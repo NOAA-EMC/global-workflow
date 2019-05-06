@@ -193,10 +193,6 @@ if [[ "$VRFYGENESIS" == "YES" && "$CDUMP" == "gfs" ]]; then
 
     if [ $machine = "WCOSS_C" -o $machine = "WCOSS_DELL_P3" -o $machine = "THEIA" ] ; then
         export GENESISSH="$HOMEgfs/jobs/JGFS_CYCLONE_GENESIS"
-    elif [ $machine = "THEIA" ] ; then
-        export GENESISSH="$HOMEens_tracker/gfs_genesis_para_fv3gfs.sh"	
-        export UTILROOT="/scratch4/NCEPDEV/global/save/glopara/nwpara/prod_util.v1.0.15"
-        export GETTX_GEN="$NWROOTGENESIS/ens_tracker.v2.0.1/exec/gettrk_gen_g2_theia"
     elif [ $machine = "JET" ] ; then
         export GENESISSH="$HOMEens_tracker/jobs/JGFS_CYCLONE_GENESIS"
         export UTILROOT="/lfs3/projects/hwrf-vd/soft/prod_util-1.0.18"

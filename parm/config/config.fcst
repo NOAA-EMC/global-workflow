@@ -50,7 +50,6 @@ export h2o_phys=".true."
 export new_o3forc="YES"
 
 # Microphysics configuration
-<<<<<<< HEAD
 export dnats=0
 export cal_pre=".true."
 export do_sat_adj=".false."
@@ -93,23 +92,11 @@ elif [ $imp_physics -eq 11 ]; then # GFDL
     export nord=2
     export dddmp=0.1
     export d4_bg=0.12
-=======
-export dnats=1
-export cal_pre=".false."
-export do_sat_adj=".true."
-export random_clds=".false."
-export cnvcld=".true."
-export ncld=5
-export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_gfdl"
-export nwat=6
-export hord_mt_nh_nonmono=6
-export hord_xx_nh_nonmono=6
-export vtdm4_nh_nonmono=0.02
-export nord=2
-export dddmp=0.1
-export d4_bg=0.12
->>>>>>> origin/merge2dell
 
+else
+    echo "Unknown microphysics option, ABORT!"
+
+fi
 
 #---------------------------------------------------------------------
 
@@ -128,11 +115,6 @@ if [[ "$CDUMP" == "gdas" ]] ; then # GDAS cycle specific parameters
 
     # Write restart files at next assimilation time
     export restart_interval=6
-    export npe_remap=240
-    export nth_remap=2
-
-    export hord_xx_nh_nonmono="6"
-    export hord_mt_nh_nonmono="6"
     
 elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
 
@@ -142,11 +124,6 @@ elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
     else
         export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_orig"
     fi
-    export npe_remap=240
-    export nth_remap=2
-
-    export hord_xx_nh_nonmono="5"
-    export hord_mt_nh_nonmono="5"
 
     # Write gfs restart files to rerun fcst from any break point         
      export restart_interval=${restart_interval_gfs:-0}
