@@ -127,7 +127,7 @@ link initial condition files from $ICSDIR to $COMROT'''
     parser.add_argument('--expdir', help='full path to EXPDIR', type=str, required=False, default=None)
     parser.add_argument('--idate', help='starting date of experiment, initial conditions must exist!', type=str, required=True)
     parser.add_argument('--edate', help='end date experiment', type=str, required=True)
-    parser.add_argument('--icsdir', help='full path to initial condition directory', type=str, required=True)
+    parser.add_argument('--icsdir', help='full path to initial condition directory', type=str, required=False)
     parser.add_argument('--configdir', help='full path to directory containing the config files', type=str, required=False, default=None)
     parser.add_argument('--nens', help='number of ensemble members', type=int, required=False, default=20)
     parser.add_argument('--cdump', help='CDUMP to start the experiment', type=str, required=False, default='gdas')
@@ -161,20 +161,23 @@ link initial condition files from $ICSDIR to $COMROT'''
     cdump = args.cdump
     gfs_cyc = args.gfs_cyc
 
-    if not os.path.exists(icsdir):
+    if args.icsdir is not None and not os.path.exists(icsdir):
         msg = 'Initial conditions do not exist in %s' % icsdir
         raise IOError(msg)
 
     # COMROT directory
-    create_comrot = True
-    if os.path.exists(comrot):
-        print
-        print 'COMROT already exists in %s' % comrot
-        print
-        overwrite_comrot = raw_input('Do you wish to over-write COMROT [y/N]: ')
-        create_comrot = True if overwrite_comrot in ['y', 'yes', 'Y', 'YES'] else False
-        if create_comrot:
-            shutil.rmtree(comrot)
+    if args.icsdir is None:
+       create_comrot = False
+    else:
+       create_comrot = True
+       if os.path.exists(comrot):
+           print
+           print 'COMROT already exists in %s' % comrot
+           print
+           overwrite_comrot = raw_input('Do you wish to over-write COMROT [y/N]: ')
+           create_comrot = True if overwrite_comrot in ['y', 'yes', 'Y', 'YES'] else False
+           if create_comrot:
+              shutil.rmtree(comrot)
 
     if create_comrot:
         create_COMROT()

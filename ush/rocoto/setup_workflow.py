@@ -33,7 +33,6 @@ from collections import OrderedDict
 import rocoto
 import workflow_utils as wfu
 
-
 def main():
     parser = ArgumentParser(description='Setup XML workflow and CRONTAB for a GFS parallel.', formatter_class=ArgumentDefaultsHelpFormatter)
     parser.add_argument('--expdir', help='full path to experiment directory containing config files', type=str, required=False, default=os.environ['PWD'])
@@ -174,8 +173,13 @@ def get_definitions(base):
     strings.append('\n')
     strings.append('\t<!-- Machine related entities -->\n')
     strings.append('\t<!ENTITY ACCOUNT    "%s">\n' % base['ACCOUNT'])
+
     strings.append('\t<!ENTITY QUEUE      "%s">\n' % base['QUEUE'])
-    strings.append('\t<!ENTITY QUEUE_ARCH "%s">\n' % base['QUEUE_ARCH'])
+    if base['machine'] == 'THEIA' and wfu.check_slurm():
+        strings.append('\t<!ENTITY QUEUE_ARCH "%s">\n' % base['QUEUE'])
+        strings.append('\t<!ENTITY PARTITION_ARCH "%s">\n' % base['QUEUE_ARCH'])
+    else:
+        strings.append('\t<!ENTITY QUEUE_ARCH "%s">\n' % base['QUEUE_ARCH'])
     strings.append('\t<!ENTITY SCHEDULER  "%s">\n' % wfu.get_scheduler(base['machine']))
     strings.append('\n')
     strings.append('\t<!-- Toggle HPSS archiving -->\n')
@@ -237,6 +241,8 @@ def get_gdasgfs_resources(dict_configs, cdump='gdas'):
 
         strings = []
         strings.append('\t<!ENTITY QUEUE_%s     "%s">\n' % (taskstr, queuestr))
+        if base['machine'] == 'THEIA' and wfu.check_slurm() and task == 'arch':
+            strings.append('\t<!ENTITY PARTITION_%s "&PARTITION_ARCH;">\n' % taskstr )
         strings.append('\t<!ENTITY WALLTIME_%s  "%s">\n' % (taskstr, wtimestr))
         strings.append('\t<!ENTITY RESOURCES_%s "%s">\n' % (taskstr, resstr))
         strings.append('\t<!ENTITY MEMORY_%s    "%s">\n' % (taskstr, memstr))
@@ -304,6 +310,8 @@ def get_hyb_resources(dict_configs):
 
         strings = []
         strings.append('\t<!ENTITY QUEUE_%s     "%s">\n' % (taskstr, queuestr))
+        if base['machine'] == 'THEIA' and wfu.check_slurm() and task == 'earc':
+            strings.append('\t<!ENTITY PARTITION_%s "&PARTITION_ARCH;">\n' % taskstr )
         strings.append('\t<!ENTITY WALLTIME_%s  "%s">\n' % (taskstr, wtimestr))
         strings.append('\t<!ENTITY RESOURCES_%s "%s">\n' % (taskstr, resstr))
         strings.append('\t<!ENTITY MEMORY_%s    "%s">\n' % (taskstr, memstr))
@@ -320,6 +328,9 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
     '''
 
     envars = []
+
+    if wfu.check_slurm():
+        envars.append(rocoto.create_envar(name='SLURM_SET', value='YES'))
     envars.append(rocoto.create_envar(name='RUN_ENVIR', value='&RUN_ENVIR;'))
     envars.append(rocoto.create_envar(name='HOMEgfs', value='&HOMEgfs;'))
     envars.append(rocoto.create_envar(name='EXPDIR', value='&EXPDIR;'))
@@ -504,6 +515,8 @@ def get_hyb_tasks(dict_configs, cycledef='enkf'):
     EARCGROUPS = ' '.join(['%02d' % x for x in range(0, nearc_grps + 1)])
 
     envars = []
+    if wfu.check_slurm():
+       envars.append(rocoto.create_envar(name='SLURM_SET', value='YES'))
     envars.append(rocoto.create_envar(name='RUN_ENVIR', value='&RUN_ENVIR;'))
     envars.append(rocoto.create_envar(name='HOMEgfs', value='&HOMEgfs;'))
     envars.append(rocoto.create_envar(name='EXPDIR', value='&EXPDIR;'))
