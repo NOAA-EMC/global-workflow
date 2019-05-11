@@ -345,33 +345,33 @@ def create_crontab(base, cronint=5):
         print 'Failed to find rocotorun, crontab will not be created'
         return
 
-    if check_slurm() and base['machine'] in ['THEIA']:
+# Leaving the code for a wrapper around crontab file if needed again later
+#    if check_slurm() and base['machine'] in ['THEIA']:
+#
+#        cronintstr = '*/%d * * * *' % cronint
+#        rocotorunstr = '%s -d %s/%s.db -w %s/%s.xml' % (rocotoruncmd, base['EXPDIR'], base['PSLOT'], base['EXPDIR'], base['PSLOT'])
+#    
+#        wrapper_strings = []
+#        wrapper_strings.append('#!/bin/env tcsh\n')
+#        wrapper_strings.append('\n')
+#        wrapper_strings.append('module load slurm\n')
+#        wrapper_strings.append('module load rocoto/1.3.0-RC4\n')
+#        wrapper_strings.append('\n')
+#        wrapper_strings.append(rocotorunstr)
+#
+#        hostname = 'tfe02'
+#        script_file = os.path.join(base['EXPDIR'], '%s.sh' % base['PSLOT'])
+#
+#        fh = open(script_file, 'w')
+#        fh.write(''.join(wrapper_strings))
+#        os.chmod(script_file,stat.S_IRWXU|stat.S_IRWXG|stat.S_IRWXO)
+#        fh.close()
+#
+#        rocotorunstr = 'ssh %s %s/%s.sh' % (socket.gethostname(), base['EXPDIR'], base['PSLOT']) 
+#
+#    else:
 
-        cronintstr = '*/%d * * * *' % cronint
-        rocotorunstr = '%s -d %s/%s.db -w %s/%s.xml' % (rocotoruncmd, base['EXPDIR'], base['PSLOT'], base['EXPDIR'], base['PSLOT'])
-
-        wrapper_strings = []
-        wrapper_strings.append('#!/bin/env tcsh\n')
-        wrapper_strings.append('\n')
-        wrapper_strings.append('module load slurm\n')
-        wrapper_strings.append('module load rocoto/1.3.0-RC4\n')
-        wrapper_strings.append('\n')
-        wrapper_strings.append(rocotorunstr)
-
-        hostname = 'tfe02'
-        script_file = os.path.join(base['EXPDIR'], '%s.sh' % base['PSLOT'])
-
-        fh = open(script_file, 'w')
-        fh.write(''.join(wrapper_strings))
-        os.chmod(script_file,stat.S_IRWXU|stat.S_IRWXG|stat.S_IRWXO)
-        fh.close()
-
-        rocotorunstr = 'ssh %s %s/%s.sh' % (socket.gethostname(), base['EXPDIR'], base['PSLOT'])
-
-    else:
-
-        rocotorunstr = '%s -d %s/%s.db -w %s/%s.xml' % (rocotoruncmd, base['EXPDIR'], base['PSLOT'], base['EXPDIR'], base['PSLOT'])
-
+    rocotorunstr = '%s -d %s/%s.db -w %s/%s.xml' % (rocotoruncmd, base['EXPDIR'], base['PSLOT'], base['EXPDIR'], base['PSLOT'])
     cronintstr = '*/%d * * * *' % cronint
 
     # On WCOSS, rocoto module needs to be loaded everytime cron runs
