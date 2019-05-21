@@ -207,7 +207,7 @@ def create_wf_task(task, cdump='gdas', cycledef=None, envar=None, dependency=Non
                  'partition' : '&PARTITION_%s_%s;' % (task.upper(),cdump.upper()), \
                  'final': final}
 
-    if task in ['arch','earc'] and check_slurm():
+    if task in ['getic','arch','earc'] and check_slurm():
         task_dict['partition'] = '&PARTITION_%s_%s;' % (task.upper(),cdump.upper())
     else:
         task_dict['partition'] = None
@@ -323,8 +323,8 @@ def get_resources(machine, cfg, task, cdump='gdas'):
         resstr = '<cores>%d</cores>' % tasks
 
     queuestr = '&QUEUE_ARCH;'
-    # Tricky logic added for Thiea arch queues beasue partition
-    # is a subset up queue for service queues (for now)
+    # Tricky logic added for Theia arch queues because partition
+    # is a subset of queue for service queues (for now)
     if task in ['arch', 'earc', 'getic']:
         if machine in ['THEIA'] and check_slurm():
             queuestr = '&QUEUE;'

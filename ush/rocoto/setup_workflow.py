@@ -177,7 +177,7 @@ def get_definitions(base):
 
     strings.append('\t<!ENTITY QUEUE      "%s">\n' % base['QUEUE'])
     if base['machine'] == 'THEIA' and wfu.check_slurm():
-        strings.append('\t<!ENTITY QUEUE_ARCH "%s">\n' % base['QUEUE'])
+        strings.append('\t<!ENTITY QUEUE_ARCH "%s">\n' % base['QUEUE_ARCH'])
         strings.append('\t<!ENTITY PARTITION_ARCH "%s">\n' % base['QUEUE_ARCH'])
     else:
         strings.append('\t<!ENTITY QUEUE_ARCH "%s">\n' % base['QUEUE_ARCH'])
