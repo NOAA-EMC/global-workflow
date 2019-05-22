@@ -292,6 +292,7 @@ EOF
 #.............................
   else  ##RERUN                         
 
+    export warm_start=".true."
     PDYT=$(echo $CDATE_RST | cut -c1-8)
     cyct=$(echo $CDATE_RST | cut -c9-10)
     for file in $RSTDIR_TMP/${PDYT}.${cyct}0000.*; do
