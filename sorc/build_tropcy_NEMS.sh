@@ -145,11 +145,11 @@ cd supvit.fd
    make install
    make clean
    cd ../
-cd gettrk.fd
-   make clean
-   make -f makefile
-   make install
-   make clean
-   cd ../
+#cd gettrk.fd
+#   make clean
+#   make -f makefile
+#   make install
+#   make clean
+#   cd ../
 
 exit

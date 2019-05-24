@@ -44,9 +44,9 @@ done
 $LINK $FIX_DIR/* .
 
 
-#------------------------------
-#--add gfs_post file
-#------------------------------
+#---------------------------------------
+#--add files from external repositories
+#---------------------------------------
 cd ${pwd}/../jobs               ||exit 8
     $LINK ../sorc/gfs_post.fd/jobs/JGLOBAL_POST_MANAGER      .
     $LINK ../sorc/gfs_post.fd/jobs/JGLOBAL_NCEPPOST          .
@@ -57,9 +57,16 @@ cd ${pwd}/../scripts            ||exit 8
     $LINK ../sorc/gfs_post.fd/scripts/exgdas_nceppost.sh.ecf .
     $LINK ../sorc/gfs_post.fd/scripts/exgfs_nceppost.sh.ecf  .
     $LINK ../sorc/gfs_post.fd/scripts/exglobal_pmgr.sh.ecf   .
+    $LINK ../sorc/ufs_utils.fd/scripts/exemcsfc_global_sfc_prep.sh.ecf .
 cd ${pwd}/../ush                ||exit 8
-    for file in fv3gfs_downstream_nems.sh  fv3gfs_dwn_nems.sh  gfs_nceppost.sh  gfs_transfer.sh  link_crtm_fix.sh  trim_rh.sh fix_precip.sh; do
+    for file in fv3gfs_downstream_nems.sh  fv3gfs_dwn_nems.sh  gfs_nceppost.sh  \
+        gfs_transfer.sh  link_crtm_fix.sh  trim_rh.sh fix_precip.sh; do
         $LINK ../sorc/gfs_post.fd/ush/$file                  .
+    done
+    for file in emcsfc_ice_blend.sh  fv3gfs_driver_grid.sh  fv3gfs_make_orog.sh  global_cycle_driver.sh \
+        emcsfc_snow.sh  fv3gfs_filter_topo.sh  global_chgres_driver.sh  global_cycle.sh \
+        fv3gfs_chgres.sh  fv3gfs_make_grid.sh  global_chgres.sh  global_tracker.sh ; do
+        $LINK ../sorc/ufs_utils.fd/ush/$file                  .
     done
 
 
@@ -169,8 +176,18 @@ $LINK ../sorc/gfs_post.fd/exec/ncep_post gfs_ncep_post
 #    done
 #fi
 
+for ufs_utilsexe in \
+     chgres_cube.exe   fregrid           global_cycle         nemsio_cvt    orog.x \
+     emcsfc_ice_blend  fregrid_parallel  make_hgrid           nemsio_get    shave.x \
+     emcsfc_snow2mdl   gettrk            make_hgrid_parallel  nemsio_read \
+     filter_topo       global_chgres     make_solo_mosaic     nst_tf_chg.x ; do
+    [[ -s $ufs_utilsexe ]] && rm -f $ufs_utilsexe
+    $LINK ../sorc/ufs_utils.fd/exec/$ufs_utilsexe .
+done
 
-for gsiexe in  global_gsi.x global_enkf.x calc_increment_ens.x  getsfcensmeanp.x  getsigensmeanp_smooth.x  getsigensstatp.x nc_diag_cat_serial.x nc_diag_cat.x recentersigp.x oznmon_horiz.x oznmon_time.x radmon_angle.x radmon_bcoef.x radmon_bcor.x radmon_time.x ;do
+for gsiexe in  global_gsi.x global_enkf.x calc_increment_ens.x  getsfcensmeanp.x  getsigensmeanp_smooth.x  \
+    getsigensstatp.x  nc_diag_cat_serial.x nc_diag_cat.x recentersigp.x oznmon_horiz.x oznmon_time.x \
+    radmon_angle.x radmon_bcoef.x radmon_bcor.x radmon_time.x ;do
     [[ -s $gsiexe ]] && rm -f $gsiexe
     $LINK ../sorc/gsi.fd/exec/$gsiexe .
 done
@@ -195,12 +212,18 @@ cd ${pwd}/../sorc   ||   exit 8
     $SLINK gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared.v3.0.0/sorc/verf_radtime.fd   radmon_time.fd 
     $SLINK gsi.fd/util/EnKF/gfs/src/recentersigp.fd                                        recentersigp.fd
 
-    $SLINK gfs_post.fd/sorc/ncep_post.fd                                                        gfs_ncep_post.fd
-    $SLINK fre-nctools.fd/tools/filter_topo                                                filter_topo.fd
-    $SLINK fre-nctools.fd/tools/fregrid                                                    fregrid.fd
-    $SLINK fre-nctools.fd/tools/make_hgrid                                                 make_hgrid.fd
-    $SLINK fre-nctools.fd/tools/make_solo_mosaic                                           make_solo_mosaic.fd
-    $SLINK fre-nctools.fd/tools/shave.fd                                                   shave.fd
+    $SLINK gfs_post.fd/sorc/ncep_post.fd                                                   gfs_ncep_post.fd
+
+    $SLINK ufs_utils.fd/sorc/fre-nctools.fd/tools/shave.fd                                 shave.fd
+    for prog in filter_topo fregrid make_hgrid make_solo_mosaic ; do
+        $SLINK ufs_utils.fd/sorc/fre-nctools.fd/tools/$prog                                ${prog}.fd                                
+    done
+    for prog in  chgres_cube.fd       global_cycle.fd   nemsio_read.fd \
+        emcsfc_ice_blend.fd  gettrk.fd         nemsio_cvt.fd    nst_tf_chg.fd \
+        emcsfc_snow2mdl.fd   global_chgres.fd  nemsio_get.fd    orog.fd ;do
+        $SLINK ufs_utils.fd/sorc/$prog                                                     $prog
+    done
+
 
 #   if [ $machine = dell ]; then
 #       $SLINK gfs_wafs.fd/sorc/wafs_awc_wafavn.fd                                              wafs_awc_wafavn.fd
