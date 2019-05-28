@@ -49,10 +49,10 @@ if [ $REALTIME = "NO" ]; then
     fi
 
 #   Set OZINFO
-    if [[ "$CDATE" -ge "2015110500" ]]; then
-        export OZINFO=$FIXgsi/fv3_historical/global_ozinfo.txt.2015110500
-    elif [[ "$CDATE" -ge "2018110700" ]]; then
+    if [[ "$CDATE" -ge "2018110700" ]]; then
         export OZINFO=$FIXgsi/fv3_historical/global_ozinfo.txt.2018110700
+    elif [[ "$CDATE" -ge "2015110500" ]]; then
+        export OZINFO=$FIXgsi/fv3_historical/global_ozinfo.txt.2015110500
     else
         echo "WARNING: No OZINFO for $CDATE"
     fi

@@ -48,6 +48,15 @@ if [ $REALTIME = "NO" ]; then
 	echo "WARNING: No CONVINFO for $CDATE"
     fi
 
+#   Set OZINFO
+    if [[ "$CDATE" -ge "2018110700" ]]; then
+        export OZINFO=$FIXgsi/fv3_historical/global_ozinfo.txt.2018110700
+    elif [[ "$CDATE" -ge "2015110500" ]]; then
+        export OZINFO=$FIXgsi/fv3_historical/global_ozinfo.txt.2015110500
+    else
+        echo "WARNING: No OZINFO for $CDATE"
+    fi
+
 #   Set SATINFO
     if [[ "$CDATE" -ge "2018053012" ]]; then
         export SATINFO=$FIXgsi/fv3_historical/global_satinfo.txt.2018053012
