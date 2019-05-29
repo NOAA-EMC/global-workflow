@@ -72,6 +72,7 @@ GSUFFIX=${GSUFFIX:-""}
 NMEM_ENKF=${NMEM_ENKF:-80}
 imp_physics=${imp_physics:-99}
 INCREMENTS_TO_ZERO=${INCREMENTS_TO_ZERO:-"'NONE'"}
+DOIAU=${DOIAU_ENKF:-"NO"}
 
 # global_chgres stuff
 CHGRESEXEC=${CHGRESEXEC:-$HOMEgfs/exec/chgres_recenter.exe}
@@ -111,17 +112,38 @@ ENKF_SUFFIX="s"
 
 ################################################################################
 # Link ensemble member guess, analysis and increment files
+nfhrs=`echo $IAUFHRS_ENKF | sed 's/,/ /g'`
+for FHR in $nfhrs; do  # loop over analysis times in window
+
 for imem in $(seq 1 $NMEM_ENKF); do
    memchar="mem"$(printf %03i $imem)
-   $NLN $COMIN_GES_ENS/$memchar/${GPREFIX}atmf006${ENKF_SUFFIX}$GSUFFIX ./atmges_$memchar
-   $NLN $COMIN_ENS/$memchar/${APREFIX_ENKF}atmanl$ASUFFIX ./atmanl_$memchar
+   $NLN $COMIN_GES_ENS/$memchar/${GPREFIX}atmf00${FHR}${ENKF_SUFFIX}$GSUFFIX ./atmges_$memchar
+   if [ $FHR -eq 6 ]; then
+      $NLN $COMIN_ENS/$memchar/${APREFIX_ENKF}atmanl$ASUFFIX ./atmanl_$memchar
+   else
+      $NLN $COMIN_ENS/$memchar/${APREFIX_ENKF}atmanl00${FHR}$ASUFFIX ./atmanl_$memchar
+   fi
    mkdir -p $COMOUT_ENS/$memchar
-   $NLN $COMOUT_ENS/$memchar/${APREFIX}atminc.nc ./atminc_$memchar
-   [[ $RECENTER_ENKF = "YES" ]] && $NLN $COMOUT_ENS/$memchar/${APREFIX}ratmanl$ASUFFIX ./ratmanl_$memchar
+   if [ $FHR -eq 6 ]; then
+      $NLN $COMOUT_ENS/$memchar/${APREFIX}atminc.nc ./atminc_$memchar
+   else
+      $NLN $COMOUT_ENS/$memchar/${APREFIX}atmi00${FHR}.nc ./atminc_$memchar
+   fi
+   if [[ $RECENTER_ENKF = "YES" ]]; then
+      if [ $FHR -eq 6 ]; then
+         $NLN $COMOUT_ENS/$memchar/${APREFIX}ratmanl$ASUFFIX ./ratmanl_$memchar
+      else
+         $NLN $COMOUT_ENS/$memchar/${APREFIX}ratmanl00${FHR}$ASUFFIX ./ratmanl_$memchar
+      fi
+   fi
 done
 
 # Link ensemble mean analysis
-$NLN $COMIN_ENS/${APREFIX_ENKF}atmanl.ensmean$ASUFFIX ./atmanl_ensmean
+if [ $FHR -eq 6 ]; then
+   $NLN $COMIN_ENS/${APREFIX_ENKF}atmanl.ensmean$ASUFFIX ./atmanl_ensmean
+else
+   $NLN $COMIN_ENS/${APREFIX_ENKF}atmanl00${FHR}.ensmean$ASUFFIX ./atmanl_ensmean
+fi
 
 # Compute ensemble mean analysis
 DATAPATH="./"
@@ -257,6 +279,8 @@ export ERR=$rc
 export err=$rc
 $ERRSCRIPT || exit 4
 
+done # loop over analysis times in window
+
 ################################################################################
 # Update surface fields in the FV3 restart's using global_cycle
 
@@ -267,6 +291,10 @@ GDATE=$($NDATE -$assim_freq $CDATE)
 gPDY=$(echo $GDATE | cut -c1-8)
 gcyc=$(echo $GDATE | cut -c9-10)
 GDUMP=${GDUMP:-"gdas"}
+
+BDATE=$($NDATE -3 $CDATE)
+bPDY=$(echo $BDATE | cut -c1-8)
+bcyc=$(echo $BDATE | cut -c9-10)
 
 # Get dimension information based on CASE
 res=$(echo $CASE | cut -c2-)
@@ -310,6 +338,38 @@ export APRUNCY=${APRUN_CYCLE:-$APRUN_ECEN}
 export OMP_NUM_THREADS_CY=${NTHREADS_CYCLE:-$NTHREADS_ECEN}
 export MAX_TASKS_CY=$NMEM_ENKF
 
+if [ $DOIAU = "YES" ]; then
+    # Update surface restarts at beginning of window when IAU is ON
+    # For now assume/hold dtfanl.nc is valid at beginning of window.
+
+    for n in $(seq 1 $ntiles); do
+
+        export TILE_NUM=$n
+
+        for imem in $(seq 1 $NMEM_ENKF); do
+
+            cmem=$(printf %03i $imem)
+            memchar="mem$cmem"
+
+            [[ $TILE_NUM -eq 1 ]] && mkdir -p $COMOUT_ENS/$memchar/RESTART
+
+            $NLN $COMIN_GES_ENS/$memchar/RESTART/$bPDY.${bcyc}0000.sfc_data.tile${n}.nc $DATA/fnbgsi.$cmem
+            $NLN $COMOUT_ENS/$memchar/RESTART/$bPDY.${bcyc}0000.sfcanl_data.tile${n}.nc $DATA/fnbgso.$cmem
+            $NLN $FIXfv3/$CASE/${CASE}_grid.tile${n}.nc                                $DATA/fngrid.$cmem
+            $NLN $FIXfv3/$CASE/${CASE}_oro_data.tile${n}.nc                            $DATA/fnorog.$cmem
+
+        done
+
+        $CYCLESH
+        rc=$?
+        export ERR=$rc
+        export err=$ERR
+        $ERRSCRIPT || exit 11
+
+    done
+
+fi
+
 for n in $(seq 1 $ntiles); do
 
     export TILE_NUM=$n
@@ -335,6 +395,7 @@ for n in $(seq 1 $ntiles); do
     $ERRSCRIPT || exit 11
 
 done
+
 ################################################################################
 
 ################################################################################

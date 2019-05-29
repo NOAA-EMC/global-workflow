@@ -72,9 +72,19 @@ SATOBS_ENKF=${SATOBS_ENKF:-""}
 OZOBS_ENKF=${OZOBS_ENKF:-""}
 imp_physics=${imp_physics:-"99"}
 lupp=${lupp:-".true."}
+corrlength=${corrlength:-1250}
+lnsigcutoff=${lnsigcutoff:-2.5}
+analpertwt=${analpertwt:-0.85}
+readin_localization_enkf=${readin_localization_enkf:-".true."}
+reducedgrid=${reducedgrid:-".true"}
+letkf_flag=${letkf_flag:-".false"}
+getkf=${getkf:-".false"}
+denkf=${denkf:-".false"}
+nobsl_max=${nobsl_max:-10000}
 lobsdiag_forenkf=${lobsdiag_forenkf:-".false"}
 write_spread_diag=${write_spread_diag:-".false"}
 netcdf_diag=${netcdf_diag:-".false."}
+modelspace_vloc=${modelspace_vloc:-".false."} # if true, 'vlocal_eig.dat' is needed
 
 ################################################################################
 ATMGES_ENSMEAN=$COMIN_GES_ENS/${GPREFIX}atmf006.ensmean${GSUFFIX}
@@ -91,6 +101,7 @@ OZINFO=${OZINFO:-${FIXgsi}/global_ozinfo.txt}
 SCANINFO=${SCANINFO:-${FIXgsi}/global_scaninfo.txt}
 HYBENSINFO=${HYBENSINFO:-${FIXgsi}/global_hybens_info.l${LEVS_ENKF}.txt}
 ANAVINFO=${ANAVINFO:-${FIXgsi}/global_anavinfo.l${LEVS_ENKF}.txt}
+VLOCALEIG=${VLOCALEIG:-${FIXgsi}/vlocal_eig_l${LEVS_ENKF}.dat}
 
 ENKF_SUFFIX="s"
 [[ $SMOOTH_ENKF = "NO" ]] && ENKF_SUFFIX=""
@@ -120,6 +131,7 @@ $NLN $CONVINFO   convinfo
 $NLN $OZINFO     ozinfo
 $NLN $HYBENSINFO hybens_info
 $NLN $ANAVINFO   anavinfo
+$NLN $VLOCALEIG  vlocal_eig.dat
 
 # Bias correction coefficients based on the ensemble mean
 $NLN $COMOUT_ANL_ENS/$GBIASe satbias_in
@@ -158,6 +170,7 @@ else
       tar -xvf $fname
    done
 fi
+nfhrs=`echo $IAUFHRS_ENKF | sed 's/,/ /g'`
 for imem in $(seq 1 $NMEM_ENKF); do
    memchar="mem"$(printf %03i $imem)
    if [ $USE_CFP = "YES" ]; then
@@ -168,12 +181,21 @@ for imem in $(seq 1 $NMEM_ENKF); do
          tar -xvf $fname
       done
    fi
-   $NLN $COMIN_GES_ENS/$memchar/${GPREFIX}atmf006${ENKF_SUFFIX}${GSUFFIX}  sfg_${CDATE}_fhr06_${memchar}
-   $NLN $COMOUT_ANL_ENS/$memchar/${APREFIX}atmanl${ASUFFIX}               sanl_${CDATE}_fhr06_${memchar}
+   mkdir -p $COMOUT_ANL_ENS/$memchar
+   for FHR in $nfhrs; do 
+      $NLN $COMIN_GES_ENS/$memchar/${GPREFIX}atmf00${FHR}${ENKF_SUFFIX}${GSUFFIX}  sfg_${CDATE}_fhr0${FHR}_${memchar}
+      if [ $FHR -eq 6 ]; then
+         $NLN $COMOUT_ANL_ENS/$memchar/${APREFIX}atmanl${ASUFFIX}             sanl_${CDATE}_fhr0${FHR}_${memchar}
+      else
+         $NLN $COMOUT_ANL_ENS/$memchar/${APREFIX}atmanl00${FHR}${ASUFFIX}             sanl_${CDATE}_fhr0${FHR}_${memchar}
+      fi
+   done
 done
 
 # Ensemble mean guess
-$NLN $COMIN_GES_ENS/${GPREFIX}atmf006.ensmean${GSUFFIX} sfg_${CDATE}_fhr06_ensmean
+for FHR in $nfhrs; do 
+   $NLN $COMIN_GES_ENS/${GPREFIX}atmf00${FHR}.ensmean${GSUFFIX} sfg_${CDATE}_fhr0${FHR}_ensmean
+done
 
 if [ $USE_CFP = "YES" ]; then
    chmod 755 $DATA/mp_untar.sh
@@ -194,22 +216,25 @@ fi
 cat > enkf.nml << EOFnml
 &nam_enkf
    datestring="$CDATE",datapath="$DATA/",
-   analpertwtnh=0.85,analpertwtsh=0.85,analpertwttr=0.85,
+   analpertwtnh=${analpertwt},analpertwtsh=${analpertwt},analpertwttr=${analpertwt},
    covinflatemax=1.e2,covinflatemin=1,pseudo_rh=.true.,iassim_order=0,
-   corrlengthnh=2000,corrlengthsh=2000,corrlengthtr=2000,
-   lnsigcutoffnh=2.0,lnsigcutoffsh=2.0,lnsigcutofftr=2.0,
-   lnsigcutoffpsnh=2.0,lnsigcutoffpssh=2.0,lnsigcutoffpstr=2.0,
-   lnsigcutoffsatnh=2.0,lnsigcutoffsatsh=2.0,lnsigcutoffsattr=2.0,
+   corrlengthnh=${corrlength},corrlengthsh=${corrlength},corrlengthtr=${corrlength},
+   lnsigcutoffnh=${lnsigcutoff},lnsigcutoffsh=${lnsigcutoff},lnsigcutofftr=${lnsigcutoff},
+   lnsigcutoffpsnh=${lnsigcutoff},lnsigcutoffpssh=${lnsigcutoff},lnsigcutoffpstr=${lnsigcutoff},
+   lnsigcutoffsatnh=${lnsigcutoff},lnsigcutoffsatsh=${lnsigcutoff},lnsigcutoffsattr=${lnsigcutoff},
    obtimelnh=1.e30,obtimelsh=1.e30,obtimeltr=1.e30,
-   saterrfact=1.0,numiter=1,
+   saterrfact=1.0,numiter=0,
    sprd_tol=1.e30,paoverpb_thresh=0.98,
    nlons=$LONA_ENKF,nlats=$LATA_ENKF,nlevs=$LEVS_ENKF,nanals=$NMEM_ENKF,
    deterministic=.true.,sortinc=.true.,lupd_satbiasc=.false.,
-   reducedgrid=.true.,readin_localization=.true.,
+   reducedgrid=${reducedgrid},readin_localization=${readin_localization_enkf}.,
    use_gfs_nemsio=.true.,imp_physics=$imp_physics,lupp=$lupp,
    univaroz=.false.,adp_anglebc=.true.,angord=4,use_edges=.false.,emiss_bc=.true.,
+   letkf_flag=${letkf_flag},nobsl_max=${nobsl_max},denkf=${denkf},getkf=${getkf}.,
+   nhr_anal=${IAUFHRS_ENKF},nhr_state=${IAUFHRS_ENKF},use_qsatensmean=.true.,
    lobsdiag_forenkf=$lobsdiag_forenkf,
    write_spread_diag=$write_spread_diag,
+   modelspace_vloc=$modelspace_vloc,
    netcdf_diag=$netcdf_diag,
    $NAM_ENKF
 /
@@ -301,9 +326,61 @@ EOFnml
 ################################################################################
 # Run enkf update
 export OMP_NUM_THREADS=$NTHREADS_ENKF
-$NCP $ENKFEXEC $DATA/enkf.x
-$APRUN_ENKF $DATA/enkf.x < enkf.nml 1>stdout 2>stderr
-rc=$?
+
+PGM=$DATA/enkf.x
+$NCP $ENKFEXEC $PGM
+
+# Execute EnKF using same number of mpi tasks on all nodes
+#$APRUN_ENKF $PGM 1>stdout 2>stderr
+#rc=$?
+
+# Execute EnKF using only one mpi task on root node.
+# (root node has to hold two copies of full ob space ensemble for LETKF)
+mpi_launcher=`echo $APRUN_ENKF | cut -f1 -d " "`
+totproc=`expr $npe_enkf \* $OMP_NUM_THREADS`
+mpitaskspernode=`expr $npe_node_max \/ $OMP_NUM_THREADS`
+HOSTFILE=machinefile_enkf
+rm -f $HOSTFILE
+if [ "$mpi_launcher" = "mpirun" ]; then
+   # PBS with mpirun
+   /bin/cp -f $PBS_NODEFILE $HOSTFILE
+   if [ $mpitaskspernode -gt 1 ]; then
+      sed -i "2,${mpitaskspernode}d" $HOSTFILE
+      nprocs=`wc -l $HOSTFILE | cut -f1 -d" "`
+   fi
+   mpirun -np $nprocs -machinefile $HOSTFILE $PGM 1>stdout 2>stderr
+   rc=$?
+   rm -f $HOSTFILE
+elif [ "$mpi_launcher" = "srun" ]; then
+   # slurm with srun
+   nnode=0
+   for node in `scontrol show hostnames $SLURM_JOB_NODELIST`; do
+       let nnode+=1
+       if [ $nnode -eq 1 ]; then
+          echo $node > $HOSTFILE
+       else
+          count=0
+          while [ $count -lt "$mpitaskspernode" ]; do
+             echo $node >> $HOSTFILE
+             let count+=1
+          done
+       fi
+   done
+   nprocs=`wc -l $HOSTFILE | cut -f1 -d" "`
+   export SLURM_HOSTFILE=$HOSTFILE
+   srun --verbose --export=ALL -c ${OMP_NUM_THREADS} --distribution=arbitrary --cpu-bind=cores $PGM 1>stdout 2>stderr
+   rc=$?
+   rm -f $HOSTFILE
+elif [ "$mpi_launcher" = "aprun" ]; then
+   # aprun (independent of scheduler)
+   totproc2=`expr $totproc - $npe_node_max`
+   nprocs=`expr $totproc2 \/ $OMP_NUM_THREADS`
+   aprun -n 1 -N 1 -d ${OMP_NUM_THREADS} --cc depth $PGM : -n $nprocs -N $mpitaskspernode -d ${OMP_NUM_THREADS} --cc depth $PGM 1>stdout 2>stderr
+   rc=$?
+else
+   echo "unknown mpi launcher"
+   rc=99
+fi
 
 export ERR=$rc
 export err=$ERR
