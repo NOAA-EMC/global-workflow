@@ -549,10 +549,8 @@ EOF
 
 #### ww3 version of nems.configure
 if [ $cplwav = ".true." ]; then
-####  atm_petlist_bounds=" 0 $((NTASKS_FV3-1))"
-####  wav_petlist_bounds=" $((NTASKS_FV3)) $((NTASKS_FV3+npe_wav))"
-  atm_petlist_bounds=" 0   311"
-  wav_petlist_bounds=" 312 431"
+  atm_petlist_bounds=" 0 $((NTASKS_FV3-1))"
+  wav_petlist_bounds=" $((NTASKS_FV3)) $((NTASKS_FV3+npe_wav))"
   coupling_interval_sec=${coupling_interval_sec:-1800}
   rm -f nems.configure
 cat > nems.configure <<EOF
@@ -607,7 +605,6 @@ atmos_nthreads:          $NTHREADS_FV3
 use_hyper_thread:        ${hyperthread:-".false."}
 ncores_per_node:         $cores_per_node
 restart_interval:        $restart_interval
-output_1st_tstep_rst:    ${output_1st_tstep_rst:-".false."}
 
 quilting:                $QUILTING
 write_groups:            ${WRITE_GROUP:-1}
