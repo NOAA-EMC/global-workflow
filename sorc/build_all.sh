@@ -66,6 +66,14 @@ echo " .... Building ncep_post .... "
 }
 
 #------------------------------------
+# build ufs_utils
+#------------------------------------
+$Build_ufs_utils && {
+echo " .... Building ufs_utils .... "
+./build_ufs_utils.sh > $logs_dir/build_ufs_utils.log 2>&1
+}
+
+#------------------------------------
 # build gfs_wafs 
 #------------------------------------
 #$Build_gfs_wafs  && {
@@ -82,35 +90,11 @@ echo " .... Building NEMS util .... "
 }
 
 #------------------------------------
-# build chgres
-#------------------------------------
-$Build_chgres && {
-echo " .... Building chgres .... "
-./build_chgres.sh > $logs_dir/build_chgres.log 2>&1
-}
-
-#------------------------------------
 # build sfcanl_nsttfchg 
 #------------------------------------
 $Build_sfcanl_nsttfchg && {
 echo " .... Building gaussian_sfcanl and nst_tf_chg .... "
 ./build_sfcanl_nsttfchg.sh > $logs_dir/build_sfcanl_nsttfchg.log 2>&1
-}
-
-#------------------------------------
-# build orog
-#------------------------------------
-$Build_orog && {
-echo " .... Building orog .... "
-./build_orog.sh > $logs_dir/build_orog.log 2>&1
-}
-
-#------------------------------------
-# build cycle 
-#------------------------------------
-$Build_cycle && {
-echo " .... Building cycle .... "
-./build_cycle.sh > $logs_dir/build_cycle.log 2>&1
 }
 
 #------------------------------------
@@ -167,22 +151,6 @@ echo " .... Building gfs_wintemv .... "
 $Build_gfs_bufrsnd && {
 echo " .... Building gfs_bufrsnd .... "
 ./build_gfs_bufrsnd.sh > $logs_dir/build_gfs_bufrsnd.log 2>&1
-}
-
-#------------------------------------
-# build emcsfc
-#------------------------------------
-$Build_emcsfc && {
-echo " .... Building emcsfc .... "
-./build_emcsfc.sh > $logs_dir/build_emcsfc.log 2>&1
-}
-
-#------------------------------------
-# build fre-nctools
-#------------------------------------
-$Build_nctools && {
-echo " .... Building fre-nctools .... "
-./build_fre-nctools.sh > $logs_dir/build_fre-nctools.log 2>&1
 }
 
 #------------------------------------

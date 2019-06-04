@@ -28,6 +28,17 @@ else
     echo 'Skip.  Directory gsi.fd already exists.'
 fi
 
+echo ufs_utils checkout ...
+if [[ ! -d ufs_utils.fd ]] ; then
+    rm -f ${topdir}/checkout-ufs_utils.log
+    git clone --recursive gerrit:UFS_UTILS ufs_utils.fd >> ${topdir}/checkout-ufs_utils.fd.log 2>&1
+    cd ufs_utils.fd
+    git checkout  release/1.0.0   
+    cd ${topdir}
+else
+    echo 'Skip.  Directory ufs_utils.fd already exists.'
+fi
+
 echo EMC_post checkout ...
 if [[ ! -d gfs_post.fd ]] ; then
     rm -f ${topdir}/checkout-gfs_post.log
