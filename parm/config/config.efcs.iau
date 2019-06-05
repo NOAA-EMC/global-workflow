@@ -23,13 +23,15 @@ export NMEM_EFCSGRP=4
 export RERUN_EFCSGRP="NO"
 
 # Stochastic physics parameters (only for ensemble forecasts)
-export DO_SKEB="NO"
-export SKEB=-999.
+export DO_SKEB="YES"
+export SKEB=0.3   
 export SKEB_TAU=21600.
 export SKEB_LSCALE=500000.
-export SKEBNORM=1
+export SKEBNORM=0
+export SKEB_NPASS=30
+export SKEB_VDOF=5
 export DO_SHUM="YES"
-export SHUM=0.006
+export SHUM=0.005
 export SHUM_TAU=21600.
 export SHUM_LSCALE=500000.
 export DO_SPPT="YES"

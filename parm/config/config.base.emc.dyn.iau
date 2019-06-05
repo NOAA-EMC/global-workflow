@@ -205,7 +205,7 @@ export CASE_ENKF="@CASEENS@"
 
 # Surface cycle update frequency
 if [[ "$CDUMP" == "gdas" ]] ; then
-   export FHCYC=1
+   export FHCYC=0
 elif [[ "$CDUMP" == "gfs" ]] ; then
    export FHCYC=24
 fi
@@ -214,6 +214,10 @@ fi
 export FHMIN=0
 export FHMAX=9
 export FHOUT=3
+
+# cycle to run EnKF
+export EUPD_CYC="BOTH"
+#export EUPD_CYC="GDAS"
 
 # GFS cycle info
 export gfs_cyc=@gfs_cyc@ # 0: no GFS cycle, 1: 00Z only, 2: 00Z and 12Z only, 4: all 4 cycles.
@@ -239,11 +243,11 @@ export OUTPUT_GRID="gaussian_grid"
 export OUTPUT_FILE="nemsio"
 
 # IAU related parameters
-export DOIAU="NO"
-export IAUFHRS=6
+export DOIAU="YES"
+export IAUFHRS=3,6,9
 export IAU_DELTHRS=6
-export DOIAU_ENKF="NO"
-export IAUFHRS_ENKF=6
+export DOIAU_ENKF="YES"
+export IAUFHRS_ENKF=3,6,9
 export IAU_DELTHRS_ENKF=6
 [[ "$SDATE" = "$CDATE" ]] && ( export DOIAU="NO"; export DOIAU_ENKF="NO" )
 
@@ -255,8 +259,11 @@ export imp_physics=11
 export DOHYBVAR="YES"
 export NMEM_ENKF=@NMEM_ENKF@
 export SMOOTH_ENKF="YES"
+export netcdf_diag=".true."
+export binary_diag=".false."
 export l4densvar=".true."
-export lwrite4danl=".false."
+export lwrite4danl=".true."
+export lobsdiag_forenkf=".true."
 
 # EnKF output frequency
 if [ $DOHYBVAR = "YES" ]; then

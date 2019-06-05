@@ -55,25 +55,25 @@ cd $COMIN
 
 [[ ! -d $ARCDIR ]] && mkdir -p $ARCDIR
 $NCP ${APREFIX}gsistat $ARCDIR/gsistat.${CDUMP}.${CDATE}
-$NCP ${APREFIX}pgrb.1p00.anl $ARCDIR/pgbanl.${CDUMP}.${CDATE}
+$NCP ${APREFIX}pgrb2.1p00.anl $ARCDIR/pgbanl.${CDUMP}.${CDATE}.grib2
 
-# Archive 1 degree forecast GRIB1 files for verification
+# Archive 1 degree forecast GRIB2 files for verification
 if [ $CDUMP = "gfs" ]; then
     fhmax=$FHMAX_GFS
     fhr=0
     while [ $fhr -le $fhmax ]; do
         fhr2=$(printf %02i $fhr)
         fhr3=$(printf %03i $fhr)
-        $NCP ${APREFIX}pgrb.1p00.f$fhr3 $ARCDIR/pgbf${fhr2}.${CDUMP}.${CDATE}
+        $NCP ${APREFIX}pgrb2.1p00.f$fhr3 $ARCDIR/pgbf${fhr2}.${CDUMP}.${CDATE}.grib2
         (( fhr = $fhr + $FHOUT_GFS ))
     done
 fi
 if [ $CDUMP = "gdas" ]; then
     flist="000 003 006 009"
     for fhr in $flist; do
-        fname=${APREFIX}pgrb.1p00.f${fhr}
+        fname=${APREFIX}pgrb2.1p00.f${fhr}
         fhr2=$(printf %02i $fhr)
-        $NCP $fname $ARCDIR/pgbf${fhr2}.${CDUMP}.${CDATE}
+        $NCP $fname $ARCDIR/pgbf${fhr2}.${CDUMP}.${CDATE}.grib2
     done
 fi
 
@@ -160,14 +160,16 @@ if [ $CDUMP = "gfs" ]; then
     done
 
     #for targrp in gfs_flux gfs_nemsio gfs_pgrb2b; do
-    for targrp in gfs_flux gfs_nemsioa gfs_nemsiob; do
-        htar -P -cvf $ATARDIR/$CDATE/${targrp}.tar `cat $ARCH_LIST/${targrp}.txt`
-        status=$?
-        if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
-            echo "HTAR $CDATE ${targrp}.tar failed"
-            exit $status
-        fi
-    done
+    if [ ${SAVEFCSTNEMSIO:-"YES"} = "YES" ]; then
+        for targrp in gfs_flux gfs_nemsioa gfs_nemsiob; do
+            htar -P -cvf $ATARDIR/$CDATE/${targrp}.tar `cat $ARCH_LIST/${targrp}.txt`
+            status=$?
+            if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
+                echo "HTAR $CDATE ${targrp}.tar failed"
+                exit $status
+            fi
+        done
+    fi
     
     if [ $SAVEFCSTIC = "YES" ]; then
         htar -P -cvf $ATARDIR/$CDATE/gfs_restarta.tar `cat $ARCH_LIST/gfs_restarta.txt`

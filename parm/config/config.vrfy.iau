@@ -18,8 +18,8 @@ export VSDB_STEP1="YES"  # populate VSDB database
 export VSDB_STEP2="NO"
 export VRFYG2OBS="YES"   # Grid to observations, see note below if turning ON
 export VRFYPRCP="YES"    # Precip threat scores
-export VRFYRAD="YES"     # Radiance data assimilation monitoring
-export VRFYOZN="YES"     # Ozone data assimilation monitoring
+export VRFYRAD="NO"     # Radiance data assimilation monitoring
+export VRFYOZN="NO"     # Ozone data assimilation monitoring
 export VRFYMINMON="YES"  # GSI minimization monitoring
 export VRFYTRAK="YES"     # Hurricane track verification
 export VRFYGENESIS="YES"  # Cyclone genesis verification
@@ -33,7 +33,7 @@ export RUNMOS="NO"       # whether to run entire MOS package
 if [ $VRFYFITS = "YES" ]; then
 
     export PRVT=$HOMEgfs/fix/fix_gsi/prepobs_errtable.global
-    export HYBLEVS=$HOMEgfs/fix/fix_am/global_hyblev.l${LEVS}.txt
+    export HYBLEVS=$HOMEgfs/fix/fix_am/global_hyblev.l65.txt
     export CUE2RUN=$QUEUE
 
     if [ $machine = "WCOSS_C" ]; then

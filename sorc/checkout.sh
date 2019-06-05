@@ -21,8 +21,11 @@ if [[ ! -d gsi.fd ]] ; then
     rm -f ${topdir}/checkout-gsi.log
     git clone --recursive gerrit:ProdGSI gsi.fd >> ${topdir}/checkout-gsi.fd.log 2>&1
     cd gsi.fd
-    git checkout fv3da.v1.0.43
+    #git checkout fv3da.v1.0.43
+    git checkout EXP-locfix-io
     git submodule update
+    cd fix
+    git checkout fix_l127
     cd ${topdir}
 else
     echo 'Skip.  Directory gsi.fd already exists.'
@@ -45,7 +48,8 @@ if [[ ! -d gfs_post.fd ]] ; then
     git clone --recursive gerrit:EMC_post gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
     #git clone --recursive gerrit:EMC_post_gtg gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
     cd gfs_post.fd
-    git checkout ncep_post.v8.0.27e
+    git checkout gfsv16_fyang
+    #git checkout ncep_post.v8.0.27e
     #git checkout ncep_post_gtg.v1.0.6c
     cd ${topdir}
 else

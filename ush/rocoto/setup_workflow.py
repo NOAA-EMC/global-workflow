@@ -270,7 +270,7 @@ def get_hyb_resources(dict_configs):
     # These tasks can be run in either or both cycles
     tasks1 = ['eobs', 'eomg', 'eupd']
     if lobsdiag_forenkf in ['.T.', '.TRUE.']:
-        tasks.remove('eomg')
+        tasks1.remove('eomg')
 
     if eupd_cyc in ['BOTH']:
         cdumps = ['gfs', 'gdas']
