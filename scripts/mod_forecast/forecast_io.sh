@@ -343,21 +343,21 @@ WW3_out()
 	# soft link commands insert here
 }
 
-HYCOM_in()
+MOM6_in()
 {
-	echo "SUB ${FUNCNAME[0]}: Linking input data for HYCOM"
+	echo "SUB ${FUNCNAME[0]}: Linking input data for MOM6"
 	# soft link commands insert here
 }
 
-HYCOM_nml()
+MOM6_nml()
 {
-	echo "SUB ${FUNCNAME[0]}: Creating name list for HYCOM"
-	sh parsing_namelist_HYCOM.sh
+	echo "SUB ${FUNCNAME[0]}: Creating name list for MOM6"
+	sh parsing_namelist_MOM6.sh
 }
 
-HYCOM_out()
+MOM6_out()
 {
-	echo "SUB ${FUNCNAME[0]}: Copying output data for HYCOM"
+	echo "SUB ${FUNCNAME[0]}: Copying output data for MOM6"
 	# soft link commands insert here
 }
 
@@ -370,7 +370,7 @@ CICE_in()
 CICE_nml()
 {
 	echo "SUB ${FUNCNAME[0]}: Creating name list for CICE"
-	sh parsing_namelist_HYCOM.sh
+	sh parsing_namelist_CICE.sh
 }
 
 CICE_out()

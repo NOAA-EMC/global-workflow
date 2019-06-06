@@ -325,8 +325,8 @@ CICE_def(){
 	echo "SUB ${FUNCNAME[0]}: Defining variables for CICE"
 }
 
-HYCOM_def(){
-	echo "SUB ${FUNCNAME[0]}: Defining variables for HYCOM"
+MOM6_def(){
+	echo "SUB ${FUNCNAME[0]}: Defining variables for MOM6"
 }
 
 CICE_def(){

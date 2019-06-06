@@ -85,7 +85,7 @@ if [ $VERBOSE = "YES" ] ; then
 fi
 
 ## Run in sandbox if no $machine defined
-## Current script folder
+## Locate mod_forecast script folder
 if [ -z $machine ]; then
 	machine='sandbox'
 	echo "MAIN: !!!Running in sandbox mode!!!"
@@ -110,18 +110,17 @@ fi
 
 source $SCRIPTDIR/cplvalidate.sh	# validation of cpl*
 source $SCRIPTDIR/forecast_def.sh	# include functions for variable definition
-source $SCRIPTDIR/forecast_io.sh	# include functions executing later
-source $SCRIPTDIR/nems_configure.sh
+source $SCRIPTDIR/forecast_io.sh	# include functions for io processing
+source $SCRIPTDIR/nems_configure.sh	# include functions for nems_configure processing
 
+# Compset string. For nems.configure.* template selection. Default ATM only
 confignamevarfornems=${confignamevarfornems:-'atm'}
 
+# CPL switches, for coupling purpose, off by default
 CPLFLX=${CPLFLX:-False} # default off,import from outside source
 CPLWAV=${CPLWAV:-False} # ? how to control 1-way/2-way?
-CPLCHEM=${CPLCHEM:-False} #
-CPLICE=${CPLICE:-False}
-#CPLFLX=TRUE				# Pseudo
-#CPLICE=TRUE				# Pseudo
-#RUN='gfs'				# debug setting
+CPLCHEM=${CPLCHEM:-False} # Chemistry model
+CPLICE=${CPLICE:-False} # ICE model
 
 echo "MAIN: $confignamevarfornems selected"
 echo "MAIN: Forecast script started for $confignamevarfornems on $machine"
@@ -129,7 +128,7 @@ echo "MAIN: Forecast script started for $confignamevarfornems on $machine"
 echo "MAIN: Validating $confignamevarfornems with cpl switches"
 cplvalidate
 echo "MAIN: $confignamevarfornems validated, continue"
-
+# Validate the consistency between $confignamevarfornems and $CPL switches
 
 echo "MAIN: Loading variables"
 echo $RUN
@@ -138,7 +137,7 @@ case $RUN in
 	'gdas') FV3_GFS_def;;
 	'gefs') FV3_GEFS_def;;
 esac
-[[ $CPLFLX = TRUE ]] && HYCOM_def
+[[ $CPLFLX = TRUE ]] && MOM6_def
 [[ $CPLWAV = TRUE ]] && WW3_def
 [[ $CPLICE = TRUE ]] && CICE_def
 [[ $CPLCHEM = TRUE ]] && GSD_def
@@ -152,7 +151,7 @@ case $RUN in
 	'gdas') data_link_GFS;;
 	'gefs') data_link_GEFS;;
 esac
-[[ $CPLFLX = TRUE ]] && HYCOM_in
+[[ $CPLFLX = TRUE ]] && MOM6_in
 [[ $CPLWAV = TRUE ]] && WW3_in
 [[ $CPLICE = TRUE ]] && CICE_in
 [[ $CPLCHEM = TRUE ]] && GSD_in
@@ -160,7 +159,7 @@ echo "MAIN: Input data linked"
 
 echo "MAIN: Writing name lists and model configuration"
 FV3_nml
-[[ $CPLFLX = TRUE ]] && HYCOM_nml
+[[ $CPLFLX = TRUE ]] && MOM6_nml
 [[ $CPLWAV = TRUE ]] && WW3_nml
 [[ $CPLICE = TRUE ]] && CICE_nml
 [[ $CPLCHEM = TRUE ]] && GSD_nml
@@ -180,7 +179,6 @@ if [ $machine != 'sandbox' ]; then
 	export ERR=$?
 	export err=$ERR
 	$ERRSCRIPT || exit $err
-	mpirun -np $NPROC executable
 else
 	echo "MAIN: mpirun launch here"
 fi
@@ -191,7 +189,7 @@ if [ $machine != 'sandbox' ]; then
 		'gdas') data_out_GFS;;
 		'gefs') data_out_GEFS;;
 	esac
-	[[ $CPLFLX = TRUE ]] && HYCOM_out
+	[[ $CPLFLX = TRUE ]] && MOM6_out
 	[[ $CPLWAV = TRUE ]] && WW3_out
 	[[ $CPLICE = TRUE ]] && CICE_out
 	[[ $CPLCHEM = TRUE ]] && GSD_out
