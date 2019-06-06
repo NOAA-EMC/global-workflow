@@ -815,6 +815,22 @@ cat > input.nml <<EOF
   $fv_core_nml
 /
 
+&cires_ugwp_nml
+       knob_ugwp_solver  = ${knob_ugwp_solver:-2}
+       knob_ugwp_source  = ${knob_ugwp_source:-1,1,0,0}
+       knob_ugwp_wvspec  = ${knob_ugwp_wvspec:-1,25,25,25}
+       knob_ugwp_azdir   = ${knob_ugwp_azdir:-2,4,4,4}
+       knob_ugwp_stoch   = ${knob_ugwp_stoch:-0,0,0,0}
+       knob_ugwp_effac   = ${knob_ugwp_effac:-1,1,1,1}
+       knob_ugwp_doaxyz  = ${knob_ugwp_doaxyz:-1}
+       knob_ugwp_doheat  = ${knob_ugwp_doheat:-1}
+       knob_ugwp_dokdis  = ${knob_ugwp_dokdis:-1}
+       knob_ugwp_ndx4lh  = ${knob_ugwp_ndx4lh:-1}
+       knob_ugwp_version = ${knob_ugwp_version:-0}
+       launch_level      = ${launch_level:-54}                   
+/
+
+
 &external_ic_nml
   filtered_terrain = $filtered_terrain
   levp = $LEVS
@@ -867,6 +883,9 @@ cat > input.nml <<EOF
   prautco      = ${prautco:-"0.00015,0.00015"}
   lgfdlmprad   = ${lgfdlmprad:-".false."}
   effr_in      = ${effr_in:-".false."}
+  ldiag_ugwp   = ${ldiag_ugwp:-.false.}
+  do_ugwp      = ${do_ugwp:-.true.}
+  do_tofd      = ${do_tofd:-.true.}"
 EOF
 
 # Add namelist for IAU

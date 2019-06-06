@@ -16,7 +16,6 @@ if [ $DONST = "YES" ]; then
 fi
 
 export FORECASTSH="$HOMEgfs/scripts/exglobal_fcst_nemsfv3gfs.sh"
-#export FCSTEXECDIR="$HOMEfv3gfs/NEMS/exe"
 export FCSTEXECDIR="$HOMEgfs/exec"
 export FCSTEXEC="global_fv3gfs.x"
 export npe_fv3=$npe_fcst # This is model resolution dependent, see note above
@@ -44,6 +43,12 @@ export h2o_phys=".true."
 
 # Options of stratosphere O3 physics reaction coefficients
 export new_o3forc="YES"
+
+# use unified gravity-wave drag and  turbulent orographic form drag (TOFD)
+export do_ugwp=".true."
+export do_tofd=".true."
+export launch_level=$(echo "$LEVS/2.35" |bc)
+
 
 # Microphysics configuration
 export dnats=0
