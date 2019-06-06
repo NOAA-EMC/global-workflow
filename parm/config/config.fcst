@@ -49,7 +49,6 @@ export do_ugwp=".true."
 export do_tofd=".true."
 export launch_level=$(echo "$LEVS/2.35" |bc)
 
-
 # Microphysics configuration
 export dnats=0
 export cal_pre=".true."
