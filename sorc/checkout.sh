@@ -23,6 +23,10 @@ if [[ ! -d gsi.fd ]] ; then
     cd gsi.fd
     git checkout fv3da.v1.0.43
     git submodule update
+    # Workaround for missing GSI file on lowres parallel runs
+    cd fix/Big_Endian/
+    git checkout ae3bc2538f34c7cdb6a533a14c4880f6970a6724^ global_berror.l64y98.f77
+    git checkout ae3bc2538f34c7cdb6a533a14c4880f6970a6724^ global_berror.l64y194.f77
     cd ${topdir}
 else
     echo 'Skip.  Directory gsi.fd already exists.'
