@@ -49,6 +49,23 @@ export do_ugwp=".true."
 export do_tofd=".true."
 export launch_level=$(echo "$LEVS/2.35" |bc)
 
+# PBL/turbulance schemes
+export hybedmf=.false.
+export satmedmf=.true.
+export isatmedmf=1
+export lheatstrg=.true.
+
+# Land surface model. (2--NoahMP, landice=F); (1--Noah, landice=T)
+export lsm=2
+export landice=.false.
+
+# Radiation options 
+export IAER=5111    ;#spectral band mapping method for aerosol optical properties
+export iovr_lw=3    ;#de-correlation length cloud overlap method (Barker, 2008)
+export iovr_sw=3    ;#de-correlation length cloud overlap method (Barker, 2008)
+export icliq_sw=2   ;#cloud optical coeffs from AER's newer version v3.9-v4.0 for hu and stamnes
+
+
 # Microphysics configuration
 export dnats=0
 export cal_pre=".true."

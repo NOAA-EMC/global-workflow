@@ -343,10 +343,6 @@ done
 $NLN $FIXfv3/$CASE/${CASE}_mosaic.nc  $DATA/INPUT/grid_spec.nc
 
 # GFS standard input data
-
-IALB=${IALB:-1}
-IEMS=${IEMS:-1}
-ISOL=${ISOL:-2}
 IAER=${IAER:-111}
 ICO2=${ICO2:-2}
 
@@ -852,13 +848,16 @@ cat > input.nml <<EOF
   pdfcld       = ${pdfcld:-".false."}
   fhswr        = ${FHSWR:-"3600."}
   fhlwr        = ${FHLWR:-"3600."}
-  ialb         = $IALB
-  iems         = $IEMS
+  ialb         = ${IALB:-"1"}
+  iems         = ${IEMS:-"1"}
   iaer         = $IAER
+  icliq_sw     = ${icliq_sw:-"2"}
+  iovr_lw      = ${iovr_lw:-"3"}
+  iovr_sw      = ${iovr_sw:-"3"}
   ico2         = $ICO2
   isubc_sw     = ${isubc_sw:-"2"}
   isubc_lw     = ${isubc_lw:-"2"}
-  isol         = $ISOL
+  isol         = ${ISOL:-"2"}
   lwhtr        = ${lwhtr:-".true."}
   swhtr        = ${swhtr:-".true."}
   cnvgwd       = ${cnvgwd:-".true."}
@@ -866,7 +865,10 @@ cat > input.nml <<EOF
   cal_pre      = ${cal_pre:-".true."}
   redrag       = ${redrag:-".true."}
   dspheat      = ${dspheat:-".true."}
-  hybedmf      = ${hybedmf:-".true."}
+  hybedmf      = ${hybedmf:-".false."}
+  satmedmf     = ${satmedmf-".true."}
+  isatmedmf    = ${isatmedmf-"1"}
+  lheatstrg    = ${lheatstrg-".true."}
   random_clds  = ${random_clds:-".true."}
   trans_trac   = ${trans_trac:-".true."}
   cnvcld       = ${cnvcld:-".true."}
@@ -876,6 +878,20 @@ cat > input.nml <<EOF
   prslrd0      = ${prslrd0:-"0."}
   ivegsrc      = ${ivegsrc:-"1"}
   isot         = ${isot:-"1"}
+  lsoil        = ${lsoil:-"4"}
+  lsm          = ${lsm:-"2"}
+  iopt_dveg    = ${iopt_dveg:-"2"}
+  iopt_crs     = ${iopt_crs:-"1"}
+  iopt_btr     = ${iopt_btr:-"1"}
+  iopt_run     = ${iopt_run:-"1"}
+  iopt_sfc     = ${iopt_sfc:-"1"}
+  iopt_frz     = ${iopt_frz:-"1"}
+  iopt_inf     = ${iopt_inf:-"1"}
+  iopt_rad     = ${iopt_rad:-"1"}
+  iopt_alb     = ${iopt_alb:-"2"}
+  iopt_snf     = ${iopt_snf:-"4"}
+  iopt_tbot    = ${iopt_tbot:-"2"}
+  iopt_stc     = ${iopt_stc:-"1"}
   debug        = ${gfs_phys_debug:-".false."}
   nstf_name    = $nstf_name
   nst_anl      = $nst_anl
@@ -986,6 +1002,7 @@ cat >> input.nml <<EOF
   FSMCL(2) = ${FSMCL2:-99999}
   FSMCL(3) = ${FSMCL3:-99999}
   FSMCL(4) = ${FSMCL4:-99999}
+  LANDICE  = ${LANDICE:-".true."}
   FTSFS = ${FTSFS:-90}
   FAISL = ${FAISL:-99999}
   FAISS = ${FAISS:-99999}
