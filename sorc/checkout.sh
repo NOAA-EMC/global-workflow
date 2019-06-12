@@ -36,7 +36,7 @@ if [[ ! -d ufs_utils.fd ]] ; then
     rm -f ${topdir}/checkout-ufs_utils.log
     git clone --recursive gerrit:UFS_UTILS ufs_utils.fd >> ${topdir}/checkout-ufs_utils.fd.log 2>&1
     cd ufs_utils.fd
-    git checkout  release/1.0.0   
+    git checkout develop
     cd ${topdir}
 else
     echo 'Skip.  Directory ufs_utils.fd already exists.'
