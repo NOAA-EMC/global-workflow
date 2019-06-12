@@ -179,7 +179,7 @@ $LINK ../sorc/gfs_post.fd/exec/ncep_post gfs_ncep_post
 for ufs_utilsexe in \
      chgres_cube.exe   fregrid           global_cycle         nemsio_cvt    orog.x \
      emcsfc_ice_blend  fregrid_parallel  make_hgrid           nemsio_get    shave.x \
-     emcsfc_snow2mdl   gettrk            make_hgrid_parallel  nemsio_read \
+     emcsfc_snow2mdl   gettrk            make_hgrid_parallel  nemsio_read   nemsio_chgdate \
      filter_topo       global_chgres     make_solo_mosaic     nst_tf_chg.x ; do
     [[ -s $ufs_utilsexe ]] && rm -f $ufs_utilsexe
     $LINK ../sorc/ufs_utils.fd/exec/$ufs_utilsexe .
@@ -218,7 +218,7 @@ cd ${pwd}/../sorc   ||   exit 8
     for prog in filter_topo fregrid make_hgrid make_solo_mosaic ; do
         $SLINK ufs_utils.fd/sorc/fre-nctools.fd/tools/$prog                                ${prog}.fd                                
     done
-    for prog in  chgres_cube.fd       global_cycle.fd   nemsio_read.fd \
+    for prog in  chgres_cube.fd       global_cycle.fd   nemsio_read.fd  nemsio_chgdate.fd \
         emcsfc_ice_blend.fd  gettrk.fd         nemsio_cvt.fd    nst_tf_chg.fd \
         emcsfc_snow2mdl.fd   global_chgres.fd  nemsio_get.fd    orog.fd ;do
         $SLINK ufs_utils.fd/sorc/$prog                                                     $prog
