@@ -52,14 +52,12 @@ export launch_level=$(echo "$LEVS/2.35" |bc)
 # PBL/turbulance schemes
 export hybedmf=".true."
 export satmedmf=".false."
-export isatmedmf=1
-export lheatstrg=".false."
-#export lheatstrg=".true."
 #export hybedmf=".false."
 #export satmedmf=".true."
-#export isatmedmf=1
 tbf=""
 if [ $satmedmf = ".true." ]; then tbf="_satmedmf" ; fi
+export lheatstrg=".true."
+export isatmedmf=1
 
 
 # Land surface model. (2--NoahMP, landice=F); (1--Noah, landice=T)
