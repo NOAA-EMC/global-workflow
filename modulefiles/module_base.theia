@@ -4,15 +4,17 @@
 ##
 module load intel/16.1.150
 module load impi/5.1.2.150
-module load wgrib2
-module load hpss
-module load netcdf
-module load nco
+module load wgrib2/0.2.0.6c
+module load hpss/hpss
+module load pnetcdf/1.5.0-impi
+module load netcdf/4.3.0
+module load nco/4.7.0
 module load hdf5/1.8.14
 module load gempak/6.7.0
 
 module use /scratch3/NCEPDEV/nwprod/lib/modulefiles
 module load EnvVars/v1.0.2
 
-module use /scratch4/NCEPDEV/nems/noscrub/emc.nemspara/soft/modulefiles
-module load prod_util
+#module use /scratch4/NCEPDEV/nems/noscrub/emc.nemspara/soft/modulefiles
+module use /scratch4/NCEPDEV/global/save/glopara/git/NCEPLIBS-prod_util/modulefiles
+module load prod_util/v1.1.0_slurm

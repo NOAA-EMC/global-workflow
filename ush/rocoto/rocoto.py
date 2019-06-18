@@ -73,6 +73,7 @@ def create_task(task_dict):
     jobname = task_dict.get('jobname', 'demojob')
     account = task_dict.get('account', 'batch')
     queue = task_dict.get('queue', 'debug')
+    partition = task_dict.get('partition', None)
     walltime = task_dict.get('walltime', '00:01:00')
     log = task_dict.get('log', 'demo.log')
     native = task_dict.get('native', None)
@@ -95,6 +96,8 @@ def create_task(task_dict):
     strings.append('\t<jobname><cyclestr>%s</cyclestr></jobname>\n' % jobname)
     strings.append('\t<account>%s</account>\n' % account)
     strings.append('\t<queue>%s</queue>\n' % queue)
+    if partition is not None:
+        strings.append('\t<partition>%s</partition>\n' % partition)
     if resources is not None:
         strings.append('\t%s\n' % resources)
     strings.append('\t<walltime>%s</walltime>\n' % walltime)

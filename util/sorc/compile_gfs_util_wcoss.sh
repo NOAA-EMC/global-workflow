@@ -42,16 +42,18 @@ set -x
 
 for dir in $dirlist
 do
-  cd $dir.fd
+  cd ${dir}.fd
+  echo "PWD: $PWD"
   set +x
   echo " "
   echo " ### ${dir} ### "
   echo " "
   set -x
-  compile_${dir}_wcoss.sh
+  ./compile_${dir}_wcoss.sh
   set +x
   echo " "
   echo " ######################################### "
   echo " "
   cd ..
+  echo "BACK TO: $PWD"
 done
