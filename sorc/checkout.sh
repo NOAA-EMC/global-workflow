@@ -9,7 +9,7 @@ if [[ ! -d fv3gfs.fd ]] ; then
     rm -f ${topdir}/checkout-fv3gfs.log
     git clone --recursive gerrit:NEMSfv3gfs fv3gfs.fd >> ${topdir}/checkout-fv3gfs.log 2>&1
     cd fv3gfs.fd
-#    git checkout nemsfv3gfs_beta_v1.0.18 #CHANGE ME#
+#    git checkout nemsfv3gfs_beta_v1.0.18
     git submodule update --init --recursive
     cd ${topdir}
 else
@@ -45,7 +45,7 @@ if [[ ! -d gfs_post.fd ]] ; then
     git clone --recursive gerrit:EMC_post gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
     #git clone --recursive gerrit:EMC_post_gtg gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
     #cd gfs_post.fd
-    #git checkout ncep_post.v8.0.27e #CHANGE ME#
+    #git checkout ncep_post.v8.0.27e
     #git checkout ncep_post_gtg.v1.0.6c
     cd ${topdir}
 else
@@ -62,5 +62,16 @@ fi
 #else
 #    echo 'Skip.  Directory gfs_wafs.fd already exists.'
 #fi
+
+echo GSD-prep-chem checkout ...
+if [[ ! -d gsd_prep_chem.fd ]] ; then
+    rm -f ${topdir}/checkout-gsd-prep-chem.log
+    git clone gerrit:GSD-prep-chem gsd_prep_chem.fd >> ${topdir}/checkout-gsd-prep-chem.log 2>&1
+#    cd gsd_prep_chem.fd
+#    git checkout INSERT_BRANCH_OR_TAG_NAME_HERE
+    cd ${topdir}
+else
+    echo 'Skip.  Directory gsd_prep_chem.fd already exists.'
+fi
 
 exit 0
