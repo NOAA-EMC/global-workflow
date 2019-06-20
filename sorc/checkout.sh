@@ -23,9 +23,29 @@ if [[ ! -d gsi.fd ]] ; then
     cd gsi.fd
     git checkout fv3da.v1.0.43
     git submodule update
+    # Workaround for missing GSI file on lowres parallel runs
+    cd fix/Big_Endian/
+    git checkout ae3bc2538f34c7cdb6a533a14c4880f6970a6724^ global_berror.l64y98.f77
+    git checkout ae3bc2538f34c7cdb6a533a14c4880f6970a6724^ global_berror.l64y194.f77
+    # Check out historical ozinfo files for use in retrospective parallels
+    cd ${topdir}/gsi.fd/fix/fv3_historical
+    git checkout cd0847ee5c67115113f61c79e7d8bc6b1b7095ba  0readme.ozinfo
+    git checkout cd0847ee5c67115113f61c79e7d8bc6b1b7095ba  global_ozinfo.txt.2015110500
+    git checkout cd0847ee5c67115113f61c79e7d8bc6b1b7095ba  global_ozinfo.txt.2018110700
     cd ${topdir}
 else
     echo 'Skip.  Directory gsi.fd already exists.'
+fi
+
+echo ufs_utils checkout ...
+if [[ ! -d ufs_utils.fd ]] ; then
+    rm -f ${topdir}/checkout-ufs_utils.log
+    git clone --recursive gerrit:UFS_UTILS ufs_utils.fd >> ${topdir}/checkout-ufs_utils.fd.log 2>&1
+    cd ufs_utils.fd
+    git checkout v1.0.0
+    cd ${topdir}
+else
+    echo 'Skip.  Directory ufs_utils.fd already exists.'
 fi
 
 echo EMC_post checkout ...
