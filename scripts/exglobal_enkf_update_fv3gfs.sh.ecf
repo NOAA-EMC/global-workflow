@@ -343,7 +343,7 @@ HOSTFILE=machinefile_enkf
 rm -f $HOSTFILE
 if [ "$mpi_launcher" = "mpirun" ]; then
    # PBS with mpirun
-   /bin/cp -f $PBS_NODEFILE $HOSTFILE
+   /bin/cp -f $LSB_DJOB_HOSTFILE $HOSTFILE
    if [ $mpitaskspernode -gt 1 ]; then
       sed -i "2,${mpitaskspernode}d" $HOSTFILE
       nprocs=`wc -l $HOSTFILE | cut -f1 -d" "`
