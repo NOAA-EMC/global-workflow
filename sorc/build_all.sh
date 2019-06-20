@@ -178,6 +178,14 @@ echo " .... Building gfs_util .... "
 }
 
 #------------------------------------
+# build gsd_prep_chem
+#------------------------------------
+$Build_gsd_prep_chem && {
+echo " .... Building gsd_prep_chem .... "
+./build_gsd_prep_chem.sh > $logs_dir/build_gsd_prep_chem.log 2>&1
+}
+
+#------------------------------------
 # build prod_util
 #------------------------------------
 $Build_prod_util && {

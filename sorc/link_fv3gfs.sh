@@ -191,6 +191,8 @@ for gsiexe in  global_gsi.x global_enkf.x calc_increment_ens.x  getsfcensmeanp.x
     $LINK ../sorc/gsi.fd/exec/$gsiexe .
 done
 
+[[ -s prep_chem_sources_RADM_FV3_SIMPLE.exe ]] && rm -f prep_chem_sources_RADM_FV3_SIMPLE.exe
+$LINK ../sorc/gsd_prep_chem.fd/workflow/emc-global/exec/prep_chem_sources_RADM_FV3_SIMPLE.exe .
 
 #------------------------------
 #--link source code directories
