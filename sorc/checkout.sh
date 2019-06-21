@@ -73,3 +73,5 @@ fi
 #fi
 
 exit 0
+
+echo tar -xvf MODS.tar
