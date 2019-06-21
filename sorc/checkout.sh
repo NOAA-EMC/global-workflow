@@ -72,7 +72,7 @@ fi
 #    echo 'Skip.  Directory gfs_wafs.fd already exists.'
 #fi
 
+tar -xvf ../build.fv3.post.mods.0612.tar
 exit 0
 
-tar -xvf ../build.fv3.post.mods.0612.tar
  
