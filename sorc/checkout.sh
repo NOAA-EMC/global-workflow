@@ -74,4 +74,5 @@ fi
 
 exit 0
 
-echo tar -xvf MODS.tar
+echo tar -xvf ../build.fv3.post.mods.0612.tar
+ 
