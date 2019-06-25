@@ -52,15 +52,19 @@ export launch_level=$(echo "$LEVS/2.35" |bc)
 # PBL/turbulance schemes
 export hybedmf=".false."
 export satmedmf=".true."
+export isatmedmf=1
 tbf=""
 if [ $satmedmf = ".true." ]; then tbf="_satmedmf" ; fi
-export lheatstrg=".true."
-export isatmedmf=1
-
 
 # Land surface model. (2--NoahMP, landice=F); (1--Noah, landice=T)
 export lsm=2
-export landice=".false."
+if [ $lsm -eq 2 ]; then
+    export lheatstrg=".true."
+    export landice=".false."
+else
+    export lheatstrg=".false."
+    export landice=".true."
+fi
 
 # Radiation options 
 export IAER=5111    ;#spectral band mapping method for aerosol optical properties
