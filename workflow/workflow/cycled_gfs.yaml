@@ -79,7 +79,7 @@ suite: !Cycle
         Trigger: !Depend 'up.dump.jgdas_dump.release_sfcprep | up.jgdas_emc_dump_waiter.updated_status'
         ecf_environment_settings: !calc doc.settings.ecflow_rocoto_cdate_workaround
         resources: !calc partition.resources.run_prep
-        config_list: [ base, prep, prepbufr, emcsfc ]
+        config_list: [ base, prep, prepbufr ]
         J_JOB: JGLOBAL_EMCSFC_SFC_PREP
 
       jgdas_prep: !Task
@@ -383,12 +383,12 @@ suite: !Cycle
 #        Disable: !calc not doc.data_assimilation.DO_EMCSFC
         <<: *exclusive_task_template
         Trigger: !Depend 'up.dump.jgfs_dump.release_sfcprep | up.jgfs_emc_dump_waiter.updated_status'
-        resources: !calc partition.resources.run_prep
+        resources: !calc partition.resources.run_sfc_prep
         J_JOB: JGLOBAL_EMCSFC_SFC_PREP
         ecf_environment_settings: !expand |
           {doc.settings.ecflow_rocoto_cdate_workaround}
           export DATAROOT="$DATAROOT.$job"
-        config_list: [ base, prep, prepbufr, emcsfc ]
+        config_list: [ base, prep, prepbufr ]
 
       jgfs_prep: !Task
         <<: *exclusive_task_template
