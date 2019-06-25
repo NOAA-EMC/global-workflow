@@ -880,7 +880,7 @@ cat > input.nml <<EOF
   isot         = ${isot:-"1"}
   lsoil        = ${lsoil:-"4"}
   lsm          = ${lsm:-"2"}
-  iopt_dveg    = ${iopt_dveg:-"2"}
+  iopt_dveg    = ${iopt_dveg:-"1"}
   iopt_crs     = ${iopt_crs:-"1"}
   iopt_btr     = ${iopt_btr:-"1"}
   iopt_run     = ${iopt_run:-"1"}
