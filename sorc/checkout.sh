@@ -1,5 +1,5 @@
 #!/bin/sh
-set -xu
+set -xue
 
 topdir=$(pwd)
 echo $topdir
@@ -9,7 +9,6 @@ if [[ ! -d fv3gfs.fd ]] ; then
     rm -f ${topdir}/checkout-fv3gfs.log
     git clone --recursive gerrit:NEMSfv3gfs fv3gfs.fd >> ${topdir}/checkout-fv3gfs.log 2>&1
     cd fv3gfs.fd
-    #git checkout nemsfv3gfs_beta_v1.0.18
     git checkout gfs.v16_preCCPP_20190610 
     git submodule update --init --recursive
     cd ${topdir}
@@ -22,8 +21,6 @@ if [[ ! -d gsi.fd ]] ; then
     rm -f ${topdir}/checkout-gsi.log
     git clone --recursive gerrit:ProdGSI gsi.fd >> ${topdir}/checkout-gsi.fd.log 2>&1
     cd gsi.fd
-    #git checkout fv3da.v1.0.43
-    git checkout EXP-locfix-io
     git submodule update
     cd fix
     git checkout fix_l127
@@ -47,10 +44,6 @@ echo EMC_post checkout ...
 if [[ ! -d gfs_post.fd ]] ; then
     rm -f ${topdir}/checkout-gfs_post.log
     git clone --recursive gerrit:EMC_post gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
-    #git clone --recursive gerrit:EMC_post_gtg gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
-    #cd gfs_post.fd
-    #git checkout ncep_post.v8.0.27e
-    #git checkout ncep_post_gtg.v1.0.6c
     cd ${topdir}
 else
     echo 'Skip.  Directory gfs_post.fd already exists.'
