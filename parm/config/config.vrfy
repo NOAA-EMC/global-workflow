@@ -14,7 +14,7 @@ export CDFNL="gdas"               # Scores verification against GDAS/GFS analysi
 
 export MKPGB4PRCP="YES"           # Make 0.25-deg pgb files in ARCDIR for precip verification
 export VRFYFITS="YES"             # Fit to observations
-export VRFY_PKCG2RUN="BOTH"       # "VSDB" = run VSDB verification package only, "METPLUS" = run METplus verification package only, "BOTH = run both verification packages
+export VRFY_PCKG2RUN="BOTH"       # "VSDB" = run VSDB verification package only, "METPLUS" = run METplus verification package only, "BOTH = run both verification packages
 export VSDB_STEP1="YES"           # Populate VSDB database
 export VSDB_STEP2="NO"
 export VRFYG2OBS="YES"            # Grid to observations, see note below if turning ON
@@ -25,11 +25,9 @@ export VRFYMINMON="YES"           # GSI minimization monitoring
 export VRFYTRAK="YES"              # Hurricane track verification
 export VRFYGENESIS="YES"           # Cyclone genesis verification
 export RUNMOS="NO"                # whether to run entire MOS package
-export VRFY_STEP1="YES"           # Run METplus verification step 1: partial sum and/or contingency table counts
-export VRFY_STEP2="NO"            # Run METplus verification step 2: make plots
-export VRFY_GRID2GRID="YES"       # Run METplus desired steps for grid-to-grid verification
-export VRFY_GRID2OBS="YES"        # Run METplus desired steps for grid-to-obs verification
-export VRFY_PRECIP="YES"          # Run METplus desired steps for precipitation verification
+export RUN_METPLUS_GRID2GRID_STEP1="YES" # Run grid-to-grid verification using METplus
+export RUN_METPLUS_GRID2OBS_STEP1="YES"  # Run grid-to-obs verification using METplus
+export RUN_METPLUS_PRECIP_STEP1="YES"    # Run precip verification using METplus
 
 #-------------------------------------------------
 # Fit to Observations
@@ -64,7 +62,7 @@ if [ "$CDUMP" = "gfs" ] ; then
     ddd=`echo $CDATE |cut -c 1-8`
     #if [ $ddd -eq 5 -o $ddd -eq 10 ]; then export VSDB_STEP2 = "YES" ;fi
 
-    if [ $VRFY_PKCG2RUN = "VSDB" -o $VRFY_PKCG2RUN = "BOTH" ]; then
+    if [ $VRFY_PCKG2RUN = "VSDB" -o $VRFY_PCKG2RUN = "BOTH" ]; then
         if [ $VSDB_STEP1 = "YES" -o $VSDB_STEP2 = "YES" -o $VRFYPRCP = "YES" -o $VRFYG2OBS = "YES" ]; then
             export BACKDATEVSDB=24                          # execute vsdbjob for the previous day
             export VBACKUP_PRCP=24                          # back up for QPF verification data
@@ -95,37 +93,57 @@ fi
 # All these call $METPLUSSH
 
 if [ "$CDUMP" = "gfs" ] ; then
-    if [ $VRFY_STEP1 = "YES" -o $VRFY_STEP2 = "YES" ]; then
-        if [ $VRFY_PKCG2RUN = "METPLUS" -o $VRFY_PKCG2RUN = "BOTH" ]; then
-            export VRFYBACK_HRS=24                                          # execute step 1 metplusjob for the previous x hours
-            export VRFYBACK_HRS_PRECIP=24                                   # additonal back up time for QPF verification data to allow observation data to come in
-            export metplussave="$NOSCRUB/archive/metplus_data"              # place to save METplus database
-            export metplushome=$BASE_VERIF_METPLUS                          # location of global verification scripts
-            export metplusconfig="$PARMgfs/verif"                           # location of configuration files to run METplus
-            export metplusfix="$FIXgfs/fix_verif"                           # location of fix files to run METplus
-            export METPLUSSH="$USHgfs/metplusjob.sh"                        # METplus job script
-            export fhmin=$FHMIN_GFS                                         # start verification forecast hour
-            export fhmax=$FHMAX_GFS                                         # end verification forecast hour
-            export anltype="gfs"                                            # default=gfs, analysis type for verification (future support for other analysis files)
-            export grid2grid_typelist="anom pres sfc"                       # type of verifications to run for grid-to-grid
-            export grid2obs_typelist="conus_sfc upper_air"                  # type of verifications to run for grid-to-obs
-            export precip_accumlist="24"                                    # accumulation lengths (in hrs) to verify
-            export gather_by="VSDB_format"                                  # how to gather METplus output: VSDB_format (future support: valid_format)
-            export vhr_rain=$FHMAX_GFS                                      # needed to create 0.25 deg grib1 files
-            export ftyplist="pgbf"                                          # file types: pgbf (future support: pgbq and flxf)
-            export ptyplist="APCP"                                          # precip types in GRIB: APCP (future support: PRATE)
-            export fbucketlist="6"                                          # file accumulation bucket in hrs: 6 (future support: other accums, bucket=0 -- continuous accumulation)
-
-            export STEP2_START_DATE="$SDATE"                                # starting date for METplus plots
-            export STEP2_END_DATE="$EDATE"                                  # ending date for METplus plots
-            export webhost="emcrzdm.ncep.noaa.gov"                          # webhost(rzdm) computer
-            export webhostid="$USER"                                        # webhost(rzdm) user name
-            export SEND2WEB="NO"                                            # whether or not to send maps to webhost
-            export WEBDIR="/home/people/emc/www/htdocs/gmb/${webhostid}/METplus/$PSLOT"
-            export mdlist="gfs $PSLOT "                                     # exps (up to 10) to compare in maps
+    if [ $RUN_METPLUS_GRID2GRID_STEP1 = "YES" -o $RUN_METPLUS_GRID2OBS_STEP1 = "YES" -o $RUN_METPLUS_PRECIP_STEP1 = "YES" ]; then
+        if [ $VRFY_PCKG2RUN = "METPLUS" -o $VRFY_PCKG2RUN = "BOTH" ]; then
+            export HOMEverif_global=${HOMEgfs}/sorc/verif-global.fd
+            export VERIF_GLOBALSH=$HOMEverif_global/ush/run_verif_global_in_global_workflow.sh
+            export RUNBATCH="NO"
+            ## INPUT DATA SETTINGS
+            export model_list=$PSLOT
+            export model_data_dir_list=$ARCDIR/..
+            export model_fileformat_list="pgbf{lead?fmt=%H}.${CDUMP}.{init?fmt=%Y%m%d%H}"
+            export model_hpssdir_list=$ATARDIR/.. 
+            export get_data_from_hpss="NO"
+            export hpss_walltime="10"
+            ## OUTPUT SETTINGS
+            export OUTPUTROOT=$RUNDIR/$CDUMP/$CDATE/vrfy/metplus_exp
+            export make_met_data_by="VALID"
+            export gather_by="VSDB"
+            ## DATE SETTINGS
+            export VRFYBACK_HRS="24"
+            ## ARCHIVE SETTINGS
+            export arch_dir=$ARCDIR/..
+            ## METPLUS SETTINGS
+            export METplus_verbosity="INFO"
+            export MET_verbosity="2"
+            export log_MET_output_to_METplus="yes"
+            ## FORECAST VERIFICATION SETTINGS
+            export fhr_min=$FHMIN_GFS
+            export fhr_max=$FHMAX_GFS
+            # GRID-TO-GRID STEP 1
+            export g2g1_type_list="anom pres sfc"
+            export g2g1_anl_name="self"
+            export g2g1_anl_fileformat="pgbanl.gfs.{valid?fmt=%Y%m%d%H}"
+            export g2g1_grid="G002"
+            # GRID-TO-OBS STEP 1
+            export g2o1_type_list="upper_air conus_sfc"
+            export g2o1_obtype_upper_air="ADPUPA"
+            export g2o1_grid_upper_air="G003"
+            export g2o1_fhr_out_upper_air="6"
+            export g2o1_obtype_conus_sfc="ONLYSF"
+            export g2o1_grid_conus_sfc="G104"
+            export g2o1_fhr_out_conus_sfc="3"
+            # PRECIP STEP 1
+            export precip1_obtype="ccpa"
+            export precip1_accum_length="24"
+            export precip1_model_bucket_list="06"
+            export precip1_model_varname_list="APCP"
+            export precip1_model_fileformat_list="pgbf{lead?fmt=%H}.gfs.{init?fmt=%Y%m%d%H}"
+            export precip1_grid="G211"
         fi
     fi
 fi
+
 
 #----------------------------------------------------------
 # Minimization, Radiance and Ozone Monitoring

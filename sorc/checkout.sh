@@ -61,6 +61,17 @@ else
     echo 'Skip.  Directory gfs_post.fd already exists.'
 fi
 
+echo EMV_verif-global checkout ...
+if [[ ! -d verif-global.fd ]] ; then
+    rm -f ${topdir}/checkout-verif-global.log
+    git clone --recursive gerrit:EMC_verif-global verif-global.fd >> ${topdir}/checkout-verif-global.log 2>&1
+    cd verif-global.fd
+    git checkout verif_global_v1.0.0
+    cd ${topdir}
+else
+    echo 'Skip. Directory verif-global.fd already exist.'
+fi
+
 #echo EMC_gfs_wafs checkout ...
 #if [[ ! -d gfs_wafs.fd ]] ; then
 #    rm -f ${topdir}/checkout-gfs_wafs.log

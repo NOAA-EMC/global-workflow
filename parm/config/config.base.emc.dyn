@@ -152,9 +152,6 @@ export HOMEpost="$HOMEgfs"
 export HOMEobsproc_prep="$BASE_GIT/obsproc/obsproc_prep.iss-46886.fv3gfs"
 export HOMEobsproc_network="$BASE_GIT/obsproc/obsproc_global.iss-46886.fv3gfs"
 export BASE_VERIF="$BASE_SVN/verif/global/tags/vsdb"
-export METver="6.1"
-export METPLUSver="1.0"
-export BASE_VERIF_METPLUS="$BASE_GIT/verif/METplus/METplus-$METPLUSver"
 
 # CONVENIENT utility scripts and other environment parameters
 export NCP="/bin/cp -p"

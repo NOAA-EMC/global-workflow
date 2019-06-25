@@ -100,7 +100,7 @@ echo
 echo "=============== START TO RUN VSDB STEP1, VERIFY PRCIP AND GRID2OBS ==============="
 if [ $CDUMP = "gfs" ]; then
 
-    if [ $VRFY_PKCG2RUN = "VSDB" -o $VRFY_PKCG2RUN = "BOTH" ]; then
+    if [ $VRFY_PCKG2RUN = "VSDB" -o $VRFY_PCKG2RUN = "BOTH" ]; then
         if [ $VSDB_STEP1 = "YES" -o $VRFYPRCP = "YES" -o $VRFYG2OBS = "YES" ]; then
  
             xdate=$(echo $($NDATE -${BACKDATEVSDB} $CDATE) | cut -c1-8)
@@ -120,15 +120,10 @@ echo
 echo "=============== START TO RUN METPLUS VERIFICATION ==============="
 if [ $CDUMP = "gfs" ]; then
 
-    if [ $VRFY_PKCG2RUN = "METPLUS" -o $VRFY_PKCG2RUN = "BOTH" ]; then
-        if [ $VRFY_STEP1 = "YES" -o $VRFY_STEP2 = "YES" ]; then
-
-            xdate=$(echo $($NDATE -${VRFYBACK_HRS} $CDATE) | cut -c1-8)
-            export ARCDIR1="$NOSCRUB/archive"
-            export rundir="$RUNDIR/$CDUMP/$CDATE/vrfy/metplus_exp"
-            export COMROT="$ARCDIR1/dummy"
-             
-            $METPLUSSH $xdate $xdate $CDATE $cyc $PSLOT $CDUMP $rundir $ARCDIR1
+    if [ $VRFY_PCKG2RUN = "METPLUS" -o $VRFY_PCKG2RUN = "BOTH" ]; then
+        if [ $RUN_METPLUS_GRID2GRID_STEP1 = "YES" -o $RUN_METPLUS_GRID2OBS_STEP1 = "YES" -o $RUN_METPLUS_PRECIP_STEP1 = "YES" ]; then
+            
+            $VERIF_GLOBALSH 
  
         fi
      fi
