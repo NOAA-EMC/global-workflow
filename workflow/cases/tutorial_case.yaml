@@ -7,10 +7,10 @@ case:
     workflow_file: workflow/cycled_gfs.yaml
 
   settings: 
-    SDATE: 2016-02-10t00:00:00
-    EDATE: 2016-02-12t00:00:00
+    SDATE: 2019-05-01t00:00:00
+    EDATE: 2019-05-01t06:00:00
 
     DUMP_SUFFIX: "p"
-    run_gsi: No
+    run_gsi: Yes
     chgres_and_convert_ics: No
     gfs_cyc: 4 # run gfs every cycle
