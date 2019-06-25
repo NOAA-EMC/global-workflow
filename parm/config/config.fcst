@@ -50,10 +50,8 @@ export do_tofd=".true."
 export launch_level=$(echo "$LEVS/2.35" |bc)
 
 # PBL/turbulance schemes
-export hybedmf=".true."
-export satmedmf=".false."
-#export hybedmf=".false."
-#export satmedmf=".true."
+export hybedmf=".false."
+export satmedmf=".true."
 tbf=""
 if [ $satmedmf = ".true." ]; then tbf="_satmedmf" ; fi
 export lheatstrg=".true."
