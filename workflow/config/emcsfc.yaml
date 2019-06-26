@@ -17,8 +17,8 @@ config_emcsfc:
     export PDY=`expr $CDATE | cut -c1-8`
     export GDATE=`$NDATE -06 $CDATE`
     export PDY_m6hrs=`expr $GDATE | cut -c1-8`
-    export COMINgfs="$COMROOThps/$NET/$envir/$RUN.$PDY"
-    export COMINgfs_m6hrs="$COMROOThps/$NET/$envir/$RUN.$PDY_m6hrs"
+    export COMINgfs="$DMPDIR/$CDATE/$CDUMP"
+    export COMINgfs_m6hrs="$DMPDIR/$GDATE/$CDUMP"
     export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc"
     
     echo "END: config.emcsfc"
