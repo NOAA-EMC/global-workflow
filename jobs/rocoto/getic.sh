@@ -58,7 +58,7 @@ rc=1
 if [ $ics_from = "opsgfs" ]; then
 
     # Handle nemsio and pre-nemsio GFS filenames
-    if [ $CDATE -gt "2017072000" ]; then
+    if [ $CDATE -ge "2017072000" ]; then
         nfanal=4
         fanal[1]="./${CDUMP}.t${cyc}z.pgrbanl"
         fanal[2]="./${CDUMP}.t${cyc}z.atmanl.nemsio"
