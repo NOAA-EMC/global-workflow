@@ -14,7 +14,10 @@ gfs_clock_2: !Clock
 
 # gfs_clock_4 - run GFS every cycle
 gfs_clock_4: !Clock
-  start: !calc suite.Clock.start+suite.Clock.step
+  start: !FirstTrue
+      - when: !calc doc.places.workflow_file == "workflow/free_forecast_gfs.yaml"
+        do: !calc suite.Clock.start
+      - otherwise: !calc suite.Clock.start+suite.Clock.step
   step: !timedelta "06:00:00"
 
 # cycled_suite_alarms - this is used to define which cycles various
