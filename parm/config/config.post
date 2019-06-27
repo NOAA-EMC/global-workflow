@@ -12,7 +12,7 @@ echo "BEGIN: config.post"
 #-------------------------------------------
 
 # No. of concurrent post jobs [0 implies sequential]
-export NPOSTGRP=42
+export NPOSTGRP=20
 
 # Post driver job that calls gfs_nceppost.sh and downstream jobs
 export POSTJJOBSH="$HOMEpost/jobs/JGLOBAL_NCEPPOST"

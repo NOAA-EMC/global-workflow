@@ -23,7 +23,7 @@ export VRFYOZN="YES"     # Ozone data assimilation monitoring
 export VRFYMINMON="YES"  # GSI minimization monitoring
 export VRFYTRAK="YES"     # Hurricane track verification
 export VRFYGENESIS="YES"  # Cyclone genesis verification
-export RUNMOS="YES"       # whether to run entire MOS package
+export RUNMOS="NO"       # whether to run entire MOS package
 
 
 #-------------------------------------------------
