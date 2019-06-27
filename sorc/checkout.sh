@@ -66,7 +66,7 @@ if [[ ! -d verif-global.fd ]] ; then
     rm -f ${topdir}/checkout-verif-global.log
     git clone --recursive gerrit:EMC_verif-global verif-global.fd >> ${topdir}/checkout-verif-global.log 2>&1
     cd verif-global.fd
-    git checkout verif_global_v1.0.0
+    git checkout verif_global_v1.0.2
     cd ${topdir}
 else
     echo 'Skip. Directory verif-global.fd already exist.'
