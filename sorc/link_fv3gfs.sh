@@ -70,6 +70,7 @@ cd ${pwd}/../ush                ||exit 8
     done
 
 
+
 #------------------------------
 #--add gfs_wafs file if on Dell
 #if [ $machine = dell ]; then 
@@ -156,7 +157,14 @@ cd ${pwd}/../ush                ||exit 8
     $LINK ../sorc/gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared.v3.0.0/ush/radmon_verf_bcoef.sh          .
     $LINK ../sorc/gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared.v3.0.0/ush/radmon_verf_bcor.sh           .
     $LINK ../sorc/gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared.v3.0.0/ush/radmon_verf_time.sh           .
-    
+
+#------------------------------
+#--add prep-chem files
+#------------------------------
+cd ${pwd}/../jobs               ||exit 8
+    $LINK ../sorc/gsd_prep_chem.fd/workflow/emc-global/jobs/JGLOBAL_PREP_CHEM          .
+cd ${pwd}/../scripts            ||exit 8
+    $LINK ../sorc/gsd_prep_chem.fd/workflow/emc-global/scripts/exglobal_prep_chem.bash .
 
 #------------------------------
 #--link executables 
