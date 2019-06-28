@@ -320,7 +320,7 @@ fi
 
 #### Copy over WW3 inputs
 # At this time only test gfs but this change need to be tested on gdas, enkf, and gfs
-if [ $cplwav = ".true." -a $CDUMP = "gfs" ]; then
+if [ $cplwav = ".true." ]; then
 #  Variable FIX_WW3 is local to this script only
 #  FIX_WW3=${FIX_WW3:-$FIX_DIR/fix_ww3} 
   FIX_WW3=${COMINwave:-${FIX_WW3:-$FIX_DIR/fix_ww3}}/${WAV_MOD_ID}.${PDY}/${cyc}
@@ -1057,7 +1057,7 @@ fi
 
 #------------------------------------------------------------------
 #### ww3 output
-if [ $cplwav = ".true." -a $CDUMP = "gfs" ]; then
+if [ $cplwav = ".true." ]; then
   $NCP out_grd.glo_30m ${COMOUTWW3}/${WAV_MOD_ID}.${PDY}/${cyc}/ww3.out_grd.glo_30m.${CDATE}
   $NCP out_pnt.points ${COMOUTWW3}/${WAV_MOD_ID}.${PDY}/${cyc}/ww3.out_pnt.points.${CDATE}
   $NCP log.mww3 ${COMOUTWW3}/${WAV_MOD_ID}.${PDY}/${cyc}/mww3.log.${CDATE}
