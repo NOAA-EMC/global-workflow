@@ -107,7 +107,7 @@ platform: !Platform
 
       # Details about the scheduler on this cluster.
       scheduler_settings: &scheduler_settings
-        scheduler_name: MoabTorque
+        scheduler_name: Slurm
         parallelism_name: HydraIMPI
         node_type: generic
         physical_cores_per_node: 24
