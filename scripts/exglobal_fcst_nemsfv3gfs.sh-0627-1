@@ -64,7 +64,6 @@ DATA=${DATA:-$pwd/fv3tmp$$}    # temporary running directory
 ROTDIR=${ROTDIR:-$pwd}         # rotating archive directory
 ICSDIR=${ICSDIR:-$pwd}         # cold start initial conditions
 DMPDIR=${DMPDIR:-$pwd}         # global dumps for seaice, snow and sst analysis
-EMIDIR=${EMIDIR:-$pwd}         # anthro.emission lpan
 
 # Model resolution specific parameters
 DELTIM=${DELTIM:-225}
@@ -99,7 +98,6 @@ NTASKS_FV3=${NTASKS_FV3:-$npe_fv3}
 TYPE=${TYPE:-"nh"}                  # choices:  nh, hydro
 MONO=${MONO:-"non-mono"}            # choices:  mono, non-mono
 
-CPL=${CPL:-".true."}   #lpan
 QUILTING=${QUILTING:-".true."}
 OUTPUT_GRID=${OUTPUT_GRID:-"gaussian_grid"}
 OUTPUT_FILE=${OUTPUT_FILE:-"nemsio"}
@@ -586,43 +584,6 @@ runSeq::
 EOF
 fi
 
-#### gsdchem version of nems.configure
-if [ $gsdchem = ".true." ]; then
-  atm_petlist_bounds=" -1   -1"
-  chm_petlist_bounds=" -1   -1"
-  rm -f nems.configure
-cat > nems.configure <<EOF
-EARTH_component_list: ATM CHM
-EARTH_attributes::
-  Verbosity = 0
-::
-
-ATM_model:                      fv3
-ATM_petlist_bounds:             ${atm_petlist_bounds}
-ATM_attributes::
-  Verbosity = 0
-::
-
-CHM_model:                      gsdchem
-CHM_petlist_bounds:             ${chm_petlist_bounds}
-CHM_attributes::
-  Verbosity = 0
-::
-
-runSeq::
-  @$DELTIM
-    ATM phase1
-    ATM -> CHM
-    CHM
-    CHM -> ATM
-    ATM phase2
-  @
-::
-EOF
-fi
-
-
-
 rm -f model_configure
 cat > model_configure <<EOF
 total_member:            $ENS_NUM
@@ -681,11 +642,6 @@ EOF
 #  restart_secs = $restart_secs
 #  $coupler_nml
 #/
-
-if [ $gsdchem = ".true." ]; then
-  cplflx = ".false."
-  cplchm = ".true."
-fi
 
 cat > input.nml <<EOF
 &amip_interp_nml
@@ -848,8 +804,6 @@ cat > input.nml <<EOF
   isot         = ${isot:-"1"}
   debug        = ${gfs_phys_debug:-".false."}
   nstf_name    = $nstf_name
-  cplflx       = $cplflx
-  cplchm       = $cplchm
   nst_anl      = $nst_anl
   psautco      = ${psautco:-"0.0008,0.0005"}
   prautco      = ${prautco:-"0.00015,0.00015"}
@@ -956,52 +910,7 @@ cat > input.nml <<EOF
   FABSL = 99999
   $namsfc_nml
 /
-EOF
 
-if [ $gsdchem = ".true." ]; then
-  if [ $imp_physics -eq 99 ]; then NTRACER=0; fi
-  if [ $imp_physics -eq 11 ]; then NTRACER=1; fi
-  if [ $warm_start = ".true." ]; then CHEMIN=1; fi
-  cat >> input.nml << EOF
-&chem_nml
-  aer_bc_opt=1
-  aer_ic_opt=1
-  aer_ra_feedback=0
-  aerchem_onoff=1
-  bio_emiss_opt=0
-  biomass_burn_opt=1
-  chem_conv_tr=2
-  chem_in_opt=$CHEMIN
-  chem_opt=300
-  chemdt=3
-  cldchem_onoff=0
-  dmsemis_opt=1
-  dust_opt=3
-  emiss_inpt_opt=1
-  emiss_opt=5
-  gas_bc_opt=1
-  gas_ic_opt=1
-  gaschem_onoff=1
-  kemit=1
-  phot_opt=1
-  photdt=60
-  plumerisefire_frq=30
-  PLUMERISE_flag=2
-  seas_opt=2
-  vertmix_onoff=1
-  gfdlmp_onoff=$NTRACER
-  archive_step = -1 
-  chem_hist_outname = "chem_out_"
-  emi_inname  = "${EMIDIR}${CASE}/$SMONTH"
-  fireemi_inname  = "../prep"
-  emi_outname = "./"
-  $chem_nml
-/
-EOF
-
-fi
-
-cat >> input.nml << EOF  
 &fv_grid_nml
   grid_file = 'INPUT/grid_spec.nc'
   $fv_grid_nml
