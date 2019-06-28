@@ -102,7 +102,7 @@ platform: !Platform
 
       # Queues to use for each job type
       shared_queue: batch
-      service_queue: service
+      service_queue: batch
       exclusive_queue: batch
 
       # Details about the scheduler on this cluster.
