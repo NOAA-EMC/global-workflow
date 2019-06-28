@@ -11,8 +11,9 @@
     Module containing functions all workflow setups require
 '''
 import random
-import os
-import sys
+import re
+import os, sys, stat
+import socket
 import glob
 import subprocess
 import numpy as np
@@ -149,12 +150,28 @@ def config_parser(files):
 
     return varbles
 
+def check_slurm(print_message = False):
+    if find_executable('srun'):
+        if print_message:
+           print 'Info: Using Slurm as scheduler because srun was found in your path'
+           non_decimal = re.compile(r'[^\d.]+')
+           rocoto_version =  non_decimal.sub('',find_executable('rocotorun').replace('.',''))
+           if int(rocoto_version) < 130:
+              print 'WARNING: XML workflow is being made to use Slurm because it was set in your'
+              print 'environment and the correct version of Rocoto is not loaded.'
+              print 'Make sure to use Rocoto 1.3.0rc2 or newer (example: module load rocoto/1.3.0rc2).'
+        return True
+    else:
+        return False
+      
 def get_scheduler(machine):
-    """Determine the scheduler"""
-    try:
-        return SCHEDULER_MAP[machine]
-    except KeyError:
-        raise UnknownMachineError('Unknown machine: %s'%(machine,))
+    if check_slurm(print_message=True):
+            return 'slurm'
+    else:
+        try:
+            return SCHEDULER_MAP[machine]
+        except KeyError:
+            raise UnknownMachineError('Unknown machine: %s'%(machine,))
 
 
 def create_wf_task(task, cdump='gdas', cycledef=None, envar=None, dependency=None, \
@@ -188,8 +205,14 @@ def create_wf_task(task, cdump='gdas', cycledef=None, envar=None, dependency=Non
                  'log': '&ROTDIR;/logs/@Y@m@d@H/%s.log' % taskstr, \
                  'envar': envar, \
                  'dependency': dependency, \
+                 'partition' : '&PARTITION_%s_%s;' % (task.upper(),cdump.upper()), \
                  'final': final}
 
+    if task in ['getic','arch','earc'] and check_slurm():
+        task_dict['partition'] = '&PARTITION_%s_%s;' % (task.upper(),cdump.upper())
+    else:
+        task_dict['partition'] = None
+    
     if metatask is None:
         task = rocoto.create_task(task_dict)
     else:
@@ -281,6 +304,9 @@ def get_resources(machine, cfg, task, cdump='gdas'):
     memstr = '' if memory is None else str(memory)
     natstr = ''
 
+    if machine in ['THEIA'] and check_slurm():
+        natstr = '--export=NONE'
+    
     if machine in ['ZEUS', 'THEIA', 'WCOSS_C', 'WCOSS_DELL_P3']:
         resstr = '<nodes>%d:ppn=%d</nodes>' % (nodes, ppn)
 
@@ -296,7 +322,14 @@ def get_resources(machine, cfg, task, cdump='gdas'):
     elif machine in ['WCOSS']:
         resstr = '<cores>%d</cores>' % tasks
 
-    queuestr = '&QUEUE_ARCH;' if task in ['arch', 'earc', 'getic'] else '&QUEUE;'
+    queuestr = '&QUEUE_ARCH;'
+    # Tricky logic added for Theia arch queues because partition
+    # is a subset of queue for service queues (for now)
+    if task in ['arch', 'earc', 'getic']:
+        if machine in ['THEIA'] and check_slurm():
+            queuestr = '&QUEUE;'
+    else:
+        queuestr = '&QUEUE;'
 
     return wtimestr, resstr, queuestr, memstr, natstr
 
@@ -312,8 +345,34 @@ def create_crontab(base, cronint=5):
         print 'Failed to find rocotorun, crontab will not be created'
         return
 
-    cronintstr = '*/%d * * * *' % cronint
+# Leaving the code for a wrapper around crontab file if needed again later
+#    if check_slurm() and base['machine'] in ['THEIA']:
+#
+#        cronintstr = '*/%d * * * *' % cronint
+#        rocotorunstr = '%s -d %s/%s.db -w %s/%s.xml' % (rocotoruncmd, base['EXPDIR'], base['PSLOT'], base['EXPDIR'], base['PSLOT'])
+#    
+#        wrapper_strings = []
+#        wrapper_strings.append('#!/bin/env tcsh\n')
+#        wrapper_strings.append('\n')
+#        wrapper_strings.append('module load slurm\n')
+#        wrapper_strings.append('module load rocoto/1.3.0-RC4\n')
+#        wrapper_strings.append('\n')
+#        wrapper_strings.append(rocotorunstr)
+#
+#        hostname = 'tfe02'
+#        script_file = os.path.join(base['EXPDIR'], '%s.sh' % base['PSLOT'])
+#
+#        fh = open(script_file, 'w')
+#        fh.write(''.join(wrapper_strings))
+#        os.chmod(script_file,stat.S_IRWXU|stat.S_IRWXG|stat.S_IRWXO)
+#        fh.close()
+#
+#        rocotorunstr = 'ssh %s %s/%s.sh' % (socket.gethostname(), base['EXPDIR'], base['PSLOT']) 
+#
+#    else:
+
     rocotorunstr = '%s -d %s/%s.db -w %s/%s.xml' % (rocotoruncmd, base['EXPDIR'], base['PSLOT'], base['EXPDIR'], base['PSLOT'])
+    cronintstr = '*/%d * * * *' % cronint
 
     # On WCOSS, rocoto module needs to be loaded everytime cron runs
     if base['machine'] in ['WCOSS']:

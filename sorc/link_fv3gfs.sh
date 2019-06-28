@@ -64,8 +64,7 @@ cd ${pwd}/../ush                ||exit 8
 
 
 #------------------------------
-#--add gfs_wafs file if on Dell
-if [ $machine = dell ]; then 
+#--add gfs_wafs file
 #------------------------------
 cd ${pwd}/../jobs               ||exit 8
     $LINK ../sorc/gfs_wafs.fd/jobs/*                         .
@@ -78,7 +77,6 @@ cd ${pwd}/../ush                ||exit 8
     $LINK ../sorc/gfs_wafs.fd/ush/*                          .
 cd ${pwd}/../fix                ||exit 8
     $LINK ../sorc/gfs_wafs.fd/fix/*                          .
-fi
 
 
 #------------------------------
@@ -162,12 +160,10 @@ $LINK ../sorc/fv3gfs.fd/NEMS/exe/global_fv3gfs.x .
 [[ -s gfs_ncep_post ]] && rm -f gfs_ncep_post
 $LINK ../sorc/gfs_post.fd/exec/ncep_post gfs_ncep_post
 
-if [ $machine = dell ]; then 
-    for wafsexe in wafs_awc_wafavn  wafs_blending  wafs_cnvgrib2  wafs_gcip  wafs_makewafs  wafs_setmissing; do
-        [[ -s $wafsexe ]] && rm -f $wafsexe
-        $LINK ../sorc/gfs_wafs.fd/exec/$wafsexe .
-    done
-fi
+for wafsexe in wafs_awc_wafavn  wafs_blending  wafs_cnvgrib2  wafs_gcip  wafs_makewafs  wafs_setmissing; do
+    [[ -s $wafsexe ]] && rm -f $wafsexe
+    $LINK ../sorc/gfs_wafs.fd/exec/$wafsexe .
+done
 
 
 for gsiexe in  global_gsi.x global_enkf.x calc_increment_ens.x  getsfcensmeanp.x  getsigensmeanp_smooth.x  getsigensstatp.x  recentersigp.x oznmon_horiz.x oznmon_time.x radmon_angle radmon_bcoef radmon_bcor radmon_time ;do
@@ -195,21 +191,19 @@ cd ${pwd}/../sorc   ||   exit 8
     $SLINK gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared.v3.0.0/sorc/verf_radtime.fd   radmon_time.fd 
     $SLINK gsi.fd/util/EnKF/gfs/src/recentersigp.fd                                        recentersigp.fd
 
-    $SLINK gfs_post.fd/sorc/ncep_post.fd                                                        gfs_ncep_post.fd
+    $SLINK gfs_post.fd/sorc/ncep_post.fd                                                   gfs_ncep_post.fd
     $SLINK fre-nctools.fd/tools/filter_topo                                                filter_topo.fd
     $SLINK fre-nctools.fd/tools/fregrid                                                    fregrid.fd
     $SLINK fre-nctools.fd/tools/make_hgrid                                                 make_hgrid.fd
     $SLINK fre-nctools.fd/tools/make_solo_mosaic                                           make_solo_mosaic.fd
     $SLINK fre-nctools.fd/tools/shave.fd                                                   shave.fd
 
-    if [ $machine = dell ]; then
-        $SLINK gfs_wafs.fd/sorc/wafs_awc_wafavn.fd                                              wafs_awc_wafavn.fd
-        $SLINK gfs_wafs.fd/sorc/wafs_blending.fd                                                wafs_blending.fd
-        $SLINK gfs_wafs.fd/sorc/wafs_cnvgrib2.fd                                                wafs_cnvgrib2.fd
-        $SLINK gfs_wafs.fd/sorc/wafs_gcip.fd                                                    wafs_gcip.fd
-        $SLINK gfs_wafs.fd/sorc/wafs_makewafs.fd                                                wafs_makewafs.fd
-        $SLINK gfs_wafs.fd/sorc/wafs_setmissing.fd                                              wafs_setmissing.fd
-    fi
+    $SLINK gfs_wafs.fd/sorc/wafs_awc_wafavn.fd                                         wafs_awc_wafavn.fd
+    $SLINK gfs_wafs.fd/sorc/wafs_blending.fd                                           wafs_blending.fd
+    $SLINK gfs_wafs.fd/sorc/wafs_cnvgrib2.fd                                           wafs_cnvgrib2.fd
+    $SLINK gfs_wafs.fd/sorc/wafs_gcip.fd                                               wafs_gcip.fd
+    $SLINK gfs_wafs.fd/sorc/wafs_makewafs.fd                                           wafs_makewafs.fd
+    $SLINK gfs_wafs.fd/sorc/wafs_setmissing.fd                                         wafs_setmissing.fd
 
 #------------------------------
 #--choose dynamic config.base for EMC installation 
