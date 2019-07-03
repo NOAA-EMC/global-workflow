@@ -107,12 +107,11 @@ if [ "$CDUMP" = "gfs" ] ; then
             export hpss_walltime="10"
             ## OUTPUT SETTINGS
             export OUTPUTROOT=$RUNDIR/$CDUMP/$CDATE/vrfy/metplus_exp
+            export model_arch_dir_list=$ARCDIR/..
             export make_met_data_by="VALID"
             export gather_by="VSDB"
             ## DATE SETTINGS
             export VRFYBACK_HRS="24"
-            ## ARCHIVE SETTINGS
-            export arch_dir=$ARCDIR/..
             ## METPLUS SETTINGS
             export METplus_verbosity="INFO"
             export MET_verbosity="2"
@@ -123,7 +122,7 @@ if [ "$CDUMP" = "gfs" ] ; then
             # GRID-TO-GRID STEP 1
             export g2g1_type_list="anom pres sfc"
             export g2g1_anl_name="self"
-            export g2g1_anl_fileformat="pgbanl.gfs.{valid?fmt=%Y%m%d%H}"
+            export g2g1_anl_fileformat_list="pgbanl.gfs.{valid?fmt=%Y%m%d%H}"
             export g2g1_grid="G002"
             # GRID-TO-OBS STEP 1
             export g2o1_type_list="upper_air conus_sfc"
