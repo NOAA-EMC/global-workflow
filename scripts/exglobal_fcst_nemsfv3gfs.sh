@@ -321,19 +321,22 @@ fi
 #### Copy over WW3 inputs
 # At this time only test gfs but this change need to be tested on gdas, enkf, and gfs
 if [ $cplwav = ".true." ]; then
-#  Variable FIX_WW3 is local to this script only
-#  FIX_WW3=${FIX_WW3:-$FIX_DIR/fix_ww3} 
-  FIX_WW3=${COMINwave:-${FIX_WW3:-$FIX_DIR/fix_ww3}}/${WAV_MOD_ID}.${PDY}/${cyc}
-#  $NLN $FIX_WW3/mod_def.glo_30m                $DATA/mod_def.glo_30m
-#  $NLN $FIX_WW3/mod_def.points                 $DATA/mod_def.points
-  $NLN $FIX_WW3/ww3_multi.inp                   $DATA/ww3_multi.inp
-  $NLN $FIX_WW3/ww3.mod_def.points              $DATA/mod_def.points
-  $NLN $FIX_WW3/ww3.mod_def.glo_30m             $DATA/mod_def.glo_30m
-  $NLN $FIX_WW3/ww3.mod_def.icean_5m            $DATA/mod_def.icean_5m
-  $NLN $FIX_WW3/ww3.icean_5m.${PDY}${cyc}.ice   $DATA/ice.icean_5m
-####  $NLN $FIX_WW3/ww3_multi.gwes.t${cyc}z.inp     $DATA/ww3_multi.inp
-####  $NLN  /scratch3/NCEPDEV/stmp2/Jessica.Meixner/TempForLin/ww3_multi.inp   $DATA/ww3_multi.inp
+        # Link WW3 files
+  $NLN $COMINWW3/${WAV_MOD_ID}.${PDY}/${cyc}/ww3_multi.${WAV_MOD_ID}${WAV_MEMBER}.${cycle}.inp $DATA/ww3_multi.inp
+        # Check for expected wave grids for this run
+  array=($curID $iceID $wndID $buoy $waveGRD $sbsGRD $postGRD $interpGRD)
+  grdALL=`printf "%s\n" "${array[@]}" | sort -u | tr '\n' ' '`
+  for wavGRD in ${grdALL}
+  do
+    $NLN $COMINWW3/${WAV_MOD_ID}.${PDY}/${cyc}/${WAV_MOD_ID}.mod_def.$wavGRD $DATA/mod_def.$wavGRD
+  done
+  $NLN $COMINWW3/${WAV_MOD_ID}.${PDY}/${cyc}/${WAV_MOD_ID}.${iceID}.${cycle}.ice $DATA/ice.${iceID}
 
+#  $NLN $COMINWW3/ww3_multi.inp                   $DATA/ww3_multi.inp
+#  $NLN $COMINWW3/ww3.mod_def.points              $DATA/mod_def.points
+  #$NLN $COMINWW3/ww3.mod_def.glo_30m             $DATA/mod_def.glo_30m
+  #$NLN $COMINWW3/ww3.mod_def.icean_5m            $DATA/mod_def.icean_5m
+  #$NLN $COMINWW3/ww3.icean_5m.${PDY}${cyc}.ice   $DATA/ice.icean_5m
 fi
 
 #------------------------------------------------------------------
@@ -1058,11 +1061,15 @@ fi
 #------------------------------------------------------------------
 #### ww3 output
 if [ $cplwav = ".true." ]; then
-  $NCP out_grd.glo_30m ${COMOUTWW3}/${WAV_MOD_ID}.${PDY}/${cyc}/ww3.out_grd.glo_30m.${CDATE}
-  $NCP out_pnt.points ${COMOUTWW3}/${WAV_MOD_ID}.${PDY}/${cyc}/ww3.out_pnt.points.${CDATE}
-  $NCP log.mww3 ${COMOUTWW3}/${WAV_MOD_ID}.${PDY}/${cyc}/mww3.log.${CDATE}
-  $NCP log.glo_30m ${COMOUTWW3}/${WAV_MOD_ID}.${PDY}/${cyc}/glo_30m.log.${CDATE}
-  $NCP restart001.glo_30m ${COMOUTWW3}/${WAV_MOD_ID}.${PDY}/${cyc}/ww3.restart.glo_30m.${CDATE}
+  for wavGRD in $waveGRD
+   do
+     $NCP out_grd.${wavGRD} $COMOUTWW3/${WAV_MOD_ID}.${PDY}/${cyc}/${WAV_MOD_ID}${WAV_MEMBER}.out_grd.${wavGRD}.${PDY}${cyc}
+     $NCP log.${wavGRD} $COMOUTWW3/${WAV_MOD_ID}.${PDY}/${cyc}/${WAV_MOD_ID}${WAV_MEMBER}.log.${wavGRD}.${PDY}${cyc}
+     $NCP restart001.${wavGRD} $COMOUTWW3/${WAV_MOD_ID}.${PDY}/${cyc}/${WAV_MOD_ID}${WAV_MEMBER}.restart.${wavGRD}.${PDY}${cyc}
+   done
+   $NCP out_pnt.point $COMOUTWW3/${WAV_MOD_ID}.${PDY}/${cyc}/${WAV_MOD_ID}${WAV_MEMBER}.out_pnt.points.${PDY}${cyc}
+   $NCP log.mww3 $COMOUTWW3/${WAV_MOD_ID}.${PDY}/${cyc}/${WAV_MOD_ID}${WAV_MEMBER}.log.mww3.${PDY}${cyc}
+
 fi
 
 #------------------------------------------------------------------
