@@ -332,11 +332,6 @@ if [ $cplwav = ".true." ]; then
   done
   $NLN $COMINWW3/${WAV_MOD_ID}.${PDY}/${cyc}/${WAV_MOD_ID}.${iceID}.${cycle}.ice $DATA/ice.${iceID}
 
-#  $NLN $COMINWW3/ww3_multi.inp                   $DATA/ww3_multi.inp
-#  $NLN $COMINWW3/ww3.mod_def.points              $DATA/mod_def.points
-  #$NLN $COMINWW3/ww3.mod_def.glo_30m             $DATA/mod_def.glo_30m
-  #$NLN $COMINWW3/ww3.mod_def.icean_5m            $DATA/mod_def.icean_5m
-  #$NLN $COMINWW3/ww3.icean_5m.${PDY}${cyc}.ice   $DATA/ice.icean_5m
 fi
 
 #------------------------------------------------------------------
@@ -1067,7 +1062,7 @@ if [ $cplwav = ".true." ]; then
      $NCP log.${wavGRD} $COMOUTWW3/${WAV_MOD_ID}.${PDY}/${cyc}/${WAV_MOD_ID}${WAV_MEMBER}.log.${wavGRD}.${PDY}${cyc}
      $NCP restart001.${wavGRD} $COMOUTWW3/${WAV_MOD_ID}.${PDY}/${cyc}/${WAV_MOD_ID}${WAV_MEMBER}.restart.${wavGRD}.${PDY}${cyc}
    done
-   $NCP out_pnt.point $COMOUTWW3/${WAV_MOD_ID}.${PDY}/${cyc}/${WAV_MOD_ID}${WAV_MEMBER}.out_pnt.points.${PDY}${cyc}
+   $NCP out_pnt.${buoy} $COMOUTWW3/${WAV_MOD_ID}.${PDY}/${cyc}/${WAV_MOD_ID}${WAV_MEMBER}.out_pnt.${buoy}.${PDY}${cyc}
    $NCP log.mww3 $COMOUTWW3/${WAV_MOD_ID}.${PDY}/${cyc}/${WAV_MOD_ID}${WAV_MEMBER}.log.mww3.${PDY}${cyc}
 
 fi
