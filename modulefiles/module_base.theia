@@ -16,6 +16,5 @@ module load gempak/6.7.0
 module use /scratch3/NCEPDEV/nwprod/lib/modulefiles
 module load EnvVars/v1.0.2
 
-#module use /scratch4/NCEPDEV/nems/noscrub/emc.nemspara/soft/modulefiles
 module use /scratch4/NCEPDEV/global/save/glopara/git/NCEPLIBS-prod_util/modulefiles
 module load prod_util/v1.1.0_slurm
