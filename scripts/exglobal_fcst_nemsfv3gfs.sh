@@ -180,6 +180,17 @@ gPDY=$(echo $GDATE | cut -c1-8)
 gcyc=$(echo $GDATE | cut -c9-10)
 gmemdir=$ROTDIR/${rprefix}.$gPDY/$gcyc/$memchar
 
+#### Double check
+if [ $gsdchem = ".true." ]; then
+  gmemdir=$ROTDIR/${prefix}.$gPDY/$gcyc/$memchar
+  #### CP from LiPan for test
+#  $NCP ../calcinc/atminc.nc $memdir/${CDUMP}.t${cyc}z.atminc.nc
+  $NCP /gpfs/dell3/ptmp/Li.Pan/junchem/${CDUMP}.$PDY/$cyc/${CDUMP}.t${cyc}z.atminc.nc $memdir/${CDUMP}.t${cyc}z.atminc.nc
+  /bin/cp -Rp /gpfs/dell3/stmp/Li.Pan/RUNDIRS/junchem/$PDY$cyc/${CDUMP}/calcinc $DATA/..
+  /bin/cp -Rp /gpfs/dell3/stmp/Li.Pan/RUNDIRS/junchem/$PDY$cyc/${CDUMP}/prep $DATA/..
+  /bin/cp -Rp /gpfs/dell3/stmp/Li.Pan/RUNDIRS/junchem/$PDY$cyc/${CDUMP}/regrid $DATA/..
+fi
+
 #-------------------------------------------------------
 # initial conditions
 warm_start=${warm_start:-".false."}
@@ -239,6 +250,17 @@ if [ $warm_start = ".true." -o $RERUN = "YES" ]; then
   else
     read_increment=".false."
     res_latlon_dynamics="''"
+  fi
+
+#### Double check it repeat line 275
+  if [ $gsdchem = ".true." ]; then
+    for file in $memdir/INPUT/*.nc; do
+      file2=$(echo $(basename $file))
+      fsuf=$(echo $file2 | cut -c1-3)
+      if [ $fsuf = $fsuf = "sfc" ]; then
+        $NLN $file $DATA/INPUT/$file2
+      fi
+    done
   fi
 
 #.............................
@@ -327,6 +349,12 @@ if [ $cplwav = ".true." ]; then
   $NLN $FIX_WW3/mod_def.points                 $DATA/mod_def.points
   $NLN $FIX_WW3/ww3_multi.inp                  $DATA/ww3_multi.inp
 fi
+
+#### Copy over GSD CHEM inputs
+#if [ $gsdchem = ".true." ]; then
+#  COMIN_LIPEN=${COMIN_LIPEN:-$RUNDIR/$CDUMP.$PDY/$cyc}
+#  cp -Rp $COMIN_LIPEN $RUNDIR/$CDUMP.$PDY/$cyc
+#fi
 
 #------------------------------------------------------------------
 # changeable parameters
@@ -530,10 +558,11 @@ DATA_TABLE=${DATA_TABLE:-$PARM_FV3DIAG/data_table}
 FIELD_TABLE=${FIELD_TABLE:-$PARM_FV3DIAG/field_table}
 
 # build the diag_table with the experiment name and date stamp
-cat > diag_table << EOF
-FV3 Forecast
-$SYEAR $SMONTH $SDAY $SHOUR 0 0
-EOF
+#### GSD CHEM remove to test
+#cat > diag_table << EOF
+#FV3 Forecast
+#$SYEAR $SMONTH $SDAY $SHOUR 0 0
+#EOF
 cat $DIAG_TABLE >> diag_table
 
 $NCP $DATA_TABLE  data_table
@@ -588,8 +617,8 @@ fi
 
 #### gsdchem version of nems.configure
 if [ $gsdchem = ".true." ]; then
-  atm_petlist_bounds=" -1   -1"
-  chm_petlist_bounds=" -1   -1"
+  atm_petlist_bounds=${atm_petlist_bounds:-" -1   -1"}
+  chm_petlist_bounds=${chm_petlist_bounds:-" -1   -1"}
   rm -f nems.configure
 cat > nems.configure <<EOF
 EARTH_component_list: ATM CHM
@@ -620,8 +649,6 @@ runSeq::
 ::
 EOF
 fi
-
-
 
 rm -f model_configure
 cat > model_configure <<EOF
@@ -683,8 +710,8 @@ EOF
 #/
 
 if [ $gsdchem = ".true." ]; then
-  cplflx = ".false."
-  cplchm = ".true."
+  cplflx=".false."
+  cplchm=".true."
 fi
 
 cat > input.nml <<EOF
@@ -724,7 +751,7 @@ cat > input.nml <<EOF
 
 &fms_nml
   clock_grain = 'ROUTINE'
-  domains_stack_size = ${domains_stack_size:-3000000}
+  domains_stack_size = ${domains_stack_size:-300000000}
   print_memory_usage = ${print_memory_usage:-".false."}
   $fms_nml
 /
@@ -961,6 +988,7 @@ EOF
 if [ $gsdchem = ".true." ]; then
   if [ $imp_physics -eq 99 ]; then NTRACER=0; fi
   if [ $imp_physics -eq 11 ]; then NTRACER=1; fi
+  CHEMIN=0
   if [ $warm_start = ".true." ]; then CHEMIN=1; fi
   cat >> input.nml << EOF
 &chem_nml
@@ -1001,7 +1029,7 @@ EOF
 
 fi
 
-cat >> input.nml << EOF  
+cat >> input.nml << EOF
 &fv_grid_nml
   grid_file = 'INPUT/grid_spec.nc'
   $fv_grid_nml
