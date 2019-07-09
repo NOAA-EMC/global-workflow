@@ -101,9 +101,9 @@ platform: !Platform
         project: !calc metasched.varref(doc.schedvar.cpu_project)
 
       # Queues to use for each job type
-      shared_queue: batch
-      service_queue: batch
-      exclusive_queue: batch
+      shared_queue: theia
+      service_queue: service
+      exclusive_queue: theia
 
       # Details about the scheduler on this cluster.
       scheduler_settings: &scheduler_settings
