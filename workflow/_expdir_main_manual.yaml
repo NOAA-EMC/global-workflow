@@ -10,10 +10,7 @@ include:
   - names.yaml
   - platform.yaml
   - 'static*yaml'
-  - schema/
-  - defaults/
   - case.yaml
   - runtime/
   - workflow.yaml
-  - config/
 
