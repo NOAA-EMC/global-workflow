@@ -332,7 +332,6 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
     '''
 
     envars = []
-
     if wfu.check_slurm():
         envars.append(rocoto.create_envar(name='SLURM_SET', value='YES'))
     envars.append(rocoto.create_envar(name='RUN_ENVIR', value='&RUN_ENVIR;'))
@@ -819,7 +818,7 @@ def create_xml(dict_configs):
                         if 'memory' not in each_line:
                              temp_task_string.append(each_line)
                     dict_hyb_tasks[hyp_tasks[each_task]] = ''.join(temp_task_string)
-
+        
     # Get GFS cycle related entities, resources, workflow
     dict_gfs_resources = get_gdasgfs_resources(dict_configs, cdump='gfs')
     dict_gfs_tasks = get_gdasgfs_tasks(dict_configs, cdump='gfs')
@@ -845,7 +844,7 @@ def create_xml(dict_configs):
                 if 'memory' not in each_line:
                      temp_task_string.append(each_line)
             dict_gfs_tasks[each_task] = ''.join(temp_task_string)
-
+    
     # Put together the XML file
     xmlfile = []
 

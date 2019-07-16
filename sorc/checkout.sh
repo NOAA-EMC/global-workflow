@@ -61,6 +61,17 @@ else
     echo 'Skip.  Directory gfs_post.fd already exists.'
 fi
 
+echo EMC_gfs_wafs checkout ...
+if [[ ! -d gfs_wafs.fd ]] ; then
+    rm -f ${topdir}/checkout-gfs_wafs.log
+    git clone --recursive gerrit:EMC_gfs_wafs gfs_wafs.fd >> ${topdir}/checkout-gfs_wafs.log 2>&1
+    cd gfs_wafs.fd
+    git checkout gfs_wafs.v5.0.9
+    cd ${topdir}
+else
+    echo 'Skip.  Directory gfs_wafs.fd already exists.'
+fi
+
 echo EMV_verif-global checkout ...
 if [[ ! -d verif-global.fd ]] ; then
     rm -f ${topdir}/checkout-verif-global.log
@@ -71,16 +82,5 @@ if [[ ! -d verif-global.fd ]] ; then
 else
     echo 'Skip. Directory verif-global.fd already exist.'
 fi
-
-#echo EMC_gfs_wafs checkout ...
-#if [[ ! -d gfs_wafs.fd ]] ; then
-#    rm -f ${topdir}/checkout-gfs_wafs.log
-#    git clone --recursive gerrit:EMC_gfs_wafs gfs_wafs.fd >> ${topdir}/checkout-gfs_wafs.log 2>&1
-#    cd gfs_wafs.fd
-#    git checkout gfs_wafs.v5.0.8
-#    cd ${topdir}
-#else
-#    echo 'Skip.  Directory gfs_wafs.fd already exists.'
-#fi
 
 exit 0
