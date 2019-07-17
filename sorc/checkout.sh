@@ -4,6 +4,27 @@ set -xu
 topdir=$(pwd)
 echo $topdir
 
+if [ $# -eq 1 ]; then
+model=$1
+fi
+model=${model:-"uncoupled"}
+
+if [ $model = "coupled" ]; then
+echo fv3_mom6_cice5 checkout ...
+rm -f ${topdir}/checkout-fv3_coupled.log
+
+if [[ ! -d fv3_coupled.fd ]] ; then
+    git clone --recursive gerrit:EMC_FV3-MOM6-CICE5 fv3_coupled.fd >> ${topdir}/checkout-fv3_coupled.log 2>&1
+    cd fv3_coupled.fd
+    git checkout v3.0.1
+    git submodule update --init --recursive
+    cd ${topdir}
+else
+    echo 'Skip.  Directory fv3_coupled.fd already exists.'
+fi
+fi
+
+if [ $model != "coupled" ]; then
 echo fv3gfs checkout ...
 if [[ ! -d fv3gfs.fd ]] ; then
     rm -f ${topdir}/checkout-fv3gfs.log
@@ -14,6 +35,7 @@ if [[ ! -d fv3gfs.fd ]] ; then
     cd ${topdir}
 else
     echo 'Skip.  Directory fv3gfs.fd already exists.'
+fi
 fi
 
 echo gsi checkout ...
