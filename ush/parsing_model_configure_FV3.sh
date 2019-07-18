@@ -12,12 +12,6 @@
 
 FV3_model_configure(){
 
-VERBOSE=${VERBOSE:-"YES"}
-if [ $VERBOSE = "YES" ] ; then
-  echo $(date) EXECUTING $0 $* >&2
-  set -x
-fi
-
 rm -f model_configure
 cat > model_configure <<EOF
 total_member:            $ENS_NUM
@@ -59,4 +53,5 @@ nfhmax_hf:               $FHMAX_HF
 nfhout_hf:               $FHOUT_HF
 nsout:                   $NSOUT
 EOF
+echo "$(cat model_configure)"
 }

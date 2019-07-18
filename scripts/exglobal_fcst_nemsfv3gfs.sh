@@ -92,11 +92,11 @@ if [ -z $machine ]; then
 	unameOut="$(uname -s)"
 	case "${unameOut}" in
     		Linux*)
-			SCRIPTDIR=$(dirname $(readlink -f "$0") )/mod_forecast
+			SCRIPTDIR=$(dirname $(readlink -f "$0") )/../ush
 			echo "MAIN: Linux environment. Current Script locates in $SCRIPTDIR."
 			;;
     		Darwin*)
-                        SCRIPTDIR=$(pwd)/mod_forecast
+                        SCRIPTDIR=$(pwd)/../ush
                         echo "MAIN: MacOS environment. Current Script locates in $SCRIPTDIR."
 			;;
     		CYGWIN*)    echo CYGWIN ;;
@@ -104,13 +104,15 @@ if [ -z $machine ]; then
     		*)          echo "UNKNOWN:${unameOut}"
     esac
 else
-	SCRIPTDIR=$(dirname $(readlink -f "$0") )/mod_forecast
+	SCRIPTDIR=$(dirname $(readlink -f "$0") )/../ush
 	echo "MAIN: environment loaded for $machine platform,Current Script locates in $SCRIPTDIR."
 fi
 
+# include all subroutines. Executions later.
 source $SCRIPTDIR/cplvalidate.sh	# validation of cpl*
-source $SCRIPTDIR/forecast_def.sh	# include functions for variable definition
-source $SCRIPTDIR/forecast_io.sh	# include functions for io processing
+source $SCRIPTDIR/forecast_predet.sh	# include functions for variable definition
+source $SCRIPTDIR/forecast_det.sh  # include functions for run type determination
+source $SCRIPTDIR/forecast_postdet.sh	# include functions for variables after run type determination
 source $SCRIPTDIR/nems_configure.sh	# include functions for nems_configure processing
 
 # Compset string. For nems.configure.* template selection. Default ATM only
@@ -122,6 +124,8 @@ CPLWAV=${CPLWAV:-False} # ? how to control 1-way/2-way?
 CPLCHEM=${CPLCHEM:-False} # Chemistry model
 CPLICE=${CPLICE:-False} # ICE model
 
+RUN=gfs
+
 echo "MAIN: $confignamevarfornems selected"
 echo "MAIN: Forecast script started for $confignamevarfornems on $machine"
 
@@ -130,35 +134,51 @@ cplvalidate
 echo "MAIN: $confignamevarfornems validated, continue"
 # Validate the consistency between $confignamevarfornems and $CPL switches
 
-echo "MAIN: Loading variables"
+echo "MAIN: Loading variables before determination of run type"
+
 echo $RUN
 case $RUN in
-	'gfs') FV3_GFS_def;;
-	'gdas') FV3_GFS_def;;
-	'gefs') FV3_GEFS_def;;
+	'data') Data_ATM_setup;;
+	'gfs') FV3_GFS_predet;;
+	'gdas') FV3_GFS_predet;;
+	'gefs') FV3_GEFS_predet;;
 esac
-[[ $CPLFLX = TRUE ]] && MOM6_def
-[[ $CPLWAV = TRUE ]] && WW3_def
-[[ $CPLICE = TRUE ]] && CICE_def
-[[ $CPLCHEM = TRUE ]] && GSD_def
+[[ $CPLFLX = TRUE ]] && MOM6_predet
+[[ $CPLWAV = TRUE ]] && WW3_predet
+[[ $CPLICE = TRUE ]] && CICE_predet
+[[ $CPLCHEM = TRUE ]] && GSD_predet
 
-echo "MAIN: Finish loading variables"
+case $RUN in
+        'gfs') FV3_GFS_det;;
+        'gdas') FV3_GFS_det;;
+        'gefs') FV3_GEFS_det;;
+esac				#no run type determination for data atmosphere
+[[ $CPLFLX = TRUE ]] && MOM6_det
+[[ $CPLWAV = TRUE ]] && WW3_det
+[[ $CPLICE = TRUE ]] && CICE_det
+[[ $CPLCHEM = TRUE ]] && GSD_det
 
-echo "MAIN: Linking input data"
+echo "MAIN: RUN Type Determined"
+
+echo "MAIN: Post-determination set up of run type"
 echo $RUN
 case $RUN in
-	'gfs') data_link_GFS;;
-	'gdas') data_link_GFS;;
-	'gefs') data_link_GEFS;;
-esac
-[[ $CPLFLX = TRUE ]] && MOM6_in
-[[ $CPLWAV = TRUE ]] && WW3_in
-[[ $CPLICE = TRUE ]] && CICE_in
-[[ $CPLCHEM = TRUE ]] && GSD_in
-echo "MAIN: Input data linked"
+	'gfs') FV3_GFS_postdet;;
+	'gdas') FV3_GFS_postdet;;
+	'gefs') FV3_GEFS_postdet;;
+esac				#no post determination set up for data atmosphere
+[[ $CPLFLX = TRUE ]] && MOM6_postdet
+[[ $CPLWAV = TRUE ]] && WW3_postdet
+[[ $CPLICE = TRUE ]] && CICE_postdet
+[[ $CPLCHEM = TRUE ]] && GSD_postdet
+echo "MAIN: Post-determination set up of run type finished"
 
 echo "MAIN: Writing name lists and model configuration"
-FV3_nml
+case $RUN in
+        'gfs') FV3_GFS_nml;;
+        'gdas') FV3_GFS_nml;;
+        'gefs') FV3_GEFS_nml;;
+esac				#no namelist for data atmosphere
 [[ $CPLFLX = TRUE ]] && MOM6_nml
 [[ $CPLWAV = TRUE ]] && WW3_nml
 [[ $CPLICE = TRUE ]] && CICE_nml
@@ -185,6 +205,7 @@ fi
 
 if [ $machine != 'sandbox' ]; then		
 	case $RUN in
+		'data') data_out_Data_ATM;;
 		'gfs') data_out_GFS;;
 		'gdas') data_out_GFS;;
 		'gefs') data_out_GEFS;;
@@ -203,7 +224,7 @@ echo "MAIN: Output copied to COMROT"
 if [ $mkdata = "YES" ]; then rm -rf $DATA; fi
 
 #------------------------------------------------------------------
-set +x
+#set +x
 if [ $VERBOSE = "YES" ] ; then
   echo $(date) EXITING $0 with return code $err >&2
 fi

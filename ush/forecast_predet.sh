@@ -12,13 +12,7 @@
 # For all non-evironment variables
 # Cycling and forecast hour specific parameters
 
-VERBOSE=${VERBOSE:-"YES"}
-if [ $VERBOSE = "YES" ] ; then
-  echo $(date) EXECUTING $0 $* >&2
-  set -x
-fi
-
-FV3_GFS_def(){
+FV3_GFS_predet(){
 	echo "SUB ${FUNCNAME[0]}: Defining variables for FV3GFS"
 	CASE=${CASE:-C768}
 	CDATE=${CDATE:-2017032500}
@@ -150,12 +144,6 @@ FV3_GFS_def(){
 	#if [ $nxblocks -le 0 ]; then nxblocks=1 ; fi
 	blocksize=${blocksize:-32}
 
-	# the pre-conditioning of the solution
-	# =0 implies no pre-conditioning
-	# >0 means new adiabatic pre-conditioning
-	# <0 means older adiabatic pre-conditioning
-	na_init=${na_init:-1}
-
 	# variables for controlling initialization of NCEP/NGGPS ICs
 	filtered_terrain=${filtered_terrain:-".true."}
 	gfs_dwinds=${gfs_dwinds:-".true."}
@@ -168,7 +156,11 @@ FV3_GFS_def(){
 
 	#-------------------------------------------------------
 	if [ ! -d $ROTDIR ]; then mkdir -p $ROTDIR; fi
-	if [ ! -d $DATA ]; then mkdir -p $DATA ;fi
+	mkdata=NO
+	if [ ! -d $DATA ]; then
+		mkdata=YES 
+		mkdir -p $DATA ;
+	fi
 	mkdir -p $DATA/RESTART $DATA/INPUT
 	cd $DATA || exit 8
 
@@ -193,124 +185,7 @@ FV3_GFS_def(){
 	gcyc=$(echo $GDATE | cut -c9-10)
 	gmemdir=$ROTDIR/${rprefix}.$gPDY/$gcyc/$memchar
 
-	#-------------------------------------------------------
-	# initial conditions
-	warm_start=${warm_start:-".false."}
-	read_increment=${read_increment:-".false."}
-	restart_interval=${restart_interval:-0}
-
-	if [ -f $gmemdir/RESTART/${PDY}.${cyc}0000.coupler.res ]; then
-	  export warm_start=".true."
-	fi
-	
-	[[ $warm_start = ".true." ]] && na_init=0
-
-	if [ ${TYPE} = "nh" ]; then # non-hydrostatic options
-
-	  hydrostatic=".false."
-	  phys_hydrostatic=".false."     # enable heating in hydrostatic balance in non-hydrostatic simulation
-	  use_hydro_pressure=".false."   # use hydrostatic pressure for physics
-	  if [ $warm_start = ".true." ]; then
-	    make_nh=".false."              # restarts contain non-hydrostatic state
-	  else
-	    make_nh=".true."               # re-initialize non-hydrostatic state
-	  fi
-
-	else # hydrostatic options
-
-	  hydrostatic=".true."
-	  phys_hydrostatic=".false."     # ignored when hydrostatic = T
-	  use_hydro_pressure=".false."   # ignored when hydrostatic = T
-	  make_nh=".false."              # running in hydrostatic mode
-
-	fi
-
-	# Conserve total energy as heat globally
-	consv_te=${consv_te:-1.} # range 0.-1., 1. will restore energy to orig. val. before physics
-
-	# time step parameters in FV3
-	k_split=${k_split:-2}
-	n_split=${n_split:-6}
-
-	if [ $(echo $MONO | cut -c-4) = "mono" ];  then # monotonic options
-
-	  d_con=${d_con_mono:-"0."}
-	  do_vort_damp=".false."
-	  if [ ${TYPE} = "nh" ]; then # non-hydrostatic
-	    hord_mt=${hord_mt_nh_mono:-"10"}
-	    hord_xx=${hord_xx_nh_mono:-"10"}
-	  else # hydrostatic
-	    hord_mt=${hord_mt_hydro_mono:-"10"}
-	    hord_xx=${hord_xx_hydro_mono:-"10"}
-	  fi
-
-	else # non-monotonic options
-
-	  d_con=${d_con_nonmono:-"1."}
-	  do_vort_damp=".true."
-	  if [ ${TYPE} = "nh" ]; then # non-hydrostatic
-	    hord_mt=${hord_mt_nh_nonmono:-"5"}
-	    hord_xx=${hord_xx_nh_nonmono:-"5"}
-	  else # hydrostatic
-	    hord_mt=${hord_mt_hydro_nonmono:-"10"}
-	    hord_xx=${hord_xx_hydro_nonmono:-"10"}
-	  fi
-
-	fi
-
-	if [ $(echo $MONO | cut -c-4) != "mono" -a $TYPE = "nh" ]; then
-	  vtdm4=${vtdm4_nh_nonmono:-"0.06"}
-	else
-	  vtdm4=${vtdm4:-"0.05"}
-	fi
-
-	if [ $warm_start = ".true." ]; then # warm start from restart file
-
-	  nggps_ic=".false."
-	  ncep_ic=".false."
-	  external_ic=".false."
-	  mountain=".true."
-	  if [ $read_increment = ".true." ]; then # add increment on the fly to the restarts
-	    res_latlon_dynamics="fv3_increment.nc"
-	  else
-	    res_latlon_dynamics='""'
-	  fi
-
-	else # CHGRES'd GFS analyses
-
-	  nggps_ic=${nggps_ic:-".true."}
-	  ncep_ic=${ncep_ic:-".false."}
-	  external_ic=".true."
-	  mountain=".false."
-	  read_increment=".false."
-	  res_latlon_dynamics='""'
-
-	fi
-
-	# Stochastic Physics Options
-	if [ ${SET_STP_SEED:-"YES"} = "YES" ]; then
-	  ISEED_SKEB=$((CDATE*1000 + MEMBER*10 + 1))
-	  ISEED_SHUM=$((CDATE*1000 + MEMBER*10 + 2))
-	  ISEED_SPPT=$((CDATE*1000 + MEMBER*10 + 3))
-	else
-	  ISEED=${ISEED:-0}
-	fi
-	DO_SKEB=${DO_SKEB:-"NO"}
-	DO_SPPT=${DO_SPPT:-"NO"}
-	DO_SHUM=${DO_SHUM:-"NO"}
-	JCAP_STP=${JCAP_STP:-$JCAP_CASE}
-	LONB_STP=${LONB_STP:-$LONB_CASE}
-	LATB_STP=${LATB_STP:-$LATB_CASE}
-
-	# build the date for curr_date and diag_table from CDATE
-	SYEAR=$(echo  $CDATE | cut -c1-4)
-	SMONTH=$(echo $CDATE | cut -c5-6)
-	SDAY=$(echo   $CDATE | cut -c7-8)
-	SHOUR=$(echo  $CDATE | cut -c9-10)
-	curr_date="${SYEAR},${SMONTH},${SDAY},${SHOUR},0,0"
-	rsecs=$((restart_interval*3600))
-	restart_secs=${rsecs:-0}
-	echo "SUB ${FUNCNAME[0]}: Variables for FV3GFS defined"
+	echo "SUB ${FUNCNAME[0]}: pre-determination variables set"
 }
 
 FV3_GEFS_def(){

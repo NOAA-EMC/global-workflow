@@ -8,12 +8,6 @@
 ## forecast script. This script is a direct execution
 #####
 
-VERBOSE=${VERBOSE:-"YES"}
-if [ $VERBOSE = "YES" ] ; then
-  echo $(date) EXECUTING $0 $* >&2
-  set -x
-fi
-
 cplvalidate(){
 echo "SUB cplvalidate: validating cpl** switches for $confignamevarfornems"
 case $confignamevarfornems in

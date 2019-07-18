@@ -10,12 +10,6 @@
 
 FV3_namelists(){
 
-VERBOSE=${VERBOSE:-"YES"}
-if [ $VERBOSE = "YES" ] ; then
-  echo $(date) EXECUTING $0 $* >&2
-  set -x
-fi
-
 # copy over the tables
 DIAG_TABLE=${DIAG_TABLE:-$PARM_FV3DIAG/diag_table}
 DATA_TABLE=${DATA_TABLE:-$PARM_FV3DIAG/data_table}
@@ -368,4 +362,5 @@ else
 EOF
 
 fi
+echo "$(cat input.nml)"
 }
