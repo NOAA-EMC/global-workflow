@@ -35,9 +35,6 @@ fi
 machine=${machine:-"WCOSS_C"}
 machine=$(echo $machine | tr '[a-z]' '[A-Z]')
 
-export ESMF_RUNTIME_PROFILE=ON
-export ESMF_RUNTIME_PROFILE_OUTPUT=SUMMARY
-
 # Cycling and forecast hour specific parameters
 CASE=${CASE:-C768}
 CDATE=${CDATE:-2017032500}
