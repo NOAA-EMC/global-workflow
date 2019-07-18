@@ -74,6 +74,7 @@ fi
 
 tar -xvf ../build.fv3.post.mods.0612.tar
 tar -xvf ../build.fv3.gsi.mods.0612.tar
+tar -xvf ../ufs.mods.tar
 exit 0
 
  
