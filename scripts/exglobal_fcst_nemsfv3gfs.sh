@@ -88,6 +88,7 @@ ENS_NUM=${ENS_NUM:-1}  # Single executable runs multiple members (e.g. GEFS)
 DOIAU=${DOIAU:-"NO"}
 IAUFHRS=${IAUFHRS:-0}
 IAU_DELTHRS=${IAU_DELTHRS:-0}
+IAU_OFFSET=${IAU_OFFSET:-0}
 
 # Model specific stuff
 FCSTEXECDIR=${FCSTEXECDIR:-$HOMEgfs/sorc/fv3gfs.fd/NEMS/exe}
@@ -634,7 +635,7 @@ nfhout:                  $FHOUT
 nfhmax_hf:               $FHMAX_HF
 nfhout_hf:               $FHOUT_HF
 nsout:                   $NSOUT
-iau_offset:              ${IAU_DELTHRS}
+iau_offset:              ${IAU_OFFSET}
 EOF
 else
 cat > model_configure <<EOF
@@ -677,7 +678,7 @@ nfhout:                  $FHOUT
 nfhmax_hf:               $FHMAX_HF
 nfhout_hf:               $FHOUT_HF
 nsout:                   $NSOUT
-iau_offset:              ${IAU_DELTHRS}
+iau_offset:              ${IAU_OFFSET}
 EOF
 fi
 
