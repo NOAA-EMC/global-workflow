@@ -244,12 +244,18 @@ def create_firstcyc_task(cdump='gdas'):
                  'command': 'sleep 1', \
                  'jobname': '&PSLOT;_%s_@H' % taskstr, \
                  'account': '&ACCOUNT;', \
-                 'queue': '&QUEUE_ARCH;', \
                  'walltime': '&WALLTIME_ARCH_%s;' % cdump.upper(), \
                  'native': '&NATIVE_ARCH_%s;' % cdump.upper(), \
                  'resources': '&RESOURCES_ARCH_%s;' % cdump.upper(), \
                  'log': '&ROTDIR;/logs/@Y@m@d@H/%s.log' % taskstr, \
                  'dependency': dependencies}
+
+    if check_slurm():
+        task_dict['queue'] = '&QUEUE_ARCH_GFS;'
+        task_dict['partition'] = '&PARTITION_ARCH_GFS;'
+    else:
+        task_dict['queue'] = '&QUEUE_ARCH'
+        task_dict['partition'] = None
 
     task = rocoto.create_task(task_dict)
 
