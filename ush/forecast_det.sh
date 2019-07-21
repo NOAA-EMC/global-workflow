@@ -63,7 +63,3 @@ CICE_det(){
 MOM6_det(){
 	echo "SUB ${FUNCNAME[0]}: Defining variables for MOM6"
 }
-
-CICE_det(){
-	echo "SUB ${FUNCNAME[0]}: Defining variables for CICE"
-}
