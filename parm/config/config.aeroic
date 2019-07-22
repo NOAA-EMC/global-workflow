@@ -1,0 +1,14 @@
+#!/bin/ksh -x
+
+########## config.aeroic ##########
+# Append aerosol variables to FV3 initial conditions
+
+echo "BEGIN: config.aeroic"
+
+# Task and thread configuration
+export wtime_aeroic="00:30:00"
+export npe_aeroic=1
+export npe_node_aeroic=3
+export nth_aeroic=8
+
+echo "END: config.aeroic"

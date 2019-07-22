@@ -35,7 +35,7 @@ import rocoto
 import workflow_utils as wfu
 
 
-taskplan = ['getic', 'fv3ic', 'fcst', 'post', 'vrfy', 'arch']
+taskplan = ['getic', 'fv3ic', 'aeroic', 'fcst', 'post', 'vrfy', 'arch']
 
 def main():
     parser = ArgumentParser(description='Setup XML workflow and CRONTAB for a forecast only experiment.', formatter_class=ArgumentDefaultsHelpFormatter)
@@ -276,6 +276,30 @@ def get_workflow(dict_configs, cdump='gdas'):
     dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
     task = wfu.create_wf_task('fv3ic', cdump=cdump, envar=envars, dependency=dependencies)
+    tasks.append(task)
+    tasks.append('\n')
+
+    # aeroic
+    deps = []
+    data = '&ICSDIR;/@Y@m@d@H/&CDUMP;/&CASE;/INPUT/gfs_data.tile6.nc'
+    dep_dict = {'type':'data', 'data':data}
+    deps.append(rocoto.add_dependency(dep_dict))
+    data = '&ICSDIR;/@Y@m@d@H/&CDUMP;/&CASE;/INPUT/sfc_data.tile6.nc'
+    dep_dict = {'type':'data', 'data':data}
+    deps.append(rocoto.add_dependency(dep_dict))
+    dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+    aero_envars = []
+    aero_envars.append(rocoto.create_envar(name='HOMEgfs', value='&HOMEgfs;'))
+    aero_envars.append(rocoto.create_envar(name='EXPDIR', value='&EXPDIR;'))
+    aero_envars.append(rocoto.create_envar(name='ROTDIR', value='&ROTDIR;'))
+    aero_envars.append(rocoto.create_envar(name='CDATE', value='<cyclestr>@Y@m@d@H</cyclestr>'))
+    aero_envars.append(rocoto.create_envar(name='CDUMP', value='&CDUMP;'))
+    aero_envars.append(rocoto.create_envar(name='CASE', value='&CASE;'))
+    aero_envars.append(rocoto.create_envar(name='FV3ICS_DIR', value='<cyclestr>&ICSDIR;/@Y@m@d@H/&CDUMP;/&CASE;/INPUT/</cyclestr>'))
+    aero_envars.append(rocoto.create_envar(name='FIXfv3', value='&HOMEgfs;/fix/fix_fv3'))
+
+    task = wfu.create_wf_task('aeroic', cdump=cdump, envar=aero_envars, dependency=dependencies)
     tasks.append(task)
     tasks.append('\n')
 

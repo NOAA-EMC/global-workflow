@@ -15,7 +15,7 @@ if [ $DONST = "YES" ]; then
     . $EXPDIR/config.nsst
 fi
 
-export FORECASTSH="$HOMEgfs/scripts/exglobal_fcst_nemsfv3gfs_v15.sh"
+export FORECASTSH="$HOMEgfs/scripts/exglobal_fcst_nemsfv3gfs_GSDsuite.sh"
 #export FCSTEXECDIR="$HOMEfv3gfs/NEMS/exe"
 export FCSTEXECDIR="$HOMEgfs/exec"
 export FCSTEXEC="global_fv3gfs_ccpp.x"
@@ -47,14 +47,13 @@ export new_o3forc="YES"
 
 # CCPP configuration
 export output_1st_tstep_rst=".false."                                        #JKH
-export CCPP_SUITE=FV3_GFS_v15
+export CCPP_SUITE=FV3_GSD_v0
 
 # Microphysics configuration
 export dnats=0
 export cal_pre=".true."
 export do_sat_adj=".false."
 export random_clds=".true."
-SUITE_DIR=$HOMEgfs/sorc/fv3gfs.fd/ccpp/suites                                        #JKH
 
 if [ $imp_physics -eq 99 ]; then # ZhaoCarr
     export ncld=1
@@ -121,7 +120,6 @@ elif [ $imp_physics -eq 11 ]; then # GFDL
     export dddmp=0.1
     export d4_bg=0.12
 
-    export CCPP_SUITE=$SUITE_DIR/suite_FV3_GFS_2017_updated_gfdlmp.xml
 else
     echo "Unknown microphysics option, ABORT!"
 
@@ -161,7 +159,6 @@ elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
     # Write gfs restart files to rerun fcst from any break point         
      export restart_interval=${restart_interval_gfs:-0}
 fi
-
 
 # Regrid tiles to global Gaussian grid in NEMSIO
 export REGRID_NEMSIO_SH="$HOMEgfs/ush/fv3gfs_regrid_nemsio.sh"

@@ -21,6 +21,7 @@ if [ $target = theia ]; then target=theia.intel ; fi
 cd fv3gfs.fd/
 FV3=$( pwd -P )/FV3
 cd tests/
-./compile.sh "$FV3" "$target" "NCEP64LEV=Y HYDRO=N 32BIT=Y" 1
-##mv -f fv3_1.exe ../NEMS/exe/fv3_gfs_nh.prod.32bit.x
-mv -f fv3_1.exe ../NEMS/exe/global_fv3gfs.x
+##./compile.sh "$FV3" "$target" "NCEP64LEV=Y HYDRO=N 32BIT=Y" 1
+##mv -f fv3_1.exe ../NEMS/exe/global_fv3gfs.x
+./compile.sh "$PWD/../FV3" "$target" "CCPP=Y 32BIT=Y STATIC=Y SUITES=FV3_GFS_v15,FV3_GSD_v0" 
+mv -f fv3.exe ../NEMS/exe/global_fv3gfs_ccpp.x
