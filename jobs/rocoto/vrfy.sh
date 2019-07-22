@@ -84,7 +84,7 @@ fi
 ###############################################################
 echo
 echo "=============== START TO RUN FIT2OBS VERIFICATION ==============="
-if [ $VRFYFITS = "YES" -a $CDUMP = $CDFNL ]; then
+if [ $VRFYFITS = "YES" -a $CDUMP = $CDFNL -a $CDATE != $SDATE ]; then
 
     export CDUMPFCST=$VDUMP
     export TMPDIR="$RUNDIR/$CDATE/$CDUMP"
@@ -116,7 +116,7 @@ fi
 ###############################################################
 echo
 echo "=============== START TO RUN RADMON DATA EXTRACTION ==============="
-if [ $VRFYRAD = "YES" -a $CDUMP = $CDFNL ]; then
+if [ $VRFYRAD = "YES" -a $CDUMP = $CDFNL -a $CDATE != $SDATE ]; then
 
     export EXP=$PSLOT
     export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc"
@@ -133,7 +133,7 @@ fi
 ###############################################################
 echo
 echo "=============== START TO RUN OZMON DATA EXTRACTION ==============="
-if [ $VRFYOZN = "YES" -a $CDUMP = $CDFNL ]; then
+if [ $VRFYOZN = "YES" -a $CDUMP = $CDFNL -a $CDATE != $SDATE ]; then
 
     export EXP=$PSLOT
     export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc"
@@ -150,7 +150,7 @@ fi
 ###############################################################
 echo
 echo "=============== START TO RUN MINMON ==============="
-if [ $VRFYMINMON = "YES" ]; then
+if [ $VRFYMINMON = "YES" -a $CDATE != $SDATE ]; then
 
     export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc"
     export jlogfile="$ROTDIR/logs/$CDATE/${CDUMP}minmon.log"
