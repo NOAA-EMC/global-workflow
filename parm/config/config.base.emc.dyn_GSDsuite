@@ -208,7 +208,8 @@ export CASE_ENKF="@CASEENS@"
 if [[ "$CDUMP" == "gdas" ]] ; then
    export FHCYC=1
 elif [[ "$CDUMP" == "gfs" ]] ; then
-   export FHCYC=24
+   #JKHexport FHCYC=24
+   export FHCYC=0
 fi
 
 # Output frequency of the forecast model (for cycling)

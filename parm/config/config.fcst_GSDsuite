@@ -84,7 +84,7 @@ elif [ $imp_physics -eq 8 ]; then # Thompson
     export bl_mynn_edmf_mom=1
 
     ## for RUC LSM
-    export lsm=2
+    export lsm=3
     export lsoil_lsm=9
 
     ## GSD namelist changes
