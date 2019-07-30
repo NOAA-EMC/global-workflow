@@ -56,11 +56,6 @@ settings_schema: !Template &settings_schema
     default: !calc doc.platform.get("prod_util_module","prod_util")
     description: Name of the unix modulefile to load to obtain NCEP production shell utilities.
 
-  ecflow_module:
-    type: str
-    default: !calc doc.platform.get("ecflow_module","ecflow")
-    description: Name of the unix modulefile to load to obtain ecflow_client.
-
   ecflow_real_clock:
     type: bool
     default: no

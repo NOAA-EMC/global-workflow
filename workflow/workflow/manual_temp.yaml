@@ -12,24 +12,6 @@ suite: !Cycle
     RUN: gdas
     ecflow_def: "edit RUN 'gdas'"
 
-    jgdas_emc_dump_waiter: !Task
-      <<: *dump_waiter_task
-      Disable: !calc metasched.type != 'ecflow'
-
-      #Time: !FirstTrue
-      #  - when: !calc doc.settings.four_cycle_mode
-      #    do: !timedelta +5:50:00
-      #  - otherwise: null
-
-      realtime_logic: !FirstTrue
-        - when: !calc doc.settings.realtime
-          do: "edit ECF_TRIES 72"
-        - otherwise: ""
-      ecflow_def: !expand |
-        {realtime_logic}
-        edit DUMPDIR '{doc.places.DMPDIR}'
-      Trigger: !Depend  forecast.at('-6:00:00')
-
     dump: !Family
       ecflow_def: "# NCO will need to add NCO dump job here"
       Dummy: true  ## <-- Node is not implemented yet
@@ -38,15 +20,6 @@ suite: !Cycle
         <<: *exclusive_task_template
         release_gdas00_ics: !DataEvent {file="/dev/null"}
         resources: !calc partition.resources.run_one_hour_exclusive
-
-      #jgdas_dump_post: !Task
-      #  Trigger: !Depend jgdas_dump
-      #  release_sfcprep: !DataEvent {file="/dev/null"}
-      #  release_gdas00_dump_alert: !DataEvent {file="/dev/null"}
-      #  ecf_file: *ecf_file_template
-      #  resources: !calc partition.resources.run_nothing
-      #  accounting: *exclusive_accounting
-      #  J_JOB: nothing
 
       jgdas_tropcy_qc_reloc: !Task
         <<: *exclusive_task_template
@@ -57,7 +30,6 @@ suite: !Cycle
           - otherwise: null
         resources: !calc partition.resources.run_one_hour_exclusive
 
-      #Replaced by emc version of dump job 
       #This dump job should be using NCO version when delivery to NCO
       jgdas_dump: !Task
         <<: *exclusive_task_template
@@ -70,21 +42,12 @@ suite: !Cycle
     #endfamily dump
 
     prep: !Family
-      Trigger: !Depend |
-        (jgdas_emc_dump_waiter.updated_status | dump.jgdas_dump.release_sfcprep ) & up.gdas.forecast.at('-6:00:00')
+      Trigger: !Depend up.gdas.forecast.at('-6:00:00')
       Complete: !Depend ( ~ suite.has_cycle('-6:00:00') )
-      jgdas_emcsfc_sfc_prep: !Task
-        <<: *exclusive_task_template
-        Disable: !calc not doc.data_assimilation.DO_EMCSFC
-        Trigger: !Depend 'up.dump.jgdas_dump.release_sfcprep | up.jgdas_emc_dump_waiter.updated_status'
-        ecf_environment_settings: !calc doc.settings.ecflow_rocoto_cdate_workaround
-        resources: !calc partition.resources.run_prep
-        config_list: [ base, prep, prepbufr, emcsfc ]
-        J_JOB: JGLOBAL_EMCSFC_SFC_PREP
 
       jgdas_prep: !Task
         <<: *exclusive_task_template
-        Trigger: !Depend ( ( up.dump.jgdas_dump & up.jgdas_emc_dump_waiter ) & up.up.gdas.post.at('-6:00:00') )
+        Trigger: !Depend ( up.dump.jgdas_dump & up.up.gdas.post.at('-6:00:00') )
         ecflow_def:
           edit model 'obsproc_global'
         resources: !calc partition.resources.run_prep
@@ -106,7 +69,7 @@ suite: !Cycle
       Complete: !Depend ( ~ suite.has_cycle('-6:00:00') )
       jgdas_analysis_high: !Task
         <<: *exclusive_task_template
-        Trigger: !Depend ( up.prep.jgdas_prep & up.prep.jgdas_emcsfc_sfc_prep & up.enkf.post.at('-6:00:00') )
+        Trigger: !Depend ( up.prep.jgdas_prep & up.enkf.post.at('-6:00:00') )
         #release_fcst: !DataEvent {file="/dev/null"}
         resources: !calc partition.resources.run_anal
         J_JOB: JGLOBAL_ANALYSIS
@@ -120,47 +83,14 @@ suite: !Cycle
         resources: !calc partition.resources.run_gdasfcst
         J_JOB: JGLOBAL_FORECAST
 
-    post_processing: !Family
-      Disable: !calc not doc.downstream.DO_POST_PROCESSING
-      Complete: !Depend ~ suite.has_cycle('-6:00:00') 
-      bulletins: !Family
-        Disable: !calc not doc.downstream.DO_BULLETINS
-        jgdas_bulls_navy: !Task
-          <<: *exclusive_task_template
-          Dummy: True  # job is broken
-          AlarmName: gfs_00_12
-          Trigger: !Depend ( up.up.prep.jgdas_prep )
-          resources: !calc partition.resources.run_bulls_navy
-          J_JOB: JGDAS_BULLS_NAVY
-
-    gempak: !Family
-      Disable: !calc not doc.downstream.DO_GEMPAK
-      Complete: !Depend ~ suite.has_cycle('-6:00:00') 
-      jgdas_gempak: !Task
-        <<: *exclusive_task_template
-        resources: !calc partition.resources.run_gdas_gempak
-        J_JOB: JGDAS_GEMPAK
-        Trigger: !Depend '( up.post if doc.settings.dev_safeguards else up.forecast.jgdas_forecast_high )'
-
-      jgdas_gempak_meta_ncdc: !Task
-        <<: *exclusive_task_template
-        resources: !calc partition.resources.run_gdas_gempak_meta_ncdc
-        Trigger: !Depend jgdas_gempak
-        J_JOB: JGDAS_GEMPAK_META_NCDC
-
-    #endfamily gempak
-
     post: !TaskArray
       RUN: !calc up.RUN
       Dimensions:
-        fhr: !calc doc.gfs_output_settings.gdas_forecast_hours
+        fhr: !calc doc.settings.gdas_forecast_hours
       post_manager_el: !TaskElement
         <<: *exclusive_task_template
         RUN: !calc up.RUN
-        Trigger: !FirstTrue
-          - when: !calc not doc.settings.dev_safeguards
-            take:  !Depend ( up.forecast.is_running() )
-          - otherwise: !Depend "up.forecast.is_running() | up.forecast"
+        Trigger: !Depend ( up.forecast.is_running() )
         Disable: !calc metasched.type=='rocoto'
         Foreach: []
         J_JOB: JGLOBAL_POST_MANAGER
@@ -183,10 +113,7 @@ suite: !Cycle
         Foreach: []
         FHR: 'anl'
         Name: jgdas_post_anl
-        Trigger: !FirstTrue
-          - when: !calc not doc.settings.dev_safeguards
-            take: !Depend jgdas_post_manager.release_postanl
-          - otherwise: !Depend jgdas_post_manager.release_postanl | up.forecast
+        Trigger: !Depend jgdas_post_manager.release_postanl
         release_pgrb2_anl: !DataEvent {file="/dev/null"}
         resources: !calc partition.resources.run_gdaspost
         ecflow_def: !expand "edit FHR '{FHR}'"
@@ -212,21 +139,8 @@ suite: !Cycle
         rocoto_command: !expand >-
           {rocoto_load_modules} ;
           /usr/bin/env FHRGRP={FHR} post_times={FHR} FHRLST={FHR} &HOMEgfs;/jobs/{J_JOB}
-        Trigger: !FirstTrue
-          - when: !calc not doc.settings.dev_safeguards
-            take: !Depend jgdas_post_manager.depend("release_post{F:03d}",F=[dimval.fhr])
-          - otherwise: !Depend jgdas_post_manager.depend("release_post{F:03d}",F=[dimval.fhr]) | up.forecast
+        Trigger: !Depend jgdas_post_manager.depend("release_post{F:03d}",F=[dimval.fhr])
     #endfamily post
-
-    jgdas_emc_vrfy: !Task
-      <<: *exclusive_task_template
-      Disable: !calc not doc.settings.run_vrfy_jobs
-      Complete: !Depend ( ~ suite.has_cycle('-6:00:00') )
-      Trigger: !Depend post
-      resources: !calc partition.resources.run_gdasvrfy
-      ecf_environment_settings: !calc doc.settings.ecflow_rocoto_cdate_workaround
-      J_JOB: rocoto/vrfy.sh
-      ecf_module_commands: "# vrfy.sh will load modules instead"
 
     enkf: !Family
       jgdas_enkf_select_obs: !Task
@@ -240,7 +154,7 @@ suite: !Cycle
         Trigger: !Depend jgdas_enkf_select_obs
         Complete: !Depend ~ suite.has_cycle('-6:00:00') 
         Dimensions:
-          groupid: !calc tools.seq(1,doc.data_assimilation.ENKF_INNOVATE_GROUPS,1)
+          groupid: [ 1, 2, 3, 4, 5, 6 ]
         jgdas_enkf_innovate_obs_grp: !TaskElement
           <<: *exclusive_task_template
           Foreach: [ groupid ]
@@ -276,7 +190,7 @@ suite: !Cycle
 
         Trigger: !Depend up.enkf.jgdas_enkf_inflate_recenter |  ~ suite.has_cycle('-6:00:00') 
         Dimensions:
-          groupid: !calc tools.seq(1,doc.data_assimilation.ENKF_FORECAST_GROUPS,1)
+          groupid: [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
         jgdas_enkf_fcst_grp: !TaskElement
           <<: *exclusive_task_template
           Foreach: [ groupid ]
@@ -304,7 +218,7 @@ suite: !Cycle
       post: !TaskArray
         Trigger: !Depend forecast
         Dimensions:
-          fhr: !calc doc.gfs_output_settings.enkf_epos_fhr
+          fhr: !calc doc.settings.enkf_epos_fhr
         jgdas_enkf_post_fhr: !TaskElement
           <<: *exclusive_task_template
           Foreach: [ fhr ]
@@ -379,17 +293,6 @@ suite: !Cycle
     prep: !Family
       Trigger: !Depend ( ( jgfs_emc_dump_waiter.updated_status | dump.jgfs_dump.release_sfcprep ) & up.gdas.forecast.at('-6:00:00') )
       Complete: !Depend ~ suite.has_cycle('-6:00:00') 
-      jgfs_emcsfc_sfc_prep: !Task
-#        Disable: !calc not doc.data_assimilation.DO_EMCSFC
-        <<: *exclusive_task_template
-        Trigger: !Depend 'up.dump.jgfs_dump.release_sfcprep | up.jgfs_emc_dump_waiter.updated_status'
-        resources: !calc partition.resources.run_sfc_prep
-        J_JOB: JGLOBAL_EMCSFC_SFC_PREP
-        ecf_environment_settings: !expand |
-          {doc.settings.ecflow_rocoto_cdate_workaround}
-          export DATAROOT="$DATAROOT.$job"
-        config_list: [ base, prep, prepbufr, emcsfc ]
-
       jgfs_prep: !Task
         <<: *exclusive_task_template
         ecflow_def:
@@ -414,7 +317,7 @@ suite: !Cycle
 
     jgfs_analysis: !Task
       <<: *exclusive_task_template
-      Trigger: !Depend ( prep.jgfs_prep & prep.jgfs_emcsfc_sfc_prep & up.gdas.enkf.post.at('-6:00:00') )
+      Trigger: !Depend ( prep.jgfs_prep & up.gdas.enkf.post.at('-6:00:00') )
       resources: !calc partition.resources.run_anal
       J_JOB: JGLOBAL_ANALYSIS
       Complete: !Depend ~ suite.has_cycle('-6:00:00') 
@@ -431,15 +334,12 @@ suite: !Cycle
     post: !TaskArray
       RUN: !calc up.RUN
       Dimensions:
-        fhr: !calc doc.gfs_output_settings.gfs_forecast_hours
+        fhr: !calc doc.settings.gfs_forecast_hours
       jgfs_post_manager_el: !TaskElement
         <<: *exclusive_task_template
         RUN: !calc up.RUN
         Disable: !calc metasched.type == 'rocoto'
-        Trigger: !FirstTrue
-          - when: !calc not doc.settings.dev_safeguards
-            take: !Depend "up.forecast.is_running()"
-          - otherwise: !Depend "up.forecast.is_running() | up.forecast"
+        Trigger: !Depend "up.forecast.is_running()"
         Foreach: [ ]
         J_JOB: JGLOBAL_POST_MANAGER
         Name: jgfs_post_manager
@@ -459,10 +359,7 @@ suite: !Cycle
         Foreach: []
         FHR: anl
         Name: jgfs_post_anl
-        Trigger: !FirstTrue
-          - when: !calc doc.settings.dev_safeguards
-            take: !Depend jgfs_post_manager.release_postanl
-          - otherwise: !Depend jgfs_post_manager.release_postanl | up.forecast
+        Trigger: !Depend jgfs_post_manager.release_postanl
 
         ecflow_def: !expand "edit FHR '{FHR}'"
         release_pgrb2_anl: !DataEvent {file="/dev/null"}
@@ -482,10 +379,7 @@ suite: !Cycle
         Name: !expand jgfs_post_f{dimval.fhr:03d}
         FHR: !expand "{dimval.fhr:03d}"
         J_JOB: JGLOBAL_NCEPPOST
-        Trigger: !FirstTrue
-          - when: !calc not doc.settings.dev_safeguards
-            take: !Depend jgfs_post_manager.depend("release_post{F:03d}",F=[dimval.fhr])
-          - otherwise: !Depend jgfs_post_manager.depend("release_post{F:03d}",F=[dimval.fhr]) | up.forecast
+        Trigger: !Depend jgfs_post_manager.depend("release_post{F:03d}",F=[dimval.fhr])
         ecflow_def: !expand "edit FHR '{FHR}'"
         ecflow_command: !expand |
           export post_times=%FHR% FHRLST=%FHR% FHRGRP=%FHR%
@@ -495,7 +389,7 @@ suite: !Cycle
           /usr/bin/env post_times={FHR} FHRLST={FHR} FHRGRP={FHR} &HOMEgfs;/jobs/{J_JOB}
 
       jgfs_pgrb2_spec_post: !FirstTrue
-        - when: !calc max(doc.gfs_output_settings.gfs_forecast_hours)>=384
+        - when: !calc max(doc.settings.gfs_forecast_hours)>=384
           do:  !Task
             <<: *exclusive_task_template
             Dummy: true  ## <-- Node is not implemented yet
@@ -505,75 +399,7 @@ suite: !Cycle
     #endfamily post
 
     post_processing: !Family
-      Disable: !calc not doc.downstream.DO_POST_PROCESSING
-      fax: !Family
-        Disable: !calc not doc.downstream.DO_FAX
-        jgfs_fax_f000: !Task
-          <<: *fax_task_template
-          FCSTHR: '00'
-          Trigger: !Depend ( up.up.post.jgfs_post_f000 & up.up.post.jgfs_post_anl )
-
-        jgfs_fax_anl: !Task
-          <<: *fax_task_template
-          FCSTHR: 'anl'
-          Trigger: !Depend up.up.post.jgfs_post_anl
-
-        jgfs_fax_wafs_f012: !Task
-          <<: *fax_wafs_task_template
-          FCSTHR: '12'
-          fhr_list: '06 12'
-          Trigger: !Depend up.up.post.jgfs_post_f012
-
-        jgfs_fax_wafs_f024: !Task
-          <<: *fax_wafs_task_template
-          FCSTHR: '24'
-          fhr_list: '18 24'
-          Trigger: !Depend up.up.post.jgfs_post_f024
-
-        jgfs_fax_wafs_f036: !Task
-          <<: *fax_wafs_task_template
-          FCSTHR: '36'
-          fhr_list: '30 36'
-          Trigger: !Depend up.up.post.jgfs_post_f036
-
-      grib_wafs: !TaskArray
-        Disable: !calc not doc.downstream.DO_WAFS
-        Dimensions:
-          fhr: !calc tools.seq(0,doc.gfs_output_settings.wafs_last_hour,6)
-        jgfs_wafs: !TaskElement
-          <<: *exclusive_task_template
-          Name: !expand 'jgfs_wafs_f{dimval.fhr:03d}'
-          resources: !ref partition.resources.run_one_node_downstream
-          Trigger: !FirstTrue
-            - when: !calc dimval.fhr == 0
-              do:   !Depend ( up.up.post.jgfs_post_f000 & up.up.post.jgfs_post_f120 & up.grib2_wafs.jgfs_wafs_grib2 )
-            - otherwise: !Depend >-
-                up.up.post.depend("jgfs_post_f{N:03d}",N=[ dimval.fhr ])
-                & up.grib_wafs.depend("jgfs_wafs_f{N:03d}",N=[ dimval.fhr-6 ])
-          ecflow_command: !expand |
-            export fcsthrs=%FCSTHR%
-            $HOMEgfs/jobs/{J_JOB}
-          FCSTHR: !expand '{dimval.fhr:02d}'
-          J_JOB: JGFS_WAFS
-          more_vars: { fcsthrs: FCSTHR }
-          config_list: [ base, wafs ]
-
-      bufr_sounding: !Family
-        Disable: !calc not doc.downstream.DO_BUFRSND
-        jgfs_postsnd: !Task
-          <<: *exclusive_task_template
-          Trigger: !Depend up.up.post.jgfs_post_f144
-          resources: !calc partition.resources.run_postsnd
-
-      bulletins: !Family
-        Disable: !calc not doc.downstream.DO_BULLETINS
-        jgfs_fbwind: !Task
-          <<: *exclusive_task_template
-          Trigger: !Depend ( up.up.post.jgfs_post_f006 & up.up.post.jgfs_post_f012 & up.up.post.jgfs_post_f024 )
-          resources: !calc partition.resources.run_small_downstream
-
       grib2_wafs: !Family
-        Disable: !calc not doc.downstream.DO_WAFS
         jgfs_wafs_grib2: !Task
           <<: *exclusive_task_template
           Trigger: !Depend up.up.post.jgfs_post_f000
@@ -583,10 +409,7 @@ suite: !Cycle
         jgfs_wafs_blending: !Task
           <<: *exclusive_task_template
           Trigger: !Depend jgfs_wafs_grib2
-          Time: !FirstTrue
-            - when: !calc not doc.settings.dev_safeguards
-              do: !timedelta +4:33:00
-            - otherwise: null
+          Time: !timedelta +4:33:00
           resources: !calc partition.resources.run_one_node_downstream
           config_list: [ base, wafs ]
 
@@ -597,40 +420,7 @@ suite: !Cycle
           config_list: [ base, wafs_gcip ]
           J_JOB: JGFS_WAFS_GCIP
 
-      awips_20km_1p0: !TaskArray
-        Disable: !calc not doc.downstream.DO_AWIPS
-        Dimensions:
-          fhr: !calc " sorted(list(set(doc.gfs_output_settings.gfs_forecast_hours)&set(doc.gfs_output_settings.awips_20km_1p0_hours))) "
-        # tasks every 6 hours till f240
-        jgfs_awips: !TaskElement
-          <<: *exclusive_task_template
-          Foreach: [ fhr ]
-          Name: !expand "jgfs_awips_f{dimval.fhr:03d}"
-          ecf_environment_settings: !calc doc.settings.ecflow_rocoto_cdate_workaround
-          Trigger: !Depend up.up.post.depend('jgfs_post_f{N:03d}',N=dimval.fhr)
-          resources: !calc partition.resources.run_awips_20km_1p0
-          TRDRUN: !calc ('YES' if (dimval.fhr==0 or dimval.fhr%6!=0 or dimval.fhr>=84) else 'NO')
-          J_JOB: JGFS_AWIPS_20KM_1P0DEG
-          FHR: !expand '{dimval.fhr:03d}'
-          more_vars: { fcsthrs: FHR }
-
-      awips_g2: !TaskArray
-        Disable: !calc not doc.downstream.DO_AWIPS
-        Dimensions:
-          fhr: !calc " sorted(list(set(doc.gfs_output_settings.gfs_forecast_hours)&set(doc.gfs_output_settings.awips_g2_hours))) "
-        jgfs_awips: !TaskElement
-          <<: *exclusive_task_template
-          Foreach: [ fhr ]
-          Name: !expand "jgfs_awips_g2_f{dimval.fhr:03d}"
-          Trigger: !Depend up.up.post.depend('jgfs_post_f{N:03d}',N=dimval.fhr)
-          resources: !calc partition.resources.run_awips_g2
-          FHR: !expand '{dimval.fhr:03d}'
-          J_JOB: JGFS_AWIPS_G2
-          more_vars: { fcsthrs: FHR }
-    #endfamily post_processing
-
     gempak: !Family
-      Disable: !calc not doc.downstream.DO_GEMPAK
       jgfs_gempak: !Task
         <<: *exclusive_task_template
         resources: !calc partition.resources.run_gfs_gempak
@@ -658,15 +448,6 @@ suite: !Cycle
         Trigger: !Depend 'jgfs_gempak.is_running() | jgfs_gempak'
         resources: !calc partition.resources.run_one_node_downstream
         
-    jgfs_emc_vrfy: !Task
-      <<: *exclusive_task_template
-      Trigger: !Depend post
-      Disable: !calc not doc.settings.run_vrfy_jobs
-      resources: !calc partition.resources.run_gfsvrfy
-      J_JOB: rocoto/vrfy.sh
-      ecf_environment_settings: !calc doc.settings.ecflow_rocoto_cdate_workaround
-      ecf_module_commands: "# vrfy.sh will load modules instead"
-      
     #endfamily gempak
   #endfamily gfs
 
@@ -675,7 +456,7 @@ suite: !Cycle
   ######################################################################
 
   archive: !Family
-    Disable: !calc not doc.archiving.archive_to_hpss
+#    Disable: !calc not doc.archiving.archive_to_hpss
     ecflow_def:
       edit ECF_TRIES '3'
     jgdas_archive: !Task
@@ -684,7 +465,7 @@ suite: !Cycle
       Trigger: !Depend up.gdas
       #Trigger: !Depend up.gdas.jgdas_emc_vrfy
       resources: !calc partition.resources.run_arch
-      Disable: !calc not doc.archiving.archive_to_hpss
+#      Disable: !calc not doc.archiving.archive_to_hpss
       ecf_environment_settings: !calc doc.settings.ecflow_rocoto_cdate_workaround
       J_JOB: rocoto/arch.sh
       ecf_module_commands: "# arch.sh will load modules instead"
@@ -701,7 +482,7 @@ suite: !Cycle
       AlarmName: gdas
       Trigger: !Depend up.gdas.enkf.post
       Dimensions:
-        groupid: !calc tools.seq(0,doc.data_assimilation.ENKF_ARCHIVE_GROUPS,1)
+        groupid: [ 1, 2, 3, 4, 5, 6 ]
       grp: !TaskElement
         <<: *service_task_template
         resources: !calc partition.resources.run_arch
@@ -744,19 +525,19 @@ suite: !Cycle
 
   cycle_end: *cycle_end_task
 
-  make_next_cycles: !Task
-    <<: *make_next_cycles_task
-    Disable: !calc ( not metasched.type=="ecflow" or doc.settings.four_cycle_mode )
-    Trigger: !Depend gdas
-    ecflow_def: !expand |
-      # These variables are used by the make_next_cycles job to generate 
-      # suites for later cycles once earlier cycles have finished.
-      edit WORKFLOW_FIRST_CYCLE '{tools.strftime(suite.Clock.start,"%Y%m%d%H")}'
-      edit WORKFLOW_LAST_CYCLE '{tools.strftime(suite.Clock.end,"%Y%m%d%H")}'
-      edit WORKFLOW_CYCLES_TO_GENERATE '5'
-      edit WORKFLOW_CROW_HOME '{doc.static_locations.initial_directory}'
-      edit WORKFLOW_EXPDIR '{doc.places.EXPDIR}'
-      edit RUN 'gdas'  # useless but required
+#  make_next_cycles: !Task
+#    <<: *make_next_cycles_task
+#    Disable: !calc ( not metasched.type=="ecflow" or doc.settings.four_cycle_mode )
+#    Trigger: !Depend gdas
+#    ecflow_def: !expand |
+#      # These variables are used by the make_next_cycles job to generate 
+#      # suites for later cycles once earlier cycles have finished.
+#      edit WORKFLOW_FIRST_CYCLE '{tools.strftime(suite.Clock.start,"%Y%m%d%H")}'
+#      edit WORKFLOW_LAST_CYCLE '{tools.strftime(suite.Clock.end,"%Y%m%d%H")}'
+#      edit WORKFLOW_CYCLES_TO_GENERATE '5'
+#      edit WORKFLOW_CROW_HOME '{doc.static_locations.initial_directory}'
+#      edit WORKFLOW_EXPDIR '{doc.places.EXPDIR}'
+#      edit RUN 'gdas'  # useless but required
 
   final: !Task
     <<: *service_task_template

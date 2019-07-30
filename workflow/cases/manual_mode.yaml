@@ -1,0 +1,54 @@
+# This file is designed to be used in manual mode, where only 
+# a subset of variables are set by CROW while the majority
+# of them are provided by developers through config files.
+# 
+# You are expected to: 1, edit layout/manual_temp.yaml file
+# following your desired workflow layout; 2, make sure everything
+# in this file is OK; 3, provide your own config files.
+
+case:
+  fv3_settings:
+    CASE: C384
+    LEVS: 65
+
+  fv3_gfs_settings:
+    CASE: C384
+    LEVS: 65
+    QUILTING: True
+    WRITE_GROUP: 1
+    WRTTASK_PER_GROUP: 2
+    layout_x: 2
+    layout_y: 3
+    fv3_threads: 4
+
+  fv3_gdas_settings:
+    CASE: C384
+    LEVS: 65
+    QUILTING: True
+    WRITE_GROUP: 1
+    WRTTASK_PER_GROUP: 2
+    layout_x: 2
+    layout_y: 3
+    fv3_threads: 4
+
+  fv3_enkf_settings:
+    CASE: C192
+    LEVS: 65
+    QUILTING: True
+    WRITE_GROUP: 1
+    WRTTASK_PER_GROUP: 2
+    layout_x: 2
+    layout_y: 3
+    fv3_threads: 4
+
+  places:
+    workflow_file: workflow/manual_temp.yaml
+
+  settings: 
+    SDATE: 2019-05-01t00:00:00
+    EDATE: 2019-05-01t06:00:00
+
+    DUMP_SUFFIX: "p"
+    run_gsi: Yes
+    chgres_and_convert_ics: No
+    gfs_cyc: 4 # run gfs every cycle

@@ -9,8 +9,12 @@
 include:
   - names.yaml
   - platform.yaml
-  - 'static*yaml'
   - case.yaml
+  - schema.yaml
+  - varnames.yaml
   - runtime/
+  - top.yaml
+  - resources.yaml
   - workflow.yaml
-
+  - base.yaml
+  - places.yaml

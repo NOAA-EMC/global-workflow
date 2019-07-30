@@ -64,7 +64,7 @@ config_base:
     export DO_GEMPAK="{tools.YES_NO(doc.downstream.DO_GEMPAK)}"  # Run GFS GEMPAK
     export DO_AWIPS="{tools.YES_NO(doc.downstream.DO_AWIPS)}"   # Run GFS AWIPS
 
-    export REALTIME="{tools.YES_NO(doc.settings.REALTIME)}"
+    export REALTIME="{tools.YES_NO(doc.settings.realtime)}"
     
     ####################################################
     # DO NOT ADD MACHINE DEPENDENT STUFF BELOW THIS LINE

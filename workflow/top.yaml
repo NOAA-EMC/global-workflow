@@ -1,0 +1,48 @@
+# This file has the top-level logic to merge other YAML data
+# structures into the document-level settings.  It merges the contents
+# of the case files, default files, platform file, and everywhere
+# else, and applies any validation from the schema/ directory.
+
+fv3_gfs_settings: !Immediate
+    - !calc doc.case.get('fv3_gfs_settings',{})
+
+fv3_gdas_settings: !Immediate
+    - !calc doc.case.get('fv3_gdas_settings',{})
+
+fv3_enkf_settings: !Immediate
+    - !calc doc.case.get('fv3_enkf_settings',{})
+
+schedvar: !Immediate
+  - !MergeMapping
+    - !calc doc.case.get('schedvar',{})
+    - Template: *schedvar_schema
+
+places: !Immediate
+  - !MergeMapping
+    - !calc doc.default_places
+    - !calc doc.case.get('places',{})
+    - !calc doc.user_places
+
+exclusive_resources: !calc doc.platform.partitions.default_exclusive.resources
+shared_resources: !calc doc.platform.partitions.default_shared.resources
+service_resources: !calc doc.platform.partitions.default_service.resources
+
+settings: !Immediate
+  - !MergeMapping
+    - !calc doc.default_settings
+    - !calc doc.case.settings
+#    - !calc doc.get('user_settings',{})
+
+suite_overrides: !Immediate
+  - !AppendSequence
+    - !calc doc.platform.get('suite_overrides',[])
+    - !calc doc.case.get('suite_overrides',[])
+    - !calc doc.get('user_suite_overrides',[])
+
+validate_me:
+  - fv3_gdas_settings
+  - fv3_gfs_settings
+  - fv3_enkf_settings
+  - settings
+  - places
+  - schedvar

@@ -99,13 +99,13 @@ platform: !Platform
         memory_per_node: !calc (64*1024)
 
       exclusive_accounting_ref:
-        queue: !calc metasched.varref(doc.schedvar.exclusive_queue)
-        project: !calc metasched.varref(doc.schedvar.cpu_project)
+        queue: batch
+        project: !calc doc.accounting.cpu_project
         partition: theia
 
       shared_accounting_ref:
-        queue: !calc metasched.varref(doc.schedvar.shared_queue)
-        project: !calc metasched.varref(doc.schedvar.cpu_project)
+        queue: batch
+        project: !calc doc.accounting.cpu_project
         partition: theia
 
       # Generate the actual Python objects for the scheduler, parallelism,
@@ -132,8 +132,8 @@ platform: !Platform
         memory_per_node: !calc (64*1024)
 
       service_accounting_ref:
-        queue: !calc metasched.varref(doc.schedvar.service_queue)
-        project: !calc metasched.varref(doc.schedvar.cpu_project)
+        queue: batch
+        project: !calc doc.accounting.cpu_project
         partition: service
 
       scheduler: !calc |
@@ -158,7 +158,7 @@ platform: !Platform
         when: !calc ( int(tools.can_write(do)) and tools.panasas_gb(do) )
       - do: /scratch4/NCEPDEV/stmp4
         when: !calc ( int(tools.can_write(do)) and tools.panasas_gb(do) )
-      - do: !expand "{doc.user_places.PROJECT_DIR}/scrub"
+      - do: !expand "{doc.user_places.PROJECT_DIR}"
         when: !calc tools.panasas_gb(do)/4
         message: "{do}: use project directory as scrub space"
 

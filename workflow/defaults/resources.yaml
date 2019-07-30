@@ -241,7 +241,7 @@ default_resources: &default_resources
     - memory: "300M"
       exe: placeholder
       walltime: !FirstTrue
-        - when: !calc doc.settings.REALTIME
+        - when: !calc doc.settings.realtime
           do: !timedelta "01:00:00"
         - otherwise: !timedelta "00:05:00"
             

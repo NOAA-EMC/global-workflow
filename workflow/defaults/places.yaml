@@ -2,8 +2,11 @@
 # See the schema/places.yaml for details.
 default_places: &default_places
   PROJECT_DIR: !error Please select a project directory.
-  HOMEgfs:     !calc doc.static_locations.HOMEgfs
+  HOMEgfs:     !calc ( tools.realpath(tools.abspath("../../")) )
   HOMEcrow:    !calc tools.crow_install_dir()
+  HOMEobsproc_prep: !expand "{doc.platform.BASE_GIT}/obsproc/obsproc_prep_RB-5.2.0"
+  HOMEobsproc_network: !expand "{doc.platform.BASE_GIT}/obsproc/obsproc_global_RB-3.2.0"
+
   NWPROD:      !calc doc.platform.NWPROD
   DMPDIR:      !calc doc.platform.DMPDIR
   RTMFIX:      !calc doc.platform.RTMFIX
