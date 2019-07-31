@@ -1,0 +1,14 @@
+#!/bin/ksh -x
+
+########## config.coupled ##########
+# Common to all steps
+
+# for uncoupled workflow
+#export cpl=".false."
+
+# for coupled workflow
+export cplflx=".T."
+export cpl=".true."
+export print_esmf=".false."
+
+echo "END: config.coupled"
