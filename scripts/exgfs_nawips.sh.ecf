@@ -172,14 +172,18 @@ EOF
   fi
   cd $DATA_RUN
 else
-  if [ $fhcnt -ge 240 ] ; then
-    let fhcnt=fhcnt+12
-  elif [ $fhcnt -lt 120 -a $RUN = "gfs_0p25" ] ; then
+    if [ $fhcnt -ge 240 ] ; then
+	if [ $fhcnt -lt 276 -a $RUN = "gfs_0p50" ] ; then
+	    let fhcnt=fhcnt+6
+	else
+	    let fhcnt=fhcnt+12
+	fi
+    elif [ $fhcnt -lt 120 -a $RUN = "gfs_0p25" ] ; then
 ####    let fhcnt=fhcnt+1
-    let fhcnt=fhcnt+$ILPOST
-  else
-    let fhcnt=fhcnt+finc
-  fi
+	let fhcnt=fhcnt+$ILPOST
+    else
+	let fhcnt=fhcnt+finc
+    fi
 fi
 done
 

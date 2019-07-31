@@ -211,7 +211,7 @@ def create_wf_task(task, cdump='gdas', cycledef=None, envar=None, dependency=Non
         task_dict['partition'] = '&PARTITION_%s_%s;' % (task.upper(),cdump.upper())
     else:
         task_dict['partition'] = None
-
+    
     if metatask is None:
         task = rocoto.create_task(task_dict)
     else:
@@ -305,7 +305,7 @@ def get_resources(machine, cfg, task, cdump='gdas'):
 
     if machine in ['THEIA'] and check_slurm():
         natstr = '--export=NONE'
-
+    
     if machine in ['ZEUS', 'THEIA', 'WCOSS_C', 'WCOSS_DELL_P3']:
         resstr = '<nodes>%d:ppn=%d</nodes>' % (nodes, ppn)
 
