@@ -1,0 +1,30 @@
+#!/bin/ksh -x
+
+########## config.post ##########
+# Post specific
+
+echo "BEGIN: config.ocnpost"
+
+# Get task specific resources
+. $EXPDIR/config.resources ocnpost
+
+# Convert .25 degree ice and ocean .nc to .5 degree grib
+#-------------------------------------------------------
+
+# No. of concurrent post jobs [0 implies sequential]
+#export NPOSTGRP=0
+export NPOSTGRP=1
+#export NPOSTGRP=5
+
+# Post driver job that calls gfs_nceppost.sh and downstream jobs
+#export POSTJJOBSH="$HOMEpost/jobs/JGLOBAL_NCEPPOST"
+#export GFSDOWNSH="$HOMEpost/ush/fv3gfs_downstream_nems.sh"
+#export GFSDWNSH="$HOMEpost/ush/fv3gfs_dwn_nems.sh"
+#
+#export POSTGPSH="$HOMEpost/ush/gfs_nceppost.sh"
+#export POSTGPEXEC="$HOMEpost/exec/gfs_ncep_post"
+#
+#export npe_postgp=$npe_post
+#export nth_postgp=1
+
+echo "END: config.ocnpost"

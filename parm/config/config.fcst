@@ -5,6 +5,9 @@
 
 echo "BEGIN: config.fcst"
 
+# Source model specific information (coupled vs uncoupled)
+. $EXPDIR/config.coupled
+
 # Source model specific information that is resolution dependent
 . $EXPDIR/config.fv3 $CASE
 
@@ -20,6 +23,10 @@ export FORECASTSH="$HOMEgfs/scripts/exglobal_fcst_nemsfv3gfs.sh"
 export FCSTEXECDIR="$HOMEgfs/exec"
 export FCSTEXEC="global_fv3gfs.x"
 export npe_fv3=$npe_fcst # This is model resolution dependent, see note above
+if [ $cpl = ".true." ] ; then
+export FCSTEXEC="nems_fv3_mom6_cice5.x"
+export CPLPREPSH=${CPLPREPSH:-$HOMEgfs/scripts/prep_coupled_fcst.sh}
+fi
 
 if [[ "$CDUMP" == "gfs" ]] ; then
    export npe_fv3=$npe_fcst_gfs
@@ -33,6 +40,12 @@ if [ $QUILTING = ".true." ]; then
     export npe_fv3=$(echo " $npe_fv3 + $WRITE_GROUP * $WRTTASK_PER_GROUP" | bc)
     export npe_fcst=$npe_fv3
     export npe_fcst_gfs=$(echo " $npe_fcst_gfs  + $WRITE_GROUP_GFS * $WRTTASK_PER_GROUP_GFS" | bc)
+fi
+
+if [ $cpl = ".true." ] ; then
+  export npe_fv3=$(echo " $npe_fv3 + $npe_ocn + $npe_ice" | bc )
+  export npe_fcst=$npe_fv3
+  export npe_fcst_gfs=$(echo " $npe_fcst_gfs  + $npe_ocn + $npe_ice" | bc)
 fi
 
 # Model configuration
@@ -118,6 +131,9 @@ elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
         export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table"
     else
         export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_orig"
+    fi
+    if [ $cpl = ".true." ] ; then
+        export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_cpl"
     fi
 
     # Write gfs restart files to rerun fcst from any break point         
