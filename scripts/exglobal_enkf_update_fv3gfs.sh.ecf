@@ -85,6 +85,7 @@ lobsdiag_forenkf=${lobsdiag_forenkf:-".false"}
 write_spread_diag=${write_spread_diag:-".false"}
 netcdf_diag=${netcdf_diag:-".false."}
 modelspace_vloc=${modelspace_vloc:-".false."} # if true, 'vlocal_eig.dat' is needed
+IAUFHRS_ENKF=${IAUFHRS_ENKF:-6}
 
 ################################################################################
 ATMGES_ENSMEAN=$COMIN_GES_ENS/${GPREFIX}atmf006.ensmean${GSUFFIX}

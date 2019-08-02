@@ -73,6 +73,7 @@ NMEM_ENKF=${NMEM_ENKF:-80}
 imp_physics=${imp_physics:-99}
 INCREMENTS_TO_ZERO=${INCREMENTS_TO_ZERO:-"'NONE'"}
 DOIAU=${DOIAU_ENKF:-"NO"}
+IAUFHRS_ENKF=${IAUFHRS_ENKF:-6}
 
 # global_chgres stuff
 CHGRESEXEC=${CHGRESEXEC:-$HOMEgfs/exec/chgres_recenter.exe}
