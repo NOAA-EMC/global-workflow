@@ -458,10 +458,31 @@ WW3_out()
 	# soft link commands insert here
 }
 
-MOM6_in()
+MOM6_postdet()
 {
 	echo "SUB ${FUNCNAME[0]}: Linking input data for MOM6"
-	# soft link commands insert here
+
+	# soft link commands insert herTA || exit 8
+	# Copy CICE5 IC - pre-generated from CFSv2
+	cp -p $ICSDIR/$CDATE/cice5_model_0.25.res_$CDATE.nc ./cice5_model.res_$CDATE.nc
+	#cp -p $ICSDIR/$CDATE/cpc/cice5_model_0.25.res_$CDATE.nc ./cice5_model.res_$CDATE.nc
+	
+	# Copy CICE5 fixed files, and namelists
+	cp -p $FIXcice/kmtu_cice_NEMS_mx025.nc $DATA/
+	cp -p $FIXcice/grid_cice_NEMS_mx025.nc $DATA/
+
+	# Copy MOM6 ICs (from CFSv2 file)
+	cp -p $ICSDIR/$CDATE/mom6_da/MOM*nc $DATA/INPUT/
+
+	# Copy MOM6 fixed files
+	cp -p $FIXmom/INPUT/* $DATA/INPUT/
+
+	# Copy grid_spec and mosaic files
+	cp -pf $FIXgrid/$CASE/${CASE}_mosaic* $DATA/INPUT/
+	cp -pf $FIXgrid/$CASE/grid_spec.nc $DATA/INPUT/
+	cp -pf $FIXgrid/$CASE/ocean_mask.nc $DATA/INPUT/
+	cp -pf $FIXgrid/$CASE/land_mask* $DATA/INPUT/
+	echo "SUB ${FUNCNAME[0]}: MOM6 input data linked/copied"
 }
 
 MOM6_nml()

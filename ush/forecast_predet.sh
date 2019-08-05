@@ -11,11 +11,17 @@
 
 # For all non-evironment variables
 # Cycling and forecast hour specific parameters
+common_predet(){
+	echo "SUB ${FUNCNAME[0]}: Defining variables for shared through models"
+	CASE=${CASE:-C768}
+	CDATE=${CDATE:-2017032500}
+	DATA=${DATA:-$pwd/fv3tmp$$}    # temporary running directory
+	ROTDIR=${ROTDIR:-$pwd}         # rotating archive directory
+	ICSDIR=${ICSDIR:-$pwd}         # cold start initial conditions
+}
 
 FV3_GFS_predet(){
 	echo "SUB ${FUNCNAME[0]}: Defining variables for FV3GFS"
-	CASE=${CASE:-C768}
-	CDATE=${CDATE:-2017032500}
 	CDUMP=${CDUMP:-gdas}
 	FHMIN=${FHMIN:-0}
 	FHMAX=${FHMAX:-9}
@@ -38,8 +44,6 @@ FV3_GFS_predet(){
 	FIX_DIR=${FIX_DIR:-$HOMEgfs/fix}
 	FIX_AM=${FIX_AM:-$FIX_DIR/fix_am}
 	FIXfv3=${FIXfv3:-$FIX_DIR/fix_fv3_gmted2010}
-	DATA=${DATA:-$pwd/fv3tmp$$}    # temporary running directory
-	ROTDIR=${ROTDIR:-$pwd}         # rotating archive directory
 	ICSDIR=${ICSDIR:-$pwd}         # cold start initial conditions
 	DMPDIR=${DMPDIR:-$pwd}         # global dumps for seaice, snow and sst analysis
 
@@ -161,7 +165,8 @@ FV3_GFS_predet(){
 		mkdata=YES 
 		mkdir -p $DATA ;
 	fi
-	mkdir -p $DATA/RESTART $DATA/INPUT
+	if [ ! -d $DATA/RESTART ]; then mkdir -p $DATA/RESTART; fi
+	if [ ! -d $DATA/INPUT ]; then mkdir -p $DATA/INPUT; fi
 	cd $DATA || exit 8
 
 	#-------------------------------------------------------
@@ -202,6 +207,17 @@ CICE_def(){
 
 MOM6_def(){
 	echo "SUB ${FUNCNAME[0]}: Defining variables for MOM6"
+	if [ ! -d $ROTDIR ]; then mkdir -p $ROTDIR; fi
+	if [ ! -d $DATA ]; then mkdir -p $DATA ;fi
+	if [ ! -d $DATA/RESTART ]; then mkdir -p $DATA/RESTART; fi
+	if [ ! -d $DATA/INPUT ]; then mkdir -p $DATA/INPUT; fi
+	if [ ! -d $DATA/restart ]; mkdir -p $DATA/restart; fi
+	if [ ! -d $DATA/history ]; mkdir -p $DATA/history; fi
+	if [ ! -d $DATA/OUTPUT ]; mkdir -p $DATA/OUTPUT; fi
+	if [ ! -d $DATA/MOM6_OUTPUT ]; mkdir -p $DATA/MOM6_OUTPUT; fi
+	if [ ! -d $DATA/MOM6_RESTART ]; mkdir -p $DATA/MOM6_RESTART; fi
+	cd $DATA || exit 8
+
 }
 
 CICE_def(){

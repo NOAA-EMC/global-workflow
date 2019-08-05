@@ -124,6 +124,13 @@ CPLWAV=${CPLWAV:-False} # ? how to control 1-way/2-way?
 CPLCHEM=${CPLCHEM:-False} # Chemistry model
 CPLICE=${CPLICE:-False} # ICE model
 
+export OCNTIM=${OCNTIM:-3600}
+export DELTIM=${DELTIM:-450}
+export ICETIM=${DELTIM}
+
+export CPL_SLOW=${OCNTIM}
+export CPL_FAST=${ICETIM}
+
 RUN=gfs
 
 echo "MAIN: $confignamevarfornems selected"
@@ -135,6 +142,8 @@ echo "MAIN: $confignamevarfornems validated, continue"
 # Validate the consistency between $confignamevarfornems and $CPL switches
 
 echo "MAIN: Loading variables before determination of run type"
+
+common_predet
 
 echo $RUN
 case $RUN in
