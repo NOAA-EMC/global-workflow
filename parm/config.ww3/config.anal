@@ -1,0 +1,83 @@
+#!/bin/ksh -x
+
+########## config.anal ##########
+# Analysis specific
+
+echo "BEGIN: config.anal"
+
+# Get task specific resources
+. $EXPDIR/config.resources anal
+
+if [ $DONST = "YES" ]; then
+    . $EXPDIR/config.nsst
+fi
+
+if [[ "$CDUMP" = "gfs" ]] ; then
+    export USE_RADSTAT="NO" # This can be only used when bias correction is not-zero.
+    export GENDIAG="NO"
+    export SETUP='diag_rad=.false.,diag_pcp=.false.,diag_conv=.false.,diag_ozone=.false.,write_diag(3)=.false.,'
+    export DIAG_TARBALL="NO"
+fi
+
+export ANALYSISSH="$HOMEgsi/scripts/exglobal_analysis_fv3gfs.sh.ecf"
+export npe_gsi=$npe_anal
+
+# Do not process the following datasets
+export GSNDBF=${GSNDBF:-/dev/null}
+export AMSREBF=${AMSREBF:-/dev/null}
+export SSMITBF=${SSMITBF:-/dev/null}
+export AMSR2BF=${AMSR2BF:-/dev/null}
+
+# Set CONVINFO and SATINFO for retrospective parallels
+if [ $REALTIME = "NO" ]; then
+
+    CDATE=${CDATE:-9999}   # provide default in case CDATE undefined
+
+#   Set CONVINFO
+    if [[ "$CDATE" -ge "2018022818" ]]; then
+	export CONVINFO=$FIXgsi/fv3_historical/global_convinfo.txt.2018022818
+    elif [[ "$CDATE" -ge "2018010512" ]]; then
+	export CONVINFO=$FIXgsi/fv3_historical/global_convinfo.txt.2018010512
+    elif [[ "$CDATE" -ge "2017071912" ]]; then
+	export CONVINFO=$FIXgsi/fv3_historical/global_convinfo.txt.2017071912
+    elif [[ "$CDATE" -ge "2016031512" ]]; then
+	export CONVINFO=$FIXgsi/fv3_historical/global_convinfo.txt.2016031512
+    elif [[ "$CDATE" -ge "2014041400" ]]; then
+	export CONVINFO=$FIXgsi/fv3_historical/global_convinfo.txt.2014041400
+    else
+	echo "WARNING: No CONVINFO for $CDATE"
+    fi
+
+#   Set SATINFO
+    if [[ "$CDATE" -ge "2018053012" ]]; then
+        export SATINFO=$FIXgsi/fv3_historical/global_satinfo.txt.2018053012
+    elif [[ "$CDATE" -ge "2018021212" ]]; then
+	export SATINFO=$FIXgsi/fv3_historical/global_satinfo.txt.2018021212
+    elif [[ "$CDATE" -ge "2017103118" ]]; then
+	export SATINFO=$FIXgsi/fv3_historical/global_satinfo.txt.2017103118
+    elif [[ "$CDATE" -ge "2017031612" ]]; then
+	export SATINFO=$FIXgsi/fv3_historical/global_satinfo.txt.2017031612
+    elif [[ "$CDATE" -ge "2017030812" ]]; then
+	export SATINFO=$FIXgsi/fv3_historical/global_satinfo.txt.2017030812
+    elif [[ "$CDATE" -ge "2016110812" ]]; then
+	export SATINFO=$FIXgsi/fv3_historical/global_satinfo.txt.2016110812
+    elif [[ "$CDATE" -ge "2016090912" ]]; then
+	export SATINFO=$FIXgsi/fv3_historical/global_satinfo.txt.2016090912
+    elif [[ "$CDATE" -ge "2016020312" ]]; then
+	export SATINFO=$FIXgsi/fv3_historical/global_satinfo.txt.2016020312
+    elif [[ "$CDATE" -ge "2016011912" ]]; then
+	export SATINFO=$FIXgsi/fv3_historical/global_satinfo.txt.2016011912
+    elif [[ "$CDATE" -ge "2015111012" ]]; then
+	export SATINFO=$FIXgsi/fv3_historical/global_satinfo.txt.2015111012
+    elif [[ "$CDATE" -ge "2015100118" ]]; then
+	export SATINFO=$FIXgsi/fv3_historical/global_satinfo.txt.2015100118
+    elif [[ "$CDATE" -ge "2015070218" ]]; then
+	export SATINFO=$FIXgsi/fv3_historical/global_satinfo.txt.2015070218
+    elif [[ "$CDATE" -ge "2015011412" ]]; then
+	export SATINFO=$FIXgsi/fv3_historical/global_satinfo.txt.2015011412
+    else
+	echo "WARNING: No SATINFO for $CDATE"
+    fi
+fi
+
+echo "END: config.anal"

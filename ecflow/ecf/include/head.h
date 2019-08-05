@@ -1,6 +1,10 @@
 set -xe  # print commands as they are executed and enable signal trapping
 
+export PS4='+ $SECONDS + ' 
+
+# Variables needed for communication with ecFlow
 export ECF_NAME=%ECF_NAME%
+#export ECF_HOST=%ECF_HOST%
 export ECF_HOST=%ECF_LOGHOST%
 export ECF_PORT=%ECF_PORT%
 export ECF_PASS=%ECF_PASS%
@@ -8,7 +12,7 @@ export ECF_TRYNO=%ECF_TRYNO%
 export ECF_RID=$LSB_JOBID
 
 # Tell ecFlow we have started
-# POST_OUT variable enables LSF to communicate with ecFlow
+# POST_OUT variable enables LSF post_exec to communicate with ecFlow
 if [ -d /opt/modules ]; then
     # WCOSS TO4 (Cray XC40)
     . /opt/modules/default/init/sh
@@ -22,10 +26,9 @@ elif [ -d /usrx/local/Modules ]; then
 else
     # WCOSS Phase 3 (Dell PowerEdge)
     . /usrx/local/prod/lmod/lmod/init/sh
-    module load ips/18.0.1.163 ecflow/4.7.1
-    POST_OUT=/var/lsf/ecflow_post_in.$LSB_BATCH_JID
+    module load ips/18.0.1.163 ecflow/%ECF_VERSION%
+    POST_OUT=/var/lsf/ecflow_post_in.$USER.$LSB_BATCH_JID
 fi
-
 ecflow_client --init=${ECF_RID}
 
 cat > $POST_OUT <<ENDFILE

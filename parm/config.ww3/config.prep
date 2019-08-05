@@ -1,0 +1,26 @@
+#!/bin/ksh -x
+
+########## config.prep ##########
+# Prep step specific
+
+echo "BEGIN: config.prep"
+
+# Get task specific resources
+. $EXPDIR/config.resources prep
+
+export DO_MAKEPREPBUFR="YES"   # if NO, will copy prepbufr from globaldump
+
+
+# Relocation and syndata QC
+export PROCESS_TROPCY=${PROCESS_TROPCY:-NO}
+[[ $RUN_ENVIR == "nco" && $envir == "prod" ]] && export PROCESS_TROPCY="YES"
+export DO_RELOCATE="NO"
+export TROPCYQCRELOSH="$HOMEgfs/scripts/extropcy_qc_reloc.sh.ecf"
+export SENDCOM=YES
+
+export HOMERELO=$HOMEgfs
+export EXECRELO=${HOMERELO}/exec
+export FIXRELO=${HOMERELO}/fix/fix_am
+export USHRELO=${HOMERELO}/ush
+
+echo "END: config.prep"

@@ -25,12 +25,12 @@ err=0
 
 echo fv3gfs checkout ...
 if [[ ! -d fv3gfs.fd ]] ; then
-    rm -f ${LOG_DIR}/checkout-fv3gfs.log
-    git clone --recursive gerrit:NEMSfv3gfs fv3gfs.fd >> ${LOG_DIR}/checkout-fv3gfs.log 2>&1
+    rm -f ${topdir}/checkout-fv3gfs.log
+    git clone --recursive gerrit:EMC_FV3-GSDCHEM-WW3 fv3gfs.fd >> ${topdir}/checkout-fv3gfs.log 2>&1
     rc=$?
     ((err+=$rc))
     cd fv3gfs.fd
-#    git checkout nemsfv3gfs_beta_v1.0.18
+    git checkout d94e32a
     git submodule update --init --recursive
     rc=$?
     ((err+=$rc))
@@ -106,16 +106,16 @@ else
     echo 'Skip.  Directory gfs_post.fd already exists.'
 fi
 
-#echo EMC_gfs_wafs checkout ...
-#if [[ ! -d gfs_wafs.fd ]] ; then
-#    rm -f ${topdir}/checkout-gfs_wafs.log
-#    git clone --recursive gerrit:EMC_gfs_wafs gfs_wafs.fd >> ${topdir}/checkout-gfs_wafs.log 2>&1
-#    cd gfs_wafs.fd
-#    git checkout gfs_wafs.v5.0.8
-#    cd ${topdir}
-#else
-#    echo 'Skip.  Directory gfs_wafs.fd already exists.'
-#fi
+echo EMC_gfs_wafs checkout ...
+if [[ ! -d gfs_wafs.fd ]] ; then
+   rm -f ${topdir}/checkout-gfs_wafs.log
+   git clone --recursive gerrit:EMC_gfs_wafs gfs_wafs.fd >> ${topdir}/checkout-gfs_wafs.log 2>&1
+   cd gfs_wafs.fd
+   git checkout gfs_wafs.v5.0.8
+   cd ${topdir}
+else
+   echo 'Skip.  Directory gfs_wafs.fd already exists.'
+fi
 
 echo GSD-prep-chem checkout ...
 if [[ ! -d gsd_prep_chem.fd ]] ; then
@@ -127,7 +127,6 @@ if [[ ! -d gsd_prep_chem.fd ]] ; then
 else
     echo 'Skip.  Directory gsd_prep_chem.fd already exists.'
 fi
-
 
 #### Exception handling
 [[ $err -ne 0 ]] && echo "FATAL CHECKOUT ERROR: Please check checkout-*.log file under checkout directory for detail, ABORT!"

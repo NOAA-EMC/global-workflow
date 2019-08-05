@@ -128,13 +128,11 @@ def get_definitions(base):
     strings.append('\t<!-- Machine related entities -->\n')
     strings.append('\t<!ENTITY ACCOUNT    "%s">\n' % base['ACCOUNT'])
     strings.append('\t<!ENTITY QUEUE      "%s">\n' % base['QUEUE'])
-
     if base['machine'] == 'THEIA' and wfu.check_slurm():
        strings.append('\t<!ENTITY QUEUE_ARCH "%s">\n' % base['QUEUE'])
        strings.append('\t<!ENTITY PARTITION_ARCH "%s">\n' % base['QUEUE_ARCH'])
     else:
        strings.append('\t<!ENTITY QUEUE_ARCH "%s">\n' % base['QUEUE_ARCH'])
-
     strings.append('\t<!ENTITY SCHEDULER  "%s">\n' % wfu.get_scheduler(base['machine']))
     strings.append('\n')
     strings.append('\t<!-- Toggle HPSS archiving -->\n')
@@ -161,7 +159,6 @@ def get_resources(dict_configs, cdump='gdas'):
 
     base = dict_configs['base']
     machine = base.get('machine', 'WCOSS_C')
-    #machine = dict_configs['base']['machine']
 
     for task in taskplan:
 
@@ -388,7 +385,7 @@ def create_xml(dict_configs):
             if any( substring in each_line for substring in memory_dict):
                 temp_workflow += each_line
     workflow = temp_workflow
-
+    
     # Start writing the XML file
     fh = open('%s/%s.xml' % (base['EXPDIR'], base['PSLOT']), 'w')
 

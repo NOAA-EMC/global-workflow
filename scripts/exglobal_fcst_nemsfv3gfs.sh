@@ -343,11 +343,21 @@ if [ $IAER -gt 0 ] ; then
 fi
 
 #### Copy over WW3 inputs
+# At this time only test gfs but this change need to be tested on gdas, enkf, and gfs
 if [ $cplwav = ".true." ]; then
-  FIX_WW3=${FIX_WW3:-$FIX_DIR/fix_ww3} 
-  $NLN $FIX_WW3/mod_def.glo_30m                $DATA/mod_def.glo_30m
-  $NLN $FIX_WW3/mod_def.points                 $DATA/mod_def.points
-  $NLN $FIX_WW3/ww3_multi.inp                  $DATA/ww3_multi.inp
+# Link WW3 files
+  $NLN $COMINWW3/${WAV_MOD_ID}.${PDY}/${cyc}/ww3_multi.${WAV_MOD_ID}${WAV_MEMBER}.${cycle}.inp $DATA/ww3_multi.inp
+        # Check for expected wave grids for this run
+  array=($curID $iceID $wndID $buoy $waveGRD $sbsGRD $postGRD $interpGRD)
+  grdALL=`printf "%s\n" "${array[@]}" | sort -u | tr '\n' ' '`
+  for wavGRD in ${grdALL}
+  do
+# Wave IC (restart) file must exist for warm start on this cycle, if not wave model starts from flat ocean
+    $NLN $COMINWW3/${WAV_MOD_ID}.${PDY}/${cycm1}/${WAV_MOD_ID}${WAV_MEMBER}.restart.${wavGRD}.${PDY}${cyc} $DATA/restart.${wavGRD}
+    $NLN $COMINWW3/${WAV_MOD_ID}.${PDY}/${cyc}/${WAV_MOD_ID}.mod_def.$wavGRD $DATA/mod_def.$wavGRD
+  done
+  $NLN $COMINWW3/${WAV_MOD_ID}.${PDY}/${cyc}/${WAV_MOD_ID}.${iceID}.${cycle}.ice $DATA/ice.${iceID}
+
 fi
 
 #### Copy over GSD CHEM inputs
@@ -582,8 +592,10 @@ EOF
 if [ $cplwav = ".true." ]; then
 ####  atm_petlist_bounds=" 0 $((NTASKS_FV3-1))"
 ####  wav_petlist_bounds=" $((NTASKS_FV3)) $((NTASKS_FV3+npe_wav))"
-  atm_petlist_bounds=" 0   311"
-  wav_petlist_bounds=" 312 431"
+####  atm_petlist_bounds=" 0   311"
+  atm_petlist_bounds=$atm_petlist_bounds
+####  wav_petlist_bounds=" 312 431"
+  wav_petlist_bounds=$wav_petlist_bounds
   coupling_interval_sec=${coupling_interval_sec:-1800}
   rm -f nems.configure
 cat > nems.configure <<EOF
@@ -682,6 +694,7 @@ num_files:               ${NUM_FILES:-2}
 filename_base:           'atm' 'sfc'
 output_grid:             $OUTPUT_GRID
 output_file:             $OUTPUT_FILE
+output_1st_tstep_rst:    ${output_1st_tstep_rst:-".false."}
 write_nemsioflip:        $WRITE_NEMSIOFLIP
 write_fsyncflag:         $WRITE_FSYNCFLAG
 imo:                     $LONB_IMO
@@ -1159,6 +1172,28 @@ if [ $SEND = "YES" ]; then
       $NCP $file $memdir/RESTART/$file
     done
   fi
+
+fi
+
+#------------------------------------------------------------------
+#### ww3 output
+if [ $cplwav = ".true." ]; then
+  for wavGRD in $waveGRD
+   do
+     $NCP out_grd.${wavGRD} $COMOUTWW3/${WAV_MOD_ID}.${PDY}/${cyc}/${WAV_MOD_ID}${WAV_MEMBER}.out_grd.${wavGRD}.${PDY}${cyc}
+     $NCP log.${wavGRD} $COMOUTWW3/${WAV_MOD_ID}.${PDY}/${cyc}/${WAV_MOD_ID}${WAV_MEMBER}.log.${wavGRD}.${PDY}${cyc}
+# Wave IC (restart) interval controlled by gfs_cyc parameter (default: 4 cyc/day gfs_cyc=4)
+     gfs_cyc=${gfs_cyc:-4}
+     gfs_cych=`expr 24 / ${gfs_cyc}`
+     WRDATE=`$NDATE ${gfs_cych} $CDATE`
+     WRPDY=`echo $WRDATE | cut -c1-8`
+     WRcyc=`echo $WRDATE | cut -c9-10`
+     WRDIR=$COMOUTWW3/${WAV_MOD_ID}.${WRPDY}/${WRcyc}
+     [[ -d $WRDIR ]] || mkdir -p $WRDIR
+     $NCP restart001.${wavGRD} $COMOUTWW3/${WAV_MOD_ID}.${WRPDY}/${WRcyc}/${WAV_MOD_ID}${WAV_MEMBER}.restart.${wavGRD}.${WRDATE}
+   done
+   $NCP out_pnt.${buoy} $COMOUTWW3/${WAV_MOD_ID}.${PDY}/${cyc}/${WAV_MOD_ID}${WAV_MEMBER}.out_pnt.${buoy}.${PDY}${cyc}
+   $NCP log.mww3 $COMOUTWW3/${WAV_MOD_ID}.${PDY}/${cyc}/${WAV_MOD_ID}${WAV_MEMBER}.log.mww3.${PDY}${cyc}
 
 fi
 

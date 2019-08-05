@@ -79,7 +79,8 @@ fi
 if [ ! -d ${ARCHSYND} ]; then mkdir -p $ARCHSYND; fi
 
 export HOMENHC=${HOMENHC:-/gpfs/?p1/nhc/save/guidance/storm-data/ncep}
-export TANK_TROPCY=${TANK_TROPCY:-${DCOMROOT}/us007003}   # path to tropical cyclone record database
+# JY export TANK_TROPCY=${TANK_TROPCY:-${DCOMROOT}/${envir}}   # path to tropical cyclone record database
+export TANK_TROPCY=${TANK_TROPCY:-${DCOMROOT}/prod}   # path to tropical cyclone record database
 
 
 ##############################################
