@@ -3,9 +3,15 @@
 ########## config.coupled ##########
 # Common to all steps
 
-# for uncoupled workflow
+# for uncoupled workflow, set cpl to false
 #export cpl=".false."
 
+# for coupled workflow, set cpl to true
+export cpl=".true."
+if [ $cpl = ".false." ]; then
+export cplflx=".F."
+echo "END: run uncoupled fv3gfs model"
+else
 # for coupled workflow
 export CPLFLX=".T."
 export CPLICE=".T."

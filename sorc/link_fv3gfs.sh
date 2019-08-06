@@ -5,6 +5,11 @@ set -ex
 
 RUN_ENVIR=${1}
 machine=${2}
+if [ $# -eq 3 ]; then
+model=${3}
+else
+model="uncoupled"
+fi
 
 if [ $# -lt 2 ]; then
     echo '***ERROR*** must specify two arguements: (1) RUN_ENVIR, (2) machine'
@@ -161,8 +166,13 @@ cd ${pwd}/../ush                ||exit 8
 #------------------------------
 
 cd $pwd/../exec
+if [ $model == "coupled" ]; then
+[[ -s nems_fv3_mom6_cice5.x ]] && rm -f nems_fv3_mom6_cice5.x
+$LINK ../sorc/fv3_coupled.fd/NEMS/exe/nems_fv3_mom6_cice5.x .
+else
 [[ -s global_fv3gfs.x ]] && rm -f global_fv3gfs.x
 $LINK ../sorc/fv3gfs.fd/NEMS/exe/global_fv3gfs.x .
+fi
 
 [[ -s gfs_ncep_post ]] && rm -f gfs_ncep_post
 $LINK ../sorc/gfs_post.fd/exec/ncep_post gfs_ncep_post
@@ -237,7 +247,21 @@ else
  cp -p config.base.emc.dyn config.base
 fi
 #------------------------------
-
+if [ $model == "coupled" ]; then
+ rm -f config.base
+ cp -p config.base.emc.dyn_coupled config.base
+ if [ $machine = "theia" ]; then
+ CPLFIX_DIR="/scratch4/NCEPDEV/nems/save/Bin.Li/fix_prep_benchmark2"
+ fi
+cd $pwd/../fix
+# Add fixed files needed for coupled fv3-mom6-cice5
+#$LINK $CPLFIX_DIR/fix_fv3   .
+#$LINK $CPLFIX_DIR/fix_fv3_gmted2010   .
+$LINK $CPLFIX_DIR/fix_ocnice   .
+$LINK $CPLFIX_DIR/fix_cice5    .
+$LINK $CPLFIX_DIR/fix_mom6     .
+$LINK $CPLFIX_DIR/fix_fv3grid  .
+fi
 
 exit 0
 
