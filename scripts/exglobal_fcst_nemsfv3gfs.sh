@@ -118,7 +118,7 @@ source $SCRIPTDIR/nems_configure.sh	# include functions for nems_configure proce
 # Compset string. For nems.configure.* template selection. Default ATM only
 confignamevarfornems=${confignamevarfornems:-'atm'}
 
-# CPL switches, for coupling purpose, off by default
+# Coupling control switches, for coupling purpose, off by default
 CPLFLX=${CPLFLX:-false} # default off,import from outside source
 CPLWAV=${CPLWAV:-false} # ? how to control 1-way/2-way?
 CPLCHEM=${CPLCHEM:-false} # Chemistry model
@@ -130,7 +130,7 @@ ICETIM=${DELTIM}
 
 CPL_SLOW=${OCNTIM}
 CPL_FAST=${ICETIM}
-# CPL switches, for coupling purpose, off by default
+# Coupling control switches, for coupling purpose, off by default
 
 [[ $machine = 'sandbox' ]] && RUN=gfs
 

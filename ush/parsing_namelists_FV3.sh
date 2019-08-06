@@ -363,21 +363,5 @@ EOF
 
 fi
 
-if [ $cpl = ".true." ] ; then
-
-  cat >> input.nml <<EOF
-
-&MOM_input_nml
-  output_directory = 'MOM6_OUTPUT/',
-  input_filename = 'r'
-  restart_input_dir = 'INPUT/',
-  restart_output_dir = 'MOM6_RESTART/',
-  parameter_filename = 'INPUT/MOM_input',
-                       'INPUT/MOM_override'
-/
-EOF
-
-fi
-
 echo "$(cat input.nml)"
 }
