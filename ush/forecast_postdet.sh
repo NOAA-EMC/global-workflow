@@ -460,16 +460,7 @@ WW3_out()
 
 MOM6_postdet()
 {
-	echo "SUB ${FUNCNAME[0]}: Linking input data for MOM6"
-
-	# soft link commands insert herTA || exit 8
-	# Copy CICE5 IC - pre-generated from CFSv2
-	cp -p $ICSDIR/$CDATE/cice5_model_0.25.res_$CDATE.nc ./cice5_model.res_$CDATE.nc
-	#cp -p $ICSDIR/$CDATE/cpc/cice5_model_0.25.res_$CDATE.nc ./cice5_model.res_$CDATE.nc
-	
-	# Copy CICE5 fixed files, and namelists
-	cp -p $FIXcice/kmtu_cice_NEMS_mx025.nc $DATA/
-	cp -p $FIXcice/grid_cice_NEMS_mx025.nc $DATA/
+	echo "SUB ${FUNCNAME[0]}: MOM6 after run type determination"
 
 	# Copy MOM6 ICs (from CFSv2 file)
 	cp -p $ICSDIR/$CDATE/mom6_da/MOM*nc $DATA/INPUT/
@@ -482,6 +473,7 @@ MOM6_postdet()
 	cp -pf $FIXgrid/$CASE/grid_spec.nc $DATA/INPUT/
 	cp -pf $FIXgrid/$CASE/ocean_mask.nc $DATA/INPUT/
 	cp -pf $FIXgrid/$CASE/land_mask* $DATA/INPUT/
+
 	echo "SUB ${FUNCNAME[0]}: MOM6 input data linked/copied"
 }
 
@@ -497,10 +489,40 @@ MOM6_out()
 	# soft link commands insert here
 }
 
-CICE_in()
+CICE_postdet()
 {
-	echo "SUB ${FUNCNAME[0]}: Linking input data for CICE"
-	# soft link commands insert here
+	echo "SUB ${FUNCNAME[0]}: CICE after run type determination"
+	# Copy CICE5 IC - pre-generated from CFSv2
+        cp -p $ICSDIR/$CDATE/cice5_model_0.25.res_$CDATE.nc $DATA/cice5_model.res_$CDATE.nc
+	#cp -p $ICSDIR/$CDATE/cpc/cice5_model_0.25.res_$CDATE.nc ./cice5_model.res_$CDATE.nc
+
+        # Copy CICE5 fixed files, and namelists
+        cp -p $FIXcice/kmtu_cice_NEMS_mx025.nc $DATA/
+        cp -p $FIXcice/grid_cice_NEMS_mx025.nc $DATA/
+
+        # Copy grid_spec and mosaic files
+        cp -pf $FIXgrid/$CASE/${CASE}_mosaic* $DATA/INPUT/
+        cp -pf $FIXgrid/$CASE/grid_spec.nc $DATA/INPUT/
+        cp -pf $FIXgrid/$CASE/ocean_mask.nc $DATA/INPUT/
+        cp -pf $FIXgrid/$CASE/land_mask* $DATA/INPUT/
+
+	iceic=cice5_model.res_$CDATE.nc
+	year=$(echo $CDATE|cut -c 1-4)
+	#BL2018
+	stepsperhr=$((3600/$ICETIM))
+	#BL2018
+	nhours=$($NHOUR $CDATE ${year}010100)
+	steps=$((nhours*stepsperhr))
+	npt=$((FHMAX*$stepsperhr))      # Need this in order for dump_last to work
+
+	histfreq_n=${histfreq_n:-6}
+	restart_interval=${restart_interval:-1296000}    # restart write interval in seconds, default 15 days
+	dumpfreq_n=$restart_interval                     # restart write interval in seconds
+
+	#BL2018
+	#dumpfreq='d'
+	#dumpfreq='s'
+
 }
 
 CICE_nml()

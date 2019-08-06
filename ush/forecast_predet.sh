@@ -13,6 +13,7 @@
 # Cycling and forecast hour specific parameters
 common_predet(){
 	echo "SUB ${FUNCNAME[0]}: Defining variables for shared through models"
+	pwd=$(pwd)
 	CASE=${CASE:-C768}
 	CDATE=${CDATE:-2017032500}
 	DATA=${DATA:-$pwd/fv3tmp$$}    # temporary running directory
@@ -201,25 +202,27 @@ WW3_def(){
 	echo "SUB ${FUNCNAME[0]}: Defining variables for WW3"
 }
 
-CICE_def(){
-	echo "SUB ${FUNCNAME[0]}: Defining variables for CICE"
+CICE_predet(){
+	echo "SUB ${FUNCNAME[0]}: CICE before run type determination"
+        if [ ! -d $ROTDIR ]; then mkdir -p $ROTDIR; fi
+        if [ ! -d $DATA ]; then mkdir -p $DATA; fi
+        if [ ! -d $DATA/RESTART ]; then mkdir -p $DATA/RESTART; fi
+        if [ ! -d $DATA/INPUT ]; then mkdir -p $DATA/INPUT; fi
+        if [ ! -d $DATA/restart ]; then mkdir -p $DATA/restart; fi
+        if [ ! -d $DATA/history ]; then mkdir -p $DATA/history; fi
+        if [ ! -d $DATA/OUTPUT ]; then mkdir -p $DATA/OUTPUT; fi
 }
 
-MOM6_def(){
-	echo "SUB ${FUNCNAME[0]}: Defining variables for MOM6"
+MOM6_predet(){
+	echo "SUB ${FUNCNAME[0]}: MOM6 before run type determination"
 	if [ ! -d $ROTDIR ]; then mkdir -p $ROTDIR; fi
-	if [ ! -d $DATA ]; then mkdir -p $DATA ;fi
+	if [ ! -d $DATA ]; then mkdir -p $DATA; fi
 	if [ ! -d $DATA/RESTART ]; then mkdir -p $DATA/RESTART; fi
 	if [ ! -d $DATA/INPUT ]; then mkdir -p $DATA/INPUT; fi
-	if [ ! -d $DATA/restart ]; mkdir -p $DATA/restart; fi
-	if [ ! -d $DATA/history ]; mkdir -p $DATA/history; fi
-	if [ ! -d $DATA/OUTPUT ]; mkdir -p $DATA/OUTPUT; fi
-	if [ ! -d $DATA/MOM6_OUTPUT ]; mkdir -p $DATA/MOM6_OUTPUT; fi
-	if [ ! -d $DATA/MOM6_RESTART ]; mkdir -p $DATA/MOM6_RESTART; fi
+	if [ ! -d $DATA/restart ]; then mkdir -p $DATA/restart; fi
+	if [ ! -d $DATA/history ]; then mkdir -p $DATA/history; fi
+	if [ ! -d $DATA/OUTPUT ]; then mkdir -p $DATA/OUTPUT; fi
+	if [ ! -d $DATA/MOM6_OUTPUT ]; then mkdir -p $DATA/MOM6_OUTPUT; fi
+	if [ ! -d $DATA/MOM6_RESTART ]; then mkdir -p $DATA/MOM6_RESTART; fi
 	cd $DATA || exit 8
-
-}
-
-CICE_def(){
-	echo "SUB ${FUNCNAME[0]}: Defining variables for CICE"
 }

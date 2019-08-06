@@ -119,19 +119,20 @@ source $SCRIPTDIR/nems_configure.sh	# include functions for nems_configure proce
 confignamevarfornems=${confignamevarfornems:-'atm'}
 
 # CPL switches, for coupling purpose, off by default
-CPLFLX=${CPLFLX:-False} # default off,import from outside source
-CPLWAV=${CPLWAV:-False} # ? how to control 1-way/2-way?
-CPLCHEM=${CPLCHEM:-False} # Chemistry model
-CPLICE=${CPLICE:-False} # ICE model
+CPLFLX=${CPLFLX:-false} # default off,import from outside source
+CPLWAV=${CPLWAV:-false} # ? how to control 1-way/2-way?
+CPLCHEM=${CPLCHEM:-false} # Chemistry model
+CPLICE=${CPLICE:-false} # ICE model
 
-export OCNTIM=${OCNTIM:-3600}
-export DELTIM=${DELTIM:-450}
-export ICETIM=${DELTIM}
+OCNTIM=${OCNTIM:-3600}
+DELTIM=${DELTIM:-450}
+ICETIM=${DELTIM}
 
-export CPL_SLOW=${OCNTIM}
-export CPL_FAST=${ICETIM}
+CPL_SLOW=${OCNTIM}
+CPL_FAST=${ICETIM}
+# CPL switches, for coupling purpose, off by default
 
-RUN=gfs
+[[ $machine = 'sandbox' ]] && RUN=gfs
 
 echo "MAIN: $confignamevarfornems selected"
 echo "MAIN: Forecast script started for $confignamevarfornems on $machine"

@@ -7,8 +7,10 @@
 #export cpl=".false."
 
 # for coupled workflow
-export cplflx=".T."
+export CPLFLX=".T."
+export CPLICE=".T."
 export cpl=".true."
 export print_esmf=".false."
 
+export confignamevarfornems='med_atm_ocn_ice'
 echo "END: config.coupled"

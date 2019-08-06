@@ -53,13 +53,35 @@ FV3_GEFS_det(){
 }
 
 WW3_det(){
-	echo "SUB ${FUNCNAME[0]}: Defining variables for WW3"
+	echo "SUB ${FUNCNAME[0]}: Run type determination for WW3"
 }
 
 CICE_det(){
-	echo "SUB ${FUNCNAME[0]}: Defining variables for CICE"
+	echo "SUB ${FUNCNAME[0]}: Run type determination for CICE"
+	export histfreq_n=$FHOUT
+
+	# Create ice_in file
+	
+	if [ $inistep = "restart" ] ; then
+	  runtyp=continue
+	  restim=.true.
+	else
+	  runtyp=initial
+	  restim=.false.
+	fi
 }
 
 MOM6_det(){
-	echo "SUB ${FUNCNAME[0]}: Defining variables for MOM6"
+	echo "SUB ${FUNCNAME[0]}: Run type determination for MOM6"
+	export histfreq_n=$FHOUT
+
+	# Create ice_in file
+
+	if [ $inistep = "restart" ] ; then
+	  runtyp=continue
+	  restim=.true.
+	else
+	  runtyp=initial
+	  restim=.false.
+	fi
 }

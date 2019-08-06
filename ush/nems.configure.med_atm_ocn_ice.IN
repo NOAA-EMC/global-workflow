@@ -5,11 +5,11 @@
 # EARTH #
 EARTH_component_list: MED ATM OCN ICE
 EARTH_attributes::
-  Verbosity = max
+   Verbosity = 0
 ::
 
 # MED #
-MED_model:                      @[med_model]
+MED_model:                      nems
 MED_petlist_bounds:             @[med_petlist_bounds]
 MED_attributes::
   Verbosity = 0
@@ -17,44 +17,40 @@ MED_attributes::
   DumpRHs = false
   coldstart = false
   restart_interval = 0
-  ProfileMemory = false
 ::
 
 # ATM #
-ATM_model:                      @[atm_model]
+ATM_model:                      fv3
 ATM_petlist_bounds:             @[atm_petlist_bounds]
 ATM_attributes::
   Verbosity = 0
   DumpFields = false
-  ProfileMemory = false
 ::
 
 # OCN #
-OCN_model:                      @[ocn_model]
+OCN_model:                      mom6
 OCN_petlist_bounds:             @[ocn_petlist_bounds]
 OCN_attributes::
   Verbosity = 0
   DumpFields = false
   restart_interval = 9999999
-  ProfileMemory = false
 ::
 
 # ICE #
-ICE_model:                      @[ice_model]
+ICE_model:                      cice
 ICE_petlist_bounds:             @[ice_petlist_bounds]
 ICE_attributes::
   Verbosity = 0
   DumpFields = false
-  ProfileMemory = false
 ::
 
 # Run Sequence #
 runSeq::
-  @@[coupling_interval_slow_sec]
+  @${CPL_SLOW}
     MED MedPhase_prep_ocn
     MED -> OCN :remapMethod=redist
     OCN
-    @@[coupling_interval_fast_sec]
+    @${CPL_FAST}
       MED MedPhase_prep_ice
       MED MedPhase_prep_atm
       MED -> ATM :remapMethod=redist
