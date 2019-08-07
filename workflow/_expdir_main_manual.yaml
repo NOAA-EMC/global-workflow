@@ -16,5 +16,6 @@ include:
   - top.yaml
   - resources.yaml
   - workflow.yaml
-  - base.yaml
+  - settings.yaml
   - places.yaml
+  - base.yaml

@@ -47,14 +47,14 @@ config_base:
     export DMPDIR="{doc.places.DMPDIR}"
     export RTMFIX="{doc.places.RTMFIX}"
     
-    export HOMEDIR="{doc.places.HOMEDIR}"
+    export HOMEDIR="{doc.places.HOMEgfs}"
     export STMP="{doc.places.SHORT_TERM_TEMP}/$USER"
     export PTMP="{doc.places.LONG_TERM_TEMP}/$USER"
     export NOSCRUB="{doc.places.NOSCRUB}"
     
     # Base directories for various builds
-    export BASE_GIT="{doc.places.BASE_GIT}"
-    export BASE_SVN="{doc.places.BASE_SVN}"
+    export BASE_GIT="{doc.platform.BASE_GIT}"
+    export BASE_SVN="{doc.platform.BASE_SVN}"
     
     # Utilities needed in the scripts (mostly post)
     {doc.platform.config_base_extras}

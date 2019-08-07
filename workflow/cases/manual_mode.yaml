@@ -17,9 +17,12 @@ case:
     QUILTING: True
     WRITE_GROUP: 1
     WRTTASK_PER_GROUP: 2
+    DONST: YES
+    nst_anl: yes
     layout_x: 2
     layout_y: 3
     fv3_threads: 4
+    imp_physics: 11
 
   fv3_gdas_settings:
     CASE: C384
@@ -37,9 +40,47 @@ case:
     QUILTING: True
     WRITE_GROUP: 1
     WRTTASK_PER_GROUP: 2
+    FHCYC_GDAS: 1
+    FHCYC_GFS: 24
     layout_x: 2
     layout_y: 3
     fv3_threads: 4
+
+  gfs_output_settings:
+    FHMIN_GFS: 0
+    FHMAX_GFS: 384
+    FHOUT_GFS: 3
+    FHMIN_GDAS: 0
+    FHMAX_GDAS: 9
+    FHOUT_GDAS: 3
+    FHMAX_HF_GFS: 0
+    FHOUT_HF_GFS: 3
+    FHMIN_ENKF: 3
+    FHMAX_ENKF: 9
+    FHOUT_ENKF: 3
+    OUTPUT_GRID: gaussian_grid
+    OUTPUT_FILE_TYPE: nemsio 
+
+  data_assimilation:
+    NMEM_ENKF: 80
+    NMEM_EOMGGRP: 5
+    NMEM_EFCSGRP: 8
+    NMEM_EARCGRP: 10
+    l4densvar: Yes
+    assim_freq: 6
+    lwrite4danl: NO
+    DOHYBVAR: YES
+    SMOOTH_ENKF: YES
+    INCREMENTS_TO_ZERO: [ delz_inc, clwmr_inc, icmr_inc ]
+
+  archiving:
+    RMOLDEND: 72
+    ATARDIR: !expand "/NCEPDEV/$HPSS_PROJECT/1year/$USER/$machine/scratch/{doc.names.experiment}"
+    arch_warmicfreq: 2
+    arch_fcsticfreq: 1
+    arch_cyc: 00
+    archive_to_hpss: YES    
+    scrub_in_archive: YES
 
   places:
     workflow_file: workflow/manual_temp.yaml
@@ -52,3 +93,17 @@ case:
     run_gsi: Yes
     chgres_and_convert_ics: No
     gfs_cyc: 4 # run gfs every cycle
+
+  downstream: &downstream
+    DO_POST_PROCESSING: NO
+    DO_BUFRSND: NO
+    DO_GEMPAK: NO
+    DO_AWIPS: NO
+    DO_FAX: NO
+    DO_WAFS: NO
+    DO_BULLETINS: NO
+    VRFYFITS: NO
+    VSDB_STEP1: NO
+    VSDB_STEP2: NO
+    VRFYG2OBS: NO
+    VRFYPRCP: NO

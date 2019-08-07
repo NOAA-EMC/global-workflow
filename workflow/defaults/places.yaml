@@ -20,6 +20,7 @@ default_places: &default_places
 #  SHORT_TERM_TEMP: !error GOT HERE
 #  LONG_TERM_TEMP:  !error GOT HERE TOO
 
+  NOSCRUB: !expand "{doc.places.PROJECT_DIR}/noscrub/{tools.env('USER')}"
   ECF_ROOT: !calc tools.env("ECF_ROOT","/dev/null/ECF_ROOT")
   ECF_HOME: !calc tools.env("ECF_HOME","/dev/null/ECF_HOME")
   ecflow_def_dir: !expand '{ECF_ROOT}/defs'
