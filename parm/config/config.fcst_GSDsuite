@@ -67,7 +67,7 @@ elif [ $imp_physics -eq 6 ]; then # WSM6
 
 elif [ $imp_physics -eq 8 ]; then # Thompson
     export ncld=5
-    export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_thompson_suite"
+    export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_gsd"
     export nwat=6
     export ltaerosol=.true.                  
     export lradar=.true.         ## JKH:  for physics test, this is set to false since that variable not used in test
@@ -147,8 +147,9 @@ elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
     # Write more variables to output
     if [ $QUILTING = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]; then
         if [ $imp_physics -eq 8 ]; then # Thompson
-            export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table"
-            #export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_thompson_suite"
+            #export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table"
+            #export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_gsd"
+            export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_gsd_ruc"
         else
             export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table"
         fi

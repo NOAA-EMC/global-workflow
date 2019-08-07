@@ -85,7 +85,7 @@ elif [ $imp_physics -eq 8 ]; then # Thompson
     export bl_mynn_edmf_mom=1
 
     ## for RUC LSM
-    export lsm=2
+    export lsm=3
     export lsoil_lsm=9
 
     ## GSD namelist changes
@@ -121,7 +121,6 @@ elif [ $imp_physics -eq 11 ]; then # GFDL
     export dddmp=0.1
     export d4_bg=0.12
 
-    export CCPP_SUITE=$SUITE_DIR/suite_FV3_GFS_2017_updated_gfdlmp.xml
 else
     echo "Unknown microphysics option, ABORT!"
 
@@ -161,7 +160,6 @@ elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
     # Write gfs restart files to rerun fcst from any break point         
      export restart_interval=${restart_interval_gfs:-0}
 fi
-
 
 # Regrid tiles to global Gaussian grid in NEMSIO
 export REGRID_NEMSIO_SH="$HOMEgfs/ush/fv3gfs_regrid_nemsio.sh"
