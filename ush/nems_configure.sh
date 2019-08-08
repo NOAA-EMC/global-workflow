@@ -59,7 +59,7 @@ fi
 cp $SCRIPTDIR/nems.configure.$confignamevarfornems.IN tmp1
 sed "s/atm_model/FV3/g" tmp1>tmp0
 
-if [ $CPLFLX = TRUE ]; then
+if [ $cplflx = .T. ]; then
 	sed "s/@MED_petlist_bounds/$MED_petlist_bounds/g" tmp0>tmp1
 	sed "s/@ATM_petlist_bounds/$ATM_petlist_bounds/g" tmp1>tmp0
 	sed "s/@OCN_petlist_bounds/$OCN_petlist_bounds/g" tmp0>tmp1
@@ -70,16 +70,16 @@ if [ $CPLFLX = TRUE ]; then
 	sed "s/@CPL_FAST/$CPL_FAST/g" tmp1>tmp0
 #	mv tmp1 tmp0
 fi
-if [ $CPLWAV = TRUE ]; then
+if [ $cplwav = .T. ]; then
 	sed "s/wav_model/WW3/g" tmp0>tmp1
 	mv tmp1 tmp0
 fi
-if [ $CPLICE = TRUE ]; then
+if [ $cplice = .T. ]; then
 	sed "s/ice_model/CICE/g" tmp0>tmp1
 	sed "s/@ICE_petlist_bounds/$ICE_petlist_bounds/g" tmp0>tmp1
 	mv tmp1 tmp0
 fi
-if [ $CPLCHEM = TRUE ]; then
+if [ $cplchem = .T. ]; then
 	sed "s/chem_model/GSD/g" tmp0>tmp1
 	mv tmp1 tmp0
 fi

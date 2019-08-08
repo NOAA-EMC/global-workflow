@@ -8,14 +8,9 @@
 
 # for coupled workflow, set cpl to true
 export cpl=".true."
-if [ $cpl = ".false." ]; then
 export cplflx=".F."
-echo "END: run uncoupled fv3gfs model"
-else
-# for coupled workflow
-export CPLFLX=".T."
-export CPLICE=".T."
-export cpl=".true."
+export cplice=$cplflx
+# place holder for future use
 export print_esmf=".false."
 
 export confignamevarfornems='med_atm_ocn_ice'

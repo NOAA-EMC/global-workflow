@@ -119,10 +119,10 @@ source $SCRIPTDIR/nems_configure.sh	# include functions for nems_configure proce
 confignamevarfornems=${confignamevarfornems:-'atm'}
 
 # Coupling control switches, for coupling purpose, off by default
-CPLFLX=${CPLFLX:-false} # default off,import from outside source
-CPLWAV=${CPLWAV:-false} # ? how to control 1-way/2-way?
-CPLCHEM=${CPLCHEM:-false} # Chemistry model
-CPLICE=${CPLICE:-false} # ICE model
+cplflx=${cplflx:-false} # default off,import from outside source
+cplwav=${cplwav:-false} # ? how to control 1-way/2-way?
+cplchem=${cplchem:-false} # Chemistry model
+cplice=${cplice:-false} # ICE model
 
 OCNTIM=${OCNTIM:-3600}
 DELTIM=${DELTIM:-450}
@@ -153,20 +153,20 @@ case $RUN in
 	'gdas') FV3_GFS_predet;;
 	'gefs') FV3_GEFS_predet;;
 esac
-[[ $CPLFLX = TRUE ]] && MOM6_predet
-[[ $CPLWAV = TRUE ]] && WW3_predet
-[[ $CPLICE = TRUE ]] && CICE_predet
-[[ $CPLCHEM = TRUE ]] && GSD_predet
+[[ $cplflx = .T. ]] && MOM6_predet
+[[ $cplwav = .T. ]] && WW3_predet
+[[ $cplice = .T. ]] && CICE_predet
+[[ $cplchem = .T. ]] && GSD_predet
 
 case $RUN in
         'gfs') FV3_GFS_det;;
         'gdas') FV3_GFS_det;;
         'gefs') FV3_GEFS_det;;
 esac				#no run type determination for data atmosphere
-[[ $CPLFLX = TRUE ]] && MOM6_det
-[[ $CPLWAV = TRUE ]] && WW3_det
-[[ $CPLICE = TRUE ]] && CICE_det
-[[ $CPLCHEM = TRUE ]] && GSD_det
+[[ $cplflx = .T. ]] && MOM6_det
+[[ $cplwav = .T. ]] && WW3_det
+[[ $cplice = .T. ]] && CICE_det
+[[ $cplchem = .T. ]] && GSD_det
 
 echo "MAIN: RUN Type Determined"
 
@@ -177,10 +177,10 @@ case $RUN in
 	'gdas') FV3_GFS_postdet;;
 	'gefs') FV3_GEFS_postdet;;
 esac				#no post determination set up for data atmosphere
-[[ $CPLFLX = TRUE ]] && MOM6_postdet
-[[ $CPLWAV = TRUE ]] && WW3_postdet
-[[ $CPLICE = TRUE ]] && CICE_postdet
-[[ $CPLCHEM = TRUE ]] && GSD_postdet
+[[ $cplflx = .T. ]] && MOM6_postdet
+[[ $cplwav = .T. ]] && WW3_postdet
+[[ $cplice = .T. ]] && CICE_postdet
+[[ $cplchem = .T. ]] && GSD_postdet
 echo "MAIN: Post-determination set up of run type finished"
 
 echo "MAIN: Writing name lists and model configuration"
@@ -189,10 +189,10 @@ case $RUN in
         'gdas') FV3_GFS_nml;;
         'gefs') FV3_GEFS_nml;;
 esac				#no namelist for data atmosphere
-[[ $CPLFLX = TRUE ]] && MOM6_nml
-[[ $CPLWAV = TRUE ]] && WW3_nml
-[[ $CPLICE = TRUE ]] && CICE_nml
-[[ $CPLCHEM = TRUE ]] && GSD_nml
+[[ $cplflx = .T. ]] && MOM6_nml
+[[ $cplwav = .T. ]] && WW3_nml
+[[ $cplice = .T. ]] && CICE_nml
+[[ $cplchem = .T. ]] && GSD_nml
 echo "MAIN: Name lists and model configuration written"
 
 echo "MAIN: Writing NEMS Configure file"
@@ -220,10 +220,10 @@ if [ $machine != 'sandbox' ]; then
 		'gdas') data_out_GFS;;
 		'gefs') data_out_GEFS;;
 	esac
-	[[ $CPLFLX = TRUE ]] && MOM6_out
-	[[ $CPLWAV = TRUE ]] && WW3_out
-	[[ $CPLICE = TRUE ]] && CICE_out
-	[[ $CPLCHEM = TRUE ]] && GSD_out
+	[[ $cplflx = .T. ]] && MOM6_out
+	[[ $cplwav = .T. ]] && WW3_out
+	[[ $cplice = .T. ]] && CICE_out
+	[[ $cplchem = .T. ]] && GSD_out
 else
 	echo "MAIN: Running on sandbox mode, no output linking"
 fi
