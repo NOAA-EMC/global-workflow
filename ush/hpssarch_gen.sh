@@ -118,12 +118,12 @@ if [ $type = "gfs" ]; then
   done
 
   #..................
-  echo  "${dirname}RESTART/${PDY}.${cyc}0000.sfcanl_data.tile1.nc  " >>gfs_restarta.txt
-  echo  "${dirname}RESTART/${PDY}.${cyc}0000.sfcanl_data.tile2.nc  " >>gfs_restarta.txt
-  echo  "${dirname}RESTART/${PDY}.${cyc}0000.sfcanl_data.tile3.nc  " >>gfs_restarta.txt
-  echo  "${dirname}RESTART/${PDY}.${cyc}0000.sfcanl_data.tile4.nc  " >>gfs_restarta.txt
-  echo  "${dirname}RESTART/${PDY}.${cyc}0000.sfcanl_data.tile5.nc  " >>gfs_restarta.txt
-  echo  "${dirname}RESTART/${PDY}.${cyc}0000.sfcanl_data.tile6.nc  " >>gfs_restarta.txt
+  echo  "${dirname}RESTART/*0000.sfcanl_data.tile1.nc  " >>gfs_restarta.txt
+  echo  "${dirname}RESTART/*0000.sfcanl_data.tile2.nc  " >>gfs_restarta.txt
+  echo  "${dirname}RESTART/*0000.sfcanl_data.tile3.nc  " >>gfs_restarta.txt
+  echo  "${dirname}RESTART/*0000.sfcanl_data.tile4.nc  " >>gfs_restarta.txt
+  echo  "${dirname}RESTART/*0000.sfcanl_data.tile5.nc  " >>gfs_restarta.txt
+  echo  "${dirname}RESTART/*0000.sfcanl_data.tile6.nc  " >>gfs_restarta.txt
 
 #-----------------------------------------------------
 fi   ##end of gfs
@@ -190,15 +190,16 @@ if [ $type = "gdas" ]; then
   echo  "${dirname}${head}abias_air                " >>gdas_restarta.txt
   echo  "${dirname}${head}abias_int                " >>gdas_restarta.txt
   echo  "${dirname}${head}abias_pc                 " >>gdas_restarta.txt
-  echo  "${dirname}${head}atminc.nc                " >>gdas_restarta.txt
+  echo  "${dirname}${head}atmi*nc                  " >>gdas_restarta.txt
   echo  "${dirname}${head}dtfanl.nc                " >>gdas_restarta.txt
 
-  echo  "${dirname}RESTART/${PDY}.${cyc}0000.sfcanl_data.tile1.nc  " >>gdas_restarta.txt
-  echo  "${dirname}RESTART/${PDY}.${cyc}0000.sfcanl_data.tile2.nc  " >>gdas_restarta.txt
-  echo  "${dirname}RESTART/${PDY}.${cyc}0000.sfcanl_data.tile3.nc  " >>gdas_restarta.txt
-  echo  "${dirname}RESTART/${PDY}.${cyc}0000.sfcanl_data.tile4.nc  " >>gdas_restarta.txt
-  echo  "${dirname}RESTART/${PDY}.${cyc}0000.sfcanl_data.tile5.nc  " >>gdas_restarta.txt
-  echo  "${dirname}RESTART/${PDY}.${cyc}0000.sfcanl_data.tile6.nc  " >>gdas_restarta.txt
+  echo  "${dirname}RESTART/*0000.sfcanl_data.tile1.nc  " >>gdas_restarta.txt
+  echo  "${dirname}RESTART/*0000.sfcanl_data.tile2.nc  " >>gdas_restarta.txt
+  echo  "${dirname}RESTART/*0000.sfcanl_data.tile3.nc  " >>gdas_restarta.txt
+  echo  "${dirname}RESTART/*0000.sfcanl_data.tile4.nc  " >>gdas_restarta.txt
+  echo  "${dirname}RESTART/*0000.sfcanl_data.tile5.nc  " >>gdas_restarta.txt
+  echo  "${dirname}RESTART/*0000.sfcanl_data.tile6.nc  " >>gdas_restarta.txt
+
 
   #..................
   echo  "${dirname}RESTART " >>gdas_restartb.txt
@@ -299,12 +300,12 @@ if [ $type = "enkfgdas" -o $type = "enkfgfs" ]; then
        echo "${dirname}${head}abias_pc             " >>enkf${CDUMP}_restarta_grp${n}.txt
     fi
     #---
-    echo "${dirname}RESTART/${PDY}.${cyc}0000.sfcanl_data.tile1.nc  " >>enkf${CDUMP}_restarta_grp${n}.txt
-    echo "${dirname}RESTART/${PDY}.${cyc}0000.sfcanl_data.tile2.nc  " >>enkf${CDUMP}_restarta_grp${n}.txt
-    echo "${dirname}RESTART/${PDY}.${cyc}0000.sfcanl_data.tile3.nc  " >>enkf${CDUMP}_restarta_grp${n}.txt
-    echo "${dirname}RESTART/${PDY}.${cyc}0000.sfcanl_data.tile4.nc  " >>enkf${CDUMP}_restarta_grp${n}.txt
-    echo "${dirname}RESTART/${PDY}.${cyc}0000.sfcanl_data.tile5.nc  " >>enkf${CDUMP}_restarta_grp${n}.txt
-    echo "${dirname}RESTART/${PDY}.${cyc}0000.sfcanl_data.tile6.nc  " >>enkf${CDUMP}_restarta_grp${n}.txt
+    echo "${dirname}RESTART/*0000.sfcanl_data.tile1.nc  " >>enkf${CDUMP}_restarta_grp${n}.txt
+    echo "${dirname}RESTART/*0000.sfcanl_data.tile2.nc  " >>enkf${CDUMP}_restarta_grp${n}.txt
+    echo "${dirname}RESTART/*0000.sfcanl_data.tile3.nc  " >>enkf${CDUMP}_restarta_grp${n}.txt
+    echo "${dirname}RESTART/*0000.sfcanl_data.tile4.nc  " >>enkf${CDUMP}_restarta_grp${n}.txt
+    echo "${dirname}RESTART/*0000.sfcanl_data.tile5.nc  " >>enkf${CDUMP}_restarta_grp${n}.txt
+    echo "${dirname}RESTART/*0000.sfcanl_data.tile6.nc  " >>enkf${CDUMP}_restarta_grp${n}.txt
 
     #---
     echo "${dirname}RESTART                     " >>enkf${CDUMP}_restartb_grp${n}.txt
