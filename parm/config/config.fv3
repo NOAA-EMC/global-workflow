@@ -90,8 +90,8 @@ case $case_in in
         export DELTIM=225
         export layout_x=12
         export layout_y=8
-        export layout_x_gfs=8 
-        export layout_y_gfs=24
+        export layout_x_gfs=16
+        export layout_y_gfs=16
         export npe_node_fcst=12
         export nth_fv3=2
         export cdmbgwd="3.5,0.25" # mountain blocking and gravity wave drag
