@@ -26,13 +26,13 @@
 
 import os
 import sys
+import re
 import numpy as np
 from datetime import datetime, timedelta
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from collections import OrderedDict
 import rocoto
 import workflow_utils as wfu
-
 
 def main():
     parser = ArgumentParser(description='Setup XML workflow and CRONTAB for a GFS parallel.', formatter_class=ArgumentDefaultsHelpFormatter)
@@ -173,8 +173,13 @@ def get_definitions(base):
     strings.append('\n')
     strings.append('\t<!-- Machine related entities -->\n')
     strings.append('\t<!ENTITY ACCOUNT    "%s">\n' % base['ACCOUNT'])
+
     strings.append('\t<!ENTITY QUEUE      "%s">\n' % base['QUEUE'])
-    strings.append('\t<!ENTITY QUEUE_ARCH "%s">\n' % base['QUEUE_ARCH'])
+    if base['machine'] == 'THEIA' and wfu.check_slurm():
+        strings.append('\t<!ENTITY QUEUE_ARCH "%s">\n' % base['QUEUE_ARCH'])
+        strings.append('\t<!ENTITY PARTITION_ARCH "%s">\n' % base['QUEUE_ARCH'])
+    else:
+        strings.append('\t<!ENTITY QUEUE_ARCH "%s">\n' % base['QUEUE_ARCH'])
     strings.append('\t<!ENTITY SCHEDULER  "%s">\n' % wfu.get_scheduler(base['machine']))
     if 'COMPUTE_PARTITION' in base:
         strings.append('\t<!ENTITY COMPUTE_PARTITION "%s">\n' % base.get('COMPUTE_PARTITION',None))
@@ -247,10 +252,12 @@ def get_gdasgfs_resources(dict_configs, cdump='gdas'):
 
         strings = []
         strings.append('\t<!ENTITY QUEUE_%s     "%s">\n' % (taskstr, queuestr))
+        if base['machine'] == 'THEIA' and wfu.check_slurm() and task == 'arch':
+            strings.append('\t<!ENTITY PARTITION_%s "&PARTITION_ARCH;">\n' % taskstr )
         strings.append('\t<!ENTITY WALLTIME_%s  "%s">\n' % (taskstr, wtimestr))
         strings.append('\t<!ENTITY RESOURCES_%s "%s">\n' % (taskstr, resstr))
-        strings.append('\t<!ENTITY MEMORY_%s    "%s">\n' % (taskstr, memstr))
-        strings.append('\t<!ENTITY NATIVE_%s    "%s">\n' % (taskstr, partition))
+        if len(memstr) != 0:
+            strings.append('\t<!ENTITY MEMORY_%s    "%s">\n' % (taskstr, memstr))
         strings.append('\t<!ENTITY NATIVE_%s    "%s">\n' % (taskstr, natstr))
 
         dict_resources['%s%s' % (cdump, task)] = ''.join(strings)
@@ -297,8 +304,9 @@ def get_hyb_resources(dict_configs):
             strings.append('\t<!ENTITY QUEUE_%s     "%s">\n' % (taskstr, queuestr))
             strings.append('\t<!ENTITY WALLTIME_%s  "%s">\n' % (taskstr, wtimestr))
             strings.append('\t<!ENTITY RESOURCES_%s "%s">\n' % (taskstr, resstr))
-            strings.append('\t<!ENTITY MEMORY_%s    "%s">\n' % (taskstr, memstr))
-            strings.append('\t<!ENTITY NATIVE_%s    "%s">\n' % (taskstr, compute_partition))
+            if len(memstr) != 0:
+                strings.append('\t<!ENTITY MEMORY_%s    "%s">\n' % (taskstr, memstr))
+            strings.append('\t<!ENTITY NATIVE_%s    "%s">\n' % (taskstr, natstr))
 
             dict_resources['%s%s' % (cdump, task)] = ''.join(strings)
 
@@ -316,10 +324,13 @@ def get_hyb_resources(dict_configs):
 
         strings = []
         strings.append('\t<!ENTITY QUEUE_%s     "%s">\n' % (taskstr, queuestr))
+        if base['machine'] == 'THEIA' and wfu.check_slurm() and task == 'earc':
+            strings.append('\t<!ENTITY PARTITION_%s "&PARTITION_ARCH;">\n' % taskstr )
         strings.append('\t<!ENTITY WALLTIME_%s  "%s">\n' % (taskstr, wtimestr))
         strings.append('\t<!ENTITY RESOURCES_%s "%s">\n' % (taskstr, resstr))
-        strings.append('\t<!ENTITY MEMORY_%s    "%s">\n' % (taskstr, memstr))
-        strings.append('\t<!ENTITY NATIVE_%s    "%s">\n' % (taskstr, compute_partition ))
+        if len(memstr) != 0:
+            strings.append('\t<!ENTITY MEMORY_%s    "%s">\n' % (taskstr, memstr))
+        strings.append('\t<!ENTITY NATIVE_%s    "%s">\n' % (taskstr, natstr))
 
         dict_resources['%s%s' % (cdump, task)] = ''.join(strings)
 
@@ -332,6 +343,8 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
     '''
 
     envars = []
+    if wfu.check_slurm():
+        envars.append(rocoto.create_envar(name='SLURM_SET', value='YES'))
     envars.append(rocoto.create_envar(name='RUN_ENVIR', value='&RUN_ENVIR;'))
     envars.append(rocoto.create_envar(name='HOMEgfs', value='&HOMEgfs;'))
     envars.append(rocoto.create_envar(name='EXPDIR', value='&EXPDIR;'))
@@ -516,6 +529,8 @@ def get_hyb_tasks(dict_configs, cycledef='enkf'):
     EARCGROUPS = ' '.join(['%02d' % x for x in range(0, nearc_grps + 1)])
 
     envars = []
+    if wfu.check_slurm():
+       envars.append(rocoto.create_envar(name='SLURM_SET', value='YES'))
     envars.append(rocoto.create_envar(name='RUN_ENVIR', value='&RUN_ENVIR;'))
     envars.append(rocoto.create_envar(name='HOMEgfs', value='&HOMEgfs;'))
     envars.append(rocoto.create_envar(name='EXPDIR', value='&EXPDIR;'))
@@ -773,6 +788,8 @@ def create_xml(dict_configs):
         create the workflow XML
     '''
 
+    from  __builtin__ import any as b_any
+
     base = dict_configs['base']
     dohybvar = base.get('DOHYBVAR', 'NO').upper()
     gfs_cyc = base.get('gfs_cyc', 0)
@@ -790,13 +807,55 @@ def create_xml(dict_configs):
 
     # Get hybrid related entities, resources, workflow
     if dohybvar in ['Y', 'YES']:
+
         dict_hyb_resources = get_hyb_resources(dict_configs)
         dict_hyb_tasks = get_hyb_tasks(dict_configs)
 
+        # Removes <memory>&MEMORY_JOB_DUMP</memory> post mortem from hyb tasks
+        hyp_tasks = {'gdaseobs':'gdaseobs', 'gdaseomg':'gdaseomn', 'gdaseupd':'gdaseupd','gdasecen':'gdasecen','gdasefcs':'gdasefmn','gdasepos':'gdasepmn','gdasearc':'gdaseamn'}
+        for each_task, each_resource_string in dict_hyb_resources.iteritems():
+            #print each_task,hyp_tasks[each_task]
+            #print dict_hyb_tasks[hyp_tasks[each_task]]
+            if 'MEMORY' not in each_resource_string:
+                if each_task in dict_hyb_tasks:
+                    temp_task_string = []
+                    for each_line in re.split(r'(\s+)', dict_hyb_tasks[each_task]):
+                        if 'memory' not in each_line:
+                             temp_task_string.append(each_line)
+                    dict_hyb_tasks[each_task] = ''.join(temp_task_string)
+                if hyp_tasks[each_task] in dict_hyb_tasks: 
+                    temp_task_string = []
+                    for each_line in re.split(r'(\s+)', dict_hyb_tasks[hyp_tasks[each_task]]):
+                        if 'memory' not in each_line:
+                             temp_task_string.append(each_line)
+                    dict_hyb_tasks[hyp_tasks[each_task]] = ''.join(temp_task_string)
+        
     # Get GFS cycle related entities, resources, workflow
     dict_gfs_resources = get_gdasgfs_resources(dict_configs, cdump='gfs')
     dict_gfs_tasks = get_gdasgfs_tasks(dict_configs, cdump='gfs')
 
+    # Removes <memory>&MEMORY_JOB_DUMP</memory> post mortem from gdas tasks
+    for each_task, each_resource_string in dict_gdas_resources.iteritems():
+        if each_task not in dict_gdas_tasks:
+            continue
+        if 'MEMORY' not in each_resource_string:
+            temp_task_string = []
+            for each_line in re.split(r'(\s+)', dict_gdas_tasks[each_task]):
+                if 'memory' not in each_line:
+                     temp_task_string.append(each_line)
+            dict_gdas_tasks[each_task] = ''.join(temp_task_string)
+
+    # Removes <memory>&MEMORY_JOB_DUMP</memory> post mortem from gfs tasks
+    for each_task, each_resource_string in dict_gfs_resources.iteritems():
+        if each_task not in dict_gfs_tasks:
+            continue
+        if 'MEMORY' not in each_resource_string:
+            temp_task_string = []
+            for each_line in re.split(r'(\s+)', dict_gfs_tasks[each_task]):
+                if 'memory' not in each_line:
+                     temp_task_string.append(each_line)
+            dict_gfs_tasks[each_task] = ''.join(temp_task_string)
+    
     # Put together the XML file
     xmlfile = []
 

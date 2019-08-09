@@ -140,7 +140,7 @@ platform: !Platform
       <<: *partition_common
       specification: "tjet:ujet:sjet:vjet:xjet"
       scheduler_settings:
-        scheduler_name: MoabTorque
+        scheduler_name: Slurm
         parallelism_name: HydraIMPI
         node_type: generic
         physical_cores_per_node: 12
@@ -154,7 +154,7 @@ platform: !Platform
       # Details about the scheduler on this cluster.
       specification: bigmem 
       scheduler_settings:
-        scheduler_name: MoabTorque
+        scheduler_name: Slurm
         parallelism_name: HydraIMPI
         node_type: generic
         physical_cores_per_node: 24
@@ -168,7 +168,7 @@ platform: !Platform
       # Details about the scheduler on this cluster.
       specification: xjet
       scheduler_settings:
-        scheduler_name: MoabTorque
+        scheduler_name: Slurm
         parallelism_name: HydraIMPI
         node_type: generic
         physical_cores_per_node: 24
@@ -182,7 +182,7 @@ platform: !Platform
       # Details about the scheduler on this cluster.
       specification: "vjet"
       scheduler_settings:
-        scheduler_name: MoabTorque
+        scheduler_name: Slurm
         parallelism_name: HydraIMPI
         node_type: generic
         physical_cores_per_node: 16
@@ -196,7 +196,7 @@ platform: !Platform
       # Details about the scheduler on this cluster.
       specification: "sjet"
       scheduler_settings:
-        scheduler_name: MoabTorque
+        scheduler_name: Slurm
         parallelism_name: HydraIMPI
         node_type: generic
         physical_cores_per_node: 16
@@ -210,7 +210,7 @@ platform: !Platform
       # Details about the scheduler on this cluster.
       specification: "sjet:vjet"
       scheduler_settings:
-        scheduler_name: MoabTorque
+        scheduler_name: Slurm
         parallelism_name: HydraIMPI
         node_type: generic
         physical_cores_per_node: 16
@@ -224,12 +224,12 @@ platform: !Platform
       # Details about the scheduler on this cluster.
       specification: "service"
       scheduler_settings:
-        scheduler_name: MoabTorque
+        scheduler_name: Slurm
         parallelism_name: HydraIMPI
         node_type: generic
-        physical_cores_per_node: 2
-        logical_cpus_per_core: 2
-        hyperthreading_allowed: true
+        physical_cores_per_node: 1
+        logical_cpus_per_core: 1
+        hyperthreading_allowed: false
         indent_text: "  "
         memory_per_node: !calc (24*1024)
 
@@ -238,7 +238,7 @@ platform: !Platform
       # Details about the scheduler on this cluster.
       specification: "tjet:ujet"
       scheduler_settings:
-        scheduler_name: MoabTorque
+        scheduler_name: Slurm
         parallelism_name: HydraIMPI
         node_type: generic
         physical_cores_per_node: 12
@@ -252,7 +252,7 @@ platform: !Platform
       # Details about the scheduler on this cluster.
       specification: "bigmem"
       scheduler_settings:
-        scheduler_name: MoabTorque
+        scheduler_name: Slurm
         parallelism_name: HydraIMPI
         node_type: generic
         physical_cores_per_node: 24

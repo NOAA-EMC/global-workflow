@@ -75,9 +75,9 @@ if [ ! -z $FIX_DIR ]; then
  $LINK $FIX_DIR/* .
 fi
 
-#------------------------------
-#--add gfs_post file
-#------------------------------
+#---------------------------------------
+#--add files from external repositories
+#---------------------------------------
 cd ${pwd}/../jobs               ||exit 8
     $LINK ../sorc/gfs_post.fd/jobs/JGLOBAL_POST_MANAGER      .
     $LINK ../sorc/gfs_post.fd/jobs/JGLOBAL_NCEPPOST          .
@@ -88,14 +88,20 @@ cd ${pwd}/../scripts            ||exit 8
     $LINK ../sorc/gfs_post.fd/scripts/exgdas_nceppost.sh.ecf .
     $LINK ../sorc/gfs_post.fd/scripts/exgfs_nceppost.sh.ecf  .
     $LINK ../sorc/gfs_post.fd/scripts/exglobal_pmgr.sh.ecf   .
+    $LINK ../sorc/ufs_utils.fd/scripts/exemcsfc_global_sfc_prep.sh.ecf .
 cd ${pwd}/../ush                ||exit 8
-    for file in fv3gfs_downstream_nems.sh  fv3gfs_dwn_nems.sh  gfs_nceppost.sh  gfs_transfer.sh  link_crtm_fix.sh  trim_rh.sh fix_precip.sh; do
+    for file in fv3gfs_downstream_nems.sh  fv3gfs_dwn_nems.sh  gfs_nceppost.sh  \
+        gfs_transfer.sh  link_crtm_fix.sh  trim_rh.sh fix_precip.sh; do
         $LINK ../sorc/gfs_post.fd/ush/$file                  .
+    done
+    for file in emcsfc_ice_blend.sh  fv3gfs_driver_grid.sh  fv3gfs_make_orog.sh  global_cycle_driver.sh \
+        emcsfc_snow.sh  fv3gfs_filter_topo.sh  global_chgres_driver.sh  global_cycle.sh \
+        fv3gfs_chgres.sh  fv3gfs_make_grid.sh  global_chgres.sh  global_tracker.sh ; do
+        $LINK ../sorc/ufs_utils.fd/ush/$file                  .
     done
 
 #------------------------------
-#--add gfs_wafs file if on Dell
-if [ $target = wcoss_dell_p3 ]; then
+#--add gfs_wafs file
 #------------------------------
 cd ${pwd}/../jobs               ||exit 8
     $LINK ../sorc/gfs_wafs.fd/jobs/*                         .
@@ -108,7 +114,6 @@ cd ${pwd}/../ush                ||exit 8
     $LINK ../sorc/gfs_wafs.fd/ush/*                          .
 cd ${pwd}/../fix                ||exit 8
     $LINK ../sorc/gfs_wafs.fd/fix/*                          .
-fi
 
 #------------------------------
 #--add GSI/EnKF file
@@ -201,15 +206,29 @@ if [[ $target == "jet" ]]; then
   done 
 fi
 
-if [ $target = wcoss_dell_p3 ]; then
-    for wafsexe in wafs_awc_wafavn  wafs_blending  wafs_cnvgrib2  wafs_gcip  wafs_makewafs  wafs_setmissing; do
-        [[ -s $wafsexe ]] && rm -f $wafsexe
-        $LINK ../sorc/gfs_wafs.fd/exec/$wafsexe .
-    done
-fi
+#if [ $machine = dell ]; then 
+#    for wafsexe in wafs_awc_wafavn  wafs_blending  wafs_cnvgrib2  wafs_gcip  wafs_makewafs  wafs_setmissing; do
+#        [[ -s $wafsexe ]] && rm -f $wafsexe
+#        $LINK ../sorc/gfs_wafs.fd/exec/$wafsexe .
+#    done
+#fi
 
+for ufs_utilsexe in \
+     chgres_cube.exe   fregrid           global_cycle         nemsio_cvt    orog.x \
+     emcsfc_ice_blend  fregrid_parallel  make_hgrid           nemsio_get    shave.x \
+     emcsfc_snow2mdl   gettrk            make_hgrid_parallel  nemsio_read \
+     filter_topo       global_chgres     make_solo_mosaic     nst_tf_chg.x ; do
+    [[ -s $ufs_utilsexe ]] && rm -f $ufs_utilsexe
+    $LINK ../sorc/ufs_utils.fd/exec/$ufs_utilsexe .
+done
 
-for gsiexe in  global_gsi.x global_enkf.x calc_increment_ens.x  getsfcensmeanp.x  getsigensmeanp_smooth.x  getsigensstatp.x  recentersigp.x oznmon_horiz.x oznmon_time.x radmon_angle radmon_bcoef radmon_bcor radmon_time ;do
+for wafsexe in wafs_awc_wafavn  wafs_blending  wafs_cnvgrib2  wafs_gcip  wafs_makewafs  wafs_setmissing; do
+    [[ -s $wafsexe ]] && rm -f $wafsexe
+    $LINK ../sorc/gfs_wafs.fd/exec/$wafsexe .
+done
+
+for gsiexe in  global_gsi.x global_enkf.x calc_increment_ens.x  getsfcensmeanp.x  getsigensmeanp_smooth.x  \
+    getsigensstatp.x  recentersigp.x oznmon_horiz.x oznmon_time.x radmon_angle radmon_bcoef radmon_bcor radmon_time ;do
     [[ -s $gsiexe ]] && rm -f $gsiexe
     $LINK ../sorc/gsi.fd/exec/$gsiexe .
 done
@@ -273,6 +292,24 @@ cd ${pwd}/../sorc   ||   exit 8
     $SLINK gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared.v3.0.0/sorc/verf_radtime.fd   radmon_time.fd 
     $SLINK gsi.fd/util/EnKF/gfs/src/recentersigp.fd                                        recentersigp.fd
 
+    $SLINK gfs_post.fd/sorc/ncep_post.fd                                                   gfs_ncep_post.fd
+
+    $SLINK ufs_utils.fd/sorc/fre-nctools.fd/tools/shave.fd                                 shave.fd
+    for prog in filter_topo fregrid make_hgrid make_solo_mosaic ; do
+        $SLINK ufs_utils.fd/sorc/fre-nctools.fd/tools/$prog                                ${prog}.fd                                
+    done
+    for prog in  chgres_cube.fd       global_cycle.fd   nemsio_read.fd \
+        emcsfc_ice_blend.fd  gettrk.fd         nemsio_cvt.fd    nst_tf_chg.fd \
+        emcsfc_snow2mdl.fd   global_chgres.fd  nemsio_get.fd    orog.fd ;do
+        $SLINK ufs_utils.fd/sorc/$prog                                                     $prog
+    done
+
+    $SLINK gfs_wafs.fd/sorc/wafs_awc_wafavn.fd                                         wafs_awc_wafavn.fd
+    $SLINK gfs_wafs.fd/sorc/wafs_blending.fd                                           wafs_blending.fd
+    $SLINK gfs_wafs.fd/sorc/wafs_cnvgrib2.fd                                           wafs_cnvgrib2.fd
+    $SLINK gfs_wafs.fd/sorc/wafs_gcip.fd                                               wafs_gcip.fd
+    $SLINK gfs_wafs.fd/sorc/wafs_makewafs.fd                                           wafs_makewafs.fd
+    $SLINK gfs_wafs.fd/sorc/wafs_setmissing.fd                                         wafs_setmissing.fd
 
 #------------------------------
 #--choose dynamic config.base for EMC installation 

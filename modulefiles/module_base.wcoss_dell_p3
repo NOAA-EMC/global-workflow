@@ -27,8 +27,7 @@ module load CFP/2.0.1
 # modules used by vrfy
 module load pm5/1.0
 
-# for jobs that use gempak
-module use -a /gpfs/dell1/nco/ops/nwpara/modulefiles/
+module use -a /gpfs/dell1/nco/ops/nwprod/modulefiles/
 module load gempak/7.3.1
 
 # modules used by fax
