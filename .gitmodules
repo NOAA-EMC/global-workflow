@@ -1,4 +1,4 @@
 [submodule "workflow/CROW"]
     path = workflow/CROW
     url = gerrit:CROW
-    branch = master
+    branch = develop
