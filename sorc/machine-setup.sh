@@ -27,7 +27,6 @@ if [[ -d /lfs3 ]] ; then
     fi
     target=jet
     module purge
-
 module load intel/15.0.3.187
 module load  impi
 #export  NCEPLIBS=/mnt/lfs3/projects/hfv3gfs/gwv/ljtjet/lib
@@ -37,7 +36,6 @@ export NCEPLIBS=/mnt/lfs3/projects/hfv3gfs/gwv/NCEPLIBS.15X
 export WRFPATH=$NCEPLIBS/wrf.shared.new/v1.1.1/src
 export myFC=mpiifort
 export FCOMP=mpiifort
-
 ##---------------------------------------------------------------------------
 elif [[ -d /scratch3 ]] ; then
     # We are on NOAA Theia
@@ -55,6 +53,7 @@ module use $NCEPLIBS/modulefiles
 export WRFPATH=/scratch4/NCEPDEV/global/noscrub/George.Vandenberghe/l618.2019/lib/wrf.shared.new/v1.1.1/src
 export myFC=mpiifort
 export FCOMP=mpiifort
+module load  ncl/6.3.0   
 #END GWV ADD
 
 ##---------------------------------------------------------------------------
@@ -187,29 +186,13 @@ elif [[ -d /lustre && -d /ncrc ]] ; then
     else
         __ms_source_etc_profile=no
     fi
-<<<<<<< HEAD
-
-    target=gaea
-    module purge
-=======
     module purge
     module purge
 # clean up after purge
->>>>>>> remotes/origin/umb.v0.1
     unset _LMFILES_
     unset _LMFILES_000
     unset _LMFILES_001
     unset LOADEDMODULES
-<<<<<<< HEAD
-    module use -a /opt/cray/ari/modulefiles
-    module use -a /opt/cray/pe/ari/modulefiles
-    module use -a /opt/cray/pe/craype/default/modulefiles
-    source /etc/opt/cray/pe/admin-pe/site-config
-    export NCEPLIBS=/lustre/f1/pdata/ncep_shared/NCEPLIBS/lib
-    echo NCEPLIBS HARD SET to  $NCEPLIBS in `pwd`/module_setup.sh.inc
-    module use $NCEPLIBS/modulefiles
-
-=======
     module load modules
     if [[ -d /opt/cray/ari/modulefiles ]] ; then
         module use -a /opt/cray/ari/modulefiles
@@ -245,7 +228,6 @@ export FCOMP=ftn
 # END GWV ADD
 
 ##---------------------------------------------------------------------------
->>>>>>> remotes/origin/umb.v0.1
 else
     echo WARNING: UNKNOWN PLATFORM 1>&2
 fi
