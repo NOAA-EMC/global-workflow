@@ -79,8 +79,6 @@ NMV=${NMV:-"/bin/mv"}
 SEND=${SEND:-"YES"}   #move final result to rotating directory
 ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 KEEPDATA=${KEEPDATA:-"NO"}
-NEMSIOCHGDATE=${NEMSIOCHGDATE:-"${HOMEgfs}/exec/nemsio_chgdate"}
-IAU_CHGDATE=${IAU_CHGDATE:-"YES"}
 
 # Other options
 MEMBER=${MEMBER:-"-1"} # -1: control, 0: ensemble mean, >0: ensemble member $MEMBER
@@ -90,6 +88,7 @@ ENS_NUM=${ENS_NUM:-1}  # Single executable runs multiple members (e.g. GEFS)
 DOIAU=${DOIAU:-"NO"}
 IAUFHRS=${IAUFHRS:-0}
 IAU_DELTHRS=${IAU_DELTHRS:-0}
+IAU_OFFSET=${IAU_OFFSET:-0}
 
 # Model specific stuff
 FCSTEXECDIR=${FCSTEXECDIR:-$HOMEgfs/sorc/fv3gfs.fd/NEMS/exe}
@@ -636,6 +635,7 @@ nfhout:                  $FHOUT
 nfhmax_hf:               $FHMAX_HF
 nfhout_hf:               $FHOUT_HF
 nsout:                   $NSOUT
+iau_offset:              ${IAU_OFFSET}
 EOF
 else
 cat > model_configure <<EOF
@@ -678,6 +678,7 @@ nfhout:                  $FHOUT
 nfhmax_hf:               $FHMAX_HF
 nfhout_hf:               $FHOUT_HF
 nsout:                   $NSOUT
+iau_offset:              ${IAU_OFFSET}
 EOF
 fi
 
@@ -1104,17 +1105,9 @@ if [ $QUILTING = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]; then
     atmi=atmf${FH3}.$OUTPUT_FILE
     sfci=sfcf${FH3}.$OUTPUT_FILE
     logi=logf${FH3}
-    if [ $DOIAU = "YES" ]; then
-      fhri=$((fhr-6))
-      [[ $fhri -lt 0 ]] && FH3i="m${fhri#-}" || FH3i=$(printf %03i $fhri)
-      atmo=$memdir/${CDUMP}.t${cyc}z.atmf${FH3i}.$OUTPUT_FILE
-      sfco=$memdir/${CDUMP}.t${cyc}z.sfcf${FH3i}.$OUTPUT_FILE
-      logo=$memdir/${CDUMP}.t${cyc}z.logf${FH3i}.$OUTPUT_FILE
-    else
-      atmo=$memdir/${CDUMP}.t${cyc}z.atmf${FH3}.$OUTPUT_FILE
-      sfco=$memdir/${CDUMP}.t${cyc}z.sfcf${FH3}.$OUTPUT_FILE
-      logo=$memdir/${CDUMP}.t${cyc}z.logf${FH3}.$OUTPUT_FILE
-    fi
+    atmo=$memdir/${CDUMP}.t${cyc}z.atmf${FH3}.$OUTPUT_FILE
+    sfco=$memdir/${CDUMP}.t${cyc}z.sfcf${FH3}.$OUTPUT_FILE
+    logo=$memdir/${CDUMP}.t${cyc}z.logf${FH3}.$OUTPUT_FILE
     eval $NLN $atmo $atmi
     eval $NLN $sfco $sfci
     eval $NLN $logo $logi
@@ -1143,30 +1136,6 @@ $APRUN_FV3 $DATA/$FCSTEXEC 1>&1 2>&2
 export ERR=$?
 export err=$ERR
 $ERRSCRIPT || exit $err
-
-
-#------------------------------------------------------------------
-# change nfhour in the output nemsio file if IAU
-if [ $QUILTING = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]; then
-  if [ $DOIAU = "YES" ] && [ $IAU_CHGDATE = "YES" ]; then
-    fhr=$FHMIN
-    while [ $fhr -le $FHMAX ]; do
-      FH3=$(printf %03i $fhr)
-      atmi=atmf${FH3}.$OUTPUT_FILE
-      sfci=sfcf${FH3}.$OUTPUT_FILE
-      fhri=$((fhr-6))
-      if [ $fhri -ge 0 ]; then
-        $NEMSIOCHGDATE $atmi $CDATE $fhri
-        $NEMSIOCHGDATE $sfci $CDATE $fhri
-      fi
-      FHINC=$FHOUT
-      if [ $FHMAX_HF -gt 0 -a $FHOUT_HF -gt 0 -a $fhr -lt $FHMAX_HF ]; then
-        FHINC=$FHOUT_HF
-      fi
-      fhr=$((fhr+FHINC))
-    done
-  fi
-fi
 
 #------------------------------------------------------------------
 if [ $SEND = "YES" ]; then

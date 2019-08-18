@@ -1,32 +1,27 @@
 # envir-p3.h
 export job=${job:-$LSB_JOBNAME} #Can't use $job in filenames!
 export jobid=${jobid:-$job.$LSB_JOBID}
-export RUN_ENVIR=${RUN_ENVIR:-nco}
 
+export RUN_ENVIR=${RUN_ENVIR:-nco}
 export envir=%ENVIR%
 export SENDDBN=${SENDDBN:-%SENDDBN:YES%}
 export SENDDBN_NTC=${SENDDBN_NTC:-%SENDDBN_NTC:YES%}
+FILESYSTEMROOT=/gpfs/%FILESYSTEM:dell1%
 
-module load prod_envir/1.0.2 prod_util/1.1.0 ecflow/4.7.1
+module load prod_envir/%prod_envir_ver% prod_util/%prod_util_ver%
 
 case $envir in
   prod)
-    export jlogfile=${jlogfile:-${COMROOT}/logs/jlogfiles/jlogfile.${jobid}}
-    export DATAROOT=${DATAROOT:-/gpfs/dell1/nco/ops/tmpnwprd}
-    export COMROOT=%COM%
-    export COMOUT_ROOT=$COMROOT
-    export PCOMROOT=%COM%/pcom/prod
-
+    export DATAROOT=${DATAROOT:-${FILESYSTEMROOT}/nco/ops/tmpnwprd}
     if [ "$SENDDBN" == "YES" ]; then
-       export DBNROOT=/iodprod/dbnet_siphon  # previously set in .bash_profile
+       export DBNROOT=/iodprod_dell/dbnet_siphon
     else
        export DBNROOT=${UTILROOT}/fakedbn
     fi
     ;;
   eval)
     export envir=para
-    export jlogfile=${jlogfile:-${COMROOT}/logs/${envir}/jlogfile}
-    export DATAROOT=${DATAROOT:-/gpfs/dell1/nco/ops/tmpnwprd}
+    export DATAROOT=${DATAROOT:-${FILESYSTEMROOT}/nco/ops/tmpnwprd}
     if [ "$SENDDBN" == "YES" ]; then
        export DBNROOT=${UTILROOT}/para_dbn
        SENDDBN_NTC=NO
@@ -35,8 +30,7 @@ case $envir in
     fi
     ;;
   para|test)
-    export jlogfile=${jlogfile:-${COMROOT}/logs/${envir}/jlogfile}
-    export DATAROOT=${DATAROOT:-/gpfs/dell1/nco/ops/tmpnwprd}
+    export DATAROOT=${DATAROOT:-${FILESYSTEMROOT}/nco/ops/tmpnwprd}
     export DBNROOT=${UTILROOT}/fakedbn
     ;;
   *)
@@ -45,11 +39,12 @@ case $envir in
     ;;
 esac
 
+export COMROOT=${FILESYSTEMROOT}/nco/ops/com
+export COREROOT=${FILESYSTEMROOT}/ptmp/production.core/$jobid
 export NWROOT=/gpfs/dell1/nco/ops/nw${envir}
 export SENDECF=${SENDECF:-YES}
 export SENDCOM=${SENDCOM:-YES}
 export KEEPDATA=${KEEPDATA:-%KEEPDATA:NO%}
-export ECF_PORT=%ECF_PORT%
 
 if [ -n "%PDY:%" ]; then export PDY=${PDY:-%PDY:%}; fi
 if [ -n "%COMPATH:%" ]; then export COMPATH=${COMPATH:-%COMPATH:%}; fi

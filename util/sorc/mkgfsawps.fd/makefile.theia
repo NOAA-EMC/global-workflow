@@ -16,9 +16,8 @@ FC =       ifort
 
 LDFLAGS =
 # IOMP5_LIB=/usrx/local/prod/intel/2018UP01/lib/intel64/libiomp5.a
-IOMP5_LIB=/home/Boi.Vuong/lib/libiomp5.a
 
-LIBS =  -Xlinker --start-group ${W3NCO_LIBd} ${W3NCO_LIBd} ${IP_LIBd} ${SP_LIBd} ${BACIO_LIB4} ${IOMP5_LIB}
+LIBS = -qopenmp -Xlinker --start-group ${W3NCO_LIBd} ${W3NCO_LIBd} ${IP_LIBd} ${SP_LIBd} ${BACIO_LIB4} ${IOMP5_LIB}
 
 CMD =		mkgfsawps
 PROFLIB =	-lprof

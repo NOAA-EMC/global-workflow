@@ -211,7 +211,7 @@ def create_wf_task(task, cdump='gdas', cycledef=None, envar=None, dependency=Non
         task_dict['partition'] = '&PARTITION_%s_%s;' % (task.upper(),cdump.upper())
     else:
         task_dict['partition'] = None
-
+    
     if metatask is None:
         task = rocoto.create_task(task_dict)
     else:
@@ -244,12 +244,18 @@ def create_firstcyc_task(cdump='gdas'):
                  'command': 'sleep 1', \
                  'jobname': '&PSLOT;_%s_@H' % taskstr, \
                  'account': '&ACCOUNT;', \
-                 'queue': '&QUEUE_ARCH;', \
                  'walltime': '&WALLTIME_ARCH_%s;' % cdump.upper(), \
                  'native': '&NATIVE_ARCH_%s;' % cdump.upper(), \
                  'resources': '&RESOURCES_ARCH_%s;' % cdump.upper(), \
                  'log': '&ROTDIR;/logs/@Y@m@d@H/%s.log' % taskstr, \
                  'dependency': dependencies}
+
+    if check_slurm():
+        task_dict['queue'] = '&QUEUE_ARCH_GFS;'
+        task_dict['partition'] = '&PARTITION_ARCH_GFS;'
+    else:
+        task_dict['queue'] = '&QUEUE_ARCH'
+        task_dict['partition'] = None
 
     task = rocoto.create_task(task_dict)
 
@@ -305,7 +311,7 @@ def get_resources(machine, cfg, task, cdump='gdas'):
 
     if machine in ['THEIA'] and check_slurm():
         natstr = '--export=NONE'
-
+    
     if machine in ['ZEUS', 'THEIA', 'WCOSS_C', 'WCOSS_DELL_P3']:
         resstr = '<nodes>%d:ppn=%d</nodes>' % (nodes, ppn)
 
@@ -355,7 +361,7 @@ def create_crontab(base, cronint=5):
 #        wrapper_strings.append('#!/bin/env tcsh\n')
 #        wrapper_strings.append('\n')
 #        wrapper_strings.append('module load slurm\n')
-#        wrapper_strings.append('module load rocoto/1.3.0-RC4\n')
+#        wrapper_strings.append('module load rocoto\n')
 #        wrapper_strings.append('\n')
 #        wrapper_strings.append(rocotorunstr)
 #
@@ -376,7 +382,7 @@ def create_crontab(base, cronint=5):
 
     # On WCOSS, rocoto module needs to be loaded everytime cron runs
     if base['machine'] in ['WCOSS']:
-        rocotoloadstr = '. /usrx/local/Modules/default/init/sh; module use -a /usrx/local/emc_rocoto/modulefiles; module load rocoto/20170119-master)'
+        rocotoloadstr = '. /usrx/local/Modules/default/init/sh; module use -a /usrx/local/emc_rocoto/modulefiles; module load rocoto/1.3.0rc2)'
         rocotorunstr = '(%s %s)' % (rocotoloadstr, rocotorunstr)
 
     try:
