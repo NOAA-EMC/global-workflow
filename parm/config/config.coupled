@@ -7,11 +7,12 @@
 #export cpl=".false."
 
 # for coupled workflow, set cpl to true
-export cpl=".true."
+export cpl=".false."
 export cplflx=".F."
 export cplice=$cplflx
 # place holder for future use
 export print_esmf=".false."
 
-export confignamevarfornems='med_atm_ocn_ice'
+export nems_temp='med_atm_ocn_ice'
+export nems_temp_cold='medcold_atm_ocn_ice'
 echo "END: config.coupled"

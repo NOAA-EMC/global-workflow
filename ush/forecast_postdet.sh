@@ -396,8 +396,6 @@ FV3_GFS_nml(){
 	fi
 	# Call child scripts in current script directory
 	source $SCRIPTDIR/parsing_namelists_FV3.sh
-	source $SCRIPTDIR/parsing_model_configure_FV3.sh
-	FV3_model_configure
 	FV3_namelists
 	echo SUB ${FUNCNAME[0]}: FV3 name lists and model configure file created
 }
@@ -449,7 +447,8 @@ WW3_in()
 WW3_nml()
 {
 	echo "SUB ${FUNCNAME[0]}: Creating name list for WW3"
-	sh parsing_namelist_WW3.sh
+        source $SCRIPTDIR/parsing_namelists_WW3.sh
+	WW3_namelists
 }
 
 WW3_out()
@@ -463,10 +462,10 @@ MOM6_postdet()
 	echo "SUB ${FUNCNAME[0]}: MOM6 after run type determination"
 
 	# Copy MOM6 ICs (from CFSv2 file)
-	cp -p $ICSDIR/$CDATE/mom6_da/MOM*nc $DATA/INPUT/
+	cp -pf $ICSDIR/$CDATE/mom6_da/MOM*nc $DATA/INPUT/
 
 	# Copy MOM6 fixed files
-	cp -p $FIXmom/INPUT/* $DATA/INPUT/
+	cp -pf $FIXmom/INPUT/* $DATA/INPUT/
 
 	# Copy grid_spec and mosaic files
 	cp -pf $FIXgrid/$CASE/${CASE}_mosaic* $DATA/INPUT/
@@ -474,18 +473,29 @@ MOM6_postdet()
 	cp -pf $FIXgrid/$CASE/ocean_mask.nc $DATA/INPUT/
 	cp -pf $FIXgrid/$CASE/land_mask* $DATA/INPUT/
 
+        # Copy mediator restart files to RUNDIR
+        if [ $runtyp = 'continue' ]; then
+               cp $ROTDIR/$CDUMP.$PDY/$cyc/mediator_* $DATA/
+        fi
+
 	echo "SUB ${FUNCNAME[0]}: MOM6 input data linked/copied"
 }
 
 MOM6_nml()
 {
 	echo "SUB ${FUNCNAME[0]}: Creating name list for MOM6"
-	sh parsing_namelist_MOM6.sh
+        source $SCRIPTDIR/parsing_namelists_MOM6.sh
+        MOM6_namelists
 }
 
 MOM6_out()
 {
 	echo "SUB ${FUNCNAME[0]}: Copying output data for MOM6"
+
+        if [ $runtyp = 'initial' ]; then
+               cp $DATA/mediator_* $ROTDIR/$CDUMP.$PDY/$cyc/
+        fi
+
 	# soft link commands insert here
 }
 
@@ -528,7 +538,8 @@ CICE_postdet()
 CICE_nml()
 {
 	echo "SUB ${FUNCNAME[0]}: Creating name list for CICE"
-	sh parsing_namelist_CICE.sh
+        source $SCRIPTDIR/parsing_namelists_CICE.sh
+        CICE_namelists
 }
 
 CICE_out()
@@ -546,7 +557,7 @@ GSD_in()
 GSD_nml()
 {
 	echo "SUB ${FUNCNAME[0]}: Creating name list for GSD"
-	sh parsing_namelist_GSD.sh
+	sh parsing_namelists_GSD.sh
 }
 
 GSD_out()

@@ -67,19 +67,19 @@ fi
 # Begin JOB SPECIFIC work
 ##############################################
 
-# Restart conditions for GFS cycle come from GDAS
+export inistep=cold
+# med-cold start. Parsing to nems.configure
 
-export inistep=restart
 rCDUMP=$CDUMP
-export confignamevarfornems=$nems_temp
+export confignamevarfornems=$nems_temp_cold
 
 [[ $CDUMP = "gfs" ]] && export rCDUMP="gdas"
 
 # Forecast length for GFS forecast
 if [ $CDUMP = "gfs" ]; then
-    export FHMAX=$FHMAX_GFS
+    export FHMAX=1
     export FHOUT=$FHOUT_GFS
-    export FHMAX_HF=$FHMAX_HF_GFS
+    export FHMAX_HF=0
     export FHOUT_HF=$FHOUT_HF_GFS
 else
     export FHMAX_HF=0

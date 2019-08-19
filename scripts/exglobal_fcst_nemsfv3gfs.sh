@@ -114,15 +114,17 @@ source $SCRIPTDIR/forecast_predet.sh	# include functions for variable definition
 source $SCRIPTDIR/forecast_det.sh  # include functions for run type determination
 source $SCRIPTDIR/forecast_postdet.sh	# include functions for variables after run type determination
 source $SCRIPTDIR/nems_configure.sh	# include functions for nems_configure processing
+source $SCRIPTDIR/parsing_model_configure_FV3.sh
 
 # Compset string. For nems.configure.* template selection. Default ATM only
-confignamevarfornems=${confignamevarfornems:-'atm'}
+confignamevarfornems=${confignamevarfornems:-'med_atm_ocn_ice'}
 
 # Coupling control switches, for coupling purpose, off by default
-cplflx=${cplflx:-false} # default off,import from outside source
-cplwav=${cplwav:-false} # ? how to control 1-way/2-way?
-cplchem=${cplchem:-false} # Chemistry model
-cplice=${cplice:-false} # ICE model
+cpl=${cpl:-.false.}
+cplflx=${cplflx:-.F.} # default off,import from outside source
+cplwav=${cplwav:-.F.} # ? how to control 1-way/2-way?
+cplchem=${cplchem:-.F.} # Chemistry model
+cplice=${cplice:-.F.} # ICE model
 
 OCNTIM=${OCNTIM:-3600}
 DELTIM=${DELTIM:-450}
@@ -193,6 +195,7 @@ esac				#no namelist for data atmosphere
 [[ $cplwav = .T. ]] && WW3_nml
 [[ $cplice = .T. ]] && CICE_nml
 [[ $cplchem = .T. ]] && GSD_nml
+Common_model_configure
 echo "MAIN: Name lists and model configuration written"
 
 echo "MAIN: Writing NEMS Configure file"

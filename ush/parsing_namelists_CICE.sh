@@ -1,6 +1,6 @@
 # parsing namelist of CICE
 
-FV3_namelists(){
+CICE_namelists(){
 
 cat > ice_in <<eof  
 &setup_nml

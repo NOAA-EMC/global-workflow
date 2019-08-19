@@ -29,10 +29,10 @@ fi
 rm -f $DATA/nems.configure
 
 if [ $CASE = "C96" ] ; then
-  MED_petlist_bounds=${MED_petlist_bounds:-'0 149'}
-  ATM_petlist_bounds=${ATM_petlist_bounds:-'0 149'}
-  OCN_petlist_bounds=${OCN_petlist_bounds:-'150 389'}
-  ICE_petlist_bounds=${ICE_petlist_bounds:-'390 509'}
+  med_petlist_bounds=${med_petlist_bounds:-'0 149'}
+  atm_petlist_bounds=${atm_petlist_bounds:-'0 149'}
+  ocn_petlist_bounds=${ocn_petlist_bounds:-'150 389'}
+  ice_petlist_bounds=${ice_petlist_bounds:-'390 509'}
 elif [ $CASE = "C384" ] ; then
   # This is 4x8 layout * 6 - worked
   #MED_petlist_bounds=${MED_petlist_bounds:-'0 263'}
@@ -40,10 +40,10 @@ elif [ $CASE = "C384" ] ; then
   #OCN_petlist_bounds=${OCN_petlist_bounds:-'264 503'}  #240
   #ICE_petlist_bounds=${ICE_petlist_bounds:-'504 623'}  #120
 
-  MED_petlist_bounds=${MED_petlist_bounds:-'0 311'}
-  ATM_petlist_bounds=${ATM_petlist_bounds:-'0 311'}    #6*8*6+wrtgrps(24)
-  OCN_petlist_bounds=${OCN_petlist_bounds:-'312 431'}  #120
-  ICE_petlist_bounds=${ICE_petlist_bounds:-'432 479'}  #48
+  med_petlist_bounds=${med_petlist_bounds:-'0 311'}
+  atm_petlist_bounds=${atm_petlist_bounds:-'0 311'}    #6*8*6+wrtgrps(24)
+  ocn_petlist_bounds=${ocn_petlist_bounds:-'312 431'}  #120
+  ice_petlist_bounds=${ice_petlist_bounds:-'432 479'}  #48
 
   # This is 6x12 layout * 6 = 432 + 72 # didn't work
   #MED_petlist_bounds=${MED_petlist_bounds:-'0 503'}
@@ -57,33 +57,31 @@ fi
 
 # Copy the selected template into run directory
 cp $SCRIPTDIR/nems.configure.$confignamevarfornems.IN tmp1
-sed "s/atm_model/FV3/g" tmp1>tmp0
+sed -i -e "s;@\[med_model\];nems;g" tmp1
+sed -i -e "s;@\[atm_model\];fv3;g" tmp1
+sed -i -e "s;@\[med_petlist_bounds\];$med_petlist_bounds;g" tmp1
+sed -i -e "s;@\[atm_petlist_bounds\];$atm_petlist_bounds;g" tmp1
 
 if [ $cplflx = .T. ]; then
-	sed "s/@MED_petlist_bounds/$MED_petlist_bounds/g" tmp0>tmp1
-	sed "s/@ATM_petlist_bounds/$ATM_petlist_bounds/g" tmp1>tmp0
-	sed "s/@OCN_petlist_bounds/$OCN_petlist_bounds/g" tmp0>tmp1
-	sed "s/@DumpFields/$DumpFields/g" tmp1>tmp0
-	sed "s/@coldstart/$coldstart/g" tmp0>tmp1
-	sed "s/@restart_interval/$restart_interval/g" tmp1>tmp0
-	sed "s/@CPL_SLOW/$CPL_SLOW/g" tmp0>tmp1
-	sed "s/@CPL_FAST/$CPL_FAST/g" tmp1>tmp0
-#	mv tmp1 tmp0
+        sed -i -e "s;@\[ocn_model\];mom6;g" tmp1
+	sed -i -e "s;@\[ocn_petlist_bounds\];$ocn_petlist_bounds;g" tmp1
+	sed -i -e "s;@\[DumpFields\];$DumpFields;g" tmp1
+	sed -i -e "s;@\[coldstart\];$coldstart;g" tmp1
+	sed -i -e "s;@\[restart_interval\];$restart_interval;g" tmp1
+	sed -i -e "s;@\[CPL_SLOW\];$CPL_SLOW;g" tmp1
+	sed -i -e "s;@\[CPL_FAST\];$CPL_FAST;g" tmp1
 fi
 if [ $cplwav = .T. ]; then
-	sed "s/wav_model/WW3/g" tmp0>tmp1
-	mv tmp1 tmp0
+	sed -i -e "s;@\[wav_model\];ww3;g" tmp1
 fi
 if [ $cplice = .T. ]; then
-	sed "s/ice_model/CICE/g" tmp0>tmp1
-	sed "s/@ICE_petlist_bounds/$ICE_petlist_bounds/g" tmp0>tmp1
-	mv tmp1 tmp0
+	sed -i -e "s;@\[ice_model\];cice;g" tmp1
+	sed -i -e "s;@\[ice_petlist_bounds\];$ice_petlist_bounds;g" tmp1
 fi
 if [ $cplchem = .T. ]; then
-	sed "s/chem_model/GSD/g" tmp0>tmp1
-	mv tmp1 tmp0
+	sed -i -e "s;@\[chem_model\];gsd;g" tmp1
 fi
-mv tmp0 nems.configure
+mv tmp1 nems.configure
 
 echo "SUB ${FUNCNAME[0]}: Nems configured for $confignamevarfornems"
 }

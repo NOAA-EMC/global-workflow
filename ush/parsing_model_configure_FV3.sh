@@ -10,7 +10,7 @@
 ## This script is a direct execution.
 #####
 
-FV3_model_configure(){
+Common_model_configure(){
 
 rm -f model_configure
 cat > model_configure <<EOF
@@ -35,6 +35,8 @@ atmos_nthreads:          $NTHREADS_FV3
 use_hyper_thread:        ${hyperthread:-".false."}
 ncores_per_node:         $cores_per_node
 restart_interval:        $restart_interval
+output_1st_tstep_rst:    .false.
+atm_coupling_interval_sec:      $DELTIM
 
 quilting:                $QUILTING
 write_groups:            ${WRITE_GROUP:-1}
