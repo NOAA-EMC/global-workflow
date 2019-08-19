@@ -15,6 +15,9 @@ if [ $# -ne 1 ]; then
 
 fi
 
+# Source model specific information
+. $EXPDIR/config.coupled
+
 step=$1
 
 echo "BEGIN: config.resources"
@@ -43,6 +46,15 @@ elif [ $step = "anal" ]; then
 
 elif [ $step = "fcst" ]; then
 
+if [ $cpl = ".true." ]; then
+    export wtime_fcst="00:30:00"
+    export wtime_fcst_gfs="00:30:00"
+    export npe_fcst=$(echo "$layout_x * $layout_y * 6" | bc)
+    export npe_fcst_gfs=$(echo "$layout_x_gfs * $layout_y_gfs * 6" | bc)
+    export npe_ocn=120
+    export npe_ice=48
+    export nth_fcst=3
+else
     export wtime_fcst="01:00:00"
     export wtime_fcst_gfs="06:00:00"
     export npe_fcst=$(echo "$layout_x * $layout_y * 6" | bc)
@@ -52,7 +64,7 @@ elif [ $step = "fcst" ]; then
     if [[ "$machine" == "WCOSS_C" ]]; then
         export memory_fcst="1024M"
     fi
-
+fi
 elif [ $step = "post" ]; then
 
     export wtime_post="02:00:00"
@@ -67,6 +79,10 @@ elif [ $step = "post" ]; then
     fi
     if [[ "$machine" == "WCOSS_C" ]]; then
         export memory_post="3072M"
+    fi
+    if [ $cpl = ".true." ]; then
+    export wtime_post="07:40:00"
+    export wtime_post_gfs="07:40:00"
     fi
 
 elif [ $step = "vrfy" ]; then
@@ -202,6 +218,18 @@ else
     echo "Invalid step = $step, ABORT!"
     exit 2
 
+fi
+# for ocean and ice post
+if [ $step = "ocnpost" ]; then
+
+    export wtime_ocnpost="00:30:00"
+    export wtime_ocnpost_gfs="00:30:00"
+    export npe_ocnpost=1
+    export npe_node_ocnpost=1
+    export npe_node_dwn=24
+    if [[ "$machine" == "WCOSS_C" ]]; then
+        export memory_post="3072M"
+    fi
 fi
 
 echo "END: config.resources"
