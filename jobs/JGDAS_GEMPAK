@@ -56,13 +56,14 @@ export fstart=00
 export GRIB=pgrb2f
 export EXT=""
 export DBN_ALERT_TYPE=GDAS_GEMPAK
+export jlogfile=${jlogfile:-$COMROOT/logs/jlogfiles/jlogfile.${jobid}}
 
 ###################################
 # Specify NET and RUN Name and model
 ####################################
 export NET=${NET:-gfs}
 export RUN=${RUN:-gdas}
-export model=${model:-gdas}
+export model=${model:-gfs}
 
 ##############################################
 # Define COM directories

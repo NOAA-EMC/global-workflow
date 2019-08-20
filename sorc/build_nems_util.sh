@@ -1,7 +1,9 @@
-#!/bin/sh
+#! /usr/bin/env bash
 set -eux
 
+set +e
 source ./machine-setup.sh > /dev/null 2>&1
+set -e
 cwd=`pwd`
 
 USE_PREINST_LIBS=${USE_PREINST_LIBS:-"true"}

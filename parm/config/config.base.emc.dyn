@@ -24,6 +24,12 @@ elif [ $machine = "WCOSS_C" -o $machine = "WCOSS_DELL_P3" ]; then
     export QUEUE="dev"
     export QUEUE_ARCH="dev_transfer"
 
+elif [ $machine = "GAEA" ]; then
+
+    export ACCOUNT="nggps_emc"
+    export QUEUE="batch"
+    export QUEUE_ARCH="rdtn"
+
 fi
 
 # Project to use in mass store:
@@ -38,10 +44,14 @@ export UTILgfs=$HOMEgfs/util
 export EXECgfs=$HOMEgfs/exec
 export SCRgfs=$HOMEgfs/scripts
 
-########################################################################
-
 # GLOBAL static environment parameters
-if [ $machine = "THEIA" ]; then
+if [ $machine = "GAEA" ]; then
+
+    export NWPROD="/lustre/f1/unswept/ncep"
+    export DMPDIR="/lustre/f1/pdata/ncep/gdump"
+    export RTMFIX="/lustre/f1/pdata/ncep_shared/NCEPLIBS/lib/crtm/v2.0.6/src/fix"
+
+elif [ $machine = "THEIA" ]; then
 
     export NWPROD="/scratch4/NCEPDEV/global/save/glopara/nwpara"
     export DMPDIR="/scratch4/NCEPDEV/global/noscrub/dump"
@@ -74,7 +84,19 @@ fi
 
 
 # Machine specific paths used everywhere
-if [ $machine = "THEIA" ]; then
+if [ $machine = "GAEA" ]; then
+
+    # USER specific paths
+    export HOMEDIR="/lustre/f1/unswept/ncep/$USER"
+    export STMP="/lustre/f1/pdata/ncep/$USER"
+    export PTMP="/lustre/f1/pdata/ncep/$USER"
+    export NOSCRUB="/lustre/f1/unswept/ncep/$USER"
+
+    # Base directories for various builds
+    export BASE_GIT="/lustre/f1/unswept/ncep/$USER"
+    export BASE_SVN="/scratch4/NCEPDEV/global/save/glopara/svn"
+
+elif [ $machine = "THEIA" ]; then
 
     # USER specific paths
     export HOMEDIR="/scratch4/NCEPDEV/global/save/$USER"
@@ -113,7 +135,19 @@ elif [ $machine = "WCOSS_DELL_P3" ]; then
 fi
 
 # Utilities needed in the scripts (mostly post)
-if [ $machine = "THEIA" ]; then
+if [ $machine = "GAEA" ]; then
+
+    module use /lustre/f1/pdata/ncep_shared/fv3/modulefiles
+    module load grib_util
+    export NHOUR="/lustre/f1/pdata/ncep_shared/emc.nemspara/soft/prod_util/1.0.18/exec/nhour"
+    export GRBINDEX2="/lustre/f1/pdata/ncep_shared/fv3/exec/grb2index"
+    export CNVGRIB21_GFS="/lustre/f1/pdata/ncep_shared/fv3/exec/cnvgrib21_gfs"
+    export COMPUTE_PARTITION="c3:c4"
+    export SERVICE_PARTITION="es"
+    export COMPUTE_PARTITION_LINE="-l partition=&COMPUTE_PARTITION;"
+    export SERVICE_PARTITION_LINE="-l partition=&SERVICE_PARTITION;"
+
+elif [ $machine = "THEIA" ]; then
 
     export NDATE="$NWPROD/util/exec/ndate"
     export NHOUR="$NWPROD/util/exec/nhour"
@@ -136,7 +170,6 @@ export DO_AWIPS="NO"
 
 # NO for retrospective parallel; YES for real-time parallel
 export REALTIME="NO"
-
 
 ####################################################
 # DO NOT ADD MACHINE DEPENDENT STUFF BELOW THIS LINE
@@ -271,12 +304,10 @@ export nst_anl=.true.
 # Analysis increments to zero in CALCINCEXEC
 export INCREMENTS_TO_ZERO="'delz_inc','clwmr_inc','icmr_inc'"
 
-
 # Archiving options
 export HPSSARCH="NO"         # save data to HPSS archive
 export ARCH_CYC=00           # Archive data at this cycle for warm_start capability
 export ARCH_WARMICFREQ=4     # Archive frequency in days for warm_start capability
 export ARCH_FCSTICFREQ=1     # Archive frequency in days for gdas and gfs forecast-only capability
-
 
 echo "END: config.base"

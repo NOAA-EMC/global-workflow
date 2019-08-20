@@ -1,0 +1,73 @@
+# Do not change this file unless you know what you're doing.  It sets
+# default values for the "settings" section.  You probably want to
+# override the settings in the case file instead.
+
+default_settings: &default_settings
+  ecf_log_path: !FirstTrue
+    - when: !calc doc.settings.four_cycle_mode
+      # in four cycle mode ,the log name is the last path component,
+      # with the leading "j" removed.
+      do: !calc ( '%COM%/output/%ENVIR%/today/' + task_path_list[-1][1:] + '_%CYC%.o%J' )
+    - otherwise: !calc ( '%COM%/logs/%PDY%%CYC%/'+ task_path_var + '.log.%J')
+
+  # rocoto_log_path: sets the stdout/stderr log path for batch jobs
+  # when using Rocoto.  This is inserted in the <join> tag of the
+  # task's <task> tag.
+  rocoto_log_path: !calc ("<cyclestr>&LOG_DIR;/@Y@m@d@H/"+task_path_var+".log</cyclestr>")
+  rocoto_task_throttle: 16  
+  rocoto_cycle_throttle: 2
+
+  max_job_tries: 2
+
+  # REALTIME and realtime - an alias that should be removed once we're
+  # sure it is consistent among the yaml files:
+  realtime: NO
+
+  four_cycle_mode: NO
+  nco_mode: NO
+  use_nco_ecflow_headers: NO
+
+  ROTDIR_DUMP: NO
+
+  # awips setting
+  NAWIPSGRP: 21
+
+  mkdir_before_running_ecflow: !FirstTrue
+    - when: !calc doc.settings.four_cycle_mode
+      take: null
+    - otherwise: !expand '{doc.places.ROTDIR}/logs/%Y%m%d%H'
+
+  ecflow_module: !calc doc.platform.get("ecflow_module","ecflow") 
+
+  ecflow_real_clock: no
+  ecflow_virtual_clock: no
+  ecflow_hybrid_clock: no
+  ecflow_totality_limit: yes
+
+  ecflow_rocoto_cdate_workaround: !FirstTrue
+    - when: !calc doc.settings.four_cycle_mode
+      take: |
+        # When sourcing config files, the $PDY must be set:
+        datedir=/tmp/date.$$.$RANDOM
+        mkdir -p "$datedir"
+        pushd "$datedir"
+        export cyc="%CYC%"
+        export cycle="t%CYC%z"
+        setpdy.sh
+        . ./PDY
+        set -u
+        export CDATE="$PDY$cyc"
+        set +u
+        popd
+        rm -rf "$datedir"
+    - otherwise: '# date variables will be set by header file.'
+
+####################################################################################
+####################################################################################
+# Manual mode would need to intake some of the variables from other session 
+# If you are using regular/automatic mode. DO NOT EDIT THIS
+####################################################################################
+
+  enkf_epos_fhr: [ 3, 4, 5, 6, 7, 8, 9 ]
+  gdas_forecast_hours: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 ]
+  gfs_forecast_hours: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 15, 18, 21, 24 ]

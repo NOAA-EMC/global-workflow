@@ -1,0 +1,19 @@
+# This file is copied into the experiment directory as _main.yaml.  The
+# Rocoto and ecFlow workflow generation scripts use it to decide what
+# YAML files to read from the experiment directory
+
+#NOTE: If you update this file, you must also update worktools.py
+# variables: YAML_DIRS_TO_COPY, YAML_FILES_TO_COPY, and
+# function make_yaml_files
+
+include:
+  - names.yaml
+  - platform.yaml
+  - 'static*yaml'
+  - schema/
+  - defaults/
+  - case.yaml
+  - runtime/
+  - workflow.yaml
+  - config/
+

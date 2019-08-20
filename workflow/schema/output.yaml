@@ -1,0 +1,89 @@
+gfs_output_settings_template: !Template &gfs_output_settings_template
+  FHOUT_GFS:
+    type: int
+    default: 3
+    description: GFS forecast output frequency in hours
+  FHMIN_GFS: 
+    type: int
+    default: 0
+    description: GFS forecast initial hour for output
+
+  FHMIN_ENKF:
+    type: int
+    default: 3
+    description: GDAS ENKF initial hour for output
+  FHMAX_ENKF:
+    type: int
+    default: 9
+    description: GDAS ENKF forecast length
+  FHOUT_ENKF:
+    type: int
+    description: GDAS ENKF output frequency in hours
+    default: !FirstTrue
+      - when: doc.data_assimilation.l4densvar
+        do: 1
+      - otherwise: 3
+
+  FHMIN_GDAS:
+    type: int
+    default: 0
+    description: GDAS initial hour for output
+  FHMAX_GDAS:
+    type: int
+    default: 9
+    description: GDAS forecast length
+  FHOUT_GDAS:
+    type: int
+    default: 3
+    description: GDAS output frequency in hours
+
+  FHMAX_HF_GFS:
+    type: int
+    default: 0
+    description: Last forecast hour with high-frequency output for gfs
+  FHOUT_HF_GFS:
+    type: int
+    default: 1
+    description: Output frequency until FHMAX_HF_GFS hours.
+
+  NCO_NAMING_CONV:
+    type: bool
+    default: YES
+    description: "YES = use standard, operational, naming conventions.  NO = use non-standard naming conventions"
+
+  OUTPUT_FILE_TYPE:
+    type: string
+    default: nemsio
+    description: "Type of model output file"
+
+
+  gfs_forecast_hours: 
+    type: int list
+    default: !calc >-
+      tools.uniq(sorted(
+        tools.seq(FHMIN_GFS,FHMAX_HF_GFS,FHOUT_HF_GFS) +
+        tools.seq(FHMIN_GFS,FHMAX_GFS,   FHOUT_GFS)))
+
+  gdas_forecast_hours: 
+    type: int list
+    default: !calc "tools.seq(FHMIN_GDAS,FHMAX_GDAS,FHOUT_GDAS)"
+
+  enkf_epos_fhr:
+    type: int list
+    default: !calc "tools.seq(FHMIN_ENKF,FHMAX_ENKF,FHOUT_ENKF)"
+
+  wafs_last_hour:
+    type: int
+    default: !calc 120
+
+  awips_g2_hours:
+    type: int list
+    default: !calc ( tools.seq(0,240,6) )
+
+  awips_20km_1p0_hours:
+    type: int list
+    default: !calc >-
+      tools.uniq(sorted(
+        tools.seq(0,84,3) +
+        tools.seq(90,240,6)))
+

@@ -1,0 +1,45 @@
+archive_settings_template: !Template &archive_settings_template
+  archive_to_hpss: 
+    default: yes
+    description: save data to HPSS archive
+    type: bool
+
+  arch_cyc:
+    default: 18
+    description: cycle for archiving files for warm_start capability
+    type: int
+
+  arch_warmicfreq:
+    default: 6
+    description: archive frequency in days for warm_start capability
+    type: int
+
+  arch_fcsticfreq:
+    default: 3
+    descripton: archive frequency in days for gdas/gfs forecast-only capability
+    type: int
+
+  copy_fit2obs_files: 
+    default: yes
+    description: online archive of nemsio files for fit2obs verification
+    type: bool
+
+  scrub_in_archive:
+    type: bool
+    default: yes
+    description: "delete GDAS/GFS COM directories at the end of the archive job"
+
+  scrub_in_archive_start:
+    type: int
+    default: 144
+    description: "starting hour of previous cycles to be removed from rotating directory during archive job"
+
+  scrub_in_archive_end:
+    type: int
+    default: 24
+    description: "ending hour of previous cycles to be removed from rotating directory during archive job"
+
+  ATARDIR:
+    type: string
+    default: "/NCEPDEV/$HPSS_PROJECT/1year/$USER/$machine/scratch/$PSLOT"
+    description: "Archiving directory on HPSS for the current workflow.  Default is a shell expression typically used in config.base."

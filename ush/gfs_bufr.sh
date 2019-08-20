@@ -14,7 +14,7 @@
 #             so remove excution of gfs_flux
 # 2018-03-22 Guang Ping Lou: Making it works for either 1 hourly or 3 hourly output
 # 2018-05-22 Guang Ping Lou: Making it work for both GFS and FV3GFS 
-# 2018-05-30  Guang Ping Lou: Make sure all files are available.
+# 2018-05-30 Guang Ping Lou: Make sure all files are available.
 echo "History: February 2003 - First implementation of this utility script"
 #
 

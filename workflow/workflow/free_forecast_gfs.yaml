@@ -1,0 +1,164 @@
+suite: !Cycle
+  <<: *suite_defaults
+
+  Alarms:
+    <<: *cycled_suite_alarms
+
+  #####################################################################
+  ## ICS FAMILY #######################################################
+  #####################################################################
+
+  ics: !Family
+    Disable: !calc >-
+      doc.settings.get("IC_CDUMP","") and not doc.settings.chgres_and_convert_ics
+#    RUN: 'gfs'
+    jgfs_emc_getics: !Task
+      <<: *service_task_template
+      RUN: 'gfs'
+      Disable: !calc doc.settings.get("IC_CDUMP","") 
+      resources: !calc partition.resources.run_getic
+      J_JOB: rocoto/getic.sh
+      ecf_module_commands: "# getics.sh will load modules instead"
+      model: gfs
+
+    jgfs_emc_fv3ic: !Task
+      <<: *exclusive_task_template
+      RUN: 'gfs'
+      Disable: !calc not doc.settings.chgres_and_convert_ics
+      Trigger: !Depend jgfs_emc_getics
+      resources: !calc partition.resources.run_fv3ic
+      J_JOB: rocoto/fv3ic.sh
+      ecf_module_commands: "# fv3ic.sh will load modules instead"
+      model: gfs
+
+
+  #####################################################################
+  ## GFS FAMILY #######################################################
+  #####################################################################
+
+  gfs: !Family
+    AlarmName: gfs
+    RUN: 'gfs'
+    ecflow_def: "edit RUN 'gfs'"
+
+    forecast: !Family
+      jgfs_forecast_high: !Task
+        <<: *exclusive_task_template
+        Trigger: !Depend up.up.ics.jgfs_emc_fv3ic
+        resources_remap: !JobRequest [ { <<: *remap_resource_template } ]
+        resources: !calc partition.resources.run_gfsfcst
+        J_JOB: JGLOBAL_FORECAST
+
+    post: !TaskArray
+      RUN: !calc up.RUN
+      Dimensions:
+        fhr: !calc doc.gfs_output_settings.gfs_forecast_hours
+      jgfs_post_manager_el: !TaskElement
+        <<: *exclusive_task_template
+        RUN: !calc up.RUN
+        Disable: !calc metasched.type == 'rocoto'
+        Trigger: !FirstTrue
+          - when: !calc not doc.settings.dev_safeguards
+            take: !Depend ( up.forecast.is_running() )
+          - otherwise: !Depend "up.forecast.is_running() | up.forecast"
+        Foreach: [ ]
+        J_JOB: JGLOBAL_POST_MANAGER
+        Name: jgfs_post_manager
+        resources: !calc partition.resources.run_gfs_post_manager
+        release_postanl: !DataEvent
+          file: !expand >-
+            {metasched.varref("COM")}/gfs.{metasched.datestring("%Y%m%d/%H/")}gfs.t{metasched.datestring("%H")}z.logf000.nemsio
+        release_post_fhr: !DataEventElement
+          Name: !expand "release_post{dimval.fhr:03d}"
+          Foreach: [ fhr ]
+          file: !expand >-
+            {metasched.varref("COM")}/gfs.{metasched.datestring("%Y%m%d/%H/")}gfs.t{metasched.datestring("%H")}z.logf{dimval.fhr:03d}.nemsio
+        # NOTE: the above files must match post_manager.yaml
+
+      jgfs_post_anl_el: !TaskElement
+        <<: *exclusive_task_template
+        Foreach: []
+        FHR: anl
+        Name: jgfs_post_anl
+        Trigger: !FirstTrue
+          - when: !calc doc.settings.dev_safeguards
+            take: !Depend jgfs_post_manager.release_postanl
+          - otherwise: !Depend jgfs_post_manager.release_postanl | up.forecast
+
+        ecflow_def: !expand "edit FHR '{FHR}'"
+        release_pgrb2_anl: !DataEvent {file="/dev/null"}
+        resources: !calc partition.resources.run_gfspost
+        J_JOB: JGLOBAL_NCEPPOST
+        ecflow_command: !expand |
+          export post_times=%FHR% FHRLST=%FHR% FHRGRP=%FHR%
+          $HOMEgfs/jobs/{J_JOB}
+        rocoto_command: !expand >-
+          {rocoto_load_modules} ;
+          /usr/bin/env FHRGRP={FHR} post_times={FHR} FHRLST={FHR} &HOMEgfs;/jobs/{J_JOB}
+
+      jgfs_post_fhr_el: !TaskElement
+        <<: *exclusive_task_template
+        Foreach: [ fhr  ]
+        resources: !calc partition.resources.run_gfspost
+        Name: !expand jgfs_post_f{dimval.fhr:03d}
+        FHR: !expand "{dimval.fhr:03d}"
+        J_JOB: JGLOBAL_NCEPPOST
+        Trigger: !FirstTrue
+          - when: !calc not doc.settings.dev_safeguards
+            take: !Depend jgfs_post_manager.depend("release_post{F:03d}",F=[dimval.fhr])
+          - otherwise: !Depend jgfs_post_manager.depend("release_post{F:03d}",F=[dimval.fhr]) | up.forecast
+        ecflow_def: !expand "edit FHR '{FHR}'"
+        ecflow_command: !expand |
+          export post_times=%FHR% FHRLST=%FHR% FHRGRP=%FHR%
+          $HOMEgfs/jobs/{J_JOB}
+        rocoto_command: !expand >-
+          {rocoto_load_modules} ;
+          /usr/bin/env post_times={FHR} FHRLST={FHR} FHRGRP={FHR} &HOMEgfs;/jobs/{J_JOB}
+    #endfamily post
+
+    jgfs_emc_vrfy: !Task
+      <<: *exclusive_task_template
+      Trigger: !Depend post
+      Disable: !calc not doc.settings.run_vrfy_jobs
+      resources: !calc partition.resources.run_gfsvrfy
+      J_JOB: rocoto/vrfy.sh
+      ecf_environment_settings: !calc doc.settings.ecflow_rocoto_cdate_workaround
+      ecf_module_commands: "# vrfy.sh will load modules instead"
+      
+  #endfamily gfs
+
+
+  #######################################################################
+  ## ARCHIVE FAMILY #####################################################
+  #######################################################################
+
+  archive: !Family
+    Disable: !calc not doc.archiving.archive_to_hpss
+    ecflow_def:
+      edit ECF_TRIES '3'
+
+    jgfs_archive: !Task
+      <<: *service_task_template
+      Disable: !calc doc.settings.gfs_cyc == 0
+      Complete: !Depend ~ suite.has_cycle('-6:00:00')
+      AlarmName: gfs
+      Trigger: !Depend up.gfs
+      resources: !calc partition.resources.run_arch
+      ecf_environment_settings: !calc doc.settings.ecflow_rocoto_cdate_workaround
+      J_JOB: rocoto/arch.sh
+      ecf_module_commands: "# arch.sh will load modules instead"
+      RUN: gfs
+      ecflow_def: !FirstTrue
+        - when: !calc doc.settings.four_cycle_mode
+          take: "edit RUN 'gfs'"
+        - otherwise: |
+            time +00:10
+            edit RUN 'gfs'
+
+  final: !Task
+    <<: *service_task_template
+    Disable: !calc not metasched.type=="rocoto"
+    resources: !calc partition.resources.run_nothing
+    rocoto_command: /bin/true
+    model: gfs # useless but required
+

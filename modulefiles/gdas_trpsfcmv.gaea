@@ -1,0 +1,22 @@
+#%Module################################################
+# Modfule file for gdas_trpsfcmv
+########################################################
+#module load ncep/1.0
+module load gcc
+module load PrgEnv-intel
+module load cray-mpich
+module load craype-haswell
+
+module use /ncrc/sw/gaea-c4/modulefiles
+module load ncl
+
+module load bufr-intel-sandybridge/11.0.1
+module load sigio-intel-sandybridge/2.0.1
+module load ip-intel-sandybridge/2.0.0         
+module load sp-intel-sandybridge/2.0.2
+module load w3nco-intel-sandybridge/2.0.6
+module load w3emc-intel-sandybridge/2.2.0
+
+#module use /usrx/local/nceplibs/modulefiles
+#module load bacio-intel-sandybridge/2.0.2
+module load bacio-intel-sandybridge/2.0.2

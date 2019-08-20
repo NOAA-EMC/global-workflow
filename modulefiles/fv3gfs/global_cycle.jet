@@ -1,0 +1,23 @@
+#%Module#####################################################
+## global_cycle component - Jet
+#############################################################
+
+# Loading Intel Compiler Suite
+# Loding nceplibs modules
+
+module load newdefaults
+module load intel/15.0.3.187
+module load impi/5.1.3.181
+
+#export NCEPLIBS=/mnt/lfs3/projects/hfv3gfs/gwv/ljtjet/lib
+module use ${NCEPLIBS}/modulefiles
+module load w3nco-intel-sandybridge/2.0.6
+module load sp-intel-sandybridge/2.0.2
+module load bacio-intel-sandybridge/2.0.1
+module load ip-intel-sandybridge/3.0.0
+module load szip
+module load hdf5
+module load netcdf4
+export NETCDF_INCLUDE=$NETCDF4_INCLUDE_OPTS
+export NETCDF_LDFLAGS_F="$NETCDF4_LINK_OPTS -lnetcdff -L${HDF5}/lib -lhdf5 -lhdf5_fortran"
+export FCMP=mpiifort

@@ -27,9 +27,9 @@ if [[ -d /lfs3 ]] ; then
     fi
     target=jet
     module purge
-     export NCEPLIBS=/mnt/lfs3/projects/hfv3gfs/gwv/ljtjet/lib
-     echo NCEPLIBS HARD SET to  $NCEPLIBS in `pwd`/module_setup.sh.inc
-     module use $NCEPLIBS/modulefiles
+    export NCEPLIBS=/mnt/lfs3/projects/hfv3gfs/gwv/ljtjet/lib
+    echo NCEPLIBS HARD SET to  $NCEPLIBS in `pwd`/module_setup.sh.inc
+    module use $NCEPLIBS/modulefiles
 elif [[ -d /scratch3 ]] ; then
     # We are on NOAA Theia
     if ( ! eval module help > /dev/null 2>&1 ) ; then
@@ -110,8 +110,21 @@ elif [[ -d /lustre && -d /ncrc ]] ; then
 	echo load the module command 1>&2
         source /etc/profile
     fi
+
     target=gaea
     module purge
+    unset _LMFILES_
+    unset _LMFILES_000
+    unset _LMFILES_001
+    unset LOADEDMODULES
+    module use -a /opt/cray/ari/modulefiles
+    module use -a /opt/cray/pe/ari/modulefiles
+    module use -a /opt/cray/pe/craype/default/modulefiles
+    source /etc/opt/cray/pe/admin-pe/site-config
+    export NCEPLIBS=/lustre/f1/pdata/ncep_shared/NCEPLIBS/lib
+    echo NCEPLIBS HARD SET to  $NCEPLIBS in `pwd`/module_setup.sh.inc
+    module use $NCEPLIBS/modulefiles
+
 else
     echo WARNING: UNKNOWN PLATFORM 1>&2
 fi

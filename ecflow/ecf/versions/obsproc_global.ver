@@ -1,0 +1,7 @@
+## main "model" software
+export obsproc_global_ver=iss-46886
+
+## main shared software versions 
+export obsproc_prep_ver=iss-46886
+
+export gfs_ver=v15.0.0pre9

@@ -14,6 +14,15 @@ fi
 gsitarget=$target
 [[ "$target" == wcoss_cray ]] && gsitarget=cray
 
+if [[ "$target" == jet ]]; then
+    if [ -f "../modulefiles/gsi/modulefile.ProdGSI.jet" ]; then
+        if [ -d gsi.fd/modulefiles ]; then
+            cp ../modulefiles/gsi/modulefile.ProdGSI.jet gsi.fd/modulefiles
+            cp ../modulefiles/gsi/setCompilerFlags.cmake gsi.fd/cmake/Modules
+        fi
+    fi
+fi    
+
 # Check final exec folder exists
 if [ ! -d "../exec" ]; then
   mkdir ../exec
@@ -23,4 +32,3 @@ cd gsi.fd/ush/
 ./build_all_cmake.sh "PRODUCTION" "$cwd/gsi.fd"
 
 exit
-

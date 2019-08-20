@@ -1,0 +1,109 @@
+# This file is designed to be used in manual mode, where only 
+# a subset of variables are set by CROW while the majority
+# of them are provided by developers through config files.
+# 
+# You are expected to: 1, edit layout/manual_temp.yaml file
+# following your desired workflow layout; 2, make sure everything
+# in this file is OK; 3, provide your own config files.
+
+case:
+  fv3_settings:
+    CASE: C384
+    LEVS: 65
+
+  fv3_gfs_settings:
+    CASE: C384
+    LEVS: 65
+    QUILTING: True
+    WRITE_GROUP: 1
+    WRTTASK_PER_GROUP: 2
+    DONST: YES
+    nst_anl: yes
+    layout_x: 2
+    layout_y: 3
+    fv3_threads: 4
+    imp_physics: 11
+
+  fv3_gdas_settings:
+    CASE: C384
+    LEVS: 65
+    QUILTING: True
+    WRITE_GROUP: 1
+    WRTTASK_PER_GROUP: 2
+    layout_x: 2
+    layout_y: 3
+    fv3_threads: 4
+
+  fv3_enkf_settings:
+    CASE: C192
+    LEVS: 65
+    QUILTING: True
+    WRITE_GROUP: 1
+    WRTTASK_PER_GROUP: 2
+    FHCYC_GDAS: 1
+    FHCYC_GFS: 24
+    layout_x: 2
+    layout_y: 3
+    fv3_threads: 4
+
+  gfs_output_settings:
+    FHMIN_GFS: 0
+    FHMAX_GFS: 384
+    FHOUT_GFS: 3
+    FHMIN_GDAS: 0
+    FHMAX_GDAS: 9
+    FHOUT_GDAS: 3
+    FHMAX_HF_GFS: 0
+    FHOUT_HF_GFS: 3
+    FHMIN_ENKF: 3
+    FHMAX_ENKF: 9
+    FHOUT_ENKF: 3
+    OUTPUT_GRID: gaussian_grid
+    OUTPUT_FILE_TYPE: nemsio 
+
+  data_assimilation:
+    NMEM_ENKF: 80
+    NMEM_EOMGGRP: 5
+    NMEM_EFCSGRP: 8
+    NMEM_EARCGRP: 10
+    l4densvar: Yes
+    assim_freq: 6
+    lwrite4danl: NO
+    DOHYBVAR: YES
+    SMOOTH_ENKF: YES
+    INCREMENTS_TO_ZERO: [ delz_inc, clwmr_inc, icmr_inc ]
+
+  archiving:
+    RMOLDEND: 72
+    ATARDIR: !expand "/NCEPDEV/$HPSS_PROJECT/1year/$USER/$machine/scratch/{doc.names.experiment}"
+    arch_warmicfreq: 2
+    arch_fcsticfreq: 1
+    arch_cyc: 00
+    archive_to_hpss: YES    
+    scrub_in_archive: YES
+
+  places:
+    workflow_file: workflow/manual_temp.yaml
+
+  settings: 
+    SDATE: 2019-05-01t00:00:00
+    EDATE: 2019-05-01t06:00:00
+
+    DUMP_SUFFIX: "p"
+    run_gsi: Yes
+    chgres_and_convert_ics: No
+    gfs_cyc: 4 # run gfs every cycle
+
+  downstream: &downstream
+    DO_POST_PROCESSING: NO
+    DO_BUFRSND: NO
+    DO_GEMPAK: NO
+    DO_AWIPS: NO
+    DO_FAX: NO
+    DO_WAFS: NO
+    DO_BULLETINS: NO
+    VRFYFITS: NO
+    VSDB_STEP1: NO
+    VSDB_STEP2: NO
+    VRFYG2OBS: NO
+    VRFYPRCP: NO

@@ -24,6 +24,7 @@ import rocoto
 DATE_ENV_VARS=['CDATE','SDATE','EDATE']
 SCHEDULER_MAP={'ZEUS':'moabtorque',
                'THEIA':'moabtorque',
+               'GAEA':'moab',
                'WCOSS':'lsf',
                'WCOSS_DELL_P3':'lsf',
                'WCOSS_C':'lsfcray'}
@@ -43,7 +44,11 @@ def get_shell_env(scripts):
     vars=dict()
     runme=''.join([ 'source %s ; '%(s,) for s in scripts ])
     magic='--- ENVIRONMENT BEGIN %d ---'%random.randint(0,64**5)
-    runme+='/bin/echo -n "%s" ; /usr/bin/env -0'%(magic,)
+    if os.path.isfile('/usr/bin/echo'):
+        echo_is='/usr/bin/echo'
+    elif os.path.isfile('/bin/echo'):
+        echo_is='/bin/echo'
+    runme+=echo_is+' -n "%s" ; /usr/bin/env -0'%(magic,)
     with open('/dev/null','wb+') as null:
         env=subprocess.Popen(runme,shell=True,stdin=null.fileno(),
                        stdout=subprocess.PIPE)
@@ -60,6 +65,12 @@ def get_shell_env(scripts):
 def get_script_env(scripts):
     default_env=get_shell_env([])
     and_script_env=get_shell_env(scripts)
+    var_script_and_env = []
+    for env_var in default_env:
+        if env_var in and_script_env:
+            var_script_and_env.append(env_var)
+    for each_var in var_script_and_env:
+        del default_env[each_var]
     vars_just_in_script=set(and_script_env)-set(default_env)
     union_env=dict(default_env)
     union_env.update(and_script_env)

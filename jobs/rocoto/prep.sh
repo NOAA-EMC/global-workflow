@@ -1,4 +1,4 @@
-#!/bin/ksh -x
+#!/bin/bash
 
 ###############################################################
 # Source FV3GFS workflow modules
@@ -82,11 +82,6 @@ fi
 ###############################################################
 # Generate prepbufr files from dumps or copy from OPS
 if [ $DO_MAKEPREPBUFR = "YES" ]; then
-    if [ $ROTDIR_DUMP = "YES" ]; then
-	rm $COMOUT/${OPREFIX}prepbufr
-	rm $COMOUT/${OPREFIX}prepbufr.acft_profiles
-	rm $COMOUT/${OPREFIX}nsstbufr
-    fi
     if [ $machine = "WCOSS_C" -o $machine = "WCOSS_DELL_P3" -o $machine = "THEIA" ]; then
 
         export job="j${CDUMP}_prep_${cyc}"
@@ -106,7 +101,25 @@ if [ $DO_MAKEPREPBUFR = "YES" ]; then
     else
         echo "WARNING:  prep step is not supported on $machine, exit"
         exit 1
+    if [ $ROTDIR_DUMP = "YES" ]; then
+	rm $COMOUT/${OPREFIX}prepbufr
+	rm $COMOUT/${OPREFIX}prepbufr.acft_profiles
+	rm $COMOUT/${OPREFIX}nsstbufr
     fi
+    export job="j${CDUMP}_prep_${cyc}"
+    export DATAROOT="$RUNDIR/$CDATE/$CDUMP/prepbufr"
+    if [ $ROTDIR_DUMP = "NO" ]; then
+      COMIN_OBS=${COMIN_OBS:-$DMPDIR/$CDATE/$CDUMP}
+      export COMSP=${COMSP:-$COMIN_OBS/$CDUMP.t${cyc}z.}
+    fi
+    export COMIN=${COMIN:-$ROTDIR/$CDUMP.$PDY/$cyc}
+    export COMINgdas=${COMINgdas:-$ROTDIR/gdas.$PDY/$cyc}
+    export COMINgfs=${COMINgfs:-$ROTDIR/gfs.$PDY/$cyc}
+
+    $HOMEobsproc_network/jobs/JGLOBAL_PREP
+    status=$?
+    [[ $status -ne 0 ]] && exit $status
+
 else
     if [ $ROTDIR_DUMP = "NO" ]; then
 	$NCP $DMPDIR/$CDATE/$CDUMP/${OPREFIX}prepbufr               $COMOUT/${OPREFIX}prepbufr

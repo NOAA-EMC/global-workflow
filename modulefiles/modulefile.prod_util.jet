@@ -1,0 +1,16 @@
+#%Module
+
+set root /lfs3/projects/hwrf-vd/soft/prod_util-1.0.18
+
+module-whatis    This module sets the environment variables for the  NCEP Central Operations production utilities
+
+conflict prod_util
+
+prepend-path UTILROOT $root
+prepend-path PATH $root/ush
+prepend-path PYTHONPATH $root/ush
+setenv NDATE $root/exec/ndate
+setenv MDATE $root/exec/mdate
+setenv NHOUR $root/exec/nhour
+setenv FSYNC $root/exec/fsync_file
+

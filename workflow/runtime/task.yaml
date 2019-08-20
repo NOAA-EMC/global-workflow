@@ -1,0 +1,327 @@
+# This file defines defaults for tasks in the suite definitions.
+# Individual tasks in the suite may override some settings
+
+eoln: "\n"
+parm_config_source_line: "source $HOMEgfs/parm/config/config.%s"
+expdir_config_source_line: "source $EXPDIR/parm/config/config.%s"
+
+task_template: &task_template
+
+  # Template - specifies a schema that is used to validate the variables in this scope.
+  Template: *task_schema
+
+  # Together, accounting and default_accounting set the accounting
+  # information, such as queues, projects, and partitions.
+
+  default_accounting: {}
+  accounting: {}
+
+  # partition_specification - this is passed into the
+  # rocoto_accounting and batch_accounting functions to set the
+  # partition to request (-l partition=) if needed.
+  partition_specification: !calc |
+    {'partition':partition.get('specification',None)}
+
+  # rocoto_load_modules - commands to run before passing control to
+  # the j-jobs (jobs/ directory) in Rocoto:
+  rocoto_load_modules: !expand >-
+     {doc.platform.get("rocoto_load_modules_extra","")}
+     source $HOMEgfs/ush/load_fv3gfs_modules.sh {task_type} ;
+     module list
+
+  # rocoto_command - command rocoto executes to pass control to the
+  # j-job (jobs/ directory) for this task.
+  rocoto_command: !expand >-
+     {rocoto_load_modules} ;
+     {rocoto_config_source} ;
+     {J_JOB_PATH}/{J_JOB}
+
+  config_list: [ base ]
+
+  rocoto_config_source: !FirstTrue
+    - when: !calc not config_list
+      take: ""
+    - otherwise: !calc '" ; ".join([ "source $EXPDIR/config.%s"%(x,) for x in config_list ])'
+
+  ecflow_config_source: !FirstTrue
+    - when: !calc not config_list
+      take: ""
+    - when: !calc doc.settings.four_cycle_mode
+      take: !expand |
+        export HOMEgfs=${{HOMEgfs:-${{NWROOT:?}}/gfs.${{gfs_ver:?"###FATAL ERROR gfs_ver is not set"}}}}
+        {doc.eoln.join([ "source $HOMEgfs/parm/config/config.%s"%(x,) for x in config_list ])}
+    - otherwise: !calc |
+        doc.eoln.join([ "source $EXPDIR/config.%s"%(x,) for x in config_list ])
+
+  # ecflow_command - command ecFlow executes from the ecf file to pass
+  # control to the j-job (jobs/ directory) for this task.
+  ecflow_command: !expand "{J_JOB_PATH}/{J_JOB}"
+
+  J_JOB_PATH: '$HOMEgfs/jobs'
+
+  # rocoto_log_path: contents of the <join> entry of the <task> which
+  # sets the stdout and stderr log path in the Rocoto XML.
+  rocoto_log_path: !ref doc.settings.rocoto_log_path
+
+  # ecflow_log_path: Used in the #BSUB or #PBS lines to specify the
+  # path.  Usually will include %VARS% for the ecflow server to parse.
+  ecflow_log_path: !ref doc.settings.ecf_log_path
+
+  # Rocoto - contents of the Rocoto <task> tag for this task,
+  # excluding the <dependency> tag, which is automatically generated
+  # in CROW/crow/metascheduler/rocoto.py
+  Rocoto: !expand |
+    <command>sh -c '{rocoto_command}'</command>
+    {partition.scheduler.rocoto_accounting(
+        partition_specification,default_accounting,accounting,
+      jobname=task_path_var,
+        outerr=rocoto_log_path,
+        partition=partition.specification)}
+    {partition.scheduler.rocoto_resources(resources)}
+    <envar><name>CDATE</name><value><cyclestr>@Y@m@d@H</cyclestr></value></envar>
+    <envar><name>PDY</name><value><cyclestr>@Y@m@d</cyclestr></value></envar>
+    <envar><name>cyc</name><value><cyclestr>@H</cyclestr></value></envar>
+    <envar><name>EXPDIR</name><value>&EXPDIR;</value></envar>
+    <envar><name>CDUMP</name><value>{CDUMP}</value></envar>
+    <envar><name>RUN_ENVIR</name><value>emc</value></envar>
+    <envar><name>DATAROOT</name><value>&DATAROOT;</value></envar>
+    <envar><name>HOMEgfs</name><value>{metasched.varref(doc.schedvar.script_home)}</value></envar>
+    <envar><name>HOMEobsproc_network</name><value>{metasched.varref(doc.schedvar.obsproc_network_home)}</value></envar>
+    <envar><name>HOMEobsproc_global</name><value>{metasched.varref(doc.schedvar.obsproc_network_home)}</value></envar>
+    <envar><name>HOMEobsproc_prep</name><value>{metasched.varref(doc.schedvar.obsproc_prep_home)}</value></envar>
+    <envar><name>job</name><value>{task_path_list[-1]}_<cyclestr>@H</cyclestr></value></envar>
+    {rocoto_more_vars}
+    {rocoto_platform_vars}
+
+  # rocoto_platform_vars - allows the platform definition file
+  # (platforms/*.yaml) to add <native> tags to the Rocoto <task>
+  # definition.
+  rocoto_platform_vars: !calc " doc.platform.get('rocoto_platform_vars','') "
+
+  # RUN - Used in ecf files to specify whether the task is gfs or gdas
+  RUN: !calc task_path_list[0]
+
+  # CDUMP - alias for RUN expected by development scripts
+  CDUMP: !calc RUN
+
+  # more_vars - Additional environment variables to pass to the j-job
+  # through the Rocoto XML or ecFlow ecf files.  This variable is only used
+  # if the task does not override the ecf_more_exports, rocoto_more_vars,
+  # or ecflow_def_more_vars variables.
+  more_vars: {}
+
+  # ecf_more_exports - additional shell "export" statements to include in
+  # this task's ecf file.
+  ecf_more_exports: !calc |
+    "\n".join([ f"export {K}=%{V}%\n" for K,V in more_vars.items() ])
+
+  # rocoto_more_vars - additional variables to set in the Rocoto <task> tag's
+  # <envar> elements.
+  rocoto_more_vars: !calc |
+    "\n".join([ metasched.defenvar(K,this[V]) for K,V in more_vars.items() ])
+
+  # ecflow_def_more_vars - additional variables to set in the ecflow
+  # suite definition "edit" statements for this task.  This is only
+  # used if the task does not override ecflow_def.
+  ecflow_def_more_vars: !calc |
+    "\n".join([ metasched.defenvar(V,this[V]) for K,V in more_vars.items() ])
+
+  # ecflow_def - the contents of this variable are sent into the task
+  # definition in the ecflow suite definition file.  The
+  # CROW/crow/metascheduler/ecflow.py copies this variable's contents
+  ecflow_def: !calc ecflow_def_more_vars
+
+  # ecf_model_include - Name of the ecflow %include file with
+  # model-specific settings.  This is model_ver.h in production or the
+  # header for the user's experiment.  Make sure this matches
+  # doc.ecf_include_experiment.filename.
+  ecf_model_include: !FirstTrue
+    - when: !calc doc.settings.nco_mode
+      take: '%include <model_ver.h>'
+    - when: !calc doc.settings.use_nco_ecflow_headers
+      take: |
+        export NWROOT=%NWROOT%   # EMC override
+        export DATAROOT=%DATAROOT% # EMC override
+        %include <model_ver.h>
+    - otherwise: !calc ecf_experiment_overrides
+
+  ecf_experiment_overrides: !FirstTrue
+    - when: !calc doc.settings.use_nco_ecflow_headers
+      take: ''
+    - otherwise: !expand "%include <experiment-{doc.names.experiment}.h>"
+
+  # ecf_file - the contents of this variable are written to the ecf
+  # file for each task by the CROW/crow/metascheduler/ecflow.py
+  # python module.
+  ecf_file: !expand |
+    #! /bin/sh
+    {ecf_batch_resources}
+    %include <head.h>
+    %include <{doc.accounting.ecflow_header}>
+
+    set -x
+
+    {ecf_resource_more}
+
+    export model=%model:gfs%
+    export NET=%NET:gfs%
+    export RUN=%RUN%
+
+    {ecf_model_include}
+
+    ############################################################
+    # Load modules
+    ############################################################
+    #. $MODULESHOME/init/sh
+    {ecf_module_commands}
+    {ecf_after_module_commands}
+
+    ############################################################
+    # WCOSS environment settings
+    ############################################################
+    {ecf_experiment_overrides}
+    {ecf_environment_settings}
+
+    ############################################################
+    export cyc=%CYC%
+    {ecflow_config_source}
+    {ecf_more_exports}
+    {ecflow_command}
+
+    %include <tail.h>
+    %manual
+    {ecf_manual}
+    %end
+
+  # ecf_manual - contents of the manual entry for this task in ecflow
+  ecf_manual: ''
+
+  # ecf_module_commands - these commands are sent to the ecf file for
+  # this task to load any modules that are required for the job
+  # ecf_module_commands: !ref doc.settings.ecf_module_commands
+  ecf_module_commands: !FirstTrue
+    - when: !calc doc.settings.four_cycle_mode
+      take: !calc doc.platform.four_cycle_mode_modules
+    - otherwise: !expand |-
+        source "$HOMEgfs/ush/load_fv3gfs_modules.sh" {task_type}
+
+  # ecf_after_module_commands - intended to list the module commands,
+  # and recover from their consequences.  For example, "module purge"
+  # clears the ecflow module, and "module load ecflow" clears the
+  # ECF_PORT.
+  ecf_after_module_commands: !FirstTrue
+    - when: !calc doc.settings.nco_mode
+      take: |
+        module list
+
+        # Synonyms expected by scripts:
+        export CDUMP="$RUN"
+        export ROTDIR="$COMROOT"
+    - when: !calc doc.settings.four_cycle_mode
+      take: |
+        module list
+        export ECF_PORT=%ECF_PORT%  # workaround for bug in ecflow module
+        
+        export cycle=t%CYC%z
+        export jlogfile=/%COM%/logs/jlogfile
+        export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config} # where to get config files
+        
+        # Development overrides
+        export DATAROOT=%DATAROOT%
+        export COMROOT=/%COM%
+
+        # Development synonyms
+        export CDUMP="$RUN"
+        export ROTDIR="$COMROOT"
+    - otherwise: !expand |
+        module load {doc.settings.ecflow_module}
+        module list
+        export ECF_PORT=%ECF_PORT%  # workaround for ecflow module bug
+
+  ecf_environment_settings: !FirstTrue
+    - when: !calc config_list
+      take: !calc doc.settings.ecflow_rocoto_cdate_workaround
+    - otherwise: "# Set tuning variables like KMP_AFFINITY and OMP_STACKSIZE here."
+
+  # ecf_log_path: sets the stdout/stderr log path for the job
+  ecf_log_path: !ref doc.settings.ecf_log_path
+
+  ecf_job_name: !FirstTrue
+    - when: !calc doc.settings.four_cycle_mode
+      take: !expand '%E%{task_path_list[-1][1:]}_%CYC%'
+    - otherwise: !calc task_path_var
+  
+  # ecf_batch_resources - generates batch card settings for the ecflow ecf file
+  ecf_batch_resources: !FirstTrue
+    - when: !calc doc.settings.nco_mode
+      take: !expand "{partition.scheduler.batch_accounting(partition_specification,default_accounting,accounting,jobname=ecf_job_name,outerr=ecf_log_path)}{partition.scheduler.batch_resources(resources)}#BSUB -cwd /tmp"
+    - otherwise: !expand "{partition.scheduler.batch_accounting(partition_specification,default_accounting,accounting,jobname=ecf_job_name,outerr=ecf_log_path)}{partition.scheduler.batch_resources(resources)}"
+
+  # ecf_resource_more - generates the ntasks, ptile, and threads variables
+  # in cases where they are needed
+  ecf_resource_more: !FirstTrue
+    - when: !calc doc.settings.four_cycle_mode
+      take: ''
+    - otherwise: !expand |-
+        {ecf_maybe_ntasks}
+        {ecf_maybe_ptile}
+        {ecf_maybe_threads}
+
+  # ecf_maybe_ntasks - generates the ntasks variable for any MPI jobs'
+  # ecf files, which specifies the number of MPI ranks.
+  ecf_maybe_ntasks: !FirstTrue
+    - when: !calc resources.total_ranks()>0
+      do: !expand 'export ntasks={resources.total_ranks()}'
+    - otherwise: "# No MPI in use, so I am not setting $ntasks."
+
+  # ecf_maybe_threads - generates the ntasks variable for any OpenMP
+  # jobs' ecf files.  This variable specifies the number of OpenMP threads
+  ecf_maybe_threads: !FirstTrue
+    - when: !calc resources.has_threads()
+      do: !expand 'export threads={resources[0]["OMP_NUM_THREADS"]}'
+    - otherwise: "# No OpenMP in use, so I am not setting $threads"
+
+  # ecf_maybe_ptile - generates the ptile variable if this is an
+  # OpenMP or MPI program.  The ptile variable specifies the number of
+  # MPI ranks per node.
+  ecf_maybe_ptile: !FirstTrue
+    - when: !calc resources.has_threads() or resources.total_ranks()>0
+      do: !expand 'export ptile={partition.nodes.max_ranks_per_node(resources[0])}'
+    - otherwise: "# Neither OpenMP nor MPI are in use, so I am not setting $ptile"
+
+# shared_task_template - a convenient alias to define a task that has
+# the shared_accounting and passes "shared" to the
+# load_fv3gfs_modules.sh
+shared_task_template: &shared_task_template
+  <<: *task_template
+  partition: !calc doc.accounting.shared_partition
+  default_accounting: !calc partition.shared_accounting_ref
+  J_JOB: !expand '{task_path_list[-1].upper()}'
+  task_type: shared
+
+# service_task_template - a convenient alias to define a task that has
+# the service_accounting and passes "service" to the
+# load_fv3gfs_modules.sh
+service_task_template: &service_task_template
+  <<: *task_template
+  partition: !calc doc.accounting.service_partition
+  default_accounting: !calc partition.service_accounting_ref
+  J_JOB: !expand '{task_path_list[-1].upper()}'
+  task_type: service
+
+# exclusive_task_template - a convenient alias to define a task that has
+# the exclusive_accounting and passes "exclusive" to the
+# load_fv3gfs_modules.sh
+exclusive_task_template: &exclusive_task_template
+  <<: *task_template
+  partition: !calc doc.accounting.exclusive_partition
+  default_accounting: !calc partition.exclusive_accounting_ref
+  J_JOB: !expand '{task_path_list[-1].upper()}'
+  task_type: exclusive
+
+# exclusive_task_template - a convenient alias for the special case of
+# an exclusive_accounting job that runs a forecast.  These jobs must
+# pass "forecast" to the load_fv3gfs_modules.sh.
+forecast_task_template: &forecast_task_template
+  <<: *exclusive_task_template
+  task_type: forecast

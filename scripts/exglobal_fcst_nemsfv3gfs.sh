@@ -1,5 +1,4 @@
-#!/bin/sh
-
+#!/bin/bash
 ################################################################################
 ## UNIX Script Documentation Block
 ## Script name:         exglobal_fcst_nemsfv3gfs.sh
@@ -234,7 +233,7 @@ echo "MAIN: Output copied to COMROT"
 
 #------------------------------------------------------------------
 # Clean up before leaving
-if [ $mkdata = "YES" ]; then rm -rf $DATA; fi
+if [ $KEEPDATA = "NO" ]; then rm -rf $DATA; fi
 
 #------------------------------------------------------------------
 #set +x

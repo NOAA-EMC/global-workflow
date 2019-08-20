@@ -58,7 +58,6 @@ export RTMFIX=$CRTM_FIX
     export BASE_GIT="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git"
     export BASE_SVN="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git"
 
-
 # Toggle to turn on/off GFS downstream processing.
 export DO_BUFRSND="YES"
 export DO_GEMPAK="YES"

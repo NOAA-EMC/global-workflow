@@ -1,0 +1,117 @@
+# This file configures the data assimilation, which is not included in
+# this release.  Although the variables are not used, they still must
+# be defined to satisfy validation logic elsewhere.
+
+data_assimilation_template: !Template &data_assimilation_template
+  DOHYBVAR:
+    type: bool
+    default: YES
+    description: flag (YES or NO) for hybrid ensemble variational option
+  NMEM_ENKF:
+    type: int
+    default: 80
+    description: Number of members of the GFS ENKF ensemble.
+  NMEM_EOMGGRP:   { type: int,      default: 10 }
+  NMEM_EFCSGRP:   { type: int,      default: 10 }
+  NMEM_EARCGRP:   { type: int,      default: 10 }
+  RECENTER_ENKF:  { type: bool,     default: YES }
+  SMOOTH_ENKF:    { type: bool,     default: YES }
+  assim_freq:     { type: int,      default: 6 }
+  l4densvar:      { type: bool,     default: YES }
+  lwrite4danl:    { type: bool,     default: NO }
+
+  NSPLIT:
+    type: int
+    default: 4
+    description: "Execute prepbufr in parallel.  Operational GFS default is 3."
+
+  NAM_ENKF:
+    type: string
+    default: "analpertwtnh=0.9,analpertwtsh=0.9,analpertwttr=0.9"
+
+  INCREMENTS_TO_ZERO:
+    type: string list
+    default: [ delz_inc, clwmr_inc, icmr_inc ]
+
+  PREP_REALTIME:
+    type: bool
+    default: no
+
+  DO_EMCSFC:
+    type: bool
+    default: NO
+    description: "Whether to run EMC SFC job"
+
+  PROCESS_TROPCY:
+    type: bool
+    default: no
+
+  DO_RELOCATE:
+    type: bool
+    default: no
+
+  DO_MAKEPREPBUFR:
+    type: bool
+    default: YES
+    description: If NO, will copy prepbufr from globaldump.  Otherwise, generates prepbufr file anew.
+
+  OPREFIX:
+    type: string
+    default: "$CDUMP.$cycle."
+    description: Format for dump file name prefix
+
+  COM_OBS:
+    type: string
+    default: "$DMPDIR"
+    description: Top folder for COMIN_OBS (DMPDIR or COMROOT)
+
+  COMIN_OBS:
+    type: string
+    description: Location to draw observation data from (global dump archive or com)
+    default: !FirstTrue
+      - when: !calc ( COM_OBS=="$DMPDIR" )
+        do: "$DMPDIR/$CDATE/$CDUMP$DUMP_SUFFIX"
+      - when: !calc ( COM_OBS=="$COMROOT" )
+        do: "$COMROOT/$CDUMP.$PDY/$CYC"
+      - otherwise: !error "Unknown COM_OBS value: {COM_OBS}"
+
+  RERUN_EFCSGRP:
+    type: bool
+    default: NO
+    description: Rerun failed ensemble forecast group members automatically.
+
+  RERUN_EOMGGRP:
+    type: bool
+    default: YES
+
+  GENDIAG:
+    type: bool
+    default: YES
+
+  NEPOSGRP:
+    type: int
+    default: 7
+
+  OBSINPUT_INVOBS: 
+    type: string
+    default: "dmesh(1)=225.0,dmesh(2)=225.0"
+  OBSQC_INVOBS:
+    type: string
+    default: "tcp_width=60.0,tcp_ermin=2.0,tcp_ermax=12.0"
+
+  ENKF_INNOVATE_GROUPS: 
+    type: int
+    default: !calc ( NMEM_ENKF // NMEM_EOMGGRP )
+
+  ENKF_FORECAST_GROUPS: 
+    type: int
+    default: !calc ( NMEM_ENKF // NMEM_EFCSGRP )
+
+  ENKF_ARCHIVE_GROUPS:
+    type: int
+    default: !calc ( NMEM_ENKF // NMEM_EARCGRP )
+
+# These variable largely eliminate the need for explicitly setting
+# USH directories, FIX files, PARM files, EXECutables below
+# The USER can overwrite components that they wish
+# e.g. PRVT is used from the GSI

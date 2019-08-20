@@ -242,7 +242,7 @@ export FORT81="tropic${cycle}"Z."${cyc}"
 ${UTILgfs}/exec/sixbitb2 >> $pgmout 2>errfile
  export err=$?;err_chk
 
-jobn=${model}_fax_${cyc}
+jobn=${RUN}_fax_${cyc}
 
  KEYW=GDTROP_g
 

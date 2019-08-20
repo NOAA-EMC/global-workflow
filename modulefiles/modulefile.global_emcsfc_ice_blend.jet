@@ -1,0 +1,20 @@
+#%Module#####################################################
+## emcsfc_ice_blend build module for Jet
+#############################################################
+
+export FCOMP=ifort
+export FFLAGS="-O0 -i4"
+
+# load ncep library modules
+
+module use $NCEPLIBS/modulefiles
+
+module load newdefaults
+module load intel/15.0.3.187
+
+module load w3nco-intel-sandybridge/2.0.6
+module load bacio-intel-sandybridge/2.0.2
+module load jasper-intel-sandybridge/1.900.1
+module load zlib-intel-sandybridge/1.2.7
+module load png-intel-sandybridge/1.2.44
+module load g2-intel-sandybridge/3.1.0

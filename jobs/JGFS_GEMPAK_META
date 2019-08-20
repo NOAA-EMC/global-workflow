@@ -18,7 +18,7 @@ export MP_LABELIO=yes
 export MP_PULSE=0
 export MP_DEBUG_NOTIMEOUT=yes
 
-##########################################################
+###########################################################
 # obtain unique process id (pid) and make temp directory
 ##########################################################
 export DATA=${DATA:-${DATAROOT}/${jobid:?}}
@@ -46,6 +46,7 @@ export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
 export FIXgfs=${FIXgfs:-$HOMEgfs/gempak/fix}
 export USHgfs=${USHgfs:-$HOMEgfs/gempak/ush}
 export SRCgfs=${SRCgfs:-$HOMEgfs/scripts}
+export UTILgfs=${UTILgfs:-$HOMEgfs/util}
 
 ######################################
 # Set up the GEMPAK directory

@@ -1,0 +1,176 @@
+case:
+  fv3_settings:
+    CASE: C768
+    LEVS: 65
+
+  fv3_enkf_settings:
+    CASE: C384
+
+  data_assimilation:
+    NMEM_ENKF: 80
+    NMEM_EOMGGRP: 5
+    NMEM_EFCSGRP: 8
+    NMEM_EARCGRP: 10
+    l4densvar: Yes
+
+  gfs_output_settings:
+    FHMAX_GFS: 384
+    FHOUT_GFS: 3
+    FHMAX_HF_GFS: 0
+
+  places:
+    workflow_file: workflow/cycled_gfs.yaml
+
+  post:
+    NPOSTGRP: 42
+    downset: 2
+    
+  downstream:
+    DO_BUFRSND: No
+    DO_GEMPAK: No
+    DO_AWIPS: No
+    VRFYFITS: NO
+    VSDB_STEP1: YES
+    VSDB_STEP2: NO
+    VRFYG2OBS: YES
+    VRFYPRCP: YES
+    VRFYRAD: YES
+    VRFYOZN: YES
+    VRFYMINMON: YES
+    VRFYTRAK: NO
+    VRFYGENESIS: NO
+    RUNMOS: NO
+    RMOLDSTD: 144
+    RMOLDEND: 72
+
+  archiving:
+    ATARDIR: /5year/NCEPDEV/emc-global/emc.glopara/JET/Q2FY19/fv3q2fy19retro5
+    scrub_in_archive_end: 72
+    arch_warmicfreq: 2
+    arch_fcsticfreq: 1
+
+  resources:
+    run_postsnd: !JobRequest
+      - batch_memory: "254M"
+        mpi_ranks: 12
+        max_ppn: 1
+        walltime: !timedelta '04:30'
+        exe: placeholder
+
+    run_ecen: !JobRequest
+      - batch_memory: "3072M"
+        exe: placeholder
+        mpi_ranks: 80
+        walltime: !timedelta '00:30:00'
+        OMP_NUM_THREADS: max
+        memory_per_rank: 8500
+
+    efcs_walltime: !timedelta '01:45:00'
+        
+  suite_overrides: !FirstTrue
+    - when: !calc (doc.platform.name=="JET")
+      do:
+        - Search: '**/prep/j*_prep*'
+          partition: !calc doc.platform.partitions.bigmem
+          max_tries: 2
+
+        - Search: '**/analysis/j*_analysis*|gfs/jgfs_analysis*'
+          partition: !calc doc.platform.partitions.sjet_or_vjet
+          max_tries: 2
+          resources: !JobRequest 
+            - batch_memory: "3072M"
+              exe: placeholder
+              mpi_ranks: 360
+              walltime: !timedelta '03:45:00'
+              OMP_NUM_THREADS: max
+              memory_per_rank: 10000
+
+ #       - Search: 'gfs/jgfs_analysis*'
+ #         partition: !calc doc.platform.partitions.tjet_or_ujet
+ #         max_tries: 2
+
+        - Search: '**/forecast/*_forecast*'
+          partition: !calc doc.platform.partitions.tjet_or_ujet
+          max_tries: 2
+
+        - Search: '**/forecast/jgdas_forecast_high'
+          partition: !calc doc.platform.partitions.tjet_or_ujet
+          max_tries: 2
+
+        - Search: '**/post/jgfs_post*'
+          # Make sure you update "resources" to match "partition"
+          partition: !calc doc.platform.partitions.sjet_or_vjet
+          max_tries: 3
+          resources: !JobRequest
+            - batch_memory: "3072M"
+              exe: placeholder
+              mpi_ranks: !calc '8*16'
+              walltime: !timedelta '00:15:00'
+
+        - Search: '**/post/jgdas_post*'
+          # Make sure you update "resources" to match "partition"
+          partition: !calc doc.platform.partitions.tjet_or_ujet
+          max_tries: 3
+          resources: !JobRequest
+            - batch_memory: "3072M"
+              exe: placeholder
+              mpi_ranks: !calc '12*12'
+              walltime: !timedelta '00:20:00'
+
+        - Search: '**/enkf/post/jgdas_enkf_post_f*'
+          partition: !calc doc.platform.partitions.tjet_or_ujet
+          max_tries: 3
+
+        - Search: '**/enkf/innovate/j*'
+          partition: !calc doc.platform.partitions.tjet_or_ujet
+          max_tries: 2
+
+        - Search: '**/enkf/forecast/j*_enkf*'
+          partition: !calc doc.platform.partitions.tjet_or_ujet
+          max_tries: 2
+
+        - Search: '**/enkf/jgdas_enkf_inflate_recenter*'
+          partition: !calc doc.platform.partitions.tjet_or_ujet
+          #accounting:  ! BAD: this blocks the job if any other "urgent" jobs are active
+          #  queue: urgent
+          max_tries: 2
+
+        - Search: '**/enkf/jgdas_enkf_select*'
+          partition: !calc doc.platform.partitions.tjet_or_ujet
+          max_tries: 2
+
+        - Search: '**/enkf/jgdas_enkf_update*'
+          partition: !calc doc.platform.partitions.tjet_or_ujet
+          max_tries: 2
+
+        - Search: 'gfs/post_processing/bufr_sounding/j*'
+          partition: !calc doc.platform.partitions.sjet_or_vjet
+          max_tries: 2
+
+        - Search: '**/*_emc_vrfy'
+          partition: !calc doc.platform.partitions.tjet_or_ujet
+          max_tries: 2
+
+    - otherwise: []
+
+  settings: 
+    rocoto_task_throttle: 100
+    rocoto_cycle_throttle: 20
+
+    # max_job_tries: tell rocoto to allow 2 submissions for all jobs,
+    # unless overridden by that job's max_tries variable.
+    max_job_tries: 2
+
+    # This belongs in "places" and putting it here makes it unused.
+    # The default values are in platforms/jet.yaml.  You should delete
+    # these lines:
+    BASE_GIT: /mnt/lfs3/projects/hfv3gfs/glopara/git
+    BASE_SVN: /mnt/lfs3/projects/hfv3gfs/glopara/git
+
+    IC_CDUMP: gdas # Get initial conditions from 1st cycle from GFS or GDAS
+    SDATE: 2015-11-25t00:00:00
+    EDATE: 2016-05-31t18:00:00
+    chgres_and_convert_ics: No
+    realtime: false
+    gfs_cyc: 4 # run gfs at 0z, 12z
+    run_gsi: Yes

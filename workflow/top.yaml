@@ -1,0 +1,65 @@
+# This file has the top-level logic to merge other YAML data
+# structures into the document-level settings.  It merges the contents
+# of the case files, default files, platform file, and everywhere
+# else, and applies any validation from the schema/ directory.
+
+fv3_settings: !Immediate
+    - !calc doc.case.fv3_gfs_settings
+
+fv3_gfs_settings: !Immediate
+    - !calc doc.case.fv3_gfs_settings
+
+fv3_gdas_settings: !Immediate
+    - !calc doc.case.fv3_gdas_settings
+
+fv3_enkf_settings: !Immediate
+    - !calc doc.case.fv3_enkf_settings
+
+gfs_output_settings: !Immediate
+    - !calc doc.case.get('gfs_output_settings',{})
+
+schedvar: !Immediate
+  - !MergeMapping
+    - !calc doc.case.get('schedvar',[])
+    - Template: *schedvar_schema
+
+data_assimilation: !Immediate
+    - !calc doc.case.get('data_assimilation',{})
+
+downstream: !Immediate
+    - !calc doc.case.get('downstream',{})
+
+places: !Immediate
+  - !MergeMapping
+    - !calc doc.default_places
+    - !calc doc.case.places
+    - !calc doc.user_places
+
+archiving: !Immediate
+    - !calc doc.case.get('archiving',{})
+
+exclusive_resources: !calc doc.platform.partitions.default_exclusive.resources
+shared_resources: !calc doc.platform.partitions.default_shared.resources
+service_resources: !calc doc.platform.partitions.default_service.resources
+
+settings: !Immediate
+  - !MergeMapping
+    - !calc doc.default_settings
+    - !calc doc.case.settings
+
+suite_overrides: !Immediate
+  - !AppendSequence
+    - !calc doc.platform.get('suite_overrides',[])
+    - !calc doc.case.get('suite_overrides',[])
+    - !calc doc.get('user_suite_overrides',[])
+
+validate_me:
+  - fv3_settings
+  - fv3_gdas_settings
+  - fv3_gfs_settings
+  - fv3_enkf_settings
+  - settings
+  - data_assimilation
+  - downstream
+  - places
+  - schedvar

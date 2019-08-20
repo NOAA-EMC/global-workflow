@@ -17,6 +17,7 @@ export MP_COLLECTIVE_OFFLOAD=no
 export MP_SHARED_MEMORY=yes
 export MP_MPILIB=mpich2
 export MP_LABELIO=yes
+
 ####################################
 # obtain unique process id (pid) and make temp directories
 export DATA=${DATA:-${DATAROOT}/${jobid:?}}

@@ -1,0 +1,24 @@
+case:
+  fv3_settings:
+    CASE: C192
+    LEVS: 65
+
+  places:
+    workflow_file: workflow/free_forecast_gfs.yaml
+
+  settings: 
+    SDATE: 2019-05-01t00:00:00
+    EDATE: 2019-05-01t06:00:00
+
+    DUMP_SUFFIX: "p"
+    run_gsi: No
+    chgres_and_convert_ics: Yes
+    gfs_cyc: 4 # run gfs every cycle
+
+  suite_overrides: !FirstTrue
+    - when: !calc (doc.platform.name=="JET")
+      do:
+        - Search: '**/forecast/*_forecast*'
+          partition: !calc doc.platform.partitions.tjet_or_ujet
+          max_tries: 2
+    - otherwise: []

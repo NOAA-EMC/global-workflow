@@ -1,0 +1,31 @@
+# This file sets default values for data and executable locations.
+# See the schema/places.yaml for details.
+default_places: &default_places
+  PROJECT_DIR: !error Please select a project directory.
+  HOMEgfs:     !calc ( tools.realpath(tools.abspath("../../")) )
+  HOMEcrow:    !calc tools.crow_install_dir()
+  HOMEobsproc_prep: !expand "{doc.platform.BASE_GIT}/obsproc/obsproc_prep_RB-5.2.0"
+  HOMEobsproc_network: !expand "{doc.platform.BASE_GIT}/obsproc/obsproc_global_RB-3.2.0"
+
+  NWPROD:      !calc doc.platform.NWPROD
+  DMPDIR:      !calc doc.platform.DMPDIR
+  RTMFIX:      !calc doc.platform.RTMFIX
+
+  EXPDIR: !expand "{doc.platform.EXP_PARENT_DIR}/expdir/{doc.names.experiment}"
+  ROTDIR: !expand "{LONG_TERM_TEMP}/comrot/{doc.names.experiment}"
+  ICSDIR: !expand "{ROTDIR}/FV3ICS"
+  DATAROOT: !expand "{SHORT_TERM_TEMP}/RUNDIRS/{doc.names.experiment}"
+  SHORT_TERM_TEMP: !calc doc.platform.short_term_temp
+  LONG_TERM_TEMP:  !calc doc.platform.long_term_temp
+#  SHORT_TERM_TEMP: !error GOT HERE
+#  LONG_TERM_TEMP:  !error GOT HERE TOO
+
+  NOSCRUB: !expand "{doc.places.PROJECT_DIR}/noscrub/{tools.env('USER')}"
+  ECF_ROOT: !calc tools.env("ECF_ROOT","/dev/null/ECF_ROOT")
+  ECF_HOME: !calc tools.env("ECF_HOME","/dev/null/ECF_HOME")
+  ecflow_def_dir: !expand '{ECF_ROOT}/defs'
+  ECF_INCLUDE: !expand '{ECF_ROOT}/include'
+  ECF_OUT: !expand '{ECF_ROOT}/output'
+
+  YAMLDIR: !calc EXPDIR
+  rocoto_workflow_xml: !expand '{YAMLDIR}/workflow.xml'

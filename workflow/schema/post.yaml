@@ -1,0 +1,25 @@
+# This is used to set default values for grib product generation.
+# Reconfiguring These variables are not supported in this release.
+
+post_schema: &post_schema !Template
+  GOESF:
+    type: bool
+    default: yes
+    description: make synthetic goes imagery
+  GTGF:
+    type: bool
+    default: no
+    description: make gtg icing product
+  FLXF:
+    type: bool
+    default: yes
+    description: grib2 flux file written by post
+  PGB1F: { type: bool, default: yes }
+  GFS_DOWNSTREAM: { type: bool, default: yes }
+  downset: { type: int, default: 1 }
+  NPOSTGRP: { type: int, default: 5 }  
+  master_grid:
+    type: string
+    default: "0p25deg"
+    allowed: [ "1deg", "0p5deg", "0p25deg", "0p125deg" ]
+    description: Original grid of the post

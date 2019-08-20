@@ -1,0 +1,121 @@
+# This file has the top-level logic to merge other YAML data
+# structures into the document-level settings.  It merges the contents
+# of the case files, default files, platform file, and everywhere
+# else, and applies any validation from the schema/ directory.
+
+fv3_settings: !Immediate
+  - !MergeMapping
+    - !calc doc.case.fv3_settings
+    - CDUMP: gfs
+      Template: *fv3_settings_template
+    - !calc doc.get('user_fv3_settings',{})
+
+schedvar: !Immediate
+  - !MergeMapping
+    - !calc doc.case.get('schedvar',{})
+    - Template: *schedvar_schema
+    - !calc doc.get('schedvar_defaults',{})
+
+fv3_gfs_settings: !Immediate
+  - !MergeMapping
+    - !calc doc.case.fv3_settings
+    - CDUMP: gfs
+      Template: *fv3_settings_template
+    - !calc doc.case.get('fv3_gfs_settings',{})
+    - !calc doc.get('user_fv3_gfs_settings',{})
+
+fv3_enkf_settings: !Immediate
+  - !MergeMapping
+    - !calc doc.fv3_enkf_defaults
+    - !calc doc.case.fv3_settings
+    - CDUMP: gdas
+      Template: *fv3_settings_template
+    - !calc doc.case.get('fv3_enkf_settings',{})
+    - !calc doc.get('user_fv3_enkf_settings',{})
+
+fv3_gdas_settings: !Immediate
+  - !MergeMapping
+    - !calc doc.fv3_gfs_settings
+    - CDUMP: gdas
+      Template: *fv3_settings_template
+    - !calc doc.case.get('fv3_gdas_settings',{})
+    - !calc doc.get('user_fv3_gfs_settings',{})
+
+gfs_output_settings: !Immediate
+  - !MergeMapping
+    - !calc doc.gfs_output_settings_defaults
+    - { Template: *gfs_output_settings_template }
+    - !calc doc.case.get('gfs_output_settings',{})
+    - !calc doc.get('user_gfs_output_settings',{})
+
+data_assimilation: !Immediate
+  - !MergeMapping
+    - { Template: *data_assimilation_template }
+    - !calc doc.case.get('data_assimilation',{})
+    - !calc doc.get('user_data_assimilation',{})
+  
+post: !Immediate
+  - !MergeMapping
+    - { Template: *post_schema }
+    - !calc doc.case.get('post',{})
+    - !calc doc.get('user_post',{})
+  
+downstream: !Immediate
+  - !MergeMapping
+    - !calc doc.downstream_defaults
+    - { Template: *downstream_schema }
+    - !calc doc.case.get('downstream',{})
+    - !calc doc.get('user_downstream',{})
+  
+places: !Immediate
+  - !MergeMapping
+    - Template: *places_schema
+    - !calc doc.default_places
+    - !calc doc.case.get('places',{})
+    - !calc doc.user_places
+
+nsst: !Immediate
+  - !MergeMapping
+    - Template: *nsst_schema
+    - !calc doc.case.get('nsst',{})
+    - !calc doc.get('user_nsst',{})
+  
+exclusive_resources: !calc doc.platform.partitions.default_exclusive.resources
+shared_resources: !calc doc.platform.partitions.default_shared.resources
+service_resources: !calc doc.platform.partitions.default_service.resources
+
+settings: !Immediate
+  - !MergeMapping
+    - Template: *settings_schema
+    - !calc doc.default_settings
+    - !calc doc.case.settings
+    - !calc doc.get('user_settings',{})
+    - Template: *settings_schema
+
+archiving: !Immediate
+  - !MergeMapping
+    - Template: *archive_settings_template
+    - !calc doc.case.get('archiving',{})
+    - !calc doc.get('user_archiving',{})
+  
+suite_overrides: !Immediate
+  - !AppendSequence
+    - !calc doc.platform.get('suite_overrides',[])
+    - !calc doc.case.get('suite_overrides',[])
+    - !calc doc.get('user_suite_overrides',[])
+
+validate_me: 
+  - fv3_settings
+  - fv3_gfs_settings
+  - fv3_enkf_settings
+  - fv3_gdas_settings
+  - gfs_output_settings
+  - data_assimilation
+  - post
+  - downstream
+  - settings
+  - places
+  - nsst
+  - archiving
+  - schedvar
+

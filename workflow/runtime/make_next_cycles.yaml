@@ -1,0 +1,72 @@
+make_next_cycles: &make_next_cycles_task !Task
+  <<: *exclusive_task_template
+  manual: |
+    The make_next_cycles task generates and begins the suites for the
+    next few cycles in the workflow.  This job is only used when running
+    in ecflow.
+
+  Disable: !calc metasched.type=='rocoto'
+
+  resources: !ref partition.resources.run_make_next_cycles
+
+  Trigger: !Depend gdas
+
+  CDUMP: gdas  # useless but required
+  
+  # The batch_job_command is dumped into the ecf file where the
+  # J-Job would normally be called.  This job is never run by
+  # Rocoto, so Rocoto never uses this code block.
+  ecflow_command: !expand |
+    workdir=/tmp/$USER.dump_waiter.$$.$RANDOM
+    mkdir -p "$workdir"
+    cd "$workdir"
+    if [[ "$ECF_ROOT" == X ]] ; then
+      export ECF_ROOT=$( cd "$ECF_HOME" ; cd .. ; pwd -P )
+    fi
+
+    export PDY=%PDY%
+    export CYC=%CYC%
+    export cycle=t%CYC%z
+    setpdy.sh
+    source ./PDY
+
+    module load {doc.settings.prod_util_module}
+    module load {doc.settings.ecflow_module}
+
+    export WORKFLOW_FIRST_CYCLE=%WORKFLOW_FIRST_CYCLE:1970010100%
+    export WORKFLOW_LAST_CYCLE=%WORKFLOW_LAST_CYCLE:ETERNITY%
+    export WORKFLOW_CYCLES_TO_GENERATE=%WORKFLOW_CYCLES_TO_GENERATE:5%
+    export WORKFLOW_CROW_HOME=%WORKFLOW_CROW_HOME%
+    export WORKFLOW_EXPDIR=%WORKFLOW_EXPDIR%
+    export ECF_HOME=%ECF_HOME%
+    export ECF_ROOT=%ECF_ROOT:X%
+    export ECF_OUT=%ECF_OUT%
+    export ECF_PORT=%ECF_PORT%
+    export ECF_HOST=%ECF_HOST%
+
+    set -uex
+
+    # Decide the range of cycles to start
+    first_cycle=$( $NDATE +6 "%PDY%%CYC%" )
+
+    if [[ "${{WORKFLOW_LAST_CYCLE:-ETERNITY}}" != ETERNITY &&
+          "$first_cycle" -gt "$WORKFLOW_LAST_CYCLE" ]] ; then
+      postmsg "Last cycle reached.  Not starting any new cycles."
+    fi
+
+    last_cycle=$first_cycle
+    for istart in $( seq 1 5 ) ; do
+      if [[ "${{WORKFLOW_LAST_CYCLE:-ETERNITY}}" != ETERNITY &&
+            "$last_cycle" -gt "$WORKFLOW_LAST_CYCLE" ]] ; then
+        break
+      fi
+      last_cycle=$( $NDATE +6 "$last_cycle" )
+    done
+
+    cd "$WORKFLOW_CROW_HOME"
+    postmsg "Start cycles $first_cycle through $last_cycle."
+    ./update_ecflow_workflow.sh -v  "$WORKFLOW_EXPDIR" "$first_cycle" "$last_cycle"
+
+    
+    cd /
+    rm -rf "$workdir"

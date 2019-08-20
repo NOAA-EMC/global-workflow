@@ -1,0 +1,20 @@
+#%Module#####################################################
+## gaussian_sfcanl component of fv3gfs - cray
+#############################################################
+
+set ver v15.0.0
+
+# Load Intel environment
+module load PrgEnv-intel
+module rm intel
+module load intel
+module load cray-hdf5
+module load cray-netcdf
+module load craype-haswell
+
+module load nemsio-intel-sandybridge/2.2.3
+module load w3nco-intel-sandybridge/2.0.6
+module load bacio-intel-sandybridge/2.0.2
+module load sp-intel-sandybridge/2.0.2
+
+export FCOMP=ftn

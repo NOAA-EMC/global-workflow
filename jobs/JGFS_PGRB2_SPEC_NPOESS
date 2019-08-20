@@ -10,7 +10,7 @@ export OMP_NUM_THREADS=${OMP_NUM_THREADS:-1}
 # GFS PGRB2_SPECIAL_POST PRODUCT GENERATION
 ############################################
 
-##########################################################
+###########################################################
 # obtain unique process id (pid) and make temp directory
 ##########################################################
 export DATA=${DATA:-${DATAROOT}/${jobid:?}}

@@ -1,7 +1,9 @@
-#!/bin/ksh
+#!/bin/bash
 set -ex
 
 #--make symbolic links for EMC installation and hardcopies for NCO delivery
+. ./machine-setup.sh
+echo "target system (machine) set to $target"
 
 RUN_ENVIR=${1}
 machine=${2}
@@ -17,12 +19,14 @@ if [ $# -lt 2 ]; then
     exit 1
 fi
 
+RUN_ENVIR=${1:-emc}
+
 if [ $RUN_ENVIR != emc -a $RUN_ENVIR != nco ]; then
-    echo 'Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | theia )'
+    echo 'Syntax: link_fv3gfs.sh ( nco | emc )'
     exit 1
 fi
-if [ $machine != cray -a $machine != theia -a $machine != dell ]; then
-    echo 'Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | theia )'
+if [ $target != wcoss_cray -a $target != theia -a $target != gaea -a $target != jet -a $target != dell]; then
+    echo '$target value set to unknown or unsupported system'
     exit 1
 fi
 
@@ -35,19 +39,50 @@ pwd=$(pwd -P)
 #------------------------------
 #--model fix fields
 #------------------------------
-if [ $machine == "cray" ]; then
+echo "target: $target"
+if [ $target == "wcoss_cray" ]; then
     FIX_DIR="/gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix"
-elif [ $machine = "dell" ]; then
+elif [ $target = "wcoss_dell_p3" ]; then
     FIX_DIR="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix"
-elif [ $machine = "theia" ]; then
+elif [ $target == "theia" ]; then
     FIX_DIR="/scratch4/NCEPDEV/global/save/glopara/git/fv3gfs/fix"
+elif [ $target == "gaea" ]; then
+    FIX_DIR="/lustre/f1/pdata/ncep_shared/FV3GFS_V1_RELEASE/fix"
+    echo "gaea says what, FIX_DIR = $FIX_DIR"
+elif [ $target == "jet" ]; then
+    FIX_DIR="/lfs3/projects/hfv3gfs/glopara/git/fv3gfs/fix"
+else
+    echo 'CRITICAL: links to fix files not set'
+    exit 1
 fi
-cd ${pwd}/../fix                ||exit 8
-for dir in fix_am fix_fv3 fix_orog fix_fv3_gmted2010 ; do
-    [[ -d $dir ]] && rm -rf $dir
-done
-$LINK $FIX_DIR/* .
 
+if [ ! -r $FIX_DIR ]; then
+   echo "CRITICAL: you do not of read permissions to the location of the fix file $FIX_DIR"
+   exit -1
+fi
+
+if [ ! -z $FIX_DIR ]; then
+ if [ ! -d ${pwd}/../fix ]; then mkdir ${pwd}/../fix; fi
+ cd ${pwd}/../fix                ||exit 8
+ for dir in fix_am fix_fv3 fix_orog fix_fv3_gmted2010 ; do
+     [[ -d $dir ]] && rm -rf $dir
+ done
+ $LINK $FIX_DIR/* .
+fi
+
+if [ ! -r $FIX_DIR ]; then
+   echo "CRITICAL: you do not of read permissions to the location of the fix file $FIX_DIR"
+   exit -1
+fi
+
+if [ ! -z $FIX_DIR ]; then
+ if [ ! -d ${pwd}/../fix ]; then mkdir ${pwd}/../fix; fi
+ cd ${pwd}/../fix                ||exit 8
+ for dir in fix_am fix_fv3 fix_orog fix_fv3_gmted2010 ; do
+     [[ -d $dir ]] && rm -rf $dir
+ done
+ $LINK $FIX_DIR/* .
+fi
 
 #---------------------------------------
 #--add files from external repositories
@@ -74,7 +109,6 @@ cd ${pwd}/../ush                ||exit 8
         $LINK ../sorc/ufs_utils.fd/ush/$file                  .
     done
 
-
 #------------------------------
 #--add gfs_wafs file
 #------------------------------
@@ -89,7 +123,6 @@ cd ${pwd}/../ush                ||exit 8
     $LINK ../sorc/gfs_wafs.fd/ush/*                          .
 cd ${pwd}/../fix                ||exit 8
     $LINK ../sorc/gfs_wafs.fd/fix/*                          .
-
 
 #------------------------------
 #--add GSI/EnKF file
@@ -113,7 +146,6 @@ cd ${pwd}/../scripts            ||exit 8
 cd ${pwd}/../fix                ||exit 8
     [[ -d fix_gsi ]] && rm -rf fix_gsi
     $LINK ../sorc/gsi.fd/fix  fix_gsi
-
 
 #------------------------------
 #--add DA Monitor file (NOTE: ensure to use correct version)
@@ -160,7 +192,6 @@ cd ${pwd}/../ush                ||exit 8
     $LINK ../sorc/gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared.v3.0.0/ush/radmon_verf_bcor.sh           .
     $LINK ../sorc/gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared.v3.0.0/ush/radmon_verf_time.sh           .
     
-
 #------------------------------
 #--link executables 
 #------------------------------
@@ -176,6 +207,25 @@ fi
 
 [[ -s gfs_ncep_post ]] && rm -f gfs_ncep_post
 $LINK ../sorc/gfs_post.fd/exec/ncep_post gfs_ncep_post
+
+if [[ $target == "jet" ]]; then
+  util_exec_dir_path=/mnt/lfs3/projects/hfv3gfs/glopara/git/fv3gfs_builds
+  #for util_exec_dirs in grib_utils prod_util gsi_tJet ;do
+  for util_exec_dirs in grib_utils prod_util ;do
+      if [[ -d ${util_exec_dir_path}/${util_exec_dirs} ]]; then
+       $LINK ${util_exec_dir_path}/${util_exec_dirs}/* .
+      else
+       echo "WARNING ${util_exec} did not copy softlink from ${util_exec_dir_path} on Jet"
+      fi
+  done 
+fi
+
+#if [ $machine = dell ]; then 
+#    for wafsexe in wafs_awc_wafavn  wafs_blending  wafs_cnvgrib2  wafs_gcip  wafs_makewafs  wafs_setmissing; do
+#        [[ -s $wafsexe ]] && rm -f $wafsexe
+#        $LINK ../sorc/gfs_wafs.fd/exec/$wafsexe .
+#    done
+#fi
 
 for ufs_utilsexe in \
      chgres_cube.exe   fregrid           global_cycle         nemsio_cvt    orog.x \
@@ -196,6 +246,45 @@ for gsiexe in  global_gsi.x global_enkf.x calc_increment_ens.x  getsfcensmeanp.x
     [[ -s $gsiexe ]] && rm -f $gsiexe
     $LINK ../sorc/gsi.fd/exec/$gsiexe .
 done
+
+if [[ $target == "gaea" ]]; then
+  if [[ -f /lustre/f1/pdata/ncep_shared/exec/wgrib2 ]]; then
+   cp /lustre/f1/pdata/ncep_shared/exec/wgrib2 .
+  else
+   echo 'WARNING wgrib2 did not copy from /lustre/f1/pdata/ncep_shared/exec on Gaea'
+  fi
+fi
+
+if [[ $target == "jet" ]]; then
+  util_exec_dir_path=/mnt/lfs3/projects/hfv3gfs/glopara/git/fv3gfs_builds
+  #for util_exec_dirs in grib_utils prod_util gsi_tJet ;do
+  for util_exec_dirs in grib_utils prod_util ;do
+      if [[ -d ${util_exec_dir_path}/${util_exec_dirs} ]]; then
+       $LINK ${util_exec_dir_path}/${util_exec_dirs}/* .
+      else
+       echo "WARNING ${util_exec} did not copy softlink from ${util_exec_dir_path} on Jet"
+      fi
+  done 
+fi
+if [ $target = wcoss_dell_p3 ]; then
+    for wafsexe in wafs_awc_wafavn  wafs_blending  wafs_cnvgrib2  wafs_gcip  wafs_makewafs  wafs_setmissing; do
+        [[ -s $wafsexe ]] && rm -f $wafsexe
+        $LINK ../sorc/gfs_wafs.fd/exec/$wafsexe .
+    done
+fi
+ 
+#cd ${pwd}
+#cd gsi.fd
+#gsi_branch=`git branch | grep \*`
+#cd ../fv3gfs.fd
+#fv3gfs_branch=`git branch | grep \*`
+#cd ../gfs_post.fd
+#gfspost_branch=`git branch | grep \*`
+
+#set +x
+#echo "FV3  Branch: $fv3gfs_branch"
+#echo "GSI  Branch: $gsi_branch"
+#echo "POST Branch: $gfspost_branch"
 
 
 #------------------------------
@@ -264,6 +353,3 @@ $LINK $CPLFIX_DIR/fix_fv3grid  .
 fi
 
 exit 0
-
-
-
