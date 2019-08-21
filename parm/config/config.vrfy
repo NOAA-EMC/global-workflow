@@ -121,7 +121,7 @@ if [ "$CDUMP" = "gfs" ] ; then
             export fhr_max=$FHMAX_GFS
             # GRID-TO-GRID STEP 1
             export g2g1_type_list="anom pres sfc"
-            export g2g1_anl_name="self"
+            export g2g1_anl_name="self_anl"
             export g2g1_anl_fileformat_list="pgbanl.gfs.{valid?fmt=%Y%m%d%H}"
             export g2g1_grid="G002"
             # GRID-TO-OBS STEP 1
