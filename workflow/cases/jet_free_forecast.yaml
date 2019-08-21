@@ -6,9 +6,14 @@ case:
   places:
     workflow_file: workflow/free_forecast_gfs.yaml
 
+  gfs_output_settings:
+    FHMAX_GFS: 24
+    FHOUT_GFS: 3
+    FHMAX_HF_GFS: 0
+
   settings: 
     SDATE: 2019-05-01t00:00:00
-    EDATE: 2019-05-01t06:00:00
+    EDATE: 2019-05-01t00:00:00
 
     DUMP_SUFFIX: "p"
     run_gsi: No

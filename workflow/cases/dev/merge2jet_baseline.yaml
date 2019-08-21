@@ -175,8 +175,8 @@ case:
     BASE_SVN: /mnt/lfs3/projects/hfv3gfs/glopara/git
 
     IC_CDUMP: gdas # Get initial conditions from 1st cycle from GFS or GDAS
-    SDATE: 2018-11-28t00:00:00
-    EDATE: 2018-11-29t12:00:00
+    SDATE: 2019-05-01t00:00:00
+    EDATE: 2019-05-02t00:00:00
     chgres_and_convert_ics: No
     realtime: false
     gfs_cyc: 4 # run gfs at 0z, 12z
