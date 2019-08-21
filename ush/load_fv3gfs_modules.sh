@@ -18,6 +18,9 @@ if [[ -d /lfs3 ]] ; then
 elif [[ -d /scratch3 ]] ; then
     # We are on NOAA Theia
 	module load module_base.theia 
+elif [[ -d /tds_scratch1/home ]] ; then
+    # We are on NOAA Hera
+	module load module_base.hera
 elif [[ -d /gpfs/hps && -e /etc/SuSE-release ]] ; then
     # We are on NOAA Luna or Surge
 	module load module_base.wcoss_c 

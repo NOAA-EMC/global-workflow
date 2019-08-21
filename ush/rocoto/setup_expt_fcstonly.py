@@ -12,6 +12,7 @@ import os
 import sys
 import glob
 import shutil
+import socket
 from datetime import datetime
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
@@ -20,7 +21,7 @@ global machines
 global expdir, configdir, comrot, pslot, res, idate, edate, gfs_cyc
 
 
-machines = ['THEIA', 'WCOSS_C', 'WCOSS_DELL_P3']
+machines = ['THEIA', 'HERA', 'WCOSS_C', 'WCOSS_DELL_P3']
 
 
 def makedirs_if_missing(d):
@@ -105,8 +106,10 @@ Create COMROT experiment directory structure'''
 
     args = parser.parse_args()
 
-    if os.path.exists('/scratch3'):
+    if socket.gethostname()[0] == 't':
         machine = 'THEIA'
+    elif socket.gethostname()[0] == 'h':
+        machine = 'HERA'
     elif os.path.exists('/gpfs') and os.path.exists('/etc/SuSE-release'):
         machine = 'WCOSS_C'
     elif os.path.exists('/gpfs/dell2'):

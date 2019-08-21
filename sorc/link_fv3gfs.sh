@@ -8,16 +8,16 @@ machine=${2}
 
 if [ $# -lt 2 ]; then
     echo '***ERROR*** must specify two arguements: (1) RUN_ENVIR, (2) machine'
-    echo ' Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | theia )'
+    echo ' Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | theia | hera )'
     exit 1
 fi
 
 if [ $RUN_ENVIR != emc -a $RUN_ENVIR != nco ]; then
-    echo 'Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | theia )'
+    echo 'Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | theia | hera )'
     exit 1
 fi
-if [ $machine != cray -a $machine != theia -a $machine != dell ]; then
-    echo 'Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | theia )'
+if [ $machine != cray -a $machine != theia -a $machine != dell -a $machine != hera ]; then
+    echo 'Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | theia | hera )'
     exit 1
 fi
 
@@ -36,6 +36,8 @@ elif [ $machine = "dell" ]; then
     FIX_DIR="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix"
 elif [ $machine = "theia" ]; then
     FIX_DIR="/scratch4/NCEPDEV/global/save/glopara/git/fv3gfs/fix"
+elif [ $machine = "hera" ]; then
+    FIX_DIR="/scratch1/NCEPDEV/global/glopara/fix"
 fi
 cd ${pwd}/../fix                ||exit 8
 for dir in fix_am fix_fv3 fix_orog fix_fv3_gmted2010 ; do
@@ -71,19 +73,21 @@ cd ${pwd}/../ush                ||exit 8
 
 
 #------------------------------
-#--add gfs_wafs file
+#--add gfs_wafs file if on Dell
+#if [ $machine = dell ]; then 
 #------------------------------
-cd ${pwd}/../jobs               ||exit 8
-    $LINK ../sorc/gfs_wafs.fd/jobs/*                         .
-cd ${pwd}/../parm               ||exit 8
-    [[ -d wafs ]] && rm -rf wafs
-    $LINK ../sorc/gfs_wafs.fd/parm/wafs                      wafs
-cd ${pwd}/../scripts            ||exit 8
-    $LINK ../sorc/gfs_wafs.fd/scripts/*                      .
-cd ${pwd}/../ush                ||exit 8
-    $LINK ../sorc/gfs_wafs.fd/ush/*                          .
-cd ${pwd}/../fix                ||exit 8
-    $LINK ../sorc/gfs_wafs.fd/fix/*                          .
+#cd ${pwd}/../jobs               ||exit 8
+#    $LINK ../sorc/gfs_wafs.fd/jobs/*                         .
+#cd ${pwd}/../parm               ||exit 8
+#    [[ -d wafs ]] && rm -rf wafs
+#    $LINK ../sorc/gfs_wafs.fd/parm/wafs                      wafs
+#cd ${pwd}/../scripts            ||exit 8
+#    $LINK ../sorc/gfs_wafs.fd/scripts/*                      .
+#cd ${pwd}/../ush                ||exit 8
+#    $LINK ../sorc/gfs_wafs.fd/ush/*                          .
+#cd ${pwd}/../fix                ||exit 8
+#    $LINK ../sorc/gfs_wafs.fd/fix/*                          .
+#fi
 
 
 #------------------------------
@@ -167,6 +171,13 @@ $LINK ../sorc/fv3gfs.fd/NEMS/exe/global_fv3gfs.x .
 [[ -s gfs_ncep_post ]] && rm -f gfs_ncep_post
 $LINK ../sorc/gfs_post.fd/exec/ncep_post gfs_ncep_post
 
+#if [ $machine = dell ]; then 
+#    for wafsexe in wafs_awc_wafavn  wafs_blending  wafs_cnvgrib2  wafs_gcip  wafs_makewafs  wafs_setmissing; do
+#        [[ -s $wafsexe ]] && rm -f $wafsexe
+#        $LINK ../sorc/gfs_wafs.fd/exec/$wafsexe .
+#    done
+#fi
+
 for ufs_utilsexe in \
      chgres_cube.exe   fregrid           global_cycle         nemsio_cvt    orog.x \
      emcsfc_ice_blend  fregrid_parallel  make_hgrid           nemsio_get    shave.x \
@@ -174,11 +185,6 @@ for ufs_utilsexe in \
      filter_topo       global_chgres     make_solo_mosaic     nst_tf_chg.x ; do
     [[ -s $ufs_utilsexe ]] && rm -f $ufs_utilsexe
     $LINK ../sorc/ufs_utils.fd/exec/$ufs_utilsexe .
-done
-
-for wafsexe in wafs_awc_wafavn  wafs_blending  wafs_cnvgrib2  wafs_gcip  wafs_makewafs  wafs_setmissing; do
-    [[ -s $wafsexe ]] && rm -f $wafsexe
-    $LINK ../sorc/gfs_wafs.fd/exec/$wafsexe .
 done
 
 for gsiexe in  global_gsi.x global_enkf.x calc_increment_ens.x  getsfcensmeanp.x  getsigensmeanp_smooth.x  \
@@ -219,12 +225,16 @@ cd ${pwd}/../sorc   ||   exit 8
         $SLINK ufs_utils.fd/sorc/$prog                                                     $prog
     done
 
-    $SLINK gfs_wafs.fd/sorc/wafs_awc_wafavn.fd                                         wafs_awc_wafavn.fd
-    $SLINK gfs_wafs.fd/sorc/wafs_blending.fd                                           wafs_blending.fd
-    $SLINK gfs_wafs.fd/sorc/wafs_cnvgrib2.fd                                           wafs_cnvgrib2.fd
-    $SLINK gfs_wafs.fd/sorc/wafs_gcip.fd                                               wafs_gcip.fd
-    $SLINK gfs_wafs.fd/sorc/wafs_makewafs.fd                                           wafs_makewafs.fd
-    $SLINK gfs_wafs.fd/sorc/wafs_setmissing.fd                                         wafs_setmissing.fd
+
+#   if [ $machine = dell ]; then
+#       $SLINK gfs_wafs.fd/sorc/wafs_awc_wafavn.fd                                              wafs_awc_wafavn.fd
+#       $SLINK gfs_wafs.fd/sorc/wafs_blending.fd                                                wafs_blending.fd
+#       $SLINK gfs_wafs.fd/sorc/wafs_cnvgrib2.fd                                                wafs_cnvgrib2.fd
+#       $SLINK gfs_wafs.fd/sorc/wafs_gcip.fd                                                    wafs_gcip.fd
+#       $SLINK gfs_wafs.fd/sorc/wafs_makewafs.fd                                                wafs_makewafs.fd
+#       $SLINK gfs_wafs.fd/sorc/wafs_setmissing.fd                                              wafs_setmissing.fd
+#   fi
+
 
 #------------------------------
 #--choose dynamic config.base for EMC installation 

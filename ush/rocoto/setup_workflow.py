@@ -176,7 +176,7 @@ def get_definitions(base):
     strings.append('\t<!ENTITY ACCOUNT    "%s">\n' % base['ACCOUNT'])
 
     strings.append('\t<!ENTITY QUEUE      "%s">\n' % base['QUEUE'])
-    if base['machine'] == 'THEIA' and wfu.check_slurm():
+    if ( base['machine'] == 'THEIA' or base['machine'] == 'HERA' ) and wfu.check_slurm():
         strings.append('\t<!ENTITY QUEUE_ARCH "%s">\n' % base['QUEUE_ARCH'])
         strings.append('\t<!ENTITY PARTITION_ARCH "%s">\n' % base['QUEUE_ARCH'])
     else:
@@ -242,7 +242,7 @@ def get_gdasgfs_resources(dict_configs, cdump='gdas'):
 
         strings = []
         strings.append('\t<!ENTITY QUEUE_%s     "%s">\n' % (taskstr, queuestr))
-        if base['machine'] == 'THEIA' and wfu.check_slurm() and task == 'arch':
+        if ( base['machine'] == 'THEIA' or base['machine'] == 'HERA' ) and wfu.check_slurm() and task == 'arch':
             strings.append('\t<!ENTITY PARTITION_%s "&PARTITION_ARCH;">\n' % taskstr )
         strings.append('\t<!ENTITY WALLTIME_%s  "%s">\n' % (taskstr, wtimestr))
         strings.append('\t<!ENTITY RESOURCES_%s "%s">\n' % (taskstr, resstr))
@@ -313,7 +313,7 @@ def get_hyb_resources(dict_configs):
 
         strings = []
         strings.append('\t<!ENTITY QUEUE_%s     "%s">\n' % (taskstr, queuestr))
-        if base['machine'] == 'THEIA' and wfu.check_slurm() and task == 'earc':
+        if ( base['machine'] == 'THEIA' or base['machine'] == 'HERA' ) and wfu.check_slurm() and task == 'earc':
             strings.append('\t<!ENTITY PARTITION_%s "&PARTITION_ARCH;">\n' % taskstr )
         strings.append('\t<!ENTITY WALLTIME_%s  "%s">\n' % (taskstr, wtimestr))
         strings.append('\t<!ENTITY RESOURCES_%s "%s">\n' % (taskstr, resstr))
@@ -332,6 +332,7 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
     '''
 
     envars = []
+
     if wfu.check_slurm():
         envars.append(rocoto.create_envar(name='SLURM_SET', value='YES'))
     envars.append(rocoto.create_envar(name='RUN_ENVIR', value='&RUN_ENVIR;'))
@@ -818,7 +819,7 @@ def create_xml(dict_configs):
                         if 'memory' not in each_line:
                              temp_task_string.append(each_line)
                     dict_hyb_tasks[hyp_tasks[each_task]] = ''.join(temp_task_string)
-        
+
     # Get GFS cycle related entities, resources, workflow
     dict_gfs_resources = get_gdasgfs_resources(dict_configs, cdump='gfs')
     dict_gfs_tasks = get_gdasgfs_tasks(dict_configs, cdump='gfs')
@@ -844,7 +845,7 @@ def create_xml(dict_configs):
                 if 'memory' not in each_line:
                      temp_task_string.append(each_line)
             dict_gfs_tasks[each_task] = ''.join(temp_task_string)
-    
+
     # Put together the XML file
     xmlfile = []
 
