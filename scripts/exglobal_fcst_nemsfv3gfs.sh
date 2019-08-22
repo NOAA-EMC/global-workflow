@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/ksh
 ################################################################################
 # UNIX Script Documentation Block
 # Script name:         exglobal_fcst_nemsfv3gfs.sh.ecf
@@ -997,7 +997,7 @@ fi
 
 #------------------------------------------------------------------
 # Clean up before leaving
-if [ $KEEPDATA = "NO" ]; then rm -rf $DATA; fi
+if [ $mkdata = "YES" ]; then rm -rf $DATA; fi
 
 #------------------------------------------------------------------
 set +x

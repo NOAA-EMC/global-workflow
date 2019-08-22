@@ -20,9 +20,9 @@ gfs_resource_table: !Select
       gdaspost: [  72,   12, !timedelta "00:30:00", 1, null    ]
       gfspost:  [  72,   12, !timedelta "00:10:00", 1, null    ]
       gdasvrfy: [   1,    1, !timedelta "03:00:00", null, null ]
-      gfsvrfy:  [   5,    1, !timedelta "06:00:00", null, null ]
+      gfsvrfy:  [   5,    1, !timedelta "01:00:00", null, null ]
       gdasfcst_wall:  !timedelta "00:15:00"
-      gfsfcst_wall:  !timedelta "06:00:00"
+      gfsfcst_wall:  !timedelta "01:00:00"
       gdasfcst_ppn: 12
       gfsfcst_ppn: 12
       post_manager_wallclock_extra: !timedelta "00:15:00"
