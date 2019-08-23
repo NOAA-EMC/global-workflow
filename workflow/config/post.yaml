@@ -52,15 +52,6 @@ config_post:
     export GRIBVERSION='grib2'
     export SENDCOM="YES"
 
-    if [ $machine = "WCOSS_C" ] ; then
-        export CRTM_FIX=/gpfs/hps/nco/ops/nwprod/lib/crtm/v2.2.5/fix
-    elif [ $machine = "WCOSS_DELL_P3" ] ; then
-        export CRTM_FIX=/gpfs/dell1/nco/ops/nwprod/lib/crtm/v2.2.5/fix
-    elif [ $machine = "THEIA" ] ; then
-        export CRTM_FIX=/scratch3/NCEPDEV/nceplibs/dev/crtm/v2.2.3/fix
-    else
-        echo "UPP using CRTM_FIX = $CRTM_FIX"
-    fi
+    export CRTM_FIX="{doc.platform.RTMFIX}"
 
     echo "END: config.post"
-    
