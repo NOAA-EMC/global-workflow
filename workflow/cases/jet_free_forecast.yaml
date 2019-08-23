@@ -29,7 +29,7 @@ case:
           resources: !JobRequest
             - batch_memory: "3072M"
               exe: placeholder
-              mpi_ranks: 200
+              mpi_ranks: 192
               walltime: !timedelta '00:40:00'
               OMP_NUM_THREADS: 1 
 

@@ -9,28 +9,19 @@ proc ModulesHelp {} {
 
 module-whatis "loads NEMS FV3 prerequisites on Jet"
 
-module load intel/18.0.5.274 impi/2019.1.144 szip hdf5 netcdf4/4.2.1.1
-
-module use /mnt/lfs3/projects/hfv3gfs/gwv/ljtjet/lib/modulefiles
-module load bacio-intel-sandybridge/2.0.2
-module load w3emc-intel-sandybridge/2.2.0
-module load w3nco-intel-sandybridge/2.0.6
-module load bufr-intel-sandybridge/11.0.2
-module load nemsio-intel-sandybridge/2.2.2
-module load ip-intel-sandybridge/2.0.0
-module load sp-intel-sandybridge/2.0.2
-module load esmflocal/7_1_0rimpi
-
-# extras for grib_util
-module load jasper-intel-sandybridge/1.900.1
-module load png-intel-sandybridge/1.2.44
-module load zlib-intel-sandybridge/1.2.6
-module load g2-intel-sandybridge/2.5.0
+module load intel/18.0.5.274 
+module load impi/2018.4.274 
+module load wgrib2/2.0.8
+module load szip/2.1 
+module load hdf5 
+module load nco/4.1.0
+module load pnetcdf/1.6.1
+module load netcdf4/4.2.1.1
+module load gempak/7.4.2
+module load hpss
 
 module use /lfs3/projects/hwrf-vd/soft/modulefiles
 module load prod_util
-module load hpss
 
 # mpiserial on Jet includes a cfp wrapper
 module load mpiserial
-module load gempak/7.4.2
