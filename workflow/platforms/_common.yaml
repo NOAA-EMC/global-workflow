@@ -10,6 +10,7 @@ partition_common: &global_partition_common
     - !calc default_resources
     - !calc doc.case.get('resources',{})
     - !calc doc.get('user_resources',{})
+    - !calc doc.resources
 
   default_resources: {}
 
