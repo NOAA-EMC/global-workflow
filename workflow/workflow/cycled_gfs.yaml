@@ -130,7 +130,7 @@ suite: !Cycle
           Dummy: True  # job is broken
           AlarmName: gfs_00_12
           Trigger: !Depend ( up.up.prep.jgdas_prep )
-          resources: !calc partition.resources.run_bulls_navy
+          resources: !calc partition.resources.run_big_downstream
           J_JOB: JGDAS_BULLS_NAVY
 
     gempak: !Family
@@ -645,7 +645,7 @@ suite: !Cycle
       jgfs_pgrb2_spec_npoess: !Task
         <<: *exclusive_task_template
         Trigger: !Depend 'up.post.jgfs_post_anl.is_running() | up.post.jgfs_post_anl'
-        resources: !calc partition.resources.run_npoess
+        resources: !calc partition.resources.run_one_node_downstream
         
       jgfs_pgrb2_spec_gempak: !Task
         <<: *exclusive_task_template
