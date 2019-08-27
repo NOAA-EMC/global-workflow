@@ -17,11 +17,7 @@ config_eupd:
     
     echo "BEGIN: config.eupd"
     
-    # Get task specific resources
-    . $EXPDIR/config.resources eupd
-    
     export ENKFUPDSH="$HOMEgsi/scripts/exglobal_enkf_update_fv3gfs.sh.ecf"
-    export npe_enkf=$npe_eupd
     
     export NAM_ENKF="{doc.data_assimilation.NAM_ENKF}"
     

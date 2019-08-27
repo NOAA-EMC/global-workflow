@@ -17,9 +17,6 @@ config_arch:
     
     echo "BEGIN: config.arch"
     
-    # Get task specific resources
-    . $EXPDIR/config.resources arch
-    
     #--online archive of nemsio files for fit2obs verification
     export FITSARC="{tools.YES_NO(doc.archiving.copy_fit2obs_files)}"
     export FHMAX_FITS=132

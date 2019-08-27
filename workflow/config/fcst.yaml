@@ -29,9 +29,6 @@ config_fcst:
     # Source model specific information that is resolution dependent
     . $EXPDIR/config.fv3 $CDUMP
     
-    # Get task specific resources
-    . $EXPDIR/config.resources fcst
-    
     if [ $DONST = "YES" ]; then
         . $EXPDIR/config.nsst
     fi
@@ -40,7 +37,6 @@ config_fcst:
     #export FCSTEXECDIR="$HOMEfv3gfs/NEMS/exe"
     export FCSTEXECDIR="$HOMEgfs/exec"
     export FCSTEXEC="global_fv3gfs.x"
-    export npe_fv3=$npe_fcst # This is model resolution dependent, see note above    
    
     # Model configuration
     export TYPE="{doc.fv3_settings.nh_type}"

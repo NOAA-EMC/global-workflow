@@ -17,9 +17,6 @@ config_prepbufr:
     
     echo "BEGIN: config.prepbufr"
     
-    # Get task specific resources
-    . $EXPDIR/config.resources prepbufr
-    
     # Set variables 
     #------------------------------
     if [ $machine = "THEIA" ]; then

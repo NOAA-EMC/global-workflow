@@ -12,9 +12,6 @@ config_anal:
     
     echo "BEGIN: config.anal"
     
-    # Get task specific resources
-    . $EXPDIR/config.resources anal
-    
     if [ $DONST = "YES" ]; then
         . $EXPDIR/config.nsst
     fi
@@ -27,7 +24,6 @@ config_anal:
     fi
     
     export ANALYSISSH="$HOMEgsi/scripts/exglobal_analysis_fv3gfs.sh.ecf"
-    export npe_gsi=$npe_anal
 
     export GSNDBF=/dev/null
     export AMSREBF=/dev/null

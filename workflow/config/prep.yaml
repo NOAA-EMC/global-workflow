@@ -17,9 +17,6 @@ config_prep:
     
     echo "BEGIN: config.prep"
     
-    # Get task specific resources
-    . $EXPDIR/config.resources prep
-
     # Source machine runtime environment
     . $BASE_ENV/{doc.platform.name}.env prep
     status=$?
