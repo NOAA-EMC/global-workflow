@@ -1,10 +1,10 @@
 case:
   fv3_settings:
-    CASE: C768
+    CASE: C384
     LEVS: 65
 
   fv3_enkf_settings:
-    CASE: C384
+    CASE: C192
 
   data_assimilation:
     NMEM_ENKF: 80
@@ -14,7 +14,7 @@ case:
     l4densvar: Yes
 
   gfs_output_settings:
-    FHMAX_GFS: 384
+    FHMAX_GFS: 144
     FHOUT_GFS: 3
     FHMAX_HF_GFS: 0
 
@@ -92,13 +92,12 @@ case:
  #         partition: !calc doc.platform.partitions.tjet_or_ujet
  #         max_tries: 2
 
-        - Search: '**/forecast/*_forecast*'
-          partition: !calc doc.platform.partitions.tjet_or_ujet
-          max_tries: 2
-
         - Search: '**/forecast/jgdas_forecast_high'
-          partition: !calc doc.platform.partitions.tjet_or_ujet
+          partition: !calc doc.platform.partitions.kjet
           max_tries: 2
+          resources: !JobRequest
+            - mpi_ranks: !calc '11*24'
+              walltime: !timedelta '00:20:00'
 
         - Search: '**/post/jgfs_post*'
           # Make sure you update "resources" to match "partition"
@@ -121,19 +120,19 @@ case:
               walltime: !timedelta '00:20:00'
 
         - Search: '**/enkf/post/jgdas_enkf_post_f*'
-          partition: !calc doc.platform.partitions.tjet_or_ujet
+          partition: !calc doc.platform.partitions.sjet_or_vjet
           max_tries: 3
 
         - Search: '**/enkf/innovate/j*'
-          partition: !calc doc.platform.partitions.tjet_or_ujet
+          partition: !calc doc.platform.partitions.sjet_or_vjet
           max_tries: 2
 
         - Search: '**/enkf/forecast/j*_enkf*'
-          partition: !calc doc.platform.partitions.tjet_or_ujet
+          partition: !calc doc.platform.partitions.sjet_or_vjet
           max_tries: 2
 
         - Search: '**/enkf/jgdas_enkf_inflate_recenter*'
-          partition: !calc doc.platform.partitions.tjet_or_ujet
+          partition: !calc doc.platform.partitions.sjet_or_vjet
           #accounting:  ! BAD: this blocks the job if any other "urgent" jobs are active
           #  queue: urgent
           max_tries: 2
