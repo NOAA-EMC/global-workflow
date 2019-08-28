@@ -9,7 +9,7 @@
 include:
   - names.yaml
   - platform.yaml
-  - resource.yaml
+  - resources_sum.yaml
   - 'static*yaml'
   - schema/
   - defaults/

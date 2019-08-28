@@ -88,52 +88,57 @@ enkf_resource_table: !Select
       efcs_wall:  !timedelta "03:00:00"
       efcs_ppn: 12
 
-downstream_resource_table: !Select
+downstream_resource_table:
       #                    ranks ppn  wallclock          threads  MB_batch MB_per_rank
-  one_node_downstream:   [    1,    1, !timedelta "01:00:00",   1, 3072,      null   ]
-  big_downstream:        [    2,    1, !timedelta "00:30:00",   1, 3072,      null   ]
-  small_downstream:      [    2,    2, !timedelta "00:02:00",   1, 3072,      null   ]
-  awips_g2:              [    2,    2, !timedelta "00:06:00", max,  254,      null   ]
-  awips_20km_1p0:        [   28,   28, !timedelta "00:06:00", max,  254,      null   ]
-  postsnd:               [   12,    3, !timedelta "04:00:00", max,  254,      null   ]
-  postsndcfp:            [   10,    3, !timedelta "02:00:00", max,  254,      null   ]
-  gempak:                [   20,    4, !timedelta "02:00:00",   3,  254,      null   ]
-  verfrad:               [    1,    1, !timedelta "00:20:00",   1, 3072,      null   ]
-  vminmon:               [    1,    1, !timedelta "00:10:00",   1, 3072,      null   ]
-  gfs_gempak:            [   28,    4, !timedelta "03:00:00",   3, 3072,      null   ]
-  gdas_gempak:           [    2,    1, !timedelta "00:30:00",   1, 3072,      null   ]
-  gdas_gempak_meta_ncdc: [    2,    1, !timedelta "00:30:00",   1, 3072,      null   ]
-  one_node_downstream:   [    1,    1, !timedelta "00:30:00",   1, 3072,      null   ]
-  big_downstream:        [    2,    1, !timedelta "00:30:00",   1, 3072,      null   ]
-  small_downstream:      [    2,    2, !timedelta "00:02:00",   1, 3072,      null   ]
+  one_node_downstream:   [    1,    1, !timedelta "01:00:00",   1, 3072M,      null   ]
+  big_downstream:        [    2,    1, !timedelta "00:30:00",   1, 3072M,      null   ]
+  small_downstream:      [    2,    2, !timedelta "00:02:00",   1, 3072M,      null   ]
+  awips_g2:              [    2,    2, !timedelta "00:06:00", max,  254M,      null   ]
+  awips_20km_1p0:        [   28,   28, !timedelta "00:06:00", max,  254M,      null   ]
+  postsnd:               [   12,    3, !timedelta "04:00:00", max,  254M,      null   ]
+  postsndcfp:            [   10,    3, !timedelta "02:00:00", max,  254M,      null   ]
+  gempak:                [   20,    4, !timedelta "02:00:00",   3,  254M,      null   ]
+  verfrad:               [    1,    1, !timedelta "00:20:00",   1, 3072M,      null   ]
+  vminmon:               [    1,    1, !timedelta "00:10:00",   1, 3072M,      null   ]
+  gfs_gempak:            [   28,    4, !timedelta "03:00:00",   3, 3072M,      null   ]
+  gdas_gempak:           [    2,    1, !timedelta "00:30:00",   1, 3072M,      null   ]
+  gdas_gempak_meta_ncdc: [    2,    1, !timedelta "00:30:00",   1, 3072M,      null   ]
+  one_node_downstream:   [    1,    1, !timedelta "00:30:00",   1, 3072M,      null   ]
+  big_downstream:        [    2,    1, !timedelta "00:30:00",   1, 3072M,      null   ]
+  small_downstream:      [    2,    2, !timedelta "00:02:00",   1, 3072M,      null   ]
 
-util_resource_table: !Select
+util_resource_table:
       #                    ranks ppn  wallclock          threads  MB_batch MB_per_rank
-  prepbufr:              [    4,    4, !timedelta "00:15:00",   1, 3072,      null   ]
-  fv3ic:                 [   24,   24, !timedelta "00:30:00",   1, 3072,      null   ]
-  dump_waiter:           [    1,    1, !timedelta "01:00:00",   1,  300,      null   ]
-  make_next_cycles:      [    1,    1, !timedelta "00:15:00",   1,  600,      null   ]
-  one_hour_exclusive:    [    2,    1, !timedelta "01:00:00",   1,  300,      null   ]
-  nothing:               [    1,    1, !timedelta "00:02:00",   1,  300,      null   ]
-  getic:                 [    1,    1, !timedelta "06:00:00",   1, 3072,      null   ]
-  arch:                  [    1,    1, !timedelta "06:00:00",   1, 3072,      null   ]
-  earc:                  [    1,    1, !timedelta "06:00:00",   1, 3072,      null   ]
-  sfc_prep:              [    1,    1, !timedelta "00:02:00",   1, 1024,      null   ]
-  final:                 [    1,    1, !timedelta "00:01:00",   1, 1024,      null   ]
+  prepbufr:              [    4,    4, !timedelta "00:15:00",   1, 3072M,      null   ]
+  fv3ic:                 [   24,   24, !timedelta "00:30:00",   1, 3072M,      null   ]
+  dump_waiter:           [    1,    1, !timedelta "01:00:00",   1,  300M,      null   ]
+  make_next_cycles:      [    1,    1, !timedelta "00:15:00",   1,  600M,      null   ]
+  one_hour_exclusive:    [    2,    1, !timedelta "01:00:00",   1,  300M,      null   ]
+  nothing:               [    1,    1, !timedelta "00:02:00",   1,  300M,      null   ]
+  getic:                 [    1,    1, !timedelta "06:00:00",   1, 3072M,      null   ]
+  arch:                  [    1,    1, !timedelta "06:00:00",   1, 3072M,      null   ]
+  earc:                  [    1,    1, !timedelta "06:00:00",   1, 3072M,      null   ]
+  sfc_prep:              [    1,    1, !timedelta "00:02:00",   1, 1024M,      null   ]
+  final:                 [    1,    1, !timedelta "00:01:00",   1, 1024M,      null   ]
+  dwn:                   [   24,   24, !timedelta "00:02:00",   1, 3072M,      null   ]
 
 # !!! Model developers should NOT changing these !!!
 # 
 
 default_resources: &default_resources
 
+  run_dwn: !JobRequest
+    - mpi_ranks: !calc doc.util_resource_table.dwn[0]
+      OMP_NUM_THREADS: !calc doc.util_resource_table.dwn[3]
+
   run_sfc_prep: !JobRequest    
-    - memory: !calc doc.util_resource_table.sfc_prep[4]
+    - batch_memory: !calc doc.util_resource_table.sfc_prep[4]
       mpi_ranks: !calc doc.util_resource_table.sfc_prep[0]
       walltime: !calc doc.util_resource_table.sfc_prep[2]
       max_ppn: !calc doc.util_resource_table.sfc_prep[1]
 
   run_final: !JobRequest
-    - memory: !calc doc.util_resource_table.final[4]
+    - batch_memory: !calc doc.util_resource_table.final[4]
       mpi_ranks: !calc doc.util_resource_table.final[0]
       walltime: !calc doc.util_resource_table.final[2]
       max_ppn: !calc doc.util_resource_table.final[1]
@@ -157,17 +162,17 @@ default_resources: &default_resources
       max_ppn: !calc doc.util_resource_table.earc[1]
 
   run_make_next_cycles: !JobRequest
-    - memory: !calc doc.util_resource_table.make_next_cycles[4]
+    - batch_memory: !calc doc.util_resource_table.make_next_cycles[4]
       walltime: !calc doc.util_resource_table.make_next_cycles[2]
 
   run_one_hour_exclusive: !JobRequest # Placeholder for one node jobs
-    - memory: !calc doc.util_resource_table.one_hour_exclusive[4]
+    - batch_memory: !calc doc.util_resource_table.one_hour_exclusive[4]
       mpi_ranks: !calc doc.util_resource_table.one_hour_exclusive[0]
       walltime: !calc doc.util_resource_table.one_hour_exclusive[2]
 
   run_nothing: !JobRequest # Special placeholder for "do nothing"
-    - memory: !calc doc.util_resource_table_nothing[4]
-      walltime: !calc doc.util_resource_table_nothing[2]
+    - batch_memory: !calc doc.util_resource_table.nothing[4]
+      walltime: !calc doc.util_resource_table.nothing[2]
 
   run_prepbufr: !JobRequest     # never used
     - batch_memory: !calc doc.util_resource_table.prepbufr[4]
@@ -182,7 +187,7 @@ default_resources: &default_resources
       walltime: !calc doc.util_resource_table.fv3ic[2]
 
   run_dump_waiter: !JobRequest
-    - memory: !calc doc.util_resource_table.dump_waiter[4]
+    - batch_memory: !calc doc.util_resource_table.dump_waiter[4]
       walltime: !calc doc.util_resource_table.dump_waiter[2]
       mpi_ranks: !calc doc.util_resource_table.dump_waiter[0]
       max_ppn: !calc doc.util_resource_table.dump_waiter[1]

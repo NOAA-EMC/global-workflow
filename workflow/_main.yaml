@@ -4,6 +4,7 @@
 # there, _expdir_main.yaml is used in its place.
 include:
   - user.yaml
+  - resources_sum.yaml
   - schema/
   - defaults/
   - runtime/
