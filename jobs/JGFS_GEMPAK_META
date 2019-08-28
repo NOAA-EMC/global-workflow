@@ -84,7 +84,7 @@ export COMINgempak=${COMINgempak:-${COMROOT}/${NET}/${envir}}
 
 export COMINukmet=${COMINukmet:-$(compath.py nawips/prod/ukmet)}
 export COMINecmwf=${COMINecmwf:-$(compath.py nawips/prod/ecmwf)}
-export COMINnam=${COMINnam:-$(compath.py nawips/prod/nam)}
+export COMINnam=${COMINnam:-$(compath.py nam/prod/nam)}
 
 msg="Begin job for $job"
 postmsg "$jlogfile" "$msg"
