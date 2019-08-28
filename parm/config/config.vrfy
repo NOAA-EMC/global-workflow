@@ -36,11 +36,15 @@ if [ $VRFYFITS = "YES" ]; then
     export HYBLEVS=$HOMEgfs/fix/fix_am/global_hyblev.l${LEVS}.txt
     export CUE2RUN=$QUEUE
 
+    if [ $netcdf_diag = ".true." ]; then
+        export CONVNETC="YES"
+    fi
+
     if [ $machine = "WCOSS_C" ]; then
         export fitdir="$BASE_SVN/verif/global/parafits.fv3nems/batrun"
         export PREPQFITSH="$fitdir/subfits_cray_nems"
     elif [ $machine = "WCOSS_DELL_P3" ]; then
-        export fitdir="$BASE_SVN/verif/global/parafits.fv3nems/batrun"
+        export fitdir="$BASE_SVN/verif/global/Fit2Obs/ncfits/batrun"
         export PREPQFITSH="$fitdir/subfits_dell_nems"
     elif [ $machine = "THEIA" ]; then
         export fitdir="$BASE_SVN/verif/global/parafits.fv3nems/batrun"
@@ -108,7 +112,7 @@ if [ $VRFYRAD = "YES" -o $VRFYMINMON = "YES" -o $VRFYOZN = "YES" ]; then
     if [[ "$VRFYMINMON" = "YES" ]] ; then
 
         export MINMON_SUFFIX=$PSLOT
-        export M_TANKverf="$NOSCRUB/monitor/minmon"
+        export M_TANKverf="$NOSCRUB/monitor/minmon/stats/$PSLOT"
         if [ $machine = "WCOSS_C" -o $machine = "WCOSS_DELL_P3" -o $machine = "THEIA" ]; then
             if [[ "$CDUMP" = "gdas" ]] ; then
                 export VRFYMINSH="$HOMEgfs/jobs/JGDAS_VMINMON"
