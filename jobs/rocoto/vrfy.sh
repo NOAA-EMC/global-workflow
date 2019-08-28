@@ -156,6 +156,8 @@ if [ $VRFYMINMON = "YES" -a $CDATE != $SDATE ]; then
 
     export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc"
     export jlogfile="$ROTDIR/logs/$CDATE/${CDUMP}minmon.log"
+    export M_TANKverfM0="$M_TANKverf/stats/$PSLOT/$CDUMP.$PDY"
+    export M_TANKverfM1="$M_TANKverf/stats/$PSLOT/$CDUMP.$PDYm1"
     export MY_MACHINE=$machine
 
     $VRFYMINSH
