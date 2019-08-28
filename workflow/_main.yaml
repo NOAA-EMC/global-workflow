@@ -1,1 +1,9 @@
-_main_auto.yaml
+# NOTE: This file is only used during setup_case.sh to tell that
+# script what YAML files to read when initializing the experiment
+# directory.  This file is NOT copied to the experiment directory;
+# there, _expdir_main.yaml is used in its place.
+include:
+  - user.yaml
+  - schema/
+  - defaults/
+  - runtime/
