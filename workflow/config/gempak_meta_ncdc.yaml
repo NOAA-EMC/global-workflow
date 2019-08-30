@@ -14,9 +14,6 @@ config_gempak_meta_ncdc:
 
     echo "BEGIN: config.gempak_meta_ncdc"
 
-    # Get task specific resources
-    . $EXPDIR/config.resources gempak
-
     export SENDCOM="YES"
 
     export FIXgfs=$HOMEgfs/gempak/fix

@@ -17,15 +17,10 @@ config_eobs:
     
     echo "BEGIN: config.eobs"
     
-    # Get task specific resources
-    . $EXPDIR/config.resources eobs
-    
     export INVOBSSH="$HOMEgsi/scripts/exglobal_innovate_obs_fv3gfs.sh.ecf"
     export ENKFINVOBSSH="$HOMEgsi/scripts/exglobal_enkf_innovate_obs_fv3gfs.sh.ecf"
     export NMEM_EOMGGRP={doc.data_assimilation.NMEM_EOMGGRP}
     export RERUN_EOMGGRP="{tools.YES_NO(doc.data_assimilation.RERUN_EOMGGRP)}"
-    export npe_gsi=$npe_eobs
-    #export nth_anal={doc.aliases.eobs.nth}
     
     # GSI namelist options related to observer for EnKF
     export OBSINPUT_INVOBS="dmesh(1)=225.0,dmesh(2)=225.0"

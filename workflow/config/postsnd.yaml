@@ -14,9 +14,6 @@ config_postsnd:
 
     echo "BEGIN: config.postsnd"
 
-    # Get task specific resources
-    . $EXPDIR/config.resources postsnd
-
     export CDATEm1=$($NDATE -24 $CDATE)
     export PDYm1=$(echo $CDATEm1 | cut -c1-8)
     export COMIN="$ROTDIR/$CDUMP.$PDY/$cyc"

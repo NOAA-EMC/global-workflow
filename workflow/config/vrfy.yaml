@@ -16,9 +16,6 @@ config_vrfy:
     
     echo "BEGIN: config.vrfy"
     
-    # Get task specific resources
-    . $EXPDIR/config.resources vrfy
-    
     export VDUMP="{doc.downstream.VDUMP}"       # verifying dump
     export CDUMPFCST="{doc.downstream.CDUMPFCST}"  # Fit-to-obs with GDAS/GFS prepbufr
     export CDFNL="{doc.downstream.CDFNL}"      # Scores verification against GDAS/GFS analysis

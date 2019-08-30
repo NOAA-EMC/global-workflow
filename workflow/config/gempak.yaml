@@ -14,9 +14,6 @@ config_gempak:
 
     echo "BEGIN: config.gempak"
 
-    # Get task specific resources
-    . $EXPDIR/config.resources gempak
-
     export SENDCOM="YES"
 
     export GEMPAKSH=$HOMEgfs/jobs/JGFS_GEMPAK

@@ -15,9 +15,6 @@ config_getic:
     
     echo "BEGIN: config.getic"
     
-    # Get task specific resources
-    . $EXPDIR/config.resources getic
-    
     # We should just be supporting the OPSGFS only
     export ics_from="{doc.settings.ics_from}" # initial conditions from opsgfs or pargfs
     

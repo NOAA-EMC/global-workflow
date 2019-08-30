@@ -15,9 +15,6 @@ config_earc:
     
     echo "BEGIN: config.earc"
     
-    # Get task specific resources
-    . $EXPDIR/config.resources earc
-    
     export NMEM_EARCGRP={doc.data_assimilation.NMEM_EARCGRP}
 
     echo "END: config.earc"

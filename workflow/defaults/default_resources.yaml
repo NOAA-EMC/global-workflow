@@ -9,6 +9,7 @@
 #        and batch system will fill in settings.
 #  a number = use this many threads per MPI rank
 
+# Resource matrix; VALUES of default resource settings
 gfs_resource_table: !Select
   select: !calc doc.fv3_gfs_settings.CASE
   otherwise: !error "Unknown FV3 deterministic grid: {doc.fv3_gfs_settings.CASE}"
@@ -87,226 +88,195 @@ enkf_resource_table: !Select
       efcs_wall:  !timedelta "03:00:00"
       efcs_ppn: 12
 
+downstream_resource_table:
+      #                    ranks ppn  wallclock          threads  MB_batch MB_per_rank
+  one_node_downstream:   [    1,    1, !timedelta "01:00:00",   1, 3072M,      null   ]
+  big_downstream:        [    2,    1, !timedelta "00:30:00",   1, 3072M,      null   ]
+  small_downstream:      [    2,    2, !timedelta "00:02:00",   1, 3072M,      null   ]
+  awips_g2:              [    2,    2, !timedelta "00:06:00", max,  254M,      null   ]
+  awips_20km_1p0:        [   28,   28, !timedelta "00:06:00", max,  254M,      null   ]
+  postsnd:               [   12,    3, !timedelta "04:00:00", max,  254M,      null   ]
+  postsndcfp:            [   10,    3, !timedelta "02:00:00", max,  254M,      null   ]
+  gempak:                [   20,    4, !timedelta "02:00:00",   3,  254M,      null   ]
+  verfrad:               [    1,    1, !timedelta "00:20:00",   1, 3072M,      null   ]
+  vminmon:               [    1,    1, !timedelta "00:10:00",   1, 3072M,      null   ]
+  gfs_gempak:            [   28,    4, !timedelta "03:00:00",   3, 3072M,      null   ]
+  gdas_gempak:           [    2,    1, !timedelta "00:30:00",   1, 3072M,      null   ]
+  gdas_gempak_meta_ncdc: [    2,    1, !timedelta "00:30:00",   1, 3072M,      null   ]
+  one_node_downstream:   [    1,    1, !timedelta "00:30:00",   1, 3072M,      null   ]
+  big_downstream:        [    2,    1, !timedelta "00:30:00",   1, 3072M,      null   ]
+  small_downstream:      [    2,    2, !timedelta "00:02:00",   1, 3072M,      null   ]
+
+util_resource_table:
+      #                    ranks ppn  wallclock          threads  MB_batch MB_per_rank
+  prepbufr:              [    4,    4, !timedelta "00:15:00",   1, 3072M,      null   ]
+  fv3ic:                 [   24,   24, !timedelta "00:30:00",   1, 3072M,      null   ]
+  dump_waiter:           [    1,    1, !timedelta "01:00:00",   1,  300M,      null   ]
+  make_next_cycles:      [    1,    1, !timedelta "00:15:00",   1,  600M,      null   ]
+  one_hour_exclusive:    [    2,    1, !timedelta "01:00:00",   1,  300M,      null   ]
+  nothing:               [    1,    1, !timedelta "00:02:00",   1,  300M,      null   ]
+  getic:                 [    1,    1, !timedelta "06:00:00",   1, 3072M,      null   ]
+  arch:                  [    1,    1, !timedelta "06:00:00",   1, 3072M,      null   ]
+  earc:                  [    1,    1, !timedelta "06:00:00",   1, 3072M,      null   ]
+  sfc_prep:              [    1,    1, !timedelta "00:02:00",   1, 1024M,      null   ]
+  final:                 [    1,    1, !timedelta "00:01:00",   1, 1024M,      null   ]
+  dwn:                   [   24,   24, !timedelta "00:02:00",   1, 3072M,      null   ]
+
+# !!! Model developers should NOT changing these !!!
+# 
+
 default_resources: &default_resources
 
-  # Constant resources; ones that do not change regardless of configuration.
   run_dwn: !JobRequest
-    - mpi_ranks: 24
-      OMP_NUM_THREADS: 1
-      exe: placeholder
-  
-  run_awips_g2: !JobRequest
-    - batch_memory: "254M"
-      mpi_ranks: 2
-      max_ppn: 2
-      walltime: !timedelta "00:06:00"
-      exe: placeholder
+    - mpi_ranks: !calc doc.util_resource_table.dwn[0]
+      OMP_NUM_THREADS: !calc doc.util_resource_table.dwn[3]
 
-  run_awips_20km_1p0: !JobRequest
-    - batch_memory: "254M"
-      mpi_ranks: 28
-      max_ppn: 28
-      walltime: !timedelta "00:06:00"
-      exe: placeholder
-
-
-  postsnd_walltime: !timedelta "04:00:00"
-
-  run_postsnd: !JobRequest
-    - batch_memory: "254M"
-      mpi_ranks: 12
-      max_ppn: 3
-      walltime: !calc postsnd_walltime
-      exe: placeholder
-      
-  run_postsndcfp: !JobRequest
-    - batch_memory: "254M"
-      mpi_ranks: 10
-      max_ppn: 3
-      walltime: !timedelta "02:00:00"
-      exe: placeholder
-      
-  run_gempak: !JobRequest
-    - batch_memory: "254M"
-      mpi_ranks: 20
-      max_ppn: 4
-      walltime: !timedelta "02:00:00"
-      OMP_NUM_THREADS: 3
-      exe: placeholder
-
-  run_verfrad: !JobRequest
-    - batch_memory: "3072M"
-      mpi_ranks: 1
-      max_ppn: 1
-      exclusive: true
-      walltime: !timedelta "00:20:00"
-      exe: placeholder
-
-  run_vminmon: !JobRequest
-    - batch_memory: "3072M"
-      mpi_ranks: 1
-      max_ppn: 1
-      exclusive: true
-      walltime: !timedelta "00:10:00"
-      exe: placeholder
-      
-  run_gfs_gempak: !JobRequest
-    - batch_memory: "3072M"
-      mpi_ranks: 28
-      max_ppn: 4
-      walltime: !timedelta "03:00:00"
-      OMP_NUM_THREADS: 3
-      exe: placeholder
-
-  run_gdas_gempak: !JobRequest
-    - batch_memory: "3072M"
-      mpi_ranks: 2
-      max_ppn: 1
-      walltime: !timedelta "00:03:00"
-      OMP_NUM_THREADS: 1
-      exe: placeholder
-      
-  run_gfs_gempak_meta: !JobRequest    # never used
-    - batch_memory: "3072M"
-      mpi_ranks: 28
-      max_ppn: 14
-      walltime: !timedelta "00:30:00"
-      exe: placeholder
-       
-  run_gdas_gempak: !JobRequest   # never used
-    - batch_memory: "3072M"
-      walltime: !timedelta "00:03:00"
-      max_ppn: 1
-      mpi_ranks: 2
-      exe: placeholder
-       
-  run_gdas_gempak_meta_ncdc: !JobRequest
-    - batch_memory: "3072M"
-      walltime: !timedelta "00:30:00"
-      max_ppn: 1
-      mpi_ranks: 2
-      exe: placeholder
-
-  run_one_node_downstream: !JobRequest
-    - batch_memory: "3072M"
-      walltime: !timedelta "00:30:00"
-      max_ppn: 1
-      mpi_ranks: 1
-      exe: placeholder
-
-  run_big_downstream: !JobRequest
-    - batch_memory: "3072M"
-      walltime: !timedelta "00:30:00"
-      max_ppn: 1
-      mpi_ranks: 2
-      exe: placeholder
-
-  run_small_downstream: !JobRequest
-    - batch_memory: "3072M"
-      walltime: !timedelta "00:02:00"
-      max_ppn: 2
-      mpi_ranks: 2
-      exe: placeholder
-       
-  run_npoess: !JobRequest
-    - batch_memory: "254M"
-      mpi_ranks: 1
-      max_ppn: 1
-      walltime: !timedelta "01:00:00"
-      OMP_NUM_THREADS: 1
-      exe: placeholder
-      
-  run_bulls_navy: !JobRequest
-    - batch_memory: "3072M"
-      walltime: !timedelta "00:30:00"
-      max_ppn: 1
-      mpi_ranks: 1
-      exe: placeholder
-      
-  run_prepbufr: !JobRequest     # never used
-    - batch_memory: "3072M"
-      walltime: !timedelta "00:15:00"
-      max_ppn: 4
-      mpi_ranks: 4
-      exe: placeholder
-
-  run_fv3ic: !JobRequest
-    - batch_memory: "3072M"
-      mpi_ranks: 24
-      max_ppn: 24
-      walltime: !timedelta "00:30:00"
-      exe: placeholder
-  
-  run_dump_waiter: !JobRequest
-    - memory: "300M"
-      exe: placeholder
-      walltime: !FirstTrue
-        - when: !calc doc.settings.realtime
-          do: !timedelta "01:00:00"
-        - otherwise: !timedelta "00:05:00"
-            
-  run_make_next_cycles: !JobRequest
-    - memory: "600M"
-      exe: placeholder
-      walltime: !timedelta "00:15:00"
-      
-  run_one_hour_exclusive: !JobRequest # Placeholder for one node jobs
-    - memory: "300M"
-      exe: placeholder
-      mpi_ranks: 2
-      walltime: !timedelta "00:02:00"
-      exclusive: true
-  
-  run_chgres: !JobRequest
-    - exe: time
-      OMP_NUM_THREADS: 12
-      args:
-        - placeholder
-  
-  run_nothing: !JobRequest # Special placeholder for "do nothing"
-    - memory: "300M"
-      exe: placeholder
-      walltime: !timedelta "00:02:00"
-      exclusive: false
-
-  run_getic: !JobRequest
-    - batch_memory: "3072M"
-      exclusive: false
-      mpi_ranks: 1
-      walltime: !timedelta "06:00:00"
-      exe: placeholder
-      max_ppn: 1
-  
-  run_arch: !JobRequest
-    - batch_memory: "3072M"
-      exclusive: false
-      mpi_ranks: 1
-      walltime: !timedelta "06:00:00"
-      exe: placeholder
-      max_ppn: 1
-
-  run_earc: !JobRequest
-    - batch_memory: "3072M"
-      mpi_ranks: 1
-      walltime: !timedelta "06:00:00"
-      exe: placeholder
-      max_ppn: 1
-      exclusive: false
-
-  run_sfc_prep: !JobRequest    # never used
-    - memory: "1024M"
-      mpi_ranks: 1
-      walltime: !timedelta "00:02:00"
-      exe: placeholder
-      max_ppn: 1
+  run_sfc_prep: !JobRequest    
+    - batch_memory: !calc doc.util_resource_table.sfc_prep[4]
+      mpi_ranks: !calc doc.util_resource_table.sfc_prep[0]
+      walltime: !calc doc.util_resource_table.sfc_prep[2]
+      max_ppn: !calc doc.util_resource_table.sfc_prep[1]
 
   run_final: !JobRequest
-    - memory: "1024M"
-      mpi_ranks: 1
-      walltime: !timedelta "00:01:00"
-      exe: placeholder
-      max_ppn: 1
-  
+    - batch_memory: !calc doc.util_resource_table.final[4]
+      mpi_ranks: !calc doc.util_resource_table.final[0]
+      walltime: !calc doc.util_resource_table.final[2]
+      max_ppn: !calc doc.util_resource_table.final[1]
+
+  run_getic: !JobRequest
+    - batch_memory: !calc doc.util_resource_table.getic[4]
+      mpi_ranks: !calc doc.util_resource_table.getic[0]
+      walltime: !calc doc.util_resource_table.getic[2]
+      max_ppn: !calc doc.util_resource_table.getic[1]
+
+  run_arch: !JobRequest
+    - batch_memory: !calc doc.util_resource_table.arch[4]
+      mpi_ranks: !calc doc.util_resource_table.arch[0]
+      walltime: !calc doc.util_resource_table.arch[2]
+      max_ppn: !calc doc.util_resource_table.arch[1]
+
+  run_earc: !JobRequest
+    - batch_memory: !calc doc.util_resource_table.earc[4]
+      mpi_ranks: !calc doc.util_resource_table.earc[0]
+      walltime: !calc doc.util_resource_table.earc[2]
+      max_ppn: !calc doc.util_resource_table.earc[1]
+
+  run_make_next_cycles: !JobRequest
+    - batch_memory: !calc doc.util_resource_table.make_next_cycles[4]
+      walltime: !calc doc.util_resource_table.make_next_cycles[2]
+
+  run_one_hour_exclusive: !JobRequest # Placeholder for one node jobs
+    - batch_memory: !calc doc.util_resource_table.one_hour_exclusive[4]
+      mpi_ranks: !calc doc.util_resource_table.one_hour_exclusive[0]
+      walltime: !calc doc.util_resource_table.one_hour_exclusive[2]
+
+  run_nothing: !JobRequest # Special placeholder for "do nothing"
+    - batch_memory: !calc doc.util_resource_table.nothing[4]
+      walltime: !calc doc.util_resource_table.nothing[2]
+
+  run_prepbufr: !JobRequest     # never used
+    - batch_memory: !calc doc.util_resource_table.prepbufr[4]
+      walltime: !calc doc.util_resource_table.prepbufr[2]
+      max_ppn: !calc doc.util_resource_table.prepbufr[1]
+      mpi_ranks: !calc doc.util_resource_table.prepbufr[0]
+
+  run_fv3ic: !JobRequest
+    - batch_memory: !calc doc.util_resource_table.fv3ic[4]
+      mpi_ranks: !calc doc.util_resource_table.fv3ic[0]
+      max_ppn: !calc doc.util_resource_table.fv3ic[1]
+      walltime: !calc doc.util_resource_table.fv3ic[2]
+
+  run_dump_waiter: !JobRequest
+    - batch_memory: !calc doc.util_resource_table.dump_waiter[4]
+      walltime: !calc doc.util_resource_table.dump_waiter[2]
+      mpi_ranks: !calc doc.util_resource_table.dump_waiter[0]
+      max_ppn: !calc doc.util_resource_table.dump_waiter[1]
+
+  run_big_downstream: !JobRequest
+    - mpi_ranks: !calc doc.downstream_resource_table.big_downstream[0]
+      max_ppn: !calc doc.downstream_resource_table.big_downstream[1]
+      walltime: !calc doc.downstream_resource_table.big_downstream[2]
+      OMP_NUM_THREADS: !calc doc.downstream_resource_table.big_downstream[3]
+      batch_memory: !calc doc.downstream_resource_table.big_downstream[4]
+
+  run_small_downstream: !JobRequest
+    - mpi_ranks: !calc doc.downstream_resource_table.small_downstream[0]
+      max_ppn: !calc doc.downstream_resource_table.small_downstream[1]
+      walltime: !calc doc.downstream_resource_table.small_downstream[2]
+      OMP_NUM_THREADS: !calc doc.downstream_resource_table.small_downstream[3]
+      batch_memory: !calc doc.downstream_resource_table.small_downstream[4]
+
+  run_one_node_downstream: !JobRequest
+    - mpi_ranks: !calc doc.downstream_resource_table.one_node_downstream[0]
+      max_ppn: !calc doc.downstream_resource_table.one_node_downstream[1]
+      walltime: !calc doc.downstream_resource_table.one_node_downstream[2]
+      OMP_NUM_THREADS: !calc doc.downstream_resource_table.one_node_downstream[3]
+      batch_memory: !calc doc.downstream_resource_table.one_node_downstream[4]
+
+  run_gdas_gempak_meta_ncdc: !JobRequest
+    - mpi_ranks: !calc doc.downstream_resource_table.gdas_gempak_meta_ncdc[0]
+      max_ppn: !calc doc.downstream_resource_table.gdas_gempak_meta_ncdc[1]
+      walltime: !calc doc.downstream_resource_table.gdas_gempak_meta_ncdc[2]
+      OMP_NUM_THREADS: !calc doc.downstream_resource_table.gdas_gempak_meta_ncdc[3]
+      batch_memory: !calc doc.downstream_resource_table.gdas_gempak_meta_ncdc[4]
+
+  run_gfs_gempak: !JobRequest
+    - mpi_ranks: !calc doc.downstream_resource_table.gfs_gempak[0]
+      max_ppn: !calc doc.downstream_resource_table.gfs_gempak[1]
+      walltime: !calc doc.downstream_resource_table.gfs_gempak[2]
+      OMP_NUM_THREADS: !calc doc.downstream_resource_table.gfs_gempak[3]
+      batch_memory: !calc doc.downstream_resource_table.gfs_gempak[4]
+
+  run_gdas_gempak: !JobRequest
+    - mpi_ranks: !calc doc.downstream_resource_table.gdas_gempak[0]
+      max_ppn: !calc doc.downstream_resource_table.gdas_gempak[1]
+      walltime: !calc doc.downstream_resource_table.gdas_gempak[2]
+      OMP_NUM_THREADS: !calc doc.downstream_resource_table.gdas_gempak[3]
+      batch_memory: !calc doc.downstream_resource_table.gdas_gempak[4]
+
+  run_vminmon: !JobRequest
+    - mpi_ranks: !calc doc.downstream_resource_table.vminmon[0]
+      max_ppn: !calc doc.downstream_resource_table.vminmon[1]
+      walltime: !calc doc.downstream_resource_table.vminmon[2]
+      batch_memory: !calc doc.downstream_resource_table.vminmon[4]
+
+  run_awips_g2: !JobRequest
+    - mpi_ranks: !calc doc.downstream_resource_table.awips_g2[0]
+      max_ppn: !calc doc.downstream_resource_table.awips_g2[1]
+      walltime: !calc doc.downstream_resource_table.awips_g2[2]
+      batch_memory: !calc doc.downstream_resource_table.awips_g2[4]
+
+  run_awips_20km_1p0: !JobRequest
+    - mpi_ranks: !calc doc.downstream_resource_table.awips_20km_1p0[0]
+      max_ppn: !calc doc.downstream_resource_table.awips_20km_1p0[1]
+      walltime: !calc doc.downstream_resource_table.awips_20km_1p0[2]
+      batch_memory: !calc doc.downstream_resource_table.awips_20km_1p0[4]
+
+  run_postsnd: !JobRequest
+    - mpi_ranks: !calc doc.downstream_resource_table.postsnd[0]
+      max_ppn: !calc doc.downstream_resource_table.postsnd[1]
+      walltime: !calc doc.downstream_resource_table.postsnd[2]
+      batch_memory: !calc doc.downstream_resource_table.postsnd[4]
+
+  run_postsndcfp: !JobRequest
+    - mpi_ranks: !calc doc.downstream_resource_table.postsndcfp[0]
+      max_ppn: !calc doc.downstream_resource_table.postsndcfp[1]
+      walltime: !calc doc.downstream_resource_table.postsndcfp[2]
+      batch_memory: !calc doc.downstream_resource_table.postsndcfp[4]
+
+  run_gempak: !JobRequest
+    - mpi_ranks: !calc doc.downstream_resource_table.gempak[0]
+      max_ppn: !calc doc.downstream_resource_table.gempak[1]
+      walltime: !calc doc.downstream_resource_table.gempak[2]
+      OMP_NUM_THREADS: !calc doc.downstream_resource_table.gempak[3]
+      batch_memory: !calc doc.downstream_resource_table.gempak[4]
+
+  run_verfrad: !JobRequest
+    - mpi_ranks: !calc doc.downstream_resource_table.verfrad[0]
+      max_ppn: !calc doc.downstream_resource_table.verfrad[1]
+      walltime: !calc doc.downstream_resource_table.verfrad[2]
+      batch_memory: !calc doc.downstream_resource_table.verfrad[4]
+
   # Calculated resources; ones that can be determined entirely from
   # other variables throughout the document.
 

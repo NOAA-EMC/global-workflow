@@ -535,7 +535,7 @@ suite: !Cycle
 #      edit WORKFLOW_FIRST_CYCLE '{tools.strftime(suite.Clock.start,"%Y%m%d%H")}'
 #      edit WORKFLOW_LAST_CYCLE '{tools.strftime(suite.Clock.end,"%Y%m%d%H")}'
 #      edit WORKFLOW_CYCLES_TO_GENERATE '5'
-#      edit WORKFLOW_CROW_HOME '{doc.static_locations.initial_directory}'
+#      edit WORKFLOW_CROW_HOME '{doc.places.HOMEcrow}'
 #      edit WORKFLOW_EXPDIR '{doc.places.EXPDIR}'
 #      edit RUN 'gdas'  # useless but required
 
