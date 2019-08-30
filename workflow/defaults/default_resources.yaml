@@ -282,12 +282,7 @@ default_resources: &default_resources
 
   run_gdasfcst: !JobRequest
     - batch_memory: "1024M"
-      mpi_ranks: !calc >-
-          doc.fv3_gdas_settings.layout_x *
-          doc.fv3_gdas_settings.layout_y * 6 + 
-          ( ( doc.fv3_gdas_settings.WRITE_GROUP * 
-          doc.fv3_gdas_settings.WRTTASK_PER_GROUP )
-          if doc.fv3_gdas_settings.QUILTING else 0 )
+      mpi_ranks: !calc doc.fv3_gdas_settings.FV3PETS
       max_ppn: !calc "doc.fv3_gdas_settings.get('fcst_max_ppn',None)"
       walltime: !calc gdasfcst_walltime
       OMP_NUM_THREADS: !calc doc.fv3_gdas_settings.fv3_threads
@@ -306,12 +301,7 @@ default_resources: &default_resources
   
   run_efcs: !JobRequest
     - batch_memory: "254M"
-      mpi_ranks: !calc >-
-          doc.fv3_enkf_settings.layout_x *
-          doc.fv3_enkf_settings.layout_y * 6 + 
-          ( ( doc.fv3_enkf_settings.WRITE_GROUP * 
-          doc.fv3_enkf_settings.WRTTASK_PER_GROUP )
-          if doc.fv3_enkf_settings.QUILTING else 0 )
+      mpi_ranks: !calc doc.fv3_enkf_settings.FV3PETS
       max_ppn: !calc "doc.fv3_enkf_settings.get('fcst_max_ppn',None)"
       OMP_NUM_THREADS: !calc doc.fv3_enkf_settings.fv3_threads
       walltime: !calc efcs_walltime
@@ -322,12 +312,15 @@ default_resources: &default_resources
   
   run_gfsfcst: !JobRequest
     - batch_memory: "1024M"
-      mpi_ranks: !calc >-
-          doc.fv3_gfs_settings.layout_x *
-          doc.fv3_gfs_settings.layout_y * 6 + 
-          ( ( doc.fv3_gfs_settings.WRITE_GROUP * 
-          doc.fv3_gfs_settings.WRTTASK_PER_GROUP )
-          if doc.fv3_gfs_settings.QUILTING else 0 )
+      mpi_ranks: !calc doc.fv3_gfs_settings.FV3PETS
+      max_ppn: !calc "doc.fv3_gfs_settings.get('fcst_max_ppn',None)"
+      OMP_NUM_THREADS: !calc doc.fv3_gfs_settings.fv3_threads
+      walltime: !calc gfsfcst_walltime
+      memory_per_rank: !calc doc.gfs_resource_table.get('gfsfcst_mem_per_rank',None)
+
+  run_coupled_fcst: !JobRequest
+    - batch_memory: "1024M"
+      mpi_ranks: !calc doc.fv3_gfs_settings.FV3PETS+doc.fv3_gfs_settings.OCNPETS+doc.fv3_gfs_settings.ICEPETS
       max_ppn: !calc "doc.fv3_gfs_settings.get('fcst_max_ppn',None)"
       OMP_NUM_THREADS: !calc doc.fv3_gfs_settings.fv3_threads
       walltime: !calc gfsfcst_walltime

@@ -5,9 +5,10 @@
 
 fv3_settings: !Immediate
   - !MergeMapping
-    - !calc doc.case.fv3_settings
     - CDUMP: gfs
       Template: *fv3_settings_template
+    - !calc doc.fv3_defaults
+    - !calc doc.case.fv3_settings
     - !calc doc.get('user_fv3_settings',{})
 
 schedvar: !Immediate
@@ -18,7 +19,7 @@ schedvar: !Immediate
 
 fv3_gfs_settings: !Immediate
   - !MergeMapping
-    - !calc doc.case.fv3_settings
+    - !calc doc.fv3_settings
     - CDUMP: gfs
       Template: *fv3_settings_template
     - !calc doc.case.get('fv3_gfs_settings',{})
@@ -27,7 +28,7 @@ fv3_gfs_settings: !Immediate
 fv3_enkf_settings: !Immediate
   - !MergeMapping
     - !calc doc.fv3_enkf_defaults
-    - !calc doc.case.fv3_settings
+    - !calc doc.fv3_settings
     - CDUMP: gdas
       Template: *fv3_settings_template
     - !calc doc.case.get('fv3_enkf_settings',{})

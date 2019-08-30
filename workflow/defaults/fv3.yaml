@@ -1,0 +1,18 @@
+# default settings for fv3 core
+
+fv3_defaults: &fv3_defaults
+  CASE: C384
+  DELTIM: 450
+  layout_x: 6
+  layout_y: 8
+  fv3_threads: 2
+  cdmbgwd: "3.5,0.25"
+  WRITE_GROUP: 1
+  WRTTASK_PER_GROUP: 24
+  WRTIOBUF: "32M"
+  FV3PETS: !FirstTrue
+    - when: !calc doc.fv3_gfs_settings.QUILTING
+      do: !calc layout_x * layout_y * 6 + WRITE_GROUP * WRTTASK_PER_GROUP
+    - otherwise: !calc layout_x * layout_y * 6
+  OCNPETS: 120
+  ICEPETS: 48

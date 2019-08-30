@@ -2,6 +2,15 @@ case:
   fv3_settings:
     CASE: C192
     LEVS: 65
+    DELTIM: 450
+    layout_x: 6
+    layout_y: 8
+    fv3_threads: 2
+    WRITE_GROUP: 1
+    WRTTASK_PER_GROUP: 24
+    WRTIOBUF: "32M"
+    OCNPETS: 120
+    ICEPETS: 48
 
   places:
     workflow_file: workflow/free_forecast_gfs.yaml

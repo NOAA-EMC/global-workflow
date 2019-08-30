@@ -32,7 +32,14 @@ config_fcst:
     if [ $DONST = "YES" ]; then
         . $EXPDIR/config.nsst
     fi
-    
+
+    #######################################################################
+    # PE Mapping
+    export FV3PETS="{doc.fv3_settings.FV3PETS}"
+    export OCNPETS="{doc.fv3_settings.OCNPETS}"
+    export ICEPETS="{doc.fv3_settings.ICEPETS}"
+    #
+    #######################################################################    
     export FORECASTSH="$HOMEgfs/scripts/exglobal_fcst_nemsfv3gfs.sh"
     #export FCSTEXECDIR="$HOMEfv3gfs/NEMS/exe"
     export FCSTEXECDIR="$HOMEgfs/exec"

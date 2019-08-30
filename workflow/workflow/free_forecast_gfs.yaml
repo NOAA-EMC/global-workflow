@@ -61,8 +61,7 @@ suite: !Cycle
       jgfs_forecast_high: !Task
         <<: *exclusive_task_template
         Trigger: !Depend up.up.ics.jgfs_emc_fv3ic and jgfs_forecast_medcold
-        resources_remap: !J  Lwq
-obRequest [ { <<: *remap_resource_template } ]
+        resources_remap: !JobRequest [ { <<: *remap_resource_template } ]
         resources: !FirstTrue
            - when: !calc doc.settings.cplflx
              do: !calc partition.resources.run_coupled_fcst
