@@ -19,7 +19,7 @@ case:
     SDATE: 2018-02-01t00:00:00
     EDATE: 2018-02-01t00:00:00
 
-    cplflx: .false.
+    cplflx: .true.
     print_esmf: .true.
  
     DUMP_SUFFIX: "p"

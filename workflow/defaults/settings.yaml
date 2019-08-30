@@ -30,12 +30,7 @@ default_settings: &default_settings
 
   cplflx: .false.
   cplice: .false.
-  cpl: !FirstTrue
-    - when: cplflx
-      do: .true.
-    - when: cplice
-      do: .true.
-    - otherwise: .false.
+  cpl: .false.
 
   KEEPDATA: NO
   ROTDIR_DUMP: NO
