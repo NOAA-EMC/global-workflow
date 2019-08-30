@@ -170,4 +170,4 @@ platform: !Platform
   short_term_temp: !expand "{doc.platform.least_used_temp}/{tools.env('USER')}"
 
   # EXP_PARENT_DIR - Parent directory  of the expdir (experiment directory)
-  EXP_PARENT_DIR: !expand "{doc.user_places.PROJECT_DIR}/noscrub/{tools.env('USER')}"
+  EXP_PARENT_DIR: !expand "{doc.user_places.PROJECT_DIR}"

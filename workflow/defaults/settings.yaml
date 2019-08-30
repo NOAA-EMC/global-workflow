@@ -26,7 +26,18 @@ default_settings: &default_settings
   four_cycle_mode: NO
   nco_mode: NO
   use_nco_ecflow_headers: NO
+  print_esmf: .false.
 
+  cplflx: .false.
+  cplice: .false.
+  cpl: !FirstTrue
+    - when: cplflx
+      do: .true.
+    - when: cplice
+      do: .true.
+    - otherwise: .false.
+
+  KEEPDATA: NO
   ROTDIR_DUMP: NO
 
   # awips setting

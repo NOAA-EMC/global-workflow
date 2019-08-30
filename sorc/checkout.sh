@@ -14,7 +14,7 @@ echo fv3_mom6_cice5 checkout ...
 rm -f ${topdir}/checkout-fv3_coupled.log
 
 if [[ ! -d fv3_coupled.fd ]] ; then
-    git clone --recursive gerrit:EMC_FV3-MOM6-CICE5 fv3_coupled.fd >> ${topdir}/checkout-fv3_coupled.log 2>&1
+    git clone gerrit:EMC_FV3-MOM6-CICE5 fv3_coupled.fd >> ${topdir}/checkout-fv3_coupled.log 2>&1
     cd fv3_coupled.fd
     git checkout v3.0.1
     git submodule update --init --recursive
