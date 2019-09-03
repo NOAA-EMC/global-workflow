@@ -1,0 +1,19 @@
+case:
+  fv3_settings:
+    CASE: C384
+    LEVS: 65
+
+  fv3_enkf_settings:
+    CASE: C192
+
+  places:
+    workflow_file: workflow/cycled_gfs.yaml
+
+  settings: 
+    SDATE: 2019-05-01t00:00:00
+    EDATE: 2019-05-01t06:00:00
+
+    DUMP_SUFFIX: ""
+    run_gsi: Yes
+    chgres_and_convert_ics: No
+    gfs_cyc: 4 # run gfs every cycle
