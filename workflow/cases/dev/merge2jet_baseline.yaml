@@ -78,7 +78,7 @@ case:
           max_tries: 2
 
         - Search: '**/analysis/j*_analysis*|gfs/jgfs_analysis*'
-          partition: !calc doc.platform.partitions.sjet_or_vjet
+          partition: !calc doc.platform.partitions.xjet
           max_tries: 2
           resources: !JobRequest 
             - batch_memory: "3072M"
@@ -132,17 +132,17 @@ case:
           max_tries: 2
 
         - Search: '**/enkf/jgdas_enkf_inflate_recenter*'
-          partition: !calc doc.platform.partitions.sjet_or_vjet
+          partition: !calc doc.platform.partitions.xjet
           #accounting:  ! BAD: this blocks the job if any other "urgent" jobs are active
           #  queue: urgent
           max_tries: 2
 
         - Search: '**/enkf/jgdas_enkf_select*'
-          partition: !calc doc.platform.partitions.tjet_or_ujet
+          partition: !calc doc.platform.partitions.sjet_or_vjet
           max_tries: 2
 
         - Search: '**/enkf/jgdas_enkf_update*'
-          partition: !calc doc.platform.partitions.tjet_or_ujet
+          partition: !calc doc.platform.partitions.xjet
           max_tries: 2
 
         - Search: 'gfs/post_processing/bufr_sounding/j*'
@@ -155,6 +155,9 @@ case:
 
     - otherwise: []
 
+  data_assimilation:
+    DO_EMCSFC: no
+
   settings: 
     rocoto_task_throttle: 100
     rocoto_cycle_throttle: 20
@@ -162,7 +165,7 @@ case:
     four_cycle_mode: no
     nco_mode: no
 
-    DUMP_SUFFIX: "p"
+    DUMP_SUFFIX: ""
     # max_job_tries: tell rocoto to allow 2 submissions for all jobs,
     # unless overridden by that job's max_tries variable.
     max_job_tries: 2
