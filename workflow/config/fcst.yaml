@@ -32,6 +32,19 @@ config_fcst:
     if [ $DONST = "YES" ]; then
         . $EXPDIR/config.nsst
     fi
+
+    export wtime_fcst="{doc.resources.run_gdasfcst.walltime}"
+    export wtime_fcst_gfs="{doc.resources.run_gfsfcst.walltime}"
+    export npe_fcst="{doc.resources.run_gdasfcst.mpi_ranks}"
+    export npe_fcst_gfs="{doc.resources.run_gfsfcst.mpi_ranks}"
+    export npe_node_fcst=${npe_node_fcst:-12}
+    export nth_fcst=${nth_fv3:-2}
+
+    if [[ "$machine" == "WCOSS_C" ]]; then
+        export memory_fcst="1024M"
+    elif [[ "$machine" == "GAEA" ]]; then
+        export memory_fcst="1024M"
+    fi
     
     export FORECASTSH="$HOMEgfs/scripts/exglobal_fcst_nemsfv3gfs.sh"
     #export FCSTEXECDIR="$HOMEfv3gfs/NEMS/exe"
@@ -76,8 +89,8 @@ config_fcst:
     
         # Write restart files at next assimilation time
         export restart_interval=6
-        export npe_remap={doc.aliases.gdasremap.npe}
-        export nth_remap={doc.aliases.gdasremap.nth}
+        export npe_remap={doc.resources.fallback_run_gfsremap.mpi_ranks}
+        export nth_remap={doc.resources.fallback_run_gfsremap.OMP_NUM_THREADS}
 
         export hord_xx_nh_nonmono="{doc.fv3_gdas_settings.hord_xx_nh_nonmono}"
         export hord_mt_nh_nonmono="{doc.fv3_gdas_settings.hord_mt_nh_nonmono}"
@@ -90,8 +103,8 @@ config_fcst:
         else
             export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_orig"
         fi
-        export npe_remap={doc.aliases.gfsremap.npe}
-        export nth_remap={doc.aliases.gfsremap.nth}
+        export npe_remap={doc.resources.fallback_run_gfsremap.mpi_ranks}
+        export nth_remap={doc.resources.fallback_run_gfsremap.OMP_NUM_THREADS}
 
         export hord_xx_nh_nonmono="{doc.fv3_gfs_settings.hord_xx_nh_nonmono}"
         export hord_mt_nh_nonmono="{doc.fv3_gfs_settings.hord_mt_nh_nonmono}"

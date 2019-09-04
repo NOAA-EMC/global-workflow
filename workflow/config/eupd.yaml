@@ -16,6 +16,19 @@ config_eupd:
     # Ensemble update specific, dependency config.anal
     
     echo "BEGIN: config.eupd"
+
+    export wtime_eupd="{doc.resources.run_eupd.walltime}"
+    export npe_eupd="{doc.resources.run_eupd.mpi_ranks}"
+    export npe_node_eupd="{doc.resources.run_eupd.max_ppn}"
+    export nth_eupd="{doc.resources.run_eupd.OMP_NUM_THREADS}"
+    if [[ "$machine" = "WCOSS_DELL_P3" ]]; then
+        export nth_eupd=7
+    fi
+    if [[ "$machine" == "WCOSS_C" ]]; then
+        export memory_eupd="3072M"
+    elif [[ "$machine" == "GAEA" ]]; then
+        export memory_eupd="3072M"
+    fi
     
     export ENKFUPDSH="$HOMEgsi/scripts/exglobal_enkf_update_fv3gfs.sh.ecf"
     

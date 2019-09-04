@@ -15,6 +15,20 @@ config_vrfy:
     # Verification step specific
     
     echo "BEGIN: config.vrfy"
+
+    export wtime_vrfy="doc.resources.run_gdasvrfy.walltime"
+    export wtime_vrfy_gfs="doc.resources.run_gfsvrfy.walltime"
+    export npe_vrfy=1
+    export npe_node_vrfy=1
+    export npe_vrfy_gfs=1
+    export npe_node_vrfy_gfs=1
+    if [[ "$machine" == "WCOSS_C" ]]; then
+            export memory_vrfy="3072M"
+    elif [[ "$machine" == "GAEA" ]]; then
+            export memory_vrfy="3072M"
+    elif [[ "$machine" == "THEIA" ]]; then
+            export memory_vrfy="16384M"
+    fi
     
     export VDUMP="{doc.downstream.VDUMP}"       # verifying dump
     export CDUMPFCST="{doc.downstream.CDUMPFCST}"  # Fit-to-obs with GDAS/GFS prepbufr

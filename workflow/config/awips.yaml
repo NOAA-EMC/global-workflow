@@ -14,6 +14,19 @@ config_awips:
 
     echo "BEGIN: config.awips"
 
+    export npe_awips="{doc.resources.run_awips.mpi_ranks}"
+    export npe_node_awips="{doc.resources.run_awips.max_ppn}"
+    export wtime_awips="{doc.resources.run_awips.walltime}"
+    export nth_awips=2
+    if [[ "$machine" == "WCOSS_DELL_P3" ]]; then
+        export npe_awips=2
+        export npe_node_awips=2
+        export nth_awips=1
+    fi
+    if [[ "$machine" == "WCOSS_C" ]]; then
+        export memory_awips="2048M"
+    fi
+
     export SENDCOM="YES"
 
     export AWIPS20SH=$HOMEgfs/jobs/JGFS_AWIPS_20KM_1P0DEG

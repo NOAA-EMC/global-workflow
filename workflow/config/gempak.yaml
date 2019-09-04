@@ -14,6 +14,16 @@ config_gempak:
 
     echo "BEGIN: config.gempak"
 
+    export wtime_gempak="{doc.resources.run_gempak.walltime}"
+    export npe_gempak="{doc.resources.run_gempak.mpi_ranks}"
+    export npe_node_gempak="{doc.resources.run_gempak.max_ppn}"
+    export nth_gempak="{doc.resources.run_gempak.OMP_NUM_THREADS}"
+    if [[ "$machine" == "WCOSS_C" ]]; then
+        export memory_gempak="254M"
+    elif [[ "$machine" == "GAEA" ]]; then
+        export memory_gempak="254"
+    fi
+
     export SENDCOM="YES"
 
     export GEMPAKSH=$HOMEgfs/jobs/JGFS_GEMPAK

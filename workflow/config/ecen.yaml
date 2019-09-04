@@ -15,6 +15,19 @@ config_ecen:
     # Ensemble recentering specific
     
     echo "BEGIN: config.ecen"
+
+    export npe_ecen="{doc.resources.run_ecen.mpi_ranks}"
+    export npe_node_ecen="{doc.resources.run_ecen.max_ppn}"
+    export nth_ecen="{doc.resources.run_ecen.OMP_NUM_THREADS}"
+    if [[ "$machine" = "WCOSS_DELL_P3" ]]; then
+        export nth_ecen=7
+    fi
+    export nth_cycle=$nth_ecen
+    if [[ "$machine" == "WCOSS_C" ]]; then
+        export memory_ecen="3072M"
+    elif [[ "$machine" == "GAEA" ]]; then
+        export memory_ecen="3072M"
+    fi
     
     export ENKFRECENSH="$HOMEgsi/scripts/exglobal_enkf_recenter_fv3gfs.sh.ecf"
 

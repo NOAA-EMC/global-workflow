@@ -93,8 +93,7 @@ downstream_resource_table:
   one_node_downstream:   [    1,    1, !timedelta "01:00:00",   1, 3072M,      null   ]
   big_downstream:        [    2,    1, !timedelta "00:30:00",   1, 3072M,      null   ]
   small_downstream:      [    2,    2, !timedelta "00:02:00",   1, 3072M,      null   ]
-  awips_g2:              [    2,    2, !timedelta "00:06:00", max,  254M,      null   ]
-  awips_20km_1p0:        [   28,   28, !timedelta "00:06:00", max,  254M,      null   ]
+  awips:                 [    4,    4, !timedelta "02:00:00",   2,  254M,      null   ]
   postsnd:               [   12,    3, !timedelta "04:00:00", max,  254M,      null   ]
   postsndcfp:            [   10,    3, !timedelta "02:00:00", max,  254M,      null   ]
   gempak:                [   20,    4, !timedelta "02:00:00",   3,  254M,      null   ]
@@ -240,17 +239,11 @@ default_resources: &default_resources
       walltime: !calc doc.downstream_resource_table.vminmon[2]
       batch_memory: !calc doc.downstream_resource_table.vminmon[4]
 
-  run_awips_g2: !JobRequest
-    - mpi_ranks: !calc doc.downstream_resource_table.awips_g2[0]
-      max_ppn: !calc doc.downstream_resource_table.awips_g2[1]
-      walltime: !calc doc.downstream_resource_table.awips_g2[2]
-      batch_memory: !calc doc.downstream_resource_table.awips_g2[4]
-
-  run_awips_20km_1p0: !JobRequest
-    - mpi_ranks: !calc doc.downstream_resource_table.awips_20km_1p0[0]
-      max_ppn: !calc doc.downstream_resource_table.awips_20km_1p0[1]
-      walltime: !calc doc.downstream_resource_table.awips_20km_1p0[2]
-      batch_memory: !calc doc.downstream_resource_table.awips_20km_1p0[4]
+  run_awips: !JobRequest
+    - mpi_ranks: !calc doc.downstream_resource_table.awips[0]
+      max_ppn: !calc doc.downstream_resource_table.awips[1]
+      walltime: !calc doc.downstream_resource_table.awips[2]
+      batch_memory: !calc doc.downstream_resource_table.awips[4]
 
   run_postsnd: !JobRequest
     - mpi_ranks: !calc doc.downstream_resource_table.postsnd[0]

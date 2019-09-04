@@ -36,7 +36,11 @@ config_prep:
     export FIXRELO=${{HOMERELO}}/fix/fix_am
     export USHRELO=${{HOMERELO}}/ush
 
-    export npe_node_prep={doc.aliases.prep.npe_node}    
+    export npe_node_prep="{doc.resources.run_prep.max_ppn}"    
+    export npe_prep="{doc.resources.run_prep.mpi_ranks}"
+    export wtime_prep="{doc.resources.run_prep.walltime}"
+    export nth_prep="{doc.resources.run_prep.OMP_NUM_THREADS}"
+
     export cycle="t\"$cyc\"z"
     export OPREFIX="{doc.data_assimilation.OPREFIX}"
     export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc"

@@ -18,6 +18,16 @@ config_efcs:
     
     # Source model specific information that is resolution dependent
     . $EXPDIR/config.fv3 enkf
+
+    export wtime_efcs="{doc.resources.run_efcs.walltime}"
+    export npe_efcs="{doc.resources.run_efcs.mpi_ranks}"
+    export npe_node_efcs="{doc.resources.run_efcs.max_ppn}"
+    export nth_efcs=${nth_fv3:-2}
+    if [[ "$machine" == "WCOSS_C" ]]; then
+        export memory_efcs="254M"
+    elif [[ "$machine" == "GAEA" ]]; then
+        export memory_efcs="254"
+    fi
     
     export ENKFFCSTSH="$HOMEgsi/scripts/exglobal_enkf_fcst_fv3gfs.sh.ecf"
     export NMEM_EFCSGRP={doc.data_assimilation.NMEM_EFCSGRP}
