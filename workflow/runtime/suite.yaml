@@ -66,7 +66,7 @@ suite_defaults: &suite_defaults
     step: !timedelta "6:00:00"
 
   Overrides:
-    allowed: [ 'partition', 'resources', 'rocoto_command', 'rocoto_log_path',
+    allowed: [ 'queue', 'partition', 'resources', 'rocoto_command', 'rocoto_log_path',
     'accounting', 'ecflow_command', 'max_tries', 'resources_remap', 'ecf_log_path',
     'Rocoto', 'ecf_file' ]
     rules: !calc doc.suite_overrides
