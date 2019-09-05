@@ -66,7 +66,7 @@ export COMIN=$DATA/GEMPAK_META_COMP
 #XXW export HPCNAM=${MODEL}/nam.$PDY
 #XXW export HPCNGM=${MODEL}/ngm.$PDY
 # BV export HPCNAM=$COMROOT/nawips/prod/nam.$PDY
-export HPCNAM=${COMINnam}.$PDY
+export HPCNAM=${COMINnam}.$PDY/gempak
 
 # export HPCNGM=$COMROOT/nawips/prod/ngm.$PDY
 #
