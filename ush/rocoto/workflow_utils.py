@@ -251,6 +251,13 @@ def create_firstcyc_task(cdump='gdas'):
                  'log': '&ROTDIR;/logs/@Y@m@d@H/%s.log' % taskstr, \
                  'dependency': dependencies}
 
+    if check_slurm():
+        task_dict['queue'] = '&QUEUE_ARCH_GFS;'
+        task_dict['partition'] = '&PARTITION_ARCH_GFS;'
+    else:
+        task_dict['queue'] = '&QUEUE_ARCH;'
+        task_dict['partition'] = None
+
     task = rocoto.create_task(task_dict)
 
     return ''.join(task)
