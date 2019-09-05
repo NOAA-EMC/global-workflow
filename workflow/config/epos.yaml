@@ -16,9 +16,9 @@ config_epos:
     
     echo "BEGIN: config.epos"
 
-    export npe_epos="{doc.resources.run_epos.mpi_ranks}"
-    export npe_node_epos="{doc.resources.run_epos.max_ppn}"
-    export nth_epos="{doc.resources.run_epos.OMP_NUM_THREADS}"
+    export npe_epos="{doc.partition_common.resources.run_epos[0].mpi_ranks}"
+    export npe_node_epos="{doc.partition_common.resources.run_epos[0].max_ppn}"
+    export nth_epos="{doc.partition_common.resources.run_epos[0].OMP_NUM_THREADS}"
     if [[ "$machine" = "WCOSS_DELL_P3" ]]; then
         export nth_epos=7
     fi

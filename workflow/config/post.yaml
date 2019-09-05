@@ -21,11 +21,11 @@ config_post:
     # No. of concurrent post jobs [0 implies sequential]
     export NPOSTGRP={doc.post.NPOSTGRP}
 
-    export wtime_post="{doc.resources.run_gdaspost.walltime}"
-    export wtime_post_gfs="{doc.resources.run_gfspost.walltime}"
-    export npe_post="{doc.resources.run_gdaspost.mpi_ranks}"
-    export nth_post="{doc.resources.run_gdaspost.OMP_NUM_THREADS}"
-    export npe_node_post="{doc.resources.run_gdaspost.max_ppn}"
+    export wtime_post="{doc.partition_common.resources.run_gdaspost[0].walltime}"
+    export wtime_post_gfs="{doc.partition_common.resources.run_gfspost[0].walltime}"
+    export npe_post="{doc.partition_common.resources.run_gdaspost[0].mpi_ranks}"
+    export nth_post="{doc.partition_common.resources.run_gdaspost[0].OMP_NUM_THREADS}"
+    export npe_node_post="{doc.partition_common.resources.run_gdaspost[0].max_ppn}"
     export npe_node_dwn=24
     if [[ "$machine" == "WCOSS_DELL_P3" ]]; then
         export npe_node_post=14
@@ -54,13 +54,13 @@ config_post:
     fi
     
     if [[ "$CDUMP" == gdas ]] ; then
-        export nth_postgp={doc.resources.run_gdaspost.OMP_NUM_THREADS}
+        export nth_postgp={doc.partition_common.resources.run_gdaspost[0].OMP_NUM_THREADS}
     else
-        export nth_postgp={doc.resources.run_gfspost.OMP_NUM_THREADS}
+        export nth_postgp={doc.partition_common.resources.run_gfspost[0].OMP_NUM_THREADS}
     fi
     export GFS_DOWNSTREAM={tools.YES_NO(doc.post.GFS_DOWNSTREAM)}
     export downset={doc.post.downset}
-    export npe_dwn={doc.resources.run_dwn.mpi_ranks}
+    export npe_dwn={doc.partition_common.resources.run_dwn[0].mpi_ranks}
     
     export GRIBVERSION='grib2'
     export SENDCOM="YES"

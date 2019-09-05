@@ -18,8 +18,8 @@ config_fv3ic:
     
     # Task and thread configuration
     export wtime_fv3ic="00:30:00"
-    export npe_fv3ic={doc.resources.run_fv3ic.mpi_ranks}
-    export npe_node_fv3ic={doc.resources.run_fv3ic.mpi_ranks}
+    export npe_fv3ic={doc.partition_common.resources.run_fv3ic[0].mpi_ranks}
+    export npe_node_fv3ic={doc.partition_common.resources.run_fv3ic[0].mpi_ranks}
     
     echo "END: config.fv3ic"
     

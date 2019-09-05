@@ -16,9 +16,9 @@ config_anal:
         . $EXPDIR/config.nsst
     fi
    
-    export npe_anal={doc.resources.run_anal.mpi_ranks}
-    export npe_node_anal={doc.resources.run_anal.max_ppn}
-    export nth_anal={doc.resources.run_anal.OMP_NUM_THREADS}
+    export npe_anal={doc.partition_common.resources.run_anal[0].mpi_ranks}
+    export npe_node_anal={doc.partition_common.resources.run_anal[0].max_ppn}
+    export nth_anal={doc.partition_common.resources.run_anal[0].OMP_NUM_THREADS}
     export nth_cycle=24
     if [[ "$machine" = "WCOSS_DELL_P3" ]]; then
         export nth_anal=14

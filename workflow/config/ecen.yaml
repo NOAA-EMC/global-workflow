@@ -16,9 +16,9 @@ config_ecen:
     
     echo "BEGIN: config.ecen"
 
-    export npe_ecen="{doc.resources.run_ecen.mpi_ranks}"
-    export npe_node_ecen="{doc.resources.run_ecen.max_ppn}"
-    export nth_ecen="{doc.resources.run_ecen.OMP_NUM_THREADS}"
+    export npe_ecen="{doc.partition_common.resources.run_ecen[0].mpi_ranks}"
+    export npe_node_ecen="{doc.partition_common.resources.run_ecen[0].max_ppn}"
+    export nth_ecen="{doc.partition_common.resources.run_ecen[0].OMP_NUM_THREADS}"
     if [[ "$machine" = "WCOSS_DELL_P3" ]]; then
         export nth_ecen=7
     fi

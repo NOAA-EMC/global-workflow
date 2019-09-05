@@ -17,11 +17,11 @@ config_eobs:
     
     echo "BEGIN: config.eobs"
 
-    export wtime_eobs="{doc.resources.run_eobs.walltime}"
-    export wtime_eomg="{doc.resources.run_eomg.walltime}"
-    export npe_eobs="{doc.resources.run_eobs.mpi_ranks}"
-    export nth_eobs="{doc.resources.run_eobs.OMP_NUM_THREADS}"
-    export npe_node_eobs="{doc.resources.run_eobs.max_ppn}"
+    export wtime_eobs="{doc.partition_common.resources.run_eobs[0].walltime}"
+    export wtime_eomg="{doc.partition_common.resources.run_eomg[0].walltime}"
+    export npe_eobs="{doc.partition_common.resources.run_eobs[0].mpi_ranks}"
+    export nth_eobs="{doc.partition_common.resources.run_eobs[0].OMP_NUM_THREADS}"
+    export npe_node_eobs="{doc.partition_common.resources.run_eobs[0].max_ppn}"
 
     if [[ "$machine" = "WCOSS_DELL_P3" ]]; then
         export npe_node_eobs=14

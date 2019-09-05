@@ -14,10 +14,10 @@ config_postsnd:
 
     echo "BEGIN: config.postsnd"
 
-    export npe_postsnd="{doc.resources.run_postsnd.mpi_ranks}"
-    export npe_node_postsnd="{doc.resources.run_postsnd.max_ppn}"
-    export npe_postsndcfp="{doc.resources.run_postsndcfp.mpi_ranks}"
-    export npe_node_postsndcfp="{doc.resources.run_postsndcfp.max_ppn}"
+    export npe_postsnd="{doc.partition_common.resources.run_postsnd[0].mpi_ranks}"
+    export npe_node_postsnd="{doc.partition_common.resources.run_postsnd[0].max_ppn}"
+    export npe_postsndcfp="{doc.partition_common.resources.run_postsndcfp[0].mpi_ranks}"
+    export npe_node_postsndcfp="{doc.partition_common.resources.run_postsndcfp[0].max_ppn}"
     if [[ "$machine" == "WCOSS_DELL_P3" ]]; then
         export npe_node_postsnd=4
         export npe_postsndcfp=9

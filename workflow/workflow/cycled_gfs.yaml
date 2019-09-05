@@ -608,7 +608,7 @@ suite: !Cycle
           Name: !expand "jgfs_awips_f{dimval.fhr:03d}"
           ecf_environment_settings: !calc doc.settings.ecflow_rocoto_cdate_workaround
           Trigger: !Depend up.up.post.depend('jgfs_post_f{N:03d}',N=dimval.fhr)
-          resources: !calc partition.resources.run_awips_20km_1p0
+          resources: !calc partition.resources.run_awips
           TRDRUN: !calc ('YES' if (dimval.fhr==0 or dimval.fhr%6!=0 or dimval.fhr>=84) else 'NO')
           J_JOB: JGFS_AWIPS_20KM_1P0DEG
           FHR: !expand '{dimval.fhr:03d}'
@@ -623,7 +623,7 @@ suite: !Cycle
           Foreach: [ fhr ]
           Name: !expand "jgfs_awips_g2_f{dimval.fhr:03d}"
           Trigger: !Depend up.up.post.depend('jgfs_post_f{N:03d}',N=dimval.fhr)
-          resources: !calc partition.resources.run_awips_g2
+          resources: !calc partition.resources.run_awips
           FHR: !expand '{dimval.fhr:03d}'
           J_JOB: JGFS_AWIPS_G2
           more_vars: { fcsthrs: FHR }

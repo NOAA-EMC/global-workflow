@@ -17,10 +17,10 @@ config_eupd:
     
     echo "BEGIN: config.eupd"
 
-    export wtime_eupd="{doc.resources.run_eupd.walltime}"
-    export npe_eupd="{doc.resources.run_eupd.mpi_ranks}"
-    export npe_node_eupd="{doc.resources.run_eupd.max_ppn}"
-    export nth_eupd="{doc.resources.run_eupd.OMP_NUM_THREADS}"
+    export wtime_eupd="{doc.partition_common.resources.run_eupd[0].walltime}"
+    export npe_eupd="{doc.partition_common.resources.run_eupd[0].mpi_ranks}"
+    export npe_node_eupd="{doc.partition_common.resources.run_eupd[0].max_ppn}"
+    export nth_eupd="{doc.partition_common.resources.run_eupd[0].OMP_NUM_THREADS}"
     if [[ "$machine" = "WCOSS_DELL_P3" ]]; then
         export nth_eupd=7
     fi
