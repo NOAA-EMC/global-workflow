@@ -11,6 +11,12 @@ if [[ ! -d fv3gfs.fd ]] ; then
     cd fv3gfs.fd
     git checkout gfsv16_physupdt
     git submodule update --init --recursive
+    cd FV3/atmos_cubed_sphere
+    git checkout gfsv16_physupdt
+    cd .. 
+    git checkout gfsv16_physupdt
+    cd .. 
+    git checkout gfsv16_physupdt
     cd ${topdir}
 else
     echo 'Skip.  Directory fv3gfs.fd already exists.'

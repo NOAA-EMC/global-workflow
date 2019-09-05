@@ -104,6 +104,7 @@ elif [ $imp_physics -eq 11 ]; then # GFDL
     export random_clds=".false."
     export lgfdlmprad=".true."
     export effr_in=".true."
+    export reiflag=2
 
     export hord_mt_nh_nonmono=5
     export hord_xx_nh_nonmono=5
