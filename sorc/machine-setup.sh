@@ -22,16 +22,17 @@ USERNAME=`echo $LOGNAME | awk '{ print tolower($0)'}`
 export hname=`hostname | cut -c 1,1`
 if [[ -d /scratch1 ]] ; then
 if [  $hname == 'h'  ] ; then
-    # We are on NOAA Jet
+    # We are on NOAA Hera
     if ( ! eval module help > /dev/null 2>&1 ) ; then
 	echo load the module command 1>&2
         source /apps/lmod/lmod/init/$__ms_shell
     fi
-    target=jet
+    target=hera
     module purge
 module load intel
-module load  impi
-export NCEPLIBS=/scratch1/NCEPDEV/global/gwv/l819/lib
+module load impi
+#export NCEPLIBS=/scratch1/NCEPDEV/global/gwv/l819/lib
+export NCEPLIBS=/scratch2/NCEPDEV/nwprod/NCEPLIBS
 
      module use $NCEPLIBS/modulefiles
 export WRFPATH=$NCEPLIBS/wrf.shared.new/v1.1.1/src
@@ -230,6 +231,23 @@ export FCOMP=ftn
 # END GWV ADD
 
 ##---------------------------------------------------------------------------
+elif [[ -d /lfs3 ]] ; then
+    # We are on NOAA Jet
+    if ( ! eval module help > /dev/null 2>&1 ) ; then
+        echo load the module command 1>&2
+        source /apps/lmod/lmod/init/$__ms_shell
+    fi
+    target=jet
+    module purge
+module load intel/15.0.3.187
+module load  impi
+#export  NCEPLIBS=/mnt/lfs3/projects/hfv3gfs/gwv/ljtjet/lib
+     export NCEPLIBS=/mnt/lfs3/projects/hfv3gfs/gwv/ljtjet/lib
+export NCEPLIBS=/mnt/lfs3/projects/hfv3gfs/gwv/NCEPLIBS.15X
+     module use $NCEPLIBS/modulefiles
+export WRFPATH=$NCEPLIBS/wrf.shared.new/v1.1.1/src
+export myFC=mpiifort
+
 else
     echo WARNING: UNKNOWN PLATFORM 1>&2
 fi

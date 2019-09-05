@@ -22,22 +22,22 @@ if [[ -d /lfs3 ]] ; then
         source /apps/lmod/lmod/init/$__ms_shell
     fi
     module purge
+elif [[ -d /scratch1 ]] ; then
+    # We are on NOAA Hera
+    if ( ! eval module help > /dev/null 2>&1 ) ; then
+        source /apps/lmod/lmod/init/$__ms_shell
+    fi
+    module purge
+    export NCEPLIBS=/scratch2/NCEPDEV/nwprod/NCEPLIBS
+    if [[ -d "$NCEPLIBS" ]] ; then
+        module use $NCEPLIBS/modulefiles
+    fi
 elif [[ -d /scratch3 ]] ; then
     # We are on NOAA Theia
     if ( ! eval module help > /dev/null 2>&1 ) ; then
         source /apps/lmod/lmod/init/$__ms_shell
     fi
     module purge
-elif [[ -d /tds_scratch1/home ]] ; then
-    # We are on NOAA Hera
-    if ( ! eval module help > /dev/null 2>&1 ) ; then
-        source /apps/lmod/lmod/init/$__ms_shell
-    fi
-    module purge
-    export NCEPLIBS=/home/George.Vandenberghe/t/l702/lib
-    if [[ -d "$NCEPLIBS" ]] ; then
-        module use $NCEPLIBS/modulefiles
-    fi
 elif [[ -d /gpfs/hps && -e /etc/SuSE-release ]] ; then
     # We are on NOAA Luna or Surge
     if ( ! eval module help > /dev/null 2>&1 ) ; then
