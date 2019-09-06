@@ -23,42 +23,25 @@
 # directory are included, so if no exclude patterns match that file, it will be
 # transferred.
 
-com/gfs/_ENVIR_/gdas._PDYm1_/ /scratch4/NCEPDEV/rstprod/com/gfs/_ENVIR_/gdas._PDYm1_/
-+ /??/
-+ /??/gdas.t??z*tcvitals*
-+ /??/gdas.*bufr*
-+ /??/gdas.t??z.abias_pc
-+ /??/gdas.t??z.abias
-+ /??/gdas.t??z.sfcf*.nemsio
-+ /??/gdas.t??z.engicegrb
-+ /??/gdas.t??z.atmf0*.nemsio
-+ /??/gdas.t??z.radstat
-+ /??/gdas.t??z.atmanl.nemsio
-+ /??/gdas.t??z.atmges.nemsio
-+ /??/gdas.t??z.atmgm3.nemsio
-+ /??/gdas.t??z.atmgp3.nemsio
-+ /??/gdas.t??z.sfcanl.nemsio
-+ /??/gdas.t??z.sstgrb
+# This directory is a good candidate for compression
+#Z
+
+com/gfs/_ENVIR_/enkfgdas._PDYm1_/ /scratch4/NCEPDEV/rstprod/com/gfs/_ENVIR_/enkfgdas._PDYm1_/
++ /06/
++ /06/mem???/
++ /06/mem???/gdas.t??z.atmf006s.nemsio
++ /06/mem???/gdas.t??z.atmf009s.nemsio
++ /06/mem???/gdas.t??z.ratmanl.nemsio
 - *
 E
 # This directory is a good candidate for compression
 #Z
-com/gfs/_ENVIR_/gdas._PDY_/ /scratch4/NCEPDEV/rstprod/com/gfs/_ENVIR_/gdas._PDY_/
-+ /??/
-+ /??/gdas.t??z*tcvitals*
-+ /??/gdas.*bufr*
-+ /??/gdas.t??z.abias_pc
-+ /??/gdas.t??z.abias
-+ /??/gdas.t??z.sfcf*.nemsio
-+ /??/gdas.t??z.engicegrb
-+ /??/gdas.t??z.atmf0*.nemsio
-+ /??/gdas.t??z.radstat
-+ /??/gdas.t??z.atmanl.nemsio
-+ /??/gdas.t??z.atmges.nemsio
-+ /??/gdas.t??z.atmgm3.nemsio
-+ /??/gdas.t??z.atmgp3.nemsio
-+ /??/gdas.t??z.sfcanl.nemsio
-+ /??/gdas.t??z.sstgrb
+com/gfs/_ENVIR_/enkfgdas._PDY_/ /scratch4/NCEPDEV/rstprod/com/gfs/_ENVIR_/enkfgdas._PDY_/
++ /06/
++ /06/mem???/
++ /06/mem???/gdas.t??z.atmf006s.nemsio
++ /06/mem???/gdas.t??z.atmf009s.nemsio
++ /06/mem???/gdas.t??z.ratmanl.nemsio
 - *
 E
 # This directory is a good candidate for compression
