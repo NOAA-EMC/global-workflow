@@ -900,10 +900,9 @@ cat > input.nml <<EOF
   prautco      = ${prautco:-"0.00015,0.00015"}
   lgfdlmprad   = ${lgfdlmprad:-".false."}
   effr_in      = ${effr_in:-".false."}
-  reiflag      = ${reiflag:-2}
-  ldiag_ugwp   = ${ldiag_ugwp:-.false.}
-  do_ugwp      = ${do_ugwp:-.true.}
-  do_tofd      = ${do_tofd:-.true.}"
+  ldiag_ugwp   = ${ldiag_ugwp:-".false."}
+  do_ugwp      = ${do_ugwp:-".true."}
+  do_tofd      = ${do_tofd:-".true."}
 EOF
 
 # Add namelist for IAU
@@ -970,6 +969,7 @@ cat >> input.nml <<EOF
   fix_negative = .true.
   icloud_f = 1
   mp_time = 150.
+  reiflag = ${reiflag:-"2"}
   $gfdl_cloud_microphysics_nml
 /
 
