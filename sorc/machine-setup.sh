@@ -38,6 +38,7 @@ export NCEPLIBS=/scratch2/NCEPDEV/nwprod/NCEPLIBS
 export WRFPATH=$NCEPLIBS/wrf.shared.new/v1.1.1/src
 export myFC=mpiifort
 export FCOMP=mpiifort
+
 ##---------------------------------------------------------------------------
 elif [  $hname == 't'  ] ; then
     # We are on NOAA Theia

@@ -1,0 +1,9 @@
+#%Module################################################
+# Module file for gdas_gridbull - Hera
+########################################################
+
+export NCEPLIBS=/scratch1/NCEPDEV/global/gwv/l819/lib
+module use -a $NCEPLIBS/modulefiles
+
+module load bacio-intel-sandybridge/2.0.2
+module load w3nco-intel-sandybridge/2.0.6

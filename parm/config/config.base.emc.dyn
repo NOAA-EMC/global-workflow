@@ -51,7 +51,8 @@ elif [ $machine = "HERA" ]; then
 
     #export NWPROD="/scratch1/NCEPDEV/global/glopara/nwpara"
     export DMPDIR="/scratch1/NCEPDEV/global/glopara/dump"
-    export RTMFIX=$CRTM_FIX
+    #export RTMFIX=$CRTM_FIX
+    export RTMFIX=/scratch1/NCEPDEV/global/glopara/crtm/2.2.3/fix_update
 
 elif [ $machine = "WCOSS_C" ]; then
 

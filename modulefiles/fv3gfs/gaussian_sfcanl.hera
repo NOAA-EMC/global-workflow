@@ -1,0 +1,17 @@
+#%Module#####################################################
+## gaussian_sfcanl build module for Hera
+#############################################################
+
+export NCEPLIBS=/scratch1/NCEPDEV/global/gwv/l819/lib
+module use -a $NCEPLIBS/modulefiles
+
+module load w3nco-intel-sandybridge/2.0.6
+module load bacio-intel-sandybridge/2.0.2
+module load nemsio-intel-sandybridge/2.2.3
+module load sp-intel-sandybridge/2.0.2
+module load netcdf/4.4.4.1
+module load hdf5/1.18
+export NETCDF_INCLUDE="-I${NETCDF}/include"
+export NETCDF_LDFLAGS_F="-L${NETCDF}/lib -lnetcdf -lnetcdff -lnetcdf  -L${HDF5}/lib -lhdf5 -lhdf5_hl -lhdf5 -lz"
+
+#export FCOMP=$FCOMP

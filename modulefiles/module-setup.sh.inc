@@ -28,7 +28,8 @@ elif [[ -d /scratch1 ]] ; then
         source /apps/lmod/lmod/init/$__ms_shell
     fi
     module purge
-    export NCEPLIBS=/scratch2/NCEPDEV/nwprod/NCEPLIBS
+    #export NCEPLIBS=/scratch2/NCEPDEV/nwprod/NCEPLIBS
+    export NCEPLIBS=/scratch1/NCEPDEV/global/gwv/l819/lib
     if [[ -d "$NCEPLIBS" ]] ; then
         module use $NCEPLIBS/modulefiles
     fi

@@ -1,0 +1,13 @@
+#%Module#####################################################
+## Module file for overpdtg2
+#############################################################
+
+export NCEPLIBS=/scratch1/NCEPDEV/global/gwv/l819/lib
+module use -a $NCEPLIBS/modulefiles
+
+module load bacio-intel-sandybridge/2.0.1
+module load w3nco-intel-sandybridge/2.0.6
+module load g2-intel-sandybridge/2.5.0
+module load jasper-intel-sandybridge/1.900.1
+module load zlib-intel-sandybridge/1.2.6
+module load png-intel-sandybridge/1.2.44
