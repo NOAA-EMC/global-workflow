@@ -52,8 +52,8 @@ config_fv3:
             export WRITE_GROUP={doc.fv3_enkf_settings.WRITE_GROUP}
             export WRTTASK_PER_GROUP={doc.fv3_enkf_settings.WRTTASK_PER_GROUP}
             export WRTIOBUF={doc.fv3_enkf_settings.WRTIOBUF}
-            export nth_fv3={doc.aliases.efcs.nth}
-            export npe_node_fcst={doc.aliases.efcs.npe_node}
+            export nth_fv3={doc.partition_common.resources.run_efcs[0].OMP_NUM_THREADS}
+            export npe_node_fcst={doc.partition_common.resources.run_efcs[0].mpi_ranks}
             {enkf_cdmbgwd_settings}
             ;;
         GFS)
@@ -63,8 +63,8 @@ config_fv3:
             export WRITE_GROUP={doc.fv3_gfs_settings.WRITE_GROUP}
             export WRTTASK_PER_GROUP={doc.fv3_gfs_settings.WRTTASK_PER_GROUP}
             export WRTIOBUF={doc.fv3_gfs_settings.WRTIOBUF}
-            export nth_fv3={doc.aliases.gfsfcst.nth}
-            export npe_node_fcst={doc.aliases.gfsfcst.npe_node}
+            export nth_fv3={doc.partition_common.resources.run_gfsfcst[0].OMP_NUM_THREADS}
+            export npe_node_fcst={doc.partition_common.resources.run_gfsfcst[0].mpi_ranks}
             {gfs_cdmbgwd_settings}
             ;;
         GDAS)
@@ -74,8 +74,8 @@ config_fv3:
             export WRITE_GROUP={doc.fv3_gdas_settings.WRITE_GROUP}
             export WRTTASK_PER_GROUP={doc.fv3_gdas_settings.WRTTASK_PER_GROUP}
             export WRTIOBUF={doc.fv3_gdas_settings.WRTIOBUF}
-            export nth_fv3={doc.aliases.gdasfcst.nth}
-            export npe_node_fcst={doc.aliases.gdasfcst.npe_node}
+            export nth_fv3={doc.partition_common.resources.run_gdasfcst[0].OMP_NUM_THREADS}
+            export npe_node_fcst={doc.partition_common.resources.run_gdasfcst[0].mpi_ranks}
             {gdas_cdmbgwd_settings}
             ;;
         *)

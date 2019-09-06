@@ -89,9 +89,9 @@ suite: !Cycle
           edit model 'obsproc_global'
         resources: !calc partition.resources.run_prep
         ecf_environment_settings: !calc doc.settings.ecflow_rocoto_cdate_workaround
-        J_JOB: JGLOBAL_PREP
-        model: obsproc_global    # for four cycle mode
-        J_JOB_PATH: '$HOMEobsproc_global/jobs'
+        J_JOB: rocoto/prep.sh
+#        model: obsproc_global    # for four cycle mode
+#        J_JOB_PATH: '$HOMEobsproc_global/jobs'
         config_list: [ base, prep, prepbufr ]
 
     jgdas_tropcy_cp: !Task
@@ -380,8 +380,8 @@ suite: !Cycle
       Trigger: !Depend ( ( jgfs_emc_dump_waiter.updated_status | dump.jgfs_dump.release_sfcprep ) & up.gdas.forecast.at('-6:00:00') )
       Complete: !Depend ~ suite.has_cycle('-6:00:00') 
       jgfs_emcsfc_sfc_prep: !Task
-#        Disable: !calc not doc.data_assimilation.DO_EMCSFC
         <<: *exclusive_task_template
+        Disable: !calc not doc.data_assimilation.DO_EMCSFC
         Trigger: !Depend 'up.dump.jgfs_dump.release_sfcprep | up.jgfs_emc_dump_waiter.updated_status'
         resources: !calc partition.resources.run_sfc_prep
         J_JOB: JGLOBAL_EMCSFC_SFC_PREP
@@ -399,9 +399,9 @@ suite: !Cycle
         ecf_environment_settings: !expand |
           {doc.settings.ecflow_rocoto_cdate_workaround}
           export DATAROOT="$DATAROOT.$job"
-        J_JOB: JGLOBAL_PREP
-        model: obsproc_global    # for four cycle mode
-        J_JOB_PATH: '$HOMEobsproc_global/jobs'
+        J_JOB: rocoto/prep.sh
+#        model: obsproc_global    # for four cycle mode
+#        J_JOB_PATH: '$HOMEobsproc_global/jobs'
         config_list: [ base, prep, prepbufr ]
 
     jgfs_tropcy_cp: !Task
@@ -608,7 +608,7 @@ suite: !Cycle
           Name: !expand "jgfs_awips_f{dimval.fhr:03d}"
           ecf_environment_settings: !calc doc.settings.ecflow_rocoto_cdate_workaround
           Trigger: !Depend up.up.post.depend('jgfs_post_f{N:03d}',N=dimval.fhr)
-          resources: !calc partition.resources.run_awips_20km_1p0
+          resources: !calc partition.resources.run_awips
           TRDRUN: !calc ('YES' if (dimval.fhr==0 or dimval.fhr%6!=0 or dimval.fhr>=84) else 'NO')
           J_JOB: JGFS_AWIPS_20KM_1P0DEG
           FHR: !expand '{dimval.fhr:03d}'
@@ -623,7 +623,7 @@ suite: !Cycle
           Foreach: [ fhr ]
           Name: !expand "jgfs_awips_g2_f{dimval.fhr:03d}"
           Trigger: !Depend up.up.post.depend('jgfs_post_f{N:03d}',N=dimval.fhr)
-          resources: !calc partition.resources.run_awips_g2
+          resources: !calc partition.resources.run_awips
           FHR: !expand '{dimval.fhr:03d}'
           J_JOB: JGFS_AWIPS_G2
           more_vars: { fcsthrs: FHR }

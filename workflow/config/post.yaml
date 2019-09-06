@@ -20,6 +20,22 @@ config_post:
     
     # No. of concurrent post jobs [0 implies sequential]
     export NPOSTGRP={doc.post.NPOSTGRP}
+
+    export wtime_post="{doc.partition_common.resources.run_gdaspost[0].walltime}"
+    export wtime_post_gfs="{doc.partition_common.resources.run_gfspost[0].walltime}"
+    export npe_post="{doc.partition_common.resources.run_gdaspost[0].mpi_ranks}"
+    export nth_post="{doc.partition_common.resources.run_gdaspost[0].OMP_NUM_THREADS}"
+    export npe_node_post="{doc.partition_common.resources.run_gdaspost[0].max_ppn}"
+    export npe_node_dwn=24
+    if [[ "$machine" == "WCOSS_DELL_P3" ]]; then
+        export npe_node_post=14
+        export npe_node_dwn=28
+    fi
+    if [[ "$machine" == "WCOSS_C" ]]; then
+        export memory_post="3072M"
+    elif [[ "$machine" == "GAEA" ]]; then
+        export memory_post="3072M"
+    fi
     
     # Post driver job that calls gfs_nceppost.sh and downstream jobs
     export POSTJJOBSH="$HOMEpost/jobs/JGLOBAL_NCEPPOST"
@@ -38,13 +54,13 @@ config_post:
     fi
     
     if [[ "$CDUMP" == gdas ]] ; then
-        export nth_postgp={doc.aliases.gdaspost.nth}
+        export nth_postgp={doc.partition_common.resources.run_gdaspost[0].OMP_NUM_THREADS}
     else
-        export nth_postgp={doc.aliases.gfspost.nth}
+        export nth_postgp={doc.partition_common.resources.run_gfspost[0].OMP_NUM_THREADS}
     fi
     export GFS_DOWNSTREAM={tools.YES_NO(doc.post.GFS_DOWNSTREAM)}
     export downset={doc.post.downset}
-    export npe_dwn={doc.aliases.dwn.npe}
+    export npe_dwn={doc.partition_common.resources.run_dwn[0].mpi_ranks}
     
     export GRIBVERSION='grib2'
     export SENDCOM="YES"

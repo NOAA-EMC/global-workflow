@@ -21,9 +21,9 @@ gfs_resource_table: !Select
       gdaspost: [  72,   12, !timedelta "00:30:00", 1, null    ]
       gfspost:  [  72,   12, !timedelta "00:10:00", 1, null    ]
       gdasvrfy: [   1,    1, !timedelta "03:00:00", null, null ]
-      gfsvrfy:  [   5,    1, !timedelta "06:00:00", null, null ]
+      gfsvrfy:  [   5,    1, !timedelta "01:00:00", null, null ]
       gdasfcst_wall:  !timedelta "00:15:00"
-      gfsfcst_wall:  !timedelta "06:00:00"
+      gfsfcst_wall:  !timedelta "01:00:00"
       gdasfcst_ppn: 12
       gfsfcst_ppn: 12
       post_manager_wallclock_extra: !timedelta "00:15:00"
@@ -93,8 +93,7 @@ downstream_resource_table:
   one_node_downstream:   [    1,    1, !timedelta "01:00:00",   1, 3072M,      null   ]
   big_downstream:        [    2,    1, !timedelta "00:30:00",   1, 3072M,      null   ]
   small_downstream:      [    2,    2, !timedelta "00:02:00",   1, 3072M,      null   ]
-  awips_g2:              [    2,    2, !timedelta "00:06:00", max,  254M,      null   ]
-  awips_20km_1p0:        [   28,   28, !timedelta "00:06:00", max,  254M,      null   ]
+  awips:                 [    4,    4, !timedelta "02:00:00",   2,  254M,      null   ]
   postsnd:               [   12,    3, !timedelta "04:00:00", max,  254M,      null   ]
   postsndcfp:            [   10,    3, !timedelta "02:00:00", max,  254M,      null   ]
   gempak:                [   20,    4, !timedelta "02:00:00",   3,  254M,      null   ]
@@ -240,17 +239,11 @@ default_resources: &default_resources
       walltime: !calc doc.downstream_resource_table.vminmon[2]
       batch_memory: !calc doc.downstream_resource_table.vminmon[4]
 
-  run_awips_g2: !JobRequest
-    - mpi_ranks: !calc doc.downstream_resource_table.awips_g2[0]
-      max_ppn: !calc doc.downstream_resource_table.awips_g2[1]
-      walltime: !calc doc.downstream_resource_table.awips_g2[2]
-      batch_memory: !calc doc.downstream_resource_table.awips_g2[4]
-
-  run_awips_20km_1p0: !JobRequest
-    - mpi_ranks: !calc doc.downstream_resource_table.awips_20km_1p0[0]
-      max_ppn: !calc doc.downstream_resource_table.awips_20km_1p0[1]
-      walltime: !calc doc.downstream_resource_table.awips_20km_1p0[2]
-      batch_memory: !calc doc.downstream_resource_table.awips_20km_1p0[4]
+  run_awips: !JobRequest
+    - mpi_ranks: !calc doc.downstream_resource_table.awips[0]
+      max_ppn: !calc doc.downstream_resource_table.awips[1]
+      walltime: !calc doc.downstream_resource_table.awips[2]
+      batch_memory: !calc doc.downstream_resource_table.awips[4]
 
   run_postsnd: !JobRequest
     - mpi_ranks: !calc doc.downstream_resource_table.postsnd[0]
@@ -284,6 +277,15 @@ default_resources: &default_resources
     - batch_memory: "1024M"
       mpi_ranks: !calc doc.fv3_gdas_settings.FV3PETS
       max_ppn: !calc "doc.fv3_gdas_settings.get('fcst_max_ppn',None)"
+=======
+      mpi_ranks: !calc >-
+          doc.fv3_gdas_settings.layout_x *
+          doc.fv3_gdas_settings.layout_y * 6 + 
+          ( ( doc.fv3_gdas_settings.WRITE_GROUP * 
+          doc.fv3_gdas_settings.WRTTASK_PER_GROUP )
+          if doc.fv3_gdas_settings.QUILTING else 0 )
+      max_ppn: !calc doc.gfs_resource_table.gdasfcst_ppn
+>>>>>>> origin/CROWdemo2
       walltime: !calc gdasfcst_walltime
       OMP_NUM_THREADS: !calc doc.fv3_gdas_settings.fv3_threads
       memory_per_rank: !calc doc.gfs_resource_table.get('gdasfcst_mem_per_rank',None)
@@ -332,7 +334,7 @@ default_resources: &default_resources
           min(240,doc.exclusive_resources.run_gfsfcst.total_ranks())
       OMP_NUM_THREADS: 2
       max_ppn: !calc >-
-          partition.nodes.max_ranks_per_node(
+          doc.platform.partitions.default_exclusive.nodes.max_ranks_per_node(
             doc.exclusive_resources.run_gfsfcst[0])
   
   run_gdas_post_manager: !JobRequest

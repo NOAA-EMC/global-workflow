@@ -17,6 +17,9 @@ config_getic:
     
     # We should just be supporting the OPSGFS only
     export ics_from="{doc.settings.ics_from}" # initial conditions from opsgfs or pargfs
+
+    export npe_getic=1
+    export npe_node_getic=1
     
     # Provide a parallel experiment name and path to HPSS archive
     if [ $ics_from = "pargfs" ]; then

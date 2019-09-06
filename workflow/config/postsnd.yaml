@@ -14,6 +14,20 @@ config_postsnd:
 
     echo "BEGIN: config.postsnd"
 
+    export npe_postsnd="{doc.partition_common.resources.run_postsnd[0].mpi_ranks}"
+    export npe_node_postsnd="{doc.partition_common.resources.run_postsnd[0].max_ppn}"
+    export npe_postsndcfp="{doc.partition_common.resources.run_postsndcfp[0].mpi_ranks}"
+    export npe_node_postsndcfp="{doc.partition_common.resources.run_postsndcfp[0].max_ppn}"
+    if [[ "$machine" == "WCOSS_DELL_P3" ]]; then
+        export npe_node_postsnd=4
+        export npe_postsndcfp=9
+    fi
+    if [[ "$machine" == "WCOSS_C" ]]; then
+        export memory_postsnd="254M"
+    elif [[ "$machine" == "GAEA" ]]; then
+        export memory_postsnd="254"
+    fi
+
     export CDATEm1=$($NDATE -24 $CDATE)
     export PDYm1=$(echo $CDATEm1 | cut -c1-8)
     export COMIN="$ROTDIR/$CDUMP.$PDY/$cyc"
