@@ -214,6 +214,7 @@ if [ $DOIAU = "YES" -a $warm_start = ".false." ]; then
   export DOIAU="NO"
   echo "turning off IAU since warm_start = $warm_start"
   DOIAU_coldstart="YES"
+  IAU_OFFSET=0
   sCDATE=$CDATE
   sPDY=$PDY
   scyc=$cyc
