@@ -17,5 +17,8 @@ config_earc:
     
     export NMEM_EARCGRP={doc.data_assimilation.NMEM_EARCGRP}
 
+    export npe_earc=1
+    export npe_node_earc=1
+
     echo "END: config.earc"
     

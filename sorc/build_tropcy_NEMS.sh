@@ -118,6 +118,11 @@ elif [ $target = jet ]; then
     export FC=mpiifort
     export FFLAGS="-openmp -O3 -g -traceback -r8 -axSSE4.2,AVX,CORE-AVX2 -I${NEMSIOGFS_INC} -I${NEMSIO_INC} -I${SIGIO_INC4}"
 
+elif [ $target = hera ]; then
+    targetx=hera
+    source ../modulefiles/modulefile.storm_reloc_v6.0.0.$target
+    export FC=mpiifort
+
 else
 
     echo "Unknown machine = $target"
@@ -127,11 +132,17 @@ fi
 export INC="${G2_INCd} -I${NEMSIO_INC}"
 export LIBS="${W3EMC_LIBd} ${W3NCO_LIBd} ${BACIO_LIB4} ${G2_LIBd} ${PNG_LIB} ${JASPER_LIB} ${Z_LIB}"
 export LIBS_SUP="${W3EMC_LIBd} ${W3NCO_LIBd}"
+echo lset
+echo lset
+
+export LIBS_REL="${W3NCO_LIB4}"
 export LIBS_REL="${NEMSIOGFS_LIB} ${NEMSIO_LIB} ${LIBS_REL} ${SIGIO_LIB4} ${BACIO_LIB4} ${SP_LIBd}"
 export LIBS_SIG="${SIGIO_INC4}"
 export LIBS_SYN_GET="${W3NCO_LIB4}"
 export LIBS_SYN_MAK="${W3NCO_LIB4} ${BACIO_LIB4}"
 export LIBS_SYN_QCT="${W3NCO_LIB8}"
+echo $LIBS_REL
+echo NEXT
 
 #cd relocate_mv_nvortex.fd
 #   make clean

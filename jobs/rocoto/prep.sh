@@ -82,35 +82,18 @@ fi
 ###############################################################
 # Generate prepbufr files from dumps or copy from OPS
 if [ $DO_MAKEPREPBUFR = "YES" ]; then
-    if [ $machine = "WCOSS_C" -o $machine = "WCOSS_DELL_P3" -o $machine = "THEIA" ]; then
 
-        export job="j${CDUMP}_prep_${cyc}"
-        export DATAROOT="$RUNDIR/$CDATE/$CDUMP/prepbufr"
-        if [ $ROTDIR_DUMP = "NO" ]; then
-          COMIN_OBS=${COMIN_OBS:-$DMPDIR/$CDATE/$CDUMP}
-          export COMSP=${COMSP:-$COMIN_OBS/$CDUMP.t${cyc}z.}
-        fi
-        export COMIN=${COMIN:-$ROTDIR/$CDUMP.$PDY/$cyc}
-        export COMINgdas=${COMINgdas:-$ROTDIR/gdas.$PDY/$cyc}
-        export COMINgfs=${COMINgfs:-$ROTDIR/gfs.$PDY/$cyc}
-
-        $HOMEobsproc_network/jobs/JGLOBAL_PREP
-        status=$?
-        [[ $status -ne 0 ]] && exit $status
-
-    else
-        echo "WARNING:  prep step is not supported on $machine, exit"
-        exit 1
     if [ $ROTDIR_DUMP = "YES" ]; then
 	rm $COMOUT/${OPREFIX}prepbufr
 	rm $COMOUT/${OPREFIX}prepbufr.acft_profiles
 	rm $COMOUT/${OPREFIX}nsstbufr
     fi
+
     export job="j${CDUMP}_prep_${cyc}"
     export DATAROOT="$RUNDIR/$CDATE/$CDUMP/prepbufr"
     if [ $ROTDIR_DUMP = "NO" ]; then
-      COMIN_OBS=${COMIN_OBS:-$DMPDIR/$CDATE/$CDUMP}
-      export COMSP=${COMSP:-$COMIN_OBS/$CDUMP.t${cyc}z.}
+       COMIN_OBS=${COMIN_OBS:-$DMPDIR/$CDATE/$CDUMP}
+       export COMSP=${COMSP:-$COMIN_OBS/$CDUMP.t${cyc}z.}
     fi
     export COMIN=${COMIN:-$ROTDIR/$CDUMP.$PDY/$cyc}
     export COMINgdas=${COMINgdas:-$ROTDIR/gdas.$PDY/$cyc}

@@ -27,7 +27,9 @@ if [[ -d /lfs3 ]] ; then
 	module load module_fcst.jet 
     else
 	module load module_base.jet 
-    fi
+elif [[ -d /scratch1 ]] ; then
+    # We are on NOAA Hera
+	module load module_base.hera
 elif [[ -d /scratch3 ]] ; then
     # We are on NOAA Theia
 	module load module_base.theia 

@@ -15,18 +15,18 @@ fi
 
 if [ $# -lt 2 ]; then
     echo '***ERROR*** must specify two arguements: (1) RUN_ENVIR, (2) machine'
-    echo ' Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | theia )'
+    echo ' Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | theia | hera )'
     exit 1
 fi
 
 RUN_ENVIR=${1:-emc}
 
 if [ $RUN_ENVIR != emc -a $RUN_ENVIR != nco ]; then
-    echo 'Syntax: link_fv3gfs.sh ( nco | emc )'
+    echo 'Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | theia | hera )'
     exit 1
 fi
-if [ $target != wcoss_cray -a $target != theia -a $target != gaea -a $target != jet -a $target != dell]; then
-    echo '$target value set to unknown or unsupported system'
+if [ $machine != cray -a $machine != theia -a $machine != dell -a $machine != hera ]; then
+    echo 'Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | theia | hera )'
     exit 1
 fi
 
@@ -51,6 +51,8 @@ elif [ $target == "gaea" ]; then
     echo "gaea says what, FIX_DIR = $FIX_DIR"
 elif [ $target == "jet" ]; then
     FIX_DIR="/lfs3/projects/hfv3gfs/glopara/git/fv3gfs/fix"
+elif [ $target == "hera" ]; then
+    FIX_DIR="/scratch1/NCEPDEV/global/glopara/fix"
 else
     echo 'CRITICAL: links to fix files not set'
     exit 1
@@ -110,19 +112,21 @@ cd ${pwd}/../ush                ||exit 8
     done
 
 #------------------------------
-#--add gfs_wafs file
+#--add gfs_wafs file if on Dell
+#if [ $machine = dell ]; then 
 #------------------------------
-cd ${pwd}/../jobs               ||exit 8
-    $LINK ../sorc/gfs_wafs.fd/jobs/*                         .
-cd ${pwd}/../parm               ||exit 8
-    [[ -d wafs ]] && rm -rf wafs
-    $LINK ../sorc/gfs_wafs.fd/parm/wafs                      wafs
-cd ${pwd}/../scripts            ||exit 8
-    $LINK ../sorc/gfs_wafs.fd/scripts/*                      .
-cd ${pwd}/../ush                ||exit 8
-    $LINK ../sorc/gfs_wafs.fd/ush/*                          .
-cd ${pwd}/../fix                ||exit 8
-    $LINK ../sorc/gfs_wafs.fd/fix/*                          .
+#cd ${pwd}/../jobs               ||exit 8
+#    $LINK ../sorc/gfs_wafs.fd/jobs/*                         .
+#cd ${pwd}/../parm               ||exit 8
+#    [[ -d wafs ]] && rm -rf wafs
+#    $LINK ../sorc/gfs_wafs.fd/parm/wafs                      wafs
+#cd ${pwd}/../scripts            ||exit 8
+#    $LINK ../sorc/gfs_wafs.fd/scripts/*                      .
+#cd ${pwd}/../ush                ||exit 8
+#    $LINK ../sorc/gfs_wafs.fd/ush/*                          .
+#cd ${pwd}/../fix                ||exit 8
+#    $LINK ../sorc/gfs_wafs.fd/fix/*                          .
+#fi
 
 #------------------------------
 #--add GSI/EnKF file
@@ -236,11 +240,6 @@ for ufs_utilsexe in \
     $LINK ../sorc/ufs_utils.fd/exec/$ufs_utilsexe .
 done
 
-for wafsexe in wafs_awc_wafavn  wafs_blending  wafs_cnvgrib2  wafs_gcip  wafs_makewafs  wafs_setmissing; do
-    [[ -s $wafsexe ]] && rm -f $wafsexe
-    $LINK ../sorc/gfs_wafs.fd/exec/$wafsexe .
-done
-
 for gsiexe in  global_gsi.x global_enkf.x calc_increment_ens.x  getsfcensmeanp.x  getsigensmeanp_smooth.x  \
     getsigensstatp.x  recentersigp.x oznmon_horiz.x oznmon_time.x radmon_angle radmon_bcoef radmon_bcor radmon_time ;do
     [[ -s $gsiexe ]] && rm -f $gsiexe
@@ -318,12 +317,16 @@ cd ${pwd}/../sorc   ||   exit 8
         $SLINK ufs_utils.fd/sorc/$prog                                                     $prog
     done
 
-    $SLINK gfs_wafs.fd/sorc/wafs_awc_wafavn.fd                                         wafs_awc_wafavn.fd
-    $SLINK gfs_wafs.fd/sorc/wafs_blending.fd                                           wafs_blending.fd
-    $SLINK gfs_wafs.fd/sorc/wafs_cnvgrib2.fd                                           wafs_cnvgrib2.fd
-    $SLINK gfs_wafs.fd/sorc/wafs_gcip.fd                                               wafs_gcip.fd
-    $SLINK gfs_wafs.fd/sorc/wafs_makewafs.fd                                           wafs_makewafs.fd
-    $SLINK gfs_wafs.fd/sorc/wafs_setmissing.fd                                         wafs_setmissing.fd
+
+#   if [ $machine = dell ]; then
+#       $SLINK gfs_wafs.fd/sorc/wafs_awc_wafavn.fd                                              wafs_awc_wafavn.fd
+#       $SLINK gfs_wafs.fd/sorc/wafs_blending.fd                                                wafs_blending.fd
+#       $SLINK gfs_wafs.fd/sorc/wafs_cnvgrib2.fd                                                wafs_cnvgrib2.fd
+#       $SLINK gfs_wafs.fd/sorc/wafs_gcip.fd                                                    wafs_gcip.fd
+#       $SLINK gfs_wafs.fd/sorc/wafs_makewafs.fd                                                wafs_makewafs.fd
+#       $SLINK gfs_wafs.fd/sorc/wafs_setmissing.fd                                              wafs_setmissing.fd
+#   fi
+
 
 #------------------------------
 #--choose dynamic config.base for EMC installation 
