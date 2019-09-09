@@ -1,6 +1,6 @@
 case:
   fv3_settings:
-    CASE: C192
+    CASE: C384
     LEVS: 65
     DELTIM: 450
     layout_x: 6

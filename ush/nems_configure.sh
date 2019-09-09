@@ -67,7 +67,7 @@ sed -i -e "s;@\[atm_model\];fv3;g" tmp1
 sed -i -e "s;@\[med_petlist_bounds\];$med_petlist_bounds;g" tmp1
 sed -i -e "s;@\[atm_petlist_bounds\];$atm_petlist_bounds;g" tmp1
 
-if [ $cplflx = .T. ]; then
+if [ $cplflx = .true. ]; then
         sed -i -e "s;@\[ocn_model\];mom6;g" tmp1
 	sed -i -e "s;@\[ocn_petlist_bounds\];$ocn_petlist_bounds;g" tmp1
 	sed -i -e "s;@\[DumpFields\];$DumpFields;g" tmp1
@@ -76,14 +76,14 @@ if [ $cplflx = .T. ]; then
 	sed -i -e "s;@\[CPL_SLOW\];$CPL_SLOW;g" tmp1
 	sed -i -e "s;@\[CPL_FAST\];$CPL_FAST;g" tmp1
 fi
-if [ $cplwav = .T. ]; then
+if [ $cplwav = .true. ]; then
 	sed -i -e "s;@\[wav_model\];ww3;g" tmp1
 fi
-if [ $cplice = .T. ]; then
+if [ $cplice = .true. ]; then
 	sed -i -e "s;@\[ice_model\];cice;g" tmp1
 	sed -i -e "s;@\[ice_petlist_bounds\];$ice_petlist_bounds;g" tmp1
 fi
-if [ $cplchem = .T. ]; then
+if [ $cplchem = .true. ]; then
 	sed -i -e "s;@\[chem_model\];gsd;g" tmp1
 fi
 mv tmp1 nems.configure
