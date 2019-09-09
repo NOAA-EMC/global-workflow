@@ -277,15 +277,6 @@ default_resources: &default_resources
     - batch_memory: "1024M"
       mpi_ranks: !calc doc.fv3_gdas_settings.FV3PETS
       max_ppn: !calc "doc.fv3_gdas_settings.get('fcst_max_ppn',None)"
-=======
-      mpi_ranks: !calc >-
-          doc.fv3_gdas_settings.layout_x *
-          doc.fv3_gdas_settings.layout_y * 6 + 
-          ( ( doc.fv3_gdas_settings.WRITE_GROUP * 
-          doc.fv3_gdas_settings.WRTTASK_PER_GROUP )
-          if doc.fv3_gdas_settings.QUILTING else 0 )
-      max_ppn: !calc doc.gfs_resource_table.gdasfcst_ppn
->>>>>>> origin/CROWdemo2
       walltime: !calc gdasfcst_walltime
       OMP_NUM_THREADS: !calc doc.fv3_gdas_settings.fv3_threads
       memory_per_rank: !calc doc.gfs_resource_table.get('gdasfcst_mem_per_rank',None)
