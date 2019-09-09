@@ -12,7 +12,7 @@ export machine="@MACHINE@"
 export RUN_ENVIR="emc"
 
 # Account, queue, etc.
-if [ $machine = "THEIA" ]; then
+if [ $machine = "THEIA" -o $machine = "HERA" ]; then
 
     export ACCOUNT="fv3-cpu"
     export QUEUE="batch"
@@ -56,6 +56,13 @@ elif [ $machine = "THEIA" ]; then
     export NWPROD="/scratch4/NCEPDEV/global/save/glopara/nwpara"
     export DMPDIR="/scratch4/NCEPDEV/global/noscrub/dump"
     export RTMFIX="/scratch4/NCEPDEV/da/save/Michael.Lueken/nwprod/lib/crtm/2.2.3/fix_update"
+
+elif [ $machine = "HERA" ]; then
+
+    #export NWPROD="/scratch1/NCEPDEV/global/glopara/nwpara"
+    export DMPDIR="/scratch1/NCEPDEV/global/glopara/dump"
+    #export RTMFIX=$CRTM_FIX
+    export RTMFIX=/scratch1/NCEPDEV/global/glopara/crtm/2.2.3/fix_update
 
 elif [ $machine = "WCOSS_C" ]; then
 
@@ -107,6 +114,18 @@ elif [ $machine = "THEIA" ]; then
     # Base directories for various builds
     export BASE_GIT="/scratch4/NCEPDEV/global/save/glopara/git"
     export BASE_SVN="/scratch4/NCEPDEV/global/save/glopara/svn"
+
+elif [ $machine = "HERA" ]; then
+
+    # USER specific paths
+    export HOMEDIR="/scratch1/NCEPDEV/global/$USER"
+    export STMP="/scratch1/NCEPDEV/stmp2/$USER"
+    export PTMP="/scratch1/NCEPDEV/stmp4/$USER"
+    export NOSCRUB="$HOMEDIR"
+
+    # Base directories for various builds
+    export BASE_GIT="/scratch1/NCEPDEV/global/glopara/git"
+    export BASE_SVN="/scratch1/NCEPDEV/global/glopara/svn"
 
 elif [ $machine = "WCOSS_C" ]; then
 
@@ -182,8 +201,8 @@ export HOMEgsi="$HOMEgfs"
 export FIXgsi="$HOMEgfs/fix/fix_gsi"
 export HOMEfv3gfs="$HOMEgfs/sorc/fv3gfs.fd"
 export HOMEpost="$HOMEgfs"
-export HOMEobsproc_prep="$BASE_GIT/obsproc/obsproc_prep_RB-5.2.0"
-export HOMEobsproc_network="$BASE_GIT/obsproc/obsproc_global_RB-3.2.0"
+export HOMEobsproc_prep="$BASE_GIT/obsproc/OT-obsproc_prep.v5.2.0-20190614"
+export HOMEobsproc_network="$BASE_GIT/obsproc/OT-obsproc_global.v3.2.1-20190613"
 export BASE_VERIF="$BASE_SVN/verif/global/tags/vsdb"
 
 # CONVENIENT utility scripts and other environment parameters

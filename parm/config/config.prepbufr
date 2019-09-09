@@ -12,17 +12,14 @@ echo "BEGIN: config.prepbufr"
 # Get task specific resources
 . $EXPDIR/config.resources prepbufr
 
-# Set variables 
-#------------------------------
+# Set variables
+
 if [ $machine = "THEIA" ]; then
-#------------------------------
-
-  export GESROOT=/scratch4/NCEPDEV/rstprod/nwges/prod   # set by module prod_envir on WCOSS_C
-
+    export GESROOT=/scratch4/NCEPDEV/rstprod/nwges/prod   # set by module prod_envir on WCOSS_C
+elif [ $machine = "HERA" ]; then
+    export GESROOT=/scratch1/NCEPDEV/rstprod   # set by module prod_envir on WCOSS_C
 elif [ $machine = "JET" ]; then
-
-  export GESROOT=/mnt/lfs3/projects/hfv3gfs/glopara/nwges/prod  # this is a dummy dir
-
+    export GESROOT=/mnt/lfs3/projects/hfv3gfs/glopara/nwges/prod  # this is a dummy dir
 fi
 
 echo "END: config.prepbufr"
