@@ -21,7 +21,10 @@ config_arch:
     export FITSARC="{tools.YES_NO(doc.archiving.copy_fit2obs_files)}"
     export FHMAX_FITS=132
     if [ $FHMAX_FITS -gt $FHMAX_GFS ]; then export FHMAX_FITS=$FHMAX_GFS; fi
-    
+
+    export npe_arch=1
+    export npe_node_arch=1
+
     #--starting and ending hours of previous cycles to be removed from rotating directory
     export RMOLDSTD={doc.archiving.scrub_in_archive_start}
     export RMOLDEND={doc.archiving.scrub_in_archive_end}

@@ -11,14 +11,14 @@
 cplvalidate(){
 echo "SUB cplvalidate: validating cpl** switches for $confignamevarfornems"
 case $confignamevarfornems in
-	'atm') combination=.false..F..F..F..F.;;
-	'med_atm_ocn_ice') combination=.true..T..T..F..F.;;
-	'blocked_atm_wav') combination=.true..F..F..T..F.;;
-	'leapfrog_atm_wav')combination=.true..F..F..T..F.;;
-	'med_atm_ocn_ice_wav') combination=.true..T..T..T..F.;;
-	'med_atm_ocn_ice_wav1way') combination=.true..T..T..T..F.;;
-	'med_atm_ocn_ice_wav1waywcurr') combination=.true..T..T..T..F.;;
-	'medcold_atm_ocn_ice') combination=.true..T..T..F..F.;;
+	'atm') combination=.false..false..false..false..false.;;
+	'med_atm_ocn_ice') combination=.true..true..true..false..false.;;
+	'blocked_atm_wav') combination=.true..false..false..true..false.;;
+	'leapfrog_atm_wav')combination=.true..false..false..true..false.;;
+	'med_atm_ocn_ice_wav') combination=.true..true..true..true..false.;;
+	'med_atm_ocn_ice_wav1way') combination=.true..true..true..true..false.;;
+	'med_atm_ocn_ice_wav1waywcurr') combination=.true..true..true..true..false.;;
+	'medcold_atm_ocn_ice') combination=.true..true..true..false..false.;;
 	*) echo "SUB cplvalidate: Combination not supported" 
 		exit ;;
 esac

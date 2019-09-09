@@ -28,8 +28,11 @@ default_settings: &default_settings
   use_nco_ecflow_headers: NO
   print_esmf: .false.
 
+  nems_temp: 'atm'
+  nems_temp_cold: 'atm'
+
   cplflx: .false.
-  cplice: .false.
+  cplice: !calc cplflx
   cpl: .false.
 
   KEEPDATA: NO

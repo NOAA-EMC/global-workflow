@@ -21,6 +21,8 @@ case:
 
     cplflx: .true.
     print_esmf: .true.
+    nems_temp: 'med_atm_ocn_ice'
+    nems_temp_cold: 'medcold_atm_ocn_ice'
  
     DUMP_SUFFIX: "p"
     run_gsi: No

@@ -29,6 +29,12 @@ config_prepbufr:
       export GESROOT=/mnt/lfs3/projects/hfv3gfs/glopara/nwges/prod  # this is a dummy dir
 
     fi
+
+    export npe_prepbufr={doc.partition_common.resources.run_prepbufr[0].mpi_ranks}
+    export npe_node_prepbufr={doc.partition_common.resources.run_prepbufr[0].max_ppn}
+    export wtime_prepbufr="{doc.partition_common.resources.run_prepbufr[0].walltime}"
+    export nth_prepbufr="{doc.partition_common.resources.run_prepbufr[0].OMP_NUM_THREADS}"
+
     
     echo "END: config.prepbufr"
     

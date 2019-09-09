@@ -28,7 +28,12 @@ config_base:
 
     export cpl="{cpl}"
     export cplflx="{doc.settings.cplflx}"
+    export cplice="{doc.settings.cplice}"
     export print_esmf="{doc.settings.print_esmf}"
+
+    export nems_temp="{doc.settings.nems_temp}"
+    export nems_temp_cold="{doc.settings.nems_temp_cold}"
+
                
     # EMC parallel or NCO production
     export RUN_ENVIR="emc"

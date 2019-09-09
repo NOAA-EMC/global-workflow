@@ -43,45 +43,21 @@ config_fv3:
     forecast_mode=$( echo "$1" | tr a-z A-Z )
     
     echo "BEGIN: config.fv3 for $forecast_mode"
-    
-    case "$forecast_mode" in
-        ENKF)
-            export DELTIM={doc.fv3_enkf_settings.DELTIM}
-            export layout_x={doc.fv3_enkf_settings.layout_x}
-            export layout_y={doc.fv3_enkf_settings.layout_y}
-            export WRITE_GROUP={doc.fv3_enkf_settings.WRITE_GROUP}
-            export WRTTASK_PER_GROUP={doc.fv3_enkf_settings.WRTTASK_PER_GROUP}
-            export WRTIOBUF={doc.fv3_enkf_settings.WRTIOBUF}
-            export nth_fv3={doc.aliases.efcs.nth}
-            export npe_node_fcst={doc.aliases.efcs.npe_node}
-            {enkf_cdmbgwd_settings}
-            ;;
-        GFS)
-            export DELTIM={doc.fv3_gfs_settings.DELTIM}
-            export layout_x={doc.fv3_gfs_settings.layout_x}
-            export layout_y={doc.fv3_gfs_settings.layout_y}
-            export WRITE_GROUP={doc.fv3_gfs_settings.WRITE_GROUP}
-            export WRTTASK_PER_GROUP={doc.fv3_gfs_settings.WRTTASK_PER_GROUP}
-            export WRTIOBUF={doc.fv3_gfs_settings.WRTIOBUF}
-            export nth_fv3={doc.aliases.gfsfcst.nth}
-            export npe_node_fcst={doc.aliases.gfsfcst.npe_node}
-            {gfs_cdmbgwd_settings}
-            ;;
-        GDAS)
-            export DELTIM={doc.fv3_gdas_settings.DELTIM}
-            export layout_x={doc.fv3_gdas_settings.layout_x}
-            export layout_y={doc.fv3_gdas_settings.layout_y}
-            export WRITE_GROUP={doc.fv3_gdas_settings.WRITE_GROUP}
-            export WRTTASK_PER_GROUP={doc.fv3_gdas_settings.WRTTASK_PER_GROUP}
-            export WRTIOBUF={doc.fv3_gdas_settings.WRTIOBUF}
-            export nth_fv3={doc.aliases.gdasfcst.nth}
-            export npe_node_fcst={doc.aliases.gdasfcst.npe_node}
-            {gdas_cdmbgwd_settings}
-            ;;
-        *)
-            err_exit "Specify GFS, GDAS, or EFCS when calling config.fv3.in"
-            exit 2
-    esac
-    
+   
+    export DELTIM={doc.gfs_resource_table.DELTIM}
+    export layout_x={doc.gfs_resource_table.layout_x}
+    export layout_y={doc.gfs_resource_table.layout_y}
+    export layout_x_gfs={doc.gfs_resource_table.layout_x_gfs}
+    export layout_y_gfs={doc.gfs_resource_table.layout_y_gfs}
+    export npe_node_fcst={doc.partition_common.resources.run_gdasfcst[0].max_ppn}
+    export nth_fv3=2
+    export npe_fv3={doc.partition_common.resources.run_gdasfcst[0].mpi_ranks}
+    export cdmbgwd={doc.gfs_resource_table.cdmbgwd}  
+             # mountain blocking and gravity wave drag
+    export WRITE_GROUP={doc.gfs_resource_table.WRITE_GROUP}
+    export WRTTASK_PER_GROUP={doc.gfs_resource_table.WRTTASK_PER_GROUP}
+    export WRITE_GROUP_GFS={doc.gfs_resource_table.WRITE_GROUP_GFS}
+    export WRTTASK_PER_GROUP_GFS={doc.gfs_resource_table.WRTTASK_PER_GROUP_GFS}
+    export WRTIOBUF={doc.gfs_resource_table.WRTIOBUF}
+ 
     echo "END: config.fv3 for $forecast_mode"
-    

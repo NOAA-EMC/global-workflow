@@ -15,6 +15,18 @@ config_epos:
     # Ensemble post processing specific
     
     echo "BEGIN: config.epos"
+
+    export npe_epos="{doc.partition_common.resources.run_epos[0].mpi_ranks}"
+    export npe_node_epos="{doc.partition_common.resources.run_epos[0].max_ppn}"
+    export nth_epos="{doc.partition_common.resources.run_epos[0].OMP_NUM_THREADS}"
+    if [[ "$machine" = "WCOSS_DELL_P3" ]]; then
+        export nth_epos=7
+    fi
+    if [[ "$machine" == "WCOSS_C" ]]; then
+        export memory_epos="254M"
+    elif [[ "$machine" == "GAEA" ]]; then
+        export memory_epos="254"
+    fi
     
     export ENKFPOSTSH="$HOMEgsi/scripts/exglobal_enkf_post_fv3gfs.sh.ecf"
 

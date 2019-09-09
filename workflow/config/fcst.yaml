@@ -4,6 +4,10 @@
 
 config_fcst:
   filename: config.fcst
+  FCSTEXEC: !FirstTrue
+    - when: !calc doc.settings.cplflx==".true."
+      do: "nems_fv3_mom6_cice5.x"
+    - otherwise: "global_fv3gfs.x"
   more_exports_for_microphys: !FirstTrue
     - when: !calc ( doc.fv3_settings.imp_physics==11 )
       do: !expand |
@@ -33,6 +37,14 @@ config_fcst:
         . $EXPDIR/config.nsst
     fi
 
+    export wtime_fcst="{doc.partition_common.resources.run_gdasfcst[0].walltime}"
+    export wtime_fcst_gfs="{doc.partition_common.resources.run_gfsfcst[0].walltime}"
+    export npe_fcst_gfs="{doc.partition_common.resources.run_gfsfcst[0].mpi_ranks}"
+    export npe_node_fcst=$npe_node_fcst
+    export nth_fcst=$nth_fv3
+    export npe_fcst=$npe_fv3
+    export memory_fcst="1024M"
+
     #######################################################################
     # PE Mapping
     export FV3PETS="{doc.fv3_settings.FV3PETS}"
@@ -43,7 +55,8 @@ config_fcst:
     export FORECASTSH="$HOMEgfs/scripts/exglobal_fcst_nemsfv3gfs.sh"
     #export FCSTEXECDIR="$HOMEfv3gfs/NEMS/exe"
     export FCSTEXECDIR="$HOMEgfs/exec"
-    export FCSTEXEC="global_fv3gfs.x"
+    #export FCSTEXEC="global_fv3gfs.x"
+    export FCSTEXEC="{FCSTEXEC}"
    
     # Model configuration
     export TYPE="{doc.fv3_settings.nh_type}"

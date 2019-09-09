@@ -16,6 +16,21 @@ config_eobs:
     # Ensemble innovation specific, dependency config.anal
     
     echo "BEGIN: config.eobs"
+
+    export wtime_eobs="{doc.partition_common.resources.run_eobs[0].walltime}"
+    export wtime_eomg="{doc.partition_common.resources.run_eomg[0].walltime}"
+    export npe_eobs="{doc.partition_common.resources.run_eobs[0].mpi_ranks}"
+    export nth_eobs="{doc.partition_common.resources.run_eobs[0].OMP_NUM_THREADS}"
+    export npe_node_eobs="{doc.partition_common.resources.run_eobs[0].max_ppn}"
+
+    if [[ "$machine" = "WCOSS_DELL_P3" ]]; then
+        export npe_node_eobs=14
+    fi
+    if [[ "$machine" == "WCOSS_C" ]]; then
+        export memory_eobs="3072M"
+    elif [[ "$machine" == "GAEA" ]]; then
+        export memory_eobs="3072M"
+    fi
     
     export INVOBSSH="$HOMEgsi/scripts/exglobal_innovate_obs_fv3gfs.sh.ecf"
     export ENKFINVOBSSH="$HOMEgsi/scripts/exglobal_enkf_innovate_obs_fv3gfs.sh.ecf"
