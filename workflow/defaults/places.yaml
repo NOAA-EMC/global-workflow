@@ -14,6 +14,7 @@ default_places: &default_places
   EXPDIR: !expand "{doc.platform.EXP_PARENT_DIR}/{doc.names.experiment}"
   ROTDIR: !expand "{LONG_TERM_TEMP}/comrot/{doc.names.experiment}"
   ICSDIR: !expand "{ROTDIR}/FV3ICS"
+  MOM6IC: /scratch4/NCEPDEV/nems/noscrub/Bin.Li/FROM_HPSS
   DATAROOT: !expand "{SHORT_TERM_TEMP}/RUNDIRS/{doc.names.experiment}"
   SHORT_TERM_TEMP: !calc doc.platform.short_term_temp
   LONG_TERM_TEMP:  !calc doc.platform.long_term_temp

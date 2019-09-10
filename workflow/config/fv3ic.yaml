@@ -20,6 +20,8 @@ config_fv3ic:
     export wtime_fv3ic="00:30:00"
     export npe_fv3ic={doc.partition_common.resources.run_fv3ic[0].mpi_ranks}
     export npe_node_fv3ic={doc.partition_common.resources.run_fv3ic[0].mpi_ranks}
+
+    export ORIGIN_ROOT="{doc.places.MOM6IC}"
     
     echo "END: config.fv3ic"
     

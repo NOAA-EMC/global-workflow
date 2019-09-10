@@ -47,9 +47,9 @@ config_fcst:
 
     #######################################################################
     # PE Mapping
-    export FV3PETS="{doc.fv3_settings.FV3PETS}"
-    export OCNPETS="{doc.fv3_settings.OCNPETS}"
-    export ICEPETS="{doc.fv3_settings.ICEPETS}"
+    export FV3PETS="{doc.fv3_gfs_settings.FV3PETS}"
+    export OCNPETS="{doc.fv3_gfs_settings.OCNPETS}"
+    export ICEPETS="{doc.fv3_gfs_settings.ICEPETS}"
     #
     #######################################################################    
 
@@ -67,9 +67,7 @@ config_fcst:
     fi
     
     export FORECASTSH="$HOMEgfs/scripts/exglobal_fcst_nemsfv3gfs.sh"
-    #export FCSTEXECDIR="$HOMEfv3gfs/NEMS/exe"
     export FCSTEXECDIR="$HOMEgfs/exec"
-    #export FCSTEXEC="global_fv3gfs.x"
     export FCSTEXEC="{FCSTEXEC}"
    
     # Model configuration

@@ -1,5 +1,19 @@
 case:
-  fv3_settings:
+  places:
+    workflow_file: workflow/free_forecast_gfs.yaml
+    MOM6IC: /scratch4/NCEPDEV/nems/noscrub/Bin.Li/FROM_HPSS
+
+  settings: 
+    SDATE: 2018-02-01t00:00:00
+    EDATE: 2018-02-01t00:00:00
+
+#    cplflx: .true.
+#    print_esmf: .true.
+#    nems_temp: 'med_atm_ocn_ice'
+#    nems_temp_cold: 'medcold_atm_ocn_ice'
+    cplflx: .false.
+
+  fv3_gfs_settings:
     CASE: C384
     LEVS: 65
     DELTIM: 450
@@ -11,20 +25,3 @@ case:
     WRTIOBUF: "32M"
     OCNPETS: 120
     ICEPETS: 48
-
-  places:
-    workflow_file: workflow/free_forecast_gfs.yaml
-
-  settings: 
-    SDATE: 2018-02-01t00:00:00
-    EDATE: 2018-02-01t00:00:00
-
-    cplflx: .true.
-    print_esmf: .true.
-    nems_temp: 'med_atm_ocn_ice'
-    nems_temp_cold: 'medcold_atm_ocn_ice'
- 
-    DUMP_SUFFIX: "p"
-    run_gsi: No
-    chgres_and_convert_ics: Yes
-    gfs_cyc: 4 # run gfs every cycle

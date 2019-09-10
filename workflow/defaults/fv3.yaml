@@ -2,6 +2,7 @@
 
 fv3_defaults: &fv3_defaults
   CASE: C384
+  LEVS: 65
   DELTIM: 450
   layout_x: 6
   layout_y: 8

@@ -28,6 +28,7 @@ default_settings: &default_settings
   use_nco_ecflow_headers: NO
   print_esmf: .false.
 
+  gfs_cyc: 4
   nems_temp: 'atm'
   nems_temp_cold: 'atm'
 
@@ -38,6 +39,8 @@ default_settings: &default_settings
   KEEPDATA: NO
   ROTDIR_DUMP: NO
   DUMP_SUFFIX: ""
+  run_gsi: No
+  chgres_and_convert_ics: Yes
 
   # awips setting
   NAWIPSGRP: 21

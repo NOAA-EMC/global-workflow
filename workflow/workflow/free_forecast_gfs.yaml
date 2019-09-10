@@ -34,7 +34,7 @@ suite: !Cycle
     jgfs_emc_mom6ic: !Task
       <<: *exclusive_task_template
       RUN: 'gfs'
-      Disable: !calc not doc.settings.cplflx or not doc.settings.chgres_and_convert_ics
+      Disable: !calc doc.settings.cplflx=='.false.' or not doc.settings.chgres_and_convert_ics
       Trigger: !Depend jgfs_emc_getics
       resources: !calc partition.resources.run_fv3ic
       J_JOB: rocoto/mom6ic.sh
@@ -53,6 +53,7 @@ suite: !Cycle
     forecast: !Family
       jgfs_forecast_medcold: !Task
         <<: *exclusive_task_template
+        Disable: !calc doc.settings.cplflx=='.false.'
         Trigger: !Depend up.up.ics.jgfs_emc_fv3ic and up.up.ics.jgfs_emc_mom6ic
         resources_remap: !JobRequest [ { <<: *remap_resource_template } ]
         resources: !calc partition.resources.run_coupled_fcst
@@ -63,7 +64,7 @@ suite: !Cycle
         Trigger: !Depend up.up.ics.jgfs_emc_fv3ic and jgfs_forecast_medcold
         resources_remap: !JobRequest [ { <<: *remap_resource_template } ]
         resources: !FirstTrue
-           - when: !calc doc.settings.cplflx
+           - when: !calc doc.settings.cplflx=='.true.'
              do: !calc partition.resources.run_coupled_fcst
            - otherwise: !calc partition.resources.run_gfsfcst
         J_JOB: JGLOBAL_FORECAST

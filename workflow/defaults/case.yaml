@@ -8,7 +8,7 @@ fv3_settings: !Immediate
     - CDUMP: gfs
       Template: *fv3_settings_template
     - !calc doc.fv3_defaults
-    - !calc doc.case.fv3_settings
+    - !calc doc.case.get('fv3_settings',{})
     - !calc doc.get('user_fv3_settings',{})
 
 schedvar: !Immediate

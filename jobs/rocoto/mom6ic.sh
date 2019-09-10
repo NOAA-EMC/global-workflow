@@ -35,8 +35,6 @@ status=$?
 
 # Output FV3 initial condition files
 
-ORIGIN_ROOT="/scratch4/NCEPDEV/nems/noscrub/Bin.Li/FROM_HPSS"
-
 cp $ORIGIN_ROOT/$CDATE/cice5_* $ICSDIR/$CDATE/
 cp $ORIGIN_ROOT/$CDATE/MOM6_*  $ICSDIR/$CDATE/
 cp -r $ORIGIN_ROOT/$CDATE/mom6_da  $ICSDIR/$CDATE/
