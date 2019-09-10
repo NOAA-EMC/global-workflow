@@ -37,6 +37,7 @@ default_settings: &default_settings
 
   KEEPDATA: NO
   ROTDIR_DUMP: NO
+  DUMP_SUFFIX: ""
 
   # awips setting
   NAWIPSGRP: 21

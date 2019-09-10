@@ -76,7 +76,7 @@ FV3_GFS_predet(){
 	NTHREADS_FV3=${NTHREADS_FV3:-${NTHREADS_FCST:-${nth_fv3:-1}}}
 	cores_per_node=${cores_per_node:-${npe_node_max:-24}}
 	ntiles=${ntiles:-6}
-	NTASKS_FV3=${NTASKS_FV3:-$npe_fv3}
+	NTASKS_TOT=${NTASKS_TOT:-$npe_fcst}
 
 	TYPE=${TYPE:-"nh"}                  # choices:  nh, hydro
 	MONO=${MONO:-"non-mono"}            # choices:  mono, non-mono
