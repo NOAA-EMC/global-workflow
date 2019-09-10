@@ -9,7 +9,11 @@ if [[ ! -d fv3gfs.fd ]] ; then
     rm -f ${topdir}/checkout-fv3gfs.log
     git clone gerrit:NEMSfv3gfs fv3gfs.fd >> ${topdir}/checkout-fv3gfs.log 2>&1
     cd fv3gfs.fd
-    git checkout nemsfv3gfs_beta_v1.0.18
+    #git checkout nemsfv3gfs_beta_v1.0.18
+    git checkout port-2-hera
+    git submodule update --init --recursive
+    cd NEMS
+    git checkout develop
     git submodule update --init --recursive
     cd ${topdir}
 else
@@ -21,6 +25,7 @@ if [[ ! -d gsi.fd ]] ; then
     rm -f ${topdir}/checkout-gsi.log
     git clone --recursive gerrit:ProdGSI gsi.fd >> ${topdir}/checkout-gsi.fd.log 2>&1
     cd gsi.fd
+    #git checkout fv3da.v1.0.43
     git checkout hera-build
     git submodule update
     # Workaround for missing GSI file on lowres parallel runs
@@ -40,9 +45,11 @@ fi
 echo ufs_utils checkout ...
 if [[ ! -d ufs_utils.fd ]] ; then
     rm -f ${topdir}/checkout-ufs_utils.log
-    git clone --recursive gerrit:UFS_UTILS ufs_utils.fd >> ${topdir}/checkout-ufs_utils.fd.log 2>&1
+    #git clone --recursive gerrit:UFS_UTILS ufs_utils.fd >> ${topdir}/checkout-ufs_utils.fd.log 2>&1
+    git clone --recursive https://github.com/GeorgeGayno-NOAA/UFS_UTILS.git ufs_utils.fd >> ${topdir}/checkout-ufs_utils.fd.log 2>&1
     cd ufs_utils.fd
-    git checkout v1.0.0
+    #git checkout v1.0.0
+    git checkout feature/hera_port
     cd ${topdir}
 else
     echo 'Skip.  Directory ufs_utils.fd already exists.'
