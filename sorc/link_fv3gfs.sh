@@ -73,21 +73,21 @@ cd ${pwd}/../ush                ||exit 8
 
 
 #------------------------------
-#--add gfs_wafs file if on Dell
-#if [ $machine = dell ]; then 
+#--add gfs_wafs link if on Dell
+if [ $machine = dell ]; then 
 #------------------------------
-#cd ${pwd}/../jobs               ||exit 8
-#    $LINK ../sorc/gfs_wafs.fd/jobs/*                         .
-#cd ${pwd}/../parm               ||exit 8
-#    [[ -d wafs ]] && rm -rf wafs
-#    $LINK ../sorc/gfs_wafs.fd/parm/wafs                      wafs
-#cd ${pwd}/../scripts            ||exit 8
-#    $LINK ../sorc/gfs_wafs.fd/scripts/*                      .
-#cd ${pwd}/../ush                ||exit 8
-#    $LINK ../sorc/gfs_wafs.fd/ush/*                          .
-#cd ${pwd}/../fix                ||exit 8
-#    $LINK ../sorc/gfs_wafs.fd/fix/*                          .
-#fi
+ cd ${pwd}/../jobs               ||exit 8
+     $LINK ../sorc/gfs_wafs.fd/jobs/*                         .
+ cd ${pwd}/../parm               ||exit 8
+     [[ -d wafs ]] && rm -rf wafs
+    $LINK ../sorc/gfs_wafs.fd/parm/wafs                      wafs
+ cd ${pwd}/../scripts            ||exit 8
+    $LINK ../sorc/gfs_wafs.fd/scripts/*                      .
+ cd ${pwd}/../ush                ||exit 8
+    $LINK ../sorc/gfs_wafs.fd/ush/*                          .
+ cd ${pwd}/../fix                ||exit 8
+    $LINK ../sorc/gfs_wafs.fd/fix/*                          .
+fi
 
 
 #------------------------------
@@ -171,16 +171,16 @@ $LINK ../sorc/fv3gfs.fd/NEMS/exe/global_fv3gfs.x .
 [[ -s gfs_ncep_post ]] && rm -f gfs_ncep_post
 $LINK ../sorc/gfs_post.fd/exec/ncep_post gfs_ncep_post
 
-#if [ $machine = dell ]; then 
-#    for wafsexe in wafs_awc_wafavn  wafs_blending  wafs_cnvgrib2  wafs_gcip  wafs_makewafs  wafs_setmissing; do
-#        [[ -s $wafsexe ]] && rm -f $wafsexe
-#        $LINK ../sorc/gfs_wafs.fd/exec/$wafsexe .
-#    done
-#fi
+if [ $machine = dell ]; then 
+    for wafsexe in wafs_awc_wafavn  wafs_blending  wafs_cnvgrib2  wafs_gcip  wafs_makewafs  wafs_setmissing; do
+        [[ -s $wafsexe ]] && rm -f $wafsexe
+        $LINK ../sorc/gfs_wafs.fd/exec/$wafsexe .
+    done
+fi
 
 for ufs_utilsexe in \
-     chgres_cube.exe   fregrid           global_cycle         nemsio_cvt    orog.x \
-     emcsfc_ice_blend  fregrid_parallel  make_hgrid           nemsio_get    shave.x \
+     chgres_cube.exe   fregrid           global_cycle         mkgfsnemsioctl    orog.x \
+     emcsfc_ice_blend  fregrid_parallel  make_hgrid           nemsio_get        shave.x \
      emcsfc_snow2mdl   gettrk            make_hgrid_parallel  nemsio_read \
      filter_topo       global_chgres     make_solo_mosaic     nst_tf_chg.x ; do
     [[ -s $ufs_utilsexe ]] && rm -f $ufs_utilsexe
@@ -220,20 +220,20 @@ cd ${pwd}/../sorc   ||   exit 8
         $SLINK ufs_utils.fd/sorc/fre-nctools.fd/tools/$prog                                ${prog}.fd                                
     done
     for prog in  chgres_cube.fd       global_cycle.fd   nemsio_read.fd \
-        emcsfc_ice_blend.fd  gettrk.fd         nemsio_cvt.fd    nst_tf_chg.fd \
-        emcsfc_snow2mdl.fd   global_chgres.fd  nemsio_get.fd    orog.fd ;do
+                 emcsfc_ice_blend.fd  gettrk.fd         mkgfsnemsioctl.fd  nst_tf_chg.fd \
+                 emcsfc_snow2mdl.fd   global_chgres.fd  nemsio_get.fd      orog.fd ;do
         $SLINK ufs_utils.fd/sorc/$prog                                                     $prog
     done
 
 
-#   if [ $machine = dell ]; then
-#       $SLINK gfs_wafs.fd/sorc/wafs_awc_wafavn.fd                                              wafs_awc_wafavn.fd
-#       $SLINK gfs_wafs.fd/sorc/wafs_blending.fd                                                wafs_blending.fd
-#       $SLINK gfs_wafs.fd/sorc/wafs_cnvgrib2.fd                                                wafs_cnvgrib2.fd
-#       $SLINK gfs_wafs.fd/sorc/wafs_gcip.fd                                                    wafs_gcip.fd
-#       $SLINK gfs_wafs.fd/sorc/wafs_makewafs.fd                                                wafs_makewafs.fd
-#       $SLINK gfs_wafs.fd/sorc/wafs_setmissing.fd                                              wafs_setmissing.fd
-#   fi
+    if [ $machine = dell ]; then
+        $SLINK gfs_wafs.fd/sorc/wafs_awc_wafavn.fd                                              wafs_awc_wafavn.fd
+        $SLINK gfs_wafs.fd/sorc/wafs_blending.fd                                                wafs_blending.fd
+        $SLINK gfs_wafs.fd/sorc/wafs_cnvgrib2.fd                                                wafs_cnvgrib2.fd
+        $SLINK gfs_wafs.fd/sorc/wafs_gcip.fd                                                    wafs_gcip.fd
+        $SLINK gfs_wafs.fd/sorc/wafs_makewafs.fd                                                wafs_makewafs.fd
+        $SLINK gfs_wafs.fd/sorc/wafs_setmissing.fd                                              wafs_setmissing.fd
+    fi
 
 
 #------------------------------

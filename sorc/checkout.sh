@@ -12,9 +12,6 @@ if [[ ! -d fv3gfs.fd ]] ; then
     #git checkout nemsfv3gfs_beta_v1.0.18
     git checkout port-2-hera
     git submodule update --init --recursive
-    cd NEMS
-    git checkout develop
-    git submodule update --init --recursive
     cd ${topdir}
 else
     echo 'Skip.  Directory fv3gfs.fd already exists.'
