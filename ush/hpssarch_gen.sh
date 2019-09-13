@@ -38,7 +38,9 @@ if [ $type = "gfs" ]; then
   touch gfs_nemsiob.txt
   touch gfs_restarta.txt
 
-  dirname="./gfs.${PDY}/${cyc}/"
+  dirpath="gfs.${PDY}/${cyc}/"
+  dirname="./${dirpath}"
+
   head="gfs.t${cyc}z."
 
   #..................
@@ -142,20 +144,27 @@ if [ $type = "gdas" ]; then
   touch gdas_restarta.txt
   touch gdas_restartb.txt
 
-  dirname="./gdas.${PDY}/${cyc}/"
+  dirpath="gdas.${PDY}/${cyc}/"
+  dirname="./${dirpath}"
   head="gdas.t${cyc}z."
 
   #..................
-  echo  "${dirname}${head}cnvstat                    " >>gdas.txt
   echo  "${dirname}${head}gsistat                    " >>gdas.txt
-  echo  "${dirname}${head}oznstat                    " >>gdas.txt
-  echo  "${dirname}${head}radstat                    " >>gdas.txt
   echo  "${dirname}${head}pgrb2.0p25.anl             " >>gdas.txt
   echo  "${dirname}${head}pgrb2.0p25.anl.idx         " >>gdas.txt
   echo  "${dirname}${head}pgrb2.1p00.anl             " >>gdas.txt
   echo  "${dirname}${head}pgrb2.1p00.anl.idx         " >>gdas.txt
   echo  "${dirname}${head}atmanl.nemsio              " >>gdas.txt
   echo  "${dirname}${head}sfcanl.nemsio              " >>gdas.txt
+  if [ -s $ROTDIR/${dirpath}${head}cnvstat ]; then
+     echo  "${dirname}${head}cnvstat                 " >>gdas.txt
+  fi
+  if [ -s $ROTDIR/${dirpath}${head}oznstat ]; then
+     echo  "${dirname}${head}oznstat                 " >>gdas.txt
+  fi
+  if [ -s $ROTDIR/${dirpath}${head}radstat ]; then
+     echo  "${dirname}${head}radstat                 " >>gdas.txt
+  fi
   for fstep in prep anal fcst vrfy radmon minmon oznmon; do
    if [ -s $ROTDIR/logs/${CDATE}/gdas${fstep}.log ]; then
      echo  "./logs/${CDATE}/gdas${fstep}.log         " >>gdas.txt
@@ -180,8 +189,12 @@ if [ $type = "gdas" ]; then
 
 
   #..................
-  echo  "${dirname}${head}cnvstat                  " >>gdas_restarta.txt
-  echo  "${dirname}${head}radstat                  " >>gdas_restarta.txt
+  if [ -s $ROTDIR/${dirpath}${head}cnvstat ]; then
+     echo  "${dirname}${head}cnvstat               " >>gdas_restarta.txt
+  fi
+  if [ -s $ROTDIR/${dirpath}${head}radstat ]; then
+     echo  "${dirname}${head}radstat               " >>gdas_restarta.txt
+  fi
   echo  "${dirname}${head}nsstbufr                 " >>gdas_restarta.txt
   echo  "${dirname}${head}prepbufr                 " >>gdas_restarta.txt
   echo  "${dirname}${head}prepbufr_pre-qc          " >>gdas_restarta.txt
@@ -223,18 +236,25 @@ if [ $type = "enkfgdas" -o $type = "enkfgfs" ]; then
   [[ $((NTARS*NMEM_EARCGRP)) -lt $NMEM_ENKF ]] && NTARS=$((NTARS+1))
   NTARS2=$((NTARS/2))
 
-  dirname="./enkf${CDUMP}.${PDY}/${cyc}/"
+  dirpath="enkf${CDUMP}.${PDY}/${cyc}/"
+  dirname="./${dirpath}"
   head="${CDUMP}.t${cyc}z."
 
   #..................
   rm -f enkf${CDUMP}.txt
   touch enkf${CDUMP}.txt
 
-  echo  "${dirname}${head}cnvstat.ensmean            " >>enkf${CDUMP}.txt
   echo  "${dirname}${head}enkfstat                   " >>enkf${CDUMP}.txt
   echo  "${dirname}${head}gsistat.ensmean            " >>enkf${CDUMP}.txt
-  echo  "${dirname}${head}oznstat.ensmean            " >>enkf${CDUMP}.txt
-  echo  "${dirname}${head}radstat.ensmean            " >>enkf${CDUMP}.txt
+  if [ -s $ROTDIR/${dirpath}${head}cnvstat.ensmean ]; then
+       echo  "${dirname}${head}cnvstat.ensmean       " >>enkf${CDUMP}.txt
+  fi
+  if [ -s $ROTDIR/${dirpath}${head}oznstat.ensmean ]; then
+       echo  "${dirname}${head}oznstat.ensmean       " >>enkf${CDUMP}.txt
+  fi
+  if [ -s $ROTDIR/${dirpath}${head}radstat.ensmean ]; then
+       echo  "${dirname}${head}radstat.ensmean       " >>enkf${CDUMP}.txt
+  fi
   for FHR in $nfhrs; do  # loop over analysis times in window
      if [ $FHR -eq 6 ]; then
         echo  "${dirname}${head}atmanl.ensmean.nemsio      " >>enkf${CDUMP}.txt
@@ -270,7 +290,8 @@ if [ $type = "enkfgdas" -o $type = "enkfgfs" ]; then
   while [ $m -le $NMEM_EARCGRP ]; do
     nm=$(((n-1)*NMEM_EARCGRP+m))
     mem=$(printf %03i $nm)
-    dirname="./enkf${CDUMP}.${PDY}/${cyc}/mem${mem}/"
+    dirpath="enkf${CDUMP}.${PDY}/${cyc}/mem${mem}/"
+    dirname="./${dirpath}"
     head="${CDUMP}.t${cyc}z."
 
     #---
@@ -290,10 +311,16 @@ if [ $type = "enkfgdas" -o $type = "enkfgfs" ]; then
     done # loop over FHR
 
     if [[ lobsdiag_forenkf = ".false." ]] ; then
-       echo "${dirname}${head}cnvstat              " >>enkf${CDUMP}_grp${n}.txt
        echo "${dirname}${head}gsistat              " >>enkf${CDUMP}_grp${n}.txt
-       echo "${dirname}${head}radstat              " >>enkf${CDUMP}_restarta_grp${n}.txt
-       echo "${dirname}${head}cnvstat              " >>enkf${CDUMP}_restarta_grp${n}.txt
+       if [ -s $ROTDIR/${dirpath}${head}cnvstat ] ; then
+          echo "${dirname}${head}cnvstat           " >>enkf${CDUMP}_grp${n}.txt
+       fi
+       if [ -s $ROTDIR/${dirpath}${head}radstat ]; then
+          echo "${dirname}${head}radstat           " >>enkf${CDUMP}_restarta_grp${n}.txt
+       fi
+       if [ -s $ROTDIR/${dirpath}${head}cnvstat ]; then
+          echo "${dirname}${head}cnvstat           " >>enkf${CDUMP}_restarta_grp${n}.txt
+       fi
        echo "${dirname}${head}abias                " >>enkf${CDUMP}_restarta_grp${n}.txt
        echo "${dirname}${head}abias_air            " >>enkf${CDUMP}_restarta_grp${n}.txt
        echo "${dirname}${head}abias_int            " >>enkf${CDUMP}_restarta_grp${n}.txt
