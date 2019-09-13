@@ -44,10 +44,19 @@ export h2o_phys=".true."
 # Options of stratosphere O3 physics reaction coefficients
 export new_o3forc="YES"
 
-# use unified gravity-wave drag and  turbulent orographic form drag (TOFD)
-export do_ugwp=".true."
+# do_ugwp=T: use unified CGWD and OGWD, and turbulent orographic form drag (TOFD)
+# do_ugwp=F: use unified CGWD but old OGWD, TOFD is not uded.
+export do_ugwp=".false."
 export do_tofd=".true."
 export launch_level=$(echo "$LEVS/2.35" |bc)
+
+# Sponge layer settings for L127
+if [ $LEVS = "128" ]; then
+   export  tau=5.0
+   export  rf_cutoff=1.0e3
+   export  d2_bg_k1=0.20
+   export  d2_bg_k2=0.0
+fi
 
 # PBL/turbulance schemes
 export hybedmf=".false."
@@ -119,6 +128,11 @@ else
 fi
 #---------------------------------------------------------------------
 
+# ideflate: netcdf zlib lossless compression (0-9): 0 no compression
+# nbits: netcdf lossy compression level (0-32): 0 lossless
+export ideflate=1
+export nbits=14
+export ishuffle=0
 
 # Disable the use of coupler.res; get model start time from model_configure
 export USE_COUPLER_RES="NO"

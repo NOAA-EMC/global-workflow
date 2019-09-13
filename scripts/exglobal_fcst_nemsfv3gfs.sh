@@ -627,6 +627,9 @@ num_files:               ${NUM_FILES:-2}
 filename_base:           'atm' 'sfc'
 output_grid:             $OUTPUT_GRID
 output_file:             $OUTPUT_FILE
+ideflate:                ${ideflate:-1}
+nbits:                   ${nbits:-14}
+ishuffle:                ${ishuffle:-0}
 write_nemsioflip:        $WRITE_NEMSIOFLIP
 write_fsyncflag:         $WRITE_FSYNCFLAG
 imo:                     $LONB_IMO
@@ -732,6 +735,11 @@ cat > input.nml <<EOF
   max_files_r = 100
   max_files_w = 100
   $fms_io_nml
+/
+
+&mpp_io_nml
+shuffle=1,
+deflate_level=1,
 /
 
 &fms_nml

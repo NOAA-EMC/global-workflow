@@ -14,7 +14,7 @@ if [[ ! -d fv3gfs.fd ]] ; then
     cd FV3/atmos_cubed_sphere
     git checkout gfsv16_physupdt
     cd .. 
-    git checkout gfsv16_physupdt
+    git checkout gfsv16_physupdt_netcdf
     cd .. 
     git checkout gfsv16_physupdt
     cd ${topdir}
@@ -39,7 +39,8 @@ if [[ ! -d ufs_utils.fd ]] ; then
     rm -f ${topdir}/checkout-ufs_utils.log
     git clone --recursive gerrit:UFS_UTILS ufs_utils.fd >> ${topdir}/checkout-ufs_utils.fd.log 2>&1
     cd ufs_utils.fd
-    git checkout develop
+    #git checkout develop
+    git checkout gfsv16
     cd ${topdir}
 else
     echo 'Skip.  Directory ufs_utils.fd already exists.'

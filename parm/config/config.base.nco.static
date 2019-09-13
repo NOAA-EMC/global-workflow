@@ -127,7 +127,7 @@ export SENDDBN=${SENDDBN:-"YES"}
 export SENDSDM=${SENDSDM:-"NO"}
 
 # Resolution specific parameters
-export LEVS=65
+export LEVS=128
 export CASE="C768"
 export CASE_ENKF="C384"
 
