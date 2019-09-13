@@ -56,7 +56,7 @@ suite: !Cycle
         Disable: !calc doc.settings.cplflx=='.false.'
         Trigger: !Depend up.up.ics.jgfs_emc_fv3ic and up.up.ics.jgfs_emc_mom6ic
         resources_remap: !JobRequest [ { <<: *remap_resource_template } ]
-        resources: !calc partition.resources.run_coupled_fcst
+        resources: !calc partition.resources.run_coupled_medcold
         J_JOB: JGLOBAL_FORECAST_MEDCOLD
 
       jgfs_forecast_high: !Task

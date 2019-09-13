@@ -19,7 +19,6 @@ config_efcs:
     # Source model specific information that is resolution dependent
     . $EXPDIR/config.fv3 enkf
 
-    export wtime_efcs="{doc.partition_common.resources.run_efcs[0].walltime}"
     export npe_efcs="{doc.partition_common.resources.run_efcs[0].mpi_ranks}"
     export npe_node_efcs="{doc.partition_common.resources.run_efcs[0].max_ppn}"
     export nth_efcs=$nth_fv3

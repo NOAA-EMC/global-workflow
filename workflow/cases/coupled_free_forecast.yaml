@@ -7,11 +7,11 @@ case:
     SDATE: 2018-02-01t00:00:00
     EDATE: 2018-02-01t00:00:00
 
-#    cplflx: .true.
-#    print_esmf: .true.
-#    nems_temp: 'med_atm_ocn_ice'
-#    nems_temp_cold: 'medcold_atm_ocn_ice'
-    cplflx: .false.
+    cplflx: .true.
+    print_esmf: .true.
+    nems_temp: 'med_atm_ocn_ice'
+    nems_temp_cold: 'medcold_atm_ocn_ice'
+#    cplflx: .false.
 
   fv3_gfs_settings:
     CASE: C384

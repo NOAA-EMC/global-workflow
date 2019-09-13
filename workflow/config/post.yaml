@@ -21,8 +21,6 @@ config_post:
     # No. of concurrent post jobs [0 implies sequential]
     export NPOSTGRP={doc.post.NPOSTGRP}
 
-    export wtime_post="{doc.partition_common.resources.run_gdaspost[0].walltime}"
-    export wtime_post_gfs="{doc.partition_common.resources.run_gfspost[0].walltime}"
     export npe_post="{doc.partition_common.resources.run_gdaspost[0].mpi_ranks}"
     export nth_post="{doc.partition_common.resources.run_gdaspost[0].OMP_NUM_THREADS}"
     export npe_node_post="{doc.partition_common.resources.run_gdaspost[0].max_ppn}"

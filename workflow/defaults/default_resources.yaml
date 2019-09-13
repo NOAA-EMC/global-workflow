@@ -26,6 +26,8 @@ gfs_resource_table: !Select
       gfsfcst_mem_per_rank:  3.124e+3
       gdasfcst_wall:  !timedelta "00:15:00"
       gfsfcst_wall:  !timedelta "01:00:00"
+      coupfcst_medcold_wall:  !timedelta "00:30:00"
+      coupfcst_wall:  !timedelta "02:00:00"
       gdasfcst_ppn: !calc doc.platform.partitions.default_exclusive.scheduler_settings.physical_cores_per_node
       gfsfcst_ppn: !calc doc.platform.partitions.default_exclusive.scheduler_settings.physical_cores_per_node
       post_manager_wallclock_extra: !timedelta "00:15:00"
@@ -39,6 +41,8 @@ gfs_resource_table: !Select
       gfsvrfy:  [   5,    1, !timedelta "03:00:00", null, null ]
       gdasfcst_wall:  !timedelta "00:15:00"
       gfsfcst_wall:  !timedelta "06:00:00"
+      coupfcst_medcold_wall:  !timedelta "00:30:00"
+      coupfcst_wall:  !timedelta "02:00:00"
       gdasfcst_ppn: !calc doc.platform.partitions.default_exclusive.scheduler_settings.physical_cores_per_node
       gfsfcst_ppn: !calc doc.platform.partitions.default_exclusive.scheduler_settings.physical_cores_per_node
       post_manager_wallclock_extra: !timedelta "00:15:00"
@@ -54,6 +58,8 @@ gfs_resource_table: !Select
       gfsfcst_mem_per_rank:  3.124e+3
       gdasfcst_wall:  !timedelta "01:00:00"
       gfsfcst_wall:  !timedelta "06:00:00"
+      coupfcst_medcold_wall:  !timedelta "00:30:00"
+      coupfcst_wall:  !timedelta "02:00:00"
       gdasfcst_ppn: !calc doc.platform.partitions.default_exclusive.scheduler_settings.physical_cores_per_node
       gfsfcst_ppn: !calc doc.platform.partitions.default_exclusive.scheduler_settings.physical_cores_per_node
       post_manager_wallclock_extra: !timedelta "00:15:00"
@@ -279,7 +285,7 @@ default_resources: &default_resources
     - batch_memory: "1024M"
       mpi_ranks: !calc doc.fv3_gdas_settings.FV3PETS
       max_ppn: !calc doc.gfs_resource_table.gdasfcst_ppn
-      walltime: !calc gdasfcst_walltime
+      walltime: !calc doc.gfs_resource_table.gdasfcst_wall
   
   no_gdasfcst_remap: !JobRequest
     - mpi_ranks: !calc (min(240,doc.default_resources.run_gdasfcst.total_ranks()))
@@ -296,26 +302,30 @@ default_resources: &default_resources
     - batch_memory: "254M"
       mpi_ranks: !calc doc.fv3_enkf_settings.FV3PETS
       max_ppn: !calc doc.enkf_resource_table.efcs_ppn
-      walltime: !calc efcs_walltime
+      walltime: !calc doc.enkf_resource_table.efcs_wall
 
-  efcs_walltime: !calc doc.enkf_resource_table.efcs_wall
-  gfsfcst_walltime: !calc doc.gfs_resource_table.gfsfcst_wall
-  gdasfcst_walltime: !calc doc.gfs_resource_table.gdasfcst_wall
-  
   run_gfsfcst: !JobRequest
     - batch_memory: "1024M"
       mpi_ranks: !calc doc.fv3_gfs_settings.FV3PETS
       max_ppn: !calc doc.gfs_resource_table.gfsfcst_ppn
-      walltime: !calc gfsfcst_walltime
+      walltime: !calc doc.gfs_resource_table.gfsfcst_wall
 
   run_coupled_fcst: !JobRequest
     - batch_memory: "1024M"
       mpi_ranks: !calc doc.fv3_gfs_settings.FV3PETS+doc.fv3_gfs_settings.OCNPETS+doc.fv3_gfs_settings.ICEPETS
-      max_ppn: !calc "doc.fv3_gfs_settings.get('fcst_max_ppn',None)"
+      max_ppn: !calc doc.fv3_gfs_settings.get('fcst_max_ppn',None)
       OMP_NUM_THREADS: !calc doc.fv3_gfs_settings.fv3_threads
-      walltime: !calc gfsfcst_walltime
+      walltime: !calc doc.gfs_resource_table.coupfcst_wall
       memory_per_rank: !calc doc.gfs_resource_table.get('gfsfcst_mem_per_rank',None)
-  
+
+  run_coupled_medcold: !JobRequest
+    - batch_memory: "1024M"
+      mpi_ranks: !calc doc.fv3_gfs_settings.FV3PETS+doc.fv3_gfs_settings.OCNPETS+doc.fv3_gfs_settings.ICEPETS
+      max_ppn: !calc doc.fv3_gfs_settings.get('fcst_max_ppn',None)
+      OMP_NUM_THREADS: !calc doc.fv3_gfs_settings.fv3_threads
+      walltime: !calc doc.gfs_resource_table.coupfcst_medcold_wall
+      memory_per_rank: !calc doc.gfs_resource_table.get('gfsfcst_mem_per_rank',None)  
+
   fallback_run_gfsremap: !JobRequest
     # Used to generate the config files if the gfs remap is not run in the workflow.
     - mpi_ranks: !calc >-

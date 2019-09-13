@@ -16,7 +16,6 @@ config_awips:
 
     export npe_awips="{doc.partition_common.resources.run_awips[0].mpi_ranks}"
     export npe_node_awips="{doc.partition_common.resources.run_awips[0].max_ppn}"
-    export wtime_awips="{doc.partition_common.resources.run_awips[0].walltime}"
     export nth_awips=2
     if [[ "$machine" == "WCOSS_DELL_P3" ]]; then
         export npe_awips=2

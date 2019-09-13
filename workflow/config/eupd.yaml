@@ -17,7 +17,6 @@ config_eupd:
     
     echo "BEGIN: config.eupd"
 
-    export wtime_eupd="{doc.partition_common.resources.run_eupd[0].walltime}"
     export npe_eupd="{doc.partition_common.resources.run_eupd[0].mpi_ranks}"
     export npe_node_eupd="{doc.partition_common.resources.run_eupd[0].max_ppn}"
     export nth_eupd="{doc.partition_common.resources.run_eupd[0].OMP_NUM_THREADS}"

@@ -18,6 +18,17 @@ config_fcst:
         export dddmp={doc.fv3_settings.dddmp}
         export d4_bg={doc.fv3_settings.d4_bg}
     - otherwise: ""
+
+  resource_a: !FirstTrue
+    - when: !calc doc.settings.cplflx==".true."
+      do: !calc doc.partition_common.resources.run_coupled_fcst
+    - otherwise: !calc doc.partition_common.resources.run_gdasfcst
+
+  resource_b: !FirstTrue
+    - when: !calc doc.settings.cplflx==".true."
+      do: !calc doc.partition_common.resources.run_coupled_fcst
+    - otherwise: !calc doc.partition_common.resources.run_gfsfcst
+
   content: !expand |
     #!/bin/ksh -x
     
@@ -37,9 +48,8 @@ config_fcst:
         . $EXPDIR/config.nsst
     fi
 
-    export wtime_fcst="{doc.partition_common.resources.run_gdasfcst[0].walltime}"
-    export wtime_fcst_gfs="{doc.partition_common.resources.run_gfsfcst[0].walltime}"
-    export npe_fcst_gfs="{doc.partition_common.resources.run_gfsfcst[0].mpi_ranks}"
+    export npe_fcst="{resource_a[0].mpi_ranks}"
+    export npe_fcst_gfs="{resource_b[0].mpi_ranks}"
     export npe_node_fcst=$npe_node_fcst
     export nth_fcst=$nth_fv3
     export npe_fcst=$npe_fv3
@@ -52,13 +62,6 @@ config_fcst:
     export ICEPETS="{doc.fv3_gfs_settings.ICEPETS}"
     #
     #######################################################################    
-
-    export wtime_fcst="{doc.partition_common.resources.run_gdasfcst[0].walltime}"
-    export wtime_fcst_gfs="{doc.partition_common.resources.run_gfsfcst[0].walltime}"
-    export npe_fcst="{doc.partition_common.resources.run_gdasfcst[0].mpi_ranks}"
-    export npe_fcst_gfs="{doc.partition_common.resources.run_gfsfcst[0].mpi_ranks}"
-    export npe_node_fcst=$npe_node_fcst
-    export nth_fcst=$nth_fv3
 
     if [[ "$machine" == "WCOSS_C" ]]; then
         export memory_fcst="1024M"

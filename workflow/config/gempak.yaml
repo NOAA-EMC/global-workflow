@@ -14,7 +14,6 @@ config_gempak:
 
     echo "BEGIN: config.gempak"
 
-    export wtime_gempak="{doc.partition_common.resources.run_gempak[0].walltime}"
     export npe_gempak="{doc.partition_common.resources.run_gempak[0].mpi_ranks}"
     export npe_node_gempak="{doc.partition_common.resources.run_gempak[0].max_ppn}"
     export nth_gempak="{doc.partition_common.resources.run_gempak[0].OMP_NUM_THREADS}"

@@ -33,7 +33,6 @@ config_prep:
 
     export npe_node_prep="{doc.partition_common.resources.run_prep[0].max_ppn}"    
     export npe_prep="{doc.partition_common.resources.run_prep[0].mpi_ranks}"
-    export wtime_prep="{doc.partition_common.resources.run_prep[0].walltime}"
     export nth_prep="{doc.partition_common.resources.run_prep[0].OMP_NUM_THREADS}"
 
     export cycle="t\"$cyc\"z"

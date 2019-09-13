@@ -16,8 +16,6 @@ config_vrfy:
     
     echo "BEGIN: config.vrfy"
 
-    export wtime_vrfy="doc.resources.run_gdasvrfy.walltime"
-    export wtime_vrfy_gfs="doc.resources.run_gfsvrfy.walltime"
     export npe_vrfy=1
     export npe_node_vrfy=1
     export npe_vrfy_gfs=1
