@@ -18,6 +18,7 @@
 
  use input_data
  use model_grid
+ use gldas_data
 
  implicit none
 
@@ -26,6 +27,8 @@
  integer(esmf_kind_i4), pointer     :: mask_input_ptr(:,:)
  integer(esmf_kind_i4), pointer     :: mask_target_ptr(:,:)
  integer(esmf_kind_i4), pointer      :: unmapped_ptr(:)
+
+ real(esmf_kind_r8), pointer      :: gldas_target_ptr(:,:)
 
  type(esmf_regridmethod_flag)        :: method
  type(esmf_routehandle)              :: regrid_land
@@ -56,7 +59,17 @@
  if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
     call error_handler("IN GridGetItem", rc)
 
- mask_target_ptr = 1
+ print*,"- CALL FieldGet FOR TARGET GRID MASK."
+ nullify(gldas_target_ptr)
+ call ESMF_FieldGet(landsea_mask_target_grid, farrayPtr=gldas_target_ptr, rc=rc)
+ if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldGet", rc)
+
+ mask_target_ptr = 0
+ where(nint(gldas_target_ptr)==1) mask_target_ptr = 1
+
+ print*,'mask pointer is ',maxval(mask_target_ptr),minval(mask_target_ptr)
+
 
  print*,"- CALL GridAddItem FOR INPUT GRID."
  call ESMF_GridAddItem(input_grid, &
