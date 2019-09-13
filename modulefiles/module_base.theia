@@ -3,9 +3,8 @@
 ##      FV3GFS prerequisites
 ##
 
-module load intel/16.1.150
-#module load impi/5.1.2.150
-module load impi/5.1.1.109
+module load intel/18.0.1.163
+module load impi/5.1.2.150
 module load wgrib2/0.2.0.6c
 module load hpss/hpss
 module load pnetcdf/1.5.0-impi
@@ -21,4 +20,6 @@ module use /scratch4/NCEPDEV/global/save/glopara/git/NCEPLIBS-prod_util/modulefi
 module load prod_util/v1.1.0_slurm
 
 module use /scratch4/NCEPDEV/nems/noscrub/emc.nemspara/soft/modulefiles
-module load esmf/8.0.0bs21
+#module load esmf/8.0.0bs21-intel18
+module load yaml-cpp/0.6.2
+module load esmf/8.0.0bs47

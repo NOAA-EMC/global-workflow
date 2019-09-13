@@ -53,7 +53,7 @@ fi
 export COMIN=$DATA/GEMPAK_META_MAR
 
 # export HPCNAM=${COMINnam}.$PDY
-export HPCNAM=${COMINnam}.$PDY
+export HPCNAM=${COMINnam}.$PDY/gempak
 
 # export HPCNGM=${MODEL}/ngm.$PDY
 #

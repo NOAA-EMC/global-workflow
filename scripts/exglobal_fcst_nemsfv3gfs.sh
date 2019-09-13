@@ -214,6 +214,7 @@ if [ $DOIAU = "YES" -a $warm_start = ".false." ]; then
   export DOIAU="NO"
   echo "turning off IAU since warm_start = $warm_start"
   DOIAU_coldstart="YES"
+  IAU_OFFSET=0
   sCDATE=$CDATE
   sPDY=$PDY
   scyc=$cyc
@@ -406,7 +407,7 @@ FNALBC2=${FNALBC2:-"$FIX_AM/global_albedo4.1x1.grb"}
 FNAISC=${FNAISC:-"$FIX_AM/CFSR.SEAICE.1982.2012.monthly.clim.grb"}
 FNTG3C=${FNTG3C:-"$FIX_AM/global_tg3clim.2.6x1.5.grb"}
 FNVEGC=${FNVEGC:-"$FIX_AM/global_vegfrac.0.144.decpercent.grb"}
-FNMSKH=${FNMSKH:-"$FIX_AM/seaice_newland.grb"}
+FNMSKH=${FNMSKH:-"$FIX_AM/global_slmask.t1534.3072.1536.grb"}
 FNVMNC=${FNVMNC:-"$FIX_AM/global_shdmin.0.144x0.144.grb"}
 FNVMXC=${FNVMXC:-"$FIX_AM/global_shdmax.0.144x0.144.grb"}
 FNSLPC=${FNSLPC:-"$FIX_AM/global_slope.1x1.grb"}
@@ -900,9 +901,9 @@ cat > input.nml <<EOF
   prautco      = ${prautco:-"0.00015,0.00015"}
   lgfdlmprad   = ${lgfdlmprad:-".false."}
   effr_in      = ${effr_in:-".false."}
-  ldiag_ugwp   = ${ldiag_ugwp:-.false.}
-  do_ugwp      = ${do_ugwp:-.true.}
-  do_tofd      = ${do_tofd:-.true.}"
+  ldiag_ugwp   = ${ldiag_ugwp:-".false."}
+  do_ugwp      = ${do_ugwp:-".true."}
+  do_tofd      = ${do_tofd:-".true."}
 EOF
 
 # Add namelist for IAU
@@ -969,6 +970,7 @@ cat >> input.nml <<EOF
   fix_negative = .true.
   icloud_f = 1
   mp_time = 150.
+  reiflag = ${reiflag:-"2"}
   $gfdl_cloud_microphysics_nml
 /
 
