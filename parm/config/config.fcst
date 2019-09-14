@@ -133,6 +133,9 @@ fi
 export ideflate=1
 export nbits=14
 export ishuffle=0
+# compression for RESTART files written by FMS 
+export shuffle=1
+export deflate_level=1
 
 # Disable the use of coupler.res; get model start time from model_configure
 export USE_COUPLER_RES="NO"
