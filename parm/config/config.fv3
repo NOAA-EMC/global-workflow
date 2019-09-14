@@ -29,7 +29,7 @@ case $case_in in
         export layout_y_gfs=4
         export npe_node_fcst=24
         export nth_fv3=1
-        export cdmbgwd="0.071,1.4,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
+        export cdmbgwd="0.071,2.1,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=1
         export WRTTASK_PER_GROUP=24
         export WRITE_GROUP_GFS=1
@@ -44,7 +44,7 @@ case $case_in in
         export layout_y_gfs=4
         export npe_node_fcst=24
         export nth_fv3=1
-        export cdmbgwd="0.14,1.2,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
+        export cdmbgwd="0.14,1.8,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=1
         export WRTTASK_PER_GROUP=24
         export WRITE_GROUP_GFS=1
@@ -59,7 +59,7 @@ case $case_in in
         export layout_y_gfs=6
         export npe_node_fcst=12
         export nth_fv3=2
-        export cdmbgwd="0.23,1.0,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
+        export cdmbgwd="0.23,1.5,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=1
         export WRTTASK_PER_GROUP=24
         export WRITE_GROUP_GFS=2
@@ -74,7 +74,7 @@ case $case_in in
         export layout_y_gfs=6
         export npe_node_fcst=12
         export nth_fv3=2
-        export cdmbgwd="1.1,0.48,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
+        export cdmbgwd="1.1,0.72,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=1
         export WRTTASK_PER_GROUP=24
         export WRITE_GROUP_GFS=2
@@ -89,7 +89,7 @@ case $case_in in
         export layout_y_gfs=8
         export npe_node_fcst=6 
         export nth_fv3=4
-        export cdmbgwd="4.0,0.10,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
+        export cdmbgwd="4.0,0.15,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=2
         export WRTTASK_PER_GROUP=24
         export WRITE_GROUP_GFS=4
@@ -104,7 +104,7 @@ case $case_in in
         export layout_y_gfs=16
         export npe_node_fcst=6
         export nth_fv3=4
-        export cdmbgwd="4.0,0.05,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
+        export cdmbgwd="4.0,0.10,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=4
         export WRTTASK_PER_GROUP=84
         export WRITE_GROUP_GFS=4
@@ -119,7 +119,7 @@ case $case_in in
         export layout_y_gfs=32
         export npe_node_fcst=6
         export nth_fv3=4
-        export cdmbgwd="4.0,0.01,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
+        export cdmbgwd="4.0,0.05,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=4
         export WRTTASK_PER_GROUP=120
         export WRITE_GROUP_GFS=4
