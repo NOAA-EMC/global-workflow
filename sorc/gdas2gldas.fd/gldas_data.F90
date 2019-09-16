@@ -102,12 +102,12 @@
      endif
    enddo
    enddo
-   print*,'what is mask ',maxval(mask),minval(mask)
-   open(12, file="./mask.bin", form='unformatted')
-   write(12) real(mask,4)
-   write(12) real(smc,4)
-   write(12) real(snowxy,4)
-   close(12)
+!  print*,'what is mask ',maxval(mask),minval(mask)
+!  open(12, file="./mask.bin", form='unformatted')
+!  write(12) real(mask,4)
+!  write(12) real(smc,4)
+!  write(12) real(snowxy,4)
+!  close(12)
    deallocate(dummy1d,snowxy,smc)
  endif
 

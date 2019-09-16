@@ -28,7 +28,8 @@
  integer(esmf_kind_i4), pointer     :: mask_target_ptr(:,:)
  integer(esmf_kind_i4), pointer      :: unmapped_ptr(:)
 
- real(esmf_kind_r8), pointer      :: gldas_target_ptr(:,:)
+ real(esmf_kind_r8), pointer         :: gldas_target_ptr(:,:)
+ real(esmf_kind_r8), pointer         :: gdas_input_ptr(:,:)
 
  type(esmf_regridmethod_flag)        :: method
  type(esmf_routehandle)              :: regrid_land
@@ -68,9 +69,6 @@
  mask_target_ptr = 0
  where(nint(gldas_target_ptr)==1) mask_target_ptr = 1
 
- print*,'mask pointer is ',maxval(mask_target_ptr),minval(mask_target_ptr)
-
-
  print*,"- CALL GridAddItem FOR INPUT GRID."
  call ESMF_GridAddItem(input_grid, &
                        itemflag=ESMF_GRIDITEM_MASK, &
@@ -86,7 +84,14 @@
  if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
     call error_handler("IN GridGetItem", rc)
 
- mask_input_ptr = 1
+ print*,"- CALL FieldGet FOR INPUT GRID MASK."
+ nullify(gdas_input_ptr)
+ call ESMF_FieldGet(landsea_mask_input_grid, farrayPtr=gdas_input_ptr, rc=rc)
+ if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldGet", rc)
+
+ mask_input_ptr = 0
+ where(nint(gdas_input_ptr)==1) mask_input_ptr = 1
 
  method=ESMF_REGRIDMETHOD_NEAREST_STOD
  isrctermprocessing = 1
