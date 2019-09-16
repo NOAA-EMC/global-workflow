@@ -116,7 +116,7 @@ source $SCRIPTDIR/nems_configure.sh	# include functions for nems_configure proce
 source $SCRIPTDIR/parsing_model_configure_FV3.sh
 
 # Compset string. For nems.configure.* template selection. Default ATM only
-confignamevarfornems=${confignamevarfornems:-'med_atm_ocn_ice'}
+confignamevarfornems=${confignamevarfornems:-'atm'}
 
 # Coupling control switches, for coupling purpose, off by default
 cpl=${cpl:-.false.}
