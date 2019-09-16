@@ -43,7 +43,7 @@ if [[ ! -d gsi.fd ]] ; then
     rm -f ${topdir}/checkout-gsi.log
     git clone --recursive gerrit:ProdGSI gsi.fd >> ${topdir}/checkout-gsi.fd.log 2>&1
     cd gsi.fd
-    git checkout hera-build
+    git checkout fv3da.v1.0.43
     git submodule update
     # Workaround for missing GSI file on lowres parallel runs
     cd fix/Big_Endian/
@@ -76,8 +76,7 @@ if [[ ! -d gfs_post.fd ]] ; then
     git clone --recursive gerrit:EMC_post gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
     #git clone --recursive gerrit:EMC_post_gtg gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
     cd gfs_post.fd
-    git checkout build_hera
-    #git checkout ncep_post.v8.0.27e
+    git checkout ncep_post.v8.0.27e
     #git checkout ncep_post_gtg.v1.0.6c
     cd ${topdir}
 else
@@ -95,11 +94,4 @@ else
     echo 'Skip.  Directory gfs_wafs.fd already exists.'
 fi
 
-tar -xvf ../build.fv3.post.mods.0612.tar
-#tar -xvf ../build.fv3.gsi.mods.0612.tar
-#tar -xvf ../ufs.mods.tar
-cd ../
-tar -xvf allmods.tar
 exit 0
-
- 

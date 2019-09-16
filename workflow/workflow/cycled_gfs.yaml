@@ -761,7 +761,7 @@ suite: !Cycle
   final: !Task
     <<: *service_task_template
     Disable: !calc not metasched.type=="rocoto"
-    resources: !calc partition.resources.run_nothing
+    resources: !calc partition.resources.run_final
     rocoto_command: /bin/true
     RUN: gfs # useless but required
 
