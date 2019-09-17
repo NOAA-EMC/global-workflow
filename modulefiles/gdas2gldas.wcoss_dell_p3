@@ -1,0 +1,16 @@
+#%Module#####################################################
+## Build module for Dell
+#############################################################
+
+module load ips/18.0.1.163
+module load impi/18.0.1
+module load NetCDF/4.5.0
+module load ESMF/7_1_0r
+
+module load w3nco/2.0.6
+module load nemsio/2.2.3
+module load bacio/2.0.2
+module load sp/2.0.2
+
+export FCOMP=mpif90
+export FFLAGS="-O0 -g -traceback -r8 -i4 -qopenmp -convert big_endian -check bounds -warn unused -assume byterecl"

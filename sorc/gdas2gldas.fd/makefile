@@ -8,20 +8,24 @@ OBJS = driver.o \
        utils.o \
        input_data.o \
        interp.o \
+       gldas_data.o \
        write_data.o \
        model_grid.o
 
 $(CMD):	$(OBJS)
 	$(FCOMP) $(FFLAGS) $(ESMF_F90COMPILEPATHS) -o $(CMD) $(OBJS) $(SP_LIBd) $(NEMSIO_LIB) $(BACIO_LIB4) $(W3NCO_LIBd) $(ESMF_F90LINKPATHS) $(ESMF_F90ESMFLINKRPATHS) $(ESMF_F90ESMFLINKLIBS) -g -traceback
 
-driver.o:  write_data.o interp.o input_data.o model_grid.o driver.F90
+driver.o:  gldas_data.o write_data.o interp.o input_data.o model_grid.o driver.F90
 	$(FCOMP) $(FFLAGS) $(ESMF_F90COMPILEPATHS) -c driver.F90
 
 model_grid.o:  model_grid.F90
 	$(FCOMP) $(FFLAGS) $(ESMF_F90COMPILEPATHS) -c model_grid.F90
 
-input_data.o:  model_grid.o input_data.F90
+input_data.o:  gldas_data.o model_grid.o input_data.F90
 	$(FCOMP) $(FFLAGS) $(ESMF_F90COMPILEPATHS) -c input_data.F90
+
+gldas_data.o:  model_grid.o gldas_data.F90
+	$(FCOMP) $(FFLAGS) $(ESMF_F90COMPILEPATHS) -c gldas_data.F90
 
 interp.o:  input_data.o model_grid.o interp.F90
 	$(FCOMP) $(FFLAGS) $(ESMF_F90COMPILEPATHS) -c interp.F90
