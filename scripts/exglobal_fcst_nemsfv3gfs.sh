@@ -35,7 +35,7 @@ fi
 machine=${machine:-"WCOSS_C"}
 machine=$(echo $machine | tr '[a-z]' '[A-Z]')
 
-# Cycling and forecast hour specific parameters
+# Cycling and forecast hour specific parameters 
 CASE=${CASE:-C768}
 CDATE=${CDATE:-2017032500}
 CDUMP=${CDUMP:-gdas}
@@ -52,6 +52,11 @@ if [ $FHMAX_HF -gt 0 -a $FHOUT_HF -gt 0 ]; then FDIAG=$FHOUT_HF; fi
 
 PDY=$(echo $CDATE | cut -c1-8)
 cyc=$(echo $CDATE | cut -c9-10)
+
+# Cycling parms for wave component
+CDATE_PCYC=`$NDATE -$FHCYC $CDATE`
+PDY_PCYC=$(echo $CDATE_PCYC | cut -c1-8)
+cyc_pcyc=$(echo $CDATE_PCYC | cut -c9-10)
 
 # Directories.
 pwd=$(pwd)
@@ -329,7 +334,7 @@ if [ $cplwav = ".true." ]; then
   for wavGRD in ${grdALL}
   do
 # Wave IC (restart) file must exist for warm start on this cycle, if not wave model starts from flat ocean
-    $NLN $COMINWW3/${WAV_MOD_ID}.${PDY}/${cycm1}/${WAV_MOD_ID}${WAV_MEMBER}.restart.${wavGRD}.${PDY}${cyc} $DATA/restart.${wavGRD}
+    $NLN $COMINWW3/${WAV_MOD_ID}.${PDY_PCYC}/${cyc_pcyc}/${WAV_MOD_ID}${WAV_MEMBER}.restart.${wavGRD}.${PDY_PCYC}${cyc_pcyc} $DATA/restart.${wavGRD}
     $NLN $COMINWW3/${WAV_MOD_ID}.${PDY}/${cyc}/${WAV_MOD_ID}.mod_def.$wavGRD $DATA/mod_def.$wavGRD
   done
   $NLN $COMINWW3/${WAV_MOD_ID}.${PDY}/${cyc}/${WAV_MOD_ID}.${iceID}.${cycle}.ice $DATA/ice.${iceID}
