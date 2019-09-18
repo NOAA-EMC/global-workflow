@@ -849,10 +849,6 @@ else
    mkdir -p $DATA
    mkdata=YES
 fi
-if ls ${FIXgsi}/Rcov* 1> /dev/null 2>&1;
-then 
-   $NCP ${FIXgsi}/Rcov* $DATA 
-fi
 cd $DATA||exit 99
 
 ################################################################################
@@ -935,6 +931,20 @@ $FCPLN $SCANINFO scaninfo
 $FCPLN $HYBENSINFO hybens_info
 $FCPLN $LIGHTINFO lightinfo
 $FCPLN $OBERROR  errtable
+
+#If using correlated error, link to the covariance files
+if grep -q "Rcov" $ANAVINFO ;
+then
+  if ls ${FIXgsi}/Rcov* 1> /dev/null 2>&1;
+  then
+    $NLN ${FIXgsi}/Rcov* $DATA
+  else
+    echo "Warning: Satellite error covariance files are missing."
+    echo "Check for the required files in " $ANAVINFO
+    exit 1
+  fi
+fi
+
 
 # CRTM Spectral and Transmittance coefficients
 mkdir -p crtm_coeffs
