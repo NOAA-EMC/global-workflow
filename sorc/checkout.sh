@@ -14,7 +14,7 @@ if [[ ! -d fv3gfs.fd ]] ; then
     cd FV3/atmos_cubed_sphere
     git checkout gfsv16_physupdt
     cd .. 
-    git checkout gfsv16_physupdt_netcdf
+    git checkout SM_gfsv16_physupdt_netcdf
     cd .. 
     git checkout gfsv16_physupdt
     cd ${topdir}
