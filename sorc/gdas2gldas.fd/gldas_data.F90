@@ -5,6 +5,11 @@
  private
 
  type(esmf_field), public        :: landsea_mask_target_grid
+                            ! this mask only contains points that
+                            ! are processed by this utility - 
+                            ! no snow or glacial points.
+ type(esmf_field), public        :: io_mask_target_grid
+                            ! this is the full mask used by gldas
 
  public :: read_gldas_data
 
@@ -22,6 +27,7 @@
 
  integer              :: i, j, istat, rc, count_land
  integer              :: vclass,nc,nr,nch
+ integer, allocatable :: idummy(:,:)
 
  real(kind=4), allocatable :: dummy(:,:), dummy1d(:)
  real(esmf_kind_r8), allocatable :: mask(:,:), smc(:,:), snowxy(:,:)
@@ -33,11 +39,20 @@
  if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
     call error_handler("IN FieldCreate", rc)
 
+ print*,"- CALL FieldCreate FOR TARGET GRID IO MASK."
+ io_mask_target_grid = ESMF_FieldCreate(target_grid, &
+                                     typekind=ESMF_TYPEKIND_I4, &
+                                     staggerloc=ESMF_STAGGERLOC_CENTER, rc=rc)
+ if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldCreate", rc)
+
  if (localpet == 0) then
    allocate(dummy(i_target,j_target))
+   allocate(idummy(i_target,j_target))
    allocate(mask(i_target,j_target))
  else
    allocate(dummy(0,0))
+   allocate(idummy(0,0))
    allocate(mask(0,0))
  endif
 
@@ -51,7 +66,16 @@
    read(50) dummy  ! mask
    close(50)
    print*,'gldas mask ',maxval(dummy),minval(dummy)
-   gldas_file="/gpfs/dell2/emc/modeling/noscrub/George.Gayno/fv3gfs.git/gldas.utils/gldas.restart.data/noah.rst.20190824"
+   idummy=nint(dummy)
+ endif
+
+ print*,"- CALL FieldScatter FOR TARGET IO MASK."
+ call ESMF_FieldScatter(io_mask_target_grid, idummy, rootpet=0, rc=rc)  
+ if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__))  &   
+    call error_handler("IN FieldScatter", rc)
+
+ if (localpet == 0) then
+   gldas_file="./noah.rst.20190824"
    OPEN(40,FILE=trim(gldas_file),FORM='unformatted',iostat=istat)
    if (istat /= 0) call error_handler("opening gldas file", istat)
    READ(40,iostat=istat) VCLASS,NC,NR,NCH
@@ -116,7 +140,7 @@
  if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__))  &   
     call error_handler("IN FieldScatter", rc)
 
- deallocate (mask, dummy)
+ deallocate (mask, dummy, idummy)
 
  end subroutine read_gldas_data
 

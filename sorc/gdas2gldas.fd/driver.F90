@@ -47,6 +47,8 @@
 
  call write_nemsio(localpet)
 
+ call update_gldas_file(localpet)
+
  print*,"- CALL ESMF_finalize"
  call ESMF_finalize(endflag=ESMF_END_KEEPMPI, rc=ierr)
 
