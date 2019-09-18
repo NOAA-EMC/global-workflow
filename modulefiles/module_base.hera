@@ -22,4 +22,4 @@ module use -a /scratch1/NCEPDEV/global/gwv/l819/lib/modulefiles
 module load prod_util/v1.1.0
 module load g2tmpl-intel-sandybridge/1.5.0
 module load grib_util-intel-sandybridge/v1.1.1
-
+module load crtm-intel-sandybridge/2.2.6
