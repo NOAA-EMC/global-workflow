@@ -110,6 +110,8 @@ OUTPUT_GRID=${OUTPUT_GRID:-"gaussian_grid"}
 OUTPUT_FILE=${OUTPUT_FILE:-"nemsio"}
 WRITE_NEMSIOFLIP=${WRITE_NEMSIOFLIP:-".true."}
 WRITE_FSYNCFLAG=${WRITE_FSYNCFLAG:-".true."}
+affix="nemsio"
+[[ "$OUTPUT_FILE" = "netcdf" ]] && affix="nc"
 
 rCDUMP=${rCDUMP:-$CDUMP}
 
@@ -627,6 +629,9 @@ num_files:               ${NUM_FILES:-2}
 filename_base:           'atm' 'sfc'
 output_grid:             $OUTPUT_GRID
 output_file:             $OUTPUT_FILE
+ideflate:                ${ideflate:-1}
+nbits:                   ${nbits:-14}
+ishuffle:                ${ishuffle:-0}
 write_nemsioflip:        $WRITE_NEMSIOFLIP
 write_fsyncflag:         $WRITE_FSYNCFLAG
 imo:                     $LONB_IMO
@@ -670,6 +675,9 @@ num_files:               ${NUM_FILES:-2}
 filename_base:           'atm' 'sfc'
 output_grid:             $OUTPUT_GRID
 output_file:             $OUTPUT_FILE
+ideflate:                ${ideflate:-1}
+nbits:                   ${nbits:-14}
+ishuffle:                ${ishuffle:-0}
 write_nemsioflip:        $WRITE_NEMSIOFLIP
 write_fsyncflag:         $WRITE_FSYNCFLAG
 imo:                     $LONB_IMO
@@ -732,6 +740,11 @@ cat > input.nml <<EOF
   max_files_r = 100
   max_files_w = 100
   $fms_io_nml
+/
+
+&mpp_io_nml
+shuffle=${shuffle:-1}
+deflate_level=${deflate_level:-1}
 /
 
 &fms_nml
@@ -1104,12 +1117,12 @@ if [ $QUILTING = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]; then
   fhr=$FHMIN
   while [ $fhr -le $FHMAX ]; do
     FH3=$(printf %03i $fhr)
-    atmi=atmf${FH3}.$OUTPUT_FILE
-    sfci=sfcf${FH3}.$OUTPUT_FILE
+    atmi=atmf${FH3}.$affix
+    sfci=sfcf${FH3}.$affix
     logi=logf${FH3}
-    atmo=$memdir/${CDUMP}.t${cyc}z.atmf${FH3}.$OUTPUT_FILE
-    sfco=$memdir/${CDUMP}.t${cyc}z.sfcf${FH3}.$OUTPUT_FILE
-    logo=$memdir/${CDUMP}.t${cyc}z.logf${FH3}.$OUTPUT_FILE
+    atmo=$memdir/${CDUMP}.t${cyc}z.atmf${FH3}.$affix
+    sfco=$memdir/${CDUMP}.t${cyc}z.sfcf${FH3}.$affix
+    logo=$memdir/${CDUMP}.t${cyc}z.logf${FH3}.$affix
     eval $NLN $atmo $atmi
     eval $NLN $sfco $sfci
     eval $NLN $logo $logi
