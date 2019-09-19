@@ -204,6 +204,7 @@
   if (localpet == 0) then
     call read_fv3_grid_data_netcdf('stc', tile, i_input, j_input, &
                                    lsoil_input, sfcdata_3d=data_one_tile_3d)
+!   data_one_tile_3d=444.
     print*,'input soil temp for tile ',tile, maxval(data_one_tile_3d), minval(data_one_tile_3d)
   endif
 
@@ -217,6 +218,7 @@
   if (localpet == 0) then
     call read_fv3_grid_data_netcdf('slc', tile, i_input, j_input, &
                                    lsoil_input, sfcdata_3d=data_one_tile_3d)
+!   data_one_tile_3d=.777
     print*,'input soilm liq for tile ',tile, maxval(data_one_tile_3d), minval(data_one_tile_3d)
   endif
 
@@ -230,6 +232,7 @@
   if (localpet == 0) then
     call read_fv3_grid_data_netcdf('smc', tile, i_input, j_input, &
                                    lsoil_input, sfcdata_3d=soilm)
+!   soilm=.888
     print*,'input soilm tot for tile ',tile, maxval(soilm), minval(soilm)
   endif
 
