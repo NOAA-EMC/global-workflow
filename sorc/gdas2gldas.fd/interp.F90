@@ -24,6 +24,7 @@
  type(esmf_field), public           :: slope_target_grid
  type(esmf_field), public           :: tg3_target_grid
  type(esmf_field), public           :: zorl_target_grid
+ type(esmf_field), public           :: orog_target_grid
 
  integer, public  :: lsoil_target
 
@@ -50,6 +51,13 @@
  type(esmf_routehandle)              :: regrid_land
 
  lsoil_target = lsoil_input
+
+ print*,"- CALL FieldCreate FOR INTERPOLATED TARGET GRID orog."
+ orog_target_grid = ESMF_FieldCreate(target_grid, &
+                                     typekind=ESMF_TYPEKIND_R8, &
+                                     staggerloc=ESMF_STAGGERLOC_CENTER, rc=rc)
+ if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldCreate", rc)
 
  print*,"- CALL FieldCreate FOR INTERPOLATED TARGET GRID zorl."
  zorl_target_grid = ESMF_FieldCreate(target_grid, &
@@ -227,6 +235,14 @@
  print*,"- CALL Field_Regrid for snowxy."
  call ESMF_FieldRegrid(snowxy_input_grid, &
                        snowxy_target_grid, &
+                       routehandle=regrid_land, &
+                       termorderflag=ESMF_TERMORDER_SRCSEQ, rc=rc)
+ if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldRegrid", rc)
+
+ print*,"- CALL Field_Regrid for orog"
+ call ESMF_FieldRegrid(orog_input_grid, &
+                       orog_target_grid, &
                        routehandle=regrid_land, &
                        termorderflag=ESMF_TERMORDER_SRCSEQ, rc=rc)
  if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &

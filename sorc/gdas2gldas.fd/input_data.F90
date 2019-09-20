@@ -10,6 +10,8 @@
 
  character(len=200) :: data_dir_input_grid = "NULL"
  character(len=200) :: sfc_files_input_grid(6) = "NULL"
+ character(len=200) :: orog_dir_input_grid = "NULL"
+ character(len=200) :: orog_files_input_grid(6) = "NULL"
 
  integer, public :: i_input, j_input
  integer, parameter, public :: lsoil_input = 4
@@ -63,6 +65,7 @@
  type(esmf_field), public        :: slope_input_grid
  type(esmf_field), public        :: tg3_input_grid
  type(esmf_field), public        :: zorl_input_grid
+ type(esmf_field), public        :: orog_input_grid
 
 
  public :: read_input_data
@@ -425,9 +428,14 @@
     call error_handler("IN FieldCreate", rc)
 
 
+ print*,"- CALL FieldCreate FOR INPUT orog."
+ orog_input_grid = ESMF_FieldCreate(input_grid, &
+                                   typekind=ESMF_TYPEKIND_R8, &
+                                   staggerloc=ESMF_STAGGERLOC_CENTER, rc=rc)
+ if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldCreate", rc)
 
  call read_input_sfc_restart_file(localpet)
-
 
  end subroutine read_input_data
 
@@ -449,7 +457,8 @@
  real(esmf_kind_r8), allocatable :: data_one_tile_3dsnow(:,:,:)
  real(esmf_kind_r8), allocatable :: data_one_tile_3dlevels(:,:,:)
 
- namelist /config/ data_dir_input_grid, sfc_files_input_grid
+ namelist /config/ data_dir_input_grid, sfc_files_input_grid, &
+                   orog_dir_input_grid, orog_files_input_grid
 
  open(41, file="./fort.41", iostat=rc)
  if (rc /= 0) call error_handler("OPENING SETUP NAMELIST.", rc)
@@ -1073,12 +1082,25 @@
   if (localpet == 0) then
     call read_fv3_grid_data_netcdf('smc', tile, i_input, j_input, &
                                    lsoil_input, sfcdata_3d=soilm)
-!   soilm=.888
     print*,'input soilm tot for tile ',tile, maxval(soilm), minval(soilm)
   endif
 
   print*,"- CALL FieldScatter FOR INPUT GRID SOILM TOT."
   call ESMF_FieldScatter(soilm_tot_input_grid, soilm, rootpet=0, tile=tile, rc=rc)
+  if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+     call error_handler("IN FieldScatter", rc)
+
+! orog
+
+  if (localpet == 0) then
+    call read_fv3_grid_data_netcdf('orog_raw', tile, i_input, j_input, &
+                                   lsoil_input, sfcdata=data_one_tile)
+    print*,'input orog for tile ',tile, maxval(data_one_tile),  &
+                                   minval(data_one_tile)
+  endif
+
+  print*,"- CALL FieldScatter FOR INPUT GRID orog."
+  call ESMF_FieldScatter(orog_input_grid, data_one_tile, rootpet=0, tile=tile, rc=rc)
   if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
      call error_handler("IN FieldScatter", rc)
 
@@ -1143,7 +1165,11 @@
 
  INTEGER               :: ERROR, NCID, ID_VAR
 
- TILEFILE = TRIM(DATA_DIR_INPUT_GRID) // "/" // TRIM(SFC_FILES_INPUT_GRID(TILE_NUM))
+ if (index(field, "orog") > 0) then
+   TILEFILE = TRIM(OROG_DIR_INPUT_GRID) // "/" // TRIM(OROG_FILES_INPUT_GRID(TILE_NUM))
+ else
+   TILEFILE = TRIM(DATA_DIR_INPUT_GRID) // "/" // TRIM(SFC_FILES_INPUT_GRID(TILE_NUM))
+ endif
  PRINT*,'WILL READ ',TRIM(FIELD), ' FROM: ', TRIM(TILEFILE)
 
  ERROR=NF90_OPEN(TRIM(TILEFILE),NF90_NOWRITE,NCID)

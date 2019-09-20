@@ -55,6 +55,8 @@
  if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
     call error_handler("IN FieldCreate", rc)
 
+ return
+
  if (localpet == 0) then
    allocate(dummy(i_target,j_target))
    allocate(idummy(i_target,j_target))

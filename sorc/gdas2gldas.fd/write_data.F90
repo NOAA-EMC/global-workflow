@@ -190,7 +190,7 @@
 
  type(nemsio_gfile)                 :: gfileo
 
- integer, parameter :: nrecs = 22
+ integer, parameter :: nrecs = 23
  character(nemsio_charkind)         :: recname(nrecs)
  character(nemsio_charkind)         :: reclevtyp(nrecs)
 
@@ -202,7 +202,7 @@
                 'soill', 'soill', 'soill', 'soill', &
                 'soilw', 'soilw', 'soilw', 'soilw', 'veg', &
                 'land', 'snowxy', 'sotyp', 'vtype', &
-                'salbd', 'sltyp', 'tg3', 'sfcr'  /
+                'salbd', 'sltyp', 'tg3', 'sfcr', 'orog'  /
 
  data reclevtyp / 'sfc','0-10 cm down','10-40 cm down','40-100 cm down', &
                   '100-200 cm down', &
@@ -211,11 +211,11 @@
                   '0-10 cm down','10-40 cm down','40-100 cm down', &
                   '100-200 cm down', &
                   'sfc', 'sfc', 'sfc', 'sfc', 'sfc', &
-                  'sfc', 'sfc', 'sfc', 'sfc' /    ! sfcr
+                  'sfc', 'sfc', 'sfc', 'sfc', 'sfc' /   
 
  data reclev / 1,1,1,1,1,1,1,1,1,1, &
                1,1,1,1,1,1,1,1,1,1, &
-               1,1 /
+               1,1,1 /
 
  version=200809
 
@@ -417,6 +417,17 @@
    dummy_nems = reshape(dummy2d, (/i_target*j_target/) )
    call nemsio_writerec(gfileo, 22, dummy_nems, iret=iret)
    if (iret /= 0) call error_handler("writing zorl", iret)
+ endif
+
+ print*,"- CALL FieldGather FOR TARGET GRID orog"
+ call ESMF_FieldGather(orog_target_grid, dummy2d, rootPet=0, rc=error)
+ if(ESMF_logFoundError(rcToCheck=error,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldGather", error)
+
+ if (localpet == 0) then
+   dummy_nems = reshape(dummy2d, (/i_target*j_target/) )
+   call nemsio_writerec(gfileo, 23, dummy_nems, iret=iret)
+   if (iret /= 0) call error_handler("writing orog", iret)
  endif
 
  if (localpet == 0) call nemsio_close(gfileo,iret=iret)
