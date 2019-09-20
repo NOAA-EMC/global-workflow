@@ -132,7 +132,6 @@ fi
 # nbits: netcdf lossy compression level (0-32): 0 lossless
 export ideflate=1
 export nbits=14
-export ishuffle=0
 # compression for RESTART files written by FMS 
 export shuffle=1
 export deflate_level=1

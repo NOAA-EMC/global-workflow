@@ -631,7 +631,6 @@ output_grid:             $OUTPUT_GRID
 output_file:             $OUTPUT_FILE
 ideflate:                ${ideflate:-1}
 nbits:                   ${nbits:-14}
-ishuffle:                ${ishuffle:-0}
 write_nemsioflip:        $WRITE_NEMSIOFLIP
 write_fsyncflag:         $WRITE_FSYNCFLAG
 imo:                     $LONB_IMO
@@ -677,7 +676,6 @@ output_grid:             $OUTPUT_GRID
 output_file:             $OUTPUT_FILE
 ideflate:                ${ideflate:-1}
 nbits:                   ${nbits:-14}
-ishuffle:                ${ishuffle:-0}
 write_nemsioflip:        $WRITE_NEMSIOFLIP
 write_fsyncflag:         $WRITE_FSYNCFLAG
 imo:                     $LONB_IMO
