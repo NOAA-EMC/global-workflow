@@ -190,32 +190,52 @@
 
  type(nemsio_gfile)                 :: gfileo
 
- character(nemsio_charkind)         :: recname(13)
- character(nemsio_charkind)         :: reclevtyp(13)
+ integer, parameter :: nrecs = 22
+ character(nemsio_charkind)         :: recname(nrecs)
+ character(nemsio_charkind)         :: reclevtyp(nrecs)
 
- integer(nemsio_intkind)            :: reclev(13)
+ integer(nemsio_intkind)            :: reclev(nrecs)
  integer(nemsio_intkind)            :: iret, version
+ integer(nemsio_intkind)            :: idate(7)
 
- data recname / 'soilt' , 'stc1', 'stc2', 'stc3', 'stc4', &
-                 'slc1', 'slc2', 'slc3', 'slc4', &
-                 'smc1', 'smc2', 'smc3', 'smc4' /
+ data recname / 'xlaixy' , 'tmp', 'tmp', 'tmp', 'tmp', &
+                'soill', 'soill', 'soill', 'soill', &
+                'soilw', 'soilw', 'soilw', 'soilw', 'veg', &
+                'land', 'snowxy', 'sotyp', 'vtype', &
+                'salbd', 'sltyp', 'tg3', 'sfcr'  /
 
- data reclevtyp / 'sfc','sfc','sfc','sfc','sfc', &
-                  'sfc','sfc','sfc','sfc', &
-                  'sfc','sfc','sfc','sfc' /
+ data reclevtyp / 'sfc','0-10 cm down','10-40 cm down','40-100 cm down', &
+                  '100-200 cm down', &
+                  '0-10 cm down','10-40 cm down','40-100 cm down', &
+                  '100-200 cm down', &
+                  '0-10 cm down','10-40 cm down','40-100 cm down', &
+                  '100-200 cm down', &
+                  'sfc', 'sfc', 'sfc', 'sfc', 'sfc', &
+                  'sfc', 'sfc', 'sfc', 'sfc' /    ! sfcr
 
- data reclev / 1,1,1,1,1,1,1,1,1,1,1,1,1 /
+ data reclev / 1,1,1,1,1,1,1,1,1,1, &
+               1,1,1,1,1,1,1,1,1,1, &
+               1,1 /
 
  version=200809
+
+ idate(1) = 2019
+ idate(2) = 9  !mon
+ idate(3) = 19 ! day
+ idate(4) = 00 ! hour
+ idate(5) = 0
+ idate(6) = 0   ! seconds numerator
+ idate(7) = 100 ! seconds denominator
 
  if (localpet == 0) then
    call nemsio_init(iret=iret)
    print*,'- OPEN NEMSIO FILE'
    call nemsio_open(gfileo, "sfc.gaussian.nemsio", 'write',   &
                     modelname="FV3GFS", gdatatype="bin4", version=version,  &
-                    nmeta=8, nrec=13, dimx=i_target, dimy=j_target, dimz=4, &
+                    nmeta=8, nrec=nrecs, dimx=i_target, dimy=j_target, dimz=4, &
                     nframe=0, nsoil=4, ntrac=0, jcap=1534, recname=recname, &
-                    reclevtyp=reclevtyp, reclev=reclev, extrameta=.false., iret=iret)
+                    reclevtyp=reclevtyp, reclev=reclev, extrameta=.false.,  &
+                    idate=idate, iret=iret)
    if (iret /= 0) call error_handler("opening nemsio file", iret)
  endif
 
@@ -229,15 +249,15 @@
    allocate(dummy_nems(0))
  endif
 
- print*,"- CALL FieldGather FOR TARGET GRID SOIL TYPE"
- call ESMF_FieldGather(soil_type_from_input_grid, dummy2d, rootPet=0, rc=error)
+ print*,"- CALL FieldGather FOR TARGET GRID xlai"
+ call ESMF_FieldGather(xlaixy_target_grid, dummy2d, rootPet=0, rc=error)
  if(ESMF_logFoundError(rcToCheck=error,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
     call error_handler("IN FieldGather", error)
 
  if (localpet == 0) then
    dummy_nems = reshape(dummy2d, (/i_target*j_target/) )
    call nemsio_writerec(gfileo,  1, dummy_nems, iret=iret)
-   if (iret /= 0) call error_handler("writing soil type", iret)
+   if (iret /= 0) call error_handler("writing xlai", iret)
  endif
  
  print*,"- CALL FieldGather FOR TARGET GRID SOIL TEMP"
@@ -298,6 +318,105 @@
    dummy_nems = reshape(dummy3d(:,:,4), (/i_target*j_target/) )
    call nemsio_writerec(gfileo,  13, dummy_nems, iret=iret)
    if (iret /= 0) call error_handler("writing soil tot 4", iret)
+ endif
+
+ print*,"- CALL FieldGather FOR TARGET GRID GREENNESS"
+ call ESMF_FieldGather(veg_greenness_target_grid, dummy2d, rootPet=0, rc=error)
+ if(ESMF_logFoundError(rcToCheck=error,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldGather", error)
+
+ if (localpet == 0) then
+   dummy_nems = reshape(dummy2d, (/i_target*j_target/) )
+   call nemsio_writerec(gfileo, 14, dummy_nems, iret=iret)
+   if (iret /= 0) call error_handler("writing greenness", iret)
+ endif
+
+ print*,"- CALL FieldGather FOR TARGET GRID MASK"
+ call ESMF_FieldGather(landsea_mask_target_grid, dummy2d, rootPet=0, rc=error)
+ if(ESMF_logFoundError(rcToCheck=error,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldGather", error)
+
+ if (localpet == 0) then
+   dummy_nems = reshape(dummy2d, (/i_target*j_target/) )
+   call nemsio_writerec(gfileo, 15, dummy_nems, iret=iret)
+   if (iret /= 0) call error_handler("writing mask", iret)
+ endif
+
+ print*,"- CALL FieldGather FOR TARGET GRID snowxy"
+ call ESMF_FieldGather(snowxy_target_grid, dummy2d, rootPet=0, rc=error)
+ if(ESMF_logFoundError(rcToCheck=error,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldGather", error)
+
+ if (localpet == 0) then
+   dummy_nems = reshape(dummy2d, (/i_target*j_target/) )
+   call nemsio_writerec(gfileo, 16, dummy_nems, iret=iret)
+   if (iret /= 0) call error_handler("writing snowxy", iret)
+ endif
+
+ print*,"- CALL FieldGather FOR TARGET GRID soil type"
+ call ESMF_FieldGather(soil_type_from_input_grid, dummy2d, rootPet=0, rc=error)
+ if(ESMF_logFoundError(rcToCheck=error,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldGather", error)
+
+ if (localpet == 0) then
+   dummy_nems = reshape(dummy2d, (/i_target*j_target/) )
+   call nemsio_writerec(gfileo, 17, dummy_nems, iret=iret)
+   if (iret /= 0) call error_handler("writing sotyp", iret)
+ endif
+
+ print*,"- CALL FieldGather FOR TARGET GRID vtype"
+ call ESMF_FieldGather(vtype_target_grid, dummy2d, rootPet=0, rc=error)
+ if(ESMF_logFoundError(rcToCheck=error,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldGather", error)
+
+ if (localpet == 0) then
+   dummy_nems = reshape(dummy2d, (/i_target*j_target/) )
+   call nemsio_writerec(gfileo, 18, dummy_nems, iret=iret)
+   if (iret /= 0) call error_handler("writing vtype", iret)
+ endif
+
+ print*,"- CALL FieldGather FOR TARGET GRID snoalb"
+ call ESMF_FieldGather(snoalb_target_grid, dummy2d, rootPet=0, rc=error)
+ if(ESMF_logFoundError(rcToCheck=error,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldGather", error)
+
+ if (localpet == 0) then
+   dummy_nems = reshape(dummy2d, (/i_target*j_target/) )
+   call nemsio_writerec(gfileo, 19, dummy_nems, iret=iret)
+   if (iret /= 0) call error_handler("writing snoalb", iret)
+ endif
+
+ print*,"- CALL FieldGather FOR TARGET GRID slope"
+ call ESMF_FieldGather(slope_target_grid, dummy2d, rootPet=0, rc=error)
+ if(ESMF_logFoundError(rcToCheck=error,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldGather", error)
+
+ if (localpet == 0) then
+   dummy_nems = reshape(dummy2d, (/i_target*j_target/) )
+   call nemsio_writerec(gfileo, 20, dummy_nems, iret=iret)
+   if (iret /= 0) call error_handler("writing slope", iret)
+ endif
+
+ print*,"- CALL FieldGather FOR TARGET GRID tg3"
+ call ESMF_FieldGather(tg3_target_grid, dummy2d, rootPet=0, rc=error)
+ if(ESMF_logFoundError(rcToCheck=error,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldGather", error)
+
+ if (localpet == 0) then
+   dummy_nems = reshape(dummy2d, (/i_target*j_target/) )
+   call nemsio_writerec(gfileo, 21, dummy_nems, iret=iret)
+   if (iret /= 0) call error_handler("writing tg3", iret)
+ endif
+
+ print*,"- CALL FieldGather FOR TARGET GRID zorl"
+ call ESMF_FieldGather(zorl_target_grid, dummy2d, rootPet=0, rc=error)
+ if(ESMF_logFoundError(rcToCheck=error,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldGather", error)
+
+ if (localpet == 0) then
+   dummy_nems = reshape(dummy2d, (/i_target*j_target/) )
+   call nemsio_writerec(gfileo, 22, dummy_nems, iret=iret)
+   if (iret /= 0) call error_handler("writing zorl", iret)
  endif
 
  if (localpet == 0) call nemsio_close(gfileo,iret=iret)

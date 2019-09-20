@@ -11,6 +11,8 @@
  type(esmf_field), public        :: io_mask_target_grid
                             ! this is the full mask used by gldas
 
+ type(esmf_field), public        :: soil_type_target_grid
+
  public :: read_gldas_data
 
  contains
@@ -46,6 +48,13 @@
  if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
     call error_handler("IN FieldCreate", rc)
 
+ print*,"- CALL FieldCreate FOR TARGET GRID SOIL TYPE."
+ soil_type_target_grid = ESMF_FieldCreate(target_grid, &
+                                     typekind=ESMF_TYPEKIND_I4, &
+                                     staggerloc=ESMF_STAGGERLOC_CENTER, rc=rc)
+ if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldCreate", rc)
+
  if (localpet == 0) then
    allocate(dummy(i_target,j_target))
    allocate(idummy(i_target,j_target))
@@ -56,6 +65,22 @@
    allocate(mask(0,0))
  endif
 
+ if (localpet == 0) then
+   gldas_mask_file="/gpfs/dell2/emc/retros/noscrub/Youlong.Xia/gldas.v2.3.0/fix/FIX_T1534/stype_gfs_T1534.bfsa"
+   OPEN(52,FILE=trim(gldas_mask_file),FORM='unformatted',iostat=istat)
+   if (istat /= 0) call error_handler("opening gldas soil type file", istat)
+   read(52) dummy  ! latitudes
+   read(52) dummy  ! longitudes
+   read(52) dummy  ! soil type
+   close(52)
+   print*,'gldas soil type ',maxval(dummy),minval(dummy)
+   idummy=nint(dummy)
+ endif
+
+ print*,"- CALL FieldScatter FOR TARGET SOIL TYPE."
+ call ESMF_FieldScatter(soil_type_target_grid, idummy, rootpet=0, rc=rc)  
+ if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__))  &   
+    call error_handler("IN FieldScatter", rc)
 
  if (localpet == 0) then
    gldas_mask_file="/gpfs/dell2/emc/retros/noscrub/Youlong.Xia/gldas.v2.3.0/fix/FIX_T1534/lmask_gfs_T1534.bfsa"
@@ -118,12 +143,12 @@
      if(nint(dummy(i,j)) == 0) then
        mask(i,j) = 0.   ! dont process water
      endif
-     if(nint(snowxy(i,j)) < 0) then
-       mask(i,j) = 0.   ! dont process where snow
-     endif
-     if(smc(i,j) > 0.9) then
-       mask(i,j) = 0.0  ! dont process where glacial ice
-     endif
+!    if(nint(snowxy(i,j)) < 0) then
+!      mask(i,j) = 0.   ! dont process where snow
+!    endif
+!    if(smc(i,j) > 0.9) then
+!      mask(i,j) = 0.0  ! dont process where glacial ice
+!    endif
    enddo
    enddo
 !  print*,'what is mask ',maxval(mask),minval(mask)
@@ -135,10 +160,11 @@
    deallocate(dummy1d,snowxy,smc)
  endif
 
- print*,"- CALL FieldScatter FOR TARGET LANDSEA MASK."
- call ESMF_FieldScatter(landsea_mask_target_grid, mask, rootpet=0, rc=rc)  
- if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__))  &   
-    call error_handler("IN FieldScatter", rc)
+! this will now be interpolated from the tiles
+!print*,"- CALL FieldScatter FOR TARGET LANDSEA MASK."
+!call ESMF_FieldScatter(landsea_mask_target_grid, mask, rootpet=0, rc=rc)  
+!if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__))  &   
+!   call error_handler("IN FieldScatter", rc)
 
  deallocate (mask, dummy, idummy)
 

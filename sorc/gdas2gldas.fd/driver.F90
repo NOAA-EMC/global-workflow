@@ -43,11 +43,11 @@
 
  call read_gldas_data(localpet)
 
- call interp_sfc
+ call interp_sfc(localpet)
 
  call write_nemsio(localpet)
 
- call update_gldas_file(localpet)
+!call update_gldas_file(localpet)
 
  print*,"- CALL ESMF_finalize"
  call ESMF_finalize(endflag=ESMF_END_KEEPMPI, rc=ierr)
