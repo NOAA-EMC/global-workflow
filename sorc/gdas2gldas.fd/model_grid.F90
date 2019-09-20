@@ -45,8 +45,8 @@
    decomptile(:,tile)=(/1,extra/)
  enddo
 
- mosaic_file_input_grid="/scratch4/NCEPDEV/da/save/George.Gayno/ufs_utils.git/UFS_UTILS/fix/fix_fv3_gmted2010/C768/C768_mosaic.nc"
- orog_dir_input_grid="/scratch4/NCEPDEV/da/save/George.Gayno/ufs_utils.git/UFS_UTILS/fix/fix_fv3_gmted2010/C768/"
+ mosaic_file_input_grid="/gpfs/dell2/emc/modeling/noscrub/George.Gayno/fv3gfs.git/global-workflow/fix/fix_fv3_gmted2010/C768/C768_mosaic.nc"
+ orog_dir_input_grid="/gpfs/dell2/emc/modeling/noscrub/George.Gayno/fv3gfs.git/global-workflow/fix/fix_fv3_gmted2010/C768/"
 
  print*,"- CALL GridCreateMosaic FOR INPUT GRID"
  input_grid = ESMF_GridCreateMosaic(filename=trim(mosaic_file_input_grid), &
@@ -127,7 +127,7 @@
  call splat(4, j_target, slat, wlat)
 
  do i = 1, j_target
-   latitude(:,i) = 90.0_esmf_kind_r8 - (acos(slat(i))* 180.0_esmf_kind_r8 / &
+   latitude(:,j_target-i+1) = 90.0_esmf_kind_r8 - (acos(slat(i))* 180.0_esmf_kind_r8 / &
                   (4.0_esmf_kind_r8*atan(1.0_esmf_kind_r8)))
  enddo
 
@@ -174,10 +174,10 @@
      lon_src_ptr(i,j) = longitude(i,j)
      if (lon_src_ptr(i,j) > 360.0_esmf_kind_r8) lon_src_ptr(i,j) = lon_src_ptr(i,j) - 360.0_esmf_kind_r8
      lat_src_ptr(i,j) = latitude(i,j)
+     if (i==1 .and.j==1) print*,'lat/lon point 11 ',latitude(i,j), longitude(i,j)
+     if (i==i_target .and.j==j_target) print*,'lat/lon point last point ',latitude(i,j), longitude(i,j)
    enddo
  enddo
-
- print*,'lat/lon ',maxval(lat_src_ptr),minval(lat_src_ptr),maxval(lon_src_ptr),minval(lon_src_ptr)
 
 
  print*,"- CALL GridAddCoord FOR TARGET GRID."
@@ -211,11 +211,11 @@
      lon_src_ptr(i,j) = longitude(i,1) - (0.5_esmf_kind_r8*deltalon)
      if (lon_src_ptr(i,j) > 360.0_esmf_kind_r8) lon_src_ptr(i,j) = lon_src_ptr(i,j) - 360.0_esmf_kind_r8
      if (j == 1) then
-       lat_src_ptr(i,j) = 90.0_esmf_kind_r8
+       lat_src_ptr(i,j) = -90.0_esmf_kind_r8
        cycle
      endif
      if (j == jp1_target) then
-       lat_src_ptr(i,j) = -90.0_esmf_kind_r8
+       lat_src_ptr(i,j) = 90.0_esmf_kind_r8
        cycle
      endif
      lat_src_ptr(i,j) = 0.5_esmf_kind_r8 * (latitude(i,j-1)+ latitude(i,j))
