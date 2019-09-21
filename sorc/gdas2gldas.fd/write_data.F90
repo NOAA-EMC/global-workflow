@@ -186,11 +186,12 @@
  integer :: error
 
  real(esmf_kind_r8), allocatable :: dummy2d(:,:), dummy3d(:,:,:)
+ real(esmf_kind_r8), allocatable :: dummy3dsnow(:,:,:), dummy3dlvl(:,:,:)
  real(nemsio_realkind), allocatable :: dummy_nems(:)
 
  type(nemsio_gfile)                 :: gfileo
 
- integer, parameter :: nrecs = 50
+ integer, parameter :: nrecs = 70
  character(nemsio_charkind)         :: recname(nrecs)
  character(nemsio_charkind)         :: reclevtyp(nrecs)
 
@@ -209,7 +210,12 @@
                 'wslakexy', 'zwtxy', 'waxy', 'wtxy', &
                 'lfmassxy', 'rtmassxy', 'stmassxy', 'woodxy', &
                 'stblcpxy', 'fastcpxy' , 'xsaixy', 'taussxy', &
-                'smcwtdxy', 'deeprechxy', 'rechxy'/
+                'smcwtdxy', 'deeprechxy', 'rechxy', 'snicexy1',&
+                'snicexy2', 'snicexy3', 'snliqxy1', 'snliqxy2', &
+                'snliqxy3', 'tsnoxy1', 'tsnoxy2', 'tsnoxy3', &
+                'smoiseq1', 'smoiseq2', 'smoiseq3', 'smoiseq4', &
+                'zsnsoxy1', 'zsnsoxy2', 'zsnsoxy3', 'zsnsoxy4', &
+                'zsnsoxy5', 'zsnsoxy6', 'zsnsoxy7' /
 
  data reclevtyp / 'sfc','0-10 cm down','10-40 cm down','40-100 cm down', &
                   '100-200 cm down', &
@@ -224,9 +230,15 @@
                   'sfc', 'sfc', 'sfc', 'sfc', 'sfc', &
                   'sfc', 'sfc', 'sfc', 'sfc', 'sfc', &
                   'sfc', 'sfc', 'sfc', 'sfc', 'sfc', &
+                  'sfc', 'sfc', 'sfc', 'sfc', 'sfc', &
+                  'sfc', 'sfc', 'sfc', 'sfc', 'sfc', &
+                  'sfc', 'sfc', 'sfc', 'sfc', 'sfc', & 
+                  'sfc', 'sfc', 'sfc', 'sfc', 'sfc', & 
                   'sfc', 'sfc' /   
 
  data reclev / 1,1,1,1,1,1,1,1,1,1, &
+               1,1,1,1,1,1,1,1,1,1, &
+               1,1,1,1,1,1,1,1,1,1, &
                1,1,1,1,1,1,1,1,1,1, &
                1,1,1,1,1,1,1,1,1,1, &
                1,1,1,1,1,1,1,1,1,1, &
@@ -257,10 +269,14 @@
  if (localpet == 0) then
    allocate(dummy2d(i_target,j_target))
    allocate(dummy3d(i_target,j_target,lsoil_target))
+   allocate(dummy3dsnow(i_target,j_target,lsnow_target))
+   allocate(dummy3dlvl(i_target,j_target,levels_target))
    allocate(dummy_nems(i_target*j_target))
  else
    allocate(dummy2d(0,0))
    allocate(dummy3d(0,0,0))
+   allocate(dummy3dsnow(0,0,0))
+   allocate(dummy3dlvl(0,0,0))
    allocate(dummy_nems(0))
  endif
 
@@ -742,12 +758,112 @@
    if (iret /= 0) call error_handler("writing rechxy", iret)
  endif
 
+ print*,"- CALL FieldGather FOR TARGET snicexy"
+ call ESMF_FieldGather(snicexy_target_grid, dummy3dsnow, rootPet=0, rc=error)
+ if(ESMF_logFoundError(rcToCheck=error,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldGather", error)
+
+ if (localpet == 0) then
+   dummy_nems = reshape(dummy3dsnow(:,:,1), (/i_target*j_target/) )
+   call nemsio_writerec(gfileo, 51, dummy_nems, iret=iret)
+   if (iret /= 0) call error_handler("writing snicexy 1", iret)
+   dummy_nems = reshape(dummy3dsnow(:,:,2), (/i_target*j_target/) )
+   call nemsio_writerec(gfileo, 52, dummy_nems, iret=iret)
+   if (iret /= 0) call error_handler("writing snicexy 2", iret)
+   dummy_nems = reshape(dummy3dsnow(:,:,3), (/i_target*j_target/) )
+   call nemsio_writerec(gfileo, 53, dummy_nems, iret=iret)
+   if (iret /= 0) call error_handler("writing snicexy 3", iret)
+ endif
+
+ print*,"- CALL FieldGather FOR TARGET snliqxy"
+ call ESMF_FieldGather(snliqxy_target_grid, dummy3dsnow, rootPet=0, rc=error)
+ if(ESMF_logFoundError(rcToCheck=error,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldGather", error)
+
+ if (localpet == 0) then
+   dummy_nems = reshape(dummy3dsnow(:,:,1), (/i_target*j_target/) )
+   call nemsio_writerec(gfileo, 54, dummy_nems, iret=iret)
+   if (iret /= 0) call error_handler("writing snliqxy 1", iret)
+   dummy_nems = reshape(dummy3dsnow(:,:,2), (/i_target*j_target/) )
+   call nemsio_writerec(gfileo, 55, dummy_nems, iret=iret)
+   if (iret /= 0) call error_handler("writing snliqxy 2", iret)
+   dummy_nems = reshape(dummy3dsnow(:,:,3), (/i_target*j_target/) )
+   call nemsio_writerec(gfileo, 56, dummy_nems, iret=iret)
+   if (iret /= 0) call error_handler("writing snliqxy 3", iret)
+ endif
+
+ print*,"- CALL FieldGather FOR TARGET tsnoxy"
+ call ESMF_FieldGather(tsnoxy_target_grid, dummy3dsnow, rootPet=0, rc=error)
+ if(ESMF_logFoundError(rcToCheck=error,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldGather", error)
+
+ if (localpet == 0) then
+   dummy_nems = reshape(dummy3dsnow(:,:,1), (/i_target*j_target/) )
+   call nemsio_writerec(gfileo, 57, dummy_nems, iret=iret)
+   if (iret /= 0) call error_handler("writing tsnoxy 1", iret)
+   dummy_nems = reshape(dummy3dsnow(:,:,2), (/i_target*j_target/) )
+   call nemsio_writerec(gfileo, 58, dummy_nems, iret=iret)
+   if (iret /= 0) call error_handler("writing tsnoxy 2", iret)
+   dummy_nems = reshape(dummy3dsnow(:,:,3), (/i_target*j_target/) )
+   call nemsio_writerec(gfileo, 59, dummy_nems, iret=iret)
+   if (iret /= 0) call error_handler("writing tsnoxy 3", iret)
+ endif
+
+ print*,"- CALL FieldGather FOR TARGET smoiseq"
+ call ESMF_FieldGather(smoiseq_target_grid, dummy3d, rootPet=0, rc=error)
+ if(ESMF_logFoundError(rcToCheck=error,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldGather", error)
+
+ if (localpet == 0) then
+   dummy_nems = reshape(dummy3d(:,:,1), (/i_target*j_target/) )
+   call nemsio_writerec(gfileo, 60, dummy_nems, iret=iret)
+   if (iret /= 0) call error_handler("writing smoiseq 1", iret)
+   dummy_nems = reshape(dummy3d(:,:,2), (/i_target*j_target/) )
+   call nemsio_writerec(gfileo, 61, dummy_nems, iret=iret)
+   if (iret /= 0) call error_handler("writing smoiseq 2", iret)
+   dummy_nems = reshape(dummy3d(:,:,3), (/i_target*j_target/) )
+   call nemsio_writerec(gfileo, 62, dummy_nems, iret=iret)
+   if (iret /= 0) call error_handler("writing smoiseq 3", iret)
+   dummy_nems = reshape(dummy3d(:,:,4), (/i_target*j_target/) )
+   call nemsio_writerec(gfileo, 63, dummy_nems, iret=iret)
+   if (iret /= 0) call error_handler("writing smoiseq 4", iret)
+ endif
+
+ print*,"- CALL FieldGather FOR TARGET zsnsoxy"
+ call ESMF_FieldGather(zsnsoxy_target_grid, dummy3dlvl, rootPet=0, rc=error)
+ if(ESMF_logFoundError(rcToCheck=error,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldGather", error)
+
+ if (localpet == 0) then
+   dummy_nems = reshape(dummy3dlvl(:,:,1), (/i_target*j_target/) )
+   call nemsio_writerec(gfileo, 64, dummy_nems, iret=iret)
+   if (iret /= 0) call error_handler("writing zsnsoxy 1", iret)
+   dummy_nems = reshape(dummy3dlvl(:,:,2), (/i_target*j_target/) )
+   call nemsio_writerec(gfileo, 65, dummy_nems, iret=iret)
+   if (iret /= 0) call error_handler("writing zsnsoxy 2", iret)
+   dummy_nems = reshape(dummy3dlvl(:,:,3), (/i_target*j_target/) )
+   call nemsio_writerec(gfileo, 66, dummy_nems, iret=iret)
+   if (iret /= 0) call error_handler("writing zsnsoxy 3", iret)
+   dummy_nems = reshape(dummy3dlvl(:,:,4), (/i_target*j_target/) )
+   call nemsio_writerec(gfileo, 67, dummy_nems, iret=iret)
+   if (iret /= 0) call error_handler("writing zsnsoxy 4", iret)
+   dummy_nems = reshape(dummy3dlvl(:,:,5), (/i_target*j_target/) )
+   call nemsio_writerec(gfileo, 68, dummy_nems, iret=iret)
+   if (iret /= 0) call error_handler("writing zsnsoxy 5", iret)
+   dummy_nems = reshape(dummy3dlvl(:,:,6), (/i_target*j_target/) )
+   call nemsio_writerec(gfileo, 69, dummy_nems, iret=iret)
+   if (iret /= 0) call error_handler("writing zsnsoxy 6", iret)
+   dummy_nems = reshape(dummy3dlvl(:,:,7), (/i_target*j_target/) )
+   call nemsio_writerec(gfileo, 70, dummy_nems, iret=iret)
+   if (iret /= 0) call error_handler("writing zsnsoxy 7", iret)
+ endif
+
  if (localpet == 0) call nemsio_close(gfileo,iret=iret)
 
  call nemsio_finalize()
 
 
- deallocate(dummy2d, dummy3d, dummy_nems)
+ deallocate(dummy2d, dummy3d, dummy3dlvl, dummy3dsnow, dummy_nems)
 
  end subroutine write_nemsio
 

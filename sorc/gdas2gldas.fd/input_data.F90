@@ -923,7 +923,7 @@
 
   if (localpet == 0) then
     call read_fv3_grid_data_netcdf('tsnoxy', tile, i_input, j_input, &
-                                   lsnow_input, sfcdata=data_one_tile_3dsnow)
+                                   lsnow_input, sfcdata_3d=data_one_tile_3dsnow)
     print*,'input tsnoxy for tile ',tile, maxval(data_one_tile_3dsnow), minval(data_one_tile_3dsnow)
   endif
 
@@ -936,7 +936,7 @@
 
   if (localpet == 0) then
     call read_fv3_grid_data_netcdf('snliqxy', tile, i_input, j_input, &
-                                   lsnow_input, sfcdata=data_one_tile_3dsnow)
+                                   lsnow_input, sfcdata_3d=data_one_tile_3dsnow)
     print*,'input snliqxy for tile ',tile, maxval(data_one_tile_3dsnow), minval(data_one_tile_3dsnow)
   endif
 
@@ -949,8 +949,10 @@
 
   if (localpet == 0) then
     call read_fv3_grid_data_netcdf('snicexy', tile, i_input, j_input, &
-                                   lsnow_input, sfcdata=data_one_tile_3dsnow)
-    print*,'input snicexy for tile ',tile, maxval(data_one_tile_3dsnow), minval(data_one_tile_3dsnow)
+                                   lsnow_input, sfcdata_3d=data_one_tile_3dsnow)
+    print*,'input snicexy1 for tile ',tile, maxval(data_one_tile_3dsnow(:,:,1)), minval(data_one_tile_3dsnow(:,:,1))
+    print*,'input snicexy2 for tile ',tile, maxval(data_one_tile_3dsnow(:,:,2)), minval(data_one_tile_3dsnow(:,:,2))
+    print*,'input snicexy3 for tile ',tile, maxval(data_one_tile_3dsnow(:,:,3)), minval(data_one_tile_3dsnow(:,:,3))
   endif
 
   print*,"- CALL FieldScatter FOR INPUT snicexy."
