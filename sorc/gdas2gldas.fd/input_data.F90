@@ -66,6 +66,27 @@
  type(esmf_field), public        :: tg3_input_grid
  type(esmf_field), public        :: zorl_input_grid
  type(esmf_field), public        :: orog_input_grid
+! noah fields
+ type(esmf_field), public        :: tsea_input_grid
+ type(esmf_field), public        :: sheleg_input_grid
+ type(esmf_field), public        :: alvsf_input_grid
+ type(esmf_field), public        :: alvwf_input_grid
+ type(esmf_field), public        :: alnsf_input_grid
+ type(esmf_field), public        :: alnwf_input_grid
+ type(esmf_field), public        :: facsf_input_grid
+ type(esmf_field), public        :: facwf_input_grid
+ type(esmf_field), public        :: canopy_input_grid
+ type(esmf_field), public        :: f10m_input_grid
+ type(esmf_field), public        :: t2m_input_grid
+ type(esmf_field), public        :: q2m_input_grid
+ type(esmf_field), public        :: uustar_input_grid
+ type(esmf_field), public        :: ffmm_input_grid
+ type(esmf_field), public        :: ffhh_input_grid
+ type(esmf_field), public        :: tprcp_input_grid
+ type(esmf_field), public        :: srflag_input_grid
+ type(esmf_field), public        :: snwdph_input_grid
+ type(esmf_field), public        :: shdmin_input_grid
+ type(esmf_field), public        :: shdmax_input_grid
 
 
  public :: read_input_data
@@ -430,6 +451,148 @@
 
  print*,"- CALL FieldCreate FOR INPUT orog."
  orog_input_grid = ESMF_FieldCreate(input_grid, &
+                                   typekind=ESMF_TYPEKIND_R8, &
+                                   staggerloc=ESMF_STAGGERLOC_CENTER, rc=rc)
+ if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldCreate", rc)
+
+! noah fields
+
+ print*,"- CALL FieldCreate FOR INPUT tsea."
+ tsea_input_grid = ESMF_FieldCreate(input_grid, &
+                                   typekind=ESMF_TYPEKIND_R8, &
+                                   staggerloc=ESMF_STAGGERLOC_CENTER, rc=rc)
+ if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldCreate", rc)
+
+ print*,"- CALL FieldCreate FOR INPUT sheleg."
+ sheleg_input_grid = ESMF_FieldCreate(input_grid, &
+                                   typekind=ESMF_TYPEKIND_R8, &
+                                   staggerloc=ESMF_STAGGERLOC_CENTER, rc=rc)
+ if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldCreate", rc)
+
+ print*,"- CALL FieldCreate FOR INPUT alvsf."
+ alvsf_input_grid = ESMF_FieldCreate(input_grid, &
+                                   typekind=ESMF_TYPEKIND_R8, &
+                                   staggerloc=ESMF_STAGGERLOC_CENTER, rc=rc)
+ if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldCreate", rc)
+
+ print*,"- CALL FieldCreate FOR INPUT alvwf."
+ alvwf_input_grid = ESMF_FieldCreate(input_grid, &
+                                   typekind=ESMF_TYPEKIND_R8, &
+                                   staggerloc=ESMF_STAGGERLOC_CENTER, rc=rc)
+ if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldCreate", rc)
+
+ print*,"- CALL FieldCreate FOR INPUT alnsf."
+ alnsf_input_grid = ESMF_FieldCreate(input_grid, &
+                                   typekind=ESMF_TYPEKIND_R8, &
+                                   staggerloc=ESMF_STAGGERLOC_CENTER, rc=rc)
+ if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldCreate", rc)
+
+ print*,"- CALL FieldCreate FOR INPUT alnwf."
+ alnwf_input_grid = ESMF_FieldCreate(input_grid, &
+                                   typekind=ESMF_TYPEKIND_R8, &
+                                   staggerloc=ESMF_STAGGERLOC_CENTER, rc=rc)
+ if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldCreate", rc)
+
+ print*,"- CALL FieldCreate FOR INPUT facsf."
+ facsf_input_grid = ESMF_FieldCreate(input_grid, &
+                                   typekind=ESMF_TYPEKIND_R8, &
+                                   staggerloc=ESMF_STAGGERLOC_CENTER, rc=rc)
+ if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldCreate", rc)
+
+ print*,"- CALL FieldCreate FOR INPUT facwf."
+ facwf_input_grid = ESMF_FieldCreate(input_grid, &
+                                   typekind=ESMF_TYPEKIND_R8, &
+                                   staggerloc=ESMF_STAGGERLOC_CENTER, rc=rc)
+ if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldCreate", rc)
+
+ print*,"- CALL FieldCreate FOR INPUT canopy."
+ canopy_input_grid = ESMF_FieldCreate(input_grid, &
+                                   typekind=ESMF_TYPEKIND_R8, &
+                                   staggerloc=ESMF_STAGGERLOC_CENTER, rc=rc)
+ if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldCreate", rc)
+
+ print*,"- CALL FieldCreate FOR INPUT f10m."
+ f10m_input_grid = ESMF_FieldCreate(input_grid, &
+                                   typekind=ESMF_TYPEKIND_R8, &
+                                   staggerloc=ESMF_STAGGERLOC_CENTER, rc=rc)
+ if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldCreate", rc)
+
+ print*,"- CALL FieldCreate FOR INPUT t2m."
+ t2m_input_grid = ESMF_FieldCreate(input_grid, &
+                                   typekind=ESMF_TYPEKIND_R8, &
+                                   staggerloc=ESMF_STAGGERLOC_CENTER, rc=rc)
+ if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldCreate", rc)
+
+ print*,"- CALL FieldCreate FOR INPUT q2m."
+ q2m_input_grid = ESMF_FieldCreate(input_grid, &
+                                   typekind=ESMF_TYPEKIND_R8, &
+                                   staggerloc=ESMF_STAGGERLOC_CENTER, rc=rc)
+ if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldCreate", rc)
+
+ print*,"- CALL FieldCreate FOR INPUT uustar."
+ uustar_input_grid = ESMF_FieldCreate(input_grid, &
+                                   typekind=ESMF_TYPEKIND_R8, &
+                                   staggerloc=ESMF_STAGGERLOC_CENTER, rc=rc)
+ if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldCreate", rc)
+
+ print*,"- CALL FieldCreate FOR INPUT ffmm."
+ ffmm_input_grid = ESMF_FieldCreate(input_grid, &
+                                   typekind=ESMF_TYPEKIND_R8, &
+                                   staggerloc=ESMF_STAGGERLOC_CENTER, rc=rc)
+ if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldCreate", rc)
+
+ print*,"- CALL FieldCreate FOR INPUT ffhh."
+ ffhh_input_grid = ESMF_FieldCreate(input_grid, &
+                                   typekind=ESMF_TYPEKIND_R8, &
+                                   staggerloc=ESMF_STAGGERLOC_CENTER, rc=rc)
+ if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldCreate", rc)
+
+ print*,"- CALL FieldCreate FOR INPUT tprcp."
+ tprcp_input_grid = ESMF_FieldCreate(input_grid, &
+                                   typekind=ESMF_TYPEKIND_R8, &
+                                   staggerloc=ESMF_STAGGERLOC_CENTER, rc=rc)
+ if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldCreate", rc)
+
+ print*,"- CALL FieldCreate FOR INPUT srflag."
+ srflag_input_grid = ESMF_FieldCreate(input_grid, &
+                                   typekind=ESMF_TYPEKIND_R8, &
+                                   staggerloc=ESMF_STAGGERLOC_CENTER, rc=rc)
+ if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldCreate", rc)
+
+ print*,"- CALL FieldCreate FOR INPUT snwdph."
+ snwdph_input_grid = ESMF_FieldCreate(input_grid, &
+                                   typekind=ESMF_TYPEKIND_R8, &
+                                   staggerloc=ESMF_STAGGERLOC_CENTER, rc=rc)
+ if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldCreate", rc)
+
+ print*,"- CALL FieldCreate FOR INPUT shdmin."
+ shdmin_input_grid = ESMF_FieldCreate(input_grid, &
+                                   typekind=ESMF_TYPEKIND_R8, &
+                                   staggerloc=ESMF_STAGGERLOC_CENTER, rc=rc)
+ if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldCreate", rc)
+
+ print*,"- CALL FieldCreate FOR INPUT shdmax."
+ shdmax_input_grid = ESMF_FieldCreate(input_grid, &
                                    typekind=ESMF_TYPEKIND_R8, &
                                    staggerloc=ESMF_STAGGERLOC_CENTER, rc=rc)
  if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
@@ -1140,6 +1303,246 @@
 
   print*,"- CALL FieldScatter FOR INPUT LANDSEA MASK."
   call ESMF_FieldScatter(landsea_mask_input_grid, data_one_tile, rootpet=0, tile=tile, rc=rc)
+  if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+     call error_handler("IN FieldScatter", rc)
+
+  if (localpet == 0) then
+    call read_fv3_grid_data_netcdf('tsea', tile, i_input, j_input, &
+                                   lsoil_input, sfcdata=data_one_tile)
+    print*,'input tsea for tile ',tile, maxval(data_one_tile),  &
+                                   minval(data_one_tile)
+  endif
+
+  print*,"- CALL FieldScatter FOR INPUT GRID tsea."
+  call ESMF_FieldScatter(tsea_input_grid, data_one_tile, rootpet=0, tile=tile, rc=rc)
+  if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+     call error_handler("IN FieldScatter", rc)
+
+  if (localpet == 0) then
+    call read_fv3_grid_data_netcdf('sheleg', tile, i_input, j_input, &
+                                   lsoil_input, sfcdata=data_one_tile)
+    print*,'input sheleg for tile ',tile, maxval(data_one_tile),  &
+                                   minval(data_one_tile)
+  endif
+
+  print*,"- CALL FieldScatter FOR INPUT GRID sheleg."
+  call ESMF_FieldScatter(sheleg_input_grid, data_one_tile, rootpet=0, tile=tile, rc=rc)
+  if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+     call error_handler("IN FieldScatter", rc)
+
+  if (localpet == 0) then
+    call read_fv3_grid_data_netcdf('alvsf', tile, i_input, j_input, &
+                                   lsoil_input, sfcdata=data_one_tile)
+    print*,'input alvsf for tile ',tile, maxval(data_one_tile),  &
+                                   minval(data_one_tile)
+  endif
+
+  print*,"- CALL FieldScatter FOR INPUT GRID alvsf."
+  call ESMF_FieldScatter(alvsf_input_grid, data_one_tile, rootpet=0, tile=tile, rc=rc)
+  if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+     call error_handler("IN FieldScatter", rc)
+
+  if (localpet == 0) then
+    call read_fv3_grid_data_netcdf('alvwf', tile, i_input, j_input, &
+                                   lsoil_input, sfcdata=data_one_tile)
+    print*,'input alvwf for tile ',tile, maxval(data_one_tile),  &
+                                   minval(data_one_tile)
+  endif
+
+  print*,"- CALL FieldScatter FOR INPUT GRID alvwf."
+  call ESMF_FieldScatter(alvwf_input_grid, data_one_tile, rootpet=0, tile=tile, rc=rc)
+  if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+     call error_handler("IN FieldScatter", rc)
+
+  if (localpet == 0) then
+    call read_fv3_grid_data_netcdf('alnsf', tile, i_input, j_input, &
+                                   lsoil_input, sfcdata=data_one_tile)
+    print*,'input alnsf for tile ',tile, maxval(data_one_tile),  &
+                                   minval(data_one_tile)
+  endif
+
+  print*,"- CALL FieldScatter FOR INPUT GRID alnsf."
+  call ESMF_FieldScatter(alnsf_input_grid, data_one_tile, rootpet=0, tile=tile, rc=rc)
+  if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+     call error_handler("IN FieldScatter", rc)
+
+  if (localpet == 0) then
+    call read_fv3_grid_data_netcdf('alnwf', tile, i_input, j_input, &
+                                   lsoil_input, sfcdata=data_one_tile)
+    print*,'input alnwf for tile ',tile, maxval(data_one_tile),  &
+                                   minval(data_one_tile)
+  endif
+
+  print*,"- CALL FieldScatter FOR INPUT GRID alnwf."
+  call ESMF_FieldScatter(alnwf_input_grid, data_one_tile, rootpet=0, tile=tile, rc=rc)
+  if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+     call error_handler("IN FieldScatter", rc)
+
+  if (localpet == 0) then
+    call read_fv3_grid_data_netcdf('facsf', tile, i_input, j_input, &
+                                   lsoil_input, sfcdata=data_one_tile)
+    print*,'input facsf for tile ',tile, maxval(data_one_tile),  &
+                                   minval(data_one_tile)
+  endif
+
+  print*,"- CALL FieldScatter FOR INPUT GRID facsf."
+  call ESMF_FieldScatter(facsf_input_grid, data_one_tile, rootpet=0, tile=tile, rc=rc)
+  if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+     call error_handler("IN FieldScatter", rc)
+
+  if (localpet == 0) then
+    call read_fv3_grid_data_netcdf('facwf', tile, i_input, j_input, &
+                                   lsoil_input, sfcdata=data_one_tile)
+    print*,'input facwf for tile ',tile, maxval(data_one_tile),  &
+                                   minval(data_one_tile)
+  endif
+
+  print*,"- CALL FieldScatter FOR INPUT GRID facwf."
+  call ESMF_FieldScatter(facwf_input_grid, data_one_tile, rootpet=0, tile=tile, rc=rc)
+  if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+     call error_handler("IN FieldScatter", rc)
+
+  if (localpet == 0) then
+    call read_fv3_grid_data_netcdf('canopy', tile, i_input, j_input, &
+                                   lsoil_input, sfcdata=data_one_tile)
+    print*,'input canopy for tile ',tile, maxval(data_one_tile),  &
+                                   minval(data_one_tile)
+  endif
+
+  print*,"- CALL FieldScatter FOR INPUT GRID canopy."
+  call ESMF_FieldScatter(canopy_input_grid, data_one_tile, rootpet=0, tile=tile, rc=rc)
+  if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+     call error_handler("IN FieldScatter", rc)
+
+  if (localpet == 0) then
+    call read_fv3_grid_data_netcdf('f10m', tile, i_input, j_input, &
+                                   lsoil_input, sfcdata=data_one_tile)
+    print*,'input f10m for tile ',tile, maxval(data_one_tile),  &
+                                   minval(data_one_tile)
+  endif
+
+  print*,"- CALL FieldScatter FOR INPUT GRID f10m."
+  call ESMF_FieldScatter(f10m_input_grid, data_one_tile, rootpet=0, tile=tile, rc=rc)
+  if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+     call error_handler("IN FieldScatter", rc)
+
+  if (localpet == 0) then
+    call read_fv3_grid_data_netcdf('t2m', tile, i_input, j_input, &
+                                   lsoil_input, sfcdata=data_one_tile)
+    print*,'input t2m for tile ',tile, maxval(data_one_tile),  &
+                                   minval(data_one_tile)
+  endif
+
+  print*,"- CALL FieldScatter FOR INPUT GRID t2m."
+  call ESMF_FieldScatter(t2m_input_grid, data_one_tile, rootpet=0, tile=tile, rc=rc)
+  if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+     call error_handler("IN FieldScatter", rc)
+
+  if (localpet == 0) then
+    call read_fv3_grid_data_netcdf('q2m', tile, i_input, j_input, &
+                                   lsoil_input, sfcdata=data_one_tile)
+    print*,'input q2m for tile ',tile, maxval(data_one_tile),  &
+                                   minval(data_one_tile)
+  endif
+
+  print*,"- CALL FieldScatter FOR INPUT GRID q2m."
+  call ESMF_FieldScatter(q2m_input_grid, data_one_tile, rootpet=0, tile=tile, rc=rc)
+  if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+     call error_handler("IN FieldScatter", rc)
+
+  if (localpet == 0) then
+    call read_fv3_grid_data_netcdf('uustar', tile, i_input, j_input, &
+                                   lsoil_input, sfcdata=data_one_tile)
+    print*,'input uustar for tile ',tile, maxval(data_one_tile),  &
+                                   minval(data_one_tile)
+  endif
+
+  print*,"- CALL FieldScatter FOR INPUT GRID uustar."
+  call ESMF_FieldScatter(uustar_input_grid, data_one_tile, rootpet=0, tile=tile, rc=rc)
+  if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+     call error_handler("IN FieldScatter", rc)
+
+  if (localpet == 0) then
+    call read_fv3_grid_data_netcdf('ffmm', tile, i_input, j_input, &
+                                   lsoil_input, sfcdata=data_one_tile)
+    print*,'input ffmm for tile ',tile, maxval(data_one_tile),  &
+                                   minval(data_one_tile)
+  endif
+
+  print*,"- CALL FieldScatter FOR INPUT GRID ffmm."
+  call ESMF_FieldScatter(ffmm_input_grid, data_one_tile, rootpet=0, tile=tile, rc=rc)
+  if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+     call error_handler("IN FieldScatter", rc)
+
+  if (localpet == 0) then
+    call read_fv3_grid_data_netcdf('ffhh', tile, i_input, j_input, &
+                                   lsoil_input, sfcdata=data_one_tile)
+    print*,'input ffhh for tile ',tile, maxval(data_one_tile),  &
+                                   minval(data_one_tile)
+  endif
+
+  print*,"- CALL FieldScatter FOR INPUT GRID ffhh."
+  call ESMF_FieldScatter(ffhh_input_grid, data_one_tile, rootpet=0, tile=tile, rc=rc)
+  if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+     call error_handler("IN FieldScatter", rc)
+
+  if (localpet == 0) then
+    call read_fv3_grid_data_netcdf('tprcp', tile, i_input, j_input, &
+                                   lsoil_input, sfcdata=data_one_tile)
+    print*,'input tprcp for tile ',tile, maxval(data_one_tile),  &
+                                   minval(data_one_tile)
+  endif
+
+  print*,"- CALL FieldScatter FOR INPUT GRID tprcp."
+  call ESMF_FieldScatter(tprcp_input_grid, data_one_tile, rootpet=0, tile=tile, rc=rc)
+  if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+     call error_handler("IN FieldScatter", rc)
+
+  if (localpet == 0) then
+    call read_fv3_grid_data_netcdf('srflag', tile, i_input, j_input, &
+                                   lsoil_input, sfcdata=data_one_tile)
+    print*,'input srflag for tile ',tile, maxval(data_one_tile),  &
+                                   minval(data_one_tile)
+  endif
+
+  print*,"- CALL FieldScatter FOR INPUT GRID srflag."
+  call ESMF_FieldScatter(srflag_input_grid, data_one_tile, rootpet=0, tile=tile, rc=rc)
+  if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+     call error_handler("IN FieldScatter", rc)
+
+  if (localpet == 0) then
+    call read_fv3_grid_data_netcdf('snwdph', tile, i_input, j_input, &
+                                   lsoil_input, sfcdata=data_one_tile)
+    print*,'input snwdph for tile ',tile, maxval(data_one_tile),  &
+                                   minval(data_one_tile)
+  endif
+
+  print*,"- CALL FieldScatter FOR INPUT GRID snwdph."
+  call ESMF_FieldScatter(snwdph_input_grid, data_one_tile, rootpet=0, tile=tile, rc=rc)
+  if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+     call error_handler("IN FieldScatter", rc)
+
+  if (localpet == 0) then
+    call read_fv3_grid_data_netcdf('shdmin', tile, i_input, j_input, &
+                                   lsoil_input, sfcdata=data_one_tile)
+    print*,'input shdmin for tile ',tile, maxval(data_one_tile),  &
+                                   minval(data_one_tile)
+  endif
+
+  print*,"- CALL FieldScatter FOR INPUT GRID shdmin."
+  call ESMF_FieldScatter(shdmin_input_grid, data_one_tile, rootpet=0, tile=tile, rc=rc)
+  if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+     call error_handler("IN FieldScatter", rc)
+
+  if (localpet == 0) then
+    call read_fv3_grid_data_netcdf('shdmax', tile, i_input, j_input, &
+                                   lsoil_input, sfcdata=data_one_tile)
+    print*,'input shdmax for tile ',tile, maxval(data_one_tile),  &
+                                   minval(data_one_tile)
+  endif
+
+  print*,"- CALL FieldScatter FOR INPUT GRID shdmax."
+  call ESMF_FieldScatter(shdmax_input_grid, data_one_tile, rootpet=0, tile=tile, rc=rc)
   if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
      call error_handler("IN FieldScatter", rc)
 
