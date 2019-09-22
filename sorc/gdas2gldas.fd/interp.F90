@@ -99,8 +99,8 @@
  integer(esmf_kind_i4), pointer     :: mask_target_ptr(:,:)
  integer(esmf_kind_i4), pointer      :: unmapped_ptr(:)
 
- real(esmf_kind_r8), pointer         :: gldas_target_ptr(:,:)
- real(esmf_kind_r8), pointer         :: gdas_input_ptr(:,:)
+!real(esmf_kind_r8), pointer         :: gldas_target_ptr(:,:)
+!real(esmf_kind_r8), pointer         :: gdas_input_ptr(:,:)
 
  type(esmf_regridmethod_flag)        :: method
  type(esmf_routehandle)              :: regrid_land

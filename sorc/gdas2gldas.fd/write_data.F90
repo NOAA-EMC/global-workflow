@@ -25,7 +25,7 @@
  integer             :: i, j, count_land, nn
 
  integer(esmf_kind_i4), allocatable :: io_mask(:,:)
- integer(esmf_kind_i4), allocatable :: landsea_mask1d(:)
+!integer(esmf_kind_i4), allocatable :: landsea_mask1d(:)
 
  real(kind=4), allocatable :: dummy(:)
  real(esmf_kind_r8), allocatable :: landsea_mask(:,:)
@@ -191,7 +191,7 @@
 
  type(nemsio_gfile)                 :: gfileo
 
- integer, parameter :: nrecs = 70
+ integer, parameter :: nrecs = 90
  character(nemsio_charkind)         :: recname(nrecs)
  character(nemsio_charkind)         :: reclevtyp(nrecs)
 
@@ -215,7 +215,11 @@
                 'snliqxy3', 'tsnoxy1', 'tsnoxy2', 'tsnoxy3', &
                 'smoiseq1', 'smoiseq2', 'smoiseq3', 'smoiseq4', &
                 'zsnsoxy1', 'zsnsoxy2', 'zsnsoxy3', 'zsnsoxy4', &
-                'zsnsoxy5', 'zsnsoxy6', 'zsnsoxy7' /
+                'zsnsoxy5', 'zsnsoxy6', 'zsnsoxy7', 'tmp', &
+                'weasd', 'alvsf', 'alvwf', 'alnsf', 'alnwf', &
+                'facsf', 'facwf', 'cnwat', 'f10m' , 'tmp', &
+                'spfh', 'fricv', 'ffmm', 'ffhh', 'tprcp', &
+                'crain', 'snod', 'shdmax', 'shdmin' /
 
  data reclevtyp / 'sfc','0-10 cm down','10-40 cm down','40-100 cm down', &
                   '100-200 cm down', &
@@ -234,9 +238,16 @@
                   'sfc', 'sfc', 'sfc', 'sfc', 'sfc', &
                   'sfc', 'sfc', 'sfc', 'sfc', 'sfc', & 
                   'sfc', 'sfc', 'sfc', 'sfc', 'sfc', & 
-                  'sfc', 'sfc' /   
+                  'sfc', 'sfc', &       ! noah below here
+                  'sfc', 'sfc', 'sfc', 'sfc', 'sfc', &
+                  'sfc', 'sfc', 'sfc', 'sfc', 'sfc', &
+                  '2 m above gnd', '2 m above gnd', &
+                  'sfc', 'sfc', 'sfc', 'sfc', 'sfc', &
+                  'sfc', 'sfc', 'sfc' /   
 
  data reclev / 1,1,1,1,1,1,1,1,1,1, &
+               1,1,1,1,1,1,1,1,1,1, &
+               1,1,1,1,1,1,1,1,1,1, &
                1,1,1,1,1,1,1,1,1,1, &
                1,1,1,1,1,1,1,1,1,1, &
                1,1,1,1,1,1,1,1,1,1, &
@@ -856,6 +867,226 @@
    dummy_nems = reshape(dummy3dlvl(:,:,7), (/i_target*j_target/) )
    call nemsio_writerec(gfileo, 70, dummy_nems, iret=iret)
    if (iret /= 0) call error_handler("writing zsnsoxy 7", iret)
+ endif
+
+ print*,"- CALL FieldGather FOR TARGET GRID tsea"
+ call ESMF_FieldGather(tsea_target_grid, dummy2d, rootPet=0, rc=error)
+ if(ESMF_logFoundError(rcToCheck=error,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldGather", error)
+
+ if (localpet == 0) then
+   dummy_nems = reshape(dummy2d, (/i_target*j_target/) )
+   call nemsio_writerec(gfileo, 71, dummy_nems, iret=iret)
+   if (iret /= 0) call error_handler("writing tsea", iret)
+ endif
+
+ print*,"- CALL FieldGather FOR TARGET GRID sheleg"
+ call ESMF_FieldGather(sheleg_target_grid, dummy2d, rootPet=0, rc=error)
+ if(ESMF_logFoundError(rcToCheck=error,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldGather", error)
+
+ if (localpet == 0) then
+   dummy_nems = reshape(dummy2d, (/i_target*j_target/) )
+   call nemsio_writerec(gfileo, 72, dummy_nems, iret=iret)
+   if (iret /= 0) call error_handler("writing sheleg", iret)
+ endif
+
+ print*,"- CALL FieldGather FOR TARGET GRID alvsf"
+ call ESMF_FieldGather(alvsf_target_grid, dummy2d, rootPet=0, rc=error)
+ if(ESMF_logFoundError(rcToCheck=error,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldGather", error)
+
+ if (localpet == 0) then
+   dummy_nems = reshape(dummy2d, (/i_target*j_target/) )
+   call nemsio_writerec(gfileo, 73, dummy_nems, iret=iret)
+   if (iret /= 0) call error_handler("writing alvsf", iret)
+ endif
+
+ print*,"- CALL FieldGather FOR TARGET GRID alvwf"
+ call ESMF_FieldGather(alvwf_target_grid, dummy2d, rootPet=0, rc=error)
+ if(ESMF_logFoundError(rcToCheck=error,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldGather", error)
+
+ if (localpet == 0) then
+   dummy_nems = reshape(dummy2d, (/i_target*j_target/) )
+   call nemsio_writerec(gfileo, 74, dummy_nems, iret=iret)
+   if (iret /= 0) call error_handler("writing alvwf", iret)
+ endif
+
+ print*,"- CALL FieldGather FOR TARGET GRID alnsf"
+ call ESMF_FieldGather(alnsf_target_grid, dummy2d, rootPet=0, rc=error)
+ if(ESMF_logFoundError(rcToCheck=error,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldGather", error)
+
+ if (localpet == 0) then
+   dummy_nems = reshape(dummy2d, (/i_target*j_target/) )
+   call nemsio_writerec(gfileo, 75, dummy_nems, iret=iret)
+   if (iret /= 0) call error_handler("writing alnsf", iret)
+ endif
+
+ print*,"- CALL FieldGather FOR TARGET GRID alnwf"
+ call ESMF_FieldGather(alnwf_target_grid, dummy2d, rootPet=0, rc=error)
+ if(ESMF_logFoundError(rcToCheck=error,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldGather", error)
+
+ if (localpet == 0) then
+   dummy_nems = reshape(dummy2d, (/i_target*j_target/) )
+   call nemsio_writerec(gfileo, 76, dummy_nems, iret=iret)
+   if (iret /= 0) call error_handler("writing alnwf", iret)
+ endif
+
+ print*,"- CALL FieldGather FOR TARGET GRID facsf"
+ call ESMF_FieldGather(facsf_target_grid, dummy2d, rootPet=0, rc=error)
+ if(ESMF_logFoundError(rcToCheck=error,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldGather", error)
+
+ if (localpet == 0) then
+   dummy_nems = reshape(dummy2d, (/i_target*j_target/) )
+   call nemsio_writerec(gfileo, 77, dummy_nems, iret=iret)
+   if (iret /= 0) call error_handler("writing facsf", iret)
+ endif
+
+ print*,"- CALL FieldGather FOR TARGET GRID facwf"
+ call ESMF_FieldGather(facwf_target_grid, dummy2d, rootPet=0, rc=error)
+ if(ESMF_logFoundError(rcToCheck=error,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldGather", error)
+
+ if (localpet == 0) then
+   dummy_nems = reshape(dummy2d, (/i_target*j_target/) )
+   call nemsio_writerec(gfileo, 78, dummy_nems, iret=iret)
+   if (iret /= 0) call error_handler("writing facwf", iret)
+ endif
+
+ print*,"- CALL FieldGather FOR TARGET GRID canopy"
+ call ESMF_FieldGather(canopy_target_grid, dummy2d, rootPet=0, rc=error)
+ if(ESMF_logFoundError(rcToCheck=error,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldGather", error)
+
+ if (localpet == 0) then
+   dummy_nems = reshape(dummy2d, (/i_target*j_target/) )
+   call nemsio_writerec(gfileo, 79, dummy_nems, iret=iret)
+   if (iret /= 0) call error_handler("writing canopy", iret)
+ endif
+
+ print*,"- CALL FieldGather FOR TARGET GRID f10m"
+ call ESMF_FieldGather(f10m_target_grid, dummy2d, rootPet=0, rc=error)
+ if(ESMF_logFoundError(rcToCheck=error,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldGather", error)
+
+ if (localpet == 0) then
+   dummy_nems = reshape(dummy2d, (/i_target*j_target/) )
+   call nemsio_writerec(gfileo, 80, dummy_nems, iret=iret)
+   if (iret /= 0) call error_handler("writing f10m", iret)
+ endif
+
+ print*,"- CALL FieldGather FOR TARGET GRID t2m"
+ call ESMF_FieldGather(t2m_target_grid, dummy2d, rootPet=0, rc=error)
+ if(ESMF_logFoundError(rcToCheck=error,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldGather", error)
+
+ if (localpet == 0) then
+   dummy_nems = reshape(dummy2d, (/i_target*j_target/) )
+   call nemsio_writerec(gfileo, 81, dummy_nems, iret=iret)
+   if (iret /= 0) call error_handler("writing t2m", iret)
+ endif
+
+ print*,"- CALL FieldGather FOR TARGET GRID q2m"
+ call ESMF_FieldGather(q2m_target_grid, dummy2d, rootPet=0, rc=error)
+ if(ESMF_logFoundError(rcToCheck=error,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldGather", error)
+
+ if (localpet == 0) then
+   dummy_nems = reshape(dummy2d, (/i_target*j_target/) )
+   call nemsio_writerec(gfileo, 82, dummy_nems, iret=iret)
+   if (iret /= 0) call error_handler("writing q2m", iret)
+ endif
+
+ print*,"- CALL FieldGather FOR TARGET GRID uustar"
+ call ESMF_FieldGather(uustar_target_grid, dummy2d, rootPet=0, rc=error)
+ if(ESMF_logFoundError(rcToCheck=error,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldGather", error)
+
+ if (localpet == 0) then
+   dummy_nems = reshape(dummy2d, (/i_target*j_target/) )
+   call nemsio_writerec(gfileo, 83, dummy_nems, iret=iret)
+   if (iret /= 0) call error_handler("writing uustar", iret)
+ endif
+
+ print*,"- CALL FieldGather FOR TARGET GRID ffmm"
+ call ESMF_FieldGather(ffmm_target_grid, dummy2d, rootPet=0, rc=error)
+ if(ESMF_logFoundError(rcToCheck=error,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldGather", error)
+
+ if (localpet == 0) then
+   dummy_nems = reshape(dummy2d, (/i_target*j_target/) )
+   call nemsio_writerec(gfileo, 84, dummy_nems, iret=iret)
+   if (iret /= 0) call error_handler("writing ffmm", iret)
+ endif
+
+ print*,"- CALL FieldGather FOR TARGET GRID ffhh"
+ call ESMF_FieldGather(ffhh_target_grid, dummy2d, rootPet=0, rc=error)
+ if(ESMF_logFoundError(rcToCheck=error,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldGather", error)
+
+ if (localpet == 0) then
+   dummy_nems = reshape(dummy2d, (/i_target*j_target/) )
+   call nemsio_writerec(gfileo, 85, dummy_nems, iret=iret)
+   if (iret /= 0) call error_handler("writing ffhh", iret)
+ endif
+
+ print*,"- CALL FieldGather FOR TARGET GRID tprcp"
+ call ESMF_FieldGather(tprcp_target_grid, dummy2d, rootPet=0, rc=error)
+ if(ESMF_logFoundError(rcToCheck=error,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldGather", error)
+
+ if (localpet == 0) then
+   dummy_nems = reshape(dummy2d, (/i_target*j_target/) )
+   call nemsio_writerec(gfileo, 86, dummy_nems, iret=iret)
+   if (iret /= 0) call error_handler("writing tprcp", iret)
+ endif
+
+ print*,"- CALL FieldGather FOR TARGET GRID srflag"
+ call ESMF_FieldGather(srflag_target_grid, dummy2d, rootPet=0, rc=error)
+ if(ESMF_logFoundError(rcToCheck=error,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldGather", error)
+
+ if (localpet == 0) then
+   dummy_nems = reshape(dummy2d, (/i_target*j_target/) )
+   call nemsio_writerec(gfileo, 87, dummy_nems, iret=iret)
+   if (iret /= 0) call error_handler("writing srflag", iret)
+ endif
+
+ print*,"- CALL FieldGather FOR TARGET GRID snwdph"
+ call ESMF_FieldGather(snwdph_target_grid, dummy2d, rootPet=0, rc=error)
+ if(ESMF_logFoundError(rcToCheck=error,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldGather", error)
+
+ if (localpet == 0) then
+   dummy_nems = reshape(dummy2d, (/i_target*j_target/) )
+   call nemsio_writerec(gfileo, 88, dummy_nems, iret=iret)
+   if (iret /= 0) call error_handler("writing snwdph", iret)
+ endif
+
+ print*,"- CALL FieldGather FOR TARGET GRID shdmax"
+ call ESMF_FieldGather(shdmax_target_grid, dummy2d, rootPet=0, rc=error)
+ if(ESMF_logFoundError(rcToCheck=error,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldGather", error)
+
+ if (localpet == 0) then
+   dummy_nems = reshape(dummy2d, (/i_target*j_target/) )
+   call nemsio_writerec(gfileo, 89, dummy_nems, iret=iret)
+   if (iret /= 0) call error_handler("writing shdmax", iret)
+ endif
+
+ print*,"- CALL FieldGather FOR TARGET GRID shdmin"
+ call ESMF_FieldGather(shdmin_target_grid, dummy2d, rootPet=0, rc=error)
+ if(ESMF_logFoundError(rcToCheck=error,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldGather", error)
+
+ if (localpet == 0) then
+   dummy_nems = reshape(dummy2d, (/i_target*j_target/) )
+   call nemsio_writerec(gfileo, 90, dummy_nems, iret=iret)
+   if (iret /= 0) call error_handler("writing shdmin", iret)
  endif
 
  if (localpet == 0) call nemsio_close(gfileo,iret=iret)
