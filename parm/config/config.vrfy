@@ -105,7 +105,7 @@ if [ "$CDUMP" = "gfs" ] ; then
             ## INPUT DATA SETTINGS
             export model_list=$PSLOT
             export model_data_dir_list=$ARCDIR/..
-            export model_fileformat_list="pgbf{lead?fmt=%H}.${CDUMP}.{init?fmt=%Y%m%d%H}"
+            export model_fileformat_list="pgbf{lead?fmt=%H}.${CDUMP}.{init?fmt=%Y%m%d%H}.grib2"
             export model_hpssdir_list=$ATARDIR/.. 
             export get_data_from_hpss="NO"
             export hpss_walltime="10"
@@ -126,7 +126,7 @@ if [ "$CDUMP" = "gfs" ] ; then
             # GRID-TO-GRID STEP 1
             export g2g1_type_list="anom pres sfc"
             export g2g1_anl_name="self_anl"
-            export g2g1_anl_fileformat_list="pgbanl.gfs.{valid?fmt=%Y%m%d%H}"
+            export g2g1_anl_fileformat_list="pgbanl.gfs.{valid?fmt=%Y%m%d%H}.grib2"
             export g2g1_grid="G002"
             # GRID-TO-OBS STEP 1
             export g2o1_type_list="upper_air conus_sfc"
@@ -141,7 +141,7 @@ if [ "$CDUMP" = "gfs" ] ; then
             export precip1_accum_length="24"
             export precip1_model_bucket_list="06"
             export precip1_model_varname_list="APCP"
-            export precip1_model_fileformat_list="pgbf{lead?fmt=%H}.gfs.{init?fmt=%Y%m%d%H}"
+            export precip1_model_fileformat_list="pgbf{lead?fmt=%H}.gfs.{init?fmt=%Y%m%d%H}.grib2"
             export precip1_grid="G211"
         fi
     fi
