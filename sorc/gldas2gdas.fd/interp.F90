@@ -21,6 +21,7 @@
  integer             :: rc, isrctermprocessing
 
  integer(esmf_kind_i4), pointer     :: lsmask_target_ptr(:,:)
+ integer(esmf_kind_i4), pointer     :: lsmask_input_ptr(:,:)
  integer(esmf_kind_i4), pointer     :: mask_target_ptr(:,:)
  integer(esmf_kind_i4), pointer     :: mask_input_ptr(:,:)
  integer(esmf_kind_i4), pointer      :: unmapped_ptr(:)
@@ -78,7 +79,12 @@
  if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
     call error_handler("IN GridGetItem", rc)
 
- mask_input_ptr = 1
+ call ESMF_FieldGet(lsmask_input_grid, farrayPtr=lsmask_input_ptr, rc=rc)
+ if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN GridGetItem", rc)
+
+!mask_input_ptr = 1
+ mask_input_ptr = lsmask_input_ptr
 
  method=ESMF_REGRIDMETHOD_NEAREST_STOD
  isrctermprocessing = 1
