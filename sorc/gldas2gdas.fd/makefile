@@ -19,7 +19,7 @@ driver.o:  write_data.o interp.o input_data.o setup.o model_grid.o driver.F90
 	$(FCOMP) $(FFLAGS) $(ESMF_F90COMPILEPATHS) -c driver.F90
 
 input_data.o:  model_grid.o input_data.F90
-	$(FCOMP) $(FFLAGS) $(ESMF_F90COMPILEPATHS) -c input_data.F90
+	$(FCOMP) $(FFLAGS) -I$(NEMSIO_INC) $(ESMF_F90COMPILEPATHS) -c input_data.F90
 
 interp.o:  model_grid.o input_data.o interp.F90
 	$(FCOMP) $(FFLAGS) $(ESMF_F90COMPILEPATHS) -c interp.F90

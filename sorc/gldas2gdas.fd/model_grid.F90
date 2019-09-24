@@ -9,6 +9,7 @@
 
  integer, public                        :: i_gldas, j_gldas
  integer, public                        :: i_gdas, j_gdas
+ integer, parameter, public             :: lsoil =4
 
  type(esmf_grid),  public               :: gldas_grid
  type(esmf_grid),  public               :: gdas_grid
@@ -131,10 +132,10 @@
  call splat(4, j_gldas, slat, wlat)
 
  do i = 1, j_gldas
-!   latitude(:,i) = 90.0_esmf_kind_r8 - (acos(slat(i))* 180.0_esmf_kind_r8 / &
-!                  (4.0_esmf_kind_r8*atan(1.0_esmf_kind_r8)))
-   latitude(:,j_gldas-i+1) = 90.0_esmf_kind_r8 - (acos(slat(i))* 180.0_esmf_kind_r8 / &
-                  (4.0_esmf_kind_r8*atan(1.0_esmf_kind_r8)))
+    latitude(:,i) = 90.0_esmf_kind_r8 - (acos(slat(i))* 180.0_esmf_kind_r8 / &
+                   (4.0_esmf_kind_r8*atan(1.0_esmf_kind_r8)))
+!  latitude(:,j_gldas-i+1) = 90.0_esmf_kind_r8 - (acos(slat(i))* 180.0_esmf_kind_r8 / &
+!                 (4.0_esmf_kind_r8*atan(1.0_esmf_kind_r8)))
  enddo
 
  deallocate(slat, wlat)
@@ -217,13 +218,13 @@
      lon_src_ptr(i,j) = longitude(i,1) - (0.5_esmf_kind_r8*deltalon)
      if (lon_src_ptr(i,j) > 360.0_esmf_kind_r8) lon_src_ptr(i,j) = lon_src_ptr(i,j) - 360.0_esmf_kind_r8
      if (j == 1) then
-       lat_src_ptr(i,j) = -90.0_esmf_kind_r8
-!      lat_src_ptr(i,j) = 90.0_esmf_kind_r8
+!      lat_src_ptr(i,j) = -90.0_esmf_kind_r8
+       lat_src_ptr(i,j) = 90.0_esmf_kind_r8
        cycle
      endif
      if (j == jp1_gldas) then
-!      lat_src_ptr(i,j) = -90.0_esmf_kind_r8
-       lat_src_ptr(i,j) =  90.0_esmf_kind_r8
+       lat_src_ptr(i,j) = -90.0_esmf_kind_r8
+!      lat_src_ptr(i,j) =  90.0_esmf_kind_r8
        cycle
      endif
      lat_src_ptr(i,j) = 0.5_esmf_kind_r8 * (latitude(i,j-1)+ latitude(i,j))
