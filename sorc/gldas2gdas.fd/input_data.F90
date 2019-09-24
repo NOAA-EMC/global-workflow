@@ -96,6 +96,7 @@
    allocate (dummy3d(i_gldas,j_gldas,lsoil))
    allocate (soilt(i_gldas,j_gldas))
    allocate (mask(i_gldas,j_gldas))
+   allocate (weasd(i_gldas,j_gldas))
    allocate(soil_temp(i_gldas,j_gldas,lsoil))
    allocate(soilm_tot(i_gldas,j_gldas,lsoil))
    allocate(soilm_liq(i_gldas,j_gldas,lsoil))
@@ -105,6 +106,7 @@
    allocate (dummy3d(0,0,0))
    allocate (soilt(0,0))
    allocate (mask(0,0))
+   allocate (weasd(0,0))
    allocate(soil_temp(0,0,0))
    allocate(soilm_tot(0,0,0))
    allocate(soilm_liq(0,0,0))
@@ -227,7 +229,7 @@
  if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
     call error_handler("IN FieldScatter", rc)
  
- deallocate (dummy, mask, soilt, dummy3d, soil_temp, soilm_liq, soilm_tot, dummy1d)
+ deallocate (weasd, dummy, mask, soilt, dummy3d, soil_temp, soilm_liq, soilm_tot, dummy1d)
 
  end subroutine read_gldas_data
 
