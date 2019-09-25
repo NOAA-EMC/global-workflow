@@ -322,17 +322,17 @@ fi
 # At this time only test gfs but this change need to be tested on gdas, enkf, and gfs
 if [ $cplwav = ".true." ]; then
 # Link WW3 files
-  $NLN $COMINWW3/${WAV_MOD_ID}.${PDY}/${cyc}/ww3_multi.${WAV_MOD_ID}${WAV_MEMBER}.${cycle}.inp $DATA/ww3_multi.inp
+  $NLN $COMINWW3/${WAV_MOD_ID}.${PDY}/${cyc}/rundata/ww3_multi.${WAV_MOD_ID}${WAV_MEMBER}.${cycle}.inp $DATA/ww3_multi.inp
         # Check for expected wave grids for this run
   array=($curID $iceID $wndID $buoy $waveGRD $sbsGRD $postGRD $interpGRD)
   grdALL=`printf "%s\n" "${array[@]}" | sort -u | tr '\n' ' '`
   for wavGRD in ${grdALL}
   do
 # Wave IC (restart) file must exist for warm start on this cycle, if not wave model starts from flat ocean
-    $NLN $COMINWW3/${WAV_MOD_ID}.${PDY}/${cyc}/${WAV_MOD_ID}${WAV_MEMBER}.restart.${wavGRD}.${PDY}${cyc} $DATA/restart.${wavGRD}
-    $NLN $COMINWW3/${WAV_MOD_ID}.${PDY}/${cyc}/${WAV_MOD_ID}.mod_def.$wavGRD $DATA/mod_def.$wavGRD
+    $NLN $COMINWW3/${WAV_MOD_ID}.${PDY}/${cyc}/restart/${WAV_MOD_ID}${WAV_MEMBER}.restart.${wavGRD}.${PDY}${cyc} $DATA/restart.${wavGRD}
+    $NLN $COMINWW3/${WAV_MOD_ID}.${PDY}/${cyc}/rundata/${WAV_MOD_ID}.mod_def.$wavGRD $DATA/mod_def.$wavGRD
   done
-  $NLN $COMINWW3/${WAV_MOD_ID}.${PDY}/${cyc}/${WAV_MOD_ID}.${iceID}.${cycle}.ice $DATA/ice.${iceID}
+  $NLN $COMINWW3/${WAV_MOD_ID}.${PDY}/${cyc}/rundata/${WAV_MOD_ID}.${iceID}.${cycle}.ice $DATA/ice.${iceID}
 
 fi
 
@@ -1060,8 +1060,8 @@ fi
 if [ $cplwav = ".true." ]; then
   for wavGRD in $waveGRD
    do
-     $NCP out_grd.${wavGRD} $COMOUTWW3/${WAV_MOD_ID}.${PDY}/${cyc}/${WAV_MOD_ID}${WAV_MEMBER}.out_grd.${wavGRD}.${PDY}${cyc}
-     $NCP log.${wavGRD} $COMOUTWW3/${WAV_MOD_ID}.${PDY}/${cyc}/${WAV_MOD_ID}${WAV_MEMBER}.log.${wavGRD}.${PDY}${cyc}
+     $NCP out_grd.${wavGRD} $COMOUTWW3/${WAV_MOD_ID}.${PDY}/${cyc}/rundata/${WAV_MOD_ID}${WAV_MEMBER}.out_grd.${wavGRD}.${PDY}${cyc}
+     $NCP log.${wavGRD} $COMOUTWW3/${WAV_MOD_ID}.${PDY}/${cyc}/rundata/${WAV_MOD_ID}${WAV_MEMBER}.log.${wavGRD}.${PDY}${cyc}
 # Wave IC (restart) interval controlled by gfs_cyc parameter (default: 4 cyc/day gfs_cyc=4)
      gfs_cyc=${gfs_cyc:-4}
      gfs_cych=`expr 24 / ${gfs_cyc}`
@@ -1070,10 +1070,10 @@ if [ $cplwav = ".true." ]; then
      WRcyc=`echo $WRDATE | cut -c9-10`
      WRDIR=$COMOUTWW3/${WAV_MOD_ID}.${WRPDY}/${WRcyc}
      [[ -d $WRDIR ]] || mkdir -p $WRDIR
-     $NCP restart001.${wavGRD} $COMOUTWW3/${WAV_MOD_ID}.${WRPDY}/${WRcyc}/${WAV_MOD_ID}${WAV_MEMBER}.restart.${wavGRD}.${WRDATE}
+     $NCP restart001.${wavGRD} $COMOUTWW3/${WAV_MOD_ID}.${WRPDY}/${WRcyc}/restart/${WAV_MOD_ID}${WAV_MEMBER}.restart.${wavGRD}.${WRDATE}
    done
-   $NCP out_pnt.${buoy} $COMOUTWW3/${WAV_MOD_ID}.${PDY}/${cyc}/${WAV_MOD_ID}${WAV_MEMBER}.out_pnt.${buoy}.${PDY}${cyc}
-   $NCP log.mww3 $COMOUTWW3/${WAV_MOD_ID}.${PDY}/${cyc}/${WAV_MOD_ID}${WAV_MEMBER}.log.mww3.${PDY}${cyc}
+   $NCP out_pnt.${buoy} $COMOUTWW3/${WAV_MOD_ID}.${PDY}/${cyc}/rundata/${WAV_MOD_ID}${WAV_MEMBER}.out_pnt.${buoy}.${PDY}${cyc}
+   $NCP log.mww3 $COMOUTWW3/${WAV_MOD_ID}.${PDY}/${cyc}/rundata/${WAV_MOD_ID}${WAV_MEMBER}.log.mww3.${PDY}${cyc}
 
 fi
 
