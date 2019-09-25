@@ -302,7 +302,7 @@ def get_resources(machine, cfg, task, cdump='gdas'):
     else:
         ppn = cfg['npe_node_%s' % ltask]
 
-    if machine in [ 'WCOSS_DELL_P3']:
+    if machine in [ 'WCOSS_DELL_P3', 'HERA']:
         threads = cfg['nth_%s' % ltask]
 
     nodes = np.int(np.ceil(np.float(tasks) / np.float(ppn)))
@@ -314,7 +314,11 @@ def get_resources(machine, cfg, task, cdump='gdas'):
         natstr = '--export=NONE'
 
     if machine in ['THEIA', 'HERA', 'WCOSS_C', 'WCOSS_DELL_P3']:
-        resstr = '<nodes>%d:ppn=%d</nodes>' % (nodes, ppn)
+
+        if machine in ['HERA']:
+            resstr = '<nodes>%d:ppn=%d:tpp=%d</nodes>' % (nodes, ppn, threads)
+        else:
+            resstr = '<nodes>%d:ppn=%d</nodes>' % (nodes, ppn)
 
         if machine in ['WCOSS_C'] and task in ['arch', 'earc', 'getic']:
             resstr += '<shared></shared>'

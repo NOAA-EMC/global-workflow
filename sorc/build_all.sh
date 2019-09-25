@@ -27,6 +27,12 @@ if [ ! -d "../exec" ]; then
 fi
 
 #------------------------------------
+# GET MACHINE
+#------------------------------------
+target=""
+source ./machine-setup.sh > /dev/null 2>&1
+
+#------------------------------------
 # INCLUDE PARTIAL BUILD 
 #------------------------------------
 
@@ -164,10 +170,13 @@ echo " .... Building regrid_nemsio .... "
 #------------------------------------
 # build gfs_util       
 #------------------------------------
-$Build_gfs_util && {
-echo " .... Building gfs_util .... "
-./build_gfs_util.sh > $logs_dir/build_gfs_util.log 2>&1
-}
+# Only build on WCOSS
+if [ $target = wcoss -o $target = wcoss_cray -o $target = wcoss_dell_p3 ]; then
+ $Build_gfs_util && {
+ echo " .... Building gfs_util .... "
+ ./build_gfs_util.sh > $logs_dir/build_gfs_util.log 2>&1
+ }
+fi
 
 #------------------------------------
 # build prod_util
