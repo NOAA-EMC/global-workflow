@@ -1,5 +1,7 @@
  program gldas2gdas
 
+! Update gdas soil moisture and soil temperature from gldas.
+
  use esmf
 
  use model_grid

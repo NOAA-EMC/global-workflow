@@ -14,8 +14,8 @@
  type(esmf_grid),  public               :: gldas_grid
  type(esmf_grid),  public               :: gdas_grid
 
- type(esmf_field),  public              :: latitude_gldas_grid
- type(esmf_field),  public              :: longitude_gldas_grid
+ type(esmf_field)                       :: latitude_gldas_grid
+ type(esmf_field)                       :: longitude_gldas_grid
 
  public :: define_gldas_grid
  public :: define_gdas_grid
@@ -235,11 +235,6 @@
 
  deallocate(latitude,longitude)
 
-
  end subroutine define_gldas_grid
- 
-
-
-
 
  end module model_grid

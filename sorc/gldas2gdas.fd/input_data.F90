@@ -70,6 +70,10 @@
 
  end subroutine read_input_data
 
+!-------------------------------------------------
+! read gldas data (gaussian nemsio format)
+!-------------------------------------------------
+
  subroutine read_gldas_data(localpet)
 
  use nemsio_module
@@ -83,6 +87,7 @@
  integer             :: rc, i, j
 
  integer(esmf_kind_i4), allocatable :: mask(:,:)
+
  real(esmf_kind_r8), allocatable :: dummy(:,:), dummy3d(:,:,:)
  real(nemsio_realkind), allocatable :: soilt(:,:), dummy1d(:)
  real(nemsio_realkind), allocatable :: weasd(:,:), soil_temp(:,:,:)
@@ -113,81 +118,90 @@
  endif
 
  if (localpet == 0) then
+
    the_file = "./gldas.nemsio"
    call nemsio_open(gfile, trim(the_file), "read", iret=rc)
    if (rc /= 0) call error_handler("opening gldas file.", rc)
 
+! soil type
    call nemsio_readrecv(gfile, "sotyp", "sfc", 1, dummy1d, 0, iret=rc)
    if (rc /= 0) call error_handler("reading gldas sotyp.", rc)
    soilt = reshape(dummy1d, (/i_gldas,j_gldas/))
-   print*,'sotype ',maxval(soilt),minval(soilt)
+   print*,'gldas sotype ',maxval(soilt),minval(soilt)
 
+! liq eq snow
    call nemsio_readrecv(gfile, "weasd", "sfc", 1, dummy1d, 0, iret=rc)
    if (rc /= 0) call error_handler("reading gldas weasd.", rc)
    weasd = reshape(dummy1d, (/i_gldas,j_gldas/))
-   print*,'weasd ',maxval(weasd),minval(weasd)
+   print*,'gldas weasd ',maxval(weasd),minval(weasd)
 
+! total soil moisture
    call nemsio_readrecv(gfile, "smc", "soil layer", 1, dummy1d, 0, iret=rc)
    if (rc /= 0) call error_handler("reading gldas smc1.", rc)
    soilm_tot(:,:,1) = reshape(dummy1d, (/i_gldas,j_gldas/))
-   print*,'smc 1 ',maxval(soilm_tot(:,:,1)),minval(soilm_tot(:,:,1))
+   print*,'gldas smc 1 ',maxval(soilm_tot(:,:,1)),minval(soilm_tot(:,:,1))
    call nemsio_readrecv(gfile, "smc", "soil layer", 2, dummy1d, 0, iret=rc)
    if (rc /= 0) call error_handler("reading gldas smc2.", rc)
    soilm_tot(:,:,2) = reshape(dummy1d, (/i_gldas,j_gldas/))
-   print*,'smc 2 ',maxval(soilm_tot(:,:,2)),minval(soilm_tot(:,:,2))
+   print*,'gldas smc 2 ',maxval(soilm_tot(:,:,2)),minval(soilm_tot(:,:,2))
    call nemsio_readrecv(gfile, "smc", "soil layer", 3, dummy1d, 0, iret=rc)
    if (rc /= 0) call error_handler("reading gldas smc3.", rc)
    soilm_tot(:,:,3) = reshape(dummy1d, (/i_gldas,j_gldas/))
-   print*,'smc 3 ',maxval(soilm_tot(:,:,3)),minval(soilm_tot(:,:,3))
+   print*,'gldas smc 3 ',maxval(soilm_tot(:,:,3)),minval(soilm_tot(:,:,3))
    call nemsio_readrecv(gfile, "smc", "soil layer", 4, dummy1d, 0, iret=rc)
    if (rc /= 0) call error_handler("reading gldas smc4.", rc)
    soilm_tot(:,:,4) = reshape(dummy1d, (/i_gldas,j_gldas/))
-   print*,'smc 4 ',maxval(soilm_tot(:,:,4)),minval(soilm_tot(:,:,4))
+   print*,'gldas smc 4 ',maxval(soilm_tot(:,:,4)),minval(soilm_tot(:,:,4))
 
+! liq soil moisture
    call nemsio_readrecv(gfile, "slc", "soil layer", 1, dummy1d, 0, iret=rc)
    if (rc /= 0) call error_handler("reading gldas slc1.", rc)
    soilm_liq(:,:,1) = reshape(dummy1d, (/i_gldas,j_gldas/))
-   print*,'slc 1 ',maxval(soilm_liq(:,:,1)),minval(soilm_liq(:,:,1))
+   print*,'gldas slc 1 ',maxval(soilm_liq(:,:,1)),minval(soilm_liq(:,:,1))
    call nemsio_readrecv(gfile, "slc", "soil layer", 2, dummy1d, 0, iret=rc)
    if (rc /= 0) call error_handler("reading gldas slc2.", rc)
    soilm_liq(:,:,2) = reshape(dummy1d, (/i_gldas,j_gldas/))
-   print*,'slc 2 ',maxval(soilm_liq(:,:,2)),minval(soilm_liq(:,:,2))
+   print*,'gldas slc 2 ',maxval(soilm_liq(:,:,2)),minval(soilm_liq(:,:,2))
    call nemsio_readrecv(gfile, "slc", "soil layer", 3, dummy1d, 0, iret=rc)
    if (rc /= 0) call error_handler("reading gldas slc3.", rc)
    soilm_liq(:,:,3) = reshape(dummy1d, (/i_gldas,j_gldas/))
-   print*,'slc 3 ',maxval(soilm_liq(:,:,3)),minval(soilm_liq(:,:,3))
+   print*,'gldas slc 3 ',maxval(soilm_liq(:,:,3)),minval(soilm_liq(:,:,3))
    call nemsio_readrecv(gfile, "slc", "soil layer", 4, dummy1d, 0, iret=rc)
    if (rc /= 0) call error_handler("reading gldas slc4.", rc)
    soilm_liq(:,:,4) = reshape(dummy1d, (/i_gldas,j_gldas/))
-   print*,'slc 4 ',maxval(soilm_liq(:,:,4)),minval(soilm_liq(:,:,4))
+   print*,'gldas slc 4 ',maxval(soilm_liq(:,:,4)),minval(soilm_liq(:,:,4))
 
+! soil temp
    call nemsio_readrecv(gfile, "stc", "soil layer", 1, dummy1d, 0, iret=rc)
    if (rc /= 0) call error_handler("reading gldas stc1.", rc)
    soil_temp(:,:,1) = reshape(dummy1d, (/i_gldas,j_gldas/))
-   print*,'stc 1 ',maxval(soil_temp(:,:,1)),minval(soil_temp(:,:,1))
+   print*,'gldas stc 1 ',maxval(soil_temp(:,:,1)),minval(soil_temp(:,:,1))
    call nemsio_readrecv(gfile, "stc", "soil layer", 2, dummy1d, 0, iret=rc)
    if (rc /= 0) call error_handler("reading gldas stc2.", rc)
    soil_temp(:,:,2) = reshape(dummy1d, (/i_gldas,j_gldas/))
-   print*,'stc 2 ',maxval(soil_temp(:,:,2)),minval(soil_temp(:,:,2))
+   print*,'gldas stc 2 ',maxval(soil_temp(:,:,2)),minval(soil_temp(:,:,2))
    call nemsio_readrecv(gfile, "stc", "soil layer", 3, dummy1d, 0, iret=rc)
    if (rc /= 0) call error_handler("reading gldas stc3.", rc)
    soil_temp(:,:,3) = reshape(dummy1d, (/i_gldas,j_gldas/))
-   print*,'stc 3 ',maxval(soil_temp(:,:,3)),minval(soil_temp(:,:,3))
+   print*,'gldas stc 3 ',maxval(soil_temp(:,:,3)),minval(soil_temp(:,:,3))
    call nemsio_readrecv(gfile, "stc", "soil layer", 4, dummy1d, 0, iret=rc)
    if (rc /= 0) call error_handler("reading gldas stc4.", rc)
    soil_temp(:,:,4) = reshape(dummy1d, (/i_gldas,j_gldas/))
-   print*,'stc 4 ',maxval(soil_temp(:,:,4)),minval(soil_temp(:,:,4))
+   print*,'gldas stc 4 ',maxval(soil_temp(:,:,4)),minval(soil_temp(:,:,4))
+
+! Set interpolation mask.  Do not use gldas data at glacial ice points
+! or with snowpack.
 
    mask = 1
    do j = 1, j_gldas
    do i = 1, i_gldas
-     if (nint(soilt(i,j)) == 0 .or. nint(soilt(i,j)) == 16) then
+     if (nint(soilt(i,j)) == 0 .or. nint(soilt(i,j)) == 16) then  ! open water
        mask(i,j) = 0
      endif
-     if (weasd(i,j) > 0.0) then
+     if (weasd(i,j) > 0.0) then  ! snow pack
        mask(i,j) = 0
      endif
-     if (soilm_tot(i,j,1) > 0.9) then
+     if (soilm_tot(i,j,1) > 0.9) then  ! glacial
        mask(i,j) = 0
      endif
    enddo
@@ -198,6 +212,7 @@
  endif
 
  dummy = soilt
+
  print*,"- CALL FieldScatter FOR input soil type."
  call ESMF_FieldScatter(soil_type_input_grid, dummy, rootpet=0, rc=rc)
  if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
