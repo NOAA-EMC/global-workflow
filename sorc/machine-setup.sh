@@ -31,9 +31,8 @@ if [  $hname == 'h'  ] ; then
     module purge
     module load intel
     module load impi
-    export NCEPLIBS=/scratch1/NCEPDEV/global/gwv/l819/lib
-    #export NCEPLIBS=/scratch2/NCEPDEV/nwprod/NCEPLIBS
-    #module use $NCEPLIBS/modulefiles
+    export NCEPLIBS=/scratch2/NCEPDEV/nwprod/NCEPLIBS
+    module use $NCEPLIBS/modulefiles
     #export WRFPATH=$NCEPLIBS/wrf.shared.new/v1.1.1/src
     export myFC=mpiifort
     export FCOMP=mpiifort
