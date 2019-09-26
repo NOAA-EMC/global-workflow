@@ -58,21 +58,37 @@
    if(ESMF_logFoundError(rcToCheck=error,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
      call error_handler("IN FieldGather", error)
 
-!  print*,"- CALL FieldGather FOR TILE: ", tile
-!  call ESMF_FieldGather(soil_type_from_input_grid, data_one_tile,  &
-!                        rootPet=0, tile=tile, rc=error)
-!  if(ESMF_logFoundError(rcToCheck=error,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
-!    call error_handler("IN FieldGather", error)
+! output interpolated soil type - only for diagnostic purposes.
+   goto 88
 
-!  if (localpet == 0) then
-!    print*,'update soil type for tile ',tile, maxval(data_one_tile), &
-!                                         minval(data_one_tile)
-!    error = nf90_inq_varid(ncid, 'stype', id_var)
-!    call netcdf_err(error, 'finding soil type')
-!    dum2d = data_one_tile
-!    error = nf90_put_var(ncid, id_var, dum2d)
-!    call netcdf_err(error, 'writing soil type')
-!  endif
+   print*,"- CALL FieldGather FOR TILE: ", tile
+   call ESMF_FieldGather(soil_type_from_input_grid, data_one_tile,  &
+                         rootPet=0, tile=tile, rc=error)
+   if(ESMF_logFoundError(rcToCheck=error,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+     call error_handler("IN FieldGather", error)
+
+   if (localpet == 0) then
+     print*,'update soil type for tile ',tile, maxval(data_one_tile), &
+                                          minval(data_one_tile)
+     error = nf90_inq_varid(ncid, 'stype', id_var)
+     call netcdf_err(error, 'finding soil type')
+
+     error = nf90_get_var(ncid, id_var, dum2d)
+     call netcdf_err(error, 'reading soil type')
+
+     do j = 1, j_gdas
+     do i = 1, i_gdas
+       if (mask_one_tile(i,j) == 1) then
+         dum2d(i,j) = data_one_tile(i,j)
+       endif
+     enddo
+     enddo
+
+     error = nf90_put_var(ncid, id_var, dum2d)
+     call netcdf_err(error, 'writing soil type')
+   endif
+
+ 88 continue
 
    print*,"- CALL FieldGather FOR TILE: ", tile
    call ESMF_FieldGather(soilm_tot_target_grid, data_one_tile3d,  &
