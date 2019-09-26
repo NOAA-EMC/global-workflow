@@ -179,10 +179,10 @@ if [ $machine = dell ]; then
 fi
 
 for ufs_utilsexe in \
-     chgres_cube.exe   fregrid           global_cycle         mkgfsnemsioctl    orog.x \
-     emcsfc_ice_blend  fregrid_parallel  make_hgrid           nemsio_get        shave.x \
-     emcsfc_snow2mdl   gettrk            make_hgrid_parallel  nemsio_read \
-     filter_topo       global_chgres     make_solo_mosaic     nst_tf_chg.x ; do
+     chgres_cube.exe   fregrid           make_hgrid           nemsio_get    shave.x \
+     emcsfc_ice_blend  fregrid_parallel  make_hgrid_parallel  nemsio_read \
+     emcsfc_snow2mdl   global_chgres     make_solo_mosaic     nst_tf_chg.x \
+     filter_topo       global_cycle      mkgfsnemsioctl       orog.x ; do
     [[ -s $ufs_utilsexe ]] && rm -f $ufs_utilsexe
     $LINK ../sorc/ufs_utils.fd/exec/$ufs_utilsexe .
 done
@@ -220,7 +220,7 @@ cd ${pwd}/../sorc   ||   exit 8
         $SLINK ufs_utils.fd/sorc/fre-nctools.fd/tools/$prog                                ${prog}.fd                                
     done
     for prog in  chgres_cube.fd       global_cycle.fd   nemsio_read.fd \
-                 emcsfc_ice_blend.fd  gettrk.fd         mkgfsnemsioctl.fd  nst_tf_chg.fd \
+                 emcsfc_ice_blend.fd  mkgfsnemsioctl.fd  nst_tf_chg.fd \
                  emcsfc_snow2mdl.fd   global_chgres.fd  nemsio_get.fd      orog.fd ;do
         $SLINK ufs_utils.fd/sorc/$prog                                                     $prog
     done
