@@ -10,7 +10,7 @@ module load hpss/hpss
 module load pnetcdf/1.10.0
 module load netcdf/4.7.0
 module load nco/4.7.0
-module load hdf5/1.10.4
+module load hdf5/1.10.5
 module load gempak/7.4.2
 
 #Load from official NCEPLIBS
