@@ -67,7 +67,7 @@ cd ${pwd}/../ush                ||exit 8
     done
     for file in emcsfc_ice_blend.sh  fv3gfs_driver_grid.sh  fv3gfs_make_orog.sh  global_cycle_driver.sh \
         emcsfc_snow.sh  fv3gfs_filter_topo.sh  global_chgres_driver.sh  global_cycle.sh \
-        fv3gfs_chgres.sh  fv3gfs_make_grid.sh  global_chgres.sh  global_tracker.sh ; do
+        fv3gfs_chgres.sh  fv3gfs_make_grid.sh  global_chgres.sh ; do
         $LINK ../sorc/ufs_utils.fd/ush/$file                  .
     done
 
