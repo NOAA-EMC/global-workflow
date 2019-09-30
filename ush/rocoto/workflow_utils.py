@@ -252,7 +252,7 @@ def create_firstcyc_task(cdump='gdas'):
                  'dependency': dependencies}
 
     if check_slurm():
-        task_dict['queue'] = '&QUEUE_ARCH;'
+        task_dict['queue'] = '&QUEUE;'
         task_dict['partition'] = '&PARTITION_ARCH;'
     else:
         task_dict['queue'] = '&QUEUE_ARCH;'
