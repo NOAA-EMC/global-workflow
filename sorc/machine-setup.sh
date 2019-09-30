@@ -46,17 +46,9 @@ elif [  $hname == 't'  ] ; then
     fi
     target=theia
     module purge
-#GWV ADD
-module load         intel/15.3.187
-module load impi/5.0.3.048 
-export NCEPLIBS=/scratch4/NCEPDEV/global/noscrub/George.Vandenberghe/l618.2019/lib
-module use $NCEPLIBS/modulefiles
-export WRFPATH=/scratch4/NCEPDEV/global/noscrub/George.Vandenberghe/l618.2019/lib/wrf.shared.new/v1.1.1/src
-export myFC=mpiifort
-export FCOMP=mpiifort
-module load  ncl/6.3.0   
-#END GWV ADD
-fi
+    module use /scratch3/NCEPDEV/nwprod/modulefiles/
+    module use /scratch3/NCEPDEV/nwprod/lib/modulefiles
+fi #scratch1
 
 ##---------------------------------------------------------------------------
 elif [[ -d /gpfs/hps && -e /etc/SuSE-release ]] ; then
