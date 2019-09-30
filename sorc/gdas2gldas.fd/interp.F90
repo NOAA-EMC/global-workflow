@@ -3,13 +3,12 @@
  use esmf
  use input_data
  use model_grid
- use gldas_data
-
 
  implicit none
 
  private
 
+ type(esmf_field), public           :: landsea_mask_target_grid
  type(esmf_field), public           :: soil_type_from_input_grid
                                        ! soil type interpolated from
                                        ! input grid
@@ -87,11 +86,9 @@
 
  contains
 
- subroutine interp_sfc(localpet)
+ subroutine interp_sfc
 
  implicit none
-
- integer, intent(in) :: localpet
 
  integer :: rc, isrctermprocessing
 
@@ -108,6 +105,13 @@
  lsoil_target = lsoil_input
  lsnow_target = lsnow_input
  levels_target = levels_input
+
+ print*,"- CALL FieldCreate FOR INTERPOLATED TARGET GRID mask."
+ landsea_mask_target_grid = ESMF_FieldCreate(target_grid, &
+                                     typekind=ESMF_TYPEKIND_R8, &
+                                     staggerloc=ESMF_STAGGERLOC_CENTER, rc=rc)
+ if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
+    call error_handler("IN FieldCreate", rc)
 
  print*,"- CALL FieldCreate FOR INTERPOLATED TARGET GRID orog."
  orog_target_grid = ESMF_FieldCreate(target_grid, &
@@ -601,12 +605,6 @@
  if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
     call error_handler("IN GridGetItem", rc)
 
-!print*,"- CALL FieldGet FOR TARGET GRID MASK."
-!nullify(gldas_target_ptr)
-!call ESMF_FieldGet(landsea_mask_target_grid, farrayPtr=gldas_target_ptr, rc=rc)
-!if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
-!   call error_handler("IN FieldGet", rc)
-
  mask_target_ptr = 1
 
  print*,"- CALL GridAddItem FOR INPUT GRID."
@@ -623,12 +621,6 @@
                        farrayPtr=mask_input_ptr, rc=rc)
  if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
     call error_handler("IN GridGetItem", rc)
-
-!print*,"- CALL FieldGet FOR INPUT GRID MASK."
-!nullify(gdas_input_ptr)
-!call ESMF_FieldGet(landsea_mask_input_grid, farrayPtr=gdas_input_ptr, rc=rc)
-!if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
-!   call error_handler("IN FieldGet", rc)
 
  mask_input_ptr = 1
 
@@ -1177,226 +1169,6 @@
  if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
     call error_handler("IN FieldRegrid", rc)
 
-
-!call rescale_soil_moisture(localpet)
-
  end subroutine interp_sfc
-
-!---------------------------------------------------------------------------------------------
-! Adjust soil moisture for changes in soil type between the input and target grids.
-!---------------------------------------------------------------------------------------------
-
- subroutine rescale_soil_moisture(localpet)
-
- use esmf
-
- implicit none
-
- integer, intent(in) :: localpet
- integer                            :: clb(3), cub(3), i, j, k, rc
- integer                            :: soilt_input, soilt_target
- integer, parameter                 :: num_soil_cats = 16
- integer(esmf_kind_i4), pointer        :: soil_type_target_ptr(:,:)
-
- real(esmf_kind_r8), pointer        :: landmask_ptr(:,:)
- real(esmf_kind_r8), pointer        :: soilm_tot_ptr(:,:,:)
- real(esmf_kind_r8), pointer        :: soil_type_input_ptr(:,:)
- real(esmf_kind_r8), pointer        :: veg_greenness_ptr(:,:)
- real                               :: f1, fn, smcdir, smctra
- real                               :: bb(num_soil_cats)
- real                               :: maxsmc(num_soil_cats)
- real                               :: satdk(num_soil_cats)
- real                               :: satpsi(num_soil_cats)
- real                               :: satdw(num_soil_cats)
- real                               :: f11(num_soil_cats)
- real                               :: refsmc(num_soil_cats)
- real                               :: refsmc1, smhigh, smlow
- real                               :: wltsmc(num_soil_cats)
- real                               :: wltsmc1
- real                               :: drysmc(num_soil_cats)
-
- data smlow /0.5/
-
- data smhigh /6.0/
-
- data bb /4.05, 4.26, 4.74, 5.33, 5.33, 5.25, &
-          6.77, 8.72, 8.17, 10.73, 10.39, 11.55, &
-          5.25, -9.99, 4.05, 4.26/
-
- data maxsmc /0.395, 0.421, 0.434, 0.476, 0.476, 0.439, &
-              0.404, 0.464, 0.465, 0.406, 0.468, 0.457, &
-              0.464, -9.99, 0.200, 0.421/
-
- data satdk /1.7600e-4, 1.4078e-5, 5.2304e-6, 2.8089e-6, 2.8089e-6, &
-             3.3770e-6, 4.4518e-6, 2.0348e-6, 2.4464e-6, 7.2199e-6, &
-             1.3444e-6, 9.7384e-7, 3.3770e-6,     -9.99, 1.4078e-5, &
-             1.4078e-5/
-
- data satpsi /0.0350, 0.0363, 0.1413, 0.7586, 0.7586, 0.3548, &
-              0.1349, 0.6166, 0.2630, 0.0977, 0.3236, 0.4677, &
-              0.3548, -9.99,  0.0350, 0.0363/
-
- do i = 1, num_soil_cats
-
-   if (maxsmc(i) > 0.0) then
-
-   SATDW(I)  = BB(I)*SATDK(I)*(SATPSI(I)/MAXSMC(I))
-   F11(I) = ALOG10(SATPSI(I)) + BB(I)*ALOG10(MAXSMC(I)) + 2.0
-   REFSMC1 = MAXSMC(I)*(5.79E-9/SATDK(I)) **(1.0/(2.0*BB(I)+3.0))
-   REFSMC(I) = REFSMC1 + (MAXSMC(I)-REFSMC1) / SMHIGH
-   WLTSMC1 = MAXSMC(I) * (200.0/SATPSI(I))**(-1.0/BB(I))
-   WLTSMC(I) = WLTSMC1 - SMLOW * WLTSMC1
-
-!----------------------------------------------------------------------
-!  CURRENT VERSION DRYSMC VALUES THAT EQUATE TO WLTSMC.
-!  FUTURE VERSION COULD LET DRYSMC BE INDEPENDENTLY SET VIA NAMELIST.
-!----------------------------------------------------------------------
-
-   DRYSMC(I) = WLTSMC(I)
-
-   end if
-
- END DO
-
- if (localpet == 1) then
- print*,'maxsmc ',maxsmc
- print*,'refsmc ',refsmc
- print*,'wltsmc ',wltsmc
- print*,'drysmc ',drysmc
- endif
-
- print*,"- RESCALE SOIL MOISTURE FOR CHANGES IN SOIL TYPE."
-
- print*,"- CALL FieldGet FOR TOTAL SOIL MOISTURE."
- call ESMF_FieldGet(soilm_tot_target_grid, &
-                    computationalLBound=clb, &
-                    computationalUBound=cub, &
-                    farrayPtr=soilm_tot_ptr, rc=rc)
- if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
-    call error_handler("IN FieldGet", rc)
-
-! this is the mask of points processed by this code - i.e., not including snow
-! or glacial points.  this is not the entire gldas mask.
-
- print*,"- CALL FieldGet FOR LAND MASK."
- call ESMF_FieldGet(landsea_mask_target_grid, &
-                    farrayPtr=landmask_ptr, rc=rc)
- if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
-    call error_handler("IN FieldGet", rc)
-
- print*,"- CALL FieldGet FOR VEGETATION GREENNESS."
- call ESMF_FieldGet(veg_greenness_target_grid, &
-                    farrayPtr=veg_greenness_ptr, rc=rc)
- if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
-    call error_handler("IN FieldGet", rc)
-
- print*,"- CALL FieldGet FOR TARGET GRID SOIL TYPE."
- call ESMF_FieldGet(soil_type_target_grid, &
-                    farrayPtr=soil_type_target_ptr, rc=rc)
- if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
-    call error_handler("IN FieldGet", rc)
-
- print*,"- CALL FieldGet FOR SOIL TYPE FROM INPUT GRID."
- call ESMF_FieldGet(soil_type_from_input_grid, &
-                    farrayPtr=soil_type_input_ptr, rc=rc)
- if(ESMF_logFoundError(rcToCheck=rc,msg=ESMF_LOGERR_PASSTHRU,line=__line__,file=__file__)) &
-    call error_handler("IN FieldGet", rc)
-
- do j = clb(2), cub(2)
-   do i = clb(1), cub(1)
-
-!---------------------------------------------------------------------------------------------
-! Check land points.
-!---------------------------------------------------------------------------------------------
-
-     if (nint(landmask_ptr(i,j)) == 1) then
-
-        soilt_target = soil_type_target_ptr(i,j)
-        soilt_input  = nint(soil_type_input_ptr(i,j))
-
-!---------------------------------------------------------------------------------------------
-! Rescale soil moisture at points where the soil type between the input and output
-! grids is different.  Caution, this logic assumes the input and target grids use the same
-! soil type dataset.
-!---------------------------------------------------------------------------------------------
-
-        if (soilt_target /= soilt_input) then
-
-!---------------------------------------------------------------------------------------------
-! Rescale top layer.  First, determine direct evaporation part:
-!---------------------------------------------------------------------------------------------
-
-          f1=(soilm_tot_ptr(i,j,1)-drysmc(soilt_input)) /    &
-             (maxsmc(soilt_input)-drysmc(soilt_input))
-
-          smcdir=drysmc(soilt_target) + f1 *        &
-                (maxsmc(soilt_target) - drysmc(soilt_target))
-
-!---------------------------------------------------------------------------------------------
-! Continue top layer rescale.  Now determine transpiration part:
-!---------------------------------------------------------------------------------------------
-
-          if (soilm_tot_ptr(i,j,1) < refsmc(soilt_input)) then
-            f1=(soilm_tot_ptr(i,j,1) - wltsmc(soilt_input)) /       &
-               (refsmc(soilt_input) - wltsmc(soilt_input))
-            smctra=wltsmc(soilt_target) + f1  *     &
-                  (refsmc(soilt_target) - wltsmc(soilt_target))
-          else
-            f1=(soilm_tot_ptr(i,j,1) - refsmc(soilt_input)) /        &
-               (maxsmc(soilt_input) - refsmc(soilt_input))
-            smctra=refsmc(soilt_target) + f1 *      &
-                  (maxsmc(soilt_target) - refsmc(soilt_target))
-          endif
-
-!---------------------------------------------------------------------------------------------
-! Top layer is weighted by green vegetation fraction:
-!---------------------------------------------------------------------------------------------
-
-          soilm_tot_ptr(i,j,1) = ((1.0 - veg_greenness_ptr(i,j)) * smcdir)  + &
-                                  (veg_greenness_ptr(i,j) * smctra)
-
-!---------------------------------------------------------------------------------------------
-! Rescale bottom layers as follows:
-!
-! - Rescale between wilting point and reference value when wilting < soil m < reference, or
-! - Rescale between reference point and maximum value when reference < soil m < max.
-!---------------------------------------------------------------------------------------------
-
-          do k = 2, cub(3)
-            if (soilm_tot_ptr(i,j,k) < refsmc(soilt_input)) then
-              fn = (soilm_tot_ptr(i,j,k) - wltsmc(soilt_input)) /        &
-                (refsmc(soilt_input) - wltsmc(soilt_input))
-              soilm_tot_ptr(i,j,k) = wltsmc(soilt_target) + fn *         &
-                (refsmc(soilt_target) - wltsmc(soilt_target))
-            else
-              fn = (soilm_tot_ptr(i,j,k) - refsmc(soilt_input)) /         &
-                (maxsmc(soilt_input) - refsmc(soilt_input))
-              soilm_tot_ptr(i,j,k) = refsmc(soilt_target) + fn *         &
-                (maxsmc(soilt_target) - refsmc(soilt_target))
-            endif
-          enddo
-
-        endif ! is soil type different?
-
-!---------------------------------------------------------------------------------------------
-! Range check all layers.
-!---------------------------------------------------------------------------------------------
-
-        soilm_tot_ptr(i,j,1)=min(soilm_tot_ptr(i,j,1),maxsmc(soilt_target))
-        soilm_tot_ptr(i,j,1)=max(drysmc(soilt_target),soilm_tot_ptr(i,j,1))
-
-        do k = 2, cub(3)
-          soilm_tot_ptr(i,j,k)=min(soilm_tot_ptr(i,j,k),maxsmc(soilt_target))
-          soilm_tot_ptr(i,j,k)=max(wltsmc(soilt_target),soilm_tot_ptr(i,j,k))
-        enddo
-
-     endif ! is this a land point?
-
-   enddo
- enddo
-
- return
-
- end subroutine rescale_soil_moisture
 
  end module interp

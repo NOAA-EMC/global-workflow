@@ -6,7 +6,6 @@
  use input_data
  use interp
  use write_data
- use gldas_data
 
  implicit none
 
@@ -41,13 +40,9 @@
 
  call read_input_data(localpet)
 
- call read_gldas_data(localpet)
-
- call interp_sfc(localpet)
+ call interp_sfc
 
  call write_nemsio(localpet)
-
-!call update_gldas_file(localpet)
 
  print*,"- CALL ESMF_finalize"
  call ESMF_finalize(endflag=ESMF_END_KEEPMPI, rc=ierr)

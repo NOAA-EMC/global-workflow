@@ -612,7 +612,7 @@
 
  character(len=400) :: tilefile
 
- integer :: ncid, id_dim, error, tile, rc, i, j
+ integer :: ncid, id_dim, error, tile, rc
 
  real(esmf_kind_r8), allocatable :: data_one_tile(:,:), soilm(:,:,:)
  real(esmf_kind_r8), allocatable :: mask(:,:), snow_liq(:,:), snow_d(:,:)
@@ -1277,29 +1277,6 @@
     print*,'input slmsk for tile ',tile, maxval(data_one_tile),  &
                                    minval(data_one_tile)
   endif
-
-! if (localpet == 0) then
-!   data_one_tile = 1.0  ! gdas point to process
-!   do j = 1, j_input
-!   do i = 1, i_input
-!     if (nint(mask(i,j)) == 0) then
-!       data_one_tile(i,j) = 0.0  ! don't process water
-!     endif
-!     if (nint(mask(i,j)) == 2) then
-!       data_one_tile(i,j) = 0.0  ! don't process sea ice
-!     endif
-!     if (snow_d(i,j) > 0.0) then
-!       data_one_tile(i,j) = 0.0  ! don't process snow
-!     endif
-!     if (snow_liq(i,j) > 0.0) then
-!       data_one_tile(i,j) = 0.0  ! don't process snow
-!     endif
-!     if (soilm(i,j,1) > 0.9) then
-!       data_one_tile(i,j) = 0.0  ! don't process land ice
-!     endif
-!   enddo
-!   enddo
-! endif
 
   print*,"- CALL FieldScatter FOR INPUT LANDSEA MASK."
   call ESMF_FieldScatter(landsea_mask_input_grid, data_one_tile, rootpet=0, tile=tile, rc=rc)
