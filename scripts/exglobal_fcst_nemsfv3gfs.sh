@@ -1069,7 +1069,7 @@ if [ $cplwav = ".true." ]; then
      WRPDY=`echo $WRDATE | cut -c1-8`
      WRcyc=`echo $WRDATE | cut -c9-10`
      WRDIR=$COMOUTWW3/${WAV_MOD_ID}.${WRPDY}/${WRcyc}
-     [[ -d $WRDIR ]] || mkdir -p $WRDIR
+     [[ -d $WRDIR ]] || mkdir -p $WRDIR/restart
      $NCP restart001.${wavGRD} $COMOUTWW3/${WAV_MOD_ID}.${WRPDY}/${WRcyc}/restart/${WAV_MOD_ID}${WAV_MEMBER}.restart.${wavGRD}.${WRDATE}
    done
    $NCP out_pnt.${buoy} $COMOUTWW3/${WAV_MOD_ID}.${PDY}/${cyc}/rundata/${WAV_MOD_ID}${WAV_MEMBER}.out_pnt.${buoy}.${PDY}${cyc}
