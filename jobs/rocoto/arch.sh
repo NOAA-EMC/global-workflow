@@ -152,6 +152,13 @@ fi
 
 cd $ROTDIR
 
+if [ $cpl = ".true." ]; then
+# ocn and ice files
+    for targrp in ocn ocn2 ice SST; do
+        htar -P -cvf $ATARDIR/$CDATE/${targrp}.tar `cat $ARCH_LIST/${targrp}.txt`
+    done
+fi
+
 if [ $CDUMP = "gfs" ]; then
 
     #for targrp in gfsa gfsb - NOTE - do not check htar error status
