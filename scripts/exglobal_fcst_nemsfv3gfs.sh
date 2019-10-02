@@ -563,6 +563,16 @@ JCAP_STP=${JCAP_STP:-$JCAP_CASE}
 LONB_STP=${LONB_STP:-$LONB_CASE}
 LATB_STP=${LATB_STP:-$LATB_CASE}
 
+if [ $DO_SKEB = "YES" ]; then
+    do_skeb=".true."
+fi
+if [ $DO_SHUM = "YES" ]; then
+    do_shum=".true."
+fi
+if [ $DO_SPPT = "YES" ]; then
+    do_sppt=".true."
+fi
+
 # copy over the tables
 DIAG_TABLE=${DIAG_TABLE:-$PARM_FV3DIAG/diag_table}
 DATA_TABLE=${DATA_TABLE:-$PARM_FV3DIAG/data_table}
@@ -915,6 +925,9 @@ deflate_level=${deflate_level:-1}
   ldiag_ugwp   = ${ldiag_ugwp:-".false."}
   do_ugwp      = ${do_ugwp:-".true."}
   do_tofd      = ${do_tofd:-".true."}
+  do_sppt      = ${do_sppt:-".false."}
+  do_shum      = ${do_shum:-".false."}
+  do_skeb      = ${do_skeb:-".false."}
 EOF
 
 # Add namelist for IAU
