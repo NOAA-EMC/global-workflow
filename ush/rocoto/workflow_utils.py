@@ -15,7 +15,7 @@ from datetime import datetime, timedelta
 import rocoto
 
 DATE_ENV_VARS=['CDATE','SDATE','EDATE']
-SCHEDULER_MAP={'ZEUS':'moabtorque',
+SCHEDULER_MAP={'HERA':'slurm',
                'THEIA':'slurm',
                'WCOSS':'lsf',
                'WCOSS_DELL_P3':'lsf',
@@ -161,13 +161,18 @@ def check_slurm(print_message = False):
 
 def detectMachine():
 
-    if os.path.exists('/scratch3'):
+    machines = ['THEIA', 'HERA', 'WCOSS_C', 'WCOSS_DELL_P3']
+
+    if os.path.exists('/scratch3/NCEPDEV'):
         return 'THEIA'
+    elif os.path.exists('/scratch1/NCEPDEV'):
+        return 'HERA'
     elif os.path.exists('/gpfs') and os.path.exists('/etc/SuSE-release'):
         return 'WCOSS_C'
     elif os.path.exists('/gpfs/dell2'):
         return 'WCOSS_DELL_P3'
     else:
+        print 'workflow is currently only supported on: %s' % ' '.join(machines)
         raise NotImplementedError('Cannot auto-detect platform, ABORT!')
 
 def get_scheduler(machine):
@@ -311,7 +316,7 @@ def get_resources(machine, cfg, task, cdump='gdas'):
     if scheduler in ['slurm']:
         natstr = '--export=NONE'
 
-    if machine in ['ZEUS', 'THEIA', 'WCOSS_C', 'WCOSS_DELL_P3']:
+    if machine in ['HERA', 'THEIA', 'WCOSS_C', 'WCOSS_DELL_P3']:
         resstr = '<nodes>%d:ppn=%d</nodes>' % (nodes, ppn)
 
         if machine in ['WCOSS_C'] and task in ['arch', 'earc', 'getic']:
