@@ -36,14 +36,18 @@ export RUN_METPLUS_PRECIP_STEP1="YES"    # Run precip verification using METplus
 if [ $VRFYFITS = "YES" ]; then
 
     export PRVT=$HOMEgfs/fix/fix_gsi/prepobs_errtable.global
-    export HYBLEVS=$HOMEgfs/fix/fix_am/global_hyblev.l65.txt
+    export HYBLEVS=$HOMEgfs/fix/fix_am/global_hyblev.l${LEVS}.txt
     export CUE2RUN=$QUEUE
+
+    if [ $netcdf_diag = ".true." ]; then
+        export CONVNETC="YES"
+    fi
 
     if [ $machine = "WCOSS_C" ]; then
         export fitdir="$BASE_SVN/verif/global/parafits.fv3nems/batrun"
         export PREPQFITSH="$fitdir/subfits_cray_nems"
     elif [ $machine = "WCOSS_DELL_P3" ]; then
-        export fitdir="$BASE_SVN/verif/global/parafits.fv3nems/batrun"
+        export fitdir="$BASE_SVN/verif/global/Fit2Obs/ncfits/batrun"
         export PREPQFITSH="$fitdir/subfits_dell_nems"
     elif [ $machine = "THEIA" -o $machine = "HERA" ]; then
         export fitdir="$BASE_SVN/verif/global/parafits.fv3nems/batrun"

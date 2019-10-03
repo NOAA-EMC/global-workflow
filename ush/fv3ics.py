@@ -31,16 +31,18 @@ def set_machine():
 def set_paths():
 
     if machine in ['THEIA']:
-        homegfs = "/scratch4/NCEPDEV/global/save/glopara/git/fv3gfs/gfs.v15.0.0"
         stmp = "/scratch4/NCEPDEV/stmp4/%s" % os.environ['USER']
+        mod_path = "/scratch3/NCEPDEV/nwprod/lib/modulefiles"
     elif machine in ['WCOSS_C']:
-        homegfs = "/gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/gfs.v15.0.0"
         stmp = "/gpfs/hps3/stmp/%s" % os.environ['USER']
+        mod_path = None
     elif machine in ['WCOSS_DELL_P3']:
-        homegfs = "/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/gfs.v15.0.0"
         stmp = "/gpfs/dell2/stmp/%s" % os.environ['USER']
+        mod_path = None
 
-    return homegfs, stmp
+    homegfs = os.path.dirname(os.path.abspath('.'))
+
+    return homegfs, stmp, mod_path
 
 
 def get_accountinfo():
@@ -106,9 +108,11 @@ def get_jobtemplate():
 
     strings += get_jobcard()
 
-    mdict = {'homegfs':homegfs, 'stmp':stmp, 'date':date, 'icsdir':icsdir, 'nthreads':nthreads}
+    mdict = {'machine':machine, 'homegfs':homegfs, 'stmp':stmp, 'date':date, 'icsdir':icsdir, 'nthreads':nthreads, 'mod_path':mod_path}
     strings += '''
 set -x
+export machine={machine}
+target=$(echo $machine | tr '[A-Z]' '[a-z]')
 
 export HOMEgfs={homegfs}
 export STMP={stmp}
@@ -144,10 +148,21 @@ export APRUNC="mpirun -n 1"
 [[ -d $DATA ]] && rm -rf $DATA
 [[ -d $OUTDIR ]] && rm -rf $OUTDIR
 mkdir -p $OUTDIR
+'''
 
-# Load fv3gfs modules
-source $HOMEgfs/ush/load_fv3gfs_modules.sh
+    if mod_path is not None:
+        strings += '''
+export MOD_PATH={mod_path}
+'''.format(**mdict)
+
+    strings += '''
+# Load appropriate modulefiles for global_chgres
+set +x
+source $HOMEgfs/modulefiles/module-setup.sh.inc
+source $HOMEgfs/modulefiles/module_base.$target
+source $HOMEgfs/modulefiles/fv3gfs/global_chgres.$target
 module list
+set -x
 
 $HOMEgfs/ush/global_chgres_driver.sh
 status=$?
@@ -207,7 +222,7 @@ def submit_jobs(jobs):
 
 def main():
 
-    global machine, homegfs, stmp, nthreads
+    global machine, homegfs, stmp, nthreads, mod_path
     global date, icsdir
     global nsst
     global CASE_det, CASE_ens, JCAP_det, JCAP_ens
@@ -285,7 +300,7 @@ def main():
     chgres_ens = False if CASE_ens is None else True
 
     machine = set_machine()
-    homegfs_def, stmp = set_paths()
+    homegfs_def, stmp, mod_path = set_paths()
     homegfs = homegfs_def if homegfs_inp == 'glopara' else homegfs_inp
 
     nsst = True if os.path.exists('%s/%s/T%s/%s.nstanl.%s' % (icsdir, date, JCAP_det, prefix, suffix)) else False

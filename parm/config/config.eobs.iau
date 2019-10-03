@@ -17,13 +17,21 @@ export npe_gsi=$npe_eobs
 # GSI namelist options related to observer for EnKF
 export OBSINPUT_INVOBS="dmesh(1)=225.0,dmesh(2)=225.0"
 export OBSQC_INVOBS="tcp_width=60.0,tcp_ermin=2.0,tcp_ermax=12.0"
+# save jacobian
+export lobsdiag_forenkf=".true."
+
 if [ $LEVS = "128" ]; then
    export GRIDOPTS_INVOBS="nlayers(63)=1,nlayers(64)=1,"
-   export SETUP_INVOBS="gpstop=55,nsig_ext=56,"
+   export SETUP_INVOBS="gpstop=55,nsig_ext=17,"
 fi
-
 
 export USE_RADSTAT="NO" # This can be only used when bias correction is non-zero.
 export GENDIAG="YES"    # Diagnostic files must be created for EnKF
+if [[ lobsdiag_forenkf = ".true." ]] ; then
+   export DIAG_TARBALL="YES"  # make sure diag tarballs are saved for EnKF
+   if [[ "$CDUMP" = "gfs" ]] ; then
+      unset SETUP # revert to default (same as used for GDAS cycle)
+   fi
+fi
 
 echo "END: config.eobs"

@@ -1,5 +1,5 @@
 #!/bin/sh
-set -xu
+set -xue
 
 topdir=$(pwd)
 echo $topdir
@@ -9,8 +9,13 @@ if [[ ! -d fv3gfs.fd ]] ; then
     rm -f ${topdir}/checkout-fv3gfs.log
     git clone gerrit:NEMSfv3gfs fv3gfs.fd >> ${topdir}/checkout-fv3gfs.log 2>&1
     cd fv3gfs.fd
-    #git checkout nemsfv3gfs_beta_v1.0.18
     git submodule update --init --recursive
+    cd FV3/atmos_cubed_sphere
+    git checkout gfsv16_physupdt
+    cd .. 
+    git checkout gfsv16_physupdt_netcdf
+    cd .. 
+    git checkout gfsv16_physupdt
     cd ${topdir}
 else
     echo 'Skip.  Directory fv3gfs.fd already exists.'
@@ -35,6 +40,11 @@ if [[ ! -d ufs_utils.fd ]] ; then
     cd ufs_utils.fd
     #git checkout v1.0.0
     git checkout feature/hera_port
+#=======
+#    git clone https://github.com/NOAA-EMC/UFS_UTILS  ufs_utils.fd >> ${topdir}/checkout-ufs_utils.fd.log 2>&1
+#    cd ufs_utils.fd
+#    git checkout develop
+#>>>>>>> origin/feature/gfsv16
     cd ${topdir}
 else
     echo 'Skip.  Directory ufs_utils.fd already exists.'
@@ -43,11 +53,7 @@ fi
 echo EMC_post checkout ...
 if [[ ! -d gfs_post.fd ]] ; then
     rm -f ${topdir}/checkout-gfs_post.log
-    git clone --recursive https://github.com/NOAA-EMC/EMC_post.git gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
-    #git clone --recursive gerrit:EMC_post_gtg gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
-    cd gfs_post.fd
-    #git checkout ncep_post.v8.0.27e
-    #git checkout ncep_post_gtg.v1.0.6c
+    git clone --recursive gerrit:EMC_post gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
     cd ${topdir}
 else
     echo 'Skip.  Directory gfs_post.fd already exists.'

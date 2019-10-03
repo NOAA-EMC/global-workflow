@@ -61,11 +61,8 @@ if [ $MKPGB4PRCP = "YES" -a $CDUMP = "gfs" ]; then
        fhr2=$(printf %02i $fhr)
        fhr3=$(printf %03i $fhr)
        fname=${CDUMP}.t${cyc}z.sfluxgrbf$fhr3.grib2
-       rm -f sflux_outtmp
-       $WGRIB2 $fname -match "(:PRATE:surface:)|(:TMP:2 m above ground:)" -grib sflux_outtmp
-       fileout=$ARCDIR/pgbq${fhr2}.${CDUMP}.${CDATE}
-       $CNVGRIB -g21 sflux_outtmp $fileout
-       rm -f sflux_outtmp
+       fileout=$ARCDIR/pgbq${fhr2}.${CDUMP}.${CDATE}.grib2
+       $WGRIB2 $fname -match "(:PRATE:surface:)|(:TMP:2 m above ground:)" -grib $fileout
        (( fhr = $fhr + 6 ))
     done
     cd $DATAROOT
@@ -90,7 +87,12 @@ if [ $VRFYFITS = "YES" -a $CDUMP = $CDFNL -a $CDATE != $SDATE ]; then
     export TMPDIR="$RUNDIR/$CDATE/$CDUMP"
     [[ ! -d $TMPDIR ]] && mkdir -p $TMPDIR
 
+    export RUN_ENVIR_SAVE=$RUN_ENVIR
+    export RUN_ENVIR=devpara
+
     $PREPQFITSH $PSLOT $CDATE $ROTDIR $ARCDIR $TMPDIR
+
+    export RUN_ENVIR=$RUN_ENVIR_SAVE
 
 fi
 
