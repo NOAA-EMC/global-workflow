@@ -9,14 +9,8 @@ if [[ ! -d fv3gfs.fd ]] ; then
     rm -f ${topdir}/checkout-fv3gfs.log
     git clone gerrit:NEMSfv3gfs fv3gfs.fd >> ${topdir}/checkout-fv3gfs.log 2>&1
     cd fv3gfs.fd
-    git checkout gfsv16_physupdt
+    git checkout gfs.v16_PhysicsUpdate 
     git submodule update --init --recursive
-    cd FV3/atmos_cubed_sphere
-    git checkout gfsv16_physupdt
-    cd .. 
-    git checkout gfsv16_physupdt_netcdf
-    cd .. 
-    git checkout gfsv16_physupdt
     cd ${topdir}
 else
     echo 'Skip.  Directory fv3gfs.fd already exists.'
