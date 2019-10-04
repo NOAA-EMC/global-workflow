@@ -26,7 +26,7 @@ input_data.o:  model_grid.o input_data.F90
 interp.o:  input_data.o model_grid.o interp.F90
 	$(FCOMP) $(FFLAGS) $(ESMF_F90COMPILEPATHS) -c interp.F90
 
-write_data.o:  model_grid.o interp.o write_data.F90
+write_data.o:  input_data.o model_grid.o interp.o write_data.F90
 	$(FCOMP) $(FFLAGS) -I$(NEMSIO_INC) $(ESMF_F90COMPILEPATHS) -c write_data.F90
 
 utils.o:  utils.f90
