@@ -207,7 +207,7 @@ export SENDSDM="NO"
 # Resolution specific parameters
 export LEVS=65
 export CASE="@CASECTL@"
-export LEVS_ENKF=$LEVS
+export LEVS_ENKF=$((LEVS-1))
 export CASE_ENKF="@CASEENS@"
 
 # Surface cycle update frequency

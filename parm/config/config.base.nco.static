@@ -123,7 +123,7 @@ export SENDSDM=${SENDSDM:-"NO"}
 # Resolution specific parameters
 export LEVS=65
 export CASE="C768"
-export LEVS_ENKF=$LEVS
+export LEVS_ENKF=$((LEVS-1))
 export CASE_ENKF="C384"
 
 # Surface cycle update frequency
