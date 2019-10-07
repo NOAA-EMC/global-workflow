@@ -58,6 +58,12 @@ else
     exit 1
 fi
 
+cd ${pwd}/../fix                ||exit 8
+for dir in fix_am fix_fv3 fix_orog fix_fv3_gmted2010 fix_verif ; do
+    [[ -d $dir ]] && rm -rf $dir
+done
+$LINK $FIX_DIR/* .
+
 if [ ! -r $FIX_DIR ]; then
    echo "CRITICAL: you do not of read permissions to the location of the fix file $FIX_DIR"
    exit -1
@@ -107,26 +113,26 @@ cd ${pwd}/../ush                ||exit 8
     done
     for file in emcsfc_ice_blend.sh  fv3gfs_driver_grid.sh  fv3gfs_make_orog.sh  global_cycle_driver.sh \
         emcsfc_snow.sh  fv3gfs_filter_topo.sh  global_chgres_driver.sh  global_cycle.sh \
-        fv3gfs_chgres.sh  fv3gfs_make_grid.sh  global_chgres.sh  global_tracker.sh ; do
+        fv3gfs_chgres.sh  fv3gfs_make_grid.sh  global_chgres.sh ; do
         $LINK ../sorc/ufs_utils.fd/ush/$file                  .
     done
 
 #------------------------------
-#--add gfs_wafs file if on Dell
-#if [ $machine = dell ]; then 
+#--add gfs_wafs link if on Dell
+if [ $machine = dell ]; then 
 #------------------------------
-#cd ${pwd}/../jobs               ||exit 8
-#    $LINK ../sorc/gfs_wafs.fd/jobs/*                         .
-#cd ${pwd}/../parm               ||exit 8
-#    [[ -d wafs ]] && rm -rf wafs
-#    $LINK ../sorc/gfs_wafs.fd/parm/wafs                      wafs
-#cd ${pwd}/../scripts            ||exit 8
-#    $LINK ../sorc/gfs_wafs.fd/scripts/*                      .
-#cd ${pwd}/../ush                ||exit 8
-#    $LINK ../sorc/gfs_wafs.fd/ush/*                          .
-#cd ${pwd}/../fix                ||exit 8
-#    $LINK ../sorc/gfs_wafs.fd/fix/*                          .
-#fi
+ cd ${pwd}/../jobs               ||exit 8
+     $LINK ../sorc/gfs_wafs.fd/jobs/*                         .
+ cd ${pwd}/../parm               ||exit 8
+     [[ -d wafs ]] && rm -rf wafs
+    $LINK ../sorc/gfs_wafs.fd/parm/wafs                      wafs
+ cd ${pwd}/../scripts            ||exit 8
+    $LINK ../sorc/gfs_wafs.fd/scripts/*                      .
+ cd ${pwd}/../ush                ||exit 8
+    $LINK ../sorc/gfs_wafs.fd/ush/*                          .
+ cd ${pwd}/../fix                ||exit 8
+    $LINK ../sorc/gfs_wafs.fd/fix/*                          .
+fi
 
 #------------------------------
 #--add GSI/EnKF file
@@ -230,18 +236,25 @@ fi
 #        $LINK ../sorc/gfs_wafs.fd/exec/$wafsexe .
 #    done
 #fi
+if [ $machine = dell ]; then 
+    for wafsexe in wafs_awc_wafavn  wafs_blending  wafs_cnvgrib2  wafs_gcip  wafs_makewafs  wafs_setmissing; do
+        [[ -s $wafsexe ]] && rm -f $wafsexe
+        $LINK ../sorc/gfs_wafs.fd/exec/$wafsexe .
+    done
+fi
 
 for ufs_utilsexe in \
-     chgres_cube.exe   fregrid           global_cycle         nemsio_cvt    orog.x \
-     emcsfc_ice_blend  fregrid_parallel  make_hgrid           nemsio_get    shave.x \
-     emcsfc_snow2mdl   gettrk            make_hgrid_parallel  nemsio_read \
-     filter_topo       global_chgres     make_solo_mosaic     nst_tf_chg.x ; do
+     chgres_cube.exe   fregrid           make_hgrid           nemsio_get    shave.x \
+     emcsfc_ice_blend  fregrid_parallel  make_hgrid_parallel  nemsio_read \
+     emcsfc_snow2mdl   global_chgres     make_solo_mosaic     nst_tf_chg.x \
+     filter_topo       global_cycle      mkgfsnemsioctl       orog.x ; do
     [[ -s $ufs_utilsexe ]] && rm -f $ufs_utilsexe
     $LINK ../sorc/ufs_utils.fd/exec/$ufs_utilsexe .
 done
 
 for gsiexe in  global_gsi.x global_enkf.x calc_increment_ens.x  getsfcensmeanp.x  getsigensmeanp_smooth.x  \
-    getsigensstatp.x  recentersigp.x oznmon_horiz.x oznmon_time.x radmon_angle radmon_bcoef radmon_bcor radmon_time ;do
+    getsigensstatp.x  nc_diag_cat_serial.x nc_diag_cat.x recentersigp.x oznmon_horiz.x oznmon_time.x \
+    radmon_angle.x radmon_bcoef.x radmon_bcor.x radmon_time.x ;do
     [[ -s $gsiexe ]] && rm -f $gsiexe
     $LINK ../sorc/gsi.fd/exec/$gsiexe .
 done
@@ -312,20 +325,20 @@ cd ${pwd}/../sorc   ||   exit 8
         $SLINK ufs_utils.fd/sorc/fre-nctools.fd/tools/$prog                                ${prog}.fd                                
     done
     for prog in  chgres_cube.fd       global_cycle.fd   nemsio_read.fd \
-        emcsfc_ice_blend.fd  gettrk.fd         nemsio_cvt.fd    nst_tf_chg.fd \
-        emcsfc_snow2mdl.fd   global_chgres.fd  nemsio_get.fd    orog.fd ;do
+                 emcsfc_ice_blend.fd  mkgfsnemsioctl.fd  nst_tf_chg.fd \
+                 emcsfc_snow2mdl.fd   global_chgres.fd  nemsio_get.fd      orog.fd ;do
         $SLINK ufs_utils.fd/sorc/$prog                                                     $prog
     done
 
 
-#   if [ $machine = dell ]; then
-#       $SLINK gfs_wafs.fd/sorc/wafs_awc_wafavn.fd                                              wafs_awc_wafavn.fd
-#       $SLINK gfs_wafs.fd/sorc/wafs_blending.fd                                                wafs_blending.fd
-#       $SLINK gfs_wafs.fd/sorc/wafs_cnvgrib2.fd                                                wafs_cnvgrib2.fd
-#       $SLINK gfs_wafs.fd/sorc/wafs_gcip.fd                                                    wafs_gcip.fd
-#       $SLINK gfs_wafs.fd/sorc/wafs_makewafs.fd                                                wafs_makewafs.fd
-#       $SLINK gfs_wafs.fd/sorc/wafs_setmissing.fd                                              wafs_setmissing.fd
-#   fi
+    if [ $machine = dell ]; then
+        $SLINK gfs_wafs.fd/sorc/wafs_awc_wafavn.fd                                              wafs_awc_wafavn.fd
+        $SLINK gfs_wafs.fd/sorc/wafs_blending.fd                                                wafs_blending.fd
+        $SLINK gfs_wafs.fd/sorc/wafs_cnvgrib2.fd                                                wafs_cnvgrib2.fd
+        $SLINK gfs_wafs.fd/sorc/wafs_gcip.fd                                                    wafs_gcip.fd
+        $SLINK gfs_wafs.fd/sorc/wafs_makewafs.fd                                                wafs_makewafs.fd
+        $SLINK gfs_wafs.fd/sorc/wafs_setmissing.fd                                              wafs_setmissing.fd
+    fi
 
 
 #------------------------------

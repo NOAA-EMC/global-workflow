@@ -67,4 +67,5 @@ fi
  make -f makefile.$target clean
  mv gdas_trpsfcmv ../../exec/
 
+echo "Build complete"
 exit

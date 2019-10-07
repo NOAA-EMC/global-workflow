@@ -2,7 +2,6 @@
 ##
 ##      FV3GFS prerequisites
 ##
-
 module load intel/16.1.150
 module load impi/5.1.2.150
 module load wgrib2/0.2.0.6c

@@ -18,19 +18,27 @@ fi
 
 target=""
 USERNAME=`echo $LOGNAME | awk '{ print tolower($0)'}`
-
-if [[ -d /lfs3 ]] ; then
-    # We are on NOAA Jet
+##---------------------------------------------------------------------------
+export hname=`hostname | cut -c 1,1`
+if [[ -d /scratch1 ]] ; then
+if [  $hname == 'h'  ] ; then
+    # We are on NOAA Hera
     if ( ! eval module help > /dev/null 2>&1 ) ; then
 	echo load the module command 1>&2
         source /apps/lmod/lmod/init/$__ms_shell
     fi
-    target=jet
+    target=hera
     module purge
-     export NCEPLIBS=/mnt/lfs3/projects/hfv3gfs/gwv/ljtjet/lib
-     echo NCEPLIBS HARD SET to  $NCEPLIBS in `pwd`/module_setup.sh.inc
-     module use $NCEPLIBS/modulefiles
-elif [[ -d /scratch3 ]] ; then
+    module load intel
+    module load impi
+    export NCEPLIBS=/scratch2/NCEPDEV/nwprod/NCEPLIBS
+    module use $NCEPLIBS/modulefiles
+    #export WRFPATH=$NCEPLIBS/wrf.shared.new/v1.1.1/src
+    export myFC=mpiifort
+    export FCOMP=mpiifort
+
+##---------------------------------------------------------------------------
+elif [  $hname == 't'  ] ; then
     # We are on NOAA Theia
     if ( ! eval module help > /dev/null 2>&1 ) ; then
 	echo load the module command 1>&2
@@ -38,8 +46,19 @@ elif [[ -d /scratch3 ]] ; then
     fi
     target=theia
     module purge
-    module use /scratch3/NCEPDEV/nwprod/modulefiles/
-    module use /scratch3/NCEPDEV/nwprod/lib/modulefiles
+#GWV ADD
+module load         intel/15.3.187
+module load impi/5.0.3.048 
+export NCEPLIBS=/scratch4/NCEPDEV/global/noscrub/George.Vandenberghe/l618.2019/lib
+module use $NCEPLIBS/modulefiles
+export WRFPATH=/scratch4/NCEPDEV/global/noscrub/George.Vandenberghe/l618.2019/lib/wrf.shared.new/v1.1.1/src
+export myFC=mpiifort
+export FCOMP=mpiifort
+module load  ncl/6.3.0   
+#END GWV ADD
+fi
+
+##---------------------------------------------------------------------------
 elif [[ -d /gpfs/hps && -e /etc/SuSE-release ]] ; then
     # We are on NOAA Luna or Surge
     if ( ! eval module help > /dev/null 2>&1 ) ; then
@@ -74,6 +93,27 @@ elif [[ -d /gpfs/hps && -e /etc/SuSE-release ]] ; then
     module use /opt/modulefiles
     module load modules
 
+# GWV ADD
+module unload PrgEnv-cray
+module load  PrgEnv-intel
+module load craype-sandybridge
+export NCEPLIBS=/gpfs/dell2/emc/modeling/noscrub/cases/l621c/lib
+#export NCEPLIBS=/gpfs/hps/stmp/lc621/lib
+module use $NCEPLIBS/modulefiles
+export myFC=ftn      
+export OPENMP="-qopenmp"
+export myFCFLAGS="-O3 -convert big_endian -traceback -g -fp-model source   -fpp"
+export WRFPATH=$NCEPLIBS/wrf.shared.new/v1.1.1/src                                                    
+export FCOMP=ftn
+# for gsi
+export NDATE=/dev/null/ndate #needs set for build
+module use /usrx/local/dev/modulefiles
+module load cmake/3.6.2   #needed for gsi cmake settings
+
+
+# END GWV ADD
+
+##---------------------------------------------------------------------------
 elif [[ -L /usrx && "$( readlink /usrx 2> /dev/null )" =~ dell ]] ; then
     # We are on NOAA Venus or Mars
     if ( ! eval module help > /dev/null 2>&1 ) ; then
@@ -82,6 +122,26 @@ elif [[ -L /usrx && "$( readlink /usrx 2> /dev/null )" =~ dell ]] ; then
     fi
     target=wcoss_dell_p3
     module purge 
+#GWV ADD
+
+
+module load  ips/18.0.1.163  
+module load impi/18.0.1
+export NCEPLIBS=/gpfs/dell2/emc/modeling/noscrub/cases/lv506/lib
+export NCEPLIBS=/gpfs/dell2/emc/modeling/noscrub/cases/lv625/lib
+module use $NCEPLIBS/modulefiles
+export WRFPATH=$NCEPLIBS/wrf.shared.new/v1.1.1/src
+export myFC=mpiifort
+
+export OPENMP="-qopenmp"
+export myFCFLAGS="-O3 -convert big_endian -traceback -g -fp-model source   -fpp"
+module load cmake/3.10.0
+module load    prod_util/1.1.2  
+module list
+export FCOMP=mpiifort
+#GWV ENDADD
+
+##---------------------------------------------------------------------------
 
 elif [[ -d /dcom && -d /hwrf ]] ; then
     # We are on NOAA Tide or Gyre
@@ -91,6 +151,19 @@ elif [[ -d /dcom && -d /hwrf ]] ; then
     fi
     target=wcoss
     module purge
+#GWV ADD
+module load ics/16.0.3 ibmpe
+export NCEPLIBS=/gpfs/dell2/emc/modeling/noscrub/cases/l612p/lib
+#export NCEPLIBS=/tmp/l626/lib                                         
+module use $NCEPLIBS/modulefiles
+export WRFPATH=$NCEPLIBS/wrf.shared.new/v1.1.1/src
+export myFC=mpiifort
+export FCOMP=mpiifort
+export OPENMP="-openmp"
+export myFCFLAGS="-O3 -convert big_endian -traceback -g -fp-model source   -fpp"
+
+#GWV ENDADD
+##---------------------------------------------------------------------------
 elif [[ -d /glade ]] ; then
     # We are on NCAR Yellowstone
     if ( ! eval module help > /dev/null 2>&1 ) ; then
@@ -99,19 +172,81 @@ elif [[ -d /glade ]] ; then
     fi
     target=yellowstone
     module purge
+##---------------------------------------------------------------------------
 elif [[ -d /lustre && -d /ncrc ]] ; then
     # We are on GAEA. 
+   # We are on GAEA.
+    echo gaea
     if ( ! eval module help > /dev/null 2>&1 ) ; then
         # We cannot simply load the module command.  The GAEA
         # /etc/profile modifies a number of module-related variables
         # before loading the module command.  Without those variables,
         # the module command fails.  Hence we actually have to source
         # /etc/profile here.
-	echo load the module command 1>&2
         source /etc/profile
+        __ms_source_etc_profile=yes
+    else
+        __ms_source_etc_profile=no
     fi
-    target=gaea
     module purge
+    module purge
+# clean up after purge
+    unset _LMFILES_
+    unset _LMFILES_000
+    unset _LMFILES_001
+    unset LOADEDMODULES
+    module load modules
+    if [[ -d /opt/cray/ari/modulefiles ]] ; then
+        module use -a /opt/cray/ari/modulefiles
+    fi
+    if [[ -d /opt/cray/pe/ari/modulefiles ]] ; then
+        module use -a /opt/cray/pe/ari/modulefiles
+    fi
+    if [[ -d /opt/cray/pe/craype/default/modulefiles ]] ; then
+        module use -a /opt/cray/pe/craype/default/modulefiles
+    fi
+    if [[ -s /etc/opt/cray/pe/admin-pe/site-config ]] ; then
+        source /etc/opt/cray/pe/admin-pe/site-config
+    fi
+    export NCEPLIBS=/lustre/f1/pdata/ncep_shared/NCEPLIBS/lib
+    if [[ -d "$NCEPLIBS" ]] ; then
+        module use $NCEPLIBS/modulefiles
+    fi
+    if [[ "$__ms_source_etc_profile" == yes ]] ; then
+      source /etc/profile
+      unset __ms_source_etc_profile
+    fi
+
+target=gaea
+
+# GWV ADD
+module load craype
+module load intel
+export NCEPLIBS=/lustre/f2/dev/ncep/George.Vandenberghe/NEWCOPY/l508/lib/
+module use $NCEPLIBS/modulefiles
+export myFC=ftn      
+export WRFPATH=$NCEPLIBS/wrf.shared.new/v1.1.1/src                                                    
+export FCOMP=ftn
+# END GWV ADD
+
+##---------------------------------------------------------------------------
+elif [[ -d /lfs3 ]] ; then
+    # We are on NOAA Jet
+    if ( ! eval module help > /dev/null 2>&1 ) ; then
+        echo load the module command 1>&2
+        source /apps/lmod/lmod/init/$__ms_shell
+    fi
+    target=jet
+    module purge
+module load intel/15.0.3.187
+module load  impi
+#export  NCEPLIBS=/mnt/lfs3/projects/hfv3gfs/gwv/ljtjet/lib
+     export NCEPLIBS=/mnt/lfs3/projects/hfv3gfs/gwv/ljtjet/lib
+export NCEPLIBS=/mnt/lfs3/projects/hfv3gfs/gwv/NCEPLIBS.15X
+     module use $NCEPLIBS/modulefiles
+export WRFPATH=$NCEPLIBS/wrf.shared.new/v1.1.1/src
+export myFC=mpiifort
+
 else
     echo WARNING: UNKNOWN PLATFORM 1>&2
 fi

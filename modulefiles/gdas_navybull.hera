@@ -2,9 +2,7 @@
 # Module file for gdas_navybull - Hera
 ########################################################
 
-export NCEPLIBS=/scratch1/NCEPDEV/global/gwv/l819/lib
-module use -a $NCEPLIBS/modulefiles
-
-module load w3emc-intel-sandybridge/2.3.0
-module load w3nco-intel-sandybridge/2.0.6
-module load bufr-intel-sandybridge/11.1.0
+module use -a /scratch2/NCEPDEV/nwprod/NCEPLIBS/modulefiles
+module load w3emc/2.3.0
+module load w3nco/2.0.6
+module load bufr/11.3.0

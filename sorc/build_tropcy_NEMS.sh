@@ -11,7 +11,6 @@
 #        5) syndat_maksynrc.fd/syndat_maksynrc
 #        6) syndat_getjtbul.fd/syndat_getjtbul
 #        7) supvit.fd/supvit
-#        8) gettrk.fd/gettrk
 #
 set -eux
 
@@ -184,11 +183,5 @@ cd supvit.fd
    make install
    make clean
    cd ../
-#cd gettrk.fd
-#   make clean
-#   make -f makefile
-#   make install
-#   make clean
-#   cd ../
 
 exit

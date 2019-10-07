@@ -5,8 +5,10 @@ CDATE=${1:-""}
 gpdy=$(echo $CDATE | cut -c9-10)
 gcyc=$(echo $CDATE | cut -c9-10)
 CDUMP=${2:-""}
-SOURCE_DIR=${3:-$DMPDIR/$CDATE/$CDUMP}
+SOURCE_DIR=${3:-$DMPDIR/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}}
 TARGET_DIR=${4:-$ROTDIR/${CDUMP}.${PDY}/$cyc}
+
+DUMP_SUFFIX=${DUMP_SUFFIX:-""}
 
 # Exit if SORUCE_DIR does not exist
 if [ ! -s $SOURCE_DIR ]; then 
