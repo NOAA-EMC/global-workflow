@@ -10,7 +10,7 @@ case:
     FHOUT_HF_GFS: 3
 
   places:
-    workflow_file: workflow/public_release_v1.yaml
+    workflow_file: layout/public_release_v1.yaml
     ICSDIR: !calc doc.platform.public_release_ics
 
   settings: 

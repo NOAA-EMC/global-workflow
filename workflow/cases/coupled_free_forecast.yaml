@@ -1,6 +1,6 @@
 case:
   places:
-    workflow_file: workflow/free_forecast_gfs.yaml
+    workflow_file: layout/free_forecast_gfs.yaml
     MOM6IC: /scratch4/NCEPDEV/nems/noscrub/Bin.Li/FROM_HPSS
 
   settings: 

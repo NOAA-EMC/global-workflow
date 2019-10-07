@@ -5,6 +5,12 @@
 # the YAML documents.
 
 fv3_enkf_defaults: &fv3_enkf_defaults
+  QUILTING: True
+  FV3PETS: !FirstTrue
+    - when: !calc doc.fv3_enkf_settings.QUILTING
+      do: !calc layout_x * layout_y * 6 + WRITE_GROUP * WRTTASK_PER_GROUP
+    - otherwise: !calc layout_x * layout_y * 6
+
   FHSWR: 3600.
   FHLWR: 3600.
   IEMS: 1

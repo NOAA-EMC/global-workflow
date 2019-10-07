@@ -44,7 +44,7 @@ case:
     hord_xx_nh_nonmono: 6
 
   places:
-    workflow_file: workflow/cycled_gfs.yaml
+    workflow_file: layout/cycled_gfs.yaml
 
   post:
     NPOSTGRP: 10

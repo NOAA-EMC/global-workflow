@@ -22,7 +22,7 @@ case:
     FHOUT_HF_GFS: 1
 
   places:
-    workflow_file: workflow/cycled_gfs.yaml
+    workflow_file: layout/cycled_gfs.yaml
     ROTDIR: !expand "/gpfs/dell2/emc/modeling/noscrub/emc.fv3/com/gfs/exp/{doc.names.experiment}"
     EXPDIR: !expand "{HOMEgfs}/ecf/exp/{doc.names.experiment}"
     DATAROOT: /gpfs/dell2/ptmp/emc.fv3/tmpnwprd

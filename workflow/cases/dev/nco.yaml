@@ -45,7 +45,7 @@ case:
 
   places:
     DMPDIR: /gpfs/dell2/emc/modeling/noscrub/emc.fv3/com/globaldump
-    workflow_file: workflow/nco.yaml
+    workflow_file: layout/nco.yaml
     COMROOT: !expand "/gpfs/dell2/emc/modeling/noscrub/Jian.Kuang/com/"
     ROTDIR: !expand "/gpfs/dell2/emc/modeling/noscrub/Jian.Kuang/com/gfs/{doc.names.experiment}"
 #    EXPDIR: !expand "{HOMEgfs}/parm/config"

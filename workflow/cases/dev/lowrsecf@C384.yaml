@@ -20,7 +20,7 @@ case:
     FHMAX_HF_GFS: 120
 
   places:
-    workflow_file: workflow/cycled_gfs.yaml
+    workflow_file: layout/cycled_gfs.yaml
     ICSDIR: /gpfs/hps3/emc/global/noscrub/Jian.Kuang/ICS
 ####    HOMEgfs: /gpfs/hps3/emc/global/noscrub/emc.glopara/parallel-ecf/builds/replace-setup-expt-20180529
     HOMEgfs: /gpfs/hps3/emc/global/noscrub/Jian.Kuang/fv3gfs/

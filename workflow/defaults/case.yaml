@@ -22,6 +22,7 @@ fv3_gfs_settings: !Immediate
     - !calc doc.fv3_settings
     - CDUMP: gfs
       Template: *fv3_settings_template
+    - !calc doc.fv3_gfs_defaults
     - !calc doc.case.get('fv3_gfs_settings',{})
     - !calc doc.get('user_fv3_gfs_settings',{})
 
@@ -39,6 +40,7 @@ fv3_gdas_settings: !Immediate
     - !calc doc.fv3_gfs_settings
     - CDUMP: gdas
       Template: *fv3_settings_template
+    - !calc doc.fv3_gdas_defaults
     - !calc doc.case.get('fv3_gdas_settings',{})
     - !calc doc.get('user_fv3_gfs_settings',{})
 

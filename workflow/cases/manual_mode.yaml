@@ -83,7 +83,7 @@ case:
     scrub_in_archive: YES
 
   places:
-    workflow_file: workflow/manual_temp.yaml
+    workflow_file: layout/manual_temp.yaml
 
   settings: 
     SDATE: 2019-05-01t00:00:00

@@ -4,7 +4,7 @@ case:
     LEVS: 65
 
   places:
-    workflow_file: workflow/free_forecast_gfs.yaml
+    workflow_file: layout/free_forecast_gfs.yaml
 
   settings: 
     SDATE: 2019-05-01t00:00:00

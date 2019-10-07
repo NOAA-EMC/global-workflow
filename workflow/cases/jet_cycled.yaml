@@ -7,7 +7,7 @@ case:
     CASE: C192
 
   places:
-    workflow_file: workflow/cycled_gfs.yaml
+    workflow_file: layout/cycled_gfs.yaml
 
   settings: 
     SDATE: 2019-05-01t00:00:00

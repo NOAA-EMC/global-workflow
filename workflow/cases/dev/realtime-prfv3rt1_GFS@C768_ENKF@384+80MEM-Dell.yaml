@@ -40,7 +40,7 @@ case:
     FHOUT_HF_GFS: 1
 
   places:
-    workflow_file: workflow/cycled_gfs.yaml
+    workflow_file: layout/cycled_gfs.yaml
 
   post:
     NPOSTGRP: 10

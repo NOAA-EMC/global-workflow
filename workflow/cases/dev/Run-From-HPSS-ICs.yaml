@@ -66,4 +66,4 @@ case:
     # workflow_file: which workflow we're running.  This specifies the
     # jobs to run and their dependencies.  The only workflow included
     # in this release is the public release workflow.
-    workflow_file: workflow/public_release_v1.yaml
+    workflow_file: layout/public_release_v1.yaml

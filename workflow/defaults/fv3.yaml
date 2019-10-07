@@ -11,9 +11,5 @@ fv3_defaults: &fv3_defaults
   WRITE_GROUP: 1
   WRTTASK_PER_GROUP: 24
   WRTIOBUF: "32M"
-  FV3PETS: !FirstTrue
-    - when: !calc doc.fv3_gfs_settings.QUILTING
-      do: !calc layout_x * layout_y * 6 + WRITE_GROUP * WRTTASK_PER_GROUP
-    - otherwise: !calc layout_x * layout_y * 6
   OCNPETS: 120
   ICEPETS: 48

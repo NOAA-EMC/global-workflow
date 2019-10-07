@@ -20,7 +20,7 @@ case:
     FHMAX_HF_GFS: 120
 
   places:
-    workflow_file: workflow/cycled_gfs.yaml
+    workflow_file: layout/cycled_gfs.yaml
     ICSDIR: !FirstTrue
       - when: !calc doc.platform.name == "THEIA"
         do: "/scratch4/NCEPDEV/global/noscrub/glopara/ICS/FV3GFS"

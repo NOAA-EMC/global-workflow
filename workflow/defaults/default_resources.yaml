@@ -11,7 +11,7 @@
 
 # Resource matrix; VALUES of default resource settings
 gfs_resource_table: !Select
-  select: !calc doc.fv3_gfs_settings.CASE
+  select: !icalc doc.fv3_gfs_settings.CASE
   otherwise: !error "Unknown FV3 deterministic grid: {doc.fv3_gfs_settings.CASE}"
   cases:
     C192:
@@ -28,8 +28,8 @@ gfs_resource_table: !Select
       gfsfcst_wall:  !timedelta "01:00:00"
       coupfcst_medcold_wall:  !timedelta "00:30:00"
       coupfcst_wall:  !timedelta "02:00:00"
-      gdasfcst_ppn: !calc doc.platform.partitions.default_exclusive.scheduler_settings.physical_cores_per_node
-      gfsfcst_ppn: !calc doc.platform.partitions.default_exclusive.scheduler_settings.physical_cores_per_node
+      gdasfcst_ppn: !icalc doc.platform.partitions.default_exclusive.scheduler_settings.physical_cores_per_node
+      gfsfcst_ppn: !icalc doc.platform.partitions.default_exclusive.scheduler_settings.physical_cores_per_node
       post_manager_wallclock_extra: !timedelta "00:15:00"
     C384:
       #          ranks   ppn wallclock            threads MB_per_rank
@@ -43,8 +43,8 @@ gfs_resource_table: !Select
       gfsfcst_wall:  !timedelta "06:00:00"
       coupfcst_medcold_wall:  !timedelta "00:30:00"
       coupfcst_wall:  !timedelta "02:00:00"
-      gdasfcst_ppn: !calc doc.platform.partitions.default_exclusive.scheduler_settings.physical_cores_per_node
-      gfsfcst_ppn: !calc doc.platform.partitions.default_exclusive.scheduler_settings.physical_cores_per_node
+      gdasfcst_ppn: !icalc doc.platform.partitions.default_exclusive.scheduler_settings.physical_cores_per_node
+      gfsfcst_ppn: !icalc doc.platform.partitions.default_exclusive.scheduler_settings.physical_cores_per_node
       post_manager_wallclock_extra: !timedelta "00:15:00"
     C768:
       #          ranks ppn  wallclock            threads  MB_per_rank
@@ -60,12 +60,12 @@ gfs_resource_table: !Select
       gfsfcst_wall:  !timedelta "06:00:00"
       coupfcst_medcold_wall:  !timedelta "00:30:00"
       coupfcst_wall:  !timedelta "02:00:00"
-      gdasfcst_ppn: !calc doc.platform.partitions.default_exclusive.scheduler_settings.physical_cores_per_node
-      gfsfcst_ppn: !calc doc.platform.partitions.default_exclusive.scheduler_settings.physical_cores_per_node
+      gdasfcst_ppn: !icalc doc.platform.partitions.default_exclusive.scheduler_settings.physical_cores_per_node
+      gfsfcst_ppn: !icalc doc.platform.partitions.default_exclusive.scheduler_settings.physical_cores_per_node
       post_manager_wallclock_extra: !timedelta "00:15:00"
 
 enkf_resource_table: !Select
-  select: !calc doc.fv3_enkf_settings.CASE
+  select: !icalc doc.fv3_enkf_settings.CASE
   otherwise: !error "Unknown FV3 ENKF grid: {doc.fv3_enkf_settings.CASE}"
   cases:
     C192:
@@ -135,163 +135,158 @@ util_resource_table:
 default_resources: &default_resources
 
   run_dwn: !JobRequest
-    - mpi_ranks: !calc doc.util_resource_table.dwn[0]
-      OMP_NUM_THREADS: !calc doc.util_resource_table.dwn[3]
+    - mpi_ranks: !icalc doc.util_resource_table.dwn[0]
+      OMP_NUM_THREADS: !icalc doc.util_resource_table.dwn[3]
 
   run_sfc_prep: !JobRequest    
-    - batch_memory: !calc doc.util_resource_table.sfc_prep[4]
-      mpi_ranks: !calc doc.util_resource_table.sfc_prep[0]
-      walltime: !calc doc.util_resource_table.sfc_prep[2]
-      max_ppn: !calc doc.util_resource_table.sfc_prep[1]
+    - batch_memory: !icalc doc.util_resource_table.sfc_prep[4]
+      mpi_ranks: !icalc doc.util_resource_table.sfc_prep[0]
+      walltime: !icalc doc.util_resource_table.sfc_prep[2]
+      max_ppn: !icalc doc.util_resource_table.sfc_prep[1]
 
   run_final: !JobRequest
-    - batch_memory: !calc doc.util_resource_table.final[4]
-      mpi_ranks: !calc doc.util_resource_table.final[0]
-      walltime: !calc doc.util_resource_table.final[2]
-      max_ppn: !calc doc.util_resource_table.final[1]
+    - batch_memory: !icalc doc.util_resource_table.final[4]
+      mpi_ranks: !icalc doc.util_resource_table.final[0]
+      walltime: !icalc doc.util_resource_table.final[2]
+      max_ppn: !icalc doc.util_resource_table.final[1]
 
   run_getic: !JobRequest
-    - batch_memory: !calc doc.util_resource_table.getic[4]
-      mpi_ranks: !calc doc.util_resource_table.getic[0]
-      walltime: !calc doc.util_resource_table.getic[2]
-      max_ppn: !calc doc.util_resource_table.getic[1]
+    - batch_memory: !icalc doc.util_resource_table.getic[4]
+      mpi_ranks: !icalc doc.util_resource_table.getic[0]
+      walltime: !icalc doc.util_resource_table.getic[2]
+      max_ppn: !icalc doc.util_resource_table.getic[1]
 
   run_arch: !JobRequest
-    - batch_memory: !calc doc.util_resource_table.arch[4]
-      mpi_ranks: !calc doc.util_resource_table.arch[0]
-      walltime: !calc doc.util_resource_table.arch[2]
-      max_ppn: !calc doc.util_resource_table.arch[1]
+    - batch_memory: !icalc doc.util_resource_table.arch[4]
+      mpi_ranks: !icalc doc.util_resource_table.arch[0]
+      walltime: !icalc doc.util_resource_table.arch[2]
+      max_ppn: !icalc doc.util_resource_table.arch[1]
 
   run_earc: !JobRequest
-    - batch_memory: !calc doc.util_resource_table.earc[4]
-      mpi_ranks: !calc doc.util_resource_table.earc[0]
-      walltime: !calc doc.util_resource_table.earc[2]
-      max_ppn: !calc doc.util_resource_table.earc[1]
+    - batch_memory: !icalc doc.util_resource_table.earc[4]
+      mpi_ranks: !icalc doc.util_resource_table.earc[0]
+      walltime: !icalc doc.util_resource_table.earc[2]
+      max_ppn: !icalc doc.util_resource_table.earc[1]
 
   run_make_next_cycles: !JobRequest
-    - batch_memory: !calc doc.util_resource_table.make_next_cycles[4]
-      walltime: !calc doc.util_resource_table.make_next_cycles[2]
+    - batch_memory: !icalc doc.util_resource_table.make_next_cycles[4]
+      walltime: !icalc doc.util_resource_table.make_next_cycles[2]
 
   run_one_hour_exclusive: !JobRequest # Placeholder for one node jobs
-    - batch_memory: !calc doc.util_resource_table.one_hour_exclusive[4]
-      mpi_ranks: !calc doc.util_resource_table.one_hour_exclusive[0]
-      walltime: !calc doc.util_resource_table.one_hour_exclusive[2]
+    - batch_memory: !icalc doc.util_resource_table.one_hour_exclusive[4]
+      mpi_ranks: !icalc doc.util_resource_table.one_hour_exclusive[0]
+      walltime: !icalc doc.util_resource_table.one_hour_exclusive[2]
 
   run_nothing: !JobRequest # Special placeholder for "do nothing"
-    - batch_memory: !calc doc.util_resource_table.nothing[4]
-      walltime: !calc doc.util_resource_table.nothing[2]
+    - batch_memory: !icalc doc.util_resource_table.nothing[4]
+      walltime: !icalc doc.util_resource_table.nothing[2]
 
   run_prepbufr: !JobRequest     # never used
-    - batch_memory: !calc doc.util_resource_table.prepbufr[4]
-      walltime: !calc doc.util_resource_table.prepbufr[2]
-      max_ppn: !calc doc.util_resource_table.prepbufr[1]
-      mpi_ranks: !calc doc.util_resource_table.prepbufr[0]
+    - batch_memory: !icalc doc.util_resource_table.prepbufr[4]
+      walltime: !icalc doc.util_resource_table.prepbufr[2]
+      max_ppn: !icalc doc.util_resource_table.prepbufr[1]
+      mpi_ranks: !icalc doc.util_resource_table.prepbufr[0]
 
   run_fv3ic: !JobRequest
-    - batch_memory: !calc doc.util_resource_table.fv3ic[4]
-      mpi_ranks: !calc doc.util_resource_table.fv3ic[0]
-      max_ppn: !calc doc.util_resource_table.fv3ic[1]
-      walltime: !calc doc.util_resource_table.fv3ic[2]
+    - batch_memory: !icalc doc.util_resource_table.fv3ic[4]
+      mpi_ranks: !icalc doc.util_resource_table.fv3ic[0]
+      max_ppn: !icalc doc.util_resource_table.fv3ic[1]
+      walltime: !icalc doc.util_resource_table.fv3ic[2]
 
   run_dump_waiter: !JobRequest
-    - batch_memory: !calc doc.util_resource_table.dump_waiter[4]
-      walltime: !calc doc.util_resource_table.dump_waiter[2]
-      mpi_ranks: !calc doc.util_resource_table.dump_waiter[0]
-      max_ppn: !calc doc.util_resource_table.dump_waiter[1]
+    - batch_memory: !icalc doc.util_resource_table.dump_waiter[4]
+      walltime: !icalc doc.util_resource_table.dump_waiter[2]
+      mpi_ranks: !icalc doc.util_resource_table.dump_waiter[0]
+      max_ppn: !icalc doc.util_resource_table.dump_waiter[1]
 
   run_big_downstream: !JobRequest
-    - mpi_ranks: !calc doc.downstream_resource_table.big_downstream[0]
-      max_ppn: !calc doc.downstream_resource_table.big_downstream[1]
-      walltime: !calc doc.downstream_resource_table.big_downstream[2]
-      OMP_NUM_THREADS: !calc doc.downstream_resource_table.big_downstream[3]
-      batch_memory: !calc doc.downstream_resource_table.big_downstream[4]
+    - mpi_ranks: !icalc doc.downstream_resource_table.big_downstream[0]
+      max_ppn: !icalc doc.downstream_resource_table.big_downstream[1]
+      walltime: !icalc doc.downstream_resource_table.big_downstream[2]
+      OMP_NUM_THREADS: !icalc doc.downstream_resource_table.big_downstream[3]
+      batch_memory: !icalc doc.downstream_resource_table.big_downstream[4]
 
   run_small_downstream: !JobRequest
-    - mpi_ranks: !calc doc.downstream_resource_table.small_downstream[0]
-      max_ppn: !calc doc.downstream_resource_table.small_downstream[1]
-      walltime: !calc doc.downstream_resource_table.small_downstream[2]
-      OMP_NUM_THREADS: !calc doc.downstream_resource_table.small_downstream[3]
-      batch_memory: !calc doc.downstream_resource_table.small_downstream[4]
+    - mpi_ranks: !icalc doc.downstream_resource_table.small_downstream[0]
+      max_ppn: !icalc doc.downstream_resource_table.small_downstream[1]
+      walltime: !icalc doc.downstream_resource_table.small_downstream[2]
+      OMP_NUM_THREADS: !icalc doc.downstream_resource_table.small_downstream[3]
+      batch_memory: !icalc doc.downstream_resource_table.small_downstream[4]
 
   run_one_node_downstream: !JobRequest
-    - mpi_ranks: !calc doc.downstream_resource_table.one_node_downstream[0]
-      max_ppn: !calc doc.downstream_resource_table.one_node_downstream[1]
-      walltime: !calc doc.downstream_resource_table.one_node_downstream[2]
-      OMP_NUM_THREADS: !calc doc.downstream_resource_table.one_node_downstream[3]
-      batch_memory: !calc doc.downstream_resource_table.one_node_downstream[4]
+    - mpi_ranks: !icalc doc.downstream_resource_table.one_node_downstream[0]
+      max_ppn: !icalc doc.downstream_resource_table.one_node_downstream[1]
+      walltime: !icalc doc.downstream_resource_table.one_node_downstream[2]
+      OMP_NUM_THREADS: !icalc doc.downstream_resource_table.one_node_downstream[3]
+      batch_memory: !icalc doc.downstream_resource_table.one_node_downstream[4]
 
   run_gdas_gempak_meta_ncdc: !JobRequest
-    - mpi_ranks: !calc doc.downstream_resource_table.gdas_gempak_meta_ncdc[0]
-      max_ppn: !calc doc.downstream_resource_table.gdas_gempak_meta_ncdc[1]
-      walltime: !calc doc.downstream_resource_table.gdas_gempak_meta_ncdc[2]
-      OMP_NUM_THREADS: !calc doc.downstream_resource_table.gdas_gempak_meta_ncdc[3]
-      batch_memory: !calc doc.downstream_resource_table.gdas_gempak_meta_ncdc[4]
+    - mpi_ranks: !icalc doc.downstream_resource_table.gdas_gempak_meta_ncdc[0]
+      max_ppn: !icalc doc.downstream_resource_table.gdas_gempak_meta_ncdc[1]
+      walltime: !icalc doc.downstream_resource_table.gdas_gempak_meta_ncdc[2]
+      OMP_NUM_THREADS: !icalc doc.downstream_resource_table.gdas_gempak_meta_ncdc[3]
+      batch_memory: !icalc doc.downstream_resource_table.gdas_gempak_meta_ncdc[4]
 
   run_gfs_gempak: !JobRequest
-    - mpi_ranks: !calc doc.downstream_resource_table.gfs_gempak[0]
-      max_ppn: !calc doc.downstream_resource_table.gfs_gempak[1]
-      walltime: !calc doc.downstream_resource_table.gfs_gempak[2]
-      OMP_NUM_THREADS: !calc doc.downstream_resource_table.gfs_gempak[3]
-      batch_memory: !calc doc.downstream_resource_table.gfs_gempak[4]
+    - mpi_ranks: !icalc doc.downstream_resource_table.gfs_gempak[0]
+      max_ppn: !icalc doc.downstream_resource_table.gfs_gempak[1]
+      walltime: !icalc doc.downstream_resource_table.gfs_gempak[2]
+      OMP_NUM_THREADS: !icalc doc.downstream_resource_table.gfs_gempak[3]
+      batch_memory: !icalc doc.downstream_resource_table.gfs_gempak[4]
 
   run_gdas_gempak: !JobRequest
-    - mpi_ranks: !calc doc.downstream_resource_table.gdas_gempak[0]
-      max_ppn: !calc doc.downstream_resource_table.gdas_gempak[1]
-      walltime: !calc doc.downstream_resource_table.gdas_gempak[2]
-      OMP_NUM_THREADS: !calc doc.downstream_resource_table.gdas_gempak[3]
-      batch_memory: !calc doc.downstream_resource_table.gdas_gempak[4]
+    - mpi_ranks: !icalc doc.downstream_resource_table.gdas_gempak[0]
+      max_ppn: !icalc doc.downstream_resource_table.gdas_gempak[1]
+      walltime: !icalc doc.downstream_resource_table.gdas_gempak[2]
+      OMP_NUM_THREADS: !icalc doc.downstream_resource_table.gdas_gempak[3]
+      batch_memory: !icalc doc.downstream_resource_table.gdas_gempak[4]
 
   run_vminmon: !JobRequest
-    - mpi_ranks: !calc doc.downstream_resource_table.vminmon[0]
-      max_ppn: !calc doc.downstream_resource_table.vminmon[1]
-      walltime: !calc doc.downstream_resource_table.vminmon[2]
-      batch_memory: !calc doc.downstream_resource_table.vminmon[4]
+    - mpi_ranks: !icalc doc.downstream_resource_table.vminmon[0]
+      max_ppn: !icalc doc.downstream_resource_table.vminmon[1]
+      walltime: !icalc doc.downstream_resource_table.vminmon[2]
+      batch_memory: !icalc doc.downstream_resource_table.vminmon[4]
 
   run_awips: !JobRequest
-    - mpi_ranks: !calc doc.downstream_resource_table.awips[0]
-      max_ppn: !calc doc.downstream_resource_table.awips[1]
-      walltime: !calc doc.downstream_resource_table.awips[2]
-      batch_memory: !calc doc.downstream_resource_table.awips[4]
+    - mpi_ranks: !icalc doc.downstream_resource_table.awips[0]
+      max_ppn: !icalc doc.downstream_resource_table.awips[1]
+      walltime: !icalc doc.downstream_resource_table.awips[2]
+      batch_memory: !icalc doc.downstream_resource_table.awips[4]
 
   run_postsnd: !JobRequest
-    - mpi_ranks: !calc doc.downstream_resource_table.postsnd[0]
-      max_ppn: !calc doc.downstream_resource_table.postsnd[1]
-      walltime: !calc doc.downstream_resource_table.postsnd[2]
-      batch_memory: !calc doc.downstream_resource_table.postsnd[4]
+    - mpi_ranks: !icalc doc.downstream_resource_table.postsnd[0]
+      max_ppn: !icalc doc.downstream_resource_table.postsnd[1]
+      walltime: !icalc doc.downstream_resource_table.postsnd[2]
+      batch_memory: !icalc doc.downstream_resource_table.postsnd[4]
 
   run_postsndcfp: !JobRequest
-    - mpi_ranks: !calc doc.downstream_resource_table.postsndcfp[0]
-      max_ppn: !calc doc.downstream_resource_table.postsndcfp[1]
-      walltime: !calc doc.downstream_resource_table.postsndcfp[2]
-      batch_memory: !calc doc.downstream_resource_table.postsndcfp[4]
+    - mpi_ranks: !icalc doc.downstream_resource_table.postsndcfp[0]
+      max_ppn: !icalc doc.downstream_resource_table.postsndcfp[1]
+      walltime: !icalc doc.downstream_resource_table.postsndcfp[2]
+      batch_memory: !icalc doc.downstream_resource_table.postsndcfp[4]
 
   run_gempak: !JobRequest
-    - mpi_ranks: !calc doc.downstream_resource_table.gempak[0]
-      max_ppn: !calc doc.downstream_resource_table.gempak[1]
-      walltime: !calc doc.downstream_resource_table.gempak[2]
-      OMP_NUM_THREADS: !calc doc.downstream_resource_table.gempak[3]
-      batch_memory: !calc doc.downstream_resource_table.gempak[4]
+    - mpi_ranks: !icalc doc.downstream_resource_table.gempak[0]
+      max_ppn: !icalc doc.downstream_resource_table.gempak[1]
+      walltime: !icalc doc.downstream_resource_table.gempak[2]
+      OMP_NUM_THREADS: !icalc doc.downstream_resource_table.gempak[3]
+      batch_memory: !icalc doc.downstream_resource_table.gempak[4]
 
   run_verfrad: !JobRequest
-    - mpi_ranks: !calc doc.downstream_resource_table.verfrad[0]
-      max_ppn: !calc doc.downstream_resource_table.verfrad[1]
-      walltime: !calc doc.downstream_resource_table.verfrad[2]
-      batch_memory: !calc doc.downstream_resource_table.verfrad[4]
+    - mpi_ranks: !icalc doc.downstream_resource_table.verfrad[0]
+      max_ppn: !icalc doc.downstream_resource_table.verfrad[1]
+      walltime: !icalc doc.downstream_resource_table.verfrad[2]
+      batch_memory: !icalc doc.downstream_resource_table.verfrad[4]
 
   # Calculated resources; ones that can be determined entirely from
   # other variables throughout the document.
 
   run_gdasfcst: !JobRequest
     - batch_memory: "1024M"
-      mpi_ranks: !calc doc.fv3_gdas_settings.FV3PETS
-      max_ppn: !calc doc.gfs_resource_table.gdasfcst_ppn
-      walltime: !calc doc.gfs_resource_table.gdasfcst_wall
+      mpi_ranks: !icalc doc.fv3_gdas_settings.FV3PETS
+      max_ppn: !icalc doc.gfs_resource_table.gdasfcst_ppn
+      walltime: !icalc doc.gfs_resource_table.gdasfcst_wall
   
-  no_gdasfcst_remap: !JobRequest
-    - mpi_ranks: !calc (min(240,doc.default_resources.run_gdasfcst.total_ranks()))
-      OMP_NUM_THREADS: 2
-      max_ppn: !calc (doc.accounting.exclusive_partition.nodes.max_ranks_per_node(doc.default_resources.run_gdasfcst[0]))
-
   remap_resource_template: &remap_resource_template
     mpi_ranks: !calc >-
       min(240,resources.total_ranks())
@@ -300,31 +295,31 @@ default_resources: &default_resources
   
   run_efcs: !JobRequest
     - batch_memory: "254M"
-      mpi_ranks: !calc doc.fv3_enkf_settings.FV3PETS
-      max_ppn: !calc doc.enkf_resource_table.efcs_ppn
-      walltime: !calc doc.enkf_resource_table.efcs_wall
+      mpi_ranks: !icalc doc.fv3_enkf_settings.FV3PETS
+      max_ppn: !icalc doc.enkf_resource_table.efcs_ppn
+      walltime: !icalc doc.enkf_resource_table.efcs_wall
 
   run_gfsfcst: !JobRequest
     - batch_memory: "1024M"
-      mpi_ranks: !calc doc.fv3_gfs_settings.FV3PETS
-      max_ppn: !calc doc.gfs_resource_table.gfsfcst_ppn
-      walltime: !calc doc.gfs_resource_table.gfsfcst_wall
+      mpi_ranks: !icalc doc.fv3_gfs_settings.FV3PETS
+      max_ppn: !icalc doc.gfs_resource_table.gfsfcst_ppn
+      walltime: !icalc doc.gfs_resource_table.gfsfcst_wall
 
   run_coupled_fcst: !JobRequest
     - batch_memory: "1024M"
-      mpi_ranks: !calc doc.fv3_gfs_settings.FV3PETS+doc.fv3_gfs_settings.OCNPETS+doc.fv3_gfs_settings.ICEPETS
-      max_ppn: !calc doc.fv3_gfs_settings.get('fcst_max_ppn',None)
-      OMP_NUM_THREADS: !calc doc.fv3_gfs_settings.fv3_threads
-      walltime: !calc doc.gfs_resource_table.coupfcst_wall
-      memory_per_rank: !calc doc.gfs_resource_table.get('gfsfcst_mem_per_rank',None)
+      mpi_ranks: !icalc doc.fv3_gfs_settings.FV3PETS+doc.fv3_gfs_settings.OCNPETS+doc.fv3_gfs_settings.ICEPETS
+      max_ppn: !icalc doc.fv3_gfs_settings.get('fcst_max_ppn',None)
+      OMP_NUM_THREADS: !icalc doc.fv3_gfs_settings.fv3_threads
+      walltime: !icalc doc.gfs_resource_table.coupfcst_wall
+      memory_per_rank: !icalc doc.gfs_resource_table.get('gfsfcst_mem_per_rank',None)
 
   run_coupled_medcold: !JobRequest
     - batch_memory: "1024M"
-      mpi_ranks: !calc doc.fv3_gfs_settings.FV3PETS+doc.fv3_gfs_settings.OCNPETS+doc.fv3_gfs_settings.ICEPETS
-      max_ppn: !calc doc.fv3_gfs_settings.get('fcst_max_ppn',None)
-      OMP_NUM_THREADS: !calc doc.fv3_gfs_settings.fv3_threads
-      walltime: !calc doc.gfs_resource_table.coupfcst_medcold_wall
-      memory_per_rank: !calc doc.gfs_resource_table.get('gfsfcst_mem_per_rank',None)  
+      mpi_ranks: !icalc doc.fv3_gfs_settings.FV3PETS+doc.fv3_gfs_settings.OCNPETS+doc.fv3_gfs_settings.ICEPETS
+      max_ppn: !icalc doc.fv3_gfs_settings.get('fcst_max_ppn',None)
+      OMP_NUM_THREADS: !icalc doc.fv3_gfs_settings.fv3_threads
+      walltime: !icalc doc.gfs_resource_table.coupfcst_medcold_wall
+      memory_per_rank: !icalc doc.gfs_resource_table.get('gfsfcst_mem_per_rank',None)  
 
   fallback_run_gfsremap: !JobRequest
     # Used to generate the config files if the gfs remap is not run in the workflow.
@@ -338,109 +333,109 @@ default_resources: &default_resources
   run_gdas_post_manager: !JobRequest
     - memory: "300M"
       exe: placeholder
-      walltime: !calc doc.gfs_resource_table.gdasfcst_wall+doc.gfs_resource_table.post_manager_wallclock_extra
+      walltime: !icalc doc.gfs_resource_table.gdasfcst_wall+doc.gfs_resource_table.post_manager_wallclock_extra
   
   run_gfs_post_manager: !JobRequest
     - memory: "300M"
       exe: placeholder
-      walltime: !calc doc.gfs_resource_table.gfsfcst_wall+doc.gfs_resource_table.post_manager_wallclock_extra
+      walltime: !icalc doc.gfs_resource_table.gfsfcst_wall+doc.gfs_resource_table.post_manager_wallclock_extra
 
   run_ecen: !JobRequest
     - batch_memory: "3072M"
       exe: placeholder
-      mpi_ranks: !calc doc.enkf_resource_table.ecen[0]
-      max_ppn: !calc doc.enkf_resource_table.ecen[1]
-      walltime: !calc doc.enkf_resource_table.ecen[2]
-      OMP_NUM_THREADS: !calc doc.enkf_resource_table.ecen[3]
-      memory_per_rank: !calc doc.enkf_resource_table.ecen[4]
+      mpi_ranks: !icalc doc.enkf_resource_table.ecen[0]
+      max_ppn: !icalc doc.enkf_resource_table.ecen[1]
+      walltime: !icalc doc.enkf_resource_table.ecen[2]
+      OMP_NUM_THREADS: !icalc doc.enkf_resource_table.ecen[3]
+      memory_per_rank: !icalc doc.enkf_resource_table.ecen[4]
   
   run_eobs: !JobRequest
     - batch_memory: "3072M"
       exe: placeholder
-      mpi_ranks: !calc doc.enkf_resource_table.eobs[0]
-      max_ppn: !calc doc.enkf_resource_table.eobs[1]
-      walltime: !calc doc.enkf_resource_table.eobs[2]
-      OMP_NUM_THREADS: !calc doc.enkf_resource_table.eobs[3]
-      memory_per_rank: !calc doc.enkf_resource_table.eobs[4]
+      mpi_ranks: !icalc doc.enkf_resource_table.eobs[0]
+      max_ppn: !icalc doc.enkf_resource_table.eobs[1]
+      walltime: !icalc doc.enkf_resource_table.eobs[2]
+      OMP_NUM_THREADS: !icalc doc.enkf_resource_table.eobs[3]
+      memory_per_rank: !icalc doc.enkf_resource_table.eobs[4]
   
   run_eomg: !JobRequest
     - batch_memory: "3072M"
       exe: placeholder
-      mpi_ranks: !calc doc.enkf_resource_table.eomg[0]
-      max_ppn: !calc doc.enkf_resource_table.eomg[1]
-      walltime: !calc doc.enkf_resource_table.eomg[2]
-      OMP_NUM_THREADS: !calc doc.enkf_resource_table.eomg[3]
-      memory_per_rank: !calc doc.enkf_resource_table.eomg[4]
+      mpi_ranks: !icalc doc.enkf_resource_table.eomg[0]
+      max_ppn: !icalc doc.enkf_resource_table.eomg[1]
+      walltime: !icalc doc.enkf_resource_table.eomg[2]
+      OMP_NUM_THREADS: !icalc doc.enkf_resource_table.eomg[3]
+      memory_per_rank: !icalc doc.enkf_resource_table.eomg[4]
   
   run_eupd: !JobRequest
     - batch_memory: "3072M"
       exe: placeholder
-      mpi_ranks: !calc doc.enkf_resource_table.eupd[0]
-      max_ppn: !calc doc.enkf_resource_table.eupd[1]
-      walltime: !calc doc.enkf_resource_table.eupd[2]
-      OMP_NUM_THREADS: !calc doc.enkf_resource_table.eupd[3]
-      memory_per_rank: !calc doc.enkf_resource_table.eupd[4]
+      mpi_ranks: !icalc doc.enkf_resource_table.eupd[0]
+      max_ppn: !icalc doc.enkf_resource_table.eupd[1]
+      walltime: !icalc doc.enkf_resource_table.eupd[2]
+      OMP_NUM_THREADS: !icalc doc.enkf_resource_table.eupd[3]
+      memory_per_rank: !icalc doc.enkf_resource_table.eupd[4]
   
   run_epos: !JobRequest
     - batch_memory: "254M"
       exe: placeholder
-      mpi_ranks: !calc doc.enkf_resource_table.epos[0]
-      max_ppn: !calc doc.enkf_resource_table.epos[1]
-      walltime: !calc doc.enkf_resource_table.epos[2]
-      OMP_NUM_THREADS: !calc doc.enkf_resource_table.epos[3]
-      memory_per_rank: !calc doc.enkf_resource_table.epos[4]
+      mpi_ranks: !icalc doc.enkf_resource_table.epos[0]
+      max_ppn: !icalc doc.enkf_resource_table.epos[1]
+      walltime: !icalc doc.enkf_resource_table.epos[2]
+      OMP_NUM_THREADS: !icalc doc.enkf_resource_table.epos[3]
+      memory_per_rank: !icalc doc.enkf_resource_table.epos[4]
 
   run_prep: !JobRequest
     - batch_memory: "3072M"
       exe: placeholder
-      mpi_ranks: !calc doc.gfs_resource_table.prep[0]
-      max_ppn: !calc doc.gfs_resource_table.prep[1]
-      walltime: !calc doc.gfs_resource_table.prep[2]
-      OMP_NUM_THREADS: !calc doc.gfs_resource_table.prep[3]
-      memory_per_rank: !calc  doc.gfs_resource_table.prep[4]
+      mpi_ranks: !icalc doc.gfs_resource_table.prep[0]
+      max_ppn: !icalc doc.gfs_resource_table.prep[1]
+      walltime: !icalc doc.gfs_resource_table.prep[2]
+      OMP_NUM_THREADS: !icalc doc.gfs_resource_table.prep[3]
+      memory_per_rank: !icalc  doc.gfs_resource_table.prep[4]
 
   run_anal: !JobRequest
     - batch_memory: "3072M"
       exe: placeholder
-      mpi_ranks: !calc doc.gfs_resource_table.anal[0]
-      max_ppn: !calc doc.gfs_resource_table.anal[1]
-      walltime: !calc doc.gfs_resource_table.anal[2]
-      OMP_NUM_THREADS: !calc doc.gfs_resource_table.anal[3]
-      memory_per_rank: !calc  doc.gfs_resource_table.anal[4]
+      mpi_ranks: !icalc doc.gfs_resource_table.anal[0]
+      max_ppn: !icalc doc.gfs_resource_table.anal[1]
+      walltime: !icalc doc.gfs_resource_table.anal[2]
+      OMP_NUM_THREADS: !icalc doc.gfs_resource_table.anal[3]
+      memory_per_rank: !icalc  doc.gfs_resource_table.anal[4]
 
   run_gdaspost: !JobRequest
     - batch_memory: "3072M"
       exe: placeholder
-      mpi_ranks: !calc doc.gfs_resource_table.gdaspost[0]
-      max_ppn: !calc doc.gfs_resource_table.gdaspost[1]
-      walltime: !calc doc.gfs_resource_table.gdaspost[2]
-      OMP_NUM_THREADS: !calc doc.gfs_resource_table.gdaspost[3]
-      memory_per_rank: !calc doc.gfs_resource_table.gdaspost[4]
+      mpi_ranks: !icalc doc.gfs_resource_table.gdaspost[0]
+      max_ppn: !icalc doc.gfs_resource_table.gdaspost[1]
+      walltime: !icalc doc.gfs_resource_table.gdaspost[2]
+      OMP_NUM_THREADS: !icalc doc.gfs_resource_table.gdaspost[3]
+      memory_per_rank: !icalc doc.gfs_resource_table.gdaspost[4]
       
   run_gfspost: !JobRequest
     - batch_memory: "3072M"
       exe: placeholder
-      mpi_ranks: !calc doc.gfs_resource_table.gfspost[0]
-      max_ppn: !calc doc.gfs_resource_table.gfspost[1]
-      walltime: !calc doc.gfs_resource_table.gfspost[2]
-      OMP_NUM_THREADS: !calc doc.gfs_resource_table.gfspost[3]
-      memory_per_rank: !calc doc.gfs_resource_table.gfspost[4]
+      mpi_ranks: !icalc doc.gfs_resource_table.gfspost[0]
+      max_ppn: !icalc doc.gfs_resource_table.gfspost[1]
+      walltime: !icalc doc.gfs_resource_table.gfspost[2]
+      OMP_NUM_THREADS: !icalc doc.gfs_resource_table.gfspost[3]
+      memory_per_rank: !icalc doc.gfs_resource_table.gfspost[4]
 
   run_gfsvrfy: !JobRequest
     - compute_memory: "16384M"
       batch_memory: "3072M"
       exe: placeholder
-      mpi_ranks: !calc doc.gfs_resource_table.gfsvrfy[0]
-      max_ppn: !calc doc.gfs_resource_table.gfsvrfy[1]
-      walltime: !calc doc.gfs_resource_table.gfsvrfy[2]
-      OMP_NUM_THREADS: !calc doc.gfs_resource_table.gfsvrfy[3]
+      mpi_ranks: !icalc doc.gfs_resource_table.gfsvrfy[0]
+      max_ppn: !icalc doc.gfs_resource_table.gfsvrfy[1]
+      walltime: !icalc doc.gfs_resource_table.gfsvrfy[2]
+      OMP_NUM_THREADS: !icalc doc.gfs_resource_table.gfsvrfy[3]
 
   run_gdasvrfy: !JobRequest
     - compute_memory: "16384M"
       batch_memory: "3072M"
       exe: placeholder
-      mpi_ranks: !calc doc.gfs_resource_table.gdasvrfy[0]
-      max_ppn: !calc doc.gfs_resource_table.gdasvrfy[1]
-      walltime: !calc doc.gfs_resource_table.gdasvrfy[2]
-      OMP_NUM_THREADS: !calc doc.gfs_resource_table.gdasvrfy[3]
+      mpi_ranks: !icalc doc.gfs_resource_table.gdasvrfy[0]
+      max_ppn: !icalc doc.gfs_resource_table.gdasvrfy[1]
+      walltime: !icalc doc.gfs_resource_table.gdasvrfy[2]
+      OMP_NUM_THREADS: !icalc doc.gfs_resource_table.gdasvrfy[3]
             

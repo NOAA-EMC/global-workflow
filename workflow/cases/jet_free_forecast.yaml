@@ -4,7 +4,7 @@ case:
     LEVS: 65
 
   places:
-    workflow_file: workflow/free_forecast_gfs.yaml
+    workflow_file: layout/free_forecast_gfs.yaml
 
   gfs_output_settings:
     FHMAX_GFS: 24
