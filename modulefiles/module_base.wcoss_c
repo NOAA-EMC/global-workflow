@@ -52,3 +52,6 @@ module load util_shared/1.0.7
 module load gcc/6.3.0
 module unload grib_util/1.0.3
 module load grib_util/1.1.0
+
+module use /gpfs/hps3/emc/nems/noscrub/emc.nemspara/soft/modulefiles
+module load esmf/8.0.0bs48

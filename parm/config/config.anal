@@ -21,6 +21,7 @@ fi
 
 export ANALYSISSH="$HOMEgsi/scripts/exglobal_analysis_fv3gfs.sh.ecf"
 export npe_gsi=$npe_anal
+export LEVS_ENKF=$((LEVS-1))
 
 # Do not process the following datasets
 export GSNDBF=${GSNDBF:-/dev/null}

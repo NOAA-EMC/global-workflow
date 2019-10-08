@@ -123,12 +123,12 @@ export SENDSDM=${SENDSDM:-"NO"}
 # Resolution specific parameters
 export LEVS=65
 export CASE="C768"
-export LEVS_ENKF=$((LEVS-1))
 export CASE_ENKF="C384"
 
 # Surface cycle update frequency
 if [[ "$CDUMP" == "gdas" ]] ; then
    export FHCYC=1
+   export FTSFS=10
 elif [[ "$CDUMP" == "gfs" ]] ; then
    export FHCYC=24
 fi
@@ -165,6 +165,14 @@ export restart_interval_gfs=12
 export QUILTING=".true."
 export OUTPUT_GRID="gaussian_grid"
 export OUTPUT_FILE="nemsio"
+
+# IAU related parameters
+export DOIAU="NO"
+export IAUFHRS=6
+export IAU_DELTHRS=6
+export DOIAU_ENKF="NO"
+export IAUFHRS_ENKF=6
+export IAU_DELTHRS_ENKF=6
 
 # Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL
 export imp_physics=11
