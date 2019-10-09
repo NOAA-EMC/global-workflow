@@ -1,12 +1,5 @@
 #!/usr/bin/env python
 
-###############################################################
-# < next few lines under version control, D O  N O T  E D I T >
-# $Date$
-# $Revision$
-# $Author$
-# $Id$
-###############################################################
 '''
     PROGRAM:
         Create the ROCOTO workflow for a forecast only experiment given the configuration of the GFS parallel
@@ -97,6 +90,9 @@ def get_definitions(base):
         Create entities related to the experiment
     '''
 
+    machine = base.get('machine', wfu.detectMachine())
+    scheduler = wfu.get_scheduler(machine)
+
     strings = []
 
     strings.append('\n')
@@ -128,14 +124,10 @@ def get_definitions(base):
     strings.append('\t<!-- Machine related entities -->\n')
     strings.append('\t<!ENTITY ACCOUNT    "%s">\n' % base['ACCOUNT'])
     strings.append('\t<!ENTITY QUEUE      "%s">\n' % base['QUEUE'])
-
-    if ( base['machine'] == 'THEIA' or base['machine'] == 'HERA' ) and wfu.check_slurm():
-       strings.append('\t<!ENTITY QUEUE_ARCH "%s">\n' % base['QUEUE'])
+    strings.append('\t<!ENTITY QUEUE_ARCH "%s">\n' % base['QUEUE_ARCH'])
+    if scheduler in ['slurm']:
        strings.append('\t<!ENTITY PARTITION_ARCH "%s">\n' % base['QUEUE_ARCH'])
-    else:
-       strings.append('\t<!ENTITY QUEUE_ARCH "%s">\n' % base['QUEUE_ARCH'])
-
-    strings.append('\t<!ENTITY SCHEDULER  "%s">\n' % wfu.get_scheduler(base['machine']))
+    strings.append('\t<!ENTITY SCHEDULER  "%s">\n' % scheduler)
     strings.append('\n')
     strings.append('\t<!-- Toggle HPSS archiving -->\n')
     strings.append('\t<!ENTITY ARCHIVE_TO_HPSS "YES">\n')
@@ -160,8 +152,8 @@ def get_resources(dict_configs, cdump='gdas'):
     strings.append('\n')
 
     base = dict_configs['base']
-    machine = base.get('machine', 'WCOSS_C')
-    #machine = dict_configs['base']['machine']
+    machine = base.get('machine', wfu.detectMachine())
+    scheduler = wfu.get_scheduler(machine)
 
     for task in taskplan:
 
@@ -172,9 +164,7 @@ def get_resources(dict_configs, cdump='gdas'):
         taskstr = '%s_%s' % (task.upper(), cdump.upper())
 
         strings.append('\t<!ENTITY QUEUE_%s     "%s">\n' % (taskstr, queuestr))
-        if ( base['machine'] == 'THEIA' or base['machine'] == 'HERA' ) and wfu.check_slurm() and task == 'arch':
-            strings.append('\t<!ENTITY PARTITION_%s "&PARTITION_ARCH;">\n' % taskstr )
-	elif ( base['machine'] == 'THEIA' or base['machine'] == 'HERA' ) and wfu.check_slurm() and task == 'getic':
+        if scheduler in ['slurm'] and task in ['getic', 'arch']:
             strings.append('\t<!ENTITY PARTITION_%s "&PARTITION_ARCH;">\n' % taskstr )
         strings.append('\t<!ENTITY WALLTIME_%s  "%s">\n' % (taskstr, wtimestr))
         strings.append('\t<!ENTITY RESOURCES_%s "%s">\n' % (taskstr, resstr))
