@@ -30,7 +30,7 @@ if [[ ! -d fv3gfs.fd ]] ; then
     rc=$?
     ((err+=$rc))
     cd fv3gfs.fd
-    git checkout e322a8b
+    git checkout 750ecb06
     git submodule update --init --recursive
     rc=$?
     ((err+=$rc))
@@ -83,9 +83,8 @@ if [[ ! -d ufs_utils.fd ]] ; then
     rc=$?
     ((err+=$rc))
     cd ufs_utils.fd
-    git checkout v1.0.0 >> ${LOG_DIR}/checkout-ufs_utils.fd.log 2>&1
-    rc=$?
-    ((err+=$rc))
+    # git checkout v1.0.0
+    git checkout e7eb676
     cd ${topdir}
 else
     echo 'Skip.  Directory ufs_utils.fd already exists.'
@@ -98,8 +97,9 @@ if [[ ! -d gfs_post.fd ]] ; then
     rc=$?
     ((err+=$rc))
     #git clone --recursive gerrit:EMC_post_gtg gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
-    #cd gfs_post.fd
-    #git checkout ncep_post.v8.0.27e
+    cd gfs_post.fd
+    # git checkout ncep_post.v8.0.27e
+    git checkout 88e936c
     #git checkout ncep_post_gtg.v1.0.6c
     cd ${topdir}
 else
