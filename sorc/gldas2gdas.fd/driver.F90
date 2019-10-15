@@ -1,8 +1,11 @@
- program gdas2gldas
+ program gldas2gdas
+
+! Update gdas soil moisture and soil temperature from gldas.
 
  use esmf
 
  use model_grid
+ use setup
  use input_data
  use interp
  use write_data
@@ -35,14 +38,15 @@
  print*,'- NPETS IS  ',npets
  print*,'- LOCAL PET ',localpet
 
- call define_target_grid(npets)
- call define_input_grid(npets)
+ call namelist_read
+ call define_gdas_grid(npets)
+ call define_gldas_grid(npets)
 
  call read_input_data(localpet)
 
- call interp_sfc
+ call interp_sfc(localpet)
 
- call write_nemsio(localpet)
+ call update_gdas_file(localpet)
 
  print*,"- CALL ESMF_finalize"
  call ESMF_finalize(endflag=ESMF_END_KEEPMPI, rc=ierr)
@@ -51,4 +55,4 @@
 
  print*,"- DONE."
 
- end program gdas2gldas
+ end program gldas2gdas
