@@ -157,6 +157,10 @@ if [ $cpl = ".true." ]; then
     for targrp in ocn ocn2 ice SST; do
         htar -P -cvf $ATARDIR/$CDATE/${targrp}.tar `cat $ARCH_LIST/${targrp}.txt`
     done
+    for targrp in gfs_flux_1p00 gfs_pgrb2b; do
+        htar -P -cvf $ATARDIR/$CDATE/${targrp}.tar `cat $ARCH_LIST/${targrp}.txt`
+    done
+
 fi
 
 if [ $CDUMP = "gfs" ]; then
@@ -290,6 +294,11 @@ if [ $CDUMP = "gfs" ]; then
     COMIN="$VFYARC/$CDUMP.$gPDY"
     [[ -d $COMIN ]] && rm -rf $COMIN
 fi
+# Remove ocean and ice files
+cd $ROTDIR/logs/$CDATE
+tail -n 300 gfsocnpost001.log|grep "Successfully completed"
+status=$?
+[[ $status -ne 0 ]] && exit $status
 
 ###############################################################
 exit 0
