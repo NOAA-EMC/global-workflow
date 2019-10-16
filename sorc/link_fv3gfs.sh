@@ -106,6 +106,9 @@ cd ${pwd}/../scripts            ||exit 8
     $LINK ../sorc/gfs_post.fd/scripts/exgfs_nceppost.sh.ecf  .
     $LINK ../sorc/gfs_post.fd/scripts/exglobal_pmgr.sh.ecf   .
     $LINK ../sorc/ufs_utils.fd/scripts/exemcsfc_global_sfc_prep.sh.ecf .
+if [ $model = "coupled" ]; then
+    $LINK exgfs_nceppost_cpl.sh.ecf exgfs_nceppost.sh.ecf
+fi
 cd ${pwd}/../ush                ||exit 8
     for file in fv3gfs_downstream_nems.sh  fv3gfs_dwn_nems.sh  gfs_nceppost.sh  \
         gfs_transfer.sh  link_crtm_fix.sh  trim_rh.sh fix_precip.sh; do
@@ -116,6 +119,9 @@ cd ${pwd}/../ush                ||exit 8
         fv3gfs_chgres.sh  fv3gfs_make_grid.sh  global_chgres.sh ; do
         $LINK ../sorc/ufs_utils.fd/ush/$file                  .
     done
+if [ $model = "coupled" ]; then
+    $LINK fv3gfs_downstream_nems_cpl.sh fv3gfs_downstream_nems.sh
+fi
 
 #------------------------------
 #--add gfs_wafs link if on Dell
