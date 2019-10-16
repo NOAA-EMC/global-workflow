@@ -182,7 +182,7 @@ def get_definitions(base):
     strings.append('\n')
     strings.append('\t<!-- ROCOTO parameters that control workflow -->\n')
     strings.append('\t<!ENTITY CYCLETHROTTLE "3">\n')
-    strings.append('\t<!ENTITY TASKTHROTTLE  "20">\n')
+    strings.append('\t<!ENTITY TASKTHROTTLE  "25">\n')
     strings.append('\t<!ENTITY MAXTRIES      "2">\n')
     strings.append('\n')
 
