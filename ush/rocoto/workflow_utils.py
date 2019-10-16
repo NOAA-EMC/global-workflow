@@ -257,7 +257,7 @@ def create_firstcyc_task(cdump='gdas'):
                  'queue': '&QUEUE_ARCH_%s;' % cdump.upper(), \
                  'dependency': dependencies}
 
-    if get_scheduler(detectMachine()):
+    if get_scheduler(detectMachine()) in ['slurm']:
         task_dict['queue'] = '&QUEUE;'
         task_dict['partition'] = '&PARTITION_ARCH;'
 
