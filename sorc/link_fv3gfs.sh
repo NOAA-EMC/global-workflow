@@ -112,6 +112,11 @@ cd ${pwd}/../scripts            ||exit 8
 cd ${pwd}/../fix                ||exit 8
     [[ -d fix_gsi ]] && rm -rf fix_gsi
     $LINK ../sorc/gsi.fd/fix  fix_gsi
+cd ${pwd}/../ush                ||exit 8
+    $LINK ../sorc/gsi.fd/ush/gsi_utils.py        .
+    $LINK ../sorc/gsi.fd/ush/calcanl_gfs.py      .
+    $LINK ../sorc/gsi.fd/ush/calcinc_gfs.py      .
+    $LINK ../sorc/gsi.fd/ush/getncdimlen         .
 
 
 #------------------------------
@@ -188,6 +193,7 @@ for ufs_utilsexe in \
 done
 
 for gsiexe in  global_gsi.x global_enkf.x calc_increment_ens.x  getsfcensmeanp.x  getsigensmeanp_smooth.x  \
+    calc_increment_ens_ncio.x calc_analysis.x \
     getsigensstatp.x  nc_diag_cat_serial.x nc_diag_cat.x recentersigp.x oznmon_horiz.x oznmon_time.x \
     radmon_angle.x radmon_bcoef.x radmon_bcor.x radmon_time.x ;do
     [[ -s $gsiexe ]] && rm -f $gsiexe
@@ -200,7 +206,9 @@ done
 #------------------------------
 
 cd ${pwd}/../sorc   ||   exit 8
+    $SLINK gsi.fd/util/netcdf_io/calc_analysis.fd                                          calc_analysis.fd
     $SLINK gsi.fd/util/EnKF/gfs/src/calc_increment_ens.fd                                  calc_increment_ens.fd
+    $SLINK gsi.fd/util/EnKF/gfs/src/calc_increment_ens_ncio.fd                             calc_increment_ens_ncio.fd
     $SLINK gsi.fd/util/EnKF/gfs/src/getsfcensmeanp.fd                                      getsfcensmeanp.fd
     $SLINK gsi.fd/util/EnKF/gfs/src/getsigensmeanp_smooth.fd                               getsigensmeanp_smooth.fd
     $SLINK gsi.fd/util/EnKF/gfs/src/getsigensstatp.fd                                      getsigensstatp.fd
