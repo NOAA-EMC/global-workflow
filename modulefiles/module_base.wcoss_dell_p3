@@ -31,7 +31,7 @@ module use -a /gpfs/dell1/nco/ops/nwprod/modulefiles/
 module load gempak/7.3.1
 
 module use /gpfs/dell2/emc/modeling/noscrub/emc.nemspara/soft/modulefiles
-module load esmf/8.0.0bs47
+module load esmf/8.0.0bs48
 
 # python
 module load python/3.6.3

@@ -17,6 +17,7 @@ fi
 
 export FORECASTSH="$HOMEgfs/scripts/exglobal_fcst_nemsfv3gfs.sh"
 export FCSTEXECDIR="$HOMEgfs/exec"
+#export FCSTEXECDIR="$HOMEfv3gfs/NEMS/exe"
 export FCSTEXEC="global_fv3gfs.x"
 export npe_fv3=$npe_fcst # This is model resolution dependent, see note above
 
@@ -132,6 +133,7 @@ fi
 # nbits: netcdf lossy compression level (0-32): 0 lossless
 export ideflate=1
 export nbits=14
+export ishuffle=0
 # compression for RESTART files written by FMS 
 export shuffle=1
 export deflate_level=1
@@ -149,7 +151,8 @@ if [[ "$CDUMP" == "gdas" ]] ; then # GDAS cycle specific parameters
     fi
 
     # Write restart files at next assimilation time
-    export restart_interval=6
+    export restart_interval=${restart_interval:-6}
+
     # For IAU, write restarts at beginning of window also
     if [ $DOIAU = "YES" ]; then export restart_interval=3; fi
 

@@ -28,6 +28,7 @@ if [[ ! -d gsi.fd ]] ; then
     cd gsi.fd
     git checkout feature/fv3_ncio 
     git submodule update
+    cd ${topdir}
 else
     echo 'Skip.  Directory gsi.fd already exists.'
 fi
@@ -62,9 +63,9 @@ fi
 echo EMC_gfs_wafs checkout ...
 if [[ ! -d gfs_wafs.fd ]] ; then
     rm -f ${topdir}/checkout-gfs_wafs.log
-    git clone --recursive gerrit:EMC_gfs_wafs gfs_wafs.fd >> ${topdir}/checkout-gfs_wafs.log 2>&1
+    git clone --recursive https://github.com/NOAA-EMC/EMC_gfs_wafs.git gfs_wafs.fd >> ${topdir}/checkout-gfs_wafs.log 2>&1
     cd gfs_wafs.fd
-    git checkout gfs_wafs.v5.0.9
+    git checkout gfs_wafs.v5.0.11
     cd ${topdir}
 else
     echo 'Skip.  Directory gfs_wafs.fd already exists.'
