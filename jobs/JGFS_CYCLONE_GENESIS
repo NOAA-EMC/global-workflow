@@ -69,6 +69,7 @@ export CDUMP=${CDUMP:-${RUN:-"gfs"}}
 if [ $RUN_ENVIR = "nco" ]; then
     export ROTDIR=${COMROOT:?}/$NET/$envir
 fi
+export cmodel=$CDUMP
 
 ####################################
 # SENDCOM  - Copy Files From TMPDIR to $COMOUT
