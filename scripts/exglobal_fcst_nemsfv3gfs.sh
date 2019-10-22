@@ -50,6 +50,7 @@ FHOUT_HF=${FHOUT_HF:-1}
 NSOUT=${NSOUT:-"-1"}
 FDIAG=$FHOUT
 if [ $FHMAX_HF -gt 0 -a $FHOUT_HF -gt 0 ]; then FDIAG=$FHOUT_HF; fi
+WRITE_DOPOST=${WRITE_DOPOST:-".false."}
 
 PDY=$(echo $CDATE | cut -c1-8)
 cyc=$(echo $CDATE | cut -c9-10)
@@ -94,6 +95,7 @@ IAU_OFFSET=${IAU_OFFSET:-0}
 FCSTEXECDIR=${FCSTEXECDIR:-$HOMEgfs/sorc/fv3gfs.fd/NEMS/exe}
 FCSTEXEC=${FCSTEXEC:-fv3_gfs.x}
 PARM_FV3DIAG=${PARM_FV3DIAG:-$HOMEgfs/parm/parm_fv3diag}
+PARM_POST=${PARM_POST:-$HOMEgfs/parm/post}
 
 # Model config options
 APRUN_FV3=${APRUN_FV3:-${APRUN_FCST:-${APRUN:-""}}}
@@ -192,10 +194,12 @@ if [[ "$DOIAU" = "YES" ]]; then
   sCDATE=$($NDATE -3 $CDATE)
   sPDY=$(echo $sCDATE | cut -c1-8)
   scyc=$(echo $sCDATE | cut -c9-10)
+  tPDY=$gPDY
 else
   sCDATE=$CDATE
   sPDY=$PDY
   scyc=$cyc
+  tPDY=$sPDY
 fi
 
 #-------------------------------------------------------
@@ -323,7 +327,7 @@ fi
 nfiles=$(ls -1 $DATA/INPUT/* | wc -l)
 if [ $nfiles -le 0 ]; then
   echo "Initial conditions must exist in $DATA/INPUT, ABORT!"
-  msg=”"Initial conditions must exist in $DATA/INPUT, ABORT!"
+  msg="Initial conditions must exist in $DATA/INPUT, ABORT!"
   postmsg "$jlogfile" "$msg"
   exit 1
 fi
@@ -373,7 +377,15 @@ if [ $IAER -gt 0 ] ; then
     $NLN $file $DATA/$(echo $(basename $file) | sed -e "s/global_//g")
   done
 fi
+
+# inline post fix files
+if [ $WRITE_DOPOST = ".true." ]; then
+    $NLN $PARM_POST/post_tag_gfs${LEVS}             $DATA/itag               
+    $NLN $PARM_POST/postxconfig-NT-GFS-TWO.txt      $DATA/postxconfig-NT.txt 
+    $NLN $PARM_POST/params_grib2_tbl_new            $DATA/params_grib2_tbl_new
+fi
 #------------------------------------------------------------------
+
 # changeable parameters
 # dycore definitions
 res=$(echo $CASE |cut -c2-5)
@@ -607,14 +619,13 @@ runSeq::
 EOF
 
 rm -f model_configure
-if [[ "$DOIAU" = "YES" ]]; then
 cat > model_configure <<EOF
 total_member:            $ENS_NUM
 print_esmf:              ${print_esmf:-.true.}
 PE_MEMBER01:             $NTASKS_FV3
-start_year:              ${gPDY:0:4}
-start_month:             ${gPDY:4:2}
-start_day:               ${gPDY:6:2}
+start_year:              ${tPDY:0:4}
+start_month:             ${tPDY:4:2}
+start_day:               ${tPDY:6:2}
 start_hour:              ${gcyc}
 start_minute:            0
 start_second:            0
@@ -635,6 +646,8 @@ restart_interval:        $restart_interval
 quilting:                $QUILTING
 write_groups:            ${WRITE_GROUP:-1}
 write_tasks_per_group:   ${WRTTASK_PER_GROUP:-24}
+output_history:          ${OUTPUT_HISTORY:-".true."}
+write_dopost:            ${WRITE_DOPOST:-".false."}
 num_files:               ${NUM_FILES:-2}
 filename_base:           'atm' 'sfc'
 output_grid:             $OUTPUT_GRID
@@ -652,52 +665,6 @@ nfhout_hf:               $FHOUT_HF
 nsout:                   $NSOUT
 iau_offset:              ${IAU_OFFSET}
 EOF
-else
-cat > model_configure <<EOF
-total_member:            $ENS_NUM
-print_esmf:              ${print_esmf:-.true.}
-PE_MEMBER01:             $NTASKS_FV3
-start_year:              ${sPDY:0:4}
-start_month:             ${sPDY:4:2}
-start_day:               ${sPDY:6:2}
-start_hour:              ${scyc}
-start_minute:            0
-start_second:            0
-nhours_fcst:             $FHMAX
-RUN_CONTINUE:            ${RUN_CONTINUE:-".false."}
-ENS_SPS:                 ${ENS_SPS:-".false."}
-
-dt_atmos:                $DELTIM
-output_1st_tstep_rst:    .false.
-calendar:                ${calendar:-'julian'}
-cpl:                     ${cpl:-".false."}
-memuse_verbose:          ${memuse_verbose:-".false."}
-atmos_nthreads:          $NTHREADS_FV3
-use_hyper_thread:        ${hyperthread:-".false."}
-ncores_per_node:         $cores_per_node
-restart_interval:        $restart_interval
-
-quilting:                $QUILTING
-write_groups:            ${WRITE_GROUP:-1}
-write_tasks_per_group:   ${WRTTASK_PER_GROUP:-24}
-num_files:               ${NUM_FILES:-2}
-filename_base:           'atm' 'sfc'
-output_grid:             $OUTPUT_GRID
-output_file:             $OUTPUT_FILE
-ideflate:                ${ideflate:-1}
-nbits:                   ${nbits:-14}
-write_nemsioflip:        $WRITE_NEMSIOFLIP
-write_fsyncflag:         $WRITE_FSYNCFLAG
-imo:                     $LONB_IMO
-jmo:                     $LATB_JMO
-
-nfhout:                  $FHOUT
-nfhmax_hf:               $FHMAX_HF
-nfhout_hf:               $FHOUT_HF
-nsout:                   $NSOUT
-iau_offset:              ${IAU_OFFSET}
-EOF
-fi
 
 #&coupler_nml
 #  months = ${months:-0}
@@ -1128,15 +1095,24 @@ if [ $QUILTING = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]; then
   fhr=$FHMIN
   while [ $fhr -le $FHMAX ]; do
     FH3=$(printf %03i $fhr)
+    FH2=$(printf %02i $fhr)
     atmi=atmf${FH3}.$affix
     sfci=sfcf${FH3}.$affix
     logi=logf${FH3}
+    pgbi=GFSPRS.GrbF${FH2}
+    flxi=GFSFLX.GrbF${FH2}
     atmo=$memdir/${CDUMP}.t${cyc}z.atmf${FH3}.$affix
     sfco=$memdir/${CDUMP}.t${cyc}z.sfcf${FH3}.$affix
     logo=$memdir/${CDUMP}.t${cyc}z.logf${FH3}.$affix
+    pgbo=$memdir/${CDUMP}.t${cyc}z.master.grb2f${FH3}
+    flxo=$memdir/${CDUMP}.t${cyc}z.sfluxgrbf${FH3}.grib2
     eval $NLN $atmo $atmi
     eval $NLN $sfco $sfci
     eval $NLN $logo $logi
+    if [ $WRITE_DOPOST = ".true." ]; then
+      eval $NLN $pgbo $pgbi
+      eval $NLN $flxo $flxi
+    fi
     FHINC=$FHOUT
     if [ $FHMAX_HF -gt 0 -a $FHOUT_HF -gt 0 -a $fhr -lt $FHMAX_HF ]; then
       FHINC=$FHOUT_HF

@@ -9,7 +9,7 @@ if [[ ! -d fv3gfs.fd ]] ; then
     rm -f ${topdir}/checkout-fv3gfs.log
     git clone gerrit:NEMSfv3gfs fv3gfs.fd >> ${topdir}/checkout-fv3gfs.log 2>&1
     cd fv3gfs.fd
-    git checkout gfs.v16_PhysicsUpdate 
+    #git checkout gfs.v16_PhysicsUpdate 
     git submodule update --init --recursive
     cd ${topdir}
 else
@@ -42,9 +42,12 @@ fi
 echo EMC_post checkout ...
 if [[ ! -d gfs_post.fd ]] ; then
     rm -f ${topdir}/checkout-gfs_post.log
-    git clone https://github.com/NOAA-EMC/EMC_post gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
+    #git clone https://github.com/NOAA-EMC/EMC_post gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
+    #cd gfs_post.fd
+    #git checkout develop
+    git clone https://github.com/yangfanglin/EMC_post.git gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
     cd gfs_post.fd
-    git checkout develop
+    git checkout inlinepost
     cd ${topdir}
 else
     echo 'Skip.  Directory gfs_post.fd already exists.'
