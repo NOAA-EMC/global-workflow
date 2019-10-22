@@ -107,6 +107,15 @@ echo " .... Building enkf_chgres_recenter .... "
 }
 
 #------------------------------------
+# build enkf_chgres_recenter_nc
+#------------------------------------
+$Build_enkf_chgres_recenter_nc && {
+echo " .... Building enkf_chgres_recenter_nc .... "
+./build_enkf_chgres_recenter_nc.sh > $logs_dir/build_enkf_chgres_recenter_nc.log 2>&1
+}
+
+#------------------------------------
+#------------------------------------
 # build tropcy_NEMS
 #------------------------------------
 $Build_tropcy && {
