@@ -14,7 +14,7 @@ export CDFNL="gdas"               # Scores verification against GDAS/GFS analysi
 
 export MKPGB4PRCP="YES"           # Make 0.25-deg pgb files in ARCDIR for precip verification
 export VRFYFITS="YES"             # Fit to observations
-export VRFY_PCKG2RUN="BOTH"       # "VSDB" = run VSDB verification package only, "METPLUS" = run METplus verification package only, "BOTH = run both verification packages
+export VRFY_PCKG2RUN="VSDB"       # "VSDB" = run VSDB verification package only, "METPLUS" = run METplus verification package only, "BOTH = run both verification packages
 export VSDB_STEP1="YES"           # Populate VSDB database
 export VSDB_STEP2="NO"
 export VRFYG2OBS="YES"            # Grid to observations, see note below if turning ON
@@ -50,8 +50,8 @@ if [ $VRFYFITS = "YES" ]; then
         export fitdir="$BASE_SVN/verif/global/Fit2Obs/ncfits/batrun"
         export PREPQFITSH="$fitdir/subfits_dell_nems"
     elif [ $machine = "THEIA" -o $machine = "HERA" ]; then
-        export fitdir="$BASE_SVN/verif/global/parafits.fv3nems/batrun"
-        export PREPQFITSH="$fitdir/subfits_theia_nems"
+        export fitdir="$BASE_GIT/Fit2Obs/batrun"
+        export PREPQFITSH="$fitdir/subfits_theia_slurm"
     fi
 
 fi
@@ -202,7 +202,7 @@ elif [ $machine = "WCOSS_DELL_P3" ] ; then
     export ens_tracker_ver=v1.1.13.1
     export HOMEens_tracker=$BASE_GIT/ens_tracker.${ens_tracker_ver}
 elif [ $machine = "THEIA" -o $machine = "HERA" ] ; then
-    export ens_tracker_ver=v1.1.13.2
+    export ens_tracker_ver=v1.1.15.1
     export HOMEens_tracker=$BASE_GIT/tracker/ens_tracker.${ens_tracker_ver}
 else
     echo "WARNING: Genesis and cyclone verifications are not enabled on $machine!"
@@ -225,8 +225,8 @@ if [ "$VRFYTRAK" = "YES" ]; then
        export COMROOTp1="/scratch4/NCEPDEV/rstprod/com"
        export COMINsyn="$COMROOTp1/arch/prod/syndat"
     elif [ $machine = "HERA" ]; then
-       export COMROOTp1="/scratch1/NCEPDEV/rstprod/com"
-       export COMINsyn="$COMROOTp1/arch/prod/syndat"
+       export COMROOTp1="/scratch4/NCEPDEV/rstprod/com"
+       export COMINsyn=${COMINsyn:-${COMROOTp1}/arch/prod/syndat}
     fi
 fi
 
