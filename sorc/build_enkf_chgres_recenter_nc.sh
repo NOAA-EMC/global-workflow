@@ -23,7 +23,7 @@ if [ ! -d "../exec" ]; then
   mkdir ../exec
 fi
 
-cd ${cwd}/enkf_chgres_recenter_nc
+cd ${cwd}/enkf_chgres_recenter_nc.fd
 
 export FFLAGS="-O3 -qopenmp -traceback -fp-model precise"
 export FV3GFS_NCIO_LIB="${cwd}/gsi.fd/build/lib/libfv3gfs_ncio.a"

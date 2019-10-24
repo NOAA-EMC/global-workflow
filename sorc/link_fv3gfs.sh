@@ -193,9 +193,9 @@ for ufs_utilsexe in \
 done
 
 for gsiexe in  global_gsi.x global_enkf.x calc_increment_ens.x  getsfcensmeanp.x  getsigensmeanp_smooth.x  \
-    calc_increment_ens_ncio.x calc_analysis.x \
+    calc_increment_ens_ncio.x calc_analysis.x interp_inc.x \
     getsigensstatp.x  nc_diag_cat_serial.x nc_diag_cat.x recentersigp.x oznmon_horiz.x oznmon_time.x \
-    radmon_angle.x radmon_bcoef.x radmon_bcor.x radmon_time.x ;do
+    radmon_angle.x radmon_bcoef.x radmon_bcor.x radmon_time.x interp_inc.x;do
     [[ -s $gsiexe ]] && rm -f $gsiexe
     $LINK ../sorc/gsi.fd/exec/$gsiexe .
 done
@@ -207,6 +207,7 @@ done
 
 cd ${pwd}/../sorc   ||   exit 8
     $SLINK gsi.fd/util/netcdf_io/calc_analysis.fd                                          calc_analysis.fd
+    $SLINK gsi.fd/util/netcdf_io/interp_inc.fd                                             interp_inc.fd 
     $SLINK gsi.fd/util/EnKF/gfs/src/calc_increment_ens.fd                                  calc_increment_ens.fd
     $SLINK gsi.fd/util/EnKF/gfs/src/calc_increment_ens_ncio.fd                             calc_increment_ens_ncio.fd
     $SLINK gsi.fd/util/EnKF/gfs/src/getsfcensmeanp.fd                                      getsfcensmeanp.fd
