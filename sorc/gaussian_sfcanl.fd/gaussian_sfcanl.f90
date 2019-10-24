@@ -367,7 +367,8 @@
 ! Write gaussian data to nemsio file.
 !------------------------------------------------------------------------------
 
- call write_sfc_data
+ call write_sfc_data_nemsio
+!call write_sfc_data_netcdf
 
  deallocate(gaussian_data%orog)
  deallocate(gaussian_data%t2m)
@@ -433,10 +434,206 @@
  end program main
 
 !-------------------------------------------------------------------------------------------
+! Write gaussian surface data to netcdf file.
+!-------------------------------------------------------------------------------------------
+
+ subroutine write_sfc_data_netcdf
+
+ use netcdf
+ use io
+
+ implicit none
+
+ character(len=50)       :: outfile
+ character(len=31)       :: date_string
+ character(len=4)        :: year
+ character(len=2)        :: mon, day, hour
+
+ integer                 :: fsize=65536, initial = 0
+ integer                 :: header_buffer_val = 16384
+ integer                 :: i, error, ncid, dim_xt, dim_yt, dim_time
+ integer                 :: id_xt, id_yt, id_lon, id_lat, id_time
+ integer                 :: id_alnsf
+
+ real, parameter         :: missing = 9.99e20
+
+ real(kind=4), allocatable :: dummy(:,:), slat(:), wlat(:)
+
+ outfile = "./sfc.gaussian.nc"
+
+ print*,"- WRITE SURFACE DATA TO NETCDF FILE: ", trim(outfile)
+
+ error = nf90_create(outfile, IOR(NF90_NETCDF4,NF90_CLASSIC_MODEL), &
+                     ncid, initialsize=initial, chunksize=fsize)
+ call netcdf_err(error, 'CREATING NETCDF FILE')
+
+! dimensions
+
+ error = nf90_def_dim(ncid, 'grid_xt', igaus, dim_xt)
+ call netcdf_err(error, 'DEFINING GRID_XT DIMENSION')
+
+ error = nf90_def_dim(ncid, 'grid_yt', jgaus, dim_yt)
+ call netcdf_err(error, 'DEFINING GRID_YT DIMENSION')
+
+ error = nf90_def_dim(ncid, 'time', 1, dim_time)
+ call netcdf_err(error, 'DEFINING TIME DIMENSION')
+
+! variables
+
+! grid_xt
+
+ error = nf90_def_var(ncid, 'grid_xt', NF90_DOUBLE, dim_xt, id_xt)
+ call netcdf_err(error, 'DEFINING GRID_XT')
+
+ error = nf90_put_att(ncid, id_xt, "cartesian_axis", "X")
+ call netcdf_err(error, 'DEFINING GRID_XT ATTRIBUTE')
+
+ error = nf90_put_att(ncid, id_xt, "long_name", "T-cell longitude")
+ call netcdf_err(error, 'DEFINING GRID_XT ATTRIBUTE')
+
+ error = nf90_put_att(ncid, id_xt, "units", "degrees_E")
+ call netcdf_err(error, 'DEFINING GRID_XT ATTRIBUTE')
+
+! lon
+
+ error = nf90_def_var(ncid, 'lon', NF90_DOUBLE, (/dim_xt,dim_yt/), id_lon)
+ call netcdf_err(error, 'DEFINING LON')
+
+ error = nf90_put_att(ncid, id_lon, "long_name", "T-cell longitude")
+ call netcdf_err(error, 'DEFINING LON ATTRIBUTE')
+
+ error = nf90_put_att(ncid, id_lon, "units", "degrees_E")
+ call netcdf_err(error, 'DEFINING LON ATTRIBUTE')
+
+! grid_yt
+
+ error = nf90_def_var(ncid, 'grid_yt', NF90_DOUBLE, dim_yt, id_yt)
+ call netcdf_err(error, 'DEFINING GRID_YT')
+
+ error = nf90_put_att(ncid, id_yt, "cartesian_axis", "Y")
+ call netcdf_err(error, 'DEFINING GRID_YT ATTRIBUTE')
+
+ error = nf90_put_att(ncid, id_yt, "long_name", "T-cell latitude")
+ call netcdf_err(error, 'DEFINING GRID_YT ATTRIBUTE')
+
+ error = nf90_put_att(ncid, id_yt, "units", "degrees_N")
+ call netcdf_err(error, 'DEFINING GRID_YT ATTRIBUTE')
+
+! lat
+
+ error = nf90_def_var(ncid, 'lat', NF90_DOUBLE, (/dim_xt,dim_yt/), id_lat)
+ call netcdf_err(error, 'DEFINING LAT')
+
+ error = nf90_put_att(ncid, id_lat, "long_name", "T-cell latitude")
+ call netcdf_err(error, 'DEFINING LAT ATTRIBUTE')
+
+ error = nf90_put_att(ncid, id_lat, "units", "degrees_N")
+ call netcdf_err(error, 'DEFINING LAT ATTRIBUTE')
+
+! time
+
+ error = nf90_def_var(ncid, 'time', NF90_DOUBLE, dim_time, id_time)
+ call netcdf_err(error, 'DEFINING TIME')
+
+ error = nf90_put_att(ncid, id_time, "long_name", "time")
+ call netcdf_err(error, 'DEFINING TIME ATTRIBUTE')
+
+ write(year, "(i4)") idate(1)
+ write(mon, "(i2.2)") idate(2)
+ write(day, "(i2.2)") idate(3)
+ write(hour, "(i2.2)") idate(4)
+
+ date_string="hours since " // year // "-" // mon // "-" // day // " " // hour // ":00:00"
+
+ error = nf90_put_att(ncid, id_time, "units", date_string)
+ call netcdf_err(error, 'DEFINING TIME ATTRIBUTE')
+
+ error = nf90_put_att(ncid, id_time, "cartesian_axis", "T")
+ call netcdf_err(error, 'DEFINING TIME ATTRIBUTE')
+
+ error = nf90_put_att(ncid, id_time, "calendar_type", "JULIAN")
+ call netcdf_err(error, 'DEFINING TIME ATTRIBUTE')
+
+ error = nf90_put_att(ncid, id_time, "calendar", "JULIAN")
+ call netcdf_err(error, 'DEFINING TIME ATTRIBUTE')
+
+! alnsf
+
+ error = nf90_def_var(ncid, 'alnsf', NF90_DOUBLE, (/dim_xt,dim_yt,dim_time/), id_alnsf)
+ call netcdf_err(error, 'DEFINING alnsf')
+
+ error = nf90_put_att(ncid, id_alnsf, "long_name", "mean nir albedo with strong cosz dependency")
+ call netcdf_err(error, 'DEFINING alnsf ATTRIBUTE')
+
+ error = nf90_put_att(ncid, id_alnsf, "units", "%")
+ call netcdf_err(error, 'DEFINING alnsf ATTRIBUTE')
+
+ error = nf90_put_att(ncid, id_alnsf, "missing", missing)
+ call netcdf_err(error, 'DEFINING alnsf ATTRIBUTE')
+
+ error = nf90_put_att(ncid, id_alnsf, "cell_methods", "time: point")
+ call netcdf_err(error, 'DEFINING alnsf ATTRIBUTE')
+
+ error = nf90_put_att(ncid, id_alnsf, "output_file", "sfc")
+ call netcdf_err(error, 'DEFINING alnsf ATTRIBUTE')
+
+! end variable defs
+
+ error = nf90_enddef(ncid, header_buffer_val,4,0,4)
+ call netcdf_err(error, 'DEFINING HEADER')
+
+
+
+! write of data begins here.
+
+ allocate(dummy(igaus,jgaus))
+ do i = 1, igaus
+   dummy(i,:) = real((i-1),4) * 360.0_4 / real(igaus,4)
+ enddo
+
+ error = nf90_put_var(ncid, id_xt, dummy(:,1))
+ call netcdf_err(error, 'WRITING GRID_XT')
+
+ error = nf90_put_var(ncid, id_lon, dummy)
+ call netcdf_err(error, 'WRITING LON')
+
+ allocate(slat(jgaus))
+ allocate(wlat(jgaus))
+ call splat(4, jgaus, slat, wlat)
+
+ do i = (jgaus/2+1), jgaus
+   dummy(:,i) = 90.0 - (acos(slat(i)) * 180.0 / (4.0*atan(1.0)))
+ enddo
+
+ do i = 1, (jgaus/2)
+   dummy(:,i) = -(dummy(:,(jgaus-i+1)))
+ enddo
+
+ deallocate(slat, wlat)
+
+ error = nf90_put_var(ncid, id_yt, dummy(1,:))
+ call netcdf_err(error, 'WRITING GRID_YT')
+
+ error = nf90_put_var(ncid, id_lat, dummy)
+ call netcdf_err(error, 'WRITING LAT')
+
+ deallocate(dummy)
+
+ error = nf90_put_var(ncid, id_time, 0)
+ call netcdf_err(error, 'WRITING TIME')
+
+ error = nf90_put_var(ncid, id_alnsf, gaussian_data%alnsf, start=(/1,1,1/), count=(/igaus,jgaus,1/))
+ call netcdf_err(error, 'WRITING alnsf')
+
+ error = nf90_close(ncid)
+
+ end subroutine write_sfc_data_netcdf
+
+!-------------------------------------------------------------------------------------------
 ! Write gaussian surface data to nemsio file.
 !-------------------------------------------------------------------------------------------
 
- subroutine write_sfc_data
+ subroutine write_sfc_data_nemsio
 
  use nemsio_module
  use io
@@ -945,7 +1142,7 @@
  call errexit(15)
  stop
 
- end subroutine write_sfc_data
+ end subroutine write_sfc_data_nemsio
 
 !-------------------------------------------------------------------------------------------
 ! Read tile data.
