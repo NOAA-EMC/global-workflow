@@ -1,0 +1,32 @@
+if [ $target == wcoss_dell_p3 ]
+then
+module load NCL/6.4.0 
+fi
+
+if [ $target == wcoss_cray ]
+then
+module load   gcc/4.9.2
+module load NCL-gnu-haswell/6.3.0
+fi
+
+if [ $target == wcoss ]
+then
+module load ncarg/v6.1.0
+fi
+
+if [ $target == theia ]
+then
+module load ncl/6.3.0
+fi
+
+if [ $target ==  jet ]
+then
+module load  ncl/6.5.0 
+export NCARG_LIB=$NCARG_ROOT/lib
+fi
+if [ $target ==  hera ]
+then
+module load  ncl/6.5.0 
+export NCARG_LIB=$NCARG_ROOT/lib
+fi
+
