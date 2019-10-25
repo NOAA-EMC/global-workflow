@@ -12,15 +12,12 @@ import os
 import sys
 import glob
 import shutil
+import socket
 from datetime import datetime
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
+import workflow_utils as wfu
 
-
-global machines
 global expdir, configdir, comrot, pslot, resdet, resens, nens, cdump, idate, edate, gfs_cyc
-
-
-machines = ['THEIA', 'WCOSS_C', 'WCOSS_DELL_P3']
 
 
 def makedirs_if_missing(d):
@@ -137,15 +134,7 @@ link initial condition files from $ICSDIR to $COMROT'''
 
     args = parser.parse_args()
 
-    if os.path.exists('/scratch3'):
-        machine = 'THEIA'
-    elif os.path.exists('/gpfs') and os.path.exists('/etc/SuSE-release'):
-        machine = 'WCOSS_C'
-    elif os.path.exists('/gpfs/dell2'):
-        machine = 'WCOSS_DELL_P3'
-    else:
-        print 'workflow is currently only supported on: %s' % ' '.join(machines)
-        raise NotImplementedError('Cannot auto-detect platform, ABORT!')
+    machine = wfu.detectMachine()
 
     configdir = args.configdir
     if not configdir:
