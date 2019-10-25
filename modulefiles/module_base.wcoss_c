@@ -53,5 +53,8 @@ module load gcc/6.3.0
 module unload grib_util/1.0.3
 module load grib_util/1.1.0
 
-module use /gpfs/hps3/emc/nems/noscrub/emc.nemspara/soft/modulefiles
+module use -a /gpfs/hps3/emc/nems/noscrub/emc.nemspara/soft/modulefiles
+module unload intel
+module load intel/16.3.210
+module load cray-netcdf
 module load esmf/8.0.0bs48

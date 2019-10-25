@@ -66,7 +66,7 @@ tbf=""
 if [ $satmedmf = ".true." ]; then tbf="_satmedmf" ; fi
 
 # Land surface model. (2--NoahMP, landice=F); (1--Noah, landice=T)
-export lsm=2
+export lsm=1
 if [ $lsm -eq 2 ]; then
     export lheatstrg=".false."
     export landice=".false."
