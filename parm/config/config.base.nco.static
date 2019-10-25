@@ -168,9 +168,11 @@ export restart_interval_gfs=12
 # I/O QUILTING, true--use Write Component; false--use GFDL FMS
 # if quilting=true, choose OUTPUT_GRID as cubed_sphere_grid in netcdf or gaussian_grid
 # if gaussian_grid, set OUTPUT_FILE for nemsio or netcdf
+# WRITE_DOPOST=true, use inline POST
 export QUILTING=".true."
 export OUTPUT_GRID="gaussian_grid"
 export OUTPUT_FILE="nemsio"
+export WRITE_DOPOST=".true."
 
 # IAU related parameters
 export DOIAU="NO"

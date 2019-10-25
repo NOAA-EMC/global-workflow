@@ -16,7 +16,6 @@ export NPOSTGRP=20
 export OUTTYP=4
 export MODEL_OUT_FORM=binarynemsiompiio
 if [ $OUTPUT_FILE = "netcdf" ]; then 
-    export OUTTYP=5 
     export MODEL_OUT_FORM=netcdfnemsiompiio
 fi
 
