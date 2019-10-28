@@ -242,6 +242,7 @@ SMOOTH_ENKF=${SMOOTH_ENKF:-"YES"}
 DOIAU=${DOIAU:-"NO"}
 DO_CALC_INCREMENT=${DO_CALC_INCREMENT:-"YES"}
 INCREMENTS_TO_ZERO=${INCREMENTS_TO_ZERO:-"'NONE'"}
+USE_CORRELATED_OBERRS=${USE_CORRELATED_OBERRS:-"YES"}
 
 # Get header information from Guess files
 LONB=${LONB:-$($NEMSIOGET $ATMGES dimx | grep -i "dimx" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}  # 'get LONB
@@ -407,15 +408,17 @@ $NLN $HYBENSINFO   hybens_info
 $NLN $OBERROR      errtable
 
 #If using correlated error, link to the covariance files
-if grep -q "Rcov" $ANAVINFO ; 
-then
-  if ls ${FIXgsi}/Rcov* 1> /dev/null 2>&1;
+if [ $USE_CORRELATED_OBERRS = "YES" ]; then
+  if grep -q "Rcov" $ANAVINFO ; 
   then
-    $NLN ${FIXgsi}/Rcov* $DATA
-  else
-    echo "Warning: Satellite error covariance files are missing."
-    echo "Check for the required Rcov files in " $ANAVINFO
-    exit 1
+    if ls ${FIXgsi}/Rcov* 1> /dev/null 2>&1;
+    then
+      $NLN ${FIXgsi}/Rcov* $DATA
+    else
+      echo "Warning: Satellite error covariance files are missing."
+      echo "Check for the required Rcov files in " $ANAVINFO
+      exit 1
+    fi
   fi
 fi
 
