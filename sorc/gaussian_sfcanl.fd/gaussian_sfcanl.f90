@@ -449,22 +449,68 @@
  character(len=4)        :: year
  character(len=2)        :: mon, day, hour
 
- integer                 :: fsize=65536, initial = 0
  integer                 :: header_buffer_val = 16384
  integer                 :: i, error, ncid, dim_xt, dim_yt, dim_time
  integer                 :: id_xt, id_yt, id_lon, id_lat, id_time
- integer                 :: id_alnsf
+ integer                 :: n
+
+ integer, parameter      :: num_noah=4
+ character(len=30)       :: noah_var(num_noah)
+ character(len=70)       :: noah_name(num_noah)
+ character(len=30)       :: noah_units(num_noah)
+ 
+ integer, parameter      :: num_nst=4
+ character(len=30)       :: nst_var(num_nst)
+ character(len=70)       :: nst_name(num_nst)
+ character(len=30)       :: nst_units(num_nst)
+
+ integer                 :: num_vars
+ character(len=30), allocatable       :: var(:)
+ character(len=70), allocatable       :: name(:)
+ character(len=30), allocatable       :: units(:)
+ integer, allocatable                 :: id_var(:)
 
  real, parameter         :: missing = 9.99e20
 
  real(kind=4), allocatable :: dummy(:,:), slat(:), wlat(:)
 
+! define noah fields
+
+ data noah_var /"alnsf", &
+                "alnwf", &
+                "alvsf", &
+                "alvwf" /
+
+ data noah_name /"mean nir albedo with strong cosz dependency", &
+                 "mean nir albedo with weak cosz dependency", &
+                 "mean vis albedo with strong cosz dependency", &
+                 "mean vis albedo with weak cosz dependency"/
+
+ data noah_units /"%", &
+                  "%", &
+                  "%", &
+                  "%" /
+
+ data nst_var /"c0", &
+               "cd", &
+               "xzts", &
+               "zc" /
+
+ data nst_name /"nsst coefficient1 to calculate d(tz)/d(ts)", &
+                "nsst coefficient2 to calculate d(tz)/d(ts)", &
+                "nsst d(xt)/d(ts)", &
+                "nsst sub-layer cooling thickness"/
+
+ data nst_units /"numerical", &
+                 "n/a", &
+                 "m/k", &
+                 "m"/
+
  outfile = "./sfc.gaussian.nc"
 
  print*,"- WRITE SURFACE DATA TO NETCDF FILE: ", trim(outfile)
 
- error = nf90_create(outfile, IOR(NF90_NETCDF4,NF90_CLASSIC_MODEL), &
-                     ncid, initialsize=initial, chunksize=fsize)
+ error = nf90_create(outfile, cmode=IOR(IOR(NF90_CLOBBER,NF90_NETCDF4),NF90_CLASSIC_MODEL), ncid=ncid)
  call netcdf_err(error, 'CREATING NETCDF FILE')
 
 ! dimensions
@@ -557,32 +603,60 @@
  error = nf90_put_att(ncid, id_time, "calendar", "JULIAN")
  call netcdf_err(error, 'DEFINING TIME ATTRIBUTE')
 
-! alnsf
+! surface vars
+ 
+ if (trim(donst) == "yes" .or. trim(donst) == "YES") then
+   num_vars = num_noah + num_nst
+ else
+   num_vars = num_noah
+ endif
+   
+ allocate(var(num_vars))
+ allocate(name(num_vars))
+ allocate(units(num_vars))
+ allocate(id_var(num_vars))
 
- error = nf90_def_var(ncid, 'alnsf', NF90_DOUBLE, (/dim_xt,dim_yt,dim_time/), id_alnsf)
- call netcdf_err(error, 'DEFINING alnsf')
+ var(1:num_noah) = noah_var
+ name(1:num_noah) = noah_name
+ units(1:num_noah) = noah_units
 
- error = nf90_put_att(ncid, id_alnsf, "long_name", "mean nir albedo with strong cosz dependency")
- call netcdf_err(error, 'DEFINING alnsf ATTRIBUTE')
+ if (trim(donst) == "yes" .or. trim(donst) == "YES") then
+   do n = 1, num_nst
+     var(n+num_noah) = nst_var(n)
+     name(n+num_noah) = nst_name(n)
+     units(n+num_noah) = nst_units(n)
+   enddo
+ endif
 
- error = nf90_put_att(ncid, id_alnsf, "units", "%")
- call netcdf_err(error, 'DEFINING alnsf ATTRIBUTE')
+ do n = 1, num_vars
 
- error = nf90_put_att(ncid, id_alnsf, "missing", missing)
- call netcdf_err(error, 'DEFINING alnsf ATTRIBUTE')
+   print*,'- DEFINE VARIABLE ',trim(var(n))
+   error = nf90_def_var(ncid, trim(var(n)), NF90_FLOAT, (/dim_xt,dim_yt,dim_time/), id_var(n))
+   call netcdf_err(error, 'DEFINING variable')
+   error = nf90_def_var_deflate(ncid, id_var(n), 1, 1, 1)
+   call netcdf_err(error, 'DEFINING variable with compression')
 
- error = nf90_put_att(ncid, id_alnsf, "cell_methods", "time: point")
- call netcdf_err(error, 'DEFINING alnsf ATTRIBUTE')
+   error = nf90_put_att(ncid, id_var(n), "long_name", trim(name(n)))
+   call netcdf_err(error, 'DEFINING name ATTRIBUTE')
 
- error = nf90_put_att(ncid, id_alnsf, "output_file", "sfc")
- call netcdf_err(error, 'DEFINING alnsf ATTRIBUTE')
+   error = nf90_put_att(ncid, id_var(n), "units", trim(units(n)))
+   call netcdf_err(error, 'DEFINING units ATTRIBUTE')
+
+   error = nf90_put_att(ncid, id_var(n), "missing", missing)
+   call netcdf_err(error, 'DEFINING missing ATTRIBUTE')
+
+   error = nf90_put_att(ncid, id_var(n), "cell_methods", "time: point")
+   call netcdf_err(error, 'DEFINING cell method ATTRIBUTE')
+
+   error = nf90_put_att(ncid, id_var(n), "output_file", "sfc")
+   call netcdf_err(error, 'DEFINING out file ATTRIBUTE')
+
+ enddo
 
 ! end variable defs
 
  error = nf90_enddef(ncid, header_buffer_val,4,0,4)
  call netcdf_err(error, 'DEFINING HEADER')
-
-
 
 ! write of data begins here.
 
@@ -611,23 +685,63 @@
 
  deallocate(slat, wlat)
 
+
  error = nf90_put_var(ncid, id_yt, dummy(1,:))
  call netcdf_err(error, 'WRITING GRID_YT')
 
  error = nf90_put_var(ncid, id_lat, dummy)
  call netcdf_err(error, 'WRITING LAT')
 
- deallocate(dummy)
-
  error = nf90_put_var(ncid, id_time, 0)
  call netcdf_err(error, 'WRITING TIME')
 
- error = nf90_put_var(ncid, id_alnsf, gaussian_data%alnsf, start=(/1,1,1/), count=(/igaus,jgaus,1/))
- call netcdf_err(error, 'WRITING alnsf')
+ do n = 1, num_vars
+   print*,'- write variable ',trim(var(n))
+   call get_var(var(n), dummy)
+   error = nf90_put_var(ncid, id_var(n), dummy, start=(/1,1,1/), count=(/igaus,jgaus,1/))
+   call netcdf_err(error, 'WRITING variable')
+ enddo
+
+
+ deallocate (dummy)
 
  error = nf90_close(ncid)
 
  end subroutine write_sfc_data_netcdf
+
+ subroutine get_var(var, dummy)
+
+ use io
+
+ implicit none
+ 
+ character(len=*), intent(in) :: var
+
+ real(kind=4), intent(out) :: dummy(igaus,jgaus)
+
+ select case (var)
+   case ('alnsf')
+     dummy = reshape(gaussian_data%alnsf, (/igaus,jgaus/))
+   case ('alnwf')
+     dummy = reshape(gaussian_data%alnwf, (/igaus,jgaus/))
+   case ('alvsf')
+     dummy = reshape(gaussian_data%alvsf, (/igaus,jgaus/))
+   case ('alvwf')
+     dummy = reshape(gaussian_data%alvwf, (/igaus,jgaus/))
+   case ('c0')
+     dummy = reshape(gaussian_data%c0, (/igaus,jgaus/))
+   case ('cd')
+     dummy = reshape(gaussian_data%cd, (/igaus,jgaus/))
+   case ('xzts')
+     dummy = reshape(gaussian_data%xzts, (/igaus,jgaus/))
+   case ('zc')
+     dummy = reshape(gaussian_data%zc, (/igaus,jgaus/))
+   case default
+     print*,'- FATAL ERROR: UNKNOWN VAR IN GET_VAR: ', var
+     call errexit(67)
+ end select
+
+ end subroutine get_var
 
 !-------------------------------------------------------------------------------------------
 ! Write gaussian surface data to nemsio file.
