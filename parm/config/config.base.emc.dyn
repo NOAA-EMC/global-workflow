@@ -245,6 +245,7 @@ export CASE_ENKF="@CASEENS@"
 # Surface cycle update frequency
 if [[ "$CDUMP" == "gdas" ]] ; then
    export FHCYC=1
+   export FTSFS=10
 elif [[ "$CDUMP" == "gfs" ]] ; then
    export FHCYC=24
 fi
@@ -261,9 +262,9 @@ export gfs_cyc=@gfs_cyc@ # 0: no GFS cycle, 1: 00Z only, 2: 00Z and 12Z only, 4:
 export FHMIN_GFS=0
 
 export FHMAX_GFS_00=240
-export FHMAX_GFS_06=180
-export FHMAX_GFS_12=180
-export FHMAX_GFS_18=180
+export FHMAX_GFS_06=240
+export FHMAX_GFS_12=240
+export FHMAX_GFS_18=240
 export FHMAX_GFS=$(eval echo \${FHMAX_GFS_$cyc})
 
 export FHOUT_GFS=3
@@ -276,6 +277,15 @@ export FHOUT_HF_GFS=1
 export QUILTING=".true."
 export OUTPUT_GRID="gaussian_grid"
 export OUTPUT_FILE="nemsio"
+
+# IAU related parameters
+export DOIAU="NO"
+export IAUFHRS=6
+export IAU_DELTHRS=6
+export DOIAU_ENKF="NO"
+export IAUFHRS_ENKF=6
+export IAU_DELTHRS_ENKF=6
+[[ "$SDATE" = "$CDATE" ]] && ( export DOIAU="NO"; export DOIAU_ENKF="NO" )
 
 # Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL
 export imp_physics=11

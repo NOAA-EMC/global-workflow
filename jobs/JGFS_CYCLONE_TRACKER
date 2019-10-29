@@ -126,24 +126,24 @@ export cmodel=$CDUMP
 export loopnum=1
 
 #-----------input data checking -----------------
-${USHens_tracker}/data_check.sh
+${USHens_tracker}/data_check_gfs.sh
 # exit code 6 = missing data of opportunity
 if [ $? -eq 6 ]; then exit; fi
 #------------------------------------------------
 
-mac=`echo ${SITE}`
-if [ $mac = TIDE -o $mac = GYRE ] ; then # For WCOSS
+machine=${machine:-`echo ${SITE}`}
+if [ $machine = TIDE -o $machine = GYRE ] ; then # For WCOSS
   machine=wcoss
-  ${USHens_tracker}/extrkr_g2.sh ${loopnum} ${cmodel} ${CDATE} ${pert} ${DATA} 
-elif [ $mac = LUNA -o $mac = SURGE ] ; then # For CRAY
+  ${USHens_tracker}/extrkr_gfs.sh ${loopnum} ${cmodel} ${CDATE} ${pert} ${DATA} 
+elif [ $machine = LUNA -o $machine = SURGE ] ; then # For CRAY
   machine=cray
-  ${APRUNTRACK} ${USHens_tracker}/extrkr_g2.sh ${loopnum} ${cmodel} ${CDATE} ${pert} ${DATA} 
-elif [ $mac = VENUS -o $mac = MARS ] ; then # For DELL
+  ${APRUNTRACK} ${USHens_tracker}/extrkr_gfs.sh ${loopnum} ${cmodel} ${CDATE} ${pert} ${DATA} 
+elif [ $machine = VENUS -o $machine = MARS ] ; then # For DELL
   machine=dell
-  mpirun -n 1 ${USHens_tracker}/extrkr_g2.sh ${loopnum} ${cmodel} ${CDATE} ${pert} ${DATA}
-else       # For THEIA
-  machine=theia
-  ${USHens_tracker}/extrkr_g2.sh ${loopnum} ${cmodel} ${CDATE} ${pert} ${DATA}
+  mpirun -n 1 ${USHens_tracker}/extrkr_gfs.sh ${loopnum} ${cmodel} ${CDATE} ${pert} ${DATA}
+elif [ $machine = HERA ]; then # For HERA
+  machine=hera
+  ${USHens_tracker}/extrkr_gfs.sh ${loopnum} ${cmodel} ${CDATE} ${pert} ${DATA}
 fi
 export err=$?; err_chk
 

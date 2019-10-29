@@ -28,10 +28,6 @@ elif [[ -d /scratch1 ]] ; then
         source /apps/lmod/lmod/init/$__ms_shell
     fi
     module purge
-    export NCEPLIBS=/scratch2/NCEPDEV/nwprod/NCEPLIBS
-    if [[ -d "$NCEPLIBS" ]] ; then
-        module use $NCEPLIBS/modulefiles
-    fi
 elif [[ -d /scratch3 ]] ; then
     # We are on NOAA Theia
     if ( ! eval module help > /dev/null 2>&1 ) ; then

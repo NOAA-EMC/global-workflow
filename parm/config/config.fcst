@@ -23,8 +23,8 @@ if [ $DONST = "YES" ]; then
 fi
 
 export FORECASTSH="$HOMEgfs/scripts/exglobal_fcst_nemsfv3gfs.sh"
-#export FCSTEXECDIR="$HOMEfv3gfs/NEMS/exe"
 export FCSTEXECDIR="$HOMEgfs/exec"
+#export FCSTEXECDIR="$HOMEfv3gfs/NEMS/exe"
 export FCSTEXEC="global_fv3gfs.x"
 export npe_fv3=$npe_fcst # This is model resolution dependent, see note above
 if [ $cpl = ".true." ] ; then
@@ -62,6 +62,44 @@ export h2o_phys=".true."
 # Options of stratosphere O3 physics reaction coefficients
 export new_o3forc="YES"
 
+# do_ugwp=T: use unified CGWD and OGWD, and turbulent orographic form drag (TOFD)
+# do_ugwp=F: use unified CGWD but old OGWD, TOFD is not uded.
+export do_ugwp=".false."
+export do_tofd=".true."
+export launch_level=$(echo "$LEVS/2.35" |bc)
+
+# Sponge layer settings for L127
+if [ $LEVS = "128" ]; then
+   export  tau=5.0
+   export  rf_cutoff=1.0e3
+   export  d2_bg_k1=0.20
+   export  d2_bg_k2=0.0
+fi
+
+# PBL/turbulance schemes
+export hybedmf=".false."
+export satmedmf=".true."
+export isatmedmf=1
+tbf=""
+if [ $satmedmf = ".true." ]; then tbf="_satmedmf" ; fi
+
+# Land surface model. (2--NoahMP, landice=F); (1--Noah, landice=T)
+export lsm=1
+if [ $lsm -eq 2 ]; then
+    export lheatstrg=".false."
+    export landice=".false."
+else
+    export lheatstrg=".true."
+    export landice=".true."
+fi
+
+# Radiation options 
+export IAER=5111    ;#spectral band mapping method for aerosol optical properties
+export iovr_lw=3    ;#de-correlation length cloud overlap method (Barker, 2008)
+export iovr_sw=3    ;#de-correlation length cloud overlap method (Barker, 2008)
+export icliq_sw=2   ;#cloud optical coeffs from AER's newer version v3.9-v4.0 for hu and stamnes
+
+
 # Microphysics configuration
 export dnats=0
 export cal_pre=".true."
@@ -70,22 +108,22 @@ export random_clds=".true."
 
 if [ $imp_physics -eq 99 ]; then # ZhaoCarr
     export ncld=1
-    export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_zhaocarr"
+    export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_zhaocarr${tbf}"
     export nwat=2
 
 elif [ $imp_physics -eq 6 ]; then # WSM6
     export ncld=2
-    export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_wsm6"
+    export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_wsm6${tbf}"
     export nwat=6
 
 elif [ $imp_physics -eq 8 ]; then # Thompson
     export ncld=2
-    export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_thompson"
+    export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_thompson${tbf}"
     export nwat=6
 
 elif [ $imp_physics -eq 11 ]; then # GFDL
     export ncld=5
-    export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_gfdl"
+    export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_gfdl${tbf}"
     export nwat=6
     export dnats=1
     export cal_pre=".false."
@@ -93,14 +131,10 @@ elif [ $imp_physics -eq 11 ]; then # GFDL
     export random_clds=".false."
     export lgfdlmprad=".true."
     export effr_in=".true."
+    export reiflag=2
 
-    if [[ "$CDUMP" == "gdas" ]] ; then
-      export hord_mt_nh_nonmono=6
-      export hord_xx_nh_nonmono=6
-    else
-      export hord_mt_nh_nonmono=5
-      export hord_xx_nh_nonmono=5
-    fi
+    export hord_mt_nh_nonmono=5
+    export hord_xx_nh_nonmono=5
     export vtdm4_nh_nonmono=0.02
     export nord=2
     export dddmp=0.1
@@ -113,6 +147,14 @@ fi
 
 #---------------------------------------------------------------------
 
+# ideflate: netcdf zlib lossless compression (0-9): 0 no compression
+# nbits: netcdf lossy compression level (0-32): 0 lossless
+export ideflate=1
+export nbits=14
+export ishuffle=0
+# compression for RESTART files written by FMS 
+export shuffle=1
+export deflate_level=1
 
 # Disable the use of coupler.res; get model start time from model_configure
 export USE_COUPLER_RES="NO"
@@ -127,8 +169,11 @@ if [[ "$CDUMP" == "gdas" ]] ; then # GDAS cycle specific parameters
     fi
 
     # Write restart files at next assimilation time
-    export restart_interval=6
-    
+    export restart_interval=${restart_interval:-6}
+
+    # For IAU, write restarts at beginning of window also
+    if [ $DOIAU = "YES" ]; then export restart_interval=3; fi
+
 elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
 
     # Write more variables to output

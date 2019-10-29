@@ -119,13 +119,19 @@ cd ${pwd}/../ush                ||exit 8
         fv3gfs_chgres.sh  fv3gfs_make_grid.sh  global_chgres.sh ; do
         $LINK ../sorc/ufs_utils.fd/ush/$file                  .
     done
+
 if [ $model = "coupled" ]; then
     $LINK fv3gfs_downstream_nems_cpl.sh fv3gfs_downstream_nems.sh
 fi
 
+cd ${pwd}/../util               ||exit 8
+    for file in sub_slurm sub_wcoss_c sub_wcoss_d ; do
+        $LINK ../sorc/ufs_utils.fd/util/$file
+    done
+
 #------------------------------
 #--add gfs_wafs link if on Dell
-if [ $machine = dell ]; then 
+if [ $machine = dell -o $machine = hera ]; then 
 #------------------------------
  cd ${pwd}/../jobs               ||exit 8
      $LINK ../sorc/gfs_wafs.fd/jobs/*                         .
@@ -242,7 +248,7 @@ fi
 #        $LINK ../sorc/gfs_wafs.fd/exec/$wafsexe .
 #    done
 #fi
-if [ $machine = dell ]; then 
+if [ $machine = dell -o $machine = hera ]; then 
     for wafsexe in wafs_awc_wafavn  wafs_blending  wafs_cnvgrib2  wafs_gcip  wafs_makewafs  wafs_setmissing; do
         [[ -s $wafsexe ]] && rm -f $wafsexe
         $LINK ../sorc/gfs_wafs.fd/exec/$wafsexe .
@@ -337,7 +343,7 @@ cd ${pwd}/../sorc   ||   exit 8
     done
 
 
-    if [ $machine = dell ]; then
+    if [ $machine = dell -o $machine = hera ]; then
         $SLINK gfs_wafs.fd/sorc/wafs_awc_wafavn.fd                                              wafs_awc_wafavn.fd
         $SLINK gfs_wafs.fd/sorc/wafs_blending.fd                                                wafs_blending.fd
         $SLINK gfs_wafs.fd/sorc/wafs_cnvgrib2.fd                                                wafs_cnvgrib2.fd

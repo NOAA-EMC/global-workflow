@@ -46,17 +46,9 @@ elif [  $hname == 't'  ] ; then
     fi
     target=theia
     module purge
-#GWV ADD
-module load         intel/15.3.187
-module load impi/5.0.3.048 
-export NCEPLIBS=/scratch4/NCEPDEV/global/noscrub/George.Vandenberghe/l618.2019/lib
-module use $NCEPLIBS/modulefiles
-export WRFPATH=/scratch4/NCEPDEV/global/noscrub/George.Vandenberghe/l618.2019/lib/wrf.shared.new/v1.1.1/src
-export myFC=mpiifort
-export FCOMP=mpiifort
-module load  ncl/6.3.0   
-#END GWV ADD
-fi
+    module use /scratch3/NCEPDEV/nwprod/modulefiles/
+    module use /scratch3/NCEPDEV/nwprod/lib/modulefiles
+fi #scratch1
 
 ##---------------------------------------------------------------------------
 elif [[ -d /gpfs/hps && -e /etc/SuSE-release ]] ; then
@@ -65,8 +57,8 @@ elif [[ -d /gpfs/hps && -e /etc/SuSE-release ]] ; then
 	echo load the module command 1>&2
 	source /opt/modules/default/init/$__ms_shell
     fi
-    target=wcoss_cray
 
+    target=wcoss_cray
     # Silence the "module purge" to avoid the expected error messages
     # related to modules that load modules.
     module purge > /dev/null 2>&1
@@ -78,12 +70,10 @@ elif [[ -d /gpfs/hps && -e /etc/SuSE-release ]] ; then
     module use /opt/cray/ari/modulefiles
     module use /opt/modulefiles
     module purge > /dev/null 2>&1
-
     # Workaround until module issues are fixed:
     #unset _LMFILES_
     #unset LOADEDMODULES
     echo y 2> /dev/null | module clear > /dev/null 2>&1
-
     module use /usrx/local/prod/modulefiles
     module use /gpfs/hps/nco/ops/nwprod/lib/modulefiles
     module use /gpfs/hps/nco/ops/nwprod/modulefiles
@@ -92,26 +82,6 @@ elif [[ -d /gpfs/hps && -e /etc/SuSE-release ]] ; then
     module use /opt/cray/ari/modulefiles
     module use /opt/modulefiles
     module load modules
-
-# GWV ADD
-module unload PrgEnv-cray
-module load  PrgEnv-intel
-module load craype-sandybridge
-export NCEPLIBS=/gpfs/dell2/emc/modeling/noscrub/cases/l621c/lib
-#export NCEPLIBS=/gpfs/hps/stmp/lc621/lib
-module use $NCEPLIBS/modulefiles
-export myFC=ftn      
-export OPENMP="-qopenmp"
-export myFCFLAGS="-O3 -convert big_endian -traceback -g -fp-model source   -fpp"
-export WRFPATH=$NCEPLIBS/wrf.shared.new/v1.1.1/src                                                    
-export FCOMP=ftn
-# for gsi
-export NDATE=/dev/null/ndate #needs set for build
-module use /usrx/local/dev/modulefiles
-module load cmake/3.6.2   #needed for gsi cmake settings
-
-
-# END GWV ADD
 
 ##---------------------------------------------------------------------------
 elif [[ -L /usrx && "$( readlink /usrx 2> /dev/null )" =~ dell ]] ; then
@@ -122,24 +92,6 @@ elif [[ -L /usrx && "$( readlink /usrx 2> /dev/null )" =~ dell ]] ; then
     fi
     target=wcoss_dell_p3
     module purge 
-#GWV ADD
-
-
-module load  ips/18.0.1.163  
-module load impi/18.0.1
-export NCEPLIBS=/gpfs/dell2/emc/modeling/noscrub/cases/lv506/lib
-export NCEPLIBS=/gpfs/dell2/emc/modeling/noscrub/cases/lv625/lib
-module use $NCEPLIBS/modulefiles
-export WRFPATH=$NCEPLIBS/wrf.shared.new/v1.1.1/src
-export myFC=mpiifort
-
-export OPENMP="-qopenmp"
-export myFCFLAGS="-O3 -convert big_endian -traceback -g -fp-model source   -fpp"
-module load cmake/3.10.0
-module load    prod_util/1.1.2  
-module list
-export FCOMP=mpiifort
-#GWV ENDADD
 
 ##---------------------------------------------------------------------------
 
@@ -151,18 +103,7 @@ elif [[ -d /dcom && -d /hwrf ]] ; then
     fi
     target=wcoss
     module purge
-#GWV ADD
-module load ics/16.0.3 ibmpe
-export NCEPLIBS=/gpfs/dell2/emc/modeling/noscrub/cases/l612p/lib
-#export NCEPLIBS=/tmp/l626/lib                                         
-module use $NCEPLIBS/modulefiles
-export WRFPATH=$NCEPLIBS/wrf.shared.new/v1.1.1/src
-export myFC=mpiifort
-export FCOMP=mpiifort
-export OPENMP="-openmp"
-export myFCFLAGS="-O3 -convert big_endian -traceback -g -fp-model source   -fpp"
 
-#GWV ENDADD
 ##---------------------------------------------------------------------------
 elif [[ -d /glade ]] ; then
     # We are on NCAR Yellowstone
@@ -172,6 +113,7 @@ elif [[ -d /glade ]] ; then
     fi
     target=yellowstone
     module purge
+
 ##---------------------------------------------------------------------------
 elif [[ -d /lustre && -d /ncrc ]] ; then
     # We are on GAEA. 

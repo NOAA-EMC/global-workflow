@@ -100,7 +100,11 @@ elif [ $step = "post" ]; then
 elif [ $step = "vrfy" ]; then
 
     export wtime_vrfy="03:00:00"
-    export wtime_vrfy_gfs="06:00:00"
+    if [[ "$machine" == "HERA" ]]; then
+      export wtime_vrfy_gfs="08:00:00"
+    else
+      export wtime_vrfy_gfs="06:00:00"
+    fi
     export npe_vrfy=1
     export npe_node_vrfy=1
     export npe_vrfy_gfs=1
