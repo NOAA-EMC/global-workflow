@@ -194,7 +194,7 @@ postmsg "$jlogfile" "$msg"
   bullparm=bull_grdbgdas.d$cyc
   out=grdbuls.tran.gdas000.${jobn}
 
-  $HOMEgfs/ush/mkbull_ntc.sh "sstgrb 000" $bullparm $out
+  $HOMEgfs/ush/mkbull_ntc.sh "rtgssthr 000" $bullparm $out
   export err=$?;err_chk
 
   msg="HAS COMPLETED NORMALLY!"
