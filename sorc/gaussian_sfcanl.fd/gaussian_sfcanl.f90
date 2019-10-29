@@ -427,7 +427,7 @@
  endif
 
  print*
- print*,'- NORMAL INTERPOLATION'
+ print*,'- NORMAL TERMINATION'
 
  call w3tage('GAUSSIAN_SFCANL')
 
@@ -454,7 +454,7 @@
  integer                 :: id_xt, id_yt, id_lon, id_lat, id_time
  integer                 :: n
 
- integer, parameter      :: num_noah=4
+ integer, parameter      :: num_noah=27
  character(len=30)       :: noah_var(num_noah)
  character(len=70)       :: noah_name(num_noah)
  character(len=30)       :: noah_units(num_noah)
@@ -479,17 +479,86 @@
  data noah_var /"alnsf", &
                 "alnwf", &
                 "alvsf", &
-                "alvwf" /
+                "alvwf", &
+                "canopy", &
+                "f10m", &
+                "facsf", &
+                "facwf", &
+                "ffhh", &
+                "ffmm", &
+                "uustar", &
+                "slope", &
+                "fice", &
+                "hice", &
+                "snoalb", &
+                "shdmax", &
+                "shdmin", &
+                "snowd", &
+                "crain",&
+                "stype", &
+                "q2m", &
+                "t2m", &
+                "tsfc", &
+                "tg3" , &
+                "tisfc", &
+                "tprcp", &
+                "vtype" /
 
  data noah_name /"mean nir albedo with strong cosz dependency", &
                  "mean nir albedo with weak cosz dependency", &
                  "mean vis albedo with strong cosz dependency", &
-                 "mean vis albedo with weak cosz dependency"/
+                 "mean vis albedo with weak cosz dependency", &
+                 "canopy water (cnwat in gfs data)" , &
+                 "10-meter wind speed divided by lowest model wind speed", &
+                 "fractional coverage with strong cosz dependency", &
+                 "fractional coverage with weak cosz dependency", &
+                 "fh parameter from PBL scheme" , &
+                 "fm parameter from PBL scheme" , &
+                 "uustar surface frictional wind", &
+                 "surface slope type" , &
+                 "surface ice concentration (ice=1; no ice=0)", &
+                 "sea ice thickness (icetk in gfs_data)", &
+                 "maximum snow albedo in fraction", &
+                 "maximum fractional coverage of green vegetation", &
+                 "minimum fractional coverage of green vegetation", &
+                 "surface snow depth", &
+                 "instantaneous categorical rain", &
+                 "soil type in integer 1-9", &
+                 "2m specific humidity" , &
+                 "2m temperature", &
+                 "surface temperature", &
+                 "deep soil temperature" , &
+                 "surface temperature over ice fraction", &
+                 "total precipitation" , &
+                 "vegetation type in integer 1-13" /
 
  data noah_units /"%", &
                   "%", &
                   "%", &
-                  "%" /
+                  "%", &
+                  "XXX", &
+                  "N/A", &
+                  "XXX", &
+                  "XXX", &
+                  "XXX", &
+                  "XXX", &
+                  "XXX", &
+                  "XXX", &
+                  "fraction", &
+                  "XXX", &
+                  "XXX", &
+                  "XXX", &
+                  "XXX", &
+                  "m", &
+                  "number", &
+                  "number", &
+                  "kg/kg", & 
+                  "K", &
+                  "K", &
+                  "K", &
+                  "K", &
+                  "kg/m**2", &
+                  "number" /
 
  data nst_var /"c0", &
                "cd", &
@@ -696,7 +765,7 @@
  call netcdf_err(error, 'WRITING TIME')
 
  do n = 1, num_vars
-   print*,'- write variable ',trim(var(n))
+   print*,'- WRITE VARIABLE ',trim(var(n))
    call get_var(var(n), dummy)
    error = nf90_put_var(ncid, id_var(n), dummy, start=(/1,1,1/), count=(/igaus,jgaus,1/))
    call netcdf_err(error, 'WRITING variable')
@@ -728,6 +797,52 @@
      dummy = reshape(gaussian_data%alvsf, (/igaus,jgaus/))
    case ('alvwf')
      dummy = reshape(gaussian_data%alvwf, (/igaus,jgaus/))
+   case ('canopy')
+     dummy = reshape(gaussian_data%canopy, (/igaus,jgaus/))
+   case ('f10m')
+     dummy = reshape(gaussian_data%f10m, (/igaus,jgaus/))
+   case ('facsf')
+     dummy = reshape(gaussian_data%facsf, (/igaus,jgaus/))
+   case ('facwf')
+     dummy = reshape(gaussian_data%facwf, (/igaus,jgaus/))
+   case ('ffhh')
+     dummy = reshape(gaussian_data%ffhh, (/igaus,jgaus/))
+   case ('ffmm')
+     dummy = reshape(gaussian_data%ffmm, (/igaus,jgaus/))
+   case ('uustar')
+     dummy = reshape(gaussian_data%uustar, (/igaus,jgaus/))
+   case ('slope')
+     dummy = reshape(gaussian_data%slope, (/igaus,jgaus/))
+   case ('fice')
+     dummy = reshape(gaussian_data%fice, (/igaus,jgaus/))
+   case ('hice')
+     dummy = reshape(gaussian_data%hice, (/igaus,jgaus/))
+   case ('snoalb')
+     dummy = reshape(gaussian_data%snoalb, (/igaus,jgaus/))
+   case ('shdmin')
+     dummy = reshape(gaussian_data%shdmin, (/igaus,jgaus/))
+   case ('shdmax')
+     dummy = reshape(gaussian_data%shdmax, (/igaus,jgaus/))
+   case ('snowd')
+     dummy = reshape(gaussian_data%snwdph, (/igaus,jgaus/))
+   case ('crain')
+     dummy = reshape(gaussian_data%srflag, (/igaus,jgaus/))
+   case ('stype')
+     dummy = reshape(gaussian_data%stype, (/igaus,jgaus/))
+   case ('q2m')
+     dummy = reshape(gaussian_data%q2m, (/igaus,jgaus/))
+   case ('t2m')
+     dummy = reshape(gaussian_data%t2m, (/igaus,jgaus/))
+   case ('tsfc')
+     dummy = reshape(gaussian_data%tsea, (/igaus,jgaus/))
+   case ('tg3')
+     dummy = reshape(gaussian_data%tg3, (/igaus,jgaus/))
+   case ('tisfc')
+     dummy = reshape(gaussian_data%tisfc, (/igaus,jgaus/))
+   case ('tprcp')
+     dummy = reshape(gaussian_data%tprcp, (/igaus,jgaus/))
+   case ('vtype')
+     dummy = reshape(gaussian_data%vtype, (/igaus,jgaus/))
    case ('c0')
      dummy = reshape(gaussian_data%c0, (/igaus,jgaus/))
    case ('cd')
