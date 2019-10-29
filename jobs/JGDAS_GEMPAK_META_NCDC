@@ -34,17 +34,10 @@ export EXECgfs=${EXECgfs:-$HOMEgfs/exec}
 export PARMgfs=${PARMgfs:-$HOMEgfs/parm}
 export PARMwmo=${PARMwmo:-$HOMEgfs/parm/wmo}
 export PARMproduct=${PARMproduct:-$HOMEgfs/parm/product}
-export FIXgfs=${FIXgfs:-$HOMEgfs/gempak/fix}
-export USHgfs=${USHgfs:-$HOMEgfs/gempak/ush}
+export FIXgempak=${FIXgempak:-$HOMEgfs/gempak/fix}
+export USHgempak=${USHgempak:-$HOMEgfs/gempak/ush}
 export SRCgfs=${SRCgfs:-$HOMEgfs/scripts}
 export UTILgfs=${UTILgfs:-$HOMEgfs/util}
-
-######################################
-# Set up the GEMPAK directory
-#######################################
-export HOMEgempak=${HOMEgempak:-${NWROOTp1}/gempak}
-export FIXgempak=${FIXgempak:-$HOMEgempak/fix}
-export USHgempak=${USHgempak:-$HOMEgempak/ush}
 
 #
 # Now set up GEMPAK/NTRANS environment
@@ -93,10 +86,10 @@ env
 
 ########################################################
 # Execute the script.
-$USHgfs/gdas_meta_na.sh
-$USHgfs/gdas_ecmwf_meta_ver.sh
-$USHgfs/gdas_meta_loop.sh
-$USHgfs/gdas_ukmet_meta_ver.sh
+$USHgempak/gdas_meta_na.sh
+$USHgempak/gdas_ecmwf_meta_ver.sh
+$USHgempak/gdas_meta_loop.sh
+$USHgempak/gdas_ukmet_meta_ver.sh
 export err=$?; err_chk
 ########################################################
 

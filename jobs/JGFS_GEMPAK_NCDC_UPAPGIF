@@ -34,16 +34,9 @@ export EXECgfs=${EXECgfs:-$HOMEgfs/exec}
 export PARMgfs=${PARMgfs:-$HOMEgfs/parm}
 export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
 export FIXgfs=${FIXgfs:-$HOMEgfs/gempak/fix}
-export USHgfs=${USHgfs:-$HOMEgfs/gempak/ush}
+export USHgempak=${USHgempak:-$HOMEgfs/gempak/ush}
 export SRCgfs=${SRCgfs:-$HOMEgfs/scripts}
 export UTILgfs=${UTILgfs:-$HOMEgfs/util}
-
-######################################
-# Set up the GEMPAK directory
-#######################################
-export HOMEgempak=${HOMEgempak:-${NWROOTp1}/gempak}
-export FIXgempak=${FIXgempak:-$HOMEgempak/fix}
-export USHgempak=${USHgempak:-$HOMEgempak/ush}
 
 export MP_PULSE=0
 export MP_TIMEOUT=2000
