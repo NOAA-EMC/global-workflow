@@ -454,7 +454,7 @@
  integer                 :: id_xt, id_yt, id_lon, id_lat, id_time
  integer                 :: n
 
- integer, parameter      :: num_noah=27
+ integer, parameter      :: num_noah=44
  character(len=30)       :: noah_var(num_noah)
  character(len=70)       :: noah_name(num_noah)
  character(len=30)       :: noah_units(num_noah)
@@ -480,65 +480,99 @@
                 "alnwf", &
                 "alvsf", &
                 "alvwf", &
-                "canopy", &
+                "cnwat", &
+                "crain",&
                 "f10m", &
                 "facsf", &
                 "facwf", &
                 "ffhh", &
                 "ffmm", &
-                "uustar", &
-                "slope", &
-                "fice", &
-                "hice", &
-                "snoalb", &
+                "fricv", &
+                "icec", &
+                "icetk", &
+                "land", &
+                "orog", &
+                "sfcr", &
                 "shdmax", &
                 "shdmin", &
-                "snowd", &
-                "crain",&
-                "stype", &
-                "q2m", &
-                "t2m", &
-                "tsfc", &
+                "sltyp", &
+                "snoalb", &
+                "snod", &
+                "soill1", &
+                "soill2", &
+                "soill3", &
+                "soill4", &
+                "soilt1", &
+                "soilt2", &
+                "soilt3", &
+                "soilt4", &
+                "soilw1", &
+                "soilw2", &
+                "soilw3", &
+                "soilw4", &
+                "sotyp", &
+                "spfh2m", &
                 "tg3" , &
                 "tisfc", &
+                "tmp2m", &
+                "tmpsfc", &
                 "tprcp", &
-                "vtype" /
+                "veg", &
+                "vtype", &
+                "weasd"  /
 
  data noah_name /"mean nir albedo with strong cosz dependency", &
                  "mean nir albedo with weak cosz dependency", &
                  "mean vis albedo with strong cosz dependency", &
                  "mean vis albedo with weak cosz dependency", &
                  "canopy water (cnwat in gfs data)" , &
+                 "instantaneous categorical rain", &
                  "10-meter wind speed divided by lowest model wind speed", &
                  "fractional coverage with strong cosz dependency", &
                  "fractional coverage with weak cosz dependency", &
                  "fh parameter from PBL scheme" , &
                  "fm parameter from PBL scheme" , &
                  "uustar surface frictional wind", &
-                 "surface slope type" , &
                  "surface ice concentration (ice=1; no ice=0)", &
                  "sea ice thickness (icetk in gfs_data)", &
-                 "maximum snow albedo in fraction", &
+                 "sea-land-ice mask (0-sea, 1-land, 2-ice)", &
+                 "surface geopotential height", &
+                 "surface roughness", &
                  "maximum fractional coverage of green vegetation", &
                  "minimum fractional coverage of green vegetation", &
+                 "surface slope type" , &
+                 "maximum snow albedo in fraction", &
                  "surface snow depth", &
-                 "instantaneous categorical rain", &
-                 "soil type in integer 1-9", &
+                 "liquid soil moisture at layer-1", &
+                 "liquid soil moisture at layer-2", &
+                 "liquid soil moisture at layer-3", &
+                 "liquid soil moisture at layer-4", &
+                 "soil temperature 0-10cm", &
+                 "soil temperature 10-40cm", &
+                 "soil temperature 40-100cm", &
+                 "soil temperature 100-200cm", &
+                 "volumetric soil moisture 0-10cm", &
+                 "volumetric soil moisture 10-40cm", &
+                 "volumetric soil moisture 40-100cm", &
+                 "volumetric soil moisture 100-200cm", &
+                 "soil type in integer", &
                  "2m specific humidity" , &
-                 "2m temperature", &
-                 "surface temperature", &
                  "deep soil temperature" , &
                  "surface temperature over ice fraction", &
+                 "2m temperature", &
+                 "surface temperature", &
                  "total precipitation" , &
-                 "vegetation type in integer 1-13" /
+                 "vegetation fraction", &
+                 "vegetation type in integer", &
+                 "surface snow water equivalent"  /
 
  data noah_units /"%", &
                   "%", &
                   "%", &
                   "%", &
                   "XXX", &
+                  "number", &
                   "N/A", &
-                  "XXX", &
                   "XXX", &
                   "XXX", &
                   "XXX", &
@@ -546,11 +580,26 @@
                   "XXX", &
                   "fraction", &
                   "XXX", &
+                  "numerical", &
+                  "gpm", &
+                  "m", &
+                  "XXX", &
                   "XXX", &
                   "XXX", &
                   "XXX", &
                   "m", &
-                  "number", &
+                  "XXX", &
+                  "XXX", &
+                  "XXX", &
+                  "XXX", &
+                  "K", &
+                  "K", &
+                  "K", &
+                  "K", &
+                  "fraction", &
+                  "fraction", &
+                  "fraction", &
+                  "fraction", &
                   "number", &
                   "kg/kg", & 
                   "K", &
@@ -558,7 +607,9 @@
                   "K", &
                   "K", &
                   "kg/m**2", &
-                  "number" /
+                  "fraction", &
+                  "number" , &
+                  "kg/m**2" /
 
  data nst_var /"c0", &
                "cd", &
@@ -797,7 +848,7 @@
      dummy = reshape(gaussian_data%alvsf, (/igaus,jgaus/))
    case ('alvwf')
      dummy = reshape(gaussian_data%alvwf, (/igaus,jgaus/))
-   case ('canopy')
+   case ('cnwat')
      dummy = reshape(gaussian_data%canopy, (/igaus,jgaus/))
    case ('f10m')
      dummy = reshape(gaussian_data%f10m, (/igaus,jgaus/))
@@ -809,13 +860,17 @@
      dummy = reshape(gaussian_data%ffhh, (/igaus,jgaus/))
    case ('ffmm')
      dummy = reshape(gaussian_data%ffmm, (/igaus,jgaus/))
-   case ('uustar')
+   case ('fricv')
      dummy = reshape(gaussian_data%uustar, (/igaus,jgaus/))
-   case ('slope')
+   case ('land')
+     dummy = reshape(gaussian_data%slmask, (/igaus,jgaus/))
+   case ('orog')
+     dummy = reshape(gaussian_data%orog, (/igaus,jgaus/))
+   case ('sltyp')
      dummy = reshape(gaussian_data%slope, (/igaus,jgaus/))
-   case ('fice')
+   case ('icec')
      dummy = reshape(gaussian_data%fice, (/igaus,jgaus/))
-   case ('hice')
+   case ('icetk')
      dummy = reshape(gaussian_data%hice, (/igaus,jgaus/))
    case ('snoalb')
      dummy = reshape(gaussian_data%snoalb, (/igaus,jgaus/))
@@ -823,17 +878,23 @@
      dummy = reshape(gaussian_data%shdmin, (/igaus,jgaus/))
    case ('shdmax')
      dummy = reshape(gaussian_data%shdmax, (/igaus,jgaus/))
-   case ('snowd')
-     dummy = reshape(gaussian_data%snwdph, (/igaus,jgaus/))
+   case ('snod')
+     dummy = reshape(gaussian_data%snwdph, (/igaus,jgaus/)) / 1000.0
+   case ('weasd')
+     dummy = reshape(gaussian_data%sheleg, (/igaus,jgaus/))
+   case ('veg')
+     dummy = reshape(gaussian_data%vfrac, (/igaus,jgaus/)) * 100.0
+   case ('sfcr')
+     dummy = reshape(gaussian_data%zorl, (/igaus,jgaus/)) / 100.0
    case ('crain')
      dummy = reshape(gaussian_data%srflag, (/igaus,jgaus/))
-   case ('stype')
+   case ('sotyp')
      dummy = reshape(gaussian_data%stype, (/igaus,jgaus/))
-   case ('q2m')
+   case ('spfh2m')
      dummy = reshape(gaussian_data%q2m, (/igaus,jgaus/))
-   case ('t2m')
+   case ('tmp2m')
      dummy = reshape(gaussian_data%t2m, (/igaus,jgaus/))
-   case ('tsfc')
+   case ('tmpsfc')
      dummy = reshape(gaussian_data%tsea, (/igaus,jgaus/))
    case ('tg3')
      dummy = reshape(gaussian_data%tg3, (/igaus,jgaus/))
@@ -843,6 +904,30 @@
      dummy = reshape(gaussian_data%tprcp, (/igaus,jgaus/))
    case ('vtype')
      dummy = reshape(gaussian_data%vtype, (/igaus,jgaus/))
+   case ('soill1')
+     dummy = reshape(gaussian_data%slc(:,1), (/igaus,jgaus/))
+   case ('soill2')
+     dummy = reshape(gaussian_data%slc(:,2), (/igaus,jgaus/))
+   case ('soill3')
+     dummy = reshape(gaussian_data%slc(:,3), (/igaus,jgaus/))
+   case ('soill4')
+     dummy = reshape(gaussian_data%slc(:,4), (/igaus,jgaus/))
+   case ('soilt1')
+     dummy = reshape(gaussian_data%stc(:,1), (/igaus,jgaus/))
+   case ('soilt2')
+     dummy = reshape(gaussian_data%stc(:,2), (/igaus,jgaus/))
+   case ('soilt3')
+     dummy = reshape(gaussian_data%stc(:,3), (/igaus,jgaus/))
+   case ('soilt4')
+     dummy = reshape(gaussian_data%stc(:,4), (/igaus,jgaus/))
+   case ('soilw1')
+     dummy = reshape(gaussian_data%smc(:,1), (/igaus,jgaus/))
+   case ('soilw2')
+     dummy = reshape(gaussian_data%smc(:,2), (/igaus,jgaus/))
+   case ('soilw3')
+     dummy = reshape(gaussian_data%smc(:,3), (/igaus,jgaus/))
+   case ('soilw4')
+     dummy = reshape(gaussian_data%smc(:,4), (/igaus,jgaus/))
    case ('c0')
      dummy = reshape(gaussian_data%c0, (/igaus,jgaus/))
    case ('cd')
