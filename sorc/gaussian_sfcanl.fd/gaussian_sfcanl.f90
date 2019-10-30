@@ -2,9 +2,10 @@
 ! 
 ! Read in surface and nst data on the cubed-sphere grid,
 ! interpolate it to the gaussian grid, and output the result
-! to a nemsio file.  The output file mimics those produced by
-! the legacy spectral GFS system.  To not process nst
-! data, set flag 'donst' to 'no'.  To process nst, set to 'yes'.
+! to a nemsio or netcdf file.  To not process nst data,
+! set flag 'donst' to 'no'.  To process nst, set to 'yes'.
+! To output gaussian file in netcdf, set netcdf_out=.true.
+! Otherwise, nemsio format will be output.
 !
 ! Input files:
 ! ------------
@@ -17,7 +18,7 @@
 !
 ! Output files:
 ! -------------
-! sfc.gaussian.nemsio     surface data on gaussian grid - nemsio
+! sfc.gaussian.analysis.file  surface data on gaussian grid - nemsio
 !
 ! Namelist variables:
 ! -------------------
@@ -25,8 +26,12 @@
 ! i/jgaus                 i/j dimension of gaussian grid.
 ! donst                   When 'no' do not process nst data.
 !                         When 'yes' process nst data.
+! netcdf_out              When 'true', output gaussian file in
+!                         netcdf.  Otherwise use nemsio format.
 !
 ! 2018-Jan-30 Gayno       Initial version
+! 2019-Oct-30 Gayno       Option to output gaussian analysis file
+!                         in netcdf.
 !
 !------------------------------------------------------------------
 
@@ -119,13 +124,17 @@
  integer                 :: yy, mm, dd, hh
  integer, allocatable    :: col(:), row(:)
 
+ logical                 :: netcdf_out
+
  real(kind=8), allocatable :: s(:)
 
- namelist /setup/ yy, mm, dd, hh, igaus, jgaus, donst
+ namelist /setup/ yy, mm, dd, hh, igaus, jgaus, donst, netcdf_out
 
  call w3tagb('GAUSSIAN_SFCANL',2018,0179,0055,'NP20')
 
  print*,"- BEGIN EXECUTION"
+
+ netcdf_out = .true.
 
  donst = 'no'
 
@@ -364,11 +373,14 @@
  endif
 
 !------------------------------------------------------------------------------
-! Write gaussian data to nemsio file.
+! Write gaussian data to either netcdf or nemsio file.
 !------------------------------------------------------------------------------
 
- call write_sfc_data_nemsio
-!call write_sfc_data_netcdf
+ if (netcdf_out) then
+   call write_sfc_data_netcdf
+ else
+   call write_sfc_data_nemsio
+ endif
 
  deallocate(gaussian_data%orog)
  deallocate(gaussian_data%t2m)
@@ -459,7 +471,7 @@
  character(len=70)       :: noah_name(num_noah)
  character(len=30)       :: noah_units(num_noah)
  
- integer, parameter      :: num_nst=4
+ integer, parameter      :: num_nst=16
  character(len=30)       :: nst_var(num_nst)
  character(len=70)       :: nst_name(num_nst)
  character(len=30)       :: nst_units(num_nst)
@@ -613,20 +625,56 @@
 
  data nst_var /"c0", &
                "cd", &
+               "dconv", &
+               "dtcool", &
+               "qrain", &
+               "tref", &
+               "w0", &
+               "wd", &
+               "xs", &
+               "xt", &
+               "xtts", &
+               "xu", &
+               "xv", &
+               "xz", &
                "xzts", &
                "zc" /
 
  data nst_name /"nsst coefficient1 to calculate d(tz)/d(ts)", &
                 "nsst coefficient2 to calculate d(tz)/d(ts)", &
+                "nsst thickness of free convection layer", &
+                "nsst sub-layer cooling amount", &
+                "nsst sensible heat flux due to rainfall", &
+                "nsst reference or foundation temperature", &
+                "nsst coefficient3 to calculate d(tz)/d(ts)", &
+                "nsst coefficient4 to calculate d(tz)/d(ts)", &
+                "nsst salinity content in diurnal thermocline layer", &
+                "nsst heat content in diurnal thermocline layer", &
+                "nsst d(xt)/d(ts)", &
+                "nsst u-current content in diurnal thermocline layer", &
+                "nsst v-current content in diurnal thermocline layer", &
+                "nsst diurnal thermocline layer thickness", &
                 "nsst d(xt)/d(ts)", &
                 "nsst sub-layer cooling thickness"/
 
  data nst_units /"numerical", &
                  "n/a", &
+                 "m", &
+                 "k", &
+                 "w/m2", &
+                 "K", &
+                 "n/a", &
+                 "n/a", &
+                 "n/a", &
+                 "k*m", &
+                 "m", &
+                 "m2/s", &
+                 "m2/s", &
+                 "m", &
                  "m/k", &
                  "m"/
 
- outfile = "./sfc.gaussian.nc"
+ outfile = "./sfc.gaussian.analysis.file"
 
  print*,"- WRITE SURFACE DATA TO NETCDF FILE: ", trim(outfile)
 
@@ -805,7 +853,6 @@
 
  deallocate(slat, wlat)
 
-
  error = nf90_put_var(ncid, id_yt, dummy(1,:))
  call netcdf_err(error, 'WRITING GRID_YT')
 
@@ -817,11 +864,10 @@
 
  do n = 1, num_vars
    print*,'- WRITE VARIABLE ',trim(var(n))
-   call get_var(var(n), dummy)
+   call get_netcdf_var(var(n), dummy)
    error = nf90_put_var(ncid, id_var(n), dummy, start=(/1,1,1/), count=(/igaus,jgaus,1/))
    call netcdf_err(error, 'WRITING variable')
  enddo
-
 
  deallocate (dummy)
 
@@ -829,7 +875,11 @@
 
  end subroutine write_sfc_data_netcdf
 
- subroutine get_var(var, dummy)
+!-------------------------------------------------------------------------------------------
+! Retrieve variable based on its netcdf identifier.
+!-------------------------------------------------------------------------------------------
+
+ subroutine get_netcdf_var(var, dummy)
 
  use io
 
@@ -932,6 +982,30 @@
      dummy = reshape(gaussian_data%c0, (/igaus,jgaus/))
    case ('cd')
      dummy = reshape(gaussian_data%cd, (/igaus,jgaus/))
+   case ('dconv')
+     dummy = reshape(gaussian_data%dconv, (/igaus,jgaus/))
+   case ('dtcool')
+     dummy = reshape(gaussian_data%dtcool, (/igaus,jgaus/))
+   case ('qrain')
+     dummy = reshape(gaussian_data%qrain, (/igaus,jgaus/))
+   case ('tref')
+     dummy = reshape(gaussian_data%tref, (/igaus,jgaus/))
+   case ('w0')
+     dummy = reshape(gaussian_data%w0, (/igaus,jgaus/))
+   case ('wd')
+     dummy = reshape(gaussian_data%wd, (/igaus,jgaus/))
+   case ('xs')
+     dummy = reshape(gaussian_data%xs, (/igaus,jgaus/))
+   case ('xt')
+     dummy = reshape(gaussian_data%xt, (/igaus,jgaus/))
+   case ('xtts')
+     dummy = reshape(gaussian_data%xtts, (/igaus,jgaus/))
+   case ('xu')
+     dummy = reshape(gaussian_data%xu, (/igaus,jgaus/))
+   case ('xv')
+     dummy = reshape(gaussian_data%xv, (/igaus,jgaus/))
+   case ('xz')
+     dummy = reshape(gaussian_data%xz, (/igaus,jgaus/))
    case ('xzts')
      dummy = reshape(gaussian_data%xzts, (/igaus,jgaus/))
    case ('zc')
@@ -941,7 +1015,7 @@
      call errexit(67)
  end select
 
- end subroutine get_var
+ end subroutine get_netcdf_var
 
 !-------------------------------------------------------------------------------------------
 ! Write gaussian surface data to nemsio file.
@@ -1118,7 +1192,7 @@
  print*
  print*,"- OPEN GAUSSIAN NEMSIO SURFACE FILE"
 
- call nemsio_open(gfileo, "sfc.gaussian.nemsio", 'write',   &
+ call nemsio_open(gfileo, "sfc.gaussian.analysis.file", 'write',   &
                   modelname="FV3GFS", gdatatype="bin4", version=version,  &
                   nmeta=8, nrec=nrec, dimx=igaus, dimy=jgaus, dimz=(levs_vcoord-1),     &
                   nframe=0, nsoil=4, ntrac=8, jcap=-9999,  &
