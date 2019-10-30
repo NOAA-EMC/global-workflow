@@ -30,8 +30,7 @@ fi
 echo ufs_utils checkout ...
 if [[ ! -d ufs_utils.fd ]] ; then
     rm -f ${topdir}/checkout-ufs_utils.log
-    #git clone --recursive gerrit:UFS_UTILS ufs_utils.fd >> ${topdir}/checkout-ufs_utils.fd.log 2>&1
-    git clone --recursive https://github.com/GeorgeGayno-NOAA/UFS_UTILS.git ufs_utils.fd >> ${topdir}/checkout-ufs_utils.fd.log 2>&1
+    git clone https://github.com/NOAA-EMC/UFS_UTILS.git ufs_utils.fd >> ${topdir}/checkout-ufs_utils.fd.log 2>&1
     cd ufs_utils.fd
     git checkout release/v2.0.0
     cd ${topdir}
@@ -44,7 +43,9 @@ if [[ ! -d gfs_post.fd ]] ; then
     rm -f ${topdir}/checkout-gfs_post.log
     git clone https://github.com/NOAA-EMC/EMC_post gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
     cd gfs_post.fd
-    git checkout develop
+    git checkout ba7e59b290c8149ff1c2fee98d01e99e4ef92ee6
+    #git checkout ncep_post.v8.0.27e
+    #git checkout ncep_post_gtg.v1.0.6c
     cd ${topdir}
 else
     echo 'Skip.  Directory gfs_post.fd already exists.'

@@ -225,7 +225,7 @@ if [ "$VRFYTRAK" = "YES" ]; then
        export COMROOTp1="/scratch4/NCEPDEV/rstprod/com"
        export COMINsyn="$COMROOTp1/arch/prod/syndat"
     elif [ $machine = "HERA" ]; then
-       export COMROOTp1="/scratch4/NCEPDEV/rstprod/com"
+       export COMROOTp1="/scratch1/NCEPDEV/rstprod/com"
        export COMINsyn=${COMINsyn:-${COMROOTp1}/arch/prod/syndat}
     fi
 fi
