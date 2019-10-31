@@ -18,7 +18,8 @@
 !
 ! Output files:
 ! -------------
-! sfc.gaussian.analysis.file  surface data on gaussian grid - nemsio
+! sfc.gaussian.analysis.file  surface data on gaussian grid - 
+!                             nemsio or netcdf.
 !
 ! Namelist variables:
 ! -------------------
@@ -27,7 +28,7 @@
 ! donst                   When 'no' do not process nst data.
 !                         When 'yes' process nst data.
 ! netcdf_out              When 'true', output gaussian file in
-!                         netcdf.  Otherwise use nemsio format.
+!                         netcdf.  Otherwise output nemsio format.
 !
 ! 2018-Jan-30 Gayno       Initial version
 ! 2019-Oct-30 Gayno       Option to output gaussian analysis file
@@ -109,6 +110,10 @@
  type(sfc_data) :: tile_data, gaussian_data
 
  end module io
+
+!------------------------------------------------------------------------------
+! Main program 
+!------------------------------------------------------------------------------
 
  program main
 
@@ -466,17 +471,20 @@
  integer                 :: id_xt, id_yt, id_lon, id_lat, id_time
  integer                 :: n
 
+! noah variables
  integer, parameter      :: num_noah=44
  character(len=30)       :: noah_var(num_noah)
  character(len=70)       :: noah_name(num_noah)
  character(len=30)       :: noah_units(num_noah)
  
+! nst variables
  integer, parameter      :: num_nst=16
  character(len=30)       :: nst_var(num_nst)
  character(len=70)       :: nst_name(num_nst)
  character(len=30)       :: nst_units(num_nst)
 
- integer                 :: num_vars
+! variables to be output
+ integer                              :: num_vars
  character(len=30), allocatable       :: var(:)
  character(len=70), allocatable       :: name(:)
  character(len=30), allocatable       :: units(:)
@@ -623,6 +631,8 @@
                   "number" , &
                   "kg/m**2" /
 
+! define nst fields
+
  data nst_var /"c0", &
                "cd", &
                "dconv", &
@@ -691,6 +701,23 @@
 
  error = nf90_def_dim(ncid, 'time', 1, dim_time)
  call netcdf_err(error, 'DEFINING TIME DIMENSION')
+
+! global attributes
+
+ error = nf90_put_att(ncid, nf90_global, 'nsoil', 4)
+ call netcdf_err(error, 'DEFINING NSOIL ATTRIBUTE')
+
+ error = nf90_put_att(ncid, nf90_global, 'source', "FV3GFS")
+ call netcdf_err(error, 'DEFINING SOURCE ATTRIBUTE')
+
+ error = nf90_put_att(ncid, nf90_global, 'grid', "gaussian")
+ call netcdf_err(error, 'DEFINING GRID ATTRIBUTE')
+
+ error = nf90_put_att(ncid, nf90_global, 'im', igaus)
+ call netcdf_err(error, 'DEFINING IM ATTRIBUTE')
+
+ error = nf90_put_att(ncid, nf90_global, 'jm', jgaus)
+ call netcdf_err(error, 'DEFINING JM ATTRIBUTE')
 
 ! variables
 
@@ -771,7 +798,9 @@
  error = nf90_put_att(ncid, id_time, "calendar", "JULIAN")
  call netcdf_err(error, 'DEFINING TIME ATTRIBUTE')
 
-! surface vars
+!-------------------------------------------------------------------------------------------
+! Determine what variables to output (noah, or noah plus nst).
+!-------------------------------------------------------------------------------------------
  
  if (trim(donst) == "yes" .or. trim(donst) == "YES") then
    num_vars = num_noah + num_nst
@@ -795,6 +824,10 @@
      units(n+num_noah) = nst_units(n)
    enddo
  endif
+
+!-------------------------------------------------------------------------------------------
+! Define variables in netcdf file.
+!-------------------------------------------------------------------------------------------
 
  do n = 1, num_vars
 
@@ -826,7 +859,9 @@
  error = nf90_enddef(ncid, header_buffer_val,4,0,4)
  call netcdf_err(error, 'DEFINING HEADER')
 
-! write of data begins here.
+!-------------------------------------------------------------------------------------------
+! Write variables to netcdf file.
+!-------------------------------------------------------------------------------------------
 
  allocate(dummy(igaus,jgaus))
  do i = 1, igaus
@@ -956,12 +991,16 @@
      dummy = reshape(gaussian_data%vtype, (/igaus,jgaus/))
    case ('soill1')
      dummy = reshape(gaussian_data%slc(:,1), (/igaus,jgaus/))
+     where (dummy > 0.99) dummy = 0.0  ! replace flag value at water/landice
    case ('soill2')
      dummy = reshape(gaussian_data%slc(:,2), (/igaus,jgaus/))
+     where (dummy > 0.99) dummy = 0.0  ! replace flag value at water/landice
    case ('soill3')
      dummy = reshape(gaussian_data%slc(:,3), (/igaus,jgaus/))
+     where (dummy > 0.99) dummy = 0.0  ! replace flag value at water/landice
    case ('soill4')
      dummy = reshape(gaussian_data%slc(:,4), (/igaus,jgaus/))
+     where (dummy > 0.99) dummy = 0.0  ! replace flag value at water/landice
    case ('soilt1')
      dummy = reshape(gaussian_data%stc(:,1), (/igaus,jgaus/))
    case ('soilt2')
