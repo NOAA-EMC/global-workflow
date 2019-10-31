@@ -323,7 +323,7 @@ def get_workflow(dict_configs, cdump='gdas'):
     deps = []
     dep_dict = {'type':'metatask', 'name':'%spost' % cdump}
     deps.append(rocoto.add_dependency(dep_dict))
-    dep_dict = {'type':'task', 'name':'%sarch' % cdump, 'offset':'&INTERVAL;'}
+    dep_dict = {'type':'task', 'name':'%sarch' % cdump, 'offset':'-&INTERVAL;'}
     deps.append(rocoto.add_dependency(dep_dict))
     dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
     metpcase = rocoto.create_envar(name='METPCASE', value='#metpcase#')
