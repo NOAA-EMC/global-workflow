@@ -195,11 +195,13 @@ if [[ "$DOIAU" = "YES" ]]; then
   sPDY=$(echo $sCDATE | cut -c1-8)
   scyc=$(echo $sCDATE | cut -c9-10)
   tPDY=$gPDY
+  tcyc=$gcyc
 else
   sCDATE=$CDATE
   sPDY=$PDY
   scyc=$cyc
   tPDY=$sPDY
+  tcyc=$cyc
 fi
 
 #-------------------------------------------------------
@@ -224,6 +226,8 @@ if [ $DOIAU = "YES" -a $warm_start = ".false." ]; then
   sCDATE=$CDATE
   sPDY=$PDY
   scyc=$cyc
+  tPDY=$sPDY
+  tcyc=$cyc
   #echo "ERROR: DOIAU = $DOIAU and warm_start = $warm_start are incompatible."
   #echo "Abort!"
   #exit 99
@@ -626,7 +630,7 @@ PE_MEMBER01:             $NTASKS_FV3
 start_year:              ${tPDY:0:4}
 start_month:             ${tPDY:4:2}
 start_day:               ${tPDY:6:2}
-start_hour:              ${gcyc}
+start_hour:              ${tcyc}
 start_minute:            0
 start_second:            0
 nhours_fcst:             $FHMAX

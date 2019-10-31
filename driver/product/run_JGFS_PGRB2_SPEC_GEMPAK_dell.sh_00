@@ -2,7 +2,6 @@
 
 #BSUB -J jgfs_pgrb2_spec_gempak_00
 #BSUB -o /gpfs/dell2/ptmp/Boi.Vuong/output/gfs_pgrb2_spec_gempak_00.o%J
-#BSUB -e /gpfs/dell2/ptmp/Boi.Vuong/output/gfs_pgrb2_spec_gempak_00.o%J
 #BSUB -q debug
 #BSUB -n 2                      # number of tasks
 #BSUB -R span[ptile=2]          # 2 task per node
@@ -14,8 +13,7 @@
 export KMP_AFFINITY=disabled
 
 export PDY=`date -u +%Y%m%d`
-export PDY=20181207
-
+export PDY=20191018
 export PDY1=`expr $PDY - 1`
 
 export cyc=00
@@ -27,17 +25,18 @@ date
 
 ####################################
 ##  Load the GRIB Utilities module
-#####################################
+####################################
 module load EnvVars/1.0.2
 module load ips/18.0.1.163
 module load CFP/2.0.1
 module load impi/18.0.1
 module load lsf/10.1
+module load prod_util/1.1.3
+module load prod_envir/1.0.3
 module load grib_util/1.1.0
 ###########################################
 # Now set up GEMPAK/NTRANS environment
 ###########################################
-module use -a /gpfs/dell1/nco/ops/nwprod/modulefiles/
 module load gempak/7.3.1
 module list
 
@@ -61,7 +60,7 @@ export MP_DEBUG_NOTIMEOUT=yes
 
 # set envir=prod or para to test with data in prod or para
  export envir=para
-# export envir=prod
+ export envir=prod
 
 export SENDCOM=YES
 export KEEPDATA=YES
@@ -83,7 +82,7 @@ export jlogfile=${COMROOT2}/logs/jlogfiles/jlogfile.${jobid}
 #############################################################
 # Specify versions
 #############################################################
-export gfs_ver=v15.0.0
+export gfs_ver=v15.2.0
 
 ##########################################################
 # obtain unique process id (pid) and make temp directory
@@ -98,8 +97,9 @@ cd $DATA
 export HOMEgfs=${HOMEgfs:-${NWROOT}/gfs.${gfs_ver}}
 export EXECgfs=${EXECgfs:-$HOMEgfs/exec}
 export PARMgfs=${PARMgfs:-$HOMEgfs/parm}
-export FIXgfs=${FIXgfs:-$HOMEgfs/gempak/fix}
-export USHgfs=${USHgfs:-$HOMEgfs/gempak/ush}
+export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
+export FIXgempak=${FIXgempak:-$HOMEgfs/gempak/fix}
+export USHgempak=${USHgempak:-$HOMEgfs/gempak/ush}
 export SRCgfs=${SRCgfs:-$HOMEgfs/scripts}
 
 ###################################
@@ -112,14 +112,13 @@ export NET=gfs
 ##############################################
 if [ $envir = "prod" ] ; then
 #  This setting is for testing with GFS (production)
-  export COMIN=/gpfs/hps/nco/ops/com/gfs/prod/gfs.${PDY}         ### NCO PROD
+  export COMIN=${COMIN:-$(compath.py ${NET}/${envir}/${NET}.${PDY})/${cyc}}
 else
-#  export COMIN=/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/${NET}.${PDY}/${cyc} ### EMC PARA Realtime
-#  export COMIN=/gpfs/hps3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/${NET}.${PDY}/${cyc} ### EMC PARA Realtimea on CRAY
-  export COMIN=/gpfs/dell2/ptmp/Boi.Vuong/com/gfs/para/${NET}.${PDY}/${cyc} ### Boi PARA
+  export COMIN=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/git/${RUN}.${PDY}/${cyc}    ### Boi PARA
+#  export COMIN=/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/prfv3rt3b/gfs.${PDY}/${cyc} ### EMC PARA Realtime
 fi
 
-export COMOUT=${COMROOT2}/${NET}/${envir}/${NET}.${PDY}/${cyc}/nawips
+export COMOUT=${COMROOT2}/${NET}/${envir}/${NET}.${PDY}/${cyc}/gempak
 
 if [ $SENDCOM = YES ] ; then
   mkdir -m 775 -p $COMOUT

@@ -33,16 +33,9 @@ export HOMEgfs=${HOMEgfs:-${NWROOT}/gfs.${gfs_ver}}
 export EXECgfs=${EXECgfs:-$HOMEgfs/exec}
 export PARMgfs=${PARMgfs:-$HOMEgfs/parm}
 export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
-export FIXgfs=${FIXgfs:-$HOMEgfs/gempak/fix}
-export USHgfs=${USHgfs:-$HOMEgfs/gempak/ush}
+export FIXgempak=${FIXgempak:-$HOMEgfs/gempak/fix}
+export USHgempak=${USHgempak:-$HOMEgfs/gempak/ush}
 export SRCgfs=${SRCgfs:-$HOMEgfs/scripts}
-
-######################################
-# Set up the GEMPAK directory
-#######################################
-export HOMEgempak=${HOMEgempak:-${NWROOTp1}/gempak}
-export FIXgempak=${FIXgempak:-$HOMEgempak/fix}
-export USHgempak=${USHgempak:-$HOMEgempak/ush}
 
 # For half-degree P Grib files
 #export DO_HD_PGRB=YES
