@@ -61,6 +61,10 @@ if [ $CDUMP = "gfs" ]; then
     fi
 fi
 
+
+if [ $CDUMP = "gdas" ]; then
+    echo "METplus verification currently not supported for CDUMP=${CDUMP}"
+fi
 ###############################################################
 # Force Exit out cleanly
 if [ ${KEEPDATA:-"NO"} = "NO" ] ; then rm -rf $DATAROOT ; fi

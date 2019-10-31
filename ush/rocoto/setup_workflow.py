@@ -49,7 +49,7 @@ def main():
         print 'input arg:     --expdir = %s' % repr(args.expdir)
         sys.exit(1)
 
-    gfs_steps = ['prep', 'anal', 'fcst', 'postsnd', 'post', 'awips', 'gempak', 'vrfy', 'arch']
+    gfs_steps = ['prep', 'anal', 'fcst', 'postsnd', 'post', 'awips', 'gempak', 'vrfy', 'metp', 'arch']
     hyb_steps = ['eobs', 'eomg', 'eupd', 'ecen', 'efcs', 'epos', 'earc']
 
     steps = gfs_steps + hyb_steps if _base.get('DOHYBVAR', 'NO') == 'YES' else gfs_steps
@@ -222,7 +222,7 @@ def get_gdasgfs_resources(dict_configs, cdump='gdas'):
     do_gempak = base.get('DO_GEMPAK', 'NO').upper()
     do_awips = base.get('DO_AWIPS', 'NO').upper()
 
-    tasks = ['prep', 'anal', 'fcst', 'post', 'vrfy', 'arch']
+    tasks = ['prep', 'anal', 'fcst', 'post', 'vrfy', 'metp', 'arch']
 
     if cdump in ['gfs'] and do_bufrsnd in ['Y', 'YES']:
         tasks += ['postsnd']
@@ -435,6 +435,21 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
 
     dict_tasks['%svrfy' % cdump] = task
 
+    # metp
+    if cdump in ['gfs']:
+        deps = []
+        dep_dict = {'type':'metatask', 'name':'%spost' % cdump}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type':'task', 'name':'%sarch' % cdump, 'offset':'-&INTERVAL_GFS;'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+        metpcase = rocoto.create_envar(name='METPCASE', value='#metpcase#')
+        metpenvars = envars + [metpcase]
+        varname1 = 'metpcase'
+        varval1 = 'g2g1 g2o1 pcp1'
+        task = wfu.create_wf_task('metp', cdump=cdump, envar=metpenvars, dependency=dependencies,
+                                   metatask='metp', varname=varname1, varval=varval1)
+        dict_tasks['%smetp' % cdump] = task
 
     if cdump in ['gfs'] and do_bufrsnd in ['Y', 'YES']:
         #postsnd
