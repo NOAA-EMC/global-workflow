@@ -49,7 +49,7 @@ echo EMC_post checkout ...
 if [[ ! -d gfs_post.fd ]] ; then
     rm -f ${topdir}/checkout-gfs_post.log
     #git clone https://github.com/NOAA-EMC/EMC_post gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
-    git clone https://github.com/WenMeng-NOAA/EMC_post gfs_post.fd>> ${topdir}/checkout-gfs_post.log 2>&1
+    git clone https://github.com/WenMeng-NOAA/EMC_post.git gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
     cd gfs_post.fd
     git checkout post_gfs_netcdf
     cd ${topdir}
