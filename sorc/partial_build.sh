@@ -6,7 +6,7 @@
                        "Build_ufs_utils" \
                        "Build_gfs_wafs" \
                        "Build_gdas" "Build_nems_util" \
-                       "Build_sfcanl_nsttfchg" \
+                       "Build_gaussian_sfcanl" \
                        "Build_tropcy" \
                        "Build_enkf_chgres_recenter" \
                        "Build_gfs_fbwndgfs" "Build_gfs_overpdtg2" \

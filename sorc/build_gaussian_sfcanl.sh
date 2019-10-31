@@ -21,6 +21,3 @@ module list
 
 cd ${cwd}/gaussian_sfcanl.fd
 ./makefile.sh
-
-#cd ${cwd}/nst_tf_chg.fd
-#./makefile.sh
