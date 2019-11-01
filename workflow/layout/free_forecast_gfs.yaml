@@ -15,7 +15,8 @@ suite: !Cycle
     jgfs_emc_getics: !Task
       <<: *service_task_template
       RUN: 'gfs'
-      Disable: !calc doc.settings.get("IC_CDUMP","") 
+#      Disable: !calc doc.settings.get("IC_CDUMP","")
+      Disable: !calc doc.settings.get("IC_CDUMP","") or doc.settings.cpl
       resources: !calc partition.resources.run_getic
       J_JOB: rocoto/getic.sh
       ecf_module_commands: "# getics.sh will load modules instead"
@@ -24,10 +25,11 @@ suite: !Cycle
     jgfs_emc_fv3ic: !Task
       <<: *exclusive_task_template
       RUN: 'gfs'
-      Disable: !calc not doc.settings.chgres_and_convert_ics
+#      Disable: !calc not doc.settings.chgres_and_convert_ics
+      Disable: !calc not doc.settings.chgres_and_convert_ics or doc.settings.cpl
       Trigger: !Depend jgfs_emc_getics
       resources: !calc partition.resources.run_fv3ic
-      J_JOB: rocoto/fv3ic.sh
+      J_JOB: rocoto/crow_fv3ic.sh
       ecf_module_commands: "# fv3ic.sh will load modules instead"
       model: gfs
 
@@ -37,7 +39,7 @@ suite: !Cycle
       Disable: !calc doc.settings.cplflx=='.false.' or not doc.settings.chgres_and_convert_ics
       Trigger: !Depend jgfs_emc_getics
       resources: !calc partition.resources.run_fv3ic
-      J_JOB: rocoto/mom6ic.sh
+      J_JOB: rocoto/coupled_ic.sh
       ecf_module_commands: "# fv3ic.sh will load modules instead"
       model: gfs
 
@@ -46,22 +48,25 @@ suite: !Cycle
   #####################################################################
 
   gfs: !Family
-    AlarmName: gfs
+#    AlarmName: gdas                    ##!!"gdas" mean to run every 6 hrs from sdate to edate!!"
     RUN: 'gfs'
     ecflow_def: "edit RUN 'gfs'"
 
     forecast: !Family
-      jgfs_forecast_medcold: !Task
+      medcold: !Task
         <<: *exclusive_task_template
         Disable: !calc doc.settings.cplflx=='.false.'
-        Trigger: !Depend up.up.ics.jgfs_emc_fv3ic and up.up.ics.jgfs_emc_mom6ic
+        Trigger: !Depend up.up.ics.jgfs_emc_mom6ic
         resources_remap: !JobRequest [ { <<: *remap_resource_template } ]
         resources: !calc partition.resources.run_coupled_medcold
         J_JOB: JGLOBAL_FORECAST_MEDCOLD
 
-      jgfs_forecast_high: !Task
+      highres: !Task
         <<: *exclusive_task_template
-        Trigger: !Depend up.up.ics.jgfs_emc_fv3ic and jgfs_forecast_medcold
+        Trigger: !FirstTrue
+           - when: !calc doc.settings.cplflx=='.true.'
+             do: !Depend medcold
+           - otherwise: !Depend up.up.ics.jgfs_emc_fv3ic
         resources_remap: !JobRequest [ { <<: *remap_resource_template } ]
         resources: !FirstTrue
            - when: !calc doc.settings.cplflx=='.true.'
@@ -99,7 +104,7 @@ suite: !Cycle
         <<: *exclusive_task_template
         Foreach: []
         FHR: anl
-        Name: jgfs_post_anl
+        Name: p_anl
         Trigger: !FirstTrue
           - when: !calc doc.settings.dev_safeguards
             take: !Depend jgfs_post_manager.release_postanl
@@ -120,7 +125,7 @@ suite: !Cycle
         <<: *exclusive_task_template
         Foreach: [ fhr  ]
         resources: !calc partition.resources.run_gfspost
-        Name: !expand jgfs_post_f{dimval.fhr:03d}
+        Name: !expand p_{dimval.fhr:03d}
         FHR: !expand "{dimval.fhr:03d}"
         J_JOB: JGLOBAL_NCEPPOST
         Trigger: !FirstTrue
@@ -135,6 +140,12 @@ suite: !Cycle
           {rocoto_load_modules} ;
           /usr/bin/env post_times={FHR} FHRLST={FHR} FHRGRP={FHR} &HOMEgfs;/jobs/{J_JOB}
     #endfamily post
+
+      p_ocn: !Task
+        <<: *exclusive_task_template
+        Trigger: !Depend "up.forecast"
+        resources: !calc partition.resources.run_gfspost
+        J_JOB: rocoto/ocnpost.sh
 
     jgfs_emc_vrfy: !Task
       <<: *exclusive_task_template
@@ -178,7 +189,7 @@ suite: !Cycle
   final: !Task
     <<: *service_task_template
     Disable: !calc not metasched.type=="rocoto"
-    resources: !calc partition.resources.run_nothing
+    resources: !calc partition.resources.run_final
     rocoto_command: /bin/true
     model: gfs # useless but required
 

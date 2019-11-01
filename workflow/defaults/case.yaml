@@ -9,7 +9,20 @@ fv3_settings: !Immediate
       Template: *fv3_settings_template
     - !calc doc.fv3_defaults
     - !calc doc.case.get('fv3_settings',{})
-    - !calc doc.get('user_fv3_settings',{})
+
+ocn_settings: !Immediate
+  - !MergeMapping
+    - CDUMP: gfs
+      Template: *ocn_settings_template
+    - !calc doc.ocn_defaults
+    - !calc doc.case.get('ocn_settings',{})
+
+ice_settings: !Immediate
+  - !MergeMapping
+    - CDUMP: gfs
+      Template: *ice_settings_template
+    - !calc doc.ice_defaults
+    - !calc doc.case.get('ice_settings',{})
 
 schedvar: !Immediate
   - !MergeMapping
@@ -59,9 +72,17 @@ data_assimilation: !Immediate
   
 post: !Immediate
   - !MergeMapping
+    - !calc doc.post_defaults
     - { Template: *post_schema }
     - !calc doc.case.get('post',{})
     - !calc doc.get('user_post',{})
+
+ocnpost: !Immediate
+  - !MergeMapping
+    - !calc doc.ocnpost_defaults
+    - { Template: *post_schema }
+    - !calc doc.case.get('ocnpost',{})
+    - !calc doc.get('user_ocnpost',{})
   
 downstream: !Immediate
   - !MergeMapping

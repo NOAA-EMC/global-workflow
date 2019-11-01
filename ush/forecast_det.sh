@@ -18,10 +18,26 @@ FV3_GFS_det(){
 	warm_start=${warm_start:-".false."}
 	read_increment=${read_increment:-".false."}
 	restart_interval=${restart_interval:-0}
+        res_latlon_dynamics="''"
 
+        # Determine if this is a warm start or cold start
 	if [ -f $gmemdir/RESTART/${PDY}.${cyc}0000.coupler.res ]; then
 	  export warm_start=".true."
 	fi
+
+        # turn IAU off for cold start
+        DOIAU_coldstart="NO"
+        if [ $DOIAU = "YES" -a $warm_start = ".false." ]; then
+          export DOIAU="NO"
+          echo "turning off IAU since warm_start = $warm_start"
+          DOIAU_coldstart="YES"
+          sCDATE=$CDATE
+          sPDY=$PDY
+          scyc=$cyc
+          #echo "ERROR: DOIAU = $DOIAU and warm_start = $warm_start are incompatible."
+          #echo "Abort!"
+          #exit 99
+        fi
 
 	#-------------------------------------------------------
 	# determine if restart IC exists to continue from a previous forecast

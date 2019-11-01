@@ -16,11 +16,19 @@ DATA_TABLE=${DATA_TABLE:-$PARM_FV3DIAG/data_table}
 FIELD_TABLE=${FIELD_TABLE:-$PARM_FV3DIAG/field_table}
 
 # build the diag_table with the experiment name and date stamp
+if [ $DOIAU = "YES" ]; then
 cat > diag_table << EOF
 FV3 Forecast
-$SYEAR $SMONTH $SDAY $SHOUR 0 0
+${gPDY:0:4} ${gPDY:4:2} ${gPDY:6:2} ${gcyc} 0 0
 EOF
 cat $DIAG_TABLE >> diag_table
+else
+cat > diag_table << EOF
+FV3 Forecast
+${sPDY:0:4} ${sPDY:4:2} ${sPDY:6:2} ${scyc} 0 0
+EOF
+cat $DIAG_TABLE >> diag_table
+fi
 
 $NCP $DATA_TABLE  data_table
 $NCP $FIELD_TABLE field_table
@@ -139,6 +147,21 @@ cat > input.nml <<EOF
   $fv_core_nml
 /
 
+&cires_ugwp_nml
+       knob_ugwp_solver  = ${knob_ugwp_solver:-2}
+       knob_ugwp_source  = ${knob_ugwp_source:-1,1,0,0}
+       knob_ugwp_wvspec  = ${knob_ugwp_wvspec:-1,25,25,25}
+       knob_ugwp_azdir   = ${knob_ugwp_azdir:-2,4,4,4}
+       knob_ugwp_stoch   = ${knob_ugwp_stoch:-0,0,0,0}
+       knob_ugwp_effac   = ${knob_ugwp_effac:-1,1,1,1}
+       knob_ugwp_doaxyz  = ${knob_ugwp_doaxyz:-1}
+       knob_ugwp_doheat  = ${knob_ugwp_doheat:-1}
+       knob_ugwp_dokdis  = ${knob_ugwp_dokdis:-1}
+       knob_ugwp_ndx4lh  = ${knob_ugwp_ndx4lh:-1}
+       knob_ugwp_version = ${knob_ugwp_version:-0}
+       launch_level      = ${launch_level:-54}                   
+/
+
 &external_ic_nml
   filtered_terrain = $filtered_terrain
   levp = $LEVS
@@ -157,14 +180,15 @@ cat > input.nml <<EOF
   pre_rad      = ${pre_rad:-".false."}
   ncld         = ${ncld:-1}
   imp_physics  = ${imp_physics:-"99"}
-  lgfdlmprad   = ${lgfdlmprad:-".false."}
-  effr_in      = ${effr_in:-".false."}
   pdfcld       = ${pdfcld:-".false."}
   fhswr        = ${FHSWR:-"3600."}
   fhlwr        = ${FHLWR:-"3600."}
   ialb         = $IALB
   iems         = $IEMS
   iaer         = $IAER
+  icliq_sw     = ${icliq_sw:-"2"}
+  iovr_lw      = ${iovr_lw:-"3"}
+  iovr_sw      = ${iovr_sw:-"3"}
   ico2         = $ICO2
   isubc_sw     = ${isubc_sw:-"2"}
   isubc_lw     = ${isubc_lw:-"2"}
@@ -177,6 +201,9 @@ cat > input.nml <<EOF
   redrag       = ${redrag:-".true."}
   dspheat      = ${dspheat:-".true."}
   hybedmf      = ${hybedmf:-".true."}
+  satmedmf     = ${satmedmf-".true."}
+  isatmedmf    = ${isatmedmf-"1"}
+  lheatstrg    = ${lheatstrg-".true."}
   random_clds  = ${random_clds:-".true."}
   trans_trac   = ${trans_trac:-".true."}
   cnvcld       = ${cnvcld:-".true."}
@@ -186,15 +213,50 @@ cat > input.nml <<EOF
   prslrd0      = ${prslrd0:-"0."}
   ivegsrc      = ${ivegsrc:-"1"}
   isot         = ${isot:-"1"}
+  lsoil        = ${lsoil:-"4"}
+  lsm          = ${lsm:-"2"}
+  iopt_dveg    = ${iopt_dveg:-"1"}
+  iopt_crs     = ${iopt_crs:-"1"}
+  iopt_btr     = ${iopt_btr:-"1"}
+  iopt_run     = ${iopt_run:-"1"}
+  iopt_sfc     = ${iopt_sfc:-"1"}
+  iopt_frz     = ${iopt_frz:-"1"}
+  iopt_inf     = ${iopt_inf:-"1"}
+  iopt_rad     = ${iopt_rad:-"1"}
+  iopt_alb     = ${iopt_alb:-"2"}
+  iopt_snf     = ${iopt_snf:-"4"}
+  iopt_tbot    = ${iopt_tbot:-"2"}
+  iopt_stc     = ${iopt_stc:-"1"}
   debug        = ${gfs_phys_debug:-".false."}
   nstf_name    = $nstf_name
   nst_anl      = $nst_anl
   psautco      = ${psautco:-"0.0008,0.0005"}
   prautco      = ${prautco:-"0.00015,0.00015"}
+  lgfdlmprad   = ${lgfdlmprad:-".false."}
+  effr_in      = ${effr_in:-".false."}
+  ldiag_ugwp   = ${ldiag_ugwp:-.false.}
+  do_ugwp      = ${do_ugwp:-.true.}
+  do_tofd      = ${do_tofd:-.true.}
   cplflx       = $cplflx
+EOF
+
+# Add namelist for IAU
+if [ $DOIAU = "YES" ]; then
+  cat >> input.nml << EOF
+  iaufhrs      = ${IAUFHRS}
+  iau_delthrs  = ${IAU_DELTHRS}
+  iau_inc_files= ${IAU_INC_FILES}
+EOF
+fi
+
+cat >> input.nml <<EOF
   $gfs_physics_nml
 /
+EOF
 
+echo "" >> input.nml
+
+cat >> input.nml <<EOF
 &gfdl_cloud_microphysics_nml
   sedi_transport = .true.
   do_sedi_heat = .false.
@@ -317,6 +379,8 @@ EOF
   skeb_tau = ${SKEB_TAU:-"-999."}
   skeb_lscale = ${SKEB_LSCALE:-"-999."}
   skebnorm = ${SKEBNORM:-"1"}
+  skeb_npass = ${SKEB_nPASS:-"30"}
+  skeb_vdof = ${SKEB_VDOF:-"5"}
 EOF
   fi
 

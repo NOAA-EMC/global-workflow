@@ -241,5 +241,10 @@ if [ $VERBOSE = "YES" ] ; then
   echo $(date) EXITING $0 with return code $err >&2
 fi
 
-echo "MAIN: $confignamevarfornems Forecast completed at normal status"
-exit 0
+if [ $err != 0 ]; then
+  echo "MAIN: $confignamevarfornems Forecast failed"
+  exit $err
+else
+  echo "MAIN: $confignamevarfornems Forecast completed at normal status"
+  exit 0
+fi

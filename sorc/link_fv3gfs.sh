@@ -364,11 +364,13 @@ else
  cp -p config.base.emc.dyn config.base
 fi
 #------------------------------
-if [ $model == "coupled" ]; then
+if [ $model = "coupled" ] ; then
  rm -f config.base
  cp -p config.base.emc.dyn_coupled config.base
- if [ $machine = "theia" ]; then
+ if [ $machine = "theia" ] ; then
  CPLFIX_DIR="/scratch4/NCEPDEV/nems/save/Bin.Li/fix_prep_benchmark2"
+ elif [ $machine = "hera" ] ; then
+ CPLFIX_DIR="/scratch1/NCEPDEV/nems/Bin.Li/S2S/fix_prep_benchmark3"
  fi
 cd $pwd/../fix
 # Add fixed files needed for coupled fv3-mom6-cice5

@@ -1,0 +1,7 @@
+
+ice_settings_template: !Template &ice_settings_template
+  MOD:
+    type: string
+    allowed: [ cice5, cice6 ]
+    default: cice5
+    description: "model selection for ice"

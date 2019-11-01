@@ -43,7 +43,6 @@ FV3_GFS_postdet(){
 
         fi
 
-
 	#-------------------------------------------------------
 	if [ $warm_start = ".true." -o $RERUN = "YES" ]; then
 	#-------------------------------------------------------
@@ -72,31 +71,48 @@ FV3_GFS_postdet(){
 	    fi
 	  done
 
-	  # Handle coupler.res file for DA cycling
-	  if [ ${USE_COUPLER_RES:-"NO"} = "YES" ]; then
-	    # In DA, this is not really a "true restart",
-	    # and the model start time is the analysis time
-	    # The alternative is to replace
-	    # model start time with current model time in coupler.res
-	    file=$gmemdir/RESTART/${PDY}.${cyc}0000.coupler.res
-	    file2=$(echo $(basename $file))
-	    file2=$(echo $file2 | cut -d. -f3-) # remove the date from file
-	    $NLN $file $DATA/INPUT/$file2
-	  fi
+          # Need a coupler.res when doing IAU
+          if [ $DOIAU = "YES" ]; then
+             rm -f $DATA/INPUT/coupler.res
+             cat >> $DATA/INPUT/coupler.res << EOF
+              2        (Calendar: no_calendar=0, thirty_day_months=1, julian=2, gregorian=3, noleap=4)
+          ${gPDY:0:4}  ${gPDY:4:2}  ${gPDY:6:2}  ${gcyc}     0     0        Model start time:   year, month, day, hour, minute, second
+          ${sPDY:0:4}  ${sPDY:4:2}  ${sPDY:6:2}  ${scyc}     0     0        Current model time: year, month, day, hour, minute, second
+EOF
+          fi
 
-	  increment_file=$memdir/${CDUMP}.t${cyc}z.atminc.nc
-	  if [ -f $increment_file ]; then
-	    $NLN $increment_file $DATA/INPUT/fv3_increment.nc
-	    read_increment=".true."
-	    res_latlon_dynamics="fv3_increment.nc"
-	  else
-	    read_increment=".false."
-	    res_latlon_dynamics="''"
-	  fi
+          # Link increments
+          if [ $DOIAU = "YES" ]; then
+            for i in $(echo $IAUFHRS | sed "s/,/ /g" | rev); do
+               incfhr=$(printf %03i $i)
+               if [ $incfhr = "006" ]; then
+                 increment_file=$memdir/${CDUMP}.t${cyc}z.atminc.nc
+               else
+                 increment_file=$memdir/${CDUMP}.t${cyc}z.atmi${incfhr}.nc
+               fi
+               if [ ! -f $increment_file ]; then
+                 echo "ERROR: DOIAU = $DOIAU, but missing increment file for fhr $incfhr at $increment_file"
+                 echo "Abort!"
+                 exit 1
+               fi
+               $NLN $increment_file $DATA/INPUT/fv_increment$i.nc
+               IAU_INC_FILES="'fv_increment$i.nc',$IAU_INC_FILES"
+            done
+            read_increment=".false."
+            res_latlon_dynamics=""
+          else
+	    increment_file=$memdir/${CDUMP}.t${cyc}z.atminc.nc
+	    if [ -f $increment_file ]; then
+	       $NLN $increment_file $DATA/INPUT/fv3_increment.nc
+	       read_increment=".true."
+	       res_latlon_dynamics="fv3_increment.nc"
+	    fi
+          fi
 
 	#.............................
-	  else  ##RERUN                         
-	
+	  else  ##RERUN               
+          
+	    export warm_start=".true."
 	    PDYT=$(echo $CDATE_RST | cut -c1-8)
 	    cyct=$(echo $CDATE_RST | cut -c9-10)
 	    for file in $RSTDIR_TMP/${PDYT}.${cyct}0000.*; do
@@ -132,13 +148,23 @@ FV3_GFS_postdet(){
 		fi
 	fi
 
+        # If doing IAU, change forecast hours
+        if [[ "$DOIAU" = "YES" ]]; then
+          FHMAX=$((FHMAX+6))
+          if [ $FHMAX_HF -gt 0 ]; then
+            FHMAX_HF=$((FHMAX_HF+6))
+          fi
+        fi
+
 	#--------------------------------------------------------------------------
 	# Grid and orography data
 	for n in $(seq 1 $ntiles); do
 	  $NLN $FIXfv3/$CASE/${CASE}_grid.tile${n}.nc     $DATA/INPUT/${CASE}_grid.tile${n}.nc
 	  $NLN $FIXfv3/$CASE/${CASE}_oro_data.tile${n}.nc $DATA/INPUT/oro_data.tile${n}.nc
 	done
-	$NLN $FIXfv3/$CASE/${CASE}_mosaic.nc  $DATA/INPUT/grid_spec.nc
+        if [ $cpl = ".false." ] ; then
+	  $NLN $FIXfv3/$CASE/${CASE}_mosaic.nc  $DATA/INPUT/grid_spec.nc
+        fi
 
 	# GFS standard input data
 
@@ -189,6 +215,9 @@ FV3_GFS_postdet(){
 	JCAP_CASE=$((2*res-2))
 	LONB_CASE=$((4*res))
 	LATB_CASE=$((2*res))
+        if [ $LATB_CASE -eq 192 ]; then
+           LATB_CASE=190 # berror file is at this resolution
+        fi
 
 	JCAP=${JCAP:-$JCAP_CASE}
 	LONB=${LONB:-$LONB_CASE}
@@ -339,20 +368,6 @@ FV3_GFS_postdet(){
 	JCAP_STP=${JCAP_STP:-$JCAP_CASE}
 	LONB_STP=${LONB_STP:-$LONB_CASE}
 	LATB_STP=${LATB_STP:-$LATB_CASE}
-
-	# build the date for curr_date and diag_table from CDATE
-	SYEAR=$(echo  $CDATE | cut -c1-4)
-	SMONTH=$(echo $CDATE | cut -c5-6)
-	SDAY=$(echo   $CDATE | cut -c7-8)
-	SHOUR=$(echo  $CDATE | cut -c9-10)
-	curr_date="${SYEAR},${SMONTH},${SDAY},${SHOUR},0,0"
-	rsecs=$((restart_interval*3600))
-	restart_secs=${rsecs:-0}
-
-	# copy over the tables
-	DIAG_TABLE=${DIAG_TABLE:-$PARM_FV3DIAG/diag_table}
-	DATA_TABLE=${DATA_TABLE:-$PARM_FV3DIAG/data_table}
-	FIELD_TABLE=${FIELD_TABLE:-$PARM_FV3DIAG/field_table}
 
 	#------------------------------------------------------------------
 	# make symbolic links to write forecast files directly in memdir

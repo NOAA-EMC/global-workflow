@@ -52,7 +52,6 @@ config_fcst:
     export npe_fcst_gfs="{resource_b[0].mpi_ranks}"
     export npe_node_fcst=$npe_node_fcst
     export nth_fcst=$nth_fv3
-    export npe_fcst=$npe_fv3
     export memory_fcst="1024M"
 
     #######################################################################
@@ -131,6 +130,10 @@ config_fcst:
         export hord_xx_nh_nonmono="{doc.fv3_gfs_settings.hord_xx_nh_nonmono}"
         export hord_mt_nh_nonmono="{doc.fv3_gfs_settings.hord_mt_nh_nonmono}"
 
+    fi
+
+    if [[ $cpl == .true. ]] ; then # coupled model
+        export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_cpl"
     fi
     
     # Regrid tiles to global Gaussian grid in NEMSIO

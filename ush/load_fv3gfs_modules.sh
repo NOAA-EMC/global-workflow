@@ -1,13 +1,5 @@
 #!/bin/sh
-set -x
-
-mode="${1:-exclusive}"
-
-mode="${1:-exclusive}"
-
-mode="${1:-exclusive}"
-
-mode="${1:-exclusive}"
+#set -x
 
 ###############################################################
 # Setup runtime environment by loading modules
@@ -22,16 +14,10 @@ module use "$HOMEgfs/modulefiles"
 
 if [[ -d /lfs3 ]] ; then
     # We are on NOAA Jet
-    export  NCEPLIBS=/mnt/lfs3/projects/hfv3gfs/gwv/ljtjet/lib
-    if [[ "$mode" == forecast ]] ; then
-	module load module_fcst.jet 
-    else
-	module load module_base.jet
-    fi
-#elif [[ -d /scratch1 && $hname == 'h' ]] ; then
+	module load module_base.jet 
+elif [[ -d /scratch1 ]] ; then
     # We are on NOAA Hera
-#	module load module_base.hera
-#elif [[ -d /scratch3 && $hname == 't' ]] ; then
+	module load module_base.hera
 elif [[ -d /scratch3 ]] ; then
     # We are on NOAA Theia
 	module load module_base.theia 
@@ -45,16 +31,11 @@ elif [[ -d /dcom && -d /hwrf ]] ; then
     # We are on NOAA Tide or Gyre
 	module load module_base.wcoss 
 elif [[ -d /glade ]] ; then
-    # We are on NCAR Cheyenne
+    # We are on NCAR Yellowstone
 	module load module_base.cheyenne 
 elif [[ -d /lustre && -d /ncrc ]] ; then
     # We are on GAEA.
-    if [[ "$mode" == service ]] ; then
-        module load module-service.gaea
-    else
-        module load module-run.gaea
-        module load module_base.gaea 
-    fi
+	module load module_base.gaea 
 else
     echo WARNING: UNKNOWN PLATFORM 
 fi

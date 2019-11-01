@@ -61,10 +61,17 @@ FV3_GFS_predet(){
 	SEND=${SEND:-"YES"}   #move final result to rotating directory
 	ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 	KEEPDATA=${KEEPDATA:-"NO"}
+        NEMSIOCHGDATE=${NEMSIOCHGDATE:-"${HOMEgfs}/exec/nemsio_chgdate"}
+        IAU_CHGDATE=${IAU_CHGDATE:-"YES"}
 
 	# Other options
 	MEMBER=${MEMBER:-"-1"} # -1: control, 0: ensemble mean, >0: ensemble member $MEMBER
 	ENS_NUM=${ENS_NUM:-1}  # Single executable runs multiple members (e.g. GEFS)
+
+        # IAU options
+        DOIAU=${DOIAU:-"NO"}
+        IAUFHRS=${IAUFHRS:-0}
+        IAU_DELTHRS=${IAU_DELTHRS:-0}
 
 	# Model specific stuff
 	FCSTEXECDIR=${FCSTEXECDIR:-$HOMEgfs/sorc/fv3gfs.fd/NEMS/exe}
@@ -118,6 +125,9 @@ FV3_GFS_predet(){
 	JCAP_CASE=$((2*res-2))
 	LONB_CASE=$((4*res))
 	LATB_CASE=$((2*res))
+        if [ $LATB_CASE -eq 192 ]; then
+           LATB_CASE=190 # berror file is at this resolution
+        fi
 
 	JCAP=${JCAP:-$JCAP_CASE}
 	LONB=${LONB:-$LONB_CASE}
@@ -166,9 +176,15 @@ FV3_GFS_predet(){
 		mkdata=YES 
 		mkdir -p $DATA ;
 	fi
-	if [ ! -d $DATA/RESTART ]; then mkdir -p $DATA/RESTART; fi
-	if [ ! -d $DATA/INPUT ]; then mkdir -p $DATA/INPUT; fi
-	cd $DATA || exit 8
+        cd $DATA || exit 8
+        mkdir -p $DATA/INPUT
+        if [ $CDUMP = "gfs" -a $restart_interval -gt 0 ]; then
+            RSTDIR_TMP=${RSTDIR:-$ROTDIR}/${CDUMP}.${PDY}/${cyc}/RERUN_RESTART
+            if [ ! -d $RSTDIR_TMP ]; then mkdir -p $RSTDIR_TMP ; fi
+            $NLN $RSTDIR_TMP RESTART
+        else
+            mkdir -p $DATA/RESTART
+        fi
 
 	#-------------------------------------------------------
 	# member directory
@@ -190,6 +206,17 @@ FV3_GFS_predet(){
 	gPDY=$(echo $GDATE | cut -c1-8)
 	gcyc=$(echo $GDATE | cut -c9-10)
 	gmemdir=$ROTDIR/${rprefix}.$gPDY/$gcyc/$memchar
+        sCDATE=$($NDATE -3 $CDATE)
+
+        if [[ "$DOIAU" = "YES" ]]; then
+          sCDATE=$($NDATE -3 $CDATE)
+          sPDY=$(echo $sCDATE | cut -c1-8)
+          scyc=$(echo $sCDATE | cut -c9-10)
+        else
+          sCDATE=$CDATE
+          sPDY=$PDY
+          scyc=$cyc
+        fi
 
 	echo "SUB ${FUNCNAME[0]}: pre-determination variables set"
 }

@@ -17,10 +17,10 @@ cat > model_configure <<EOF
 total_member:            $ENS_NUM
 print_esmf:              ${print_esmf:-.true.}
 PE_MEMBER01:             $NTASKS_TOT
-start_year:              $SYEAR
-start_month:             $SMONTH
-start_day:               $SDAY
-start_hour:              $SHOUR
+start_year:              ${sPDY:0:4}
+start_month:             ${sPDY:4:2}
+start_day:               ${sPDY:6:2}
+start_hour:              ${scyc}
 start_minute:            0
 start_second:            0
 nhours_fcst:             $FHMAX

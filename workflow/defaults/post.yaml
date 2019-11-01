@@ -1,0 +1,7 @@
+# default settings for post jobs
+
+post_defaults: &post_defaults
+  NPOSTGRP: 5
+
+ocnpost_defaults: &ocnpost_defaults
+  NPOSTGRP: 1

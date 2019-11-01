@@ -33,12 +33,39 @@ done
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
+# Temporary runtime directory
+export DATA="$RUNDIR/$CDATE/$CDUMP/fv3ic$$"
+[[ -d $DATA ]] && rm -rf $DATA
+
+# Input GFS initial condition files
+export INIDIR="$ICSDIR/$CDATE/$CDUMP"
+export ATMANL="$ICSDIR/$CDATE/$CDUMP/siganl.${CDUMP}.$CDATE"
+export SFCANL="$ICSDIR/$CDATE/$CDUMP/sfcanl.${CDUMP}.$CDATE"
+if [ -f $ICSDIR/$CDATE/$CDUMP/nstanl.${CDUMP}.$CDATE ]; then
+    export NSTANL="$ICSDIR/$CDATE/$CDUMP/nstanl.${CDUMP}.$CDATE"
+fi
+
 # Output FV3 initial condition files
+export OUTDIR="$ICSDIR/$CDATE/$CDUMP/$CASE/INPUT"
 
-cp $ORIGIN_ROOT/$CDATE/cice5_* $ICSDIR/$CDATE/
-cp $ORIGIN_ROOT/$CDATE/MOM6_*  $ICSDIR/$CDATE/
-cp -r $ORIGIN_ROOT/$CDATE/mom6_da  $ICSDIR/$CDATE/
+export OMP_NUM_THREADS_CH=$NTHREADS_CHGRES
+export APRUNC=$APRUN_CHGRES
 
-##############################################################
+# Call global_chgres_driver.sh
+$HOMEgfs/ush/global_chgres_driver.sh
+status=$?
+if [ $status -ne 0 ]; then
+    echo "global_chgres_driver.sh returned with a non-zero exit code, ABORT!"
+    exit $status
+fi
+
+# Stage the FV3 initial conditions to ROTDIR
+COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc"
+[[ ! -d $COMOUT ]] && mkdir -p $COMOUT
+cd $COMOUT || exit 99
+rm -rf INPUT
+$NLN $OUTDIR .
+
+###############################################################
 # Exit cleanly
 exit 0
