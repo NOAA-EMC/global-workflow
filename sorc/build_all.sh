@@ -27,6 +27,12 @@ if [ ! -d "../exec" ]; then
 fi
 
 #------------------------------------
+# GET MACHINE
+#------------------------------------
+target=""
+source ./machine-setup.sh > /dev/null 2>&1
+
+#------------------------------------
 # INCLUDE PARTIAL BUILD 
 #------------------------------------
 
@@ -76,18 +82,13 @@ echo " .... Building ufs_utils .... "
 #------------------------------------
 # build gfs_wafs 
 #------------------------------------
-$Build_gfs_wafs  && {
-echo " .... Building gfs_wafs  .... "
-./build_gfs_wafs.sh > $logs_dir/build_gfs_wafs .log 2>&1
-}
-
-#------------------------------------
-# build NEMS util
-#------------------------------------
-$Build_nems_util && {
-echo " .... Building NEMS util .... "
-./build_nems_util.sh > $logs_dir/build_NEMS.log 2>&1
-}
+# Only build on WCOSS
+if [ $target = wcoss -o $target = wcoss_cray -o $target = wcoss_dell_p3 ]; then
+ $Build_gfs_wafs  && {
+ echo " .... Building gfs_wafs  .... "
+ ./build_gfs_wafs.sh > $logs_dir/build_gfs_wafs .log 2>&1
+ }
+fi
 
 #------------------------------------
 # build sfcanl_nsttfchg 
@@ -172,10 +173,13 @@ echo " .... Building regrid_nemsio .... "
 #------------------------------------
 # build gfs_util       
 #------------------------------------
-$Build_gfs_util && {
-echo " .... Building gfs_util .... "
-./build_gfs_util.sh > $logs_dir/build_gfs_util.log 2>&1
-}
+# Only build on WCOSS
+if [ $target = wcoss -o $target = wcoss_cray -o $target = wcoss_dell_p3 ]; then
+ $Build_gfs_util && {
+ echo " .... Building gfs_util .... "
+ ./build_gfs_util.sh > $logs_dir/build_gfs_util.log 2>&1
+ }
+fi
 
 #------------------------------------
 # build gsd_prep_chem

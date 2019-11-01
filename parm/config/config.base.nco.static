@@ -32,13 +32,7 @@ export SCRgfs=$HOMEgfs/scripts
 # GLOBAL static environment parameters
 
 export NWPROD="/gpfs/dell1/nco/ops/nwprod"
-if [ -d /gpfs/tp1 ]; then
-    export SITE="MARS"
-    export DMPDIR="/gpfs/tp1/emc/globaldump"
-elif [ -d /gpfs/gp1 ]; then
-    export SITE="VENUS"
-    export DMPDIR="/gpfs/gp1/emc/globaldump"
-fi
+export DMPDIR="/gpfs/dell3/emc/global/dump"
 export RTMFIX=$CRTM_FIX
 
 
@@ -134,6 +128,7 @@ export CASE_ENKF="C384"
 # Surface cycle update frequency
 if [[ "$CDUMP" == "gdas" ]] ; then
    export FHCYC=1
+   export FTSFS=10
 elif [[ "$CDUMP" == "gfs" ]] ; then
    export FHCYC=24
 fi
@@ -170,6 +165,14 @@ export restart_interval_gfs=12
 export QUILTING=".true."
 export OUTPUT_GRID="gaussian_grid"
 export OUTPUT_FILE="nemsio"
+
+# IAU related parameters
+export DOIAU="NO"
+export IAUFHRS=6
+export IAU_DELTHRS=6
+export DOIAU_ENKF="NO"
+export IAUFHRS_ENKF=6
+export IAU_DELTHRS_ENKF=6
 
 # Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL
 export imp_physics=11

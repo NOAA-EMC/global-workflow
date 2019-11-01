@@ -32,7 +32,7 @@ export NETCDF_INCLUDE=$INCnetcdf
 $FCMP $FFLAGS -c kinds.f90
 $FCMP $FFLAGS -c constants.f90
 $FCMP $FFLAGS $NETCDF_INCLUDE -I $NEMSIO_INC -c fv3_module.f90
-$FCMP $FFLAGS $NETCDF_INCLUDE -I $NEMSIO_INC -I. -o fv3nc2nemsio.x fv3_main.f90 fv3_module.o $NETCDF_LDFLAGS $NEMSIO_LIB $BACIO_LIB4 $W3NCO_LIBd
+$FCMP $FFLAGS $NETCDF_INCLUDE -I $NEMSIO_INC -I. -o fv3nc2nemsio.x fv3_main.f90 fv3_module.o $NETCDF_LDFLAGS $NEMSIO_LIB $BACIO_LIB4 $W3NCO_LIBd -L$HDF5/lib -lhdf5_hl -lhdf5 -lz
 
 rm -f *.o *.mod
 
