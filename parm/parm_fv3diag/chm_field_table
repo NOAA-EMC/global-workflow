@@ -17,7 +17,7 @@
 # prognostic so2 mixing ratio tracer
  "TRACER", "atmos_mod", "so2"
            "longname",     "so2 mixing ratio"
-           "units",        "ppm"
+           "units",        "ug/kg"
        "profile_type", "fixed", "surface_value=5.e-6" /
 # prognostic sulfate mixing ratio tracer
  "TRACER", "atmos_mod", "sulf"

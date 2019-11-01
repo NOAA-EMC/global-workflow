@@ -65,6 +65,10 @@ ROTDIR=${ROTDIR:-$pwd}         # rotating archive directory
 ICSDIR=${ICSDIR:-$pwd}         # cold start initial conditions
 DMPDIR=${DMPDIR:-$pwd}         # global dumps for seaice, snow and sst analysis
 EMIDIR=${EMIDIR:-$pwd}         # anthro.emission lpan
+EMITYPE=${EMITYPE:-2}         # 1:MODIS, 2:GBBEPx
+
+cplwav=${cplwav:-".false."}    # Couple with Wavewatch III
+cplchm=${cplchm:-".false."}    # Couple with GSD Chem model
 
 # Model resolution specific parameters
 DELTIM=${DELTIM:-225}
@@ -99,7 +103,6 @@ NTASKS_FV3=${NTASKS_FV3:-$npe_fv3}
 TYPE=${TYPE:-"nh"}                  # choices:  nh, hydro
 MONO=${MONO:-"non-mono"}            # choices:  mono, non-mono
 
-CPL=${CPL:-".true."}   #lpan
 QUILTING=${QUILTING:-".true."}
 OUTPUT_GRID=${OUTPUT_GRID:-"gaussian_grid"}
 OUTPUT_FILE=${OUTPUT_FILE:-"nemsio"}
@@ -123,42 +126,39 @@ fi
 
 #-------------------------------------------------------
 if [ ! -d $ROTDIR ]; then mkdir -p $ROTDIR; fi
-mkdata=NO
-if [ ! -d $DATA ]; then
-   mkdata=YES
-   mkdir -p $DATA
-fi
+if [ ! -d $DATA/INPUT ]; then mkdir -p $DATA/INPUT; fi
+
 cd $DATA || exit 8
-mkdir -p $DATA/INPUT
-if [ $CDUMP = "gfs" -a $restart_interval -gt 0 ]; then
-    RSTDIR_TMP=${RSTDIR:-$ROTDIR}/${CDUMP}.${PDY}/${cyc}/RERUN_RESTART
-    if [ ! -d $RSTDIR_TMP ]; then mkdir -p $RSTDIR_TMP ; fi
-    $NLN $RSTDIR_TMP RESTART
+
+if [ $restart_interval -gt 0 ]; then
+  RSTDIR_TMP=${GESIN}/${mem}/RERUN_RESTART
+  if [ ! -d $RSTDIR_TMP ]; then mkdir -p $RSTDIR_TMP ; fi
+  $NLN $RSTDIR_TMP RESTART
 else
-    mkdir -p $DATA/RESTART
+  mkdir -p $DATA/RESTART
 fi
 
 #-------------------------------------------------------
 # determine if restart IC exists to continue from a previous forecast
 RERUN="NO"
 filecount=$(find $RSTDIR_TMP -type f | wc -l) 
-if [ $CDUMP = "gfs" -a $restart_interval -gt 0 -a $FHMAX -gt $restart_interval -a $filecount -gt 10 ]; then
-    SDATE=$($NDATE +$FHMAX $CDATE)
-    EDATE=$($NDATE +$restart_interval $CDATE)
-    while [ $SDATE -gt $EDATE ]; do
-        PDYS=$(echo $SDATE | cut -c1-8)
-        cycs=$(echo $SDATE | cut -c9-10)
-        flag1=$RSTDIR_TMP/${PDYS}.${cycs}0000.coupler.res
-        flag2=$RSTDIR_TMP/coupler.res
-        if [ -s $flag1 ]; then
-            mv $flag1 ${flag1}.old
-            if [ -s $flag2 ]; then mv $flag2 ${flag2}.old ;fi
-            RERUN="YES"
-            CDATE_RST=$($NDATE -$restart_interval $SDATE)
-            break
-        fi 
-        SDATE=$($NDATE -$restart_interval $SDATE)
-    done
+if [ $restart_interval -gt 0 -a $FHMAX -gt $restart_interval -a $filecount -gt 10 ]; then
+  SDATE=$($NDATE +$FHMAX $CDATE)
+  EDATE=$($NDATE +$restart_interval $CDATE)
+  while [ $SDATE -gt $EDATE ]; do
+      PDYS=$(echo $SDATE | cut -c1-8)
+      cycs=$(echo $SDATE | cut -c9-10)
+      flag1=$RSTDIR_TMP/${PDYS}.${cycs}0000.coupler.res
+      flag2=$RSTDIR_TMP/coupler.res
+      if [ -s $flag1 ]; then
+          mv $flag1 ${flag1}.old
+          if [ -s $flag2 ]; then mv $flag2 ${flag2}.old ;fi
+          RERUN="YES"
+          CDATE_RST=$($NDATE -$restart_interval $SDATE)
+          break
+      fi 
+      SDATE=$($NDATE -$restart_interval $SDATE)
+  done
 fi
 
 #-------------------------------------------------------
@@ -180,15 +180,27 @@ gPDY=$(echo $GDATE | cut -c1-8)
 gcyc=$(echo $GDATE | cut -c9-10)
 gmemdir=$ROTDIR/${rprefix}.$gPDY/$gcyc/$memchar
 
-#### Double check
-if [ $gsdchem = ".true." ]; then
-  gmemdir=$ROTDIR/${prefix}.$gPDY/$gcyc/$memchar
-  #### CP from LiPan for test
-#  $NCP ../calcinc/atminc.nc $memdir/${CDUMP}.t${cyc}z.atminc.nc
-  $NCP /gpfs/dell3/ptmp/Li.Pan/junchem/${CDUMP}.$PDY/$cyc/${CDUMP}.t${cyc}z.atminc.nc $memdir/${CDUMP}.t${cyc}z.atminc.nc
-  /bin/cp -Rp /gpfs/dell3/stmp/Li.Pan/RUNDIRS/junchem/$PDY$cyc/${CDUMP}/calcinc $DATA/..
-  /bin/cp -Rp /gpfs/dell3/stmp/Li.Pan/RUNDIRS/junchem/$PDY$cyc/${CDUMP}/prep $DATA/..
-  /bin/cp -Rp /gpfs/dell3/stmp/Li.Pan/RUNDIRS/junchem/$PDY$cyc/${CDUMP}/regrid $DATA/..
+if [ $cplchm = ".true." ]; then
+#   # memdir=${GESROOT}/${RUN_ENVIR}/gefs.${PDY}/${cyc}/${mem}
+#   # gmemdir=${GESROOT}/${RUN_ENVIR}/gefs.${gPDY}/${gcyc}/${mem}
+#   # #### When this run is the first cycle; use INIT_DIR
+#   # ####  default to use output from previous cycle
+#   # if [ ! -f $gmemdir/RESTART/${PDY}.${cyc}0000.coupler.res ]; then
+#   #   gmemdir=$INIT_DIR/gfs.${gPDY}/$gcyc
+#   # fi
+#   # #### Using output from initchem as INPUT
+#   # if [ -f $HOMEdata/gfs_15/gfs.${PDY}/$cyc/$mem ]; then
+#   #   [[ -d $DATA/INPUT ]] && rm -rf $DATA/INPUT
+#   #   $NLN $HOMEdata/gfs_15/gfs.${PDY}/$cyc/$mem  $DATA/INPUT
+#   # fi
+
+#   FIELD_TABLE=$PARM_FV3DIAG/chm_field_table_gfdl
+#   calcincdir=$DATAROOT/$CDATE/gfs/calcinc
+#   increment_file=$calcincdir/atminc.nc # WCK - come back to this
+#   prepdir=$DATAROOT/$CDATE/gfs/prep # Not used?
+  prepdir=$DATA/INPUT/prep
+  cpl=".true."
+
 fi
 
 #-------------------------------------------------------
@@ -242,7 +254,7 @@ if [ $warm_start = ".true." -o $RERUN = "YES" ]; then
     $NLN $file $DATA/INPUT/$file2
   fi
 
-  increment_file=$memdir/${CDUMP}.t${cyc}z.atminc.nc
+  increment_file=${increment_file:-$memdir/${CDUMP}.t${cyc}z.atminc.nc}
   if [ -f $increment_file ]; then
     $NLN $increment_file $DATA/INPUT/fv3_increment.nc
     read_increment=".true."
@@ -253,15 +265,15 @@ if [ $warm_start = ".true." -o $RERUN = "YES" ]; then
   fi
 
 #### Double check it repeat line 275
-  if [ $gsdchem = ".true." ]; then
-    for file in $memdir/INPUT/*.nc; do
-      file2=$(echo $(basename $file))
-      fsuf=$(echo $file2 | cut -c1-3)
-      if [ $fsuf = $fsuf = "sfc" ]; then
-        $NLN $file $DATA/INPUT/$file2
-      fi
-    done
-  fi
+  # if [ $cplchm = ".true." ]; then
+  #   for file in $memdir/INPUT/*.nc; do
+  #     file2=$(echo $(basename $file))
+  #     fsuf=$(echo $file2 | cut -c1-3)
+  #     if [ $fsuf = $fsuf = "sfc" ]; then
+  #       $NLN $file $DATA/INPUT/$file2
+  #     fi
+  #   done
+  # fi
 
 #.............................
   else  ##RERUN                         
@@ -294,8 +306,8 @@ fi
 
 nfiles=$(ls -1 $DATA/INPUT/* | wc -l)
 if [ $nfiles -le 0 ]; then
-  echo "Initial conditions must exist in $DATA/INPUT, ABORT!"
-  msg=”"Initial conditions must exist in $DATA/INPUT, ABORT!"
+  msg="FATAL ERROR: Initial conditions must exist in $DATA/INPUT, ABORT!"
+  echo "$msg"
   postmsg "$jlogfile" "$msg"
   exit 1
 fi
@@ -343,28 +355,20 @@ if [ $IAER -gt 0 ] ; then
 fi
 
 #### Copy over WW3 inputs
-# At this time only test gfs but this change need to be tested on gdas, enkf, and gfs
 if [ $cplwav = ".true." ]; then
-# Link WW3 files
+  # Link WW3 files
   $NLN $COMINWW3/${WAV_MOD_ID}.${PDY}/${cyc}/rundata/ww3_multi.${WAV_MOD_ID}${WAV_MEMBER}.${cycle}.inp $DATA/ww3_multi.inp
-        # Check for expected wave grids for this run
+  # Check for expected wave grids for this run
   array=($curID $iceID $wndID $buoy $waveGRD $sbsGRD $postGRD $interpGRD)
   grdALL=`printf "%s\n" "${array[@]}" | sort -u | tr '\n' ' '`
-  for wavGRD in ${grdALL}
-  do
-# Wave IC (restart) file must exist for warm start on this cycle, if not wave model starts from flat ocean
+  for wavGRD in ${grdALL}; do
+    # Wave IC (restart) file must exist for warm start on this cycle, if not wave model starts from flat ocean
     $NLN $COMINWW3/${WAV_MOD_ID}.${PDY}/${cyc}/restart/${WAV_MOD_ID}${WAV_MEMBER}.restart.${wavGRD}.${PDY}${cyc} $DATA/restart.${wavGRD}
     $NLN $COMINWW3/${WAV_MOD_ID}.${PDY}/${cyc}/rundata/${WAV_MOD_ID}.mod_def.$wavGRD $DATA/mod_def.$wavGRD
   done
   $NLN $COMINWW3/${WAV_MOD_ID}.${PDY}/${cyc}/rundata/${WAV_MOD_ID}.${iceID}.${cycle}.ice $DATA/ice.${iceID}
 
 fi
-
-#### Copy over GSD CHEM inputs
-#if [ $gsdchem = ".true." ]; then
-#  COMIN_LIPEN=${COMIN_LIPEN:-$RUNDIR/$CDUMP.$PDY/$cyc}
-#  cp -Rp $COMIN_LIPEN $RUNDIR/$CDUMP.$PDY/$cyc
-#fi
 
 #------------------------------------------------------------------
 # changeable parameters
@@ -569,10 +573,10 @@ FIELD_TABLE=${FIELD_TABLE:-$PARM_FV3DIAG/field_table}
 
 # build the diag_table with the experiment name and date stamp
 #### GSD CHEM remove to test
-#cat > diag_table << EOF
-#FV3 Forecast
-#$SYEAR $SMONTH $SDAY $SHOUR 0 0
-#EOF
+cat > diag_table << EOF
+FV3 Forecast
+$SYEAR $SMONTH $SDAY $SHOUR 0 0
+EOF
 cat $DIAG_TABLE >> diag_table
 
 $NCP $DATA_TABLE  data_table
@@ -590,11 +594,7 @@ EOF
 
 #### ww3 version of nems.configure
 if [ $cplwav = ".true." ]; then
-####  atm_petlist_bounds=" 0 $((NTASKS_FV3-1))"
-####  wav_petlist_bounds=" $((NTASKS_FV3)) $((NTASKS_FV3+npe_wav))"
-####  atm_petlist_bounds=" 0   311"
   atm_petlist_bounds=$atm_petlist_bounds
-####  wav_petlist_bounds=" 312 431"
   wav_petlist_bounds=$wav_petlist_bounds
   coupling_interval_sec=${coupling_interval_sec:-1800}
   rm -f nems.configure
@@ -628,7 +628,7 @@ EOF
 fi
 
 #### gsdchem version of nems.configure
-if [ $gsdchem = ".true." ]; then
+if [ $cplchm = ".true." ]; then
   atm_petlist_bounds=${atm_petlist_bounds:-" -1   -1"}
   chm_petlist_bounds=${chm_petlist_bounds:-" -1   -1"}
   rm -f nems.configure
@@ -722,9 +722,10 @@ EOF
 #  $coupler_nml
 #/
 
-if [ $gsdchem = ".true." ]; then
+if [ $cplchm = ".true." ]; then
   cplflx=".false."
-  cplchm=".true."
+  trans_trac=".true."
+  FNSMCC="$FIX_AM/global_soilmgldas.statsgo.t${JCAP}.${LONB}.${LATB}.grb"
 fi
 
 cat > input.nml <<EOF
@@ -896,6 +897,7 @@ cat > input.nml <<EOF
   lgfdlmprad   = ${lgfdlmprad:-".false."}
   effr_in      = ${effr_in:-".false."}
   cplwav       = ${cplwav:-".false."}
+  fscav_aero   = "sulf:0.2", "bc1:0.2","bc2:0.2","oc1:0.15","oc2:0.15",
   $gfs_physics_nml
 /
 
@@ -998,7 +1000,7 @@ cat > input.nml <<EOF
 /
 EOF
 
-if [ $gsdchem = ".true." ]; then
+if [ $cplchm = ".true." ]; then
   if [ $imp_physics -eq 99 ]; then NTRACER=0; fi
   if [ $imp_physics -eq 11 ]; then NTRACER=1; fi
   CHEMIN=0
@@ -1011,13 +1013,17 @@ if [ $gsdchem = ".true." ]; then
   aerchem_onoff=1
   bio_emiss_opt=0
   biomass_burn_opt=1
-  chem_conv_tr=2
+  chem_conv_tr=0
   chem_in_opt=$CHEMIN
   chem_opt=300
   chemdt=3
   cldchem_onoff=0
   dmsemis_opt=1
-  dust_opt=3
+  dust_opt=5
+  dust_alpha=2.0
+  dust_gamma=1.8
+  dust_calcdrag=1
+  dust_uthres=0.065,0.15,0.27,0.30,0.35,0.38,0.35,0.30,0.30,0.45,0.50,0.45,9.999
   emiss_inpt_opt=1
   emiss_opt=5
   gas_bc_opt=1
@@ -1026,15 +1032,18 @@ if [ $gsdchem = ".true." ]; then
   kemit=1
   phot_opt=1
   photdt=60
-  plumerisefire_frq=30
-  PLUMERISE_flag=2
+  plumerisefire_frq=60
+  PLUMERISE_flag=$EMITYPE
   seas_opt=2
+  seas_emis_scheme=-1
+  seas_emis_scale=1.0,1.0,1.0,1.0,1.0 
   vertmix_onoff=1
   gfdlmp_onoff=$NTRACER
   archive_step = -1 
   chem_hist_outname = "chem_out_"
   emi_inname  = "${EMIDIR}${CASE}/$SMONTH"
-  fireemi_inname  = "../prep"
+  dust_inname = "${EMIDIR}${CASE}/$SMONTH"
+  fireemi_inname  = "${prepdir}"
   emi_outname = "./"
   $chem_nml
 /
