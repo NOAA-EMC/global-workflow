@@ -34,6 +34,17 @@ else
     echo 'Skip.  Directory gsi.fd already exists.'
 fi
 
+echo gldas checkout ...
+if [[ ! -d gldas.fd ]] ; then
+    rm -f ${topdir}/checkout-gldas.log
+    git clone https://github.com/NOAA-EMC/GLDAS  gldas.fd >> ${topdir}/checkout-gldas.fd.log 2>&1
+    cd gldas.fd
+    git checkout feature/gldasnoahmp
+    cd ${topdir}
+else
+    echo 'Skip.  Directory gldas.fd already exists.'
+fi
+
 echo ufs_utils checkout ...
 if [[ ! -d ufs_utils.fd ]] ; then
     rm -f ${topdir}/checkout-ufs_utils.log

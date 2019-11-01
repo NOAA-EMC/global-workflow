@@ -74,6 +74,14 @@ echo " .... Building ufs_utils .... "
 }
 
 #------------------------------------
+# build gldas
+#------------------------------------
+$Build_gldas && {
+echo " .... Building gldas .... "
+./build_gldas.sh > $logs_dir/build_gldas.log 2>&1
+}
+
+#------------------------------------
 # build gfs_wafs 
 #------------------------------------
 $Build_gfs_wafs  && {
