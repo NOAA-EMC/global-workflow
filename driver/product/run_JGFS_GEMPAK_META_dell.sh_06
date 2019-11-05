@@ -76,7 +76,7 @@ export fhinc=12
 #############################################################
 # Specify versions
 #############################################################
-export gfs_ver=v15.2.0
+export gfs_ver=v16.0.0
 
 ##########################################################
 # obtain unique process id (pid) and make temp directory

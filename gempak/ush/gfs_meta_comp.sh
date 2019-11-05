@@ -298,7 +298,7 @@ export err=$?;err_chk
         # COMPARE THE 1200 UTC GFS MODEL TO THE 1200 UTC ECMWF FROM YESTERDAY
         grid="F-${MDL} | ${PDY2}/${cyc}00"
         #XXW grid2=${MODEL}/ecmwf.${PDYm1}/ecmwf_glob_${PDYm1}12 
-        grid2=${COMINecmwf}.${PDYm1}/ecmwf_glob_${PDYm1}12 
+        grid2=${COMINecmwf}.${PDYm1}/gempak/ecmwf_glob_${PDYm1}12 
         for gfsfhr in 00 24 48 72 96 120
         do
             ecmwffhr=F`expr ${gfsfhr} + 24`
@@ -675,7 +675,7 @@ export err=$?;err_chk
         # COMPARE THE 0000 UTC GFS MODEL TO THE 1200 UTC ECMWF FROM YESTERDAY
         grid="F-${MDL} | ${PDY2}/${cyc}00"
         # JY grid2="$COMROOT/nawips/prod/ecmwf.${PDYm1}/ecmwf_glob_${PDYm1}12"
-        grid2="${COMINecmwf}.${PDYm1}/ecmwf_glob_${PDYm1}12"
+        grid2="${COMINecmwf}.${PDYm1}/gempak/ecmwf_glob_${PDYm1}12"
         for gfsfhr in 12 36 60 84 108
         do
             ecmwffhr=F`expr ${gfsfhr} + 12`
