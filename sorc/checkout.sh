@@ -30,8 +30,8 @@ if [[ ! -d fv3gfs.fd ]] ; then
     rc=$?
     ((err+=$rc))
     cd fv3gfs.fd
-    git checkout 05510fe
-    git submodule update --init --recursive
+	git checkout 321632d
+	git submodule update --init --recursive
     rc=$?
     ((err+=$rc))
     cd ${topdir}
@@ -46,36 +46,8 @@ if [[ ! -d gsi.fd ]] ; then
     rc=$?
     ((err+=$rc))
     cd gsi.fd
-# <<<<<<< HEAD
-#     git checkout fv3da.v1.0.43 >> ${LOG_DIR}/checkout-gsi.fd.log 2>&1
-#     rc=$?
-#     ((err+=$rc))
-#     git submodule update
-#     rc=$?
-#     ((err+=$rc))
-#     # Workaround for missing GSI file on lowres parallel runs
-#     cd fix/Big_Endian/
-#     git checkout ae3bc2538f34c7cdb6a533a14c4880f6970a6724^ global_berror.l64y98.f77  >> ${LOG_DIR}/checkout-gsi.fd.log 2>&1
-#     rc=$?
-#     ((err+=$rc))
-#     git checkout ae3bc2538f34c7cdb6a533a14c4880f6970a6724^ global_berror.l64y194.f77  >> ${LOG_DIR}/checkout-gsi.fd.log 2>&1
-#     rc=$?
-#     ((err+=$rc))
-#     # Check out historical ozinfo files for use in retrospective parallels
-#     cd ${topdir}/gsi.fd/fix/fv3_historical
-#     git checkout cd0847ee5c67115113f61c79e7d8bc6b1b7095ba  0readme.ozinfo  >> ${LOG_DIR}/checkout-gsi.fd.log 2>&1
-#     rc=$?
-#     ((err+=$rc))
-#     git checkout cd0847ee5c67115113f61c79e7d8bc6b1b7095ba  global_ozinfo.txt.2015110500  >> ${LOG_DIR}/checkout-gsi.fd.log 2>&1
-#     rc=$?
-#     ((err+=$rc))
-#     git checkout cd0847ee5c67115113f61c79e7d8bc6b1b7095ba  global_ozinfo.txt.2018110700  >> ${LOG_DIR}/checkout-gsi.fd.log 2>&1
-#     rc=$?
-#     ((err+=$rc))
-# =======
     git checkout 3664477befd7ef2ba8299c3a5461747a78da30a0
     git submodule update
-# >>>>>>> origin/lgan_fv3_ww3
     cd ${topdir}
 else
     echo 'Skip.  Directory gsi.fd already exists.'
