@@ -104,8 +104,8 @@
 
 ! 700MB HEIGHTS/TEMPERATURES
 
-  restore $NTS/base_nh
-  restore $NTS/700_hgt_tmp
+  restore $NTS/base_nh.nts
+  restore $NTS/700_hgt_tmp.nts
 
   CLEAR   = yes
   GDFILE  = $gdfile
@@ -133,8 +133,8 @@
 
 ! 500MB HEIGHTS/TEMPERATURES
 
-  restore $NTS/base_nh
-  restore $NTS/500_hgt_tmp
+  restore $NTS/base_nh.nts
+  restore $NTS/500_hgt_tmp.nts
 
   CLEAR   = yes
   GDFILE  = $gdfile
@@ -162,8 +162,8 @@
 
 ! 300MB HEIGHTS/ISOTACHS
 
-  restore $NTS/base_nh
-  restore $NTS/300_hgt_iso
+  restore $NTS/base_nh.nts
+  restore $NTS/300_hgt_iso.nts
 
   CLEAR   = yes
   GDFILE  = $gdfile
@@ -191,8 +191,8 @@
 
 ! 250MB HEIGHTS/TEMPERATURES
 
-  restore $NTS/base_nh
-  restore $NTS/250_hgt_tmp
+  restore $NTS/base_nh.nts
+  restore $NTS/250_hgt_tmp.nts
 
   CLEAR   = yes
   GDFILE  = $gdfile
@@ -220,8 +220,8 @@
 
 ! 250MB ANALYSIS HEIGHTS/ISOTACHS
 
-  restore $NTS/base_nh
-  restore $NTS/250_hgt_iso
+  restore $NTS/base_nh.nts
+  restore $NTS/250_hgt_iso.nts
 
   CLEAR   = yes 
   GDFILE  = ${gdfile}
@@ -250,8 +250,8 @@
 
 ! 200MB HEIGHTS/ISOTACHS
 
-  restore $NTS/base_nh
-  restore $NTS/200_hgt_iso
+  restore $NTS/base_nh.nts
+  restore $NTS/200_hgt_iso.nts
 
   CLEAR   = yes
   GDFILE  = $gdfile
@@ -279,8 +279,8 @@
 
 ! 100MB HEIGHTS/TEMPERATURES
 
-  restore $NTS/base_nh
-  restore $NTS/100_hgt_tmp
+  restore $NTS/base_nh.nts
+  restore $NTS/100_hgt_tmp.nts
 
   CLEAR   = yes
   GDFILE  = $gdfile
@@ -308,8 +308,8 @@
 
 ! 100MB HEIGHTS/ISOTACHS
 
-  restore $NTS/base_nh
-  restore $NTS/100_hgt_iso
+  restore $NTS/base_nh.nts
+  restore $NTS/100_hgt_iso.nts
 
   CLEAR   = yes
   GDFILE  = $gdfile
@@ -337,8 +337,8 @@
 
 ! ANALYSIS MSLP/1000-500 THICKNESS
 
-  restore $NTS/base_nh
-  restore $NTS/sfc_mslp_thk
+  restore $NTS/base_nh.nts
+  restore $NTS/sfc_mslp_thk.nts
 
   CLEAR   = yes
   GDFILE  = ${gdfile}
@@ -367,8 +367,8 @@
 
 ! ANALYSIS MSLP/1000-500 THICKNESS (US/CANADA)
 
-  restore $NTS/base_uscan
-  restore $NTS/sfc_mslp_thk
+  restore $NTS/base_uscan.nts
+  restore $NTS/sfc_mslp_thk.nts
 
   CLEAR   = yes
   GDFILE  = ${gdfile}
@@ -396,8 +396,8 @@
 
 ! 500MB ANALYSIS  HEIGHTS/VORTICITY
 
-  restore $NTS/base_nh
-  restore $NTS/500_hgt_vor
+  restore $NTS/base_nh.nts
+  restore $NTS/500_hgt_vor.nts
 
   CLEAR   = yes
   GDFILE  = ${gdfile}
@@ -425,8 +425,8 @@
 
 ! 500MB ANALYSIS  HEIGHTS/VORTICITY (US/CANADA)
 
-  restore $NTS/base_uscan
-  restore $NTS/500_hgt_vor
+  restore $NTS/base_uscan.nts
+  restore $NTS/500_hgt_vor.nts
 
   CLEAR   = yes
   GDFILE  = ${gdfile}
@@ -453,8 +453,8 @@
 
 ! ANALYSIS  LIFTED INDEX
 
-  restore $NTS/base_nh
-  restore $NTS/100_lift
+  restore $NTS/base_nh.nts
+  restore $NTS/100_lift.nts
 
   CLEAR   = yes
   GDFILE  = ${gdfile}
@@ -482,8 +482,8 @@
 
 ! ANALYSIS  TROPOPAUSE PRESSURE/WIND SHEAR
 
-  restore $NTS/base_nh
-  restore $NTS/trop_pres_wshr
+  restore $NTS/base_nh.nts
+  restore $NTS/trop_pres_wshr.nts
 
   CLEAR   = yes
   GDFILE  = ${gdfile}
@@ -511,8 +511,8 @@
 
 ! ANALYSIS 700MB RELATIVE HUMIDITY AND VERTICAL VELOCITY
 
-  restore $NTS/base_nh
-  restore $NTS/700_rel_vvel
+  restore $NTS/base_nh.nts
+  restore $NTS/700_rel_vvel.nts
 
   CLEAR   = yes
   GDFILE  = ${gdfile}

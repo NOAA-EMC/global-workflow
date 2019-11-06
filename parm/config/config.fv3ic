@@ -12,7 +12,7 @@ export npe_node_fv3ic=1
 if [ $machine = THEIA ]; then
   export npe_fv3ic=4
   export npe_node_fv3ic=4
-fi 
+fi
 export nth_fv3ic=${NTHREADS_CHGRES:-24}
 
 echo "END: config.fv3ic"
