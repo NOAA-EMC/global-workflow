@@ -57,19 +57,21 @@ do
    then
       pgrbfile="pgrbanl"
       pgrbifile="pgrbianl"
-   elif test "$i" = "sstgrb"
+   elif test "$i" = "rtgssthr"
    then
-      pgrbfile="sstgrb"
-      pgrbifile="sstgrb.index"
-#      cp $COMIN/${RUN}.${cycle}.${pgrbfile}  ${pgrbfile}
+      pgrbfile="rtgssthr"
+      pgrbifile="rtgssthr.index"
       cp $COMIN/${cyc}/${RUN}.${cycle}.${pgrbfile}.grib2  .
       export err=$?
       if [[ $err -ne 0 ]] ; then
          echo " File ${RUN}.${cycle}.${pgrbfile}.grib2 does not exist."
          exit $err
       fi
+      
+      export grid="0 6 0 0 0 0 0 0 360 180 0 0 89500000 500000 48 -89500000 359500000 1000000 1000000 0"
+      $COPYGB2 -g "$grid" -i0 -x gdas.t12z.rtgssthr.grib2   gdas.t12z.rtgssthr_1p0.grib2
 
-      $CNVGRIB -g21 ${RUN}.${cycle}.${pgrbfile}.grib2  $pgrbfile
+      $CNVGRIB -g21 gdas.t12z.rtgssthr_1p0.grib2 $pgrbfile
       $GRBINDEX $pgrbfile $pgrbifile
    else
       pgrbfile="pgrbf$i"

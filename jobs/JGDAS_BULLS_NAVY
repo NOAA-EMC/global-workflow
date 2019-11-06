@@ -37,14 +37,9 @@ export PARMproduct=${PARMproduct:-$HOMEgfs/parm/product}
 export FIXgfs=${FIXgfs:-$HOMEgfs/gempak/fix}
 export USHgfs=${USHgfs:-$HOMEgfs/gempak/ush}
 export SRCgfs=${SRCgfs:-$HOMEgfs/scripts}
+export FIXgempak=${FIXgempak:-$HOMEgfs/gempak/fix}
+export USHgempak=${USHgempak:-$HOMEgfs/gempak/ush}
 export UTILgfs=${UTILgfs:-$HOMEgfs/util}
-
-######################################
-# Set up the GEMPAK directory
-#######################################
-export HOMEgempak=${HOMEgempak:-${NWROOTp1}/gempak}
-export FIXgempak=${FIXgempak:-$HOMEgempak/fix}
-export USHgempak=${USHgempak:-$HOMEgempak/ush}
 
 #################################
 # Set up the NET and RUN

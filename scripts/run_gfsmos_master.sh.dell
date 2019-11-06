@@ -72,7 +72,7 @@ export SENDCOM=YES
 #------------------
 
 #--------------------------------
-##export COMDATEROOT=$COMROOTp1
+# COMDATEROOT defined by module prod_util
 ##export PTMPROOT=/gpfs/dell2/ptmp/$USER
 ##export STMPROOT=/gpfs/dell2/stmp/$USER
 ##export MODELROOT=/gpfs/dell2/mdl/mdlstat/noscrub/usr/$USER/nwprod

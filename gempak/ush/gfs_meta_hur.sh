@@ -337,10 +337,10 @@ if [ ${cyc} -eq 00 ] ; then
     # BV export MODEL=/com/nawips/prod
     # JY export HPCECMWF=${MODEL}/ecmwf.${PDY}
     # JY export HPCUKMET=${MODEL}/ukmet.${PDY}
-    export HPCECMWF=${COMINecmwf}.${PDY}
+    export HPCECMWF=${COMINecmwf}.${PDY}/gempak
     export HPCUKMET=${COMINukmet}.${PDY}
     grid1="F-${MDL} | ${PDY2}/${cyc}00"
-    grid2="${COMINecmwf}.${PDYm1}/ecmwf_glob_${PDYm1}12"
+    grid2="${COMINecmwf}.${PDYm1}/gempak/ecmwf_glob_${PDYm1}12"
     grid3="F-UKMETHPC | ${PDY2}/${cyc}00"
     for gfsfhr in 12 36 60 84 108
     do

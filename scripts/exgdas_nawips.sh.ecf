@@ -25,27 +25,27 @@ cd $DATA_RUN
 msg="Begin job for $job"
 postmsg "$jlogfile" "$msg"
 
-cp $FIXgfs/g2varswmo2.tbl g2varswmo2.tbl
+cp $FIXgempak/g2varswmo2.tbl g2varswmo2.tbl
 export err=$?
 if [[ $err -ne 0 ]] ; then
    echo " File g2varswmo2.tbl file is missing."
    exit $err
 fi
-cp $FIXgfs/g2vcrdwmo2.tbl g2vcrdwmo2.tbl
+cp $FIXgempak/g2vcrdwmo2.tbl g2vcrdwmo2.tbl
 export err=$?
 if [[ $err -ne 0 ]] ; then
    echo " File g2vcrdwmo2.tbl file is missing."
    exit $err
 fi
 
-cp $FIXgfs/g2varsncep1.tbl g2varsncep1.tbl
+cp $FIXgempak/g2varsncep1.tbl g2varsncep1.tbl
 export err=$?
 if [[ $err -ne 0 ]] ; then
    echo " File g2varsncep1.tbl file is missing."
    exit $err
 fi
 
-cp $FIXgfs/g2vcrdncep1.tbl g2vcrdncep1.tbl
+cp $FIXgempak/g2vcrdncep1.tbl g2vcrdncep1.tbl
 export err=$?
 if [[ $err -ne 0 ]] ; then
    echo " File g2vcrdncep1.tbl file is missing."
@@ -53,13 +53,6 @@ if [[ $err -ne 0 ]] ; then
 fi
 
 #
-NAGRIB_TABLE=${NAGRIB_TABLE:-$NWROOTp1/gempak/fix/nagrib.tbl}
-export err=$?
-if [[ $err -ne 0 ]] ; then
-   echo " File nagrib.tbl does not exist."
-   exit $err
-fi
-
 NAGRIB=$GEMEXE/nagrib2_nc
 export err=$?
 if [[ $err -ne 0 ]] ; then
@@ -68,29 +61,14 @@ if [[ $err -ne 0 ]] ; then
    exit $err
 fi
 
-#
-
-entry=`grep "^$RUN " $NAGRIB_TABLE | awk 'index($1,"#") != 1 {print $0}'`
-
-if [ "$entry" != "" ] ; then
-  cpyfil=`echo $entry  | awk 'BEGIN {FS="|"} {print $2}'`
-  garea=`echo $entry   | awk 'BEGIN {FS="|"} {print $3}'`
-  gbtbls=`echo $entry  | awk 'BEGIN {FS="|"} {print $4}'`
-  maxgrd=`echo $entry  | awk 'BEGIN {FS="|"} {print $5}'`
-  kxky=`echo $entry    | awk 'BEGIN {FS="|"} {print $6}'`
-  grdarea=`echo $entry | awk 'BEGIN {FS="|"} {print $7}'`
-  proj=`echo $entry    | awk 'BEGIN {FS="|"} {print $8}'`
-  output=`echo $entry  | awk 'BEGIN {FS="|"} {print $9}'`
-else
-  cpyfil=gds
-  garea=dset
-  gbtbls=
-  maxgrd=4999
-  kxky=
-  grdarea=
-  proj=
-  output=T
-fi  
+cpyfil=gds
+garea=dset
+gbtbls=
+maxgrd=4999
+kxky=
+grdarea=
+proj=
+output=T
 pdsext=no
 
 maxtries=180

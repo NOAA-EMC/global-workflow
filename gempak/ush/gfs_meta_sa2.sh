@@ -217,7 +217,7 @@ do
             ecmwffhr="F0`expr ${gfsfhr} + 6`"
         done
     gfsfhr="F${gfsfhr}"
-    grid2="${COMINecmwf}.${PDYm1}/ecmwf_glob_${PDYm1}12"
+    grid2="${COMINecmwf}.${PDYm1}/gempak/ecmwf_glob_${PDYm1}12"
 
 $GEMEXE/gdplot2_nc << EOF10
 \$MAPFIL = mepowo.gsf
