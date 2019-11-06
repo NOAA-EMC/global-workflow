@@ -10,7 +10,7 @@
 
  implicit none
 
- call w3tagb('CHGRES_NC_GAUSS',2019,0270,0085,'NP20')
+ call w3tagb('ENKF_CHGRES_RECENTER_NCIO',2019,0270,0085,'NP20')
 
  print*,"STARTING PROGRAM"
 
@@ -60,8 +60,8 @@
  print*
  print*,"PROGRAM FINISHED NORMALLY!"
 
- call w3tage('CHGRES_NC_GAUSS')
+ call w3tage('ENKF_CHGRES_RECENTER_NCIO')
 
  stop
- 
- end program regrid 
+
+ end program regrid
