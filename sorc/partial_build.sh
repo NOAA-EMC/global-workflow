@@ -4,9 +4,10 @@
  declare -a Build_prg=("Build_libs" "Build_fv3gfs" \
                        "Build_gsi" "Build_ncep_post" \
                        "Build_ufs_utils" \
+                       "Build_gldas" \
                        "Build_gfs_wafs" \
-                       "Build_gdas" \
-                       "Build_sfcanl_nsttfchg" \
+                       "Build_gdas" "Build_nems_util" \
+                       "Build_gaussian_sfcanl" \
                        "Build_tropcy" \
                        "Build_enkf_chgres_recenter" \
                        "Build_enkf_chgres_recenter_nc" \

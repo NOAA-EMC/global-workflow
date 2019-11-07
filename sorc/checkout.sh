@@ -7,9 +7,16 @@ echo $topdir
 echo fv3gfs checkout ...
 if [[ ! -d fv3gfs.fd ]] ; then
     rm -f ${topdir}/checkout-fv3gfs.log
-    git clone gerrit:NEMSfv3gfs fv3gfs.fd >> ${topdir}/checkout-fv3gfs.log 2>&1
+    git clone https://github.com/junwang-noaa/ufs-weather-model fv3gfs.fd >> ${topdir}/checkout-fv3gfs.log 2>&1
     cd fv3gfs.fd
+    git checkout gfsv16_bugfix
     git submodule update --init --recursive
+
+    #git clone gerrit:NEMSfv3gfs fv3gfs.fd >> ${topdir}/checkout-fv3gfs.log 2>&1
+    #cd fv3gfs.fd
+    ##git checkout gfs.v16_PhysicsUpdate
+    #git submodule update --init --recursive
+
     cd ${topdir}
 else
     echo 'Skip.  Directory fv3gfs.fd already exists.'
@@ -27,6 +34,17 @@ else
     echo 'Skip.  Directory gsi.fd already exists.'
 fi
 
+echo gldas checkout ...
+if [[ ! -d gldas.fd ]] ; then
+    rm -f ${topdir}/checkout-gldas.log
+    git clone https://github.com/NOAA-EMC/GLDAS  gldas.fd >> ${topdir}/checkout-gldas.fd.log 2>&1
+    cd gldas.fd
+    git checkout feature/gldasnoahmp
+    cd ${topdir}
+else
+    echo 'Skip.  Directory gldas.fd already exists.'
+fi
+
 echo ufs_utils checkout ...
 if [[ ! -d ufs_utils.fd ]] ; then
     rm -f ${topdir}/checkout-ufs_utils.log
@@ -41,11 +59,10 @@ fi
 echo EMC_post checkout ...
 if [[ ! -d gfs_post.fd ]] ; then
     rm -f ${topdir}/checkout-gfs_post.log
-    git clone https://github.com/NOAA-EMC/EMC_post gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
+    #git clone https://github.com/NOAA-EMC/EMC_post gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
+    git clone https://github.com/WenMeng-NOAA/EMC_post.git gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
     cd gfs_post.fd
-    git checkout ba7e59b290c8149ff1c2fee98d01e99e4ef92ee6
-    #git checkout ncep_post.v8.0.27e
-    #git checkout ncep_post_gtg.v1.0.6c
+    git checkout post_gfs_netcdf
     cd ${topdir}
 else
     echo 'Skip.  Directory gfs_post.fd already exists.'
