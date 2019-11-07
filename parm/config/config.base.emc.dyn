@@ -244,7 +244,7 @@ export FHOUT_HF_GFS=1
 # WRITE_DOPOST=true, use inline POST
 export QUILTING=".true."
 export OUTPUT_GRID="gaussian_grid"
-export OUTPUT_FILE="nemsio"
+export OUTPUT_FILE="netcdf"
 export WRITE_DOPOST=".false."
 
 # IAU related parameters
@@ -296,5 +296,11 @@ export ARCH_CYC=00           # Archive data at this cycle for warm_start capabil
 export ARCH_WARMICFREQ=4     # Archive frequency in days for warm_start capability
 export ARCH_FCSTICFREQ=1     # Archive frequency in days for gdas and gfs forecast-only capability
 
+# suffix options depending on file format
+if [ $OUTPUT_FILE = "netcdf" ]; then
+    export SUFFIX=".nc"
+else
+    export SUFFIX=".nemsio"
+fi 
 
 echo "END: config.base"

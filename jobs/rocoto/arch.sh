@@ -36,7 +36,13 @@ fi
 
 # CURRENT CYCLE
 APREFIX="${CDUMP}.t${cyc}z."
-ASUFFIX=".nc"
+ASUFFIX=${ASUFFIX:-$SUFFIX}
+
+if [ $ASUFFIX = ".nc" ]; then
+   format="netcdf"
+else
+   format="nemsio"
+fi
 
 # Realtime parallels run GFS MOS on 1 day delay
 # If realtime parallel, back up CDATE_MOS one day
@@ -89,7 +95,7 @@ if [ $CDUMP = "gfs" ]; then
     $NCP trak.gfso.atcfunix.altg.$CDATE   ${ARCDIR}/.
 fi
 
-# Archive atmospheric nemsio gfs forecast files for fit2obs
+# Archive atmospheric gaussian gfs forecast files for fit2obs
 VFYARC=$ROTDIR/vrfyarch
 [[ ! -d $VFYARC ]] && mkdir -p $VFYARC
 if [ $CDUMP = "gfs" -a $FITSARC = "YES" ]; then
@@ -98,8 +104,8 @@ if [ $CDUMP = "gfs" -a $FITSARC = "YES" ]; then
     fhr=0
     while [[ $fhr -le $fhmax ]]; do
       fhr3=$(printf %03i $fhr)
-      sfcfile=${CDUMP}.t${cyc}z.sfcf${fhr3}.nemsio
-      sigfile=${CDUMP}.t${cyc}z.atmf${fhr3}.nemsio
+      sfcfile=${CDUMP}.t${cyc}z.sfcf${fhr3}${ASUFFIX}
+      sigfile=${CDUMP}.t${cyc}z.atmf${fhr3}${ASUFFIX}
       $NCP $sfcfile $VFYARC/${CDUMP}.$PDY/$cyc/
       $NCP $sigfile $VFYARC/${CDUMP}.$PDY/$cyc/
       (( fhr = $fhr + 6 ))
@@ -159,9 +165,9 @@ if [ $CDUMP = "gfs" ]; then
         htar -P -cvf $ATARDIR/$CDATE/${targrp}.tar `cat $ARCH_LIST/${targrp}.txt`
     done
 
-    #for targrp in gfs_flux gfs_nemsio gfs_pgrb2b; do
+    #for targrp in gfs_flux gfs_netcdf/nemsio gfs_pgrb2b; do
     if [ ${SAVEFCSTNEMSIO:-"YES"} = "YES" ]; then
-        for targrp in gfs_flux gfs_nemsioa gfs_nemsiob; do
+        for targrp in gfs_flux gfs_${format}a gfs_${format}b; do
             htar -P -cvf $ATARDIR/$CDATE/${targrp}.tar `cat $ARCH_LIST/${targrp}.txt`
             status=$?
             if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
@@ -278,7 +284,7 @@ while [ $GDATE -le $GDATEEND ]; do
 done
 
 # Remove archived stuff in $VFYARC that are (48+$FHMAX_GFS) hrs behind
-# 1. atmospheric nemsio files used for fit2obs
+# 1. atmospheric gaussian files used for fit2obs
 if [ $CDUMP = "gfs" ]; then
     GDATE=$($NDATE -$FHMAX_GFS $GDATE)
     gPDY=$(echo $GDATE | cut -c1-8)

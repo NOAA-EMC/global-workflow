@@ -49,9 +49,9 @@ ghh=$(echo  $GDATE | cut -c9-10)
 OPREFIX="${CDUMP}.t${chh}z."
 OSUFFIX=".bufr_d"
 GPREFIX="gdas.t${ghh}z."
-GSUFFIX=".nemsio"
+GSUFFIX=${GSUFFIX:-$SUFFIX}
 APREFIX="${CDUMP}.t${chh}z."
-ASUFFIX=".nemsio"
+ASUFFIX=${ASUFFIX:-$SUFFIX}
 
 COMIN_OBS=${COMIN_OBS:-"$DMPDIR/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}"}
 COMIN_GES=${COMIN_GES:-"$ROTDIR/gdas.$gymd/$ghh"}
