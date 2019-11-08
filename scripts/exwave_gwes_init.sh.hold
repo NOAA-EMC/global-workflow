@@ -14,10 +14,7 @@
 #  Update record :                                                            #
 #                                                                             #
 # - Origination:                                               02-Apr-2019    #
-#                                                                             #
-# Update log                                                                  #
-# May2019 JHAlves - Transitioning to GEFS workflow workflow                   #
-# Nov2019 JHAlves - Merging wave scripts to global workflow                   #
+# - Transitioning to GEFS workflow                             02-May-2019    #
 #                                                                             #
 ###############################################################################
 # --------------------------------------------------------------------------- #
@@ -97,16 +94,16 @@
       set +x
       echo " Mod def file for $grdID not found in ${COMIN}/rundata. Setting up to generate ..."
       [[ "$LOUD" = YES ]] && set -x
-      if [ -f $FIXwave/ww3_$grdID.inp.$NET ]
+      if [ -f $FIXwave/ww3_$grdID.inp ]
       then
-        cp $FIXwave/ww3_$grdID.inp.$NET $grdID.inp
+        cp $FIXwave/ww3_$grdID.inp $grdID.inp
       fi
 
       if [ -f $grdID.inp ]
       then
         set +x
         echo ' '
-        echo "   $grdID.inp copied ($FIXwave/ww3_$grdID.inp.$NET)."
+        echo "   $grdID.inp copied ($FIXwave/ww3_$grdID.inp)."
         echo ' '
         [[ "$LOUD" = YES ]] && set -x
       else

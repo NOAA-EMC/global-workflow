@@ -1,4 +1,0 @@
-#!/bin/bash
-
-# Step label
-export sigMODE=${sigMODE:-init}
