@@ -1,0 +1,6 @@
+#!/bin/bash
+# Wave component parm file for POST step
+
+# Step label
+export sigMODE=${sigMODE:-post}
+
