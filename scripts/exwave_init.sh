@@ -14,7 +14,10 @@
 #  Update record :                                                            #
 #                                                                             #
 # - Origination:                                               02-Apr-2019    #
-# - Transitioning to GEFS workflow                             02-May-2019    #
+#                                                                             #
+# Update log                                                                  #
+# May2019 JHAlves - Transitioning to GEFS workflow workflow                   #
+# Nov2019 JHAlves - Merging wave scripts to global workflow                   #
 #                                                                             #
 ###############################################################################
 # --------------------------------------------------------------------------- #
@@ -50,7 +53,7 @@
   if [ -z ${NTASKS} ] 
   then
     echo "FATAL ERROR: requires NTASKS to be set "
-    err=999; export err;${errchk}
+    err=1; export err;${errchk}
   fi
 
   set +x
@@ -93,17 +96,18 @@
     else
       set +x
       echo " Mod def file for $grdID not found in ${COMIN}/rundata. Setting up to generate ..."
+      echo ' '
       [[ "$LOUD" = YES ]] && set -x
-      if [ -f $FIXwave/ww3_$grdID.inp ]
+      if [ -f $FIXwave/ww3_$grdID.inp.$NET ]
       then
-        cp $FIXwave/ww3_$grdID.inp $grdID.inp
+        cp $FIXwave/ww3_$grdID.inp.$NET $grdID.inp
       fi
 
       if [ -f $grdID.inp ]
       then
         set +x
         echo ' '
-        echo "   $grdID.inp copied ($FIXwave/ww3_$grdID.inp)."
+        echo "   $grdID.inp copied ($FIXwave/ww3_$grdID.inp.$NET)."
         echo ' '
         [[ "$LOUD" = YES ]] && set -x
       else
@@ -119,7 +123,7 @@
         echo $msg
         [[ "$LOUD" = YES ]] && set -x
         echo "$wavemodID init config $date $cycle : $grdID.inp missing." >> $wavelog
-        err=1;export err;${errchk}
+        err=2;export err;${errchk}
       fi
 
       echo "$USHwave/wave_moddef.sh $grdID > $grdID.out 2>&1" >> cmdfile
@@ -201,7 +205,7 @@
       sed "s/^/$grdID.out : /g"  $grdID.out
       [[ "$LOUD" = YES ]] && set -x
       echo "$wavemodID prep $date $cycle : mod_def.$grdID missing." >> $wavelog
-      err=2;export err;${errchk}
+      err=3;export err;${errchk}
     fi
   done
 

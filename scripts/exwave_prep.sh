@@ -16,13 +16,14 @@
 #  Update record :                                                            #
 #                                                                             #
 # - Origination:                                               01-Mar-2007    #
-# - Added NCO note on resources on mist/dew.                   05-Mar-2007    #
-# - Renmaing mod_def files in $FIX_wave.                       26-Apr-2007    #
-# - Migrating to a vertical structure                          28-Mar-2011    #
-# - Transitioning to WCOSS                                     30-Nov-2012    #
-# - Adding wave-current interactions, new two polar grids, 1/4 degree res     #
-#                                                              10-Jan-2018    #
-# - Transitioning to GEFS workflow                              2-Apr-2019    #
+#                                                                             #
+# Update log                                                                  #
+# Mar2007 HTolman - Added NCO note on resources on mist/dew                   #
+# Apr2007 HTolman - Renaming mod_def files in $FIX_wave.                      #
+# Mar2011 AChawla - Migrating to a vertical structure                         #
+# Nov2012 JHAlves - Transitioning to WCOSS                                    #
+# Apr2019 JHAlves - Transitioning to GEFS workflow                            #
+# Nov2019 JHAlves - Merging wave scripts to global workflow                   #
 #                                                                             #
 #   wavemodID and wavemodTAG replace modID. wavemodTAG                        # 
 #   is used for ensemble-specific I/O. For deterministic                      #
@@ -107,7 +108,7 @@
   if [ -z ${NTASKS} ]        
   then
     echo "FATAL ERROR: Requires NTASKS to be set "
-    err=999; export err;${errchk}
+    err=1; export err;${errchk}
   fi
 
 # --------------------------------------------------------------------------- #
@@ -153,34 +154,6 @@
       echo $msg
       [[ "$LOUD" = YES ]] && set -x
       echo "$wavemodID prep $date $cycle : ${wavemodID}.mod_def.${grdID} missing." >> $wavelog
-      err=1;export err;${errchk}
-    fi
-  done
-
-# 1.a.1 Check if mod_defs are available
-  for grdID in $grdINP $waveGRD
-  do
-    if [ -f mod_def.$grdID ]
-    then
-      set +x
-      echo ' '
-      echo " mod_def.$grdID succesfully copied "
-      echo ' '
-      [[ "$LOUD" = YES ]] && set -x
-    else 
-      msg="ABNORMAL EXIT: NO MODEL DEFINITION FILE"
-      postmsg "$jlogfile" "$msg"
-      set +x
-      echo ' '
-      echo '********************************************** '
-      echo '*** FATAL ERROR : NO MODEL DEFINITION FILE *** '
-      echo '********************************************** '
-      echo "                                grdID = $grdID"
-      echo ' '
-      echo $msg
-      sed "s/^/$grdID.out : /g"  $grdID.out
-      [[ "$LOUD" = YES ]] && set -x
-      echo "$wavemodID prep $date $cycle : mod_def.$grdID missing." >> $wavelog
       err=2;export err;${errchk}
     fi
   done
@@ -191,23 +164,20 @@
    do
 
      case $grdID in
-     $currID ) 
-              type='curr' 
-     ;;
-     $wndID )
-              type='wind'
-     ;;
-     $iceID )
-              type='ice'
-     ;;
-     * )
+       $currID ) 
+                type='curr' 
+       ;;
+       $wndID )
+                type='wind'
+       ;;
+       $iceID )
+                type='ice'
+       ;;
+       * )
               echo 'Input type not yet implelemted' 	    
               err=3; export err;${errchk}
               ;;
      esac 
-
-     echo 'Working here,TYPE is: '$type
-
 
      if [ -f $FIXwave/ww3_prnc.${type}.$grdID.inp.tmpl ]
      then
@@ -434,7 +404,7 @@
     
       if [ "$nr_err" -gt "$err_max" ]
       then
-        msg="ABNORMAL EXIT: ERROR(S) IN SIGMA FILES"
+        msg="ABNORMAL EXIT: TOO MANY MISSING WIND INPUT GRB2 FILES"
         postmsg "$jlogfile" "$msg"
         set +x
         echo ' '
@@ -628,7 +598,7 @@
         set +x
         echo ' '
         echo '******************************************** '
-        echo '*** FATAL ERROR : CANNOT FIND WIND FILES *** '
+        echo '*** FATAL ERROR : CANNOT FIND CURR FILES *** '
         echo '******************************************** '
         echo ' '
         [[ "$LOUD" = YES ]] && set -x
@@ -701,9 +671,10 @@
     set +x
     echo "   buoy.loc not found.                           **** WARNING **** "
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" " **** WARNING **** buoy.loc NOT FOUND"
+    postmsg "$jlogfile" " FATAL ERROR : buoy.loc ($FIXwave/wave_$wavemodID.buoys) NOT FOUND"
     touch buoy.loc
-    echo "$wavemodID fcst $date $cycle : no buoy locations file." >> $wavelog
+    echo "$wavemodID fcst $date $cycle : no buoy locations file ($FIXwave/wave_$wavemodID.buoys)." >> $wavelog
+    err=13;export err;${errchk}
   fi
 
 # Initialize inp file parameters
