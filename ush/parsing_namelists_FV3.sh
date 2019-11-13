@@ -159,7 +159,7 @@ cat > input.nml <<EOF
        knob_ugwp_dokdis  = ${knob_ugwp_dokdis:-1}
        knob_ugwp_ndx4lh  = ${knob_ugwp_ndx4lh:-1}
        knob_ugwp_version = ${knob_ugwp_version:-0}
-       launch_level      = ${launch_level:-54}                   
+       launch_level      = ${launch_level:-27}                   
 /
 
 &external_ic_nml
@@ -186,9 +186,9 @@ cat > input.nml <<EOF
   ialb         = $IALB
   iems         = $IEMS
   iaer         = $IAER
-  icliq_sw     = ${icliq_sw:-"2"}
-  iovr_lw      = ${iovr_lw:-"3"}
-  iovr_sw      = ${iovr_sw:-"3"}
+  icliq_sw     = ${icliq_sw:-"1"}
+  iovr_lw      = ${iovr_lw:-"1"}
+  iovr_sw      = ${iovr_sw:-"1"}
   ico2         = $ICO2
   isubc_sw     = ${isubc_sw:-"2"}
   isubc_lw     = ${isubc_lw:-"2"}
@@ -201,10 +201,10 @@ cat > input.nml <<EOF
   redrag       = ${redrag:-".true."}
   dspheat      = ${dspheat:-".true."}
   hybedmf      = ${hybedmf:-".true."}
-  satmedmf     = ${satmedmf-".true."}
-  isatmedmf    = ${isatmedmf-"1"}
-  lheatstrg    = ${lheatstrg-".true."}
-  random_clds  = ${random_clds:-".true."}
+  satmedmf     = ${satmedmf-".false."}
+  isatmedmf    = ${isatmedmf-"0"}
+  lheatstrg    = ${lheatstrg-".false."}
+  random_clds  = ${random_clds:-".false."}
   trans_trac   = ${trans_trac:-".true."}
   cnvcld       = ${cnvcld:-".true."}
   imfshalcnv   = ${imfshalcnv:-"2"}
@@ -214,7 +214,7 @@ cat > input.nml <<EOF
   ivegsrc      = ${ivegsrc:-"1"}
   isot         = ${isot:-"1"}
   lsoil        = ${lsoil:-"4"}
-  lsm          = ${lsm:-"2"}
+  lsm          = ${lsm:-"1"}
   iopt_dveg    = ${iopt_dveg:-"1"}
   iopt_crs     = ${iopt_crs:-"1"}
   iopt_btr     = ${iopt_btr:-"1"}
@@ -229,14 +229,14 @@ cat > input.nml <<EOF
   iopt_stc     = ${iopt_stc:-"1"}
   debug        = ${gfs_phys_debug:-".false."}
   nstf_name    = $nstf_name
-  nst_anl      = $nst_anl
+  nst_anl      = $nst_anl            ! In Workflow
   psautco      = ${psautco:-"0.0008,0.0005"}
   prautco      = ${prautco:-"0.00015,0.00015"}
-  lgfdlmprad   = ${lgfdlmprad:-".false."}
-  effr_in      = ${effr_in:-".false."}
-  ldiag_ugwp   = ${ldiag_ugwp:-.false.}
-  do_ugwp      = ${do_ugwp:-.true.}
-  do_tofd      = ${do_tofd:-.true.}
+  lgfdlmprad   = ${lgfdlmprad:-".true."}
+  effr_in      = ${effr_in:-".true."}
+  ldiag_ugwp   = ${ldiag_ugwp:-".false."}
+  do_ugwp      = ${do_ugwp:-".false."}
+  do_tofd      = ${do_tofd:-".false."}
   cplflx       = $cplflx
 EOF
 
@@ -338,6 +338,7 @@ cat >> input.nml <<EOF
   FSMCL(2) = ${FSMCL2:-99999}
   FSMCL(3) = ${FSMCL3:-99999}
   FSMCL(4) = ${FSMCL4:-99999}
+  LANDICE  = ${LANDICE:-".true."}
   FTSFS = ${FTSFS:-90}
   FAISL = ${FAISL:-99999}
   FAISS = ${FAISS:-99999}

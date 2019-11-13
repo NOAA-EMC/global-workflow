@@ -1,0 +1,102 @@
+#!/bin/bash
+set -x
+
+###############################################################
+## CICE5/MOM6 post driver script 
+## FHRGRP : forecast hour group to post-process (e.g. 0, 1, 2 ...)
+## FHRLST : forecast hourlist to be post-process (e.g. anl, f000, f000_f001_f002, ...)
+###############################################################
+
+#############################
+# Source relevant config files
+#############################
+configs="base ocnpost"
+config_path=${EXPDIR:-$NWROOT/gfs.${gfs_ver}/parm/config}
+for config in $configs; do
+    . $config_path/config.$config
+    status=$?
+    [[ $status -ne 0 ]] && exit $status
+done
+
+
+##########################################
+# Source machine runtime environment
+##########################################
+. $HOMEgfs/env/${machine}.env ocnpost
+status=$?
+[[ $status -ne 0 ]] && exit $status
+
+
+##############################################
+# Obtain unique process id (pid) and make temp directory
+##############################################
+export job=${job:-"ocnpost"}
+export pid=${pid:-$$}
+export outid=${outid:-"LL$job"}
+export jobid=${jobid:-"${outid}.o${pid}"}
+
+if [ $RUN_ENVIR = "nco" ]; then
+    export DATA="$DATAROOT/${job}.${pid}"
+else
+    export DATAROOT="$RUNDIR/$CDATE/$CDUMP"
+    export DATA="$DATAROOT/DATAocnpost$FHRGRP"
+fi
+[[ -d $DATA ]] && rm -rf $DATA
+mkdir -p $DATA
+cd $DATA
+
+##############################################
+# Run setpdy and initialize PDY variables
+##############################################
+export cycle="t${cyc}z"
+setpdy.sh
+. ./PDY
+
+##############################################
+# Define the Log File directory
+##############################################
+export jlogfile=${jlogfile:-$COMROOT/logs/jlogfiles/jlogfile.${job}.${pid}}
+
+##############################################
+# Determine Job Output Name on System
+##############################################
+export pgmout="OUTPUT.${pid}"
+export pgmerr=errfile
+
+
+##############################################
+# Set variables used in the exglobal script
+##############################################
+export CDATE=${CDATE:-${PDY}${cyc}}
+export CDUMP=${CDUMP:-${RUN:-"gfs"}}
+if [ $RUN_ENVIR = "nco" ]; then
+    export ROTDIR=${COMROOT:?}/$NET/$envir
+fi
+
+##############################################
+# Begin JOB SPECIFIC work
+##############################################
+
+$SCRgfs/run_ocnpost.sh
+status=$?
+[[ $status -ne 0 ]] && exit $status
+
+##############################################
+# Final processing
+##############################################
+if [ -e "$pgmout" ]; then
+  cat $pgmout
+fi
+
+msg="ENDED NORMALLY."
+postmsg "$jlogfile" "$msg"
+
+
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd $DATAROOT
+[[ $KEEPDATA = "NO" ]] && rm -rf $DATA
+
+date
+exit 0

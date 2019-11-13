@@ -217,6 +217,7 @@ fi
 done
 # Restore CDATE to what is expected
   export CDATE=$IDATE
+  echo $pwd
   $NMV SST*nc $COMOUT/
   $NMV ocnr*.nc $COMOUT
   $NMV ocnr*.grb2 $COMOUT

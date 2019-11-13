@@ -28,6 +28,8 @@ RUN_CONTINUE:            ${RUN_CONTINUE:-".false."}
 ENS_SPS:                 ${ENS_SPS:-".false."}
 
 dt_atmos:                $DELTIM
+output_1st_tstep_rst:    .false.
+atm_coupling_interval_sec:      $DELTIM
 calendar:                ${calendar:-'julian'}
 cpl:                     ${cpl:-".false."}
 memuse_verbose:          ${memuse_verbose:-".false."}
@@ -35,8 +37,6 @@ atmos_nthreads:          $NTHREADS_FV3
 use_hyper_thread:        ${hyperthread:-".false."}
 ncores_per_node:         $cores_per_node
 restart_interval:        $restart_interval
-output_1st_tstep_rst:    .false.
-atm_coupling_interval_sec:      $DELTIM
 
 quilting:                $QUILTING
 write_groups:            ${WRITE_GROUP:-1}

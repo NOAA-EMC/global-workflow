@@ -1,11 +1,14 @@
 case:
+  fv3_settings:
+    nst_anl: False
+
   places:
     workflow_file: layout/free_forecast_gfs.yaml
     MOM6IC: /scratch1/NCEPDEV/nems/Bin.Li/S2S/FROM_HPSS
 
   settings: 
-    SDATE: 2018-02-01t00:00:00
-    EDATE: 2018-02-01t00:00:00
+    SDATE: 2013-04-01t00:00:00
+    EDATE: 2013-04-01t00:00:00
 
     cplflx: .true.
     print_esmf: .true.
@@ -13,7 +16,11 @@ case:
     nems_temp_cold: 'medcold_atm_ocn_ice'
 #    cplflx: .false.
 
+  nsst:
+    NST_MODEL: 0
+
   gfs_output_settings:
+    FHOUT_GFS: 6
     FHMIN_GFS: 0
     FHMAX_GFS: 24
 
@@ -29,3 +36,6 @@ case:
     WRTIOBUF: "32M"
     OCNPETS: 120
     ICEPETS: 48
+    hord_mt_nh_nonmono: 5
+    hord_xx_nh_nonmono: 5
+    cdmbgwd: "1.0,1.2"

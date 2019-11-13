@@ -33,6 +33,9 @@ done
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
+# Create ICSDIR if needed
+[[ ! -d $ICSDIR/$CDATE ]] && mkdir -p $ICSDIR/$CDATE
+
 # Output FV3 initial condition files
 
 cp $ORIGIN_ROOT/$CDATE/cice5_* $ICSDIR/$CDATE/

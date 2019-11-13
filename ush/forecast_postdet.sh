@@ -507,11 +507,74 @@ MOM6_out()
 {
 	echo "SUB ${FUNCNAME[0]}: Copying output data for MOM6"
 
+	export ENSMEM=${ENSMEM:-01}
+
+        export IDATE=$CDATE
+
+	if [ $RUN_ENVIR = "nco" ]; then
+	    export COMIN=${COMIN:-$ROTDIR/$RUN.$PDY/$cyc}
+	    export COMOUT=${COMOUT:-$ROTDIR/$RUN.$PDY/$cyc}
+	else
+	    export COMIN="$ROTDIR/$CDUMP.$PDY/$cyc"
+	    export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc"
+	fi
+	[[ ! -d $COMOUT ]] && mkdir -m 775 -p $COMOUT
+
         if [ $runtyp = 'initial' ]; then
-               cp $DATA/mediator_* $ROTDIR/$CDUMP.$PDY/$cyc/
+               cp $DATA/mediator_* $COMOUT/
+               status=$?
+               exit $status
         fi
 
-	# soft link commands insert here
+        if [ $FHRGRP -eq 0 ]; then
+            fhrlst="anl"
+        else
+            fhrlst=$(echo $FHRLST | sed -e 's/_/ /g; s/\[/ /g; s/\]/ /g; s/f/ /g; s/,/ /g')
+        fi
+
+	# copy ocn files
+	for fhr in $fhrlst; do
+	  export fhr=$fhr
+	  if [[ 10#$fhr -ge 6 ]]; then
+       	  hh_inc_m=$((10#$FHOUT/2))
+	#hh_inc_m=3
+	#hh_in_o=6
+	  hh_inc_o=$((10#$FHOUT  ))
+
+  # ------------------------------------------------------
+  #  adjust the dates on the mom filenames and save
+  # ------------------------------------------------------
+	  VDATE=$($NDATE $fhr $IDATE)
+	  YYYY=`echo $VDATE | cut -c1-4`
+	  MM=`echo $VDATE | cut -c5-6`
+	  DD=`echo $VDATE | cut -c7-8`
+	  HH=`echo $VDATE | cut -c9-10`
+	  SS=$((10#$HH*3600))
+
+	#  m_date=$($NDATE $hh_inc_m $DDATE)
+	#  p_date=$($NDATE $hh_inc_o $DDATE)
+
+	  m_date=$($NDATE -$hh_inc_m $VDATE)
+	  p_date=$VDATE
+
+	  # This loop probably isn't needed
+	    year=`echo $m_date | cut -c1-4`
+	    month=`echo $m_date | cut -c5-6`
+	    day=`echo $m_date | cut -c7-8`
+	    hh=`echo $m_date | cut -c9-10`
+
+	    export ocnfile=ocn_${year}_${month}_${day}_${hh}.nc
+
+	    echo "cp -p $ocnfile $COMOUT/ocn$p_date.$ENSMEM.$IDATE.nc"
+	    $NCP -p $ocnfile $COMOUT/ocn$p_date.$ENSMEM.$IDATE.nc
+	    status=$?
+	    [[ $status -ne 0 ]] && exit $status
+	  fi
+	done
+	$NCP -p $DATA/SST*nc $COMOUT/
+        $NCP -p $DATA/input.nml $COMOUT/
+        $NCP -p $DATA/ice_in $COMOUT/
+        $NCP -p $DATA/INPUT/MOM_input $COMOUT/
 }
 
 CICE_postdet()
@@ -560,7 +623,44 @@ CICE_nml()
 CICE_out()
 {
 	echo "SUB ${FUNCNAME[0]}: Copying output data for CICE"
-	# soft link commands insert here
+        if [ $FHRGRP -eq 0 ]; then
+            fhrlst="anl"
+        else
+            fhrlst=$(echo $FHRLST | sed -e 's/_/ /g; s/f/ /g; s/,/ /g')
+        fi
+
+	for fhr in $fhrlst; do
+	  export fhr=$fhr
+	  #  --------------------------------------
+	  #  cp cice data to COMOUT directory
+	  #  --------------------------------------
+	  YYYY0=`echo $IDATE | cut -c1-4`
+	  MM0=`echo $IDATE | cut -c5-6`
+	  DD0=`echo $IDATE | cut -c7-8`
+	  HH0=`echo $IDATE | cut -c9-10`
+	  SS0=$((10#$HH0*3600))
+
+	  VDATE=$($NDATE $fhr $IDATE)
+	  YYYY=`echo $VDATE | cut -c1-4`
+	  MM=`echo $VDATE | cut -c5-6`
+	  DD=`echo $VDATE | cut -c7-8`
+	  HH=`echo $VDATE | cut -c9-10`
+	  SS=$((10#$HH*3600))
+
+	#  DDATE=$($NDATE -$FHOUT $VDATE)
+
+	  if [[ 10#$fhr -eq 0 ]]; then
+	    $NCP -p $DATA/history/iceh_ic.${YYYY0}-${MM0}-${DD0}-`printf "%5.5d" ${SS0}`.nc $COMOUT/iceic$VDATE.$ENSMEM.$IDATE.nc
+	    status=$?
+	    [[ $status -ne 0 ]] && exit $status
+	    echo "fhr is 0, only copying ice initial conditions... exiting"
+	  else
+	    $NCP -p $DATA/history/iceh_`printf "%0.2d" $FHOUT`h.${YYYY}-${MM}-${DD}-`printf "%5.5d" ${SS}`.nc $COMOUT/ice$VDATE.$ENSMEM.$IDATE.nc
+	    status=$?
+	    [[ $status -ne 0 ]] && exit $status
+	  fi
+
+	done
 }
 
 GSD_in()
