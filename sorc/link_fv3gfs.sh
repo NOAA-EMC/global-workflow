@@ -370,7 +370,7 @@ if [ $model = "coupled" ] ; then
  if [ $machine = "theia" ] ; then
  CPLFIX_DIR="/scratch4/NCEPDEV/nems/save/Bin.Li/fix_prep_benchmark2"
  elif [ $machine = "hera" ] ; then
- CPLFIX_DIR="/scratch1/NCEPDEV/nems/Bin.Li/S2S/fix_prep_benchmark3"
+ CPLFIX_DIR="/scratch2/NCEPDEV/climate/Jessica.Meixner/S2S/fix/fix_prep_benchmark3"
  fi
 cd $pwd/../fix
 # Add fixed files needed for coupled fv3-mom6-cice5
