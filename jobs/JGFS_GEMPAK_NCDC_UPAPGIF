@@ -38,6 +38,13 @@ export USHgempak=${USHgempak:-$HOMEgfs/gempak/ush}
 export SRCgfs=${SRCgfs:-$HOMEgfs/scripts}
 export UTILgfs=${UTILgfs:-$HOMEgfs/util}
 
+######################################
+# Set up the GEMPAK directory
+#######################################
+export HOMEgempak=${HOMEgempak:-$HOMEgfs/gempak}
+export FIXgempak=${FIXgempak:-$HOMEgempak/fix}
+export USHgempak=${USHgempak:-$HOMEgempak/ush}
+
 export MP_PULSE=0
 export MP_TIMEOUT=2000
 export cycle=t${cyc}z
