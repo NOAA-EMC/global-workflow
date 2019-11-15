@@ -92,7 +92,7 @@ if [ $type = "gfs" ]; then
 
     echo  "${dirname}${head}pgrb2.0p25.f${fhr}              " >>gfsa.txt
     echo  "${dirname}${head}pgrb2.0p25.f${fhr}.idx          " >>gfsa.txt
-    echo  "${dirname}${head}logf${fhr}${SUFFIX}             " >>gfsa.txt
+    echo  "${dirname}${head}logf${fhr}.txt                  " >>gfsa.txt
 
     echo  "${dirname}${head}pgrb2.0p50.f${fhr}              " >>gfsb.txt
     echo  "${dirname}${head}pgrb2.0p50.f${fhr}.idx          " >>gfsb.txt
@@ -187,7 +187,7 @@ if [ $type = "gdas" ]; then
     echo  "${dirname}${head}pgrb2.0p25.f${fhr}.idx     " >>gdas.txt
     echo  "${dirname}${head}pgrb2.1p00.f${fhr}         " >>gdas.txt
     echo  "${dirname}${head}pgrb2.1p00.f${fhr}.idx     " >>gdas.txt
-    echo  "${dirname}${head}logf${fhr}${SUFFIX}        " >>gdas.txt
+    echo  "${dirname}${head}logf${fhr}.txt             " >>gdas.txt
     echo  "${dirname}${head}atmf${fhr}${SUFFIX}        " >>gdas.txt
     echo  "${dirname}${head}sfcf${fhr}${SUFFIX}        " >>gdas.txt
     fh=$((fh+3))
