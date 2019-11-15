@@ -46,7 +46,7 @@ do
   for fhr in $postjobs
   do 
     fhr3=`printf "%03d" $fhr`   
-    if [ -s ${COMIN}/gfs.${cycle}.logf${fhr}.nc -o  -s ${COMIN}/gfs.${cycle}.logf${fhr3}.nc ]
+    if [ -s ${COMIN}/gfs.${cycle}.logf${fhr}.txt -o  -s ${COMIN}/gfs.${cycle}.logf${fhr3}.txt ]
     then
       if [ $fhr -eq 0 ]
       then 

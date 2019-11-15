@@ -86,7 +86,7 @@ export FINT=$NINT1
    ic=0
    while [ $ic -lt 1000 ]
    do
-      if [ ! -f $COMIN/${RUN}.${cycle}.logf$FEND.nc ]
+      if [ ! -f $COMIN/${RUN}.${cycle}.logf$FEND.txt ]
       then
           sleep 10
           ic=`expr $ic + 1`
