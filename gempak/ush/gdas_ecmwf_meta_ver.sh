@@ -106,7 +106,7 @@ for area in $areas
             sdatenum=$sdate7
         fi
         # JY grid="$COMROOT/nawips/${envir}/ecmwf.20${sdatenum}/ecmwf_glob_20${sdatenum}12"
-        grid="${COMINecmwf}.20${sdatenum}/ecmwf_glob_20${sdatenum}12"
+        grid="${COMINecmwf}.20${sdatenum}/gempak/ecmwf_glob_20${sdatenum}12"
 
 # 500 MB HEIGHT METAFILE
 

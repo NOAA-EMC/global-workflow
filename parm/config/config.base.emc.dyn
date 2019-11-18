@@ -155,8 +155,9 @@ export HOMEgsi="$HOMEgfs"
 export FIXgsi="$HOMEgfs/fix/fix_gsi"
 export HOMEfv3gfs="$HOMEgfs/sorc/fv3gfs.fd"
 export HOMEpost="$HOMEgfs"
-export HOMEobsproc_prep="$BASE_GIT/obsproc/OT-obsproc_prep.v5.2.0-20190614"
-export HOMEobsproc_network="$BASE_GIT/obsproc/OT-obsproc_global.v3.2.1-20190613"
+export HOMEobsproc_prep="$BASE_GIT/obsproc/obsproc_prep_RB-5.2.0"
+export HOMEobsproc_network="$BASE_GIT/obsproc/obsproc_global_RB-3.2.2"
+export HOMEobsproc_global=$HOMEobsproc_network
 export BASE_VERIF="$BASE_SVN/verif/global/tags/vsdb"
 
 # CONVENIENT utility scripts and other environment parameters

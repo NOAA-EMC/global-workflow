@@ -100,7 +100,7 @@ elif [ $step = "eobs" -o $step = "eomg" ]; then
 
     export wtime_eobs="00:30:00"
     export wtime_eomg="01:00:00"
-    export npe_eobs=84 
+    export npe_eobs=140
     export nth_eobs=2
     export npe_node_eobs=12
     if [[ "$machine" = "WCOSS_DELL_P3" ]]; then
