@@ -51,8 +51,8 @@ cat > input.nml <<EOF
   fdiag = $FDIAG
   fhmax = $FHMAX
   fhout = $FHOUT
-  fhmaxhf = $FHMAX_HF
-  fhouthf = $FHOUT_HF
+  fhmaxhf = $FHMAX_HF     ! CROW configured
+  fhouthf = $FHOUT_HF     ! CROW configured
   $atmos_model_nml
 /
 
