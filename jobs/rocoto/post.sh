@@ -24,7 +24,7 @@ fi
 #---------------------------------------------------------------
 for fhr in $fhrlst; do
 
-    if [ ! -f $restart_file${fhr}.nemsio -a ! -f $restart_file${fhr}.nc ]; then
+    if [ ! -f $restart_file${fhr}.nemsio -a ! -f $restart_file${fhr}.nc  -a ! -f $restart_file${fhr}.txt ]; then
         echo "Nothing to process for FHR = $fhr, cycle"
         continue
     fi
