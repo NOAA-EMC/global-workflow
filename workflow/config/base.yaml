@@ -107,7 +107,11 @@ config_base:
     export KEEPDATA="{doc.settings.KEEPDATA}"
     export CHGRP_CMD="{doc.platform.CHGRP_RSTPROD_COMMAND}"
     export NEMSIOGET="$HOMEgfs/exec/nemsio_get"
-    
+
+    # For coupled
+    export UGCSsrc="/scratch1/NCEPDEV/nems/Bin.Li/S2S/ocean_ice_post"
+   
+ 
     # Machine environment, jobs, and other utility scripts
     export BASE_ENV="$HOMEgfs/env"
     export BASE_JOB="$HOMEgfs/jobs/rocoto"
