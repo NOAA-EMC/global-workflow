@@ -1,0 +1,13 @@
+#!/bin/ksh -x
+
+########## config.gldas ##########
+# GDAS gldas step specific
+
+echo "BEGIN: config.gldas"
+
+# Get task specific resources
+. $EXPDIR/config.resources gldas
+
+export GLDASSH=$HOMEgfs/jobs/JGFS_GLDAS
+
+echo "END: config.gldas"

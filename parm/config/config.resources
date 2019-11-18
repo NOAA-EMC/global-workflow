@@ -41,6 +41,23 @@ elif [ $step = "anal" ]; then
         export memory_anal="3072M"
     fi
 
+elif [ $step = "gldas" ]; then
+
+    export wtime_gldas="02:00:00"
+    export npe_gldas=96  
+    export nth_gldas=1 
+    export npe_node_gldas=24
+    export npe_gaussian=6  
+    export nth_gaussian=1 
+    export npe_node_gaussian=6  
+    if [[ "$machine" = "WCOSS_DELL_P3" ]]; then
+        export npe_gldas=112 
+        export npe_node_gldas=28
+    fi
+    if [[ "$machine" == "WCOSS_C" ]]; then
+        export memory_gldas="3072M"
+    fi
+
 elif [ $step = "fcst" ]; then
 
     export wtime_fcst="01:00:00"

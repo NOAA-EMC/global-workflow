@@ -211,6 +211,9 @@ elif [[ "$CDUMP" == "gfs" ]] ; then
    export FHCYC=24
 fi
 
+# run GLDAS to spin up land ICs
+export DO_GLDAS=NO
+
 # Output frequency of the forecast model (for cycling)
 export FHMIN=0
 export FHMAX=9
