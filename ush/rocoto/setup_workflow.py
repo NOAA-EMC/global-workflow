@@ -404,7 +404,7 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
 
     # post
     deps = []
-    data = '&ROTDIR;/%s.@Y@m@d/@H/%s.t@Hz.log#dep#.nc' % (cdump, cdump)
+    data = '&ROTDIR;/%s.@Y@m@d/@H/%s.t@Hz.log#dep#.txt' % (cdump, cdump)
     dep_dict = {'type': 'data', 'data': data}
     deps.append(rocoto.add_dependency(dep_dict))
     dep_dict = {'type': 'task', 'name': '%sfcst' % cdump}
