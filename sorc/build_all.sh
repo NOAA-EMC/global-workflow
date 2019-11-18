@@ -82,13 +82,10 @@ echo " .... Building ufs_utils .... "
 #------------------------------------
 # build gfs_wafs 
 #------------------------------------
-# Only build on WCOSS
-if [ $target = wcoss -o $target = wcoss_cray -o $target = wcoss_dell_p3 ]; then
- $Build_gfs_wafs  && {
- echo " .... Building gfs_wafs  .... "
- ./build_gfs_wafs.sh > $logs_dir/build_gfs_wafs .log 2>&1
- }
-fi
+$Build_gfs_wafs  && {
+echo " .... Building gfs_wafs  .... "
+./build_gfs_wafs.sh > $logs_dir/build_gfs_wafs .log 2>&1
+}
 
 #------------------------------------
 # build sfcanl_nsttfchg 
