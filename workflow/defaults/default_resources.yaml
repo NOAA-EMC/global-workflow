@@ -98,7 +98,6 @@ enkf_resource_table: !Select
 
 downstream_resource_table:
       #                    ranks ppn  wallclock          threads  MB_batch MB_per_rank
-  one_node_downstream:   [    1,    1, !timedelta "01:00:00",   1, 3072M,      null   ]
   big_downstream:        [    2,    1, !timedelta "00:30:00",   1, 3072M,      null   ]
   small_downstream:      [    2,    2, !timedelta "00:02:00",   1, 3072M,      null   ]
   awips:                 [    4,    4, !timedelta "02:00:00",   2,  254M,      null   ]
