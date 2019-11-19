@@ -144,7 +144,8 @@ suite: !Cycle
       p_ocn: !Task
         <<: *exclusive_task_template
         Trigger: !Depend "up.forecast"
-        resources: !calc partition.resources.run_gfspost
+        Disable: !calc not doc.settings.cplflx
+        resources: !calc partition.resources.run_one_node_downstream
         J_JOB: rocoto/ocnpost.sh
 
     jgfs_emc_vrfy: !Task
