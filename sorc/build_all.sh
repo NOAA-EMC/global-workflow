@@ -7,6 +7,11 @@ set -eu
 #                   Anything other than "true"  will use libraries locally.
 #------------------------------------
 
+if [ $# -eq 1 ]; then
+model=$1
+fi
+model=${model:-"uncoupled"}
+
 export USE_PREINST_LIBS="true"
 
 #------------------------------------
@@ -50,11 +55,14 @@ echo " .... Library build not currently supported .... "
 #------------------------------------
 # build fv3
 #------------------------------------
-$Build_fv3gfs && {
-echo " .... Building fv3 .... "
-./build_fv3.sh > $logs_dir/build_fv3.log 2>&1
-}
-
+if [ $model = "coupled" ]; then
+  ./build_fv3_coupled.sh > $logs_dir/build_fv3_coupled.log 2>&1
+else
+  $Build_fv3gfs && {
+  echo " .... Building fv3 .... "
+  ./build_fv3.sh > $logs_dir/build_fv3.log 2>&1
+  }
+fi 
 #------------------------------------
 # build gsi
 #------------------------------------
