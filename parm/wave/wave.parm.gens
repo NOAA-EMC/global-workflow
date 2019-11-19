@@ -6,7 +6,8 @@
 export wave_sys_ver=v1.0.0  
 
 # General runtime labels
-export wavemodID=${wavemodID:-gwes}
+export wavemodID=${wavemodID:-wave}
+export WAV_MOD_ID=${WAV_MOD_ID:-wave}
 
 # Grids for wave model
 #export waveGRD='glo_30m' 

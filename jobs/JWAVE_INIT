@@ -14,8 +14,8 @@ export HOMEgsm=${HOMEgsm:-$NWROOT/gsm.${gsm_ver}}
 # Add default errchk = err_chk
 export errchk=${errchk:-err_chk}
 
-# Set HOMEwave to HOMEgefs
-HOMEwave=${HOMEwave:-${HOMEgefs}} 
+# Set HOMEwave to HOMEgsm
+HOMEwave=${HOMEwave:-${HOMEgsm}} 
 
 export DATA=${DATA:-${DATAROOT:?}/${jobid}}
 mkdir -p $DATA
@@ -35,10 +35,10 @@ export MP_PULSE=0
 export CODEwave=${CODEwave:-${NWROOT}/${NET}_code.${wave_code_ver}/${code_pkg}}
 
 export EXECwave=${EXECwave:-$HOMEwave/exec}
-export FIXwave=${FIXwave:-$HOMEwave/fix_wave}
-export PARMwave=${PARMwave:-$HOMEwave/parm}
+export FIXwave=${FIXwave:-$HOMEwave/fix/fix_wave_${NET}}
+export PARMwave=${PARMwave:-$HOMEwave/parm/wave}
 export USHwave=${USHwave:-$HOMEwave/ush}
-export EXECcode=${EXECcode:-$CODEwave/exec}
+export EXECcode=${EXECcode:-$CODEwave/exe}
 
 # Set PDY
 setpdy.sh
@@ -69,9 +69,12 @@ export wave_mpmd=${wave_mpmd:-"cfp"}
 # Set parameters using gwes_init.parm
 ##############################################
 
-. $PARMwave/gefs.parm
-. $PARMwave/gwes.parm
-. $PARMwave/gwes_init.parm
+if [ "${NET}" == "gens" ]
+then
+  . ${HOMEgefs}/parm/gefs.parm
+fi
+. $PARMwave/wave.parm.${NET}
+. $PARMwave/wave_init.parm.${NET}
 
 env | sort
 
@@ -79,7 +82,7 @@ env | sort
 # Execute the Script  
 ###################################
 
-$HOMEwave/scripts/exwave_gwes_init.sh
+$HOMEwave/scripts/exwave_init.sh
 
 ###################################
 # Remove temp directories

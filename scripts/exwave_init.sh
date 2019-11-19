@@ -6,7 +6,7 @@
 # spectral grids, as well as set general physics parameters and time steps.   #
 #                                                                             #
 # The main script for generating mod_def files is                             #
-#  wave_moddef.sh : creates the mod_def file for the grid                     #
+#  wave_grid_moddef.sh : creates the mod_def file for the grid                #
 #                                                                             #
 # Remarks :                                                                   #
 # - For non-fatal errors output is witten to the wave.log file.               #
@@ -98,16 +98,16 @@
       echo " Mod def file for $grdID not found in ${COMIN}/rundata. Setting up to generate ..."
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
-      if [ -f $FIXwave/ww3_$grdID.inp.$NET ]
+      if [ -f $FIXwave/ww3_$grdID.inp ]
       then
-        cp $FIXwave/ww3_$grdID.inp.$NET $grdID.inp
+        cp $FIXwave/ww3_$grdID.inp $grdID.inp
       fi
 
       if [ -f $grdID.inp ]
       then
         set +x
         echo ' '
-        echo "   $grdID.inp copied ($FIXwave/ww3_$grdID.inp.$NET)."
+        echo "   $grdID.inp copied ($FIXwave/ww3_$grdID.inp)."
         echo ' '
         [[ "$LOUD" = YES ]] && set -x
       else
@@ -126,7 +126,7 @@
         err=2;export err;${errchk}
       fi
 
-      echo "$USHwave/wave_moddef.sh $grdID > $grdID.out 2>&1" >> cmdfile
+      echo "$USHwave/wave_grid_moddef.sh $grdID > $grdID.out 2>&1" >> cmdfile
 
       nmoddef=`expr $nmoddef + 1`
 
