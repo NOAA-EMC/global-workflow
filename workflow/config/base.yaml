@@ -109,7 +109,7 @@ config_base:
     export NEMSIOGET="$HOMEgfs/exec/nemsio_get"
 
     # For coupled
-    export UGCSsrc="/scratch1/NCEPDEV/nems/Bin.Li/S2S/ocean_ice_post"
+    export UGCSsrc="/scratch2/NCEPDEV/climate/Bin.Li/S2S/fix/ocean_ice_post"
    
  
     # Machine environment, jobs, and other utility scripts
