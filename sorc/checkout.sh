@@ -4,16 +4,27 @@ set -xu
 topdir=$(pwd)
 echo $topdir
 
-echo fv3gfs checkout ...
-if [[ ! -d fv3gfs.fd ]] ; then
-    rm -f ${topdir}/checkout-fv3gfs.log
+echo fv3gfs_emc checkout ...
+if [[ ! -d fv3gfs_emc.fd ]] ; then
+    rm -f ${topdir}/checkout-fv3gfs_emc.log
     git clone --recursive gerrit:NEMSfv3gfs fv3gfs.fd >> ${topdir}/checkout-fv3gfs.log 2>&1
-    cd fv3gfs.fd
+    cd fv3gfs_emc.fd
     git checkout nemsfv3gfs_beta_v1.0.18
     git submodule update --init --recursive
     cd ${topdir}
 else
-    echo 'Skip.  Directory fv3gfs.fd already exists.'
+    echo 'Skip.  Directory fv3gfs_emc.fd already exists.'
+fi
+
+echo fv3gfs_ccpp checkout ...
+if [[ ! -d fv3gfs_ccpp.fd ]] ; then
+    rm -f ${topdir}/checkout-fv3gfs_ccpp.log
+    git clone --recursive -b gsd/develop https://github.com/NCAR/NEMSfv3gfs fv3gfs_ccpp.fd
+    cd fv3gfs_ccpp.fd
+    git submodule update --init --recursive
+    cd ${topdir}
+else
+    echo 'Skip.  Directory fv3gfs_ccpp.fd already exists.'
 fi
 
 echo gsi checkout ...
