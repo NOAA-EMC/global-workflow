@@ -197,10 +197,9 @@ if [ $cplchm = ".true." ]; then
 #   FIELD_TABLE=$PARM_FV3DIAG/chm_field_table_gfdl
 #   calcincdir=$DATAROOT/$CDATE/gfs/calcinc
 #   increment_file=$calcincdir/atminc.nc # WCK - come back to this
-#   prepdir=$DATAROOT/$CDATE/gfs/prep # Not used?
-  prepdir=$DATA/INPUT/prep
+#   chemdir=$DATAROOT/$CDATE/gfs/prep # Not used?
+  chemdir=$DATA/INPUT/chem
   cpl=".true."
-
 fi
 
 #-------------------------------------------------------
@@ -900,7 +899,7 @@ cat > input.nml <<EOF
   isot         = ${isot:-"1"}
   debug        = ${gfs_phys_debug:-".false."}
   nstf_name    = $nstf_name
-  cplflx       = $cplflx
+  cplflx       = ${cplflx:-".false."}
   cplchm       = $cplchm
   nst_anl      = $nst_anl
   psautco      = ${psautco:-"0.0008,0.0005"}
@@ -908,7 +907,7 @@ cat > input.nml <<EOF
   lgfdlmprad   = ${lgfdlmprad:-".false."}
   effr_in      = ${effr_in:-".false."}
   cplwav       = ${cplwav:-".false."}
-  fscav_aero   = "sulf:0.2", "bc1:0.2","bc2:0.2","oc1:0.15","oc2:0.15",
+  fscav_aero   = "sulf:0.2","bc1:0.2","bc2:0.2","oc1:0.2","oc2:0.2”,
   $gfs_physics_nml
 /
 
@@ -1034,7 +1033,7 @@ if [ $cplchm = ".true." ]; then
   dust_alpha=2.0
   dust_gamma=1.8
   dust_calcdrag=1
-  dust_uthres=0.065,0.15,0.27,0.30,0.35,0.38,0.35,0.30,0.30,0.45,0.50,0.45,9.999
+  dust_uthres=0.065,0.15,0.25,0.30,0.35,0.38,0.35,0.30,0.30,0.45,0.50,0.45,9999.0
   emiss_inpt_opt=1
   emiss_opt=5
   gas_bc_opt=1
@@ -1054,7 +1053,7 @@ if [ $cplchm = ".true." ]; then
   chem_hist_outname = "chem_out_"
   emi_inname  = "${EMIDIR}${CASE}/$SMONTH"
   dust_inname = "${EMIDIR}${CASE}/$SMONTH"
-  fireemi_inname  = "${prepdir}"
+  fireemi_inname  = "${chemdir}"
   emi_outname = "./"
   $chem_nml
 /
