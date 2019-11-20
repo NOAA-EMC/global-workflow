@@ -79,7 +79,7 @@ if [[ ! -d gfs_post.fd ]] ; then
     # git checkout ncep_post.v8.0.27e
     # git checkout 88e936c
     # git checkout ba7e59b290c8149ff1c2fee98d01e99e4ef92ee6
-    git checkout 6b01d9d
+    git checkout gefs_v12_release
     #git checkout ncep_post_gtg.v1.0.6c
     cd ${topdir}
 else
