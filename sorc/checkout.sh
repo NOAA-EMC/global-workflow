@@ -23,6 +23,7 @@ if [[ ! -d fv3gfs_ccpp.fd ]] ; then
     cd fv3gfs_ccpp.fd
     git submodule update --init --recursive
     cd ${topdir}
+    ln -fs fv3gfs_ccpp.fd fv3gfs.fd
 else
     echo 'Skip.  Directory fv3gfs_ccpp.fd already exists.'
 fi
