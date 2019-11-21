@@ -54,7 +54,7 @@
   if [ -z "$YMDH" ] || [ -z "$cycle" ] || \
      [ -z "$COMOUT" ] || [ -z "$FIXwave" ] || [ -z "$EXECcode" ] || \
      [ -z "$wavemodTAG" ] || [ -z "$iceID" ] || [ -z "$SENDCOM" ] || \
-     [ -z "$COMICE" ] || [ -z "$wavemodID" ]
+     [ -z "$COMINice" ] || [ -z "$wavemodID" ]
   then
     set $setoff
     echo ' '
@@ -84,7 +84,7 @@
     YMD="`echo $YMDH | cut -c 1-8`"
   fi
 
-  file=$COMICE/sice.$YMD/seaice.t00z.5min.grb.grib2
+  file=$COMINice/sice.$YMD/seaice.t00z.5min.grb.grib2
 
   if [ -f $file ]
   then

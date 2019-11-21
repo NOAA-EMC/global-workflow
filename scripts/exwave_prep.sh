@@ -1,13 +1,14 @@
 #!/bin/bash
 ###############################################################################
 #                                                                             #
-# This script is the preprocessor for the global multi_grid wave model. It    #
-# sets some shell script variables for export to child scripts and copies     #
+# This is the preprocessor for the wave component in NCEP's coupled system.   #
+# It sets some shell script variables for export to child scripts and copies   #
 # some generally used files to the work directory. After this the actual      #
 # preprocessing is performed by the following child scripts :                 #
 #                                                                             #
-#  wave_ice.sh     : preprocess ice fields.                                   #
-#  wave_rtofs     : preprocess rtofs current fields.                          #
+#  wave_prnc_ice.sh     : preprocess ice fields.                              #
+#  wave_prnc_wnd.sh     : preprocess wind fields (uncoupled run, not active)  #
+#  wave_prnc_rtofs.sh   : preprocess rtofs current fields.                    #
 #  wave_g2ges.sh  : find and copy wind grib2 files.                           #
 #                                                                             #
 # Remarks :                                                                   #
@@ -52,8 +53,8 @@
   echo '                      ********************************'
   echo '                      *** MWW3 PREPROCESSOR SCRIPT ***'
   echo '                      ********************************'
-  echo '                          Global multi-grid model with GFS forcing'
-  echo "                          Model identifier : $wavemodTAG "
+  echo '                          PREP for wave component of NCEP coupled system'
+  echo "                          Wave component identifier : $wavemodTAG "
   echo ' '
   echo "Starting at : `date`"
   echo ' '
@@ -222,7 +223,7 @@
     if [ "${RUNMEM}" = "-1" ] || [ "${WW3ICEIENS}" = "T" ] || [ "$waveMEMB" = "00" ]
     then
 
-      $USHwave/wave_ice.sh > wave_ice.out 
+      $USHwave/wave_prnc_ice.sh > wave_prnc_ice.out 
       ERR=$?
     
       if [ -d ice ]
@@ -257,7 +258,7 @@
   fi
 
 # --------------------------------------------------------------------------- #
-# WIND processing
+# WIND processing (not functional, TBD for uncoupled cases)
 
   if [ "${WW3ATMINP}" = 'YES' ]; then
 
@@ -573,7 +574,7 @@
   fi
 
 #-------------------------------------------------------------------
-# CURR processing
+# CURR processing (not functional, TBD for uncoupled and GFSv16 cases)
 
   if [ "${WW3CURINP}" = 'YES' ]; then
 
@@ -634,9 +635,9 @@
 
 # 5.a ww3_multi template
 
-  if [ -f $FIXwave/ww3_multi.${wavemodID}.inp.tmpl ]
+  if [ -f $FIXwave/ww3_multi.${NET}.inp.tmpl ]
   then
-    cp $FIXwave/ww3_multi.${wavemodID}.inp.tmpl ww3_multi.inp.tmpl
+    cp $FIXwave/ww3_multi.${NET}.inp.tmpl ww3_multi.inp.tmpl
   fi
 
   if [ ! -f ww3_multi.inp.tmpl ]
@@ -657,23 +658,23 @@
 
 # 5.b Buoy location file
 
-  if [ -f $FIXwave/wave_$wavemodID.buoys ]
+  if [ -f $FIXwave/wave_${NET}.buoys ]
   then
-    cp $FIXwave/wave_$wavemodID.buoys buoy.loc
+    cp $FIXwave/wave_${NET}.buoys buoy.loc
   fi
 
   if [ -f buoy.loc ]
   then
     set +x
-    echo "   buoy.loc copied ($FIXwave/wave_$wavemodID.buoys)."
+    echo "   buoy.loc copied ($FIXwave/wave_${NET}.buoys)."
     [[ "$LOUD" = YES ]] && set -x
   else
     set +x
     echo "   buoy.loc not found.                           **** WARNING **** "
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" " FATAL ERROR : buoy.loc ($FIXwave/wave_$wavemodID.buoys) NOT FOUND"
+    postmsg "$jlogfile" " FATAL ERROR : buoy.loc ($FIXwave/wave_${NET}.buoys) NOT FOUND"
     touch buoy.loc
-    echo "$wavemodID fcst $date $cycle : no buoy locations file ($FIXwave/wave_$wavemodID.buoys)." >> $wavelog
+    echo "$wavemodID fcst $date $cycle : no buoy locations file ($FIXwave/wave_${NET}.buoys)." >> $wavelog
     err=13;export err;${errchk}
   fi
 
