@@ -8,6 +8,7 @@ echo "BEGIN: config.gldas"
 # Get task specific resources
 . $EXPDIR/config.resources gldas
 
-export GLDASSH=$HOMEgfs/jobs/JGFS_GLDAS
+export GLDASSH=$HOMEgfs/scripts/exgdas_gldas.sh.ecf
+export GLDAS_SPINUP_HOURS=72
 
 echo "END: config.gldas"

@@ -71,8 +71,7 @@ cd ${pwd}/../ush                ||exit 8
         fv3gfs_chgres.sh  fv3gfs_make_grid.sh  global_chgres.sh  ; do
         $LINK ../sorc/ufs_utils.fd/ush/$file                  .
     done
-    for file in gdas2gldas_2nd.sh  gdas2gldas.sh  gldas2gdas.sh  gldas_archive.sh  gldas_forcing.sh  \
-        gldas_get_data.sh  gldas_liscrd.sh  gldas_post.sh  gldas_rst.sh ; do
+    for file in gldas_archive.sh  gldas_forcing.sh gldas_get_data.sh  gldas_liscrd.sh  gldas_post.sh ; do
         $LINK ../sorc/gldas.fd/ush/$file                  .
     done
 

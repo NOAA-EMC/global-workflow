@@ -5,157 +5,118 @@ set -x
 export PS4='$SECONDS + '
 date
 
-#############################################################
-# NOTE: This job depends on the prod_util module being loaded
-#############################################################
+#############################
+# Source relevant config files
+#############################
+export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
+configs="base gldas"
+config_path=${EXPDIR:-$NWROOT/gfs.${gfs_ver}/parm/config}
+for config in $configs; do
+    . $config_path/config.$config
+    status=$?
+    [[ $status -ne 0 ]] && exit $status
+done
 
-#####################################################################################
-# Run config file to get input parameters
-# NOTE: $gldas_ver must be exported by the submission script prior to running this job (in run_all of lsf directory)!
-# This config file should define the following variables
-# DATA_IN: Location of working directory, default to /tmpnwprd
-# DEV_ECF: If the job is to be running using SMS, default to YES
-# SENDDBN: Set to NO for developers, default to YES
-# COM_IN:  Directory for input files, default to /com/$NET/${envir}
-# COM_OUT: Directory for output file, default to /com/$NET/${envir}
-# gespath: Directory for the guess or restart files, default to /nwges/${envir}
-# SENDECF: Flag Events on ecFlow
-# SENDCOM: Copy Files From $TMPDIR to $COMOUT
-# SENDDBN: Issue DBNet Client Calls
-#
-# History:  2019 10 15 Jesse Meng and Youlong Xia, first version
-#####################################################################################
-##############################
-# Set up the UTILITIES
-##############################
-export utilscript=${utilscript:-$HOMEgfs/util/ush}
-export FINDDATE=${FINDDATE:-$utilscript/finddate.sh}
 
-export utilexec=${utilexec:-$HOMEgfs/util/exec}
-export CNVGRIB=${CNVGRIB:-$utilexec/cnvgrib}
-export WGRIB=${WGRIB:-$utilexec/wgrib}
-export WGRIB2=${WGRIB2:-$utilexec/wgrib2}
-export COPYGB=${COPYGB:-$utilexec/copygb}
+##########################################
+# Source machine runtime environment
+##########################################
+. $HOMEgfs/env/${machine}.env gldas
+status=$?
+[[ $status -ne 0 ]] && exit $status
+
 
 ##############################################
-# Define directories for nco
+# Obtain unique process id (pid) and make temp directory
 ##############################################
-if [ "$RUN_ENVIR" = "nco" ] ### For nco operation
-then
+export pid=${pid:-$$}
+export outid=${outid:-"LL$job"}
 
-export gldas_ver=${gldas_ver:-v2.3.0}
-export HOMEgldas=${HOMEgldas:-/gpfs/dell1/nco/ops/nwprod/gldas.${gldas_ver}}
-export PARA_CONFIG=${gldas_para_config:-$HOMEgldas/user/gldas_para_config}
-if [ -s $PARA_CONFIG ] ; then . $PARA_CONFIG ; fi
-
-export COM_IN=${COM_IN:-${COMROOT:?}/${NET}/${envir}}
-export COM_OUT=${COM_OUT:-${COMROOT}/${NET}/${envir}}
-
-export COMIN=$COM_IN/gldas.${PDY}
-export COMOUT=$COM_OUT/gldas.${PDY}
-export COMOUTp1=$COM_OUT/gldas.${PDYp1}
-
-export LOGDIR=${LOGDIR:-${COMROOT}/${NET}/${envir}/logdir}
-
-mkdir -m 775 -p $COMOUT $COMOUTp1 $LOGDIR
-
-env
-fi
-
-##############################################
-# Define directories for deveopers
-##############################################
-
-if [ "$RUN_ENVIR" != "nco" ]      ### For Developers
-then
-#  export gldas_ver=${gldas_ver:-v2.3.0}
-#  export HOMEgldas=${HOMEgldas:-/gpfs/dell2/emc/modeling/noscrub/$LOGNAME/gldas.${gldas_ver}}
-#  export HOMEgldas=${HOMEgldas:-/gpfs/dell2/emc/retros/noscrub/Youlong.Xia/GLDAS}
-  export HOMEgldas=${HOMEgldas:-$HOMEgfs/sorc/gldas.fd}
-  export PARA_CONFIG=${gldas_para_config:-$HOMEgldas/user/gldas_para_config}
-  if [ -s $PARA_CONFIG ] ; then . $PARA_CONFIG ; fi
-#  export DATA=${DATA:-/gpfs/dell2/ptmp/$LOGNAME/tmpnwprd}
-  export DATA=${DATA:-${DATAROOT}/${jobid:?}}
-  export SENDECF=${SENDECF:-NO}
-  export SENDDBN=${SENDDBN:-NO}
-  export SENDCOM=${SENDCOM:-YES}
-  export jobid="LL${job}_${envir}.o$$"
-  export jlogfile=${jlogfile:-$DATA/jlogfiles/jlogfile.${jobid}}
-fi
-
-########################################################
-# obtain unique process id and make temp directory
-########################################################
-if [ $RUN_ENVIR = "nco" ]; then
-    export DATA=${DATA:-${DATAROOT}/${jobid:?}}
-else
-    export job="gdas_gldas"
-    export DATA="$DATAROOT/${job}$$"
-    [[ -d $DATA ]] && rm -rf $DATA
-fi
+export DATA=${DATA:-${DATAROOT}/${jobid:?}}
 mkdir -p $DATA
 cd $DATA
 
-##########################
-# Specify NET and RUN Name
-##########################
-export NET=${NET:-gldas}
-export RUN=${RUN:-gldas}
 
-#############################
-# Specify model (noah/noahmp)
-############################
+##############################################
+# Run setpdy and initialize PDY variables
+##############################################
+export cycle="t${cyc}z"
+setpdy.sh
+. ./PDY
+
+
+##############################################
+# Determine Job Output Name on System
+##############################################
+export pgmout="OUTPUT.${pid}"
+export pgmerr=errfile
+
+
+##############################################
+# Set variables used in the exglobal script
+##############################################
+export CDATE=${CDATE:-${PDY}${cyc}}
+export CDUMP=${CDUMP:-${RUN:-"gdas"}}
+if [ $RUN_ENVIR = "nco" ]; then
+    export ROTDIR=${COMROOT:?}/$NET/$envir
+fi
+
+
+##############################################
+# Begin JOB SPECIFIC work
+##############################################
+export gldas_ver=${gldas_ver:-v2.3.0}
+export HOMEgldas=${HOMEgldas:-$HOMEgfs}
+export FIXgldas=${FIXgldas:-$HOMEgldas/fix/fix_gldas}
+export PARMgldas=${PARMgldas:-$HOMEgldas/parm/gldas}
+export EXECgldas=${EXECgldas:-$HOMEgldas/exec}
+export USHgldas=${USHgldas:-$HOMEgldas/ush}
+export PARA_CONFIG=$HOMEgfs/parm/config/config.gldas}
+
+if [ $RUN_ENVIR = "nco" ]; then
+    export COMIN=${COMIN:-$ROTDIR/$RUN.$PDY/$cyc}
+    export COMOUT=${COMOUT:-$ROTDIR/$RUN.$PDY/$cyc}
+else
+    export COMIN="$ROTDIR/$CDUMP.$PDY/$cyc"
+    export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc"
+fi
+[[ ! -d $COMOUT ]] && mkdir -m 775 -p $COMOUT
 
 export model=${model:-noah}
 export MODEL=${MODEL:-`echo $model |tr '[a-z]' '[A-Z]'`}
 
-###########################
-# Define alert_type
-###########################
-if [ "$RUN_ENVIR" = "nco"  -a "$envir" != "prod" ]; then
-  export alert_type=GLDAS_GB2_PARA
+
+###############################################################
+# Run relevant exglobal script
+env
+msg="HAS BEGUN on `hostname`"
+postmsg "$jlogfile" "$msg"
+$LOGSCRIPT
+
+$HOMEgldas/scripts/exgdas_gldas.sh.ecf
+status=$?
+[[ $status -ne 0 ]] && exit $status
+
+##############################################
+# End JOB SPECIFIC work
+##############################################
+
+##############################################
+# Final processing
+##############################################
+if [ -e "$pgmout" ] ; then
+  cat $pgmout
 fi
 
-export alert_type=${alert_type:-GLDAS_GB2}
-
-export pgmout="OUTPUT.$$"
-
-####################################
-# Specify Execution Areas
-####################################
-export FIXgldas=${FIXgldas:-$HOMEgldas/fix}
-export PARMgldas=${PARMgldas:-$HOMEgldas/parm}
-export EXECgldas=${EXECgldas:-$HOMEgldas/exec}
-export USHgldas=${USHgldas:-$HOMEgldas/ush}
-
-##############################
-# Run setpdy and initialize PDY variables
-##############################
-setpdy.sh
-. ./PDY
-
-export GDATE=${GDATE:-$PDY}
-export BDATE=$PDYm3
-export cyc=${cyc:-00}
-export cycle=t${cyc}z
-
-export RUNDIR=${DATA}/gldas.$BDATE
-
-echo "GLDAS CYCLE = ${GDATE}.${cycle}"
-
-#############################################################
-# execute the script
-echo "--${FCSTSH:-$HOMEgldas/scripts/exgdas_gldas.sh.ecf}---"
-$HOMEgldas/scripts/exgdas_gldas.sh.ecf
-
-cat $pgmout
-
-msg="JGDAS_GLDAS ENDED NORMALLY."
+msg="ENDED NORMALLY."
 postmsg "$jlogfile" "$msg"
 
-##############################
+##########################################
 # Remove the Temporary working directory
-##############################
-###if [ "$KEEPDATA" != "YES" ]; then rm -rf $DATA; fi
+##########################################
+cd $DATAROOT
+[[ $KEEPDATA = "NO" ]] && rm -rf $DATA
 
 date
+exit 0
+

@@ -1,213 +1,210 @@
 #!/bin/ksh
 set -x
+
 ###################################################################
 # This script runs the global land analysis
 # Usage: exgdas_gldas.sh.ecf
-#
-# Imported variables:
-# GDATE - GLDAS run end date 
-# DATA  - top run directory
-#
-# Configuration variables:
-# HOMEgldas - software directory
-# RUNDIR    - daily run directory
-# 
-# History:  2019 10 15 Jesse Meng and Youlong Xia, first version
+# History:  
+#  20191015 Jesse Meng and Youlong Xia, first version
+#  20191123 Fanglin Yang, restructure for global workflow
 ###################################################################
-##############################
-# Set up the UTILITIES
-##############################
-utilscript=${utilscript:-/gpfs/dell1/nco/ops/nwprod/prod_util.v1.1.0/ush}
-FINDDATE=${FINDDATE:-$utilscript/finddate.sh}
+#
+# 
+#################################
+# Set up UTILITIES
+#################################
+export FINDDATE=${FINDDATE:-$HOMEgldas/util/ush/finddate.sh}
+export utilexec=${utilexec:-/gpfs/dell1/nco/ops/nwprod/grib_util.v1.1.0/exec}
+export CNVGRIB=${CNVGRIB:-$utilexec/cnvgrib}
+export WGRIB=${WGRIB:-$utilexec/wgrib}
+export WGRIB2=${WGRIB2:-$utilexec/wgrib2}
+export COPYGB=${COPYGB:-$utilexec/copygb}
+export NDATE=${NDATE:-/gpfs/dell1/nco/ops/nwprod/prod_util.v1.1.0/exec/ips/ndate}
+export DCOMIN=${DCOMIN:-${DCOMROOT:-"/gpfs/dell1/nco/ops/dcom"}}
+export COMINgdas=${COMINgdas:-$ROTDIR}
 
-utilexec=${utilexec:-/gpfs/dell1/nco/ops/nwprod/grib_util.v1.1.0/exec}
-CNVGRIB=${CNVGRIB:-$utilexec/cnvgrib}
-WGRIB=${WGRIB:-$utilexec/wgrib}
-WGRIB2=${WGRIB2:-$utilexec/wgrib2}
-COPYGB=${COPYGB:-$utilexec/copygb}
+#################################
+# Set up the running environment
+#################################
+export assim_freq=${assim_freq:-6}
+export gldas_spinup_hours=${gldas_spinup_hours:-72}
+export gldas_cdate=$CDATE
+export gldas_eymd=`echo $gldas_cdate |cut -c 1-8`                 
+export gldas_ecyc=`echo $gldas_cdate |cut -c 9-10`                 
+export gldas_sdate=`$NDATE -$gldas_spinup_hours $CDATE`
+export gldas_symd=`echo $gldas_sdate |cut -c 1-8`                 
+export gldas_scyc=`echo $gldas_sdate |cut -c 9-10`                 
+echo "GLDAS runs from $gldas_sdate to $gldas_cdate"
 
-##############################
-# Set up the run environment
-##############################
+export RUNENDDATE=$gldas_eymd                          
+export RUNSTARTDATE=$gldas_symd
 
-LISDIR=$HOMEgldas
-GDATE=$GDATE
-BDATE=`$FINDDATE $GDATE d-3`
-DATA=${DATA:-/gpfs/dell2/ptmp/$LOGNAME/tmpnwprd}
+export CASE=${CASE:-C768}
+export res=$(echo $CASE |cut -c2-5)
+export JCAP=$((2*res-2))               
+export topodir=$HOMEgfs/fix/fix_fv3_gmted2010/$CASE/
 
-RUNDIR=$DATA/gldas.${BDATE}
+DATA=${DATA:-$pwd/gldastmp$$}    
+mkdata=NO
+if [ ! -d $DATA ]; then
+   mkdata=YES
+   mkdir -p $DATA
+fi
+cd $DATA || exit 8
+export RUNDIR=$DATA
 
-#############################################################
-# execute the script
 
-echo "GLDAS runs from $BDATE $cycle to $GDATE $cycle"
-
-mkdir $RUNDIR
-cd $RUNDIR
-
-RUNSTARTDATE=$BDATE
-yyyymmdd0=`$FINDDATE $BDATE d-1`
-RUNENDDATE=$GDATE
-
-# As CPC precipitation is from 12z to 12z, the script needs to get one more
-# day gdas data to disaggregate daily CPC precipitation value to hourly
-
-### define soft directories
-
-GDAS=${DATA}/force
+#################################
+GDAS=${RUNDIR}/force
 mkdir -p $GDAS
 
 input1=$GDAS/gdas.$RUNSTARTDATE
 input2=$GDAS/gdas.$RUNENDDATE
-
-rm -f $RUNDIR/input
+[[ -d $RUNDIR/input ]] && rm -f $RUNDIR/input
+[[ -d $RUNDIR ]]       && rm -f $RUNDIR/FIX
+[[ -f $RUNDIR/LIS ]]   && rm -f $RUNDIR/LIS
 mkdir -p $RUNDIR/input
-ln -s $GDAS $RUNDIR/input/GDAS
+ln -fs $GDAS $RUNDIR/input/GDAS
+ln -fs $FIXgldas $RUNDIR/FIX
+ln -fs $EXECgldas/gldas_${model} $RUNDIR/LIS
 
-rm -f $RUNDIR/FIX
-#ln -s $FIXgldas/FIX_T1534 $RUNDIR/FIX
-#T1534 fix files are in /gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix/fix_gldas
-ln -s $FIXgldas $RUNDIR/FIX
-rm -f $RUNDIR/LIS
-ln -s $EXECgldas/gldas_${model} $RUNDIR/LIS
 
-### 1) Get all gdas data and 6-tile netcdf restart data -----
-
-yyyymmdd=$yyyymmdd0
-while [ $yyyymmdd -le $RUNENDDATE ];do
-
-${USHgldas}/gldas_get_data.sh $yyyymmdd
-
-yyyymmdd=`sh $FINDDATE $yyyymmdd d+1`
-done
-
-### 2) Get CPC daily precip and temporally disaggreated ---
-
-yyyymmdd=$RUNSTARTDATE
-while [ $yyyymmdd -lt $RUNENDDATE ];do
-
-${USHgldas}/gldas_forcing.sh $yyyymmdd
-
-yyyymmdd=`sh $FINDDATE $yyyymmdd d+1`
-done
-
-### spatially disaggregated
-
-yyyymmdd=$RUNSTARTDATE
-
-while [ $yyyymmdd -lt $RUNENDDATE ]; do
-
-gds='255 4 3072 1536 89909 0 128 -89909 -117 117 768 0 0 0 0 0 0 0 0 0 255 0 0 0 0 0'
-$COPYGB -i3 -g"$gds" -x $GDAS/cpc.$yyyymmdd/precip.gldas.${yyyymmdd}00 $RUNDIR/cmap.gdas.${yyyymmdd}00
-$COPYGB -i3 -g"$gds" -x $GDAS/cpc.$yyyymmdd/precip.gldas.${yyyymmdd}06 $RUNDIR/cmap.gdas.${yyyymmdd}06
-$COPYGB -i3 -g"$gds" -x $GDAS/cpc.$yyyymmdd/precip.gldas.${yyyymmdd}12 $RUNDIR/cmap.gdas.${yyyymmdd}12
-$COPYGB -i3 -g"$gds" -x $GDAS/cpc.$yyyymmdd/precip.gldas.${yyyymmdd}18 $RUNDIR/cmap.gdas.${yyyymmdd}18
-
-yyyymmdd=`sh $FINDDATE $yyyymmdd d+1`
-
-done
-
-### create configure file
-${USHgldas}/gldas_liscrd.sh $RUNSTARTDATE $RUNENDDATE 1534
-
-### 3) Produce initials noah.rst from 6-tile gdas restart files ----
-
-### 3a) create gdas2gldas input file ----
-
-echo "create gdas2gldqas input file fort.43 and copy into fort.41"
-cp ${PARMgldas}/gdas2gldas.input fort.43
-sed -i -e 's/date/'"$RUNSTARTDATE"'/g' -e 's/cyc/'"$cyc"'/g' fort.43
-sed -i 's|/indirect/|'"$input1"'|g' fort.43
-sed -i 's|/orogdir/|'"$topodir"'|g' fort.43
-sed -i -e 's/noahmp/'"${model}"'/g' fort.43
-
-### 3b) Use gdas2gldas to generate nemsio file and
-###     gldas_noah_rst/gldas_noahmp_rst to generate noah.rst ---
-
-LOG_FILE=gdas2gldas.log
-
-OMP_NUM_THREADS=1
-${USHgldas}/gdas2gldas.sh > $LOG_FILE
-
-LOG_FILE=gldas_rst.log
-OMP_NUM_THREADS=1
-${USHgldas}/gldas_rst.sh > $LOG_FILE
-
-### 4) run noah/noahmp model
-$APRUN_GLDAS ./LIS >>$pgmout 2>errfile
+#---------------------------------------------------------------
+### 1) Get gdas 6-tile netcdf restart file and gdas forcing data
+#---------------------------------------------------------------
+${USHgldas}/gldas_get_data.sh $gldas_sdate $gldas_cdate
 export err=$?; err_chk
 
+
+#---------------------------------------------------------------
+### 2) Get CPC daily precip and temporally disaggreated 
+#---------------------------------------------------------------
+${USHgldas}/gldas_forcing.sh $RUNSTARTDATE $RUNENDDATE
+export err=$?; err_chk
+
+# spatially disaggregated
+yyyymmdd=$RUNSTARTDATE
+while [ $yyyymmdd -lt $RUNENDDATE ]; do
+  gds='255 4 3072 1536 89909 0 128 -89909 -117 117 768 0 0 0 0 0 0 0 0 0 255 0 0 0 0 0'
+  $COPYGB -i3 -g"$gds" -x $GDAS/cpc.$yyyymmdd/precip.gldas.${yyyymmdd}00 $RUNDIR/cmap.gdas.${yyyymmdd}00
+  $COPYGB -i3 -g"$gds" -x $GDAS/cpc.$yyyymmdd/precip.gldas.${yyyymmdd}06 $RUNDIR/cmap.gdas.${yyyymmdd}06
+  $COPYGB -i3 -g"$gds" -x $GDAS/cpc.$yyyymmdd/precip.gldas.${yyyymmdd}12 $RUNDIR/cmap.gdas.${yyyymmdd}12
+  $COPYGB -i3 -g"$gds" -x $GDAS/cpc.$yyyymmdd/precip.gldas.${yyyymmdd}18 $RUNDIR/cmap.gdas.${yyyymmdd}18
+  yyyymmdd=`sh $FINDDATE $yyyymmdd d+1`
+done
+
+# create configure file
+${USHgldas}/gldas_liscrd.sh $RUNSTARTDATE $RUNENDDATE ${JCAP}
+export err=$?; err_chk
+
+
+#---------------------------------------------------------------
+### 3) Produce initials noah.rst from 6-tile gdas restart files 
+#---------------------------------------------------------------
+rm -f fort.41 fort.11 fort.12
+
+# 3a) create gdas2gldas input file ----
+cat >> fort.41 << EOF
+ &config
+   data_dir_input_grid="$input1"
+   sfc_files_input_grid="${gldas_symd}.${gldas_scyc}0000.sfcanl_data.tile1.nc","${gldas_symd}.${gldas_scyc}0000.sfcanl_data.tile2.nc","${gldas_symd}.${gldas_scyc}0000.sfcanl_data.tile3.nc","${gldas_symd}.${gldas_scyc}0000.sfcanl_data.tile4.nc","${gldas_symd}.${gldas_scyc}0000.sfcanl_data.tile5.nc","${gldas_symd}.${gldas_scyc}0000.sfcanl_data.tile6.nc"
+   orog_dir_input_grid="$topodir"
+   orog_files_input_grid="${CASE}_oro_data.tile1.nc","${CASE}_oro_data.tile2.nc","${CASE}_oro_data.tile3.nc","${CASE}_oro_data.tile4.nc","${CASE}_oro_data.tile5.nc","${CASE}_oro_data.tile6.nc"
+   model="$model"
+ /
+EOF
+
+
+# 3b) Use gdas2gldas to generate nemsio file 
+export OMP_NUM_THREADS=1
+$APRUN_GAUSSIAN ${EXECgldas}/gdas2gldas  
+export err=$?; err_chk
+
+
+# 3c)gldas_noah_rst/gldas_noahmp_rst to generate noah.rst 
+sfcanl=sfc.gaussian.nemsio
+ln -fs ${FIXgldas}/lmask_gfs_T${JCAP}.bfsa fort.11
+ln -fs $sfcanl fort.12
+
+${EXECgldas}/gldas_${model}_rst
+export err=$?; err_chk
+
+mv $sfcanl ${sfcanl}.$RUNSTARTDATE
+
+
+#---------------------------------------------------------------
+### 4) run noah/noahmp model
+#---------------------------------------------------------------
+$APRUN_GLDAS ./LIS 
+export err=$?; err_chk
+
+#---------------------------------------------------------------
 ### 5) using gdas2gldas to generate nemsio file for RUNENDDATE
 ###    use gldas_post to replace soil moisture and temperature
 ###    use gldas2gdas to produce 6-tile restart file
+#---------------------------------------------------------------
+rm -f fort.41 fort.42
 
-cd $RUNDIR
+# 5a) create input file for gdas2gldas
+cat >> fort.41 << EOF
+ &config
+   data_dir_input_grid="$input2"
+   sfc_files_input_grid="${gldas_eymd}.${gldas_ecyc}0000.sfcanl_data.tile1.nc","${gldas_eymd}.${gldas_ecyc}0000.sfcanl_data.tile2.nc","${gldas_eymd}.${gldas_ecyc}0000.sfcanl_data.tile3.nc","${gldas_eymd}.${gldas_ecyc}0000.sfcanl_data.tile4.nc","${gldas_eymd}.${gldas_ecyc}0000.sfcanl_data.tile5.nc","${gldas_eymd}.${gldas_ecyc}0000.sfcanl_data.tile6.nc"
+   orog_dir_input_grid="$topodir"
+   orog_files_input_grid="${CASE}_oro_data.tile1.nc","${CASE}_oro_data.tile2.nc","${CASE}_oro_data.tile3.nc","${CASE}_oro_data.tile4.nc","${CASE}_oro_data.tile5.nc","${CASE}_oro_data.tile6.nc"
+   model="$model"
+ /
+EOF
 
-if [ -s fort.41 ]; then
-rm -rf fort.41
-fi
 
-### 5a) create input file for gdas2gldas
+# 5b) use gdas2gldas to produce nemsio file
+export OMP_NUM_THREADS=1
+$APRUN_GAUSSIAN ${EXECgldas}/gdas2gldas
+export err=$?; err_chk
 
-echo "create gdas2gldas input file fort.45, and then cp fort.45 to for.41 to
-avoid refill fort.41 in the first step"
-cp ${PARMgldas}/gdas2gldas.input fort.45
-sed -i -e 's/date/'"$RUNENDDATE"'/g' -e 's/cyc/'"$cyc"'/g' fort.45
-sed -i 's|/indirect/|'"$input2"'|g' fort.45
-sed -i 's|/orogdir/|'"$topodir"'|g' fort.45
-sed -i -e 's/noahmp/'"${model}"'/g' fort.45
 
-### 5b) use gdas2gldas to produce nemsio file
-
-LOG_FILE=gdas2gldas_2nd.log
-OMP_NUM_THREADS=1
-${USHgldas}/gdas2gldas_2nd.sh > $LOG_FILE
-
-### 5c) use gldas_post to replace soil moisture and temperature
-
+# 5c) use gldas_post to replace soil moisture and temperature
 yyyy=`echo $RUNENDDATE | cut -c1-4`
 gbin=$RUNDIR/EXP901/NOAH/$yyyy/$RUNENDDATE/LIS.E901.${RUNENDDATE}00.NOAHgbin
 sfcanl=sfc.gaussian.nemsio
+export OMP_NUM_THREADS=1
+${USHgldas}/gldas_post.sh $gbin $sfcanl 
 
-LOG_FILE=gldas_post.log
-OMP_NUM_THREADS=1
-${USHgldas}/gldas_post.sh $gbin $sfcanl > $LOG_FILE
 
-### 5d) use gldas2gdas to create 6-tile restart tiles
-
-echo "create gdas2gldqas input file fort.42"
-cp ${PARMgldas}/gldas2gdas.input fort.42
-sed -i 's|/orogdir/|'"$topodir"'|g' fort.42
+# 5d) use gldas2gdas to create 6-tile restart tiles
+cat >> fort.42 << EOF
+ &config
+   orog_dir_gdas_grid="$topodir"
+ /
+EOF
 
 # copy gdas netcdf tiles
-gdate=${RUNENDDATE}
-gdas_date=${gdate}.${cyc}0000
-cp ${GDAS}/gdas.${gdate}/${gdas_date}.sfcanl_data.tile1.nc ./sfc_data.tile1.nc
-cp ${GDAS}/gdas.${gdate}/${gdas_date}.sfcanl_data.tile2.nc ./sfc_data.tile2.nc
-cp ${GDAS}/gdas.${gdate}/${gdas_date}.sfcanl_data.tile3.nc ./sfc_data.tile3.nc
-cp ${GDAS}/gdas.${gdate}/${gdas_date}.sfcanl_data.tile4.nc ./sfc_data.tile4.nc
-cp ${GDAS}/gdas.${gdate}/${gdas_date}.sfcanl_data.tile5.nc ./sfc_data.tile5.nc
-cp ${GDAS}/gdas.${gdate}/${gdas_date}.sfcanl_data.tile6.nc ./sfc_data.tile6.nc
-
-chmod 744 sfc_data.tile*.nc
+k=1; while [ $k -le 6 ]; do
+ cp ${GDAS}/gdas.${gldas_eymd}/${gldas_eymd}.${gldas_ecyc}0000.sfcanl_data.tile${k}.nc  sfc_data.tile${k}.nc
+ k=$((k+1))
+done
 
 # copy soil type
-cp ${FIXgldas}/stype_gfs_T1534.bfsa  ./stype_gfs_T1534.bfsa
+cp ${FIXgldas}/stype_gfs_T${JCAP}.bfsa  stype_gfs_T${JCAP}.bfsa
 
-LOG_FILE=gldas2gdas.log
-OMP_NUM_THREADS=1
-${USHgldas}/gldas2gdas.sh > $LOG_FILE
+export OMP_NUM_THREADS=1
+$APRUN_GAUSSIAN $EXECgldas/gldas2gdas
+export err=$?; err_chk
 
-### 5e) archive gldas results
-LOG_FILE=gldas_archive.log
-OMP_NUM_THREADS=1
-${USHgldas}/gldas_archive.sh $RUNSTARTDATE $RUNENDDATE > $LOG_FILE
 
-echo $RUNDIR
+# 5e) archive gldas results
+export OMP_NUM_THREADS=1
+${USHgldas}/gldas_archive.sh $RUNSTARTDATE $RUNENDDATE 
+export err=$?; err_chk
 
-###### gldas_driver.sh ends
 
-msg="$HOMEgldas/scripts/exgdas_gldas.sh.ecf ENDED NORMALLY."
-postmsg "$jlogfile" "$msg"
+#------------------------------------------------------------------
+# Clean up before leaving
+if [ $mkdata = "YES" ]; then rm -rf $DATA; fi
 
-date
+set +x
+if [ $VERBOSE = "YES" ] ; then
+  echo $(date) EXITING $0 with return code $err >&2
+fi
+exit 0
+

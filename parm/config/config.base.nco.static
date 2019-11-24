@@ -141,6 +141,7 @@ fi
 
 # run GLDAS to spin up land ICs
 export DO_GLDAS=YES
+export gldas_cyc=00
 
 
 # Output frequency of the forecast model (for cycling)

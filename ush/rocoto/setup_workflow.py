@@ -351,6 +351,7 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
 
     base = dict_configs['base']
     gfs_cyc = base.get('gfs_cyc', 0)
+    gldas_cyc = base.get('gldas_cyc', 0)
     dohybvar = base.get('DOHYBVAR', 'NO').upper()
     eupd_cyc = base.get('EUPD_CYC', 'gdas').upper()
     do_bufrsnd = base.get('DO_BUFRSND', 'NO').upper()
