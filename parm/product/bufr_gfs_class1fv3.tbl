@@ -12,7 +12,8 @@
 | D10M     | 362004 | TABLE D ENTRY _ 10 M DATA                                |
 |          |        |                                                          |
 | FTIM     | 004194 | TABLE B ENTRY - FORECAST TIME                            |
-| STNM     | 001205 | TABLE B ENTRY - STATION NUMBER -- 5 DIGIT                |
+| STNM     | 001205 | TABLE B ENTRY - STATION NUMBER -- 6 DIGIT                |
+| RPID     | 001198 | REPORT IDENTIFIER                                        |
 | CLAT     | 005002 | TABLE B ENTRY - LATITUDE                                 |
 | CLON     | 006002 | TABLE B ENTRY - LONGITUDE                                |
 | GELV     | 010194 | TABLE B ENTRY - GRID POINT ELEVATION                     |
@@ -49,7 +50,7 @@
 |----------|-------------------------------------------------------------------|
 |          |                                                                   |
 | GFSCLS1  | HEADR {PROFILE} CLS1 D10M                                         |
-| HEADR    | FTIM STNM CLAT CLON GELV 
+| HEADR    | FTIM STNM RPID CLAT CLON GELV 
 | PROFILE  | PRES TMDB UWND VWND SPFH VVEL
 | CLS1     | PMSL PRSS TMSK STC1 EVAP TP03 C03M SWEM LCLD MCLD HCLD            !
 ! D10M     | U10M V10M T2MS Q2MS WXTS WXTP WXTZ WXTR                           !
@@ -60,6 +61,7 @@
 |          |      |             |     |                          |-------------|
 | FTIM     |    0 |           0 |  24 | SECONDS                  |-------------|
 | STNM     |    0 |           0 |  20 | NUMERIC ID               |-------------|
+| RPID     |    0 |           0 |  64 | CCITT IA5                |-------------|
 | CLAT     |    2 |       -9000 |  15 | DEG N                    |-------------|
 | CLON     |    2 |      -18000 |  16 | DEG E                    |-------------|
 | GELV     |    0 |        -400 |  15 | M                        |-------------|
