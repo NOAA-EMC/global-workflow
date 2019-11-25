@@ -12,6 +12,7 @@ type=${1:-gfs}                ##gfs, gdas, enkfgdas or enkfggfs
 CDATE=${CDATE:-2018010100}
 PDY=$(echo $CDATE | cut -c 1-8)
 cyc=$(echo $CDATE | cut -c 9-10)
+OUTPUT_FILE=${OUTPUT_FILE:-"netcdf"}
 SUFFIX=${SUFFIX:-".nc"}
 if [ $SUFFIX = ".nc" ]; then
   format="netcdf"
@@ -271,19 +272,23 @@ if [ $type = "enkfgdas" -o $type = "enkfgfs" ]; then
      if [ $FHR -eq 6 ]; then
         echo  "${dirname}${head}atmanl.ensmean${SUFFIX}      " >>enkf${CDUMP}.txt
      else
-        echo  "${dirname}${head}atmanl00${FHR}.ensmean${SUFFIX}      " >>enkf${CDUMP}.txt
+        echo  "${dirname}${head}atma00${FHR}.ensmean${SUFFIX}      " >>enkf${CDUMP}.txt
      fi 
   done # loop over FHR
   for fstep in eobs eomg ecen eupd efcs epos ; do
    echo  "logs/${CDATE}/${CDUMP}${fstep}*.log        " >>enkf${CDUMP}.txt
   done
 
+
+# Ensemble spread file only available with netcdf output
   fh=3
   while [ $fh -le 9 ]; do
-    fhr=$(printf %03i $fh)
-    echo  "${dirname}${head}atmf${fhr}.ensmean.nc4      " >>enkf${CDUMP}.txt
-    echo  "${dirname}${head}atmf${fhr}.ensspread.nc4    " >>enkf${CDUMP}.txt
-    fh=$((fh+3))
+      fhr=$(printf %03i $fh)
+      echo  "${dirname}${head}atmf${fhr}.ensmean${SUFFIX}       " >>enkf${CDUMP}.txt
+      if [ $OUTPUT_FILE = "netcdf" ]; then
+	  echo  "${dirname}${head}atmf${fhr}.ensspread${SUFFIX}     " >>enkf${CDUMP}.txt
+      fi
+      fh=$((fh+3))
   done
 
   #...........................
@@ -315,7 +320,7 @@ if [ $type = "enkfgdas" -o $type = "enkfgfs" ]; then
          echo "${dirname}${head}atminc.nc            " >>enkf${CDUMP}_restarta_grp${n}.txt
       else
          if [ $n -le $NTARS2 ]; then
-            echo "${dirname}${head}ratmanl00${FHR}${SUFFIX}      " >>enkf${CDUMP}_grp${n}.txt
+            echo "${dirname}${head}ratma00${FHR}${SUFFIX}      " >>enkf${CDUMP}_grp${n}.txt
          fi
          echo "${dirname}${head}atmi00${FHR}.nc            " >>enkf${CDUMP}_restarta_grp${n}.txt
       fi 
