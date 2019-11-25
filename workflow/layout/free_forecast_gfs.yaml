@@ -172,7 +172,6 @@ suite: !Cycle
     jgfs_archive: !Task
       <<: *service_task_template
       Disable: !calc doc.settings.gfs_cyc == 0
-      Complete: !Depend ~ suite.has_cycle('-6:00:00')
       AlarmName: gfs
       Trigger: !Depend up.gfs
       resources: !calc partition.resources.run_arch

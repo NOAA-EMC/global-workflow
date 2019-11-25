@@ -22,7 +22,7 @@ case:
   gfs_output_settings:
     FHOUT_GFS: 6
     FHMIN_GFS: 0
-    FHMAX_GFS: 24
+    FHMAX_GFS: 96
     FHMAX_HF_GFS: 0
     FHOUT_HF_GFS: 1
 
