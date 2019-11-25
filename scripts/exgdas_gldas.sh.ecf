@@ -58,8 +58,8 @@ export RUNDIR=$DATA
 GDAS=${RUNDIR}/force
 mkdir -p $GDAS
 
-input1=$GDAS/gdas.$RUNSTARTDATE
-input2=$GDAS/gdas.$RUNENDDATE
+input1=$COMINgdas/gdas.$gldas_symd/$gldas_scyc/RESTART
+input2=$COMINgdas/gdas.$gldas_eymd/$gldas_ecyc/RESTART
 [[ -d $RUNDIR/input ]] && rm -f $RUNDIR/input
 [[ -d $RUNDIR ]]       && rm -f $RUNDIR/FIX
 [[ -f $RUNDIR/LIS ]]   && rm -f $RUNDIR/LIS
