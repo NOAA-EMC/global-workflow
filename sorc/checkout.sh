@@ -9,7 +9,7 @@ if [[ ! -d fv3gfs_emc.fd ]] ; then
     rm -f ${topdir}/checkout-fv3gfs_emc.log
     git clone --recursive gerrit:NEMSfv3gfs fv3gfs.fd >> ${topdir}/checkout-fv3gfs.log 2>&1
     cd fv3gfs_emc.fd
-    git checkout nemsfv3gfs_beta_v1.0.18
+    git checkout nemsfv3_gfsv15.2.1
     git submodule update --init --recursive
     cd ${topdir}
 else
