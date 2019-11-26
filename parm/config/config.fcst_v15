@@ -15,7 +15,7 @@ if [ $DONST = "YES" ]; then
     . $EXPDIR/config.nsst
 fi
 
-export FORECASTSH="$HOMEgfs/scripts/exglobal_fcst_nemsfv3gfs_GSDsuite.sh"
+export FORECASTSH="$HOMEgfs/scripts/exglobal_fcst_nemsfv3gfs_v15.sh"
 #export FCSTEXECDIR="$HOMEfv3gfs/NEMS/exe"
 export FCSTEXECDIR="$HOMEgfs/exec"
 export FCSTEXEC="global_fv3gfs_ccpp.x"
@@ -47,7 +47,11 @@ export new_o3forc="YES"
 
 # CCPP configuration
 export output_1st_tstep_rst=".false."                                        #JKH
-export CCPP_SUITE=FV3_GSD_v0
+export CCPP_SUITE=FV3_GFS_v15
+
+# Convection Options: 2-SASAS, 3-GF
+export imfdeepcnv=2
+export imfshalcnv=2
 
 # Microphysics configuration
 export dnats=0
@@ -67,7 +71,7 @@ elif [ $imp_physics -eq 6 ]; then # WSM6
 
 elif [ $imp_physics -eq 8 ]; then # Thompson
     export ncld=5
-    export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_gsd"
+    export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_thompson_suite"
     export nwat=6
     export ltaerosol=.true.                  
     export lradar=.true.         ## JKH:  for physics test, this is set to false since that variable not used in test
@@ -147,9 +151,8 @@ elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
     # Write more variables to output
     if [ $QUILTING = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]; then
         if [ $imp_physics -eq 8 ]; then # Thompson
-            #export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table"
-            #export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_gsd"
-            export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_gsd_ruc"
+            export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table"
+            #export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_thompson_suite"
         else
             export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table"
         fi

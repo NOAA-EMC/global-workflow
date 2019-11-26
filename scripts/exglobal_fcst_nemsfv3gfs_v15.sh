@@ -529,14 +529,6 @@ cat $DIAG_TABLE >> diag_table
 $NCP $DATA_TABLE  data_table
 $NCP $FIELD_TABLE field_table
 
-# copy CCN_ACTIVATE.BIN for Thompson microphysics
-if [ $imp_physics -eq 8 ]; then 
-  $NCP $FV3INP/CCN_ACTIVATE.BIN  CCN_ACTIVATE.BIN
-  $NCP $FV3INP/freezeH2O.dat  freezeH2O.dat
-  $NCP $FV3INP/qr_acr_qg.dat  qr_acr_qg.dat
-  $NCP $FV3INP/qr_acr_qs.dat  qr_acr_qs.dat
-fi
-
 #------------------------------------------------------------------
 rm -f nems.configure
 cat > nems.configure <<EOF
@@ -739,8 +731,6 @@ cat > input.nml <<EOF
   pre_rad      = ${pre_rad:-".false."}
   ncld         = ${ncld:-1}
   imp_physics  = ${imp_physics:-"99"}
-  ltaerosol    = ${ltaerosol:-".F."}
-  lradar       = ${lradar:-".F."}
   pdfcld       = ${pdfcld:-".false."}
   fhswr        = ${FHSWR:-"3600."}
   fhlwr        = ${FHLWR:-"3600."}
@@ -759,17 +749,9 @@ cat > input.nml <<EOF
   redrag       = ${redrag:-".true."}
   dspheat      = ${dspheat:-".true."}
   hybedmf      = ${hybedmf:-".true."}
-  satmedmf     = ${satmedmf:-".true."}
-  do_mynnedmf  = ${do_mynnedmf:-".false."}            
-  do_mynnsfclay= ${do_mynnsfclay:-".false."}         
-  bl_mynn_edmf = ${bl_mynn_edmf:-"1"}
-  icloud_bl    = ${icloud_bl:-"1"}
-  bl_mynn_tkeadvect=${bl_mynn_tkeadvect:-".true."}
-  bl_mynn_edmf_mom=${bl_mynn_edmf_mom:-"1"}
   random_clds  = ${random_clds:-".true."}
   trans_trac   = ${trans_trac:-".true."}
   cnvcld       = ${cnvcld:-".true."}
-  ttendlim     = ${ttendlim:0.002}
   imfshalcnv   = ${imfshalcnv:-"2"}
   imfdeepcnv   = ${imfdeepcnv:-"2"}
   cdmbgwd      = ${cdmbgwd:-"3.5,0.25"}
@@ -785,9 +767,6 @@ cat > input.nml <<EOF
   prautco      = ${prautco:-"0.00015,0.00015"}
   lgfdlmprad   = ${lgfdlmprad:-".false."}
   effr_in      = ${effr_in:-".false."}
-  lsm          = ${lsm:-"1"}                        
-  lsoil_lsm    = ${lsoil_lsm:-"4"}                 
-
   $gfs_physics_nml
 /
 
