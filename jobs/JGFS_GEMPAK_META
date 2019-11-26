@@ -43,18 +43,11 @@ export HOMEgfs=${HOMEgfs:-${NWROOT}/gfs.${gfs_ver}}
 export EXECgfs=${EXECgfs:-$HOMEgfs/exec}
 export PARMgfs=${PARMgfs:-$HOMEgfs/parm}
 export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
-export FIXgfs=${FIXgfs:-$HOMEgfs/gempak/fix}
-export USHgfs=${USHgfs:-$HOMEgfs/gempak/ush}
+export FIXgempak=${FIXgempak:-$HOMEgfs/gempak/fix}
+export USHgempak=${USHgempak:-$HOMEgfs/gempak/ush}
 export SRCgfs=${SRCgfs:-$HOMEgfs/scripts}
 
-######################################
-# Set up the GEMPAK directory
-#######################################
-export HOMEgempak=${HOMEgempak:-${NWROOTp1}/gempak}
-export FIXgempak=${FIXgempak:-$HOMEgempak/fix}
-export USHgempak=${USHgempak:-$HOMEgempak/ush}
-
-cp  $FIXgfs/datatype.tbl datatype.tbl
+cp  $FIXgempak/datatype.tbl datatype.tbl
 
 #############################################
 #set the fcst hrs for all the cycles
@@ -83,8 +76,8 @@ export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/gempak/m
 export COMINgempak=${COMINgempak:-${COMROOT}/${NET}/${envir}}
 
 export COMINukmet=${COMINukmet:-$(compath.py nawips/prod/ukmet)}
-export COMINecmwf=${COMINecmwf:-$(compath.py nawips/prod/ecmwf)}
-export COMINnam=${COMINnam:-$(compath.py nawips/prod/nam)}
+export COMINecmwf=${COMINecmwf:-$(compath.py ecmwf/prod/ecmwf)}
+export COMINnam=${COMINnam:-$(compath.py nam/prod/nam)}
 
 msg="Begin job for $job"
 postmsg "$jlogfile" "$msg"

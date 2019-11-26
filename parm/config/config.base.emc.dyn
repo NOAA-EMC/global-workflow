@@ -151,7 +151,8 @@ export FIXgsi="$HOMEgfs/fix/fix_gsi"
 export HOMEfv3gfs="$HOMEgfs/sorc/fv3gfs.fd"
 export HOMEpost="$HOMEgfs"
 export HOMEobsproc_prep="$BASE_GIT/obsproc/obsproc_prep_RB-5.2.0"
-export HOMEobsproc_network="$BASE_GIT/obsproc/obsproc_global_RB-3.2.0"
+export HOMEobsproc_network="$BASE_GIT/obsproc/obsproc_global_RB-3.2.2"
+export HOMEobsproc_global=$HOMEobsproc_network
 export BASE_VERIF="$BASE_SVN/verif/global/tags/vsdb"
 
 # CONVENIENT utility scripts and other environment parameters
@@ -174,7 +175,7 @@ export assim_freq=6
 export PSLOT="@PSLOT@"
 export EXPDIR="@EXPDIR@/$PSLOT"
 export ROTDIR="@ROTDIR@/$PSLOT"
-export ROTDIR_DUMP="NO"
+export ROTDIR_DUMP="YES"
 export DUMP_SUFFIX=""
 export RUNDIR="$STMP/RUNDIRS/$PSLOT"
 export DATAROOT="$RUNDIR/$CDATE/$CDUMP"
@@ -207,6 +208,7 @@ export CASE_ENKF="@CASEENS@"
 # Surface cycle update frequency
 if [[ "$CDUMP" == "gdas" ]] ; then
    export FHCYC=1
+   export FTSFS=10
 elif [[ "$CDUMP" == "gfs" ]] ; then
    #JKHexport FHCYC=24
    export FHCYC=0

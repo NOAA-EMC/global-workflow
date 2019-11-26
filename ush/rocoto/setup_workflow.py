@@ -777,8 +777,8 @@ def create_xml(dict_configs):
         create the workflow XML
     '''
 
-    from  __builtin__ import any as b_any
-
+    from  __builtin__ import any as b_any    
+    
     base = dict_configs['base']
     dohybvar = base.get('DOHYBVAR', 'NO').upper()
     gfs_cyc = base.get('gfs_cyc', 0)

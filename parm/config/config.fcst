@@ -165,6 +165,7 @@ elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
      export restart_interval=${restart_interval_gfs:-0}
 fi
 
+
 # Regrid tiles to global Gaussian grid in NEMSIO
 export REGRID_NEMSIO_SH="$HOMEgfs/ush/fv3gfs_regrid_nemsio.sh"
 if [ $DONST = YES ]; then

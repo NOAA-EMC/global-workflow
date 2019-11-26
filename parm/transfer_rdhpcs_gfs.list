@@ -34,6 +34,8 @@ com/gfs/_ENVIR_/gfs._PDY_/ /scratch4/NCEPDEV/rstprod/com/gfs/_ENVIR_/gfs._PDY_/
 + /??/gfs.t??z.master.grb2f*
 + /??/gfs.t??z.pgrb2.0p25.f*
 + /??/gfs.t??z.sfluxgrbf*
++ /??/gfs.t??z.gtg.grb2f*
++ /??/gfs.t??z.gcip.f00.grib2
 + /??/gfs.t??z.atmf000.nemsio
 + /??/gfs.t??z.atmf003.nemsio
 + /??/gfs.t??z.atmf006.nemsio

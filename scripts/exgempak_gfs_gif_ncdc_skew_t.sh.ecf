@@ -51,7 +51,7 @@ then
      
 #       if [ $cyc -eq 00 -o $cyc -eq 12 ]
        #then
-          $USHgfs/gempak_${RUN}_f${fhr}_gif.sh
+          $USHgempak/gempak_${RUN}_f${fhr}_gif.sh
        #fi
 
     done
@@ -77,8 +77,8 @@ cd $DATA
 
 export RSHPDY=`echo $PDY | cut -c5-``echo $PDY | cut -c3-4`
 
-cp ${NWROOTp1}/dictionaries/sonde.land.tbl .
-cp ${NWROOTp1}/dictionaries/metar.tbl .
+cp $HOMEgfs/gempak/dictionaries/sonde.land.tbl .
+cp $HOMEgfs/gempak/dictionaries/metar.tbl .
 sort -k 2n,2 metar.tbl > metar_stnm.tbl
 cp $COMINgfs/${model}.$cycle.adpupa.tm00.bufr_d fort.40
 export err=$?
