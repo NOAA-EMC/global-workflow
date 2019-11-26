@@ -74,6 +74,14 @@ echo " .... Building ufs_utils .... "
 }
 
 #------------------------------------
+# build gldas
+#------------------------------------
+$Build_gldas && {
+echo " .... Building gldas .... "
+./build_gldas.sh > $logs_dir/build_gldas.log 2>&1
+}
+
+#------------------------------------
 # build gfs_wafs 
 #------------------------------------
 $Build_gfs_wafs  && {
@@ -90,11 +98,11 @@ echo " .... Building NEMS util .... "
 }
 
 #------------------------------------
-# build sfcanl_nsttfchg 
+# build gaussian_sfcanl
 #------------------------------------
-$Build_sfcanl_nsttfchg && {
-echo " .... Building gaussian_sfcanl and nst_tf_chg .... "
-./build_sfcanl_nsttfchg.sh > $logs_dir/build_sfcanl_nsttfchg.log 2>&1
+$Build_gaussian_sfcanl && {
+echo " .... Building gaussian_sfcanl .... "
+./build_gaussian_sfcanl.sh > $logs_dir/build_gaussian_sfcanl.log 2>&1
 }
 
 #------------------------------------

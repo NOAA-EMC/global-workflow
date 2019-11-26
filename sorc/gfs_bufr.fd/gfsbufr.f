@@ -11,6 +11,10 @@ C   99-07-21  Hualu Pan
 C   16-09-27  HUIYA CHUANG  MODIFY TO READ GFS NEMS OUTPUT ON GRID SPACE
 C   16-10-15  HUIYA CHUANG: CONSOLIDATE TO READ FLUX FIELDS IN THIS
 C             PACKAGE TOO AND THIS SPEEDS UP BFS BUFR BY 3X
+C   17-02-27  GUANG PING LOU: CHANGE MODEL OUTPUT READ-IN TO HOURLY
+C             TO 120 HOURS AND 3 HOURLY TO 180 HOURS.
+C   19-07-16  GUANG PING LOU: CHANGE FROM NEMSIO TO GRIB2.
+C   
 C
 C USAGE:
 C   INPUT FILES:
@@ -37,19 +41,17 @@ C   LANGUAGE: INDICATE EXTENSIONS, COMPILER OPTIONS
 C   MACHINE:  IBM SP
 C
 C$$$
-      use nemsio_module
-      use sigio_module
+      use netcdf
       implicit none
       include 'mpif.h'
       integer,parameter:: nsta=3000
-      integer(sigio_intkind),parameter:: lusig=11
-      integer(sigio_intkind):: irets
-!      type(sigio_head):: sighead
-      type(nemsio_gfile) :: gfile
+      integer,parameter:: ifile=11
+      integer:: irets
       integer ncfsig, nsig
       integer istat(nsta), idate(4), jdate
-      integer :: iromb, maxwv, levs,nstart,nend,nint,nsfc,levsi,im,jm
-      integer :: kwskip,npoint,np,ist,is,iret,lss,nss,nf,nsk,nfile
+      integer, allocatable  :: ijdum(:,:)
+      integer :: levs,nstart,nend,nint,nsfc,levsi,im,jm
+      integer :: npoint,np,ist,is,iret,lss,nss,nf,nsk,nfile
       integer :: ielev
       integer :: lsfc
       real :: alat,alon,rla,rlo
@@ -59,6 +61,7 @@ C$$$
       integer landwater(nsta)
       character*1 ns, ew
       character*4 t3
+      character*4 cstat(nsta)
       character*32 desc
       character*150 dird, fnsig
       logical f00, makebufr
@@ -70,6 +73,8 @@ C$$$
       CHARACTER*8     SEQNAM(4)
       integer ierr, mrank, msize
       integer n0, ntot
+      integer  :: error, ncid, id_var,dimid
+      character(len=10) :: dim_nam
 C
       DATA             SBSET / 'ABCD1234' /
 C
@@ -79,7 +84,7 @@ C
 c      DATA         SEQNAM / 'HEADR', 'PRES TMDB UWND VWND SPFH OMEG',
 c     &                      'CLS1' ,'D10M' /
 C
-      namelist /nammet/ iromb, maxwv, levs, makebufr, dird,
+      namelist /nammet/ levs, makebufr, dird,
      &                  nstart, nend, nint, nend1, nint1, 
      &                  nint3, nsfc, f00
 
@@ -92,7 +97,6 @@ C
       open(5,file='gfsparm')
       read(5,nammet)
       write(6,nammet)
-      kwskip = (maxwv + 1) * ((iromb+1) * maxwv + 2)
       npoint = 0
    99 FORMAT (I6, F6.2,A1, F7.2,A1,1X,A4,1X,I2, A28, I4)
       do np = 1, nsta+2
@@ -110,6 +114,7 @@ CC        print*, IST,ALAT,NS,ALON,EW,T3,lsfc,DESC,IELEV
           rlat(npoint) = rla
           rlon(npoint) = rlo
           istat(npoint) = ist
+          cstat(npoint) = T3
           elevstn(npoint) = ielev
            
         if(lsfc .le. 9) then
@@ -160,23 +165,12 @@ c     do nf = nss, nend, nint
         nf = (n0 + mrank - 1) * nint + nss
 C        print*,'n0 ntot nint nss mrank msize',n0,ntot,nint,
 C     &  nss,mrank,msize
-        if(n0.eq.1.and.mrank.gt.0) then
-c          print*,'min(mrank,ntot-1) = ',min(mrank,ntot-1)
-          do nsk = 1, min(mrank,ntot-1)
-!            read(12) dummy
-          enddo
-        endif
-        if(n0.gt.1.and.msize.gt.1.and.nf.le.nend) then
-          do nsk = 2, msize
-!            read(12) dummy
-          enddo
-        endif
         if(nf .le. nend1) then
         nfile = 21 + (nf / nint1)
          else
         nfile = 21 + (nend1/nint1) + (nf-nend1)/nint3
         endif
-C        print*, 'nf,nint,nfile = ',nf,nint,nfile
+        print*, 'nf,nint,nfile = ',nf,nint,nfile
         if(nf.le.nend) then
           if(nf.lt.10) then
             fnsig = 'sigf0'
@@ -193,30 +187,29 @@ C        print*, 'nf,nint,nfile = ',nf,nint,nfile
           endif
            print *, 'Opening file : ',fnsig
 
-          call nemsio_init(iret=irets)
-          print *,'nemsio_init, iret=',irets
-          call nemsio_open(gfile,trim(fnsig),'read',iret=irets)
-          if ( irets /= 0 ) then
-            print*,"fail to open nems atmos file";stop
-          endif
+          error=nf90_open(trim(fnsig),nf90_nowrite,ncid)
+          error=nf90_inq_dimid(ncid,"grid_xt",dimid)
+          error=nf90_inquire_dimension(ncid,dimid,dim_nam,im)
+          error=nf90_inq_dimid(ncid,"grid_yt",dimid)
+          error=nf90_inquire_dimension(ncid,dimid,dim_nam,jm)
+          error=nf90_inq_dimid(ncid,"pfull",dimid)
+          error=nf90_inquire_dimension(ncid,dimid,dim_nam,levsi)
+          error=nf90_close(ncid)
 
-          call nemsio_getfilehead(gfile,iret=irets            
-     &           ,dimx=im,dimy=jm,dimz=levsi)
-          if( irets /= 0 ) then
-           print*,'error finding model dimensions '; stop
-          endif
-          print*,'im,jm,lm= ',im,jm,levsi          
-!          call sigio_sclose(nsig,irets)
-!          if(irets.ne.0) then
-!           call errmsg('sighdr: error closing header from file
-!     &      '//fnsig(1:ncfsig))
-!           call errexit(2)
-!          endif
-          call nemsio_close(gfile,iret=irets)
-          call meteorg(npoint,rlat,rlon,istat,elevstn,
+          print*,'im,jm,lm= ',im,jm,levs,levsi
+!!       OPEN(12,file="ij.txt",action='write',position='append')
+!  read nearest neighbor i,j from the table
+          print*,'np,IST,idum,jdum,rlat(np),rlon(np)= '
+          allocate (ijdum(npoint,2))
+          do np = 1, npoint
+          read(7,98) IST, ijdum(np,1), ijdum(np,2), ALAT, ALON
+!!          print*, np, IST, ijdum(np,1), ijdum(np,2), ALAT, ALON
+          enddo
+  98     FORMAT (3I6, 2F9.2) 
+          call meteorg(npoint,rlat,rlon,istat,cstat,elevstn,
      &             nf,nfile,fnsig,jdate,idate,
-     &      iromb,maxwv,kwskip,levs,levsi,im,jm,nsfc,
-     &      landwater,nend1, nint1, nint3)
+     &      levs,levsi,im,jm,nsfc,
+     &      landwater,nend1, nint1, nint3, ijdum)
         endif
       enddo
       call mpi_barrier(mpi_comm_world,ierr)
@@ -225,6 +218,9 @@ C        print*, 'nf,nint,nfile = ',nf,nint,nfile
       print *, ' starting to make bufr files'
       print *, ' makebufr= ', makebufr
       print *, 'nint1,nend1,nint3,nend= ',nint1,nend1,nint3,nend
+!!  idate =           0           7           1        2019
+!!  jdate =   2019070100
+
       if(makebufr) then
           nend3 = nend
          call buff(nint1,nend1,nint3,nend3,

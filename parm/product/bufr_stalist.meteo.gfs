@@ -634,6 +634,7 @@
 003772 51.29N    .27W EGL  11 LONDON/HEATHROW, UK          24                                
 003957 52.25N   6.33W      11 ROSSLARE, IRELAND            25                                
 004018 63.97N  22.60W      11 KEFLAVIK, ICELAND            37                                
+006011 62.02N   6.76W TOR  00 Thorshvan, Denmark           54 Usr Rqst 4-19
 006181 55.77N  12.53E      11 KOBENHAVN, DENMARK           40                                
 006200 52.03N   4.35E      11 YPENBURG, HOLLAND            -2                                
 006451 50.90N   4.47E      11 BRUSSELS AEROPORT            39                                
@@ -2078,4 +2079,6 @@
 999909 17.85N  66.52W PSE  00 PONCE,PUERTO RICO             0 TAF PR 2-99                    
 999911 18.17N  67.15W MAZ  00 MAYAGUEZ,PUERTO RICO          0 TAF PR 2-99                    
 999912 35.25N  93.09W RUE  10 RUSSELLVILLE_MCPL       AR  120 Weiss 2-99
+999913 15.51S 128.15E WYN  00 Wyndham aerodrome Australia  14 Usr Rqst 1-19
+999914 57.48N   7.36W EGPL 00 Benbecula, Scotland, UK       6 Usr Rqst 1-19
 999918 54.38N  10.13E EDHK 11 KIEL-HOLTENAU AIRPORT      -999 Usr Rqst 1-17

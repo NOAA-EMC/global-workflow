@@ -1519,27 +1519,6 @@
       task jgfs_wafs_gcip
         trigger ../post/jgfs_post_f003 == complete
         time 16:40
-      family fax
-        defstatus complete
-        task jgfs_fax_f00
-          trigger ../../post/jgfs_post_f000 == complete and ../../post/jgfs_post_anl == complete
-          edit FCSTHR '00'
-        task jgfs_fax_anl
-          trigger ../../post/jgfs_post_anl == complete
-          edit FCSTHR 'anl'
-        task jgfs_fax_wafs_f12
-          trigger ../../post/jgfs_post_f012 == complete
-          edit FCSTHR '12'
-        task jgfs_fax_wafs_f24
-          trigger ../../post/jgfs_post_f024 == complete
-          edit FCSTHR '24'
-        task jgfs_fax_wafs_f36
-          trigger ../../post/jgfs_post_f036 == complete
-          edit FCSTHR '36'
-        task jgfs_fax_f48
-          trigger ../../post/jgfs_post_f048 == complete
-          edit FCSTHR '48'
-      endfamily
       family grib_wafs
         task jgfs_wafs_f00
           trigger ../../post/jgfs_post_f000 == complete and ../../post/jgfs_post_f120 == complete and ../grib2_wafs/jgfs_wafs_grib2 == complete
