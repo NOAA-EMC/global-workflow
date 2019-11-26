@@ -85,14 +85,14 @@ elif [ $step = "vrfy" ]; then
     fi
 
 elif [ $step = "metp" ]; then
-
-    export wtime_metp="03:00:00"
-    export wtime_metp_gfs="06:00:00"
-    export npe_metp=1
+    
     export nth_metp=1
-    export npe_node_metp=1
-    export npe_metp_gfs=1
-    export npe_node_metp_gfs=1
+    export wtime_metp="03:00:00"
+    export npe_metp=4
+    export npe_node_metp=4
+    export wtime_metp_gfs="06:00:00"
+    export npe_metp_gfs=4
+    export npe_node_metp_gfs=4
     if [[ "$machine" == "WCOSS_C" ]]; then
             export memory_metp="3072M"
     elif [[ "$machine" == "THEIA" ]]; then
