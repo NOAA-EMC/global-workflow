@@ -41,10 +41,16 @@ gfs_output_settings_template: !Template &gfs_output_settings_template
     type: int
     default: 0
     description: Last forecast hour with high-frequency output for gfs
+
   FHOUT_HF_GFS:
     type: int
     default: 1
     description: Output frequency until FHMAX_HF_GFS hours.
+
+  OCN_INTERVAL:
+    type: int
+    default: 120
+    description: Interval for separating ocean post job.
 
   NCO_NAMING_CONV:
     type: bool
@@ -63,6 +69,10 @@ gfs_output_settings_template: !Template &gfs_output_settings_template
       tools.uniq(sorted(
         tools.seq(FHMIN_GFS,FHMAX_HF_GFS,FHOUT_HF_GFS) +
         tools.seq(FHMIN_GFS,FHMAX_GFS,   FHOUT_GFS)))
+
+  ocnpost_hours:
+    type: int list
+    default: !calc "tools.seq(FHMIN_GFS,FHMAX_GFS,OCN_INTERVAL)"
 
   gdas_forecast_hours: 
     type: int list

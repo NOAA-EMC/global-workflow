@@ -119,7 +119,7 @@ util_resource_table:
   fv3ic:                 [   24,   24, !timedelta "00:30:00",   1, 3072M,      null   ]
   dump_waiter:           [    1,    1, !timedelta "01:00:00",   1,  300M,      null   ]
   make_next_cycles:      [    1,    1, !timedelta "00:15:00",   1,  600M,      null   ]
-  one_hour_exclusive:    [    2,    1, !timedelta "01:00:00",   1,  300M,      null   ]
+  one_hour_exclusive:    [    2,    1, !timedelta "04:00:00",   1,  300M,      null   ]
   nothing:               [    1,    1, !timedelta "00:02:00",   1,  300M,      null   ]
   getic:                 [    1,    1, !timedelta "06:00:00",   1, 3072M,      null   ]
   arch:                  [    1,    1, !timedelta "06:00:00",   1, 3072M,      null   ]
