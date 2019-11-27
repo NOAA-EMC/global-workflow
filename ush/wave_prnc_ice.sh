@@ -45,7 +45,7 @@
   echo '!         Make ice fields        |'
   echo '+--------------------------------+'
   echo "   Model TAG       : $wavemodTAG"
-  echo "   Model ID        : $wavemodID"
+  echo "   Model ID        : $WAV_MOD_ID"
   echo "   Ice grid ID     : $iceID"
   echo ' '
   set $seton
@@ -54,7 +54,7 @@
   if [ -z "$YMDH" ] || [ -z "$cycle" ] || \
      [ -z "$COMOUT" ] || [ -z "$FIXwave" ] || [ -z "$EXECcode" ] || \
      [ -z "$wavemodTAG" ] || [ -z "$iceID" ] || [ -z "$SENDCOM" ] || \
-     [ -z "$COMINice" ] || [ -z "$wavemodID" ]
+     [ -z "$COMINice" ] || [ -z "$WAV_MOD_ID" ]
   then
     set $setoff
     echo ' '
@@ -201,14 +201,14 @@
 # 3.  Save the ice file
 #
 # Ice file name will have ensemble member number if WW3ATMIENS=T
-# and only wavemodID if WW3ATMIENS=F
+# and only WAV_MOD_ID if WW3ATMIENS=F
 #
   if [ "${WW3ATMIENS}" = "T" ]
   then 
     icefile=${wavemodTAG}.${iceID}.$cycle.ice
   elif [ "${WW3ATMIENS}" = "F" ]
   then 
-    icefile=${wavemodID}.${iceID}.$cycle.ice
+    icefile=${WAV_MOD_ID}.${iceID}.$cycle.ice
   fi
  
   if [ "$SENDCOM" = 'YES' ]

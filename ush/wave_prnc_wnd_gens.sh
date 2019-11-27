@@ -54,7 +54,7 @@
   echo '+--------------------------------+'
   echo '!         Make wind felds        |'
   echo '+--------------------------------+'
-  echo "   Model ID        : $wavemodID"
+  echo "   Model ID        : $WAV_MOD_ID"
   echo "   Member ID       : $modIE"
   echo "   Wind grid ID    : $wndID"
   echo "   Wind Member ID  : $wndIE"
@@ -64,7 +64,7 @@
 
   if [ -z "$YMDH" ] || [ -z "$cycle" ] || [ -z "$modIE" ] || \
      [ -z "$COMOUT" ] || [ -z "$FIXwave" ] || [ -z "$EXECcode" ] || \
-     [ -z "$wavemodID" ] || [ -z "$wndID" ] || [ -z "$SENDCOM" ] || \
+     [ -z "$WAV_MOD_ID" ] || [ -z "$wndID" ] || [ -z "$SENDCOM" ] || \
      [ -z "$COMINGEFS" ] || [ -z "$time_beg" ] || [ -z "$time_end" ]
   then
     set +x
@@ -215,7 +215,7 @@
   echo '   Extract wind fields from spectral files ...'
   [[ "$LOUD" = YES ]] && set -x
 #
-# Get into single file (${wavemodID}gfs)
+# Get into single file (${WAV_MOD_ID}gfs)
 #
      rm -f gfsinput
 
@@ -227,16 +227,16 @@
 
      if [ "$err" != '0' ]
      then
-       msg="ABNORMAL EXIT: ERROR IN ${wavemodID}gfs"
+       msg="ABNORMAL EXIT: ERROR IN ${WAV_MOD_ID}gfs"
        ../postmsg "$jlogfile" "$msg"
        set +x
        echo ' '
        echo '****************************************** '
-       echo "*** FATAL ERROR : ERROR IN ${wavemodID}gfs *** "
+       echo "*** FATAL ERROR : ERROR IN ${WAV_MOD_ID}gfs *** "
        echo '****************************************** '
        echo ' '
        [[ "$LOUD" = YES ]] && set -x
-       echo "$modIE prep $ymd $cycle : error in ${wavemodID}gfs." >> $wavelog
+       echo "$modIE prep $ymd $cycle : error in ${WAV_MOD_ID}gfs." >> $wavelog
        exit 2
      fi
 #
@@ -246,7 +246,7 @@
        ../postmsg "$jlogfile" "$msg"
        set +x
        echo ' '
-       cat ${wavemodID}gfs.out
+       cat ${WAV_MOD_ID}gfs.out
        echo ' '
        echo '****************************************'
        echo '*** FATAL ERROR : gfs.wind NOT FOUND ***'
@@ -260,7 +260,7 @@
   if [ "${modIE}" == "gwes00" ]
   then
     # Copy sst file to com for later archiving
-    cp sst.ww3 ${COMOUT}/rundata/${wavemodID}.${wndID}.t${cyc}z.sst
+    cp sst.ww3 ${COMOUT}/rundata/${WAV_MOD_ID}.${wndID}.t${cyc}z.sst
   fi
 
   rm -f sst.ww3

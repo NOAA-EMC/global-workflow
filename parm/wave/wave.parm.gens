@@ -6,11 +6,10 @@
 export wave_sys_ver=v1.0.0  
 
 # General runtime labels
-export wavemodID=${wavemodID:-wave}
-export WAV_MOD_ID=${WAV_MOD_ID:-wave}
+# export WAV_MOD_ID=${WAV_MOD_ID:-wave} # generic modID=wave valid for GFSv16 and beyond
+export WAV_MOD_ID=${WAV_MOD_ID:-gwes}
 
 # Grids for wave model
-#export waveGRD='glo_30m' 
 export waveGRD='glo_15m ao_20m so_20m' 
 export waveGRDN='1 2 2' # gridnumber for ww3_multi
 export waveGRDG='1 2 2' # gridgroup for ww3_multi
@@ -58,10 +57,10 @@ export DTRST=1 # time between restart files, set to DTRST=1 for a single restart
 # Set runmember to default value if not GEFS cpl run
 #  (for a GFS coupled run, RUNMEN would be unset, this should default to -1)
 export RUNMEM=${RUNMEM:--1}
-# Set wave model member tags to wavemodID if ensemble run 
+# Set wave model member tags if ensemble run 
 # -1: no suffix, deterministic; xxxNN: extract two last digits to make ofilename prefix=gwesNN
 if [ $RUNMEM = -1 ]; then
-# No suffix added to wavemodID in case of deterministic run
+# No suffix added to model ID in case of deterministic run
   export waveMEMB=
 else
 # Extract member number only

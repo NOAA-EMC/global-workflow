@@ -76,7 +76,7 @@ fi
 
 # Set wave model ID tag to include member number 
 # if ensemble; waveMEMB var empty in deterministic
-export wavemodTAG=${wavemodID}${waveMEMB}
+export wavemodTAG=${WAV_MOD_ID}${waveMEMB}
 
 # Execute the Script  
 $HOMEwave/scripts/exwave_prep.sh

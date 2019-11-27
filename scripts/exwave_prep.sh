@@ -26,9 +26,9 @@
 # Apr2019 JHAlves - Transitioning to GEFS workflow                            #
 # Nov2019 JHAlves - Merging wave scripts to global workflow                   #
 #                                                                             #
-#   wavemodID and wavemodTAG replace modID. wavemodTAG                        # 
+#   WAV_MOD_ID and wavemodTAG replace modID. wavemodTAG                        # 
 #   is used for ensemble-specific I/O. For deterministic                      #
-#   wavemodID=wavemodTAG                                                      # 
+#   WAV_MOD_ID=wavemodTAG                                                      # 
 #                                                                             #
 ###############################################################################
 # --------------------------------------------------------------------------- #
@@ -135,12 +135,12 @@
 
   for grdID in $grdINP $waveGRD
   do
-    if [ -f "$COMIN/rundata/${wavemodID}.mod_def.${grdID}" ]
+    if [ -f "$COMIN/rundata/${WAV_MOD_ID}.mod_def.${grdID}" ]
     then
       set +x
       echo " Mod def file for $grdID found in ${COMIN}/rundata. copying ...."
       [[ "$LOUD" = YES ]] && set -x
-      cp $COMIN/rundata/${wavemodID}.mod_def.${grdID} mod_def.$grdID
+      cp $COMIN/rundata/${WAV_MOD_ID}.mod_def.${grdID} mod_def.$grdID
 
     else
       msg="FATAL ERROR: NO MODEL DEFINITION FILE"
@@ -154,7 +154,7 @@
       echo ' '
       echo $msg
       [[ "$LOUD" = YES ]] && set -x
-      echo "$wavemodID prep $date $cycle : ${wavemodID}.mod_def.${grdID} missing." >> $wavelog
+      echo "$WAV_MOD_ID prep $date $cycle : ${WAV_MOD_ID}.mod_def.${grdID} missing." >> $wavelog
       err=2;export err;${errchk}
     fi
   done
@@ -205,7 +205,7 @@
        echo $msg
        echo ' '
        [[ "$LOUD" = YES ]] && set -x
-       echo "$wavemodID prep $date $cycle : ww3_prnc.${type}.$grdID.tmpl missing." >> $wavelog
+       echo "$WAV_MOD_ID prep $date $cycle : ww3_prnc.${type}.$grdID.tmpl missing." >> $wavelog
        err=4;export err;${errchk}
      fi
    done
@@ -674,7 +674,7 @@
     [[ "$LOUD" = YES ]] && set -x
     postmsg "$jlogfile" " FATAL ERROR : buoy.loc ($FIXwave/wave_${NET}.buoys) NOT FOUND"
     touch buoy.loc
-    echo "$wavemodID fcst $date $cycle : no buoy locations file ($FIXwave/wave_${NET}.buoys)." >> $wavelog
+    echo "$WAV_MOD_ID fcst $date $cycle : no buoy locations file ($FIXwave/wave_${NET}.buoys)." >> $wavelog
     err=13;export err;${errchk}
   fi
 

@@ -108,7 +108,7 @@
   echo "   Side-by-side grids : $sbsGRD"
   echo "   Interpolated grids : $interpGRD"
   echo "   Post-process grids : $postGRD"
-  echo "   Output points : ${wavemodID}_$buoy"
+  echo "   Output points : ${WAV_MOD_ID}_$buoy"
   echo ' '
   [[ "$LOUD" = YES ]] && set -x
 
@@ -143,6 +143,7 @@
 
 # 1.a.2 Create entries in cmdfile for copying raw data files
 
+  iloop=1
   for grdID in $waveGRD $sbsGRD
   do
   
@@ -152,8 +153,23 @@
       echo "   Copying $wavemodTAG.out_grd.$grdID.$PDY$cyc from ${COMIN}/rundata to out_grd.$grdID"
       [[ "$LOUD" = YES ]] && set -x
 
-      echo  "cp $COMIN/rundata/$wavemodTAG.out_grd.$grdID.$PDY$cyc out_grd.$grdID"  >> cmdfile
+      echo  "cp -f $COMIN/rundata/$wavemodTAG.out_grd.$grdID.$PDY$cyc out_grd.$grdID > copycmd.out.$iloop 2>&1"  >> cmdfile
+      iloop=`expr $iloop + 1`
     fi 
+  done
+
+  for grdID in $waveGRD $sbsGRD $postGRD $interpGRD $buoy
+  do
+    if [ -f "$COMIN/rundata/${WAV_MOD_ID}.mod_def.${grdID}" ]
+    then
+      set +x
+      echo " Mod def file for $grdID found in ${COMIN}/rundata. copying ...."
+      [[ "$LOUD" = YES ]] && set -x
+
+      echo "cp -f $COMIN/rundata/${WAV_MOD_ID}.mod_def.${grdID} mod_def.$grdID > copycmd.out.$iloop 2>&1"  >> cmdfile
+      iloop=`expr $iloop + 1`
+      
+    fi
 
   done
 
@@ -162,8 +178,10 @@
     set +x
     echo "   Copying $COMIN/rundata/$wavemodTAG.out_pnt.${buoy}.$PDY$cyc to out_pnt.ww3"
     [[ "$LOUD" = YES ]] && set -x
-    echo "cp $COMIN/rundata/$wavemodTAG.out_pnt.${buoy}.$PDY$cyc out_pnt.ww3" >> cmdfile
+    echo "cp -f $COMIN/rundata/$wavemodTAG.out_pnt.${buoy}.$PDY$cyc out_pnt.ww3 > copycmd.out.$iloop 2>&1" >> cmdfile
+    iloop=`expr $iloop + 1`
   fi
+
 
 # Set number of processes for mpmd
     cat cmdfile
@@ -254,45 +272,39 @@
   fi
 
 
-# 1.b Model definition files
-
   for grdID in $waveGRD $sbsGRD $postGRD $interpGRD $buoy
   do
-    if [ -f "$COMIN/rundata/${wavemodID}.mod_def.${grdID}" ]
+    if [ ! -f mod_def.$grdID ]
     then
       set +x
-      echo " Mod def file for $grdID found in ${COMIN}/rundata. copying ...."
+      echo ' '
+      echo '*************************************************** '
+      echo " FATAL ERROR : NO MOD_DEF FILE mod_def.$grdID "
+      echo '*************************************************** '
+      echo ' '
       [[ "$LOUD" = YES ]] && set -x
-
-      cp $COMIN/rundata/${wavemodID}.mod_def.${grdID} mod_def.$grdID
-
+      echo "$wavemodTAG post $grdID $date $cycle : mod_def file missing." >> $wavelog
+      postmsg "$jlogfile" "FATAL ERROR : NO MOD_DEF file mod_def.$grdID"
+      fieldOK='no'
+      err=2; export err;${errchk}
+      exit $err
+      gribOK='no'
     else
       set +x
-      echo " Mod def file for $grdID not found in ${COMIN}/rundata. Exiting ..."
-      msg="ABNORMAL EXIT: NO mod_def FILE for grid $grdID"
-      postmsg "$jlogfile" "$msg"
-      set +x
-      echo ' '
-      echo '*********************************************************** '
-      echo "*** FATAL ERROR : NO mod_def FILE FOR GRID $grdID *** "
-      echo '*********************************************************** '
-      echo ' '
-      echo $msg
+      echo "File mod_def.$grdID found. Syncing to all nodes ..."
       [[ "$LOUD" = YES ]] && set -x
-      echo "$wavemodID post $date $cycle : mod_def.$grdID missing." >> $wavelog
-      err=4;export err;${errchk}
-      exit $err
+      $FSYNC mod_def.$grdID
     fi
-
   done
+ 
 
 # 1.c Output locations file
 
   rm -f buoy.loc
 
-  if [ -f $FIXwave/wave_$wavemodID.buoys ]
+  if [ -f $FIXwave/wave_$WAV_MOD_ID.buoys ]
   then
-    cp $FIXwave/wave_$wavemodID.buoys buoy.loc.temp
+    cp -f $FIXwave/wave_$WAV_MOD_ID.buoys buoy.loc.temp
 # Reverse grep to exclude IBP points
     sed -n '/^\$.*/!p' buoy.loc.temp | grep -v IBP > buoy.loc
     rm -f buoy.loc.temp
@@ -301,7 +313,7 @@
   if [ -f buoy.loc ]
   then
     set +x
-    echo "   buoy.loc copied and processed ($FIXwave/wave_$wavemodID.buoys)."
+    echo "   buoy.loc copied and processed ($FIXwave/wave_$WAV_MOD_ID.buoys)."
     [[ "$LOUD" = YES ]] && set -x
   else
     set +x
@@ -311,7 +323,7 @@
     echo '************************************* '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    echo "$wavemodID post $date $cycle : buoy location file missing." >> $wavelog
+    echo "$WAV_MOD_ID post $date $cycle : buoy location file missing." >> $wavelog
     postmsg "$jlogfile" "FATAL ERROR : NO BUOY LOCATION FILE"
     err=5; export err;${errchk}
     exit $err
@@ -328,7 +340,7 @@
     do
       if [ -f $FIXwave/${intGRD}_interp.inp.tmpl ]
       then
-        cp $FIXwave/${intGRD}_interp.inp.tmpl ${intGRD}_interp.inp.tmpl
+        cp -f $FIXwave/${intGRD}_interp.inp.tmpl ${intGRD}_interp.inp.tmpl
       fi
   
       if [ -f ${intGRD}_interp.inp.tmpl ]
@@ -356,7 +368,7 @@
   then
     if [ -f $FIXwave/ww3_grib2.inp.tmpl ]
     then
-      cp $FIXwave/ww3_grib2.inp.tmpl ww3_grib2.inp.tmpl
+      cp -f $FIXwave/ww3_grib2.inp.tmpl ww3_grib2.inp.tmpl
     fi
 
     if [ -f ww3_grib2.inp.tmpl ]
@@ -382,7 +394,7 @@
 
   if [ -f $FIXwave/ww3_spec.inp.tmpl ]
   then
-    cp $FIXwave/ww3_spec.inp.tmpl ww3_spec.inp.tmpl
+    cp -f $FIXwave/ww3_spec.inp.tmpl ww3_spec.inp.tmpl
   fi
 
   if [ -f ww3_spec.inp.tmpl ]
@@ -408,7 +420,7 @@
 
   if [ -f $FIXwave/ww3_spec_bull.inp.tmpl ]
   then
-    cp $FIXwave/ww3_spec_bull.inp.tmpl ww3_spec_bull.inp.tmpl
+    cp -f $FIXwave/ww3_spec_bull.inp.tmpl ww3_spec_bull.inp.tmpl
   fi
 
   if [ -f ww3_spec_bull.inp.tmpl ]

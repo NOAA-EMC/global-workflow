@@ -15,104 +15,80 @@ export HOMEgsm=${HOMEgsm:-$NWROOT/gsm.${gsm_ver}}
 export errchk=${errchk:-err_chk}
 
 # Set HOMEwave to HOMEgefs
-HOMEwave=${HOMEwave:-${HOMEgefs}} 
+HOMEwave=${HOMEwave:-${HOMEgsm}} 
 
-cyc=${cyc:-00}
-export cycle=${cycle:-t${cyc}z}
- 
-export pgmout=OUTPUT.$$
-
-export MP_PULSE=0
-
-####################################
-# Path to HOME Directory
-####################################
-
-export CODEwave=${CODEwave:-${NWROOT}/${NET}_code.${wave_code_ver}/${code_pkg}}
-
-export EXECwave=${EXECwave:-$HOMEwave/exec}
-export FIXwave=${FIXwave:-$HOMEwave/fix_wave}
-export PARMwave=${PARMwave:-$HOMEwave/parm}
-export USHwave=${USHwave:-$HOMEwave/ush}
-export EXECcode=${EXECcode:-$CODEwave/exec}
-
-##############################################
-# Set parameters using gwes_post.parm
-##############################################
-
-. $PARMwave/gefs.parm
-. $PARMwave/gwes.parm
-. $PARMwave/gwes_post.parm
-
-###################################
 # Create and go to DATA directory
-#  (requires wavemodTAG) 
-###################################
 export DATA=${DATA:-${DATAROOT:?}/${jobid}}
 mkdir -p $DATA
 cd $DATA
 
+cyc=${cyc:-00}
+export cycle=${cycle:-t${cyc}z}
+ 
 # Set PDY
 setpdy.sh
 sh ./PDY
 
-# Set wave model ID tag to include member number 
-# if ensemble; waveMEMB var empty in deterministic
-membTAG='p'
-if [ "${waveMEMB}" == "00" ]; then membTAG='c'; fi
-export membTAG
-export wavemodTAG=${wavemodID}${waveMEMB}
+export pgmout=OUTPUT.$$
 
-###################################
+export MP_PULSE=0
+
+# Path to HOME Directory
+export CODEwave=${CODEwave:-${NWROOT}/${NET}_code.${wave_code_ver}/${code_pkg}}
+export EXECwave=${EXECwave:-$HOMEwave/exec}
+export FIXwave=${FIXwave:-$HOMEwave/fix/fix_wave_${NET}}
+export PARMwave=${PARMwave:-$HOMEwave/parm/wave}
+export USHwave=${USHwave:-$HOMEwave/ush}
+export EXECcode=${EXECcode:-$CODEwave/exe}
+
 # Set COM Paths and GETGES environment
-###################################
-
 export COMINwave=${COMINwave:-${COMROOT:?}/${NET}/${envir}}
 export COMOUTwave=${COMOUTwave:-${COMROOT:?}/${NET}/${envir}}
 export COMIN=${COMIN:-${COMINwave}/${RUN}.${PDY}/${cyc}}
 export COMOUT=${COMOUT:-${COMOUTwave}/${RUN}.${PDY}/${cyc}}
 
-export COMICE=${COMICE:-${COMROOTp2}/omb/prod}
-export COMWND=${COMWND:-${COMROOT}/gfs/prod}
-export COMCUR=${COMCUR:-${COMROOTp2}/rtofs/prod}
+export COMINice=${COMINice:-${COMROOTp2}/omb/prod}
+export COMINwnd=${COMINwnd:-${COMROOT}/gfs/prod}
+export COMINcur=${COMINcur:-${COMROOTp2}/rtofs/prod}
 
 if [ $SENDCOM = YES ]; then
-  mkdir -p $COMOUT/gridded
-  mkdir -p $COMOUT/station
-  mkdir -p $COMOUT/stats
+  mkdir -p $COMOUT
 fi
 
 export wavelog=${COMOUTwave}/wave.log
 
-##################################
 # Set mpi serial command
-#################################
 export wavempexec=${wavempexec:-"mpirun"}
 export wave_mpmd=${wave_mpmd:-"cfp"}
 
 env | sort
 
-###################################
-# Execute the Script  
-###################################
-
-$HOMEwave/scripts/exwave_gwes_post.sh
-err=$?
-if [ $err -ne 0 ]; then
-    msg="FATAL ERROR: ex-script of GWES_POST failed!"
-else
-    msg="$job completed normally!"
+# Set parameters using gwes_post.parm
+if [ "${NET}" == "gens" ]
+then
+  . ${HOMEgefs}/parm/gefs.parm
 fi
-postmsg "$jlogfile" "$msg"
+. $PARMwave/wave.parm.${NET}
+. $PARMwave/wave_post.parm.${NET}
 
-###################################
+# Set wave model ID tag to include member number 
+# if ensemble; waveMEMB var empty in deterministic
+# Set wave model ID tag to include member number
+# if ensemble; waveMEMB var empty in deterministic
+membTAG='p'
+if [ "${waveMEMB}" == "00" ]; then membTAG='c'; fi
+export membTAG
+export wavemodTAG=${WAV_MOD_ID}${waveMEMB}
+
+export CFP_VERBOSE=1
+
+# Execute the Script  
+$HOMEwave/scripts/exwave_post.sh
+
 # Remove temp directories
-###################################
-
 if [ "$KEEPDATA" != "YES" ]; then
   cd $DATAROOT
   rm -rf $DATA
 fi
 date
 
-exit $err
