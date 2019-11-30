@@ -217,10 +217,10 @@ if [ -f $gmemdir/RESTART/${sPDY}.${scyc}0000.coupler.res ]; then
 fi
 
 # turn IAU off for cold start
-DOIAU_coldstart="NO"
-if [ $DOIAU = "YES" -a $warm_start = ".false." ]; then
+DOIAU_coldstart=${DOIAU_coldstart:-"NO"}
+if [ $DOIAU = "YES" -a $warm_start = ".false." ] || [ $DOIAU_coldstart = "YES" -a $warm_start = ".true." ]; then
   export DOIAU="NO"
-  echo "turning off IAU since warm_start = $warm_start"
+  echo "turning off IAU"
   DOIAU_coldstart="YES"
   IAU_OFFSET=0
   sCDATE=$CDATE
@@ -228,9 +228,6 @@ if [ $DOIAU = "YES" -a $warm_start = ".false." ]; then
   scyc=$cyc
   tPDY=$sPDY
   tcyc=$cyc
-  #echo "ERROR: DOIAU = $DOIAU and warm_start = $warm_start are incompatible."
-  #echo "Abort!"
-  #exit 99
 fi
 
 #-------------------------------------------------------

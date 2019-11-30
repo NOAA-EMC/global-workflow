@@ -211,10 +211,6 @@ elif [[ "$CDUMP" == "gfs" ]] ; then
    export FHCYC=24
 fi
 
-# run GLDAS to spin up land ICs
-export DO_GLDAS=YES
-export gldas_cyc=00
-
 # Output frequency of the forecast model (for cycling)
 export FHMIN=0
 export FHMAX=9
@@ -253,6 +249,10 @@ export DOIAU_ENKF="NO"
 export IAUFHRS_ENKF=6
 export IAU_DELTHRS_ENKF=6
 [[ "$SDATE" = "$CDATE" ]] && ( export DOIAU="NO"; export DOIAU_ENKF="NO" )
+
+# run GLDAS to spin up land ICs
+export DO_GLDAS=YES
+export gldas_cyc=00
 
 # Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL
 export imp_physics=11

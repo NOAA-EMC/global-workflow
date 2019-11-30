@@ -9,6 +9,6 @@ echo "BEGIN: config.gldas"
 . $EXPDIR/config.resources gldas
 
 export GLDASSH=$HOMEgfs/scripts/exgdas_gldas.sh.ecf
-export GLDAS_SPINUP_HOURS=72
+export gldas_spinup_hours=72
 
 echo "END: config.gldas"
