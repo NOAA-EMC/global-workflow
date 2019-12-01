@@ -9,12 +9,7 @@ status=$?
 ###############################################################
 # Execute the JJOB. GLDAS only runs once per day.
 
-if [ $cyc -eq $gldas_cyc ]; then
-    $HOMEgfs/jobs/JGDAS_GLDAS
-    status=$?
-else
-    echo "GLDAS only runs for $gldas_cyc cycle; Skip GLDAS step for cycle $cyc"
-    status=0
-fi
+$HOMEgfs/jobs/JGDAS_GLDAS
+status=$?
 
 exit $status
