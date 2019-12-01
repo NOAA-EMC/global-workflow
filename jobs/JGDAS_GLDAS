@@ -18,6 +18,11 @@ for config in $configs; do
 done
 
 
+if [ $cyc -ne $gldas_cyc ]; then
+    echo "GLDAS only runs for $gldas_cyc cycle; Skip GLDAS step for cycle $cyc"
+    status=0
+fi
+
 ##########################################
 # Source machine runtime environment
 ##########################################
