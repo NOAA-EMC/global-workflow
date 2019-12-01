@@ -1,0 +1,63 @@
+##################################################################
+# This parameter file set up the environment variables used in
+# the J-Job scripts to run the gldas land analsis system
+##################################################################
+# module load for untility in run_all of lsf directory 
+
+export GDATE=${PDY:-20191025}
+export cyc=${cyc:-00}
+export model=${model:-noah}
+export QUEUE=debug
+export PROJECT_CODE=NLDAS-T2O
+
+#export workdir=/gpfs/dell2/emc/modeling/noscrub/$LOGNAME/global-workflow
+export workdir=${workdir:-$HOMEgfs}
+
+export gldas_ver=${gldas_ver:-v2.3.0}
+export HOMEgldas=${HOMEgldas:-$workdir/sorc/gldas.fd}
+export FIXgldas=${FIXgldas:-$HOMEgldas/fix}
+export PARMgldas=${PARMgldas:-$HOMEgldas/parm}
+export EXECgldas=${EXECgldas:-$HOMEgldas/exec}
+export USHgldas=${USHgldas:-$HOMEgldas/ush}
+
+#export FIXgldas=/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix/fix_gldas
+#export topodir=/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix/fix_fv3_gmted2010/C768/
+export FIXgldas=${FIXgldas:-$workdir/fix/fix_gldas}
+export topodir=${topodir:-$workdir/fix/fix_fv3_gmted2010/C768}
+
+
+export COM_IN=${COM_IN:-$workdir/com/gldas.${gldas_ver}}
+export COM_OUT=${COM_OUT:-$COM_IN}
+
+# set up com and decom directory used
+# GFS OPS
+if [ ${model} == 'noah' ]; then
+export COMROOT=/gpfs/dell1/nco/ops/com
+export DCOMROOT=/gpfs/dell1/nco/ops/dcom
+fi
+
+##GFS Retrospective test
+#if [ ${model} == 'noah' ]; then
+#export COMROOT=/gpfs/dell2/emc/retros/noscrub/Youlong.Xia/com
+#export DCOMROOT=/gpfs/dell2/emc/retros/noscrub/Youlong.Xia/com
+#fi
+
+# gfsv16 systhesis test
+if [ ${model} == 'noahmp' ]; then
+export COMROOT=/gpfs/dell2/emc/retros/noscrub/Youlong.Xia/com
+export DCOMROOT=/gpfs/dell2/emc/retros/noscrub/Youlong.Xia/com
+fi
+
+export COMINgdas=${COMINgdas:-${COMROOT}/gfs/prod}
+export DCOMIN=${DCOM_IN:-${DCOMROOT}/prod}
+
+
+#export DATA_IN=/gpfs/dell2/ptmp/$LOGNAME/tmpnwprd
+#export jlogfile=$DATA_IN/jlogfile
+export DATA=/gpfs/dell2/ptmp/$LOGNAME/tmpnwprd
+export jlogfile=$DATA/jlogfile
+
+export SENDCOM=${SENDCOM:-YES}
+export SENDECF=${SENDECF:-NO}
+export SENDDBN=${SENDDBN:-NO}
+

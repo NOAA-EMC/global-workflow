@@ -42,7 +42,7 @@ def main():
         print 'input arg:     --expdir = %s' % repr(args.expdir)
         sys.exit(1)
 
-    gfs_steps = ['prep', 'anal', 'fcst', 'postsnd', 'post', 'awips', 'gempak', 'vrfy', 'arch']
+    gfs_steps = ['prep', 'anal', 'gldas', 'fcst', 'postsnd', 'post', 'awips', 'gempak', 'vrfy', 'arch']
     hyb_steps = ['eobs', 'eomg', 'eupd', 'ecen', 'efcs', 'epos', 'earc']
 
     steps = gfs_steps + hyb_steps if _base.get('DOHYBVAR', 'NO') == 'YES' else gfs_steps
@@ -216,8 +216,15 @@ def get_gdasgfs_resources(dict_configs, cdump='gdas'):
     do_bufrsnd = base.get('DO_BUFRSND', 'NO').upper()
     do_gempak = base.get('DO_GEMPAK', 'NO').upper()
     do_awips = base.get('DO_AWIPS', 'NO').upper()
+    do_gldas = base.get('DO_GLDAS', 'NO').upper()
 
-    tasks = ['prep', 'anal', 'fcst', 'post', 'vrfy', 'arch']
+    #tasks = ['prep', 'anal', 'fcst', 'post', 'vrfy', 'arch']
+    tasks = ['prep', 'anal']
+
+    if cdump in ['gdas'] and do_gldas in ['Y', 'YES']:
+        tasks += ['gldas']
+
+    tasks += ['fcst', 'post', 'vrfy', 'arch']
 
     if cdump in ['gfs'] and do_bufrsnd in ['Y', 'YES']:
         tasks += ['postsnd']
@@ -225,7 +232,7 @@ def get_gdasgfs_resources(dict_configs, cdump='gdas'):
         tasks += ['gempak']
     if cdump in ['gfs'] and do_awips in ['Y', 'YES']:
         tasks += ['awips']
-
+ 
     dict_resources = OrderedDict()
 
     for task in tasks:
@@ -340,11 +347,13 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
 
     base = dict_configs['base']
     gfs_cyc = base.get('gfs_cyc', 0)
+    gldas_cyc = base.get('gldas_cyc', 0)
     dohybvar = base.get('DOHYBVAR', 'NO').upper()
     eupd_cyc = base.get('EUPD_CYC', 'gdas').upper()
     do_bufrsnd = base.get('DO_BUFRSND', 'NO').upper()
     do_gempak = base.get('DO_GEMPAK', 'NO').upper()
     do_awips = base.get('DO_AWIPS', 'NO').upper()
+    do_gldas = base.get('DO_GLDAS', 'NO').upper()
     dumpsuffix = base.get('DUMP_SUFFIX', '')
     gridsuffix = base.get('SUFFIX', '')
 
@@ -389,15 +398,34 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
 
     dict_tasks['%sanal' % cdump] = task
 
+    # gldas
+    if cdump in ['gdas'] and do_gldas in ['Y', 'YES']:
+        deps = []
+        dep_dict = {'type': 'task', 'name': '%sanal' % cdump}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+        task = wfu.create_wf_task('gldas', cdump=cdump, envar=envars, dependency=dependencies)
+
+        dict_tasks['%sgldas' % cdump] = task
+
     # fcst
     deps = []
-    dep_dict = {'type': 'task', 'name': '%sanal' % cdump}
-    deps.append(rocoto.add_dependency(dep_dict))
     if cdump in ['gdas']:
-        dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': '-06:00:00'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
+        if do_gldas in ['Y', 'YES']:
+            dep_dict = {'type': 'task', 'name': '%sgldas' % cdump}
+            deps.append(rocoto.add_dependency(dep_dict))
+            dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': '-06:00:00'}
+            deps.append(rocoto.add_dependency(dep_dict))
+            dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
+        else:
+            dep_dict = {'type': 'task', 'name': '%sanal' % cdump}
+            deps.append(rocoto.add_dependency(dep_dict))
+            dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': '-06:00:00'}
+            deps.append(rocoto.add_dependency(dep_dict))
+            dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
     elif cdump in ['gfs']:
+        dep_dict = {'type': 'task', 'name': '%sanal' % cdump}
+        deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
     task = wfu.create_wf_task('fcst', cdump=cdump, envar=envars, dependency=dependencies)
 

@@ -40,7 +40,7 @@ elif [ $machine = "hera" ]; then
     FIX_DIR="/scratch1/NCEPDEV/global/glopara/fix"
 fi
 cd ${pwd}/../fix                ||exit 8
-for dir in fix_am fix_fv3 fix_orog fix_fv3_gmted2010 fix_verif ; do
+for dir in fix_am fix_fv3 fix_gldas fix_orog fix_fv3_gmted2010 fix_verif ; do
     [[ -d $dir ]] && rm -rf $dir
 done
 $LINK $FIX_DIR/* .
@@ -55,11 +55,14 @@ cd ${pwd}/../jobs               ||exit 8
 cd ${pwd}/../parm               ||exit 8
     [[ -d post ]] && rm -rf post
     $LINK ../sorc/gfs_post.fd/parm                           post
+    [[ -d gldas ]] && rm -rf gldas
+    $LINK ../sorc/gldas.fd/parm                              gldas
 cd ${pwd}/../scripts            ||exit 8
     $LINK ../sorc/gfs_post.fd/scripts/exgdas_nceppost.sh.ecf .
     $LINK ../sorc/gfs_post.fd/scripts/exgfs_nceppost.sh.ecf  .
     $LINK ../sorc/gfs_post.fd/scripts/exglobal_pmgr.sh.ecf   .
     $LINK ../sorc/ufs_utils.fd/scripts/exemcsfc_global_sfc_prep.sh.ecf .
+    $LINK ../sorc/gldas.fd/scripts/exgdas_gldas.sh.ecf .             
 cd ${pwd}/../ush                ||exit 8
     for file in fv3gfs_downstream_nems.sh  fv3gfs_dwn_nems.sh  gfs_nceppost.sh  \
         gfs_transfer.sh  link_crtm_fix.sh  trim_rh.sh fix_precip.sh; do
@@ -70,10 +73,12 @@ cd ${pwd}/../ush                ||exit 8
         fv3gfs_chgres.sh  fv3gfs_make_grid.sh  global_chgres.sh  ; do
         $LINK ../sorc/ufs_utils.fd/ush/$file                  .
     done
+    for file in gldas_archive.sh  gldas_forcing.sh gldas_get_data.sh  gldas_liscrd.sh  gldas_post.sh ; do
+        $LINK ../sorc/gldas.fd/ush/$file                  .
+    done
 cd ${pwd}/../util               ||exit 8
     for file in sub_slurm sub_wcoss_c sub_wcoss_d ; do
         $LINK ../sorc/ufs_utils.fd/util/$file
-    done
 
 
 #------------------------------
@@ -204,6 +209,10 @@ for gsiexe in  global_gsi.x global_enkf.x calc_increment_ens.x  getsfcensmeanp.x
     $LINK ../sorc/gsi.fd/exec/$gsiexe .
 done
 
+for gldasexe in gdas2gldas  gldas2gdas  gldas_forcing  gldas_noah gldas_noah_rst  gldas_post; do
+    [[ -s $gldasexe ]] && rm -f $gldasexe
+    $LINK ../sorc/gldas.fd/exec/$gldasexe .
+done
 
 #------------------------------
 #--link source code directories
@@ -249,6 +258,10 @@ cd ${pwd}/../sorc   ||   exit 8
         $SLINK gfs_wafs.fd/sorc/wafs_setmissing.fd                                              wafs_setmissing.fd
     fi
 
+
+    for prog in gdas2gldas.fd  gldas2gdas.fd  gldas_forcing.fd  gldas_model.fd  gldas_post.fd  gldas_rst.fd ;do
+        $SLINK gldas.fd/sorc/$prog                                                     $prog
+    done
 
 #------------------------------
 #--choose dynamic config.base for EMC installation 
