@@ -11,4 +11,12 @@ echo "BEGIN: config.gldas"
 export GLDASSH=$HOMEgfs/scripts/exgdas_gldas.sh.ecf
 export gldas_spinup_hours=72
 
+
+if [ $machine = "WCOSS_C" -o $machine = "WCOSS_DELL_P3" ]; then
+    export CPCGAUGE=/gpfs/dell2/emc/modeling/noscrub/Fanglin.Yang/stat/cpcUniGauge
+elif [ $machine = "HERA" ]; then
+    export CPCGAUGE=/scratch1/NCEPDEV/global/Fanglin.Yang/stat/cpcUniGauge
+fi
+
+
 echo "END: config.gldas"
