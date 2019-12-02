@@ -7,7 +7,7 @@ echo $topdir
 echo fv3gfs_emc checkout ...
 if [[ ! -d fv3gfs_emc.fd ]] ; then
     rm -f ${topdir}/checkout-fv3gfs_emc.log
-    git clone --recursive gerrit:NEMSfv3gfs fv3gfs.fd >> ${topdir}/checkout-fv3gfs.log 2>&1
+    git clone --recursive gerrit:NEMSfv3gfs fv3gfs_emc.fd >> ${topdir}/checkout-fv3gfs_emc.log 2>&1
     cd fv3gfs_emc.fd
     git checkout gfs.v16_PhysicsUpdate
     git submodule update --init --recursive
@@ -19,7 +19,7 @@ fi
 echo fv3gfs_ccpp checkout ...
 if [[ ! -d fv3gfs_ccpp.fd ]] ; then
     rm -f ${topdir}/checkout-fv3gfs_ccpp.log
-    git clone --recursive -b dtc/develop https://github.com/NCAR/ufs-weather-model  fv3gfs_ccpp.fd
+    git clone --recursive -b dtc/develop https://github.com/NCAR/ufs-weather-model  fv3gfs_ccpp.fd >> ${topdir}/checkout-fv3gfs_ccpp.log 2>&1
     cd fv3gfs_ccpp.fd
     git submodule update --init --recursive
     cd ${topdir}
