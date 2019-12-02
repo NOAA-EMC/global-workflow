@@ -43,11 +43,11 @@
     set +x
     echo ' '
     echo '****************************************************************************** '
-    echo '*** FATAL ERROR : ERROR IN ww3_spec (COULD NOT CREATE TEMP DIRECTORY) *** '
+    echo '*** FATAL ERROR : ERROR IN ww3_outp_spec (COULD NOT CREATE TEMP DIRECTORY) *** '
     echo '****************************************************************************** '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" "FATAL ERROR : ERROR IN ww3_spec (Could not create temp directory)"
+    postmsg "$jlogfile" "FATAL ERROR : ERROR IN ww3_outp_spec (Could not create temp directory)"
     exit 1
   fi
 
@@ -69,11 +69,11 @@
     set +x
     echo ' '
     echo '***********************************************'
-    echo '*** LOCATION ID IN ww3_spec2.sh NOT SET ***'
+    echo '*** LOCATION ID IN ww3_outp_spec.sh NOT SET ***'
     echo '***********************************************'
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" "LOCATION ID IN ww3_spec2.sh NOT SET"
+    postmsg "$jlogfile" "LOCATION ID IN ww3_outp_spec.sh NOT SET"
     exit 1
   else
     buoy=$1
@@ -96,11 +96,11 @@
     then
       set +x
       echo '******************************************************'
-      echo '*** LOCATION ID IN ww3_spec2.sh NOT RECOGNIZED ***'
+      echo '*** LOCATION ID IN ww3_outp_spec.sh NOT RECOGNIZED ***'
       echo '******************************************************'
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
-      postmsg "$jlogfile" "LOCATION ID IN ww3_spec2.sh NOT RECOGNIZED"
+      postmsg "$jlogfile" "LOCATION ID IN ww3_outp_spec.sh NOT RECOGNIZED"
       exit 2
     fi
   fi
@@ -115,11 +115,11 @@
     set +x
     echo ' '
     echo '******************************************************'
-    echo '*** EXPORTED VARIABLES IN ww3_spec2.sh NOT SET ***'
+    echo '*** EXPORTED VARIABLES IN ww3_outp_spec.sh NOT SET ***'
     echo '******************************************************'
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" "EXPORTED VARIABLES IN ww3_spec2.sh NOT SET"
+    postmsg "$jlogfile" "EXPORTED VARIABLES IN ww3_outp_spec.sh NOT SET"
     exit 3
   fi
 
@@ -136,7 +136,7 @@
 
 #  $FSYNC ${DATA}/mod_def.points
 #  $FSYNC ${DATA}/out_pnt.ww3
-#  $FSYNC ${DATA}/ww3_spec.inp.tmpl
+#  $FSYNC ${DATA}/ww3_outp_spec.inp.tmpl
 
 # 0.f Links to mother directory
 
@@ -156,7 +156,7 @@
       -e "s/POINT/$point/g" \
       -e "s/ITYPE/1/g" \
       -e "s/FORMAT/F/g" \
-                               ../ww3_spec.inp.tmpl > ww3_outp.inp
+                               ../ww3_outp_spec.inp.tmpl > ww3_outp.inp
 
 # 2.b Run the postprocessor
 
@@ -211,7 +211,7 @@
 
   set +x
   echo ' '
-  echo 'End of ww3_spec2.sh at'
+  echo 'End of ww3_outp_spec.sh at'
   date
 
-# End of ww3_spec2.sh ---------------------------------------------------- #
+# End of ww3_outp_spec.sh ---------------------------------------------------- #

@@ -9,13 +9,13 @@ export NET=${NET:-gens}
 export RUN=${RUN:-gwes}
 
 export HOMEgefs=${HOMEgefs:-$NWROOT/gefs.${gefs_ver}}
-export HOMEgsm=${HOMEgsm:-$NWROOT/gsm.${gsm_ver}}
+export HOMEgfs=${HOMEgfs:-$NWROOT/gfs.${gfs_ver}}
 
 # Add default errchk = err_chk
 export errchk=${errchk:-err_chk}
 
 # Set HOMEwave to HOMEgefs
-HOMEwave=${HOMEwave:-${HOMEgsm}} 
+HOMEwave=${HOMEwave:-${HOMEgfs}} 
 
 # Create and go to DATA directory
 export DATA=${DATA:-${DATAROOT:?}/${jobid}}
@@ -52,7 +52,9 @@ export COMINwnd=${COMINwnd:-${COMROOT}/gfs/prod}
 export COMINcur=${COMINcur:-${COMROOTp2}/rtofs/prod}
 
 if [ $SENDCOM = YES ]; then
-  mkdir -p $COMOUT
+  mkdir -p $COMOUT/gridded
+  mkdir -p $COMOUT/station
+  mkdir -p $COMOUT/stats
 fi
 
 export wavelog=${COMOUTwave}/wave.log
@@ -84,6 +86,13 @@ export CFP_VERBOSE=1
 
 # Execute the Script  
 $HOMEwave/scripts/exwave_post.sh
+err=$?
+if [ $err -ne 0 ]; then
+  msg="FATAL ERROR: ex-script of GWES_POST failed!"
+else
+  msg="$job completed normally!"
+fi
+postmsg "$jlogfile" "$msg"
 
 # Remove temp directories
 if [ "$KEEPDATA" != "YES" ]; then

@@ -9,7 +9,7 @@
 #  wave_grib.sh              : generates GRIB2 files.                         #
 #  wave_outp_spec.sh         : generates spectral data files for output       #
 #                             locations.                                      #
-#  wave_spec_bull.sh         : generates bulletins for output locations.      #
+#  wave_outp_bull.sh         : generates bulletins for output locations.      #
 #                             grids for backward compatibility                #
 #  wave_tar.sh               : tars the spectral and bulletin multiple files  #
 #  wave_grid_interp.sh       : interpolates data from new grids to old grids  #
@@ -302,9 +302,9 @@
 
   rm -f buoy.loc
 
-  if [ -f $FIXwave/wave_$WAV_MOD_ID.buoys ]
+  if [ -f $FIXwave/wave_${NET}.buoys ]
   then
-    cp -f $FIXwave/wave_$WAV_MOD_ID.buoys buoy.loc.temp
+    cp -f $FIXwave/wave_${NET}.buoys buoy.loc.temp
 # Reverse grep to exclude IBP points
     sed -n '/^\$.*/!p' buoy.loc.temp | grep -v IBP > buoy.loc
     rm -f buoy.loc.temp
@@ -313,7 +313,7 @@
   if [ -f buoy.loc ]
   then
     set +x
-    echo "   buoy.loc copied and processed ($FIXwave/wave_$WAV_MOD_ID.buoys)."
+    echo "   buoy.loc copied and processed ($FIXwave/wave_${NET}.buoys)."
     [[ "$LOUD" = YES ]] && set -x
   else
     set +x
@@ -392,17 +392,17 @@
     fi
   fi
 
-  if [ -f $FIXwave/ww3_spec.inp.tmpl ]
+  if [ -f $FIXwave/ww3_outp_spec.inp.tmpl ]
   then
-    cp -f $FIXwave/ww3_spec.inp.tmpl ww3_spec.inp.tmpl
+    cp -f $FIXwave/ww3_outp_spec.inp.tmpl ww3_outp_spec.inp.tmpl
   fi
 
-  if [ -f ww3_spec.inp.tmpl ]
+  if [ -f ww3_outp_spec.inp.tmpl ]
   then
     set +x
-    echo "   ww3_spec.inp.tmpl copied. Syncing to all grids ..."
+    echo "   ww3_outp_spec.inp.tmpl copied. Syncing to all grids ..."
     [[ "$LOUD" = YES ]] && set -x
-    $FSYNC ww3_spec.inp.tmpl
+    $FSYNC ww3_outp_spec.inp.tmpl
   else
     set +x
     echo ' '
@@ -411,24 +411,24 @@
     echo '*********************************************** '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    echo "$wavemodTAG post $date $cycle : specra template file missing." >> $wavelog
+    echo "$wavemodTAG post $date $cycle : ww3_outp_spec.inp.tmpl file missing." >> $wavelog
     postmsg "$jlogfile" "NON-FATAL ERROR : NO TEMPLATE FOR SPEC INPUT FILE"
     exit_code=3
     specOK='no'
     bullOK='no'
   fi
 
-  if [ -f $FIXwave/ww3_spec_bull.inp.tmpl ]
+  if [ -f $FIXwave/ww3_outp_bull.inp.tmpl ]
   then
-    cp -f $FIXwave/ww3_spec_bull.inp.tmpl ww3_spec_bull.inp.tmpl
+    cp -f $FIXwave/ww3_outp_bull.inp.tmpl ww3_outp_bull.inp.tmpl
   fi
 
-  if [ -f ww3_spec_bull.inp.tmpl ]
+  if [ -f ww3_outp_bull.inp.tmpl ]
   then
     set +x
-    echo "   ww3_spec_bull.inp.tmpl copied. Syncing to all nodes ..."
+    echo "   ww3_outp_bull.inp.tmpl copied. Syncing to all nodes ..."
     [[ "$LOUD" = YES ]] && set -x
-    $FSYNC ww3_spec_bull.inp.tmpl
+    $FSYNC ww3_outp_bull.inp.tmpl
   else
     set +x
     echo ' '
@@ -455,11 +455,10 @@
         -e "s/POINT/1/g" \
         -e "s/ITYPE/0/g" \
         -e "s/FORMAT/F/g" \
-                               ww3_spec.inp.tmpl > ww3_spec.inp
+                               ww3_outp_spec.inp.tmpl > ww3_outp.inp
    
     ln -s mod_def.$buoy mod_def.ww3
     rm -f ww3_oup.inp
-    ln -s ww3_spec.inp ww3_outp.inp  
     $EXECcode/ww3_outp > buoy_tmp.loc 
     err=$?
 
@@ -583,7 +582,7 @@
       dtgh=`expr ${dtgi} / 3600`
       ngrib=`expr ${wavlsth} / ${dtgh} + 1`
 
-      echo "$USHwave/ww3_grib2_cat.sh $grdID $dtgrib $ngrib $GRIDNR $MODNR $gribFL > grib_$grdID.out 2>&1"               >> cmdfile
+      echo "$USHwave/wave_grib2_cat.sh $grdID $dtgrib $ngrib $GRIDNR $MODNR $gribFL > grib_$grdID.out 2>&1"               >> cmdfile
 
     done
 
@@ -600,7 +599,7 @@
       glo_30mxt) ymdh_int=`$NDATE -${HINDH} $YMDH`; dt_int=3600.; n_int=9999 ;;
       esac
 
-      echo "$USHwave/ww3_grid_interp.sh $grdID $ymdh_int $dt_int $n_int > grint_$grdID.out 2>&1" >> cmdfile
+      echo "$USHwave/wave_grid_interp.sh $grdID $ymdh_int $dt_int $n_int > grint_$grdID.out 2>&1" >> cmdfile
     done
   fi
 
@@ -680,7 +679,7 @@
       dtgh=`expr ${dtgi} / 3600`
       ngrib=`expr ${wavlsth} / ${dtgh} + 1`
 
-      echo "$USHwave/ww3_grib2.sh $grdID $dtgrib $ngrib $GRIDNR $MODNR $gribFL > grib_$grdID.out 2>&1"  >> cmdfile
+      echo "$USHwave/wave_grib2.sh $grdID $dtgrib $ngrib $GRIDNR $MODNR $gribFL > grib_$grdID.out 2>&1"  >> cmdfile
 
     done
 
@@ -747,7 +746,7 @@
     ilayer=1
     for buoy in $buoys
     do
-      echo "$USHwave/ww3_spec2.sh $buoy $ymdh > spec_$buoy.out 2>&1" >> cmdfile
+      echo "$USHwave/wave_outp_spec.sh $buoy $ymdh > spec_$buoy.out 2>&1" >> cmdfile
     done
   fi
   [[ "$LOUD" = YES ]] && set -x
@@ -924,12 +923,12 @@
         set +x
         echo ' '
         echo '**************************************'
-        echo '*** ERROR OUTPUT ww3_grib2.sh ***'
+        echo '*** ERROR OUTPUT wave_grib2.sh ***'
         echo '**************************************'
         echo ' '
         [[ "$LOUD" = YES ]] && set -x
         echo "$wavemodTAG post $date $cycle : error in GRIB." >> $wavelog
-        postmsg "$jlogfile" "NON-FATAL ERROR in ww3_grib2.sh"
+        postmsg "$jlogfile" "NON-FATAL ERROR in wave_grib2.sh"
         err=10;export err;${errchk}
         sed "s/^/grib_$grdID.err : /g"  grib_$grdID.err
       fi
@@ -941,12 +940,12 @@
       set +x
       echo ' '
       echo '*************************************'
-      echo '*** ERROR OUTPUT ww3_outp.sh ***'
+      echo '*** ERROR OUTPUT wave_outp.sh ***'
       echo '*************************************'
       echo '            Possibly in multiple calls'
       [[ "$LOUD" = YES ]] && set -x
       echo "$wavemodTAG post $date $cycle : error in spectra." >> $wavelog
-      postmsg "$jlogfile" "NON-FATAL ERROR in ww3_outp.sh, possibly in multiple calls."
+      postmsg "$jlogfile" "NON-FATAL ERROR in wave_outp.sh, possibly in multiple calls."
       err=11;export err;${errchk}
       for file in spec_*.err
       do
@@ -960,13 +959,13 @@
       set +x
       echo ' '
       echo '******************************************'
-      echo '*** ERROR OUTPUT ww3_outp_bull.sh ***'
+      echo '*** ERROR OUTPUT wave_outp_bull.sh ***'
       echo '******************************************'
       echo '            Possibly in multiple calls'
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
       echo "$wavemodTAG post $date $cycle : error in bulletins." >> $wavelog
-      postmsg "$jlogfile" "NON-FATAL ERROR in ww3_bull.sh, possibly in multiple calls."
+      postmsg "$jlogfile" "NON-FATAL ERROR in wave_bull.sh, possibly in multiple calls."
       err=12;export err;${errchk}
       for file in bull_*.err
       do
@@ -996,7 +995,7 @@
 
   if [ "$specOK" = 'yes' ]
   then
-    echo "$USHwave/ww3_tar.sh $wavemodTAG spec $Nb > ${wavemodTAG}_spec_tar.out 2>&1 "   >> cmdfile
+    echo "$USHwave/wave_tar.sh $wavemodTAG spec $Nb > ${wavemodTAG}_spec_tar.out 2>&1 "   >> cmdfile
 
   fi
 
@@ -1004,7 +1003,7 @@
 
   if [ "$bullOK" = 'yes' ]
   then
-    echo "$USHwave/ww3_tar.sh $wavemodTAG bull $Nb > ${wavemodTAG}_bull_tar.out 2>&1 "   >> cmdfile
+    echo "$USHwave/wave_tar.sh $wavemodTAG bull $Nb > ${wavemodTAG}_bull_tar.out 2>&1 "   >> cmdfile
 
   fi
 
@@ -1012,7 +1011,7 @@
 
   if [ "$bullOK" = 'yes' ]
   then
-     echo "$USHwave/ww3_tar.sh $wavemodTAG cbull $Nb > ${wavemodTAG}_cbull_tar.out 2>&1 " >> cmdfile
+     echo "$USHwave/wave_tar.sh $wavemodTAG cbull $Nb > ${wavemodTAG}_cbull_tar.out 2>&1 " >> cmdfile
   fi
 
 # 6.e Execute fourth command file
