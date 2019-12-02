@@ -19,7 +19,7 @@ fi
 echo fv3gfs_ccpp checkout ...
 if [[ ! -d fv3gfs_ccpp.fd ]] ; then
     rm -f ${topdir}/checkout-fv3gfs_ccpp.log
-    git clone --recursive -b gsd/develop https://github.com/NCAR/NEMSfv3gfs fv3gfs_ccpp.fd
+    git clone --recursive -b dtc/develop https://github.com/NCAR/ufs-weather-model  fv3gfs_ccpp.fd
     cd fv3gfs_ccpp.fd
     git submodule update --init --recursive
     cd ${topdir}
