@@ -141,12 +141,27 @@ suite: !Cycle
           /usr/bin/env post_times={FHR} FHRLST={FHR} FHRGRP={FHR} &HOMEgfs;/jobs/{J_JOB}
     #endfamily post
 
-      p_ocn: !Task
+    ocnpost: !TaskArray
+      RUN: !calc up.RUN
+      Disable: !calc not doc.settings.cplflx
+      Dimensions:
+        fhr: !calc doc.gfs_output_settings.ocnpost_hours
+      jgfs_ocnpost_fhr_el: !TaskElement
         <<: *exclusive_task_template
-        Trigger: !Depend "up.forecast"
-        Disable: !calc not doc.settings.cplflx
+        Foreach: [ fhr  ]
         resources: !calc partition.resources.run_one_node_downstream
+        Name: !expand p_{dimval.fhr:03d}
+        FHR: !expand "{dimval.fhr:03d}"
         J_JOB: rocoto/ocnpost.sh
+        Trigger: !Depend up.forecast
+        ecflow_def: !expand "edit FHR '{FHR}'"
+        ecflow_command: !expand |
+          export post_times=%FHR% FHRLST=%FHR% FHRGRP=%FHR%
+          $HOMEgfs/jobs/{J_JOB}
+        rocoto_command: !expand >-
+          {rocoto_load_modules} ;
+          export OCN_POST_BEGIN=$FHR ; /jobs/{J_JOB}
+    #endfamily ocnpost
 
     jgfs_emc_vrfy: !Task
       <<: *exclusive_task_template
