@@ -219,8 +219,7 @@ if [[ "$CDUMP" == "gdas" ]] ; then
    export FHCYC=1
    export FTSFS=10
 elif [[ "$CDUMP" == "gfs" ]] ; then
-   #JKHexport FHCYC=24
-   export FHCYC=0
+   export FHCYC=24
 fi
 
 # Output frequency of the forecast model (for cycling)
@@ -261,7 +260,7 @@ export IAU_DELTHRS_ENKF=6
 [[ "$SDATE" = "$CDATE" ]] && ( export DOIAU="NO"; export DOIAU_ENKF="NO" )
 
 # Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL
-export imp_physics=8
+export imp_physics=11
 
 # Shared parameters
 # Hybrid related
