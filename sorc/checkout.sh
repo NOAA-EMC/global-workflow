@@ -9,7 +9,7 @@ if [[ ! -d fv3gfs_emc.fd ]] ; then
     rm -f ${topdir}/checkout-fv3gfs_emc.log
     git clone --recursive gerrit:NEMSfv3gfs fv3gfs.fd >> ${topdir}/checkout-fv3gfs.log 2>&1
     cd fv3gfs_emc.fd
-    git checkout nemsfv3_gfsv15.2.1
+    git checkout gfs.v16_PhysicsUpdate
     git submodule update --init --recursive
     cd ${topdir}
 else
@@ -33,17 +33,8 @@ if [[ ! -d gsi.fd ]] ; then
     rm -f ${topdir}/checkout-gsi.log
     git clone --recursive gerrit:ProdGSI gsi.fd >> ${topdir}/checkout-gsi.log 2>&1
     cd gsi.fd
-    git checkout fv3da_gfsv15.2.0
+    git checkout cb8f69d82f38dcf85669b45aaf95dad068f0103c
     git submodule update
-    # Workaround for missing GSI file on lowres parallel runs
-    cd fix/Big_Endian/
-    git checkout ae3bc2538f34c7cdb6a533a14c4880f6970a6724^ global_berror.l64y98.f77
-    git checkout ae3bc2538f34c7cdb6a533a14c4880f6970a6724^ global_berror.l64y194.f77
-    # Check out historical ozinfo files for use in retrospective parallels
-    cd ${topdir}/gsi.fd/fix/fv3_historical
-    git checkout cd0847ee5c67115113f61c79e7d8bc6b1b7095ba  0readme.ozinfo
-    git checkout cd0847ee5c67115113f61c79e7d8bc6b1b7095ba  global_ozinfo.txt.2015110500
-    git checkout cd0847ee5c67115113f61c79e7d8bc6b1b7095ba  global_ozinfo.txt.2018110700
     cd ${topdir}
 else
     echo 'Skip.  Directory gsi.fd already exists.'
@@ -52,9 +43,9 @@ fi
 echo ufs_utils checkout ...
 if [[ ! -d ufs_utils.fd ]] ; then
     rm -f ${topdir}/checkout-ufs_utils.log
-    git clone --recursive gerrit:UFS_UTILS ufs_utils.fd >> ${topdir}/checkout-ufs_utils.fd.log 2>&1
+    git clone https://github.com/NOAA-EMC/UFS_UTILS.git ufs_utils.fd >> ${topdir}/checkout-ufs_utils.fd.log 2>&1
     cd ufs_utils.fd
-    git checkout v1.0.0
+    git checkout v1.1.0
     cd ${topdir}
 else
     echo 'Skip.  Directory ufs_utils.fd already exists.'
@@ -63,10 +54,11 @@ fi
 echo EMC_post checkout ...
 if [[ ! -d gfs_post.fd ]] ; then
     rm -f ${topdir}/checkout-gfs_post.log
-    git clone --recursive gerrit:EMC_post gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
+    git clone --recursive https://github.com/NOAA-EMC/EMC_post.git gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
     #git clone --recursive gerrit:EMC_post_gtg gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
     cd gfs_post.fd
-    git checkout ncep_post.v8.1.2
+    git checkout ba7e59b290c8149ff1c2fee98d01e99e4ef92ee6
+    #git checkout ncep_post.v8.1.2
     #git checkout ncep_post_gtg.v1.1.7
     cd ${topdir}
 else
@@ -76,20 +68,23 @@ fi
 echo EMC_gfs_wafs checkout ...
 if [[ ! -d gfs_wafs.fd ]] ; then
     rm -f ${topdir}/checkout-gfs_wafs.log
-    git clone --recursive gerrit:EMC_gfs_wafs gfs_wafs.fd >> ${topdir}/checkout-gfs_wafs.log 2>&1
+    git clone --recursive https://github.com/NOAA-EMC/EMC_gfs_wafs.git gfs_wafs.fd >> ${topdir}/checkout-gfs_wafs.log 2>&1
     cd gfs_wafs.fd
-    git checkout gfs_wafs.v5.0.10
+    git checkout gfs_wafs.v5.0.11
     cd ${topdir}
 else
     echo 'Skip.  Directory gfs_wafs.fd already exists.'
 fi
 
-echo aeroconv checkout ...
-if [[ ! -d aeroconv ]] ; then
-    rm -f ${topdir}/checkout-aero.log
-    git clone https://github.com/NCAR/aeroconv aeroconv >> ${topdir}/checkout-aero.log 2>&1
+echo EMC_verif-global checkout ...
+if [[ ! -d verif-global.fd ]] ; then
+    rm -f ${topdir}/checkout-verif-global.log
+    git clone --recursive gerrit:EMC_verif-global verif-global.fd >> ${topdir}/checkout-verif-global.log 2>&1
+    cd verif-global.fd
+    git checkout verif_global_v1.2.2
+    cd ${topdir}
 else
-    echo 'Skip.  Directory aeroconv already exists.'
+    echo 'Skip. Directory verif-global.fd already exist.'
 fi
 
 exit 0

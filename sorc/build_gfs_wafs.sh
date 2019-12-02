@@ -19,8 +19,11 @@ fi
 if [ $target = wcoss_dell_p3 ]; then 
  cd gfs_wafs.fd/sorc
  sh build_wafs_dell.sh
+elif [ $target = hera ]; then
+ cd gfs_wafs.fd/sorc
+ sh build_wafs_hera.sh
 else
- echo "This version of wafs only works on Dell. exit"
+ echo "This version of wafs only works on Dell and Hera. exit"
 fi
 
 exit
