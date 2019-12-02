@@ -32,13 +32,7 @@ export SCRgfs=$HOMEgfs/scripts
 # GLOBAL static environment parameters
 
 export NWPROD="/gpfs/dell1/nco/ops/nwprod"
-if [ -d /gpfs/tp1 ]; then
-    export SITE="MARS"
-    export DMPDIR="/gpfs/tp1/emc/globaldump"
-elif [ -d /gpfs/gp1 ]; then
-    export SITE="VENUS"
-    export DMPDIR="/gpfs/gp1/emc/globaldump"
-fi
+export DMPDIR="/gpfs/dell3/emc/global/dump"
 export RTMFIX=$CRTM_FIX
 
 

@@ -217,10 +217,10 @@ if [ -f $gmemdir/RESTART/${sPDY}.${scyc}0000.coupler.res ]; then
 fi
 
 # turn IAU off for cold start
-DOIAU_coldstart="NO"
-if [ $DOIAU = "YES" -a $warm_start = ".false." ]; then
+DOIAU_coldstart=${DOIAU_coldstart:-"NO"}
+if [ $DOIAU = "YES" -a $warm_start = ".false." ] || [ $DOIAU_coldstart = "YES" -a $warm_start = ".true." ]; then
   export DOIAU="NO"
-  echo "turning off IAU since warm_start = $warm_start"
+  echo "turning off IAU"
   DOIAU_coldstart="YES"
   IAU_OFFSET=0
   sCDATE=$CDATE
@@ -228,9 +228,6 @@ if [ $DOIAU = "YES" -a $warm_start = ".false." ]; then
   scyc=$cyc
   tPDY=$sPDY
   tcyc=$cyc
-  #echo "ERROR: DOIAU = $DOIAU and warm_start = $warm_start are incompatible."
-  #echo "Abort!"
-  #exit 99
 fi
 
 #-------------------------------------------------------
@@ -404,9 +401,6 @@ io_layout="1,1"
 JCAP_CASE=$((2*res-2))
 LONB_CASE=$((4*res))
 LATB_CASE=$((2*res))
-if [ $LATB_CASE -eq 192 ]; then
-  LATB_CASE=190 # berror file is at this resolution
-fi
 
 JCAP=${JCAP:-$JCAP_CASE}
 LONB=${LONB:-$LONB_CASE}
@@ -1107,7 +1101,7 @@ if [ $QUILTING = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]; then
     flxi=GFSFLX.GrbF${FH2}
     atmo=$memdir/${CDUMP}.t${cyc}z.atmf${FH3}.$affix
     sfco=$memdir/${CDUMP}.t${cyc}z.sfcf${FH3}.$affix
-    logo=$memdir/${CDUMP}.t${cyc}z.logf${FH3}.$affix
+    logo=$memdir/${CDUMP}.t${cyc}z.logf${FH3}.txt
     pgbo=$memdir/${CDUMP}.t${cyc}z.master.grb2f${FH3}
     flxo=$memdir/${CDUMP}.t${cyc}z.sfluxgrbf${FH3}.grib2
     eval $NLN $atmo $atmi

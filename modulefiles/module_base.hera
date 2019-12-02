@@ -1,0 +1,28 @@
+#%Module######################################################################
+##
+##      FV3GFS prerequisites
+##
+
+module load intel/18.0.5.274
+module load impi/2018.0.4
+module load wgrib2/2.0.8
+module load hpss/hpss
+module load pnetcdf/1.10.0
+module load netcdf/4.7.0
+module load nco/4.7.0
+module load hdf5/1.10.5
+module load gempak/7.4.2
+
+#Load from official NCEPLIBS
+module use -a /scratch2/NCEPDEV/nwprod/NCEPLIBS/modulefiles
+module load g2tmpl/1.5.0
+module load grib_util/1.1.1
+module load crtm/2.2.6
+module load prod_util/1.1.0
+
+module use -a /scratch1/NCEPDEV/nems/emc.nemspara/soft/modulefiles
+module load esmf/8.0.0bs48
+
+# python
+module use -a /contrib/modulefiles
+module load anaconda/2.3.0

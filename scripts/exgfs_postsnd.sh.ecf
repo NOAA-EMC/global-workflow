@@ -56,9 +56,11 @@ mkdir -p ${COMOUT}/bufr.${cycle}
 
 # Extract number of vertical levels from $STARTHOUR atmospheric file
 export NEMSIOGET=${NEMSIOGET:-$EXECbufrsnd/nemsio_get}
+export NCDUMP=${NCDUMP:-$NETCDF/bin/ncdump}
 fhr3=$(printf %03i $STARTHOUR)
-ATMFCS=$COMIN/${RUN}.${cycle}.atmf${fhr3}.nemsio
-export LEVS=$($NEMSIOGET $ATMFCS dimz | awk '{print $2}')
+ATMFCS=$COMIN/${RUN}.${cycle}.atmf${fhr3}.nc
+#export LEVS=$($NEMSIOGET $ATMFCS dimz | awk '{print $2}')
+export LEVS=${LEVS:-$($NCDUMP -h $ATMGES | grep -i "pfull" | head -1 | awk -F" = " '{print $2}' | awk -F" " '{print $1}')} # get LEVS
 
 ### Loop for the hour and wait for the sigma and surface flux file:
 export FSTART=$STARTHOUR
@@ -84,7 +86,7 @@ export FINT=$NINT1
    ic=0
    while [ $ic -lt 1000 ]
    do
-      if [ ! -f $COMIN/${RUN}.${cycle}.logf$FEND.nemsio ]
+      if [ ! -f $COMIN/${RUN}.${cycle}.logf$FEND.txt ]
       then
           sleep 10
           ic=`expr $ic + 1`

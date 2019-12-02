@@ -45,9 +45,9 @@ if [ $VRFYFITS = "YES" ]; then
     elif [ $machine = "WCOSS_DELL_P3" ]; then
         export fitdir="$BASE_SVN/verif/global/Fit2Obs/ncfits/batrun"
         export PREPQFITSH="$fitdir/subfits_dell_nems"
-    elif [ $machine = "THEIA" ]; then
-        export fitdir="$BASE_SVN/verif/global/parafits.fv3nems/batrun"
-        export PREPQFITSH="$fitdir/subfits_theia_nems"
+    elif [ $machine = "THEIA" -o $machine = "HERA" ]; then
+        export fitdir="$BASE_GIT/Fit2Obs/batrun"
+        export PREPQFITSH="$fitdir/subfits_theia_slurm"
     fi
 
 fi
@@ -97,12 +97,7 @@ if [ $VRFYRAD = "YES" -o $VRFYMINMON = "YES" -o $VRFYOZN = "YES" ]; then
 
         export RADMON_SUFFIX=$PSLOT
         export TANKverf="$NOSCRUB/monitor/radmon"
-        if [ $machine = "WCOSS_C" -o $machine = "WCOSS_DELL_P3" -o $machine = "THEIA" ]; then
-            export VRFYRADSH="$HOMEgfs/jobs/JGDAS_VERFRAD"
-        else
-            echo "WARNING: Radiance monitoring is not enabled on $machine!"
-            export VRFYRAD="NO"
-        fi
+        export VRFYRADSH="$HOMEgfs/jobs/JGDAS_VERFRAD"
 
     fi
 
@@ -111,15 +106,10 @@ if [ $VRFYRAD = "YES" -o $VRFYMINMON = "YES" -o $VRFYOZN = "YES" ]; then
 
         export MINMON_SUFFIX=$PSLOT
         export M_TANKverf="$NOSCRUB/monitor/minmon"
-        if [ $machine = "WCOSS_C" -o $machine = "WCOSS_DELL_P3" -o $machine = "THEIA" ]; then
-            if [[ "$CDUMP" = "gdas" ]] ; then
-                export VRFYMINSH="$HOMEgfs/jobs/JGDAS_VMINMON"
-            elif [[ "$CDUMP" = "gfs" ]] ; then
-                export VRFYMINSH="$HOMEgfs/jobs/JGFS_VMINMON"
-            fi
-        else
-            echo "WARNING: Minimization monitoring is not enabled on $machine!"
-            export VRFYMINMON="NO"
+        if [[ "$CDUMP" = "gdas" ]] ; then
+            export VRFYMINSH="$HOMEgfs/jobs/JGDAS_VMINMON"
+        elif [[ "$CDUMP" = "gfs" ]] ; then
+            export VRFYMINSH="$HOMEgfs/jobs/JGFS_VMINMON"
         fi
 
     fi
@@ -130,12 +120,7 @@ if [ $VRFYRAD = "YES" -o $VRFYMINMON = "YES" -o $VRFYOZN = "YES" ]; then
         export HOMEgfs_ozn="$HOMEgfs"
         export OZNMON_SUFFIX=$PSLOT
         export TANKverf_ozn="$NOSCRUB/monitor/oznmon"
-        if [ $machine = "WCOSS_C" -o $machine = "WCOSS_DELL_P3" -o $machine = "THEIA" ]; then
-            export VRFYOZNSH="$HOMEgfs/jobs/JGDAS_VERFOZN"
-        else
-            echo "WARNING: Ozone monitoring is not enabled on $machine!"
-            export VRFYOZN="NO"
-        fi
+        export VRFYOZNSH="$HOMEgfs/jobs/JGDAS_VERFOZN"
 
     fi
 
@@ -152,8 +137,8 @@ if [ $machine = "WCOSS_C" ] ; then
 elif [ $machine = "WCOSS_DELL_P3" ] ; then
     export ens_tracker_ver=v1.1.13.1
     export HOMEens_tracker=$BASE_GIT/ens_tracker.${ens_tracker_ver}
-elif [ $machine = "THEIA" ] ; then
-    export ens_tracker_ver=v1.1.13.2
+elif [ $machine = "THEIA" -o $machine = "HERA" ] ; then
+    export ens_tracker_ver=v1.1.15.1
     export HOMEens_tracker=$BASE_GIT/tracker/ens_tracker.${ens_tracker_ver}
 else
     echo "WARNING: Genesis and cyclone verifications are not enabled on $machine!"
@@ -175,19 +160,16 @@ if [ "$VRFYTRAK" = "YES" ]; then
     if [ $machine = "THEIA" ]; then
        export COMROOTp1="/scratch4/NCEPDEV/rstprod/com"
        export COMINsyn="$COMROOTp1/arch/prod/syndat"
+    elif [ $machine = "HERA" ]; then
+       export COMROOTp1="/scratch1/NCEPDEV/rstprod/com"
+       export COMINsyn=${COMINsyn:-${COMROOTp1}/arch/prod/syndat}
     fi
 fi
 
 
 if [[ "$VRFYGENESIS" == "YES" && "$CDUMP" == "gfs" ]]; then
 
-    if [ $machine = "WCOSS_C" -o $machine = "WCOSS_DELL_P3" -o $machine = "THEIA" ] ; then
-        export GENESISSH="$HOMEgfs/jobs/JGFS_CYCLONE_GENESIS"
-    else
-        echo "WARNING: Genesis verification is not enabled on $machine!"
-        export VRFYGENESIS="NO"
-        export GENESISSH=""
-    fi
+    export GENESISSH="$HOMEgfs/jobs/JGFS_CYCLONE_GENESIS"
 fi
 
 if [[ "$RUNMOS" == "YES" && "$CDUMP" == "gfs" ]]; then
