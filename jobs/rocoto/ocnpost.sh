@@ -91,7 +91,7 @@ fi
 if [ $FHRGRP -eq 0 ]; then
     fhrlst="anl"
 else
-    fhrlst=$(echo $FHRLST | sed -e 's/_/ /g; s/\[/ /g; s/\]/ /g; s/f/ /g; s/,/ /g')
+    fhrlst=$(echo $OCN_FHRLST | sed -e 's/_/ /g; s/\[/ /g; s/\]/ /g; s/f/ /g; s/,/ /g')
 fi
 
 export OMP_NUM_THREADS=1
