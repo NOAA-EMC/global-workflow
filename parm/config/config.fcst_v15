@@ -85,6 +85,10 @@ export icliq_sw=2   ;#cloud optical coeffs from AER's newer version v3.9-v4.0 fo
 export output_1st_tstep_rst=".false."                                        #JKH
 export CCPP_SUITE=FV3_GFS_v15
 
+# Convection Options: 2-SASAS, 3-GF
+export imfdeepcnv=2
+export imfshalcnv=2
+
 # Microphysics configuration
 export dnats=0
 export cal_pre=".true."
@@ -190,9 +194,8 @@ elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
     # Write more variables to output
     if [ $QUILTING = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]; then
         if [ $imp_physics -eq 8 ]; then # Thompson
-            #export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table"
-            #export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_gsd"
-            export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_gsd_ruc"
+            export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table"
+            #export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_thompson_suite"
         else
             export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table"
         fi
