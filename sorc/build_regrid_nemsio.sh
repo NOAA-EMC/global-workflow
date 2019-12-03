@@ -33,10 +33,12 @@ export LDFLAGS="${FCFFLAGS}"
 export OPTIMIZATION="-O3 -xHOST" #-axCORE-AVX2,AVX -xSSE4.2 -O3
 export DEBUG="-traceback -g" #-O0 #-C #-fp-stack-check #-check all -fp-stack-check
 
-LIBnetcdf=`$NETCDF/bin/nf-config --flibs`
-INCnetcdf=`$NETCDF/bin/nf-config --fflags`
-export NETCDF_LDFLAGS=$LIBnetcdf
-export NETCDF_INCLUDE=$INCnetcdf
+if [ $target != hera ]; then
+  LIBnetcdf=`$NETCDF/bin/nf-config --flibs`
+  INCnetcdf=`$NETCDF/bin/nf-config --fflags`
+  export NETCDF_LDFLAGS=$LIBnetcdf
+  export NETCDF_INCLUDE=$INCnetcdf
+fi
 
 make -f Makefile clean
 make -f Makefile

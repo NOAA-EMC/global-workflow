@@ -371,7 +371,7 @@ then
    if [ "$copy_back" = 'YES' -a ${envir} = 'prod' ]; then
       if [ -s $HOMENHC/tcvitals ]; then
          cp nhc $HOMENHC/tcvitals
-      elif [-s $HOMENHCp1/tcvitals ]; then
+      elif [ -s $HOMENHCp1/tcvitals ]; then
          cp nhc $HOMENHCp1/tcvitals
       fi
 
