@@ -72,7 +72,7 @@ gfs_output_settings_template: !Template &gfs_output_settings_template
 
   ocnpost_hours:
     type: int list
-    default: !calc "tools.seq(FHMIN_GFS,FHMAX_GFS,OCN_INTERVAL)"
+    default: !calc "tools.seq(FHMIN_GFS,FHMAX_GFS-OCN_INTERVAL,OCN_INTERVAL)"
 
   gdas_forecast_hours: 
     type: int list

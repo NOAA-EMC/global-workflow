@@ -152,7 +152,7 @@ suite: !Cycle
         resources: !calc partition.resources.run_one_node_downstream
         Name: !expand p_{dimval.fhr:03d}
         FHR: !expand "{dimval.fhr:03d}"
-        OCN_FHRLST: !calc "tools.seq(dimval.fhr, dimval.fhr+120, 6)"
+        OCN_FHRLST: !calc "tools.seq(dimval.fhr, dimval.fhr+doc.gfs_output_settings.OCN_INTERVAL, 6)"
         J_JOB: rocoto/ocnpost.sh
         Trigger: !Depend up.forecast
         ecflow_def: !expand "edit FHR '{FHR}'"
