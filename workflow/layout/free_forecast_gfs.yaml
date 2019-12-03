@@ -161,7 +161,7 @@ suite: !Cycle
           $HOMEgfs/jobs/{J_JOB}
         rocoto_command: !expand >-
           {rocoto_load_modules} ;
-          export OCN_FHRLST={OCN_FHRLST} ;/jobs/{J_JOB}
+          export OCN_FHRLST="{OCN_FHRLST}"; $HOMEgfs/jobs/{J_JOB}
     #endfamily ocnpost
 
     jgfs_emc_vrfy: !Task
