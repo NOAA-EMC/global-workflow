@@ -9,7 +9,7 @@ if [[ ! -d fv3gfs.fd ]] ; then
     rm -f ${topdir}/checkout-fv3gfs.log
     git clone https://github.com/ufs-community/ufs-weather-model fv3gfs.fd >> ${topdir}/checkout-fv3gfs.log 2>&1
     cd fv3gfs.fd
-    git checkout gfs.v16.0.0
+    git checkout gfs_v16.0.1
     git submodule update --init --recursive
 
     #git clone gerrit:NEMSfv3gfs fv3gfs.fd >> ${topdir}/checkout-fv3gfs.log 2>&1
@@ -33,18 +33,6 @@ if [[ ! -d gsi.fd ]] ; then
 else
     echo 'Skip.  Directory gsi.fd already exists.'
 fi
-
-echo gldas checkout ...
-if [[ ! -d gldas.fd ]] ; then
-    rm -f ${topdir}/checkout-gldas.log
-    git clone https://github.com/NOAA-EMC/GLDAS gldas.fd >> ${topdir}/checkout-gldas.fd.log 2>&1
-    cd gldas.fd
-    git checkout feature/gldasnoahmp
-    cd ${topdir}
-else
-    echo 'Skip.  Directory gldas.fd already exists.'
-fi
-
 
 echo gldas checkout ...
 if [[ ! -d gldas.fd ]] ; then
@@ -93,7 +81,7 @@ if [[ ! -d verif-global.fd ]] ; then
     rm -f ${topdir}/checkout-verif-global.log
     git clone --recursive gerrit:EMC_verif-global verif-global.fd >> ${topdir}/checkout-verif-global.log 2>&1
     cd verif-global.fd
-    git checkout verif_global_v1.3.1
+    git checkout verif_global_v1.4.0
     cd ${topdir}
 else
     echo 'Skip. Directory verif-global.fd already exist.'
