@@ -60,8 +60,8 @@ fi
 
 # PBL/turbulence schemes
 export hybedmf=".false."
-#export satmedmf=".true."    #JKH
-#export isatmedmf=1          #JKH
+export satmedmf=".false."   #JKH
+export isatmedmf=0          #JKH
 tbf=""
 if [ $satmedmf = ".true." ]; then tbf="_satmedmf" ; fi
 
@@ -115,7 +115,7 @@ elif [ $imp_physics -eq 8 ]; then # Thompson
     ## MYNN options
     export shal_cnv=".true."       
     export hybedmf=".false."     
-    export satmedmf=".false."    
+    #export satmedmf=".false."    
     export do_mynnedmf=".true."     
     export do_mynnsfclay=".false."
     export icloud_bl=1        
