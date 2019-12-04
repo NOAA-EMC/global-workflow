@@ -25,7 +25,7 @@ platform: !Platform
   # DMPDIR - location of the global dump data.  This is used by the observation
   # processing scripts, which are not included in the public release.
   DMPDIR: "/scratch1/NCEPDEV/global/glopara/dump"
-  NWPROD: "/scratch1/NCEPDEV/global/glopara"
+  NWPROD: "/scratch1/NCEPDEV/global/glopara/svn/verif/global/tags/vsdb/nwprod"
   RTMFIX: "/scratch1/NCEPDEV/global/glopara/crtm/2.2.3/fix_update/"
   BASE_SVN: "/scratch1/NCEPDEV/global/glopara/svn"
 
@@ -33,11 +33,19 @@ platform: !Platform
   # that contains recent versions of source code and executables for
   # various git repositories. This is used on some platforms to find
   # executables for this workflow.
-  BASE_GIT: "/scratch1/NCEPDEV/global/glopara/git/"
+  BASE_GIT: "/scratch1/NCEPDEV/global/glopara/git/global-workflow/port2hera"
 
   config_base_extras: !expand |
-    export NDATE="$NWPROD/git/NCEPLIBS-prod_util/v1.1.0/exec/ndate"
-    export NHOUR="$NWPROD/git/NCEPLIBS-prod_util/v1.1.0/exec/nhour"
+    export NDATE="$NWPROD/util/exec/ndate"
+    export NHOUR="$NWPROD/util/exec/nhour"
+    export WGRIB="$NWPROD/util/exec/wgrib"
+    export WGRIB2="$NWPROD/util/exec/wgrib2"
+    export COPYGB="$NWPROD/util/exec/copygb"
+    export COPYGB2="$NWPROD/util/exec/copygb2"
+    export GRBINDEX="$NWPROD/util/exec/grbindex"
+    export CNVGRIB="$NWPROD/util/exec/cnvgrib"
+    export CNVGRIB21_GFS="$NWPROD/util/exec/cnvgrib"
+    export POSTGRB2TBL="$BASE_GIT/sorc/gfs_post.fd/parm/params_grib2_tbl_new"
 
   # CHGRP_RSTPROD_COMMAND - this specifies the command to use to
   # restrict access to NOAA "rstprod" data restriction class.
