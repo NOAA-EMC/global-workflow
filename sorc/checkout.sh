@@ -59,7 +59,7 @@ if [[ ! -d gfs_post.fd ]] ; then
     #git clone --recursive gerrit:EMC_post_gtg gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
     cd gfs_post.fd
     git checkout ba7e59b290c8149ff1c2fee98d01e99e4ef92ee6
-    #git checkout ncep_post.v8.1.2
+    #git checkout ncep_post.v8.1.3
     #git checkout ncep_post_gtg.v1.1.7
     cd ${topdir}
 else
