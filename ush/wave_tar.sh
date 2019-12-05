@@ -73,7 +73,7 @@
 # 0.c Define directories and the search path.
 #     The tested variables should be exported by the postprocessor script.
 
-  if [ -z "$cycle" ] || [ -z "$COMOUT" ] || [ -z "$wavemodTAG" ] ||  \
+  if [ -z "$cycle" ] || [ -z "$COMOUT" ] || [ -z "$WAV_MOD_TAG" ] ||  \
      [ -z "$SENDCOM" ] || [ -z "$SENDDBN" ] || [ -z "${STA_DIR}" ]
   then
     set +x

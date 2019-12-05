@@ -46,7 +46,7 @@
 
   postmsg "$jlogfile" "HAS BEGUN on `hostname`"
 
-  msg="Starting MWW3 POSTPROCESSOR SCRIPT for $wavemodTAG"
+  msg="Starting MWW3 POSTPROCESSOR SCRIPT for $WAV_MOD_TAG"
   postmsg "$jlogfile" "$msg"
 
   set +x
@@ -150,10 +150,10 @@
     if [ ! -f out_grd.$grdID ]
     then
       set +x
-      echo "   Copying $wavemodTAG.out_grd.$grdID.$PDY$cyc from ${COMIN}/rundata to out_grd.$grdID"
+      echo "   Copying $WAV_MOD_TAG.out_grd.$grdID.$PDY$cyc from ${COMIN}/rundata to out_grd.$grdID"
       [[ "$LOUD" = YES ]] && set -x
 
-      echo  "cp -f $COMIN/rundata/$wavemodTAG.out_grd.$grdID.$PDY$cyc out_grd.$grdID > copycmd.out.$iloop 2>&1"  >> cmdfile
+      echo  "cp -f $COMIN/rundata/$WAV_MOD_TAG.out_grd.$grdID.$PDY$cyc out_grd.$grdID > copycmd.out.$iloop 2>&1"  >> cmdfile
       iloop=`expr $iloop + 1`
     fi 
   done
@@ -176,9 +176,9 @@
   if [ ! -f out_pnt.ww3 ]
   then
     set +x
-    echo "   Copying $COMIN/rundata/$wavemodTAG.out_pnt.${buoy}.$PDY$cyc to out_pnt.ww3"
+    echo "   Copying $COMIN/rundata/$WAV_MOD_TAG.out_pnt.${buoy}.$PDY$cyc to out_pnt.ww3"
     [[ "$LOUD" = YES ]] && set -x
-    echo "cp -f $COMIN/rundata/$wavemodTAG.out_pnt.${buoy}.$PDY$cyc out_pnt.ww3 > copycmd.out.$iloop 2>&1" >> cmdfile
+    echo "cp -f $COMIN/rundata/$WAV_MOD_TAG.out_pnt.${buoy}.$PDY$cyc out_pnt.ww3 > copycmd.out.$iloop 2>&1" >> cmdfile
     iloop=`expr $iloop + 1`
   fi
 
@@ -232,7 +232,7 @@
       echo '*************************************************** '
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
-      echo "$wavemodTAG post $grdID $date $cycle : field output missing." >> $wavelog
+      echo "$WAV_MOD_TAG post $grdID $date $cycle : field output missing." >> $wavelog
       postmsg "$jlogfile" "NON-FATAL ERROR : NO RAW FIELD OUTPUT FILE out_grd.$grdID"
       fieldOK='no'
       err=2; export err;${errchk}
@@ -260,7 +260,7 @@
     echo '**************************************** '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    echo "$wavemodTAG post $date $cycle : point output missing." >> $wavelog
+    echo "$WAV_MOD_TAG post $date $cycle : point output missing." >> $wavelog
     postmsg "$jlogfile" " FATAL ERROR NO RAW POINT OUTPUT FILE"
     err=3; export err;${errchk}
     exit $err
@@ -283,7 +283,7 @@
       echo '*************************************************** '
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
-      echo "$wavemodTAG post $grdID $date $cycle : mod_def file missing." >> $wavelog
+      echo "$WAV_MOD_TAG post $grdID $date $cycle : mod_def file missing." >> $wavelog
       postmsg "$jlogfile" "FATAL ERROR : NO MOD_DEF file mod_def.$grdID"
       fieldOK='no'
       err=2; export err;${errchk}
@@ -357,7 +357,7 @@
         echo '*********************************************** '
         echo ' '
         [[ "$LOUD" = YES ]] && set -x
-        echo "$wavemodTAG post $date $cycle : GRINT template file missing." >> $wavelog
+        echo "$WAV_MOD_TAG post $date $cycle : GRINT template file missing." >> $wavelog
         postmsg "$jlogfile" "NON-FATAL ERROR : NO TEMPLATE FOR GRINT INPUT FILE"
         exit_code=1
         grintOK='no'
@@ -385,7 +385,7 @@
       echo '*********************************************** '
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
-      echo "$wavemodTAG post $date $cycle : GRIB2 template file missing." >> $wavelog
+      echo "$WAV_MOD_TAG post $date $cycle : GRIB2 template file missing." >> $wavelog
       postmsg "$jlogfile" "NON-FATAL ERROR : NO TEMPLATE FOR GRIB2 INPUT FILE"
       exit_code=2
       gribOK='no'
@@ -411,7 +411,7 @@
     echo '*********************************************** '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    echo "$wavemodTAG post $date $cycle : ww3_outp_spec.inp.tmpl file missing." >> $wavelog
+    echo "$WAV_MOD_TAG post $date $cycle : ww3_outp_spec.inp.tmpl file missing." >> $wavelog
     postmsg "$jlogfile" "NON-FATAL ERROR : NO TEMPLATE FOR SPEC INPUT FILE"
     exit_code=3
     specOK='no'
@@ -437,7 +437,7 @@
     echo '*************************************************** '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    echo "$wavemodTAG post $date $cycle : bulletin template file missing." >> $wavelog
+    echo "$WAV_MOD_TAG post $date $cycle : bulletin template file missing." >> $wavelog
     postmsg "$jlogfile" "NON-FATAL ERROR : NO TEMPLATE FOR BULLETIN INPUT FILE"
     exit_code=4
     bullOK='no'
@@ -473,7 +473,7 @@
       echo '*** FATAL ERROR : ERROR IN ww3_outp *** '
       echo '******************************************** '
       echo ' '
-      echo "$wavemodTAG post $date $cycle : buoy log file failed to be created." >> $wavelog
+      echo "$WAV_MOD_TAG post $date $cycle : buoy log file failed to be created." >> $wavelog
       echo $msg
       [[ "$LOUD" = YES ]] && set -x
       err=6;export err;${errchk}
@@ -509,7 +509,7 @@
       echo '**************************************** '
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
-      echo "$wavemodTAG post $date $cycle : buoy log file missing." >> $wavelog
+      echo "$WAV_MOD_TAG post $date $cycle : buoy log file missing." >> $wavelog
       postmsg "$jlogfile" "NON-FATAL ERROR : NO BUOY LOG FILE GENERATED FOR SPEC AND BULLETIN FILES"
       exit_code=5
       specOK='no'
@@ -927,7 +927,7 @@
         echo '**************************************'
         echo ' '
         [[ "$LOUD" = YES ]] && set -x
-        echo "$wavemodTAG post $date $cycle : error in GRIB." >> $wavelog
+        echo "$WAV_MOD_TAG post $date $cycle : error in GRIB." >> $wavelog
         postmsg "$jlogfile" "NON-FATAL ERROR in wave_grib2.sh"
         err=10;export err;${errchk}
         sed "s/^/grib_$grdID.err : /g"  grib_$grdID.err
@@ -944,7 +944,7 @@
       echo '*************************************'
       echo '            Possibly in multiple calls'
       [[ "$LOUD" = YES ]] && set -x
-      echo "$wavemodTAG post $date $cycle : error in spectra." >> $wavelog
+      echo "$WAV_MOD_TAG post $date $cycle : error in spectra." >> $wavelog
       postmsg "$jlogfile" "NON-FATAL ERROR in wave_outp.sh, possibly in multiple calls."
       err=11;export err;${errchk}
       for file in spec_*.err
@@ -964,7 +964,7 @@
       echo '            Possibly in multiple calls'
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
-      echo "$wavemodTAG post $date $cycle : error in bulletins." >> $wavelog
+      echo "$WAV_MOD_TAG post $date $cycle : error in bulletins." >> $wavelog
       postmsg "$jlogfile" "NON-FATAL ERROR in wave_bull.sh, possibly in multiple calls."
       err=12;export err;${errchk}
       for file in bull_*.err
@@ -995,7 +995,7 @@
 
   if [ "$specOK" = 'yes' ]
   then
-    echo "$USHwave/wave_tar.sh $wavemodTAG spec $Nb > ${wavemodTAG}_spec_tar.out 2>&1 "   >> cmdfile
+    echo "$USHwave/wave_tar.sh $WAV_MOD_TAG spec $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdfile
 
   fi
 
@@ -1003,7 +1003,7 @@
 
   if [ "$bullOK" = 'yes' ]
   then
-    echo "$USHwave/wave_tar.sh $wavemodTAG bull $Nb > ${wavemodTAG}_bull_tar.out 2>&1 "   >> cmdfile
+    echo "$USHwave/wave_tar.sh $WAV_MOD_TAG bull $Nb > ${WAV_MOD_TAG}_bull_tar.out 2>&1 "   >> cmdfile
 
   fi
 
@@ -1011,7 +1011,7 @@
 
   if [ "$bullOK" = 'yes' ]
   then
-     echo "$USHwave/wave_tar.sh $wavemodTAG cbull $Nb > ${wavemodTAG}_cbull_tar.out 2>&1 " >> cmdfile
+     echo "$USHwave/wave_tar.sh $WAV_MOD_TAG cbull $Nb > ${WAV_MOD_TAG}_cbull_tar.out 2>&1 " >> cmdfile
   fi
 
 # 6.e Execute fourth command file
@@ -1069,18 +1069,18 @@
 
   if [ "$specOK" = 'yes' ]
   then
-    if [ -d TAR_spec_$wavemodTAG ]
+    if [ -d TAR_spec_$WAV_MOD_TAG ]
     then
       set +x
-      echo "      Error in $wavemodTAG spectral tar file."
+      echo "      Error in $WAV_MOD_TAG spectral tar file."
       [[ "$LOUD" = YES ]] && set -x
-      echo "$wavemodTAG post $date $cycle : error in spectral tar." >> $wavelog
-      postmsg "$jlogfile" "NON-FATAL ERROR in $wavemodTAG spectral tar file."
+      echo "$WAV_MOD_TAG post $date $cycle : error in spectral tar." >> $wavelog
+      postmsg "$jlogfile" "NON-FATAL ERROR in $WAV_MOD_TAG spectral tar file."
       exit_code=11
-      mv ${wavemodTAG}_spec_tar.out ${wavemodTAG}_spec_tar.err
+      mv ${WAV_MOD_TAG}_spec_tar.out ${WAV_MOD_TAG}_spec_tar.err
     else
       set +x
-      echo "      $wavemodTAG Spectral tar file OK."
+      echo "      $WAV_MOD_TAG Spectral tar file OK."
       [[ "$LOUD" = YES ]] && set -x
     fi
   fi
@@ -1089,33 +1089,33 @@
 
   if [ "$bullOK" = 'yes' ]
   then
-    if [ -d TAR_bull_$wavemodTAG ]
+    if [ -d TAR_bull_$WAV_MOD_TAG ]
     then
       set +x
-      echo "      Error in $wavemodTAG bulletin tar file."
+      echo "      Error in $WAV_MOD_TAG bulletin tar file."
       [[ "$LOUD" = YES ]] && set -x
-      echo "$wavemodTAG post $date $cycle : error in bulletin tar." >> $wavelog
-      postmsg "$jlogfile" "NON-FATAL ERROR in $wavemodTAG bulletin tar file."
+      echo "$WAV_MOD_TAG post $date $cycle : error in bulletin tar." >> $wavelog
+      postmsg "$jlogfile" "NON-FATAL ERROR in $WAV_MOD_TAG bulletin tar file."
       exit_code=12
-      mv -f ${wavemodTAG}_bull_tar.out ${wavemodTAG}_bull_tar.err
+      mv -f ${WAV_MOD_TAG}_bull_tar.out ${WAV_MOD_TAG}_bull_tar.err
     else
       set +x
-      echo "      $wavemodTAG Bulletin tar file OK."
+      echo "      $WAV_MOD_TAG Bulletin tar file OK."
       [[ "$LOUD" = YES ]] && set -x
     fi
 
-    if [ -d TAR_cbull_$wavemodTAG ]
+    if [ -d TAR_cbull_$WAV_MOD_TAG ]
     then
       set +x
-      echo "      Error in $wavemodTAG compressed bulletin tar file."
+      echo "      Error in $WAV_MOD_TAG compressed bulletin tar file."
       [[ "$LOUD" = YES ]] && set -x
-      echo "$wavemodTAG post $date $cycle : error in compressed bulletin tar." >> $wavelog
-      postmsg "$jlogfile" "NON-FATAL ERROR in $wavemodTAG compressed bulletin tar file."
+      echo "$WAV_MOD_TAG post $date $cycle : error in compressed bulletin tar." >> $wavelog
+      postmsg "$jlogfile" "NON-FATAL ERROR in $WAV_MOD_TAG compressed bulletin tar file."
       exit_code=13
-      mv -f ${wavemodTAG}_cbull_tar.out ${wavemodTAG}_cbull_tar.err
+      mv -f ${WAV_MOD_TAG}_cbull_tar.out ${WAV_MOD_TAG}_cbull_tar.err
     else
       set +x
-      echo "      $wavemodTAG compressed bulletin tar file OK."
+      echo "      $WAV_MOD_TAG compressed bulletin tar file OK."
       [[ "$LOUD" = YES ]] && set -x
     fi
 
@@ -1145,7 +1145,7 @@
 
   set +x
   rm -f *.tmpl
-  for ID in $wavemodTAG
+  for ID in $WAV_MOD_TAG
   do
     rm -f $ID.*.spec
     rm -f $ID.*.bull

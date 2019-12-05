@@ -59,7 +59,7 @@
   echo '+--------------------------------+'
   echo '!       Make spectral file       |'
   echo '+--------------------------------+'
-  echo "   Model ID        : $wavemodTAG"
+  echo "   Model ID        : $WAV_MOD_TAG"
   [[ "$LOUD" = YES ]] && set -x
 
 # 0.b Check if buoy location set
@@ -110,7 +110,7 @@
 #     The tested variables should be exported by the postprocessor script.
 
   if [ -z "$YMDH" ] || [ -z "$dtspec" ] || [ -z "$EXECwave" ] || \
-     [ -z "$wavemodTAG" ] || [ -z "${STA_DIR}" ]
+     [ -z "$WAV_MOD_TAG" ] || [ -z "${STA_DIR}" ]
   then
     set +x
     echo ' '
@@ -188,7 +188,7 @@
 
   if [ -f $outfile ]
   then
-    mv $outfile  ${STA_DIR}/spec/$wavemodTAG.$buoy.spec
+    mv $outfile  ${STA_DIR}/spec/$WAV_MOD_TAG.$buoy.spec
   else
     set +x
     echo ' '

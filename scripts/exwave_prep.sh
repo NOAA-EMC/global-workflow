@@ -26,9 +26,9 @@
 # Apr2019 JHAlves - Transitioning to GEFS workflow                            #
 # Nov2019 JHAlves - Merging wave scripts to global workflow                   #
 #                                                                             #
-#   WAV_MOD_ID and wavemodTAG replace modID. wavemodTAG                        # 
+#   WAV_MOD_ID and WAV_MOD_TAG replace modID. WAV_MOD_TAG                        # 
 #   is used for ensemble-specific I/O. For deterministic                      #
-#   WAV_MOD_ID=wavemodTAG                                                      # 
+#   WAV_MOD_ID=WAV_MOD_TAG                                                      # 
 #                                                                             #
 ###############################################################################
 # --------------------------------------------------------------------------- #
@@ -45,7 +45,7 @@
 
   msg="HAS BEGUN on `hostname`"
   postmsg "$jlogfile" "$msg"
-  msg="Starting MWW3 PREPROCESSOR SCRIPT for $wavemodTAG"
+  msg="Starting MWW3 PREPROCESSOR SCRIPT for $WAV_MOD_TAG"
   postmsg "$jlogfile" "$msg"
 
   set +x
@@ -54,7 +54,7 @@
   echo '                      *** MWW3 PREPROCESSOR SCRIPT ***'
   echo '                      ********************************'
   echo '                          PREP for wave component of NCEP coupled system'
-  echo "                          Wave component identifier : $wavemodTAG "
+  echo "                          Wave component identifier : $WAV_MOD_TAG "
   echo ' '
   echo "Starting at : `date`"
   echo ' '
@@ -248,7 +248,7 @@
       fi
     else
       echo ' '
-      echo " Ice input is not perturbed, single ice file generated, skipping ${wavemodTAG}"
+      echo " Ice input is not perturbed, single ice file generated, skipping ${WAV_MOD_TAG}"
       echo ' '
     fi 
   else
@@ -390,7 +390,7 @@
         echo '**********************************'
         echo '            Possibly in multiple calls'
         [[ "$LOUD" = YES ]] && set -x
-        echo "$wavemodTAG prep $date $cycle : error in wind grib2 files." >> $wavelog
+        echo "$WAV_MOD_TAG prep $date $cycle : error in wind grib2 files." >> $wavelog
         set +x
         for file in grb_*.out
         do
@@ -415,7 +415,7 @@
         echo ' '
         echo $msg
         [[ "$LOUD" = YES ]] && set -x
-        echo "$wavemodTAG prep $date $cycle : fatal error in grib2 wind files." >> $wavelog
+        echo "$WAV_MOD_TAG prep $date $cycle : fatal error in grib2 wind files." >> $wavelog
         err=6;export err;${errchk}
       fi
   
@@ -442,7 +442,7 @@
         echo '******************************************** '
         echo ' '
         [[ "$LOUD" = YES ]] && set -x
-        echo "$wavemodTAG prep $date $cycle : no wind files found." >> $wavelog
+        echo "$WAV_MOD_TAG prep $date $cycle : no wind files found." >> $wavelog
         err=7;export err;${errchk}
       fi
   
@@ -489,7 +489,7 @@
           echo '*************************************** '
           echo ' '
           [[ "$LOUD" = YES ]] && set -x
-          echo "$wavemodTAG prep $grdID $date $cycle : error in waveprnc." >> $wavelog
+          echo "$WAV_MOD_TAG prep $grdID $date $cycle : error in waveprnc." >> $wavelog
           err=8;export err;${errchk}
         fi
   
@@ -506,7 +506,7 @@
           echo '****************************************'
           echo ' '
           [[ "$LOUD" = YES ]] && set -x
-          echo "$wavemodTAG prep $grdID $date $cycle : wind.ww3 missing." >> $wavelog
+          echo "$WAV_MOD_TAG prep $grdID $date $cycle : wind.ww3 missing." >> $wavelog
           err=9;export err;${errchk}
         fi
 
@@ -549,7 +549,7 @@
           echo '************************************************'
           echo ' '
           [[ "$LOUD" = YES ]] && set -x
-          echo "$wavemodTAG prep $grdID $date $cycle : error in wind increment." >> $wavelog
+          echo "$WAV_MOD_TAG prep $grdID $date $cycle : error in wind increment." >> $wavelog
           err=10;export err;${errchk}
         fi
     
@@ -560,7 +560,7 @@
       rm -f ww3_prnc.inp
     else
       echo ' '
-      echo " Wind input is not perturbed, single wnd file generated, skipping ${wavemodTAG}"
+      echo " Wind input is not perturbed, single wnd file generated, skipping ${WAV_MOD_TAG}"
       echo ' '
 
     fi
@@ -603,7 +603,7 @@
         echo '******************************************** '
         echo ' '
         [[ "$LOUD" = YES ]] && set -x
-        echo "$wavemodTAG prep $date $cycle : no current files found." >> $wavelog
+        echo "$WAV_MOD_TAG prep $date $cycle : no current files found." >> $wavelog
         err=11;export err;${errchk}
       fi
 
@@ -617,7 +617,7 @@
 
     else
       echo ' '
-      echo " Current input is not perturbed, single cur file generated, skipping ${wavemodTAG}"
+      echo " Current input is not perturbed, single cur file generated, skipping ${WAV_MOD_TAG}"
       echo ' '
     fi
 
@@ -650,7 +650,7 @@
     echo '*** FATAL ERROR : NO TEMPLATE FOR INPUT FILE *** '
     echo '************************************************ '
     echo ' '
-    echo "${wavemodTAG} fcst $date $cycle : ww3_multi file missing." >> $wavelog
+    echo "${WAV_MOD_TAG} fcst $date $cycle : ww3_multi file missing." >> $wavelog
     echo $msg
     [[ "$LOUD" = YES ]] && set -x
     err=12;export err;${errchk}
@@ -794,10 +794,10 @@
 
   if [ -f ww3_multi.inp ]
   then
-    echo " Copying file ww3_multi.${wavemodTAG}.inp to $COMOUT "
-    cp ww3_multi.inp ${COMOUT}/rundata/ww3_multi.${wavemodTAG}.$cycle.inp
+    echo " Copying file ww3_multi.${WAV_MOD_TAG}.inp to $COMOUT "
+    cp ww3_multi.inp ${COMOUT}/rundata/ww3_multi.${WAV_MOD_TAG}.$cycle.inp
   else
-    echo "FATAL ERROR: file ww3_multi.${wavemodTAG}.$cycle.inp NOT CREATED, ABORTING"
+    echo "FATAL ERROR: file ww3_multi.${WAV_MOD_TAG}.$cycle.inp NOT CREATED, ABORTING"
     err=13;export err;${errchk}
   fi 
 
@@ -813,12 +813,12 @@
     do
       set +x
       echo ' '
-      echo "   Saving wind.$grdID as $COMOUT/rundata/${wavemodTAG}.$grdID.$PDY$cyc.wind"
-      echo "   Saving times.$grdID file as $COMOUT/rundata/${wavemodTAG}.$grdID.$PDY$cyc.$grdID.wind.times"
+      echo "   Saving wind.$grdID as $COMOUT/rundata/${WAV_MOD_TAG}.$grdID.$PDY$cyc.wind"
+      echo "   Saving times.$grdID file as $COMOUT/rundata/${WAV_MOD_TAG}.$grdID.$PDY$cyc.$grdID.wind.times"
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
-      cp wind.$grdID $COMOUT/rundata/${wavemodTAG}.$grdID.$PDY$cyc.wind
-      cp times.$grdID $COMOUT/rundata/${wavemodTAG}.$grdID.$PDY$cyc.$grdID.wind.times
+      cp wind.$grdID $COMOUT/rundata/${WAV_MOD_TAG}.$grdID.$PDY$cyc.wind
+      cp times.$grdID $COMOUT/rundata/${WAV_MOD_TAG}.$grdID.$PDY$cyc.$grdID.wind.times
     done
    fi
 
@@ -828,10 +828,10 @@
     do
       set +x
       echo ' '
-      echo "   Saving current.$grdID as $COMOUT/rundata/${wavemodTAG}.$grdID.$PDY$cyc.curr"
+      echo "   Saving current.$grdID as $COMOUT/rundata/${WAV_MOD_TAG}.$grdID.$PDY$cyc.curr"
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
-      cp curr.$grdID $COMOUT/rundata/${wavemodTAG}.$grdID.$PDY$cyc.curr
+      cp curr.$grdID $COMOUT/rundata/${WAV_MOD_TAG}.$grdID.$PDY$cyc.curr
     done
    fi
   fi 

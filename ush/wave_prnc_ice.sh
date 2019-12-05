@@ -44,7 +44,7 @@
   echo '+--------------------------------+'
   echo '!         Make ice fields        |'
   echo '+--------------------------------+'
-  echo "   Model TAG       : $wavemodTAG"
+  echo "   Model TAG       : $WAV_MOD_TAG"
   echo "   Model ID        : $WAV_MOD_ID"
   echo "   Ice grid ID     : $iceID"
   echo ' '
@@ -53,7 +53,7 @@
 
   if [ -z "$YMDH" ] || [ -z "$cycle" ] || \
      [ -z "$COMOUT" ] || [ -z "$FIXwave" ] || [ -z "$EXECcode" ] || \
-     [ -z "$wavemodTAG" ] || [ -z "$iceID" ] || [ -z "$SENDCOM" ] || \
+     [ -z "$WAV_MOD_TAG" ] || [ -z "$iceID" ] || [ -z "$SENDCOM" ] || \
      [ -z "$COMINice" ] || [ -z "$WAV_MOD_ID" ]
   then
     set $setoff
@@ -205,7 +205,7 @@
 #
   if [ "${WW3ATMIENS}" = "T" ]
   then 
-    icefile=${wavemodTAG}.${iceID}.$cycle.ice
+    icefile=${WAV_MOD_TAG}.${iceID}.$cycle.ice
   elif [ "${WW3ATMIENS}" = "F" ]
   then 
     icefile=${WAV_MOD_ID}.${iceID}.$cycle.ice

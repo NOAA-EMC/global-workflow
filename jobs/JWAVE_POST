@@ -80,7 +80,7 @@ fi
 membTAG='p'
 if [ "${waveMEMB}" == "00" ]; then membTAG='c'; fi
 export membTAG
-export wavemodTAG=${WAV_MOD_ID}${waveMEMB}
+export WAV_MOD_TAG=${WAV_MOD_ID}${waveMEMB}
 
 export CFP_VERBOSE=1
 

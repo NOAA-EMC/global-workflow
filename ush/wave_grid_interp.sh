@@ -63,11 +63,11 @@
   echo '+--------------------------------+'
   echo '!         Make GRID files        |'
   echo '+--------------------------------+'
-  echo "   Model ID         : $wavemodTAG"
+  echo "   Model ID         : $WAV_MOD_TAG"
   [[ "$LOUD" = YES ]] && set -x
 
   if [ -z "$YMDH" ] || [ -z "$cycle" ] || [ -z "$EXECcode" ] || \
-     [ -z "$COMOUT" ] || [ -z "$wavemodTAG" ] || [ -z "$SENDCOM" ] || \
+     [ -z "$COMOUT" ] || [ -z "$WAV_MOD_TAG" ] || [ -z "$SENDCOM" ] || \
      [ -z "$SENDDBN" ] || [ -z "$waveGRD" ]
   then
     set +x
@@ -76,7 +76,7 @@
     echo '*** EXPORTED VARIABLES IN postprocessor NOT SET ***'
     echo '***************************************************'
     echo ' '
-    echo "$YMDH $cycle $EXECcode $COMOUT $wavemodTAG $SENDCOM $SENDDBN $waveGRD"
+    echo "$YMDH $cycle $EXECcode $COMOUT $WAV_MOD_TAG $SENDCOM $SENDDBN $waveGRD"
     [[ "$LOUD" = YES ]] && set -x
     postmsg "$jlogfile" "EXPORTED VARIABLES IN postprocessor NOT SET"
     exit 1
@@ -180,14 +180,14 @@
   if [ "$SENDCOM" = 'YES' ]
   then
     set +x
-    echo "   Saving GRID file as $COMOUT/rundata/$wavemodTAG.out_grd.$grdID.$PDY$cyc"
+    echo "   Saving GRID file as $COMOUT/rundata/$WAV_MOD_TAG.out_grd.$grdID.$PDY$cyc"
     [[ "$LOUD" = YES ]] && set -x
-    cp out_grd.$grdID $COMOUT/rundata/$wavemodTAG.out_grd.$grdID.$PDY$cyc
+    cp out_grd.$grdID $COMOUT/rundata/$WAV_MOD_TAG.out_grd.$grdID.$PDY$cyc
 
 #    if [ "$SENDDBN" = 'YES' ]
 #    then
 #      set +x
-#      echo "   Alerting GRID file as $COMOUT/rundata/$wavemodTAG.out_grd.$grdID.$PDY$cyc
+#      echo "   Alerting GRID file as $COMOUT/rundata/$WAV_MOD_TAG.out_grd.$grdID.$PDY$cyc
 #      [[ "$LOUD" = YES ]] && set -x
 
 #
