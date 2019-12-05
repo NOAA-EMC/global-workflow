@@ -113,22 +113,6 @@ if [ $CDUMP = "gfs" ]; then
     fi
 fi
 
-
-###############################################################
-echo
-echo "=============== START TO RUN METPLUS VERIFICATION ==============="
-if [ $CDUMP = "gfs" ]; then
-
-    if [ $VRFY_PCKG2RUN = "METPLUS" -o $VRFY_PCKG2RUN = "BOTH" ]; then
-        if [ $RUN_METPLUS_GRID2GRID_STEP1 = "YES" -o $RUN_METPLUS_GRID2OBS_STEP1 = "YES" -o $RUN_METPLUS_PRECIP_STEP1 = "YES" ]; then
-            
-            $VERIF_GLOBALSH 
- 
-        fi
-     fi
- fi
-
-
 ###############################################################
 echo
 echo "=============== START TO RUN RADMON DATA EXTRACTION ==============="
