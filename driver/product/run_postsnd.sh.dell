@@ -102,7 +102,7 @@ export DATA_IN=${DATA_IN:-/gpfs/dell2/ptmp/$USER}
 export DATA=$DATA_IN/postsnd.${pid}
 mkdir -p $DATA
 cd $DATA
-export PDY=20191112
+export PDY=20191111
 export cyc=00
 export STARTHOUR=00
 export ENDHOUR=180
@@ -137,6 +137,7 @@ mkdir -p $pcom
 # Set up the UTILITIES
 ###################################
 
+export HOMEgfs=/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/global-workflow/feature_gfsv16b
 export HOMEbufrsnd=/gpfs/dell2/emc/verification/noscrub/Guang.Ping.Lou/gfsv16b
 ##export HOMEbufrsnd=/gpfs/dell2/emc/verification/noscrub/Guang.Ping.Lou/fv3gfs
 ##export HOMEbufrsnd=/gpfs/hps3/emc/meso/noscrub/Guang.Ping.Lou/fv3gfs
@@ -163,7 +164,7 @@ env
 ########################################################
 # Execute the script.
 #$SCRbufrsnd/exgfs_postsnd.sh.ecf
-${HOMEbufrsnd}/jobs/JGFS_POSTSND_netcdf
+${HOMEbufrsnd}/jobs/JGFS_POSTSND
 ########################################################
 
 #cat $pgmout
