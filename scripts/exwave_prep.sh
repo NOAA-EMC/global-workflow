@@ -779,6 +779,7 @@
       -e "s/OUT_BEG/$time_beg/g" \
       -e "s/OUT_END/$time_end/g" \
       -e "s/DTFLD/ $DTFLD/g" \
+      -e "s/OFILETYPE/ $OFILETYPE/g" \
       -e "s/FIELDS/$FIELDS/g" \
       -e "s/DTPNT/ $DTPNT/g" \
       -e "/BUOY_FILE/r buoy.loc" \

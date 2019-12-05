@@ -141,12 +141,31 @@
 
   [[ "$LOUD" = YES ]] && set -x
 
+# Copy model definition files
+  for grdID in $waveGRD $sbsGRD $postGRD $interpGRD $buoy
+  do
+    if [ -f "$COMIN/rundata/${WAV_MOD_ID}.mod_def.${grdID}" ]
+    then
+      set +x
+      echo " Mod def file for $grdID found in ${COMIN}/rundata. copying ...."
+      [[ "$LOUD" = YES ]] && set -x
+
+      echo "cp -f $COMIN/rundata/${WAV_MOD_ID}.mod_def.${grdID} mod_def.$grdID > copycmd.out.$iloop 2>&1"  >> cmdfile
+      iloop=`expr $iloop + 1`
+
+    fi
+
+  done
+
 # 1.a.2 Create entries in cmdfile for copying raw data files
+
+  while [ ${ymdhnow} -le ${ymdh_end} ]
+  do
 
   iloop=1
   for grdID in $waveGRD $sbsGRD
   do
-  
+ 
     if [ ! -f out_grd.$grdID ]
     then
       set +x
@@ -158,20 +177,9 @@
     fi 
   done
 
-  for grdID in $waveGRD $sbsGRD $postGRD $interpGRD $buoy
-  do
-    if [ -f "$COMIN/rundata/${WAV_MOD_ID}.mod_def.${grdID}" ]
-    then
-      set +x
-      echo " Mod def file for $grdID found in ${COMIN}/rundata. copying ...."
-      [[ "$LOUD" = YES ]] && set -x
+  done # while loop per time step
 
-      echo "cp -f $COMIN/rundata/${WAV_MOD_ID}.mod_def.${grdID} mod_def.$grdID > copycmd.out.$iloop 2>&1"  >> cmdfile
-      iloop=`expr $iloop + 1`
-      
-    fi
-
-  done
+# Add al grib stuff above here
 
   if [ ! -f out_pnt.ww3 ]
   then
@@ -974,6 +982,7 @@
       done
     fi
   fi
+
 
 
 # --------------------------------------------------------------------------- #

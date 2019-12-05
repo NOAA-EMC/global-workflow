@@ -6,6 +6,7 @@ export sigMODE=${sigMODE:-prep}
 
 export HOUR_INC=3      # This value should match with the one used in 
                          # the wind update script
+export OFILETYPE=1     # OFILETYPE=1 one file per output step 
 
 # Parameters for ww3_multi.inp
 # Unified output T or F
