@@ -71,7 +71,7 @@ export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/gempak/m
 export COMOUTncdc=${COMOUTncdc:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}/${cyc}}
 
 export COMINukmet=${COMINukmet:-$(compath.py nawips/prod/ukmet)}
-export COMINecmwf=${COMINecmwf:-$(compath.py nawips/prod/ecmwf)}
+export COMINecmwf=${COMINecmwf:-$(compath.py ecmwf/prod/ecmwf)}
 
 export COMOUTukmet=${COMOUT}
 export COMOUTecmwf=${COMOUT}
