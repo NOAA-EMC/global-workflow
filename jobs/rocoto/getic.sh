@@ -47,12 +47,6 @@ target_dir=$ICSDIR/$CDATE/$CDUMP
 mkdir -p $target_dir
 cd $target_dir
 
-# Save the files as legacy EMC filenames
-ftanal[1]="siganl.${CDUMP}.$CDATE"
-ftanal[2]="sfcanl.${CDUMP}.$CDATE"
-ftanal[3]="nstanl.${CDUMP}.$CDATE"
-ftanal[4]="pgbanl.${CDUMP}.$CDATE"
-
 # Initialize return code to 0
 rc=1
 
@@ -63,6 +57,11 @@ if [ $ics_from = "opsgfs" ]; then
 
     # Handle nemsio and pre-nemsio GFS filenames
     if [ $CDATE -le "2019061118" ]; then #GFSv14
+        # Add CDUMP.PDY/CYC to target_dir
+        target_dir=$ICSDIR/$CDATE/$CDUMP/${CDUMP}.$yyyy$mm$dd/$cyc
+        mkdir -p $target_dir
+        cd $target_dir
+
         nfanal=4
         fanal[1]="./${CDUMP}.t${cyc}z.atmanl.nemsio"
         fanal[2]="./${CDUMP}.t${cyc}z.sfcanl.nemsio"
@@ -98,7 +97,7 @@ if [ $ics_from = "opsgfs" ]; then
         rc=0
         for i in `seq 1 $nfanal`; do
             if [ -f $comdir/${fanal[i]} ]; then
-                $NCP $comdir/${fanal[i]} ${ftanal[i]}
+                $NCP $comdir/${fanal[i]} ${fanal[i]}
             else
                 rb=1 ; ((rc+=rb))
             fi
@@ -139,12 +138,17 @@ if [ $ics_from = "opsgfs" ]; then
 
 elif [ $ics_from = "pargfs" ]; then
 
+    # Add CDUMP.PDY/CYC to target_dir
+    target_dir=$ICSDIR/$CDATE/$CDUMP/${CDUMP}.$yyyy$mm$dd/$cyc
+    mkdir -p $target_dir
+    cd $target_dir
+
     # Filenames in parallel
     nfanal=4
-    fanal[1]="pgbanl.${CDUMP}.$CDATE"
-    fanal[2]="gfnanl.${CDUMP}.$CDATE"
-    fanal[3]="sfnanl.${CDUMP}.$CDATE"
-    fanal[4]="nsnanl.${CDUMP}.$CDATE"
+    fanal[1]="gfnanl.${CDUMP}.$CDATE"
+    fanal[2]="sfnanl.${CDUMP}.$CDATE"
+    fanal[3]="nsnanl.${CDUMP}.$CDATE"
+    fanal[4]="pgbanl.${CDUMP}.$CDATE"
     flanal="${fanal[1]} ${fanal[2]} ${fanal[3]} ${fanal[4]}"
 
     # Get initial conditions from HPSS from retrospective parallel
@@ -165,11 +169,6 @@ elif [ $ics_from = "pargfs" ]; then
         exit $rc
     fi
 
-    # Move the files to legacy EMC filenames
-    for i in $(seq 1 $nfanal); do
-        $NMV ${fanal[i]} ${ftanal[i]}
-    done
-
     # If found, exit out
     if [ $rc -ne 0 ]; then
         echo "Unable to obtain parallel GFS initial conditions, ABORT!"
@@ -188,7 +187,7 @@ fi
 if [ $CDATE -le "2019061118" ]; then #GFSv14
   COMROT=$ROTDIR/${CDUMP}.$PDY/$cyc
   [[ ! -d $COMROT ]] && mkdir -p $COMROT
-  $NCP ${ftanal[4]} $COMROT/${CDUMP}.t${cyc}z.pgrbanl
+  $NCP ${fanal[4]} $COMROT/${CDUMP}.t${cyc}z.pgrbanl
 fi
 
 ###############################################################

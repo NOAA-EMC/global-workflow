@@ -228,16 +228,19 @@ def get_workflow(dict_configs, cdump='gdas'):
 
     # getics
     deps = []
-    data = '&ICSDIR;/@Y@m@d@H/&CDUMP;/pgbanl.&CDUMP;.@Y@m@d@H'
+    data = '&ICSDIR;/@Y@m@d@H/&CDUMP;/&CDUMP;.@Y@m@d/@H/siganl.&CDUMP;.@Y@m@d@H'
     dep_dict = {'type':'data', 'data':data}
     deps.append(rocoto.add_dependency(dep_dict))
-    data = '&ICSDIR;/@Y@m@d@H/&CDUMP;/siganl.&CDUMP;.@Y@m@d@H'
+    data = '&ICSDIR;/@Y@m@d@H/&CDUMP;/&CDUMP;.@Y@m@d/@H/&CDUMP;.t@Hz.sanl'
     dep_dict = {'type':'data', 'data':data}
     deps.append(rocoto.add_dependency(dep_dict))
-    data = '&ICSDIR;/@Y@m@d@H/&CDUMP;/sfcanl.&CDUMP;.@Y@m@d@H'
+    data = '&ICSDIR;/@Y@m@d@H/&CDUMP;/&CDUMP;.@Y@m@d/@H/gfnanl.&CDUMP;.@Y@m@d@H'
     dep_dict = {'type':'data', 'data':data}
     deps.append(rocoto.add_dependency(dep_dict))
-    deps = rocoto.create_dependency(dep_condition='and', dep=deps)
+    data = '&ICSDIR;/@Y@m@d@H/&CDUMP;/&CDUMP;.@Y@m@d/@H/&CDUMP;.t@Hz.atmanl.nemsio'
+    dep_dict = {'type':'data', 'data':data}
+    deps.append(rocoto.add_dependency(dep_dict))
+    deps = rocoto.create_dependency(dep_condition='or', dep=deps)
     dependencies = rocoto.create_dependency(dep_condition='not', dep=deps)
     task = wfu.create_wf_task('getic', cdump=cdump, envar=envars, dependency=dependencies)
     tasks.append(task)
@@ -245,13 +248,19 @@ def get_workflow(dict_configs, cdump='gdas'):
 
     # chgres
     deps = []
-    data = '&ICSDIR;/@Y@m@d@H/&CDUMP;/siganl.&CDUMP;.@Y@m@d@H'
+    data = '&ICSDIR;/@Y@m@d@H/&CDUMP;/&CDUMP;.@Y@m@d/@H/siganl.&CDUMP;.@Y@m@d@H'
     dep_dict = {'type':'data', 'data':data}
     deps.append(rocoto.add_dependency(dep_dict))
-    data = '&ICSDIR;/@Y@m@d@H/&CDUMP;/sfcanl.&CDUMP;.@Y@m@d@H'
+    data = '&ICSDIR;/@Y@m@d@H/&CDUMP;/&CDUMP;.@Y@m@d/@H/&CDUMP;.t@Hz.sanl'
     dep_dict = {'type':'data', 'data':data}
     deps.append(rocoto.add_dependency(dep_dict))
-    dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+    data = '&ICSDIR;/@Y@m@d@H/&CDUMP;/&CDUMP;.@Y@m@d/@H/gfnanl.&CDUMP;.@Y@m@d@H'
+    dep_dict = {'type':'data', 'data':data}
+    deps.append(rocoto.add_dependency(dep_dict))
+    data = '&ICSDIR;/@Y@m@d@H/&CDUMP;/&CDUMP;.@Y@m@d/@H/&CDUMP;.t@Hz.atmanl.nemsio'
+    dep_dict = {'type':'data', 'data':data}
+    deps.append(rocoto.add_dependency(dep_dict))
+    dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
 
     deps = []
     data = '&ICSDIR;/@Y@m@d@H/&CDUMP;/&CASE;/INPUT/gfs_data.tile6.nc'

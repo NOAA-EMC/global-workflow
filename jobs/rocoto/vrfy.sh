@@ -110,9 +110,23 @@ if [ $CDUMP = "gfs" ]; then
         export COMROT="$ARCDIR1/dummy"
 
         $VSDBSH $xdate $xdate $vlength $cyc $PSLOT $CDATE $CDUMP $gfs_cyc $rain_bucket
-
     fi
 fi
+
+
+###############################################################
+echo
+echo "=============== START TO RUN METPLUS VERIFICATION ==============="
+if [ $CDUMP = "gfs" ]; then
+
+    if [ $VRFY_PCKG2RUN = "METPLUS" -o $VRFY_PCKG2RUN = "BOTH" ]; then
+        if [ $RUN_METPLUS_GRID2GRID_STEP1 = "YES" -o $RUN_METPLUS_GRID2OBS_STEP1 = "YES" -o $RUN_METPLUS_PRECIP_STEP1 = "YES" ]; then
+            
+            $VERIF_GLOBALSH 
+ 
+        fi
+     fi
+ fi
 
 
 ###############################################################

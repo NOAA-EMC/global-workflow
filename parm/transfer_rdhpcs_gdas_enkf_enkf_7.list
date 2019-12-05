@@ -27,19 +27,21 @@
 #Z
 
 com/gfs/_ENVIR_/enkfgdas._PDYm1_/ _REMOTEPATH_/com/gfs/_ENVIR_/enkfgdas._PDYm1_/
-+ /18/
-+ /18/mem???/
-+ /18/mem???/gdas.t??z.atmf006s.nemsio
-+ /18/mem???/gdas.t??z.atmf009s.nemsio
++ /12/
++ /12/mem???/
++ /12/mem???/gdas.t??z.ratmanl.nemsio
++ /12/gdas.t??z.atmf006.ensmean.nemsio
++ /12/gdas.t??z.atmf009.ensmean.nemsio
 - *
 E
 # This directory is a good candidate for compression
 #Z
 com/gfs/_ENVIR_/enkfgdas._PDY_/ _REMOTEPATH_/com/gfs/_ENVIR_/enkfgdas._PDY_/
-+ /18/
-+ /18/mem???/
-+ /18/mem???/gdas.t??z.atmf006s.nemsio
-+ /18/mem???/gdas.t??z.atmf009s.nemsio
++ /12/
++ /12/mem???/
++ /12/mem???/gdas.t??z.ratmanl.nemsio
++ /12/gdas.t??z.atmf006.ensmean.nemsio
++ /12/gdas.t??z.atmf009.ensmean.nemsio
 - *
 E
 # This directory is a good candidate for compression

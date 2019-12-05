@@ -72,13 +72,15 @@ export DO_RELOCATE=${DO_RELOCATE:-NO}           # Turn on tropical cyclone reloc
 
 export tmmark=tm00
 if [ $RUN_ENVIR = "nco" ]; then
-    export ARCHSYND=$COMROOTp1/arch/${envir}/syndat
+    export ARCHSYND=$COMROOTp3/gfs/${envir}/syndat     # this location is unique, do not change
 else
     export ARCHSYND=${ROTDIR}/syndat   
 fi
 if [ ! -d ${ARCHSYND} ]; then mkdir -p $ARCHSYND; fi
 
-export HOMENHC=${HOMENHC:-/gpfs/?p1/nhc/save/guidance/storm-data/ncep}
+export HOMENHCp1=${HOMENHCp1:-/gpfs/?p1/nhc/save/guidance/storm-data/ncep}
+export HOMENHC=${HOMENHC:-/gpfs/dell2/nhc/save/guidance/storm-data/ncep}
+
 # JY export TANK_TROPCY=${TANK_TROPCY:-${DCOMROOT}/${envir}}   # path to tropical cyclone record database
 export TANK_TROPCY=${TANK_TROPCY:-${DCOMROOT}/prod}   # path to tropical cyclone record database
 

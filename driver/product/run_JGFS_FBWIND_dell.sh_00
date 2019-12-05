@@ -42,7 +42,7 @@ module list
 ##############################################
 # set envir=prod or para to test with data in prod or para
  export envir=para
-# export envir=prod
+ export envir=prod
 
 export SENDCOM=YES
 export KEEPDATA=YES
