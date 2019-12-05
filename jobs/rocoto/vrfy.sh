@@ -110,10 +110,8 @@ if [ $CDUMP = "gfs" ]; then
         export COMROT="$ARCDIR1/dummy"
 
         $VSDBSH $xdate $xdate $vlength $cyc $PSLOT $CDATE $CDUMP $gfs_cyc $rain_bucket
-
     fi
 fi
-
 
 ###############################################################
 echo

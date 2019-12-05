@@ -37,3 +37,5 @@ do
   make -f makefile_module clean
   make -f makefile_module 
 done
+
+echo "Build complete"

@@ -84,6 +84,7 @@ if [ "$CDUMP" = "gfs" ] ; then
     fi
 fi
 
+
 #----------------------------------------------------------
 # Minimization, Radiance and Ozone Monitoring
 #----------------------------------------------------------
@@ -132,10 +133,10 @@ fi
 #-------------------------------------------------
 
 if [ $machine = "WCOSS_C" ] ; then
-    export ens_tracker_ver=v1.1.13.1
+    export ens_tracker_ver=v1.1.15.1
     export HOMEens_tracker=$BASE_GIT/ens_tracker.${ens_tracker_ver}
 elif [ $machine = "WCOSS_DELL_P3" ] ; then
-    export ens_tracker_ver=v1.1.13.1
+    export ens_tracker_ver=v1.1.15.1
     export HOMEens_tracker=$BASE_GIT/ens_tracker.${ens_tracker_ver}
 elif [ $machine = "THEIA" -o $machine = "HERA" ] ; then
     export ens_tracker_ver=v1.1.15.1
@@ -157,12 +158,11 @@ if [ "$VRFYTRAK" = "YES" ]; then
         export FHOUT_CYCLONE=6            
         export FHMAX_CYCLONE=$(( FHMAX_GFS<240 ? FHMAX_GFS : 240 ))
     fi
-    if [ $machine = "THEIA" ]; then
-       export COMROOTp1="/scratch4/NCEPDEV/rstprod/com"
-       export COMINsyn="$COMROOTp1/arch/prod/syndat"
-    elif [ $machine = "HERA" ]; then
+    if [ $machine = "HERA" ]; then
        export COMROOTp1="/scratch1/NCEPDEV/rstprod/com"
        export COMINsyn=${COMINsyn:-${COMROOTp1}/arch/prod/syndat}
+    else
+       export COMINsyn=${COMINsyn:-${COMROOT}/gfs/prod/syndat}
     fi
 fi
 

@@ -9,7 +9,7 @@ if [[ ! -d fv3gfs.fd ]] ; then
     rm -f ${topdir}/checkout-fv3gfs.log
     git clone https://github.com/ufs-community/ufs-weather-model fv3gfs.fd >> ${topdir}/checkout-fv3gfs.log 2>&1
     cd fv3gfs.fd
-    git checkout gfs.v16.0.0
+    git checkout gfs_v16.0.1
     git submodule update --init --recursive
 
     #git clone gerrit:NEMSfv3gfs fv3gfs.fd >> ${topdir}/checkout-fv3gfs.log 2>&1
@@ -25,7 +25,7 @@ fi
 echo gsi checkout ...
 if [[ ! -d gsi.fd ]] ; then
     rm -f ${topdir}/checkout-gsi.log
-    git clone --recursive gerrit:ProdGSI gsi.fd >> ${topdir}/checkout-gsi.fd.log 2>&1
+    git clone --recursive gerrit:ProdGSI gsi.fd >> ${topdir}/checkout-gsi.log 2>&1
     cd gsi.fd
     git checkout feature/fv3_ncio 
     git submodule update
