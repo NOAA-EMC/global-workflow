@@ -19,6 +19,18 @@ step=$1
 
 echo "BEGIN: config.resources"
 
+if [[ "$machine" = "WCOSS_DELL_P3" ]]; then
+   export npe_node_max=28
+elif [[ "$machine" = "WCOSS_C" ]]; then
+   export npe_node_max=24
+elif [[ "$machine" = "THEIA" ]]; then
+   export npe_node_max=24
+elif [[ "$machine" = "JET" ]]; then
+   export npe_node_max=24
+elif [[ "$machine" = "HERA" ]]; then
+   export npe_node_max=40
+fi
+
 if [ $step = "prep" -o $step = "prepbufr" ]; then
 
     eval "export wtime_$step='00:45:00'"
@@ -29,13 +41,22 @@ if [ $step = "prep" -o $step = "prepbufr" ]; then
 elif [ $step = "anal" ]; then
 
     export wtime_anal="02:30:00"
+    export nth_cycle=$npe_node_max
     export npe_anal=160
     export npe_node_anal=2
     export nth_anal=12
-    export nth_cycle=24
     if [[ "$machine" = "WCOSS_DELL_P3" ]]; then
-        export nth_anal=14
-        export nth_cycle=28
+      export nth_anal=14
+    fi
+    if [[ "$machine" != "WCOSS_C" ]]; then
+     if [ $CASE = "C384" -o $CASE = "C192" -o $CASE = "C96" -o $CASE = "C48" ]; then
+      export npe_anal=84
+      export nth_anal=4
+      export npe_node_anal=$(echo "$npe_node_max / $nth_anal" | bc)
+      if [[ "$machine" = "WCOSS_DELL_P3" ]]; then
+        export npe_node_anal=7
+      fi
+     fi
     fi
     if [[ "$machine" == "WCOSS_C" ]]; then
         export memory_anal="3072M"
@@ -43,28 +64,33 @@ elif [ $step = "anal" ]; then
 
 elif [ $step = "fcst" ]; then
 
+    if [[ "$machine" == "WCOSS_DELL" ]]; then
+      export npe_node_max=24
+    fi
     export wtime_fcst="01:00:00"
     export wtime_fcst_gfs="06:00:00"
     export npe_fcst=$(echo "$layout_x * $layout_y * 6" | bc)
     export npe_fcst_gfs=$(echo "$layout_x_gfs * $layout_y_gfs * 6" | bc)
-    export npe_node_fcst=${npe_node_fcst:-12}
     export nth_fcst=${nth_fv3:-2}
+    #export npe_node_fcst=${npe_node_fcst:-12}
+    export npe_node_fcst=$(echo "$npe_node_max / $nth_fcst" | bc)
     if [[ "$machine" == "WCOSS_C" ]]; then
         export memory_fcst="1024M"
     fi
 
 elif [ $step = "post" ]; then
 
-    export wtime_post="02:00:00"
-    export wtime_post_gfs="06:00:00"
-    export npe_post=84
+    export wtime_post="00:30:00"
+    export wtime_post_gfs="01:30:00"
+    export npe_post=144
     export nth_post=1
-    export npe_node_post=12
-    export npe_node_dwn=24
-    if [[ "$machine" == "WCOSS_DELL_P3" ]]; then
-        export npe_node_post=14
-        export npe_node_dwn=28
+    export npe_node_dwn=$npe_node_max
+    if [ $CASE = "C384" -o $CASE = "C192" -o $CASE = "C96" -o $CASE = "C48" ]; then
+      export wtime_post="00:10:00"
+      export wtime_post_gfs="00:30:00"
+      export npe_post=$(echo "$npe_node_max * 2" | bc)
     fi
+    export npe_node_post=$(echo "$npe_node_max / $nth_post" | bc)
     if [[ "$machine" == "WCOSS_C" ]]; then
         export memory_post="3072M"
     fi
@@ -72,7 +98,11 @@ elif [ $step = "post" ]; then
 elif [ $step = "vrfy" ]; then
 
     export wtime_vrfy="03:00:00"
-    export wtime_vrfy_gfs="06:00:00"
+    if [[ "$machine" == "HERA" ]]; then
+      export wtime_vrfy_gfs="08:00:00"
+    else
+      export wtime_vrfy_gfs="06:00:00"
+    fi
     export npe_vrfy=1
     export nth_vrfy=1
     export npe_node_vrfy=1
@@ -96,12 +126,17 @@ elif [ $step = "eobs" -o $step = "eomg" ]; then
 
     export wtime_eobs="00:30:00"
     export wtime_eomg="01:00:00"
-    export npe_eobs=140
-    export nth_eobs=2
-    export npe_node_eobs=12
-    if [[ "$machine" = "WCOSS_DELL_P3" ]]; then
-        export npe_node_eobs=14
+    if [ $CASE = "C768" ]; then
+      export npe_eobs=84
+    elif [ $CASE = "C384" ]; then
+      export npe_eobs=42
+    elif [ $CASE = "C192" ]; then
+      export npe_eobs=28
+    elif [ $CASE = "C96" -o $CASE = "C48" ]; then
+      export npe_eobs=14
     fi
+    export nth_eobs=2
+    export npe_node_eobs=$(echo "$npe_node_max / $nth_eobs" | bc)
     if [[ "$machine" == "WCOSS_C" ]]; then
         export memory_eobs="3072M"
     fi
@@ -109,24 +144,37 @@ elif [ $step = "eobs" -o $step = "eomg" ]; then
 elif [ $step = "eupd" ]; then
 
     export wtime_eupd="00:30:00"
-    export npe_eupd=240
-    export npe_node_eupd=4  
-    export nth_eupd=6
-    if [[ "$machine" = "WCOSS_DELL_P3" ]]; then
+    if [ $CASE = "C768" ]; then
+      export npe_eupd=240
+      export nth_eupd=6
+      if [[ "$machine" = "WCOSS_DELL_P3" ]]; then
         export nth_eupd=7
+      fi
+    elif [ $CASE = "C384" ]; then
+      export npe_eupd=84
+      export nth_eupd=2
+    elif [ $CASE = "C192" -o $CASE = "C96" -o $CASE = "C48" ]; then
+      export npe_eupd=42
+      export nth_eupd=2
     fi
+    export npe_node_eupd=$(echo "$npe_node_max / $nth_eupd" | bc)
     if [[ "$machine" == "WCOSS_C" ]]; then
         export memory_eupd="3072M"
     fi
 
 elif [ $step = "ecen" ]; then
 
-    export wtime_ecen="01:00:00"
+    export wtime_ecen="00:30:00"
     export npe_ecen=80
-    export npe_node_ecen=4 
     export nth_ecen=6
+    export npe_node_ecen=4
+    if [ $CASE = "C384" -o $CASE = "C192" -o $CASE = "C96" -o $CASE = "C48" ]; then
+      export npe_ecen=84
+      export nth_ecen=2
+      export npe_node_ecen=$(echo "$npe_node_max / $nth_ecen" | bc)
+    fi
     if [[ "$machine" = "WCOSS_DELL_P3" ]]; then
-        export nth_ecen=7
+      export nth_ecen=7
     fi
     export nth_cycle=$nth_ecen
     if [[ "$machine" == "WCOSS_C" ]]; then
@@ -137,8 +185,9 @@ elif [ $step = "efcs" ]; then
 
     export wtime_efcs="03:00:00"
     export npe_efcs=$(echo "$layout_x * $layout_y * 6" | bc)
-    export npe_node_efcs=${npe_node_fcst:-12}
     export nth_efcs=${nth_fv3:-2}
+    #export npe_node_efcs=${npe_node_fcst:-12}
+    export npe_node_efcs=$(echo "$npe_node_max / $nth_efcs" | bc)
     if [[ "$machine" == "WCOSS_C" ]]; then
         export memory_efcs="254M"
     fi
@@ -150,7 +199,7 @@ elif [ $step = "epos" ]; then
     export npe_node_epos=4
     export nth_epos=6
     if [[ "$machine" = "WCOSS_DELL_P3" ]]; then
-        export nth_epos=7
+      export nth_epos=7
     fi
     if [[ "$machine" == "WCOSS_C" ]]; then
         export memory_epos="254M"

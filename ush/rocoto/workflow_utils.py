@@ -1,12 +1,5 @@
 #!/usr/bin/env python
 
-###############################################################
-# < next few lines under version control, D O  N O T  E D I T >
-# $Date$
-# $Revision$
-# $Author$
-# $Id$
-###############################################################
 '''
     Module containing functions all workflow setups require
 '''
@@ -22,8 +15,8 @@ from datetime import datetime, timedelta
 import rocoto
 
 DATE_ENV_VARS=['CDATE','SDATE','EDATE']
-SCHEDULER_MAP={'ZEUS':'moabtorque',
-               'THEIA':'moabtorque',
+SCHEDULER_MAP={'HERA':'slurm',
+               'THEIA':'slurm',
                'WCOSS':'lsf',
                'WCOSS_DELL_P3':'lsf',
                'WCOSS_C':'lsfcray'}
@@ -150,28 +143,27 @@ def config_parser(files):
 
     return varbles
 
-def check_slurm(print_message = False):
-    if find_executable('srun'):
-        if print_message:
-           print 'Info: Using Slurm as scheduler because srun was found in your path'
-           non_decimal = re.compile(r'[^\d.]+')
-           rocoto_version =  non_decimal.sub('',find_executable('rocotorun').replace('.',''))
-           if int(rocoto_version) < 130:
-              print 'WARNING: XML workflow is being made to use Slurm because it was set in your'
-              print 'environment and the correct version of Rocoto is not loaded.'
-              print 'Make sure to use Rocoto 1.3.0rc2 or newer (example: module load rocoto/1.3.0rc2).'
-        return True
+def detectMachine():
+
+    machines = ['THEIA', 'HERA', 'WCOSS_C', 'WCOSS_DELL_P3']
+
+    if os.path.exists('/scratch1/NCEPDEV'):
+        return 'HERA'
+    elif os.path.exists('/scratch3/NCEPDEV'):
+        return 'THEIA'
+    elif os.path.exists('/gpfs') and os.path.exists('/etc/SuSE-release'):
+        return 'WCOSS_C'
+    elif os.path.exists('/gpfs/dell2'):
+        return 'WCOSS_DELL_P3'
     else:
-        return False
+        print 'workflow is currently only supported on: %s' % ' '.join(machines)
+        raise NotImplementedError('Cannot auto-detect platform, ABORT!')
 
 def get_scheduler(machine):
-    if check_slurm(print_message=True):
-	    return 'slurm'
-    else:
-        try:
-            return SCHEDULER_MAP[machine]
-        except KeyError:
-            raise UnknownMachineError('Unknown machine: %s'%(machine,))
+    try:
+        return SCHEDULER_MAP[machine]
+    except KeyError:
+        raise UnknownMachineError('Unknown machine: %s, ABORT!' % machine)
 
 def create_wf_task(task, cdump='gdas', cycledef=None, envar=None, dependency=None, \
                    metatask=None, varname=None, varval=None, vardict=None, \
@@ -204,14 +196,11 @@ def create_wf_task(task, cdump='gdas', cycledef=None, envar=None, dependency=Non
                  'log': '&ROTDIR;/logs/@Y@m@d@H/%s.log' % taskstr, \
                  'envar': envar, \
                  'dependency': dependency, \
-                 'partition' : '&PARTITION_%s_%s;' % (task.upper(),cdump.upper()), \
                  'final': final}
 
-    if task in ['getic','arch','earc'] and check_slurm():
+    if task in ['getic','arch','earc'] and get_scheduler(detectMachine()) in ['slurm']:
         task_dict['partition'] = '&PARTITION_%s_%s;' % (task.upper(),cdump.upper())
-    else:
-        task_dict['partition'] = None
-    
+
     if metatask is None:
         task = rocoto.create_task(task_dict)
     else:
@@ -244,18 +233,17 @@ def create_firstcyc_task(cdump='gdas'):
                  'command': 'sleep 1', \
                  'jobname': '&PSLOT;_%s_@H' % taskstr, \
                  'account': '&ACCOUNT;', \
+                 'queue': '&QUEUE_ARCH;', \
                  'walltime': '&WALLTIME_ARCH_%s;' % cdump.upper(), \
                  'native': '&NATIVE_ARCH_%s;' % cdump.upper(), \
                  'resources': '&RESOURCES_ARCH_%s;' % cdump.upper(), \
                  'log': '&ROTDIR;/logs/@Y@m@d@H/%s.log' % taskstr, \
+                 'queue': '&QUEUE_ARCH_%s;' % cdump.upper(), \
                  'dependency': dependencies}
 
-    if check_slurm():
-        task_dict['queue'] = '&QUEUE_ARCH_GFS;'
-        task_dict['partition'] = '&PARTITION_ARCH_GFS;'
-    else:
-        task_dict['queue'] = '&QUEUE_ARCH;'
-        task_dict['partition'] = None
+    if get_scheduler(detectMachine()) in ['slurm']:
+        task_dict['queue'] = '&QUEUE;'
+        task_dict['partition'] = '&PARTITION_ARCH;'
 
     task = rocoto.create_task(task_dict)
 
@@ -282,6 +270,8 @@ def get_gfs_interval(gfs_cyc):
 
 def get_resources(machine, cfg, task, cdump='gdas'):
 
+    scheduler = get_scheduler(machine)
+
     if cdump in ['gfs'] and 'wtime_%s_gfs' % task in cfg.keys():
         wtimestr = cfg['wtime_%s_gfs' % task]
     else:
@@ -301,7 +291,7 @@ def get_resources(machine, cfg, task, cdump='gdas'):
     else:
         ppn = cfg['npe_node_%s' % ltask]
 
-    if machine in [ 'WCOSS_DELL_P3']:
+    if machine in [ 'WCOSS_DELL_P3', 'HERA']:
         threads = cfg['nth_%s' % ltask]
 
     nodes = np.int(np.ceil(np.float(tasks) / np.float(ppn)))
@@ -309,11 +299,15 @@ def get_resources(machine, cfg, task, cdump='gdas'):
     memstr = '' if memory is None else str(memory)
     natstr = ''
 
-    if machine in ['THEIA'] and check_slurm():
+    if scheduler in ['slurm']:
         natstr = '--export=NONE'
-    
-    if machine in ['ZEUS', 'THEIA', 'WCOSS_C', 'WCOSS_DELL_P3']:
-        resstr = '<nodes>%d:ppn=%d</nodes>' % (nodes, ppn)
+
+    if machine in ['THEIA', 'HERA', 'WCOSS_C', 'WCOSS_DELL_P3']:
+
+        if machine in ['HERA']:
+            resstr = '<nodes>%d:ppn=%d:tpp=%d</nodes>' % (nodes, ppn, threads)
+        else:
+            resstr = '<nodes>%d:ppn=%d</nodes>' % (nodes, ppn)
 
         if machine in ['WCOSS_C'] and task in ['arch', 'earc', 'getic']:
             resstr += '<shared></shared>'
@@ -328,12 +322,8 @@ def get_resources(machine, cfg, task, cdump='gdas'):
     elif machine in ['WCOSS']:
         resstr = '<cores>%d</cores>' % tasks
 
-    queuestr = '&QUEUE_ARCH;'
-    # Tricky logic added for Theia arch queues because partition
-    # is a subset of queue for service queues (for now)
     if task in ['arch', 'earc', 'getic']:
-        if machine in ['THEIA'] and check_slurm():
-            queuestr = '&QUEUE;'
+        queuestr = '&QUEUE;' if scheduler in ['slurm'] else '&QUEUE_ARCH;'
     else:
         queuestr = '&QUEUE;'
 
@@ -356,12 +346,12 @@ def create_crontab(base, cronint=5):
 #
 #        cronintstr = '*/%d * * * *' % cronint
 #        rocotorunstr = '%s -d %s/%s.db -w %s/%s.xml' % (rocotoruncmd, base['EXPDIR'], base['PSLOT'], base['EXPDIR'], base['PSLOT'])
-#    
+#
 #        wrapper_strings = []
 #        wrapper_strings.append('#!/bin/env tcsh\n')
 #        wrapper_strings.append('\n')
 #        wrapper_strings.append('module load slurm\n')
-#        wrapper_strings.append('module load rocoto\n')
+#        wrapper_strings.append('module load rocoto/1.3.0-RC4\n')
 #        wrapper_strings.append('\n')
 #        wrapper_strings.append(rocotorunstr)
 #
@@ -373,7 +363,7 @@ def create_crontab(base, cronint=5):
 #        os.chmod(script_file,stat.S_IRWXU|stat.S_IRWXG|stat.S_IRWXO)
 #        fh.close()
 #
-#        rocotorunstr = 'ssh %s %s/%s.sh' % (socket.gethostname(), base['EXPDIR'], base['PSLOT']) 
+#        rocotorunstr = 'ssh %s %s/%s.sh' % (socket.gethostname(), base['EXPDIR'], base['PSLOT'])
 #
 #    else:
 
@@ -382,7 +372,7 @@ def create_crontab(base, cronint=5):
 
     # On WCOSS, rocoto module needs to be loaded everytime cron runs
     if base['machine'] in ['WCOSS']:
-        rocotoloadstr = '. /usrx/local/Modules/default/init/sh; module use -a /usrx/local/emc_rocoto/modulefiles; module load rocoto/1.3.0rc2)'
+        rocotoloadstr = '. /usrx/local/Modules/default/init/sh; module use -a /usrx/local/emc_rocoto/modulefiles; module load rocoto/20170119-master)'
         rocotorunstr = '(%s %s)' % (rocotoloadstr, rocotorunstr)
 
     try:

@@ -5,7 +5,7 @@
                        "Build_gsi" "Build_ncep_post" \
                        "Build_ufs_utils" \
                        "Build_gfs_wafs" \
-                       "Build_gdas" "Build_nems_util" \
+                       "Build_gdas" \
                        "Build_sfcanl_nsttfchg" \
                        "Build_tropcy" \
                        "Build_enkf_chgres_recenter" \
