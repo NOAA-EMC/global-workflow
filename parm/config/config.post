@@ -13,6 +13,11 @@ echo "BEGIN: config.post"
 
 # No. of concurrent post jobs [0 implies sequential]
 export NPOSTGRP=20
+export OUTTYP=4
+export MODEL_OUT_FORM=binarynemsiompiio
+if [ $OUTPUT_FILE = "netcdf" ]; then 
+    export MODEL_OUT_FORM=netcdfnemsiompiio
+fi
 
 # Post driver job that calls gfs_nceppost.sh and downstream jobs
 export POSTJJOBSH="$HOMEpost/jobs/JGLOBAL_NCEPPOST"

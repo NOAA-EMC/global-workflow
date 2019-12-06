@@ -1,17 +1,21 @@
-TARGET        = gfs_bufr
-AR            = ar
-ARFLAGS       = ruv
+#####################################################################################
+# gfs_bufr using module compile standard
+# # 11/08/2019 guang.ping.lou@noaa.gov:    Create NetCDF version
+# #####################################################################################
+# set -eux
+#
 
 FC = $(myFC) $(myFCFLAGS)
 CPP = $(myCPP) $(myCPPFLAGS)
-CPPFLAGS = -DLINUX
+NCLIB = -L/usrx/local/prod/packages/ips/18.0.1/netcdf/4.5.0/lib -lnetcdff -lnetcdf
+HDF5_LDFLAGS_C= -L/usrx/local/prod/packages/ips/18.0.1/hdf5/1.10.1/lib -lhdf5_hl -lhdf5
 
-FFLAGS   = $(OPTS) $(DEBUG) \
-           -I$(NEMSIO_INC) \
+FFLAGS   = -I$(NETCDF_INC) \
            -I$(SIGIO_INC4) \
            -I$(W3EMC_INC4)
 
-LIBS     = $(NEMSIO_LIB) \
+LIBS =     $(NCLIB) \
+           $(HDF5_LDFLAGS_C) \
            $(W3EMC_LIB4) \
            $(W3NCO_LIB4) \
            $(BUFR_LIB4) \
@@ -29,7 +33,7 @@ CMD     = ../../exec/gfs_bufr
 
 $(CMD):	$(SRCM) $(OBJS)
 	$(FC) $(FFLAGS) $(SRCM) $(OBJS) $(LIBS) -o $(CMD)
-
+		  
 machine.o:	machine.f
 	$(FC) $(FFLAGS) -free -c machine.f
 physcons.o:	physcons.f machine.o
@@ -41,7 +45,7 @@ gslp.o:	gslp.f
 modstuff1.o:	modstuff1.f
 	$(FC) $(INC) $(FFLAGS) -free -c modstuff1.f
 meteorg.o:	meteorg.f physcons.o funcphys.o
-	$(FC) $(INC) $(FFLAGS) -c meteorg.f
+	$(FC) $(INC) $(FFLAGS) -c meteorg.f 
 bfrhdr.o:	bfrhdr.f
 	$(FC) $(FFLAGS) -c bfrhdr.f
 newsig1.o:	newsig1.f

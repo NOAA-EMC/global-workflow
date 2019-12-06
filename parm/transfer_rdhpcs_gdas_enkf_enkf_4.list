@@ -26,22 +26,20 @@
 # This directory is a good candidate for compression
 #Z
 
-com/gfs/_ENVIR_/enkfgdas._PDYm1_/ /scratch4/NCEPDEV/rstprod/com/gfs/_ENVIR_/enkfgdas._PDYm1_/
+com/gfs/_ENVIR_/enkfgdas._PDYm1_/ _REMOTEPATH_/com/gfs/_ENVIR_/enkfgdas._PDYm1_/
 + /18/
 + /18/mem???/
 + /18/mem???/gdas.t??z.atmf006s.nemsio
 + /18/mem???/gdas.t??z.atmf009s.nemsio
-+ /18/mem???/gdas.t??z.ratmanl.nemsio
 - *
 E
 # This directory is a good candidate for compression
 #Z
-com/gfs/_ENVIR_/enkfgdas._PDY_/ /scratch4/NCEPDEV/rstprod/com/gfs/_ENVIR_/enkfgdas._PDY_/
+com/gfs/_ENVIR_/enkfgdas._PDY_/ _REMOTEPATH_/com/gfs/_ENVIR_/enkfgdas._PDY_/
 + /18/
 + /18/mem???/
 + /18/mem???/gdas.t??z.atmf006s.nemsio
 + /18/mem???/gdas.t??z.atmf009s.nemsio
-+ /18/mem???/gdas.t??z.ratmanl.nemsio
 - *
 E
 # This directory is a good candidate for compression

@@ -15,6 +15,7 @@
 #                          parameters as input; make it work for 
 #                          both FV3GFS and GFS
 #   7) 2018-07-18       Guang Ping Lou Generalize this version to other platforms
+#   8) 2019-10-18       Guang Ping Lou Transition to reading in NetCDF model data
 ################################################################
 set -xa
 
@@ -27,21 +28,17 @@ msg="HAS BEGUN"
 ###################################################
 ## Run meteogram generator for T574
 ###################################################
-export JCAP=${JCAP:-1534}
-export LEVS=${LEVS:-64}
-export LATB=${LATB:-1536}
-export LONB=${LONB:-3072}
+export LEVS=${LEVS:-127}
 export STARTHOUR=${STARTHOUR:-00}
 export ENDHOUR=${ENDHOUR:-180}
-export NEND1=120   ##first period length with time interval = NINT1
-export NINT1=3     ##first period time interval
+export NEND1=120  ##first period length with time interval = NINT1
+export NINT1=6     ##first period time interval
 ##export NINT1=1     ##first period time interval
-export NINT3=3     ##second period time interval
-export NZERO=6
+export NINT3=6     ##second period time interval
 export INCREMENT=12
-export OUTFILE=meteomrf
 export MAKEBUFR=NO
 export F00FLAG=YES
+export fformat="nc"
 
 if [ $FHMAX_HF_GFS -gt 0 -a $FHOUT_HF_GFS -gt 0 ]
   then
@@ -55,10 +52,11 @@ rm -f -r ${COMOUT}/bufr.${cycle}
 mkdir -p ${COMOUT}/bufr.${cycle}
 
 # Extract number of vertical levels from $STARTHOUR atmospheric file
-export NEMSIOGET=${NEMSIOGET:-$EXECbufrsnd/nemsio_get}
-fhr3=$(printf %03i $STARTHOUR)
-ATMFCS=$COMIN/${RUN}.${cycle}.atmf${fhr3}.nemsio
-export LEVS=$($NEMSIOGET $ATMFCS dimz | awk '{print $2}')
+##export NEMSIOGET=${NEMSIOGET:-$EXECbufrsnd/nemsio_get}
+##fhr3=$(printf %03i $STARTHOUR)
+##ATMFCS=$COMIN/${RUN}.${cycle}.atmf${fhr3}.nemsio
+##export LEVS=$($NEMSIOGET $ATMFCS dimz | awk '{print $2}')
+export LEVS=`$HOMEgfs/ush/getncdimlen $COMIN/${RUN}.${cycle}.atmf000.${fformat} pfull`
 
 ### Loop for the hour and wait for the sigma and surface flux file:
 export FSTART=$STARTHOUR
@@ -84,7 +82,7 @@ export FINT=$NINT1
    ic=0
    while [ $ic -lt 1000 ]
    do
-      if [ ! -f $COMIN/${RUN}.${cycle}.logf$FEND.nemsio ]
+      if [ ! -f $COMIN/${RUN}.${cycle}.logf$FEND.txt ]
       then
           sleep 10
           ic=`expr $ic + 1`
@@ -102,6 +100,7 @@ export FINT=$NINT1
    if [ $FEND -gt $NEND1 ]; then
      export FINT=$NINT3
    fi
+##   $USHbufrsnd/gfs_bufr.sh
    $USHbufrsnd/gfs_bufr.sh
   
    export FSTART=$FEND

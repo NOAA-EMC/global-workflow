@@ -80,7 +80,7 @@ echo " .... Building ufs_utils .... "
 }
 
 #------------------------------------
-# build gfs_wafs 
+# build gldas
 #------------------------------------
 # Only build on WCOSS
 if [ $target = wcoss -o $target = wcoss_cray -o $target = wcoss_dell_p3 ]; then
@@ -89,13 +89,25 @@ if [ $target = wcoss -o $target = wcoss_cray -o $target = wcoss_dell_p3 ]; then
  ./build_gfs_wafs.sh > $logs_dir/build_gfs_wafs .log 2>&1
  }
 fi
+$Build_gldas && {
+echo " .... Building gldas .... "
+./build_gldas.sh > $logs_dir/build_gldas.log 2>&1
+}
 
 #------------------------------------
-# build sfcanl_nsttfchg 
+# build gfs_wafs 
 #------------------------------------
-$Build_sfcanl_nsttfchg && {
-echo " .... Building gaussian_sfcanl and nst_tf_chg .... "
-./build_sfcanl_nsttfchg.sh > $logs_dir/build_sfcanl_nsttfchg.log 2>&1
+$Build_gfs_wafs  && {
+echo " .... Building gfs_wafs  .... "
+./build_gfs_wafs.sh > $logs_dir/build_gfs_wafs .log 2>&1
+}
+
+#------------------------------------
+# build gaussian_sfcanl
+#------------------------------------
+$Build_gaussian_sfcanl && {
+echo " .... Building gaussian_sfcanl .... "
+./build_gaussian_sfcanl.sh > $logs_dir/build_gaussian_sfcanl.log 2>&1
 }
 
 #------------------------------------
@@ -106,6 +118,15 @@ echo " .... Building enkf_chgres_recenter .... "
 ./build_enkf_chgres_recenter.sh > $logs_dir/build_enkf_chgres_recenter.log 2>&1
 }
 
+#------------------------------------
+# build enkf_chgres_recenter_nc
+#------------------------------------
+$Build_enkf_chgres_recenter_nc && {
+echo " .... Building enkf_chgres_recenter_nc .... "
+./build_enkf_chgres_recenter_nc.sh > $logs_dir/build_enkf_chgres_recenter_nc.log 2>&1
+}
+
+#------------------------------------
 #------------------------------------
 # build tropcy_NEMS
 #------------------------------------

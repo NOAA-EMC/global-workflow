@@ -14,6 +14,7 @@
  integer(nemsio_intkind), public  :: i_output
  integer(nemsio_intkind), public  :: j_output
  integer                , public  :: ij_output
+ logical, public :: flipdelz
 
  public                           :: program_setup
 

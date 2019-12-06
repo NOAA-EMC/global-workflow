@@ -10,7 +10,7 @@
 
  contains
 
- subroutine compute_delz(ijm, levp, ak_in, bk_in, ps, zs, t, sphum, delz)
+ subroutine compute_delz(ijm, levp, ak_in, bk_in, ps, zs, t, sphum, delz, flipsign)
 
  implicit none
  integer, intent(in):: levp, ijm
@@ -19,6 +19,7 @@
  real,    intent(in), dimension(ijm,levp):: t
  real,    intent(in), dimension(ijm,levp):: sphum
  real,    intent(out), dimension(ijm,levp):: delz
+ logical, intent(in) :: flipsign
 ! Local:
  real, dimension(ijm,levp+1):: zh
  real, dimension(ijm,levp+1):: pe0, pn0
@@ -63,7 +64,11 @@
 
  do k = 1, levp
    do i = 1, ijm
-     delz(i,k) = zh(i,k+1) - zh(i,k)
+     if (flipsign) then
+       delz(i,k) = zh(i,k) - zh(i,k+1)
+     else
+       delz(i,k) = zh(i,k+1) - zh(i,k)
+     end if
    enddo
  enddo
 

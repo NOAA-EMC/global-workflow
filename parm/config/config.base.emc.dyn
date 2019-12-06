@@ -155,8 +155,9 @@ export HOMEgsi="$HOMEgfs"
 export FIXgsi="$HOMEgfs/fix/fix_gsi"
 export HOMEfv3gfs="$HOMEgfs/sorc/fv3gfs.fd"
 export HOMEpost="$HOMEgfs"
-export HOMEobsproc_prep="$BASE_GIT/obsproc/OT-obsproc_prep.v5.2.0-20190614"
-export HOMEobsproc_network="$BASE_GIT/obsproc/OT-obsproc_global.v3.2.1-20190613"
+export HOMEobsproc_prep="$BASE_GIT/obsproc/obsproc_prep_RB-5.2.0"
+export HOMEobsproc_network="$BASE_GIT/obsproc/obsproc_global_RB-3.2.2"
+export HOMEobsproc_global=$HOMEobsproc_network
 export BASE_VERIF="$BASE_SVN/verif/global/tags/vsdb"
 
 # CONVENIENT utility scripts and other environment parameters
@@ -205,7 +206,7 @@ export SENDDBN="NO"
 export SENDSDM="NO"
 
 # Resolution specific parameters
-export LEVS=65
+export LEVS=128
 export CASE="@CASECTL@"
 export CASE_ENKF="@CASEENS@"
 
@@ -241,9 +242,24 @@ export FHOUT_HF_GFS=1
 # I/O QUILTING, true--use Write Component; false--use GFDL FMS
 # if quilting=true, choose OUTPUT_GRID as cubed_sphere_grid in netcdf or gaussian_grid
 # if gaussian_grid, set OUTPUT_FILE for nemsio or netcdf
+# WRITE_DOPOST=true, use inline POST
 export QUILTING=".true."
 export OUTPUT_GRID="gaussian_grid"
-export OUTPUT_FILE="nemsio"
+export OUTPUT_FILE="netcdf"
+export WRITE_DOPOST=".false."
+
+# IAU related parameters
+export DOIAU="NO"
+export IAUFHRS=6
+export IAU_DELTHRS=6
+export DOIAU_ENKF="NO"
+export IAUFHRS_ENKF=6
+export IAU_DELTHRS_ENKF=6
+[[ "$SDATE" = "$CDATE" ]] && ( export DOIAU="NO"; export DOIAU_ENKF="NO" )
+
+# run GLDAS to spin up land ICs
+export DO_GLDAS=YES
+export gldas_cyc=00
 
 # IAU related parameters
 export DOIAU="NO"
@@ -294,5 +310,11 @@ export ARCH_CYC=00           # Archive data at this cycle for warm_start capabil
 export ARCH_WARMICFREQ=4     # Archive frequency in days for warm_start capability
 export ARCH_FCSTICFREQ=1     # Archive frequency in days for gdas and gfs forecast-only capability
 
+# suffix options depending on file format
+if [ $OUTPUT_FILE = "netcdf" ]; then
+    export SUFFIX=".nc"
+else
+    export SUFFIX=".nemsio"
+fi 
 
 echo "END: config.base"

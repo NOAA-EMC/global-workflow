@@ -87,7 +87,7 @@ case $case_in in
         export layout_y=8
         export layout_x_gfs=12
         export layout_y_gfs=8
-        export npe_node_fcst=6
+        export npe_node_fcst=6 
         export nth_fv3=4
         export cdmbgwd="4.0,0.15,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=2

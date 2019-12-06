@@ -24,15 +24,19 @@ fi
 #---------------------------------------------------------------
 for fhr in $fhrlst; do
 
-    if [ ! -f $restart_file${fhr}.nemsio ]; then
+    if [ ! -f $restart_file${fhr}.nemsio -a ! -f $restart_file${fhr}.nc  -a ! -f $restart_file${fhr}.txt ]; then
         echo "Nothing to process for FHR = $fhr, cycle"
         continue
     fi
 
-    export post_times=$fhr
-    $HOMEgfs/jobs/JGLOBAL_NCEPPOST
-    status=$?
-    [[ $status -ne 0 ]] && exit $status
+    #master=$ROTDIR/${CDUMP}.${PDY}/${cyc}/${CDUMP}.t${cyc}z.master.grb2f${fhr}
+    pgb0p25=$ROTDIR/${CDUMP}.${PDY}/${cyc}/${CDUMP}.t${cyc}z.pgrb2.0p25.f${fhr}
+    if [ ! -s $pgb0p25 ]; then
+        export post_times=$fhr
+        $HOMEgfs/jobs/JGLOBAL_NCEPPOST
+        status=$?
+        [[ $status -ne 0 ]] && exit $status
+    fi
 
 done
 

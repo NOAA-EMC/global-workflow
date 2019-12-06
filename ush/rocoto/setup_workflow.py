@@ -42,7 +42,7 @@ def main():
         print 'input arg:     --expdir = %s' % repr(args.expdir)
         sys.exit(1)
 
-    gfs_steps = ['prep', 'anal', 'fcst', 'postsnd', 'post', 'awips', 'gempak', 'vrfy', 'arch']
+    gfs_steps = ['prep', 'anal', 'gldas', 'fcst', 'postsnd', 'post', 'awips', 'gempak', 'vrfy', 'metp', 'arch']
     hyb_steps = ['eobs', 'eomg', 'eupd', 'ecen', 'efcs', 'epos', 'earc']
 
     steps = gfs_steps + hyb_steps if _base.get('DOHYBVAR', 'NO') == 'YES' else gfs_steps
@@ -216,8 +216,15 @@ def get_gdasgfs_resources(dict_configs, cdump='gdas'):
     do_bufrsnd = base.get('DO_BUFRSND', 'NO').upper()
     do_gempak = base.get('DO_GEMPAK', 'NO').upper()
     do_awips = base.get('DO_AWIPS', 'NO').upper()
+    do_gldas = base.get('DO_GLDAS', 'NO').upper()
 
-    tasks = ['prep', 'anal', 'fcst', 'post', 'vrfy', 'arch']
+    #tasks = ['prep', 'anal', 'fcst', 'post', 'vrfy', 'arch']
+    tasks = ['prep', 'anal']
+
+    if cdump in ['gdas'] and do_gldas in ['Y', 'YES']:
+        tasks += ['gldas']
+
+    tasks += ['fcst', 'post', 'vrfy', 'metp', 'arch']
 
     if cdump in ['gfs'] and do_bufrsnd in ['Y', 'YES']:
         tasks += ['postsnd']
@@ -225,7 +232,7 @@ def get_gdasgfs_resources(dict_configs, cdump='gdas'):
         tasks += ['gempak']
     if cdump in ['gfs'] and do_awips in ['Y', 'YES']:
         tasks += ['awips']
-
+ 
     dict_resources = OrderedDict()
 
     for task in tasks:
@@ -266,7 +273,7 @@ def get_hyb_resources(dict_configs):
     # These tasks can be run in either or both cycles
     tasks1 = ['eobs', 'eomg', 'eupd']
     if lobsdiag_forenkf in ['.T.', '.TRUE.']:
-        tasks.remove('eomg')
+        tasks1.remove('eomg')
 
     if eupd_cyc in ['BOTH']:
         cdumps = ['gfs', 'gdas']
@@ -340,12 +347,15 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
 
     base = dict_configs['base']
     gfs_cyc = base.get('gfs_cyc', 0)
+    gldas_cyc = base.get('gldas_cyc', 0)
     dohybvar = base.get('DOHYBVAR', 'NO').upper()
     eupd_cyc = base.get('EUPD_CYC', 'gdas').upper()
     do_bufrsnd = base.get('DO_BUFRSND', 'NO').upper()
     do_gempak = base.get('DO_GEMPAK', 'NO').upper()
     do_awips = base.get('DO_AWIPS', 'NO').upper()
+    do_gldas = base.get('DO_GLDAS', 'NO').upper()
     dumpsuffix = base.get('DUMP_SUFFIX', '')
+    gridsuffix = base.get('SUFFIX', '')
 
     dict_tasks = OrderedDict()
 
@@ -353,7 +363,7 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
     deps = []
     dep_dict = {'type': 'metatask', 'name': '%spost' % 'gdas', 'offset': '-06:00:00'}
     deps.append(rocoto.add_dependency(dep_dict))
-    data = '&ROTDIR;/gdas.@Y@m@d/@H/gdas.t@Hz.atmf009.nemsio'
+    data = '&ROTDIR;/gdas.@Y@m@d/@H/gdas.t@Hz.atmf009%s' % (gridsuffix)
     dep_dict = {'type': 'data', 'data': data, 'offset': '-06:00:00'}
     deps.append(rocoto.add_dependency(dep_dict))
     data = '&DMPDIR;/%s%s.@Y@m@d/@H/%s.t@Hz.updated.status.tm00.bufr_d' % (cdump, dumpsuffix, cdump)
@@ -388,15 +398,34 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
 
     dict_tasks['%sanal' % cdump] = task
 
+    # gldas
+    if cdump in ['gdas'] and do_gldas in ['Y', 'YES']:
+        deps = []
+        dep_dict = {'type': 'task', 'name': '%sanal' % cdump}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+        task = wfu.create_wf_task('gldas', cdump=cdump, envar=envars, dependency=dependencies)
+
+        dict_tasks['%sgldas' % cdump] = task
+
     # fcst
     deps = []
-    dep_dict = {'type': 'task', 'name': '%sanal' % cdump}
-    deps.append(rocoto.add_dependency(dep_dict))
     if cdump in ['gdas']:
-        dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': '-06:00:00'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
+        if do_gldas in ['Y', 'YES']:
+            dep_dict = {'type': 'task', 'name': '%sgldas' % cdump}
+            deps.append(rocoto.add_dependency(dep_dict))
+            dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': '-06:00:00'}
+            deps.append(rocoto.add_dependency(dep_dict))
+            dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
+        else:
+            dep_dict = {'type': 'task', 'name': '%sanal' % cdump}
+            deps.append(rocoto.add_dependency(dep_dict))
+            dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': '-06:00:00'}
+            deps.append(rocoto.add_dependency(dep_dict))
+            dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
     elif cdump in ['gfs']:
+        dep_dict = {'type': 'task', 'name': '%sanal' % cdump}
+        deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
     task = wfu.create_wf_task('fcst', cdump=cdump, envar=envars, dependency=dependencies)
 
@@ -404,7 +433,7 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
 
     # post
     deps = []
-    data = '&ROTDIR;/%s.@Y@m@d/@H/%s.t@Hz.log#dep#.nemsio' % (cdump, cdump)
+    data = '&ROTDIR;/%s.@Y@m@d/@H/%s.t@Hz.log#dep#.txt' % (cdump, cdump)
     dep_dict = {'type': 'data', 'data': data}
     deps.append(rocoto.add_dependency(dep_dict))
     dep_dict = {'type': 'task', 'name': '%sfcst' % cdump}
@@ -431,6 +460,21 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
 
     dict_tasks['%svrfy' % cdump] = task
 
+    # metp
+    if cdump in ['gfs']:
+        deps = []
+        dep_dict = {'type':'metatask', 'name':'%spost' % cdump}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type':'task', 'name':'%sarch' % cdump, 'offset':'-&INTERVAL_GFS;'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+        metpcase = rocoto.create_envar(name='METPCASE', value='#metpcase#')
+        metpenvars = envars + [metpcase]
+        varname1 = 'metpcase'
+        varval1 = 'g2g1 g2o1 pcp1'
+        task = wfu.create_wf_task('metp', cdump=cdump, envar=metpenvars, dependency=dependencies,
+                                   metatask='metp', varname=varname1, varval=varval1)
+        dict_tasks['%smetp' % cdump] = task
 
     if cdump in ['gfs'] and do_bufrsnd in ['Y', 'YES']:
         #postsnd

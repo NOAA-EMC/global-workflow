@@ -54,7 +54,7 @@ export prevday=`$NDATE -24 ${PDY}00 | cut -c1-8`
 #
 # VARIABLES TO SET
 # PTMPROOT and STMPROOT should be set to the user's directories
-export COMDATEROOT=$COMROOTp1
+# COMDATEROOT defined by module prod_util
 #export PTMPROOT=/gpfs/hps3/ptmp/$USER
 export PTMPROOT=$ROTDIR/gfsmos.$PDY
 #export STMPROOT=/gpfs/hps3/stmp/$USER

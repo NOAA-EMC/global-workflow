@@ -37,15 +37,10 @@ status=$?
 export DATA="$RUNDIR/$CDATE/$CDUMP/fv3ic$$"
 [[ -d $DATA ]] && rm -rf $DATA
 
-# Input GFS initial condition files
-export INIDIR="$ICSDIR/$CDATE/$CDUMP"
-export ATMANL="$ICSDIR/$CDATE/$CDUMP/siganl.${CDUMP}.$CDATE"
-export SFCANL="$ICSDIR/$CDATE/$CDUMP/sfcanl.${CDUMP}.$CDATE"
-if [ -f $ICSDIR/$CDATE/$CDUMP/nstanl.${CDUMP}.$CDATE ]; then
-    export NSTANL="$ICSDIR/$CDATE/$CDUMP/nstanl.${CDUMP}.$CDATE"
-fi
+# Input GFS initial condition directory
+export INIDIR="$ICSDIR/$CDATE/$CDUMP/$CDUMP.$PDY/$cyc"
 
-# Output FV3 initial condition files
+# Output FV3 initial condition directory
 export OUTDIR="$ICSDIR/$CDATE/$CDUMP/$CASE/INPUT"
 
 export OMP_NUM_THREADS_CH=$NTHREADS_CHGRES
