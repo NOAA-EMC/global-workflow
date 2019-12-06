@@ -56,6 +56,7 @@ mkdir -p ${COMOUT}/bufr.${cycle}
 ##fhr3=$(printf %03i $STARTHOUR)
 ##ATMFCS=$COMIN/${RUN}.${cycle}.atmf${fhr3}.nemsio
 ##export LEVS=$($NEMSIOGET $ATMFCS dimz | awk '{print $2}')
+export LEVS=`$HOMEgfs/ush/getncdimlen $COMIN/${RUN}.${cycle}.atmf000.${fformat} pfull`
 
 ### Loop for the hour and wait for the sigma and surface flux file:
 export FSTART=$STARTHOUR
@@ -95,7 +96,6 @@ export FINT=$NINT1
       fi
    done
 
-export LEVS=`$HOMEgfs/ush/getncdimlen $COMIN/${RUN}.${cycle}.atmf000.${fformat} pfull`
 ## 1-hourly output before $NEND1, 3-hourly output after
    if [ $FEND -gt $NEND1 ]; then
      export FINT=$NINT3
