@@ -41,11 +41,7 @@ elif [ $machine = "hera" ]; then
     FIX_DIR="/scratch1/NCEPDEV/global/glopara/fix"
 fi
 cd ${pwd}/../fix                ||exit 8
-if [ "${sysID}" = "gefs" ]; then
-for dir in fix_am fix_fv3 fix_orog fix_fv3_gmted2010 fix_verif ; do
-else
 for dir in fix_am fix_fv3 fix_gldas fix_orog fix_fv3_gmted2010 fix_verif ; do
-fi
     [[ -d $dir ]] && rm -rf $dir
 done
 $LINK $FIX_DIR/* .
@@ -73,13 +69,15 @@ cd ${pwd}/../ush                ||exit 8
         gfs_transfer.sh  link_crtm_fix.sh  trim_rh.sh fix_precip.sh; do
         $LINK ../sorc/gfs_post.fd/ush/$file                  .
     done
+if [ "${sysID}" = "gefs" ]; then
     for file in emcsfc_ice_blend.sh  fv3gfs_driver_grid.sh  fv3gfs_make_orog.sh  global_cycle_driver.sh \
         emcsfc_snow.sh  fv3gfs_filter_topo.sh  global_chgres_driver.sh  global_cycle.sh \
-if [ "${sysID}" = "gefs" ]; then
         fv3gfs_chgres.sh  fv3gfs_make_grid.sh  global_chgres.sh ; do
         $LINK ../sorc/ufs_utils.fd/ush/$file                  .
     done
 else
+    for file in emcsfc_ice_blend.sh  fv3gfs_driver_grid.sh  fv3gfs_make_orog.sh  global_cycle_driver.sh \
+        emcsfc_snow.sh  fv3gfs_filter_topo.sh  global_chgres_driver.sh  global_cycle.sh \
         fv3gfs_chgres.sh  fv3gfs_make_grid.sh  global_chgres.sh  ; do
         $LINK ../sorc/ufs_utils.fd/ush/$file                  .
     done
@@ -213,18 +211,22 @@ for ufs_utilsexe in \
     $LINK ../sorc/ufs_utils.fd/exec/$ufs_utilsexe .
 done
 
-for gsiexe in  global_gsi.x global_enkf.x calc_increment_ens.x  getsfcensmeanp.x  getsigensmeanp_smooth.x  \
 if [ "${sysID}" = "gefs" ]; then
+for gsiexe in  global_gsi.x global_enkf.x calc_increment_ens.x  getsfcensmeanp.x  getsigensmeanp_smooth.x  \
     getsigensstatp.x  nc_diag_cat_serial.x nc_diag_cat.x recentersigp.x oznmon_horiz.x oznmon_time.x \
     radmon_angle.x radmon_bcoef.x radmon_bcor.x radmon_time.x ;do
-else
-    calc_increment_ens_ncio.x calc_analysis.x interp_inc.x \
-    getsigensstatp.x  nc_diag_cat_serial.x nc_diag_cat.x recentersigp.x oznmon_horiz.x oznmon_time.x \
-    radmon_angle.x radmon_bcoef.x radmon_bcor.x radmon_time.x interp_inc.x;do
-fi
     [[ -s $gsiexe ]] && rm -f $gsiexe
     $LINK ../sorc/gsi.fd/exec/$gsiexe .
 done
+else
+for gsiexe in  global_gsi.x global_enkf.x calc_increment_ens.x  getsfcensmeanp.x  getsigensmeanp_smooth.x  \
+    calc_increment_ens_ncio.x calc_analysis.x interp_inc.x \
+    getsigensstatp.x  nc_diag_cat_serial.x nc_diag_cat.x recentersigp.x oznmon_horiz.x oznmon_time.x \
+    radmon_angle.x radmon_bcoef.x radmon_bcor.x radmon_time.x interp_inc.x;do
+    [[ -s $gsiexe ]] && rm -f $gsiexe
+    $LINK ../sorc/gsi.fd/exec/$gsiexe .
+done
+fi
 
 for gldasexe in gdas2gldas  gldas2gdas  gldas_forcing  gldas_noah gldas_noah_rst  gldas_post; do
     [[ -s $gldasexe ]] && rm -f $gldasexe
@@ -263,13 +265,15 @@ if [ "${sysID}" = "gefs" ]; then
     for prog in  chgres_cube.fd       global_cycle.fd   nemsio_read.fd \
                  emcsfc_ice_blend.fd  mkgfsnemsioctl.fd  nst_tf_chg.fd \
                  emcsfc_snow2mdl.fd   global_chgres.fd  nemsio_get.fd      orog.fd ;do
+        $SLINK ufs_utils.fd/sorc/$prog                                                     $prog
+    done
 else
     for prog in  chgres_cube.fd       global_cycle.fd   nemsio_read.fd  nemsio_chgdate.fd \
         emcsfc_ice_blend.fd  nst_tf_chg.fd \
         emcsfc_snow2mdl.fd   global_chgres.fd  nemsio_get.fd    orog.fd ;do
-fi
         $SLINK ufs_utils.fd/sorc/$prog                                                     $prog
     done
+fi
 
 
     if [ $machine = dell -o $machine = hera ]; then
@@ -281,9 +285,7 @@ fi
         $SLINK gfs_wafs.fd/sorc/wafs_setmissing.fd                                              wafs_setmissing.fd
     fi
 
-if [ "${sysID}" = "gefs" ]; then
-else
-
+if [ "${sysID}" = "gfs" ]; then
     for prog in gdas2gldas.fd  gldas2gdas.fd  gldas_forcing.fd  gldas_model.fd  gldas_post.fd  gldas_rst.fd ;do
         $SLINK gldas.fd/sorc/$prog                                                     $prog
     done

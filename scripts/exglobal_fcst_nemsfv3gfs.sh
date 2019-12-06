@@ -404,7 +404,22 @@ if [ $cplwav = ".true." ]; then
     $NLN $COMOUTWW3/${WAV_MOD_ID}.${WRPDY}/${WRcyc}/restart/${WAV_MOD_ID}${WAV_MEMBER}.restart.${wavGRD}.${WRDATE} $DATA/restart001.${wavGRD}
   done
   $NLN $COMINWW3/${WAV_MOD_ID}.${PDY}/${cyc}/rundata/${WAV_MOD_ID}.${iceID}.${cycle}.ice $DATA/ice.${iceID}
-
+# Link output files
+  fhr=$FHMIN
+  while [ $fhr -le $FHMAX ]; do
+  YMDH=`$NDATE $fhr $CDATE`
+  YMD=$(echo $YMDH | cut -c1-8)
+  HMS="$(echo $YMDH | cut -c9-10)0000"
+    $NLN $DATA/${YMD}.${HMS}.out_pnt.${buoy} $COMOUTWW3/${WAV_MOD_ID}.${PDY}/${cyc}/rundata/
+    for wavGRD in ${waveGRD} ; do
+      $NLN $DATA/${YMD}.${HMS}.out_grd.${wavGRD} $COMOUTWW3/${WAV_MOD_ID}.${PDY}/${cyc}/rundata/
+    done
+      FHINC=$FHOUT
+      if [ $FHMAX_HF -gt 0 -a $FHOUT_HF -gt 0 -a $fhr -lt $FHMAX_HF ]; then
+        FHINC=$FHOUT_HF
+      fi
+      fhr=$((fhr+FHINC))
+  done
 fi
 
 # inline post fix files
@@ -782,12 +797,18 @@ cat > input.nml <<EOF
   max_files_w = 100
   $fms_io_nml
 /
+EOF
 
+if [ "${NET}" != "gens" ]; then
+cat >> input.nml << EOF
 &mpp_io_nml
 shuffle=${shuffle:-1}
 deflate_level=${deflate_level:-1}
 /
+EOF
+fi
 
+cat >> input.nml << EOF
 &fms_nml
   clock_grain = 'ROUTINE'
   domains_stack_size = ${domains_stack_size:-3000000}
@@ -866,7 +887,10 @@ deflate_level=${deflate_level:-1}
   res_latlon_dynamics = $res_latlon_dynamics
   $fv_core_nml
 /
+EOF
 
+if [ "${NET}" != "gens" ]; then
+cat >> input.nml << EOF
 &cires_ugwp_nml
        knob_ugwp_solver  = ${knob_ugwp_solver:-2}
        knob_ugwp_source  = ${knob_ugwp_source:-1,1,0,0}
@@ -881,8 +905,10 @@ deflate_level=${deflate_level:-1}
        knob_ugwp_version = ${knob_ugwp_version:-0}
        launch_level      = ${launch_level:-54}                   
 /
+EOF
+fi
 
-
+cat >> input.nml << EOF
 &external_ic_nml
   filtered_terrain = $filtered_terrain
   levp = $LEVS
@@ -907,9 +933,17 @@ deflate_level=${deflate_level:-1}
   ialb         = ${IALB:-"1"}
   iems         = ${IEMS:-"1"}
   iaer         = $IAER
+EOF
+
+if [ "${NET}" != "gens" ]; then
+cat >> input.nml << EOF
   icliq_sw     = ${icliq_sw:-"2"}
   iovr_lw      = ${iovr_lw:-"3"}
   iovr_sw      = ${iovr_sw:-"3"}
+EOF
+fi
+
+cat >> input.nml << EOF
   ico2         = $ICO2
   isubc_sw     = ${isubc_sw:-"2"}
   isubc_lw     = ${isubc_lw:-"2"}
@@ -921,10 +955,22 @@ deflate_level=${deflate_level:-1}
   cal_pre      = ${cal_pre:-".true."}
   redrag       = ${redrag:-".true."}
   dspheat      = ${dspheat:-".true."}
+EOF
+
+if [ "${NET}" = "gens" ]; then
+cat >> input.nml << EOF
+  hybedmf      = ${hybedmf:-".true."}
+EOF
+elif [ "${NET}" != "gens" ]; then
+cat >> input.nml << EOF
   hybedmf      = ${hybedmf:-".false."}
   satmedmf     = ${satmedmf-".true."}
   isatmedmf    = ${isatmedmf-"1"}
   lheatstrg    = ${lheatstrg-".true."}
+EOF
+fi
+
+cat >> input.nml << EOF
   random_clds  = ${random_clds:-".true."}
   trans_trac   = ${trans_trac:-".true."}
   cnvcld       = ${cnvcld:-".true."}
@@ -934,6 +980,10 @@ deflate_level=${deflate_level:-1}
   prslrd0      = ${prslrd0:-"0."}
   ivegsrc      = ${ivegsrc:-"1"}
   isot         = ${isot:-"1"}
+EOF
+
+if [ "${NET}" != "gens" ]; then
+cat >> input.nml << EOF
   lsoil        = ${lsoil:-"4"}
   lsm          = ${lsm:-"2"}
   iopt_dveg    = ${iopt_dveg:-"1"}
@@ -948,6 +998,10 @@ deflate_level=${deflate_level:-1}
   iopt_snf     = ${iopt_snf:-"4"}
   iopt_tbot    = ${iopt_tbot:-"2"}
   iopt_stc     = ${iopt_stc:-"1"}
+EOF
+fi
+
+cat >> input.nml << EOF
   debug        = ${gfs_phys_debug:-".false."}
   nstf_name    = $nstf_name
   nst_anl      = $nst_anl
@@ -956,6 +1010,10 @@ deflate_level=${deflate_level:-1}
   lgfdlmprad   = ${lgfdlmprad:-".false."}
   effr_in      = ${effr_in:-".false."}
   cplwav       = ${cplwav:-".false."}
+EOF
+
+if [ "${NET}" != "gens" ]; then
+cat >> input.nml << EOF
   ldiag_ugwp   = ${ldiag_ugwp:-".false."}
   do_ugwp      = ${do_ugwp:-".true."}
   do_tofd      = ${do_tofd:-".true."}
@@ -963,6 +1021,7 @@ deflate_level=${deflate_level:-1}
   do_shum      = ${do_shum:-".false."}
   do_skeb      = ${do_skeb:-".false."}
 EOF
+fi
 
 # Add namelist for IAU
 if [ $DOIAU = "YES" ]; then
@@ -1028,7 +1087,15 @@ cat >> input.nml <<EOF
   fix_negative = .true.
   icloud_f = 1
   mp_time = 150.
+EOF
+
+if [ "${NET}" != "gens" ]; then
+cat >> input.nml << EOF
   reiflag = ${reiflag:-"2"}
+EOF
+fi
+
+cat >> input.nml << EOF
   $gfdl_cloud_microphysics_nml
 /
 
@@ -1063,7 +1130,15 @@ cat >> input.nml <<EOF
   FSMCL(2) = ${FSMCL2:-99999}
   FSMCL(3) = ${FSMCL3:-99999}
   FSMCL(4) = ${FSMCL4:-99999}
-  LANDICE  = ${landice:-".true."}
+EOF
+
+if [ "${NET}" != "gens" ]; then
+cat >> input.nml << EOF
+ LANDICE  = ${landice:-".true."}
+EOF
+fi
+
+cat >> input.nml << EOF
   FTSFS = ${FTSFS:-90}
   FAISL = ${FAISL:-99999}
   FAISS = ${FAISS:-99999}

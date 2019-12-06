@@ -4,18 +4,12 @@ set -xue
 topdir=$(pwd)
 echo $topdir
 
-sysID=${1} 
-
-if [ $# -lt 1 ]; then
-    echo '***ERROR*** must specify arguements: (3) sysID'
-    echo ' Syntax: checkout.sh (gfs | gefs)'
-    exit 1
-fi
+SYSID=${1:?***ERROR*** must specify arguements: (3) SYSID, syntax: checkout.sh (gfs | gefs)}
 
 echo fv3gfs checkout ...
 if [[ ! -d fv3gfs.fd ]] ; then
     rm -f ${topdir}/checkout-fv3gfs.log
-if [ "${sysID}" = "gefs" ]
+if [ "${SYSID}" = "gefs" ]
 then
     git clone --recursive gerrit:EMC_FV3-GSDCHEM-WW3 fv3gfs.fd >> ${topdir}/checkout-fv3gfs.log 2>&1
     cd fv3gfs.fd
@@ -43,7 +37,7 @@ if [[ ! -d gsi.fd ]] ; then
     rm -f ${topdir}/checkout-gsi.log
     git clone --recursive gerrit:ProdGSI gsi.fd >> ${topdir}/checkout-gsi.log 2>&1
     cd gsi.fd
-if [ "${sysID}" = "gefs" ]
+if [ "${SYSID}" = "gefs" ]
 then
     git checkout 3664477befd7ef2ba8299c3a5461747a78da30a0
 else
@@ -80,7 +74,7 @@ fi
 echo EMC_post checkout ...
 if [[ ! -d gfs_post.fd ]] ; then
     rm -f ${topdir}/checkout-gfs_post.log
-if [ "${sysID}" = "gefs" ]
+if [ "${SYSID}" = "gefs" ]
 then
     git clone --recursive https://github.com/NOAA-EMC/EMC_post.git gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
     #git clone --recursive gerrit:EMC_post_gtg gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
@@ -113,7 +107,7 @@ if [[ ! -d verif-global.fd ]] ; then
     rm -f ${topdir}/checkout-verif-global.log
     git clone --recursive gerrit:EMC_verif-global verif-global.fd >> ${topdir}/checkout-verif-global.log 2>&1
     cd verif-global.fd
-if [ "${sysID}" = "gefs" ]
+if [ "${SYSID}" = "gefs" ]
 then
     git checkout verif_global_v1.2.2
 else
