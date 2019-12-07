@@ -249,26 +249,20 @@ export OUTPUT_FILE="netcdf"
 export WRITE_DOPOST=".false."
 
 # IAU related parameters
-export DOIAU="NO"
-export IAUFHRS=6
+export DOIAU="NO"        # Enable 4DIAU for control with 3 increments
+export IAUFHRS="3,6,9"
 export IAU_DELTHRS=6
-export DOIAU_ENKF="NO"
-export IAUFHRS_ENKF=6
+export IAU_OFFSET=6
+export DOIAU_ENKF="NO"   # Enable 4DIAU for EnKF ensemble
+export IAUFHRS_ENKF="3,6,9"
 export IAU_DELTHRS_ENKF=6
-[[ "$SDATE" = "$CDATE" ]] && ( export DOIAU="NO"; export DOIAU_ENKF="NO" )
+if [[ "$SDATE" = "$CDATE" ]]; then export IAU_OFFSET=0 ;fi
+
 
 # run GLDAS to spin up land ICs
 export DO_GLDAS=YES
 export gldas_cyc=00
 
-# IAU related parameters
-export DOIAU="NO"
-export IAUFHRS=6
-export IAU_DELTHRS=6
-export DOIAU_ENKF="NO"
-export IAUFHRS_ENKF=6
-export IAU_DELTHRS_ENKF=6
-[[ "$SDATE" = "$CDATE" ]] && ( export DOIAU="NO"; export DOIAU_ENKF="NO" )
 
 # Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL
 export imp_physics=11

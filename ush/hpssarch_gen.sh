@@ -114,7 +114,7 @@ if [ $type = "gfs" ]; then
   echo  "${dirname}${head}sfcanl${SUFFIX}            " >>gfs_${format}a.txt
   echo  "${dirname}${head}atmf000${SUFFIX}           " >>gfs_${format}a.txt
   echo  "${dirname}${head}sfcf000${SUFFIX}           " >>gfs_${format}a.txt
-  echo  "${dirname}${head}atminc.nc                  " >>gfs_${format}a.txt
+  echo  "${dirname}${head}atmi*.nc                   " >>gfs_${format}a.txt
   echo  "${dirname}${head}dtfanl.nc                  " >>gfs_${format}a.txt
 
   #..................
@@ -161,8 +161,8 @@ if [ $type = "gdas" ]; then
   echo  "${dirname}${head}pgrb2.0p25.anl.idx         " >>gdas.txt
   echo  "${dirname}${head}pgrb2.1p00.anl             " >>gdas.txt
   echo  "${dirname}${head}pgrb2.1p00.anl.idx         " >>gdas.txt
-  echo  "${dirname}${head}atmanl${SUFFIX}              " >>gdas.txt
-  echo  "${dirname}${head}sfcanl${SUFFIX}              " >>gdas.txt
+  echo  "${dirname}${head}atmanl${SUFFIX}            " >>gdas.txt
+  echo  "${dirname}${head}sfcanl${SUFFIX}            " >>gdas.txt
   if [ -s $ROTDIR/${dirpath}${head}cnvstat ]; then
      echo  "${dirname}${head}cnvstat                 " >>gdas.txt
   fi
