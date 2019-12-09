@@ -19,7 +19,8 @@
 #   Imported Shell Variables:
 #     CASE          Model resolution.  Defaults to C768.
 #     DONST         Process NST fields when 'yes'.  Default is 'no'.
-#     NETCDF_OUT    Output gaussian analysis file in netcdf when 'true'.
+#     OUTPUT_FILE   Output gaussian analysis file format.  Default is "nemsio"
+#                   Set to "netcdf" for netcdf output file
 #                   Otherwise, output in nemsio.
 #     BASEDIR       Root directory where all scripts and fixed files reside.
 #                   Default is /nwprod2.
@@ -122,9 +123,14 @@ LATB_CASE=$((res*2))
 LONB_SFC=${LONB_SFC:-$LONB_CASE}
 LATB_SFC=${LATB_SFC:-$LATB_CASE}
 DONST=${DONST:-"NO"}
-NETCDF_OUT=${NETCDF_OUT:-.false.}
 LEVS=${LEVS:-64}
 LEVSP1=$(($LEVS+1))
+OUTPUT_FILE=${OUTPUT_FILE:-"nemsio"}
+if [ $OUTPUT_FILE = "netcdf" ]; then
+    export NETCDF_OUT=".true."
+else
+    export NETCDF_OUT=".false."
+fi
 
 #  Directories.
 gfs_ver=${gfs_ver:-v15.0.0}
