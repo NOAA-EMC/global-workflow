@@ -89,4 +89,12 @@ else
     echo 'Skip. Directory verif-global.fd already exist.'
 fi
 
+echo aeroconv checkout ...
+if [[ ! -d aeroconv ]] ; then
+    rm -f ${topdir}/checkout-aero.log
+    git clone https://github.com/NCAR/aeroconv aeroconv >> ${topdir}/checkout-aero.log 2>&1
+else
+    echo 'Skip.  Directory aeroconv already exists.'
+fi
+
 exit 0
