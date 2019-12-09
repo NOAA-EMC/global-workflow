@@ -28,10 +28,10 @@ fi
 
 rm -f $DATA/nems.configure
 
-med_petlist_bounds=${med_petlist_bounds:-"0 $(( $FV3PETS-1 ))"}
-atm_petlist_bounds=${atm_petlist_bounds:-"0 $(( $FV3PETS-1 ))"}    #6*8*6+wrtgrps(24)
-ocn_petlist_bounds=${ocn_petlist_bounds:-"$FV3PETS $(( $FV3PETS+$OCNPETS-1 ))"}  #120
-ice_petlist_bounds=${ice_petlist_bounds:-"$(( $FV3PETS+$OCNPETS )) $(( $FV3PETS+$OCNPETS+$ICEPETS-1 ))"}  #48
+med_petlist_bounds=${med_petlist_bounds:-"0 $(( $ATMPETS-1 ))"}
+atm_petlist_bounds=${atm_petlist_bounds:-"0 $(( $ATMPETS-1 ))"}    #6*8*6+wrtgrps(24)
+ocn_petlist_bounds=${ocn_petlist_bounds:-"$ATMPETS $(( $ATMPETS+$OCNPETS-1 ))"}  #120
+ice_petlist_bounds=${ice_petlist_bounds:-"$(( $ATMPETS+$OCNPETS )) $(( $ATMPETS+$OCNPETS+$ICEPETS-1 ))"}  #48
 
 #if [ $CASE = "C96" ] ; then
 #  med_petlist_bounds=${med_petlist_bounds:-'0 149'}

@@ -1,6 +1,6 @@
 fv3_gdas_defaults: &fv3_gdas_defaults
   QUILTING: True
-  FV3PETS: !FirstTrue
+  ATMPETS: !FirstTrue
     - when: !calc doc.fv3_gdas_settings.QUILTING
       do: !calc layout_x * layout_y * 6 + WRITE_GROUP * WRTTASK_PER_GROUP
     - otherwise: !calc layout_x * layout_y * 6

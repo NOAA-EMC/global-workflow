@@ -45,7 +45,7 @@ platform: !Platform
     export GRBINDEX="$NWPROD/util/exec/grbindex"
     export CNVGRIB="$NWPROD/util/exec/cnvgrib"
     export CNVGRIB21_GFS="$NWPROD/util/exec/cnvgrib"
-    export POSTGRB2TBL="$BASE_GIT/sorc/gfs_post.fd/parm/params_grib2_tbl_new"
+    export POSTGRB2TBL="$HOMEgfs/sorc/gfs_post.fd/parm/params_grib2_tbl_new"
 
   # CHGRP_RSTPROD_COMMAND - this specifies the command to use to
   # restrict access to NOAA "rstprod" data restriction class.
