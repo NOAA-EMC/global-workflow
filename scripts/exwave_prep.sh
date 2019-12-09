@@ -165,8 +165,8 @@
    do
 
      case $grdID in
-       $currID ) 
-                type='curr' 
+       $curID ) 
+                type='cur' 
        ;;
        $wndID )
                 type='wind'
@@ -175,7 +175,7 @@
                 type='ice'
        ;;
        * )
-              echo 'Input type not yet implelemted' 	    
+              echo 'Input type not yet implemented' 	    
               err=3; export err;${errchk}
               ;;
      esac 
@@ -284,6 +284,8 @@
 # 3.b Execute the serial or parallel cmdfile
 
 # Set number of processes for mpmd
+      cat cmdfile
+
       wavenproc=`wc -l cmdfile | awk '{print $1}'`
       wavenproc=`echo $((${wavenproc}<${NTASKS}?${wavenproc}:${NTASKS}))`
   
@@ -294,7 +296,7 @@
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
   
-      if [ "$nfile" -gt '1' ]
+      if [ "$wavenproc" -gt '1' ]
       then
         ${wavempexec} ${wavenproc} ${wave_mpmd} cmdfile
         exit=$?
@@ -590,6 +592,52 @@
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
 
+# Prepare files for cfp process
+      rm -f cmdfile
+      touch cmdfile
+      chmod 744 cmfile
+
+    ymdh=${YMDH}
+    ymdh_end=`$NDATE ${FHMAX_CUR} ${YMDH}`
+
+    while [ "$ymdh" -le "$ymdh_end" ]
+    do
+      echo "$USHwave/wave_prnc_cur.sh $ymdh > cur_$ymdh.out 2>&1" >> cmdfile
+      ymdh=`$NDATE $CUR_DT $ymdh`
+  done
+
+# Set number of processes for mpmd
+      wavenproc=`wc -l cmdfile | awk '{print $1}'`
+      wavenproc=`echo $((${wavenproc}<${NTASKS}?${wavenproc}:${NTASKS}))`
+
+      set +x
+      echo ' '
+      echo "   Executing the copy command file at : `date`"
+      echo '   ------------------------------------'
+      echo ' '
+      [[ "$LOUD" = YES ]] && set -x
+
+      if [ $wavenproc -gt '1' ]
+      then
+        ${wavempexec} ${wavenproc} ${wave_mpmd} cmdfile
+        exit=$?
+      else
+        ./cmdfile
+        exit=$?
+      fi
+
+      if [ "$exit" != '0' ]
+      then
+        set +x
+        echo ' '
+        echo '********************************************'
+        echo '*** CMDFILE FAILED IN CUR GENERATION   ***'
+        echo '********************************************'
+        echo '     See Details Below '
+        echo ' '
+        [[ "$LOUD" = YES ]] && set -x
+      fi
+
       files=`ls rtofs.* 2> /dev/null`
 
       if [ -z "$files" ]
@@ -607,13 +655,15 @@
         err=11;export err;${errchk}
       fi
 
-      rm -f curr.${curID}
+      rm -f cur.${curID}
 
       for file in $files
       do
-        cat $file >> curr.${curID}
+        cat $file >> cur.${curID}
         rm -f $file
       done
+
+      cp -f cur.${curID} ${COMOUT}/rundata/${WAV_MOD_ID}.${curID}.$cycle.cur 
 
     else
       echo ' '
@@ -628,7 +678,6 @@
       echo ' '
 
   fi
-
 
 # --------------------------------------------------------------------------- #
 # 5. Create ww3_multi.inp
@@ -779,7 +828,8 @@
       -e "s/OUT_BEG/$time_beg/g" \
       -e "s/OUT_END/$time_end/g" \
       -e "s/DTFLD/ $DTFLD/g" \
-      -e "s/OFILETYPE/ $OFILETYPE/g" \
+      -e "s/GOFILETYPE/ $GOFILETYPE/g" \
+      -e "s/POFILETYPE/ $POFILETYPE/g" \
       -e "s/FIELDS/$FIELDS/g" \
       -e "s/DTPNT/ $DTPNT/g" \
       -e "/BUOY_FILE/r buoy.loc" \
@@ -822,18 +872,18 @@
     done
    fi
 
-   if [ "${WW3CURINP}" = 'YES' ]; then
-
-    for grdID in $curID
-    do
-      set +x
-      echo ' '
-      echo "   Saving current.$grdID as $COMOUT/rundata/${WAV_MOD_TAG}.$grdID.$PDY$cyc.curr"
-      echo ' '
-      [[ "$LOUD" = YES ]] && set -x
-      cp curr.$grdID $COMOUT/rundata/${WAV_MOD_TAG}.$grdID.$PDY$cyc.curr
-    done
-   fi
+#   if [ "${WW3CURINP}" = 'YES' ]; then
+#
+#    for grdID in $curID
+#    do
+#      set +x
+#      echo ' '
+#      echo "   Saving cur.$grdID as $COMOUT/rundata/${WAV_MOD_TAG}.$grdID.$PDY$cyc.cur"
+#      echo ' '
+#      [[ "$LOUD" = YES ]] && set -x
+#      cp cur.$grdID $COMOUT/rundata/${WAV_MOD_TAG}.$grdID.$PDY$cyc.cur
+#    done
+#   fi
   fi 
 
   rm -f wind.*

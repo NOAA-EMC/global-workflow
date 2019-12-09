@@ -33,6 +33,10 @@ export pgmout=OUTPUT.$$
 
 export MP_PULSE=0
 
+# CDO required for processing RTOFS currents
+# export CDO=${COMROOTp2}/nwprod/rtofs_glo.v1.2.0/bin/cdo
+export CDO=/gpfs/dell2/emc/verification/noscrub/Todd.Spindler/CDO/bin/cdo
+
 # Path to HOME Directory
 export CODEwave=${CODEwave:-${NWROOT}/${NET}_code.${wave_code_ver}/${code_pkg}}
 export EXECwave=${EXECwave:-$HOMEwave/exec}
@@ -52,7 +56,7 @@ export COMOUT=${COMOUT:-${COMOUTwave}/${RUN}.${PDY}/${cyc}}
 
 export COMINice=${COMINice:-${COMROOTp2}/omb/prod}
 export COMINwnd=${COMINwnd:-${COMROOT}/gfs/prod}
-export COMINcur=${COMINcur:-${COMROOTp2}/rtofs/prod}
+export COMINcur=${COMINcur:-$(compath.py rtofs/prod)}
 
 if [ $SENDCOM = YES ]; then
   mkdir -p $COMOUT

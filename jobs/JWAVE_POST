@@ -22,7 +22,7 @@ export DATA=${DATA:-${DATAROOT:?}/${jobid}}
 mkdir -p $DATA
 cd $DATA
 
-cyc=${cyc:-00}
+export cyc=${cyc:-00}
 export cycle=${cycle:-t${cyc}z}
  
 # Set PDY
@@ -73,6 +73,11 @@ fi
 . $PARMwave/wave.parm.${NET}
 . $PARMwave/wave_post.parm.${NET}
 
+export FHMAX=${FHMAX:-384}
+export FHOUT=${FHOUT:-3}
+export FHMAX_HF=${FHMAX_HF:-120}
+export FHOUT_HF=${FHOUT_HF:-1}
+
 # Set wave model ID tag to include member number 
 # if ensemble; waveMEMB var empty in deterministic
 # Set wave model ID tag to include member number
@@ -85,7 +90,8 @@ export WAV_MOD_TAG=${WAV_MOD_ID}${waveMEMB}
 export CFP_VERBOSE=1
 
 # Execute the Script  
-$HOMEwave/scripts/exwave_post.sh
+#$HOMEwave/scripts/exwave_post.sh
+$HOMEwave/scripts/exwave_post_sbs.sh
 err=$?
 if [ $err -ne 0 ]; then
   msg="FATAL ERROR: ex-script of GWES_POST failed!"

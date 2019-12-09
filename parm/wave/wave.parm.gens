@@ -20,7 +20,7 @@ export esmfGRD=glo_15mxt # input grid
 
 # Grids for input fields 
 export iceID=icean_5m
-export curID=
+export curID=rtofs_5m
 export wndID=
 
 # Grids for output fields 
@@ -28,6 +28,9 @@ export buoy=points
 export interpGRD='glo_15mxt' # Grids that need to be interpolated from native 
 export sbsGRD=''  # side-by-side grids generated as wave model runs, writes to com
 export postGRD='glo_15mxt' # Grids generated in the sequential post step
+
+# CDATE
+export CDATE=${PDY}${cyc}
 
 # Output stride
 export HOUR_INC=3      # This value should match with the one used in 
@@ -37,11 +40,19 @@ export DTFLD=10800
 export DTPNT=3600
 
 # Selected output parameters (gridded)
-export OUTPARS='WND ICE HS T01 T02 DIR FP DP PHS PTP PDIR CHAR'
+export OUTPARS='WND CUR ICE HS T01 T02 DIR FP DP PHS PTP PDIR CHAR'
 # GFS # export OUTPARS='WND CUR ICE HS T01 T02 DIR FP DP PHS PTP PDIR CHAR'
 
 # The start time reflects the number of hindcast hours prior to the cycle initial time
 export HINDH=0
+export FHMIN=0
+export FHOUT=6
+export FHMAX_HF=240
+export FHOUT_HF=3
+
+# Intake currents settings
+export CUR_DT=3
+export FHMAX_CUR=192 # RTOFS forecasts only out to 8 days
 
 #   The ending time of the run is always the $wavlsth hour forecast. 
 export wavlsth=${fhcplwav:-384}
@@ -70,7 +81,7 @@ fi
 # Determine if wave component needs input and/or is coupled
 export WW3ATMINP='CPL'
 export WW3ICEINP='YES'
-export WW3CURINP='NO'
+export WW3CURINP='YES'
 
 # Determine if input is from perturbed ensemble (T) or single input file (F) for all members
 export WW3ATMIENS='F'

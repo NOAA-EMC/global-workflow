@@ -403,7 +403,12 @@ if [ $cplwav = ".true." ]; then
     [[ -d $WRDIR ]] || mkdir -p $WRDIR
     $NLN $COMOUTWW3/${WAV_MOD_ID}.${WRPDY}/${WRcyc}/restart/${WAV_MOD_ID}${WAV_MEMBER}.restart.${wavGRD}.${WRDATE} $DATA/restart001.${wavGRD}
   done
-  $NLN $COMINWW3/${WAV_MOD_ID}.${PDY}/${cyc}/rundata/${WAV_MOD_ID}.${iceID}.${cycle}.ice $DATA/ice.${iceID}
+  if [ "$WW3ICEINP" = "YES" ]; then
+    $NLN $COMINWW3/${WAV_MOD_ID}.${PDY}/${cyc}/rundata/${WAV_MOD_ID}.${iceID}.${cycle}.ice $DATA/ice.${iceID}
+  fi
+  if [ "$WW3CURINP" = "YES" ]; then
+    $NLN $COMINWW3/${WAV_MOD_ID}.${PDY}/${cyc}/rundata/${WAV_MOD_ID}.${curID}.${cycle}.cur $DATA/current.${curID}
+  fi
 # Link output files
   fhr=$FHMIN
   while [ $fhr -le $FHMAX ]; do
@@ -412,7 +417,7 @@ if [ $cplwav = ".true." ]; then
   HMS="$(echo $YMDH | cut -c9-10)0000"
     $NLN $DATA/${YMD}.${HMS}.out_pnt.${buoy} $COMOUTWW3/${WAV_MOD_ID}.${PDY}/${cyc}/rundata/
     for wavGRD in ${waveGRD} ; do
-      $NLN $DATA/${YMD}.${HMS}.out_grd.${wavGRD} $COMOUTWW3/${WAV_MOD_ID}.${PDY}/${cyc}/rundata/
+      $NLN $COMOUTWW3/${WAV_MOD_ID}.${PDY}/${cyc}/rundata/${WAV_MOD_ID}${WAV_MEMBER}.out_grd.${wavGRD}.${YMD}.${HMS} $DATA/${YMD}.${HMS}.out_grd.${wavGRD}
     done
       FHINC=$FHOUT
       if [ $FHMAX_HF -gt 0 -a $FHOUT_HF -gt 0 -a $fhr -lt $FHMAX_HF ]; then
