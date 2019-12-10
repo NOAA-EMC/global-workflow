@@ -143,22 +143,6 @@ def config_parser(files):
 
     return varbles
 
-def check_slurm(print_message = False):
-    # Seriously?
-    # What happens if srun IS in your path but the scheduler is something else?
-    if find_executable('srun'):
-        if print_message:
-           print 'Info: Using Slurm as scheduler because srun was found in your path'
-           non_decimal = re.compile(r'[^\d.]+')
-           rocoto_version =  non_decimal.sub('',find_executable('rocotorun').replace('.',''))
-           if int(rocoto_version) < 130:
-              print 'WARNING: XML workflow is being made to use Slurm because it was set in your'
-              print 'environment and the correct version of Rocoto is not loaded.'
-              print 'Make sure to use Rocoto 1.3.0rc2 or newer (example: module load rocoto/1.3.0rc2).'
-        return True
-    else:
-        return False
-
 def detectMachine():
 
     machines = ['THEIA', 'HERA', 'WCOSS_C', 'WCOSS_DELL_P3']
