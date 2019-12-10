@@ -81,7 +81,7 @@ elif [ $step = "fcst" ]; then
 elif [ $step = "post" ]; then
 
     export wtime_post="00:30:00"
-    export wtime_post_gfs="01:00:00"
+    export wtime_post_gfs="01:30:00"
     export npe_post=144
     export nth_post=1
     export npe_node_dwn=$npe_node_max

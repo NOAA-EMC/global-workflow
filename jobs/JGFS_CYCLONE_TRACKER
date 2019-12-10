@@ -135,10 +135,10 @@ machine=${machine:-`echo ${SITE}`}
 if [ $machine = TIDE -o $machine = GYRE ] ; then # For WCOSS
   machine=wcoss
   ${USHens_tracker}/extrkr_gfs.sh ${loopnum} ${cmodel} ${CDATE} ${pert} ${DATA} 
-elif [ $machine = LUNA -o $machine = SURGE ] ; then # For CRAY
+elif [ $machine = LUNA -o $machine = SURGE -o $machine = WCOSS_C ] ; then # For CRAY
   machine=cray
   ${APRUNTRACK} ${USHens_tracker}/extrkr_gfs.sh ${loopnum} ${cmodel} ${CDATE} ${pert} ${DATA} 
-elif [ $machine = VENUS -o $machine = MARS ] ; then # For DELL
+elif [ $machine = VENUS -o $machine = MARS -o $machine = WCOSS_DELL_P3 ] ; then # For DELL
   machine=dell
   mpirun -n 1 ${USHens_tracker}/extrkr_gfs.sh ${loopnum} ${cmodel} ${CDATE} ${pert} ${DATA}
 elif [ $machine = HERA ]; then # For HERA

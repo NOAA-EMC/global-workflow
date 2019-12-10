@@ -192,10 +192,10 @@ fi
 #-------------------------------------------------
 
 if [ $machine = "WCOSS_C" ] ; then
-    export ens_tracker_ver=v1.1.13.1
+    export ens_tracker_ver=v1.1.15.1
     export HOMEens_tracker=$BASE_GIT/ens_tracker.${ens_tracker_ver}
 elif [ $machine = "WCOSS_DELL_P3" ] ; then
-    export ens_tracker_ver=v1.1.13.1
+    export ens_tracker_ver=v1.1.15.1
     export HOMEens_tracker=$BASE_GIT/ens_tracker.${ens_tracker_ver}
 elif [ $machine = "THEIA" -o $machine = "HERA" ] ; then
     export ens_tracker_ver=v1.1.15.1
