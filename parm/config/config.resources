@@ -38,6 +38,27 @@ if [ $step = "prep" -o $step = "prepbufr" ]; then
     eval "export npe_node_$step=4"
     eval "export nth_$step=1"
 
+elif [ $step = "waveinit" ]; then
+
+    export wtime_waveinit="00:10:00"
+    export npe_waveinit=10
+    export nth_waveinit=1
+    export npe_node_waveinit=$(echo "$npe_node_max / $nth_waveinit" | bc)
+
+elif [ $step = "waveprep" ]; then
+
+    export wtime_waveprep="00:30:00"
+    export npe_waveprep=65
+    export nth_waveprep=1
+    export npe_node_waveprep=$(echo "$npe_node_max / $nth_waveprep" | bc)
+
+elif [ $step = "wavepost" ]; then
+
+    export wtime_wavepost="00:30:00"
+    export npe_wavepost=280
+    export nth_wavepost=1
+    export npe_node_wavepost=$(echo "$npe_node_max / $nth_wavepost" | bc)
+
 elif [ $step = "anal" ]; then
 
     export wtime_anal="02:30:00"

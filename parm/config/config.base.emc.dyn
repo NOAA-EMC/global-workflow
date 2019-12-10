@@ -261,6 +261,9 @@ export IAU_DELTHRS_ENKF=6
 export DO_GLDAS=YES
 export gldas_cyc=00
 
+# run wave component
+export DO_WAVE=YES
+
 # IAU related parameters
 export DOIAU="NO"
 export IAUFHRS=6
