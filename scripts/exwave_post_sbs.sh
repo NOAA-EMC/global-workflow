@@ -450,7 +450,7 @@
 # When executed side-by-side, serial mode (cfp when run after the fcst step)
   fhr=$FHMIN
   iwaitmax=60 # Maximum loop cycles for waiting until wave component output file is ready (fails after max)
-  while [ $fhr -le $wavlsth ]; do
+  while [ $fhr -le $FHMAXWAV ]; do
     
     ymdh=`$NDATE $fhr $CDATE`
     YMD=$(echo $ymdh | cut -c1-8)
@@ -476,7 +476,7 @@
     fi
     echo "cp -f ${pfile} ./out_pnt.${buoy} > cpoutp_$wavGRD.out 2>&1" >> ${fcmdnow}
     for wavGRD in ${waveGRD} ; do
-      gfile=$COMIN/rundata/${YMD}.${HMS}.out_grd.${wavGRD}
+      gfile=$COMIN/rundata/${WAV_MOD_ID}${waveMEMB}.out_grd.${wavGRD}.${YMD}.${HMS}
       while [ ! -s ${gfile} ]; do sleep 10; done
       if [ $iwait -eq $iwaitmax ]; then 
         echo '*************************************************** '
@@ -519,18 +519,30 @@
           glo_15mxt) gribFL="${OUTPARS}";
                   GRDRES=0p25 ; GRIDNR=255  ; MODNR=255 ; dtgrib=10800. ; ngrib=181 ;;
         esac
-# Recalculate ngrib based on wavlsth (TODO: add new interval if changes to dtgrib after given forecast hour)
+# Recalculate ngrib based on FHMAXWAV (TODO: add new interval if changes to dtgrib after given forecast hour)
         dtgi=`echo ${dtgrib} | sed 's/\.//g'`
         dtgh=`expr ${dtgi} / 3600`
-        ngrib=`expr ${wavlsth} / ${dtgh} + 1`
+        ngrib=`expr ${FHMAXWAV} / ${dtgh} + 1`
         echo "$USHwave/wave_grib2_sbs.sh $grdID $dtgrib $ngrib $GRIDNR $MODNR $ymdh $fhr $GRDRES "$gribFL" > grib_$grdID.out 2>&1" >> ${fcmdnow}
+      done
+    fi
+
+    if [ "$specOK" = 'yes' ]
+    then
+      export dtspec=10800.   # time step for spectra
+      ymdh=`$NDATE -${HINDH} $CDATE` # start time for spectra output
+
+      ifile=1
+      ilayer=1
+      for buoy in $buoys
+      do
+        echo "$USHwave/wave_outp_spec_sbs.sh $buoy $ymdh > spec_$buoy.out 2>&1" >> ${fcmdnow}
+      done
+    fi
 
         chmod 744 ${fcmdnow}
         ./${fcmdnow}
 
-      done
-
-    fi
 
     cd $DATA
 
@@ -540,6 +552,10 @@
     fi
     fhr=$((fhr+FHINC))
     echo $fhr
+
+exit
+
+
   done
 
 # Set number of processes for mpmd

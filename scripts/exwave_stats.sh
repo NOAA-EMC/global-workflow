@@ -64,16 +64,16 @@
 #
 # 0.c Time management
 #
-  export wavlsth=${wavlsth:-384}
+  export FHMAXWAV=${FHMAXWAV:-384}
 
   export dtgh='3' # Time interval between fields
   export hcst_hour=-24
 
 #   Time range for data output
 # This line for when hindcast codes are available
-#   export trange=`expr ${wavlsth} - ${hcst_hour}` 
+#   export trange=`expr ${FHMAXWAV} - ${hcst_hour}` 
 # In the meantime, generate grib2 stats data only with forecasts
-   export trange=`expr ${wavlsth} - 0`
+   export trange=`expr ${FHMAXWAV} - 0`
    ngrib=`expr ${trange} / ${dtgh} + 1`
 
 #

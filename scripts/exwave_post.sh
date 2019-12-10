@@ -577,10 +577,10 @@
                   GRIDNR=11  ; MODNR=11  ; dtgrib=3600. ; ngrib=181 ;;
       esac
 
-# Recalculate ngrib based on wavlsth (TODO: add new interval if changes to dtgrib after given forecast hour)
+# Recalculate ngrib based on FHMAXWAV (TODO: add new interval if changes to dtgrib after given forecast hour)
       dtgi=`echo ${dtgrib} | sed 's/\.//g'`
       dtgh=`expr ${dtgi} / 3600`
-      ngrib=`expr ${wavlsth} / ${dtgh} + 1`
+      ngrib=`expr ${FHMAXWAV} / ${dtgh} + 1`
 
       echo "$USHwave/wave_grib2_cat.sh $grdID $dtgrib $ngrib $GRIDNR $MODNR $gribFL > grib_$grdID.out 2>&1"               >> cmdfile
 
@@ -674,10 +674,10 @@
                   GRIDNR=11  ; MODNR=11  ; dtgrib=3600. ; ngrib=181 ;;
       esac
 
-# Recalculate ngrib based on wavlsth (TODO: add new interval if changes to dtgrib after given forecast hour)
+# Recalculate ngrib based on FHMAXWAV (TODO: add new interval if changes to dtgrib after given forecast hour)
       dtgi=`echo ${dtgrib} | sed 's/\.//g'`
       dtgh=`expr ${dtgi} / 3600`
-      ngrib=`expr ${wavlsth} / ${dtgh} + 1`
+      ngrib=`expr ${FHMAXWAV} / ${dtgh} + 1`
 
       echo "$USHwave/wave_grib2.sh $grdID $dtgrib $ngrib $GRIDNR $MODNR $gribFL > grib_$grdID.out 2>&1"  >> cmdfile
 

@@ -65,9 +65,9 @@
 
   if [ "$INDRUN" = 'no' ]
   then
-    wavlsth=${wavlsth:-3}
+    FHMAXWAV=${FHMAXWAV:-3}
   else
-    wavlsth=${wavlsth:-384}
+    FHMAXWAV=${FHMAXWAV:-384}
   fi
 
 # 0.b Date and time stuff
@@ -78,7 +78,7 @@
   ymdh_beg=`$NDATE -$HINDH $YMDH`
   time_beg="`echo $ymdh_beg | cut -c1-8` `echo $ymdh_beg | cut -c9-10`0000"
 
-  ymdh_end=`$NDATE $wavlsth $YMDH`
+  ymdh_end=`$NDATE $FHMAXWAV $YMDH`
   time_end="`echo $ymdh_end | cut -c1-8` `echo $ymdh_end | cut -c9-10`0000"
 
 # Restart file times 

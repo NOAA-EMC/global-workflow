@@ -61,6 +61,9 @@ export wave_mpmd=${wave_mpmd:-"cfp"}
 if [ "${NET}" == "gens" ]
 then
   . ${HOMEgefs}/parm/gefs.parm
+elif [ "${NET}" == "gfs" ]
+then
+  echo 'Placeholder for GFS config'
 fi
 . $PARMwave/wave.parm.${NET}
 . $PARMwave/wave_init.parm.${NET}

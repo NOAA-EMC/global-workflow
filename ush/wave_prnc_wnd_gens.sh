@@ -97,7 +97,7 @@
 
   CYCrun=${cycle}
 
-  while [ "$fhour" -le "$wavlsth" ]
+  while [ "$fhour" -le "$FHMAXWAV" ]
   do
     if [ "${fhour}" -lt 0 ]
     then

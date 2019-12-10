@@ -14,7 +14,7 @@ export HOMEgsm=${HOMEgsm:-$NWROOT/gsm.${gsm_ver}}
 # Add default errchk = err_chk
 export errchk=${errchk:-err_chk}
 
-# Set HOMEwave to HOMEgefs
+# Set HOMEwave to HOMEgfs
 HOMEwave=${HOMEwave:-${HOMEgsm}} 
 
 # Create and go to DATA directory
@@ -74,6 +74,9 @@ env | sort
 if [ "${NET}" == "gens" ]
 then
   . ${HOMEgefs}/parm/gefs.parm
+elif [ "${NET}" == "gfs" ]
+then
+  echo 'Placeholder for GFS config'
 fi
 . $PARMwave/wave.parm.${NET}
 . $PARMwave/wave_prep.parm.${NET}
