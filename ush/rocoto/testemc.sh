@@ -23,5 +23,5 @@ RESDET=768               ## 96 192 384 768
        --res $RESDET --comrot $COMROT --expdir $EXPDIR
 
 #for running chgres, forecast, and post 
-./setup_workflow_fcstonly.py --expdir $EXPDIR/$PSLOT
+./setup_workflow_fcstonly_noaeroic.py --expdir $EXPDIR/$PSLOT
 
