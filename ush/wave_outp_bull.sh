@@ -137,14 +137,14 @@
 
 # 0.e sync important files
 
-#  $FSYNC ${DATA}/mod_def.points
-#  $FSYNC ${DATA}/out_pnt.ww3
+#  $FSYNC ${DATA}/mod_def.${uoutpGRD}
+#  $FSYNC ${DATA}/out_pnt.${uoutpGRD}
 #  $FSYNC ${DATA}/ww3_spec_bull.inp.tmpl
 
 # 0.f Links to mother directory
 
-  ln -s ../mod_def.points mod_def.ww3
-  ln -s ../out_pnt.ww3 .
+  ln -s ${DATA}/mod_def.${uoutpGRD} mod_def.ww3
+  ln -s ${DATA}/out_pnt.${uoutpGRD} .
 
 # --------------------------------------------------------------------------- #
 # 2.  Generate spectral data file
@@ -158,7 +158,7 @@
       -e "s/DT/$dtbull/g" \
       -e "s/POINT/$point/g" \
       -e "s/REFT/$truntime/g" \
-                               ../ww3_spec_bull.inp.tmpl > ww3_outp.inp
+                               ${DATA}/ww3_spec_bull.inp.tmpl > ww3_outp.inp
 
 # 2.b Run the postprocessor
 

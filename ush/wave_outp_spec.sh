@@ -134,14 +134,14 @@
 
 # 0.e sync important files
 
-#  $FSYNC ${DATA}/mod_def.points
-#  $FSYNC ${DATA}/out_pnt.ww3
+#  $FSYNC ${DATA}/mod_def.${uoutpGRD}
+#  $FSYNC ${DATA}/out_pnt.${uoutpGRD}
 #  $FSYNC ${DATA}/ww3_outp_spec.inp.tmpl
 
 # 0.f Links to mother directory
 
-  ln -s ../mod_def.ww3 .
-  ln -s ../out_pnt.ww3 .
+  ln -s ${DATA}/mod_def.${uoutpGRD} .
+  ln -s ${DATA}/out_pnt.${uoutpGRD} .
 
 # --------------------------------------------------------------------------- #
 # 2.  Generate spectral data file

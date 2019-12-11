@@ -76,7 +76,7 @@
 
 # 0.c Defining model grids
 
-  buoy=${buoy:?buoyNotSet}
+  uoutpGRD=${uoutpGRD:?uoutpGRDNotSet}
 
 # 0.c.1 Grids
 
@@ -108,7 +108,7 @@
   echo "   Side-by-side grids : $sbsGRD"
   echo "   Interpolated grids : $interpGRD"
   echo "   Post-process grids : $postGRD"
-  echo "   Output points : ${WAV_MOD_ID}_$buoy"
+  echo "   Output points : $uoutpGRD"
   echo ' '
   [[ "$LOUD" = YES ]] && set -x
 
@@ -158,7 +158,7 @@
     fi 
   done
 
-  for grdID in $waveGRD $sbsGRD $postGRD $interpGRD $buoy
+  for grdID in $waveGRD $sbsGRD $postGRD $interpGRD $uoutpGRD
   do
     if [ -f "$COMIN/rundata/${WAV_MOD_ID}.mod_def.${grdID}" ]
     then
@@ -176,9 +176,9 @@
   if [ ! -f out_pnt.ww3 ]
   then
     set +x
-    echo "   Copying $COMIN/rundata/$WAV_MOD_TAG.out_pnt.${buoy}.$PDY$cyc to out_pnt.ww3"
+    echo "   Copying $COMIN/rundata/$WAV_MOD_TAG.out_pnt.${uoutpGRD}.$PDY$cyc to out_pnt.ww3"
     [[ "$LOUD" = YES ]] && set -x
-    echo "cp -f $COMIN/rundata/$WAV_MOD_TAG.out_pnt.${buoy}.$PDY$cyc out_pnt.ww3 > copycmd.out.$iloop 2>&1" >> cmdfile
+    echo "cp -f $COMIN/rundata/$WAV_MOD_TAG.out_pnt.${uoutpGRD}.$PDY$cyc out_pnt.ww3 > copycmd.out.$iloop 2>&1" >> cmdfile
     iloop=`expr $iloop + 1`
   fi
 
@@ -272,7 +272,7 @@
   fi
 
 
-  for grdID in $waveGRD $sbsGRD $postGRD $interpGRD $buoy
+  for grdID in $waveGRD $sbsGRD $postGRD $interpGRD $uoutpGRD
   do
     if [ ! -f mod_def.$grdID ]
     then
@@ -457,7 +457,7 @@
         -e "s/FORMAT/F/g" \
                                ww3_outp_spec.inp.tmpl > ww3_outp.inp
    
-    ln -s mod_def.$buoy mod_def.ww3
+    ln -s mod_def.$uoutpGRD mod_def.ww3
     rm -f ww3_oup.inp
     $EXECcode/ww3_outp > buoy_tmp.loc 
     err=$?

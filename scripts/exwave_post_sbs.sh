@@ -70,7 +70,7 @@
 
 # 0.c Defining model grids
 
-  buoy=${buoy:?buoyNotSet}
+  uoutpGRD=${uoutpGRD:?buoyNotSet}
 
 # 0.c.1 Grids
 
@@ -102,7 +102,7 @@
   echo "   Side-by-side grids : $sbsGRD"
   echo "   Interpolated grids : $interpGRD"
   echo "   Post-process grids : $postGRD"
-  echo "   Output points : ${WAV_MOD_ID}_$buoy"
+  echo "   Output points : $uoutpGRD"
   echo ' '
   [[ "$LOUD" = YES ]] && set -x
 
@@ -136,7 +136,7 @@
   [[ "$LOUD" = YES ]] && set -x
 
 # Copy model definition files
-  for grdID in $waveGRD $sbsGRD $postGRD $interpGRD $buoy
+  for grdID in $waveGRD $sbsGRD $postGRD $interpGRD $uoutpGRD
   do
     if [ -f "$COMIN/rundata/${WAV_MOD_ID}.mod_def.${grdID}" ]
     then
@@ -151,7 +151,7 @@
 
   done
 
-  for grdID in $waveGRD $sbsGRD $postGRD $interpGRD $buoy
+  for grdID in $waveGRD $sbsGRD $postGRD $interpGRD $uoutpGRD
   do
     if [ ! -f mod_def.$grdID ]
     then
@@ -336,7 +336,7 @@
         -e "s/FORMAT/F/g" \
                                ww3_outp_spec.inp.tmpl > ww3_outp.inp
    
-    ln -s mod_def.$buoy mod_def.ww3
+    ln -s mod_def.$uoutpGRD mod_def.ww3
     fhr=$FHMIN
     YMD=$(echo $CDATE | cut -c1-8)
     HMS="$(echo $CDATE | cut -c9-10)0000"
@@ -345,9 +345,9 @@
     tsleep=10
     while [ ${tloop} -le ${tloopmax} ]
     do
-      if [ -f $COMIN/rundata/${YMD}.${HMS}.out_pnt.${buoy} ]
+      if [ -f $COMIN/rundata/${YMD}.${HMS}.out_pnt.${uoutpGRD} ]
       then
-        cp -f $COMIN/rundata/${YMD}.${HMS}.out_pnt.${buoy} ./out_pnt.ww3
+        cp -f $COMIN/rundata/${YMD}.${HMS}.out_pnt.${uoutpGRD} ./out_pnt.${uoutpGRD}
         break
       else
         sleep ${tsleep}
@@ -461,20 +461,20 @@
     fcmdnow=cmdfile.${FH3}
     echo "mkdir output_$YMDHMS" >> ${fcmdnow}
     echo "cd output_$YMDHMS" >> ${fcmdnow}
-    echo "ln -fs $DATA/mod_def.${buoy} mod_def.ww3" >> ${fcmdnow}
+    echo "ln -fs $DATA/mod_def.${uoutpGRD} mod_def.ww3" >> ${fcmdnow}
     iwait=0
-    pfile=$COMIN/rundata/${YMD}.${HMS}.out_pnt.${buoy}
+    pfile=$COMIN/rundata/${YMD}.${HMS}.out_pnt.${uoutpGRD}
     while [ ! -s ${pfile} ]; do sleep 10; ((iwait++)) && ((iwait==$iwaitmax)) && break ; echo $iwait; done
     if [ $iwait -eq $iwaitmax ]; then 
-      echo " FATAL ERROR : NO RAW POINT OUTPUT FILE out_pnt.$buoy "
+      echo " FATAL ERROR : NO RAW POINT OUTPUT FILE out_pnt.$uoutpGRD
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
-      echo "$WAV_MOD_TAG post $buoy $date $cycle : point output missing." >> $wavelog
-      postmsg "$jlogfile" "FATAL ERROR : NO RAW POINT OUTPUT FILE out_pnt.$buoy"
+      echo "$WAV_MOD_TAG post $uoutpGRD $date $cycle : point output missing." >> $wavelog
+      postmsg "$jlogfile" "FATAL ERROR : NO RAW POINT OUTPUT FILE out_pnt.$uoutpGRD
       err=7; export err;${errchk}
       exit $err
     fi
-    echo "cp -f ${pfile} ./out_pnt.${buoy} > cpoutp_$wavGRD.out 2>&1" >> ${fcmdnow}
+    echo "cp -f ${pfile} ./out_pnt.${uoutpGRD} > cpoutp_$uoutpGRD.out 2>&1" >> ${fcmdnow}
     for wavGRD in ${waveGRD} ; do
       gfile=$COMIN/rundata/${WAV_MOD_ID}${waveMEMB}.out_grd.${wavGRD}.${YMD}.${HMS}
       while [ ! -s ${gfile} ]; do sleep 10; done

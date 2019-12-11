@@ -27,7 +27,7 @@ export curID=rtofs_5m
 export wndID=
 
 # Grids for output fields
-export buoy=points
+export uoutpGRD=points
 export interpGRD='glo_15mxt' # Grids that need to be interpolated from native
 export sbsGRD=''  # side-by-side grids generated as wave model runs, writes to com
 export postGRD='glo_15mxt' # Grids generated in the sequential post step
