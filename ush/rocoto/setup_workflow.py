@@ -397,7 +397,9 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
         deps = []
         dep_dict = {'type': 'task', 'name': '%sprep' % cdump}
         deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
+        dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': '-06:00:00'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
         task = wfu.create_wf_task('waveinit', cdump=cdump, envar=envars, dependency=dependencies)
         dict_tasks['%swaveinit' % cdump] = task
 
@@ -489,7 +491,8 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
     # wavepost
     if do_wave in ['Y', 'YES']:
         deps = []
-        dep_dict = {'type': 'task', 'name': '%sfcst' % cdump}
+        data = '&ROTDIR;/%s.@Y@m@d/@H/%s.t@Hz.logf006.txt' % (cdump, cdump)
+        dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
         task = wfu.create_wf_task('wavepost', cdump=cdump, envar=envars, dependency=dependencies)
