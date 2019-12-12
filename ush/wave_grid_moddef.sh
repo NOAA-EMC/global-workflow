@@ -88,7 +88,7 @@
   [[ "$LOUD" = YES ]] && set -x
  
   rm -f ww3_grid.inp 
-  ln -sf ../$grdID.inp ww3_grid.inp
+  ln -sf ../ww3_grid.inp.$grdID ww3_grid.inp
  
   $EXECcode/ww3_grid
   err=$?

@@ -93,8 +93,7 @@ export WAV_MOD_TAG=${WAV_MOD_ID}${waveMEMB}
 export CFP_VERBOSE=1
 
 # Execute the Script  
-#$HOMEwave/scripts/exwave_post.sh
-$HOMEwave/scripts/exwave_post_sbs.sh
+$HOMEwave/scripts/exwave_post.sh
 err=$?
 if [ $err -ne 0 ]; then
   msg="FATAL ERROR: ex-script of GWES_POST failed!"

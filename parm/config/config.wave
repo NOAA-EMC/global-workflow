@@ -10,10 +10,10 @@ export wave_sys_ver=v1.0.0
 
 # General runtime labels
 # export WAV_MOD_ID=${WAV_MOD_ID:-wave} # generic modID=wave valid for GFSv16 and beyond
-export WAV_MOD_ID=${WAV_MOD_ID:-gwes}
+export WAV_MOD_ID=${WAV_MOD_ID:-wave}
 
 # Grids for wave model
-export waveGRD='glo_15m ao_20m so_20m'
+export waveGRD='glo_10m aoc_9km ant_9km'
 export waveGRDN='1 2 2' # gridnumber for ww3_multi
 export waveGRDG='1 2 2' # gridgroup for ww3_multi
 export curvGRD=  # Curvilinear grids
@@ -36,10 +36,10 @@ export postGRD='glo_15mxt' # Grids generated in the sequential post step
 export CDATE=${PDY}${cyc}
 
 # Output stride
-export HOUR_INC=3      # This value should match with the one used in
+export HOUR_INC=1      # This value should match with the one used in
                          # the wind update script
 # gridded and point output rate
-export DTFLD=10800
+export DTFLD=3600
 export DTPNT=3600
 
 # Selected output parameters (gridded)
@@ -49,9 +49,9 @@ export OUTPARS='WND CUR ICE HS T01 T02 DIR FP DP PHS PTP PDIR CHAR'
 # The start time reflects the number of hindcast hours prior to the cycle initial time
 export HINDH=0
 export FHMIN=0
-export FHOUT=6
-export FHMAX_HF=240
-export FHOUT_HF=3
+export FHOUT=3
+export FHMAX_HF=120
+export FHOUT_HF=1
 
 # Intake currents settings
 export CUR_DT=3

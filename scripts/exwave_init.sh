@@ -98,16 +98,16 @@
       echo " Mod def file for $grdID not found in ${COMIN}/rundata. Setting up to generate ..."
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
-      if [ -f $FIXwave/ww3_$grdID.inp ]
+      if [ -f $FIXwave/ww3_grid.inp.$grdID ]
       then
-        cp $FIXwave/ww3_$grdID.inp $grdID.inp
+        cp $FIXwave/ww3_grid.inp.$grdID ww3_grid.inp.$grdID
       fi
 
-      if [ -f $grdID.inp ]
+      if [ -f ww3_grid.inp.$grdID ]
       then
         set +x
         echo ' '
-        echo "   $grdID.inp copied ($FIXwave/ww3_$grdID.inp)."
+        echo "   ww3_grid.inp.$grdID copied ($FIXwave/ww3_grid.inp.$grdID)."
         echo ' '
         [[ "$LOUD" = YES ]] && set -x
       else
@@ -122,10 +122,11 @@
         echo ' '
         echo $msg
         [[ "$LOUD" = YES ]] && set -x
-        echo "$WAV_MOD_ID init config $date $cycle : $grdID.inp missing." >> $wavelog
+        echo "$WAV_MOD_ID init config $date $cycle : ww3_grid.inp.$grdID missing." >> $wavelog
         err=2;export err;${errchk}
       fi
 
+      [[ ! -d $COMOUT/rundata ]] && mkdir -m 775 -p $COMOUT/rundata
       echo "$USHwave/wave_grid_moddef.sh $grdID > $grdID.out 2>&1" >> cmdfile
 
       nmoddef=`expr $nmoddef + 1`
@@ -152,7 +153,7 @@
 
     set +x
     echo ' '
-    echo "   Executing the copy command file at : `date`"
+    echo "   Executing the mod_def command file at : `date`"
     echo '   ------------------------------------'
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
@@ -182,9 +183,9 @@
 
 # 1.a.3 File check
 
-  for grdID in $curID $iceID $wndID $waveGRD $esmfGRD $sbsGRD $postGRD $interpGRD
+  for grdID in ${grdALL}
   do
-    if [ -f mod_def.$grdID ]
+    if [ -f ${COMOUT}/rundata/${RUN}.mod_def.$grdID ]
     then
       set +x
       echo ' '
