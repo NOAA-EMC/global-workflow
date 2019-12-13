@@ -21,14 +21,7 @@ done
 
 ###############################################################
 echo
-echo "=============== START TO SOURCE MACHINE RUNTIME ENVIRONMENT ==============="
-. $BASE_ENV/${machine}.env wave
-status=$?
-[[ $status -ne 0 ]] && exit $status
-
-###############################################################
-echo
-echo "=============== START TO RUN WAVE INIT ==============="
+echo "=============== START TO RUN WAVE PREP ==============="
 # Execute the JJOB
 $HOMEgfs/jobs/JWAVE_PREP
 status=$?

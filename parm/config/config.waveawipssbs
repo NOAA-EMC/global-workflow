@@ -1,0 +1,12 @@
+#!/bin/ksh -x
+
+########## config.waveawipssbs ##########
+# Wave steps specific
+
+echo "BEGIN: config.waveawipssbs"
+
+# Get task specific resources
+. $EXPDIR/config.resources waveawipssbs
+
+
+echo "END: config.waveawipssbs"

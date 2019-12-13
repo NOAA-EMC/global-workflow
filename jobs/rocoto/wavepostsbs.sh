@@ -11,7 +11,7 @@ status=$?
 ###############################################################
 echo
 echo "=============== START TO SOURCE RELEVANT CONFIGS ==============="
-configs="base wave wavepost"
+configs="base wave wavepostsbs"
 for config in $configs; do
     . $EXPDIR/config.${config}
     status=$?
@@ -21,9 +21,9 @@ done
 
 ###############################################################
 echo
-echo "=============== START TO RUN WAVE POST ==============="
+echo "=============== START TO RUN WAVE POST_SBS ==============="
 # Execute the JJOB
-$HOMEgfs/jobs/JWAVE_POST
+$HOMEgfs/jobs/JWAVE_POST_SBS
 status=$?
 exit $status
 
