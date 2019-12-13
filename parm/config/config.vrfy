@@ -21,8 +21,9 @@ export VRFYPRCP="YES"             # Precip threat scores
 export VRFYRAD="YES"              # Radiance data assimilation monitoring
 export VRFYOZN="YES"              # Ozone data assimilation monitoring
 export VRFYMINMON="YES"           # GSI minimization monitoring
-export VRFYTRAK="YES"              # Hurricane track verification
-export VRFYGENESIS="YES"           # Cyclone genesis verification
+export VRFYTRAK="YES"             # Hurricane track verification
+export VRFYGENESIS="YES"          # Cyclone genesis verification
+export VRFYFSU="NO"               # Cyclone genesis verification (FSU)
 export RUNMOS="NO"                # whether to run entire MOS package
 
 #-------------------------------------------------
@@ -136,8 +137,8 @@ if [ $machine = "WCOSS_C" ] ; then
     export ens_tracker_ver=v1.1.15.1
     export HOMEens_tracker=$BASE_GIT/ens_tracker.${ens_tracker_ver}
 elif [ $machine = "WCOSS_DELL_P3" ] ; then
-    export ens_tracker_ver=v1.1.15.1
-    export HOMEens_tracker=$BASE_GIT/ens_tracker.${ens_tracker_ver}
+    export ens_tracker_ver=v1.1.15.2
+    export HOMEens_tracker=$BASE_GIT/tracker/ens_tracker.${ens_tracker_ver}
 elif [ $machine = "THEIA" -o $machine = "HERA" ] ; then
     export ens_tracker_ver=v1.1.15.1
     export HOMEens_tracker=$BASE_GIT/tracker/ens_tracker.${ens_tracker_ver}
@@ -170,6 +171,11 @@ fi
 if [[ "$VRFYGENESIS" == "YES" && "$CDUMP" == "gfs" ]]; then
 
     export GENESISSH="$HOMEgfs/jobs/JGFS_CYCLONE_GENESIS"
+fi
+
+if [[ "$VRFYFSU" == "YES" && "$CDUMP" == "gfs" ]]; then
+
+    export GENESISFSU="$HOMEgfs/jobs/JGFS_FSU_GENESIS"
 fi
 
 if [[ "$RUNMOS" == "YES" && "$CDUMP" == "gfs" ]]; then

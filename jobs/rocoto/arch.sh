@@ -100,6 +100,8 @@ if [ $CDUMP = "gfs" ]; then
     $NCP storms.gfso.atcf_gen.altg.$CDATE ${ARCDIR}/.
     $NCP trak.gfso.atcfunix.$CDATE        ${ARCDIR}/.
     $NCP trak.gfso.atcfunix.altg.$CDATE   ${ARCDIR}/.
+
+    cp -rp tracker                        ${ARCDIR}/tracker.$CDATE
 fi
 
 # Archive atmospheric gaussian gfs forecast files for fit2obs

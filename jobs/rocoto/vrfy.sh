@@ -178,6 +178,15 @@ if [ $VRFYGENESIS = "YES" -a $CDUMP = "gfs" ]; then
     $GENESISSH
 fi
 
+
+################################################################################
+echo
+echo "=============== START TO RUN CYCLONE GENESIS VERIFICATION (FSU) ==============="
+if [ $VRFYFSU = "YES" -a $CDUMP = "gfs" ]; then
+    $GENESISFSU
+fi
+
+
 ###############################################################
 # Force Exit out cleanly
 if [ ${KEEPDATA:-"NO"} = "NO" ] ; then rm -rf $DATAROOT ; fi
