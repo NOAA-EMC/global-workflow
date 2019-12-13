@@ -9,7 +9,7 @@ if [ $# -ne 1 ]; then
     echo "Must specify an input task argument to set resource variables!"
     echo "argument can be any one of the following:"
     echo "anal fcst post vrfy metp arch"
-    echo "eobs eomg eupd ecen efcs epos earc"
+    echo "eobs eomg eupd ecen esfc efcs epos earc"
     echo "postsnd awips gempak"
     exit 1
 
@@ -211,6 +211,21 @@ elif [ $step = "ecen" ]; then
     export nth_cycle=$nth_ecen
     if [[ "$machine" == "WCOSS_C" ]]; then
         export memory_ecen="3072M"
+    fi
+
+elif [ $step = "esfc" ]; then
+
+    export wtime_esfc="03:00:00"
+    export npe_esfc=80
+    export npe_node_esfc=24
+    export nth_esfc=1
+    if [[ "$machine" = "WCOSS_DELL_P3" ]]; then
+        export npe_node_esfc=28
+        export nth_esfc=1
+    fi
+    export nth_cycle=$nth_esfc
+    if [[ "$machine" == "WCOSS_C" ]]; then
+        export memory_esfc="3072M"
     fi
 
 elif [ $step = "efcs" ]; then

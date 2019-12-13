@@ -1,0 +1,14 @@
+#!/bin/ksh -x
+
+########## config.esfc ##########
+# Ensemble surface specific
+
+echo "BEGIN: config.esfc"
+
+# Get task specific resources
+. $EXPDIR/config.resources esfc
+
+export ENKFRESFCSH="$HOMEgsi/scripts/exglobal_enkf_surface_fv3gfs.sh.ecf"
+
+
+echo "END: config.esfc"

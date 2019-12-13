@@ -109,6 +109,7 @@ cd ${pwd}/../jobs               ||exit 8
     $LINK ../sorc/gsi.fd/jobs/JGLOBAL_ENKF_INNOVATE_OBS  .
     $LINK ../sorc/gsi.fd/jobs/JGLOBAL_ENKF_UPDATE        .
     $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_RECENTER        .
+    $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_SURFACE         .    
     $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_FCST            .
     $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_POST            .
 cd ${pwd}/../scripts            ||exit 8
@@ -117,6 +118,7 @@ cd ${pwd}/../scripts            ||exit 8
     $LINK ../sorc/gsi.fd/scripts/exglobal_enkf_innovate_obs_fv3gfs.sh.ecf  .
     $LINK ../sorc/gsi.fd/scripts/exglobal_enkf_update_fv3gfs.sh.ecf        .
     $LINK ../sorc/gsi.fd/scripts/exglobal_enkf_recenter_fv3gfs.sh.ecf      .
+    $LINK ../sorc/gsi.fd/scripts/exglobal_enkf_surface_fv3gfs.sh.ecf       .
     $LINK ../sorc/gsi.fd/scripts/exglobal_enkf_fcst_fv3gfs.sh.ecf          .
     $LINK ../sorc/gsi.fd/scripts/exglobal_enkf_post_fv3gfs.sh.ecf          .
 cd ${pwd}/../fix                ||exit 8
