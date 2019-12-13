@@ -36,7 +36,7 @@ if [ $VRFYFITS = "YES" ]; then
     export HYBLEVS=$HOMEgfs/fix/fix_am/global_hyblev.l${LEVS}.txt
     export CUE2RUN=$QUEUE
 
-    if [ $netcdf_diag = ".true." ]; then
+    if [ ${netcdf_diag:-"NO"} = ".true." ]; then
         export CONVNETC="YES"
     fi
 
