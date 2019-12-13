@@ -8,7 +8,7 @@ if [ $# -ne 1 ]; then
 
     echo "Must specify an input task argument to set resource variables!"
     echo "argument can be any one of the following:"
-    echo "anal fcst post vrfy metp arch"
+    echo "anal gldas fcst post vrfy metp arch"
     echo "eobs eomg eupd ecen esfc efcs epos earc"
     echo "postsnd awips gempak"
     exit 1
