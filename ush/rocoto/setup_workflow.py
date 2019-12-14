@@ -660,16 +660,21 @@ def get_hyb_tasks(dict_configs, cycledef='enkf'):
 
 
     # efmn, efcs
-    deps = []
+    deps1 = []
     dep_dict = {'type': 'metatask', 'name': '%secmn' % cdump}
-    deps.append(rocoto.add_dependency(dep_dict))
+    deps1.append(rocoto.add_dependency(dep_dict))
     dep_dict = {'type': 'task', 'name': '%sesfc' % cdump}
-    deps.append(rocoto.add_dependency(dep_dict))
+    deps1.append(rocoto.add_dependency(dep_dict))
+    dependencies1 = rocoto.create_dependency(dep_condition='and', dep=deps1)
+  
+    deps2 = []
+    deps2 = dependencies1
     dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': '-06:00:00'}
-    deps.append(rocoto.add_dependency(dep_dict))
-    dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
+    deps2.append(rocoto.add_dependency(dep_dict))
+    dependencies2 = rocoto.create_dependency(dep_condition='or', dep=deps2)
+
     efcsenvars = envars1 + [ensgrp]
-    task = wfu.create_wf_task('efcs', cdump=cdump, envar=efcsenvars, dependency=dependencies,
+    task = wfu.create_wf_task('efcs', cdump=cdump, envar=efcsenvars, dependency=dependencies2,
                               metatask='efmn', varname='grp', varval=EFCSGROUPS, cycledef=cycledef)
 
     dict_tasks['%sefmn' % cdump] = task
