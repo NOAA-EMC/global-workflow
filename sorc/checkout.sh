@@ -69,6 +69,8 @@ if [[ ! -d gfs_post.fd ]] ; then
     #git checkout ncep_post.v8.0.27e
     #git checkout ncep_post.v8.0.27e
     #git checkout ncep_post_gtg.v1.0.6c
+# use develop branch (Oct 9, 2019)
+    git checkout 454aa4f797eb322e356271c8537174a028e7b0f9
     cd ${topdir}
 else
     echo 'Skip.  Directory gfs_post.fd already exists.'
