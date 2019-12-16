@@ -14,8 +14,8 @@ export WAV_MOD_ID=${WAV_MOD_ID:-wave}
 
 # Grids for wave model
 export waveGRD='glo_10m aoc_9km ant_9km'
-export waveGRDN='1 2 2' # gridnumber for ww3_multi
-export waveGRDG='1 2 2' # gridgroup for ww3_multi
+export waveGRDN='1 2 3' # gridnumber for ww3_multi
+export waveGRDG='1 2 3' # gridgroup for ww3_multi
 export curvGRD=  # Curvilinear grids
 
 # ESMF input grid
@@ -47,25 +47,28 @@ export OUTPARS='WND CUR ICE HS T01 T02 DIR FP DP PHS PTP PDIR CHAR'
 # GFS # export OUTPARS='WND CUR ICE HS T01 T02 DIR FP DP PHS PTP PDIR CHAR'
 
 # The start time reflects the number of hindcast hours prior to the cycle initial time
-export HINDH=0
-export FHMIN=0
-export FHOUT=3
-export FHMAX_HF=120
-export FHOUT_HF=1
+export HINDH=${HINDH:-0}
+export FHMIN=${FHMIN:-0}
+export FHOUT=${FHOUT:-6}
+export FHMAX=${FHMAX:-384}
+export FHMAX_HF=${FHMAX_HF:-240}
+export FHOUT_HF=${FHOUT_HF:-3}
 
 # Intake currents settings
-export CUR_DT=3
-export FHMAX_CUR=192 # RTOFS forecasts only out to 8 days
+export CUR_DT=${CUR_DT:-3}
+export FHMAX_CUR=${FHMAX_CUR:-192} # RTOFS forecasts only out to 8 days
 
 #   The ending time of the run is always the $wavlsth hour forecast.
-export wavlsth=${fhcplwav:-384}
+export FHMAXWAV=${FHMAX:-384} # For GEFS depedency is on the
 
 # Number of cycles to look back for restart files
 export nback=
 
 # Restart file config
-export gfs_cyc=`expr 24 / ${gefs_cych}`
-export CYCSTRIDE=${gefs_cych} # cycle stride in h
+gfs_cych=6
+if [ ${gfs_cyc} -ne 0 ]; then gfs_cych=`expr 24 / ${gfs_cyc}`; fi
+export gfs_cych #=`expr 24 / ${gfs_cyc}`
+export CYCSTRIDE=${gfs_cych} # cycle stride in h
 export DTRST=1 # time between restart files, set to DTRST=1 for a single restart file
 
 # Set runmember to default value if not GEFS cpl run

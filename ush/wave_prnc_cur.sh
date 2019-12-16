@@ -30,6 +30,8 @@ fhr=`printf "%03d\n" ${fhr}`
 
 curfile=rtofs_glo_2ds_${fext}${fhr}_3hrly_prog.nc
 
+echo "FILE: $COMINcur/rtofs.${PDY}/$curfile"
+
 if [ -s ${COMINcur}/rtofs.${PDY}/${curfile} ]
 then
 

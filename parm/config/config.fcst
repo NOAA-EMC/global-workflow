@@ -156,6 +156,9 @@ if [[ "$CDUMP" == "gdas" ]] ; then # GDAS cycle specific parameters
     # For IAU, write restarts at beginning of window also
     if [ $DOIAU = "YES" ]; then export restart_interval=3; fi
 
+    # Choose coupling with wave
+    export cplwav=.true.
+
 elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
 
     # Write more variables to output
@@ -167,6 +170,9 @@ elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
 
     # Write gfs restart files to rerun fcst from any break point         
      export restart_interval=${restart_interval_gfs:-0}
+
+    # Choose coupling with wave
+    export cplwav=.true.
 fi
 
 

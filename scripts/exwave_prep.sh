@@ -622,6 +622,7 @@
         ${wavempexec} ${wavenproc} ${wave_mpmd} cmdfile
         exit=$?
       else
+        chmod 744 ./cmdfile
         ./cmdfile
         exit=$?
       fi

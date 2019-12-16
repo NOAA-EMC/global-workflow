@@ -383,9 +383,12 @@ fi
 # At this time only test gfs but this change need to be tested on gdas, enkf, and gfs
 if [ $cplwav = ".true." ]; then
 # Link WW3 files
+  for file in $(ls $COMINWW3/${WAV_MOD_ID}.${PDY}/${cyc}/rundata/rmp_src_to_dst_conserv_*) ; do
+    $NLN $file $DATA/
+  done
   $NLN $COMINWW3/${WAV_MOD_ID}.${PDY}/${cyc}/rundata/ww3_multi.${WAV_MOD_ID}${WAV_MEMBER}.${cycle}.inp $DATA/ww3_multi.inp
         # Check for expected wave grids for this run
-  array=($curID $iceID $wndID $buoy $waveGRD $sbsGRD $postGRD $interpGRD)
+  array=($curID $iceID $wndID $uoutpGRD $waveGRD $sbsGRD $postGRD $interpGRD)
   grdALL=`printf "%s\n" "${array[@]}" | sort -u | tr '\n' ' '`
   for wavGRD in ${grdALL}; do
     # Wave IC (restart) file must exist for warm start on this cycle, if not wave model starts from flat ocean
@@ -415,7 +418,7 @@ if [ $cplwav = ".true." ]; then
   YMDH=`$NDATE $fhr $CDATE`
   YMD=$(echo $YMDH | cut -c1-8)
   HMS="$(echo $YMDH | cut -c9-10)0000"
-    $NLN $DATA/${YMD}.${HMS}.out_pnt.${buoy} $COMOUTWW3/${WAV_MOD_ID}.${PDY}/${cyc}/rundata/
+    $NLN $DATA/${YMD}.${HMS}.out_pnt.${uoutpGRD} $COMOUTWW3/${WAV_MOD_ID}.${PDY}/${cyc}/rundata/
     for wavGRD in ${waveGRD} ; do
       $NLN $COMOUTWW3/${WAV_MOD_ID}.${PDY}/${cyc}/rundata/${WAV_MOD_ID}${WAV_MEMBER}.out_grd.${wavGRD}.${YMD}.${HMS} $DATA/${YMD}.${HMS}.out_grd.${wavGRD}
     done
@@ -1322,7 +1325,7 @@ if [ $cplwav = ".true." ]; then
      $NCP out_grd.${wavGRD} $COMOUTWW3/${WAV_MOD_ID}.${PDY}/${cyc}/rundata/${WAV_MOD_ID}${WAV_MEMBER}.out_grd.${wavGRD}.${PDY}${cyc}
      $NCP log.${wavGRD} $COMOUTWW3/${WAV_MOD_ID}.${PDY}/${cyc}/rundata/${WAV_MOD_ID}${WAV_MEMBER}.log.${wavGRD}.${PDY}${cyc}
    done
-   $NCP out_pnt.${buoy} $COMOUTWW3/${WAV_MOD_ID}.${PDY}/${cyc}/rundata/${WAV_MOD_ID}${WAV_MEMBER}.out_pnt.${buoy}.${PDY}${cyc}
+   $NCP out_pnt.${uoutpGRD} $COMOUTWW3/${WAV_MOD_ID}.${PDY}/${cyc}/rundata/${WAV_MOD_ID}${WAV_MEMBER}.out_pnt.${uoutpGRD}.${PDY}${cyc}
    $NCP log.mww3 $COMOUTWW3/${WAV_MOD_ID}.${PDY}/${cyc}/rundata/${WAV_MOD_ID}${WAV_MEMBER}.log.mww3.${PDY}${cyc}
 
 fi

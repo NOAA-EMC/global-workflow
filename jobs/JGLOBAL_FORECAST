@@ -9,7 +9,7 @@ date
 #############################
 # Source relevant config files
 #############################
-configs="base fcst"
+configs="base fcst wave"
 export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
 config_path=${EXPDIR:-$NWROOT/gfs.${gfs_ver}/parm/config}
 for config in $configs; do
@@ -61,6 +61,11 @@ if [ $RUN_ENVIR = "nco" ]; then
     export ROTDIR=${COMROOT:?}/$NET/$envir
     export RSTDIR=${GESROOT:?}/$envir
 fi
+
+# WAVE component directory
+export WAV_MOD_ID=${WAV_MOD_ID:-wave}
+export COMINWW3=${COMINWW3:-${ROTDIR:?}}
+export COMOUTWW3=${COMOUTWW3:-${ROTDIR:?}}
 
 
 ##############################################

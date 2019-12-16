@@ -211,14 +211,10 @@
     icefile=${WAV_MOD_ID}.${iceID}.$cycle.ice
   fi
  
-  if [ "$SENDCOM" = 'YES' ]
-  then
-    set $setoff
-    echo "   Saving ice.ww3 as $COMOUT/rundata/${icefile}"
-    set $seton
-    cp ice.ww3 $COMOUT/rundata/${icefile}
-  fi 
-
+  set $setoff
+  echo "   Saving ice.ww3 as $COMOUT/rundata/${icefile}"
+  set $seton
+  cp ice.ww3 $COMOUT/rundata/${icefile}
   rm -f ice.ww3
 
 # --------------------------------------------------------------------------- #
