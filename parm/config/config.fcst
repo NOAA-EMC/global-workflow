@@ -150,7 +150,14 @@ if [[ "$CDUMP" == "gdas" ]] ; then # GDAS cycle specific parameters
         export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_da_orig"
     fi
 
-    # Write restart files at next assimilation time
+    # Write restart files, where $number is current model start time. 
+    # restart_interval:        $number
+    #    number=0, writes out restart files at the end of forecast. 
+    #    number>0, writes out restart files at the frequency of $number and at the end of forecast.
+    # restart_interval:        "$number -1"
+    #    writes out restart files only once at $number forecast hour.
+    # restart_interval:        "$number1 $number2 $number3 ..."
+    #    writes out restart file at the specified forecast hours 
     export restart_interval=${restart_interval:-6}
 
     # For IAU, write restarts at beginning of window also
