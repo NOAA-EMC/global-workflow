@@ -7,8 +7,8 @@ case:
     MOM6IC: /scratch1/NCEPDEV/nems/Bin.Li/S2S/FROM_HPSS
 
   settings: 
-    SDATE: 2013-04-01t00:00:00
-    EDATE: 2013-04-01t00:00:00
+    SDATE: 2016-04-01t00:00:00
+    EDATE: 2016-04-01t00:00:00
 
     cplflx: .true.
     print_esmf: .true.
@@ -20,10 +20,10 @@ case:
     NST_MODEL: 0
 
   gfs_output_settings:
-    OCN_INTERVAL: 120
+    OCN_INTERVAL: 24
     FHOUT_GFS: 6
     FHMIN_GFS: 0
-    FHMAX_GFS: 840
+    FHMAX_GFS: 72
     FHMAX_HF_GFS: 0
     FHOUT_HF_GFS: 1
 
@@ -42,3 +42,7 @@ case:
     hord_mt_nh_nonmono: 5
     hord_xx_nh_nonmono: 5
     cdmbgwd: "1.0,1.2"
+
+  post:
+    downset: 2
+    GOESF: no

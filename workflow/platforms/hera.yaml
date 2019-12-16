@@ -39,7 +39,7 @@ platform: !Platform
     export NDATE="$NWPROD/util/exec/ndate"
     export NHOUR="$NWPROD/util/exec/nhour"
     export WGRIB="$NWPROD/util/exec/wgrib"
-    export WGRIB2="$NWPROD/util/exec/wgrib2"
+    export WGRIB2="/apps/wgrib2/2.0.8/intel/18.0.3.222/bin/wgrib2"
     export COPYGB="$NWPROD/util/exec/copygb"
     export COPYGB2="$NWPROD/util/exec/copygb2"
     export GRBINDEX="$NWPROD/util/exec/grbindex"

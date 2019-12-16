@@ -124,9 +124,7 @@ done
 # Restore CDATE to what is expected
   export CDATE=$IDATE
   echo $pwd
-  $NMV SST*nc $COMOUT/
-  $NMV ocnr*.nc $COMOUT
-  $NMV ocnr*.grb2 $COMOUT
+  $NMV ocn_ice*.grb2 $COMOUT
   status=$?
   [[ $status -ne 0 ]] && exit $status
 

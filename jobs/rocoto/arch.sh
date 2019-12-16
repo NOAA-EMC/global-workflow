@@ -297,7 +297,7 @@ fi
 if [ $cpl = ".true." ]; then
 # Remove ocean and ice files
 cd $ROTDIR/logs/$CDATE
-tail -n 300 gfsocnpost001.log|grep "Successfully completed"
+tail -n 3 gfs.ocnpost.p*.log |grep "code 0:0"
 status=$?
 [[ $status -ne 0 ]] && exit $status
 fi

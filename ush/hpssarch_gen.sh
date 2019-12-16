@@ -38,8 +38,11 @@ if [ $type = "gfs" ]; then
   touch gfs_nemsiob.txt
   touch gfs_restarta.txt
 
+  dirname="./gfs.${PDY}/${cyc}/"
+  head="gfs.t${cyc}z."
+
 # for coupled model
-if [ $cpl = ".true." ]
+if [ $cpl = ".true." ]; then
   echo "cpl=",$cpl
   rm -f gfs_flux_1p00.txt
   rm -f ocn.txt
@@ -51,15 +54,13 @@ if [ $cpl = ".true." ]
   touch ocn2.txt
   touch ice.txt
   touch SST.txt
-fi
   echo  "${dirname}ice*nc             " >>ice.txt
   echo  "${dirname}ocn*nc             " >>ocn.txt
-  echo  "${dirname}ocnr*grb2           " >>ocn2.txt
+  echo  "${dirname}ocn_ice*grb2       " >>ocn2.txt
   echo  "${dirname}SST*nc             " >>SST.txt
-# for coupled model
-
-  dirname="./gfs.${PDY}/${cyc}/"
-  head="gfs.t${cyc}z."
+  echo  "${dirname}${head}flux.1p00.f${fhr}           " >>gfs_flux_1p00.txt
+  echo  "${dirname}${head}flux.1p00.f${fhr}.idx       " >>gfs_flux_1p00.txt
+fi
 
   #..................
   echo  "${dirname}${head}pgrb2b.0p25.anl                  " >>gfs_pgrb2b.txt
