@@ -637,11 +637,10 @@ def get_hyb_tasks(dict_configs, cycledef='enkf'):
     dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
     fhrgrp = rocoto.create_envar(name='FHRGRP', value='#grp#')
     fhrlst = rocoto.create_envar(name='FHRLST', value='#lst#')
-    fhrsfc = rocoto.create_envar(name='FHRSFC', value='#sfc#')
-    ecenenvars = envars1 + [fhrgrp] + [fhrlst] + [fhrsfc]
-    varname1, varname2, varname3, varname4 = 'grp', 'dep', 'lst', 'sfc'
-    varval1, varval2, varval3, varval4 = get_ecengroups(dict_configs, dict_configs['ecen'], cdump=cdump)
-    vardict = {varname2: varval2, varname3: varval3, varname4: varval4}
+    ecenenvars = envars1 + [fhrgrp] + [fhrlst]
+    varname1, varname2, varname3 = 'grp', 'dep', 'lst'
+    varval1, varval2, varval3 = get_ecengroups(dict_configs, dict_configs['ecen'], cdump=cdump)
+    vardict = {varname2: varval2, varname3: varval3}
     task = wfu.create_wf_task('ecen', cdump=cdump, envar=ecenenvars, dependency=dependencies,
                               metatask='ecmn', varname=varname1, varval=varval1, vardict=vardict)
 
@@ -824,30 +823,21 @@ def get_ecengroups(dict_configs, ecen, cdump='gdas'):
         ifhrs0 = ifhrs[0]
         nfhrs = len(fhrs)
 
-        ifhrsfc = []
-        index = 0
-        while index < nfhrs:
-            ifhrsfc.append(ifhrs0)
-            index = index + 1
-    
         necengrp = ecen['NECENGRP']
         ngrps = necengrp if len(fhrs) > necengrp else len(fhrs)
 
         ifhrs = np.array_split(ifhrs, ngrps)
-        ifhrsfc = np.array_split(ifhrsfc, ngrps)
 
         fhrgrp = ' '.join(['%03d' % x for x in range(0, ngrps)])
         fhrdep = ' '.join([f[-1] for f in ifhrs])
         fhrlst = ' '.join(['_'.join(f) for f in ifhrs])
-        fhrsfc = ' '.join(['_'.join(f) for f in ifhrsfc])
 
     else:
         fhrgrp='000'
         fhrdep='f006'
         fhrlst='f006'
-        fhrsfc='f006'
 
-    return fhrgrp, fhrdep, fhrlst, fhrsfc
+    return fhrgrp, fhrdep, fhrlst
 
 def get_eposgroups(epos, cdump='gdas'):
 

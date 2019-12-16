@@ -9,16 +9,11 @@ status=$?
 ###############################################################
 # Loop over groups to Execute the JJOB
 fhrlst=$(echo $FHRLST | sed -e 's/_/ /g; s/f/ /g; s/,/ /g')
-
-##fhrsfc=$(echo $FHRSFC | cut -d'_' -f1 | sed -e 's/f//g')
-fhrsfc=$(echo $FHRSFC | sed -e 's/ /_/g' | cut -d'_' -f1 |  sed -e 's/f//g')
-
 for fhr in $fhrlst; do
 
     export FHMIN_ECEN=$fhr
     export FHMAX_ECEN=$fhr
     export FHOUT_ECEN=$fhr
-    export FHSFC_ECEN=$fhrsfc
     export job=ecen${fhr}
 
     $HOMEgfs/jobs/JGDAS_ENKF_RECENTER
