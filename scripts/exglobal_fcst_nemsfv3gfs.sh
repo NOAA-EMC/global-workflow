@@ -669,12 +669,17 @@ EOF
 
 #### ww3 version of nems.configure
 if [ $cplwav = ".true." ]; then
-####  atm_petlist_bounds=" 0 $((NTASKS_FV3-1))"
-####  wav_petlist_bounds=" $((NTASKS_FV3)) $((NTASKS_FV3+npe_wav))"
-####  atm_petlist_bounds=" 0   311"
-  atm_petlist_bounds=$atm_petlist_bounds
-####  wav_petlist_bounds=" 312 431"
-  wav_petlist_bounds=$wav_petlist_bounds
+
+# Switch on cpl flag
+  cpl=.true.
+
+NTASKS_FV3m1=$((NTASKS_FV3-1))
+atm_petlist_bounds=" 0 $((NTASKS_FV3-1))"
+wav_petlist_bounds=" $((NTASKS_FV3)) $((NTASKS_FV3m1+npe_wav))"
+###  atm_petlist_bounds=" 0   1511"
+###  atm_petlist_bounds=$atm_petlist_bounds
+###  wav_petlist_bounds="1512 1691"
+###  wav_petlist_bounds=$wav_petlist_bounds
   coupling_interval_sec=${coupling_interval_sec:-1800}
   rm -f nems.configure
 cat > nems.configure <<EOF
@@ -706,11 +711,17 @@ runSeq::
 EOF
 fi
 
+# Set NTASKS_CFG to reflect cplwav
+NTASKS_CFG=$NTASKS_FV3
+if [ $cplwav = ".true." ]; then
+  NTASKS_CFG=$((NTASKS_FV3 + npe_wav))
+fi
+
 rm -f model_configure
 cat > model_configure <<EOF
 total_member:            $ENS_NUM
 print_esmf:              ${print_esmf:-.true.}
-PE_MEMBER01:             $NTASKS_FV3
+PE_MEMBER01:             $NTASKS_CFG
 start_year:              ${tPDY:0:4}
 start_month:             ${tPDY:4:2}
 start_day:               ${tPDY:6:2}

@@ -741,9 +741,9 @@
   UNIPOINTS='$'
 
 # Check for required inputs and coupling options
-  if [ $buoy ]
+  if [ $uoutpGRD ]
   then
-    UNIPOINTS="'$buoy'"
+    UNIPOINTS="'$uoutpGRD'"
   fi
 
 # Check if esmfGRD is set

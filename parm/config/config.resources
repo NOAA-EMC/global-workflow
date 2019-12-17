@@ -147,13 +147,15 @@ elif [ $step = "gldas" ]; then
 
 elif [ $step = "fcst" ]; then
 
-    if [[ "$machine" == "WCOSS_DELL" ]]; then
+    if [[ "$machine" == "WCOSS_DELL_P3" ]]; then
       export npe_node_max=24
     fi
     export wtime_fcst="01:00:00"
     export wtime_fcst_gfs="06:00:00"
     export npe_fcst=$(echo "$layout_x * $layout_y * 6" | bc)
     export npe_fcst_gfs=$(echo "$layout_x_gfs * $layout_y_gfs * 6" | bc)
+    export npe_cpl=$((npe_fcst + npe_wav))
+    export npe_cpl_gfs=$((npe_fcst_gfs + npe_wav))
     export nth_fcst=${nth_fv3:-2}
     #export npe_node_fcst=${npe_node_fcst:-12}
     export npe_node_fcst=$(echo "$npe_node_max / $nth_fcst" | bc)

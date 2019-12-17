@@ -35,6 +35,10 @@ if [ $QUILTING = ".true." ]; then
     export npe_fcst_gfs=$(echo " $npe_fcst_gfs  + $WRITE_GROUP_GFS * $WRTTASK_PER_GROUP_GFS" | bc)
 fi
 
+# Coupled run
+  export npe_cpl=$((npe_fcst + npe_wav))
+  export npe_cpl_gfs=$((npe_fcst_gfs + npe_wav))
+
 # Model configuration
 export TYPE="nh"
 export MONO="non-mono"

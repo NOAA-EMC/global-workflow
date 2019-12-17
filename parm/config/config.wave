@@ -15,7 +15,7 @@ export WAV_MOD_ID=${WAV_MOD_ID:-wave}
 # Grids for wave model
 export waveGRD='glo_10m aoc_9km ant_9km'
 export waveGRDN='1 2 3' # gridnumber for ww3_multi
-export waveGRDG='1 2 3' # gridgroup for ww3_multi
+export waveGRDG='10 20 30' # gridgroup for ww3_multi
 export curvGRD=  # Curvilinear grids
 
 # ESMF input grid
