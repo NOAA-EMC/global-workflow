@@ -51,6 +51,8 @@ NSOUT=${NSOUT:-"-1"}
 FDIAG=$FHOUT
 if [ $FHMAX_HF -gt 0 -a $FHOUT_HF -gt 0 ]; then FDIAG=$FHOUT_HF; fi
 WRITE_DOPOST=${WRITE_DOPOST:-".false."}
+restart_interval=${restart_interval:-0}
+rst_invt1=`echo $restart_interval |cut -d " " -f 1`
 
 PDY=$(echo $CDATE | cut -c1-8)
 cyc=$(echo $CDATE | cut -c9-10)
@@ -139,7 +141,7 @@ if [ ! -d $DATA ]; then
 fi
 cd $DATA || exit 8
 mkdir -p $DATA/INPUT
-if [ $CDUMP = "gfs" -a $restart_interval -gt 0 ]; then
+if [ $CDUMP = "gfs" -a $rst_invt1 -gt 0 ]; then
     RSTDIR_TMP=${RSTDIR:-$ROTDIR}/${CDUMP}.${PDY}/${cyc}/RERUN_RESTART
     if [ ! -d $RSTDIR_TMP ]; then mkdir -p $RSTDIR_TMP ; fi
     $NLN $RSTDIR_TMP RESTART
@@ -151,9 +153,9 @@ fi
 # determine if restart IC exists to continue from a previous forecast
 RERUN="NO"
 filecount=$(find $RSTDIR_TMP -type f | wc -l) 
-if [ $CDUMP = "gfs" -a $restart_interval -gt 0 -a $FHMAX -gt $restart_interval -a $filecount -gt 10 ]; then
+if [ $CDUMP = "gfs" -a $rst_invt1 -gt 0 -a $FHMAX -gt $rst_invt1 -a $filecount -gt 10 ]; then
     SDATE=$($NDATE +$FHMAX $CDATE)
-    EDATE=$($NDATE +$restart_interval $CDATE)
+    EDATE=$($NDATE +$rst_invt1 $CDATE)
     while [ $SDATE -gt $EDATE ]; do
         PDYS=$(echo $SDATE | cut -c1-8)
         cycs=$(echo $SDATE | cut -c9-10)
@@ -163,10 +165,10 @@ if [ $CDUMP = "gfs" -a $restart_interval -gt 0 -a $FHMAX -gt $restart_interval -
             mv $flag1 ${flag1}.old
             if [ -s $flag2 ]; then mv $flag2 ${flag2}.old ;fi
             RERUN="YES"
-            CDATE_RST=$($NDATE -$restart_interval $SDATE)
+            CDATE_RST=$($NDATE -$rst_invt1 $SDATE)
             break
         fi 
-        SDATE=$($NDATE -$restart_interval $SDATE)
+        SDATE=$($NDATE -$rst_invt1 $SDATE)
     done
 fi
 
@@ -207,7 +209,6 @@ fi
 #-------------------------------------------------------
 # initial conditions
 warm_start=${warm_start:-".false."}
-restart_interval=${restart_interval:-0}
 read_increment=${read_increment:-".false."}
 res_latlon_dynamics="''"
 
@@ -1142,11 +1143,11 @@ $ERRSCRIPT || exit $err
 if [ $SEND = "YES" ]; then
 
   # Copy gdas and enkf member restart files
-  if [ $CDUMP = "gdas" -a $restart_interval -gt 0 ]; then
+  if [ $CDUMP = "gdas" -a $rst_invt1 -gt 0 ]; then
     cd $DATA/RESTART
     mkdir -p $memdir/RESTART
 
-    RDATE=$($NDATE +$restart_interval $CDATE)
+    RDATE=$($NDATE +$rst_invt1 $CDATE)
     rPDY=$(echo $RDATE | cut -c1-8)
     rcyc=$(echo $RDATE | cut -c9-10)
     for file in ${rPDY}.${rcyc}0000.* ; do
@@ -1154,7 +1155,7 @@ if [ $SEND = "YES" ]; then
     done
     if [ $DOIAU = "YES" ] || [ $DOIAU_coldstart = "YES" ]; then
        # if IAU is on, save two consective restarts
-       RDATE=$($NDATE +$restart_interval $RDATE)
+       RDATE=$($NDATE +$rst_invt1 $RDATE)
        rPDY=$(echo $RDATE | cut -c1-8)
        rcyc=$(echo $RDATE | cut -c9-10)
        for file in ${rPDY}.${rcyc}0000.* ; do
