@@ -695,7 +695,6 @@ atmos_nthreads:          $NTHREADS_FV3
 use_hyper_thread:        ${hyperthread:-".false."}
 ncores_per_node:         $cores_per_node
 restart_interval:        $restart_interval
-output_1st_tstep_rst:    ${output_1st_tstep_rst:-".false."}
 
 quilting:                $QUILTING
 write_groups:            ${WRITE_GROUP:-1}
@@ -907,7 +906,7 @@ cat > input.nml <<EOF
   lgfdlmprad   = ${lgfdlmprad:-".false."}
   effr_in      = ${effr_in:-".false."}
   cplwav       = ${cplwav:-".false."}
-  fscav_aero   = "sulf:0.2","bc1:0.2","bc2:0.2","oc1:0.2","oc2:0.2”,
+  fscav_aero   = "sulf:0.2","bc1:0.2","bc2:0.2","oc1:0.2","oc2:0.2",
   $gfs_physics_nml
 /
 
