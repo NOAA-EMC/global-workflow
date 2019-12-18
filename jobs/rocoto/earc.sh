@@ -80,32 +80,34 @@ if [[ $ENSGRP -gt 0 ]] && [[ $HPSSARCH = "YES" ]]; then
        if [ $CDATE -eq $SDATE -a $cyc -eq $EARCICS_CYC ] ; then SAVEWARMICB="YES" ; fi
    fi
 
-   if [ $CDATE -gt $SDATE ]; then
-       htar -P -cvf $ATARDIR/$CDATE/enkf${CDUMP}_grp${ENSGRP}.tar `cat $ARCH_LIST/enkf${CDUMP}_grp${n}.txt`
-       status=$?
-       if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
-           echo "HTAR $CDATE enkf${CDUMP}_grp${ENSGRP}.tar failed"
-           exit $status
-       fi
-   fi
+   if [ $CDATE -gt $SDATE ]; then # Don't run for first half cycle
 
-   if [ $SAVEWARMICA = "YES" -a $cyc -eq $EARCINC_CYC ]; then
+     htar -P -cvf $ATARDIR/$CDATE/enkf${CDUMP}_grp${ENSGRP}.tar `cat $ARCH_LIST/enkf${CDUMP}_grp${n}.txt`
+     status=$?
+     if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
+         echo "HTAR $CDATE enkf${CDUMP}_grp${ENSGRP}.tar failed"
+         exit $status
+     fi
+
+     if [ $SAVEWARMICA = "YES" -a $cyc -eq $EARCINC_CYC ]; then
        htar -P -cvf $ATARDIR/$CDATE/enkf${CDUMP}_restarta_grp${ENSGRP}.tar `cat $ARCH_LIST/enkf${CDUMP}_restarta_grp${n}.txt`
        status=$?
        if [ $status -ne 0 ]; then
            echo "HTAR $CDATE enkf${CDUMP}_restarta_grp${ENSGRP}.tar failed"
            exit $status
        fi
-   fi
+     fi
 
-   if [ $SAVEWARMICB = "YES"  -a $cyc -eq $EARCICS_CYC ]; then
+     if [ $SAVEWARMICB = "YES"  -a $cyc -eq $EARCICS_CYC ]; then
        htar -P -cvf $ATARDIR/$CDATE/enkf${CDUMP}_restartb_grp${ENSGRP}.tar `cat $ARCH_LIST/enkf${CDUMP}_restartb_grp${n}.txt`
        status=$?
        if [ $status -ne 0 ]; then
            echo "HTAR $CDATE enkf${CDUMP}_restartb_grp${ENSGRP}.tar failed"
            exit $status
        fi
-   fi
+     fi
+
+   fi # CDATE>SDATE
 
 fi
 
