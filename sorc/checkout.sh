@@ -103,6 +103,8 @@ if [[ ! -d gsd_prep_chem.fd ]] ; then
     git clone gerrit:GSD-prep-chem gsd_prep_chem.fd >> ${LOG_DIR}/checkout-gsd-prep-chem.log 2>&1
     rc=$?
     ((err+=$rc))
+    cd gsd_prep_chem.fd
+    git checkout 29e2bb2
     cd ${topdir}
 else
     echo 'Skip.  Directory gsd_prep_chem.fd already exists.'
