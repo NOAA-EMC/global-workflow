@@ -159,7 +159,7 @@ config_base:
     
     # Resolution specific parameters
     export LEVS={doc.fv3_settings.LEVS}
-    export CASE="{doc.fv3_settings.CASE}"
+    export CASE="{doc.fv3_gfs_settings.CASE}"
     export CASE_ENKF="{doc.fv3_enkf_settings.CASE}"
     
     # Surface cycle update frequency
