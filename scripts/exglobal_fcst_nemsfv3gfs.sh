@@ -418,7 +418,7 @@ if [ $cplwav = ".true." ]; then
   YMDH=`$NDATE $fhr $CDATE`
   YMD=$(echo $YMDH | cut -c1-8)
   HMS="$(echo $YMDH | cut -c9-10)0000"
-    $NLN $DATA/${YMD}.${HMS}.out_pnt.${uoutpGRD} $COMOUTWW3/${WAV_MOD_ID}.${PDY}/${cyc}/rundata/
+    $NLN $COMOUTWW3/${WAV_MOD_ID}.${PDY}/${cyc}/rundata/${WAV_MOD_ID}${WAV_MEMBER}.out_pnt.${uoutpGRD}.${YMD}.${HMS} $DATA/${YMD}.${HMS}.out_pnt.${uoutpGRD}
     for wavGRD in ${waveGRD} ; do
       $NLN $COMOUTWW3/${WAV_MOD_ID}.${PDY}/${cyc}/rundata/${WAV_MOD_ID}${WAV_MEMBER}.out_grd.${wavGRD}.${YMD}.${HMS} $DATA/${YMD}.${HMS}.out_grd.${wavGRD}
     done

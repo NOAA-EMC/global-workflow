@@ -345,9 +345,9 @@
     tsleep=10
     while [ ${tloop} -le ${tloopmax} ]
     do
-      if [ -f $COMIN/rundata/${YMD}.${HMS}.out_pnt.${uoutpGRD} ]
+      if [ -f $COMIN/rundata/${WAV_MOD_TAG}.out_pnt.${uoutpGRD}.${YMD}.${HMS} ]
       then
-        cp -f $COMIN/rundata/${YMD}.${HMS}.out_pnt.${uoutpGRD} ./out_pnt.${uoutpGRD}
+        cp -f $COMIN/rundata/${WAV_MOD_TAG}.out_pnt.${uoutpGRD}.${YMD}.${HMS} ./out_pnt.${uoutpGRD}
         break
       else
         sleep ${tsleep}
@@ -356,6 +356,8 @@
     done
     
     rm -f ww3_oup.inp
+    ln -fs ./out_pnt.${uoutpGRD} ./out_pnt.ww3
+    ln -fs ./mod_def.${uoutpGRD} ./mod_def.ww3
     $EXECcode/ww3_outp > buoy_tmp.loc 
     err=$?
 
@@ -463,7 +465,7 @@
     echo "cd output_$YMDHMS" >> ${fcmdnow}
     echo "ln -fs $DATA/mod_def.${uoutpGRD} mod_def.ww3" >> ${fcmdnow}
     iwait=0
-    pfile=$COMIN/rundata/${YMD}.${HMS}.out_pnt.${uoutpGRD}
+    pfile=$COMIN/rundata/${WAV_MOD_TAG}.out_pnt.${uoutpGRD}.${YMD}.${HMS}
     while [ ! -s ${pfile} ]; do sleep 10; ((iwait++)) && ((iwait==$iwaitmax)) && break ; echo $iwait; done
     if [ $iwait -eq $iwaitmax ]; then 
       echo " FATAL ERROR : NO RAW POINT OUTPUT FILE out_pnt.$uoutpGRD
@@ -476,7 +478,7 @@
     fi
     echo "cp -f ${pfile} ./out_pnt.${uoutpGRD} > cpoutp_$uoutpGRD.out 2>&1" >> ${fcmdnow}
     for wavGRD in ${waveGRD} ; do
-      gfile=$COMIN/rundata/${WAV_MOD_ID}${waveMEMB}.out_grd.${wavGRD}.${YMD}.${HMS}
+      gfile=$COMIN/rundata/${WAV_MOD_TAG}.out_grd.${wavGRD}.${YMD}.${HMS}
       while [ ! -s ${gfile} ]; do sleep 10; done
       if [ $iwait -eq $iwaitmax ]; then 
         echo '*************************************************** '

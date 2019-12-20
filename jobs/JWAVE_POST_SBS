@@ -5,8 +5,9 @@ export PS4=' $SECONDS + '
 set -x -e
 
 # PATH for working directory
-export NET=${NET:-gens}
-export RUN=${RUN:-gwes}
+export NET=${NET:-gfs}
+#export RUN=${RUN:-gwes}
+export RUN=wave
 
 export HOMEgefs=${HOMEgefs:-$NWROOT/gefs.${gefs_ver}}
 export HOMEgfs=${HOMEgfs:-$NWROOT/gfs.${gfs_ver}}
@@ -16,6 +17,10 @@ export errchk=${errchk:-err_chk}
 
 # Set HOMEwave to HOMEgefs
 HOMEwave=${HOMEwave:-${HOMEgfs}} 
+
+# Set resources to propagate NTASKS across cfp call
+NTASKS=${NTASKS:-${npe_node_waveprep}}
+export NTASKS=${NTASKS:?NTASKS required to be set}
 
 # Create and go to DATA directory
 export DATA=${DATA:-${DATAROOT:?}/${jobid}}
@@ -34,7 +39,7 @@ export pgmout=OUTPUT.$$
 export MP_PULSE=0
 
 # Path to HOME Directory
-export CODEwave=${CODEwave:-${NWROOT}/${NET}_code.${wave_code_ver}/${code_pkg}}
+export CODEwave=${CODEwave:-${HOMEfv3gfs}/WW3/model}
 export EXECwave=${EXECwave:-$HOMEwave/exec}
 export FIXwave=${FIXwave:-$HOMEwave/fix/fix_wave_${NET}}
 export PARMwave=${PARMwave:-$HOMEwave/parm/wave}
@@ -42,8 +47,8 @@ export USHwave=${USHwave:-$HOMEwave/ush}
 export EXECcode=${EXECcode:-$CODEwave/exe}
 
 # Set COM Paths and GETGES environment
-export COMINwave=${COMINwave:-${COMROOT:?}/${NET}/${envir}}
-export COMOUTwave=${COMOUTwave:-${COMROOT:?}/${NET}/${envir}}
+export COMINwave=${COMINwave:-${ROTDIR:?}}
+export COMOUTwave=${COMOUTwave:-${ROTDIR:?}}
 export COMIN=${COMIN:-${COMINwave}/${RUN}.${PDY}/${cyc}}
 export COMOUT=${COMOUT:-${COMOUTwave}/${RUN}.${PDY}/${cyc}}
 
@@ -60,21 +65,10 @@ fi
 export wavelog=${COMOUTwave}/wave.log
 
 # Set mpi serial command
-export wavempexec=${wavempexec:-"mpirun"}
+export wavempexec=${wavempexec:-"mpirun -n"}
 export wave_mpmd=${wave_mpmd:-"cfp"}
 
 env | sort
-
-# Set parameters using gwes_post.parm
-if [ "${NET}" == "gens" ]
-then
-  . ${HOMEgefs}/parm/gefs.parm
-elif [ "${NET}" == "gfs" ]
-then
-  echo 'Placeholder for GFS config'
-fi
-. $PARMwave/wave.parm.${NET}
-. $PARMwave/wave_post.parm.${NET}
 
 export FHMAX=${FHMAX:-384}
 export FHOUT=${FHOUT:-3}
@@ -93,7 +87,7 @@ export WAV_MOD_TAG=${WAV_MOD_ID}${waveMEMB}
 export CFP_VERBOSE=1
 
 # Execute the Script  
-$HOMEwave/scripts/exwave_post.sh
+$HOMEwave/scripts/exwave_post_sbs.sh
 err=$?
 if [ $err -ne 0 ]; then
   msg="FATAL ERROR: ex-script of GWES_POST failed!"
