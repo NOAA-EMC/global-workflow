@@ -13,6 +13,7 @@ CDATE=${CDATE:-2018010100}
 PDY=$(echo $CDATE | cut -c 1-8)
 cyc=$(echo $CDATE | cut -c 9-10)
 OUTPUT_FILE=${OUTPUT_FILE:-"netcdf"}
+OUTPUT_HISTORY=${OUTPUT_HISTORY:-"trune"}
 SUFFIX=${SUFFIX:-".nc"}
 if [ $SUFFIX = ".nc" ]; then
   format="netcdf"
@@ -112,19 +113,19 @@ if [ $type = "gfs" ]; then
   #..................
   echo  "${dirname}${head}atmanl${SUFFIX}            " >>gfs_${format}a.txt
   echo  "${dirname}${head}sfcanl${SUFFIX}            " >>gfs_${format}a.txt
-  echo  "${dirname}${head}atmf000${SUFFIX}           " >>gfs_${format}a.txt
-  echo  "${dirname}${head}sfcf000${SUFFIX}           " >>gfs_${format}a.txt
   echo  "${dirname}${head}atmi*.nc                   " >>gfs_${format}a.txt
   echo  "${dirname}${head}dtfanl.nc                  " >>gfs_${format}a.txt
 
   #..................
-  fh=6
+  if [ $OUTPUT_HISTORY = ".true." ]; then
+  fh=0
   while [ $fh -le 36 ]; do
     fhr=$(printf %03i $fh)
     echo  "${dirname}${head}atmf${fhr}${SUFFIX}        " >>gfs_${format}b.txt
     echo  "${dirname}${head}sfcf${fhr}${SUFFIX}        " >>gfs_${format}b.txt
     fh=$((fh+6))
   done
+  fi
 
   #..................
   echo  "${dirname}RESTART/*0000.sfcanl_data.tile1.nc  " >>gfs_restarta.txt
