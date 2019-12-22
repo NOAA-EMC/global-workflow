@@ -355,10 +355,10 @@
       fi
     done
     
-    rm -f ww3_oup.inp
+    rm -f buoy.loc buoy_tmp.loc buoy_log.ww3 ww3_oup.inp
     ln -fs ./out_pnt.${uoutpGRD} ./out_pnt.ww3
     ln -fs ./mod_def.${uoutpGRD} ./mod_def.ww3
-    $EXECcode/ww3_outp > buoy_tmp.loc 
+    $EXECcode/ww3_outp > buoy_tmp.loc 2>&1 
     err=$?
 
     if [ "$err" != '0' ]
@@ -372,6 +372,7 @@
       echo '*** FATAL ERROR : ERROR IN ww3_outp *** '
       echo '******************************************** '
       echo ' '
+      cat buoy_tmp.loc 
       echo "$WAV_MOD_TAG post $date $cycle : buoy log file failed to be created." >> $wavelog
       echo $msg
       [[ "$LOUD" = YES ]] && set -x
@@ -461,9 +462,16 @@
     FH3=$(printf %03i $fhr)
 
     fcmdnow=cmdfile.${FH3}
-    echo "mkdir output_$YMDHMS" >> ${fcmdnow}
-    echo "cd output_$YMDHMS" >> ${fcmdnow}
-    echo "ln -fs $DATA/mod_def.${uoutpGRD} mod_def.ww3" >> ${fcmdnow}
+    fcmdgrd=gcmdfile.${FH3}
+    fcmdpnt=pcmdfile.${FH3}
+    rm -f ${fcmdnow} ${fcmdgrd} ${fcmdpnt}
+    touch ${fcmdnow} ${fcmdgrd} ${fcmdpnt}
+#    echo "mkdir output_$YMDHMS" >> ${fcmdnow}
+    mkdir output_$YMDHMS
+#    echo "cd output_$YMDHMS" >> ${fcmdnow}
+    cd output_$YMDHMS
+#    echo "ln -fs $DATA/mod_def.${uoutpGRD} mod_def.ww3" >> ${fcmdnow}
+    ln -fs $DATA/mod_def.${uoutpGRD} mod_def.ww3
     iwait=0
     pfile=$COMIN/rundata/${WAV_MOD_TAG}.out_pnt.${uoutpGRD}.${YMD}.${HMS}
     while [ ! -s ${pfile} ]; do sleep 10; ((iwait++)) && ((iwait==$iwaitmax)) && break ; echo $iwait; done
@@ -476,7 +484,8 @@
       err=7; export err;${errchk}
       exit $err
     fi
-    echo "cp -f ${pfile} ./out_pnt.${uoutpGRD} > cpoutp_$uoutpGRD.out 2>&1" >> ${fcmdnow}
+#    echo "cp -f ${pfile} ./out_pnt.${uoutpGRD} > cpoutp_$uoutpGRD.out 2>&1" >> ${fcmdnow}
+    cp -f ${pfile} ./out_pnt.${uoutpGRD} > cpoutp_$uoutpGRD.out 2>&1
     for wavGRD in ${waveGRD} ; do
       gfile=$COMIN/rundata/${WAV_MOD_TAG}.out_grd.${wavGRD}.${YMD}.${HMS}
       while [ ! -s ${gfile} ]; do sleep 10; done
@@ -492,7 +501,8 @@
         err=8; export err;${errchk}
         exit $err
       fi
-      echo "cp -f ${gfile} ./out_grd.${wavGRD} > cpoutg_$wavGRD.out 2>&1" >> ${fcmdnow}
+#      echo "cp -f ${gfile} ./out_grd.${wavGRD} > cpoutg_$wavGRD.out 2>&1" >> ${fcmdnow}
+      cp -f ${gfile} ./out_grd.${wavGRD} > cpoutg_$wavGRD.out 2>&1
     done
 
     if [ "$grintOK" = 'yes' ]
@@ -503,7 +513,7 @@
           glo_15mxt) ymdh_int=`$NDATE -${HINDH} $ymdh`; dt_int=3600.; n_int=9999 ;;
           glo_30mxt) ymdh_int=`$NDATE -${HINDH} $ymdh`; dt_int=3600.; n_int=9999 ;;
         esac
-        echo "$USHwave/wave_grid_interp_sbs.sh $grdID $ymdh_int $dt_int $n_int > grint_$grdID.out 2>&1" >> ${fcmdnow}
+        echo "$USHwave/wave_grid_interp_sbs.sh $grdID $ymdh_int $dt_int $n_int > grint_$grdID.out 2>&1" >> ${fcmdgrd}
       done
     fi
 
@@ -525,8 +535,9 @@
         dtgi=`echo ${dtgrib} | sed 's/\.//g'`
         dtgh=`expr ${dtgi} / 3600`
         ngrib=`expr ${FHMAXWAV} / ${dtgh} + 1`
-        echo "$USHwave/wave_grib2_sbs.sh $grdID $dtgrib $ngrib $GRIDNR $MODNR $ymdh $fhr $GRDRES "$gribFL" > grib_$grdID.out 2>&1" >> ${fcmdnow}
+        echo "$USHwave/wave_grib2_sbs.sh $grdID $dtgrib $ngrib $GRIDNR $MODNR $ymdh $fhr $GRDRES "$gribFL" > grib_$grdID.out 2>&1" >> ${fcmdgrd}
       done
+      cat ${fcmdgrd} >> ${fcmdnow}
     fi
 
     if [ "$specOK" = 'yes' ]
@@ -538,13 +549,45 @@
       ilayer=1
       for buoy in $buoys
       do
-        echo "$USHwave/wave_outp_spec_sbs.sh $buoy $ymdh > spec_$buoy.out 2>&1" >> ${fcmdnow}
+        echo "$USHwave/wave_outp_spec.sh $buoy $ymdh > spec_$buoy.out 2>&1" >> ${fcmdnow}
       done
     fi
 
-        chmod 744 ${fcmdnow}
-        ./${fcmdnow}
 
+    wavenproc=`wc -l ${fcmdnow} | awk '{print $1}'`
+    wavenproc=`echo $((${wavenproc}<${NTASKS}?${wavenproc}:${NTASKS}))`
+
+    set +x
+    echo ' '
+    echo "   Executing the copy command file at : `date`"
+    echo '   ------------------------------------'
+    echo ' '
+    [[ "$LOUD" = YES ]] && set -x
+
+    if [ "$wavenproc" -gt '1' ]
+    then
+      ${wavempexec} ${wavenproc} ${wave_mpmd} ${fcmdnow}
+      exit=$?
+    else
+      ./${fcmdnow}
+      exit=$?
+    fi
+
+    if [ "$exit" != '0' ]
+    then
+      set +x
+      echo ' '
+      echo '********************************************'
+      echo '*** CMDFILE FAILED IN WIND GENERATION   ***'
+      echo '********************************************'
+      echo '     See Details Below '
+      echo ' '
+      [[ "$LOUD" = YES ]] && set -x
+    fi
+
+
+#    chmod 744 ${fcmdnow}
+#    ./${fcmdnow}
 
     cd $DATA
 

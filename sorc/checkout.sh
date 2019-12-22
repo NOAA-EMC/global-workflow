@@ -16,9 +16,11 @@ then
 	git checkout 321632d
 	git submodule update --init --recursive
 else
-    git clone https://github.com/ufs-community/ufs-weather-model fv3gfs.fd >> ${topdir}/checkout-fv3gfs.log 2>&1
+#    git clone https://github.com/ufs-community/ufs-weather-model fv3gfs.fd >> ${topdir}/checkout-fv3gfs.log 2>&1
+    git clone https://github.com/ajhenrique/ufs-weather-model fv3gfs.fd >> ${topdir}/checkout-fv3gfs.log 2>&1
     cd fv3gfs.fd
-    git checkout gfs_v16.0.1
+#    git checkout gfs_v16.0.1
+    git checkout gfsv16_wave
     git submodule update --init --recursive
 
     #git clone gerrit:NEMSfv3gfs fv3gfs.fd >> ${topdir}/checkout-fv3gfs.log 2>&1

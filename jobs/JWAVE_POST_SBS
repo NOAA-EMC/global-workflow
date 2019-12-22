@@ -97,6 +97,7 @@ fi
 postmsg "$jlogfile" "$msg"
 
 # Remove temp directories
+KEEPDATA=YES
 if [ "$KEEPDATA" != "YES" ]; then
   cd $DATAROOT
   rm -rf $DATA
