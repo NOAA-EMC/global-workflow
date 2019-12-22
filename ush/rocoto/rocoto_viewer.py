@@ -192,11 +192,11 @@ def load_produtil_pythonpath():
         pass
 
     PRODUTIL = collections.defaultdict(list) 
-    PRODUTIL['theia'] = '/scratch4/NCEPDEV/global/save/glopara/svn/nceplibs/produtil/trunk/ush'
+    PRODUTIL['hera'] = '/scratch1/NCEPDEV/global/glopara/svn/nceplibs/produtil/trunk/ush'
     PRODUTIL['luna']  = '/gpfs/hps3/emc/global/noscrub/emc.glopara/svn/nceplibs/produtil/trunk/ush'
     PRODUTIL['tide']  = '/gpfs/td1/emc/global/save/emc.glopara/svn/nceplibs/produtil/trunk/ush'
     PRODUTIL['gyre']  = '/gpfs/gd1/emc/global/save/emc.glopara/svn/nceplibs/produtil/trunk/ush'
-    try_clusters = ('theia','luna','tide','gyre')
+    try_clusters = ('hera','luna','tide','gyre')
 
     for cluster in try_clusters:
         sys.path.append(PRODUTIL[cluster])

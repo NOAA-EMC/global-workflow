@@ -1154,8 +1154,9 @@ if [ $SEND = "YES" ]; then
       $NCP $file $memdir/RESTART/$file
     done
     if [ $DOIAU = "YES" ] || [ $DOIAU_coldstart = "YES" ]; then
-       # if IAU is on, save two consective restarts
-       RDATE=$($NDATE +$rst_invt1 $RDATE)
+       # if IAU is on, save restart at start of IAU window
+       rst_iau=$(( ${IAU_OFFSET} - (${IAU_DELTHRS}/2) ))
+       RDATE=$($NDATE +$rst_iau $CDATE)
        rPDY=$(echo $RDATE | cut -c1-8)
        rcyc=$(echo $RDATE | cut -c9-10)
        for file in ${rPDY}.${rcyc}0000.* ; do

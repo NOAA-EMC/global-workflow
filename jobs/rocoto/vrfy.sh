@@ -88,7 +88,7 @@ if [ $VRFYFITS = "YES" -a $CDUMP = $CDFNL -a $CDATE != $SDATE ]; then
     [[ ! -d $TMPDIR ]] && mkdir -p $TMPDIR
 
     export RUN_ENVIR_SAVE=$RUN_ENVIR
-    export RUN_ENVIR=devpara
+    export RUN_ENVIR=$OUTPUT_FILE
 
     $PREPQFITSH $PSLOT $CDATE $ROTDIR $ARCDIR $TMPDIR
 

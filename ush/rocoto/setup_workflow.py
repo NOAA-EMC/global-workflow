@@ -770,7 +770,7 @@ def get_postgroups(post, cdump='gdas'):
     fhrs = [f.tolist() for f in fhrs]
 
     fhrgrp = ' '.join(['%03d' % x for x in range(0, ngrps+1)])
-    fhrdep = ' '.join(['f000'] + [f[-1] for f in fhrs])
+    fhrdep = ' '.join(['anl'] + [f[-1] for f in fhrs])
     fhrlst = ' '.join(['anl'] + ['_'.join(f) for f in fhrs])
 
     return fhrgrp, fhrdep, fhrlst
