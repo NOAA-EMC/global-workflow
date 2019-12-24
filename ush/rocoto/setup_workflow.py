@@ -417,9 +417,7 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
         if do_gldas in ['Y', 'YES']:
             dep_dict = {'type': 'task', 'name': '%sgldas' % cdump}
             deps.append(rocoto.add_dependency(dep_dict))
-            dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': '-06:00:00'}
-            deps.append(rocoto.add_dependency(dep_dict))
-            dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
+            dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
         else:
             dep_dict = {'type': 'task', 'name': '%sanal' % cdump}
             deps.append(rocoto.add_dependency(dep_dict))
