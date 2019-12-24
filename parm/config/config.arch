@@ -15,12 +15,11 @@ export FHMAX_FITS=132
 
 #--starting and ending hours of previous cycles to be removed from rotating directory
 export RMOLDSTD=144
-export RMOLDEND=72
+export RMOLDEND=24
 
 #--keep forcing data for running gldas step
 if [[ "$DO_GLDAS" == "YES" && "$CDUMP" == "gdas" ]]; then
      [[ $RMOLDSTD -lt 144 ]] && export RMOLDSTD=144   
-     [[ $RMOLDEND -lt 120 ]] && export RMOLDEND=120   
 fi
 
 echo "END: config.arch"

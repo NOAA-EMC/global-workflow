@@ -262,8 +262,10 @@ fi
 # Step back every assim_freq hours
 # and remove old rotating directories for successful cycles
 # defaults from 24h to 120h
+DO_GLDAS=${DO_GLDAS:-"NO"}
 GDATEEND=$($NDATE -${RMOLDEND:-24}  $CDATE)
-GDATE=$(   $NDATE -${RMOLDSTD:-120} $CDATE)
+GDATE=$($NDATE -${RMOLDSTD:-120} $CDATE)
+GLDAS_DATE=$($NDATE -96 $CDATE)
 while [ $GDATE -le $GDATEEND ]; do
     gPDY=$(echo $GDATE | cut -c1-8)
     gcyc=$(echo $GDATE | cut -c9-10)
@@ -273,7 +275,15 @@ while [ $GDATE -le $GDATEEND ]; do
 	if [ -f $rocotolog ]; then
             testend=$(tail -n 1 $rocotolog | grep "This cycle is complete: Success")
             rc=$?
-            [[ $rc -eq 0 ]] && rm -rf $COMIN
+            if [ $rc -eq 0 ]; then
+                if [ $CDUMP != "gdas" -o $DO_GLDAS = "NO" ]; then 
+                    rm -rf $COMIN 
+                else
+                    for file in `ls $COMIN |grep -v sflux`; do
+                        rm -rf $COMIN/$file
+                    done
+                fi
+            fi
 	fi
     fi
 
