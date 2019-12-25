@@ -279,7 +279,10 @@ while [ $GDATE -le $GDATEEND ]; do
                 if [ $CDUMP != "gdas" -o $DO_GLDAS = "NO" ]; then 
                     rm -rf $COMIN 
                 else
-                    for file in `ls $COMIN |grep -v sflux`; do
+                    for file in `ls $COMIN |grep -v sflux |grep -v RESTART`; do
+                        rm -rf $COMIN/$file
+                    done
+                    for file in `ls $COMIN/RESTART |grep -v sfcanl `; do
                         rm -rf $COMIN/$file
                     done
                 fi
