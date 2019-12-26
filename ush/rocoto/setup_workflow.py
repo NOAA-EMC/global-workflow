@@ -627,31 +627,46 @@ def get_hyb_tasks(dict_configs, cycledef='enkf'):
     cdump_eupd = 'gfs' if eupd_cyc in ['GFS'] else 'gdas'
 
     # ecmn, ecen
-    deps = []
+    deps1 = []
+    data = '&ROTDIR;/%s.@Y@m@d/@H/%s.t@Hz.loganl.txt' % (cdump, cdump)
+    dep_dict = {'type': 'data', 'data': data}
+    deps1.append(rocoto.add_dependency(dep_dict))
     dep_dict = {'type': 'task', 'name': '%sanal' % cdump}
-    deps.append(rocoto.add_dependency(dep_dict))
+    deps1.append(rocoto.add_dependency(dep_dict))
+    dependencies1 = rocoto.create_dependency(dep_condition='or', dep=deps1)
+
+    deps2 = []
+    deps2 = dependencies1    
     dep_dict = {'type': 'task', 'name': '%seupd' % cdump_eupd}
-    deps.append(rocoto.add_dependency(dep_dict))
-    dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+    deps2.append(rocoto.add_dependency(dep_dict))
+    dependencies2 = rocoto.create_dependency(dep_condition='and', dep=deps2)
+
     fhrgrp = rocoto.create_envar(name='FHRGRP', value='#grp#')
     fhrlst = rocoto.create_envar(name='FHRLST', value='#lst#')
     ecenenvars = envars1 + [fhrgrp] + [fhrlst]
     varname1, varname2, varname3 = 'grp', 'dep', 'lst'
     varval1, varval2, varval3 = get_ecengroups(dict_configs, dict_configs['ecen'], cdump=cdump)
     vardict = {varname2: varval2, varname3: varval3}
-    task = wfu.create_wf_task('ecen', cdump=cdump, envar=ecenenvars, dependency=dependencies,
+    task = wfu.create_wf_task('ecen', cdump=cdump, envar=ecenenvars, dependency=dependencies2,
                               metatask='ecmn', varname=varname1, varval=varval1, vardict=vardict)
 
     dict_tasks['%secmn' % cdump] = task
 
     # esfc
-    deps = []
+    deps1 = []
+    data = '&ROTDIR;/%s.@Y@m@d/@H/%s.t@Hz.loganl.txt' % (cdump, cdump)
+    dep_dict = {'type': 'data', 'data': data}
+    deps1.append(rocoto.add_dependency(dep_dict))
     dep_dict = {'type': 'task', 'name': '%sanal' % cdump}
-    deps.append(rocoto.add_dependency(dep_dict))
+    deps1.append(rocoto.add_dependency(dep_dict))
+    dependencies1 = rocoto.create_dependency(dep_condition='or', dep=deps1)
+
+    deps2 = []
+    deps2 = dependencies1
     dep_dict = {'type': 'task', 'name': '%seupd' % cdump_eupd}
-    deps.append(rocoto.add_dependency(dep_dict))
-    dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
-    task = wfu.create_wf_task('esfc', cdump=cdump, envar=envars1, dependency=dependencies, cycledef=cycledef)
+    deps2.append(rocoto.add_dependency(dep_dict))
+    dependencies2 = rocoto.create_dependency(dep_condition='and', dep=deps2)
+    task = wfu.create_wf_task('esfc', cdump=cdump, envar=envars1, dependency=dependencies2, cycledef=cycledef)
 
     dict_tasks['%sesfc' % cdump] = task
 
