@@ -188,7 +188,7 @@
     rm -f buoy.loc.temp
   fi
 
-  if [ -f buoy.loc ]
+  if [ -s buoy.loc ]
   then
     set +x
     echo "   buoy.loc copied and processed ($FIXwave/wave_${NET}.buoys)."
@@ -355,7 +355,7 @@
       fi
     done
     
-    rm -f buoy.loc buoy_tmp.loc buoy_log.ww3 ww3_oup.inp
+    rm -f buoy_tmp.loc buoy_log.ww3 ww3_oup.inp
     ln -fs ./out_pnt.${uoutpGRD} ./out_pnt.ww3
     ln -fs ./mod_def.${uoutpGRD} ./mod_def.ww3
     $EXECcode/ww3_outp > buoy_tmp.loc 2>&1 
@@ -395,12 +395,12 @@
     Nb=`wc buoy_tmp3.loc | awk '{ print $1 }'`
     rm buoy_tmp.loc buoy_tmp1.loc buoy_tmp2.loc buoy_tmp3.loc
 
-    if [ -f buoy_log.ww3 ]
+    if [ -s buoy_log.ww3 ]
     then
       set +x
       echo 'Buoy log file created. Syncing to all nodes ...'
-      [[ "$LOUD" = YES ]] && set -x
       $FSYNC buoy_log.ww3
+      [[ "$LOUD" = YES ]] && set -x
     else
       set +x
       echo ' '
@@ -410,8 +410,8 @@
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
       echo "$WAV_MOD_TAG post $date $cycle : buoy log file missing." >> $wavelog
-      postmsg "$jlogfile" "NON-FATAL ERROR : NO BUOY LOG FILE GENERATED FOR SPEC AND BULLETIN FILES"
-      exit_code=5
+      postmsg "$jlogfile" "FATAL ERROR : NO BUOY LOG FILE GENERATED FOR SPEC AND BULLETIN FILES"
+      err=7;export err;${errchk}
       specOK='no'
       bullOK='no'
       OspecOK='no'
@@ -470,6 +470,11 @@
     mkdir output_$YMDHMS
 #    echo "cd output_$YMDHMS" >> ${fcmdnow}
     cd output_$YMDHMS
+# Create instances of directories for spec and gridded output
+    export SPECDATA=${DATA}/output_$YMDHMS
+    export BULLDATA=${DATA}/output_$YMDHMS
+    export GRIBDATA=${DATA}/output_$YMDHMS
+    export GRDIDATA=${DATA}/output_$YMDHMS
 #    echo "ln -fs $DATA/mod_def.${uoutpGRD} mod_def.ww3" >> ${fcmdnow}
     ln -fs $DATA/mod_def.${uoutpGRD} mod_def.ww3
     iwait=0
@@ -481,7 +486,7 @@
       [[ "$LOUD" = YES ]] && set -x
       echo "$WAV_MOD_TAG post $uoutpGRD $date $cycle : point output missing." >> $wavelog
       postmsg "$jlogfile" "FATAL ERROR : NO RAW POINT OUTPUT FILE out_pnt.$uoutpGRD
-      err=7; export err;${errchk}
+      err=8; export err;${errchk}
       exit $err
     fi
 #    echo "cp -f ${pfile} ./out_pnt.${uoutpGRD} > cpoutp_$uoutpGRD.out 2>&1" >> ${fcmdnow}
@@ -498,7 +503,7 @@
         echo "$WAV_MOD_TAG post $grdID $date $cycle : field output missing." >> $wavelog
         postmsg "$jlogfile" "NON-FATAL ERROR : NO RAW FIELD OUTPUT FILE out_grd.$grdID"
         fieldOK='no'
-        err=8; export err;${errchk}
+        err=9; export err;${errchk}
         exit $err
       fi
 #      echo "cp -f ${gfile} ./out_grd.${wavGRD} > cpoutg_$wavGRD.out 2>&1" >> ${fcmdnow}
@@ -545,8 +550,6 @@
       export dtspec=10800.   # time step for spectra
       ymdh=`$NDATE -${HINDH} $CDATE` # start time for spectra output
 
-      ifile=1
-      ilayer=1
       for buoy in $buoys
       do
         echo "$USHwave/wave_outp_spec.sh $buoy $ymdh > spec_$buoy.out 2>&1" >> ${fcmdnow}
@@ -769,7 +772,7 @@ exit
     echo '***********************************************************'
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    err=9;export err;${errchk}
+    err=10;export err;${errchk}
     exit $err
   fi
 
@@ -898,7 +901,7 @@ exit
         [[ "$LOUD" = YES ]] && set -x
         echo "$WAV_MOD_TAG post $date $cycle : error in GRIB." >> $wavelog
         postmsg "$jlogfile" "NON-FATAL ERROR in wave_grib2.sh"
-        err=10;export err;${errchk}
+        err=11;export err;${errchk}
         sed "s/^/grib_$grdID.err : /g"  grib_$grdID.err
       fi
 
@@ -915,7 +918,7 @@ exit
       [[ "$LOUD" = YES ]] && set -x
       echo "$WAV_MOD_TAG post $date $cycle : error in spectra." >> $wavelog
       postmsg "$jlogfile" "NON-FATAL ERROR in wave_outp.sh, possibly in multiple calls."
-      err=11;export err;${errchk}
+      err=12;export err;${errchk}
       for file in spec_*.err
       do
         echo ' '
@@ -935,7 +938,7 @@ exit
       [[ "$LOUD" = YES ]] && set -x
       echo "$WAV_MOD_TAG post $date $cycle : error in bulletins." >> $wavelog
       postmsg "$jlogfile" "NON-FATAL ERROR in wave_bull.sh, possibly in multiple calls."
-      err=12;export err;${errchk}
+      err=13;export err;${errchk}
       for file in bull_*.err
       do
         echo ' '
@@ -1023,7 +1026,7 @@ exit
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
     exit_code=$exit
-    err=13; export err;${errchk}
+    err=14; export err;${errchk}
     exit $err
   fi
 
@@ -1107,7 +1110,7 @@ exit
       echo ' '
       sed "s/^/$file : /g" $file
     done
-    err=14;export err;${errchk}
+    err=15;export err;${errchk}
   fi
 
 # --------------------------------------------------------------------------- #
@@ -1140,7 +1143,7 @@ exit
     msg="ABNORMAL EXIT: Problem in MWW3 POST"
     postmsg "$jlogfile" "$msg"
     echo $msg
-    err=15; export err;${errchk}
+    err=16; export err;${errchk}
     exit $err
   else
     echo " Wave Post Completed Normally "

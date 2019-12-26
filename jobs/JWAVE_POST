@@ -4,6 +4,13 @@ date
 export PS4=' $SECONDS + '
 set -x -e
 
+##########################################
+# Source machine runtime environment
+##########################################
+. $HOMEgfs/env/${machine}.env wavepost
+status=$?
+[[ $status -ne 0 ]] && exit $status
+
 # PATH for working directory
 export NET=${NET:-gens}
 export RUN=${RUN:-gwes}

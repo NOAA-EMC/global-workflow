@@ -46,7 +46,8 @@ def main():
     gfs_steps_gempak = ['gempak']
     gfs_steps_awips = ['awips']
     hyb_steps = ['eobs', 'eomg', 'eupd', 'ecen', 'efcs', 'epos', 'earc']
-    wav_steps = ['waveinit', 'waveprep', 'wavepostsbs', 'wavepost', 'wavestat']
+    #wav_steps = ['waveinit', 'waveprep', 'wavepostsbs', 'wavepost', 'wavestat']
+    wav_steps = ['waveinit', 'waveprep', 'wavepostsbs']
     wav_steps_gempak = ['wavegempaksbs']
     wav_steps_awips = ['waveawipssbs', 'waveawips']
 

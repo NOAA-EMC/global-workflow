@@ -4,6 +4,13 @@ date
 export PS4=' $SECONDS + '
 set -x -e
 
+##########################################
+# Source machine runtime environment
+##########################################
+. $HOMEgfs/env/${machine}.env waveinit
+status=$?
+[[ $status -ne 0 ]] && exit $status
+
 # PATH for working directory
 export NET=${NET:-gfs}
 #export RUN=${RUN:-wave}
@@ -66,7 +73,6 @@ export wave_mpmd=${wave_mpmd:-"cfp"}
 $HOMEwave/scripts/exwave_init.sh
 
 # Remove temp directories
-KEEPDATA=YES
 if [ "$KEEPDATA" != "YES" ]; then
   cd $DATAROOT
   rm -rf $DATA

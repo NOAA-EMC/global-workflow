@@ -33,7 +33,7 @@
   export LOUD=${LOUD:-YES}; [[ $LOUD = yes ]] && export LOUD=YES
   [[ "$LOUD" != YES ]] && set +x
 
-  cd $DATA
+  cd $SPECDATA
 
   rm -rf spec_$1
   mkdir spec_$1
@@ -77,7 +77,7 @@
     exit 1
   else
     buoy=$1
-    grep $buoy ../buoy_log.ww3 > tmp_list.loc
+    grep $buoy ${DATA}/buoy_log.ww3 > tmp_list.loc
     while read line
     do
       buoy_name=`echo $line | awk '{print $2}'`
@@ -156,7 +156,7 @@
       -e "s/POINT/$point/g" \
       -e "s/ITYPE/1/g" \
       -e "s/FORMAT/F/g" \
-                               ../ww3_outp_spec.inp.tmpl > ww3_outp.inp
+                               ${DATA}/ww3_outp_spec.inp.tmpl > ww3_outp.inp
 
 # 2.b Run the postprocessor
 

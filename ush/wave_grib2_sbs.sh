@@ -31,7 +31,7 @@
   export LOUD=${LOUD:-YES}; [[ $LOUD = yes ]] && export LOUD=YES
   [[ "$LOUD" != YES ]] && set +x
 
-#  cd $DATA
+  cd $GRIBDATA
 #  postmsg "$jlogfile" "Making GRIB2 Files."   # commented to reduce unnecessary output to jlogfile
 
   grdID=$1 
@@ -211,7 +211,7 @@ echo " 1 $CDATE 2 $cycle 3 $EXECwave 4 $EXECcode 5 $COMOUT 6 $WAV_MOD_TAG 7 $SEN
   echo "   Removing work directory after success."
   [[ "$LOUD" = YES ]] && set -x
 
-  cd ..
+  cd ../
   mv -f ${gribDIR} done.${gribDIR}
 
   set +x

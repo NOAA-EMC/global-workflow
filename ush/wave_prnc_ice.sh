@@ -34,7 +34,7 @@
   rm -rf ice
   mkdir ice
   cd ice
-  ln -s ../postmsg .
+  ln -s ${DATA}/postmsg .
 
 # 0.b Define directories and the search path.
 #     The tested variables should be exported by the postprocessor script.
@@ -69,7 +69,7 @@
 
 # 0.c Links to working directory
 
-  ln -s ../mod_def.$iceID mod_def.ww3
+  ln -s ${DATA}/mod_def.$iceID mod_def.ww3
 
 # --------------------------------------------------------------------------- #
 # 1.  Get the necessary files
@@ -176,7 +176,7 @@
   echo ' '
   set $seton
 
-  cp -f ../ww3_prnc.ice.$iceID.inp.tmpl ww3_prnc.inp
+  cp -f ${DATA}/ww3_prnc.ice.$iceID.inp.tmpl ww3_prnc.inp
 
   $EXECcode/ww3_prnc > wave_prnc.out
   err=$?

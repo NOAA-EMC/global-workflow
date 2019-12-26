@@ -29,7 +29,7 @@
   export LOUD=${LOUD:-YES}; [[ $LOUD = yes ]] && export LOUD=YES
   [[ "$LOUD" != YES ]] && set +x
 
-#  cd $DATA
+  cd $GRDIDATA
 
   grdID=$1  
   ymdh=$2
@@ -87,7 +87,7 @@
   rm -f ${DATA}/output_${ymdh}0000/out_grd.$grdID
   
   if [ ! -f ${DATA}/${grdID}_interp.inp.tmpl ]; then
-    cp $FIXwave/${grdID}_interp.inp.tmpl ../.
+    cp $FIXwave/${grdID}_interp.inp.tmpl ${DATA}
   fi
   ln -sf ${DATA}/${grdID}_interp.inp.tmpl . 
 
@@ -201,7 +201,7 @@
   echo "   Removing work directory after success."
   [[ "$LOUD" = YES ]] && set -x
 
-  cd ..
+  cd ../
   mv -f grint_${grdID}_${ymdh} done.grint_${grdID}_${ymdh}
 
   set +x

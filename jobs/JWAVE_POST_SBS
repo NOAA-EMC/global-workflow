@@ -4,6 +4,13 @@ date
 export PS4=' $SECONDS + '
 set -x -e
 
+##########################################
+# Source machine runtime environment
+##########################################
+. $HOMEgfs/env/${machine}.env wavepostsbs
+status=$?
+[[ $status -ne 0 ]] && exit $status
+
 # PATH for working directory
 export NET=${NET:-gfs}
 #export RUN=${RUN:-gwes}
@@ -97,7 +104,6 @@ fi
 postmsg "$jlogfile" "$msg"
 
 # Remove temp directories
-KEEPDATA=YES
 if [ "$KEEPDATA" != "YES" ]; then
   cd $DATAROOT
   rm -rf $DATA

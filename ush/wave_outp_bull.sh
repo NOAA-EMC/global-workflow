@@ -35,7 +35,7 @@
   export LOUD=${LOUD:-YES}; [[ $LOUD = yes ]] && export LOUD=YES
   [[ "$LOUD" != YES ]] && set +x
 
-  cd $DATA
+  cd $BULLDATA
 
   rm -rf bull_$1
   mkdir bull_$1
@@ -79,7 +79,7 @@
     exit 1
   else
     buoy=$1
-    grep $buoy ../buoy_log.ww3 > tmp_list.loc
+    grep $buoy ${DATA}/buoy_log.ww3 > tmp_list.loc
     while read line
     do
       buoy_name=`echo $line | awk '{print $2}'`
