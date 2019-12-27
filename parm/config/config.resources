@@ -147,9 +147,6 @@ elif [ $step = "gldas" ]; then
 
 elif [ $step = "fcst" ]; then
 
-    if [[ "$machine" == "WCOSS_DELL_P3" ]]; then
-      export npe_node_max=24
-    fi
     export wtime_fcst="01:00:00"
     export wtime_fcst_gfs="06:00:00"
     export npe_fcst=$(echo "$layout_x * $layout_y * 6" | bc)
