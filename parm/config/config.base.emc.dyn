@@ -156,7 +156,7 @@ export FIXgsi="$HOMEgfs/fix/fix_gsi"
 export HOMEfv3gfs="$HOMEgfs/sorc/fv3gfs.fd"
 export HOMEpost="$HOMEgfs"
 export HOMEobsproc_prep="$BASE_GIT/obsproc/obsproc_prep_RB-5.2.0"
-export HOMEobsproc_network="$BASE_GIT/obsproc/obsproc_global_RB-3.2.2"
+export HOMEobsproc_network="$BASE_GIT/obsproc/obsproc_global.v3.2.3"
 export HOMEobsproc_global=$HOMEobsproc_network
 export BASE_VERIF="$BASE_SVN/verif/global/tags/vsdb"
 
@@ -249,13 +249,15 @@ export OUTPUT_FILE="netcdf"
 export WRITE_DOPOST=".false."
 
 # IAU related parameters
-export DOIAU="NO"
-export IAUFHRS=6
+export DOIAU="NO"        # Enable 4DIAU for control with 3 increments
+export IAUFHRS="3,6,9"
 export IAU_DELTHRS=6
-export DOIAU_ENKF="NO"
-export IAUFHRS_ENKF=6
+export IAU_OFFSET=6
+export DOIAU_ENKF="NO"   # Enable 4DIAU for EnKF ensemble
+export IAUFHRS_ENKF="3,6,9"
 export IAU_DELTHRS_ENKF=6
-[[ "$SDATE" = "$CDATE" ]] && ( export DOIAU="NO"; export DOIAU_ENKF="NO" )
+if [[ "$SDATE" = "$CDATE" ]]; then export IAU_OFFSET=0 ;fi
+
 
 # run GLDAS to spin up land ICs
 export DO_GLDAS=YES

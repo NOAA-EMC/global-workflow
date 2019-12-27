@@ -88,11 +88,20 @@ if [ -s avno.t${cyc}z.cyclone.trackatcfunix ]; then
     cat avno.t${cyc}z.cyclone.trackatcfunix | sed s:AVNO:${PLSOT4}:g  > ${ARCDIR}/atcfunix.${CDUMP}.$CDATE
     cat avnop.t${cyc}z.cyclone.trackatcfunix | sed s:AVNO:${PLSOT4}:g  > ${ARCDIR}/atcfunixp.${CDUMP}.$CDATE
 fi
+
+if [ $CDUMP = "gdas" -a -s gdas.t${cyc}z.cyclone.trackatcfunix ]; then
+    PLSOT4=`echo $PSLOT|cut -c 1-4 |tr '[a-z]' '[A-Z]'`
+    cat gdas.t${cyc}z.cyclone.trackatcfunix | sed s:AVNO:${PLSOT4}:g  > ${ARCDIR}/atcfunix.${CDUMP}.$CDATE
+    cat gdasp.t${cyc}z.cyclone.trackatcfunix | sed s:AVNO:${PLSOT4}:g  > ${ARCDIR}/atcfunixp.${CDUMP}.$CDATE
+fi
+
 if [ $CDUMP = "gfs" ]; then
     $NCP storms.gfso.atcf_gen.$CDATE      ${ARCDIR}/.
     $NCP storms.gfso.atcf_gen.altg.$CDATE ${ARCDIR}/.
     $NCP trak.gfso.atcfunix.$CDATE        ${ARCDIR}/.
     $NCP trak.gfso.atcfunix.altg.$CDATE   ${ARCDIR}/.
+
+    cp -rp tracker                        ${ARCDIR}/tracker.$CDATE
 fi
 
 # Archive atmospheric gaussian gfs forecast files for fit2obs
@@ -253,8 +262,10 @@ fi
 # Step back every assim_freq hours
 # and remove old rotating directories for successful cycles
 # defaults from 24h to 120h
+DO_GLDAS=${DO_GLDAS:-"NO"}
 GDATEEND=$($NDATE -${RMOLDEND:-24}  $CDATE)
-GDATE=$(   $NDATE -${RMOLDSTD:-120} $CDATE)
+GDATE=$($NDATE -${RMOLDSTD:-120} $CDATE)
+GLDAS_DATE=$($NDATE -96 $CDATE)
 while [ $GDATE -le $GDATEEND ]; do
     gPDY=$(echo $GDATE | cut -c1-8)
     gcyc=$(echo $GDATE | cut -c9-10)
@@ -264,7 +275,18 @@ while [ $GDATE -le $GDATEEND ]; do
 	if [ -f $rocotolog ]; then
             testend=$(tail -n 1 $rocotolog | grep "This cycle is complete: Success")
             rc=$?
-            [[ $rc -eq 0 ]] && rm -rf $COMIN
+            if [ $rc -eq 0 ]; then
+                if [ $CDUMP != "gdas" -o $DO_GLDAS = "NO" ]; then 
+                    rm -rf $COMIN 
+                else
+                    for file in `ls $COMIN |grep -v sflux |grep -v RESTART`; do
+                        rm -rf $COMIN/$file
+                    done
+                    for file in `ls $COMIN/RESTART |grep -v sfcanl `; do
+                        rm -rf $COMIN/$file
+                    done
+                fi
+            fi
 	fi
     fi
 
