@@ -10,5 +10,12 @@ echo "BEGIN: config.esfc"
 
 export ENKFRESFCSH="$HOMEgsi/scripts/exglobal_enkf_surface_fv3gfs.sh.ecf"
 
+# With IAU only need surface analysis at start of IAU window.
+# Set DOSFCANL_ENKF=NO to prevent creation of sfcanl at 
+# center of analysis window.  
+
+if [ $DOIAU_ENKF = "YES" ]; then
+   export DOSFCANL_ENKF="NO"
+fi
 
 echo "END: config.esfc"
