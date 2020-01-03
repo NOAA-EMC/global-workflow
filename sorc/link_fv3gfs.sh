@@ -52,6 +52,7 @@ $LINK $FIX_DIR/* .
 cd ${pwd}/../jobs               ||exit 8
     $LINK ../sorc/gfs_post.fd/jobs/JGLOBAL_POST_MANAGER      .
     $LINK ../sorc/gfs_post.fd/jobs/JGLOBAL_NCEPPOST          .
+    $LINK ../sorc/gldas.fd/jobs/JGDAS_GLDAS                  .             
 cd ${pwd}/../parm               ||exit 8
     [[ -d post ]] && rm -rf post
     $LINK ../sorc/gfs_post.fd/parm                           post
@@ -73,7 +74,7 @@ cd ${pwd}/../ush                ||exit 8
         fv3gfs_chgres.sh  fv3gfs_make_grid.sh  global_chgres.sh  ; do
         $LINK ../sorc/ufs_utils.fd/ush/$file                  .
     done
-    for file in gldas_archive.sh  gldas_forcing.sh gldas_get_data.sh  gldas_liscrd.sh  gldas_post.sh ; do
+    for file in gldas_archive.sh  gldas_forcing.sh gldas_get_data.sh  gldas_process_data.sh gldas_liscrd.sh  gldas_post.sh ; do
         $LINK ../sorc/gldas.fd/ush/$file                  .
     done
 cd ${pwd}/../util               ||exit 8
