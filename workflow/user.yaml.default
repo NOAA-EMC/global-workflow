@@ -1,5 +1,5 @@
 user_places: &user_places
-  PROJECT_DIR: !error Please select a project directory.
+  EXPROOT: !error Please select the EXPROOT directory.
     # ie. /scratch4/NCEPDEV/ocean
   FIX_SCRUB: False
   SCRUB: none # Please select a scrub space when FIX_SCRUB is True

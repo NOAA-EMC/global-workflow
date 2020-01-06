@@ -1,7 +1,7 @@
 # This file sets default values for data and executable locations.
 # See the schema/places.yaml for details.
 default_places: &default_places
-  PROJECT_DIR: !error Please select a project directory.
+  EXPROOT: !error Please select a EXPROOT directory.
   HOMEgfs:     !calc ( tools.realpath(tools.abspath("../../")) )
   HOMEcrow:    !calc tools.crow_install_dir()
   HOMEobsproc_prep: !expand "{doc.platform.BASE_GIT}/obsproc/obsproc_prep_RB-5.2.0"
@@ -11,7 +11,7 @@ default_places: &default_places
   DMPDIR:      !calc doc.platform.DMPDIR
   RTMFIX:      !calc doc.platform.RTMFIX
 
-  EXPDIR: !expand "{doc.platform.EXP_PARENT_DIR}/{doc.names.experiment}"
+  EXPDIR: !expand "{doc.platform.EXPROOT}/{doc.names.experiment}"
   ROTDIR: !expand "{LONG_TERM_TEMP}/comrot/{doc.names.experiment}"
   ICSDIR: !expand "{ROTDIR}/FV3ICS"
   MOM6IC: /scratch4/NCEPDEV/nems/noscrub/Bin.Li/FROM_HPSS
@@ -21,7 +21,6 @@ default_places: &default_places
 #  SHORT_TERM_TEMP: !error GOT HERE
 #  LONG_TERM_TEMP:  !error GOT HERE TOO
 
-  NOSCRUB: !expand "{doc.places.PROJECT_DIR}/noscrub/{tools.env('USER')}"
   ECF_ROOT: !calc tools.env("ECF_ROOT","/dev/null/ECF_ROOT")
   ECF_HOME: !calc tools.env("ECF_HOME","/dev/null/ECF_HOME")
   ecflow_def_dir: !expand '{ECF_ROOT}/defs'

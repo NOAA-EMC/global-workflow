@@ -165,7 +165,7 @@ platform: !Platform
            when: !calc ( int(tools.can_write(do)) and tools.panasas_gb(do) )
          - do: /scratch2/NCEPDEV/stmp3
            when: !calc ( int(tools.can_write(do)) and tools.panasas_gb(do) )
-         - do: !expand "{doc.user_places.PROJECT_DIR}"
+         - do: !expand "{doc.user_places.EXPROOT}"
            when: !calc tools.panasas_gb(do)/4
            message: "{do}: use project directory as scrub space"
 
@@ -176,5 +176,5 @@ platform: !Platform
   # short_term_temp - area for data that is only needed within one job:
   short_term_temp: !expand "{doc.platform.least_used_temp}/{tools.env('USER')}"
 
-  # EXP_PARENT_DIR - Parent directory  of the expdir (experiment directory)
-  EXP_PARENT_DIR: !expand "{doc.user_places.PROJECT_DIR}"
+  # EXPROOT - Parent directory  of the expdir (experiment directory)
+  EXPROOT: !expand "{doc.user_places.EXPROOT}"

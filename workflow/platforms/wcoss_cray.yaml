@@ -176,5 +176,5 @@ platform: !Platform
   # short_term_temp - area for data that is only needed within one job:
   short_term_temp: !expand "{least_used_stmp}/{tools.env('USER')}"
 
-  # EXP_PARENT_DIR - Parent directory  of the expdir (experiment directory)
-  EXP_PARENT_DIR: !expand "{doc.user_places.PROJECT_DIR}/noscrub/{tools.env('USER')}"
+  # EXPROOT - Parent directory  of the expdir (experiment directory)
+  EXPROOT: !expand "{doc.user_places.EXPROOT}"

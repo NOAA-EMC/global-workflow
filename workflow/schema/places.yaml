@@ -2,7 +2,7 @@
 # user.yaml.default file for documentation.
 
 places_schema: &places_schema !Template
-  PROJECT_DIR: { type: string }
+  EXPROOT: { type: string }
   HOMEgfs: { type: string }
   HOMEcrow: { type: string }
   NWPROD: { type: string }
@@ -24,14 +24,14 @@ places_schema: &places_schema !Template
     default: !FirstTrue
       - when: !calc doc.platform.get('SAVE_DIR','')
         do: !calc doc.platform.SAVE_DIR
-      - otherwise: !expand "{doc.places.PROJECT_DIR}/save/{tools.env('USER')}"
+      - otherwise: !expand "{doc.places.EXPROOT}/save/{tools.env('USER')}"
 
   NOSCRUB:
     type: string
     default: !FirstTrue
       - when: !calc doc.platform.get('NOSCRUB_DIR','')
         do: !calc doc.platform.NOSCRUB_DIR
-      - otherwise: !expand "{doc.places.PROJECT_DIR}/noscrub/{tools.env('USER')}"
+      - otherwise: !expand "{doc.places.EXPROOT}/noscrub/{tools.env('USER')}"
     description: "Disk area used to store reduced output, verification statistics, and other small files that may be desired between runs.  The workflow will not scrub this."
 
   FIXgsi: { type: string, optional: true }

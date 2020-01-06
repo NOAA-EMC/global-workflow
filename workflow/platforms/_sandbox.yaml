@@ -37,7 +37,7 @@ platform: !Platform
 
   # DMPDIR - location of the global dump data.  This is used by the observation
   # processing scripts, which are not included in the public release.
-  DMPDIR: !calc doc.user_places.PROJECT_DIR
+  DMPDIR: !calc doc.user_places.EXPROOT
   #"/Users/jiankuang/Documents/Eclipse_workspace/ecfutils_007"
   #DMPDIR: !FirstTrue
   #  - do: "/gpfs/gp1/emc/globaldump"
@@ -173,13 +173,13 @@ platform: !Platform
 
   # long_term_temp - area for storage of data that must be passed
   # between jobs or shared with programs external to this workflow.
-  long_term_temp: !calc doc.user_places.PROJECT_DIR 
+  long_term_temp: !calc doc.user_places.EXPROOT
   #!expand "{least_used_ptmp}/{tools.env('USER')}"
 
   # short_term_temp - area for data that is only needed within one job:
-  short_term_temp: !calc doc.user_places.PROJECT_DIR 
+  short_term_temp: !calc doc.user_places.EXPROOT 
   #!expand "{least_used_stmp}/{tools.env('USER')}"
 
-  # EXP_PARENT_DIR - Parent directory  of the expdir (experiment directory)
-  EXP_PARENT_DIR: !calc doc.user_places.PROJECT_DIR
-  #!expand "{doc.user_places.PROJECT_DIR}/noscrub/{tools.env('USER')}"
+  # EXPROOT - Parent directory  of the expdir (experiment directory)
+  EXPROOT: !calc doc.user_places.EXPROOT
+  #!expand "{doc.user_places.EXPROOT}/noscrub/{tools.env('USER')}"

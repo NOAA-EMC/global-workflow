@@ -1,5 +1,5 @@
 user_places: &user_places
-  PROJECT_DIR: /lfs3/projects/hfv3gfs # !error Please select a project directory.
+  EXPROOT: /lfs3/projects/hfv3gfs # !error Please select a EXPROOT directory.
     # ie. /scratch4/NCEPDEV/ocean
 
   # Override scrub areas here.  Mandatory on Jet.
