@@ -66,13 +66,6 @@ while [ $fhcnt -le $fend ] ; do
   GRIBIN=$COMIN/${model}.${cycle}.${GRIB}${fhr}${EXT}
   GEMGRD=${RUN}_${PDY}${cyc}f${fhr3}
 
-#  case $RUN in
-#   gfs_goessim) GRIBIN=$COMIN/${model}.${cycle}.${GRIB}${fhr}${EXT}
-#                GEMGRD=${RUN}_${PDY}${cyc}f${fhr3} ;;
-#   gfs_goessim221) GRIBIN=$COMIN/${model}.${cycle}.${GRIB}${fhr}${EXT}
-#                   GEMGRD=${RUN}_${PDY}${cyc}f${fhr3} ;;
-#  esac
-
   GRIBIN_chk=$GRIBIN
 
   icnt=1
