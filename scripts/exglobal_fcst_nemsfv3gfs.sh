@@ -207,6 +207,7 @@ fi
 warm_start=${warm_start:-".false."}
 read_increment=${read_increment:-".false."}
 restart_interval=${restart_interval:-0}
+other_restart_time=${other_restart_time:-0}
 
 # Determine if this is a warm start or cold start
 if [ -f $gmemdir/RESTART/${PDY}.${cyc}0000.coupler.res ]; then
@@ -695,6 +696,7 @@ atmos_nthreads:          $NTHREADS_FV3
 use_hyper_thread:        ${hyperthread:-".false."}
 ncores_per_node:         $cores_per_node
 restart_interval:        $restart_interval
+other_restart_time:      $other_restart_time
 
 quilting:                $QUILTING
 write_groups:            ${WRITE_GROUP:-1}
