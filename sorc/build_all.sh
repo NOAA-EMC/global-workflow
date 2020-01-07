@@ -145,22 +145,6 @@ echo " .... Building gfs_fbwndgfs .... "
 }
 
 #------------------------------------
-# build gfs_overpdtg2
-#------------------------------------
-$Build_gfs_overpdtg2 && {
-echo " .... Building gfs_overpdtg2 .... "
-./build_gfs_overpdtg2.sh > $logs_dir/build_gfs_overpdtg2.log 2>&1
-}
-
-#------------------------------------
-# build gfs_wintemv
-#------------------------------------
-$Build_gfs_wintemv && {
-echo " .... Building gfs_wintemv .... "
-./build_gfs_wintemv.sh > $logs_dir/build_gfs_wintemv.log 2>&1
-}
-
-#------------------------------------
 # build gfs_bufrsnd
 #------------------------------------
 $Build_gfs_bufrsnd && {
