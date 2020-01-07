@@ -100,6 +100,7 @@ else
 #  export COMIN=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/git/${RUN}.${PDY}/${cyc}    ### Boi PARA
 #  export COMIN=/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/prfv3rt3b/gfs.${PDY}/${cyc} ### EMC PARA Realtime
   export COMIN=/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/v16rt2/gfs.20200101/00
+
 fi
 
 export COMOUT=${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}

@@ -27,8 +27,4 @@ bsub < run_JGFS_GEMPAK_META_dell.sh_${cyc}
 bsub < run_JGFS_GEMPAK_NCDC_UPAPGIF_dell.sh_${cyc} 
 bsub < run_JGFS_PGRB2_SPEC_NPOESS_dell.sh_${cyc}
 bsub < run_JGFS_PGRB2_SPEC_GEMPAK_dell.sh_${cyc} 
-if [ $cyc -eq 00 -o $cyc -eq 12 ] ; then
-# bsub < run_JGDAS_BULLS_NAVY_dell.sh_${cyc}
- echo  ""
-fi
 done

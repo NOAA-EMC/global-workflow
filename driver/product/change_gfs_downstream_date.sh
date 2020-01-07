@@ -7,8 +7,8 @@ export dir=` pwd `
 export PDY=`date -u +%Y%m%d`
 export PDY1=`expr $PDY - 1`
 
-export var=20200106
-export var1=20200105
+export var=20200107
+export var1=20191018
 
 export gdas=/gpfs/dell1/nco/ops/com/gfs/prod/gdas.${PDY}/${cyc}
 export gdasgp=/gpfs/dell1/nco/ops/com/gfs/prod/gdas.${PDY}/${cyc}/gempak

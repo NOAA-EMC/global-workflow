@@ -9,4 +9,3 @@ bsub < run_JGFS_GEMPAK_NCDC_UPAPGIF_dell.sh_12
 bsub < run_JGFS_PGRB2_SPEC_NPOESS_dell.sh_12
 bsub < run_JGFS_PGRB2_SPEC_GEMPAK_dell.sh_12 
 bsub < run_JGFS_GEMPAK_dell.sh_12
-bsub < run_JGDAS_BULLS_NAVY_dell.sh_12

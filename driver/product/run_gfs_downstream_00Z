@@ -1,5 +1,4 @@
 set -x
-bsub < run_JGDAS_BULLS_NAVY_dell.sh_00
 bsub < run_JGDAS_GEMPAK_dell.sh_00
 bsub < run_JGDAS_GEMPAK_META_NCDC_dell.sh_00
 bsub < run_JGFS_AWIPS_20KM_1P0DEG_dell.sh_00
