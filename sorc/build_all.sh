@@ -129,14 +129,6 @@ echo " .... Building tropcy_NEMS .... "
 }
 
 #------------------------------------
-# build gdas
-#------------------------------------
-$Build_gdas && {
-echo " .... Building gdas .... "
-./build_gdas.sh > $logs_dir/build_gdas.log 2>&1
-}
-
-#------------------------------------
 # build gfs_fbwndgfs
 #------------------------------------
 $Build_gfs_fbwndgfs && {

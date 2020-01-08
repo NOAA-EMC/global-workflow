@@ -8,7 +8,6 @@
                        "Build_ufs_utils" \
                        "Build_gldas" \
                        "Build_gfs_wafs" \
-                       "Build_gdas" \
                        "Build_gaussian_sfcanl" \
                        "Build_tropcy" \
                        "Build_enkf_chgres_recenter" \
