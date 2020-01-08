@@ -46,7 +46,6 @@ export MP_STDOUTMODE=ordered
 
 #export machine="WCOSS_C"
 machine="WCOSS_DELL_P3"
-#machine="THEIA"
 if [ $machine == "WCOSS_C" ]; then
 ##For WCOSS-Cray##################
 export launcher="aprun"
