@@ -1,0 +1,23 @@
+#%Module######################################################################
+##
+##      FV3GFS prerequisites
+##
+
+module load intel/2018.4
+module load impi/2018.4
+module load wgrib/2.0.8
+#module load hpss/hpss
+module load pnetcdf/1.12.0
+module load netcdf/4.7.2
+#module load nco/4.7.0
+module load hdf5/1.10.5
+module load gempak/7.5.1
+
+#Load from official NCEPLIBS
+module use -a /work/noaa/noaatest/NCEPLIBS/lib/modulefiles
+module load g2tmpl-intel/1.5.0
+module load grib_util-intel-sandybridge/v1.1.1
+module load crtm-intel-sandybridge/2.2.6
+module load prod_util/v1.1.0
+module load esmflocal/8_0_48b
+

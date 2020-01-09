@@ -1,0 +1,10 @@
+#%Module################################################
+# Module file for gdas_trpsfcmv - Orion
+########################################################
+
+module use -a /work/noaa/noaatest/NCEPLIBS/lib/modulefiles
+module load bufr-intel-sandybridge/11.2.0
+module load ip-intel-sandybridge/3.0.0
+module load sp-intel-sandybridge/2.0.2
+module load w3nco-intel-sandybridge/2.0.6
+module load bacio-intel-sandybridge/2.0.2

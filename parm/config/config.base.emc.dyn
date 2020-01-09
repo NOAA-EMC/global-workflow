@@ -18,6 +18,12 @@ if [ $machine = "THEIA" -o $machine = "HERA" ]; then
     export QUEUE="batch"
     export QUEUE_ARCH="service"
 
+elif [ $machine = "ORION" ]; then
+
+    export ACCOUNT="noaatest"
+    export QUEUE="batch"
+    export QUEUE_ARCH="service"
+
 elif [ $machine = "WCOSS_C" -o $machine = "WCOSS_DELL_P3" ]; then
 
     export ACCOUNT="FV3GFS-T2O"
@@ -51,6 +57,11 @@ elif [ $machine = "HERA" ]; then
 
     #export NWPROD="/scratch1/NCEPDEV/global/glopara/nwpara"
     export DMPDIR="/scratch1/NCEPDEV/global/glopara/dump"
+    export RTMFIX=$CRTM_FIX
+
+elif [ $machine = "ORION" ]; then
+
+    export DMPDIR="/work/noaa/noaatest/kfriedma/glopara/dump"
     export RTMFIX=$CRTM_FIX
 
 elif [ $machine = "WCOSS_C" ]; then
@@ -91,6 +102,18 @@ elif [ $machine = "HERA" ]; then
     # Base directories for various builds
     export BASE_GIT="/scratch1/NCEPDEV/global/glopara/git"
     export BASE_SVN="/scratch1/NCEPDEV/global/glopara/svn"
+
+elif [ $machine = "ORION" ]; then
+
+    # USER specific paths
+    export HOMEDIR="/work/noaa/noaatest/$USER"
+    export STMP="/work/noaa/noaatest/$USER/stmp"
+    export PTMP="/work/noaa/noaatest/$USER/ptmp"
+    export NOSCRUB="$HOMEDIR"
+
+    # Base directories for various builds
+    export BASE_GIT="/work/noaa/noaatest/kfriedma/glopara/git"
+    export BASE_SVN="/work/noaa/noaatest/kfriedma/glopara/svn"
 
 elif [ $machine = "WCOSS_C" ]; then
 

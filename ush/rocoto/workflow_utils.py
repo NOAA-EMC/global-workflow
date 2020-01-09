@@ -17,6 +17,7 @@ import rocoto
 DATE_ENV_VARS=['CDATE','SDATE','EDATE']
 SCHEDULER_MAP={'HERA':'slurm',
                'THEIA':'slurm',
+               'ORION':'slurm',
                'WCOSS':'lsf',
                'WCOSS_DELL_P3':'lsf',
                'WCOSS_C':'lsfcray'}
@@ -145,12 +146,14 @@ def config_parser(files):
 
 def detectMachine():
 
-    machines = ['THEIA', 'HERA', 'WCOSS_C', 'WCOSS_DELL_P3']
+    machines = ['THEIA', 'HERA', 'ORION' 'WCOSS_C', 'WCOSS_DELL_P3']
 
     if os.path.exists('/scratch1/NCEPDEV'):
         return 'HERA'
     elif os.path.exists('/scratch3/NCEPDEV'):
         return 'THEIA'
+    elif os.path.exists('/work/noaa'):
+        return 'ORION'
     elif os.path.exists('/gpfs') and os.path.exists('/etc/SuSE-release'):
         return 'WCOSS_C'
     elif os.path.exists('/gpfs/dell2'):
@@ -291,7 +294,7 @@ def get_resources(machine, cfg, task, cdump='gdas'):
     else:
         ppn = cfg['npe_node_%s' % ltask]
 
-    if machine in [ 'WCOSS_DELL_P3', 'HERA']:
+    if machine in [ 'WCOSS_DELL_P3', 'HERA', 'ORION']:
         threads = cfg['nth_%s' % ltask]
 
     nodes = np.int(np.ceil(np.float(tasks) / np.float(ppn)))
@@ -302,9 +305,9 @@ def get_resources(machine, cfg, task, cdump='gdas'):
     if scheduler in ['slurm']:
         natstr = '--export=NONE'
 
-    if machine in ['THEIA', 'HERA', 'WCOSS_C', 'WCOSS_DELL_P3']:
+    if machine in ['THEIA', 'HERA', 'ORION', 'WCOSS_C', 'WCOSS_DELL_P3']:
 
-        if machine in ['HERA']:
+        if machine in ['HERA', 'ORION']:
             resstr = '<nodes>%d:ppn=%d:tpp=%d</nodes>' % (nodes, ppn, threads)
         else:
             resstr = '<nodes>%d:ppn=%d</nodes>' % (nodes, ppn)
