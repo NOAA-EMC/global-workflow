@@ -16,6 +16,7 @@
 #                          both FV3GFS and GFS
 #   7) 2018-07-18       Guang Ping Lou Generalize this version to other platforms
 #   8) 2019-10-18       Guang Ping Lou Transition to reading in NetCDF model data
+#   9) 2019-12-18       Guang Ping Lou generalizing to reading in NetCDF or nemsio
 ################################################################
 set -xa
 
@@ -31,32 +32,36 @@ msg="HAS BEGUN"
 export LEVS=${LEVS:-127}
 export STARTHOUR=${STARTHOUR:-00}
 export ENDHOUR=${ENDHOUR:-180}
-export NEND1=120  ##first period length with time interval = NINT1
-export NINT1=6     ##first period time interval
-##export NINT1=1     ##first period time interval
-export NINT3=6     ##second period time interval
 export INCREMENT=12
 export MAKEBUFR=NO
 export F00FLAG=YES
-export fformat="nc"
+export fformat=${OUTPUT_FILE:-netcdf}
+if [ $fformat == "netcdf" ]
+ then
+export atmfm="nc"
+export logfm="txt"
+else 
+export atmfm="nemsio"
+export logfm="nemsio"
+fi
 
-if [ $FHMAX_HF_GFS -gt 0 -a $FHOUT_HF_GFS -gt 0 ]
-  then
     export NINT1=${FHOUT_HF_GFS:-1}
     export NEND1=${FHMAX_HF_GFS:-120}
-  else
     export NINT3=${FHOUT_GFS:-3}
-fi
 
 rm -f -r ${COMOUT}/bufr.${cycle}
 mkdir -p ${COMOUT}/bufr.${cycle}
 
+if [ $fformat == "netcdf" ]
+ then
+export LEVS=`$HOMEgfs/ush/getncdimlen $COMIN/${RUN}.${cycle}.atmf000.${atmfm} pfull`
+else
 # Extract number of vertical levels from $STARTHOUR atmospheric file
-##export NEMSIOGET=${NEMSIOGET:-$EXECbufrsnd/nemsio_get}
-##fhr3=$(printf %03i $STARTHOUR)
-##ATMFCS=$COMIN/${RUN}.${cycle}.atmf${fhr3}.nemsio
-##export LEVS=$($NEMSIOGET $ATMFCS dimz | awk '{print $2}')
-export LEVS=`$HOMEgfs/ush/getncdimlen $COMIN/${RUN}.${cycle}.atmf000.${fformat} pfull`
+export NEMSIOGET=${NEMSIOGET:-$EXECbufrsnd/nemsio_get}
+fhr3=$(printf %03i $STARTHOUR)
+ATMFCS=$COMIN/${RUN}.${cycle}.atmf${fhr3}.nemsio
+export LEVS=$($NEMSIOGET $ATMFCS dimz | awk '{print $2}')
+fi
 
 ### Loop for the hour and wait for the sigma and surface flux file:
 export FSTART=$STARTHOUR
@@ -82,7 +87,7 @@ export FINT=$NINT1
    ic=0
    while [ $ic -lt 1000 ]
    do
-      if [ ! -f $COMIN/${RUN}.${cycle}.logf$FEND.txt ]
+      if [ ! -f $COMIN/${RUN}.${cycle}.logf$FEND.${logfm} ]
       then
           sleep 10
           ic=`expr $ic + 1`
