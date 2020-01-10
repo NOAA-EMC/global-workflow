@@ -28,7 +28,7 @@ import rocoto
 import workflow_utils as wfu
 
 
-taskplan = ['getic', 'fv3ic', 'fcst', 'post', 'vrfy', 'arch']
+taskplan = ['getic', 'fv3ic', 'fcst', 'post', 'vrfy', 'metp', 'arch']
 
 def main():
     parser = ArgumentParser(description='Setup XML workflow and CRONTAB for a forecast only experiment.', formatter_class=ArgumentDefaultsHelpFormatter)
@@ -318,6 +318,22 @@ def get_workflow(dict_configs, cdump='gdas'):
     deps.append(rocoto.add_dependency(dep_dict))
     dependencies = rocoto.create_dependency(dep=deps)
     task = wfu.create_wf_task('vrfy', cdump=cdump, envar=envars, dependency=dependencies)
+    tasks.append(task)
+    tasks.append('\n')
+
+    # metp
+    deps = []
+    dep_dict = {'type':'metatask', 'name':'%spost' % cdump}
+    deps.append(rocoto.add_dependency(dep_dict))
+    dep_dict = {'type':'task', 'name':'%sarch' % cdump, 'offset':'-&INTERVAL;'}
+    deps.append(rocoto.add_dependency(dep_dict))
+    dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+    metpcase = rocoto.create_envar(name='METPCASE', value='#metpcase#')
+    metpenvars = envars + [metpcase]
+    varname1 = 'metpcase'
+    varval1 = 'g2g1 g2o1 pcp1' 
+    task = wfu.create_wf_task('metp', cdump=cdump, envar=metpenvars, dependency=dependencies,
+                              metatask='metp', varname=varname1, varval=varval1)
     tasks.append(task)
     tasks.append('\n')
 
