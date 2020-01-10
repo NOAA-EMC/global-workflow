@@ -172,7 +172,7 @@
     211  00  YVQV15   0                        EOM
   00001C02  0760FF80  22640064...000100CC       34     100.0 MB   V GRD
     211  00  YVQV10   0                        EOM
-  00001C02  0760FF80  02660000...000100CC       02           MSL  PRMSL
+  00001C02  0760FF80  82660000...000100CC       02           MSL  MSLET
     211  00  YPQV89   0                        EOM
   00001C02  0760FF80  3D010000...0001C6CC       61           SFC  A PCP
     211  00  YEQV98   0                        EOM
