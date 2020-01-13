@@ -60,13 +60,32 @@ fi
 
 # PBL/turbulence schemes
 export hybedmf=".false."
-export satmedmf=".false."   #JKH
-export isatmedmf=0          #JKH
+if [ $CCPP_SUITE = "FV3_GSD_v0" ]; then
+    export satmedmf=".false."
+    export isatmedmf=0
+    export shal_cnv=".true."       
+    export do_mynnedmf=".true."     
+    export do_mynnsfclay=".false."
+    export icloud_bl=1        
+    export bl_mynn_tkeadvect=.true. 
+    export bl_mynn_edmf=1        
+    export bl_mynn_edmf_mom=1
+else
+    export satmedmf=".true."   
+    export isatmedmf=1        
+fi
+
 tbf=""
 if [ $satmedmf = ".true." ]; then tbf="_satmedmf" ; fi
 
 # Land surface model. (3--RUCLSM, landice=F;) (2--NoahMP, landice=F); (1--Noah, landice=T)
-export lsm=3
+if [ $CCPP_SUITE = "FV3_GSD_v0" ]; then
+    export lsm=3
+    export lsoil_lsm=9
+else
+    export lsm=1
+fi
+
 if [ $lsm -eq 2 -o $lsm -eq 3 ]; then
     export lheatstrg=".false."
     export landice=".false."
@@ -106,35 +125,28 @@ elif [ $imp_physics -eq 6 ]; then # WSM6
     export nwat=6
 
 elif [ $imp_physics -eq 8 ]; then # Thompson
-    export ncld=5
-    export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_gsd"
     export nwat=6
-    export ltaerosol=.true.                  
-    export lradar=.true.         ## JKH:  for physics test, this is set to false since that variable not used in test
-
-    ## MYNN options
-    export shal_cnv=".true."       
-    export hybedmf=".false."     
-    #export satmedmf=".false."    
-    export do_mynnedmf=".true."     
-    export do_mynnsfclay=".false."
-    export icloud_bl=1        
-    export bl_mynn_tkeadvect=.true. 
-    export bl_mynn_edmf=1        
-    export bl_mynn_edmf_mom=1
-
-    ## for RUC LSM
-    export lsoil_lsm=9
-
-    ## GSD namelist changes
-    export cal_pre=".false."
-    export random_clds=".false."
-
-    export ttendlim=0.005
-    export vtdm4_nh_nonmono=0.02
-    export nord=2
-    export dddmp=0.1
-    export d4_bg=0.12
+    if [ $CCPP_SUITE = "FV3_GSD_v0" ]; then
+        export ncld=5
+        export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_gsd"
+        export ltaerosol=.true.                  
+        export lradar=.true.         ## JKH:  for physics test, this is set to false since that variable not used in test
+    
+        ## GSD namelist changes
+        export cal_pre=".false."
+        export random_clds=".false."
+    
+        export ttendlim=0.005
+        export vtdm4_nh_nonmono=0.02
+        export nord=2
+        export dddmp=0.1
+        export d4_bg=0.12
+    else
+        export lgfdlmprad=.false.     # Newly added -- Jian
+        export effr_in=.false.        # Newly added -- Jian
+        export ncld=2
+        export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_thompson${tbf}"
+    fi
 
 elif [ $imp_physics -eq 11 ]; then # GFDL
     export ncld=5
@@ -192,9 +204,7 @@ elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
 
     # Write more variables to output
     if [ $QUILTING = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]; then
-        if [ $imp_physics -eq 8 ]; then # Thompson
-            #export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table"
-            #export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_gsd"
+        if [ $CCPP_SUITE = "FV3_GSD_v0" ]; then
             export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_gsd_ruc"
         else
             export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table"
