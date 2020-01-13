@@ -102,11 +102,17 @@ export icliq_sw=2   ;#cloud optical coeffs from AER's newer version v3.9-v4.0 fo
 
 # CCPP configuration
 export output_1st_tstep_rst=".false."                                        #JKH
-export CCPP_SUITE=FV3_GSD_v0
 
 # Convection Options: 2-SASAS, 3-GF
-export imfdeepcnv=3
-export imfshalcnv=3
+if [ $CCPP_SUITE = "FV3_GSD_v0" ]; then
+	export imfdeepcnv=3
+	export imfshalcnv=3
+####        export lheatstrg=.false.
+else
+	export imfdeepcnv=2
+	export imfshalcnv=2
+####        export lheatstrg=.true.
+fi
 
 # Microphysics configuration
 export dnats=0

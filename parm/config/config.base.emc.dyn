@@ -140,8 +140,8 @@ if [ $machine = "THEIA" ]; then
 fi
 
 #### CCPP Suite
-#### export CCPP_SUITE="FV3_GSD_v0"          # testgsdsuite
-export CCPP_SUITE="FV3_GFS_v15"        # testemc
+export CCPP_SUITE="FV3_GSD_v0"              # testgsdsuite
+#### export CCPP_SUITE="FV3_GFS_v15"        # testemc
 
 # Toggle to turn on/off GFS downstream processing.
 export DO_BUFRSND="NO"
