@@ -1014,8 +1014,7 @@ EOF
 if [ $cplchm = ".true." ]; then
   if [ $imp_physics -eq 99 ]; then NTRACER=0; fi
   if [ $imp_physics -eq 11 ]; then NTRACER=1; fi
-  CHEMIN=0
-  if [ $warm_start = ".true." ]; then CHEMIN=1; fi
+  CHEMIN=1
   cat >> input.nml << EOF
 &chem_nml
   aer_bc_opt=1
@@ -1034,7 +1033,7 @@ if [ $cplchm = ".true." ]; then
   dust_alpha=2.0
   dust_gamma=1.8
   dust_calcdrag=1
-  dust_uthres=0.065,0.15,0.25,0.30,0.35,0.38,0.35,0.30,0.30,0.45,0.50,0.45,9999.0
+  dust_uthres=0.065,0.18,0.27,0.30,0.35,0.38,0.35,0.41,0.41,0.45,0.50,0.45,9999.0
   emiss_inpt_opt=1
   emiss_opt=5
   gas_bc_opt=1
