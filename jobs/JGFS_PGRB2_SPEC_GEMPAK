@@ -45,7 +45,7 @@ export SRCgfs=${SRCgfs:-$HOMEgfs/scripts}
 ####################################
 export NET=gfs
 export RUN=gfs_goessim
-export finc=6
+export finc=3
 export model=gfs
 export EXT=""
 
@@ -74,10 +74,10 @@ mkdir -p $DATA
 cd $DATA
 
 export DBN_ALERT_TYPE=GFS_GOESSIM_GEMPAK
-export GRIB=goessimpgrb2.0p25.f
+export GRIB=goessimpgrb2.1p00.f
 export EXT=" "
-export fend=024
-export finc=6
+export fend=180
+export finc=3
 export fstart=000
 
 echo "RUNS the Program"
@@ -98,8 +98,8 @@ export DBN_ALERT_TYPE=GFS_GOESSIM221_GEMPAK
 export RUN=gfs_goessim221
 export GRIB=goessimpgrb2f
 export EXT=".grd221"
-export fend=024
-export finc=6
+export fend=180
+export finc=3
 export fstart=000
 
 echo "RUNS the Program"

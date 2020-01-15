@@ -13,7 +13,7 @@
 export KMP_AFFINITY=disabled
 
 export PDY=`date -u +%Y%m%d`
-export PDY=20191230
+export PDY=20200106
 
 export PDY1=`expr $PDY - 1`
 
@@ -44,9 +44,9 @@ module list
 ############################################
 # GDAS GEMPAK PRODUCT GENERATION
 ############################################
-# set envir=prod or para to test with data in prod or para
+# set envir=para or para to test with data in prod or para
  export envir=para
-# export envir=prod
+# export envir=para
 
 export SENDCOM=YES
 export KEEPDATA=YES
@@ -105,8 +105,8 @@ if [ $envir = "prod" ] ; then
 else
 #  export COMIN=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/git/${RUN}.${PDY}/${cyc}    ### Boi PARA
 #   export COMIN=/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/prfv3rt3b/gfs.${PDY}/${cyc} ### EMC PARA Realtime
-#   export COMIN=/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/v16rt2/gdas.20191230/${cyc} ### EMC PARA Realtime
-  export COMIN=/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/v16rt2/gfs.20200101/00
+#   export COMIN=/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/v16rt2/gdas.20200106/${cyc} ### EMC PARA Realtime
+  export COMIN=/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/v16rt2/gdas.20200106/00
 
 fi
 
