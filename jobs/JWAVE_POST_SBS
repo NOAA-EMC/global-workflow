@@ -100,7 +100,7 @@ else
   msg="$job completed normally!"
 fi
 postmsg "$jlogfile" "$msg"
-KEEPDATA='YES'
+
 # Remove temp directories
 if [ "$KEEPDATA" != "YES" ]; then
   cd $DATAROOT
