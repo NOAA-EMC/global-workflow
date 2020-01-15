@@ -2,14 +2,19 @@ RELEASE NOTES: GFS.v16.0.0 downstream products - released March 31, 2020 (tentat
 
 CODE CHANGES
    No code change
+
+AWIPS CHANGES
+    Removed field "5WAVH" in All parm crads for AWIPS 20km and 1.0 deg (UPP planed to remove in GFS v16.0)
+
+GEMPAK CHANGES
+    Removed simulated GOES 12/13 in GEMPAK and PGRB2
+    Added  simulated GOES 16/17 in GEMPAK and PGRB2 in LAT/LON 0.25 deg
 	
 JOB CHANGES
-   The following script have been removed from GFS v16.0.0
-   - exgfs_grib_awips_g2.sh.ecf  (retired in June 12, 2019)
-   - exgdas_bulls_navy.sh.ecf    (Plan to retire in GFSS v16.0.0) GDAS and NAVY bulletins
-   - Removed WINTEMV bulltin in script exgfs_fbwind.sh.ecf (WINTEMV bulletin plan to retire in GFS v16.0.0)
+   - Removed JGDAS_BULLS_NAVY   - to be retired in GFS V16.0
+   - Removed JGDAS_TROPC        - Rteired in GFS v15.2.0
 
-   The remain GFS downstream jobs are below:
+   The remain GFS downstream jobs are following:
    - JGDAS_GEMPAK
    - JGDAS_GEMPAK_META_NCDC
    - JGFS_AWIPS_G2
@@ -17,11 +22,20 @@ JOB CHANGES
    - JGFS_GEMPAK
    - JGFS_GEMPAK_META
    - JGFS_PGRB2_SPEC_GEMPAK
-   - JGFS_AWIPS_20KM_1P0DEG 
+   - JGFS_AWIPS_20KM_1P0DEG
    - JGFS_GEMPAK_NCDC_UPAPGIF
    - JGFS_PGRB2_SPEC_NPOESS
-   - JGDAS_BULLS_NAVY
 
+SCRIPTS CHANGES
+   The following script have been removed from GFS v16.0.0
+   - exgfs_grib_awips_g2.sh.ecf  (retired in June 12, 2019)
+   - exgdas_bulls_navy.sh.ecf    (Plan to retire in GFSS v16.0.0) GDAS and NAVY bulletins
+   - Removed WINTEMV bulltin in script exgfs_fbwind.sh.ecf (WINTEMV bulletin plan to retire in GFS v16.0.0)
+
+PARM/wmo
+   - Removed parm in grid 160,161,213,254,225  -----> Retired in GFS v15.2.7
+
+-DRIVER
    All Job cards have same setting for testing on DELL with real-time GFS v15.2 data.
    ( An example: JGFS_GEMPAK )
    # LSBATCH: User input
