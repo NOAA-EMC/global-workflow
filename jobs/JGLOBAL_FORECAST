@@ -17,7 +17,15 @@ for config in $configs; do
     status=$?
     [[ $status -ne 0 ]] && exit $status
 done
-
+# Source additional configs
+if [ ${DO_WAVE:-"NO"} = "YES" ]; then
+  configs="wave"
+  for config in $configs; do
+    . $config_path/config.$config
+    status=$?
+    [[ $status -ne 0 ]] && exit $status
+  done
+fi
 
 ##########################################
 # Source machine runtime environment
