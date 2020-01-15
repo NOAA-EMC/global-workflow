@@ -433,8 +433,6 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
     # wavepostsbs
     if do_wave in ['Y', 'YES']:
         deps = []
-        data = '&ROTDIR;/%s.@Y@m@d/@H/%s.t@Hz.logf006.txt' % (cdump, cdump)
-        dep_dict = {'type': 'data', 'data': data}
         data = '&ROTDIR;/wave.@Y@m@d/@H/@Y@m@d.@H0000.out_grd.glo_10m'
         dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
