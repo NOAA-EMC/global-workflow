@@ -125,7 +125,7 @@ echo " 1 $CDATE 2 $cycle 3 $EXECwave 4 $EXECcode 5 $COMOUT 6 $WAV_MOD_TAG 7 $SEN
       -e "s/GRIDNR/$GRIDNR/g" \
       -e "s/MODNR/$MODNR/g" \
       -e "s/FLAGS/$gribflags/g" \
-                               ${DATA}/ww3_grib2.inp.tmpl > ww3_grib.inp
+                               ${DATA}/ww3_grib2.${grdID}.inp.tmpl > ww3_grib.inp
 
 # 1.b Run GRIB packing program
 

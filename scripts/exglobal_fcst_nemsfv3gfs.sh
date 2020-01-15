@@ -18,6 +18,7 @@
 # 2017-09-13  Fanglin Yang   Updated for using GFDL MP and Write Component
 # 2019-03-05  Rahul Mahajan  Implemented IAU
 # 2019-03-21  Fanglin Yang   Add restart capability for running gfs fcst from a break point.
+# 2019-12-12  Henrique Alves Added wave model blocks for coupled run
 #
 # $Id$
 #
@@ -239,7 +240,7 @@ if [ $warm_start = ".true." -o $RERUN = "YES" ]; then
 #.............................
 
   # Link all (except sfc_data) restart files from $gmemdir
-  for file in $gmemdir/RESTART/${sPDY}.${scyc}0000.*.nc; do
+  for file in $(ls $gmemdir/RESTART/${sPDY}.${scyc}0000.*.nc); do
     file2=$(echo $(basename $file))
     file2=$(echo $file2 | cut -d. -f3-) # remove the date from file
     fsuf=$(echo $file2 | cut -d. -f1)
@@ -249,7 +250,7 @@ if [ $warm_start = ".true." -o $RERUN = "YES" ]; then
   done
 
   # Link sfcanl_data restart files from $memdir
-  for file in $memdir/RESTART/${sPDY}.${scyc}0000.*.nc; do
+  for file in $(ls $memdir/RESTART/${sPDY}.${scyc}0000.*.nc); do
     file2=$(echo $(basename $file))
     file2=$(echo $file2 | cut -d. -f3-) # remove the date from file
     fsufanl=$(echo $file2 | cut -d. -f1)
@@ -303,7 +304,7 @@ EOF
     export warm_start=".true."
     PDYT=$(echo $CDATE_RST | cut -c1-8)
     cyct=$(echo $CDATE_RST | cut -c9-10)
-    for file in $RSTDIR_TMP/${PDYT}.${cyct}0000.*; do
+    for file in $(ls $RSTDIR_TMP/${PDYT}.${cyct}0000.*); do
       file2=$(echo $(basename $file))
       file2=$(echo $file2 | cut -d. -f3-) 
       $NLN $file $DATA/INPUT/$file2
@@ -314,7 +315,7 @@ EOF
 
 else ## cold start                            
 
-  for file in $memdir/INPUT/*.nc; do
+  for file in $(ls $memdir/INPUT/*.nc); do
     file2=$(echo $(basename $file))
     fsuf=$(echo $file2 | cut -c1-3)
     if [ $fsuf = "gfs" -o $fsuf = "sfc" ]; then
@@ -384,17 +385,17 @@ fi
 # At this time only test gfs but this change need to be tested on gdas, enkf, and gfs
 if [ $cplwav = ".true." ]; then
 # Link WW3 files
-  for file in $(ls $COMINWW3/${WAV_MOD_ID}.${PDY}/${cyc}/rundata/rmp_src_to_dst_conserv_*) ; do
+  for file in $(ls $COMINWW3/${CDUMP}_${WAV_MOD_ID}.${PDY}/${cyc}/rundata/rmp_src_to_dst_conserv_*) ; do
     $NLN $file $DATA/
   done
-  $NLN $COMINWW3/${WAV_MOD_ID}.${PDY}/${cyc}/rundata/ww3_multi.${WAV_MOD_ID}${WAV_MEMBER}.${cycle}.inp $DATA/ww3_multi.inp
+  $NLN $COMINWW3/${CDUMP}_${WAV_MOD_ID}.${PDY}/${cyc}/rundata/ww3_multi.${WAV_MOD_ID}${WAV_MEMBER}.${cycle}.inp $DATA/ww3_multi.inp
         # Check for expected wave grids for this run
   array=($curID $iceID $wndID $uoutpGRD $waveGRD $sbsGRD $postGRD $interpGRD)
   grdALL=`printf "%s\n" "${array[@]}" | sort -u | tr '\n' ' '`
   for wavGRD in ${grdALL}; do
     # Wave IC (restart) file must exist for warm start on this cycle, if not wave model starts from flat ocean
-    $NLN $COMINWW3/${WAV_MOD_ID}.${PDY}/${cyc}/restart/${WAV_MOD_ID}${WAV_MEMBER}.restart.${wavGRD}.${PDY}${cyc} $DATA/restart.${wavGRD}
-    $NLN $COMINWW3/${WAV_MOD_ID}.${PDY}/${cyc}/rundata/${WAV_MOD_ID}.mod_def.$wavGRD $DATA/mod_def.$wavGRD
+    $NLN $COMINWW3/${rCDUMP}_${WAV_MOD_ID}.${PDY}/${cyc}/restart/${WAV_MOD_ID}${WAV_MEMBER}.restart.${wavGRD}.${PDY}${cyc} $DATA/restart.${wavGRD}
+    $NLN $COMINWW3/${rCDUMP}_${WAV_MOD_ID}.${PDY}/${cyc}/rundata/${WAV_MOD_ID}.mod_def.$wavGRD $DATA/mod_def.$wavGRD
 
     # Link wave IC for the next cycle
     # Wave IC (restart) interval controlled by gfs_cyc parameter (default: 4 cyc/day gfs_cyc=4)
@@ -403,31 +404,46 @@ if [ $cplwav = ".true." ]; then
     WRDATE=`$NDATE ${gfs_cych} $CDATE`
     WRPDY=`echo $WRDATE | cut -c1-8`
     WRcyc=`echo $WRDATE | cut -c9-10`
-    WRDIR=$COMOUTWW3/${WAV_MOD_ID}.${WRPDY}/${WRcyc}/restart
+    WRDIR=$COMOUTWW3/${rCDUMP}_${WAV_MOD_ID}.${WRPDY}/${WRcyc}/restart
     [[ -d $WRDIR ]] || mkdir -p $WRDIR
-    $NLN $COMOUTWW3/${WAV_MOD_ID}.${WRPDY}/${WRcyc}/restart/${WAV_MOD_ID}${WAV_MEMBER}.restart.${wavGRD}.${WRDATE} $DATA/restart001.${wavGRD}
+    $NLN ${WRDIR}/${WAV_MOD_ID}${WAV_MEMBER}.restart.${wavGRD}.${WRDATE} $DATA/restart001.${wavGRD}
   done
   if [ "$WW3ICEINP" = "YES" ]; then
-    $NLN $COMINWW3/${WAV_MOD_ID}.${PDY}/${cyc}/rundata/${WAV_MOD_ID}.${iceID}.${cycle}.ice $DATA/ice.${iceID}
+    $NLN $COMINWW3/${CDUMP}_${WAV_MOD_ID}.${PDY}/${cyc}/rundata/${WAV_MOD_ID}.${iceID}.${cycle}.ice $DATA/ice.${iceID}
   fi
   if [ "$WW3CURINP" = "YES" ]; then
-    $NLN $COMINWW3/${WAV_MOD_ID}.${PDY}/${cyc}/rundata/${WAV_MOD_ID}.${curID}.${cycle}.cur $DATA/current.${curID}
+    $NLN $COMINWW3/${CDUMP}_${WAV_MOD_ID}.${PDY}/${cyc}/rundata/${WAV_MOD_ID}.${curID}.${cycle}.cur $DATA/current.${curID}
   fi
 # Link output files
+  cd $DATA
+  datwave=$COMOUTWW3/${CDUMP}_${WAV_MOD_ID}.${PDY}/${cyc}/rundata/
+  wavprfx=${WAV_MOD_ID}${WAV_MEMBER}
+  eval $NLN $datwave/${wavprfx}.log.mww3.${PDY}${cyc} log.mww3
+  eval $NLN $datwave/${wavprfx}.log.${wavGRD}.${PDY}${cyc} log.${grdID}
+# Loop for gridded output (uses FHINC)
   fhr=$FHMIN
   while [ $fhr -le $FHMAX ]; do
-  YMDH=`$NDATE $fhr $CDATE`
-  YMD=$(echo $YMDH | cut -c1-8)
-  HMS="$(echo $YMDH | cut -c9-10)0000"
-    $NLN $COMOUTWW3/${WAV_MOD_ID}.${PDY}/${cyc}/rundata/${WAV_MOD_ID}${WAV_MEMBER}.out_pnt.${uoutpGRD}.${YMD}.${HMS} $DATA/${YMD}.${HMS}.out_pnt.${uoutpGRD}
-    for wavGRD in ${waveGRD} ; do
-      $NLN $COMOUTWW3/${WAV_MOD_ID}.${PDY}/${cyc}/rundata/${WAV_MOD_ID}${WAV_MEMBER}.out_grd.${wavGRD}.${YMD}.${HMS} $DATA/${YMD}.${HMS}.out_grd.${wavGRD}
-    done
+    YMDH=`$NDATE $fhr $CDATE`
+    YMD=$(echo $YMDH | cut -c1-8)
+    HMS="$(echo $YMDH | cut -c9-10)0000"
+      for wavGRD in ${waveGRD} ; do
+        eval $NLN $datwave/${wavprfx}.out_grd.${wavGRD}.${YMD}.${HMS} ${YMD}.${HMS}.out_grd.${wavGRD}
+      done
       FHINC=$FHOUT
       if [ $FHMAX_HF -gt 0 -a $FHOUT_HF -gt 0 -a $fhr -lt $FHMAX_HF ]; then
         FHINC=$FHOUT_HF
       fi
-      fhr=$((fhr+FHINC))
+    fhr=$((fhr+FHINC))
+  done
+# Loop for point output (uses DTPNT)
+  fhr=$FHMIN
+  while [ $fhr -le $FHMAX ]; do
+    YMDH=`$NDATE $fhr $CDATE`
+    YMD=$(echo $YMDH | cut -c1-8)
+    HMS="$(echo $YMDH | cut -c9-10)0000"
+      eval $NLN $datwave/${wavprfx}.out_pnt.${uoutpGRD}.${YMD}.${HMS} ${YMD}.${HMS}.out_pnt.${uoutpGRD}
+      FHINC=$FHINCWAVP
+    fhr=$((fhr+FHINC))
   done
 fi
 
@@ -1313,7 +1329,7 @@ if [ $SEND = "YES" ]; then
     RDATE=$($NDATE +$rst_invt1 $CDATE)
     rPDY=$(echo $RDATE | cut -c1-8)
     rcyc=$(echo $RDATE | cut -c9-10)
-    for file in ${rPDY}.${rcyc}0000.* ; do
+    for file in $(ls ${rPDY}.${rcyc}0000.*) ; do
       $NCP $file $memdir/RESTART/$file
     done
     if [ $DOIAU = "YES" ] || [ $DOIAU_coldstart = "YES" ]; then
@@ -1322,25 +1338,12 @@ if [ $SEND = "YES" ]; then
        RDATE=$($NDATE +$rst_iau $CDATE)
        rPDY=$(echo $RDATE | cut -c1-8)
        rcyc=$(echo $RDATE | cut -c9-10)
-       for file in ${rPDY}.${rcyc}0000.* ; do
+       for file in $(ls ${rPDY}.${rcyc}0000.*) ; do
           $NCP $file $memdir/RESTART/$file
        done
     fi
 
   fi
-
-fi
-
-#------------------------------------------------------------------
-#### ww3 output
-if [ $cplwav = ".true." ]; then
-  for wavGRD in $waveGRD
-   do
-     $NCP out_grd.${wavGRD} $COMOUTWW3/${WAV_MOD_ID}.${PDY}/${cyc}/rundata/${WAV_MOD_ID}${WAV_MEMBER}.out_grd.${wavGRD}.${PDY}${cyc}
-     $NCP log.${wavGRD} $COMOUTWW3/${WAV_MOD_ID}.${PDY}/${cyc}/rundata/${WAV_MOD_ID}${WAV_MEMBER}.log.${wavGRD}.${PDY}${cyc}
-   done
-   $NCP out_pnt.${uoutpGRD} $COMOUTWW3/${WAV_MOD_ID}.${PDY}/${cyc}/rundata/${WAV_MOD_ID}${WAV_MEMBER}.out_pnt.${uoutpGRD}.${PDY}${cyc}
-   $NCP log.mww3 $COMOUTWW3/${WAV_MOD_ID}.${PDY}/${cyc}/rundata/${WAV_MOD_ID}${WAV_MEMBER}.log.mww3.${PDY}${cyc}
 
 fi
 

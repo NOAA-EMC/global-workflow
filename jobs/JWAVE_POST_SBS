@@ -13,8 +13,8 @@ status=$?
 
 # PATH for working directory
 export NET=${NET:-gfs}
-#export RUN=${RUN:-gwes}
-export RUN=wave
+export RUN=${RUN:-gfs}
+export WAV_MOD_ID=${WAV_MOD_ID:-wave}
 
 export HOMEgefs=${HOMEgefs:-$NWROOT/gefs.${gefs_ver}}
 export HOMEgfs=${HOMEgfs:-$NWROOT/gfs.${gfs_ver}}
@@ -56,18 +56,16 @@ export EXECcode=${EXECcode:-$CODEwave/exe}
 # Set COM Paths and GETGES environment
 export COMINwave=${COMINwave:-${ROTDIR:?}}
 export COMOUTwave=${COMOUTwave:-${ROTDIR:?}}
-export COMIN=${COMIN:-${COMINwave}/${RUN}.${PDY}/${cyc}}
-export COMOUT=${COMOUT:-${COMOUTwave}/${RUN}.${PDY}/${cyc}}
+export COMIN=${COMIN:-${COMINwave}/${RUN}_${WAV_MOD_ID}.${PDY}/${cyc}}
+export COMOUT=${COMOUT:-${COMOUTwave}/${RUN}_${WAV_MOD_ID}.${PDY}/${cyc}}
 
 export COMINice=${COMINice:-${COMROOTp2}/omb/prod}
 export COMINwnd=${COMINwnd:-${COMROOT}/gfs/prod}
 export COMINcur=${COMINcur:-${COMROOTp2}/rtofs/prod}
 
-if [ $SENDCOM = YES ]; then
-  mkdir -p $COMOUT/gridded
-  mkdir -p $COMOUT/station
-  mkdir -p $COMOUT/stats
-fi
+mkdir -p $COMOUT/gridded
+mkdir -p $COMOUT/station
+mkdir -p $COMOUT/stats
 
 export wavelog=${COMOUTwave}/wave.log
 
@@ -102,7 +100,7 @@ else
   msg="$job completed normally!"
 fi
 postmsg "$jlogfile" "$msg"
-
+KEEPDATA='YES'
 # Remove temp directories
 if [ "$KEEPDATA" != "YES" ]; then
   cd $DATAROOT

@@ -185,7 +185,7 @@
 
   for grdID in ${grdALL}
   do
-    if [ -f ${COMOUT}/rundata/${RUN}.mod_def.$grdID ]
+    if [ -f ${COMOUT}/rundata/${WAV_MOD_ID}.mod_def.$grdID ]
     then
       set +x
       echo ' '

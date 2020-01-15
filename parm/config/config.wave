@@ -29,22 +29,12 @@ export wndID=
 # Grids for output fields
 export uoutpGRD=points
 export interpGRD='glo_15mxt' # Grids that need to be interpolated from native
+                             # in POST will generate grib unless gribOK not set
 export sbsGRD=''  # side-by-side grids generated as wave model runs, writes to com
-export postGRD='glo_15mxt' # Grids generated in the sequential post step
+export postGRD='glo_10m aoc_9km ant_9km' # Native grids that will be post-processed (grib2)
 
 # CDATE
 export CDATE=${PDY}${cyc}
-
-# Output stride
-export HOUR_INC=1      # This value should match with the one used in
-                         # the wind update script
-# gridded and point output rate
-export DTFLD=3600
-export DTPNT=3600
-
-# Selected output parameters (gridded)
-export OUTPARS='WND CUR ICE HS T01 T02 DIR FP DP PHS PTP PDIR CHAR'
-# GFS # export OUTPARS='WND CUR ICE HS T01 T02 DIR FP DP PHS PTP PDIR CHAR'
 
 # The start time reflects the number of hindcast hours prior to the cycle initial time
 export HINDH=${HINDH:-0}
@@ -53,6 +43,28 @@ export FHOUT=${FHOUT:-6}
 export FHMAX=${FHMAX:-384}
 export FHMAX_HF=${FHMAX_HF:-240}
 export FHOUT_HF=${FHOUT_HF:-3}
+
+# Reset FH values for gfs run`dd
+if [ "$CDUMP" = "gfs" ]
+then
+  export FHMIN=${FHMIN_GFS:-0}
+  export FHOUT=${FHOUT_GFS:-6}
+  export FHMAX=${FHMAX_GFS:-384}
+  export FHMAX_HF=${FHMAX_HF_GFS:-240}
+  export FHOUT_HF=${FHOUT_HF_GFS:-3}
+fi
+
+# Output stride
+export HOUR_INC=1      # This value should match with the one used in
+                         # the wind update script
+# gridded and point output rate
+export DTFLD=`expr $FHOUT_HF \* 3600`
+export DTPNT=3600
+export FHINCWAVP=`expr $DTPNT / 3600`
+
+# Selected output parameters (gridded)
+export OUTPARS='WND CUR ICE HS T01 T02 DIR FP DP PHS PTP PDIR CHAR'
+# GFS # export OUTPARS='WND CUR ICE HS T01 T02 DIR FP DP PHS PTP PDIR CHAR'
 
 # Intake currents settings
 export CUR_DT=${CUR_DT:-3}
@@ -65,8 +77,16 @@ export FHMAXWAV=${FHMAX:-384} # For GEFS depedency is on the
 export nback=
 
 # Restart file config
-gfs_cych=6
-if [ ${gfs_cyc} -ne 0 ]; then gfs_cych=`expr 24 / ${gfs_cyc}`; fi
+if [ "$CDUMP" = "gdas" ]
+then
+  gfs_cyc=4
+  gfs_cych=6
+elif [ ${gfs_cyc} -ne 0 ]
+then 
+  gfs_cych=`expr 24 / ${gfs_cyc}`
+else
+  gfs_cych=0
+fi
 export gfs_cych #=`expr 24 / ${gfs_cyc}`
 export CYCSTRIDE=${gfs_cych} # cycle stride in h
 export DTRST=1 # time between restart files, set to DTRST=1 for a single restart file
@@ -86,8 +106,8 @@ fi
 
 # Determine if wave component needs input and/or is coupled
 export WW3ATMINP='CPL'
-export WW3ICEINP='YES'
-export WW3CURINP='YES'
+export WW3ICEINP='NO '
+export WW3CURINP='NO '
 
 # Determine if input is from perturbed ensemble (T) or single input file (F) for all members
 export WW3ATMIENS='F'
