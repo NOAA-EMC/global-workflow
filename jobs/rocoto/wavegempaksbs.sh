@@ -7,18 +7,6 @@ echo "=============== START TO SOURCE FV3GFS WORKFLOW MODULES ==============="
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
-
-###############################################################
-echo
-echo "=============== START TO SOURCE RELEVANT CONFIGS ==============="
-configs="base wave wavegempaksbs"
-for config in $configs; do
-    . $EXPDIR/config.${config}
-    status=$?
-    [[ $status -ne 0 ]] && exit $status
-done
-
-
 ###############################################################
 echo
 echo "=============== START TO RUN WAVE GEMPAK_SBS ==============="
