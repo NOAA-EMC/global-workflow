@@ -57,15 +57,15 @@
 # 0.b Define directories and the search path.
 #     The tested variables should be exported by the postprocessor script.
 
-  dtgrib=$2
-  ngrib=$3
-  GRIDNR=$4
-  MODNR=$5
-  ymdh=$6
-  fhr=$7
-  grdres=$8
-  gribflags=$9
-
+  GRIDNR=$2
+  MODNR=$3
+  ymdh=$4
+  fhr=$5
+  grdnam=$6
+  grdres=$7
+  gribflags=$8
+  ngrib=1
+# SBS one time slice per file
   FH3=$(printf %03i $fhr)
 
   set +x
@@ -75,11 +75,10 @@
   echo '+--------------------------------+'
   echo "   Model ID         : $WAV_MOD_TAG"
   [[ "$LOUD" = YES ]] && set -x
-echo " 1 $CDATE 2 $cycle 3 $EXECwave 4 $EXECcode 5 $COMOUT 6 $WAV_MOD_TAG 7 $SENDCOM 8 $dtgrib 9 $ngrib 10 $gribflags 11 $GRIDNR 12 $MODNR 13 $SENDDBN"
 
   if [ -z "$CDATE" ] || [ -z "$cycle" ] || [ -z "$EXECwave" ] || [ -z "$EXECcode" ] || \
      [ -z "$COMOUT" ] || [ -z "$WAV_MOD_TAG" ] || [ -z "$SENDCOM" ] || \
-     [ -z "$dtgrib" ] || [ -z "$ngrib" ] || [ -z "$gribflags" ] || \
+     [ -z "$gribflags" ] || \
      [ -z "$GRIDNR" ] || [ -z "$MODNR" ] || [ -z "$SENDDBN" ]
   then
     set +x
@@ -99,8 +98,8 @@ echo " 1 $CDATE 2 $cycle 3 $EXECwave 4 $EXECcode 5 $COMOUT 6 $WAV_MOD_TAG 7 $SEN
 
   set +x
   echo "   Starting time    : $tstart"
-  echo "   Time step        : $dtgrib"
-  echo "   Number of times  : $ngrib"
+  echo "   Time step        : Single SBS
+  echo "   Number of times  : Single SBS
   echo "   GRIB field flags : $gribflags"
   echo ' '
   [[ "$LOUD" = YES ]] && set -x
@@ -135,7 +134,7 @@ echo " 1 $CDATE 2 $cycle 3 $EXECwave 4 $EXECcode 5 $COMOUT 6 $WAV_MOD_TAG 7 $SEN
   [[ "$LOUD" = YES ]] && set -x
   ENSTAG=""
   if [ ${waveMEMB} ]; then ENSTAG=".${membTAG}${waveMEMB}" ; fi
-  outfile=${WAV_MOD_ID}.${cycle}${ENSTAG}.${grdID}.${grdres}.f${FH3}.grib2
+  outfile=${WAV_MOD_ID}.${cycle}${ENSTAG}.${grdnam}.${grdres}.f${FH3}.grib2
   ln -sf ${COMOUT}/gridded/${outfile} gribfile
   $EXECcode/ww3_grib
   err=$?

@@ -563,14 +563,10 @@
         if [ "$gribOK" = 'yes' ]
         then
           case $grdID in
-            glo_15m) gribFL="${OUTPARS}";
-                    GRDRES=0p25 ; GRIDNR=255  ; MODNR=255  ; dtgrib=10800. ;;
-            ao_20m) gribFL="${OUTPARS}";
-                  GRDRES=0p33 ; GRIDNR=255  ; MODNR=255  ; dtgrib=10800. ;;
-            so_20m) gribFL="${OUTPARS}";
-                  GRDRES=0p33 ; GRIDNR=255  ; MODNR=255  ; dtgrib=10800. ;;
             glo_15mxt) gribFL="${OUTPARS}";
-                  GRDRES=0p25 ; GRIDNR=255  ; MODNR=255 ; dtgrib=10800. ; ngrib=181 ;;
+                    GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=255 ;;
+            glo_30mxt) gribFL="${OUTPARS}";
+                    GRDNAME='global' ; GRDRES=0p50 ; GRIDNR=255  ; MODNR=255 ;;
           esac
 # Recalculate ngrib based on FHMAXWAV (TODO: add new interval if changes to dtgrib after given forecast hour)
           dtgi=`echo ${dtgrib} | sed 's/\.//g'`
@@ -589,20 +585,26 @@
       for grdID in ${postGRD} # First concatenate grib files for sbs grids
       do
         case $grdID in
-          glo_15m) gribFL="${OUTPARS}";
-                  GRDRES=0p25 ; GRIDNR=255  ; MODNR=255  ; dtgrib=10800. ;;
-          ao_20m) gribFL="${OUTPARS}";
-                  GRDRES=0p33 ; GRIDNR=255  ; MODNR=255  ; dtgrib=10800. ;;
-          so_20m) gribFL="${OUTPARS}";
-                  GRDRES=0p33 ; GRIDNR=255  ; MODNR=255  ; dtgrib=10800. ;;
-          glo_15mxt) gribFL="${OUTPARS}";
-                  GRDRES=0p25 ; GRIDNR=255  ; MODNR=255 ; dtgrib=10800. ; ngrib=181 ;;
+            aoc_9km) gribFL="${OUTPARS}";
+                    GRDNAME='arctic' ; GRDRES=9km ; GRIDNR=255  ; MODNR=255  ;;
+            ant_9km) gribFL="${OUTPARS}";
+                    GRDNAME='antarc' ; GRDRES=9km ; GRIDNR=255  ; MODNR=255  ;;
+            glo_10m) gribFL="${OUTPARS}";
+                    GRDNAME='global' ; GRDRES=0p16 ; GRIDNR=255  ; MODNR=255  ;;
+            glo_15m) gribFL="${OUTPARS}";
+                    GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=255  ;;
+            ao_20m) gribFL="${OUTPARS}";
+                    GRDNAME='arctic' ; GRDRES=0p33 ; GRIDNR=255  ; MODNR=255  ;;
+            so_20m) gribFL="${OUTPARS}";
+                    GRDNAME='antarc' ; GRDRES=0p33 ; GRIDNR=255  ; MODNR=255  ;;
+            glo_15mxt) gribFL="${OUTPARS}";
+                    GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=255  ;;
         esac
 # Recalculate ngrib based on FHMAXWAV (TODO: add new interval if changes to dtgrib after given forecast hour)
         dtgi=`echo ${dtgrib} | sed 's/\.//g'`
         dtgh=`expr ${dtgi} / 3600`
         ngrib=`expr ${FHMAXWAV} / ${dtgh} + 1`
-        echo "$USHwave/wave_grib2_sbs.sh $grdID $dtgrib $ngrib $GRIDNR $MODNR $ymdh $fhr $GRDRES "$gribFL" > grib_$grdID.out 2>&1" >> ${fcmdnow}
+        echo "$USHwave/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDNAME $GRDRES "$gribFL" > grib_$grdID.out 2>&1" >> ${fcmdnow}
       done
     fi
 
@@ -673,6 +675,63 @@
 
   done
 
+# --------------------------------------------------------------------------- #
+# 3. Compress point output data into tar files
+
+# 3.a Set up cmdfile
+
+  rm -f cmdtarfile
+  touch cmdtarfile
+  chmod 744 cmdtarfile
+
+  set +x
+  echo ' '
+  echo '   Making command file for taring all point output files.'
+
+  [[ "$LOUD" = YES ]] && set -x
+
+# 6.b Spectral data files
+
+  if [ "$specOK" = 'yes' ]
+  then
+    echo "$USHwave/wave_tar.sh $WAV_MOD_TAG spec $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
+    echo "$USHwave/wave_tar.sh $WAV_MOD_TAG ibp $Nibp > ${WAV_MOD_TAG}_ibp_tar.out 2>&1 "   >> cmdtarfile
+  fi
+
+    wavenproc=`wc -l cmdtarfile | awk '{print $1}'`
+    wavenproc=`echo $((${wavenproc}<${NTASKS}?${wavenproc}:${NTASKS}))`
+
+    set +x
+    echo ' '
+    echo "   Executing the copy command file at : `date`"
+    echo '   ------------------------------------'
+    echo ' '
+    [[ "$LOUD" = YES ]] && set -x
+
+    if [ "$wavenproc" -gt '1' ]
+    then
+      ${wavempexec} ${wavenproc} ${wave_mpmd} cmdtarfile
+      exit=$?
+    else
+      chmod 744 cmdtarfile
+      ./cmdtarfile
+      exit=$?
+    fi
+
+    if [ "$exit" != '0' ]
+    then
+      set +x
+      echo ' '
+      echo '********************************************'
+      echo '*** CMDFILE FAILED   ***'
+      echo '********************************************'
+      echo '     See Details Below '
+      echo ' '
+      [[ "$LOUD" = YES ]] && set -x
+      err=8; export err;${errchk}
+      exit $err
+    fi
+
 exit
 
 # --------------------------------------------------------------------------- #
@@ -690,7 +749,7 @@ exit
   set +x; [ "$LOUD" = YES -a "$specOK" = 'yes' ] 
   if [ "$specOK" = 'yes' ]
   then
-    export dtspec=10800.   # time step for spectra
+    export dtspec=$DTPNT   # time step for spectra
     ymdh=`$NDATE -${HINDH} $CDATE` # start time for spectra output
 
     ifile=1

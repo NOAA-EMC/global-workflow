@@ -66,8 +66,11 @@
     nb=$3
   fi
 
-  rm -rf TAR_${type}_$ID 
-  mkdir  TAR_${type}_$ID
+  filext=$type
+  if [ "$type" = "ibp" ]; then filext='spec'; fi
+
+  rm -rf TAR_${filext}_$ID 
+  mkdir  TAR_${filext}_$ID
 # this directory is used only for error capturing
 
 # 0.c Define directories and the search path.
@@ -108,7 +111,7 @@
     nf=`ls | awk '/'$ID.*.$type'/ {a++} END {print a}'`
     if [ "$nf" = "$nb" ]
     then 
-      tar -cf $ID.$cycle.${type}_tar ./$ID.*.$type
+      tar -cf $ID.$cycle.${filext}_tar ./$ID.*.$filext
       exit=$?
       set +v; [[ "$LOUD" = YES ]] && set -x
 
@@ -125,7 +128,7 @@
         exit 3
       fi
       
-      if [ -f "$ID.$cycle.${type}_tar" ]
+      if [ -f "$ID.$cycle.${filext}_tar" ]
       then
         tardone='yes'
       fi
@@ -152,7 +155,7 @@
     exit 3
   fi
 
-  if [ "$type" = 'spec' ]
+  if [ "$filext" = 'spec' ]
   then
     if [ -s $ID.$cycle.${type}_tar ]
     then
@@ -180,48 +183,45 @@
 # --------------------------------------------------------------------------- #
 # 3.  Move data to /com
 
-  if [ "$SENDCOM" = 'YES' ]
+  set +x
+  echo ' '
+  echo "   Moving tar file ${file_name} to $COMOUT ..."
+  [[ "$LOUD" = YES ]] && set -x
+
+  cp ${file_name} $COMOUT/station/.
+
+  exit=$?
+
+  if  [ "$exit" != '0' ]
   then
     set +x
     echo ' '
-    echo "   Moving tar file ${file_name} to $COMOUT ..."
+    echo '************************************* '
+    echo '*** FATAL ERROR : TAR COPY FAILED *** '
+    echo '************************************* '
+    echo ' '
     [[ "$LOUD" = YES ]] && set -x
+    postmsg "$jlogfile" "FATAL ERROR : TAR COPY FAILED"
+    exit 4
+  fi
 
-    cp ${file_name} $COMOUT/station/.
-
-    exit=$?
-
-    if  [ "$exit" != '0' ]
-    then
-      set +x
-      echo ' '
-      echo '************************************* '
-      echo '*** FATAL ERROR : TAR COPY FAILED *** '
-      echo '************************************* '
-      echo ' '
-      [[ "$LOUD" = YES ]] && set -x
-      postmsg "$jlogfile" "FATAL ERROR : TAR COPY FAILED"
-      exit 4
-    fi
-
-    if [ "$SENDDBN" = 'YES' ]
-    then
-      set +x
-      echo ' '
-      echo "   Alerting TAR file as $COMOUT/station/${file_name}"
-      echo ' '
-      [[ "$LOUD" = YES ]] && set -x
-      $DBNROOT/bin/dbn_alert MODEL OMBWAVE $job $COMOUT/station/${file_name}
-    fi
+  if [ "$SENDDBN" = 'YES' ]
+  then
+    set +x
+    echo ' '
+    echo "   Alerting TAR file as $COMOUT/station/${file_name}"
+    echo ' '
+    [[ "$LOUD" = YES ]] && set -x
+    $DBNROOT/bin/dbn_alert MODEL OMBWAVE $job $COMOUT/station/${file_name}
   fi
 
 # --------------------------------------------------------------------------- #
 # 4.  Final clean up
 
   cd $DATA
-  rm -rf TAR_${type}_$ID
+
   set +x; [[ "$LOUD" = YES ]] && set -v
-  rm -f  $ID.*.$type
+  rm -f  ${STA_DIR}/${type}
   set +v
 
   echo ' '
