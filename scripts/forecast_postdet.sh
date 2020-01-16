@@ -415,6 +415,10 @@ EOF
 	    eval $NLN atmos_4xdaily.tile${n}.nc $memdir/atmos_4xdaily.tile${n}.nc
 	  done
 	fi
+
+        # Copy namelist file
+        $NCP input.nml $memdir
+
 }
 
 FV3_GFS_nml(){

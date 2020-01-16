@@ -23,3 +23,11 @@ module load prod_util/1.1.0
 #Load from emc.nemspara
 module use -a /scratch1/NCEPDEV/nems/emc.nemspara/soft/modulefiles
 module load esmf/8.0.0bs48
+
+# for aeroic task
+module load grib_api/1.26.1
+module load contrib
+module load anaconda/2.3.0
+module use -a /scratch1/BMC/gmtb/software/modulefiles/intel-18.0.5.274/impi-2018.0.4
+module load cdo/1.7.2
+

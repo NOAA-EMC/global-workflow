@@ -32,8 +32,8 @@ AERO_DIR=${HOMEgfs}/sorc/aeroconv
 export LD_PRELOAD=$AERO_DIR/thirdparty/lib/libjpeg.so
 export PYTHONPATH=$AERO_DIR/thirdparty/lib/python2.7/site-packages:$PYTHONPATH
 
-module use -a /scratch1/BMC/gmtb/software/modulefiles/intel-18.0.5.274/impi-2018.0.4
-module load cdo/1.7.2
+#module use -a /scratch1/BMC/gmtb/software/modulefiles/intel-18.0.5.274/impi-2018.0.4
+#module load cdo/1.7.2
 
 echo
 echo "FIXfv3 = $FIXfv3"
