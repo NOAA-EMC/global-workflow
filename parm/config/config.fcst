@@ -131,25 +131,24 @@ elif [ $imp_physics -eq 6 ]; then # WSM6
     export nwat=6
 
 elif [ $imp_physics -eq 8 ]; then # Thompson
+    export lgfdlmprad=.false.     # Newly added -- Jian
+    export effr_in=.false.        # Newly added -- Jian
     export nwat=6
     if [ $CCPP_SUITE = "FV3_GSD_v0" ]; then
         export ncld=5
         export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_gsd"
         export ltaerosol=.true.                  
-        export lradar=.true.         ## JKH:  for physics test, this is set to false since that variable not used in test
+        export lradar=.true.         
     
         ## GSD namelist changes
         export cal_pre=".false."
         export random_clds=".false."
-    
         export ttendlim=0.005
         export vtdm4_nh_nonmono=0.02
         export nord=2
         export dddmp=0.1
         export d4_bg=0.12
     else
-        export lgfdlmprad=.false.     # Newly added -- Jian
-        export effr_in=.false.        # Newly added -- Jian
         export ncld=2
         export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_thompson${tbf}"
     fi
