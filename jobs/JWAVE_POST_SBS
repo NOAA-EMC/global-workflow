@@ -68,8 +68,8 @@ export EXECcode=${EXECcode:-$CODEwave/exe}
 # Set COM Paths and GETGES environment
 export COMINwave=${COMINwave:-${ROTDIR:?}}
 export COMOUTwave=${COMOUTwave:-${ROTDIR:?}}
-export COMIN=${COMIN:-${COMINwave}/${RUN}_${WAV_MOD_ID}.${PDY}/${cyc}}
-export COMOUT=${COMOUT:-${COMOUTwave}/${RUN}_${WAV_MOD_ID}.${PDY}/${cyc}}
+export COMIN=${COMIN:-${COMINwave}/${RUN}${WAV_MOD_ID}.${PDY}/${cyc}}
+export COMOUT=${COMOUT:-${COMOUTwave}/${RUN}${WAV_MOD_ID}.${PDY}/${cyc}}
 
 export COMINice=${COMINice:-${COMROOTp2}/omb/prod}
 export COMINwnd=${COMINwnd:-${COMROOT}/gfs/prod}
