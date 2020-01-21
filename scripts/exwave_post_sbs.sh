@@ -491,7 +491,7 @@
 # 1.a.2 Loop over forecast time to generate post files 
 # When executed side-by-side, serial mode (cfp when run after the fcst step)
   fhr=$FHMIN
-  iwaitmax=60 # Maximum loop cycles for waiting until wave component output file is ready (fails after max)
+  iwaitmax=1200 # Maximum loop cycles for waiting until wave component output file is ready (fails after max)
   while [ $fhr -le $FHMAXWAV ]; do
     
     ymdh=`$NDATE $fhr $CDATE`
@@ -562,17 +562,12 @@
         echo "$USHwave/wave_grid_interp_sbs.sh $grdID $ymdh_int $dt_int $n_int > grint_$grdID.out 2>&1" >> ${fcmdigrd}.${nigrd}
         if [ "$gribOK" = 'yes' ]
         then
+        gribFL=\'`echo ${OUTPARS}`\'
           case $grdID in
-            glo_15mxt) gribFL="${OUTPARS}";
-                    GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=255 ;;
-            glo_30mxt) gribFL="${OUTPARS}";
-                    GRDNAME='global' ; GRDRES=0p50 ; GRIDNR=255  ; MODNR=255 ;;
+            glo_15mxt) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=255 ;;
+            glo_30mxt) GRDNAME='global' ; GRDRES=0p50 ; GRIDNR=255  ; MODNR=255 ;;
           esac
-# Recalculate ngrib based on FHMAXWAV (TODO: add new interval if changes to dtgrib after given forecast hour)
-          dtgi=`echo ${dtgrib} | sed 's/\.//g'`
-          dtgh=`expr ${dtgi} / 3600`
-          ngrib=`expr ${FHMAXWAV} / ${dtgh} + 1`
-          echo "$USHwave/wave_grib2_sbs.sh $grdID $dtgrib $ngrib $GRIDNR $MODNR $ymdh $fhr $GRDRES "$gribFL" > grib_$grdID.out 2>&1" >> ${fcmdigrd}.${nigrd}
+          echo "$USHwave/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDNAME $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdigrd}.${nigrd}
         fi
         echo "${fcmdigrd}.${nigrd}" >> ${fcmdnow}
         chmod 744 ${fcmdigrd}.${nigrd}
@@ -584,27 +579,17 @@
     then
       for grdID in ${postGRD} # First concatenate grib files for sbs grids
       do
+        gribFL=\'`echo ${OUTPARS}`\'
         case $grdID in
-            aoc_9km) gribFL="${OUTPARS}";
-                    GRDNAME='arctic' ; GRDRES=9km ; GRIDNR=255  ; MODNR=255  ;;
-            ant_9km) gribFL="${OUTPARS}";
-                    GRDNAME='antarc' ; GRDRES=9km ; GRIDNR=255  ; MODNR=255  ;;
-            glo_10m) gribFL="${OUTPARS}";
-                    GRDNAME='global' ; GRDRES=0p16 ; GRIDNR=255  ; MODNR=255  ;;
-            glo_15m) gribFL="${OUTPARS}";
-                    GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=255  ;;
-            ao_20m) gribFL="${OUTPARS}";
-                    GRDNAME='arctic' ; GRDRES=0p33 ; GRIDNR=255  ; MODNR=255  ;;
-            so_20m) gribFL="${OUTPARS}";
-                    GRDNAME='antarc' ; GRDRES=0p33 ; GRIDNR=255  ; MODNR=255  ;;
-            glo_15mxt) gribFL="${OUTPARS}";
-                    GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=255  ;;
+            aoc_9km) GRDNAME='arctic' ; GRDRES=9km ; GRIDNR=255  ; MODNR=255  ;;
+            ant_9km) GRDNAME='antarc' ; GRDRES=9km ; GRIDNR=255  ; MODNR=255  ;;
+            glo_10m) GRDNAME='global' ; GRDRES=0p16 ; GRIDNR=255  ; MODNR=255  ;;
+            glo_15m) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=255  ;;
+            ao_20m) GRDNAME='arctic' ; GRDRES=0p33 ; GRIDNR=255  ; MODNR=255  ;;
+            so_20m) GRDNAME='antarc' ; GRDRES=0p33 ; GRIDNR=255  ; MODNR=255  ;;
+            glo_15mxt) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=255  ;;
         esac
-# Recalculate ngrib based on FHMAXWAV (TODO: add new interval if changes to dtgrib after given forecast hour)
-        dtgi=`echo ${dtgrib} | sed 's/\.//g'`
-        dtgh=`expr ${dtgi} / 3600`
-        ngrib=`expr ${FHMAXWAV} / ${dtgh} + 1`
-        echo "$USHwave/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDNAME $GRDRES "$gribFL" > grib_$grdID.out 2>&1" >> ${fcmdnow}
+        echo "$USHwave/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDNAME $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdnow}
       done
     fi
 

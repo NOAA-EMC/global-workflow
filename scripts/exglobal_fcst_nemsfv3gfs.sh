@@ -100,6 +100,9 @@ FCSTEXEC=${FCSTEXEC:-fv3_gfs.x}
 PARM_FV3DIAG=${PARM_FV3DIAG:-$HOMEgfs/parm/parm_fv3diag}
 PARM_POST=${PARM_POST:-$HOMEgfs/parm/post}
 
+# Wave coupling parameter defaults to false
+cplwav=${cplwav:-.false.}
+
 # Model config options
 APRUN_FV3=${APRUN_FV3:-${APRUN_FCST:-${APRUN:-""}}}
 NTHREADS_FV3=${NTHREADS_FV3:-${NTHREADS_FCST:-${nth_fv3:-1}}}
@@ -385,17 +388,17 @@ fi
 # At this time only test gfs but this change need to be tested on gdas, enkf, and gfs
 if [ $cplwav = ".true." ]; then
 # Link WW3 files
-  for file in $(ls $COMINWW3/${CDUMP}_${WAV_MOD_ID}.${PDY}/${cyc}/rundata/rmp_src_to_dst_conserv_*) ; do
+  for file in $(ls $COMINWW3/${CDUMP}${WAV_MOD_ID}.${PDY}/${cyc}/rundata/rmp_src_to_dst_conserv_*) ; do
     $NLN $file $DATA/
   done
-  $NLN $COMINWW3/${CDUMP}_${WAV_MOD_ID}.${PDY}/${cyc}/rundata/ww3_multi.${WAV_MOD_ID}${WAV_MEMBER}.${cycle}.inp $DATA/ww3_multi.inp
+  $NLN $COMINWW3/${CDUMP}${WAV_MOD_ID}.${PDY}/${cyc}/rundata/ww3_multi.${WAV_MOD_ID}${WAV_MEMBER}.${cycle}.inp $DATA/ww3_multi.inp
         # Check for expected wave grids for this run
   array=($curID $iceID $wndID $uoutpGRD $waveGRD $sbsGRD $postGRD $interpGRD)
   grdALL=`printf "%s\n" "${array[@]}" | sort -u | tr '\n' ' '`
   for wavGRD in ${grdALL}; do
     # Wave IC (restart) file must exist for warm start on this cycle, if not wave model starts from flat ocean
-    $NLN $COMINWW3/${rCDUMP}_${WAV_MOD_ID}.${PDY}/${cyc}/restart/${WAV_MOD_ID}${WAV_MEMBER}.restart.${wavGRD}.${PDY}${cyc} $DATA/restart.${wavGRD}
-    $NLN $COMINWW3/${rCDUMP}_${WAV_MOD_ID}.${PDY}/${cyc}/rundata/${WAV_MOD_ID}.mod_def.$wavGRD $DATA/mod_def.$wavGRD
+    $NLN $COMINWW3/${rCDUMP}${WAV_MOD_ID}.${PDY}/${cyc}/restart/${WAV_MOD_ID}${WAV_MEMBER}.restart.${wavGRD}.${PDY}${cyc} $DATA/restart.${wavGRD}
+    $NLN $COMINWW3/${rCDUMP}${WAV_MOD_ID}.${PDY}/${cyc}/rundata/${WAV_MOD_ID}.mod_def.$wavGRD $DATA/mod_def.$wavGRD
 
     # Link wave IC for the next cycle
     # Wave IC (restart) interval controlled by gfs_cyc parameter (default: 4 cyc/day gfs_cyc=4)
@@ -404,19 +407,19 @@ if [ $cplwav = ".true." ]; then
     WRDATE=`$NDATE ${gfs_cych} $CDATE`
     WRPDY=`echo $WRDATE | cut -c1-8`
     WRcyc=`echo $WRDATE | cut -c9-10`
-    WRDIR=$COMOUTWW3/${rCDUMP}_${WAV_MOD_ID}.${WRPDY}/${WRcyc}/restart
+    WRDIR=$COMOUTWW3/${rCDUMP}${WAV_MOD_ID}.${WRPDY}/${WRcyc}/restart
     [[ -d $WRDIR ]] || mkdir -p $WRDIR
     $NLN ${WRDIR}/${WAV_MOD_ID}${WAV_MEMBER}.restart.${wavGRD}.${WRDATE} $DATA/restart001.${wavGRD}
   done
   if [ "$WW3ICEINP" = "YES" ]; then
-    $NLN $COMINWW3/${CDUMP}_${WAV_MOD_ID}.${PDY}/${cyc}/rundata/${WAV_MOD_ID}.${iceID}.${cycle}.ice $DATA/ice.${iceID}
+    $NLN $COMINWW3/${CDUMP}${WAV_MOD_ID}.${PDY}/${cyc}/rundata/${WAV_MOD_ID}.${iceID}.${cycle}.ice $DATA/ice.${iceID}
   fi
   if [ "$WW3CURINP" = "YES" ]; then
-    $NLN $COMINWW3/${CDUMP}_${WAV_MOD_ID}.${PDY}/${cyc}/rundata/${WAV_MOD_ID}.${curID}.${cycle}.cur $DATA/current.${curID}
+    $NLN $COMINWW3/${CDUMP}${WAV_MOD_ID}.${PDY}/${cyc}/rundata/${WAV_MOD_ID}.${curID}.${cycle}.cur $DATA/current.${curID}
   fi
 # Link output files
   cd $DATA
-  datwave=$COMOUTWW3/${CDUMP}_${WAV_MOD_ID}.${PDY}/${cyc}/rundata/
+  datwave=$COMOUTWW3/${CDUMP}${WAV_MOD_ID}.${PDY}/${cyc}/rundata/
   wavprfx=${WAV_MOD_ID}${WAV_MEMBER}
   eval $NLN $datwave/${wavprfx}.log.mww3.${PDY}${cyc} log.mww3
   eval $NLN $datwave/${wavprfx}.log.${wavGRD}.${PDY}${cyc} log.${grdID}

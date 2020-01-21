@@ -64,7 +64,8 @@
   grdnam=$6
   grdres=$7
   gribflags=$8
-  ngrib=1
+  ngrib=1 # only one time slice
+  dtgrib=3600 # only one time slice
 # SBS one time slice per file
   FH3=$(printf %03i $fhr)
 
@@ -134,7 +135,7 @@
   [[ "$LOUD" = YES ]] && set -x
   ENSTAG=""
   if [ ${waveMEMB} ]; then ENSTAG=".${membTAG}${waveMEMB}" ; fi
-  outfile=${WAV_MOD_ID}.${cycle}${ENSTAG}.${grdnam}.${grdres}.f${FH3}.grib2
+  outfile=${RUN}${WAV_MOD_ID}.${cycle}${ENSTAG}.${grdnam}.${grdres}.f${FH3}.grib2
   ln -sf ${COMOUT}/gridded/${outfile} gribfile
   $EXECcode/ww3_grib
   err=$?
