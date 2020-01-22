@@ -10,7 +10,8 @@ export wave_sys_ver=v1.0.0
 
 # General runtime labels
 # export WAV_MOD_ID=${WAV_MOD_ID:-wave} # generic modID=wave valid for GFSv16 and beyond
-export WAV_MOD_ID=${WAV_MOD_ID:-wave}
+# MDC stands for model component, in addition to NET/RUN for coupled systems
+export MDC=${MDC:-${RUN}wave}
 
 # Grids for wave model
 export waveGRD='glo_10m aoc_9km ant_9km'

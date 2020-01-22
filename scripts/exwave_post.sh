@@ -160,13 +160,13 @@
 
   for grdID in $waveGRD $sbsGRD $postGRD $interpGRD $uoutpGRD
   do
-    if [ -f "$COMIN/rundata/${WAV_MOD_ID}.mod_def.${grdID}" ]
+    if [ -f "$COMIN/rundata/${MDC}.mod_def.${grdID}" ]
     then
       set +x
       echo " Mod def file for $grdID found in ${COMIN}/rundata. copying ...."
       [[ "$LOUD" = YES ]] && set -x
 
-      echo "cp -f $COMIN/rundata/${WAV_MOD_ID}.mod_def.${grdID} mod_def.$grdID > copycmd.out.$iloop 2>&1"  >> cmdfile
+      echo "cp -f $COMIN/rundata/${MDC}.mod_def.${grdID} mod_def.$grdID > copycmd.out.$iloop 2>&1"  >> cmdfile
       iloop=`expr $iloop + 1`
       
     fi
@@ -323,7 +323,7 @@
     echo '************************************* '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    echo "$WAV_MOD_ID post $date $cycle : buoy location file missing." >> $wavelog
+    echo "$WAV_MOD_TAG post $date $cycle : buoy location file missing." >> $wavelog
     postmsg "$jlogfile" "FATAL ERROR : NO BUOY LOCATION FILE"
     err=5; export err;${errchk}
     exit $err

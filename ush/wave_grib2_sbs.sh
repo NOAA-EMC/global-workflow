@@ -135,7 +135,7 @@
   [[ "$LOUD" = YES ]] && set -x
   ENSTAG=""
   if [ ${waveMEMB} ]; then ENSTAG=".${membTAG}${waveMEMB}" ; fi
-  outfile=${RUN}${WAV_MOD_ID}.${cycle}${ENSTAG}.${grdnam}.${grdres}.f${FH3}.grib2
+  outfile=${WAV_MOD_TAG}.${cycle}${ENSTAG}.${grdnam}.${grdres}.f${FH3}.grib2
   ln -sf ${COMOUT}/gridded/${outfile} gribfile
   $EXECcode/ww3_grib
   err=$?

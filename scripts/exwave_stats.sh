@@ -490,7 +490,7 @@ rm -f ${modID}??.${grdID}.t${cyc}z.grib2
       do
   
         ingrib=${snip}_${stype}.${hhh}.grib2
-        outgrib=${WAV_MOD_ID}.${snip}_${stype}.t${cyc}z.grib2 
+        outgrib=${MDC}.${snip}_${stype}.t${cyc}z.grib2 
 
 #        echo "$wgrib2  ./${par_dir}/${valtime}/${ingrib} -append -grib ./${outgrib} >> ${snip}_${stype}.t${cyc}z.out 2>> ${snip}_${stype}.t${cyc}z.err" >> cmdfile
         echo "$wgrib2  ./${par_dir}/${valtime}/${ingrib} -append -grib ./${outgrib} >> ${snip}_${stype}.t${cyc}z.out 2>> ${snip}_${stype}.t${cyc}z.err" >> cmdfile.${ifile}
@@ -534,9 +534,9 @@ rm -f ${modID}??.${grdID}.t${cyc}z.grib2
    fi
 
 # 2.e Check for errors and create bundle files
-  rm -f ${WAV_MOD_ID}.mean.t${cyc}z.grib2 
-  rm -f ${WAV_MOD_ID}.spread.t${cyc}z.grib2 
-  rm -f ${WAV_MOD_ID}.probab.t${cyc}z.grib2
+  rm -f ${MDC}.mean.t${cyc}z.grib2 
+  rm -f ${MDC}.spread.t${cyc}z.grib2 
+  rm -f ${MDC}.probab.t${cyc}z.grib2
   iparam=1
 
   while [ ${iparam} -le ${nparam} ]
@@ -559,7 +559,7 @@ rm -f ${modID}??.${grdID}.t${cyc}z.grib2
       *)       nnip= ;;
     esac
 
-   if [ ! -f ${WAV_MOD_ID}.${snip}_mean.t${cyc}z.grib2 ]
+   if [ ! -f ${MDC}.${snip}_mean.t${cyc}z.grib2 ]
    then
      msg="ABNORMAL EXIT: ERR in generating statistics file"
      ./postmsg "$jlogfile" "$msg"
@@ -567,7 +567,7 @@ rm -f ${modID}??.${grdID}.t${cyc}z.grib2
      echo ' '
      echo '***************************************** '
      echo "***            FATAL ERROR            *** "
-     echo "--- No ${WAV_MOD_ID}.${snip}_mean.t${cyc}z.grib2 file --- "
+     echo "--- No ${MDC}.${snip}_mean.t${cyc}z.grib2 file --- "
      echo '***************************************** '
      echo ' '
      [[ "$LOUD" = YES ]] && set -x
@@ -578,16 +578,16 @@ rm -f ${modID}??.${grdID}.t${cyc}z.grib2
      set +x
      echo -e "\n Statistics files generated succesfully.\n"
      [[ "$LOUD" = YES ]] && set -x
-     echo -e "\n ${COMOUT}/${WAV_MOD_ID}.${snip}_mean.t${cyc}z.grib2\n"
+     echo -e "\n ${COMOUT}/${MDC}.${snip}_mean.t${cyc}z.grib2\n"
 # Large directory, cleanup is taking long time. Will leave for SPA to decide
 #     rm -rf tmp_${nip}  
      rm -f wave_${modID}_stats_${nip}_*.out
      rm -f ${snip}_*.t${cyc}z.out ${snip}_*.t${cyc}z.err
 
 # Bundle individual parameter files into a single file
-     cat ${WAV_MOD_ID}.${snip}_mean.t${cyc}z.grib2 >> ${WAV_MOD_ID}.mean.t${cyc}z.grib2
-     cat ${WAV_MOD_ID}.${snip}_spread.t${cyc}z.grib2 >> ${WAV_MOD_ID}.spread.t${cyc}z.grib2
-     cat ${WAV_MOD_ID}.${snip}_probab.t${cyc}z.grib2 >> ${WAV_MOD_ID}.probab.t${cyc}z.grib2
+     cat ${MDC}.${snip}_mean.t${cyc}z.grib2 >> ${MDC}.mean.t${cyc}z.grib2
+     cat ${MDC}.${snip}_spread.t${cyc}z.grib2 >> ${MDC}.spread.t${cyc}z.grib2
+     cat ${MDC}.${snip}_probab.t${cyc}z.grib2 >> ${MDC}.probab.t${cyc}z.grib2
 
    fi
 
@@ -628,7 +628,7 @@ rm -f ${modID}??.${grdID}.t${cyc}z.grib2
   ibuoy=1
 
 # 3.c Create bundled grib2 file with all parameters
-  cat ${WAV_MOD_ID}.hs_*.t${cyc}z.grib2 ${WAV_MOD_ID}.tp_*.t${cyc}z.grib2 ${WAV_MOD_ID}.wnd_*.t${cyc}z.grib2 > gribfile
+  cat ${MDC}.hs_*.t${cyc}z.grib2 ${MDC}.tp_*.t${cyc}z.grib2 ${MDC}.wnd_*.t${cyc}z.grib2 > gribfile
 
 # 3.d Loop through buoys and populate cmdfiles with calls to wave_ens_bull.sh
 
@@ -728,7 +728,7 @@ rm -f ${modID}??.${grdID}.t${cyc}z.grib2
      echo ' '
      echo '***************************************** '
      echo "***            FATAL ERROR            *** "
-     echo "--- No ${WAV_MOD_ID}.${bnom}.bull file created --- "
+     echo "--- No ${MDC}.${bnom}.bull file created --- "
      echo '***************************************** '
      echo ' '
      [[ "$LOUD" = YES ]] && set -x
@@ -747,10 +747,10 @@ rm -f ${modID}??.${grdID}.t${cyc}z.grib2
 #
 
 # 4.a Compress bulletins into tar file and copy to COMOUT
-  tar cf ${WAV_MOD_ID}.t${cyc}z.bull_tar ${WAV_MOD_ID}.*.bull
-  rm -f ${WAV_MOD_ID}.*.bull
-  tar cf ${WAV_MOD_ID}.t${cyc}z.station_tar ${WAV_MOD_ID}.*.ts
-  rm -f ${WAV_MOD_ID}.*.ts
+  tar cf ${MDC}.t${cyc}z.bull_tar ${MDC}.*.bull
+  rm -f ${MDC}.*.bull
+  tar cf ${MDC}.t${cyc}z.station_tar ${MDC}.*.ts
+  rm -f ${MDC}.*.ts
 
   set +x
   echo ' '
@@ -758,12 +758,12 @@ rm -f ${modID}??.${grdID}.t${cyc}z.grib2
   echo '---------------------'
   [[ "$LOUD" = YES ]] && set -x
 
-  if [ -f ${WAV_MOD_ID}.t${cyc}z.bull_tar ]
+  if [ -f ${MDC}.t${cyc}z.bull_tar ]
   then
     set +x
-    echo "   Copying ${WAV_MOD_ID}.t${cyc}z.bull_tar  to $COMOUT"
+    echo "   Copying ${MDC}.t${cyc}z.bull_tar  to $COMOUT"
     [[ "$LOUD" = YES ]] && set -x
-    cp -f ${WAV_MOD_ID}.t${cyc}z.bull_tar $COMOUT/.
+    cp -f ${MDC}.t${cyc}z.bull_tar $COMOUT/.
    else
      set +x
      echo ' '
@@ -779,12 +779,12 @@ rm -f ${modID}??.${grdID}.t${cyc}z.grib2
 
 
 # 4.b Compress time series into tar file and copy to COMOUT
-  if [ -f ${WAV_MOD_ID}.t${cyc}z.station_tar ]
+  if [ -f ${MDC}.t${cyc}z.station_tar ]
   then
     set +x
-    echo "   Copying ${WAV_MOD_ID}.t${cyc}z.bull_tar  to $COMOUT"
+    echo "   Copying ${MDC}.t${cyc}z.bull_tar  to $COMOUT"
     [[ "$LOUD" = YES ]] && set -x
-    cp -f ${WAV_MOD_ID}.t${cyc}z.station_tar $COMOUT/.
+    cp -f ${MDC}.t${cyc}z.station_tar $COMOUT/.
    else
      set +x
      echo ' '
@@ -802,20 +802,20 @@ rm -f ${modID}??.${grdID}.t${cyc}z.grib2
 
   for stype in mean spread probab
   do
-   if [ -f ${WAV_MOD_ID}.${stype}.t${cyc}z.grib2 ]
+   if [ -f ${MDC}.${stype}.t${cyc}z.grib2 ]
    then
      set +x
-     echo "   Copying ${WAV_MOD_ID}.${stype}.t${cyc}z.grib2 to $COMOUT"
+     echo "   Copying ${MDC}.${stype}.t${cyc}z.grib2 to $COMOUT"
      [[ "$LOUD" = YES ]] && set -x
-     cp -f ${WAV_MOD_ID}.${stype}.t${cyc}z.grib2 $COMOUT/.
+     cp -f ${MDC}.${stype}.t${cyc}z.grib2 $COMOUT/.
     else
       set +x
       echo ' '
       echo '*************************************** '
-      echo '*** FATAL ERROR: No ${WAV_MOD_ID}.${stype}.t${cyc}z.grib2 file found *'
+      echo '*** FATAL ERROR: No ${MDC}.${stype}.t${cyc}z.grib2 file found *'
       echo '*************************************** '
       echo ' '
-      echo "$modIE fcst $date $cycle: ${WAV_MOD_ID}.${stype}.t${cyc}z.grib2 not fouund." >> $wavelog
+      echo "$modIE fcst $date $cycle: ${MDC}.${stype}.t${cyc}z.grib2 not fouund." >> $wavelog
       echo $msg
       [[ "$LOUD" = YES ]] && set -x
       err=7;export err pgm;./err_chk
@@ -850,20 +850,20 @@ rm -f ${modID}??.${grdID}.t${cyc}z.grib2
 
     for stype in ${stypes} 
     do
-      if [ -f ${WAV_MOD_ID}.${snip}_${stype}.t${cyc}z.grib2 ]
+      if [ -f ${MDC}.${snip}_${stype}.t${cyc}z.grib2 ]
       then
        set +x
-       echo "   Copying ${WAV_MOD_ID}.${snip}_${stype}.t${cyc}z.grib2 to $COMOUT"
+       echo "   Copying ${MDC}.${snip}_${stype}.t${cyc}z.grib2 to $COMOUT"
        [[ "$LOUD" = YES ]] && set -x
-       cp -f ${WAV_MOD_ID}.${snip}_${stype}.t${cyc}z.grib2 $COMOUT/.
+       cp -f ${MDC}.${snip}_${stype}.t${cyc}z.grib2 $COMOUT/.
       else
         set +x
         echo ' '
         echo '*************************************** '
-        echo '*** FATAL ERROR: No ${WAV_MOD_ID}.${snip}_${stype}.t${cyc}z.grib2 file found *'
+        echo '*** FATAL ERROR: No ${MDC}.${snip}_${stype}.t${cyc}z.grib2 file found *'
         echo '*************************************** '
         echo ' '
-        echo "$modIE fcst $date $cycle: ${WAV_MOD_ID}.${snip}_${stype}.t${cyc}z.grib2 not fouund." >> $wavelog
+        echo "$modIE fcst $date $cycle: ${MDC}.${snip}_${stype}.t${cyc}z.grib2 not fouund." >> $wavelog
         echo $msg
         [[ "$LOUD" = YES ]] && set -x
         err=7;export err pgm;./err_chk
@@ -877,11 +877,11 @@ rm -f ${modID}??.${grdID}.t${cyc}z.grib2
 #
   if [ "$SENDDBN" = 'YES' ]
   then
-       $DBNROOT/bin/dbn_alert MODEL WAVE_GRIB_GB2 $job $COMOUT/${WAV_MOD_ID}.mean.t${cyc}z.grib2
-       $DBNROOT/bin/dbn_alert MODEL WAVE_GRIB_GB2 $job $COMOUT/${WAV_MOD_ID}.spread.t${cyc}z.grib2
-       $DBNROOT/bin/dbn_alert MODEL WAVE_GRIB_GB2 $job $COMOUT/${WAV_MOD_ID}.probab.t${cyc}z.grib2
-       $DBNROOT/bin/dbn_alert MODEL WAVE_GRIB_GB2 $job $COMOUT/${WAV_MOD_ID}.t${cyc}z.bull_tar
-       $DBNROOT/bin/dbn_alert MODEL WAVE_GRIB_GB2 $job $COMOUT/${WAV_MOD_ID}.t${cyc}z.station_tar
+       $DBNROOT/bin/dbn_alert MODEL WAVE_GRIB_GB2 $job $COMOUT/${MDC}.mean.t${cyc}z.grib2
+       $DBNROOT/bin/dbn_alert MODEL WAVE_GRIB_GB2 $job $COMOUT/${MDC}.spread.t${cyc}z.grib2
+       $DBNROOT/bin/dbn_alert MODEL WAVE_GRIB_GB2 $job $COMOUT/${MDC}.probab.t${cyc}z.grib2
+       $DBNROOT/bin/dbn_alert MODEL WAVE_GRIB_GB2 $job $COMOUT/${MDC}.t${cyc}z.bull_tar
+       $DBNROOT/bin/dbn_alert MODEL WAVE_GRIB_GB2 $job $COMOUT/${MDC}.t${cyc}z.station_tar
   fi
 #
   if [ "$exit_code" -ne '0' ]
@@ -891,7 +891,7 @@ rm -f ${modID}??.${grdID}.t${cyc}z.grib2
      echo $msg
      err=$exit_code ; export err ; ./err_chk
   else
-     touch $COMOUT/${WAV_MOD_ID}.$cycle.statsdone
+     touch $COMOUT/${MDC}.$cycle.statsdone
   fi
 
   msg="$job completed normally"

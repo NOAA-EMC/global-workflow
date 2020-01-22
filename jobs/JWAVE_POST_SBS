@@ -26,10 +26,10 @@ status=$?
 # PATH for working directory
 export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
-export WAV_MOD_ID=${WAV_MOD_ID:-wave}
+export MDC=${MDC:-${RUN}wave}
 
-export HOMEgefs=${HOMEgefs:-$NWROOT/gefs.${gefs_ver}}
-export HOMEgfs=${HOMEgfs:-$NWROOT/gfs.${gfs_ver}}
+export HOMEgefs=${HOMEgefs:-$NWROOT/$NET.${gefs_ver}}
+export HOMEgfs=${HOMEgfs:-$NWROOT/$NET.${gfs_ver}}
 
 # Add default errchk = err_chk
 export errchk=${errchk:-err_chk}
@@ -68,8 +68,8 @@ export EXECcode=${EXECcode:-$CODEwave/exe}
 # Set COM Paths and GETGES environment
 export COMINwave=${COMINwave:-${ROTDIR:?}}
 export COMOUTwave=${COMOUTwave:-${ROTDIR:?}}
-export COMIN=${COMIN:-${COMINwave}/${RUN}${WAV_MOD_ID}.${PDY}/${cyc}}
-export COMOUT=${COMOUT:-${COMOUTwave}/${RUN}${WAV_MOD_ID}.${PDY}/${cyc}}
+export COMIN=${COMIN:-${COMINwave}/${MDC}.${PDY}/${cyc}}
+export COMOUT=${COMOUT:-${COMOUTwave}/${MDC}.${PDY}/${cyc}}
 
 export COMINice=${COMINice:-${COMROOTp2}/omb/prod}
 export COMINwnd=${COMINwnd:-${COMROOT}/gfs/prod}
@@ -99,7 +99,7 @@ export FHOUT_HF=${FHOUT_HF:-1}
 membTAG='p'
 if [ "${waveMEMB}" == "00" ]; then membTAG='c'; fi
 export membTAG
-export WAV_MOD_TAG=${WAV_MOD_ID}${waveMEMB}
+export WAV_MOD_TAG=${MDC}${waveMEMB}
 
 export CFP_VERBOSE=1
 

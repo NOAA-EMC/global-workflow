@@ -108,10 +108,10 @@
     
     [[ "$LOUD" = YES ]] && set -v
     # JY nf=`ls $ID.*.$type | wc -l | awk '{ print $1 }'`
-    nf=`ls | awk '/'$ID.*.$type'/ {a++} END {print a}'`
+    nf=`ls | awk '/'$ID.*.$filext'/ {a++} END {print a}'`
     if [ "$nf" = "$nb" ]
     then 
-      tar -cf $ID.$cycle.${filext}_tar ./$ID.*.$filext
+      tar -cf $ID.$cycle.${type}_tar ./$ID.*.$filext
       exit=$?
       set +v; [[ "$LOUD" = YES ]] && set -x
 
@@ -128,7 +128,7 @@
         exit 3
       fi
       
-      if [ -f "$ID.$cycle.${filext}_tar" ]
+      if [ -f "$ID.$cycle.${type}_tar" ]
       then
         tardone='yes'
       fi
