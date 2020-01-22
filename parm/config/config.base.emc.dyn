@@ -266,15 +266,6 @@ export gldas_cyc=00
 # run wave component
 export DO_WAVE=YES
 
-# IAU related parameters
-export DOIAU="NO"
-export IAUFHRS=6
-export IAU_DELTHRS=6
-export DOIAU_ENKF="NO"
-export IAUFHRS_ENKF=6
-export IAU_DELTHRS_ENKF=6
-[[ "$SDATE" = "$CDATE" ]] && ( export DOIAU="NO"; export DOIAU_ENKF="NO" )
-
 # Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL
 export imp_physics=11
 
