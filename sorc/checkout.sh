@@ -30,7 +30,7 @@ if [[ ! -d fv3gfs.fd ]] ; then
     rc=$?
     ((err+=$rc))
     cd fv3gfs.fd
-	git checkout 4e4ee73
+	git checkout b2f2c9b
 	git submodule update --init --recursive
     rc=$?
     ((err+=$rc))
@@ -74,13 +74,8 @@ if [[ ! -d gfs_post.fd ]] ; then
     git clone --recursive https://github.com/NOAA-EMC/EMC_post.git gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
     rc=$?
     ((err+=$rc))
-    #git clone --recursive gerrit:EMC_post_gtg gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
     cd gfs_post.fd
-    # git checkout ncep_post.v8.0.27e
-    # git checkout 88e936c
-    # git checkout ba7e59b290c8149ff1c2fee98d01e99e4ef92ee6
-    git checkout gefs_v12_release
-    #git checkout ncep_post_gtg.v1.0.6c
+    git checkout 8d5deea
     cd ${topdir}
 else
     echo 'Skip.  Directory gfs_post.fd already exists.'
