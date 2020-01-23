@@ -49,8 +49,8 @@ else
 fi
 
 ##fformat="nc"
+##fformat="nemsio"
 
- SFCF="sfc"
  CLASS="class1fv3"
 cat << EOF > gfsparm
  &NAMMET
@@ -58,7 +58,7 @@ cat << EOF > gfsparm
   dird="$COMOUT/bufr.${cycle}/bufr",
   nstart=$FSTART,nend=$FEND,nint=$FINT,
   nend1=$NEND1,nint1=$NINT1,nint3=$NINT3,
-  nsfc=80,f00=$f00flag,
+  nsfc=80,f00=$f00flag,fformat=$fformat
 /
 EOF
 
@@ -82,7 +82,7 @@ do
    ic=0
    while [ $ic -lt 1000 ]
    do
-      if [ ! -f $COMIN/${RUN}.${cycle}.logf${hh2}.txt ]
+      if [ ! -f $COMIN/${RUN}.${cycle}.logf${hh2}.${logfm} ]
       then
           sleep 10
           ic=`expr $ic + 1`
@@ -96,8 +96,8 @@ do
       fi
    done
 #------------------------------------------------------------------
-   ln -sf $COMIN/${RUN}.${cycle}.atmf${hh2}.${fformat} sigf${hh} 
-   ln -sf $COMIN/${RUN}.${cycle}.${SFCF}f${hh2}.${fformat} flxf${hh}
+   ln -sf $COMIN/${RUN}.${cycle}.atmf${hh2}.${atmfm} sigf${hh} 
+   ln -sf $COMIN/${RUN}.${cycle}.sfcf${hh2}.${atmfm} flxf${hh}
 
    hh=` expr $hh + $FINT `
    if test $hh -lt 10

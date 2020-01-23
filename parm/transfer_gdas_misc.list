@@ -23,7 +23,7 @@
 # directory are included, so if no exclude patterns match that file, it will be
 # transferred.
 
-com/arch/_ENVIR_/syndat/
+com/gfs/_ENVIR_/syndat/
 B 180
  
 com/realtime/_ENVIR_/gds._PDY_/

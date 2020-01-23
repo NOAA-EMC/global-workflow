@@ -8,14 +8,11 @@
                        "Build_ufs_utils" \
                        "Build_gldas" \
                        "Build_gfs_wafs" \
-                       "Build_gdas" \
-                       "Build_sfcanl_nsttfchg" \
                        "Build_gaussian_sfcanl" \
                        "Build_tropcy" \
                        "Build_enkf_chgres_recenter" \
                        "Build_enkf_chgres_recenter_nc" \
-                       "Build_gfs_fbwndgfs" "Build_gfs_overpdtg2" \
-                       "Build_gfs_wintemv" \
+                       "Build_gfs_fbwndgfs" \
                        "Build_gfs_bufrsnd" \
                        "Build_fv3nc2nemsio" \
                        "Build_regrid_nemsio" \

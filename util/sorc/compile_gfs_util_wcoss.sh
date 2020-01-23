@@ -2,7 +2,7 @@
 
 ######################################################################
 #
-# Build executable GFS utility for GFS V15.0.0 
+# Build executable GFS utility for GFS V16.0.0 
 #
 ######################################################################
 
@@ -10,7 +10,7 @@ LMOD_EXACT_MATCH=no
 source ../../sorc/machine-setup.sh > /dev/null 2>&1
 cwd=`pwd`
 
-if [ "$target" = "wcoss_dell_p3" ] || [ "$target" = "wcoss_cray" ] || [ "$target" = "theia" ] ; then
+if [ "$target" = "wcoss_dell_p3" ] || [ "$target" = "wcoss_cray" ] || [ "$target" = "hera" ] ; then
    echo " "
    echo " You are on WCOSS:  $target "
    echo " "
@@ -18,7 +18,7 @@ elif [ "$target" = "wcoss" ] ; then
    echo " "
    echo " "
    echo " You are on WCOSS:  $target "
-   echo " You do not need to build GFS utilities for GFS V15.0.0 "
+   echo " You do not need to build GFS utilities for GFS V16.0.0 "
    echo " "
    echo " "
    exit
@@ -35,9 +35,7 @@ echo " "
 source ../modulefiles/gfs_util.${target}
 module list 
 
-dirlist="faxmakr faxmakrx fxcompoz gendata overgridid plotvpap ras2bit 
-         ras2bity rdbfmsua redsat rsonde rsondplt sixbitb sixbitb2 
-         trpanl trpsfcmv trpsfprv upaprep webtitle wndanftf mkgfsawps"
+dirlist="overgridid rdbfmsua webtitle mkgfsawps"
 set -x
 
 for dir in $dirlist

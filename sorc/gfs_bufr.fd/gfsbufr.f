@@ -42,14 +42,16 @@ C   MACHINE:  IBM SP
 C
 C$$$
       use netcdf
+      use nemsio_module
+      use sigio_module
       implicit none
       include 'mpif.h'
       integer,parameter:: nsta=3000
       integer,parameter:: ifile=11
-      integer:: irets
+      integer(sigio_intkind):: irets
+      type(nemsio_gfile) :: gfile
       integer ncfsig, nsig
       integer istat(nsta), idate(4), jdate
-      integer, allocatable  :: ijdum(:,:)
       integer :: levs,nstart,nend,nint,nsfc,levsi,im,jm
       integer :: npoint,np,ist,is,iret,lss,nss,nf,nsk,nfile
       integer :: ielev
@@ -57,6 +59,7 @@ C$$$
       real :: alat,alon,rla,rlo
       real :: wrkd(1),dummy
       real rlat(nsta), rlon(nsta), elevstn(nsta)
+      integer iidum(nsta),jjdum(nsta)
       integer nint1, nend1, nint3, nend3
       integer landwater(nsta)
       character*1 ns, ew
@@ -75,6 +78,7 @@ C$$$
       integer n0, ntot
       integer  :: error, ncid, id_var,dimid
       character(len=10) :: dim_nam
+      character(len=6) :: fformat
 C
       DATA             SBSET / 'ABCD1234' /
 C
@@ -86,7 +90,7 @@ c     &                      'CLS1' ,'D10M' /
 C
       namelist /nammet/ levs, makebufr, dird,
      &                  nstart, nend, nint, nend1, nint1, 
-     &                  nint3, nsfc, f00
+     &                  nint3, nsfc, f00, fformat
 
       call mpi_init(ierr)
       call mpi_comm_rank(MPI_COMM_WORLD,mrank,ierr)
@@ -134,6 +138,12 @@ CC        print*, IST,ALAT,NS,ALON,EW,T3,lsfc,DESC,IELEV
         print *, ' number of station exceeds nsta, abort program'
         call abort
       endif
+!          print*,'npoint= ', npoint
+!          print*,'np,IST,idum,jdum,rlat(np),rlon(np)= '
+          do np = 1, npoint
+          read(7,98) IST, iidum(np), jjdum(np), ALAT, ALON
+          enddo
+  98     FORMAT (3I6, 2F9.2) 
       if (mrank.eq.0.and.makebufr) then
         REWIND 1
         READ (1,100) SBSET
@@ -187,6 +197,8 @@ C     &  nss,mrank,msize
           endif
            print *, 'Opening file : ',fnsig
 
+!! read in either nemsio or NetCDF files
+       if (fformat == 'netcdf') then
           error=nf90_open(trim(fnsig),nf90_nowrite,ncid)
           error=nf90_inq_dimid(ncid,"grid_xt",dimid)
           error=nf90_inquire_dimension(ncid,dimid,dim_nam,im)
@@ -195,21 +207,34 @@ C     &  nss,mrank,msize
           error=nf90_inq_dimid(ncid,"pfull",dimid)
           error=nf90_inquire_dimension(ncid,dimid,dim_nam,levsi)
           error=nf90_close(ncid)
+          print*,'NetCDF file im,jm,lm= ',im,jm,levs,levsi
 
-          print*,'im,jm,lm= ',im,jm,levs,levsi
+           else
+          call nemsio_init(iret=irets)
+          print *,'nemsio_init, iret=',irets
+          call nemsio_open(gfile,trim(fnsig),'read',iret=irets)
+          if ( irets /= 0 ) then
+            print*,"fail to open nems atmos file";stop
+          endif
+
+          call nemsio_getfilehead(gfile,iret=irets
+     &           ,dimx=im,dimy=jm,dimz=levsi)
+          if( irets /= 0 ) then
+           print*,'error finding model dimensions '; stop
+          endif
+          print*,'nemsio file im,jm,lm= ',im,jm,levsi
+          call nemsio_close(gfile,iret=irets)
+         endif
 !!       OPEN(12,file="ij.txt",action='write',position='append')
 !  read nearest neighbor i,j from the table
-          print*,'np,IST,idum,jdum,rlat(np),rlon(np)= '
-          allocate (ijdum(npoint,2))
-          do np = 1, npoint
-          read(7,98) IST, ijdum(np,1), ijdum(np,2), ALAT, ALON
-!!          print*, np, IST, ijdum(np,1), ijdum(np,2), ALAT, ALON
-          enddo
-  98     FORMAT (3I6, 2F9.2) 
+!          print*,'idum,jdum= '
+!          do np = 1, npoint
+!          print*,  iidum(np), jjdum(np)
+!          enddo
           call meteorg(npoint,rlat,rlon,istat,cstat,elevstn,
      &             nf,nfile,fnsig,jdate,idate,
      &      levs,levsi,im,jm,nsfc,
-     &      landwater,nend1, nint1, nint3, ijdum)
+     &      landwater,nend1, nint1, nint3, iidum,jjdum,fformat)
         endif
       enddo
       call mpi_barrier(mpi_comm_world,ierr)

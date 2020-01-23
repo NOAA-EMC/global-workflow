@@ -276,7 +276,7 @@ while [ $GDATE -le $GDATEEND ]; do
             testend=$(tail -n 1 $rocotolog | grep "This cycle is complete: Success")
             rc=$?
             if [ $rc -eq 0 ]; then
-                if [ $CDUMP != "gdas" -o $DO_GLDAS = "NO" ]; then 
+                if [ $CDUMP != "gdas" -o $DO_GLDAS = "NO" -o $GDATE -lt $GLDAS_DATE ]; then 
                     rm -rf $COMIN 
                 else
                     for file in `ls $COMIN |grep -v sflux |grep -v RESTART`; do

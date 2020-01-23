@@ -7,13 +7,13 @@
 #BSUB -R span[ptile=1]          # 1 task per node
 #BSUB -cwd /gpfs/dell2/ptmp/Boi.Vuong/output
 #BSUB -W 00:30
-#BSUB -P GFS-T2O
+#BSUB -P GFS-DEV
 #BSUB -R affinity[core(1):distribute=balance]
 
 export KMP_AFFINITY=disabled
 
 export PDY=`date -u +%Y%m%d`
-export PDY=20191018
+export PDY=20200106
 
 export PDY1=`expr $PDY - 1`
 
@@ -40,9 +40,9 @@ module list
 ############################################
 # GFS PGRB2_SPECIAL_POST PRODUCT GENERATION
 ############################################
-# set envir=prod or para to test with data in prod or para
+# set envir=para or para to test with data in prod or para
  export envir=para
- export envir=prod
+ export envir=para
 
 export SENDCOM=YES
 export KEEPDATA=YES
@@ -98,9 +98,11 @@ export model=${model:-gfs}
 if [ $envir = "prod" ] ; then
 #  This setting is for testing with GFS (production)
   export COMIN=${COMIN:-$(compath.py ${NET}/${envir}/${RUN}.${PDY})/${cyc}}        ### NCO PROD
+  export COMIN=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/git/gfs.20200106/12
 else
   export COMIN=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/git/${RUN}.${PDY}/${cyc}    ### Boi PARA
 #  export COMIN=/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/prfv3rt3b/gfs.${PDY}/${cyc} ### EMC PARA Realtime
+  export COMIN=/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/v16rt2/gfs.20200106/12
 fi
 
 export COMOUT=${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}

@@ -1,3 +1,0 @@
-       subroutine PLTWLL()
-       return
-       end

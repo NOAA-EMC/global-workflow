@@ -30,7 +30,7 @@ msg="Begin job for $job"
 postmsg "$jlogfile" "$msg"
 
 #
-NAGRIB_TABLE=${NWROOTp1}/gempak/fix/nagrib.tbl
+NAGRIB_TABLE=$FIXgempak/nagrib.tbl
 utilfix_nam=$FIXshared
 NAGRIB=$GEMEXE/nagrib_nc
 #

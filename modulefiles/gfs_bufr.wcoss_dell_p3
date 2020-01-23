@@ -9,6 +9,7 @@ module load ips/18.0.5.274
 module load impi/18.0.1
 
 # Loding nceplibs modules
+module load nemsio/2.2.3
 module load bacio/2.0.2
 module load w3emc/2.3.0
 module load w3nco/2.0.6

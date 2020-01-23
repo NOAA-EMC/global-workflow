@@ -34,7 +34,7 @@ postmsg "$jlogfile" "$msg"
 export opt1=' -set_grib_type same -new_grid_winds earth '
 export opt1uv=' -set_grib_type same -new_grid_winds grid '
 export opt21=' -new_grid_interpolation bilinear -if '
-export opt22=":(LAND|CSNOW|CRAIN|CFRZR|CICEP|ICSEV):"
+export opt22=":(CSNOW|CRAIN|CFRZR|CICEP|ICSEV):"
 export opt23=' -new_grid_interpolation neighbor -fi '
 export opt24=' -set_bitmap 1 -set_grib_max_bits 16 -if '
 export opt25=":(APCP|ACPCP|PRATE|CPRAT):"
@@ -172,8 +172,9 @@ do
 
 #    $COPYGB2 -g "0 6 0 0 0 0 0 0 360 181 0 0 90000000 0 48 -90000000 359000000 1000000 1000000 0" -i1,1 -x masterfile pgb2file
 
-    export grid1p0="latlon 0:360:1.0 90:181:-1.0" 
-    $WGRIB2  masterfile $opt1 $opt21 $opt22 $opt23 $opt24 $opt25 $opt26 $opt27 $opt28 -new_grid $grid1p0 pgb2file
+#    export grid1p0="latlon 0:360:1.0 90:181:-1.0" 
+    export grid0p25="latlon 0:1440:0.25 90:721:-0.25"
+    $WGRIB2  masterfile $opt1 $opt21 $opt22 $opt23 $opt24 $opt25 $opt26 $opt27 $opt28 -new_grid $grid0p25 pgb2file
 
 # creating higher resolution goes files for US centers    
 #    $COPYGB2 -g "30 6 0 0 0 0 0 0 349 277 1000000  214500000 8 50000000 253000000 32463000 32463000 0 64 50000000 50000000 0 0" -i1,1 -x masterfile pgb2file2 
@@ -183,39 +184,19 @@ do
 
     $WGRIB2 pgb2file -s > pgb2ifile
 
-#    DO NOT GENERATE GRIB1
-#    $CNVGRIB -g21 pgb2file pgbfile
-#    $GRBINDEX pgbfile pgifile
-#    $CNVGRIB -g21 pgb2file2 pgbfile2
-#    $GRBINDEX pgbfile2 pgifile2
-
     if test $SENDCOM = "YES"
     then
 
-#    DO NOT GENERATE GRIB1
-#       cp pgbfile $COMOUT/${RUN}.${cycle}.goessimpgrbf${fhr}
-#       cp pgifile $COMOUT/${RUN}.${cycle}.goessimpgrbif${fhr}
-
-       cp pgb2file $COMOUT/${RUN}.${cycle}.goessimpgrb2.1p00.f${fhr}
-       cp pgb2ifile $COMOUT/${RUN}.${cycle}.goessimpgrb2.1p00.f${fhr}.idx
-
-#       cp pgbfile2 $COMOUT/${RUN}.${cycle}.goessimpgrb221f${fhr}
-#       cp pgifile2 $COMOUT/${RUN}.${cycle}.goessimpgrb221if${fhr}
+       cp pgb2file $COMOUT/${RUN}.${cycle}.goessimpgrb2.0p25.f${fhr}
+       cp pgb2ifile $COMOUT/${RUN}.${cycle}.goessimpgrb2.0p25.f${fhr}.idx
 
        cp pgb2file2 $COMOUT/${RUN}.${cycle}.goessimpgrb2f${fhr}.grd221
 
        if test $SENDDBN = "YES"
        then
-          $DBNROOT/bin/dbn_alert MODEL GFS_GOESSIMPGB2_1P0 $job $COMOUT/${RUN}.${cycle}.goessimpgrb2.1p00.f${fhr}
-          $DBNROOT/bin/dbn_alert MODEL GFS_GOESSIMPGB2_1P0_WIDX $job $COMOUT/${RUN}.${cycle}.goessimpgrb2.1p00.f${fhr}.idx
+          $DBNROOT/bin/dbn_alert MODEL GFS_GOESSIMPGB2_1P0 $job $COMOUT/${RUN}.${cycle}.goessimpgrb2.0p25.f${fhr}
+          $DBNROOT/bin/dbn_alert MODEL GFS_GOESSIMPGB2_1P0_WIDX $job $COMOUT/${RUN}.${cycle}.goessimpgrb2.0p25.f${fhr}.idx
           $DBNROOT/bin/dbn_alert MODEL GFS_GOESSIMGRD221_PGB2 $job $COMOUT/${RUN}.${cycle}.goessimpgrb2f${fhr}.grd221
-
-#    DO NOT GENERATE GRIB1
-#          $DBNROOT/bin/dbn_alert MODEL GFS_GOESSIMPGB $job $COMOUT/${RUN}.${cycle}.goessimpgrbf$fhr
-#          $DBNROOT/bin/dbn_alert MODEL GFS_GOESSIMPGBI $job $COMOUT/${RUN}.${cycle}.goessimpgrbif$fhr
-#          $DBNROOT/bin/dbn_alert MODEL GFS_GOESSIM221_PGB2 $job $COMOUT/${RUN}.${cycle}.goessimpgrb221f$fhr
-#          $DBNROOT/bin/dbn_alert MODEL GFS_GOESSIM221I_PGB2 $job $COMOUT/${RUN}.${cycle}.goessimpgrb221if$fhr
-
        fi
 
        echo "$PDY$cyc$fhr" > $COMOUT/${RUN}.t${cyc}z.control.goessimpgrb

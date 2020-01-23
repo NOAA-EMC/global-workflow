@@ -5,7 +5,7 @@
 #BSUB -q debug
 #BSUB -cwd /gpfs/dell2/ptmp/Boi.Vuong/output
 #BSUB -W 00:30
-#BSUB -P GFS-T2O
+#BSUB -P GFS-DEV
 #BSUB -n 24                                     # 24 tasks 
 #BSUB -R span[ptile=12]                         # 12 task per node
 #BSUB -R affinity[core(1):distribute=balance]   # using 12 cores on node and bind to 1 core per task and distribute across sockets
@@ -13,7 +13,7 @@
 export KMP_AFFINITY=disabled
 
 export PDY=`date -u +%Y%m%d`
-export PDY=20191018
+export PDY=20200106
 
 export PDY1=`expr $PDY - 1`
 
@@ -44,9 +44,9 @@ module list
 ############################################
 # Define COM, COMOUTwmo, COMIN  directories
 ############################################
-# set envir=prod or para to test with data in prod or para
+# set envir=para or para to test with data in prod or para
  export envir=para
- export envir=prod
+ export envir=para
 
 export SENDCOM=YES
 export KEEPDATA=YES

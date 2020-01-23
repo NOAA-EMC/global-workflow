@@ -7,13 +7,13 @@
 #BSUB -R span[ptile=1]          # 1 task per node
 #BSUB -cwd /gpfs/dell2/ptmp/Boi.Vuong/output
 #BSUB -W 00:30
-#BSUB -P GFS-T2O
+#BSUB -P GFS-DEV
 #BSUB -R affinity[core(1):distribute=balance]
 
 export KMP_AFFINITY=disabled
 
 export PDY=`date -u +%Y%m%d`
-export PDY=20191018
+export PDY=20200106
 
 export PDY1=`expr $PDY - 1`
 
@@ -45,9 +45,9 @@ module list
 # Define COM, COMOUTwmo, COMIN  directories
 ##############################################
 
-# set envir=prod or para to test with data in prod or para
+# set envir=para or para to test with data in prod or para
  export envir=para
- export envir=prod
+ export envir=para
 
 export SENDCOM=YES
 export KEEPDATA=YES
@@ -107,6 +107,10 @@ if [ $envir = "prod" ] ; then
 else
   export COMIN=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/git/${NET}/${envir}/${RUN}.${PDY}/${cyc}/gempak   ### Boi PARA
   export COMINgfs=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/git/${NET}/${envir}/${RUN}.${PDY}/${cyc}
+  
+#  export COMIN=/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/v16rt2/gfs.20200106/12/gempak
+  export COMIN=/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/v16rt2/gfs.20200106/12/nawips
+  export COMINgfs=/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/v16rt2/gfs.20200106/12
 fi
 
 export COMOUT=${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}

@@ -7,13 +7,13 @@
 #BSUB -R span[ptile=1]          # 1 task per node
 #BSUB -cwd /gpfs/dell2/ptmp/Boi.Vuong/output
 #BSUB -W 00:30
-#BSUB -P GFS-T2O
+#BSUB -P GFS-DEV
 #BSUB -R affinity[core(1):distribute=balance]
 
 export KMP_AFFINITY=disabled
 
 export PDY=`date -u +%Y%m%d`
-export PDY=20191018
+export PDY=20200106
 
 export PDY1=`expr $PDY - 1`
 
@@ -44,9 +44,9 @@ module list
 ############################################
 # GDAS GEMPAK META PRODUCT GENERATION
 ############################################
-# set envir=prod or para to test with data in prod or para
+# set envir=para or para to test with data in prod or para
 # export envir=para
- export envir=prod
+ export envir=para
 
 export SENDCOM=YES
 export KEEPDATA=YES
@@ -110,6 +110,9 @@ else
 # export COMINgdas=/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/${RUN} ### EMC PARA Realtime
 #  export COMIN=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/git/${NET}/${envir}/${RUN}.${PDY}/${cyc}/gempak   ### Boi PARA
 #  export COMINgdas=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/git/${NET}/${envir}/${RUN}  ### Boi PARA
+
+  export COMIN=/gpfs/dell2/ptmp/Boi.Vuong/com/gfs/para/gdas.20200106/12/gempak
+  export COMINgdas=/gpfs/dell2/ptmp/Boi.Vuong/com/gfs/para/gdas
 fi
 
 export COMINukmet=${COMINukmet:-$(compath.py nawips/prod/ukmet)}

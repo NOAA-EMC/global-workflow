@@ -41,12 +41,6 @@
       task jgdas_forecast_high
         trigger ../analysis/jgdas_analysis_high:release_fcst
     endfamily
-    family post_processing
-      family bulletins
-        task jgdas_mknavybulls
-          trigger ../../post == complete
-      endfamily
-    endfamily
     family gempak
       task jgdas_gempak
         trigger ../forecast/jgdas_forecast_high == complete
