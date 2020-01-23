@@ -502,13 +502,13 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
     # wavepostsbs
     if do_wave in ['Y', 'YES']:
         deps = []
-        data = '&ROTDIR;/%swave.@Y@m@d/@H/@Y@m@d.@H0000.out_grd.glo_10m' % (cdump)
+        data = '&ROTDIR;/%swave.@Y@m@d/@H/rundata/%swave.out_grd.glo_10m.@Y@m@d.@H0000' % (cdump,cdump)
         dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
-        data = '&ROTDIR;/%swave.@Y@m@d/@H/@Y@m@d.@H0000.out_grd.aoc_9km' % (cdump)
+        data = '&ROTDIR;/%swave.@Y@m@d/@H/rundata/%swave.out_grd.aoc_9km.@Y@m@d.@H0000' % (cdump,cdump)
         dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
-        data = '&ROTDIR;/%swave.@Y@m@d/@H/@Y@m@d.@H0000.out_grd.ant_9km' % (cdump)
+        data = '&ROTDIR;/%swave.@Y@m@d/@H/rundata/%swave.out_grd.ant_9km.@Y@m@d.@H0000' % (cdump,cdump)
         dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
