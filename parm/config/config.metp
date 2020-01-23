@@ -24,7 +24,7 @@ if [ "$CDUMP" = "gfs" ] ; then
         ## INPUT DATA SETTINGS
         export model_list=$PSLOT
         export model_data_dir_list=$ARCDIR/..
-        export model_fileformat_list="pgbf{lead?fmt=%H}.${CDUMP}.{init?fmt=%Y%m%d%H}.grib2"
+        export model_fileformat_list="pgbf{lead?fmt=%H}.${CDUMP}.{init?fmt=%Y%m%d%H}"
         export model_hpssdir_list=$ATARDIR/.. 
         export get_data_from_hpss="NO"
         export hpss_walltime="10"
