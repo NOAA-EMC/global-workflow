@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 #------------------------------------
-# Exception handling is now included.
+# Including Exception Handling.
 #
 # USER DEFINED STUFF:
 #
