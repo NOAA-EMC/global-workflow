@@ -1,6 +1,8 @@
 #!/bin/sh
 set -eu
 #------------------------------------
+# Exception handling is now included.
+#
 # USER DEFINED STUFF:
 #
 # USE_PREINST_LIBS: set to "true" to use preinstalled libraries.
