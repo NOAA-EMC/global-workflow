@@ -401,9 +401,12 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
     # gldas
     if cdump in ['gdas'] and do_gldas in ['Y', 'YES']:
         deps = []
+        data = '&ROTDIR;/%s.@Y@m@d/@H/%s.t@Hz.loginc.txt' % (cdump, cdump)
+        dep_dict = {'type': 'data', 'data': data}
+        deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'task', 'name': '%sanal' % cdump}
         deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
+        dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
         task = wfu.create_wf_task('gldas', cdump=cdump, envar=envars, dependency=dependencies)
 
         dict_tasks['%sgldas' % cdump] = task
