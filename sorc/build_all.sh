@@ -51,40 +51,60 @@ echo " .... Library build not currently supported .... "
 # build fv3
 #------------------------------------
 $Build_fv3gfs && {
-echo " .... Building fv3 .... "
-./build_fv3.sh > $logs_dir/build_fv3.log 2>&1
+if [ ! -d fv3gfs.fd ]; then
+  echo " **** SKIPPING: FV3GFS sorc folder (fv3gfs.fd) not present"
+else
+  echo " .... Building fv3 .... "
+  ./build_fv3.sh > $logs_dir/build_fv3.log 2>&1
+fi
 }
 
 #------------------------------------
 # build gsi
 #------------------------------------
 $Build_gsi && {
-echo " .... Building gsi .... "
-./build_gsi.sh > $logs_dir/build_gsi.log 2>&1
+if [ ! -d gsi.fd ]; then
+  echo " **** SKIPPING: GSI sorc folder (gsi.fd) not present"
+else
+  echo " .... Building gsi .... "
+  ./build_gsi.sh > $logs_dir/build_gsi.log 2>&1
+fi
 }
 
 #------------------------------------
 # build ncep_post
 #------------------------------------
 $Build_ncep_post && {
-echo " .... Building ncep_post .... "
-./build_ncep_post.sh > $logs_dir/build_ncep_post.log 2>&1
+if [ ! -d gfs_post.fd ]; then
+  echo " **** SKIPPING: EMC_post sorc folder (gfs_post.fd) not present"
+else
+  echo " .... Building ncep_post .... "
+  ./build_ncep_post.sh > $logs_dir/build_ncep_post.log 2>&1
+fi
 }
 
 #------------------------------------
 # build ufs_utils
 #------------------------------------
 $Build_ufs_utils && {
-echo " .... Building ufs_utils .... "
-./build_ufs_utils.sh > $logs_dir/build_ufs_utils.log 2>&1
+if [ ! -d ufs_utils.fd ]; then
+  echo " **** SKIPPING: UFS_UTILS sorc folder (ufs_utils.fd) not present"
+else
+  echo " .... Building ufs_utils .... "
+  ./build_ufs_utils.sh > $logs_dir/build_ufs_utils.log 2>&1
+fi
 }
 
 #------------------------------------
 # build gfs_wafs 
 #------------------------------------
 $Build_gfs_wafs  && {
-echo " .... Building gfs_wafs  .... "
-./build_gfs_wafs.sh > $logs_dir/build_gfs_wafs .log 2>&1
+if [ ! -d gfs_wafs.fd ]; then
+  echo " **** SKIPPING: GFS WAFS sorc folder (gfs_wafs.fd) not present"
+else
+  echo " .... Building gfs_wafs  .... "
+  ./build_gfs_wafs.sh > $logs_dir/build_gfs_wafs .log 2>&1
+fi
 }
 
 #------------------------------------
@@ -178,24 +198,5 @@ if [ $target = wcoss -o $target = wcoss_cray -o $target = wcoss_dell_p3 ]; then
  }
 fi
 
-#------------------------------------
-# build prod_util
-#------------------------------------
-$Build_prod_util && {
-echo " .... prod_util build not currently supported .... "
-#echo " .... Building prod_util .... "
-#./build_prod_util.sh > $logs_dir/build_prod_util.log 2>&1
-}
-
-#------------------------------------
-# build grib_util
-#------------------------------------
-$Build_grib_util && {
-echo " .... grib_util build not currently supported .... "
-#echo " .... Building grib_util .... "
-#./build_grib_util.sh > $logs_dir/build_grib_util.log 2>&1
-}
-
-echo;echo " .... Build system finished .... "
-
+echo;echo "----- Build system finished -----"
 exit 0
