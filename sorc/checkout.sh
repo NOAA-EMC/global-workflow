@@ -18,7 +18,7 @@ then
 else
     git clone https://github.com/ufs-community/ufs-weather-model fv3gfs.fd >> ${topdir}/checkout-fv3gfs.log 2>&1
     cd fv3gfs.fd
-    git checkout develop
+    git checkout gfsv16_updates
     git submodule update --init --recursive
 fi
     cd ${topdir}
@@ -77,7 +77,8 @@ then
     #git checkout ncep_post_gtg.v1.0.6c
 else
     git clone https://github.com/NOAA-EMC/EMC_post.git gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
-fi
+    cd gfs_post.fd
+    git checkout upp_gfsv16_release.v1.0.0
     cd ${topdir}
 else
     echo 'Skip.  Directory gfs_post.fd already exists.'
@@ -103,7 +104,7 @@ if [ "${SYSID}" = "gefs" ]
 then
     git checkout verif_global_v1.2.2
 else
-    git checkout verif_global_v1.4.0
+    git checkout verif_global_v1.4.1
 fi
     cd ${topdir}
 else
