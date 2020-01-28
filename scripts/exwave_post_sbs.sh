@@ -92,6 +92,8 @@
   mkdir -p ${STA_DIR}
   mkdir -p ${STA_DIR}/spec
   mkdir -p ${STA_DIR}/ibp
+  mkdir -p ${STA_DIR}/bull
+  mkdir -p ${STA_DIR}/cbull
 
   set +x
   echo ' '
@@ -114,7 +116,7 @@
    gribOK='yes'
   grintOK='yes'
    specOK='yes'
-   bullOK='no '
+   bullOK='yes'
 
   exit_code=0
 
@@ -491,6 +493,8 @@
 # 1.a.2 Loop over forecast time to generate post files 
 # When executed side-by-side, serial mode (cfp when run after the fcst step)
   fhr=$FHMIN
+  fhrp=$fhr
+  fhrg=$fhr
   iwaitmax=120 # Maximum loop cycles for waiting until wave component output file is ready (fails after max)
   while [ $fhr -le $FHMAXWAV ]; do
     
@@ -517,98 +521,117 @@
     export GRDIDATA=${DATA}/output_$YMDHMS
 #    echo "ln -fs $DATA/mod_def.${uoutpGRD} mod_def.ww3" >> ${fcmdnow}
     ln -fs $DATA/mod_def.${uoutpGRD} mod_def.ww3
-    iwait=0
-    pfile=$COMIN/rundata/${WAV_MOD_TAG}.out_pnt.${uoutpGRD}.${YMD}.${HMS}
-    while [ ! -s ${pfile} ]; do sleep 10; ((iwait++)) && ((iwait==$iwaitmax)) && break ; echo $iwait; done
-    if [ $iwait -eq $iwaitmax ]; then 
-      echo " FATAL ERROR : NO RAW POINT OUTPUT FILE out_pnt.$uoutpGRD
-      echo ' '
-      [[ "$LOUD" = YES ]] && set -x
-      echo "$WAV_MOD_TAG post $uoutpGRD $date $cycle : point output missing." >> $wavelog
-      postmsg "$jlogfile" "FATAL ERROR : NO RAW POINT OUTPUT FILE out_pnt.$uoutpGRD
-      err=6; export err;${errchk}
-      exit $err
-    fi
-#    echo "cp -f ${pfile} ./out_pnt.${uoutpGRD} > cpoutp_$uoutpGRD.out 2>&1" >> ${fcmdnow}
-    cp -f ${pfile} ./out_pnt.${uoutpGRD} > cpoutp_$uoutpGRD.out 2>&1
-    for wavGRD in ${waveGRD} ; do
-      gfile=$COMIN/rundata/${WAV_MOD_TAG}.out_grd.${wavGRD}.${YMD}.${HMS}
-      while [ ! -s ${gfile} ]; do sleep 10; done
+
+    if [ $fhr = $fhrp ]
+    then
+      iwait=0
+      pfile=$COMIN/rundata/${WAV_MOD_TAG}.out_pnt.${uoutpGRD}.${YMD}.${HMS}
+      while [ ! -s ${pfile} ]; do sleep 10; ((iwait++)) && ((iwait==$iwaitmax)) && break ; echo $iwait; done
       if [ $iwait -eq $iwaitmax ]; then 
-        echo '*************************************************** '
-        echo " FATAL ERROR : NO RAW FIELD OUTPUT FILE out_grd.$grdID "
-        echo '*************************************************** '
+        echo " FATAL ERROR : NO RAW POINT OUTPUT FILE out_pnt.$uoutpGRD
         echo ' '
         [[ "$LOUD" = YES ]] && set -x
-        echo "$WAV_MOD_TAG post $grdID $date $cycle : field output missing." >> $wavelog
-        postmsg "$jlogfile" "NON-FATAL ERROR : NO RAW FIELD OUTPUT FILE out_grd.$grdID"
-        fieldOK='no'
-        err=7; export err;${errchk}
+        echo "$WAV_MOD_TAG post $uoutpGRD $date $cycle : point output missing." >> $wavelog
+        postmsg "$jlogfile" "FATAL ERROR : NO RAW POINT OUTPUT FILE out_pnt.$uoutpGRD
+        err=6; export err;${errchk}
         exit $err
       fi
-#      echo "cp -f ${gfile} ./out_grd.${wavGRD} > cpoutg_$wavGRD.out 2>&1" >> ${fcmdnow}
-      cp -f ${gfile} ./out_grd.${wavGRD} > cpoutg_$wavGRD.out 2>&1
-    done
+#    echo "cp -f ${pfile} ./out_pnt.${uoutpGRD} > cpoutp_$uoutpGRD.out 2>&1" >> ${fcmdnow}
+      cp -f ${pfile} ./out_pnt.${uoutpGRD} > cpoutp_$uoutpGRD.out 2>&1
 
-    if [ "$grintOK" = 'yes' ]
+      if [ "$specOK" = 'yes' ]
+      then
+        export dtspec=3600.
+        for buoy in $buoys
+        do
+          echo "$USHwave/wave_outp_spec.sh $buoy $ymdh spec > spec_$buoy.out 2>&1" >> ${fcmdnow}
+        done
+      fi
+  
+      if [ "$ibspecOK" = 'yes' ]
+      then
+        export dtspec=3600.
+        for buoy in $ibpoints
+        do
+          echo "$USHwave/wave_outp_spec.sh $buoy $ymdh ibp > ibp_$buoy.out 2>&1" >> ${fcmdnow}
+        done
+      fi
+
+      if [ "$bullOK" = 'yes' ]
+      then
+        export dtspec=3600.
+        for buoy in $buoys
+        do
+          echo "$USHwave/wave_outp_spec.sh $buoy $ymdh bull > bull_$buoy.out 2>&1" >> ${fcmdnow}
+        done
+      fi
+
+    fi
+
+    if [ $fhr = $fhrg ]
     then
-      nigrd=1
-      for grdID in $interpGRD
-      do
-        case $grdID in
-          glo_15mxt) ymdh_int=`$NDATE -${HINDH} $ymdh`; dt_int=3600.; n_int=9999 ;;
-          glo_30mxt) ymdh_int=`$NDATE -${HINDH} $ymdh`; dt_int=3600.; n_int=9999 ;;
-        esac
-        echo "$USHwave/wave_grid_interp_sbs.sh $grdID $ymdh_int $dt_int $n_int > grint_$grdID.out 2>&1" >> ${fcmdigrd}.${nigrd}
-        if [ "$gribOK" = 'yes' ]
-        then
-        gribFL=\'`echo ${OUTPARS}`\'
-          case $grdID in
-            glo_15mxt) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=255 ;;
-            glo_30mxt) GRDNAME='global' ; GRDRES=0p50 ; GRIDNR=255  ; MODNR=255 ;;
-          esac
-          echo "$USHwave/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDNAME $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdigrd}.${nigrd}
+      for wavGRD in ${waveGRD} ; do
+        gfile=$COMIN/rundata/${WAV_MOD_TAG}.out_grd.${wavGRD}.${YMD}.${HMS}
+        while [ ! -s ${gfile} ]; do sleep 10; done
+        if [ $iwait -eq $iwaitmax ]; then 
+          echo '*************************************************** '
+          echo " FATAL ERROR : NO RAW FIELD OUTPUT FILE out_grd.$grdID "
+          echo '*************************************************** '
+          echo ' '
+          [[ "$LOUD" = YES ]] && set -x
+          echo "$WAV_MOD_TAG post $grdID $date $cycle : field output missing." >> $wavelog
+          postmsg "$jlogfile" "NON-FATAL ERROR : NO RAW FIELD OUTPUT FILE out_grd.$grdID"
+          fieldOK='no'
+          err=7; export err;${errchk}
+          exit $err
         fi
-        echo "${fcmdigrd}.${nigrd}" >> ${fcmdnow}
-        chmod 744 ${fcmdigrd}.${nigrd}
-        nigrd=$((nigrd+1)) 
+#      echo "cp -f ${gfile} ./out_grd.${wavGRD} > cpoutg_$wavGRD.out 2>&1" >> ${fcmdnow}
+        cp -f ${gfile} ./out_grd.${wavGRD} > cpoutg_$wavGRD.out 2>&1
       done
-    fi
 
-    if [ "$gribOK" = 'yes' ]
-    then
-      for grdID in ${postGRD} # First concatenate grib files for sbs grids
-      do
-        gribFL=\'`echo ${OUTPARS}`\'
-        case $grdID in
-            aoc_9km) GRDNAME='arctic' ; GRDRES=9km ; GRIDNR=255  ; MODNR=255  ;;
-            ant_9km) GRDNAME='antarc' ; GRDRES=9km ; GRIDNR=255  ; MODNR=255  ;;
-            glo_10m) GRDNAME='global' ; GRDRES=0p16 ; GRIDNR=255  ; MODNR=255  ;;
-            glo_15m) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=255  ;;
-            ao_20m) GRDNAME='arctic' ; GRDRES=0p33 ; GRIDNR=255  ; MODNR=255  ;;
-            so_20m) GRDNAME='antarc' ; GRDRES=0p33 ; GRIDNR=255  ; MODNR=255  ;;
-            glo_15mxt) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=255  ;;
-        esac
-        echo "$USHwave/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDNAME $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdnow}
-      done
-    fi
+      if [ "$grintOK" = 'yes' ]
+      then
+        nigrd=1
+        for grdID in $interpGRD
+        do
+          case $grdID in
+            glo_15mxt) ymdh_int=`$NDATE -${HINDH} $ymdh`; dt_int=3600.; n_int=9999 ;;
+            glo_30mxt) ymdh_int=`$NDATE -${HINDH} $ymdh`; dt_int=3600.; n_int=9999 ;;
+          esac
+          echo "$USHwave/wave_grid_interp_sbs.sh $grdID $ymdh_int $dt_int $n_int > grint_$grdID.out 2>&1" >> ${fcmdigrd}.${nigrd}
+          if [ "$gribOK" = 'yes' ]
+          then
+          gribFL=\'`echo ${OUTPARS}`\'
+            case $grdID in
+              glo_15mxt) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=255 ;;
+              glo_30mxt) GRDNAME='global' ; GRDRES=0p50 ; GRIDNR=255  ; MODNR=255 ;;
+            esac
+            echo "$USHwave/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDNAME $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdigrd}.${nigrd}
+          fi
+          echo "${fcmdigrd}.${nigrd}" >> ${fcmdnow}
+          chmod 744 ${fcmdigrd}.${nigrd}
+          nigrd=$((nigrd+1)) 
+        done
+      fi
 
-    if [ "$specOK" = 'yes' ]
-    then
-      export dtspec=3600.
-      for buoy in $buoys
-      do
-        echo "$USHwave/wave_outp_spec.sh $buoy $ymdh spec > spec_$buoy.out 2>&1" >> ${fcmdnow}
-      done
-    fi
+      if [ "$gribOK" = 'yes' ]
+      then
+        for grdID in ${postGRD} # First concatenate grib files for sbs grids
+        do
+          gribFL=\'`echo ${OUTPARS}`\'
+          case $grdID in
+              aoc_9km) GRDNAME='arctic' ; GRDRES=9km ; GRIDNR=255  ; MODNR=255  ;;
+              ant_9km) GRDNAME='antarc' ; GRDRES=9km ; GRIDNR=255  ; MODNR=255  ;;
+              glo_10m) GRDNAME='global' ; GRDRES=0p16 ; GRIDNR=255  ; MODNR=255  ;;
+              glo_15m) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=255  ;;
+              ao_20m) GRDNAME='arctic' ; GRDRES=0p33 ; GRIDNR=255  ; MODNR=255  ;;
+              so_20m) GRDNAME='antarc' ; GRDRES=0p33 ; GRIDNR=255  ; MODNR=255  ;;
+              glo_15mxt) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=255  ;;
+          esac
+          echo "$USHwave/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDNAME $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdnow}
+        done
+      fi
 
-    if [ "$ibspecOK" = 'yes' ]
-    then
-      export dtspec=3600.
-      for buoy in $ibpoints
-      do
-        echo "$USHwave/wave_outp_spec.sh $buoy $ymdh ibp > ibp_$buoy.out 2>&1" >> ${fcmdnow}
-      done
     fi
 
     wavenproc=`wc -l ${fcmdnow} | awk '{print $1}'`
@@ -645,19 +668,23 @@
       exit $err
     fi
 
-
-#    chmod 744 ${fcmdnow}
-#    ./${fcmdnow}
-
     cd $DATA
 
-    FHINC=$FHOUT
-    if [ $FHMAX_HF -gt 0 ] && [ $FHOUT_HF -gt 0 ] && [ $fhr -lt $FHMAX_HF ]; then
-      FHINC=$FHOUT_HF
+    FHINCP=$(( DTPNT / 3600 ))
+    FHINCG=$(( DTFLD / 3600 ))
+    if [ $fhr = $fhrg ]
+    then
+      if [ $FHMAX_HF -gt 0 ] && [ $FHOUT_HF -gt 0 ] && [ $fhr -lt $FHMAX_HF ]; then
+        FHINCG=$FHOUT_HF
+      fi
+      fhrg=$((fhr+FHINCG))
     fi
-    fhr=$((fhr+FHINC))
-    echo $fhr
-
+    if [ $fhr = $fhrp ]
+    then
+      fhrp=$((fhr+FHINCP))
+    fi
+    echo $fhrg $fhrp
+    fhr=$([ $fhrg -le $fhrp ] && echo "$fhrg" || echo "$fhrp") # reference fhr is the least between grid and point stride
   done
 
 # --------------------------------------------------------------------------- #
@@ -679,8 +706,10 @@
 
   if [ "$specOK" = 'yes' ]
   then
-    echo "$USHwave/wave_tar.sh $WAV_MOD_TAG spec $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
     echo "$USHwave/wave_tar.sh $WAV_MOD_TAG ibp $Nibp > ${WAV_MOD_TAG}_ibp_tar.out 2>&1 "   >> cmdtarfile
+    echo "$USHwave/wave_tar.sh $WAV_MOD_TAG spec $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
+    echo "$USHwave/wave_tar.sh $WAV_MOD_TAG bull $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
+    echo "$USHwave/wave_tar.sh $WAV_MOD_TAG cbull $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
   fi
 
     wavenproc=`wc -l cmdtarfile | awk '{print $1}'`
