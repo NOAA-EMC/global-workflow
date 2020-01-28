@@ -46,10 +46,11 @@ def main():
     gfs_steps_gempak = ['gempak']
     gfs_steps_awips = ['awips']
     #hyb_steps = ['eobs', 'eomg', 'eupd', 'ecen', 'efcs', 'epos', 'earc']
-    wav_steps = ['waveinit', 'waveprep', 'wavepostsbs', 'wavepost', 'wavestat']
-    #wav_steps = ['waveinit', 'waveprep', 'wavepostsbs']
-    wav_steps_gempak = ['wavegempaksbs']
-    wav_steps_awips = ['waveawipssbs', 'waveawips']
+    wav_steps = ['waveinit', 'waveprep', 'wavepostsbs']
+    #Implement additional wave jobs at later date
+    #wav_steps = ['waveinit', 'waveprep', 'wavepostsbs', 'wavepost', 'wavestat']
+    #wav_steps_gempak = ['wavegempaksbs']
+    #wav_steps_awips = ['waveawipssbs', 'waveawips']
 # From gfsv16b latest
 #    gfs_steps = ['prep', 'anal', 'gldas', 'fcst', 'postsnd', 'post', 'awips', 'gempak', 'vrfy', 'metp', 'arch']
     hyb_steps = ['eobs', 'eomg', 'eupd', 'ecen', 'esfc', 'efcs', 'epos', 'earc']
@@ -58,8 +59,8 @@ def main():
     steps = steps + gfs_steps_gempak if _base.get('DO_GEMPAK', 'NO') == 'YES' else steps
     steps = steps + gfs_steps_awips if _base.get('DO_AWIPS', 'NO') == 'YES' else steps
     steps = steps + wav_steps if _base.get('DO_WAVE', 'NO') == 'YES' else steps
-    steps = steps + wav_steps_gempak if _base.get('DO_GEMPAK', 'NO') == 'YES' else steps
-    steps = steps + wav_steps_awips if _base.get('DO_AWIPS', 'NO') == 'YES' else steps
+    #steps = steps + wav_steps_gempak if _base.get('DO_GEMPAK', 'NO') == 'YES' else steps
+    #steps = steps + wav_steps_awips if _base.get('DO_AWIPS', 'NO') == 'YES' else steps
 
     dict_configs = wfu.source_configs(configs, steps)
 
@@ -232,7 +233,6 @@ def get_gdasgfs_resources(dict_configs, cdump='gdas'):
     do_awips = base.get('DO_AWIPS', 'NO').upper()
     do_gldas = base.get('DO_GLDAS', 'NO').upper()
     do_wave = base.get('DO_WAVE', 'NO').upper()
-    #do_iau = base.get('DOIAU', 'NO').upper()
 
     #tasks = ['prep', 'anal', 'fcst', 'post', 'vrfy', 'arch']
     tasks = ['prep', 'anal']
@@ -240,24 +240,24 @@ def get_gdasgfs_resources(dict_configs, cdump='gdas'):
     if cdump in ['gdas'] and do_gldas in ['Y', 'YES']:
         tasks += ['gldas']
     if cdump in ['gdas'] and do_wave in ['Y', 'YES']:
-        tasks += ['waveinit', 'waveprep', 'wavepostsbs', 'wavepost', 'wavestat']
-        #tasks += ['waveinit', 'waveprep', 'wavepostsbs']
+        #tasks += ['waveinit', 'waveprep', 'wavepostsbs', 'wavepost', 'wavestat']
+        tasks += ['waveinit', 'waveprep', 'wavepostsbs']
 
     tasks += ['fcst', 'post', 'vrfy', 'metp', 'arch']
 
     if cdump in ['gfs'] and do_wave in ['Y', 'YES']:
-        tasks += ['waveinit', 'waveprep', 'wavepostsbs', 'wavepost', 'wavestat']
-        #tasks += ['waveinit', 'waveprep', 'wavepostsbs']
+        #tasks += ['waveinit', 'waveprep', 'wavepostsbs', 'wavepost', 'wavestat']
+        tasks += ['waveinit', 'waveprep', 'wavepostsbs']
     if cdump in ['gfs'] and do_bufrsnd in ['Y', 'YES']:
         tasks += ['postsnd']
     if cdump in ['gfs'] and do_gempak in ['Y', 'YES']:
         tasks += ['gempak']
-    if cdump in ['gfs'] and do_wave in ['Y', 'YES'] and do_gempak in ['Y', 'YES']:
-        tasks += ['wavegempaksbs']
+    #if cdump in ['gfs'] and do_wave in ['Y', 'YES'] and do_gempak in ['Y', 'YES']:
+    #    tasks += ['wavegempaksbs']
     if cdump in ['gfs'] and do_awips in ['Y', 'YES']:
         tasks += ['awips']
-    if cdump in ['gfs'] and do_wave in ['Y', 'YES'] and do_awips in ['Y', 'YES']:
-        tasks += ['waveawipssbs', 'waveawips']
+    #if cdump in ['gfs'] and do_wave in ['Y', 'YES'] and do_awips in ['Y', 'YES']:
+    #    tasks += ['waveawipssbs', 'waveawips']
  
     dict_resources = OrderedDict()
 
@@ -381,7 +381,6 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
     do_awips = base.get('DO_AWIPS', 'NO').upper()
     do_gldas = base.get('DO_GLDAS', 'NO').upper()
     do_wave = base.get('DO_WAVE', 'NO').upper()
-    #do_iau = base.get('DOIAU', 'NO').upper()
     dumpsuffix = base.get('DUMP_SUFFIX', '')
     gridsuffix = base.get('SUFFIX', '')
 
@@ -516,65 +515,65 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
         dict_tasks['%swavepostsbs' % cdump] = task
 
     # wavegempaksbs
-    if do_wave in ['Y', 'YES'] and do_gempak in ['Y', 'YES'] and cdump in ['gfs']:
-        deps = []
-        data = '&ROTDIR;/%swave.@Y@m@d/@H/%swave.t@Hz.glo_10m.10m.f000.grib2' % (cdump,cdump)
-        dep_dict = {'type': 'data', 'data': data}
-        deps.append(rocoto.add_dependency(dep_dict))
-        data = '&ROTDIR;/%swave.@Y@m@d/@H/%swave.t@Hz.aoc_9km.9km.f000.grib2' % (cdump,cdump)
-        dep_dict = {'type': 'data', 'data': data}
-        deps.append(rocoto.add_dependency(dep_dict))
-        data = '&ROTDIR;/%swave.@Y@m@d/@H/%swave.t@Hz.ant_9km.9km.f000.grib2' % (cdump,cdump)
-        dep_dict = {'type': 'data', 'data': data}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
-        task = wfu.create_wf_task('wavegempaksbs', cdump=cdump, envar=envars, dependency=dependencies)
-        dict_tasks['%swavegempaksbs' % cdump] = task
+    #if do_wave in ['Y', 'YES'] and do_gempak in ['Y', 'YES'] and cdump in ['gfs']:
+    #    deps = []
+    #    data = '&ROTDIR;/%swave.@Y@m@d/@H/%swave.t@Hz.glo_10m.10m.f000.grib2' % (cdump,cdump)
+    #    dep_dict = {'type': 'data', 'data': data}
+    #    deps.append(rocoto.add_dependency(dep_dict))
+    #    data = '&ROTDIR;/%swave.@Y@m@d/@H/%swave.t@Hz.aoc_9km.9km.f000.grib2' % (cdump,cdump)
+    #    dep_dict = {'type': 'data', 'data': data}
+    #    deps.append(rocoto.add_dependency(dep_dict))
+    #    data = '&ROTDIR;/%swave.@Y@m@d/@H/%swave.t@Hz.ant_9km.9km.f000.grib2' % (cdump,cdump)
+    #    dep_dict = {'type': 'data', 'data': data}
+    #    deps.append(rocoto.add_dependency(dep_dict))
+    #    dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+    #    task = wfu.create_wf_task('wavegempaksbs', cdump=cdump, envar=envars, dependency=dependencies)
+    #    dict_tasks['%swavegempaksbs' % cdump] = task
 
     # waveawipssbs
-    if do_wave in ['Y', 'YES'] and do_awips in ['Y', 'YES'] and cdump in ['gfs']:
-        deps = []
-        data = '&ROTDIR;/%swave.@Y@m@d/@H/%swave.t@Hz.glo_10m.10m.f000.grib2' % (cdump,cdump)
-        dep_dict = {'type': 'data', 'data': data}
-        deps.append(rocoto.add_dependency(dep_dict))
-        data = '&ROTDIR;/%swave.@Y@m@d/@H/%swave.t@Hz.aoc_9km.9km.f000.grib2' % (cdump,cdump)
-        dep_dict = {'type': 'data', 'data': data}
-        deps.append(rocoto.add_dependency(dep_dict))
-        data = '&ROTDIR;/%swave.@Y@m@d/@H/%swave.t@Hz.ant_9km.9km.f000.grib2' % (cdump,cdump)
-        dep_dict = {'type': 'data', 'data': data}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
-        task = wfu.create_wf_task('waveawipssbs', cdump=cdump, envar=envars, dependency=dependencies)
-        dict_tasks['%swaveawipssbs' % cdump] = task
+    #if do_wave in ['Y', 'YES'] and do_awips in ['Y', 'YES'] and cdump in ['gfs']:
+    #    deps = []
+    #    data = '&ROTDIR;/%swave.@Y@m@d/@H/%swave.t@Hz.glo_10m.10m.f000.grib2' % (cdump,cdump)
+    #    dep_dict = {'type': 'data', 'data': data}
+    #    deps.append(rocoto.add_dependency(dep_dict))
+    #    data = '&ROTDIR;/%swave.@Y@m@d/@H/%swave.t@Hz.aoc_9km.9km.f000.grib2' % (cdump,cdump)
+    #    dep_dict = {'type': 'data', 'data': data}
+    #    deps.append(rocoto.add_dependency(dep_dict))
+    #    data = '&ROTDIR;/%swave.@Y@m@d/@H/%swave.t@Hz.ant_9km.9km.f000.grib2' % (cdump,cdump)
+    #    dep_dict = {'type': 'data', 'data': data}
+    #    deps.append(rocoto.add_dependency(dep_dict))
+    #    dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+    #    task = wfu.create_wf_task('waveawipssbs', cdump=cdump, envar=envars, dependency=dependencies)
+    #    dict_tasks['%swaveawipssbs' % cdump] = task
 
     # wavepost
-    if do_wave in ['Y', 'YES']:
-        deps = []
-        dep_dict = {'type':'task', 'name':'%sfcst' % cdump}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type':'task', 'name':'%swavepostsbs' % cdump}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
-        task = wfu.create_wf_task('wavepost', cdump=cdump, envar=envars, dependency=dependencies)
-        dict_tasks['%swavepost' % cdump] = task
+    #if do_wave in ['Y', 'YES']:
+    #    deps = []
+    #    dep_dict = {'type':'task', 'name':'%sfcst' % cdump}
+    #    deps.append(rocoto.add_dependency(dep_dict))
+    #    dep_dict = {'type':'task', 'name':'%swavepostsbs' % cdump}
+    #    deps.append(rocoto.add_dependency(dep_dict))
+    #    dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+    #    task = wfu.create_wf_task('wavepost', cdump=cdump, envar=envars, dependency=dependencies)
+    #    dict_tasks['%swavepost' % cdump] = task
 
     # waveawips
-    if do_wave in ['Y', 'YES'] and do_awips in ['Y', 'YES'] and cdump in ['gfs']:
-        deps = []
-        dep_dict = {'type':'task', 'name':'%swavepost' % cdump}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
-        task = wfu.create_wf_task('waveawips', cdump=cdump, envar=envars, dependency=dependencies)
-        dict_tasks['%swaveawips' % cdump] = task
+    #if do_wave in ['Y', 'YES'] and do_awips in ['Y', 'YES'] and cdump in ['gfs']:
+    #    deps = []
+    #    dep_dict = {'type':'task', 'name':'%swavepost' % cdump}
+    #    deps.append(rocoto.add_dependency(dep_dict))
+    #    dependencies = rocoto.create_dependency(dep=deps)
+    #    task = wfu.create_wf_task('waveawips', cdump=cdump, envar=envars, dependency=dependencies)
+    #    dict_tasks['%swaveawips' % cdump] = task
 
     # wavestat
-    if do_wave in ['Y', 'YES']:
-        deps = []
-        dep_dict = {'type':'task', 'name':'%swavepost' % cdump}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
-        task = wfu.create_wf_task('wavestat', cdump=cdump, envar=envars, dependency=dependencies)
-        dict_tasks['%swavestat' % cdump] = task
+    #if do_wave in ['Y', 'YES']:
+    #    deps = []
+    #    dep_dict = {'type':'task', 'name':'%swavepost' % cdump}
+    #    deps.append(rocoto.add_dependency(dep_dict))
+    #    dependencies = rocoto.create_dependency(dep=deps)
+    #    task = wfu.create_wf_task('wavestat', cdump=cdump, envar=envars, dependency=dependencies)
+    #    dict_tasks['%swavestat' % cdump] = task
 
     # vrfy
     deps = []

@@ -20,7 +20,7 @@ if [ $machine = "THEIA" ]; then
 
 elif [ $machine = "WCOSS_C" -o $machine = "WCOSS_DELL_P3" ]; then
 
-    export ACCOUNT="FV3GFS-T2O"
+    export ACCOUNT="GFS-DEV"
     export QUEUE="dev"
     export QUEUE_ARCH="dev_transfer"
 
