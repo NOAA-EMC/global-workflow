@@ -37,10 +37,12 @@
   ymdh=$2
   specdir=$3
 
+  YMDHE=`$NDATE $FHMAX $CDATE`
+
   cd $SPECDATA
 
-  rm -rf spec_$bloc
-  mkdir spec_$bloc
+  rm -rf ${specdir}_${bloc}
+  mkdir ${specdir}_${bloc}
   err=$?
   if [ "$err" != '0' ]
   then
@@ -55,7 +57,7 @@
     exit 1
   fi
 
-  cd spec_$bloc
+  cd ${specdir}_${bloc}
 
   set +x
   echo ' '
@@ -155,12 +157,26 @@
   echo "   Generate input file for ww3_outp."
   [[ "$LOUD" = YES ]] && set -x
 
-  sed -e "s/TIME/$tstart/g" \
+  if [ "$specdir" = "bull" ]
+  then
+    tstart="`echo $ymdh | cut -c1-8` `echo $ymdh | cut -c9-10`0000"
+    truntime="`echo $CDATE | cut -c1-8` `echo $YMDH | cut -c9-10`0000"
+    sed -e "s/TIME/$tstart/g" \
+      -e "s/DT/$dtspec/g" \
+      -e "s/POINT/$point/g" \
+      -e "s/REFT/$truntime/g" \
+                               ${DATA}/ww3_outp_bull.inp.tmpl > ww3_outp.inp
+    outfile=${buoy}.bull
+    coutfile=${buoy}.cbull
+  else
+    sed -e "s/TIME/$tstart/g" \
       -e "s/DT/$dtspec/g" \
       -e "s/POINT/$point/g" \
       -e "s/ITYPE/1/g" \
       -e "s/FORMAT/F/g" \
                                ${DATA}/ww3_outp_spec.inp.tmpl > ww3_outp.inp
+    outfile=ww3.`echo $tstart | cut -c3-8``echo $tstart | cut -c10-11`.spc
+  fi
 
 # 2.b Run the postprocessor
 
@@ -188,15 +204,32 @@
 # 3.  Clean up
 # 3.a Move data to directory for station ascii files
 
-  outfile=ww3.`echo $tstart | cut -c3-8``echo $tstart | cut -c10-11`.spc
-
   if [ -f $outfile ]
   then
    if [ "${ymdh}" = "${CDATE}" ]
    then
-     cat $outfile >> ${STA_DIR}/${specdir}/$WAV_MOD_TAG.$buoy.spec
+     if [ "$specdir" = "bull" ]
+     then
+       cat $outfile | sed -e '9,$d' >> ${STA_DIR}/${specdir}/$WAV_MOD_TAG.$buoy.bull
+       cat $coutfile | sed -e '8,$d' >> ${STA_DIR}/c${specdir}/$WAV_MOD_TAG.$buoy.cbull
+     else
+       cat $outfile | sed -e '8,$d' >> ${STA_DIR}/${specdir}/$WAV_MOD_TAG.$buoy.spec
+     fi
+   elif [ "${ymdh}" = "${YMDHE}" ]
+   then
+     if [ "$specdir" = "bull" ]
+     then
+       cat $outfile | sed -e '1,7d' >> ${STA_DIR}/${specdir}/$WAV_MOD_TAG.$buoy.bull
+       cat $coutfile | sed -e '1,6d' >> ${STA_DIR}/c${specdir}/$WAV_MOD_TAG.$buoy.cbull
+     fi
    else
-     cat $outfile | sed -n "/^${YMD} ${HMS}$/,\$p" >> ${STA_DIR}/${specdir}/$WAV_MOD_TAG.$buoy.spec
+     if [ "$specdir" = "bull" ]
+     then
+       cat $outfile | sed -e '1,7d' | sed -e '2,$d' >> ${STA_DIR}/${specdir}/$WAV_MOD_TAG.$buoy.bull
+       cat $coutfile | sed -e '1,6d' | sed -e '2,$d' >> ${STA_DIR}/c${specdir}/$WAV_MOD_TAG.$buoy.cbull
+     else
+       cat $outfile | sed -n "/^${YMD} ${HMS}$/,\$p" >> ${STA_DIR}/${specdir}/$WAV_MOD_TAG.$buoy.spec
+     fi
    fi
   else
     set +x
@@ -216,7 +249,7 @@
 #  rm -f mod_def.ww3 out_pnt.ww3
 
   cd ..
-  mv -f spec_$buoy done.spec_$buoy
+  mv -f $specdir_$buoy done.$specdir_$buoy
 
   set +x
   echo ' '
