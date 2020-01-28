@@ -74,7 +74,7 @@ case $case_in in
         export layout_x_gfs=6
         export layout_y_gfs=6
         export npe_node_fcst=7
-        export npe_wav=175
+        export npe_wav=210
         export nth_fv3=4
         export cdmbgwd="1.1,0.72,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=1
@@ -90,7 +90,7 @@ case $case_in in
         export layout_x_gfs=12
         export layout_y_gfs=8
         export npe_node_fcst=7 
-        export npe_wav=350
+        export npe_wav=490
         export nth_fv3=4
         export cdmbgwd="4.0,0.15,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=2
