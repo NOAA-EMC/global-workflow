@@ -460,23 +460,26 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
 
     # fcst
     deps = []
+    data = '&ROTDIR;/%s.@Y@m@d/@H/%s.t@Hz.loginc.txt' % (cdump, cdump)
+    dep_dict = {'type': 'data', 'data': data}
+    deps.append(rocoto.add_dependency(dep_dict))
     if do_wave in ['Y', 'YES']:
         dep_dict = {'type': 'task', 'name': '%swaveprep' % cdump}
         deps.append(rocoto.add_dependency(dep_dict))
-    if cdump in ['gdas']:
-        if do_gldas in ['Y', 'YES']:
-            dep_dict = {'type': 'task', 'name': '%sgldas' % cdump}
-            deps.append(rocoto.add_dependency(dep_dict))
-        else:
-            dep_dict = {'type': 'task', 'name': '%sanal' % cdump}
-            deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': '-06:00:00'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep_condition='or',dep=deps)
-    elif cdump in ['gfs']:
-        dep_dict = {'type': 'task', 'name': '%sanal' % cdump}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep_condition='and',dep=deps)
+    #if cdump in ['gdas']:
+    #    if do_gldas in ['Y', 'YES']:
+    #        dep_dict = {'type': 'task', 'name': '%sgldas' % cdump}
+    #        deps.append(rocoto.add_dependency(dep_dict))
+    #    else:
+    #        dep_dict = {'type': 'task', 'name': '%sanal' % cdump}
+    #        deps.append(rocoto.add_dependency(dep_dict))
+    #    dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': '-06:00:00'}
+    #    deps.append(rocoto.add_dependency(dep_dict))
+    #    dependencies = rocoto.create_dependency(dep_condition='or',dep=deps)
+    #elif cdump in ['gfs']:
+    #    dep_dict = {'type': 'task', 'name': '%sanal' % cdump}
+    #    deps.append(rocoto.add_dependency(dep_dict))
+    dependencies = rocoto.create_dependency(dep_condition='and',dep=deps)
     task = wfu.create_wf_task('fcst', cdump=cdump, envar=envars, dependency=dependencies)
 
     dict_tasks['%sfcst' % cdump] = task

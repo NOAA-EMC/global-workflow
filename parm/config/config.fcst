@@ -165,7 +165,11 @@ if [[ "$CDUMP" == "gdas" ]] ; then # GDAS cycle specific parameters
     export restart_interval=${restart_interval:-6}
 
     # For IAU, write restarts at beginning of window also
-    if [ $DOIAU = "YES" ]; then export restart_interval=3; fi
+    if [[ "$SDATE" = "$CDATE" ]]; then
+       if [ $DOIAU = "YES" ]; then export restart_interval="3 6"; fi
+    else
+       if [ $DOIAU = "YES" ]; then export restart_interval="6 9"; fi
+    fi
 
     # Choose coupling with wave
     export cplwav=.true.

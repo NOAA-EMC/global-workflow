@@ -108,22 +108,12 @@ elif [ $step = "anal" ]; then
 
     export wtime_anal="02:30:00"
     export nth_cycle=$npe_node_max
-    export npe_anal=160
-    export npe_node_anal=2
-    export nth_anal=12
-    if [[ "$machine" = "WCOSS_DELL_P3" ]]; then
-      export nth_anal=14
-    fi
-    if [[ "$machine" != "WCOSS_C" ]]; then
-     if [ $CASE = "C384" -o $CASE = "C192" -o $CASE = "C96" -o $CASE = "C48" ]; then
+    export npe_anal=210
+    export nth_anal=4
+    if [ $CASE = "C192" -o $CASE = "C96" -o $CASE = "C48" ]; then
       export npe_anal=84
-      export nth_anal=4
-      export npe_node_anal=$(echo "$npe_node_max / $nth_anal" | bc)
-      if [[ "$machine" = "WCOSS_DELL_P3" ]]; then
-        export npe_node_anal=7
-      fi
-     fi
     fi
+    export npe_node_anal=$(echo "$npe_node_max / $nth_anal" | bc)
     if [[ "$machine" == "WCOSS_C" ]]; then
         export memory_anal="3072M"
     fi
@@ -248,13 +238,14 @@ elif [ $step = "eupd" ]; then
         export nth_eupd=7
       fi
     elif [ $CASE = "C384" ]; then
-      export npe_eupd=84
-      export nth_eupd=2
+      export npe_eupd=80
+      export nth_eupd=10
+      export npe_node_eupd=4
     elif [ $CASE = "C192" -o $CASE = "C96" -o $CASE = "C48" ]; then
       export npe_eupd=42
       export nth_eupd=2
     fi
-    export npe_node_eupd=$(echo "$npe_node_max / $nth_eupd" | bc)
+    export npe_node_eupd=${npe_node_eupd:-$(echo "$npe_node_max / $nth_eupd" | bc)}
     if [[ "$machine" == "WCOSS_C" ]]; then
         export memory_eupd="3072M"
     fi

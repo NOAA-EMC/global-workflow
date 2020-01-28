@@ -29,9 +29,6 @@ export AMSREBF=${AMSREBF:-/dev/null}
 export SSMITBF=${SSMITBF:-/dev/null}
 export AMSR2BF=${AMSR2BF:-/dev/null}
 
-# Set directory and structure for COMIN_OBS
-export COMIN_OBS="$DMPDIR/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}"
-
 # Set CONVINFO and SATINFO for retrospective parallels
 if [ $REALTIME = "NO" ]; then
 
