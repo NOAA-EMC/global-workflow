@@ -1,5 +1,5 @@
 #!/bin/sh
-set -xu
+set +x
 #------------------------------------
 # Exception handling is now included.
 #
@@ -62,6 +62,10 @@ $Build_fv3gfs && {
 echo " .... Building fv3 .... "
 ./build_fv3.sh > $logs_dir/build_fv3.log 2>&1
 rc=$?
+if [[ $rc -ne 0 ]] ; then
+    echo "Fatal error in building fv3."
+    echo "The log file is in $logs_dir/build_fv3.log"
+fi
 ((err+=$rc))
 }
 
@@ -72,6 +76,10 @@ $Build_gsi && {
 echo " .... Building gsi .... "
 ./build_gsi.sh > $logs_dir/build_gsi.log 2>&1
 rc=$?
+if [[ $rc -ne 0 ]] ; then
+    echo "Fatal error in building gsi."
+    echo "The log file is in $logs_dir/build_gsi.log"
+fi
 ((err+=$rc))
 }
 
@@ -82,6 +90,10 @@ $Build_ncep_post && {
 echo " .... Building ncep_post .... "
 ./build_ncep_post.sh > $logs_dir/build_ncep_post.log 2>&1
 rc=$?
+if [[ $rc -ne 0 ]] ; then
+    echo "Fatal error in building ncep_post."
+    echo "The log file is in $logs_dir/build_ncep_post.log"
+fi
 ((err+=$rc))
 }
 
@@ -92,6 +104,10 @@ $Build_ufs_utils && {
 echo " .... Building ufs_utils .... "
 ./build_ufs_utils.sh > $logs_dir/build_ufs_utils.log 2>&1
 rc=$?
+if [[ $rc -ne 0 ]] ; then
+    echo "Fatal error in building ufs_utils."
+    echo "The log file is in $logs_dir/build_ufs_utils.log"
+fi
 ((err+=$rc))
 }
 
@@ -100,8 +116,12 @@ rc=$?
 #------------------------------------
 $Build_gfs_wafs  && {
 echo " .... Building gfs_wafs  .... "
-./build_gfs_wafs.sh > $logs_dir/build_gfs_wafs .log 2>&1
+./build_gfs_wafs.sh > $logs_dir/build_gfs_wafs.log 2>&1
 rc=$?
+if [[ $rc -ne 0 ]] ; then
+    echo "Fatal error in building gfs_wafs."
+    echo "The log file is in $logs_dir/build_gfs_wafs.log"
+fi
 ((err+=$rc))
 }
 
@@ -112,6 +132,10 @@ $Build_sfcanl_nsttfchg && {
 echo " .... Building gaussian_sfcanl and nst_tf_chg .... "
 ./build_sfcanl_nsttfchg.sh > $logs_dir/build_sfcanl_nsttfchg.log 2>&1
 rc=$?
+if [[ $rc -ne 0 ]] ; then
+    echo "Fatal error in building gaussian_sfcanl and nst_tf_chg."
+    echo "The log file is in $logs_dir/build_sfcanl_nsttfchg.log"
+fi
 ((err+=$rc))
 }
 
@@ -122,6 +146,10 @@ $Build_enkf_chgres_recenter && {
 echo " .... Building enkf_chgres_recenter .... "
 ./build_enkf_chgres_recenter.sh > $logs_dir/build_enkf_chgres_recenter.log 2>&1
 rc=$?
+if [[ $rc -ne 0 ]] ; then
+    echo "Fatal error in building enkf_chgres_recenter."
+    echo "The log file is in $logs_dir/build_enkf_chgres_recenter.log"
+fi
 ((err+=$rc))
 }
 
@@ -132,6 +160,10 @@ $Build_tropcy && {
 echo " .... Building tropcy_NEMS .... "
 ./build_tropcy_NEMS.sh > $logs_dir/build_tropcy_NEMS.log 2>&1
 rc=$?
+if [[ $rc -ne 0 ]] ; then
+    echo "Fatal error in building tropcy_NEMS."
+    echo "The log file is in $logs_dir/build_tropcy_NEMS.log"
+fi
 ((err+=$rc))
 }
 
@@ -142,6 +174,10 @@ $Build_gdas && {
 echo " .... Building gdas .... "
 ./build_gdas.sh > $logs_dir/build_gdas.log 2>&1
 rc=$?
+if [[ $rc -ne 0 ]] ; then
+    echo "Fatal error in building gdas."
+    echo "The log file is in $logs_dir/build_gdas.log"
+fi
 ((err+=$rc))
 }
 
@@ -152,6 +188,10 @@ $Build_gfs_fbwndgfs && {
 echo " .... Building gfs_fbwndgfs .... "
 ./build_gfs_fbwndgfs.sh > $logs_dir/build_gfs_fbwndgfs.log 2>&1
 rc=$?
+if [[ $rc -ne 0 ]] ; then
+    echo "Fatal error in building gfs_fbwndgfs."
+    echo "The log file is in $logs_dir/build_gfs_fbwndgfs.log"
+fi
 ((err+=$rc))
 }
 
@@ -162,6 +202,10 @@ $Build_gfs_overpdtg2 && {
 echo " .... Building gfs_overpdtg2 .... "
 ./build_gfs_overpdtg2.sh > $logs_dir/build_gfs_overpdtg2.log 2>&1
 rc=$?
+if [[ $rc -ne 0 ]] ; then
+    echo "Fatal error in building gfs_overpdtg2."
+    echo "The log file is in $logs_dir/build_gfs_overpdtg2.log"
+fi
 ((err+=$rc))
 }
 
@@ -172,6 +216,10 @@ $Build_gfs_wintemv && {
 echo " .... Building gfs_wintemv .... "
 ./build_gfs_wintemv.sh > $logs_dir/build_gfs_wintemv.log 2>&1
 rc=$?
+if [[ $rc -ne 0 ]] ; then
+    echo "Fatal error in building gfs_wintemv."
+    echo "The log file is in $logs_dir/build_gfs_wintemv.log"
+fi
 ((err+=$rc))
 }
 
@@ -182,6 +230,10 @@ $Build_gfs_bufrsnd && {
 echo " .... Building gfs_bufrsnd .... "
 ./build_gfs_bufrsnd.sh > $logs_dir/build_gfs_bufrsnd.log 2>&1
 rc=$?
+if [[ $rc -ne 0 ]] ; then
+    echo "Fatal error in building gfs_bufrsnd."
+    echo "The log file is in $logs_dir/build_gfs_bufrsnd.log"
+fi
 ((err+=$rc))
 }
 
@@ -192,6 +244,10 @@ $Build_fv3nc2nemsio && {
 echo " .... Building fv3nc2nemsio .... "
 ./build_fv3nc2nemsio.sh > $logs_dir/build_fv3nc2nemsio.log 2>&1
 rc=$?
+if [[ $rc -ne 0 ]] ; then
+    echo "Fatal error in building fv3nc2nemsio."
+    echo "The log file is in $logs_dir/build_fv3nc2nemsio.log"
+fi
 ((err+=$rc))
 }
 
@@ -202,6 +258,10 @@ $Build_regrid_nemsio && {
 echo " .... Building regrid_nemsio .... "
 ./build_regrid_nemsio.sh > $logs_dir/build_regrid_nemsio.log 2>&1
 rc=$?
+if [[ $rc -ne 0 ]] ; then
+    echo "Fatal error in building regrid_nemsio."
+    echo "The log file is in $logs_dir/build_regrid_nemsio.log"
+fi
 ((err+=$rc))
 }
 
@@ -214,6 +274,10 @@ if [ $target = wcoss -o $target = wcoss_cray -o $target = wcoss_dell_p3 ]; then
  echo " .... Building gfs_util .... "
  ./build_gfs_util.sh > $logs_dir/build_gfs_util.log 2>&1
  rc=$?
+ if [[ $rc -ne 0 ]] ; then
+     echo "Fatal error in building gfs_util."
+     echo "The log file is in $logs_dir/build_gfs_util.log"
+ fi
  ((err+=$rc))
  }
 fi
