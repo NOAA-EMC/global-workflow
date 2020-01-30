@@ -1329,15 +1329,22 @@ if [ $SEND = "YES" ]; then
     cd $DATA/RESTART
     mkdir -p $memdir/RESTART
 
-    RDATE=$($NDATE +$rst_invt1 $CDATE)
-    rPDY=$(echo $RDATE | cut -c1-8)
-    rcyc=$(echo $RDATE | cut -c9-10)
-    for file in $(ls ${rPDY}.${rcyc}0000.*) ; do
-      $NCP $file $memdir/RESTART/$file
+    for rst_int in $restart_interval ; do
+     if [ $rst_int -ge 0 ]; then
+      RDATE=$($NDATE +$rst_int $CDATE)
+      rPDY=$(echo $RDATE | cut -c1-8)
+      rcyc=$(echo $RDATE | cut -c9-10)
+      for file in $(ls ${rPDY}.${rcyc}0000.*) ; do
+        $NCP $file $memdir/RESTART/$file
+      done
+     fi
     done
     if [ $DOIAU = "YES" ] || [ $DOIAU_coldstart = "YES" ]; then
        # if IAU is on, save restart at start of IAU window
        rst_iau=$(( ${IAU_OFFSET} - (${IAU_DELTHRS}/2) ))
+       if [ $rst_iau -lt 0 ];then
+          rst_iau=$(( (${IAU_DELTHRS}) - ${IAU_OFFSET} ))
+       fi
        RDATE=$($NDATE +$rst_iau $CDATE)
        rPDY=$(echo $RDATE | cut -c1-8)
        rcyc=$(echo $RDATE | cut -c9-10)
