@@ -85,6 +85,8 @@ echo EMC_gfs_wafs checkout ...
 if [[ ! -d gfs_wafs.fd ]] ; then
     rm -f ${topdir}/checkout-gfs_wafs.log
     git clone --recursive https://github.com/NOAA-EMC/EMC_gfs_wafs.git gfs_wafs.fd >> ${topdir}/checkout-gfs_wafs.log 2>&1
+    rc=$?
+    ((err+=$rc))
     cd gfs_wafs.fd
     git checkout gfs_wafs.v5.0.11
     cd ${topdir}
@@ -99,7 +101,7 @@ if [[ ! -d gsd_prep_chem.fd ]] ; then
     rc=$?
     ((err+=$rc))
     cd gsd_prep_chem.fd
-    git checkout 088b7e6
+    git checkout d7aa917
     cd ${topdir}
 else
     echo 'Skip.  Directory gsd_prep_chem.fd already exists.'
@@ -109,6 +111,8 @@ echo EMC_verif-global checkout ...
 if [[ ! -d verif-global.fd ]] ; then
     rm -f ${topdir}/checkout-verif-global.log
     git clone --recursive gerrit:EMC_verif-global verif-global.fd >> ${topdir}/checkout-verif-global.log 2>&1
+    rc=$?
+    ((err+=$rc))
     cd verif-global.fd
     git checkout verif_global_v1.2.2
     cd ${topdir}
