@@ -1013,8 +1013,10 @@ CC due to rounding and interpolation errors, correct it here -G.P. Lou:
           gridsi(np,k+2+2*levs)=omega3d(idum,jdum,k)
           gridui(np,k)=uh(idum,jdum,k)
           gridvi(np,k)=vh(idum,jdum,k)
-          p1(np,k)=0.5*(pint(idum,jdum,k)+pint(idum,jdum,k+1))
-          z1(np,k)=0.5*(zint(idum,jdum,k)+zint(idum,jdum,k+1))
+          p1(np,k)=pint(idum,jdum,k+1)
+          z1(np,k)=zint(idum,jdum,k+1)
+!!          p1(np,k)=0.5*(pint(idum,jdum,k)+pint(idum,jdum,k+1))
+!!          z1(np,k)=0.5*(zint(idum,jdum,k)+zint(idum,jdum,k+1))
  
           griddiv(np,k)=(uh(ie,jdum,k)-uh(iw,jdum,k))/dx+
      +       (vh(idum,jn,k)*cos(gdlat(idum,jn)*dtr)-
@@ -1144,6 +1146,12 @@ CC due to rounding and interpolation errors, correct it here -G.P. Lou:
 !
 !  move the new clocking into the old
 !
+!! test removing height adjustments
+        np1=0
+      if (np1==0) then
+          print*, 'do not do height adjustments'
+      else
+          print*, 'do height adjustments'
         do np = 1, npoint
           ps(np) = psn(np)
         enddo
@@ -1153,6 +1161,7 @@ CC due to rounding and interpolation errors, correct it here -G.P. Lou:
             grids(np,k+levso+2) = qnew(np,k)
           enddo
         enddo
+       endif
         print*,'finish adjusting to station terrain'
 !
 !  get sea-level pressure (Pa) and layer geopotential height
@@ -1204,7 +1213,8 @@ CC due to rounding and interpolation errors, correct it here -G.P. Lou:
             u = gridu(np,k)
             v = gridv(np,k)
 !           data((k-1)*6+7) = pi3(np,k)                ! PRESSURE (PA) at interface layer
-            data((k-1)*6+7) = p3(np,k)                 ! PRESSURE (PA) at integer layer
+!            data((k-1)*6+7) = p3(np,k)                 ! PRESSURE (PA) at integer layer
+            data((k-1)*6+7) = p1(np,k)                 ! PRESSURE (PA) at integer layer
             data((k-1)*6+8) = t                        ! TEMPERATURE (K)
             data((k-1)*6+9) = u                        ! U WIND (M/S)
             data((k-1)*6+10) = v                        ! V WIND (M/S)
