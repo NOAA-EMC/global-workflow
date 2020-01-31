@@ -30,7 +30,7 @@ if [[ ! -d fv3gfs.fd ]] ; then
     rc=$?
     ((err+=$rc))
     cd fv3gfs.fd
-	git checkout b2f2c9b
+	git checkout 289e73c
 	git submodule update --init --recursive
     rc=$?
     ((err+=$rc))
