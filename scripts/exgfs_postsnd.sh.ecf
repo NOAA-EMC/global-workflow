@@ -52,9 +52,15 @@ fi
 rm -f -r ${COMOUT}/bufr.${cycle}
 mkdir -p ${COMOUT}/bufr.${cycle}
 
+    if [ -f $HOMEgfs/ush/getncdimlen ]
+	then
+	GETDIM=$HOMEgfs/ush/getncdimlen
+	else
+	GETDIM=$EXECbufrsnd/getncdimlen
+	fi
 if [ $fformat == "netcdf" ]
  then
-export LEVS=`$HOMEgfs/ush/getncdimlen $COMIN/${RUN}.${cycle}.atmf000.${atmfm} pfull`
+export LEVS=`$GETDIM $COMIN/${RUN}.${cycle}.atmf000.${atmfm} pfull`
 else
 # Extract number of vertical levels from $STARTHOUR atmospheric file
 export NEMSIOGET=${NEMSIOGET:-$EXECbufrsnd/nemsio_get}
@@ -177,4 +183,3 @@ msg='HAS COMPLETED NORMALLY.'
 #postmsg "$jlogfile" "$msg"
 
 ############## END OF SCRIPT #######################
-
