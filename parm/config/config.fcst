@@ -138,6 +138,25 @@ export ishuffle=0
 export shuffle=1
 export deflate_level=1
 
+if [ "$OUTPUT_FILE" = "netcdf" ]; then
+    export OUTPUT_FILETYPES="netcdf"
+    if [ $machine = "WCOSS_DELL_P3" ]; then
+        if [ $(echo $CASE |cut -c 2-) -ge 768 ]; then
+            export OUTPUT_FILETYPES=" 'netcdf_parallel' 'netcdf_parallel' "
+            export ichunk3d=$((4*RESTILE)) 
+            export jchunk3d=$((2*RESTILE))
+            export kchunk3d=1
+        else
+            export OUTPUT_FILETYPES=" 'netcdf_parallel' 'netcdf' "
+        fi
+    fi
+    if [ $machine = "HERA" ]; then
+        export OUTPUT_FILETYPES=" 'netcdf_parallel' 'netcdf_parallel' "
+    fi
+fi
+
+
+#---------------------------------------------------------------------
 # Disable the use of coupler.res; get model start time from model_configure
 export USE_COUPLER_RES="NO"
 

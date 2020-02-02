@@ -10,14 +10,8 @@ if [[ ! -d fv3gfs.fd ]] ; then
     #git clone https://github.com/ufs-community/ufs-weather-model fv3gfs.fd >> ${topdir}/checkout-fv3gfs.log 2>&1
     git clone https://github.com/junwang-noaa/ufs-weather-model  fv3gfs.fd >> ${topdir}/checkout-fv3gfs.log 2>&1
     cd fv3gfs.fd
-    git checkout gfsv16_updates
+    git checkout netcdf_parallel
     git submodule update --init --recursive
-
-    #git clone gerrit:NEMSfv3gfs fv3gfs.fd >> ${topdir}/checkout-fv3gfs.log 2>&1
-    #cd fv3gfs.fd
-    ##git checkout gfs.v16_PhysicsUpdate
-    #git submodule update --init --recursive
-
     cd ${topdir}
 else
     echo 'Skip.  Directory fv3gfs.fd already exists.'
@@ -60,7 +54,7 @@ if [[ ! -d gfs_post.fd ]] ; then
     rm -f ${topdir}/checkout-gfs_post.log
     git clone https://github.com/NOAA-EMC/EMC_post.git gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
     cd gfs_post.fd
-    git checkout upp_gfsv16_release.v1.0.0
+    git checkout upp_gfsv16_release.v1.0.1
     cd ${topdir}
 else
     echo 'Skip.  Directory gfs_post.fd already exists.'
