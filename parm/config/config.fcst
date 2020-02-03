@@ -139,9 +139,9 @@ export shuffle=1
 export deflate_level=1
 
 export OUTPUT_FILETYPES="$OUTPUT_FILE"
-if [ "$OUTPUT_FILETYPES" = "netcdf" ]; then
-    RESTILE=$(echo $CASE |cut -c 2-)
-    if [ $machine = "WCOSS_DELL_P3" ]; then
+if [[ "$OUTPUT_FILETYPES" == "netcdf" ]]; then
+    RESTILE=`echo $CASE |cut -c 2-`
+    if [[ "$machine" == "WCOSS_DELL_P3" ]]; then
         if [ $RESTILE -ge 768 ]; then
             export OUTPUT_FILETYPES=" 'netcdf_parallel' 'netcdf_parallel' "
             export ichunk3d=$((4*RESTILE)) 
@@ -151,7 +151,7 @@ if [ "$OUTPUT_FILETYPES" = "netcdf" ]; then
             export OUTPUT_FILETYPES=" 'netcdf_parallel' 'netcdf' "
         fi
     fi
-    if [ $machine = "HERA" ]; then
+    if [[ "$machine" == "HERA" ]]; then
         export OUTPUT_FILETYPES=" 'netcdf_parallel' 'netcdf_parallel' "
         if [ $RESTILE -le 192 ]; then
             export OUTPUT_FILETYPES=" 'netcdf_parallel' 'netcdf' "

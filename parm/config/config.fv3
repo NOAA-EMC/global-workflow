@@ -19,6 +19,20 @@ case_in=$1
 
 echo "BEGIN: config.fv3"
 
+
+if [[ "$machine" = "WCOSS_DELL_P3" ]]; then
+   export npe_node_max=28
+elif [[ "$machine" = "WCOSS_C" ]]; then
+   export npe_node_max=24
+elif [[ "$machine" = "THEIA" ]]; then
+   export npe_node_max=24
+elif [[ "$machine" = "JET" ]]; then
+   export npe_node_max=24
+elif [[ "$machine" = "HERA" ]]; then
+   export npe_node_max=40
+fi
+
+
 # (Standard) Model resolution dependent variables
 case $case_in in
     "C48")
@@ -28,7 +42,7 @@ case $case_in in
         export layout_x_gfs=2
         export layout_y_gfs=4
         export nth_fv3=1
-        export npe_node_fcst=$((npe_node_max/nth_fv3))
+        export npe_node_fcst=$(echo "$npe_node_max/$nth_fv3" |bc)
         export cdmbgwd="0.071,2.1,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=1
         export WRTTASK_PER_GROUP=$npe_node_max
@@ -43,7 +57,7 @@ case $case_in in
         export layout_x_gfs=4
         export layout_y_gfs=4
         export nth_fv3=1
-        export npe_node_fcst=$((npe_node_max/nth_fv3))
+        export npe_node_fcst=$(echo "$npe_node_max/$nth_fv3" |bc)
         export cdmbgwd="0.14,1.8,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=1
         export WRTTASK_PER_GROUP=$npe_node_max
@@ -58,7 +72,7 @@ case $case_in in
         export layout_x_gfs=4
         export layout_y_gfs=6
         export nth_fv3=2
-        export npe_node_fcst=$((npe_node_max/nth_fv3))
+        export npe_node_fcst=$(echo "$npe_node_max/$nth_fv3" |bc)
         export cdmbgwd="0.23,1.5,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=1
         export WRTTASK_PER_GROUP=$npe_node_max
@@ -73,7 +87,7 @@ case $case_in in
         export layout_x_gfs=6
         export layout_y_gfs=6
         export nth_fv3=1
-        export npe_node_fcst=$((npe_node_max/nth_fv3))
+        export npe_node_fcst=$(echo "$npe_node_max/$nth_fv3" |bc)
         export cdmbgwd="1.1,0.72,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=1
         export WRTTASK_PER_GROUP=$npe_node_max
@@ -88,12 +102,12 @@ case $case_in in
         export layout_x_gfs=12
         export layout_y_gfs=8
         export nth_fv3=4
-        export npe_node_fcst=$((npe_node_max/nth_fv3))
+        export npe_node_fcst=$(echo "$npe_node_max/$nth_fv3" |bc)
         export cdmbgwd="4.0,0.15,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=2
-        export WRTTASK_PER_GROUP=$((2*npe_node_max))
+        export WRTTASK_PER_GROUP=$(echo "2*$npe_node_max" |bc)
         export WRITE_GROUP_GFS=2
-        export WRTTASK_PER_GROUP=$((2*npe_node_max))
+        export WRTTASK_PER_GROUP_GFS=$(echo "2*$npe_node_max" |bc)
         export WRTIOBUF="32M"
         ;;
     "C1152")
@@ -103,12 +117,12 @@ case $case_in in
         export layout_x_gfs=8
         export layout_y_gfs=16
         export nth_fv3=4
-        export npe_node_fcst=$((npe_node_max/nth_fv3))
+        export npe_node_fcst=$(echo "$npe_node_max/$nth_fv3" |bc)
         export cdmbgwd="4.0,0.10,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=4
-        export WRTTASK_PER_GROUP=$((2*npe_node_max))
+        export WRTTASK_PER_GROUP=$(echo "2*$npe_node_max" |bc)
         export WRITE_GROUP_GFS=4
-        export WRTTASK_PER_GROUP=$((2*npe_node_max))
+        export WRTTASK_PER_GROUP_GFS=$(echo "2*$npe_node_max" |bc)
         export WRTIOBUF="48M"
         ;;
     "C3072")
@@ -118,12 +132,12 @@ case $case_in in
         export layout_x_gfs=16
         export layout_y_gfs=32
         export nth_fv3=4
-        export npe_node_fcst=$((npe_node_max/nth_fv3))
+        export npe_node_fcst=$(echo "$npe_node_max/$nth_fv3" |bc)
         export cdmbgwd="4.0,0.05,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=4
-        export WRTTASK_PER_GROUP=$((3*npe_node_max))
+        export WRTTASK_PER_GROUP=$(echo "3*$npe_node_max" |bc)
         export WRITE_GROUP_GFS=4
-        export WRTTASK_PER_GROUP=$((3*npe_node_max))
+        export WRTTASK_PER_GROUP_GFS=$(echo "3*$npe_node_max" |bc)
         export WRTIOBUF="64M"
         ;;
     *)
