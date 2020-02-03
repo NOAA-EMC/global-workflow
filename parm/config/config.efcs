@@ -21,6 +21,8 @@ fi
 export ENKFFCSTSH="$HOMEgsi/scripts/exglobal_enkf_fcst_fv3gfs.sh.ecf"
 export NMEM_EFCSGRP=4
 export RERUN_EFCSGRP="NO"
+
+# Turn off inline UPP for EnKF forecast
 export WRITE_DOPOST=".false."
 
 # Stochastic physics parameters (only for ensemble forecasts)
@@ -52,9 +54,7 @@ fi
 export restart_interval=${restart_interval:-6}
 
 # For IAU, write restarts at beginning of window also
-if [ $DOIAU_ENKF = "YES" ]; then export restart_interval=3; fi
+if [ $DOIAU_ENKF = "YES" ]; then export restart_interval="6 -1"; fi
 
-export k_split=1  # model is unstable with k_split=2, n_split=6 and stochastic physics
-export n_split=12 # make the model stable with k_split=1, n_split=12
 
 echo "END: config.efcs"

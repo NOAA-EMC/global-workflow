@@ -19,7 +19,7 @@ export FORECASTSH="$HOMEgfs/scripts/exglobal_fcst_nemsfv3gfs.sh"
 export FCSTEXECDIR="$HOMEgfs/exec"
 #export FCSTEXECDIR="$HOMEfv3gfs/NEMS/exe"
 export FCSTEXEC="global_fv3gfs.x"
-export npe_fv3=$npe_fcst # This is model resolution dependent, see note above
+export npe_fv3=$npe_fcst 
 
 if [[ "$CDUMP" == "gfs" ]] ; then
    export npe_fv3=$npe_fcst_gfs
@@ -30,7 +30,7 @@ if [[ "$CDUMP" == "gfs" ]] ; then
 fi
 
 if [ $QUILTING = ".true." ]; then
-    export npe_fv3=$(echo " $npe_fv3 + $WRITE_GROUP * $WRTTASK_PER_GROUP" | bc)
+    export npe_fv3=$(echo " $npe_fcst + $WRITE_GROUP * $WRTTASK_PER_GROUP" | bc)
     export npe_fcst=$npe_fv3
     export npe_fcst_gfs=$(echo " $npe_fcst_gfs  + $WRITE_GROUP_GFS * $WRTTASK_PER_GROUP_GFS" | bc)
 fi
@@ -138,10 +138,11 @@ export ishuffle=0
 export shuffle=1
 export deflate_level=1
 
-if [ "$OUTPUT_FILE" = "netcdf" ]; then
-    export OUTPUT_FILETYPES="netcdf"
+export OUTPUT_FILETYPES="$OUTPUT_FILE"
+if [ "$OUTPUT_FILETYPES" = "netcdf" ]; then
+    RESTILE=$(echo $CASE |cut -c 2-)
     if [ $machine = "WCOSS_DELL_P3" ]; then
-        if [ $(echo $CASE |cut -c 2-) -ge 768 ]; then
+        if [ $RESTILE -ge 768 ]; then
             export OUTPUT_FILETYPES=" 'netcdf_parallel' 'netcdf_parallel' "
             export ichunk3d=$((4*RESTILE)) 
             export jchunk3d=$((2*RESTILE))
@@ -152,6 +153,9 @@ if [ "$OUTPUT_FILE" = "netcdf" ]; then
     fi
     if [ $machine = "HERA" ]; then
         export OUTPUT_FILETYPES=" 'netcdf_parallel' 'netcdf_parallel' "
+        if [ $RESTILE -le 192 ]; then
+            export OUTPUT_FILETYPES=" 'netcdf_parallel' 'netcdf' "
+        fi
     fi
 fi
 
@@ -180,7 +184,7 @@ if [[ "$CDUMP" == "gdas" ]] ; then # GDAS cycle specific parameters
     export restart_interval=${restart_interval:-6}
 
     # For IAU, write restarts at beginning of window also
-    if [ $DOIAU = "YES" ]; then export restart_interval=3; fi
+    if [ $DOIAU = "YES" ]; then export restart_interval="6 9"; fi
 
 elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
 

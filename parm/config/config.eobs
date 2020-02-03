@@ -26,4 +26,7 @@ fi
 export USE_RADSTAT="NO" # This can be only used when bias correction is non-zero.
 export GENDIAG="YES"    # Diagnostic files must be created for EnKF
 
+export lobsdiag_forenkf=".true."  # write out jacobians from eobs
+                                  # need to specify .true. setting since config.anal sets to .false.
+
 echo "END: config.eobs"

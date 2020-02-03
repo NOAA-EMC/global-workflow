@@ -21,16 +21,27 @@ fi
 
 export ANALYSISSH="$HOMEgsi/scripts/exglobal_analysis_fv3gfs.sh.ecf"
 export npe_gsi=$npe_anal
-export LEVS_ENKF=$((LEVS-1))
+
+# Set parameters specific to L127
+if [ $LEVS = "128" ]; then
+    export GRIDOPTS="nlayers(63)=1,nlayers(64)=1,"
+    export SETUP="gpstop=55,nsig_ext=56,$SETUP"
+fi
+
+# Set namelist option for LETKF
+export lobsdiag_forenkf=".false."  # anal does not need to write out jacobians
+                                   # set to .true. in config.eobs and config.eupd
+
+if [ $OUTPUT_FILE = "nemsio" ]; then
+    export DO_CALC_INCREMENT="YES"
+    export DO_CALC_ANALYSIS="NO"
+fi
 
 # Do not process the following datasets
 export GSNDBF=${GSNDBF:-/dev/null}
 export AMSREBF=${AMSREBF:-/dev/null}
 export SSMITBF=${SSMITBF:-/dev/null}
 export AMSR2BF=${AMSR2BF:-/dev/null}
-
-# Set directory and structure for COMIN_OBS
-export COMIN_OBS="$DMPDIR/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}"
 
 # Set CONVINFO and SATINFO for retrospective parallels
 if [ $REALTIME = "NO" ]; then
@@ -93,9 +104,17 @@ if [ $REALTIME = "NO" ]; then
     fi
 fi
 
-if [ $LEVS = "128" ]; then
-   export GRIDOPTS="nlayers(63)=1,nlayers(64)=1,"
-   export SETUP="gpstop=55,nsig_ext=56,$SETUP"
+# TEST - use experimental dumps
+export AHIBF="$DMPDIR/${CDUMP}x.${PDY}/${cyc}/${CDUMP}.t${cyc}z.ahicsr.tm00.bufr_d"
+export ABIBF="$DMPDIR/${CDUMP}x.${PDY}/${cyc}/${CDUMP}.t${cyc}z.gsrcsr.tm00.bufr_d"
+if [[ "$CDATE" -ge "2019111000" ]]; then
+    export ABIBF="$DMPDIR/${CDUMP}y.${PDY}/${cyc}/${CDUMP}.t${cyc}z.gsrcsr.tm00.bufr_d"
 fi
+
+##TEST
+if [[ "$CDATE" -ge "2020011600" && "$CDATE" -lt "2020011800" ]]; then
+    export OZINFO=/gpfs/dell2/emc/modeling/noscrub/emc.glopara/para_fv3gfs/v16rt2/global_ozinfo.txt
+fi
+##TEST
 
 echo "END: config.anal"
