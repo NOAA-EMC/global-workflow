@@ -1,0 +1,16 @@
+accounting_template: !Template &accounting_template
+  user_email:
+    type: string
+    description: Which email address to use for automatic status report
+
+  cpu_project:
+    type: string
+    description: Which project or accounting code to use for cpu time in the batch queue
+
+  hpss_project:
+    type: string
+    description: Which project or accounting code to use for HPSS tape storage.
+
+  noscrub_project:
+    type: string
+    description: Which project to use for non-scrubbed disk areas

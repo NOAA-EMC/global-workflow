@@ -1,0 +1,36 @@
+case:
+  fv3_settings:
+    CASE: C192
+    LEVS: 65
+
+  places:
+    workflow_file: layout/free_forecast_gfs.yaml
+
+  gfs_output_settings:
+    FHMAX_GFS: 24
+    FHOUT_GFS: 3
+    FHMAX_HF_GFS: 0
+
+  settings: 
+    SDATE: 2019-05-01t00:00:00
+    EDATE: 2019-05-01t00:00:00
+
+    DUMP_SUFFIX: "p"
+    run_gsi: No
+    chgres_and_convert_ics: Yes
+    gfs_cyc: 4 # run gfs every cycle
+
+  suite_overrides: !FirstTrue
+    - when: !calc (doc.platform.name=="JET")
+      do:
+        - Search: '**/forecast/jgfs_forecast_high'
+          partition: !calc doc.platform.partitions.kjet
+          max_tries: 2
+          resources: !JobRequest
+            - batch_memory: "3072M"
+              exe: placeholder
+              mpi_ranks: 192
+              walltime: !timedelta '00:40:00'
+              OMP_NUM_THREADS: 1 
+
+    - otherwise: []                            

@@ -1,0 +1,5 @@
+# default settings for fv3 core
+
+ice_defaults: &ice_defaults
+  MOD: cice5
+  ICEPETS: 48

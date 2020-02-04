@@ -1,0 +1,127 @@
+# This file describes the jobs to run and their dependencies.  The
+# CROW/crow/metascheduler package converts this to a Rocoto XML
+# document or an ecFlow suit definition with ecf files.  Much of the
+# configuration logic is included from the runtime/ directory via YAML
+# imports (<<: *anchor_name)
+
+suite: !Cycle
+  <<: *suite_defaults
+
+  # The ics family of tasks generates FV3 input conditions.  It is only
+  # enabled if required.
+  ics: !Family
+    Disable: !calc >-
+      doc.settings.get("IC_CDUMP","") and not doc.settings.chgres_and_convert_ics
+    model: 'gfs' # useless but required
+
+    # The jgfs_emc_getics task pulls GFS GSM data from disk.
+    jgfs_emc_getics: !Task
+      <<: *service_task_template
+      Disable: !calc doc.settings.get("IC_CDUMP","") 
+      resources: !calc partition.resources.run_getic
+      J_JOB: rocoto/getic.sh
+      ecf_module_commands: "# getics.sh will load modules instead"
+      model: gfs
+
+    # The jgfs_emc_fv3ic task convers GFS GSM data to FV3 data
+    jgfs_emc_fv3ic: !Task
+      <<: *exclusive_task_template
+      Disable: !calc not doc.settings.chgres_and_convert_ics
+      Trigger: !Depend jgfs_emc_getics
+      resources: !calc partition.resources.run_fv3ic
+      J_JOB: rocoto/fv3ic.sh
+      ecf_module_commands: "# fv3ic.sh will load modules instead"
+      model: gfs
+
+  # The gfs family executes the gfs forecast and post-processing.
+  # Were this the full workflow, it would also run the observation
+  # processing, analysis, and varoius downstream (post-processing of
+  # the post-processed data).
+  gfs: !Family
+    Trigger: !Depend ics
+    model: 'gfs'
+
+    # Forecast family: in the old GSM GFS workflow this contains two
+    # jobs at two resolutions.  We only have one forecast for FV3.
+    forecast: !Family
+      # jgfs_forecast_high - the FV3 forecast
+      jgfs_forecast_high: !Task
+        <<: *forecast_task_template
+        resources: !calc partition.resources.run_gfsfcst
+        J_JOB: JGLOBAL_FORECAST
+        resources_remap: !JobRequest [ { <<: *remap_resource_template } ]
+        
+    # post family - this family runs the UPP to convert FV3 output
+    # conditions to GRIB files.  It runs wgrib2 to convert 
+    # gaussian grid files to lat-lon.
+    post: !TaskArray
+      model: !calc up.model
+      Dimensions:
+        fhr: !calc doc.gfs_output_settings.gfs_forecast_hours
+
+      # jgfs_post_manager_el - used to generate the jgfs_post_manager
+      # task.  That task is only executed in ecFlow; it watches the
+      # forecast output directory for output data and alerts ecflow
+      # when new files become available.
+      #
+      # When running Rocoto, the specified data files (!DataEventElement)
+      # are used to define Rocoto date dependencies in later jobs.
+      jgfs_post_manager_el: !TaskElement
+        <<: *exclusive_task_template
+        model: !calc up.model
+        Disable: !calc metasched.type == 'rocoto'
+        Trigger: !Depend up.forecast.is_running()
+        Complete: !Depend up.forecast
+        Foreach: [ ]
+        ecflow_command: *post_manager_job_contents
+        J_JOB: post_manager
+        Name: jgfs_post_manager
+        resources: !calc partition.resources.run_gfs_post_manager
+        release_post_fhr: !DataEventElement
+          Name: !expand "release_post{dimval.fhr:02d}"
+          Foreach: [ fhr ]
+          file: !expand >-
+            {metasched.varref("COM")}/gfs.{metasched.datestring("%Y%m%d/%H/")}gfs.t{metasched.datestring("%H")}z.logf{dimval.fhr:03d}.nemsio
+        # NOTE: the above files must match post_manager.yaml
+
+      # jgfs_post_fhr_el - generates the numerous jgfs_post jobs, one per
+      # forecast hour.  These jobs run UPP and wgrib2 to convert FV3
+      # output to gaussian and lat-lon GRIB files.
+      jgfs_post_fhr_el: !TaskElement
+        <<: *exclusive_task_template
+        Foreach: [ fhr  ]
+        resources: !calc partition.resources.run_gfspost
+        Name: !expand jgfs_post_f{dimval.fhr:02d}
+        FHRGRP: !expand "{dimidx.fhr+1:03d}"
+        FHRLST: !expand "f{dimval.fhr:03d}"
+        FHR: !expand 'f{dimval.fhr:02d}'
+        HR: !expand '{dimval.fhr:02d}'
+        more_vars: [ FHRGRP, FHRLST, FHR, HR ]
+        J_JOB: JGLOBAL_NCEPPOST
+        Trigger: !Depend jgfs_post_manager.depend("release_post{F:02d}",F=[dimval.fhr]) | up.forecast
+        ecflow_command: !expand |
+          export post_times={dimval.fhr:03d} FHRLST={FHRLST} FHRGRP={FHRGRP}
+          $HOMEgfs/jobs/{J_JOB}
+        rocoto_command: !expand >-
+          {rocoto_load_modules} ;
+          /usr/bin/env post_times={dimval.fhr:03d} &HOMEgfs;/jobs/{J_JOB}
+    #endfamily post
+      
+  #endfamily gfs
+
+  # final - The special "final" task is used in Rocoto to detect when
+  # all tasks that have to run in a given forecast cycle are
+  # completed.  This is not needed for this workflow, but is mandatory
+  # anyway.  It is needed when Complete directives are present.  Such
+  # directives tell the metascheduler that a job should be marked as
+  # completed without submitting it if a certain condition is met.
+  # Rocoto does not have that capability, so it has to be implemented
+  # using Rocoto's "final" task capability.
+
+  final: !Task
+    <<: *service_task_template
+    Disable: !calc not metasched.type=="rocoto"
+    resources: !calc partition.resources.run_nothing
+    rocoto_command: /bin/true
+    model: gfs # useless but required
+

@@ -1,0 +1,6 @@
+include:
+  - rocoto.yaml
+  - task.yaml
+  - experiment_include.yaml
+  - suite.yaml
+  - "*.yaml"

@@ -1,0 +1,10 @@
+# fv3_settings_template - sets the namelist values for the fv3
+# forecast.  See the physcs and model documentation for full
+# information on these variables.
+
+ocn_settings_template: !Template &ocn_settings_template
+  MOD:
+    type: string
+    allowed: [ mom6, hycom ]
+    default: mom6
+    description: "model selection for ocean"

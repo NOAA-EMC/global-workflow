@@ -1,0 +1,15 @@
+# default settings for fv3 core
+
+fv3_defaults: &fv3_defaults
+  CASE: C384
+  LEVS: 65
+  DELTIM: 450
+  layout_x: 6
+  layout_y: 8
+  fv3_threads: 2
+  cdmbgwd: "3.5,0.25"
+  WRITE_GROUP: 1
+  WRTTASK_PER_GROUP: 24
+  WRTIOBUF: "32M"
+  OCNPETS: 120
+  ICEPETS: 48

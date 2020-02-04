@@ -1,0 +1,5 @@
+# default settings for ocean model core
+
+ocn_defaults: &ocn_defaults
+  MOD: mom6
+  OCNPETS: 120

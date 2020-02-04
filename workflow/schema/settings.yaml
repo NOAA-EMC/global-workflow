@@ -1,0 +1,138 @@
+settings_schema: !Template &settings_schema
+
+  dev_safeguards:
+    type: bool
+    default: true
+    description: "Add backup triggers in workflow to handle scheduling delays, such as the forecast finishing any posts start.  Only turn this off for NCO operational deliveries."
+
+  realtime:
+    type: bool
+    default: false
+    description: "Simulation of an event that is currently happening (ie.: a forecast)"
+
+  run_vrfy_jobs:
+    type: bool
+    default: true
+    description: "Run the EMC product generation jobs."
+    
+  four_cycle_mode:
+    type: bool
+    description: "Enable NCO-like four cycle suite.  Requires a special setup for your ecFlow server, and a prepared directory structure designed to look like NCEP production.  Do not use unless you know what you're doing."
+    default: false
+    if_present: !FirstTrue
+      - when: !calc four_cycle_mode
+        take: !FirstTrue
+          - when: !calc ( doc.names.experiment in [ "prod", "para", "test" ] )
+            message: !expand "Running four cycle mode with envir={doc.names.experiment}"
+            take: null
+          - otherwise: !error "In four cycle mode, the experiment must be prod, para, or test, not {doc.names.experiment}."
+      - otherwise: null
+
+#  ecf_module_commands:
+#    type: str
+#    default: !FirstTrue
+#      - when: !calc four_cycle_mode
+#        take: !calc doc.platform.four_cycle_mode_modules
+#      - otherwise: !expand |
+#          source "$HOMEgfs/ush/load_fv3gfs_modules.sh" {task_type}
+          
+  rocoto_cycle_throttle:
+    type: int
+    description: "Maximum number of cycles active at once in a Rocoto workflow"
+    default: 2
+
+  rocoto_task_throttle:
+    type: int
+    description: "Maximum number of tasks active (queued/running) at once in a Rocoto workflow"
+    default: 5
+
+  use_nco_ecflow_headers:
+    type: bool
+    description: "Use the NCO model-ver.h instead of experiment-specific paths.  This will cause you to use the scripts and code in NCEP Operational areas instead of your own scripts and code.  Only use this option if you know what you're doing."
+    default: !calc four_cycle_mode
+
+  prod_util_module:
+    type: str
+    default: !calc doc.platform.get("prod_util_module","prod_util")
+    description: Name of the unix modulefile to load to obtain NCEP production shell utilities.
+
+  ecflow_real_clock:
+    type: bool
+    default: no
+    description: the ecflow suite definition should specify a real clock
+
+  ecflow_virtual_clock:
+    type: bool
+    default: no
+    description: the ecflow suite definition should specify a virtual clock
+  
+  ecflow_hybrid_clock:
+    type: bool
+    default: no
+    description: the ecflow suite definition should specify a hybrid clock
+
+  ecflow_totality_limit:
+    type: bool
+    default: yes
+    description: 'Place the entire suite in the "/totality_limit:TOTALITY" limit so that the server can limit the total number of jobs running.'
+
+  run_gsi:
+    type: bool
+    description: "Run Gridpoint Statistical Interpolation"
+
+  run_enkf:
+    type: bool
+    description: "Enable Ensemble Kalman Filter"
+    default: !calc run_gsi
+
+  chgres_and_convert_ics: 
+    type: bool
+    description: "Run the fv3ic job, which changes restart file resolution and converts legacy GFS GSM restart files to FV3 restart files."
+
+  max_job_tries:
+    type: int
+    default: 1
+    description: "Number of times to try running a job.  Set to 1 for no retries."
+
+  IC_CDUMP:
+    type: string
+    allowed: [ gfs, gdas ]
+    optional: true
+    description: Get initial conditions from gfs or gdas
+
+  gfs_cyc:
+    type: int
+    default: 4
+    allowed: [ 0, 1, 2, 4 ]
+    description: |
+      When to run GFS forecast.  Data assimilation is run for every
+      cycle regardless of these values
+        * 0: no GFS cycle
+        * 1: 00Z only
+        * 2: 00Z and 12Z only
+        * 4: all 4 cycles (0, 6, 12, 18 Z)
+
+  SDATE:
+    type: datetime
+    description: |
+      First cycle to run.  In the cycled workflow, this is a
+      "half-cycle" in that it only runs the parts of the workflow that
+      do not require a prior cycle.  The first "real" cycle is the
+      following cycle.
+
+  EDATE:
+    type: datetime
+    description: Last cycle to run GDAS.
+  
+  ics_from:
+    type: string
+    default: opsgfs
+    allowed: [ opsgfs, pargfs ]
+    description: initial conditions from opsgfs or pargfs
+    if_present: !Template
+      parexp: 
+        type: string
+        default: prnemsrn
+      HPSS_PAR_PATH:
+        type: string
+        default: !expand "/5year/NCEPDEV/emc-global/emc.glopara/WCOSS_C/{parexp}"
