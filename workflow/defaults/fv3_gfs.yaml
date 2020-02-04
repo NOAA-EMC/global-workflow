@@ -4,3 +4,19 @@ fv3_gfs_defaults: &fv3_gfs_defaults
     - when: !calc doc.fv3_gfs_settings.QUILTING
       do: !calc layout_x * layout_y * 6 + WRITE_GROUP * WRTTASK_PER_GROUP
     - otherwise: !calc layout_x * layout_y * 6
+  cdmbgwd: !FirstTrue
+    - when: !calc CASE=="C48"
+      do: "0.071,2.1,1.0,1.0"
+    - when: !calc CASE=="C96"
+      do: "0.14,1.8,1.0,1.0"
+    - when: !calc CASE=="C192"
+      do: "0.23,1.5,1.0,1.0"
+    - when: !calc CASE=="C384" 
+      do: "1.1,0.72,1.0,1.0"
+    - when: !calc CASE=="C768" 
+      do: "4.0,0.15,1.0,1.0"
+    - when: !calc CASE=="C1152"
+      do: "4.0,0.10,1.0,1.0"
+    - when: !calc CASE=="C3072"
+      do: "4.0,0.05,1.0,1.0"
+    - otherwise: !error "Unknown resolution!"

@@ -33,7 +33,7 @@ platform: !Platform
   # that contains recent versions of source code and executables for
   # various git repositories. This is used on some platforms to find
   # executables for this workflow.
-  BASE_GIT: "/scratch1/NCEPDEV/global/glopara/git/global-workflow/port2hera"
+  BASE_GIT: "/scratch1/NCEPDEV/global/glopara/git/"
 
   config_base_extras: !expand |
     export NDATE="$NWPROD/util/exec/ndate"

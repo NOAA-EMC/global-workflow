@@ -39,21 +39,23 @@ config_anal:
     
     export ANALYSISSH="$HOMEgsi/scripts/exglobal_analysis_fv3gfs.sh.ecf"
     export npe_gsi=$npe_anal
+    export LEVS_ENKF=$((LEVS-1))
 
     export GSNDBF=/dev/null
     export AMSREBF=/dev/null
     export SSMITBF=/dev/null
     export AMSR2BF=/dev/null
 
-    export REALTIME="{tools.YES_NO(doc.settings.realtime)}"   # Run GFS AWIPS
+    # Set directory and structure for COMIN_OBS
+    export COMIN_OBS="$DMPDIR/$CDUMP$DUMP_SUFFIX.$PDY/$cyc"
+
+    # export REALTIME="{tools.YES_NO(doc.settings.realtime)}"   # Run GFS AWIPS
     
     # Set CONVINFO and SATINFO for retrospective parallels
     if [ $REALTIME = "NO" ]; then
 
       # Set CONVINFO
-      if [[ "$CDATE" -ge "2018053012" ]]; then
-        export CONVINFO=$FIXgsi/fv3_historical/global_convinfo.txt.2018053012
-      elif [[ "$CDATE" -ge "2018022818" ]]; then
+      if [[ "$CDATE" -ge "2018022818" ]]; then
         export CONVINFO=$FIXgsi/fv3_historical/global_convinfo.txt.2018022818
       elif [[ "$CDATE" -ge "2018010512" ]]; then
         export CONVINFO=$FIXgsi/fv3_historical/global_convinfo.txt.2018010512
@@ -65,6 +67,15 @@ config_anal:
         export CONVINFO=$FIXgsi/fv3_historical/global_convinfo.txt.2014041400
       else
         echo "WARNING: No CONVINFO for $CDATE"
+      fi
+
+      # Set OZINFO
+      if [[ "$CDATE" -ge "2018110700" ]]; then
+          export OZINFO=$FIXgsi/fv3_historical/global_ozinfo.txt.2018110700
+      elif [[ "$CDATE" -ge "2015110500" ]]; then
+          export OZINFO=$FIXgsi/fv3_historical/global_ozinfo.txt.2015110500
+      else
+          echo "WARNING: No OZINFO for $CDATE"
       fi
 
       # Set SATINFO

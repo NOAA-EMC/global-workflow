@@ -1,5 +1,7 @@
 fv3_gdas_defaults: &fv3_gdas_defaults
   QUILTING: True
+  hord_mt_nh_nonmono: 5
+  hord_xx_nh_nonmono: 5
   ATMPETS: !FirstTrue
     - when: !calc doc.fv3_gdas_settings.QUILTING
       do: !calc layout_x * layout_y * 6 + WRITE_GROUP * WRTTASK_PER_GROUP

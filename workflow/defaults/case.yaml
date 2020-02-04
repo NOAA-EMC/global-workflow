@@ -50,7 +50,7 @@ fv3_enkf_settings: !Immediate
 
 fv3_gdas_settings: !Immediate
   - !MergeMapping
-    - !calc doc.fv3_gfs_settings
+    - !calc doc.fv3_settings
     - CDUMP: gdas
       Template: *fv3_settings_template
     - !calc doc.fv3_gdas_defaults

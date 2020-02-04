@@ -36,7 +36,7 @@ fv3_settings_template: !Template &fv3_settings_template
           nwat: { type: int, override: 6 }
           FIELD_TABLE:
             type: string
-            default: "$HOMEgfs/parm/parm_fv3diag/field_table_gfdl"
+            default: "$HOMEgfs/parm/parm_fv3diag/field_table_gfdl_satmedmf"
           dnats: { type: int, override: 1 }
           cal_pre: { type: bool, default: false }
           do_sat_adj: { type: bool, default: true }
@@ -259,9 +259,9 @@ fv3_settings_template: !Template &fv3_settings_template
 
       - when: !calc (CASE == "C384")
         do: !Template
-          DELTIM: { type: int, default: 300 }
-          layout_x: { type: int, default: 4 }
-          layout_y: { type: int, default: 8 }
+          DELTIM: { type: int, default: 240 }
+          layout_x: { type: int, default: 6 }
+          layout_y: { type: int, default: 6 }
           fv3_threads: { type: int, default: 2 }
           cdmbgwd:
             type: string
