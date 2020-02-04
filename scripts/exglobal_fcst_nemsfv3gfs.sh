@@ -749,6 +749,7 @@ start_day:               ${tPDY:6:2}
 start_hour:              ${tcyc}
 start_minute:            0
 start_second:            0
+fhrot:                   ${IAU_FHROT}
 nhours_fcst:             $FHMAX
 RUN_CONTINUE:            ${RUN_CONTINUE:-".false."}
 ENS_SPS:                 ${ENS_SPS:-".false."}

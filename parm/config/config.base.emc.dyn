@@ -251,12 +251,16 @@ export WRITE_DOPOST=".false."
 # IAU related parameters
 export DOIAU="NO"        # Enable 4DIAU for control with 3 increments
 export IAUFHRS="3,6,9"
+export IAU_FHROT=`echo $IAUFHRS | cut -c1`
 export IAU_DELTHRS=6
 export IAU_OFFSET=6
 export DOIAU_ENKF="NO"   # Enable 4DIAU for EnKF ensemble
 export IAUFHRS_ENKF="3,6,9"
 export IAU_DELTHRS_ENKF=6
-if [[ "$SDATE" = "$CDATE" ]]; then export IAU_OFFSET=0 ;fi
+if [[ "$SDATE" = "$CDATE" ]]; then
+  export IAU_OFFSET=0
+  export IAU_FHROT=0
+fi
 
 
 # run GLDAS to spin up land ICs

@@ -90,7 +90,11 @@ else
 fi
 export gfs_cych #=`expr 24 / ${gfs_cyc}`
 export CYCSTRIDE=${gfs_cych} # cycle stride in h
-export DTRST=1 # time between restart files, set to DTRST=1 for a single restart file
+# Using DTRST=10800 to create two restart files with 3h stride for HWRF IC
+export DTRST=10800 # time between restart files, set to DTRST=1 for a single restart file
+export RSTIOFF=0 # first restart file offset relative to model start
+export RSTEOFF=3 # last restart time offset relative to first restart file date
+export DTRSTCHK=  # restart stride for checkpointing restart
 
 # Set runmember to default value if not GEFS cpl run
 #  (for a GFS coupled run, RUNMEN would be unset, this should default to -1)

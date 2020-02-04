@@ -72,26 +72,36 @@
 
 # 0.b Date and time stuff
 
+# Beginning time for outpupt may differ from SDATE if DOIAU=YES
   export date=$PDY
   export YMDH=${PDY}${cyc}
-
+# Roll back $IAU_FHROT hours of DOIAU=YES
+  echo "IAU_FHROT=$IAU_FHROT"
+  if [ "$DOIAU" = "YES" ]
+  then
+    HIND=$(( HIND + IAU_FHROT ))
+  fi
+# Set time stamps for model start and output
   ymdh_beg=`$NDATE -$HINDH $YMDH`
   time_beg="`echo $ymdh_beg | cut -c1-8` `echo $ymdh_beg | cut -c9-10`0000"
-
   ymdh_end=`$NDATE $FHMAXWAV $YMDH`
   time_end="`echo $ymdh_end | cut -c1-8` `echo $ymdh_end | cut -c9-10`0000"
+  ymdh_beg_out=`$NDATE -$HINDH $YMDH`
+  time_beg_out="`echo $ymdh_beg_out | cut -c1-8` `echo $ymdh_beg_out | cut -c9-10`0000"
 
-# Restart file times 
+# Restart file times (already has IAU_FHROT in HINDH) 
   RSTOFFSET=`expr ${CYCSTRIDE} - ${HINDH}`
-  ymdh=`$NDATE ${RSTOFFSET} $YMDH`
-  time_rst_ini="`echo $ymdh | cut -c1-8` `echo $ymdh | cut -c9-10`0000"
-  if [ ${DTRST} -gt 1 ]
+# Update restart time is added offset relative to mdoel start
+  RSTOFFSET=`expr ${RSTOFFSET} + ${RSTIOFF}`
+  ymdh_rsti=`$NDATE ${RSTOFFSET} $YMDH`
+  time_rst_ini="`echo $ymdh_rsti | cut -c1-8` `echo $ymdh_rsti | cut -c9-10`0000"
+  if [ ${DTRST} -eq 1 ]
   then
-    ymdh=`$NDATE $DTRST $ymdh`
-    time_rst_end="`echo $ymdh | cut -c1-8` `echo $ymdh | cut -c9-10`0000"
-  else
-    time_rst_end=${time_rst_ini}
+     time_rst_end=${time_rst_ini}
      DTRST=1
+  else
+    ymdh_rste=`$NDATE $RSTEOFF $ymdh_rsti`
+    time_rst_end="`echo $ymdh_rste | cut -c1-8` `echo $ymdh_rste | cut -c9-10`0000"
   fi
 
   set +x
@@ -826,7 +836,7 @@
       -e "s/WINDFLAG/$WINDFLAG/g" \
       -e "s/RUN_BEG/$time_beg/g" \
       -e "s/RUN_END/$time_end/g" \
-      -e "s/OUT_BEG/$time_beg/g" \
+      -e "s/OUT_BEG/$time_beg_out/g" \
       -e "s/OUT_END/$time_end/g" \
       -e "s/DTFLD/ $DTFLD/g" \
       -e "s/GOFILETYPE/ $GOFILETYPE/g" \

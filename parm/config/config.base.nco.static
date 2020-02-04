@@ -170,10 +170,15 @@ export WRITE_DOPOST=".true."
 # IAU related parameters
 export DOIAU="NO"
 export IAUFHRS=6
+export IAU_FHROT=`echo $IAUFHRS | cut -c1`
 export IAU_DELTHRS=6
 export DOIAU_ENKF="NO"
 export IAUFHRS_ENKF=6
 export IAU_DELTHRS_ENKF=6
+if [[ "$SDATE" = "$CDATE" ]]; then
+  export IAU_OFFSET=0
+  export IAU_FHROT=0
+fi
 
 # run GLDAS to spin up land ICs
 export DO_GLDAS=YES
