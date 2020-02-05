@@ -218,8 +218,8 @@ FV3_GFS_predet(){
 	if [ ! -d $memdir ]; then mkdir -p $memdir; fi
 
 	GDATE=$($NDATE -$assim_freq $CDATE)
-	gPDY=$(echo $CDATE | cut -c1-8)
-	gcyc=$(echo $CDATE | cut -c9-10)
+	gPDY=$(echo $GDATE | cut -c1-8)
+	gcyc=$(echo $GDATE | cut -c9-10)
 	gmemdir=$ROTDIR/${rprefix}.$gPDY/$gcyc/$memchar
         sCDATE=$($NDATE -3 $CDATE)
 

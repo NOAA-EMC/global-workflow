@@ -37,8 +37,11 @@ $NCP $FIELD_TABLE $DATA/field_table
 ####
 # copy CCN_ACTIVATE.BIN for Thompson microphysics
 if [ $imp_physics -eq 8 ]; then
-  $NCP $FV3INP/CCN_ACTIVATE.BIN  CCN_ACTIVATE.BIN
+  $NLN $FV3INP/CCN_ACTIVATE.BIN  CCN_ACTIVATE.BIN
 fi
+$NLN $FV3INP/freezeH2O.dat  freezeH2O.dat
+$NLN $FV3INP/qr_acr_qg.dat  qr_acr_qg.dat
+$NLN $FV3INP/qr_acr_qs.dat  qr_acr_qs.dat
 
 cat > input.nml <<EOF
 &amip_interp_nml
