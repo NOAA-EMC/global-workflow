@@ -37,7 +37,6 @@ default_settings: &default_settings
   cpl: .false.
 
   KEEPDATA: NO
-  ROTDIR_DUMP: NO
   DUMP_SUFFIX: ""
   run_gsi: No
   chgres_and_convert_ics: Yes

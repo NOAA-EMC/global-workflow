@@ -127,7 +127,6 @@ case:
     run_vrfy_jobs: NO
     archive_to_hpss: NO
 
-    ROTDIR_DUMP: Yes
     DUMP_SUFFIX: "p"
 
     # max_job_tries: tell rocoto to allow 2 submissions for all jobs,
