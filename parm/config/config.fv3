@@ -27,8 +27,8 @@ case $case_in in
         export layout_y=4
         export layout_x_gfs=2
         export layout_y_gfs=4
-        export npe_node_fcst=24
         export nth_fv3=1
+        export nth_efcs=1
         export cdmbgwd="0.071,2.1,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=1
         export WRTTASK_PER_GROUP=24
@@ -42,8 +42,8 @@ case $case_in in
         export layout_y=4
         export layout_x_gfs=4
         export layout_y_gfs=4
-        export npe_node_fcst=24
         export nth_fv3=1
+        export nth_efcs=1
         export cdmbgwd="0.14,1.8,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=1
         export WRTTASK_PER_GROUP=24
@@ -57,9 +57,9 @@ case $case_in in
         export layout_y=6
         export layout_x_gfs=4
         export layout_y_gfs=6
-        export npe_node_fcst=7
         export npe_wav=70
-        export nth_fv3=4
+        export nth_fv3=2
+        export nth_efcs=1
         export cdmbgwd="0.23,1.5,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=1
         export WRTTASK_PER_GROUP=24
@@ -69,34 +69,35 @@ case $case_in in
         ;;
     "C384")
         export DELTIM=240
-        export layout_x=6
-        export layout_y=6
+        export layout_x=8
+        export layout_y=8
         export layout_x_gfs=6
         export layout_y_gfs=6
-        export npe_node_fcst=7
-        export npe_wav=210
+        export npe_wav=270
         export nth_fv3=4
+        export nth_efcs=1
         export cdmbgwd="1.1,0.72,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
-        export WRITE_GROUP=1
-        export WRTTASK_PER_GROUP=24
+        export WRITE_GROUP=7
+        export WRTTASK_PER_GROUP=28
         export WRITE_GROUP_GFS=2
         export WRTTASK_PER_GROUP_GFS=24
         export WRTIOBUF="16M"
         ;;
     "C768")
         export DELTIM=150
-        export layout_x=12
-        export layout_y=8
-        export layout_x_gfs=12
-        export layout_y_gfs=8
+        export layout_x=16
+        export layout_y=12
+        export layout_x_gfs=16
+        export layout_y_gfs=12
         export npe_node_fcst=7 
-        export npe_wav=490
+        export npe_wav=270
         export nth_fv3=4
+        export nth_efcs=1
         export cdmbgwd="4.0,0.15,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
-        export WRITE_GROUP=2
-        export WRTTASK_PER_GROUP=24
-        export WRITE_GROUP_GFS=4
-        export WRTTASK_PER_GROUP_GFS=24
+        export WRITE_GROUP=6
+        export WRTTASK_PER_GROUP=60
+        export WRITE_GROUP_GFS=6
+        export WRTTASK_PER_GROUP_GFS=60
         export WRTIOBUF="32M"
         ;;
     "C1152")
@@ -107,6 +108,7 @@ case $case_in in
         export layout_y_gfs=16
         export npe_node_fcst=6
         export nth_fv3=4
+        export nth_efcs=1
         export cdmbgwd="4.0,0.10,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=4
         export WRTTASK_PER_GROUP=84
@@ -122,6 +124,7 @@ case $case_in in
         export layout_y_gfs=32
         export npe_node_fcst=6
         export nth_fv3=4
+        export nth_efcs=1
         export cdmbgwd="4.0,0.05,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=4
         export WRTTASK_PER_GROUP=120
