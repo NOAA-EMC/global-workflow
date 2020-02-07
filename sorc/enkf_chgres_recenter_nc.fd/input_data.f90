@@ -242,19 +242,25 @@
  print*
  print*,"READ CLD_AMT"
  allocate(cldamt_input(ij_input,lev))
- call read_vardata(indset, 'cld_amt', work3d, errcode=iret)
- if (iret == 0) then
-    do vlev = 1, lev
-      rvlev = lev+1-vlev
-      cldamt_input(:,vlev) = reshape(work3d(:,:,rvlev),(/ij_input/))
-      print*,'MAX/MIN CLD_AMT AT LEVEL ', vlev, 'IS: ', maxval(cldamt_input(:,vlev)), minval(cldamt_input(:,vlev))
-    enddo
-    icldamt = 1
+ if (cld_amt) then
+    call read_vardata(indset, 'cld_amt', work3d, errcode=iret)
+    if (iret == 0) then
+       do vlev = 1, lev
+         rvlev = lev+1-vlev
+         cldamt_input(:,vlev) = reshape(work3d(:,:,rvlev),(/ij_input/))
+         print*,'MAX/MIN CLD_AMT AT LEVEL ', vlev, 'IS: ', maxval(cldamt_input(:,vlev)), minval(cldamt_input(:,vlev))
+       enddo
+       icldamt = 1
+    else
+       cldamt_input = missing_value
+       print*,'CLDAMT NOT IN INPUT FILE'
+       icldamt = 0 
+    endif
  else
     cldamt_input = missing_value
-    print*,'CLDAMT NOT IN INPUT FILE'
+    print*,'CLDAMT NOT READ - CLD_AMT NAMELIST OPTION NOT SET TO TRUE'
     icldamt = 0 
- endif
+ end if
 
  call read_vardata(indset, 'dpres', work3d, errcode=iret)
  if (iret == 0) then
