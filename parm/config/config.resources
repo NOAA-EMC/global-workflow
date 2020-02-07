@@ -40,7 +40,7 @@ if [ $step = "prep" -o $step = "prepbufr" ]; then
 
 elif [ $step = "anal" ]; then
 
-    export wtime_anal="06:00:00"
+    export wtime_anal="02:00:00"
     export npe_anal=800
     if [ $CASE = "C384" -o $CASE = "C192" -o $CASE = "C96" -o $CASE = "C48" ]; then export npe_anal=84; fi
     export nth_anal=4  
@@ -64,7 +64,7 @@ elif [ $step = "gldas" ]; then
 elif [ $step = "fcst" ]; then
 
     export wtime_fcst="01:00:00"
-    export wtime_fcst_gfs="10:00:00"
+    export wtime_fcst_gfs="8:00:00"
     export npe_fcst=$(echo "$layout_x * $layout_y * 6" | bc)
     export npe_fcst_gfs=$(echo "$layout_x_gfs * $layout_y_gfs * 6" | bc)
     export nth_fcst=${nth_fv3:-2}
@@ -160,7 +160,7 @@ elif [ $step = "eupd" ]; then
 
 elif [ $step = "ecen" ]; then
 
-    export wtime_ecen="03:00:00"
+    export wtime_ecen="00:30:00"
     export npe_ecen=80
     export nth_ecen=6
     if [[ "$machine" = "WCOSS_DELL_P3" ]]; then export nth_ecen=7; fi

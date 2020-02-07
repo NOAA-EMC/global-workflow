@@ -64,7 +64,11 @@ if [ $REALTIME = "NO" ]; then
     fi
 
 #   Set OZINFO
-    if [[ "$CDATE" -ge "2018110700" ]]; then
+    if [[ "$CDATE" -ge "2020011806" ]]; then
+        export OZINFO=$FIXgsi/fv3_historical/global_ozinfo.txt.2020011806
+    elif [[ "$CDATE" -ge "20200116000" ]]; then
+	export OZINFO=$FIXgsi/fv3_historical/global_ozinfo.txt.2020011600
+    elif [[ "$CDATE" -ge "2018110700" ]]; then
         export OZINFO=$FIXgsi/fv3_historical/global_ozinfo.txt.2018110700
     elif [[ "$CDATE" -ge "2015110500" ]]; then
         export OZINFO=$FIXgsi/fv3_historical/global_ozinfo.txt.2015110500
@@ -104,17 +108,25 @@ if [ $REALTIME = "NO" ]; then
     fi
 fi
 
-# TEST - use experimental dumps
-export AHIBF="$DMPDIR/${CDUMP}x.${PDY}/${cyc}/${CDUMP}.t${cyc}z.ahicsr.tm00.bufr_d"
-export ABIBF="$DMPDIR/${CDUMP}x.${PDY}/${cyc}/${CDUMP}.t${cyc}z.gsrcsr.tm00.bufr_d"
-if [[ "$CDATE" -ge "2019111000" ]]; then
-    export ABIBF="$DMPDIR/${CDUMP}y.${PDY}/${cyc}/${CDUMP}.t${cyc}z.gsrcsr.tm00.bufr_d"
+# Use experimental dumps in GFS v16 parallels
+export ABIBF="/dev/null"
+if [[ "$CDATE" -ge "2019022800" ]] ; then
+    export ABIBF="$DMPDIR/${CDUMP}x.${PDY}/${cyc}/${CDUMP}.t${cyc}z.gsrcsr.tm00.bufr_d"
+    if [[ "$CDATE" -ge "2019111000" ]]; then
+	export ABIBF="$DMPDIR/${CDUMP}y.${PDY}/${cyc}/${CDUMP}.t${cyc}z.gsrcsr.tm00.bufr_d"
+    fi
 fi
 
-##TEST
-if [[ "$CDATE" -ge "2020011600" && "$CDATE" -lt "2020011800" ]]; then
+export AHIBF="/dev/null"
+if [[ "$CDATE" -ge "2019042300" ]]; then
+    export AHIBF="$DMPDIR/${CDUMP}x.${PDY}/${cyc}/${CDUMP}.t${cyc}z.ahicsr.tm00.bufr_d"
+fi
+
+
+# Turn off assmilation of OMPS during period of bad data
+if [[ "$CDATE" -ge "2020011600" && "$CDATE" -lt "2020011806" ]]; then
     export OZINFO=/gpfs/dell2/emc/modeling/noscrub/emc.glopara/para_fv3gfs/v16rt2/global_ozinfo.txt
 fi
-##TEST
+
 
 echo "END: config.anal"
