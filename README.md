@@ -31,7 +31,7 @@ cd ../workflow
 cp user.yaml.default user.yaml
 Then, open and edit user.yaml:
 
-- PROJECT_DIR: Place for experiment directory, make sure you have write access.
+- EXPROOT: Place for experiment directory, make sure you have write access.
 - cpu_project: cpu project that you are working with.
 - hpss_project: hpss project that you are working with.
 ```
@@ -40,17 +40,17 @@ Then, open and edit user.yaml:
 CROW gets information of the targeted experiment from case files. A case file is a text file in YAML format, describing the information
 of the experiment to be configured. A series of pre-generated case files are given under /workflow/cases. You could generate your
 own case from scratch as well. For this project, we start with "coupled_free_forecast.yaml". The "coupled_free_forecast.yaml" will
-generate a 3-day run case starting from 2016040100. From the /workflow/CROW directory:
+generate a 3-day run case (test_3d) starting from 2016040100. From the /workflow/CROW directory:
 ```
-mkdir -p $PROJECT_DIR
-(Note that $PROJECT_DIR is the experiment directory that has been set in the user.yaml file.)
+mkdir -p $EXPROOT
+(Note that $EXPROOT is the experiment directory that has been set in the user.yaml file.)
 ./setup_case.sh -p HERA coupled_free_forecast test_3d
 
 or
 
 ./setup_case.sh -p HERA ../cases/coupled_free_forecast.yaml test_3d
 ```
-This will create a experiment directory ($EXPERIMENT_DIRECTORY), containing all config files under the $PROJECT_DIR defined in user file.
+This will create a experiment directory ($EXPERIMENT_DIRECTORY). In the current example, $EXPERIMENT_DIRECTORY=$EXPROOT/test_3d.
 
 ## Create Rocoto XML using CROW
 The final process of workflow configuration is to generate a XML file for Rocoto. After the previous step, CROW will pop-up the
