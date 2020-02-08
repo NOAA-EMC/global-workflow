@@ -481,7 +481,7 @@ MOM6_postdet()
 
 	# Copy MOM6 fixed files
 	cp -pf $FIXmom/INPUT/* $DATA/INPUT/
-        cp -pf $FIXmom/INPUT/MOM_input_update $DATA/INPUT/MOM_input
+        cp -pf $FIXmom/INPUT/MOM_input_with_runoff $DATA/INPUT/MOM_input
 
 	# Copy grid_spec and mosaic files
 	cp -pf $FIXgrid/$CASE/${CASE}_mosaic* $DATA/INPUT/
