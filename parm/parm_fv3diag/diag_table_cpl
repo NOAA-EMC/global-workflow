@@ -60,7 +60,7 @@
  "ocean_model", "LW",        "LW",            "ocn%4yr%2mo%2dy%2hr","all",.true.,"none",2
  "ocean_model", "evap",      "evap",          "ocn%4yr%2mo%2dy%2hr","all",.true.,"none",2
  "ocean_model", "lprec",     "lprec",         "ocn%4yr%2mo%2dy%2hr","all",.true.,"none",2
-# "ocean_model", "lrunoff",   "lrunoff",       "ocn%4yr%2mo%2dy%2hr","all",.true.,"none",2
+ "ocean_model", "lrunoff",   "lrunoff",       "ocn%4yr%2mo%2dy%2hr","all",.true.,"none",2
 # "ocean_model", "frunoff",   "frunoff",       "ocn%4yr%2mo%2dy%2hr","all",.true.,"none",2
  "ocean_model", "fprec",     "fprec",         "ocn%4yr%2mo%2dy%2hr","all",.true.,"none",2
  "ocean_model", "LwLatSens", "LwLatSens",     "ocn%4yr%2mo%2dy%2hr","all",.true.,"none",2

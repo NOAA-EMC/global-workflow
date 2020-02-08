@@ -12,6 +12,7 @@ cat > ice_in <<eof
   , npt            = $npt
   , ndtd           = 1
   , runtype        = 'initial' 
+  , runid          = 'cpcice' 
   , ice_ic         = '$iceic'
   , restart        = .true.
   , restart_ext    = .false.
@@ -163,7 +164,7 @@ cat > ice_in <<eof
   , calc_Tsfc       = .true.
   , precip_units    = 'mm_per_month'
   , ustar_min       = 0.0005
-  , update_ocn_f    = .false.
+  , update_ocn_f    = .true.
   , oceanmixed_ice  = .false.
   , ocn_data_format = 'bin'
   , sss_data_type   = 'default'
