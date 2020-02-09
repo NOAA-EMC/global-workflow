@@ -194,7 +194,7 @@ export imp_physics=11
 # Hybrid related
 export DOHYBVAR="YES"
 export NMEM_ENKF=80
-export SMOOTH_ENKF="YES"
+export SMOOTH_ENKF="NO"
 export l4densvar=".true."
 export lwrite4danl=".false."
 

@@ -651,7 +651,12 @@ write_dopost:            ${WRITE_DOPOST:-".false."}
 num_files:               ${NUM_FILES:-2}
 filename_base:           'atm' 'sfc'
 output_grid:             $OUTPUT_GRID
-output_file:             $OUTPUT_FILE
+output_file:             $OUTPUT_FILETYPES
+ichunk2d:                ${ichunk2d:-0}
+jchunk2d:                ${jchunk2d:-0}
+ichunk3d:                ${ichunk3d:-0}
+jchunk3d:                ${jchunk3d:-0}
+kchunk3d:                ${kchunk3d:-0}
 ideflate:                ${ideflate:-1}
 nbits:                   ${nbits:-14}
 write_nemsioflip:        $WRITE_NEMSIOFLIP
