@@ -199,9 +199,9 @@ for ufs_utilsexe in \
     $LINK ../sorc/ufs_utils.fd/exec/$ufs_utilsexe .
 done
 
-for gsiexe in  global_gsi.x global_enkf.x calc_increment_ens.x  getsfcensmeanp.x  getsigensmeanp_smooth.x  \
-    getsigensstatp.x  nc_diag_cat_serial.x nc_diag_cat.x recentersigp.x oznmon_horiz.x oznmon_time.x \
-    radmon_angle.x radmon_bcoef.x radmon_bcor.x radmon_time.x ;do
+for gsiexe in  global_gsi.x global_enkf.x calc_increment_ens.x calc_increment_ens_gsdchem.x getsfcensmeanp.x \
+    getsigensmeanp_smooth.x getsigensstatp.x  nc_diag_cat_serial.x nc_diag_cat.x recentersigp.x oznmon_horiz.x \
+    oznmon_time.x radmon_angle.x radmon_bcoef.x radmon_bcor.x radmon_time.x ;do
     [[ -s $gsiexe ]] && rm -f $gsiexe
     $LINK ../sorc/gsi.fd/exec/$gsiexe .
 done
@@ -215,6 +215,7 @@ $LINK ../sorc/gsd_prep_chem.fd/workflow/emc-global/exec/prep_chem_sources_RADM_F
 
 cd ${pwd}/../sorc   ||   exit 8
     $SLINK gsi.fd/util/EnKF/gfs/src/calc_increment_ens.fd                                  calc_increment_ens.fd
+    $SLINK gsi.fd/util/EnKF/gfs/src/calc_increment_ens_gsdchem.fd                          calc_increment_ens_gsdchem.fd
     $SLINK gsi.fd/util/EnKF/gfs/src/getsfcensmeanp.fd                                      getsfcensmeanp.fd
     $SLINK gsi.fd/util/EnKF/gfs/src/getsigensmeanp_smooth.fd                               getsigensmeanp_smooth.fd
     $SLINK gsi.fd/util/EnKF/gfs/src/getsigensstatp.fd                                      getsigensstatp.fd

@@ -46,7 +46,7 @@ if [[ ! -d gsi.fd ]] ; then
     rc=$?
     ((err+=$rc))
     cd gsi.fd
-    git checkout 3664477befd7ef2ba8299c3a5461747a78da30a0
+    git checkout d47a995ae
     git submodule update
     cd ${topdir}
 else
