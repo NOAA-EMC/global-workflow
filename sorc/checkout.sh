@@ -18,7 +18,7 @@ then
 else
     git clone https://github.com/ufs-community/ufs-weather-model fv3gfs.fd >> ${topdir}/checkout-fv3gfs.log 2>&1
     cd fv3gfs.fd
-    git checkout gfsv16_updates
+    git checkout netcdf_parallel
     git submodule update --init --recursive
 fi
     cd ${topdir}
@@ -55,9 +55,12 @@ fi
 echo ufs_utils checkout ...
 if [[ ! -d ufs_utils.fd ]] ; then
     rm -f ${topdir}/checkout-ufs_utils.log
-    git clone https://github.com/NOAA-EMC/UFS_UTILS.git ufs_utils.fd >> ${topdir}/checkout-ufs_utils.fd.log 2>&1
+    #git clone https://github.com/NOAA-EMC/UFS_UTILS.git ufs_utils.fd >> ${topdir}/checkout-ufs_utils.fd.log 2>&1
+    #cd ufs_utils.fd
+    #git checkout release/v2.0.0
+    git clone  https://github.com/GeorgeGayno-NOAA/UFS_UTILS.git  ufs_utils.fd >> ${topdir}/checkout-ufs_utils.fd.log 2>&1
     cd ufs_utils.fd
-    git checkout release/v2.0.0
+    git checkout feature/PNetcdf
     cd ${topdir}
 else
     echo 'Skip.  Directory ufs_utils.fd already exists.'
@@ -78,7 +81,7 @@ then
 else
     git clone https://github.com/NOAA-EMC/EMC_post.git gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
     cd gfs_post.fd
-    git checkout upp_gfsv16_release.v1.0.0
+    git checkout upp_gfsv16_release.v1.0.2
     cd ${topdir}
 else
     echo 'Skip.  Directory gfs_post.fd already exists.'
@@ -104,7 +107,7 @@ if [ "${SYSID}" = "gefs" ]
 then
     git checkout verif_global_v1.2.2
 else
-    git checkout verif_global_v1.4.1
+    git checkout verif_global_v1.5.0
 fi
     cd ${topdir}
 else
