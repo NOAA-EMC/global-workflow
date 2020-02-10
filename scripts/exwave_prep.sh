@@ -76,32 +76,48 @@
   export date=$PDY
   export YMDH=${PDY}${cyc}
 # Roll back $IAU_FHROT hours of DOIAU=YES
-  echo "IAU_FHROT=$IAU_FHROT"
+  IAU_FHROT=3
   if [ "$DOIAU" = "YES" ]
   then
-    HIND=$(( HIND + IAU_FHROT ))
+    HINDH=$(( HINDH + IAU_FHROT ))
   fi
 # Set time stamps for model start and output
-  ymdh_beg=`$NDATE -$HINDH $YMDH`
+# For special case when IAU is on but this is an initial half cycle 
+  if [ $IAU_OFFSET = 0 ]; then
+    ymdh_beg=$YMDH
+  else
+    ymdh_beg=`$NDATE -$HINDH $YMDH`
+  fi
   time_beg="`echo $ymdh_beg | cut -c1-8` `echo $ymdh_beg | cut -c9-10`0000"
   ymdh_end=`$NDATE $FHMAXWAV $YMDH`
   time_end="`echo $ymdh_end | cut -c1-8` `echo $ymdh_end | cut -c9-10`0000"
-  ymdh_beg_out=`$NDATE -$HINDH $YMDH`
+  ymdh_beg_out=$YMDH
   time_beg_out="`echo $ymdh_beg_out | cut -c1-8` `echo $ymdh_beg_out | cut -c9-10`0000"
 
 # Restart file times (already has IAU_FHROT in HINDH) 
-  RSTOFFSET=`expr ${CYCSTRIDE} - ${HINDH}`
-# Update restart time is added offset relative to mdoel start
-  RSTOFFSET=`expr ${RSTOFFSET} + ${RSTIOFF}`
-  ymdh_rsti=`$NDATE ${RSTOFFSET} $YMDH`
-  time_rst_ini="`echo $ymdh_rsti | cut -c1-8` `echo $ymdh_rsti | cut -c9-10`0000"
-  if [ ${DTRST} -eq 1 ]
-  then
-     time_rst_end=${time_rst_ini}
-     DTRST=1
+  RSTOFFSET=$(( ${WAVHCYC} - ${HINDH} ))
+# Update restart time is added offset relative to model start
+  RSTOFFSET=$(( ${RSTOFFSET} + ${RSTIOFF} ))
+  ymdh_rst_ini=`$NDATE ${RSTOFFSET} $YMDH`
+  RST2OFFSET=$(( DT_2_RST / 3600 ))
+  ymdh_rst2_ini=`$NDATE ${RST2OFFSET} $ymdh_rst_ini` # DT2 relative to first-first-cycle restart file
+# First restart file for cycling
+  time_rst_ini="`echo $ymdh_rst_ini | cut -c1-8` `echo $ymdh_rst_ini | cut -c9-10`0000"
+  if [ ${DT_1_RST} = 1 ]; then
+    time_rst1_end=${time_rst_ini}
   else
-    ymdh_rste=`$NDATE $RSTEOFF $ymdh_rsti`
-    time_rst_end="`echo $ymdh_rste | cut -c1-8` `echo $ymdh_rste | cut -c9-10`0000"
+    RST1OFFSET=$(( DT_1_RST / 3600 ))
+    ymdh_rst1_end=`$NDATE $RST1OFFSET $ymdh_rst_ini`
+    time_rst1_end="`echo $ymdh_rst1_end | cut -c1-8` `echo $ymdh_rst1_end | cut -c9-10`0000"
+  fi
+# Second restart file for checkpointing
+  time_rst2_ini="`echo $ymdh_rst2_ini | cut -c1-8` `echo $ymdh_rst2_ini | cut -c9-10`0000"
+  time_rst2_end=$time_end
+# Condition for gdas run or any other run when checkpoint stamp is > ymdh_end
+  if [ $ymdh_rst2_ini -ge $ymdh_end ]; then
+    ymdh_rst2_ini=`$NDATE 3 $ymdh_end`
+    time_rst2_ini="`echo $ymdh_rst2_ini | cut -c1-8` `echo $ymdh_rst2_ini | cut -c9-10`0000"
+    time_rst2_end=$time_rst2_ini
   fi
 
   set +x
@@ -846,8 +862,12 @@
       -e "/BUOY_FILE/r buoy.loc" \
       -e "s/BUOY_FILE/DUMMY/g" \
       -e "s/RST_BEG/$time_rst_ini/g" \
-      -e "s/DTRST/$DTRST/g" \
-      -e "s/RST_END/$time_rst_end/g" \
+      -e "s/RSTTYPE/$RSTTYPE/g" \
+      -e "s/RST_2_BEG/$time_rst2_ini/g" \
+      -e "s/DTRST/$DT_1_RST/g" \
+      -e "s/DT_2_RST/$DT_2_RST/g" \
+      -e "s/RST_END/$time_rst1_end/g" \
+      -e "s/RST_2_END/$time_rst2_end/g" \
                                      ww3_multi.inp.tmpl | \
   sed -n "/DUMMY/!p"               > ww3_multi.inp
 
