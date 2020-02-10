@@ -18,7 +18,7 @@ then
 else
     git clone https://github.com/ufs-community/ufs-weather-model fv3gfs.fd >> ${topdir}/checkout-fv3gfs.log 2>&1
     cd fv3gfs.fd
-    git checkout netcdf_parallel
+    git checkout gfsv16_updates
     git submodule update --init --recursive
 fi
     cd ${topdir}
