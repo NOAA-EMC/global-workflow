@@ -72,7 +72,7 @@ if [ $lsm -eq 2 ]; then
     export lheatstrg=".false."
     export landice=".false."
 else
-    export lheatstrg=".true."
+    export lheatstrg=".false."
     export landice=".true."
 fi
 

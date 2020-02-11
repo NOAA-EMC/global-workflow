@@ -863,7 +863,7 @@ deflate_level=${deflate_level:-1}
   hybedmf      = ${hybedmf:-".false."}
   satmedmf     = ${satmedmf-".true."}
   isatmedmf    = ${isatmedmf-"1"}
-  lheatstrg    = ${lheatstrg-".true."}
+  lheatstrg    = ${lheatstrg-".false."}
   random_clds  = ${random_clds:-".true."}
   trans_trac   = ${trans_trac:-".true."}
   cnvcld       = ${cnvcld:-".true."}
@@ -1031,9 +1031,7 @@ if [ $MEMBER -gt 0 ]; then
 
     cat >> input.nml << EOF
 &nam_stochy
-  ntrunc = $JCAP_STP
-  lon_s = $LONB_STP
-  lat_s = $LATB_STP
+/
 EOF
 
   if [ $DO_SKEB = "YES" ]; then
