@@ -571,9 +571,6 @@ fi
 DO_SKEB=${DO_SKEB:-"NO"}
 DO_SPPT=${DO_SPPT:-"NO"}
 DO_SHUM=${DO_SHUM:-"NO"}
-JCAP_STP=${JCAP_STP:-$JCAP_CASE}
-LONB_STP=${LONB_STP:-$LONB_CASE}
-LATB_STP=${LATB_STP:-$LATB_CASE}
 
 if [ $DO_SKEB = "YES" ]; then
     do_skeb=".true."
