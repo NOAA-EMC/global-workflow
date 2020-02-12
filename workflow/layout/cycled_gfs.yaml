@@ -188,14 +188,16 @@ suite: !Cycle
             take: !Depend jgdas_post_manager.release_postanl
           - otherwise: !Depend jgdas_post_manager.release_postanl | up.forecast
         release_pgrb2_anl: !DataEvent {file="/dev/null"}
+        config_list: [ base, post ]
         resources: !calc partition.resources.run_gdaspost
         ecflow_def: !expand "edit FHR '{FHR}'"
-        J_JOB: JGLOBAL_NCEPPOST
+        J_JOB: rocoto/post.sh
         ecflow_command: !expand |
           export post_times=%FHR% FHRLST=%FHR% FHRGRP=%FHR%
           $HOMEgfs/jobs/{J_JOB}
         rocoto_command: !expand >-
           {rocoto_load_modules} ;
+          {rocoto_config_source} ;
           /usr/bin/env FHRGRP={FHR} post_times={FHR} FHRLST={FHR} &HOMEgfs;/jobs/{J_JOB}
 
       jgdas_post_fhr_el: !TaskElement
@@ -204,13 +206,15 @@ suite: !Cycle
         resources: !calc partition.resources.run_gdaspost
         Name: !expand jgdas_post_f{dimval.fhr:03d}
         FHR: !expand '{dimval.fhr:03d}'
-        J_JOB: JGLOBAL_NCEPPOST
+        config_list: [ base, post ]
+        J_JOB: rocoto/post.sh
         ecflow_def: !expand "edit FHR '{FHR}'"
         ecflow_command: !expand |
           export post_times=%FHR% FHRLST=%FHR% FHRGRP=%FHR%
           $HOMEgfs/jobs/{J_JOB}
         rocoto_command: !expand >-
           {rocoto_load_modules} ;
+          {rocoto_config_source} ;
           /usr/bin/env FHRGRP={FHR} post_times={FHR} FHRLST={FHR} &HOMEgfs;/jobs/{J_JOB}
         Trigger: !FirstTrue
           - when: !calc not doc.settings.dev_safeguards
@@ -317,6 +321,7 @@ suite: !Cycle
             $HOMEgfs/jobs/{J_JOB}
           rocoto_command: !expand >-
             {rocoto_load_modules} ;
+            {rocoto_config_source} ;
             /usr/bin/env FHMIN_EPOS={FHMIN_EPOS} FHMAX_EPOS={FHMAX_EPOS} FHOUT_EPOS={FHOUT_EPOS} &HOMEgfs;/jobs/{J_JOB}
           resources: !calc partition.resources.run_epos
           J_JOB: JGDAS_ENKF_POST
@@ -467,12 +472,14 @@ suite: !Cycle
         ecflow_def: !expand "edit FHR '{FHR}'"
         release_pgrb2_anl: !DataEvent {file="/dev/null"}
         resources: !calc partition.resources.run_gfspost
-        J_JOB: JGLOBAL_NCEPPOST
+        config_list: [ base, post ]
+        J_JOB: rocoto/post.sh
         ecflow_command: !expand |
           export post_times=%FHR% FHRLST=%FHR% FHRGRP=%FHR%
           $HOMEgfs/jobs/{J_JOB}
         rocoto_command: !expand >-
           {rocoto_load_modules} ;
+          {rocoto_config_source} ;
           /usr/bin/env post_times=anl &HOMEgfs;/jobs/{J_JOB}
 
       jgfs_post_fhr_el: !TaskElement
@@ -481,7 +488,8 @@ suite: !Cycle
         resources: !calc partition.resources.run_gfspost
         Name: !expand jgfs_post_f{dimval.fhr:03d}
         FHR: !expand "{dimval.fhr:03d}"
-        J_JOB: JGLOBAL_NCEPPOST
+        config_list: [ base, post ]
+        J_JOB: rocoto/post.sh
         Trigger: !FirstTrue
           - when: !calc not doc.settings.dev_safeguards
             take: !Depend jgfs_post_manager.depend("release_post{F:03d}",F=[dimval.fhr])
@@ -492,6 +500,7 @@ suite: !Cycle
           $HOMEgfs/jobs/{J_JOB}
         rocoto_command: !expand >-
           {rocoto_load_modules} ;
+          {rocoto_config_source} ;
           /usr/bin/env post_times={FHR} FHRLST={FHR} FHRGRP={FHR} &HOMEgfs;/jobs/{J_JOB}
 
       jgfs_pgrb2_spec_post: !FirstTrue

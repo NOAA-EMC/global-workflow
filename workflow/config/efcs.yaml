@@ -4,6 +4,10 @@
 
 config_efcs:
   filename: config.efcs
+  res_interval: !FirstTrue
+    - when: !calc doc.fv3_enkf_settings.DOIAU_ENKF=="YES"
+      do: 3
+    - otherwise: !calc doc.fv3_enkf_settings.restart_interval
   content: !expand |
     #!/bin/ksh -x
     
@@ -38,6 +42,8 @@ config_efcs:
     export SKEB_TAU={doc.fv3_enkf_settings.SKEB_TAU}
     export SKEB_LSCALE={doc.fv3_enkf_settings.SKEB_LSCALE}
     export SKEBNORM={doc.fv3_enkf_settings.SKEBNORM}
+    export SKEB_NPASS={doc.fv3_enkf_settings.SKEB_NPASS}
+    export SKEB_VDOF={doc.fv3_enkf_settings.SKEB_VDOF}
     export DO_SHUM="{tools.YES_NO(doc.fv3_enkf_settings.DO_SHUM)}"
     export SHUM={doc.fv3_enkf_settings.SHUM}
     export SHUM_TAU={doc.fv3_enkf_settings.SHUM_TAU}
@@ -56,7 +62,7 @@ config_efcs:
     fi
     
     # FV3 model namelist parameters to over-ride
-    export restart_interval={doc.fv3_enkf_settings.restart_interval}
+    export restart_interval={res_interval}
     export k_split={doc.fv3_enkf_settings.k_split}  # model is unstable with k_split=2, n_split=6 and stochastic physics
     export n_split={doc.fv3_enkf_settings.n_split} # make the model stable with k_split=1, n_split=12
     

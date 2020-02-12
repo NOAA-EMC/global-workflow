@@ -61,13 +61,12 @@ config_base:
     export OCNFIXDIR=$HOMEgfs/fix/fix_ocnice
 
     # GLOBAL static environment parameters
-    export NWPROD="{doc.places.NWPROD}"
     export DMPDIR="{doc.places.DMPDIR}"
     export RTMFIX="{doc.places.RTMFIX}"
     
     export HOMEDIR="{doc.places.HOMEgfs}"
-    export STMP="{doc.places.SHORT_TERM_TEMP}/$USER"
-    export PTMP="{doc.places.LONG_TERM_TEMP}/$USER"
+    export STMP="{doc.places.SHORT_TERM_TEMP}"
+    export PTMP="{doc.places.LONG_TERM_TEMP}"
     export NOSCRUB="{doc.places.NOSCRUB}"
     
     # Base directories for various builds
@@ -192,7 +191,16 @@ config_base:
     export QUILTING="{tools.fort(doc.fv3_settings.QUILTING)}"
     export OUTPUT_GRID="{doc.gfs_output_settings.OUTPUT_GRID}"
     export OUTPUT_FILE="{doc.gfs_output_settings.OUTPUT_FILE_TYPE}"
-    
+   
+    # IAU related parameters
+    export DOIAU={doc.settings.DOIAU}
+    export IAUFHRS={doc.settings.IAUFHRS}
+    export IAU_DELTHRS={doc.settings.IAU_DELTHRS}
+    export DOIAU_ENKF={doc.fv3_enkf_settings.DOIAU_ENKF}
+    export IAUFHRS_ENKF={doc.fv3_enkf_settings.IAUFHRS_ENKF}
+    export IAU_DELTHRS_ENKF={doc.fv3_enkf_settings.IAU_DELTHRS_ENKF}
+    [[ "$SDATE" = "$CDATE" ]] && ( export DOIAU="NO"; export DOIAU_ENKF="NO" ) 
+
     # Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL
     export imp_physics={doc.fv3_settings.imp_physics}
     

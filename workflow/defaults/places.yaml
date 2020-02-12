@@ -12,7 +12,7 @@ default_places: &default_places
   RTMFIX:      !calc doc.platform.RTMFIX
 
   EXPDIR: !expand "{doc.platform.EXPROOT}/{doc.names.experiment}"
-  ROTDIR: !expand "{LONG_TERM_TEMP}/comrot/{doc.names.experiment}"
+  ROTDIR: !expand "{LONG_TERM_TEMP}/{doc.names.experiment}"
   ICSDIR: !expand "{ROTDIR}/FV3ICS"
   MOM6IC: /scratch4/NCEPDEV/nems/noscrub/Bin.Li/FROM_HPSS
   DATAROOT: !expand "{SHORT_TERM_TEMP}/RUNDIRS/{doc.names.experiment}"

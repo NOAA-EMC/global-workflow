@@ -16,7 +16,7 @@ post_schema: &post_schema !Template
     description: grib2 flux file written by post
   PGB1F: { type: bool, default: yes }
   GFS_DOWNSTREAM: { type: bool, default: yes }
-  downset: { type: int, default: 1 }
+  downset: { type: int, default: 2 }
   NPOSTGRP: { type: int, default: 5 }  
   master_grid:
     type: string

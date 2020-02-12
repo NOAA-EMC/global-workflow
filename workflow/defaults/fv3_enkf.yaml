@@ -25,16 +25,21 @@ fv3_enkf_defaults: &fv3_enkf_defaults
   FHMAX: 6
 
 # Stochastic physics parameters (only for ensemble forecasts)
-  DO_SKEB: NO
-  SKEB: -999.
+  DO_SKEB: YES
+  SKEB: 0.3
   SKEB_TAU: 21600.
-  SKEB_LSCALE: 500000.
-  SKEBNORM: 1
+  SKEB_LSCALE: 250000.
+  SKEBNORM: 0
+  SKEB_NPASS: 30
+  SKEB_VDOF: 5
   DO_SHUM: YES
-  SHUM: 0.006
+  SHUM: 0.005
   SHUM_TAU: 21600.
   SHUM_LSCALE: 500000.
   DO_SPPT: YES
+  DOIAU_ENKF: NO
+  IAUFHRS_ENKF: 6
+  IAU_DELTHRS_ENKF: 6
   SPPT: 0.5
   SPPT_TAU: 21600.
   SPPT_LSCALE: 500000.

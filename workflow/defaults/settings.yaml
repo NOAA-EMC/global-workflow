@@ -36,6 +36,10 @@ default_settings: &default_settings
   cplice: !calc cplflx
   cpl: .false.
 
+  DOIAU: NO
+  IAUFHRS: 6
+  IAU_DELTHRS: 6
+
   KEEPDATA: NO
   DUMP_SUFFIX: ""
   run_gsi: No

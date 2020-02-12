@@ -41,8 +41,8 @@ fv3_gfs_settings: !Immediate
 
 fv3_enkf_settings: !Immediate
   - !MergeMapping
-    - !calc doc.fv3_enkf_defaults
     - !calc doc.fv3_settings
+    - !calc doc.fv3_enkf_defaults
     - CDUMP: gdas
       Template: *fv3_settings_template
     - !calc doc.case.get('fv3_enkf_settings',{})
