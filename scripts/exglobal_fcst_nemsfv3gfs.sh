@@ -1028,7 +1028,6 @@ if [ $MEMBER -gt 0 ]; then
 
     cat >> input.nml << EOF
 &nam_stochy
-/
 EOF
 
   if [ $DO_SKEB = "YES" ]; then
