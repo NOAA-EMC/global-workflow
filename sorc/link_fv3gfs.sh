@@ -5,11 +5,10 @@ set -ex
 
 RUN_ENVIR=${1}
 machine=${2}
-sysID=${3}
 
-if [ $# -lt 3 ]; then
-    echo '***ERROR*** must specify three arguements: (1) RUN_ENVIR, (2) machine, (3) sysID'
-    echo ' Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | theia | hera ) (gfs | gefs)'
+if [ $# -lt 2 ]; then
+    echo '***ERROR*** must specify two arguements: (1) RUN_ENVIR, (2) machine'
+    echo ' Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | theia | hera )'
     exit 1
 fi
 
@@ -70,13 +69,6 @@ cd ${pwd}/../ush                ||exit 8
         gfs_transfer.sh  link_crtm_fix.sh  trim_rh.sh fix_precip.sh; do
         $LINK ../sorc/gfs_post.fd/ush/$file                  .
     done
-if [ "${sysID}" = "gefs" ]; then
-    for file in emcsfc_ice_blend.sh  fv3gfs_driver_grid.sh  fv3gfs_make_orog.sh  global_cycle_driver.sh \
-        emcsfc_snow.sh  fv3gfs_filter_topo.sh  global_chgres_driver.sh  global_cycle.sh \
-        fv3gfs_chgres.sh  fv3gfs_make_grid.sh  global_chgres.sh ; do
-        $LINK ../sorc/ufs_utils.fd/ush/$file                  .
-    done
-else
     for file in emcsfc_ice_blend.sh  fv3gfs_driver_grid.sh  fv3gfs_make_orog.sh  global_cycle_driver.sh \
         emcsfc_snow.sh  fv3gfs_filter_topo.sh  global_chgres_driver.sh  global_cycle.sh \
         fv3gfs_chgres.sh  fv3gfs_make_grid.sh  global_chgres.sh  ; do
@@ -85,7 +77,6 @@ else
     for file in gldas_archive.sh  gldas_forcing.sh gldas_get_data.sh  gldas_process_data.sh gldas_liscrd.sh  gldas_post.sh ; do
         $LINK ../sorc/gldas.fd/ush/$file                  .
     done
-fi
 cd ${pwd}/../util               ||exit 8
     for file in sub_slurm sub_wcoss_c sub_wcoss_d ; do
         $LINK ../sorc/ufs_utils.fd/util/$file
@@ -214,14 +205,6 @@ for ufs_utilsexe in \
     $LINK ../sorc/ufs_utils.fd/exec/$ufs_utilsexe .
 done
 
-if [ "${sysID}" = "gefs" ]; then
-for gsiexe in  global_gsi.x global_enkf.x calc_increment_ens.x  getsfcensmeanp.x  getsigensmeanp_smooth.x  \
-    getsigensstatp.x  nc_diag_cat_serial.x nc_diag_cat.x recentersigp.x oznmon_horiz.x oznmon_time.x \
-    radmon_angle.x radmon_bcoef.x radmon_bcor.x radmon_time.x ;do
-    [[ -s $gsiexe ]] && rm -f $gsiexe
-    $LINK ../sorc/gsi.fd/exec/$gsiexe .
-done
-else
 for gsiexe in  global_gsi.x global_enkf.x calc_increment_ens.x  getsfcensmeanp.x  getsigensmeanp_smooth.x  \
     calc_increment_ens_ncio.x calc_analysis.x interp_inc.x \
     getsigensstatp.x  nc_diag_cat_serial.x nc_diag_cat.x recentersigp.x oznmon_horiz.x oznmon_time.x \
@@ -229,7 +212,6 @@ for gsiexe in  global_gsi.x global_enkf.x calc_increment_ens.x  getsfcensmeanp.x
     [[ -s $gsiexe ]] && rm -f $gsiexe
     $LINK ../sorc/gsi.fd/exec/$gsiexe .
 done
-fi
 
 for gldasexe in gdas2gldas  gldas2gdas  gldas_forcing  gldas_noah gldas_noah_rst  gldas_post; do
     [[ -s $gldasexe ]] && rm -f $gldasexe
@@ -264,19 +246,11 @@ cd ${pwd}/../sorc   ||   exit 8
     for prog in filter_topo fregrid make_hgrid make_solo_mosaic ; do
         $SLINK ufs_utils.fd/sorc/fre-nctools.fd/tools/$prog                                ${prog}.fd                                
     done
-if [ "${sysID}" = "gefs" ]; then
-    for prog in  chgres_cube.fd       global_cycle.fd   nemsio_read.fd \
-                 emcsfc_ice_blend.fd  mkgfsnemsioctl.fd  nst_tf_chg.fd \
-                 emcsfc_snow2mdl.fd   global_chgres.fd  nemsio_get.fd      orog.fd ;do
-        $SLINK ufs_utils.fd/sorc/$prog                                                     $prog
-    done
-else
     for prog in  chgres_cube.fd       global_cycle.fd   nemsio_read.fd  nemsio_chgdate.fd \
         emcsfc_ice_blend.fd  nst_tf_chg.fd \
         emcsfc_snow2mdl.fd   global_chgres.fd  nemsio_get.fd    orog.fd ;do
         $SLINK ufs_utils.fd/sorc/$prog                                                     $prog
     done
-fi
 
 
     if [ $machine = dell -o $machine = hera ]; then
@@ -288,11 +262,9 @@ fi
         $SLINK gfs_wafs.fd/sorc/wafs_setmissing.fd                                              wafs_setmissing.fd
     fi
 
-if [ "${sysID}" = "gfs" ]; then
     for prog in gdas2gldas.fd  gldas2gdas.fd  gldas_forcing.fd  gldas_model.fd  gldas_post.fd  gldas_rst.fd ;do
         $SLINK gldas.fd/sorc/$prog                                                     $prog
     done
-fi
 
 #------------------------------
 #--choose dynamic config.base for EMC installation 
