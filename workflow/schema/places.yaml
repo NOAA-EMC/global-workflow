@@ -16,8 +16,8 @@ places_schema: &places_schema !Template
     type: string
     optional: !calc not doc.settings.four_cycle_mode
 
-  SHORT_TERM_TEMP: { type: string }
-  LONG_TERM_TEMP: { type: string }
+#  SHORT_TERM_TEMP: { type: string }
+#  LONG_TERM_TEMP: { type: string }
 
   HOMEDIR:
     type: string

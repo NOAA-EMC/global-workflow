@@ -26,7 +26,7 @@ platform: !Platform
   # processing scripts, which are not included in the public release.
   DMPDIR: "/scratch1/NCEPDEV/global/glopara/dump"
   NWPROD: "/scratch1/NCEPDEV/global/glopara/svn/verif/global/tags/vsdb/nwprod"
-  RTMFIX: "/scratch1/NCEPDEV/global/glopara/crtm/2.2.3/fix_update/"
+  RTMFIX: "/scratch2/NCEPDEV/nwprod/NCEPLIBS/fix/crtm_v2.2.6"
   BASE_SVN: "/scratch1/NCEPDEV/global/glopara/svn"
 
   # BASE_GIT - a directory maintained by emc global model developers
@@ -36,16 +36,17 @@ platform: !Platform
   BASE_GIT: "/scratch1/NCEPDEV/global/glopara/git/"
 
   config_base_extras: !expand |
-    export NDATE="$NWPROD/util/exec/ndate"
-    export NHOUR="$NWPROD/util/exec/nhour"
-    export WGRIB="$NWPROD/util/exec/wgrib"
-    export WGRIB2="/apps/wgrib2/2.0.8/intel/18.0.3.222/bin/wgrib2"
-    export COPYGB="$NWPROD/util/exec/copygb"
-    export COPYGB2="$NWPROD/util/exec/copygb2"
-    export GRBINDEX="$NWPROD/util/exec/grbindex"
-    export CNVGRIB="$NWPROD/util/exec/cnvgrib"
-    export CNVGRIB21_GFS="$NWPROD/util/exec/cnvgrib"
-    export POSTGRB2TBL="/scratch2/NCEPDEV/nwprod/NCEPLIBS/src/g2tmpl_v1.5.0/params_grib2_tbl_new"
+     echo "place holder for NWPROD and associated utilities, now go through load_gfs_modules.sh"
+#    export NDATE="$NWPROD/util/exec/ndate"
+#    export NHOUR="$NWPROD/util/exec/nhour"
+#    export WGRIB="$NWPROD/util/exec/wgrib"
+#    export WGRIB2="/apps/wgrib2/2.0.8/intel/18.0.3.222/bin/wgrib2"
+#    export COPYGB="$NWPROD/util/exec/copygb"
+#    export COPYGB2="$NWPROD/util/exec/copygb2"
+#    export GRBINDEX="$NWPROD/util/exec/grbindex"
+#    export CNVGRIB="$NWPROD/util/exec/cnvgrib"
+#    export CNVGRIB21_GFS="$NWPROD/util/exec/cnvgrib"
+#    export POSTGRB2TBL="/scratch2/NCEPDEV/nwprod/NCEPLIBS/src/g2tmpl_v1.5.0/params_grib2_tbl_new"
 
   # CHGRP_RSTPROD_COMMAND - this specifies the command to use to
   # restrict access to NOAA "rstprod" data restriction class.
@@ -154,7 +155,7 @@ platform: !Platform
   # Automatically detect the least used scrub area the user can access:
   least_used_temp: !Immediate
      - !FirstTrue
-       - do: !expand "{doc.user_places.SCRUB}"
+       - do: !expand "{doc.user_places.DATAROOT}"
          when: !calc doc.user_places.FIX_SCRUB
        - otherwise: !FirstMax
          - do: /scratch1/NCEPDEV/stmp2
@@ -171,10 +172,16 @@ platform: !Platform
 
   # long_term_temp - area for storage of data that must be passed
   # between jobs or shared with programs external to this workflow.
-  long_term_temp: !expand "{doc.platform.least_used_temp}/{tools.env('USER')}"
+  COMROOT: !FirstTrue
+       - do: !expand "{doc.user_places.COMROOT}"
+         when: !calc doc.user_places.FIX_SCRUB
+       - otherwise: !expand "{doc.platform.least_used_temp}/{tools.env('USER')}"
 
   # short_term_temp - area for data that is only needed within one job:
-  short_term_temp: !expand "{doc.platform.least_used_temp}/{tools.env('USER')}"
+  DATAROOT: !FirstTrue
+       - do: !expand "{doc.user_places.DATAROOT}"
+         when: !calc doc.user_places.FIX_SCRUB
+       - otherwise: !expand "{doc.platform.least_used_temp}/{tools.env('USER')}"
 
   # EXPROOT - Parent directory  of the expdir (experiment directory)
   EXPROOT: !expand "{doc.user_places.EXPROOT}"

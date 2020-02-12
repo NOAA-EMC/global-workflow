@@ -65,8 +65,8 @@ config_base:
     export RTMFIX="{doc.places.RTMFIX}"
     
     export HOMEDIR="{doc.places.HOMEgfs}"
-    export STMP="{doc.places.SHORT_TERM_TEMP}"
-    export PTMP="{doc.places.LONG_TERM_TEMP}"
+    export STMP="{doc.places.DATAROOT}"
+    export PTMP="{doc.places.COMROOT}"
     export NOSCRUB="{doc.places.NOSCRUB}"
     
     # Base directories for various builds
