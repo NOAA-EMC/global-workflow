@@ -268,7 +268,7 @@ def get_gfs_interval(gfs_cyc):
     return interval
 
 
-def get_resources(machine, cfg, task, cdump='gdas'):
+def get_resources(machine, cfg, task, reservation, cdump='gdas'):
 
     scheduler = get_scheduler(machine)
 
@@ -313,10 +313,16 @@ def get_resources(machine, cfg, task, cdump='gdas'):
             resstr += '<shared></shared>'
 
         if machine in ['WCOSS_DELL_P3']:
-            natstr = "-R 'affinity[core(%d)]'" % (threads)
+            if not reservation in ['NONE']:
+               natstr = "-U %s -R 'affinity[core(%d)]'" % (reservation, threads)
+            else:
+               natstr = "-R 'affinity[core(%d)]'" % (threads)
 
             if task in ['arch', 'earc', 'getic']:
-                 natstr = "-R 'affinity[core(1)]'"
+                if not reservation in ['NONE']:
+                   natstr = "-U %s -R 'affinity[core(1)]'" % (reservation)
+                else:
+                  natstr = "-R 'affinity[core(1)]'"
 
 
     elif machine in ['WCOSS']:

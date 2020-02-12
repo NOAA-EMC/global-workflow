@@ -217,6 +217,7 @@ def get_gdasgfs_resources(dict_configs, cdump='gdas'):
     do_gempak = base.get('DO_GEMPAK', 'NO').upper()
     do_awips = base.get('DO_AWIPS', 'NO').upper()
     do_gldas = base.get('DO_GLDAS', 'NO').upper()
+    reservation = base.get('RESERVATION', 'NONE').upper()
 
     #tasks = ['prep', 'anal', 'fcst', 'post', 'vrfy', 'arch']
     tasks = ['prep', 'anal']
@@ -239,7 +240,7 @@ def get_gdasgfs_resources(dict_configs, cdump='gdas'):
 
         cfg = dict_configs[task]
 
-        wtimestr, resstr, queuestr, memstr, natstr = wfu.get_resources(machine, cfg, task, cdump=cdump)
+        wtimestr, resstr, queuestr, memstr, natstr = wfu.get_resources(machine, cfg, task, reservation, cdump=cdump)
         taskstr = '%s_%s' % (task.upper(), cdump.upper())
 
         strings = []
@@ -267,6 +268,7 @@ def get_hyb_resources(dict_configs):
     scheduler = wfu.get_scheduler(machine)
     lobsdiag_forenkf = base.get('lobsdiag_forenkf', '.false.').upper()
     eupd_cyc= base.get('EUPD_CYC', 'gdas').upper()
+    reservation = base.get('RESERVATION', 'NONE').upper()
 
     dict_resources = OrderedDict()
 
@@ -287,7 +289,7 @@ def get_hyb_resources(dict_configs):
 
             cfg = dict_configs['eobs'] if task in ['eomg'] else dict_configs[task]
 
-            wtimestr, resstr, queuestr, memstr, natstr = wfu.get_resources(machine, cfg, task, cdump=cdump)
+            wtimestr, resstr, queuestr, memstr, natstr = wfu.get_resources(machine, cfg, task, reservation, cdump=cdump)
 
             taskstr = '%s_%s' % (task.upper(), cdump.upper())
 
@@ -310,7 +312,7 @@ def get_hyb_resources(dict_configs):
 
         cfg = dict_configs[task]
 
-        wtimestr, resstr, queuestr, memstr, natstr = wfu.get_resources(machine, cfg, task, cdump=cdump)
+        wtimestr, resstr, queuestr, memstr, natstr = wfu.get_resources(machine, cfg, task, reservation, cdump=cdump)
 
         taskstr = '%s_%s' % (task.upper(), cdump.upper())
 
