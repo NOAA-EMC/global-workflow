@@ -193,7 +193,7 @@ elif [ $step = "eobs" -o $step = "eomg" ]; then
     export wtime_eomg="01:00:00"
     export nth_eobs=2
     if [ $CASE = "C768" ]; then
-      export npe_eobs=400
+      export npe_eobs=100
     elif [ $CASE = "C384" ]; then
       export npe_eobs=42
     elif [ $CASE = "C192" ]; then
