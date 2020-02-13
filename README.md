@@ -6,7 +6,7 @@ The global-workflow depends on the following prerequisities to be available on t
 * workload management platform / scheduler - LSF or SLURM
 * workflow manager - ROCOTO (https://github.com/christopherwharrop/rocoto)
 * modules - NCEPLIBS (various), esmf v8.0.0bs48, hdf5, intel/ips v18, impi v18, wgrib2, netcdf v4.7.0, hpss, gempak (see module files under /modulefiles for additional details)
-* manage_externals - A utility from ESMCI to checkout external dependencies. Manage_externals can be obtained at the following address and should in the users PATH: https://github.com/ESMCI/manage_externals
+* manage_externals - A utility from ESMCI to checkout external dependencies. Manage_externals can be obtained at the following address and should be in the users PATH: https://github.com/ESMCI/manage_externals
 
 The global-workflow current supports the following machines:
 
@@ -26,7 +26,7 @@ Run manage_externals (checkout_externals) while at top of clone:
 $ checkout_externals
 ```
 
-If checkout_externals is not in PATH then use full path to it:
+If checkout_externals is not in your $PATH then use full path to it:
 
 * WCOSS-Dell: /gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/manage_externals/manic-v1.1.6/checkout_externals
 * WCOSS-Cray: /gpfs/hps3/emc/global/noscrub/emc.glopara/git/manage_externals/manic-v1.1.6/checkout_externals
