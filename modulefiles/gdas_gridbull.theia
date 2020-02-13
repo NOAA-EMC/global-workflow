@@ -1,7 +1,0 @@
-#%Module################################################
-# Modfule file for gdas_gridbull
-########################################################
-module load intel/14.0.2
-module use -a $MOD_PATH
-module load bacio/v2.0.2
-module load w3nco/v2.0.6
