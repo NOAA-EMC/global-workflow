@@ -47,7 +47,7 @@ if [ $VRFYFITS = "YES" ]; then
     elif [ $machine = "WCOSS_DELL_P3" ]; then
         export fitdir="$BASE_SVN/verif/global/Fit2Obs/ncf-vqc/batrun"
         export PREPQFITSH="$fitdir/subfits_dell_nems"
-    elif [ $machine = "THEIA" -o $machine = "HERA" ]; then
+    elif [ $machine = "HERA" ]; then
         export fitdir="$BASE_GIT/Fit2Obs/batrun"
         export PREPQFITSH="$fitdir/subfits_theia_slurm"
     fi

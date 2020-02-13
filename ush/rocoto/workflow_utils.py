@@ -16,7 +16,6 @@ import rocoto
 
 DATE_ENV_VARS=['CDATE','SDATE','EDATE']
 SCHEDULER_MAP={'HERA':'slurm',
-               'THEIA':'slurm',
                'WCOSS':'lsf',
                'WCOSS_DELL_P3':'lsf',
                'WCOSS_C':'lsfcray'}
@@ -145,12 +144,10 @@ def config_parser(files):
 
 def detectMachine():
 
-    machines = ['THEIA', 'HERA', 'WCOSS_C', 'WCOSS_DELL_P3']
+    machines = ['HERA', 'WCOSS_C', 'WCOSS_DELL_P3']
 
     if os.path.exists('/scratch1/NCEPDEV'):
         return 'HERA'
-    elif os.path.exists('/scratch3/NCEPDEV'):
-        return 'THEIA'
     elif os.path.exists('/gpfs') and os.path.exists('/etc/SuSE-release'):
         return 'WCOSS_C'
     elif os.path.exists('/gpfs/dell2'):
@@ -302,7 +299,7 @@ def get_resources(machine, cfg, task, reservation, cdump='gdas'):
     if scheduler in ['slurm']:
         natstr = '--export=NONE'
 
-    if machine in ['THEIA', 'HERA', 'WCOSS_C', 'WCOSS_DELL_P3']:
+    if machine in ['HERA', 'WCOSS_C', 'WCOSS_DELL_P3']:
 
         if machine in ['HERA']:
             resstr = '<nodes>%d:ppn=%d:tpp=%d</nodes>' % (nodes, ppn, threads)
@@ -348,7 +345,7 @@ def create_crontab(base, cronint=5):
         return
 
 # Leaving the code for a wrapper around crontab file if needed again later
-#    if check_slurm() and base['machine'] in ['THEIA']:
+#    if check_slurm():
 #
 #        cronintstr = '*/%d * * * *' % cronint
 #        rocotorunstr = '%s -d %s/%s.db -w %s/%s.xml' % (rocotoruncmd, base['EXPDIR'], base['PSLOT'], base['EXPDIR'], base['PSLOT'])

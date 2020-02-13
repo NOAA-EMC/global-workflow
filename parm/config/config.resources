@@ -23,8 +23,6 @@ if [[ "$machine" = "WCOSS_DELL_P3" ]]; then
    export npe_node_max=28
 elif [[ "$machine" = "WCOSS_C" ]]; then
    export npe_node_max=24
-elif [[ "$machine" = "THEIA" ]]; then
-   export npe_node_max=24
 elif [[ "$machine" = "JET" ]]; then
    export npe_node_max=24
 elif [[ "$machine" = "HERA" ]]; then
@@ -92,7 +90,7 @@ elif [ $step = "vrfy" ]; then
     export npe_node_vrfy_gfs=1
     if [[ "$machine" == "WCOSS_C" ]]; then
 	    export memory_vrfy="3072M"
-    elif [[ "$machine" == "THEIA" ]]; then
+    elif [[ "$machine" == "HERA" ]]; then
 	    export memory_vrfy="16384M"
     fi
 

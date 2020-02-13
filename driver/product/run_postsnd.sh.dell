@@ -51,7 +51,6 @@ export MP_STDOUTMODE=ordered
 
 #export machine="WCOSS_C"
 machine="WCOSS_DELL_P3"
-#machine="THEIA"
 #machine="JET"
 export npe_postsnd=12
 export npe_postsndcfp=10

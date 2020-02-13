@@ -3,8 +3,8 @@
 machine=${1:-${machine:-"WCOSS_C"}}
 machine=$(echo $machine | tr '[a-z]' '[A-Z]')
 
-if [ $machine = "THEIA" ]; then
-    doxygen=/scratch3/NCEPDEV/hwrf/save/Samuel.Trahan/doxygen-1.8.10/bin/doxygen
+if [ $machine = "HERA" ]; then
+    doxygen=/usr/bin/doxygen
 elif [ $machine = "WCOSS_C" ]; then
     doxygen=/gpfs/hps3/emc/hwrf/noscrub/soft/doxygen-1.8.10/bin/doxygen
 elif [ $machine = "WCOSS" ]; then
