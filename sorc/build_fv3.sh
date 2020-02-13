@@ -16,7 +16,6 @@ if [ ! -d "../exec" ]; then
   mkdir ../exec
 fi
 
-if [ $target = theia ]; then target=theia.intel ; fi
 if [ $target = hera ]; then target=hera.intel ; fi
 
 cd fv3gfs.fd/

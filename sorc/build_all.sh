@@ -1,6 +1,8 @@
 #!/bin/sh
-set -eu
+set +x
 #------------------------------------
+# Exception handling is now included.
+#
 # USER DEFINED STUFF:
 #
 # USE_PREINST_LIBS: set to "true" to use preinstalled libraries.
@@ -39,6 +41,12 @@ source ./machine-setup.sh > /dev/null 2>&1
 . ./partial_build.sh
 
 #------------------------------------
+# Exception Handling Init
+#------------------------------------
+ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
+err=0
+
+#------------------------------------
 # build libraries first
 #------------------------------------
 $Build_libs && {
@@ -51,61 +59,73 @@ echo " .... Library build not currently supported .... "
 # build fv3
 #------------------------------------
 $Build_fv3gfs && {
-if [ ! -d fv3gfs.fd ]; then
-  echo " **** SKIPPING: FV3GFS sorc folder (fv3gfs.fd) not present"
-else
-  echo " .... Building fv3 .... "
-  ./build_fv3.sh > $logs_dir/build_fv3.log 2>&1
+echo " .... Building fv3 .... "
+./build_fv3.sh > $logs_dir/build_fv3.log 2>&1
+rc=$?
+if [[ $rc -ne 0 ]] ; then
+    echo "Fatal error in building fv3."
+    echo "The log file is in $logs_dir/build_fv3.log"
 fi
+((err+=$rc))
 }
 
 #------------------------------------
 # build gsi
 #------------------------------------
 $Build_gsi && {
-if [ ! -d gsi.fd ]; then
-  echo " **** SKIPPING: GSI sorc folder (gsi.fd) not present"
-else
-  echo " .... Building gsi .... "
-  ./build_gsi.sh > $logs_dir/build_gsi.log 2>&1
+echo " .... Building gsi .... "
+./build_gsi.sh > $logs_dir/build_gsi.log 2>&1
+rc=$?
+if [[ $rc -ne 0 ]] ; then
+    echo "Fatal error in building gsi."
+    echo "The log file is in $logs_dir/build_gsi.log"
 fi
+((err+=$rc))
 }
 
 #------------------------------------
 # build ncep_post
 #------------------------------------
 $Build_ncep_post && {
-if [ ! -d gfs_post.fd ]; then
-  echo " **** SKIPPING: EMC_post sorc folder (gfs_post.fd) not present"
-else
-  echo " .... Building ncep_post .... "
-  ./build_ncep_post.sh > $logs_dir/build_ncep_post.log 2>&1
+echo " .... Building ncep_post .... "
+./build_ncep_post.sh > $logs_dir/build_ncep_post.log 2>&1
+rc=$?
+if [[ $rc -ne 0 ]] ; then
+    echo "Fatal error in building ncep_post."
+    echo "The log file is in $logs_dir/build_ncep_post.log"
 fi
+((err+=$rc))
 }
 
 #------------------------------------
 # build ufs_utils
 #------------------------------------
 $Build_ufs_utils && {
-if [ ! -d ufs_utils.fd ]; then
-  echo " **** SKIPPING: UFS_UTILS sorc folder (ufs_utils.fd) not present"
-else
-  echo " .... Building ufs_utils .... "
-  ./build_ufs_utils.sh > $logs_dir/build_ufs_utils.log 2>&1
+echo " .... Building ufs_utils .... "
+./build_ufs_utils.sh > $logs_dir/build_ufs_utils.log 2>&1
+rc=$?
+if [[ $rc -ne 0 ]] ; then
+    echo "Fatal error in building ufs_utils."
+    echo "The log file is in $logs_dir/build_ufs_utils.log"
 fi
+((err+=$rc))
 }
 
 #------------------------------------
-# build gfs_wafs 
+# build gfs_wafs - optional checkout 
 #------------------------------------
-$Build_gfs_wafs  && {
-if [ ! -d gfs_wafs.fd ]; then
-  echo " **** SKIPPING: GFS WAFS sorc folder (gfs_wafs.fd) not present"
-else
+if [ -d gfs_wafs.fd ]; then
+  $Build_gfs_wafs  && {
   echo " .... Building gfs_wafs  .... "
-  ./build_gfs_wafs.sh > $logs_dir/build_gfs_wafs .log 2>&1
-fi
+  ./build_gfs_wafs.sh > $logs_dir/build_gfs_wafs.log 2>&1
+  rc=$?
+  if [[ $rc -ne 0 ]] ; then
+    echo "Fatal error in building gfs_wafs."
+    echo "The log file is in $logs_dir/build_gfs_wafs.log"
+  fi
+  ((err+=$rc))
 }
+fi
 
 #------------------------------------
 # build sfcanl_nsttfchg 
@@ -113,6 +133,12 @@ fi
 $Build_sfcanl_nsttfchg && {
 echo " .... Building gaussian_sfcanl and nst_tf_chg .... "
 ./build_sfcanl_nsttfchg.sh > $logs_dir/build_sfcanl_nsttfchg.log 2>&1
+rc=$?
+if [[ $rc -ne 0 ]] ; then
+    echo "Fatal error in building gaussian_sfcanl and nst_tf_chg."
+    echo "The log file is in $logs_dir/build_sfcanl_nsttfchg.log"
+fi
+((err+=$rc))
 }
 
 #------------------------------------
@@ -121,6 +147,12 @@ echo " .... Building gaussian_sfcanl and nst_tf_chg .... "
 $Build_enkf_chgres_recenter && {
 echo " .... Building enkf_chgres_recenter .... "
 ./build_enkf_chgres_recenter.sh > $logs_dir/build_enkf_chgres_recenter.log 2>&1
+rc=$?
+if [[ $rc -ne 0 ]] ; then
+    echo "Fatal error in building enkf_chgres_recenter."
+    echo "The log file is in $logs_dir/build_enkf_chgres_recenter.log"
+fi
+((err+=$rc))
 }
 
 #------------------------------------
@@ -129,6 +161,12 @@ echo " .... Building enkf_chgres_recenter .... "
 $Build_tropcy && {
 echo " .... Building tropcy_NEMS .... "
 ./build_tropcy_NEMS.sh > $logs_dir/build_tropcy_NEMS.log 2>&1
+rc=$?
+if [[ $rc -ne 0 ]] ; then
+    echo "Fatal error in building tropcy_NEMS."
+    echo "The log file is in $logs_dir/build_tropcy_NEMS.log"
+fi
+((err+=$rc))
 }
 
 #------------------------------------
@@ -137,6 +175,12 @@ echo " .... Building tropcy_NEMS .... "
 $Build_gdas && {
 echo " .... Building gdas .... "
 ./build_gdas.sh > $logs_dir/build_gdas.log 2>&1
+rc=$?
+if [[ $rc -ne 0 ]] ; then
+    echo "Fatal error in building gdas."
+    echo "The log file is in $logs_dir/build_gdas.log"
+fi
+((err+=$rc))
 }
 
 #------------------------------------
@@ -145,6 +189,12 @@ echo " .... Building gdas .... "
 $Build_gfs_fbwndgfs && {
 echo " .... Building gfs_fbwndgfs .... "
 ./build_gfs_fbwndgfs.sh > $logs_dir/build_gfs_fbwndgfs.log 2>&1
+rc=$?
+if [[ $rc -ne 0 ]] ; then
+    echo "Fatal error in building gfs_fbwndgfs."
+    echo "The log file is in $logs_dir/build_gfs_fbwndgfs.log"
+fi
+((err+=$rc))
 }
 
 #------------------------------------
@@ -153,6 +203,12 @@ echo " .... Building gfs_fbwndgfs .... "
 $Build_gfs_overpdtg2 && {
 echo " .... Building gfs_overpdtg2 .... "
 ./build_gfs_overpdtg2.sh > $logs_dir/build_gfs_overpdtg2.log 2>&1
+rc=$?
+if [[ $rc -ne 0 ]] ; then
+    echo "Fatal error in building gfs_overpdtg2."
+    echo "The log file is in $logs_dir/build_gfs_overpdtg2.log"
+fi
+((err+=$rc))
 }
 
 #------------------------------------
@@ -161,6 +217,12 @@ echo " .... Building gfs_overpdtg2 .... "
 $Build_gfs_wintemv && {
 echo " .... Building gfs_wintemv .... "
 ./build_gfs_wintemv.sh > $logs_dir/build_gfs_wintemv.log 2>&1
+rc=$?
+if [[ $rc -ne 0 ]] ; then
+    echo "Fatal error in building gfs_wintemv."
+    echo "The log file is in $logs_dir/build_gfs_wintemv.log"
+fi
+((err+=$rc))
 }
 
 #------------------------------------
@@ -169,6 +231,12 @@ echo " .... Building gfs_wintemv .... "
 $Build_gfs_bufrsnd && {
 echo " .... Building gfs_bufrsnd .... "
 ./build_gfs_bufrsnd.sh > $logs_dir/build_gfs_bufrsnd.log 2>&1
+rc=$?
+if [[ $rc -ne 0 ]] ; then
+    echo "Fatal error in building gfs_bufrsnd."
+    echo "The log file is in $logs_dir/build_gfs_bufrsnd.log"
+fi
+((err+=$rc))
 }
 
 #------------------------------------
@@ -177,6 +245,12 @@ echo " .... Building gfs_bufrsnd .... "
 $Build_fv3nc2nemsio && {
 echo " .... Building fv3nc2nemsio .... "
 ./build_fv3nc2nemsio.sh > $logs_dir/build_fv3nc2nemsio.log 2>&1
+rc=$?
+if [[ $rc -ne 0 ]] ; then
+    echo "Fatal error in building fv3nc2nemsio."
+    echo "The log file is in $logs_dir/build_fv3nc2nemsio.log"
+fi
+((err+=$rc))
 }
 
 #------------------------------------
@@ -185,6 +259,12 @@ echo " .... Building fv3nc2nemsio .... "
 $Build_regrid_nemsio && {
 echo " .... Building regrid_nemsio .... "
 ./build_regrid_nemsio.sh > $logs_dir/build_regrid_nemsio.log 2>&1
+rc=$?
+if [[ $rc -ne 0 ]] ; then
+    echo "Fatal error in building regrid_nemsio."
+    echo "The log file is in $logs_dir/build_regrid_nemsio.log"
+fi
+((err+=$rc))
 }
 
 #------------------------------------
@@ -195,8 +275,39 @@ if [ $target = wcoss -o $target = wcoss_cray -o $target = wcoss_dell_p3 ]; then
  $Build_gfs_util && {
  echo " .... Building gfs_util .... "
  ./build_gfs_util.sh > $logs_dir/build_gfs_util.log 2>&1
+ rc=$?
+ if [[ $rc -ne 0 ]] ; then
+     echo "Fatal error in building gfs_util."
+     echo "The log file is in $logs_dir/build_gfs_util.log"
+ fi
+ ((err+=$rc))
  }
 fi
 
-echo;echo "----- Build system finished -----"
+#------------------------------------
+# build prod_util
+#------------------------------------
+$Build_prod_util && {
+echo " .... prod_util build not currently supported .... "
+#echo " .... Building prod_util .... "
+#./build_prod_util.sh > $logs_dir/build_prod_util.log 2>&1
+}
+
+#------------------------------------
+# build grib_util
+#------------------------------------
+$Build_grib_util && {
+echo " .... grib_util build not currently supported .... "
+#echo " .... Building grib_util .... "
+#./build_grib_util.sh > $logs_dir/build_grib_util.log 2>&1
+}
+
+#------------------------------------
+# Exception Handling
+#------------------------------------
+[[ $err -ne 0 ]] && echo "FATAL BUILD ERROR: Please check the log file for detail, ABORT!"
+$ERRSCRIPT || exit $err
+
+echo;echo " .... Build system finished .... "
+
 exit 0

@@ -10,7 +10,7 @@ export wtime_fv3ic="00:30:00"
 export npe_fv3ic=1
 export npe_node_fv3ic=1
 export nth_fv3ic=${NTHREADS_CHGRES:-24}
-if [ $machine = THEIA -o $machine = HERA ]; then
+if [ $machine = HERA ]; then
   export npe_fv3ic=4
   export npe_node_fv3ic=4
   export nth_fv3ic=1
