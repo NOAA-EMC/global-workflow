@@ -8,22 +8,14 @@
 FC = $(myFC) $(myFCFLAGS)
 CPP = $(myCPP) $(myCPPFLAGS)
 
-  ifeq ($(target),wcoss_dell_p3)
-  NCLIB = -L/usrx/local/prod/packages/ips/18.0.1/netcdf/4.5.0/lib -lnetcdff -lnetcdf
-  HDF5_LDFLAGS_C= -L/usrx/local/prod/packages/ips/18.0.1/hdf5/1.10.1/lib -lhdf5_hl -lhdf5
-  else
-  NETCDF_INC =/apps/netcdf/4.7.0/intel/18.0.5.274/include/
-  NCLIB = -L/apps/netcdf/4.7.0/intel/18.0.5.274/lib  -lnetcdf -lnetcdff
-  HDF5_LDFLAGS_C= -L/apps/modules/modulefamilies/intel/hdf5/1.10.5
-  endif
 FFLAGS   = -I$(NETCDF_INC) \
     	   -I$(NEMSIO_INC) \
            -I$(SIGIO_INC4) \
            -I$(W3EMC_INC4)
 
-LIBS =     $(NCLIB) \
-           $(HDF5_LDFLAGS_C) \
-	   $(NEMSIO_LIB) \
+LIBS =    -L$(NETCDF_LIB) -lnetcdf -lnetcdff \
+          -L$(HDF5_LIB) -lhdf5_hl -lhdf5 \
+	       $(NEMSIO_LIB) \
            $(W3EMC_LIB4) \
            $(W3NCO_LIB4) \
            $(BUFR_LIB4) \
