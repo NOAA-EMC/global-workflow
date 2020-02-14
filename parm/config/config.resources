@@ -223,9 +223,13 @@ elif [ $step = "eupd" ]; then
         export nth_eupd=9
       fi
     elif [ $CASE = "C384" ]; then
-      export npe_eupd=84
+      export npe_eupd=270
       export nth_eupd=2
+      if [[ "$machine" = "WCOSS_DELL_P3" ]]; then
+        export nth_eupd=9
+      fi
       if [[ "$machine" = "HERA" ]]; then
+        export npe_eupd=84
         export nth_eupd=10
       fi
     elif [ $CASE = "C192" -o $CASE = "C96" -o $CASE = "C48" ]; then
