@@ -30,7 +30,7 @@ if [[ "$CDUMP" == "gfs" ]] ; then
 fi
 
 if [ $QUILTING = ".true." ]; then
-    export npe_fv3=$(echo " $npe_fcst + $WRITE_GROUP * $WRTTASK_PER_GROUP" | bc)
+    export npe_fv3=$(echo " $npe_fv3 + $WRITE_GROUP * $WRTTASK_PER_GROUP" | bc)
     export npe_fcst=$npe_fv3
     export npe_fcst_gfs=$(echo " $npe_fcst_gfs  + $WRITE_GROUP_GFS * $WRTTASK_PER_GROUP_GFS" | bc)
 fi
