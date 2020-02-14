@@ -71,16 +71,16 @@ enkf_resource_table: !Select
     C192:
       #          ranks ppn  wallclock          threads  MB_per_rank
       ecen:     [  84,   12, !timedelta "00:30:00", 2,  null  ]
-      eobs:     [  72,    6, !timedelta "00:45:00", 4,  null  ]
-      eomg:     [  72,    6, !timedelta "01:00:00", 2,  null  ]
+      eobs:     [  72,    6, !timedelta "00:15:00", 4,  null  ]
+      eomg:     [  72,    6, !timedelta "00:30:00", 2,  null  ]
       eupd:     [ 120,   12, !timedelta "00:30:00", 4,  null  ]
       epos:     [  84,   12, !timedelta "00:30:00", 2,  null  ]
       efcs_wall:  !timedelta "00:30:00"
       efcs_ppn: 40
     C384:
       #          ranks ppn  wallclock           threads  MB_per_rank
-      eobs:     [ 140,   14, !timedelta "00:30:00", max, 4.2e+3  ]
-      eomg:     [ 140,   14, !timedelta "01:00:00", max, 4.0e+3  ]
+      eobs:     [ 140,   14, !timedelta "00:20:00", max, 4.2e+3  ]
+      eomg:     [ 140,   14, !timedelta "00:45:00", max, 4.0e+3  ]
       eupd:     [ 360,    4, !timedelta "00:30:00", max, 1.5e+3  ]
       ecen:     [  80,    4, !timedelta "01:00:00", max, 15.7e+3 ]
       epos:     [  80,    4, !timedelta "02:00:00", max, 8.6e+3 ]
