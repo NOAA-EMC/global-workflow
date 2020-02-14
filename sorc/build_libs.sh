@@ -18,8 +18,6 @@ rm -rf libpng* libjasper*  lib*.a incmod/* modulefiles/*
 # --- hopefully this will lead to single version in the future
 if [ $target = wcoss_cray ]; then
   bufr_ver=v11.0.1
-elif [ $target = "theia" ]; then
-  bufr_ver=v10.2.5
 fi
 # --------------------------------------------------------------
 

@@ -45,7 +45,7 @@ if [ $VRFYFITS = "YES" ]; then
     elif [ $machine = "WCOSS_DELL_P3" ]; then
         export fitdir="$BASE_SVN/verif/global/parafits.fv3nems/batrun"
         export PREPQFITSH="$fitdir/subfits_dell_nems"
-    elif [ $machine = "THEIA" -o $machine = "HERA" ]; then
+    elif [ $machine = "HERA" ]; then
         export fitdir="$BASE_GIT/Fit2Obs/batrun"
         export PREPQFITSH="$fitdir/subfits_theia_slurm"
     fi
@@ -205,10 +205,7 @@ if [ "$VRFYTRAK" = "YES" ]; then
         export FHOUT_CYCLONE=6            
         export FHMAX_CYCLONE=$(( FHMAX_GFS<240 ? FHMAX_GFS : 240 ))
     fi
-    if [ $machine = "THEIA" ]; then
-       export COMROOTp1="/scratch4/NCEPDEV/rstprod/com"
-       export COMINsyn="$COMROOTp1/arch/prod/syndat"
-    elif [ $machine = "HERA" ]; then
+    if [ $machine = "HERA" ]; then
        export COMROOTp1="/scratch1/NCEPDEV/rstprod/com"
        export COMINsyn=${COMINsyn:-${COMROOTp1}/arch/prod/syndat}
     fi
