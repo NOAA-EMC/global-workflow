@@ -178,7 +178,7 @@ if [ ! -d $memdir ]; then mkdir -p $memdir; fi
 GDATE=$($NDATE -$assim_freq $CDATE)
 gPDY=$(echo $GDATE | cut -c1-8)
 gcyc=$(echo $GDATE | cut -c9-10)
-gmemdir=$ROTDIR/${rprefix}.$gPDY/$gcyc/$memchar
+gmemdir=${gmemdir:-$ROTDIR/${rprefix}.$gPDY/$gcyc/$memchar}
 
 if [ $cplchm = ".true." ]; then
 #   # memdir=${GESROOT}/${RUN_ENVIR}/gefs.${PDY}/${cyc}/${mem}
@@ -1050,6 +1050,8 @@ if [ $cplchm = ".true." ]; then
   gfdlmp_onoff=$NTRACER
   archive_step = -1 
   chem_hist_outname = "chem_out_"
+  restart_inname = "INPUT/"
+  restart_outname = "RESTART/" 
   emi_inname  = "${EMIDIR}${CASE}/$SMONTH"
   dust_inname = "${EMIDIR}${CASE}/$SMONTH"
   fireemi_inname  = "${chemdir}"
