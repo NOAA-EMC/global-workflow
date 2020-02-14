@@ -70,16 +70,16 @@
 
 # 0.c Defining model grids
 
-  uoutpGRD=${uoutpGRD:?buoyNotSet}
+  waveuoutpGRD=${waveuoutpGRD:?buoyNotSet}
 
 # 0.c.1 Grids
 
   export waveGRD=${waveGRD?Var waveGRD Not Set}
-  export sbsGRD=${sbsGRD?Var sbsGRD Not Set}
+  export wavesbsGRD=${wavesbsGRD?Var wavesbsGRD Not Set}
 
 # 0.c.3 extended global grid and rtma transfer grid
-  export interpGRD=${interpGRD?Var postGRD Not Set}
-  export postGRD=${postGRD?Var postGRD Not Set}
+  export waveinterpGRD=${waveinterpGRD?Var wavepostGRD Not Set}
+  export wavepostGRD=${wavepostGRD?Var wavepostGRD Not Set}
 
 # 0.c.4 Define a temporary directory for storing ascii point output files
 #       and flush it
@@ -100,10 +100,10 @@
   echo 'Grid information  :'
   echo '-------------------'
   echo "   Native wave grids  : $waveGRD"
-  echo "   Side-by-side grids : $sbsGRD"
-  echo "   Interpolated grids : $interpGRD"
-  echo "   Post-process grids : $postGRD"
-  echo "   Output points : $uoutpGRD"
+  echo "   Side-by-side grids : $wavesbsGRD"
+  echo "   Interpolated grids : $waveinterpGRD"
+  echo "   Post-process grids : $wavepostGRD"
+  echo "   Output points : $waveuoutpGRD"
   echo ' '
   [[ "$LOUD" = YES ]] && set -x
 
@@ -137,22 +137,22 @@
   [[ "$LOUD" = YES ]] && set -x
 
 # Copy model definition files
-  for grdID in $waveGRD $sbsGRD $postGRD $interpGRD $uoutpGRD
+  for grdID in $waveGRD $wavesbsGRD $wavepostGRD $waveinterpGRD $waveuoutpGRD
   do
-    if [ -f "$COMIN/rundata/${MDC}.mod_def.${grdID}" ]
+    if [ -f "$COMIN/rundata/${COMPONENTwave}.mod_def.${grdID}" ]
     then
       set +x
       echo " Mod def file for $grdID found in ${COMIN}/rundata. copying ...."
       [[ "$LOUD" = YES ]] && set -x
 
-      cp -f $COMIN/rundata/${MDC}.mod_def.${grdID} mod_def.$grdID
+      cp -f $COMIN/rundata/${COMPONENTwave}.mod_def.${grdID} mod_def.$grdID
       iloop=`expr $iloop + 1`
 
     fi
 
   done
 
-  for grdID in $waveGRD $sbsGRD $postGRD $interpGRD $uoutpGRD
+  for grdID in $waveGRD $wavesbsGRD $wavepostGRD $waveinterpGRD $waveuoutpGRD
   do
     if [ ! -f mod_def.$grdID ]
     then
@@ -217,7 +217,7 @@
 
   if [ "$grintOK" = 'yes' ]
   then
-    for intGRD in $interpGRD
+    for intGRD in $waveinterpGRD
     do
       if [ -f $FIXwave/${intGRD}_interp.inp.tmpl ]
       then
@@ -248,7 +248,7 @@
 
   if [ "$gribOK" = 'yes' ]
   then
-    for grbGRD in $interpGRD $postGRD
+    for grbGRD in $waveinterpGRD $wavepostGRD
     do
       if [ -f $FIXwave/ww3_grib2.${grbGRD}.inp.tmpl ]
       then
@@ -332,7 +332,7 @@
 
   if [ "$specOK" = 'yes' ] || [ "$bullOK" = 'yes' ]
   then
-    ymdh=`$NDATE -${HINDH} $CDATE`
+    ymdh=`$NDATE -${WAVHINDH} $CDATE`
     tstart="`echo $ymdh | cut -c1-8` `echo $ymdh | cut -c9-10`0000"
     dtspec=3600.            # default time step (not used here)
     sed -e "s/TIME/$tstart/g" \
@@ -342,8 +342,8 @@
         -e "s/FORMAT/F/g" \
                                ww3_outp_spec.inp.tmpl > ww3_outp.inp
    
-    ln -s mod_def.$uoutpGRD mod_def.ww3
-    fhr=$FHMIN
+    ln -s mod_def.$waveuoutpGRD mod_def.ww3
+    fhr=$FHMIN_WAV
     YMD=$(echo $CDATE | cut -c1-8)
     HMS="$(echo $CDATE | cut -c9-10)0000"
     tloop=0
@@ -351,9 +351,9 @@
     tsleep=10
     while [ ${tloop} -le ${tloopmax} ]
     do
-      if [ -f $COMIN/rundata/${WAV_MOD_TAG}.out_pnt.${uoutpGRD}.${YMD}.${HMS} ]
+      if [ -f $COMIN/rundata/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS} ]
       then
-        cp -f $COMIN/rundata/${WAV_MOD_TAG}.out_pnt.${uoutpGRD}.${YMD}.${HMS} ./out_pnt.${uoutpGRD}
+        cp -f $COMIN/rundata/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS} ./out_pnt.${waveuoutpGRD}
         break
       else
         sleep ${tsleep}
@@ -362,8 +362,8 @@
     done
     
     rm -f buoy_tmp.loc buoy_log.ww3 ww3_oup.inp
-    ln -fs ./out_pnt.${uoutpGRD} ./out_pnt.ww3
-    ln -fs ./mod_def.${uoutpGRD} ./mod_def.ww3
+    ln -fs ./out_pnt.${waveuoutpGRD} ./out_pnt.ww3
+    ln -fs ./mod_def.${waveuoutpGRD} ./mod_def.ww3
     $EXECcode/ww3_outp > buoy_lst.loc 2>&1 
     err=$?
 
@@ -492,11 +492,11 @@
 
 # 1.a.2 Loop over forecast time to generate post files 
 # When executed side-by-side, serial mode (cfp when run after the fcst step)
-  fhr=$FHMIN
+  fhr=$FHMIN_WAV
   fhrp=$fhr
   fhrg=$fhr
   iwaitmax=120 # Maximum loop cycles for waiting until wave component output file is ready (fails after max)
-  while [ $fhr -le $FHMAXWAV ]; do
+  while [ $fhr -le $FHMAX_WAV ]; do
     
     ymdh=`$NDATE $fhr $CDATE`
     YMD=$(echo $ymdh | cut -c1-8)
@@ -519,25 +519,25 @@
     export BULLDATA=${DATA}/output_$YMDHMS
     export GRIBDATA=${DATA}/output_$YMDHMS
     export GRDIDATA=${DATA}/output_$YMDHMS
-#    echo "ln -fs $DATA/mod_def.${uoutpGRD} mod_def.ww3" >> ${fcmdnow}
-    ln -fs $DATA/mod_def.${uoutpGRD} mod_def.ww3
+#    echo "ln -fs $DATA/mod_def.${waveuoutpGRD} mod_def.ww3" >> ${fcmdnow}
+    ln -fs $DATA/mod_def.${waveuoutpGRD} mod_def.ww3
 
     if [ $fhr = $fhrp ]
     then
       iwait=0
-      pfile=$COMIN/rundata/${WAV_MOD_TAG}.out_pnt.${uoutpGRD}.${YMD}.${HMS}
+      pfile=$COMIN/rundata/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS}
       while [ ! -s ${pfile} ]; do sleep 10; ((iwait++)) && ((iwait==$iwaitmax)) && break ; echo $iwait; done
       if [ $iwait -eq $iwaitmax ]; then 
-        echo " FATAL ERROR : NO RAW POINT OUTPUT FILE out_pnt.$uoutpGRD
+        echo " FATAL ERROR : NO RAW POINT OUTPUT FILE out_pnt.$waveuoutpGRD
         echo ' '
         [[ "$LOUD" = YES ]] && set -x
-        echo "$WAV_MOD_TAG post $uoutpGRD $date $cycle : point output missing." >> $wavelog
-        postmsg "$jlogfile" "FATAL ERROR : NO RAW POINT OUTPUT FILE out_pnt.$uoutpGRD
+        echo "$WAV_MOD_TAG post $waveuoutpGRD $date $cycle : point output missing." >> $wavelog
+        postmsg "$jlogfile" "FATAL ERROR : NO RAW POINT OUTPUT FILE out_pnt.$waveuoutpGRD
         err=6; export err;${errchk}
         exit $err
       fi
-#    echo "cp -f ${pfile} ./out_pnt.${uoutpGRD} > cpoutp_$uoutpGRD.out 2>&1" >> ${fcmdnow}
-      cp -f ${pfile} ./out_pnt.${uoutpGRD} > cpoutp_$uoutpGRD.out 2>&1
+#    echo "cp -f ${pfile} ./out_pnt.${waveuoutpGRD} > cpoutp_$waveuoutpGRD.out 2>&1" >> ${fcmdnow}
+      cp -f ${pfile} ./out_pnt.${waveuoutpGRD} > cpoutp_$waveuoutpGRD.out 2>&1
 
       if [ "$specOK" = 'yes' ]
       then
@@ -592,16 +592,16 @@
       if [ "$grintOK" = 'yes' ]
       then
         nigrd=1
-        for grdID in $interpGRD
+        for grdID in $waveinterpGRD
         do
           case $grdID in
-            glo_15mxt) ymdh_int=`$NDATE -${HINDH} $ymdh`; dt_int=3600.; n_int=9999 ;;
-            glo_30mxt) ymdh_int=`$NDATE -${HINDH} $ymdh`; dt_int=3600.; n_int=9999 ;;
+            glo_15mxt) ymdh_int=`$NDATE -${WAVHINDH} $ymdh`; dt_int=3600.; n_int=9999 ;;
+            glo_30mxt) ymdh_int=`$NDATE -${WAVHINDH} $ymdh`; dt_int=3600.; n_int=9999 ;;
           esac
           echo "$USHwave/wave_grid_interp_sbs.sh $grdID $ymdh_int $dt_int $n_int > grint_$grdID.out 2>&1" >> ${fcmdigrd}.${nigrd}
           if [ "$gribOK" = 'yes' ]
           then
-          gribFL=\'`echo ${OUTPARS}`\'
+          gribFL=\'`echo ${OUTPARS_WAV}`\'
             case $grdID in
               glo_15mxt) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=255 ;;
               glo_30mxt) GRDNAME='global' ; GRDRES=0p50 ; GRIDNR=255  ; MODNR=255 ;;
@@ -616,9 +616,9 @@
 
       if [ "$gribOK" = 'yes' ]
       then
-        for grdID in ${postGRD} # First concatenate grib files for sbs grids
+        for grdID in ${wavepostGRD} # First concatenate grib files for sbs grids
         do
-          gribFL=\'`echo ${OUTPARS}`\'
+          gribFL=\'`echo ${OUTPARS_WAV}`\'
           case $grdID in
               aoc_9km) GRDNAME='arctic' ; GRDRES=9km ; GRIDNR=255  ; MODNR=255  ;;
               ant_9km) GRDNAME='antarc' ; GRDRES=9km ; GRIDNR=255  ; MODNR=255  ;;
@@ -670,12 +670,12 @@
 
     cd $DATA
 
-    FHINCP=$(( DTPNT / 3600 ))
-    FHINCG=$(( DTFLD / 3600 ))
+    FHINCP=$(( DTPNT_WAV / 3600 ))
+    FHINCG=$(( DTFLD_WAV / 3600 ))
     if [ $fhr = $fhrg ]
     then
-      if [ $FHMAX_HF -gt 0 ] && [ $FHOUT_HF -gt 0 ] && [ $fhr -lt $FHMAX_HF ]; then
-        FHINCG=$FHOUT_HF
+      if [ $FHMAX_HF_WAV -gt 0 ] && [ $FHOUT_HF_WAV -gt 0 ] && [ $fhr -lt $FHMAX_HF_WAV ]; then
+        FHINCG=$FHOUT_HF_WAV
       fi
       fhrg=$((fhr+FHINCG))
     fi
@@ -763,8 +763,8 @@ exit
   set +x; [ "$LOUD" = YES -a "$specOK" = 'yes' ] 
   if [ "$specOK" = 'yes' ]
   then
-    export dtspec=$DTPNT   # time step for spectra
-    ymdh=`$NDATE -${HINDH} $CDATE` # start time for spectra output
+    export dtspec=$DTPNT_WAV   # time step for spectra
+    ymdh=`$NDATE -${WAVHINDH} $CDATE` # start time for spectra output
 
     ifile=1
     ilayer=1
@@ -781,7 +781,7 @@ exit
   if [ "$bullOK" = 'yes' ]
   then
     export dtbull=3600.    # time step for bulletins
-    ymdh=`$NDATE -${HINDH} $CDATE` # start time for bulletin output
+    ymdh=`$NDATE -${WAVHINDH} $CDATE` # start time for bulletin output
    
     for buoy in $buoys
     do
@@ -840,7 +840,7 @@ exit
 
   if [ "$grintOK" = 'yes' ]
   then
-    for grdID in $interpGRD
+    for grdID in $waveinterpGRD
     do
       if [ -d grint_$grdID ]
       then
@@ -876,7 +876,7 @@ exit
 
   if [ "$gribOK" = 'yes' ]
   then
-    for grdID in $sbsGRD $postGRD
+    for grdID in $wavesbsGRD $wavepostGRD
     do
       if [ -d grib_$grdID ]
       then
@@ -940,7 +940,7 @@ exit
 
   if ls *.err 1> /dev/null 2>&1
   then
-    for grdID in $waveGRD $sbsGRD $postGRD
+    for grdID in $waveGRD $wavesbsGRD $wavepostGRD
     do 
       if [ -f grib_$grdID.err ]
       then

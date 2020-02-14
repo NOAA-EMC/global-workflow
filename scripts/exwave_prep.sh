@@ -65,9 +65,9 @@
 
   if [ "$INDRUN" = 'no' ]
   then
-    FHMAXWAV=${FHMAXWAV:-3}
+    FHMAX_WAV=${FHMAX_WAV:-3}
   else
-    FHMAXWAV=${FHMAXWAV:-384}
+    FHMAX_WAV=${FHMAX_WAV:-384}
   fi
 
 # 0.b Date and time stuff
@@ -79,34 +79,34 @@
   IAU_FHROT=3
   if [ "$DOIAU" = "YES" ]
   then
-    HINDH=$(( HINDH + IAU_FHROT ))
+    WAVHINDH=$(( WAVHINDH + IAU_FHROT ))
   fi
 # Set time stamps for model start and output
 # For special case when IAU is on but this is an initial half cycle 
   if [ $IAU_OFFSET = 0 ]; then
     ymdh_beg=$YMDH
   else
-    ymdh_beg=`$NDATE -$HINDH $YMDH`
+    ymdh_beg=`$NDATE -$WAVHINDH $YMDH`
   fi
   time_beg="`echo $ymdh_beg | cut -c1-8` `echo $ymdh_beg | cut -c9-10`0000"
-  ymdh_end=`$NDATE $FHMAXWAV $YMDH`
+  ymdh_end=`$NDATE $FHMAX_WAV $YMDH`
   time_end="`echo $ymdh_end | cut -c1-8` `echo $ymdh_end | cut -c9-10`0000"
   ymdh_beg_out=$YMDH
   time_beg_out="`echo $ymdh_beg_out | cut -c1-8` `echo $ymdh_beg_out | cut -c9-10`0000"
 
-# Restart file times (already has IAU_FHROT in HINDH) 
-  RSTOFFSET=$(( ${WAVHCYC} - ${HINDH} ))
+# Restart file times (already has IAU_FHROT in WAVHINDH) 
+  RSTOFFSET=$(( ${WAVHCYC} - ${WAVHINDH} ))
 # Update restart time is added offset relative to model start
-  RSTOFFSET=$(( ${RSTOFFSET} + ${RSTIOFF} ))
+  RSTOFFSET=$(( ${RSTOFFSET} + ${RSTIOFF_WAV} ))
   ymdh_rst_ini=`$NDATE ${RSTOFFSET} $YMDH`
-  RST2OFFSET=$(( DT_2_RST / 3600 ))
+  RST2OFFSET=$(( DT_2_RST_WAV / 3600 ))
   ymdh_rst2_ini=`$NDATE ${RST2OFFSET} $ymdh_rst_ini` # DT2 relative to first-first-cycle restart file
 # First restart file for cycling
   time_rst_ini="`echo $ymdh_rst_ini | cut -c1-8` `echo $ymdh_rst_ini | cut -c9-10`0000"
-  if [ ${DT_1_RST} = 1 ]; then
+  if [ ${DT_1_RST_WAV} = 1 ]; then
     time_rst1_end=${time_rst_ini}
   else
-    RST1OFFSET=$(( DT_1_RST / 3600 ))
+    RST1OFFSET=$(( DT_1_RST_WAV / 3600 ))
     ymdh_rst1_end=`$NDATE $RST1OFFSET $ymdh_rst_ini`
     time_rst1_end="`echo $ymdh_rst1_end | cut -c1-8` `echo $ymdh_rst1_end | cut -c9-10`0000"
   fi
@@ -153,20 +153,20 @@
   touch cmdfile
 
   grdINP=''
-  if [ "${WW3ATMINP}" = 'YES' ]; then grdINP="${grdINP} $wndID" ; fi 
-  if [ "${WW3ICEINP}" = 'YES' ]; then grdINP="${grdINP} $iceID" ; fi 
-  if [ "${WW3CURINP}" = 'YES' ]; then grdINP="${grdINP} $curID" ; fi 
+  if [ "${WW3ATMINP}" = 'YES' ]; then grdINP="${grdINP} $wavewndID" ; fi 
+  if [ "${WW3ICEINP}" = 'YES' ]; then grdINP="${grdINP} $waveiceID" ; fi 
+  if [ "${WW3CURINP}" = 'YES' ]; then grdINP="${grdINP} $wavecurID" ; fi 
 
   ifile=1
 
   for grdID in $grdINP $waveGRD
   do
-    if [ -f "$COMIN/rundata/${MDC}.mod_def.${grdID}" ]
+    if [ -f "$COMIN/rundata/${COMPONENTwave}.mod_def.${grdID}" ]
     then
       set +x
       echo " Mod def file for $grdID found in ${COMIN}/rundata. copying ...."
       [[ "$LOUD" = YES ]] && set -x
-      cp $COMIN/rundata/${MDC}.mod_def.${grdID} mod_def.$grdID
+      cp $COMIN/rundata/${COMPONENTwave}.mod_def.${grdID} mod_def.$grdID
 
     else
       msg="FATAL ERROR: NO MODEL DEFINITION FILE"
@@ -180,7 +180,7 @@
       echo ' '
       echo $msg
       [[ "$LOUD" = YES ]] && set -x
-      echo "$WAV_MOD_TAG prep $date $cycle : ${MDC}.mod_def.${grdID} missing." >> $wavelog
+      echo "$WAV_MOD_TAG prep $date $cycle : ${COMPONENTwave}.mod_def.${grdID} missing." >> $wavelog
       err=2;export err;${errchk}
     fi
   done
@@ -191,13 +191,13 @@
    do
 
      case $grdID in
-       $curID ) 
+       $wavecurID ) 
                 type='cur' 
        ;;
-       $wndID )
+       $wavewndID )
                 type='wind'
        ;;
-       $iceID )
+       $waveiceID )
                 type='ice'
        ;;
        * )
@@ -265,7 +265,7 @@
         err=5;export err;${errchk}
       else
         mv -f ice.out $DATA/outtmp
-        rm -f ww3_prep.$iceID.tmpl mod_def.$iceID
+        rm -f ww3_prep.$waveiceID.tmpl mod_def.$waveiceID
         set +x
         echo ' '
         echo '      Ice field unpacking successful.'
@@ -304,7 +304,7 @@
       while [ "$ymdh" -le "$ymdh_end" ]
       do
         echo "$USHwave/wave_g2ges.sh $ymdh > grb_$ymdh.out 2>&1" >> cmdfile
-        ymdh=`$NDATE $HOUR_INC $ymdh`
+        ymdh=`$NDATE $WAV_WND_HOUR_INC $ymdh`
       done
   
 # 3.b Execute the serial or parallel cmdfile
@@ -406,7 +406,7 @@
             fi
           fi
         fi
-        ymdh=`$NDATE $HOUR_INC $ymdh`
+        ymdh=`$NDATE $WAV_WND_HOUR_INC $ymdh`
       done
 
       if [ -f grb_*.out ]
@@ -487,7 +487,7 @@
 # Convert gfs wind to netcdf
       $WGRIB2 gfs.wind -netcdf gfs.nc
   
-      for grdID in $wndID $curvID
+      for grdID in $wavewndID $curvID
       do
   
         set +x
@@ -556,7 +556,7 @@
           if [ "$first_pass" = 'no' ]
           then
             hr_inc=`$NHOUR $ymdh $ymdh_prev`
-            if [ "${hr_inc}" -gt "${HOUR_INC}" ]
+            if [ "${hr_inc}" -gt "${WAV_WND_HOUR_INC}" ]
             then
               set +x
               echo "Incorrect wind forcing increment at $ymdh" 
@@ -624,12 +624,12 @@
       chmod 744 cmfile
 
     ymdh=${YMDH}
-    ymdh_end=`$NDATE ${FHMAX_CUR} ${YMDH}`
+    ymdh_end=`$NDATE ${FHMAX_CUR_WAV} ${YMDH}`
 
     while [ "$ymdh" -le "$ymdh_end" ]
     do
       echo "$USHwave/wave_prnc_cur.sh $ymdh > cur_$ymdh.out 2>&1" >> cmdfile
-      ymdh=`$NDATE $CUR_DT $ymdh`
+      ymdh=`$NDATE $CUR_WAV_DT $ymdh`
   done
 
 # Set number of processes for mpmd
@@ -682,15 +682,15 @@
         err=11;export err;${errchk}
       fi
 
-      rm -f cur.${curID}
+      rm -f cur.${wavecurID}
 
       for file in $files
       do
-        cat $file >> cur.${curID}
+        cat $file >> cur.${wavecurID}
         rm -f $file
       done
 
-      cp -f cur.${curID} ${COMOUT}/rundata/${MDC}.${curID}.$cycle.cur 
+      cp -f cur.${wavecurID} ${COMOUT}/rundata/${COMPONENTwave}.${wavecurID}.$cycle.cur 
 
     else
       echo ' '
@@ -767,13 +767,13 @@
   UNIPOINTS='$'
 
 # Check for required inputs and coupling options
-  if [ $uoutpGRD ]
+  if [ $waveuoutpGRD ]
   then
-    UNIPOINTS="'$uoutpGRD'"
+    UNIPOINTS="'$waveuoutpGRD'"
   fi
 
-# Check if esmfGRD is set
-  if [ ${esmfGRD} ]
+# Check if waveesmfGRD is set
+  if [ ${waveesmfGRD} ]
   then
     NFGRIDS=`expr $NFGRIDS + 1`
   fi 
@@ -781,39 +781,39 @@
   case ${WW3ATMINP} in
     'YES' )
       NFGRIDS=`expr $NFGRIDS + 1`
-      WINDLINE="  '$wndID'  F F T F F F F"
-      WINDFLAG="$wndID"
+      WINDLINE="  '$wavewndID'  F F T F F F F"
+      WINDFLAG="$wavewndID"
     ;;
     'CPL' )
-      WINDFLAG="CPL:${esmfGRD}"
+      WINDFLAG="CPL:${waveesmfGRD}"
       WNDIFLAG='T'
-      CPLILINE="  '${esmfGRD}' F F T F F F F"
+      CPLILINE="  '${waveesmfGRD}' F F T F F F F"
     ;;
   esac
   
   case ${WW3ICEINP} in
     'YES' ) 
       NFGRIDS=`expr $NFGRIDS + 1`
-      ICELINE="  '$iceID'  F F F T F F F"
-      ICEFLAG="$iceID"
+      ICELINE="  '$waveiceID'  F F F T F F F"
+      ICEFLAG="$waveiceID"
     ;;
     'CPL' )
-      ICEFLAG="CPL:${esmfGRD}"
+      ICEFLAG="CPL:${waveesmfGRD}"
       ICEIFLAG='T'
-      CPLILINE="  '${esmfGRD}' F F ${WNDIFLAG} T F F F"
+      CPLILINE="  '${waveesmfGRD}' F F ${WNDIFLAG} T F F F"
     ;;
   esac
 
   case ${WW3CURINP} in
     'YES' ) 
       NFGRIDS=`expr $NFGRIDS + 1`
-      CURRLINE="  '$curID'  F T F F F F F"
-      CURRFLAG="$curID"
+      CURRLINE="  '$wavecurID'  F T F F F F F"
+      CURRFLAG="$wavecurID"
     ;;
     'CPL' )
-      CURRFLAG="CPL:${esmfGRD}"
+      CURRFLAG="CPL:${waveesmfGRD}"
       CURIFLAG='T'
-      CPLILINE="  '${esmfGRD}' F T ${WNDIFLAG} ${ICEIFLAG} F F F"
+      CPLILINE="  '${waveesmfGRD}' F T ${WNDIFLAG} ${ICEIFLAG} F F F"
     ;;
   esac
 
@@ -840,7 +840,7 @@
       -e "s/PNTSRV/${PNTSRV}/g" \
       -e "s/FPNTPROC/${FPNTPROC}/g" \
       -e "s/FGRDPROC/${FGRDPROC}/g" \
-      -e "s/OUTPARS/${OUTPARS}/g" \
+      -e "s/OUTPARS/${OUTPARS_WAV}/g" \
       -e "s/CPLILINE/${CPLILINE}/g" \
       -e "s/UNIPOINTS/${UNIPOINTS}/g" \
       -e "s/GRIDLINE/${gline}/g" \
@@ -854,18 +854,18 @@
       -e "s/RUN_END/$time_end/g" \
       -e "s/OUT_BEG/$time_beg_out/g" \
       -e "s/OUT_END/$time_end/g" \
-      -e "s/DTFLD/ $DTFLD/g" \
+      -e "s/DTFLD/ $DTFLD_WAV/g" \
       -e "s/GOFILETYPE/ $GOFILETYPE/g" \
       -e "s/POFILETYPE/ $POFILETYPE/g" \
       -e "s/FIELDS/$FIELDS/g" \
-      -e "s/DTPNT/ $DTPNT/g" \
+      -e "s/DTPNT/ $DTPNT_WAV/g" \
       -e "/BUOY_FILE/r buoy.loc" \
       -e "s/BUOY_FILE/DUMMY/g" \
       -e "s/RST_BEG/$time_rst_ini/g" \
-      -e "s/RSTTYPE/$RSTTYPE/g" \
+      -e "s/RSTTYPE/$RSTTYPE_WAV/g" \
       -e "s/RST_2_BEG/$time_rst2_ini/g" \
-      -e "s/DTRST/$DT_1_RST/g" \
-      -e "s/DT_2_RST/$DT_2_RST/g" \
+      -e "s/DTRST/$DT_1_RST_WAV/g" \
+      -e "s/DT_2_RST/$DT_2_RST_WAV/g" \
       -e "s/RST_END/$time_rst1_end/g" \
       -e "s/RST_2_END/$time_rst2_end/g" \
                                      ww3_multi.inp.tmpl | \
@@ -913,7 +913,7 @@
 
    if [ "${WW3ATMINP}" = 'YES' ]; then
 
-    for grdID in $wndID $curvID 
+    for grdID in $wavewndID $curvID 
     do
       set +x
       echo ' '
@@ -928,7 +928,7 @@
 
 #   if [ "${WW3CURINP}" = 'YES' ]; then
 #
-#    for grdID in $curID
+#    for grdID in $wavecurID
 #    do
 #      set +x
 #      echo ' '
@@ -941,7 +941,7 @@
   fi 
 
   rm -f wind.*
-  rm -f $iceID.*
+  rm -f $waveiceID.*
   rm -f times.*
 
 # --------------------------------------------------------------------------- #

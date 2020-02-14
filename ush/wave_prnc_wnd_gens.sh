@@ -54,9 +54,9 @@
   echo '+--------------------------------+'
   echo '!         Make wind felds        |'
   echo '+--------------------------------+'
-  echo "   Model ID        : $MDC"
+  echo "   Model ID        : $COMPONENTwave"
   echo "   Member ID       : $modIE"
-  echo "   Wind grid ID    : $wndID"
+  echo "   Wind grid ID    : $wavewndID"
   echo "   Wind Member ID  : $wndIE"
   echo ' '
   [[ "$LOUD" = YES ]] && set -x
@@ -64,7 +64,7 @@
 
   if [ -z "$YMDH" ] || [ -z "$cycle" ] || [ -z "$modIE" ] || \
      [ -z "$COMOUT" ] || [ -z "$FIXwave" ] || [ -z "$EXECcode" ] || \
-     [ -z "$MDC" ] || [ -z "$wndID" ] || [ -z "$SENDCOM" ] || \
+     [ -z "$COMPONENTwave" ] || [ -z "$wavewndID" ] || [ -z "$SENDCOM" ] || \
      [ -z "$COMINGEFS" ] || [ -z "$time_beg" ] || [ -z "$time_end" ]
   then
     set +x
@@ -80,7 +80,7 @@
 
 # 0.c Links to working directory
 
-  ln -s ../mod_def.$wndID mod_def.ww3
+  ln -s ../mod_def.$wavewndID mod_def.ww3
   ln -s ../sst.ww3 
 
 # --------------------------------------------------------------------------- #
@@ -97,7 +97,7 @@
 
   CYCrun=${cycle}
 
-  while [ "$fhour" -le "$FHMAXWAV" ]
+  while [ "$fhour" -le "$FHMAX_WAV" ]
   do
     if [ "${fhour}" -lt 0 ]
     then
@@ -215,7 +215,7 @@
   echo '   Extract wind fields from spectral files ...'
   [[ "$LOUD" = YES ]] && set -x
 #
-# Get into single file (${MDC}gfs)
+# Get into single file (${COMPONENTwave}gfs)
 #
      rm -f gfsinput
 
@@ -227,16 +227,16 @@
 
      if [ "$err" != '0' ]
      then
-       msg="ABNORMAL EXIT: ERROR IN ${MDC}gfs"
+       msg="ABNORMAL EXIT: ERROR IN ${COMPONENTwave}gfs"
        ../postmsg "$jlogfile" "$msg"
        set +x
        echo ' '
        echo '****************************************** '
-       echo "*** FATAL ERROR : ERROR IN ${MDC}gfs *** "
+       echo "*** FATAL ERROR : ERROR IN ${COMPONENTwave}gfs *** "
        echo '****************************************** '
        echo ' '
        [[ "$LOUD" = YES ]] && set -x
-       echo "$modIE prep $ymd $cycle : error in ${MDC}gfs." >> $wavelog
+       echo "$modIE prep $ymd $cycle : error in ${COMPONENTwave}gfs." >> $wavelog
        exit 2
      fi
 #
@@ -246,7 +246,7 @@
        ../postmsg "$jlogfile" "$msg"
        set +x
        echo ' '
-       cat ${MDC}gfs.out
+       cat ${COMPONENTwave}gfs.out
        echo ' '
        echo '****************************************'
        echo '*** FATAL ERROR : gfs.wind NOT FOUND ***'
@@ -260,7 +260,7 @@
   if [ "${modIE}" == "gwes00" ]
   then
     # Copy sst file to com for later archiving
-    cp sst.ww3 ${COMOUT}/rundata/${MDC}.${wndID}.t${cyc}z.sst
+    cp sst.ww3 ${COMOUT}/rundata/${COMPONENTwave}.${wavewndID}.t${cyc}z.sst
   fi
 
   rm -f sst.ww3
@@ -273,7 +273,7 @@
   echo '   Running wind fields through preprocessor.'
   [[ "$LOUD" = YES ]] && set -x
 
-  sed -e "s/HDRFL/T/g" ../waveprep.$wndID.tmpl > ww3_prep.inp
+  sed -e "s/HDRFL/T/g" ../waveprep.$wavewndID.tmpl > ww3_prep.inp
 
   echo "Executing $EXECcode/ww3_prep"
 

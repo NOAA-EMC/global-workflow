@@ -37,7 +37,7 @@
   ymdh=$2
   specdir=$3
 
-  YMDHE=`$NDATE $FHMAX $CDATE`
+  YMDHE=`$NDATE $FHMAX_WAV $CDATE`
 
   cd $SPECDATA
 
@@ -140,14 +140,14 @@
 
 # 0.e sync important files
 
-#  $FSYNC ${DATA}/mod_def.${uoutpGRD}
-#  $FSYNC ${DATA}/out_pnt.${uoutpGRD}
+#  $FSYNC ${DATA}/mod_def.${waveuoutpGRD}
+#  $FSYNC ${DATA}/out_pnt.${waveuoutpGRD}
 #  $FSYNC ${DATA}/ww3_outp_spec.inp.tmpl
 
 # 0.f Links to mother directory
 
-  ln -s ${DATA}/mod_def.${uoutpGRD} ./mod_def.ww3
-  ln -s ${DATA}/output_${ymdh}0000/out_pnt.${uoutpGRD} ./out_pnt.ww3
+  ln -s ${DATA}/mod_def.${waveuoutpGRD} ./mod_def.ww3
+  ln -s ${DATA}/output_${ymdh}0000/out_pnt.${waveuoutpGRD} ./out_pnt.ww3
 
 # --------------------------------------------------------------------------- #
 # 2.  Generate spectral data file

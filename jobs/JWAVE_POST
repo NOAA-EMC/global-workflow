@@ -26,7 +26,7 @@ status=$?
 # PATH for working directory
 export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
-export MDC=${MDC:-${RUN}wave}
+export COMPONENTwave=${COMPONENTwave:-${RUN}wave}
 
 export HOMEgefs=${HOMEgefs:-$NWROOT/$NET.${gefs_ver}}
 export HOMEgfs=${HOMEgfs:-$NWROOT/$NET.${gfs_ver}}
@@ -64,8 +64,8 @@ export EXECcode=${EXECcode:-$CODEwave/exe}
 # Set COM Paths and GETGES environment
 export COMINwave=${COMINwave:-${COMROOT:?}/${NET}/${envir}}
 export COMOUTwave=${COMOUTwave:-${COMROOT:?}/${NET}/${envir}}
-export COMIN=${COMIN:-${COMINwave}/${MDC}.${PDY}/${cyc}}
-export COMOUT=${COMOUT:-${COMOUTwave}/${MDC}.${PDY}/${cyc}}
+export COMIN=${COMIN:-${COMINwave}/${COMPONENTwave}.${PDY}/${cyc}}
+export COMOUT=${COMOUT:-${COMOUTwave}/${COMPONENTwave}.${PDY}/${cyc}}
 
 export COMINice=${COMINice:-${COMROOTp2}/omb/prod}
 export COMINwnd=${COMINwnd:-${COMROOT}/gfs/prod}
@@ -94,11 +94,6 @@ fi
 . $PARMwave/wave.parm.${NET}
 . $PARMwave/wave_post.parm.${NET}
 
-export FHMAX=${FHMAX:-384}
-export FHOUT=${FHOUT:-3}
-export FHMAX_HF=${FHMAX_HF:-120}
-export FHOUT_HF=${FHOUT_HF:-1}
-
 # Set wave model ID tag to include member number 
 # if ensemble; waveMEMB var empty in deterministic
 # Set wave model ID tag to include member number
@@ -106,7 +101,7 @@ export FHOUT_HF=${FHOUT_HF:-1}
 membTAG='p'
 if [ "${waveMEMB}" == "00" ]; then membTAG='c'; fi
 export membTAG
-export WAV_MOD_TAG=${MDC}${waveMEMB}
+export WAV_MOD_TAG=${COMPONENTwave}${waveMEMB}
 
 export CFP_VERBOSE=1
 

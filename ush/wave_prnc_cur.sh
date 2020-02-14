@@ -66,7 +66,7 @@ then
 # Cleanup
   rm -f rtofs_temp[123].nc rtofs_5min_??.nc rtofs_glo_uv_${PDY}_${fext}${fhr}.nc weights.nc
 
-  if [ ${fhr_wave} -gt ${HINDH} ] 
+  if [ ${fhr_wave} -gt ${WAVHINDH} ] 
   then
     sed -e "s/HDRFL/F/g" ${FIXwave}/ww3_prnc.cur.rtofs_5m.inp.tmpl > ww3_prnc.inp
   else

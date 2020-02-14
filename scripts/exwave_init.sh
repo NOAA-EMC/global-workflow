@@ -33,7 +33,7 @@
 
   msg="HAS BEGUN on `hostname`"
   postmsg "$jlogfile" "$msg"
-  msg="Starting MWW3 INIT CONFIG SCRIPT for $MDC"
+  msg="Starting MWW3 INIT CONFIG SCRIPT for $COMPONENTwave"
   postmsg "$jlogfile" "$msg"
 
   set +x
@@ -42,7 +42,7 @@
   echo '                      *** MWW3 INIT CONFIG  SCRIPT ***'
   echo '                      ********************************'
   echo '                          Initial configuration script'
-  echo "                          Model identifier : $MDC"
+  echo "                          Model identifier : $COMPONENTwave"
   echo ' '
   echo "Starting at : `date`"
   echo ' '
@@ -81,17 +81,17 @@
   chmod 744 cmdfile
 
 # Eliminate duplicate grids
-  array=($curID $iceID $wndID $uoutpGRD $waveGRD $esmfGRD $sbsGRD $postGRD $interpGRD)
+  array=($wavecurID $waveiceID $wavewndID $waveuoutpGRD $waveGRD $waveesmfGRD $wavesbsGRD $wavepostGRD $waveinterpGRD)
   grdALL=`printf "%s\n" "${array[@]}" | sort -u | tr '\n' ' '`
 
   for grdID in ${grdALL}
   do
-    if [ -f "$COMIN/rundata/${MDC}.mod_def.${grdID}" ]
+    if [ -f "$COMIN/rundata/${COMPONENTwave}.mod_def.${grdID}" ]
     then
       set +x
       echo " Mod def file for $grdID found in ${COMIN}/rundata. copying ...."
       [[ "$LOUD" = YES ]] && set -x
-      cp $COMIN/rundata/${MDC}.mod_def.${grdID} mod_def.$grdID
+      cp $COMIN/rundata/${COMPONENTwave}.mod_def.${grdID} mod_def.$grdID
 
     else
       set +x
@@ -122,7 +122,7 @@
         echo ' '
         echo $msg
         [[ "$LOUD" = YES ]] && set -x
-        echo "$MDC init config $date $cycle : ww3_grid.inp.$grdID missing." >> $wavelog
+        echo "$COMPONENTwave init config $date $cycle : ww3_grid.inp.$grdID missing." >> $wavelog
         err=2;export err;${errchk}
       fi
 
@@ -185,7 +185,7 @@
 
   for grdID in ${grdALL}
   do
-    if [ -f ${COMOUT}/rundata/${MDC}.mod_def.$grdID ]
+    if [ -f ${COMOUT}/rundata/${COMPONENTwave}.mod_def.$grdID ]
     then
       set +x
       echo ' '
@@ -205,7 +205,7 @@
       echo $msg
       sed "s/^/$grdID.out : /g"  $grdID.out
       [[ "$LOUD" = YES ]] && set -x
-      echo "$MDC prep $date $cycle : mod_def.$grdID missing." >> $wavelog
+      echo "$COMPONENTwave prep $date $cycle : mod_def.$grdID missing." >> $wavelog
       err=3;export err;${errchk}
     fi
   done

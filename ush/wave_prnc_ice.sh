@@ -45,16 +45,16 @@
   echo '!         Make ice fields        |'
   echo '+--------------------------------+'
   echo "   Model TAG       : $WAV_MOD_TAG"
-  echo "   Model ID        : $MDC"
-  echo "   Ice grid ID     : $iceID"
+  echo "   Model ID        : $COMPONENTwave"
+  echo "   Ice grid ID     : $waveiceID"
   echo ' '
   set $seton
   postmsg "$jlogfile" "Making ice fields."
 
   if [ -z "$YMDH" ] || [ -z "$cycle" ] || \
      [ -z "$COMOUT" ] || [ -z "$FIXwave" ] || [ -z "$EXECcode" ] || \
-     [ -z "$WAV_MOD_TAG" ] || [ -z "$iceID" ] || [ -z "$SENDCOM" ] || \
-     [ -z "$COMINice" ] || [ -z "$MDC" ]
+     [ -z "$WAV_MOD_TAG" ] || [ -z "$waveiceID" ] || [ -z "$SENDCOM" ] || \
+     [ -z "$COMINice" ] || [ -z "$COMPONENTwave" ]
   then
     set $setoff
     echo ' '
@@ -69,7 +69,7 @@
 
 # 0.c Links to working directory
 
-  ln -s ${DATA}/mod_def.$iceID mod_def.ww3
+  ln -s ${DATA}/mod_def.$waveiceID mod_def.ww3
 
 # --------------------------------------------------------------------------- #
 # 1.  Get the necessary files
@@ -176,7 +176,7 @@
   echo ' '
   set $seton
 
-  cp -f ${DATA}/ww3_prnc.ice.$iceID.inp.tmpl ww3_prnc.inp
+  cp -f ${DATA}/ww3_prnc.ice.$waveiceID.inp.tmpl ww3_prnc.inp
 
   $EXECcode/ww3_prnc > wave_prnc.out
   err=$?
@@ -205,10 +205,10 @@
 #
   if [ "${WW3ATMIENS}" = "T" ]
   then 
-    icefile=${WAV_MOD_TAG}.${iceID}.$cycle.ice
+    icefile=${WAV_MOD_TAG}.${waveiceID}.$cycle.ice
   elif [ "${WW3ATMIENS}" = "F" ]
   then 
-    icefile=${MDC}.${iceID}.$cycle.ice
+    icefile=${COMPONENTwave}.${waveiceID}.$cycle.ice
   fi
  
   set $setoff

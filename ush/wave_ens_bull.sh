@@ -75,8 +75,8 @@
 #
 # 0.e Output file names
 #
-  bfil="${MDC}.${bnom}.bull"
-  tfil="${MDC}.${bnom}.ts"
+  bfil="${COMPONENTwave}.${bnom}.bull"
+  tfil="${COMPONENTwave}.${bnom}.ts"
 #
 # 1. Prepare input data
 #
@@ -175,7 +175,7 @@
 # 2. Generate bulletin
 #
     printf "\n Location : "$bnom"      ("$blat"N  "$blon"W)\n" > $bfil
-    printf " Model    : NCEP Global Wave Ensemble System (${MDC})\n" >> $bfil
+    printf " Model    : NCEP Global Wave Ensemble System (${COMPONENTwave})\n" >> $bfil
     printf " Cycle    : "$PDY" "$cycle" UTC\n" >> $bfil
     printf "\n+-------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+--------+\n" >> $bfil
     printf   "| day   | Hs avg | Hs spr | Tp avg | Tp spr | U10avg | U10spr | P(Hs>) | P(Hs>) | P(Hs>) | P(Hs>) | P(Hs>) | P(Hs>) |\n" >> $bfil
@@ -235,7 +235,7 @@
 #
   if [ -f ${bfil} ] && [ -f ${tfil} ]
   then
-    echo -e "\n ${MDC} bulletin and ts-file created for location ${bnom}.\n"
+    echo -e "\n ${COMPONENTwave} bulletin and ts-file created for location ${bnom}.\n"
   else
     set +x
     echo ' '

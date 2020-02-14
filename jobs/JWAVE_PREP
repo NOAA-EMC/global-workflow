@@ -26,7 +26,7 @@ status=$?
 # PATH for working directory
 export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
-export MDC=${MDC:-${RUN}wave}
+export COMPONENTwave=${COMPONENTwave:-${RUN}wave}
 
 export HOMEgfs=${HOMEgfs:-$NWROOT/gfs.${gfs_ver}}
 
@@ -74,8 +74,8 @@ export EXECcode=${EXECcode:-$CODEwave/exe}
 # Set COM Paths and GETGES environment
 export COMINwave=${COMINwave:-${ROTDIR:?}}
 export COMOUTwave=${COMOUTwave:-${ROTDIR:?}}
-export COMIN=${COMIN:-${COMINwave}/${MDC}.${PDY}/${cyc}}
-export COMOUT=${COMOUT:-${COMOUTwave}/${MDC}.${PDY}/${cyc}}
+export COMIN=${COMIN:-${COMINwave}/${COMPONENTwave}.${PDY}/${cyc}}
+export COMOUT=${COMOUT:-${COMOUTwave}/${COMPONENTwave}.${PDY}/${cyc}}
 [[ ! -d $COMOUT ]] && mkdir -m 775 -p $COMOUT
 
 #export COMINice=${COMINice:-${COMROOTp2}/omb/prod}
@@ -96,7 +96,7 @@ export wave_mpmd=${wave_mpmd:-"cfp"}
 
 # Set wave model ID tag to include member number 
 # if ensemble; waveMEMB var empty in deterministic
-export WAV_MOD_TAG=${MDC}${waveMEMB}
+export WAV_MOD_TAG=${COMPONENTwave}${waveMEMB}
 
 # Execute the Script  
 $HOMEwave/scripts/exwave_prep.sh
