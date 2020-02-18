@@ -162,9 +162,6 @@ config_fcst:
         export npe_remap={doc.partition_common.resources.fallback_run_gfsremap[0].mpi_ranks}
         export nth_remap={doc.partition_common.resources.fallback_run_gfsremap[0].OMP_NUM_THREADS}
 
-        export hord_xx_nh_nonmono="{doc.fv3_gdas_settings.hord_xx_nh_nonmono}"
-        export hord_mt_nh_nonmono="{doc.fv3_gdas_settings.hord_mt_nh_nonmono}"
-        
     elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
     
         # Write more variables to output
@@ -175,9 +172,6 @@ config_fcst:
         fi
         export npe_remap={doc.partition_common.resources.fallback_run_gfsremap[0].mpi_ranks}
         export nth_remap={doc.partition_common.resources.fallback_run_gfsremap[0].OMP_NUM_THREADS}
-
-        export hord_xx_nh_nonmono="{doc.fv3_gfs_settings.hord_xx_nh_nonmono}"
-        export hord_mt_nh_nonmono="{doc.fv3_gfs_settings.hord_mt_nh_nonmono}"
 
     fi
 

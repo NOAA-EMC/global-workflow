@@ -37,21 +37,7 @@ platform: !Platform
 
   config_base_extras: !expand |
      echo "place holder for NWPROD and associated utilities, now go through load_gfs_modules.sh"
-#    export NDATE="$NWPROD/util/exec/ndate"
-#    export NHOUR="$NWPROD/util/exec/nhour"
-#    export WGRIB="$NWPROD/util/exec/wgrib"
-#    export WGRIB2="/apps/wgrib2/2.0.8/intel/18.0.3.222/bin/wgrib2"
-#    export COPYGB="$NWPROD/util/exec/copygb"
-#    export COPYGB2="$NWPROD/util/exec/copygb2"
-#    export GRBINDEX="$NWPROD/util/exec/grbindex"
-#    export CNVGRIB="$NWPROD/util/exec/cnvgrib"
-#    export CNVGRIB21_GFS="$NWPROD/util/exec/cnvgrib"
-#    export POSTGRB2TBL="/scratch2/NCEPDEV/nwprod/NCEPLIBS/src/g2tmpl_v1.5.0/params_grib2_tbl_new"
 
-  # CHGRP_RSTPROD_COMMAND - this specifies the command to use to
-  # restrict access to NOAA "rstprod" data restriction class.
-  # This only used for observation processing, data assimilation, and
-  # data assimilation archiving, which are not in the public release.
   CHGRP_RSTPROD_COMMAND: "chgrp rstprod"
 
   partitions:
