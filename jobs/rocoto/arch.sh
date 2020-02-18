@@ -176,7 +176,7 @@ if [ $CDUMP = "gfs" ]; then
 
     #for targrp in gfs_flux gfs_netcdf/nemsio gfs_pgrb2b; do
     if [ ${SAVEFCSTNEMSIO:-"YES"} = "YES" ]; then
-        for targrp in gfs_flux gfs_${format}a gfs_${format}b; do
+        for targrp in gfs_flux gfs_${format}a gfs_${format}b gfs_pgrb2b; do
             htar -P -cvf $ATARDIR/$CDATE/${targrp}.tar `cat $ARCH_LIST/${targrp}.txt`
             status=$?
             if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
