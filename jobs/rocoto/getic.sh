@@ -124,9 +124,11 @@ if [ $ics_from = "opsgfs" ]; then
         fi
 
         # Move the files to legacy EMC filenames
-        for i in `seq 1 $nfanal`; do
-            $NMV ${fanal[i]} ${ftanal[i]}
-        done
+        if [ $CDATE -le "2019061118" ]; then #GFSv14
+           for i in `seq 1 $nfanal`; do
+             $NMV ${fanal[i]} ${flanal[i]}
+           done
+        fi
 
     fi
 

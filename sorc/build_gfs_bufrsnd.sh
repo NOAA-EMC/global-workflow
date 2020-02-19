@@ -16,12 +16,6 @@ if [ $USE_PREINST_LIBS = true ]; then
 	    fi
 	fi
 
-	export myFC=mpiifort
-	export myFCFLAGS="-O3 -convert big_endian -traceback -g -fp-model source -qopenmp"
-	export myCPP=/lib/cpp
-	export myCPPFLAGS="-P"
-    export target=$target
-
 # Check final exec folder exists
 if [ ! -d "../exec" ]; then
   mkdir ../exec

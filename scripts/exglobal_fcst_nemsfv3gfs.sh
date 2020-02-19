@@ -643,9 +643,6 @@ fi
 DO_SKEB=${DO_SKEB:-"NO"}
 DO_SPPT=${DO_SPPT:-"NO"}
 DO_SHUM=${DO_SHUM:-"NO"}
-JCAP_STP=${JCAP_STP:-$JCAP_CASE}
-LONB_STP=${LONB_STP:-$LONB_CASE}
-LATB_STP=${LATB_STP:-$LATB_CASE}
 
 if [ $DO_SKEB = "YES" ]; then
     do_skeb=".true."
@@ -1013,11 +1010,7 @@ cat >> input.nml << EOF
   hybedmf      = ${hybedmf:-".false."}
   satmedmf     = ${satmedmf-".true."}
   isatmedmf    = ${isatmedmf-"1"}
-  lheatstrg    = ${lheatstrg-".true."}
-EOF
-fi
-
-cat >> input.nml << EOF
+  lheatstrg    = ${lheatstrg-".false."}
   random_clds  = ${random_clds:-".true."}
   trans_trac   = ${trans_trac:-".true."}
   cnvcld       = ${cnvcld:-".true."}
@@ -1215,9 +1208,6 @@ if [ $MEMBER -gt 0 ]; then
 
     cat >> input.nml << EOF
 &nam_stochy
-  ntrunc = $JCAP_STP
-  lon_s = $LONB_STP
-  lat_s = $LATB_STP
 EOF
 
   if [ $DO_SKEB = "YES" ]; then
