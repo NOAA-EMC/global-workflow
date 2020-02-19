@@ -905,6 +905,7 @@ if [ $DOIAU = "YES" ]; then
   iaufhrs      = ${IAUFHRS}
   iau_delthrs  = ${IAU_DELTHRS}
   iau_inc_files= ${IAU_INC_FILES}
+  iau_drymassfixer = .true.
 EOF
 fi
 
