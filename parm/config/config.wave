@@ -41,6 +41,10 @@ export wavepostGRD='glo_10m aoc_9km ant_9km' # Native grids that will be post-pr
 export CDATE=${PDY}${cyc}
 
 # The start time reflects the number of hindcast hours prior to the cycle initial time
+if [ "$CDUMP" = "gdas" ]
+then
+  export FHMAX_WAV=${FHMAX_WAV:-9}
+fi
 export WAVHINDH=${WAVHINDH:-0}
 export FHMIN_WAV=${FHMIN_WAV:-0}
 export FHOUT_WAV=${FHOUT_WAV:-3}
@@ -59,6 +63,9 @@ export FHINCP_WAV=`expr $DTPNT_WAV / 3600`
 # Selected output parameters (gridded)
 export OUTPARS_WAV="WND CUR ICE HS T01 T02 DIR FP DP PHS PTP PDIR CHAR"
 # GFS # export OUTPARS_WAV='WND CUR ICE HS T01 T02 DIR FP DP PHS PTP PDIR CHAR'
+
+# Options for point output (switch on/off boundary point output)
+export DOIBP_WAV='NO'
 
 # Intake currents settings
 export CUR_WAV_DT=${CUR_WAV_DT:-3}

@@ -353,7 +353,7 @@
     do
       if [ -f $COMIN/rundata/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS} ]
       then
-        cp -f $COMIN/rundata/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS} ./out_pnt.${waveuoutpGRD}
+        ln -s $COMIN/rundata/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS} ./out_pnt.${waveuoutpGRD}
         break
       else
         sleep ${tsleep}
@@ -537,7 +537,7 @@
         exit $err
       fi
 #    echo "cp -f ${pfile} ./out_pnt.${waveuoutpGRD} > cpoutp_$waveuoutpGRD.out 2>&1" >> ${fcmdnow}
-      cp -f ${pfile} ./out_pnt.${waveuoutpGRD} > cpoutp_$waveuoutpGRD.out 2>&1
+      ln -fs ${pfile} ./out_pnt.${waveuoutpGRD} #> cpoutp_$waveuoutpGRD.out 2>&1
 
       if [ "$specOK" = 'yes' ]
       then
@@ -548,7 +548,7 @@
         done
       fi
   
-      if [ "$ibspecOK" = 'yes' ]
+      if [ "$ibspecOK" = 'yes' ] && [ "$DOIBP_WAV" = "YES" ]
       then
         export dtspec=3600.
         for buoy in $ibpoints
@@ -586,7 +586,7 @@
           exit $err
         fi
 #      echo "cp -f ${gfile} ./out_grd.${wavGRD} > cpoutg_$wavGRD.out 2>&1" >> ${fcmdnow}
-        cp -f ${gfile} ./out_grd.${wavGRD} > cpoutg_$wavGRD.out 2>&1
+        ln -s ${gfile} ./out_grd.${wavGRD} > cpoutg_$wavGRD.out 2>&1
       done
 
       if [ "$grintOK" = 'yes' ]
@@ -676,6 +676,8 @@
     then
       if [ $FHMAX_HF_WAV -gt 0 ] && [ $FHOUT_HF_WAV -gt 0 ] && [ $fhr -lt $FHMAX_HF_WAV ]; then
         FHINCG=$FHOUT_HF_WAV
+      else
+        FHINCG=$FHOUT_WAV
       fi
       fhrg=$((fhr+FHINCG))
     fi
@@ -746,440 +748,8 @@
       exit $err
     fi
 
-exit
-
 # --------------------------------------------------------------------------- #
-# 4. Post-process (concatenate) point outputs: spectra, bulletins 
-#
-
-# 4.a Set up cmdfile
-
-  rm -f cmdfile
-  touch cmdfile
-  chmod 744 cmdfile
-
-# 4.b Spectral data files
-
-  set +x; [ "$LOUD" = YES -a "$specOK" = 'yes' ] 
-  if [ "$specOK" = 'yes' ]
-  then
-    export dtspec=$DTPNT_WAV   # time step for spectra
-    ymdh=`$NDATE -${WAVHINDH} $CDATE` # start time for spectra output
-
-    ifile=1
-    ilayer=1
-    for buoy in $buoys
-    do
-      echo "$USHwave/wave_outp_spec.sh $buoy $ymdh > spec_$buoy.out 2>&1" >> cmdfile
-    done
-  fi
-  [[ "$LOUD" = YES ]] && set -x
-
-# 4.c Bulletins
-
-  set +x; [ "$LOUD" = YES -a "$bullOK" = 'yes' ] 
-  if [ "$bullOK" = 'yes' ]
-  then
-    export dtbull=3600.    # time step for bulletins
-    ymdh=`$NDATE -${WAVHINDH} $CDATE` # start time for bulletin output
-   
-    for buoy in $buoys
-    do
-      echo "$USHwave/wave_outp_bull.sh $buoy $ymdh > bull_$buoy.out 2>&1" >> cmdfile
-    done
-  fi
-  [[ "$LOUD" = YES ]] && set -x
-
-# 4.d Execute point output cmd file
-
-# Determine number of processes needed for mpmd
-  cat cmdfile
-
-  wavenproc=`wc -l cmdfile | awk '{print $1}'`
-  wavenproc=`echo $((${wavenproc}<${NTASKS}?${wavenproc}:${NTASKS}))`
-
-  set +x
-  echo "   Executing point output command file at : `date`"
-  echo '   ---------------------------------------'
-  echo ' '
-  [[ "$LOUD" = YES ]] && set -x
-
-  if [ "$wavenproc" -gt '1' ]
-  then
-    ${wavempexec} ${wavenproc} ${wave_mpmd} cmdfile
-    exit=$?
-  else
-    ./cmdfile
-    exit=$?
-  fi
-
-# 4.e Check for errors
-
-  if [ "$exit" != '0' ]
-  then
-    set +x
-    echo ' '
-    echo '***********************************************************'
-    echo '*** CMDFILE FAILED TO GENERATE SPEC AND BULLETIN FILES  ***'
-    echo '***********************************************************'
-    echo ' '
-    [[ "$LOUD" = YES ]] && set -x
-    err=10;export err;${errchk}
-    exit $err
-  fi
-
-# --------------------------------------------------------------------------- #
-# 5.  General error checking
-
-  set +x
-  echo ' '
-  echo '   Checking for errors (error output concatenated below).'
-  [[ "$LOUD" = YES ]] && set -x
-
-# 5.a Grid interpolation
-
-  if [ "$grintOK" = 'yes' ]
-  then
-    for grdID in $waveinterpGRD
-    do
-      if [ -d grint_$grdID ]
-      then
-        set +x
-        echo "      Error in GRID interpolation for $grdID."
-        [[ "$LOUD" = YES ]] && set -x
-        postmsg "$jlogfile" "NON-FATAL ERROR in GRID interpolation for $grdID."
-        exit_code=6
-        mv -f grint_$grdID.out grint_$grdID.err 
-      else
-        set +x
-        echo "      GRID interpolation successful for $grdID."
-        [[ "$LOUD" = YES ]] && set -x
-      fi
-
-      if [ -d grib_$grdID ]
-      then
-        set +x
-        echo "      Error in GRIB encoding for $grdID."
-        [[ "$LOUD" = YES ]] && set -x
-        postmsg "$jlogfile" "NON-FATAL ERROR in GRIB encoding for $grdID."
-        exit_code=7
-        mv -f grib_$grdID.out grib_$grdID.err 
-      else
-        set +x
-        echo "      GRIB encoding successful for $grdID."
-        [[ "$LOUD" = YES ]] && set -x
-      fi
-    done
-  fi
-
-# 5.b GRIB file
-
-  if [ "$gribOK" = 'yes' ]
-  then
-    for grdID in $wavesbsGRD $wavepostGRD
-    do
-      if [ -d grib_$grdID ]
-      then
-        set +x
-        echo "      Error in GRIB encoding for $grdID."
-        [[ "$LOUD" = YES ]] && set -x
-        postmsg "$jlogfile" "NON-FATAL ERROR in GRIB encoding for $grdID."
-        exit_code=8
-        mv -f grib_$grdID.out grib_$grdID.err
-      else
-        set +x
-        echo "      GRIB encoding successful for $grdID."
-        [[ "$LOUD" = YES ]] && set -x
-      fi
-    done
-  fi
-
-# 5.c Spectral data files and bulletins
-
-  set +x
-
-  if  [ "$specOK" = 'yes' ]
-  then
-    if ls spec_* 1> /dev/null 2>&1
-    then
-      for buoy in $buoys
-      do
-        if [ -d spec_$buoy ]
-        then
-          specstring='Error in spectra.'
-          postmsg "$jlogfile" "NON-FATAL ERROR in spectra."
-          exit_code=9
-          mv -f spec_$buoy.out spec_$buoy.err
-        fi
-      done
-    else
-      echo " Spectra OK "
-    fi
-  fi
- 
-  if  [ "$bullOK" = 'yes' ]
-  then
-    if ls bull_* 1> /dev/null 2>&1
-    then
-      for buoy in $buoys
-      do
-        if [ -d bull_$buoy ]
-        then
-          specstring='Error in spectra.'
-          postmsg "$jlogfile" "NON-FATAL ERROR in spectra."
-          exit_code=10
-          mv -f bull_$buoy.out bull_$buoy.err
-        fi
-      done
-    else
-      echo " Bulletins OK "
-    fi
-  fi
-
-  [[ "$LOUD" = YES ]] && set -x
-
-  if ls *.err 1> /dev/null 2>&1
-  then
-    for grdID in $waveGRD $wavesbsGRD $wavepostGRD
-    do 
-      if [ -f grib_$grdID.err ]
-      then
-        set +x
-        echo ' '
-        echo '**************************************'
-        echo '*** ERROR OUTPUT wave_grib2.sh ***'
-        echo '**************************************'
-        echo ' '
-        [[ "$LOUD" = YES ]] && set -x
-        echo "$WAV_MOD_TAG post $date $cycle : error in GRIB." >> $wavelog
-        postmsg "$jlogfile" "NON-FATAL ERROR in wave_grib2.sh"
-        err=11;export err;${errchk}
-        sed "s/^/grib_$grdID.err : /g"  grib_$grdID.err
-      fi
-
-    done
-
-    if ls spec_*.err 1> /dev/null 2>&1
-    then
-      set +x
-      echo ' '
-      echo '*************************************'
-      echo '*** ERROR OUTPUT wave_outp.sh ***'
-      echo '*************************************'
-      echo '            Possibly in multiple calls'
-      [[ "$LOUD" = YES ]] && set -x
-      echo "$WAV_MOD_TAG post $date $cycle : error in spectra." >> $wavelog
-      postmsg "$jlogfile" "NON-FATAL ERROR in wave_outp.sh, possibly in multiple calls."
-      err=12;export err;${errchk}
-      for file in spec_*.err
-      do
-        echo ' '
-        sed "s/^/$file : /g" $file
-      done
-    fi
-
-    if ls bull_*.err 1> /dev/null 2>&1
-    then
-      set +x
-      echo ' '
-      echo '******************************************'
-      echo '*** ERROR OUTPUT wave_outp_bull.sh ***'
-      echo '******************************************'
-      echo '            Possibly in multiple calls'
-      echo ' '
-      [[ "$LOUD" = YES ]] && set -x
-      echo "$WAV_MOD_TAG post $date $cycle : error in bulletins." >> $wavelog
-      postmsg "$jlogfile" "NON-FATAL ERROR in wave_bull.sh, possibly in multiple calls."
-      err=13;export err;${errchk}
-      for file in bull_*.err
-      do
-        echo ' '
-        sed "s/^/$file : /g" $file
-      done
-    fi
-  fi
-
-
-
-# --------------------------------------------------------------------------- #
-# 6. Compress point output data into tar files
-
-# 6.a Set up cmdfile
-
-  rm -f cmdfile
-  touch cmdfile
-  chmod 744 cmdfile
-
-  set +x
-  echo ' '
-  echo '   Making command file for taring all point output files.'
-
-  [[ "$LOUD" = YES ]] && set -x
-
-# 6.b Spectral data files
-
-  if [ "$specOK" = 'yes' ]
-  then
-    echo "$USHwave/wave_tar.sh $WAV_MOD_TAG spec $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdfile
-
-  fi
-
-# 6.c Bulletins
-
-  if [ "$bullOK" = 'yes' ]
-  then
-    echo "$USHwave/wave_tar.sh $WAV_MOD_TAG bull $Nb > ${WAV_MOD_TAG}_bull_tar.out 2>&1 "   >> cmdfile
-
-  fi
-
-# 6.d Compressed bulletins
-
-  if [ "$bullOK" = 'yes' ]
-  then
-     echo "$USHwave/wave_tar.sh $WAV_MOD_TAG cbull $Nb > ${WAV_MOD_TAG}_cbull_tar.out 2>&1 " >> cmdfile
-  fi
-
-# 6.e Execute fourth command file
-
-# Set number of processes for mpmd
-  cat cmdfile
-
-  wavenproc=`wc -l cmdfile | awk '{print $1}'`
-  wavenproc=`echo $((${wavenproc}<${NTASKS}?${wavenproc}:${NTASKS}))`
-
-# 1.a.3 Execute the serial or parallel cmdfile
-
-  set +x
-  echo ' '
-  echo "   Executing the tar command file at : `date`"
-  echo '   ------------------------------------'
-  echo ' '
-  [[ "$LOUD" = YES ]] && set -x
-
-  if [ "$wavenproc" -gt '1' ]
-  then
-    ${wavempexec} ${wavenproc} ${wave_mpmd} cmdfile
-    exit=$?
-  else
-    ./cmdfile
-    exit=$?
-  fi
-
-# 6.f Check for errors
-
-  if [ "$exit" != '0' ]
-  then
-    set +x
-    echo ' '
-    echo '***************************************************'
-    echo '*** FATAL ERROR: CMD FAILURE DURING TAR PROCESS ***'
-    echo '***************************************************'
-    echo '     See Details Below '
-    echo ' '
-    [[ "$LOUD" = YES ]] && set -x
-    exit_code=$exit
-    err=14; export err;${errchk}
-    exit $err
-  fi
-
-
-# 6.g  Check further for errors in file generation`
-
-  set +x
-  echo ' '
-  echo '   Checking for errors (error output concatenated below).'
-  [[ "$LOUD" = YES ]] && set -x
-
-# 6.g.1 Spectral tar file
-
-  if [ "$specOK" = 'yes' ]
-  then
-    if [ -d TAR_spec_$WAV_MOD_TAG ]
-    then
-      set +x
-      echo "      Error in $WAV_MOD_TAG spectral tar file."
-      [[ "$LOUD" = YES ]] && set -x
-      echo "$WAV_MOD_TAG post $date $cycle : error in spectral tar." >> $wavelog
-      postmsg "$jlogfile" "NON-FATAL ERROR in $WAV_MOD_TAG spectral tar file."
-      exit_code=11
-      mv ${WAV_MOD_TAG}_spec_tar.out ${WAV_MOD_TAG}_spec_tar.err
-    else
-      set +x
-      echo "      $WAV_MOD_TAG Spectral tar file OK."
-      [[ "$LOUD" = YES ]] && set -x
-    fi
-  fi
-
-# 6.g.2 Bulletin tar files
-
-  if [ "$bullOK" = 'yes' ]
-  then
-    if [ -d TAR_bull_$WAV_MOD_TAG ]
-    then
-      set +x
-      echo "      Error in $WAV_MOD_TAG bulletin tar file."
-      [[ "$LOUD" = YES ]] && set -x
-      echo "$WAV_MOD_TAG post $date $cycle : error in bulletin tar." >> $wavelog
-      postmsg "$jlogfile" "NON-FATAL ERROR in $WAV_MOD_TAG bulletin tar file."
-      exit_code=12
-      mv -f ${WAV_MOD_TAG}_bull_tar.out ${WAV_MOD_TAG}_bull_tar.err
-    else
-      set +x
-      echo "      $WAV_MOD_TAG Bulletin tar file OK."
-      [[ "$LOUD" = YES ]] && set -x
-    fi
-
-    if [ -d TAR_cbull_$WAV_MOD_TAG ]
-    then
-      set +x
-      echo "      Error in $WAV_MOD_TAG compressed bulletin tar file."
-      [[ "$LOUD" = YES ]] && set -x
-      echo "$WAV_MOD_TAG post $date $cycle : error in compressed bulletin tar." >> $wavelog
-      postmsg "$jlogfile" "NON-FATAL ERROR in $WAV_MOD_TAG compressed bulletin tar file."
-      exit_code=13
-      mv -f ${WAV_MOD_TAG}_cbull_tar.out ${WAV_MOD_TAG}_cbull_tar.err
-    else
-      set +x
-      echo "      $WAV_MOD_TAG compressed bulletin tar file OK."
-      [[ "$LOUD" = YES ]] && set -x
-    fi
-
-  fi
-
-# 7. Check if any left over error output
-
-  if ls *.err 1> /dev/null 2>&1
-  then
-    set +x
-    echo ' '
-    echo '*********************'
-    echo '*** ERROR OUTPUTS ***'
-    echo '*********************'
-    echo ' '
-    [[ "$LOUD" = YES ]] && set -x
-    for file in *.err
-    do
-      echo ' '
-      sed "s/^/$file : /g" $file
-    done
-    err=15;export err;${errchk}
-  fi
-
-# --------------------------------------------------------------------------- #
-# 8. Clean up and rename old grid files
-
-  set +x
-  rm -f *.tmpl
-  for ID in $WAV_MOD_TAG
-  do
-    rm -f $ID.*.spec
-    rm -f $ID.*.bull
-    rm -f $ID.*.cbull
-  done
-  [[ "$LOUD" = YES ]] && set -x
-
-# --------------------------------------------------------------------------- #
-# 9.  Ending output
+# 7.  Ending output
 
   set +x
   echo ' '
@@ -1198,7 +768,7 @@ exit
     err=16; export err;${errchk}
     exit $err
   else
-    echo " Wave Post Completed Normally "
+    echo " Side-by-Side Wave Post Completed Normally "
     msg="$job completed normally"
     postmsg "$jlogfile" "$msg"
     exit 0
