@@ -87,10 +87,13 @@ if [ $VRFYFITS = "YES" -a $CDUMP = $CDFNL -a $CDATE != $SDATE ]; then
     export TMPDIR="$RUNDIR/$CDATE/$CDUMP"
     [[ ! -d $TMPDIR ]] && mkdir -p $TMPDIR
 
+    xdate=$($NDATE -${VBACKUP_FITS} $CDATE)
+
+
     export RUN_ENVIR_SAVE=$RUN_ENVIR
     export RUN_ENVIR=$OUTPUT_FILE
 
-    $PREPQFITSH $PSLOT $CDATE $ROTDIR $ARCDIR $TMPDIR
+    $PREPQFITSH $PSLOT $xdate $ROTDIR $ARCDIR $TMPDIR
 
     export RUN_ENVIR=$RUN_ENVIR_SAVE
 

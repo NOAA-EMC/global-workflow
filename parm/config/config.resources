@@ -77,6 +77,7 @@ elif [ $step = "post" ]; then
     export nth_post=1
     export npe_node_post=12
     export npe_node_dwn=$npe_node_max
+    if [[ "$machine" = "WCOSS_DELL_P3" ]]; then export npe_node_post=14 ; fi
     if [[ "$machine" == "WCOSS_C" ]]; then export memory_post="3072M"; fi
 
 elif [ $step = "vrfy" ]; then
@@ -122,7 +123,7 @@ elif [ $step = "eobs" -o $step = "eomg" ]; then
     export wtime_eobs="00:30:00"
     export wtime_eomg="01:00:00"
     if [ $CASE = "C768" ]; then
-      export npe_eobs=400
+      export npe_eobs=100
     elif [ $CASE = "C384" ]; then
       export npe_eobs=42
     elif [ $CASE = "C192" ]; then
