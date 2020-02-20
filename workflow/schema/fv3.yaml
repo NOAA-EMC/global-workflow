@@ -11,38 +11,38 @@ fv3_settings_template: !Template &fv3_settings_template
     if_present: !FirstTrue
       - when: !calc ( imp_physics==99 )
         do: !Template
-          ncld: { type: int, override: 1 }
-          nwat: { type: int, override: 2 }
+          ncld: { type: int, default: 1 }
+          nwat: { type: int, default: 2 }
           FIELD_TABLE:
             type: string
             default: "$HOMEgfs/parm/parm_fv3diag/field_table_zhaocarr"
       - when: !calc ( imp_physics == 6 )
         do: !Template
-          ncld: { type: int, override: 2 }
-          nwat: { type: int, override: 6 }
+          ncld: { type: int, default: 2 }
+          nwat: { type: int, default: 6 }
           FIELD_TABLE:
             type: string
             default: "$HOMEgfs/parm/parm_fv3diag/field_table_wsm6"
       - when: !calc ( imp_physics == 8 )
         do: !Template
-          ncld: { type: int, override: 2 }
-          nwat: { type: int, override: 6 }
+          ncld: { type: int, default: 2 }
+          nwat: { type: int, default: 6 }
           FIELD_TABLE:
             type: string
             default: "$HOMEgfs/parm/parm_fv3diag/field_table_thompson"
       - when: !calc ( imp_physics == 11 )
         do: !Template
-          ncld: { type: int, override: 5 }
-          nwat: { type: int, override: 6 }
+          ncld: { type: int, default: 5 }
+          nwat: { type: int, default: 6 }
           FIELD_TABLE:
             type: string
-            default: "$HOMEgfs/parm/parm_fv3diag/field_table_gfdl"
-          dnats: { type: int, override: 1 }
+            default: "$HOMEgfs/parm/parm_fv3diag/field_table_gfdl_satmedmf"
+          dnats: { type: int, default: 1 }
           cal_pre: { type: bool, default: false }
           do_sat_adj: { type: bool, default: true }
           random_clds: { type: bool, default: false }
-          hord_mt_nh_nonmono: { type: int, default: 6 }
-          hord_xx_nh_nonmono: { type: int, default: 6 }
+          hord_mt_nh_nonmono: { type: int, default: 5 }
+          hord_xx_nh_nonmono: { type: int, default: 5 }
           vtdm4_nh_nonmono:   { type: float, default: 0.02 }
           nord: { type: int, default: 2 }
           dddmp: { type: float, default: 0.1 }
@@ -223,7 +223,7 @@ fv3_settings_template: !Template &fv3_settings_template
           fv3_threads: { type: int, default: 1 }
           cdmbgwd:
             type: string
-            default: "0.062,3.5"
+            default: "0.062,3.5,1.0,1.0"
             description: "mountain blocking and gravity wave drag"
           WRITE_GROUP: { type: int, default: 1 }
           WRTTASK_PER_GROUP: { type: int, default: 24 }
@@ -237,7 +237,7 @@ fv3_settings_template: !Template &fv3_settings_template
           fv3_threads: { type: int, default: 1 }
           cdmbgwd:
             type: string
-            default: "0.125,3.0"
+            default: "0.125,3.0,1.0,1.0"
             description: "mountain blocking and gravity wave drag"
           WRITE_GROUP: { type: int, default: 1 }
           WRTTASK_PER_GROUP: { type: int, default: 24 }
@@ -251,7 +251,7 @@ fv3_settings_template: !Template &fv3_settings_template
           fv3_threads: { type: int, default: 2 }
           cdmbgwd:
             type: string
-            default: "0.2,2.5"
+            default: "0.23,1.5,1.0,1.0"
             description: "mountain blocking and gravity wave drag"
           WRITE_GROUP: { type: int, default: 2 }
           WRTTASK_PER_GROUP: { type: int, default: 24 }
@@ -259,13 +259,13 @@ fv3_settings_template: !Template &fv3_settings_template
 
       - when: !calc (CASE == "C384")
         do: !Template
-          DELTIM: { type: int, default: 300 }
-          layout_x: { type: int, default: 4 }
-          layout_y: { type: int, default: 8 }
+          DELTIM: { type: int, default: 240 }
+          layout_x: { type: int, default: 6 }
+          layout_y: { type: int, default: 6 }
           fv3_threads: { type: int, default: 2 }
           cdmbgwd:
             type: string
-            default: "1.0,1.2"
+            default: "1.1,0.72,1.0,1.0"
             description: "mountain blocking and gravity wave drag"
           WRITE_GROUP: { type: int, default: 3 }
           WRTTASK_PER_GROUP: { type: int, default: 24 }
@@ -279,7 +279,7 @@ fv3_settings_template: !Template &fv3_settings_template
           fv3_threads: { type: int, default: 2 }
           cdmbgwd:
             type: string
-            default: "3.5,0.25"
+            default: "3.5,0.25,1.0,1.0"
             description: "mountain blocking and gravity wave drag"
           WRITE_GROUP: { type: int, default: 4 }
           WRTTASK_PER_GROUP: { type: int, default: 60 }

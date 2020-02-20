@@ -10,9 +10,11 @@ case:
     workflow_file: layout/cycled_gfs.yaml
 
   settings: 
-    SDATE: 2019-05-01t00:00:00
-    EDATE: 2019-05-02t06:00:00
+    SDATE: 2019-08-20t00:00:00
+    EDATE: 2019-08-21t06:00:00
 
+    print_esmf: .true.
+    KEEPDATA: Yes
     run_gsi: Yes
     chgres_and_convert_ics: No
     gfs_cyc: 4 # run gfs every cycle

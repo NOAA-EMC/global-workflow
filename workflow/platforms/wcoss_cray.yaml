@@ -146,35 +146,46 @@ platform: !Platform
 
   # Automatically detect the least used scrub area the user can access:
   least_used_ptmp: !Immediate
-    - !FirstMax
-      - take: /gpfs/hps3/ptmp
-        when: !calc ( int(tools.can_write(take)) * tools.gpfs_gb(take,"hps3-ptmp",gpfs_hps+"3",mmlsquota,-1) )
-        message: Use {take} for long-term temp.
-      - take: /gpfs/hps/ptmp
-        when: !calc ( int(tools.can_write(take)) * tools.gpfs_gb(take,"hps-ptmp",gpfs_hps,mmlsquota,-1) )
-        message: Use {take} for long-term temp.
-      - take: /gpfs/hps2/ptmp
-        when: !calc ( int(tools.can_write(take)) * tools.gpfs_gb(take,"hps2-ptmp",gpfs_hps+"2",mmlsquota,-1) )
-        message: Use {take} for long-term temp.
+     - !FirstTrue
+       - do: !expand "{doc.user_places.COMROOT}"
+         when: !calc doc.user_places.FIX_SCRUB
+       - otherwise: !FirstMax
+          - do: /gpfs/hps3/ptmp
+            when: !calc ( int(tools.can_write(take)) * tools.gpfs_gb(take,"hps3-ptmp",gpfs_hps+"3",mmlsquota,-1) )
+            message: Use {do} for long-term temp.
+          - do: /gpfs/hps/ptmp
+            when: !calc ( int(tools.can_write(take)) * tools.gpfs_gb(take,"hps-ptmp",gpfs_hps,mmlsquota,-1) )
+            message: Use {do} for long-term temp.
+          - do: /gpfs/hps2/ptmp
+            when: !calc ( int(tools.can_write(take)) * tools.gpfs_gb(take,"hps2-ptmp",gpfs_hps+"2",mmlsquota,-1) )
+            message: Use {do} for long-term temp.
 
   least_used_stmp: !Immediate
-    - !FirstMax
-      - take: /gpfs/hps/stmp
-        when: !calc ( int(tools.can_write(take)) * tools.gpfs_gb(take,"hps-stmp",gpfs_hps,mmlsquota,-1) )
-        message: Use {take} for short-term temp.
-      - take: /gpfs/hps2/stmp
-        when: !calc ( int(tools.can_write(take)) * tools.gpfs_gb(take,"hps2-stmp",gpfs_hps+"2",mmlsquota,-1) )
-        message: Use {take} for short-term temp.
-      - take: /gpfs/hps3/stmp
-        when: !calc ( int(tools.can_write(take)) * tools.gpfs_gb(take,"hps3-stmp",gpfs_hps+"3",mmlsquota,-1) )
-        message: Use {take} for short-term temp.
+     - !FirstTrue
+       - do: !expand "{doc.user_places.DATAROOT}"
+         when: !calc doc.user_places.FIX_SCRUB
+       - otherwise: !FirstMax
+          - do: /gpfs/hps/stmp
+            when: !calc ( int(tools.can_write(take)) * tools.gpfs_gb(take,"hps-stmp",gpfs_hps,mmlsquota,-1) )
+            message: Use {do} for short-term temp.
+          - do: /gpfs/hps2/stmp
+            when: !calc ( int(tools.can_write(take)) * tools.gpfs_gb(take,"hps2-stmp",gpfs_hps+"2",mmlsquota,-1) )
+            message: Use {do} for short-term temp.
+          - do: /gpfs/hps3/stmp
+            when: !calc ( int(tools.can_write(take)) * tools.gpfs_gb(take,"hps3-stmp",gpfs_hps+"3",mmlsquota,-1) )
+            message: Use {do} for short-term temp.
 
   # long_term_temp - area for storage of data that must be passed
   # between jobs or shared with programs external to this workflow.
-  long_term_temp: !expand "{least_used_ptmp}/{tools.env('USER')}"
+  COMROOT: !FirstTrue
+     - do: !expand "{doc.user_places.COMROOT}"
+       when: !calc doc.user_places.FIX_SCRUB
+     - otherwise: !expand "{doc.platform.least_used_ptmp}/{tools.env('USER')}"
 
-  # short_term_temp - area for data that is only needed within one job:
-  short_term_temp: !expand "{least_used_stmp}/{tools.env('USER')}"
+  DATAROOT: !FirstTrue
+       - do: !expand "{doc.user_places.DATAROOT}"
+         when: !calc doc.user_places.FIX_SCRUB
+       - otherwise: !expand "{doc.platform.least_used_stmp}/{tools.env('USER')}"
 
   # EXPROOT - Parent directory  of the expdir (experiment directory)
   EXPROOT: !expand "{doc.user_places.EXPROOT}"

@@ -36,8 +36,11 @@ default_settings: &default_settings
   cplice: !calc cplflx
   cpl: .false.
 
+  DOIAU: NO
+  IAUFHRS: 6
+  IAU_DELTHRS: 6
+
   KEEPDATA: NO
-  ROTDIR_DUMP: NO
   DUMP_SUFFIX: ""
   run_gsi: No
   chgres_and_convert_ics: Yes

@@ -149,18 +149,21 @@ platform: !Platform
 
   # Automatically detect the least used scrub area the user can access:
   least_used_temp: !Immediate 
-    - !FirstMax
-      - do: /scratch3/NCEPDEV/stmp1
-        when: !calc ( int(tools.can_write(do)) and tools.panasas_gb(do) )
-      - do: /scratch3/NCEPDEV/stmp2
-        when: !calc ( int(tools.can_write(do)) and tools.panasas_gb(do) )
-      - do: /scratch4/NCEPDEV/stmp3
-        when: !calc ( int(tools.can_write(do)) and tools.panasas_gb(do) )
-      - do: /scratch4/NCEPDEV/stmp4
-        when: !calc ( int(tools.can_write(do)) and tools.panasas_gb(do) )
-      - do: !expand "{doc.user_places.EXPROOT}"
-        when: !calc tools.panasas_gb(do)/4
-        message: "{do}: use project directory as scrub space"
+     - !FirstTrue
+       - do: !expand "{doc.user_places.DATAROOT}"
+         when: !calc doc.user_places.FIX_SCRUB
+       - otherwise: !FirstMax
+           - do: /scratch3/NCEPDEV/stmp1
+             when: !calc ( int(tools.can_write(do)) and tools.panasas_gb(do) )
+           - do: /scratch3/NCEPDEV/stmp2
+             when: !calc ( int(tools.can_write(do)) and tools.panasas_gb(do) )
+           - do: /scratch4/NCEPDEV/stmp3
+             when: !calc ( int(tools.can_write(do)) and tools.panasas_gb(do) )
+           - do: /scratch4/NCEPDEV/stmp4
+             when: !calc ( int(tools.can_write(do)) and tools.panasas_gb(do) )
+           - do: !expand "{doc.user_places.EXPROOT}"
+             when: !calc tools.panasas_gb(do)/4
+             message: "{do}: use project directory as scrub space"
 
   # long_term_temp - area for storage of data that must be passed
   # between jobs or shared with programs external to this workflow.

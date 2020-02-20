@@ -17,6 +17,17 @@ config_fcst:
         export nord={doc.fv3_settings.nord}
         export dddmp={doc.fv3_settings.dddmp}
         export d4_bg={doc.fv3_settings.d4_bg}
+        export lgfdlmprad=".true."
+        export effr_in=".true."
+    - otherwise: ""
+
+  level_127: !FirstTrue
+    - when: !calc doc.fv3_settings.LEVS==128
+      do: !expand |
+         export  tau=5.0
+         export  rf_cutoff=1.0e3
+         export  d2_bg_k1=0.20
+         export  d2_bg_k2=0.0
     - otherwise: ""
 
   resource_a: !FirstTrue
@@ -50,8 +61,9 @@ config_fcst:
 
     export npe_fcst="{resource_a[0].mpi_ranks}"
     export npe_fcst_gfs="{resource_b[0].mpi_ranks}"
-    export npe_node_fcst=$npe_node_fcst
-    export nth_fcst=$nth_fv3
+    export npe_node_fcst="{resource_a[0].max_ppn}"
+    export nth_fcst="{doc.fv3_gfs_settings.fv3_threads}"
+    export NTHREADS_FV3="{doc.fv3_gfs_settings.fv3_threads}"
     export memory_fcst="1024M"
 
     #######################################################################
@@ -82,6 +94,35 @@ config_fcst:
     # Options of stratosphere O3 physics reaction coefficients
     export new_o3forc="{tools.YES_NO(doc.fv3_settings_template.new_o3force)}"
     
+    # do_ugwp=T: use unified CGWD and OGWD, and turbulent orographic form drag (TOFD)
+    # do_ugwp=F: use unified CGWD but old OGWD, TOFD is not uded.
+    export do_ugwp=".false."
+    export do_tofd=".true."
+    export launch_level=$(echo "$LEVS/2.35" |bc)
+
+    # PBL/turbulance schemes
+    export hybedmf=".false."
+    export satmedmf=".true."
+    export isatmedmf=1
+    tbf=""
+    if [ $satmedmf = ".true." ]; then tbf="_satmedmf" ; fi
+
+    # Land surface model. (2--NoahMP, landice=F); (1--Noah, landice=T)
+    export lsm=1
+    if [ $lsm -eq 2 ]; then
+        export lheatstrg=".false."
+        export landice=".false."
+    else
+        export lheatstrg=".true."
+        export landice=".true."
+    fi
+
+    # Radiation options
+    export IAER=5111
+    export iovr_lw=3
+    export iovr_sw=3
+    export icliq_sw=2
+
     # Microphysics configuration
     export dnats={doc.fv3_settings.dnats}
     export cal_pre="{tools.fort(doc.fv3_settings.cal_pre)}"
@@ -92,9 +133,17 @@ config_fcst:
     export FIELD_TABLE="{doc.fv3_settings.FIELD_TABLE}"
     export nwat={doc.fv3_settings.nwat}
     {more_exports_for_microphys}
+    {level_127}
 
     #---------------------------------------------------------------------
-    
+    # ideflate: netcdf zlib lossless compression (0-9): 0 no compression
+    # nbits: netcdf lossy compression level (0-32): 0 lossless
+    export ideflate=1
+    export nbits=14
+    export ishuffle=0
+    # compression for RESTART files written by FMS
+    export shuffle=1
+    export deflate_level=1
     
     # Disable the use of coupler.res; get model start time from model_configure
     export USE_COUPLER_RES="NO"
@@ -113,9 +162,6 @@ config_fcst:
         export npe_remap={doc.partition_common.resources.fallback_run_gfsremap[0].mpi_ranks}
         export nth_remap={doc.partition_common.resources.fallback_run_gfsremap[0].OMP_NUM_THREADS}
 
-        export hord_xx_nh_nonmono="{doc.fv3_gdas_settings.hord_xx_nh_nonmono}"
-        export hord_mt_nh_nonmono="{doc.fv3_gdas_settings.hord_mt_nh_nonmono}"
-        
     elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
     
         # Write more variables to output
@@ -126,9 +172,6 @@ config_fcst:
         fi
         export npe_remap={doc.partition_common.resources.fallback_run_gfsremap[0].mpi_ranks}
         export nth_remap={doc.partition_common.resources.fallback_run_gfsremap[0].OMP_NUM_THREADS}
-
-        export hord_xx_nh_nonmono="{doc.fv3_gfs_settings.hord_xx_nh_nonmono}"
-        export hord_mt_nh_nonmono="{doc.fv3_gfs_settings.hord_mt_nh_nonmono}"
 
     fi
 
