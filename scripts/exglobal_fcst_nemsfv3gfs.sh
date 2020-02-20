@@ -753,7 +753,7 @@ RUN_CONTINUE:            ${RUN_CONTINUE:-".false."}
 ENS_SPS:                 ${ENS_SPS:-".false."}
 
 dt_atmos:                $DELTIM
-output_1st_tstep_rst:    ${output_1st_tstep_rst:-".false."}
+output_1st_tstep_rst:    ".false."
 calendar:                ${calendar:-'julian'}
 cpl:                     ${cpl:-".false."}
 memuse_verbose:          ${memuse_verbose:-".false."}
@@ -924,7 +924,6 @@ deflate_level=${deflate_level:-1}
   res_latlon_dynamics = $res_latlon_dynamics
   $fv_core_nml
 /
-
 &cires_ugwp_nml
        knob_ugwp_solver  = ${knob_ugwp_solver:-2}
        knob_ugwp_source  = ${knob_ugwp_source:-1,1,0,0}
@@ -1027,6 +1026,7 @@ if [ $DOIAU = "YES" ]; then
   iaufhrs      = ${IAUFHRS}
   iau_delthrs  = ${IAU_DELTHRS}
   iau_inc_files= ${IAU_INC_FILES}
+  iau_drymassfixer = .true.
 EOF
 fi
 
@@ -1086,7 +1086,6 @@ cat >> input.nml <<EOF
   icloud_f = 1
   mp_time = 150.
   reiflag = ${reiflag:-"2"}
-
   $gfdl_cloud_microphysics_nml
 /
 
