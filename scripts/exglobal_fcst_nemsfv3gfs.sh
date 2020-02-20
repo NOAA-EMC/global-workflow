@@ -90,7 +90,6 @@ ENS_NUM=${ENS_NUM:-1}  # Single executable runs multiple members (e.g. GEFS)
 
 # IAU options
 DOIAU=${DOIAU:-"NO"}
-DOIAUWAV=$DOIAU
 IAUFHRS=${IAUFHRS:-0}
 IAU_DELTHRS=${IAU_DELTHRS:-0}
 IAU_OFFSET=${IAU_OFFSET:-0}
@@ -723,8 +722,8 @@ WAV_attributes::
 
 runSeq::
   @${coupling_interval_sec}
-    ATM -> WAV
     ATM
+    ATM -> WAV
     WAV
   @
 ::
@@ -841,18 +840,12 @@ cat > input.nml <<EOF
   max_files_w = 100
   $fms_io_nml
 /
-EOF
 
-if [ "${NET}" != "gens" ]; then
-cat >> input.nml << EOF
 &mpp_io_nml
 shuffle=${shuffle:-1}
 deflate_level=${deflate_level:-1}
 /
-EOF
-fi
 
-cat >> input.nml << EOF
 &fms_nml
   clock_grain = 'ROUTINE'
   domains_stack_size = ${domains_stack_size:-3000000}
@@ -931,10 +924,7 @@ cat >> input.nml << EOF
   res_latlon_dynamics = $res_latlon_dynamics
   $fv_core_nml
 /
-EOF
 
-if [ "${NET}" != "gens" ]; then
-cat >> input.nml << EOF
 &cires_ugwp_nml
        knob_ugwp_solver  = ${knob_ugwp_solver:-2}
        knob_ugwp_source  = ${knob_ugwp_source:-1,1,0,0}
@@ -949,10 +939,7 @@ cat >> input.nml << EOF
        knob_ugwp_version = ${knob_ugwp_version:-0}
        launch_level      = ${launch_level:-54}                   
 /
-EOF
-fi
 
-cat >> input.nml << EOF
 &external_ic_nml
   filtered_terrain = $filtered_terrain
   levp = $LEVS
@@ -977,17 +964,9 @@ cat >> input.nml << EOF
   ialb         = ${IALB:-"1"}
   iems         = ${IEMS:-"1"}
   iaer         = $IAER
-EOF
-
-if [ "${NET}" != "gens" ]; then
-cat >> input.nml << EOF
   icliq_sw     = ${icliq_sw:-"2"}
   iovr_lw      = ${iovr_lw:-"3"}
   iovr_sw      = ${iovr_sw:-"3"}
-EOF
-fi
-
-cat >> input.nml << EOF
   ico2         = $ICO2
   isubc_sw     = ${isubc_sw:-"2"}
   isubc_lw     = ${isubc_lw:-"2"}
@@ -999,14 +978,6 @@ cat >> input.nml << EOF
   cal_pre      = ${cal_pre:-".true."}
   redrag       = ${redrag:-".true."}
   dspheat      = ${dspheat:-".true."}
-EOF
-
-if [ "${NET}" = "gens" ]; then
-cat >> input.nml << EOF
-  hybedmf      = ${hybedmf:-".true."}
-EOF
-elif [ "${NET}" != "gens" ]; then
-cat >> input.nml << EOF
   hybedmf      = ${hybedmf:-".false."}
   satmedmf     = ${satmedmf-".true."}
   isatmedmf    = ${isatmedmf-"1"}
@@ -1020,10 +991,6 @@ cat >> input.nml << EOF
   prslrd0      = ${prslrd0:-"0."}
   ivegsrc      = ${ivegsrc:-"1"}
   isot         = ${isot:-"1"}
-EOF
-
-if [ "${NET}" != "gens" ]; then
-cat >> input.nml << EOF
   lsoil        = ${lsoil:-"4"}
   lsm          = ${lsm:-"2"}
   iopt_dveg    = ${iopt_dveg:-"1"}
@@ -1038,10 +1005,6 @@ cat >> input.nml << EOF
   iopt_snf     = ${iopt_snf:-"4"}
   iopt_tbot    = ${iopt_tbot:-"2"}
   iopt_stc     = ${iopt_stc:-"1"}
-EOF
-fi
-
-cat >> input.nml << EOF
   debug        = ${gfs_phys_debug:-".false."}
   nstf_name    = $nstf_name
   nst_anl      = $nst_anl
@@ -1050,10 +1013,6 @@ cat >> input.nml << EOF
   lgfdlmprad   = ${lgfdlmprad:-".false."}
   effr_in      = ${effr_in:-".false."}
   cplwav       = ${cplwav:-".false."}
-EOF
-
-if [ "${NET}" != "gens" ]; then
-cat >> input.nml << EOF
   ldiag_ugwp   = ${ldiag_ugwp:-".false."}
   do_ugwp      = ${do_ugwp:-".true."}
   do_tofd      = ${do_tofd:-".true."}
@@ -1061,7 +1020,6 @@ cat >> input.nml << EOF
   do_shum      = ${do_shum:-".false."}
   do_skeb      = ${do_skeb:-".false."}
 EOF
-fi
 
 # Add namelist for IAU
 if [ $DOIAU = "YES" ]; then
@@ -1069,7 +1027,6 @@ if [ $DOIAU = "YES" ]; then
   iaufhrs      = ${IAUFHRS}
   iau_delthrs  = ${IAU_DELTHRS}
   iau_inc_files= ${IAU_INC_FILES}
-  iau_drymassfixer = .true.
 EOF
 fi
 
@@ -1128,15 +1085,8 @@ cat >> input.nml <<EOF
   fix_negative = .true.
   icloud_f = 1
   mp_time = 150.
-EOF
-
-if [ "${NET}" != "gens" ]; then
-cat >> input.nml << EOF
   reiflag = ${reiflag:-"2"}
-EOF
-fi
 
-cat >> input.nml << EOF
   $gfdl_cloud_microphysics_nml
 /
 
@@ -1171,15 +1121,7 @@ cat >> input.nml << EOF
   FSMCL(2) = ${FSMCL2:-99999}
   FSMCL(3) = ${FSMCL3:-99999}
   FSMCL(4) = ${FSMCL4:-99999}
-EOF
-
-if [ "${NET}" != "gens" ]; then
-cat >> input.nml << EOF
- LANDICE  = ${landice:-".true."}
-EOF
-fi
-
-cat >> input.nml << EOF
+  LANDICE  = ${landice:-".true."}
   FTSFS = ${FTSFS:-90}
   FAISL = ${FAISL:-99999}
   FAISS = ${FAISS:-99999}
