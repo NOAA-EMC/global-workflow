@@ -6,6 +6,8 @@
 
 fv3_enkf_defaults: &fv3_enkf_defaults
   QUILTING: True
+  layout_x: 4
+  layout_y: 6
   ATMPETS: !FirstTrue
     - when: !calc doc.fv3_enkf_settings.QUILTING
       do: !calc layout_x * layout_y * 6 + WRITE_GROUP * WRTTASK_PER_GROUP

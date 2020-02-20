@@ -41,23 +41,56 @@ config_fv3:
     fi
     
     forecast_mode=$( echo "$1" | tr a-z A-Z )
-    
-    echo "BEGIN: config.fv3 for $forecast_mode"
+
+    case $forecast_mode in
+        "gfs")    
+              echo "BEGIN: config.fv3 for $forecast_mode"
+              export DELTIM={doc.fv3_gfs_settings.DELTIM}
+              export layout_x={doc.fv3_gfs_settings.layout_x}
+                 export layout_y={doc.fv3_gfs_settings.layout_y}
+              export layout_x_gfs={doc.fv3_gfs_settings.layout_x}
+              export layout_y_gfs={doc.fv3_gfs_settings.layout_y}
+              export npe_node_fcst={doc.partition_common.resources.run_gdasfcst[0].max_ppn}
+              export nth_fv3=2
+              export npe_fv3={doc.partition_common.resources.run_gdasfcst[0].mpi_ranks}
+              export cdmbgwd={doc.fv3_gfs_settings.cdmbgwd}  
+                       # mountain blocking and gravity wave drag
+              export WRITE_GROUP={doc.fv3_gfs_settings.WRITE_GROUP}
+              export WRTTASK_PER_GROUP={doc.fv3_gfs_settings.WRTTASK_PER_GROUP}
+              export WRITE_GROUP_GFS={doc.fv3_gfs_settings.WRITE_GROUP}
+              export WRTTASK_PER_GROUP_GFS={doc.fv3_gfs_settings.WRTTASK_PER_GROUP}
+              export WRTIOBUF={doc.fv3_gfs_settings.WRTIOBUF}
+        "gdas")
+              echo "BEGIN: config.fv3 for $forecast_mode"
+              export DELTIM={doc.fv3_gdas_settings.DELTIM}
+              export layout_x={doc.fv3_gdas_settings.layout_x}
+                 export layout_y={doc.fv3_gdas_settings.layout_y}
+              export layout_x_gfs={doc.fv3_gdas_settings.layout_x}
+              export layout_y_gfs={doc.fv3_gdas_settings.layout_y}
+              export npe_node_fcst={doc.partition_common.resources.run_gdasfcst[0].max_ppn}
+              export nth_fv3=2
+              export npe_fv3={doc.partition_common.resources.run_gdasfcst[0].mpi_ranks}
+              export cdmbgwd={doc.fv3_gdas_settings.cdmbgwd}
+              export WRITE_GROUP={doc.fv3_gdas_settings.WRITE_GROUP}
+              export WRTTASK_PER_GROUP={doc.fv3_gdas_settings.WRTTASK_PER_GROUP}
+              export WRITE_GROUP_GFS={doc.fv3_gdas_settings.WRITE_GROUP}
+              export WRTTASK_PER_GROUP_GFS={doc.fv3_gdas_settings.WRTTASK_PER_GROUP}
+              export WRTIOBUF={doc.fv3_gdas_settings.WRTIOBUF}
+        "enkf")
+              echo "BEGIN: config.fv3 for $forecast_mode"
+              export DELTIM={doc.fv3_enkf_settings.DELTIM}
+              export layout_x={doc.fv3_enkf_settings.layout_x}
+                 export layout_y={doc.fv3_enkf_settings.layout_y}
+              export layout_x_gfs={doc.fv3_enkf_settings.layout_x}
+              export layout_y_gfs={doc.fv3_enkf_settings.layout_y}
+              export npe_node_fcst={doc.partition_common.resources.run_efcs[0].max_ppn}
+              export nth_fv3=2
+              export npe_fv3={doc.partition_common.resources.run_efcs[0].mpi_ranks}
+              export cdmbgwd={doc.fv3_enkf_settings.cdmbgwd}
+              export WRITE_GROUP={doc.fv3_enkf_settings.WRITE_GROUP}
+              export WRTTASK_PER_GROUP={doc.fv3_enkf_settings.WRTTASK_PER_GROUP}
+              export WRITE_GROUP_GFS={doc.fv3_enkf_settings.WRITE_GROUP}
+              export WRTTASK_PER_GROUP_GFS={doc.fv3_enkf_settings.WRTTASK_PER_GROUP}
+              export WRTIOBUF={doc.fv3_enkf_settings.WRTIOBUF}
    
-    export DELTIM={doc.fv3_gfs_settings.DELTIM}
-    export layout_x={doc.fv3_gfs_settings.layout_x}
-    export layout_y={doc.fv3_gfs_settings.layout_y}
-    export layout_x_gfs={doc.fv3_gfs_settings.layout_x}
-    export layout_y_gfs={doc.fv3_gfs_settings.layout_y}
-    export npe_node_fcst={doc.partition_common.resources.run_gdasfcst[0].max_ppn}
-    export nth_fv3=2
-    export npe_fv3={doc.partition_common.resources.run_gdasfcst[0].mpi_ranks}
-    export cdmbgwd={doc.fv3_gfs_settings.cdmbgwd}  
-             # mountain blocking and gravity wave drag
-    export WRITE_GROUP={doc.fv3_gfs_settings.WRITE_GROUP}
-    export WRTTASK_PER_GROUP={doc.fv3_gfs_settings.WRTTASK_PER_GROUP}
-    export WRITE_GROUP_GFS={doc.fv3_gfs_settings.WRITE_GROUP}
-    export WRTTASK_PER_GROUP_GFS={doc.fv3_gfs_settings.WRTTASK_PER_GROUP}
-    export WRTIOBUF={doc.fv3_gfs_settings.WRTIOBUF}
- 
     echo "END: config.fv3 for $forecast_mode"

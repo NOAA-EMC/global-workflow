@@ -223,7 +223,7 @@ fv3_settings_template: !Template &fv3_settings_template
           fv3_threads: { type: int, default: 1 }
           cdmbgwd:
             type: string
-            default: "0.062,3.5"
+            default: "0.062,3.5,1.0,1.0"
             description: "mountain blocking and gravity wave drag"
           WRITE_GROUP: { type: int, default: 1 }
           WRTTASK_PER_GROUP: { type: int, default: 24 }
@@ -237,7 +237,7 @@ fv3_settings_template: !Template &fv3_settings_template
           fv3_threads: { type: int, default: 1 }
           cdmbgwd:
             type: string
-            default: "0.125,3.0"
+            default: "0.125,3.0,1.0,1.0"
             description: "mountain blocking and gravity wave drag"
           WRITE_GROUP: { type: int, default: 1 }
           WRTTASK_PER_GROUP: { type: int, default: 24 }
@@ -251,7 +251,7 @@ fv3_settings_template: !Template &fv3_settings_template
           fv3_threads: { type: int, default: 2 }
           cdmbgwd:
             type: string
-            default: "0.2,2.5"
+            default: "0.23,1.5,1.0,1.0"
             description: "mountain blocking and gravity wave drag"
           WRITE_GROUP: { type: int, default: 2 }
           WRTTASK_PER_GROUP: { type: int, default: 24 }
@@ -265,7 +265,7 @@ fv3_settings_template: !Template &fv3_settings_template
           fv3_threads: { type: int, default: 2 }
           cdmbgwd:
             type: string
-            default: "1.0,1.2"
+            default: "1.1,0.72,1.0,1.0"
             description: "mountain blocking and gravity wave drag"
           WRITE_GROUP: { type: int, default: 3 }
           WRTTASK_PER_GROUP: { type: int, default: 24 }
@@ -279,7 +279,7 @@ fv3_settings_template: !Template &fv3_settings_template
           fv3_threads: { type: int, default: 2 }
           cdmbgwd:
             type: string
-            default: "3.5,0.25"
+            default: "3.5,0.25,1.0,1.0"
             description: "mountain blocking and gravity wave drag"
           WRITE_GROUP: { type: int, default: 4 }
           WRTTASK_PER_GROUP: { type: int, default: 60 }

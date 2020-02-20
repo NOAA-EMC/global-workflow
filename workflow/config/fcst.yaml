@@ -61,9 +61,9 @@ config_fcst:
 
     export npe_fcst="{resource_a[0].mpi_ranks}"
     export npe_fcst_gfs="{resource_b[0].mpi_ranks}"
-    export npe_node_fcst=$npe_node_fcst
-    export nth_fcst=$nth_fv3
-    export NTHREADS_FV3=$nth_fv3
+    export npe_node_fcst="{resource_a[0].max_ppn}"
+    export nth_fcst="{doc.fv3_gfs_settings.fv3_threads}"
+    export NTHREADS_FV3="{doc.fv3_gfs_settings.fv3_threads}"
     export memory_fcst="1024M"
 
     #######################################################################
