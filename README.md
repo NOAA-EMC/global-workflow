@@ -32,6 +32,10 @@ cp user.yaml.default user.yaml
 Then, open and edit user.yaml:
 
 - EXPROOT: Place for experiment directory, make sure you have write access.
+- FIX_SCRUB: YES if you would like to fix the path to ROTDIR(under COMROOT) and RUNDIR(under DATAROOT)
+             NO if you would like CROW to detect available disk space automatically.
+- COMROOT: Place to generate ROTDIR for this experiment.
+- DATAROOT: Place for temporary storage for each job of this experiment.
 - cpu_project: cpu project that you are working with.
 - hpss_project: hpss project that you are working with.
 ```
@@ -65,3 +69,26 @@ cd $EXPERIMENT_DIRECTORY
 module load rocoto
 rocotorun -w workflow.xml -d workflow.db
 ```
+
+## Resource handling
+There are two ways of changing resource settings (cpu count, time limits, threads) for a job that has already been defined in the workflow.
+
+If you would like to only change the resource settings for an experiment that already set up. Then all you need to do is editing a file named "resources_sum.yaml" under $EXPDIR, and run CROW again with -f option activated. More specifically:
+```
+cd $EXPDIR
+(edit resources_sum.yaml)
+cd ~/workflow/CROW
+./setup_case.sh -p HERA -f ../cases/coupled_free_forecast.yaml test_3d
+./make_rocoto_xml_for.sh $EXPERIMENT_DIRECTORY
+```
+In this way, both your config files and rocoto xml will be updated with the new resource settings.
+
+If you would like to change the resource settings on a permanent base, and push into the repository. Then you would need to edit this file: ~/workflow/defaults/default_resources.yaml. Changes in this file is trivial in some cases while complicated in others. For now, instructions are only made for changing the following parameters: ranks(number of cpu), ppn(number of cpu per node), clock time limit, for prep and atmospheric post; and changing ONLY clock time limit for medcold forecast and primary forecast.
+
+resources for all forecast jobs are listed in gfs_resource_table in this file. Resources for most jobs are resolution-dependent. If you would like to change settings for prep and atmospheric post job. Locate "prep" or "gfspost" entry in corresponding resolution within the table (C192, C384, C768), and upate the entry with the desired value.
+
+If you would like to update clock time limit for primary or medcold forecast job: update this entry: "coupfcst_medcold_wall/coupfcst_wall".
+
+If you want more advanced changes in the resource settings, contact a EIB person.
+
+After changing this file, you NEED to start a new experiment instead of overwriting the existing one. The reason is that, the "resources_sum.yaml" within $EXPDIR has the highest priority so that any changes in default_resources.yaml will be overwritten.
