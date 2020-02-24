@@ -316,9 +316,6 @@ def get_resources(machine, cfg, task, reservation, cdump='gdas'):
                natstr = "-R 'affinity[core(%d)]'" % (threads)
 
             if task in ['arch', 'earc', 'getic']:
-                if not reservation in ['NONE']:
-                   natstr = "-U %s -R 'affinity[core(1)]'" % (reservation)
-                else:
                   natstr = "-R 'affinity[core(1)]'"
 
 
