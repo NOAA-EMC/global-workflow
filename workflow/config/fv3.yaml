@@ -43,11 +43,11 @@ config_fv3:
     forecast_mode=$( echo "$1" | tr a-z A-Z )
 
     case $forecast_mode in
-        "gfs")    
+        "GFS")    
               echo "BEGIN: config.fv3 for $forecast_mode"
               export DELTIM={doc.fv3_gfs_settings.DELTIM}
               export layout_x={doc.fv3_gfs_settings.layout_x}
-                 export layout_y={doc.fv3_gfs_settings.layout_y}
+              export layout_y={doc.fv3_gfs_settings.layout_y}
               export layout_x_gfs={doc.fv3_gfs_settings.layout_x}
               export layout_y_gfs={doc.fv3_gfs_settings.layout_y}
               export npe_node_fcst={doc.partition_common.resources.run_gdasfcst[0].max_ppn}
@@ -60,11 +60,12 @@ config_fv3:
               export WRITE_GROUP_GFS={doc.fv3_gfs_settings.WRITE_GROUP}
               export WRTTASK_PER_GROUP_GFS={doc.fv3_gfs_settings.WRTTASK_PER_GROUP}
               export WRTIOBUF={doc.fv3_gfs_settings.WRTIOBUF}
-        "gdas")
+              ;;
+        "GDAS")
               echo "BEGIN: config.fv3 for $forecast_mode"
               export DELTIM={doc.fv3_gdas_settings.DELTIM}
               export layout_x={doc.fv3_gdas_settings.layout_x}
-                 export layout_y={doc.fv3_gdas_settings.layout_y}
+              export layout_y={doc.fv3_gdas_settings.layout_y}
               export layout_x_gfs={doc.fv3_gdas_settings.layout_x}
               export layout_y_gfs={doc.fv3_gdas_settings.layout_y}
               export npe_node_fcst={doc.partition_common.resources.run_gdasfcst[0].max_ppn}
@@ -76,11 +77,12 @@ config_fv3:
               export WRITE_GROUP_GFS={doc.fv3_gdas_settings.WRITE_GROUP}
               export WRTTASK_PER_GROUP_GFS={doc.fv3_gdas_settings.WRTTASK_PER_GROUP}
               export WRTIOBUF={doc.fv3_gdas_settings.WRTIOBUF}
-        "enkf")
+              ;;
+        "ENKF")
               echo "BEGIN: config.fv3 for $forecast_mode"
               export DELTIM={doc.fv3_enkf_settings.DELTIM}
               export layout_x={doc.fv3_enkf_settings.layout_x}
-                 export layout_y={doc.fv3_enkf_settings.layout_y}
+              export layout_y={doc.fv3_enkf_settings.layout_y}
               export layout_x_gfs={doc.fv3_enkf_settings.layout_x}
               export layout_y_gfs={doc.fv3_enkf_settings.layout_y}
               export npe_node_fcst={doc.partition_common.resources.run_efcs[0].max_ppn}
@@ -92,5 +94,9 @@ config_fv3:
               export WRITE_GROUP_GFS={doc.fv3_enkf_settings.WRITE_GROUP}
               export WRTTASK_PER_GROUP_GFS={doc.fv3_enkf_settings.WRTTASK_PER_GROUP}
               export WRTIOBUF={doc.fv3_enkf_settings.WRTIOBUF}
-   
+              ;;
+          *)
+              echo "CDUMP undefined!"
+              exit 2
+    esac 
     echo "END: config.fv3 for $forecast_mode"
