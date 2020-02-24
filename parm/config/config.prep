@@ -23,4 +23,30 @@ export EXECRELO=${HOMERELO}/exec
 export FIXRELO=${HOMERELO}/fix/fix_am
 export USHRELO=${HOMERELO}/ush
 
+
+# Adjust observation error for GFS v16 parallels
+#
+#   NOTE:  Remember to set OBERROR in config.anal as PRVT is set below
+#
+# Set default prepobs_errtable.global
+export PRVT=$FIXgsi/prepobs_errtable.global
+
+
+# Set prepobs.errtable.global for start of GFS v16 parallels
+if [[ "$CDATE" -ge "2019021900" && "$CDATE" -lt "2019110706" ]]; then
+    export PRVT=$FIXgsi/gfsv16_historical/prepobs_errtable.global.2019021900
+fi
+
+# NOTE:
+#   As of 2019110706, gfsv16_historical/global_convinfo.txt.2019110706 is
+#   identical to ../global_convinfo.txt.  Thus, the logical below is not
+#   needed at this time.   A similar comment applies to ../prepobs_errtable.global
+#   and gfsv16_historical/prepobs_errtable.global.2019110706
+
+# Place GOES-15 AMVs in monitor, assimilate GOES-17 AMVs, assimilate KOMPSAT-5 gps
+##  if [[ "$CDATE" -ge "2019110706" ]]; then
+##     export PRVT=$FIXgsi/gfsv16_historical/prepobs_errtable.global.2019110706
+##  fi
+
+
 echo "END: config.prep"
