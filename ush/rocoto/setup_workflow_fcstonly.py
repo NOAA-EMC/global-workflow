@@ -153,6 +153,7 @@ def get_resources(dict_configs, cdump='gdas'):
 
     base = dict_configs['base']
     machine = base.get('machine', wfu.detectMachine())
+    reservation = base.get('RESERVATION', 'NONE').upper()
     scheduler = wfu.get_scheduler(machine)
 
     do_wave = base.get('DO_WAVE', 'NO').upper()
@@ -166,7 +167,7 @@ def get_resources(dict_configs, cdump='gdas'):
 
         cfg = dict_configs[task]
 
-        wtimestr, resstr, queuestr, memstr, natstr = wfu.get_resources(machine, cfg, task, cdump=cdump)
+        wtimestr, resstr, queuestr, memstr, natstr = wfu.get_resources(machine, cfg, task, reservation, cdump=cdump)
 
         taskstr = '%s_%s' % (task.upper(), cdump.upper())
 
