@@ -1,7 +1,8 @@
       subroutine meteorg(npoint,rlat,rlon,istat,cstat,elevstn,
      &             nf,nfile,fnsig,jdate,idate,
      &       levso,levs,im,jm,kdim,
-     &       landwater,nend1,nint1,nint3,iidum,jjdum,fformat)
+     &       landwater,nend1,nint1,nint3,iidum,jjdum,
+     &       fformat,iocomms,iope,ionproc)
 
 !$$$  SUBPROGRAM DOCUMENTATION BLOCK
 !                .      .    .                                       .
@@ -115,8 +116,8 @@
       integer :: n3dfercld,iseedl
       integer :: istat(npoint)
       logical :: trace
-      logical, parameter :: debugprint=.true.
-!!      logical, parameter :: debugprint=.false.
+!!      logical, parameter :: debugprint=.true.
+      logical, parameter :: debugprint=.false.
       character             lprecip_accu*3
       real, parameter :: ERAD=6.371E6
       real, parameter :: DTR=3.1415926/180.
@@ -137,6 +138,7 @@
       character(7)  :: zone
       character(3)  :: Zreverse
       character(20)  :: VarName,LayName
+      integer iocomms,iope,ionproc
 
       nij = 12
       nflx = 6 * levso
@@ -150,13 +152,15 @@
        idsl=1
 !read in NetCDF file header info
        print*,"fformat= ", fformat
-       print*,'meteorg.f, idum,jdum= '
-        do np = 1, npoint
-          print*,  iidum(np), jjdum(np)
-         enddo
+!       print*,'meteorg.f, idum,jdum= '
+!        do np = 1, npoint
+!          print*,  iidum(np), jjdum(np)
+!         enddo
 
        if(fformat .eq. "netcdf") then
-          error=nf90_open(trim(fnsig),nf90_nowrite,ncid)
+         print*,'iocomms inside meteorg.f=', iocomms
+        error=nf90_open(trim(fnsig),ior(nf90_nowrite,nf90_mpiio),
+     &          ncid,comm=iocomms, info = mpi_info_null)
           error=nf90_get_att(ncid,nf90_global,"ak",vdummy)
            do k = 1, levs+1
             vcoord(k,1)=vdummy(levs-k+1)
@@ -169,7 +173,7 @@
           error=nf90_get_var(ncid, id_var, nfhour)
           print*, "nfhour:",nfhour
           error=nf90_get_att(ncid,id_var,"units",long_name)
-          print*,'time units',' -- ',trim(long_name)
+!!          print*,'time units',' -- ',trim(long_name)
         read(long_name(13:16),"(i4)")idate(4)
         read(long_name(18:19),"(i2)")idate(2)
         read(long_name(21:22),"(i2)")idate(3)
@@ -229,19 +233,18 @@
       print*,'sample lon= ',gdlon(im/5,jm/4)
      +       ,gdlon(im/5,jm/3),gdlon(im/5,jm/2)
       endif
-
-      call date_and_time(date,time,zone,clocking)
-      print *,'1date, time, zone',date, time, zone
 ! topography
       if (fformat == 'netcdf') then
       VarName='hgtsfc'
       Zreverse='yes'
-      call read_netcdf(ncid,im,jm,1,VarName,hgt,Zreverse,error)
+      call read_netcdf_p(ncid,im,jm,1,VarName,hgt,Zreverse,
+     &     iope,ionproc,iocomms,error)
         if (error /= 0) print*,'surface hgt not found'
        else 
       VarName='hgt'
       LayName='sfc'
-       call  read_nemsio(gfile,im,jm,1,VarName,LayName,hgt,error)
+       call  read_nemsio(gfile,im,jm,1,VarName,LayName,hgt,
+     &     iope,ionproc,iocomms,error)
         if (error /= 0) print*,'surface hgt not found'
       endif
         if(debugprint)print*,'sample sfc h= ',hgt(im/5,jm/4)
@@ -251,8 +254,9 @@
        if (fformat == 'netcdf') then
       VarName='pressfc'
       Zreverse='yes'
-       call read_netcdf(ncid,im,jm,1,VarName,pint(:,:,1),
-     &       Zreverse,error)
+       call read_netcdf_p(ncid,im,jm,1,VarName,pint(:,:,1),
+     &       Zreverse,
+     &     iope,ionproc,iocomms,error)
         if (error /= 0) print*,'surface pressure not found'
        else 
       VarName='pres'
@@ -268,7 +272,8 @@
       if (fformat == 'netcdf') then
       VarName='tmp'
       Zreverse='yes'
-       call read_netcdf(ncid,im,jm,levs,VarName,t3d,Zreverse,error)
+       call read_netcdf_p(ncid,im,jm,levs,VarName,t3d,Zreverse,
+     &     iope,ionproc,iocomms,error)
         if (error /= 0) print*,'temp not found'
        else 
       VarName='tmp'
@@ -286,7 +291,8 @@
       if (fformat == 'netcdf') then
       VarName='spfh'
       Zreverse='yes'
-       call read_netcdf(ncid,im,jm,levs,VarName,q3d,Zreverse,error)
+       call read_netcdf_p(ncid,im,jm,levs,VarName,q3d,Zreverse,
+     &     iope,ionproc,iocomms,error)
         if (error /= 0) print*,'spfh not found'
        else 
       VarName='spfh'
@@ -304,7 +310,8 @@
       if (fformat == 'netcdf') then
       VarName='ugrd'
       Zreverse='yes'
-       call read_netcdf(ncid,im,jm,levs,VarName,uh,Zreverse,error)
+       call read_netcdf_p(ncid,im,jm,levs,VarName,uh,Zreverse,
+     &     iope,ionproc,iocomms,error)
         if (error /= 0) print*,'ugrd not found'
        else 
       VarName='ugrd'
@@ -322,7 +329,8 @@
       if (fformat == 'netcdf') then
       VarName='vgrd'
       Zreverse='yes'
-       call read_netcdf(ncid,im,jm,levs,VarName,vh,Zreverse,error)
+       call read_netcdf_p(ncid,im,jm,levs,VarName,vh,Zreverse,
+     &     iope,ionproc,iocomms,error)
         if (error /= 0) print*,'vgrd not found'
        else 
       VarName='vgrd'
@@ -340,7 +348,8 @@
       if (fformat == 'netcdf') then
       VarName='dzdt'
       Zreverse='yes'
-       call read_netcdf(ncid,im,jm,levs,VarName,omega3d,Zreverse,error)
+      call read_netcdf_p(ncid,im,jm,levs,VarName,omega3d,Zreverse,
+     &     iope,ionproc,iocomms,error)
         if (error /= 0) print*,'dzdt not found'
        else 
       VarName='dzdt'
@@ -359,7 +368,8 @@
       if (fformat == 'netcdf') then
       VarName='dpres'
       Zreverse='no'
-       call read_netcdf(ncid,im,jm,levs,VarName,delp,Zreverse,error)
+       call read_netcdf_p(ncid,im,jm,levs,VarName,delp,Zreverse,
+     &     iope,ionproc,iocomms,error)
         if (error /= 0) print*,'dpres not found'
        else 
       VarName='dpres'
@@ -378,7 +388,8 @@
       if (fformat == 'netcdf') then
       VarName='delz'
       Zreverse='no'
-       call read_netcdf(ncid,im,jm,levs,VarName,delz,Zreverse,error)
+       call read_netcdf_p(ncid,im,jm,levs,VarName,delz,Zreverse,
+     &     iope,ionproc,iocomms,error)
         if (error /= 0) print*,'delz not found'
        else 
       VarName='delz'
@@ -519,7 +530,8 @@
       if (fformat == 'netcdf') then
       VarName='land'
       Zreverse='no'
-       call read_netcdf(ncid,im,jm,1,VarName,lwmask,Zreverse,error)
+       call read_netcdf_p(ncid,im,jm,1,VarName,lwmask,Zreverse,
+     &     iope,ionproc,iocomms,error)
         if (error /= 0) print*,'lwmask not found'
        else 
       VarName='land'
@@ -535,8 +547,9 @@
       if (fformat == 'netcdf') then
       VarName='tmpsfc'
       Zreverse='no'
-       call read_netcdf(ncid,im,jm,1,VarName,dum2d(:,:,1),
-     &       Zreverse,error)
+       call read_netcdf_p(ncid,im,jm,1,VarName,dum2d(:,:,1),
+     &       Zreverse,
+     &     iope,ionproc,iocomms,error)
         if (error /= 0) print*,'tmpsfc not found'
        else 
       VarName='tmp'
@@ -552,8 +565,9 @@
       if (fformat == 'netcdf') then
       VarName='tmp2m'
       Zreverse='no'
-       call read_netcdf(ncid,im,jm,1,VarName,dum2d(:,:,2),
-     &              Zreverse,error)
+       call read_netcdf_p(ncid,im,jm,1,VarName,dum2d(:,:,2),
+     &              Zreverse,
+     &     iope,ionproc,iocomms,error)
         if (error /= 0) print*,'tmp2m not found'
        else 
       VarName='tmp'
@@ -570,8 +584,9 @@
       if (fformat == 'netcdf') then
       VarName='spfh2m'
       Zreverse='no'
-       call read_netcdf(ncid,im,jm,1,VarName,dum2d(:,:,3),
-     &           Zreverse,error)
+       call read_netcdf_p(ncid,im,jm,1,VarName,dum2d(:,:,3),
+     &           Zreverse,
+     &     iope,ionproc,iocomms,error)
         if (error /= 0) print*,'spfh2m not found'
        else 
       VarName='spfh'
@@ -588,8 +603,9 @@
       if (fformat == 'netcdf') then
       VarName='ugrd10m'
       Zreverse='no'
-       call read_netcdf(ncid,im,jm,1,VarName,dum2d(:,:,4),
-     &              Zreverse,error)
+       call read_netcdf_p(ncid,im,jm,1,VarName,dum2d(:,:,4),
+     &              Zreverse,
+     &     iope,ionproc,iocomms,error)
         if (error /= 0) print*,'ugrd10m not found'
        else 
       VarName='ugrd'
@@ -603,8 +619,9 @@
       if (fformat == 'netcdf') then
       VarName='vgrd10m'
       Zreverse='no'
-       call read_netcdf(ncid,im,jm,1,VarName,dum2d(:,:,5),
-     &             Zreverse,error)
+       call read_netcdf_p(ncid,im,jm,1,VarName,dum2d(:,:,5),
+     &             Zreverse,
+     &     iope,ionproc,iocomms,error)
         if (error /= 0) print*,'vgrd10m not found'
        else 
       VarName='vgrd'
@@ -618,8 +635,9 @@
       if (fformat == 'netcdf') then
       VarName='soilt1'
       Zreverse='no'
-       call read_netcdf(ncid,im,jm,1,VarName,dum2d(:,:,6),
-     &              Zreverse,error)
+       call read_netcdf_p(ncid,im,jm,1,VarName,dum2d(:,:,6),
+     &              Zreverse,
+     &     iope,ionproc,iocomms,error)
         if (error /= 0) print*,'soilt1 not found'
        else 
       VarName='tmp'
@@ -636,8 +654,9 @@
       if (fformat == 'netcdf') then
       VarName='snod'
       Zreverse='no'
-       call read_netcdf(ncid,im,jm,1,VarName,dum2d(:,:,7),
-     &          Zreverse,error)
+       call read_netcdf_p(ncid,im,jm,1,VarName,dum2d(:,:,7),
+     &          Zreverse,
+     &     iope,ionproc,iocomms,error)
         if (error /= 0) print*,'snod not found'
        else 
       VarName='snod'
@@ -652,8 +671,9 @@
       if (fformat == 'netcdf') then
       VarName='lhtfl'
       Zreverse='no'
-       call read_netcdf(ncid,im,jm,1,VarName,dum2d(:,:,8),
-     &            Zreverse,error)
+       call read_netcdf_p(ncid,im,jm,1,VarName,dum2d(:,:,8),
+     &            Zreverse,
+     &     iope,ionproc,iocomms,error)
         if (error /= 0) print*,'lhtfl not found'
        else 
       VarName='lhtfl'
@@ -679,8 +699,12 @@
       if (fformat == 'netcdf') then
       VarName='prate_ave'
       Zreverse='no'
-       call read_netcdf(ncid,im,jm,1,VarName,apcp,Zreverse,error) !current hour
-       call read_netcdf(ncid2,im,jm,1,VarName,cpcp,Zreverse,error) !earlier hour
+!!       call read_netcdf_p(ncid,im,jm,1,VarName,apcp,Zreverse,error) !current hour
+       call read_netcdf_p(ncid,im,jm,1,VarName,apcp,Zreverse,
+     &     iope,ionproc,iocomms,error)
+!!       call read_netcdf_p(ncid2,im,jm,1,VarName,cpcp,Zreverse,error) !earlier hour
+       call read_netcdf_p(ncid2,im,jm,1,VarName,cpcp,Zreverse,
+     &     iope,ionproc,iocomms,error)
         if (error /= 0) print*,'prate_ave not found'
        else 
       VarName='prate_ave'
@@ -710,8 +734,10 @@
       if (fformat == 'netcdf') then
       VarName='cprat_ave'
       Zreverse='no'
-       call read_netcdf(ncid,im,jm,1,VarName,apcp,Zreverse,error) !current hour
-       call read_netcdf(ncid2,im,jm,1,VarName,cpcp,Zreverse,error) !earlier hour
+       call read_netcdf_p(ncid,im,jm,1,VarName,apcp,Zreverse,
+     &     iope,ionproc,iocomms,error)
+       call read_netcdf_p(ncid2,im,jm,1,VarName,cpcp,Zreverse,
+     &     iope,ionproc,iocomms,error)
         if (error /= 0) print*,'cprat_ave not found'
        else 
       VarName='cprat_ave'
@@ -734,8 +760,9 @@
       if (fformat == 'netcdf') then
       VarName='weasd'
       Zreverse='no'
-       call read_netcdf(ncid,im,jm,1,VarName,dum2d(:,:,11),
-     &                Zreverse,error)
+       call read_netcdf_p(ncid,im,jm,1,VarName,dum2d(:,:,11),
+     &                Zreverse,
+     &     iope,ionproc,iocomms,error)
         if (error /= 0) print*,'weasd not found'
        else 
       VarName='weasd'
@@ -749,8 +776,9 @@
       if (fformat == 'netcdf') then
       VarName='tcdc_avelcl'
       Zreverse='no'
-       call read_netcdf(ncid,im,jm,1,VarName,
-     &               dum2d(:,:,12),Zreverse,error)
+       call read_netcdf_p(ncid,im,jm,1,VarName,
+     &               dum2d(:,:,12),Zreverse,
+     &     iope,ionproc,iocomms,error)
         if (error /= 0) print*,'tcdc_avelcl not found'
        else 
       VarName='tcdc_ave'
@@ -764,8 +792,9 @@
       if (fformat == 'netcdf') then
       VarName='tcdc_avemcl'
       Zreverse='no'
-       call read_netcdf(ncid,im,jm,1,VarName,
-     &               dum2d(:,:,13),Zreverse,error)
+       call read_netcdf_p(ncid,im,jm,1,VarName,
+     &               dum2d(:,:,13),Zreverse,
+     &     iope,ionproc,iocomms,error)
         if (error /= 0) print*,'tcdc_avemcl not found'
        else 
       VarName='tcdc_ave'
@@ -779,8 +808,9 @@
       if (fformat == 'netcdf') then
       VarName='tcdc_avehcl'
       Zreverse='no'
-       call read_netcdf(ncid,im,jm,1,VarName,
-     &               dum2d(:,:,14),Zreverse,error)
+       call read_netcdf_p(ncid,im,jm,1,VarName,
+     &               dum2d(:,:,14),Zreverse,
+     &     iope,ionproc,iocomms,error)
         if (error /= 0) print*,'tcdc_avehcl not found'
        else 
       VarName='tcdc_ave'
