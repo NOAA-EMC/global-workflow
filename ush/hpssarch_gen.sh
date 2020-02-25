@@ -174,7 +174,7 @@ if [ $type = "gdas" ]; then
   if [ -s $ROTDIR/${dirpath}${head}radstat ]; then
      echo  "${dirname}${head}radstat                 " >>gdas.txt
   fi
-  for fstep in prep anal fcst vrfy radmon minmon oznmon; do
+  for fstep in prep anal gldas fcst vrfy radmon minmon oznmon; do
    if [ -s $ROTDIR/logs/${CDATE}/gdas${fstep}.log ]; then
      echo  "./logs/${CDATE}/gdas${fstep}.log         " >>gdas.txt
    fi
@@ -278,7 +278,7 @@ if [ $type = "enkfgdas" -o $type = "enkfgfs" ]; then
         echo  "${dirname}${head}atma00${FHR}.ensmean${SUFFIX}      " >>enkf${CDUMP}.txt
      fi 
   done # loop over FHR
-  for fstep in eobs eomg ecen eupd efcs epos ; do
+  for fstep in eobs eomg ecen esfc eupd efcs epos ; do
    echo  "logs/${CDATE}/${CDUMP}${fstep}*.log        " >>enkf${CDUMP}.txt
   done
 
