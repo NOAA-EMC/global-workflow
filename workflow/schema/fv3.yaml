@@ -36,13 +36,13 @@ fv3_settings_template: !Template &fv3_settings_template
           nwat: { type: int, default: 6 }
           FIELD_TABLE:
             type: string
-            default: "$HOMEgfs/parm/parm_fv3diag/field_table_gfdl_satmedmf"
+            default: "$HOMEgfs/parm/parm_fv3diag/field_table_gfdl"
           dnats: { type: int, default: 1 }
           cal_pre: { type: bool, default: false }
           do_sat_adj: { type: bool, default: true }
           random_clds: { type: bool, default: false }
-          hord_mt_nh_nonmono: { type: int, default: 5 }
-          hord_xx_nh_nonmono: { type: int, default: 5 }
+          hord_mt_nh_nonmono: { type: int, default: 6 }
+          hord_xx_nh_nonmono: { type: int, default: 6 }
           vtdm4_nh_nonmono:   { type: float, default: 0.02 }
           nord: { type: int, default: 2 }
           dddmp: { type: float, default: 0.1 }

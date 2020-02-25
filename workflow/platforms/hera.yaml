@@ -26,7 +26,7 @@ platform: !Platform
   # processing scripts, which are not included in the public release.
   DMPDIR: "/scratch1/NCEPDEV/global/glopara/dump"
   NWPROD: "/scratch1/NCEPDEV/global/glopara/svn/verif/global/tags/vsdb/nwprod"
-  RTMFIX: "/scratch2/NCEPDEV/nwprod/NCEPLIBS/fix/crtm_v2.2.6"
+  RTMFIX: "/scratch1/NCEPDEV/global/glopara/crtm/2.2.3/fix_update/"
   BASE_SVN: "/scratch1/NCEPDEV/global/glopara/svn"
 
   # BASE_GIT - a directory maintained by emc global model developers
