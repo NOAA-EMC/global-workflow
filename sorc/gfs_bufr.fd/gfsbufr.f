@@ -241,7 +241,7 @@ c     do nf = nss, nend, nint
      &             nf,nfile,fnsig,jdate,idate,
      &      levs,levsi,im,jm,nsfc,
      &      landwater,nend1, nint1, nint3, iidum,jjdum,
-     &      fformat,iocomms(ntask),iope,ionproc,ntot)
+     &      fformat,iocomms(ntask),iope,ionproc)
        call mpi_barrier(iocomms(ntask), ierr)
        call mpi_comm_free(iocomms(ntask), ierr)
        else
@@ -250,7 +250,7 @@ c     do nf = nss, nend, nint
      &             nf,nfile,fnsig,jdate,idate,
      &      levs,levsi,im,jm,nsfc,
      &      landwater,nend1, nint1, nint3, iidum,jjdum,
-     &      fformat,iocomms(ntask),iope,ionproc,ntot)
+     &      fformat,iocomms(ntask),iope,ionproc)
         endif  
         endif  
       call mpi_barrier(mpi_comm_world,ierr)
