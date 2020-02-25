@@ -192,15 +192,6 @@ config_base:
     export OUTPUT_GRID="{doc.gfs_output_settings.OUTPUT_GRID}"
     export OUTPUT_FILE="{doc.gfs_output_settings.OUTPUT_FILE_TYPE}"
    
-    # IAU related parameters
-    export DOIAU={doc.settings.DOIAU}
-    export IAUFHRS={doc.settings.IAUFHRS}
-    export IAU_DELTHRS={doc.settings.IAU_DELTHRS}
-    export DOIAU_ENKF={doc.fv3_enkf_settings.DOIAU_ENKF}
-    export IAUFHRS_ENKF={doc.fv3_enkf_settings.IAUFHRS_ENKF}
-    export IAU_DELTHRS_ENKF={doc.fv3_enkf_settings.IAU_DELTHRS_ENKF}
-    [[ "$SDATE" = "$CDATE" ]] && ( export DOIAU="NO"; export DOIAU_ENKF="NO" ) 
-
     # Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL
     export imp_physics={doc.fv3_settings.imp_physics}
     

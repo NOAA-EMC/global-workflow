@@ -17,8 +17,6 @@ config_fcst:
         export nord={doc.fv3_settings.nord}
         export dddmp={doc.fv3_settings.dddmp}
         export d4_bg={doc.fv3_settings.d4_bg}
-        export lgfdlmprad=".true."
-        export effr_in=".true."
     - otherwise: ""
 
   level_127: !FirstTrue
@@ -94,35 +92,6 @@ config_fcst:
     # Options of stratosphere O3 physics reaction coefficients
     export new_o3forc="{tools.YES_NO(doc.fv3_settings_template.new_o3force)}"
     
-    # do_ugwp=T: use unified CGWD and OGWD, and turbulent orographic form drag (TOFD)
-    # do_ugwp=F: use unified CGWD but old OGWD, TOFD is not uded.
-    export do_ugwp=".false."
-    export do_tofd=".true."
-    export launch_level=$(echo "$LEVS/2.35" |bc)
-
-    # PBL/turbulance schemes
-    export hybedmf=".false."
-    export satmedmf=".true."
-    export isatmedmf=1
-    tbf=""
-    if [ $satmedmf = ".true." ]; then tbf="_satmedmf" ; fi
-
-    # Land surface model. (2--NoahMP, landice=F); (1--Noah, landice=T)
-    export lsm=1
-    if [ $lsm -eq 2 ]; then
-        export lheatstrg=".false."
-        export landice=".false."
-    else
-        export lheatstrg=".true."
-        export landice=".true."
-    fi
-
-    # Radiation options
-    export IAER=5111
-    export iovr_lw=3
-    export iovr_sw=3
-    export icliq_sw=2
-
     # Microphysics configuration
     export dnats={doc.fv3_settings.dnats}
     export cal_pre="{tools.fort(doc.fv3_settings.cal_pre)}"
@@ -136,15 +105,6 @@ config_fcst:
     {level_127}
 
     #---------------------------------------------------------------------
-    # ideflate: netcdf zlib lossless compression (0-9): 0 no compression
-    # nbits: netcdf lossy compression level (0-32): 0 lossless
-    export ideflate=1
-    export nbits=14
-    export ishuffle=0
-    # compression for RESTART files written by FMS
-    export shuffle=1
-    export deflate_level=1
-    
     # Disable the use of coupler.res; get model start time from model_configure
     export USE_COUPLER_RES="NO"
     
