@@ -275,15 +275,14 @@ elif [ $step = "epos" ]; then
 elif [ $step = "postsnd" ]; then
 
     export wtime_postsnd="02:00:00"
-    export npe_postsnd=12
-    export nth_postsnd=1
-    export npe_node_postsnd=3
+    export npe_postsnd=40
+    export npe_node_postsnd=10
     export npe_postsndcfp=10
     export npe_node_postsndcfp=3
-    if [[ "$machine" == "WCOSS_DELL_P3" ]]; then
-        export npe_node_postsnd=4
-        export npe_postsndcfp=9
-    fi
+	if [ $OUTPUT_FILE == "nemsio" ]; then
+	export npe_postsnd=13
+    export npe_node_postsnd=4
+	fi
     if [[ "$machine" == "WCOSS_C" ]]; then export memory_postsnd="254M"; fi
 
 elif [ $step = "awips" ]; then

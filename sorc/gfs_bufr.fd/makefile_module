@@ -27,7 +27,7 @@ SRCM    = gfsbufr.f
 OBJS    = physcons.o funcphys.o meteorg.o bfrhdr.o newsig1.o terp3.o\
           bfrize.o vintg.o buff.o rsearch.o \
           svp.o calpreciptype.o lcl.o mstadb.o tdew.o\
-          machine.o gslp.o modstuff1.o read_nemsio.o read_netcdf.o
+          machine.o gslp.o modstuff1.o read_nemsio.o read_netcdf_p.o
 
 CMD     = ../../exec/gfs_bufr
 
@@ -46,8 +46,8 @@ modstuff1.o:	modstuff1.f
 	$(FC) $(INC) $(FFLAGS) -free -c modstuff1.f
 meteorg.o:	meteorg.f physcons.o funcphys.o
 	$(FC) $(INC) $(FFLAGS) -c meteorg.f 
-read_netcdf.o:	read_netcdf.f 
-	$(FC) $(INC) $(FFLAGS) -c read_netcdf.f
+read_netcdf_p.o:	read_netcdf_p.f 
+	$(FC) $(INC) $(FFLAGS) -c read_netcdf_p.f
 read_nemsio.o:	read_nemsio.f 
 	$(FC) $(INC) $(FFLAGS) -c read_nemsio.f
 bfrhdr.o:	bfrhdr.f

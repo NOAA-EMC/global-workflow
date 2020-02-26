@@ -42,10 +42,11 @@ C   MACHINE:  IBM SP
 C
 C$$$
       use netcdf
+      use mpi
       use nemsio_module
       use sigio_module
       implicit none
-      include 'mpif.h'
+!!      include 'mpif.h'
       integer,parameter:: nsta=3000
       integer,parameter:: ifile=11
       integer(sigio_intkind):: irets
@@ -74,11 +75,14 @@ C$$$
       CHARACTER*80     CLIST(4)
       INTEGER            NPP(4)
       CHARACTER*8     SEQNAM(4)
-      integer ierr, mrank, msize
+      integer ierr, mrank, msize,ntask
       integer n0, ntot
       integer  :: error, ncid, id_var,dimid
       character(len=10) :: dim_nam
       character(len=6) :: fformat
+      !added from Cory
+      integer :: iope, ionproc
+      integer, allocatable  :: iocomms(:)
 C
       DATA             SBSET / 'ABCD1234' /
 C
@@ -171,10 +175,11 @@ C
       if(f00) nss = nstart
 c     do nf = nss, nend, nint
       ntot = (nend - nss) / nint + 1
-      do n0 = 1, ntot, msize
-        nf = (n0 + mrank - 1) * nint + nss
-C        print*,'n0 ntot nint nss mrank msize',n0,ntot,nint,
-C     &  nss,mrank,msize
+        ntask = mrank/(float(msize)/float(ntot))
+        nf = ntask * nint + nss
+        print*,'n0 ntot nint nss mrank msize'
+        print*, n0,ntot,nint,nss,mrank,msize
+        print*,'nf, ntask= ', nf, ntask
         if(nf .le. nend1) then
         nfile = 21 + (nf / nint1)
          else
@@ -207,7 +212,7 @@ C     &  nss,mrank,msize
           error=nf90_inq_dimid(ncid,"pfull",dimid)
           error=nf90_inquire_dimension(ncid,dimid,dim_nam,levsi)
           error=nf90_close(ncid)
-          print*,'NetCDF file im,jm,lm= ',im,jm,levs,levsi
+!!          print*,'NetCDF file im,jm,lm= ',im,jm,levs,levsi
 
            else
           call nemsio_init(iret=irets)
@@ -225,18 +230,29 @@ C     &  nss,mrank,msize
           print*,'nemsio file im,jm,lm= ',im,jm,levsi
           call nemsio_close(gfile,iret=irets)
          endif
-!!       OPEN(12,file="ij.txt",action='write',position='append')
-!  read nearest neighbor i,j from the table
-!          print*,'idum,jdum= '
-!          do np = 1, npoint
-!          print*,  iidum(np), jjdum(np)
-!          enddo
+         allocate (iocomms(0:ntot))
+       if (fformat == 'netcdf') then
+        print*,'iocomms= ', iocomms
+        call mpi_comm_split(MPI_COMM_WORLD,ntask,0,iocomms(ntask),ierr)
+        call mpi_comm_rank(iocomms(ntask), iope, ierr)
+        call mpi_comm_size(iocomms(ntask), ionproc, ierr)
+
           call meteorg(npoint,rlat,rlon,istat,cstat,elevstn,
      &             nf,nfile,fnsig,jdate,idate,
      &      levs,levsi,im,jm,nsfc,
-     &      landwater,nend1, nint1, nint3, iidum,jjdum,fformat)
-        endif
-      enddo
+     &      landwater,nend1, nint1, nint3, iidum,jjdum,
+     &      fformat,iocomms(ntask),iope,ionproc)
+       call mpi_barrier(iocomms(ntask), ierr)
+       call mpi_comm_free(iocomms(ntask), ierr)
+       else
+!! For nemsio input
+          call meteorg(npoint,rlat,rlon,istat,cstat,elevstn,
+     &             nf,nfile,fnsig,jdate,idate,
+     &      levs,levsi,im,jm,nsfc,
+     &      landwater,nend1, nint1, nint3, iidum,jjdum,
+     &      fformat,iocomms(ntask),iope,ionproc)
+        endif  
+        endif  
       call mpi_barrier(mpi_comm_world,ierr)
       call mpi_finalize(ierr)
       if(mrank.eq.0) then
