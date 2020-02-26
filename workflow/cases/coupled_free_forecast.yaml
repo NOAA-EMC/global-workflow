@@ -1,6 +1,8 @@
 case:
   fv3_settings:
     nst_anl: False
+    hord_mt_nh_nonmono: 5
+    hord_xx_nh_nonmono: 5
 
   places:
     workflow_file: layout/free_forecast_gfs.yaml
@@ -25,7 +27,7 @@ case:
     FHMIN_GFS: 0
     FHMAX_GFS: 72
     FHMAX_HF_GFS: 0
-    FHOUT_HF_GFS: 1
+    FHOUT_HF_GFS: -1
 
   fv3_gfs_settings:
     CASE: C384
