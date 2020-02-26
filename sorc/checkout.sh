@@ -21,7 +21,7 @@ if [[ ! -d gsi.fd ]] ; then
     rm -f ${topdir}/checkout-gsi.log
     git clone --recursive gerrit:ProdGSI gsi.fd >> ${topdir}/checkout-gsi.log 2>&1
     cd gsi.fd
-    git checkout feature/fv3_ncio 
+    git checkout feature/parallel_ncio
     git submodule update
     cd ${topdir}
 else
@@ -77,7 +77,6 @@ if [[ ! -d verif-global.fd ]] ; then
     rm -f ${topdir}/checkout-verif-global.log
     git clone --recursive gerrit:EMC_verif-global verif-global.fd >> ${topdir}/checkout-verif-global.log 2>&1
     cd verif-global.fd
-    git checkout verif_global_v1.2.2
     git checkout verif_global_v1.5.0
     cd ${topdir}
 else
