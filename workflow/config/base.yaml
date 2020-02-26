@@ -157,7 +157,7 @@ config_base:
     #export COMOUTwmo="$ROTDIR/$CDUMP.$PDY/$cyc/wmo"
     
     # Resolution specific parameters
-    export LEVS={doc.fv3_settings.LEVS}
+    export LEVS={doc.fv3_gdas_settings.LEVS}
     export CASE="{doc.fv3_gfs_settings.CASE}"
     export CASE_ENKF="{doc.fv3_enkf_settings.CASE}"
     
@@ -188,7 +188,7 @@ config_base:
     # I/O QUILTING, true--use Write Component; false--use GFDL FMS
     # if quilting=true, choose OUTPUT_GRID as cubed_sphere_grid in netcdf or gaussian_grid
     # if gaussian_grid, set OUTPUT_FILE for nemsio or netcdf
-    export QUILTING="{tools.fort(doc.fv3_settings.QUILTING)}"
+    export QUILTING="{tools.fort(doc.fv3_gdas_settings.QUILTING)}"
     export OUTPUT_GRID="{doc.gfs_output_settings.OUTPUT_GRID}"
     export OUTPUT_FILE="{doc.gfs_output_settings.OUTPUT_FILE_TYPE}"
    
@@ -202,7 +202,7 @@ config_base:
     [[ "$SDATE" = "$CDATE" ]] && ( export DOIAU="NO"; export DOIAU_ENKF="NO" ) 
 
     # Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL
-    export imp_physics={doc.fv3_settings.imp_physics}
+    export imp_physics={doc.fv3_gdas_settings.imp_physics}
     
     # Shared parameters
     # Hybrid related
@@ -223,11 +223,11 @@ config_base:
     fi
     
     # If YES, NSST is turned on in anal and/or fcst steps
-    export DONST="{tools.YES_NO(doc.fv3_settings.DONST)}"
+    export DONST="{tools.YES_NO(doc.fv3_gdas_settings.DONST)}"
     if [ $DONST = "YES" ]; then export FNTSFA="        "; fi
     
     # The switch to apply SST elevation correction or not
-    export nst_anl={tools.fort(doc.fv3_settings.nst_anl)}
+    export nst_anl={tools.fort(doc.fv3_gdas_settings.nst_anl)}
     
     # Analysis increments to zero in CALCINCEXEC
     export INCREMENTS_TO_ZERO="{tools.join(doc.data_assimilation.INCREMENTS_TO_ZERO,',')}"

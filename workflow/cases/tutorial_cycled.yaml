@@ -1,10 +1,11 @@
 case:
-  fv3_settings:
+  fv3_gdas_settings:
     CASE: C384
     LEVS: 65
 
   fv3_enkf_settings:
     CASE: C192
+    LEVS: 65
 
   places:
     workflow_file: layout/cycled_gfs.yaml

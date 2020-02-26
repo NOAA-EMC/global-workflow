@@ -28,6 +28,7 @@ platform: !Platform
   NWPROD: "/scratch1/NCEPDEV/global/glopara/svn/verif/global/tags/vsdb/nwprod"
   RTMFIX: "/scratch2/NCEPDEV/nwprod/NCEPLIBS/fix/crtm_v2.2.6"
   BASE_SVN: "/scratch1/NCEPDEV/global/glopara/svn"
+  prod_util_module: "none"
 
   # BASE_GIT - a directory maintained by emc global model developers
   # that contains recent versions of source code and executables for

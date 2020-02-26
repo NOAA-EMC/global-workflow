@@ -31,9 +31,10 @@ case:
     CASE: C384
     LEVS: 65
     DELTIM: 450
-    layout_x: 6
-    layout_y: 8
-    fv3_threads: 2
+    layout:
+       x: 6
+       y: 8
+       nth: 2
     WRITE_GROUP: 1
     WRTTASK_PER_GROUP: 24
     WRTIOBUF: "32M"

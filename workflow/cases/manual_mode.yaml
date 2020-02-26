@@ -19,9 +19,10 @@ case:
     WRTTASK_PER_GROUP: 2
     DONST: YES
     nst_anl: yes
-    layout_x: 2
-    layout_y: 3
-    fv3_threads: 4
+    layout:
+       x: 2
+       y: 3
+       nth: 4
     imp_physics: 11
 
   fv3_gdas_settings:
@@ -30,9 +31,10 @@ case:
     QUILTING: True
     WRITE_GROUP: 1
     WRTTASK_PER_GROUP: 2
-    layout_x: 2
-    layout_y: 3
-    fv3_threads: 4
+    layout:
+       x: 2
+       y: 3
+       nth: 4
 
   fv3_enkf_settings:
     CASE: C192
@@ -42,9 +44,10 @@ case:
     WRTTASK_PER_GROUP: 2
     FHCYC_GDAS: 1
     FHCYC_GFS: 24
-    layout_x: 2
-    layout_y: 3
-    fv3_threads: 4
+    layout:
+       x: 2
+       y: 3
+       nth: 4
 
   gfs_output_settings:
     FHMIN_GFS: 0
