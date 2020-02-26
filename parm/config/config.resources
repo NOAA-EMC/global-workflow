@@ -198,6 +198,7 @@ elif [ $step = "postsnd" ]; then
 
     export wtime_postsnd="02:00:00"
     export npe_postsnd=40
+	export nth_postsnd=1
     export npe_node_postsnd=10
     export npe_postsndcfp=10
     export npe_node_postsndcfp=3
