@@ -16,7 +16,7 @@ export NPOSTGRP=42
 export OUTTYP=4
 export MODEL_OUT_FORM=binarynemsiompiio
 if [ $OUTPUT_FILE = "netcdf" ]; then 
-    export MODEL_OUT_FORM=netcdfnemsiompiio
+    export MODEL_OUT_FORM=netcdfpara
 fi
 
 # Post driver job that calls gfs_nceppost.sh and downstream jobs
