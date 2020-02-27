@@ -57,6 +57,7 @@ output_settings: !Immediate
 data_assimilation: !Immediate
   - !MergeMapping
     - { Template: *data_assimilation_template }
+    - !calc doc.data_assimilation_defaults
     - !calc doc.case.get('data_assimilation',{})
     - !calc doc.get('user_data_assimilation',{})
   
@@ -91,6 +92,7 @@ places: !Immediate
 nsst: !Immediate
   - !MergeMapping
     - Template: *nsst_schema
+    - !calc doc.nsst_defaults
     - !calc doc.case.get('nsst',{})
     - !calc doc.get('user_nsst',{})
   
