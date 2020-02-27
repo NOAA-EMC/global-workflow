@@ -1,0 +1,8 @@
+nsst_defaults: &nsst_defaults
+   NST_MODEL: 2
+   NST_RESV: 0
+   ZSEA1: 0
+   ZSEA2: 0
+   NST_GSI: 3
+   NSTINFO: 0
+   NST_SPINUP: 0

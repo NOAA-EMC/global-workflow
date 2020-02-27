@@ -19,7 +19,7 @@ case:
   nsst:
     NST_MODEL: 0
 
-  gfs_output_settings:
+  output_settings:
     OCN_INTERVAL: 24
     FHOUT_GFS: 6
     FHMIN_GFS: 0

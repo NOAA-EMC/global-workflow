@@ -15,8 +15,8 @@ fv3_gdas_settings: !Immediate
 fv3_enkf_settings: !Immediate
     - !calc doc.case.fv3_enkf_settings
 
-gfs_output_settings: !Immediate
-    - !calc doc.case.get('gfs_output_settings',{})
+output_settings: !Immediate
+    - !calc doc.case.get('output_settings',{})
 
 schedvar: !Immediate
   - !MergeMapping

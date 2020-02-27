@@ -6,7 +6,7 @@ case:
   places:
     workflow_file: layout/free_forecast_gfs.yaml
 
-  gfs_output_settings:
+  output_settings:
     FHMAX_GFS: 24
     FHOUT_GFS: 3
     FHMAX_HF_GFS: 0

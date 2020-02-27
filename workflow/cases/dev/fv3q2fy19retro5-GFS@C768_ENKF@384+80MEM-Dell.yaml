@@ -15,7 +15,7 @@ case:
     NMEM_EARCGRP: 10
     l4densvar: Yes
 
-  gfs_output_settings:
+  output_settings:
     FHMAX_GFS: 384
     FHOUT_GFS: 3
     FHMAX_HF_GFS: 0

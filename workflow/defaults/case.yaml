@@ -47,12 +47,12 @@ fv3_gdas_settings: !Immediate
     - !calc doc.case.get('fv3_gdas_settings',{})
     - !calc doc.get('user_fv3_gdas_settings',{})
 
-gfs_output_settings: !Immediate
+output_settings: !Immediate
   - !MergeMapping
-    - Template: *gfs_output_settings_template
-    - !calc doc.gfs_output_settings_defaults
-    - !calc doc.case.get('gfs_output_settings',{})
-    - !calc doc.get('user_gfs_output_settings',{})
+    - Template: *output_settings_template
+    - !calc doc.output_settings_defaults
+    - !calc doc.case.get('output_settings',{})
+    - !calc doc.get('user_output_settings',{})
 
 data_assimilation: !Immediate
   - !MergeMapping
@@ -123,7 +123,7 @@ validate_me:
   - fv3_gfs_settings
   - fv3_enkf_settings
   - fv3_gdas_settings
-  - gfs_output_settings
+  - output_settings
   - data_assimilation
   - post
   - downstream

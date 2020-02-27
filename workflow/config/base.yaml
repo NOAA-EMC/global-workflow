@@ -170,27 +170,27 @@ config_base:
     fi
     
     # Output frequency of the forecast model (for cycling)
-    export FHMIN={doc.gfs_output_settings.FHMIN_GDAS}
-    export FHMAX={doc.gfs_output_settings.FHMAX_GDAS}
-    export FHOUT={doc.gfs_output_settings.FHOUT_GDAS}
+    export FHMIN={doc.output_settings.FHMIN_GDAS}
+    export FHMAX={doc.output_settings.FHMAX_GDAS}
+    export FHOUT={doc.output_settings.FHOUT_GDAS}
     
     # GFS cycle info
     export gfs_cyc={doc.settings.gfs_cyc} # 0: no GFS cycle, 1: 00Z only, 2: 00Z and 12Z only, 4: all 4 cycles.
     
     # GFS output and frequency
-    export FHMIN_GFS={doc.gfs_output_settings.FHMIN_GFS}
-    export FHMAX_GFS={doc.gfs_output_settings.FHMAX_GFS}
-    export FHOUT_GFS={doc.gfs_output_settings.FHOUT_GFS}
-    export FHMAX_HF_GFS={doc.gfs_output_settings.FHMAX_HF_GFS}
-    export FHOUT_HF_GFS={doc.gfs_output_settings.FHOUT_HF_GFS}
-    export FHRLST="{doc.gfs_output_settings.gfs_forecast_hours}"
+    export FHMIN_GFS={doc.output_settings.FHMIN_GFS}
+    export FHMAX_GFS={doc.output_settings.FHMAX_GFS}
+    export FHOUT_GFS={doc.output_settings.FHOUT_GFS}
+    export FHMAX_HF_GFS={doc.output_settings.FHMAX_HF_GFS}
+    export FHOUT_HF_GFS={doc.output_settings.FHOUT_HF_GFS}
+    export FHRLST="{doc.output_settings.gfs_forecast_hours}"
 
     # I/O QUILTING, true--use Write Component; false--use GFDL FMS
     # if quilting=true, choose OUTPUT_GRID as cubed_sphere_grid in netcdf or gaussian_grid
     # if gaussian_grid, set OUTPUT_FILE for nemsio or netcdf
     export QUILTING="{tools.fort(doc.fv3_gdas_settings.QUILTING)}"
-    export OUTPUT_GRID="{doc.gfs_output_settings.OUTPUT_GRID}"
-    export OUTPUT_FILE="{doc.gfs_output_settings.OUTPUT_FILE_TYPE}"
+    export OUTPUT_GRID="{doc.output_settings.OUTPUT_GRID}"
+    export OUTPUT_FILE="{doc.output_settings.OUTPUT_FILE_TYPE}"
    
     # IAU related parameters
     export DOIAU={doc.settings.DOIAU}
@@ -214,9 +214,9 @@ config_base:
     
     # EnKF output frequency
     if [ $DOHYBVAR = "YES" ]; then
-        export FHMIN_ENKF={doc.gfs_output_settings.FHMIN_ENKF}
-        export FHMAX_ENKF={doc.gfs_output_settings.FHMAX_ENKF}
-        export FHOUT_ENKF={doc.gfs_output_settings.FHOUT_ENKF}
+        export FHMIN_ENKF={doc.output_settings.FHMIN_ENKF}
+        export FHMAX_ENKF={doc.output_settings.FHMAX_ENKF}
+        export FHOUT_ENKF={doc.output_settings.FHOUT_ENKF}
         if [ $l4densvar = ".true." ]; then
             export FHOUT=1
         fi

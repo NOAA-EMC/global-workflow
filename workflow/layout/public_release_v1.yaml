@@ -57,7 +57,7 @@ suite: !Cycle
     post: !TaskArray
       model: !calc up.model
       Dimensions:
-        fhr: !calc doc.gfs_output_settings.gfs_forecast_hours
+        fhr: !calc doc.output_settings.gfs_forecast_hours
 
       # jgfs_post_manager_el - used to generate the jgfs_post_manager
       # task.  That task is only executed in ecFlow; it watches the

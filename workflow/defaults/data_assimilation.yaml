@@ -1,0 +1,37 @@
+data_assimilation_defaults: &data_assimilation_defaults
+   DOHYBVAR: YES
+   NMEM_ENKF: 80
+   NMEM_EOMGGRP: 10
+   NMEM_EFCSGRP: 10
+   NMEM_EARCGRP: 10
+   RECENTER_ENKF: YES
+   SMOOTH_ENKF: YES
+   assim_freq: 6
+   l4densvar: YES
+   lwrite4danl: NO
+
+   NSPLIT: 4
+   NAM_ENKF: "analpertwtnh=0.9,analpertwtsh=0.9,analpertwttr=0.9"
+   INCREMENTS_TO_ZERO: [ delz_inc, clwmr_inc, icmr_inc ]
+   PREP_REALTIME: no
+   DO_EMCSFC: NO
+   PROCESS_TROPCY: no
+   DO_RELOCATE: no
+   DO_MAKEPREPBUFR: YES
+   OPREFIX: "$CDUMP.$cycle."
+   COM_OBS: "$DMPDIR"
+   COMIN_OBS: !FirstTrue
+      - when: !calc ( COM_OBS=="$DMPDIR" )
+        do: "$DMPDIR/$CDATE/$CDUMP$DUMP_SUFFIX"
+      - when: !calc ( COM_OBS=="$COMROOT" )
+        do: "$COMROOT/$CDUMP.$PDY/$CYC"
+      - otherwise: !error "Unknown COM_OBS value: {COM_OBS}"
+   RERUN_EFCSGRP: NO
+   RERUN_EOMGGRP: YES
+   GENDIAG: YES
+   NEPOSGRP: 7
+   OBSINPUT_INVOBS: "dmesh(1)=225.0,dmesh(2)=225.0"
+   OBSQC_INVOBS: "tcp_width=60.0,tcp_ermin=2.0,tcp_ermax=12.0"
+   ENKF_INNOVATE_GROUPS: !calc ( NMEM_ENKF // NMEM_EOMGGRP )
+   ENKF_FORECAST_GROUPS: !calc ( NMEM_ENKF // NMEM_EFCSGRP )
+   ENKF_ARCHIVE_GROUPS: !calc ( NMEM_ENKF // NMEM_EARCGRP )
