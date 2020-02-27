@@ -74,6 +74,7 @@ export DOIBP_WAV='NO'
 export WAV_CUR_DT=${WAV_CUR_DT:-3}
 export WAV_CUR_HF_DT=${WAV_CUR_HF_DT:-1}
 export WAV_CUR_HF_FH=${WAV_CUR_HF_FH:-72}
+export WAV_CUR_CDO_SMOOTH="NO"
 
 # Number of cycles to look back for restart files
 export nback=
