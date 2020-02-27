@@ -289,7 +289,9 @@ if [ $type = "enkfgdas" -o $type = "enkfgfs" ]; then
       fhr=$(printf %03i $fh)
       echo  "${dirname}${head}atmf${fhr}.ensmean${SUFFIX}       " >>enkf${CDUMP}.txt
       if [ $OUTPUT_FILE = "netcdf" ]; then
-	  echo  "${dirname}${head}atmf${fhr}.ensspread${SUFFIX}     " >>enkf${CDUMP}.txt
+          if [ -s $ROTDIR/${dirpath}${head}atmf${fhr}.ensspread${SUFFIX} ]; then
+	     echo  "${dirname}${head}atmf${fhr}.ensspread${SUFFIX}     " >>enkf${CDUMP}.txt
+          fi
       fi
       fh=$((fh+3))
   done
