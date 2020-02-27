@@ -56,7 +56,7 @@
   echo '+--------------------------------+'
   echo "   Model ID        : $COMPONENTwave"
   echo "   Member ID       : $modIE"
-  echo "   Wind grid ID    : $wavewndID"
+  echo "   Wind grid ID    : $WAVEWND_FID"
   echo "   Wind Member ID  : $wndIE"
   echo ' '
   [[ "$LOUD" = YES ]] && set -x
@@ -64,7 +64,7 @@
 
   if [ -z "$YMDH" ] || [ -z "$cycle" ] || [ -z "$modIE" ] || \
      [ -z "$COMOUT" ] || [ -z "$FIXwave" ] || [ -z "$EXECcode" ] || \
-     [ -z "$COMPONENTwave" ] || [ -z "$wavewndID" ] || [ -z "$SENDCOM" ] || \
+     [ -z "$COMPONENTwave" ] || [ -z "$WAVEWND_FID" ] || [ -z "$SENDCOM" ] || \
      [ -z "$COMINGEFS" ] || [ -z "$time_beg" ] || [ -z "$time_end" ]
   then
     set +x
@@ -80,7 +80,7 @@
 
 # 0.c Links to working directory
 
-  ln -s ../mod_def.$wavewndID mod_def.ww3
+  ln -s ../mod_def.$WAVEWND_FID mod_def.ww3
   ln -s ../sst.ww3 
 
 # --------------------------------------------------------------------------- #
@@ -260,7 +260,7 @@
   if [ "${modIE}" == "gwes00" ]
   then
     # Copy sst file to com for later archiving
-    cp sst.ww3 ${COMOUT}/rundata/${COMPONENTwave}.${wavewndID}.t${cyc}z.sst
+    cp sst.ww3 ${COMOUT}/rundata/${COMPONENTwave}.${WAVEWND_FID}.t${cyc}z.sst
   fi
 
   rm -f sst.ww3
@@ -273,7 +273,7 @@
   echo '   Running wind fields through preprocessor.'
   [[ "$LOUD" = YES ]] && set -x
 
-  sed -e "s/HDRFL/T/g" ../waveprep.$wavewndID.tmpl > ww3_prep.inp
+  sed -e "s/HDRFL/T/g" ../waveprep.$WAVEWND_FID.tmpl > ww3_prep.inp
 
   echo "Executing $EXECcode/ww3_prep"
 

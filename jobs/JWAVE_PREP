@@ -78,11 +78,9 @@ export COMIN=${COMIN:-${COMINwave}/${COMPONENTwave}.${PDY}/${cyc}}
 export COMOUT=${COMOUT:-${COMOUTwave}/${COMPONENTwave}.${PDY}/${cyc}}
 [[ ! -d $COMOUT ]] && mkdir -m 775 -p $COMOUT
 
-#export COMINice=${COMINice:-${COMROOTp2}/omb/prod}
-export COMINice=${ROTDIR}
-export COMINwnd=${COMINwnd:-${COMROOT}/gfs/prod}
-#export COMINcur=${COMINcur:-$(compath.py rtofs/prod)}
-export COMINcur=${ROTDIR}
+export COMIN_WAV_ICE=${COMIN_OBS:-$(compath.py gfs/prod)}/${CDUMP}.${PDY}/${cyc}
+export COMIN_WAV_WND=${COMIN_OBS:-$(compath.py gfs/prod)}/${CDUMP}.${PDY}/${cyc}
+export COMIN_WAV_CUR=${COMIN_OBS:-$(compath.py ${WAVECUR_DID}/prod)}/${WAVECUR_DID}.$PDY
 
 if [ $SENDCOM = YES ]; then
   mkdir -p $COMOUT

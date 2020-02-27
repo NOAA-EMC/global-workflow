@@ -393,7 +393,7 @@ if [ $cplwav = ".true." ]; then
   done
   $NLN $COMINWW3/${COMPONENTwave}.${PDY}/${cyc}/rundata/ww3_multi.${COMPONENTwave}${WAV_MEMBER}.${cycle}.inp $DATA/ww3_multi.inp
         # Check for expected wave grids for this run
-  array=($wavecurID $waveiceID $wavewndID $waveuoutpGRD $waveGRD $wavesbsGRD $wavepostGRD $waveinterpGRD)
+  array=($WAVECUR_FID $WAVEICE_FID $WAVEWND_FID $waveuoutpGRD $waveGRD $waveesmfGRD $wavesbsGRD $wavepostGRD $waveinterpGRD)
   grdALL=`printf "%s\n" "${array[@]}" | sort -u | tr '\n' ' '`
   for wavGRD in ${grdALL}; do
     # Wave IC (restart) file must exist for warm start on this cycle, if not wave model starts from flat ocean
@@ -416,10 +416,10 @@ if [ $cplwav = ".true." ]; then
     eval $NLN $datwave/${wavprfx}.log.${wavGRD}.${PDY}${cyc} log.${wavGRD}
   done
   if [ "$WW3ICEINP" = "YES" ]; then
-    $NLN $COMINWW3/${COMPONENTwave}.${PDY}/${cyc}/rundata/${COMPONENTwave}.${waveiceID}.${cycle}.ice $DATA/ice.${waveiceID}
+    $NLN $COMINWW3/${COMPONENTwave}.${PDY}/${cyc}/rundata/${COMPONENTwave}.${WAVEICE_FID}.${cycle}.ice $DATA/ice.${WAVEICE_FID}
   fi
   if [ "$WW3CURINP" = "YES" ]; then
-    $NLN $COMINWW3/${COMPONENTwave}.${PDY}/${cyc}/rundata/${COMPONENTwave}.${wavecurID}.${cycle}.cur $DATA/current.${wavecurID}
+    $NLN $COMINWW3/${COMPONENTwave}.${PDY}/${cyc}/rundata/${COMPONENTwave}.${WAVECUR_FID}.${cycle}.cur $DATA/current.${WAVECUR_FID}
   fi
 # Link output files
   cd $DATA

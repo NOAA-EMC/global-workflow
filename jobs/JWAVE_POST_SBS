@@ -73,7 +73,7 @@ export COMOUT=${COMOUT:-${COMOUTwave}/${COMPONENTwave}.${PDY}/${cyc}}
 
 export COMINice=${COMINice:-${COMROOTp2}/omb/prod}
 export COMINwnd=${COMINwnd:-${COMROOT}/gfs/prod}
-export COMINcur=${COMINcur:-${COMROOTp2}/rtofs/prod}
+export COMIN_WAV_CUR=${COMIN_WAV_CUR:-${COMROOTp2}/rtofs/prod}
 
 mkdir -p $COMOUT/gridded
 mkdir -p $COMOUT/station

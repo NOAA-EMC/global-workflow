@@ -571,7 +571,7 @@ rm -f ${modID}??.${grdID}.t${cyc}z.grib2
      echo '***************************************** '
      echo ' '
      [[ "$LOUD" = YES ]] && set -x
-     echo "No ${modIE}.${wavewndID}.$cycle.wind " >> $wavelog
+     echo "No ${modIE}.${WAVEWND_FID}.$cycle.wind " >> $wavelog
      err=4;export err;./err_chk
      exit_code=4
    else

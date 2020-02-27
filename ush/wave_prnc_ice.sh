@@ -46,15 +46,16 @@
   echo '+--------------------------------+'
   echo "   Model TAG       : $WAV_MOD_TAG"
   echo "   Model ID        : $COMPONENTwave"
-  echo "   Ice grid ID     : $waveiceID"
+  echo "   Ice grid ID     : $WAVEICE_FID"
+  echo "   Ice file        : $WAVICEFILE"
   echo ' '
   set $seton
   postmsg "$jlogfile" "Making ice fields."
 
   if [ -z "$YMDH" ] || [ -z "$cycle" ] || \
      [ -z "$COMOUT" ] || [ -z "$FIXwave" ] || [ -z "$EXECcode" ] || \
-     [ -z "$WAV_MOD_TAG" ] || [ -z "$waveiceID" ] || [ -z "$SENDCOM" ] || \
-     [ -z "$COMINice" ] || [ -z "$COMPONENTwave" ]
+     [ -z "$WAV_MOD_TAG" ] || [ -z "$WAVEICE_FID" ] || [ -z "$SENDCOM" ] || \
+     [ -z "$COMIN_WAV_ICE" ] || [ -z "$COMPONENTwave" ]
   then
     set $setoff
     echo ' '
@@ -69,22 +70,13 @@
 
 # 0.c Links to working directory
 
-  ln -s ${DATA}/mod_def.$waveiceID mod_def.ww3
+  ln -s ${DATA}/mod_def.$WAVEICE_FID mod_def.ww3
 
 # --------------------------------------------------------------------------- #
 # 1.  Get the necessary files
 # 1.a Copy the ice data file
 
-  if [ "$cycle" = 't00z' ]  || [ "$cycle" = 't06z' ]
-  then
-    timeID="`$NDATE -24 $YMDH | cut -c3-8`00"
-    YMD="`$NDATE -24 $YMDH | cut -c1-8`"
-  else
-    timeID="`echo $YMDH | cut -c 3-8`00"
-    YMD="`echo $YMDH | cut -c 1-8`"
-  fi
-
-  file=$COMINice/sice.$YMD/seaice.t00z.5min.grb.grib2
+  file=${COMIN_WAV_ICE}/${WAVICEFILE}
 
   if [ -f $file ]
   then
@@ -110,43 +102,14 @@
 
 # --------------------------------------------------------------------------- #
 # 2.  Process the GRIB packed ice file
-# 2.a Make an index file
-
-  set $setoff
-  echo ' '
-  echo '   Making GRIB index file ...'
-  set $seton
-
-  $WGRIB2 ice.grib > ice.index
-
-# 2.b Check valid time in index file
-
-  set $setoff
-  echo "   Time ID of ice field : $timeID"
-  set $seton
-
-  if [ -z "`grep $timeID ice.index`" ]
-  then
-    set $setoff
-    echo ' '
-    echo '********************************************** '
-    echo '*** ERROR : ICE FIELD WITH UNEXPECTED DATE *** '
-    echo '********************************************** '
-    echo ' '
-    set $seton
-    postmsg "$jlogfile" "NON-FATAL ERROR - ICE FIELD WITH UNEXPECTED DATE"
-    exit 0
-  fi
-
-# 2.c Unpack data
+# 2.a Unpack data
 
   set $setoff
   echo '   Extracting data from ice.grib ...'
   set $seton
 
-  grep $timeID ice.index | \
-           $WGRIB2 ice.grib -netcdf icean_5m.nc 2>&1 > wgrib.out
-           #$WGRIB ice.grib -i -text -o ice.raw 2>&1 > wgrib.out
+  $WGRIB2 ice.grib -netcdf icean_5m.nc 2>&1 > wgrib.out
+
 
   err=$?
 
@@ -176,7 +139,7 @@
   echo ' '
   set $seton
 
-  cp -f ${DATA}/ww3_prnc.ice.$waveiceID.inp.tmpl ww3_prnc.inp
+  cp -f ${DATA}/ww3_prnc.ice.$WAVEICE_FID.inp.tmpl ww3_prnc.inp
 
   $EXECcode/ww3_prnc > wave_prnc.out
   err=$?
@@ -205,10 +168,10 @@
 #
   if [ "${WW3ATMIENS}" = "T" ]
   then 
-    icefile=${WAV_MOD_TAG}.${waveiceID}.$cycle.ice
+    icefile=${WAV_MOD_TAG}.${WAVEICE_FID}.$cycle.ice
   elif [ "${WW3ATMIENS}" = "F" ]
   then 
-    icefile=${COMPONENTwave}.${waveiceID}.$cycle.ice
+    icefile=${COMPONENTwave}.${WAVEICE_FID}.$cycle.ice
   fi
  
   set $setoff

@@ -2,13 +2,13 @@
 ###############################################################################
 #                                                                             #
 # This is the preprocessor for the wave component in NCEP's coupled system.   #
-# It sets some shell script variables for export to child scripts and copies   #
+# It sets some shell script variables for export to child scripts and copies  #
 # some generally used files to the work directory. After this the actual      #
 # preprocessing is performed by the following child scripts :                 #
 #                                                                             #
 #  wave_prnc_ice.sh     : preprocess ice fields.                              #
 #  wave_prnc_wnd.sh     : preprocess wind fields (uncoupled run, not active)  #
-#  wave_prnc_rtofs.sh   : preprocess rtofs current fields.                    #
+#  wave_prnc_cur.sh     : preprocess current fields.                          #
 #  wave_g2ges.sh  : find and copy wind grib2 files.                           #
 #                                                                             #
 # Remarks :                                                                   #
@@ -26,9 +26,9 @@
 # Apr2019 JHAlves - Transitioning to GEFS workflow                            #
 # Nov2019 JHAlves - Merging wave scripts to global workflow                   #
 #                                                                             #
-#   WAV_MOD_ID and WAV_MOD_TAG replace modID. WAV_MOD_TAG                        # 
+#   WAV_MOD_ID and WAV_MOD_TAG replace modID. WAV_MOD_TAG                     # 
 #   is used for ensemble-specific I/O. For deterministic                      #
-#   WAV_MOD_ID=WAV_MOD_TAG                                                      # 
+#   WAV_MOD_ID=WAV_MOD_TAG                                                    # 
 #                                                                             #
 ###############################################################################
 # --------------------------------------------------------------------------- #
@@ -153,9 +153,9 @@
   touch cmdfile
 
   grdINP=''
-  if [ "${WW3ATMINP}" = 'YES' ]; then grdINP="${grdINP} $wavewndID" ; fi 
-  if [ "${WW3ICEINP}" = 'YES' ]; then grdINP="${grdINP} $waveiceID" ; fi 
-  if [ "${WW3CURINP}" = 'YES' ]; then grdINP="${grdINP} $wavecurID" ; fi 
+  if [ "${WW3ATMINP}" = 'YES' ]; then grdINP="${grdINP} $WAVEWND_FID" ; fi 
+  if [ "${WW3ICEINP}" = 'YES' ]; then grdINP="${grdINP} $WAVEICE_FID" ; fi 
+  if [ "${WW3CURINP}" = 'YES' ]; then grdINP="${grdINP} $WAVECUR_FID" ; fi 
 
   ifile=1
 
@@ -191,13 +191,13 @@
    do
 
      case $grdID in
-       $wavecurID ) 
+       $WAVECUR_FID ) 
                 type='cur' 
        ;;
-       $wavewndID )
+       $WAVEWND_FID )
                 type='wind'
        ;;
-       $waveiceID )
+       $WAVEICE_FID )
                 type='ice'
        ;;
        * )
@@ -265,7 +265,7 @@
         err=5;export err;${errchk}
       else
         mv -f ice.out $DATA/outtmp
-        rm -f ww3_prep.$waveiceID.tmpl mod_def.$waveiceID
+        rm -f ww3_prep.$WAVEICE_FID.tmpl mod_def.$WAVEICE_FID
         set +x
         echo ' '
         echo '      Ice field unpacking successful.'
@@ -487,7 +487,7 @@
 # Convert gfs wind to netcdf
       $WGRIB2 gfs.wind -netcdf gfs.nc
   
-      for grdID in $wavewndID $curvID
+      for grdID in $WAVEWND_FID $curvID
       do
   
         set +x
@@ -623,13 +623,54 @@
       touch cmdfile
       chmod 744 cmfile
 
-    ymdh=${YMDH}
-    ymdh_end=`$NDATE ${FHMAX_CUR_WAV} ${YMDH}`
+    ymdh_rtofs=${PDY}00 # RTOFS runs once daily
+    ymdh_end=`$NDATE ${FHMAX_WAV_CUR} ${ymdh_rtofs}`
+    NDATE_DT=${WAV_CUR_HF_DT}
+    FLGHF='T'
 
-    while [ "$ymdh" -le "$ymdh_end" ]
+    while [ "$ymdh_rtofs" -le "$ymdh_end" ]
     do
-      echo "$USHwave/wave_prnc_cur.sh $ymdh > cur_$ymdh.out 2>&1" >> cmdfile
-      ymdh=`$NDATE $CUR_WAV_DT $ymdh`
+# Timing has to be made relative to the single 00z RTOFS cycle for that PDY
+      fhr_rtofs=`${NHOUR} ${ymdh_rtofs} ${PDY}00`
+      fext='f'
+
+      if [ ${fhr_rtofs} -le 0 ]
+      then
+# Data from nowcast phase
+        fhr_rtofs=`expr 48 + ${fhr_rtofs}`
+        fext='n'
+      fi
+
+      fhr_rtofs=`printf "%03d\n" ${fhr_rtofs}`
+
+      curfile1h=${COMIN_WAV_CUR}/rtofs_glo_2ds_${fext}${fhr_rtofs}_1hrly_prog.nc
+      curfile3h=${COMIN_WAV_CUR}/rtofs_glo_2ds_${fext}${fhr_rtofs}_3hrly_prog.nc
+
+      if [ -s ${curfile1h} ]  && [ "${FLGHF}" = "T" ] ; then
+        curfile=${curfile1h}
+      elif [ -s ${curfile3h} ]; then
+        curfile=${curfile3h}
+        FLGHF='F'
+      else
+        echo ' '
+        set $setoff
+        echo ' '
+        echo '************************************** '
+        echo "*** FATAL ERROR: NO CUR FILE $curfile ***  "
+        echo '************************************** '
+        echo ' '
+        set $seton
+        postmsg "$jlogfile" "FATAL ERROR - NO CURRENT FILE (RTOFS)"
+        err=11;export err;${errchk}
+        exit 0
+        echo ' '
+      fi
+
+      echo "$USHwave/wave_prnc_cur.sh $ymdh_rtofs $curfile > cur_$ymdh_rtofs.out 2>&1" >> cmdfile
+      if [ $fhr_rtofs -ge ${WAV_CUR_HF_FH} ] ; then
+        NDATE_DT=${WAV_CUR_DT}
+      fi
+      ymdh_rtofs=`$NDATE $NDATE_DT $ymdh_rtofs`
   done
 
 # Set number of processes for mpmd
@@ -665,11 +706,11 @@
         [[ "$LOUD" = YES ]] && set -x
       fi
 
-      files=`ls rtofs.* 2> /dev/null`
+      files=`ls ${WAVECUR_FID}.* 2> /dev/null`
 
       if [ -z "$files" ]
       then
-        msg="ABNORMAL EXIT: NO rtofs.* FILES FOUND"
+        msg="ABNORMAL EXIT: NO ${WAVECUR_FID}.* FILES FOUND"
         postmsg "$jlogfile" "$msg"
         set +x
         echo ' '
@@ -682,15 +723,15 @@
         err=11;export err;${errchk}
       fi
 
-      rm -f cur.${wavecurID}
+      rm -f cur.${WAVECUR_FID}
 
       for file in $files
       do
-        cat $file >> cur.${wavecurID}
+        cat $file >> cur.${WAVECUR_FID}
         rm -f $file
       done
 
-      cp -f cur.${wavecurID} ${COMOUT}/rundata/${COMPONENTwave}.${wavecurID}.$cycle.cur 
+      cp -f cur.${WAVECUR_FID} ${COMOUT}/rundata/${COMPONENTwave}.${WAVECUR_FID}.$cycle.cur 
 
     else
       echo ' '
@@ -781,8 +822,8 @@
   case ${WW3ATMINP} in
     'YES' )
       NFGRIDS=`expr $NFGRIDS + 1`
-      WINDLINE="  '$wavewndID'  F F T F F F F"
-      WINDFLAG="$wavewndID"
+      WINDLINE="  '$WAVEWND_FID'  F F T F F F F"
+      WINDFLAG="$WAVEWND_FID"
     ;;
     'CPL' )
       WINDFLAG="CPL:${waveesmfGRD}"
@@ -794,8 +835,8 @@
   case ${WW3ICEINP} in
     'YES' ) 
       NFGRIDS=`expr $NFGRIDS + 1`
-      ICELINE="  '$waveiceID'  F F F T F F F"
-      ICEFLAG="$waveiceID"
+      ICELINE="  '$WAVEICE_FID'  F F F T F F F"
+      ICEFLAG="$WAVEICE_FID"
     ;;
     'CPL' )
       ICEFLAG="CPL:${waveesmfGRD}"
@@ -807,8 +848,8 @@
   case ${WW3CURINP} in
     'YES' ) 
       NFGRIDS=`expr $NFGRIDS + 1`
-      CURRLINE="  '$wavecurID'  F T F F F F F"
-      CURRFLAG="$wavecurID"
+      CURRLINE="  '$WAVECUR_FID'  F T F F F F F"
+      CURRFLAG="$WAVECUR_FID"
     ;;
     'CPL' )
       CURRFLAG="CPL:${waveesmfGRD}"
@@ -913,7 +954,7 @@
 
    if [ "${WW3ATMINP}" = 'YES' ]; then
 
-    for grdID in $wavewndID $curvID 
+    for grdID in $WAVEWND_FID $curvID 
     do
       set +x
       echo ' '
@@ -928,7 +969,7 @@
 
 #   if [ "${WW3CURINP}" = 'YES' ]; then
 #
-#    for grdID in $wavecurID
+#    for grdID in $WAVECUR_FID
 #    do
 #      set +x
 #      echo ' '
@@ -941,7 +982,7 @@
   fi 
 
   rm -f wind.*
-  rm -f $waveiceID.*
+  rm -f $WAVEICE_FID.*
   rm -f times.*
 
 # --------------------------------------------------------------------------- #
