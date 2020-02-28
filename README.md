@@ -32,8 +32,8 @@ cp user.yaml.default user.yaml
 Then, open and edit user.yaml:
 
 - EXPROOT: Place for experiment directory, make sure you have write access.
-- FIX_SCRUB: YES if you would like to fix the path to ROTDIR(under COMROOT) and RUNDIR(under DATAROOT)
-             NO if you would like CROW to detect available disk space automatically.
+- FIX_SCRUB: True if you would like to fix the path to ROTDIR(under COMROOT) and RUNDIR(under DATAROOT)
+             False if you would like CROW to detect available disk space automatically.
 - COMROOT: Place to generate ROTDIR for this experiment.
 - DATAROOT: Place for temporary storage for each job of this experiment.
 - cpu_project: cpu project that you are working with.
