@@ -136,6 +136,27 @@ if [ $type = "gfs" ]; then
   echo  "${dirname}RESTART/*0000.sfcanl_data.tile5.nc  " >>gfs_restarta.txt
   echo  "${dirname}RESTART/*0000.sfcanl_data.tile6.nc  " >>gfs_restarta.txt
 
+  #..................
+  if [ $DO_WAVE = "YES" ]; then
+
+    rm -rf gfswave.txt
+    touch gfswave.txt
+    rm -rf gfswave_restart.txt
+    touch gfswave_restart.txt
+
+    dirpath="gfswave.${PDY}/${cyc}/"
+    dirname="./${dirpath}"
+
+    head="gfswave.t${cyc}z."
+
+    #...........................
+    echo "${dirname}/gridded/${head}*      " >>gfswave.txt
+    echo "${dirname}/station/${head}*      " >>gfswave.txt
+
+    echo "${dirname}/restart/*             " >>gfswave_restart.txt
+
+  fi
+
 #-----------------------------------------------------
 fi   ##end of gfs
 #-----------------------------------------------------
@@ -232,6 +253,28 @@ if [ $type = "gdas" ]; then
 
   #..................
   echo  "${dirname}RESTART " >>gdas_restartb.txt
+
+  #..................
+  if [ $DO_WAVE = "YES" ]; then
+
+    rm -rf gdaswave.txt
+    touch gdaswave.txt
+    rm -rf gdaswave_restart.txt
+    touch gdaswave_restart.txt
+
+    dirpath="gdaswave.${PDY}/${cyc}/"
+    dirname="./${dirpath}"
+
+    head="gdaswave.t${cyc}z."
+
+    #...........................
+    echo "${dirname}/gridded/${head}*      " >>gdaswave.txt
+    echo "${dirname}/station/${head}*      " >>gdaswave.txt
+
+    echo "${dirname}/restart/*             " >>gdaswave_restart.txt
+
+  fi
+
 
 #-----------------------------------------------------
 fi   ##end of gdas
@@ -372,7 +415,6 @@ if [ $type = "enkfgdas" -o $type = "enkfgfs" ]; then
 #-----------------------------------------------------
 fi   ##end of enkfgdas or enkfgfs
 #-----------------------------------------------------
-
 
 exit 0
 

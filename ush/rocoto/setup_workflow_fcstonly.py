@@ -162,9 +162,6 @@ def get_resources(dict_configs, cdump='gdas'):
 
     for task in taskplan:
 
-        #if task in ['waveinit', 'waveprep', 'wavepostsbs'] and do_wave in ['N', 'NO']:
-        #   return
-
         cfg = dict_configs[task]
 
         wtimestr, resstr, queuestr, memstr, natstr = wfu.get_resources(machine, cfg, task, reservation, cdump=cdump)
@@ -259,7 +256,7 @@ def get_workflow(dict_configs, cdump='gdas'):
     tasks.append(task)
     tasks.append('\n')
 
-    # chgres
+    # chgres fv3ic
     deps = []
     data = '&ICSDIR;/@Y@m@d@H/&CDUMP;/&CDUMP;.@Y@m@d/@H/siganl.&CDUMP;.@Y@m@d@H'
     dep_dict = {'type':'data', 'data':data}
@@ -296,7 +293,7 @@ def get_workflow(dict_configs, cdump='gdas'):
 
     # waveinit
     if do_wave in ['Y', 'YES']:
-        task = wfu.create_wf_task('waveinit', cdump=cdump, envar=envars)
+        task = wfu.create_wf_task('%swaveinit', cdump=cdump, envar=envars)
         tasks.append(task)
         tasks.append('\n')
 
