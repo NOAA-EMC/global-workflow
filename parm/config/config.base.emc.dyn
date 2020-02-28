@@ -150,7 +150,7 @@ export FIXgsi="$HOMEgfs/fix/fix_gsi"
 export HOMEfv3gfs="$HOMEgfs/sorc/fv3gfs.fd"
 export HOMEpost="$HOMEgfs"
 export HOMEobsproc_prep="$BASE_GIT/obsproc/obsproc_prep_RB-5.2.0"
-export HOMEobsproc_network="$BASE_GIT/obsproc/obsproc_global.v3.2.4"
+export HOMEobsproc_network="$BASE_GIT/obsproc/obsproc_global.v3.2.5"
 export HOMEobsproc_global=$HOMEobsproc_network
 export BASE_VERIF="$BASE_SVN/verif/global/tags/vsdb"
 
