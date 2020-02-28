@@ -150,10 +150,10 @@ if [ $type = "gfs" ]; then
     head="gfswave.t${cyc}z."
 
     #...........................
-    echo "${dirname}/gridded/${head}*      " >>gfswave.txt
-    echo "${dirname}/station/${head}*      " >>gfswave.txt
+    echo "${dirname}gridded/${head}*      " >>gfswave.txt
+    echo "${dirname}station/${head}*      " >>gfswave.txt
 
-    echo "${dirname}/restart/*             " >>gfswave_restart.txt
+    echo "${dirname}restart/*             " >>gfswave_restart.txt
 
   fi
 
@@ -268,10 +268,10 @@ if [ $type = "gdas" ]; then
     head="gdaswave.t${cyc}z."
 
     #...........................
-    echo "${dirname}/gridded/${head}*      " >>gdaswave.txt
-    echo "${dirname}/station/${head}*      " >>gdaswave.txt
+    echo "${dirname}gridded/${head}*      " >>gdaswave.txt
+    echo "${dirname}station/${head}*      " >>gdaswave.txt
 
-    echo "${dirname}/restart/*             " >>gdaswave_restart.txt
+    echo "${dirname}restart/*             " >>gdaswave_restart.txt
 
   fi
 
