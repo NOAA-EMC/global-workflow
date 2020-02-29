@@ -78,9 +78,20 @@ export COMIN=${COMIN:-${COMINwave}/${COMPONENTwave}.${PDY}/${cyc}}
 export COMOUT=${COMOUT:-${COMOUTwave}/${COMPONENTwave}.${PDY}/${cyc}}
 [[ ! -d $COMOUT ]] && mkdir -m 775 -p $COMOUT
 
-export COMIN_WAV_ICE=${COMIN_OBS:-$(compath.py gfs/prod)}/${CDUMP}.${PDY}/${cyc}
-export COMIN_WAV_WND=${COMIN_OBS:-$(compath.py gfs/prod)}/${CDUMP}.${PDY}/${cyc}
-export COMIN_WAV_CUR=${COMIN_OBS:-$(compath.py ${WAVECUR_DID}/prod)}/${WAVECUR_DID}.$PDY
+if [ $RUN_ENVIR = "nco" ]; then
+  export COMIN_WAV_ICE=${COMIN_WAV_ICE:-$(compath.py gfs/prod)}/${CDUMP}.${PDY}/${cyc}
+  export COMIN_WAV_WND=${COMIN_WAV_WND:-$(compath.py gfs/prod)}/${CDUMP}.${PDY}/${cyc}
+  export COMIN_WAV_CUR=${COMIN_WAV_CUR:-$(compath.py ${WAVECUR_DID}/prod)}/${WAVECUR_DID}.$PDY
+else 
+  if [ ! -L $ROTDIR/${WAVECUR_DID}.${PDY} ]; then # Check if symlink already exists in ROTDIR
+    $NLN $DMPDIR/${WAVECUR_DID}.${PDY} $ROTDIR/${WAVECUR_DID}.${PDY}
+    $NLN $DMPDIR/$CDUMP.${PDY}/$cyc/${WAVICEFILE} $ROTDIR/$CDUMP.${PDY}/$cyc/${WAVICEFILE}
+  fi
+  export COMIN_OBS=${COMIN_OBS:-$ROTDIR/$RUN.$PDY/$cyc}
+  export COMIN_WAV_ICE=${COMIN_OBS}
+  export COMIN_WAV_WND=${COMIN_OBS}
+  export COMIN_WAV_CUR=${ROTDIR}/${WAVECUR_DID}.${PDY}
+fi
 
 if [ $SENDCOM = YES ]; then
   mkdir -p $COMOUT

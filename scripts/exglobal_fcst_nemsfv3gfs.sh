@@ -407,9 +407,9 @@ if [ $cplwav = ".true." ]; then
   WRPDY=`echo $WRDATE | cut -c1-8`
   WRcyc=`echo $WRDATE | cut -c9-10`
   WRDIR=$COMINWW3/${COMPONENTRSTwave}.${WRPDY}/${WRcyc}/restart
+  mkdir -p ${WRDIR}
   datwave=$COMOUTWW3/${COMPONENTwave}.${PDY}/${cyc}/rundata/
   wavprfx=${COMPONENTwave}${WAV_MEMBER}
-#  [[ -d $WRDIR ]] || mkdir -p $WRDIR
   for wavGRD in $waveGRD ; do
     # Link wave IC for current cycle
     $NLN ${WRDIR}/${sPDY}.${scyc}0000.restart.${wavGRD} $DATA/restart.${wavGRD}
@@ -1280,6 +1280,7 @@ if [ $SEND = "YES" ]; then
        done
        if [ $cplwav = ".true." ]; then
          WRDIR=$COMINWW3/${COMPONENTRSTwave}.${PDY}/${cyc}/restart
+         mkdir -p ${WRDIR}
          for wavGRD in $waveGRD ; do
          # Copy wave IC for the next cycle
            $NCP $DATA/${rPDY}.${rcyc}0000.restart.${wavGRD} ${WRDIR}
@@ -1300,7 +1301,8 @@ if [ $SEND = "YES" ]; then
          $NCP $file $memdir/RESTART/$file
       done
       if [ $cplwav = ".true." ]; then
-        WRDIR=$COMINWW3/${COMPONENTRSTwave}.${PDY}/${cyc}/restart
+        WRDIR=$COMINWW3/${COMPONENTRSTwave}.${PDY}/${cyc}/restart/
+        mkdir -p ${WRDIR}
         for wavGRD in $waveGRD ; do
         # Copy wave IC for the next cycle
            $NCP $DATA/${rPDY}.${rcyc}0000.restart.${wavGRD} ${WRDIR}

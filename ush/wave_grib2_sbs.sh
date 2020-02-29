@@ -136,8 +136,8 @@
   ENSTAG=""
   if [ ${waveMEMB} ]; then ENSTAG=".${membTAG}${waveMEMB}" ; fi
   outfile=${WAV_MOD_TAG}.${cycle}${ENSTAG}.${grdnam}.${grdres}.f${FH3}.grib2
-  ln -sf ${COMOUT}/gridded/${outfile} gribfile
   $EXECcode/ww3_grib
+  $WGRIB2 gribfile -set_date $CDATE -set_ftime "$fhr hour fcst" -grib ${COMOUT}/gridded/${outfile}
   err=$?
 
   if [ $err != 0 ]
