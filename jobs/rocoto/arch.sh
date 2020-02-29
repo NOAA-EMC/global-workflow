@@ -127,7 +127,7 @@ fi
 if [ $HPSSARCH = "YES" ]; then
 ###############################################################
 
-#--determine when to save ICs for warm start and forecat-only runs 
+#--determine when to save ICs for warm start and forecast-only runs 
 SAVEWARMICA="NO"
 SAVEWARMICB="NO"
 SAVEFCSTIC="NO"
@@ -185,13 +185,34 @@ if [ $CDUMP = "gfs" ]; then
             fi
         done
     fi
-    
+
+    #for targrp in gfswave
+    if [ $DO_WAVE = "YES" ]; then
+        for targrp in gfswave; do
+            htar -P -cvf $ATARDIR/$CDATE/${targrp}.tar `cat $ARCH_LIST/${targrp}.txt`
+            status=$?
+            if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
+                echo "HTAR $CDATE ${targrp}.tar failed"
+                exit $status
+            fi
+        done
+    fi
+
+    #for restarts    
     if [ $SAVEFCSTIC = "YES" ]; then
         htar -P -cvf $ATARDIR/$CDATE/gfs_restarta.tar `cat $ARCH_LIST/gfs_restarta.txt`
         status=$?
         if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
             echo "HTAR $CDATE gfs_restarta.tar failed"
             exit $status
+        fi
+        if [ $DO_WAVE = "YES" ]; then
+            htar -P -cvf $ATARDIR/$CDATE/gfswave_restart.tar `cat $ARCH_LIST/gfswave_restart.txt`
+            status=$?
+            if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
+                echo "HTAR $CDATE gfswave_restart.tar failed"
+                exit $status
+            fi
         fi
     fi
 
@@ -217,6 +238,16 @@ if [ $CDUMP = "gdas" ]; then
         exit $status
     fi
 
+    #gdaswave
+    if [ $DO_WAVE = "YES" ]; then
+        htar -P -cvf $ATARDIR/$CDATE/gdaswave.tar `cat $ARCH_LIST/gdaswave.txt`
+        status=$?
+        if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
+            echo "HTAR $CDATE gdaswave.tar failed"
+            exit $status
+        fi
+    fi
+
     if [ $SAVEWARMICA = "YES" -o $SAVEFCSTIC = "YES" ]; then
         htar -P -cvf $ATARDIR/$CDATE/gdas_restarta.tar `cat $ARCH_LIST/gdas_restarta.txt`
         status=$?
@@ -224,7 +255,16 @@ if [ $CDUMP = "gdas" ]; then
             echo "HTAR $CDATE gdas_restarta.tar failed"
             exit $status
         fi
+        if [ $DO_WAVE = "YES" ]; then
+            htar -P -cvf $ATARDIR/$CDATE/gdaswave_restart.tar `cat $ARCH_LIST/gdaswave_restart.txt`
+            status=$?
+            if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
+                echo "HTAR $CDATE gdaswave_restart.tar failed"
+                exit $status
+            fi
+        fi
     fi
+
     if [ $SAVEWARMICB = "YES" -o $SAVEFCSTIC = "YES" ]; then
         htar -P -cvf $ATARDIR/$CDATE/gdas_restartb.tar `cat $ARCH_LIST/gdas_restartb.txt`
         status=$?
@@ -233,6 +273,7 @@ if [ $CDUMP = "gdas" ]; then
             exit $status
         fi
     fi
+
 fi
 
 ###############################################################

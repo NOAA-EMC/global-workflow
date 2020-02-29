@@ -385,7 +385,6 @@ if [ $IAER -gt 0 ] ; then
 fi
 
 #### Copy over WW3 inputs
-# At this time only test gfs but this change need to be tested on gdas, enkf, and gfs
 if [ $cplwav = ".true." ]; then
 # Link WW3 files
   for file in $(ls $COMINWW3/${COMPONENTwave}.${PDY}/${cyc}/rundata/rmp_src_to_dst_conserv_*) ; do

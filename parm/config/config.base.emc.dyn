@@ -248,7 +248,6 @@ fi
 # Use Jacobians in eupd and thereby remove need to run eomg
 export lobsdiag_forenkf=".true."
 
-
 # run GLDAS to spin up land ICs
 export DO_GLDAS=YES
 export gldas_cyc=00
