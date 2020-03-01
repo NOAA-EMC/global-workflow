@@ -62,7 +62,6 @@ FIX_AM=${FIX_AM:-$FIX_DIR/fix_am}
 FIXfv3=${FIXfv3:-$FIX_DIR/fix_fv3_gmted2010}
 DATA=${DATA:-$pwd/fv3tmp$$}    # temporary running directory
 ROTDIR=${ROTDIR:-$pwd}         # rotating archive directory
-ICSDIR=${ICSDIR:-$pwd}         # cold start initial conditions
 DMPDIR=${DMPDIR:-$pwd}         # global dumps for seaice, snow and sst analysis
 EMIDIR=${EMIDIR:-$pwd}         # anthro.emission lpan
 EMITYPE=${EMITYPE:-2}         # 1:MODIS, 2:GBBEPx
@@ -111,6 +110,12 @@ WRITE_FSYNCFLAG=${WRITE_FSYNCFLAG:-".true."}
 
 rCDUMP=${rCDUMP:-$CDUMP}
 
+if [[ $(echo "$CDUMP" | cut -c1-2) = "ge" ]]; then
+  gefs=".true."
+else
+  gefs=".false."
+fi
+
 #------------------------------------------------------------------
 # setup the runtime environment
 if [ $machine = "WCOSS_C" ] ; then
@@ -126,12 +131,17 @@ fi
 
 #-------------------------------------------------------
 if [ ! -d $ROTDIR ]; then mkdir -p $ROTDIR; fi
-if [ ! -d $DATA/INPUT ]; then mkdir -p $DATA/INPUT; fi
+mkdata=NO
+if [ ! -d $DATA ]; then
+   mkdata=YES
+   mkdir -p $DATA
+fi
 
 cd $DATA || exit 8
+if [ ! -d $DATA/INPUT ]; then mkdir -p $DATA/INPUT; fi
 
-if [ $restart_interval -gt 0 ]; then
-  RSTDIR_TMP=${GESIN}/${mem}/RERUN_RESTART
+if [[ ( $CDUMP = "gfs" || $gefs = ".true." ) && $restart_interval -gt 0 ]]; then
+  RSTDIR_TMP=${RSTDIR:-$ROTDIR}/${CDUMP}.${PDY}/${cyc}/RERUN_RESTART
   if [ ! -d $RSTDIR_TMP ]; then mkdir -p $RSTDIR_TMP ; fi
   $NLN $RSTDIR_TMP RESTART
 else
@@ -142,7 +152,7 @@ fi
 # determine if restart IC exists to continue from a previous forecast
 RERUN="NO"
 filecount=$(find $RSTDIR_TMP -type f | wc -l) 
-if [ $restart_interval -gt 0 -a $FHMAX -gt $restart_interval -a $filecount -gt 10 ]; then
+if [[ ( $CDUMP = "gfs" || $gefs = ".true." ) && $restart_interval -gt 0 && $FHMAX && $restart_interval && $filecount -gt 10 ]]; then
   SDATE=$($NDATE +$FHMAX $CDATE)
   EDATE=$($NDATE +$restart_interval $CDATE)
   while [ $SDATE -gt $EDATE ]; do
@@ -163,7 +173,7 @@ fi
 
 #-------------------------------------------------------
 # member directory
-if [ $MEMBER -lt 0 ]; then
+if [[ $MEMBER -lt 0 || $gefs = ".true." ]]; then
   prefix=$CDUMP
   rprefix=$rCDUMP
   memchar=""
@@ -172,7 +182,7 @@ else
   rprefix=enkf$rCDUMP
   memchar=mem$(printf %03i $MEMBER)
 fi
-memdir=$ROTDIR/${prefix}.$PDY/$cyc/$memchar
+memdir=${memdir:-$ROTDIR/${prefix}.$PDY/$cyc/$memchar}
 if [ ! -d $memdir ]; then mkdir -p $memdir; fi
 
 GDATE=$($NDATE -$assim_freq $CDATE)
@@ -181,24 +191,13 @@ gcyc=$(echo $GDATE | cut -c9-10)
 gmemdir=${gmemdir:-$ROTDIR/${rprefix}.$gPDY/$gcyc/$memchar}
 
 if [ $cplchm = ".true." ]; then
-#   # memdir=${GESROOT}/${RUN_ENVIR}/gefs.${PDY}/${cyc}/${mem}
-#   # gmemdir=${GESROOT}/${RUN_ENVIR}/gefs.${gPDY}/${gcyc}/${mem}
-#   # #### When this run is the first cycle; use INIT_DIR
-#   # ####  default to use output from previous cycle
-#   # if [ ! -f $gmemdir/RESTART/${PDY}.${cyc}0000.coupler.res ]; then
-#   #   gmemdir=$INIT_DIR/gfs.${gPDY}/$gcyc
-#   # fi
-#   # #### Using output from initchem as INPUT
-#   # if [ -f $HOMEdata/gfs_15/gfs.${PDY}/$cyc/$mem ]; then
-#   #   [[ -d $DATA/INPUT ]] && rm -rf $DATA/INPUT
-#   #   $NLN $HOMEdata/gfs_15/gfs.${PDY}/$cyc/$mem  $DATA/INPUT
-#   # fi
-
-#   FIELD_TABLE=$PARM_FV3DIAG/chm_field_table_gfdl
-#   calcincdir=$DATAROOT/$CDATE/gfs/calcinc
-#   increment_file=$calcincdir/atminc.nc # WCK - come back to this
-#   chemdir=$DATAROOT/$CDATE/gfs/prep # Not used?
+  CHEMIN=${CHEMIN:-$memdir/chem}
+  if [[ ! -d $CHEMIN ]]; then
+    echo "FATAL: cplchm is .true. but there is no chem input directry at $CHEMIN"
+    exit 200
+  fi
   chemdir=$DATA/INPUT/chem
+  $NLN $CHEMIN $chemdir
   cpl=".true."
 fi
 
@@ -264,17 +263,6 @@ if [ $warm_start = ".true." -o $RERUN = "YES" ]; then
     res_latlon_dynamics="''"
   fi
 
-#### Double check it repeat line 275
-  # if [ $cplchm = ".true." ]; then
-  #   for file in $memdir/INPUT/*.nc; do
-  #     file2=$(echo $(basename $file))
-  #     fsuf=$(echo $file2 | cut -c1-3)
-  #     if [ $fsuf = $fsuf = "sfc" ]; then
-  #       $NLN $file $DATA/INPUT/$file2
-  #     fi
-  #   done
-  # fi
-
 #.............................
   else  ##RERUN                         
 
@@ -289,9 +277,10 @@ if [ $warm_start = ".true." -o $RERUN = "YES" ]; then
   fi
 #.............................
 
-else ## cold start                            
+else ## cold start                    
 
-  for file in $memdir/INPUT/*.nc; do
+  ICSDIR=${ICSDIR:-$memdir/INPUT}         # cold start initial conditions  
+  for file in $ICSDIR/*.nc; do
     file2=$(echo $(basename $file))
     fsuf=$(echo $file2 | cut -c1-3)
     if [ $fsuf = "gfs" -o $fsuf = "sfc" ]; then
@@ -300,7 +289,7 @@ else ## cold start
   done
 
 #-------------------------------------------------------
-fi 
+fi
 #-------------------------------------------------------
 
 
@@ -1014,7 +1003,7 @@ EOF
 if [ $cplchm = ".true." ]; then
   if [ $imp_physics -eq 99 ]; then NTRACER=0; fi
   if [ $imp_physics -eq 11 ]; then NTRACER=1; fi
-  CHEMIN=1
+  chem_in_opt=1
   cat >> input.nml << EOF
 &chem_nml
   aer_bc_opt=1
@@ -1024,7 +1013,7 @@ if [ $cplchm = ".true." ]; then
   bio_emiss_opt=0
   biomass_burn_opt=1
   chem_conv_tr=0
-  chem_in_opt=$CHEMIN
+  chem_in_opt=$chem_in_opt
   chem_opt=300
   chemdt=3
   cldchem_onoff=0
@@ -1050,8 +1039,6 @@ if [ $cplchm = ".true." ]; then
   gfdlmp_onoff=$NTRACER
   archive_step = -1 
   chem_hist_outname = "chem_out_"
-  restart_inname = "INPUT/"
-  restart_outname = "RESTART/" 
   emi_inname  = "${EMIDIR}${CASE}/$SMONTH"
   dust_inname = "${EMIDIR}${CASE}/$SMONTH"
   fireemi_inname  = "${chemdir}"
@@ -1078,6 +1065,8 @@ if [ $MEMBER -gt 0 ]; then
   ntrunc = $JCAP_STP
   lon_s = $LONB_STP
   lat_s = $LATB_STP
+  fhstoch = ${fhstoch:-"-999.0"} 
+  stochini = ${stochini:-".false."}
 EOF
 
   if [ $DO_SKEB = "YES" ]; then
@@ -1137,6 +1126,7 @@ fi
 
 #------------------------------------------------------------------
 # make symbolic links to write forecast files directly in memdir
+FCSTDIR=${FCSTDIR:-$memdir}
 cd $DATA
 if [ $QUILTING = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]; then
   fhr=$FHMIN
@@ -1145,9 +1135,9 @@ if [ $QUILTING = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]; then
     atmi=atmf${FH3}.$OUTPUT_FILE
     sfci=sfcf${FH3}.$OUTPUT_FILE
     logi=logf${FH3}
-    atmo=$memdir/${CDUMP}.t${cyc}z.atmf${FH3}.$OUTPUT_FILE
-    sfco=$memdir/${CDUMP}.t${cyc}z.sfcf${FH3}.$OUTPUT_FILE
-    logo=$memdir/${CDUMP}.t${cyc}z.logf${FH3}.$OUTPUT_FILE
+    atmo=$FCSTDIR/${CDUMP}.t${cyc}z.atmf${FH3}.$OUTPUT_FILE
+    sfco=$FCSTDIR/${CDUMP}.t${cyc}z.sfcf${FH3}.$OUTPUT_FILE
+    logo=$FCSTDIR/${CDUMP}.t${cyc}z.logf${FH3}.$OUTPUT_FILE
     eval $NLN $atmo $atmi
     eval $NLN $sfco $sfci
     eval $NLN $logo $logi
@@ -1159,11 +1149,11 @@ if [ $QUILTING = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]; then
   done
 else
   for n in $(seq 1 $ntiles); do
-    eval $NLN nggps2d.tile${n}.nc       $memdir/nggps2d.tile${n}.nc
-    eval $NLN nggps3d.tile${n}.nc       $memdir/nggps3d.tile${n}.nc
-    eval $NLN grid_spec.tile${n}.nc     $memdir/grid_spec.tile${n}.nc
-    eval $NLN atmos_static.tile${n}.nc  $memdir/atmos_static.tile${n}.nc
-    eval $NLN atmos_4xdaily.tile${n}.nc $memdir/atmos_4xdaily.tile${n}.nc
+    eval $NLN nggps2d.tile${n}.nc       $FCSTDIR/nggps2d.tile${n}.nc
+    eval $NLN nggps3d.tile${n}.nc       $FCSTDIR/nggps3d.tile${n}.nc
+    eval $NLN grid_spec.tile${n}.nc     $FCSTDIR/grid_spec.tile${n}.nc
+    eval $NLN atmos_static.tile${n}.nc  $FCSTDIR/atmos_static.tile${n}.nc
+    eval $NLN atmos_4xdaily.tile${n}.nc $FCSTDIR/atmos_4xdaily.tile${n}.nc
   done
 fi
 
