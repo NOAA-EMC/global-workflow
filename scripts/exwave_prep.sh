@@ -1,11 +1,16 @@
 #!/bin/bash
-###############################################################################
-#                                                                             #
-# This is the preprocessor for the wave component in NCEP's coupled system.   #
-# It sets some shell script variables for export to child scripts and copies  #
-# some generally used files to the work directory. After this the actual      #
-# preprocessing is performed by the following child scripts :                 #
-#                                                                             #
+#
+################################################################################
+#
+# UNIX Script Documentation Block
+# Script name:         exwave_prep.sh
+# Script description:  Creates output products from binary WW3 data
+#
+# Author:   Hendrik Tolman      Org: NCEP/EMC      Date: 2007-03-01
+# Abstract: This is the preprocessor for the wave component in GFS.
+#           It executes several scripts for preparing and creating input data
+#           as follows:
+#                                                                             
 #  wave_prnc_ice.sh     : preprocess ice fields.                              #
 #  wave_prnc_wnd.sh     : preprocess wind fields (uncoupled run, not active)  #
 #  wave_prnc_cur.sh     : preprocess current fields.                          #
@@ -634,7 +639,7 @@
       fhr_rtofs=`${NHOUR} ${ymdh_rtofs} ${PDY}00`
       fext='f'
 
-      if [ ${fhr_rtofs} -le 0 ]
+      if [ ${fhr_rtofs} -lt 0 ]
       then
 # Data from nowcast phase
         fhr_rtofs=`expr 48 + ${fhr_rtofs}`

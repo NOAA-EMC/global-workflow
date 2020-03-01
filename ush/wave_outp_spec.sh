@@ -1,26 +1,24 @@
 #!/bin/bash
-###############################################################################
-#                                                                             #
-# This script generates ASCII data files with the wave spectral data at full  #
-# resolution for a given output point of WAVEWATCH (MWW3) implementation      #
-# or parallel. The location ID and position is passed as a shel script        # 
-# parameter.                                                                  #
-#                                                                             #
-# Remarks :                                                                   #
-# - The necessary files are retrieved by the mother script.                   #
-# - Shell script variables controling time, directories etc. are set in the   #
-#   mother script.                                                            #
-# - This script runs in the work directory designated in the mother script.   #
-#   Under this directory it geneates a work directory spec_$loc which is      #
-#   removed if this script exits normally.                                    #
-# - See section 0.c for variables that need to be set.                        #
-#                                                                             #
-#                                                            March 12, 2007   #
-# Update log                                                                  #
-# Nov2019 JHAlves - Merging wave scripts to global workflow                   #
-#                                                                             #
-###############################################################################
+#                                                                       
+################################################################################
 #
+# UNIX Script Documentation Block
+# Script name:         wave_outp_spec.sh
+# Script description:  Generates ASCII data files with the wave spectral data
+#
+# Author:   Hendrik Tolman      Org: NCEP/EMC      Date: 2007-03-17
+# Abstract: Creates grib2 files from WW3 binary output
+#
+# Script history log:
+# 2019-11-02  J-Henrique Alves Ported to global-workflow.
+#
+# $Id$
+#
+# Attributes:
+#   Language: Bourne-again (BASH) shell
+#   Machine: WCOSS-DELL-P3
+#
+################################################################################
 # --------------------------------------------------------------------------- #
 # 0.  Preparations
 # 0.a Basic modes of operation

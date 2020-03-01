@@ -1,24 +1,27 @@
 #!/bin/bash
-###############################################################################
-#                                                                             #
-# This script generates the GRIB2 file for the MWW3 forecast model            #
-# It is run as a child scipt interactively by the postprocessor.              #
-#                                                                             #
-# Remarks :                                                                   #
-# - The necessary files are retrieved by the mother script.                   #
-# - This script generates it own sub-directory 'grib_*'.                      # 
-# - See section 0.b for variables that need to be set.                        # 
-#                                                                             #
-#                                                                July, 2007   #
-# Update log                                                                  #
-# Nov2019 JHAlves - Merging wave scripts to global workflow                   #
-#                                                                             #
-###############################################################################
-
+#                                                                       
+################################################################################
 #
-# ... Define directories
+# UNIX Script Documentation Block
+# Script name:         wave_grib2_sbs.sh
+# Script description:  Create grib2 files for the wave component
 #
+# Author:   Hendrik Tolman      Org: NCEP/EMC      Date: 2007-07-11
+# Abstract: Creates grib2 files from WW3 binary output
 #
+# Script history log:
+# 2019-11-02  J-Henrique Alves Ported to global-workflow.
+#
+# $Id$
+#
+# Attributes:
+#   Language: Bourne-again (BASH) shell
+#   Machine: WCOSS-DELL-P3
+#
+# Requirements:                                                             
+# - wgrib2 with IPOLATES library                                            
+#                                                                           
+################################################################################
 # --------------------------------------------------------------------------- #
 # 0.  Preparations
 # 0.a Basic modes of operation

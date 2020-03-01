@@ -1,37 +1,34 @@
 #!/bin/bash
+#
+################################################################################
+#
+# UNIX Script Documentation Block
+# Script name:         exwave_post_sbs.sh
+# Script description:  Creates output products from binary WW3 data
+#
+# Author:   Jose-Henrique Alves Org: NCEP/EMC      Date: 2019-12-06
+# Abstract: This script is the postprocessor for the wave component in GFS.
+#           This version runs side-by-side with the GFS fcst step. 
+#           It executes several scripts forpreparing and creating output data
+#           as follows:
+#
+#  wave_grib2_sbs.sh         : generates GRIB2 files.                         
+#  wave_outp_spec.sh         : generates spectral data for output locations.                                      
+#  wave_outp_bull.sh         : generates bulletins for output locations.      
+#  wave_grid_interp_ush.sh   : interpolates data from new grids to old grids  
+#  wave_tar.sh               : tars the spectral and bulletin multiple files  
+#
+# Script history log:
+# 2019-12-06  J-Henrique Alves First Version adapted from HTolman post.sh 2007 
+#
+# $Id$
+#
+# Attributes:
+#   Language: Bourne-again (Bash) Shell
+#   Machine: WCOSS-DELL-P3
+#
 ###############################################################################
-#                                                                             #
-# This script is the postprocessor for the wave component in NCEP's global    #
-# coupled system (GEFS, GFS). Ift sets some shell script variables for export #
-# to child scripts, copies files, set parallel streams, executes several      #
-# scripts to generate output data. The actual postprocessing is performed     #
-# by the following child scripts :                                            #
-#                                                                             #
-#  wave_grib.sh              : generates GRIB2 files.                         #
-#  wave_outp_spec.sh         : generates spectral data files for output       #
-#                             locations.                                      #
-#  wave_outp_bull.sh         : generates bulletins for output locations.      #
-#                             grids for backward compatibility                #
-#  wave_tar.sh               : tars the spectral and bulletin multiple files  #
-#  wave_grid_interp.sh       : interpolates data from new grids to old grids  #
-#                                                                             #
-# Remarks :                                                                   #
-# - The above scripts are (mostly) run using mpiserial or cfp.                #
-#   Each script runs in its own directory created in DATA.                    # 
-# - For non-fatal errors output is witten to the wave.log file.               #
-#                                                                             #
-# Origination  : 03/09/2007                                                   #
-#                                                                             #
-# Update log                                                                  #
-# Mar2007 HTolman - Added NCO note on resources on mist/dew                   #
-# Apr2007 HTolman - Renaming mod_def files in $FIX_wave.                      #
-# Mar2011 AChawla - Migrating to a vertical structure                         #
-# Nov2012 JHAlves - Transitioning to WCOSS                                    #
-# Apr2019 JHAlves - Transitioning to GEFS workflow                            #
-# Nov2019 JHAlves - Merging wave scripts to global workflow                   #
-# Dec2019 JHAlves - Creating side-by-side version                             #
-#                                                                             #
-###############################################################################
+#
 # --------------------------------------------------------------------------- #
 # 0.  Preparations
 # 0.a Basic modes of operation

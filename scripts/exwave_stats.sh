@@ -1,35 +1,31 @@
 #!/bin/bash
 #                                                                       
 ################################################################################
-#                                                                       
-# exwave_stats.sh - Compute unified statistics for global wave ensemble
-#                                                                             
-# Packs ensemble mean, spread and probabilities in grib2 format.              
-#                                                                           
-# Requirements:                                                             
-# - wgrib2 with IPOLATES library                                            
-#                                                                           
-# Origination: 
-# - Unreported Waves Group Developer, Feb 2008                               
-#                                                                       
-# Changes:                                                              
-# - expanded parameter list including partitioned data (list in parameter array)
-#   (JH Alves, Jan 2014)                                                
-# - introduced wave ensemble bulletin following spectral bulletin format
-#   (JH Alves, Jan 2014)                                                
-# - introduced two USH scripts for post proc 
-#   - wave_ens_stats.sh : generate unified stats files (mean, spread, prob)
-#   - wave_ens_bull.sh : generates wave ensemble bulletin files        
-#   (JH Alves, Jan 2014)                                                
-# - mpiserial for parallel processing (JH Alves, Jan 2014)                
-# - Changes to wave_ens_stats (fortran) for paralellism: code now computes separately
-#    stats type (mean, spread or prob) and prob level (JH Alves, Jan 2014)
 #
-# Update log since 2014                                                       #
-# Nov2019 JHAlves - Transitioning to GEFS workflow                            #
-# Dec2019 JHAlves - Merging wave scripts to global workflow                   #
-#                                                                       
-################################################################################
+# UNIX Script Documentation Block
+# Script name:         exwave_init.sh
+# Script description:  Creates model definition files for WW3
+#
+# Author:   Yung Chao           Org: NCEP/EMC      Date: 2008-02-20
+# Abstract: This script is the init config for the global multi_grid wave model.
+#           It creates model definition files with all configurations of spatial
+#           and spectral grids, as well as physics parameters and time steps.
+#
+# Script history log:
+# 2008-02-20  Ying Chao: origination.
+# 2014-01-10  J-Henrique Alves Expanded parameter list including partitions
+# 2014-01-20  J-Henrique Alves Introduced wave ensemble bulletin 
+# 2014-01-30  J-Henrique Alves Mpiserial for parallel processing
+# 2019-11-18  J-Henrique Alves Transitioning to GEFS workflow
+# 2019-12-02  J-Henrique Alves Merging wave scripts to global workflow 
+#
+# $Id$
+#
+# Attributes:
+#   Language: Bourne-again (BASH) shell
+#   Machine: WCOSS-DELL-P3
+#
+###############################################################################
 #
   set -x
   #£ Use LOUD variable to turn on/off trace.  Defaults to YES (on).

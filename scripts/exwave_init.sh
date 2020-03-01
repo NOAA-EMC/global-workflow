@@ -1,25 +1,28 @@
 #!/bin/bash
+#
+################################################################################
+#
+# UNIX Script Documentation Block
+# Script name:         exwave_init.sh
+# Script description:  Creates model definition files for WW3
+#
+# Author:   Jose-Henrique Alves Org: NCEP/EMC      Date: 2019-04-20
+# Abstract: This script is the init config for the global multi_grid wave model.
+#           It creates model definition files with all configurations of spatial
+#           and spectral grids, as well as physics parameters and time steps.
+#
+# Script history log:
+# 2019-05-06  J-Henrique Alves First Version.
+# 2019-11-02  J-Henrique Alves Ported to global-workflow.
+#
+# $Id$
+#
+# Attributes:
+#   Language: Bourne-again (BASH) shell
+#   Machine: WCOSS-DELL-P3
+#
 ###############################################################################
-#                                                                             #
-# This script is the init config  for the global multi_grid wave model. It    #
-# creates model definition files with all configurations of spatial and       #
-# spectral grids, as well as set general physics parameters and time steps.   #
-#                                                                             #
-# The main script for generating mod_def files is                             #
-#  wave_grid_moddef.sh : creates the mod_def file for the grid                #
-#                                                                             #
-# Remarks :                                                                   #
-# - For non-fatal errors output is witten to the wave.log file.               #
-#                                                                             #
-#  Update record :                                                            #
-#                                                                             #
-# - Origination:                                               02-Apr-2019    #
-#                                                                             #
-# Update log                                                                  #
-# May2019 JHAlves - Transitioning to GEFS workflow workflow                   #
-# Nov2019 JHAlves - Merging wave scripts to global workflow                   #
-#                                                                             #
-###############################################################################
+#
 # --------------------------------------------------------------------------- #
 # 0.  Preparations
 # 0.a Basic modes of operation

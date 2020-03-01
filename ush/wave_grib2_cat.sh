@@ -1,25 +1,28 @@
 #!/bin/bash
-###############################################################################
-#                                                                             #
-# This script concatenates  GRIB2 file for the MWW3 forecast model            #
-# It is run as a child scipt interactively by the postprocessor.              #
-#                                                                             #
-# Remarks :                                                                   #
-# - The necessary files are retrieved by the mother script.                   #
-# - This script generates it own sub-directory 'grib_*'.                      # 
-# - See section 0.b for variables that need to be set.                        # 
-#                                                                             #
-#                                                                July, 2007   #
-# Update log                                                                  #
-# Nov2019 JHAlves - Merging wave scripts to global workflow                   #
-#                                                                             #
-#                                                                             #
-###############################################################################
-
 #
-# ... Define directories
+################################################################################
 #
+# UNIX Script Documentation Block
+# Script name:         wave_grib2_cat.sh 
+# Script description:  Concatenates files from wave model component
 #
+# Author:   Jose-Henrique Alves Org: NCEP/EMC      Date: 2014-01-16
+# Abstract: Creates bulletin for NCEP Global Wave Ensemble using grib2 data.
+#           Values at buoy locations are extracted using wgrib2 bi-linear 
+#           interpolation (-new_grid) and requires IPOLATES lib.
+#
+# Script history log:
+#
+# $Id$
+#
+# Attributes:
+#   Language: Bourne-again (BASH) shell
+#   Machine: WCOSS-DELL-P3
+#
+# Requirements:                                                             
+# - wgrib2 with IPOLATES library                                            
+#                                                                           
+################################################################################
 # --------------------------------------------------------------------------- #
 # 0.  Preparations
 # 0.a Basic modes of operation

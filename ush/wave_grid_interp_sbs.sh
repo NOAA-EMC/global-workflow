@@ -1,22 +1,27 @@
 #!/bin/bash
-###############################################################################
-#                                                                             #
-# This script generates the interpolated data for the older grids             #
-# in the MWW3 forecast model                                                  #
-# It is run as a child scipt interactively by the postprocessor.              #
-#                                                                             #
-# Remarks :                                                                   #
-# - The necessary files are retrieved by the mother script.                   #
-# - This script generates it own sub-directory 'grint_*'.                     # 
-# - See section 0.b for variables that need to be set.                        # 
-# - The script is designed to generate interpolated files for a single step   #
-#                                                                             #
-#                                                             July 10, 2009   #
-# Update log                                                                  #
-# Nov2019 JHAlves - Merging wave scripts to global workflow                   #
-#                                                                             #
-###############################################################################
+#                                                                       
+################################################################################
 #
+# UNIX Script Documentation Block
+# Script name:         wave_grid_interp_sbs.sh
+# Script description:  Interpolate from native grids to target grid
+#
+# Author:   Arun Chawla         Org: NCEP/EMC      Date: 2009-07-22
+# Abstract: Creates grib2 files from WW3 binary output
+#
+# Script history log:
+# 2019-11-02  J-Henrique Alves Ported to global-workflow.
+#
+# $Id$
+#
+# Attributes:
+#   Language: Bourne-again (BASH) shell
+#   Machine: WCOSS-DELL-P3
+#
+# Requirements:                                                             
+# - wgrib2 with IPOLATES library                                            
+#                                                                           
+################################################################################
 # --------------------------------------------------------------------------- #
 # 0.  Preparations
 # 0.a Basic modes of operation

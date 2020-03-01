@@ -14,7 +14,7 @@
 #   removed if this script exits normally.                                    #
 # - See section 0.c for variables that need to be set.                        #
 #                                                                             #
-#                                                            March 13, 2007   #
+# Origination: Hendrik Tolman                                March 13, 2007   #
 # Update log                                                                  #
 # Nov2019 JHAlves - Merging wave scripts to global workflow                   #
 #                                                                             #

@@ -1,5 +1,24 @@
 #!/bin/sh
-
+#                                                                       
+################################################################################
+#
+# UNIX Script Documentation Block
+# Script name:         wave_prns_cur.sh
+# Script description:  Acquires current data and generates binary input for WW3
+#
+# Author:   J.-Henrique Alves   Org: NCEP/EMC      Date: 2019-11-06
+# Abstract: Creates current binary data for forcing WW3
+#
+# Script history log:
+#
+# $Id$
+#
+# Attributes:
+#   Language: Bourne-again (BASH) shell
+#   Machine: WCOSS-DELL-P3
+#
+################################################################################
+#
 set -x
 
 ymdh_rtofs=$1

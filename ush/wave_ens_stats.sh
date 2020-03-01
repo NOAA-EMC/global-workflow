@@ -1,11 +1,30 @@
 #!/bin/bash
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --+ + + ++
-# This script calls the stats program for each requested parameters in         +
-# exwave_gwes_stats.sh                                                         +
-#                                                                              +
-# Jan, 2014                                                                    +
-#                                                                              +
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --+ + + ++
+#
+################################################################################
+#
+# UNIX Script Documentation Block
+# Script name:         wave_ens_stats.sh
+# Script description:  Create statists (means etc) from wave ensemble data
+#
+# Author:   Jose-Henrique Alves Org: NCEP/EMC      Date: 2014-01-16
+# Abstract: Creates bulletin for NCEP Global Wave Ensemble using grib2 data.
+#           Values at buoy locations are extracted using wgrib2 bi-linear 
+#           interpolation (-new_grid) and requires IPOLATES lib.
+#
+# Script history log:
+# 2014-01-16  J-Henrique Alves First Version.
+# 2019-11-02  J-Henrique Alves Ported to global-workflow.
+#
+# $Id$
+#
+# Attributes:
+#   Language: Bourne-again (BASH) shell
+#   Machine: WCOSS-DELL-P3
+#
+# Requirements:                                                             
+# - wgrib2 with IPOLATES library                                            
+#                                                                           
+################################################################################
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --+ + + ++
 # 0.  Preparations
 # 0.a Basic modes of operation

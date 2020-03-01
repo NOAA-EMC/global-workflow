@@ -19,6 +19,7 @@
 # 2019-03-05  Rahul Mahajan  Implemented IAU
 # 2019-03-21  Fanglin Yang   Add restart capability for running gfs fcst from a break point.
 # 2019-12-12  Henrique Alves Added wave model blocks for coupled run
+# 2020-01-31  Henrique Alves Added IAU capability for wave component
 #
 # $Id$
 #
@@ -406,7 +407,6 @@ if [ $cplwav = ".true." ]; then
   WRPDY=`echo $WRDATE | cut -c1-8`
   WRcyc=`echo $WRDATE | cut -c9-10`
   WRDIR=$COMINWW3/${COMPONENTRSTwave}.${WRPDY}/${WRcyc}/restart
-  mkdir -p ${WRDIR}
   datwave=$COMOUTWW3/${COMPONENTwave}.${PDY}/${cyc}/rundata/
   wavprfx=${COMPONENTwave}${WAV_MEMBER}
   for wavGRD in $waveGRD ; do

@@ -1,18 +1,18 @@
 #!/bin/bash
-###############################################################################
-#                                                                             #
-# This script creates the mod_def file for the grid.                          #
-#                                                                             #
-# Remarks :                                                                   #
-# - Shell script variables controling time, directories etc. are set in the   #
-#   mother script.                                                            #
-# - This script runs in the work directory designated in the mother script.   #
-# - Script is run in a sub directory that is then removed at the end          #
-# - See section 0.c for variables that need to be set.                        #
-#                                                                             #
-#                                                            April 08, 2011   #
-# Update log                                                                  #
-# Nov2019 JHAlves - Merging wave scripts to global workflow                   #
+#                                                                       
+################################################################################
+#
+# UNIX Script Documentation Block
+# Script name:         wave_grid_moddef.sh
+# Script description:  Create grib2 files for the wave component
+#
+# Author:   J-Henrique Alves    Org: NCEP/EMC      Date: 2011-04-08
+# Abstract: Creates model definition files for the wave model WW3
+#
+# Script history log:
+# 2019-11-02  J-Henrique Alves Ported to global-workflow.
+#
+# $Id$
 #                                                                             #
 ###############################################################################
 #

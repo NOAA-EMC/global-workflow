@@ -1,37 +1,32 @@
 #!/bin/bash
-###############################################################################
-#                                                                             #
-# This script is the postprocessor for the multi scale  WW3 wave model. It    #
-# sets some shell script variables for export to child scripts and copies     #
-# some generally used files to the work directory. After this the actual      #
-# postprocessing is performed by the following child scripts :                #
-#                                                                             #
-#  wave_grib.sh              : generates GRIB2 files.                         #
-#  wave_outp_spec.sh         : generates spectral data files for output       #
-#                             locations.                                      #
-#  wave_outp_bull.sh         : generates bulletins for output locations.      #
-#                             grids for backward compatibility                #
-#  wave_tar.sh               : tars the spectral and bulletin multiple files  #
-#  wave_grid_interp.sh       : interpolates data from new grids to old grids  #
-#                                                                             #
-# Remarks :                                                                   #
-# - The above scripts are (mostly) run using mpiserial or cfp.                #
-#   Each script runs in its own directory created in DATA. If all is well     #
-#   this directory disappears. If this directory is still there after poe     #
-#   has finished, an error has occured Only then the output of the process    #
-#   is copied to the output file. Otherwise, the output is deleted.           #
-# - For non-fatal errors output is witten to the wave.log file.               #
-#                                                                             #
-# Origination  : 03/09/2007                                                   #
-#                                                                             #
-# Update log                                                                  #
-# Mar2007 HTolman - Added NCO note on resources on mist/dew                   #
-# Apr2007 HTolman - Renaming mod_def files in $FIX_wave.                      #
-# Mar2011 AChawla - Migrating to a vertical structure                         #
-# Nov2012 JHAlves - Transitioning to WCOSS                                    #
-# Apr2019 JHAlves - Transitioning to GEFS workflow                            #
-# Nov2019 JHAlves - Merging wave scripts to global workflow                   #
-#                                                                             #
+#
+################################################################################
+#
+# UNIX Script Documentation Block
+# Script name:         exwave_post.sh
+# Script description:  Creates output products from binary WW3 data
+#
+# Author:   Hendrik Tolman      Org: NCEP/EMC      Date: 2007-09-03
+# Abstract: This script is the postprocessor for the wave component in GFS.
+#           It executes several scripts forpreparing and creating output data
+#           as follows:
+#                                                                             
+#  wave_grib.sh              : generates GRIB2 files.                         
+#  wave_outp_spec.sh         : generates spectral data files for output       
+#                             locations.                                      
+#  wave_outp_bull.sh         : generates bulletins for output locations.      
+#                             grids for backward compatibility                
+#  wave_tar.sh               : tars the spectral and bulletin multiple files  
+#  wave_grid_interp.sh       : interpolates data from new grids to old grids  
+#                                                                             
+# Update log                                                                  
+# Mar2007 HTolman - Added NCO note on resources on mist/dew                   
+# Apr2007 HTolman - Renaming mod_def files in $FIX_wave.                      
+# Mar2011 AChawla - Migrating to a vertical structure                         
+# Nov2012 JHAlves - Transitioning to WCOSS                                    
+# Apr2019 JHAlves - Transitioning to GEFS workflow                            
+# Nov2019 JHAlves - Merging wave scripts to global workflow                   
+#                                                                             
 ###############################################################################
 # --------------------------------------------------------------------------- #
 # 0.  Preparations
