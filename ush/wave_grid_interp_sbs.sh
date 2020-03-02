@@ -6,7 +6,7 @@
 # Script name:         wave_grid_interp_sbs.sh
 # Script description:  Interpolate from native grids to target grid
 #
-# Author:   Arun Chawla         Org: NCEP/EMC      Date: 2009-07-22
+# Author:   J-Henrique Alves    Org: NCEP/EMC      Date: 2019-11-02
 # Abstract: Creates grib2 files from WW3 binary output
 #
 # Script history log:
@@ -175,7 +175,7 @@
 
   rm -f grid_interp.inp
   rm -f mod_def.*
-  cp out_grd.$grdID ${DATA}/output_${ymdh}0000/out_grd.$grdID
+  mv out_grd.$grdID ${DATA}/output_${ymdh}0000/out_grd.$grdID
 
 # 1.c Save in /com
 
@@ -184,7 +184,7 @@
     set +x
     echo "   Saving GRID file as $COMOUT/rundata/$WAV_MOD_TAG.out_grd.$grdID.${CDATE}"
     [[ "$LOUD" = YES ]] && set -x
-    cp out_grd.$grdID $COMOUT/rundata/$WAV_MOD_TAG.out_grd.$grdID.${CDATE}
+    cp ${DATA}/output_${ymdh}0000/out_grd.$grdID $COMOUT/rundata/$WAV_MOD_TAG.out_grd.$grdID.${CDATE}
 
 #    if [ "$SENDDBN" = 'YES' ]
 #    then

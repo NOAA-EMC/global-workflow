@@ -72,7 +72,7 @@ elif [ $step = "wavegempaksbs" ]; then
 
 elif [ $step = "waveawipssbs" ]; then
 
-    export wtime_waveawipssbs="06:00:00"
+    export wtime_waveawipssbs="08:00:00"
     export npe_waveawipssbs=$npe_node_max
     export nth_waveawipssbs=1
     export npe_node_waveawipssbs=$(echo "$npe_node_max / $nth_waveawipssbs" | bc)

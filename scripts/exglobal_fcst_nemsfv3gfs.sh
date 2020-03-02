@@ -1278,7 +1278,7 @@ if [ $SEND = "YES" ]; then
          $NCP $file $memdir/RESTART/$file
        done
        if [ $cplwav = ".true." ]; then
-         WRDIR=$COMINWW3/${COMPONENTRSTwave}.${PDY}/${cyc}/restart
+         WRDIR=$COMOUTWW3/${COMPONENTRSTwave}.${PDY}/${cyc}/restart
          mkdir -p ${WRDIR}
          for wavGRD in $waveGRD ; do
          # Copy wave IC for the next cycle
@@ -1300,7 +1300,7 @@ if [ $SEND = "YES" ]; then
          $NCP $file $memdir/RESTART/$file
       done
       if [ $cplwav = ".true." ]; then
-        WRDIR=$COMINWW3/${COMPONENTRSTwave}.${PDY}/${cyc}/restart/
+        WRDIR=$COMOUTWW3/${COMPONENTRSTwave}.${PDY}/${cyc}/restart/
         mkdir -p ${WRDIR}
         for wavGRD in $waveGRD ; do
         # Copy wave IC for the next cycle

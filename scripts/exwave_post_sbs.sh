@@ -392,11 +392,10 @@
     mv buoy_log.tmp buoy_log.dat
 
     grep -F -f ibp_tags buoy_lst.loc >  buoy_tmp1.loc
-    sed -n '11,/^$/p' buoy_tmp1.loc > buoy_tmp2.loc
-    sed    '$d' buoy_tmp2.loc > buoy_tmp3.loc
-    buoys=`awk '{ print $1 }' buoy_tmp3.loc`
-    Nb=`wc buoy_tmp3.loc | awk '{ print $1 }'`
-    rm buoy_tmp1.loc buoy_tmp2.loc buoy_tmp3.loc
+    sed    '$d' buoy_tmp1.loc > buoy_tmp2.loc
+    buoys=`awk '{ print $1 }' buoy_tmp2.loc`
+    Nb=`wc buoy_tmp2.loc | awk '{ print $1 }'`
+    rm -f buoy_tmp1.loc buoy_tmp2.loc
 
     if [ -s buoy_log.dat ]
     then
@@ -429,11 +428,10 @@
     mv buoy_log.tmp buoy_log.ibp
 
     grep -F -f ibp_tags buoy_lst.loc >  buoy_tmp1.loc
-    sed -n '11,/^$/p' buoy_tmp1.loc > buoy_tmp2.loc
-    sed    '$d' buoy_tmp2.loc > buoy_tmp3.loc
-    ibpoints=`awk '{ print $1 }' buoy_tmp3.loc`
-    Nibp=`wc buoy_tmp3.loc | awk '{ print $1 }'`
-    rm buoy_tmp1.loc buoy_tmp2.loc buoy_tmp3.loc
+    sed    '$d' buoy_tmp1.loc > buoy_tmp2.loc
+    ibpoints=`awk '{ print $1 }' buoy_tmp2.loc`
+    Nibp=`wc buoy_tmp2.loc | awk '{ print $1 }'`
+    rm -f buoy_tmp1.loc buoy_tmp2.loc
 
     if [ -s buoy_log.ibp ]
     then
@@ -516,7 +514,6 @@
     export BULLDATA=${DATA}/output_$YMDHMS
     export GRIBDATA=${DATA}/output_$YMDHMS
     export GRDIDATA=${DATA}/output_$YMDHMS
-#    echo "ln -fs $DATA/mod_def.${waveuoutpGRD} mod_def.ww3" >> ${fcmdnow}
     ln -fs $DATA/mod_def.${waveuoutpGRD} mod_def.ww3
 
     if [ $fhr = $fhrp ]
@@ -533,8 +530,7 @@
         err=6; export err;${errchk}
         exit $err
       fi
-#    echo "cp -f ${pfile} ./out_pnt.${waveuoutpGRD} > cpoutp_$waveuoutpGRD.out 2>&1" >> ${fcmdnow}
-      ln -fs ${pfile} ./out_pnt.${waveuoutpGRD} #> cpoutp_$waveuoutpGRD.out 2>&1
+      ln -fs ${pfile} ./out_pnt.${waveuoutpGRD} 
 
       if [ "$specOK" = 'yes' ]
       then
@@ -582,8 +578,7 @@
           err=7; export err;${errchk}
           exit $err
         fi
-#      echo "cp -f ${gfile} ./out_grd.${wavGRD} > cpoutg_$wavGRD.out 2>&1" >> ${fcmdnow}
-        ln -s ${gfile} ./out_grd.${wavGRD} > cpoutg_$wavGRD.out 2>&1
+        ln -s ${gfile} ./out_grd.${wavGRD} 
       done
 
       if [ "$grintOK" = 'yes' ]
@@ -664,6 +659,8 @@
       err=8; export err;${errchk}
       exit $err
     fi
+
+    rm -f out_grd.* # Remove large binary grid output files
 
     cd $DATA
 

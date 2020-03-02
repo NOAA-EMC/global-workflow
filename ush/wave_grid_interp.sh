@@ -167,10 +167,7 @@
 
   rm -f grid_interp.inp
   rm -f mod_def.*
-  cp out_grd.$grdID ../out_grd.$grdID
-
-
-
+  mv out_grd.$grdID ../out_grd.$grdID
 
 # 1.c Save in /com
 
@@ -179,7 +176,7 @@
     set +x
     echo "   Saving GRID file as $COMOUT/rundata/$WAV_MOD_TAG.out_grd.$grdID.$PDY$cyc"
     [[ "$LOUD" = YES ]] && set -x
-    cp out_grd.$grdID $COMOUT/rundata/$WAV_MOD_TAG.out_grd.$grdID.$PDY$cyc
+    cp ../out_grd.$grdID $COMOUT/rundata/$WAV_MOD_TAG.out_grd.$grdID.$PDY$cyc
 
 #    if [ "$SENDDBN" = 'YES' ]
 #    then

@@ -156,12 +156,6 @@
     exit 3
   fi
 
-# 1.c Clean up
-
-#  rm -f ww3_grib.inp
-#  rm -f mod_def.ww3
-#  rm -f out_grd.ww3
-
 # Create index
     $WGRIB2 -s $COMOUT/gridded/${outfile} > $COMOUT/gridded/${outfile}.idx
 
@@ -209,6 +203,8 @@
  
 # --------------------------------------------------------------------------- #
 # 3.  Clean up the directory
+
+  rm -f gribfile
 
   set +x
   echo "   Removing work directory after success."
