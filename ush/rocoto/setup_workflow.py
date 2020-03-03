@@ -468,10 +468,10 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
     if do_wave in ['Y', 'YES']:
         dep_dict = {'type': 'task', 'name': '%swaveprep' % cdump}
         deps.append(rocoto.add_dependency(dep_dict))
-    #if cdump in ['gdas']:
-    #    if do_gldas in ['Y', 'YES']:
-    #        dep_dict = {'type': 'task', 'name': '%sgldas' % cdump}
-    #        deps.append(rocoto.add_dependency(dep_dict))
+    if cdump in ['gdas']:
+        if do_gldas in ['Y', 'YES']:
+            dep_dict = {'type': 'task', 'name': '%sgldas' % cdump}
+            deps.append(rocoto.add_dependency(dep_dict))
     #    else:
     #        dep_dict = {'type': 'task', 'name': '%sanal' % cdump}
     #        deps.append(rocoto.add_dependency(dep_dict))
