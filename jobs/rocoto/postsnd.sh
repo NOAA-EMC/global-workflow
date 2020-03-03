@@ -59,7 +59,7 @@ export SENDDBN="YES"
 export HOMEbufrsnd=$HOMEgfs
 export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc"
 export pcom="$COMOUT/wmo"
-export COMAWP="$COMOUT/nawips"
+export COMAWP="$COMOUT/gempak"
 
 $POSTSNDSH
 
