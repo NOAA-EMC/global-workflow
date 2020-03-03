@@ -49,7 +49,7 @@ elif [ $step = "waveinit" ]; then
 elif [ $step = "waveprep" ]; then
 
     export wtime_waveprep="00:30:00"
-    export npe_waveprep=65
+    export npe_waveprep=115
     export nth_waveprep=1
     export npe_node_waveprep=$(echo "$npe_node_max / $nth_waveprep" | bc)
     export NTASKS=${npe_waveprep}

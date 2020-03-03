@@ -211,7 +211,8 @@
        cat $outfile | sed -e '9,$d' >> ${STA_DIR}/${specdir}/$WAV_MOD_TAG.$buoy.bull
        cat $coutfile | sed -e '8,$d' >> ${STA_DIR}/c${specdir}/$WAV_MOD_TAG.$buoy.cbull
      else
-       cat $outfile | sed -e '15,$d' >> ${STA_DIR}/${specdir}/$WAV_MOD_TAG.$buoy.spec
+       #cat $outfile | sed -e '15,$d' >> ${STA_DIR}/${specdir}/$WAV_MOD_TAG.$buoy.spec
+       cat $outfile >> ${STA_DIR}/${specdir}/$WAV_MOD_TAG.$buoy.spec
      fi
    elif [ "${ymdh}" = "${YMDHE}" ]
    then
@@ -219,6 +220,8 @@
      then
        cat $outfile | sed -e '1,7d' >> ${STA_DIR}/${specdir}/$WAV_MOD_TAG.$buoy.bull
        cat $coutfile | sed -e '1,6d' >> ${STA_DIR}/c${specdir}/$WAV_MOD_TAG.$buoy.cbull
+     else
+       cat $outfile | sed -n "/^${YMD} ${HMS}$/,\$p" >> ${STA_DIR}/${specdir}/$WAV_MOD_TAG.$buoy.spec
      fi
    else
      if [ "$specdir" = "bull" ]
