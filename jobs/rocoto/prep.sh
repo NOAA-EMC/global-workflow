@@ -46,13 +46,6 @@ if [ $ROTDIR_DUMP = "YES" ]; then
      [[ $status -ne 0 ]] && exit $status
    fi
 
-   # If waves on, link to rtofs data in GDA
-   if [ $DO_WAVE = "YES" ]; then
-    if [ ! -L $ROTDIR/rtofs.${PDY} ]; then # Check if symlink already exists in ROTDIR
-     $NLN $DMPDIR/rtofs.${PDY} $ROTDIR/rtofs.${PDY}
-    fi
-   fi
-    
 fi
 
 ###############################################################
