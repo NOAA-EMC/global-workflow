@@ -75,6 +75,7 @@ config_base:
     
     # Utilities needed in the scripts (mostly post)
     {doc.platform.config_base_extras}
+    export POSTGRB2TBL="{doc.places.HOMEgfs}/sorc/gfs_post.fd/parm/params_grib2_tbl_new"
 
     # Toggle to turn on/off GFS downstream processing.
     export DO_BUFRSND="{tools.YES_NO(doc.downstream.DO_BUFRSND)}" # Run GFS_POSTSND
