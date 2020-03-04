@@ -37,7 +37,7 @@ platform: !Platform
   BASE_GIT: "/scratch1/NCEPDEV/global/glopara/git/"
 
   config_base_extras: !expand |
-     echo "place holder for NWPROD and associated utilities, now go through load_gfs_modules.sh"
+     echo "place holder for NWPROD and associated utilities, all except POSTGRB2TBL are going through load_gfs_modules.sh"
 
   CHGRP_RSTPROD_COMMAND: "chgrp rstprod"
 
