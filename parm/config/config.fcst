@@ -192,7 +192,7 @@ if [[ "$CDUMP" == "gdas" ]] ; then # GDAS cycle specific parameters
 
     # For IAU, write restarts at beginning of window also
     if [ $DOIAU = "YES" ]; then
-       then export restart_interval="6 9"
+       export restart_interval="6 9"
        if [[ "$SDATE" = "$CDATE" ]]; then export restart_interval="3 6"; fi
     fi
 
