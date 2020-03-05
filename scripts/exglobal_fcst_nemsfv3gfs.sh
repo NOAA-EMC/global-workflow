@@ -910,7 +910,8 @@ deflate_level=${deflate_level:-1}
   hord_tm = $hord_xx
   hord_dp = -$hord_xx
   hord_tr = ${hord_tr:-"8"}
-  adjust_dry_mass = ${adjust_dry_mass:-".false."}
+  adjust_dry_mass = ${adjust_dry_mass:-".true."}
+  dry_mass=${dry_mass:-98320.0}
   consv_te = $consv_te
   do_sat_adj = ${do_sat_adj:-".false."}
   consv_am = .false.
@@ -1028,7 +1029,7 @@ if [ $DOIAU = "YES" ]; then
   iaufhrs      = ${IAUFHRS}
   iau_delthrs  = ${IAU_DELTHRS}
   iau_inc_files= ${IAU_INC_FILES}
-  iau_drymassfixer = .true.
+  iau_drymassfixer = .false.
 EOF
 fi
 
