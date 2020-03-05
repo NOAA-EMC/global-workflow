@@ -930,24 +930,26 @@
 
 # 6. Copy rmp grid remapping pre-processed coefficients
 
-  if ls $FIXwave/rmp_src_to_dst_conserv_* 2> /dev/null
-  then
-    for file in $(ls $FIXwave/rmp_src_to_dst_conserv_*) ; do
-      cp -f $file ${COMOUT}/rundata
-    done
-  else
-    msg="NO rmp precomputed nc files found, is this OK???"
-    postmsg "$jlogfile" "$msg"
-    set +x
-    echo ' '
-    echo '************************************************ '
-    echo '*** FATAL ERROR : NO PRECOMPUTED RMP FILES FOUND *** '
-    echo '************************************************ '
-    echo ' '
-    echo "${WAV_MOD_TAG} prep $date $cycle : rmp*.nc not found." >> $wavelog
-    echo $msg
-    [[ "$LOUD" = YES ]] && set -x
-    err=13;export err;${errchk}
+  if [ "${USE_WAV_RMP:-YES}" = "YES" ]; then
+    if ls $FIXwave/rmp_src_to_dst_conserv_* 2> /dev/null
+    then
+      for file in $(ls $FIXwave/rmp_src_to_dst_conserv_*) ; do
+        cp -f $file ${COMOUT}/rundata
+      done
+    else
+      msg="NO rmp precomputed nc files found, is this OK???"
+      postmsg "$jlogfile" "$msg"
+      set +x
+      echo ' '
+      echo '************************************************ '
+      echo '*** FATAL ERROR : NO PRECOMPUTED RMP FILES FOUND *** '
+      echo '************************************************ '
+      echo ' '
+      echo "${WAV_MOD_TAG} prep $date $cycle : rmp*.nc not found." >> $wavelog
+      echo $msg
+      [[ "$LOUD" = YES ]] && set -x
+      err=13;export err;${errchk}
+    fi
   fi
 
 
