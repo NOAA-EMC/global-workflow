@@ -677,16 +677,9 @@ $NCP $FIELD_TABLE field_table
 
 #------------------------------------------------------------------
 rm -f nems.configure
-cat > nems.configure <<EOF
-EARTH_component_list: ATM
-ATM_model:            fv3
-runSeq::
-  ATM
-::
-EOF
 
-#### ww3 version of nems.configure
 if [ $cplwav = ".true." ]; then
+#### ww3 version of nems.configure
 
 # Switch on cpl flag
   cpl=.true.
@@ -725,6 +718,15 @@ runSeq::
     ATM -> WAV
     WAV
   @
+::
+EOF
+else
+#### fv3 standalone version of nems.configure
+cat > nems.configure <<EOF
+EARTH_component_list: ATM
+ATM_model:            fv3
+runSeq::
+  ATM
 ::
 EOF
 fi
