@@ -38,10 +38,6 @@
   export LOUD=${LOUD:-YES}; [[ $LOUD = yes ]] && export LOUD=YES
   [[ "$LOUD" != YES ]] && set +x
 
-  # Set buffered output 
-  export FORT_BUFFERED=true
-  export FORT_BLOCKSIZE=8192
-
   cd $DATA
 
   postmsg "$jlogfile" "HAS BEGUN on `hostname`"
