@@ -18,6 +18,8 @@
 # 2017-09-13  Fanglin Yang   Updated for using GFDL MP and Write Component
 # 2019-03-05  Rahul Mahajan  Implemented IAU
 # 2019-03-21  Fanglin Yang   Add restart capability for running gfs fcst from a break point.
+# 2019-12-12  Henrique Alves Added wave model blocks for coupled run
+# 2020-01-31  Henrique Alves Added IAU capability for wave component
 #
 # $Id$
 #
@@ -36,7 +38,7 @@ fi
 machine=${machine:-"WCOSS_C"}
 machine=$(echo $machine | tr '[a-z]' '[A-Z]')
 
-# Cycling and forecast hour specific parameters
+# Cycling and forecast hour specific parameters 
 CASE=${CASE:-C768}
 CDATE=${CDATE:-2017032500}
 CDUMP=${CDUMP:-gdas}
@@ -98,6 +100,9 @@ FCSTEXECDIR=${FCSTEXECDIR:-$HOMEgfs/sorc/fv3gfs.fd/NEMS/exe}
 FCSTEXEC=${FCSTEXEC:-fv3_gfs.x}
 PARM_FV3DIAG=${PARM_FV3DIAG:-$HOMEgfs/parm/parm_fv3diag}
 PARM_POST=${PARM_POST:-$HOMEgfs/parm/post}
+
+# Wave coupling parameter defaults to false
+cplwav=${cplwav:-.false.}
 
 # Model config options
 APRUN_FV3=${APRUN_FV3:-${APRUN_FCST:-${APRUN:-""}}}
@@ -239,71 +244,71 @@ if [ $warm_start = ".true." -o $RERUN = "YES" ]; then
 #.............................
 
   # Link all (except sfc_data) restart files from $gmemdir
-  for file in $gmemdir/RESTART/${sPDY}.${scyc}0000.*.nc; do
-    file2=$(echo $(basename $file))
-    file2=$(echo $file2 | cut -d. -f3-) # remove the date from file
-    fsuf=$(echo $file2 | cut -d. -f1)
-    if [ $fsuf != "sfc_data" ]; then
-       $NLN $file $DATA/INPUT/$file2
-    fi
-  done
+    for file in $(ls $gmemdir/RESTART/${sPDY}.${scyc}0000.*.nc); do
+      file2=$(echo $(basename $file))
+      file2=$(echo $file2 | cut -d. -f3-) # remove the date from file
+      fsuf=$(echo $file2 | cut -d. -f1)
+      if [ $fsuf != "sfc_data" ]; then
+         $NLN $file $DATA/INPUT/$file2
+      fi
+    done
 
   # Link sfcanl_data restart files from $memdir
-  for file in $memdir/RESTART/${sPDY}.${scyc}0000.*.nc; do
-    file2=$(echo $(basename $file))
-    file2=$(echo $file2 | cut -d. -f3-) # remove the date from file
-    fsufanl=$(echo $file2 | cut -d. -f1)
-    if [ $fsufanl = "sfcanl_data" ]; then
-      file2=$(echo $file2 | sed -e "s/sfcanl_data/sfc_data/g")
-      $NLN $file $DATA/INPUT/$file2
-    fi
-  done
+    for file in $(ls $memdir/RESTART/${sPDY}.${scyc}0000.*.nc); do
+      file2=$(echo $(basename $file))
+      file2=$(echo $file2 | cut -d. -f3-) # remove the date from file
+      fsufanl=$(echo $file2 | cut -d. -f1)
+      if [ $fsufanl = "sfcanl_data" ]; then
+        file2=$(echo $file2 | sed -e "s/sfcanl_data/sfc_data/g")
+        $NLN $file $DATA/INPUT/$file2
+      fi
+    done
 
   # Need a coupler.res when doing IAU
-  if [ $DOIAU = "YES" ]; then
-    rm -f $DATA/INPUT/coupler.res
-    cat >> $DATA/INPUT/coupler.res << EOF
+    if [ $DOIAU = "YES" ]; then
+      rm -f $DATA/INPUT/coupler.res
+      cat >> $DATA/INPUT/coupler.res << EOF
      2        (Calendar: no_calendar=0, thirty_day_months=1, julian=2, gregorian=3, noleap=4)
   ${gPDY:0:4}  ${gPDY:4:2}  ${gPDY:6:2}  ${gcyc}     0     0        Model start time:   year, month, day, hour, minute, second
   ${sPDY:0:4}  ${sPDY:4:2}  ${sPDY:6:2}  ${scyc}     0     0        Current model time: year, month, day, hour, minute, second
 EOF
-  fi
+    fi
 
   # Link increments
-  if [ $DOIAU = "YES" ]; then
-    for i in $(echo $IAUFHRS | sed "s/,/ /g" | rev); do
-      incfhr=$(printf %03i $i)
-      if [ $incfhr = "006" ]; then
-        increment_file=$memdir/${CDUMP}.t${cyc}z.atminc.nc
-      else
-        increment_file=$memdir/${CDUMP}.t${cyc}z.atmi${incfhr}.nc
+    if [ $DOIAU = "YES" ]; then
+      for i in $(echo $IAUFHRS | sed "s/,/ /g" | rev); do
+        incfhr=$(printf %03i $i)
+        if [ $incfhr = "006" ]; then
+          increment_file=$memdir/${CDUMP}.t${cyc}z.atminc.nc
+        else
+          increment_file=$memdir/${CDUMP}.t${cyc}z.atmi${incfhr}.nc
+        fi
+        if [ ! -f $increment_file ]; then
+          echo "ERROR: DOIAU = $DOIAU, but missing increment file for fhr $incfhr at $increment_file"
+          echo "Abort!"
+          exit 1
+        fi
+        $NLN $increment_file $DATA/INPUT/fv_increment$i.nc
+        IAU_INC_FILES="'fv_increment$i.nc',$IAU_INC_FILES"
+      done
+      read_increment=".false."
+      res_latlon_dynamics=""
+    else
+      increment_file=$memdir/${CDUMP}.t${cyc}z.atminc.nc
+      if [ -f $increment_file ]; then
+        $NLN $increment_file $DATA/INPUT/fv_increment.nc
+        read_increment=".true."
+        res_latlon_dynamics="fv_increment.nc"
       fi
-      if [ ! -f $increment_file ]; then
-        echo "ERROR: DOIAU = $DOIAU, but missing increment file for fhr $incfhr at $increment_file"
-        echo "Abort!"
-        exit 1
-      fi
-      $NLN $increment_file $DATA/INPUT/fv_increment$i.nc
-      IAU_INC_FILES="'fv_increment$i.nc',$IAU_INC_FILES"
-    done
-    read_increment=".false."
-    res_latlon_dynamics=""
-  else
-    increment_file=$memdir/${CDUMP}.t${cyc}z.atminc.nc
-    if [ -f $increment_file ]; then
-      $NLN $increment_file $DATA/INPUT/fv_increment.nc
-      read_increment=".true."
-      res_latlon_dynamics="fv_increment.nc"
     fi
-  fi
-
+  
 #.............................
   else  ##RERUN                         
 
     export warm_start=".true."
     PDYT=$(echo $CDATE_RST | cut -c1-8)
     cyct=$(echo $CDATE_RST | cut -c9-10)
-    for file in $RSTDIR_TMP/${PDYT}.${cyct}0000.*; do
+    for file in $(ls $RSTDIR_TMP/${PDYT}.${cyct}0000.*); do
       file2=$(echo $(basename $file))
       file2=$(echo $file2 | cut -d. -f3-) 
       $NLN $file $DATA/INPUT/$file2
@@ -314,7 +319,7 @@ EOF
 
 else ## cold start                            
 
-  for file in $memdir/INPUT/*.nc; do
+  for file in $(ls $memdir/INPUT/*.nc); do
     file2=$(echo $(basename $file))
     fsuf=$(echo $file2 | cut -c1-3)
     if [ $fsuf = "gfs" -o $fsuf = "sfc" ]; then
@@ -377,6 +382,71 @@ $NLN $FIX_AM/global_climaeropac_global.txt     $DATA/aerosol.dat
 if [ $IAER -gt 0 ] ; then
   for file in $(ls $FIX_AM/global_volcanic_aerosols*) ; do
     $NLN $file $DATA/$(echo $(basename $file) | sed -e "s/global_//g")
+  done
+fi
+
+#### Copy over WW3 inputs
+if [ $cplwav = ".true." ]; then
+# Link WW3 files
+  for file in $(ls $COMINWW3/${COMPONENTwave}.${PDY}/${cyc}/rundata/rmp_src_to_dst_conserv_*) ; do
+    $NLN $file $DATA/
+  done
+  $NLN $COMINWW3/${COMPONENTwave}.${PDY}/${cyc}/rundata/ww3_multi.${COMPONENTwave}${WAV_MEMBER}.${cycle}.inp $DATA/ww3_multi.inp
+        # Check for expected wave grids for this run
+  array=($WAVECUR_FID $WAVEICE_FID $WAVEWND_FID $waveuoutpGRD $waveGRD $waveesmfGRD $wavesbsGRD $wavepostGRD $waveinterpGRD)
+  grdALL=`printf "%s\n" "${array[@]}" | sort -u | tr '\n' ' '`
+  for wavGRD in ${grdALL}; do
+    # Wave IC (restart) file must exist for warm start on this cycle, if not wave model starts from flat ocean
+    # For IAU needs to use sPDY for adding IAU backup of 3h
+    $NLN $COMINWW3/${COMPONENTwave}.${PDY}/${cyc}/rundata/${COMPONENTwave}.mod_def.$wavGRD $DATA/mod_def.$wavGRD
+  done
+  # Wave IC (restart) interval assumes 4 daily cycles (restarts only written by gdas cycle) 
+  # WAVCYCH needs to be consistent with restart write interval in ww3_multi.inp or will FAIL
+  WAVCYCH=${WAVCYCH:-6}
+  WRDATE=`$NDATE -${WAVCYCH} $CDATE`
+  WRPDY=`echo $WRDATE | cut -c1-8`
+  WRcyc=`echo $WRDATE | cut -c9-10`
+  WRDIR=$COMINWW3/${COMPONENTRSTwave}.${WRPDY}/${WRcyc}/restart
+  datwave=$COMOUTWW3/${COMPONENTwave}.${PDY}/${cyc}/rundata/
+  wavprfx=${COMPONENTwave}${WAV_MEMBER}
+  for wavGRD in $waveGRD ; do
+    # Link wave IC for current cycle
+    $NLN ${WRDIR}/${sPDY}.${scyc}0000.restart.${wavGRD} $DATA/restart.${wavGRD}
+    eval $NLN $datwave/${wavprfx}.log.${wavGRD}.${PDY}${cyc} log.${wavGRD}
+  done
+  if [ "$WW3ICEINP" = "YES" ]; then
+    $NLN $COMINWW3/${COMPONENTwave}.${PDY}/${cyc}/rundata/${COMPONENTwave}.${WAVEICE_FID}.${cycle}.ice $DATA/ice.${WAVEICE_FID}
+  fi
+  if [ "$WW3CURINP" = "YES" ]; then
+    $NLN $COMINWW3/${COMPONENTwave}.${PDY}/${cyc}/rundata/${COMPONENTwave}.${WAVECUR_FID}.${cycle}.cur $DATA/current.${WAVECUR_FID}
+  fi
+# Link output files
+  cd $DATA
+  eval $NLN $datwave/${wavprfx}.log.mww3.${PDY}${cyc} log.mww3
+# Loop for gridded output (uses FHINC)
+  fhr=$FHMIN_WAV
+  while [ $fhr -le $FHMAX_WAV ]; do
+    YMDH=`$NDATE $fhr $CDATE`
+    YMD=$(echo $YMDH | cut -c1-8)
+    HMS="$(echo $YMDH | cut -c9-10)0000"
+      for wavGRD in ${waveGRD} ; do
+        eval $NLN $datwave/${wavprfx}.out_grd.${wavGRD}.${YMD}.${HMS} ${YMD}.${HMS}.out_grd.${wavGRD}
+      done
+      FHINC=$FHOUT_WAV
+      if [ $FHMAX_HF_WAV -gt 0 -a $FHOUT_HF_WAV -gt 0 -a $fhr -lt $FHMAX_HF_WAV ]; then
+        FHINC=$FHOUT_HF_WAV
+      fi
+    fhr=$((fhr+FHINC))
+  done
+# Loop for point output (uses DTPNT)
+  fhr=$FHMIN_WAV
+  while [ $fhr -le $FHMAX_WAV ]; do
+    YMDH=`$NDATE $fhr $CDATE`
+    YMD=$(echo $YMDH | cut -c1-8)
+    HMS="$(echo $YMDH | cut -c9-10)0000"
+      eval $NLN $datwave/${wavprfx}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS} ${YMD}.${HMS}.out_pnt.${waveuoutpGRD}
+      FHINC=$FHINCP_WAV
+    fhr=$((fhr+FHINC))
   done
 fi
 
@@ -607,6 +677,51 @@ $NCP $FIELD_TABLE field_table
 
 #------------------------------------------------------------------
 rm -f nems.configure
+
+if [ $cplwav = ".true." ]; then
+#### ww3 version of nems.configure
+
+# Switch on cpl flag
+  cpl=.true.
+
+NTASKS_FV3m1=$((NTASKS_FV3-1))
+atm_petlist_bounds=" 0 $((NTASKS_FV3-1))"
+wav_petlist_bounds=" $((NTASKS_FV3)) $((NTASKS_FV3m1+npe_wav))"
+###  atm_petlist_bounds=" 0   1511"
+###  atm_petlist_bounds=$atm_petlist_bounds
+###  wav_petlist_bounds="1512 1691"
+###  wav_petlist_bounds=$wav_petlist_bounds
+  coupling_interval_sec=${coupling_interval_sec:-1800}
+  rm -f nems.configure
+cat > nems.configure <<EOF
+EARTH_component_list: ATM WAV
+EARTH_attributes::
+  Verbosity = 0
+::
+
+ATM_model:                      fv3
+ATM_petlist_bounds:             ${atm_petlist_bounds}
+ATM_attributes::
+  Verbosity = 0
+  DumpFields = false
+::
+
+WAV_model:                      ww3
+WAV_petlist_bounds:             ${wav_petlist_bounds}
+WAV_attributes::
+  Verbosity = 0
+::
+
+runSeq::
+  @${coupling_interval_sec}
+    ATM
+    ATM -> WAV
+    WAV
+  @
+::
+EOF
+else
+#### fv3 standalone version of nems.configure
 cat > nems.configure <<EOF
 EARTH_component_list: ATM
 ATM_model:            fv3
@@ -614,18 +729,26 @@ runSeq::
   ATM
 ::
 EOF
+fi
+
+# Set NTASKS_CFG to reflect cplwav
+NTASKS_CFG=$NTASKS_FV3
+if [ $cplwav = ".true." ]; then
+  NTASKS_CFG=$((NTASKS_FV3 + npe_wav))
+fi
 
 rm -f model_configure
 cat > model_configure <<EOF
 total_member:            $ENS_NUM
 print_esmf:              ${print_esmf:-.true.}
-PE_MEMBER01:             $NTASKS_FV3
+PE_MEMBER01:             $NTASKS_CFG
 start_year:              ${tPDY:0:4}
 start_month:             ${tPDY:4:2}
 start_day:               ${tPDY:6:2}
 start_hour:              ${tcyc}
 start_minute:            0
 start_second:            0
+fhrot:                   ${IAU_FHROT}
 nhours_fcst:             $FHMAX
 RUN_CONTINUE:            ${RUN_CONTINUE:-".false."}
 ENS_SPS:                 ${ENS_SPS:-".false."}
@@ -818,7 +941,6 @@ deflate_level=${deflate_level:-1}
        launch_level      = ${launch_level:-54}                   
 /
 
-
 &external_ic_nml
   filtered_terrain = $filtered_terrain
   levp = $LEVS
@@ -891,6 +1013,7 @@ deflate_level=${deflate_level:-1}
   prautco      = ${prautco:-"0.00015,0.00015"}
   lgfdlmprad   = ${lgfdlmprad:-".false."}
   effr_in      = ${effr_in:-".false."}
+  cplwav       = ${cplwav:-".false."}
   ldiag_ugwp   = ${ldiag_ugwp:-".false."}
   do_ugwp      = ${do_ugwp:-".true."}
   do_tofd      = ${do_tofd:-".true."}
@@ -965,6 +1088,7 @@ cat >> input.nml <<EOF
   icloud_f = 1
   mp_time = 150.
   reiflag = ${reiflag:-"2"}
+
   $gfdl_cloud_microphysics_nml
 /
 
@@ -1147,21 +1271,44 @@ if [ $SEND = "YES" ]; then
     cd $DATA/RESTART
     mkdir -p $memdir/RESTART
 
-    RDATE=$($NDATE +$rst_invt1 $CDATE)
-    rPDY=$(echo $RDATE | cut -c1-8)
-    rcyc=$(echo $RDATE | cut -c9-10)
-    for file in ${rPDY}.${rcyc}0000.* ; do
-      $NCP $file $memdir/RESTART/$file
-    done
-    if [ $DOIAU = "YES" ] || [ $DOIAU_coldstart = "YES" ]; then
-       # if IAU is on, save restart at start of IAU window
-       rst_iau=$(( ${IAU_OFFSET} - (${IAU_DELTHRS}/2) ))
-       RDATE=$($NDATE +$rst_iau $CDATE)
+    for rst_int in $restart_interval ; do
+     if [ $rst_int -ge 0 ]; then
+       RDATE=$($NDATE +$rst_int $CDATE)
        rPDY=$(echo $RDATE | cut -c1-8)
        rcyc=$(echo $RDATE | cut -c9-10)
-       for file in ${rPDY}.${rcyc}0000.* ; do
-          $NCP $file $memdir/RESTART/$file
+       for file in $(ls ${rPDY}.${rcyc}0000.*) ; do
+         $NCP $file $memdir/RESTART/$file
        done
+       if [ $cplwav = ".true." ]; then
+         WRDIR=$COMOUTWW3/${COMPONENTRSTwave}.${PDY}/${cyc}/restart
+         mkdir -p ${WRDIR}
+         for wavGRD in $waveGRD ; do
+         # Copy wave IC for the next cycle
+           $NCP $DATA/${rPDY}.${rcyc}0000.restart.${wavGRD} ${WRDIR}
+         done
+       fi
+     fi
+    done
+    if [ $DOIAU = "YES" ] || [ $DOIAU_coldstart = "YES" ]; then
+      # if IAU is on, save restart at start of IAU window
+      rst_iau=$(( ${IAU_OFFSET} - (${IAU_DELTHRS}/2) ))
+      if [ $rst_iau -lt 0 ];then
+         rst_iau=$(( (${IAU_DELTHRS}) - ${IAU_OFFSET} ))
+      fi
+      RDATE=$($NDATE +$rst_iau $CDATE)
+      rPDY=$(echo $RDATE | cut -c1-8)
+      rcyc=$(echo $RDATE | cut -c9-10)
+      for file in $(ls ${rPDY}.${rcyc}0000.*) ; do
+         $NCP $file $memdir/RESTART/$file
+      done
+      if [ $cplwav = ".true." ]; then
+        WRDIR=$COMOUTWW3/${COMPONENTRSTwave}.${PDY}/${cyc}/restart/
+        mkdir -p ${WRDIR}
+        for wavGRD in $waveGRD ; do
+        # Copy wave IC for the next cycle
+           $NCP $DATA/${rPDY}.${rcyc}0000.restart.${wavGRD} ${WRDIR}
+        done
+      fi
     fi
 
   fi

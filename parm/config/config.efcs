@@ -54,8 +54,10 @@ fi
 export restart_interval=${restart_interval:-6}
 
 # For IAU, write restarts at beginning of window also
-if [ $DOIAU_ENKF = "YES" ]; then export restart_interval="6 -1"; fi
-
+if [ $DOIAU_ENKF = "YES" ]; then
+    export restart_interval="6 -1"
+    if [[ "$SDATE" = "$CDATE" ]]; then export restart_interval="3 -1"; fi
+fi
 
 export OUTPUT_FILETYPES="$OUTPUT_FILE"
 if [[ "$OUTPUT_FILE" == "netcdf" ]]; then
@@ -81,5 +83,8 @@ if [[ "$OUTPUT_FILE" == "netcdf" ]]; then
         fi
     fi
 fi
+
+# wave model
+export cplwav=.false.
 
 echo "END: config.efcs"

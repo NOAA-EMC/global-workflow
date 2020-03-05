@@ -38,7 +38,7 @@ elif [ $machine = "hera" ]; then
     FIX_DIR="/scratch1/NCEPDEV/global/glopara/fix"
 fi
 cd ${pwd}/../fix                ||exit 8
-for dir in fix_am fix_fv3 fix_gldas fix_orog fix_fv3_gmted2010 fix_verif ; do
+for dir in fix_am fix_chem fix_fv3 fix_fv3_gmted2010 fix_gldas fix_orog fix_sfc_climo fix_verif fix_wave_gfs ; do
     [[ -d $dir ]] && rm -rf $dir
 done
 $LINK $FIX_DIR/* .
@@ -183,6 +183,12 @@ cd ${pwd}/../ush                ||exit 8
 cd $pwd/../exec
 [[ -s global_fv3gfs.x ]] && rm -f global_fv3gfs.x
 $LINK ../sorc/fv3gfs.fd/NEMS/exe/global_fv3gfs.x .
+if [ -d ../sorc/fv3gfs.fd/WW3/exec ]; then # Wave execs
+  for waveexe in ww3_gint ww3_grib ww3_grid ww3_multi ww3_ounf ww3_ounp ww3_outf ww3_outp ww3_prep ww3_prnc; do
+    [[ -s $waveexe ]] && rm -f $waveexe
+    $LINK ../sorc/fv3gfs.fd/WW3/exec/$waveexe .
+  done
+fi
 
 [[ -s gfs_ncep_post ]] && rm -f gfs_ncep_post
 $LINK ../sorc/gfs_post.fd/exec/ncep_post gfs_ncep_post
@@ -259,7 +265,6 @@ cd ${pwd}/../sorc   ||   exit 8
         $SLINK gfs_wafs.fd/sorc/wafs_makewafs.fd                                                wafs_makewafs.fd
         $SLINK gfs_wafs.fd/sorc/wafs_setmissing.fd                                              wafs_setmissing.fd
     fi
-
 
     for prog in gdas2gldas.fd  gldas2gdas.fd  gldas_forcing.fd  gldas_model.fd  gldas_post.fd  gldas_rst.fd ;do
         $SLINK gldas.fd/sorc/$prog                                                     $prog

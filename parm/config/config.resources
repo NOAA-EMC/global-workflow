@@ -10,6 +10,8 @@ if [ $# -ne 1 ]; then
     echo "argument can be any one of the following:"
     echo "anal gldas fcst post vrfy metp arch"
     echo "eobs eomg eupd ecen esfc efcs epos earc"
+    echo "waveinit waveprep wavepostsbs wavegempaksbs waveawipssbs"
+    echo "wavepost waveawips wavestat"
     echo "postsnd awips gempak"
     exit 1
 
@@ -36,12 +38,80 @@ if [ $step = "prep" -o $step = "prepbufr" ]; then
     eval "export npe_node_$step=4"
     eval "export nth_$step=1"
 
+elif [ $step = "waveinit" ]; then
+
+    export wtime_waveinit="00:10:00"
+    export npe_waveinit=10
+    export nth_waveinit=1
+    export npe_node_waveinit=$(echo "$npe_node_max / $nth_waveinit" | bc)
+    export NTASKS=${npe_waveinit}
+
+elif [ $step = "waveprep" ]; then
+
+    export wtime_waveprep="00:30:00"
+    export npe_waveprep=115
+    export nth_waveprep=1
+    export npe_node_waveprep=$(echo "$npe_node_max / $nth_waveprep" | bc)
+    export NTASKS=${npe_waveprep}
+
+elif [ $step = "wavepostsbs" ]; then
+
+    export wtime_wavepostsbs="06:00:00"
+    export npe_wavepostsbs=280
+    export nth_wavepostsbs=1
+    export npe_node_wavepostsbs=$(echo "$npe_node_max / $nth_wavepostsbs" | bc)
+    export NTASKS=${npe_wavepostsbs}
+
+elif [ $step = "wavegempaksbs" ]; then
+
+    export wtime_wavegempaksbs="06:00:00"
+    export npe_wavegempaksbs=$npe_node_max
+    export nth_wavegempaksbs=1
+    export npe_node_wavegempaksbs=$(echo "$npe_node_max / $nth_wavegempaksbs" | bc)
+    export NTASKS=${npe_wavegempaksbs}
+
+elif [ $step = "waveawipssbs" ]; then
+
+    export wtime_waveawipssbs="08:00:00"
+    export npe_waveawipssbs=$npe_node_max
+    export nth_waveawipssbs=1
+    export npe_node_waveawipssbs=$(echo "$npe_node_max / $nth_waveawipssbs" | bc)
+    export NTASKS=${npe_waveawipssbs}
+
+elif [ $step = "wavepost" ]; then
+
+    export wtime_wavepost="01:00:00"
+    export npe_wavepost=560
+    export nth_wavepost=1
+    export npe_node_wavepost=$(echo "$npe_node_max / $nth_wavepost" | bc)
+    export NTASKS=${npe_wavepost}
+
+elif [ $step = "waveawips" ]; then
+
+    export wtime_waveawips="06:00:00"
+    export npe_waveawips=$npe_node_max
+    export nth_waveawips=1
+    export npe_node_waveawips=$(echo "$npe_node_max / $nth_waveawips" | bc)
+    export NTASKS=${npe_waveawips}
+
+elif [ $step = "wavestat" ]; then
+
+    export wtime_wavestat="01:00:00"
+    export npe_wavestat=$npe_node_max
+    export nth_wavestat=1
+    export npe_node_wavestat=$(echo "$npe_node_max / $nth_wavestat" | bc)
+    export NTASKS=${npe_wavestats}
+
 elif [ $step = "anal" ]; then
 
     export wtime_anal="02:00:00"
     export npe_anal=800
-    if [ $CASE = "C384" -o $CASE = "C192" -o $CASE = "C96" -o $CASE = "C48" ]; then export npe_anal=84; fi
     export nth_anal=4  
+    if [ $CASE = "C384" ]; then
+      export npe_anal=160
+      export nth_anal=10
+    fi
+    if [ $CASE = "C192" -o $CASE = "C96" -o $CASE = "C48" ]; then export npe_anal=84; fi
     if [[ "$machine" = "WCOSS_DELL_P3" ]]; then export nth_anal=7; fi
     export npe_node_anal=$(echo "$npe_node_max / $nth_anal" | bc)
     export nth_cycle=$npe_node_max
@@ -62,11 +132,11 @@ elif [ $step = "gldas" ]; then
 elif [ $step = "fcst" ]; then
 
     export wtime_fcst="01:00:00"
-    export wtime_fcst_gfs="8:00:00"
+    export wtime_fcst_gfs="08:00:00"
     export npe_fcst=$(echo "$layout_x * $layout_y * 6" | bc)
     export npe_fcst_gfs=$(echo "$layout_x_gfs * $layout_y_gfs * 6" | bc)
     export nth_fcst=${nth_fv3:-2}
-    export npe_node_fcst=${npe_node_fcst:-12}
+    export npe_node_fcst=$(echo "$npe_node_max / $nth_fcst" | bc)
     if [[ "$machine" == "WCOSS_C" ]]; then export memory_fcst="1024M"; fi
 
 elif [ $step = "post" ]; then
@@ -120,6 +190,7 @@ elif [ $step = "arch" -o $step = "earc" -o $step = "getic" ]; then
 
 elif [ $step = "eobs" -o $step = "eomg" ]; then
 
+
     export wtime_eobs="00:30:00"
     export wtime_eomg="01:00:00"
     if [ $CASE = "C768" ]; then
@@ -146,8 +217,15 @@ elif [ $step = "eupd" ]; then
         export nth_eupd=9
       fi
     elif [ $CASE = "C384" ]; then
-      export npe_eupd=84
+      export npe_eupd=270
       export nth_eupd=2
+      if [[ "$machine" = "WCOSS_DELL_P3" ]]; then
+        export nth_eupd=9
+      fi
+      if [[ "$machine" = "HERA" ]]; then
+        export npe_eupd=84
+        export nth_eupd=10
+      fi
     elif [ $CASE = "C192" -o $CASE = "C96" -o $CASE = "C48" ]; then
       export npe_eupd=42
       export nth_eupd=2
@@ -181,7 +259,7 @@ elif [ $step = "efcs" ]; then
 
     export wtime_efcs="03:00:00"
     export npe_efcs=$(echo "$layout_x * $layout_y * 6" | bc)
-    export nth_efcs=${nth_fv3:-2}
+    export nth_efcs=${nth_efcs:-2}
     export npe_node_efcs=$(echo "$npe_node_max / $nth_efcs" | bc)
     if [[ "$machine" == "WCOSS_C" ]]; then export memory_efcs="254M"; fi
 
@@ -197,6 +275,7 @@ elif [ $step = "epos" ]; then
 elif [ $step = "postsnd" ]; then
 
     export wtime_postsnd="02:00:00"
+    export nth_postsnd=1
     export npe_postsnd=40
 	export nth_postsnd=1
     export npe_node_postsnd=4

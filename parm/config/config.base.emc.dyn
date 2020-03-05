@@ -192,6 +192,9 @@ export FHMIN=0
 export FHMAX=9
 export FHOUT=3
 
+# Cycle to run EnKF  (set to BOTH for both gfs and gdas)
+export EUPD_CYC="gdas"
+
 # GFS cycle info
 export gfs_cyc=@gfs_cyc@ # 0: no GFS cycle, 1: 00Z only, 2: 00Z and 12Z only, 4: all 4 cycles.
 
@@ -231,20 +234,26 @@ fi
 # IAU related parameters
 export DOIAU="YES"        # Enable 4DIAU for control with 3 increments
 export IAUFHRS="3,6,9"
+export IAU_FHROT=`echo $IAUFHRS | cut -c1`
 export IAU_DELTHRS=6
 export IAU_OFFSET=6
 export DOIAU_ENKF="YES"   # Enable 4DIAU for EnKF ensemble
 export IAUFHRS_ENKF="3,6,9"
-if [[ "$SDATE" = "$CDATE" ]]; then export IAU_OFFSET=0 ;fi
+export IAU_DELTHRS_ENKF=6
+if [[ "$SDATE" = "$CDATE" ]]; then
+  export IAU_OFFSET=0
+  export IAU_FHROT=0
+fi
 
 # Use Jacobians in eupd and thereby remove need to run eomg
 export lobsdiag_forenkf=".true."
-
 
 # run GLDAS to spin up land ICs
 export DO_GLDAS=YES
 export gldas_cyc=00
 
+# run wave component
+export DO_WAVE=YES
 
 # Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL
 export imp_physics=11
