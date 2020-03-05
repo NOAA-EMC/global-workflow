@@ -58,12 +58,12 @@ export pgmout=OUTPUT.$$
 export MP_PULSE=0
 
 # Path to HOME Directory
-export CODEwave=${CODEwave:-${HOMEfv3gfs}/WW3/model}
+export CODEwave=${CODEwave:-${HOMEfv3gfs}/WW3}
 export EXECwave=${EXECwave:-$HOMEwave/exec}
 export FIXwave=${FIXwave:-$HOMEwave/fix/fix_wave_${NET}}
 export PARMwave=${PARMwave:-$HOMEwave/parm/wave}
 export USHwave=${USHwave:-$HOMEwave/ush}
-export EXECcode=${EXECcode:-$CODEwave/exe}
+export EXECcode=${EXECcode:-$CODEwave/exec}
 
 # Set COM Paths and GETGES environment
 export COMINwave=${COMINwave:-${ROTDIR:?}}
