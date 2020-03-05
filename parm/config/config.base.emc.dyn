@@ -303,6 +303,8 @@ export INCVARS_EFOLD="5"
 export netcdf_diag=".true."
 export binary_diag=".false."
 
+# Verification options
+export DO_METP="YES"                  # Run MET+ jobs
 
 # Archiving options
 export HPSSARCH="NO"         # save data to HPSS archive

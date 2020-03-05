@@ -42,10 +42,11 @@ def main():
         print 'input arg:     --expdir = %s' % repr(args.expdir)
         sys.exit(1)
 
-    gfs_steps = ['prep', 'anal', 'gldas', 'fcst', 'postsnd', 'post', 'vrfy', 'metp', 'arch']
+    gfs_steps = ['prep', 'anal', 'gldas', 'fcst', 'postsnd', 'post', 'vrfy', 'arch']
     gfs_steps_gempak = ['gempak']
     gfs_steps_awips = ['awips']
     #hyb_steps = ['eobs', 'eomg', 'eupd', 'ecen', 'efcs', 'epos', 'earc']
+    metp_steps = ['metp']
     wav_steps = ['waveinit', 'waveprep', 'wavepostsbs']
     #Implement additional wave jobs at later date
     #wav_steps = ['waveinit', 'waveprep', 'wavepostsbs', 'wavepost', 'wavestat']
@@ -56,6 +57,7 @@ def main():
     hyb_steps = ['eobs', 'eomg', 'eupd', 'ecen', 'esfc', 'efcs', 'epos', 'earc']
 
     steps = gfs_steps + hyb_steps if _base.get('DOHYBVAR', 'NO') == 'YES' else gfs_steps
+    steps = steps + metp_steps if _base.get('DO_METP', 'NO') == 'YES' else steps
     steps = steps + gfs_steps_gempak if _base.get('DO_GEMPAK', 'NO') == 'YES' else steps
     steps = steps + gfs_steps_awips if _base.get('DO_AWIPS', 'NO') == 'YES' else steps
     steps = steps + wav_steps if _base.get('DO_WAVE', 'NO') == 'YES' else steps
@@ -231,6 +233,7 @@ def get_gdasgfs_resources(dict_configs, cdump='gdas'):
     do_bufrsnd = base.get('DO_BUFRSND', 'NO').upper()
     do_gempak = base.get('DO_GEMPAK', 'NO').upper()
     do_awips = base.get('DO_AWIPS', 'NO').upper()
+    do_metp = base.get('DO_METP', 'NO').upper()
     do_gldas = base.get('DO_GLDAS', 'NO').upper()
     do_wave = base.get('DO_WAVE', 'NO').upper()
     reservation = base.get('RESERVATION', 'NONE').upper()
@@ -244,7 +247,7 @@ def get_gdasgfs_resources(dict_configs, cdump='gdas'):
         #tasks += ['waveinit', 'waveprep', 'wavepostsbs', 'wavepost', 'wavestat']
         tasks += ['waveinit', 'waveprep', 'wavepostsbs']
 
-    tasks += ['fcst', 'post', 'vrfy', 'metp', 'arch']
+    tasks += ['fcst', 'post', 'vrfy', 'arch']
 
     if cdump in ['gfs'] and do_wave in ['Y', 'YES']:
         #tasks += ['waveinit', 'waveprep', 'wavepostsbs', 'wavepost', 'wavestat']
@@ -257,6 +260,8 @@ def get_gdasgfs_resources(dict_configs, cdump='gdas'):
     #    tasks += ['wavegempaksbs']
     if cdump in ['gfs'] and do_awips in ['Y', 'YES']:
         tasks += ['awips']
+    if cdump in ['gfs'] and do_metp in ['Y', 'YES']:
+        tasks += ['metp']
     #if cdump in ['gfs'] and do_wave in ['Y', 'YES'] and do_awips in ['Y', 'YES']:
     #    tasks += ['waveawipssbs', 'waveawips']
  
@@ -381,6 +386,7 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
     do_bufrsnd = base.get('DO_BUFRSND', 'NO').upper()
     do_gempak = base.get('DO_GEMPAK', 'NO').upper()
     do_awips = base.get('DO_AWIPS', 'NO').upper()
+    do_metp = base.get('DO_METP', 'NO').upper()
     do_gldas = base.get('DO_GLDAS', 'NO').upper()
     do_wave = base.get('DO_WAVE', 'NO').upper()
     dumpsuffix = base.get('DUMP_SUFFIX', '')
@@ -593,7 +599,7 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
     dict_tasks['%svrfy' % cdump] = task
 
     # metp
-    if cdump in ['gfs']:
+    if cdump in ['gfs'] and do_metp in ['Y', 'YES']:
         deps = []
         dep_dict = {'type':'metatask', 'name':'%spost' % cdump}
         deps.append(rocoto.add_dependency(dep_dict))
