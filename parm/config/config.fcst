@@ -199,6 +199,9 @@ if [[ "$CDUMP" == "gdas" ]] ; then # GDAS cycle specific parameters
     # Choose coupling with wave
     if [ $DO_WAVE = YES ]; then export cplwav=.true.; fi
 
+    # Turn on dry mass adjustment in GDAS
+    export adjust_dry_mass=".true."
+
 elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
 
     # Write more variables to output
@@ -213,6 +216,10 @@ elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
 
     # Choose coupling with wave
     if [ $DO_WAVE = YES ]; then export cplwav=.true.; fi
+
+    # Turn off dry mass adjustment in GFS
+    export adjust_dry_mass=".false."
+
 fi
 
 

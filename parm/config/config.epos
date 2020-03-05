@@ -16,4 +16,7 @@ if [ $l4densvar = ".false." ]; then
     export NEPOSGRP=3
 fi
 
+# Generate ensemble spread files
+export ENKF_SPREAD="YES"
+
 echo "END: config.epos"

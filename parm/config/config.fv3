@@ -43,7 +43,6 @@ case $case_in in
         export layout_y_gfs=4
         export npe_wav=70
         export nth_fv3=1
-        export nth_efcs=1
         export cdmbgwd="0.071,2.1,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=1
         export WRTTASK_PER_GROUP=$npe_node_max
@@ -59,7 +58,6 @@ case $case_in in
         export layout_y_gfs=4
         export npe_wav=70
         export nth_fv3=1
-        export nth_efcs=1
         export cdmbgwd="0.14,1.8,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=1
         export WRTTASK_PER_GROUP=$npe_node_max
@@ -75,7 +73,6 @@ case $case_in in
         export layout_y_gfs=6
         export npe_wav=70
         export nth_fv3=2
-        export nth_efcs=1
         export cdmbgwd="0.23,1.5,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=1
         export WRTTASK_PER_GROUP=$npe_node_max
@@ -90,8 +87,7 @@ case $case_in in
         export layout_x_gfs=6
         export layout_y_gfs=6
         export npe_wav=270
-        export nth_fv3=4
-        export nth_efcs=1
+        export nth_fv3=1
         export cdmbgwd="1.1,0.72,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=1
         export WRTTASK_PER_GROUP=$npe_node_max
@@ -107,7 +103,6 @@ case $case_in in
         export layout_y_gfs=12
         export npe_wav=270
         export nth_fv3=4
-        export nth_efcs=1
         export cdmbgwd="4.0,0.15,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=2
         export WRTTASK_PER_GROUP=$(echo "2*$npe_node_max" |bc)
@@ -123,7 +118,6 @@ case $case_in in
         export layout_y_gfs=16
         export npe_wav=270
         export nth_fv3=4
-        export nth_efcs=1
         export cdmbgwd="4.0,0.10,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=4
         export WRTTASK_PER_GROUP=$(echo "2*$npe_node_max" |bc)
@@ -139,7 +133,6 @@ case $case_in in
         export layout_y_gfs=32
         export npe_wav=270
         export nth_fv3=4
-        export nth_efcs=1
         export cdmbgwd="4.0,0.05,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=4
         export WRTTASK_PER_GROUP=$(echo "3*$npe_node_max" |bc)

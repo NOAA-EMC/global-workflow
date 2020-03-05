@@ -15,7 +15,7 @@ fi
 if [[ "$CDUMP" = "gfs" ]] ; then
     export USE_RADSTAT="NO" # This can be only used when bias correction is not-zero.
     export GENDIAG="NO"
-    export SETUP='diag_rad=.false.,diag_pcp=.false.,diag_conv=.false.,diag_ozone=.false.,write_diag(3)=.false.,'
+    export SETUP='diag_rad=.false.,diag_pcp=.false.,diag_conv=.false.,diag_ozone=.false.,write_diag(3)=.false.,niter(2)=100,'
     export DIAG_TARBALL="NO"
 fi
 
