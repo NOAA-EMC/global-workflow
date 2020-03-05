@@ -253,6 +253,8 @@ export nst_anl=.true.
 # Analysis increments to zero in CALCINCEXEC
 export INCREMENTS_TO_ZERO="'delz_inc','clwmr_inc','icmr_inc'"
 
+# Verification options
+export DO_METP="YES"                  # Run MET+ jobs
 
 # Archiving options
 export HPSSARCH="NO"         # save data to HPSS archive

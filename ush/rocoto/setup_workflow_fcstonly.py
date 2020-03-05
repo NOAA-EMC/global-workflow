@@ -224,6 +224,9 @@ def get_workflow(dict_configs, cdump='gdas'):
     envars.append(rocoto.create_envar(name='PDY', value='<cyclestr>@Y@m@d</cyclestr>'))
     envars.append(rocoto.create_envar(name='cyc', value='<cyclestr>@H</cyclestr>'))
 
+    base = dict_configs['base']
+    do_metp = base.get('DO_METP', 'NO').upper()
+
     tasks = []
 
     # getics
@@ -322,20 +325,21 @@ def get_workflow(dict_configs, cdump='gdas'):
     tasks.append('\n')
 
     # metp
-    deps = []
-    dep_dict = {'type':'metatask', 'name':'%spost' % cdump}
-    deps.append(rocoto.add_dependency(dep_dict))
-    dep_dict = {'type':'task', 'name':'%sarch' % cdump, 'offset':'-&INTERVAL;'}
-    deps.append(rocoto.add_dependency(dep_dict))
-    dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
-    metpcase = rocoto.create_envar(name='METPCASE', value='#metpcase#')
-    metpenvars = envars + [metpcase]
-    varname1 = 'metpcase'
-    varval1 = 'g2g1 g2o1 pcp1' 
-    task = wfu.create_wf_task('metp', cdump=cdump, envar=metpenvars, dependency=dependencies,
+    if do_metp in ['Y', 'YES']:
+        deps = []
+        dep_dict = {'type':'metatask', 'name':'%spost' % cdump}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type':'task', 'name':'%sarch' % cdump, 'offset':'-&INTERVAL;'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+        metpcase = rocoto.create_envar(name='METPCASE', value='#metpcase#')
+        metpenvars = envars + [metpcase]
+        varname1 = 'metpcase'
+        varval1 = 'g2g1 g2o1 pcp1'
+        task = wfu.create_wf_task('metp', cdump=cdump, envar=metpenvars, dependency=dependencies,
                               metatask='metp', varname=varname1, varval=varval1)
-    tasks.append(task)
-    tasks.append('\n')
+        tasks.append(task)
+        tasks.append('\n')
 
     # arch
     deps = []
