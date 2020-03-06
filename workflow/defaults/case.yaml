@@ -3,13 +3,6 @@
 # of the case files, default files, platform file, and everywhere
 # else, and applies any validation from the schema/ directory.
 
-fv3_settings: !Immediate
-  - !MergeMapping
-    - CDUMP: gfs
-      Template: *fv3_settings_template
-    - !calc doc.fv3_defaults
-    - !calc doc.case.get('fv3_settings',{})
-
 ocn_settings: !Immediate
   - !MergeMapping
     - CDUMP: gfs
@@ -32,7 +25,6 @@ schedvar: !Immediate
 
 fv3_gfs_settings: !Immediate
   - !MergeMapping
-    - !calc doc.fv3_settings
     - CDUMP: gfs
       Template: *fv3_settings_template
     - !calc doc.fv3_gfs_defaults
@@ -41,32 +33,31 @@ fv3_gfs_settings: !Immediate
 
 fv3_enkf_settings: !Immediate
   - !MergeMapping
-    - !calc doc.fv3_settings
-    - !calc doc.fv3_enkf_defaults
     - CDUMP: gdas
       Template: *fv3_settings_template
+    - !calc doc.fv3_enkf_defaults
     - !calc doc.case.get('fv3_enkf_settings',{})
     - !calc doc.get('user_fv3_enkf_settings',{})
 
 fv3_gdas_settings: !Immediate
   - !MergeMapping
-    - !calc doc.fv3_settings
     - CDUMP: gdas
       Template: *fv3_settings_template
     - !calc doc.fv3_gdas_defaults
     - !calc doc.case.get('fv3_gdas_settings',{})
-    - !calc doc.get('user_fv3_gfs_settings',{})
+    - !calc doc.get('user_fv3_gdas_settings',{})
 
-gfs_output_settings: !Immediate
+output_settings: !Immediate
   - !MergeMapping
-    - !calc doc.gfs_output_settings_defaults
-    - { Template: *gfs_output_settings_template }
-    - !calc doc.case.get('gfs_output_settings',{})
-    - !calc doc.get('user_gfs_output_settings',{})
+    - Template: *output_settings_template
+    - !calc doc.output_settings_defaults
+    - !calc doc.case.get('output_settings',{})
+    - !calc doc.get('user_output_settings',{})
 
 data_assimilation: !Immediate
   - !MergeMapping
     - { Template: *data_assimilation_template }
+    - !calc doc.data_assimilation_defaults
     - !calc doc.case.get('data_assimilation',{})
     - !calc doc.get('user_data_assimilation',{})
   
@@ -101,6 +92,7 @@ places: !Immediate
 nsst: !Immediate
   - !MergeMapping
     - Template: *nsst_schema
+    - !calc doc.nsst_defaults
     - !calc doc.case.get('nsst',{})
     - !calc doc.get('user_nsst',{})
   
@@ -119,6 +111,7 @@ settings: !Immediate
 archiving: !Immediate
   - !MergeMapping
     - Template: *archive_settings_template
+    - !calc doc.archiving_defaults
     - !calc doc.case.get('archiving',{})
     - !calc doc.get('user_archiving',{})
   
@@ -129,11 +122,10 @@ suite_overrides: !Immediate
     - !calc doc.get('user_suite_overrides',[])
 
 validate_me: 
-  - fv3_settings
   - fv3_gfs_settings
   - fv3_enkf_settings
   - fv3_gdas_settings
-  - gfs_output_settings
+  - output_settings
   - data_assimilation
   - post
   - downstream
