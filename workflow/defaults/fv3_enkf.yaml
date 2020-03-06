@@ -50,8 +50,6 @@ fv3_enkf_defaults: &fv3_enkf_defaults
   n_split: 12
 
   RUN_EFCSGRP: NO
-  ncld: 1
-  nwat: 2
   zhao_mic: YES
   nh_type: 'nh'
   USE_COUPLER_RES: NO
