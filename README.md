@@ -18,12 +18,12 @@ The global-workflow current supports the following machines:
 
 ### 1. Check out components
 
-The global-workflow uses the manage_externals utility to handle checking out its components. The manic-v1.1.8 manage_externals tag is supported.
+The global-workflow uses the manage_externals utility to handle checking out its components. The manic-v1.1.8 manage_externals tag is supported. The manage_externals utility will be replacing the current checkout.sh script.
 
 Run manage_externals (checkout_externals) while at top of clone:
 
 ```
-$ checkout_externals
+$ checkout_externals -e Externals.cfg
 ```
 
 If checkout_externals is not in your $PATH then use full path to it:
