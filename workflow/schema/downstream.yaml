@@ -68,7 +68,6 @@ downstream_schema: &downstream_schema !Template
     description: "Run FAX"
   DO_WAFS:
     type: bool
-    default: NO
     description: "Run WAFS"
   DO_BULLETINS:
     type: bool

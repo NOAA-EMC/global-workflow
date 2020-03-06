@@ -19,19 +19,15 @@ places_schema: &places_schema !Template
 #  SHORT_TERM_TEMP: { type: string }
 #  LONG_TERM_TEMP: { type: string }
 
-  HOMEDIR:
-    type: string
-    default: !FirstTrue
-      - when: !calc doc.platform.get('SAVE_DIR','')
-        do: !calc doc.platform.SAVE_DIR
-      - otherwise: !expand "{doc.places.EXPROOT}/save/{tools.env('USER')}"
+#  HOMEDIR:
+#    type: string
+#    default: !FirstTrue
+#      - when: !calc doc.platform.get('SAVE_DIR','')
+#        do: !calc doc.platform.SAVE_DIR
+#      - otherwise: !expand "{doc.places.EXPROOT}/save/{tools.env('USER')}"
 
   NOSCRUB:
     type: string
-    default: !FirstTrue
-      - when: !calc doc.platform.get('NOSCRUB_DIR','')
-        do: !calc doc.platform.NOSCRUB_DIR
-      - otherwise: !expand "{doc.places.EXPROOT}/noscrub/{tools.env('USER')}"
     description: "Disk area used to store reduced output, verification statistics, and other small files that may be desired between runs.  The workflow will not scrub this."
 
   FIXgsi: { type: string, optional: true }
@@ -40,28 +36,16 @@ places_schema: &places_schema !Template
   HOMEobsproc_prep:
     type: string
     optional: true
-    default: !expand "{doc.platform.BASE_GIT}/obsproc/obsproc_prep_RB-5.2.0"
   HOMEobsproc_network:
     type: string
     optional: true
-    default: !expand "{doc.platform.BASE_GIT}/obsproc/obsproc_global_RB-3.2.0"
   BASE_VERIF: { type: string, optional: true }
   BASE_SVN:
     type: string
-    default: !calc doc.platform.BASE_SVN
   BASE_GIT:
     type: string
-    default: !calc doc.platform.BASE_GIT
 
   ics_from:
     type: string
-    default: opsgfs
     allowed: [ opsgfs, pargfs ]
     description: initial conditions from opsgfs or pargfs
-    if_present: !Template
-      parexp: 
-        type: string
-        default: prnemsrn
-      HPSS_PAR_PATH:
-        type: string
-        default: !expand "/5year/NCEPDEV/emc-global/emc.glopara/WCOSS_C/{parexp}"
