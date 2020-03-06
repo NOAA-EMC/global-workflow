@@ -285,24 +285,6 @@ if [ $target = wcoss -o $target = wcoss_cray -o $target = wcoss_dell_p3 ]; then
 fi
 
 #------------------------------------
-# build prod_util
-#------------------------------------
-$Build_prod_util && {
-echo " .... prod_util build not currently supported .... "
-#echo " .... Building prod_util .... "
-#./build_prod_util.sh > $logs_dir/build_prod_util.log 2>&1
-}
-
-#------------------------------------
-# build grib_util
-#------------------------------------
-$Build_grib_util && {
-echo " .... grib_util build not currently supported .... "
-#echo " .... Building grib_util .... "
-#./build_grib_util.sh > $logs_dir/build_grib_util.log 2>&1
-}
-
-#------------------------------------
 # Exception Handling
 #------------------------------------
 [[ $err -ne 0 ]] && echo "FATAL BUILD ERROR: Please check the log file for detail, ABORT!"
