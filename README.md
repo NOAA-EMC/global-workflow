@@ -18,7 +18,7 @@ The global-workflow current supports the following machines:
 
 ### 1. Check out components
 
-The global-workflow uses the manage_externals utility to handle checking out its components. The manic-v1.1.7 manage_externals tag is supported.
+The global-workflow uses the manage_externals utility to handle checking out its components. The manic-v1.1.8 manage_externals tag is supported.
 
 Run manage_externals (checkout_externals) while at top of clone:
 
@@ -28,9 +28,9 @@ $ checkout_externals
 
 If checkout_externals is not in your $PATH then use full path to it:
 
-* WCOSS-Dell: /gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/manage_externals/manic-v1.1.7/checkout_externals
-* WCOSS-Cray: /gpfs/hps3/emc/global/noscrub/emc.glopara/git/manage_externals/manic-v1.1.7/checkout_externals
-* Hera: /scratch1/NCEPDEV/global/glopara/git/manage_externals/manic-v1.1.7/checkout_externals
+* WCOSS-Dell: /gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/manage_externals/manic-v1.1.8/checkout_externals
+* WCOSS-Cray: /gpfs/hps3/emc/global/noscrub/emc.glopara/git/manage_externals/manic-v1.1.8/checkout_externals
+* Hera: /scratch1/NCEPDEV/global/glopara/git/manage_externals/manic-v1.1.8/checkout_externals
 
 ### 2. Build components
 
