@@ -29,6 +29,9 @@ case:
     LEVS: 65
     DELTIM: 450
     nst_anl: no
+    DO_SKEB: true
+    DO_SHUM: false
+    DO_SPPT: true
     layout:
        x: 6
        y: 8

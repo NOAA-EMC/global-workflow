@@ -36,19 +36,19 @@ config_efcs:
     export NMEM_EFCSGRP={doc.data_assimilation.NMEM_EFCSGRP}
     export RERUN_EFCSGRP="{tools.YES_NO(doc.data_assimilation.RERUN_EFCSGRP)}"
     
-    # Stochastic physics parameters (only for ensemble forecasts)
-    export DO_SKEB="{tools.YES_NO(doc.fv3_enkf_settings.DO_SKEB)}"
+    # Stochastic physics parameters
+    export DO_SKEB="{tools.fort(doc.fv3_enkf_settings.DO_SKEB)}"
     export SKEB={doc.fv3_enkf_settings.SKEB}
     export SKEB_TAU={doc.fv3_enkf_settings.SKEB_TAU}
     export SKEB_LSCALE={doc.fv3_enkf_settings.SKEB_LSCALE}
     export SKEBNORM={doc.fv3_enkf_settings.SKEBNORM}
     export SKEB_NPASS={doc.fv3_enkf_settings.SKEB_NPASS}
     export SKEB_VDOF={doc.fv3_enkf_settings.SKEB_VDOF}
-    export DO_SHUM="{tools.YES_NO(doc.fv3_enkf_settings.DO_SHUM)}"
+    export DO_SHUM="{tools.fort(doc.fv3_enkf_settings.DO_SHUM)}"
     export SHUM={doc.fv3_enkf_settings.SHUM}
     export SHUM_TAU={doc.fv3_enkf_settings.SHUM_TAU}
     export SHUM_LSCALE={doc.fv3_enkf_settings.SHUM_LSCALE}
-    export DO_SPPT="{tools.YES_NO(doc.fv3_enkf_settings.DO_SPPT)}"
+    export DO_SPPT="{tools.fort(doc.fv3_enkf_settings.DO_SPPT)}"
     export SPPT={doc.fv3_enkf_settings.SPPT}
     export SPPT_TAU={doc.fv3_enkf_settings.SPPT_TAU}
     export SPPT_LSCALE={doc.fv3_enkf_settings.SPPT_LSCALE}

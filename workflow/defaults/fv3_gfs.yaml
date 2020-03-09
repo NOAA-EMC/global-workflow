@@ -17,9 +17,10 @@ fv3_gfs_defaults: &fv3_gfs_defaults
   dddmp: 0.2
   ISEED: 0
   SET_STP_SEED: YES
-  DO_SHUM: NO
-  DO_SKEB: NO
-  DO_SPPT: NO
+  DO_SHUM: false
+  DO_SKEB: false
+  DO_SPPT: false
+
   RUN_EFCSGRP: NO
   zhao_mic: YES
   nh_type: 'nh'

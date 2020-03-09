@@ -104,6 +104,29 @@ config_fcst:
     {more_exports_for_microphys}
     {level_127}
 
+    # Stochastic physics parameters
+    export SEEDLET=1
+    export ISEED_SKEB=$((SDATE*1000 + SEEDLET*10 + 1))
+    export ISEED_SHUM=$((SDATE*1000 + SEEDLET*10 + 2))
+    export ISEED_SPPT=$((SDATE*1000 + SEEDLET*10 + 3))
+    export DO_SKEB="{tools.fort(doc.fv3_gfs_settings.DO_SKEB)}"
+    export DO_SHUM="{tools.fort(doc.fv3_gfs_settings.DO_SHUM)}"
+    export DO_SPPT="{tools.fort(doc.fv3_gfs_settings.DO_SPPT)}"
+
+    export skeb=0.6,-999,-999,-999,-999
+    export iseed_skeb=$ISEED_SKEB
+    export skeb_tau=2.16E4,1.728E5,2.592E6,7.776E6,3.1536E7
+    export skeb_lscale=500.E3,1000.E3,2000.E3,2000.E3,2000.E3
+    export skebnorm=1
+    
+    export sppt=0.8,0.4,0.2,0.08,0.04
+    export iseed_sppt=$ISEED_SPPT
+    export sppt_tau=2.16E4,2.592E5,2.592E6,7.776E6,3.1536E7
+    export sppt_lscale=500.E3,1000.E3,2000.E3,2000.E3,2000.E3
+    export sppt_logit=.TRUE.
+    export sppt_sfclimit=.true.
+    export use_zmtnblck=.true.
+
     #---------------------------------------------------------------------
     # Disable the use of coupler.res; get model start time from model_configure
     export USE_COUPLER_RES="NO"
