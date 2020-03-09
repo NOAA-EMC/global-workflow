@@ -10,7 +10,7 @@
 ## This script is a direct execution.
 #####
 
-Common_model_configure(){
+FV3_model_configure(){
 
 rm -f model_configure
 cat > model_configure <<EOF
@@ -29,7 +29,6 @@ ENS_SPS:                 ${ENS_SPS:-".false."}
 
 dt_atmos:                $DELTIM
 output_1st_tstep_rst:    .false.
-atm_coupling_interval_sec:      $DELTIM
 calendar:                ${calendar:-'julian'}
 cpl:                     ${cpl:-".false."}
 memuse_verbose:          ${memuse_verbose:-".false."}
@@ -41,12 +40,12 @@ restart_interval:        $restart_interval
 quilting:                $QUILTING
 write_groups:            ${WRITE_GROUP:-1}
 write_tasks_per_group:   ${WRTTASK_PER_GROUP:-24}
-output_history:          ${OUTPUT_HISTORY:-".true."}
-write_dopost:            ${WRITE_DOPOST:-".false."}
 num_files:               ${NUM_FILES:-2}
 filename_base:           'atm' 'sfc'
 output_grid:             $OUTPUT_GRID
 output_file:             $OUTPUT_FILE
+ideflate:                ${ideflate:-1}
+nbits:                   ${nbits:-14}
 write_nemsioflip:        $WRITE_NEMSIOFLIP
 write_fsyncflag:         $WRITE_FSYNCFLAG
 imo:                     $LONB_IMO
@@ -56,6 +55,16 @@ nfhout:                  $FHOUT
 nfhmax_hf:               $FHMAX_HF
 nfhout_hf:               $FHOUT_HF
 nsout:                   $NSOUT
+iau_offset:              ${IAU_OFFSET:-0}
 EOF
+
+if [ $cpl = .true. ]; then
+cat > model_configure <<EOF
+atm_coupling_interval_sec:      $DELTIM
+output_history:          ${OUTPUT_HISTORY:-".true."}
+write_dopost:            ${WRITE_DOPOST:-".false."}
+EOF
+fi
+
 echo "$(cat model_configure)"
 }

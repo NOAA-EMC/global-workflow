@@ -16,6 +16,21 @@ FV3_GEFS_postdet(){
 # soft link commands insert here
 }
 
+DATM_postdet(){
+######################################################################
+# 3.1 Link DATM  inputs (ie forcing files)                           #
+######################################################################
+
+#TODO: This should be some loop through CDATE-> CDATE+ FORECAST length 
+#and get input from either CFSR or GEFS or Whatever... 
+#Currently assumes you only need the month of DATM input for IC date
+
+# DATM forcing file name convention is ${DATM_FILENAME_BASE}.$YYYYMMDDHH.nc 
+echo "Link DATM forcing files"
+DATMINPUTDIR="/scratch2/NCEPDEV/marineda/DATM_INPUT/CFSR/${SYEAR}${SMONTH}"
+ln -sf ${DATMINPUTDIR}/${DATM_FILENAME_BASE}*.nc $DATA/DATM_INPUT/
+}
+
 FV3_GFS_postdet(){
 
 	echo "SUB ${FUNCNAME[0]}: $RERUN and $warm_start determined for $RUN"
@@ -180,6 +195,16 @@ EOF
 	    O3FORC=global_o3prdlos.f77
 	fi
 	H2OFORC=${H2OFORC:-"global_h2o_pltc.f77"}
+        ####
+        # copy CCN_ACTIVATE.BIN for Thompson microphysics
+        if [ $imp_physics -eq 8 ]; then
+        $NCP $FV3INP/CCN_ACTIVATE.BIN  CCN_ACTIVATE.BIN
+        ####
+        $NCP /scratch1/NCEPDEV/stmp2/Lin.Gan/RUNDIRS/gsdsuite-NEW/2019100900/gfs/fcst.383441/freezeH2O.dat  freezeH2O.dat
+        $NCP /scratch1/NCEPDEV/stmp2/Lin.Gan/RUNDIRS/gsdsuite-NEW/2019100900/gfs/fcst.383441/qr_acr_qg.dat  qr_acr_qg.dat
+        $NCP /scratch1/NCEPDEV/stmp2/Lin.Gan/RUNDIRS/gsdsuite-NEW/2019100900/gfs/fcst.383441/qr_acr_qs.dat  qr_acr_qs.dat
+        sleep 60
+        fi
 	$NLN $FIX_AM/${O3FORC}                         $DATA/global_o3prdlos.f77
 	$NLN $FIX_AM/${H2OFORC}                        $DATA/global_h2oprdlos.f77
 	$NLN $FIX_AM/global_solarconstant_noaa_an.txt  $DATA/solarconstant_noaa_an.txt
@@ -362,9 +387,9 @@ EOF
 	else
 	  ISEED=${ISEED:-0}
 	fi
-	DO_SKEB=${DO_SKEB:-"NO"}
-	DO_SPPT=${DO_SPPT:-"NO"}
-	DO_SHUM=${DO_SHUM:-"NO"}
+	DO_SKEB=${DO_SKEB:-".false."}
+	DO_SPPT=${DO_SPPT:-".false."}
+	DO_SHUM=${DO_SHUM:-".false."}
 	JCAP_STP=${JCAP_STP:-$JCAP_CASE}
 	LONB_STP=${LONB_STP:-$LONB_CASE}
 	LATB_STP=${LATB_STP:-$LATB_CASE}
@@ -413,6 +438,12 @@ FV3_GFS_nml(){
 	source $SCRIPTDIR/parsing_namelists_FV3.sh
 	FV3_namelists
 	echo SUB ${FUNCNAME[0]}: FV3 name lists and model configure file created
+}
+
+DATM_nml(){
+        source $SCRIPTDIR/parsing_namelists_DATM.sh
+        DATM_namelists
+        echo SUB ${FUNCNAME[0]}: DATM name lists and model configure file created
 }
 
 data_out_GFS()
@@ -581,37 +612,57 @@ MOM6_out()
 CICE_postdet()
 {
 	echo "SUB ${FUNCNAME[0]}: CICE after run type determination"
+
+        year=$(echo $CDATE|cut -c 1-4)
+        #BL2018
+        stepsperhr=$((3600/$DT_CICE))
+        #BL2018
+        nhours=$(${NHOUR} ${CDATE} ${SYEAR}010100)
+        istep0=$((nhours*stepsperhr))
+        npt=$((FHMAX*$stepsperhr))      # Need this in order for dump_last to work
+
+        histfreq_n=${histfreq_n:-6}
+        restart_interval=${restart_interval:-1296000}    # restart write interval in seconds, default 15 days
+        dumpfreq_n=$restart_interval                     # restart write interval in seconds
+
+        #BL2018
+        #dumpfreq='d'
+        #dumpfreq='s'
+        if [ -d $ROTDIR/../NEXT_IC ]; then
+          #continuing run "hot start" 
+          RUNTYPE='continue'
+          USE_RESTART_TIME='.true.'
+          restart_pond_lvl=${restart_pond_lvl:-".true."}
+        else
+          #using cold start IC
+          RUNTYPE='initial'
+          USE_RESTART_TIME='.false.'
+          restart_pond_lvl=${restart_pond_lvl:-".false."}
+        fi
+
+        dumpfreq_n=${dumpfreq_n:-"${restart_interval}"}
+        dumpfreq=${dumpfreq:-"s"} #  "s" or "d" or "m" for restarts at intervals of "seconds", "days" or "months"
+
+        iceres=${iceres:-"mx025"}
+        ice_grid_file=${ice_grid_file:-"grid_cice_NEMS_${iceres}.nc"}
+        ice_kmt_file=${ice_kmt_file:-"kmtu_cice_NEMS_${iceres}.nc"}
+
+        #TODO iceic name... this might need to be update? 
+        iceic="cice5_model.res_$CDATE.nc"
+
 	# Copy CICE5 IC - pre-generated from CFSv2
-        cp -p $ICSDIR/$CDATE/cice5_model_0.25.res_$CDATE.nc $DATA/cice5_model.res_$CDATE.nc
+        cp -p $ICSDIR/$CDATE/cice5_model_0.25.res_$CDATE.nc $DATA/$iceic
 	#cp -p $ICSDIR/$CDATE/cpc/cice5_model_0.25.res_$CDATE.nc ./cice5_model.res_$CDATE.nc
 
-        # Copy CICE5 fixed files, and namelists
-        cp -p $FIXcice/kmtu_cice_NEMS_mx025.nc $DATA/
-        cp -p $FIXcice/grid_cice_NEMS_mx025.nc $DATA/
+        echo "Link CICE fixed files"
+        ln -sf $FIXcice/${ice_grid_file} $DATA/
+        ln -sf $FIXcice/${ice_kmt_file} $DATA/
 
         # Copy grid_spec and mosaic files
         cp -pf $FIXgrid/$CASE/${CASE}_mosaic* $DATA/INPUT/
         cp -pf $FIXgrid/$CASE/grid_spec.nc $DATA/INPUT/
         cp -pf $FIXgrid/$CASE/ocean_mask.nc $DATA/INPUT/
         cp -pf $FIXgrid/$CASE/land_mask* $DATA/INPUT/
-
-	iceic=cice5_model.res_$CDATE.nc
-	year=$(echo $CDATE|cut -c 1-4)
-	#BL2018
-	stepsperhr=$((3600/$ICETIM))
-	#BL2018
-	nhours=$($NHOUR $CDATE ${year}010100)
-	steps=$((nhours*stepsperhr))
-	npt=$((FHMAX*$stepsperhr))      # Need this in order for dump_last to work
-
-	histfreq_n=${histfreq_n:-6}
-	restart_interval=${restart_interval:-1296000}    # restart write interval in seconds, default 15 days
-	dumpfreq_n=$restart_interval                     # restart write interval in seconds
-
-	#BL2018
-	#dumpfreq='d'
-	#dumpfreq='s'
-
 }
 
 CICE_nml()
@@ -683,3 +734,6 @@ GSD_out()
 	echo "SUB ${FUNCNAME[0]}: Copying output data for GSD"
 	# soft link commands insert here
 }
+
+
+
