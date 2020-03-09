@@ -138,7 +138,7 @@ fv3_gfs_defaults: &fv3_gfs_defaults
         "11":
            ncld: 5
            nwat: 6
-           FIELD_TABLE: "$HOMEgfs/parm/parm_fv3diag/field_table_gfdl_satmedmf"
+           FIELD_TABLE: "$HOMEgfs/parm/parm_fv3diag/field_table_gfdl"
            dnats: 1
            cal_pre: false
            do_sat_adjust: true
