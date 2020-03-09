@@ -21,6 +21,18 @@ default_places: &default_places
 #  SHORT_TERM_TEMP: !error GOT HERE
 #  LONG_TERM_TEMP:  !error GOT HERE TOO
 
+  NOSCRUB: !FirstTrue
+      - when: !calc doc.platform.get('NOSCRUB_DIR','')
+        do: !calc doc.platform.NOSCRUB_DIR
+      - otherwise: !expand "{doc.places.EXPROOT}/noscrub/{tools.env('USER')}"
+
+  BASE_SVN: !calc doc.platform.BASE_SVN
+  BASE_GIT: !calc doc.platform.BASE_GIT
+
+  ics_from: opsgfs
+  parexp: prnemsrn
+  HPSS_PAR_PATH: !expand "/5year/NCEPDEV/emc-global/emc.glopara/WCOSS_C/{parexp}"
+
   ECF_ROOT: !calc tools.env("ECF_ROOT","/dev/null/ECF_ROOT")
   ECF_HOME: !calc tools.env("ECF_HOME","/dev/null/ECF_HOME")
   ecflow_def_dir: !expand '{ECF_ROOT}/defs'

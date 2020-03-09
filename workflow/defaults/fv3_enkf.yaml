@@ -1,32 +1,32 @@
-# This file is used to configure the ENKF-related config files.  The
-# ENKF is not included in this release, so these settings are not
-# needed.  However, they do need to be set to valid values because
-# there is validation of the fv3_enkf_settings variables elsewhere in
-# the YAML documents.
-
 fv3_enkf_defaults: &fv3_enkf_defaults
-  QUILTING: True
-  layout_x: 4
-  layout_y: 6
-  ATMPETS: !FirstTrue
-    - when: !calc doc.fv3_enkf_settings.QUILTING
-      do: !calc layout_x * layout_y * 6 + WRITE_GROUP * WRTTASK_PER_GROUP
-    - otherwise: !calc layout_x * layout_y * 6
-
-  FHSWR: 3600.
-  FHLWR: 3600.
-  IEMS: 1
-  ISOL: 2
-  IAER: 111
-  ICO2: 2
-  dspheat: YES
-  shal_cnv: NO
-  FHZER: 6
+  CDUMP: gdas
+  CASE: C192
+  LEVS: 65
   FHCYC: 1
-  restart_interval: 6
+  FHCYC_GDAS: 1
+  FHCYC_GFS: 24
+  FHSWR: 3600
+  FHLWR: 3600
+  FHZER: 6
   FHMAX: 6
+  QUILTING: True
+  WRITE_NEMSIOFILE: YES
+  WRITE_NEMSIOFLIP: yes
+  nst_anl: yes
+  lprecip_accu: yes
+  DONST: YES
+  MONO: "non-mono"
+  MEMBER: -1
+  d4_bg: 0.15
+  dddmp: 0.2
+  ISEED: 0
+  SET_STP_SEED: YES
 
-# Stochastic physics parameters (only for ensemble forecasts)
+  DO_SHUM: YES
+  SHUM: 0.005
+  SHUM_TAU: 21600.
+  SHUM_LSCALE: 500000.
+
   DO_SKEB: YES
   SKEB: 0.3
   SKEB_TAU: 21600.
@@ -34,20 +34,157 @@ fv3_enkf_defaults: &fv3_enkf_defaults
   SKEBNORM: 0
   SKEB_NPASS: 30
   SKEB_VDOF: 5
-  DO_SHUM: YES
-  SHUM: 0.005
-  SHUM_TAU: 21600.
-  SHUM_LSCALE: 500000.
+
   DO_SPPT: YES
-  DOIAU_ENKF: NO
-  IAUFHRS_ENKF: 6
-  IAU_DELTHRS_ENKF: 6
   SPPT: 0.5
   SPPT_TAU: 21600.
   SPPT_LSCALE: 500000.
   SPPT_LOGIT: YES
   SPPT_SFCLIMIT: YES
 
+  DOIAU_ENKF: NO
+  IAUFHRS_ENKF: 6
+  IAU_DELTHRS_ENKF: 6
+
   k_split: 1
   n_split: 12
+
+  RUN_EFCSGRP: NO
+  zhao_mic: YES
+  nh_type: 'nh'
+  USE_COUPLER_RES: NO
+  cdmbgwd: !FirstTrue
+    - when: !calc CASE=="C48"
+      do: "0.071,2.1,1.0,1.0"
+    - when: !calc CASE=="C96"
+      do: "0.14,1.8,1.0,1.0"
+    - when: !calc CASE=="C192"
+      do: "0.23,1.5,1.0,1.0"
+    - when: !calc CASE=="C384" 
+      do: "1.1,0.72,1.0,1.0"
+    - when: !calc CASE=="C768" 
+      do: "4.0,0.15,1.0,1.0"
+    - when: !calc CASE=="C1152"
+      do: "4.0,0.10,1.0,1.0"
+    - when: !calc CASE=="C3072"
+      do: "4.0,0.05,1.0,1.0"
+    - otherwise: ""
+      message: "Newly defined CASE, please make sure cdmbgwd is set correctly in case file under fv3_enkf_settings!"
+
+  DELTIM: !FirstTrue
+    - when: !calc CASE=="C384"
+      do: 240
+    - when: !calc CASE=="C768"
+      do: 225
+    - when: !calc CASE=="C1152"
+      do: 150
+    - when: !calc CASE=="C3072"
+      do: 90
+    - otherwise: 450
+
+  layout: !Select
+     select: !calc CASE
+     otherwise: !error "Unknown FV3 deterministic grid: {doc.fv3_enkf_settings.CASE}"
+     cases:
+        C48:   { x: 2,y: 4,  nth: 1, WGRP: 1, WGRP_NTASKS: 24, WRTIOBUF: "4M" }
+        C96:   { x: 4,y: 4,  nth: 1, WGRP: 1, WGRP_NTASKS: 24, WRTIOBUF: "4M" }
+        C192:  { x: 4, y: 6,  nth: 2, WGRP: 2, WGRP_NTASKS: 24, WRTIOBUF: "8M" }
+        C384:  { x: 6, y: 6,  nth: 2, WGRP: 3, WGRP_NTASKS: 24, WRTIOBUF: "16M" }
+        C768:  { x: 8, y: 16, nth: 2, WGRP: 4, WGRP_NTASKS: 60, WRTIOBUF: "32M" }
+        C1152: { x: 8, y: 16, nth: 4, WGRP: 4, WGRP_NTASKS: 84, WRTIOBUF: "48M" }
+        C3072: { x: 16,y: 32, nth: 4, WGRP: 4, WGRP_NTASKS: 120, WRTIOBUF: "64M" } 
+# layout_x: layout.x
+# layout_y: layout.y
+# fv3_thread: layout.nth
+# WRITE_GROUP: layout.WGRP
+# WRTTASK_PER_GROUP: layout.WGRP_NTASKS
+# WRTIOBUF: layout.WRTIOBUF
+
+  new_o3force: yes
+  h2o_phys: yes
+  do_vort_damp: yes
+  cnvcld: true
   consv_te: 1.
+  fv_sg_adj: 450
+  dspheat: YES
+  shal_cnv: NO
+  agrid_vel_rst: yes
+  IEMS: 1
+  IALB: 1
+  ISOL: 2
+  IAER: 111
+  ICO2: 2
+  warm_start: true
+  read_increment: no
+  restart_interval: 6
+  imp_physics: "11"
+#     if_present: !FirstTrue
+#      - when: !calc ( imp_physics==99 )
+#        do:
+#           ncld: 1
+#           nwat: 2
+  phy_dependent_var: !Select
+     select: !calc imp_physics
+     otherwise: !error "Unknown imp_physics option: {imp_physics} !"
+     cases:
+        "99":
+           ncld: 1
+           nwat: 2
+           FIELD_TABLE: "$HOMEgfs/parm/parm_fv3diag/field_table_zhaocarr"
+           dnats: 0
+           cal_pre: false
+           do_sat_adjust: false
+           random_clds: false
+           hord_mt_nh_nonmono: 5
+           hord_xx_nh_nonmono: 5
+           vtdm4_nh_nonmono: 0.02
+           nord: 2
+           dddmp: 0.1
+           d4_bg: 0.12
+        "6": 
+           ncld: 2 
+           nwat: 6
+           FIELD_TABLE: "$HOMEgfs/parm/parm_fv3diag/field_table_wsm6"
+           dnats: 0
+           cal_pre: false
+           do_sat_adjust: false
+           random_clds: false
+           hord_mt_nh_nonmono: 5
+           hord_xx_nh_nonmono: 5
+           vtdm4_nh_nonmono: 0.02
+           nord: 2
+           dddmp: 0.1
+           d4_bg: 0.12
+        "8": 
+           ncld: 2
+           nwat: 6
+           FIELD_TABLE: "$HOMEgfs/parm/parm_fv3diag/field_table_thompson"
+           dnats: 0
+           cal_pre: false
+           do_sat_adjust: false
+           random_clds: false
+           hord_mt_nh_nonmono: 5
+           hord_xx_nh_nonmono: 5
+           vtdm4_nh_nonmono: 0.02
+           nord: 2
+           dddmp: 0.1
+           d4_bg: 0.12
+        "11":
+           ncld: 5
+           nwat: 6
+           FIELD_TABLE: "$HOMEgfs/parm/parm_fv3diag/field_table_gfdl_satmedmf"
+           dnats: 1
+           cal_pre: false
+           do_sat_adjust: true
+           random_clds: false
+           hord_mt_nh_nonmono: 5
+           hord_xx_nh_nonmono: 5
+           vtdm4_nh_nonmono: 0.02
+           nord: 2
+           dddmp: 0.1
+           d4_bg: 0.12
+           
+  ATMPETS: !FirstTrue
+    - when: !calc QUILTING
+      do: !calc layout.x * layout.y * 6 + layout.WGRP * layout.WGRP_NTASKS
+    - otherwise: !calc layout.x * layout.y * 6

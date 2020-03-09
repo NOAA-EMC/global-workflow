@@ -308,7 +308,7 @@ default_resources: &default_resources
     - batch_memory: "1024M"
       mpi_ranks: !icalc doc.fv3_gfs_settings.ATMPETS+doc.fv3_gfs_settings.OCNPETS+doc.fv3_gfs_settings.ICEPETS
       max_ppn: !icalc doc.gfs_resource_table.gfsfcst_ppn
-      OMP_NUM_THREADS: !icalc doc.fv3_gfs_settings.fv3_threads
+      OMP_NUM_THREADS: !icalc doc.fv3_gfs_settings.layout.nth
       walltime: !icalc doc.gfs_resource_table.coupfcst_wall
       memory_per_rank: !icalc doc.gfs_resource_table.get('gfsfcst_mem_per_rank',None)
 
@@ -316,7 +316,7 @@ default_resources: &default_resources
     - batch_memory: "1024M"
       mpi_ranks: !icalc doc.fv3_gfs_settings.ATMPETS+doc.fv3_gfs_settings.OCNPETS+doc.fv3_gfs_settings.ICEPETS
       max_ppn: !icalc doc.gfs_resource_table.gfsfcst_ppn
-      OMP_NUM_THREADS: !icalc doc.fv3_gfs_settings.fv3_threads
+      OMP_NUM_THREADS: !icalc doc.fv3_gfs_settings.layout.nth
       walltime: !icalc doc.gfs_resource_table.coupfcst_medcold_wall
       memory_per_rank: !icalc doc.gfs_resource_table.get('gfsfcst_mem_per_rank',None)  
 

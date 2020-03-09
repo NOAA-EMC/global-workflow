@@ -9,18 +9,18 @@ config_fcst:
       do: "nems_fv3_mom6_cice5.x"
     - otherwise: "global_fv3gfs.x"
   more_exports_for_microphys: !FirstTrue
-    - when: !calc ( doc.fv3_settings.imp_physics==11 )
+    - when: !calc ( doc.fv3_gdas_settings.imp_physics==11 )
       do: !expand |
-        export hord_mt_nh_nonmono={doc.fv3_settings.hord_mt_nh_nonmono}
-        export hord_xx_nh_nonmono={doc.fv3_settings.hord_xx_nh_nonmono}
-        export vtdm4_nh_nonmono={doc.fv3_settings.vtdm4_nh_nonmono}
-        export nord={doc.fv3_settings.nord}
-        export dddmp={doc.fv3_settings.dddmp}
-        export d4_bg={doc.fv3_settings.d4_bg}
+        export hord_mt_nh_nonmono={doc.fv3_gdas_settings.phy_dependent_var.hord_mt_nh_nonmono}
+        export hord_xx_nh_nonmono={doc.fv3_gdas_settings.phy_dependent_var.hord_xx_nh_nonmono}
+        export vtdm4_nh_nonmono={doc.fv3_gdas_settings.phy_dependent_var.vtdm4_nh_nonmono}
+        export nord={doc.fv3_gdas_settings.phy_dependent_var.nord}
+        export dddmp={doc.fv3_gdas_settings.phy_dependent_var.dddmp}
+        export d4_bg={doc.fv3_gdas_settings.phy_dependent_var.d4_bg}
     - otherwise: ""
 
   level_127: !FirstTrue
-    - when: !calc doc.fv3_settings.LEVS==128
+    - when: !calc doc.fv3_gdas_settings.LEVS==128
       do: !expand |
          export  tau=5.0
          export  rf_cutoff=1.0e3
@@ -60,8 +60,8 @@ config_fcst:
     export npe_fcst="{resource_a[0].mpi_ranks}"
     export npe_fcst_gfs="{resource_b[0].mpi_ranks}"
     export npe_node_fcst="{resource_a[0].max_ppn}"
-    export nth_fcst="{doc.fv3_gfs_settings.fv3_threads}"
-    export NTHREADS_FV3="{doc.fv3_gfs_settings.fv3_threads}"
+    export nth_fcst="{doc.fv3_gfs_settings.layout.nth}"
+    export NTHREADS_FV3="{doc.fv3_gfs_settings.layout.nth}"
     export memory_fcst="1024M"
 
     #######################################################################
@@ -83,24 +83,24 @@ config_fcst:
     export FCSTEXEC="{FCSTEXEC}"
    
     # Model configuration
-    export TYPE="{doc.fv3_settings.nh_type}"
-    export MONO="{doc.fv3_settings.MONO}"
+    export TYPE="{doc.fv3_gdas_settings.nh_type}"
+    export MONO="{doc.fv3_gdas_settings.MONO}"
     
     # Use stratosphere h2o physics
-    export h2o_phys="{tools.fort(doc.fv3_settings.h2o_phys)}"
+    export h2o_phys="{tools.fort(doc.fv3_gdas_settings.h2o_phys)}"
     
     # Options of stratosphere O3 physics reaction coefficients
-    export new_o3forc="{tools.YES_NO(doc.fv3_settings_template.new_o3force)}"
+    export new_o3forc="{tools.YES_NO(doc.fv3_gdas_settings.new_o3force)}"
     
     # Microphysics configuration
-    export dnats={doc.fv3_settings.dnats}
-    export cal_pre="{tools.fort(doc.fv3_settings.cal_pre)}"
-    export do_sat_adj="{tools.fort(doc.fv3_settings.do_sat_adj)}"
-    export random_clds="{tools.fort(doc.fv3_settings.random_clds)}"
-    #export cnvcld="{tools.fort(doc.fv3_settings.cnvcld)}"
-    export ncld={doc.fv3_settings.ncld}
-    export FIELD_TABLE="{doc.fv3_settings.FIELD_TABLE}"
-    export nwat={doc.fv3_settings.nwat}
+    export dnats={doc.fv3_gfs_settings.phy_dependent_var.dnats}
+    export cal_pre="{tools.fort(doc.fv3_gfs_settings.phy_dependent_var.cal_pre)}"
+    export do_sat_adj="{tools.fort(doc.fv3_gfs_settings.phy_dependent_var.do_sat_adjust)}"
+    export random_clds="{tools.fort(doc.fv3_gfs_settings.phy_dependent_var.random_clds)}"
+    #export cnvcld="{tools.fort(doc.fv3_gdas_settings.cnvcld)}"
+    export ncld={doc.fv3_gfs_settings.phy_dependent_var.ncld}
+    export FIELD_TABLE="{doc.fv3_gdas_settings.phy_dependent_var.FIELD_TABLE}"
+    export nwat={doc.fv3_gfs_settings.phy_dependent_var.nwat}
     {more_exports_for_microphys}
     {level_127}
 

@@ -1,0 +1,10 @@
+archiving_defaults: &archiving_defaults
+   archive_to_hpss: yes
+   arch_cyc: 18
+   arch_warmicfreq: 6
+   arch_fcsticfreq: 3
+   copy_fit2obs_files: yes
+   scrub_in_archive: yes
+   scrub_in_archive_start: 144
+   scrub_in_archive_end: 24
+   ATARDIR: "/NCEPDEV/$HPSS_PROJECT/1year/$USER/$machine/scratch/$PSLOT"

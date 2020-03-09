@@ -6,5 +6,4 @@ ocn_settings_template: !Template &ocn_settings_template
   MOD:
     type: string
     allowed: [ mom6, hycom ]
-    default: mom6
     description: "model selection for ocean"

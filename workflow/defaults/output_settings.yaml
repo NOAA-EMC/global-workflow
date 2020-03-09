@@ -1,0 +1,38 @@
+# This file sets default values for the GFS output settings.  See
+# schema/output.yaml for documentation.
+
+output_settings_defaults: &output_settings_defaults
+  FHMIN_GFS: 0
+  FHMAX_GFS: 384
+  FHOUT_GFS: 3
+  FHMIN_ENKF: 3
+  FHMAX_ENKF: 9
+  FHOUT_ENKF: !FirstTrue
+      - when: doc.data_assimilation.l4densvar
+        do: 1
+      - otherwise: 3
+  FHMIN_GDAS: 0
+  FHMAX_GDAS: 9
+  FHOUT_GDAS: 3
+
+  FHMAX_HF_GFS: 0
+  FHOUT_HF_GFS: 1
+  OCN_INTERVAL: 120
+
+  NCO_NAMING_CONV: YES
+  OUTPUT_FILE_TYPE: nemsio
+  OUTPUT_GRID: gaussian_grid
+
+  gfs_forecast_hours: !calc >-
+      tools.uniq(sorted(
+        tools.seq(FHMIN_GFS,FHMAX_HF_GFS,FHOUT_HF_GFS) +
+        tools.seq(FHMIN_GFS,FHMAX_GFS,   FHOUT_GFS)))
+  gdas_forecast_hours: !calc "tools.seq(FHMIN_GDAS,FHMAX_GDAS,FHOUT_GDAS)"
+  ocnpost_hours: !calc "tools.seq(FHMIN_GFS,FHMAX_GFS-OCN_INTERVAL,OCN_INTERVAL)"
+  enkf_epos_fhr: !calc "tools.seq(FHMIN_ENKF,FHMAX_ENKF,FHOUT_ENKF)"
+  wafs_last_hour: 120
+  awips_g2_hours: !calc ( tools.seq(0,240,6) )
+  awips_20km_1p0_hours: !calc >-
+      tools.uniq(sorted(
+        tools.seq(0,84,3) +
+        tools.seq(90,240,6)))

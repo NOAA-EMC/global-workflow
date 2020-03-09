@@ -1,6 +1,158 @@
 fv3_gfs_defaults: &fv3_gfs_defaults
+  CDUMP: gfs
+  CASE: C384
+  LEVS: 65
+  FHCYC: 24
+  FHCYC_GDAS: 1
+  FHCYC_GFS: 24
   QUILTING: True
+  WRITE_NEMSIOFILE: YES
+  WRITE_NEMSIOFLIP: yes
+  nst_anl: yes
+  lprecip_accu: yes
+  DONST: YES
+  MONO: "non-mono"
+  MEMBER: -1
+  d4_bg: 0.15
+  dddmp: 0.2
+  ISEED: 0
+  SET_STP_SEED: YES
+  DO_SHUM: NO
+  DO_SKEB: NO
+  DO_SPPT: NO
+  RUN_EFCSGRP: NO
+  zhao_mic: YES
+  nh_type: 'nh'
+  USE_COUPLER_RES: NO
+  cdmbgwd: !FirstTrue
+    - when: !calc CASE=="C48"
+      do: "0.071,2.1,1.0,1.0"
+    - when: !calc CASE=="C96"
+      do: "0.14,1.8,1.0,1.0"
+    - when: !calc CASE=="C192"
+      do: "0.23,1.5,1.0,1.0"
+    - when: !calc CASE=="C384" 
+      do: "1.1,0.72,1.0,1.0"
+    - when: !calc CASE=="C768" 
+      do: "4.0,0.15,1.0,1.0"
+    - when: !calc CASE=="C1152"
+      do: "4.0,0.10,1.0,1.0"
+    - when: !calc CASE=="C3072"
+      do: "4.0,0.05,1.0,1.0"
+    - otherwise: ""
+      message: "Newly defined CASE, please make sure cdmbgwd is set correctly in case file under fv3_gfs_settings!"
+
+  DELTIM: !FirstTrue
+    - when: !calc CASE=="C384"
+      do: 240
+    - when: !calc CASE=="C768"
+      do: 225
+    - when: !calc CASE=="C1152"
+      do: 150
+    - when: !calc CASE=="C3072"
+      do: 90
+    - otherwise: 450
+
+  layout: !Select
+     select: !calc CASE
+     otherwise: !error "Unknown FV3 deterministic grid: {doc.fv3_gfs_settings.CASE}"
+     cases:
+        C48:   { x: 2,y: 4,  nth: 1, WGRP: 1, WGRP_NTASKS: 24, WRTIOBUF: "4M" }
+        C96:   { x: 4,y: 4,  nth: 1, WGRP: 1, WGRP_NTASKS: 24, WRTIOBUF: "4M" }
+        C192:  { x: 4, y: 6,  nth: 2, WGRP: 2, WGRP_NTASKS: 24, WRTIOBUF: "8M" }
+        C384:  { x: 6, y: 6,  nth: 2, WGRP: 3, WGRP_NTASKS: 24, WRTIOBUF: "16M" }
+        C768:  { x: 8, y: 16, nth: 2, WGRP: 4, WGRP_NTASKS: 60, WRTIOBUF: "32M" }
+        C1152: { x: 8, y: 16, nth: 4, WGRP: 4, WGRP_NTASKS: 84, WRTIOBUF: "48M" }
+        C3072: { x: 16,y: 32, nth: 4, WGRP: 4, WGRP_NTASKS: 120, WRTIOBUF: "64M" } 
+# layout_x: layout.x
+# layout_y: layout.y
+# fv3_thread: layout.nth
+# WRITE_GROUP: layout.WGRP
+# WRTTASK_PER_GROUP: layout.WGRP_NTASKS
+# WRTIOBUF: layout.WRTIOBUF
+
+  new_o3force: yes
+  h2o_phys: yes
+  do_vort_damp: yes
+  cnvcld: true
+  consv_te: 1.
+  fv_sg_adj: 450
+  dspheat: YES
+  shal_cnv: YES
+  agrid_vel_rst: yes
+  IEMS: 1
+  IALB: 1
+  ISOL: 2
+  IAER: 111
+  ICO2: 2
+  warm_start: true
+  read_increment: no
+  restart_interval: 6
+  imp_physics: "11"
+  phy_dependent_var: !Select
+     select: !calc imp_physics
+     otherwise: !error "Unknown imp_physics option: {imp_physics} !"
+     cases:
+        "99":
+           ncld: 1
+           nwat: 2
+           FIELD_TABLE: "$HOMEgfs/parm/parm_fv3diag/field_table_zhaocarr"
+           dnats: 0
+           cal_pre: false
+           do_sat_adjust: false
+           random_clds: false
+           hord_mt_nh_nonmono: 5
+           hord_xx_nh_nonmono: 5
+           vtdm4_nh_nonmono: 0.02
+           nord: 2
+           dddmp: 0.1
+           d4_bg: 0.12
+        "6": 
+           ncld: 2 
+           nwat: 6
+           FIELD_TABLE: "$HOMEgfs/parm/parm_fv3diag/field_table_wsm6"
+           dnats: 0
+           cal_pre: false
+           do_sat_adjust: false
+           random_clds: false
+           hord_mt_nh_nonmono: 5
+           hord_xx_nh_nonmono: 5
+           vtdm4_nh_nonmono: 0.02
+           nord: 2
+           dddmp: 0.1
+           d4_bg: 0.12
+        "8": 
+           ncld: 2
+           nwat: 6
+           FIELD_TABLE: "$HOMEgfs/parm/parm_fv3diag/field_table_thompson"
+           dnats: 0
+           cal_pre: false
+           do_sat_adjust: false
+           random_clds: false
+           hord_mt_nh_nonmono: 5
+           hord_xx_nh_nonmono: 5
+           vtdm4_nh_nonmono: 0.02
+           nord: 2
+           dddmp: 0.1
+           d4_bg: 0.12
+        "11":
+           ncld: 5
+           nwat: 6
+           FIELD_TABLE: "$HOMEgfs/parm/parm_fv3diag/field_table_gfdl_satmedmf"
+           dnats: 1
+           cal_pre: false
+           do_sat_adjust: true
+           random_clds: false
+           hord_mt_nh_nonmono: 5
+           hord_xx_nh_nonmono: 5
+           vtdm4_nh_nonmono: 0.02
+           nord: 2
+           dddmp: 0.1
+           d4_bg: 0.12
+           
   ATMPETS: !FirstTrue
-    - when: !calc doc.fv3_gfs_settings.QUILTING
-      do: !calc layout_x * layout_y * 6 + WRITE_GROUP * WRTTASK_PER_GROUP
-    - otherwise: !calc layout_x * layout_y * 6
+    - when: !calc QUILTING
+      do: !calc layout.x * layout.y * 6 + layout.WGRP * layout.WGRP_NTASKS
+    - otherwise: !calc layout.x * layout.y * 6
+  OCNPETS: 120
+  ICEPETS: 48
