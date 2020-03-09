@@ -158,7 +158,7 @@ config_base:
     #export COMOUTwmo="$ROTDIR/$CDUMP.$PDY/$cyc/wmo"
     
     # Resolution specific parameters
-    export LEVS={doc.fv3_settings.LEVS}
+    export LEVS={doc.fv3_gfs_settings.LEVS}
     export CASE="{doc.fv3_gfs_settings.CASE}"
     export CASE_ENKF="{doc.fv3_enkf_settings.CASE}"
     
@@ -171,30 +171,30 @@ config_base:
     fi
     
     # Output frequency of the forecast model (for cycling)
-    export FHMIN={doc.gfs_output_settings.FHMIN_GDAS}
-    export FHMAX={doc.gfs_output_settings.FHMAX_GDAS}
-    export FHOUT={doc.gfs_output_settings.FHOUT_GDAS}
+    export FHMIN={doc.output_settings.FHMIN_GDAS}
+    export FHMAX={doc.output_settings.FHMAX_GDAS}
+    export FHOUT={doc.output_settings.FHOUT_GDAS}
     
     # GFS cycle info
     export gfs_cyc={doc.settings.gfs_cyc} # 0: no GFS cycle, 1: 00Z only, 2: 00Z and 12Z only, 4: all 4 cycles.
     
     # GFS output and frequency
-    export FHMIN_GFS={doc.gfs_output_settings.FHMIN_GFS}
-    export FHMAX_GFS={doc.gfs_output_settings.FHMAX_GFS}
-    export FHOUT_GFS={doc.gfs_output_settings.FHOUT_GFS}
-    export FHMAX_HF_GFS={doc.gfs_output_settings.FHMAX_HF_GFS}
-    export FHOUT_HF_GFS={doc.gfs_output_settings.FHOUT_HF_GFS}
-    export FHRLST="{doc.gfs_output_settings.gfs_forecast_hours}"
+    export FHMIN_GFS={doc.output_settings.FHMIN_GFS}
+    export FHMAX_GFS={doc.output_settings.FHMAX_GFS}
+    export FHOUT_GFS={doc.output_settings.FHOUT_GFS}
+    export FHMAX_HF_GFS={doc.output_settings.FHMAX_HF_GFS}
+    export FHOUT_HF_GFS={doc.output_settings.FHOUT_HF_GFS}
+    export FHRLST="{doc.output_settings.gfs_forecast_hours}"
 
     # I/O QUILTING, true--use Write Component; false--use GFDL FMS
     # if quilting=true, choose OUTPUT_GRID as cubed_sphere_grid in netcdf or gaussian_grid
     # if gaussian_grid, set OUTPUT_FILE for nemsio or netcdf
-    export QUILTING="{tools.fort(doc.fv3_settings.QUILTING)}"
-    export OUTPUT_GRID="{doc.gfs_output_settings.OUTPUT_GRID}"
-    export OUTPUT_FILE="{doc.gfs_output_settings.OUTPUT_FILE_TYPE}"
+    export QUILTING="{tools.fort(doc.fv3_gdas_settings.QUILTING)}"
+    export OUTPUT_GRID="{doc.output_settings.OUTPUT_GRID}"
+    export OUTPUT_FILE="{doc.output_settings.OUTPUT_FILE_TYPE}"
    
     # Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL
-    export imp_physics={doc.fv3_settings.imp_physics}
+    export imp_physics={doc.fv3_gfs_settings.imp_physics}
     
     # Shared parameters
     # Hybrid related
@@ -206,20 +206,20 @@ config_base:
     
     # EnKF output frequency
     if [ $DOHYBVAR = "YES" ]; then
-        export FHMIN_ENKF={doc.gfs_output_settings.FHMIN_ENKF}
-        export FHMAX_ENKF={doc.gfs_output_settings.FHMAX_ENKF}
-        export FHOUT_ENKF={doc.gfs_output_settings.FHOUT_ENKF}
+        export FHMIN_ENKF={doc.output_settings.FHMIN_ENKF}
+        export FHMAX_ENKF={doc.output_settings.FHMAX_ENKF}
+        export FHOUT_ENKF={doc.output_settings.FHOUT_ENKF}
         if [ $l4densvar = ".true." ]; then
             export FHOUT=1
         fi
     fi
     
     # If YES, NSST is turned on in anal and/or fcst steps
-    export DONST="{tools.YES_NO(doc.fv3_settings.DONST)}"
+    export DONST="{tools.YES_NO(doc.fv3_gdas_settings.DONST)}"
     if [ $DONST = "YES" ]; then export FNTSFA="        "; fi
     
     # The switch to apply SST elevation correction or not
-    export nst_anl={tools.fort(doc.fv3_settings.nst_anl)}
+    export nst_anl={tools.fort(doc.fv3_gfs_settings.nst_anl)}
     
     # Analysis increments to zero in CALCINCEXEC
     export INCREMENTS_TO_ZERO="{tools.join(doc.data_assimilation.INCREMENTS_TO_ZERO,',')}"

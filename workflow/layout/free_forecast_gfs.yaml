@@ -77,7 +77,7 @@ suite: !Cycle
     post: !TaskArray
       RUN: !calc up.RUN
       Dimensions:
-        fhr: !calc doc.gfs_output_settings.gfs_forecast_hours
+        fhr: !calc doc.output_settings.gfs_forecast_hours
       jgfs_post_manager_el: !TaskElement
         <<: *exclusive_task_template
         RUN: !calc up.RUN
@@ -145,14 +145,14 @@ suite: !Cycle
       RUN: !calc up.RUN
       Disable: !calc not doc.settings.cplflx
       Dimensions:
-        fhr: !calc doc.gfs_output_settings.ocnpost_hours
+        fhr: !calc doc.output_settings.ocnpost_hours
       jgfs_ocnpost_fhr_el: !TaskElement
         <<: *exclusive_task_template
         Foreach: [ fhr  ]
         resources: !calc partition.resources.run_one_node_downstream
         Name: !expand p_{dimval.fhr:03d}
         FHR: !expand "{dimval.fhr:03d}"
-        OCN_FHRLST: !calc "tools.seq(dimval.fhr, dimval.fhr+doc.gfs_output_settings.OCN_INTERVAL, 6)"
+        OCN_FHRLST: !calc "tools.seq(dimval.fhr, dimval.fhr+doc.output_settings.OCN_INTERVAL, 6)"
         J_JOB: rocoto/ocnpost.sh
         Trigger: !Depend up.forecast
         ecflow_def: !expand "edit FHR '{FHR}'"

@@ -1,9 +1,4 @@
 case:
-  fv3_settings:
-    nst_anl: False
-    hord_mt_nh_nonmono: 5
-    hord_xx_nh_nonmono: 5
-
   places:
     workflow_file: layout/free_forecast_gfs.yaml
     MOM6IC: /scratch1/NCEPDEV/nems/Bin.Li/S2S/FROM_HPSS
@@ -21,7 +16,7 @@ case:
   nsst:
     NST_MODEL: 0
 
-  gfs_output_settings:
+  output_settings:
     OCN_INTERVAL: 24
     FHOUT_GFS: 6
     FHMIN_GFS: 0
@@ -33,16 +28,16 @@ case:
     CASE: C384
     LEVS: 65
     DELTIM: 450
-    layout_x: 6
-    layout_y: 8
-    fv3_threads: 2
-    WRITE_GROUP: 1
-    WRTTASK_PER_GROUP: 24
-    WRTIOBUF: "32M"
+    nst_anl: no
+    layout:
+       x: 6
+       y: 8
+       nth: 2
+       WGRP: 1
+       WGRP_NTASKS: 24
+       WRTIOBUF: "32M"
     OCNPETS: 120
     ICEPETS: 48
-    hord_mt_nh_nonmono: 5
-    hord_xx_nh_nonmono: 5
     cdmbgwd: "1.0,1.2"
 
   post:
