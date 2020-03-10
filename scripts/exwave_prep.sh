@@ -322,7 +322,7 @@
   
       set +x
       echo ' '
-      echo "   Executing the copy command file at : `date`"
+      echo "   Executing the wnd grib cmd file at : `date`"
       echo '   ------------------------------------'
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
@@ -684,7 +684,7 @@
 
       set +x
       echo ' '
-      echo "   Executing the copy command file at : `date`"
+      echo "   Executing the curr prnc cmdfile at : `date`"
       echo '   ------------------------------------'
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
