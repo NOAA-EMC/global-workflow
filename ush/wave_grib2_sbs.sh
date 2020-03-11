@@ -139,7 +139,7 @@
   ENSTAG=""
   if [ ${waveMEMB} ]; then ENSTAG=".${membTAG}${waveMEMB}" ; fi
   outfile=${WAV_MOD_TAG}.${cycle}${ENSTAG}.${grdnam}.${grdres}.f${FH3}.grib2
-  $EXECcode/ww3_grib
+  $EXECcode/ww3_grib > grib2_${grdnam}_${FH3}.out 2>&1
   $WGRIB2 gribfile -set_date $CDATE -set_ftime "$fhr hour fcst" -grib ${COMOUT}/gridded/${outfile}
   err=$?
 
@@ -158,6 +158,17 @@
 
 # Create index
     $WGRIB2 -s $COMOUT/gridded/${outfile} > $COMOUT/gridded/${outfile}.idx
+
+# Create grib2 subgrid is this is the source grid
+  if [ "${grdID}" = "${WAV_SUBGRBSRC}" ]; then
+    for subgrb in ${WAV_SUBGRB}; do
+      subgrbref=`echo ${!subgrb} | cut -d " " -f 1-20`
+      subgrbnam=`echo ${!subgrb} | cut -d " " -f 21`
+      subgrbres=`echo ${!subgrb} | cut -d " " -f 22`
+      subfnam="${WAV_MOD_TAG}.${cycle}${ENSTAG}.${subgrbnam}.${subgrbres}.f${FH3}.grib2"
+      $COPYGB2 -g "${subgrbref}" -i0 -x  gribfile ${COMOUT}/gridded/${subfnam}
+   done
+  fi
 
 # 1.e Save in /com
 

@@ -90,7 +90,7 @@
   rm -f ww3_grid.inp 
   ln -sf ../ww3_grid.inp.$grdID ww3_grid.inp
  
-  $EXECcode/ww3_grid
+  $EXECcode/ww3_grid 1> grid_${grdID}.out 2>&1
   err=$?
 
   if [ "$err" != '0' ]

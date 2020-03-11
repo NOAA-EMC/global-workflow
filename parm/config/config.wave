@@ -18,18 +18,25 @@ export COMPONENTwave=${COMPONENTwave:-${RUN}wave}
 export COMPONENTRSTwave=${COMPONENTRSTwave:-gdaswave}
 
 # Grids for wave model
+# GFSv16
 export waveGRD='glo_10m aoc_9km ant_9km'
 export waveGRDN='1 2 3' # gridnumber for ww3_multi
 export waveGRDG='10 20 30' # gridgroup for ww3_multi
+# GEFSv1r2
+#export waveGRD='glo_15m ao_20m so_20m'
+#export waveGRDN='1 2 3' # gridnumber for ww3_multi
+#export waveGRDG='10 20 30' # gridgroup for ww3_multi
 
 # ESMF input grid
 export waveesmfGRD='glox_10m' # input grid
 
 # Grids for input fields
 export WAVEICE_DID=sice
-export WAVEICE_FID=icean_5m
+#export WAVEICE_FID=icean_5m
+export WAVEICE_FID=$waveesmfGRD
 export WAVECUR_DID=rtofs
-export WAVECUR_FID=rtofs_5m
+#export WAVECUR_FID=rtofs_5m
+export WAVECUR_FID=$waveesmfGRD
 export WAVEWND_DID=
 export WAVEWND_FID=
 
@@ -67,8 +74,21 @@ export FHINCP_WAV=`expr $DTPNT_WAV / 3600`
 export OUTPARS_WAV="WND CUR ICE HS T01 T02 DIR FP DP PHS PTP PDIR CHAR"
 # GFS # export OUTPARS_WAV='WND CUR ICE HS T01 T02 DIR FP DP PHS PTP PDIR CHAR'
 
+# Subgrid info for grib2 encoding
+export WAV_SUBGRBSRC="glo_10m"
+export WAV_SUBGRB="WAV_ATLO_GRB WAV_EPAC_GRB WAV_WCST_GRB"
+export WAV_ATLO_GRB="0 6 0 0 0 0 0 0 301 331 0 0 55000000 260000000 48 0 310000000 166667 166667 0 atlocn 0p16"
+export WAV_EPAC_GRB="0 6 0 0 0 0 0 0 511 301 0 0 30000002 130000000 48 -20000000 215000000 166667 166667 0 epacif 0p16"
+export WAV_WCST_GRB="0 6 0 0 0 0 0 0 241 151 0 0 50000000 210000000 48 25000000 250000000 166667 166667 0 wcoast 0p16"
+
 # Options for point output (switch on/off boundary point output)
-export DOIBP_WAV='NO'
+export DOIBP_WAV='NO' # Input boundary points
+export DOFLD_WAV='YES' # Field data
+export DOPNT_WAV='YES' # Station data
+export DOGRB_WAV='YES' # Create grib2 files
+export DOGRI_WAV='YES' # Create interpolated grids
+export DOSPC_WAV='YES' # Spectral post
+export DOBLL_WAV='YES' # Bulletin post
 
 # Intake currents settings
 export WAV_CUR_DT=${WAV_CUR_DT:-3}
@@ -117,7 +137,10 @@ fi
 # Determine if wave component needs input and/or is coupled
 export WW3ATMINP='CPL'
 export WW3ICEINP='YES'
-export WW3CURINP='YES'
+# GFSv16
+ export WW3CURINP='YES'
+# GEFSv12
+#export WW3CURINP='NO'
 
 if [ "${WW3ICEINP}" = "YES" ]; then
   export WAVICEFILE=${CDUMP}.t${cyc}z.seaice.5min.grib2

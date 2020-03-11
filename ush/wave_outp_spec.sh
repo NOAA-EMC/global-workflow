@@ -182,7 +182,7 @@
   echo "   Executing $EXECcode/ww3_outp"
   [[ "$LOUD" = YES ]] && set -x
 
-  $EXECcode/ww3_outp
+  $EXECcode/ww3_outp 1> outp_${specdir}_${buoy}.out 2>&1
   err=$?
 
   if [ "$err" != '0' ]
@@ -211,7 +211,6 @@
        cat $outfile | sed -e '9,$d' >> ${STA_DIR}/${specdir}/$WAV_MOD_TAG.$buoy.bull
        cat $coutfile | sed -e '8,$d' >> ${STA_DIR}/c${specdir}/$WAV_MOD_TAG.$buoy.cbull
      else
-       #cat $outfile | sed -e '15,$d' >> ${STA_DIR}/${specdir}/$WAV_MOD_TAG.$buoy.spec
        cat $outfile >> ${STA_DIR}/${specdir}/$WAV_MOD_TAG.$buoy.spec
      fi
    elif [ "${ymdh}" = "${YMDHE}" ]
@@ -250,7 +249,7 @@
 #  rm -f mod_def.ww3 out_pnt.ww3
 
   cd ..
-  mv -f $specdir_$buoy done.$specdir_$buoy
+  rm -rf ${specdir}_${bloc}
 
   set +x
   echo ' '
