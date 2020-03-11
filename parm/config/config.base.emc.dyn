@@ -16,19 +16,20 @@ if [ $machine = "THEIA" -o $machine = "HERA" ]; then
 
     export ACCOUNT="fv3-cpu"
     export QUEUE="batch"
-    export QUEUE_ARCH="service"
+    export QUEUE_SERVICE="service"
 
 elif [ $machine = "ORION" ]; then
 
     export ACCOUNT="noaatest"
     export QUEUE="batch"
-    export QUEUE_ARCH="service"
+    export QUEUE_SERVICE="service"
+    export PARTITION_BATCH="orion"
 
 elif [ $machine = "WCOSS_C" -o $machine = "WCOSS_DELL_P3" ]; then
 
     export ACCOUNT="FV3GFS-T2O"
     export QUEUE="dev"
-    export QUEUE_ARCH="dev_transfer"
+    export QUEUE_SERVICE="dev_transfer"
 
 fi
 

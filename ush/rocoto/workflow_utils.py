@@ -236,17 +236,17 @@ def create_firstcyc_task(cdump='gdas'):
                  'command': 'sleep 1', \
                  'jobname': '&PSLOT;_%s_@H' % taskstr, \
                  'account': '&ACCOUNT;', \
-                 'queue': '&QUEUE_ARCH;', \
+                 'queue': '&QUEUE_SERVICE;', \
                  'walltime': '&WALLTIME_ARCH_%s;' % cdump.upper(), \
                  'native': '&NATIVE_ARCH_%s;' % cdump.upper(), \
                  'resources': '&RESOURCES_ARCH_%s;' % cdump.upper(), \
                  'log': '&ROTDIR;/logs/@Y@m@d@H/%s.log' % taskstr, \
-                 'queue': '&QUEUE_ARCH_%s;' % cdump.upper(), \
+                 'queue': '&QUEUE_SERVICE_%s;' % cdump.upper(), \
                  'dependency': dependencies}
 
     if get_scheduler(detectMachine()) in ['slurm']:
         task_dict['queue'] = '&QUEUE;'
-        task_dict['partition'] = '&PARTITION_ARCH;'
+        task_dict['partition'] = '&PARTITION_SERVICE;'
 
     task = rocoto.create_task(task_dict)
 
@@ -326,7 +326,7 @@ def get_resources(machine, cfg, task, cdump='gdas'):
         resstr = '<cores>%d</cores>' % tasks
 
     if task in ['arch', 'earc', 'getic']:
-        queuestr = '&QUEUE;' if scheduler in ['slurm'] else '&QUEUE_ARCH;'
+        queuestr = '&QUEUE;' if scheduler in ['slurm'] else '&QUEUE_SERVICE;'
     else:
         queuestr = '&QUEUE;'
 
