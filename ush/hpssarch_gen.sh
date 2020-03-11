@@ -115,6 +115,7 @@ if [ $type = "gfs" ]; then
   echo  "${dirname}${head}sfcanl${SUFFIX}            " >>gfs_${format}a.txt
   echo  "${dirname}${head}atmi*.nc                   " >>gfs_${format}a.txt
   echo  "${dirname}${head}dtfanl.nc                  " >>gfs_${format}a.txt
+  echo  "${dirname}${head}loginc.txt                 " >>gfs_${format}a.txt
 
   #..................
   if [ $OUTPUT_HISTORY = ".true." ]; then
@@ -134,6 +135,23 @@ if [ $type = "gfs" ]; then
   echo  "${dirname}RESTART/*0000.sfcanl_data.tile4.nc  " >>gfs_restarta.txt
   echo  "${dirname}RESTART/*0000.sfcanl_data.tile5.nc  " >>gfs_restarta.txt
   echo  "${dirname}RESTART/*0000.sfcanl_data.tile6.nc  " >>gfs_restarta.txt
+
+  #..................
+  if [ $DO_WAVE = "YES" ]; then
+
+    rm -rf gfswave.txt
+    touch gfswave.txt
+
+    dirpath="gfswave.${PDY}/${cyc}/"
+    dirname="./${dirpath}"
+
+    head="gfswave.t${cyc}z."
+
+    #...........................
+    echo "${dirname}gridded/${head}*      " >>gfswave.txt
+    echo "${dirname}station/${head}*      " >>gfswave.txt
+
+  fi
 
 #-----------------------------------------------------
 fi   ##end of gfs
@@ -173,7 +191,7 @@ if [ $type = "gdas" ]; then
   if [ -s $ROTDIR/${dirpath}${head}radstat ]; then
      echo  "${dirname}${head}radstat                 " >>gdas.txt
   fi
-  for fstep in prep anal fcst vrfy radmon minmon oznmon; do
+  for fstep in prep anal gldas fcst vrfy radmon minmon oznmon; do
    if [ -s $ROTDIR/logs/${CDATE}/gdas${fstep}.log ]; then
      echo  "./logs/${CDATE}/gdas${fstep}.log         " >>gdas.txt
    fi
@@ -219,6 +237,7 @@ if [ $type = "gdas" ]; then
   echo  "${dirname}${head}abias_pc                 " >>gdas_restarta.txt
   echo  "${dirname}${head}atmi*nc                  " >>gdas_restarta.txt
   echo  "${dirname}${head}dtfanl.nc                " >>gdas_restarta.txt
+  echo  "${dirname}${head}loginc.txt               " >>gdas_restarta.txt
 
   echo  "${dirname}RESTART/*0000.sfcanl_data.tile1.nc  " >>gdas_restarta.txt
   echo  "${dirname}RESTART/*0000.sfcanl_data.tile2.nc  " >>gdas_restarta.txt
@@ -230,6 +249,28 @@ if [ $type = "gdas" ]; then
 
   #..................
   echo  "${dirname}RESTART " >>gdas_restartb.txt
+
+  #..................
+  if [ $DO_WAVE = "YES" ]; then
+
+    rm -rf gdaswave.txt
+    touch gdaswave.txt
+    rm -rf gdaswave_restart.txt
+    touch gdaswave_restart.txt
+
+    dirpath="gdaswave.${PDY}/${cyc}/"
+    dirname="./${dirpath}"
+
+    head="gdaswave.t${cyc}z."
+
+    #...........................
+    echo "${dirname}gridded/${head}*      " >>gdaswave.txt
+    echo "${dirname}station/${head}*      " >>gdaswave.txt
+
+    echo "${dirname}restart/*             " >>gdaswave_restart.txt
+
+  fi
+
 
 #-----------------------------------------------------
 fi   ##end of gdas
@@ -276,7 +317,7 @@ if [ $type = "enkfgdas" -o $type = "enkfgfs" ]; then
         echo  "${dirname}${head}atma00${FHR}.ensmean${SUFFIX}      " >>enkf${CDUMP}.txt
      fi 
   done # loop over FHR
-  for fstep in eobs eomg ecen eupd efcs epos ; do
+  for fstep in eobs eomg ecen esfc eupd efcs epos ; do
    echo  "logs/${CDATE}/${CDUMP}${fstep}*.log        " >>enkf${CDUMP}.txt
   done
 
@@ -287,7 +328,9 @@ if [ $type = "enkfgdas" -o $type = "enkfgfs" ]; then
       fhr=$(printf %03i $fh)
       echo  "${dirname}${head}atmf${fhr}.ensmean${SUFFIX}       " >>enkf${CDUMP}.txt
       if [ $OUTPUT_FILE = "netcdf" ]; then
-	  echo  "${dirname}${head}atmf${fhr}.ensspread${SUFFIX}     " >>enkf${CDUMP}.txt
+          if [ -s $ROTDIR/${dirpath}${head}atmf${fhr}.ensspread${SUFFIX} ]; then
+	     echo  "${dirname}${head}atmf${fhr}.ensspread${SUFFIX}     " >>enkf${CDUMP}.txt
+          fi
       fi
       fh=$((fh+3))
   done
@@ -368,7 +411,6 @@ if [ $type = "enkfgdas" -o $type = "enkfgfs" ]; then
 #-----------------------------------------------------
 fi   ##end of enkfgdas or enkfgfs
 #-----------------------------------------------------
-
 
 exit 0
 

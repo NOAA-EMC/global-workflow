@@ -1,7 +1,8 @@
       subroutine meteorg(npoint,rlat,rlon,istat,cstat,elevstn,
      &             nf,nfile,fnsig,jdate,idate,
      &       levso,levs,im,jm,kdim,
-     &       landwater,nend1,nint1,nint3,ijdum)
+     &       landwater,nend1,nint1,nint3,iidum,jjdum,
+     &       fformat,iocomms,iope,ionproc)
 
 !$$$  SUBPROGRAM DOCUMENTATION BLOCK
 !                .      .    .                                       .
@@ -57,14 +58,16 @@
 !
 !$$$
       use netcdf
+      use nemsio_module
       use sigio_module 
       use physcons
       use mersenne_twister
       use funcphys
       implicit none 
       include 'mpif.h'
-!      type(sigio_head):: sighead,sigheado
-!      type(sigio_data):: sigdata
+      type(nemsio_gfile) :: gfile
+      type(nemsio_gfile) :: ffile
+      type(nemsio_gfile) :: ffile2
       integer :: nfile,npoint,levso,levs,kdim
       integer :: nfile1
       integer :: i,j,im,jm,kk,idum,jdum,idvc,idsl
@@ -108,6 +111,7 @@
       real :: PREC,TSKIN,SR,randomno(1,2)
       real :: DOMR,DOMZR,DOMIP,DOMS
       real :: vcoord(levs+1,nvcoord),vdummy(levs+1)
+      real :: vcoordnems(levs+1,3,2)
       real :: rdum
       integer :: n3dfercld,iseedl
       integer :: istat(npoint)
@@ -124,13 +128,17 @@
       integer recn_dpres,recn_delz,recn_dzdt
       integer :: jrec
       equivalence (cstat1,rstat1)
-      integer :: ijdum(npoint,2)
+      integer iidum(npoint),jjdum(npoint)
       integer  :: error, ncid, ncid2, id_var,dimid
       character(len=100) :: long_name
+      character(len=6) :: fformat
       integer,dimension(8) :: clocking
       character(10)  :: date
       character(12) :: time
       character(7)  :: zone
+      character(3)  :: Zreverse
+      character(20)  :: VarName,LayName
+      integer iocomms,iope,ionproc
 
       nij = 12
       nflx = 6 * levso
@@ -142,7 +150,17 @@
 
        idvc=2
        idsl=1
-          error=nf90_open(trim(fnsig),nf90_nowrite,ncid)
+!read in NetCDF file header info
+       print*,"fformat= ", fformat
+!       print*,'meteorg.f, idum,jdum= '
+!        do np = 1, npoint
+!          print*,  iidum(np), jjdum(np)
+!         enddo
+
+       if(fformat .eq. "netcdf") then
+         print*,'iocomms inside meteorg.f=', iocomms
+        error=nf90_open(trim(fnsig),ior(nf90_nowrite,nf90_mpiio),
+     &          ncid,comm=iocomms, info = mpi_info_null)
           error=nf90_get_att(ncid,nf90_global,"ak",vdummy)
            do k = 1, levs+1
             vcoord(k,1)=vdummy(levs-k+1)
@@ -155,7 +173,7 @@
           error=nf90_get_var(ncid, id_var, nfhour)
           print*, "nfhour:",nfhour
           error=nf90_get_att(ncid,id_var,"units",long_name)
-          print*,'time units',' -- ',trim(long_name)
+!!          print*,'time units',' -- ',trim(long_name)
         read(long_name(13:16),"(i4)")idate(4)
         read(long_name(18:19),"(i2)")idate(2)
         read(long_name(21:22),"(i2)")idate(3)
@@ -169,6 +187,39 @@
           error=nf90_get_var(ncid, id_var, gdlon)
           error=nf90_inq_varid(ncid, "lat", id_var)
           error=nf90_get_var(ncid, id_var, gdlat)
+!!end read NetCDF hearder info, read nemsio below if necessary
+       else 
+
+      call nemsio_open(gfile,trim(fnsig),'read',iret=iret)
+      call nemsio_getfilehead(gfile,iret=iret
+     +     ,idate=idate_nems(1:7),nfhour=nfhour
+     +     ,idvc=idvc,idsl=idsl,lat=dum1d,lon=dum1d2
+     +     ,vcoord=vcoordnems)
+
+      do k=1,levs+1
+        vcoord(k,1)=vcoordnems(k,1,1)
+        vcoord(k,2)=vcoordnems(k,2,1)
+      end do
+      idate(1)=idate_nems(4)
+      idate(2)=idate_nems(2)
+      idate(3)=idate_nems(3)
+      idate(4)=idate_nems(1)
+      fhour=float(nfhour)
+      print *, ' processing forecast hour ', fhour
+      print *, ' idate =', idate
+      jdate = idate(4)*1000000 + idate(2)*10000+
+     &        idate(3)*100 + idate(1)
+      print *, 'jdate = ', jdate
+      print *, 'Total number of stations = ', npoint
+      ap = 0.0
+      do j=1,jm
+        do i=1,im
+          gdlat(i,j)=dum1d((j-1)*im+i)
+          gdlon(i,j)=dum1d2((j-1)*im+i)
+        end do
+      end do
+   
+      endif !end read in nemsio hearder 
 
       if(debugprint) then
       do k=1,levs+1 
@@ -182,183 +233,176 @@
       print*,'sample lon= ',gdlon(im/5,jm/4)
      +       ,gdlon(im/5,jm/3),gdlon(im/5,jm/2)
       endif
-
-! read NetCDF data
 ! topography
-      call date_and_time(date,time,zone,clocking)
-      print *,'1date, time, zone',date, time, zone
-!      print *,'1reading hgt start= ', clocking
-      error=nf90_inq_varid(ncid, "hgtsfc", id_var)
-      error=nf90_get_var(ncid, id_var, hgt)
-      call date_and_time(date,time,zone,clocking)
-!      print *,'2reading hgt end= ', clocking
-      print *,'2date, time, zone',date, time, zone
-      if (error /= 0) then
-        print*,'surface hgt not found'
-      else
+      if (fformat == 'netcdf') then
+      VarName='hgtsfc'
+      Zreverse='yes'
+      call read_netcdf_p(ncid,im,jm,1,VarName,hgt,Zreverse,
+     &     iope,ionproc,iocomms,error)
+        if (error /= 0) print*,'surface hgt not found'
+       else 
+      VarName='hgt'
+      LayName='sfc'
+       call  read_nemsio(gfile,im,jm,1,VarName,LayName,hgt,
+     &     iope,ionproc,iocomms,error)
+        if (error /= 0) print*,'surface hgt not found'
+      endif
         if(debugprint)print*,'sample sfc h= ',hgt(im/5,jm/4)
      +    ,hgt(im/5,jm/3),hgt(im/5,jm/2)
-      end if 
 
 ! surface pressure (Pa)
-
-      error=nf90_inq_varid(ncid, "pressfc", id_var)
-      error=nf90_get_var(ncid, id_var, pint(:,:,1))
-      if (error /= 0) then
-        print*,'surface pres not found'
-      else
+       if (fformat == 'netcdf') then
+      VarName='pressfc'
+      Zreverse='yes'
+       call read_netcdf_p(ncid,im,jm,1,VarName,pint(:,:,1),
+     &       Zreverse,
+     &     iope,ionproc,iocomms,error)
+        if (error /= 0) print*,'surface pressure not found'
+       else 
+      VarName='pres'
+      LayName='sfc'
+        call  read_nemsio(gfile,im,jm,1,VarName,
+     &                    LayName,pint(:,:,1),error)
+        if (error /= 0) print*,'surface pressure not found'
+       endif
         if(debugprint)print*,'sample sfc P= ',pint(im/2,jm/4,1),
      +          pint(im/2,jm/3,1),pint(im/2,jm/2,1)
-      end if
 
 ! temperature using NetCDF
-      call date_and_time(date,time,zone,clocking)
-!      print *,'3reading temp start= ', clocking
-      print *,'3date, time, zone',date, time, zone
-      error=nf90_inq_varid(ncid, "tmp", id_var)
-      error=nf90_get_var(ncid, id_var, dummy3d)
-      call date_and_time(date,time,zone,clocking)
-!      print *,'4reading temp end= ', clocking
-      print *,'4date, time, zone',date, time, zone
-        if (error /= 0) then
-          print*,'T not found at ',k
-        else
-            do k = 1, levs
-             do j=1, jm
-              do i=1, im
-               t3d(i,j,k) = dummy3d(i,j,levs-k+1)
-              enddo
-             enddo
-            enddo
-          if(debugprint) then
+      if (fformat == 'netcdf') then
+      VarName='tmp'
+      Zreverse='yes'
+       call read_netcdf_p(ncid,im,jm,levs,VarName,t3d,Zreverse,
+     &     iope,ionproc,iocomms,error)
+        if (error /= 0) print*,'temp not found'
+       else 
+      VarName='tmp'
+      LayName='mid layer'
+        call  read_nemsio(gfile,im,jm,levs,VarName,LayName,t3d,error)
+        if (error /= 0) print*,'temp not found'
+       endif
+         if(debugprint) then
           print*,'sample T at lev=1 to levs '
             do k = 1, levs
              print*,k, t3d(im/2,jm/3,k)
             enddo
           endif
-        end if
 ! specific humidity
-      call date_and_time(date,time,zone,clocking)
-!      print *,'5reading spfh start= ', clocking
-      print *,'5date, time, zone',date, time, zone
-      error=nf90_inq_varid(ncid, "spfh", id_var)
-      error=nf90_get_var(ncid, id_var, dummy3d)
-      call date_and_time(date,time,zone,clocking)
-      print *,'6date, time, zone',date, time, zone
-!      print *,'6reading spfh end= ', clocking
-        if (error /= 0) then
-          print*,'Q not found at ',error
-        else
-            do k = 1, levs
-             do j=1, jm
-              do i=1, im
-               q3d(i,j,k) = dummy3d(i,j,levs-k+1)
-              enddo
-             enddo
-            enddo
-          if(debugprint) then
+      if (fformat == 'netcdf') then
+      VarName='spfh'
+      Zreverse='yes'
+       call read_netcdf_p(ncid,im,jm,levs,VarName,q3d,Zreverse,
+     &     iope,ionproc,iocomms,error)
+        if (error /= 0) print*,'spfh not found'
+       else 
+      VarName='spfh'
+      LayName='mid layer'
+        call  read_nemsio(gfile,im,jm,levs,VarName,LayName,q3d,error)
+        if (error /= 0) print*,'spfh not found'
+       endif
+        if(debugprint) then
           print*,'sample Q at lev=1 to levs '
             do k = 1, levs
              print*,k, q3d(im/2,jm/3,k)
             enddo
           endif
-        end if        
 ! U wind
-      error=nf90_inq_varid(ncid, "ugrd", id_var)
-      error=nf90_get_var(ncid, id_var, dummy3d)
-        if (error /= 0) then
-          print*,'U not found at ',k
-        else
-            do k = 1, levs
-             do j=1, jm
-              do i=1, im
-               uh(i,j,k) = dummy3d(i,j,levs-k+1)
-              enddo
-             enddo
-            enddo
+      if (fformat == 'netcdf') then
+      VarName='ugrd'
+      Zreverse='yes'
+       call read_netcdf_p(ncid,im,jm,levs,VarName,uh,Zreverse,
+     &     iope,ionproc,iocomms,error)
+        if (error /= 0) print*,'ugrd not found'
+       else 
+      VarName='ugrd'
+      LayName='mid layer'
+        call  read_nemsio(gfile,im,jm,levs,VarName,LayName,uh,error)
+        if (error /= 0) print*,'ugrd not found'
+       endif
           if(debugprint) then
           print*,'sample U at lev=1 to levs '
             do k = 1, levs
              print*,k, uh(im/2,jm/3,k)
             enddo
           endif
-        end if
 ! V wind
-      error=nf90_inq_varid(ncid, "vgrd", id_var)
-      error=nf90_get_var(ncid, id_var, dummy3d)
-        if (error /= 0) then
-          print*,'V not found at ',k
-        else
-            do k = 1, levs
-             do j=1, jm
-              do i=1, im
-               vh(i,j,k) = dummy3d(i,j,levs-k+1)
-              enddo
-             enddo
-            enddo
+      if (fformat == 'netcdf') then
+      VarName='vgrd'
+      Zreverse='yes'
+       call read_netcdf_p(ncid,im,jm,levs,VarName,vh,Zreverse,
+     &     iope,ionproc,iocomms,error)
+        if (error /= 0) print*,'vgrd not found'
+       else 
+      VarName='vgrd'
+      LayName='mid layer'
+        call  read_nemsio(gfile,im,jm,levs,VarName,LayName,vh,error)
+        if (error /= 0) print*,'vgrd not found'
+       endif
           if(debugprint) then
           print*,'sample V at lev=1 to levs '
             do k = 1, levs
              print*,k, vh(im/2,jm/3,k)
             enddo
           endif
-        end if
 ! dzdt !added by Guang Ping Lou for FV3GFS
-      error=nf90_inq_varid(ncid, "dzdt", id_var)
-      error=nf90_get_var(ncid, id_var, dummy3d)
-        if (error /= 0) then
-          recn_dzdt = -9999
-          print*,'dzdt not found at ',k
-        else
-            do k = 1, levs
-             do j=1, jm
-              do i=1, im
-               omega3d(i,j,k) = dummy3d(i,j,levs-k+1)
-              enddo
-             enddo
-            enddo
+      if (fformat == 'netcdf') then
+      VarName='dzdt'
+      Zreverse='yes'
+      call read_netcdf_p(ncid,im,jm,levs,VarName,omega3d,Zreverse,
+     &     iope,ionproc,iocomms,error)
+        if (error /= 0) print*,'dzdt not found'
+       else 
+      VarName='dzdt'
+      LayName='mid layer'
+        call  read_nemsio(gfile,im,jm,levs,VarName,LayName,
+     &           omega3d,error)
+        if (error /= 0) print*,'dzdt not found'
+       endif
           if(debugprint) then
           print*,'sample dzdt at lev=1 to levs '
             do k = 1, levs
              print*,k, omega3d(im/2,jm/3,k)
             enddo
           endif
-        end if
 ! dpres !added by Guang Ping Lou for FV3GFS (interface pressure delta)
-      error=nf90_inq_varid(ncid, "dpres", id_var)
-      error=nf90_get_var(ncid, id_var, delp)
-        if (error /= 0) then
-          recn_dpres = -9999
-          print*,'dpres not found at ',k
-        else
+      if (fformat == 'netcdf') then
+      VarName='dpres'
+      Zreverse='no'
+       call read_netcdf_p(ncid,im,jm,levs,VarName,delp,Zreverse,
+     &     iope,ionproc,iocomms,error)
+        if (error /= 0) print*,'dpres not found'
+       else 
+      VarName='dpres'
+      LayName='mid layer'
+        call  read_nemsio(gfile,im,jm,levs,VarName,LayName,
+     &               delp,error)
+        if (error /= 0) print*,'dpres not found'
+       endif
           if(debugprint) then
           print*,'sample delp at lev=1 to levs '
             do k = 1, levs
              print*,k, delp(im/2,jm/3,k)
             enddo
           endif
-        end if
 ! delz !added by Guang Ping Lou for FV3GFS ("height thickness" with unit "meters" bottom up)
-      call date_and_time(date,time,zone,clocking)
-!      print *,'7reading delz start= ', clocking
-      print *,'7date, time, zone',date, time, zone
-      error=nf90_inq_varid(ncid, "delz", id_var)
-      error=nf90_get_var(ncid, id_var, delz)
-        if (error /= 0) then
-          recn_delz = -9999
-          print*,'delz not found at ',k
-        else
+      if (fformat == 'netcdf') then
+      VarName='delz'
+      Zreverse='no'
+       call read_netcdf_p(ncid,im,jm,levs,VarName,delz,Zreverse,
+     &     iope,ionproc,iocomms,error)
+        if (error /= 0) print*,'delz not found'
+       else 
+      VarName='delz'
+      LayName='mid layer'
+        call read_nemsio(gfile,im,jm,levs,VarName,LayName,delz,error)
+        if (error /= 0) print*,'delz not found'
+       endif
           if(debugprint) then
           print*,'sample delz at lev=1 to levs '
             do k = 1, levs
              print*,k, delz(im/2,jm/3,k)
             enddo
           endif
-        end if
-      call date_and_time(date,time,zone,clocking)
-      print *,'8date, time, zone',date, time, zone
-!      print *,'8reading delz end= ', clocking
-!!      end do ! vertical loop k
 
 ! compute interface pressure
       if(recn_dpres == -9999) then
@@ -372,6 +416,7 @@
        end do
        else
 ! compute pint using dpres from top down if DZDT is used
+      if (fformat == 'netcdf') then
         do j=1,jm
           do i=1,im
             pint(i,j,levs+1) = delp(i,j,1)
@@ -385,6 +430,15 @@
           end do
         end do
        end do
+        else
+         do k=2,levs+1
+          do j=1,jm
+           do i=1,im
+            pint(i,j,k) = pint(i,j,k-1) - delp(i,j,k-1)
+            end do
+           end do
+          end do
+         endif
           if(debugprint) then
           print*,'sample interface pressure pint at lev =1 to levs '
             do k = 1, levs+1
@@ -397,6 +451,7 @@
        print*, 'using calculated height'
        else
 ! compute zint using delz from bot up if DZDT is used
+      if (fformat == 'netcdf') then
         do j=1,jm
           do i=1,im
             zint(i,j,1) = 0.0
@@ -406,11 +461,19 @@
          kk=levs-k+1
         do j=1,jm
           do i=1,im
-!            zint(i,j,k) = zint(i,j,k-1) + delz(i,j,k-1)
             zint(i,j,k) = zint(i,j,k-1) - delz(i,j,kk)
           end do
         end do
        end do
+        else
+       do k=2,levs+1
+        do j=1,jm
+         do i=1,im
+          zint(i,j,k) = zint(i,j,k-1) + delz(i,j,k-1)
+          end do
+         end do
+        end do
+        endif
           if(debugprint) then
           print*,'sample interface height zint at lev =1 to levs '
             do k = 1, levs+1
@@ -428,8 +491,8 @@
       else
       nf1 = nf - nint3
        endif
-       if ( nf .eq. 0 ) nf1=0
-      if(nf.eq.0) then
+       if ( nf == 0 ) nf1=0
+      if(nf==0) then
         fngrib='flxf00'
       elseif(nf.lt.10) then
         fngrib='flxf0'
@@ -441,7 +504,7 @@
         fngrib='flxf'
         write(fngrib(5:7),'(i3)') nf
       endif
-      if(nf1.eq.0) then
+      if(nf1==0) then
         fngrib2='flxf00'
       elseif(nf1.lt.10) then
         fngrib2='flxf0'
@@ -453,93 +516,178 @@
         fngrib2='flxf'
         write(fngrib2(5:7),'(i3)') nf1
       endif
-      call date_and_time(date,time,zone,clocking)
-!      print *,'9reading surface data start= ', clocking
-      print *,'9date, time, zone',date, time, zone
+      if (fformat == 'netcdf') then
           error=nf90_open(trim(fngrib),nf90_nowrite,ncid)
+!open T-nint below
           error=nf90_open(trim(fngrib2),nf90_nowrite,ncid2)
-       print*, 'open file1,2= ', trim(fngrib),'  ', trim(fngrib2)
-      if ( error /= 0 ) then
-        print*,"fail to open nems flux file";stop
-      endif
+       if(error /= 0)print*,'file not open',trim(fngrib), trim(fngrib2)
+       else 
+      call nemsio_open(ffile,trim(fngrib),'read',iret=error)
+      call nemsio_open(ffile2,trim(fngrib2),'read',iret=error)
+       if(error /= 0)print*,'file not open',trim(fngrib), trim(fngrib2)
+       endif
 ! land water mask
-      error=nf90_inq_varid(ncid, "land", id_var)
-      error=nf90_get_var(ncid, id_var, lwmask)
-      if (error /= 0) then
-        print*,'land mask not found'
-      else
+      if (fformat == 'netcdf') then
+      VarName='land'
+      Zreverse='no'
+       call read_netcdf_p(ncid,im,jm,1,VarName,lwmask,Zreverse,
+     &     iope,ionproc,iocomms,error)
+        if (error /= 0) print*,'lwmask not found'
+       else 
+      VarName='land'
+      LayName='sfc'
+        call  read_nemsio(ffile,im,jm,1,VarName,LayName,lwmask,error)
+        if (error /= 0) print*,'lwmask not found'
+       endif
         if(debugprint)
      +   print*,'sample land mask= ',lwmask(im/2,jm/4),
      +          lwmask(im/2,jm/3)
-      end if
 
 ! surface T
-      error=nf90_inq_varid(ncid, "tmpsfc", id_var)
-      error=nf90_get_var(ncid, id_var, dum2d(:,:,1))
-      if (error /= 0) then
-        print*,'surface T not found'
-      else
+      if (fformat == 'netcdf') then
+      VarName='tmpsfc'
+      Zreverse='no'
+       call read_netcdf_p(ncid,im,jm,1,VarName,dum2d(:,:,1),
+     &       Zreverse,
+     &     iope,ionproc,iocomms,error)
+        if (error /= 0) print*,'tmpsfc not found'
+       else 
+      VarName='tmp'
+      LayName='sfc'
+        call  read_nemsio(ffile,im,jm,1,VarName,LayName,
+     &        dum2d(:,:,1),error)
+        if (error /= 0) print*,'tmpsfc not found'
+       endif
         if(debugprint)
      +   print*,'sample sfc T= ',dum2d(im/2,jm/4,1),dum2d(im/2,jm/3,1),
      +          dum2d(im/2,jm/2,1)
-      end if
 ! 2m T
-      error=nf90_inq_varid(ncid, "tmp2m", id_var)
-      error=nf90_get_var(ncid, id_var, dum2d(:,:,2))
-      if (error /= 0) then
-        print*,'surface T not found'
-      else
-      end if
+      if (fformat == 'netcdf') then
+      VarName='tmp2m'
+      Zreverse='no'
+       call read_netcdf_p(ncid,im,jm,1,VarName,dum2d(:,:,2),
+     &              Zreverse,
+     &     iope,ionproc,iocomms,error)
+        if (error /= 0) print*,'tmp2m not found'
+       else 
+      VarName='tmp'
+      LayName='2 m above gnd'
+        call  read_nemsio(ffile,im,jm,1,VarName,LayName,
+     +             dum2d(:,:,2),error)
+        if (error /= 0) print*,'tmp2m not found'
+       endif
+        if(debugprint)
+     +   print*,'sample 2m T= ',dum2d(im/2,jm/4,2),dum2d(im/2,jm/3,2),
+     +          dum2d(im/2,jm/2,2)
 
 ! 2m Q
-      error=nf90_inq_varid(ncid, "spfh2m", id_var)
-      error=nf90_get_var(ncid, id_var, dum2d(:,:,3))
-      if (error /= 0) then
-        print*,'surface T not found'
-      else
+      if (fformat == 'netcdf') then
+      VarName='spfh2m'
+      Zreverse='no'
+       call read_netcdf_p(ncid,im,jm,1,VarName,dum2d(:,:,3),
+     &           Zreverse,
+     &     iope,ionproc,iocomms,error)
+        if (error /= 0) print*,'spfh2m not found'
+       else 
+      VarName='spfh'
+      LayName='2 m above gnd'
+        call  read_nemsio(ffile,im,jm,1,VarName,LayName,
+     +             dum2d(:,:,3),error)
+        if (error /= 0) print*,'spfh2m not found'
+       endif
         if(debugprint)
      +   print*,'sample 2m Q= ',dum2d(im/2,jm/4,3),dum2d(im/2,jm/3,3),
      +          dum2d(im/2,jm/2,3)
-      end if
 
 ! U10
-      error=nf90_inq_varid(ncid, "ugrd10m", id_var)
-      error=nf90_get_var(ncid, id_var, dum2d(:,:,4))
-      if (error /= 0) then
-        print*,'10 m U not found'
-      end if
+      if (fformat == 'netcdf') then
+      VarName='ugrd10m'
+      Zreverse='no'
+       call read_netcdf_p(ncid,im,jm,1,VarName,dum2d(:,:,4),
+     &              Zreverse,
+     &     iope,ionproc,iocomms,error)
+        if (error /= 0) print*,'ugrd10m not found'
+       else 
+      VarName='ugrd'
+      LayName='10 m above gnd'
+        call  read_nemsio(ffile,im,jm,1,VarName,LayName,
+     +             dum2d(:,:,4),error)
+        if (error /= 0) print*,'ugrd10m not found'
+       endif
 
 ! V10
-      error=nf90_inq_varid(ncid, "vgrd10m", id_var)
-      error=nf90_get_var(ncid, id_var, dum2d(:,:,5))
-      if (error /= 0) then
-        print*,'10 m V not found'
-      end if
+      if (fformat == 'netcdf') then
+      VarName='vgrd10m'
+      Zreverse='no'
+       call read_netcdf_p(ncid,im,jm,1,VarName,dum2d(:,:,5),
+     &             Zreverse,
+     &     iope,ionproc,iocomms,error)
+        if (error /= 0) print*,'vgrd10m not found'
+       else 
+      VarName='vgrd'
+      LayName='10 m above gnd'
+        call  read_nemsio(ffile,im,jm,1,VarName,LayName,
+     +             dum2d(:,:,5),error)
+        if (error /= 0) print*,'vgrd10m not found'
+       endif
 
 ! soil T
-      error=nf90_inq_varid(ncid, "soilt1", id_var)
-      error=nf90_get_var(ncid, id_var, dum2d(:,:,6))
-      if (error /= 0) then
-        print*,'soil T not found'
-      else
+      if (fformat == 'netcdf') then
+      VarName='soilt1'
+      Zreverse='no'
+       call read_netcdf_p(ncid,im,jm,1,VarName,dum2d(:,:,6),
+     &              Zreverse,
+     &     iope,ionproc,iocomms,error)
+        if (error /= 0) print*,'soilt1 not found'
+       else 
+      VarName='tmp'
+      LayName='0-10 cm down'
+        call  read_nemsio(ffile,im,jm,1,VarName,LayName,
+     +             dum2d(:,:,6),error)
+        if (error /= 0) print*,'soil T not found'
+       endif
         if(debugprint)
      +   print*,'sample soil T= ',dum2d(im/2,jm/4,6),dum2d(im/2,jm/3,6),
      +          dum2d(im/2,jm/2,6)
-      end if
+
 ! snow depth
-      error=nf90_inq_varid(ncid, "snod", id_var)
-      error=nf90_get_var(ncid, id_var, dum2d(:,:,7))
-      if (error /= 0) then
-        print*,'snow depth not found'
-      end if
+      if (fformat == 'netcdf') then
+      VarName='snod'
+      Zreverse='no'
+       call read_netcdf_p(ncid,im,jm,1,VarName,dum2d(:,:,7),
+     &          Zreverse,
+     &     iope,ionproc,iocomms,error)
+        if (error /= 0) print*,'snod not found'
+       else 
+      VarName='snod'
+      LayName='sfc'
+        call  read_nemsio(ffile,im,jm,1,VarName,LayName,
+     +             dum2d(:,:,7),error)
+        if (error /= 0) print*,'snod not found'
+       endif
 
 ! evaporation
 !instantaneous surface latent heat net flux
-      error=nf90_inq_varid(ncid, "lhtfl", id_var)
-      error=nf90_get_var(ncid, id_var, dum2d(:,:,8))
-      if (error /= 0) then
-        print*,'latent heat flux not found'
-      end if
+      if (fformat == 'netcdf') then
+      VarName='lhtfl'
+      Zreverse='no'
+       call read_netcdf_p(ncid,im,jm,1,VarName,dum2d(:,:,8),
+     &            Zreverse,
+     &     iope,ionproc,iocomms,error)
+        if (error /= 0) print*,'lhtfl not found'
+       else 
+      VarName='lhtfl'
+      LayName='sfc'
+        call  read_nemsio(ffile,im,jm,1,VarName,LayName,
+     +             dum2d(:,:,8),error)
+        if (error /= 0) print*,'lhtfl not found'
+       endif
+        if(debugprint)
+     +   print*,'evaporation latent heat net flux= ',
+     +          dum2d(im/2,jm/4,8),dum2d(im/2,jm/3,8)
+        if(debugprint)
+     +   print*,'evaporation latent heat net flux stn 000692)= ',
+     +          dum2d(2239,441,8)
 
 ! total precip
        if ( nf .le. nend1 ) then
@@ -548,17 +696,28 @@
       fint = nint3
        endif
 ! for accumulated precipitation:
-        error=nf90_inq_varid(ncid, "prate_ave", id_var)  !current hour
-        error=nf90_get_var(ncid, id_var, apcp)
-        error=nf90_inq_varid(ncid2, "prate_ave", id_var) !earlier hour
-        error=nf90_get_var(ncid2, id_var, cpcp)
-      if (error /= 0) then
-        print*,'total precip not found'
-      else
+      if (fformat == 'netcdf') then
+      VarName='prate_ave'
+      Zreverse='no'
+!!       call read_netcdf_p(ncid,im,jm,1,VarName,apcp,Zreverse,error) !current hour
+       call read_netcdf_p(ncid,im,jm,1,VarName,apcp,Zreverse,
+     &     iope,ionproc,iocomms,error)
+!!       call read_netcdf_p(ncid2,im,jm,1,VarName,cpcp,Zreverse,error) !earlier hour
+       call read_netcdf_p(ncid2,im,jm,1,VarName,cpcp,Zreverse,
+     &     iope,ionproc,iocomms,error)
+        if (error /= 0) print*,'prate_ave not found'
+       else 
+      VarName='prate_ave'
+      LayName='sfc'
+        call  read_nemsio(ffile,im,jm,1,VarName,LayName,
+     +             apcp,error)
+        call  read_nemsio(ffile2,im,jm,1,VarName,LayName,
+     +             cpcp,error)
+        if (error /= 0) print*,'prate_ave2 not found'
+       endif
         if(debugprint)
      & print*,'sample fhour ,3= ', fhour,
      & '1sample precip rate= ',apcp(im/2,jm/3),cpcp(im/2,jm/3)
-       end if
           ap=fhour-fint
         do j=1,jm
           do i=1,im
@@ -572,13 +731,23 @@
      +         dum2d(im/2,jm/3,9),dum2d(im/2,jm/2,9)
 
 ! convective precip
-        error=nf90_inq_varid(ncid, "cprat_ave", id_var)
-        error=nf90_get_var(ncid, id_var, apcp)
-        error=nf90_inq_varid(ncid2, "cprat_ave", id_var) !earlier hour
-        error=nf90_get_var(ncid2, id_var, cpcp)
-      if (error /= 0) then
-        print*,'convective precip not found= ', 'cprat_ave'
-      end if
+      if (fformat == 'netcdf') then
+      VarName='cprat_ave'
+      Zreverse='no'
+       call read_netcdf_p(ncid,im,jm,1,VarName,apcp,Zreverse,
+     &     iope,ionproc,iocomms,error)
+       call read_netcdf_p(ncid2,im,jm,1,VarName,cpcp,Zreverse,
+     &     iope,ionproc,iocomms,error)
+        if (error /= 0) print*,'cprat_ave not found'
+       else 
+      VarName='cprat_ave'
+      LayName='sfc'
+        call  read_nemsio(ffile,im,jm,1,VarName,LayName,
+     +             apcp,error)
+        call  read_nemsio(ffile2,im,jm,1,VarName,LayName,
+     +             cpcp,error)
+        if (error /= 0) print*,'cprat_ave2 not found'
+       endif
           ap=fhour-fint
         do j=1,jm
           do i=1,im
@@ -588,39 +757,80 @@
         end do
 
 ! water equi
-        error=nf90_inq_varid(ncid, "weasd", id_var)
-        error=nf90_get_var(ncid, id_var, dum2d(:,:,11))
-      if (error /= 0) then
-        print*,'water equivqlent not found'
-      end if
+      if (fformat == 'netcdf') then
+      VarName='weasd'
+      Zreverse='no'
+       call read_netcdf_p(ncid,im,jm,1,VarName,dum2d(:,:,11),
+     &                Zreverse,
+     &     iope,ionproc,iocomms,error)
+        if (error /= 0) print*,'weasd not found'
+       else 
+      VarName='weasd'
+      LayName='sfc'
+        call  read_nemsio(ffile,im,jm,1,VarName,LayName,
+     +             dum2d(:,:,11),error)
+        if (error /= 0) print*,'weasd not found'
+       endif
 
 ! low cloud fraction
-        error=nf90_inq_varid(ncid, "tcdc_avelcl", id_var)
-        error=nf90_get_var(ncid, id_var, dum2d(:,:,12))
-      if (error /= 0) then
-        print*,'tcdc_avelcl not found'
-      end if
+      if (fformat == 'netcdf') then
+      VarName='tcdc_avelcl'
+      Zreverse='no'
+       call read_netcdf_p(ncid,im,jm,1,VarName,
+     &               dum2d(:,:,12),Zreverse,
+     &     iope,ionproc,iocomms,error)
+        if (error /= 0) print*,'tcdc_avelcl not found'
+       else 
+      VarName='tcdc_ave'
+      LayName='low cld lay'
+        call  read_nemsio(ffile,im,jm,1,VarName,LayName,
+     +             dum2d(:,:,12),error)
+        if (error /= 0) print*,'low cld lay not found'
+       endif
 
 ! mid cloud fraction
-        error=nf90_inq_varid(ncid, "tcdc_avemcl", id_var)
-        error=nf90_get_var(ncid, id_var, dum2d(:,:,13))
-      if (error /= 0) then
-        print*,'tcdc_avemcl not found'
-      end if
+      if (fformat == 'netcdf') then
+      VarName='tcdc_avemcl'
+      Zreverse='no'
+       call read_netcdf_p(ncid,im,jm,1,VarName,
+     &               dum2d(:,:,13),Zreverse,
+     &     iope,ionproc,iocomms,error)
+        if (error /= 0) print*,'tcdc_avemcl not found'
+       else 
+      VarName='tcdc_ave'
+      LayName='mid cld lay'
+        call  read_nemsio(ffile,im,jm,1,VarName,LayName,
+     +             dum2d(:,:,13),error)
+        if (error /= 0) print*,'mid cld lay not found'
+       endif
 
 ! high cloud fraction
-        error=nf90_inq_varid(ncid, "tcdc_avehcl", id_var)
-        error=nf90_get_var(ncid, id_var, dum2d(:,:,14))
-      if (error /= 0) then
-        print*,'tcdc_avehcl not found'
-      end if
+      if (fformat == 'netcdf') then
+      VarName='tcdc_avehcl'
+      Zreverse='no'
+       call read_netcdf_p(ncid,im,jm,1,VarName,
+     &               dum2d(:,:,14),Zreverse,
+     &     iope,ionproc,iocomms,error)
+        if (error /= 0) print*,'tcdc_avehcl not found'
+       else 
+      VarName='tcdc_ave'
+      LayName='high cld lay'
+        call  read_nemsio(ffile,im,jm,1,VarName,LayName,
+     +             dum2d(:,:,14),error)
+        if (error /= 0) print*,'high cld lay not found'
+       endif
 
         if(debugprint)
      +   print*,'sample high cloud frac= ',dum2d(im/2,jm/4,14),
      +         dum2d(im/2,jm/3,14),dum2d(im/2,jm/2,14)
 
-      error=nf90_close(ncid)
-      error=nf90_close(ncid2)
+      if (fformat == 'netcdf') then
+        error=nf90_close(ncid)
+        error=nf90_close(ncid2)
+      else
+        call nemsio_close(ffile,iret=error)
+        call nemsio_close(ffile2,iret=error)
+      endif
       call date_and_time(date,time,zone,clocking)
 !      print *,'10reading surface data end= ', clocking
       print *,'10date, time, zone',date, time, zone
@@ -632,8 +842,8 @@
       do np=1, npoint
 ! use read in predetermined i,j
       if (np1==0) then
-        idum=ijdum(np,1)
-        jdum=ijdum(np,2)
+        idum=iidum(np)
+        jdum=jjdum(np)
 
       else
 !  find nearest neighbor 
@@ -644,123 +854,123 @@
          do i=1,im-1
           if((rdum>=gdlon(i,j) .and. rdum<=gdlon(i+1,j)) .and.
      +    (rlat(np)<=gdlat(i,j).and.rlat(np)>=gdlat(i,j+1)) ) then
-              if(landwater(np) .eq. 2)then
+              if(landwater(np) == 2)then
                idum=i
                jdum=j
             exit
-              else if(landwater(np) .eq. lwmask(i,j))then
+              else if(landwater(np) == lwmask(i,j))then
                idum=i
                jdum=j      !1
             exit
-              else if(landwater(np) .eq. lwmask(i+1,j))then
+              else if(landwater(np) == lwmask(i+1,j))then
                idum=i+1
                jdum=j      ! 2 
             exit
-              else if(landwater(np) .eq. lwmask(i-1,j))then
+              else if(landwater(np) == lwmask(i-1,j))then
                idum=i-1
                jdum=j      ! 3
             exit
-              else if(landwater(np) .eq. lwmask(i,j+1))then
+              else if(landwater(np) == lwmask(i,j+1))then
                idum=i
                jdum=j+1    ! 4
             exit
-              else if(landwater(np) .eq. lwmask(i,j-1))then
+              else if(landwater(np) == lwmask(i,j-1))then
                idum=i
                jdum=j-1    ! 5
             exit
-              else if(landwater(np) .eq. lwmask(i+1,j-1))then
+              else if(landwater(np) == lwmask(i+1,j-1))then
                idum=i+1
                jdum=j-1    ! 6
             exit
-              else if(landwater(np) .eq. lwmask(i+1,j+1))then
+              else if(landwater(np) == lwmask(i+1,j+1))then
                idum=i+1
                jdum=j+1    ! 7
             exit
-              else if(landwater(np) .eq. lwmask(i-1,j+1))then
+              else if(landwater(np) == lwmask(i-1,j+1))then
                idum=i-1
                jdum=j+1    ! 8
             exit
-              else if(landwater(np) .eq. lwmask(i-1,j-1))then
+              else if(landwater(np) == lwmask(i-1,j-1))then
                idum=i-1
                jdum=j-1    ! 9
             exit
-              else if(landwater(np) .eq. lwmask(i,j+2))then
+              else if(landwater(np) == lwmask(i,j+2))then
                idum=i
                jdum=j+2    !   10
             exit
-              else if(landwater(np) .eq. lwmask(i+2,j))then
+              else if(landwater(np) == lwmask(i+2,j))then
                idum=i+2
                jdum=j      !11
             exit
-              else if(landwater(np) .eq. lwmask(i,j-2))then
+              else if(landwater(np) == lwmask(i,j-2))then
                idum=i
                jdum=j-2     !  12
             exit
-              else if(landwater(np) .eq. lwmask(i-2,j))then
+              else if(landwater(np) == lwmask(i-2,j))then
                idum=i-2
                jdum=j       !13
             exit
-              else if(landwater(np) .eq. lwmask(i-2,j+1))then
+              else if(landwater(np) == lwmask(i-2,j+1))then
                idum=i-2
                jdum=j+1      ! 14
             exit
-              else if(landwater(np) .eq. lwmask(i-1,j+2))then
+              else if(landwater(np) == lwmask(i-1,j+2))then
                idum=i-1
                jdum=j+2      !15
             exit
-              else if(landwater(np) .eq. lwmask(i+1,j+2))then
+              else if(landwater(np) == lwmask(i+1,j+2))then
                idum=i+1
                jdum=j+2      !16
             exit
-              else if(landwater(np) .eq. lwmask(i+2,j+1))then
+              else if(landwater(np) == lwmask(i+2,j+1))then
                idum=i+2
                jdum=j+1      !17
             exit
-              else if(landwater(np) .eq. lwmask(i+2,j-1))then
+              else if(landwater(np) == lwmask(i+2,j-1))then
                idum=i+2
                jdum=j-1      !18
             exit
-              else if(landwater(np) .eq. lwmask(i+1,j-2))then
+              else if(landwater(np) == lwmask(i+1,j-2))then
                idum=i+1
                jdum=j-2       !19
             exit
-              else if(landwater(np) .eq. lwmask(i-1,j-2))then
+              else if(landwater(np) == lwmask(i-1,j-2))then
                idum=i-1
                jdum=j-2       !20
             exit
-              else if(landwater(np) .eq. lwmask(i-2,j-1))then
+              else if(landwater(np) == lwmask(i-2,j-1))then
                idum=i-2
                jdum=j-1       !21
             exit
-              else if(landwater(np) .eq. lwmask(i-2,j-2))then
+              else if(landwater(np) == lwmask(i-2,j-2))then
                idum=i-2
                jdum=j-2       !22
             exit
-              else if(landwater(np) .eq. lwmask(i+2,j-2))then
+              else if(landwater(np) == lwmask(i+2,j-2))then
                idum=i+2
                jdum=j-2       !23
             exit
-              else if(landwater(np) .eq. lwmask(i+2,j+2))then
+              else if(landwater(np) == lwmask(i+2,j+2))then
                idum=i+2
                jdum=j+2       !24
             exit
-              else if(landwater(np) .eq. lwmask(i-2,j+2))then
+              else if(landwater(np) == lwmask(i-2,j+2))then
                idum=i-2
                jdum=j+2       !25
             exit
-              else if(landwater(np) .eq. lwmask(i+3,j))then
+              else if(landwater(np) == lwmask(i+3,j))then
                idum=i+3
                jdum=j         !26
             exit
-              else if(landwater(np) .eq. lwmask(i-3,j))then
+              else if(landwater(np) == lwmask(i-3,j))then
                idum=i-3
                jdum=j         !27
             exit
-              else if(landwater(np) .eq. lwmask(i,j+3))then
+              else if(landwater(np) == lwmask(i,j+3))then
                idum=i
                jdum=j+3         !28
             exit
-              else if(landwater(np) .eq. lwmask(i,j-3))then
+              else if(landwater(np) == lwmask(i,j-3))then
                idum=i
                jdum=j-3         !29
             exit
@@ -783,7 +993,7 @@ CC             print*, ' So it takes i,j '
         if(debugprint) then
          write(nij,98) np,idum,jdum,rlat(np),rlon(np)
    98     FORMAT (3I6, 2F9.2)
-          if(elevstn(np).eq.-999.) elevstn(np)=hgt(idum,jdum)
+          if(elevstn(np)==-999.) elevstn(np)=hgt(idum,jdum)
          write(9,99) np,rlat(np),rlon(np),elevstn(np),hgt(idum,jdum)
    99     FORMAT (I6, 4F9.2)
          if(np==1 .or.np==100)print*,'nearest neighbor for station ',np
@@ -833,8 +1043,10 @@ CC due to rounding and interpolation errors, correct it here -G.P. Lou:
           gridsi(np,k+2+2*levs)=omega3d(idum,jdum,k)
           gridui(np,k)=uh(idum,jdum,k)
           gridvi(np,k)=vh(idum,jdum,k)
-          p1(np,k)=0.5*(pint(idum,jdum,k)+pint(idum,jdum,k+1))
-          z1(np,k)=0.5*(zint(idum,jdum,k)+zint(idum,jdum,k+1))
+          p1(np,k)=pint(idum,jdum,k+1)
+          z1(np,k)=zint(idum,jdum,k+1)
+!!          p1(np,k)=0.5*(pint(idum,jdum,k)+pint(idum,jdum,k+1))
+!!          z1(np,k)=0.5*(zint(idum,jdum,k)+zint(idum,jdum,k+1))
  
           griddiv(np,k)=(uh(ie,jdum,k)-uh(iw,jdum,k))/dx+
      +       (vh(idum,jn,k)*cos(gdlat(idum,jn)*dtr)-
@@ -928,16 +1140,13 @@ CC due to rounding and interpolation errors, correct it here -G.P. Lou:
 !
 !  move surface pressure to the station surface from the model surface
 !
-      call date_and_time(date,time,zone,clocking)
-!      print *,'11reading stn elev start= ', clocking
-      print *,'11date, time, zone',date, time, zone
         do np = 1, npoint
 !
 !  when the station elevation information in the table says missing,
 !    use the model elevation
 !
 !          print *, "elevstn = ", elevstn(np)
-          if(elevstn(np).eq.-999.) elevstn(np) = grids(np,1)
+          if(elevstn(np)==-999.) elevstn(np) = grids(np,1)
           psn(np) = ps(np) * exp(-con_g*(elevstn(np)-grids(np,1)) /
      &              (con_rd * grids(np,3)))
           call sigio_modpr(1,1,levso,nvcoord,idvc,
@@ -957,8 +1166,8 @@ CC due to rounding and interpolation errors, correct it here -G.P. Lou:
             ppn = p3(np,k)          
             tt(np,k) = grids(np,k+2)    
             ttnew(np,k) = tt(np,k) * (ppn/pp)**(con_rocp)
-            if(np==1)print*,'k,pp,ppn,tt,ttnew= ',k,pp,ppn,
-     +      tt(np,k),ttnew(np,k)
+!            if(np==1)print*,'k,pp,ppn,tt,ttnew= ',k,pp,ppn,
+!     +      tt(np,k),ttnew(np,k)
             call svp(qsn,esn,ppn,ttnew(np,k))
             call svp(qs,es,pp,tt(np,k))
             qnew(np,k) = grids(np,k+levso+2) * qsn / qs
@@ -967,6 +1176,12 @@ CC due to rounding and interpolation errors, correct it here -G.P. Lou:
 !
 !  move the new clocking into the old
 !
+!! test removing height adjustments
+        np1=0
+      if (np1==0) then
+          print*, 'do not do height adjustments'
+      else
+          print*, 'do height adjustments'
         do np = 1, npoint
           ps(np) = psn(np)
         enddo
@@ -976,6 +1191,7 @@ CC due to rounding and interpolation errors, correct it here -G.P. Lou:
             grids(np,k+levso+2) = qnew(np,k)
           enddo
         enddo
+       endif
         print*,'finish adjusting to station terrain'
 !
 !  get sea-level pressure (Pa) and layer geopotential height
@@ -998,9 +1214,6 @@ CC due to rounding and interpolation errors, correct it here -G.P. Lou:
        print*,'finish computing MSLP'
        print*,'finish computing zp ', (zp(3,k),k=1,levso)
        print*,'finish computing zp2(1-2) ', zp2(1),zp2(2)
-      call date_and_time(date,time,zone,clocking)
-!      print *,'12reading stn elev end= ', clocking
-      print *,'12date, time, zone',date, time, zone
 !
 !  prepare buffer data
 !
@@ -1009,7 +1222,7 @@ CC due to rounding and interpolation errors, correct it here -G.P. Lou:
           do k=1,levso
             pi3(np,k+1)=pi3(np,k)-pd3(np,k)    !layer pressure (Pa)
           enddo
-!!      equivalence (cstat1,rstat1)
+!!     ==ivalence (cstat1,rstat1)
           cstat1=cstat(np)
           data(1) = ifix(fhour+.2) * 3600    ! FORECAST TIME (SEC)
           data(2) = istat(np)                ! STATION NUMBER
@@ -1030,7 +1243,8 @@ CC due to rounding and interpolation errors, correct it here -G.P. Lou:
             u = gridu(np,k)
             v = gridv(np,k)
 !           data((k-1)*6+7) = pi3(np,k)                ! PRESSURE (PA) at interface layer
-            data((k-1)*6+7) = p3(np,k)                 ! PRESSURE (PA) at integer layer
+!            data((k-1)*6+7) = p3(np,k)                 ! PRESSURE (PA) at integer layer
+            data((k-1)*6+7) = p1(np,k)                 ! PRESSURE (PA) at integer layer
             data((k-1)*6+8) = t                        ! TEMPERATURE (K)
             data((k-1)*6+9) = u                        ! U WIND (M/S)
             data((k-1)*6+10) = v                        ! V WIND (M/S)
@@ -1053,7 +1267,7 @@ CC due to rounding and interpolation errors, correct it here -G.P. Lou:
 ! It was decided that no corrctions were needed due to higher model
 ! resolution.
 !
-!          if(sfc(10,np).eq.0.) then
+!          if(sfc(10,np)==0.) then
 !            sfc(30,np) = sfc(30,np) + dtemp
 !            sfc(5,np) = sfc(5,np) + dtemp
 !          endif
@@ -1065,6 +1279,8 @@ CC due to rounding and interpolation errors, correct it here -G.P. Lou:
 !            endif
 !            sfc(30,np) = sfc(30,np) + dtemp
 !          endif
+        if(debugprint)
+     +   print*,'evaporation (stn 000692)= ',sfc(17,np)
           data(9+nflx) = sfc(5,np)                       ! tsfc (K)
           data(10+nflx) = sfc(6,np)                       ! 10cm soil temp (K)
           data(11+nflx) = sfc(17,np)                     ! evaporation (w/m**2)
@@ -1090,8 +1306,8 @@ CC due to rounding and interpolation errors, correct it here -G.P. Lou:
           DOMR=0.
           DOMIP=0.
           DOMZR=0.
-          if(np.eq.1.or.np.eq.2) nd = 1
-          if(np.eq.1.or.np.eq.2) trace = .true.
+          if(np==1.or.np==2) nd = 1
+          if(np==1.or.np==2) trace = .true.
 
           if(sfc(12,np).gt.0.) then !check for precip then calc precip type
           do k = 1, leveta+1
@@ -1136,7 +1352,7 @@ CC due to rounding and interpolation errors, correct it here -G.P. Lou:
           data(nflx + 23) = DOMIP
           data(nflx + 24) = DOMZR
           data(nflx + 25) = DOMR
-          if(np.eq.1.or.np.eq.100) then
+          if(np==1.or.np==100) then
             print *, ' surface fields for hour', nf, 'np =', np
             print *, (data(l+nflx),l=1,25)
             print *, ' temperature sounding'

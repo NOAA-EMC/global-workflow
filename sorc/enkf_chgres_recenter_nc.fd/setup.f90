@@ -12,6 +12,7 @@
  integer, public  :: i_output
  integer, public  :: j_output
  integer                , public  :: ij_output
+ logical, public :: cld_amt
 
  public                           :: program_setup
 
@@ -24,7 +25,9 @@
  integer                           :: istat
 
  namelist /chgres_setup/ i_output, j_output, input_file, output_file, &
-                      terrain_file, vcoord_file
+                      terrain_file, vcoord_file, cld_amt
+
+ cld_amt = .false. ! default option
 
  print*
  print*,"OPEN SETUP NAMELIST."

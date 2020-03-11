@@ -12,11 +12,11 @@ echo "BEGIN: config.post"
 #-------------------------------------------
 
 # No. of concurrent post jobs [0 implies sequential]
-export NPOSTGRP=20
+export NPOSTGRP=42
 export OUTTYP=4
 export MODEL_OUT_FORM=binarynemsiompiio
 if [ $OUTPUT_FILE = "netcdf" ]; then 
-    export MODEL_OUT_FORM=netcdfnemsiompiio
+    export MODEL_OUT_FORM=netcdfpara
 fi
 
 # Post driver job that calls gfs_nceppost.sh and downstream jobs
@@ -27,7 +27,7 @@ export GFSDWNSH="$HOMEpost/ush/fv3gfs_dwn_nems.sh"
 export POSTGPSH="$HOMEpost/ush/gfs_nceppost.sh"
 export POSTGPEXEC="$HOMEpost/exec/gfs_ncep_post"
 export GOESF=YES                              # goes image
-export GTGF=NO                                # gtg icing product
+export WAFSF=NO                               # WAFS products
 export FLXF=YES                               # grib2 flux file written by post
 export PGB1F=YES                              
 if [ $RUN_ENVIR = "nco" ]; then
@@ -48,11 +48,5 @@ fi
 
 export GRIBVERSION='grib2'
 export SENDCOM="YES"
-
-if [ $machine = "THEIA" ] ; then
-    export CRTM_FIX=/scratch3/NCEPDEV/nceplibs/dev/crtm/v2.2.3/fix
-else
-    echo "UPP using CRTM_FIX = $CRTM_FIX"
-fi
 
 echo "END: config.post"

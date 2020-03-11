@@ -16,7 +16,6 @@ import rocoto
 
 DATE_ENV_VARS=['CDATE','SDATE','EDATE']
 SCHEDULER_MAP={'HERA':'slurm',
-               'THEIA':'slurm',
                'ORION':'slurm',
                'WCOSS':'lsf',
                'WCOSS_DELL_P3':'lsf',
@@ -146,12 +145,10 @@ def config_parser(files):
 
 def detectMachine():
 
-    machines = ['THEIA', 'HERA', 'ORION' 'WCOSS_C', 'WCOSS_DELL_P3']
+    machines = ['HERA', 'ORION' 'WCOSS_C', 'WCOSS_DELL_P3']
 
     if os.path.exists('/scratch1/NCEPDEV'):
         return 'HERA'
-    elif os.path.exists('/scratch3/NCEPDEV'):
-        return 'THEIA'
     elif os.path.exists('/work/noaa'):
         return 'ORION'
     elif os.path.exists('/gpfs') and os.path.exists('/etc/SuSE-release'):
@@ -271,7 +268,7 @@ def get_gfs_interval(gfs_cyc):
     return interval
 
 
-def get_resources(machine, cfg, task, cdump='gdas'):
+def get_resources(machine, cfg, task, reservation, cdump='gdas'):
 
     scheduler = get_scheduler(machine)
 
@@ -305,7 +302,7 @@ def get_resources(machine, cfg, task, cdump='gdas'):
     if scheduler in ['slurm']:
         natstr = '--export=NONE'
 
-    if machine in ['THEIA', 'HERA', 'ORION', 'WCOSS_C', 'WCOSS_DELL_P3']:
+    if machine in ['HERA', 'ORION', 'WCOSS_C', 'WCOSS_DELL_P3']:
 
         if machine in ['HERA', 'ORION']:
             resstr = '<nodes>%d:ppn=%d:tpp=%d</nodes>' % (nodes, ppn, threads)
@@ -316,10 +313,13 @@ def get_resources(machine, cfg, task, cdump='gdas'):
             resstr += '<shared></shared>'
 
         if machine in ['WCOSS_DELL_P3']:
-            natstr = "-R 'affinity[core(%d)]'" % (threads)
+            if not reservation in ['NONE']:
+               natstr = "-U %s -R 'affinity[core(%d)]'" % (reservation, threads)
+            else:
+               natstr = "-R 'affinity[core(%d)]'" % (threads)
 
             if task in ['arch', 'earc', 'getic']:
-                 natstr = "-R 'affinity[core(1)]'"
+                  natstr = "-R 'affinity[core(1)]'"
 
 
     elif machine in ['WCOSS']:
@@ -345,7 +345,7 @@ def create_crontab(base, cronint=5):
         return
 
 # Leaving the code for a wrapper around crontab file if needed again later
-#    if check_slurm() and base['machine'] in ['THEIA']:
+#    if check_slurm():
 #
 #        cronintstr = '*/%d * * * *' % cronint
 #        rocotorunstr = '%s -d %s/%s.db -w %s/%s.xml' % (rocotoruncmd, base['EXPDIR'], base['PSLOT'], base['EXPDIR'], base['PSLOT'])

@@ -1,4 +1,3 @@
-########! /usr/bin/env bash
 #!/bin/sh
 set -eux
 
@@ -17,16 +16,15 @@ if [ $USE_PREINST_LIBS = true ]; then
 	    fi
 	fi
 
-	export myFC=mpiifort
-	export myFCFLAGS="-O3 -convert big_endian -traceback -g -fp-model source -qopenmp"
-	export myCPP=/lib/cpp
-	export myCPPFLAGS="-P"
-
 # Check final exec folder exists
 if [ ! -d "../exec" ]; then
   mkdir ../exec
 fi
 
+if [ -f gfs_bufr.fd/getncdimlen ]; then
+	   cp gfs_bufr.fd/getncdimlen ../exec
+   fi
+echo "compiling ...." 
 # Compile codes under /sorc
 compile1='gfs_bufr tocsbufr'
 

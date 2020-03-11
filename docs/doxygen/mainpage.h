@@ -21,7 +21,7 @@ This is a very much a work in progress and any issues should be reported back an
 To setup an experiment, a python script <b>\c setup_expt.py</b> (located in <b>\c fv3gfs/ush</b>) can be used:
 
     $> setup_expt.py -h
-    usage: setup_expt.py [-h] [--machine {THEIA,WCOSS_C}] --pslot PSLOT
+    usage: setup_expt.py [-h] [--machine {HERA,WCOSS_C}] --pslot PSLOT
                      [--configdir CONFIGDIR] [--idate IDATE] [--icsdir ICSDIR]
                      [--resdet RESDET] [--resens RESENS] [--comrot COMROT]
                      [--expdir EXPDIR] [--nens NENS] [--cdump CDUMP]

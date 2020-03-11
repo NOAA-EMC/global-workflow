@@ -38,7 +38,6 @@ if [[ -d /work ]] ; then
 
 ##---------------------------------------------------------------------------
 elif [[ -d /scratch1 ]] ; then
- if [  $hname == 'h'  ] ; then
     # We are on NOAA Hera
     if ( ! eval module help > /dev/null 2>&1 ) ; then
 	echo load the module command 1>&2
@@ -53,19 +52,6 @@ elif [[ -d /scratch1 ]] ; then
     #export WRFPATH=$NCEPLIBS/wrf.shared.new/v1.1.1/src
     export myFC=mpiifort
     export FCOMP=mpiifort
-
- ##---------------------------------------------------------------------------
- elif [  $hname == 't'  ] ; then
-    # We are on NOAA Theia
-    if ( ! eval module help > /dev/null 2>&1 ) ; then
-	echo load the module command 1>&2
-        source /apps/lmod/lmod/init/$__ms_shell
-    fi
-    target=theia
-    module purge
-    module use /scratch3/NCEPDEV/nwprod/modulefiles/
-    module use /scratch3/NCEPDEV/nwprod/lib/modulefiles
- fi #scratch1
 
 ##---------------------------------------------------------------------------
 elif [[ -d /gpfs/hps && -e /etc/SuSE-release ]] ; then
