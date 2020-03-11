@@ -120,15 +120,15 @@ deflate_level=${deflate_level:-1}
   p_fac = 0.1
   k_split = $k_split
   n_split = $n_split
-  nwat = ${nwat:-2}
+  nwat = ${nwat:-2}		! CROW configured
   na_init = $na_init
   d_ext = 0.
-  dnats = ${dnats:-0}
+  dnats = ${dnats:-0}		! CROW configured
   fv_sg_adj = ${fv_sg_adj:-"450"}
   d2_bg = 0.
-  nord = ${nord:-3}
-  dddmp = ${dddmp:-0.2}
-  d4_bg = ${d4_bg:-0.15}
+  nord = ${nord:-3}		! CROW configured
+  dddmp = ${dddmp:-0.2}		! CROW configured
+  d4_bg = ${d4_bg:-0.15}	! CROW configured
   vtdm4 = $vtdm4
   delt_max = ${delt_max:-"0.002"}
   ke_bg = 0.
@@ -140,14 +140,14 @@ deflate_level=${deflate_level:-1}
   mountain = $mountain
   ncep_ic = $ncep_ic
   d_con = $d_con
-  hord_mt = $hord_mt
-  hord_vt = $hord_xx
-  hord_tm = $hord_xx
-  hord_dp = -$hord_xx
-  hord_tr = ${hord_tr:-"8"}
+  hord_mt = $hord_mt		! CROW configured
+  hord_vt = $hord_xx		! CROW configured
+  hord_tm = $hord_xx		! CROW configured
+  hord_dp = -$hord_xx		! CROW configured
+  hord_tr = ${hord_tr:-"8"}	
   adjust_dry_mass = ${adjust_dry_mass:-".false."}
   consv_te = $consv_te
-  do_sat_adj = ${do_sat_adj:-".false."}
+  do_sat_adj = ${do_sat_adj:-".false."}	! CROW configured
   consv_am = .false.
   fill = .true.
   dwind_2d = .false.
@@ -187,13 +187,13 @@ deflate_level=${deflate_level:-1}
 
 &gfs_physics_nml
   fhzero       = $FHZER
-  h2o_phys     = ${h2o_phys:-".true."}
+  h2o_phys     = ${h2o_phys:-".true."}	! CROW configured
   ldiag3d      = ${ldiag3d:-".false."}
-  fhcyc        = $FHCYC
+  fhcyc        = $FHCYC			! CROW configured
   use_ufo      = ${use_ufo:-".true."}
   pre_rad      = ${pre_rad:-".false."}
-  ncld         = ${ncld:-1}
-  imp_physics  = ${imp_physics:-"99"}
+  ncld         = ${ncld:-1}		! CROW configured
+  imp_physics  = ${imp_physics:-"99"}	! CROW configured
 EOF
 
 if [ $CCPP_SUITE = "FV3_GSD_v0" ]; then
@@ -215,33 +215,33 @@ cat >> input.nml <<EOF
   pdfcld       = ${pdfcld:-".false."}
   fhswr        = ${FHSWR:-"3600."}
   fhlwr        = ${FHLWR:-"3600."}
-  ialb         = ${IALB:-"1"}
-  iems         = ${IEMS:-"1"}
-  iaer         = $IAER
-  icliq_sw     = ${icliq_sw:-"2"}
-  iovr_lw      = ${iovr_lw:-"3"}
-  iovr_sw      = ${iovr_sw:-"3"}
-  ico2         = $ICO2
-  isubc_sw     = ${isubc_sw:-"2"}
-  isubc_lw     = ${isubc_lw:-"2"}
-  isol         = ${ISOL:-"2"}
+  ialb         = ${IALB:-"1"}           ! In config.fcst
+  iems         = ${IEMS:-"1"}           ! In config.fcst
+  iaer         = $IAER			! In config.fcst
+  icliq_sw     = ${icliq_sw:-"2"}	! In config.fcst
+  iovr_lw      = ${iovr_lw:-"3"}	! In config.fcst
+  iovr_sw      = ${iovr_sw:-"3"}	! In config.fcst
+  ico2         = $ICO2			! In config.fcst
+  isubc_sw     = ${isubc_sw:-"2"}	! In config.fcst
+  isubc_lw     = ${isubc_lw:-"2"}	! In config.fcst
+  isol         = ${ISOL:-"2"}		! In config.fcst
   lwhtr        = ${lwhtr:-".true."}
   swhtr        = ${swhtr:-".true."}
   cnvgwd       = ${cnvgwd:-".true."}
   shal_cnv     = ${shal_cnv:-".true."}
-  cal_pre      = ${cal_pre:-".true."}
+  cal_pre      = ${cal_pre:-".true."}	! CROW configured
   redrag       = ${redrag:-".true."}
   dspheat      = ${dspheat:-".true."}
   hybedmf      = ${hybedmf:-".false."}
   satmedmf     = ${satmedmf-".true."}
   isatmedmf    = ${isatmedmf-"1"}
   lheatstrg    = ${lheatstrg-".true."}
-  random_clds  = ${random_clds:-".true."}
+  random_clds  = ${random_clds:-".true."} ! CROW configured
   trans_trac   = ${trans_trac:-".true."}
   cnvcld       = ${cnvcld:-".true."}
   imfshalcnv   = ${imfshalcnv:-"2"}
   imfdeepcnv   = ${imfdeepcnv:-"2"}
-  cdmbgwd      = ${cdmbgwd:-"3.5,0.25"}
+  cdmbgwd      = ${cdmbgwd:-"3.5,0.25"}   ! CROW configured
   prslrd0      = ${prslrd0:-"0."}
   ivegsrc      = ${ivegsrc:-"1"}
   isot         = ${isot:-"1"}
@@ -405,7 +405,8 @@ EOF
 
 # Add namelist for stochastic physics options
 echo "" >> input.nml
-if [ $MEMBER -gt 0 ]; then
+#if [ $MEMBER -gt 0 ]; then
+if [ $DO_SPPT = .true. -o $DO_SHUM = .true. -o $DO_SKEB = .true. ]; then
 
     cat >> input.nml << EOF
 &nam_stochy
@@ -469,6 +470,8 @@ else
 EOF
 
 fi
+
+$NCP input.nml $DATA/input.nml
 
 echo "$(cat input.nml)"
 }

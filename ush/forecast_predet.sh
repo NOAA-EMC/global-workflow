@@ -95,7 +95,7 @@ FV3_GFS_predet(){
 	# Model config options
 	APRUN_FV3=${APRUN_FV3:-${APRUN_FCST:-${APRUN:-""}}}
 	NTHREADS_FV3=${NTHREADS_FV3:-${NTHREADS_FCST:-${nth_fv3:-1}}}
-	cores_per_node=${cores_per_node:-${npe_node_max:-24}}
+	cores_per_node=${cores_per_node:-${npe_node_fcst:-24}}
 	ntiles=${ntiles:-6}
         if [ $MEMBER -lt 0 ]; then
                 NTASKS_TOT=${NTASKS_TOT:-$npe_fcst}

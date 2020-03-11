@@ -13,7 +13,7 @@
 FV3_model_configure(){
 
 rm -f model_configure
-cat > model_configure <<EOF
+cat >> model_configure <<EOF
 total_member:            $ENS_NUM
 print_esmf:              ${print_esmf:-.true.}
 PE_MEMBER01:             $NTASKS_TOT
@@ -59,12 +59,14 @@ iau_offset:              ${IAU_OFFSET:-0}
 EOF
 
 if [ $cpl = .true. ]; then
-cat > model_configure <<EOF
+cat >> model_configure <<EOF
 atm_coupling_interval_sec:      $DELTIM
 output_history:          ${OUTPUT_HISTORY:-".true."}
 write_dopost:            ${WRITE_DOPOST:-".false."}
 EOF
 fi
+
+$NCP model_configure $DATA/model_configure
 
 echo "$(cat model_configure)"
 }

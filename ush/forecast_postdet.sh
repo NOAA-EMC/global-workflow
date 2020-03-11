@@ -615,7 +615,7 @@ CICE_postdet()
 
         year=$(echo $CDATE|cut -c 1-4)
         #BL2018
-        stepsperhr=$((3600/$DT_CICE))
+        stepsperhr=$((3600/$ICETIM))
         #BL2018
         nhours=$(${NHOUR} ${CDATE} ${SYEAR}010100)
         istep0=$((nhours*stepsperhr))

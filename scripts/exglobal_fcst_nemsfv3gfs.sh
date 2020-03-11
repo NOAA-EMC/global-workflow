@@ -188,23 +188,31 @@ echo "MAIN: NEMS configured"
 #------------------------------------------------------------------
 # run the executable
 
-$NCP $FCSTEXECDIR/$FCSTEXEC $DATA/.
-export OMP_NUM_THREADS=$NTHREADS_FV3
-$APRUN_FV3 $DATA/$FCSTEXEC 1>&1 2>&2
-export ERR=$?
-export err=$ERR
-$ERRSCRIPT || exit $err
+if [ $machine != 'sandbox' ]; then
+        $NCP $FCSTEXECDIR/$FCSTEXEC $DATA/.
+        export OMP_NUM_THREADS=$NTHREADS_FV3
+        $APRUN_FV3 $DATA/$FCSTEXEC 1>&1 2>&2
+        export ERR=$?
+        export err=$ERR
+        $ERRSCRIPT || exit $err
+else
+        echo "MAIN: mpirun launch here"
+fi
 
-case $RUN in
-        'data') data_out_Data_ATM;;
-        'gfs') data_out_GFS;;
-        'gdas') data_out_GFS;;
-        'gefs') data_out_GEFS;;
-esac
-[[ $cplflx = .true. ]] && MOM6_out
-[[ $cplwav = .true. ]] && WW3_out
-[[ $cplice = .true. ]] && CICE_out
-[[ $cplchem = .true. ]] && GSD_out
+if [ $machine != 'sandbox' ]; then
+        case $RUN in
+                'data') data_out_Data_ATM;;
+                'gfs') data_out_GFS;;
+                'gdas') data_out_GFS;;
+                'gefs') data_out_GEFS;;
+        esac
+        [[ $cplflx = .true. ]] && MOM6_out
+        [[ $cplwav = .true. ]] && WW3_out
+        [[ $cplice = .true. ]] && CICE_out
+        [[ $cplchem = .true. ]] && GSD_out
+else
+        echo "MAIN: Running on sandbox mode, no output linking"
+fi
 echo "MAIN: Output copied to COMROT"
 
 #------------------------------------------------------------------
@@ -217,6 +225,6 @@ if [ $err != 0 ]; then
   exit $err
 else
   echo "MAIN: $confignamevarfornems Forecast completed at normal status"
-  if [ $mkdata = "YES" ]; then rm -rf $DATA; fi
+  if [ $KEEPDATA != "YES" ]; then rm -rf $DATA; fi
   exit 0
 fi
