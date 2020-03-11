@@ -139,7 +139,7 @@
   echo "   Executing $EXECcode/ww3_gint
   [[ "$LOUD" = YES ]] && set -x
 
-  $EXECcode/ww3_gint
+    $EXECcode/ww3_gint 1> gint.{$grdID}.out 2>&1
   err=$?
 
 # Write interpolation file to main TEMP dir area if not there yet
