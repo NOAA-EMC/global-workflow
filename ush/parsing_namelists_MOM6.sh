@@ -15,5 +15,7 @@ MOM6_namelists(){
 /
 EOF
 
+$NCP input.nml $DATA/input.nml
+
 echo "$(cat input.nml)"
 }

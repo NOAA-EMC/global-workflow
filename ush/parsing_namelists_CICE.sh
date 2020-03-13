@@ -7,7 +7,7 @@ cat > ice_in <<eof
     days_per_year  = 365
   , use_leap_years = .true.
   , year_init      = $year
-  , istep0         = $steps
+  , istep0         = $istep0
   , dt             = $ICETIM
   , npt            = $npt
   , ndtd           = 1
@@ -371,4 +371,5 @@ cat > ice_in <<eof
 /
 eof
 
+$NCP ice_in $DATA/ice_in
 }

@@ -53,6 +53,9 @@ fv3_gdas_defaults: &fv3_gdas_defaults
       do: 90
     - otherwise: 450
 
+  OCNTIM: 1800
+  ICETIM: !calc DELTIM
+
   layout: !Select
      select: !calc CASE
      otherwise: !error "Unknown FV3 deterministic grid: {doc.fv3_gdas_settings.CASE}"

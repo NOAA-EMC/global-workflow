@@ -76,11 +76,18 @@ cat >> input.nml <<EOF
   max_files_w = 100
   $fms_io_nml
 /
+EOF
 
+if [ $cpl = ".false." ]; then
+cat >> input.nml <<EOF
 &mpp_io_nml
-shuffle=${shuffle:-1}
-deflate_level=${deflate_level:-1}
+  shuffle=${shuffle:-1}
+  deflate_level=${deflate_level:-1}
 /
+EOF
+fi
+
+cat >> input.nml <<EOF
 
 &fms_nml
   clock_grain = 'ROUTINE'
