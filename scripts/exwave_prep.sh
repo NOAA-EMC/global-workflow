@@ -191,19 +191,22 @@
   done
 
 # 1.b Netcdf Preprocessor template files
+   if [ "$WW3ATMINP" = 'YES' ]; then itype="$itype wind" ; fi 
+   if [ "$WW3ICEINP" = 'YES' ]; then itype="$itype ice" ; fi 
+   if [ "$WW3CURINP" = 'YES' ]; then itype="$itype cur" ; fi 
 
-   for grdID in $grdINP
+   for type in $itype
    do
 
-     case $grdID in
-       $WAVECUR_FID ) 
-                type='cur' 
+     case $type in
+       wind )
+         grdID=$WAVEWND_FID
        ;;
-       $WAVEWND_FID )
-                type='wind'
+       ice )
+         grdID=$WAVEICE_FID 
        ;;
-       $WAVEICE_FID )
-                type='ice'
+       cur )
+         grdID=$WAVECUR_FID 
        ;;
        * )
               echo 'Input type not yet implemented' 	    
@@ -270,7 +273,6 @@
         err=5;export err;${errchk}
       else
         mv -f ice.out $DATA/outtmp
-        rm -f ww3_prep.$WAVEICE_FID.tmpl mod_def.$WAVEICE_FID
         set +x
         echo ' '
         echo '      Ice field unpacking successful.'
@@ -711,7 +713,7 @@
         [[ "$LOUD" = YES ]] && set -x
       fi
 
-      files=`ls ${WAVECUR_FID}.* 2> /dev/null`
+      files=`ls ${WAVECUR_DID}.* 2> /dev/null`
 
       if [ -z "$files" ]
       then
@@ -840,6 +842,7 @@
   case ${WW3ICEINP} in
     'YES' ) 
       NFGRIDS=`expr $NFGRIDS + 1`
+      ICEIFLAG='T'
       ICELINE="  '$WAVEICE_FID'  F F F T F F F"
       ICEFLAG="$WAVEICE_FID"
     ;;
@@ -852,14 +855,19 @@
 
   case ${WW3CURINP} in
     'YES' ) 
-      NFGRIDS=`expr $NFGRIDS + 1`
-      CURRLINE="  '$WAVECUR_FID'  F T F F F F F"
-      CURRFLAG="$WAVECUR_FID"
+      if [ "$WAVECUR_FID" != "$WAVEICE_FID" ]; then
+        NFGRIDS=`expr $NFGRIDS + 1`
+        CURRLINE="  '$WAVECUR_FID'  F T F F F F F"
+        CURRFLAG="$WAVECUR_FID"
+      else # cur fields share the same grid as ice grid
+        ICELINE="  '$WAVEICE_FID'  F T F ${ICEIFLAG} F F F"
+        CURRFLAG="$WAVEICE_FID"
+      fi
     ;;
     'CPL' )
       CURRFLAG="CPL:${waveesmfGRD}"
       CURIFLAG='T'
-      CPLILINE="  '${waveesmfGRD}' F T ${WNDIFLAG} ${ICEIFLAG} F F F"
+      CPLILINE="  '${waveesmfGRD}' F T ${WNDIFLAG} ${ICEFLAG} F F F"
     ;;
   esac
 
