@@ -30,7 +30,7 @@ export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc"
 ###############################################################
 # If ROTDIR_DUMP=YES, copy dump files to rotdir 
 if [ $ROTDIR_DUMP = "YES" ]; then
-    $HOMEgfs/ush/getdump.sh $CDATE $CDUMP $DMPDIR/${CDATE}/${CDUMP}${DUMP_SUFFIX} $COMOUT
+    $HOMEgfs/ush/getdump.sh $CDATE $CDUMP $DMPDIR/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc} $COMOUT
     status=$?
     [[ $status -ne 0 ]] && exit $status
 
@@ -41,7 +41,7 @@ if [ $ROTDIR_DUMP = "YES" ]; then
     GDUMP=gdas
     gCOMOUT="$ROTDIR/$GDUMP.$gPDY/$gcyc"
     if [ ! -s $gCOMOUT/$GDUMP.t${gcyc}z.updated.status.tm00.bufr_d ]; then
-     $HOMEgfs/ush/getdump.sh $GDATE $GDUMP $DMPDIR/${GDATE}/${GDUMP}${DUMP_SUFFIX} $gCOMOUT
+     $HOMEgfs/ush/getdump.sh $GDATE $GDUMP $DMPDIR/${GDUMP}${DUMP_SUFFIX}.${gPDY}/${gcyc} $gCOMOUT
      status=$?
      [[ $status -ne 0 ]] && exit $status
     fi
@@ -75,7 +75,7 @@ if [ $PROCESS_TROPCY = "YES" ]; then
     [[ $status -ne 0 ]] && exit $status
 
 else
-    [[ $ROTDIR_DUMP = "NO" ]] && cp $DMPDIR/$CDATE/$CDUMP/${CDUMP}.t${cyc}z.syndata.tcvitals.tm00 $COMOUT/
+    [[ $ROTDIR_DUMP = "NO" ]] && cp $DMPDIR/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}/${CDUMP}.t${cyc}z.syndata.tcvitals.tm00 $COMOUT/
 fi
 
 
@@ -87,31 +87,26 @@ if [ $DO_MAKEPREPBUFR = "YES" ]; then
 	rm $COMOUT/${OPREFIX}prepbufr.acft_profiles
 	rm $COMOUT/${OPREFIX}nsstbufr
     fi
-    if [ $machine = "WCOSS_C" -o $machine = "WCOSS_DELL_P3" -o $machine = "THEIA" ]; then
 
-        export job="j${CDUMP}_prep_${cyc}"
-        export DATAROOT="$RUNDIR/$CDATE/$CDUMP/prepbufr"
-        if [ $ROTDIR_DUMP = "NO" ]; then
-          COMIN_OBS=${COMIN_OBS:-$DMPDIR/$CDATE/$CDUMP}
-          export COMSP=${COMSP:-$COMIN_OBS/$CDUMP.t${cyc}z.}
-        fi
-        export COMIN=${COMIN:-$ROTDIR/$CDUMP.$PDY/$cyc}
-        export COMINgdas=${COMINgdas:-$ROTDIR/gdas.$PDY/$cyc}
-        export COMINgfs=${COMINgfs:-$ROTDIR/gfs.$PDY/$cyc}
-
-        $HOMEobsproc_network/jobs/JGLOBAL_PREP
-        status=$?
-        [[ $status -ne 0 ]] && exit $status
-
-    else
-        echo "WARNING:  prep step is not supported on $machine, exit"
-        exit 1
+    export job="j${CDUMP}_prep_${cyc}"
+    export DATAROOT="$RUNDIR/$CDATE/$CDUMP/prepbufr"
+    if [ $ROTDIR_DUMP = "NO" ]; then
+      COMIN_OBS=${COMIN_OBS:-$DMPDIR/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}}
+      export COMSP=${COMSP:-$COMIN_OBS/$CDUMP.t${cyc}z.}
     fi
+    export COMIN=${COMIN:-$ROTDIR/$CDUMP.$PDY/$cyc}
+    export COMINgdas=${COMINgdas:-$ROTDIR/gdas.$PDY/$cyc}
+    export COMINgfs=${COMINgfs:-$ROTDIR/gfs.$PDY/$cyc}
+
+    $HOMEobsproc_network/jobs/JGLOBAL_PREP
+    status=$?
+    [[ $status -ne 0 ]] && exit $status
+
 else
     if [ $ROTDIR_DUMP = "NO" ]; then
-	$NCP $DMPDIR/$CDATE/$CDUMP/${OPREFIX}prepbufr               $COMOUT/${OPREFIX}prepbufr
-	$NCP $DMPDIR/$CDATE/$CDUMP/${OPREFIX}prepbufr.acft_profiles $COMOUT/${OPREFIX}prepbufr.acft_profiles
-	[[ $DONST = "YES" ]] && $NCP $DMPDIR/$CDATE/$CDUMP/${OPREFIX}nsstbufr $COMOUT/${OPREFIX}nsstbufr
+	$NCP $DMPDIR/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}/${OPREFIX}prepbufr               $COMOUT/${OPREFIX}prepbufr
+	$NCP $DMPDIR/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}/${OPREFIX}prepbufr.acft_profiles $COMOUT/${OPREFIX}prepbufr.acft_profiles
+	[[ $DONST = "YES" ]] && $NCP $DMPDIR/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}/${OPREFIX}nsstbufr $COMOUT/${OPREFIX}nsstbufr
     fi
 fi
 
