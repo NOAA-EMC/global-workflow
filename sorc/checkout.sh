@@ -21,7 +21,8 @@ if [[ ! -d gsi.fd ]] ; then
     rm -f ${topdir}/checkout-gsi.log
     git clone --recursive gerrit:ProdGSI gsi.fd >> ${topdir}/checkout-gsi.log 2>&1
     cd gsi.fd
-    git checkout gfsda.v16.0.0
+#   git checkout gfsda.v16.0.0
+    git checkout feature/parallel_ncio
     git submodule update
     cd ${topdir}
 else

@@ -8,8 +8,8 @@ if [ $# -ne 1 ]; then
 
     echo "Must specify an input task argument to set resource variables!"
     echo "argument can be any one of the following:"
-    echo "anal gldas fcst post vrfy metp arch"
-    echo "eobs eomg eupd ecen esfc efcs epos earc"
+    echo "anal analcalc analdiag gldas fcst post vrfy metp arch"
+    echo "eobs ediag eomg eupd ecen esfc efcs epos earc"
     echo "waveinit waveprep wavepostsbs wavegempaksbs waveawipssbs"
     echo "wavepost waveawips wavestat"
     echo "postsnd awips gempak"
@@ -117,6 +117,24 @@ elif [ $step = "anal" ]; then
     export nth_cycle=$npe_node_max
     if [[ "$machine" == "WCOSS_C" ]]; then export memory_anal="3072M"; fi
 
+elif [ $step = "analcalc" ]; then
+
+    export wtime_analcalc="02:00:00"
+    export npe_analcalc=127
+    export nth_analcalc=1
+    export npe_node_analcalc=$npe_node_max
+    if [[ "$machine" = "WCOSS_DELL_P3" ]]; then export npe_analcalc=127 ; fi
+    if [[ "$machine" == "WCOSS_C" ]]; then export memory_analcalc="3072M"; fi
+
+elif [ $step = "analdiag" ]; then
+
+    export wtime_analdiag="02:00:00"
+    export npe_analdiag=60
+    export nth_analdiag=1
+    export npe_node_analdiag=$npe_node_max
+    if [[ "$machine" = "WCOSS_DELL_P3" ]]; then export npe_analdiag=56 ; fi
+    if [[ "$machine" == "WCOSS_C" ]]; then export memory_analdiag="3072M"; fi
+
 elif [ $step = "gldas" ]; then
 
     export wtime_gldas="02:00:00"
@@ -206,6 +224,15 @@ elif [ $step = "eobs" -o $step = "eomg" ]; then
     if [[ "$machine" = "WCOSS_DELL_P3" ]]; then export nth_eobs=7; fi
     export npe_node_eobs=$(echo "$npe_node_max / $nth_eobs" | bc)
     if [[ "$machine" == "WCOSS_C" ]]; then export memory_eobs="3072M"; fi
+
+elif [ $step = "ediag" ]; then
+
+    export wtime_ediag="02:00:00"
+    export npe_ediag=60
+    export nth_ediag=1
+    export npe_node_ediag=$npe_node_max
+    if [[ "$machine" = "WCOSS_DELL_P3" ]]; then export npe_ediag=56 ; fi
+    if [[ "$machine" == "WCOSS_C" ]]; then export memory_ediag="3072M"; fi
 
 elif [ $step = "eupd" ]; then
 
