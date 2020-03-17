@@ -305,7 +305,7 @@ elif [ $step = "postsnd" ]; then
     export npe_postsnd=40
     export nth_postsnd=1
     export npe_node_postsnd=4
-    export npe_postsndcfp=10
+    export npe_postsndcfp=9
     export npe_node_postsndcfp=3
     if [ $OUTPUT_FILE == "nemsio" ]; then
         export npe_postsnd=13
