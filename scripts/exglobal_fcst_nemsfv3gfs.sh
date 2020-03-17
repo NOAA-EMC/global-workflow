@@ -150,7 +150,7 @@ fi
 
 #-------------------------------------------------------
 # determine if restart IC exists to continue from a previous forecast
-RERUN="NO"
+RERUN=${RERUN:-"NO"}
 filecount=$(find $RSTDIR_TMP -type f | wc -l) 
 if [[ ( $CDUMP = "gfs" || $gefs = ".true." ) && $restart_interval -gt 0 && $FHMAX && $restart_interval && $filecount -gt 10 ]]; then
   SDATE=$($NDATE +$FHMAX $CDATE)
