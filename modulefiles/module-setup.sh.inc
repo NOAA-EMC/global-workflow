@@ -28,10 +28,10 @@ elif [[ -d /scratch1 ]] ; then
         source /apps/lmod/lmod/init/$__ms_shell
     fi
     module purge
-elif [[ -d /scratch3 ]] ; then
-    # We are on NOAA Theia
+elif [[ -d /work ]] ; then
+    # We are on MSU Orion
     if ( ! eval module help > /dev/null 2>&1 ) ; then
-        source /apps/lmod/lmod/init/$__ms_shell
+        source /apps/lmod/init/$__ms_shell
     fi
     module purge
 elif [[ -d /gpfs/hps && -e /etc/SuSE-release ]] ; then

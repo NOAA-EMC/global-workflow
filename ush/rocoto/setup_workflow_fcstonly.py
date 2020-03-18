@@ -172,7 +172,7 @@ def get_resources(dict_configs, cdump='gdas'):
         taskstr = '%s_%s' % (task.upper(), cdump.upper())
 
         strings.append('\t<!ENTITY QUEUE_%s     "%s">\n' % (taskstr, queuestr))
-        if scheduler in ['slurm'] and machine in ['ORION'] and task not in ['getic', 'arch'
+        if scheduler in ['slurm'] and machine in ['ORION'] and task not in ['getic', 'arch']:
             strings.append('\t<!ENTITY PARTITION_%s "&PARTITION_BATCH;">\n' % taskstr )
         if scheduler in ['slurm'] and task in ['getic', 'arch']:
             strings.append('\t<!ENTITY PARTITION_%s "&PARTITION_SERVICE;">\n' % taskstr )
@@ -440,7 +440,7 @@ def get_workflow(dict_configs, cdump='gdas'):
     tasks.append('\n')
 
     # metp
-    if do_metp in ['Y', 'YES':]
+    if do_metp in ['Y', 'YES']:
         deps = []
         dep_dict = {'type':'metatask', 'name':'%spost' % cdump}
         deps.append(rocoto.add_dependency(dep_dict))

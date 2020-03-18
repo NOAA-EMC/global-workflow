@@ -1,7 +1,0 @@
-#%Module################################################
-# Module file for gdas_gridbull - Orion
-########################################################
-
-module use -a /work/noaa/noaatest/NCEPLIBS/lib/modulefiles
-module load bacio-intel-sandybridge/2.0.2
-module load w3nco-intel-sandybridge/2.0.6

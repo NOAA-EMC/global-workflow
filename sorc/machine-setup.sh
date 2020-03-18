@@ -21,10 +21,10 @@ USERNAME=`echo $LOGNAME | awk '{ print tolower($0)'}`
 ##---------------------------------------------------------------------------
 export hname=`hostname | cut -c 1,1`
 if [[ -d /work ]] ; then
-    # We are on Mississippi Orion
+    # We are on MSU Orion
     if ( ! eval module help > /dev/null 2>&1 ) ; then
         echo load the module command 1>&2
-        source /apps/lmod/lmod/init/$__ms_shell
+        source /apps/lmod/init/$__ms_shell
     fi
     target=orion
     module purge
