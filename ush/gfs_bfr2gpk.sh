@@ -49,7 +49,7 @@ SNOUTF   = ${outfilbase}.snd
 SFOUTF   = ${outfilbase}.sfc
 SNPRMF   = sngfs.prm
 SFPRMF   = sfgfs.prm
-TIMSTN   = 170/2100
+TIMSTN   = 170/2150
 r
 
 ex

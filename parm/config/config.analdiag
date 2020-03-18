@@ -1,0 +1,13 @@
+#!/bin/ksh -x
+
+########## config.analdiag ##########
+# GFS post-anal specific (diag)
+
+echo "BEGIN: config.analdiag"
+
+# Get task specific resources
+. $EXPDIR/config.resources analdiag
+
+export ANALDIAGSH=$HOMEgfs/jobs/JGLOBAL_ANALDIAG
+
+echo "END: config.analdiag"
