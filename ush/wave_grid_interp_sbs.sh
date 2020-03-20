@@ -111,6 +111,8 @@
 # 1.a Generate Input file
 
   time="`echo $ymdh | cut -c1-8` `echo $ymdh | cut -c9-10`0000"
+  YMD=$(echo $ymdh | cut -c1-8)
+  HMS="$(echo $ymdh | cut -c9-10)0000"
 
   sed -e "s/TIME/$time/g" \
       -e "s/DT/$dt/g" \
@@ -184,7 +186,7 @@
     set +x
     echo "   Saving GRID file as $COMOUT/rundata/$WAV_MOD_TAG.out_grd.$grdID.${CDATE}"
     [[ "$LOUD" = YES ]] && set -x
-    cp ${DATA}/output_${ymdh}0000/out_grd.$grdID $COMOUT/rundata/$WAV_MOD_TAG.out_grd.$grdID.${CDATE}
+    cp ${DATA}/output_${ymdh}0000/out_grd.$grdID $COMOUT/rundata/$WAV_MOD_TAG.out_grd.$grdID.${YMD}.${HMS}
 
 #    if [ "$SENDDBN" = 'YES' ]
 #    then
