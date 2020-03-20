@@ -141,7 +141,7 @@ cd $DATA || exit 8
 if [ ! -d $DATA/INPUT ]; then mkdir -p $DATA/INPUT; fi
 
 if [[ ( $CDUMP = "gfs" || $gefs = ".true." ) && $restart_interval -gt 0 ]]; then
-  RSTDIR_TMP=${RSTDIR:-$ROTDIR}/${CDUMP}.${PDY}/${cyc}/RERUN_RESTART
+  RSTDIR_TMP=${RSTDIR_TMP:-${RSTDIR:-$ROTDIR}/${CDUMP}.${PDY}/${cyc}/RERUN_RESTART}
   if [ ! -d $RSTDIR_TMP ]; then mkdir -p $RSTDIR_TMP ; fi
   $NLN $RSTDIR_TMP RESTART
 else
