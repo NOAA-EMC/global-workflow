@@ -153,7 +153,8 @@ fi
 RERUN=${RERUN:-"NO"}
 filecount=$(find $RSTDIR_TMP -type f | wc -l) 
 if [[ ( $CDUMP = "gfs" || $gefs = ".true." ) && $restart_interval -gt 0 && $FHMAX && $restart_interval && $filecount -gt 10 ]]; then
-  SDATE=$($NDATE +$FHMAX $CDATE)
+  last_rst=$(( $FHMAX - $FHMAX % $restart_interval ))
+  SDATE=$($NDATE +$last_rst $CDATE)
   EDATE=$($NDATE +$restart_interval $CDATE)
   while [ $SDATE -gt $EDATE ]; do
       PDYS=$(echo $SDATE | cut -c1-8)
@@ -169,6 +170,12 @@ if [[ ( $CDUMP = "gfs" || $gefs = ".true." ) && $restart_interval -gt 0 && $FHMA
       fi 
       SDATE=$($NDATE -$restart_interval $SDATE)
   done
+fi
+
+if [[ $RERUN = "YES" && CDATE_RST = "" ]]; then
+  echo "FATAL ERROR: Tried to perform a rerun but CDATE_RST was not set!"
+  export err=40
+  $ERRSCRIPT || exit $err
 fi
 
 #-------------------------------------------------------
