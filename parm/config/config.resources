@@ -21,6 +21,9 @@ echo "BEGIN: config.resources"
 
 if [[ "$machine" = "WCOSS_DELL_P3" ]]; then
    export npe_node_max=28
+   if [ "$QUEUE" = "dev2" -o "$QUEUE" = "devonprod2" -o "$QUEUE" = "devmax2" ]; then # WCOSS Dell 3.5
+     export npe_node_max=40
+   fi
 elif [[ "$machine" = "WCOSS_C" ]]; then
    export npe_node_max=24
 elif [[ "$machine" = "JET" ]]; then
