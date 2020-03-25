@@ -144,7 +144,7 @@ Create COMROT experiment directory structure'''
       queue_arch = 'dev_transfer'
       if partition is not None and partition in ['3p5']:
         queue = 'dev2'
-        queue_arch = 'dev_transfer2'
+        queue_arch = 'dev2_transfer'
     elif machine is 'WCOSS_C':
       base_git = '/gpfs/hps3/emc/global/noscrub/emc.glopara/git'
       base_svn = '/gpfs/hps3/emc/global/noscrub/emc.glopara/svn'
