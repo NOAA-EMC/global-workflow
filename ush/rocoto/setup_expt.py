@@ -176,7 +176,7 @@ link initial condition files from $ICSDIR to $COMROT'''
       account = 'GFS-DEV'
       queue = 'dev'
       queue_arch = 'dev_transfer'
-      if partition is not None and partition in ['3p5']:
+      if partition in ['3p5']:
         queue = 'dev2'
         queue_arch = 'dev2_transfer'
     elif machine is 'WCOSS_C':
