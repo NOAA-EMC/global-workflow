@@ -147,10 +147,10 @@ config_vrfy:
     #-------------------------------------------------
 
     export ens_tracker_ver=v1.1.15.1
-    export HOMEens_tracker=$BASE_GIT/tracker/ens_tracker.${ens_tracker_ver}
+    export HOMEens_tracker=$BASE_GIT/tracker/ens_tracker.$ens_tracker_ver
     if [ $machine = "JET" ]; then
         export ens_tracker_ver=v1.1.13.2
-        export HOMEens_tracker=/mnt/lfs3/projects/hfv3gfs/glopara/git/tracker/ens_tracker.${ens_tracker_ver}
+        export HOMEens_tracker=/mnt/lfs3/projects/hfv3gfs/glopara/git/tracker/ens_tracker.$ens_tracker_ver
     fi
     
     if [ "$VRFYTRAK" = "YES" ]; then

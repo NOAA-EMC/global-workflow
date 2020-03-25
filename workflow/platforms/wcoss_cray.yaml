@@ -31,14 +31,8 @@ platform: !Platform
   # the paths to certain programs and scripts.
   NWPROD: "/gpfs/hps/nco/ops/nwprod"
 
-  # DMPDIR - location of the global dump data.  This is used by the observation
-  # processing scripts, which are not included in the public release.
-  DMPDIR: !FirstTrue
-    - do: "/gpfs/gp1/emc/globaldump"
-      when: !calc tools.isdir(do)
-    - do: "/gpfs/tp1/emc/globaldump"
-      when: !calc tools.isdir(do)
-    - otherwise: !error "Cannot find globaldump directory."
+  # DMPDIR - location of the global dump archive data
+  DMPDIR: "/gpfs/dell3/emc/global/dump"
 
   # RTMFIX - location of the CRTM fixed data files used by the GSI data
   # assimilation.  The data assimilation is not included in this public release

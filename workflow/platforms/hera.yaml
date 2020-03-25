@@ -22,19 +22,27 @@ platform: !Platform
     {metasched.defvar(doc.schedvar.service_queue, doc.accounting.service_partition.service_queue)}
     {metasched.defvar(doc.schedvar.cpu_project, doc.accounting.cpu_project)}
 
-  # DMPDIR - location of the global dump data.  This is used by the observation
-  # processing scripts, which are not included in the public release.
+  # DMPDIR - location of the global dump archive data
   DMPDIR: "/scratch1/NCEPDEV/global/glopara/dump"
-  NWPROD: "/scratch1/NCEPDEV/global/glopara/svn/verif/global/tags/vsdb/nwprod"
-  RTMFIX: "/scratch2/NCEPDEV/nwprod/NCEPLIBS/fix/crtm_v2.2.6"
-  BASE_SVN: "/scratch1/NCEPDEV/global/glopara/svn"
-  prod_util_module: "none"
 
-  # BASE_GIT - a directory maintained by emc global model developers
+  # NWPROD - location of the NCEP operational "nwprod" directory, which
+  # only has meaning on the NCEP WCOSS machines.  It is used to get
+  # the paths to certain programs and scripts.
+  NWPROD: "/scratch1/NCEPDEV/global/glopara/nwpara"
+
+  # RTMFIX - location of the CRTM fixed data files used by the GSI data
+  # assimilation.  The data assimilation is not included in this public release
+  # so this path is unused.
+  RTMFIX: "$CRTM_FIX"
+
+  # BASE_GIT/SVN - a directory maintained by emc global model developers
   # that contains recent versions of source code and executables for
-  # various git repositories. This is used on some platforms to find
+  # various git/svn repositories. This is used on some platforms to find
   # executables for this workflow.
   BASE_GIT: "/scratch1/NCEPDEV/global/glopara/git"
+  BASE_SVN: "/scratch1/NCEPDEV/global/glopara/svn"
+
+  prod_util_module: "none"
 
   config_base_extras: !expand |
      echo "place holder for NWPROD and associated utilities, all except POSTGRB2TBL are going through load_gfs_modules.sh"
