@@ -56,6 +56,9 @@ default_settings: &default_settings
   run_enkf: !calc run_gsi
   chgres_and_convert_ics: Yes
 
+  # verification settings
+  DO_METP: YES
+
   # awips setting
   NAWIPSGRP: 21
 

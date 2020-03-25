@@ -125,6 +125,7 @@ suite_defaults: &suite_defaults
     workflow_xml: !expand |
       <?xml version="1.0"?>
       <!DOCTYPE workflow [
+
         <!ENTITY LOG_DIR "{doc.places.ROTDIR}/logs">
         <!ENTITY TASK_THROTTLE "{doc.settings.rocoto_task_throttle}">
         <!ENTITY CYCLE_THROTTLE "{doc.settings.rocoto_cycle_throttle}">
@@ -136,15 +137,16 @@ suite_defaults: &suite_defaults
         <!ENTITY {doc.schedvar.obsproc_network_home} "{doc.places.HOMEobsproc_network}">
         <!ENTITY {doc.schedvar.obsproc_prep_home} "{doc.places.HOMEobsproc_prep}">
         <!ENTITY COM "{doc.places.ROTDIR}">
-      {tools.indent(doc.platform.metasched_more,"  ")}
+        {tools.indent(doc.platform.metasched_more,"  ")}
+
       ]>
-      <workflow realtime="F"
-                cyclethrottle="&CYCLE_THROTTLE;"
-                scheduler="{doc.platform.partitions.default_exclusive.scheduler.rocoto_name.lower()}"
-                taskthrottle="&TASK_THROTTLE;" >
+
+      <workflow realtime="F" cyclethrottle="&CYCLE_THROTTLE;" scheduler="{doc.platform.partitions.default_exclusive.scheduler.rocoto_name.lower()}" taskthrottle="&TASK_THROTTLE;" >
+
         <log><cyclestr>&COM;/logs/@Y@m@d@H/rocoto.log</cyclestr></log>
-      {to_rocoto.make_time_xml(indent=1)}
-      {to_rocoto.make_task_xml(indent=1)}
+        {to_rocoto.make_time_xml(indent=1)}
+        {to_rocoto.make_task_xml(indent=1)}
+
       </workflow>
 
   # before_suite_def - when generating an ecFlow suite, the contents

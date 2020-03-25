@@ -34,7 +34,7 @@ platform: !Platform
   # that contains recent versions of source code and executables for
   # various git repositories. This is used on some platforms to find
   # executables for this workflow.
-  BASE_GIT: "/scratch1/NCEPDEV/global/glopara/git/"
+  BASE_GIT: "/scratch1/NCEPDEV/global/glopara/git"
 
   config_base_extras: !expand |
      echo "place holder for NWPROD and associated utilities, all except POSTGRB2TBL are going through load_gfs_modules.sh"

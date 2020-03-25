@@ -10,7 +10,6 @@ case:
     SDATE: 2019-05-01t00:00:00
     EDATE: 2019-05-01t06:00:00
 
-    DUMP_SUFFIX: "p"
     run_gsi: No
     chgres_and_convert_ics: Yes
     gfs_cyc: 4 # run gfs every cycle

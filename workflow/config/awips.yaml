@@ -26,8 +26,6 @@ config_awips:
         export memory_awips="2048M"
     fi
 
-    export SENDCOM="YES"
-
     export AWIPS20SH=$HOMEgfs/jobs/JGFS_AWIPS_20KM_1P0DEG
     export AWIPSG2SH=$HOMEgfs/jobs/JGFS_AWIPS_G2
 

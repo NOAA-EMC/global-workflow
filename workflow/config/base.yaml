@@ -26,15 +26,6 @@ config_base:
     # Machine environment
     export machine="{doc.platform.name}"
 
-    export cpl="{cpl}"
-    export cplflx="{doc.settings.cplflx}"
-    export cplice="{doc.settings.cplice}"
-    export print_esmf="{doc.settings.print_esmf}"
-
-    export nems_temp="{doc.settings.nems_temp}"
-    export nems_temp_cold="{doc.settings.nems_temp_cold}"
-
-               
     # EMC parallel or NCO production
     export RUN_ENVIR="emc"
     
@@ -44,7 +35,7 @@ config_base:
     export QUEUE_ARCH="{doc.accounting.service_partition.service_queue}"
         
     # Project to use in mass store:
-    HPSS_PROJECT={doc.accounting.hpss_project}
+    export HPSS_PROJECT={doc.accounting.hpss_project}
     
     # Directories relative to installation areas:
     export HOMEgfs="{doc.places.HOMEgfs}"
@@ -54,11 +45,6 @@ config_base:
     export UTILgfs=$HOMEgfs/util
     export EXECgfs=$HOMEgfs/exec
     export SCRgfs=$HOMEgfs/scripts
-
-    export FIXcice=$HOMEgfs/fix/fix_cice5
-    export FIXmom=$HOMEgfs/fix/fix_mom6
-    export FIXgrid=$HOMEgfs/fix/fix_fv3grid
-    export OCNFIXDIR=$HOMEgfs/fix/fix_ocnice
 
     # GLOBAL static environment parameters
     export DMPDIR="{doc.places.DMPDIR}"
@@ -73,10 +59,6 @@ config_base:
     export BASE_GIT="{doc.platform.BASE_GIT}"
     export BASE_SVN="{doc.platform.BASE_SVN}"
     
-    # Utilities needed in the scripts (mostly post)
-    {doc.platform.config_base_extras}
-    export POSTGRB2TBL="{doc.places.HOMEgfs}/sorc/gfs_post.fd/parm/params_grib2_tbl_new"
-
     # Toggle to turn on/off GFS downstream processing.
     export DO_BUFRSND="{tools.YES_NO(doc.downstream.DO_BUFRSND)}" # Run GFS_POSTSND
     export DO_GEMPAK="{tools.YES_NO(doc.downstream.DO_GEMPAK)}"  # Run GFS GEMPAK
@@ -98,7 +80,7 @@ config_base:
     export HOMEobsproc_prep="{doc.places.get('HOMEobsproc_prep', '$BASE_GIT/obsproc/obsproc_prep_RB-5.2.0')}"
     export HOMEobsproc_network="{doc.places.get('HOMEobsproc_network', '$BASE_GIT/obsproc/obsproc_global_RB-3.2.0')}"
     export BASE_VERIF="{doc.places.get('BASE_VERIF', '$BASE_SVN/verif/global/tags/vsdb')}"
-    
+
     # CONVENIENT utility scripts and other environment parameters
     export NCP="/bin/cp -p"
     export NMV="/bin/mv"
@@ -108,10 +90,6 @@ config_base:
     export CHGRP_CMD="{doc.platform.CHGRP_RSTPROD_COMMAND}"
     export NEMSIOGET="$HOMEgfs/exec/nemsio_get"
 
-    # For coupled
-    export UGCSsrc="/scratch2/NCEPDEV/climate/Bin.Li/S2S/fix/ocean_ice_post"
-   
- 
     # Machine environment, jobs, and other utility scripts
     export BASE_ENV="$HOMEgfs/env"
     export BASE_JOB="$HOMEgfs/jobs/rocoto"
@@ -119,7 +97,6 @@ config_base:
     # EXPERIMENT specific environment parameters
     export SDATE={tools.to_YMDH(doc.settings.SDATE)}
     export EDATE={tools.to_YMDH(doc.settings.EDATE)}
-    export assim_freq={doc.data_assimilation.assim_freq}
     export PSLOT="{doc.names.experiment}"
     export EXPDIR="{doc.places.EXPDIR}"
     export ROTDIR="{doc.places.ROTDIR}"
@@ -186,6 +163,24 @@ config_base:
     export FHOUT_HF_GFS={doc.output_settings.FHOUT_HF_GFS}
     export FHRLST="{doc.output_settings.gfs_forecast_hours}"
 
+    # Coupled settings
+    export cpl="{cpl}"
+    export cplflx="{doc.settings.cplflx}"
+    export cplice="{doc.settings.cplice}"
+    export print_esmf="{doc.settings.print_esmf}"
+
+    export nems_temp="{doc.settings.nems_temp}"
+    export nems_temp_cold="{doc.settings.nems_temp_cold}"
+
+    # Fix paths
+    export FIXcice=$HOMEgfs/fix/fix_cice5
+    export FIXmom=$HOMEgfs/fix/fix_mom6
+    export FIXgrid=$HOMEgfs/fix/fix_fv3grid
+    export OCNFIXDIR=$HOMEgfs/fix/fix_ocnice
+
+    # For coupled
+    export UGCSsrc="/scratch2/NCEPDEV/climate/Bin.Li/S2S/fix/ocean_ice_post"
+
     # I/O QUILTING, true--use Write Component; false--use GFDL FMS
     # if quilting=true, choose OUTPUT_GRID as cubed_sphere_grid in netcdf or gaussian_grid
     # if gaussian_grid, set OUTPUT_FILE for nemsio or netcdf
@@ -194,10 +189,10 @@ config_base:
     export OUTPUT_FILE="{doc.output_settings.OUTPUT_FILE_TYPE}"
    
     # IAU related parameters
-    export DOIAU={doc.settings.DOIAU}
+    export DOIAU={tools.YES_NO(doc.settings.DOIAU)}
     export IAUFHRS={doc.settings.IAUFHRS}
     export IAU_DELTHRS={doc.settings.IAU_DELTHRS}
-    export DOIAU_ENKF={doc.fv3_enkf_settings.DOIAU_ENKF}
+    export DOIAU_ENKF={tools.YES_NO(doc.fv3_enkf_settings.DOIAU_ENKF)}
     export IAUFHRS_ENKF={doc.fv3_enkf_settings.IAUFHRS_ENKF}
     export IAU_DELTHRS_ENKF={doc.fv3_enkf_settings.IAU_DELTHRS_ENKF}
     [[ "$SDATE" = "$CDATE" ]] && ( export DOIAU="NO"; export DOIAU_ENKF="NO" ) 
@@ -205,6 +200,9 @@ config_base:
     # Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL
     export imp_physics={doc.fv3_gdas_settings.imp_physics}
     
+    # Analysis settings
+    export assim_freq={doc.data_assimilation.assim_freq}
+
     # Shared parameters
     # Hybrid related
     export DOHYBVAR="{tools.YES_NO(doc.data_assimilation.DOHYBVAR)}"
@@ -223,7 +221,7 @@ config_base:
         fi
     fi
     
-    # If YES, NSST is turned on in anal and/or fcst steps
+    # If YES, NSST is turned on in anal and/or fcst steps and turn off rtgsst
     export DONST="{tools.YES_NO(doc.fv3_gdas_settings.DONST)}"
     if [ $DONST = "YES" ]; then export FNTSFA="        "; fi
     
@@ -232,6 +230,13 @@ config_base:
     
     # Analysis increments to zero in CALCINCEXEC
     export INCREMENTS_TO_ZERO="{tools.join(doc.data_assimilation.INCREMENTS_TO_ZERO,',')}"
+
+    # Utilities needed in the scripts (mostly post)
+    {doc.platform.config_base_extras}
+    export POSTGRB2TBL="{doc.places.HOMEgfs}/sorc/gfs_post.fd/parm/params_grib2_tbl_new"
+
+    # Verification options
+    export DO_METP="{tools.YES_NO(doc.settings.DO_METP)}"        # Run MET+ jobs
 
     # Archiving options
     export DELETE_COM_IN_ARCHIVE_JOB={tools.YES_NO(doc.archiving.scrub_in_archive)}
