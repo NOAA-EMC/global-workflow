@@ -104,7 +104,7 @@
 # Update restart time is added offset relative to model start
   RSTOFFSET=$(( ${RSTOFFSET} + ${RSTIOFF_WAV} ))
   ymdh_rst_ini=`$NDATE ${RSTOFFSET} $YMDH`
-  RST2OFFSET=$(( ${RSTOFFSET} + ${RST2IOFF_WAV} ))
+  RST2OFFSET=$(( ${DT_2_RST_WAV} + ${RST2IOFF_WAV} ))
   ymdh_rst2_ini=`$NDATE ${RST2OFFSET} $YMDH` # DT2 relative to first-first-cycle restart file
 # First restart file for cycling
   time_rst_ini="`echo $ymdh_rst_ini | cut -c1-8` `echo $ymdh_rst_ini | cut -c9-10`0000"
