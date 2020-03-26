@@ -19,7 +19,7 @@ export COMPONENTRSTwave=${COMPONENTRSTwave:-gdaswave}
 
 # Grids for wave model
 # GFSv16
-export waveGRD='nh_10m aoc_9km sh_15m'
+export waveGRD='gnh_10m aoc_9km gsh_15m'
 export waveGRDN='1 2 3' # gridnumber for ww3_multi
 export waveGRDG='10 20 30' # gridgroup for ww3_multi
 
@@ -42,7 +42,7 @@ export waveuoutpGRD=points
 export waveinterpGRD='glo_15mxt' # Grids that need to be interpolated from native
                              # in POST will generate grib unless gribOK not set
 export wavesbsGRD=''  # side-by-side grids generated as wave model runs, writes to com
-export wavepostGRD='nh_10m aoc_9km sh_15m' # Native grids that will be post-processed (grib2)
+export wavepostGRD='gnh_10m aoc_9km gsh_15m' # Native grids that will be post-processed (grib2)
 
 # CDATE
 export CDATE=${PDY}${cyc}

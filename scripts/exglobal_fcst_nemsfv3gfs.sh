@@ -466,7 +466,7 @@ resp=$((res+1))
 npx=$resp
 npy=$resp
 npz=$((LEVS-1))
-io_layout="1,1"
+io_layout=${io_layout:-"1,1"}
 #ncols=$(( (${npx}-1)*(${npy}-1)*3/2 ))
 
 # spectral truncation and regular grid resolution based on FV3 resolution
@@ -696,7 +696,8 @@ wav_petlist_bounds=" $((NTASKS_FV3)) $((NTASKS_FV3m1+npe_wav))"
 cat > nems.configure <<EOF
 EARTH_component_list: ATM WAV
 EARTH_attributes::
-  Verbosity = 0
+  Verbosity = high
+  HierarchyProtocol = off
 ::
 
 ATM_model:                      fv3
@@ -709,13 +710,13 @@ ATM_attributes::
 WAV_model:                      ww3
 WAV_petlist_bounds:             ${wav_petlist_bounds}
 WAV_attributes::
-  Verbosity = 0
+  Verbosity = high
 ::
 
 runSeq::
   @${coupling_interval_sec}
     ATM
-    ATM -> WAV
+    ATM -> WAV :SrcTermProcessing=0:TermOrder=SrcSeq
     WAV
   @
 ::
