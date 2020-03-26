@@ -130,7 +130,7 @@ Create COMROT experiment directory structure'''
     partition = args.partition
 
     # Set machine defaults
-    if machine is 'WCOSS_DELL_P3':
+    if machine == 'WCOSS_DELL_P3':
       base_git = '/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git'
       base_svn = '/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git'
       dmpdir = '/gpfs/dell3/emc/global/dump'
@@ -145,7 +145,7 @@ Create COMROT experiment directory structure'''
       if partition in ['3p5']:
         queue = 'dev2'
         queue_arch = 'dev2_transfer'
-    elif machine is 'WCOSS_C':
+    elif machine == 'WCOSS_C':
       base_git = '/gpfs/hps3/emc/global/noscrub/emc.glopara/git'
       base_svn = '/gpfs/hps3/emc/global/noscrub/emc.glopara/svn'
       dmpdir = '/gpfs/dell3/emc/global/dump'
@@ -157,7 +157,7 @@ Create COMROT experiment directory structure'''
       account = 'GFS-DEV'
       queue = 'dev'
       queue_arch = 'dev_transfer'
-    elif machine is 'HERA':
+    elif machine == 'HERA':
       base_git = '/scratch1/NCEPDEV/global/glopara/git'
       base_svn = '/scratch1/NCEPDEV/global/glopara/svn'
       dmpdir = '/scratch1/NCEPDEV/global/glopara/dump'
