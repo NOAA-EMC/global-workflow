@@ -152,7 +152,7 @@ fi
 # determine if restart IC exists to continue from a previous forecast
 RERUN=${RERUN:-"NO"}
 filecount=$(find $RSTDIR_TMP -type f | wc -l) 
-if [[ ( $CDUMP = "gfs" || $gefs = ".true." ) && $restart_interval -gt 0 && $FHMAX && $restart_interval && $filecount -gt 10 ]]; then
+if [[ ( $CDUMP = "gfs" || ( $gefs = ".true." && $CDATE_RST = "" )) && $restart_interval -gt 0 && $FHMAX -gt $restart_interval && $filecount -gt 10 ]]; then
   last_rst=$(( $FHMAX - $FHMAX % $restart_interval ))
   SDATE=$($NDATE +$last_rst $CDATE)
   EDATE=$($NDATE +$restart_interval $CDATE)
@@ -172,7 +172,7 @@ if [[ ( $CDUMP = "gfs" || $gefs = ".true." ) && $restart_interval -gt 0 && $FHMA
   done
 fi
 
-if [[ $RERUN = "YES" && CDATE_RST = "" ]]; then
+if [[ $RERUN = "YES" && $CDATE_RST = "" ]]; then
   echo "FATAL ERROR: Tried to perform a rerun but CDATE_RST was not set!"
   export err=40
   $ERRSCRIPT || exit $err
