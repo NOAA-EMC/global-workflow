@@ -4,8 +4,8 @@ case:
     MOM6IC: /scratch1/NCEPDEV/nems/Bin.Li/S2S/FROM_HPSS
 
   settings: 
-    SDATE: 2016-04-01t00:00:00
-    EDATE: 2016-04-01t00:00:00
+    SDATE: 2012-01-01t00:00:00
+    EDATE: 2012-01-01t00:00:00
 
     cplflx: .true.
     print_esmf: .true.
@@ -20,7 +20,7 @@ case:
     OCN_INTERVAL: 24
     FHOUT_GFS: 6
     FHMIN_GFS: 0
-    FHMAX_GFS: 72
+    FHMAX_GFS: 840
     FHMAX_HF_GFS: 0
     FHOUT_HF_GFS: -1
 
@@ -28,6 +28,7 @@ case:
     CASE: C384
     LEVS: 65
     DELTIM: 450
+    SEEDLET: 10
     nst_anl: no
     DO_SKEB: true
     DO_SHUM: false

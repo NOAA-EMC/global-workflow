@@ -58,8 +58,8 @@ if [ $cpl = ".true." ]; then
   echo  "${dirname}ocn*nc             " >>ocn.txt
   echo  "${dirname}ocn_ice*grb2       " >>ocn2.txt
   echo  "${dirname}SST*nc             " >>SST.txt
-  echo  "${dirname}${head}flux.1p00.f${fhr}           " >>gfs_flux_1p00.txt
-  echo  "${dirname}${head}flux.1p00.f${fhr}.idx       " >>gfs_flux_1p00.txt
+  echo  "${dirname}${head}flux.1p00.f???           " >>gfs_flux_1p00.txt
+  echo  "${dirname}${head}flux.1p00.f???.idx       " >>gfs_flux_1p00.txt
 fi
 
   #..................

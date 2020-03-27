@@ -127,10 +127,7 @@ config_fcst:
 
     # Stochastic physics parameters
     # nam_stochy section
-    export SEEDLET=1
-    export ISEED_SKEB=$((SDATE*1000 + SEEDLET*10 + 1))
-    export ISEED_SHUM=$((SDATE*1000 + SEEDLET*10 + 2))
-    export ISEED_SPPT=$((SDATE*1000 + SEEDLET*10 + 3))
+    export SEEDLET="{doc.fv3_gfs_settings.SEEDLET}"
     export DO_SKEB="{tools.fort(doc.fv3_gfs_settings.DO_SKEB)}"
     export DO_SHUM="{tools.fort(doc.fv3_gfs_settings.DO_SHUM)}"
     export DO_SPPT="{tools.fort(doc.fv3_gfs_settings.DO_SPPT)}"

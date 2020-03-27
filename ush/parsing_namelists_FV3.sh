@@ -351,7 +351,14 @@ cat >> input.nml <<EOF
   fix_negative = .true.
   icloud_f = 1
   mp_time = 150.
+EOF
+if [ $cplflx = .true. ]; then
+  cat >> input.nml << EOF
   reiflag = ${reiflag:-"2"}
+EOF
+fi
+
+cat >> input.nml <<EOF
   $gfdl_cloud_microphysics_nml
 /
 
@@ -417,6 +424,7 @@ if [ $DO_SPPT = .true. -o $DO_SHUM = .true. -o $DO_SKEB = .true. ]; then
 
     cat >> input.nml << EOF
 &nam_stochy
+  new_lscale = .true.
   ntrunc = $JCAP_STP
   lon_s = $LONB_STP
   lat_s = $LATB_STP

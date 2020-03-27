@@ -44,8 +44,7 @@ num_files:               ${NUM_FILES:-2}
 filename_base:           'atm' 'sfc'
 output_grid:             $OUTPUT_GRID
 output_file:             $OUTPUT_FILE
-ideflate:                ${ideflate:-1}
-nbits:                   ${nbits:-14}
+
 write_nemsioflip:        $WRITE_NEMSIOFLIP
 write_fsyncflag:         $WRITE_FSYNCFLAG
 imo:                     $LONB_IMO
@@ -63,6 +62,12 @@ cat >> model_configure <<EOF
 atm_coupling_interval_sec:      $DELTIM
 output_history:          ${OUTPUT_HISTORY:-".true."}
 write_dopost:            ${WRITE_DOPOST:-".false."}
+EOF
+elif [ $cpl = .false. ]; then
+cat >> model_configure <<EOF
+ideflate:                ${ideflate:-1}
+nbits:                   ${nbits:-14}
+iau_offset:              ${IAU_OFFSET:-0}
 EOF
 fi
 

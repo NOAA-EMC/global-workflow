@@ -16,6 +16,7 @@ fv3_gfs_defaults: &fv3_gfs_defaults
   d4_bg: 0.15
   dddmp: 0.2
   ISEED: 0
+  SEEDLET: 1
   SET_STP_SEED: YES
   DO_SHUM: false
   DO_SKEB: false

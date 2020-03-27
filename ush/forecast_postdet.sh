@@ -381,9 +381,9 @@ EOF
 
 	# Stochastic Physics Options
 	if [ ${SET_STP_SEED:-"YES"} = "YES" ]; then
-	  ISEED_SKEB=$((CDATE*1000 + MEMBER*10 + 1))
-	  ISEED_SHUM=$((CDATE*1000 + MEMBER*10 + 2))
-	  ISEED_SPPT=$((CDATE*1000 + MEMBER*10 + 3))
+	  ISEED_SKEB=$((CDATE*1000 + SEEDLET*10 + 1))
+	  ISEED_SHUM=$((CDATE*1000 + SEEDLET*10 + 2))
+	  ISEED_SPPT=$((CDATE*1000 + SEEDLET*10 + 3))
 	else
 	  ISEED=${ISEED:-0}
 	fi
@@ -617,8 +617,10 @@ CICE_postdet()
         #BL2018
         stepsperhr=$((3600/$ICETIM))
         #BL2018
-        nhours=$(${NHOUR} ${CDATE} ${SYEAR}010100)
+        #nhours=$(${NHOUR} ${CDATE} ${SYEAR}010100)
+        nhours=$($NHOUR $CDATE ${year}010100)
         istep0=$((nhours*stepsperhr))
+        steps=$((nhours*stepsperhr))
         npt=$((FHMAX*$stepsperhr))      # Need this in order for dump_last to work
 
         histfreq_n=${histfreq_n:-6}
