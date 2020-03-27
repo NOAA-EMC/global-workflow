@@ -416,10 +416,8 @@ for i in $(seq -f "%02g" 0 $npert); do membn="$membn $i"; done
       nip=${arrpar[$iparam-1]}
 
 # Line for doing per parameter, per time stamp
-#            echo "$USHwave/wave_ens_stats.sh ${nip} ${ngrib} ${fhour} 1> wave_ens_stats_${nip}_${fhour}.out 2>&1" >> cmdfile
-# mpiserial block
             echo "nip ngrib fhour: ${nip}, ${ngrib}, ${fhour}"
-            echo "$USHwave/wave_ens_stats.sh ${nip} ${ngrib} ${fhour} 1> wave_ens_stats_${nip}_${fhour}.out 2>&1" >> cmdfile.${ifile}
+            echo "$USHwave/wave_ens_stat.sh ${nip} ${ngrib} ${fhour} 1> wave_ens_stats_${nip}_${fhour}.out 2>&1" >> cmdfile.${ifile}
 
             if [ "$ncmdfile" -gt '1' ]
             then
