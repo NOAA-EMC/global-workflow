@@ -1,7 +1,7 @@
 user_places: &user_places
   EXPROOT: !error Please select the EXPROOT directory.
     # ie. /scratch4/NCEPDEV/ocean
-  FIX_SCRUB: False
+  FIX_SCRUB: True
   COMROOT: none # Please select a scrub space when FIX_SCRUB is True
   DATAROOT: none
 
