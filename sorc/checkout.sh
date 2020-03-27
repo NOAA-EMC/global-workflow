@@ -38,16 +38,18 @@ else
 fi
 fi
 
-echo gsi checkout ...
-if [[ ! -d gsi.fd ]] ; then
-    rm -f ${topdir}/checkout-gsi.log
-    git clone --recursive gerrit:ProdGSI gsi.fd >> ${topdir}/checkout-gsi.fd.log 2>&1
-    cd gsi.fd
-    git checkout 3664477befd7ef2ba8299c3a5461747a78da30a0
-    git submodule update
-    cd ${topdir}
-else
-    echo 'Skip.  Directory gsi.fd already exists.'
+if [ $model != "coupled" ]; then
+    echo gsi checkout ...
+    if [[ ! -d gsi.fd ]] ; then
+        rm -f ${topdir}/checkout-gsi.log
+        git clone --recursive gerrit:ProdGSI gsi.fd >> ${topdir}/checkout-gsi.fd.log 2>&1
+        cd gsi.fd
+        git checkout 3664477befd7ef2ba8299c3a5461747a78da30a0
+        git submodule update
+        cd ${topdir}
+    else
+        echo 'Skip.  Directory gsi.fd already exists.'
+    fi
 fi
 
 echo ufs_utils checkout ...
