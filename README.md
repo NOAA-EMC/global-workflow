@@ -26,6 +26,9 @@ be worked with.
 
 The user file is a short text file in YAML format, telling CROW the information of the user. Such as scratch space for EXPDIR, 
 account information and email for cron job notification purpose. A template named user.yaml.default is included in the repository.
+
+2020/03: Please use FIX_SCRUB: True option on Hera until further notice. 
+
 ```
 cd ../workflow
 cp user.yaml.default user.yaml
