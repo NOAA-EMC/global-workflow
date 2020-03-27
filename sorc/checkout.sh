@@ -60,7 +60,7 @@ if [[ ! -d ufs_utils.fd ]] ; then
     rc=$?
     ((err+=$rc))
     cd ufs_utils.fd
-    git checkout 9de34ea
+    git checkout ops-gefsv12
     cd ${topdir}
 else
     echo 'Skip.  Directory ufs_utils.fd already exists.'
