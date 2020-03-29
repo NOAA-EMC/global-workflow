@@ -1015,7 +1015,7 @@ ls -lt ${MDC}.hs_*.t${cyc}z.grib2
 #
   if [ "$exit_code" -ne '0' ]
   then
-     msg="ABNORMAL EXIT: Problem in GWES STATS"
+     msg="ABNORMAL EXIT: Problem in WAVE STAT"
      postmsg "$jlogfile" "$msg"
      echo $msg
      err=$exit_code ; export err ; ./err_chk
