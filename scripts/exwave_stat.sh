@@ -653,7 +653,7 @@
 #
   if [ "$exit_code" -ne '0' ]
   then
-     msg="ABNORMAL EXIT: Problem in GWES STATS"
+     msg="ABNORMAL EXIT: Problem in WAVE STAT"
      postmsg "$jlogfile" "$msg"
      echo $msg
      err=4;export err;${errchk};exit $err

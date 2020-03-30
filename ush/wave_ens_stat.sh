@@ -139,7 +139,7 @@
 
     FH3=$(printf %03i $fhour)
 #
-    rm -f gwes_stats.inp data_* 
+    rm -f wave_stat.inp data_* 
 #
 # 1.b Loop through members
     nme=0
@@ -150,23 +150,23 @@
       if [ "${im}" = "00" ]
       then
 
-# 1.b.1 Generate input file for gwes_stats
-        echo $CDATE $FH3 $nnip $parcode  > gwes_stats.inp
-        echo ${nmemb}                 >> gwes_stats.inp
-        echo $memb                    >> gwes_stats.inp
-        echo ${scale[@]} | wc -w           >> gwes_stats.inp
-        echo ${scale[@]}                   >> gwes_stats.inp
+# 1.b.1 Generate input file for wave_stat
+        echo $YMDH $hhh $nnip $parcode  > wave_stat.inp
+        echo ${nmemb}                 >> wave_stat.inp
+        echo $memb                    >> wave_stat.inp
+        echo ${scale[@]} | wc -w           >> wave_stat.inp
+        echo ${scale[@]}                   >> wave_stat.inp
 
 # 1.b.2 Get grid dimension for input grib file and pass to fortran code
         nlola=`$WGRIB2 ${infile} -grid -d 1 | sed 's/(/ /g' | sed 's/)/ /g' | sed '2!d' | awk '{print $3,$5}'`
         rdlon=`$WGRIB2 ${infile} -grid -d 1 | sed 's/(/ /g' | sed 's/)/ /g' | sed '4!d' | awk '{print $2,$4,$6}'`
         rdlat=`$WGRIB2 ${infile} -grid -d 1 | sed 's/(/ /g' | sed 's/)/ /g' | sed '3!d' | awk '{print $2,$4,$6}'`
-        echo ${nlola}       >> gwes_stats.inp
-        echo ${rdlon}       >> gwes_stats.inp
-        echo ${rdlat}       >> gwes_stats.inp
+        echo ${nlola}       >> wave_stat.inp
+        echo ${rdlon}       >> wave_stat.inp
+        echo ${rdlat}       >> wave_stat.inp
       fi
 
-# 1.b.3 Create binary file for input to gwes_stats FORTRAN executable
+# 1.b.3 Create binary file for input to wave_stat FORTRAN executable
       $WGRIB2 $infile -vt -match ${valtime} -bin data_${im}
       ok1=$?
 
@@ -175,18 +175,18 @@
         echo " *** ERROR : para=$para, im=$im, ok1=$ok1"
         exit
       fi
-      echo data_$im       >> gwes_stats.inp
+      echo data_$im       >> wave_stat.inp
 
       nme=`expr ${nme} + 1`
       
     done
 
 #
-# 1.c Execute gwes_stats and create grib2 files
+# 1.c Execute wave_stat and create grib2 files
 #
     rm -f mean_out spread_out probab_out test_out
 #
-    $EXECwave/gwes_stats  < gwes_stats.inp >>$pgmout 2>&1
+    $EXECwave/wave_stat  < wave_stat.inp >>$pgmout 2>&1
 #
 # 1.d Check for errors and move output files to tagged grib2 parameter-hour files
    if [ ! -f mean_out ]
@@ -237,4 +237,4 @@
   rm -f data_??
 
 # 
-# End of wave_gwes_stats.sh
+# End of wave_ens_stat.sh
