@@ -151,7 +151,7 @@
       then
 
 # 1.b.1 Generate input file for wave_stat
-        echo $YMDH $hhh $nnip $parcode  > wave_stat.inp
+        echo $CDATE $FH3 $nnip $parcode  > wave_stat.inp
         echo ${nmemb}                 >> wave_stat.inp
         echo $memb                    >> wave_stat.inp
         echo ${scale[@]} | wc -w           >> wave_stat.inp
