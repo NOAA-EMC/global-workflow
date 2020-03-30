@@ -38,7 +38,7 @@
   [[ "$LOUD" != YES ]] && set +x
 
   set +x
-  echo -e '\n                   ******************************************\n'
+  echo -e '                   ******************************************\n'
   echo '                   *** WAVE ENSEMBLE STATS SCRIPT ***'
   echo -e '                   ******************************************\n'
   echo "Starting at : `date`"
@@ -49,56 +49,33 @@
   exit_code=0
 
 # 0.a Date and system wide settings
-#
-  export YMD=$PDY
-  export YMDH=${PDY}${cyc}
-  export tcycz=t${cyc}z
-#
-#  export wgrib2=$utilexec/wgrib2
+# In coupled system used CDATE
 #
 # 0.b System-specific settings
 #
   npert=${npert:?Parameter npert required for ensemble statistics}
   nmembn=`expr ${npert} + 1`
 #
- export membn=""
-for i in $(seq -f "%02g" 0 $npert); do membn="$membn $i"; done
+  export membn=""
+  for i in $(seq -f "%02g" 0 $npert); do membn="$membn $i"; done
 #
 # 0.c Time management
 #
-  export FHMAXWAV=${FHMAXWAV:-384}
-
-  export dtgh='3' # Time interval between fields
-  export dtgh2='6' # Time interval between fields after 240 hrs
-  export hcst_hour=-24
-
-#   Time range for data output
-# This line for when hindcast codes are available
-#   export trange=`expr ${FHMAXWAV} - ${hcst_hour}` 
-# In the meantime, generate grib2 stats data only with forecasts
-# and ngrib is calculated while the input files are copied to the wrok directory.
-   export trange=`expr ${FHMAXWAV} - 0`
-#   ngrib=`expr ${trange} / ${dtgh} + 1`
-
-#
 # 0.d Parameter selection and deployment of arrays
 #
-    ASWELL=(SWELL1 SWELL2) # Indices of HS from partitions
-    ASWPER=(SWPER1 SWPER2) # Indices of PERIODS form partitions 
-                                  #  (should be same as ASWELL)
-    export arrpar=(HTSGW PERPW WIND WDIR DIRPW WVHGT WVPER WVDIR ${ASWELL[@]} ${ASWPER[@]})
-    export nparam=`echo ${arrpar[@]} | wc -w`
-
-# 0.e Number of processes available for script
-  ncmdfile=`echo $LSB_HOSTS | wc -w | awk '{ print $1}'`
+  ASWELL=(SWELL1 SWELL2 SWELL3) # Indices of HS from partitions
+  ASWPER=(SWPER1 SWPER2 SWPER3) # Indices of PERIODS from partitions 
+                                #  (should be same as ASWELL)
+  ASWDIR=(SWDIR1 SWDIR2 SWDIR3) # Indices of PERIODS from partitions 
+  export arrpar=(HTSGW PERPW ICEC IMWF MWSPER DIRPW WVHGT WVPER WVDIR WWSDIR WIND WDIR ${ASWELL[@]} ${ASWDIR[@]} ${ASWPER[@]})
+  export nparam=`echo ${arrpar[@]} | wc -w`
 
 #
 # 1. Get Input files for current script 
 #
 # 1.a Check if buoy input files exist and copy
 #
-# When changing to cfp, verify for cfp hang noticed during Q4FY15 GEFS upgrade
- buoyfile=wave_${NET}.buoys
+  buoyfile=wave_${NET}.buoys
   if [ -f $FIXwave/${buoyfile} ] ; then
     cp  $FIXwave/${buoyfile} buoy_file.data
     echo " $FIXwave/${buoyfile} copied to buoy_file.data."
@@ -116,70 +93,59 @@ for i in $(seq -f "%02g" 0 $npert); do membn="$membn $i"; done
     echo "$FIXwave/wave_${NET}_buoy.data  missing." >> $ensemb_log
     msg="ABNORMAL EXIT: NO FILE $buoyfile"
     postmsg "$jlogfile" "$msg"
-    err=1;export err;${errchk} || exit ${err}
+    err=1;export err;${errchk}; exit ${err}
   fi
 
 #
-# 1.b Copy grib2 data for all members
+# 1.b Link grib2 data for all members
 #
-# for ifrcst in `seq 0 $dtgh $FHMAXWAV`
-#  do
   ngrib=0
-  inc=$dtgh
+  inc=$FHOUT_HF_WAV
   ifrcst=0
-  while [ $ifrcst -le $FHMAXWAV ]
+  while [ $ifrcst -le $FHMAX_WAV ]
   do
-    ngrib=$(( $ngrib + 1 ))
-    fcsthr=$(printf "%03d" $ifrcst)
-    for me in $membn
+    for grdID in $waveinterpGRD
     do
-      if [ "$me" == "00" ]; then
-        ftype="c"
-      else
-        ftype="p"
+      ngrib=$(( $ngrib + 1 ))
+      FH3=$(printf "%03d" $ifrcst)
+      for me in $membn
+      do
+        if [ "$me" == "00" ]; then
+          ftype="c"
+        else
+          ftype="p"
+        fi
+        ENSTAG=${ftype}${me}
+        case $grdID in
+          glo_15mxt) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=11 ;;
+          glo_30mxt) GRDNAME='global' ; GRDRES=0p50 ; GRIDNR=255  ; MODNR=11 ;;
+        esac
+        cpfile=$COMIN/gridded/${WAV_MOD_TAG}.${cycle}.${ENSTAG}.${GRDNAME}.${GRDRES}.f${FH3}.grib2
+        if [ -f ${cpfile} ] ; then 
+          ln -s  $cpfile  ./. 
+        else
+          msg="ABNORMAL EXIT: ERR in coping $cpfile "
+          postmsg "$jlogfile" "$msg"
+          echo ' '
+          echo '******************************************************* '
+          echo "*** ERR : No $cpfile copied. *** "
+          echo '******************************************************* '
+          echo ' '
+          echo "$cpfile missing." >> $ensemb_log
+          err=2;export err;${errchk}; exit ${err}
+        fi
+      done
+      if [ $ifrcst -ge $FHMAX_HF_WAV ]
+      then
+         inc=$FHOUT_WAV
       fi
-      cpfile=$COMIN/${modIE}${me}.t${cyc}z.${ftype}${me}.$grdID.f${fcsthr}.grib2
-      if [ -f ${cpfile} ] ; then 
-        cp  $cpfile  ./. 
-      else
-        msg="ABNORMAL EXIT: ERR in coping $cpfile "
-        postmsg "$jlogfile" "$msg"
-        echo ' '
-        echo '******************************************************* '
-        echo "*** ERR : No $cpfile copied. *** "
-        echo '******************************************************* '
-        echo ' '
-        echo "$cpfile missing." >> $ensemb_log
-        err=2;export err;${errchk} || exit ${err}
-      fi
+      ifrcst=$(( $ifrcst + $inc ))
     done
-    if [ $ifrcst -ge 240 ]
-    then
-       inc=$dtgh2
-    fi
-    ifrcst=$(( $ifrcst + $inc ))
   done
-
-
 # Prepare separate data files to reduce copy load to tmp directories
 # 
 # 2.a Command file set-up
-#     The command file points to $ncmdfile files named cmdfile.$ifile.
-#     The actual work is distributed over these files.
-  
-  rm -f cmdfile*
-  touch cmdfile
-  chmod 744 cmdfile
-  rm -f cmdfile.*
- # mpiserial lines
-  ifile=1
-  while [ "$ifile" -le "$ncmdfile" ]
-  do
-    touch cmdfile.$ifile
-    chmod 700 cmdfile.$ifile
-    echo "./cmdfile.$ifile" >> cmdfile
-    ifile=`expr $ifile + 1`
-  done
+  rm -f cmdfile cmdfile.$ 
 
   iparam=1
 
@@ -196,27 +162,34 @@ for i in $(seq -f "%02g" 0 $npert); do membn="$membn $i"; done
     case $prepar in
       HTSG)   nnip=${nip} ; snip=hs ;;
       PERP)   nnip=${nip} ; snip=tp ;;
+      ICE)   nnip=${nip} ; snip=ice ;;
+      IMW)   nnip=${nip} ; snip=tm ;;
+      MWSPE)   nnip=${nip} ; snip=tz ;;
       DIRP)   nnip=${nip} ; snip=pdir ;;
       WVHG)  nnip=${nip} ; snip=wshs ;;
       WVPE)  nnip=${nip} ; snip=wstp ;;
       WVDI)  nnip=${nip} ; snip=wsdir ;;
+      WWSDI)  nnip=${nip} ; snip=wwdir ;;
       WIN)    nnip=${nip} ; snip=wnd ;;
       WDI)    nnip=${nip} ; snip=wnddir ;;
       SWELL)  nnip=${nip} ; snip=hswell ; npart=1 ;;
+      SWDIR)  nnip=${nip} ; snip=dswell ; npart=1 ;;
       SWPER)  nnip=${nip} ; snip=tswell ; npart=1 ;;
       *)       nnip= ;;
     esac
 
-# mpiserial line
-    ifile=1
-
-#    for ifrcst in `seq 0 $dtgh $FHMAXWAV`
-#      do
-    inc=$dtgh
+    inc=$FHOUT_HF_WAV
     ifrcst=0
-    while [ $ifrcst -le $FHMAXWAV ]
-    do
-        fcsthr=$(printf "%03d" $ifrcst)
+    if [ ${iparam} -eq 3 ] ||[ ${iparam} -eq 4 ] || [ ${iparam} -eq 5 ] || \
+       [ ${iparam} -eq 10 ] || [ ${iparam} -eq 15 ] || [ ${iparam} -eq 16 ] ||
+       [ ${iparam} -eq 17 ] || [ ${iparam} -eq 18 ] || [ ${iparam} -eq 21 ]
+    then
+      echo "Parameter $snip not yet available for stats"
+    else
+
+      while [ $ifrcst -le $FHMAX_WAV ]
+      do
+        FH3=$(printf "%03d" $ifrcst)
         for me in $membn
           do
            if [ "$me" == "00" ]; then
@@ -224,473 +197,289 @@ for i in $(seq -f "%02g" 0 $npert); do membn="$membn $i"; done
            else
              ftype="p"
            fi
-           infile=${modIE}${me}.t${cyc}z.${ftype}${me}.$grdID.f${fcsthr}.grib2
-           outfile=${nnip}.t${cyc}z.${ftype}${me}.f${fcsthr}.grib2
+           ENSTAG=${ftype}${me}
+           infile=${WAV_MOD_TAG}.${cycle}.${ENSTAG}.${GRDNAME}.${GRDRES}.f${FH3}.grib2
+           outfile=${nnip}_${me}.t${cyc}z.f${FH3}.grib2
 
            wgfileout=wgrib_${nnip}_${me}.out
            if [ "${npart}" = "0" ]
            then 
-             echo "$WGRIB2 -match ${nip} -match surface ${infile} -grib ${outfile} > ${wgfileout} 2>&1" >> cmdfile.${ifile}
+             echo "$WGRIB2 -match ${nip} -match surface ${infile} -grib ${outfile} > ${wgfileout} 2>&1" >> cmdfile
            else
-             echo "$WGRIB2 -match ${prepar} -match \"${paridx} in sequence\" ${infile} -grib ${outfile} > ${wgfileout} 2>&1" >> cmdfile.${ifile}
+             echo "$WGRIB2 -match ${prepar} -match \"${paridx} in sequence\" ${infile} -grib ${outfile} > ${wgfileout} 2>&1" >> cmdfile
            fi
 
-# mpiserial if block
-           if [ "$ncmdfile" -gt '1' ]
-           then
-             ifile=`expr $ifile + 1`
-           fi
-           if [ "$ifile" -gt "$ncmdfile" ]
-           then
-             ifile=1
-           fi
         done    #for members
-        if [ $ifrcst -ge 240 ]
+        if [ $ifrcst -ge $FHMAX_HF_WAV ]
         then
-           inc=$dtgh2
+           inc=$FHOUT_WAV
         fi
         ifrcst=$(( $ifrcst + $inc ))
       done    #for times
+    fi
       iparam=`expr ${iparam} + 1`
   done    #for parameters
   # END all loops
 
-
-
-
 # 2.c Execute poe or serial command files
-
-  if [ "$nparam" -gt '0' ]
-  then
 
   set +x
   echo ' '
-  echo " Extracting $nmembn x $nparam wave ensembles parameter files "
+  echo " Extracting $nmembn x $nparam wave ensembles parameter files at `date`"
   echo ' '
   [[ "$LOUD" = YES ]] && set -x
-   if [ "$ncmdfile" -gt '1' ]
-   then
-#    mpirun.lsf cfp cmdfile
-     mpirun cfp cmdfile
-     exit=$?
-   else
-#     ./cmdfile
-     ./cmdfile.1
-     exit=$?
-   fi
- fi
-#
-# mpiserial section
-# 2.d.1 Ending times on the different processors
 
-  if [ "$nparam" -gt '0' ]
+  wavenproc=`wc -l cmdfile | awk '{print $1}'`
+  wavenproc=`echo $((${wavenproc}<${NTASKS}?${wavenproc}:${NTASKS}))`
+
+  if [ "$wavenproc" -gt '1' ]
+  then
+    ${wavempexec} ${wavenproc} ${wave_mpmd} cmdfile
+    exit=$?
+  else
+    chmod 744 cmdfile
+    ./cmdfile
+    exit=$?
+  fi
+
+  if [ "$exit" != '0' ]
   then
     set +x
     echo ' '
-    echo "   Ending times for separate processors :"
+    echo '********************************************'
+    echo '*** CMDFILE FAILED   ***'
+    echo '********************************************'
+    echo '     See Details Below '
+    echo ' '
     [[ "$LOUD" = YES ]] && set -x
-
-    for file in `cat cmdfile`
-    do
-      if [ "`wc $file | awk '{ print $1 }'`" = '0' ]
-      then
-        set +x
-        echo "      $file : no commands in this file."
-        [[ "$LOUD" = YES ]] && set -x
-      else
-        words="`tail -1 $file | wc | awk '{ print $2 }'`"
-        wrdnr=`expr $words - 1`
-        echo "{ print "'$'"$wrdnr }" > awkfile
-        outfile="`tail -1 $file | awk -f awkfile`"
-        rm -f awkfile
-        set +x
-        echo "      $file : `tail -1 $outfile`"
-        [[ "$LOUD" = YES ]] && set -x
-      fi
-    done
+    err=8; export err;${errchk}
+    exit $err
   fi
 
-# 2.d Check for errors
-  inc=$dtgh
-  ifrcst=0
-  while [ $ifrcst -le $FHMAXWAV ]
-  do
-    fcsthr=$(printf "%03d" $ifrcst)
-
-    iparam=1
-    for me in $membn
-    do
-       if [ "$me" == "00" ]; then
-         ftype="c"
-       else
-         ftype="p"
-       fi
-       while [ ${iparam} -le ${nparam} ]
-         do
-         nnip=${arrpar[$iparam-1]}
-
-         if [ ! -f ${nnip}.t${cyc}z.${ftype}${me}.f${fcsthr}.grib2 ]
-         then
-           msg="ABNORMAL EXIT: ERR in generating base grib parameter file"
-           postmsg "$jlogfile" "$msg"
-           set +x
-           echo ' '
-           echo '***************************************** '
-           echo "***            FATAL ERROR            *** "
-           echo "--- No ${nnip}.t${cyc}z.${ftype}${me}.f${fcsthr}.grib2 file --- "
-           echo '***************************************** '
-           echo ' '
-           [[ "$LOUD" = YES ]] && set -x
-           echo "No ${nnip}_${me}.t${cyc}z.grib2 " >> $wavelog
-           err=3;export err;./err_chk
-           exit_code=3
-         else
-           set +x
-           echo -e "\n Base grib parameter file created succesfully.\n"
-           [[ "$LOUD" = YES ]] && set -x
-           echo -e "\n ${COMOUT}/${nnip}_${me}.t${cyc}z.grib2 \n"
-           rm -f wgrib_${nnip}_${me}.out
-         fi
-
-         iparam=`expr ${iparam} + 1`
-
-       done  #for iparam
-    done  #for member number
-     if [ $ifrcst -ge 240 ]
-     then
-        inc=$dtgh2
-     fi
-     ifrcst=$(( $ifrcst + $inc ))
-  done  #for fcst time
-#XXX   WORKING FINE UP TO HERE
-
-
-
+#
 # 2.f Clean up larger grib2 gridded files
-#XXX don't delet them for the moment. 
-#XXX rm -f ${modIE}??.t${cyc}z.???.$grdID.f???.grib2
-#XXX
 #
 # 2. Generate ensemble mean, spread and probability files
-#
-# 2.a Command file set-up
-#     The command file points to $ncmdfile files named cmdfile.$ifile.
-#     The actual work is distributed over these files.
-
-  rm -f cmdfile
-  touch cmdfile
-  chmod 744 cmdfile
-# mpiserial block
-  rm -f cmdfile.*
-  ifile=1
-  while [ "$ifile" -le "$ncmdfile" ]
-  do
-    touch cmdfile.$ifile
-    chmod 744 cmdfile.$ifile
-    echo "./cmdfile.$ifile" >> cmdfile
-    ifile=`expr $ifile + 1`
-  done
-
 # 
 # 2.b Populate command files with stats wave_ens_stats.sh calls
 #
-  ifile=1
+  rm -f cmdfile cmdfile.$ 
+
   fhour=0
-
-# 81 is the number of files up to 240 hrs evry 3 hours.
-# after that files are every 6 hours
-  if [ "$ngrib" -gt 81 ]
-  then
-    diffhr=`expr $ngrib - 81`
-    plushr=`expr $diffhr \* 6`
-    end_hour=`expr 240 + $plushr`
-  else
-    end_hour=`expr ${ngrib} \* ${dtgh}` 
-  fi
-
-  while [ "$fhour" -lt "$end_hour" ]
+  while [ "$fhour" -le "$FHMAX_WAV" ]
   do
     iparam=1
     while [ ${iparam} -le ${nparam} ]
     do
       nip=${arrpar[$iparam-1]}
 
+      if [ ${iparam} -eq 3 ] ||[ ${iparam} -eq 4 ] || [ ${iparam} -eq 5 ] || \
+         [ ${iparam} -eq 10 ] || [ ${iparam} -eq 15 ] || [ ${iparam} -eq 16 ] ||
+         [ ${iparam} -eq 17 ] || [ ${iparam} -eq 18 ] || [ ${iparam} -eq 21 ]
+      then
+        echo " Parameter $nip not yet available in grib2 library "
+      else
 # Line for doing per parameter, per time stamp
-            echo "nip ngrib fhour: ${nip}, ${ngrib}, ${fhour}"
-            echo "$USHwave/wave_ens_stat.sh ${nip} ${ngrib} ${fhour} 1> wave_ens_stats_${nip}_${fhour}.out 2>&1" >> cmdfile.${ifile}
+        echo "nip ngrib fhour: ${nip}, ${ngrib}, ${fhour}"
+        echo "$USHwave/wave_ens_stat.sh ${nip} ${ngrib} ${fhour} 1> wave_ens_stats_${nip}_${fhour}.out 2>&1" >> cmdfile
 
-            if [ "$ncmdfile" -gt '1' ]
-            then
-              ifile=`expr $ifile + 1`
-            fi
-            if [ "$ifile" -gt "$ncmdfile" ]
-            then
-              ifile=1
-            fi
- 
-      iparam=`expr ${iparam} + 1`
+      fi
+
+        iparam=`expr ${iparam} + 1`
 
     done
-    if [ $fhour -ge 240 ]
+    if [ $fhour -ge $FHMAX_HF_WAV ]
     then
-      inc=$dtgh2
+      inc=$FHOUT_WAV
     else 
-      inc=$dtgh
+      inc=$FHOUT_HF_WAV
     fi
     fhour=`expr $fhour + $inc`
   done
 
 # 2.c Execute poe or serial command files
 
-  if [ "$nparam" -gt '0' ]
-  then
-
   set +x
   echo ' '
-  echo " Generating $nmembn hourly to ${end_hour}h wave ensembles stats files "
+  echo " Generating $nmembn hourly to ${FHMAX_WAV}h wave ensembles stats files "
   echo ' '
   [[ "$LOUD" = YES ]] && set -x
-   if [ "$ncmdfile" -gt '1' ]
-   then
-#     mpirun.lsf cfp cmdfile
-     mpirun cfp cmdfile
-     exit=$?
-   else
-#     ./cmdfile
-     ./cmdfile.1
-     exit=$?
-   fi
- fi
 
-# 2.d.1 Ending times on the different processors
+  wavenproc=`wc -l cmdfile | awk '{print $1}'`
+  wavenproc=`echo $((${wavenproc}<${NTASKS}?${wavenproc}:${NTASKS}))`
 
-  if [ "$nparam" -gt '0' ]
+  if [ "$wavenproc" -gt '1' ]
+  then
+    ${wavempexec} ${wavenproc} ${wave_mpmd} cmdfile
+    exit=$?
+  else
+    chmod 744 cmdfile
+    ./cmdfile
+    exit=$?
+  fi
+
+  if [ "$exit" != '0' ]
   then
     set +x
     echo ' '
-    echo "   Ending times for separate processors :"
+    echo '********************************************'
+    echo '*** CMDFILE FAILED   ***'
+    echo '********************************************'
+    echo '     See Details Below '
+    echo ' '
     [[ "$LOUD" = YES ]] && set -x
-
-    for file in `cat cmdfile`
-    do
-      if [ "`wc $file | awk '{ print $1 }'`" = '0' ]
-      then
-        set +x
-        echo "      $file : no commands in this file."
-        [[ "$LOUD" = YES ]] && set -x
-      else
-        words="`tail -1 $file | wc | awk '{ print $2 }'`"
-        wrdnr=`expr $words - 1`
-        echo "{ print "'$'"$wrdnr }" > awkfile
-        outfile="`tail -1 $file | awk -f awkfile`"
-        rm -f awkfile
-        set +x
-        echo "      $file : `tail -1 $outfile`"
-        [[ "$LOUD" = YES ]] && set -x
-      fi
-    done
+    err=8; export err;${errchk}
+    exit $err
   fi
 
 # Regroup all outputs in parameter/stats files
-# 2.d Command file set-up
-#     The command file points to $ncmdfile files named cmdfile.$ifile.
-#     The actual work is distributed over these files.
+# Regrouping has to be sequential per parameter, per hour
 
-  rm -f cmdfile
-  touch cmdfile
-  chmod 744 cmdfile
-# mpiserial block
-  ifile=1
-  rm -f cmdfile.*
 
-  while [ "$ifile" -le "$ncmdfile" ]
+  fhour=0
+
+  while [ "$fhour" -le "$FHMAX_WAV" ]
   do
-    touch cmdfile.$ifile
-    chmod 700 cmdfile.$ifile
-    echo "./cmdfile.$ifile" >> cmdfile
-    ifile=`expr $ifile + 1`
-  done
+    FH3=$(printf "%03d" $fhour)
+    valtime=`$NDATE ${fhour} ${CDATE}`  
+    iparam=1
 
-  ifile=1
-
-  iparam=1
-
-  while [ ${iparam} -le ${nparam} ]
-  do
-    nip=${arrpar[$iparam-1]}
-    case $nip in
-      HTSGW)   snip=hs ;;
-      PERPW)   snip=tp ;;
-      DIRPW)   snip=pdir ;;
-      IMWF)    snip=tm ;;
-      WVHGT)   snip=wshs ;;
-      WVPER)   snip=wstp ;;
-      WVDIR)   snip=wsdir ;;
-      WIND)    snip=wnd ;;
-      WDIR)    snip=wnddir ;;
-      SWELL1)  snip=hswell1 ;;
-      SWELL2)  snip=hswell2 ;;
-      SWELL3)  snip=hswell3 ;;
-      SWPER1)  snip=tswell1 ;;
-      SWPER2)  snip=tswell2 ;;
-      SWPER3)  snip=tswell3 ;;
-      *)       nnip= ;;
-    esac
-
-# 2.e Cleanup base parameter files per member
-    rm -f ${nip}_??.t${cyc}z.grib2
-
-    fhour=0
-    par_dir=tmp_${nip}
-#    cd ${par_dir}
-
-    while [ "$fhour" -lt "$end_hour" ]
+    while [ ${iparam} -le ${nparam} ]
     do
+      nip=${arrpar[$iparam-1]}
+      case $nip in
+        HTSGW)   stypes='mean spread probab' ; snip=hs ;;
+        PERPW)   stypes='mean spread probab' ; snip=tp ;;
+        ICEC)    stypes='mean spread probab' ; snip=ice ;;
+        DIRPW)   stypes='mean spread probab' ; snip=pdir ;;
+        IMWF)    stypes='mean spread probab' ; snip=tm ;;
+        MWSP)    stypes='mean spread probab' ; snip=tz ;;
+        WVHGT)   stypes='mean spread probab' ; snip=wshs ;;
+        WVPER)   stypes='mean spread probab' ; snip=wstp ;;
+        WVDIR)   stypes='mean spread' ; snip=wsdir ;;
+        WWSDIR)  stypes='mean spread' ; snip=wwdir ;;
+        WIND)    stypes='mean spread probab' ; snip=wnd ;;
+        WDIR)    stypes='mean spread' ; snip=wnddir ;;
+        SWELL1)  stypes='mean spread probab' ; snip=hswell1 ;;
+        SWELL2)  stypes='mean spread probab' ; snip=hswell2 ;;
+        SWELL3)  stypes='mean spread probab' ; snip=hswell3 ;;
+        SWDIR1)  stypes='mean spread' ; snip=dswell1 ;;
+        SWDIR2)  stypes='mean spread' ; snip=dswell2 ;;
+        SWDIR3)  stypes='mean spread' ; snip=dswell3 ;;
+        SWPER1)  stypes='mean spread probab' ; snip=tswell1 ;;
+        SWPER2)  stypes='mean spread probab' ; snip=tswell2 ;;
+        SWPER3)  stypes='mean spread probab' ; snip=tswell3 ;;
+        *)       nnip= ;;
+      esac
 
-# Line for doing per parameter, per time stamp
-      if [ $fhour -eq 0 ] ; then
-        hhh='000'
-      elif [ $fhour -lt 10 ] ; then
-        hhh='00'$fhour
-      elif [ $fhour -lt 100 ] ; then
-        hhh='0'$fhour
-      elif [ $fhour -ge 100 ] ; then
-        hhh=$fhour
-      fi
+      par_dir=tmp_${nip}
 
-      valtime=`${utilexec}/ndate ${fhour} ${YMDH}`           
-
-      stypes='mean spread probab'
-      if [ "${snip}" = "pdir" ] || [ "${snip}" = "wnddir" ] || [ "${snip}" = "wsdir" ]
+      if [ ${iparam} -eq 3 ] ||[ ${iparam} -eq 4 ] || [ ${iparam} -eq 5 ] || \
+         [ ${iparam} -eq 10 ] || [ ${iparam} -eq 15 ] || [ ${iparam} -eq 16 ] ||
+         [ ${iparam} -eq 17 ] || [ ${iparam} -eq 18 ] || [ ${iparam} -eq 21 ]
       then
-        stypes='mean spread'
-      fi
-
-      for stype in ${stypes}
-      do
+        echo " Parameter $nip not yet available in grib2 library "
+      else
+# 2.e Cleanup base parameter files per member
+        rm -f ${nip}_??.t${cyc}z.grib2         
   
-        ingrib=${snip}_${stype}.${hhh}.grib2
-        outgrib=${MDC}.${snip}_${stype}.t${cyc}z.grib2 
+        for stype in $stypes
+        do
 
-#        echo "$WGRIB2  ./${par_dir}/${valtime}/${ingrib} -append -grib ./${outgrib} >> ${snip}_${stype}.t${cyc}z.out 2>> ${snip}_${stype}.t${cyc}z.err" >> cmdfile
-        echo "$WGRIB2  ./${par_dir}/${valtime}/${ingrib} -append -grib ./${outgrib} >> ${snip}_${stype}.t${cyc}z.out 2>> ${snip}_${stype}.t${cyc}z.err" >> cmdfile.${ifile}
+          ingrib=${snip}_${stype}.${FH3}.grib2
+          outgrib=${WAV_MOD_TAG}.${stype}.t${cyc}z.f${FH3}.grib2 
 
-      done
+          echo "$WGRIB2  ./${par_dir}/${valtime}/${ingrib} -append -grib ./${outgrib} >> ${FH3}_${stype}.t${cyc}z.out 2>> ${FH3}_${stype}.t${cyc}z.err" >> cmdfile.${fhour}
 
-    if [ $fhour -ge 240 ]
+        done
+
+      fi
+      iparam=$((iparam + 1))
+      echo "IPARAM: $iparam"
+    done
+
+    if [ $fhour -ge $FHMAX_HF_WAV ]
     then
-      inc=$dtgh2
+      inc=$FHOUT_WAV
     else 
-      inc=$dtgh
+      inc=$FHOUT_HF_WAV
     fi
     fhour=`expr $fhour + $inc`
 
-    done
-
-
-# Cleanup appended data file
-#    echo "rm -rf ./${par_dir}/${valtime}" >> cmdfile
-# mpiserial block
-    echo "rm -rf ./${par_dir}/${valtime}" >> cmdfile.${ifile}
-    if [ "$ncmdfile" -gt '1' ]
-    then
-      ifile=`expr $ifile + 1`
-    fi
-    if [ "$ifile" -gt "$ncmdfile" ]
-    then
-      ifile=1
-    fi
-
-    iparam=`expr ${iparam} + 1`
-
   done
+  chmod 744 cmdfile.*
+  ls -1 cmdfile.* > cmdfile
 
- set +x
+  set +x
   echo ' '
   echo " Regrouping stats files for ${nparam} parameters"
   echo ' '
   [[ "$LOUD" = YES ]] && set -x
-   if [ "$ncmdfile" -gt '1' ]
-   then
-#     mpirun.lsf cfp cmdfile
-     mpirun cfp cmdfile
-     exit=$?
-   else
-#     ./cmdfile
-     ./cmdfile.1
-     exit=$?
-   fi
 
-# 2.e Check for errors and create bundle files
+  wavenproc=`wc -l cmdfile | awk '{print $1}'`
+  wavenproc=`echo $((${wavenproc}<${NTASKS}?${wavenproc}:${NTASKS}))`
+
+  if [ "$wavenproc" -gt '1' ]
+  then
+    ${wavempexec} ${wavenproc} ${wave_mpmd} cmdfile
+    exit=$?
+  else
+    chmod 744 cmdfile
+    ./cmdfile
+    exit=$?
+  fi
+
+  if [ "$exit" != '0' ]
+  then
+    set +x
+    echo ' '
+    echo '********************************************'
+    echo '*** CMDFILE FAILED   ***'
+    echo '********************************************'
+    echo '     See Details Below '
+    echo ' '
+    [[ "$LOUD" = YES ]] && set -x
+    err=8; export err;${errchk}
+    exit $err
+  fi
 
 
-  rm -f ${MDC}.mean.t${cyc}z.grib2 
-  rm -f ${MDC}.spread.t${cyc}z.grib2 
-  rm -f ${MDC}.probab.t${cyc}z.grib2
-  iparam=1
+# 4.b Output all grib2 parameter files to COMOUT
 
-  while [ ${iparam} -le ${nparam} ]
+  fhour=0
+
+  while [ "$fhour" -le "$FHMAX_WAV" ]
   do
-
-    nip=${arrpar[$iparam-1]}
-    case $nip in
-      HTSGW)   snip=hs ;;
-      PERPW)   snip=tp ;;
-      DIRPW)   snip=pdir ;;
-      IMWF)    snip=tm ;;
-      WVHGT)   snip=wshs ;;
-      WVPER)   snip=wstp ;;
-      WVDIR)   snip=wsdir ;;
-      WIND)    snip=wnd ;;
-      WDIR)    snip=wnddir ;;
-      SWELL1)  snip=hswell1 ;;
-      SWELL2)  snip=hswell2 ;;
-      SWELL3)  snip=hswell3 ;;
-      SWPER1)  snip=tswell1 ;;
-      SWPER2)  snip=tswell2 ;;
-      SWPER3)  snip=tswell3 ;;
-      *)       nnip= ;;
-    esac
-
-   ls -lt ${MDC}.${snip}_mean.t${cyc}z.grib2
-   ls -lt ${MDC}.${snip}_mean.t${cyc}z.grib2
-
-
-
-   if [ ! -f ${MDC}.${snip}_mean.t${cyc}z.grib2 ]
-   then
-     msg="ABNORMAL EXIT: ERR in generating statistics file"
-     postmsg "$jlogfile" "$msg"
-     set +x
-     echo ' '
-     echo '***************************************** '
-     echo "***            FATAL ERROR            *** "
-     echo "--- No ${MDC}.${snip}_mean.t${cyc}z.grib2 file --- "
-     echo '***************************************** '
-     echo ' '
-     [[ "$LOUD" = YES ]] && set -x
-     echo "No ${modIE}.${wndID}.$cycle.wind " >> $wavelog
-     err=4;export err;./err_chk
-     exit_code=4
-   else
-     set +x
-     echo -e "\n Statistics files generated succesfully.\n"
-     [[ "$LOUD" = YES ]] && set -x
-     echo -e "\n ${COMOUT}/${MDC}.${snip}_mean.t${cyc}z.grib2\n"
-# Large directory, cleanup is taking long time. Will leave for SPA to decide
-#     rm -rf tmp_${nip}  
-     rm -f wave_${modID}_stats_${nip}_*.out
-     rm -f ${snip}_*.t${cyc}z.out ${snip}_*.t${cyc}z.err
-
-# Bundle individual parameter files into a single file
-     cat ${MDC}.${snip}_mean.t${cyc}z.grib2 >> ${MDC}.mean.t${cyc}z.grib2
-     cat ${MDC}.${snip}_spread.t${cyc}z.grib2 >> ${MDC}.spread.t${cyc}z.grib2
-     cat ${MDC}.${snip}_probab.t${cyc}z.grib2 >> ${MDC}.probab.t${cyc}z.grib2
-
-   fi
-
-    iparam=`expr ${iparam} + 1`
-
+    FH3=$(printf "%03d" $fhour)
+    for stype in mean spread probab
+    do
+     fcopy=${WAV_MOD_TAG}.${stype}.t${cyc}z.f${FH3}.grib2
+     if [ -f ${fcopy} ]
+     then
+       set +x
+       echo "   Copying ${fcopy} to $COMOUT/gridded"
+       [[ "$LOUD" = YES ]] && set -x
+       cp -f ${fcopy} $COMOUT/gridded
+      else
+        set +x
+        echo ' '
+        echo '*************************************** '
+        echo "*** FATAL ERROR: No ${fcopy} file found *"
+        echo '*************************************** '
+        echo ' '
+        echo "$modIE fcst $date $cycle: ${fcopy} not fouund." >> $wavelog
+        echo $msg
+        [[ "$LOUD" = YES ]] && set -x
+        err=4;export err;${errchk};exit $err
+      fi
+    done
+    if [ $fhour -ge $FHMAX_HF_WAV ]
+    then
+      inc=$FHOUT_WAV
+    else 
+      inc=$FHOUT_HF_WAV
+    fi
+    fhour=`expr $fhour + $inc`
   done
 
 #
@@ -704,57 +493,13 @@ for i in $(seq -f "%02g" 0 $npert); do membn="$membn $i"; done
   nbuoys=`cat buoy.file | wc -l`
 
 # 3.b Command file set-up
-
-  rm -f cmdfile
-  touch cmdfile
-  chmod 744 cmdfile
-# mpiserial block
-  rm -f cmdfile.*
-
-  ifile=1
-
-  while [ "$ifile" -le "$ncmdfile" ]
-  do
-    touch cmdfile.$ifile
-    chmod 700 cmdfile.$ifile
-    echo "./cmdfile.$ifile" >> cmdfile
-    ifile=`expr $ifile + 1`
-  done
-
-  ifile=1
+  rm -f cmdfile cmdfile.$ 
 
   ibuoy=1
 
 # 3.c Create bundled grib2 file with all parameters
-#XXX
-ls -lt ${MDC}.hs_*.t${cyc}z.grib2
 
-   if [ ! -f ${MDC}.hs_*.t${cyc}z.grib2 ]
-   then
-     msg="ABNORMAL EXIT: ERR in generating statistics file"
-     postmsg "$jlogfile" "$msg"
-     set +x
-     echo ' '
-     echo '***************************************** '
-     echo "***            FATAL ERROR            *** "
-     echo "--- No ${MDC}.hs_*.t${cyc}z.grib2 file --- "
-     echo '***************************************** '
-     echo ' '
-     [[ "$LOUD" = YES ]] && set -x
-     echo "No ${MDC}.hs_*.t${cyc}z.grib2 " >> $wavelog
-     err=4;export err; ./err_chk
-     exit_code=4
-     exit 1
-   else
-     echo "---  ${MDC}.hs_*.t${cyc}z.grib2 file exist...continue --- "
-
-
-   fi
-#XXX
-
-
-
-  cat ${MDC}.hs_*.t${cyc}z.grib2 ${MDC}.tp_*.t${cyc}z.grib2 ${MDC}.wnd_*.t${cyc}z.grib2 > gribfile
+  cat gefswave.mean.t12z.f???.grib2 | $WGRIB2 - -match "(HTSGW|PERPW|WIND)" -grib gribfile > gribfile.out 2>&1 
 
 # 3.d Loop through buoys and populate cmdfiles with calls to wave_ens_bull.sh
 
@@ -766,73 +511,44 @@ ls -lt ${MDC}.hs_*.t${cyc}z.grib2
     blon=`echo $bline | awk '{print $1}'`
     bnom=`echo $bline | awk '{print $3}' | sed "s/'//g"`
 
-#    echo "$USHwave/wave_ens_bull.sh ${blon} ${blat} ${bnom} 1> bull_${bnom}.out 2>&1" >> cmdfile
-# mpiserial blocki
-    echo "$USHwave/wave_ens_bull.sh ${blon} ${blat} ${bnom} 1> bull_${bnom}.out 2>&1" >> cmdfile.${ifile}
-    if [ "$ncmdfile" -gt '1' ]
-    then
-      ifile=`expr $ifile + 1`
-    fi
-    if [ "$ifile" -gt "$ncmdfile" ]
-    then
-      ifile=1
-    fi
+    echo "$USHwave/wave_ens_bull.sh ${blon} ${blat} ${bnom} 1> bull_${bnom}.out 2>&1" >> cmdfile
 
     ibuoy=`expr ${ibuoy} + 1`
 
   done
 
 # 3.e Execute poe or serial cmdfile
-
-  if [ "$nparam" -gt '0' ]
-  then
-
   set +x
   echo ' '
   echo " Generating bulletins and ts files for ${nbuoys} locations."
   echo ' '
   [[ "$LOUD" = YES ]] && set -x
-   if [ "$ncmdfile" -gt '1' ]
-   then
-#     mpirun.lsf cfp cmdfile
-     mpirun cfp cmdfile
-     exit=$?
-   else
-#     ./cmdfile
-     ./cmdfile.${ifile}
-     exit=$?
-   fi
- fi
 
+  wavenproc=`wc -l cmdfile | awk '{print $1}'`
+  wavenproc=`echo $((${wavenproc}<${NTASKS}?${wavenproc}:${NTASKS}))`
 
-# mpiserial section
-# 3.f.1 Ending times on the different processors
+  if [ "$wavenproc" -gt '1' ]
+  then
+    ${wavempexec} ${wavenproc} ${wave_mpmd} cmdfile
+    exit=$?
+  else
+    chmod 744 cmdfile
+    ./cmdfile
+    exit=$?
+  fi
 
-  if [ "$nparam" -gt '0' ]
+  if [ "$exit" != '0' ]
   then
     set +x
     echo ' '
-    echo "   Ending times for separate processors :"
+    echo '********************************************'
+    echo '*** CMDFILE FAILED   ***'
+    echo '********************************************'
+    echo '     See Details Below '
+    echo ' '
     [[ "$LOUD" = YES ]] && set -x
-
-    for file in `cat cmdfile`
-    do
-      if [ "`wc $file | awk '{ print $1 }'`" = '0' ]
-      then
-        set +x
-        echo "      $file : no commands in this file."
-        [[ "$LOUD" = YES ]] && set -x
-      else
-        words="`tail -1 $file | wc | awk '{ print $2 }'`"
-        wrdnr=`expr $words - 1`
-        echo "{ print "'$'"$wrdnr }" > awkfile
-        outfile="`tail -1 $file | awk -f awkfile`"
-        rm -f awkfile
-        set +x
-        echo "      $file : `tail -1 $outfile`"
-        [[ "$LOUD" = YES ]] && set -x
-      fi
-    done
+    err=8; export err;${errchk}
+    exit $err
   fi
 
 # echo ' Checking for errors after bulletins cfp'
@@ -854,13 +570,12 @@ ls -lt ${MDC}.hs_*.t${cyc}z.grib2
      echo ' '
      echo '***************************************** '
      echo "***            FATAL ERROR            *** "
-     echo "--- No ${MDC}.${bnom}.bull file created --- "
+     echo "--- No ${WAV_MOD_TAG}.${bnom}.bull file created --- "
      echo '***************************************** '
      echo ' '
      [[ "$LOUD" = YES ]] && set -x
      echo "No ${modIE}.${bnom}.bull " >> $wavelog
-     err=5;export err;./err_chk
-     exit_code=5
+     err=4;export err;${errchk};exit $err
    else
      set +x
      echo -e "\n Bulletin file ${modID}.${bnom}.bull generated succesfully.\n"
@@ -873,10 +588,10 @@ ls -lt ${MDC}.hs_*.t${cyc}z.grib2
 #
 
 # 4.a Compress bulletins into tar file and copy to COMOUT
-  tar cf ${MDC}.t${cyc}z.bull_tar ${MDC}.*.bull
-  rm -f ${MDC}.*.bull
-  tar cf ${MDC}.t${cyc}z.station_tar ${MDC}.*.ts
-  rm -f ${MDC}.*.ts
+  tar cf ${WAV_MOD_TAG}.t${cyc}z.bull_tar ${WAV_MOD_TAG}.*.bull
+  rm -f ${WAV_MOD_TAG}.*.bull
+  tar cf ${WAV_MOD_TAG}.t${cyc}z.station_tar ${WAV_MOD_TAG}.*.ts
+  rm -f ${WAV_MOD_TAG}.*.ts
 
   set +x
   echo ' '
@@ -884,12 +599,12 @@ ls -lt ${MDC}.hs_*.t${cyc}z.grib2
   echo '---------------------'
   [[ "$LOUD" = YES ]] && set -x
 
-  if [ -f ${MDC}.t${cyc}z.bull_tar ]
+  if [ -f ${WAV_MOD_TAG}.t${cyc}z.bull_tar ]
   then
     set +x
-    echo "   Copying ${MDC}.t${cyc}z.bull_tar  to $COMOUT"
+    echo "   Copying ${WAV_MOD_TAG}.t${cyc}z.bull_tar  to $COMOUT/station"
     [[ "$LOUD" = YES ]] && set -x
-    cp -f ${MDC}.t${cyc}z.bull_tar $COMOUT/.
+    cp -f ${WAV_MOD_TAG}.t${cyc}z.bull_tar $COMOUT/station
    else
      set +x
      echo ' '
@@ -900,17 +615,17 @@ ls -lt ${MDC}.hs_*.t${cyc}z.grib2
      echo "$modIE fcst $date $cycle: bull_tar not fouund." >> $wavelog
      echo $msg
      [[ "$LOUD" = YES ]] && set -x
-     err=6;export err pgm;./err_chk
+     err=4;export err;${errchk};exit $err
    fi
 
 
 # 4.b Compress time series into tar file and copy to COMOUT
-  if [ -f ${MDC}.t${cyc}z.station_tar ]
+  if [ -f ${WAV_MOD_TAG}.t${cyc}z.station_tar ]
   then
     set +x
-    echo "   Copying ${MDC}.t${cyc}z.bull_tar  to $COMOUT"
+    echo "   Copying ${WAV_MOD_TAG}.t${cyc}z.bull_tar  to $COMOUT/station"
     [[ "$LOUD" = YES ]] && set -x
-    cp -f ${MDC}.t${cyc}z.station_tar $COMOUT/.
+    cp -f ${WAV_MOD_TAG}.t${cyc}z.station_tar $COMOUT/station
    else
      set +x
      echo ' '
@@ -921,96 +636,19 @@ ls -lt ${MDC}.hs_*.t${cyc}z.grib2
      echo "$modIE fcst $date $cycle: station_tar not fouund." >> $wavelog
      echo $msg
      [[ "$LOUD" = YES ]] && set -x
-     err=7;export err pgm;./err_chk
+     err=4;export err;${errchk};exit $err
    fi
-
-# 4.b Output all grib2 parameter files to COMOUT
-
-  for stype in mean spread probab
-  do
-   if [ -f ${MDC}.${stype}.t${cyc}z.grib2 ]
-   then
-     set +x
-     echo "   Copying ${MDC}.${stype}.t${cyc}z.grib2 to $COMOUT"
-     [[ "$LOUD" = YES ]] && set -x
-     cp -f ${MDC}.${stype}.t${cyc}z.grib2 $COMOUT/.
-    else
-      set +x
-      echo ' '
-      echo '*************************************** '
-      echo '*** FATAL ERROR: No ${MDC}.${stype}.t${cyc}z.grib2 file found *'
-      echo '*************************************** '
-      echo ' '
-      echo "$modIE fcst $date $cycle: ${MDC}.${stype}.t${cyc}z.grib2 not fouund." >> $wavelog
-      echo $msg
-      [[ "$LOUD" = YES ]] && set -x
-      err=7;export err pgm;./err_chk
-    fi
-  done
-
-  iparam=1
-  while [ ${iparam} -le ${nparam} ]
-  do
-    nip=${arrpar[$iparam-1]}
-    case $nip in
-      HTSGW)   snip=hs ;;
-      PERPW)   snip=tp ;;
-      DIRPW)   snip=pdir ;;
-      IMWF)    snip=tm ;;
-      WVHGT)   snip=wshs ;;
-      WVPER)   snip=wstp ;;
-      WVDIR)   snip=wsdir ;;
-      WIND)    snip=wnd ;;
-      WDIR)    snip=wnddir ;;
-      SWELL1)  snip=hswell1 ;;
-      SWELL2)  snip=hswell2 ;;
-      SWELL3)  snip=hswell3 ;;
-      SWPER1)  snip=tswell1 ;;
-      SWPER2)  snip=tswell2 ;;
-      SWPER3)  snip=tswell3 ;;
-      *)       nnip= ;;
-    esac
-
-    stypes='mean spread probab'
-    if [ "${snip}" = "pdir" ] || [ "${snip}" = "wnddir" ] || [ "${snip}" = "wsdir" ]
-    then
-      stypes='mean spread'
-    fi
-
-    for stype in ${stypes} 
-    do
-      if [ -f ${MDC}.${snip}_${stype}.t${cyc}z.grib2 ]
-      then
-       set +x
-       echo "   Copying ${MDC}.${snip}_${stype}.t${cyc}z.grib2 to $COMOUT"
-       [[ "$LOUD" = YES ]] && set -x
-       cp -f ${MDC}.${snip}_${stype}.t${cyc}z.grib2 $COMOUT/.
-      else
-        set +x
-        echo ' '
-        echo '*************************************** '
-        echo '*** FATAL ERROR: No ${MDC}.${snip}_${stype}.t${cyc}z.grib2 file found *'
-        echo '*************************************** '
-        echo ' '
-        echo "$modIE fcst $date $cycle: ${MDC}.${snip}_${stype}.t${cyc}z.grib2 not fouund." >> $wavelog
-        echo $msg
-        [[ "$LOUD" = YES ]] && set -x
-        err=7;export err pgm;./err_chk
-      fi
-    done
-    iparam=`expr ${iparam} + 1`
-  done
 
 #
 # 4.b Alert DBN
 #
   if [ "$SENDDBN" = 'YES' ]
   then
-       $DBNROOT/bin/dbn_alert MODEL WAVE_GRIB_GB2 $job $COMOUT/${MDC}.mean.t${cyc}z.grib2
-       $DBNROOT/bin/dbn_alert MODEL WAVE_GRIB_GB2 $job $COMOUT/${MDC}.spread.t${cyc}z.grib2
-       $DBNROOT/bin/dbn_alert MODEL WAVE_GRIB_GB2 $job $COMOUT/${MDC}.probab.t${cyc}z.grib2
-       $DBNROOT/bin/dbn_alert MODEL WAVE_GRIB_GB2 $job $COMOUT/${MDC}.t${cyc}z.bull_tar
-       $DBNROOT/bin/dbn_alert MODEL WAVE_GRIB_GB2 $job $COMOUT/${MDC}.t${cyc}z.station_tar
+       $DBNROOT/bin/dbn_alert MODEL WAVE_GRIB_GB2 $job $COMOUT/gridded/${WAV_MOD_TAG}.mean.t${cyc}z.grib2
+       $DBNROOT/bin/dbn_alert MODEL WAVE_GRIB_GB2 $job $COMOUT/gridded/${WAV_MOD_TAG}.spread.t${cyc}z.grib2
+       $DBNROOT/bin/dbn_alert MODEL WAVE_GRIB_GB2 $job $COMOUT/gridded/${WAV_MOD_TAG}.probab.t${cyc}z.grib2
+       $DBNROOT/bin/dbn_alert MODEL WAVE_GRIB_GB2 $job $COMOUT/gridded/${WAV_MOD_TAG}.t${cyc}z.bull_tar
+       $DBNROOT/bin/dbn_alert MODEL WAVE_GRIB_GB2 $job $COMOUT/station/${WAV_MOD_TAG}.t${cyc}z.station_tar
   fi
 #
   if [ "$exit_code" -ne '0' ]
@@ -1018,9 +656,7 @@ ls -lt ${MDC}.hs_*.t${cyc}z.grib2
      msg="ABNORMAL EXIT: Problem in GWES STATS"
      postmsg "$jlogfile" "$msg"
      echo $msg
-     err=$exit_code ; export err ; ./err_chk
-  else
-     touch $COMOUT/${MDC}.$cycle.statsdone
+     err=4;export err;${errchk};exit $err
   fi
 
   msg="$job completed normally"

@@ -40,7 +40,6 @@
 #
 # 0.b External dependencies and paths
 #
-  export wgrib2=$utilexec/wgrib2
   scripname=wave_ens_bull.sh
 #
 # 0.b Date and time stuff
@@ -87,7 +86,7 @@
 # 1.a Interpolate from gribfile at model res to high resolution at buoy location 
 # (wgrib2 + IPOLATES -> bi-linear)
 #
-  $utilexec/wgrib2 ../gribfile -new_grid_winds earth \
+  $WGRIB2 ../gribfile -new_grid_winds earth \
                      -new_grid_interpolation bilinear -new_grid latlon \
                      ${blon}:2:.01 ${blat}:2:.01 grbint.${bnom} \
                      1> buoy_interp.out 2>&1
@@ -107,35 +106,35 @@
 #   
 # 1.b Extract parameters at buoy locations from higher res interpolated file 
 #
-    valpdy=(`$utilexec/wgrib2 grbint.${bnom} -match HTSGW -match mean -vt \
+    valpdy=(`$WGRIB2 grbint.${bnom} -match HTSGW -match mean -vt \
           | sed 's/[,=]/ /g' | awk '{print $NF}' | cut -c1-8`)
-    vald=(`$utilexec/wgrib2 grbint.${bnom} -match HTSGW -match mean -vt \
+    vald=(`$WGRIB2 grbint.${bnom} -match HTSGW -match mean -vt \
           | sed 's/[,=]/ /g' | awk '{print $NF}' | cut -c7-8`)
-    valt=(`$utilexec/wgrib2 grbint.${bnom} -match HTSGW -match mean -vt \
+    valt=(`$WGRIB2 grbint.${bnom} -match HTSGW -match mean -vt \
           | sed 's/[,=]/ /g' | awk '{print $NF}' | cut -c9-10`)
-    hsb=(`$utilexec/wgrib2 grbint.${bnom} -match HTSGW -match mean -lon \
+    hsb=(`$WGRIB2 grbint.${bnom} -match HTSGW -match mean -lon \
           ${blon} ${blat} | sed 's/[,=]/ /g' | awk '{print $NF}'`)
-    hspb=(`$utilexec/wgrib2 grbint.${bnom} -match HTSGW -match spread \
+    hspb=(`$WGRIB2 grbint.${bnom} -match HTSGW -match spread \
           -lon ${blon} ${blat} | sed 's/[,=]/ /g' | awk '{print $NF}'`)
-    tpb=(`$utilexec/wgrib2 grbint.${bnom} -match PERPW -match mean -lon \
+    tpb=(`$WGRIB2 grbint.${bnom} -match PERPW -match mean -lon \
           ${blon} ${blat} | sed 's/[,=]/ /g' | awk '{print $NF}'`)
-    tspb=(`$utilexec/wgrib2 grbint.${bnom} -match PERPW -match spread \
+    tspb=(`$WGRIB2 grbint.${bnom} -match PERPW -match spread \
           -lon ${blon} ${blat} | sed 's/[,=]/ /g' | awk '{print $NF}'`)
-    ub=(`$utilexec/wgrib2 grbint.${bnom} -match WIND -match mean -lon \
+    ub=(`$WGRIB2 grbint.${bnom} -match WIND -match mean -lon \
           ${blon} ${blat} | sed 's/[,=]/ /g' | awk '{print $NF}'`)
-    usb=(`$utilexec/wgrib2 grbint.${bnom} -match WIND -match spread -lon \
+    usb=(`$WGRIB2 grbint.${bnom} -match WIND -match spread -lon \
           ${blon} ${blat} | sed 's/[,=]/ /g' | awk '{print $NF}'`)
-    p1b=(`$utilexec/wgrib2 grbint.${bnom} -match HTSGW -match 'prob >0.6' \
+    p1b=(`$WGRIB2 grbint.${bnom} -match HTSGW -match 'prob >0.6' \
           -lon ${blon} ${blat} | sed 's/[,=]/ /g' | awk '{print $NF}'`)
-    p2b=(`$utilexec/wgrib2 grbint.${bnom} -match HTSGW -match 'prob >1' \
+    p2b=(`$WGRIB2 grbint.${bnom} -match HTSGW -match 'prob >1' \
           -lon ${blon} ${blat} | sed 's/[,=]/ /g' | awk '{print $NF}'`)
-    p3b=(`$utilexec/wgrib2 grbint.${bnom} -match HTSGW -match 'prob >2' \
+    p3b=(`$WGRIB2 grbint.${bnom} -match HTSGW -match 'prob >2' \
           -lon ${blon} ${blat} | sed 's/[,=]/ /g' | awk '{print $NF}'`)
-    p4b=(`$utilexec/wgrib2 grbint.${bnom} -match HTSGW -match 'prob >5.5' \
+    p4b=(`$WGRIB2 grbint.${bnom} -match HTSGW -match 'prob >5.5' \
           -lon ${blon} ${blat} | sed 's/[,=]/ /g' | awk '{print $NF}'`)
-    p5b=(`$utilexec/wgrib2 grbint.${bnom} -match HTSGW -match 'prob >7' \
+    p5b=(`$WGRIB2 grbint.${bnom} -match HTSGW -match 'prob >7' \
           -lon ${blon} ${blat} | sed 's/[,=]/ /g' | awk '{print $NF}'`)
-    p6b=(`$utilexec/wgrib2 grbint.${bnom} -match HTSGW -match 'prob >9' \
+    p6b=(`$WGRIB2 grbint.${bnom} -match HTSGW -match 'prob >9' \
           -lon ${blon} ${blat} | sed 's/[,=]/ /g' | awk '{print $NF}'`)
 #
 # Length of parameter vectors
