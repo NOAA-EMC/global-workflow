@@ -53,7 +53,6 @@ export COMDATEROOT=/gpfs/hps/ptmp/Qingfu.Liu/com
 #export COMDATEROOT=/gpfs/hps/emc/global/noscrub/Qingfu.Liu/com
 #export COMDATEROOT=/gpfs/tp2/nco/ops/com
 export DATA_DUMPJB=/gpfs/hps/ptmp/Qingfu.Liu/com/111
-#export archsyndir=/gpfs/tp1/nco/ops/com/arch/prod/syndat
 
 #export DCOMROOT=/dcom
 export DCOMROOT=/gpfs/tp1/nco/ops/dcom

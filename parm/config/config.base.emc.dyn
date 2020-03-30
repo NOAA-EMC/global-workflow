@@ -32,6 +32,7 @@ export SCRgfs=$HOMEgfs/scripts
 
 # GLOBAL static environment parameters
 export NWPROD="@NWPROD@"
+export COMROOT="@COMROOT@"
 export DMPDIR="@DMPDIR@"
 export RTMFIX=$CRTM_FIX
 

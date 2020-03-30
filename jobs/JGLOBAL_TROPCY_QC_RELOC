@@ -72,7 +72,7 @@ export DO_RELOCATE=${DO_RELOCATE:-NO}           # Turn on tropical cyclone reloc
 
 export tmmark=tm00
 if [ $RUN_ENVIR = "nco" ]; then
-    export ARCHSYND=$COMROOTp3/gfs/${envir}/syndat     # this location is unique, do not change
+    export ARCHSYND=${COMINsyn:-$(compath.py gfs/prod/syndat)}
 else
     export ARCHSYND=${ROTDIR}/syndat   
 fi

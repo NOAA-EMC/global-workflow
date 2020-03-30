@@ -142,11 +142,9 @@ if [ "$VRFYTRAK" = "YES" ]; then
         export FHOUT_CYCLONE=6            
         export FHMAX_CYCLONE=$(( FHMAX_GFS<240 ? FHMAX_GFS : 240 ))
     fi
+    export COMINsyn=${COMINsyn:-$(compath.py gfs/prod/syndat)}
     if [ $machine = "HERA" ]; then
-       export COMROOTp1="/scratch1/NCEPDEV/rstprod/com"
-       export COMINsyn=${COMINsyn:-${COMROOTp1}/arch/prod/syndat}
-    else
-       export COMINsyn=${COMINsyn:-${COMROOT}/gfs/prod/syndat}
+       export COMINsyn="${COMROOT}/arch/prod/syndat"
     fi
 fi
 
