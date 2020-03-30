@@ -14,7 +14,7 @@
 
 module use /gpfs/hps/nco/ops/nwprod/modulefiles
 module load prod_util
-module load prod_envir
+module load prod_envir/1.1.0
 module unload grib_util
 module load grib_util/1.0.3
 ##module load crtm-intel/2.2.3

@@ -17,7 +17,7 @@ QUEUE = prod
 RUN = gfs
 SENDDBN:YES = YES
 SENDDBN_NTC:YES = YES
-prod_envir_ver = 1.0.3
+prod_envir_ver = 1.1.0
 prod_util_ver = 1.1.0
 %end - ecf user variables
 #! /bin/sh

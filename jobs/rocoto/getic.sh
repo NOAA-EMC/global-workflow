@@ -91,7 +91,7 @@ if [ $ics_from = "opsgfs" ]; then
     if [ $machine = "WCOSS_C" ]; then
 
         # Need COMROOT
-        module load prod_envir >> /dev/null 2>&1
+        module load prod_envir/1.1.0 >> /dev/null 2>&1
 
         comdir="$COMROOT/$CDUMP/prod/$CDUMP.$PDY"
         rc=0

@@ -46,7 +46,7 @@ setenv USE_CFP YES
 
 # modules used by vrfy
 module load pm5
-module load prod_envir
+module load prod_envir/1.1.0
 module load util_shared/1.0.7
 
 module load gcc/6.3.0
