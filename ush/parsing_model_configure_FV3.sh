@@ -71,7 +71,5 @@ iau_offset:              ${IAU_OFFSET:-0}
 EOF
 fi
 
-$NCP model_configure $DATA/model_configure
-
 echo "$(cat model_configure)"
 }

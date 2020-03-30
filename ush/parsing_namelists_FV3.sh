@@ -486,7 +486,5 @@ EOF
 
 fi
 
-$NCP input.nml $DATA/input.nml
-
 echo "$(cat input.nml)"
 }

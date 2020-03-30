@@ -261,7 +261,11 @@ EOF
 	FNAISC=${FNAISC:-"$FIX_AM/CFSR.SEAICE.1982.2012.monthly.clim.grb"}
 	FNTG3C=${FNTG3C:-"$FIX_AM/global_tg3clim.2.6x1.5.grb"}
 	FNVEGC=${FNVEGC:-"$FIX_AM/global_vegfrac.0.144.decpercent.grb"}
-	FNMSKH=${FNMSKH:-"$FIX_AM/seaice_newland.grb"}
+        if [ $cpl = ".true." ]; then
+		export FNMSKH=${FNMSKH:-"$FIX_AM/seaice_newland.grb"}
+	else
+		export FNMSKH=${FNMSKH:-"$FIX_AM/global_slmask.t1534.3072.1536.grb"}
+	fi
 	FNVMNC=${FNVMNC:-"$FIX_AM/global_shdmin.0.144x0.144.grb"}
 	FNVMXC=${FNVMXC:-"$FIX_AM/global_shdmax.0.144x0.144.grb"}
 	FNSLPC=${FNSLPC:-"$FIX_AM/global_slope.1x1.grb"}
