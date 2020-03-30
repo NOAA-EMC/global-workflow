@@ -143,7 +143,7 @@ cd $DATA || exit 8
 if [ ! -d $DATA/INPUT ]; then mkdir -p $DATA/INPUT; fi
 
 if [[ ( $CDUMP = "gfs" || $gefs = ".true." ) && $restart_interval -gt 0 ]]; then
-  RSTDIR_TMP=${RSTDIR:-$ROTDIR}/${CDUMP}.${PDY}/${cyc}/RERUN_RESTART
+  RSTDIR_TMP=${RSTDIR_TMP:-${RSTDIR:-$ROTDIR}/${CDUMP}.${PDY}/${cyc}/RERUN_RESTART}
   if [ ! -d $RSTDIR_TMP ]; then mkdir -p $RSTDIR_TMP ; fi
   $NLN $RSTDIR_TMP RESTART
 else
@@ -154,8 +154,9 @@ fi
 # determine if restart IC exists to continue from a previous forecast
 RERUN=${RERUN:-"NO"}
 filecount=$(find $RSTDIR_TMP -type f | wc -l) 
-if [[ ( $CDUMP = "gfs" || $gefs = ".true." ) && $restart_interval -gt 0 && $FHMAX -gt $restart_interval && $filecount -gt 10 ]]; then
-  SDATE=$($NDATE +$FHMAX $CDATE)
+if [[ ( $CDUMP = "gfs" || ( $gefs = ".true." && $CDATE_RST = "" )) && $restart_interval -gt 0 && $FHMAX -gt $restart_interval && $filecount -gt 10 ]]; then
+  last_rst=$(( $FHMAX - $FHMAX % $restart_interval ))
+  SDATE=$($NDATE +$last_rst $CDATE)
   EDATE=$($NDATE +$restart_interval $CDATE)
   while [ $SDATE -gt $EDATE ]; do
       PDYS=$(echo $SDATE | cut -c1-8)
@@ -171,6 +172,12 @@ if [[ ( $CDUMP = "gfs" || $gefs = ".true." ) && $restart_interval -gt 0 && $FHMA
       fi 
       SDATE=$($NDATE -$restart_interval $SDATE)
   done
+fi
+
+if [[ $RERUN = "YES" && $CDATE_RST = "" ]]; then
+  echo "FATAL ERROR: Tried to perform a rerun but CDATE_RST was not set!"
+  export err=40
+  $ERRSCRIPT || exit $err
 fi
 
 #-------------------------------------------------------

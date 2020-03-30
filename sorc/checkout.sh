@@ -30,7 +30,7 @@ if [[ ! -d fv3gfs.fd ]] ; then
     rc=$?
     ((err+=$rc))
     cd fv3gfs.fd
-	git checkout 343d54d
+	git checkout 7f17df7
 	git submodule update --init --recursive
     rc=$?
     ((err+=$rc))
@@ -60,7 +60,7 @@ if [[ ! -d ufs_utils.fd ]] ; then
     rc=$?
     ((err+=$rc))
     cd ufs_utils.fd
-    git checkout 9de34ea
+    git checkout ops-gefsv12
     cd ${topdir}
 else
     echo 'Skip.  Directory ufs_utils.fd already exists.'
