@@ -43,7 +43,7 @@ config_fv3:
     forecast_mode=$( echo "$1" | tr a-z A-Z )
 
     case $forecast_mode in
-        "gfs")    
+        "GFS")    
               echo "BEGIN: config.fv3 for $forecast_mode"
               export DELTIM={doc.fv3_gfs_settings.DELTIM}
               export layout_x={doc.fv3_gfs_settings.layout.x}
@@ -60,7 +60,8 @@ config_fv3:
               export WRITE_GROUP_GFS={doc.fv3_gfs_settings.layout.WGRP}
               export WRTTASK_PER_GROUP_GFS={doc.fv3_gfs_settings.layout.WGRP_NTASKS}
               export WRTIOBUF={doc.fv3_gfs_settings.layout.WRTIOBUF}
-        "gdas")
+              ;;
+        "GDAS")
               echo "BEGIN: config.fv3 for $forecast_mode"
               export DELTIM={doc.fv3_gdas_settings.DELTIM}
               export layout_x={doc.fv3_gdas_settings.layout.x}
@@ -76,7 +77,8 @@ config_fv3:
               export WRITE_GROUP_GFS={doc.fv3_gdas_settings.layout.WGRP}
               export WRTTASK_PER_GROUP_GFS={doc.fv3_gdas_settings.layout.WGRP_NTASKS}
               export WRTIOBUF={doc.fv3_gdas_settings.layout.WRTIOBUF}
-        "enkf")
+              ;;
+        "ENKF")
               echo "BEGIN: config.fv3 for $forecast_mode"
               export DELTIM={doc.fv3_enkf_settings.DELTIM}
               export layout_x={doc.fv3_enkf_settings.layout.x}
@@ -92,5 +94,9 @@ config_fv3:
               export WRITE_GROUP_GFS={doc.fv3_enkf_settings.layout.WGRP}
               export WRTTASK_PER_GROUP_GFS={doc.fv3_enkf_settings.layout.WGRP_NTASKS}
               export WRTIOBUF={doc.fv3_enkf_settings.layout.WRTIOBUF}
-   
+              ;;
+          *)
+              echo "CDUMP undefined!"
+              exit 2
+    esac 
     echo "END: config.fv3 for $forecast_mode"
