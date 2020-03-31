@@ -37,14 +37,8 @@ platform: !Platform
 
   # DMPDIR - location of the global dump data.  This is used by the observation
   # processing scripts, which are not included in the public release.
-  DMPDIR: !calc doc.user_places.EXPROOT
+  DMPDIR: !calc doc.user_places.COMROOT
   #"/Users/jiankuang/Documents/Eclipse_workspace/ecfutils_007"
-  #DMPDIR: !FirstTrue
-  #  - do: "/gpfs/gp1/emc/globaldump"
-  #    when: !calc tools.isdir(do)
-  #  - do: "/gpfs/tp1/emc/globaldump"
-  #    when: !calc tools.isdir(do)
-  #  - otherwise: !error "Cannot find globaldump directory."
 
   # RTMFIX - location of the CRTM fixed data files used by the GSI data
   # assimilation.  The data assimilation is not included in this public release
