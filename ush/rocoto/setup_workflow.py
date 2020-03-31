@@ -44,8 +44,10 @@ def main():
 
     gfs_steps = ['prep', 'anal', 'fcst', 'postsnd', 'post', 'awips', 'gempak', 'vrfy', 'arch']
     hyb_steps = ['eobs', 'eomg', 'eupd', 'ecen', 'efcs', 'epos', 'earc']
+    metp_steps = ['metp']
 
     steps = gfs_steps + hyb_steps if _base.get('DOHYBVAR', 'NO') == 'YES' else gfs_steps
+    steps = steps + metp_steps if _base.get('DO_METP', 'NO') == 'YES' else steps
 
     dict_configs = wfu.source_configs(configs, steps)
 
@@ -216,6 +218,7 @@ def get_gdasgfs_resources(dict_configs, cdump='gdas'):
     do_bufrsnd = base.get('DO_BUFRSND', 'NO').upper()
     do_gempak = base.get('DO_GEMPAK', 'NO').upper()
     do_awips = base.get('DO_AWIPS', 'NO').upper()
+    do_metp = base.get('DO_METP', 'NO').upper()
 
     tasks = ['prep', 'anal', 'fcst', 'post', 'vrfy', 'arch']
 
@@ -225,6 +228,8 @@ def get_gdasgfs_resources(dict_configs, cdump='gdas'):
         tasks += ['gempak']
     if cdump in ['gfs'] and do_awips in ['Y', 'YES']:
         tasks += ['awips']
+    if cdump in ['gfs'] and do_metp in ['Y', 'YES']:
+        tasks += ['metp']
 
     dict_resources = OrderedDict()
 
@@ -345,6 +350,7 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
     do_bufrsnd = base.get('DO_BUFRSND', 'NO').upper()
     do_gempak = base.get('DO_GEMPAK', 'NO').upper()
     do_awips = base.get('DO_AWIPS', 'NO').upper()
+    do_metp = base.get('DO_METP', 'NO').upper()
     dumpsuffix = base.get('DUMP_SUFFIX', '')
 
     dict_tasks = OrderedDict()
@@ -431,6 +437,21 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
 
     dict_tasks['%svrfy' % cdump] = task
 
+    # metp 
+    if cdump in ['gfs'] and do_metp in ['Y', 'YES']:
+        deps = []
+        dep_dict = {'type':'metatask', 'name':'%spost' % cdump}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type':'task', 'name':'%sarch' % cdump, 'offset':'-&INTERVAL_GFS;'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+        metpcase = rocoto.create_envar(name='METPCASE', value='#metpcase#')
+        metpenvars = envars + [metpcase]
+        varname1 = 'metpcase'
+        varval1 = 'g2g1 g2o1 pcp1'
+        task = wfu.create_wf_task('metp', cdump=cdump, envar=metpenvars, dependency=dependencies,
+                                   metatask='metp', varname=varname1, varval=varval1)
+        dict_tasks['%smetp' % cdump] = task
 
     if cdump in ['gfs'] and do_bufrsnd in ['Y', 'YES']:
         #postsnd

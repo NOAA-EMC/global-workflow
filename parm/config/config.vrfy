@@ -14,7 +14,6 @@ export CDFNL="gdas"               # Scores verification against GDAS/GFS analysi
 
 export MKPGB4PRCP="YES"           # Make 0.25-deg pgb files in ARCDIR for precip verification
 export VRFYFITS="YES"             # Fit to observations
-export VRFY_PCKG2RUN="VSDB"       # "VSDB" = run VSDB verification package only, "METPLUS" = run METplus verification package only, "BOTH = run both verification packages
 export VSDB_STEP1="YES"           # Populate VSDB database
 export VSDB_STEP2="NO"
 export VRFYG2OBS="YES"            # Grid to observations, see note below if turning ON
@@ -22,12 +21,9 @@ export VRFYPRCP="YES"             # Precip threat scores
 export VRFYRAD="YES"              # Radiance data assimilation monitoring
 export VRFYOZN="YES"              # Ozone data assimilation monitoring
 export VRFYMINMON="YES"           # GSI minimization monitoring
-export VRFYTRAK="YES"              # Hurricane track verification
-export VRFYGENESIS="YES"           # Cyclone genesis verification
+export VRFYTRAK="YES"             # Hurricane track verification
+export VRFYGENESIS="YES"          # Cyclone genesis verification
 export RUNMOS="NO"                # whether to run entire MOS package
-export RUN_METPLUS_GRID2GRID_STEP1="YES" # Run grid-to-grid verification using METplus
-export RUN_METPLUS_GRID2OBS_STEP1="YES"  # Run grid-to-obs verification using METplus
-export RUN_METPLUS_PRECIP_STEP1="YES"    # Run precip verification using METplus
 
 #-------------------------------------------------
 # Fit to Observations
@@ -36,7 +32,7 @@ export RUN_METPLUS_PRECIP_STEP1="YES"    # Run precip verification using METplus
 if [ $VRFYFITS = "YES" ]; then
 
     export PRVT=$HOMEgfs/fix/fix_gsi/prepobs_errtable.global
-    export HYBLEVS=$HOMEgfs/fix/fix_am/global_hyblev.l65.txt
+    export HYBLEVS=$HOMEgfs/fix/fix_am/global_hyblev.l${LEVS}.txt
     export CUE2RUN=$QUEUE
 
     if [ $machine = "WCOSS_C" ]; then
@@ -45,7 +41,7 @@ if [ $VRFYFITS = "YES" ]; then
     elif [ $machine = "WCOSS_DELL_P3" ]; then
         export fitdir="$BASE_SVN/verif/global/parafits.fv3nems/batrun"
         export PREPQFITSH="$fitdir/subfits_dell_nems"
-    elif [ $machine = "THEIA" -o $machine = "HERA" ]; then
+    elif [ $machine = "HERA" ]; then
         export fitdir="$BASE_GIT/Fit2Obs/batrun"
         export PREPQFITSH="$fitdir/subfits_theia_slurm"
     fi
@@ -62,84 +58,25 @@ if [ "$CDUMP" = "gfs" ] ; then
     ddd=`echo $CDATE |cut -c 1-8`
     #if [ $ddd -eq 5 -o $ddd -eq 10 ]; then export VSDB_STEP2 = "YES" ;fi
 
-    if [ $VRFY_PCKG2RUN = "VSDB" -o $VRFY_PCKG2RUN = "BOTH" ]; then
-        if [ $VSDB_STEP1 = "YES" -o $VSDB_STEP2 = "YES" -o $VRFYPRCP = "YES" -o $VRFYG2OBS = "YES" ]; then
-            export BACKDATEVSDB=24                          # execute vsdbjob for the previous day
-            export VBACKUP_PRCP=24                          # back up for QPF verification data
-            export vsdbsave="$NOSCRUB/archive/vsdb_data"    # place to save vsdb database
-            export vsdbhome=$BASE_VERIF                     # location of global verification scripts
-            export VSDBSH="$vsdbhome/vsdbjob.sh"            # VSDB job script
-            export vlength=$FHMAX_GFS                       # verification length
-            export vhr_rain=$FHMAX_GFS                      # verification length for precip
-            export ftyplist="pgbq"                          # verif. files used for computing QPF ETS scores
-            export ptyplist="PRATE"                         # precip types in GRIB: PRATE or APCP
-            export anltype="gfs"                            # default=gfs, analysis type (gfs or gdas) for verification
-            export rain_bucket=6                            # prate in pgb files is 6-hr accumulated
+    if [ $VSDB_STEP1 = "YES" -o $VSDB_STEP2 = "YES" -o $VRFYPRCP = "YES" -o $VRFYG2OBS = "YES" ]; then
+        export BACKDATEVSDB=24                          # execute vsdbjob for the previous day
+        export VBACKUP_PRCP=24                          # back up for QPF verification data
+        export vsdbsave="$NOSCRUB/archive/vsdb_data"    # place to save vsdb database
+        export vsdbhome=$BASE_VERIF                     # location of global verification scripts
+        export VSDBSH="$vsdbhome/vsdbjob.sh"            # VSDB job script
+        export vlength=$FHMAX_GFS                       # verification length
+        export vhr_rain=$FHMAX_GFS                      # verification length for precip
+        export ftyplist="pgbq"                          # verif. files used for computing QPF ETS scores
+        export ptyplist="PRATE"                         # precip types in GRIB: PRATE or APCP
+        export anltype="gfs"                            # default=gfs, analysis type (gfs or gdas) for verification
+        export rain_bucket=6                            # prate in pgb files is 6-hr accumulated
 
-            export VSDB_START_DATE="$SDATE"                 # starting date for vsdb maps
-            export webhost="emcrzdm.ncep.noaa.gov"          # webhost(rzdm) computer
-            export webhostid="$USER"                        # webhost(rzdm) user name
-            export SEND2WEB="NO"                            # whether or not to send maps to webhost
-            export WEBDIR="/home/people/emc/www/htdocs/gmb/${webhostid}/vsdb/$PSLOT"
-            export mdlist="gfs $PSLOT "                     # exps (up to 10) to compare in maps
-        fi
-    fi
-fi
-
-
-#----------------------------------------------------------
-# METplus, Verify grid-to-grid, and/or grid-to-obs, and/or precipitation options
-#----------------------------------------------------------
-# All these call $METPLUSSH
-
-if [ "$CDUMP" = "gfs" ] ; then
-    if [ $RUN_METPLUS_GRID2GRID_STEP1 = "YES" -o $RUN_METPLUS_GRID2OBS_STEP1 = "YES" -o $RUN_METPLUS_PRECIP_STEP1 = "YES" ]; then
-        if [ $VRFY_PCKG2RUN = "METPLUS" -o $VRFY_PCKG2RUN = "BOTH" ]; then
-            export HOMEverif_global=${HOMEgfs}/sorc/verif-global.fd
-            export VERIF_GLOBALSH=$HOMEverif_global/ush/run_verif_global_in_global_workflow.sh
-            export RUNBATCH="NO"
-            ## INPUT DATA SETTINGS
-            export model_list=$PSLOT
-            export model_data_dir_list=$ARCDIR/..
-            export model_fileformat_list="pgbf{lead?fmt=%H}.${CDUMP}.{init?fmt=%Y%m%d%H}"
-            export model_hpssdir_list=$ATARDIR/.. 
-            export get_data_from_hpss="NO"
-            export hpss_walltime="10"
-            ## OUTPUT SETTINGS
-            export OUTPUTROOT=$RUNDIR/$CDUMP/$CDATE/vrfy/metplus_exp
-            export model_arch_dir_list=$ARCDIR/..
-            export make_met_data_by="VALID"
-            export gather_by="VSDB"
-            ## DATE SETTINGS
-            export VRFYBACK_HRS="24"
-            ## METPLUS SETTINGS
-            export METplus_verbosity="INFO"
-            export MET_verbosity="2"
-            export log_MET_output_to_METplus="yes"
-            ## FORECAST VERIFICATION SETTINGS
-            export fhr_min=$FHMIN_GFS
-            export fhr_max=$FHMAX_GFS
-            # GRID-TO-GRID STEP 1
-            export g2g1_type_list="anom pres sfc"
-            export g2g1_anl_name="self_anl"
-            export g2g1_anl_fileformat_list="pgbanl.gfs.{valid?fmt=%Y%m%d%H}"
-            export g2g1_grid="G002"
-            # GRID-TO-OBS STEP 1
-            export g2o1_type_list="upper_air conus_sfc"
-            export g2o1_obtype_upper_air="ADPUPA"
-            export g2o1_grid_upper_air="G003"
-            export g2o1_fhr_out_upper_air="6"
-            export g2o1_obtype_conus_sfc="ONLYSF"
-            export g2o1_grid_conus_sfc="G104"
-            export g2o1_fhr_out_conus_sfc="3"
-            # PRECIP STEP 1
-            export precip1_obtype="ccpa"
-            export precip1_accum_length="24"
-            export precip1_model_bucket_list="06"
-            export precip1_model_varname_list="APCP"
-            export precip1_model_fileformat_list="pgbf{lead?fmt=%H}.gfs.{init?fmt=%Y%m%d%H}"
-            export precip1_grid="G211"
-        fi
+        export VSDB_START_DATE="$SDATE"                 # starting date for vsdb maps
+        export webhost="emcrzdm.ncep.noaa.gov"          # webhost(rzdm) computer
+        export webhostid="$USER"                        # webhost(rzdm) user name
+        export SEND2WEB="NO"                            # whether or not to send maps to webhost
+        export WEBDIR="/home/people/emc/www/htdocs/gmb/${webhostid}/vsdb/$PSLOT"
+        export mdlist="gfs $PSLOT "                     # exps (up to 10) to compare in maps
     fi
 fi
 
@@ -191,20 +128,8 @@ fi
 # Cyclone genesis and cyclone track verification
 #-------------------------------------------------
 
-if [ $machine = "WCOSS_C" ] ; then
-    export ens_tracker_ver=v1.1.15.1
-    export HOMEens_tracker=$BASE_GIT/ens_tracker.${ens_tracker_ver}
-elif [ $machine = "WCOSS_DELL_P3" ] ; then
-    export ens_tracker_ver=v1.1.15.1
-    export HOMEens_tracker=$BASE_GIT/ens_tracker.${ens_tracker_ver}
-elif [ $machine = "THEIA" -o $machine = "HERA" ] ; then
-    export ens_tracker_ver=v1.1.15.1
-    export HOMEens_tracker=$BASE_GIT/tracker/ens_tracker.${ens_tracker_ver}
-else
-    echo "WARNING: Genesis and cyclone verifications are not enabled on $machine!"
-    export VRFYGENESIS="NO"
-    export VRFYTRAK="NO"
-fi
+export ens_tracker_ver=v1.1.15.1
+export HOMEens_tracker=$BASE_GIT/tracker/ens_tracker.${ens_tracker_ver}
 
 
 if [ "$VRFYTRAK" = "YES" ]; then
@@ -217,12 +142,11 @@ if [ "$VRFYTRAK" = "YES" ]; then
         export FHOUT_CYCLONE=6            
         export FHMAX_CYCLONE=$(( FHMAX_GFS<240 ? FHMAX_GFS : 240 ))
     fi
-    if [ $machine = "THEIA" ]; then
-       export COMROOTp1="/scratch4/NCEPDEV/rstprod/com"
-       export COMINsyn="$COMROOTp1/arch/prod/syndat"
-    elif [ $machine = "HERA" ]; then
+    if [ $machine = "HERA" ]; then
        export COMROOTp1="/scratch1/NCEPDEV/rstprod/com"
        export COMINsyn=${COMINsyn:-${COMROOTp1}/arch/prod/syndat}
+    else
+       export COMINsyn=${COMINsyn:-${COMROOT}/gfs/prod/syndat}
     fi
 fi
 

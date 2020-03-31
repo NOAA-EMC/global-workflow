@@ -12,19 +12,9 @@ export machine="@MACHINE@"
 export RUN_ENVIR="emc"
 
 # Account, queue, etc.
-if [ $machine = "THEIA" -o $machine = "HERA" ]; then
-
-    export ACCOUNT="fv3-cpu"
-    export QUEUE="batch"
-    export QUEUE_ARCH="service"
-
-elif [ $machine = "WCOSS_C" -o $machine = "WCOSS_DELL_P3" ]; then
-
-    export ACCOUNT="FV3GFS-T2O"
-    export QUEUE="dev"
-    export QUEUE_ARCH="dev_transfer"
-
-fi
+export ACCOUNT="@ACCOUNT@"
+export QUEUE="@QUEUE@"
+export QUEUE_ARCH="@QUEUE_ARCH@"
 
 # Project to use in mass store:
 HPSS_PROJECT=emc-global
@@ -41,104 +31,19 @@ export SCRgfs=$HOMEgfs/scripts
 ########################################################################
 
 # GLOBAL static environment parameters
-if [ $machine = "THEIA" ]; then
+export NWPROD="@NWPROD@"
+export DMPDIR="@DMPDIR@"
+export RTMFIX=$CRTM_FIX
 
-    export NWPROD="/scratch4/NCEPDEV/global/save/glopara/nwpara"
-    export DMPDIR="/scratch4/NCEPDEV/global/noscrub/dump"
-    export RTMFIX="/scratch4/NCEPDEV/da/save/Michael.Lueken/nwprod/lib/crtm/2.2.3/fix_update"
-    export FV3INP="/scratch4/NCEPDEV/nems/noscrub/emc.nemspara/RT/NEMSfv3gfs/trunk-20190613/FV3_input_data_gsd"
+# USER specific paths
+export HOMEDIR="@HOMEDIR@"
+export STMP="@STMP@"
+export PTMP="@PTMP@"
+export NOSCRUB="@NOSCRUB@"
 
-elif [ $machine = "HERA" ]; then
-
-    #export NWPROD="/scratch1/NCEPDEV/global/glopara/nwpara"
-    export DMPDIR="/scratch1/NCEPDEV/global/glopara/dump"
-    export RTMFIX=$CRTM_FIX
-    export FV3INP="/scratch1/NCEPDEV/nems/emc.nemspara/RT/NEMSfv3gfs/trunk-20190925/FV3_input_data_gsd"
-
-elif [ $machine = "WCOSS_C" ]; then
-
-    export NWPROD="/gpfs/hps/nco/ops/nwprod"
-    export DMPDIR="/gpfs/dell3/emc/global/dump"
-    export RTMFIX=$CRTM_FIX
-    export FV3INP=$FV3INP
-
-elif [ $machine = "WCOSS_DELL_P3" ]; then
-
-    export NWPROD="/gpfs/dell1/nco/ops/nwprod"
-    export DMPDIR="/gpfs/dell3/emc/global/dump"
-    export RTMFIX=$CRTM_FIX
-    export FV3INP=$FV3INP
-fi
-
-
-# Machine specific paths used everywhere
-if [ $machine = "THEIA" ]; then
-
-    # USER specific paths
-    export HOMEDIR="/scratch4/NCEPDEV/global/save/$USER"
-    export STMP="/scratch4/NCEPDEV/stmp3/$USER"
-    export PTMP="/scratch4/NCEPDEV/stmp4/$USER"
-    export NOSCRUB="/scratch4/NCEPDEV/global/noscrub/$USER"
-
-    # Base directories for various builds
-    export BASE_GIT="/scratch4/NCEPDEV/global/save/glopara/git"
-    export BASE_SVN="/scratch4/NCEPDEV/global/save/glopara/svn"
-
-elif [ $machine = "HERA" ]; then
-
-    # USER specific paths
-    export HOMEDIR="/scratch1/NCEPDEV/global/$USER"
-    export STMP="/scratch1/NCEPDEV/stmp2/$USER"
-    export PTMP="/scratch1/NCEPDEV/stmp4/$USER"
-    export NOSCRUB="$HOMEDIR"
-
-    # Base directories for various builds
-    export BASE_GIT="/scratch1/NCEPDEV/global/glopara/git"
-    export BASE_SVN="/scratch1/NCEPDEV/global/glopara/svn"
-
-elif [ $machine = "WCOSS_C" ]; then
-
-    # USER specific paths
-    export HOMEDIR="/gpfs/hps3/emc/global/noscrub/$USER"
-    export STMP="/gpfs/hps2/stmp/$USER"
-    export PTMP="/gpfs/hps2/ptmp/$USER"
-    export NOSCRUB="/gpfs/hps3/emc/global/noscrub/$USER"
-
-    # Base directories for various builds
-    export BASE_GIT="/gpfs/hps3/emc/global/noscrub/emc.glopara/git"
-    export BASE_SVN="/gpfs/hps3/emc/global/noscrub/emc.glopara/svn"
-
-elif [ $machine = "WCOSS_DELL_P3" ]; then
-
-    # USER specific paths
-    export HOMEDIR="/gpfs/dell2/emc/modeling/noscrub/$USER"
-    export STMP="/gpfs/dell3/stmp/$USER"
-    export PTMP="/gpfs/dell3/ptmp/$USER"
-    export NOSCRUB="/gpfs/dell2/emc/modeling/noscrub/$USER"
-
-    # Base directories for various builds
-    export BASE_GIT="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git"
-    export BASE_SVN="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git"
-
-fi
-
-# Utilities needed in the scripts (mostly post)
-if [ $machine = "THEIA" ]; then
-
-    export NDATE="$NWPROD/util/exec/ndate"
-    export NHOUR="$NWPROD/util/exec/nhour"
-    export WGRIB="$NWPROD/util/exec/wgrib"
-    export WGRIB2="/scratch3/NCEPDEV/nwprod/utils/wgrib2.v2.0.6c/wgrib2/wgrib2"
-    export COPYGB="$NWPROD/util/exec/copygb"
-    export COPYGB2="$NWPROD/util/exec/copygb2"
-    export GRBINDEX="$NWPROD/util/exec/grbindex"
-    export GRB2INDEX="$NWPROD/util/exec/grb2index"
-    export GRBINDEX2="$NWPROD/util/exec/grb2index"
-    export CNVGRIB="/apps/cnvgrib/1.4.0/bin/cnvgrib"
-    export POSTGRB2TBL="/scratch3/NCEPDEV/nwprod/lib/g2tmpl/v1.5.0/sorc/params_grib2_tbl_new"
-
-fi
-
+# Base directories for various builds
+export BASE_GIT="@BASE_GIT@"
+export BASE_SVN="@BASE_SVN@"
 #### CCPP Suite
 export CCPP_SUITE="FV3_GSD_v0"              # testgsdsuite
 #### export CCPP_SUITE="FV3_GFS_v15"        # testemc
@@ -164,7 +69,7 @@ export FIXgsi="$HOMEgfs/fix/fix_gsi"
 export HOMEfv3gfs="$HOMEgfs/sorc/fv3gfs.fd"
 export HOMEpost="$HOMEgfs"
 export HOMEobsproc_prep="$BASE_GIT/obsproc/obsproc_prep_RB-5.2.0"
-export HOMEobsproc_network="$BASE_GIT/obsproc/obsproc_global_RB-3.2.2"
+export HOMEobsproc_network="$BASE_GIT/obsproc/obsproc_global.v3.2.3"
 export HOMEobsproc_global=$HOMEobsproc_network
 export BASE_VERIF="$BASE_SVN/verif/global/tags/vsdb"
 
@@ -304,6 +209,8 @@ export nst_anl=.true.
 # Analysis increments to zero in CALCINCEXEC
 export INCREMENTS_TO_ZERO="'delz_inc','clwmr_inc','icmr_inc'"
 
+# Verification options
+export DO_METP="YES"                  # Run MET+ jobs
 
 # Archiving options
 export HPSSARCH="NO"         # save data to HPSS archive
