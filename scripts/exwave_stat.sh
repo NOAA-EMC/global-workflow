@@ -76,7 +76,7 @@
 # 1.a Check if buoy input files exist and copy
 #
   buoyfile=wave_${NET}.buoys
-  if [ -f $FIXwave/${buoyfile} ] ; then
+  if [ -s $FIXwave/${buoyfile} ] ; then
     cp  $FIXwave/${buoyfile} buoy_file.data
     echo " $FIXwave/${buoyfile} copied to buoy_file.data."
   else
@@ -121,7 +121,7 @@
           glo_30mxt) GRDNAME='global' ; GRDRES=0p50 ; GRIDNR=255  ; MODNR=11 ;;
         esac
         cpfile=$COMIN/gridded/${WAV_MOD_TAG}.${cycle}.${ENSTAG}.${GRDNAME}.${GRDRES}.f${FH3}.grib2
-        if [ -f ${cpfile} ] ; then 
+        if [ -s ${cpfile} ] ; then 
           ln -s  $cpfile  ./. 
         else
           msg="ABNORMAL EXIT: ERR in coping $cpfile "
@@ -252,8 +252,7 @@
     echo '     See Details Below '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    err=8; export err;${errchk}
-    exit $err
+    err=3; export err;${errchk} ; exit $err
   fi
 
 #
@@ -328,8 +327,7 @@
     echo '     See Details Below '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    err=8; export err;${errchk}
-    exit $err
+    err=4; export err;${errchk} ; exit $err
   fi
 
 # Regroup all outputs in parameter/stats files
@@ -439,8 +437,7 @@
     echo '     See Details Below '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    err=8; export err;${errchk}
-    exit $err
+    err=5; export err;${errchk} ; exit $err
   fi
 
 
@@ -454,7 +451,7 @@
     for stype in mean spread probab
     do
      fcopy=${WAV_MOD_TAG}.${stype}.t${cyc}z.f${FH3}.grib2
-     if [ -f ${fcopy} ]
+     if [ -s ${fcopy} ]
      then
        set +x
        echo "   Copying ${fcopy} to $COMOUT/gridded"
@@ -470,7 +467,7 @@
         echo "$modIE fcst $date $cycle: ${fcopy} not fouund." >> $wavelog
         echo $msg
         [[ "$LOUD" = YES ]] && set -x
-        err=4;export err;${errchk};exit $err
+        err=6;export err;${errchk};exit $err
       fi
     done
     if [ $fhour -ge $FHMAX_HF_WAV ]
@@ -499,7 +496,25 @@
 
 # 3.c Create bundled grib2 file with all parameters
 
-  cat gefswave.mean.t12z.f???.grib2 | $WGRIB2 - -match "(HTSGW|PERPW|WIND)" -grib gribfile > gribfile.out 2>&1 
+  cat gefswave.mean.t${cyc}z.f???.grib2 | $WGRIB2 - -match "(HTSGW|PERPW|WIND)" -grib gribfile > gribfile.out 2>&1 
+
+  if [ -s gribfile ]
+  then
+     set +x
+     echo "   Gribfile for bulletins created"
+     [[ "$LOUD" = YES ]] && set -x
+    else
+      set +x
+      echo ' '
+      echo '************************************************* '
+      echo "*** FATAL ERROR: No gribfile created, no bulls  *"
+      echo '************************************************* '
+      echo ' '
+      echo "$modIE fcst $date $cycle: No gribfile created." >> $wavelog
+      echo $msg
+      [[ "$LOUD" = YES ]] && set -x
+      err=7;export err;${errchk};exit $err
+    fi
 
 # 3.d Loop through buoys and populate cmdfiles with calls to wave_ens_bull.sh
 
@@ -547,8 +562,7 @@
     echo '     See Details Below '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    err=8; export err;${errchk}
-    exit $err
+    err=8; export err;${errchk} ; exit $err
   fi
 
 # echo ' Checking for errors after bulletins cfp'
@@ -575,7 +589,7 @@
      echo ' '
      [[ "$LOUD" = YES ]] && set -x
      echo "No ${modIE}.${bnom}.bull " >> $wavelog
-     err=4;export err;${errchk};exit $err
+     err=9;export err;${errchk};exit $err
    else
      set +x
      echo -e "\n Bulletin file ${modID}.${bnom}.bull generated succesfully.\n"
@@ -599,7 +613,7 @@
   echo '---------------------'
   [[ "$LOUD" = YES ]] && set -x
 
-  if [ -f ${WAV_MOD_TAG}.t${cyc}z.bull_tar ]
+  if [ -s ${WAV_MOD_TAG}.t${cyc}z.bull_tar ]
   then
     set +x
     echo "   Copying ${WAV_MOD_TAG}.t${cyc}z.bull_tar  to $COMOUT/station"
@@ -615,12 +629,12 @@
      echo "$modIE fcst $date $cycle: bull_tar not fouund." >> $wavelog
      echo $msg
      [[ "$LOUD" = YES ]] && set -x
-     err=4;export err;${errchk};exit $err
+     err=9p5;export err;${errchk};exit $err
    fi
 
 
 # 4.b Compress time series into tar file and copy to COMOUT
-  if [ -f ${WAV_MOD_TAG}.t${cyc}z.station_tar ]
+  if [ -s ${WAV_MOD_TAG}.t${cyc}z.station_tar ]
   then
     set +x
     echo "   Copying ${WAV_MOD_TAG}.t${cyc}z.bull_tar  to $COMOUT/station"
@@ -636,7 +650,7 @@
      echo "$modIE fcst $date $cycle: station_tar not fouund." >> $wavelog
      echo $msg
      [[ "$LOUD" = YES ]] && set -x
-     err=4;export err;${errchk};exit $err
+     err=10;export err;${errchk};exit $err
    fi
 
 #
@@ -656,7 +670,7 @@
      msg="ABNORMAL EXIT: Problem in WAVE STAT"
      postmsg "$jlogfile" "$msg"
      echo $msg
-     err=4;export err;${errchk};exit $err
+     err=11;export err;${errchk};exit $err
   fi
 
   msg="$job completed normally"
