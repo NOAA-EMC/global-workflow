@@ -3,6 +3,8 @@
 ########## config.wave ##########
 # Wave steps specific
 
+echo "BEGIN: config.wave"
+
 # Parameters that are common to all wave model steps
 
 # System and version
@@ -128,4 +130,4 @@ export WW3ATMIENS='F'
 export WW3ICEIENS='F'
 export WW3CURIENS='F'
 
-echo "END: config.waveprep"
+echo "END: config.wave"

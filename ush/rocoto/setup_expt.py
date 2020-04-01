@@ -91,6 +91,18 @@ def edit_baseconfig():
                     .replace('@CASECTL@', 'C%d' % resdet) \
                     .replace('@NMEM_ENKF@', '%d' % nens) \
                     .replace('@HOMEgfs@', top) \
+                    .replace('@BASE_GIT@', base_git) \
+                    .replace('@BASE_SVN@', base_svn) \
+                    .replace('@DMPDIR@', dmpdir) \
+                    .replace('@NWPROD@', nwprod) \
+                    .replace('@HOMEDIR@', homedir) \
+                    .replace('@STMP@', stmp) \
+                    .replace('@PTMP@', ptmp) \
+                    .replace('@NOSCRUB@', noscrub) \
+                    .replace('@ACCOUNT@', account) \
+                    .replace('@QUEUE@', queue) \
+                    .replace('@QUEUE_SERVICE@', queue_service) \
+                    .replace('@PARTITION_BATCH@', partition_batch) \
                     .replace('@gfs_cyc@', '%d' % gfs_cyc)
                 if expdir is not None:
                     line = line.replace('@EXPDIR@', os.path.dirname(expdir))
@@ -129,6 +141,7 @@ link initial condition files from $ICSDIR to $COMROT'''
     parser.add_argument('--nens', help='number of ensemble members', type=int, required=False, default=20)
     parser.add_argument('--cdump', help='CDUMP to start the experiment', type=str, required=False, default='gdas')
     parser.add_argument('--gfs_cyc', help='GFS cycles to run', type=int, choices=[0, 1, 2, 4], default=1, required=False)
+    parser.add_argument('--partition', help='partition on machine', type=str, required=False, default=None)
 
     args = parser.parse_args()
 
@@ -149,6 +162,64 @@ link initial condition files from $ICSDIR to $COMROT'''
     nens = args.nens
     cdump = args.cdump
     gfs_cyc = args.gfs_cyc
+    partition = args.partition
+
+    # Set machine defaults
+    if machine == 'WCOSS_DELL_P3':
+      base_git = '/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git'
+      base_svn = '/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git'
+      dmpdir = '/gpfs/dell3/emc/global/dump'
+      nwprod = '/gpfs/dell1/nco/ops/nwprod'
+      homedir = '/gpfs/dell2/emc/modeling/noscrub/$USER'
+      stmp = '/gpfs/dell3/stmp/$USER'
+      ptmp = '/gpfs/dell3/ptmp/$USER'
+      noscrub = '/gpfs/dell2/emc/modeling/noscrub/$USER'
+      account = 'GFS-DEV'
+      queue = 'dev'
+      queue_service = 'dev_transfer'
+      partition_batch = ''
+      if partition in ['3p5']:
+        queue = 'dev2'
+        queue_service = 'dev2_transfer'
+    elif machine == 'WCOSS_C':
+      base_git = '/gpfs/hps3/emc/global/noscrub/emc.glopara/git'
+      base_svn = '/gpfs/hps3/emc/global/noscrub/emc.glopara/svn'
+      dmpdir = '/gpfs/dell3/emc/global/dump'
+      nwprod = '/gpfs/hps/nco/ops/nwprod'
+      homedir = '/gpfs/hps3/emc/global/noscrub/$USER'
+      stmp = '/gpfs/hps2/stmp/$USER'
+      ptmp = '/gpfs/hps2/ptmp/$USER'
+      noscrub = '/gpfs/hps3/emc/global/noscrub/$USER'
+      account = 'GFS-DEV'
+      queue = 'dev'
+      queue_service = 'dev_transfer'
+      partition_batch = ''
+    elif machine == 'HERA':
+      base_git = '/scratch1/NCEPDEV/global/glopara/git'
+      base_svn = '/scratch1/NCEPDEV/global/glopara/svn'
+      dmpdir = '/scratch1/NCEPDEV/global/glopara/dump'
+      nwprod = '/scratch1/NCEPDEV/global/glopara/nwpara'
+      homedir = '/scratch1/NCEPDEV/global/$USER'
+      stmp = '/scratch1/NCEPDEV/stmp2/$USER'
+      ptmp = '/scratch1/NCEPDEV/stmp4/$USER'
+      noscrub = '$HOMEDIR'
+      account = 'fv3-cpu'
+      queue = 'batch'
+      queue_service = 'service'
+      partition_batch = ''
+    elif machine == 'ORION':
+      base_git = '/work/noaa/nems/kfriedma/glopara/git'
+      base_svn = '/work/noaa/nems/kfriedma/glopara/svn'
+      dmpdir = '/work/noaa/nems/kfriedma/glopara/dump'
+      nwprod = '/work/noaa/nems/kfriedma/glopara/nwpara'
+      homedir = '/work/noaa/nems/$USER'
+      stmp = '/work/noaa/nems/$USER/stmp'
+      ptmp = '/work/noaa/nems/$USER/ptmp'
+      noscrub = '$HOMEDIR'
+      account = 'fv3-cpu'
+      queue = 'batch'
+      queue_service = 'service'
+      partition_batch = 'orion'
 
     if args.icsdir is not None and not os.path.exists(icsdir):
         msg = 'Initial conditions do not exist in %s' % icsdir

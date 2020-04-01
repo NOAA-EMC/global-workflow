@@ -316,7 +316,7 @@ while [ $GDATE -le $GDATEEND ]; do
                         rm -rf $COMIN/$file
                     done
                     for file in `ls $COMIN/RESTART |grep -v sfcanl `; do
-                        rm -rf $COMIN/$file
+                        rm -rf $COMIN/RESTART/$file
                     done
                 fi
             fi
