@@ -24,6 +24,8 @@ fi
 
 cd ./fv3nc2nemsio.fd
 
+if [ $target = orion ]; then HDF5=$HDF5_ROOT ; fi
+
 LIBnetcdf=`$NETCDF/bin/nf-config --flibs`
 INCnetcdf=`$NETCDF/bin/nf-config --fflags`
 export NETCDF_LDFLAGS=$LIBnetcdf

@@ -31,6 +31,7 @@ fi
 
 source ../modulefiles/modulefile.storm_reloc_v6.0.0.$target
 export FC=mpiifort
+export JASPER_LIB=${JASPER_LIB:-$JASPER_LIBRARY_DIRS/libjasper.a}
 
 export INC="${G2_INCd} -I${NEMSIO_INC}"
 export LIBS="${W3EMC_LIBd} ${W3NCO_LIBd} ${BACIO_LIB4} ${G2_LIBd} ${PNG_LIB} ${JASPER_LIB} ${Z_LIB}"

@@ -2,9 +2,13 @@
 ## Module file for fv3nc2nemsio
 #############################################################
 
-module use -a /work/noaa/noaatest/NCEPLIBS/lib/modulefiles
+module load intel/2018.4
+module load impi/2018.4
+
 module load netcdf/4.7.2
 module load hdf5/1.10.5
+
+module use /apps/contrib/NCEPLIBS/lib/modulefiles
 module load bacio-intel-sandybridge/2.0.2
 module load nemsio-intel-sandybridge/2.2.3
 module load w3nco-intel-sandybridge/2.0.6

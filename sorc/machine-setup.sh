@@ -30,7 +30,7 @@ if [[ -d /work ]] ; then
     module purge
     module load intel/2018.4
     module load impi/2018.4
-    export NCEPLIBS=/work/noaa/noaatest/NCEPLIBS/lib
+    export NCEPLIBS=/apps/contrib/NCEPLIBS/orion
     export WRFPATH=$NCEPLIBS/wrf.shared.new/v1.1.1/src
     module use $NCEPLIBS/modulefiles
     export myFC=mpiifort
