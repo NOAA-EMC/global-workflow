@@ -50,12 +50,14 @@ export CDATE=${PDY}${cyc}
 # The start time reflects the number of hindcast hours prior to the cycle initial time
 if [ "$CDUMP" = "gdas" ]
 then
-  export FHMAX_WAV=${FHMAX_WAV:-9}
+  export FHMAX_WAV=${FHMAX:-9}
+else
+  FHMAX_GFS="FHMAX_GFS_${cyc}"
+  export FHMAX_WAV=${!FHMAX_GFS}
 fi
 export WAVHINDH=${WAVHINDH:-0}
 export FHMIN_WAV=${FHMIN_WAV:-0}
 export FHOUT_WAV=${FHOUT_WAV:-3}
-export FHMAX_WAV=${FHMAX_WAV:-384}
 export FHMAX_HF_WAV=${FHMAX_HF_WAV:-120}
 export FHOUT_HF_WAV=${FHOUT_HF_WAV:-1}
 

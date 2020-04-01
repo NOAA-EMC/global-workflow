@@ -401,9 +401,9 @@ if [ $cplwav = ".true." ]; then
     $NLN $COMINWW3/${COMPONENTwave}.${PDY}/${cyc}/rundata/${COMPONENTwave}.mod_def.$wavGRD $DATA/mod_def.$wavGRD
   done
   # Wave IC (restart) interval assumes 4 daily cycles (restarts only written by gdas cycle) 
-  # WAVCYCH needs to be consistent with restart write interval in ww3_multi.inp or will FAIL
-  WAVCYCH=${WAVCYCH:-6}
-  WRDATE=`$NDATE -${WAVCYCH} $CDATE`
+  # WAVHCYC needs to be consistent with restart write interval in ww3_multi.inp or will FAIL
+  WAVHCYC=${WAVHCYC:-6}
+  WRDATE=`$NDATE -${WAVHCYC} $CDATE`
   WRPDY=`echo $WRDATE | cut -c1-8`
   WRcyc=`echo $WRDATE | cut -c9-10`
   WRDIR=$COMINWW3/${COMPONENTRSTwave}.${WRPDY}/${WRcyc}/restart
