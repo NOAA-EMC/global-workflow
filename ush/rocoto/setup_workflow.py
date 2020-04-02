@@ -42,7 +42,7 @@ def main():
         print 'input arg:     --expdir = %s' % repr(args.expdir)
         sys.exit(1)
 
-    gfs_steps = ['prep', 'anal', 'gldas', 'fcst', 'postsnd', 'post', 'vrfy', 'arch']
+    gfs_steps = ['prep', 'anal', 'analdiag', 'analcalc', 'gldas', 'fcst', 'postsnd', 'post', 'vrfy', 'arch']
     gfs_steps_gempak = ['gempak']
     gfs_steps_awips = ['awips']
     #hyb_steps = ['eobs', 'eomg', 'eupd', 'ecen', 'efcs', 'epos', 'earc']
@@ -54,7 +54,7 @@ def main():
     #wav_steps_awips = ['waveawipssbs', 'waveawips']
 # From gfsv16b latest
 #    gfs_steps = ['prep', 'anal', 'gldas', 'fcst', 'postsnd', 'post', 'awips', 'gempak', 'vrfy', 'metp', 'arch']
-    hyb_steps = ['eobs', 'eomg', 'eupd', 'ecen', 'esfc', 'efcs', 'epos', 'earc']
+    hyb_steps = ['eobs', 'ediag', 'eomg', 'eupd', 'ecen', 'esfc', 'efcs', 'epos', 'earc']
 
     steps = gfs_steps + hyb_steps if _base.get('DOHYBVAR', 'NO') == 'YES' else gfs_steps
     steps = steps + metp_steps if _base.get('DO_METP', 'NO') == 'YES' else steps
@@ -236,20 +236,23 @@ def get_gdasgfs_resources(dict_configs, cdump='gdas'):
     do_metp = base.get('DO_METP', 'NO').upper()
     do_gldas = base.get('DO_GLDAS', 'NO').upper()
     do_wave = base.get('DO_WAVE', 'NO').upper()
+    do_wave_cdump = base.get('WAVE_CDUMP', 'BOTH').upper()
     reservation = base.get('RESERVATION', 'NONE').upper()
 
     #tasks = ['prep', 'anal', 'fcst', 'post', 'vrfy', 'arch']
-    tasks = ['prep', 'anal']
+    tasks = ['prep', 'anal', 'analcalc']
 
+    if cdump in ['gdas']:
+        tasks += ['analdiag']
     if cdump in ['gdas'] and do_gldas in ['Y', 'YES']:
         tasks += ['gldas']
-    if cdump in ['gdas'] and do_wave in ['Y', 'YES']:
+    if cdump in ['gdas'] and do_wave in ['Y', 'YES'] and do_wave_cdump in ['GDAS', 'BOTH']:
         #tasks += ['waveinit', 'waveprep', 'wavepostsbs', 'wavepost', 'wavestat']
         tasks += ['waveinit', 'waveprep', 'wavepostsbs']
 
     tasks += ['fcst', 'post', 'vrfy', 'arch']
 
-    if cdump in ['gfs'] and do_wave in ['Y', 'YES']:
+    if cdump in ['gfs'] and do_wave in ['Y', 'YES'] and do_wave_cdump in ['GFS', 'BOTH']:
         #tasks += ['waveinit', 'waveprep', 'wavepostsbs', 'wavepost', 'wavestat']
         tasks += ['waveinit', 'waveprep', 'wavepostsbs']
     if cdump in ['gfs'] and do_bufrsnd in ['Y', 'YES']:
@@ -304,9 +307,10 @@ def get_hyb_resources(dict_configs):
     dict_resources = OrderedDict()
 
     # These tasks can be run in either or both cycles
-    tasks1 = ['eobs', 'eomg', 'eupd']
     if lobsdiag_forenkf in ['.T.', '.TRUE.']:
-        tasks1.remove('eomg')
+        tasks1 = ['eobs', 'ediag', 'eupd']
+    else:
+        tasks1 = ['eobs', 'eomg', 'eupd']
 
     if eupd_cyc in ['BOTH']:
         cdumps = ['gfs', 'gdas']
@@ -389,6 +393,7 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
     do_metp = base.get('DO_METP', 'NO').upper()
     do_gldas = base.get('DO_GLDAS', 'NO').upper()
     do_wave = base.get('DO_WAVE', 'NO').upper()
+    do_wave_cdump = base.get('WAVE_CDUMP', 'BOTH').upper()
     dumpsuffix = base.get('DUMP_SUFFIX', '')
     gridsuffix = base.get('SUFFIX', '')
 
@@ -419,8 +424,16 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
 
     dict_tasks['%sprep' % cdump] = task
 
+    # wave tasks in gdas or gfs or both
+    if do_wave_cdump in ['BOTH']:
+        cdumps = ['gfs', 'gdas']
+    elif do_wave_cdump in ['GFS']:
+        cdumps = ['gfs']
+    elif do_wave_cdump in ['GDAS']:
+        cdumps = ['gdas']
+
     # waveinit
-    if do_wave in ['Y', 'YES']:
+    if do_wave in ['Y', 'YES'] and cdump in cdumps:
         deps = []
         dep_dict = {'type': 'task', 'name': '%sprep' % cdump}
         deps.append(rocoto.add_dependency(dep_dict))
@@ -431,7 +444,7 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
         dict_tasks['%swaveinit' % cdump] = task
 
     # waveprep
-    if do_wave in ['Y', 'YES']:
+    if do_wave in ['Y', 'YES'] and cdump in cdumps:
         deps = []
         dep_dict = {'type': 'task', 'name': '%swaveinit' % cdump}
         deps.append(rocoto.add_dependency(dep_dict))
@@ -453,6 +466,31 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
 
     dict_tasks['%sanal' % cdump] = task
 
+    # analcalc
+    deps = []
+    data = '&ROTDIR;/%s.@Y@m@d/@H/%s.t@Hz.loginc.txt' % (cdump, cdump)
+    dep_dict = {'type': 'data', 'data': data}
+    deps.append(rocoto.add_dependency(dep_dict))
+    dep_dict = {'type': 'task', 'name': '%sanal' % cdump}
+    deps.append(rocoto.add_dependency(dep_dict))
+    dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
+    task = wfu.create_wf_task('analcalc', cdump=cdump, envar=envars, dependency=dependencies)
+
+    dict_tasks['%sanalcalc' % cdump] = task
+
+    # analdiag
+    if cdump in ['gdas']:
+        deps = []
+        data = '&ROTDIR;/%s.@Y@m@d/@H/%s.t@Hz.loginc.txt' % (cdump, cdump)
+        dep_dict = {'type': 'data', 'data': data}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'task', 'name': '%sanal' % cdump}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
+        task = wfu.create_wf_task('analdiag', cdump=cdump, envar=envars, dependency=dependencies)
+
+        dict_tasks['%sanaldiag' % cdump] = task
+
     # gldas
     if cdump in ['gdas'] and do_gldas in ['Y', 'YES']:
         deps = []
@@ -468,25 +506,25 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
 
     # fcst
     deps = []
-    data = '&ROTDIR;/%s.@Y@m@d/@H/%s.t@Hz.loginc.txt' % (cdump, cdump)
-    dep_dict = {'type': 'data', 'data': data}
-    deps.append(rocoto.add_dependency(dep_dict))
-    if do_wave in ['Y', 'YES']:
+    #data = '&ROTDIR;/%s.@Y@m@d/@H/%s.t@Hz.loginc.txt' % (cdump, cdump)
+    #dep_dict = {'type': 'data', 'data': data}
+#   #deps.append(rocoto.add_dependency(dep_dict))
+    if do_wave in ['Y', 'YES'] and cdump in cdumps:
         dep_dict = {'type': 'task', 'name': '%swaveprep' % cdump}
         deps.append(rocoto.add_dependency(dep_dict))
     if cdump in ['gdas']:
         if do_gldas in ['Y', 'YES']:
             dep_dict = {'type': 'task', 'name': '%sgldas' % cdump}
             deps.append(rocoto.add_dependency(dep_dict))
-    #    else:
-    #        dep_dict = {'type': 'task', 'name': '%sanal' % cdump}
-    #        deps.append(rocoto.add_dependency(dep_dict))
+        else:
+            dep_dict = {'type': 'task', 'name': '%sanalcalc' % cdump}
+            deps.append(rocoto.add_dependency(dep_dict))
     #    dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': '-06:00:00'}
     #    deps.append(rocoto.add_dependency(dep_dict))
-    #    dependencies = rocoto.create_dependency(dep_condition='or',dep=deps)
-    #elif cdump in ['gfs']:
-    #    dep_dict = {'type': 'task', 'name': '%sanal' % cdump}
-    #    deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='or',dep=deps)
+    elif cdump in ['gfs']:
+        dep_dict = {'type': 'task', 'name': '%sanal' % cdump}
+        deps.append(rocoto.add_dependency(dep_dict))
     dependencies = rocoto.create_dependency(dep_condition='and',dep=deps)
     task = wfu.create_wf_task('fcst', cdump=cdump, envar=envars, dependency=dependencies)
 
@@ -513,7 +551,7 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
     dict_tasks['%spost' % cdump] = task
 
     # wavepostsbs
-    if do_wave in ['Y', 'YES']:
+    if do_wave in ['Y', 'YES'] and cdump in cdumps:
         deps = []
         data = '&ROTDIR;/%swave.@Y@m@d/@H/rundata/%swave.out_grd.glo_10m.@Y@m@d.@H0000' % (cdump,cdump)
         dep_dict = {'type': 'data', 'data': data}
@@ -561,7 +599,7 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
     #    dict_tasks['%swaveawipssbs' % cdump] = task
 
     # wavepost
-    #if do_wave in ['Y', 'YES']:
+    #if do_wave in ['Y', 'YES'] and cdump in cdumps:
     #    deps = []
     #    dep_dict = {'type':'task', 'name':'%sfcst' % cdump}
     #    deps.append(rocoto.add_dependency(dep_dict))
@@ -581,7 +619,7 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
     #    dict_tasks['%swaveawips' % cdump] = task
 
     # wavestat
-    #if do_wave in ['Y', 'YES']:
+    #if do_wave in ['Y', 'YES'] and cdump in cdumps:
     #    deps = []
     #    dep_dict = {'type':'task', 'name':'%swavepost' % cdump}
     #    deps.append(rocoto.add_dependency(dep_dict))
@@ -745,12 +783,22 @@ def get_hyb_tasks(dict_configs, cycledef='enkf'):
 
             dict_tasks['%seomn' % cdump] = task
 
+        # ediag
+        else:
+            deps = []
+            dep_dict = {'type': 'task', 'name': '%seobs' % cdump}
+            deps.append(rocoto.add_dependency(dep_dict))
+            dependencies = rocoto.create_dependency(dep=deps)
+            task = wfu.create_wf_task('ediag', cdump=cdump, envar=envars1, dependency=dependencies, cycledef=cycledef)
+
+            dict_tasks['%sediag' % cdump] = task
+
         # eupd
         deps = []
         if lobsdiag_forenkf in ['.F.', '.FALSE.']:
             dep_dict = {'type': 'metatask', 'name': '%seomn' % cdump}
         else:
-            dep_dict = {'type': 'task', 'name': '%seobs' % cdump}
+            dep_dict = {'type': 'task', 'name': '%sediag' % cdump}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
         task = wfu.create_wf_task('eupd', cdump=cdump, envar=envars1, dependency=dependencies, cycledef=cycledef)
@@ -768,7 +816,7 @@ def get_hyb_tasks(dict_configs, cycledef='enkf'):
     data = '&ROTDIR;/%s.@Y@m@d/@H/%s.t@Hz.loganl.txt' % (cdump, cdump)
     dep_dict = {'type': 'data', 'data': data}
     deps1.append(rocoto.add_dependency(dep_dict))
-    dep_dict = {'type': 'task', 'name': '%sanal' % cdump}
+    dep_dict = {'type': 'task', 'name': '%sanalcalc' % cdump}
     deps1.append(rocoto.add_dependency(dep_dict))
     dependencies1 = rocoto.create_dependency(dep_condition='or', dep=deps1)
 
@@ -794,7 +842,7 @@ def get_hyb_tasks(dict_configs, cycledef='enkf'):
     data = '&ROTDIR;/%s.@Y@m@d/@H/%s.t@Hz.loganl.txt' % (cdump, cdump)
     dep_dict = {'type': 'data', 'data': data}
     deps1.append(rocoto.add_dependency(dep_dict))
-    dep_dict = {'type': 'task', 'name': '%sanal' % cdump}
+    dep_dict = {'type': 'task', 'name': '%sanalcalc' % cdump}
     deps1.append(rocoto.add_dependency(dep_dict))
     dependencies1 = rocoto.create_dependency(dep_condition='or', dep=deps1)
 
@@ -1050,7 +1098,7 @@ def create_xml(dict_configs):
         dict_hyb_tasks = get_hyb_tasks(dict_configs)
 
         # Removes <memory>&MEMORY_JOB_DUMP</memory> post mortem from hyb tasks
-        hyp_tasks = {'gdaseobs':'gdaseobs', 'gdaseomg':'gdaseomn', 'gdaseupd':'gdaseupd','gdasecen':'gdasecmn','gdasesfc':'gdasesfc','gdasefcs':'gdasefmn','gdasepos':'gdasepmn','gdasearc':'gdaseamn'}
+        hyp_tasks = {'gdaseobs':'gdaseobs', 'gdasediag':'gdasediag', 'gdaseomg':'gdaseomn', 'gdaseupd':'gdaseupd','gdasecen':'gdasecmn','gdasesfc':'gdasesfc','gdasefcs':'gdasefmn','gdasepos':'gdasepmn','gdasearc':'gdaseamn'}
         for each_task, each_resource_string in dict_hyb_resources.iteritems():
             #print each_task,hyp_tasks[each_task]
             #print dict_hyb_tasks[hyp_tasks[each_task]]

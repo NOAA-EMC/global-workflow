@@ -141,8 +141,6 @@ if [ $type = "gfs" ]; then
 
     rm -rf gfswave.txt
     touch gfswave.txt
-    rm -rf gfswave_restart.txt
-    touch gfswave_restart.txt
 
     dirpath="gfswave.${PDY}/${cyc}/"
     dirname="./${dirpath}"
@@ -152,8 +150,6 @@ if [ $type = "gfs" ]; then
     #...........................
     echo "${dirname}gridded/${head}*      " >>gfswave.txt
     echo "${dirname}station/${head}*      " >>gfswave.txt
-
-    echo "${dirname}restart/*             " >>gfswave_restart.txt
 
   fi
 
@@ -331,6 +327,7 @@ if [ $type = "enkfgdas" -o $type = "enkfgfs" ]; then
   while [ $fh -le 9 ]; do
       fhr=$(printf %03i $fh)
       echo  "${dirname}${head}atmf${fhr}.ensmean${SUFFIX}       " >>enkf${CDUMP}.txt
+      echo  "${dirname}${head}sfcf${fhr}.ensmean${SUFFIX}       " >>enkf${CDUMP}.txt
       if [ $OUTPUT_FILE = "netcdf" ]; then
           if [ -s $ROTDIR/${dirpath}${head}atmf${fhr}.ensspread${SUFFIX} ]; then
 	     echo  "${dirname}${head}atmf${fhr}.ensspread${SUFFIX}     " >>enkf${CDUMP}.txt

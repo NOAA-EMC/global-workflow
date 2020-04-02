@@ -88,6 +88,7 @@ KEEPDATA=${KEEPDATA:-"NO"}
 # Other options
 MEMBER=${MEMBER:-"-1"} # -1: control, 0: ensemble mean, >0: ensemble member $MEMBER
 ENS_NUM=${ENS_NUM:-1}  # Single executable runs multiple members (e.g. GEFS)
+PREFIX_ATMINC=${PREFIX_ATMINC:-""} # allow ensemble to use recentered increment
 
 # IAU options
 DOIAU=${DOIAU:-"NO"}
@@ -279,9 +280,9 @@ EOF
       for i in $(echo $IAUFHRS | sed "s/,/ /g" | rev); do
         incfhr=$(printf %03i $i)
         if [ $incfhr = "006" ]; then
-          increment_file=$memdir/${CDUMP}.t${cyc}z.atminc.nc
+          increment_file=$memdir/${CDUMP}.t${cyc}z.${PREFIX_INC}atminc.nc
         else
-          increment_file=$memdir/${CDUMP}.t${cyc}z.atmi${incfhr}.nc
+          increment_file=$memdir/${CDUMP}.t${cyc}z.${PREFIX_INC}atmi${incfhr}.nc
         fi
         if [ ! -f $increment_file ]; then
           echo "ERROR: DOIAU = $DOIAU, but missing increment file for fhr $incfhr at $increment_file"
@@ -294,7 +295,7 @@ EOF
       read_increment=".false."
       res_latlon_dynamics=""
     else
-      increment_file=$memdir/${CDUMP}.t${cyc}z.atminc.nc
+      increment_file=$memdir/${CDUMP}.t${cyc}z.${PREFIX_INC}atminc.nc
       if [ -f $increment_file ]; then
         $NLN $increment_file $DATA/INPUT/fv_increment.nc
         read_increment=".true."

@@ -206,14 +206,6 @@ if [ $CDUMP = "gfs" ]; then
             echo "HTAR $CDATE gfs_restarta.tar failed"
             exit $status
         fi
-        if [ $DO_WAVE = "YES" ]; then
-            htar -P -cvf $ATARDIR/$CDATE/gfswave_restart.tar `cat $ARCH_LIST/gfswave_restart.txt`
-            status=$?
-            if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
-                echo "HTAR $CDATE gfswave_restart.tar failed"
-                exit $status
-            fi
-        fi
     fi
 
    #--save mdl gfsmos output from all cycles in the 18Z archive directory
@@ -324,7 +316,7 @@ while [ $GDATE -le $GDATEEND ]; do
                         rm -rf $COMIN/$file
                     done
                     for file in `ls $COMIN/RESTART |grep -v sfcanl `; do
-                        rm -rf $COMIN/$file
+                        rm -rf $COMIN/RESTART/$file
                     done
                 fi
             fi

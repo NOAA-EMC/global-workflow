@@ -12,19 +12,9 @@ export machine="@MACHINE@"
 export RUN_ENVIR="emc"
 
 # Account, queue, etc.
-if [ $machine = "HERA" ]; then
-
-    export ACCOUNT="fv3-cpu"
-    export QUEUE="batch"
-    export QUEUE_ARCH="service"
-
-elif [ $machine = "WCOSS_C" -o $machine = "WCOSS_DELL_P3" ]; then
-
-    export ACCOUNT="GFS-DEV"
-    export QUEUE="dev"
-    export QUEUE_ARCH="dev_transfer"
-
-fi
+export ACCOUNT="@ACCOUNT@"
+export QUEUE="@QUEUE@"
+export QUEUE_ARCH="@QUEUE_ARCH@"
 
 # Project to use in mass store:
 HPSS_PROJECT=emc-global
@@ -41,68 +31,19 @@ export SCRgfs=$HOMEgfs/scripts
 ########################################################################
 
 # GLOBAL static environment parameters
-if [ $machine = "HERA" ]; then
+export NWPROD="@NWPROD@"
+export DMPDIR="@DMPDIR@"
+export RTMFIX=$CRTM_FIX
 
-    #export NWPROD="/scratch1/NCEPDEV/global/glopara/nwpara"
-    export DMPDIR="/scratch1/NCEPDEV/global/glopara/dump"
-    export RTMFIX=$CRTM_FIX
+# USER specific paths
+export HOMEDIR="@HOMEDIR@"
+export STMP="@STMP@"
+export PTMP="@PTMP@"
+export NOSCRUB="@NOSCRUB@"
 
-elif [ $machine = "WCOSS_C" ]; then
-
-    export NWPROD="/gpfs/hps/nco/ops/nwprod"
-    export DMPDIR="/gpfs/dell3/emc/global/dump"
-    [[ $(hostname |cut -c 1) = l ]] && export SITE="LUNA"
-    [[ $(hostname |cut -c 1) = s ]] && export SITE="SURGE"
-    export RTMFIX=$CRTM_FIX
-
-elif [ $machine = "WCOSS_DELL_P3" ]; then
-
-    export NWPROD="/gpfs/dell1/nco/ops/nwprod"
-    export DMPDIR="/gpfs/dell3/emc/global/dump"
-    [[ $(hostname |cut -c 1) = m ]] && export SITE="MARS"
-    [[ $(hostname |cut -c 1) = v ]] && export SITE="VENUS"
-    export RTMFIX=$CRTM_FIX
-fi
-
-
-# Machine specific paths used everywhere
-if [ $machine = "HERA" ]; then
-
-    # USER specific paths
-    export HOMEDIR="/scratch1/NCEPDEV/global/$USER"
-    export STMP="/scratch1/NCEPDEV/stmp2/$USER"
-    export PTMP="/scratch1/NCEPDEV/stmp4/$USER"
-    export NOSCRUB="$HOMEDIR"
-
-    # Base directories for various builds
-    export BASE_GIT="/scratch1/NCEPDEV/global/glopara/git"
-    export BASE_SVN="/scratch1/NCEPDEV/global/glopara/svn"
-
-elif [ $machine = "WCOSS_C" ]; then
-
-    # USER specific paths
-    export HOMEDIR="/gpfs/hps3/emc/global/noscrub/$USER"
-    export STMP="/gpfs/hps2/stmp/$USER"
-    export PTMP="/gpfs/hps2/ptmp/$USER"
-    export NOSCRUB="/gpfs/hps3/emc/global/noscrub/$USER"
-
-    # Base directories for various builds
-    export BASE_GIT="/gpfs/hps3/emc/global/noscrub/emc.glopara/git"
-    export BASE_SVN="/gpfs/hps3/emc/global/noscrub/emc.glopara/svn"
-
-elif [ $machine = "WCOSS_DELL_P3" ]; then
-
-    # USER specific paths
-    export HOMEDIR="/gpfs/dell2/emc/modeling/noscrub/$USER"
-    export STMP="/gpfs/dell3/stmp/$USER"
-    export PTMP="/gpfs/dell3/ptmp/$USER"
-    export NOSCRUB="/gpfs/dell2/emc/modeling/noscrub/$USER"
-
-    # Base directories for various builds
-    export BASE_GIT="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git"
-    export BASE_SVN="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git"
-
-fi
+# Base directories for various builds
+export BASE_GIT="@BASE_GIT@"
+export BASE_SVN="@BASE_SVN@"
 
 # Toggle to turn on/off GFS downstream processing.
 export DO_BUFRSND="YES"
@@ -254,6 +195,7 @@ export gldas_cyc=00
 
 # run wave component
 export DO_WAVE=YES
+export WAVE_CDUMP="gdas"
 
 # Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL
 export imp_physics=11

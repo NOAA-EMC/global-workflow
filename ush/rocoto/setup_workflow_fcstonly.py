@@ -436,7 +436,7 @@ def get_workflow(dict_configs, cdump='gdas'):
     tasks.append('\n')
 
     # metp
-    if do_metp in ['Y', 'YES':]
+    if do_metp in ['Y', 'YES']:
         deps = []
         dep_dict = {'type':'metatask', 'name':'%spost' % cdump}
         deps.append(rocoto.add_dependency(dep_dict))

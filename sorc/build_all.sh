@@ -126,18 +126,20 @@ fi
 }
 
 #------------------------------------
-# build gfs_wafs 
+# build gfs_wafs - optional checkout 
 #------------------------------------
-$Build_gfs_wafs  && {
-echo " .... Building gfs_wafs  .... "
-./build_gfs_wafs.sh > $logs_dir/build_gfs_wafs.log 2>&1
-rc=$?
-if [[ $rc -ne 0 ]] ; then
+if [ -d gfs_wafs.fd ]; then
+  $Build_gfs_wafs  && {
+  echo " .... Building gfs_wafs  .... "
+  ./build_gfs_wafs.sh > $logs_dir/build_gfs_wafs.log 2>&1
+  rc=$?
+  if [[ $rc -ne 0 ]] ; then
     echo "Fatal error in building gfs_wafs."
     echo "The log file is in $logs_dir/build_gfs_wafs.log"
-fi
-((err+=$rc))
+  fi
+  ((err+=$rc))
 }
+fi
 
 #------------------------------------
 # build gaussian_sfcanl
@@ -267,24 +269,6 @@ if [ $target = wcoss -o $target = wcoss_cray -o $target = wcoss_dell_p3 ]; then
  ((err+=$rc))
  }
 fi
-
-#------------------------------------
-# build prod_util
-#------------------------------------
-$Build_prod_util && {
-echo " .... prod_util build not currently supported .... "
-#echo " .... Building prod_util .... "
-#./build_prod_util.sh > $logs_dir/build_prod_util.log 2>&1
-}
-
-#------------------------------------
-# build grib_util
-#------------------------------------
-$Build_grib_util && {
-echo " .... grib_util build not currently supported .... "
-#echo " .... Building grib_util .... "
-#./build_grib_util.sh > $logs_dir/build_grib_util.log 2>&1
-}
 
 #------------------------------------
 # Exception Handling

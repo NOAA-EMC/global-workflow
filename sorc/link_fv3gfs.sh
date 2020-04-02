@@ -81,10 +81,10 @@ cd ${pwd}/../util               ||exit 8
     done
 
 
-#------------------------------
-#--add gfs_wafs link if on Dell
-if [ $machine = dell -o $machine = hera ]; then 
-#------------------------------
+#-----------------------------------
+#--add gfs_wafs link if checked out
+if [ -d ${pwd}/gfs_wafs.fd ]; then 
+#-----------------------------------
  cd ${pwd}/../jobs               ||exit 8
      $LINK ../sorc/gfs_wafs.fd/jobs/*                         .
  cd ${pwd}/../parm               ||exit 8
@@ -104,7 +104,10 @@ fi
 #------------------------------
 cd ${pwd}/../jobs               ||exit 8
     $LINK ../sorc/gsi.fd/jobs/JGLOBAL_ANALYSIS           .
+    $LINK ../sorc/gsi.fd/jobs/JGLOBAL_ANALCALC           .
+    $LINK ../sorc/gsi.fd/jobs/JGLOBAL_ANALDIAG           .
     $LINK ../sorc/gsi.fd/jobs/JGLOBAL_ENKF_SELECT_OBS    .
+    $LINK ../sorc/gsi.fd/jobs/JGLOBAL_ENKF_ANALDIAG      .
     $LINK ../sorc/gsi.fd/jobs/JGLOBAL_ENKF_INNOVATE_OBS  .
     $LINK ../sorc/gsi.fd/jobs/JGLOBAL_ENKF_UPDATE        .
     $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_RECENTER        .
@@ -113,6 +116,8 @@ cd ${pwd}/../jobs               ||exit 8
     $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_POST            .
 cd ${pwd}/../scripts            ||exit 8
     $LINK ../sorc/gsi.fd/scripts/exglobal_analysis_fv3gfs.sh.ecf           .
+    $LINK ../sorc/gsi.fd/scripts/exglobal_analcalc_fv3gfs.sh.ecf           .
+    $LINK ../sorc/gsi.fd/scripts/exglobal_analdiag_fv3gfs.sh.ecf           .
     $LINK ../sorc/gsi.fd/scripts/exglobal_innovate_obs_fv3gfs.sh.ecf       .
     $LINK ../sorc/gsi.fd/scripts/exglobal_enkf_innovate_obs_fv3gfs.sh.ecf  .
     $LINK ../sorc/gsi.fd/scripts/exglobal_enkf_update_fv3gfs.sh.ecf        .
@@ -193,7 +198,7 @@ fi
 [[ -s gfs_ncep_post ]] && rm -f gfs_ncep_post
 $LINK ../sorc/gfs_post.fd/exec/ncep_post gfs_ncep_post
 
-if [ $machine = dell -o $machine = hera ]; then 
+if [ -d ${pwd}/gfs_wafs.fd ]; then 
     for wafsexe in wafs_awc_wafavn  wafs_blending  wafs_cnvgrib2  wafs_gcip  wafs_makewafs  wafs_setmissing; do
         [[ -s $wafsexe ]] && rm -f $wafsexe
         $LINK ../sorc/gfs_wafs.fd/exec/$wafsexe .
@@ -257,7 +262,7 @@ cd ${pwd}/../sorc   ||   exit 8
     done
 
 
-    if [ $machine = dell -o $machine = hera ]; then
+    if [ -d ${pwd}/gfs_wafs.fd ]; then 
         $SLINK gfs_wafs.fd/sorc/wafs_awc_wafavn.fd                                              wafs_awc_wafavn.fd
         $SLINK gfs_wafs.fd/sorc/wafs_blending.fd                                                wafs_blending.fd
         $SLINK gfs_wafs.fd/sorc/wafs_cnvgrib2.fd                                                wafs_cnvgrib2.fd
@@ -284,6 +289,4 @@ fi
 
 
 exit 0
-
-
 
