@@ -368,20 +368,36 @@ if [ $cplwav = ".true." ]; then
   done
 
   # Wave IC (restart) interval assumes 4 daily cycles (restarts only written by gdas cycle) 
-  # WAVCYCH needs to be consistent with restart write interval in ww3_multi.inp or will FAIL
-  WAVCYCH=${WAVCYCH:-6}
-  WRDATE=$($NDATE -${WAVCYCH} $CDATE)
+  # WAVHCYC needs to be consistent with restart write interval in ww3_multi.inp or will FAIL
+  WAVHCYC=${WAVHCYC:-6}
+  WRDATE=$($NDATE -${WAVHCYC} $CDATE)
   WRPDY=$(echo $WRDATE | cut -c1-8)
   WRcyc=$(echo $WRDATE | cut -c9-10)
   WRDIR=$COMOUTWW3/${COMPONENTRSTwave}.${WRPDY}/${WRcyc}/restart
   datwave=$COMOUTWW3/${COMPONENTwave}.${PDY}/${cyc}/rundata/
   wavprfx=${COMPONENTwave}${WAV_MEMBER}
+
   for wavGRD in $waveGRD ; do
     # Link wave IC for current cycle
     # Elimanted dependency on sPDY scyc, only required in GFS with IAU, not GEFS
+    if [ -s ${WRDIR}/${PDY}.${cyc}0000.${COMPONENTwave}${WAV_MEMBER}.restart.${wavGRD} ]; then
     $NLN ${WRDIR}/${PDY}.${cyc}0000.${COMPONENTwave}${WAV_MEMBER}.restart.${wavGRD} $DATA/restart.${wavGRD}
-    eval $NLN $datwave/${wavprfx}.log.${wavGRD}.${PDY}${cyc} log.${wavGRD}
+      eval $NLN $datwave/${wavprfx}.log.${wavGRD}.${PDY}${cyc} log.${wavGRD}
+    fi 
   done
+# Next-cycle restart for GEFS
+  if [ "${COMPONENTwave}" = "gefswave" ]; then
+    WRDIR=$COMOUTWW3/${COMPONENTRSTwave}.${PDY}/${cyc}/restart
+    mkdir -p ${WRDIR}
+    RDATE=$($NDATE +$WAVHCYC $CDATE)
+    rPDY=$(echo $RDATE | cut -c1-8)
+    rcyc=$(echo $RDATE | cut -c9-10)
+    for wavGRD in $waveGRD ; do
+      # Copy wave IC for the next cycle
+      $NLN ${WRDIR}/${rPDY}.${rcyc}0000.${COMPONENTwave}${WAV_MEMBER}.restart.${wavGRD} $DATA/${rPDY}.${rcyc}0000.restart.${wavGRD}
+    done
+  fi
+# Ice and (if) current
   if [ "$WW3ICEINP" = "YES" ]; then
     $NLN $COMINWW3/${COMPONENTwave}.${PDY}/${cyc}/rundata/${COMPONENTwave}.${WAVEICE_FID}.${cycle}.ice $DATA/ice.${WAVEICE_FID}
   fi
@@ -1236,21 +1252,6 @@ if [ $SEND = "YES" ]; then
         $NCP $DATA/${rPDY}.${rcyc}0000.restart.${wavGRD} ${WRDIR}
       done
     fi
-  fi
-fi
-
-# Copy single wave restart file for GEFS
-if [ $cplwav = ".true." ]; then
-  if [ "${COMPONENTwave}" = "gefswave" ]; then
-    WRDIR=$COMOUTWW3/${COMPONENTRSTwave}.${PDY}/${cyc}/restart
-    mkdir -p ${WRDIR}
-    RDATE=$($NDATE +$WAVCYCH $CDATE)
-    rPDY=$(echo $RDATE | cut -c1-8)
-    rcyc=$(echo $RDATE | cut -c9-10)
-    for wavGRD in $waveGRD ; do
-      # Copy wave IC for the next cycle
-      $NCP $DATA/${rPDY}.${rcyc}0000.restart.${wavGRD} ${WRDIR}/${rPDY}.${rcyc}0000.${COMPONENTwave}${WAV_MEMBER}.restart.${wavGRD}
-    done
   fi
 fi
 
