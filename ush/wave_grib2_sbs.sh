@@ -167,6 +167,7 @@
       subgrbres=`echo ${!subgrb} | cut -d " " -f 22`
       subfnam="${WAV_MOD_TAG}.${cycle}${ENSTAG}.${subgrbnam}.${subgrbres}.f${FH3}.grib2"
       $COPYGB2 -g "${subgrbref}" -i0 -x  gribfile ${COMOUT}/gridded/${subfnam}
+      $WGRIB2 -s $COMOUT/gridded/${subfnam} > $COMOUT/gridded/${subfnam}.idx
    done
   fi
 
