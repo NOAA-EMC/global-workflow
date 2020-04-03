@@ -10,6 +10,9 @@ echo "BEGIN: config.wave"
 # System and version
 export wave_sys_ver=v1.0.0
 
+# This config contains variables/parameters used in the fcst step
+# Some others are also used across the workflow in wave component scripts
+
 # General runtime labels
 # export WAV_MOD_ID=${WAV_MOD_ID:-wave} # generic modID=wave valid for GFSv16 and beyond
 # COMPONENTwave stands for model component, in addition to NET/RUN for coupled systems
@@ -32,12 +35,11 @@ export waveesmfGRD='glox_10m' # input grid
 export WAVEICE_DID=sice
 export WAVEICE_FID=glix_10m
 export WAVECUR_DID=rtofs
-#export WAVECUR_FID=rtofs_5m
 export WAVECUR_FID=glix_10m
 export WAVEWND_DID=
 export WAVEWND_FID=
 
-# Grids for output fields
+# Grids for output fields (used in all steps)
 export waveuoutpGRD=points
 export waveinterpGRD='glo_15mxt' # Grids that need to be interpolated from native
                              # in POST will generate grib unless gribOK not set
@@ -61,9 +63,6 @@ export FHOUT_WAV=${FHOUT_WAV:-3}
 export FHMAX_HF_WAV=${FHMAX_HF_WAV:-120}
 export FHOUT_HF_WAV=${FHOUT_HF_WAV:-1}
 
-# Output stride
-export WAV_WND_HOUR_INC=1      # This value should match with the one used in
-                         # the wind update script
 # gridded and point output rate
 export DTFLD_WAV=`expr $FHOUT_HF_WAV \* 3600`
 export DTPNT_WAV=3600
@@ -71,31 +70,6 @@ export FHINCP_WAV=`expr $DTPNT_WAV / 3600`
 
 # Selected output parameters (gridded)
 export OUTPARS_WAV="WND CUR ICE HS T01 T02 DIR FP DP PHS PTP PDIR CHA"
-
-# Subgrid info for grib2 encoding
-export WAV_SUBGRBSRC="gnh_10m"
-export WAV_SUBGRB="WAV_ATLO_GRB WAV_EPAC_GRB WAV_WCST_GRB"
-export WAV_ATLO_GRB="0 6 0 0 0 0 0 0 301 331 0 0 55000000 260000000 48 0 310000000 166667 166667 0 atlocn 0p16"
-export WAV_EPAC_GRB="0 6 0 0 0 0 0 0 511 301 0 0 30000002 130000000 48 -20000000 215000000 166667 166667 0 epacif 0p16"
-export WAV_WCST_GRB="0 6 0 0 0 0 0 0 241 151 0 0 50000000 210000000 48 25000000 250000000 166667 166667 0 wcoast 0p16"
-
-# Options for point output (switch on/off boundary point output)
-export DOIBP_WAV='NO' # Input boundary points
-export DOFLD_WAV='YES' # Field data
-export DOPNT_WAV='YES' # Station data
-export DOGRB_WAV='YES' # Create grib2 files
-export DOGRI_WAV='YES' # Create interpolated grids
-export DOSPC_WAV='YES' # Spectral post
-export DOBLL_WAV='YES' # Bulletin post
-
-# Intake currents settings
-export WAV_CUR_DT=${WAV_CUR_DT:-3}
-export WAV_CUR_HF_DT=${WAV_CUR_HF_DT:-1}
-export WAV_CUR_HF_FH=${WAV_CUR_HF_FH:-72}
-export WAV_CUR_CDO_SMOOTH="NO"
-
-# Number of cycles to look back for restart files
-export nback=
 
 # Restart file config
 if [ "$CDUMP" = "gdas" ]
@@ -137,16 +111,6 @@ if [ $RUNMEM = -1 ]; then
 else
 # Extract member number only
   export waveMEMB=`echo $RUNMEM | grep -o '..$'`
-fi
-
-# Determine if wave component needs input and/or is coupled
-export WW3ATMINP='CPL'
-export WW3ICEINP='YES'
-# GFSv16
- export WW3CURINP='YES'
-
-if [ "${WW3ICEINP}" = "YES" ]; then
-  export WAVICEFILE=${CDUMP}.t${cyc}z.seaice.5min.grib2
 fi
 
 # Determine if input is from perturbed ensemble (T) or single input file (F) for all members
