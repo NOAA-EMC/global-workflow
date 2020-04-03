@@ -159,7 +159,6 @@
       echo '*************************************************** '
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
-      echo "$WAV_MOD_TAG post $grdID $date $cycle : mod_def file missing." >> $wavelog
       postmsg "$jlogfile" "FATAL ERROR : NO MOD_DEF file mod_def.$grdID"
       DOFLD_WAV='NO'
       err=2; export err;${errchk}
@@ -196,7 +195,6 @@
     echo '************************************* '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    echo "$AV_MOD_ID post $date $cycle : buoy location file missing." >> $wavelog
     postmsg "$jlogfile" "FATAL ERROR : NO BUOY LOCATION FILE"
     err=3; export err;${errchk}
     exit $err
@@ -220,7 +218,6 @@
       echo '************************************* '
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
-      echo "$AV_MOD_ID post $date $cycle : buoy location file missing." >> $wavelog
       postmsg "$jlogfile" "FATAL ERROR : NO BUOY LOCATION FILE"
       err=3; export err;${errchk}
       exit $err
@@ -254,7 +251,6 @@
         echo '*********************************************** '
         echo ' '
         [[ "$LOUD" = YES ]] && set -x
-        echo "$WAV_MOD_TAG post $date $cycle : GRINT template file missing." >> $wavelog
         postmsg "$jlogfile" "NON-FATAL ERROR : NO TEMPLATE FOR GRINT INPUT FILE"
         exit_code=1
         DOGRI_WAV='NO'
@@ -284,7 +280,6 @@
         echo '*********************************************** '
         echo ' '
         [[ "$LOUD" = YES ]] && set -x
-        echo "$WAV_MOD_TAG post $date $cycle : GRIB2 template file missing." >> $wavelog
         postmsg "$jlogfile" "NON-FATAL ERROR : NO TEMPLATE FOR GRIB2 INPUT FILE"
         exit_code=2
         DOGRB_WAV='NO'
@@ -310,7 +305,6 @@
     echo '*********************************************** '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    echo "$WAV_MOD_TAG post $date $cycle : ww3_outp_spec.inp.tmpl file missing." >> $wavelog
     postmsg "$jlogfile" "NON-FATAL ERROR : NO TEMPLATE FOR SPEC INPUT FILE"
     exit_code=3
     DOSPC_WAV='NO'
@@ -335,7 +329,6 @@
     echo '*************************************************** '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    echo "$WAV_MOD_TAG post $date $cycle : bulletin template file missing." >> $wavelog
     postmsg "$jlogfile" "NON-FATAL ERROR : NO TEMPLATE FOR BULLETIN INPUT FILE"
     exit_code=4
     DOBLL_WAV='NO'
@@ -392,7 +385,6 @@
       echo '******************************************** '
       echo ' '
       cat buoy_tmp.loc 
-      echo "$WAV_MOD_TAG post $date $cycle : buoy log file failed to be created." >> $wavelog
       echo $msg
       [[ "$LOUD" = YES ]] && set -x
       err=4;export err;${errchk}
@@ -426,7 +418,6 @@
       echo '**************************************** '
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
-      echo "$WAV_MOD_TAG post $date $cycle : buoy log file missing." >> $wavelog
       postmsg "$jlogfile" "FATAL ERROR : NO BUOY LOG FILE GENERATED FOR SPEC AND BULLETIN FILES"
       err=5;export err;${errchk}
       DOSPC_WAV='NO'
@@ -458,7 +449,6 @@
         echo '**************************************** '
         echo ' '
         [[ "$LOUD" = YES ]] && set -x
-        echo "$WAV_MOD_TAG post $date $cycle : ibp  log file missing." >> $wavelog
         postmsg "$jlogfile" "FATAL ERROR : NO  IBP LOG FILE GENERATED FOR SPEC AND BULLETIN FILES"
         err=6;export err;${errchk}
         DOIBP_WAV='NO'
@@ -535,7 +525,6 @@
         echo " FATAL ERROR : NO RAW POINT OUTPUT FILE out_pnt.$waveuoutpGRD
         echo ' '
         [[ "$LOUD" = YES ]] && set -x
-        echo "$WAV_MOD_TAG post $waveuoutpGRD $date $cycle : point output missing." >> $wavelog
         postmsg "$jlogfile" "FATAL ERROR : NO RAW POINT OUTPUT FILE out_pnt.$waveuoutpGRD
         err=6; export err;${errchk}
         exit $err
@@ -582,7 +571,6 @@
           echo '*************************************************** '
           echo ' '
           [[ "$LOUD" = YES ]] && set -x
-          echo "$WAV_MOD_TAG post $grdID $date $cycle : field output missing." >> $wavelog
           postmsg "$jlogfile" "NON-FATAL ERROR : NO RAW FIELD OUTPUT FILE out_grd.$grdID"
           DOFLD_WAVE='NO'
           err=7; export err;${errchk}

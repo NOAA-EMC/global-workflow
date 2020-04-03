@@ -1,6 +1,7 @@
 #!/bin/bash
 
 date
+export RUN_ENVIR=${RUN_ENVIR:-"nco"}
 export PS4=' $SECONDS + '
 set -x -e
 
@@ -72,8 +73,6 @@ export COMOUT=${COMOUT:-${COMOUTwave}/${COMPONENTwave}.${PDY}/${cyc}}
 if [ $SENDCOM = YES ]; then
   mkdir -p $COMOUT/rundata
 fi
-
-export wavelog=${COMOUTwave}/wave.log
 
 # Set mpi serial command
 export wavempexec=${launcher:-"mpirun -n"}

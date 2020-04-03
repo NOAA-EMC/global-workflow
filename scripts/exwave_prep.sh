@@ -190,7 +190,6 @@
       echo ' '
       echo $msg
       [[ "$LOUD" = YES ]] && set -x
-      echo "$WAV_MOD_TAG prep $date $cycle : ${COMPONENTwave}.mod_def.${grdID} missing." >> $wavelog
       err=2;export err;${errchk}
     fi
   done
@@ -244,7 +243,6 @@
        echo $msg
        echo ' '
        [[ "$LOUD" = YES ]] && set -x
-       echo "$WAV_MOD_TAG prep $date $cycle : ww3_prnc.${type}.$grdID.tmpl missing." >> $wavelog
        err=4;export err;${errchk}
      fi
    done
@@ -430,7 +428,6 @@
         echo '**********************************'
         echo '            Possibly in multiple calls'
         [[ "$LOUD" = YES ]] && set -x
-        echo "$WAV_MOD_TAG prep $date $cycle : error in wind grib2 files." >> $wavelog
         set +x
         for file in grb_*.out
         do
@@ -455,7 +452,6 @@
         echo ' '
         echo $msg
         [[ "$LOUD" = YES ]] && set -x
-        echo "$WAV_MOD_TAG prep $date $cycle : fatal error in grib2 wind files." >> $wavelog
         err=6;export err;${errchk}
       fi
   
@@ -482,7 +478,6 @@
         echo '******************************************** '
         echo ' '
         [[ "$LOUD" = YES ]] && set -x
-        echo "$WAV_MOD_TAG prep $date $cycle : no wind files found." >> $wavelog
         err=7;export err;${errchk}
       fi
   
@@ -529,7 +524,6 @@
           echo '*************************************** '
           echo ' '
           [[ "$LOUD" = YES ]] && set -x
-          echo "$WAV_MOD_TAG prep $grdID $date $cycle : error in waveprnc." >> $wavelog
           err=8;export err;${errchk}
         fi
   
@@ -546,7 +540,6 @@
           echo '****************************************'
           echo ' '
           [[ "$LOUD" = YES ]] && set -x
-          echo "$WAV_MOD_TAG prep $grdID $date $cycle : wind.ww3 missing." >> $wavelog
           err=9;export err;${errchk}
         fi
 
@@ -589,7 +582,7 @@
           echo '************************************************'
           echo ' '
           [[ "$LOUD" = YES ]] && set -x
-          echo "$WAV_MOD_TAG prep $grdID $date $cycle : error in wind increment." >> $wavelog
+          postmsg "$jlogfile" "$WAV_MOD_TAG prep $grdID $date $cycle : error in wind increment."
           err=10;export err;${errchk}
         fi
     
@@ -731,7 +724,6 @@
         echo '******************************************** '
         echo ' '
         [[ "$LOUD" = YES ]] && set -x
-        echo "$WAV_MOD_TAG prep $date $cycle : no current files found." >> $wavelog
         err=11;export err;${errchk}
       fi
 
@@ -779,7 +771,6 @@
     echo '*** FATAL ERROR : NO TEMPLATE FOR INPUT FILE *** '
     echo '************************************************ '
     echo ' '
-    echo "${WAV_MOD_TAG} fcst $date $cycle : ww3_multi file missing." >> $wavelog
     echo $msg
     [[ "$LOUD" = YES ]] && set -x
     err=12;export err;${errchk}
@@ -803,7 +794,6 @@
     [[ "$LOUD" = YES ]] && set -x
     postmsg "$jlogfile" " FATAL ERROR : buoy.loc ($FIXwave/wave_${NET}.buoys) NOT FOUND"
     touch buoy.loc
-    echo "$WAV_MOD_TAG fcst $date $cycle : no buoy locations file ($FIXwave/wave_${NET}.buoys)." >> $wavelog
     err=13;export err;${errchk}
   fi
 
@@ -958,7 +948,6 @@
       echo '*** FATAL ERROR : NO PRECOMPUTED RMP FILES FOUND *** '
       echo '************************************************ '
       echo ' '
-      echo "${WAV_MOD_TAG} prep $date $cycle : rmp*.nc not found." >> $wavelog
       echo $msg
       [[ "$LOUD" = YES ]] && set -x
       err=13;export err;${errchk}
