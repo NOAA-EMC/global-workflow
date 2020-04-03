@@ -106,10 +106,11 @@ else
 fi
 postmsg "$jlogfile" "$msg"
 
-# Remove temp directories
-if [ "$KEEPDATA" != "YES" ]; then
-  cd $DATAROOT
-  rm -rf $DATA
-fi
-date
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd $DATAROOT
+[[ $KEEPDATA = "NO" ]] && rm -rf $DATA
 
+date
+exit 0

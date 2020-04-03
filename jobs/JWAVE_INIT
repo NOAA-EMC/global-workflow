@@ -82,10 +82,11 @@ export wave_mpmd=${mpmd:-"cfp"}
 # Execute the Script  
 $HOMEwave/scripts/exwave_init.sh
 
-# Remove temp directories
-if [ "$KEEPDATA" != "YES" ]; then
-  cd $DATAROOT
-  rm -rf $DATA
-fi
-date
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd $DATAROOT
+[[ $KEEPDATA = "NO" ]] && rm -rf $DATA
 
+date
+exit 0
