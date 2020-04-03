@@ -512,10 +512,10 @@
         ln -sf mod_def.$grdID mod_def.ww3
   
         set +x
-        echo "Executing $EXECcode/ww3_prnc"
+        echo "Executing $EXECwave/ww3_prnc"
         [[ "$LOUD" = YES ]] && set -x
   
-        $EXECcode/ww3_prnc > prnc.out
+        $EXECwave/ww3_prnc > prnc.out
         err=$?
   
         if [ "$err" != '0' ]

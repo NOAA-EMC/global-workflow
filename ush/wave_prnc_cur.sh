@@ -67,7 +67,7 @@ rm -f cur.nc
 ln -s cur_glo_uv_${PDY}_${fext}${fhr}_5min.nc cur.nc
 ln -s ${DATA}/mod_def.${WAVECUR_FID} ./mod_def.ww3
 
-$EXECcode/ww3_prnc 1> prnc_${WAVECUR_FID}_${ymdh_rtofs}.out 2>&1
+$EXECwave/ww3_prnc 1> prnc_${WAVECUR_FID}_${ymdh_rtofs}.out 2>&1
 
 mv -f current.ww3 ${DATA}/${WAVECUR_DID}.${ymdh_rtofs}
 

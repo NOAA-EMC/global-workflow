@@ -112,7 +112,7 @@
 # 0.c Define directories and the search path.
 #     The tested variables should be exported by the postprocessor script.
 
-  if [ -z "$CDATE" ] || [ -z "$dtspec" ] || [ -z "$EXECcode" ] || \
+  if [ -z "$CDATE" ] || [ -z "$dtspec" ] || [ -z "$EXECwave" ] || \
      [ -z "$WAV_MOD_TAG" ] || [ -z "${STA_DIR}" ]
   then
     set +x
@@ -179,10 +179,10 @@
 # 2.b Run the postprocessor
 
   set +x
-  echo "   Executing $EXECcode/ww3_outp"
+  echo "   Executing $EXECwave/ww3_outp"
   [[ "$LOUD" = YES ]] && set -x
 
-  $EXECcode/ww3_outp 1> outp_${specdir}_${buoy}.out 2>&1
+  $EXECwave/ww3_outp 1> outp_${specdir}_${buoy}.out 2>&1
   err=$?
 
   if [ "$err" != '0' ]

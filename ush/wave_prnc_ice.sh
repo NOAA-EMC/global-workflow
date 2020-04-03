@@ -53,7 +53,7 @@
   postmsg "$jlogfile" "Making ice fields."
 
   if [ -z "$YMDH" ] || [ -z "$cycle" ] || \
-     [ -z "$COMOUT" ] || [ -z "$FIXwave" ] || [ -z "$EXECcode" ] || \
+     [ -z "$COMOUT" ] || [ -z "$FIXwave" ] || [ -z "$EXECwave" ] || \
      [ -z "$WAV_MOD_TAG" ] || [ -z "$WAVEICE_FID" ] || [ -z "$SENDCOM" ] || \
      [ -z "$COMIN_WAV_ICE" ] || [ -z "$COMPONENTwave" ]
   then
@@ -141,7 +141,7 @@
 
   cp -f ${DATA}/ww3_prnc.ice.$WAVEICE_FID.inp.tmpl ww3_prnc.inp
 
-  $EXECcode/ww3_prnc 1> prnc_${WAVEICE_FID}_${cycle}.out 2>&1 
+  $EXECwave/ww3_prnc 1> prnc_${WAVEICE_FID}_${cycle}.out 2>&1 
   err=$?
 
   if [ "$err" != '0' ]

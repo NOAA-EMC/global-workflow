@@ -71,7 +71,7 @@
   echo "   Model ID         : $WAV_MOD_TAG"
   [[ "$LOUD" = YES ]] && set -x
 
-  if [ -z "$CDATE" ] || [ -z "$cycle" ] || [ -z "$EXECcode" ] || \
+  if [ -z "$CDATE" ] || [ -z "$cycle" ] || [ -z "$EXECwave" ] || \
      [ -z "$COMOUT" ] || [ -z "$WAV_MOD_TAG" ] || [ -z "$SENDCOM" ] || \
      [ -z "$SENDDBN" ] || [ -z "$waveGRD" ]
   then
@@ -81,7 +81,7 @@
     echo '*** EXPORTED VARIABLES IN postprocessor NOT SET ***'
     echo '***************************************************'
     echo ' '
-    echo "$CDATE $cycle $EXECcode $COMOUT $WAV_MOD_TAG $SENDCOM $SENDDBN $waveGRD"
+    echo "$CDATE $cycle $EXECwave $COMOUT $WAV_MOD_TAG $SENDCOM $SENDDBN $waveGRD"
     [[ "$LOUD" = YES ]] && set -x
     postmsg "$jlogfile" "EXPORTED VARIABLES IN postprocessor NOT SET"
     exit 1
@@ -144,10 +144,10 @@
 
   set +x
   echo "   Run ww3_gint
-  echo "   Executing $EXECcode/ww3_gint
+  echo "   Executing $EXECwave/ww3_gint
   [[ "$LOUD" = YES ]] && set -x
 
-  $EXECcode/ww3_gint 1> gint.${grdID}.out 2>&1
+  $EXECwave/ww3_gint 1> gint.${grdID}.out 2>&1
   err=$?
 
 # Write interpolation file to main TEMP dir area if not there yet

@@ -80,7 +80,7 @@
   echo "   Model ID         : $WAV_MOD_TAG"
   [[ "$LOUD" = YES ]] && set -x
 
-  if [ -z "$CDATE" ] || [ -z "$cycle" ] || [ -z "$EXECwave" ] || [ -z "$EXECcode" ] || \
+  if [ -z "$CDATE" ] || [ -z "$cycle" ] || [ -z "$EXECwave" ] || \
      [ -z "$COMOUT" ] || [ -z "$WAV_MOD_TAG" ] || [ -z "$SENDCOM" ] || \
      [ -z "$gribflags" ] || \
      [ -z "$GRIDNR" ] || [ -z "$MODNR" ] || [ -z "$SENDDBN" ]
@@ -134,12 +134,12 @@
 
   set +x
   echo "   Run ww3_grib2"
-  echo "   Executing $EXECcode/ww3_grib"
+  echo "   Executing $EXECwave/ww3_grib"
   [[ "$LOUD" = YES ]] && set -x
   ENSTAG=""
   if [ ${waveMEMB} ]; then ENSTAG=".${membTAG}${waveMEMB}" ; fi
   outfile=${WAV_MOD_TAG}.${cycle}${ENSTAG}.${grdnam}.${grdres}.f${FH3}.grib2
-  $EXECcode/ww3_grib > grib2_${grdnam}_${FH3}.out 2>&1
+  $EXECwave/ww3_grib > grib2_${grdnam}_${FH3}.out 2>&1
   $WGRIB2 gribfile -set_date $CDATE -set_ftime "$fhr hour fcst" -grib ${COMOUT}/gridded/${outfile}
   err=$?
 
