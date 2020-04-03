@@ -416,10 +416,22 @@ if [ $cplwav = ".true." ]; then
     eval $NLN $datwave/${wavprfx}.log.${wavGRD}.${PDY}${cyc} log.${wavGRD}
   done
   if [ "$WW3ICEINP" = "YES" ]; then
-    $NLN $COMINWW3/${COMPONENTwave}.${PDY}/${cyc}/rundata/${COMPONENTwave}.${WAVEICE_FID}.${cycle}.ice $DATA/ice.${WAVEICE_FID}
+    wavicefile=$COMINWW3/${COMPONENTwave}.${PDY}/${cyc}/rundata/${COMPONENTwave}.${WAVEICE_FID}.${cycle}.ice
+    if [ ! -f $wavicefile ]; then
+      echo "ERROR: WW3ICEINP = ${WW3ICEINP}, but missing ice file"
+      echo "Abort!"
+      exit 1
+    fi
+    $NLN ${wavicefile} $DATA/ice.${WAVEICE_FID}
   fi
   if [ "$WW3CURINP" = "YES" ]; then
-    $NLN $COMINWW3/${COMPONENTwave}.${PDY}/${cyc}/rundata/${COMPONENTwave}.${WAVECUR_FID}.${cycle}.cur $DATA/current.${WAVECUR_FID}
+    wavcurfile=$COMINWW3/${COMPONENTwave}.${PDY}/${cyc}/rundata/${COMPONENTwave}.${WAVECUR_FID}.${cycle}.cur
+    if [ ! -f $wavcurfile ]; then
+      echo "ERROR: WW3CURINP = ${WW3CURINP}, but missing current file"
+      echo "Abort!"
+      exit 1
+    fi
+    $NLN $wavcurfile $DATA/current.${WAVECUR_FID}
   fi
 # Link output files
   cd $DATA
@@ -742,7 +754,7 @@ fi
 rm -f model_configure
 cat > model_configure <<EOF
 total_member:            $ENS_NUM
-print_esmf:              ${print_esmf:-.true.}
+print_esmf:              ${print_esmf:-.false.}
 PE_MEMBER01:             $NTASKS_CFG
 start_year:              ${tPDY:0:4}
 start_month:             ${tPDY:4:2}

@@ -36,12 +36,6 @@ export WAV_CUR_HF_DT=${WAV_CUR_HF_DT:-1}
 export WAV_CUR_HF_FH=${WAV_CUR_HF_FH:-72}
 export WAV_CUR_CDO_SMOOTH="NO"
 
-# Determine if wave component needs input and/or is coupled
-export WW3ATMINP='CPL'
-export WW3ICEINP='YES'
-# GFSv16
- export WW3CURINP='YES'
-
 if [ "${WW3ICEINP}" = "YES" ]; then
   export WAVICEFILE=${CDUMP}.t${cyc}z.seaice.5min.grib2
 fi

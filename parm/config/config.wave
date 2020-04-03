@@ -113,6 +113,11 @@ else
   export waveMEMB=`echo $RUNMEM | grep -o '..$'`
 fi
 
+# Determine if wave component needs input and/or is coupled
+export WW3ATMINP='CPL'
+export WW3ICEINP='YES'
+export WW3CURINP='YES'
+
 # Determine if input is from perturbed ensemble (T) or single input file (F) for all members
 export WW3ATMIENS='F'
 export WW3ICEIENS='F'
