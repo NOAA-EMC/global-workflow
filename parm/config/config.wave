@@ -27,11 +27,9 @@ export waveGRDG='10 20 30' # gridgroup for ww3_multi
 
 # ESMF input grid
 export waveesmfGRD='glox_10m' # input grid
-#export waveesmfGRD='glo_15mxt' # input grid
 
 # Grids for input fields
 export WAVEICE_DID=sice
-#export WAVEICE_FID=icean_5m
 export WAVEICE_FID=glix_10m
 export WAVECUR_DID=rtofs
 #export WAVECUR_FID=rtofs_5m
@@ -72,8 +70,7 @@ export DTPNT_WAV=3600
 export FHINCP_WAV=`expr $DTPNT_WAV / 3600`
 
 # Selected output parameters (gridded)
-export OUTPARS_WAV="WND CUR ICE HS T01 T02 DIR FP DP PHS PTP PDIR CHAR"
-# GFS # export OUTPARS_WAV='WND CUR ICE HS T01 T02 DIR FP DP PHS PTP PDIR CHAR'
+export OUTPARS_WAV="WND CUR ICE HS T01 T02 DIR FP DP PHS PTP PDIR CHA"
 
 # Subgrid info for grib2 encoding
 export WAV_SUBGRBSRC="gnh_10m"
