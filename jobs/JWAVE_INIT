@@ -64,6 +64,9 @@ export USHwave=${USHwave:-$HOMEwave/ush}
 export EXECwave=${EXECwave:-$HOMEgfs/exec}
 
 # Set COM Paths and GETGES environment
+if [ $RUN_ENVIR = "nco" ]; then
+    export ROTDIR=${COMROOT:?}/$NET/$envir
+fi
 export COMINwave=${COMINwave:-${ROTDIR:?}}
 export COMOUTwave=${COMOUTwave:-${ROTDIR:?}}
 export COMIN=${COMIN:-${COMINwave}/${COMPONENTwave}.${PDY}/${cyc}}
