@@ -31,9 +31,9 @@ case:
     SEEDLET: 10
     CCPP_SUITE: GFS
     nst_anl: no
-    DO_SKEB: true
+    DO_SKEB: false
     DO_SHUM: false
-    DO_SPPT: true
+    DO_SPPT: false
     layout:
        x: 6
        y: 8
