@@ -205,16 +205,16 @@ EOF
 
 if [ $CCPP_SUITE = "FV3_GSD_v0" ]; then
   cat >> input.nml << EOF
-  ltaerosol    = ${ltaerosol:-".F."}
-  lradar       = ${lradar:-".F."}
-  do_mynnedmf  = ${do_mynnedmf:-".false."}
-  do_mynnsfclay= ${do_mynnsfclay:-".false."}
-  lsoil_lsm    = ${lsoil_lsm:-"4"}
-  ttendlim     = ${ttendlim:-0.005}
-  icloud_bl    = ${icloud_bl:-"1"}
-  bl_mynn_edmf = ${bl_mynn_edmf:-"1"}
-  bl_mynn_tkeadvect=${bl_mynn_tkeadvect:-".true."}
-  bl_mynn_edmf_mom=${bl_mynn_edmf_mom:-"1"}
+  ltaerosol    = ${ltaerosol:-".F."}    ! In config.fcst
+  lradar       = ${lradar:-".F."}	! In config.fcst
+  do_mynnedmf  = ${do_mynnedmf:-".false."}	! In config.fcst
+  do_mynnsfclay= ${do_mynnsfclay:-".false."}	! In config.fcst
+  lsoil_lsm    = ${lsoil_lsm:-"4"}	! In config.fcst
+  ttendlim     = ${ttendlim:-0.005}	! In config.fcst
+  icloud_bl    = ${icloud_bl:-"1"}	! In config.fcst
+  bl_mynn_edmf = ${bl_mynn_edmf:-"1"}	! In config.fcst
+  bl_mynn_tkeadvect=${bl_mynn_tkeadvect:-".true."}	! In config.fcst
+  bl_mynn_edmf_mom=${bl_mynn_edmf_mom:-"1"}	! In config.fcst
 EOF
 fi
 

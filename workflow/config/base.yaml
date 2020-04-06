@@ -33,7 +33,6 @@ config_base:
 
     export nems_temp="{doc.settings.nems_temp}"
     export nems_temp_cold="{doc.settings.nems_temp_cold}"
-
                
     # EMC parallel or NCO production
     export RUN_ENVIR="emc"
@@ -44,7 +43,7 @@ config_base:
     export QUEUE_ARCH="{doc.accounting.service_partition.service_queue}"
         
     # Project to use in mass store:
-    HPSS_PROJECT={doc.accounting.hpss_project}
+    export HPSS_PROJECT={doc.accounting.hpss_project}
     
     # Directories relative to installation areas:
     export HOMEgfs="{doc.places.HOMEgfs}"
@@ -76,6 +75,9 @@ config_base:
     # Utilities needed in the scripts (mostly post)
     {doc.platform.config_base_extras}
     export POSTGRB2TBL="{doc.places.HOMEgfs}/sorc/gfs_post.fd/parm/params_grib2_tbl_new"
+
+    # CCPP Configurations
+    export CCPP_SUITE="{doc.fv3_gfs_settings.CCPP_SUITE}"
 
     # Toggle to turn on/off GFS downstream processing.
     export DO_BUFRSND="{tools.YES_NO(doc.downstream.DO_BUFRSND)}" # Run GFS_POSTSND
@@ -110,7 +112,6 @@ config_base:
 
     # For coupled
     export UGCSsrc="/scratch2/NCEPDEV/climate/Bin.Li/S2S/fix/ocean_ice_post"
-   
  
     # Machine environment, jobs, and other utility scripts
     export BASE_ENV="$HOMEgfs/env"

@@ -116,6 +116,9 @@ config_fcst:
     export hybedmf=.true.
     export satmedmf=.false.
     export isatmedmf=0
+    tbf=""
+    if [ $satmedmf = ".true." ]; then tbf="_satmedmf" ; fi
+
     export lheatstrg=.false.
 
     export random_clds="{tools.fort(doc.fv3_gfs_settings.phy_dependent_var.random_clds)}"
