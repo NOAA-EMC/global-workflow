@@ -65,7 +65,7 @@ FIXfv3=${FIXfv3:-$FIX_DIR/fix_fv3_gmted2010}
 DATA=${DATA:-$pwd/fv3tmp$$}    # temporary running directory
 ROTDIR=${ROTDIR:-$pwd}         # rotating archive directory
 DMPDIR=${DMPDIR:-$pwd}         # global dumps for seaice, snow and sst analysis
-EMIDIR=${EMIDIR:-$pwd}         # anthro.emission lpan
+FIXemi=${FIXemi:-$pwd}         # anthro.emission
 EMITYPE=${EMITYPE:-2}         # 1:MODIS, 2:GBBEPx
 
 cplwav=${cplwav:-".false."}    # Couple with Wavewatch III
@@ -1102,8 +1102,8 @@ if [ $cplchm = ".true." ]; then
   gfdlmp_onoff=$NTRACER
   archive_step = -1 
   chem_hist_outname = "chem_out_"
-  emi_inname  = "${EMIDIR}${CASE}/$SMONTH"
-  dust_inname = "${EMIDIR}${CASE}/$SMONTH"
+  emi_inname  = "${FIXemi}${CASE}/$SMONTH"
+  dust_inname = "${FIXemi}${CASE}/$SMONTH"
   fireemi_inname  = "${chemdir}"
   emi_outname = "./"
   $chem_nml
