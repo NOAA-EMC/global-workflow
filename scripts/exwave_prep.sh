@@ -116,6 +116,7 @@
     time_rst1_end="`echo $ymdh_rst1_end | cut -c1-8` `echo $ymdh_rst1_end | cut -c9-10`0000"
   fi
 # Second restart file for checkpointing
+  RST1OFFSET=$(( RST2OFFSET / 3600 ))
   time_rst2_ini="`echo $ymdh_rst2_ini | cut -c1-8` `echo $ymdh_rst2_ini | cut -c9-10`0000"
   time_rst2_end=$time_end
 # Condition for gdas run or any other run when checkpoint stamp is > ymdh_end
