@@ -200,9 +200,9 @@ EOF
         if [ $imp_physics -eq 8 ]; then
         $NCP $FV3INP/CCN_ACTIVATE.BIN  CCN_ACTIVATE.BIN
         ####
-        $NCP /scratch1/NCEPDEV/stmp2/Lin.Gan/RUNDIRS/gsdsuite-NEW/2019100900/gfs/fcst.383441/freezeH2O.dat  freezeH2O.dat
-        $NCP /scratch1/NCEPDEV/stmp2/Lin.Gan/RUNDIRS/gsdsuite-NEW/2019100900/gfs/fcst.383441/qr_acr_qg.dat  qr_acr_qg.dat
-        $NCP /scratch1/NCEPDEV/stmp2/Lin.Gan/RUNDIRS/gsdsuite-NEW/2019100900/gfs/fcst.383441/qr_acr_qs.dat  qr_acr_qs.dat
+        $NCP $FIX_AM/freezeH2O.dat .
+        $NCP $FIX_AM/qr_acr_qg.dat .
+        $NCP $FIX_AM/qr_acr_qs.dat .
         sleep 60
         fi
 	$NLN $FIX_AM/${O3FORC}                         $DATA/global_o3prdlos.f77
