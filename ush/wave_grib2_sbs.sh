@@ -80,7 +80,7 @@
   echo "   Model ID         : $WAV_MOD_TAG"
   [[ "$LOUD" = YES ]] && set -x
 
-  if [ -z "$CDATE" ] || [ -z "$cycle" ] || [ -z "$EXECwave" ] || [ -z "$EXECcode" ] || \
+  if [ -z "$CDATE" ] || [ -z "$cycle" ] || [ -z "$EXECwave" ] || \
      [ -z "$COMOUT" ] || [ -z "$WAV_MOD_TAG" ] || [ -z "$SENDCOM" ] || \
      [ -z "$gribflags" ] || \
      [ -z "$GRIDNR" ] || [ -z "$MODNR" ] || [ -z "$SENDDBN" ]
@@ -134,12 +134,12 @@
 
   set +x
   echo "   Run ww3_grib2"
-  echo "   Executing $EXECcode/ww3_grib"
+  echo "   Executing $EXECwave/ww3_grib"
   [[ "$LOUD" = YES ]] && set -x
   ENSTAG=""
   if [ ${waveMEMB} ]; then ENSTAG=".${membTAG}${waveMEMB}" ; fi
   outfile=${WAV_MOD_TAG}.${cycle}${ENSTAG}.${grdnam}.${grdres}.f${FH3}.grib2
-  $EXECcode/ww3_grib
+  $EXECwave/ww3_grib > grib2_${grdnam}_${FH3}.out 2>&1
   $WGRIB2 gribfile -set_date $CDATE -set_ftime "$fhr hour fcst" -grib ${COMOUT}/gridded/${outfile}
   err=$?
 
@@ -158,6 +158,18 @@
 
 # Create index
     $WGRIB2 -s $COMOUT/gridded/${outfile} > $COMOUT/gridded/${outfile}.idx
+
+# Create grib2 subgrid is this is the source grid
+  if [ "${grdID}" = "${WAV_SUBGRBSRC}" ]; then
+    for subgrb in ${WAV_SUBGRB}; do
+      subgrbref=`echo ${!subgrb} | cut -d " " -f 1-20`
+      subgrbnam=`echo ${!subgrb} | cut -d " " -f 21`
+      subgrbres=`echo ${!subgrb} | cut -d " " -f 22`
+      subfnam="${WAV_MOD_TAG}.${cycle}${ENSTAG}.${subgrbnam}.${subgrbres}.f${FH3}.grib2"
+      $COPYGB2 -g "${subgrbref}" -i0 -x  gribfile ${COMOUT}/gridded/${subfnam}
+      $WGRIB2 -s $COMOUT/gridded/${subfnam} > $COMOUT/gridded/${subfnam}.idx
+   done
+  fi
 
 # 1.e Save in /com
 

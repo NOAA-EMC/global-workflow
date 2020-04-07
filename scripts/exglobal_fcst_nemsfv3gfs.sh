@@ -402,9 +402,9 @@ if [ $cplwav = ".true." ]; then
     $NLN $COMINWW3/${COMPONENTwave}.${PDY}/${cyc}/rundata/${COMPONENTwave}.mod_def.$wavGRD $DATA/mod_def.$wavGRD
   done
   # Wave IC (restart) interval assumes 4 daily cycles (restarts only written by gdas cycle) 
-  # WAVCYCH needs to be consistent with restart write interval in ww3_multi.inp or will FAIL
-  WAVCYCH=${WAVCYCH:-6}
-  WRDATE=`$NDATE -${WAVCYCH} $CDATE`
+  # WAVHCYC needs to be consistent with restart write interval in ww3_multi.inp or will FAIL
+  WAVHCYC=${WAVHCYC:-6}
+  WRDATE=`$NDATE -${WAVHCYC} $CDATE`
   WRPDY=`echo $WRDATE | cut -c1-8`
   WRcyc=`echo $WRDATE | cut -c9-10`
   WRDIR=$COMINWW3/${COMPONENTRSTwave}.${WRPDY}/${WRcyc}/restart
@@ -416,10 +416,22 @@ if [ $cplwav = ".true." ]; then
     eval $NLN $datwave/${wavprfx}.log.${wavGRD}.${PDY}${cyc} log.${wavGRD}
   done
   if [ "$WW3ICEINP" = "YES" ]; then
-    $NLN $COMINWW3/${COMPONENTwave}.${PDY}/${cyc}/rundata/${COMPONENTwave}.${WAVEICE_FID}.${cycle}.ice $DATA/ice.${WAVEICE_FID}
+    wavicefile=$COMINWW3/${COMPONENTwave}.${PDY}/${cyc}/rundata/${COMPONENTwave}.${WAVEICE_FID}.${cycle}.ice
+    if [ ! -f $wavicefile ]; then
+      echo "ERROR: WW3ICEINP = ${WW3ICEINP}, but missing ice file"
+      echo "Abort!"
+      exit 1
+    fi
+    $NLN ${wavicefile} $DATA/ice.${WAVEICE_FID}
   fi
   if [ "$WW3CURINP" = "YES" ]; then
-    $NLN $COMINWW3/${COMPONENTwave}.${PDY}/${cyc}/rundata/${COMPONENTwave}.${WAVECUR_FID}.${cycle}.cur $DATA/current.${WAVECUR_FID}
+    wavcurfile=$COMINWW3/${COMPONENTwave}.${PDY}/${cyc}/rundata/${COMPONENTwave}.${WAVECUR_FID}.${cycle}.cur
+    if [ ! -f $wavcurfile ]; then
+      echo "ERROR: WW3CURINP = ${WW3CURINP}, but missing current file"
+      echo "Abort!"
+      exit 1
+    fi
+    $NLN $wavcurfile $DATA/current.${WAVECUR_FID}
   fi
 # Link output files
   cd $DATA
@@ -467,7 +479,7 @@ resp=$((res+1))
 npx=$resp
 npy=$resp
 npz=$((LEVS-1))
-io_layout="1,1"
+io_layout=${io_layout:-"1,1"}
 #ncols=$(( (${npx}-1)*(${npy}-1)*3/2 ))
 
 # spectral truncation and regular grid resolution based on FV3 resolution
@@ -697,7 +709,8 @@ wav_petlist_bounds=" $((NTASKS_FV3)) $((NTASKS_FV3m1+npe_wav))"
 cat > nems.configure <<EOF
 EARTH_component_list: ATM WAV
 EARTH_attributes::
-  Verbosity = 0
+  Verbosity = high
+  HierarchyProtocol = off
 ::
 
 ATM_model:                      fv3
@@ -710,13 +723,13 @@ ATM_attributes::
 WAV_model:                      ww3
 WAV_petlist_bounds:             ${wav_petlist_bounds}
 WAV_attributes::
-  Verbosity = 0
+  Verbosity = high
 ::
 
 runSeq::
   @${coupling_interval_sec}
     ATM
-    ATM -> WAV
+    ATM -> WAV :SrcTermProcessing=0:TermOrder=SrcSeq
     WAV
   @
 ::
@@ -741,7 +754,7 @@ fi
 rm -f model_configure
 cat > model_configure <<EOF
 total_member:            $ENS_NUM
-print_esmf:              ${print_esmf:-.true.}
+print_esmf:              ${print_esmf:-.false.}
 PE_MEMBER01:             $NTASKS_CFG
 start_year:              ${tPDY:0:4}
 start_month:             ${tPDY:4:2}

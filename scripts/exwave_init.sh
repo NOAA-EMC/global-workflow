@@ -125,7 +125,6 @@
         echo ' '
         echo $msg
         [[ "$LOUD" = YES ]] && set -x
-        echo "$COMPONENTwave init config $date $cycle : ww3_grid.inp.$grdID missing." >> $wavelog
         err=2;export err;${errchk}
       fi
 
@@ -208,7 +207,6 @@
       echo $msg
       sed "s/^/$grdID.out : /g"  $grdID.out
       [[ "$LOUD" = YES ]] && set -x
-      echo "$COMPONENTwave prep $date $cycle : mod_def.$grdID missing." >> $wavelog
       err=3;export err;${errchk}
     fi
   done
