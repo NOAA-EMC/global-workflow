@@ -15,7 +15,7 @@ export RUN_ENVIR="emc"
 export ACCOUNT="@ACCOUNT@"
 export QUEUE="@QUEUE@"
 export QUEUE_SERVICE="@QUEUE_SERVICE@"
-export PARTITION_BATCH="@PARTITION_BATCH"
+export PARTITION_BATCH="@PARTITION_BATCH@"
 
 # Project to use in mass store:
 HPSS_PROJECT=emc-global
@@ -195,7 +195,7 @@ export DO_GLDAS=YES
 export gldas_cyc=00
 
 # run wave component
-export DO_WAVE=YES
+export DO_WAVE="YES"
 export WAVE_CDUMP="gdas"
 
 # Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL

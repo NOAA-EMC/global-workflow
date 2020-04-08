@@ -83,7 +83,7 @@ elif [[ -d /lustre && -d /ncrc ]] ; then
         __ms_source_etc_profile=no
     fi
     module purge
-# clean up after purge 
+    # clean up after purge 
     unset _LMFILES_
     unset _LMFILES_000
     unset _LMFILES_001

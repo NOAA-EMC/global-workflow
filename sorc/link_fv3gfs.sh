@@ -37,7 +37,7 @@ elif [ $machine = "dell" ]; then
 elif [ $machine = "hera" ]; then
     FIX_DIR="/scratch1/NCEPDEV/global/glopara/fix"
 elif [ $machine = "orion" ]; then
-    FIX_DIR="/work/noaa/noaatest/kfriedma/glopara/fix"
+    FIX_DIR="/work/noaa/nems/kfriedma/glopara/fix"
 fi
 cd ${pwd}/../fix                ||exit 8
 for dir in fix_am fix_chem fix_fv3 fix_fv3_gmted2010 fix_gldas fix_orog fix_sfc_climo fix_verif fix_wave_gfs ; do
