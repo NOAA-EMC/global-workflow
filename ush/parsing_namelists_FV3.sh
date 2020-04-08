@@ -354,7 +354,7 @@ cat >> input.nml <<EOF
 EOF
 if [ $cplflx = .true. ]; then
   cat >> input.nml << EOF
-  reiflag = ${reiflag:-"2"}
+  reiflag = ${reiflag:-"1"}
 EOF
 fi
 
