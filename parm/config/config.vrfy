@@ -8,6 +8,8 @@ echo "BEGIN: config.vrfy"
 # Get task specific resources
 . $EXPDIR/config.resources vrfy
 
+export DO_VSDB=${DO_VSDB:-"NO"}   # Switch to run VSDB package; set in config.base
+
 export VDUMP="gfs"                # Verifying dump
 export CDUMPFCST="gdas"           # Fit-to-obs with GDAS/GFS prepbufr
 export CDFNL="gdas"               # Scores verification against GDAS/GFS analysis
@@ -143,10 +145,9 @@ if [ "$VRFYTRAK" = "YES" ]; then
         export FHMAX_CYCLONE=$(( FHMAX_GFS<240 ? FHMAX_GFS : 240 ))
     fi
     if [ $machine = "HERA" ]; then
-       export COMROOTp1="/scratch1/NCEPDEV/rstprod/com"
-       export COMINsyn=${COMINsyn:-${COMROOTp1}/arch/prod/syndat}
+        export COMINsyn="${COMROOT}/arch/prod/syndat"
     else
-       export COMINsyn=${COMINsyn:-${COMROOT}/gfs/prod/syndat}
+        export COMINsyn=${COMINsyn:-$(compath.py gfs/prod/syndat)}
     fi
 fi
 

@@ -98,7 +98,7 @@ export gfsdir=${COMINgfs}
 export COMINgdas=${COMIN}
 export gdasdir=${COMINgdas}
 export COMOUT=${ROTDIR}/${RUN}.${PDY}/${cyc}
-export COMINsyn=${COMINsyn:-$(compath.py arch/prod/syndat)}
+export COMINsyn=${COMINsyn:-$(compath.py gfs/prod/syndat)}
 
 if [ $RUN_ENVIR = "nco" ]; then
     export COMOUThur=${COMROOTp1:?}/hur/${envir}/global
