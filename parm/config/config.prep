@@ -18,6 +18,11 @@ export DO_RELOCATE="NO"
 export TROPCYQCRELOSH="$HOMEgfs/scripts/extropcy_qc_reloc.sh.ecf"
 export SENDCOM=YES
 
+export COMINsyn=${COMINsyn:-$(compath.py gfs/prod/syndat)}
+if [ $machine = "HERA" ]; then
+    export COMINsyn="${COMROOT}/arch/prod/syndat"
+fi
+
 export HOMERELO=$HOMEgfs
 export EXECRELO=${HOMERELO}/exec
 export FIXRELO=${HOMERELO}/fix/fix_am
