@@ -57,13 +57,13 @@ fi
 
 if [ $PROCESS_TROPCY = "YES" ]; then
 
-    export ARCHSYNDNCO=$COMROOTp1/arch/prod/syndat
+    export COMINsyn=${COMINsyn:-$(compath.py gfs/prod/syndat)}
     if [ $RUN_ENVIR != "nco" ]; then
         export ARCHSYND=${ROTDIR}/syndat
         if [ ! -d ${ARCHSYND} ]; then mkdir -p $ARCHSYND; fi
         if [ ! -s $ARCHSYND/syndat_akavit ]; then 
             for file in syndat_akavit syndat_dateck syndat_stmcat.scr syndat_stmcat syndat_sthisto syndat_sthista ; do
-                cp $ARCHSYNDNCO/$file $ARCHSYND/. 
+                cp $COMINsyn/$file $ARCHSYND/.
             done
         fi
     fi

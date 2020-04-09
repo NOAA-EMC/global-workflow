@@ -39,6 +39,7 @@ status=$?
 yyyy=$(echo $CDATE | cut -c1-4)
 mm=$(echo $CDATE | cut -c5-6)
 dd=$(echo $CDATE | cut -c7-8)
+cyc=${cyc:-$(echo $CDATE | cut -c9-10)}
 
 ###############################################################
 
@@ -46,47 +47,57 @@ target_dir=$ICSDIR/$CDATE/$CDUMP
 mkdir -p $target_dir
 cd $target_dir
 
-# Save the files as legacy EMC filenames
-ftanal[1]="pgbanl.${CDUMP}.$CDATE"
-ftanal[2]="siganl.${CDUMP}.$CDATE"
-ftanal[3]="sfcanl.${CDUMP}.$CDATE"
-ftanal[4]="nstanl.${CDUMP}.$CDATE"
-
 # Initialize return code to 0
 rc=1
 
 if [ $ics_from = "opsgfs" ]; then
 
+    # Location of production tarballs on HPSS
+    hpssdir="/NCEPPROD/hpssprod/runhistory/rh$yyyy/$yyyy$mm/$PDY"
+
     # Handle nemsio and pre-nemsio GFS filenames
-    if [ $CDATE -gt "2017072000" ]; then
+    if [ $CDATE -le "2019061118" ]; then #GFSv14
+        # Add CDUMP.PDY/CYC to target_dir
+        target_dir=$ICSDIR/$CDATE/$CDUMP/${CDUMP}.$yyyy$mm$dd/$cyc
+        mkdir -p $target_dir
+        cd $target_dir
+
         nfanal=4
-        fanal[1]="./${CDUMP}.t${cyc}z.pgrbanl"
-        fanal[2]="./${CDUMP}.t${cyc}z.atmanl.nemsio"
-        fanal[3]="./${CDUMP}.t${cyc}z.sfcanl.nemsio"
-        fanal[4]="./${CDUMP}.t${cyc}z.nstanl.nemsio"
+        fanal[1]="./${CDUMP}.t${cyc}z.atmanl.nemsio"
+        fanal[2]="./${CDUMP}.t${cyc}z.sfcanl.nemsio"
+        fanal[3]="./${CDUMP}.t${cyc}z.nstanl.nemsio"
+        fanal[4]="./${CDUMP}.t${cyc}z.pgrbanl"
         flanal="${fanal[1]} ${fanal[2]} ${fanal[3]} ${fanal[4]}"
         tarpref="gpfs_hps_nco_ops_com"
-    else
-        nfanal=3
-        [[ $CDUMP = "gdas" ]] && str1=1
-        fanal[1]="./${CDUMP}${str1}.t${cyc}z.pgrbanl"
-        fanal[2]="./${CDUMP}${str1}.t${cyc}z.sanl"
-        fanal[3]="./${CDUMP}${str1}.t${cyc}z.sfcanl"
-        flanal="${fanal[1]} ${fanal[2]} ${fanal[3]}"
-        tarpref="com2"
+        if [ $CDUMP = "gdas" ]; then
+            tarball="$hpssdir/${tarpref}_gfs_prod_${CDUMP}.${CDATE}.tar"
+        elif [ $CDUMP = "gfs" ]; then
+            tarball="$hpssdir/${tarpref}_gfs_prod_${CDUMP}.${CDATE}.anl.tar"
+        fi
+    else #GFSv15
+        nfanal=2
+        fanal[1]="./${CDUMP}.$yyyy$mm$dd/$cyc/${CDUMP}.t${cyc}z.atmanl.nemsio"
+        fanal[2]="./${CDUMP}.$yyyy$mm$dd/$cyc/${CDUMP}.t${cyc}z.sfcanl.nemsio"
+        flanal="${fanal[1]} ${fanal[2]}"
+        tarpref="gpfs_dell1_nco_ops_com"
+        if [ $CDUMP = "gdas" ]; then
+            tarball="$hpssdir/${tarpref}_gfs_prod_${CDUMP}.${yyyy}${mm}${dd}_${cyc}.${CDUMP}_nemsio.tar"
+        elif [ $CDUMP = "gfs" ]; then
+            tarball="$hpssdir/${tarpref}_gfs_prod_${CDUMP}.${yyyy}${mm}${dd}_${cyc}.${CDUMP}_nemsioa.tar"
+        fi
     fi
 
     # First check the COMROOT for files, if present copy over
     if [ $machine = "WCOSS_C" ]; then
 
         # Need COMROOT
-        module load prod_envir >> /dev/null 2>&1
+        module load prod_envir/1.1.0 >> /dev/null 2>&1
 
         comdir="$COMROOT/$CDUMP/prod/$CDUMP.$PDY"
         rc=0
         for i in `seq 1 $nfanal`; do
             if [ -f $comdir/${fanal[i]} ]; then
-                $NCP $comdir/${fanal[i]} ${ftanal[i]}
+                $NCP $comdir/${fanal[i]} ${fanal[i]}
             else
                 rb=1 ; ((rc+=rb))
             fi
@@ -96,13 +107,6 @@ if [ $ics_from = "opsgfs" ]; then
 
     # Get initial conditions from HPSS
     if [ $rc -ne 0 ]; then
-
-        hpssdir="/NCEPPROD/hpssprod/runhistory/rh$yyyy/$yyyy$mm/$PDY"
-        if [ $CDUMP = "gdas" ]; then
-            tarball="$hpssdir/${tarpref}_gfs_prod_${CDUMP}.${CDATE}.tar"
-        elif [ $CDUMP = "gfs" ]; then
-            tarball="$hpssdir/${tarpref}_gfs_prod_${CDUMP}.${CDATE}.anl.tar"
-        fi
 
         # check if the tarball exists
         hsi ls -l $tarball
@@ -120,9 +124,11 @@ if [ $ics_from = "opsgfs" ]; then
         fi
 
         # Move the files to legacy EMC filenames
-        for i in `seq 1 $nfanal`; do
-            $NMV ${fanal[i]} ${ftanal[i]}
-        done
+        if [ $CDATE -le "2019061118" ]; then #GFSv14
+           for i in `seq 1 $nfanal`; do
+             $NMV ${fanal[i]} ${flanal[i]}
+           done
+        fi
 
     fi
 
@@ -134,12 +140,17 @@ if [ $ics_from = "opsgfs" ]; then
 
 elif [ $ics_from = "pargfs" ]; then
 
+    # Add CDUMP.PDY/CYC to target_dir
+    target_dir=$ICSDIR/$CDATE/$CDUMP/${CDUMP}.$yyyy$mm$dd/$cyc
+    mkdir -p $target_dir
+    cd $target_dir
+
     # Filenames in parallel
     nfanal=4
-    fanal[1]="pgbanl.${CDUMP}.$CDATE"
-    fanal[2]="gfnanl.${CDUMP}.$CDATE"
-    fanal[3]="sfnanl.${CDUMP}.$CDATE"
-    fanal[4]="nsnanl.${CDUMP}.$CDATE"
+    fanal[1]="gfnanl.${CDUMP}.$CDATE"
+    fanal[2]="sfnanl.${CDUMP}.$CDATE"
+    fanal[3]="nsnanl.${CDUMP}.$CDATE"
+    fanal[4]="pgbanl.${CDUMP}.$CDATE"
     flanal="${fanal[1]} ${fanal[2]} ${fanal[3]} ${fanal[4]}"
 
     # Get initial conditions from HPSS from retrospective parallel
@@ -160,11 +171,6 @@ elif [ $ics_from = "pargfs" ]; then
         exit $rc
     fi
 
-    # Move the files to legacy EMC filenames
-    for i in $(seq 1 $nfanal); do
-        $NMV ${fanal[i]} ${ftanal[i]}
-    done
-
     # If found, exit out
     if [ $rc -ne 0 ]; then
         echo "Unable to obtain parallel GFS initial conditions, ABORT!"
@@ -179,10 +185,12 @@ else
 fi
 ###############################################################
 
-# Copy pgbanl file to COMROT for verification
-COMROT=$ROTDIR/${CDUMP}.$PDY/$cyc
-[[ ! -d $COMROT ]] && mkdir -p $COMROT
-$NCP ${ftanal[1]} $COMROT/${CDUMP}.t${cyc}z.pgrbanl
+# Copy pgbanl file to COMROT for verification - GFSv14 only
+if [ $CDATE -le "2019061118" ]; then #GFSv14
+  COMROT=$ROTDIR/${CDUMP}.$PDY/$cyc
+  [[ ! -d $COMROT ]] && mkdir -p $COMROT
+  $NCP ${fanal[4]} $COMROT/${CDUMP}.t${cyc}z.pgrbanl
+fi
 
 ###############################################################
 # Exit out cleanly
