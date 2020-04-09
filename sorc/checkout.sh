@@ -7,9 +7,9 @@ echo $topdir
 echo fv3gfs checkout ...
 if [[ ! -d fv3gfs.fd ]] ; then
     rm -f ${topdir}/checkout-fv3gfs.log
-    git clone https://github.com/junwang-noaa/ufs-weather-model fv3gfs.fd >> ${topdir}/checkout-fv3gfs.log 2>&1
+    git clone https://github.com/ufs-community/ufs-weather-model fv3gfs.fd >> ${topdir}/checkout-fv3gfs.log 2>&1
     cd fv3gfs.fd
-    git checkout esmf8.0.1
+    git checkout  GFS.v16.0.2
     git submodule update --init --recursive
     cd ${topdir}
 else
