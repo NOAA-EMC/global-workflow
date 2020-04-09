@@ -1,0 +1,122 @@
+########################################################################
+#
+#  Filename: nagrib.tbl
+#
+#  Used by: NA_format
+#
+#  Description:  This table is used by the NA_format script to get
+#                parameters for the different models that are to be
+#                GEMPAK grid formatted.  The parameters are used as
+#                model specific settings to the NAWIPS nagrib program.
+#
+########################################################################
+#
+#  The format of the table entries is as follows:
+#
+#  MODEL|CPYFIL|GAREA|GBTBLS|MAXGRD|KXKY|GRDAREA|PROJ|OUTPUT
+#
+#  NOTES: 1. Lines with a pound (#) sign in the first column
+#            are treated as comments.  
+#         2. Valid entries cannot have leading whitespace.
+#         3. Valid entries are pipe (|) delimited.
+#         4. Blank lines are ignored.
+#
+########################################################################
+#
+#MODEL     |CPYFIL|GAREA|GBTBLS      |MAXGRD|KXKY  |GRDAREA       |PROJ     |OUTPUT
+#----------|------|-----|------------|------|------|--------------|---------|------
+gfs        |gds   |dset |            |4999  |      |              |         |T
+gfshd      |gds   |dset |            |4999  |      |              |         |T
+gfs_asbkup |gds   |dset |            |4999  |      |              |         |T
+gfs_special|gds   |dset |            |4999  |      |              |         |T
+nam        |#104  |dset |            |4999  |      |              |         |T
+nam20      |gds   |dset |            |4999  |      |              |         |T
+nam44      |gds   |dset |            |4999  |      |              |         |T
+nam40      |gds   |dset |            |4999  |      |              |         |T
+dgex       |gds   |dset |            |4999  |      |              |         |T
+threats    |gds   |dset |            |4999  |      |              |         |T
+hiresw     |gds   |dset |            |4999  |      |              |         |T
+fw         |gds   |dset |            |4999  |      |              |         |T
+fwfull     |gds   |dset |            |4999  |      |              |         |T
+gdas       |gds   |dset |            |4999  |      |              |         |T
+ice        |gds   |40;130;75;10 |wmogrib2.tbl|10    |      |40;130;75;10  |         |T
+ecmwf_glob |      |dset |            |4999  |144;73|-90;0;90;-2.5 |ced/0;0;0|T
+ecmwf_trop |      |dset |            |4999  |144;29|-35;0;35;357.5|ced/0;0;0|T
+ecmwf_hr   |gds   |dset |            |4999  |      |              |         |T
+ecmwf_wave |gds   |dset |ecmwf_wave_grib.tbl|4999  |      |              |         |T
+ghm        |gds   |dset |            |4999  |      |              |         |T
+ghmc       |gds   |dset |            |4999  |      |              |         |T
+fog        |gds   |dset |            |4999  |      |              |         |T
+sice       |gds   |dset |            |4999  |      |              |         |T
+mrf        |gds   |dset |            |4999  |      |              |         |T
+mrfx       |gds   |dset |            |4999  |      |              |         |T
+ngm        |#104  |dset |            |4999  |      |              |         |T
+ofs        |gds   |dset | wmogrib2.tbl;ncepgrib2.tbl;vcrdgrib1.tbl |10  |      | dset           |         |T
+nww3       |gds   |dset |            |4999  |      |              |         |T
+mww3       |gds   |dset |            |4999  |      |              |         |T
+akw        |gds   |dset |            |4999  |      |              |         |T
+wna        |gds   |dset |            |4999  |      |              |         |T
+nah        |gds   |dset |            |4999  |      |              |         |T
+nph        |gds   |dset |            |4999  |      |              |         |T
+enp        |gds   |dset |            |4999  |      |              |         |T
+rucs       |#87   |dset |            |20    |      |              |         |T
+ruc2       |gds   |dset |            |4999  |      |              |         |T
+ruc20      |gds   |dset |            |4999  |      |              |         |T
+ukmet      |gds   |dset |            |200   |      |              |         |T
+ukmet2     |gds   |dset |            |200   |      |              |         |T
+vaftad     |gds   |dset |            |500   |      |              |         |T
+hysplit    |gds   |dset |            |500   |      |              |         |T
+#
+ensgfs     |gds   |dset |            |3500  |      |              |         |T
+enscnt     |gds   |dset |            |3500  |      |              |         |T
+ensmrf     |gds   |dset |            |3500  |      |              |         |T
+ensn1      |gds   |dset |            |3500  |      |              |         |T
+ensn2      |gds   |dset |            |3500  |      |              |         |T
+ensn3      |gds   |dset |            |3500  |      |              |         |T
+ensn4      |gds   |dset |            |3500  |      |              |         |T
+ensn5      |gds   |dset |            |3500  |      |              |         |T
+ensp1      |gds   |dset |            |3500  |      |              |         |T
+ensp2      |gds   |dset |            |3500  |      |              |         |T
+ensp3      |gds   |dset |            |3500  |      |              |         |T
+ensp4      |gds   |dset |            |3500  |      |              |         |T
+ensp5      |gds   |dset |            |3500  |      |              |         |T
+#
+gep01      |gds   |dset |            |3500  |      |              |         |T
+gep02      |gds   |dset |            |3500  |      |              |         |T
+gep03      |gds   |dset |            |3500  |      |              |         |T
+gep04      |gds   |dset |            |3500  |      |              |         |T
+gep05      |gds   |dset |            |3500  |      |              |         |T
+gep06      |gds   |dset |            |3500  |      |              |         |T
+gep07      |gds   |dset |            |3500  |      |              |         |T
+gep08      |gds   |dset |            |3500  |      |              |         |T
+gep09      |gds   |dset |            |3500  |      |              |         |T
+gep10      |gds   |dset |            |3500  |      |              |         |T
+gep11      |gds   |dset |            |3500  |      |              |         |T
+gep12      |gds   |dset |            |3500  |      |              |         |T
+gep13      |gds   |dset |            |3500  |      |              |         |T
+gep14      |gds   |dset |            |3500  |      |              |         |T
+gep15      |gds   |dset |            |3500  |      |              |         |T
+gep16      |gds   |dset |            |3500  |      |              |         |T
+gep17      |gds   |dset |            |3500  |      |              |         |T
+gep18      |gds   |dset |            |3500  |      |              |         |T
+gep19      |gds   |dset |            |3500  |      |              |         |T
+gep20      |gds   |dset |            |3500  |      |              |         |T
+geavg      |gds   |dset |            |3500  |      |              |         |T
+gespr      |gds   |dset |            |3500  |      |              |         |T
+#
+sref       |gds   |dset |            |6000  |      |              |         |T
+spcsref    |gds   |dset |            |6000  |      |              |         |T
+#
+mdlgfs     |gds   |dset |            |3500  |      |              |         |T
+mdlmrf     |gds   |dset |            |3500  |      |              |         |T
+mdlngm     |gds   |dset |            |3500  |      |              |         |T
+mdlngmsvr  |#212  |dset |            |3500  |      |              |         |T
+mdlngmfltwx|gds   |dset |            |3500  |      |              |         |T
+mdlmrfplt  |gds   |dset |            |3500  |      |              |         |T
+mdlens     |gds   |dset |            |3500  |      |              |         |T
+mdlgfssvr  |gds   |dset |            |3500  |      |              |         |T
+mdlnamsvr  |gds   |dset |            |3500  |      |              |         |T
+mdlnamcns  |gds   |dset |            |3500  |      |              |         |T
+mdlmrfsvr  |gds   |dset |            |3500  |      |              |         |T
+#
+rtma       |gds   |dset |            |3500  |      |              |         |T
