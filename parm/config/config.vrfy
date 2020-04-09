@@ -8,6 +8,8 @@ echo "BEGIN: config.vrfy"
 # Get task specific resources
 . $EXPDIR/config.resources vrfy
 
+export DO_VSDB=${DO_VSDB:-"NO"}   # Switch to run VSDB package; set in config.base
+
 export VDUMP="gfs"                # Verifying dump
 export CDUMPFCST="gdas"           # Fit-to-obs with GDAS/GFS prepbufr
 export CDFNL="gdas"               # Scores verification against GDAS/GFS analysis

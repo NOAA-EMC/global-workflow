@@ -200,8 +200,8 @@ export nst_anl=.true.
 export INCREMENTS_TO_ZERO="'delz_inc','clwmr_inc','icmr_inc'"
 
 # Verification options
-export DO_METP="YES"                  # Run METPLUS jobs - set METPLUS settings in config.metp
-export DO_VSDB="YES"                  # Run VSDB package - set VSDB settings in config.vrfy
+export DO_METP="YES"         # Run METPLUS jobs - set METPLUS settings in config.metp
+export DO_VSDB="YES"         # Run VSDB package - set VSDB settings in config.vrfy
 
 # Archiving options
 export HPSSARCH="NO"         # save data to HPSS archive
