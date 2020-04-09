@@ -105,7 +105,7 @@ if [ $CDUMP = "gfs" ]; then
 fi
 
 # Archive atmospheric gaussian gfs forecast files for fit2obs
-VFYARC=$ROTDIR/vrfyarch
+VFYARC=${VFYARC:-$ROTDIR/vrfyarch}
 [[ ! -d $VFYARC ]] && mkdir -p $VFYARC
 if [ $CDUMP = "gfs" -a $FITSARC = "YES" ]; then
     mkdir -p $VFYARC/${CDUMP}.$PDY/$cyc
@@ -351,7 +351,8 @@ if [ $CDUMP = "gfs" ]; then
     while [ $TDATE -lt $CDATE ]; do
         tPDY=$(echo $TDATE | cut -c1-8)
         tcyc=$(echo $TDATE | cut -c9-10)
-        touch $VFYARC/$CDUMP.$tPDY/$tcyc/* 
+        TDIR=$VFYARC/$CDUMP.$tPDY/$tcyc
+        [[ -d $TDIR ]] && touch $TDIR/*
         TDATE=$($NDATE +6 $TDATE)
     done
 fi
