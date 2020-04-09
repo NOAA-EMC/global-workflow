@@ -338,13 +338,22 @@ while [ $GDATE -le $GDATEEND ]; do
     GDATE=$($NDATE +$assim_freq $GDATE)
 done
 
-# Remove archived stuff in $VFYARC that are (48+$FHMAX_GFS) hrs behind
-# 1. atmospheric gaussian files used for fit2obs
+# Remove archived atmospheric gaussian files used for fit2obs in $VFYARC that are $FHMAX_FITS hrs behind.
+# touch existing files to prevent the files from being removed by the operation system.
 if [ $CDUMP = "gfs" ]; then
-    GDATE=$($NDATE -$FHMAX_GFS $GDATE)
-    gPDY=$(echo $GDATE | cut -c1-8)
-    COMIN="$VFYARC/$CDUMP.$gPDY"
+    fhmax=$((FHMAX_FITS+36))       
+    RDATE=$($NDATE -$fhmax $CDATE)
+    rPDY=$(echo $RDATE | cut -c1-8)
+    COMIN="$VFYARC/$CDUMP.$rPDY"
     [[ -d $COMIN ]] && rm -rf $COMIN
+
+    TDATE=$($NDATE -$FHMAX_FITS $CDATE)
+    while [ $TDATE -lt $CDATE ]; do
+        tPDY=$(echo $TDATE | cut -c1-8)
+        tcyc=$(echo $TDATE | cut -c9-10)
+        touch $VFYARC/$CDUMP.$tPDY/$tcyc/* 
+        TDATE=$($NDATE +6 $TDATE)
+    done
 fi
 
 ###############################################################
