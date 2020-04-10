@@ -376,7 +376,6 @@ if [ $cplwav = ".true." ]; then
   WRDIR=$COMOUTWW3/${COMPONENTRSTwave}.${WRPDY}/${WRcyc}/restart
   datwave=$COMOUTWW3/${COMPONENTwave}.${PDY}/${cyc}/rundata/
   wavprfx=${COMPONENTwave}${WAV_MEMBER}
-
   for wavGRD in $waveGRD ; do
     # Link wave IC for current cycle
     # Elimanted dependency on sPDY scyc, only required in GFS with IAU, not GEFS
@@ -397,6 +396,21 @@ if [ $cplwav = ".true." ]; then
       $NLN ${WRDIR}/${rPDY}.${rcyc}0000.${COMPONENTwave}${WAV_MEMBER}.restart.${wavGRD} $DATA/${rPDY}.${rcyc}0000.restart.${wavGRD}
     done
   fi
+# Loop for checkpoint restart
+  DT2RSTH=$(( DT_2_RST_WAV / 3600 ))
+  RSTHINC=$(( ${DT2RSTH} + ${RST2IOFF_WAV} ))
+  fhr=$RSTHINC
+  while [ $fhr -le $FHMAX_WAV ]; do
+    YMDH=$($NDATE $fhr $CDATE)
+    YMD=$(echo $YMDH | cut -c1-8)
+    HMS="$(echo $YMDH | cut -c9-10)0000"
+    for wavGRD in $waveGRD ; do
+      # Copy wave IC for the next cycle
+      $NLN ${gmemdir}/RESTART/${YMD}.${HMS}.${COMPONENTwave}${WAV_MEMBER}.restart.${wavGRD} $DATA/${YMD}.${HMS}.restart.${wavGRD}
+    done
+    fhr=$((fhr+RSTHINC))
+  done
+
 # Ice and (if) current
   if [ "$WW3ICEINP" = "YES" ]; then
     $NLN $COMINWW3/${COMPONENTwave}.${PDY}/${cyc}/rundata/${COMPONENTwave}.${WAVEICE_FID}.${cycle}.ice $DATA/ice.${WAVEICE_FID}
