@@ -121,7 +121,7 @@ export SENDDBN=${SENDDBN:-"YES"}
 export SENDSDM=${SENDSDM:-"NO"}
 
 # Resolution specific parameters
-export LEVS=65
+export LEVS=128
 export CASE="C768"
 export CASE_ENKF="C384"
 
@@ -132,7 +132,6 @@ if [[ "$CDUMP" == "gdas" ]] ; then
 elif [[ "$CDUMP" == "gfs" ]] ; then
    export FHCYC=24
 fi
-
 
 # Output frequency of the forecast model (for cycling)
 export FHMIN=0
@@ -162,17 +161,31 @@ export restart_interval_gfs=12
 # I/O QUILTING, true--use Write Component; false--use GFDL FMS
 # if quilting=true, choose OUTPUT_GRID as cubed_sphere_grid in netcdf or gaussian_grid
 # if gaussian_grid, set OUTPUT_FILE for nemsio or netcdf
+# WRITE_DOPOST=true, use inline POST
 export QUILTING=".true."
 export OUTPUT_GRID="gaussian_grid"
 export OUTPUT_FILE="nemsio"
+export WRITE_DOPOST=".true."
 
 # IAU related parameters
 export DOIAU="NO"
 export IAUFHRS=6
+export IAU_FHROT=`echo $IAUFHRS | cut -c1`
 export IAU_DELTHRS=6
 export DOIAU_ENKF="NO"
 export IAUFHRS_ENKF=6
 export IAU_DELTHRS_ENKF=6
+if [[ "$SDATE" = "$CDATE" ]]; then
+  export IAU_OFFSET=0
+  export IAU_FHROT=0
+fi
+
+# run GLDAS to spin up land ICs
+export DO_GLDAS=YES
+export gldas_cyc=00
+
+# run wave component
+export DO_WAVE=YES
 
 # Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL
 export imp_physics=11
@@ -181,7 +194,7 @@ export imp_physics=11
 # Hybrid related
 export DOHYBVAR="YES"
 export NMEM_ENKF=80
-export SMOOTH_ENKF="YES"
+export SMOOTH_ENKF="NO"
 export l4densvar=".true."
 export lwrite4danl=".false."
 

@@ -9,6 +9,7 @@ echo "         Feb 2006 - L Sager  Send bulletins to TOC via NTC.  "
 echo "         Jul 2014 - B Vuong  Modified to use GFS master GRIB2"
 echo "                             and Add bulletins WINTEMV process."
 echo "         Sep 2016 - B Vuong  Modified to use GFS 0p25 deg GRIB2"
+echo "         Nov 2019 - B Vuong  Removed WINTEMV bulletin (retired)"
 #####################################################################
 
 cd $DATA
@@ -80,20 +81,24 @@ then
 #    make_ntc_bull.pl WMOBH NONE KWNO NONE tran.fbwnd_pacific ${COMOUTwmo}/tran.fbwnd_pacific.$job_name
    ${UTILgfs}/ush/make_ntc_bull.pl WMOBH NONE KWNO NONE tran.fbwnd_pacific ${COMOUTwmo}/tran.fbwnd_pacific.$job_name
 fi
+
+#
+#  EMC is proposing to retire WINTEMV bulletin in GFS v16.0
+#
    
-if test ${cycle} = 't00z' -o ${cycle} = 't12z'
-then
-
-      set +x
-      echo " "
-      echo "#################################################"
-      echo " Process 06, 12, 18 and 24 fcsthrs WINTEM Bulletins. "
-      echo "#################################################"
-      echo " "
-      set -x
-      sh $USHgfs/mkwintem.sh
-
-fi
+# if test ${cycle} = 't00z' -o ${cycle} = 't12z'
+# then
+#
+#      set +x
+#      echo " "
+#      echo "#################################################"
+#      echo " Process 06, 12, 18 and 24 fcsthrs WINTEM Bulletins. "
+#      echo "#################################################"
+#      echo " "
+#      set -x
+#      sh $USHgfs/mkwintem.sh
+#
+#fi
 
 #####################################################################
 # GOOD RUN

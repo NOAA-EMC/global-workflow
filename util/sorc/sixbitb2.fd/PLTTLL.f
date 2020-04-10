@@ -1,3 +1,0 @@
-       SUBROUTINE PLTTLL()
-       return
-       end

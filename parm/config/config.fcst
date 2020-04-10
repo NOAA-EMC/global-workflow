@@ -34,6 +34,13 @@ if [ $QUILTING = ".true." ]; then
     export npe_fcst_gfs=$(echo " $npe_fcst_gfs  + $WRITE_GROUP_GFS * $WRTTASK_PER_GROUP_GFS" | bc)
 fi
 
+if [ $DO_WAVE = "YES" ] ; then
+  export npe_fcst=$((npe_fcst + npe_wav))
+  if [ "$WAVE_CDUMP" = "gfs" -o "$WAVE_CDUMP" = "both" ]; then
+     export npe_fcst_gfs=$((npe_fcst_gfs + npe_wav))
+  fi
+fi
+
 # Model configuration
 export TYPE="nh"
 export MONO="non-mono"
@@ -187,6 +194,31 @@ export ishuffle=0
 export shuffle=1
 export deflate_level=1
 
+export OUTPUT_FILETYPES="$OUTPUT_FILE"
+if [[ "$OUTPUT_FILE" == "netcdf" ]]; then
+    export  ichunk2d=0; export jchunk2d=0
+    export  ichunk3d=0; export jchunk3d=0;  export kchunk3d=0
+    RESTILE=`echo $CASE |cut -c 2-`
+    if [[ "$machine" == "WCOSS_DELL_P3" ]]; then
+        if [ $RESTILE -ge 768 ]; then
+            export OUTPUT_FILETYPES=" 'netcdf_parallel' 'netcdf_parallel' "
+            export ichunk3d=$((4*RESTILE)) 
+            export jchunk3d=$((2*RESTILE))
+            export kchunk3d=1
+        else
+            export OUTPUT_FILETYPES=" 'netcdf_parallel' 'netcdf' "
+        fi
+    fi
+    if [[ "$machine" == "HERA" ]]; then
+        export OUTPUT_FILETYPES=" 'netcdf_parallel' 'netcdf_parallel' "
+        if [ $RESTILE -le 192 ]; then
+            export OUTPUT_FILETYPES=" 'netcdf_parallel' 'netcdf' "
+        fi
+    fi
+fi
+
+
+#---------------------------------------------------------------------
 # Disable the use of coupler.res; get model start time from model_configure
 export USE_COUPLER_RES="NO"
 
@@ -199,11 +231,27 @@ if [[ "$CDUMP" == "gdas" ]] ; then # GDAS cycle specific parameters
         export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_da_orig"
     fi
 
-    # Write restart files at next assimilation time
+    # Write restart files, where $number is current model start time. 
+    # restart_interval:        $number
+    #    number=0, writes out restart files at the end of forecast. 
+    #    number>0, writes out restart files at the frequency of $number and at the end of forecast.
+    # restart_interval:        "$number -1"
+    #    writes out restart files only once at $number forecast hour.
+    # restart_interval:        "$number1 $number2 $number3 ..."
+    #    writes out restart file at the specified forecast hours 
     export restart_interval=${restart_interval:-6}
 
     # For IAU, write restarts at beginning of window also
-    if [ $DOIAU = "YES" ]; then export restart_interval=3; fi
+    if [ $DOIAU = "YES" ]; then
+       export restart_interval="6 9"
+       if [[ "$SDATE" = "$CDATE" ]]; then export restart_interval="3 6"; fi
+    fi
+
+    # Choose coupling with wave
+    if [ $DO_WAVE = YES ]; then export cplwav=.true.; fi
+
+    # Turn on dry mass adjustment in GDAS
+    export adjust_dry_mass=".true."
 
 elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
 
@@ -220,6 +268,13 @@ elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
 
     # Write gfs restart files to rerun fcst from any break point         
      export restart_interval=${restart_interval_gfs:-0}
+
+    # Choose coupling with wave
+    if [ $DO_WAVE = YES ]; then export cplwav=.true.; fi
+
+    # Turn off dry mass adjustment in GFS
+    export adjust_dry_mass=".false."
+
 fi
 
 

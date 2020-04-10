@@ -16,7 +16,6 @@
    module load gempak/6.32.0
    module unload ncarg-intel-sandybridge
    module load ncarg-intel-sandybridge/6.1.0
-   module load graphics-intel/2.0.0
 
 # Loading Intel-Compiled NCEP Libraries
    module load bacio-intel/2.0.1

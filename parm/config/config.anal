@@ -15,13 +15,27 @@ fi
 if [[ "$CDUMP" = "gfs" ]] ; then
     export USE_RADSTAT="NO" # This can be only used when bias correction is not-zero.
     export GENDIAG="NO"
-    export SETUP='diag_rad=.false.,diag_pcp=.false.,diag_conv=.false.,diag_ozone=.false.,write_diag(3)=.false.,'
+    export SETUP='diag_rad=.false.,diag_pcp=.false.,diag_conv=.false.,diag_ozone=.false.,write_diag(3)=.false.,niter(2)=100,'
     export DIAG_TARBALL="NO"
 fi
 
 export ANALYSISSH="$HOMEgsi/scripts/exglobal_analysis_fv3gfs.sh.ecf"
 export npe_gsi=$npe_anal
-export LEVS_ENKF=$((LEVS-1))
+
+# Set parameters specific to L127
+if [ $LEVS = "128" ]; then
+    export GRIDOPTS="nlayers(63)=1,nlayers(64)=1,"
+    export SETUP="gpstop=55,nsig_ext=56,$SETUP"
+fi
+
+# Set namelist option for LETKF
+export lobsdiag_forenkf=".false."  # anal does not need to write out jacobians
+                                   # set to .true. in config.eobs and config.eupd
+
+if [ $OUTPUT_FILE = "nemsio" ]; then
+    export DO_CALC_INCREMENT="YES"
+    export DO_CALC_ANALYSIS="NO"
+fi
 
 # Do not process the following datasets
 export GSNDBF=${GSNDBF:-/dev/null}
@@ -29,68 +43,82 @@ export AMSREBF=${AMSREBF:-/dev/null}
 export SSMITBF=${SSMITBF:-/dev/null}
 export AMSR2BF=${AMSR2BF:-/dev/null}
 
-# Set directory and structure for COMIN_OBS
-export COMIN_OBS="$DMPDIR/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}"
 
-# Set CONVINFO and SATINFO for retrospective parallels
-if [ $REALTIME = "NO" ]; then
-
-    CDATE=${CDATE:-9999}   # provide default in case CDATE undefined
-
-#   Set CONVINFO
-    if [[ "$CDATE" -ge "2018022818" ]]; then
-	export CONVINFO=$FIXgsi/fv3_historical/global_convinfo.txt.2018022818
-    elif [[ "$CDATE" -ge "2018010512" ]]; then
-	export CONVINFO=$FIXgsi/fv3_historical/global_convinfo.txt.2018010512
-    elif [[ "$CDATE" -ge "2017071912" ]]; then
-	export CONVINFO=$FIXgsi/fv3_historical/global_convinfo.txt.2017071912
-    elif [[ "$CDATE" -ge "2016031512" ]]; then
-	export CONVINFO=$FIXgsi/fv3_historical/global_convinfo.txt.2016031512
-    elif [[ "$CDATE" -ge "2014041400" ]]; then
-	export CONVINFO=$FIXgsi/fv3_historical/global_convinfo.txt.2014041400
-    else
-	echo "WARNING: No CONVINFO for $CDATE"
-    fi
-
-#   Set OZINFO
-    if [[ "$CDATE" -ge "2018110700" ]]; then
-        export OZINFO=$FIXgsi/fv3_historical/global_ozinfo.txt.2018110700
-    elif [[ "$CDATE" -ge "2015110500" ]]; then
-        export OZINFO=$FIXgsi/fv3_historical/global_ozinfo.txt.2015110500
-    else
-        echo "WARNING: No OZINFO for $CDATE"
-    fi
-
-#   Set SATINFO
-    if [[ "$CDATE" -ge "2018053012" ]]; then
-        export SATINFO=$FIXgsi/fv3_historical/global_satinfo.txt.2018053012
-    elif [[ "$CDATE" -ge "2018021212" ]]; then
-	export SATINFO=$FIXgsi/fv3_historical/global_satinfo.txt.2018021212
-    elif [[ "$CDATE" -ge "2017103118" ]]; then
-	export SATINFO=$FIXgsi/fv3_historical/global_satinfo.txt.2017103118
-    elif [[ "$CDATE" -ge "2017031612" ]]; then
-	export SATINFO=$FIXgsi/fv3_historical/global_satinfo.txt.2017031612
-    elif [[ "$CDATE" -ge "2017030812" ]]; then
-	export SATINFO=$FIXgsi/fv3_historical/global_satinfo.txt.2017030812
-    elif [[ "$CDATE" -ge "2016110812" ]]; then
-	export SATINFO=$FIXgsi/fv3_historical/global_satinfo.txt.2016110812
-    elif [[ "$CDATE" -ge "2016090912" ]]; then
-	export SATINFO=$FIXgsi/fv3_historical/global_satinfo.txt.2016090912
-    elif [[ "$CDATE" -ge "2016020312" ]]; then
-	export SATINFO=$FIXgsi/fv3_historical/global_satinfo.txt.2016020312
-    elif [[ "$CDATE" -ge "2016011912" ]]; then
-	export SATINFO=$FIXgsi/fv3_historical/global_satinfo.txt.2016011912
-    elif [[ "$CDATE" -ge "2015111012" ]]; then
-	export SATINFO=$FIXgsi/fv3_historical/global_satinfo.txt.2015111012
-    elif [[ "$CDATE" -ge "2015100118" ]]; then
-	export SATINFO=$FIXgsi/fv3_historical/global_satinfo.txt.2015100118
-    elif [[ "$CDATE" -ge "2015070218" ]]; then
-	export SATINFO=$FIXgsi/fv3_historical/global_satinfo.txt.2015070218
-    elif [[ "$CDATE" -ge "2015011412" ]]; then
-	export SATINFO=$FIXgsi/fv3_historical/global_satinfo.txt.2015011412
-    else
-	echo "WARNING: No SATINFO for $CDATE"
+# Use experimental dumps in GFS v16 parallels
+export ABIBF="/dev/null"
+if [[ "$CDATE" -ge "2019022800" ]] ; then
+    export ABIBF="$DMPDIR/${CDUMP}x.${PDY}/${cyc}/${CDUMP}.t${cyc}z.gsrcsr.tm00.bufr_d"
+    if [[ "$CDATE" -ge "2019111000" ]]; then
+	export ABIBF="$DMPDIR/${CDUMP}y.${PDY}/${cyc}/${CDUMP}.t${cyc}z.gsrcsr.tm00.bufr_d"
     fi
 fi
+
+export AHIBF="/dev/null"
+if [[ "$CDATE" -ge "2019042300" ]]; then
+    export AHIBF="$DMPDIR/${CDUMP}x.${PDY}/${cyc}/${CDUMP}.t${cyc}z.ahicsr.tm00.bufr_d"
+fi
+
+
+# Adjust data usage for GFS v16 parallels
+#
+#   NOTE:  Remember to set PRVT in config.prep as OBERROR is set below
+#
+# Set default values
+export CONVINFO=$FIXgsi/global_convinfo.txt
+export OZINFO=$FIXgsi/global_ozinfo.txt
+export SATINFO=$FIXgsi/global_satinfo.txt
+export OBERROR=$FIXgsi/prepobs_errtable.global
+
+
+# Set convinfo and prepobs.errtable.global for start of GFS v16 parallels
+if [[ "$CDATE" -ge "2019021900" && "$CDATE" -lt "2019110706" ]]; then
+    export CONVINFO=$FIXgsi/gfsv16_historical/global_convinfo.txt.2019021900
+    export OBERROR=$FIXgsi/gfsv16_historical/prepobs_errtable.global.2019021900
+fi
+
+# Place GOES-15 AMVs in monitor, assimilate GOES-17 AMVs, assimilate KOMPSAT-5 gps
+if [[ "$CDATE" -ge "2019110706" && "$CDATE" -lt "2020040718" ]]; then
+    export CONVINFO=$FIXgsi/gfsv16_historical/global_convinfo.txt.2019110706
+    export OBERROR=$FIXgsi/gfsv16_historical/prepobs_errtable.global.2019110706
+fi
+
+# NOTE:
+#   As of 2020040718, gfsv16_historical/global_convinfo.txt.2020040718 is
+#   identical to ../global_convinfo.txt.  Thus, the logic below is not
+#   needed at this time.   A similar comment applies to ../prepobs_errtable.global
+#   and gfsv16_historical/prepobs_errtable.global.2019110706
+
+# Assimilate 135 (T) & 235 (uv) Canadian AMDAR observations
+##if [[ "$CDATE" -ge "2020040718" && "$CDATE" -lt "YYYYMMDDHH" ]]; then_break
+##    export CONVINFO=$FIXgsi/gfsv16_historical/global_convinfo.txt.2020040718
+##    export OBERROR=$FIXgsi/gfsv16_historical/prepobs_errtable.global.2020040718
+##fi
+
+
+# Turn off assmilation of OMPS during period of bad data
+if [[ "$CDATE" -ge "2020011600" && "$CDATE" -lt "2020011806" ]]; then
+    export OZINFO=$FIXgsi/gfsv16_historical/global_ozinfo.txt.2020011600
+fi
+
+
+# Set satinfo for start of GFS v16 parallels
+if [[ "$CDATE" -ge "2019021900" && "$CDATE" -lt "2019110706" ]]; then
+    export SATINFO=$FIXgsi/gfsv16_historical/global_satinfo.txt.2019021900
+fi
+
+# Turn on assimilation of Metop-C AMSUA and MHS
+if [[ "$CDATE" -ge "2019110706" && "$CDATE" -lt "2020022012" ]]; then
+    export SATINFO=$FIXgsi/gfsv16_historical/global_satinfo.txt.2019110706
+fi
+
+# NOTE:  
+#   As of 2020022012, gfsv16_historical/global_satinfo.txt.2020022012 is
+#   identical to ../global_satinfo.txt.  Thus, the logic below is not
+#   needed at this time
+#
+# Turn off assmilation of all Metop-A MHS
+##  if [[ "$CDATE" -ge "2020022012" && "$CDATE" -lt "YYYYMMDDHH" ]]; then_break
+##      export SATINFO=$FIXgsi/gfsv16_historical/global_satinfo.txt.2020022012
+##  fi
 
 echo "END: config.anal"

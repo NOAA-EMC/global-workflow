@@ -15,6 +15,7 @@
 # 2018-03-22 Guang Ping Lou: Making it works for either 1 hourly or 3 hourly output
 # 2018-05-22 Guang Ping Lou: Making it work for both GFS and FV3GFS 
 # 2018-05-30  Guang Ping Lou: Make sure all files are available.
+# 2019-10-10  Guang Ping Lou: Read in NetCDF files
 echo "History: February 2003 - First implementation of this utility script"
 #
 
@@ -27,17 +28,6 @@ else
    f00flag=".false."
 fi
 
-export pgm=gfs_flux
-#. prep_step
-
-cat << EOF > gfsflxparm
- &NAMKEN
-  nout=$FINT,lonf=$LONB,latg=$LATB,nsfc=80,
-  nstart=$FSTART,nend=$FEND,nint=$FINT,
-  nend1=$NEND1,nint1=$NINT1,nint3=$NINT3,
-  nzero=$NZERO,f00=$f00flag,
-/
-EOF
 hh=$FSTART
 while  test $hh -le $FEND
 do  
@@ -58,20 +48,17 @@ else
    bufrflag=".false."
 fi
 
-if [ -s ${COMIN}/${RUN}.${cycle}.sfcf000.nemsio ]; then
- SFCF="sfc"
+##fformat="nc"
+##fformat="nemsio"
+
  CLASS="class1fv3"
- else
- SFCF="flx"
- CLASS="class1"
-fi 
 cat << EOF > gfsparm
  &NAMMET
-  iromb=0,maxwv=$JCAP,levs=$LEVS,makebufr=$bufrflag,
+  levs=$LEVS,makebufr=$bufrflag,
   dird="$COMOUT/bufr.${cycle}/bufr",
   nstart=$FSTART,nend=$FEND,nint=$FINT,
   nend1=$NEND1,nint1=$NINT1,nint3=$NINT3,
-  nsfc=80,f00=$f00flag,
+  nsfc=80,f00=$f00flag,fformat=$fformat
 /
 EOF
 
@@ -95,7 +82,7 @@ do
    ic=0
    while [ $ic -lt 1000 ]
    do
-      if [ ! -f $COMIN/${RUN}.${cycle}.logf${hh2}.nemsio ]
+      if [ ! -f $COMIN/${RUN}.${cycle}.logf${hh2}.${logfm} ]
       then
           sleep 10
           ic=`expr $ic + 1`
@@ -109,8 +96,8 @@ do
       fi
    done
 #------------------------------------------------------------------
-   ln -sf $COMIN/${RUN}.${cycle}.atmf${hh2}.nemsio sigf${hh} 
-   ln -sf $COMIN/${RUN}.${cycle}.${SFCF}f${hh2}.nemsio flxf${hh}
+   ln -sf $COMIN/${RUN}.${cycle}.atmf${hh2}.${atmfm} sigf${hh} 
+   ln -sf $COMIN/${RUN}.${cycle}.sfcf${hh2}.${atmfm} flxf${hh}
 
    hh=` expr $hh + $FINT `
    if test $hh -lt 10
@@ -122,10 +109,7 @@ done
 #  define input BUFR table file.
 ln -sf $PARMbufrsnd/bufr_gfs_${CLASS}.tbl fort.1
 ln -sf ${STNLIST:-$PARMbufrsnd/bufr_stalist.meteo.gfs} fort.8
+ln -sf $PARMbufrsnd/bufr_ij13km.txt fort.7
 
-#startmsg
-##export APRUN=${APRUN_POSTSND:-'aprun -n 12 -N 3 -j 1'}
-##${APRUN:-mpirun.lsf} ${GBUFR:-$EXECbufrsnd/gfs_bufr} < gfsparm > out_gfs_bufr_$FEND
-##mpirun $EXECbufrsnd/gfs_bufr < gfsparm > out_gfs_bufr_$FEND
 ${APRUN_POSTSND} $EXECbufrsnd/gfs_bufr < gfsparm > out_gfs_bufr_$FEND
 export err=$?;err_chk

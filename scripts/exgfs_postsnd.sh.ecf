@@ -15,6 +15,8 @@
 #                          parameters as input; make it work for 
 #                          both FV3GFS and GFS
 #   7) 2018-07-18       Guang Ping Lou Generalize this version to other platforms
+#   8) 2019-10-18       Guang Ping Lou Transition to reading in NetCDF model data
+#   9) 2019-12-18       Guang Ping Lou generalizing to reading in NetCDF or nemsio
 ################################################################
 set -xa
 
@@ -27,38 +29,45 @@ msg="HAS BEGUN"
 ###################################################
 ## Run meteogram generator for T574
 ###################################################
-export JCAP=${JCAP:-1534}
-export LEVS=${LEVS:-64}
-export LATB=${LATB:-1536}
-export LONB=${LONB:-3072}
+export LEVS=${LEVS:-127}
 export STARTHOUR=${STARTHOUR:-00}
 export ENDHOUR=${ENDHOUR:-180}
-export NEND1=120   ##first period length with time interval = NINT1
-export NINT1=3     ##first period time interval
-##export NINT1=1     ##first period time interval
-export NINT3=3     ##second period time interval
-export NZERO=6
 export INCREMENT=12
-export OUTFILE=meteomrf
 export MAKEBUFR=NO
 export F00FLAG=YES
+export fformat=${OUTPUT_FILE:-netcdf}
+if [ $fformat == "netcdf" ]
+ then
+export atmfm="nc"
+export logfm="txt"
+else 
+export atmfm="nemsio"
+export logfm="nemsio"
+fi
 
-if [ $FHMAX_HF_GFS -gt 0 -a $FHOUT_HF_GFS -gt 0 ]
-  then
     export NINT1=${FHOUT_HF_GFS:-1}
     export NEND1=${FHMAX_HF_GFS:-120}
-  else
     export NINT3=${FHOUT_GFS:-3}
-fi
 
 rm -f -r ${COMOUT}/bufr.${cycle}
 mkdir -p ${COMOUT}/bufr.${cycle}
 
+    if [ -f $HOMEgfs/ush/getncdimlen ]
+	then
+	GETDIM=$HOMEgfs/ush/getncdimlen
+	else
+	GETDIM=$EXECbufrsnd/getncdimlen
+	fi
+if [ $fformat == "netcdf" ]
+ then
+export LEVS=`$GETDIM $COMIN/${RUN}.${cycle}.atmf000.${atmfm} pfull`
+else
 # Extract number of vertical levels from $STARTHOUR atmospheric file
 export NEMSIOGET=${NEMSIOGET:-$EXECbufrsnd/nemsio_get}
 fhr3=$(printf %03i $STARTHOUR)
 ATMFCS=$COMIN/${RUN}.${cycle}.atmf${fhr3}.nemsio
 export LEVS=$($NEMSIOGET $ATMFCS dimz | awk '{print $2}')
+fi
 
 ### Loop for the hour and wait for the sigma and surface flux file:
 export FSTART=$STARTHOUR
@@ -84,7 +93,7 @@ export FINT=$NINT1
    ic=0
    while [ $ic -lt 1000 ]
    do
-      if [ ! -f $COMIN/${RUN}.${cycle}.logf$FEND.nemsio ]
+      if [ ! -f $COMIN/${RUN}.${cycle}.logf$FEND.${logfm} ]
       then
           sleep 10
           ic=`expr $ic + 1`
@@ -102,6 +111,7 @@ export FINT=$NINT1
    if [ $FEND -gt $NEND1 ]; then
      export FINT=$NINT3
    fi
+##   $USHbufrsnd/gfs_bufr.sh
    $USHbufrsnd/gfs_bufr.sh
   
    export FSTART=$FEND
@@ -128,7 +138,7 @@ fi
 # add appropriate WMO Headers.
 ########################################
 collect=' 1 2 3 4 5 6 7 8 9'
-if [ $machine == "JET" ]; then
+if [ $machine == "HERA" -o  $machine == "JET" ]; then
 for m in ${collect}
 do
 sh $USHbufrsnd/gfs_sndp.sh $m
@@ -141,7 +151,6 @@ sh $USHbufrsnd/gfs_bfr2gpk.sh
 
 else
 rm -rf poe_col
-echo "sh $USHbufrsnd/gfs_bfr2gpk.sh " >> poe_col
 for m in ${collect}
 do
 echo "sh $USHbufrsnd/gfs_sndp.sh $m " >> poe_col
@@ -152,8 +161,9 @@ mv poe_col cmdfile
 cat cmdfile
 chmod +x cmdfile
 
-##mpirun -n 10 cfp cmdfile
 ${APRUN_POSTSNDCFP} cmdfile
+
+sh $USHbufrsnd/gfs_bfr2gpk.sh
 fi
 ################################################
 # Convert the bufr soundings into GEMPAK files
@@ -173,4 +183,3 @@ msg='HAS COMPLETED NORMALLY.'
 #postmsg "$jlogfile" "$msg"
 
 ############## END OF SCRIPT #######################
-

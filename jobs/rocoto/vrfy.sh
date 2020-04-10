@@ -61,11 +61,8 @@ if [ $MKPGB4PRCP = "YES" -a $CDUMP = "gfs" ]; then
        fhr2=$(printf %02i $fhr)
        fhr3=$(printf %03i $fhr)
        fname=${CDUMP}.t${cyc}z.sfluxgrbf$fhr3.grib2
-       rm -f sflux_outtmp
-       $WGRIB2 $fname -match "(:PRATE:surface:)|(:TMP:2 m above ground:)" -grib sflux_outtmp
-       fileout=$ARCDIR/pgbq${fhr2}.${CDUMP}.${CDATE}
-       $CNVGRIB -g21 sflux_outtmp $fileout
-       rm -f sflux_outtmp
+       fileout=$ARCDIR/pgbq${fhr2}.${CDUMP}.${CDATE}.grib2
+       $WGRIB2 $fname -match "(:PRATE:surface:)|(:TMP:2 m above ground:)" -grib $fileout
        (( fhr = $fhr + 6 ))
     done
     cd $DATAROOT
@@ -90,7 +87,15 @@ if [ $VRFYFITS = "YES" -a $CDUMP = $CDFNL -a $CDATE != $SDATE ]; then
     export TMPDIR="$RUNDIR/$CDATE/$CDUMP"
     [[ ! -d $TMPDIR ]] && mkdir -p $TMPDIR
 
-    $PREPQFITSH $PSLOT $CDATE $ROTDIR $ARCDIR $TMPDIR
+    xdate=$($NDATE -${VBACKUP_FITS} $CDATE)
+
+
+    export RUN_ENVIR_SAVE=$RUN_ENVIR
+    export RUN_ENVIR=$OUTPUT_FILE
+
+    $PREPQFITSH $PSLOT $xdate $ROTDIR $ARCDIR $TMPDIR
+
+    export RUN_ENVIR=$RUN_ENVIR_SAVE
 
 fi
 
@@ -100,35 +105,16 @@ echo
 echo "=============== START TO RUN VSDB STEP1, VERIFY PRCIP AND GRID2OBS ==============="
 if [ $CDUMP = "gfs" ]; then
 
-    if [ $VRFY_PCKG2RUN = "VSDB" -o $VRFY_PCKG2RUN = "BOTH" ]; then
-        if [ $VSDB_STEP1 = "YES" -o $VRFYPRCP = "YES" -o $VRFYG2OBS = "YES" ]; then
+    if [ $VSDB_STEP1 = "YES" -o $VRFYPRCP = "YES" -o $VRFYG2OBS = "YES" ]; then
  
-            xdate=$(echo $($NDATE -${BACKDATEVSDB} $CDATE) | cut -c1-8)
-            export ARCDIR1="$NOSCRUB/archive"
-            export rundir="$RUNDIR/$CDUMP/$CDATE/vrfy/vsdb_exp"
-            export COMROT="$ARCDIR1/dummy"
+        xdate=$(echo $($NDATE -${BACKDATEVSDB} $CDATE) | cut -c1-8)
+        export ARCDIR1="$NOSCRUB/archive"
+        export rundir="$RUNDIR/$CDUMP/$CDATE/vrfy/vsdb_exp"
+        export COMROT="$ARCDIR1/dummy"
 
-            $VSDBSH $xdate $xdate $vlength $cyc $PSLOT $CDATE $CDUMP $gfs_cyc $rain_bucket
-
-        fi
+        $VSDBSH $xdate $xdate $vlength $cyc $PSLOT $CDATE $CDUMP $gfs_cyc $rain_bucket
     fi
 fi
-
-
-###############################################################
-echo
-echo "=============== START TO RUN METPLUS VERIFICATION ==============="
-if [ $CDUMP = "gfs" ]; then
-
-    if [ $VRFY_PCKG2RUN = "METPLUS" -o $VRFY_PCKG2RUN = "BOTH" ]; then
-        if [ $RUN_METPLUS_GRID2GRID_STEP1 = "YES" -o $RUN_METPLUS_GRID2OBS_STEP1 = "YES" -o $RUN_METPLUS_PRECIP_STEP1 = "YES" ]; then
-            
-            $VERIF_GLOBALSH 
- 
-        fi
-     fi
- fi
-
 
 ###############################################################
 echo
@@ -194,6 +180,15 @@ echo "=============== START TO RUN CYCLONE GENESIS VERIFICATION ==============="
 if [ $VRFYGENESIS = "YES" -a $CDUMP = "gfs" ]; then
     $GENESISSH
 fi
+
+
+################################################################################
+echo
+echo "=============== START TO RUN CYCLONE GENESIS VERIFICATION (FSU) ==============="
+if [ $VRFYFSU = "YES" -a $CDUMP = "gfs" ]; then
+    $GENESISFSU
+fi
+
 
 ###############################################################
 # Force Exit out cleanly

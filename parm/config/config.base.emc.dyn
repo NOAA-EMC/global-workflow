@@ -49,7 +49,7 @@ export CCPP_SUITE="FV3_GSD_v0"              # testgsdsuite
 #### export CCPP_SUITE="FV3_GFS_v15"        # testemc
 
 # Toggle to turn on/off GFS downstream processing.
-export DO_BUFRSND="NO"
+export DO_BUFRSND="YES"
 export DO_GEMPAK="NO"
 export DO_AWIPS="NO"
 
@@ -68,8 +68,8 @@ export HOMEgsi="$HOMEgfs"
 export FIXgsi="$HOMEgfs/fix/fix_gsi"
 export HOMEfv3gfs="$HOMEgfs/sorc/fv3gfs.fd"
 export HOMEpost="$HOMEgfs"
-export HOMEobsproc_prep="$BASE_GIT/obsproc/obsproc_prep_RB-5.2.0"
-export HOMEobsproc_network="$BASE_GIT/obsproc/obsproc_global.v3.2.3"
+export HOMEobsproc_prep="$BASE_GIT/obsproc/gfsv16/obsproc_prep.iss70457.netcdfhistory_new"
+export HOMEobsproc_network="$BASE_GIT/obsproc/gfsv16/obsproc_global.iss71402.supportGFSv16"
 export HOMEobsproc_global=$HOMEobsproc_network
 export BASE_VERIF="$BASE_SVN/verif/global/tags/vsdb"
 
@@ -140,16 +140,19 @@ export FHMIN=0
 export FHMAX=9
 export FHOUT=3
 
+# Cycle to run EnKF  (set to BOTH for both gfs and gdas)
+export EUPD_CYC="gdas"
+
 # GFS cycle info
 export gfs_cyc=@gfs_cyc@ # 0: no GFS cycle, 1: 00Z only, 2: 00Z and 12Z only, 4: all 4 cycles.
 
 # GFS output and frequency
 export FHMIN_GFS=0
 
-export FHMAX_GFS_00=240
-export FHMAX_GFS_06=240
-export FHMAX_GFS_12=240
-export FHMAX_GFS_18=240
+export FHMAX_GFS_00=384
+export FHMAX_GFS_06=384
+export FHMAX_GFS_12=384
+export FHMAX_GFS_18=384
 export FHMAX_GFS=$(eval echo \${FHMAX_GFS_$cyc})
 
 export FHOUT_GFS=3
@@ -159,18 +162,47 @@ export FHOUT_HF_GFS=1
 # I/O QUILTING, true--use Write Component; false--use GFDL FMS
 # if quilting=true, choose OUTPUT_GRID as cubed_sphere_grid in netcdf or gaussian_grid
 # if gaussian_grid, set OUTPUT_FILE for nemsio or netcdf
+# WRITE_DOPOST=true, use inline POST
 export QUILTING=".true."
 export OUTPUT_GRID="gaussian_grid"
-export OUTPUT_FILE="nemsio"
+export OUTPUT_FILE="netcdf"
+export WRITE_DOPOST=".true."
+
+# suffix options depending on file format
+if [ $OUTPUT_FILE = "netcdf" ]; then
+    export SUFFIX=".nc"
+    export NEMSIO_IN=".false."
+    export NETCDF_IN=".true."
+else
+    export SUFFIX=".nemsio"
+    export NEMSIO_IN=".true."
+    export NETCDF_IN=".false."
+fi
 
 # IAU related parameters
-export DOIAU="NO"
-export IAUFHRS=6
+export DOIAU="YES"        # Enable 4DIAU for control with 3 increments
+export IAUFHRS="3,6,9"
+export IAU_FHROT=`echo $IAUFHRS | cut -c1`
 export IAU_DELTHRS=6
-export DOIAU_ENKF="NO"
-export IAUFHRS_ENKF=6
+export IAU_OFFSET=6
+export DOIAU_ENKF="YES"   # Enable 4DIAU for EnKF ensemble
+export IAUFHRS_ENKF="3,6,9"
 export IAU_DELTHRS_ENKF=6
-[[ "$SDATE" = "$CDATE" ]] && ( export DOIAU="NO"; export DOIAU_ENKF="NO" )
+if [[ "$SDATE" = "$CDATE" ]]; then
+  export IAU_OFFSET=0
+  export IAU_FHROT=0
+fi
+
+# Use Jacobians in eupd and thereby remove need to run eomg
+export lobsdiag_forenkf=".true."
+
+# run GLDAS to spin up land ICs
+export DO_GLDAS=YES
+export gldas_cyc=00
+
+# run wave component
+export DO_WAVE=YES
+export WAVE_CDUMP="gdas"
 
 # Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL
 if [[ "$CCPP_SUITE" == "FV3_GSD_v0" ]] ; then
@@ -183,9 +215,9 @@ fi
 # Hybrid related
 export DOHYBVAR="YES"
 export NMEM_ENKF=@NMEM_ENKF@
-export SMOOTH_ENKF="YES"
+export SMOOTH_ENKF="NO"
 export l4densvar=".true."
-export lwrite4danl=".false."
+export lwrite4danl=".true."
 
 # EnKF output frequency
 if [ $DOHYBVAR = "YES" ]; then
@@ -207,7 +239,22 @@ if [ $DONST = "YES" ]; then export FNTSFA="        "; fi
 export nst_anl=.true.
 
 # Analysis increments to zero in CALCINCEXEC
-export INCREMENTS_TO_ZERO="'delz_inc','clwmr_inc','icmr_inc'"
+export INCREMENTS_TO_ZERO="'liq_wat_inc','icmr_inc'"
+
+if [ $OUTPUT_FILE = "nemsio" ]; then
+    export DO_CALC_INCREMENT="YES"
+    export DO_CALC_ANALYSIS="NO"
+fi
+
+# Stratospheric increments to zero
+export INCVARS_ZERO_STRAT="'sphum_inc','liq_wat_inc','icmr_inc'"
+export INCVARS_EFOLD="5"
+
+# Swith to generate netcdf or binary diagnostic files.  If not specified,
+# script default to binary diagnostic files.   Set diagnostic file
+# variables here since used in both DA and vrfy jobs
+export netcdf_diag=".true."
+export binary_diag=".false."
 
 # Verification options
 export DO_METP="YES"                  # Run MET+ jobs
@@ -217,6 +264,5 @@ export HPSSARCH="NO"         # save data to HPSS archive
 export ARCH_CYC=00           # Archive data at this cycle for warm_start capability
 export ARCH_WARMICFREQ=4     # Archive frequency in days for warm_start capability
 export ARCH_FCSTICFREQ=1     # Archive frequency in days for gdas and gfs forecast-only capability
-
 
 echo "END: config.base"

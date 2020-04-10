@@ -70,7 +70,7 @@ if mkdir lock.$fhcnt  ; then
   export opt1=' -set_grib_type same -new_grid_winds earth '
   export opt1uv=' -set_grib_type same -new_grid_winds grid '
   export opt21=' -new_grid_interpolation bilinear -if '
-  export opt22=":(LAND|CSNOW|CRAIN|CFRZR|CICEP|ICSEV):"
+  export opt22=":(CSNOW|CRAIN|CFRZR|CICEP|ICSEV):"
   export opt23=' -new_grid_interpolation neighbor -fi '
   export opt24=' -set_bitmap 1 -set_grib_max_bits 16 -if '
   export opt25=":(APCP|ACPCP|PRATE|CPRAT):"

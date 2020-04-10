@@ -11,25 +11,31 @@ module load EnvVars/1.0.2
 
 module load HPSS/5.0.2.5
 module load prod_util/1.1.0
-module load prod_envir/1.0.2
-module load g2tmpl/1.5.0       
-module load crtm/2.2.6
-#module load ESMF/7_1_0r
+module load prod_envir/1.1.0
 module unload grib_util/1.0.6   
 module load grib_util/1.1.0
 
 module load NCO/4.7.0   
-module load HDF5-serial/1.10.1
-module load NetCDF/4.5.0
 module load CFP/2.0.1
 setenv USE_CFP YES
-
-# modules used by vrfy
 module load pm5
+
+module use /gpfs/dell2/emc/modeling/noscrub/emc.nemspara/soft/modulefiles
+module load hdf5_parallel/1.10.6
+module load netcdf_parallel/4.7.4
+module load esmf/8.0.1bs08
 
 module use -a /gpfs/dell1/nco/ops/nwprod/modulefiles/
 module load gempak/7.3.1
 
-module use /gpfs/dell2/emc/modeling/noscrub/emc.nemspara/soft/modulefiles
-module load esmf/8.0.0bs48
+# python
+module load python/3.6.3
 
+# Load crtm/2.3.0 from nceplibs (until installed by NCO)
+module use -a /usrx/local/nceplibs/dev/NCEPLIBS/modulefiles
+module load crtm/2.3.0
+module load g2tmpl/1.6.0
+
+# Load FSU Genesis module
+module use -a /gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/tracker/ens_tracker.v1.1.15.2/tclogg/modulefiles
+module load tclogg

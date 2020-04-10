@@ -74,7 +74,7 @@ mkdir -p $DATA
 cd $DATA
 
 export DBN_ALERT_TYPE=GFS_GOESSIM_GEMPAK
-export GRIB=goessimpgrb2.1p00.f
+export GRIB=goessimpgrb2.0p25.f
 export EXT=" "
 export fend=180
 export finc=3

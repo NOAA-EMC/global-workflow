@@ -1,33 +1,19 @@
 #!/bin/sh
-set -xu
+set -xue
 
 topdir=$(pwd)
 echo $topdir
 
-echo fv3gfs_emc checkout ...
-if [[ ! -d fv3gfs_emc.fd ]] ; then
-    rm -f ${topdir}/checkout-fv3gfs_emc.log
-    git clone --recursive gerrit:NEMSfv3gfs fv3gfs_emc.fd >> ${topdir}/checkout-fv3gfs_emc.log 2>&1
-    cd fv3gfs_emc.fd
-    git checkout gfs.v16_PhysicsUpdate
+echo fv3gfs checkout ...
+if [[ ! -d fv3gfs.fd ]] ; then
+    rm -f ${topdir}/checkout-fv3gfs.log
+    git clone https://github.com/ufs-community/ufs-weather-model fv3gfs.fd >> ${topdir}/checkout-fv3gfs.log 2>&1
+    cd fv3gfs.fd
+    git checkout  GFS.v16.0.2
     git submodule update --init --recursive
     cd ${topdir}
 else
-    echo 'Skip.  Directory fv3gfs_emc.fd already exists.'
-fi
-
-echo fv3gfs_ccpp checkout ...
-if [[ ! -d fv3gfs_ccpp.fd ]] ; then
-    rm -f ${topdir}/checkout-fv3gfs_ccpp.log
-    git clone --recursive -b dtc/develop https://github.com/NCAR/ufs-weather-model  fv3gfs_ccpp.fd >> ${topdir}/checkout-fv3gfs_ccpp.log 2>&1
-    cd fv3gfs_ccpp.fd
-    git checkout 0bf138fabb51b071e54891b1f60ae5fb720e0736
-    git submodule sync
-    git submodule update --init --recursive
-    cd ${topdir}
-    ln -fs fv3gfs_ccpp.fd fv3gfs.fd
-else
-    echo 'Skip.  Directory fv3gfs_ccpp.fd already exists.'
+    echo 'Skip.  Directory fv3gfs.fd already exists.'
 fi
 
 echo gsi checkout ...
@@ -35,11 +21,23 @@ if [[ ! -d gsi.fd ]] ; then
     rm -f ${topdir}/checkout-gsi.log
     git clone --recursive gerrit:ProdGSI gsi.fd >> ${topdir}/checkout-gsi.log 2>&1
     cd gsi.fd
-    git checkout cb8f69d82f38dcf85669b45aaf95dad068f0103c
+#   git checkout gfsda.v16.0.0
+    git checkout feature/parallel_ncio
     git submodule update
     cd ${topdir}
 else
     echo 'Skip.  Directory gsi.fd already exists.'
+fi
+
+echo gldas checkout ...
+if [[ ! -d gldas.fd ]] ; then
+    rm -f ${topdir}/checkout-gldas.log
+    git clone https://github.com/NOAA-EMC/GLDAS  gldas.fd >> ${topdir}/checkout-gldas.fd.log 2>&1
+    cd gldas.fd
+    git checkout gldas_gfsv16_release.v1.0.0
+    cd ${topdir}
+else
+    echo 'Skip.  Directory gldas.fd already exists.'
 fi
 
 echo ufs_utils checkout ...
@@ -47,7 +45,7 @@ if [[ ! -d ufs_utils.fd ]] ; then
     rm -f ${topdir}/checkout-ufs_utils.log
     git clone https://github.com/NOAA-EMC/UFS_UTILS.git ufs_utils.fd >> ${topdir}/checkout-ufs_utils.fd.log 2>&1
     cd ufs_utils.fd
-    git checkout v1.1.0
+    git checkout release/ops-gfsv16 
     cd ${topdir}
 else
     echo 'Skip.  Directory ufs_utils.fd already exists.'
@@ -56,12 +54,9 @@ fi
 echo EMC_post checkout ...
 if [[ ! -d gfs_post.fd ]] ; then
     rm -f ${topdir}/checkout-gfs_post.log
-    git clone --recursive https://github.com/NOAA-EMC/EMC_post.git gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
-    #git clone --recursive gerrit:EMC_post_gtg gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
+    git clone https://github.com/NOAA-EMC/EMC_post.git gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
     cd gfs_post.fd
-    git checkout ba7e59b290c8149ff1c2fee98d01e99e4ef92ee6
-    #git checkout ncep_post.v8.1.3
-    #git checkout ncep_post_gtg.v1.1.7
+    git checkout upp_gfsv16_release.v1.0.6
     cd ${topdir}
 else
     echo 'Skip.  Directory gfs_post.fd already exists.'
@@ -83,7 +78,7 @@ if [[ ! -d verif-global.fd ]] ; then
     rm -f ${topdir}/checkout-verif-global.log
     git clone --recursive https://github.com/NOAA-EMC/EMC_verif-global.git verif-global.fd >> ${topdir}/checkout-verif-global.log 2>&1
     cd verif-global.fd
-    git checkout verif_global_v1.5.0
+    git checkout verif_global_v1.6.0
     cd ${topdir}
 else
     echo 'Skip. Directory verif-global.fd already exist.'

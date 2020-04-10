@@ -122,6 +122,21 @@
 
  allocate(dummy(ij_input))
 
+ ! figure out the sign of delz
+ print*,"READ DELZ FOR SIGN CHECK"
+ vlev = 1
+ vlevtyp = "mid layer"
+ vname = "delz"
+ call nemsio_readrecv(gfile, vname, vlevtyp, vlev, dummy, 0, iret)
+ if (iret /= 0) goto 67
+ if ( sum(dummy) > 0 ) then
+    flipdelz = .false.
+    print*,"DELZ IS POSITIVE"
+ else
+    flipdelz = .true.
+    print*,"DELZ IS NEGATIVE"
+ end if
+
  print*
  print*,"READ SURFACE PRESSURE"
  vlev    = 1

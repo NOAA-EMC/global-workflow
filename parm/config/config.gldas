@@ -1,0 +1,20 @@
+#!/bin/ksh -x
+
+########## config.gldas ##########
+# GDAS gldas step specific
+
+echo "BEGIN: config.gldas"
+
+# Get task specific resources
+. $EXPDIR/config.resources gldas
+
+export GLDASSH=$HOMEgfs/scripts/exgdas_gldas.sh.ecf
+export gldas_spinup_hours=72
+
+
+if [ $machine = "HERA" ]; then
+    export CPCGAUGE=/scratch1/NCEPDEV/global/Fanglin.Yang/stat/cpcUniGauge
+fi
+
+
+echo "END: config.gldas"
