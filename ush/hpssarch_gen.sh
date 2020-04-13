@@ -289,7 +289,8 @@ if [ $type = "enkfgdas" -o $type = "enkfgfs" ]; then
   NTARS=$((NMEM_ENKF/NMEM_EARCGRP))
   [[ $NTARS -eq 0 ]] && NTARS=1
   [[ $((NTARS*NMEM_EARCGRP)) -lt $NMEM_ENKF ]] && NTARS=$((NTARS+1))
-  NTARS2=$((NTARS/2))
+##NTARS2=$((NTARS/2))  # number of earc groups to include analysis/increments
+  NTARS2=$NTARS
 
   dirpath="enkf${CDUMP}.${PDY}/${cyc}/"
   dirname="./${dirpath}"
@@ -312,9 +313,19 @@ if [ $type = "enkfgdas" -o $type = "enkfgfs" ]; then
   fi
   for FHR in $nfhrs; do  # loop over analysis times in window
      if [ $FHR -eq 6 ]; then
-        echo  "${dirname}${head}atmanl.ensmean${SUFFIX}      " >>enkf${CDUMP}.txt
+        if [ -s $ROTDIR/${dirpath}${head}atmanl.ensmean${SUFFIX} ]; then
+            echo  "${dirname}${head}atmanl.ensmean${SUFFIX}      " >>enkf${CDUMP}.txt
+	fi
+        if [ -s $ROTDIR/${dirpath}${head}atminc.ensmean${SUFFIX} ]; then
+            echo  "${dirname}${head}atminc.ensmean${SUFFIX}      " >>enkf${CDUMP}.txt
+        fi
      else
-        echo  "${dirname}${head}atma00${FHR}.ensmean${SUFFIX}      " >>enkf${CDUMP}.txt
+        if [ -s $ROTDIR/${dirpath}${head}atma00${FHR}.ensmean${SUFFIX} ]; then
+	    echo  "${dirname}${head}atma00${FHR}.ensmean${SUFFIX}      " >>enkf${CDUMP}.txt
+        fi
+        if [ -s $ROTDIR/${dirpath}${head}atmi00${FHR}.ensmean${SUFFIX} ]; then
+            echo  "${dirname}${head}atmi00${FHR}.ensmean${SUFFIX}      " >>enkf${CDUMP}.txt
+        fi
      fi 
   done # loop over FHR
   for fstep in eobs eomg ecen esfc eupd efcs epos ; do
@@ -360,12 +371,22 @@ if [ $type = "enkfgdas" -o $type = "enkfgfs" ]; then
     for FHR in $nfhrs; do  # loop over analysis times in window
       if [ $FHR -eq 6 ]; then
          if [ $n -le $NTARS2 ]; then
-            echo "${dirname}${head}ratmanl${SUFFIX}      " >>enkf${CDUMP}_grp${n}.txt
+	    if [ -s $ROTDIR/${dirpath}${head}ratmanl${SUFFIX} ] ; then
+		echo "${dirname}${head}ratmanl${SUFFIX}      " >>enkf${CDUMP}_grp${n}.txt
+	    fi
+            if [ -s $ROTDIR/${dirpath}${head}ratminc${SUFFIX} ] ; then
+                echo "${dirname}${head}ratminc${SUFFIX}      " >>enkf${CDUMP}_grp${n}.txt
+            fi
          fi
          echo "${dirname}${head}atminc.nc            " >>enkf${CDUMP}_restarta_grp${n}.txt
       else
          if [ $n -le $NTARS2 ]; then
-            echo "${dirname}${head}ratma00${FHR}${SUFFIX}      " >>enkf${CDUMP}_grp${n}.txt
+	     if [ -s $ROTDIR/${dirpath}${head}ratma00${FHR}${SUFFIX} ] ; then
+		 echo "${dirname}${head}ratma00${FHR}${SUFFIX}      " >>enkf${CDUMP}_grp${n}.txt
+	     fi
+             if [ -s $ROTDIR/${dirpath}${head}ratmi00${FHR}${SUFFIX} ] ; then
+                 echo "${dirname}${head}ratmi00${FHR}${SUFFIX}      " >>enkf${CDUMP}_grp${n}.txt
+             fi
          fi
          echo "${dirname}${head}atmi00${FHR}.nc            " >>enkf${CDUMP}_restarta_grp${n}.txt
       fi 

@@ -280,9 +280,9 @@ EOF
       for i in $(echo $IAUFHRS | sed "s/,/ /g" | rev); do
         incfhr=$(printf %03i $i)
         if [ $incfhr = "006" ]; then
-          increment_file=$memdir/${CDUMP}.t${cyc}z.${PREFIX_INC}atminc.nc
+          increment_file=$memdir/${CDUMP}.t${cyc}z.${PREFIX_ATMINC}atminc.nc
         else
-          increment_file=$memdir/${CDUMP}.t${cyc}z.${PREFIX_INC}atmi${incfhr}.nc
+          increment_file=$memdir/${CDUMP}.t${cyc}z.${PREFIX_ATMINC}atmi${incfhr}.nc
         fi
         if [ ! -f $increment_file ]; then
           echo "ERROR: DOIAU = $DOIAU, but missing increment file for fhr $incfhr at $increment_file"
