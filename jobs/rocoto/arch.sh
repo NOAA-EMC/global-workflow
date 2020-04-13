@@ -187,7 +187,7 @@ if [ $CDUMP = "gfs" ]; then
     fi
 
     #for targrp in gfswave
-    if [ $DO_WAVE = "YES" ]; then
+    if [ $DO_WAVE = "YES" -a "$WAVE_CDUMP" != "gdas" ]; then
         for targrp in gfswave; do
             htar -P -cvf $ATARDIR/$CDATE/${targrp}.tar `cat $ARCH_LIST/${targrp}.txt`
             status=$?
