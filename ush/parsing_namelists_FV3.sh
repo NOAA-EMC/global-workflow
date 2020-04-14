@@ -48,6 +48,15 @@ cat > input.nml <<EOF
   blocksize = $blocksize
   chksum_debug = $chksum_debug
   dycore_only = $dycore_only
+EOF
+
+if [ $CCPP_SUITE != "GFS" ]; then
+  cat >> input.nml << EOF
+  ccpp_suite = ${CCPP_SUITE:-"FV3_GFS_v15"}
+EOF
+fi
+
+cat >> input.nml <<EOF
   fdiag = $FDIAG
   fhmax = $FHMAX
   fhout = $FHOUT
@@ -67,6 +76,18 @@ cat > input.nml <<EOF
   max_files_w = 100
   $fms_io_nml
 /
+EOF
+
+if [ $cpl = ".false." ]; then
+cat >> input.nml <<EOF
+&mpp_io_nml
+  shuffle=${shuffle:-1}
+  deflate_level=${deflate_level:-1}
+/
+EOF
+fi
+
+cat >> input.nml <<EOF
 
 &fms_nml
   clock_grain = 'ROUTINE'
@@ -106,15 +127,15 @@ cat > input.nml <<EOF
   p_fac = 0.1
   k_split = $k_split
   n_split = $n_split
-  nwat = ${nwat:-2}
+  nwat = ${nwat:-2}		! CROW configured
   na_init = $na_init
   d_ext = 0.
-  dnats = ${dnats:-0}
+  dnats = ${dnats:-0}		! CROW configured
   fv_sg_adj = ${fv_sg_adj:-"450"}
   d2_bg = 0.
-  nord = ${nord:-3}
-  dddmp = ${dddmp:-0.2}
-  d4_bg = ${d4_bg:-0.15}
+  nord = ${nord:-3}		! CROW configured
+  dddmp = ${dddmp:-0.2}		! CROW configured
+  d4_bg = ${d4_bg:-0.15}	! CROW configured
   vtdm4 = $vtdm4
   delt_max = ${delt_max:-"0.002"}
   ke_bg = 0.
@@ -126,14 +147,14 @@ cat > input.nml <<EOF
   mountain = $mountain
   ncep_ic = $ncep_ic
   d_con = $d_con
-  hord_mt = $hord_mt
-  hord_vt = $hord_xx
-  hord_tm = $hord_xx
-  hord_dp = -$hord_xx
-  hord_tr = ${hord_tr:-"8"}
+  hord_mt = $hord_mt		! CROW configured
+  hord_vt = $hord_xx		! CROW configured
+  hord_tm = $hord_xx		! CROW configured
+  hord_dp = -$hord_xx		! CROW configured
+  hord_tr = ${hord_tr:-"8"}	
   adjust_dry_mass = ${adjust_dry_mass:-".false."}
   consv_te = $consv_te
-  do_sat_adj = ${do_sat_adj:-".false."}
+  do_sat_adj = ${do_sat_adj:-".false."}	! CROW configured
   consv_am = .false.
   fill = .true.
   dwind_2d = .false.
@@ -159,7 +180,7 @@ cat > input.nml <<EOF
        knob_ugwp_dokdis  = ${knob_ugwp_dokdis:-1}
        knob_ugwp_ndx4lh  = ${knob_ugwp_ndx4lh:-1}
        knob_ugwp_version = ${knob_ugwp_version:-0}
-       launch_level      = ${launch_level:-27}                   
+       launch_level      = ${launch_level:-54}                   
 /
 
 &external_ic_nml
@@ -173,43 +194,61 @@ cat > input.nml <<EOF
 
 &gfs_physics_nml
   fhzero       = $FHZER
-  h2o_phys     = ${h2o_phys:-".true."}
+  h2o_phys     = ${h2o_phys:-".true."}	! CROW configured
   ldiag3d      = ${ldiag3d:-".false."}
-  fhcyc        = $FHCYC
+  fhcyc        = $FHCYC			! CROW configured
   use_ufo      = ${use_ufo:-".true."}
   pre_rad      = ${pre_rad:-".false."}
-  ncld         = ${ncld:-1}
-  imp_physics  = ${imp_physics:-"99"}
+  ncld         = ${ncld:-1}		! CROW configured
+  imp_physics  = ${imp_physics:-"99"}	! CROW configured
+EOF
+
+if [ $CCPP_SUITE = "FV3_GSD_v0" ]; then
+  cat >> input.nml << EOF
+  ltaerosol    = ${ltaerosol:-".F."}    ! In config.fcst
+  lradar       = ${lradar:-".F."}	! In config.fcst
+  do_mynnedmf  = ${do_mynnedmf:-".false."}	! In config.fcst
+  do_mynnsfclay= ${do_mynnsfclay:-".false."}	! In config.fcst
+  lsoil_lsm    = ${lsoil_lsm:-"4"}	! In config.fcst
+  ttendlim     = ${ttendlim:-0.005}	! In config.fcst
+  icloud_bl    = ${icloud_bl:-"1"}	! In config.fcst
+  bl_mynn_edmf = ${bl_mynn_edmf:-"1"}	! In config.fcst
+  bl_mynn_tkeadvect=${bl_mynn_tkeadvect:-".true."}	! In config.fcst
+  bl_mynn_edmf_mom=${bl_mynn_edmf_mom:-"1"}	! In config.fcst
+EOF
+fi
+
+cat >> input.nml <<EOF
   pdfcld       = ${pdfcld:-".false."}
   fhswr        = ${FHSWR:-"3600."}
   fhlwr        = ${FHLWR:-"3600."}
-  ialb         = $IALB
-  iems         = $IEMS
-  iaer         = $IAER
-  icliq_sw     = ${icliq_sw:-"1"}
-  iovr_lw      = ${iovr_lw:-"1"}
-  iovr_sw      = ${iovr_sw:-"1"}
-  ico2         = $ICO2
-  isubc_sw     = ${isubc_sw:-"2"}
-  isubc_lw     = ${isubc_lw:-"2"}
-  isol         = $ISOL
+  ialb         = ${IALB:-"1"}           ! In config.fcst
+  iems         = ${IEMS:-"1"}           ! In config.fcst
+  iaer         = $IAER			! In config.fcst
+  icliq_sw     = ${icliq_sw:-"2"}	! In config.fcst
+  iovr_lw      = ${iovr_lw:-"3"}	! In config.fcst
+  iovr_sw      = ${iovr_sw:-"3"}	! In config.fcst
+  ico2         = $ICO2			! In config.fcst
+  isubc_sw     = ${isubc_sw:-"2"}	! In config.fcst
+  isubc_lw     = ${isubc_lw:-"2"}	! In config.fcst
+  isol         = ${ISOL:-"2"}		! In config.fcst
   lwhtr        = ${lwhtr:-".true."}
   swhtr        = ${swhtr:-".true."}
   cnvgwd       = ${cnvgwd:-".true."}
   shal_cnv     = ${shal_cnv:-".true."}
-  cal_pre      = ${cal_pre:-".true."}
+  cal_pre      = ${cal_pre:-".true."}	! CROW configured
   redrag       = ${redrag:-".true."}
   dspheat      = ${dspheat:-".true."}
-  hybedmf      = ${hybedmf:-".true."}
-  satmedmf     = ${satmedmf-".false."}
-  isatmedmf    = ${isatmedmf-"0"}
-  lheatstrg    = ${lheatstrg-".false."}
-  random_clds  = ${random_clds:-".false."}
+  hybedmf      = ${hybedmf:-".false."}
+  satmedmf     = ${satmedmf-".true."}
+  isatmedmf    = ${isatmedmf-"1"}
+  lheatstrg    = ${lheatstrg-".true."}
+  random_clds  = ${random_clds:-".true."} ! CROW configured
   trans_trac   = ${trans_trac:-".true."}
   cnvcld       = ${cnvcld:-".true."}
   imfshalcnv   = ${imfshalcnv:-"2"}
   imfdeepcnv   = ${imfdeepcnv:-"2"}
-  cdmbgwd      = ${cdmbgwd:-"3.5,0.25"}
+  cdmbgwd      = ${cdmbgwd:-"3.5,0.25"}   ! CROW configured
   prslrd0      = ${prslrd0:-"0."}
   ivegsrc      = ${ivegsrc:-"1"}
   isot         = ${isot:-"1"}
@@ -237,8 +276,16 @@ cat > input.nml <<EOF
   ldiag_ugwp   = ${ldiag_ugwp:-".false."}
   do_ugwp      = ${do_ugwp:-".false."}
   do_tofd      = ${do_tofd:-".false."}
+  do_sppt      = ${DO_SPPT:-".false."}
+  do_shum      = ${DO_SHUM:-".false."}
+  do_skeb      = ${DO_SKEB:-".false."}
+EOF
+
+if [ $cplflx = .true. ]; then
+  cat >> input.nml << EOF
   cplflx       = $cplflx
 EOF
+fi
 
 # Add namelist for IAU
 if [ $DOIAU = "YES" ]; then
@@ -304,6 +351,14 @@ cat >> input.nml <<EOF
   fix_negative = .true.
   icloud_f = 1
   mp_time = 150.
+EOF
+if [ $cplflx = .true. ]; then
+  cat >> input.nml << EOF
+  reiflag = ${reiflag:-"1"}
+EOF
+fi
+
+cat >> input.nml <<EOF
   $gfdl_cloud_microphysics_nml
 /
 
@@ -338,7 +393,7 @@ cat >> input.nml <<EOF
   FSMCL(2) = ${FSMCL2:-99999}
   FSMCL(3) = ${FSMCL3:-99999}
   FSMCL(4) = ${FSMCL4:-99999}
-  LANDICE  = ${LANDICE:-".true."}
+  LANDICE  = ${landice:-".true."}
   FTSFS = ${FTSFS:-90}
   FAISL = ${FAISL:-99999}
   FAISS = ${FAISS:-99999}
@@ -364,16 +419,18 @@ EOF
 
 # Add namelist for stochastic physics options
 echo "" >> input.nml
-if [ $MEMBER -gt 0 ]; then
+#if [ $MEMBER -gt 0 ]; then
+if [ $DO_SPPT = .true. -o $DO_SHUM = .true. -o $DO_SKEB = .true. ]; then
 
     cat >> input.nml << EOF
 &nam_stochy
+  new_lscale = .true.
   ntrunc = $JCAP_STP
   lon_s = $LONB_STP
   lat_s = $LATB_STP
 EOF
 
-  if [ $DO_SKEB = "YES" ]; then
+  if [ $DO_SKEB = ".true." ]; then
     cat >> input.nml << EOF
   skeb = $SKEB
   iseed_skeb = ${ISEED_SKEB:-$ISEED}
@@ -385,7 +442,7 @@ EOF
 EOF
   fi
 
-  if [ $DO_SHUM = "YES" ]; then
+  if [ $DO_SHUM = ".true." ]; then
     cat >> input.nml << EOF
   shum = $SHUM
   iseed_shum = ${ISEED_SHUM:-$ISEED}
@@ -394,7 +451,7 @@ EOF
 EOF
   fi
 
-  if [ $DO_SPPT = "YES" ]; then
+  if [ $DO_SPPT = ".true." ]; then
     cat >> input.nml << EOF
   sppt = $SPPT
   iseed_sppt = ${ISEED_SPPT:-$ISEED}

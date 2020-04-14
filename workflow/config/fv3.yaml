@@ -46,6 +46,8 @@ config_fv3:
         "GFS")    
               echo "BEGIN: config.fv3 for $forecast_mode"
               export DELTIM={doc.fv3_gfs_settings.DELTIM}
+              export OCNTIM={doc.fv3_gfs_settings.OCNTIM}
+              export ICETIM={doc.fv3_gfs_settings.ICETIM}
               export layout_x={doc.fv3_gfs_settings.layout.x}
               export layout_y={doc.fv3_gfs_settings.layout.y}
               export layout_x_gfs={doc.fv3_gfs_settings.layout.x}
@@ -64,6 +66,8 @@ config_fv3:
         "GDAS")
               echo "BEGIN: config.fv3 for $forecast_mode"
               export DELTIM={doc.fv3_gdas_settings.DELTIM}
+              export OCNTIM={doc.fv3_gdas_settings.OCNTIM}
+              export ICETIM={doc.fv3_gdas_settings.ICETIM}
               export layout_x={doc.fv3_gdas_settings.layout.x}
               export layout_y={doc.fv3_gdas_settings.layout.y}
               export layout_x_gfs={doc.fv3_gdas_settings.layout.x}
@@ -81,6 +85,8 @@ config_fv3:
         "ENKF")
               echo "BEGIN: config.fv3 for $forecast_mode"
               export DELTIM={doc.fv3_enkf_settings.DELTIM}
+              export OCNTIM={doc.fv3_enkf_settings.OCNTIM}
+              export ICETIM={doc.fv3_enkf_settings.ICETIM}
               export layout_x={doc.fv3_enkf_settings.layout.x}
               export layout_y={doc.fv3_enkf_settings.layout.y}
               export layout_x_gfs={doc.fv3_enkf_settings.layout.x}

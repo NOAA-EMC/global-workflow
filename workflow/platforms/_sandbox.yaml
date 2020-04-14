@@ -141,22 +141,22 @@ platform: !Platform
   # Path to mmlsquota, the program used to get GPFS disk usage information:
   #mmlsquota: "/usr/lpp/mmfs/bin/mmlsquota"
 
+  # long_term_temp - area for storage of data that must be passed
   # between jobs or shared with programs external to this workflow.
   long_term_temp: !calc doc.user_places.COMROOT
+  #!expand "{least_used_ptmp}/{tools.env('USER')}"
 
   # short_term_temp - area for data that is only needed within one job:
   short_term_temp: !calc doc.user_places.DATAROOT 
-
-  COMROOT: !FirstTrue
-       - do: !expand "{doc.user_places.COMROOT}"
-         when: !calc doc.user_places.FIX_SCRUB
-       - otherwise: !expand "{doc.platform.least_used_temp}/{tools.env('USER')}"
-
-  # short_term_temp - area for data that is only needed within one job:
-  DATAROOT: !FirstTrue
-       - do: !expand "{doc.user_places.DATAROOT}"
-         when: !calc doc.user_places.FIX_SCRUB
-       - otherwise: !expand "{doc.platform.least_used_temp}/{tools.env('USER')}"
+  #!expand "{least_used_stmp}/{tools.env('USER')}"
 
   # EXPROOT - Parent directory  of the expdir (experiment directory)
   EXPROOT: !calc doc.user_places.EXPROOT
+
+  # COMROOT - Parent directory  of the expdir (experiment directory)
+  COMROOT: !calc doc.user_places.COMROOT
+
+  # EXPROOT - Parent directory  of the expdir (experiment directory)
+  DATAROOT: !calc doc.user_places.DATAROOT
+
+  #!expand "{doc.user_places.EXPROOT}/noscrub/{tools.env('USER')}"

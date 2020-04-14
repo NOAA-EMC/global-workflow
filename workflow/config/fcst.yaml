@@ -85,24 +85,69 @@ config_fcst:
     # Model configuration
     export TYPE="{doc.fv3_gfs_settings.nh_type}"
     export MONO="{doc.fv3_gfs_settings.MONO}"
-    
-    # Use stratosphere h2o physics
-    export h2o_phys="{tools.fort(doc.fv3_gfs_settings.h2o_phys)}"
-    
+    export launch_level=27
+
     # Options of stratosphere O3 physics reaction coefficients
     export new_o3forc="{tools.YES_NO(doc.fv3_gfs_settings.new_o3force)}"
-    
-    # Microphysics configuration
+
+    # fv3_core_nml section
     export dnats={doc.fv3_gfs_settings.phy_dependent_var.dnats}
-    export cal_pre="{tools.fort(doc.fv3_gfs_settings.phy_dependent_var.cal_pre)}"
     export do_sat_adj="{tools.fort(doc.fv3_gfs_settings.phy_dependent_var.do_sat_adjust)}"
+    export nwat={doc.fv3_gfs_settings.phy_dependent_var.nwat}
+
+    # gfs_physics_nml section
+    export h2o_phys="{tools.fort(doc.fv3_gfs_settings.h2o_phys)}"
+
+    export ncld={doc.fv3_gfs_settings.phy_dependent_var.ncld}
+
+    export IALB=1
+    export IEMS=1
+    export ISOL=2
+    export IAER=111
+    export ICO2=2
+
+    export icliq_sw=1
+    export iovr_lw=1
+    export iovr_sw=1
+    export isubc_sw=2
+    export isubc_lw=2
+    
+    export cal_pre="{tools.fort(doc.fv3_gfs_settings.phy_dependent_var.cal_pre)}"
+    export hybedmf=.true.
+    export satmedmf=.false.
+    export isatmedmf=0
+    tbf=""
+    if [ $satmedmf = ".true." ]; then tbf="_satmedmf" ; fi
+
+    export lheatstrg=.false.
+
     export random_clds="{tools.fort(doc.fv3_gfs_settings.phy_dependent_var.random_clds)}"
     #export cnvcld="{tools.fort(doc.fv3_gfs_settings.cnvcld)}"
-    export ncld={doc.fv3_gfs_settings.phy_dependent_var.ncld}
+
     export FIELD_TABLE="{doc.fv3_gfs_settings.phy_dependent_var.FIELD_TABLE}"
-    export nwat={doc.fv3_gfs_settings.phy_dependent_var.nwat}
     {more_exports_for_microphys}
     {level_127}
+
+    # Stochastic physics parameters
+    # nam_stochy section
+    export SEEDLET="{doc.fv3_gfs_settings.SEEDLET}"
+    export DO_SKEB="{tools.fort(doc.fv3_gfs_settings.DO_SKEB)}"
+    export DO_SHUM="{tools.fort(doc.fv3_gfs_settings.DO_SHUM)}"
+    export DO_SPPT="{tools.fort(doc.fv3_gfs_settings.DO_SPPT)}"
+
+    export SKEB=0.6,-999,-999,-999,-999
+    export iseed_skeb=$ISEED_SKEB
+    export SKEB_TAU=2.16E4,1.728E5,2.592E6,7.776E6,3.1536E7
+    export SKEB_LSCALE=500.E3,1000.E3,2000.E3,2000.E3,2000.E3
+    export SKEBNORM=1
+    
+    export SPPT=0.8,0.4,0.2,0.08,0.04
+    export iseed_sppt=$ISEED_SPPT
+    export SPPT_TAU=2.16E4,2.592E5,2.592E6,7.776E6,3.1536E7
+    export SPPT_LSCALE=500.E3,1000.E3,2000.E3,2000.E3,2000.E3
+    export sppt_logit=.TRUE.
+    export sppt_sfclimit=.true.
+    export use_zmtnblck=.true.
 
     #---------------------------------------------------------------------
     # Disable the use of coupler.res; get model start time from model_configure

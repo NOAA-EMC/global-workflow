@@ -30,10 +30,10 @@ cat > ice_in <<eof
   , diag_file      = 'ice_diag.d'
   , print_global   = .true.
   , print_points   = .true.
-  , latpnt(1)      =  90.
-  , lonpnt(1)      =   0.
-  , latpnt(2)      = -65.
-  , lonpnt(2)      = -45.
+  , latpnt(1)      =  -61.9609947594009
+  , lonpnt(1)      = -58.8750016383461
+  , latpnt(2)      = -63.6735588144113
+  , lonpnt(2)      =  65.3749918013124
   , dbug           = .false.
   , histfreq       = 'm','d','h','x','x'
   , histfreq_n     =  0 , 0 , 6 , 1 , 1
