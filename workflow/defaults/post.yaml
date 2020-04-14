@@ -1,7 +1,21 @@
 # default settings for post jobs
 
 post_defaults: &post_defaults
+  GOESF: yes
+  GTGF: no
+  FLXF: yes
+  PGB1F: yes
+  GFS_DOWNSTREAM: yes
+  downset: 1
   NPOSTGRP: 5
+  master_grid: "0p25deg"
 
 ocnpost_defaults: &ocnpost_defaults
+  GOESF: yes
+  GTGF: no
+  FLXF: yes
+  PGB1F: yes
+  GFS_DOWNSTREAM: yes
+  downset: 2
   NPOSTGRP: 1
+  master_grid: "0p25deg"

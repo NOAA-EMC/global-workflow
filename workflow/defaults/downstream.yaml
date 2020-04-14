@@ -1,4 +1,6 @@
 downstream_defaults: &downstream_defaults
+  CDUMPFCST: gdas
+  CDFNL: gdas
   DO_POST_PROCESSING: NO
   DO_BUFRSND: NO
   DO_GEMPAK: NO
@@ -6,6 +8,10 @@ downstream_defaults: &downstream_defaults
   DO_FAX: NO
   DO_WAFS: NO
   DO_BULLETINS: NO
+  FHOUT_CYCLONE_GFS: 6
+  FHOUT_CYCLONE_GDAS: 3
+  MKPGB4PRCP: yes
+  VDUMP: gfs
   VRFYFITS: NO
   VSDB_STEP1: NO
   VSDB_STEP2: NO

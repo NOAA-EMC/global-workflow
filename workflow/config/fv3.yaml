@@ -46,54 +46,60 @@ config_fv3:
         "GFS")    
               echo "BEGIN: config.fv3 for $forecast_mode"
               export DELTIM={doc.fv3_gfs_settings.DELTIM}
-              export layout_x={doc.fv3_gfs_settings.layout_x}
-              export layout_y={doc.fv3_gfs_settings.layout_y}
-              export layout_x_gfs={doc.fv3_gfs_settings.layout_x}
-              export layout_y_gfs={doc.fv3_gfs_settings.layout_y}
+              export OCNTIM={doc.fv3_gfs_settings.OCNTIM}
+              export ICETIM={doc.fv3_gfs_settings.ICETIM}
+              export layout_x={doc.fv3_gfs_settings.layout.x}
+              export layout_y={doc.fv3_gfs_settings.layout.y}
+              export layout_x_gfs={doc.fv3_gfs_settings.layout.x}
+              export layout_y_gfs={doc.fv3_gfs_settings.layout.y}
               export npe_node_fcst={doc.partition_common.resources.run_gdasfcst[0].max_ppn}
               export nth_fv3=2
               export npe_fv3={doc.partition_common.resources.run_gdasfcst[0].mpi_ranks}
               export cdmbgwd={doc.fv3_gfs_settings.cdmbgwd}  
                        # mountain blocking and gravity wave drag
-              export WRITE_GROUP={doc.fv3_gfs_settings.WRITE_GROUP}
-              export WRTTASK_PER_GROUP={doc.fv3_gfs_settings.WRTTASK_PER_GROUP}
-              export WRITE_GROUP_GFS={doc.fv3_gfs_settings.WRITE_GROUP}
-              export WRTTASK_PER_GROUP_GFS={doc.fv3_gfs_settings.WRTTASK_PER_GROUP}
-              export WRTIOBUF={doc.fv3_gfs_settings.WRTIOBUF}
+              export WRITE_GROUP={doc.fv3_gfs_settings.layout.WGRP}
+              export WRTTASK_PER_GROUP={doc.fv3_gfs_settings.layout.WGRP_NTASKS}
+              export WRITE_GROUP_GFS={doc.fv3_gfs_settings.layout.WGRP}
+              export WRTTASK_PER_GROUP_GFS={doc.fv3_gfs_settings.layout.WGRP_NTASKS}
+              export WRTIOBUF={doc.fv3_gfs_settings.layout.WRTIOBUF}
               ;;
         "GDAS")
               echo "BEGIN: config.fv3 for $forecast_mode"
               export DELTIM={doc.fv3_gdas_settings.DELTIM}
-              export layout_x={doc.fv3_gdas_settings.layout_x}
-              export layout_y={doc.fv3_gdas_settings.layout_y}
-              export layout_x_gfs={doc.fv3_gdas_settings.layout_x}
-              export layout_y_gfs={doc.fv3_gdas_settings.layout_y}
+              export OCNTIM={doc.fv3_gdas_settings.OCNTIM}
+              export ICETIM={doc.fv3_gdas_settings.ICETIM}
+              export layout_x={doc.fv3_gdas_settings.layout.x}
+              export layout_y={doc.fv3_gdas_settings.layout.y}
+              export layout_x_gfs={doc.fv3_gdas_settings.layout.x}
+              export layout_y_gfs={doc.fv3_gdas_settings.layout.y}
               export npe_node_fcst={doc.partition_common.resources.run_gdasfcst[0].max_ppn}
               export nth_fv3=2
               export npe_fv3={doc.partition_common.resources.run_gdasfcst[0].mpi_ranks}
               export cdmbgwd={doc.fv3_gdas_settings.cdmbgwd}
-              export WRITE_GROUP={doc.fv3_gdas_settings.WRITE_GROUP}
-              export WRTTASK_PER_GROUP={doc.fv3_gdas_settings.WRTTASK_PER_GROUP}
-              export WRITE_GROUP_GFS={doc.fv3_gdas_settings.WRITE_GROUP}
-              export WRTTASK_PER_GROUP_GFS={doc.fv3_gdas_settings.WRTTASK_PER_GROUP}
-              export WRTIOBUF={doc.fv3_gdas_settings.WRTIOBUF}
+              export WRITE_GROUP={doc.fv3_gdas_settings.layout.WGRP}
+              export WRTTASK_PER_GROUP={doc.fv3_gdas_settings.layout.WGRP_NTASKS}
+              export WRITE_GROUP_GFS={doc.fv3_gdas_settings.layout.WGRP}
+              export WRTTASK_PER_GROUP_GFS={doc.fv3_gdas_settings.layout.WGRP_NTASKS}
+              export WRTIOBUF={doc.fv3_gdas_settings.layout.WRTIOBUF}
               ;;
         "ENKF")
               echo "BEGIN: config.fv3 for $forecast_mode"
               export DELTIM={doc.fv3_enkf_settings.DELTIM}
-              export layout_x={doc.fv3_enkf_settings.layout_x}
-              export layout_y={doc.fv3_enkf_settings.layout_y}
-              export layout_x_gfs={doc.fv3_enkf_settings.layout_x}
-              export layout_y_gfs={doc.fv3_enkf_settings.layout_y}
+              export OCNTIM={doc.fv3_enkf_settings.OCNTIM}
+              export ICETIM={doc.fv3_enkf_settings.ICETIM}
+              export layout_x={doc.fv3_enkf_settings.layout.x}
+              export layout_y={doc.fv3_enkf_settings.layout.y}
+              export layout_x_gfs={doc.fv3_enkf_settings.layout.x}
+              export layout_y_gfs={doc.fv3_enkf_settings.layout.y}
               export npe_node_fcst={doc.partition_common.resources.run_efcs[0].max_ppn}
               export nth_fv3=2
               export npe_fv3={doc.partition_common.resources.run_efcs[0].mpi_ranks}
               export cdmbgwd={doc.fv3_enkf_settings.cdmbgwd}
-              export WRITE_GROUP={doc.fv3_enkf_settings.WRITE_GROUP}
-              export WRTTASK_PER_GROUP={doc.fv3_enkf_settings.WRTTASK_PER_GROUP}
-              export WRITE_GROUP_GFS={doc.fv3_enkf_settings.WRITE_GROUP}
-              export WRTTASK_PER_GROUP_GFS={doc.fv3_enkf_settings.WRTTASK_PER_GROUP}
-              export WRTIOBUF={doc.fv3_enkf_settings.WRTIOBUF}
+              export WRITE_GROUP={doc.fv3_enkf_settings.layout.WGRP}
+              export WRTTASK_PER_GROUP={doc.fv3_enkf_settings.layout.WGRP_NTASKS}
+              export WRITE_GROUP_GFS={doc.fv3_enkf_settings.layout.WGRP}
+              export WRTTASK_PER_GROUP_GFS={doc.fv3_enkf_settings.layout.WGRP_NTASKS}
+              export WRTIOBUF={doc.fv3_enkf_settings.layout.WRTIOBUF}
               ;;
           *)
               echo "CDUMP undefined!"

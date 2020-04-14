@@ -26,6 +26,14 @@ else
   coldstart=false
 fi
 
+ATM_model=${ATM_model:-'fv3'}
+OCN_model=${OCN_model:-'mom6'}
+ICE_model=${ICE_model:-'cice'}
+
+ATMPETS=${ATMPETS:-8}
+OCNPETS=${OCNPETS:-8}
+ICEPETS=${ICEPETS:-8}
+
 rm -f $DATA/nems.configure
 
 med_petlist_bounds=${med_petlist_bounds:-"0 $(( $ATMPETS-1 ))"}
@@ -63,12 +71,12 @@ ice_petlist_bounds=${ice_petlist_bounds:-"$(( $ATMPETS+$OCNPETS )) $(( $ATMPETS+
 # Copy the selected template into run directory
 cp $SCRIPTDIR/nems.configure.$confignamevarfornems.IN tmp1
 sed -i -e "s;@\[med_model\];nems;g" tmp1
-sed -i -e "s;@\[atm_model\];fv3;g" tmp1
+sed -i -e "s;@\[atm_model\];$ATM_model;g" tmp1
 sed -i -e "s;@\[med_petlist_bounds\];$med_petlist_bounds;g" tmp1
 sed -i -e "s;@\[atm_petlist_bounds\];$atm_petlist_bounds;g" tmp1
 
 if [ $cplflx = .true. ]; then
-        sed -i -e "s;@\[ocn_model\];mom6;g" tmp1
+        sed -i -e "s;@\[ocn_model\];$OCN_model;g" tmp1
 	sed -i -e "s;@\[ocn_petlist_bounds\];$ocn_petlist_bounds;g" tmp1
 	sed -i -e "s;@\[DumpFields\];$DumpFields;g" tmp1
 	sed -i -e "s;@\[coldstart\];$coldstart;g" tmp1
@@ -80,7 +88,7 @@ if [ $cplwav = .true. ]; then
 	sed -i -e "s;@\[wav_model\];ww3;g" tmp1
 fi
 if [ $cplice = .true. ]; then
-	sed -i -e "s;@\[ice_model\];cice;g" tmp1
+	sed -i -e "s;@\[ice_model\];$ICE_model;g" tmp1
 	sed -i -e "s;@\[ice_petlist_bounds\];$ice_petlist_bounds;g" tmp1
 fi
 if [ $cplchem = .true. ]; then

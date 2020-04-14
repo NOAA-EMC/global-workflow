@@ -18,19 +18,29 @@ default_settings: &default_settings
   rocoto_cycle_throttle: 2
 
   max_job_tries: 2
+  dev_safeguards: true
 
   # REALTIME and realtime - an alias that should be removed once we're
   # sure it is consistent among the yaml files:
   realtime: NO
+  run_vrfy_jobs: true
 
   four_cycle_mode: NO
   nco_mode: NO
   use_nco_ecflow_headers: NO
   print_esmf: .false.
+  prod_util_module: !calc doc.platform.get("prod_util_module","prod_util")
+  ecflow_real_clock: no
+  ecflow_virtual_clock: no
+  ecflow_hybrid_clock: no
 
   gfs_cyc: 4
   nems_temp: 'atm'
   nems_temp_cold: 'atm'
+  ics_from: opsgfs
+
+  parexp: prnemsrn
+  HPSS_PAR_PATH: !expand "/5year/NCEPDEV/emc-global/emc.glopara/WCOSS_C/{parexp}"
 
   cplflx: .false.
   cplice: !calc cplflx
@@ -43,6 +53,7 @@ default_settings: &default_settings
   KEEPDATA: NO
   DUMP_SUFFIX: ""
   run_gsi: No
+  run_enkf: !calc run_gsi
   chgres_and_convert_ics: Yes
 
   # awips setting
@@ -55,9 +66,6 @@ default_settings: &default_settings
 
   ecflow_module: !calc doc.platform.get("ecflow_module","ecflow") 
 
-  ecflow_real_clock: no
-  ecflow_virtual_clock: no
-  ecflow_hybrid_clock: no
   ecflow_totality_limit: yes
 
   ecflow_rocoto_cdate_workaround: !FirstTrue

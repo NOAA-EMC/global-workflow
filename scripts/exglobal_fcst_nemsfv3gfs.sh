@@ -1,4 +1,4 @@
-#!/bin/ksh
+#!/bin/bash
 ################################################################################
 ## UNIX Script Documentation Block
 ## Script name:         exglobal_fcst_nemsfv3gfs.sh
@@ -72,7 +72,6 @@
 ##	2. nems.configure
 ##	3. model_configure
 ##	4. input.nml
-
 #######################
 # Main body starts here
 #######################
@@ -83,29 +82,8 @@ if [ $VERBOSE = "YES" ] ; then
   set -x
 fi
 
-## Run in sandbox if no $machine defined
-## Locate mod_forecast script folder
-if [ -z $machine ]; then
-	machine='sandbox'
-	echo "MAIN: !!!Running in sandbox mode!!!"
-	unameOut="$(uname -s)"
-	case "${unameOut}" in
-    		Linux*)
-			SCRIPTDIR=$(dirname $(readlink -f "$0") )/../ush
-			echo "MAIN: Linux environment. Current Script locates in $SCRIPTDIR."
-			;;
-    		Darwin*)
-                        SCRIPTDIR=$(pwd)/../ush
-                        echo "MAIN: MacOS environment. Current Script locates in $SCRIPTDIR."
-			;;
-    		CYGWIN*)    echo CYGWIN ;;
-    		MINGW*)     echo MinGw ;;
-    		*)          echo "UNKNOWN:${unameOut}"
-    esac
-else
-	SCRIPTDIR=$(dirname $(readlink -f "$0") )/../ush
-	echo "MAIN: environment loaded for $machine platform,Current Script locates in $SCRIPTDIR."
-fi
+SCRIPTDIR=$(dirname $(readlink -f "$0") )/../ush
+echo "MAIN: environment loaded for $machine platform,Current Script locates in $SCRIPTDIR."
 
 # include all subroutines. Executions later.
 source $SCRIPTDIR/cplvalidate.sh	# validation of cpl*
@@ -114,6 +92,7 @@ source $SCRIPTDIR/forecast_det.sh  # include functions for run type determinatio
 source $SCRIPTDIR/forecast_postdet.sh	# include functions for variables after run type determination
 source $SCRIPTDIR/nems_configure.sh	# include functions for nems_configure processing
 source $SCRIPTDIR/parsing_model_configure_FV3.sh
+source $SCRIPTDIR/parsing_model_configure_DATM.sh
 
 # Compset string. For nems.configure.* template selection. Default ATM only
 confignamevarfornems=${confignamevarfornems:-'atm'}
@@ -125,15 +104,12 @@ cplwav=${cplwav:-.false.} # ? how to control 1-way/2-way?
 cplchem=${cplchem:-.false.} # Chemistry model
 cplice=${cplice:-.false.} # ICE model
 
-OCNTIM=${OCNTIM:-1800}
+OCNTIM=${OCNTIM:-3600}
 DELTIM=${DELTIM:-450}
 ICETIM=${DELTIM}
 
-CPL_SLOW=${OCNTIM}
-CPL_FAST=${ICETIM}
-# Coupling control switches, for coupling purpose, off by default
-
-[[ $machine = 'sandbox' ]] && RUN=gfs
+CPL_SLOW=${CPL_SLOW:-$OCNTIM}
+CPL_FAST=${CPL_FAST:-$ICETIM}
 
 echo "MAIN: $confignamevarfornems selected"
 echo "MAIN: Forecast script started for $confignamevarfornems on $machine"
@@ -149,7 +125,7 @@ common_predet
 
 echo $RUN
 case $RUN in
-	'data') Data_ATM_setup;;
+	'data') DATM_predet;;
 	'gfs') FV3_GFS_predet;;
 	'gdas') FV3_GFS_predet;;
 	'gefs') FV3_GEFS_predet;;
@@ -174,6 +150,7 @@ echo "MAIN: RUN Type Determined"
 echo "MAIN: Post-determination set up of run type"
 echo $RUN
 case $RUN in
+        'data') DATM_postdet;;
 	'gfs') FV3_GFS_postdet;;
 	'gdas') FV3_GFS_postdet;;
 	'gefs') FV3_GEFS_postdet;;
@@ -186,6 +163,7 @@ echo "MAIN: Post-determination set up of run type finished"
 
 echo "MAIN: Writing name lists and model configuration"
 case $RUN in
+        'data') DATM_nml;;
         'gfs') FV3_GFS_nml;;
         'gdas') FV3_GFS_nml;;
         'gefs') FV3_GEFS_nml;;
@@ -194,7 +172,13 @@ esac				#no namelist for data atmosphere
 [[ $cplwav = .true. ]] && WW3_nml
 [[ $cplice = .true. ]] && CICE_nml
 [[ $cplchem = .true. ]] && GSD_nml
-Common_model_configure
+
+case $RUN in
+        'data') DATM_model_configure;;
+        'gfs') FV3_model_configure;;
+        'gdas') FV3_model_configure;;
+        'gefs') FV3_model_configure;;
+esac
 echo "MAIN: Name lists and model configuration written"
 
 echo "MAIN: Writing NEMS Configure file"
@@ -205,38 +189,33 @@ echo "MAIN: NEMS configured"
 # run the executable
 
 if [ $machine != 'sandbox' ]; then
-	$NCP $FCSTEXECDIR/$FCSTEXEC $DATA/.
-	export OMP_NUM_THREADS=$NTHREADS_FV3
-	$APRUN_FV3 $DATA/$FCSTEXEC 1>&1 2>&2
-	export ERR=$?
-	export err=$ERR
-	$ERRSCRIPT || exit $err
+        $NCP $FCSTEXECDIR/$FCSTEXEC $DATA/.
+        export OMP_NUM_THREADS=$NTHREADS_FV3
+        $APRUN_FV3 $DATA/$FCSTEXEC 1>&1 2>&2
+        export ERR=$?
+        export err=$ERR
+        $ERRSCRIPT || exit $err
 else
-	echo "MAIN: mpirun launch here"
+        echo "MAIN: mpirun launch here"
 fi
 
-if [ $machine != 'sandbox' ]; then		
-	case $RUN in
-		'data') data_out_Data_ATM;;
-		'gfs') data_out_GFS;;
-		'gdas') data_out_GFS;;
-		'gefs') data_out_GEFS;;
-	esac
-	[[ $cplflx = .true. ]] && MOM6_out
-	[[ $cplwav = .true. ]] && WW3_out
-	[[ $cplice = .true. ]] && CICE_out
-	[[ $cplchem = .true. ]] && GSD_out
+if [ $machine != 'sandbox' ]; then
+        case $RUN in
+                'data') data_out_Data_ATM;;
+                'gfs') data_out_GFS;;
+                'gdas') data_out_GFS;;
+                'gefs') data_out_GEFS;;
+        esac
+        [[ $cplflx = .true. ]] && MOM6_out
+        [[ $cplwav = .true. ]] && WW3_out
+        [[ $cplice = .true. ]] && CICE_out
+        [[ $cplchem = .true. ]] && GSD_out
 else
-	echo "MAIN: Running on sandbox mode, no output linking"
+        echo "MAIN: Running on sandbox mode, no output linking"
 fi
 echo "MAIN: Output copied to COMROT"
 
 #------------------------------------------------------------------
-# Clean up before leaving
-if [ $mkdata = "YES" ]; then rm -rf $DATA; fi
-
-#------------------------------------------------------------------
-#set +x
 if [ $VERBOSE = "YES" ] ; then
   echo $(date) EXITING $0 with return code $err >&2
 fi
@@ -246,5 +225,6 @@ if [ $err != 0 ]; then
   exit $err
 else
   echo "MAIN: $confignamevarfornems Forecast completed at normal status"
+  if [ $KEEPDATA != "YES" ]; then rm -rf $DATA; fi
   exit 0
 fi

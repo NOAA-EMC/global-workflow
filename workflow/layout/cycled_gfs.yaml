@@ -153,7 +153,7 @@ suite: !Cycle
     post: !TaskArray
       RUN: !calc up.RUN
       Dimensions:
-        fhr: !calc doc.gfs_output_settings.gdas_forecast_hours
+        fhr: !calc doc.output_settings.gdas_forecast_hours
       post_manager_el: !TaskElement
         <<: *exclusive_task_template
         RUN: !calc up.RUN
@@ -308,7 +308,7 @@ suite: !Cycle
       post: !TaskArray
         Trigger: !Depend forecast
         Dimensions:
-          fhr: !calc doc.gfs_output_settings.enkf_epos_fhr
+          fhr: !calc doc.output_settings.enkf_epos_fhr
         jgdas_enkf_post_fhr: !TaskElement
           <<: *exclusive_task_template
           Foreach: [ fhr ]
@@ -436,7 +436,7 @@ suite: !Cycle
     post: !TaskArray
       RUN: !calc up.RUN
       Dimensions:
-        fhr: !calc doc.gfs_output_settings.gfs_forecast_hours
+        fhr: !calc doc.output_settings.gfs_forecast_hours
       jgfs_post_manager_el: !TaskElement
         <<: *exclusive_task_template
         RUN: !calc up.RUN
@@ -504,7 +504,7 @@ suite: !Cycle
           /usr/bin/env post_times={FHR} FHRLST={FHR} FHRGRP={FHR} &HOMEgfs;/jobs/{J_JOB}
 
       jgfs_pgrb2_spec_post: !FirstTrue
-        - when: !calc max(doc.gfs_output_settings.gfs_forecast_hours)>=384
+        - when: !calc max(doc.output_settings.gfs_forecast_hours)>=384
           do:  !Task
             <<: *exclusive_task_template
             Dummy: true  ## <-- Node is not implemented yet
@@ -548,7 +548,7 @@ suite: !Cycle
       grib_wafs: !TaskArray
         Disable: !calc not doc.downstream.DO_WAFS
         Dimensions:
-          fhr: !calc tools.seq(0,doc.gfs_output_settings.wafs_last_hour,6)
+          fhr: !calc tools.seq(0,doc.output_settings.wafs_last_hour,6)
         jgfs_wafs: !TaskElement
           <<: *exclusive_task_template
           Name: !expand 'jgfs_wafs_f{dimval.fhr:03d}'
@@ -609,7 +609,7 @@ suite: !Cycle
       awips_20km_1p0: !TaskArray
         Disable: !calc not doc.downstream.DO_AWIPS
         Dimensions:
-          fhr: !calc " sorted(list(set(doc.gfs_output_settings.gfs_forecast_hours)&set(doc.gfs_output_settings.awips_20km_1p0_hours))) "
+          fhr: !calc " sorted(list(set(doc.output_settings.gfs_forecast_hours)&set(doc.output_settings.awips_20km_1p0_hours))) "
         # tasks every 6 hours till f240
         jgfs_awips: !TaskElement
           <<: *exclusive_task_template
@@ -626,7 +626,7 @@ suite: !Cycle
       awips_g2: !TaskArray
         Disable: !calc not doc.downstream.DO_AWIPS
         Dimensions:
-          fhr: !calc " sorted(list(set(doc.gfs_output_settings.gfs_forecast_hours)&set(doc.gfs_output_settings.awips_g2_hours))) "
+          fhr: !calc " sorted(list(set(doc.output_settings.gfs_forecast_hours)&set(doc.output_settings.awips_g2_hours))) "
         jgfs_awips: !TaskElement
           <<: *exclusive_task_template
           Foreach: [ fhr ]
