@@ -354,46 +354,41 @@ fi
 #### Copy over WW3 inputs
 if [ $cplwav = ".true." ]; then
   # Link WW3 files
-  for file in $(ls $COMINWW3/${COMPONENTwave}.${PDY}/${cyc}/rundata/rmp_src_to_dst_conserv_*) ; do
+  for file in $(ls $COMINWW3/rundata/rmp_src_to_dst_conserv_*) ; do
     $NLN $file $DATA/
   done
-  $NLN $COMINWW3/${COMPONENTwave}.${PDY}/${cyc}/rundata/ww3_multi.${COMPONENTwave}${WAV_MEMBER}.${cycle}.inp $DATA/ww3_multi.inp
+  $NLN $COMINWW3/rundata/ww3_multi.${COMPONENTwave}${WAV_MEMBER}.${cycle}.inp $DATA/ww3_multi.inp
   # Check for expected wave grids for this run
   array=($WAVECUR_FID $WAVEICE_FID $WAVEWND_FID $waveuoutpGRD $waveGRD $waveesmfGRD $wavesbsGRD $wavepostGRD $waveinterpGRD)
   grdALL=`printf "%s\n" "${array[@]}" | sort -u | tr '\n' ' '`
   for wavGRD in ${grdALL}; do
     # Wave IC (restart) file must exist for warm start on this cycle, if not wave model starts from flat ocean
     # For IAU needs to use sPDY for adding IAU backup of 3h
-    $NLN $COMINWW3/${COMPONENTwave}.${PDY}/${cyc}/rundata/${COMPONENTwave}.mod_def.$wavGRD $DATA/mod_def.$wavGRD
+    $NLN $COMINWW3/rundata/${COMPONENTwave}.mod_def.$wavGRD $DATA/mod_def.$wavGRD
   done
 
   # Wave IC (restart) interval assumes 4 daily cycles (restarts only written by gdas cycle) 
   # WAVHCYC needs to be consistent with restart write interval in ww3_multi.inp or will FAIL
   WAVHCYC=${WAVHCYC:-6}
-  WRDATE=$($NDATE -${WAVHCYC} $CDATE)
-  WRPDY=$(echo $WRDATE | cut -c1-8)
-  WRcyc=$(echo $WRDATE | cut -c9-10)
-  WRDIR=$COMOUTWW3/${COMPONENTRSTwave}.${WRPDY}/${WRcyc}/restart
-  datwave=$COMOUTWW3/${COMPONENTwave}.${PDY}/${cyc}/rundata/
+  datwave=$COMOUTWW3/rundata
   wavprfx=${COMPONENTwave}${WAV_MEMBER}
   for wavGRD in $waveGRD ; do
     # Link wave IC for current cycle
     # Elimanted dependency on sPDY scyc, only required in GFS with IAU, not GEFS
     if [ -s ${WRDIR}/${PDY}.${cyc}0000.${COMPONENTwave}${WAV_MEMBER}.restart.${wavGRD} ]; then
-    $NLN ${WRDIR}/${PDY}.${cyc}0000.${COMPONENTwave}${WAV_MEMBER}.restart.${wavGRD} $DATA/restart.${wavGRD}
+      $NLN ${WRDIR}/${PDY}.${cyc}0000.${COMPONENTwave}${WAV_MEMBER}.restart.${wavGRD} $DATA/restart.${wavGRD}
       eval $NLN $datwave/${wavprfx}.log.${wavGRD}.${PDY}${cyc} log.${wavGRD}
     fi 
   done
 # Next-cycle restart for GEFS
   if [ "${COMPONENTwave}" = "gefswave" ]; then
-    WRDIR=$COMOUTWW3/${COMPONENTRSTwave}.${PDY}/${cyc}/restart
-    mkdir -p ${WRDIR}
+    mkdir -p $COMOUTWW3/restart
     RDATE=$($NDATE +$WAVHCYC $CDATE)
     rPDY=$(echo $RDATE | cut -c1-8)
     rcyc=$(echo $RDATE | cut -c9-10)
     for wavGRD in $waveGRD ; do
       # Copy wave IC for the next cycle
-      $NLN ${WRDIR}/${rPDY}.${rcyc}0000.${COMPONENTwave}${WAV_MEMBER}.restart.${wavGRD} $DATA/${rPDY}.${rcyc}0000.restart.${wavGRD}
+      $NLN $COMOUTWW3/restart/${rPDY}.${rcyc}0000.${COMPONENTwave}${WAV_MEMBER}.restart.${wavGRD} $DATA/${rPDY}.${rcyc}0000.restart.${wavGRD}
     done
   fi
 # Loop for checkpoint restart
@@ -413,10 +408,10 @@ if [ $cplwav = ".true." ]; then
 
 # Ice and (if) current
   if [ "$WW3ICEINP" = "YES" ]; then
-    $NLN $COMINWW3/${COMPONENTwave}.${PDY}/${cyc}/rundata/${COMPONENTwave}.${WAVEICE_FID}.${cycle}.ice $DATA/ice.${WAVEICE_FID}
+    $NLN $COMINWW3/rundata/${COMPONENTwave}.${WAVEICE_FID}.${cycle}.ice $DATA/ice.${WAVEICE_FID}
   fi
   if [ "$WW3CURINP" = "YES" ]; then
-    $NLN $COMINWW3/${COMPONENTwave}.${PDY}/${cyc}/rundata/${COMPONENTwave}.${WAVECUR_FID}.${cycle}.cur $DATA/current.${WAVECUR_FID}
+    $NLN $COMINWW3/rundata/${COMPONENTwave}.${WAVECUR_FID}.${cycle}.cur $DATA/current.${WAVECUR_FID}
   fi
   # Link output files
   cd $DATA
