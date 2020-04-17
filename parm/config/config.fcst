@@ -38,7 +38,7 @@ fi
 if [ $DO_WAVE = "YES" ] ; then
   export npe_fcst=$((npe_fcst + npe_wav))
   if [ "$WAVE_CDUMP" = "gfs" -o "$WAVE_CDUMP" = "both" ]; then
-     export npe_fcst_gfs=$((npe_fcst_gfs + npe_wav))
+     export npe_fcst_gfs=$((npe_fcst_gfs + npe_wav_gfs))
   fi
 fi
 
