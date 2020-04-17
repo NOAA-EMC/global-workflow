@@ -24,16 +24,16 @@ platform: !Platform
 
   # DMPDIR - location of the global dump data.  This is used by the observation
   # processing scripts, which are not included in the public release.
-  DMPDIR: "/scratch1/NCEPDEV/global/glopara/dump"
-  NWPROD: "/scratch1/NCEPDEV/global/glopara/svn/verif/global/tags/vsdb/nwprod"
-  RTMFIX: "/scratch1/NCEPDEV/global/glopara/crtm/2.2.3/fix_update/"
-  BASE_SVN: "/scratch1/NCEPDEV/global/glopara/svn"
+  DMPDIR: "/work/noaa/marine/place_holder"
+  NWPROD: "/work/noaa/marine/place_holder"
+  RTMFIX: "/work/noaa/marine/place_holder"
+  BASE_SVN: "/work/noaa/marine/place_holder"
 
   # BASE_GIT - a directory maintained by emc global model developers
   # that contains recent versions of source code and executables for
   # various git repositories. This is used on some platforms to find
   # executables for this workflow.
-  BASE_GIT: "/scratch1/NCEPDEV/global/glopara/git/"
+  BASE_GIT: "/work/noaa/marine/place_holder"
 
   config_base_extras: !expand |
      echo "place holder for NWPROD and associated utilities, all except POSTGRB2TBL are going through load_gfs_modules.sh"
