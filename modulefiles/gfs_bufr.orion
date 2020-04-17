@@ -1,0 +1,26 @@
+#%Module#####################################################
+## bufrsnd
+#############################################################
+
+module load intel/2018.4
+module load impi/2018.4
+
+module load gempak/7.5.1
+
+module use /work/noaa/noaatest/NCEPLIBS/lib/modulefiles
+module load netcdf/4.7.2-parallel
+module load hdf5/1.10.5-parallel
+
+module use /apps/contrib/NCEPLIBS/lib/modulefiles
+module load bacio-intel-sandybridge/2.0.2
+module load w3nco-intel-sandybridge/2.0.6
+module load sigio-intel-sandybridge/2.1.0
+module load bufr-intel-sandybridge/11.2.0
+module load nemsio-intel-sandybridge/2.2.3
+module load w3emc-intel-sandybridge/2.4.0p
+#module load netcdfp/4.7.4
+
+export myFC=$FCOMP   
+export myFCFLAGS="-O3 -convert big_endian -traceback -g -fp-model source -qopenmp"
+export myCPP=/lib/cpp
+export myCPPFLAGS="-P"

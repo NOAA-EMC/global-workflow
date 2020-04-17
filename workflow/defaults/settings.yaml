@@ -45,6 +45,7 @@ default_settings: &default_settings
   cplflx: .false.
   cplice: !calc cplflx
   cpl: .false.
+  mom6ic_prepared: .false. # If set True, User need to manually copy mom6ic files into ROTIDR
 
   DOIAU: NO
   IAUFHRS: 6
