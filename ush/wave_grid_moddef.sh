@@ -64,7 +64,7 @@
 # 0.c Define directories and the search path.
 #     The tested variables should be exported by the postprocessor script.
 
-  if [ -z "$grdID" ] || [ -z "$EXECcode" ] || [ -z "$wave_sys_ver" ]
+  if [ -z "$grdID" ] || [ -z "$EXECwave" ] || [ -z "$wave_sys_ver" ]
   then
     set +x
     echo ' '
@@ -83,14 +83,14 @@
   set +x
   echo ' '
   echo '   Creating mod_def file ...'
-  echo "   Executing $EXECcode/ww3_grid"
+  echo "   Executing $EXECwave/ww3_grid"
   echo ' '
   [[ "$LOUD" = YES ]] && set -x
  
   rm -f ww3_grid.inp 
   ln -sf ../ww3_grid.inp.$grdID ww3_grid.inp
  
-  $EXECcode/ww3_grid
+  $EXECwave/ww3_grid 1> grid_${grdID}.out 2>&1
   err=$?
 
   if [ "$err" != '0' ]

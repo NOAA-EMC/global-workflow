@@ -8,6 +8,6 @@ echo "BEGIN: config.analcalc"
 # Get task specific resources
 . $EXPDIR/config.resources analcalc
 
-export ANALCALCSH=$HOMEgfs/jobs/JGLOBAL_ANALCALC
+export ANALCALCSH=$HOMEgsi/scripts/exglobal_analcalc_fv3gfs.sh.ecf
 
 echo "END: config.analcalc"

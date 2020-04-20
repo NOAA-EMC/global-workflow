@@ -37,16 +37,19 @@ if [[ "$CDATE" -ge "2019021900" && "$CDATE" -lt "2019110706" ]]; then
     export PRVT=$FIXgsi/gfsv16_historical/prepobs_errtable.global.2019021900
 fi
 
-# NOTE:
-#   As of 2019110706, gfsv16_historical/global_convinfo.txt.2019110706 is
-#   identical to ../global_convinfo.txt.  Thus, the logical below is not
-#   needed at this time.   A similar comment applies to ../prepobs_errtable.global
-#   and gfsv16_historical/prepobs_errtable.global.2019110706
-
 # Place GOES-15 AMVs in monitor, assimilate GOES-17 AMVs, assimilate KOMPSAT-5 gps
-##  if [[ "$CDATE" -ge "2019110706" ]]; then
-##     export PRVT=$FIXgsi/gfsv16_historical/prepobs_errtable.global.2019110706
-##  fi
+  if [[ "$CDATE" -ge "2019110706" && "$CDATE" -lt "2020040718" ]]; then
+     export PRVT=$FIXgsi/gfsv16_historical/prepobs_errtable.global.2019110706
+  fi
 
+#NOTE:
+#   As of 2020040718, gfsv16_historical/prepobs_errtable.global.2020040718 is
+#   identical to ../prepobs_errtable.global.  Thus, the logic below is not
+#   needed at this time
+
+# Set observation errors for type 135 (T) & 235 (uv) Canadian AMDAR observations
+##if [[ "$CDATE" -ge "2020040718" && "$CDATE" -lt "YYYMMDDHH" ]]; then_break
+##    export PRVT=$EXPDIR/prepobs_errtable.global
+##fi
 
 echo "END: config.prep"

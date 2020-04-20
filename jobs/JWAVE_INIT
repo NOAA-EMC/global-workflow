@@ -1,6 +1,7 @@
 #!/bin/bash
 
 date
+export RUN_ENVIR=${RUN_ENVIR:-"nco"}
 export PS4=' $SECONDS + '
 set -x -e
 
@@ -57,14 +58,15 @@ NTASKS=${NTASKS:-${npe_node_waveinit}}
 export NTASKS=${NTASKS:?NTASKS required to be set}
 
 # Path to HOME Directory
-export CODEwave=${CODEwave:-${HOMEfv3gfs}/WW3}
-export EXECwave=${EXECwave:-$HOMEwave/exec}
 export FIXwave=${FIXwave:-$HOMEwave/fix/fix_wave_${NET}}
 export PARMwave=${PARMwave:-$HOMEwave/parm/wave}
 export USHwave=${USHwave:-$HOMEwave/ush}
-export EXECcode=${EXECcode:-$CODEwave/exec}
+export EXECwave=${EXECwave:-$HOMEgfs/exec}
 
 # Set COM Paths and GETGES environment
+if [ $RUN_ENVIR = "nco" ]; then
+    export ROTDIR=${COMROOT:?}/$NET/$envir
+fi
 export COMINwave=${COMINwave:-${ROTDIR:?}}
 export COMOUTwave=${COMOUTwave:-${ROTDIR:?}}
 export COMIN=${COMIN:-${COMINwave}/${COMPONENTwave}.${PDY}/${cyc}}
@@ -75,19 +77,18 @@ if [ $SENDCOM = YES ]; then
   mkdir -p $COMOUT/rundata
 fi
 
-export wavelog=${COMOUTwave}/wave.log
-
 # Set mpi serial command
-export wavempexec=${wavempexec:-"mpirun -n"}
-export wave_mpmd=${wave_mpmd:-"cfp"}
+export wavempexec=${launcher:-"mpirun -n"}
+export wave_mpmd=${mpmd:-"cfp"}
 
 # Execute the Script  
 $HOMEwave/scripts/exwave_init.sh
 
-# Remove temp directories
-if [ "$KEEPDATA" != "YES" ]; then
-  cd $DATAROOT
-  rm -rf $DATA
-fi
-date
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd $DATAROOT
+[[ $KEEPDATA = "NO" ]] && rm -rf $DATA
 
+date
+exit 0

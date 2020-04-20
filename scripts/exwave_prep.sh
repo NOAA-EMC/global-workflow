@@ -116,15 +116,20 @@
     time_rst1_end="`echo $ymdh_rst1_end | cut -c1-8` `echo $ymdh_rst1_end | cut -c9-10`0000"
   fi
 # Second restart file for checkpointing
-  time_rst2_ini="`echo $ymdh_rst2_ini | cut -c1-8` `echo $ymdh_rst2_ini | cut -c9-10`0000"
-  time_rst2_end=$time_end
-# Condition for gdas run or any other run when checkpoint stamp is > ymdh_end
-  if [ $ymdh_rst2_ini -ge $ymdh_end ]; then
-    ymdh_rst2_ini=`$NDATE 3 $ymdh_end`
+  if [ "${RSTTYPE_WAV}" = "T" ]; then
     time_rst2_ini="`echo $ymdh_rst2_ini | cut -c1-8` `echo $ymdh_rst2_ini | cut -c9-10`0000"
-    time_rst2_end=$time_rst2_ini
+    time_rst2_end=$time_end
+# Condition for gdas run or any other run when checkpoint stamp is > ymdh_end
+    if [ $ymdh_rst2_ini -ge $ymdh_end ]; then
+      ymdh_rst2_ini=`$NDATE 3 $ymdh_end`
+      time_rst2_ini="`echo $ymdh_rst2_ini | cut -c1-8` `echo $ymdh_rst2_ini | cut -c9-10`0000"
+      time_rst2_end=$time_rst2_ini
+    fi
+  else
+    time_rst2_ini="$"
+    time_rst2_end=
+    DT_2_RST_WAV=
   fi
-
   set +x
   echo ' '
   echo 'Times in wave model format :'
@@ -185,25 +190,27 @@
       echo ' '
       echo $msg
       [[ "$LOUD" = YES ]] && set -x
-      echo "$WAV_MOD_TAG prep $date $cycle : ${COMPONENTwave}.mod_def.${grdID} missing." >> $wavelog
       err=2;export err;${errchk}
     fi
   done
 
 # 1.b Netcdf Preprocessor template files
+   if [ "$WW3ATMINP" = 'YES' ]; then itype="$itype wind" ; fi 
+   if [ "$WW3ICEINP" = 'YES' ]; then itype="$itype ice" ; fi 
+   if [ "$WW3CURINP" = 'YES' ]; then itype="$itype cur" ; fi 
 
-   for grdID in $grdINP
+   for type in $itype
    do
 
-     case $grdID in
-       $WAVECUR_FID ) 
-                type='cur' 
+     case $type in
+       wind )
+         grdID=$WAVEWND_FID
        ;;
-       $WAVEWND_FID )
-                type='wind'
+       ice )
+         grdID=$WAVEICE_FID 
        ;;
-       $WAVEICE_FID )
-                type='ice'
+       cur )
+         grdID=$WAVECUR_FID 
        ;;
        * )
               echo 'Input type not yet implemented' 	    
@@ -236,7 +243,6 @@
        echo $msg
        echo ' '
        [[ "$LOUD" = YES ]] && set -x
-       echo "$WAV_MOD_TAG prep $date $cycle : ww3_prnc.${type}.$grdID.tmpl missing." >> $wavelog
        err=4;export err;${errchk}
      fi
    done
@@ -270,7 +276,6 @@
         err=5;export err;${errchk}
       else
         mv -f ice.out $DATA/outtmp
-        rm -f ww3_prep.$WAVEICE_FID.tmpl mod_def.$WAVEICE_FID
         set +x
         echo ' '
         echo '      Ice field unpacking successful.'
@@ -322,7 +327,7 @@
   
       set +x
       echo ' '
-      echo "   Executing the copy command file at : `date`"
+      echo "   Executing the wnd grib cmd file at : `date`"
       echo '   ------------------------------------'
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
@@ -423,7 +428,6 @@
         echo '**********************************'
         echo '            Possibly in multiple calls'
         [[ "$LOUD" = YES ]] && set -x
-        echo "$WAV_MOD_TAG prep $date $cycle : error in wind grib2 files." >> $wavelog
         set +x
         for file in grb_*.out
         do
@@ -448,7 +452,6 @@
         echo ' '
         echo $msg
         [[ "$LOUD" = YES ]] && set -x
-        echo "$WAV_MOD_TAG prep $date $cycle : fatal error in grib2 wind files." >> $wavelog
         err=6;export err;${errchk}
       fi
   
@@ -475,7 +478,6 @@
         echo '******************************************** '
         echo ' '
         [[ "$LOUD" = YES ]] && set -x
-        echo "$WAV_MOD_TAG prep $date $cycle : no wind files found." >> $wavelog
         err=7;export err;${errchk}
       fi
   
@@ -505,10 +507,10 @@
         ln -sf mod_def.$grdID mod_def.ww3
   
         set +x
-        echo "Executing $EXECcode/ww3_prnc"
+        echo "Executing $EXECwave/ww3_prnc"
         [[ "$LOUD" = YES ]] && set -x
   
-        $EXECcode/ww3_prnc > prnc.out
+        $EXECwave/ww3_prnc > prnc.out
         err=$?
   
         if [ "$err" != '0' ]
@@ -522,7 +524,6 @@
           echo '*************************************** '
           echo ' '
           [[ "$LOUD" = YES ]] && set -x
-          echo "$WAV_MOD_TAG prep $grdID $date $cycle : error in waveprnc." >> $wavelog
           err=8;export err;${errchk}
         fi
   
@@ -539,7 +540,6 @@
           echo '****************************************'
           echo ' '
           [[ "$LOUD" = YES ]] && set -x
-          echo "$WAV_MOD_TAG prep $grdID $date $cycle : wind.ww3 missing." >> $wavelog
           err=9;export err;${errchk}
         fi
 
@@ -582,7 +582,7 @@
           echo '************************************************'
           echo ' '
           [[ "$LOUD" = YES ]] && set -x
-          echo "$WAV_MOD_TAG prep $grdID $date $cycle : error in wind increment." >> $wavelog
+          postmsg "$jlogfile" "$WAV_MOD_TAG prep $grdID $date $cycle : error in wind increment."
           err=10;export err;${errchk}
         fi
     
@@ -684,7 +684,7 @@
 
       set +x
       echo ' '
-      echo "   Executing the copy command file at : `date`"
+      echo "   Executing the curr prnc cmdfile at : `date`"
       echo '   ------------------------------------'
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
@@ -711,7 +711,7 @@
         [[ "$LOUD" = YES ]] && set -x
       fi
 
-      files=`ls ${WAVECUR_FID}.* 2> /dev/null`
+      files=`ls ${WAVECUR_DID}.* 2> /dev/null`
 
       if [ -z "$files" ]
       then
@@ -724,7 +724,6 @@
         echo '******************************************** '
         echo ' '
         [[ "$LOUD" = YES ]] && set -x
-        echo "$WAV_MOD_TAG prep $date $cycle : no current files found." >> $wavelog
         err=11;export err;${errchk}
       fi
 
@@ -772,7 +771,6 @@
     echo '*** FATAL ERROR : NO TEMPLATE FOR INPUT FILE *** '
     echo '************************************************ '
     echo ' '
-    echo "${WAV_MOD_TAG} fcst $date $cycle : ww3_multi file missing." >> $wavelog
     echo $msg
     [[ "$LOUD" = YES ]] && set -x
     err=12;export err;${errchk}
@@ -796,7 +794,6 @@
     [[ "$LOUD" = YES ]] && set -x
     postmsg "$jlogfile" " FATAL ERROR : buoy.loc ($FIXwave/wave_${NET}.buoys) NOT FOUND"
     touch buoy.loc
-    echo "$WAV_MOD_TAG fcst $date $cycle : no buoy locations file ($FIXwave/wave_${NET}.buoys)." >> $wavelog
     err=13;export err;${errchk}
   fi
 
@@ -840,6 +837,7 @@
   case ${WW3ICEINP} in
     'YES' ) 
       NFGRIDS=`expr $NFGRIDS + 1`
+      ICEIFLAG='T'
       ICELINE="  '$WAVEICE_FID'  F F F T F F F"
       ICEFLAG="$WAVEICE_FID"
     ;;
@@ -852,14 +850,19 @@
 
   case ${WW3CURINP} in
     'YES' ) 
-      NFGRIDS=`expr $NFGRIDS + 1`
-      CURRLINE="  '$WAVECUR_FID'  F T F F F F F"
-      CURRFLAG="$WAVECUR_FID"
+      if [ "$WAVECUR_FID" != "$WAVEICE_FID" ]; then
+        NFGRIDS=`expr $NFGRIDS + 1`
+        CURRLINE="  '$WAVECUR_FID'  F T F F F F F"
+        CURRFLAG="$WAVECUR_FID"
+      else # cur fields share the same grid as ice grid
+        ICELINE="  '$WAVEICE_FID'  F T F ${ICEIFLAG} F F F"
+        CURRFLAG="$WAVEICE_FID"
+      fi
     ;;
     'CPL' )
       CURRFLAG="CPL:${waveesmfGRD}"
       CURIFLAG='T'
-      CPLILINE="  '${waveesmfGRD}' F T ${WNDIFLAG} ${ICEIFLAG} F F F"
+      CPLILINE="  '${waveesmfGRD}' F T ${WNDIFLAG} ${ICEFLAG} F F F"
     ;;
   esac
 
@@ -883,7 +886,7 @@
   sed -e "s/NFGRIDS/$NFGRIDS/g" \
       -e "s/NMGRIDS/${NMGRIDS}/g" \
       -e "s/FUNIPNT/${FUNIPNT}/g" \
-      -e "s/PNTSRV/${PNTSRV}/g" \
+      -e "s/IOSRV/${IOSRV}/g" \
       -e "s/FPNTPROC/${FPNTPROC}/g" \
       -e "s/FGRDPROC/${FGRDPROC}/g" \
       -e "s/OUTPARS/${OUTPARS_WAV}/g" \
@@ -930,24 +933,25 @@
 
 # 6. Copy rmp grid remapping pre-processed coefficients
 
-  if ls $FIXwave/rmp_src_to_dst_conserv_* 2> /dev/null
-  then
-    for file in $(ls $FIXwave/rmp_src_to_dst_conserv_*) ; do
-      cp -f $file ${COMOUT}/rundata
-    done
-  else
-    msg="NO rmp precomputed nc files found, is this OK???"
-    postmsg "$jlogfile" "$msg"
-    set +x
-    echo ' '
-    echo '************************************************ '
-    echo '*** FATAL ERROR : NO PRECOMPUTED RMP FILES FOUND *** '
-    echo '************************************************ '
-    echo ' '
-    echo "${WAV_MOD_TAG} prep $date $cycle : rmp*.nc not found." >> $wavelog
-    echo $msg
-    [[ "$LOUD" = YES ]] && set -x
-    err=13;export err;${errchk}
+  if [ "${USE_WAV_RMP:-YES}" = "YES" ]; then
+    if ls $FIXwave/rmp_src_to_dst_conserv_* 2> /dev/null
+    then
+      for file in $(ls $FIXwave/rmp_src_to_dst_conserv_*) ; do
+        cp -f $file ${COMOUT}/rundata
+      done
+    else
+      msg="NO rmp precomputed nc files found, is this OK???"
+      postmsg "$jlogfile" "$msg"
+      set +x
+      echo ' '
+      echo '************************************************ '
+      echo '*** FATAL ERROR : NO PRECOMPUTED RMP FILES FOUND *** '
+      echo '************************************************ '
+      echo ' '
+      echo $msg
+      [[ "$LOUD" = YES ]] && set -x
+      err=13;export err;${errchk}
+    fi
   fi
 
 

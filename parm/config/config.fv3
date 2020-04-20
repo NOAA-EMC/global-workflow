@@ -42,6 +42,7 @@ case $case_in in
         export layout_x_gfs=2
         export layout_y_gfs=4
         export npe_wav=70
+        export npe_wav_gfs=70
         export nth_fv3=1
         export cdmbgwd="0.071,2.1,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=1
@@ -57,6 +58,7 @@ case $case_in in
         export layout_x_gfs=4
         export layout_y_gfs=4
         export npe_wav=70
+        export npe_wav_gfs=70
         export nth_fv3=1
         export cdmbgwd="0.14,1.8,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=1
@@ -72,6 +74,7 @@ case $case_in in
         export layout_x_gfs=4
         export layout_y_gfs=6
         export npe_wav=70
+        export npe_wav_gfs=70
         export nth_fv3=2
         export cdmbgwd="0.23,1.5,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=1
@@ -82,11 +85,12 @@ case $case_in in
         ;;
     "C384")
         export DELTIM=240
-        export layout_x=6
+        export layout_x=8
         export layout_y=8
         export layout_x_gfs=6
         export layout_y_gfs=6
         export npe_wav=270
+        export npe_wav_gfs=270
         export nth_fv3=1
         export cdmbgwd="1.1,0.72,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=1
@@ -101,7 +105,8 @@ case $case_in in
         export layout_y=8
         export layout_x_gfs=16
         export layout_y_gfs=12
-        export npe_wav=270
+        export npe_wav=280
+        export npe_wav_gfs=280
         export nth_fv3=4
         export cdmbgwd="4.0,0.15,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=2
@@ -117,6 +122,7 @@ case $case_in in
         export layout_x_gfs=8
         export layout_y_gfs=16
         export npe_wav=270
+        export npe_wav_gfs=270
         export nth_fv3=4
         export cdmbgwd="4.0,0.10,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=4
@@ -132,6 +138,7 @@ case $case_in in
         export layout_x_gfs=16
         export layout_y_gfs=32
         export npe_wav=270
+        export npe_wav_gfs=270
         export nth_fv3=4
         export cdmbgwd="4.0,0.05,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=4

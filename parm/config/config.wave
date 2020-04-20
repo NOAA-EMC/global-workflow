@@ -10,6 +10,9 @@ echo "BEGIN: config.wave"
 # System and version
 export wave_sys_ver=v1.0.0
 
+# This config contains variables/parameters used in the fcst step
+# Some others are also used across the workflow in wave component scripts
+
 # General runtime labels
 # export WAV_MOD_ID=${WAV_MOD_ID:-wave} # generic modID=wave valid for GFSv16 and beyond
 # COMPONENTwave stands for model component, in addition to NET/RUN for coupled systems
@@ -20,7 +23,8 @@ export COMPONENTwave=${COMPONENTwave:-${RUN}wave}
 export COMPONENTRSTwave=${COMPONENTRSTwave:-gdaswave}
 
 # Grids for wave model
-export waveGRD='glo_10m aoc_9km ant_9km'
+# GFSv16
+export waveGRD='gnh_10m aoc_9km gsh_15m'
 export waveGRDN='1 2 3' # gridnumber for ww3_multi
 export waveGRDG='10 20 30' # gridgroup for ww3_multi
 
@@ -29,18 +33,18 @@ export waveesmfGRD='glox_10m' # input grid
 
 # Grids for input fields
 export WAVEICE_DID=sice
-export WAVEICE_FID=icean_5m
+export WAVEICE_FID=glix_10m
 export WAVECUR_DID=rtofs
-export WAVECUR_FID=rtofs_5m
+export WAVECUR_FID=glix_10m
 export WAVEWND_DID=
 export WAVEWND_FID=
 
-# Grids for output fields
+# Grids for output fields (used in all steps)
 export waveuoutpGRD=points
 export waveinterpGRD='glo_15mxt' # Grids that need to be interpolated from native
                              # in POST will generate grib unless gribOK not set
 export wavesbsGRD=''  # side-by-side grids generated as wave model runs, writes to com
-export wavepostGRD='glo_10m aoc_9km ant_9km' # Native grids that will be post-processed (grib2)
+export wavepostGRD='gnh_10m aoc_9km gsh_15m' # Native grids that will be post-processed (grib2)
 
 # CDATE
 export CDATE=${PDY}${cyc}
@@ -48,38 +52,24 @@ export CDATE=${PDY}${cyc}
 # The start time reflects the number of hindcast hours prior to the cycle initial time
 if [ "$CDUMP" = "gdas" ]
 then
-  export FHMAX_WAV=${FHMAX_WAV:-9}
+  export FHMAX_WAV=${FHMAX:-9}
+else
+  FHMAX_GFS="FHMAX_GFS_${cyc}"
+  export FHMAX_WAV=${!FHMAX_GFS}
 fi
 export WAVHINDH=${WAVHINDH:-0}
 export FHMIN_WAV=${FHMIN_WAV:-0}
 export FHOUT_WAV=${FHOUT_WAV:-3}
-export FHMAX_WAV=${FHMAX_WAV:-384}
 export FHMAX_HF_WAV=${FHMAX_HF_WAV:-120}
 export FHOUT_HF_WAV=${FHOUT_HF_WAV:-1}
 
-# Output stride
-export WAV_WND_HOUR_INC=1      # This value should match with the one used in
-                         # the wind update script
 # gridded and point output rate
 export DTFLD_WAV=`expr $FHOUT_HF_WAV \* 3600`
 export DTPNT_WAV=3600
 export FHINCP_WAV=`expr $DTPNT_WAV / 3600`
 
 # Selected output parameters (gridded)
-export OUTPARS_WAV="WND CUR ICE HS T01 T02 DIR FP DP PHS PTP PDIR CHAR"
-# GFS # export OUTPARS_WAV='WND CUR ICE HS T01 T02 DIR FP DP PHS PTP PDIR CHAR'
-
-# Options for point output (switch on/off boundary point output)
-export DOIBP_WAV='NO'
-
-# Intake currents settings
-export WAV_CUR_DT=${WAV_CUR_DT:-3}
-export WAV_CUR_HF_DT=${WAV_CUR_HF_DT:-1}
-export WAV_CUR_HF_FH=${WAV_CUR_HF_FH:-72}
-export WAV_CUR_CDO_SMOOTH="NO"
-
-# Number of cycles to look back for restart files
-export nback=
+export OUTPARS_WAV="WND CUR ICE HS T01 T02 DIR FP DP PHS PTP PDIR CHA"
 
 # Restart file config
 if [ "$CDUMP" = "gdas" ]
@@ -98,10 +88,17 @@ fi
 export FHMAX_WAV_CUR WAVHCYC WAVNCYC
 
 # Restart timing business
-export RSTTYPE_WAV='T' # generate second tier of restart files
-export DT_1_RST_WAV=10800 # time between restart files, set to DTRST=1 for a single restart file
-export DT_2_RST_WAV=43200  # restart stride for checkpointing restart
-export RSTIOFF_WAV=0 # first restart file offset relative to model start
+if [ "${CDUMP}" != gfs ]; then # Setting is valid for GDAS and GEFS 
+  export RSTTYPE_WAV='T' # generate second tier of restart files
+  export DT_1_RST_WAV=10800 # time between restart files, set to DTRST=1 for a single restart file
+  export DT_2_RST_WAV=43200  # restart stride for checkpointing restart
+  export RSTIOFF_WAV=0 # first restart file offset relative to model start
+else # This is a GFS run
+  export RSTTYPE_WAV='F' # generate second tier of restart files
+  export DT_1_RST_WAV=0 # time between restart files, set to DTRST=1 for a single restart file
+  export DT_2_RST_WAV=0  # restart stride for checkpointing restart
+  export RSTIOFF_WAV=0 # first restart file offset relative to model start
+fi
 #
 # Set runmember to default value if not GEFS cpl run
 #  (for a GFS coupled run, RUNMEN would be unset, this should default to -1)
@@ -120,10 +117,6 @@ fi
 export WW3ATMINP='CPL'
 export WW3ICEINP='YES'
 export WW3CURINP='YES'
-
-if [ "${WW3ICEINP}" = "YES" ]; then
-  export WAVICEFILE=${CDUMP}.t${cyc}z.seaice.5min.grib2
-fi
 
 # Determine if input is from perturbed ensemble (T) or single input file (F) for all members
 export WW3ATMIENS='F'

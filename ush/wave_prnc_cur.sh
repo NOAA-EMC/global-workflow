@@ -56,7 +56,7 @@ fi
 # Cleanup
 rm -f cur_temp[123].nc cur_5min_??.nc cur_glo_uv_${PDY}_${fext}${fhr}.nc weights.nc
 
-if [ ${fhr_wave} -gt ${WAVHINDH} ] 
+if [ ${fhr} -gt ${WAVHINDH} ] 
 then
   sed -e "s/HDRFL/F/g" ${FIXwave}/ww3_prnc.cur.${WAVECUR_FID}.inp.tmpl > ww3_prnc.inp
 else
@@ -65,11 +65,11 @@ fi
 
 rm -f cur.nc
 ln -s cur_glo_uv_${PDY}_${fext}${fhr}_5min.nc cur.nc
-ln -s ${DATA}/mod_def.rtofs_5m ./mod_def.ww3
+ln -s ${DATA}/mod_def.${WAVECUR_FID} ./mod_def.ww3
 
-$EXECcode/ww3_prnc
+$EXECwave/ww3_prnc 1> prnc_${WAVECUR_FID}_${ymdh_rtofs}.out 2>&1
 
-mv -f current.ww3 ${DATA}/${WAVECUR_FID}.${ymdh_rtofs}
+mv -f current.ww3 ${DATA}/${WAVECUR_DID}.${ymdh_rtofs}
 
 cd ${DATA}
 
