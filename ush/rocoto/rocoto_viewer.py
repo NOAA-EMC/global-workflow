@@ -193,7 +193,7 @@ def load_produtil_pythonpath():
 
     PRODUTIL = collections.defaultdict(list) 
     PRODUTIL['hera'] = '/scratch1/NCEPDEV/global/glopara/svn/nceplibs/produtil/trunk/ush'
-    PRODUTIL['orion'] = '/work/noaa/noaatest/kfriedma/glopara/svn/nceplibs/produtil/trunk/ush'
+    PRODUTIL['orion'] = '/work/noaa/nems/kfriedma/glopara/svn/nceplibs/produtil/trunk/ush'
     PRODUTIL['luna']  = '/gpfs/hps3/emc/global/noscrub/emc.glopara/svn/nceplibs/produtil/trunk/ush'
     PRODUTIL['surge']  = '/gpfs/hps3/emc/global/noscrub/emc.glopara/svn/nceplibs/produtil/trunk/ush'
     PRODUTIL['mars']  = '/gpfs/dell2/emc/modeling/noscrub/emc.glopara/svn/nceplibs/produtil/trunk/ush'
