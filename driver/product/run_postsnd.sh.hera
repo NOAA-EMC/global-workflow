@@ -1,8 +1,8 @@
 #!/bin/ksh -l
 #SBATCH -A fv3-cam        # Use a valid account
 #SBATCH --time=2:30:00    # For big directories you may want 8:00:00 hrs
-#SBATCH -N 6              # Probably 2 to 4 depending on amount of data
-#SBATCH -n 12
+#SBATCH -N 20              # Probably 2 to 4 depending on amount of data
+#SBATCH -n 40
 #SBATCH -o %x.o%j
 #SBATCH -J postsnd
 
@@ -28,8 +28,8 @@ module load nemsio/v2.2.1
 module load gempak/7.4.2
 module load prod_util
 
-module load netcdf/4.7.0
-module load hdf5/1.10.5
+module load netcdf_parallel/4.7.4
+module load hdf5_parallel/1.10.6
 module load intelpython/3.6.8
 
 module use -a /contrib/modulefiles
@@ -49,8 +49,9 @@ export MP_STDOUTMODE=ordered
 #machine="WCOSS_DELL_P3"
 machine="HERA"
 #machine="JET"
-export npe_postsnd=12
+export npe_postsnd=40
 export npe_postsndcfp=10
+export OUTPUT_FILE=${OUTPUT_FILE:-netcdf}
 if [ $machine == "WCOSS_C" ]; then
 ##For WCOSS-Cray##################
 export FHMAX_HF_GFS=120
@@ -75,8 +76,8 @@ else
 ##export FHOUT_HF_GFS=1
 export FHMAX_HF_GFS=120
 export FHOUT_HF_GFS=3
-export npe_postsnd=12
-export npe_node_postsnd=6
+export npe_postsnd=40
+export npe_node_postsnd=20
 export launcher="mpirun"
 #export APRUN_POSTSND=srun
 export APRUN_POSTSND="$launcher -n $npe_postsnd"
@@ -109,8 +110,10 @@ export DATA_IN=${DATA_IN:-/scratch2/NCEPDEV/stmp1/$USER}
 export DATA=$DATA_IN/postsnd.${pid}
 mkdir -p $DATA
 cd $DATA
-export PDY=20200113
-export cyc=12
+export PDY=20190223
+export cyc=00
+##export PDY=20200113
+##export cyc=12
 export STARTHOUR=00
 export ENDHOUR=180
 
@@ -143,7 +146,7 @@ mkdir -p $pcom
 # Set up the UTILITIES
 ###################################
 
-export HOMEbufrsnd=/scratch2/NCEPDEV/fv3-cam/noscrub/Guang.Ping.Lou/gfsv16b_hub
+export HOMEbufrsnd=/scratch2/NCEPDEV/fv3-cam/noscrub/Guang.Ping.Lou/gfsv16bnetcd4
 #export HOMEbufrsnd=/scratch2/NCEPDEV/fv3-cam/noscrub/Guang.Ping.Lou/global-workflow
 #export HOMEbufrsnd=/scratch4/NCEPDEV/meso/save/Guang.Ping.Lou/fv3gfs
 #export HOMEbufrsnd=/gpfs/hps3/emc/meso/noscrub/Guang.Ping.Lou/fv3gfs
@@ -158,7 +161,8 @@ export HOMEbufrsnd=/scratch2/NCEPDEV/fv3-cam/noscrub/Guang.Ping.Lou/gfsv16b_hub
 ##export COMIN=/gpfs/hps/nco/ops/com/gfs/prod/${RUN}.${PDY}
 #export COMIN=/scratch4/NCEPDEV/meso/save/Guang.Ping.Lou/fv3data/${RUN}.${PDY}/$cyc
 ##export COMIN=/scratch2/NCEPDEV/fv3-cam//noscrub/Guang.Ping.Lou/gfs.${PDY}_nc_lossy/$cyc
-export COMIN=/scratch2/NCEPDEV/fv3-cam//noscrub/Guang.Ping.Lou/data_v16rt2
+##export COMIN=/scratch2/NCEPDEV/fv3-cam//noscrub/Guang.Ping.Lou/data_v16rt2
+export COMIN=/scratch1/NCEPDEV/global/glopara/ptmp/v16retro1/gfs.${PDY}/$cyc
 
 export COMOUT=$DATA_IN/com2/${NET}/${envir}/${RUN}.${PDY}
 mkdir -p $COMOUT
