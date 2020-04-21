@@ -67,7 +67,7 @@ fi
 
 # PBL/turbulence schemes
 export hybedmf=".false."
-if [ $CCPP_SUITE = "FV3_GSD_v0" ]; then
+if [[ "$CCPP_SUITE" == "FV3_GSD_v0" || "$CCPP_SUITE" == "FV3_GSD_noah" ]] ; then
     export satmedmf=".false."
     export isatmedmf=0
     export shal_cnv=".true."       
@@ -111,7 +111,7 @@ export icliq_sw=2   ;#cloud optical coeffs from AER's newer version v3.9-v4.0 fo
 export output_1st_tstep_rst=".false."                                        #JKH
 
 # Convection Options: 2-SASAS, 3-GF
-if [ $CCPP_SUITE = "FV3_GSD_v0" ]; then
+if [[ "$CCPP_SUITE" == "FV3_GSD_v0" || "$CCPP_SUITE" == "FV3_GSD_noah" ]] ; then
 	export imfdeepcnv=3
 	export imfshalcnv=3
 ####        export lheatstrg=.false.
@@ -141,7 +141,7 @@ elif [ $imp_physics -eq 8 ]; then # Thompson
     export lgfdlmprad=.false.     # Newly added -- Jian
     export effr_in=.false.        # Newly added -- Jian
     export nwat=6
-    if [ $CCPP_SUITE = "FV3_GSD_v0" ]; then
+    if [[ "$CCPP_SUITE" == "FV3_GSD_v0" || "$CCPP_SUITE" == "FV3_GSD_noah" ]] ; then
         export ncld=5
         export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_gsd"
         export ltaerosol=.true.                  

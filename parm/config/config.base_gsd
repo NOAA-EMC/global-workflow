@@ -149,10 +149,10 @@ export gfs_cyc=@gfs_cyc@ # 0: no GFS cycle, 1: 00Z only, 2: 00Z and 12Z only, 4:
 # GFS output and frequency
 export FHMIN_GFS=0
 
-export FHMAX_GFS_00=384          
-export FHMAX_GFS_06=384          
-export FHMAX_GFS_12=384          
-export FHMAX_GFS_18=384          
+export FHMAX_GFS_00=120          ## JKH
+export FHMAX_GFS_06=120          ## JKH
+export FHMAX_GFS_12=120          ## JKH
+export FHMAX_GFS_18=120          ## JKH
 export FHMAX_GFS=$(eval echo \${FHMAX_GFS_$cyc})
 
 export FHOUT_GFS=3
@@ -197,7 +197,7 @@ fi
 export lobsdiag_forenkf=".true."
 
 # run GLDAS to spin up land ICs
-export DO_GLDAS=YES 
+export DO_GLDAS=NO                          ## JKH
 export gldas_cyc=00
 
 # run wave component

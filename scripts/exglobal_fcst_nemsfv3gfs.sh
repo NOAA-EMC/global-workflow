@@ -690,10 +690,10 @@ $NCP $FIELD_TABLE field_table
 
 # copy CCN_ACTIVATE.BIN for Thompson microphysics
 if [ $imp_physics -eq 8 ]; then 
-  $NLN $FV3INP/CCN_ACTIVATE.BIN  CCN_ACTIVATE.BIN
-  $NLN $FV3INP/freezeH2O.dat  freezeH2O.dat
-  $NLN $FV3INP/qr_acr_qg.dat  qr_acr_qg.dat
-  $NLN $FV3INP/qr_acr_qs.dat  qr_acr_qs.dat
+  $NLN $FIX_AM/CCN_ACTIVATE.BIN  CCN_ACTIVATE.BIN
+  $NLN $FIX_AM/freezeH2O.dat  freezeH2O.dat
+  $NLN $FIX_AM/qr_acr_qg.dat  qr_acr_qg.dat
+  $NLN $FIX_AM/qr_acr_qs.dat  qr_acr_qs.dat
 fi
 
 #------------------------------------------------------------------

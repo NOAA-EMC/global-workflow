@@ -17,8 +17,7 @@ from datetime import datetime
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 import workflow_utils as wfu
 
-global expdir, configdir, comrot, pslot, resdet, resens, nens, cdump, idate, edate, gfs_cyc, ccpp_suite, hpss_project, atardir
-
+global expdir, configdir, comrot, pslot, res, idate, edate, gfs_cyc, ccpp_suite, hpss_project, atardir
 
 def makedirs_if_missing(d):
     if not os.path.exists(d):
@@ -40,30 +39,7 @@ def create_EXPDIR():
 
 def create_COMROT():
 
-    idatestr = idate.strftime('%Y%m%d%H')
-    cymd = idate.strftime('%Y%m%d')
-    chh = idate.strftime('%H')
-
     makedirs_if_missing(comrot)
-
-    # Link ensemble member initial conditions
-    enkfdir = 'enkf%s.%s/%s' % (cdump, cymd, chh)
-    makedirs_if_missing(os.path.join(comrot, enkfdir))
-    for i in range(1, nens + 1):
-        makedirs_if_missing(os.path.join(comrot, enkfdir, 'mem%03d' % i))
-        os.symlink(os.path.join(icsdir, idatestr, 'C%d' % resens, 'mem%03d' % i, 'INPUT'),
-                   os.path.join(comrot, enkfdir, 'mem%03d' % i, 'INPUT'))
-
-    # Link deterministic initial conditions
-    detdir = '%s.%s/%s' % (cdump, cymd, chh)
-    makedirs_if_missing(os.path.join(comrot, detdir))
-    os.symlink(os.path.join(icsdir, idatestr, 'C%d' % resdet, 'control', 'INPUT'),
-               os.path.join(comrot, detdir, 'INPUT'))
-
-    # Link bias correction and radiance diagnostics files
-    for fname in ['abias', 'abias_pc', 'abias_air', 'radstat']:
-        os.symlink(os.path.join(icsdir, idatestr, '%s.t%sz.%s' % (cdump, chh, fname)),
-                   os.path.join(comrot, detdir, '%s.t%sz.%s' % (cdump, chh, fname)))
 
     return
 
@@ -73,23 +49,20 @@ def edit_baseconfig():
     base_config = '%s/config.base' % expdir
 
     here = os.path.dirname(__file__)
-    top = os.path.abspath(os.path.join(
-        os.path.abspath(here), '../..'))
+    top = os.path.abspath(os.path.join(os.path.abspath(here), '../..'))
 
-    if os.path.exists(base_config):
-        os.unlink(base_config)
+    # make a copy of the default before editing
+    shutil.copy(base_config, base_config + '.default')
 
     print '\nSDATE = %s\nEDATE = %s' % (idate, edate)
-    with open(base_config + '.emc.dyn', 'rt') as fi:
-        with open(base_config, 'wt') as fo:
+    with open(base_config + '.default', 'rt') as fi:
+        with open(base_config + '.new', 'wt') as fo:
             for line in fi:
                 line = line.replace('@MACHINE@', machine.upper()) \
                     .replace('@PSLOT@', pslot) \
                     .replace('@SDATE@', idate.strftime('%Y%m%d%H')) \
                     .replace('@EDATE@', edate.strftime('%Y%m%d%H')) \
-                    .replace('@CASEENS@', 'C%d' % resens) \
-                    .replace('@CASECTL@', 'C%d' % resdet) \
-                    .replace('@NMEM_ENKF@', '%d' % nens) \
+                    .replace('@CASECTL@', 'C%d' % res) \
                     .replace('@HOMEgfs@', top) \
                     .replace('@BASE_GIT@', base_git) \
                     .replace('@BASE_SVN@', base_svn) \
@@ -110,13 +83,14 @@ def edit_baseconfig():
                     line = line.replace('@EXPDIR@', os.path.dirname(expdir))
                 if comrot is not None:
                     line = line.replace('@ROTDIR@', os.path.dirname(comrot))
-                if 'ICSDIR' in line:
-                    continue
+                line = line.replace('@ICSDIR@', os.path.join(os.path.dirname(comrot), 'FV3ICS'))
                 fo.write(line)
+    os.unlink(base_config)
+    os.rename(base_config + '.new', base_config)
 
     print ''
     print 'EDITED:  %s/config.base as per user input.' % expdir
-    print 'DEFAULT: %s/config.base.emc.dyn is for reference only.' % expdir
+    print 'DEFAULT: %s/config.base.default is for reference only.' % expdir
     print 'Please verify and delete the default file before proceeding.'
     print ''
 
@@ -127,21 +101,16 @@ if __name__ == '__main__':
 
     description = '''Setup files and directories to start a GFS parallel.
 Create EXPDIR, copy config files
-Create COMROT experiment directory structure,
-link initial condition files from $ICSDIR to $COMROT'''
+Create COMROT experiment directory structure'''
 
     parser = ArgumentParser(description=description, formatter_class=ArgumentDefaultsHelpFormatter)
     parser.add_argument('--pslot', help='parallel experiment name', type=str, required=False, default='test')
-    parser.add_argument('--resdet', help='resolution of the deterministic model forecast', type=int, required=False, default=384)
-    parser.add_argument('--resens', help='resolution of the ensemble model forecast', type=int, required=False, default=192)
+    parser.add_argument('--res', help='resolution of the model forecast', type=int, required=False, default=192)
     parser.add_argument('--comrot', help='full path to COMROT', type=str, required=False, default=None)
     parser.add_argument('--expdir', help='full path to EXPDIR', type=str, required=False, default=None)
     parser.add_argument('--idate', help='starting date of experiment, initial conditions must exist!', type=str, required=True)
     parser.add_argument('--edate', help='end date experiment', type=str, required=True)
-    parser.add_argument('--icsdir', help='full path to initial condition directory', type=str, required=False)
     parser.add_argument('--configdir', help='full path to directory containing the config files', type=str, required=False, default=None)
-    parser.add_argument('--nens', help='number of ensemble members', type=int, required=False, default=20)
-    parser.add_argument('--cdump', help='CDUMP to start the experiment', type=str, required=False, default='gdas')
     parser.add_argument('--gfs_cyc', help='GFS cycles to run', type=int, choices=[0, 1, 2, 4], default=1, required=False)
     parser.add_argument('--ccpp_suite', help='CCPP Suite', type=str, required=True, default='FV3_GFS_v16beta')
     parser.add_argument('--hpss_project', help='HPSS Project', type=str, required=False, default='emc-global')
@@ -158,13 +127,9 @@ link initial condition files from $ICSDIR to $COMROT'''
     pslot = args.pslot
     idate = datetime.strptime(args.idate, '%Y%m%d%H')
     edate = datetime.strptime(args.edate, '%Y%m%d%H')
-    icsdir = args.icsdir
-    resdet = args.resdet
-    resens = args.resens
+    res = args.res
     comrot = args.comrot if args.comrot is None else os.path.join(args.comrot, pslot)
     expdir = args.expdir if args.expdir is None else os.path.join(args.expdir, pslot)
-    nens = args.nens
-    cdump = args.cdump
     gfs_cyc = args.gfs_cyc
     ccpp_suite = args.ccpp_suite
     hpss_project = args.hpss_project
@@ -203,32 +168,25 @@ link initial condition files from $ICSDIR to $COMROT'''
       base_svn = '/scratch1/NCEPDEV/global/glopara/svn'
       dmpdir = '/scratch1/NCEPDEV/global/glopara/dump'
       nwprod = '/scratch1/NCEPDEV/global/glopara/nwpara'
-      homedir = '/scratch1/NCEPDEV/global/$USER'
-      stmp = '/scratch1/NCEPDEV/stmp2/$USER'
-      ptmp = '/scratch1/NCEPDEV/stmp4/$USER'
+      homedir = '/scratch1/BMC/gsd-fv3-dev/NCEPDEV/global/$USER'
+      stmp = '/scratch1/BMC/gsd-fv3-dev/NCEPDEV/stmp3/$USER'
+      ptmp = '/scratch1/BMC/gsd-fv3-dev/NCEPDEV/stmp4/$USER'
       noscrub = '$HOMEDIR'
-      account = 'fv3-cpu'
-      atardir = '/NCEPDEV/$HPSS_PROJECT/1year/$USER/$machine/scratch/$PSLOT'
+      account = 'gsd-fv3'
+      atardir = '/BMC/$HPSS_PROJECT/1year/$USER/$machine/scratch/$PSLOT'
       queue = 'batch'
       queue_arch = 'service'
 
-    if args.icsdir is not None and not os.path.exists(icsdir):
-        msg = 'Initial conditions do not exist in %s' % icsdir
-        raise IOError(msg)
-
     # COMROT directory
-    if args.icsdir is None:
-       create_comrot = False
-    else:
-       create_comrot = True
-       if os.path.exists(comrot):
-           print
-           print 'COMROT already exists in %s' % comrot
-           print
-           overwrite_comrot = raw_input('Do you wish to over-write COMROT [y/N]: ')
-           create_comrot = True if overwrite_comrot in ['y', 'yes', 'Y', 'YES'] else False
-           if create_comrot:
-              shutil.rmtree(comrot)
+    create_comrot = True
+    if os.path.exists(comrot):
+        print
+        print 'COMROT already exists in %s' % comrot
+        print
+        overwrite_comrot = raw_input('Do you wish to over-write COMROT [y/N]: ')
+        create_comrot = True if overwrite_comrot in ['y', 'yes', 'Y', 'YES'] else False
+        if create_comrot:
+            shutil.rmtree(comrot)
 
     if create_comrot:
         create_COMROT()
