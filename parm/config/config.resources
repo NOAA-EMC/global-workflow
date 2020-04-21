@@ -314,6 +314,7 @@ elif [ $step = "postsnd" ]; then
         export npe_postsnd=13
         export npe_node_postsnd=4
     fi
+    if [[ "$machine" = "HERA" ]]; then export npe_node_postsnd=2
     if [[ "$machine" == "WCOSS_C" ]]; then export memory_postsnd="254M"; fi
 
 elif [ $step = "awips" ]; then
