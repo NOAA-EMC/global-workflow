@@ -17,7 +17,7 @@ from datetime import datetime
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 import workflow_utils as wfu
 
-global expdir, configdir, comrot, pslot, resdet, resens, nens, cdump, idate, edate, gfs_cyc, ccpp_suite, hpss_project, atardir
+global expdir, configdir, comrot, pslot, resdet, resens, nens, cdump, idate, edate, gfs_cyc
 
 
 def makedirs_if_missing(d):
@@ -100,12 +100,9 @@ def edit_baseconfig():
                     .replace('@PTMP@', ptmp) \
                     .replace('@NOSCRUB@', noscrub) \
                     .replace('@ACCOUNT@', account) \
-                    .replace('@ATARDIR@', atardir) \
                     .replace('@QUEUE@', queue) \
                     .replace('@QUEUE_ARCH@', queue_arch) \
-                    .replace('@gfs_cyc@', '%d' % gfs_cyc) \
-                    .replace('@HPSS_PROJECT@', hpss_project) \
-                    .replace('@CCPP_SUITE@', ccpp_suite) 
+                    .replace('@gfs_cyc@', '%d' % gfs_cyc) 
                 if expdir is not None:
                     line = line.replace('@EXPDIR@', os.path.dirname(expdir))
                 if comrot is not None:
@@ -143,8 +140,6 @@ link initial condition files from $ICSDIR to $COMROT'''
     parser.add_argument('--nens', help='number of ensemble members', type=int, required=False, default=20)
     parser.add_argument('--cdump', help='CDUMP to start the experiment', type=str, required=False, default='gdas')
     parser.add_argument('--gfs_cyc', help='GFS cycles to run', type=int, choices=[0, 1, 2, 4], default=1, required=False)
-    parser.add_argument('--ccpp_suite', help='CCPP Suite', type=str, required=True, default='FV3_GFS_v16beta')
-    parser.add_argument('--hpss_project', help='HPSS Project', type=str, required=False, default='emc-global')
     parser.add_argument('--partition', help='partition on machine', type=str, required=False, default=None)
 
     args = parser.parse_args()
@@ -166,8 +161,6 @@ link initial condition files from $ICSDIR to $COMROT'''
     nens = args.nens
     cdump = args.cdump
     gfs_cyc = args.gfs_cyc
-    ccpp_suite = args.ccpp_suite
-    hpss_project = args.hpss_project
     partition = args.partition
 
     # Set machine defaults
@@ -208,7 +201,6 @@ link initial condition files from $ICSDIR to $COMROT'''
       ptmp = '/scratch1/NCEPDEV/stmp4/$USER'
       noscrub = '$HOMEDIR'
       account = 'fv3-cpu'
-      atardir = '/NCEPDEV/$HPSS_PROJECT/1year/$USER/$machine/scratch/$PSLOT'
       queue = 'batch'
       queue_arch = 'service'
 

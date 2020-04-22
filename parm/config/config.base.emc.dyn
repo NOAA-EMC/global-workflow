@@ -17,7 +17,7 @@ export QUEUE="@QUEUE@"
 export QUEUE_ARCH="@QUEUE_ARCH@"
 
 # Project to use in mass store:
-HPSS_PROJECT=@HPSS_PROJECT@               ## JKH
+HPSS_PROJECT=emc-global
 
 # Directories relative to installation areas:
 export HOMEgfs=@HOMEgfs@
@@ -46,7 +46,8 @@ export BASE_GIT="@BASE_GIT@"
 export BASE_SVN="@BASE_SVN@"
 
 #### CCPP Suite
-export CCPP_SUITE="@CCPP_SUITE@"            ## JKH
+#### export CCPP_SUITE="FV3_GSD_noah"      # GSDsuite + NOAH LSM  
+export CCPP_SUITE="FV3_GFS_v16beta"        # EMC v16beta
 
 # Toggle to turn on/off GFS downstream processing.
 export DO_BUFRSND="YES"
@@ -99,7 +100,7 @@ export RUNDIR="$STMP/RUNDIRS/$PSLOT"
 export DATAROOT="$RUNDIR/$CDATE/$CDUMP"
 export ARCDIR="$NOSCRUB/archive/$PSLOT"
 export ICSDIR="@ICSDIR@"
-export ATARDIR="@ATARDIR@"                   ## JKH
+export ATARDIR="/NCEPDEV/$HPSS_PROJECT/1year/$USER/$machine/scratch/$PSLOT"
 
 # Commonly defined parameters in JJOBS
 export envir=${envir:-"prod"}
@@ -119,7 +120,7 @@ export SENDDBN="NO"
 export SENDSDM="NO"
 
 # Resolution specific parameters
-export LEVS=65
+export LEVS=65                      ## JKH
 export CASE="@CASECTL@"
 export CASE_ENKF="@CASEENS@"
 
