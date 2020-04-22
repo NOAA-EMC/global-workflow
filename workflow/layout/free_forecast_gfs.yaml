@@ -10,7 +10,7 @@ suite: !Cycle
 
   ics: !Family
     Disable: !calc >-
-      doc.settings.get("IC_CDUMP","") and not doc.settings.chgres_and_convert_ics
+      doc.settings.get("IC_CDUMP","") and not doc.settings.chgres_and_convert_ics or doc.settings.mom6ic_prepared=='.true.'
 #    RUN: 'gfs'
     jgfs_emc_getics: !Task
       <<: *service_task_template
