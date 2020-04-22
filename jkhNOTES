@@ -13,6 +13,9 @@ tests
 4)  GSD NOAH free forecast
 4)  GSD NOAH cycled
 
+used 08Apr2020 GFS.v16.0.2 ufs-weather-model tag, 606cfb8
+used 09Apr2020 feature/gfsv16b branch, 073e5f6
+
 changes:
   need to modify ccpp/physics/physics/module_mp_thompson.F90 to read in Thompson lookup tables
      with threading  
@@ -41,9 +44,6 @@ changes:
 changes
   sorc/build_fv3.sh compiles these suites:  FV3_GFS_v15,FV3_GSD_v0,FV3_GSD_noah,FV3_GFS_v16beta
 
-  parm/config/config.base.emc.dyn
-      added @CCPP_SUITE@, @HPSS_PROJECT@, @ATARDIR@
-
   parm/config/config.fcst
       changes for FV3_GSD_noah 
 
@@ -57,7 +57,4 @@ changes
  scripts/exglobal_fcst_fv3gfs.sh
       change path for Thompson lookup tables from $FV3INP to $FIX_AM 
 
- ush/rocoto/setup_expt*.py
-    added ccpp_suite, hpss_project, atardir
-  
  when running with 20 enkf members, need to adjust NMEM_EOMGGRP in config.eobs to be a value that cleanly divides into 20 (NMEM_ENKF). Change NMEM_EOMGGRP to 10.
