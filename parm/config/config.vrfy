@@ -170,10 +170,7 @@ if [ "$VRFYTRAK" = "YES" ]; then
         export FHOUT_CYCLONE=6            
         export FHMAX_CYCLONE=$(( FHMAX_GFS<240 ? FHMAX_GFS : 240 ))
     fi
-    if [ $machine = "THEIA" ]; then
-       export COMROOTp1="/scratch4/NCEPDEV/rstprod/com"
-       export COMINsyn="$COMROOTp1/arch/prod/syndat"
-    fi
+    export COMINsyn=${COMINsyn:-$(compath.py gfs/prod/syndat)}
 fi
 
 

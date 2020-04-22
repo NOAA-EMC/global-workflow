@@ -20,7 +20,7 @@ if [ $machine = "THEIA" ]; then
 
 elif [ $machine = "WCOSS_C" -o $machine = "WCOSS_DELL_P3" ]; then
 
-    export ACCOUNT="FV3GFS-T2O"
+    export ACCOUNT="GFS-DEV"
     export QUEUE="dev"
     export QUEUE_ARCH="dev_transfer"
 
@@ -50,6 +50,7 @@ if [ $machine = "THEIA" ]; then
 elif [ $machine = "WCOSS_C" ]; then
 
     export NWPROD="/gpfs/hps/nco/ops/nwprod"
+    export COMROOT=${COMROOT:-"/gpfs/hps/nco/ops/com"}
     export DMPDIR="/gpfs/dell3/emc/global/dump"
     if [ -d /gpfs/tp1 ]; then
         export SITE="LUNA"
@@ -61,6 +62,7 @@ elif [ $machine = "WCOSS_C" ]; then
 elif [ $machine = "WCOSS_DELL_P3" ]; then
 
     export NWPROD="/gpfs/dell1/nco/ops/nwprod"
+    export COMROOT=${COMROOT:-"/gpfs/dell1/nco/ops/com"}
     export DMPDIR="/gpfs/dell3/emc/global/dump"
     if [ -d /gpfs/tp1 ]; then
         export SITE="MARS"
@@ -148,7 +150,7 @@ export FIXgsi="$HOMEgfs/fix/fix_gsi"
 export HOMEfv3gfs="$HOMEgfs/sorc/fv3gfs.fd"
 export HOMEpost="$HOMEgfs"
 export HOMEobsproc_prep="$BASE_GIT/obsproc/obsproc_prep_RB-5.2.0"
-export HOMEobsproc_network="$BASE_GIT/obsproc/obsproc_global.v3.2.5"
+export HOMEobsproc_network="$BASE_GIT/obsproc/obsproc_global.v3.2.6"
 export HOMEobsproc_global=$HOMEobsproc_network
 export BASE_VERIF="$BASE_SVN/verif/global/tags/vsdb"
 
