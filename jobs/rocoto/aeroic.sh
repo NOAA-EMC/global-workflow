@@ -28,7 +28,7 @@ for config in $configs; do
 done
 
 # initialize
-AERO_DIR=${HOMEgfs}/sorc/aeroconv
+AERO_DIR=${HOMEgfs}/sorc/aeroconv.fd
 export LD_PRELOAD=$AERO_DIR/thirdparty/lib/libjpeg.so
 export PYTHONPATH=$AERO_DIR/thirdparty/lib/python2.7/site-packages:$PYTHONPATH
 
