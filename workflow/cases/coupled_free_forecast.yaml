@@ -4,8 +4,8 @@ case:
     MOM6IC: /scratch1/NCEPDEV/nems/Bin.Li/S2S/FROM_HPSS
 
   settings: 
-    SDATE: 2012-01-01t00:00:00
-    EDATE: 2012-01-01t00:00:00
+    SDATE: 2013-04-01t00:00:00
+    EDATE: 2013-04-02t00:00:00
 
     cplflx: .true.
     print_esmf: .true.

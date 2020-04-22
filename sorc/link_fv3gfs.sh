@@ -15,18 +15,18 @@ fi
 
 if [ $# -lt 2 ]; then
     echo '***ERROR*** must specify two arguements: (1) RUN_ENVIR, (2) machine'
-    echo ' Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | theia | hera )'
+    echo ' Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | theia | hera | orion )'
     exit 1
 fi
 
 RUN_ENVIR=${1:-emc}
 
 if [ $RUN_ENVIR != emc -a $RUN_ENVIR != nco ]; then
-    echo 'Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | theia | hera )'
+    echo 'Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | theia | hera | orion )'
     exit 1
 fi
-if [ $machine != cray -a $machine != theia -a $machine != dell -a $machine != hera ]; then
-    echo 'Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | theia | hera )'
+if [ $machine != cray -a $machine != theia -a $machine != dell -a $machine != hera -a $machine != orion]; then
+    echo 'Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | theia | hera | orion )'
     exit 1
 fi
 
@@ -55,7 +55,7 @@ elif [ $target == "hera" ]; then
     FIX_DIR="/scratch1/NCEPDEV/global/glopara/fix"
 else
     echo 'CRITICAL: links to fix files not set'
-    exit 1
+    [[ $machine != orion ]] && exit 1
 fi
 
 cd ${pwd}/../fix                ||exit 8
