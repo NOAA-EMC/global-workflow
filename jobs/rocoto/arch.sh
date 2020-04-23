@@ -303,12 +303,14 @@ while [ $GDATE -le $GDATEEND ]; do
     gPDY=$(echo $GDATE | cut -c1-8)
     gcyc=$(echo $GDATE | cut -c9-10)
     COMIN="$ROTDIR/$CDUMP.$gPDY/$gcyc"
+    COMINwave="$ROTDIR/${CDUMP}wave.$gPDY/$gcyc"
     if [ -d $COMIN ]; then
         rocotolog="$EXPDIR/logs/${GDATE}.log"
 	if [ -f $rocotolog ]; then
             testend=$(tail -n 1 $rocotolog | grep "This cycle is complete: Success")
             rc=$?
             if [ $rc -eq 0 ]; then
+                [[ -d $COMINwave ]] && rm -rf $COMINwave
                 if [ $CDUMP != "gdas" -o $DO_GLDAS = "NO" -o $GDATE -lt $GLDAS_DATE ]; then 
                     rm -rf $COMIN 
                 else
@@ -327,6 +329,11 @@ while [ $GDATE -le $GDATEEND ]; do
     COMIN="$ROTDIR/$CDUMP.$gPDY"
     if [ -d $COMIN ]; then
         [[ ! "$(ls -A $COMIN)" ]] && rm -rf $COMIN
+    fi
+
+    COMINwave="$ROTDIR/${CDUMP}wave.$gPDY"
+    if [ -d $COMINwave ]; then
+        [[ ! "$(ls -A $COMINwave)" ]] && rm -rf $COMINwave
     fi
 
     # Remove mdl gfsmos directory
