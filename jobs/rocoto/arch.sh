@@ -299,18 +299,21 @@ DO_GLDAS=${DO_GLDAS:-"NO"}
 GDATEEND=$($NDATE -${RMOLDEND:-24}  $CDATE)
 GDATE=$($NDATE -${RMOLDSTD:-120} $CDATE)
 GLDAS_DATE=$($NDATE -96 $CDATE)
+RTOFS_DATE=$($NDATE -48 $CDATE)
 while [ $GDATE -le $GDATEEND ]; do
     gPDY=$(echo $GDATE | cut -c1-8)
     gcyc=$(echo $GDATE | cut -c9-10)
     COMIN="$ROTDIR/$CDUMP.$gPDY/$gcyc"
     COMINwave="$ROTDIR/${CDUMP}wave.$gPDY/$gcyc"
+    COMINrtofs="$ROTDIR/rtofs.$gPDY"
     if [ -d $COMIN ]; then
         rocotolog="$EXPDIR/logs/${GDATE}.log"
 	if [ -f $rocotolog ]; then
             testend=$(tail -n 1 $rocotolog | grep "This cycle is complete: Success")
             rc=$?
             if [ $rc -eq 0 ]; then
-                [[ -d $COMINwave ]] && rm -rf $COMINwave
+                if [ -d $COMINwave ]; then rm -rf $COMINwave ; fi
+                if [ -d $COMINrtofs -a $GDATE -lt $RTOFS_DATE ]; then rm -rf $COMINrtofs ; fi
                 if [ $CDUMP != "gdas" -o $DO_GLDAS = "NO" -o $GDATE -lt $GLDAS_DATE ]; then 
                     rm -rf $COMIN 
                 else
