@@ -195,6 +195,9 @@ if [ -d ../sorc/fv3gfs.fd/WW3/exec ]; then # Wave execs
   done
 fi
 
+[[ -s global_fv3gfs_ccpp.x ]] && rm -f global_fv3gfs_ccpp.x
+$LINK ../sorc/fv3gfs.fd/NEMS/exe/global_fv3gfs_ccpp.x .
+
 [[ -s gfs_ncep_post ]] && rm -f gfs_ncep_post
 $LINK ../sorc/gfs_post.fd/exec/ncep_post gfs_ncep_post
 

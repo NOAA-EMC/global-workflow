@@ -45,6 +45,10 @@ export NOSCRUB="@NOSCRUB@"
 export BASE_GIT="@BASE_GIT@"
 export BASE_SVN="@BASE_SVN@"
 
+#### CCPP Suite
+#### export CCPP_SUITE="FV3_GSD_noah"      # GSDsuite + NOAH LSM  
+export CCPP_SUITE="FV3_GFS_v16beta"        # EMC v16beta
+
 # Toggle to turn on/off GFS downstream processing.
 export DO_BUFRSND="YES"
 export DO_GEMPAK="NO"
@@ -125,7 +129,11 @@ if [[ "$CDUMP" == "gdas" ]] ; then
    export FHCYC=1
    export FTSFS=10
 elif [[ "$CDUMP" == "gfs" ]] ; then
-   export FHCYC=24
+   if [[ "$CCPP_SUITE" == "FV3_GSD_v0" ]] ; then
+       export FHCYC=0
+   else
+       export FHCYC=24
+   fi
 fi
 
 # Output frequency of the forecast model (for cycling)
@@ -198,7 +206,11 @@ export DO_WAVE=YES
 export WAVE_CDUMP="gdas"
 
 # Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL
-export imp_physics=11
+if [[ "$CCPP_SUITE" == "FV3_GSD_v0" || "$CCPP_SUITE" == "FV3_GSD_noah" ]] ; then
+       export imp_physics=8
+else
+       export imp_physics=11
+fi
 
 # Shared parameters
 # Hybrid related

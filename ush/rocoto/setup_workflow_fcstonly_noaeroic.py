@@ -28,7 +28,7 @@ import rocoto
 import workflow_utils as wfu
 
 #taskplan = ['getic', 'fv3ic', 'waveinit', 'waveprep', 'fcst', 'post', 'wavepostsbs', 'wavegempaksbs', 'waveawipssbs', 'wavepost', 'waveawips', 'wavestat', 'vrfy', 'metp', 'arch']
-taskplan = ['getic', 'fv3ic', 'aeroic', 'waveinit', 'waveprep', 'fcst', 'post', 'wavepostsbs', 'vrfy', 'metp', 'arch']
+taskplan = ['getic', 'fv3ic', 'waveinit', 'waveprep', 'fcst', 'post', 'wavepostsbs', 'vrfy', 'metp', 'arch']
 
 def main():
     parser = ArgumentParser(description='Setup XML workflow and CRONTAB for a forecast only experiment.', formatter_class=ArgumentDefaultsHelpFormatter)
@@ -309,30 +309,6 @@ def get_workflow(dict_configs, cdump='gdas'):
         tasks.append(task)
         tasks.append('\n')
 
-    # aeroic
-    deps = []
-    data = '&ICSDIR;/@Y@m@d@H/&CDUMP;/&CASE;/INPUT/gfs_data.tile6.nc'
-    dep_dict = {'type':'data', 'data':data}
-    deps.append(rocoto.add_dependency(dep_dict))
-    data = '&ICSDIR;/@Y@m@d@H/&CDUMP;/&CASE;/INPUT/sfc_data.tile6.nc'
-    dep_dict = {'type':'data', 'data':data}
-    deps.append(rocoto.add_dependency(dep_dict))
-    dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
-
-    aero_envars = []
-    aero_envars.append(rocoto.create_envar(name='HOMEgfs', value='&HOMEgfs;'))
-    aero_envars.append(rocoto.create_envar(name='EXPDIR', value='&EXPDIR;'))
-    aero_envars.append(rocoto.create_envar(name='ROTDIR', value='&ROTDIR;'))
-    aero_envars.append(rocoto.create_envar(name='CDATE', value='<cyclestr>@Y@m@d@H</cyclestr>'))
-    aero_envars.append(rocoto.create_envar(name='CDUMP', value='&CDUMP;'))
-    aero_envars.append(rocoto.create_envar(name='CASE', value='&CASE;'))
-    aero_envars.append(rocoto.create_envar(name='FV3ICS_DIR', value='<cyclestr>&ICSDIR;/@Y@m@d@H/&CDUMP;/&CASE;/INPUT/</cyclestr>'))
-    aero_envars.append(rocoto.create_envar(name='FIXfv3', value='&HOMEgfs;/fix/fix_fv3'))
-
-    task = wfu.create_wf_task('aeroic', cdump=cdump, envar=aero_envars, dependency=dependencies)
-    tasks.append(task)
-    tasks.append('\n')
-
     # fcst
     deps = []
     data = '&ICSDIR;/@Y@m@d@H/&CDUMP;/&CASE;/INPUT/gfs_data.tile6.nc'
@@ -370,13 +346,13 @@ def get_workflow(dict_configs, cdump='gdas'):
     # wavepostsbs
     if do_wave in ['Y', 'YES']:
         deps = []
-        data = '&ROTDIR;/%swave.@Y@m@d/@H/rundata/%swave.out_grd.gnh_10m.@Y@m@d.@H0000' % (cdump,cdump)
+        data = '&ROTDIR;/%swave.@Y@m@d/@H/rundata/%swave.out_grd.glo_10m.@Y@m@d.@H0000' % (cdump,cdump)
         dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
         data = '&ROTDIR;/%swave.@Y@m@d/@H/rundata/%swave.out_grd.aoc_9km.@Y@m@d.@H0000' % (cdump,cdump)
         dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
-        data = '&ROTDIR;/%swave.@Y@m@d/@H/rundata/%swave.out_grd.gsh_15m.@Y@m@d.@H0000' % (cdump,cdump)
+        data = '&ROTDIR;/%swave.@Y@m@d/@H/rundata/%swave.out_grd.ant_9km.@Y@m@d.@H0000' % (cdump,cdump)
         dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
@@ -419,13 +395,13 @@ def get_workflow(dict_configs, cdump='gdas'):
     # wavegempaksbs
     #if do_wave in ['Y', 'YES'] and do_gempak in ['Y', 'YES']:
     #    deps = []
-    #    data = '&ROTDIR;/wave.@Y@m@d/@H/wave.t@Hz.gnh_10m.f000.grib2'
+    #    data = '&ROTDIR;/wave.@Y@m@d/@H/wave.t@Hz.glo_10m.10m.f000.grib2'
     #    dep_dict = {'type': 'data', 'data': data}
     #    deps.append(rocoto.add_dependency(dep_dict))
-    #    data = '&ROTDIR;/wave.@Y@m@d/@H/wave.t@Hz.aoc_9km.f000.grib2'
+    #    data = '&ROTDIR;/wave.@Y@m@d/@H/wave.t@Hz.aoc_9km.9km.f000.grib2'
     #    dep_dict = {'type': 'data', 'data': data}
     #    deps.append(rocoto.add_dependency(dep_dict))
-    #    data = '&ROTDIR;/wave.@Y@m@d/@H/wave.t@Hz.gsh_15m.f000.grib2'
+    #    data = '&ROTDIR;/wave.@Y@m@d/@H/wave.t@Hz.ant_9km.9km.f000.grib2'
     #    dep_dict = {'type': 'data', 'data': data}
     #    deps.append(rocoto.add_dependency(dep_dict))
     #    dependencies = rocoto.create_dependency(dep=deps)
@@ -436,13 +412,13 @@ def get_workflow(dict_configs, cdump='gdas'):
     # waveawipssbs
     #if do_wave in ['Y', 'YES'] and do_awips in ['Y', 'YES']:
     #    deps = []
-    #    data = '&ROTDIR;/wave.@Y@m@d/@H/wave.t@Hz.gnh_10m.f000.grib2'
+    #    data = '&ROTDIR;/wave.@Y@m@d/@H/wave.t@Hz.glo_10m.10m.f000.grib2'
     #    dep_dict = {'type': 'data', 'data': data}
     #    deps.append(rocoto.add_dependency(dep_dict))
-    #    data = '&ROTDIR;/wave.@Y@m@d/@H/wave.t@Hz.aoc_9km.f000.grib2'
+    #    data = '&ROTDIR;/wave.@Y@m@d/@H/wave.t@Hz.aoc_9km.9km.f000.grib2'
     #    dep_dict = {'type': 'data', 'data': data}
     #    deps.append(rocoto.add_dependency(dep_dict))
-    #    data = '&ROTDIR;/wave.@Y@m@d/@H/wave.t@Hz.gsh_15m.f000.grib2'
+    #    data = '&ROTDIR;/wave.@Y@m@d/@H/wave.t@Hz.ant_9km.9km.f000.grib2'
     #    dep_dict = {'type': 'data', 'data': data}
     #    deps.append(rocoto.add_dependency(dep_dict))
     #    dependencies = rocoto.create_dependency(dep=deps)

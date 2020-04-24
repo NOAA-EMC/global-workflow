@@ -1,0 +1,60 @@
+Lin's ICS
+==========
+CDATE:2020020800
+/scratch1/NCEPDEV/stmp2/Lin.Gan/ptmp/comrot/test/prexglobal
+tar file: /scratch1/NCEPDEV/stmp2/Lin.Gan/ptmp/comrot/test/prexglobal_ICS.tar
+
+
+tests
+=====
+1)  EMC v15 free forecast
+2)  EMC v16b free forecast
+3)  EMC v16b cycled
+4)  GSD NOAH free forecast
+4)  GSD NOAH cycled
+
+used 08Apr2020 GFS.v16.0.2 ufs-weather-model tag, 606cfb8
+used 09Apr2020 feature/gfsv16b branch, 073e5f6
+
+changes:
+  need to modify ccpp/physics/physics/module_mp_thompson.F90 to read in Thompson lookup tables
+     with threading  
+
+        ccpp_physics change:  
+          commit 8223afed5e66b0e124702eab47feca896543a1ee
+          Author: Dom Heinzeller <climbfuji@ymail.com>
+          Date:   Thu Jan 23 11:50:13 2020 -0700
+
+          physics/module_mp_thompson.F90: bugfix, remove threaded computation/read of lookup tables
+
+      changed file in sorc/fv3gfs.fd_jkh/ccpp/physics/physics/
+
+  need to modify sorc/gsi.fd/src/gsi routines for cycling with Thompson micro-physics
+         crtm_interface.f90
+         set_crtm_cloudmod.f90
+         ncepnems_io.f90*
+         general_read_gfsatm.f90*
+         cplr_gfs_ensmod.f90
+         
+      changed files in sorc/gsi.fd_jkh/src/gsi
+
+  half cycle issue
+     gdasanalcalc and gdasanaldiag go into DEAD state; set to complete using rocotocomplete
+
+changes
+  sorc/build_fv3.sh compiles these suites:  FV3_GFS_v15,FV3_GSD_v0,FV3_GSD_noah,FV3_GFS_v16beta
+
+  parm/config/config.fcst
+      changes for FV3_GSD_noah 
+
+  Externals.cfg
+      updated with tags in checkout.sh for FV3GFS, Gsi, and EMC_Post
+      added aeroconv
+
+  sorc/aero_extract.sh 
+      creates aeroconv.fd/INPUT/ and aeroconv.fd/thirdparty/ sub-directories
+
+ scripts/exglobal_fcst_fv3gfs.sh
+      change path for Thompson lookup tables from $FV3INP to $FIX_AM 
+
+ when running with 20 enkf members, need to adjust NMEM_EOMGGRP in config.eobs to be a value that cleanly divides into 20 (NMEM_ENKF). Change NMEM_EOMGGRP to 10.

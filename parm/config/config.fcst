@@ -17,8 +17,8 @@ fi
 
 export FORECASTSH="$HOMEgfs/scripts/exglobal_fcst_nemsfv3gfs.sh"
 export FCSTEXECDIR="$HOMEgfs/exec"
-#export FCSTEXECDIR="$HOMEfv3gfs/NEMS/exe"
-export FCSTEXEC="global_fv3gfs.x"
+#export FCSTEXEC="global_fv3gfs.x"
+export FCSTEXEC="global_fv3gfs_ccpp.x"
 export npe_fv3=$npe_fcst 
 
 if [[ "$CDUMP" == "gfs" ]] ; then
@@ -66,16 +66,35 @@ if [ $LEVS = "128" ]; then
    export  d2_bg_k2=0.0
 fi
 
-# PBL/turbulance schemes
+# PBL/turbulence schemes
 export hybedmf=".false."
-export satmedmf=".true."
-export isatmedmf=1
+if [[ "$CCPP_SUITE" == "FV3_GSD_v0" || "$CCPP_SUITE" == "FV3_GSD_noah" ]] ; then
+    export satmedmf=".false."
+    export isatmedmf=0
+    export shal_cnv=".true."       
+    export do_mynnedmf=".true."     
+    export do_mynnsfclay=".false."
+    export icloud_bl=1        
+    export bl_mynn_tkeadvect=.true. 
+    export bl_mynn_edmf=1        
+    export bl_mynn_edmf_mom=1
+else
+    export satmedmf=".true."   
+    export isatmedmf=1        
+fi
+
 tbf=""
 if [ $satmedmf = ".true." ]; then tbf="_satmedmf" ; fi
 
-# Land surface model. (2--NoahMP, landice=F); (1--Noah, landice=T)
-export lsm=1
-if [ $lsm -eq 2 ]; then
+# Land surface model. (3--RUCLSM, landice=F;) (2--NoahMP, landice=F); (1--Noah, landice=T)
+if [ $CCPP_SUITE = "FV3_GSD_v0" ]; then
+    export lsm=3
+    export lsoil_lsm=9
+else
+    export lsm=1
+fi
+
+if [ $lsm -eq 2 -o $lsm -eq 3 ]; then
     export lheatstrg=".false."
     export landice=".false."
 else
@@ -89,6 +108,19 @@ export iovr_lw=3    ;#de-correlation length cloud overlap method (Barker, 2008)
 export iovr_sw=3    ;#de-correlation length cloud overlap method (Barker, 2008)
 export icliq_sw=2   ;#cloud optical coeffs from AER's newer version v3.9-v4.0 for hu and stamnes
 
+# CCPP configuration
+export output_1st_tstep_rst=".false."                                        #JKH
+
+# Convection Options: 2-SASAS, 3-GF
+if [[ "$CCPP_SUITE" == "FV3_GSD_v0" || "$CCPP_SUITE" == "FV3_GSD_noah" ]] ; then
+	export imfdeepcnv=3
+	export imfshalcnv=3
+####        export lheatstrg=.false.
+else
+	export imfdeepcnv=2
+	export imfshalcnv=2
+####        export lheatstrg=.true.
+fi
 
 # Microphysics configuration
 export dnats=0
@@ -107,9 +139,27 @@ elif [ $imp_physics -eq 6 ]; then # WSM6
     export nwat=6
 
 elif [ $imp_physics -eq 8 ]; then # Thompson
-    export ncld=2
-    export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_thompson${tbf}"
+    export lgfdlmprad=.false.     # Newly added -- Jian
+    export effr_in=.false.        # Newly added -- Jian
     export nwat=6
+    if [[ "$CCPP_SUITE" == "FV3_GSD_v0" || "$CCPP_SUITE" == "FV3_GSD_noah" ]] ; then
+        export ncld=5
+        export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_gsd"
+        export ltaerosol=.true.                  
+        export lradar=.true.         
+    
+        ## GSD namelist changes
+        export cal_pre=".false."
+        export random_clds=".false."
+        export ttendlim=0.005
+        export vtdm4_nh_nonmono=0.02
+        export nord=2
+        export dddmp=0.1
+        export d4_bg=0.12
+    else
+        export ncld=2
+        export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_thompson${tbf}"
+    fi
 
 elif [ $imp_physics -eq 11 ]; then # GFDL
     export ncld=5
@@ -208,7 +258,11 @@ elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
 
     # Write more variables to output
     if [ $QUILTING = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]; then
-        export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table"
+        if [ $CCPP_SUITE = "FV3_GSD_v0" ]; then
+            export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_gsd_ruc"
+        else
+            export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table"
+        fi
     else
         export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_orig"
     fi
