@@ -46,7 +46,7 @@ if [[ ! -d gsi.fd ]] ; then
     rc=$?
     ((err+=$rc))
     cd gsi.fd
-    git checkout d47a995ae
+    git checkout gefs_v12.0.0
     git submodule update
     cd ${topdir}
 else
@@ -73,7 +73,7 @@ if [[ ! -d gfs_post.fd ]] ; then
     rc=$?
     ((err+=$rc))
     cd gfs_post.fd
-    git checkout 107e342
+    git checkout gefs_v12.0.0
     cd ${topdir}
 else
     echo 'Skip.  Directory gfs_post.fd already exists.'
@@ -99,7 +99,7 @@ if [[ ! -d gsd_prep_chem.fd ]] ; then
     rc=$?
     ((err+=$rc))
     cd gsd_prep_chem.fd
-    git checkout 9e200f7
+    git checkout gefs_v12.0.0-1
     cd ${topdir}
 else
     echo 'Skip.  Directory gsd_prep_chem.fd already exists.'
