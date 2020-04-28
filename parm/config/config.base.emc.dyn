@@ -20,7 +20,7 @@ if [ $machine = "THEIA" ]; then
 
 elif [ $machine = "WCOSS_C" -o $machine = "WCOSS_DELL_P3" ]; then
 
-    export ACCOUNT="GFS-DEV"
+    export ACCOUNT="FV3GFS-T2O"
     export QUEUE="dev"
     export QUEUE_ARCH="dev_transfer"
 
@@ -50,24 +50,24 @@ if [ $machine = "THEIA" ]; then
 elif [ $machine = "WCOSS_C" ]; then
 
     export NWPROD="/gpfs/hps/nco/ops/nwprod"
-    export COMROOT=${COMROOT:-"/gpfs/hps/nco/ops/com"}
-    export DMPDIR="/gpfs/dell3/emc/global/dump"
     if [ -d /gpfs/tp1 ]; then
         export SITE="LUNA"
+        export DMPDIR="/gpfs/tp1/emc/globaldump"
     elif [ -d /gpfs/gp1 ]; then
         export SITE="SURGE"
+        export DMPDIR="/gpfs/gp1/emc/globaldump"
     fi
     export RTMFIX=$CRTM_FIX
 
 elif [ $machine = "WCOSS_DELL_P3" ]; then
 
     export NWPROD="/gpfs/dell1/nco/ops/nwprod"
-    export COMROOT=${COMROOT:-"/gpfs/dell1/nco/ops/com"}
-    export DMPDIR="/gpfs/dell3/emc/global/dump"
     if [ -d /gpfs/tp1 ]; then
         export SITE="MARS"
+        export DMPDIR="/gpfs/tp1/emc/globaldump"
     elif [ -d /gpfs/gp1 ]; then
         export SITE="VENUS"
+        export DMPDIR="/gpfs/gp1/emc/globaldump"
     fi
     export RTMFIX=$CRTM_FIX
 fi
@@ -150,8 +150,7 @@ export FIXgsi="$HOMEgfs/fix/fix_gsi"
 export HOMEfv3gfs="$HOMEgfs/sorc/fv3gfs.fd"
 export HOMEpost="$HOMEgfs"
 export HOMEobsproc_prep="$BASE_GIT/obsproc/obsproc_prep_RB-5.2.0"
-export HOMEobsproc_network="$BASE_GIT/obsproc/obsproc_global.v3.2.6"
-export HOMEobsproc_global=$HOMEobsproc_network
+export HOMEobsproc_network="$BASE_GIT/obsproc/obsproc_global_RB-3.2.0"
 export BASE_VERIF="$BASE_SVN/verif/global/tags/vsdb"
 
 # CONVENIENT utility scripts and other environment parameters
@@ -174,7 +173,7 @@ export assim_freq=6
 export PSLOT="@PSLOT@"
 export EXPDIR="@EXPDIR@/$PSLOT"
 export ROTDIR="@ROTDIR@/$PSLOT"
-export ROTDIR_DUMP="YES"
+export ROTDIR_DUMP="NO"
 export DUMP_SUFFIX=""
 export RUNDIR="$STMP/RUNDIRS/$PSLOT"
 export DATAROOT="$RUNDIR/$CDATE/$CDUMP"

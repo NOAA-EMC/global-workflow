@@ -53,7 +53,7 @@ GSUFFIX=".nemsio"
 APREFIX="${CDUMP}.t${chh}z."
 ASUFFIX=".nemsio"
 
-COMIN_OBS=${COMIN_OBS:-"$DMPDIR/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}"}
+COMIN_OBS=${COMIN_OBS:-"$DMPDIR/$CDATE/$CDUMP"}
 COMIN_GES=${COMIN_GES:-"$ROTDIR/gdas.$gymd/$ghh"}
 COMOUT=${COMOUT:-"$ROTDIR/$CDUMP.$cymd/$chh"}
 [[ ! -d $COMOUT ]] && mkdir -p $COMOUT

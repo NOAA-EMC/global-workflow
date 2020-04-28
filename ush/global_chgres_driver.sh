@@ -73,16 +73,10 @@ cd $DATA || exit 8
 export ymd=`echo $CDATE | cut -c 1-8`
 export cyc=`echo $CDATE | cut -c 9-10`
 
-# Determine if input data is:
-#   (1) FV3GFS - DATA IS NEMSIO. SFC AND NSST FIELDS IN ONE FILE ('fv3gfs')
-#   (2) GFS NEMSIO FORMAT.  SFC AND NSST FIELDS IN SEPARATE FILES ('opsgfs')
-#   (3) GFS SIGIO/SFCIO FORMAT ('oldgfs')
-
+# Determine if we are current operations with NSST or the one before that
 if [ ${ATMANL:-"NULL"} = "NULL" ]; then
  if [ -s ${INIDIR}/nsnanl.${CDUMP}.$CDATE -o -s ${INIDIR}/${CDUMP}.t${cyc}z.nstanl.nemsio ]; then
   ictype='opsgfs'
- elif [ -s ${INIDIR}/sfnanl.${CDUMP}.$CDATE -o -s ${INIDIR}/${CDUMP}.t${cyc}z.sfcanl.nemsio ]; then
-  ictype='fv3gfs'
  else
   ictype='oldgfs'
  fi
@@ -125,37 +119,23 @@ if [ $ictype = oldgfs ]; then   # input data is old spectral sigio format.
    LATB_SFC=1536
  fi
 
-elif [ $ictype = opsgfs ] || [ $ictype = fv3gfs ]; then   # input data is nemsio format.
+elif [ $ictype = opsgfs ]; then   # input data is nemsio format.
 
  if [ ${ATMANL:-"NULL"} = "NULL" ]; then
   if [ -s ${INIDIR}/gfnanl.${CDUMP}.$CDATE ]; then
    export ATMANL=$INIDIR/gfnanl.${CDUMP}.$CDATE
    export SFCANL=$INIDIR/sfnanl.${CDUMP}.$CDATE
-   if [ $ictype = opsgfs ] ; then
-     export NSTANL=$INIDIR/nsnanl.${CDUMP}.$CDATE
-   else
-     export NSTANL=NULL
-   fi
+   export NSTANL=$INIDIR/nsnanl.${CDUMP}.$CDATE
   else
    export ATMANL=$INIDIR/${CDUMP}.t${cyc}z.atmanl.nemsio
    export SFCANL=$INIDIR/${CDUMP}.t${cyc}z.sfcanl.nemsio
-   if [ $ictype = opsgfs ] ; then
-     export NSTANL=$INIDIR/${CDUMP}.t${cyc}z.nstanl.nemsio
-   else
-     export NSTANL=NULL
-   fi
+   export NSTANL=$INIDIR/${CDUMP}.t${cyc}z.nstanl.nemsio
   fi
  fi
 
  export SOILTYPE_INP=statsgo
  export VEGTYPE_INP=igbp
-
- if [ $ictype = opsgfs ]; then
-   export nopdpvv=.true.
- else
-   export nopdpvv=.false.
-   export NTRAC=7
- fi
+ export nopdpvv=.true.
 
  LONB_ATM=0   # not used for
  LATB_ATM=0   # ops files
@@ -172,7 +152,7 @@ fi  # is input data old or new format?
 
 # to use new albedo, soil/veg type
 export CLIMO_FIELDS_OPT=3
-export LANDICE_OPT=${LANDICE_OPT:-2}
+export LANDICE_OPT=2
 export IALB=1
 export SOILTYPE_OUT=statsgo
 export VEGTYPE_OUT=igbp
@@ -191,7 +171,7 @@ export FNVEGC=${FIXam}/global_vegfrac.0.144.decpercent.grb
 export FNVMNC=${FIXam}/global_shdmin.0.144x0.144.grb
 export FNVMXC=${FIXam}/global_shdmax.0.144x0.144.grb
 export FNSLPC=${FIXam}/global_slope.1x1.grb
-export FNMSKH=${FIXam}/global_slmask.t1534.3072.1536.grb
+export FNMSKH=${FIXam}/seaice_newland.grb
 export FNSMCC=$FIXam/global_soilmgldas.statsgo.t${JCAP_CASE}.${LONB_SFC}.${LATB_SFC}.grb
 export FNSOTC=$FIXam/global_soiltype.statsgo.t${JCAP_CASE}.${LONB_SFC}.${LATB_SFC}.rg.grb
 export FNVETC=$FIXam/global_vegtype.igbp.t${JCAP_CASE}.${LONB_SFC}.${LATB_SFC}.rg.grb
@@ -210,7 +190,7 @@ if [ $REGIONAL -ne 2 ]; then           # REGIONAL -ne 2 is for uniform and regio
 # Convert atmospheric file.
 #------------------------------------------------
 
-  export CHGRESVARS="use_ufo=.false.,idvc=2,nvcoord=2,idvt=21,idsl=1,IDVM=0,nopdpvv=$nopdpvv"
+  export CHGRESVARS="use_ufo=.false.,idvc=2,idvt=21,idsl=1,IDVM=0,nopdpvv=$nopdpvv"
   export SIGINP=$ATMANL
   export SFCINP=NULL
   export NSTINP=NULL
@@ -234,7 +214,7 @@ if [ $REGIONAL -ne 2 ]; then           # REGIONAL -ne 2 is for uniform and regio
 # Convert surface and nst files one tile at a time.
 #---------------------------------------------------
 
-  export CHGRESVARS="use_ufo=.true.,idvc=2,nvcoord=2,idvt=21,idsl=1,IDVM=0,nopdpvv=$nopdpvv"
+  export CHGRESVARS="use_ufo=.true.,idvc=2,idvt=21,idsl=1,IDVM=0,nopdpvv=$nopdpvv"
   export SIGINP=NULL
   export SFCINP=$SFCANL
   export NSTINP=$NSTANL
@@ -268,11 +248,7 @@ if [ $REGIONAL -ne 2 ]; then           # REGIONAL -ne 2 is for uniform and regio
 else # REGIONAL = 2, just generate boundary data
 
   export CHGRESVARS="use_ufo=.false.,nst_anl=$nst_anl,idvc=2,idvt=21,idsl=1,IDVM=0,nopdpvv=$nopdpvv"
-  if [ $ictype = oldgfs ]; then
-    export ATMANL=$INIDIR/${CDUMP}.t${cyc}z.sf${bchour}
-  else
-    export ATMANL=$INIDIR/${CDUMP}.t${cyc}z.atmf${bchour}.nemsio
-  fi
+  export ATMANL=$INIDIR/${CDUMP}.t${cyc}z.atmf${bchour}.nemsio
   export SIGINP=$ATMANL
   export SFCINP=NULL
   export NSTINP=NULL

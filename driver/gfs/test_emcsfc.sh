@@ -28,7 +28,7 @@ export RUN_ENVIR="nco"
 export DATA="/gpfs/hps/stmp/$LOGNAME/tmpnwprd/${job}"
 export jlogfile="/gpfs/hps/stmp/$LOGNAME/jlogfile"
 
-module load prod_envir/1.1.0
+module load prod_envir/1.0.1
 
 export envir="prod"
 export COMROOT="/gpfs/hps/stmp/${LOGNAME}"${COMROOT}
