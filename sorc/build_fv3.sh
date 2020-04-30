@@ -17,6 +17,7 @@ if [ ! -d "../exec" ]; then
 fi
 
 if [ $target = hera ]; then target=hera.intel ; fi
+if [ $target = orion ]; then target=orion.intel ; fi
 
 cd fv3gfs.fd/
 FV3=$( pwd -P )/FV3
