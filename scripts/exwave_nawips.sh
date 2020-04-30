@@ -87,7 +87,7 @@ while [ $fhcnt -le $FHMAX_WAV ]; do
   GEMGRD=${model}${waveMEMB}_0p25_${PDY}${cyc}f${fhr3}
 
   NAGRIB=nagrib2
-  GRIBIN_chk=$GRIBIN
+  GRIBIN_chk=${GRIBIN}.idx
   icnt=1
   while [ $icnt -lt 1000 ]
   do
@@ -96,7 +96,7 @@ while [ $fhcnt -le $FHMAX_WAV ]; do
     else
       echo "Waiting for input file: $GRIBIN_chk"
       let "icnt=icnt+1"
-      sleep 20
+      sleep 5
     fi
     if [ $icnt -ge $maxtries ]
     then
@@ -105,7 +105,7 @@ while [ $fhcnt -le $FHMAX_WAV ]; do
     fi
   done
 
-  cp $GRIBIN grib$fhr
+  ln -s $GRIBIN grib$fhr
 
   echo "GRIBIN:   $GRIBIN"
   echo "GEMGRD:   $GEMGRD"
