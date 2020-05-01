@@ -10,7 +10,6 @@ if [[ ! -d fv3gfs.fd ]] ; then
     #git clone https://github.com/ufs-community/ufs-weather-model fv3gfs.fd >> ${topdir}/checkout-fv3gfs.log 2>&1
     git clone https://github.com/DusanJovic-NOAA/ufs-weather-model fv3gfs.fd >> ${topdir}/checkout-fv3gfs.log 2>&1
     cd fv3gfs.fd
-    #git checkout  GFS.v16.0.2
     git checkout orion_gfs.v16
     git submodule update --init --recursive
     cd ${topdir}
@@ -61,7 +60,6 @@ if [[ ! -d gfs_post.fd ]] ; then
     #git clone https://github.com/NOAA-EMC/EMC_post.git gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
     git clone https://github.com/WenMeng-NOAA/EMC_post.git gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
     cd gfs_post.fd
-    #git checkout upp_gfsv16_release.v1.0.6
     git checkout post_orion
     cd ${topdir}
 else
