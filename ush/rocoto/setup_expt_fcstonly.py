@@ -77,6 +77,8 @@ def edit_baseconfig():
                     .replace('@QUEUE@', queue) \
                     .replace('@QUEUE_SERVICE@', queue_service) \
                     .replace('@PARTITION_BATCH@', partition_batch) \
+                    .replace('@CHGRP_RSTPROD@', chgrp_rstprod) \
+                    .replace('@CHGRP_CMD@', chgrp_cmd) \
                     .replace('@gfs_cyc@', '%d' % gfs_cyc)
                 if expdir is not None:
                     line = line.replace('@EXPDIR@', os.path.dirname(expdir))
@@ -147,6 +149,8 @@ Create COMROT experiment directory structure'''
       if partition in ['3p5']:
         queue = 'dev2'
         queue_service = 'dev2_transfer'
+      chgrp_rstprod = 'YES'
+      chgrp_cmd = 'chgrp rstprod'
     elif machine == 'WCOSS_C':
       base_git = '/gpfs/hps3/emc/global/noscrub/emc.glopara/git'
       base_svn = '/gpfs/hps3/emc/global/noscrub/emc.glopara/svn'
@@ -160,6 +164,8 @@ Create COMROT experiment directory structure'''
       queue = 'dev'
       queue_service = 'dev_transfer'
       partition_batch = ''
+      chgrp_rstprod = 'YES'
+      chgrp_cmd = 'chgrp rstprod'
     elif machine == 'HERA':
       base_git = '/scratch1/NCEPDEV/global/glopara/git'
       base_svn = '/scratch1/NCEPDEV/global/glopara/svn'
@@ -173,6 +179,8 @@ Create COMROT experiment directory structure'''
       queue = 'batch'
       queue_service = 'service'
       partition_batch = ''
+      chgrp_rstprod = 'YES'
+      chgrp_cmd = 'chgrp rstprod'
     elif machine == 'ORION':
       base_git = '/work/noaa/nems/kfriedma/glopara/git'
       base_svn = '/work/noaa/nems/kfriedma/glopara/svn'
@@ -186,6 +194,8 @@ Create COMROT experiment directory structure'''
       queue = 'batch'
       queue_service = 'service'
       partition_batch = 'orion'
+      chgrp_rstprod = 'NO'          # No rstprod on Orion
+      chgrp_cmd = 'ls'
 
     # COMROT directory
     create_comrot = True

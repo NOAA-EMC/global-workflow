@@ -77,7 +77,8 @@ export NMV="/bin/mv"
 export NLN="/bin/ln -sf"
 export VERBOSE="YES"
 export KEEPDATA="NO"
-export CHGRP_CMD="chgrp rstprod"
+export CHGRP_RSTPROD="@CHGRP_RSTPROD@"
+export CHGRP_CMD="@CHGRP_CMD@"
 export NEMSIOGET="$HOMEgfs/exec/nemsio_get"
 
 # Machine environment, jobs, and other utility scripts

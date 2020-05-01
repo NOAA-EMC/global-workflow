@@ -134,7 +134,7 @@ elif [ $step = "analcalc" ]; then
 elif [ $step = "analdiag" ]; then
 
     export wtime_analdiag="02:00:00"
-    export npe_analdiag=60
+    export npe_analdiag=120
     export nth_analdiag=1
     export npe_node_analdiag=$npe_node_max
     if [[ "$machine" = "WCOSS_DELL_P3" ]]; then export npe_analdiag=56 ; fi
