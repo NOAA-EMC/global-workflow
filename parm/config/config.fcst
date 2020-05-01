@@ -260,6 +260,8 @@ elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
     if [ $QUILTING = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]; then
         if [ $CCPP_SUITE = "FV3_GSD_v0" ]; then
             export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_gsd_ruc"
+        elif [ $CCPP_SUITE = "FV3_GSD_noah" ]; then
+            export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_gsd"
         else
             export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table"
         fi
