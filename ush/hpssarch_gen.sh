@@ -371,24 +371,30 @@ if [ $type = "enkfgdas" -o $type = "enkfgfs" ]; then
     for FHR in $nfhrs; do  # loop over analysis times in window
       if [ $FHR -eq 6 ]; then
          if [ $n -le $NTARS2 ]; then
-	    if [ -s $ROTDIR/${dirpath}${head}ratmanl${SUFFIX} ] ; then
-		echo "${dirname}${head}ratmanl${SUFFIX}      " >>enkf${CDUMP}_grp${n}.txt
-	    fi
-            if [ -s $ROTDIR/${dirpath}${head}ratminc${SUFFIX} ] ; then
-                echo "${dirname}${head}ratminc${SUFFIX}      " >>enkf${CDUMP}_grp${n}.txt
+            if [ -s $ROTDIR/${dirpath}${head}atmanl${SUFFIX} ] ; then
+                echo "${dirname}${head}atmanl${SUFFIX}      " >>enkf${CDUMP}_grp${n}.txt
             fi
+	    if [ -s $ROTDIR/${dirpath}${head}atminc${SUFFIX} ] ; then
+		echo "${dirname}${head}atminc${SUFFIX}      " >>enkf${CDUMP}_grp${n}.txt
+	    fi
          fi
-         echo "${dirname}${head}atminc.nc            " >>enkf${CDUMP}_restarta_grp${n}.txt
+         if [ -s $ROTDIR/${dirpath}${head}ratminc${SUFFIX} ] ; then
+             echo "${dirname}${head}ratminc${SUFFIX}      " >>enkf${CDUMP}_restarta_grp${n}.txt
+         fi
+
       else
          if [ $n -le $NTARS2 ]; then
-	     if [ -s $ROTDIR/${dirpath}${head}ratma00${FHR}${SUFFIX} ] ; then
-		 echo "${dirname}${head}ratma00${FHR}${SUFFIX}      " >>enkf${CDUMP}_grp${n}.txt
-	     fi
-             if [ -s $ROTDIR/${dirpath}${head}ratmi00${FHR}${SUFFIX} ] ; then
-                 echo "${dirname}${head}ratmi00${FHR}${SUFFIX}      " >>enkf${CDUMP}_grp${n}.txt
+             if [ -s $ROTDIR/${dirpath}${head}atma00${FHR}${SUFFIX} ] ; then
+                 echo "${dirname}${head}atma00${FHR}${SUFFIX}      " >>enkf${CDUMP}_grp${n}.txt
+             fi
+             if [ -s $ROTDIR/${dirpath}${head}atmi00${FHR}${SUFFIX} ] ; then
+                 echo "${dirname}${head}atmi00${FHR}${SUFFIX}      " >>enkf${CDUMP}_grp${n}.txt
              fi
          fi
-         echo "${dirname}${head}atmi00${FHR}.nc            " >>enkf${CDUMP}_restarta_grp${n}.txt
+         if [ -s $ROTDIR/${dirpath}${head}ratmi00${FHR}${SUFFIX} ] ; then
+             echo "${dirname}${head}ratmi00${FHR}${SUFFIX}      " >>enkf${CDUMP}_restarta_grp${n}.txt
+         fi
+
       fi 
       echo "${dirname}${head}atmf00${FHR}${SUFFIX}       " >>enkf${CDUMP}_grp${n}.txt
     done # loop over FHR
