@@ -19,7 +19,7 @@ export MP_MPILIB=mpich2
 export MP_LABELIO=yes
 ####################################
 # obtain unique process id (pid) and make temp directories
-export DATA=${DATA:-${DATAROOT}/${jobid:?}}
+export DATA=/gpfs/dell2/nco/ops/tmpnwprd/${jobid:?}
 mkdir $DATA
 cd $DATA 
 
@@ -53,7 +53,7 @@ setpdy.sh
 ##############################
 # Define COM Directories
 ##############################
-export COMIN=${COMIN:-$COMROOT/${NET}/${envir}/${RUN}.${PDY}/${cyc}}
+export COMIN=$COMROOT/${NET}/prod/${RUN}.${PDY}/${cyc} #AJWR 17 Apr 2020: $envir->prod; removed COMIN as default because of ver file hard set
 export COMOUT=${COMOUT:-$COMROOT/${NET}/${envir}/${RUN}.${PDY}/${cyc}}
 export pcom=${pcom:-${COMOUT}/wmo}
 export COMAWP=${COMAWP:-${COMOUT}/gempak}

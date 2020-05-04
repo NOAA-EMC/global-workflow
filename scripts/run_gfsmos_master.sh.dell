@@ -54,7 +54,7 @@ module load EnvVars/1.0.2     2>/dev/null
 module load ips/18.0.1.163    2>/dev/null
 module load impi/18.0.1       2>/dev/null
 module load lsf/10.1          2>/dev/null
-module load prod_envir/1.1.0  2>/dev/null
+module load prod_envir/1.0.2  2>/dev/null
 module load prod_util/1.1.0   2>/dev/null
 module load CFP/2.0.1         2>/dev/null
  

@@ -23,7 +23,7 @@ fi
 
 LINK="ln -fs"
 SLINK="ln -fs"
-[[ $RUN_ENVIR = nco ]] && LINK="cp -rp"
+[[ $RUN_ENVIR = nco ]] && LINK="rsync -av"
 
 pwd=$(pwd -P)
 
@@ -33,7 +33,7 @@ pwd=$(pwd -P)
 if [ $machine == "cray" ]; then
     FIX_DIR="/gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix"
 elif [ $machine = "dell" ]; then
-    FIX_DIR="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix"
+    FIX_DIR="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix_nco_gfsv15" # GFSv15 fix
 elif [ $machine = "theia" ]; then
     FIX_DIR="/scratch4/NCEPDEV/global/save/glopara/git/fv3gfs/fix"
 fi
