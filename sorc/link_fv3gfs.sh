@@ -23,7 +23,7 @@ fi
 
 LINK="ln -fs"
 SLINK="ln -fs"
-[[ $RUN_ENVIR = nco ]] && LINK="cp -rp"
+[[ $RUN_ENVIR = nco ]] && LINK="rsync -av"
 
 pwd=$(pwd -P)
 
