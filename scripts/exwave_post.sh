@@ -60,7 +60,7 @@
   if [ -z ${NTASKS} ]        
   then
     echo "FATAL ERROR: requires NTASKS to be set "
-    err=1; export err;${errchk}
+    export err=1;${errchk}
     exit $err
   fi
 
@@ -230,7 +230,7 @@
       echo "$WAV_MOD_TAG post $grdID $date $cycle : field output missing." >> $wavelog
       postmsg "$jlogfile" "NON-FATAL ERROR : NO RAW FIELD OUTPUT FILE out_grd.$grdID"
       fieldOK='no'
-      err=2; export err;${errchk}
+      export err=2;${errchk}
       exit $err
       gribOK='no'
     else
@@ -257,7 +257,7 @@
     [[ "$LOUD" = YES ]] && set -x
     echo "$WAV_MOD_TAG post $date $cycle : point output missing." >> $wavelog
     postmsg "$jlogfile" " FATAL ERROR NO RAW POINT OUTPUT FILE"
-    err=3; export err;${errchk}
+    export err=3;${errchk}
     exit $err
     pointOK='no'
     specOK='no'
@@ -281,7 +281,7 @@
       echo "$WAV_MOD_TAG post $grdID $date $cycle : mod_def file missing." >> $wavelog
       postmsg "$jlogfile" "FATAL ERROR : NO MOD_DEF file mod_def.$grdID"
       fieldOK='no'
-      err=2; export err;${errchk}
+      export err=4;${errchk}
       exit $err
       gribOK='no'
     else
@@ -320,7 +320,7 @@
     [[ "$LOUD" = YES ]] && set -x
     echo "$WAV_MOD_TAG post $date $cycle : buoy location file missing." >> $wavelog
     postmsg "$jlogfile" "FATAL ERROR : NO BUOY LOCATION FILE"
-    err=5; export err;${errchk}
+    export err=5;${errchk}
     exit $err
     pointOK='no'
     specOK='no'
@@ -471,10 +471,10 @@
       echo "$WAV_MOD_TAG post $date $cycle : buoy log file failed to be created." >> $wavelog
       echo $msg
       [[ "$LOUD" = YES ]] && set -x
-      err=6;export err;${errchk}
+      export err=6;${errchk}
+      exit $err
       specOK='no'
       bullOK='no'
-      exit $err
     fi
 
 # Create new buoy_log.ww3 excluding all IBP files
@@ -627,13 +627,13 @@
   then
     set +x
     echo ' '
-    echo '***********************************************************'
-    echo '*** CMDFILE FAILED TO GENERATE SBS GRIB2 AND GINT FILES ***'
-    echo '***********************************************************'
+    echo '************************************************************'
+    echo '*** FATAL ERROR: CMDFILE FAILED SBS GRIB2 AND GINT FILES ***'
+    echo '************************************************************'
     echo '     See Details Below '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    err=7;export err;${errchk}
+    export err=7;${errchk}
     exit $err
   fi
 
@@ -709,12 +709,12 @@
   then
     set +x
     echo ' '
-    echo '***********************************************************'
-    echo '*** CMDFILE FAILED TO GENERATE POST GRIB2 FILES ***********'
-    echo '***********************************************************'
+    echo '************************************************************'
+    echo '*** FATAL ERROR: CMDFILE FAILED POST GRIB2 FILES ***********'
+    echo '************************************************************'
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    err=8;export err;${errchk}
+    export err=8;${errchk}
     exit_code=$exit
     exit $err
   fi
@@ -790,12 +790,12 @@
   then
     set +x
     echo ' '
-    echo '***********************************************************'
-    echo '*** CMDFILE FAILED TO GENERATE SPEC AND BULLETIN FILES  ***'
-    echo '***********************************************************'
+    echo '************************************************************'
+    echo '*** FATAL ERROR: CMDFILE FAILED SPEC AND BULLETIN FILES  ***'
+    echo '************************************************************'
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    err=9;export err;${errchk}
+    export err=9;${errchk}
     exit $err
   fi
 
@@ -917,14 +917,15 @@
       then
         set +x
         echo ' '
-        echo '**************************************'
-        echo '*** ERROR OUTPUT wave_grib2.sh ***'
-        echo '**************************************'
+        echo '***********************************************'
+        echo '*** FATAL ERROR: ERROR OUTPUT wave_grib2.sh ***'
+        echo '***********************************************'
         echo ' '
         [[ "$LOUD" = YES ]] && set -x
         echo "$WAV_MOD_TAG post $date $cycle : error in GRIB." >> $wavelog
-        postmsg "$jlogfile" "NON-FATAL ERROR in wave_grib2.sh"
-        err=10;export err;${errchk}
+        postmsg "$jlogfile" "FATAL ERROR in wave_grib2.sh"
+        export err=10;${errchk}
+        exit $err
         sed "s/^/grib_$grdID.err : /g"  grib_$grdID.err
       fi
 
@@ -934,14 +935,15 @@
     then
       set +x
       echo ' '
-      echo '*************************************'
-      echo '*** ERROR OUTPUT wave_outp.sh ***'
-      echo '*************************************'
+      echo '****************************************'
+      echo '*** FATAL ERROR: OUTPUT wave_outp.sh ***'
+      echo '****************************************'
       echo '            Possibly in multiple calls'
       [[ "$LOUD" = YES ]] && set -x
       echo "$WAV_MOD_TAG post $date $cycle : error in spectra." >> $wavelog
-      postmsg "$jlogfile" "NON-FATAL ERROR in wave_outp.sh, possibly in multiple calls."
-      err=11;export err;${errchk}
+      postmsg "$jlogfile" "FATAL ERROR in wave_outp.sh, possibly in multiple calls."
+      export err=11;${errchk}
+      exit $err
       for file in spec_*.err
       do
         echo ' '
@@ -953,15 +955,16 @@
     then
       set +x
       echo ' '
-      echo '******************************************'
-      echo '*** ERROR OUTPUT wave_outp_bull.sh ***'
-      echo '******************************************'
+      echo '*********************************************'
+      echo '*** FATAL ERROR: OUTPUT wave_outp_bull.sh ***'
+      echo '*********************************************'
       echo '            Possibly in multiple calls'
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
       echo "$WAV_MOD_TAG post $date $cycle : error in bulletins." >> $wavelog
-      postmsg "$jlogfile" "NON-FATAL ERROR in wave_bull.sh, possibly in multiple calls."
-      err=12;export err;${errchk}
+      postmsg "$jlogfile" "FATAL ERROR in wave_bull.sh, possibly in multiple calls."
+      export err=12;${errchk}
+      exit $err
       for file in bull_*.err
       do
         echo ' '
@@ -1048,7 +1051,7 @@
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
     exit_code=$exit
-    err=13; export err;${errchk}
+    export err=13;${errchk}
     exit $err
   fi
 
@@ -1122,9 +1125,9 @@
   then
     set +x
     echo ' '
-    echo '*********************'
-    echo '*** ERROR OUTPUTS ***'
-    echo '*********************'
+    echo '****************************'
+    echo '*** FATAL ERROR: OUTPUTS ***'
+    echo '****************************'
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
     for file in *.err
@@ -1132,7 +1135,8 @@
       echo ' '
       sed "s/^/$file : /g" $file
     done
-    err=14;export err;${errchk}
+    export err=14;${errchk}
+    exit $err
   fi
 
 # --------------------------------------------------------------------------- #
@@ -1162,10 +1166,11 @@
 
   if [ "$exit_code" -ne '0' ]
   then
+    echo "FATAL ERROR: Problem in MWW3 POST"
     msg="ABNORMAL EXIT: Problem in MWW3 POST"
     postmsg "$jlogfile" "$msg"
     echo $msg
-    err=15; export err;${errchk}
+    export err=15;${errchk}
     exit $err
   else
     echo " Wave Post Completed Normally "
