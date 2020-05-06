@@ -443,16 +443,17 @@ if [ $cplwav = ".true." ]; then
 # Loop for gridded output (uses FHINC)
 # Contingency for RERUN=YES
   if [ "${RERUN}" = "YES" ]; then
-    fhr=${FHROT}+$FHMIN_WAV
+    fhri=${FHROT}+$FHMIN_WAV
 # Skip initial time step already available from interrupted run
     FHINC=$FHOUT_WAV
     if [ $FHMAX_HF_WAV -gt 0 -a $FHOUT_HF_WAV -gt 0 -a $fhr -lt $FHMAX_HF_WAV ]; then
       FHINC=$FHOUT_HF_WAV
     fi
-    fhr=${fhr}+$FHINC
+    fhri=${fhri}+$FHINC
   else
-    fhr=$FHMIN_WAV
+    fhri=$FHMIN_WAV
   fi
+  fhr=${fhri}
   while [ $fhr -le $FHMAX_WAV ]; do
     YMDH=$($NDATE $fhr $CDATE)
     YMD=$(echo $YMDH | cut -c1-8)
@@ -468,6 +469,7 @@ if [ $cplwav = ".true." ]; then
   done
 
   # Loop for point output (uses DTPNT)
+  fhr=${fhri}
   while [ $fhr -le $FHMAX_WAV ]; do
     YMDH=$($NDATE $fhr $CDATE)
     YMD=$(echo $YMDH | cut -c1-8)
