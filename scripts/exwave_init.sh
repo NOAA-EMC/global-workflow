@@ -56,7 +56,8 @@
   if [ -z ${NTASKS} ] 
   then
     echo "FATAL ERROR: requires NTASKS to be set "
-    err=1; export err;${errchk}
+    export err=1; ${errchk}
+    exit $err
   fi
 
   set +x
@@ -125,8 +126,9 @@
         echo ' '
         echo $msg
         [[ "$LOUD" = YES ]] && set -x
-        echo "$COMPONENTwave init config $date $cycle : ww3_grid.inp.$grdID missing." >> $wavelog
-        err=2;export err;${errchk}
+        echo "FATAL ERROR: $COMPONENTwave init config $date $cycle : ww3_grid.inp.$grdID missing." >> $wavelog
+        export err=2;${errchk}
+        exit $err
       fi
 
       [[ ! -d $COMOUT/rundata ]] && mkdir -m 775 -p $COMOUT/rundata
@@ -208,8 +210,9 @@
       echo $msg
       sed "s/^/$grdID.out : /g"  $grdID.out
       [[ "$LOUD" = YES ]] && set -x
-      echo "$COMPONENTwave prep $date $cycle : mod_def.$grdID missing." >> $wavelog
-      err=3;export err;${errchk}
+      echo "FATAL ERROR: $COMPONENTwave prep $date $cycle : mod_def.$grdID missing." >> $wavelog
+      export err=3;${errchk}
+      exit $err
     fi
   done
 

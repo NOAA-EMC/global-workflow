@@ -61,7 +61,7 @@
   if [ -z ${NTASKS} ]        
   then
     echo "FATAL ERROR: requires NTASKS to be set "
-    err=1; export err;${errchk}
+    export err=1; ${errchk}
     exit $err
   fi
 
@@ -162,7 +162,7 @@
       echo "$WAV_MOD_TAG post $grdID $date $cycle : mod_def file missing." >> $wavelog
       postmsg "$jlogfile" "FATAL ERROR : NO MOD_DEF file mod_def.$grdID"
       DOFLD_WAV='NO'
-      err=2; export err;${errchk}
+      export err=2; ${errchk}
       exit $err
       DOGRB_WAV='NO'
     else
@@ -196,9 +196,9 @@
     echo '************************************* '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    echo "$AV_MOD_ID post $date $cycle : buoy location file missing." >> $wavelog
+    echo "$WAV_MOD_ID post $date $cycle : buoy location file missing." >> $wavelog
     postmsg "$jlogfile" "FATAL ERROR : NO BUOY LOCATION FILE"
-    err=3; export err;${errchk}
+    export err=3; ${errchk}
     exit $err
     DOPNT_WAV='NO'
     DOSPC_WAV='NO'
@@ -220,9 +220,9 @@
       echo '************************************* '
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
-      echo "$AV_MOD_ID post $date $cycle : buoy location file missing." >> $wavelog
+      echo "$WAV_MOD_ID post $date $cycle : buoy location file missing." >> $wavelog
       postmsg "$jlogfile" "FATAL ERROR : NO BUOY LOCATION FILE"
-      err=3; export err;${errchk}
+      export err=3; ${errchk}
       exit $err
       DOPNT_WAV='NO'
       DOSPC_WAV='NO'
@@ -395,10 +395,10 @@
       echo "$WAV_MOD_TAG post $date $cycle : buoy log file failed to be created." >> $wavelog
       echo $msg
       [[ "$LOUD" = YES ]] && set -x
-      err=4;export err;${errchk}
+      export err=4;${errchk}
+      exit $err
       DOSPC_WAV='NO'
       DOBLL_WAV='NO'
-      exit $err
     fi
 
 # Create new buoy_log.ww3 excluding all IBP files
@@ -421,14 +421,15 @@
     else
       set +x
       echo ' '
-      echo '**************************************** '
-      echo '*** ERROR : NO BUOY LOG FILE CREATED *** '
-      echo '**************************************** '
+      echo '********************************************** '
+      echo '*** FATAL ERROR : NO BUOY LOG FILE CREATED *** '
+      echo '********************************************** '
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
       echo "$WAV_MOD_TAG post $date $cycle : buoy log file missing." >> $wavelog
       postmsg "$jlogfile" "FATAL ERROR : NO BUOY LOG FILE GENERATED FOR SPEC AND BULLETIN FILES"
-      err=5;export err;${errchk}
+      export err=5;${errchk}
+      exit $err
       DOSPC_WAV='NO'
       DOBLL_WAV='NO'
     fi
@@ -453,14 +454,15 @@
       else
         set +x
         echo ' '
-        echo '**************************************** '
-        echo '*** ERROR : NO  IBP LOG FILE CREATED *** '
-        echo '**************************************** '
+        echo '********************************************** '
+        echo '*** FATAL ERROR : NO  IBP LOG FILE CREATED *** '
+        echo '********************************************** '
         echo ' '
         [[ "$LOUD" = YES ]] && set -x
         echo "$WAV_MOD_TAG post $date $cycle : ibp  log file missing." >> $wavelog
         postmsg "$jlogfile" "FATAL ERROR : NO  IBP LOG FILE GENERATED FOR SPEC AND BULLETIN FILES"
-        err=6;export err;${errchk}
+        export err=6;${errchk}
+        exit $err
         DOIBP_WAV='NO'
       fi
     fi
@@ -532,12 +534,12 @@
       pfile=$COMIN/rundata/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS}
       while [ ! -s ${pfile} ]; do sleep 10; ((iwait++)) && ((iwait==$iwaitmax)) && break ; echo $iwait; done
       if [ $iwait -eq $iwaitmax ]; then 
-        echo " FATAL ERROR : NO RAW POINT OUTPUT FILE out_pnt.$waveuoutpGRD
+        echo " FATAL ERROR : NO RAW POINT OUTPUT FILE out_pnt.$waveuoutpGRD"
         echo ' '
         [[ "$LOUD" = YES ]] && set -x
         echo "$WAV_MOD_TAG post $waveuoutpGRD $date $cycle : point output missing." >> $wavelog
-        postmsg "$jlogfile" "FATAL ERROR : NO RAW POINT OUTPUT FILE out_pnt.$waveuoutpGRD
-        err=6; export err;${errchk}
+        postmsg "$jlogfile" "FATAL ERROR : NO RAW POINT OUTPUT FILE out_pnt.$waveuoutpGRD"
+        export err=7;${errchk}
         exit $err
       fi
       ln -fs ${pfile} ./out_pnt.${waveuoutpGRD} 
@@ -585,7 +587,7 @@
           echo "$WAV_MOD_TAG post $grdID $date $cycle : field output missing." >> $wavelog
           postmsg "$jlogfile" "NON-FATAL ERROR : NO RAW FIELD OUTPUT FILE out_grd.$grdID"
           DOFLD_WAVE='NO'
-          err=7; export err;${errchk}
+          export err=8;${errchk}
           exit $err
         fi
         ln -s ${gfile} ./out_grd.${wavGRD} 
@@ -660,13 +662,13 @@
     then
       set +x
       echo ' '
-      echo '********************************************'
-      echo '*** CMDFILE FAILED   ***'
-      echo '********************************************'
+      echo '*************************************'
+      echo '*** FATAL ERROR: CMDFILE FAILED   ***'
+      echo '*************************************'
       echo '     See Details Below '
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
-      err=8; export err;${errchk}
+      export err=9;${errchk}
       exit $err
     fi
 
@@ -745,13 +747,13 @@
     then
       set +x
       echo ' '
-      echo '********************************************'
-      echo '*** CMDFILE FAILED   ***'
-      echo '********************************************'
+      echo '*************************************'
+      echo '*** FATAL ERROR: CMDFILE FAILED   ***'
+      echo '*************************************'
       echo '     See Details Below '
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
-      err=8; export err;${errchk}
+      export err=10;${errchk}
       exit $err
     fi
 
@@ -769,10 +771,11 @@
 
   if [ "$exit_code" -ne '0' ]
   then
+    echo " FATAL ERROR: Problem in MWW3 POST"
     msg="ABNORMAL EXIT: Problem in MWW3 POST"
     postmsg "$jlogfile" "$msg"
     echo $msg
-    err=16; export err;${errchk}
+    export err=11;${errchk}
     exit $err
   else
     echo " Side-by-Side Wave Post Completed Normally "
