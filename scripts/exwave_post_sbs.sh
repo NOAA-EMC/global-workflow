@@ -105,6 +105,15 @@
   [[ "$LOUD" = YES ]] && set -x
 
 
+# 0.c.5 Define CDATE_POST as a function of RERUN variable setting
+  if [ "${RERUN}" = "YES" ]; then
+    export CDATE_POST=${CDATE_RST}
+    export FHRUN=`$NHOUR ${CDATE_RST} ${CDATE}`
+  else # regular run
+    export CDATE_POST=${CDATE}
+    export FHRUN=0
+  fi
+
 # --------------------------------------------------------------------------- #
 # 1.  Get files that are used by most child scripts
 
@@ -345,7 +354,7 @@
 
   if [ "$DOSPC_WAV" = 'YES' ] || [ "$DOBLL_WAV" = 'YES' ]
   then
-    ymdh=`$NDATE -${WAVHINDH} $CDATE`
+    ymdh=`$NDATE -${WAVHINDH} $CDATE_POST`
     tstart="`echo $ymdh | cut -c1-8` `echo $ymdh | cut -c9-10`0000"
     dtspec=3600.            # default time step (not used here)
     sed -e "s/TIME/$tstart/g" \
@@ -356,9 +365,8 @@
                                ww3_outp_spec.inp.tmpl > ww3_outp.inp
    
     ln -s mod_def.$waveuoutpGRD mod_def.ww3
-    fhr=$FHMIN_WAV
-    YMD=$(echo $CDATE | cut -c1-8)
-    HMS="$(echo $CDATE | cut -c9-10)0000"
+    YMD=$(echo $CDATE_POST | cut -c1-8)
+    HMS="$(echo $CDATE_POST | cut -c9-10)0000"
     tloop=0
     tloopmax=600
     tsleep=10
@@ -498,9 +506,24 @@
 
 # 1.a.2 Loop over forecast time to generate post files 
 # When executed side-by-side, serial mode (cfp when run after the fcst step)
-  fhr=$FHMIN_WAV
-  fhrp=$fhr
-  fhrg=$fhr
+# Contingency for RERUN=YES
+  if [ "${RERUN}" = "YES" ]; then
+    fhr=$((FHRUN + FHMIN_WAV))
+    fhrp=$((fhr + $FHINCP_WAV))
+    if [ $FHMAX_HF_WAV -gt 0 ] && [ $FHOUT_HF_WAV -gt 0 ] && [ $fhr -lt $FHMAX_HF_WAV ]; then
+      FHINCG=$FHOUT_HF_WAV
+    else
+      FHINCG=$FHOUT_WAV
+    fi
+    fhrg=$((fhr + $FHINCG))
+# Get minimum value to start count from fhr+min(fhrp,fhrg)
+    fhrinc=`echo $(( $FHINCP_WAV < $FHINCG ? $FHINCG : $FHINCG ))`
+    fhr=$((fhr + fhrinc))
+  else
+    fhr=$FHMIN_WAV
+    fhrp=$fhr
+    fhrg=$fhr
+  fi
   iwaitmax=120 # Maximum loop cycles for waiting until wave component output file is ready (fails after max)
   while [ $fhr -le $FHMAX_WAV ]; do
     
@@ -573,6 +596,7 @@
 
     if [ $fhr = $fhrg ]
     then
+      iwait=0
       for wavGRD in ${waveGRD} ; do
         gfile=$COMIN/rundata/${WAV_MOD_TAG}.out_grd.${wavGRD}.${YMD}.${HMS}
         while [ ! -s ${gfile} ]; do sleep 10; done
@@ -669,6 +693,8 @@
       err=8; export err;${errchk}
       exit $err
     fi
+
+#sleep 10
 
     rm -f out_grd.* # Remove large binary grid output files
 

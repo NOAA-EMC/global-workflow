@@ -78,7 +78,7 @@
   outfile=${COMPONENTwave}.${cycle}${ENSTAG}.${grdnam}.${grdres}.f${FH3}.grib2
 
 # Onlye create file if not present in COM
-  if [ ! -s ${COMOUT}/gridded/${outfile} ]; then
+#  if [ ! -s ${COMOUT}/gridded/${outfile} ]; then
 
     set +x
     echo ' '
@@ -145,9 +145,20 @@
     echo "   Executing $EXECcode/ww3_grib"
     [[ "$LOUD" = YES ]] && set -x
     $EXECcode/ww3_grib > grib2_${grdnam}_${FH3}.out 2>&1
+    if [ ! -s gribfile ]; then
+      set +x
+      echo ' '
+      echo '************************************************ '
+      echo '*** FATAL ERROR : ERROR IN ww3_grib encoding *** '
+      echo '************************************************ '
+      echo ' '
+      [[ "$LOUD" = YES ]] && set -x
+      postmsg "$jlogfile" "FATAL ERROR : ERROR IN ww3_grib2"
+      exit 3
+    fi
+
     $WGRIB2 gribfile -set_date $CDATE -set_ftime "$fhr hour fcst" -grib ${COMOUT}/gridded/${outfile}
     err=$?
-  
     if [ $err != 0 ]
     then
       set +x
@@ -229,11 +240,11 @@
     cd ../
     mv -f ${gribDIR} done.${gribDIR}
 
-  else
-    echo ' '
-    echo " File ${COMOUT}/gridded/${outfile} found, skipping generation process"
-    echo ' '
-  fi
+#  else
+#    echo ' '
+#    echo " File ${COMOUT}/gridded/${outfile} found, skipping generation process"
+#    echo ' '
+#  fi
 
   set +x
   echo ' '

@@ -373,28 +373,20 @@ if [ $cplwav = ".true." ]; then
     # Wave IC (restart) file must exist for warm start on this cycle, if not wave model starts from flat ocean
     # For IAU needs to use sPDY for adding IAU backup of 3h
     $NLN $COMINWW3/rundata/${COMPONENTwave}.mod_def.$wavGRD $DATA/mod_def.$wavGRD
+    WAVHCYC=${WAVHCYC:-6}
+    datwave=$COMOUTWW3/rundata
+    wavprfx=${COMPONENTwave}${WAV_MEMBER}
     if [ "${RERUN}" != "YES" ]; then
       if [ -s ${WRDIR}/${PDY}.${cyc}0000.${COMPONENTwave}${WAV_MEMBER}.restart.${wavGRD} ]; then
         $NLN ${WRDIR}/${PDY}.${cyc}0000.${COMPONENTwave}${WAV_MEMBER}.restart.${wavGRD} $DATA/restart.${wavGRD}
         eval $NLN $datwave/${wavprfx}.log.${wavGRD}.${PDY}${cyc} log.${wavGRD}
       fi
+    else
+      eval $NLN $datwave/${wavprfx}.log.rerun.${wavGRD}.${PDY}${cyc} log.${wavGRD}
     fi
   done
 
   if [ "${RERUN}" != "YES" ]; then
-  # Wave IC (restart) interval assumes 4 daily cycles (restarts only written by gdas cycle) 
-  # WAVHCYC needs to be consistent with restart write interval in ww3_multi.inp or will FAIL
-    WAVHCYC=${WAVHCYC:-6}
-    datwave=$COMOUTWW3/rundata
-    wavprfx=${COMPONENTwave}${WAV_MEMBER}
-    for wavGRD in $waveGRD ; do
-      # Link wave IC for current cycle
-      # Elimanted dependency on sPDY scyc, only required in GFS with IAU, not GEFS
-      if [ -s ${WRDIR}/${PDY}.${cyc}0000.${COMPONENTwave}${WAV_MEMBER}.restart.${wavGRD} ]; then
-        $NLN ${WRDIR}/${PDY}.${cyc}0000.${COMPONENTwave}${WAV_MEMBER}.restart.${wavGRD} $DATA/restart.${wavGRD}
-        eval $NLN $datwave/${wavprfx}.log.${wavGRD}.${PDY}${cyc} log.${wavGRD}
-      fi 
-    done
 # Next-cycle restart for GEFS
     if [ "${COMPONENTwave}" = "gefswave" ]; then
       mkdir -p $COMOUTWW3/restart
@@ -409,11 +401,11 @@ if [ $cplwav = ".true." ]; then
   fi
 # Loop for checkpoint restart
   DT2RSTH=$(( DT_2_RST_WAV / 3600 ))
-  RSTHINC=$(( ${DT2RSTH} + ${RST2IOFF_WAV} ))
+  RSTHINC=$(( DT2RSTH + RST2IOFF_WAV ))
 # Contingency for RERUN=YES
   if [ "${RERUN}" = "YES" ]; then 
     CDATE_OUT=${CDATE_RST} 
-    fhr=${FHROT}+$RSTHINC
+    fhr=$((FHROT + RSTHINC))
   else 
     CDATE_OUT=${CDATE} 
     fhr=$RSTHINC
@@ -443,13 +435,13 @@ if [ $cplwav = ".true." ]; then
 # Loop for gridded output (uses FHINC)
 # Contingency for RERUN=YES
   if [ "${RERUN}" = "YES" ]; then
-    fhri=${FHROT}+$FHMIN_WAV
+    fhri=$((FHROT + FHMIN_WAV))
 # Skip initial time step already available from interrupted run
     FHINC=$FHOUT_WAV
-    if [ $FHMAX_HF_WAV -gt 0 -a $FHOUT_HF_WAV -gt 0 -a $fhr -lt $FHMAX_HF_WAV ]; then
+    if [ $FHMAX_HF_WAV -gt 0 -a $FHOUT_HF_WAV -gt 0 -a $fhri -lt $FHMAX_HF_WAV ]; then
       FHINC=$FHOUT_HF_WAV
     fi
-    fhri=${fhri}+$FHINC
+    fhri=$((fhri + FHINC))
   else
     fhri=$FHMIN_WAV
   fi
@@ -468,7 +460,14 @@ if [ $cplwav = ".true." ]; then
     fhr=$((fhr+FHINC))
   done
 
-  # Loop for point output (uses DTPNT)
+# Loop for point output (uses DTPNT)
+# Contingency for RERUN=YES
+  if [ "${RERUN}" = "YES" ]; then
+    fhri=$((FHROT + FHMIN_WAV))
+# Skip initial time step already available from interrupted run
+  else
+    fhri=$FHMIN_WAV
+  fi
   fhr=${fhri}
   while [ $fhr -le $FHMAX_WAV ]; do
     YMDH=$($NDATE $fhr $CDATE)

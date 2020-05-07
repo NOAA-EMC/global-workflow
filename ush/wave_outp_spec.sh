@@ -23,11 +23,11 @@
 # 0.  Preparations
 # 0.a Basic modes of operation
 
-  # set execution trace prompt.  ${0##*/} adds the script's basename
+# set execution trace prompt.  ${0##*/} adds the script's basename
   PS4=" \${SECONDS} ${0##*/} L\${LINENO} + "
   set -x
 
-  # Use LOUD variable to turn on/off trace.  Defaults to YES (on).
+# Use LOUD variable to turn on/off trace.  Defaults to YES (on).
   export LOUD=${LOUD:-YES}; [[ $LOUD = yes ]] && export LOUD=YES
   [[ "$LOUD" != YES ]] && set +x
    
