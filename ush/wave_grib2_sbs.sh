@@ -77,8 +77,8 @@
   if [ ${waveMEMB} ]; then ENSTAG=".${membTAG}${waveMEMB}" ; fi
   outfile=${COMPONENTwave}.${cycle}${ENSTAG}.${grdnam}.${grdres}.f${FH3}.grib2
 
-# Onlye create file if not present in COM
-#  if [ ! -s ${COMOUT}/gridded/${outfile} ]; then
+# Only create file if not present in COM
+  if [ ! -s ${COMOUT}/gridded/${outfile}.idx ]; then
 
     set +x
     echo ' '
@@ -240,11 +240,11 @@
     cd ../
     mv -f ${gribDIR} done.${gribDIR}
 
-#  else
-#    echo ' '
-#    echo " File ${COMOUT}/gridded/${outfile} found, skipping generation process"
-#    echo ' '
-#  fi
+  else
+    echo ' '
+    echo " File ${COMOUT}/gridded/${outfile} found, skipping generation process"
+    echo ' '
+  fi
 
   set +x
   echo ' '
