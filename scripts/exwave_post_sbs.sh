@@ -509,21 +509,19 @@
 # Contingency for RERUN=YES
   if [ "${RERUN}" = "YES" ]; then
     fhr=$((FHRUN + FHMIN_WAV))
-    fhrp=$((fhr + $FHINCP_WAV))
     if [ $FHMAX_HF_WAV -gt 0 ] && [ $FHOUT_HF_WAV -gt 0 ] && [ $fhr -lt $FHMAX_HF_WAV ]; then
       FHINCG=$FHOUT_HF_WAV
     else
       FHINCG=$FHOUT_WAV
     fi
-    fhrg=$((fhr + $FHINCG))
 # Get minimum value to start count from fhr+min(fhrp,fhrg)
     fhrinc=`echo $(( $FHINCP_WAV < $FHINCG ? $FHINCG : $FHINCG ))`
     fhr=$((fhr + fhrinc))
   else
     fhr=$FHMIN_WAV
-    fhrp=$fhr
-    fhrg=$fhr
   fi
+  fhrp=$fhr
+  fhrg=$fhr
   iwaitmax=120 # Maximum loop cycles for waiting until wave component output file is ready (fails after max)
   while [ $fhr -le $FHMAX_WAV ]; do
     
@@ -679,7 +677,6 @@
       ./${fcmdnow}
       exit=$?
     fi
-
     if [ "$exit" != '0' ]
     then
       set +x
@@ -694,16 +691,30 @@
       exit $err
     fi
 
-#sleep 10
-
     rm -f out_grd.* # Remove large binary grid output files
-
+    sleep 5
     cd $DATA
 
     FHINCP=$(( DTPNT_WAV / 3600 ))
     FHINCG=$(( DTFLD_WAV / 3600 ))
     if [ $fhr = $fhrg ]
     then
+# Check if grib2 file created
+      ENSTAG=""
+      if [ ${waveMEMB} ]; then ENSTAG=".${membTAG}${waveMEMB}" ; fi
+      gribchk=${COMPONENTwave}.${cycle}${ENSTAG}.${GRDNAME}.${GRDRES}.f${FH3}.grib2
+      if [ ! -s ${COMOUT}/gridded/${gribchk} ]; then
+        set +x
+        echo ' '
+        echo '********************************************'
+        echo "*** FATAL ERROR: $gribchk not generated "
+        echo '********************************************'
+        echo '     See Details Below '
+        echo ' '
+        [[ "$LOUD" = YES ]] && set -x
+        err=8; export err;${errchk}
+        exit $err
+      fi
       if [ $FHMAX_HF_WAV -gt 0 ] && [ $FHOUT_HF_WAV -gt 0 ] && [ $fhr -lt $FHMAX_HF_WAV ]; then
         FHINCG=$FHOUT_HF_WAV
       else
