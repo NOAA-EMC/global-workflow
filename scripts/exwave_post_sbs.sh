@@ -117,14 +117,6 @@
 # --------------------------------------------------------------------------- #
 # 1.  Get files that are used by most child scripts
 
-  export DOIBP_WAV='NO'
-  export DOFLD_WAV='YES'
-  export DOPNT_WAV='YES'
-  export DOGRB_WAV='YES'
-  export DOGRI_WAV='YES'
-  export DOSPC_WAV='YES'
-  export DOBLL_WAV='YES'
-
   exit_code=0
 
   set +x

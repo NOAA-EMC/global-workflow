@@ -404,14 +404,12 @@ if [ $cplwav = ".true." ]; then
   RSTHINC=$(( DT2RSTH + RST2IOFF_WAV ))
 # Contingency for RERUN=YES
   if [ "${RERUN}" = "YES" ]; then 
-    CDATE_OUT=${CDATE_RST} 
     fhr=$((FHROT + RSTHINC))
   else 
-    CDATE_OUT=${CDATE} 
     fhr=$RSTHINC
   fi
   while [ $fhr -le $FHMAX_WAV ]; do
-    YMDH=$($NDATE $fhr $CDATE_OUT)
+    YMDH=$($NDATE $fhr $CDATE)
     YMD=$(echo $YMDH | cut -c1-8)
     HMS="$(echo $YMDH | cut -c9-10)0000"
     for wavGRD in $waveGRD ; do
@@ -460,23 +458,25 @@ if [ $cplwav = ".true." ]; then
     fhr=$((fhr+FHINC))
   done
 
+  if [ "$DOPNT_WAV" = "YES" ]; then
 # Loop for point output (uses DTPNT)
 # Contingency for RERUN=YES
-  if [ "${RERUN}" = "YES" ]; then
-    fhri=$((FHROT + FHMIN_WAV))
+    if [ "${RERUN}" = "YES" ]; then
+      fhri=$((FHROT + FHMIN_WAV))
 # Skip initial time step already available from interrupted run
-  else
-    fhri=$FHMIN_WAV
-  fi
-  fhr=${fhri}
-  while [ $fhr -le $FHMAX_WAV ]; do
-    YMDH=$($NDATE $fhr $CDATE)
-    YMD=$(echo $YMDH | cut -c1-8)
-    HMS="$(echo $YMDH | cut -c9-10)0000"
+    else
+      fhri=$FHMIN_WAV
+    fi
+    fhr=${fhri}
+    while [ $fhr -le $FHMAX_WAV ]; do
+      YMDH=$($NDATE $fhr $CDATE)
+      YMD=$(echo $YMDH | cut -c1-8)
+      HMS="$(echo $YMDH | cut -c9-10)0000"
       eval $NLN $datwave/${wavprfx}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS} ${YMD}.${HMS}.out_pnt.${waveuoutpGRD}
       FHINC=$FHINCP_WAV
-    fhr=$((fhr+FHINC))
-  done
+      fhr=$((fhr+FHINC))
+    done
+  fi
 fi
 
 #------------------------------------------------------------------
