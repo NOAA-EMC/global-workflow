@@ -70,11 +70,10 @@ GDATE=$($NDATE -$assim_freq $CDATE)
 gPDY=$(echo $GDATE | cut -c1-8)
 gcyc=$(echo $GDATE | cut -c9-10)
 
-
 export APREFIX="${CDUMP}.t${cyc}z."
-export ASUFFIX=".nemsio"
 export GPREFIX="gdas.t${gcyc}z."
-export GSUFFIX=".nemsio"
+export ASUFFIX=${ASUFFIX:-$SUFFIX}
+export GSUFFIX=${GSUFFIX:-$SUFFIX}
 
 
 # COMIN_GES_ENS and COMOUT_ANL_ENS are used in exglobal script

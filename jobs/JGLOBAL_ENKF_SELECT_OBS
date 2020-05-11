@@ -74,12 +74,11 @@ GDUMP=${GDUMP:-"gdas"}
 export CASE=$CASE_ENKF
 export CDUMP_OBS=${CDUMP_OBS:-$CDUMP}
 
-
 export OPREFIX="${CDUMP_OBS}.t${cyc}z."
 export APREFIX="${CDUMP}.t${cyc}z."
-export ASUFFIX=".nemsio"
 export GPREFIX="${GDUMP}.t${gcyc}z."
-export GSUFFIX=".ensmean.nemsio"
+export GSUFFIX="${GSUFFIX:-".ensmean${SUFFIX}"}"
+export ASUFFIX="${ASUFFIX:-"${SUFFIX}"}"
 
 if [ $RUN_ENVIR = "nco" -o ${ROTDIR_DUMP:-NO} = "YES" ]; then
     export COMIN_OBS=${COMIN_OBS:-$ROTDIR/$RUN.$PDY/$cyc}
@@ -104,7 +103,7 @@ if [ ! -f $ATMGES_ENSMEAN ]; then
     exit 1
 fi
 
-export LEVS=$($NEMSIOGET $ATMGES_ENSMEAN dimz | awk '{print $2}')
+export LEVS=$($NCDUMP -h $ATMGES_ENSMEAN | grep -i "pfull" | head -1 | awk -F" = " '{print $2}' | awk -F" " '{print $1}') # get LEVS
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
@@ -145,7 +144,7 @@ export SELECT_OBS="$COMOUT/${APREFIX}obsinput.ensmean"
 export DIAG_SUFFIX="_ensmean"
 
 # GSI namelist options specific to eobs
-export SETUP_INVOBS="passive_bc=.false."
+export SETUP_INVOBS="passive_bc=.false.,$SETUP_INVOBS"
 
 # Ensure clean stat tarballs for ensemble mean
 for fstat in $CNVSTAT $OZNSTAT $RADSTAT; do

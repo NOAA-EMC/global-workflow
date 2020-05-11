@@ -10,7 +10,7 @@ date
 # Source relevant config files
 #############################
 export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
-configs="base ecen"
+configs="base anal analcalc"
 config_path=${EXPDIR:-$NWROOT/gfs.${gfs_ver}/parm/config}
 for config in $configs; do
     . $config_path/config.$config
@@ -22,7 +22,7 @@ done
 ##########################################
 # Source machine runtime environment
 ##########################################
-. $HOMEgfs/env/${machine}.env ecen
+. $HOMEgfs/env/${machine}.env anal
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
@@ -32,6 +32,7 @@ status=$?
 ##############################################
 export pid=${pid:-$$}
 export outid=${outid:-"LL$job"}
+
 export DATA=${DATA:-${DATAROOT}/${jobid:?}}
 mkdir -p $DATA
 cd $DATA
@@ -56,10 +57,11 @@ export pgmerr=errfile
 # Set variables used in the exglobal script
 ##############################################
 export CDATE=${CDATE:-${PDY}${cyc}}
-export CDUMP=${CDUMP:-${RUN:-"gdas"}}
+export CDUMP=${CDUMP:-${RUN:-"gfs"}}
 if [ $RUN_ENVIR = "nco" ]; then
     export ROTDIR=${COMROOT:?}/$NET/$envir
 fi
+export DO_CALC_ANALYSIS=${DO_CALC_ANALYSIS:-"YES"} 
 
 
 ##############################################
@@ -71,37 +73,64 @@ gPDY=$(echo $GDATE | cut -c1-8)
 gcyc=$(echo $GDATE | cut -c9-10)
 GDUMP=${GDUMP:-"gdas"}
 
-export CASE=$CASE_ENKF
-
-
-EUPD_CYC=$(echo ${EUPD_CYC:-"gdas"} | tr a-z A-Z)
-if [ $EUPD_CYC = "GFS" ]; then
-    CDUMP_ENKF="gfs"
-else
-    CDUMP_ENKF=$CDUMP
-fi
-
 export OPREFIX="${CDUMP}.t${cyc}z."
+export GPREFIX="${GDUMP}.t${gcyc}z."
 export APREFIX="${CDUMP}.t${cyc}z."
-export APREFIX_ENKF="${CDUMP_ENKF}.t${cyc}z."
-export GPREFIX="${CDUMP}.t${gcyc}z."
 export GSUFFIX=${GSUFFIX:-$SUFFIX}
 export ASUFFIX=${ASUFFIX:-$SUFFIX}
 
+
 if [ $RUN_ENVIR = "nco" -o ${ROTDIR_DUMP:-NO} = "YES" ]; then
+    export COMIN=${COMIN:-$ROTDIR/$RUN.$PDY/$cyc}
+    export COMOUT=${COMOUT:-$ROTDIR/$RUN.$PDY/$cyc}
     export COMIN_OBS=${COMIN_OBS:-$ROTDIR/$RUN.$PDY/$cyc}
     export COMIN_GES_OBS=${COMIN_GES_OBS:-$ROTDIR/$GDUMP.$gPDY/$gcyc}
 else
+    export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc"
     export COMIN_OBS="$DMPDIR/$CDATE/$CDUMP"
     export COMIN_GES_OBS="$DMPDIR/$GDATE/$GDUMP"
 fi
-
-# COMIN, COMIN_ENS and COMIN_GES_ENS are used in exglobal script
+mkdir -m 775 -p $COMOUT
+# COMIN_GES and COMIN_GES_ENS are used in exglobal script
 # TO DO: Map NCO's directory into these variables
-export COMIN="$ROTDIR/$CDUMP.$PDY/$cyc"
-export COMIN_ENS="$ROTDIR/enkf$CDUMP_ENKF.$PDY/$cyc"
-export COMOUT_ENS="$ROTDIR/enkf$CDUMP.$PDY/$cyc"
-export COMIN_GES_ENS="$ROTDIR/enkf$CDUMP.$gPDY/$gcyc"
+export COMIN_GES="$ROTDIR/$GDUMP.$gPDY/$gcyc"
+export COMIN_GES_ENS="$ROTDIR/enkfgdas.$gPDY/$gcyc"
+
+
+export ATMGES="$COMIN_GES/${GPREFIX}atmf006${GSUFFIX}"
+if [ ! -f $ATMGES ]; then
+    echo "FATAL ERROR: FILE MISSING: ATMGES = $ATMGES"
+    exit 1
+fi
+
+
+# Get LEVS
+if [ ${GSUFFIX} = ".nc" ]; then
+    export LEVS=$($NCLEN $ATMGES pfull) 
+    status=$?
+else
+    export LEVS=$($NEMSIOGET $ATMGES dimz | awk '{print $2}')
+    status=$?
+fi
+[[ $status -ne 0 ]] && exit $status
+
+
+if [ $DOHYBVAR = "YES" ]; then
+    export ATMGES_ENSMEAN="$COMIN_GES_ENS/${GPREFIX}atmf006.ensmean$GSUFFIX"
+    if [ ! -f $ATMGES_ENSMEAN ]; then
+        echo "FATAL ERROR: FILE MISSING: ATMGES_ENSMEAN = $ATMGES_ENSMEAN"
+        exit 2
+    fi
+fi
+
+
+
+# Update surface fields with global_cycle
+export DOGCYCLE=${DOGCYCLE:-"YES"}
+
+
+# Generate Gaussian surface analysis
+export DOGAUSFCANL=${DOGAUSFCANL:-"YES"}
 
 
 ###############################################################
@@ -112,7 +141,7 @@ postmsg "$jlogfile" "$msg"
 $LOGSCRIPT
 
 
-${ENKFRECENSH:-$SCRgsi/exglobal_enkf_recenter_fv3gfs.sh.ecf}
+${ANALCALCSH:-$HOMEgsi/scripts/exglobal_analcalc_fv3gfs.sh.ecf}
 status=$?
 [[ $status -ne 0 ]] && exit $status
 

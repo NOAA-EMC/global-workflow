@@ -10,7 +10,7 @@ date
 # Source relevant config files
 #############################
 export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
-configs="base ecen"
+configs="base esfc"
 config_path=${EXPDIR:-$NWROOT/gfs.${gfs_ver}/parm/config}
 for config in $configs; do
     . $config_path/config.$config
@@ -22,7 +22,7 @@ done
 ##########################################
 # Source machine runtime environment
 ##########################################
-. $HOMEgfs/env/${machine}.env ecen
+. $HOMEgfs/env/${machine}.env esfc
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
@@ -112,7 +112,7 @@ postmsg "$jlogfile" "$msg"
 $LOGSCRIPT
 
 
-${ENKFRECENSH:-$SCRgsi/exglobal_enkf_recenter_fv3gfs.sh.ecf}
+${ENKFRESFCSH:-$SCRgsi/exglobal_enkf_surface_fv3gfs.sh.ecf}
 status=$?
 [[ $status -ne 0 ]] && exit $status
 

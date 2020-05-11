@@ -40,6 +40,7 @@ NCP=${NCP:-"/bin/cp -p"}
 NLN=${NLN:-"/bin/ln -sf"}
 ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 NEMSIOGET=${NEMSIOGET:-$NWPROD/utils/exec/nemsio_get}
+NCLEN=${NCLEN:-$HOMEgfs/ush/getncdimlen}
 USE_CFP=${USE_CFP:-"NO"}
 APRUNCFP=${APRUNCFP:-""}
 APRUN_ENKF=${APRUN_ENKF:-${APRUN:-""}}
@@ -53,9 +54,9 @@ CDATE=${CDATE:-"2001010100"}
 
 # Filenames.
 GPREFIX=${GPREFIX:-""}
-GSUFFIX=${GSUFFIX:-""}
+GSUFFIX=${GSUFFIX:-$SUFFIX}
 APREFIX=${APREFIX:-""}
-ASUFFIX=${ASUFFIX:-""}
+ASUFFIX=${ASUFFIX:-$SUFFIX}
 
 SMOOTH_ENKF=${SMOOTH_ENKF:-"YES"}
 
@@ -66,32 +67,58 @@ RADSTAT=${RADSTAT:-${APREFIX}radstat}
 ENKFSTAT=${ENKFSTAT:-${APREFIX}enkfstat}
 
 # Namelist parameters
+USE_CORRELATED_OBERRS=${USE_CORRELATED_OBERRS:-"NO"}
 NMEM_ENKF=${NMEM_ENKF:-80}
 NAM_ENKF=${NAM_ENKF:-""}
 SATOBS_ENKF=${SATOBS_ENKF:-""}
 OZOBS_ENKF=${OZOBS_ENKF:-""}
+use_correlated_oberrs=${use_correlated_oberrs:-".false."}
+if [ $USE_CORRELATED_OBERRS == "YES" ]; then
+   use_correlated_oberrs=".true."
+fi
 imp_physics=${imp_physics:-"99"}
 lupp=${lupp:-".true."}
 corrlength=${corrlength:-1250}
 lnsigcutoff=${lnsigcutoff:-2.5}
 analpertwt=${analpertwt:-0.85}
 readin_localization_enkf=${readin_localization_enkf:-".true."}
-reducedgrid=${reducedgrid:-".true"}
-letkf_flag=${letkf_flag:-".false"}
-getkf=${getkf:-".false"}
-denkf=${denkf:-".false"}
+reducedgrid=${reducedgrid:-".true."}
+letkf_flag=${letkf_flag:-".false."}
+getkf=${getkf:-".false."}
+denkf=${denkf:-".false."}
 nobsl_max=${nobsl_max:-10000}
-lobsdiag_forenkf=${lobsdiag_forenkf:-".false"}
-write_spread_diag=${write_spread_diag:-".false"}
-netcdf_diag=${netcdf_diag:-".false."}
+lobsdiag_forenkf=${lobsdiag_forenkf:-".false."}
+write_spread_diag=${write_spread_diag:-".false."}
+cnvw_option=${cnvw_option:-".false."}
+netcdf_diag=${netcdf_diag:-".true."}
 modelspace_vloc=${modelspace_vloc:-".false."} # if true, 'vlocal_eig.dat' is needed
 IAUFHRS_ENKF=${IAUFHRS_ENKF:-6}
+DO_CALC_INCREMENT=${DO_CALC_INCREMENT:-"NO"}
+INCREMENTS_TO_ZERO=${INCREMENTS_TO_ZERO:-"'NONE'"}
 
 ################################################################################
 ATMGES_ENSMEAN=$COMIN_GES_ENS/${GPREFIX}atmf006.ensmean${GSUFFIX}
-LEVS_ENKF=${LEVS_ENKF:-$($NEMSIOGET $ATMGES_ENSMEAN dimz | awk '{print $2}')}
-LATB_ENKF=${LATB_ENKF:-$($NEMSIOGET $ATMGES_ENSMEAN dimy | awk '{print $2}')}
-LONB_ENKF=${LONB_ENKF:-$($NEMSIOGET $ATMGES_ENSMEAN dimx | awk '{print $2}')}
+if [ $SUFFIX = ".nc" ]; then
+   LONB_ENKF=${LONB_ENKF:-$($NCLEN $ATMGES_ENSMEAN grid_xt)} # get LONB_ENKF
+   LATB_ENKF=${LATB_ENKF:-$($NCLEN $ATMGES_ENSMEAN grid_yt)} # get LATB_ENFK
+   LEVS_ENKF=${LEVS_ENKF:-$($NCLEN $ATMGES_ENSMEAN pfull)} # get LEVS_ENFK
+   use_gfs_ncio=".true."
+   use_gfs_nemsio=".false."
+   paranc=${paranc:-".true."}
+   if [ $DO_CALC_INCREMENT = "YES" ]; then
+      write_fv3_incr=".false."
+   else
+      write_fv3_incr=".true."
+      WRITE_INCR_ZERO="incvars_to_zero= $INCREMENTS_TO_ZERO,"
+   fi
+else
+   LEVS_ENKF=${LEVS_ENKF:-$($NEMSIOGET $ATMGES_ENSMEAN dimz | awk '{print $2}')}
+   LATB_ENKF=${LATB_ENKF:-$($NEMSIOGET $ATMGES_ENSMEAN dimy | awk '{print $2}')}
+   LONB_ENKF=${LONB_ENKF:-$($NEMSIOGET $ATMGES_ENSMEAN dimx | awk '{print $2}')}
+   use_gfs_ncio=".false."
+   use_gfs_nemsio=".true."
+   paranc=${paranc:-".false."}
+fi
 LATA_ENKF=${LATA_ENKF:-$LATB_ENKF}
 LONA_ENKF=${LONA_ENKF:-$LONB_ENKF}
 
@@ -160,7 +187,7 @@ EOFuntar
 fi
 
 ################################################################################
-# Ensemble guess, observational data and analysis
+# Ensemble guess, observational data and analyses/increments
 
 flist="$CNVSTAT $OZNSTAT $RADSTAT"
 if [ $USE_CFP = "YES" ]; then
@@ -174,28 +201,44 @@ fi
 nfhrs=`echo $IAUFHRS_ENKF | sed 's/,/ /g'`
 for imem in $(seq 1 $NMEM_ENKF); do
    memchar="mem"$(printf %03i $imem)
-   if [ $USE_CFP = "YES" ]; then
-      echo "$DATA/untar.sh $memchar" | tee -a $DATA/mp_untar.sh
-   else
-      for ftype in $flist; do
-         fname=$COMOUT_ANL_ENS/$memchar/$ftype
-         tar -xvf $fname
-      done
+   if [ $lobsdiag_forenkf = ".false." ]; then
+      if [ $USE_CFP = "YES" ]; then
+         echo "$DATA/untar.sh $memchar" | tee -a $DATA/mp_untar.sh
+      else
+         for ftype in $flist; do
+            fname=$COMOUT_ANL_ENS/$memchar/$ftype
+            tar -xvf $fname
+         done
+      fi
    fi
    mkdir -p $COMOUT_ANL_ENS/$memchar
-   for FHR in $nfhrs; do 
+   for FHR in $nfhrs; do
       $NLN $COMIN_GES_ENS/$memchar/${GPREFIX}atmf00${FHR}${ENKF_SUFFIX}${GSUFFIX}  sfg_${CDATE}_fhr0${FHR}_${memchar}
+      if [ $cnvw_option = ".true." ]; then
+         $NLN $COMIN_GES_ENS/$memchar/${GPREFIX}sfcf00${FHR}${GSUFFIX} sfgsfc_${CDATE}_fhr0${FHR}_${memchar}
+      fi
       if [ $FHR -eq 6 ]; then
-         $NLN $COMOUT_ANL_ENS/$memchar/${APREFIX}atmanl${ASUFFIX}             sanl_${CDATE}_fhr0${FHR}_${memchar}
+         if [ $DO_CALC_INCREMENT = "YES" ]; then
+            $NLN $COMOUT_ANL_ENS/$memchar/${APREFIX}atmanl${ASUFFIX}             sanl_${CDATE}_fhr0${FHR}_${memchar}
+         else
+            $NLN $COMOUT_ANL_ENS/$memchar/${APREFIX}atminc${ASUFFIX}             incr_${CDATE}_fhr0${FHR}_${memchar}
+         fi
       else
-         $NLN $COMOUT_ANL_ENS/$memchar/${APREFIX}atmanl00${FHR}${ASUFFIX}             sanl_${CDATE}_fhr0${FHR}_${memchar}
+         if [ $DO_CALC_INCREMENT = "YES" ]; then
+            $NLN $COMOUT_ANL_ENS/$memchar/${APREFIX}atma00${FHR}${ASUFFIX}             sanl_${CDATE}_fhr0${FHR}_${memchar}
+         else
+            $NLN $COMOUT_ANL_ENS/$memchar/${APREFIX}atmi00${FHR}${ASUFFIX}             incr_${CDATE}_fhr0${FHR}_${memchar}
+         fi
       fi
    done
 done
 
 # Ensemble mean guess
-for FHR in $nfhrs; do 
+for FHR in $nfhrs; do
    $NLN $COMIN_GES_ENS/${GPREFIX}atmf00${FHR}.ensmean${GSUFFIX} sfg_${CDATE}_fhr0${FHR}_ensmean
+   if [ $cnvw_option = ".true." ]; then
+      $NLN $COMIN_GES_ENS/${GPREFIX}sfcf00${FHR}.ensmean${GSUFFIX} sfgsfc_${CDATE}_fhr0${FHR}_ensmean
+   fi
 done
 
 if [ $USE_CFP = "YES" ]; then
@@ -229,14 +272,17 @@ cat > enkf.nml << EOFnml
    nlons=$LONA_ENKF,nlats=$LATA_ENKF,nlevs=$LEVS_ENKF,nanals=$NMEM_ENKF,
    deterministic=.true.,sortinc=.true.,lupd_satbiasc=.false.,
    reducedgrid=${reducedgrid},readin_localization=${readin_localization_enkf}.,
-   use_gfs_nemsio=.true.,imp_physics=$imp_physics,lupp=$lupp,
+   use_gfs_nemsio=${use_gfs_nemsio},use_gfs_ncio=${use_gfs_ncio},imp_physics=$imp_physics,lupp=$lupp,
    univaroz=.false.,adp_anglebc=.true.,angord=4,use_edges=.false.,emiss_bc=.true.,
    letkf_flag=${letkf_flag},nobsl_max=${nobsl_max},denkf=${denkf},getkf=${getkf}.,
    nhr_anal=${IAUFHRS_ENKF},nhr_state=${IAUFHRS_ENKF},use_qsatensmean=.true.,
    lobsdiag_forenkf=$lobsdiag_forenkf,
    write_spread_diag=$write_spread_diag,
    modelspace_vloc=$modelspace_vloc,
-   netcdf_diag=$netcdf_diag,
+   use_correlated_oberrs=${use_correlated_oberrs},
+   netcdf_diag=$netcdf_diag,cnvw_option=$cnvw_option,
+   paranc=$paranc,write_fv3_incr=$write_fv3_incr,
+   $WRITE_INCR_ZERO
    $NAM_ENKF
 /
 &satobs_enkf
@@ -307,6 +353,9 @@ cat > enkf.nml << EOFnml
    sattypes_rad(65)= 'saphir_meghat', dsis(65)= 'saphir_meghat',
    sattypes_rad(66)= 'amsua_metop-c', dsis(66)= 'amsua_metop-c',
    sattypes_rad(67)= 'mhs_metop-c',   dsis(67)= 'mhs_metop-c',
+   sattypes_rad(68)= 'ahi_himawari8', dsis(68)= 'ahi_himawari8',
+   sattypes_rad(69)= 'abi_g16',       dsis(69)= 'abi_g16',
+   sattypes_rad(70)= 'abi_g17',       dsis(70)= 'abi_g17',
    $SATOBS_ENKF
 /
 &ozobs_enkf
@@ -332,56 +381,8 @@ PGM=$DATA/enkf.x
 $NCP $ENKFEXEC $PGM
 
 # Execute EnKF using same number of mpi tasks on all nodes
-#$APRUN_ENKF $PGM 1>stdout 2>stderr
-#rc=$?
-
-# Execute EnKF using only one mpi task on root node.
-# (root node has to hold two copies of full ob space ensemble for LETKF)
-mpi_launcher=`echo $APRUN_ENKF | cut -f1 -d " "`
-totproc=`expr $npe_enkf \* $OMP_NUM_THREADS`
-mpitaskspernode=`expr $npe_node_max \/ $OMP_NUM_THREADS`
-HOSTFILE=machinefile_enkf
-rm -f $HOSTFILE
-if [ "$mpi_launcher" = "mpirun" ]; then
-   # PBS with mpirun
-   /bin/cp -f $LSB_DJOB_HOSTFILE $HOSTFILE
-   if [ $mpitaskspernode -gt 1 ]; then
-      sed -i "2,${mpitaskspernode}d" $HOSTFILE
-      nprocs=`wc -l $HOSTFILE | cut -f1 -d" "`
-   fi
-   mpirun -np $nprocs -machinefile $HOSTFILE $PGM 1>stdout 2>stderr
-   rc=$?
-   rm -f $HOSTFILE
-elif [ "$mpi_launcher" = "srun" ]; then
-   # slurm with srun
-   nnode=0
-   for node in `scontrol show hostnames $SLURM_JOB_NODELIST`; do
-       let nnode+=1
-       if [ $nnode -eq 1 ]; then
-          echo $node > $HOSTFILE
-       else
-          count=0
-          while [ $count -lt "$mpitaskspernode" ]; do
-             echo $node >> $HOSTFILE
-             let count+=1
-          done
-       fi
-   done
-   nprocs=`wc -l $HOSTFILE | cut -f1 -d" "`
-   export SLURM_HOSTFILE=$HOSTFILE
-   srun --verbose --export=ALL -c ${OMP_NUM_THREADS} --distribution=arbitrary --cpu-bind=cores $PGM 1>stdout 2>stderr
-   rc=$?
-   rm -f $HOSTFILE
-elif [ "$mpi_launcher" = "aprun" ]; then
-   # aprun (independent of scheduler)
-   totproc2=`expr $totproc - $npe_node_max`
-   nprocs=`expr $totproc2 \/ $OMP_NUM_THREADS`
-   aprun -n 1 -N 1 -d ${OMP_NUM_THREADS} --cc depth $PGM : -n $nprocs -N $mpitaskspernode -d ${OMP_NUM_THREADS} --cc depth $PGM 1>stdout 2>stderr
-   rc=$?
-else
-   echo "unknown mpi launcher"
-   rc=99
-fi
+$APRUN_ENKF $PGM 1>stdout 2>stderr
+rc=$?
 
 export ERR=$rc
 export err=$ERR
