@@ -4,16 +4,14 @@
 
 module load intel/2018.4
 module load impi/2018.4
-#module load netcdf/4.7.2
-#module load hdf5/1.10.5
 
-module use -a /work/noaa/noaatest/NCEPLIBS/lib/modulefiles
-module load w3nco-intel-sandybridge/2.0.6
-module load bacio-intel-sandybridge/2.0.2
-module load nemsio-intel-sandybridge/2.2.3
-module load sp-intel-sandybridge/2.0.2
-module load hdf5/1.10.5-parallel
-module load netcdf/4.7.2-parallel
+module use -a /apps/contrib/NCEPLIBS/orion/modulefiles
+module load w3nco/2.0.7
+module load bacio/2.0.3
+module load nemsio/2.2.4
+module load sp/2.0.3
+module load hdf5_parallel/1.10.6
+module load netcdf_parallel/4.7.4
 
 export NETCDF_INCLUDE="-I${NETCDF}/include"
 export NETCDF_LDFLAGS_F="-L${NETCDF}/lib -lnetcdf -lnetcdff -L${HDF5_LIBRARY_DIRS}/lib -lhdf5 -lhdf5_fortran"

@@ -33,7 +33,7 @@ fi
 echo gldas checkout ...
 if [[ ! -d gldas.fd ]] ; then
     rm -f ${topdir}/checkout-gldas.log
-    git clone https://github.com/NOAA-EMC/GLDAS  gldas.fd >> ${topdir}/checkout-gldas.fd.log 2>&1
+    git clone https://github.com/NOAA-EMC/GLDAS.git gldas.fd >> ${topdir}/checkout-gldas.fd.log 2>&1
     cd gldas.fd
     git checkout gldas_gfsv16_release.v1.1.0
     cd ${topdir}

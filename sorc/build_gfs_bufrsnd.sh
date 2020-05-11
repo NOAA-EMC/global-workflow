@@ -21,12 +21,6 @@ if [ ! -d "../exec" ]; then
   mkdir ../exec
 fi
 
-if [ $target = orion ]; then export NETCDF_INC=$NETCDF_INCLUDE_DIRS ; fi
-#if [ $target = orion ]; then
-#  export NETCDF_INC=$NETCDF_DIR/include
-#  export NETCDF_LIB=$NETCDF_DIR/lib
-#fi
-
 if [ -f gfs_bufr.fd/getncdimlen ]; then
 	   cp gfs_bufr.fd/getncdimlen ../exec
    fi
