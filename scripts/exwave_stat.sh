@@ -85,7 +85,7 @@
     set +x
     echo ' '
     echo '******************************************************* '
-    echo "*** ERROR: No $FIXwave/${buoyfile} copied. *** "
+    echo "*** FATAL ERROR: No $FIXwave/${buoyfile} copied. *** "
     echo '******************************************************* '
     echo ' '
     echo "$FIXwave/wave_ens_buoy.data  missing." >> $ensemb_log
@@ -93,7 +93,8 @@
     echo "$FIXwave/wave_${NET}_buoy.data  missing." >> $ensemb_log
     msg="ABNORMAL EXIT: NO FILE $buoyfile"
     postmsg "$jlogfile" "$msg"
-    err=1;export err;${errchk}; exit ${err}
+    export err=1;${errchk};
+    exit ${err}
   fi
 
 #
@@ -128,11 +129,12 @@
           postmsg "$jlogfile" "$msg"
           echo ' '
           echo '******************************************************* '
-          echo "*** ERR : No $cpfile copied. *** "
+          echo "*** FATAL ERROR: No $cpfile copied. *** "
           echo '******************************************************* '
           echo ' '
           echo "$cpfile missing." >> $ensemb_log
-          err=2;export err;${errchk}; exit ${err}
+          export err=2;${errchk}
+          exit ${err}
         fi
       done
       if [ $ifrcst -ge $FHMAX_HF_WAV ]
@@ -247,12 +249,13 @@
     set +x
     echo ' '
     echo '********************************************'
-    echo '*** CMDFILE FAILED   ***'
+    echo '*** FATAL ERROR: CMDFILE FAILED   ***'
     echo '********************************************'
     echo '     See Details Below '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    err=3; export err;${errchk} ; exit $err
+    export err=3; ${errchk} 
+    exit $err
   fi
 
 #
@@ -322,12 +325,13 @@
     set +x
     echo ' '
     echo '********************************************'
-    echo '*** CMDFILE FAILED   ***'
+    echo '*** FATAL ERROR: CMDFILE FAILED   ***'
     echo '********************************************'
     echo '     See Details Below '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    err=4; export err;${errchk} ; exit $err
+    export err=4; ${errchk}
+    exit $err
   fi
 
 # Regroup all outputs in parameter/stats files
@@ -432,12 +436,13 @@
     set +x
     echo ' '
     echo '********************************************'
-    echo '*** CMDFILE FAILED   ***'
+    echo '*** FATAL ERROR: CMDFILE FAILED   ***'
     echo '********************************************'
     echo '     See Details Below '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    err=5; export err;${errchk} ; exit $err
+    export err=5; ${errchk}
+    exit $err
   fi
 
 
@@ -467,7 +472,8 @@
         echo "$modIE fcst $date $cycle: ${fcopy} not fouund." >> $wavelog
         echo $msg
         [[ "$LOUD" = YES ]] && set -x
-        err=6;export err;${errchk};exit $err
+        export err=6;${errchk}
+        exit $err
       fi
     done
     if [ $fhour -ge $FHMAX_HF_WAV ]
@@ -513,7 +519,8 @@
       echo "$modIE fcst $date $cycle: No gribfile created." >> $wavelog
       echo $msg
       [[ "$LOUD" = YES ]] && set -x
-      err=7;export err;${errchk};exit $err
+      export err=7;${errchk}
+      exit $err
     fi
 
 # 3.d Loop through buoys and populate cmdfiles with calls to wave_ens_bull.sh
@@ -557,12 +564,13 @@
     set +x
     echo ' '
     echo '********************************************'
-    echo '*** CMDFILE FAILED   ***'
+    echo '*** FATAL ERROR: CMDFILE FAILED   ***'
     echo '********************************************'
     echo '     See Details Below '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    err=8; export err;${errchk} ; exit $err
+    export err=8; ${errchk}
+    exit $err
   fi
 
 # echo ' Checking for errors after bulletins cfp'
@@ -589,7 +597,8 @@
      echo ' '
      [[ "$LOUD" = YES ]] && set -x
      echo "No ${modIE}.${bnom}.bull " >> $wavelog
-     err=9;export err;${errchk};exit $err
+     export err=9;${errchk}
+     exit $err
    else
      set +x
      echo -e "\n Bulletin file ${modID}.${bnom}.bull generated succesfully.\n"
@@ -629,7 +638,8 @@
      echo "$modIE fcst $date $cycle: bull_tar not fouund." >> $wavelog
      echo $msg
      [[ "$LOUD" = YES ]] && set -x
-     err=9p5;export err;${errchk};exit $err
+     export err=10;${errchk}
+     exit $err
    fi
 
 
@@ -650,7 +660,8 @@
      echo "$modIE fcst $date $cycle: station_tar not fouund." >> $wavelog
      echo $msg
      [[ "$LOUD" = YES ]] && set -x
-     err=10;export err;${errchk};exit $err
+     export err=11;${errchk}
+     exit $err
    fi
 
 #
@@ -667,10 +678,12 @@
 #
   if [ "$exit_code" -ne '0' ]
   then
+     echo "FATAL ERROR: Problem in WAVE STAT"
      msg="ABNORMAL EXIT: Problem in WAVE STAT"
      postmsg "$jlogfile" "$msg"
      echo $msg
-     err=11;export err;${errchk};exit $err
+     export err=12;${errchk}
+     exit $err
   fi
 
   msg="$job completed normally"

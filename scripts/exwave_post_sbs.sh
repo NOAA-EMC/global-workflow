@@ -61,7 +61,7 @@
   if [ -z ${NTASKS} ]        
   then
     echo "FATAL ERROR: requires NTASKS to be set "
-    err=1; export err;${errchk}
+    export err=1; ${errchk}
     exit $err
   fi
 
@@ -163,7 +163,7 @@
       echo "$WAV_MOD_TAG post $grdID $date $cycle : mod_def file missing." >> $wavelog
       postmsg "$jlogfile" "FATAL ERROR : NO MOD_DEF file mod_def.$grdID"
       DOFLD_WAV='NO'
-      err=2; export err;${errchk}
+      export err=2; ${errchk}
       exit $err
       DOGRB_WAV='NO'
     else
@@ -182,8 +182,30 @@
     then
       cp -f $FIXwave/wave_${NET}.buoys buoy.loc.temp
 # Reverse grep to exclude IBP points
-      sed -n '/^\$.*/!p' buoy.loc.temp | grep -v IBP > buoy.loc
-    fi
+    sed -n '/^\$.*/!p' buoy.loc.temp | grep -v IBP > buoy.loc
+  fi
+
+  if [ -s buoy.loc ]
+  then
+    set +x
+    echo "   buoy.loc and buoy.ibp copied and processed ($FIXwave/wave_${NET}.buoys)."
+    [[ "$LOUD" = YES ]] && set -x
+  else
+    set +x
+    echo ' '
+    echo '************************************* '
+    echo ' FATAL ERROR : NO BUOY LOCATION FILE  '
+    echo '************************************* '
+    echo ' '
+    [[ "$LOUD" = YES ]] && set -x
+    echo "$WAV_MOD_ID post $date $cycle : buoy location file missing." >> $wavelog
+    postmsg "$jlogfile" "FATAL ERROR : NO BUOY LOCATION FILE"
+    export err=3; ${errchk}
+    exit $err
+    DOPNT_WAV='NO'
+    DOSPC_WAV='NO'
+    DOBLL_WAV='NO'
+  fi
 
     if [ -s buoy.loc ]
     then
@@ -198,9 +220,9 @@
       echo '************************************* '
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
-      echo "$AV_MOD_ID post $date $cycle : buoy location file missing." >> $wavelog
+      echo "$WAV_MOD_ID post $date $cycle : buoy location file missing." >> $wavelog
       postmsg "$jlogfile" "FATAL ERROR : NO BUOY LOCATION FILE"
-      err=3; export err;${errchk}
+      export err=3; ${errchk}
       exit $err
       DOPNT_WAV='NO'
       DOSPC_WAV='NO'
@@ -315,9 +337,8 @@
       echo '*********************************************** '
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
-      echo "$WAV_MOD_TAG post $date $cycle : ww3_outp_spec.inp.tmpl file missing." >> $wavelog
-      postmsg "$jlogfile" "NON-FATAL ERROR : NO TEMPLATE FOR SPEC INPUT FILE"
-      exit_code=3
+      export err=4;${errchk}
+      exit $err
       DOSPC_WAV='NO'
       DOBLL_WAV='NO'
     fi
@@ -335,14 +356,16 @@
     else
       set +x
       echo ' '
-      echo '*************************************************** '
-      echo '*** ERROR : NO TEMPLATE FOR BULLETIN INPUT FILE *** '
-      echo '*************************************************** '
+      echo '********************************************** '
+      echo '*** FATAL ERROR : NO BUOY LOG FILE CREATED *** '
+      echo '********************************************** '
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
-      echo "$WAV_MOD_TAG post $date $cycle : bulletin template file missing." >> $wavelog
-      postmsg "$jlogfile" "NON-FATAL ERROR : NO TEMPLATE FOR BULLETIN INPUT FILE"
-      exit_code=4
+      echo "$WAV_MOD_TAG post $date $cycle : buoy log file missing." >> $wavelog
+      postmsg "$jlogfile" "FATAL ERROR : NO BUOY LOG FILE GENERATED FOR SPEC AND BULLETIN FILES"
+      export err=5;${errchk}
+      exit $err
+      DOSPC_WAV='NO'
       DOBLL_WAV='NO'
     fi
 
@@ -425,48 +448,16 @@
       else
         set +x
         echo ' '
-        echo '**************************************** '
-        echo '*** ERROR : NO BUOY LOG FILE CREATED *** '
-        echo '**************************************** '
+        echo '********************************************** '
+        echo '*** FATAL ERROR : NO  IBP LOG FILE CREATED *** '
+        echo '********************************************** '
         echo ' '
         [[ "$LOUD" = YES ]] && set -x
-        echo "$WAV_MOD_TAG post $date $cycle : buoy log file missing." >> $wavelog
-        postmsg "$jlogfile" "FATAL ERROR : NO BUOY LOG FILE GENERATED FOR SPEC AND BULLETIN FILES"
-        err=5;export err;${errchk}
-        DOSPC_WAV='NO'
-        DOBLL_WAV='NO'
-      fi
-  
-# Create new buoy_log.ww3 including all IBP files
-      if [ "$DOIBP_WAV" = 'YES' ]; then
-        cat buoy.ibp | awk '{print $3}' | sed 's/'\''//g' > ibp_tags
-        grep -F -f ibp_tags buoy_log.ww3 > buoy_log.tmp
-        rm -f buoy_log.ibp
-        mv buoy_log.tmp buoy_log.ibp
-  
-        grep -F -f ibp_tags buoy_lst.loc >  buoy_tmp1.loc
-        sed    '$d' buoy_tmp1.loc > buoy_tmp2.loc
-        ibpoints=`awk '{ print $1 }' buoy_tmp2.loc`
-        Nibp=`wc buoy_tmp2.loc | awk '{ print $1 }'`
-        rm -f buoy_tmp1.loc buoy_tmp2.loc
-        if [ -s buoy_log.ibp ]
-        then
-          set +x
-          echo 'IBP  log file created. Syncing to all nodes ...'
-          [[ "$LOUD" = YES ]] && set -x
-        else
-          set +x
-          echo ' '
-          echo '**************************************** '
-          echo '*** ERROR : NO  IBP LOG FILE CREATED *** '
-          echo '**************************************** '
-          echo ' '
-          [[ "$LOUD" = YES ]] && set -x
-          echo "$WAV_MOD_TAG post $date $cycle : ibp  log file missing." >> $wavelog
-          postmsg "$jlogfile" "FATAL ERROR : NO  IBP LOG FILE GENERATED FOR SPEC AND BULLETIN FILES"
-          err=6;export err;${errchk}
-          DOIBP_WAV='NO'
-        fi
+        echo "$WAV_MOD_TAG post $date $cycle : ibp  log file missing." >> $wavelog
+        postmsg "$jlogfile" "FATAL ERROR : NO  IBP LOG FILE GENERATED FOR SPEC AND BULLETIN FILES"
+        export err=6;${errchk}
+        exit $err
+        DOIBP_WAV='NO'
       fi
     fi
   fi
@@ -546,8 +537,23 @@
     export GRDIDATA=${DATA}/output_$YMDHMS
     ln -fs $DATA/mod_def.${waveuoutpGRD} mod_def.ww3
 
-    if [ "${DOPNT_WAV}" = "YES" ]; then
-      if [ $fhr = $fhrp ]
+    if [ $fhr = $fhrp ]
+    then
+      iwait=0
+      pfile=$COMIN/rundata/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS}
+      while [ ! -s ${pfile} ]; do sleep 10; ((iwait++)) && ((iwait==$iwaitmax)) && break ; echo $iwait; done
+      if [ $iwait -eq $iwaitmax ]; then 
+        echo " FATAL ERROR : NO RAW POINT OUTPUT FILE out_pnt.$waveuoutpGRD"
+        echo ' '
+        [[ "$LOUD" = YES ]] && set -x
+        echo "$WAV_MOD_TAG post $waveuoutpGRD $date $cycle : point output missing." >> $wavelog
+        postmsg "$jlogfile" "FATAL ERROR : NO RAW POINT OUTPUT FILE out_pnt.$waveuoutpGRD"
+        export err=7;${errchk}
+        exit $err
+      fi
+      ln -fs ${pfile} ./out_pnt.${waveuoutpGRD} 
+
+      if [ "$DOSPC_WAV" = 'YES' ]
       then
         iwait=0
         pfile=$COMIN/rundata/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS}
@@ -609,7 +615,7 @@
           echo "$WAV_MOD_TAG post $grdID $date $cycle : field output missing." >> $wavelog
           postmsg "$jlogfile" "NON-FATAL ERROR : NO RAW FIELD OUTPUT FILE out_grd.$grdID"
           DOFLD_WAVE='NO'
-          err=7; export err;${errchk}
+          export err=8;${errchk}
           exit $err
         fi
         ln -s ${gfile} ./out_grd.${wavGRD} 
@@ -682,13 +688,13 @@
     then
       set +x
       echo ' '
-      echo '********************************************'
-      echo '*** CMDFILE FAILED   ***'
-      echo '********************************************'
+      echo '*************************************'
+      echo '*** FATAL ERROR: CMDFILE FAILED   ***'
+      echo '*************************************'
       echo '     See Details Below '
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
-      err=8; export err;${errchk}
+      export err=9;${errchk}
       exit $err
     fi
 
@@ -791,13 +797,13 @@
     then
       set +x
       echo ' '
-      echo '********************************************'
-      echo '*** CMDFILE FAILED   ***'
-      echo '********************************************'
+      echo '*************************************'
+      echo '*** FATAL ERROR: CMDFILE FAILED   ***'
+      echo '*************************************'
       echo '     See Details Below '
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
-      err=8; export err;${errchk}
+      export err=10;${errchk}
       exit $err
     fi
   fi
@@ -816,10 +822,11 @@
 
   if [ "$exit_code" -ne '0' ]
   then
+    echo " FATAL ERROR: Problem in MWW3 POST"
     msg="ABNORMAL EXIT: Problem in MWW3 POST"
     postmsg "$jlogfile" "$msg"
     echo $msg
-    err=16; export err;${errchk}
+    export err=11;${errchk}
     exit $err
   else
     echo " Side-by-Side Wave Post Completed Normally "
