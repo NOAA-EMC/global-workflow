@@ -73,12 +73,11 @@ gcyc=$(echo $GDATE | cut -c9-10)
 
 export CASE=$CASE_ENKF
 
-
 export OPREFIX="${CDUMP}.t${cyc}z."
 export APREFIX="${CDUMP}.t${cyc}z."
-export ASUFFIX=".nemsio"
 export GPREFIX="gdas.t${gcyc}z."
-export GSUFFIX=".nemsio"
+export GSUFFIX="${GSUFFIX:-$SUFFIX}"
+export ASUFFIX="${ASUFFIX:-$SUFFIX}"
 
 
 # COMIN_GES, COMIN_GES_ENS and COMOUT are used in exglobal script
@@ -96,7 +95,7 @@ if [ ! -f $ATMGES_ENSMEAN ]; then
 fi
 
 
-export LEVS=$($NEMSIOGET $ATMGES_ENSMEAN dimz | awk '{print $2}')
+export LEVS=$($NCDUMP -h $ATMGES_ENSMEAN | grep -i "pfull" | head -1 | awk -F" = " '{print $2}' | awk -F" " '{print $1}') # get LEVS
 status=$?
 [[ $status -ne 0 ]] && exit $status
 

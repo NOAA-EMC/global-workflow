@@ -61,6 +61,7 @@ export CDUMP=${CDUMP:-${RUN:-"gfs"}}
 if [ $RUN_ENVIR = "nco" ]; then
     export ROTDIR=${COMROOT:?}/$NET/$envir
 fi
+export DO_CALC_ANALYSIS=${DO_CALC_ANALYSIS:-"YES"} 
 
 
 ##############################################
@@ -74,9 +75,9 @@ GDUMP=${GDUMP:-"gdas"}
 
 export OPREFIX="${CDUMP}.t${cyc}z."
 export GPREFIX="${GDUMP}.t${gcyc}z."
-export GSUFFIX=".nemsio"
 export APREFIX="${CDUMP}.t${cyc}z."
-export ASUFFIX=".nemsio"
+export GSUFFIX=${GSUFFIX:-$SUFFIX}
+export ASUFFIX=${ASUFFIX:-$SUFFIX}
 
 
 if [ $RUN_ENVIR = "nco" -o ${ROTDIR_DUMP:-NO} = "YES" ]; then
@@ -103,8 +104,14 @@ if [ ! -f $ATMGES ]; then
 fi
 
 
-export LEVS=$($NEMSIOGET $ATMGES dimz | awk '{print $2}')
-status=$?
+# Get LEVS
+if [ ${GSUFFIX} = ".nc" ]; then
+    export LEVS=$($NCLEN $ATMGES pfull) 
+    status=$?
+else
+    export LEVS=$($NEMSIOGET $ATMGES dimz | awk '{print $2}')
+    status=$?
+fi
 [[ $status -ne 0 ]] && exit $status
 
 
