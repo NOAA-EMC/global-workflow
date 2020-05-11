@@ -241,9 +241,11 @@
     mv -f ${gribDIR} done.${gribDIR}
 
   else
+    set +x
     echo ' '
     echo " File ${COMOUT}/gridded/${outfile} found, skipping generation process"
     echo ' '
+    [[ "$LOUD" = YES ]] && set -x
   fi
 
   set +x
