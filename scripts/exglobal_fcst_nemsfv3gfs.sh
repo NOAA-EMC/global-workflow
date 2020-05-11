@@ -48,6 +48,7 @@ FHMAX_HF=${FHMAX_HF:-0}
 FHOUT_HF=${FHOUT_HF:-1}
 NSOUT=${NSOUT:-"-1"}
 FDIAG=$FHOUT
+FHROT=${FHROT:-0}
 if [ $FHMAX_HF -gt 0 -a $FHOUT_HF -gt 0 ]; then FDIAG=$FHOUT_HF; fi
 restart_interval=${restart_interval:-0}      # Restart files will be written out this often
 other_restart_time=${other_restart_time:-0}  # Additionally, restart files will be written out at this time
@@ -279,8 +280,15 @@ if [ $warm_start = ".true." -o $RERUN = "YES" ]; then
     for file in $(ls $RSTDIR_TMP/${PDYT}.${cyct}0000.*); do
       file2=$(echo $(basename $file))
       file2=$(echo $file2 | cut -d. -f3-) 
-      $NLN $file $DATA/INPUT/$file2
+      testchar=$(echo $file2 | cut -c1-8) 
+      if [ $testchar = "gefswave" ]; then
+          file2=$(echo $file2 | cut -d. -f2-) 
+          $NLN $file $DATA/$file2
+      else
+          $NLN $file $DATA/INPUT/$file2
+      fi
     done
+    FHROT=`$NHOUR $CDATE_RST $CDATE`
 
   fi
 #.............................
@@ -365,36 +373,41 @@ if [ $cplwav = ".true." ]; then
     # Wave IC (restart) file must exist for warm start on this cycle, if not wave model starts from flat ocean
     # For IAU needs to use sPDY for adding IAU backup of 3h
     $NLN $COMINWW3/rundata/${COMPONENTwave}.mod_def.$wavGRD $DATA/mod_def.$wavGRD
+    WAVHCYC=${WAVHCYC:-6}
+    datwave=$COMOUTWW3/rundata
+    wavprfx=${COMPONENTwave}${WAV_MEMBER}
+    if [ "${RERUN}" != "YES" ]; then
+      if [ -s ${WRDIR}/${PDY}.${cyc}0000.${COMPONENTwave}${WAV_MEMBER}.restart.${wavGRD} ]; then
+        $NLN ${WRDIR}/${PDY}.${cyc}0000.${COMPONENTwave}${WAV_MEMBER}.restart.${wavGRD} $DATA/restart.${wavGRD}
+        eval $NLN $datwave/${wavprfx}.log.${wavGRD}.${PDY}${cyc} log.${wavGRD}
+      fi
+    else
+      eval $NLN $datwave/${wavprfx}.log.rerun.${wavGRD}.${PDY}${cyc} log.${wavGRD}
+    fi
   done
 
-  # Wave IC (restart) interval assumes 4 daily cycles (restarts only written by gdas cycle) 
-  # WAVHCYC needs to be consistent with restart write interval in ww3_multi.inp or will FAIL
-  WAVHCYC=${WAVHCYC:-6}
-  datwave=$COMOUTWW3/rundata
-  wavprfx=${COMPONENTwave}${WAV_MEMBER}
-  for wavGRD in $waveGRD ; do
-    # Link wave IC for current cycle
-    # Elimanted dependency on sPDY scyc, only required in GFS with IAU, not GEFS
-    if [ -s ${WRDIR}/${PDY}.${cyc}0000.${COMPONENTwave}${WAV_MEMBER}.restart.${wavGRD} ]; then
-      $NLN ${WRDIR}/${PDY}.${cyc}0000.${COMPONENTwave}${WAV_MEMBER}.restart.${wavGRD} $DATA/restart.${wavGRD}
-      eval $NLN $datwave/${wavprfx}.log.${wavGRD}.${PDY}${cyc} log.${wavGRD}
-    fi 
-  done
+  if [ "${RERUN}" != "YES" ]; then
 # Next-cycle restart for GEFS
-  if [ "${COMPONENTwave}" = "gefswave" ]; then
-    mkdir -p $COMOUTWW3/restart
-    RDATE=$($NDATE +$WAVHCYC $CDATE)
-    rPDY=$(echo $RDATE | cut -c1-8)
-    rcyc=$(echo $RDATE | cut -c9-10)
-    for wavGRD in $waveGRD ; do
-      # Copy wave IC for the next cycle
-      $NLN $COMOUTWW3/restart/${rPDY}.${rcyc}0000.${COMPONENTwave}${WAV_MEMBER}.restart.${wavGRD} $DATA/${rPDY}.${rcyc}0000.restart.${wavGRD}
-    done
+    if [ "${COMPONENTwave}" = "gefswave" ]; then
+      mkdir -p $COMOUTWW3/restart
+      RDATE=$($NDATE +$WAVHCYC $CDATE)
+      rPDY=$(echo $RDATE | cut -c1-8)
+      rcyc=$(echo $RDATE | cut -c9-10)
+      for wavGRD in $waveGRD ; do
+        # Copy wave IC for the next cycle
+        $NLN $COMOUTWW3/restart/${rPDY}.${rcyc}0000.${COMPONENTwave}${WAV_MEMBER}.restart.${wavGRD} $DATA/${rPDY}.${rcyc}0000.restart.${wavGRD}
+      done
+    fi
   fi
 # Loop for checkpoint restart
   DT2RSTH=$(( DT_2_RST_WAV / 3600 ))
-  RSTHINC=$(( ${DT2RSTH} + ${RST2IOFF_WAV} ))
-  fhr=$RSTHINC
+  RSTHINC=$(( DT2RSTH + RST2IOFF_WAV ))
+# Contingency for RERUN=YES
+  if [ "${RERUN}" = "YES" ]; then 
+    fhr=$((FHROT + RSTHINC))
+  else 
+    fhr=$RSTHINC
+  fi
   while [ $fhr -le $FHMAX_WAV ]; do
     YMDH=$($NDATE $fhr $CDATE)
     YMD=$(echo $YMDH | cut -c1-8)
@@ -413,12 +426,24 @@ if [ $cplwav = ".true." ]; then
   if [ "$WW3CURINP" = "YES" ]; then
     $NLN $COMINWW3/rundata/${COMPONENTwave}.${WAVECUR_FID}.${cycle}.cur $DATA/current.${WAVECUR_FID}
   fi
-  # Link output files
+# Link output files
   cd $DATA
   eval $NLN $datwave/${wavprfx}.log.mww3.${PDY}${cyc} log.mww3
 
-  # Loop for gridded output (uses FHINC)
-  fhr=$FHMIN_WAV
+# Loop for gridded output (uses FHINC)
+# Contingency for RERUN=YES
+  if [ "${RERUN}" = "YES" ]; then
+    fhri=$((FHROT + FHMIN_WAV))
+# Skip initial time step already available from interrupted run
+    FHINC=$FHOUT_WAV
+    if [ $FHMAX_HF_WAV -gt 0 -a $FHOUT_HF_WAV -gt 0 -a $fhri -lt $FHMAX_HF_WAV ]; then
+      FHINC=$FHOUT_HF_WAV
+    fi
+    fhri=$((fhri + FHINC))
+  else
+    fhri=$FHMIN_WAV
+  fi
+  fhr=${fhri}
   while [ $fhr -le $FHMAX_WAV ]; do
     YMDH=$($NDATE $fhr $CDATE)
     YMD=$(echo $YMDH | cut -c1-8)
@@ -433,16 +458,25 @@ if [ $cplwav = ".true." ]; then
     fhr=$((fhr+FHINC))
   done
 
-  # Loop for point output (uses DTPNT)
-  fhr=$FHMIN_WAV
-  while [ $fhr -le $FHMAX_WAV ]; do
-    YMDH=$($NDATE $fhr $CDATE)
-    YMD=$(echo $YMDH | cut -c1-8)
-    HMS="$(echo $YMDH | cut -c9-10)0000"
+  if [ "$DOPNT_WAV" = "YES" ]; then
+# Loop for point output (uses DTPNT)
+# Contingency for RERUN=YES
+    if [ "${RERUN}" = "YES" ]; then
+      fhri=$((FHROT + FHMIN_WAV))
+# Skip initial time step already available from interrupted run
+    else
+      fhri=$FHMIN_WAV
+    fi
+    fhr=${fhri}
+    while [ $fhr -le $FHMAX_WAV ]; do
+      YMDH=$($NDATE $fhr $CDATE)
+      YMD=$(echo $YMDH | cut -c1-8)
+      HMS="$(echo $YMDH | cut -c9-10)0000"
       eval $NLN $datwave/${wavprfx}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS} ${YMD}.${HMS}.out_pnt.${waveuoutpGRD}
       FHINC=$FHINCP_WAV
-    fhr=$((fhr+FHINC))
-  done
+      fhr=$((fhr+FHINC))
+    done
+  fi
 fi
 
 #------------------------------------------------------------------
@@ -745,6 +779,7 @@ start_day:               $SDAY
 start_hour:              $SHOUR
 start_minute:            0
 start_second:            0
+fhrot:                   $FHROT
 nhours_fcst:             $FHMAX
 RUN_CONTINUE:            ${RUN_CONTINUE:-".false."}
 ENS_SPS:                 ${ENS_SPS:-".false."}
