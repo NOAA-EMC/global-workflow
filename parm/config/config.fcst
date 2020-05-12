@@ -151,6 +151,7 @@ elif [ $imp_physics -eq 8 ]; then # Thompson
         ## GSD namelist changes
         export cal_pre=".false."
         export random_clds=".false."
+        export effr_in=.true.
         export ttendlim=0.005
         export vtdm4_nh_nonmono=0.02
         export nord=2
