@@ -446,7 +446,7 @@
   fi
 
 
-# 4.b Output all grib2 parameter files to COMOUT
+# 2.f Output all grib2 parameter files to COMOUT
 
   fhour=0
 
@@ -455,26 +455,31 @@
     FH3=$(printf "%03d" $fhour)
     for stype in mean spread probab
     do
-     fcopy=${WAV_MOD_TAG}.${stype}.t${cyc}z.f${FH3}.grib2
-     if [ -s ${fcopy} ]
-     then
-       set +x
-       echo "   Copying ${fcopy} to $COMOUT/gridded"
-       [[ "$LOUD" = YES ]] && set -x
-       cp -f ${fcopy} $COMOUT/gridded
-      else
+      fcopy=${WAV_MOD_TAG}.${stype}.t${cyc}z.f${FH3}.grib2
+      if [ -s ${fcopy} ]
+      then
         set +x
-        echo ' '
-        echo '*************************************** '
-        echo "*** FATAL ERROR: No ${fcopy} file found *"
-        echo '*************************************** '
-        echo ' '
-        echo "$modIE fcst $date $cycle: ${fcopy} not fouund." >> $wavelog
-        echo $msg
+        echo "   Copying ${fcopy} to $COMOUT/gridded and ALERT if SENDDBN=YES"
         [[ "$LOUD" = YES ]] && set -x
-        export err=6;${errchk}
-        exit $err
-      fi
+        cp -f ${fcopy} $COMOUT/gridded
+# 2.g Alert DBN
+        if [ "$SENDDBN" = 'YES' ]
+        then
+         $DBNROOT/bin/dbn_alert MODEL WAVE_GRIB_GB2 $job $COMOUT/gridded/${fcopy}
+        fi
+      else
+         set +x
+         echo ' '
+         echo '*************************************** '
+         echo "*** FATAL ERROR: No ${fcopy} file found *"
+         echo '*************************************** '
+         echo ' '
+         echo "$modIE fcst $date $cycle: ${fcopy} not fouund." >> $wavelog
+         echo $msg
+         [[ "$LOUD" = YES ]] && set -x
+         export err=6;${errchk}
+         exit $err
+       fi
     done
     if [ $fhour -ge $FHMAX_HF_WAV ]
     then
@@ -665,13 +670,10 @@
    fi
 
 #
-# 4.b Alert DBN
+# 4.c Alert DBN
 #
   if [ "$SENDDBN" = 'YES' ]
   then
-       $DBNROOT/bin/dbn_alert MODEL WAVE_GRIB_GB2 $job $COMOUT/gridded/${WAV_MOD_TAG}.mean.t${cyc}z.grib2
-       $DBNROOT/bin/dbn_alert MODEL WAVE_GRIB_GB2 $job $COMOUT/gridded/${WAV_MOD_TAG}.spread.t${cyc}z.grib2
-       $DBNROOT/bin/dbn_alert MODEL WAVE_GRIB_GB2 $job $COMOUT/gridded/${WAV_MOD_TAG}.probab.t${cyc}z.grib2
        $DBNROOT/bin/dbn_alert MODEL WAVE_GRIB_GB2 $job $COMOUT/gridded/${WAV_MOD_TAG}.t${cyc}z.bull_tar
        $DBNROOT/bin/dbn_alert MODEL WAVE_GRIB_GB2 $job $COMOUT/station/${WAV_MOD_TAG}.t${cyc}z.station_tar
   fi

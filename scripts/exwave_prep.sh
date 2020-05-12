@@ -104,6 +104,14 @@
   ymdh_rst_ini=`$NDATE ${RSTOFFSET} $YMDH`
   DT2RSTH=$(( DT_2_RST_WAV / 3600 ))
   RST2OFFSET=$(( ${DT2RSTH} + ${RST2IOFF_WAV} ))
+  if [ ${RST2OFFSET} -lt ${WAVHCYC} ]; then
+    echo ' '
+    echo " FATAL ERROR: RST2 STRIDE SMALLER THAN RUN CYCLE "
+    echo ' '
+  fi
+  if [ ${RST2OFFSET} -eq ${WAVHCYC} ]; then
+    RST2OFFSET=$(( $RST2OFFSET + ${DT2RSTH} ))
+  fi
   ymdh_rst2_ini=`$NDATE ${RST2OFFSET} $YMDH` # DT2 relative to first-first-cycle restart file
 # First restart file for cycling
   time_rst_ini="`echo $ymdh_rst_ini | cut -c1-8` `echo $ymdh_rst_ini | cut -c9-10`0000"

@@ -24,7 +24,7 @@
 # Oct 2011 D Stokes: - specific version for wave_multi_1."                    #
 #                     Use grib2 for akw, wna and enp."                        #
 # Jan 2020 RPadilla, JHAlves                                                  #
-#                    - Merging wave scripts to global workflow                #
+#                    - Merging wave scripts to global-workflow                #
 #                                                                             #
 ###############################################################################
 #
@@ -38,7 +38,7 @@ set -xa
 #export GRIDproc=$1
 export model=$1
 export grdID=${model} 
-export DATAoutgem=$2
+export COMOUTgem=$2
 #
 membTAG='p'
 if [ "${waveMEMB}" == "00" ]; then membTAG='c'; fi
@@ -72,7 +72,6 @@ pdsext=no
 
 maxtries=180
 fhcnt=$fstart
-
 while [ $fhcnt -le $FHMAX_WAV ]; do
   fhr=$(printf "%03d" $fhcnt)
   fhr3=$fhr
@@ -86,81 +85,87 @@ while [ $fhcnt -le $FHMAX_WAV ]; do
   echo "GRIBIN: $GRIBIN"
   GEMGRD=${model}${waveMEMB}_0p25_${PDY}${cyc}f${fhr3}
 
-  NAGRIB=nagrib2
-  GRIBIN_chk=${GRIBIN}.idx
-  icnt=1
-  while [ $icnt -lt 1000 ]
-  do
-    if [ -r $GRIBIN_chk ] ; then
-      break
-    else
-      echo "Waiting for input file: $GRIBIN_chk"
-      let "icnt=icnt+1"
-      sleep 5
-    fi
-    if [ $icnt -ge $maxtries ]
-    then
-      msg="ABORTING after 1 hour of waiting for F$fhr to end."
-      err_exit $msg
-    fi
-  done
+  FileOut=${model}${waveMEMB}_0p25_${PDY}${cyc}f${fhr3}
+# Only create file if not present in COM
+  if [ ! -s ${COMOUT}/gempak/$FileOut ]; then
+    NAGRIB=nagrib2
+    GRIBIN_chk=${GRIBIN}.idx
+    icnt=1
+    while [ $icnt -lt 1000 ]
+    do
+      if [ -r $GRIBIN_chk ] ; then
+        break
+      else
+        echo "Waiting for input file: $GRIBIN_chk"
+        let "icnt=icnt+1"
+        sleep 5
+      fi
+      if [ $icnt -ge $maxtries ]
+      then
+        msg="ABORTING after 1 hour of waiting for F$fhr to end."
+        err_exit $msg
+      fi
+    done
 
-  ln -s $GRIBIN grib$fhr
+    ln -s $GRIBIN grib$fhr
 
-  echo "GRIBIN:   $GRIBIN"
-  echo "GEMGRD:   $GEMGRD"
-  echo "--->model:   $model"
+    echo "GRIBIN:   $GRIBIN"
+    echo "GEMGRD:   $GEMGRD"
+    echo "model :   $model"
 
-  startmsg
+    startmsg
 
-  $NAGRIB << EOF
-   GBFILE   = grib$fhr
-   INDXFL   = 
-   GDOUTF   = $GEMGRD
-   PROJ     = $proj
-   GRDAREA  = $grdarea
-   KXKY     = $kxky
-   MAXGRD   = $maxgrd
-   CPYFIL   = $cpyfil
-   GAREA    = $garea
-   OUTPUT   = $output
-   GBTBLS   = $gbtbls
-   GBDIAG   = 
-   PDSEXT   = $pdsext
+    $NAGRIB << EOF
+     GBFILE   = grib$fhr
+     INDXFL   = 
+     GDOUTF   = $GEMGRD
+     PROJ     = $proj
+     GRDAREA  = $grdarea
+     KXKY     = $kxky
+     MAXGRD   = $maxgrd
+     CPYFIL   = $cpyfil
+     GAREA    = $garea
+     OUTPUT   = $output
+     GBTBLS   = $gbtbls
+     GBDIAG   = 
+     PDSEXT   = $pdsext
   l
   r
 EOF
-  export err=$?;err_chk
+    export err=$?;err_chk
 
-  #####################################################
-  # GEMPAK DOES NOT ALWAYS HAVE A NON ZERO RETURN CODE
-  # WHEN IT CAN NOT PRODUCE THE DESIRED GRID.  CHECK
-  # FOR THIS CASE HERE.
-  #####################################################
+    #####################################################
+    # GEMPAK DOES NOT ALWAYS HAVE A NON ZERO RETURN CODE
+    # WHEN IT CAN NOT PRODUCE THE DESIRED GRID.  CHECK
+    # FOR THIS CASE HERE.
+    #####################################################
 
-  ls -l $GEMGRD
-  export err=$?;export pgm="GEMPAK CHECK FILE for $GEMGRD";err_chk
-
-  #if [ "$NAGRIB" = "nagrib2" ] ; then
+    ls -l $GEMGRD
+    export err=$?;export pgm="GEMPAK CHECK FILE for $GEMGRD";err_chk
+    #
     gpend
-  #fi
-
-  #
-
-  if [ $SENDCOM = "YES" ] ; then
-     if [ $grdID = "ecmwf_hr" -o $grdID = "ecmwf_wave" ] ; then
-       chgrp rstprod $GEMGRD
-       chmod 750 $GEMGRD
-     fi
-     #mv $GEMGRD $COMOUT/$GEMGRD
-     mv $GEMGRD $DATAoutgem/$GEMGRD
-     if [ $SENDDBN = "YES" ] ; then
-         $DBNROOT/bin/dbn_alert MODEL ${DBN_ALERT_TYPE} $job \
-           $COMOUT/$GEMGRD
-     else
-       echo "##### DBN_ALERT_TYPE is: ${DBN_ALERT_TYPE} #####"
-     fi
+    #
+    if [ $SENDCOM = "YES" ] ; then
+       if [ $grdID = "ecmwf_hr" -o $grdID = "ecmwf_wave" ] ; then
+         chgrp rstprod $GEMGRD
+         chmod 750 $GEMGRD
+       fi
+       mv $GEMGRD $COMOUT/gempak/$GEMGRD
+       if [ $SENDDBN = "YES" ] ; then
+           $DBNROOT/bin/dbn_alert MODEL ${DBN_ALERT_TYPE} $job \
+             $COMOUT/gempak/$GEMGRD
+       else
+         echo "##### DBN_ALERT_TYPE is: ${DBN_ALERT_TYPE} #####"
+       fi
+    fi
+  else
+    set +x
+    echo ' '
+    echo " File ${COMOUT}/gempak/$FileOut  found, skipping generation process"
+    echo ' '
+    [[ "$LOUD" = YES ]] && set -x
   fi
+
 
   if [ $fhcnt -ge $FHMAX_HF_WAV ]; then
     inc=$FHOUT_WAV
