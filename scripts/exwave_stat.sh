@@ -461,25 +461,27 @@
         set +x
         echo "   Copying ${fcopy} to $COMOUT/gridded and ALERT if SENDDBN=YES"
         [[ "$LOUD" = YES ]] && set -x
-        cp -f ${fcopy} $COMOUT/gridded
+        if [ $SENDCOM = "YES" ] ; then
+          cp -f ${fcopy} $COMOUT/gridded
 # 2.g Alert DBN
-        if [ "$SENDDBN" = 'YES' ]
-        then
-         $DBNROOT/bin/dbn_alert MODEL WAVE_GRIB_GB2 $job $COMOUT/gridded/${fcopy}
+          if [ "$SENDDBN" = 'YES' ]
+          then
+           $DBNROOT/bin/dbn_alert MODEL WAVE_GRIB_GB2 $job $COMOUT/gridded/${fcopy}
+          fi
         fi
       else
-         set +x
-         echo ' '
-         echo '*************************************** '
-         echo "*** FATAL ERROR: No ${fcopy} file found *"
-         echo '*************************************** '
-         echo ' '
-         echo "$modIE fcst $date $cycle: ${fcopy} not fouund." >> $wavelog
-         echo $msg
-         [[ "$LOUD" = YES ]] && set -x
-         export err=6;${errchk}
-         exit $err
-       fi
+        set +x
+        echo ' '
+        echo '*************************************** '
+        echo "*** FATAL ERROR: No ${fcopy} file found *"
+        echo '*************************************** '
+        echo ' '
+        echo "$modIE fcst $date $cycle: ${fcopy} not fouund." >> $wavelog
+        echo $msg
+        [[ "$LOUD" = YES ]] && set -x
+        export err=6;${errchk}
+        exit $err
+      fi
     done
     if [ $fhour -ge $FHMAX_HF_WAV ]
     then
