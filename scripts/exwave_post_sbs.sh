@@ -503,7 +503,7 @@
       FHINCG=$FHOUT_WAV
     fi
 # Get minimum value to start count from fhr+min(fhrp,fhrg)
-    fhrinc=`echo $(( $FHINCP_WAV < $FHINCG ? $FHINCG : $FHINCG ))`
+    fhrinc=`echo $(( $FHINCP_WAV < $FHINCG ? $FHINCP_WAV : $FHINCG ))`
     fhr=$((fhr + fhrinc))
   else
     fhr=$FHMIN_WAV

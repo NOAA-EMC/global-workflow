@@ -407,6 +407,9 @@ if [ $cplwav = ".true." ]; then
     fhr=$((FHROT + RSTHINC))
   else 
     fhr=$RSTHINC
+    if [ ${RSTHINC} -eq ${WAVHCYC} ]; then
+      RSTHINC=$(( $RSTHINC + ${DT2RSTH} ))
+    fi
   fi
   while [ $fhr -le $FHMAX_WAV ]; do
     YMDH=$($NDATE $fhr $CDATE)
