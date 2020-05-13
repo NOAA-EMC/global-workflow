@@ -537,69 +537,71 @@
     export GRDIDATA=${DATA}/output_$YMDHMS
     ln -fs $DATA/mod_def.${waveuoutpGRD} mod_def.ww3
 
-    if [ $fhr = $fhrp ]
-    then
-      iwait=0
-      pfile=$COMIN/rundata/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS}
-      while [ ! -s ${pfile} ]; do sleep 10; ((iwait++)) && ((iwait==$iwaitmax)) && break ; echo $iwait; done
-      if [ $iwait -eq $iwaitmax ]; then 
-        echo " FATAL ERROR : NO RAW POINT OUTPUT FILE out_pnt.$waveuoutpGRD"
-        echo ' '
-        [[ "$LOUD" = YES ]] && set -x
-        echo "$WAV_MOD_TAG post $waveuoutpGRD $date $cycle : point output missing." >> $wavelog
-        postmsg "$jlogfile" "FATAL ERROR : NO RAW POINT OUTPUT FILE out_pnt.$waveuoutpGRD"
-        export err=7;${errchk}
-        exit $err
-      fi
-      ln -fs ${pfile} ./out_pnt.${waveuoutpGRD} 
+    
+    if [ "${DOPNT_WAV}" = "YES" ]; then
 
-      if [ "$DOSPC_WAV" = 'YES' ]
+      if [ $fhr = $fhrp ]
       then
         iwait=0
         pfile=$COMIN/rundata/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS}
         while [ ! -s ${pfile} ]; do sleep 10; ((iwait++)) && ((iwait==$iwaitmax)) && break ; echo $iwait; done
         if [ $iwait -eq $iwaitmax ]; then 
-          echo " FATAL ERROR : NO RAW POINT OUTPUT FILE out_pnt.$waveuoutpGRD
+          echo " FATAL ERROR : NO RAW POINT OUTPUT FILE out_pnt.$waveuoutpGRD"
           echo ' '
           [[ "$LOUD" = YES ]] && set -x
           echo "$WAV_MOD_TAG post $waveuoutpGRD $date $cycle : point output missing." >> $wavelog
-          postmsg "$jlogfile" "FATAL ERROR : NO RAW POINT OUTPUT FILE out_pnt.$waveuoutpGRD
-          err=6; export err;${errchk}
+          postmsg "$jlogfile" "FATAL ERROR : NO RAW POINT OUTPUT FILE out_pnt.$waveuoutpGRD"
+          export err=7;${errchk}
           exit $err
         fi
         ln -fs ${pfile} ./out_pnt.${waveuoutpGRD} 
-  
+
         if [ "$DOSPC_WAV" = 'YES' ]
         then
-          export dtspec=3600.
-          for buoy in $buoys
-          do
-            echo "$USHwave/wave_outp_spec.sh $buoy $ymdh spec > spec_$buoy.out 2>&1" >> ${fcmdnow}
-          done
-        fi
-    
-        if [ "$DOIBP_WAV" = 'YES' ]
-        then
-          export dtspec=3600.
-          for buoy in $ibpoints
-          do
-            echo "$USHwave/wave_outp_spec.sh $buoy $ymdh ibp > ibp_$buoy.out 2>&1" >> ${fcmdnow}
-          done
-        fi
+          iwait=0
+          pfile=$COMIN/rundata/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS}
+          while [ ! -s ${pfile} ]; do sleep 10; ((iwait++)) && ((iwait==$iwaitmax)) && break ; echo $iwait; done
+          if [ $iwait -eq $iwaitmax ]; then 
+            echo " FATAL ERROR : NO RAW POINT OUTPUT FILE out_pnt.$waveuoutpGRD
+            echo ' '
+            [[ "$LOUD" = YES ]] && set -x
+            echo "$WAV_MOD_TAG post $waveuoutpGRD $date $cycle : point output missing." >> $wavelog
+            postmsg "$jlogfile" "FATAL ERROR : NO RAW POINT OUTPUT FILE out_pnt.$waveuoutpGRD
+            err=6; export err;${errchk}
+            exit $err
+          fi
+          ln -fs ${pfile} ./out_pnt.${waveuoutpGRD} 
   
-        if [ "$DOBLL_WAV" = 'YES' ]
-        then
-          export dtspec=3600.
-          for buoy in $buoys
-          do
-            echo "$USHwave/wave_outp_spec.sh $buoy $ymdh bull > bull_$buoy.out 2>&1" >> ${fcmdnow}
-          done
+          if [ "$DOSPC_WAV" = 'YES' ]
+          then
+            export dtspec=3600.
+            for buoy in $buoys
+            do
+              echo "$USHwave/wave_outp_spec.sh $buoy $ymdh spec > spec_$buoy.out 2>&1" >> ${fcmdnow}
+            done
+          fi
+    
+          if [ "$DOIBP_WAV" = 'YES' ]
+          then
+            export dtspec=3600.
+            for buoy in $ibpoints
+            do
+              echo "$USHwave/wave_outp_spec.sh $buoy $ymdh ibp > ibp_$buoy.out 2>&1" >> ${fcmdnow}
+            done
+          fi
+  
+          if [ "$DOBLL_WAV" = 'YES' ]
+          then
+            export dtspec=3600.
+            for buoy in $buoys
+            do
+              echo "$USHwave/wave_outp_spec.sh $buoy $ymdh bull > bull_$buoy.out 2>&1" >> ${fcmdnow}
+            done
+          fi
         fi
-
       fi
-
     fi
-
+    
     if [ $fhr = $fhrg ]
     then
       iwait=0
