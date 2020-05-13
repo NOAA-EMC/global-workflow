@@ -101,6 +101,8 @@
     echo " Interpolated grid file ${ifile} exists, skipping"
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
+# Add link in case grib2 has not completed    
+    ln -s ${COMOUT}/rundata/${ifile} ${DATA}/output_${ymdh}0000/out_grd.$grdID 
   else
 
 # 0.c Links to files

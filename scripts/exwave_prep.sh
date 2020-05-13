@@ -108,6 +108,8 @@
     echo ' '
     echo " FATAL ERROR: RST2 STRIDE SMALLER THAN RUN CYCLE "
     echo ' '
+    export err=1;${errchk}
+    exit $err
   fi
   if [ ${RST2OFFSET} -eq ${WAVHCYC} ]; then
     RST2OFFSET=$(( $RST2OFFSET + ${DT2RSTH} ))
@@ -147,7 +149,7 @@
   if [ -z ${NTASKS} ]        
   then
     echo "FATAL ERROR: Requires NTASKS to be set "
-    export err=1;${errchk}
+    export err=2;${errchk}
     exit $err
   fi
 
@@ -194,7 +196,7 @@
       echo $msg
       [[ "$LOUD" = YES ]] && set -x
       echo "$WAV_MOD_TAG prep $date $cycle : ${COMPONENTwave}.mod_def.${grdID} missing." >> $wavelog
-      export err=2;${errchk}
+      export err=3;${errchk}
       exit $err
     fi
   done
@@ -216,7 +218,7 @@
        ;;
        * )
               echo 'FATAL ERROR: Input type not yet implemented' 	    
-              export err=3;${errchk}
+              export err=4;${errchk}
               exit $err
               ;;
      esac 
@@ -247,7 +249,7 @@
        echo ' '
        [[ "$LOUD" = YES ]] && set -x
        echo "$WAV_MOD_TAG prep $date $cycle : ww3_prnc.${type}.$grdID.tmpl missing." >> $wavelog
-       export err=4;${errchk}
+       export err=5;${errchk}
        exit $err
      fi
    done
@@ -278,7 +280,7 @@
         sed "s/^/ice.out : /g" ice.out
         echo ' '
         [[ "$LOUD" = YES ]] && set -x
-        export err=5;${errchk}
+        export err=6;${errchk}
         exit $err
       else
         mv -f ice.out $DATA/outtmp
@@ -461,7 +463,7 @@
         echo $msg
         [[ "$LOUD" = YES ]] && set -x
         echo "$WAV_MOD_TAG prep $date $cycle : fatal error in grib2 wind files." >> $wavelog
-        export err=6;${errchk}
+        export err=7;${errchk}
         exit $err
       fi
   
@@ -489,7 +491,7 @@
         echo ' '
         [[ "$LOUD" = YES ]] && set -x
         echo "$WAV_MOD_TAG prep $date $cycle : no wind files found." >> $wavelog
-        export err=7;${errchk}
+        export err=8;${errchk}
         exit $err
       fi
   
@@ -537,7 +539,7 @@
           echo ' '
           [[ "$LOUD" = YES ]] && set -x
           echo "$WAV_MOD_TAG prep $grdID $date $cycle : error in waveprnc." >> $wavelog
-          export err=8;${errchk}
+          export err=9;${errchk}
           exit $err
         fi
   
@@ -555,7 +557,7 @@
           echo ' '
           [[ "$LOUD" = YES ]] && set -x
           echo "$WAV_MOD_TAG prep $grdID $date $cycle : wind.ww3 missing." >> $wavelog
-          export err=9;${errchk}
+          export err=10;${errchk}
           exit $err
         fi
 
@@ -599,7 +601,7 @@
           echo ' '
           [[ "$LOUD" = YES ]] && set -x
           echo "$WAV_MOD_TAG prep $grdID $date $cycle : error in wind increment." >> $wavelog
-          export err=10;${errchk}
+          export err=11;${errchk}
           exit $err
         fi
     
@@ -683,7 +685,7 @@
         echo ' '
         set $seton
         postmsg "$jlogfile" "FATAL ERROR - NO CURRENT FILE (RTOFS)"
-        export err=11;${errchk}
+        export err=12;${errchk}
         exit $err
         echo ' '
       fi
@@ -742,7 +744,7 @@
         echo ' '
         [[ "$LOUD" = YES ]] && set -x
         echo "$WAV_MOD_TAG prep $date $cycle : no current files found." >> $wavelog
-        export err=11;${errchk}
+        export err=13;${errchk}
         exit $err
       fi
 
@@ -793,7 +795,7 @@
     echo "${WAV_MOD_TAG} fcst $date $cycle : ww3_multi file missing." >> $wavelog
     echo $msg
     [[ "$LOUD" = YES ]] && set -x
-    export err=12;${errchk}
+    export err=14;${errchk}
     exit $err
   fi
 
@@ -821,7 +823,7 @@
     postmsg "$jlogfile" " FATAL ERROR : buoy.loc ($FIXwave/wave_${NET}.buoys) NOT FOUND"
     touch buoy.loc
     echo "$WAV_MOD_TAG fcst $date $cycle : no buoy locations file ($FIXwave/wave_${NET}.buoys)." >> $wavelog
-    export err=13;${errchk}
+    export err=15;${errchk}
     exit $err
   fi
 
@@ -955,7 +957,7 @@
     echo '******************************************************************* '
     echo ' '
     echo "FATAL ERROR: file ww3_multi.${WAV_MOD_TAG}.$cycle.inp NOT CREATED, ABORTING"
-    export err=14;${errchk}
+    export err=16;${errchk}
     exit $err
   fi 
 
@@ -979,7 +981,7 @@
       echo "${WAV_MOD_TAG} prep $date $cycle : rmp*.nc not found." >> $wavelog
       echo $msg
       [[ "$LOUD" = YES ]] && set -x
-      export err=15;${errchk}
+      export err=17;${errchk}
       exit $err
     fi
   fi
