@@ -406,10 +406,10 @@ if [ $cplwav = ".true." ]; then
   if [ "${RERUN}" = "YES" ]; then 
     fhr=$((FHROT + RSTHINC))
   else 
+    fhr=$RSTHINC
     if [ ${RSTHINC} -eq ${WAVHCYC} ]; then
       RSTHINC=$(( $RSTHINC + ${DT2RSTH} ))
     fi
-    fhr=$RSTHINC
   fi
   while [ $fhr -le $FHMAX_WAV ]; do
     YMDH=$($NDATE $fhr $CDATE)
