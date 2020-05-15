@@ -288,6 +288,14 @@ if [ $warm_start = ".true." -o $RERUN = "YES" ]; then
           $NLN $file $DATA/INPUT/$file2
       fi
     done
+
+    # Copy stochastic pattern state if it exists
+    if [[ $DO_SPPT = "YES" || $DO_SHUM = "YES" || $DO_SKEB = "YES" ]]; then
+      FH3=$(printf "%03.0f" $( $NHOUR $CDATE_RST $CDATE ) )
+      stoch_in=$RSTDIR_TMP/stoch_out.F000${FH3}
+      if [[ -s $stoch_in ]]; then $NCP $stoch_in $DATA/stoch_ini; fi
+    fi
+
     FHROT=`$NHOUR $CDATE_RST $CDATE`
 
   fi
