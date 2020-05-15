@@ -473,27 +473,41 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
     dict_tasks['%sanal' % cdump] = task
 
     # analcalc
-    deps = []
+    deps1 = []
     data = '&ROTDIR;/%s.@Y@m@d/@H/%s.t@Hz.loginc.txt' % (cdump, cdump)
     dep_dict = {'type': 'data', 'data': data}
-    deps.append(rocoto.add_dependency(dep_dict))
+    deps1.append(rocoto.add_dependency(dep_dict))
     dep_dict = {'type': 'task', 'name': '%sanal' % cdump}
-    deps.append(rocoto.add_dependency(dep_dict))
-    dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
-    task = wfu.create_wf_task('analcalc', cdump=cdump, envar=envars, dependency=dependencies)
+    deps1.append(rocoto.add_dependency(dep_dict))
+    dependencies1 = rocoto.create_dependency(dep_condition='or', dep=deps)
+
+    dep2 = []
+    deps2 = dependencies1
+    dep_dict = {'type': 'cycleexist', 'offset': '-06:00:00'}
+    deps2.append(rocoto.add_dependency(dep_dict))
+    dependencies2 = rocoto.create_dependency(dep_condition='and', dep=deps2)
+
+    task = wfu.create_wf_task('analcalc', cdump=cdump, envar=envars, dependency=dependencies2)
 
     dict_tasks['%sanalcalc' % cdump] = task
 
     # analdiag
     if cdump in ['gdas']:
-        deps = []
+        deps1 = []
         data = '&ROTDIR;/%s.@Y@m@d/@H/%s.t@Hz.loginc.txt' % (cdump, cdump)
         dep_dict = {'type': 'data', 'data': data}
-        deps.append(rocoto.add_dependency(dep_dict))
+        deps1.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'task', 'name': '%sanal' % cdump}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
-        task = wfu.create_wf_task('analdiag', cdump=cdump, envar=envars, dependency=dependencies)
+        deps1.append(rocoto.add_dependency(dep_dict))
+        dependencies1 = rocoto.create_dependency(dep_condition='or', dep=deps)
+
+        dep2 = []
+        deps2 = dependencies1
+        dep_dict = {'type': 'cycleexist', 'offset': '-06:00:00'}
+        deps2.append(rocoto.add_dependency(dep_dict))
+        dependencies2 = rocoto.create_dependency(dep_condition='and', dep=deps2)
+
+        task = wfu.create_wf_task('analdiag', cdump=cdump, envar=envars, dependency=dependencies2)
 
         dict_tasks['%sanaldiag' % cdump] = task
 
@@ -511,28 +525,33 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
         dict_tasks['%sgldas' % cdump] = task
 
     # fcst
-    deps = []
+    deps1 = []
     #data = '&ROTDIR;/%s.@Y@m@d/@H/%s.t@Hz.loginc.txt' % (cdump, cdump)
     #dep_dict = {'type': 'data', 'data': data}
-#   #deps.append(rocoto.add_dependency(dep_dict))
-    if do_wave in ['Y', 'YES'] and cdump in cdumps:
-        dep_dict = {'type': 'task', 'name': '%swaveprep' % cdump}
-        deps.append(rocoto.add_dependency(dep_dict))
+    #deps1.append(rocoto.add_dependency(dep_dict))
     if cdump in ['gdas']:
+        dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': '-06:00:00'}
+        deps1.append(rocoto.add_dependency(dep_dict))
         if do_gldas in ['Y', 'YES']:
             dep_dict = {'type': 'task', 'name': '%sgldas' % cdump}
-            deps.append(rocoto.add_dependency(dep_dict))
+            deps1.append(rocoto.add_dependency(dep_dict))
         else:
             dep_dict = {'type': 'task', 'name': '%sanalcalc' % cdump}
-            deps.append(rocoto.add_dependency(dep_dict))
-    #    dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': '-06:00:00'}
-    #    deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep_condition='or',dep=deps)
+            deps1.append(rocoto.add_dependency(dep_dict))
     elif cdump in ['gfs']:
         dep_dict = {'type': 'task', 'name': '%sanal' % cdump}
-        deps.append(rocoto.add_dependency(dep_dict))
-    dependencies = rocoto.create_dependency(dep_condition='and',dep=deps)
-    task = wfu.create_wf_task('fcst', cdump=cdump, envar=envars, dependency=dependencies)
+        deps1.append(rocoto.add_dependency(dep_dict))
+    dependencies1 = rocoto.create_dependency(dep_condition='or', dep=deps1)
+
+    if do_wave in ['Y', 'YES'] and cdump in cdumps:
+        deps2 = []
+        deps2 = dependencies1
+        dep_dict = {'type': 'task', 'name': '%swaveprep' % cdump}
+        deps2.append(rocoto.add_dependency(dep_dict))
+        dependencies2 = rocoto.create_dependency(dep_condition='and', dep=deps2)
+        task = wfu.create_wf_task('fcst', cdump=cdump, envar=envars, dependency=dependencies2)
+    else:
+        task = wfu.create_wf_task('fcst', cdump=cdump, envar=envars, dependency=dependencies1)
 
     dict_tasks['%sfcst' % cdump] = task
 

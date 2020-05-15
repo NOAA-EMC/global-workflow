@@ -88,6 +88,7 @@ export BASE_JOB="$HOMEgfs/jobs/rocoto"
 # EXPERIMENT specific environment parameters
 export SDATE=@SDATE@
 export EDATE=@EDATE@
+export CYC_WARM_START=".false."
 export assim_freq=6
 export PSLOT="@PSLOT@"
 export EXPDIR="@EXPDIR@/$PSLOT"
@@ -183,7 +184,7 @@ export IAU_OFFSET=6
 export DOIAU_ENKF="YES"   # Enable 4DIAU for EnKF ensemble
 export IAUFHRS_ENKF="3,6,9"
 export IAU_DELTHRS_ENKF=6
-if [[ "$SDATE" = "$CDATE" ]]; then
+if [[ "$SDATE" = "$CDATE" && $CYC_WARM_START = ".false." ]]; then # Cold starting
   export IAU_OFFSET=0
   export IAU_FHROT=0
 fi
@@ -192,7 +193,7 @@ fi
 export lobsdiag_forenkf=".true."
 
 # run GLDAS to spin up land ICs
-export DO_GLDAS=YES
+export DO_GLDAS="YES"
 export gldas_cyc=00
 
 # run wave component

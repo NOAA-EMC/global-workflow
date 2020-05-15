@@ -236,6 +236,7 @@ def get_workflow(dict_configs, cdump='gdas'):
 
     base = dict_configs['base']
     do_wave = base.get('DO_WAVE', 'NO').upper()
+    do_wave_cdump = base.get('WAVE_CDUMP', 'BOTH').upper()
     do_gempak = base.get('DO_GEMPAK', 'NO').upper()
     do_awips = base.get('DO_AWIPS', 'NO').upper()
     do_metp = base.get('DO_METP', 'NO').upper()
@@ -298,13 +299,13 @@ def get_workflow(dict_configs, cdump='gdas'):
     tasks.append('\n')
 
     # waveinit
-    if do_wave in ['Y', 'YES']:
+    if do_wave in ['Y', 'YES'] and do_wave_cdump in ['GFS', 'BOTH']:
         task = wfu.create_wf_task('%swaveinit', cdump=cdump, envar=envars)
         tasks.append(task)
         tasks.append('\n')
 
     # waveprep
-    if do_wave in ['Y', 'YES']:
+    if do_wave in ['Y', 'YES'] and do_wave_cdump in ['GFS', 'BOTH']:
         deps = []
         dep_dict = {'type': 'task', 'name': '%swaveinit' % cdump}
         deps.append(rocoto.add_dependency(dep_dict))
@@ -315,16 +316,26 @@ def get_workflow(dict_configs, cdump='gdas'):
 
     # fcst
     deps = []
-    data = '&ICSDIR;/@Y@m@d@H/&CDUMP;/&CASE;/INPUT/gfs_data.tile6.nc'
-    dep_dict = {'type':'data', 'data':data}
-    deps.append(rocoto.add_dependency(dep_dict))
     data = '&ICSDIR;/@Y@m@d@H/&CDUMP;/&CASE;/INPUT/sfc_data.tile6.nc'
     dep_dict = {'type':'data', 'data':data}
     deps.append(rocoto.add_dependency(dep_dict))
-    if do_wave in ['Y', 'YES']:
+    data = '&ROTDIR;/&CDUMP;.@Y@m@d/@H/RESTART/@Y@m@d.@H0000.sfcanl_data.tile6.nc'
+    dep_dict = {'type':'data', 'data':data}
+    deps.append(rocoto.add_dependency(dep_dict))
+    dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
+
+    if do_wave in ['Y', 'YES'] and do_wave_cdump in ['GFS', 'BOTH']:
+        deps = []
         dep_dict = {'type': 'task', 'name': '%swaveprep' % cdump}
         deps.append(rocoto.add_dependency(dep_dict))
+        dependencies2 = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+    deps = []
+    deps.append(dependencies)
+    if do_wave in ['Y', 'YES'] and do_wave_cdump in ['GFS', 'BOTH']:
+        deps.append(dependencies2)
     dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
     task = wfu.create_wf_task('fcst', cdump=cdump, envar=envars, dependency=dependencies)
     tasks.append(task)
     tasks.append('\n')
@@ -348,7 +359,7 @@ def get_workflow(dict_configs, cdump='gdas'):
     tasks.append('\n')
 
     # wavepostsbs
-    if do_wave in ['Y', 'YES']:
+    if do_wave in ['Y', 'YES'] and do_wave_cdump in ['GFS', 'BOTH']:
         deps = []
         data = '&ROTDIR;/%swave.@Y@m@d/@H/rundata/%swave.out_grd.gnh_10m.@Y@m@d.@H0000' % (cdump,cdump)
         dep_dict = {'type': 'data', 'data': data}
@@ -365,7 +376,7 @@ def get_workflow(dict_configs, cdump='gdas'):
         tasks.append('\n')
 
     # wavepost
-    #if do_wave in ['Y', 'YES']:
+    #if do_wave in ['Y', 'YES'] and do_wave_cdump in ['GFS', 'BOTH']:
     #    deps = []
     #    dep_dict = {'type':'task', 'name':'%sfcst' % cdump}
     #    deps.append(rocoto.add_dependency(dep_dict))
@@ -377,7 +388,7 @@ def get_workflow(dict_configs, cdump='gdas'):
     #    tasks.append('\n')
 
     # waveawips
-    #if do_wave in ['Y', 'YES'] and do_awips in ['Y', 'YES']:
+    #if do_wave in ['Y', 'YES'] and do_awips in ['Y', 'YES'] and do_wave_cdump in ['GFS', 'BOTH']:
     #    deps = []
     #    dep_dict = {'type':'task', 'name':'%swavepost' % cdump}
     #    deps.append(rocoto.add_dependency(dep_dict))
@@ -387,7 +398,7 @@ def get_workflow(dict_configs, cdump='gdas'):
     #    tasks.append('\n')
 
     # wavestat
-    #if do_wave in ['Y', 'YES']:
+    #if do_wave in ['Y', 'YES'] and do_wave_cdump in ['GFS', 'BOTH']:
     #    deps = []
     #    dep_dict = {'type':'task', 'name':'%swavepost' % cdump}
     #    deps.append(rocoto.add_dependency(dep_dict))
@@ -397,7 +408,7 @@ def get_workflow(dict_configs, cdump='gdas'):
     #    tasks.append('\n')
 
     # wavegempaksbs
-    #if do_wave in ['Y', 'YES'] and do_gempak in ['Y', 'YES']:
+    #if do_wave in ['Y', 'YES'] and do_gempak in ['Y', 'YES'] and do_wave_cdump in ['GFS', 'BOTH']:
     #    deps = []
     #    data = '&ROTDIR;/wave.@Y@m@d/@H/wave.t@Hz.gnh_10m.f000.grib2'
     #    dep_dict = {'type': 'data', 'data': data}
@@ -414,7 +425,7 @@ def get_workflow(dict_configs, cdump='gdas'):
     #    tasks.append('\n')
 
     # waveawipssbs
-    #if do_wave in ['Y', 'YES'] and do_awips in ['Y', 'YES']:
+    #if do_wave in ['Y', 'YES'] and do_awips in ['Y', 'YES'] and do_wave_cdump in ['GFS', 'BOTH']:
     #    deps = []
     #    data = '&ROTDIR;/wave.@Y@m@d/@H/wave.t@Hz.gnh_10m.f000.grib2'
     #    dep_dict = {'type': 'data', 'data': data}

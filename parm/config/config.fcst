@@ -195,7 +195,7 @@ if [[ "$CDUMP" == "gdas" ]] ; then # GDAS cycle specific parameters
     # For IAU, write restarts at beginning of window also
     if [ $DOIAU = "YES" ]; then
        export restart_interval="6 9"
-       if [[ "$SDATE" = "$CDATE" ]]; then export restart_interval="3 6"; fi
+       if [[ "$SDATE" = "$CDATE" && $CYC_WARM_START = ".false." ]]; then export restart_interval="3 6"; fi # Cold starting
     fi
 
     # Choose coupling with wave
