@@ -36,7 +36,7 @@ if [ $VRFYFITS = "YES" ]; then
     export HYBLEVS=$HOMEgfs/fix/fix_am/global_hyblev.l${LEVS}.txt
     export CUE2RUN=$QUEUE
 
-    export VBACKUP_FITS=00
+    export VBACKUP_FITS=24
 
     export CONVNETC="NO"
     if [ ${netcdf_diag:-".false."} = ".true." ]; then
@@ -50,8 +50,9 @@ if [ $VRFYFITS = "YES" ]; then
         export fitdir="$BASE_SVN/verif/global/Fit2Obs/ncf-vqc/batrun"
         export PREPQFITSH="$fitdir/subfits_dell_nems"
     elif [ $machine = "HERA" ]; then
-        export fitdir="$BASE_GIT/Fit2Obs/batrun"
-        export PREPQFITSH="$fitdir/subfits_theia_slurm"
+        #export fitdir="$BASE_GIT/Fit2Obs/batrun"
+        export fitdir="$BASE_GIT/verif/global/Fit2Obs/ncf-vqc/batrun"
+        export PREPQFITSH="$fitdir/subfits_hera_slurm"
     fi
 
 fi
