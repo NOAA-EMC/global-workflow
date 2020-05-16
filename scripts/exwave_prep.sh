@@ -115,15 +115,9 @@
     RST2OFFSET=$(( $RST2OFFSET + ${DT2RSTH} ))
   fi
   ymdh_rst2_ini=`$NDATE ${RST2OFFSET} $YMDH` # DT2 relative to first-first-cycle restart file
-# First restart file for cycling
+# First restart file for cycling: only one restart file for GEFS
   time_rst_ini="`echo $ymdh_rst_ini | cut -c1-8` `echo $ymdh_rst_ini | cut -c9-10`0000"
-  if [ ${DT_1_RST_WAV} = 1 ]; then
-    time_rst1_end=${time_rst_ini}
-  else
-    RST1OFFSET=$(( DT_1_RST_WAV / 3600 ))
-    ymdh_rst1_end=`$NDATE $RST1OFFSET $ymdh_rst_ini`
-    time_rst1_end="`echo $ymdh_rst1_end | cut -c1-8` `echo $ymdh_rst1_end | cut -c9-10`0000"
-  fi
+  time_rst1_end=${time_rst_ini}
 # Second restart file for checkpointing
   time_rst2_ini="`echo $ymdh_rst2_ini | cut -c1-8` `echo $ymdh_rst2_ini | cut -c9-10`0000"
   time_rst2_end=$time_end
