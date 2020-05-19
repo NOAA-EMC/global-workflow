@@ -88,7 +88,7 @@ export BASE_JOB="$HOMEgfs/jobs/rocoto"
 # EXPERIMENT specific environment parameters
 export SDATE=@SDATE@
 export EDATE=@EDATE@
-export EXP_WARM_START=".false."
+export EXP_WARM_START="@EXP_WARM_START@"
 export assim_freq=6
 export PSLOT="@PSLOT@"
 export EXPDIR="@EXPDIR@/$PSLOT"

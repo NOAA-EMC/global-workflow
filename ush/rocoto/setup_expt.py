@@ -103,6 +103,7 @@ def edit_baseconfig():
                     .replace('@QUEUE@', queue) \
                     .replace('@QUEUE_SERVICE@', queue_service) \
                     .replace('@PARTITION_BATCH@', partition_batch) \
+                    .replace('@EXP_WARM_START@', exp_warm_start) \
                     .replace('@CHGRP_RSTPROD@', chgrp_rstprod) \
                     .replace('@CHGRP_CMD@', chgrp_cmd) \
                     .replace('@gfs_cyc@', '%d' % gfs_cyc)
@@ -185,6 +186,7 @@ link initial condition files from $ICSDIR to $COMROT'''
         queue_service = 'dev2_transfer'
       chgrp_rstprod = 'YES'
       chgrp_cmd = 'chgrp rstprod'
+      exp_warm_start = '.false.'
     elif machine == 'WCOSS_C':
       base_git = '/gpfs/hps3/emc/global/noscrub/emc.glopara/git'
       base_svn = '/gpfs/hps3/emc/global/noscrub/emc.glopara/svn'
@@ -200,6 +202,7 @@ link initial condition files from $ICSDIR to $COMROT'''
       partition_batch = ''
       chgrp_rstprod = 'YES'
       chgrp_cmd = 'chgrp rstprod'
+      exp_warm_start = '.false.'
     elif machine == 'HERA':
       base_git = '/scratch1/NCEPDEV/global/glopara/git'
       base_svn = '/scratch1/NCEPDEV/global/glopara/svn'
@@ -215,6 +218,7 @@ link initial condition files from $ICSDIR to $COMROT'''
       partition_batch = ''
       chgrp_rstprod = 'YES'
       chgrp_cmd = 'chgrp rstprod'
+      exp_warm_start = '.false.'
     elif machine == 'ORION':
       base_git = '/work/noaa/global/kfriedma/glopara/git'
       base_svn = '/work/noaa/global/kfriedma/glopara/svn'
@@ -230,6 +234,7 @@ link initial condition files from $ICSDIR to $COMROT'''
       partition_batch = 'orion'
       chgrp_rstprod = 'NO'
       chgrp_cmd = 'ls'
+      exp_warm_start = '.false.'
 
     if args.icsdir is not None and not os.path.exists(icsdir):
         msg = 'Initial conditions do not exist in %s' % icsdir
