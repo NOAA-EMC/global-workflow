@@ -102,8 +102,10 @@ while [ $fhcnt -le $FHMAX_WAV ]; do
       fi
       if [ $icnt -ge $maxtries ]
       then
-        msg="ABORTING after 1 hour of waiting for F$fhr to end."
-        err_exit $msg
+        msg="FATAL ERROR: aborting after waiting 1 hour for F$fhr to end."
+        echo "$msg"
+        export err=1; $err_chk
+        exit $err
       fi
     done
 
