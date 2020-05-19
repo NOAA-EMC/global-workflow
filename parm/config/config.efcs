@@ -56,7 +56,7 @@ export restart_interval=${restart_interval:-6}
 # For IAU, write restarts at beginning of window also
 if [ $DOIAU_ENKF = "YES" ]; then
     export restart_interval="6 -1"
-    if [[ "$SDATE" = "$CDATE" && $CYC_WARM_START = ".false." ]]; then export restart_interval="3 -1"; fi # Cold starting
+    if [[ "$SDATE" = "$CDATE" && $EXP_WARM_START = ".false." ]]; then export restart_interval="3 -1"; fi # Cold starting
 fi
 
 export OUTPUT_FILETYPES="$OUTPUT_FILE"

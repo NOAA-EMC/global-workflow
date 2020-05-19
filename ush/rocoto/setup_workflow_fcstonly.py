@@ -257,8 +257,23 @@ def get_workflow(dict_configs, cdump='gdas'):
     data = '&ICSDIR;/@Y@m@d@H/&CDUMP;/&CDUMP;.@Y@m@d/@H/&CDUMP;.t@Hz.atmanl.nemsio'
     dep_dict = {'type':'data', 'data':data}
     deps.append(rocoto.add_dependency(dep_dict))
-    deps = rocoto.create_dependency(dep_condition='or', dep=deps)
-    dependencies = rocoto.create_dependency(dep_condition='not', dep=deps)
+    dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
+
+    deps = []
+    data = '&ICSDIR;/@Y@m@d@H/&CDUMP;/&CASE;/INPUT/gfs_data.tile6.nc'
+    dep_dict = {'type':'data', 'data':data}
+    deps.append(rocoto.add_dependency(dep_dict))
+    data = '&ICSDIR;/@Y@m@d@H/&CDUMP;/&CASE;/INPUT/sfc_data.tile6.nc'
+    dep_dict = {'type':'data', 'data':data}
+    deps.append(rocoto.add_dependency(dep_dict))
+    deps = rocoto.create_dependency(dep_condition='and', dep=deps)
+    dependencies2 = rocoto.create_dependency(dep_condition='not', dep=deps)
+
+    deps = []
+    deps.append(dependencies)
+    deps.append(dependencies2)
+    dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
     task = wfu.create_wf_task('getic', cdump=cdump, envar=envars, dependency=dependencies)
     tasks.append(task)
     tasks.append('\n')
