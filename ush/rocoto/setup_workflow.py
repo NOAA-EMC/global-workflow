@@ -479,15 +479,17 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
     deps1.append(rocoto.add_dependency(dep_dict))
     dep_dict = {'type': 'task', 'name': '%sanal' % cdump}
     deps1.append(rocoto.add_dependency(dep_dict))
-    dependencies1 = rocoto.create_dependency(dep_condition='or', dep=deps)
+    dependencies1 = rocoto.create_dependency(dep_condition='or', dep=deps1)
 
-    dep2 = []
-    deps2 = dependencies1
-    dep_dict = {'type': 'cycleexist', 'offset': '-06:00:00'}
-    deps2.append(rocoto.add_dependency(dep_dict))
-    dependencies2 = rocoto.create_dependency(dep_condition='and', dep=deps2)
-
-    task = wfu.create_wf_task('analcalc', cdump=cdump, envar=envars, dependency=dependencies2)
+    if cdump in ['gdas']:
+        deps2 = []
+        deps2 = dependencies1
+        dep_dict = {'type': 'cycleexist', 'offset': '-06:00:00'}
+        deps2.append(rocoto.add_dependency(dep_dict))
+        dependencies2 = rocoto.create_dependency(dep_condition='and', dep=deps2)
+        task = wfu.create_wf_task('analcalc', cdump=cdump, envar=envars, dependency=dependencies2)
+    else:
+        task = wfu.create_wf_task('analcalc', cdump=cdump, envar=envars, dependency=dependencies1)
 
     dict_tasks['%sanalcalc' % cdump] = task
 
@@ -499,9 +501,9 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
         deps1.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'task', 'name': '%sanal' % cdump}
         deps1.append(rocoto.add_dependency(dep_dict))
-        dependencies1 = rocoto.create_dependency(dep_condition='or', dep=deps)
+        dependencies1 = rocoto.create_dependency(dep_condition='or', dep=deps1)
 
-        dep2 = []
+        deps2 = []
         deps2 = dependencies1
         dep_dict = {'type': 'cycleexist', 'offset': '-06:00:00'}
         deps2.append(rocoto.add_dependency(dep_dict))
