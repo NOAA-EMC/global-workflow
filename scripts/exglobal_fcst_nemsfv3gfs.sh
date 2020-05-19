@@ -1121,7 +1121,7 @@ EOF
 if [ $cplchm = ".true." ]; then
   if [ $imp_physics -eq 99 ]; then NTRACER=0; fi
   if [ $imp_physics -eq 11 ]; then NTRACER=1; fi
-  if [[ warm_start = ".true." ]];
+  if [[ warm_start = ".true." ]]; then
     chem_in_opt=1
   else 
     chem_in_opt=0
