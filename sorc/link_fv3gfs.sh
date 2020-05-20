@@ -208,10 +208,10 @@ if [ -d ${pwd}/gfs_wafs.fd ]; then
 fi
 
 for ufs_utilsexe in \
-     chgres_cube.exe   fregrid           make_hgrid           nemsio_get    shave.x \
-     emcsfc_ice_blend  fregrid_parallel  make_hgrid_parallel  nemsio_read \
-     emcsfc_snow2mdl   global_chgres     make_solo_mosaic     nst_tf_chg.x \
-     filter_topo       global_cycle      mkgfsnemsioctl       orog.x ; do
+     chgres_cube       fregrid           make_solo_mosaic     nemsio_read     shave \
+     emcsfc_ice_blend  global_chgres     mkgfsnemsioctl       nst_tf_chg \
+     emcsfc_snow2mdl   global_cycle      nemsio_chgdate       orog \
+     filter_topo       make_hgrid        nemsio_get           sfc_climo_gen ; do
     [[ -s $ufs_utilsexe ]] && rm -f $ufs_utilsexe
     $LINK ../sorc/ufs_utils.fd/exec/$ufs_utilsexe .
 done
