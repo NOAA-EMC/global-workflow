@@ -160,7 +160,7 @@ if [[ "$OUTPUT_FILE" == "netcdf" ]]; then
             export OUTPUT_FILETYPES=" 'netcdf_parallel' 'netcdf' "
         fi
     fi
-    if [[ "$machine" == "HERA" ]]; then
+    if [[ "$machine" == "HERA" || "$machine" == "ORION" ]]; then
         export OUTPUT_FILETYPES=" 'netcdf_parallel' 'netcdf_parallel' "
         if [ $RESTILE -le 192 ]; then
             export OUTPUT_FILETYPES=" 'netcdf_parallel' 'netcdf' "
