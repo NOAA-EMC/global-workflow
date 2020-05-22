@@ -162,3 +162,5 @@ util/sub_slurm
 util/sub_wcoss_c
 util/sub_wcoss_d
 workflow/user.yaml
+sorc/checkout-gldas.fd.log
+sorc/gldas.fd/
