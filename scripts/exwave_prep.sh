@@ -311,9 +311,15 @@
 # 3.a Gather and pre-process grib2 files 
       ymdh=$ymdh_beg
     
+      if [ ${CFP_MP:-"NO"} = "YES" ]; then nm=0 ; fi # Counter for MP CFP
       while [ "$ymdh" -le "$ymdh_end" ]
       do
-        echo "$USHwave/wave_g2ges.sh $ymdh > grb_$ymdh.out 2>&1" >> cmdfile
+        if [ ${CFP_MP:-"NO"} = "YES" ]; then
+          echo "$nm $USHwave/wave_g2ges.sh $ymdh > grb_$ymdh.out 2>&1" >> cmdfile
+          nm=`expr $nm + 1`
+        else
+          echo "$USHwave/wave_g2ges.sh $ymdh > grb_$ymdh.out 2>&1" >> cmdfile
+        fi
         ymdh=`$NDATE $WAV_WND_HOUR_INC $ymdh`
       done
   
@@ -334,7 +340,11 @@
   
       if [ "$wavenproc" -gt '1' ]
       then
-        ${wavempexec} ${wavenproc} ${wave_mpmd} cmdfile
+        if [ ${CFP_MP:-"NO"} = "YES" ]; then
+          ${wavempexec} -n ${wavenproc} ${wave_mpmd} cmdfile
+        else
+          ${wavempexec} ${wavenproc} ${wave_mpmd} cmdfile
+        fi
         exit=$?
       else
         ./cmdfile
@@ -626,30 +636,24 @@
 # Prepare files for cfp process
       rm -f cmdfile
       touch cmdfile
-      chmod 744 cmfile
+      chmod 744 cmdfile
 
     ymdh_rtofs=${PDY}00 # RTOFS runs once daily
     ymdh_end=`$NDATE ${FHMAX_WAV_CUR} ${ymdh_rtofs}`
     NDATE_DT=${WAV_CUR_HF_DT}
     FLGHF='T'
 
+    if [ ${CFP_MP:-"NO"} = "YES" ]; then nm=0 ; fi # Counter for MP CFP
     while [ "$ymdh_rtofs" -le "$ymdh_end" ]
     do
 # Timing has to be made relative to the single 00z RTOFS cycle for that PDY
       fhr_rtofs=`${NHOUR} ${ymdh_rtofs} ${PDY}00`
       fext='f'
 
-      if [ ${fhr_rtofs} -lt 0 ]
-      then
-# Data from nowcast phase
-        fhr_rtofs=`expr 48 + ${fhr_rtofs}`
-        fext='n'
-      fi
+      fh3_rtofs=`printf "%03d" "${fhr_rtofs#0}"`
 
-      fhr_rtofs=`printf "%03d\n" ${fhr_rtofs}`
-
-      curfile1h=${COMIN_WAV_CUR}/rtofs_glo_2ds_${fext}${fhr_rtofs}_1hrly_prog.nc
-      curfile3h=${COMIN_WAV_CUR}/rtofs_glo_2ds_${fext}${fhr_rtofs}_3hrly_prog.nc
+      curfile1h=${COMIN_WAV_CUR}/rtofs_glo_2ds_${fext}${fh3_rtofs}_1hrly_prog.nc
+      curfile3h=${COMIN_WAV_CUR}/rtofs_glo_2ds_${fext}${fh3_rtofs}_3hrly_prog.nc
 
       if [ -s ${curfile1h} ]  && [ "${FLGHF}" = "T" ] ; then
         curfile=${curfile1h}
@@ -671,7 +675,13 @@
         echo ' '
       fi
 
-      echo "$USHwave/wave_prnc_cur.sh $ymdh_rtofs $curfile > cur_$ymdh_rtofs.out 2>&1" >> cmdfile
+      if [ ${CFP_MP:-"NO"} = "YES" ]; then
+        echo "$nm $USHwave/wave_prnc_cur.sh $ymdh_rtofs $curfile $fhr_rtofs > cur_$ymdh_rtofs.out 2>&1" >> cmdfile
+        nm=`expr $nm + 1`
+      else
+        echo "$USHwave/wave_prnc_cur.sh $ymdh_rtofs $curfile $fhr_rtofs > cur_$ymdh_rtofs.out 2>&1" >> cmdfile
+      fi
+
       if [ $fhr_rtofs -ge ${WAV_CUR_HF_FH} ] ; then
         NDATE_DT=${WAV_CUR_DT}
       fi
@@ -691,7 +701,11 @@
 
       if [ $wavenproc -gt '1' ]
       then
-        ${wavempexec} ${wavenproc} ${wave_mpmd} cmdfile
+        if [ ${CFP_MP:-"NO"} = "YES" ]; then
+          ${wavempexec} -n ${wavenproc} ${wave_mpmd} cmdfile
+        else
+          ${wavempexec} ${wavenproc} ${wave_mpmd} cmdfile
+        fi
         exit=$?
       else
         chmod 744 ./cmdfile
@@ -727,12 +741,13 @@
         err=11;export err;${errchk}
       fi
 
-      rm -f cur.${WAVECUR_FID}
+#      rm -f cur.${WAVECUR_FID}
 
       for file in $files
       do
-        cat $file >> cur.${WAVECUR_FID}
-        rm -f $file
+        echo $file
+        cat -s $file >> cur.${WAVECUR_FID}
+#        rm -f $file
       done
 
       cp -f cur.${WAVECUR_FID} ${COMOUT}/rundata/${COMPONENTwave}.${WAVECUR_FID}.$cycle.cur 
