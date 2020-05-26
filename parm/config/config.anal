@@ -119,7 +119,7 @@ fi
 #   needed at this time
 #
 # Turn off assmilation of all Metop-A MHS
-##  if [[ "$CDATE" -ge "2020022012" && "$CDATE" -lt "YYYYMMDDHH" ]]; then_break
+##  if [[ "$CDATE" -ge "2020022012" && "$CDATE" -lt "YYYYMMDDHH" ]]; then
 ##      export SATINFO=$FIXgsi/gfsv16_historical/global_satinfo.txt.2020022012
 ##  fi
 

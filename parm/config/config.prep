@@ -48,7 +48,7 @@ fi
 #   needed at this time
 
 # Set observation errors for type 135 (T) & 235 (uv) Canadian AMDAR observations
-##if [[ "$CDATE" -ge "2020040718" && "$CDATE" -lt "YYYMMDDHH" ]]; then_break
+##if [[ "$CDATE" -ge "2020040718" && "$CDATE" -lt "YYYMMDDHH" ]]; then
 ##    export PRVT=$EXPDIR/prepobs_errtable.global
 ##fi
 
