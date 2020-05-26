@@ -82,16 +82,18 @@ if [[ "$CDATE" -ge "2019110706" && "$CDATE" -lt "2020040718" ]]; then
     export OBERROR=$FIXgsi/gfsv16_historical/prepobs_errtable.global.2019110706
 fi
 
-# NOTE:
-#   As of 2020040718, gfsv16_historical/global_convinfo.txt.2020040718 is
-#   identical to ../global_convinfo.txt.  Thus, the logic below is not
-#   needed at this time.   A similar comment applies to ../prepobs_errtable.global
-#   and gfsv16_historical/prepobs_errtable.global.2019110706
-
 # Assimilate 135 (T) & 235 (uv) Canadian AMDAR observations
-##if [[ "$CDATE" -ge "2020040718" && "$CDATE" -lt "YYYYMMDDHH" ]]; then_break
-##    export CONVINFO=$FIXgsi/gfsv16_historical/global_convinfo.txt.2020040718
-##    export OBERROR=$FIXgsi/gfsv16_historical/prepobs_errtable.global.2020040718
+if [[ "$CDATE" -ge "2020040718" && "$CDATE" -lt "2020052612" ]]; then_break
+    export CONVINFO=$FIXgsi/gfsv16_historical/global_convinfo.txt.2020040718
+fi
+
+# NOTE:
+#   As of 2020052612, gfsv16_historical/global_convinfo.txt.2020052612 is
+#   identical to ../global_convinfo.txt.  Thus, the logic below is not
+#   needed at this time.
+# Assimilate COSMIC-2 GPS
+##if [[ "$CDATE" -ge "2020052612" && "$CDATE" -lt "YYYYMMDDHH" ]]; then_break
+##    export CONVINFO=$FIXgsi/gfsv16_historical/global_convinfo.txt.2020052612
 ##fi
 
 
