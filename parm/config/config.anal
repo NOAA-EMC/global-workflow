@@ -83,7 +83,7 @@ if [[ "$CDATE" -ge "2019110706" && "$CDATE" -lt "2020040718" ]]; then
 fi
 
 # Assimilate 135 (T) & 235 (uv) Canadian AMDAR observations
-if [[ "$CDATE" -ge "2020040718" && "$CDATE" -lt "2020052612" ]]; then_break
+if [[ "$CDATE" -ge "2020040718" && "$CDATE" -lt "2020052612" ]]; then
     export CONVINFO=$FIXgsi/gfsv16_historical/global_convinfo.txt.2020040718
 fi
 
@@ -92,7 +92,7 @@ fi
 #   identical to ../global_convinfo.txt.  Thus, the logic below is not
 #   needed at this time.
 # Assimilate COSMIC-2 GPS
-##if [[ "$CDATE" -ge "2020052612" && "$CDATE" -lt "YYYYMMDDHH" ]]; then_break
+##if [[ "$CDATE" -ge "2020052612" && "$CDATE" -lt "YYYYMMDDHH" ]]; then
 ##    export CONVINFO=$FIXgsi/gfsv16_historical/global_convinfo.txt.2020052612
 ##fi
 
