@@ -48,7 +48,7 @@ export AMSR2BF=${AMSR2BF:-/dev/null}
 export ABIBF="/dev/null"
 if [[ "$CDATE" -ge "2019022800" ]] ; then
     export ABIBF="$DMPDIR/${CDUMP}x.${PDY}/${cyc}/${CDUMP}.t${cyc}z.gsrcsr.tm00.bufr_d"
-    if [[ "$CDATE" -ge "2019111000" ]]; then
+    if [[ "$CDATE" -ge "2019111000" && "$CDATE" -le "2020052612" ]]; then
 	export ABIBF="$DMPDIR/${CDUMP}y.${PDY}/${cyc}/${CDUMP}.t${cyc}z.gsrcsr.tm00.bufr_d"
     fi
 fi
