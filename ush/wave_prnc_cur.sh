@@ -57,7 +57,7 @@ else
 fi
 
 # Cleanup
-#### #rm -f cur_temp[123].nc cur_5min_??.nc cur_glo_uv_${PDY}_${fext}${fh3}.nc weights.nc
+rm -f cur_temp[123].nc cur_5min_??.nc cur_glo_uv_${PDY}_${fext}${fh3}.nc weights.nc
 
 if [ ${fhr} -gt ${WAVHINDH} ] 
 then

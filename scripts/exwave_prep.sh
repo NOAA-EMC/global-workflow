@@ -746,8 +746,8 @@
       for file in $files
       do
         echo $file
-        cat -s $file >> cur.${WAVECUR_FID}
-#        rm -f $file
+        cat $file >> cur.${WAVECUR_FID}
+        rm -f $file
       done
 
       cp -f cur.${WAVECUR_FID} ${COMOUT}/rundata/${COMPONENTwave}.${WAVECUR_FID}.$cycle.cur 
