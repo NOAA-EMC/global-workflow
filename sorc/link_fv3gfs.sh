@@ -53,6 +53,8 @@ elif [ $target == "jet" ]; then
     FIX_DIR="/lfs3/projects/hfv3gfs/glopara/git/fv3gfs/fix"
 elif [ $target == "hera" ]; then
     FIX_DIR="/scratch1/NCEPDEV/global/glopara/fix"
+elif [ $target == "orion" ]; then
+    FIX_DIR="/work/noaa/marine/jmeixner/tempFixICdir/fix/fix_prep_benchmark3"
 else
     echo 'CRITICAL: links to fix files not set'
     [[ $machine != orion ]] && exit 1
