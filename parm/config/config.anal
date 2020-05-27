@@ -48,7 +48,7 @@ export AMSR2BF=${AMSR2BF:-/dev/null}
 export ABIBF="/dev/null"
 if [[ "$CDATE" -ge "2019022800" ]] ; then
     export ABIBF="$DMPDIR/${CDUMP}x.${PDY}/${cyc}/${CDUMP}.t${cyc}z.gsrcsr.tm00.bufr_d"
-    if [[ "$CDATE" -ge "2019111000" ]]; then
+    if [[ "$CDATE" -ge "2019111000" && "$CDATE" -le "2020052612" ]]; then
 	export ABIBF="$DMPDIR/${CDUMP}y.${PDY}/${cyc}/${CDUMP}.t${cyc}z.gsrcsr.tm00.bufr_d"
     fi
 fi
@@ -82,16 +82,18 @@ if [[ "$CDATE" -ge "2019110706" && "$CDATE" -lt "2020040718" ]]; then
     export OBERROR=$FIXgsi/gfsv16_historical/prepobs_errtable.global.2019110706
 fi
 
-# NOTE:
-#   As of 2020040718, gfsv16_historical/global_convinfo.txt.2020040718 is
-#   identical to ../global_convinfo.txt.  Thus, the logic below is not
-#   needed at this time.   A similar comment applies to ../prepobs_errtable.global
-#   and gfsv16_historical/prepobs_errtable.global.2019110706
-
 # Assimilate 135 (T) & 235 (uv) Canadian AMDAR observations
-##if [[ "$CDATE" -ge "2020040718" && "$CDATE" -lt "YYYYMMDDHH" ]]; then_break
-##    export CONVINFO=$FIXgsi/gfsv16_historical/global_convinfo.txt.2020040718
-##    export OBERROR=$FIXgsi/gfsv16_historical/prepobs_errtable.global.2020040718
+if [[ "$CDATE" -ge "2020040718" && "$CDATE" -lt "2020052612" ]]; then
+    export CONVINFO=$FIXgsi/gfsv16_historical/global_convinfo.txt.2020040718
+fi
+
+# NOTE:
+#   As of 2020052612, gfsv16_historical/global_convinfo.txt.2020052612 is
+#   identical to ../global_convinfo.txt.  Thus, the logic below is not
+#   needed at this time.
+# Assimilate COSMIC-2 GPS
+##if [[ "$CDATE" -ge "2020052612" && "$CDATE" -lt "YYYYMMDDHH" ]]; then
+##    export CONVINFO=$FIXgsi/gfsv16_historical/global_convinfo.txt.2020052612
 ##fi
 
 
@@ -117,7 +119,7 @@ fi
 #   needed at this time
 #
 # Turn off assmilation of all Metop-A MHS
-##  if [[ "$CDATE" -ge "2020022012" && "$CDATE" -lt "YYYYMMDDHH" ]]; then_break
+##  if [[ "$CDATE" -ge "2020022012" && "$CDATE" -lt "YYYYMMDDHH" ]]; then
 ##      export SATINFO=$FIXgsi/gfsv16_historical/global_satinfo.txt.2020022012
 ##  fi
 

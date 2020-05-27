@@ -60,8 +60,7 @@ export pgmout=OUTPUT.$$
 export MP_PULSE=0
 
 # CDO required for processing RTOFS currents
-# export CDO=${COMROOTp2}/nwprod/rtofs_glo.v1.2.0/bin/cdo
-export CDO=/gpfs/dell2/emc/verification/noscrub/Todd.Spindler/CDO/bin/cdo
+export CDO=${CDO_ROOT}/bin/cdo
 
 # Path to HOME Directory
 export FIXwave=${FIXwave:-$HOMEwave/fix/fix_wave_${NET}}

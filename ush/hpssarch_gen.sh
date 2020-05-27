@@ -70,8 +70,8 @@ if [ $type = "gfs" ]; then
   echo  "${dirname}trak.gfso.atcfunix.altg.${PDY}${cyc}    " >>gfsa.txt
   echo  "${dirname}storms.gfso.atcf_gen.${PDY}${cyc}       " >>gfsa.txt
   echo  "${dirname}storms.gfso.atcf_gen.altg.${PDY}${cyc}  " >>gfsa.txt
-  echo  "${dirname}nawips/gfs_${PDY}${cyc}.sfc             " >>gfsa.txt
-  echo  "${dirname}nawips/gfs_${PDY}${cyc}.snd             " >>gfsa.txt
+  echo  "${dirname}gempak/gfs_${PDY}${cyc}.sfc             " >>gfsa.txt
+  echo  "${dirname}gempak/gfs_${PDY}${cyc}.snd             " >>gfsa.txt
   echo  "${dirname}bufr.t${cyc}z                           " >>gfsa.txt
   echo  "./logs/${CDATE}/gfs*.log                          " >>gfsa.txt
 
