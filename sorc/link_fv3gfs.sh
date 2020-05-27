@@ -52,9 +52,9 @@ elif [ $target == "gaea" ]; then
 elif [ $target == "jet" ]; then
     FIX_DIR="/lfs3/projects/hfv3gfs/glopara/git/fv3gfs/fix"
 elif [ $target == "hera" ]; then
-    FIX_DIR="/scratch1/NCEPDEV/global/glopara/fix"
+    FIX_DIR="/scratch2/NCEPDEV/climate/climpara/S2S/FIX/fix_UFSp4"
 elif [ $target == "orion" ]; then
-    FIX_DIR="/work/noaa/marine/jmeixner/tempFixICdir/fix/fix_prep_benchmark3"
+    FIX_DIR="/work/noaa/marine/jmeixner/tempFixICdir/fix_UFSp4"
 else
     echo 'CRITICAL: links to fix files not set'
     [[ $machine != orion ]] && exit 1
@@ -369,19 +369,14 @@ fi
 if [ $model = "coupled" ] ; then
  rm -f config.base
  cp -p config.base.emc.dyn_coupled config.base
- if [ $machine = "theia" ] ; then
- CPLFIX_DIR="/scratch4/NCEPDEV/nems/save/Bin.Li/fix_prep_benchmark2"
- elif [ $machine = "hera" ] ; then
- CPLFIX_DIR="/scratch2/NCEPDEV/climate/Bin.Li/S2S/fix/fix_prep_benchmark3"
- fi
-cd $pwd/../fix
-# Add fixed files needed for coupled fv3-mom6-cice5
-#$LINK $CPLFIX_DIR/fix_fv3   .
-#$LINK $CPLFIX_DIR/fix_fv3_gmted2010   .
-$LINK $CPLFIX_DIR/fix_ocnice   .
-$LINK $CPLFIX_DIR/fix_cice5    .
-$LINK $CPLFIX_DIR/fix_mom6     .
-$LINK $CPLFIX_DIR/fix_fv3grid  .
+ cd $pwd/../fix
+ # Add fixed files needed for coupled ufs-s2s-model
+ $LINK $FIX_DIR/fix_ocnice   .
+ $LINK $FIX_DIR/fix_cice5    .
+ $LINK $FIX_DIR/fix_mom6     .
+ $LINK $FIX_DIR/fix_fv3grid  .
+ $LINK $FIX_DIR/fix_cpl      .
+ $LINK $FIX_DIR/fix_wav      .
 fi
 
 exit 0
