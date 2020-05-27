@@ -14,3 +14,5 @@ case:
     run_gsi: No
     chgres_and_convert_ics: Yes
     gfs_cyc: 4 # run gfs every cycle
+
+    mom6ic_prepared: .true.

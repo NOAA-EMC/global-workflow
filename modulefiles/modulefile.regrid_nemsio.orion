@@ -1,0 +1,21 @@
+#%Module#####################################################
+## Module file for regrid_nemsio
+#############################################################
+
+module load intel/2018.4
+module load impi/2018.4
+
+module load netcdf/4.7.2
+module load hdf5/1.10.5
+
+module use /apps/contrib/NCEPLIBS/lib/modulefiles
+module load bacio-intel-sandybridge/2.0.2
+module load w3nco-intel-sandybridge/2.0.6
+module load nemsio-intel-sandybridge/2.2.3
+module load sp-intel-sandybridge/2.0.2
+
+export FCMP="$FCOMP" 
+export NETCDF_LDFLAGS_F="-L${NETCDF}/lib -lnetcdf -lnetcdff -lnetcdf  -L${HDF5_ROOT}/lib -lhdf5 -lhdf5_hl -lhdf5 -lz"
+export NETCDF_LDFLAGS="-L${NETCDF}/lib -lnetcdf -lnetcdff -lnetcdf  -L${HDF5_ROOT}/lib -lhdf5 -lhdf5_hl -lhdf5 -lz"
+export NETCDF_INCLUDE=-I$NETCDF/include
+#export FCMP="mpif90 -f90=ifort"
