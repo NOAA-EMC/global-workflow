@@ -51,6 +51,9 @@ platform: !Platform
   # executables for this workflow.
   BASE_GIT: "/mnt/lfs3/projects/hfv3gfs/glopara/git"
 
+  #BASE_CPLIC - is the base directory of ICs for coupled s2s runs
+  BASE_CPLIC: "/path/to/base/dir/of/IC"
+
   # config_base_extras - Additional configuration data to put in the
   # config.base file
   config_base_extras: |
