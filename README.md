@@ -15,7 +15,10 @@ sh build_ncep_post.sh        #This command will build ncep_post.
 sh build_fv3_coupled.sh      #This command will build ufs-s2s-model
 
 To link fixed files and executable programs for the coupled application:
+On Hera: 
 sh link_fv3gfs.sh emc hera coupled
+On Orion: 
+sh link_fv3gfs.sh emc orion coupled
 ```
 
 ## Create CROW user file
