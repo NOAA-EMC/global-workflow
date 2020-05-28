@@ -33,15 +33,34 @@ done
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
+
+#TODO: make the following configurable variables instead of hardcoded 
+CPL_ATMIC=CFSR
+CPL_OCNIC=CPC3Dvar
+CPL_ICEIC=CPC
+OCNRES=025
+ICERES=025
+
 # Create ICSDIR if needed
 [[ ! -d $ICSDIR/$CDATE ]] && mkdir -p $ICSDIR/$CDATE
+[[ ! -d $ICSDIR/$CDATE/ocn ]] && mkdir -p $ICSDIR/$CDATE/ocn
+[[ ! -d $ICSDIR/$CDATE/ice ]] && mkdir -p $ICSDIR/$CDATE/ice
 
-# Output FV3 initial condition files
 
-cp $ORIGIN_ROOT/$CDATE/cice5_* $ICSDIR/$CDATE/
-cp $ORIGIN_ROOT/$CDATE/MOM6_*  $ICSDIR/$CDATE/
-cp -r $ORIGIN_ROOT/$CDATE/mom6_da  $ICSDIR/$CDATE/
-cp -r $ORIGIN_ROOT/$CDATE/gfs  $ICSDIR/$CDATE/
+# Setup ATM initial condition files
+cp -r $ORIGIN_ROOT/$CPL_ATMIC/$CDATE/$CDUMP  $ICSDIR/$CDATE/
+
+# Setup Ocean IC files 
+cp -r $ORIGIN_ROOT/$CPL_OCNIC/$CDATE/ocn/$OCNRES/*  $ICSDIR/$CDATE/ocn/
+
+#Setup Ice IC files 
+cp $ORIGIN_ROOT/$CPL_ICEIC/$CDATE/ice/$ICERES/* $ICSDIR/$CDATE/ice/
+
+#TODO for wave coupling
+#if cplwav=true 
+  #Setup Wave IC files
+#fi 
+
 
 export OUTDIR="$ICSDIR/$CDATE/$CDUMP/$CASE/INPUT"
 

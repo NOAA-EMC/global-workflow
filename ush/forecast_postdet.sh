@@ -511,8 +511,8 @@ MOM6_postdet()
 {
 	echo "SUB ${FUNCNAME[0]}: MOM6 after run type determination"
 
-	# Copy MOM6 ICs (from CFSv2 file)
-	cp -pf $ICSDIR/$CDATE/mom6_da/MOM*nc $DATA/INPUT/
+	# Copy MOM6 ICs
+	cp -pf $ICSDIR/$CDATE/ocn/MOM*nc $DATA/INPUT/
 
 	# Copy MOM6 fixed files
 	cp -pf $FIXmom/INPUT/* $DATA/INPUT/
@@ -649,16 +649,22 @@ CICE_postdet()
         dumpfreq_n=${dumpfreq_n:-"${restart_interval}"}
         dumpfreq=${dumpfreq:-"s"} #  "s" or "d" or "m" for restarts at intervals of "seconds", "days" or "months"
 
-        iceres=${iceres:-"mx025"}
-        ice_grid_file=${ice_grid_file:-"grid_cice_NEMS_${iceres}.nc"}
-        ice_kmt_file=${ice_kmt_file:-"kmtu_cice_NEMS_${iceres}.nc"}
+        ICERES=${ICERES:-"025"} 
+        if [ $ICERES = '025' ]; then
+          ICERESmx="mx025"
+          ICERESdec="0.25"
+        else if [ $ICERES = '050' ]; then
+          ICERESmx="mx050"
+          ICERESdec="0.50"
+        fi 
 
-        #TODO iceic name... this might need to be update? 
+        ice_grid_file=${ice_grid_file:-"grid_cice_NEMS_${ICERESmx}.nc"}
+        ice_kmt_file=${ice_kmt_file:-"kmtu_cice_NEMS_${ICERESmx}.nc"}
+
         iceic="cice5_model.res_$CDATE.nc"
 
-	# Copy CICE5 IC - pre-generated from CFSv2
-        cp -p $ICSDIR/$CDATE/cice5_model_0.25.res_$CDATE.nc $DATA/$iceic
-	#cp -p $ICSDIR/$CDATE/cpc/cice5_model_0.25.res_$CDATE.nc ./cice5_model.res_$CDATE.nc
+	# Copy CICE5 IC 
+        cp -p $ICSDIR/$CDATE/ice/cice5_model_${ICERESdec}.res_$CDATE.nc $DATA/$iceic
 
         echo "Link CICE fixed files"
         ln -sf $FIXcice/${ice_grid_file} $DATA/
