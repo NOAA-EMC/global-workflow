@@ -49,7 +49,8 @@ ICERES=${ICERES:-"025"}
 
 if [ $ICERES = '025' ]; then
   ICERESdec="0.25"
-else if [ $ICERES = '050' ]; then         
+fi 
+if [ $ICERES = '050' ]; then         
  ICERESdec="0.50"        
 fi 
 
