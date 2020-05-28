@@ -74,30 +74,8 @@ WW3_det(){
 
 CICE_det(){
 	echo "SUB ${FUNCNAME[0]}: Run type determination for CICE"
-	export histfreq_n=$FHOUT
-
-	# Create ice_in file
-	
-	if [ $inistep = "restart" ] ; then
-	  runtyp=continue
-	  restim=.true.
-	else
-	  runtyp=initial
-	  restim=.false.
-	fi
 }
 
 MOM6_det(){
 	echo "SUB ${FUNCNAME[0]}: Run type determination for MOM6"
-	export histfreq_n=$FHOUT
-
-	# Create ice_in file
-
-	if [ $inistep = "restart" ] ; then
-	  runtyp=continue
-	  restim=.true.
-	else
-	  runtyp=initial
-	  restim=.false.
-	fi
 }

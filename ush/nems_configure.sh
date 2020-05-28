@@ -22,7 +22,7 @@ if [[ $inistep = "cold" ]]; then
   restart_interval=0
   coldstart=true     # this is the correct setting
 else
-  restart_interval=${restart_interval:-1296000}    # Interval in seconds to write restarts
+  restart_interval=${restart_interval:-3024000}    # Interval in seconds to write restarts
   coldstart=false
 fi
 

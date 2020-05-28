@@ -527,6 +527,7 @@ MOM6_postdet()
 
         # Copy MOM6 input file 
         $NCP -pf $HOMEgfs/parm/mom6/MOM_input_$OCNRES $DATA/INPUT/MOM_input 
+
         #TODO: if cplwav, copy MOM_input_$OCNRES_wav 
         #TODO: update to make MOM_input configurable 
 
@@ -628,10 +629,20 @@ CICE_postdet()
         npt=$((FHMAX*$stepsperhr))      # Need this in order for dump_last to work
 
         histfreq_n=${histfreq_n:-6}
-        restart_interval=${restart_interval:-1296000}    # restart write interval in seconds, default 15 days
-        dumpfreq_n=$restart_interval                     # restart write interval in seconds
+        restart_interval=${restart_interval:-3024000}    # restart write interval in seconds, default 35 days
+        dumpfreq_n=${dumpfreq_n:-"${restart_interval}"}  # restart write interval in seconds
+        dumpfreq=${dumpfreq:-"s"} #  "s" or "d" or "m" for restarts at intervals of "seconds", "days" or "months"
 
-        #TODO: Determine the properway to determine if it's a 'hot start' or not
+        cice_hist_avg=${cice_hist_avg:-".true."}
+
+        FRAZIL_FWSALT=${FRAZIL_FWSALT:-".true."}
+        tr_pond_lvl=${tr_pond_lvl:-".true."} # Use level melt ponds tr_pond_lvl=true
+
+        # restart_pond_lvl (if tr_pond_lvl=true):
+        #   -- if true, initialize the level ponds from restart (if runtype=continue) 
+        #   -- if false, re-initialize level ponds to zero (if runtype=initial or continue)  
+
+        #TODO: Determine the proper way to determine if it's a 'hot start' or not
         #if [ hotstart ]; then
         #  #continuing run "hot start" 
         #  RUNTYPE='continue'
@@ -643,9 +654,6 @@ CICE_postdet()
           USE_RESTART_TIME='.false.'
           restart_pond_lvl=${restart_pond_lvl:-".false."}
         #fi
-
-        dumpfreq_n=${dumpfreq_n:-"${restart_interval}"}
-        dumpfreq=${dumpfreq:-"s"} #  "s" or "d" or "m" for restarts at intervals of "seconds", "days" or "months"
 
         ICERES=${ICERES:-"025"} 
         if [ $ICERES = '025' ]; then
