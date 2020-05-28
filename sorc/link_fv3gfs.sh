@@ -74,15 +74,6 @@ if [ ! -r $FIX_DIR ]; then
    exit -1
 fi
 
-if [ ! -z $FIX_DIR ]; then
- if [ ! -d ${pwd}/../fix ]; then mkdir ${pwd}/../fix; fi
- cd ${pwd}/../fix                ||exit 8
- for dir in fix_am fix_fv3 fix_orog fix_fv3_gmted2010 ; do
-     [[ -d $dir ]] && rm -rf $dir
- done
- $LINK $FIX_DIR/* .
-fi
-
 #---------------------------------------
 #--add files from external repositories
 #---------------------------------------
@@ -211,8 +202,8 @@ cd ${pwd}/../ush                ||exit 8
 
 cd $pwd/../exec
 if [ $model == "coupled" ]; then
-[[ -s nems_fv3_mom6_cice5.x ]] && rm -f nems_fv3_mom6_cice5.x
-$LINK ../sorc/fv3_coupled.fd/NEMS/exe/nems_fv3_mom6_cice5.x .
+[[ -s nems_fv3_ccpp_mom6_cice5_ww3.x ]] && rm -f nems_fv3_ccpp_mom6_cice5_ww3.x
+$LINK ../sorc/fv3_coupled.fd/NEMS/exe/nems_fv3_ccpp_mom6_cice5_ww3.x .
 else
 [[ -s global_fv3gfs.x ]] && rm -f global_fv3gfs.x
 $LINK ../sorc/fv3gfs.fd/NEMS/exe/global_fv3gfs.x .
@@ -287,20 +278,6 @@ if [ $target = wcoss_dell_p3 ]; then
         $LINK ../sorc/gfs_wafs.fd/exec/$wafsexe .
     done
 fi
- 
-#cd ${pwd}
-#cd gsi.fd
-#gsi_branch=`git branch | grep \*`
-#cd ../fv3gfs.fd
-#fv3gfs_branch=`git branch | grep \*`
-#cd ../gfs_post.fd
-#gfspost_branch=`git branch | grep \*`
-
-#set +x
-#echo "FV3  Branch: $fv3gfs_branch"
-#echo "GSI  Branch: $gsi_branch"
-#echo "POST Branch: $gfspost_branch"
-
 
 #------------------------------
 #--link source code directories
