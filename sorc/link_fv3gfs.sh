@@ -321,6 +321,17 @@ cd ${pwd}/../sorc   ||   exit 8
     fi
 
 
+#Link CCPP Suite files: 
+cd $pwd/../fix
+[[ -d fix_ccpp_suites ]] && rm -rf fix_ccpp_suites
+if [ $model == "coupled" ]; then
+$SLINK ../sorc/fv3_coupled.fd/FV3/ccpp/suites fix_ccpp_suites
+else
+$SLINK ../sorc/fv3gfs.fd/FV3/ccpp/suites fix_ccpp_suites
+fi
+
+
+
 #------------------------------
 #--choose dynamic config.base for EMC installation 
 #--choose static config.base for NCO installation 

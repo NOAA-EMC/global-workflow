@@ -184,6 +184,9 @@ EOF
           $NLN $FIXfv3/$CASE/${CASE}_mosaic.nc  $DATA/INPUT/${CASE}_mosaic.nc
         fi
 
+        # CCPP Suite file 
+        $NCP -p $FIX_DIR/fix_ccpp_suites/suite_${CCPP_SUITE}.xml $DATA/
+
 	# GFS standard input data
 
 	IALB=${IALB:-1}
