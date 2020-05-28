@@ -60,21 +60,10 @@ else
     [[ $machine != orion ]] && exit 1
 fi
 
-cd ${pwd}/../fix                ||exit 8
-for dir in fix_am fix_fv3 fix_orog fix_fv3_gmted2010 fix_verif ; do
-    [[ -d $dir ]] && rm -rf $dir
-done
-$LINK $FIX_DIR/* .
-
-if [ ! -r $FIX_DIR ]; then
-   echo "CRITICAL: you do not of read permissions to the location of the fix file $FIX_DIR"
-   exit -1
-fi
-
 if [ ! -z $FIX_DIR ]; then
  if [ ! -d ${pwd}/../fix ]; then mkdir ${pwd}/../fix; fi
  cd ${pwd}/../fix                ||exit 8
- for dir in fix_am fix_fv3 fix_orog fix_fv3_gmted2010 ; do
+ for dir in fix_am fix_fv3 fix_orog fix_fv3_gmted2010 fix_verif ; do
      [[ -d $dir ]] && rm -rf $dir
  done
  $LINK $FIX_DIR/* .
