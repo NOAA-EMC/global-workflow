@@ -59,6 +59,15 @@ mkdir -p $EXPROOT
 or
 
 ./setup_case.sh -p HERA ../cases/coupled_free_forecast.yaml test_3d
+
+
+For Orion: 
+First make sure you have python loaded: 
+module load contrib
+module load rocoto
+module load intelpython3
+and then replace ORION with HERA in the commands above. 
+
 ```
 This will create a experiment directory ($EXPERIMENT_DIRECTORY). In the current example, $EXPERIMENT_DIRECTORY=$EXPROOT/test_3d.
 
