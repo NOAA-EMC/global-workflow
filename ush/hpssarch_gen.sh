@@ -42,22 +42,42 @@ if [ $type = "gfs" ]; then
   head="gfs.t${cyc}z."
 
 # for coupled model
-if [ $cpl = ".true." ]; then
-  echo "cpl=",$cpl
+if [ $cplflx = ".true." ]; then
+  echo "cplflx=",$cplflx
+  rm -f gfs_pgrb2b_1p00.txt
+  rm -f gfs_pgrb2b_0p25.txt
   rm -f gfs_flux_1p00.txt
-  rm -f ocn.txt
-  rm -f ocn2.txt
+  rm -f ocn.txt 
+  rm -f ocn_2D.txt
+  rm -f ocn_3D.txt
+  rm -f ocn_xsect.txt
+  rm -f log.txt
   rm -f ice.txt
-  rm -f SST.txt
+  rm -f ocn_daily.txt
+  rm -f wavocn.txt
   touch gfs_flux_1p00.txt
-  touch ocn.txt
-  touch ocn2.txt
-  touch ice.txt
-  touch SST.txt
+  touch gfs_pgrb2b_1p00.txt 
+  touch gfs_pgrb2b_0p25.txt
+  touch ocn.txt 
+  touch ocn_2D.txt 
+  touch ocn_3D.txt 
+  touch ocn_xsect.txt 
+  touch ocn_daily.txt 
+  touch log.txt 
+  touch ice.txt 
+  touch wavocn.txt 
   echo  "${dirname}ice*nc             " >>ice.txt
-  echo  "${dirname}ocn*nc             " >>ocn.txt
-  echo  "${dirname}ocn_ice*grb2       " >>ocn2.txt
-  echo  "${dirname}SST*nc             " >>SST.txt
+  echo  "${dirname}ocn_2D*            " >>ocn_2D.txt
+  echo  "${dirname}ocn_3D*            " >>ocn_3D.txt
+  echo  "${dirname}ocn*EQ*            " >>ocn_xsect.txt
+  echo  "${dirname}ocn_daily*         " >>ocn_daily.txt
+  echo  "${dirname}wavocn*            " >>wavocn.txt
+  echo  "${dirname}input.nml          " >>log.txt
+  echo  "${dirname}ice_in             " >>log.txt
+  echo  "${dirname}MOM_input          " >>log.txt
+  echo  "./logs/${CDATE}/gfs*.log     " >>log.txt
+  echo  "${dirname}${head}logf*.nemsio " >>log.txt
+  echo  "${dirname}ocn_ice*grb2       " >>ocn.txt
   echo  "${dirname}${head}flux.1p00.f???           " >>gfs_flux_1p00.txt
   echo  "${dirname}${head}flux.1p00.f???.idx       " >>gfs_flux_1p00.txt
 fi
@@ -100,6 +120,14 @@ fi
     echo  "${dirname}${head}pgrb2b.0p50.f${fhr}             " >>gfs_pgrb2b.txt
     echo  "${dirname}${head}pgrb2b.0p50.f${fhr}.idx         " >>gfs_pgrb2b.txt
 
+    if [ $cplflx = ".true." ]; then
+      echo  "${dirname}${head}pgrb2b.0p25.f${fhr}           " >>gfs_pgrb2b_0p25.txt
+      echo  "${dirname}${head}pgrb2b.0p25.f${fhr}.idx       " >>gfs_pgrb2b_0p25.txt
+      echo  "${dirname}${head}pgrb2b.1p00.f${fhr}           " >>gfs_pgrb2b_1p00.txt
+      echo  "${dirname}${head}pgrb2b.1p00.f${fhr}.idx       " >>gfs_pgrb2b_1p00.txt
+      echo  "${dirname}${head}flux.1p00.f${fhr}             " >>gfs_flux_1p00.txt
+      echo  "${dirname}${head}flux.1p00.f${fhr}.idx         " >>gfs_flux_1p00.txt
+    fi
     echo  "${dirname}${head}sfluxgrbf${fhr}.grib2           " >>gfs_flux.txt
     echo  "${dirname}${head}sfluxgrbf${fhr}.grib2.idx       " >>gfs_flux.txt
 
