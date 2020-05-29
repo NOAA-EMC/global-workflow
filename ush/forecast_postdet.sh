@@ -407,6 +407,9 @@ EOF
 	#------------------------------------------------------------------
 	# make symbolic links to write forecast files directly in memdir
 	cd $DATA
+        if [ $inistep = 'cold' ]; then
+          echo "Not making links of output for mediator cold start" 
+        else 
 	if [ $QUILTING = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]; then
 	  fhr=$FHMIN
 	  while [ $fhr -le $FHMAX ]; do
@@ -435,6 +438,7 @@ EOF
 	    eval $NLN atmos_4xdaily.tile${n}.nc $memdir/atmos_4xdaily.tile${n}.nc
 	  done
 	fi
+        fi
 }
 
 FV3_GFS_nml(){
@@ -465,6 +469,7 @@ data_out_GFS()
 # make symbolic links to write forecast files directly in memdir
 echo "SUB ${FUNCNAME[0]}: copying output data for FV3"
 #------------------------------------------------------------------
+
 if [ $SEND = "YES" ]; then
   # Copy model restart files
   if [ $CDUMP = "gdas" -a $restart_interval -gt 0 ]; then
@@ -538,7 +543,7 @@ MOM6_postdet()
         $NCP -pf $FIX_DIR/fix_cpl/a${CASE}o${OCNRES}/grid_spec.nc $DATA/INPUT/
 
         # Copy mediator restart files to RUNDIR
-        if [ $runtyp = 'continue' ]; then
+        if [ $inistep = 'restart' ]; then
            $NCP $ROTDIR/$CDUMP.$PDY/$cyc/mediator_* $DATA/
         fi
 
@@ -569,55 +574,57 @@ MOM6_out()
 	fi
 	[[ ! -d $COMOUT ]] && mkdir -m 775 -p $COMOUT
 
-        if [ $runtyp = 'initial' ]; then
+        if [ $inistep = 'cold' ]; then
                cp $DATA/mediator_* $COMOUT/
                status=$?
                exit $status
-        fi
-
-        if [ $FHRGRP -eq 0 ]; then
-            fhrlst="anl"
         else
-            fhrlst=$(echo $FHRLST | sed -e 's/_/ /g; s/\[/ /g; s/\]/ /g; s/f/ /g; s/,/ /g')
-        fi
 
-	# copy ocn files
-	for fhr in $fhrlst; do
-	  export fhr=$fhr
-	  if [[ 10#$fhr -ge 6 ]]; then
-       	    hh_inc_m=$((10#$FHOUT/2))
-	    hh_inc_o=$((10#$FHOUT  ))
+          if [ $FHRGRP -eq 0 ]; then
+              fhrlst="anl"
+          else
+              fhrlst=$(echo $FHRLST | sed -e 's/_/ /g; s/\[/ /g; s/\]/ /g; s/f/ /g; s/,/ /g')
+          fi
+
+      	  # copy ocn files
+  	  for fhr in $fhrlst; do
+	    export fhr=$fhr
+	    if [[ 10#$fhr -ge 6 ]]; then
+       	      hh_inc_m=$((10#$FHOUT/2))
+	      hh_inc_o=$((10#$FHOUT  ))
 
   # ------------------------------------------------------
   #  adjust the dates on the mom filenames and save
   # ------------------------------------------------------
-	    VDATE=$($NDATE $fhr $IDATE)
-	    YYYY=`echo $VDATE | cut -c1-4`
-	    MM=`echo $VDATE | cut -c5-6`
-	    DD=`echo $VDATE | cut -c7-8`
-       	    HH=`echo $VDATE | cut -c9-10`
-	    SS=$((10#$HH*3600))
+	      VDATE=$($NDATE $fhr $IDATE)
+	      YYYY=`echo $VDATE | cut -c1-4`
+	      MM=`echo $VDATE | cut -c5-6`
+	      DD=`echo $VDATE | cut -c7-8`
+       	      HH=`echo $VDATE | cut -c9-10`
+	      SS=$((10#$HH*3600))
 
-	    m_date=$($NDATE -$hh_inc_m $VDATE)
-	    p_date=$VDATE
+	      m_date=$($NDATE -$hh_inc_m $VDATE)
+	      p_date=$VDATE
 
-	  #TODO: Determine if this loop is needed  
-	    year=`echo $m_date | cut -c1-4`
-	    month=`echo $m_date | cut -c5-6`
-	    day=`echo $m_date | cut -c7-8`
-	    hh=`echo $m_date | cut -c9-10`
+	      #TODO: Determine if this loop is needed  
+	      year=`echo $m_date | cut -c1-4`
+	      month=`echo $m_date | cut -c5-6`
+	      day=`echo $m_date | cut -c7-8`
+	      hh=`echo $m_date | cut -c9-10`
 
-	    export ocnfile=ocn_${year}_${month}_${day}_${hh}.nc
+	      export ocnfile=ocn_${year}_${month}_${day}_${hh}.nc
 
-	    echo "cp -p $ocnfile $COMOUT/ocn$p_date.$ENSMEM.$IDATE.nc"
-	    $NCP -p $ocnfile $COMOUT/ocn$p_date.$ENSMEM.$IDATE.nc
-	    status=$?
-	    [[ $status -ne 0 ]] && exit $status
-	  fi
-	done
-        $NCP -p $DATA/ocn_daily*nc $COMOUT/
-        $NCP -p $DATA/wavocn*nc $COMOUT/ #temporary for p4
-        $NCP -p $DATA/INPUT/MOM_input $COMOUT/
+	      echo "$NCP -p $ocnfile $COMOUT/ocn$p_date.$ENSMEM.$IDATE.nc"
+	      $NCP -p $ocnfile $COMOUT/ocn$p_date.$ENSMEM.$IDATE.nc
+	      status=$?
+	      [[ $status -ne 0 ]] && exit $status
+	    fi
+       
+	  done
+          $NCP -p $DATA/ocn_daily*nc $COMOUT/
+          $NCP -p $DATA/wavocn*nc $COMOUT/ #temporary for p4
+          $NCP -p $DATA/INPUT/MOM_input $COMOUT/
+        fi
 }
 
 CICE_postdet()
@@ -632,10 +639,13 @@ CICE_postdet()
         npt=$((FHMAX*$stepsperhr))      # Need this in order for dump_last to work
 
         histfreq_n=${histfreq_n:-6}
-        restart_interval=${restart_interval:-3024000}    # restart write interval in seconds, default 35 days
-        dumpfreq_n=${dumpfreq_n:-"${restart_interval}"}  # restart write interval in seconds
-        dumpfreq=${dumpfreq:-"s"} #  "s" or "d" or "m" for restarts at intervals of "seconds", "days" or "months"
-
+        if [ $inistep = 'cold' ]; then
+           dumpfreq_n=${dumpfreq_n:-3600}  # restart write interval in seconds, default 1 hour
+           dumpfreq="s"
+        else 
+           dumpfreq_n=${dumpfreq_n:-3024000}  # restart write interval in seconds, default 35 days
+           dumpfreq=${dumpfreq:-"s"} #  "s" or "d" or "m" for restarts at intervals of "seconds", "days" or "months"
+        fi 
         cice_hist_avg=${cice_hist_avg:-".true."}
 
         FRAZIL_FWSALT=${FRAZIL_FWSALT:-".true."}
@@ -646,6 +656,7 @@ CICE_postdet()
         #   -- if false, re-initialize level ponds to zero (if runtype=initial or continue)  
 
         #TODO: Determine the proper way to determine if it's a 'hot start' or not
+        #note this is not mediator cold start or not 
         #if [ hotstart ]; then
         #  #continuing run "hot start" 
         #  RUNTYPE='continue'
@@ -691,6 +702,9 @@ CICE_nml()
 CICE_out()
 {
 	echo "SUB ${FUNCNAME[0]}: Copying output data for CICE"
+        if [ $inistep = 'cold' ]; then
+           echo "mediator cold start, no copying of data for CICE"
+        else
         export ENSMEM=${ENSMEM:-01}
         export IDATE=$CDATE
         $NCP -p $DATA/ice_in $COMOUT/
@@ -718,8 +732,6 @@ CICE_out()
 	  HH=`echo $VDATE | cut -c9-10`
 	  SS=$((10#$HH*3600))
 
-	#  DDATE=$($NDATE -$FHOUT $VDATE)
-
 	  if [[ 10#$fhr -eq 0 ]]; then
 	    $NCP -p $DATA/history/iceh_ic.${YYYY0}-${MM0}-${DD0}-`printf "%5.5d" ${SS0}`.nc $COMOUT/iceic$VDATE.$ENSMEM.$IDATE.nc
 	    status=$?
@@ -732,6 +744,7 @@ CICE_out()
 	  fi
 
 	done
+        fi
 }
 
 GSD_in()

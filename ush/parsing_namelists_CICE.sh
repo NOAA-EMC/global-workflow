@@ -11,7 +11,7 @@ cat > ice_in <<eof
   , dt             = $ICETIM
   , npt            = $npt
   , ndtd           = 1
-  , runtype        = $RUNTYPE 
+  , runtype        = '$RUNTYPE' 
   , runid          = 'cpcice' 
   , ice_ic         = '$iceic'
   , restart        = .true.
