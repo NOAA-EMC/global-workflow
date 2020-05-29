@@ -5,14 +5,13 @@ case:
 
   settings: 
     SDATE: 2013-04-01t00:00:00
-    EDATE: 2013-04-02t00:00:00
+    EDATE: 2013-04-01t00:00:00
 
     cplflx: .true.
     print_esmf: .true.
     nems_temp: 'med_atm_ocn_ice'
     nems_temp_cold: 'medcold_atm_ocn_ice'
     mom6ic_prepared: .true.
-#    cplflx: .false.
 
   nsst:
     NST_MODEL: 0
