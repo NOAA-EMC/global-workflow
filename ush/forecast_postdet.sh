@@ -606,7 +606,6 @@ MOM6_out()
 	      m_date=$($NDATE -$hh_inc_m $VDATE)
 	      p_date=$VDATE
 
-	      #TODO: Determine if this loop is needed  
 	      year=`echo $m_date | cut -c1-4`
 	      month=`echo $m_date | cut -c5-6`
 	      day=`echo $m_date | cut -c7-8`
@@ -618,6 +617,7 @@ MOM6_out()
 	      $NCP -p $ocnfile $COMOUT/ocn$p_date.$ENSMEM.$IDATE.nc
 	      status=$?
 	      [[ $status -ne 0 ]] && exit $status
+             
 	    fi
        
 	  done

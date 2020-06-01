@@ -28,6 +28,7 @@ platform: !Platform
   NWPROD: "/scratch1/NCEPDEV/global/glopara/svn/verif/global/tags/vsdb/nwprod"
   RTMFIX: "/scratch1/NCEPDEV/global/glopara/crtm/2.2.3/fix_update/"
   BASE_SVN: "/scratch1/NCEPDEV/global/glopara/svn"
+  ncks: "
 
   # BASE_GIT - a directory maintained by emc global model developers
   # that contains recent versions of source code and executables for
@@ -37,6 +38,8 @@ platform: !Platform
 
   #BASE_CPLIC - is the base directory of ICs for coupled s2s runs
   BASE_CPLIC: "/scratch2/NCEPDEV/climate/climpara/S2S/IC"
+  #ncks - NCO netcdf operator used in ocean post 
+  ncks: "/apps/nco/4.9.1/intel/18.0.5.274/bin/ncks"
 
   config_base_extras: !expand |
      echo "place holder for NWPROD and associated utilities, all except POSTGRB2TBL are going through load_gfs_modules.sh"

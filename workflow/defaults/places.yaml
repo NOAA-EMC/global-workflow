@@ -21,6 +21,8 @@ default_places: &default_places
 #  SHORT_TERM_TEMP: !error GOT HERE
 #  LONG_TERM_TEMP:  !error GOT HERE TOO
 
+  ncks: !calc doc.platform.ncks
+
   NOSCRUB: !FirstTrue
       - when: !calc doc.platform.get('NOSCRUB_DIR','')
         do: !calc doc.platform.NOSCRUB_DIR
