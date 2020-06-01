@@ -534,27 +534,45 @@
       if [ "$DOSPC_WAV" = 'YES' ]
       then
         export dtspec=3600.
+        if [ ${CFP_MP:-"NO"} = "YES" ]; then nm=0 ; fi # Counter for MP CFP
         for buoy in $buoys
         do
-          echo "$USHwave/wave_outp_spec.sh $buoy $ymdh spec > spec_$buoy.out 2>&1" >> ${fcmdnow}
+          if [ ${CFP_MP:-"NO"} = "YES" ]; then
+            echo "$nm $USHwave/wave_outp_spec.sh $buoy $ymdh spec > spec_$buoy.out 2>&1" >> ${fcmdnow}
+            nm=`expr $nm + 1`
+          else
+            echo "$USHwave/wave_outp_spec.sh $buoy $ymdh spec > spec_$buoy.out 2>&1" >> ${fcmdnow}
+          fi
         done
       fi
   
       if [ "$DOIBP_WAV" = 'YES' ]
       then
         export dtspec=3600.
+        if [ ${CFP_MP:-"NO"} = "YES" ]; then nm=0 ; fi # Counter for MP CFP
         for buoy in $ibpoints
         do
-          echo "$USHwave/wave_outp_spec.sh $buoy $ymdh ibp > ibp_$buoy.out 2>&1" >> ${fcmdnow}
+          if [ ${CFP_MP:-"NO"} = "YES" ]; then
+            echo "$nm $USHwave/wave_outp_spec.sh $buoy $ymdh ibp > ibp_$buoy.out 2>&1" >> ${fcmdnow}
+            nm=`expr $nm + 1`
+          else
+            echo "$USHwave/wave_outp_spec.sh $buoy $ymdh ibp > ibp_$buoy.out 2>&1" >> ${fcmdnow}
+          fi
         done
       fi
 
       if [ "$DOBLL_WAV" = 'YES' ]
       then
         export dtspec=3600.
+        if [ ${CFP_MP:-"NO"} = "YES" ]; then nm=0 ; fi # Counter for MP CFP
         for buoy in $buoys
         do
-          echo "$USHwave/wave_outp_spec.sh $buoy $ymdh bull > bull_$buoy.out 2>&1" >> ${fcmdnow}
+          if [ ${CFP_MP:-"NO"} = "YES" ]; then
+            echo "$nm $USHwave/wave_outp_spec.sh $buoy $ymdh bull > bull_$buoy.out 2>&1" >> ${fcmdnow}
+            nm=`expr $nm + 1`
+          else
+            echo "$USHwave/wave_outp_spec.sh $buoy $ymdh bull > bull_$buoy.out 2>&1" >> ${fcmdnow}
+          fi
         done
       fi
 
@@ -582,13 +600,18 @@
       if [ "$DOGRI_WAV" = 'YES' ]
       then
         nigrd=1
+        if [ ${CFP_MP:-"NO"} = "YES" ]; then nm=0 ; fi # Counter for MP CFP
         for grdID in $waveinterpGRD
         do
           case $grdID in
             glo_15mxt) ymdh_int=`$NDATE -${WAVHINDH} $ymdh`; dt_int=3600.; n_int=9999 ;;
             glo_30mxt) ymdh_int=`$NDATE -${WAVHINDH} $ymdh`; dt_int=3600.; n_int=9999 ;;
           esac
-          echo "$USHwave/wave_grid_interp_sbs.sh $grdID $ymdh_int $dt_int $n_int > grint_$grdID.out 2>&1" >> ${fcmdigrd}.${nigrd}
+          if [ ${CFP_MP:-"NO"} = "YES" ]; then
+            echo "$nm $USHwave/wave_grid_interp_sbs.sh $grdID $ymdh_int $dt_int $n_int > grint_$grdID.out 2>&1" >> ${fcmdigrd}.${nigrd}
+          else
+            echo "$USHwave/wave_grid_interp_sbs.sh $grdID $ymdh_int $dt_int $n_int > grint_$grdID.out 2>&1" >> ${fcmdigrd}.${nigrd}
+          fi
           if [ "$DOGRB_WAV" = 'YES' ]
           then
           gribFL=\'`echo ${OUTPARS_WAV}`\'
@@ -596,16 +619,22 @@
               glo_15mxt) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=11 ;;
               glo_30mxt) GRDNAME='global' ; GRDRES=0p50 ; GRIDNR=255  ; MODNR=11 ;;
             esac
-            echo "$USHwave/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDNAME $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdigrd}.${nigrd}
+            if [ ${CFP_MP:-"NO"} = "YES" ]; then
+              echo "$nm $USHwave/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDNAME $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdigrd}.${nigrd}
+            else
+              echo "$USHwave/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDNAME $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdigrd}.${nigrd}
+            fi
           fi
           echo "${fcmdigrd}.${nigrd}" >> ${fcmdnow}
           chmod 744 ${fcmdigrd}.${nigrd}
           nigrd=$((nigrd+1)) 
+          if [ ${CFP_MP:-"NO"} = "YES" ]; then nm=`expr $nm + 1` ; fi # Increment counter for fcmdigrd
         done
       fi
 
       if [ "$DOGRB_WAV" = 'YES' ]
       then
+        if [ ${CFP_MP:-"NO"} = "YES" ]; then nm=0 ; fi # Counter for MP CFP
         for grdID in ${wavepostGRD} # First concatenate grib files for sbs grids
         do
           gribFL=\'`echo ${OUTPARS_WAV}`\'
@@ -620,7 +649,12 @@
               so_20m) GRDNAME='antarc' ; GRDRES=0p33 ; GRIDNR=255  ; MODNR=11   ;;
               glo_15mxt) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=11   ;;
           esac
-          echo "$USHwave/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDNAME $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdnow}
+          if [ ${CFP_MP:-"NO"} = "YES" ]; then
+            echo "$nm $USHwave/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDNAME $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdnow}
+            nm=`expr $nm + 1`
+          else
+            echo "$USHwave/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDNAME $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdnow}
+          fi
         done
       fi
 
@@ -638,7 +672,11 @@
 
     if [ "$wavenproc" -gt '1' ]
     then
-      ${wavempexec} ${wavenproc} ${wave_mpmd} ${fcmdnow}
+      if [ ${CFP_MP:-"NO"} = "YES" ]; then
+        ${wavempexec} -n ${wavenproc} ${wave_mpmd} ${fcmdnow}
+      else
+        ${wavempexec} ${wavenproc} ${wave_mpmd} ${fcmdnow}
+      fi
       exit=$?
     else
       chmod 744 ${fcmdnow}
@@ -702,13 +740,23 @@
 
   if [ "$DOIBP_WAV" = 'YES' ]
   then
-    echo "$USHwave/wave_tar.sh $WAV_MOD_TAG ibp $Nibp > ${WAV_MOD_TAG}_ibp_tar.out 2>&1 "   >> cmdtarfile
+    if [ ${CFP_MP:-"NO"} = "YES" ]; then
+      echo "0 $USHwave/wave_tar.sh $WAV_MOD_TAG ibp $Nibp > ${WAV_MOD_TAG}_ibp_tar.out 2>&1 "   >> cmdtarfile
+    else
+      echo "$USHwave/wave_tar.sh $WAV_MOD_TAG ibp $Nibp > ${WAV_MOD_TAG}_ibp_tar.out 2>&1 "   >> cmdtarfile
+    fi
   fi
   if [ "$DOSPC_WAV" = 'YES' ]
   then
-    echo "$USHwave/wave_tar.sh $WAV_MOD_TAG spec $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
-    echo "$USHwave/wave_tar.sh $WAV_MOD_TAG bull $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
-    echo "$USHwave/wave_tar.sh $WAV_MOD_TAG cbull $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
+    if [ ${CFP_MP:-"NO"} = "YES" ]; then
+      echo "1 $USHwave/wave_tar.sh $WAV_MOD_TAG spec $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
+      echo "2 $USHwave/wave_tar.sh $WAV_MOD_TAG bull $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
+      echo "3 $USHwave/wave_tar.sh $WAV_MOD_TAG cbull $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
+    else
+      echo "$USHwave/wave_tar.sh $WAV_MOD_TAG spec $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
+      echo "$USHwave/wave_tar.sh $WAV_MOD_TAG bull $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
+      echo "$USHwave/wave_tar.sh $WAV_MOD_TAG cbull $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
+    fi
   fi
 
     wavenproc=`wc -l cmdtarfile | awk '{print $1}'`
@@ -723,7 +771,11 @@
 
     if [ "$wavenproc" -gt '1' ]
     then
-      ${wavempexec} ${wavenproc} ${wave_mpmd} cmdtarfile
+      if [ ${CFP_MP:-"NO"} = "YES" ]; then
+        ${wavempexec} -n ${wavenproc} ${wave_mpmd} cmdtarfile
+      else
+        ${wavempexec} ${wavenproc} ${wave_mpmd} cmdtarfile
+      fi
       exit=$?
     else
       chmod 744 cmdtarfile

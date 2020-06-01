@@ -129,7 +129,11 @@
       fi
 
       [[ ! -d $COMOUT/rundata ]] && mkdir -m 775 -p $COMOUT/rundata
-      echo "$USHwave/wave_grid_moddef.sh $grdID > $grdID.out 2>&1" >> cmdfile
+      if [ ${CFP_MP:-"NO"} = "YES" ]; then
+        echo "$nmoddef $USHwave/wave_grid_moddef.sh $grdID > $grdID.out 2>&1" >> cmdfile
+      else
+        echo "$USHwave/wave_grid_moddef.sh $grdID > $grdID.out 2>&1" >> cmdfile
+      fi
 
       nmoddef=`expr $nmoddef + 1`
 
@@ -162,7 +166,11 @@
   
     if [ "$NTASKS" -gt '1' ]
     then
-      ${wavempexec} ${wavenproc} ${wave_mpmd} cmdfile
+      if [ ${CFP_MP:-"NO"} = "YES" ]; then
+        ${wavempexec} -n ${wavenproc} ${wave_mpmd} cmdfile
+      else
+        ${wavempexec} ${wavenproc} ${wave_mpmd} cmdfile
+      fi
       exit=$?
     else
       ./cmdfile
