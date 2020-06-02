@@ -152,17 +152,36 @@ fi
 
 cd $ROTDIR
 
-if [ $cpl = ".true." ]; then
+if [ $cplflx = ".true." ]; then
 # ocn and ice files
-    for targrp in ocn ocn2 ice SST; do
-        htar -P -cvf $ATARDIR/$CDATE/${targrp}.tar `cat $ARCH_LIST/${targrp}.txt`
-    done
-    for targrp in gfs_flux_1p00 gfs_pgrb2b; do
+    echo "current location is $ROTDIR"
+    echo `date`
+    echo "starting gzip netcdf files, this will take a while ......"
+    gzip $COMIN/ocn_2D*nc $COMIN/ice*nc $COMIN/ocn_daily*nc
+    echo `date`
+    echo "gzip done !"
+    for targrp in ocn ocn_2D ocn_3D ocn_xsect ice ocn_daily log wavocn wave; do
         htar -P -cvf $ATARDIR/$CDATE/${targrp}.tar `cat $ARCH_LIST/${targrp}.txt`
     done
 fi
 
 if [ $CDUMP = "gfs" ]; then
+  if [ $cplflx = ".true." ]; then
+    #Reorganize tar files 
+
+    htar -P -cvf $ATARDIR/$CDATE/gfs_pgrb2_0p25.tar `cat $ARCH_LIST/gfsa.txt`
+    htar -P -cvf $ATARDIR/$CDATE/gfs_pgrb2_1p00.tar `cat $ARCH_LIST/gfsb.txt`
+
+    for targrp in gfs_nemsioa gfs_nemsiob gfs_flux gfs_flux_1p00 gfs_pgrb2_1p00 gfs_pgrb2_0p25 gfs_pgrb2b_1p00 gfs_pgrb2b_0p25; do
+        htar -P -cvf $ATARDIR/$CDATE/${targrp}.tar `cat $ARCH_LIST/${targrp}.txt`
+        status=$?
+        if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
+            echo "HTAR $CDATE ${targrp}.tar failed"
+            exit $status
+        fi
+    done
+
+  else #leave as is
 
     #for targrp in gfsa gfsb - NOTE - do not check htar error status
     for targrp in gfsa gfsb; do
@@ -178,7 +197,8 @@ if [ $CDUMP = "gfs" ]; then
             exit $status
         fi
     done
-    
+  fi 
+  
     if [ $SAVEFCSTIC = "YES" ]; then
         htar -P -cvf $ATARDIR/$CDATE/gfs_restarta.tar `cat $ARCH_LIST/gfs_restarta.txt`
         status=$?

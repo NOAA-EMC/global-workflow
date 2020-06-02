@@ -203,6 +203,14 @@ cat >> input.nml <<EOF
   imp_physics  = ${imp_physics:-"99"}	! CROW configured
 EOF
 
+
+if [ $CCPP_SUITE = "FV3_GFS_v15p2_coupled" ]; then
+  cat >> input.nml << EOF
+  oz_phys      = .false.
+  oz_phys_2015 = .true.
+EOF
+fi
+
 if [ $CCPP_SUITE = "FV3_GSD_v0" ]; then
   cat >> input.nml << EOF
   ltaerosol    = ${ltaerosol:-".F."}    ! In config.fcst

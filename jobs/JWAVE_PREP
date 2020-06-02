@@ -30,7 +30,6 @@ export RUN=${RUN:-gfs}
 # Add default errchk = err_chk
 export errchk=${errchk:-err_chk}
 
-# Create and go to DATA directory
 mkdir -p $DATA
 cd $DATA
 

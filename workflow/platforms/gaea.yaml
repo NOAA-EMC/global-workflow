@@ -51,6 +51,11 @@ platform: !Platform
   # executables for this workflow.
   BASE_GIT: "/dev/null/global/save/glopara/git"
 
+  #BASE_CPLIC - is the base directory of ICs for coupled s2s runs
+  BASE_CPLIC: "/path/to/base/dir/of/IC"
+  #ncks - NCO netcdf operator used in ocean post 
+  ncks: "/path/to/ncks" 
+  
   # rocoto_platform_vars - additional variables sent to the rocoto xml
   # file for each job to set platform-specific batch card settings.
   rocoto_platform_vars: |

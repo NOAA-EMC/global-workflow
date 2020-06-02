@@ -15,7 +15,10 @@ sh build_ncep_post.sh        #This command will build ncep_post.
 sh build_fv3_coupled.sh      #This command will build ufs-s2s-model
 
 To link fixed files and executable programs for the coupled application:
+On Hera: 
 sh link_fv3gfs.sh emc hera coupled
+On Orion: 
+sh link_fv3gfs.sh emc orion coupled
 ```
 
 ## Create CROW user file
@@ -56,6 +59,15 @@ mkdir -p $EXPROOT
 or
 
 ./setup_case.sh -p HERA ../cases/coupled_free_forecast.yaml test_3d
+
+
+For Orion: 
+First make sure you have python loaded: 
+module load contrib
+module load rocoto
+module load intelpython3
+and then replace ORION with HERA in the commands above. 
+
 ```
 This will create a experiment directory ($EXPERIMENT_DIRECTORY). In the current example, $EXPERIMENT_DIRECTORY=$EXPROOT/test_3d.
 
