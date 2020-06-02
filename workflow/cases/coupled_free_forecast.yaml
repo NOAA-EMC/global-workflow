@@ -12,7 +12,7 @@ case:
     nems_temp: 'med_atm_ocn_ice'
     nems_temp_cold: 'medcold_atm_ocn_ice'
     mom6ic_prepared: .false.
-    KEEPDATA: No
+    KEEPDATA: NO
 
   nsst:
     NST_MODEL: 0

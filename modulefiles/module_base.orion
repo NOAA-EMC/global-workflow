@@ -42,6 +42,11 @@ module load netcdfp/4.7.4
 module load esmflocal/8.0.0.para
 module load post-intel-sandybridge/8.0.5
 
+
+module load netcdf_parallel/4.7.4
+module load hdf5_parallel/1.10.6
+module load wgrib/2.0.8
+module load grib_util/1.2.0
 ##
 ### load cmake
 ###
