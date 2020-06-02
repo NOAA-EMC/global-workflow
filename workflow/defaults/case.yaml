@@ -17,6 +17,13 @@ ice_settings: !Immediate
     - !calc doc.ice_defaults
     - !calc doc.case.get('ice_settings',{})
 
+wave_settings: !Immediate
+  - !MergeMapping
+    - CDUMP: gfs
+      Template: *wave_settings_template
+    - !calc doc.wave_defaults
+    - !calc doc.case.get('wave_settings',{})
+
 schedvar: !Immediate
   - !MergeMapping
     - !calc doc.case.get('schedvar',{})

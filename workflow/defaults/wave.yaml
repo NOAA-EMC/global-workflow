@@ -1,0 +1,4 @@
+wave_defaults: &wave_defaults
+   waveGRD: 'glo_10m aoc_9km ant_9km'
+   waveGRDN: '1 2 3'
+   waveGRDG: '10 20 30'

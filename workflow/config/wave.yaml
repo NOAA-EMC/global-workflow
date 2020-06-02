@@ -12,8 +12,8 @@ config_wave:
       export DATA=${DATA:-${DATAROOT:?}/${jobid}}
       
       # Grids for wave model
-      export waveGRD='glo_10m aoc_9km ant_9km'
-      export waveGRDN='1 2 3' # gridnumber for ww3_multi
+      export waveGRD='{doc.wave_settings.waveGRD}'
+      export waveGRDN='{doc.wave_settings.waveGRDN}' # gridnumber for ww3_multi
       export waveGRDG='10 20 30' # gridgroup for ww3_multi
       
       # ESMF input grid
