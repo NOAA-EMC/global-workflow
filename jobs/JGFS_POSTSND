@@ -53,7 +53,7 @@ setpdy.sh
 ##############################
 # Define COM Directories
 ##############################
-export COMIN=$COMROOT/${NET}/prod/${RUN}.${PDY}/${cyc} #AJWR 17 Apr 2020: $envir->prod; removed COMIN as default because of ver file hard set
+export COMIN=${COMIN:-$COMROOT/${NET}/${envir}/${RUN}.${PDY}/${cyc}}
 export COMOUT=${COMOUT:-$COMROOT/${NET}/${envir}/${RUN}.${PDY}/${cyc}}
 export pcom=${pcom:-${COMOUT}/wmo}
 export COMAWP=${COMAWP:-${COMOUT}/gempak}

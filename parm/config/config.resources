@@ -96,11 +96,11 @@ elif [ $step = "eobs" -o $step = "eomg" ]; then
 
     export wtime_eobs="00:30:00"
     export wtime_eomg="01:00:00"
-    export npe_eobs=140
-    export nth_eobs=2
+    export npe_eobs=308
+    export nth_eobs=1
     export npe_node_eobs=12
     if [[ "$machine" = "WCOSS_DELL_P3" ]]; then
-        export npe_node_eobs=14
+        export npe_node_eobs=28
     fi
     if [[ "$machine" == "WCOSS_C" ]]; then
         export memory_eobs="3072M"

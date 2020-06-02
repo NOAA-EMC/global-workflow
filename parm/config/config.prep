@@ -23,4 +23,6 @@ export EXECRELO=${HOMERELO}/exec
 export FIXRELO=${HOMERELO}/fix/fix_am
 export USHRELO=${HOMERELO}/ush
 
+export dictionaries_ver=v3.3.0
+
 echo "END: config.prep"
