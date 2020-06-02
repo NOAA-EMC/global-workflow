@@ -106,7 +106,7 @@ elif [ $machine = WCOSS_DELL_P3 ]; then
  # module load ips/18.0.1.163             2>>/dev/null
  # module load impi/18.0.1                2>>/dev/null
  # module load prod_util/1.1.0            2>>/dev/null
- # module load prod_envir/1.1.0           2>>/dev/null
+ # module load prod_envir/1.0.2           2>>/dev/null
  # module load HPSS/5.0.2.5               2>>/dev/null
  # module load NetCDF/4.5.0               2>>/dev/null
  # module load HDF5-serial/1.10.1         2>>/dev/null

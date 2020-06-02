@@ -100,7 +100,7 @@ export JYYYY=`echo ${PDY} | cut -c1-4`
 #export COMOUTgenvit=${COMOUTgenvit:-${COMOUT}/genesis_vital_${JYYYY}}
 export COMINgenvit=${COMINgenvit:-${DATA}/genesis_vital_${JYYYY}}
 export COMOUTgenvit=${COMOUTgenvit:-${DATA}/genesis_vital_${JYYYY}}
-export COMINsyn=${COMINsyn:-$(compath.py gfs/prod/syndat)}
+export COMINsyn=${COMINsyn:-$(compath.py arch/prod/syndat)}
 
 mkdir -m 775 -p $COMOUTgenvit
 
