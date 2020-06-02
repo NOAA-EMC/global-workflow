@@ -1,0 +1,53 @@
+case:
+  places:
+    workflow_file: layout/free_forecast_gfs.yaml
+    MOM6IC: /scratch1/NCEPDEV/nems/Bin.Li/S2S/FROM_HPSS
+
+  settings: 
+    SDATE: 2013-04-01t00:00:00
+    EDATE: 2013-04-02t00:00:00
+
+    cplwav: .false.
+    cplwav2atm: .false.
+    cplflx: .true.
+    print_esmf: .true.
+    nems_temp: 'med_atm_ocn_ice'
+    nems_temp_cold: 'medcold_atm_ocn_ice'
+    mom6ic_prepared: .true.
+#    cplflx: .false.
+
+  nsst:
+    NST_MODEL: 0
+
+  output_settings:
+    OCN_INTERVAL: 24
+    FHOUT_GFS: 6
+    FHMIN_GFS: 0
+    FHMAX_GFS: 840
+    FHMAX_HF_GFS: 0
+    FHOUT_HF_GFS: -1
+
+  fv3_gfs_settings:
+    CASE: C384
+    LEVS: 65
+    DELTIM: 450
+    SEEDLET: 10
+    CCPP_SUITE: S2S
+    nst_anl: no
+    DO_SKEB: false
+    DO_SHUM: false
+    DO_SPPT: false
+    layout:
+       x: 6
+       y: 8
+       nth: 2
+       WGRP: 1
+       WGRP_NTASKS: 24
+       WRTIOBUF: "32M"
+    OCNPETS: 120
+    ICEPETS: 48
+    cdmbgwd: "1.0,1.2"
+
+  post:
+    downset: 2
+    GOESF: no

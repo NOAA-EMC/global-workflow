@@ -1,0 +1,75 @@
+#!/bin/bash
+
+date
+export PS4=' $SECONDS + '
+set -x -e
+
+#############################
+# Source relevant config files
+#############################
+configs="base wave wavepostsbs"
+export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
+config_path=${EXPDIR:-$NWROOT/gfs.${gfs_ver}/parm/config}
+for config in $configs; do
+    . $config_path/config.$config
+    status=$?
+    [[ $status -ne 0 ]] && exit $status
+done
+
+##########################################
+# Source machine runtime environment
+##########################################
+. $HOMEgfs/env/${machine}.env wavepostsbs
+status=$?
+[[ $status -ne 0 ]] && exit $status
+
+# PATH for working directory
+export NET=${NET:-gfs}
+export RUN=${RUN:-gfs}
+
+# Add default errchk = err_chk
+export errchk=${errchk:-err_chk}
+
+mkdir -p $DATA
+cd $DATA
+
+# Set PDY
+setpdy.sh
+sh ./PDY
+
+export pgmout=OUTPUT.$$
+
+mkdir -p $COMOUT/gridded
+mkdir -p $COMOUT/station
+mkdir -p $COMOUT/stats
+
+env | sort
+
+# Set wave model ID tag to include member number 
+# if ensemble; waveMEMB var empty in deterministic
+# Set wave model ID tag to include member number
+# if ensemble; waveMEMB var empty in deterministic
+export membTAG='p'
+if [ "${waveMEMB}" == "00" ]; then membTAG='c'; fi
+export membTAG
+export WAV_MOD_TAG=${COMPONENTwave}${waveMEMB}
+
+export CFP_VERBOSE=1
+
+# Execute the Script  
+$HOMEwave/scripts/exwave_post_sbs.sh
+err=$?
+if [ $err -ne 0 ]; then
+  msg="FATAL ERROR: ex-script of GWES_POST failed!"
+else
+  msg="$job completed normally!"
+fi
+postmsg "$jlogfile" "$msg"
+
+# Remove temp directories
+if [ "$KEEPDATA" != "YES" ]; then
+  cd $DATAROOT
+  rm -rf $DATA
+fi
+date
+

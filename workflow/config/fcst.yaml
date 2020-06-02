@@ -5,7 +5,9 @@
 config_fcst:
   filename: config.fcst
   FCSTEXEC: !FirstTrue
-    - when: !calc doc.settings.cplflx==".true."
+    - when: !calc doc.settings.cplflx and doc.settings.cplwav
+      do: "nems_fv3_mom6_cice5_ww3.x"
+    - when: !calc doc.settings.cplflx and not doc.settings.cplwav
       do: "nems_fv3_mom6_cice5.x"
     - otherwise: "global_fv3gfs.x"
   more_exports_for_microphys: !FirstTrue

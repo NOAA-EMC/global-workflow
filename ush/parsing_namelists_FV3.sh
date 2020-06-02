@@ -216,6 +216,13 @@ if [ $CCPP_SUITE = "FV3_GSD_v0" ]; then
   bl_mynn_tkeadvect=${bl_mynn_tkeadvect:-".true."}	! In config.fcst
   bl_mynn_edmf_mom=${bl_mynn_edmf_mom:-"1"}	! In config.fcst
 EOF
+elif [ $CCPP_SUITE = "S2S" ]; then
+  cat >> input.nml << EOF
+  oz_phys      = ${oz_phys}             ! In config.fcst
+  oz_phys_2015 = ${oz_phys_2015}        ! In config.fcst
+  cplwav       = ${cplwav}              ! CROW configured
+  cplwav2atm   = ${cplwav2atm}          ! CROW configured
+EOF 
 fi
 
 cat >> input.nml <<EOF
@@ -352,7 +359,7 @@ cat >> input.nml <<EOF
   icloud_f = 1
   mp_time = 150.
 EOF
-if [ $cplflx = .true. ]; then
+if [ $cplflx = .true. -a $CCPP_SUITE = GFS ]; then
   cat >> input.nml << EOF
   reiflag = ${reiflag:-"1"}
 EOF

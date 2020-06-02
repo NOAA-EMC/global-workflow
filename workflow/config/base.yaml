@@ -10,6 +10,8 @@ config_base:
       do: .true.
     - when: !calc doc.settings.cplice==".true."
       do: .true.
+    - when: !calc doc.settings.cplwav==".true."
+      do: .true.
     - otherwise: .false.
   content: !expand |
     #!/bin/ksh -x
@@ -29,6 +31,8 @@ config_base:
     export cpl="{cpl}"
     export cplflx="{doc.settings.cplflx}"
     export cplice="{doc.settings.cplice}"
+    export cplwav="{doc.settings.cplwav}"
+    export cplwav2atm="{doc.settings.cplwav2atm}"
     export print_esmf="{doc.settings.print_esmf}"
 
     export nems_temp="{doc.settings.nems_temp}"
