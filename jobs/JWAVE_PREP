@@ -91,9 +91,6 @@ else
   if [ ! -L $ROTDIR/${WAVECUR_DID}.${RPDY} ]; then # Check if symlink already exists in ROTDIR
     $NLN $DMPDIR/${WAVECUR_DID}.${RPDY} $ROTDIR/${WAVECUR_DID}.${RPDY}
   fi
-
-    ls -l $DMPDIR/$CDUMP.${PDY}/$cyc/${WAVICEFILE} 
-    ls -l $ROTDIR/$CDUMP.${PDY}/$cyc/${WAVICEFILE}
   if [ ! -L $ROTDIR/${CDUMP}.${PDY}/${cyc}/${WAVICEFILE} ]; then # Check if symlink already exists in ROTDIR
     $NLN $DMPDIR/$CDUMP.${PDY}/$cyc/${WAVICEFILE} $ROTDIR/$CDUMP.${PDY}/$cyc/${WAVICEFILE}
   fi
