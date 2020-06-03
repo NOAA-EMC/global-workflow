@@ -52,11 +52,30 @@ suite: !Cycle
     RUN: 'gfs'
     ecflow_def: "edit RUN 'gfs'"
 
+    prep: !Family
+
+      waveinit: !Task
+        <<: *exclusive_task_template
+        Disable: !calc doc.settings.cplwav=='.false.'
+        Trigger: !Depend up.up.ics.jgfs_emc_mom6ic
+        resources: !calc partition.resources.run_prep
+        J_JOB: rocoto/waveinit.sh
+
+      waveprep: !Task
+        <<: *exclusive_task_template
+        Disable: !calc doc.settings.cplwav=='.false.'
+        Trigger: !Depend waveinit
+        resources: !calc partition.resources.run_prep
+        J_JOB: rocoto/waveprep.sh
+
     forecast: !Family
       medcold: !Task
         <<: *exclusive_task_template
         Disable: !calc doc.settings.cplflx=='.false.'
-        Trigger: !Depend up.up.ics.jgfs_emc_mom6ic
+        Trigger: !FirstTrue
+           - when: !calc doc.settings.cplwav=='.true.'
+             do: !Depend up.prep
+           - otherwise: !Depend up.up.ics.jgfs_emc_mom6ic
         resources_remap: !JobRequest [ { <<: *remap_resource_template } ]
         resources: !calc partition.resources.run_coupled_medcold
         J_JOB: JGLOBAL_FORECAST_MEDCOLD

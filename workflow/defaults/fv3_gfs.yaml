@@ -162,3 +162,7 @@ fv3_gfs_defaults: &fv3_gfs_defaults
     - otherwise: !calc layout.x * layout.y * 6
   OCNPETS: 120
   ICEPETS: 48
+  WAVPETS: !FirstTrue
+    - when: !calc doc.settings.cplwav
+      do: 24
+    - otherwise: 0

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -x
+
 date
 export PS4=' $SECONDS + '
 set -x -e
@@ -27,9 +29,12 @@ status=$?
 export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
 
+export COMPONENTwave=${COMPONENTwave:-${RUN}wave}
+
 # Add default errchk = err_chk
 export errchk=${errchk:-err_chk}
 
+export DATA=${DATA:-${DATAROOT}/${jobid:?}}
 mkdir -p $DATA
 cd $DATA
 
@@ -44,7 +49,31 @@ export RPDY=$PDY
 
 export pgmout=OUTPUT.$$
 
+export COMINwave=${COMINwave:-${ROTDIR:?}}
+export COMOUTwave=${COMOUTwave:-${ROTDIR:?}}
+export COMIN=${COMIN:-${COMINwave}/${COMPONENTwave}.${PDY}/${cyc}}
+export COMOUT=${COMOUT:-${COMOUTwave}/${COMPONENTwave}.${PDY}/${cyc}}
 [[ ! -d $COMOUT ]] && mkdir -m 775 -p $COMOUT
+
+if [ $RUN_ENVIR = "nco" ]; then
+  export COMIN_WAV_ICE=${COMIN_WAV_ICE:-$(compath.py gfs/prod)}/${CDUMP}.${PDY}/${cyc}
+  export COMIN_WAV_WND=${COMIN_WAV_WND:-$(compath.py gfs/prod)}/${CDUMP}.${PDY}/${cyc}
+  export COMIN_WAV_CUR=${COMIN_WAV_CUR:-$(compath.py ${WAVECUR_DID}/prod)}/${WAVECUR_DID}.${RPDY}
+  if [ ! -d $COMIN_WAV_CUR ]; then
+    export RPDY=`$NDATE -24 ${PDY}00 | cut -c1-8`
+    export COMIN_WAV_CUR=$(compath.py ${WAVECUR_DID}/prod)/${WAVECUR_DID}.${RPDY}
+  fi
+else
+  if [ ! -d $DMPDIR/${WAVECUR_DID}.${RPDY} ]; then export RPDY=`$NDATE -24 ${PDY}00 | cut -c1-8`; fi
+  if [ ! -L $ROTDIR/${WAVECUR_DID}.${RPDY} ]; then # Check if symlink already exists in ROTDIR
+    $NLN $DMPDIR/${WAVECUR_DID}.${RPDY} $ROTDIR/${WAVECUR_DID}.${RPDY}
+  fi
+  $NLN $DMPDIR/$CDUMP.${PDY}/$cyc/${WAVICEFILE} $ROTDIR/$CDUMP.${PDY}/$cyc/${WAVICEFILE}
+  export COMIN_OBS=${COMIN_OBS:-$ROTDIR/$RUN.$PDY/$cyc}
+  export COMIN_WAV_ICE=${COMIN_OBS}
+  export COMIN_WAV_WND=${COMIN_OBS}
+  export COMIN_WAV_CUR=${ROTDIR}/${WAVECUR_DID}.${RPDY}
+fi
 
 if [ $SENDCOM = YES ]; then
   mkdir -p $COMOUT
@@ -59,4 +88,4 @@ if [ "$KEEPDATA" != "YES" ]; then
   rm -rf $DATA
 fi
 date
-
+exit 0

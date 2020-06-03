@@ -58,6 +58,7 @@ output_settings: !Immediate
   - !MergeMapping
     - Template: *output_settings_template
     - !calc doc.output_settings_defaults
+    - !calc doc.wave_output_settings_defaults
     - !calc doc.case.get('output_settings',{})
     - !calc doc.get('user_output_settings',{})
 

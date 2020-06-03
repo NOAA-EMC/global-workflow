@@ -7,7 +7,7 @@ set -x -e
 #############################
 # Source relevant config files
 #############################
-configs="base wave waveinit"
+configs="base wave"
 export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
 config_path=${EXPDIR:-$NWROOT/gfs.${gfs_ver}/parm/config}
 for config in $configs; do
@@ -27,9 +27,12 @@ status=$?
 export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
 
+export COMPONENTwave=${COMPONENTwave:-${RUN}wave}
+
 # Add default errchk = err_chk
 export errchk=${errchk:-err_chk}
 
+export DATA=${DATA:-${DATAROOT}/${jobid:?}}
 mkdir -p $DATA
 cd $DATA
 
@@ -41,6 +44,11 @@ setpdy.sh
 sh ./PDY
 
 export pgmout=OUTPUT.$$
+
+export COMINwave=${COMINwave:-${ROTDIR:?}}
+export COMOUTwave=${COMOUTwave:-${ROTDIR:?}}
+export COMIN=${COMIN:-${COMINwave}/${COMPONENTwave}.${PDY}/${cyc}}
+export COMOUT=${COMOUT:-${COMOUTwave}/${COMPONENTwave}.${PDY}/${cyc}}
 
 [[ ! -d $COMOUT ]] && mkdir -m 775 -p $COMOUT
 

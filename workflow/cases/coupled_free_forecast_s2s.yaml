@@ -7,13 +7,13 @@ case:
     SDATE: 2013-04-01t00:00:00
     EDATE: 2013-04-02t00:00:00
 
-    cplwav: .false.
-    cplwav2atm: .false.
+    cplwav: .true.
+    cplwav2atm: .true.
     cplflx: .true.
     print_esmf: .true.
-    nems_temp: 'med_atm_ocn_ice'
-    nems_temp_cold: 'medcold_atm_ocn_ice'
-    mom6ic_prepared: .true.
+    nems_temp: 'med_atm_ocn_ice_wav'
+    nems_temp_cold: 'med_atm_ocn_ice_wav'
+    mom6ic_prepared: .false.
 #    cplflx: .false.
 
   nsst:
@@ -23,7 +23,7 @@ case:
     OCN_INTERVAL: 24
     FHOUT_GFS: 6
     FHMIN_GFS: 0
-    FHMAX_GFS: 840
+    FHMAX_GFS: 120
     FHMAX_HF_GFS: 0
     FHOUT_HF_GFS: -1
 
