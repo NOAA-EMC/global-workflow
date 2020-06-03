@@ -1,7 +1,7 @@
 case:
   places:
     workflow_file: layout/free_forecast_gfs.yaml
-    MOM6IC: /scratch1/NCEPDEV/nems/Bin.Li/S2S/FROM_HPSS
+    #BASE_CPLIC: /scratch2/NCEPDEV/climate/climpara/S2S/IC
 
   settings: 
     SDATE: 2013-04-01t00:00:00
@@ -32,7 +32,7 @@ case:
     LEVS: 65
     DELTIM: 450
     SEEDLET: 10
-    CCPP_SUITE: S2S
+    CCPP_SUITE: FV3_GFS_v15p2_coupled
     nst_anl: no
     DO_SKEB: false
     DO_SHUM: false
