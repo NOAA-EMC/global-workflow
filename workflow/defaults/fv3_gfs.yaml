@@ -2,7 +2,7 @@ fv3_gfs_defaults: &fv3_gfs_defaults
   CDUMP: gfs
   CASE: C384
   LEVS: 65
-  CCPP_SUITE: GFS
+  CCPP_SUITE: IPD
   FHCYC: 24
   FHCYC_GDAS: 1
   FHCYC_GFS: 24
