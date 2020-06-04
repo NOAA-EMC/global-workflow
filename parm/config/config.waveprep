@@ -32,8 +32,8 @@ export WAV_WND_HOUR_INC=1      # This value should match with the one used in
                          # the wind update script
 # Intake currents settings
 export WAV_CUR_DT=${WAV_CUR_DT:-3}
-export WAV_CUR_HF_DT=${WAV_CUR_HF_DT:-3}
-export WAV_CUR_HF_FH=${WAV_CUR_HF_FH:-72}
+export WAV_CUR_HF_DT=${WAV_CUR_HF_DT:-3} # Defaults to 3h for GEFSv12
+export WAV_CUR_HF_FH=${WAV_CUR_HF_FH:-0} # Constant DT for GFSv16 from getgo
 export WAV_CUR_CDO_SMOOTH="NO"
 
 # Location of CDO module
