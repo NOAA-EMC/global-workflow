@@ -8,6 +8,4 @@ echo "BEGIN: config.ediag"
 # Get task specific resources
 . $EXPDIR/config.resources ediag
 
-export ANALDIAGSH="$HOMEgfs/scripts/exglobal_analdiag_fv3gfs.sh.ecf"
-
 echo "END: config.ediag"

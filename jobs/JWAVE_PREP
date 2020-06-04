@@ -91,7 +91,9 @@ else
   if [ ! -L $ROTDIR/${WAVECUR_DID}.${RPDY} ]; then # Check if symlink already exists in ROTDIR
     $NLN $DMPDIR/${WAVECUR_DID}.${RPDY} $ROTDIR/${WAVECUR_DID}.${RPDY}
   fi
-  $NLN $DMPDIR/$CDUMP.${PDY}/$cyc/${WAVICEFILE} $ROTDIR/$CDUMP.${PDY}/$cyc/${WAVICEFILE}
+  if [ ! -L $ROTDIR/${CDUMP}.${PDY}/${cyc}/${WAVICEFILE} ]; then # Check if symlink already exists in ROTDIR
+    $NLN $DMPDIR/$CDUMP.${PDY}/$cyc/${WAVICEFILE} $ROTDIR/$CDUMP.${PDY}/$cyc/${WAVICEFILE}
+  fi
   export COMIN_OBS=${COMIN_OBS:-$ROTDIR/$RUN.$PDY/$cyc}
   export COMIN_WAV_ICE=${COMIN_OBS}
   export COMIN_WAV_WND=${COMIN_OBS}

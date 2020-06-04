@@ -25,3 +25,6 @@ module load prod_util/1.1.0
 # python
 module use -a /contrib/modulefiles
 module load anaconda/2.3.0
+
+# waveprep
+module load cdo/1.9.5
