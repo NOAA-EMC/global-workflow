@@ -1,6 +1,6 @@
       subroutine meteorg(npoint,rlat,rlon,istat,cstat,elevstn,
      &             nf,nfile,fnsig,jdate,idate,
-     &       levso,levs,im,jm,kdim,
+     &       levs,im,jm,kdim,
      &       landwater,nend1,nint1,nint3,iidum,jjdum,
      &       fformat,iocomms,iope,ionproc)
 
@@ -31,8 +31,10 @@
 !   2018-03-27  GUANG PING LOU CHANGE STATION ELEVATION CORRECTION LAPSE RATE FROM 0.01 TO 0.0065
 !   2018-03-28  GUANG PING LOU GENERALIZE TIME INTERVAL 
 !   2019-07-08  GUANG PING LOU ADDED STATION CHARACTER IDS
-!   2019-10-08  GUANG PING LOU MODIFY TO READ IN NetCDF FILES. REMOVE NEMSIO
+!   2019-10-08  GUANG PING LOU MODIFY TO READ IN NetCDF FILES. RETAIN NEMSIO
 !                              RELATED CALLS AND CLEAN UP THE CODE.
+!   2020-04-24  GUANG PING LOU Clean up code and remove station height
+!                              adjustment
 !
 ! USAGE:    CALL PROGRAM meteorg
 !   INPUT:
@@ -44,7 +46,6 @@
 !     nf               - forecast cycle         
 !     fnsig            - sigma file name        
 !     idate(4)         - date                   
-!     levso            - output vertical layers
 !     levs             - input vertical layers
 !     kdim             - sfc file dimension         
 !
@@ -68,7 +69,7 @@
       type(nemsio_gfile) :: gfile
       type(nemsio_gfile) :: ffile
       type(nemsio_gfile) :: ffile2
-      integer :: nfile,npoint,levso,levs,kdim
+      integer :: nfile,npoint,levs,kdim
       integer :: nfile1
       integer :: i,j,im,jm,kk,idum,jdum,idvc,idsl
 !     idsl              Integer(sigio_intkind) semi-lagrangian id
@@ -78,36 +79,32 @@
       integer :: idate(4),nij,nflx,np,k,l,nf,nfhour,np1
       integer :: idate_nems(7)
       integer :: iret,jdate,leveta,lm,lp1
-      integer :: ie,iw,jn,js
       character*150 :: fnsig,fngrib
-      real*8 :: data(6*levso+25)
+      real*8 :: data(6*levs+25)
       real*8 :: rstat1
       character*8 :: cstat1
       character*4 :: cstat(npoint)
-      real :: fhour,pp,ppn,qs,qsn,esn,es,psfc,ppi,dtemp,iwx,nd
-      real :: t,q,u,v,td,tlcl,plcl,qw,tw,xlat,xlon,iossil
-      real :: dx,dy
+      real :: fhour,pp,ppn,qs,qsn,esn,es,psfc,ppi,dtemp,nd
+      real :: t,q,u,v,td,tlcl,plcl,qw,tw,xlat,xlon
       integer,dimension(npoint):: landwater
       integer,dimension(im,jm):: lwmask
       real,dimension(im,jm)::  apcp, cpcp
-      real,dimension(npoint,2+levso*3):: grids,gridsi
+      real,dimension(npoint,2+levs*3):: grids
       real,dimension(npoint) :: rlat,rlon,pmsl,ps,psn,elevstn
       real,dimension(im*jm) :: dum1d,dum1d2
       real,dimension(im,jm) :: gdlat, hgt, gdlon
       real,dimension(im,jm,15) :: dum2d
       real,dimension(im,jm,levs) :: t3d, q3d, uh, vh,omega3d
-      real,dimension(im,jm,levs) :: delp,delz,dummy3d
+      real,dimension(im,jm,levs) :: delpz
       real,dimension(im,jm,levs+1) :: pint, zint
-      real,dimension(npoint,levso) :: gridu,gridv,omega,qnew,zp
-      real,dimension(npoint):: gradx, grady
-      real,dimension(npoint,levs) :: griddiv,gridui,gridvi,omegai
-      real,dimension(npoint,levso) :: p1,p2,p3,pd1,pd2,pd3,tt,ttnew
-      real,dimension(npoint,levso) :: z1
-      real,dimension(npoint,levso+1) :: pi3
+      real,dimension(npoint,levs) :: gridu,gridv,omega,qnew,zp
+      real,dimension(npoint,levs) :: p1,pd3,ttnew
+      real,dimension(npoint,levs) :: z1
+      real,dimension(npoint,levs+1) :: pi3
       real :: zp2(2)
       real,dimension(kdim,npoint) :: sfc
-      real,dimension(1,levso+1) :: prsi,phii
-      real,dimension(1,levso) ::  gt0,gq0,prsl,phy_f3d
+      real,dimension(1,levs+1) :: prsi,phii
+      real,dimension(1,levs) ::  gt0,gq0,prsl,phy_f3d
       real :: PREC,TSKIN,SR,randomno(1,2)
       real :: DOMR,DOMZR,DOMIP,DOMS
       real :: vcoord(levs+1,nvcoord),vdummy(levs+1)
@@ -116,8 +113,8 @@
       integer :: n3dfercld,iseedl
       integer :: istat(npoint)
       logical :: trace
-!!      logical, parameter :: debugprint=.true.
-      logical, parameter :: debugprint=.false.
+      logical, parameter :: debugprint=.true.
+!!      logical, parameter :: debugprint=.false.
       character             lprecip_accu*3
       real, parameter :: ERAD=6.371E6
       real, parameter :: DTR=3.1415926/180.
@@ -141,7 +138,7 @@
       integer iocomms,iope,ionproc
 
       nij = 12
-      nflx = 6 * levso
+      nflx = 6 * levs
           recn_dpres = 0
           recn_delz = 0
           recn_dzdt = 0
@@ -368,42 +365,22 @@
       if (fformat == 'netcdf') then
       VarName='dpres'
       Zreverse='no'
-       call read_netcdf_p(ncid,im,jm,levs,VarName,delp,Zreverse,
+       call read_netcdf_p(ncid,im,jm,levs,VarName,delpz,Zreverse,
      &     iope,ionproc,iocomms,error)
         if (error /= 0) print*,'dpres not found'
        else 
       VarName='dpres'
       LayName='mid layer'
         call  read_nemsio(gfile,im,jm,levs,VarName,LayName,
-     &               delp,error)
+     &               delpz,error)
         if (error /= 0) print*,'dpres not found'
        endif
           if(debugprint) then
           print*,'sample delp at lev=1 to levs '
             do k = 1, levs
-             print*,k, delp(im/2,jm/3,k)
+             print*,k, delpz(im/2,jm/3,k)
             enddo
           endif
-! delz !added by Guang Ping Lou for FV3GFS ("height thickness" with unit "meters" bottom up)
-      if (fformat == 'netcdf') then
-      VarName='delz'
-      Zreverse='no'
-       call read_netcdf_p(ncid,im,jm,levs,VarName,delz,Zreverse,
-     &     iope,ionproc,iocomms,error)
-        if (error /= 0) print*,'delz not found'
-       else 
-      VarName='delz'
-      LayName='mid layer'
-        call read_nemsio(gfile,im,jm,levs,VarName,LayName,delz,error)
-        if (error /= 0) print*,'delz not found'
-       endif
-          if(debugprint) then
-          print*,'sample delz at lev=1 to levs '
-            do k = 1, levs
-             print*,k, delz(im/2,jm/3,k)
-            enddo
-          endif
-
 ! compute interface pressure
       if(recn_dpres == -9999) then
       do k=2,levs+1
@@ -419,14 +396,14 @@
       if (fformat == 'netcdf') then
         do j=1,jm
           do i=1,im
-            pint(i,j,levs+1) = delp(i,j,1)
+            pint(i,j,levs+1) = delpz(i,j,1)
           end do
         end do
       do k=levs,2,-1
          kk=levs-k+2
         do j=1,jm
           do i=1,im
-            pint(i,j,k) = pint(i,j,k+1) + delp(i,j,kk)
+            pint(i,j,k) = pint(i,j,k+1) + delpz(i,j,kk)
           end do
         end do
        end do
@@ -434,7 +411,7 @@
          do k=2,levs+1
           do j=1,jm
            do i=1,im
-            pint(i,j,k) = pint(i,j,k-1) - delp(i,j,k-1)
+            pint(i,j,k) = pint(i,j,k-1) - delpz(i,j,k-1)
             end do
            end do
           end do
@@ -446,6 +423,26 @@
             enddo
           endif
        endif
+! delz !added by Guang Ping Lou for FV3GFS ("height thickness" with unit "meters" bottom up)
+      if (fformat == 'netcdf') then
+      VarName='delz'
+      Zreverse='no'
+       call read_netcdf_p(ncid,im,jm,levs,VarName,delpz,Zreverse,
+     &     iope,ionproc,iocomms,error)
+        if (error /= 0) print*,'delz not found'
+       else 
+      VarName='delz'
+      LayName='mid layer'
+        call read_nemsio(gfile,im,jm,levs,VarName,LayName,delpz,error)
+        if (error /= 0) print*,'delz not found'
+       endif
+          if(debugprint) then
+          print*,'sample delz at lev=1 to levs '
+            do k = 1, levs
+             print*,k, delpz(im/2,jm/3,k)
+            enddo
+          endif
+
 ! compute interface height (meter)
       if(recn_delz == -9999) then
        print*, 'using calculated height'
@@ -461,7 +458,7 @@
          kk=levs-k+1
         do j=1,jm
           do i=1,im
-            zint(i,j,k) = zint(i,j,k-1) - delz(i,j,kk)
+            zint(i,j,k) = zint(i,j,k-1) - delpz(i,j,kk)
           end do
         end do
        end do
@@ -469,7 +466,7 @@
        do k=2,levs+1
         do j=1,jm
          do i=1,im
-          zint(i,j,k) = zint(i,j,k-1) + delz(i,j,k-1)
+          zint(i,j,k) = zint(i,j,k-1) + delpz(i,j,k-1)
           end do
          end do
         end do
@@ -1001,23 +998,8 @@ CC             print*, ' So it takes i,j '
         endif
         endif
 
-        gridsi(np,1)=hgt(idum,jdum)
-        gridsi(np,2)=pint(idum,jdum,1)
-        ie=idum+1
-        iw=idum-1
-        jn=jdum-1
-        js=jdum+1
-        dx=(gdlon(ie,jdum)-gdlon(iw,jdum))*dtr*erad*
-     +      cos(gdlat(idum,jdum)*dtr)
-        dy=(gdlat(idum,jn)-gdlat(idum,js))*erad*dtr
-        gradx(np)=(log(pint(ie,jdum,1))
-     +     -log(pint(iw,jdum,1)))/dx
-        grady(np)=(log(pint(idum,jn,1))
-     +      -log(pint(idum,js,1)))/dy
-        if(debugprint) then
-        if(np==1.or.np==100)print*,'gradx,grady= ',
-     +   gradx(np),grady(np)
-        endif
+        grids(np,1)=hgt(idum,jdum)
+        grids(np,2)=pint(idum,jdum,1)
         
         sfc(5,np)=dum2d(idum,jdum,1)
         sfc(6,np)=dum2d(idum,jdum,6)
@@ -1038,20 +1020,16 @@ CC due to rounding and interpolation errors, correct it here -G.P. Lou:
         if(sfc(11,np) .gt. sfc(12,np)) sfc(11,np)=sfc(12,np) 
 
         do k=1,levs
-          gridsi(np,k+2)=t3d(idum,jdum,k) 
-          gridsi(np,k+2+levs)=q3d(idum,jdum,k)
-          gridsi(np,k+2+2*levs)=omega3d(idum,jdum,k)
-          gridui(np,k)=uh(idum,jdum,k)
-          gridvi(np,k)=vh(idum,jdum,k)
+          grids(np,k+2)=t3d(idum,jdum,k) 
+          grids(np,k+2+levs)=q3d(idum,jdum,k)
+          grids(np,k+2+2*levs)=omega3d(idum,jdum,k)
+          gridu(np,k)=uh(idum,jdum,k)
+          gridv(np,k)=vh(idum,jdum,k)
           p1(np,k)=pint(idum,jdum,k+1)
           z1(np,k)=zint(idum,jdum,k+1)
 !!          p1(np,k)=0.5*(pint(idum,jdum,k)+pint(idum,jdum,k+1))
 !!          z1(np,k)=0.5*(zint(idum,jdum,k)+zint(idum,jdum,k+1))
  
-          griddiv(np,k)=(uh(ie,jdum,k)-uh(iw,jdum,k))/dx+
-     +       (vh(idum,jn,k)*cos(gdlat(idum,jn)*dtr)-
-     +       vh(idum,js,k)*cos(gdlat(idum,js)*dtr))/dy/
-     +       cos(gdlat(idum,jdum)*dtr)
         end do
       end do 
       
@@ -1059,84 +1037,21 @@ CC due to rounding and interpolation errors, correct it here -G.P. Lou:
 
         do np = 1, npoint
 !        !ps in kPa
-          ps(np) = gridsi(np,2)/1000.  !! surface pressure
+          ps(np) = grids(np,2)/1000.  !! surface pressure
         enddo
 
 !
-!   compute omega(Pa/s) and interface layer pressure (Pa) 
-!
-      if(recn_dzdt == -9999) then !!calculated omega
-      do np=1,npoint
-       call modstuff(levs,idvc,idsl,
-     &       nvcoord,vcoord,ps(np)*1000,
-     &       gradx(np),grady(np),griddiv(np,1:levs),
-     &       gridui(np,1:levs),gridvi(np,1:levs),
-     &       pd1(np,1:levs),pd1(np,1:levs),omegai(np,1:levs))
-      enddo
-!
-!  put omega (pa/s) in the tracer to prepare for interpolation
-!
-        print*, 'using calculated omega '
-        do k = 1, levs
-          do np = 1, npoint
-            gridsi(np,2+levs*2+k) = omegai(np,k)
-          enddo
-        enddo
-       else
-        print*, 'using model dzdt m/s'
-          if(debugprint) then
-        do k = 1, levs
-          print*,'sample gridsi(dzdt) at lev ',k,' = ',
-     +     gridsi(10,2+levs*2+k)
-        enddo
-       endif
-       endif
-
 !        -----------------
-! levs=levso so the following section will not be
-! excuted so comment out sigma sction for now 
-!         sigheado=sighead
-!        -----------------
-        print*, 'levs,levso= ', levs, levso
-        if(levs.ne.levso) then
-          do np = 1, npoint
-            grids(np,1) = gridsi(np,1)
-            grids(np,2) = gridsi(np,2)
-          enddo
-          call vintg(npoint,npoint,levs,levso,2,
-     &      p1,gridui,gridvi,gridsi(1,3),gridsi(1,3+levs),
-     &      p2,gridu, gridv, grids (1,3),grids (1,3+levso))
-          do k = 1, levso
-            do np = 1, npoint
-              omega(np,k) = grids(np,2+levso*2+k) 
-            enddo
-          enddo
-        else
-          do k = 1, levs
-            do np = 1, npoint
-              p2(np,k)    = p1(np,k)
-              gridu(np,k) = gridui(np,k)
-              gridv(np,k) = gridvi(np,k)
-              omega(np,k) = omegai(np,k) 
-            enddo
-          enddo
 ! Put topo(1),surf press(2),vir temp(3:66),and specifi hum(67:130) in grids
 ! for each station
-          do k = 1, 2*levs+2
-            do np = 1, npoint
-              grids(np,k) = gridsi(np,k)
-            enddo
-          enddo
-        endif  !END OF IF STATMENT LEVS .NE. LEVSO
-      if(recn_dzdt == 0 ) then !!DZDT
+!!      if(recn_dzdt == 0 ) then !!DZDT
           do k = 1, levs
             do np = 1, npoint
-              omega(np,k) = gridsi(np,2+levs*2+k) 
+              omega(np,k) = grids(np,2+levs*2+k) 
             enddo
           enddo
                  if(debugprint)
      +     print*,'sample (omega) dzdt ', (omega(3,k),k=1,levs)
-      endif
 !
 !  move surface pressure to the station surface from the model surface
 !
@@ -1147,79 +1062,54 @@ CC due to rounding and interpolation errors, correct it here -G.P. Lou:
 !
 !          print *, "elevstn = ", elevstn(np)
           if(elevstn(np)==-999.) elevstn(np) = grids(np,1)
-          psn(np) = ps(np) * exp(-con_g*(elevstn(np)-grids(np,1)) /
-     &              (con_rd * grids(np,3)))
-          call sigio_modpr(1,1,levso,nvcoord,idvc,
+          psn(np) = ps(np)
+          call sigio_modpr(1,1,levs,nvcoord,idvc,
      &         idsl,vcoord,iret,
-     &         ps=psn(np)*1000,pd=pd3(np,1:levso),pm=p3(np,1:levso))
+     &         ps=psn(np)*1000,pd=pd3(np,1:levs))
           grids(np,2) = log(psn(np))
-          if(np==1)print*,'station H,grud H,psn,ps,new pm',
-     &     elevstn(np),grids(np,1),psn(np),ps(np),p3(np,1:levso)
+          if(np==11)print*,'station H,grud H,psn,ps,new pm',
+     &     elevstn(np),grids(np,1),psn(np),ps(np)
+          if(np==11)print*,'pd3= ', pd3(np,1:levs)
         enddo
-!
-!  move t to new levels conserving theta
-!  move q to new levels conserving RH
-!
-        do k = 1, levso
-          do np = 1, npoint
-            pp  = p2(np,k)            
-            ppn = p3(np,k)          
-            tt(np,k) = grids(np,k+2)    
-            ttnew(np,k) = tt(np,k) * (ppn/pp)**(con_rocp)
-!            if(np==1)print*,'k,pp,ppn,tt,ttnew= ',k,pp,ppn,
-!     +      tt(np,k),ttnew(np,k)
-            call svp(qsn,esn,ppn,ttnew(np,k))
-            call svp(qs,es,pp,tt(np,k))
-            qnew(np,k) = grids(np,k+levso+2) * qsn / qs
-          enddo
-        enddo
-!
-!  move the new clocking into the old
 !
 !! test removing height adjustments
-        np1=0
-      if (np1==0) then
           print*, 'do not do height adjustments'
-      else
-          print*, 'do height adjustments'
-        do np = 1, npoint
-          ps(np) = psn(np)
-        enddo
-        do k = 1, levso
-          do np = 1, npoint
-            grids(np,k+2) = ttnew(np,k)
-            grids(np,k+levso+2) = qnew(np,k)
-          enddo
-        enddo
-       endif
-        print*,'finish adjusting to station terrain'
 !
 !  get sea-level pressure (Pa) and layer geopotential height
 !
-        do np=1,npoint
-          call gslp(levso,elevstn(np),ps(np)*1000,
-     &      p3(np,1:levso),ttnew(np,1:levso),qnew(np,1:levso),
-     &      pmsl(np),zp(np,1:levso),zp2(1:2))
+        do k = 1, levs
+          do np = 1, npoint
+            ttnew(np,k) = grids(np,k+2)
+            qnew(np,k) = grids(np,k+levs+2)
+          enddo
         enddo
+
+        do np=1,npoint
+!!          call gslp(levs,elevstn(np),ps(np)*1000,
+          call gslp(levs,grids(np,1),ps(np)*1000,
+     &      p1(np,1:levs),ttnew(np,1:levs),qnew(np,1:levs),
+     &      pmsl(np),zp(np,1:levs),zp2(1:2))
+        enddo
+            print *, 'call gslp pmsl= ', (pmsl(np),np=1,20)
       if(recn_delz == -9999) then 
         print*, 'using calculated height '
        else
         print*, 'using model height m'
-        do  k = 1, levso
+        do  k = 1, levs
           do np=1, npoint
            zp(np,k) =  z1(np,k)
           enddo
         enddo
        endif
        print*,'finish computing MSLP'
-       print*,'finish computing zp ', (zp(3,k),k=1,levso)
-       print*,'finish computing zp2(1-2) ', zp2(1),zp2(2)
+       print*,'finish computing zp ', (zp(11,k),k=1,levs)
+       print*,'finish computing zp2(11-12) ', zp2(11),zp2(12)
 !
 !  prepare buffer data
 !
         do np = 1, npoint
           pi3(np,1)=psn(np)*1000
-          do k=1,levso
+          do k=1,levs
             pi3(np,k+1)=pi3(np,k)-pd3(np,k)    !layer pressure (Pa)
           enddo
 !!     ==ivalence (cstat1,rstat1)
@@ -1232,22 +1122,20 @@ CC due to rounding and interpolation errors, correct it here -G.P. Lou:
           data(6) = elevstn(np)              ! STATION ELEVATION (M)
           psfc = 10. * psn(np)               ! convert to MB
           leveta = 1
-          do k = 1, levso
+          do k = 1, levs
 !
 !  look for the layer above 500 mb for precip type computation
 !
             if(pi3(np,k).ge.50000.) leveta = k
             ppi = pi3(np,k)                 
             t = grids(np,k+2)
-            q = max(1.e-8,grids(np,2+k+levso))
+            q = max(1.e-8,grids(np,2+k+levs))
             u = gridu(np,k)
             v = gridv(np,k)
-!           data((k-1)*6+7) = pi3(np,k)                ! PRESSURE (PA) at interface layer
-!            data((k-1)*6+7) = p3(np,k)                 ! PRESSURE (PA) at integer layer
             data((k-1)*6+7) = p1(np,k)                 ! PRESSURE (PA) at integer layer
             data((k-1)*6+8) = t                        ! TEMPERATURE (K)
             data((k-1)*6+9) = u                        ! U WIND (M/S)
-            data((k-1)*6+10) = v                        ! V WIND (M/S)
+            data((k-1)*6+10) = v                       ! V WIND (M/S)
             data((k-1)*6+11) = q                       ! HUMIDITY (KG/KG)
             data((k-1)*6+12) = omega(np,k)*100.        ! Omega (pa/sec) !changed to dzdt(cm/s) if available
           enddo
@@ -1279,11 +1167,19 @@ CC due to rounding and interpolation errors, correct it here -G.P. Lou:
 !            endif
 !            sfc(30,np) = sfc(30,np) + dtemp
 !          endif
+!
+!G.P. Lou 20200501:
+!convert instantaneous surface latent heat net flux to surface
+!evapolation  1 W m-2 = 0.0864 MJ m-2 day-1 
+!         and 1 mm day-1 = 2.45 MJ m-2 day-1
+!         equivament to 0.0864/2.54 = 0.035265
+!         equivament to 2.54/0.0864 = 28.3565 
         if(debugprint)
      +   print*,'evaporation (stn 000692)= ',sfc(17,np)
           data(9+nflx) = sfc(5,np)                       ! tsfc (K)
-          data(10+nflx) = sfc(6,np)                       ! 10cm soil temp (K)
-          data(11+nflx) = sfc(17,np)                     ! evaporation (w/m**2)
+          data(10+nflx) = sfc(6,np)                      ! 10cm soil temp (K)
+!!          data(11+nflx) = sfc(17,np)/28.3565             ! evaporation (kg/m**2) from (W m-2)
+          data(11+nflx) = sfc(17,np)*0.035265            ! evaporation (kg/m**2) from (W m-2)
           data(12+nflx) = sfc(12,np)                     ! total precip (m)
           data(13+nflx) = sfc(11,np)                     ! convective precip (m)
           data(14+nflx) = sfc(10,np)                     ! water equi. snow (m)
@@ -1299,7 +1195,6 @@ CC due to rounding and interpolation errors, correct it here -G.P. Lou:
           data(23+nflx) = 0.
           data(24+nflx) = 0.
           data(25+nflx) = 0.
-          iwx = 0
           nd = 0
           trace = .false.
           DOMS=0.
@@ -1311,10 +1206,10 @@ CC due to rounding and interpolation errors, correct it here -G.P. Lou:
 
           if(sfc(12,np).gt.0.) then !check for precip then calc precip type
           do k = 1, leveta+1
-            pp = p3(np,k)              
+            pp = p1(np,k)              
             ppi = pi3(np,k)               
             t = grids(np,k+2)
-            q = max(0.,grids(np,2+k+levso))
+            q = max(0.,grids(np,2+k+levs))
             u = gridu(np,k)
             v = gridv(np,k)
             if(q.gt.1.e-6.and.pp.ge.20000.) then
@@ -1356,11 +1251,9 @@ CC due to rounding and interpolation errors, correct it here -G.P. Lou:
             print *, ' surface fields for hour', nf, 'np =', np
             print *, (data(l+nflx),l=1,25)
             print *, ' temperature sounding'
-            print 6101, (data((k-1)*6+8),k=1,levso)
+            print 6101, (data((k-1)*6+8),k=1,levs)
             print *, ' omega sounding'
-            print *, (data((k-1)*6+12),k=1,levso)
-            print *, ' divergence sounding'
-            print *, (griddiv(np,k),k=1,levs)
+            print *, (data((k-1)*6+12),k=1,levs)
           endif
 C        print *, 'in meteorg nfile1= ', nfile1
           write(nfile) data
