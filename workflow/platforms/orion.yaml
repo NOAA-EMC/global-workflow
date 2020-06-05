@@ -35,6 +35,11 @@ platform: !Platform
   # executables for this workflow.
   BASE_GIT: "/work/noaa/marine/place_holder"
 
+  #BASE_CPLIC - is the base directory of ICs for coupled s2s runs
+  BASE_CPLIC: "/work/noaa/marine/jmeixner/tempFixICdir/IC"
+  #ncks - NCO netcdf operator used in ocean post 
+  ncks: "/apps/intel-2020/nco-4.8.1/bin/ncks"
+
   config_base_extras: !expand |
      echo "place holder for NWPROD and associated utilities, all except POSTGRB2TBL are going through load_gfs_modules.sh"
 
