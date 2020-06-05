@@ -1,47 +1,11 @@
 #!/bin/bash
-set -euax
+set -x
 
-# Adapted from: Xingren Wu
-# 2016-09-02
-# This scripts is for CFS/UGCS ocean post
-
-# Christopher Melhauser
-# 2017-09-11
-# This script is for UGCS CICE5/MOM5 ocean and ice post
-
-# Xingren Wu
-# 2017-10-23
-# Update and bug/fix
-#module purge
-#module load ics/12.1
-#module load prod_util/v1.0.7
-#module load NetCDF/4.2/serial
-#module load prod_util/1.0.18
 module load grib_util/1.1.1
 module list
 
-#### export NWPROD=${NWPROD:-/scratch1/NCEPDEV/global/glopara/svn/verif/global/tags/vsdb/nwprod}
-# on Hera
-#### module purge
-#### module load intel/18.0.5.274
-#### module load netcdf/4.7.0
-#### module load wgrib2/2.0.8
-#### module use -a $MOD_PATH
-#### module load ip/3.0.1
-#### module load sp/2.0.2
-#### module load w3nco/2.0.6
-#### module load bacio/2.0.2
-#### module load landsfcutil/2.1.0
-#### set FCMP ifort
-
-#export execdir=${execdir:-/climate/save/emc.climpara/Xingren/regrid/iceocnpost/exec}
-#export executable=${executable:-$execdir/reg2grb2.x}
-
-#### export execdir=$MOM6REGRID/exec
-#### export execdir=${execdir:-/scratch2/NCEPDEV/climate/Bin.Li/S2S/fix/ocean_ice_post/mom6_regrid_025/exec}
-#### export executable=${executable:-$execdir/reg2grb2.x}
-#### export mask_file=/scratch2/NCEPDEV/climate/Bin.Li/S2S/fix/ocean_ice_post/mom6_regrid_025/mask.0p25x0p25.grb2
-export mask_file=$MOM6REGRID/fix/mask.0p25x0p25.grb2
+MOM6REGRID=${MOM6REGRID:-$HOMEgfs}
+export mask_file=$MOM6REGRID/fix/fix_reg2grb2/mask.0p25x0p25.grb2
 #export icefile=/climate/save/emc.climpara/Xingren/regrid/out/icer2015040106.01.2015040100_0p5x0p5_CICE.nc
 #export ocnfile=/climate/save/emc.climpara/Xingren/regrid/out/ocnr2015040106.01.2015040100_0p5x0p5_MOM6.nc
 #export outfile=/climate/save/emc.climpara/Xingren/regrid/out/ocnh2015040106.01.2015040100.grb2

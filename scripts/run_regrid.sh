@@ -1,13 +1,10 @@
 #!/bin/bash
-set -euax
-
-#####################################################################
-# User specific parameters
+set -x
 
 echo "Entered $0"
-
+MOM6REGRID=${MOM6REGRID:-$HOMEgfs}
 export EXEC_DIR=$MOM6REGRID/exec
-export FIX_DIR=$MOM6REGRID/fix
+export USH_DIR=$MOM6REGRID/ush
 export COMOUT=$COMOUT
 export IDATE=$IDATE
 export ENSMEM=$ENSMEM
@@ -31,6 +28,7 @@ ls -alrt
 # executed from DATA dir
 #$NCL $EXEC_DIR/regrid_MOM6.ncl > regrid_MOM6.log 2>&1
 #$NCL $EXEC_DIR/regrid_CICE.ncl > regrid_CICE.log 2>&1
-$NCL $FIX_DIR/icepost.ncl > regrid_CICE.log 2>&1
-$NCL $FIX_DIR/ocnpost.ncl > regrid_MOM6.log 2>&1
+
+$NCL $USH_DIR/icepost.ncl > regrid_CICE.log 2>&1
+$NCL $USH_DIR/ocnpost.ncl > regrid_MOM6.log 2>&1
 #####################################################################

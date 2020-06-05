@@ -1,5 +1,5 @@
 #!/bin/bash
-set -ex
+set -x
 
 #--make symbolic links for EMC installation and hardcopies for NCO delivery
 . ./machine-setup.sh
@@ -52,33 +52,23 @@ elif [ $target == "gaea" ]; then
 elif [ $target == "jet" ]; then
     FIX_DIR="/lfs3/projects/hfv3gfs/glopara/git/fv3gfs/fix"
 elif [ $target == "hera" ]; then
-    FIX_DIR="/scratch1/NCEPDEV/global/glopara/fix"
+    FIX_DIR="/scratch2/NCEPDEV/climate/climpara/S2S/FIX/fix_UFSp4"
+####    FIX_DIR="/scratch1/NCEPDEV/global/Lin.Gan/git/reg2grb2_fix/test/fix_UFSp4"
 elif [ $target == "orion" ]; then
-    FIX_DIR="/work/noaa/marine/jmeixner/tempFixICdir/fix/fix_prep_benchmark3"
+####    FIX_DIR="/work/noaa/marine/jmeixner/tempFixICdir/fix/fix_prep_benchmark3"
+    FIX_DIR="/work/noaa/marine/jmeixner/tempFixICdir/fix_UFSp4"
 else
     echo 'CRITICAL: links to fix files not set'
     [[ $machine != orion ]] && exit 1
 fi
 
+if [ ! -d ${pwd}/../fix ]; then mkdir ${pwd}/../fix; fi
 cd ${pwd}/../fix                ||exit 8
+
 for dir in fix_am fix_fv3 fix_orog fix_fv3_gmted2010 fix_verif ; do
     [[ -d $dir ]] && rm -rf $dir
 done
 $LINK $FIX_DIR/* .
-
-if [ ! -r $FIX_DIR ]; then
-   echo "CRITICAL: you do not of read permissions to the location of the fix file $FIX_DIR"
-   exit -1
-fi
-
-if [ ! -z $FIX_DIR ]; then
- if [ ! -d ${pwd}/../fix ]; then mkdir ${pwd}/../fix; fi
- cd ${pwd}/../fix                ||exit 8
- for dir in fix_am fix_fv3 fix_orog fix_fv3_gmted2010 ; do
-     [[ -d $dir ]] && rm -rf $dir
- done
- $LINK $FIX_DIR/* .
-fi
 
 if [ ! -r $FIX_DIR ]; then
    echo "CRITICAL: you do not of read permissions to the location of the fix file $FIX_DIR"

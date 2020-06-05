@@ -1,5 +1,5 @@
 #!/bin/sh
-set -eu
+set -x
 #------------------------------------
 # USER DEFINED STUFF:
 #
