@@ -88,16 +88,18 @@ fi
 export FHMAX_WAV_CUR WAVHCYC WAVNCYC
 
 # Restart timing business
-if [ "${CDUMP}" != gfs ]; then # Setting is valid for GDAS and GEFS 
-  export RSTTYPE_WAV='T' # generate second tier of restart files
-  export DT_1_RST_WAV=10800 # time between restart files, set to DTRST=1 for a single restart file
-  export DT_2_RST_WAV=43200  # restart stride for checkpointing restart
-  export RSTIOFF_WAV=0 # first restart file offset relative to model start
-else # This is a GFS run
-  export RSTTYPE_WAV='F' # generate second tier of restart files
-  export DT_1_RST_WAV=0 # time between restart files, set to DTRST=1 for a single restart file
-  export DT_2_RST_WAV=0  # restart stride for checkpointing restart
-  export RSTIOFF_WAV=0 # first restart file offset relative to model start
+if [ "${CDUMP}" != gfs ]; then    # Setting is valid for GDAS and GEFS 
+  export RSTTYPE_WAV='T'          # generate second tier of restart files
+  export DT_1_RST_WAV=10800       # time between restart files, set to DTRST=1 for a single restart file
+  export DT_2_RST_WAV=43200       # restart stride for checkpointing restart
+  export RSTIOFF_WAV=0            # first restart file offset relative to model start
+else                              # This is a GFS run
+  rst_dt_gfs=$(( restart_interval_gfs * 3600 ))
+  export RSTTYPE_WAV='F'                 # generate second tier of restart files
+  if [ $rst_dt_gfs -gt 0 ]; then export RSTTYPE_WAV='T' ; fi
+  export DT_1_RST_WAV=${rst_dt_gfs:-0}   # time between restart files, set to DTRST=1 for a single restart file
+  export DT_2_RST_WAV=${rst_dt_gfs:-0}   # restart stride for checkpointing restart
+  export RSTIOFF_WAV=0                   # first restart file offset relative to model start
 fi
 #
 # Set runmember to default value if not GEFS cpl run

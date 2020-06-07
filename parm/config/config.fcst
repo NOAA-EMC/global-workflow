@@ -17,7 +17,6 @@ fi
 
 export FORECASTSH="$HOMEgfs/scripts/exglobal_fcst_nemsfv3gfs.sh"
 export FCSTEXECDIR="$HOMEgfs/exec"
-#export FCSTEXECDIR="$HOMEfv3gfs/NEMS/exe"
 export FCSTEXEC="global_fv3gfs.x"
 export npe_fv3=$npe_fcst 
 
@@ -39,6 +38,7 @@ if [ $DO_WAVE = "YES" ] ; then
   export npe_fcst=$((npe_fcst + npe_wav))
   if [ "$WAVE_CDUMP" = "gfs" -o "$WAVE_CDUMP" = "both" ]; then
      export npe_fcst_gfs=$((npe_fcst_gfs + npe_wav_gfs))
+     if [ "$CDUMP" = "gfs" ]; then npe_wav=$npe_wav_gfs ; fi
   fi
 fi
 
@@ -237,6 +237,14 @@ elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
 
     # Turn off dry mass adjustment in GFS
     export adjust_dry_mass=".false."
+
+    # Write each restart file in 16 small files to save time
+    export io_layout="4,4"
+
+    # Debug load balancing 
+    #export KEEPDATA="YES"
+    #export ESMF_RUNTIME_PROFILE=ON
+    #export ESMF_RUNTIME_PROFILE_OUTPUT=SUMMARY
 
 fi
 
