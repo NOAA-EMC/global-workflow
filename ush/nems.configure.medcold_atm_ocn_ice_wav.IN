@@ -13,10 +13,9 @@ MED_model:                      @[med_model]
 MED_petlist_bounds:             @[med_petlist_bounds]
 MED_attributes::
   Verbosity = 0
-  DumpFields = @[DumpFields]
+  DumpFields = false
   DumpRHs = false
-  coldstart = false
-  restart_interval = 0
+  coldstart = true
   ProfileMemory = false
 ::
 
@@ -25,7 +24,7 @@ ATM_model:                      @[atm_model]
 ATM_petlist_bounds:             @[atm_petlist_bounds]
 ATM_attributes::
   Verbosity = 0
-  DumpFields = @[DumpFields]
+  DumpFields = false
   ProfileMemory = false
   OverwriteSlice = false
 ::
@@ -35,9 +34,9 @@ OCN_model:                      @[ocn_model]
 OCN_petlist_bounds:             @[ocn_petlist_bounds]
 OCN_attributes::
   Verbosity = 0
-  DumpFields = @[DumpFields]
-  restart_interval = 0
+  DumpFields = false
   ProfileMemory = false
+  restart_n=0
   OverwriteSlice = false
 ::
 
@@ -46,12 +45,12 @@ ICE_model:                      @[ice_model]
 ICE_petlist_bounds:             @[ice_petlist_bounds]
 ICE_attributes::
   Verbosity = 0
-  DumpFields = @[DumpFields]
+  DumpFields = false
   ProfileMemory = false
   OverwriteSlice = false
 ::
 
-# WAV # 
+# WAV #
 WAV_model:                      @[wav_model]
 WAV_petlist_bounds:             @[wav_petlist_bounds]
 WAV_attributes::
@@ -59,31 +58,31 @@ WAV_attributes::
   OverwriteSlice = false
 ::
 
+
 # Run Sequence #
 runSeq::
-  @@[CPL_SLOW]
-    MED MedPhase_prep_ocn
-    MED -> OCN :remapMethod=redist
-    OCN -> WAV 
+  @@[coupling_interval_slow_sec]
+    OCN -> WAV
     WAV -> OCN :srcMaskValues=1
-    OCN
-    @@[CPL_FAST]
-      MED MedPhase_prep_ice
+    @@[coupling_interval_fast_sec]
       MED MedPhase_prep_atm
       MED -> ATM :remapMethod=redist
-      MED -> ICE :remapMethod=redist
       WAV -> ATM :srcMaskValues=1
-      ATM -> WAV
-      ICE -> WAV
       ATM
-      ICE
-      WAV 
+      ATM -> WAV
       ATM -> MED :remapMethod=redist
+      MED MedPhase_prep_ice
+      MED -> ICE :remapMethod=redist
+      ICE
+      ICE -> WAV 
+      WAV
       ICE -> MED :remapMethod=redist
       MED MedPhase_atm_ocn_flux
       MED MedPhase_accum_fast
     @
+    MED MedPhase_prep_ocn
+    MED -> OCN :remapMethod=redist
+    OCN
     OCN -> MED :remapMethod=redist
-    MED MedPhase_write_restart
   @
 ::

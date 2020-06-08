@@ -49,7 +49,6 @@ export COMINwave=${COMINwave:-${ROTDIR:?}}
 export COMOUTwave=${COMOUTwave:-${ROTDIR:?}}
 export COMIN=${COMIN:-${COMINwave}/${COMPONENTwave}.${PDY}/${cyc}}
 export COMOUT=${COMOUT:-${COMOUTwave}/${COMPONENTwave}.${PDY}/${cyc}}
-
 [[ ! -d $COMOUT ]] && mkdir -m 775 -p $COMOUT
 
 if [ $SENDCOM = YES ]; then
@@ -65,4 +64,3 @@ if [ "$KEEPDATA" != "YES" ]; then
   rm -rf $DATA
 fi
 date
-
