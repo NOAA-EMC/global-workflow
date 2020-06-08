@@ -212,7 +212,7 @@ c     do nf = nss, nend, nint
           error=nf90_inq_dimid(ncid,"pfull",dimid)
           error=nf90_inquire_dimension(ncid,dimid,dim_nam,levsi)
           error=nf90_close(ncid)
-!!          print*,'NetCDF file im,jm,lm= ',im,jm,levs,levsi
+          print*,'NetCDF file im,jm,lm= ',im,jm,levs,levsi
 
            else
           call nemsio_init(iret=irets)
@@ -239,7 +239,7 @@ c     do nf = nss, nend, nint
 
           call meteorg(npoint,rlat,rlon,istat,cstat,elevstn,
      &             nf,nfile,fnsig,jdate,idate,
-     &      levs,levsi,im,jm,nsfc,
+     &      levsi,im,jm,nsfc,
      &      landwater,nend1, nint1, nint3, iidum,jjdum,
      &      fformat,iocomms(ntask),iope,ionproc)
        call mpi_barrier(iocomms(ntask), ierr)
@@ -248,7 +248,7 @@ c     do nf = nss, nend, nint
 !! For nemsio input
           call meteorg(npoint,rlat,rlon,istat,cstat,elevstn,
      &             nf,nfile,fnsig,jdate,idate,
-     &      levs,levsi,im,jm,nsfc,
+     &      levs,im,jm,nsfc,
      &      landwater,nend1, nint1, nint3, iidum,jjdum,
      &      fformat,iocomms(ntask),iope,ionproc)
         endif  

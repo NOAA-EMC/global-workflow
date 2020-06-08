@@ -17,7 +17,6 @@ fi
 
 export FORECASTSH="$HOMEgfs/scripts/exglobal_fcst_nemsfv3gfs.sh"
 export FCSTEXECDIR="$HOMEgfs/exec"
-#export FCSTEXECDIR="$HOMEfv3gfs/NEMS/exe"
 export FCSTEXEC="global_fv3gfs.x"
 export npe_fv3=$npe_fcst 
 
@@ -39,6 +38,7 @@ if [ $DO_WAVE = "YES" ] ; then
   export npe_fcst=$((npe_fcst + npe_wav))
   if [ "$WAVE_CDUMP" = "gfs" -o "$WAVE_CDUMP" = "both" ]; then
      export npe_fcst_gfs=$((npe_fcst_gfs + npe_wav_gfs))
+     if [ "$CDUMP" = "gfs" ]; then npe_wav=$npe_wav_gfs ; fi
   fi
 fi
 
@@ -214,8 +214,22 @@ elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
     fi
 
     # Write gfs restart files to rerun fcst from any break point         
-     export restart_interval=${restart_interval_gfs:-0}
+    export restart_interval_gfs=${restart_interval_gfs:-0}
+    if [ $restart_interval_gfs -le 0 ]; then
+        export restart_interval=0
+    else
+        rst_list=""
+        IAU_OFFSET=${IAU_OFFSET:-0}
+        [[ $DOIAU = "NO" ]] && export IAU_OFFSET=0
+        xfh=$((restart_interval_gfs+(IAU_OFFSET/2)))
+        while [ $xfh -le $FHMAX_GFS ]; do
+          rst_list="$rst_list $xfh"
+          xfh=$((xfh+restart_interval_gfs))
+        done
+        export restart_interval="$rst_list"
+    fi
 
+    
     # Choose coupling with wave
     if [ $DO_WAVE = "YES" -a "$WAVE_CDUMP" != "gdas" ]; then 
         export cplwav=".true."
@@ -223,6 +237,14 @@ elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
 
     # Turn off dry mass adjustment in GFS
     export adjust_dry_mass=".false."
+
+    # Write each restart file in 16 small files to save time
+    export io_layout="4,4"
+
+    # Debug load balancing 
+    #export KEEPDATA="YES"
+    #export ESMF_RUNTIME_PROFILE=ON
+    #export ESMF_RUNTIME_PROFILE_OUTPUT=SUMMARY
 
 fi
 

@@ -154,6 +154,11 @@ export FHMAX_GFS=$(eval echo \${FHMAX_GFS_$cyc})
 export FHOUT_GFS=3
 export FHMAX_HF_GFS=0
 export FHOUT_HF_GFS=1
+export ILPOST=1           # gempak output frequency up to F120
+
+# GFS restart interval in hours
+export restart_interval_gfs=0
+
 
 # I/O QUILTING, true--use Write Component; false--use GFDL FMS
 # if quilting=true, choose OUTPUT_GRID as cubed_sphere_grid in netcdf or gaussian_grid

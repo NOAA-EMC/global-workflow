@@ -86,8 +86,10 @@ if [ $type = "gfs" ]; then
     fhr=$(printf %03i $fh)
     echo  "${dirname}${head}pgrb2b.0p25.f${fhr}             " >>gfs_pgrb2b.txt
     echo  "${dirname}${head}pgrb2b.0p25.f${fhr}.idx         " >>gfs_pgrb2b.txt
-    echo  "${dirname}${head}pgrb2b.0p50.f${fhr}             " >>gfs_pgrb2b.txt
-    echo  "${dirname}${head}pgrb2b.0p50.f${fhr}.idx         " >>gfs_pgrb2b.txt
+    if [ -s $ROTDIR/${dirpath}${head}pgrb2b.0p50.f${fhr} ]; then
+       echo  "${dirname}${head}pgrb2b.0p50.f${fhr}         " >>gfs_pgrb2b.txt
+       echo  "${dirname}${head}pgrb2b.0p50.f${fhr}.idx     " >>gfs_pgrb2b.txt
+    fi
 
     echo  "${dirname}${head}sfluxgrbf${fhr}.grib2           " >>gfs_flux.txt
     echo  "${dirname}${head}sfluxgrbf${fhr}.grib2.idx       " >>gfs_flux.txt
@@ -96,10 +98,14 @@ if [ $type = "gfs" ]; then
     echo  "${dirname}${head}pgrb2.0p25.f${fhr}.idx          " >>gfsa.txt
     echo  "${dirname}${head}logf${fhr}.txt                  " >>gfsa.txt
 
-    echo  "${dirname}${head}pgrb2.0p50.f${fhr}              " >>gfsb.txt
-    echo  "${dirname}${head}pgrb2.0p50.f${fhr}.idx          " >>gfsb.txt
-    echo  "${dirname}${head}pgrb2.1p00.f${fhr}              " >>gfsb.txt
-    echo  "${dirname}${head}pgrb2.1p00.f${fhr}.idx          " >>gfsb.txt
+    if [ -s $ROTDIR/${dirpath}}${head}pgrb2.0p50.f${fhr} ]; then
+       echo  "${dirname}${head}pgrb2.0p50.f${fhr}          " >>gfsb.txt
+       echo  "${dirname}${head}pgrb2.0p50.f${fhr}.idx      " >>gfsb.txt
+    fi
+    if [ -s $ROTDIR/${dirpath}${head}pgrb2.1p00.f${fhr} ]; then
+       echo  "${dirname}${head}pgrb2.1p00.f${fhr}          " >>gfsb.txt
+       echo  "${dirname}${head}pgrb2.1p00.f${fhr}.idx      " >>gfsb.txt
+    fi
 
     inc=$FHOUT_GFS
     if [ $FHMAX_HF_GFS -gt 0 -a $FHOUT_HF_GFS -gt 0 -a $fh -lt $FHMAX_HF_GFS ]; then

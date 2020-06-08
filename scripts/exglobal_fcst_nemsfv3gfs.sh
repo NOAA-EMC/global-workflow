@@ -20,6 +20,7 @@
 # 2019-03-21  Fanglin Yang   Add restart capability for running gfs fcst from a break point.
 # 2019-12-12  Henrique Alves Added wave model blocks for coupled run
 # 2020-01-31  Henrique Alves Added IAU capability for wave component
+# 2020-06-02  Fanglin Yang   restore restart capability when IAU is turned on.                     
 #
 # $Id$
 #
@@ -160,21 +161,22 @@ fi
 RERUN="NO"
 filecount=$(find $RSTDIR_TMP -type f | wc -l) 
 if [ $CDUMP = "gfs" -a $rst_invt1 -gt 0 -a $FHMAX -gt $rst_invt1 -a $filecount -gt 10 ]; then
-    SDATE=$($NDATE +$FHMAX $CDATE)
-    EDATE=$($NDATE +$rst_invt1 $CDATE)
-    while [ $SDATE -gt $EDATE ]; do
+    reverse=$(echo "${restart_interval[@]} " | tac -s ' ')
+    for xfh in $reverse ; do
+        yfh=$((xfh-(IAU_OFFSET/2)))
+        SDATE=$($NDATE +$yfh $CDATE)
         PDYS=$(echo $SDATE | cut -c1-8)
         cycs=$(echo $SDATE | cut -c9-10)
         flag1=$RSTDIR_TMP/${PDYS}.${cycs}0000.coupler.res
         flag2=$RSTDIR_TMP/coupler.res
         if [ -s $flag1 ]; then
+            CDATE_RST=$SDATE          
+            [[ $RERUN = "YES" ]] && break
             mv $flag1 ${flag1}.old
             if [ -s $flag2 ]; then mv $flag2 ${flag2}.old ;fi
             RERUN="YES"
-            CDATE_RST=$($NDATE -$rst_invt1 $SDATE)
-            break
+            [[ $xfh = $rst_invt1 ]] && RERUN="NO"
         fi 
-        SDATE=$($NDATE -$rst_invt1 $SDATE)
     done
 fi
 
@@ -314,6 +316,13 @@ EOF
       file2=$(echo $file2 | cut -d. -f3-) 
       $NLN $file $DATA/INPUT/$file2
     done
+   
+    if [ $DOIAU = "YES" ]; then
+      IAUFHRS=-1         
+      IAU_DELTHRS=0
+      IAU_INC_FILES="''"
+    fi
+
 
   fi
 #.............................
@@ -762,7 +771,7 @@ start_day:               ${tPDY:6:2}
 start_hour:              ${tcyc}
 start_minute:            0
 start_second:            0
-fhrot:                   ${IAU_FHROT}
+fhrot:                   ${IAU_FHROT:-0}
 nhours_fcst:             $FHMAX
 RUN_CONTINUE:            ${RUN_CONTINUE:-".false."}
 ENS_SPS:                 ${ENS_SPS:-".false."}
