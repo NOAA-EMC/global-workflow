@@ -44,9 +44,13 @@ case:
        WGRP: 1
        WGRP_NTASKS: 24
        WRTIOBUF: "32M"
-    OCNPETS: 120
-    ICEPETS: 48
     cdmbgwd: "1.0,1.2"
+
+  ocn_settings:
+    OCNPETS: 120
+
+  ice_settings:
+    ICEPETS: 48
 
   post:
     downset: 2

@@ -46,6 +46,12 @@ case:
     ICEPETS: 48
     cdmbgwd: "1.0,1.2"
 
+  ocn_settings:
+    OCNPETS: 120
+
+  ice_settings:
+    ICEPETS: 48
+
   post:
     downset: 2
     GOESF: no

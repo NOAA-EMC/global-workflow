@@ -1,5 +1,9 @@
 wave_defaults: &wave_defaults
    MOD: ww3
+   WAVPETS: !FirstTrue
+     - when: !calc doc.settings.cplwav
+       do: 24
+     - otherwise: 0
    sigMODE: prep
    waveGRD: 'glo_10m aoc_9km ant_9km'
    waveGRDN: '1 2 3'
