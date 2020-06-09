@@ -53,17 +53,16 @@ suite: !Cycle
     ecflow_def: "edit RUN 'gfs'"
 
     prep: !Family
+      Disable: !calc doc.settings.cplwav=='.false.'
 
       waveinit: !Task
         <<: *exclusive_task_template
-        Disable: !calc doc.settings.cplwav=='.false.'
         Trigger: !Depend up.up.ics.jgfs_emc_mom6ic
         resources: !calc partition.resources.run_prep
         J_JOB: rocoto/waveinit.sh
 
       waveprep: !Task
         <<: *exclusive_task_template
-        Disable: !calc doc.settings.cplwav=='.false.'
         Trigger: !Depend waveinit
         resources: !calc partition.resources.run_prep
         J_JOB: rocoto/waveprep.sh
