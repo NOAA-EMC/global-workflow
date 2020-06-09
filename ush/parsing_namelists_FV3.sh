@@ -225,8 +225,6 @@ EOF
 fi
 
 cat >> input.nml <<EOF
-  cplwav       = ${cplwav}              ! CROW configured
-  cplwav2atm   = ${cplwav2atm}          ! CROW configured
   pdfcld       = ${pdfcld:-".false."}
   fhswr        = ${FHSWR:-"3600."}
   fhlwr        = ${FHLWR:-"3600."}
@@ -362,7 +360,7 @@ cat >> input.nml <<EOF
   icloud_f = 1
   mp_time = 150.
 EOF
-if [ $cplflx = .true. -a $CCPP_SUITE = GFS ]; then
+if [ $cplflx = .true. ]; then
   cat >> input.nml << EOF
   reiflag = ${reiflag:-"1"}
 EOF
