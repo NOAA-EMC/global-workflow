@@ -35,6 +35,11 @@ platform: !Platform
   # executables for this workflow.
   BASE_GIT: "/scratch1/NCEPDEV/global/glopara/git/"
 
+  #BASE_CPLIC - is the base directory of ICs for coupled s2s runs
+  BASE_CPLIC: "/scratch2/NCEPDEV/climate/climpara/S2S/IC"
+  #ncks - NCO netcdf operator used in ocean post 
+  ncks: "/apps/nco/4.9.1/intel/18.0.5.274/bin/ncks"
+
   config_base_extras: !expand |
      echo "place holder for NWPROD and associated utilities, all except POSTGRB2TBL are going through load_gfs_modules.sh"
 

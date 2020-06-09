@@ -1,5 +1,5 @@
 #!/bin/bash
-set -x
+set -ex
 
 #--make symbolic links for EMC installation and hardcopies for NCO delivery
 . ./machine-setup.sh
@@ -53,35 +53,25 @@ elif [ $target == "jet" ]; then
     FIX_DIR="/lfs3/projects/hfv3gfs/glopara/git/fv3gfs/fix"
 elif [ $target == "hera" ]; then
     FIX_DIR="/scratch2/NCEPDEV/climate/climpara/S2S/FIX/fix_UFSp4"
-####    FIX_DIR="/scratch1/NCEPDEV/global/Lin.Gan/git/reg2grb2_fix/test/fix_UFSp4"
 elif [ $target == "orion" ]; then
-####    FIX_DIR="/work/noaa/marine/jmeixner/tempFixICdir/fix/fix_prep_benchmark3"
     FIX_DIR="/work/noaa/marine/jmeixner/tempFixICdir/fix_UFSp4"
 else
     echo 'CRITICAL: links to fix files not set'
     [[ $machine != orion ]] && exit 1
 fi
 
-if [ ! -d ${pwd}/../fix ]; then mkdir ${pwd}/../fix; fi
-cd ${pwd}/../fix                ||exit 8
-
-for dir in fix_am fix_fv3 fix_orog fix_fv3_gmted2010 fix_verif ; do
-    [[ -d $dir ]] && rm -rf $dir
-done
-$LINK $FIX_DIR/* .
+if [ ! -z $FIX_DIR ]; then
+ if [ ! -d ${pwd}/../fix ]; then mkdir ${pwd}/../fix; fi
+ cd ${pwd}/../fix                ||exit 8
+ for dir in fix_am fix_fv3 fix_orog fix_fv3_gmted2010 fix_verif ; do
+     [[ -d $dir ]] && rm -rf $dir
+ done
+ $LINK $FIX_DIR/* .
+fi
 
 if [ ! -r $FIX_DIR ]; then
    echo "CRITICAL: you do not of read permissions to the location of the fix file $FIX_DIR"
    exit -1
-fi
-
-if [ ! -z $FIX_DIR ]; then
- if [ ! -d ${pwd}/../fix ]; then mkdir ${pwd}/../fix; fi
- cd ${pwd}/../fix                ||exit 8
- for dir in fix_am fix_fv3 fix_orog fix_fv3_gmted2010 ; do
-     [[ -d $dir ]] && rm -rf $dir
- done
- $LINK $FIX_DIR/* .
 fi
 
 #---------------------------------------
@@ -212,8 +202,8 @@ cd ${pwd}/../ush                ||exit 8
 
 cd $pwd/../exec
 if [ $model == "coupled" ]; then
-[[ -s nems_fv3_mom6_cice5.x ]] && rm -f nems_fv3_mom6_cice5.x
-$LINK ../sorc/fv3_coupled.fd/NEMS/exe/nems_fv3_mom6_cice5.x .
+[[ -s nems_fv3_ccpp_mom6_cice5_ww3.x ]] && rm -f nems_fv3_ccpp_mom6_cice5_ww3.x
+$LINK ../sorc/fv3_coupled.fd/NEMS/exe/nems_fv3_ccpp_mom6_cice5_ww3.x .
 else
 [[ -s global_fv3gfs.x ]] && rm -f global_fv3gfs.x
 $LINK ../sorc/fv3gfs.fd/NEMS/exe/global_fv3gfs.x .
@@ -288,20 +278,6 @@ if [ $target = wcoss_dell_p3 ]; then
         $LINK ../sorc/gfs_wafs.fd/exec/$wafsexe .
     done
 fi
- 
-#cd ${pwd}
-#cd gsi.fd
-#gsi_branch=`git branch | grep \*`
-#cd ../fv3gfs.fd
-#fv3gfs_branch=`git branch | grep \*`
-#cd ../gfs_post.fd
-#gfspost_branch=`git branch | grep \*`
-
-#set +x
-#echo "FV3  Branch: $fv3gfs_branch"
-#echo "GSI  Branch: $gsi_branch"
-#echo "POST Branch: $gfspost_branch"
-
 
 #------------------------------
 #--link source code directories
@@ -345,6 +321,17 @@ cd ${pwd}/../sorc   ||   exit 8
     fi
 
 
+#Link CCPP Suite files: 
+cd $pwd/../fix
+[[ -d fix_ccpp_suites ]] && rm -rf fix_ccpp_suites
+if [ $model == "coupled" ]; then
+$SLINK ../sorc/fv3_coupled.fd/FV3/ccpp/suites fix_ccpp_suites
+else
+$SLINK ../sorc/fv3gfs.fd/FV3/ccpp/suites fix_ccpp_suites
+fi
+
+
+
 #------------------------------
 #--choose dynamic config.base for EMC installation 
 #--choose static config.base for NCO installation 
@@ -359,19 +346,14 @@ fi
 if [ $model = "coupled" ] ; then
  rm -f config.base
  cp -p config.base.emc.dyn_coupled config.base
- if [ $machine = "theia" ] ; then
- CPLFIX_DIR="/scratch4/NCEPDEV/nems/save/Bin.Li/fix_prep_benchmark2"
- elif [ $machine = "hera" ] ; then
- CPLFIX_DIR="/scratch2/NCEPDEV/climate/Bin.Li/S2S/fix/fix_prep_benchmark3"
- fi
-cd $pwd/../fix
-# Add fixed files needed for coupled fv3-mom6-cice5
-#$LINK $CPLFIX_DIR/fix_fv3   .
-#$LINK $CPLFIX_DIR/fix_fv3_gmted2010   .
-$LINK $CPLFIX_DIR/fix_ocnice   .
-$LINK $CPLFIX_DIR/fix_cice5    .
-$LINK $CPLFIX_DIR/fix_mom6     .
-$LINK $CPLFIX_DIR/fix_fv3grid  .
+ cd $pwd/../fix
+ # Add fixed files needed for coupled ufs-s2s-model
+ $LINK $FIX_DIR/fix_ocnice   .
+ $LINK $FIX_DIR/fix_cice5    .
+ $LINK $FIX_DIR/fix_mom6     .
+ $LINK $FIX_DIR/fix_fv3grid  .
+ $LINK $FIX_DIR/fix_cpl      .
+ $LINK $FIX_DIR/fix_wav      .
 fi
 
 exit 0
