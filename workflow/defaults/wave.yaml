@@ -1,0 +1,10 @@
+wave_defaults: &wave_defaults
+   MOD: ww3
+   sigMODE: prep
+   waveGRD: 'glo_10m aoc_9km ant_9km'
+   waveGRDN: '1 2 3'
+   waveGRDG: '10 20 30'
+   WAV_CUR_DT: 3
+   WAV_CUR_HF_DT: 1
+   WAV_CUR_HF_FH: 72
+   WAV_CUR_CDO_SMOOTH: NO

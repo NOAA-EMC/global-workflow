@@ -2,7 +2,7 @@ fv3_gfs_defaults: &fv3_gfs_defaults
   CDUMP: gfs
   CASE: C384
   LEVS: 65
-  CCPP_SUITE: GFS
+  CCPP_SUITE: IPD
   FHCYC: 24
   FHCYC_GDAS: 1
   FHCYC_GFS: 24
@@ -162,3 +162,7 @@ fv3_gfs_defaults: &fv3_gfs_defaults
     - otherwise: !calc layout.x * layout.y * 6
   OCNPETS: 120
   ICEPETS: 48
+  WAVPETS: !FirstTrue
+    - when: !calc doc.settings.cplwav
+      do: 24
+    - otherwise: 0

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -x
+
 date
 export PS4=' $SECONDS + '
 set -x -e
@@ -26,22 +28,13 @@ status=$?
 # PATH for working directory
 export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
-export COMPONENTwave=${COMPONENTwave:-${RUN}wave}
 
-export HOMEgfs=${HOMEgfs:-$NWROOT/gfs.${gfs_ver}}
+export COMPONENTwave=${COMPONENTwave:-${RUN}wave}
 
 # Add default errchk = err_chk
 export errchk=${errchk:-err_chk}
 
-# Set HOMEwave to HOMEgfs
-HOMEwave=${HOMEwave:-${HOMEgfs}} 
-
-# Set resources to propagate NTASKS across cfp call
-NTASKS=${NTASKS:-${npe_node_waveprep}}
-export NTASKS=${NTASKS:?NTASKS required to be set}
-
-# Create and go to DATA directory
-export DATA=${DATA:-${DATAROOT:?}/${jobid}}
+export DATA=${DATA:-${DATAROOT}/${jobid:?}}
 mkdir -p $DATA
 cd $DATA
 
@@ -56,24 +49,6 @@ export RPDY=$PDY
 
 export pgmout=OUTPUT.$$
 
-export MP_PULSE=0
-
-# CDO required for processing RTOFS currents
-# export CDO=${COMROOTp2}/nwprod/rtofs_glo.v1.2.0/bin/cdo
-export CDO=/gpfs/dell2/emc/verification/noscrub/Todd.Spindler/CDO/bin/cdo
-
-# Path to HOME Directory
-export CODEwave=${CODEwave:-${HOMEfv3gfs}/WW3}
-export EXECwave=${EXECwave:-$HOMEwave/exec}
-export FIXwave=${FIXwave:-$HOMEwave/fix/fix_wave_${NET}}
-export PARMwave=${PARMwave:-$HOMEwave/parm/wave}
-export USHwave=${USHwave:-$HOMEwave/ush}
-export EXECcode=${EXECcode:-$CODEwave/exec}
-
-###################################
-# Set COM Paths and GETGES environment
-###################################
-# Set COM Paths and GETGES environment
 export COMINwave=${COMINwave:-${ROTDIR:?}}
 export COMOUTwave=${COMOUTwave:-${ROTDIR:?}}
 export COMIN=${COMIN:-${COMINwave}/${COMPONENTwave}.${PDY}/${cyc}}
@@ -88,7 +63,7 @@ if [ $RUN_ENVIR = "nco" ]; then
     export RPDY=`$NDATE -24 ${PDY}00 | cut -c1-8`
     export COMIN_WAV_CUR=$(compath.py ${WAVECUR_DID}/prod)/${WAVECUR_DID}.${RPDY}
   fi
-else 
+else
   if [ ! -d $DMPDIR/${WAVECUR_DID}.${RPDY} ]; then export RPDY=`$NDATE -24 ${PDY}00 | cut -c1-8`; fi
   if [ ! -L $ROTDIR/${WAVECUR_DID}.${RPDY} ]; then # Check if symlink already exists in ROTDIR
     $NLN $DMPDIR/${WAVECUR_DID}.${RPDY} $ROTDIR/${WAVECUR_DID}.${RPDY}
@@ -104,16 +79,6 @@ if [ $SENDCOM = YES ]; then
   mkdir -p $COMOUT
 fi
 
-export wavelog=${COMOUTwave}/wave.log
-
-# Set mpi serial command
-export wavempexec=${wavempexec:-"mpirun -n"}
-export wave_mpmd=${wave_mpmd:-"cfp"}
-
-# Set wave model ID tag to include member number 
-# if ensemble; waveMEMB var empty in deterministic
-export WAV_MOD_TAG=${COMPONENTwave}${waveMEMB}
-
 # Execute the Script  
 $HOMEwave/scripts/exwave_prep.sh
 
@@ -123,4 +88,4 @@ if [ "$KEEPDATA" != "YES" ]; then
   rm -rf $DATA
 fi
 date
-
+exit 0

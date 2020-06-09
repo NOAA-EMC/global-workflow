@@ -69,6 +69,7 @@ config_fcst:
     export ATMPETS="{doc.fv3_gfs_settings.ATMPETS}"
     export OCNPETS="{doc.fv3_gfs_settings.OCNPETS}"
     export ICEPETS="{doc.fv3_gfs_settings.ICEPETS}"
+    export WAVPETS="{doc.fv3_gfs_settings.WAVPETS}"
     #
     #######################################################################    
 

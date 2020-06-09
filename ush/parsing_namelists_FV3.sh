@@ -50,7 +50,7 @@ cat > input.nml <<EOF
   dycore_only = $dycore_only
 EOF
 
-if [ $CCPP_SUITE != "GFS" ]; then
+if [ $CCPP_SUITE != "IPD" ]; then
   cat >> input.nml << EOF
   ccpp_suite = ${CCPP_SUITE:-"FV3_GFS_v15"}
 EOF
@@ -209,9 +209,7 @@ if [ $CCPP_SUITE = "FV3_GFS_v15p2_coupled" ]; then
   oz_phys      = .false.
   oz_phys_2015 = .true.
 EOF
-fi
-
-if [ $CCPP_SUITE = "FV3_GSD_v0" ]; then
+elif [ $CCPP_SUITE = "FV3_GSD_v0" ]; then
   cat >> input.nml << EOF
   ltaerosol    = ${ltaerosol:-".F."}    ! In config.fcst
   lradar       = ${lradar:-".F."}	! In config.fcst
@@ -227,6 +225,8 @@ EOF
 fi
 
 cat >> input.nml <<EOF
+  cplwav       = ${cplwav}              ! CROW configured
+  cplwav2atm   = ${cplwav2atm}          ! CROW configured
   pdfcld       = ${pdfcld:-".false."}
   fhswr        = ${FHSWR:-"3600."}
   fhlwr        = ${FHLWR:-"3600."}
@@ -289,9 +289,11 @@ cat >> input.nml <<EOF
   do_skeb      = ${DO_SKEB:-".false."}
 EOF
 
-if [ $cplflx = .true. ]; then
+if [ $cpl = .true. ]; then
   cat >> input.nml << EOF
   cplflx       = $cplflx
+  cplwav       = ${cplwav}              ! CROW configured
+  cplwav2atm   = ${cplwav2atm}          ! CROW configured
 EOF
 fi
 
@@ -360,7 +362,7 @@ cat >> input.nml <<EOF
   icloud_f = 1
   mp_time = 150.
 EOF
-if [ $cplflx = .true. ]; then
+if [ $cplflx = .true. -a $CCPP_SUITE = GFS ]; then
   cat >> input.nml << EOF
   reiflag = ${reiflag:-"1"}
 EOF
