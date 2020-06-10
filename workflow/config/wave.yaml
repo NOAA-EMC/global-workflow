@@ -23,14 +23,14 @@ config_wave:
       export waveGRDG='10 20 30' # gridgroup for ww3_multi
       
       # ESMF input grid
-      export waveesmfGRD='glox_10m' # input grid
+      export waveesmfGRD='' # input grid
       
       # Grids for output fields
       export waveuoutpGRD=points
-      export waveinterpGRD='glo_15mxt' # Grids that need to be interpolated from native
+      export waveinterpGRD='' # Grids that need to be interpolated from native
       # in POST will generate grib unless gribOK not set
       export wavesbsGRD=''  # side-by-side grids generated as wave model runs, writes to com
-      export wavepostGRD='glo_10m aoc_9km ant_9km' # Native grids that will be post-processed (grib2)
+      export wavepostGRD='gwes_30m' # Native grids that will be post-processed (grib2)
       
       if [ "$CDUMP" = "gdas" ]
       then
@@ -53,10 +53,10 @@ config_wave:
       export FHINCP_WAV=`expr $DTPNT_WAV / 3600`
       
       # Grids for input fields
-      export WAVEICE_DID=sice
-      export WAVEICE_FID=icean_5m
-      export WAVECUR_DID=rtofs
-      export WAVECUR_FID=rtofs_5m
+      export WAVEICE_DID=
+      export WAVEICE_FID=
+      export WAVECUR_DID=
+      export WAVECUR_FID=
       export WAVEWND_DID=
       export WAVEWND_FID=
       
@@ -107,8 +107,8 @@ config_wave:
       #
       # Determine if wave component needs input and/or is coupled
       export WW3ATMINP='CPL'
-      export WW3ICEINP='YES'
-      export WW3CURINP='YES'
+      export WW3ICEINP='CPL'
+      export WW3CURINP='CPL'
       #
       if [ "$WW3ICEINP" = "YES" ]; then
       export WAVICEFILE=$CDUMP.t$((cyc))z.seaice.5min.grib2
