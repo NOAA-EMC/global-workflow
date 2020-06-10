@@ -306,7 +306,7 @@ default_resources: &default_resources
 
   run_coupled_fcst: !JobRequest
     - batch_memory: "1024M"
-      mpi_ranks: !icalc doc.fv3_gfs_settings.ATMPETS+doc.fv3_gfs_settings.OCNPETS+doc.fv3_gfs_settings.ICEPETS+doc.fv3_gfs_settings.WAVPETS
+      mpi_ranks: !icalc doc.fv3_gfs_settings.ATMPETS+doc.ocn_settings.OCNPETS+doc.ice_settings.ICEPETS+doc.wave_settings.WAVPETS
       max_ppn: !icalc doc.gfs_resource_table.gfsfcst_ppn
       OMP_NUM_THREADS: !icalc doc.fv3_gfs_settings.layout.nth
       walltime: !icalc doc.gfs_resource_table.coupfcst_wall
@@ -314,7 +314,7 @@ default_resources: &default_resources
 
   run_coupled_medcold: !JobRequest
     - batch_memory: "1024M"
-      mpi_ranks: !icalc doc.fv3_gfs_settings.ATMPETS+doc.fv3_gfs_settings.OCNPETS+doc.fv3_gfs_settings.ICEPETS+doc.fv3_gfs_settings.WAVPETS
+      mpi_ranks: !icalc doc.fv3_gfs_settings.ATMPETS+doc.ocn_settings.OCNPETS+doc.ice_settings.ICEPETS+doc.wave_settings.WAVPETS
       max_ppn: !icalc doc.gfs_resource_table.gfsfcst_ppn
       OMP_NUM_THREADS: !icalc doc.fv3_gfs_settings.layout.nth
       walltime: !icalc doc.gfs_resource_table.coupfcst_medcold_wall

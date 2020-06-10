@@ -184,7 +184,7 @@ suite: !Cycle
 
     wavepost: !TaskArray
       RUN: !calc up.RUN
-      Disable: !calc not doc.settings.cplwav
+      Disable: !calc doc.settings.cplwav=='.false.'
       Dimensions:
         fhr: !calc doc.output_settings.ocnpost_hours
       jgfs_wavepost_fhr_el: !TaskElement
