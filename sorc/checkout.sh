@@ -34,7 +34,8 @@ if [[ ! -d gldas.fd ]] ; then
     rm -f ${topdir}/checkout-gldas.log
     git clone https://github.com/NOAA-EMC/GLDAS.git gldas.fd >> ${topdir}/checkout-gldas.fd.log 2>&1
     cd gldas.fd
-    git checkout gldas_gfsv16_release.v1.2.0
+    #git checkout gldas_gfsv16_release.v1.2.0
+    git checkout feature/orion_port
     cd ${topdir}
 else
     echo 'Skip.  Directory gldas.fd already exists.'
@@ -80,7 +81,7 @@ if [[ ! -d verif-global.fd ]] ; then
     rm -f ${topdir}/checkout-verif-global.log
     git clone --recursive https://github.com/NOAA-EMC/EMC_verif-global.git verif-global.fd >> ${topdir}/checkout-verif-global.log 2>&1
     cd verif-global.fd
-    git checkout verif_global_v1.8.0
+    git checkout verif_global_v1.8.1
     cd ${topdir}
 else
     echo 'Skip. Directory verif-global.fd already exist.'
