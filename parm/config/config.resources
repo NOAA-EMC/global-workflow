@@ -207,7 +207,6 @@ elif [ $step = "chgresfcst" ]; then
     export nth_chgresfcst=1
     export npe_node_chgresfcst=$npe_node_max
     if [[ "$machine" = "WCOSS_DELL_P3" ]]; then export npe_chgresfcst=24 ; fi
-    if [[ "$machine" == "WCOSS_C" ]]; then export memory_chgresfcst="3072M"; fi
 
 elif [ $step = "arch" -o $step = "earc" -o $step = "getic" ]; then
 

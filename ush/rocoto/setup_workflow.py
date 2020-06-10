@@ -308,9 +308,9 @@ def get_hyb_resources(dict_configs):
 
     # These tasks can be run in either or both cycles
     if lobsdiag_forenkf in ['.T.', '.TRUE.']:
-        tasks1 = ['eobs', 'ediag', 'eupd']
+        tasks1 = ['eobs', 'ediag', 'eupd', 'chgresfcst']
     else:
-        tasks1 = ['eobs', 'eomg', 'eupd']
+        tasks1 = ['eobs', 'eomg', 'eupd', 'chgresfcst']
 
     if eupd_cyc in ['BOTH']:
         cdumps = ['gfs', 'gdas']
@@ -342,7 +342,7 @@ def get_hyb_resources(dict_configs):
 
     # These tasks are always run as part of the GDAS cycle
     cdump = 'gdas'
-    tasks2 = ['ecen', 'esfc', 'efcs', 'epos', 'earc', 'chgresfcst']
+    tasks2 = ['ecen', 'esfc', 'efcs', 'epos', 'earc']
     for task in tasks2:
 
         cfg = dict_configs[task]
@@ -473,7 +473,7 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
     deps.append(rocoto.add_dependency(dep_dict))
     dep_dict = {'type': 'task', 'name': '%sanal' % cdump}
     deps.append(rocoto.add_dependency(dep_dict))
-    if dohybvar in ['y', 'Y', 'yes', 'YES']:
+    if dohybvar in ['y', 'Y', 'yes', 'YES'] and cdump == 'gdas':
         dep_dict = {'type': 'task', 'name': '%schgresfcst' % 'gdas', 'offset': '-06:00:00'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
@@ -866,10 +866,10 @@ def get_hyb_tasks(dict_configs, cycledef='enkf'):
     deps1.append(rocoto.add_dependency(dep_dict))
     dep_dict = {'type': 'metatask', 'name': '%sefmn' % cdump}
     deps1.append(rocoto.add_dependency(dep_dict))
-    dependencies1 = rocoto.create_dependency(dep_condition='and', dep=deps2)
+    dependencies1 = rocoto.create_dependency(dep_condition='and', dep=deps1)
     task = wfu.create_wf_task('chgresfcst', cdump=cdump, envar=envars1, dependency=dependencies1, cycledef=cycledef)
 
-    dict_tasks['%schgresfcst ' % cdump] = task
+    dict_tasks['%schgresfcst' % cdump] = task
 
     # efmn, efcs
     deps1 = []
@@ -1113,7 +1113,16 @@ def create_xml(dict_configs):
         dict_hyb_tasks = get_hyb_tasks(dict_configs)
 
         # Removes <memory>&MEMORY_JOB_DUMP</memory> post mortem from hyb tasks
-        hyp_tasks = {'gdaseobs':'gdaseobs', 'gdasediag':'gdasediag', 'gdaseomg':'gdaseomn', 'gdaseupd':'gdaseupd','gdasecen':'gdasecmn','gdasesfc':'gdasesfc','gdasefcs':'gdasefmn','gdasepos':'gdasepmn','gdasearc':'gdaseamn'}
+        hyp_tasks = {'gdaseobs':'gdaseobs',
+                     'gdasediag':'gdasediag',
+                     'gdaseomg':'gdaseomn',
+                     'gdaseupd':'gdaseupd',
+                     'gdasecen':'gdasecmn',
+                     'gdasesfc':'gdasesfc',
+                     'gdasefcs':'gdasefmn',
+                     'gdasepos':'gdasepmn',
+                     'gdasearc':'gdaseamn',
+                     'gdaschgresfcst':'gdaschgresfcst'}
         for each_task, each_resource_string in dict_hyb_resources.iteritems():
             #print each_task,hyp_tasks[each_task]
             #print dict_hyb_tasks[hyp_tasks[each_task]]
