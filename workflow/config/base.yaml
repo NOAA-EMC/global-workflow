@@ -99,7 +99,6 @@ config_base:
     # Build paths relative to $HOMEgfs
     export HOMEgsi="$HOMEgfs"
     export FIXgsi="{doc.places.get('FIXgsi','$HOMEgfs/fix/fix_gsi')}"
-    export HOMEfv3gfs="{doc.places.get('HOMEfv3gfs','$HOMEgfs/sorc/fv3gfs.fd')}"
     export HOMEpost="{doc.places.get('HOMEpost','$HOMEgfs')}"
     export HOMEobsproc_prep="{doc.places.get('HOMEobsproc_prep', '$BASE_GIT/obsproc/obsproc_prep_RB-5.2.0')}"
     export HOMEobsproc_network="{doc.places.get('HOMEobsproc_network', '$BASE_GIT/obsproc/obsproc_global_RB-3.2.0')}"

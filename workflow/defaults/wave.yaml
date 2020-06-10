@@ -4,6 +4,9 @@ wave_defaults: &wave_defaults
      - when: !calc doc.settings.cplwav
        do: 24
      - otherwise: 0
+   COMPONENTRSTwave: gdaswave
+   WAVHINDH: 0
+   RUNMEM: -1
    sigMODE: prep
    waveGRD: 'gwes_glo30m' 
    waveGRDN: '1 2 3'
@@ -12,3 +15,5 @@ wave_defaults: &wave_defaults
    WAV_CUR_HF_DT: 1
    WAV_CUR_HF_FH: 72
    WAV_CUR_CDO_SMOOTH: NO
+   wavempexec: "mpirun -n"
+   wave_mpmd: "cfp"

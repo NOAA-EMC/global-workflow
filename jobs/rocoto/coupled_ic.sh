@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -x
+
 ###############################################################
 ## Abstract:
 ## Create FV3 initial conditions from GFS intitial conditions
@@ -64,8 +66,9 @@ cp -r $ORIGIN_ROOT/$CPL_OCNIC/$CDATE/ocn/$OCNRES/MOM*.nc  $ICSDIR/$CDATE/ocn/
 #Setup Ice IC files 
 cp $ORIGIN_ROOT/$CPL_ICEIC/$CDATE/ice/$ICERES/cice5_model_${ICERESdec}.res_$CDATE.nc $ICSDIR/$CDATE/ice/
 
-if [ $cplwave = ".true." ]; then
-  for grdID in ${$waveGRD}
+if [ $cplwav = ".true." ]; then
+  [[ ! -d $ICSDIR/$CDATE/wav ]] && mkdir -p $ICSDIR/$CDATE/wav
+  for grdID in $waveGRD
   do
     cp $ORIGIN_ROOT/$CPL_WAVIC/$CDATE/wav/$grdID/*restart.$grdID $ICSDIR/$CDATE/wav/
   done
@@ -82,4 +85,6 @@ $NLN $OUTDIR .
 
 ##############################################################
 # Exit cleanly
+
+set +x
 exit 0
