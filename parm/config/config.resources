@@ -8,7 +8,7 @@ if [ $# -ne 1 ]; then
 
     echo "Must specify an input task argument to set resource variables!"
     echo "argument can be any one of the following:"
-    echo "anal analcalc analdiag gldas fcst post vrfy metp arch"
+    echo "anal analcalc analdiag gldas fcst post vrfy metp arch chgresfcst"
     echo "eobs ediag eomg eupd ecen esfc efcs epos earc"
     echo "waveinit waveprep wavepostsbs wavegempaksbs waveawipssbs"
     echo "wavepost waveawips wavestat"
@@ -199,6 +199,15 @@ elif [ $step = "metp" ]; then
     elif [[ "$machine" == "THEIA" ]]; then
             export memory_metp="16384M"
     fi
+
+elif [ $step = "chgresfcst" ]; then
+
+    export wtime_chgresfcst="01:00:00"
+    export npe_chgresfcst=24
+    export nth_chgresfcst=1
+    export npe_node_chgresfcst=$npe_node_max
+    if [[ "$machine" = "WCOSS_DELL_P3" ]]; then export npe_chgresfcst=24 ; fi
+    if [[ "$machine" == "WCOSS_C" ]]; then export memory_chgresfcst="3072M"; fi
 
 elif [ $step = "arch" -o $step = "earc" -o $step = "getic" ]; then
 
