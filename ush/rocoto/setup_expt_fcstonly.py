@@ -115,6 +115,7 @@ Create COMROT experiment directory structure'''
     parser.add_argument('--configdir', help='full path to directory containing the config files', type=str, required=False, default=None)
     parser.add_argument('--gfs_cyc', help='GFS cycles to run', type=int, choices=[0, 1, 2, 4], default=1, required=False)
     parser.add_argument('--partition', help='partition on machine', type=str, required=False, default=None)
+    parser.add_argument('--start', help='restart mode: warm or cold', type=str, choices=['warm', 'cold'], required=False, default='cold')
 
     args = parser.parse_args()
 
@@ -132,6 +133,13 @@ Create COMROT experiment directory structure'''
     expdir = args.expdir if args.expdir is None else os.path.join(args.expdir, pslot)
     gfs_cyc = args.gfs_cyc
     partition = args.partition
+    start = args.start
+
+    # Set restart setting in config.base
+    if start == 'cold':
+      exp_warm_start = '.false.'
+    elif start == 'warm':
+      exp_warm_start = '.true.'
 
     # Set machine defaults
     if machine == 'WCOSS_DELL_P3':
@@ -152,7 +160,6 @@ Create COMROT experiment directory structure'''
         queue_service = 'dev2_transfer'
       chgrp_rstprod = 'YES'
       chgrp_cmd = 'chgrp rstprod'
-      exp_warm_start = '.false.'
     elif machine == 'WCOSS_C':
       base_git = '/gpfs/hps3/emc/global/noscrub/emc.glopara/git'
       base_svn = '/gpfs/hps3/emc/global/noscrub/emc.glopara/svn'
@@ -168,7 +175,6 @@ Create COMROT experiment directory structure'''
       partition_batch = ''
       chgrp_rstprod = 'YES'
       chgrp_cmd = 'chgrp rstprod'
-      exp_warm_start = '.false.'
     elif machine == 'HERA':
       base_git = '/scratch1/NCEPDEV/global/glopara/git'
       base_svn = '/scratch1/NCEPDEV/global/glopara/svn'
@@ -184,12 +190,11 @@ Create COMROT experiment directory structure'''
       partition_batch = ''
       chgrp_rstprod = 'YES'
       chgrp_cmd = 'chgrp rstprod'
-      exp_warm_start = '.false.'
     elif machine == 'ORION':
-      base_git = '/work/noaa/global/kfriedma/glopara/git'
-      base_svn = '/work/noaa/global/kfriedma/glopara/svn'
-      dmpdir = '/work/noaa/global/kfriedma/glopara/dump'
-      nwprod = '/work/noaa/global/kfriedma/glopara/nwpara'
+      base_git = '/work/noaa/global/glopara/git'
+      base_svn = '/work/noaa/global/glopara/svn'
+      dmpdir = '/work/noaa/global/glopara/dump'
+      nwprod = '/work/noaa/global/glopara/nwpara'
       homedir = '/work/noaa/global/$USER'
       stmp = '/work/noaa/stmp/$USER'
       ptmp = '/work/noaa/stmp/$USER'
@@ -200,7 +205,6 @@ Create COMROT experiment directory structure'''
       partition_batch = 'orion'
       chgrp_rstprod = 'NO'          # No rstprod on Orion
       chgrp_cmd = 'ls'
-      exp_warm_start = '.false.'
 
     # COMROT directory
     create_comrot = True
