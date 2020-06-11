@@ -45,9 +45,9 @@ sh ./PDY
 
 export pgmout=OUTPUT.$$
 
-export COMINice=$((COMINice:-$COMROOTp2/omb/prod))
-export COMINwnd=$((COMINwnd:-$COMROOT/gfs/prod))
-export COMIN_WAV_CUR=$((COMIN_WAV_CUR:-$COMROOTp2/rtofs/prod))
+export COMINice=${COMINice:-$COMROOTp2/omb/prod}
+export COMINwnd=${COMINwnd:-$COMROOT/gfs/prod}
+export COMIN_WAV_CUR=${COMIN_WAV_CUR:-$COMROOTp2/rtofs/prod} 
 
 export COMINwave=${COMINwave:-${ROTDIR:?}}
 export COMOUTwave=${COMOUTwave:-${ROTDIR:?}}
@@ -63,8 +63,6 @@ fi
 $HOMEwave/scripts/exwave_init.sh
 
 # Remove temp directories
-if [ "$KEEPDATA" != "YES" ]; then
-  cd $DATAROOT
-  rm -rf $DATA
-fi
+[[ $KEEPDATA = "NO" ]] && rm -rf $DATA
+
 date
