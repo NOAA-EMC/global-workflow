@@ -19,7 +19,8 @@
 #  wave_tar.sh               : tars the spectral and bulletin multiple files  
 #
 # Script history log:
-# 2019-12-06  J-Henrique Alves First Version adapted from HTolman post.sh 2007 
+# 2019-12-06  J-Henrique Alves: First Version adapted from HTolman post.sh 2007 
+# 2020-06-10  J-Henrique Alves: Porting to R&D machine Hera
 #
 # $Id$
 #
@@ -516,49 +517,7 @@
     export GRDIDATA=${DATA}/output_$YMDHMS
     ln -fs $DATA/mod_def.${waveuoutpGRD} mod_def.ww3
 
-    if [ $fhr = $fhrp ]
-    then
-      iwait=0
-      pfile=$COMIN/rundata/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS}
-      while [ ! -s ${pfile} ]; do sleep 10; ((iwait++)) && ((iwait==$iwaitmax)) && break ; echo $iwait; done
-      if [ $iwait -eq $iwaitmax ]; then 
-        echo " FATAL ERROR : NO RAW POINT OUTPUT FILE out_pnt.$waveuoutpGRD
-        echo ' '
-        [[ "$LOUD" = YES ]] && set -x
-        postmsg "$jlogfile" "FATAL ERROR : NO RAW POINT OUTPUT FILE out_pnt.$waveuoutpGRD
-        err=6; export err;${errchk}
-        exit $err
-      fi
-      ln -fs ${pfile} ./out_pnt.${waveuoutpGRD} 
-
-      if [ "$DOSPC_WAV" = 'YES' ]
-      then
-        export dtspec=3600.
-        for buoy in $buoys
-        do
-          echo "$USHwave/wave_outp_spec.sh $buoy $ymdh spec > spec_$buoy.out 2>&1" >> ${fcmdnow}
-        done
-      fi
-  
-      if [ "$DOIBP_WAV" = 'YES' ]
-      then
-        export dtspec=3600.
-        for buoy in $ibpoints
-        do
-          echo "$USHwave/wave_outp_spec.sh $buoy $ymdh ibp > ibp_$buoy.out 2>&1" >> ${fcmdnow}
-        done
-      fi
-
-      if [ "$DOBLL_WAV" = 'YES' ]
-      then
-        export dtspec=3600.
-        for buoy in $buoys
-        do
-          echo "$USHwave/wave_outp_spec.sh $buoy $ymdh bull > bull_$buoy.out 2>&1" >> ${fcmdnow}
-        done
-      fi
-
-    fi
+# Gridded data (main part, need to be run side-by-side with forecast
 
     if [ $fhr = $fhrg ]
     then
@@ -582,13 +541,14 @@
       if [ "$DOGRI_WAV" = 'YES' ]
       then
         nigrd=1
+        if [ ${CFP_MP:-"NO"} = "YES" ]; then nm=0 ; fi # Counter for MP CFP
         for grdID in $waveinterpGRD
         do
           case $grdID in
             glo_15mxt) ymdh_int=`$NDATE -${WAVHINDH} $ymdh`; dt_int=3600.; n_int=9999 ;;
             glo_30mxt) ymdh_int=`$NDATE -${WAVHINDH} $ymdh`; dt_int=3600.; n_int=9999 ;;
           esac
-          echo "$USHwave/wave_grid_interp_sbs.sh $grdID $ymdh_int $dt_int $n_int > grint_$grdID.out 2>&1" >> ${fcmdigrd}.${nigrd}
+            echo "$USHwave/wave_grid_interp_sbs.sh $grdID $ymdh_int $dt_int $n_int > grint_$grdID.out 2>&1" >> ${fcmdigrd}.${nigrd}
           if [ "$DOGRB_WAV" = 'YES' ]
           then
           gribFL=\'`echo ${OUTPARS_WAV}`\'
@@ -596,11 +556,13 @@
               glo_15mxt) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=11 ;;
               glo_30mxt) GRDNAME='global' ; GRDRES=0p50 ; GRIDNR=255  ; MODNR=11 ;;
             esac
-            echo "$USHwave/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDNAME $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdigrd}.${nigrd}
+              echo "$USHwave/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDNAME $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdigrd}.${nigrd}
           fi
-          echo "${fcmdigrd}.${nigrd}" >> ${fcmdnow}
+          echo "pwd" >> ${fcmdnow}
+          echo "${GRIBDATA}/${fcmdigrd}.${nigrd}" >> ${fcmdnow}
           chmod 744 ${fcmdigrd}.${nigrd}
           nigrd=$((nigrd+1)) 
+          if [ ${CFP_MP:-"NO"} = "YES" ]; then nm=`expr $nm + 1` ; fi # Increment counter for fcmdigrd
         done
       fi
 
@@ -620,10 +582,83 @@
               so_20m) GRDNAME='antarc' ; GRDRES=0p33 ; GRIDNR=255  ; MODNR=11   ;;
               glo_15mxt) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=11   ;;
           esac
-          echo "$USHwave/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDNAME $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdnow}
+            echo "$USHwave/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDNAME $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdnow}
         done
       fi
 
+    fi
+
+# Point output part (can be split or become meta-task to reduce resource usage)
+    if [ $fhr = $fhrp ]
+    then
+      iwait=0
+      pfile=$COMIN/rundata/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS}
+      while [ ! -s ${pfile} ]; do sleep 10; ((iwait++)) && ((iwait==$iwaitmax)) && break ; echo $iwait; done
+      if [ $iwait -eq $iwaitmax ]; then
+        echo " FATAL ERROR : NO RAW POINT OUTPUT FILE out_pnt.$waveuoutpGRD
+        echo ' '
+        [[ "$LOUD" = YES ]] && set -x
+        postmsg "$jlogfile" "FATAL ERROR : NO RAW POINT OUTPUT FILE out_pnt.$waveuoutpGRD
+        err=6; export err;${errchk}
+        exit $err
+      fi
+      ln -fs ${pfile} ./out_pnt.${waveuoutpGRD}
+
+      if [ "$DOSPC_WAV" = 'YES' ]
+      then
+        export dtspec=3600.
+        for buoy in $buoys
+        do
+            echo "$USHwave/wave_outp_spec.sh $buoy $ymdh spec > spec_$buoy.out 2>&1" >> ${fcmdnow}
+        done
+      fi
+
+      if [ "$DOIBP_WAV" = 'YES' ]
+      then
+        export dtspec=3600.
+        for buoy in $ibpoints
+        do
+            echo "$USHwave/wave_outp_spec.sh $buoy $ymdh ibp > ibp_$buoy.out 2>&1" >> ${fcmdnow}
+        done
+      fi
+
+      if [ "$DOBLL_WAV" = 'YES' ]
+      then
+        export dtspec=3600.
+        if [ ${CFP_MP:-"NO"} = "YES" ]; then nm=0 ; fi # Counter for MP CFP
+        for buoy in $buoys
+        do
+            echo "$USHwave/wave_outp_spec.sh $buoy $ymdh bull > bull_$buoy.out 2>&1" >> ${fcmdnow}
+        done
+      fi
+
+    fi
+
+    if [ ${CFP_MP:-"NO"} = "YES" ]; then
+      nfile=0
+      ifile=0
+      iline=1
+      ifirst='yes'
+      nlines=$( wc -l ${fcmdnow} | awk '{print $1}' )
+      while [ $iline -le $nlines ]; do
+        line=$( sed -n ''$iline'p' ${fcmdnow} )
+        if [ -z "$line" ]; then  
+          break
+        else
+          if [ "$ifirst" = 'yes' ]; then 
+            echo "#!/bin/sh" > cmdmfile.$nfile 
+            echo "$nfile cmdmfile.$nfile" >> cmdmprog
+            chmod 744 cmdmfile.$nfile
+          fi
+          echo $line >> cmdmfile.$nfile
+          nfile=$(( nfile + 1 ))
+          if [ $nfile -eq $NTASKS ]; then
+            nfile=0 
+            ifirst='no'
+          fi
+          iline=$(( iline + 1 ))
+        fi
+      done
     fi
 
     wavenproc=`wc -l ${fcmdnow} | awk '{print $1}'`
@@ -638,7 +673,11 @@
 
     if [ "$wavenproc" -gt '1' ]
     then
-      ${wavempexec} ${wavenproc} ${wave_mpmd} ${fcmdnow}
+      if [ ${CFP_MP:-"NO"} = "YES" ]; then
+        ${wavempexec} -n ${wavenproc} ${wave_mpmd} cmdmprog
+      else
+        ${wavempexec} ${wavenproc} ${wave_mpmd} ${fcmdnow}
+      fi
       exit=$?
     else
       chmod 744 ${fcmdnow}
@@ -700,15 +739,31 @@
 
 # 6.b Spectral data files
 
+  if [ ${CFP_MP:-"NO"} = "YES" ]; then nm=0; fi
+
   if [ "$DOIBP_WAV" = 'YES' ]
   then
-    echo "$USHwave/wave_tar.sh $WAV_MOD_TAG ibp $Nibp > ${WAV_MOD_TAG}_ibp_tar.out 2>&1 "   >> cmdtarfile
+    if [ ${CFP_MP:-"NO"} = "YES" ]; then
+      echo "$nm $USHwave/wave_tar.sh $WAV_MOD_TAG ibp $Nibp > ${WAV_MOD_TAG}_ibp_tar.out 2>&1 "   >> cmdtarfile
+      nm=$(( nm + 1 ))
+    else
+      echo "$USHwave/wave_tar.sh $WAV_MOD_TAG ibp $Nibp > ${WAV_MOD_TAG}_ibp_tar.out 2>&1 "   >> cmdtarfile
+    fi
   fi
   if [ "$DOSPC_WAV" = 'YES' ]
   then
-    echo "$USHwave/wave_tar.sh $WAV_MOD_TAG spec $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
-    echo "$USHwave/wave_tar.sh $WAV_MOD_TAG bull $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
-    echo "$USHwave/wave_tar.sh $WAV_MOD_TAG cbull $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
+    if [ ${CFP_MP:-"NO"} = "YES" ]; then
+      echo "$nm $USHwave/wave_tar.sh $WAV_MOD_TAG spec $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
+      nm=$(( nm + 1 ))
+      echo "$nm $USHwave/wave_tar.sh $WAV_MOD_TAG bull $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
+      nm=$(( nm + 1 ))
+      echo "$nm $USHwave/wave_tar.sh $WAV_MOD_TAG cbull $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
+      nm=$(( nm + 1 ))
+    else
+      echo "$USHwave/wave_tar.sh $WAV_MOD_TAG spec $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
+      echo "$USHwave/wave_tar.sh $WAV_MOD_TAG bull $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
+      echo "$USHwave/wave_tar.sh $WAV_MOD_TAG cbull $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
+    fi
   fi
 
     wavenproc=`wc -l cmdtarfile | awk '{print $1}'`
@@ -723,7 +778,11 @@
 
     if [ "$wavenproc" -gt '1' ]
     then
-      ${wavempexec} ${wavenproc} ${wave_mpmd} cmdtarfile
+      if [ ${CFP_MP:-"NO"} = "YES" ]; then
+        ${wavempexec} -n ${wavenproc} ${wave_mpmd} cmdtarfile
+      else
+        ${wavempexec} ${wavenproc} ${wave_mpmd} cmdtarfile
+      fi
       exit=$?
     else
       chmod 744 cmdtarfile
