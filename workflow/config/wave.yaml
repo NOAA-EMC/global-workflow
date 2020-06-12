@@ -124,12 +124,12 @@ config_wave:
       export NTASKS={doc.partition_common.resources.run_prep[0].mpi_ranks}
       #
       # # Path to HOME Directory
-      export CODEwave="{doc.places.HOMEgfs}/sorc/fv3gfs.fd/WW3"
+      export CODEwave="{doc.places.HOMEgfs}/sorc/fv3_coupled.fd/WW3"
       export EXECwave="{doc.places.HOMEgfs}/exec"
       export FIXwave="{doc.places.FIXwave}"
       export PARMwave="{doc.places.HOMEgfs}/parm/wave"
       export USHwave="{doc.places.HOMEgfs}/ush"
-      export EXECcode="{doc.places.HOMEgfs}/sorc/fv3gfs.fd/WW3/exec"
+      export EXECcode="{doc.places.HOMEgfs}/sorc/fv3_coupled.fd/WW3/exec"
       #
       export MP_PULSE=0
       
