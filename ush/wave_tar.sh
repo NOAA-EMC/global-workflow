@@ -30,7 +30,7 @@
 
   # Use LOUD variable to turn on/off trace.  Defaults to YES (on).
   export LOUD=${LOUD:-YES}; [[ $LOUD = yes ]] && export LOUD=YES
-  [[ "$LOUD" != YES ]] && set +x
+  [[ "$LOUD" != YES ]] && set -x
 
   cd $DATA
   postmsg "$jlogfile" "Making TAR FILE"
@@ -98,6 +98,7 @@
   set +x
   echo ' '
   echo '   Making tar file ...'
+  set -x
 
   count=0
   countMAX=5
@@ -106,14 +107,12 @@
   while [ "$count" -lt "$countMAX" ] && [ "$tardone" = 'no' ]
   do
     
-    [[ "$LOUD" = YES ]] && set -v
-    # JY nf=`ls $ID.*.$type | wc -l | awk '{ print $1 }'`
     nf=`ls | awk '/'$ID.*.$filext'/ {a++} END {print a}'`
-    if [ "$nf" = "$nb" ]
+    nbm2=$(( $nb - 2 ))
+    if [ $nf -ge $nbm2 ]
     then 
       tar -cf $ID.$cycle.${type}_tar ./$ID.*.$filext
       exit=$?
-      set +v; [[ "$LOUD" = YES ]] && set -x
 
       if  [ "$exit" != '0' ]
       then

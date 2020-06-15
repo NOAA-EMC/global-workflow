@@ -8,7 +8,7 @@ wave_defaults: &wave_defaults
    WAVHINDH: 0
    RUNMEM: -1
    sigMODE: prep
-   waveGRD: 'gwes_glo30m' 
+   waveGRD: 'gwes_30m' 
    waveGRDN: '1 2 3'
    waveGRDG: '10 20 30'
    WAV_CUR_DT: 3
