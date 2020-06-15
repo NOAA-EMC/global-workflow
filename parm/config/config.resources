@@ -203,10 +203,10 @@ elif [ $step = "metp" ]; then
 elif [ $step = "chgresfcst" ]; then
 
     export wtime_chgresfcst="01:00:00"
-    export npe_chgresfcst=24
+    export npe_chgresfcst=3
     export nth_chgresfcst=1
-    export npe_node_chgresfcst=$npe_node_max
-    if [[ "$machine" = "WCOSS_DELL_P3" ]]; then export npe_chgresfcst=24 ; fi
+    export npe_node_chgresfcst=1
+    if [[ "$machine" = "WCOSS_DELL_P3" ]]; then export nth_chgresfcst=28 ; fi
 
 elif [ $step = "arch" -o $step = "earc" -o $step = "getic" ]; then
 
