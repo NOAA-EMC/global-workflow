@@ -541,7 +541,6 @@
       if [ "$DOGRI_WAV" = 'YES' ]
       then
         nigrd=1
-        if [ ${CFP_MP:-"NO"} = "YES" ]; then nm=0 ; fi # Counter for MP CFP
         for grdID in $waveinterpGRD
         do
           case $grdID in
@@ -562,7 +561,6 @@
           echo "${GRIBDATA}/${fcmdigrd}.${nigrd}" >> ${fcmdnow}
           chmod 744 ${fcmdigrd}.${nigrd}
           nigrd=$((nigrd+1)) 
-          if [ ${CFP_MP:-"NO"} = "YES" ]; then nm=`expr $nm + 1` ; fi # Increment counter for fcmdigrd
         done
       fi
 
@@ -625,7 +623,6 @@
       if [ "$DOBLL_WAV" = 'YES' ]
       then
         export dtspec=3600.
-        if [ ${CFP_MP:-"NO"} = "YES" ]; then nm=0 ; fi # Counter for MP CFP
         for buoy in $buoys
         do
             echo "$USHwave/wave_outp_spec.sh $buoy $ymdh bull > bull_$buoy.out 2>&1" >> ${fcmdnow}
