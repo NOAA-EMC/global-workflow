@@ -106,7 +106,6 @@ cd ${pwd}/../jobs               ||exit 8
     $LINK ../sorc/gsi.fd/jobs/JGLOBAL_ANALYSIS           .
     $LINK ../sorc/gsi.fd/jobs/JGLOBAL_ANALCALC           .
     $LINK ../sorc/gsi.fd/jobs/JGLOBAL_ANALDIAG           .
-    $LINK ../sorc/gsi.fd/jobs/JGLOBAL_CHGRESFCST         .
     $LINK ../sorc/gsi.fd/jobs/JGLOBAL_ENKF_SELECT_OBS    .
     $LINK ../sorc/gsi.fd/jobs/JGLOBAL_ENKF_ANALDIAG      .
     $LINK ../sorc/gsi.fd/jobs/JGLOBAL_ENKF_INNOVATE_OBS  .
@@ -115,11 +114,11 @@ cd ${pwd}/../jobs               ||exit 8
     $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_SURFACE         .    
     $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_FCST            .
     $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_POST            .
+    $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_CHGRES          .
 cd ${pwd}/../scripts            ||exit 8
     $LINK ../sorc/gsi.fd/scripts/exglobal_analysis_fv3gfs.sh.ecf           .
     $LINK ../sorc/gsi.fd/scripts/exglobal_analcalc_fv3gfs.sh.ecf           .
     $LINK ../sorc/gsi.fd/scripts/exglobal_analdiag_fv3gfs.sh.ecf           .
-    $LINK ../sorc/gsi.fd/scripts/exglobal_chgresfcst_fv3gfs.sh.ecf         .
     $LINK ../sorc/gsi.fd/scripts/exglobal_innovate_obs_fv3gfs.sh.ecf       .
     $LINK ../sorc/gsi.fd/scripts/exglobal_enkf_innovate_obs_fv3gfs.sh.ecf  .
     $LINK ../sorc/gsi.fd/scripts/exglobal_enkf_update_fv3gfs.sh.ecf        .
@@ -127,6 +126,7 @@ cd ${pwd}/../scripts            ||exit 8
     $LINK ../sorc/gsi.fd/scripts/exglobal_enkf_surface_fv3gfs.sh.ecf       .
     $LINK ../sorc/gsi.fd/scripts/exglobal_enkf_fcst_fv3gfs.sh.ecf          .
     $LINK ../sorc/gsi.fd/scripts/exglobal_enkf_post_fv3gfs.sh.ecf          .
+    $LINK ../sorc/gsi.fd/scripts/exglobal_enkf_chgres_fv3gfs.sh.ecf        .
 cd ${pwd}/../fix                ||exit 8
     [[ -d fix_gsi ]] && rm -rf fix_gsi
     $LINK ../sorc/gsi.fd/fix  fix_gsi

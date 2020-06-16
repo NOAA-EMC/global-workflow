@@ -54,7 +54,7 @@ def main():
     #wav_steps_awips = ['waveawipssbs', 'waveawips']
 # From gfsv16b latest
 #    gfs_steps = ['prep', 'anal', 'gldas', 'fcst', 'postsnd', 'post', 'awips', 'gempak', 'vrfy', 'metp', 'arch']
-    hyb_steps = ['eobs', 'ediag', 'eomg', 'eupd', 'ecen', 'esfc', 'efcs', 'chgresfcst', 'epos', 'earc']
+    hyb_steps = ['eobs', 'ediag', 'eomg', 'eupd', 'ecen', 'esfc', 'efcs', 'echgres', 'epos', 'earc']
 
     steps = gfs_steps + hyb_steps if _base.get('DOHYBVAR', 'NO') == 'YES' else gfs_steps
     steps = steps + metp_steps if _base.get('DO_METP', 'NO') == 'YES' else steps
@@ -308,9 +308,9 @@ def get_hyb_resources(dict_configs):
 
     # These tasks can be run in either or both cycles
     if lobsdiag_forenkf in ['.T.', '.TRUE.']:
-        tasks1 = ['eobs', 'ediag', 'eupd', 'chgresfcst']
+        tasks1 = ['eobs', 'ediag', 'eupd', 'echgres']
     else:
-        tasks1 = ['eobs', 'eomg', 'eupd', 'chgresfcst']
+        tasks1 = ['eobs', 'eomg', 'eupd', 'echgres']
 
     if eupd_cyc in ['BOTH']:
         cdumps = ['gfs', 'gdas']
@@ -474,7 +474,7 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
     dep_dict = {'type': 'task', 'name': '%sanal' % cdump}
     deps.append(rocoto.add_dependency(dep_dict))
     if dohybvar in ['y', 'Y', 'yes', 'YES'] and cdump == 'gdas':
-        dep_dict = {'type': 'task', 'name': '%schgresfcst' % 'gdas', 'offset': '-06:00:00'}
+        dep_dict = {'type': 'task', 'name': '%sechgres' % 'gdas', 'offset': '-06:00:00'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
     else:
@@ -880,16 +880,16 @@ def get_hyb_tasks(dict_configs, cycledef='enkf'):
 
     dict_tasks['%sefmn' % cdump] = task
 
-    # chgresfcst
+    # echgres
     deps1 = []
     dep_dict = {'type': 'task', 'name': '%sfcst' % cdump}
     deps1.append(rocoto.add_dependency(dep_dict))
     dep_dict = {'type': 'metatask', 'name': '%sefmn' % cdump}
     deps1.append(rocoto.add_dependency(dep_dict))
     dependencies1 = rocoto.create_dependency(dep_condition='and', dep=deps1)
-    task = wfu.create_wf_task('chgresfcst', cdump=cdump, envar=envars1, dependency=dependencies1, cycledef=cycledef)
+    task = wfu.create_wf_task('echgres', cdump=cdump, envar=envars1, dependency=dependencies1, cycledef=cycledef)
 
-    dict_tasks['%schgresfcst' % cdump] = task
+    dict_tasks['%sechgres' % cdump] = task
 
     # epmn, epos
     deps = []
@@ -1122,7 +1122,7 @@ def create_xml(dict_configs):
                      'gdasefcs':'gdasefmn',
                      'gdasepos':'gdasepmn',
                      'gdasearc':'gdaseamn',
-                     'gdaschgresfcst':'gdaschgresfcst'}
+                     'gdasechgres':'gdasechgres'}
         for each_task, each_resource_string in dict_hyb_resources.iteritems():
             #print each_task,hyp_tasks[each_task]
             #print dict_hyb_tasks[hyp_tasks[each_task]]
