@@ -139,7 +139,7 @@ export prevday=`$NDATE -24 ${PDY}00 | cut -c1-8`
 ##fi
 
 # ERIC ENGLE 05/30/2018 - PATCH FOR FV3GFS WINTER 17/18 PARALLEL
-export range=both
+export range=short
 
 #if [ $cyc -eq 00 -o $cyc -eq 12 ]; then
 # if [ $cyc -eq 00 ]; then
