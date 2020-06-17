@@ -10,6 +10,9 @@
 # Abstract: Creates current binary data for forcing WW3
 #
 # Script history log:
+# 2019-10-02  J-Henrique Alves: origination, first version
+# 2019-11-02  J-Henrique Alves Ported to global-workflow.
+# 2020-06-10  J-Henrique Alves Ported R&D machine Hera   
 #
 # $Id$
 #
