@@ -230,7 +230,5 @@
   echo ' '
   [[ "$LOUD" = YES ]] && set -x
 
-  msg="$job completed normally"
-  postmsg "$jlogfile" "$msg"
-
+  exit $err
 # End of MWW3 init config script ------------------------------------------- #
