@@ -97,11 +97,6 @@ config_fcst:
     export nwat={doc.fv3_gfs_settings.phy_dependent_var.nwat}
 
     # ocean and ice variables
-    export CPL_ATMIC={doc.fv3_gfs_settings.CPL_ATMIC}
-    export CPL_ICEIC={doc.ice_settings.CPL_ICEIC}
-    export CPL_OCNIC={doc.ocn_settings.CPL_OCNIC}
-    export CPL_WAVIC={doc.wave_settings.CPL_WAVIC}
-
     export ICERES={doc.ice_settings.ICERES}
     export OCNRES={doc.ocn_settings.OCNRES}
 
