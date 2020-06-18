@@ -9,7 +9,7 @@ echo "BEGIN: config.prep"
 . $EXPDIR/config.resources prep
 
 export DO_MAKEPREPBUFR="YES"   # if NO, will copy prepbufr from globaldump
-
+export dictionaries_ver=v3.3.0
 
 # Relocation and syndata QC
 export PROCESS_TROPCY=${PROCESS_TROPCY:-NO}

@@ -38,11 +38,10 @@ elif [ $machine = "hera" ]; then
     FIX_DIR="/scratch1/NCEPDEV/global/glopara/fix"
 fi
 cd ${pwd}/../fix                ||exit 8
-for dir in fix_am fix_fv3 fix_orog fix_fv3_gmted2010 fix_verif ; do
+for dir in fix_am fix_chem fix_fv3 fix_fv3_gmted2010 fix_orog fix_sfc_climo fix_verif ; do
     [[ -d $dir ]] && rm -rf $dir
+    $LINK $FIX_DIR/$dir $dir
 done
-$LINK $FIX_DIR/* .
-
 
 #---------------------------------------
 #--add files from external repositories

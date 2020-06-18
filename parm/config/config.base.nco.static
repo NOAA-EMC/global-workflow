@@ -12,7 +12,7 @@ export machine="WCOSS_DELL_P3"
 export RUN_ENVIR="nco"
 
 # Account, queue, etc.
-export ACCOUNT="FV3GFS-T2O"
+export ACCOUNT="GFS-T2O"
 export QUEUE="prod"
 export QUEUE_ARCH="dev_transfer"
 
