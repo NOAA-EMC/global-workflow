@@ -1,5 +1,6 @@
 wave_defaults: &wave_defaults
    MOD: ww3
+   CPL_WAVIC: CFSR
    WAVPETS: !FirstTrue
      - when: !calc doc.settings.cplwav
        do: 24

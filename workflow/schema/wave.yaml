@@ -7,3 +7,6 @@ wave_settings_template: !Template &wave_settings_template
     type: string
     allowed: [ ww3, swan ]
     description: "model selection for wave"
+  CPL_WAVIC:
+    type: string
+    allowed: [ 'CFSR' ]

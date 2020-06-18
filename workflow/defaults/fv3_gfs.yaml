@@ -3,6 +3,7 @@ fv3_gfs_defaults: &fv3_gfs_defaults
   CASE: C384
   LEVS: 65
   CCPP_SUITE: IPD
+  CPL_ATMIC: CFSR
   FHCYC: 24
   FHCYC_GDAS: 1
   FHCYC_GFS: 24
