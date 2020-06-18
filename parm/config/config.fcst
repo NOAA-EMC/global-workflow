@@ -98,15 +98,27 @@ if [ $lsm -eq 2 -o $lsm -eq 3 ]; then
     export lheatstrg=".false."
     export landice=".false."
 else
-    export lheatstrg=".true."
-    export landice=".true."
+    if [[ "$CCPP_SUITE" == "FV3_GSD_v0" || "$CCPP_SUITE" == "FV3_GSD_noah" ]] ; then
+        export lheatstrg=".false."    ##JKH   
+        export landice=".false."      ##JKH
+    else
+        export lheatstrg=".true."    
+        export landice=".true."
+    fi
 fi
 
 # Radiation options 
-export IAER=5111    ;#spectral band mapping method for aerosol optical properties
-export iovr_lw=3    ;#de-correlation length cloud overlap method (Barker, 2008)
-export iovr_sw=3    ;#de-correlation length cloud overlap method (Barker, 2008)
-export icliq_sw=2   ;#cloud optical coeffs from AER's newer version v3.9-v4.0 for hu and stamnes
+if [[ "$CCPP_SUITE" == "FV3_GSD_v0" || "$CCPP_SUITE" == "FV3_GSD_noah" ]] ; then
+    export IAER=111    ## JKH 
+    export iovr_lw=1   ## JKH 
+    export iovr_sw=1   ## JKH
+    export icliq_sw=1  ## JKH
+else
+    export IAER=5111    ;#spectral band mapping method for aerosol optical properties
+    export iovr_lw=3    ;#de-correlation length cloud overlap method (Barker, 2008)
+    export iovr_sw=3    ;#de-correlation length cloud overlap method (Barker, 2008)
+    export icliq_sw=2   ;#cloud optical coeffs from AER's newer version v3.9-v4.0 for hu and stamnes
+fi
 
 # CCPP configuration
 export output_1st_tstep_rst=".false."                                        #JKH
@@ -115,11 +127,9 @@ export output_1st_tstep_rst=".false."                                        #JK
 if [[ "$CCPP_SUITE" == "FV3_GSD_v0" || "$CCPP_SUITE" == "FV3_GSD_noah" ]] ; then
 	export imfdeepcnv=3
 	export imfshalcnv=3
-####        export lheatstrg=.false.
 else
 	export imfdeepcnv=2
 	export imfshalcnv=2
-####        export lheatstrg=.true.
 fi
 
 # Microphysics configuration
@@ -139,9 +149,6 @@ elif [ $imp_physics -eq 6 ]; then # WSM6
     export nwat=6
 
 elif [ $imp_physics -eq 8 ]; then # Thompson
-    export lgfdlmprad=.false.     # Newly added -- Jian
-    export effr_in=.false.        # Newly added -- Jian
-    export nwat=6
     if [[ "$CCPP_SUITE" == "FV3_GSD_v0" || "$CCPP_SUITE" == "FV3_GSD_noah" ]] ; then
         export ncld=5
         export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_gsd"
@@ -160,6 +167,7 @@ elif [ $imp_physics -eq 8 ]; then # Thompson
     else
         export ncld=2
         export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_thompson${tbf}"
+        export nwat=6
     fi
 
 elif [ $imp_physics -eq 11 ]; then # GFDL
@@ -228,7 +236,11 @@ if [[ "$CDUMP" == "gdas" ]] ; then # GDAS cycle specific parameters
 
     # Variables used in DA cycling
     if [ $QUILTING = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]; then
-        export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_da"
+        if [[ "$CCPP_SUITE" == "FV3_GSD_v0" || "$CCPP_SUITE" == "FV3_GSD_noah" ]] ; then
+          export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_da_gsd"
+        else
+          export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_da"
+        fi
     else
         export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_da_orig"
     fi
