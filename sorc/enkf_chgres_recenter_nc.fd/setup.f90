@@ -23,6 +23,7 @@
  implicit none
 
  integer                           :: istat
+ character(len=500)                :: filenamelist
 
  namelist /chgres_setup/ i_output, j_output, input_file, output_file, &
                       terrain_file, vcoord_file, cld_amt
@@ -30,8 +31,9 @@
  cld_amt = .false. ! default option
 
  print*
- print*,"OPEN SETUP NAMELIST."
- open(43, file="./chgres_nc_gauss.nml", iostat=istat)
+ call getarg(1,filenamelist)
+ print*,"OPEN SETUP NAMELIST ",trim(filenamelist)
+ open(43, file=filenamelist, iostat=istat)
  if (istat /= 0) then
    print*,"FATAL ERROR OPENING NAMELIST FILE. ISTAT IS: ",istat
    stop 
