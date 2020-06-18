@@ -30,6 +30,7 @@ export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
 
 export COMPONENTwave=${COMPONENTwave:-${RUN}wave}
+export WAV_MOD_TAG=${COMPONENTwave}${waveMEMB}
 
 # Add default errchk = err_chk
 export errchk=${errchk:-err_chk}

@@ -20,10 +20,14 @@ config_waveprep:
       
       export FUNIPNT="T"
       # Unified output server type (see ww3_multi.inp in WW3 repo)
-      export PNTSRV="1"
+      export IOSRV="1"
       # # Flag for dedicated output process for unified points
       export FPNTPROC="T"
       # # Flag for grids sharing dedicated output processes
       export FGRDPROC="F"
+      # Flag for masking computation in two-way nesting 
+      export FLAGMASKCOMP="F"
+      # Flag for masking at printout time. 
+      export FLAGMASKOUT="F"
       #
       echo "END: config.waveprep"
