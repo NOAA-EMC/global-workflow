@@ -96,6 +96,10 @@ config_fcst:
     export do_sat_adj="{tools.fort(doc.fv3_gfs_settings.phy_dependent_var.do_sat_adjust)}"
     export nwat={doc.fv3_gfs_settings.phy_dependent_var.nwat}
 
+    # ocean and ice variables
+    export ICERES={doc.ice_settings.ICERES}
+    export OCNRES={doc.ocn_settings.OCNRES}
+
     # gfs_physics_nml section
     export h2o_phys="{tools.fort(doc.fv3_gfs_settings.h2o_phys)}"
 
