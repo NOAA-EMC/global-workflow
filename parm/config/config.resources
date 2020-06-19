@@ -204,9 +204,8 @@ elif [ $step = "echgres" ]; then
 
     export wtime_echgres="01:00:00"
     export npe_echgres=3
-    export nth_echgres=1
+    export nth_echgres=$npe_node_max
     export npe_node_echgres=1
-    if [[ "$machine" = "WCOSS_DELL_P3" ]]; then export nth_echgres=28 ; fi
 
 elif [ $step = "arch" -o $step = "earc" -o $step = "getic" ]; then
 
