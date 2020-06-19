@@ -948,9 +948,9 @@
   if [ -f ww3_multi.inp ]
   then
     echo " Copying file ww3_multi.${WAV_MOD_TAG}.inp to $COMOUT "
-    cp ww3_multi.inp ${COMOUT}/rundata/ww3_multi.${WAV_MOD_TAG}.$cycle.inp
+    cp ww3_multi.inp ${COMOUT}/rundata/ww3_multi.${WAV_MOD_TAG}.${cycle}.inp
   else
-    echo "FATAL ERROR: file ww3_multi.${WAV_MOD_TAG}.$cycle.inp NOT CREATED, ABORTING"
+    echo "FATAL ERROR: file ww3_multi.${WAV_MOD_TAG}.${cycle}.inp NOT CREATED, ABORTING"
     err=13;export err;${errchk}
   fi 
 
