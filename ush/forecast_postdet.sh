@@ -509,14 +509,13 @@ WW3_postdet()
 
   #Link mod_def files for wave grids 
   array=($WAVECUR_FID $WAVEICE_FID $WAVEWND_FID $waveuoutpGRD $waveGRD $waveesmfGRD $wavesbsGRD $wavepostGRD $waveinterpGRD)
+  echo "Wave Grids: $WAVECUR_FID $WAVEICE_FID $WAVEWND_FID $waveuoutpGRD $waveGRD $waveesmfGRD $wavesbsGRD $wavepostGRD $waveinterpGRD"
   grdALL=`printf "%s\n" "${array[@]}" | sort -u | tr '\n' ' '`
   for wavGRD in ${grdALL}; do
-    $NLN $ROTDIR/${COMPONENTwave}.${PDY}/${cyc}/rundata/${COMPONENTwave}.mod_def.$wavGRD $DATA/mod_def.$wavGRD
+    $NLN $ROTDIR/${COMPONENTwave}.${PDY}/${cyc}/rundata/${COMPONENTwave}.mod_def.$waveGRD $DATA/mod_def.$waveGRD
   done
 
   #Copy initial condition files: 
-  $NCP -pf $ICSDIR/$CDATE/wav/$wavGRD/*.restart.$wavGRD $DATA/restart.$wavGRD
-
   for wavGRD in $waveGRD ; do
     # Link wave IC for current cycle
     # $NLN ${WRDIR}/${sPDY}.${scyc}0000.restart.${wavGRD} $DATA/restart.${wavGRD}
