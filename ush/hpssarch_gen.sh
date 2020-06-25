@@ -188,6 +188,15 @@ if [ $type = "gdas" ]; then
   echo  "${dirname}${head}pgrb2.1p00.anl.idx         " >>gdas.txt
   echo  "${dirname}${head}atmanl${SUFFIX}            " >>gdas.txt
   echo  "${dirname}${head}sfcanl${SUFFIX}            " >>gdas.txt
+  if [ -s $ROTDIR/${dirpath}${head}atmanl.ensres${SUFFIX} ]; then
+     echo  "${dirname}${head}atmanl.ensres${SUFFIX}  " >>gdas.txt
+  fi
+  if [ -s $ROTDIR/${dirpath}${head}atma003.ensres${SUFFIX} ]; then
+     echo  "${dirname}${head}atma003.ensres${SUFFIX}  " >>gdas.txt
+  fi
+  if [ -s $ROTDIR/${dirpath}${head}atma009.ensres${SUFFIX} ]; then
+     echo  "${dirname}${head}atma000.ensres${SUFFIX}  " >>gdas.txt
+  fi
   if [ -s $ROTDIR/${dirpath}${head}cnvstat ]; then
      echo  "${dirname}${head}cnvstat                 " >>gdas.txt
   fi
@@ -380,8 +389,8 @@ if [ $type = "enkfgdas" -o $type = "enkfgfs" ]; then
             if [ -s $ROTDIR/${dirpath}${head}atmanl${SUFFIX} ] ; then
                 echo "${dirname}${head}atmanl${SUFFIX}      " >>enkf${CDUMP}_grp${n}.txt
             fi
-	    if [ -s $ROTDIR/${dirpath}${head}atminc${SUFFIX} ] ; then
-		echo "${dirname}${head}atminc${SUFFIX}      " >>enkf${CDUMP}_grp${n}.txt
+	    if [ -s $ROTDIR/${dirpath}${head}ratminc${SUFFIX} ] ; then
+		echo "${dirname}${head}ratminc${SUFFIX}      " >>enkf${CDUMP}_grp${n}.txt
 	    fi
          fi
          if [ -s $ROTDIR/${dirpath}${head}ratminc${SUFFIX} ] ; then
@@ -393,8 +402,8 @@ if [ $type = "enkfgdas" -o $type = "enkfgfs" ]; then
              if [ -s $ROTDIR/${dirpath}${head}atma00${FHR}${SUFFIX} ] ; then
                  echo "${dirname}${head}atma00${FHR}${SUFFIX}      " >>enkf${CDUMP}_grp${n}.txt
              fi
-             if [ -s $ROTDIR/${dirpath}${head}atmi00${FHR}${SUFFIX} ] ; then
-                 echo "${dirname}${head}atmi00${FHR}${SUFFIX}      " >>enkf${CDUMP}_grp${n}.txt
+             if [ -s $ROTDIR/${dirpath}${head}ratmi00${FHR}${SUFFIX} ] ; then
+                 echo "${dirname}${head}ratmi00${FHR}${SUFFIX}      " >>enkf${CDUMP}_grp${n}.txt
              fi
          fi
          if [ -s $ROTDIR/${dirpath}${head}ratmi00${FHR}${SUFFIX} ] ; then
