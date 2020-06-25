@@ -87,7 +87,7 @@ tbf=""
 if [ $satmedmf = ".true." ]; then tbf="_satmedmf" ; fi
 
 # Land surface model. (3--RUCLSM, landice=F;) (2--NoahMP, landice=F); (1--Noah, landice=T)
-if [ $CCPP_SUITE = "FV3_GSD_v0" ]; then
+if [[ "$CCPP_SUITE" == "FV3_GSD_v0" ]]; then
     export lsm=3
     export lsoil_lsm=9
 else
@@ -271,9 +271,9 @@ elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
 
     # Write more variables to output
     if [ $QUILTING = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]; then
-        if [ $CCPP_SUITE = "FV3_GSD_v0" ]; then
+        if [[ "$CCPP_SUITE" == "FV3_GSD_v0" ]]; then
             export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_gsd_ruc"
-        elif [ $CCPP_SUITE = "FV3_GSD_noah" ]; then
+        elif [[ "$CCPP_SUITE" == "FV3_GSD_noah" ]]; then
             export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_gsd"
         else
             export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table"
