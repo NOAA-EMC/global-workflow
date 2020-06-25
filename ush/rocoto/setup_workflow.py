@@ -484,7 +484,7 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
     else:
-        dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
     task = wfu.create_wf_task('analcalc', cdump=cdump, envar=envars, dependency=dependencies)
 
     dict_tasks['%sanalcalc' % cdump] = task
