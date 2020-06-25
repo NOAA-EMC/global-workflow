@@ -69,8 +69,8 @@ export HOMEgsi="$HOMEgfs"
 export FIXgsi="$HOMEgfs/fix/fix_gsi"
 export HOMEfv3gfs="$HOMEgfs/sorc/fv3gfs.fd"
 export HOMEpost="$HOMEgfs"
-export HOMEobsproc_prep="$BASE_GIT/obsproc/gfsv16b/obsproc_prep.iss70457.netcdfhistory"
-export HOMEobsproc_network="$BASE_GIT/obsproc/gfsv16b/obsproc_global.iss71402.supportGFSv16"
+export HOMEobsproc_prep="$BASE_GIT/obsproc/gfsv16/obsproc_prep.iss70457.netcdfhistory_new"
+export HOMEobsproc_network="$BASE_GIT/obsproc/gfsv16/obsproc_global.iss71402.supportGFSv16"
 export HOMEobsproc_global=$HOMEobsproc_network
 export BASE_VERIF="$BASE_SVN/verif/global/tags/vsdb"
 
@@ -210,7 +210,7 @@ export DO_GLDAS="YES"
 export gldas_cyc=00
 
 # run wave component
-export DO_WAVE=YES
+export DO_WAVE="YES"
 export WAVE_CDUMP="both"
 
 # Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL
