@@ -179,6 +179,8 @@ if [[ "$RUNMOS" == "YES" && "$CDUMP" == "gfs" ]]; then
         export RUNGFSMOSSH="$HOMEgfs/scripts/run_gfsmos_master.sh.cray"
     elif [ $machine = "WCOSS_DELL_P3" ] ; then
         export RUNGFSMOSSH="$HOMEgfs/scripts/run_gfsmos_master.sh.dell"
+    elif [ $machine = "HERA" ] ; then
+        export RUNGFSMOSSH="$HOMEgfs/scripts/run_gfsmos_master.sh.hera"
     else
         echo "WARNING: MOS package is not enabled on $machine!"
         export RUNMOS="NO"
