@@ -512,7 +512,7 @@ WW3_postdet()
   echo "Wave Grids: $WAVECUR_FID $WAVEICE_FID $WAVEWND_FID $waveuoutpGRD $waveGRD $waveesmfGRD $wavesbsGRD $wavepostGRD $waveinterpGRD"
   grdALL=`printf "%s\n" "${array[@]}" | sort -u | tr '\n' ' '`
   for wavGRD in ${grdALL}; do
-    $NLN $ROTDIR/${COMPONENTwave}.${PDY}/${cyc}/rundata/${COMPONENTwave}.mod_def.$waveGRD $DATA/mod_def.$waveGRD
+    $NLN $ROTDIR/${COMPONENTwave}.${PDY}/${cyc}/rundata/${COMPONENTwave}.mod_def.$wavGRD $DATA/mod_def.$wavGRD
   done
 
   #Copy initial condition files: 
@@ -586,9 +586,11 @@ MOM6_postdet()
         $NCP -pf $FIXmom/$OCNRES/* $DATA/INPUT/
 
         # Copy MOM6 input file 
-        $NCP -pf $HOMEgfs/parm/mom6/MOM_input_$OCNRES $DATA/INPUT/MOM_input 
-
-        #TODO: if cplwav, copy MOM_input_$OCNRES_wav 
+        if [ $cplwav = ".true." ] ; then
+          $NCP -pf $HOMEgfs/parm/mom6/MOM_input_${OCNRES}_wav $DATA/INPUT/MOM_input
+        else 
+          $NCP -pf $HOMEgfs/parm/mom6/MOM_input_$OCNRES $DATA/INPUT/MOM_input 
+        fi 
         #TODO: update to make MOM_input configurable 
 
 	# Copy coupled grid_spec

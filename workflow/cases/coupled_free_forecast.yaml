@@ -21,7 +21,7 @@ case:
     OCN_INTERVAL: 24
     FHOUT_GFS: 6
     FHMIN_GFS: 0
-    FHMAX_GFS: 840
+    FHMAX_GFS: 48
     FHMAX_HF_GFS: 0
     FHOUT_HF_GFS: -1
 
@@ -42,8 +42,6 @@ case:
        WGRP: 1
        WGRP_NTASKS: 24
        WRTIOBUF: "32M"
-    OCNPETS: 120
-    ICEPETS: 48
     cdmbgwd: "1.0,1.2"
 
   ocn_settings:

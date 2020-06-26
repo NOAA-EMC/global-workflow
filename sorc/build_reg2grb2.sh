@@ -1,6 +1,11 @@
 #! /usr/bin/env bash
 set -x
 
+# Check final exec folder exists
+if [ ! -d "../exec" ]; then
+  mkdir ../exec
+fi
+
 source ./machine-setup.sh > /dev/null 2>&1
 
 source ../modulefiles/modulefile.reg2grb2.$target

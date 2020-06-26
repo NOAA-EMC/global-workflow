@@ -47,6 +47,10 @@ module load netcdf_parallel/4.7.4
 module load hdf5_parallel/1.10.6
 module load wgrib/2.0.8
 module load grib_util/1.2.0
+
+#For ocean post: 
+module load ncl/6.6.2 
+module load nco/4.8.1
 ##
 ### load cmake
 ###

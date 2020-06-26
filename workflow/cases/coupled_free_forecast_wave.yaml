@@ -23,7 +23,7 @@ case:
     OCN_INTERVAL: 24
     FHOUT_GFS: 6
     FHMIN_GFS: 0
-    FHMAX_GFS: 120
+    FHMAX_GFS: 48
     FHMAX_HF_GFS: 0
     FHOUT_HF_GFS: -1
 
@@ -51,6 +51,9 @@ case:
 
   ice_settings:
     ICEPETS: 48
+
+  wave_settings: 
+    WAVPETS: 40
 
   post:
     downset: 2

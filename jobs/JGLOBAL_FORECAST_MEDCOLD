@@ -62,6 +62,8 @@ if [ $RUN_ENVIR = "nco" ]; then
     export RSTDIR=${GESROOT:?}/$envir
 fi
 
+export COMPONENTwave=${COMPONENTwave:-${RUN}wave}
+export WAV_MOD_TAG=${COMPONENTwave}${waveMEMB}
 
 ##############################################
 # Begin JOB SPECIFIC work
