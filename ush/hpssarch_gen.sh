@@ -195,7 +195,7 @@ if [ $type = "gdas" ]; then
      echo  "${dirname}${head}atma003.ensres${SUFFIX}  " >>gdas.txt
   fi
   if [ -s $ROTDIR/${dirpath}${head}atma009.ensres${SUFFIX} ]; then
-     echo  "${dirname}${head}atma000.ensres${SUFFIX}  " >>gdas.txt
+     echo  "${dirname}${head}atma009.ensres${SUFFIX}  " >>gdas.txt
   fi
   if [ -s $ROTDIR/${dirpath}${head}cnvstat ]; then
      echo  "${dirname}${head}cnvstat                 " >>gdas.txt
