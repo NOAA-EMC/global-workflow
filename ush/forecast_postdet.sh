@@ -512,7 +512,7 @@ WW3_postdet()
   echo "Wave Grids: $WAVECUR_FID $WAVEICE_FID $WAVEWND_FID $waveuoutpGRD $waveGRD $waveesmfGRD $wavesbsGRD $wavepostGRD $waveinterpGRD"
   grdALL=`printf "%s\n" "${array[@]}" | sort -u | tr '\n' ' '`
   for wavGRD in ${grdALL}; do
-    $NLN $ROTDIR/${COMPONENTwave}.${PDY}/${cyc}/rundata/${COMPONENTwave}.mod_def.$wavGRD $DATA/mod_def.$wavGRD
+    $NCP $ROTDIR/${COMPONENTwave}.${PDY}/${cyc}/rundata/${COMPONENTwave}.mod_def.$wavGRD $DATA/mod_def.$wavGRD
   done
 
   #Copy initial condition files: 
