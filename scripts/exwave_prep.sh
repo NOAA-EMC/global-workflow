@@ -30,6 +30,7 @@
 # Nov2012 JHAlves - Transitioning to WCOSS                                    #
 # Apr2019 JHAlves - Transitioning to GEFS workflow                            #
 # Nov2019 JHAlves - Merging wave scripts to global workflow                   #
+# Jun2020 JHAlves - Porting to R&D machine Hera                               #
 #                                                                             #
 #   WAV_MOD_ID and WAV_MOD_TAG replace modID. WAV_MOD_TAG                     # 
 #   is used for ensemble-specific I/O. For deterministic                      #
@@ -105,7 +106,7 @@
   RSTOFFSET=$(( ${RSTOFFSET} + ${RSTIOFF_WAV} ))
   ymdh_rst_ini=`$NDATE ${RSTOFFSET} $YMDH`
   RST2OFFSET=$(( DT_2_RST_WAV / 3600 ))
-  ymdh_rst2_ini=`$NDATE ${RST2OFFSET} $ymdh_rst_ini` # DT2 relative to first-first-cycle restart file
+  ymdh_rst2_ini=`$NDATE ${RST2OFFSET} $YMDH` # DT2 relative to first-first-cycle restart file
 # First restart file for cycling
   time_rst_ini="`echo $ymdh_rst_ini | cut -c1-8` `echo $ymdh_rst_ini | cut -c9-10`0000"
   if [ ${DT_1_RST_WAV} = 1 ]; then
@@ -311,9 +312,15 @@
 # 3.a Gather and pre-process grib2 files 
       ymdh=$ymdh_beg
     
+      if [ ${CFP_MP:-"NO"} = "YES" ]; then nm=0 ; fi # Counter for MP CFP
       while [ "$ymdh" -le "$ymdh_end" ]
       do
-        echo "$USHwave/wave_g2ges.sh $ymdh > grb_$ymdh.out 2>&1" >> cmdfile
+        if [ ${CFP_MP:-"NO"} = "YES" ]; then
+          echo "$nm $USHwave/wave_g2ges.sh $ymdh > grb_$ymdh.out 2>&1" >> cmdfile
+          nm=`expr $nm + 1`
+        else
+          echo "$USHwave/wave_g2ges.sh $ymdh > grb_$ymdh.out 2>&1" >> cmdfile
+        fi
         ymdh=`$NDATE $WAV_WND_HOUR_INC $ymdh`
       done
   
@@ -334,7 +341,11 @@
   
       if [ "$wavenproc" -gt '1' ]
       then
-        ${wavempexec} ${wavenproc} ${wave_mpmd} cmdfile
+        if [ ${CFP_MP:-"NO"} = "YES" ]; then
+          ${wavempexec} -n ${wavenproc} ${wave_mpmd} cmdfile
+        else
+          ${wavempexec} ${wavenproc} ${wave_mpmd} cmdfile
+        fi
         exit=$?
       else
         ./cmdfile
@@ -626,57 +637,57 @@
 # Prepare files for cfp process
       rm -f cmdfile
       touch cmdfile
-      chmod 744 cmfile
+      chmod 744 cmdfile
 
-    ymdh_rtofs=${PDY}00 # RTOFS runs once daily
-    ymdh_end=`$NDATE ${FHMAX_WAV_CUR} ${ymdh_rtofs}`
-    NDATE_DT=${WAV_CUR_HF_DT}
-    FLGHF='T'
+      ymdh_rtofs=${PDY}00 # RTOFS runs once daily use ${PDY}00
+      ymdh_end=`$NDATE ${FHMAX_WAV_CUR} ${PDY}00`
+      NDATE_DT=${WAV_CUR_HF_DT}
+      FLGHF='T'
 
-    while [ "$ymdh_rtofs" -le "$ymdh_end" ]
-    do
+      if [ ${CFP_MP:-"NO"} = "YES" ]; then nm=0 ; fi # Counter for MP CFP
+      while [ "$ymdh_rtofs" -le "$ymdh_end" ]
+      do
 # Timing has to be made relative to the single 00z RTOFS cycle for that PDY
-      fhr_rtofs=`${NHOUR} ${ymdh_rtofs} ${PDY}00`
-      fext='f'
+        fhr_rtofs=`${NHOUR} ${ymdh_rtofs} ${PDY}00`
+        fext='f'
 
-      if [ ${fhr_rtofs} -lt 0 ]
-      then
-# Data from nowcast phase
-        fhr_rtofs=`expr 48 + ${fhr_rtofs}`
-        fext='n'
-      fi
+        fh3_rtofs=`printf "%03d" "${fhr_rtofs#0}"`
 
-      fhr_rtofs=`printf "%03d\n" ${fhr_rtofs}`
+        curfile1h=${COMIN_WAV_CUR}/rtofs_glo_2ds_${fext}${fh3_rtofs}_1hrly_prog.nc
+        curfile3h=${COMIN_WAV_CUR}/rtofs_glo_2ds_${fext}${fh3_rtofs}_3hrly_prog.nc
 
-      curfile1h=${COMIN_WAV_CUR}/rtofs_glo_2ds_${fext}${fhr_rtofs}_1hrly_prog.nc
-      curfile3h=${COMIN_WAV_CUR}/rtofs_glo_2ds_${fext}${fhr_rtofs}_3hrly_prog.nc
+        if [ -s ${curfile1h} ]  && [ "${FLGHF}" = "T" ] ; then
+          curfile=${curfile1h}
+        elif [ -s ${curfile3h} ]; then
+          curfile=${curfile3h}
+          FLGHF='F'
+        else
+          echo ' '
+          set $setoff
+          echo ' '
+          echo '************************************** '
+          echo "*** FATAL ERROR: NO CUR FILE $curfile ***  "
+          echo '************************************** '
+          echo ' '
+          set $seton
+          postmsg "$jlogfile" "FATAL ERROR - NO CURRENT FILE (RTOFS)"
+          err=11;export err;${errchk}
+          exit 0
+          echo ' '
+        fi
 
-      if [ -s ${curfile1h} ]  && [ "${FLGHF}" = "T" ] ; then
-        curfile=${curfile1h}
-      elif [ -s ${curfile3h} ]; then
-        curfile=${curfile3h}
-        FLGHF='F'
-      else
-        echo ' '
-        set $setoff
-        echo ' '
-        echo '************************************** '
-        echo "*** FATAL ERROR: NO CUR FILE $curfile ***  "
-        echo '************************************** '
-        echo ' '
-        set $seton
-        postmsg "$jlogfile" "FATAL ERROR - NO CURRENT FILE (RTOFS)"
-        err=11;export err;${errchk}
-        exit 0
-        echo ' '
-      fi
+        if [ ${CFP_MP:-"NO"} = "YES" ]; then
+          echo "$nm $USHwave/wave_prnc_cur.sh $ymdh_rtofs $curfile $fhr_rtofs > cur_$ymdh_rtofs.out 2>&1" >> cmdfile
+          nm=`expr $nm + 1`
+        else
+          echo "$USHwave/wave_prnc_cur.sh $ymdh_rtofs $curfile $fhr_rtofs > cur_$ymdh_rtofs.out 2>&1" >> cmdfile
+        fi
 
-      echo "$USHwave/wave_prnc_cur.sh $ymdh_rtofs $curfile > cur_$ymdh_rtofs.out 2>&1" >> cmdfile
-      if [ $fhr_rtofs -ge ${WAV_CUR_HF_FH} ] ; then
-        NDATE_DT=${WAV_CUR_DT}
-      fi
-      ymdh_rtofs=`$NDATE $NDATE_DT $ymdh_rtofs`
-  done
+        if [ $fhr_rtofs -ge ${WAV_CUR_HF_FH} ] ; then
+          NDATE_DT=${WAV_CUR_DT}
+        fi
+        ymdh_rtofs=`$NDATE $NDATE_DT $ymdh_rtofs`
+      done
 
 # Set number of processes for mpmd
       wavenproc=`wc -l cmdfile | awk '{print $1}'`
@@ -691,7 +702,11 @@
 
       if [ $wavenproc -gt '1' ]
       then
-        ${wavempexec} ${wavenproc} ${wave_mpmd} cmdfile
+        if [ ${CFP_MP:-"NO"} = "YES" ]; then
+          ${wavempexec} -n ${wavenproc} ${wave_mpmd} cmdfile
+        else
+          ${wavempexec} ${wavenproc} ${wave_mpmd} cmdfile
+        fi
         exit=$?
       else
         chmod 744 ./cmdfile
@@ -731,8 +746,8 @@
 
       for file in $files
       do
+        echo $file
         cat $file >> cur.${WAVECUR_FID}
-        rm -f $file
       done
 
       cp -f cur.${WAVECUR_FID} ${COMOUT}/rundata/${COMPONENTwave}.${WAVECUR_FID}.$cycle.cur 
@@ -1005,7 +1020,6 @@
   echo ' '
   [[ "$LOUD" = YES ]] && set -x
 
-  msg="$job completed normally"
-  postmsg "$jlogfile" "$msg"
+  exit $err
 
 # End of MWW3 preprocessor script ------------------------------------------- #

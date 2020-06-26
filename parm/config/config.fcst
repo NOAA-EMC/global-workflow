@@ -39,6 +39,7 @@ if [ $DO_WAVE = "YES" ] ; then
   export npe_fcst=$((npe_fcst + npe_wav))
   if [ "$WAVE_CDUMP" = "gfs" -o "$WAVE_CDUMP" = "both" ]; then
      export npe_fcst_gfs=$((npe_fcst_gfs + npe_wav_gfs))
+     if [ "$CDUMP" = "gfs" ]; then npe_wav=$npe_wav_gfs ; fi
   fi
 fi
 
@@ -59,7 +60,7 @@ export do_tofd=".true."
 export launch_level=$(echo "$LEVS/2.35" |bc)
 
 # Sponge layer settings for L127
-if [ $LEVS = "128" ]; then
+if [ $LEVS = "128" -a "$CDUMP" = "gdas" ]; then
    export  tau=5.0
    export  rf_cutoff=1.0e3
    export  d2_bg_k1=0.20
@@ -102,7 +103,7 @@ else
         export lheatstrg=".false."    ##JKH   
         export landice=".false."      ##JKH
     else
-        export lheatstrg=".true."    
+        export lheatstrg=".false."    
         export landice=".true."
     fi
 fi
@@ -149,6 +150,7 @@ elif [ $imp_physics -eq 6 ]; then # WSM6
     export nwat=6
 
 elif [ $imp_physics -eq 8 ]; then # Thompson
+    export nwat=6
     if [[ "$CCPP_SUITE" == "FV3_GSD_v0" || "$CCPP_SUITE" == "FV3_GSD_noah" ]] ; then
         export ncld=5
         export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_gsd"
@@ -167,7 +169,6 @@ elif [ $imp_physics -eq 8 ]; then # Thompson
     else
         export ncld=2
         export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_thompson${tbf}"
-        export nwat=6
     fi
 
 elif [ $imp_physics -eq 11 ]; then # GFDL
@@ -283,8 +284,22 @@ elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
     fi
 
     # Write gfs restart files to rerun fcst from any break point         
-     export restart_interval=${restart_interval_gfs:-0}
+    export restart_interval_gfs=${restart_interval_gfs:-0}
+    if [ $restart_interval_gfs -le 0 ]; then
+        export restart_interval=0
+    else
+        rst_list=""
+        IAU_OFFSET=${IAU_OFFSET:-0}
+        [[ $DOIAU = "NO" ]] && export IAU_OFFSET=0
+        xfh=$((restart_interval_gfs+(IAU_OFFSET/2)))
+        while [ $xfh -le $FHMAX_GFS ]; do
+          rst_list="$rst_list $xfh"
+          xfh=$((xfh+restart_interval_gfs))
+        done
+        export restart_interval="$rst_list"
+    fi
 
+    
     # Choose coupling with wave
     if [ $DO_WAVE = "YES" -a "$WAVE_CDUMP" != "gdas" ]; then 
         export cplwav=".true."
@@ -292,6 +307,14 @@ elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
 
     # Turn off dry mass adjustment in GFS
     export adjust_dry_mass=".false."
+
+    # Write each restart file in 16 small files to save time
+    export io_layout="4,4"
+
+    # Debug load balancing 
+    #export KEEPDATA="YES"
+    #export ESMF_RUNTIME_PROFILE=ON
+    #export ESMF_RUNTIME_PROFILE_OUTPUT=SUMMARY
 
 fi
 

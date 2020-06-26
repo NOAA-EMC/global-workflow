@@ -11,6 +11,7 @@
 #
 # Script history log:
 # 2019-11-02  J-Henrique Alves Ported to global-workflow.
+# 2020-06-10  J-Henrique Alves Ported to R&D machine Hera
 #
 # $Id$
 #                                                                             #
@@ -126,7 +127,7 @@
 # 3.  Clean up
 
   cd ..
-  #rm -rf moddef_$grdID
+  rm -rf moddef_$grdID
 
   set +x
   echo ' '

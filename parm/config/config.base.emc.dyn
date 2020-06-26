@@ -55,7 +55,10 @@ export DO_GEMPAK="NO"
 export DO_AWIPS="NO"
 
 # NO for retrospective parallel; YES for real-time parallel
-export REALTIME="NO"
+#  arch.sh uses REALTIME for MOS.  Need to set REALTIME=YES
+#  if want MOS written to HPSS.   Should update arch.sh to
+#  use RUNMOS flag (currently in config.vrfy)
+export REALTIME="YES"
 
 
 ####################################################
@@ -69,8 +72,8 @@ export HOMEgsi="$HOMEgfs"
 export FIXgsi="$HOMEgfs/fix/fix_gsi"
 export HOMEfv3gfs="$HOMEgfs/sorc/fv3gfs.fd"
 export HOMEpost="$HOMEgfs"
-export HOMEobsproc_prep="$BASE_GIT/obsproc/gfsv16/obsproc_prep.iss70457.netcdfhistory_new"
-export HOMEobsproc_network="$BASE_GIT/obsproc/gfsv16/obsproc_global.iss71402.supportGFSv16"
+export HOMEobsproc_prep="$BASE_GIT/obsproc/gfsv16b/obsproc_prep.iss70457.netcdfhistory"
+export HOMEobsproc_network="$BASE_GIT/obsproc/gfsv16b/obsproc_global.iss71402.supportGFSv16"
 export HOMEobsproc_global=$HOMEobsproc_network
 export BASE_VERIF="$BASE_SVN/verif/global/tags/vsdb"
 
@@ -82,6 +85,8 @@ export VERBOSE="YES"
 export KEEPDATA="NO"
 export CHGRP_CMD="chgrp rstprod"
 export NEMSIOGET="$HOMEgfs/exec/nemsio_get"
+export NCDUMP="$NETCDF/bin/ncdump"
+export NCLEN="$HOMEgfs/ush/getncdimlen"
 
 # Machine environment, jobs, and other utility scripts
 export BASE_ENV="$HOMEgfs/env"
@@ -96,6 +101,9 @@ export EXPDIR="@EXPDIR@/$PSLOT"
 export ROTDIR="@ROTDIR@/$PSLOT"
 export ROTDIR_DUMP="YES"                #Note: A value of "NO" does not currently work
 export DUMP_SUFFIX=""
+if [[ "$CDATE" -ge "2019092100" && "$CDATE" -le "2019110700" ]]; then
+    export DUMP_SUFFIX="p"              # Use dumps from NCO GFS v15.3 parallel
+fi
 export RUNDIR="$STMP/RUNDIRS/$PSLOT"
 export DATAROOT="$RUNDIR/$CDATE/$CDUMP"
 export ARCDIR="$NOSCRUB/archive/$PSLOT"
@@ -159,6 +167,11 @@ export FHMAX_GFS=$(eval echo \${FHMAX_GFS_$cyc})
 export FHOUT_GFS=3
 export FHMAX_HF_GFS=0
 export FHOUT_HF_GFS=1
+export ILPOST=1           # gempak output frequency up to F120
+
+# GFS restart interval in hours
+export restart_interval_gfs=0
+
 
 # I/O QUILTING, true--use Write Component; false--use GFDL FMS
 # if quilting=true, choose OUTPUT_GRID as cubed_sphere_grid in netcdf or gaussian_grid
@@ -203,7 +216,7 @@ export gldas_cyc=00
 
 # run wave component
 export DO_WAVE=YES
-export WAVE_CDUMP="gdas"
+export WAVE_CDUMP="both"
 
 # Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL
 if [[ "$CCPP_SUITE" == "FV3_GSD_v0" || "$CCPP_SUITE" == "FV3_GSD_noah" ]] ; then
@@ -261,9 +274,11 @@ export binary_diag=".false."
 export DO_METP="YES"                  # Run MET+ jobs
 
 # Archiving options
-export HPSSARCH="NO"         # save data to HPSS archive
+export HPSSARCH="YES"        # save data to HPSS archive
 export ARCH_CYC=00           # Archive data at this cycle for warm_start capability
 export ARCH_WARMICFREQ=4     # Archive frequency in days for warm_start capability
 export ARCH_FCSTICFREQ=1     # Archive frequency in days for gdas and gfs forecast-only capability
+
+export DELETE_COM_IN_ARCHIVE_JOB="YES"   # NO=retain ROTDIR.  YES default in arch.sh and earc.sh.
 
 echo "END: config.base"

@@ -27,9 +27,9 @@ export BPATH
 
 #  Set output directory:
 
-COMAWP=${COMAWP:-$COMROOT/nawips/${envir}/${RUN}.${PDY}}
+COMAWP=${COMAWP:-$COMOUT/gempak}
 OUTDIR=$COMAWP
-mkdir -p $OUTDIR
+if [ ! -d $OUTDIR ]; then mkdir -p $OUTDIR; fi
 
 outfilbase=gfs_${PDY}${cyc}
 

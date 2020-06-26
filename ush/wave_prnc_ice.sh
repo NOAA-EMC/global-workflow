@@ -16,6 +16,7 @@
 #  Update record :                                                            #
 #                                                                             #
 # - Origination: Hendrik Tolman                                01-Mar-2007    #
+# 2019-11-02  J-Henrique Alves Ported to global-workflow.
 #                                                                             #
 # Update log                                                                  #
 # Nov2019 JHAlves - Merging wave scripts to global workflow                   #

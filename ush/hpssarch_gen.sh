@@ -70,8 +70,8 @@ if [ $type = "gfs" ]; then
   echo  "${dirname}trak.gfso.atcfunix.altg.${PDY}${cyc}    " >>gfsa.txt
   echo  "${dirname}storms.gfso.atcf_gen.${PDY}${cyc}       " >>gfsa.txt
   echo  "${dirname}storms.gfso.atcf_gen.altg.${PDY}${cyc}  " >>gfsa.txt
-  echo  "${dirname}nawips/gfs_${PDY}${cyc}.sfc             " >>gfsa.txt
-  echo  "${dirname}nawips/gfs_${PDY}${cyc}.snd             " >>gfsa.txt
+  echo  "${dirname}gempak/gfs_${PDY}${cyc}.sfc             " >>gfsa.txt
+  echo  "${dirname}gempak/gfs_${PDY}${cyc}.snd             " >>gfsa.txt
   echo  "${dirname}bufr.t${cyc}z                           " >>gfsa.txt
   echo  "./logs/${CDATE}/gfs*.log                          " >>gfsa.txt
 
@@ -86,8 +86,10 @@ if [ $type = "gfs" ]; then
     fhr=$(printf %03i $fh)
     echo  "${dirname}${head}pgrb2b.0p25.f${fhr}             " >>gfs_pgrb2b.txt
     echo  "${dirname}${head}pgrb2b.0p25.f${fhr}.idx         " >>gfs_pgrb2b.txt
-    echo  "${dirname}${head}pgrb2b.0p50.f${fhr}             " >>gfs_pgrb2b.txt
-    echo  "${dirname}${head}pgrb2b.0p50.f${fhr}.idx         " >>gfs_pgrb2b.txt
+    if [ -s $ROTDIR/${dirpath}${head}pgrb2b.0p50.f${fhr} ]; then
+       echo  "${dirname}${head}pgrb2b.0p50.f${fhr}         " >>gfs_pgrb2b.txt
+       echo  "${dirname}${head}pgrb2b.0p50.f${fhr}.idx     " >>gfs_pgrb2b.txt
+    fi
 
     echo  "${dirname}${head}sfluxgrbf${fhr}.grib2           " >>gfs_flux.txt
     echo  "${dirname}${head}sfluxgrbf${fhr}.grib2.idx       " >>gfs_flux.txt
@@ -96,10 +98,14 @@ if [ $type = "gfs" ]; then
     echo  "${dirname}${head}pgrb2.0p25.f${fhr}.idx          " >>gfsa.txt
     echo  "${dirname}${head}logf${fhr}.txt                  " >>gfsa.txt
 
-    echo  "${dirname}${head}pgrb2.0p50.f${fhr}              " >>gfsb.txt
-    echo  "${dirname}${head}pgrb2.0p50.f${fhr}.idx          " >>gfsb.txt
-    echo  "${dirname}${head}pgrb2.1p00.f${fhr}              " >>gfsb.txt
-    echo  "${dirname}${head}pgrb2.1p00.f${fhr}.idx          " >>gfsb.txt
+    if [ -s $ROTDIR/${dirpath}}${head}pgrb2.0p50.f${fhr} ]; then
+       echo  "${dirname}${head}pgrb2.0p50.f${fhr}          " >>gfsb.txt
+       echo  "${dirname}${head}pgrb2.0p50.f${fhr}.idx      " >>gfsb.txt
+    fi
+    if [ -s $ROTDIR/${dirpath}${head}pgrb2.1p00.f${fhr} ]; then
+       echo  "${dirname}${head}pgrb2.1p00.f${fhr}          " >>gfsb.txt
+       echo  "${dirname}${head}pgrb2.1p00.f${fhr}.idx      " >>gfsb.txt
+    fi
 
     inc=$FHOUT_GFS
     if [ $FHMAX_HF_GFS -gt 0 -a $FHOUT_HF_GFS -gt 0 -a $fh -lt $FHMAX_HF_GFS ]; then
@@ -182,6 +188,15 @@ if [ $type = "gdas" ]; then
   echo  "${dirname}${head}pgrb2.1p00.anl.idx         " >>gdas.txt
   echo  "${dirname}${head}atmanl${SUFFIX}            " >>gdas.txt
   echo  "${dirname}${head}sfcanl${SUFFIX}            " >>gdas.txt
+  if [ -s $ROTDIR/${dirpath}${head}atmanl.ensres${SUFFIX} ]; then
+     echo  "${dirname}${head}atmanl.ensres${SUFFIX}  " >>gdas.txt
+  fi
+  if [ -s $ROTDIR/${dirpath}${head}atma003.ensres${SUFFIX} ]; then
+     echo  "${dirname}${head}atma003.ensres${SUFFIX}  " >>gdas.txt
+  fi
+  if [ -s $ROTDIR/${dirpath}${head}atma009.ensres${SUFFIX} ]; then
+     echo  "${dirname}${head}atma009.ensres${SUFFIX}  " >>gdas.txt
+  fi
   if [ -s $ROTDIR/${dirpath}${head}cnvstat ]; then
      echo  "${dirname}${head}cnvstat                 " >>gdas.txt
   fi
@@ -371,24 +386,30 @@ if [ $type = "enkfgdas" -o $type = "enkfgfs" ]; then
     for FHR in $nfhrs; do  # loop over analysis times in window
       if [ $FHR -eq 6 ]; then
          if [ $n -le $NTARS2 ]; then
-	    if [ -s $ROTDIR/${dirpath}${head}ratmanl${SUFFIX} ] ; then
-		echo "${dirname}${head}ratmanl${SUFFIX}      " >>enkf${CDUMP}_grp${n}.txt
-	    fi
-            if [ -s $ROTDIR/${dirpath}${head}ratminc${SUFFIX} ] ; then
-                echo "${dirname}${head}ratminc${SUFFIX}      " >>enkf${CDUMP}_grp${n}.txt
+            if [ -s $ROTDIR/${dirpath}${head}atmanl${SUFFIX} ] ; then
+                echo "${dirname}${head}atmanl${SUFFIX}      " >>enkf${CDUMP}_grp${n}.txt
             fi
+	    if [ -s $ROTDIR/${dirpath}${head}ratminc${SUFFIX} ] ; then
+		echo "${dirname}${head}ratminc${SUFFIX}      " >>enkf${CDUMP}_grp${n}.txt
+	    fi
          fi
-         echo "${dirname}${head}atminc.nc            " >>enkf${CDUMP}_restarta_grp${n}.txt
+         if [ -s $ROTDIR/${dirpath}${head}ratminc${SUFFIX} ] ; then
+             echo "${dirname}${head}ratminc${SUFFIX}      " >>enkf${CDUMP}_restarta_grp${n}.txt
+         fi
+
       else
          if [ $n -le $NTARS2 ]; then
-	     if [ -s $ROTDIR/${dirpath}${head}ratma00${FHR}${SUFFIX} ] ; then
-		 echo "${dirname}${head}ratma00${FHR}${SUFFIX}      " >>enkf${CDUMP}_grp${n}.txt
-	     fi
+             if [ -s $ROTDIR/${dirpath}${head}atma00${FHR}${SUFFIX} ] ; then
+                 echo "${dirname}${head}atma00${FHR}${SUFFIX}      " >>enkf${CDUMP}_grp${n}.txt
+             fi
              if [ -s $ROTDIR/${dirpath}${head}ratmi00${FHR}${SUFFIX} ] ; then
                  echo "${dirname}${head}ratmi00${FHR}${SUFFIX}      " >>enkf${CDUMP}_grp${n}.txt
              fi
          fi
-         echo "${dirname}${head}atmi00${FHR}.nc            " >>enkf${CDUMP}_restarta_grp${n}.txt
+         if [ -s $ROTDIR/${dirpath}${head}ratmi00${FHR}${SUFFIX} ] ; then
+             echo "${dirname}${head}ratmi00${FHR}${SUFFIX}      " >>enkf${CDUMP}_restarta_grp${n}.txt
+         fi
+
       fi 
       echo "${dirname}${head}atmf00${FHR}${SUFFIX}       " >>enkf${CDUMP}_grp${n}.txt
     done # loop over FHR

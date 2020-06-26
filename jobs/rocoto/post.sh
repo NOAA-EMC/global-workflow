@@ -25,7 +25,11 @@ fi
 for fhr in $fhrlst; do
 
     if [ ! -f $restart_file${fhr}.nemsio -a ! -f $restart_file${fhr}.nc  -a ! -f $restart_file${fhr}.txt ]; then
-        echo "Nothing to process for FHR = $fhr, cycle"
+        echo "Nothing to process for FHR = $fhr, cycle, wait for 5 minutes"
+        sleep 300
+    fi
+    if [ ! -f $restart_file${fhr}.nemsio -a ! -f $restart_file${fhr}.nc  -a ! -f $restart_file${fhr}.txt ]; then
+        echo "Nothing to process for FHR = $fhr, cycle, skip"
         continue
     fi
 
