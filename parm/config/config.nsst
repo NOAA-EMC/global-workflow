@@ -11,17 +11,29 @@ echo "BEGIN: config.nsst"
 export NST_MODEL=2
 
 # nstf_name(2) : NST_SPINUP : 0 = OFF, 1 = ON,
-export NST_SPINUP=1
+if [[ "$CCPP_SUITE" == "FV3_GSD_v0" || "$CCPP_SUITE" == "FV3_GSD_noah" ]] ; then
+  export NST_SPINUP=1
+else 
+  export NST_SPINUP=0
+fi
 #if [[ "$CDATE" = $SDATE ]]; then
 #    export NST_SPINUP=1
 #fi
 
 # nstf_name(3) : NST_RESV (Reserved, NSST Analysis) : 0 = OFF, 1 = ON
-export NST_RESV=1
+if [[ "$CCPP_SUITE" == "FV3_GSD_v0" || "$CCPP_SUITE" == "FV3_GSD_noah" ]] ; then
+  export NST_RESV=1
+else
+  export NST_RESV=0
+fi
 
 # nstf_name(4,5) : ZSEA1, ZSEA2 the two depths to apply vertical average (bias correction)
 export ZSEA1=0
-export ZSEA2=5
+if [[ "$CCPP_SUITE" == "FV3_GSD_v0" || "$CCPP_SUITE" == "FV3_GSD_noah" ]] ; then
+  export ZSEA2=5
+else
+  export ZSEA2=0
+fi
 
 export NST_GSI=3          # default 0: No NST info at all;
                           #         1: Input NST info but not used in GSI;
