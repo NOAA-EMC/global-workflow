@@ -14,6 +14,7 @@
 # Script history log:
 # 2019-05-06  J-Henrique Alves First Version.
 # 2019-11-02  J-Henrique Alves Ported to global-workflow.
+# 2020-06-10  J-Henrique Alves Ported to R&D machine Hera
 #
 # $Id$
 #
@@ -230,7 +231,6 @@
   echo ' '
   [[ "$LOUD" = YES ]] && set -x
 
-  msg="$job completed normally"
-  postmsg "$jlogfile" "$msg"
+  exit $err
 
 # End of MWW3 init config script ------------------------------------------- #

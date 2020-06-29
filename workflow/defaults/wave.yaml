@@ -16,5 +16,5 @@ wave_defaults: &wave_defaults
    WAV_CUR_HF_DT: 1
    WAV_CUR_HF_FH: 72
    WAV_CUR_CDO_SMOOTH: NO
-   wavempexec: "mpirun -n"
-   wave_mpmd: "cfp"
+   wavempexec: "srun --export=ALL"
+   wave_mpmd: "--multi-prog"

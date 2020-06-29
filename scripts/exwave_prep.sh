@@ -30,6 +30,7 @@
 # Nov2012 JHAlves - Transitioning to WCOSS                                    #
 # Apr2019 JHAlves - Transitioning to GEFS workflow                            #
 # Nov2019 JHAlves - Merging wave scripts to global workflow                   #
+# Jun2020 JHAlves - Porting to R&D machine Hera                               #
 #                                                                             #
 #   WAV_MOD_ID and WAV_MOD_TAG replace modID. WAV_MOD_TAG                     # 
 #   is used for ensemble-specific I/O. For deterministic                      #
@@ -1019,7 +1020,6 @@
   echo ' '
   [[ "$LOUD" = YES ]] && set -x
 
-  msg="$job completed normally"
-  postmsg "$jlogfile" "$msg"
+  exit $err
 
 # End of MWW3 preprocessor script ------------------------------------------- #
