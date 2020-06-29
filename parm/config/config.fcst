@@ -309,7 +309,7 @@ elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
     export adjust_dry_mass=".false."
 
     # Write each restart file in 16 small files to save time
-    export io_layout="4,4"
+    #export io_layout="4,4"                   ## JKH
 
     # Debug load balancing 
     #export KEEPDATA="YES"
