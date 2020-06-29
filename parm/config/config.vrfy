@@ -157,8 +157,8 @@ if [ "$VRFYTRAK" = "YES" ]; then
         export FHMAX_CYCLONE=$(( FHMAX_GFS<240 ? FHMAX_GFS : 240 ))
     fi
     if [ $machine = "HERA" ]; then
-       export COMROOTp1="/scratch1/NCEPDEV/rstprod/com"
-       export COMINsyn=${COMINsyn:-${COMROOTp1}/arch/prod/syndat}
+       export COMROOTp1="/scratch1/NCEPDEV/global/glopara/com"
+       export COMINsyn=${COMINsyn:-${COMROOTp1}/gfs/prod/syndat}
     else
        export COMINsyn=${COMINsyn:-${COMROOT}/gfs/prod/syndat}
     fi
@@ -181,6 +181,8 @@ if [[ "$RUNMOS" == "YES" && "$CDUMP" == "gfs" ]]; then
         export RUNGFSMOSSH="$HOMEgfs/scripts/run_gfsmos_master.sh.cray"
     elif [ $machine = "WCOSS_DELL_P3" ] ; then
         export RUNGFSMOSSH="$HOMEgfs/scripts/run_gfsmos_master.sh.dell"
+    elif [ $machine = "HERA" ] ; then
+        export RUNGFSMOSSH="$HOMEgfs/scripts/run_gfsmos_master.sh.hera"
     else
         echo "WARNING: MOS package is not enabled on $machine!"
         export RUNMOS="NO"

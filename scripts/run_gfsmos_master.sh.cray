@@ -73,7 +73,7 @@ else
    exit
 fi
 
-export range=both
+export range=${range:-"both"}
 export skipmodel=n
 export skipprep=n
 export stnonly=Y
