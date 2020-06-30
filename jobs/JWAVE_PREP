@@ -30,6 +30,7 @@ export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
 
 export COMPONENTwave=${COMPONENTwave:-${RUN}wave}
+export WAV_MOD_TAG=${COMPONENTwave}${waveMEMB}
 
 # Add default errchk = err_chk
 export errchk=${errchk:-err_chk}
@@ -82,6 +83,10 @@ fi
 if [ $SENDCOM = YES ]; then
   mkdir -p $COMOUT
 fi
+
+# Set mpi serial command
+export wavempexec=${launcher:-"mpirun -n"}
+export wave_mpmd=${mpmd:-"cfp"}
 
 # Execute the Script  
 $HOMEwave/scripts/exwave_prep.sh

@@ -66,15 +66,7 @@
   echo ' '
   [[ "$LOUD" = YES ]] && set -x
 
-#  export MP_PGMMODEL=mpmd
-#  export MP_CMDFILE=./cmdfile
-
-  if [ "$INDRUN" = 'no' ]
-  then
-    FHMAX_WAV=${FHMAX_WAV:-3}
-  else
-    FHMAX_WAV=${FHMAX_WAV:-384}
-  fi
+  FHMAX_WAV=${FHMAX_WAV:-384}
 
 # 0.b Date and time stuff
 
@@ -843,9 +835,14 @@
       WINDFLAG="$WAVEWND_FID"
     ;;
     'CPL' )
-      WINDFLAG="CPL:${waveesmfGRD}"
       WNDIFLAG='T'
-      CPLILINE="  '${waveesmfGRD}' F F T F F F F"
+      if [ ${waveesmfGRD} ]
+      then
+        WINDFLAG="CPL:${waveesmfGRD}"
+        CPLILINE="  '${waveesmfGRD}' F F T F F F F"
+      else 
+        WINDFLAG="CPL:native"
+      fi
     ;;
   esac
   
@@ -857,9 +854,14 @@
       ICEFLAG="$WAVEICE_FID"
     ;;
     'CPL' )
-      ICEFLAG="CPL:${waveesmfGRD}"
       ICEIFLAG='T'
-      CPLILINE="  '${waveesmfGRD}' F F ${WNDIFLAG} T F F F"
+      if [ ${waveesmfGRD} ]
+      then
+        ICEFLAG="CPL:${waveesmfGRD}"
+        CPLILINE="  '${waveesmfGRD}' F F ${WNDIFLAG} T F F F"
+      else 
+        ICEFLAG="CPL:native"
+      fi
     ;;
   esac
 
@@ -875,9 +877,14 @@
       fi
     ;;
     'CPL' )
-      CURRFLAG="CPL:${waveesmfGRD}"
       CURIFLAG='T'
-      CPLILINE="  '${waveesmfGRD}' F T ${WNDIFLAG} ${ICEFLAG} F F F"
+      if [ ${waveesmfGRD} ]
+      then
+        CURRFLAG="CPL:${waveesmfGRD}"
+        CPLILINE="  '${waveesmfGRD}' F T ${WNDIFLAG} ${ICEFLAG} F F F"
+      else 
+        CURRFLAG="CPL:native"
+      fi
     ;;
   esac
 
@@ -919,6 +926,8 @@
       -e "s/OUT_BEG/$time_beg_out/g" \
       -e "s/OUT_END/$time_end/g" \
       -e "s/DTFLD/ $DTFLD_WAV/g" \
+      -e "s/FLAGMASKCOMP/ $FLAGMASKCOMP/g" \
+      -e "s/FLAGMASKOUT/ $FLAGMASKOUT/g" \
       -e "s/GOFILETYPE/ $GOFILETYPE/g" \
       -e "s/POFILETYPE/ $POFILETYPE/g" \
       -e "s/FIELDS/$FIELDS/g" \
@@ -940,9 +949,9 @@
   if [ -f ww3_multi.inp ]
   then
     echo " Copying file ww3_multi.${WAV_MOD_TAG}.inp to $COMOUT "
-    cp ww3_multi.inp ${COMOUT}/rundata/ww3_multi.${WAV_MOD_TAG}.$cycle.inp
+    cp ww3_multi.inp ${COMOUT}/rundata/ww3_multi.${WAV_MOD_TAG}.${cycle}.inp
   else
-    echo "FATAL ERROR: file ww3_multi.${WAV_MOD_TAG}.$cycle.inp NOT CREATED, ABORTING"
+    echo "FATAL ERROR: file ww3_multi.${WAV_MOD_TAG}.${cycle}.inp NOT CREATED, ABORTING"
     err=13;export err;${errchk}
   fi 
 

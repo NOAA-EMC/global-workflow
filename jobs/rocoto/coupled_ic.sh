@@ -35,16 +35,6 @@ done
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
-
-#TODO: make the following configurable variables instead of hardcoded 
-CPL_ATMIC=CFSR
-CPL_OCNIC=CPC3Dvar
-CPL_ICEIC=CPC
-CPL_WAVIC=CFSR
-OCNRES=025
-ICERES=025
-ICERES=${ICERES:-"025"}
-
 # Create ICSDIR if needed
 [[ ! -d $ICSDIR/$CDATE ]] && mkdir -p $ICSDIR/$CDATE
 [[ ! -d $ICSDIR/$CDATE/ocn ]] && mkdir -p $ICSDIR/$CDATE/ocn

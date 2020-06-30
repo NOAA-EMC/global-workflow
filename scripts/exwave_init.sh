@@ -232,5 +232,4 @@
   [[ "$LOUD" = YES ]] && set -x
 
   exit $err
-
 # End of MWW3 init config script ------------------------------------------- #

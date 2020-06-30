@@ -45,7 +45,7 @@ wave_output_settings_defaults: &wave_output_settings_defaults
   FHOUT_WAV: 3
 
   FHMAX_HF_WAV: 120
-  FHOUT_HF_WAV: 1
+  FHOUT_HF_WAV: 3
 
   FHMAX_WAV_CUR: 48
 

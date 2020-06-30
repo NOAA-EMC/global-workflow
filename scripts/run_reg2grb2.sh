@@ -1,15 +1,11 @@
 #!/bin/bash
 set -x
 
-module load grib_util/1.1.1
-module list
+#requires grib_util module 
 
 MOM6REGRID=${MOM6REGRID:-$HOMEgfs}
 export mask_file=$MOM6REGRID/fix/fix_reg2grb2/mask.0p25x0p25.grb2
-#export icefile=/climate/save/emc.climpara/Xingren/regrid/out/icer2015040106.01.2015040100_0p5x0p5_CICE.nc
-#export ocnfile=/climate/save/emc.climpara/Xingren/regrid/out/ocnr2015040106.01.2015040100_0p5x0p5_MOM6.nc
-#export outfile=/climate/save/emc.climpara/Xingren/regrid/out/ocnh2015040106.01.2015040100.grb2
-#
+
 # offline testing:
 #export DATA=
 #export icefile=$DATA/DATA0p5/icer2012010106.01.2012010100_0p5x0p5.nc

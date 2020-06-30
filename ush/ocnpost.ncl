@@ -253,7 +253,7 @@ begin
    outgrid = dstgrds(jj)
 
    ; regrid a field to obtain the output xy dimensions
-    wgtsfile = nemsrc+"tripole.mx025.Ct.to."+dsttype+dstgrds(jj)+".bilinear.nc"
+    wgtsfile = nemsrc+"/"+"tripole.mx025.Ct.to."+dsttype+dstgrds(jj)+".bilinear.nc"
           tt = ESMF_regrid_with_weights(sinrot,wgtsfile,False)
         tt!0 = "lat"
         tt!1 = "lon"
@@ -275,7 +275,7 @@ begin
     ; have crept into the field. remapped model fields are then
     ; masked with this interpolation mask
 
-    wgtsfile = nemsrc+"tripole.mx025.Ct.to."+dsttype+dstgrds(jj)+".bilinear.nc"
+    wgtsfile = nemsrc+"/"+"tripole.mx025.Ct.to."+dsttype+dstgrds(jj)+".bilinear.nc"
     rgmask2d = ESMF_regrid_with_weights(mask2d, wgtsfile,False)
     rgmask3d = ESMF_regrid_with_weights(mask3d, wgtsfile,False)
 
@@ -448,7 +448,7 @@ begin
 
      ; regrid to dsttype+dstgrd with method
      ;print("remapping "+varname+" to grid "+dsttype+dstgrds(jj))
-     wgtsfile = nemsrc+"tripole.mx025.Ct.to."+dsttype+dstgrds(jj)+"."+varmeth+".nc"
+     wgtsfile = nemsrc+"/"+"tripole.mx025.Ct.to."+dsttype+dstgrds(jj)+"."+varmeth+".nc"
 
      rgtt = ESMF_regrid_with_weights(ocnvar,wgtsfile,False)
     if(vardims .eq. "2")then
@@ -493,7 +493,7 @@ begin
        vecfld = where(ismissing(uvel),0.0,uvel)
         copy_VarAtts(uvel,vecfld)
      ;print("unstagger "+vecnames(n)+" from "+vecgrids(n)+" to Ct")
-     wgtsfile = nemsrc+"tripole.mx025."+vecgrids(n)+".to.Ct.bilinear.nc"
+     wgtsfile = nemsrc+"/"+"tripole.mx025."+vecgrids(n)+".to.Ct.bilinear.nc"
            ut = ESMF_regrid_with_weights(vecfld,wgtsfile,False)
      delete(ut@remap)
 
@@ -502,7 +502,7 @@ begin
        vecfld = where(ismissing(vvel),0.0,vvel)
         copy_VarAtts(vvel,vecfld)
      ;print("unstagger "+vecnames(n)+" from "+vecgrids(n)+" to Ct")
-     wgtsfile = nemsrc+"tripole.mx025."+vecgrids(n)+".to.Ct.bilinear.nc"
+     wgtsfile = nemsrc+"/"+"tripole.mx025."+vecgrids(n)+".to.Ct.bilinear.nc"
            vt = ESMF_regrid_with_weights(vecfld,wgtsfile,False)
      delete(vt@remap)
 
@@ -534,7 +534,7 @@ begin
       vecfld = vecpairs[n]
       ; regrid to dsttype+dstgrd with method
       ;print("remapping "+vecnames(n)+" to grid "+dsttype+dstgrds(jj))
-      wgtsfile = nemsrc+"tripole.mx025.Ct.to."+dsttype+dstgrds(jj)+"."+vecmeth(n)+".nc"
+      wgtsfile = nemsrc+"/"+"tripole.mx025.Ct.to."+dsttype+dstgrds(jj)+"."+vecmeth(n)+".nc"
 
        rgtt = ESMF_regrid_with_weights(vecfld,wgtsfile,False)
       if(vecdims(n) .eq. "2")then

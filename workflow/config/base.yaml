@@ -61,7 +61,7 @@ config_base:
     export FIXcice=$HOMEgfs/fix/fix_cice5
     export FIXmom=$HOMEgfs/fix/fix_mom6
     export FIXgrid=$HOMEgfs/fix/fix_fv3grid
-    export OCNFIXDIR=$HOMEgfs/fix/fix_ocnice
+    export OCNFIXDIR=$HOMEgfs/fix/fix_reg2grb2
 
     # GLOBAL static environment parameters
     export DMPDIR="{doc.places.DMPDIR}"
@@ -113,9 +113,6 @@ config_base:
     export CHGRP_CMD="{doc.platform.CHGRP_RSTPROD_COMMAND}"
     export NEMSIOGET="$HOMEgfs/exec/nemsio_get"
 
-    # For coupled
-    export UGCSsrc="/scratch2/NCEPDEV/climate/Bin.Li/S2S/fix/ocean_ice_post"
- 
     # Machine environment, jobs, and other utility scripts
     export BASE_ENV="$HOMEgfs/env"
     export BASE_JOB="$HOMEgfs/jobs/rocoto"
@@ -165,7 +162,9 @@ config_base:
     export LEVS={doc.fv3_gfs_settings.LEVS}
     export CASE="{doc.fv3_gfs_settings.CASE}"
     export CASE_ENKF="{doc.fv3_enkf_settings.CASE}"
-    
+    export ICERES={doc.ice_settings.ICERES}
+    export OCNRES={doc.ocn_settings.OCNRES}    
+
     # Surface cycle update frequency
     if [ "$CDUMP" == "gdas" ] ; then
         export FHCYC={doc.fv3_enkf_settings.FHCYC_GDAS}

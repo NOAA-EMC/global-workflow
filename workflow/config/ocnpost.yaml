@@ -20,5 +20,6 @@ config_ocnpost:
     
     # No. of concurrent post jobs [0 implies sequential]
     export NPOSTGRP={doc.ocnpost.NPOSTGRP}
+    export ncks="{doc.places.ncks}"
 
     echo "END: config.ocnpost"

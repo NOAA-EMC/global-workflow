@@ -59,6 +59,10 @@ if [ $SENDCOM = YES ]; then
   mkdir -p $COMOUT/rundata
 fi
 
+# Set mpi serial command
+export wavempexec=${launcher:-"mpirun -n"}
+export wave_mpmd=${mpmd:-"cfp"}
+
 # Execute the Script  
 $HOMEwave/scripts/exwave_init.sh
 
