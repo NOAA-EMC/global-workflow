@@ -260,7 +260,6 @@ contains
     use guess_grids, only: ifilesig,nfldsig,ntguessig 
     use gsi_metguess_mod, only: gsi_metguess_bundle,gsi_metguess_get 
     use guess_grids, only: ifilesig,nfldsig
-    use guess_grids, only: ifilesfc
     use gsi_metguess_mod, only: gsi_metguess_bundle
     use gsi_bundlemod, only: gsi_bundlegetpointer
     use gsi_bundlemod, only: gsi_bundlecreate
@@ -271,13 +270,11 @@ contains
     use general_sub2grid_mod, only: sub2grid_info,general_sub2grid_create_info,general_sub2grid_destroy_info
     use mpimod, only: npe,mype
     use cloud_efr_mod, only: cloud_calc_gfs,set_cloud_lower_bound
-    use jfunc, only: cnvw_option
     use gridmod, only: fv3_full_hydro
     implicit none
 
     character(len=*),parameter::myname_=myname//'*read_'
     character(24) filename
-    character(24) filenamesfc
     integer(i_kind):: it, istatus, inner_vars, num_fields
     integer(i_kind):: i,j,k   
 
@@ -351,14 +348,8 @@ contains
           call general_read_fv3atm_nems(grd_t,sp_a,filename,.true.,.true.,.true.,&
                atm_bundle,.true.,istatus)
        else
-          if (cnvw_option) then
-             write(filenamesfc,'(''sfcf'',i2.2)') ifilesfc(it)
-             call general_read_gfsatm_nems(grd_t,sp_a,filename,.true.,.true.,.true.,&
-                  atm_bundle,.true.,istatus,filenamesfc)
-          else
-             call general_read_gfsatm_nems(grd_t,sp_a,filename,.true.,.true.,.true.,&
-                  atm_bundle,.true.,istatus)
-          end if
+          call general_read_gfsatm_nems(grd_t,sp_a,filename,.true.,.true.,.true.,&
+               atm_bundle,.true.,istatus,it)
        endif
 
        inithead=.false.
@@ -541,7 +532,6 @@ contains
     use gsi_chemguess_mod, only: gsi_chemguess_get
     use gsi_bundlemod, only: gsi_bundle,gsi_bundlecreate,gsi_bundledestroy
     use gsi_bundlemod, only: gsi_grid,gsi_gridcreate
-    use gridmod, only: regional,use_fv3_aero
     use radiance_mod, only: n_aerosols_fwd,aerosol_names_fwd 
     use gridmod, only: grd_a,sp_a,regional
     use guess_grids, only: ifilesig,ifileaer,nfldaer
@@ -2094,7 +2084,6 @@ contains
     use mpimod, only: mype
 
     use guess_grids, only: ifilesig
-    use guess_grids, only: ges_prsl,ges_prsi
     use guess_grids, only: load_geop_hgt,geop_hgti,ges_geopi
 
     use gridmod, only: ntracer
@@ -2811,10 +2800,10 @@ contains
                work1,grd%ijn,grd%displs_g,mpi_rtype,&
                mype_out,mpi_comm_world,ierror)
           if (mype == mype_out) then
-             work1 = work1 * -1.0_r_kind  ! Flip sign, FV3 is top to bottom
+             work1 = -one * work1  ! Flip sign, FV3 is top to bottom
              call nemsio_readrecv(gfile,'delz','mid layer',k,rwork1d,iret=iret)
              if (iret /= 0) call error_msg(trim(my_name),trim(filename),'delz','read',istop,iret)
-             if (sum(rwork1d) < zero) work1 = work1 * -1.0_r_kind  !Flip sign, FV3 is top to bottom 
+             if (sum(rwork1d) < zero) work1 = -one * work1  !Flip sign, FV3 is top to bottom 
              if(diff_res)then
                 grid_b=reshape(rwork1d,(/size(grid_b,1),size(grid_b,2)/))
                 do kk=1,grd%iglobal
@@ -2907,7 +2896,7 @@ contains
     use mpimod, only: mype
 
     use guess_grids, only: ifilesig
-    use guess_grids, only: ges_prsl,ges_prsi
+    use guess_grids, only: ges_prsi
     use guess_grids, only: load_geop_hgt,geop_hgti,ges_geopi
 
     use gridmod, only: ntracer
@@ -3542,10 +3531,10 @@ contains
                work1,grd%ijn,grd%displs_g,mpi_rtype,&
                mype_out,mpi_comm_world,ierror)
           if (mype == mype_out) then
-             work1 = work1 * -1.0_r_kind  ! Flip sign, FV3 is top to bottom
+             work1 = -one * work1  ! Flip sign, FV3 is top to bottom
              call nemsio_readrecv(gfile,'delz','mid layer',k,rwork1d,iret=iret)
              if (iret /= 0) call error_msg(trim(my_name),trim(filename),'delz','read',istop,iret)
-             if (sum(rwork1d) < zero) work1 = work1 * -1.0_r_kind  ! Flip sign, FV3 is top to bottom
+             if (sum(rwork1d) < zero) work1 = -one * work1  ! Flip sign, FV3 is top to bottom
              if(diff_res)then
                 grid_b=reshape(rwork1d,(/size(grid_b,1),size(grid_b,2)/))
                 do kk=1,grd%iglobal

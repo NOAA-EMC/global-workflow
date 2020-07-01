@@ -761,7 +761,7 @@ subroutine general_read_gfsatm(grd,sp_a,sp_b,filename,uvflag,vordivflag,zflag, &
 end subroutine general_read_gfsatm
 
 subroutine general_read_gfsatm_nems(grd,sp_a,filename,uvflag,vordivflag,zflag, &
-           gfs_bundle,init_head,iret_read,filenamesfc)
+           gfs_bundle,init_head,iret_read,it)
 !$$$  subprogram documentation block
 !                .      .    .                                       .
 ! subprogram:    general_read_gfsatm  adaptation of read_gfsatm for general resolutions
@@ -822,6 +822,7 @@ subroutine general_read_gfsatm_nems(grd,sp_a,filename,uvflag,vordivflag,zflag, &
    use gsi_bundlemod, only: gsi_bundlegetpointer
    use jfunc, only: cnvw_option
    use gfsreadmod, only: general_reload
+   use guess_grids, only: ifilesfc
 
    implicit none
 
@@ -832,8 +833,8 @@ subroutine general_read_gfsatm_nems(grd,sp_a,filename,uvflag,vordivflag,zflag, &
    type(sub2grid_info)                   ,intent(in   ) :: grd
    type(spec_vars)                       ,intent(in   ) :: sp_a
    character(*)                          ,intent(in   ) :: filename
-   character(*),optional                 ,intent(in   ) :: filenamesfc
    logical                               ,intent(in   ) :: uvflag,zflag,vordivflag,init_head
+   integer(i_kind)                       ,intent(in   ) :: it
    integer(i_kind)                       ,intent(  out) :: iret_read
    type(gsi_bundle)                      ,intent(inout) :: gfs_bundle
 
@@ -848,6 +849,7 @@ subroutine general_read_gfsatm_nems(grd,sp_a,filename,uvflag,vordivflag,zflag, &
 
    ! Declare local variables
    character(len=120) :: my_name = 'GENERAL_READ_GFSATM_NEMS'
+   character(len=24)       :: filenamesfc
    character(len=1)   :: null = ' '
    integer(i_kind):: jrec,nrec 
    integer(i_kind):: iret,nlatm2,nlevs,icm,nord_int
@@ -960,6 +962,7 @@ subroutine general_read_gfsatm_nems(grd,sp_a,filename,uvflag,vordivflag,zflag, &
       endif
 
       if (cnvw_option) then
+         write(filenamesfc,'(''sfcf'',i2.2)') ifilesfc(it)
          call nemsio_open(gfilesfc,filenamesfc,'READ',iret=iret)
          if (iret /= 0) call error_msg(trim(my_name),trim(filenamesfc),null,'open',istop+2,iret)
 
@@ -1609,7 +1612,7 @@ subroutine general_read_gfsatm_nems(grd,sp_a,filename,uvflag,vordivflag,zflag, &
    ! Print date/time stamp
    if ( mype == 0 ) then
       write(6,700) lonb,latb,nlevs,grd%nlon,nlatm2,&
-            fhour,odate,filename(1:120)
+            fhour,odate,filename(1:24)
 700   format('GENERAL_READ_GFSATM_NEMS: read lonb,latb,levs=',&
             3i6,', scatter nlon,nlat=',2i6,', hour=',f6.1,', idate=',4i5,1x,a)
    endif
@@ -1694,12 +1697,10 @@ subroutine general_read_gfsatm_nc(grd,sp_a,filename,uvflag,vordivflag,zflag, &
 
    ! Declare local variables
    character(len=120) :: my_name = 'GENERAL_READ_GFSATM_NC'
-   character(len=1)   :: null = ' '
    integer(i_kind):: iret,nlatm2,nlevs,icm,nord_int
    integer(i_kind):: i,j,k,icount,kk,kr
    integer(i_kind) :: ier,istatus,iredundant
    integer(i_kind) :: latb, lonb, levs
-   integer(i_kind) :: istop = 101
    integer(i_kind),dimension(npe)::ilev,iflag,mype_use
    integer(i_kind),dimension(6):: idate
    integer(i_kind),dimension(4):: odate

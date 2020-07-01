@@ -185,7 +185,7 @@ subroutine get_user_ens_gfs_fastread_(ntindex,en_loc3,m_cvars2d,m_cvars3d, &
     use control_vectors, only: nc2d,nc3d
     !use control_vectors, only: cvars2d,cvars3d
     use genex_mod, only: genex_info,genex_create_info,genex,genex_destroy_info
-    use gridmod, only: use_gfs_nemsio, use_gfs_ncio
+    use gridmod, only: use_gfs_nemsio
     use jfunc, only: cnvw_option
 
     implicit none
@@ -1054,10 +1054,7 @@ subroutine parallel_read_gfsnc_state_(en_full,m_cvars2d,m_cvars3d,nlon,nlat,nsig
    ! Declare local variables
    integer(i_kind) i,ii,j,jj,k,lonb,latb,levs,kr
    integer(i_kind) k2,k3,k3u,k3v,k3t,k3q,k3cw,k3oz,kf
-   integer(i_kind) iret
-   integer(i_kind) :: istop = 101
    character(len=120) :: myname_ = 'parallel_read_gfsnc_state_'
-   character(len=1)   :: null = ' '
    real(r_single),allocatable,dimension(:,:,:) ::  temp2, rwork3d1, rwork3d2
    real(r_single),allocatable,dimension(:,:) ::  rwork2d
    real(r_single),allocatable,dimension(:,:,:,:) ::  temp3
@@ -1445,7 +1442,7 @@ end subroutine move1_
        else
 
           call general_read_gfsatm_nems(grd,sp_ens,filename,uv_hyb_ens,.false., &
-               zflag,atm_bundle,.true.,iret)
+               zflag,atm_bundle,.true.,iret,ntindex)
 
        endif
     else if ( use_gfs_ncio ) then
