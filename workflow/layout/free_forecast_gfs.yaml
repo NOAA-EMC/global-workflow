@@ -16,7 +16,7 @@ suite: !Cycle
       <<: *service_task_template
       RUN: 'gfs'
 #      Disable: !calc doc.settings.get("IC_CDUMP","")
-      Disable: !calc doc.settings.get("IC_CDUMP","") or doc.settings.cpl=='.true.'
+      Disable: !calc doc.settings.get("IC_CDUMP","") or doc.settings.cplflx=='.true.'
       resources: !calc partition.resources.run_getic
       J_JOB: rocoto/getic.sh
       ecf_module_commands: "# getics.sh will load modules instead"
@@ -26,7 +26,7 @@ suite: !Cycle
       <<: *exclusive_task_template
       RUN: 'gfs'
 #      Disable: !calc not doc.settings.chgres_and_convert_ics
-      Disable: !calc doc.settings.chgres_and_convert_ics=='.false.' or doc.settings.cpl=='.true.'
+      Disable: !calc doc.settings.chgres_and_convert_ics=='.false.' or doc.settings.cplflx=='.true.'
       Trigger: !Depend jgfs_emc_getics
       resources: !calc partition.resources.run_fv3ic
       J_JOB: rocoto/crow_fv3ic.sh
