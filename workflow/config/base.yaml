@@ -5,12 +5,6 @@
 
 config_base:
   filename: config.base
-  cpl: !FirstTrue
-    - when: !calc doc.settings.cplflx==".true."
-      do: .true.
-    - when: !calc doc.settings.cplice==".true."
-      do: .true.
-    - otherwise: .false.
   content: !expand |
     #!/bin/ksh -x
     
@@ -26,7 +20,7 @@ config_base:
     # Machine environment
     export machine="{doc.platform.name}"
 
-    export cpl="{cpl}"
+    export cpl="{doc.settings.cpl}"
     export cplflx="{doc.settings.cplflx}"
     export cplice="{doc.settings.cplice}"
     export print_esmf="{doc.settings.print_esmf}"
