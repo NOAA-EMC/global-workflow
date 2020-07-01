@@ -44,6 +44,10 @@ places_schema: &places_schema !Template
     type: string
   BASE_GIT:
     type: string
+  BASE_CPLIC:
+    type: string
+  ncks: 
+    type: string
 
   ics_from:
     type: string

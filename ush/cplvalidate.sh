@@ -12,6 +12,7 @@ cplvalidate(){
 echo "SUB cplvalidate: validating cpl** switches for $confignamevarfornems"
 case $confignamevarfornems in
 	'atm') combination=.false..false..false..false..false.;;
+        'datm') combination=.true..true..false..false..false.;;
 	'med_atm_ocn_ice') combination=.true..true..true..false..false.;;
 	'blocked_atm_wav') combination=.true..false..false..true..false.;;
 	'leapfrog_atm_wav')combination=.true..false..false..true..false.;;

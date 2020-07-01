@@ -107,18 +107,27 @@ for fhr in $fhrlst; do
   # The regrid scripts use CDATE for the current day, restore it to IDATE afterwards
   export CDATE=$VDATE
   cd $DATA
-if [ $fhr -gt 0 ]; then
-  export MOM6REGRID=$UGCSsrc/mom6_regrid_025
-  $MOM6REGRID/run_regrid.sh
+  if [ $fhr -gt 0 ]; then
+    export MOM6REGRID=$UGCSsrc/mom6_regrid_025
+    $MOM6REGRID/run_regrid.sh
+    status=$?
+    [[ $status -ne 0 ]] && exit $status
+
+    # Convert the netcdf files to grib2
+    export executable=$MOM6REGRID/exec/reg2grb2.x
+    $MOM6REGRID/run_reg2grb2.sh
+    status=$?
+    [[ $status -ne 0 ]] && exit $status
+  fi
+
+  #break up ocn netcdf into multiple files:  
+  $ncks -x -v vo,uo,so,temp $COMOUT/ocn_$VDATE.$ENSMEM.$IDATE.nc $COMOUT/ocn_2D_$VDATE.$ENSMEM.$IDATE.nc
+  $ncks -x -v Heat_PmE,LW,LwLatSens,MLD_003,MLD_0125,SSH,SSS,SST,SSU,SSV,SW,cos_rot,ePBL,evap,fprec,frazil,latent,lprec,lrunoff,sensible,sin_rot,speed,taux,tauy,wet_c,wet_u,wet_v $COMOUT/ocn_$VDATE.$ENSMEM.$IDATE.nc $COMOUT/ocn_3D_$VDATE.$ENSMEM.$IDATE.nc
+  $ncks -v temp -d yh,503 -d xh,-299.92,60.03 $COMOUT/ocn_3D_$VDATE.$ENSMEM.$IDATE.nc $COMOUT/ocn-temp-EQ_$VDATE.$ENSMEM.$IDATE.nc
+  $ncks -v uo -d yh,503 -d xh,-299.92,60.03 $COMOUT/ocn_3D_$VDATE.$ENSMEM.$IDATE.nc $COMOUT/ocn-uo-EQ_$VDATE.$ENSMEM.$IDATE.nc
   status=$?
   [[ $status -ne 0 ]] && exit $status
 
-  # Convert the netcdf files to grib2
-  export executable=$MOM6REGRID/exec/reg2grb2.x
-  $MOM6REGRID/run_reg2grb2.sh
-  status=$?
-  [[ $status -ne 0 ]] && exit $status
-fi
 
 done
 # Restore CDATE to what is expected
@@ -129,8 +138,7 @@ done
   [[ $status -ne 0 ]] && exit $status
 
 # clean up working folder
-#rm -Rf $DATA
-#BL2019
+if [ ${KEEPDATA:-"NO"} = "NO" ] ; then rm -rf $DATA ; fi
 ###############################################################
 # Exit out cleanly
 exit 0

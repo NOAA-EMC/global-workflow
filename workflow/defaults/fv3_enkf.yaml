@@ -2,6 +2,7 @@ fv3_enkf_defaults: &fv3_enkf_defaults
   CDUMP: gdas
   CASE: C192
   LEVS: 65
+  CCPP_SUITE: GFS
   FHCYC: 1
   FHCYC_GDAS: 1
   FHCYC_GFS: 24
@@ -81,6 +82,9 @@ fv3_enkf_defaults: &fv3_enkf_defaults
     - when: !calc CASE=="C3072"
       do: 90
     - otherwise: 450
+
+  OCNTIM: 1800
+  ICETIM: !calc DELTIM
 
   layout: !Select
      select: !calc CASE

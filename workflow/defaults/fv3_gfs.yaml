@@ -2,6 +2,7 @@ fv3_gfs_defaults: &fv3_gfs_defaults
   CDUMP: gfs
   CASE: C384
   LEVS: 65
+  CCPP_SUITE: GFS
   FHCYC: 24
   FHCYC_GDAS: 1
   FHCYC_GFS: 24
@@ -16,10 +17,12 @@ fv3_gfs_defaults: &fv3_gfs_defaults
   d4_bg: 0.15
   dddmp: 0.2
   ISEED: 0
+  SEEDLET: 1
   SET_STP_SEED: YES
-  DO_SHUM: NO
-  DO_SKEB: NO
-  DO_SPPT: NO
+  DO_SHUM: false
+  DO_SKEB: false
+  DO_SPPT: false
+
   RUN_EFCSGRP: NO
   zhao_mic: YES
   nh_type: 'nh'
@@ -52,6 +55,9 @@ fv3_gfs_defaults: &fv3_gfs_defaults
     - when: !calc CASE=="C3072"
       do: 90
     - otherwise: 450
+
+  OCNTIM: 1800
+  ICETIM: !calc DELTIM
 
   layout: !Select
      select: !calc CASE

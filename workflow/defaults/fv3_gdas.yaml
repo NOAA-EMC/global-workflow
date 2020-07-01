@@ -1,6 +1,7 @@
 fv3_gdas_defaults: &fv3_gdas_defaults
   CDUMP: gdas
   CASE: C384
+  CCPP_SUITE: GFS
   LEVS: 65
   FHCYC: 24
   FHCYC_GDAS: 1
@@ -52,6 +53,9 @@ fv3_gdas_defaults: &fv3_gdas_defaults
     - when: !calc CASE=="C3072"
       do: 90
     - otherwise: 450
+
+  OCNTIM: 1800
+  ICETIM: !calc DELTIM
 
   layout: !Select
      select: !calc CASE

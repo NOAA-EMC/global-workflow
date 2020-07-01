@@ -21,6 +21,20 @@ common_predet(){
 	ICSDIR=${ICSDIR:-$pwd}         # cold start initial conditions
 }
 
+DATM_predet(){
+        SYEAR=$(echo  $CDATE | cut -c1-4)
+        SMONTH=$(echo $CDATE | cut -c5-6)
+        SDAY=$(echo   $CDATE | cut -c7-8)
+        SHOUR=$(echo  $CDATE | cut -c9-10)
+        # directory set up
+        if [ ! -d $DATA ]; then mkdir -p $DATA; fi
+        if [ ! -d $DATA/DATM_INPUT ]; then mkdir -p $DATA/DATM_INPUT; fi
+        FHMAX=${FHMAX:-9}
+# Go to Run Directory (DATA)         
+cd $DATA
+
+}
+
 FV3_GFS_predet(){
 	echo "SUB ${FUNCNAME[0]}: Defining variables for FV3GFS"
 	CDUMP=${CDUMP:-gdas}
@@ -81,9 +95,13 @@ FV3_GFS_predet(){
 	# Model config options
 	APRUN_FV3=${APRUN_FV3:-${APRUN_FCST:-${APRUN:-""}}}
 	NTHREADS_FV3=${NTHREADS_FV3:-${NTHREADS_FCST:-${nth_fv3:-1}}}
-	cores_per_node=${cores_per_node:-${npe_node_max:-24}}
+	cores_per_node=${cores_per_node:-${npe_node_fcst:-24}}
 	ntiles=${ntiles:-6}
-	NTASKS_TOT=${NTASKS_TOT:-$npe_fcst}
+        if [ $MEMBER -lt 0 ]; then
+                NTASKS_TOT=${NTASKS_TOT:-$npe_fcst}
+        else
+                NTASKS_TOT=${NTASKS_TOT:-$npe_efcs}
+        fi
 
 	TYPE=${TYPE:-"nh"}                  # choices:  nh, hydro
 	MONO=${MONO:-"non-mono"}            # choices:  mono, non-mono

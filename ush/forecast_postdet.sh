@@ -16,6 +16,22 @@ FV3_GEFS_postdet(){
 # soft link commands insert here
 }
 
+DATM_postdet(){
+  ######################################################################
+  # Link DATM  inputs (ie forcing files)                           #
+  ######################################################################
+
+  #TODO: This should be some loop through CDATE-> CDATE+ FORECAST length 
+  #and get input from either CFSR or GEFS or Whatever... 
+  #Currently assumes you only need the month of DATM input for IC date
+  #DATMINPUTDIR should be machine specific 
+
+  # DATM forcing file name convention is ${DATM_FILENAME_BASE}.$YYYYMMDDHH.nc 
+  echo "Link DATM forcing files"
+  DATMINPUTDIR="/scratch2/NCEPDEV/marineda/DATM_INPUT/CFSR/${SYEAR}${SMONTH}"
+  $NLN -sf ${DATMINPUTDIR}/${DATM_FILENAME_BASE}*.nc $DATA/DATM_INPUT/
+}
+
 FV3_GFS_postdet(){
 
 	echo "SUB ${FUNCNAME[0]}: $RERUN and $warm_start determined for $RUN"
@@ -162,9 +178,14 @@ EOF
 	  $NLN $FIXfv3/$CASE/${CASE}_grid.tile${n}.nc     $DATA/INPUT/${CASE}_grid.tile${n}.nc
 	  $NLN $FIXfv3/$CASE/${CASE}_oro_data.tile${n}.nc $DATA/INPUT/oro_data.tile${n}.nc
 	done
-        if [ $cpl = ".false." ] ; then
+        if [ $cplflx = ".false." ] ; then
 	  $NLN $FIXfv3/$CASE/${CASE}_mosaic.nc  $DATA/INPUT/grid_spec.nc
+        else 
+          $NLN $FIXfv3/$CASE/${CASE}_mosaic.nc  $DATA/INPUT/${CASE}_mosaic.nc
         fi
+
+        # CCPP Suite file 
+        $NCP -p $FIX_DIR/fix_ccpp_suites/suite_${CCPP_SUITE}.xml $DATA/
 
 	# GFS standard input data
 
@@ -180,6 +201,16 @@ EOF
 	    O3FORC=global_o3prdlos.f77
 	fi
 	H2OFORC=${H2OFORC:-"global_h2o_pltc.f77"}
+        ####
+        # copy CCN_ACTIVATE.BIN for Thompson microphysics
+        if [ $imp_physics -eq 8 ]; then
+        $NCP $FV3INP/CCN_ACTIVATE.BIN  CCN_ACTIVATE.BIN
+        ####
+        $NCP $FIX_AM/freezeH2O.dat .
+        $NCP $FIX_AM/qr_acr_qg.dat .
+        $NCP $FIX_AM/qr_acr_qs.dat .
+        sleep 60
+        fi
 	$NLN $FIX_AM/${O3FORC}                         $DATA/global_o3prdlos.f77
 	$NLN $FIX_AM/${H2OFORC}                        $DATA/global_h2oprdlos.f77
 	$NLN $FIX_AM/global_solarconstant_noaa_an.txt  $DATA/solarconstant_noaa_an.txt
@@ -236,7 +267,11 @@ EOF
 	FNAISC=${FNAISC:-"$FIX_AM/CFSR.SEAICE.1982.2012.monthly.clim.grb"}
 	FNTG3C=${FNTG3C:-"$FIX_AM/global_tg3clim.2.6x1.5.grb"}
 	FNVEGC=${FNVEGC:-"$FIX_AM/global_vegfrac.0.144.decpercent.grb"}
-	FNMSKH=${FNMSKH:-"$FIX_AM/seaice_newland.grb"}
+        if [ $cpl = ".true." ]; then
+		export FNMSKH=${FNMSKH:-"$FIX_AM/seaice_newland.grb"}
+	else
+		export FNMSKH=${FNMSKH:-"$FIX_AM/global_slmask.t1534.3072.1536.grb"}
+	fi
 	FNVMNC=${FNVMNC:-"$FIX_AM/global_shdmin.0.144x0.144.grb"}
 	FNVMXC=${FNVMXC:-"$FIX_AM/global_shdmax.0.144x0.144.grb"}
 	FNSLPC=${FNSLPC:-"$FIX_AM/global_slope.1x1.grb"}
@@ -356,15 +391,15 @@ EOF
 
 	# Stochastic Physics Options
 	if [ ${SET_STP_SEED:-"YES"} = "YES" ]; then
-	  ISEED_SKEB=$((CDATE*1000 + MEMBER*10 + 1))
-	  ISEED_SHUM=$((CDATE*1000 + MEMBER*10 + 2))
-	  ISEED_SPPT=$((CDATE*1000 + MEMBER*10 + 3))
+	  ISEED_SKEB=$((CDATE*1000 + SEEDLET*10 + 1))
+	  ISEED_SHUM=$((CDATE*1000 + SEEDLET*10 + 2))
+	  ISEED_SPPT=$((CDATE*1000 + SEEDLET*10 + 3))
 	else
 	  ISEED=${ISEED:-0}
 	fi
-	DO_SKEB=${DO_SKEB:-"NO"}
-	DO_SPPT=${DO_SPPT:-"NO"}
-	DO_SHUM=${DO_SHUM:-"NO"}
+	DO_SKEB=${DO_SKEB:-".false."}
+	DO_SPPT=${DO_SPPT:-".false."}
+	DO_SHUM=${DO_SHUM:-".false."}
 	JCAP_STP=${JCAP_STP:-$JCAP_CASE}
 	LONB_STP=${LONB_STP:-$LONB_CASE}
 	LATB_STP=${LATB_STP:-$LATB_CASE}
@@ -372,6 +407,9 @@ EOF
 	#------------------------------------------------------------------
 	# make symbolic links to write forecast files directly in memdir
 	cd $DATA
+        if [ $inistep = 'cold' ]; then
+          echo "Not making links of output for mediator cold start" 
+        else 
 	if [ $QUILTING = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]; then
 	  fhr=$FHMIN
 	  while [ $fhr -le $FHMAX ]; do
@@ -400,6 +438,7 @@ EOF
 	    eval $NLN atmos_4xdaily.tile${n}.nc $memdir/atmos_4xdaily.tile${n}.nc
 	  done
 	fi
+        fi
 }
 
 FV3_GFS_nml(){
@@ -415,6 +454,12 @@ FV3_GFS_nml(){
 	echo SUB ${FUNCNAME[0]}: FV3 name lists and model configure file created
 }
 
+DATM_nml(){
+        source $SCRIPTDIR/parsing_namelists_DATM.sh
+        DATM_namelists
+        echo SUB ${FUNCNAME[0]}: DATM name lists and model configure file created
+}
+
 data_out_GFS()
 {
 # data in take for FV3GFS
@@ -424,6 +469,7 @@ data_out_GFS()
 # make symbolic links to write forecast files directly in memdir
 echo "SUB ${FUNCNAME[0]}: copying output data for FV3"
 #------------------------------------------------------------------
+
 if [ $SEND = "YES" ]; then
   # Copy model restart files
   if [ $CDUMP = "gdas" -a $restart_interval -gt 0 ]; then
@@ -450,6 +496,9 @@ if [ $SEND = "YES" ]; then
     done
   fi
 fi
+        
+$NCP -p $DATA/input.nml $COMOUT/
+
 echo "SUB ${FUNCNAME[0]}: Output data for FV3 copied"
 }
 
@@ -476,22 +525,26 @@ MOM6_postdet()
 {
 	echo "SUB ${FUNCNAME[0]}: MOM6 after run type determination"
 
-	# Copy MOM6 ICs (from CFSv2 file)
-	cp -pf $ICSDIR/$CDATE/mom6_da/MOM*nc $DATA/INPUT/
+        OCNRES=${OCNRES:-"025"}
+ 
+	# Copy MOM6 ICs
+	$NCP -pf $ICSDIR/$CDATE/ocn/MOM*nc $DATA/INPUT/
 
 	# Copy MOM6 fixed files
-	cp -pf $FIXmom/INPUT/* $DATA/INPUT/
-        cp -pf $FIXmom/INPUT/MOM_input_with_runoff $DATA/INPUT/MOM_input
+        $NCP -pf $FIXmom/$OCNRES/* $DATA/INPUT/
 
-	# Copy grid_spec and mosaic files
-	cp -pf $FIXgrid/$CASE/${CASE}_mosaic* $DATA/INPUT/
-	cp -pf $FIXgrid/$CASE/grid_spec.nc $DATA/INPUT/
-	cp -pf $FIXgrid/$CASE/ocean_mask.nc $DATA/INPUT/
-	cp -pf $FIXgrid/$CASE/land_mask* $DATA/INPUT/
+        # Copy MOM6 input file 
+        $NCP -pf $HOMEgfs/parm/mom6/MOM_input_$OCNRES $DATA/INPUT/MOM_input 
+
+        #TODO: if cplwav, copy MOM_input_$OCNRES_wav 
+        #TODO: update to make MOM_input configurable 
+
+	# Copy coupled grid_spec
+        $NCP -pf $FIX_DIR/fix_cpl/a${CASE}o${OCNRES}/grid_spec.nc $DATA/INPUT/
 
         # Copy mediator restart files to RUNDIR
-        if [ $runtyp = 'continue' ]; then
-               cp $ROTDIR/$CDUMP.$PDY/$cyc/mediator_* $DATA/
+        if [ $inistep = 'restart' ]; then
+           $NCP $ROTDIR/$CDUMP.$PDY/$cyc/mediator_* $DATA/
         fi
 
 	echo "SUB ${FUNCNAME[0]}: MOM6 input data linked/copied"
@@ -521,97 +574,122 @@ MOM6_out()
 	fi
 	[[ ! -d $COMOUT ]] && mkdir -m 775 -p $COMOUT
 
-        if [ $runtyp = 'initial' ]; then
+        if [ $inistep = 'cold' ]; then
                cp $DATA/mediator_* $COMOUT/
                status=$?
                exit $status
-        fi
-
-        if [ $FHRGRP -eq 0 ]; then
-            fhrlst="anl"
         else
-            fhrlst=$(echo $FHRLST | sed -e 's/_/ /g; s/\[/ /g; s/\]/ /g; s/f/ /g; s/,/ /g')
-        fi
 
-	# copy ocn files
-	for fhr in $fhrlst; do
-	  export fhr=$fhr
-	  if [[ 10#$fhr -ge 6 ]]; then
-       	  hh_inc_m=$((10#$FHOUT/2))
-	#hh_inc_m=3
-	#hh_in_o=6
-	  hh_inc_o=$((10#$FHOUT  ))
+          if [ $FHRGRP -eq 0 ]; then
+              fhrlst="anl"
+          else
+              fhrlst=$(echo $FHRLST | sed -e 's/_/ /g; s/\[/ /g; s/\]/ /g; s/f/ /g; s/,/ /g')
+          fi
+
+      	  # copy ocn files
+  	  for fhr in $fhrlst; do
+	    export fhr=$fhr
+	    if [[ 10#$fhr -ge 6 ]]; then
+       	      hh_inc_m=$((10#$FHOUT/2))
+	      hh_inc_o=$((10#$FHOUT  ))
 
   # ------------------------------------------------------
   #  adjust the dates on the mom filenames and save
   # ------------------------------------------------------
-	  VDATE=$($NDATE $fhr $IDATE)
-	  YYYY=`echo $VDATE | cut -c1-4`
-	  MM=`echo $VDATE | cut -c5-6`
-	  DD=`echo $VDATE | cut -c7-8`
-	  HH=`echo $VDATE | cut -c9-10`
-	  SS=$((10#$HH*3600))
+	      VDATE=$($NDATE $fhr $IDATE)
+	      YYYY=`echo $VDATE | cut -c1-4`
+	      MM=`echo $VDATE | cut -c5-6`
+	      DD=`echo $VDATE | cut -c7-8`
+       	      HH=`echo $VDATE | cut -c9-10`
+	      SS=$((10#$HH*3600))
 
-	#  m_date=$($NDATE $hh_inc_m $DDATE)
-	#  p_date=$($NDATE $hh_inc_o $DDATE)
+	      m_date=$($NDATE -$hh_inc_m $VDATE)
+	      p_date=$VDATE
 
-	  m_date=$($NDATE -$hh_inc_m $VDATE)
-	  p_date=$VDATE
+	      year=`echo $m_date | cut -c1-4`
+	      month=`echo $m_date | cut -c5-6`
+	      day=`echo $m_date | cut -c7-8`
+	      hh=`echo $m_date | cut -c9-10`
 
-	  # This loop probably isn't needed
-	    year=`echo $m_date | cut -c1-4`
-	    month=`echo $m_date | cut -c5-6`
-	    day=`echo $m_date | cut -c7-8`
-	    hh=`echo $m_date | cut -c9-10`
+	      export ocnfile=ocn_${year}_${month}_${day}_${hh}.nc
 
-	    export ocnfile=ocn_${year}_${month}_${day}_${hh}.nc
-
-	    echo "cp -p $ocnfile $COMOUT/ocn$p_date.$ENSMEM.$IDATE.nc"
-	    $NCP -p $ocnfile $COMOUT/ocn$p_date.$ENSMEM.$IDATE.nc
-	    status=$?
-	    [[ $status -ne 0 ]] && exit $status
-	  fi
-	done
-	$NCP -p $DATA/SST*nc $COMOUT/
-        $NCP -p $DATA/input.nml $COMOUT/
-        $NCP -p $DATA/ice_in $COMOUT/
-        $NCP -p $DATA/INPUT/MOM_input $COMOUT/
+	      echo "$NCP -p $ocnfile $COMOUT/ocn$p_date.$ENSMEM.$IDATE.nc"
+	      $NCP -p $ocnfile $COMOUT/ocn$p_date.$ENSMEM.$IDATE.nc
+	      status=$?
+	      [[ $status -ne 0 ]] && exit $status
+             
+	    fi
+       
+	  done
+          $NCP -p $DATA/ocn_daily*nc $COMOUT/
+          $NCP -p $DATA/wavocn*nc $COMOUT/ #temporary for p4
+          $NCP -p $DATA/INPUT/MOM_input $COMOUT/
+        fi
 }
 
 CICE_postdet()
 {
 	echo "SUB ${FUNCNAME[0]}: CICE after run type determination"
-	# Copy CICE5 IC - pre-generated from CFSv2
-        cp -p $ICSDIR/$CDATE/cice5_model_0.25.res_$CDATE.nc $DATA/cice5_model.res_$CDATE.nc
-	#cp -p $ICSDIR/$CDATE/cpc/cice5_model_0.25.res_$CDATE.nc ./cice5_model.res_$CDATE.nc
 
-        # Copy CICE5 fixed files, and namelists
-        cp -p $FIXcice/kmtu_cice_NEMS_mx025.nc $DATA/
-        cp -p $FIXcice/grid_cice_NEMS_mx025.nc $DATA/
+        year=$(echo $CDATE|cut -c 1-4)
+        stepsperhr=$((3600/$ICETIM))
+        nhours=$($NHOUR $CDATE ${year}010100)
+        istep0=$((nhours*stepsperhr))
+        steps=$((nhours*stepsperhr))
+        npt=$((FHMAX*$stepsperhr))      # Need this in order for dump_last to work
 
-        # Copy grid_spec and mosaic files
-        cp -pf $FIXgrid/$CASE/${CASE}_mosaic* $DATA/INPUT/
-        cp -pf $FIXgrid/$CASE/grid_spec.nc $DATA/INPUT/
-        cp -pf $FIXgrid/$CASE/ocean_mask.nc $DATA/INPUT/
-        cp -pf $FIXgrid/$CASE/land_mask* $DATA/INPUT/
+        histfreq_n=${histfreq_n:-6}
+        if [ $inistep = 'cold' ]; then
+           dumpfreq_n=${dumpfreq_n:-3600}  # restart write interval in seconds, default 1 hour
+           dumpfreq="s"
+        else 
+           dumpfreq_n=${dumpfreq_n:-3024000}  # restart write interval in seconds, default 35 days
+           dumpfreq=${dumpfreq:-"s"} #  "s" or "d" or "m" for restarts at intervals of "seconds", "days" or "months"
+        fi 
+        cice_hist_avg=${cice_hist_avg:-".true."}
 
-	iceic=cice5_model.res_$CDATE.nc
-	year=$(echo $CDATE|cut -c 1-4)
-	#BL2018
-	stepsperhr=$((3600/$ICETIM))
-	#BL2018
-	nhours=$($NHOUR $CDATE ${year}010100)
-	steps=$((nhours*stepsperhr))
-	npt=$((FHMAX*$stepsperhr))      # Need this in order for dump_last to work
+        FRAZIL_FWSALT=${FRAZIL_FWSALT:-".true."}
+        tr_pond_lvl=${tr_pond_lvl:-".true."} # Use level melt ponds tr_pond_lvl=true
 
-	histfreq_n=${histfreq_n:-6}
-	restart_interval=${restart_interval:-1296000}    # restart write interval in seconds, default 15 days
-	dumpfreq_n=$restart_interval                     # restart write interval in seconds
+        # restart_pond_lvl (if tr_pond_lvl=true):
+        #   -- if true, initialize the level ponds from restart (if runtype=continue) 
+        #   -- if false, re-initialize level ponds to zero (if runtype=initial or continue)  
 
-	#BL2018
-	#dumpfreq='d'
-	#dumpfreq='s'
+        #TODO: Determine the proper way to determine if it's a 'hot start' or not
+        #note this is not mediator cold start or not 
+        #if [ hotstart ]; then
+        #  #continuing run "hot start" 
+        #  RUNTYPE='continue'
+        #  USE_RESTART_TIME='.true.'
+        #  restart_pond_lvl=${restart_pond_lvl:-".true."}
+        #else
+          #using cold start IC
+          RUNTYPE='initial'
+          USE_RESTART_TIME='.false.'
+          restart_pond_lvl=${restart_pond_lvl:-".false."}
+        #fi
 
+        ICERES=${ICERES:-"025"} 
+        if [ $ICERES = '025' ]; then
+          ICERESmx="mx025"
+          ICERESdec="0.25"
+        fi
+        if [ $ICERES = '050' ]; then
+          ICERESmx="mx050"
+          ICERESdec="0.50"
+        fi 
+
+        ice_grid_file=${ice_grid_file:-"grid_cice_NEMS_${ICERESmx}.nc"}
+        ice_kmt_file=${ice_kmt_file:-"kmtu_cice_NEMS_${ICERESmx}.nc"}
+
+        iceic="cice5_model.res_$CDATE.nc"
+
+	# Copy CICE5 IC 
+        $NCP -p $ICSDIR/$CDATE/ice/cice5_model_${ICERESdec}.res_$CDATE.nc $DATA/$iceic
+
+        echo "Link CICE fixed files"
+        $NLN -sf $FIXcice/${ice_grid_file} $DATA/
+        $NLN -sf $FIXcice/${ice_kmt_file} $DATA/
 }
 
 CICE_nml()
@@ -624,8 +702,12 @@ CICE_nml()
 CICE_out()
 {
 	echo "SUB ${FUNCNAME[0]}: Copying output data for CICE"
+        if [ $inistep = 'cold' ]; then
+           echo "mediator cold start, no copying of data for CICE"
+        else
         export ENSMEM=${ENSMEM:-01}
         export IDATE=$CDATE
+        $NCP -p $DATA/ice_in $COMOUT/
         if [ $FHRGRP -eq 0 ]; then
             fhrlst="anl"
         else
@@ -650,8 +732,6 @@ CICE_out()
 	  HH=`echo $VDATE | cut -c9-10`
 	  SS=$((10#$HH*3600))
 
-	#  DDATE=$($NDATE -$FHOUT $VDATE)
-
 	  if [[ 10#$fhr -eq 0 ]]; then
 	    $NCP -p $DATA/history/iceh_ic.${YYYY0}-${MM0}-${DD0}-`printf "%5.5d" ${SS0}`.nc $COMOUT/iceic$VDATE.$ENSMEM.$IDATE.nc
 	    status=$?
@@ -664,6 +744,7 @@ CICE_out()
 	  fi
 
 	done
+        fi
 }
 
 GSD_in()
@@ -683,3 +764,6 @@ GSD_out()
 	echo "SUB ${FUNCNAME[0]}: Copying output data for GSD"
 	# soft link commands insert here
 }
+
+
+

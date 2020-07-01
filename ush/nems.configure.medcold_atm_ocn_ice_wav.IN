@@ -1,0 +1,88 @@
+#############################################
+####  NEMS Run-Time Configuration File  #####
+#############################################
+
+# EARTH #
+EARTH_component_list: MED ATM OCN ICE WAV
+EARTH_attributes::
+  Verbosity = 0
+::
+
+# MED #
+MED_model:                      @[med_model]
+MED_petlist_bounds:             @[med_petlist_bounds]
+MED_attributes::
+  Verbosity = 0
+  DumpFields = false
+  DumpRHs = false
+  coldstart = true
+  ProfileMemory = false
+::
+
+# ATM #
+ATM_model:                      @[atm_model]
+ATM_petlist_bounds:             @[atm_petlist_bounds]
+ATM_attributes::
+  Verbosity = 0
+  DumpFields = false
+  ProfileMemory = false
+  OverwriteSlice = false
+::
+
+# OCN #
+OCN_model:                      @[ocn_model]
+OCN_petlist_bounds:             @[ocn_petlist_bounds]
+OCN_attributes::
+  Verbosity = 0
+  DumpFields = false
+  ProfileMemory = false
+  restart_n=0
+  OverwriteSlice = false
+::
+
+# ICE #
+ICE_model:                      @[ice_model]
+ICE_petlist_bounds:             @[ice_petlist_bounds]
+ICE_attributes::
+  Verbosity = 0
+  DumpFields = false
+  ProfileMemory = false
+  OverwriteSlice = false
+::
+
+# WAV #
+WAV_model:                      @[wav_model]
+WAV_petlist_bounds:             @[wav_petlist_bounds]
+WAV_attributes::
+  Verbosity = 0
+  OverwriteSlice = false
+::
+
+
+# Run Sequence #
+runSeq::
+  @@[coupling_interval_slow_sec]
+    OCN -> WAV
+    WAV -> OCN :srcMaskValues=1
+    @@[coupling_interval_fast_sec]
+      MED MedPhase_prep_atm
+      MED -> ATM :remapMethod=redist
+      WAV -> ATM :srcMaskValues=1
+      ATM
+      ATM -> WAV
+      ATM -> MED :remapMethod=redist
+      MED MedPhase_prep_ice
+      MED -> ICE :remapMethod=redist
+      ICE
+      ICE -> WAV 
+      WAV
+      ICE -> MED :remapMethod=redist
+      MED MedPhase_atm_ocn_flux
+      MED MedPhase_accum_fast
+    @
+    MED MedPhase_prep_ocn
+    MED -> OCN :remapMethod=redist
+    OCN
+    OCN -> MED :remapMethod=redist
+  @
+::

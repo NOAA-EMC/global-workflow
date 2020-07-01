@@ -1,17 +1,18 @@
 case:
   places:
     workflow_file: layout/free_forecast_gfs.yaml
-    MOM6IC: /scratch1/NCEPDEV/nems/Bin.Li/S2S/FROM_HPSS
+    #BASE_CPLIC: /scratch2/NCEPDEV/climate/climpara/S2S/IC
 
   settings: 
-    SDATE: 2016-04-01t00:00:00
-    EDATE: 2016-04-01t00:00:00
+    SDATE: 2013-04-01t00:00:00
+    EDATE: 2013-04-01t00:00:00
 
     cplflx: .true.
     print_esmf: .true.
     nems_temp: 'med_atm_ocn_ice'
     nems_temp_cold: 'medcold_atm_ocn_ice'
-#    cplflx: .false.
+    mom6ic_prepared: .false.
+    KEEPDATA: NO
 
   nsst:
     NST_MODEL: 0
@@ -20,7 +21,7 @@ case:
     OCN_INTERVAL: 24
     FHOUT_GFS: 6
     FHMIN_GFS: 0
-    FHMAX_GFS: 72
+    FHMAX_GFS: 840
     FHMAX_HF_GFS: 0
     FHOUT_HF_GFS: -1
 
@@ -28,7 +29,12 @@ case:
     CASE: C384
     LEVS: 65
     DELTIM: 450
+    SEEDLET: 10
+    CCPP_SUITE: FV3_GFS_v15p2_coupled
     nst_anl: no
+    DO_SKEB: false
+    DO_SHUM: false
+    DO_SPPT: false
     layout:
        x: 6
        y: 8

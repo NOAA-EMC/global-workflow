@@ -18,6 +18,6 @@ fi
 
 if [ $target = theia ]; then target=theia.intel ; fi
 
-cd fv3_coupled.fd/
-./NEMS/NEMSAppBuilder rebuild app=coupledFV3_MOM6_CICE
-mv ./NEMS/exe/NEMS.x ./NEMS/exe/nems_fv3_mom6_cice5.x
+cd fv3_coupled.fd/NEMS 
+make -j 8 app=coupledFV3_CCPP_MOM6_CICE_WW3 build
+mv ./exe/NEMS.x ./exe/nems_fv3_ccpp_mom6_cice5_ww3.x

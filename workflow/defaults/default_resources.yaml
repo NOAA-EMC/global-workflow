@@ -18,7 +18,7 @@ gfs_resource_table: !Select
       #          ranks   ppn wallclock            threads MB_per_rank
       prep:     [  12,   12, !timedelta "00:15:00", null, null ]
       anal:     [ 144,    6, !timedelta "01:30:00", max, null  ]
-      gdaspost: [  72,   12, !timedelta "00:30:00", 1, null    ]
+      gdaspost: [  72,   12, !timedelta "00:10:00", 1, null    ]
       gfspost:  [  72,   12, !timedelta "00:10:00", 1, null    ]
       gdasvrfy: [   1,    1, !timedelta "03:00:00", null, null ]
       gfsvrfy:  [   5,    1, !timedelta "01:00:00", null, null ]
@@ -35,14 +35,14 @@ gfs_resource_table: !Select
       #          ranks   ppn wallclock            threads MB_per_rank
       prep:     [  12,   12, !timedelta "00:15:00", null, null ]
       anal:     [ 144,    6, !timedelta "02:30:00", max, null  ]
-      gdaspost: [  72,   12, !timedelta "00:30:00", 1, null    ]
-      gfspost:  [  72,   12, !timedelta "00:10:00", 1, null    ]
+      gdaspost: [  72,   12, !timedelta "00:20:00", 1, null    ]
+      gfspost:  [  72,   12, !timedelta "00:20:00", 1, null    ]
       gdasvrfy: [   1,    1, !timedelta "03:00:00", null, null ]
       gfsvrfy:  [   5,    1, !timedelta "03:00:00", null, null ]
       gdasfcst_wall:  !timedelta "00:15:00"
-      gfsfcst_wall:  !timedelta "06:00:00"
+      gfsfcst_wall:  !timedelta "08:00:00"
       coupfcst_medcold_wall:  !timedelta "00:30:00"
-      coupfcst_wall:  !timedelta "02:00:00"
+      coupfcst_wall:  !timedelta "08:00:00"
       gdasfcst_ppn: !icalc doc.platform.partitions.default_exclusive.scheduler_settings.physical_cores_per_node
       gfsfcst_ppn: !icalc doc.platform.partitions.default_exclusive.scheduler_settings.physical_cores_per_node
       post_manager_wallclock_extra: !timedelta "00:15:00"
@@ -50,7 +50,7 @@ gfs_resource_table: !Select
       #          ranks ppn  wallclock            threads  MB_per_rank
       prep:     [   4,    4, !timedelta "00:45:00", max,  null  ]
       anal:     [ 360,    6, !timedelta "05:30:00", max,  7000  ]
-      gdaspost: [  84,   12, !timedelta "00:45:00", null, 3770  ]
+      gdaspost: [  84,   12, !timedelta "00:30:00", null, 3770  ]
       gfspost:  [  84,   12, !timedelta "00:30:00", null, 3770  ]
       gdasvrfy: [   1,    1, !timedelta "03:00:00", null, null  ]
       gfsvrfy:  [   5, null, !timedelta "06:00:00", null, null  ]

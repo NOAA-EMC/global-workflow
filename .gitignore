@@ -1,5 +1,6 @@
 __pycache__
 exec/
+fix
 fix/0readme
 fix/fix_am
 fix/fix_chem
@@ -124,6 +125,9 @@ sorc/wafs_cnvgrib2.fd
 sorc/wafs_gcip.fd
 sorc/wafs_makewafs.fd
 sorc/wafs_setmissing.fd
+sorc/checkout-fv3_coupled.log
+sorc/checkout-gsi.fd.log
+sorc/fv3_coupled.fd/
 ush/emcsfc_ice_blend.sh
 ush/emcsfc_snow.sh
 ush/fix_precip.sh
@@ -159,3 +163,5 @@ util/sub_slurm
 util/sub_wcoss_c
 util/sub_wcoss_d
 workflow/user.yaml
+sorc/checkout-gldas.fd.log
+sorc/gldas.fd/

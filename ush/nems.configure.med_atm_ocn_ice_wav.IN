@@ -5,51 +5,58 @@
 # EARTH #
 EARTH_component_list: MED ATM OCN ICE WAV
 EARTH_attributes::
-  Verbosity = max
+  Verbosity = 0
 ::
 
 # MED #
 MED_model:                      @[med_model]
 MED_petlist_bounds:             @[med_petlist_bounds]
 MED_attributes::
-  Verbosity = max
-  DumpFields = false
+  Verbosity = 0
+  DumpFields = @[DumpFields]
   DumpRHs = false
   coldstart = false
   restart_interval = 0
+  ProfileMemory = false
 ::
 
 # ATM #
 ATM_model:                      @[atm_model]
 ATM_petlist_bounds:             @[atm_petlist_bounds]
 ATM_attributes::
-  Verbosity = max
-  DumpFields = false
+  Verbosity = 0
+  DumpFields = @[DumpFields]
+  ProfileMemory = false
+  OverwriteSlice = false
 ::
 
 # OCN #
 OCN_model:                      @[ocn_model]
 OCN_petlist_bounds:             @[ocn_petlist_bounds]
 OCN_attributes::
-  Verbosity = max
-  DumpFields = false
-  restart_interval = 9999999
+  Verbosity = 0
+  DumpFields = @[DumpFields]
+  restart_interval = 0
+  ProfileMemory = false
+  OverwriteSlice = false
 ::
 
 # ICE #
 ICE_model:                      @[ice_model]
 ICE_petlist_bounds:             @[ice_petlist_bounds]
 ICE_attributes::
-  Verbosity = max
-  DumpFields = false
+  Verbosity = 0
+  DumpFields = @[DumpFields]
+  ProfileMemory = false
+  OverwriteSlice = false
 ::
 
-# WAV #
+# WAV # 
 WAV_model:                      @[wav_model]
 WAV_petlist_bounds:             @[wav_petlist_bounds]
 WAV_attributes::
-  Verbosity = max
-  DumpFields = false
+  Verbosity = 0
+  OverwriteSlice = false
 ::
 
 # Run Sequence #
@@ -57,18 +64,20 @@ runSeq::
   @@[coupling_interval_slow_sec]
     MED MedPhase_prep_ocn
     MED -> OCN :remapMethod=redist
-    ATM -> WAV 
-    OCN -> WAV
+    OCN -> WAV 
     WAV -> OCN :srcMaskValues=1
     OCN
-    WAV
     @@[coupling_interval_fast_sec]
       MED MedPhase_prep_ice
       MED MedPhase_prep_atm
       MED -> ATM :remapMethod=redist
       MED -> ICE :remapMethod=redist
+      WAV -> ATM :srcMaskValues=1
+      ATM -> WAV
+      ICE -> WAV
       ATM
       ICE
+      WAV 
       ATM -> MED :remapMethod=redist
       ICE -> MED :remapMethod=redist
       MED MedPhase_atm_ocn_flux
