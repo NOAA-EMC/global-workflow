@@ -70,14 +70,6 @@ if [ $RUN_ENVIR = "nco" ]; then
     export RSTDIR=${GESROOT:?}/$envir
 fi
 
-# Source additional configs
-if [ ${DO_WAVE:-"NO"} = "YES" ]; then
-# WAVE component directory
-  export WAV_MOD_ID=${WAV_MOD_ID:-wave}
-  export COMINWW3=${COMINWW3:-${ROTDIR:?}}
-  export COMOUTWW3=${COMOUTWW3:-${ROTDIR:?}}
-fi
-
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
