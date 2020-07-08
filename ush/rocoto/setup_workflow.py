@@ -403,7 +403,7 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
     deps = []
     dep_dict = {'type': 'metatask', 'name': '%spost' % 'gdas', 'offset': '-06:00:00'}
     deps.append(rocoto.add_dependency(dep_dict))
-    data = '&ROTDIR;/gdas.@Y@m@d/@H/gdas.t@Hz.atmf009%s' % (gridsuffix)
+    data = '&ROTDIR;/gdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmf009%s' % (gridsuffix)
     dep_dict = {'type': 'data', 'data': data, 'offset': '-06:00:00'}
     deps.append(rocoto.add_dependency(dep_dict))
     data = '&DMPDIR;/%s%s.@Y@m@d/@H/%s.t@Hz.updated.status.tm00.bufr_d' % (cdump, dumpsuffix, cdump)

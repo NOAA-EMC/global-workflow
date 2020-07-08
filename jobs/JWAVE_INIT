@@ -27,7 +27,8 @@ status=$?
 # PATH for working directory
 export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
-export COMPONENTwave=${COMPONENTwave:-${RUN}wave}
+export COMPONENTatmos=${COMPONENTatmos:-atmos}
+export COMPONENTwave=${COMPONENTwave:-wave}
 
 export HOMEgfs=${HOMEgfs:-$NWROOT/${NET}.${gfs_ver}}
 
@@ -67,10 +68,8 @@ export EXECwave=${EXECwave:-$HOMEgfs/exec}
 if [ $RUN_ENVIR = "nco" ]; then
     export ROTDIR=${COMROOT:?}/$NET/$envir
 fi
-export COMINwave=${COMINwave:-${ROTDIR:?}}
-export COMOUTwave=${COMOUTwave:-${ROTDIR:?}}
-export COMIN=${COMIN:-${COMINwave}/${COMPONENTwave}.${PDY}/${cyc}}
-export COMOUT=${COMOUT:-${COMOUTwave}/${COMPONENTwave}.${PDY}/${cyc}}
+export COMIN=${COMIN:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENTwave}}
+export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENTwave}}
 [[ ! -d $COMOUT ]] && mkdir -m 775 -p $COMOUT
 
 if [ $SENDCOM = YES ]; then

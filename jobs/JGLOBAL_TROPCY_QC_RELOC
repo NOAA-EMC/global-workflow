@@ -57,6 +57,7 @@ export pgmerr=errfile
 ##############################################
 export CDATE=${CDATE:-${PDY}${cyc}}
 export CDUMP=${CDUMP:-${RUN:-"gfs"}}
+export COMPONENTatmos=${COMPONENTatmos:-atmos}
 if [ $RUN_ENVIR = "nco" ]; then
     export ROTDIR=${COMROOT:?}/$NET/$envir
 fi
@@ -88,8 +89,8 @@ export TANK_TROPCY=${TANK_TROPCY:-${DCOMROOT}/prod}   # path to tropical cyclone
 ##############################################
 # Define COM directories
 ##############################################
-export COMIN=${ROTDIR}/${RUN}.${PDY}/${cyc}
-export COMOUT=${ROTDIR}/${RUN}.${PDY}/${cyc}
+export COMIN=${ROTDIR}/${RUN}.${PDY}/${cyc}/${COMPONENTatmos}
+export COMOUT=${ROTDIR}/${RUN}.${PDY}/${cyc}/${COMPONENTatmos}
 if [ ! -d ${COMOUT} ]; then mkdir -p $COMOUT; fi
 #export COMINgdas=${ROTDIR}/gdas.${PDY}/${cyc}
 #export COMINgfs=${ROTDIR}/gfs.${PDY}/${cyc}

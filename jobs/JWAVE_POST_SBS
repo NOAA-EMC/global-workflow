@@ -27,7 +27,8 @@ status=$?
 # PATH for working directory
 export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
-export COMPONENTwave=${COMPONENTwave:-${RUN}wave}
+export COMPONENTatmos=${COMPONENTatmos:-atmos}
+export COMPONENTwave=${COMPONENTwave:-wave}
 
 export HOMEgefs=${HOMEgefs:-$NWROOT/$NET.${gefs_ver}}
 export HOMEgfs=${HOMEgfs:-$NWROOT/$NET.${gfs_ver}}
@@ -68,10 +69,8 @@ export EXECwave=${EXECwave:-$HOMEgfs/exec}
 if [ $RUN_ENVIR = "nco" ]; then
     export ROTDIR=${COMROOT:?}/$NET/$envir
 fi
-export COMINwave=${COMINwave:-${ROTDIR:?}}
-export COMOUTwave=${COMOUTwave:-${ROTDIR:?}}
-export COMIN=${COMIN:-${COMINwave}/${COMPONENTwave}.${PDY}/${cyc}}
-export COMOUT=${COMOUT:-${COMOUTwave}/${COMPONENTwave}.${PDY}/${cyc}}
+export COMIN=${COMIN:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENTwave}}
+export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENTwave}}
 
 export COMINice=${COMINice:-${COMROOTp2}/omb/prod}
 export COMINwnd=${COMINwnd:-${COMROOT}/gfs/prod}
@@ -94,7 +93,7 @@ env | sort
 membTAG='p'
 if [ "${waveMEMB}" == "00" ]; then membTAG='c'; fi
 export membTAG
-export WAV_MOD_TAG=${COMPONENTwave}${waveMEMB}
+export WAV_MOD_TAG=${CDUMP}wave${waveMEMB}
 
 export CFP_VERBOSE=1
 

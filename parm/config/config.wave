@@ -13,14 +13,16 @@ export wave_sys_ver=v1.0.0
 # This config contains variables/parameters used in the fcst step
 # Some others are also used across the workflow in wave component scripts
 
+export COMINwave=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENTwave}
+export COMOUTwave=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENTwave}
+
 # General runtime labels
-# export WAV_MOD_ID=${WAV_MOD_ID:-wave} # generic modID=wave valid for GFSv16 and beyond
 # COMPONENTwave stands for model component, in addition to NET/RUN for coupled systems
-export COMPONENTwave=${COMPONENTwave:-${RUN}wave}
+export COMPONENTwave="wave"
+export CDUMPwave="${CDUMP}wave"
 
 # In GFS/GDAS, restart files are generated/read from gdas runs
-# Can I use rCDUMP here????
-export COMPONENTRSTwave=${COMPONENTRSTwave:-gdaswave}
+export CDUMPRSTwave="gdas"
 
 # Grids for wave model
 # GFSv16

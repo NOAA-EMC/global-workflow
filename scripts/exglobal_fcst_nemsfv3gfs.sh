@@ -40,6 +40,9 @@ machine=${machine:-"WCOSS_C"}
 machine=$(echo $machine | tr '[a-z]' '[A-Z]')
 
 # Cycling and forecast hour specific parameters 
+COMPONENTatmos=${COMPONENTatmos:-"atmos"}
+COMPONENTwave=${COMPONENTwave:-"wave"}
+CDUMPwave="${CDUMP}wave"
 CASE=${CASE:-C768}
 CDATE=${CDATE:-2017032500}
 CDUMP=${CDUMP:-gdas}
@@ -149,7 +152,7 @@ fi
 cd $DATA || exit 8
 mkdir -p $DATA/INPUT
 if [ $CDUMP = "gfs" -a $rst_invt1 -gt 0 ]; then
-    RSTDIR_TMP=${RSTDIR:-$ROTDIR}/${CDUMP}.${PDY}/${cyc}/RERUN_RESTART
+    RSTDIR_TMP=${RSTDIR:-$ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENTatmos}/RERUN_RESTART
     if [ ! -d $RSTDIR_TMP ]; then mkdir -p $RSTDIR_TMP ; fi
     $NLN $RSTDIR_TMP RESTART
 else
@@ -191,13 +194,13 @@ else
   rprefix=enkf$rCDUMP
   memchar=mem$(printf %03i $MEMBER)
 fi
-memdir=$ROTDIR/${prefix}.$PDY/$cyc/$memchar
+memdir=$ROTDIR/${prefix}.$PDY/$cyc/$COMPONENTatmos/$memchar
 if [ ! -d $memdir ]; then mkdir -p $memdir; fi
 
 GDATE=$($NDATE -$assim_freq $CDATE)
 gPDY=$(echo $GDATE | cut -c1-8)
 gcyc=$(echo $GDATE | cut -c9-10)
-gmemdir=$ROTDIR/${rprefix}.$gPDY/$gcyc/$memchar
+gmemdir=$ROTDIR/${rprefix}.$gPDY/$gcyc/$COMPONENTatmos/$memchar
 sCDATE=$($NDATE -3 $CDATE)
 
 if [[ "$DOIAU" = "YES" ]]; then
@@ -397,35 +400,40 @@ fi
 
 #### Copy over WW3 inputs
 if [ $cplwav = ".true." ]; then
-# Link WW3 files
-  for file in $(ls $COMINWW3/${COMPONENTwave}.${PDY}/${cyc}/rundata/rmp_src_to_dst_conserv_*) ; do
+
+  # Link WW3 files
+  for file in $(ls $COMINwave/rundata/rmp_src_to_dst_conserv_*) ; do
     $NLN $file $DATA/
   done
-  $NLN $COMINWW3/${COMPONENTwave}.${PDY}/${cyc}/rundata/ww3_multi.${COMPONENTwave}${WAV_MEMBER}.${cycle}.inp $DATA/ww3_multi.inp
-        # Check for expected wave grids for this run
+  $NLN $COMINwave/rundata/ww3_multi.${CDUMPwave}${WAV_MEMBER}.${cycle}.inp $DATA/ww3_multi.inp
+
+  # Check for expected wave grids for this run
   array=($WAVECUR_FID $WAVEICE_FID $WAVEWND_FID $waveuoutpGRD $waveGRD $waveesmfGRD $wavesbsGRD $wavepostGRD $waveinterpGRD)
   grdALL=`printf "%s\n" "${array[@]}" | sort -u | tr '\n' ' '`
+
   for wavGRD in ${grdALL}; do
     # Wave IC (restart) file must exist for warm start on this cycle, if not wave model starts from flat ocean
     # For IAU needs to use sPDY for adding IAU backup of 3h
-    $NLN $COMINWW3/${COMPONENTwave}.${PDY}/${cyc}/rundata/${COMPONENTwave}.mod_def.$wavGRD $DATA/mod_def.$wavGRD
+    $NLN $COMINwave/rundata/${CDUMPwave}.mod_def.$wavGRD $DATA/mod_def.$wavGRD
   done
+
   # Wave IC (restart) interval assumes 4 daily cycles (restarts only written by gdas cycle) 
   # WAVHCYC needs to be consistent with restart write interval in ww3_multi.inp or will FAIL
-  WAVHCYC=${WAVHCYC:-6}
-  WRDATE=`$NDATE -${WAVHCYC} $CDATE`
-  WRPDY=`echo $WRDATE | cut -c1-8`
-  WRcyc=`echo $WRDATE | cut -c9-10`
-  WRDIR=$COMINWW3/${COMPONENTRSTwave}.${WRPDY}/${WRcyc}/restart
-  datwave=$COMOUTWW3/${COMPONENTwave}.${PDY}/${cyc}/rundata/
-  wavprfx=${COMPONENTwave}${WAV_MEMBER}
+  export WAVHCYC=${WAVHCYC:-6}
+  export WRDATE=`$NDATE -${WAVHCYC} $CDATE`
+  export WRPDY=`echo $WRDATE | cut -c1-8`
+  export WRcyc=`echo $WRDATE | cut -c9-10`
+  export WRDIR=${ROTDIR}/${CDUMPRSTwave}.${WRPDY}/${WRcyc}/${COMPONENTwave}/restart
+  export datwave=$COMOUTwave/rundata
+  export wavprfx=${CDUMP}${WAV_MEMBER}
   for wavGRD in $waveGRD ; do
     # Link wave IC for current cycle
     $NLN ${WRDIR}/${sPDY}.${scyc}0000.restart.${wavGRD} $DATA/restart.${wavGRD}
     eval $NLN $datwave/${wavprfx}.log.${wavGRD}.${PDY}${cyc} log.${wavGRD}
   done
+
   if [ "$WW3ICEINP" = "YES" ]; then
-    wavicefile=$COMINWW3/${COMPONENTwave}.${PDY}/${cyc}/rundata/${COMPONENTwave}.${WAVEICE_FID}.${cycle}.ice
+    wavicefile=$COMINwave/rundata/${CDUMPwave}.${WAVEICE_FID}.${cycle}.ice
     if [ ! -f $wavicefile ]; then
       echo "ERROR: WW3ICEINP = ${WW3ICEINP}, but missing ice file"
       echo "Abort!"
@@ -433,8 +441,9 @@ if [ $cplwav = ".true." ]; then
     fi
     $NLN ${wavicefile} $DATA/ice.${WAVEICE_FID}
   fi
+
   if [ "$WW3CURINP" = "YES" ]; then
-    wavcurfile=$COMINWW3/${COMPONENTwave}.${PDY}/${cyc}/rundata/${COMPONENTwave}.${WAVECUR_FID}.${cycle}.cur
+    wavcurfile=$COMINwave/rundata/${CDUMPwave}.${WAVECUR_FID}.${cycle}.cur
     if [ ! -f $wavcurfile ]; then
       echo "ERROR: WW3CURINP = ${WW3CURINP}, but missing current file"
       echo "Abort!"
@@ -442,10 +451,12 @@ if [ $cplwav = ".true." ]; then
     fi
     $NLN $wavcurfile $DATA/current.${WAVECUR_FID}
   fi
-# Link output files
+
+  # Link output files
   cd $DATA
   eval $NLN $datwave/${wavprfx}.log.mww3.${PDY}${cyc} log.mww3
-# Loop for gridded output (uses FHINC)
+
+  # Loop for gridded output (uses FHINC)
   fhr=$FHMIN_WAV
   while [ $fhr -le $FHMAX_WAV ]; do
     YMDH=`$NDATE $fhr $CDATE`
@@ -460,7 +471,8 @@ if [ $cplwav = ".true." ]; then
       fi
     fhr=$((fhr+FHINC))
   done
-# Loop for point output (uses DTPNT)
+
+  # Loop for point output (uses DTPNT)
   fhr=$FHMIN_WAV
   while [ $fhr -le $FHMAX_WAV ]; do
     YMDH=`$NDATE $fhr $CDATE`
@@ -470,7 +482,8 @@ if [ $cplwav = ".true." ]; then
       FHINC=$FHINCP_WAV
     fhr=$((fhr+FHINC))
   done
-fi
+
+fi #cplwav=true
 
 # inline post fix files
 if [ $WRITE_DOPOST = ".true." ]; then
@@ -1304,7 +1317,7 @@ if [ $SEND = "YES" ]; then
          $NCP $file $memdir/RESTART/$file
        done
        if [ $cplwav = ".true." ]; then
-         WRDIR=$COMOUTWW3/${COMPONENTRSTwave}.${PDY}/${cyc}/restart
+         WRDIR=$COMOUTwave/restart
          mkdir -p ${WRDIR}
          for wavGRD in $waveGRD ; do
          # Copy wave IC for the next cycle
@@ -1326,7 +1339,7 @@ if [ $SEND = "YES" ]; then
          $NCP $file $memdir/RESTART/$file
       done
       if [ $cplwav = ".true." ]; then
-        WRDIR=$COMOUTWW3/${COMPONENTRSTwave}.${PDY}/${cyc}/restart/
+        WRDIR=$COMOUTwave/restart
         mkdir -p ${WRDIR}
         for wavGRD in $waveGRD ; do
         # Copy wave IC for the next cycle

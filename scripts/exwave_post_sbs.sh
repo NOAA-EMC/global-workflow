@@ -138,13 +138,13 @@
 # Copy model definition files
   for grdID in $waveGRD $wavesbsGRD $wavepostGRD $waveinterpGRD $waveuoutpGRD
   do
-    if [ -f "$COMIN/rundata/${COMPONENTwave}.mod_def.${grdID}" ]
+    if [ -f "$COMIN/rundata/${CDUMP}wave.mod_def.${grdID}" ]
     then
       set +x
       echo " Mod def file for $grdID found in ${COMIN}/rundata. copying ...."
       [[ "$LOUD" = YES ]] && set -x
 
-      cp -f $COMIN/rundata/${COMPONENTwave}.mod_def.${grdID} mod_def.$grdID
+      cp -f $COMIN/rundata/${CDUMP}wave.mod_def.${grdID} mod_def.$grdID
       iloop=`expr $iloop + 1`
     fi
   done

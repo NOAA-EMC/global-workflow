@@ -11,13 +11,14 @@
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
+COMPONENTatmos=${COMPONENTatmos:-"atmos"}
 
 if [ $FHRGRP -eq 0 ]; then
     fhrlst="anl"
-    restart_file=$ROTDIR/${CDUMP}.${PDY}/${cyc}/${CDUMP}.t${cyc}z.atm
+    restart_file=$ROTDIR/${CDUMP}.${PDY}/${cyc}/${COMPONENTatmos}/${CDUMP}.t${cyc}z.atm
 else
     fhrlst=$(echo $FHRLST | sed -e 's/_/ /g; s/f/ /g; s/,/ /g')
-    restart_file=$ROTDIR/${CDUMP}.${PDY}/${cyc}/${CDUMP}.t${cyc}z.logf
+    restart_file=$ROTDIR/${CDUMP}.${PDY}/${cyc}/${COMPONENTatmos}/${CDUMP}.t${cyc}z.logf
 fi
 
 
@@ -33,8 +34,8 @@ for fhr in $fhrlst; do
         continue
     fi
 
-    #master=$ROTDIR/${CDUMP}.${PDY}/${cyc}/${CDUMP}.t${cyc}z.master.grb2f${fhr}
-    pgb0p25=$ROTDIR/${CDUMP}.${PDY}/${cyc}/${CDUMP}.t${cyc}z.pgrb2.0p25.f${fhr}
+    #master=$ROTDIR/${CDUMP}.${PDY}/${cyc}/${COMPONENTatmos}/${CDUMP}.t${cyc}z.master.grb2f${fhr}
+    pgb0p25=$ROTDIR/${CDUMP}.${PDY}/${cyc}/${COMPONENTatmos}/${CDUMP}.t${cyc}z.pgrb2.0p25.f${fhr}
     if [ ! -s $pgb0p25 ]; then
         export post_times=$fhr
         $HOMEgfs/jobs/JGLOBAL_NCEPPOST

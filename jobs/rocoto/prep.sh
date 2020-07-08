@@ -24,7 +24,7 @@ status=$?
 ###############################################################
 # Set script and dependency variables
 export OPREFIX="${CDUMP}.t${cyc}z."
-export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc"
+export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc/${COMPONENTatmos}"
 [[ ! -d $COMOUT ]] && mkdir -p $COMOUT
 
 ###############################################################
@@ -39,7 +39,7 @@ if [ $ROTDIR_DUMP = "YES" ]; then
    gPDY=$(echo $GDATE | cut -c1-8)
    gcyc=$(echo $GDATE | cut -c9-10)
    GDUMP=gdas
-   gCOMOUT="$ROTDIR/$GDUMP.$gPDY/$gcyc"
+   gCOMOUT="$ROTDIR/$GDUMP.$gPDY/$gcyc/${COMPONENTatmos}"
    if [ ! -s $gCOMOUT/$GDUMP.t${gcyc}z.updated.status.tm00.bufr_d ]; then
      $HOMEgfs/ush/getdump.sh $GDATE $GDUMP $DMPDIR/${GDUMP}${DUMP_SUFFIX}.${gPDY}/${gcyc} $gCOMOUT
      status=$?
@@ -94,9 +94,9 @@ if [ $DO_MAKEPREPBUFR = "YES" ]; then
       COMIN_OBS=${COMIN_OBS:-$DMPDIR/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}}
       export COMSP=${COMSP:-$COMIN_OBS/$CDUMP.t${cyc}z.}
     fi
-    export COMIN=${COMIN:-$ROTDIR/$CDUMP.$PDY/$cyc}
-    export COMINgdas=${COMINgdas:-$ROTDIR/gdas.$PDY/$cyc}
-    export COMINgfs=${COMINgfs:-$ROTDIR/gfs.$PDY/$cyc}
+    export COMIN=${COMIN:-$ROTDIR/$CDUMP.$PDY/$cyc/${COMPONENTatmos}}
+    export COMINgdas=${COMINgdas:-$ROTDIR/gdas.$PDY/$cyc/${COMPONENTatmos}}
+    export COMINgfs=${COMINgfs:-$ROTDIR/gfs.$PDY/$cyc/${COMPONENTatmos}}
 
     $HOMEobsproc_network/jobs/JGLOBAL_PREP
     status=$?

@@ -27,7 +27,8 @@ status=$?
 # PATH for working directory
 export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
-export COMPONENTwave=${COMPONENTwave:-${RUN}wave}
+export COMPONENTatmos=${COMPONENTatmos:-atmos}
+export COMPONENTwave=${COMPONENTwave:-wave}
 
 export HOMEgfs=${HOMEgfs:-$NWROOT/gfs.${gfs_ver}}
 
@@ -72,15 +73,13 @@ export EXECwave=${EXECwave:-$HOMEgfs/exec}
 if [ $RUN_ENVIR = "nco" ]; then
     export ROTDIR=${COMROOT:?}/$NET/$envir
 fi
-export COMINwave=${COMINwave:-${ROTDIR:?}}
-export COMOUTwave=${COMOUTwave:-${ROTDIR:?}}
-export COMIN=${COMIN:-${COMINwave}/${COMPONENTwave}.${PDY}/${cyc}}
-export COMOUT=${COMOUT:-${COMOUTwave}/${COMPONENTwave}.${PDY}/${cyc}}
+export COMIN=${COMIN:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENTwave}}
+export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENTwave}}
 [[ ! -d $COMOUT ]] && mkdir -m 775 -p $COMOUT
 
 if [ $RUN_ENVIR = "nco" ]; then
-  export COMIN_WAV_ICE=${COMIN_WAV_ICE:-$(compath.py gfs/prod)}/${CDUMP}.${PDY}/${cyc}
-  export COMIN_WAV_WND=${COMIN_WAV_WND:-$(compath.py gfs/prod)}/${CDUMP}.${PDY}/${cyc}
+  export COMIN_WAV_ICE=${COMIN_WAV_ICE:-$(compath.py gfs/prod)}/${CDUMP}.${PDY}/${cyc}/${COMPONENTatmos}
+  export COMIN_WAV_WND=${COMIN_WAV_WND:-$(compath.py gfs/prod)}/${CDUMP}.${PDY}/${cyc}/${COMPONENTatmos}
   export COMIN_WAV_CUR=${COMIN_WAV_CUR:-$(compath.py ${WAVECUR_DID}/prod)}/${WAVECUR_DID}.${RPDY}
   if [ ! -d $COMIN_WAV_CUR ]; then
     export RPDY=`$NDATE -24 ${PDY}00 | cut -c1-8`
@@ -91,10 +90,10 @@ else
   if [ ! -L $ROTDIR/${WAVECUR_DID}.${RPDY} ]; then # Check if symlink already exists in ROTDIR
     $NLN $DMPDIR/${WAVECUR_DID}.${RPDY} $ROTDIR/${WAVECUR_DID}.${RPDY}
   fi
-  if [ ! -L $ROTDIR/${CDUMP}.${PDY}/${cyc}/${WAVICEFILE} ]; then # Check if symlink already exists in ROTDIR
-    $NLN $DMPDIR/$CDUMP.${PDY}/$cyc/${WAVICEFILE} $ROTDIR/$CDUMP.${PDY}/$cyc/${WAVICEFILE}
+  if [ ! -L $ROTDIR/${CDUMP}.${PDY}/${cyc}/${COMPONENTatmos}/${WAVICEFILE} ]; then # Check if symlink already exists in ROTDIR
+    $NLN $DMPDIR/$CDUMP.${PDY}/$cyc/${WAVICEFILE} $ROTDIR/$CDUMP.${PDY}/$cyc/${COMPONENTatmos}/${WAVICEFILE}
   fi
-  export COMIN_OBS=${COMIN_OBS:-$ROTDIR/$RUN.$PDY/$cyc}
+  export COMIN_OBS=${COMIN_OBS:-$ROTDIR/$RUN.$PDY/$cyc/${COMPONENTatmos}}
   export COMIN_WAV_ICE=${COMIN_OBS}
   export COMIN_WAV_WND=${COMIN_OBS}
   export COMIN_WAV_CUR=${ROTDIR}/${WAVECUR_DID}.${RPDY}
@@ -106,7 +105,7 @@ export wave_mpmd=${mpmd:-"cfp"}
 
 # Set wave model ID tag to include member number 
 # if ensemble; waveMEMB var empty in deterministic
-export WAV_MOD_TAG=${COMPONENTwave}${waveMEMB}
+export WAV_MOD_TAG=${CDUMP}wave${waveMEMB}
 
 # Execute the Script  
 $HOMEwave/scripts/exwave_prep.sh

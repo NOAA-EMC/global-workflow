@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#!/uve
+sr/bin/env python
 
 ###############################################################
 # < next few lines under version control, D O  N O T  E D I T >

@@ -12,6 +12,8 @@ type=${1:-gfs}                ##gfs, gdas, enkfgdas or enkfggfs
 CDATE=${CDATE:-2018010100}
 PDY=$(echo $CDATE | cut -c 1-8)
 cyc=$(echo $CDATE | cut -c 9-10)
+COMPONENTatmos=${COMPONENTatmos:-atmos}
+COMPONENTwave=${COMPONENTwave:-wave}
 OUTPUT_FILE=${OUTPUT_FILE:-"netcdf"}
 OUTPUT_HISTORY=${OUTPUT_HISTORY:-".true."}
 SUFFIX=${SUFFIX:-".nc"}
@@ -46,7 +48,7 @@ if [ $type = "gfs" ]; then
   touch gfs_${format}b.txt
   touch gfs_restarta.txt
 
-  dirpath="gfs.${PDY}/${cyc}/"
+  dirpath="gfs.${PDY}/${cyc}/${COMPONENTatmos}"
   dirname="./${dirpath}"
 
   head="gfs.t${cyc}z."
@@ -148,7 +150,7 @@ if [ $type = "gfs" ]; then
     rm -rf gfswave.txt
     touch gfswave.txt
 
-    dirpath="gfswave.${PDY}/${cyc}/"
+    dirpath="gfs.${PDY}/${cyc}/${COMPONENTwave}"
     dirname="./${dirpath}"
 
     head="gfswave.t${cyc}z."
@@ -176,7 +178,7 @@ if [ $type = "gdas" ]; then
   touch gdas_restarta.txt
   touch gdas_restartb.txt
 
-  dirpath="gdas.${PDY}/${cyc}/"
+  dirpath="gdas.${PDY}/${cyc}/${COMPONENTatmos}"
   dirname="./${dirpath}"
   head="gdas.t${cyc}z."
 
@@ -273,7 +275,7 @@ if [ $type = "gdas" ]; then
     rm -rf gdaswave_restart.txt
     touch gdaswave_restart.txt
 
-    dirpath="gdaswave.${PDY}/${cyc}/"
+    dirpath="gdas.${PDY}/${cyc}/${COMPONENTwave}"
     dirname="./${dirpath}"
 
     head="gdaswave.t${cyc}z."
@@ -307,7 +309,7 @@ if [ $type = "enkfgdas" -o $type = "enkfgfs" ]; then
 ##NTARS2=$((NTARS/2))  # number of earc groups to include analysis/increments
   NTARS2=$NTARS
 
-  dirpath="enkf${CDUMP}.${PDY}/${cyc}/"
+  dirpath="enkf${CDUMP}.${PDY}/${cyc}/${COMPONENTatmos}"
   dirname="./${dirpath}"
   head="${CDUMP}.t${cyc}z."
 
@@ -378,7 +380,7 @@ if [ $type = "enkfgdas" -o $type = "enkfgfs" ]; then
   while [ $m -le $NMEM_EARCGRP ]; do
     nm=$(((n-1)*NMEM_EARCGRP+m))
     mem=$(printf %03i $nm)
-    dirpath="enkf${CDUMP}.${PDY}/${cyc}/mem${mem}/"
+    dirpath="enkf${CDUMP}.${PDY}/${cyc}/${COMPONENTatmos}/mem${mem}/"
     dirname="./${dirpath}"
     head="${CDUMP}.t${cyc}z."
 

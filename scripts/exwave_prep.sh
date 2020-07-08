@@ -66,8 +66,8 @@
   echo ' '
   [[ "$LOUD" = YES ]] && set -x
 
-#  export MP_PGMMODEL=mpmd
-#  export MP_CMDFILE=./cmdfile
+  #  export MP_PGMMODEL=mpmd
+  #  export MP_CMDFILE=./cmdfile
 
   if [ "$INDRUN" = 'no' ]
   then
@@ -76,19 +76,19 @@
     FHMAX_WAV=${FHMAX_WAV:-384}
   fi
 
-# 0.b Date and time stuff
+  # 0.b Date and time stuff
 
-# Beginning time for outpupt may differ from SDATE if DOIAU=YES
+  # Beginning time for outpupt may differ from SDATE if DOIAU=YES
   export date=$PDY
   export YMDH=${PDY}${cyc}
-# Roll back $IAU_FHROT hours of DOIAU=YES
+  # Roll back $IAU_FHROT hours of DOIAU=YES
   IAU_FHROT=3
   if [ "$DOIAU" = "YES" ]
   then
     WAVHINDH=$(( WAVHINDH + IAU_FHROT ))
   fi
-# Set time stamps for model start and output
-# For special case when IAU is on but this is an initial half cycle 
+  # Set time stamps for model start and output
+  # For special case when IAU is on but this is an initial half cycle 
   if [ $IAU_OFFSET = 0 ]; then
     ymdh_beg=$YMDH
   else
@@ -100,14 +100,14 @@
   ymdh_beg_out=$YMDH
   time_beg_out="`echo $ymdh_beg_out | cut -c1-8` `echo $ymdh_beg_out | cut -c9-10`0000"
 
-# Restart file times (already has IAU_FHROT in WAVHINDH) 
+  # Restart file times (already has IAU_FHROT in WAVHINDH) 
   RSTOFFSET=$(( ${WAVHCYC} - ${WAVHINDH} ))
-# Update restart time is added offset relative to model start
+  # Update restart time is added offset relative to model start
   RSTOFFSET=$(( ${RSTOFFSET} + ${RSTIOFF_WAV} ))
   ymdh_rst_ini=`$NDATE ${RSTOFFSET} $YMDH`
   RST2OFFSET=$(( DT_2_RST_WAV / 3600 ))
   ymdh_rst2_ini=`$NDATE ${RST2OFFSET} $YMDH` # DT2 relative to first-first-cycle restart file
-# First restart file for cycling
+  # First restart file for cycling
   time_rst_ini="`echo $ymdh_rst_ini | cut -c1-8` `echo $ymdh_rst_ini | cut -c9-10`0000"
   if [ ${DT_1_RST_WAV} = 1 ]; then
     time_rst1_end=${time_rst_ini}
@@ -116,11 +116,11 @@
     ymdh_rst1_end=`$NDATE $RST1OFFSET $ymdh_rst_ini`
     time_rst1_end="`echo $ymdh_rst1_end | cut -c1-8` `echo $ymdh_rst1_end | cut -c9-10`0000"
   fi
-# Second restart file for checkpointing
+  # Second restart file for checkpointing
   if [ "${RSTTYPE_WAV}" = "T" ]; then
     time_rst2_ini="`echo $ymdh_rst2_ini | cut -c1-8` `echo $ymdh_rst2_ini | cut -c9-10`0000"
     time_rst2_end=$time_end
-# Condition for gdas run or any other run when checkpoint stamp is > ymdh_end
+  # Condition for gdas run or any other run when checkpoint stamp is > ymdh_end
     if [ $ymdh_rst2_ini -ge $ymdh_end ]; then
       ymdh_rst2_ini=`$NDATE 3 $ymdh_end`
       time_rst2_ini="`echo $ymdh_rst2_ini | cut -c1-8` `echo $ymdh_rst2_ini | cut -c9-10`0000"
@@ -141,16 +141,16 @@
   echo ' '
   [[ "$LOUD" = YES ]] && set -x
 
-# Script will run only if pre-defined NTASKS
-#     The actual work is distributed over these tasks.
+  # Script will run only if pre-defined NTASKS
+  #     The actual work is distributed over these tasks.
   if [ -z ${NTASKS} ]        
   then
     echo "FATAL ERROR: Requires NTASKS to be set "
     err=1; export err;${errchk}
   fi
 
-# --------------------------------------------------------------------------- #
-# 1.  Get files that are used by most child scripts
+  # --------------------------------------------------------------------------- #
+  # 1.  Get files that are used by most child scripts
 
   set +x
   echo 'Preparing input files :'
@@ -158,7 +158,7 @@
   echo ' '
   [[ "$LOUD" = YES ]] && set -x
 
-# 1.a Model definition files
+  # 1.a Model definition files
 
   rm -f cmdfile
   touch cmdfile
@@ -172,12 +172,12 @@
 
   for grdID in $grdINP $waveGRD
   do
-    if [ -f "$COMIN/rundata/${COMPONENTwave}.mod_def.${grdID}" ]
+    if [ -f "$COMIN/rundata/${CDUMP}wave.mod_def.${grdID}" ]
     then
       set +x
       echo " Mod def file for $grdID found in ${COMIN}/rundata. copying ...."
       [[ "$LOUD" = YES ]] && set -x
-      cp $COMIN/rundata/${COMPONENTwave}.mod_def.${grdID} mod_def.$grdID
+      cp $COMIN/rundata/${CDUMP}wave.mod_def.${grdID} mod_def.$grdID
 
     else
       msg="FATAL ERROR: NO MODEL DEFINITION FILE"
@@ -195,7 +195,7 @@
     fi
   done
 
-# 1.b Netcdf Preprocessor template files
+  # 1.b Netcdf Preprocessor template files
    if [ "$WW3ATMINP" = 'YES' ]; then itype="$itype wind" ; fi 
    if [ "$WW3ICEINP" = 'YES' ]; then itype="$itype ice" ; fi 
    if [ "$WW3CURINP" = 'YES' ]; then itype="$itype cur" ; fi 
@@ -750,7 +750,7 @@
         cat $file >> cur.${WAVECUR_FID}
       done
 
-      cp -f cur.${WAVECUR_FID} ${COMOUT}/rundata/${COMPONENTwave}.${WAVECUR_FID}.$cycle.cur 
+      cp -f cur.${WAVECUR_FID} ${COMOUT}/rundata/${CDUMP}wave.${WAVECUR_FID}.$cycle.cur 
 
     else
       echo ' '

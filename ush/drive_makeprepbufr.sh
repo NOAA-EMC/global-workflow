@@ -53,9 +53,11 @@ GSUFFIX=${GSUFFIX:-$SUFFIX}
 APREFIX="${CDUMP}.t${chh}z."
 ASUFFIX=${ASUFFIX:-$SUFFIX}
 
+COMPONENTatmos=${COMPONENTatmos:-atmos}
+
 COMIN_OBS=${COMIN_OBS:-"$DMPDIR/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}"}
-COMIN_GES=${COMIN_GES:-"$ROTDIR/gdas.$gymd/$ghh"}
-COMOUT=${COMOUT:-"$ROTDIR/$CDUMP.$cymd/$chh"}
+COMIN_GES=${COMIN_GES:-"$ROTDIR/gdas.$gymd/$ghh/$COMPONENTatmos"}
+COMOUT=${COMOUT:-"$ROTDIR/$CDUMP.$cymd/$chh/$COMPONENTatmos"}
 [[ ! -d $COMOUT ]] && mkdir -p $COMOUT
 export DATA="$RUNDIR/$CDATE/$CDUMP/prepbufr"
 [[ -d $DATA ]] && rm -rf $DATA

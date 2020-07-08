@@ -43,7 +43,7 @@ status=$?
 export CDATEm1=$($NDATE -24 $CDATE)
 export PDYm1=$(echo $CDATEm1 | cut -c1-8)
 
-export COMIN="$ROTDIR/$CDUMP.$PDY/$cyc"
+export COMIN="$ROTDIR/$CDUMP.$PDY/$cyc/${COMPONENTatmos}"
 export DATAROOT="$RUNDIR/$CDATE/$CDUMP/vrfy"
 [[ -d $DATAROOT ]] && rm -rf $DATAROOT
 mkdir -p $DATAROOT

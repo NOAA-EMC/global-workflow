@@ -53,7 +53,7 @@ setpdy.sh
 ####################################
 export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
-
+export COMPONENTatmos=${COMPONENTatmos:-atmos}
 
 ##############################################
 # Determine Job Output Name on System
@@ -91,10 +91,10 @@ export SCRIPTens_tracker=${SCRIPTens_tracker:-$HOMEens_tracker/scripts}
 ##############################################
 # Define COM directories
 ##############################################
-export COMIN=${ROTDIR}/${RUN}.${PDY}/${cyc}
+export COMIN=${ROTDIR}/${RUN}.${PDY}/${cyc}/${COMPONENTatmos}
 export gfsdir=${COMIN}
 export COMINgfs=${COMIN}
-export COMOUT=${ROTDIR}/${RUN}.${PDY}/${cyc}
+export COMOUT=${ROTDIR}/${RUN}.${PDY}/${cyc}/${COMPONENTatmos}
 
 export JYYYY=`echo ${PDY} | cut -c1-4`
 export COMINgenvit=${COMINgenvit:-${COMOUT}/genesis_vital_${JYYYY}}
