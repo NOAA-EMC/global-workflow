@@ -151,10 +151,21 @@ if [ ! -d $DATA ]; then
 fi
 cd $DATA || exit 8
 mkdir -p $DATA/INPUT
+
+if [ $cplwav = ".true." ]; then 
+    if [ $CDUMP = "gdas" ]; then
+        RSTDIR_WAVE=$ROTDIR/${CDUMP}wave.${PDY}/${cyc}/restart
+    else
+        RSTDIR_WAVE=${RSTDIR_WAVE:-$ROTDIR/${CDUMP}wave.${PDY}/${cyc}/restart}
+    fi
+    if [ ! -d $RSTDIR_WAVE ]; then mkdir -p $RSTDIR_WAVE ; fi
+    $NLN $RSTDIR_WAVE restart_wave
+fi
+
 if [ $CDUMP = "gfs" -a $rst_invt1 -gt 0 ]; then
-    RSTDIR_TMP=${RSTDIR:-$ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENTatmos}/RERUN_RESTART
-    if [ ! -d $RSTDIR_TMP ]; then mkdir -p $RSTDIR_TMP ; fi
-    $NLN $RSTDIR_TMP RESTART
+    RSTDIR_ATM=${RSTDIR:-$ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENTatmos}/RERUN_RESTART
+    if [ ! -d $RSTDIR_ATM ]; then mkdir -p $RSTDIR_ATM ; fi
+    $NLN $RSTDIR_ATM RESTART
 else
     mkdir -p $DATA/RESTART
 fi
@@ -162,7 +173,7 @@ fi
 #-------------------------------------------------------
 # determine if restart IC exists to continue from a previous forecast
 RERUN="NO"
-filecount=$(find $RSTDIR_TMP -type f | wc -l) 
+filecount=$(find $RSTDIR_ATM -type f | wc -l) 
 if [ $CDUMP = "gfs" -a $rst_invt1 -gt 0 -a $FHMAX -gt $rst_invt1 -a $filecount -gt 10 ]; then
     reverse=$(echo "${restart_interval[@]} " | tac -s ' ')
     for xfh in $reverse ; do
@@ -170,8 +181,8 @@ if [ $CDUMP = "gfs" -a $rst_invt1 -gt 0 -a $FHMAX -gt $rst_invt1 -a $filecount -
         SDATE=$($NDATE +$yfh $CDATE)
         PDYS=$(echo $SDATE | cut -c1-8)
         cycs=$(echo $SDATE | cut -c9-10)
-        flag1=$RSTDIR_TMP/${PDYS}.${cycs}0000.coupler.res
-        flag2=$RSTDIR_TMP/coupler.res
+        flag1=$RSTDIR_ATM/${PDYS}.${cycs}0000.coupler.res
+        flag2=$RSTDIR_ATM/coupler.res
         if [ -s $flag1 ]; then
             CDATE_RST=$SDATE          
             [[ $RERUN = "YES" ]] && break
@@ -314,12 +325,14 @@ EOF
     export warm_start=".true."
     PDYT=$(echo $CDATE_RST | cut -c1-8)
     cyct=$(echo $CDATE_RST | cut -c9-10)
-    for file in $(ls $RSTDIR_TMP/${PDYT}.${cyct}0000.*); do
+    for file in $(ls $RSTDIR_ATM/${PDYT}.${cyct}0000.*); do
       file2=$(echo $(basename $file))
       file2=$(echo $file2 | cut -d. -f3-) 
       $NLN $file $DATA/INPUT/$file2
     done
    
+    hour_rst=`$NHOUR $CDATE_RST $CDATE`
+    IAU_FHROT=$((IAU_OFFSET+hour_rst))         
     if [ $DOIAU = "YES" ]; then
       IAUFHRS=-1         
       IAU_DELTHRS=0
@@ -398,7 +411,7 @@ if [ $IAER -gt 0 ] ; then
   done
 fi
 
-#### Copy over WW3 inputs
+#-------------wavewave----------------------
 if [ $cplwav = ".true." ]; then
 
   # Link WW3 files
@@ -425,10 +438,14 @@ if [ $cplwav = ".true." ]; then
   export WRcyc=`echo $WRDATE | cut -c9-10`
   export WRDIR=${ROTDIR}/${CDUMPRSTwave}.${WRPDY}/${WRcyc}/${COMPONENTwave}/restart
   export datwave=$COMOUTwave/rundata
-  export wavprfx=${CDUMP}${WAV_MEMBER}
+  export wavprfx=${CDUMPwave}${WAV_MEMBER}
+
   for wavGRD in $waveGRD ; do
-    # Link wave IC for current cycle
-    $NLN ${WRDIR}/${sPDY}.${scyc}0000.restart.${wavGRD} $DATA/restart.${wavGRD}
+    if [ $RERUN = "NO" ]; then
+      $NLN ${WRDIR}/${sPDY}.${scyc}0000.restart.${wavGRD} $DATA/restart.${wavGRD}
+    else
+      $NLN ${RSTDIR_WAVE}/${PDYT}.${cyct}0000.restart.${wavGRD} $DATA/restart.${wavGRD}
+    fi
     eval $NLN $datwave/${wavprfx}.log.${wavGRD}.${PDY}${cyc} log.${wavGRD}
   done
 
@@ -484,6 +501,7 @@ if [ $cplwav = ".true." ]; then
   done
 
 fi #cplwav=true
+#-------------wavewave----------------------
 
 # inline post fix files
 if [ $WRITE_DOPOST = ".true." ]; then
@@ -1307,7 +1325,6 @@ if [ $SEND = "YES" ]; then
   if [ $CDUMP = "gdas" -a $rst_invt1 -gt 0 ]; then
     cd $DATA/RESTART
     mkdir -p $memdir/RESTART
-
     for rst_int in $restart_interval ; do
      if [ $rst_int -ge 0 ]; then
        RDATE=$($NDATE +$rst_int $CDATE)
@@ -1316,14 +1333,6 @@ if [ $SEND = "YES" ]; then
        for file in $(ls ${rPDY}.${rcyc}0000.*) ; do
          $NCP $file $memdir/RESTART/$file
        done
-       if [ $cplwav = ".true." ]; then
-         WRDIR=$COMOUTwave/restart
-         mkdir -p ${WRDIR}
-         for wavGRD in $waveGRD ; do
-         # Copy wave IC for the next cycle
-           $NCP $DATA/${rPDY}.${rcyc}0000.restart.${wavGRD} ${WRDIR}
-         done
-       fi
      fi
     done
     if [ $DOIAU = "YES" ] || [ $DOIAU_coldstart = "YES" ]; then
@@ -1338,18 +1347,8 @@ if [ $SEND = "YES" ]; then
       for file in $(ls ${rPDY}.${rcyc}0000.*) ; do
          $NCP $file $memdir/RESTART/$file
       done
-      if [ $cplwav = ".true." ]; then
-        WRDIR=$COMOUTwave/restart
-        mkdir -p ${WRDIR}
-        for wavGRD in $waveGRD ; do
-        # Copy wave IC for the next cycle
-           $NCP $DATA/${rPDY}.${rcyc}0000.restart.${wavGRD} ${WRDIR}
-        done
-      fi
     fi
-
   fi
-
 fi
 
 #------------------------------------------------------------------
