@@ -50,12 +50,10 @@ export wavepostGRD='gnh_10m aoc_9km gsh_15m' # Native grids that will be post-pr
 export CDATE=${PDY}${cyc}
 
 # The start time reflects the number of hindcast hours prior to the cycle initial time
-if [ "$CDUMP" = "gdas" ]
-then
+if [ "$CDUMP" = "gdas" ]; then
   export FHMAX_WAV=${FHMAX:-9}
 else
-  FHMAX_GFS="FHMAX_GFS_${cyc}"
-  export FHMAX_WAV=${!FHMAX_GFS}
+  export FHMAX_WAV=$FHMAX_GFS
 fi
 export WAVHINDH=${WAVHINDH:-0}
 export FHMIN_WAV=${FHMIN_WAV:-0}
@@ -72,13 +70,11 @@ export FHINCP_WAV=`expr $DTPNT_WAV / 3600`
 export OUTPARS_WAV="WND CUR ICE HS T01 T02 DIR FP DP PHS PTP PDIR CHA"
 
 # Restart file config
-if [ "$CDUMP" = "gdas" ]
-then
+if [ "$CDUMP" = "gdas" ]; then
   WAVNCYC=4
   WAVHCYC=6
   FHMAX_WAV_CUR=${FHMAX_WAV_CUR:-48} # RTOFS forecasts only out to 8 days
-elif [ ${gfs_cyc} -ne 0 ]
-then 
+elif [ ${gfs_cyc} -ne 0 ]; then 
   FHMAX_WAV_CUR=${FHMAX_WAV_CUR:-192} # RTOFS forecasts only out to 8 days
   WAVHCYC=`expr 24 / ${gfs_cyc}`
 else
