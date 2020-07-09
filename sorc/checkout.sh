@@ -7,10 +7,9 @@ echo $topdir
 echo fv3gfs checkout ...
 if [[ ! -d fv3gfs.fd ]] ; then
     rm -f ${topdir}/checkout-fv3gfs.log
-    #git clone https://github.com/ufs-community/ufs-weather-model fv3gfs.fd >> ${topdir}/checkout-fv3gfs.log 2>&1
-    git clone https://github.com/DusanJovic-NOAA/ufs-weather-model fv3gfs.fd >> ${topdir}/checkout-fv3gfs.log 2>&1
+    git clone https://github.com/ufs-community/ufs-weather-model fv3gfs.fd >> ${topdir}/checkout-fv3gfs.log 2>&1
     cd fv3gfs.fd
-    git checkout orion_gfs.v16
+    git checkout  GFS.v16.0.9
     git submodule update --init --recursive
     cd ${topdir}
 else
@@ -81,7 +80,7 @@ if [[ ! -d verif-global.fd ]] ; then
     rm -f ${topdir}/checkout-verif-global.log
     git clone --recursive https://github.com/NOAA-EMC/EMC_verif-global.git verif-global.fd >> ${topdir}/checkout-verif-global.log 2>&1
     cd verif-global.fd
-    git checkout verif_global_v1.8.1
+    git checkout verif_global_v1.9.0
     cd ${topdir}
 else
     echo 'Skip. Directory verif-global.fd already exist.'
