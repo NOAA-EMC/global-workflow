@@ -16,7 +16,6 @@ if [ ! -d "../exec" ]; then
   mkdir ../exec
 fi
 
-if [ $target = theia ]; then target=theia.intel ; fi
 
 cd fv3_coupled.fd/NEMS 
 make -j 8 app=coupledFV3_CCPP_MOM6_CICE_WW3 build
