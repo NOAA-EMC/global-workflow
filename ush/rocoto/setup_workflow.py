@@ -468,7 +468,7 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
 
     # analcalc
     deps = []
-    data = '&ROTDIR;/%s.@Y@m@d/@H/%s.t@Hz.loginc.txt' % (cdump, cdump)
+    data = '&ROTDIR;/%s.@Y@m@d/@H/atmos/%s.t@Hz.loginc.txt' % (cdump, cdump)
     dep_dict = {'type': 'data', 'data': data}
     deps.append(rocoto.add_dependency(dep_dict))
     dep_dict = {'type': 'task', 'name': '%sanal' % cdump}
@@ -486,7 +486,7 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
     # analdiag
     if cdump in ['gdas']:
         deps = []
-        data = '&ROTDIR;/%s.@Y@m@d/@H/%s.t@Hz.loginc.txt' % (cdump, cdump)
+        data = '&ROTDIR;/%s.@Y@m@d/@H/atmos/%s.t@Hz.loginc.txt' % (cdump, cdump)
         dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'task', 'name': '%sanal' % cdump}
@@ -499,7 +499,7 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
     # gldas
     if cdump in ['gdas'] and do_gldas in ['Y', 'YES']:
         deps = []
-        data = '&ROTDIR;/%s.@Y@m@d/@H/%s.t@Hz.loginc.txt' % (cdump, cdump)
+        data = '&ROTDIR;/%s.@Y@m@d/@H/atmos/%s.t@Hz.loginc.txt' % (cdump, cdump)
         dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'task', 'name': '%sanal' % cdump}
@@ -511,7 +511,7 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
 
     # fcst
     deps = []
-    #data = '&ROTDIR;/%s.@Y@m@d/@H/%s.t@Hz.loginc.txt' % (cdump, cdump)
+    #data = '&ROTDIR;/%s.@Y@m@d/@H/atmos/%s.t@Hz.loginc.txt' % (cdump, cdump)
     #dep_dict = {'type': 'data', 'data': data}
 #   #deps.append(rocoto.add_dependency(dep_dict))
     if do_wave in ['Y', 'YES'] and cdump in cdumps:
@@ -537,7 +537,7 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
 
     # post
     deps = []
-    data = '&ROTDIR;/%s.@Y@m@d/@H/%s.t@Hz.log#dep#.txt' % (cdump, cdump)
+    data = '&ROTDIR;/%s.@Y@m@d/@H/atmos/%s.t@Hz.log#dep#.txt' % (cdump, cdump)
     dep_dict = {'type': 'data', 'data': data}
     deps.append(rocoto.add_dependency(dep_dict))
     dep_dict = {'type': 'task', 'name': '%sfcst' % cdump}
@@ -558,13 +558,13 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
     # wavepostsbs
     if do_wave in ['Y', 'YES'] and cdump in cdumps:
         deps = []
-        data = '&ROTDIR;/%swave.@Y@m@d/@H/rundata/%swave.out_grd.gnh_10m.@Y@m@d.@H0000' % (cdump,cdump)
+        data = '&ROTDIR;/%s.@Y@m@d/@H/wave/rundata/%swave.out_grd.gnh_10m.@Y@m@d.@H0000' % (cdump,cdump)
         dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
-        data = '&ROTDIR;/%swave.@Y@m@d/@H/rundata/%swave.out_grd.aoc_9km.@Y@m@d.@H0000' % (cdump,cdump)
+        data = '&ROTDIR;/%s.@Y@m@d/@H/wave/rundata/%swave.out_grd.aoc_9km.@Y@m@d.@H0000' % (cdump,cdump)
         dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
-        data = '&ROTDIR;/%swave.@Y@m@d/@H/rundata/%swave.out_grd.gsh_15m.@Y@m@d.@H0000' % (cdump,cdump)
+        data = '&ROTDIR;/%s.@Y@m@d/@H/wave/rundata/%swave.out_grd.gsh_15m.@Y@m@d.@H0000' % (cdump,cdump)
         dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
@@ -574,13 +574,13 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
     # wavegempaksbs
     #if do_wave in ['Y', 'YES'] and do_gempak in ['Y', 'YES'] and cdump in ['gfs']:
     #    deps = []
-    #    data = '&ROTDIR;/%swave.@Y@m@d/@H/%swave.t@Hz.gnh_10m.f000.grib2' % (cdump,cdump)
+    #    data = '&ROTDIR;/%s.@Y@m@d/@H/wave/%swave.t@Hz.gnh_10m.f000.grib2' % (cdump,cdump)
     #    dep_dict = {'type': 'data', 'data': data}
     #    deps.append(rocoto.add_dependency(dep_dict))
-    #    data = '&ROTDIR;/%swave.@Y@m@d/@H/%swave.t@Hz.aoc_9km.f000.grib2' % (cdump,cdump)
+    #    data = '&ROTDIR;/%s.@Y@m@d/@H/wave/%swave.t@Hz.aoc_9km.f000.grib2' % (cdump,cdump)
     #    dep_dict = {'type': 'data', 'data': data}
     #    deps.append(rocoto.add_dependency(dep_dict))
-    #    data = '&ROTDIR;/%swave.@Y@m@d/@H/%swave.t@Hz.gsh_15m.f000.grib2' % (cdump,cdump)
+    #    data = '&ROTDIR;/%s.@Y@m@d/@H/wave/%swave.t@Hz.gsh_15m.f000.grib2' % (cdump,cdump)
     #    dep_dict = {'type': 'data', 'data': data}
     #    deps.append(rocoto.add_dependency(dep_dict))
     #    dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
@@ -590,13 +590,13 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
     # waveawipssbs
     #if do_wave in ['Y', 'YES'] and do_awips in ['Y', 'YES'] and cdump in ['gfs']:
     #    deps = []
-    #    data = '&ROTDIR;/%swave.@Y@m@d/@H/%swave.t@Hz.gnh_10m.f000.grib2' % (cdump,cdump)
+    #    data = '&ROTDIR;/%s.@Y@m@d/@H/wave/%swave.t@Hz.gnh_10m.f000.grib2' % (cdump,cdump)
     #    dep_dict = {'type': 'data', 'data': data}
     #    deps.append(rocoto.add_dependency(dep_dict))
-    #    data = '&ROTDIR;/%swave.@Y@m@d/@H/%swave.t@Hz.aoc_9km.f000.grib2' % (cdump,cdump)
+    #    data = '&ROTDIR;/%s.@Y@m@d/@H/wave/%swave.t@Hz.aoc_9km.f000.grib2' % (cdump,cdump)
     #    dep_dict = {'type': 'data', 'data': data}
     #    deps.append(rocoto.add_dependency(dep_dict))
-    #    data = '&ROTDIR;/%swave.@Y@m@d/@H/%swave.t@Hz.gsh_15m.f000.grib2' % (cdump,cdump)
+    #    data = '&ROTDIR;/%s.@Y@m@d/@H/wave/%swave.t@Hz.gsh_15m.f000.grib2' % (cdump,cdump)
     #    dep_dict = {'type': 'data', 'data': data}
     #    deps.append(rocoto.add_dependency(dep_dict))
     #    dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
@@ -670,7 +670,7 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
     # awips
     if cdump in ['gfs'] and do_awips in ['Y', 'YES']:
         deps = []
-        data = '&ROTDIR;/%s.@Y@m@d/@H/%s.t@Hz.sfluxgrb#dep#.grib2.idx' % (cdump, cdump)
+        data = '&ROTDIR;/%s.@Y@m@d/@H/atmos/%s.t@Hz.sfluxgrb#dep#.grib2.idx' % (cdump, cdump)
         dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'metatask', 'name': '%spost' % cdump}
@@ -818,7 +818,7 @@ def get_hyb_tasks(dict_configs, cycledef='enkf'):
 
     # ecmn, ecen
     deps1 = []
-    data = '&ROTDIR;/%s.@Y@m@d/@H/%s.t@Hz.loganl.txt' % (cdump, cdump)
+    data = '&ROTDIR;/%s.@Y@m@d/@H/atmos/%s.t@Hz.loganl.txt' % (cdump, cdump)
     dep_dict = {'type': 'data', 'data': data}
     deps1.append(rocoto.add_dependency(dep_dict))
     dep_dict = {'type': 'task', 'name': '%sanalcalc' % cdump}
@@ -844,7 +844,7 @@ def get_hyb_tasks(dict_configs, cycledef='enkf'):
 
     # esfc
     deps1 = []
-    data = '&ROTDIR;/%s.@Y@m@d/@H/%s.t@Hz.loganl.txt' % (cdump, cdump)
+    data = '&ROTDIR;/%s.@Y@m@d/@H/atmos/%s.t@Hz.loganl.txt' % (cdump, cdump)
     dep_dict = {'type': 'data', 'data': data}
     deps1.append(rocoto.add_dependency(dep_dict))
     dep_dict = {'type': 'task', 'name': '%sanalcalc' % cdump}
