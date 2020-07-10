@@ -40,8 +40,6 @@ machine=${machine:-"WCOSS_C"}
 machine=$(echo $machine | tr '[a-z]' '[A-Z]')
 
 # Cycling and forecast hour specific parameters 
-COMPONENTatmos=${COMPONENTatmos:-"atmos"}
-COMPONENTwave=${COMPONENTwave:-"wave"}
 CDUMPwave="${CDUMP}wave"
 CASE=${CASE:-C768}
 CDATE=${CDATE:-2017032500}
@@ -163,7 +161,7 @@ if [ $cplwav = ".true." ]; then
 fi
 
 if [ $CDUMP = "gfs" -a $rst_invt1 -gt 0 ]; then
-    RSTDIR_ATM=${RSTDIR:-$ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENTatmos}/RERUN_RESTART
+    RSTDIR_ATM=${RSTDIR:-$ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos/RERUN_RESTART
     if [ ! -d $RSTDIR_ATM ]; then mkdir -p $RSTDIR_ATM ; fi
     $NLN $RSTDIR_ATM RESTART
 else
@@ -205,13 +203,13 @@ else
   rprefix=enkf$rCDUMP
   memchar=mem$(printf %03i $MEMBER)
 fi
-memdir=$ROTDIR/${prefix}.$PDY/$cyc/$COMPONENTatmos/$memchar
+memdir=$ROTDIR/${prefix}.$PDY/$cyc/atmos/$memchar
 if [ ! -d $memdir ]; then mkdir -p $memdir; fi
 
 GDATE=$($NDATE -$assim_freq $CDATE)
 gPDY=$(echo $GDATE | cut -c1-8)
 gcyc=$(echo $GDATE | cut -c9-10)
-gmemdir=$ROTDIR/${rprefix}.$gPDY/$gcyc/$COMPONENTatmos/$memchar
+gmemdir=$ROTDIR/${rprefix}.$gPDY/$gcyc/atmos/$memchar
 sCDATE=$($NDATE -3 $CDATE)
 
 if [[ "$DOIAU" = "YES" ]]; then
@@ -436,7 +434,7 @@ if [ $cplwav = ".true." ]; then
   export WRDATE=`$NDATE -${WAVHCYC} $CDATE`
   export WRPDY=`echo $WRDATE | cut -c1-8`
   export WRcyc=`echo $WRDATE | cut -c9-10`
-  export WRDIR=${ROTDIR}/${CDUMPRSTwave}.${WRPDY}/${WRcyc}/${COMPONENTwave}/restart
+  export WRDIR=${ROTDIR}/${CDUMPRSTwave}.${WRPDY}/${WRcyc}/wave/restart
   export datwave=$COMOUTwave/rundata
   export wavprfx=${CDUMPwave}${WAV_MEMBER}
 

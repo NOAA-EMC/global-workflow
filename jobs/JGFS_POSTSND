@@ -34,7 +34,6 @@ export cycle=t${cyc}z
 export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
 export model=${model:-gfs}
-export COMPONENTatmos=${COMPONENTatmos:-atmos}
 
 ###################################
 # Set up the UTILITIES
@@ -54,8 +53,8 @@ setpdy.sh
 ##############################
 # Define COM Directories
 ##############################
-export COMIN=${COMIN:-$COMROOT/${NET}/${envir}/${RUN}.${PDY}/${cyc}/${COMPONENTatmos}}
-export COMOUT=${COMOUT:-$COMROOT/${NET}/${envir}/${RUN}.${PDY}/${cyc}/${COMPONENTatmos}}
+export COMIN=${COMIN:-$COMROOT/${NET}/${envir}/${RUN}.${PDY}/${cyc}/atmos}
+export COMOUT=${COMOUT:-$COMROOT/${NET}/${envir}/${RUN}.${PDY}/${cyc}/atmos}
 export pcom=${pcom:-${COMOUT}/wmo}
 export COMAWP=${COMAWP:-${COMOUT}/gempak}
 mkdir -p $COMOUT $pcom $COMAWP

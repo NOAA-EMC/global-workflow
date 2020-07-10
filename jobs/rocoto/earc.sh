@@ -40,7 +40,7 @@ fi
 # EnKF update in GFS, GDAS or both
 CDUMP_ENKF=$(echo ${EUPD_CYC:-"gdas"} | tr a-z A-Z)
 
-ARCH_LIST="$ROTDIR/enkf${CDUMP}.$PDY/$cyc/${COMPONENTatmos}/earc$ENSGRP"
+ARCH_LIST="$ROTDIR/enkf${CDUMP}.$PDY/$cyc/atmos/earc$ENSGRP"
 [[ -d $ARCH_LIST ]] && rm -rf $ARCH_LIST
 mkdir -p $ARCH_LIST
 cd $ARCH_LIST
@@ -130,12 +130,12 @@ if [ $ENSGRP -eq 0 ]; then
     [[ ! -d $ARCDIR ]] && mkdir -p $ARCDIR
     cd $ARCDIR
 
-    $NCP $ROTDIR/enkf${CDUMP}.$PDY/$cyc/${COMPONENTatmos}/${CDUMP}.t${cyc}z.enkfstat         enkfstat.${CDUMP}.$CDATE
-    $NCP $ROTDIR/enkf${CDUMP}.$PDY/$cyc/${COMPONENTatmos}/${CDUMP}.t${cyc}z.gsistat.ensmean  gsistat.${CDUMP}.${CDATE}.ensmean
+    $NCP $ROTDIR/enkf${CDUMP}.$PDY/$cyc/atmos/${CDUMP}.t${cyc}z.enkfstat         enkfstat.${CDUMP}.$CDATE
+    $NCP $ROTDIR/enkf${CDUMP}.$PDY/$cyc/atmos/${CDUMP}.t${cyc}z.gsistat.ensmean  gsistat.${CDUMP}.${CDATE}.ensmean
 
     if [ $CDUMP_ENKF != "GDAS" ]; then
-		$NCP $ROTDIR/enkfgfs.$PDY/$cyc/${COMPONENTatmos}/${CDUMP}.t${cyc}z.enkfstat         enkfstat.gfs.$CDATE
-		$NCP $ROTDIR/enkfgfs.$PDY/$cyc/${COMPONENTatmos}/${CDUMP}.t${cyc}z.gsistat.ensmean  gsistat.gfs.${CDATE}.ensmean
+		$NCP $ROTDIR/enkfgfs.$PDY/$cyc/atmos/${CDUMP}.t${cyc}z.enkfstat         enkfstat.gfs.$CDATE
+		$NCP $ROTDIR/enkfgfs.$PDY/$cyc/atmos/${CDUMP}.t${cyc}z.gsistat.ensmean  gsistat.gfs.${CDATE}.ensmean
 	fi
 
 fi
@@ -160,9 +160,9 @@ if [ $ENSGRP -eq 0 ]; then
     gcyc=$(echo $GDATE | cut -c9-10)
 
     # Handle GDAS and GFS EnKF directories separately
-    COMIN_ENS="$ROTDIR/enkfgdas.$gPDY/$gcyc/${COMPONENTatmos}"
+    COMIN_ENS="$ROTDIR/enkfgdas.$gPDY/$gcyc/atmos"
     [[ -d $COMIN_ENS ]] && rm -rf $COMIN_ENS
-    COMIN_ENS="$ROTDIR/enkfgfs.$gPDY/$gcyc/${COMPONENTatmos}"
+    COMIN_ENS="$ROTDIR/enkfgfs.$gPDY/$gcyc/atmos"
     [[ -d $COMIN_ENS ]] && rm -rf $COMIN_ENS
 
     # PREVIOUS day 00Z remove the whole day

@@ -62,7 +62,6 @@ export fhinc=12
 export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
 export model=${model:-gfs}
-export COMPONENTatmos=${COMPONENTatmos:-atmos}
 
 ##############################################
 # Set up model and cycle specific variables
@@ -72,8 +71,8 @@ export DBN_ALERT_TYPE=GFS_METAFILE
 ##############################################
 # Define COM directories
 ##############################################
-export COMIN=${COMIN:-$(compath.py ${NET}/${envir}/${RUN}.${PDY})/${cyc}/${COMPONENTatmos}/gempak}
-export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/${COMPONENTatmos}/gempak/meta}
+export COMIN=${COMIN:-$(compath.py ${NET}/${envir}/${RUN}.${PDY})/${cyc}/atmos/gempak}
+export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/atmos/gempak/meta}
 export COMINgempak=${COMINgempak:-${COMROOT}/${NET}/${envir}}
 
 export COMINukmet=${COMINukmet:-$(compath.py nawips/prod/ukmet)}

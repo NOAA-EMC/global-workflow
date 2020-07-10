@@ -4,7 +4,7 @@ set -x
 CDATE=${1:-""}
 CDUMP=${2:-""}
 SOURCE_DIR=${3:-$DMPDIR/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}}
-TARGET_DIR=${4:-$ROTDIR/${CDUMP}.${PDY}/$cyc/$COMPONENTatmos}
+TARGET_DIR=${4:-$ROTDIR/${CDUMP}.${PDY}/$cyc/atmos}
 
 DUMP_SUFFIX=${DUMP_SUFFIX:-""}
 

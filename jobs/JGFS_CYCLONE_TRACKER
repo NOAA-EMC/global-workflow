@@ -53,7 +53,6 @@ setpdy.sh
 ####################################
 export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
-export COMPONENTatmos=${COMPONENTatmos:-atmos}
 
 
 ##############################################
@@ -93,12 +92,12 @@ export USHens_tracker=${USHens_tracker:-$HOMEens_tracker/ush}
 ##############################################
 # Define COM and Data directories
 ##############################################
-export COMIN=${ROTDIR}/${RUN}.${PDY}/${cyc}/${COMPONENTatmos}
+export COMIN=${ROTDIR}/${RUN}.${PDY}/${cyc}/atmos
 export COMINgfs=${COMIN}
 export gfsdir=${COMINgfs}
 export COMINgdas=${COMIN}
 export gdasdir=${COMINgdas}
-export COMOUT=${ROTDIR}/${RUN}.${PDY}/${cyc}/${COMPONENTatmos}
+export COMOUT=${ROTDIR}/${RUN}.${PDY}/${cyc}/atmos
 export COMINsyn=${COMINsyn:-$(compath.py arch/prod/syndat)}
 
 if [ $RUN_ENVIR = "nco" ]; then

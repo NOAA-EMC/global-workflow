@@ -42,7 +42,7 @@ status=$?
 export CDATEm1=$($NDATE -24 $CDATE)
 export PDYm1=$(echo $CDATEm1 | cut -c1-8)
 
-export COMIN="$ROTDIR/$CDUMP.$PDY/$cyc/${COMPONENTatmos}"
+export COMIN="$ROTDIR/$CDUMP.$PDY/$cyc/atmos"
 export DATAROOT="$RUNDIR/$CDATE/$CDUMP/gempak"
 [[ -d $DATAROOT ]] && rm -rf $DATAROOT
 mkdir -p $DATAROOT
@@ -55,7 +55,7 @@ export job="jgfs_gempak_${cyc}"
 export jlogfile="$ROTDIR/logs/$CDATE/$job.log"    
 export DATA="${DATAROOT}/$job"
 export SENDCOM="YES"
-export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc/${COMPONENTatmos}/gempak"
+export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc/atmos/gempak"
 export FIXgfs=""  # set blank so that GEMPAKSH defaults FIXgfs to HOMEgfs/gempak/fix
 export USHgfs=""  # set blank so that GEMPAKSH defaults FIXgfs to HOMEgfs/gempak/ush
 

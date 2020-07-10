@@ -187,7 +187,7 @@ fi
 
 # Copy pgbanl file to COMROT for verification - GFSv14 only
 if [ $CDATE -le "2019061118" ]; then #GFSv14
-  COMROT=$ROTDIR/${CDUMP}.$PDY/$cyc/${COMPONENTatmos}
+  COMROT=$ROTDIR/${CDUMP}.$PDY/$cyc/atmos
   [[ ! -d $COMROT ]] && mkdir -p $COMROT
   $NCP ${fanal[4]} $COMROT/${CDUMP}.t${cyc}z.pgrbanl
 fi

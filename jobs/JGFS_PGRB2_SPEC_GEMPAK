@@ -45,7 +45,6 @@ export SRCgfs=${SRCgfs:-$HOMEgfs/scripts}
 ####################################
 export NET=gfs
 export RUN=gfs_goessim
-export COMPONENTatmos=${COMPONENTatmos:-atmos}
 export finc=3
 export model=gfs
 export EXT=""
@@ -53,8 +52,8 @@ export EXT=""
 ##############################################
 # Define COM directories
 ##############################################
-export COMIN=${COMIN:-$(compath.py ${NET}/${envir}/${NET}.${PDY})/${cyc}/${COMPONENTatmos}}
-export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${NET}.${PDY}/${cyc}/${COMPONENTatmos}/gempak}
+export COMIN=${COMIN:-$(compath.py ${NET}/${envir}/${NET}.${PDY})/${cyc}/atmos}
+export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${NET}.${PDY}/${cyc}/atmos/gempak}
 
 if [ $SENDCOM = YES ] ; then
   mkdir -m 775 -p $COMOUT

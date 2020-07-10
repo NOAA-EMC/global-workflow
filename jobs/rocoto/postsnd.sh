@@ -42,7 +42,7 @@ status=$?
 export CDATEm1=$($NDATE -24 $CDATE)
 export PDYm1=$(echo $CDATEm1 | cut -c1-8)
 
-export COMIN="$ROTDIR/$CDUMP.$PDY/$cyc/${COMPONENTatmos}"
+export COMIN="$ROTDIR/$CDUMP.$PDY/$cyc/atmos"
 export DATAROOT="$RUNDIR/$CDATE/$CDUMP/postsnd"
 [[ -d $DATAROOT ]] && rm -rf $DATAROOT
 mkdir -p $DATAROOT
@@ -57,7 +57,7 @@ export DATA="${DATAROOT}/$job"
 export SENDCOM="YES"
 export SENDDBN="YES"
 export HOMEbufrsnd=$HOMEgfs
-export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc/${COMPONENTatmos}"
+export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc/atmos"
 export pcom="$COMOUT/wmo"
 export COMAWP="$COMOUT/gempak"
 

@@ -27,8 +27,6 @@ status=$?
 # PATH for working directory
 export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
-export COMPONENTatmos=${COMPONENTatmos:-atmos}
-export COMPONENTwave=${COMPONENTwave:-wave}
 
 export HOMEgfs=${HOMEgfs:-$NWROOT/gfs.${gfs_ver}}
 
@@ -73,13 +71,13 @@ export EXECwave=${EXECwave:-$HOMEgfs/exec}
 if [ $RUN_ENVIR = "nco" ]; then
     export ROTDIR=${COMROOT:?}/$NET/$envir
 fi
-export COMIN=${COMIN:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENTwave}}
-export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENTwave}}
+export COMIN=${COMIN:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/wave}
+export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/wave}
 [[ ! -d $COMOUT ]] && mkdir -m 775 -p $COMOUT
 
 if [ $RUN_ENVIR = "nco" ]; then
-  export COMIN_WAV_ICE=${COMIN_WAV_ICE:-$(compath.py gfs/prod)}/${CDUMP}.${PDY}/${cyc}/${COMPONENTatmos}
-  export COMIN_WAV_WND=${COMIN_WAV_WND:-$(compath.py gfs/prod)}/${CDUMP}.${PDY}/${cyc}/${COMPONENTatmos}
+  export COMIN_WAV_ICE=${COMIN_WAV_ICE:-$(compath.py gfs/prod)}/${CDUMP}.${PDY}/${cyc}/atmos
+  export COMIN_WAV_WND=${COMIN_WAV_WND:-$(compath.py gfs/prod)}/${CDUMP}.${PDY}/${cyc}/atmos
   export COMIN_WAV_CUR=${COMIN_WAV_CUR:-$(compath.py ${WAVECUR_DID}/prod)}/${WAVECUR_DID}.${RPDY}
   if [ ! -d $COMIN_WAV_CUR ]; then
     export RPDY=`$NDATE -24 ${PDY}00 | cut -c1-8`
@@ -90,10 +88,10 @@ else
   if [ ! -L $ROTDIR/${WAVECUR_DID}.${RPDY} ]; then # Check if symlink already exists in ROTDIR
     $NLN $DMPDIR/${WAVECUR_DID}.${RPDY} $ROTDIR/${WAVECUR_DID}.${RPDY}
   fi
-  if [ ! -L $ROTDIR/${CDUMP}.${PDY}/${cyc}/${COMPONENTatmos}/${WAVICEFILE} ]; then # Check if symlink already exists in ROTDIR
-    $NLN $DMPDIR/$CDUMP.${PDY}/$cyc/${WAVICEFILE} $ROTDIR/$CDUMP.${PDY}/$cyc/${COMPONENTatmos}/${WAVICEFILE}
+  if [ ! -L $ROTDIR/${CDUMP}.${PDY}/${cyc}/atmos/${WAVICEFILE} ]; then # Check if symlink already exists in ROTDIR
+    $NLN $DMPDIR/$CDUMP.${PDY}/$cyc/${WAVICEFILE} $ROTDIR/$CDUMP.${PDY}/$cyc/atmos/${WAVICEFILE}
   fi
-  export COMIN_OBS=${COMIN_OBS:-$ROTDIR/$RUN.$PDY/$cyc/${COMPONENTatmos}}
+  export COMIN_OBS=${COMIN_OBS:-$ROTDIR/$RUN.$PDY/$cyc/atmos}
   export COMIN_WAV_ICE=${COMIN_OBS}
   export COMIN_WAV_WND=${COMIN_OBS}
   export COMIN_WAV_CUR=${ROTDIR}/${WAVECUR_DID}.${RPDY}

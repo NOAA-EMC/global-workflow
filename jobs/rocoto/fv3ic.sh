@@ -55,7 +55,7 @@ if [ $status -ne 0 ]; then
 fi
 
 # Stage the FV3 initial conditions to ROTDIR
-COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc/${COMPONENTatmos}"
+COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc/atmos"
 [[ ! -d $COMOUT ]] && mkdir -p $COMOUT
 cd $COMOUT || exit 99
 rm -rf INPUT
