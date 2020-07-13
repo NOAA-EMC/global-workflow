@@ -466,7 +466,7 @@
 # 2.g Alert DBN
           if [ "$SENDDBN" = 'YES' ]
           then
-           $DBNROOT/bin/dbn_alert MODEL WAVE_GRIB_GB2 $job $COMOUT/gridded/${fcopy}
+           $DBNROOT/bin/dbn_alert MODEL ${NET}_${COMPONENT}_GB2 $job $COMOUT/gridded/${fcopy}
           fi
         fi
       else
@@ -676,8 +676,8 @@
 #
   if [ "$SENDDBN" = 'YES' ]
   then
-       $DBNROOT/bin/dbn_alert MODEL WAVE_GRIB_GB2 $job $COMOUT/gridded/${WAV_MOD_TAG}.t${cyc}z.bull_tar
-       $DBNROOT/bin/dbn_alert MODEL WAVE_GRIB_GB2 $job $COMOUT/station/${WAV_MOD_TAG}.t${cyc}z.station_tar
+       $DBNROOT/bin/dbn_alert MODEL ${NET}_${COMPONENT}_GB2 $job $COMOUT/gridded/${WAV_MOD_TAG}.t${cyc}z.bull_tar
+       $DBNROOT/bin/dbn_alert MODEL ${NET}_${COMPONENT}_GB2 $job $COMOUT/station/${WAV_MOD_TAG}.t${cyc}z.station_tar
   fi
 #
   if [ "$exit_code" -ne '0' ]
