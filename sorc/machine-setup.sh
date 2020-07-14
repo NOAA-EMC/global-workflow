@@ -24,7 +24,7 @@ if [[ -d /work ]] ; then
     # We are on MSU Orion
     if ( ! eval module help > /dev/null 2>&1 ) ; then
         echo load the module command 1>&2
-        source /apps/lmod/init/$__ms_shell
+        source /apps/lmod/lmod/init/$__ms_shell
     fi
     target=orion
     module purge
