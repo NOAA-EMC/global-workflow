@@ -7,8 +7,8 @@ export dir=` pwd `
 export PDY=`date -u +%Y%m%d`
 export PDY1=`expr $PDY - 1`
 
-export olddate=20191230
-export newdate=20200106
+export olddate=20200106
+export newdate=20200712
 
 export gdas=/gpfs/dell1/nco/ops/com/gfs/prod/gdas.${PDY}/${cyc}
 export gdasgp=/gpfs/dell1/nco/ops/com/gfs/prod/gdas.${PDY}/${cyc}/gempak
@@ -44,10 +44,3 @@ sed -i s/envir=prod/envir=para/g  run_JGFS_PGRB2_SPEC_NPOESS_dell.sh_${cyc}
 sed -i s/envir=prod/envir=para/g  run_JGFS_PGRB2_SPEC_GEMPAK_dell.sh_${cyc}
 
 done
-
-
-
-
-
-
-

@@ -13,7 +13,7 @@
 export KMP_AFFINITY=disabled
 
 export PDY=`date -u +%Y%m%d`
-export PDY=20200106
+export PDY=20200712
 export PDY1=`expr $PDY - 1`
 
 export cyc=12
@@ -113,14 +113,14 @@ export NET=gfs
 if [ $envir = "prod" ] ; then
 #  This setting is for testing with GFS (production)
   export COMIN=${COMIN:-$(compath.py ${NET}/${envir}/${NET}.${PDY})/${cyc}}
-  export COMIN=/gpfs/dell2/ptmp/Boi.Vuong/com/gfs/prod/gfs.20200106/12
+  export COMIN=/gpfs/dell2/ptmp/Boi.Vuong/com/gfs/prod/gfs.20200712/12
 else
-  export COMIN=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/git/${RUN}.${PDY}/${cyc}    ### Boi PARA
-#  export COMIN=/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/prfv3rt3b/gfs.${PDY}/${cyc} ### EMC PARA Realtime
-  export COMIN=/gpfs/dell2/ptmp/Boi.Vuong/com/gfs/para/gfs.20200106/12
+#   export COMIN=/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/v16rt2c/gfs/para/${RUN}.${PDY}/${cyc}/atmos ### EMC PARA Realtime
+   export COMIN=/gpfs/dell2/ptmp/Boi.Vuong/com/gfs/para/gfs.20200712/12/atmos    %%%% Boi PARA Realtime
+
 fi
 
-export COMOUT=${COMROOT2}/${NET}/${envir}/${NET}.${PDY}/${cyc}/gempak
+export COMOUT=${COMROOT2}/${NET}/${envir}/${NET}.${PDY}/${cyc}/atmos/gempak
 
 if [ $SENDCOM = YES ] ; then
   mkdir -m 775 -p $COMOUT
