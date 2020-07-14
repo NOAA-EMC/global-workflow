@@ -79,6 +79,7 @@ parm/post
 parm/wafs
 
 # Ignore scripts from externals
+jobs/JGDAS_ENKF_CHGRES
 jobs/JGDAS_ENKF_FCST
 jobs/JGDAS_ENKF_POST
 jobs/JGDAS_ENKF_RECENTER
@@ -116,6 +117,7 @@ scripts/exgfs_wafs_grib2.sh.ecf
 scripts/exglobal_analcalc_fv3gfs.sh.ecf
 scripts/exglobal_analdiag_fv3gfs.sh.ecf
 scripts/exglobal_analysis_fv3gfs.sh.ecf
+scripts/exglobal_enkf_chgres_fv3gfs.sh.ecf
 scripts/exglobal_enkf_fcst_fv3gfs.sh.ecf
 scripts/exglobal_enkf_innovate_obs_fv3gfs.sh.ecf
 scripts/exglobal_enkf_post_fv3gfs.sh.ecf
@@ -155,6 +157,7 @@ ush/minmon_xtrct_costs.pl
 ush/minmon_xtrct_gnorms.pl
 ush/minmon_xtrct_reduct.pl
 ush/mkwfsgbl.sh
+ush/mod_icec.sh
 ush/ozn_xtrct.sh
 ush/radmon_ck_stdout.sh
 ush/radmon_err_rpt.sh
