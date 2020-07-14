@@ -10,6 +10,7 @@ module load wgrib/2.0.8
 module load nco/4.8.1
 
 module load gempak/7.5.1
+module load cdo/1.9.5
 
 #Load from official NCEPLIBS
 module use /apps/contrib/NCEPLIBS/orion/modulefiles
