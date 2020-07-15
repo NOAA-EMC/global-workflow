@@ -40,10 +40,11 @@ status=$?
 [[ $status -ne 0 ]] && exit $status
 
 ###############################################################
+export COMPONENT=${COMPONENT:-atmos}
 export CDATEm1=$($NDATE -24 $CDATE)
 export PDYm1=$(echo $CDATEm1 | cut -c1-8)
 
-export COMIN="$ROTDIR/$CDUMP.$PDY/$cyc/atmos"
+export COMIN="$ROTDIR/$CDUMP.$PDY/$cyc/$COMPONENT"
 export DATAROOT="$RUNDIR/$CDATE/$CDUMP/awips$FHRGRP"
 [[ -d $DATAROOT ]] && rm -rf $DATAROOT
 mkdir -p $DATAROOT
@@ -53,7 +54,7 @@ mkdir -p $DATAROOT
 echo
 echo "=============== BEGIN AWIPS ==============="
 export SENDCOM="YES"
-export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc/atmos"
+export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc/$COMPONENT"
 export PCOM="$COMOUT/wmo"
 export jlogfile="$ROTDIR/logs/$CDATE/jgfs_awips.log"
 

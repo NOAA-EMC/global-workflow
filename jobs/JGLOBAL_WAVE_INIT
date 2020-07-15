@@ -27,14 +27,10 @@ status=$?
 # PATH for working directory
 export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
-
-export HOMEgfs=${HOMEgfs:-$NWROOT/${NET}.${gfs_ver}}
+export COMPONENT=${COMPONENT:-wave}
 
 # Add default errchk = err_chk
 export errchk=${errchk:-err_chk}
-
-# Set HOMEwave to HOMEgfs
-HOMEwave=${HOMEwave:-${HOMEgfs}} 
 
 # Create and go to DATA directory
 export DATA=${DATA:-${DATAROOT:?}/${jobid}}
@@ -57,17 +53,17 @@ NTASKS=${NTASKS:-${npe_node_waveinit}}
 export NTASKS=${NTASKS:?NTASKS required to be set}
 
 # Path to HOME Directory
-export FIXwave=${FIXwave:-$HOMEwave/fix/fix_wave_${NET}}
-export PARMwave=${PARMwave:-$HOMEwave/parm/wave}
-export USHwave=${USHwave:-$HOMEwave/ush}
+export FIXwave=${FIXwave:-$HOMEgfs/fix/fix_wave_${NET}}
+export PARMwave=${PARMwave:-$HOMEgfs/parm/wave}
+export USHwave=${USHwave:-$HOMEgfs/ush}
 export EXECwave=${EXECwave:-$HOMEgfs/exec}
 
 # Set COM Paths and GETGES environment
 if [ $RUN_ENVIR = "nco" ]; then
     export ROTDIR=${COMROOT:?}/$NET/$envir
 fi
-export COMIN=${COMIN:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/wave}
-export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/wave}
+export COMIN=${COMIN:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/$COMPONENT}
+export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/$COMPONENT}
 [[ ! -d $COMOUT ]] && mkdir -m 775 -p $COMOUT
 
 if [ $SENDCOM = YES ]; then
@@ -79,7 +75,7 @@ export wavempexec=${launcher:-"mpirun -n"}
 export wave_mpmd=${mpmd:-"cfp"}
 
 # Execute the Script  
-$HOMEwave/scripts/exwave_init.sh
+$HOMEgfs/scripts/exgfs_wave_init.sh
 
 ##########################################
 # Remove the Temporary working directory

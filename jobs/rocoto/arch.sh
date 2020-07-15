@@ -27,6 +27,9 @@ for config in $configs; do
     [[ $status -ne 0 ]] && exit $status
 done
 
+export COMPONENTatmos=${COMPONENTatmos:-atmos}
+export COMPONENTwave=${COMPONENTwave:-wave}
+
 # ICS are restarts and always lag INC by $assim_freq hours
 ARCHINC_CYC=$ARCH_CYC
 ARCHICS_CYC=$((ARCH_CYC-assim_freq))
@@ -57,7 +60,7 @@ PDY_MOS=$(echo $CDATE_MOS | cut -c1-8)
 # Archive online for verification and diagnostics
 ###############################################################
 
-COMIN="$ROTDIR/$CDUMP.$PDY/$cyc/atmos"
+COMIN="$ROTDIR/$CDUMP.$PDY/$cyc/$COMPONENTatmos"
 cd $COMIN
 
 [[ ! -d $ARCDIR ]] && mkdir -p $ARCDIR
@@ -304,8 +307,8 @@ RTOFS_DATE=$($NDATE -48 $CDATE)
 while [ $GDATE -le $GDATEEND ]; do
     gPDY=$(echo $GDATE | cut -c1-8)
     gcyc=$(echo $GDATE | cut -c9-10)
-    COMIN="$ROTDIR/${CDUMP}.$gPDY/$gcyc/atmos"
-    COMINwave="$ROTDIR/${CDUMP}.$gPDY/$gcyc/wave"
+    COMIN="$ROTDIR/${CDUMP}.$gPDY/$gcyc/$COMPONENTatmos"
+    COMINwave="$ROTDIR/${CDUMP}.$gPDY/$gcyc/$COMPONENTwave"
     COMINrtofs="$ROTDIR/rtofs.$gPDY"
     if [ -d $COMIN ]; then
         rocotolog="$EXPDIR/logs/${GDATE}.log"

@@ -65,6 +65,8 @@ export pgmerr=errfile
 ##############################################
 export CDATE=${CDATE:-${PDY}${cyc}}
 export CDUMP=${CDUMP:-${RUN:-"gfs"}}
+export COMPONENTatmos=${COMPONENTatmos:-atmos}
+export COMPONENTwave=${COMPONENTwave:-wave}
 if [ $RUN_ENVIR = "nco" ]; then
     export ROTDIR=${COMROOT:?}/$NET/$envir
     export RSTDIR=${GESROOT:?}/$envir
@@ -74,8 +76,8 @@ fi
 if [ ${DO_WAVE:-"NO"} = "YES" ]; then
   # WAVE component directory
   export CDUMPwave=${CDUMPwave:-${CDUMP}wave}
-  export COMINwave=${COMINwave:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/wave}
-  export COMOUTwave=${COMOUTwave:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/wave}
+  export COMINwave=${COMINwave:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/$COMPONENTwave}
+  export COMOUTwave=${COMOUTwave:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/$COMPONENTwave}
 fi
 
 ##############################################
