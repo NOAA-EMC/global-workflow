@@ -67,9 +67,8 @@ config_fcst:
     #######################################################################
     # PE Mapping
     export ATMPETS="{doc.fv3_gfs_settings.ATMPETS}"
-    export OCNPETS="{doc.ocn_settings.OCNPETS}"
-    export ICEPETS="{doc.ice_settings.ICEPETS}"
-    export WAVPETS="{doc.wave_settings.WAVPETS}"
+    export OCNPETS="{doc.fv3_gfs_settings.OCNPETS}"
+    export ICEPETS="{doc.fv3_gfs_settings.ICEPETS}"
     #
     #######################################################################    
 

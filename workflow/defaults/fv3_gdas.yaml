@@ -1,7 +1,7 @@
 fv3_gdas_defaults: &fv3_gdas_defaults
   CDUMP: gdas
   CASE: C384
-  CCPP_SUITE: IPD
+  CCPP_SUITE: GFS
   LEVS: 65
   FHCYC: 24
   FHCYC_GDAS: 1

@@ -15,3 +15,7 @@ $HOMEgfs/jobs/JWAVE_INIT
 status=$?
 exit $status
 
+###############################################################
+# Force Exit out cleanly
+if [ ${KEEPDATA:-"NO"} = "NO" ] ; then rm -rf $DATAROOT ; fi
+exit 0

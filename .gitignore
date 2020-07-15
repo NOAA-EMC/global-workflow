@@ -165,5 +165,3 @@ util/sub_wcoss_d
 workflow/user.yaml
 sorc/checkout-gldas.fd.log
 sorc/gldas.fd/
-sorc/reg2grb2.fd/*.o
-sorc/reg2grb2.fd/*.mod

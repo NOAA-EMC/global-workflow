@@ -502,69 +502,17 @@ $NCP -p $DATA/input.nml $COMOUT/
 echo "SUB ${FUNCNAME[0]}: Output data for FV3 copied"
 }
 
-WW3_postdet()
+WW3_in()
 {
-  echo "SUB ${FUNCNAME[0]}: Linking input data for WW3"
-  COMPONENTwave=${COMPONENTwave:-${RUN}wave}
-
-  #Link mod_def files for wave grids 
-  array=($WAVECUR_FID $WAVEICE_FID $WAVEWND_FID $waveuoutpGRD $waveGRD $waveesmfGRD $wavesbsGRD $wavepostGRD $waveinterpGRD)
-  echo "Wave Grids: $WAVECUR_FID $WAVEICE_FID $WAVEWND_FID $waveuoutpGRD $waveGRD $waveesmfGRD $wavesbsGRD $wavepostGRD $waveinterpGRD"
-  grdALL=`printf "%s\n" "${array[@]}" | sort -u | tr '\n' ' '`
-  for wavGRD in ${grdALL}; do
-    $NCP $ROTDIR/${COMPONENTwave}.${PDY}/${cyc}/rundata/${COMPONENTwave}.mod_def.$wavGRD $DATA/mod_def.$wavGRD
-  done
-
-  #Copy initial condition files: 
-  for wavGRD in $waveGRD ; do
-    # Link wave IC for current cycle
-    # $NLN ${WRDIR}/${sPDY}.${scyc}0000.restart.${wavGRD} $DATA/restart.${wavGRD}
-    # Link IC for S2S benchmarks: 
-    $NCP -pf $ICSDIR/$CDATE/wav/${PDY}.${cyc}0000.restart.$wavGRD $DATA/restart.$wavGRD
-    # Link log files for computational grids: 
-    eval $NLN  $ROTDIR/${COMPONENTwave}.${PDY}/${cyc}/rundata/${COMPONENTwave}${WAV_MEMBER}.log.${wavGRD}.${PDY}${cyc} $DATA/log.${wavGRD}
-  done
-
-  #link more log files: 
-  eval $NLN $ROTDIR/${COMPONENTwave}.${PDY}/${cyc}/rundata/${COMPONENTwave}${WAV_MEMBER}.log.mww3.${PDY}${cyc} $DATA/log.mww3
-
-  datwave=$ROTDIR/${COMPONENTwave}.${PDY}/${cyc}/rundata
-  wavprfx=${COMPONENTwave}${WAV_MEMBER}
-  # Loop for gridded output (uses FHINC)
-  fhr=$FHMIN_WAV
-  while [ $fhr -le $FHMAX_WAV ]; do
-    YMDH=`$NDATE $fhr $CDATE`
-    YMD=$(echo $YMDH | cut -c1-8)
-    HMS="$(echo $YMDH | cut -c9-10)0000"
-      for wavGRD in ${waveGRD} ; do
-        eval $NLN $datwave/${wavprfx}.out_grd.${wavGRD}.${YMD}.${HMS} $DATA/${YMD}.${HMS}.out_grd.${wavGRD}
-      done
-      FHINC=$FHOUT_WAV
-      #if [ $FHMAX_HF_WAV -gt 0 -a $FHOUT_HF_WAV -gt 0 -a $fhr -lt $FHMAX_HF_WAV ]; then
-      #  FHINC=$FHOUT_HF_WAV
-      #fi
-    fhr=$((fhr+FHINC))
-  done
-  # Loop for point output (uses DTPNT)
-  fhr=$FHMIN_WAV
-  while [ $fhr -le $FHMAX_WAV ]; do
-    YMDH=`$NDATE $fhr $CDATE`
-    YMD=$(echo $YMDH | cut -c1-8)
-    HMS="$(echo $YMDH | cut -c9-10)0000"
-      eval $NLN $datwave/${wavprfx}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS} $DATA/${YMD}.${HMS}.out_pnt.${waveuoutpGRD}
-      FHINC=$FHINCP_WAV
-    fhr=$((fhr+FHINC))
-  done
-
-
-
+	echo "SUB ${FUNCNAME[0]}: Linking input data for WW3"
+	# soft link commands insert here
 }
 
 WW3_nml()
 {
-	echo "SUB ${FUNCNAME[0]}: Copying input files for WW3"
-	COMPONENTwave=${COMPONENTwave:-${RUN}wave}
-        $NCP $ROTDIR/${COMPONENTwave}.${PDY}/${cyc}/rundata/ww3_multi.${WAV_MOD_TAG}.${cycle}.inp  $DATA/ww3_multi.inp 
+	echo "SUB ${FUNCNAME[0]}: Creating name list for WW3"
+        source $SCRIPTDIR/parsing_namelists_WW3.sh
+	WW3_namelists
 }
 
 WW3_out()
@@ -586,11 +534,9 @@ MOM6_postdet()
         $NCP -pf $FIXmom/$OCNRES/* $DATA/INPUT/
 
         # Copy MOM6 input file 
-        if [ $cplwav = ".true." ] ; then
-          $NCP -pf $HOMEgfs/parm/mom6/MOM_input_${OCNRES}_wav $DATA/INPUT/MOM_input
-        else 
-          $NCP -pf $HOMEgfs/parm/mom6/MOM_input_$OCNRES $DATA/INPUT/MOM_input 
-        fi 
+        $NCP -pf $HOMEgfs/parm/mom6/MOM_input_$OCNRES $DATA/INPUT/MOM_input 
+
+        #TODO: if cplwav, copy MOM_input_$OCNRES_wav 
         #TODO: update to make MOM_input configurable 
 
 	# Copy coupled grid_spec

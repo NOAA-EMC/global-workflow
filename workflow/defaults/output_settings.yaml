@@ -17,7 +17,6 @@ output_settings_defaults: &output_settings_defaults
 
   FHMAX_HF_GFS: 0
   FHOUT_HF_GFS: 1
-
   OCN_INTERVAL: 120
 
   NCO_NAMING_CONV: YES
@@ -37,16 +36,3 @@ output_settings_defaults: &output_settings_defaults
       tools.uniq(sorted(
         tools.seq(0,84,3) +
         tools.seq(90,240,6)))
-
-wave_output_settings_defaults: &wave_output_settings_defaults
-  FHMIN_WAV: 0
-  FHMAX_WAV: 9
-  FHMAX_WAV_GFS: 384
-  FHOUT_WAV: 3
-
-  FHMAX_HF_WAV: 120
-  FHOUT_HF_WAV: 3
-
-  FHMAX_WAV_CUR: 48
-
-  OUTPARS_WAV: "WND CUR ICE HS T01 T02 DIR FP DP PHS PTP PDIR CHAR"

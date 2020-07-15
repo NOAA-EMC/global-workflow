@@ -4,9 +4,3 @@ ice_settings_template: !Template &ice_settings_template
     type: string
     allowed: [ cice5, cice6 ]
     description: "model selection for ice"
-  ICERES:
-    type: string
-    allowed: [ '025', '050' ]
-  CPL_ICEIC:
-    type: string
-    allowed: [ 'CFSR', 'CPC' ]

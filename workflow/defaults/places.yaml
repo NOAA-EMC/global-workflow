@@ -10,8 +10,6 @@ default_places: &default_places
   NWPROD:      !calc doc.platform.NWPROD
   DMPDIR:      !calc doc.platform.DMPDIR
   RTMFIX:      !calc doc.platform.RTMFIX
- 
-  FIXwave: !expand "{HOMEgfs}/fix/fix_wav"
 
   EXPDIR: !expand "{doc.platform.EXPROOT}/{doc.names.experiment}"
   ROTDIR: !expand "{doc.platform.COMROOT}/{doc.names.experiment}"

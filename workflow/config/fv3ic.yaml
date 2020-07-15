@@ -21,10 +21,6 @@ config_fv3ic:
     export npe_node_fv3ic={doc.partition_common.resources.run_fv3ic[0].mpi_ranks}
 
     export ORIGIN_ROOT="{doc.places.BASE_CPLIC}"
-    export CPL_ATMIC={doc.fv3_gfs_settings.CPL_ATMIC}
-    export CPL_ICEIC={doc.ice_settings.CPL_ICEIC}
-    export CPL_OCNIC={doc.ocn_settings.CPL_OCNIC}
-    export CPL_WAVIC={doc.wave_settings.CPL_WAVIC}
     
     echo "END: config.fv3ic"
     

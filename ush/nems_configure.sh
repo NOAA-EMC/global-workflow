@@ -29,12 +29,10 @@ fi
 ATM_model=${ATM_model:-'fv3'}
 OCN_model=${OCN_model:-'mom6'}
 ICE_model=${ICE_model:-'cice'}
-WAV_model=${WAV_model:-'ww3'}
 
 ATMPETS=${ATMPETS:-8}
 OCNPETS=${OCNPETS:-8}
 ICEPETS=${ICEPETS:-8}
-WAVPETS=${WAVPETS:-8}
 
 rm -f $DATA/nems.configure
 
@@ -42,7 +40,6 @@ med_petlist_bounds=${med_petlist_bounds:-"0 $(( $ATMPETS-1 ))"}
 atm_petlist_bounds=${atm_petlist_bounds:-"0 $(( $ATMPETS-1 ))"}    #6*8*6+wrtgrps(24)
 ocn_petlist_bounds=${ocn_petlist_bounds:-"$ATMPETS $(( $ATMPETS+$OCNPETS-1 ))"}  #120
 ice_petlist_bounds=${ice_petlist_bounds:-"$(( $ATMPETS+$OCNPETS )) $(( $ATMPETS+$OCNPETS+$ICEPETS-1 ))"}  #48
-wav_petlist_bounds=${wav_petlist_bounds:-"$(( $ATMPETS+$OCNPETS+$ICEPETS )) $(( $ATMPETS+$OCNPETS+$ICEPETS+$WAVPETS-1 ))"}  #48
 
 #if [ $CASE = "C96" ] ; then
 #  med_petlist_bounds=${med_petlist_bounds:-'0 149'}
@@ -89,7 +86,6 @@ if [ $cplflx = .true. ]; then
 fi
 if [ $cplwav = .true. ]; then
 	sed -i -e "s;@\[wav_model\];ww3;g" tmp1
-        sed -i -e "s;@\[wav_petlist_bounds\];$wav_petlist_bounds;g" tmp1
 fi
 if [ $cplice = .true. ]; then
 	sed -i -e "s;@\[ice_model\];$ICE_model;g" tmp1

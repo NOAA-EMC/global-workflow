@@ -7,9 +7,3 @@ ocn_settings_template: !Template &ocn_settings_template
     type: string
     allowed: [ mom6, hycom ]
     description: "model selection for ocean"
-  OCNRES:
-    type: string
-    allowed: [ '025', '050' ]
-  CPL_OCNIC:
-    type: string
-    allowed: [ 'CFSR', 'CPC3Dvar' ]

@@ -208,6 +208,8 @@ export ARCDIR="$NOSCRUB/archive/$PSLOT"
 export ICSDIR="@ICSDIR@"
 export ATARDIR="/NCEPDEV/$HPSS_PROJECT/1year/$USER/$machine/scratch/$PSLOT"
 
+# For coupled
+export UGCSsrc="/scratch2/NCEPDEV/climate/Bin.Li/S2S/fix/ocean_ice_post"
 
 # Commonly defined parameters in JJOBS
 export envir=${envir:-"prod"}

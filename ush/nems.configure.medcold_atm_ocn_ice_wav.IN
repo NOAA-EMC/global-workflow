@@ -61,10 +61,10 @@ WAV_attributes::
 
 # Run Sequence #
 runSeq::
-  @@[CPL_SLOW]
+  @@[coupling_interval_slow_sec]
     OCN -> WAV
     WAV -> OCN :srcMaskValues=1
-    @@[CPL_FAST]
+    @@[coupling_interval_fast_sec]
       MED MedPhase_prep_atm
       MED -> ATM :remapMethod=redist
       WAV -> ATM :srcMaskValues=1
