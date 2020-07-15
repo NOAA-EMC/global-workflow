@@ -51,6 +51,8 @@ default_settings: &default_settings
       do: .true.
     - otherwise: .false.
 
+  cplwav: .false.
+  cplwav2atm: .false.
   mom6ic_prepared: .false. # If set True, User need to manually copy mom6ic files into ROTIDR
 
   DOIAU: NO

@@ -1,5 +1,5 @@
 #!/bin/sh
-set -eu
+set -x
 #------------------------------------
 # USER DEFINED STUFF:
 #
@@ -206,6 +206,16 @@ echo " .... grib_util build not currently supported .... "
 #echo " .... Building grib_util .... "
 #./build_grib_util.sh > $logs_dir/build_grib_util.log 2>&1
 }
+
+#------------------------------------
+# build reg2grb2
+#------------------------------------
+if [ $target = hera -o $target = orion ]; then
+  $Build_reg2grb2 && {
+  echo " .... Building reg2grb2 .... "
+  ./build_reg2grb2.sh > $logs_dir/build_reg2grb2.log 2>&1
+}
+fi
 
 echo;echo " .... Build system finished .... "
 
