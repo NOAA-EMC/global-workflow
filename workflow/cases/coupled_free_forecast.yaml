@@ -18,7 +18,8 @@ case:
     NST_MODEL: 0
 
   output_settings:
-    OCN_INTERVAL: 24
+    ATM_INTERVAL: 24
+    OCN_INTERVAL: 120
     FHOUT_GFS: 6
     FHMIN_GFS: 0
     FHMAX_GFS: 840

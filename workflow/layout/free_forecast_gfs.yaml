@@ -77,7 +77,7 @@ suite: !Cycle
     post: !TaskArray
       RUN: !calc up.RUN
       Dimensions:
-        fhr: !calc doc.output_settings.gfs_forecast_hours
+        fhr: !calc doc.output_settings.atmpost_hours
       jgfs_post_manager_el: !TaskElement
         <<: *exclusive_task_template
         RUN: !calc up.RUN
@@ -127,7 +127,8 @@ suite: !Cycle
         resources: !calc partition.resources.run_gfspost
         Name: !expand p_{dimval.fhr:03d}
         FHR: !expand "{dimval.fhr:03d}"
-        J_JOB: JGLOBAL_NCEPPOST
+        ATM_FHRLST: !calc "tools.seq(dimval.fhr, dimval.fhr+doc.output_settings.ATM_INTERVAL, 6)"
+        J_JOB: rocoto/post.sh
         Trigger: !FirstTrue
           - when: !calc not doc.settings.dev_safeguards
             take: !Depend jgfs_post_manager.depend("release_post{F:03d}",F=[dimval.fhr])
@@ -138,7 +139,7 @@ suite: !Cycle
           $HOMEgfs/jobs/{J_JOB}
         rocoto_command: !expand >-
           {rocoto_load_modules} ;
-          /usr/bin/env post_times={FHR} FHRLST={FHR} FHRGRP={FHR} &HOMEgfs;/jobs/{J_JOB}
+          /usr/bin/env FHRLST={ATM_FHRLST} FHRGRP={FHR} &HOMEgfs;/jobs/{J_JOB}
     #endfamily post
 
     ocnpost: !TaskArray
