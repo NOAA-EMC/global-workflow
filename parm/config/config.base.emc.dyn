@@ -110,6 +110,11 @@ export ATARDIR="/NCEPDEV/$HPSS_PROJECT/1year/$USER/$machine/scratch/$PSLOT"
 export envir=${envir:-"prod"}
 export NET="gfs"
 export RUN=${RUN:-${CDUMP:-"gfs"}}
+export COMINatmos=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos
+export COMOUTatmos=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos
+export COMINwave=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/wave
+export COMOUTwave=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/wave
+
 export jlogfile="${EXPDIR}/logs/jlogfile"
 export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 export LOGSCRIPT=${LOGSCRIPT:-""}
