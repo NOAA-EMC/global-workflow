@@ -39,6 +39,10 @@
   export LOUD=${LOUD:-YES}; [[ $LOUD = yes ]] && export LOUD=YES
   [[ "$LOUD" != YES ]] && set +x
 
+  # Set wave model ID tag to include member number
+  # if ensemble; waveMEMB var empty in deterministic
+  export WAV_MOD_TAG=${CDUMP}wave${waveMEMB}
+
   cd $DATA
 
   postmsg "$jlogfile" "HAS BEGUN on `hostname`"

@@ -35,10 +35,6 @@ export HOMEgfs=${HOMEgfs:-$NWROOT/$NET.${gfs_ver}}
 # Add default errchk = err_chk
 export errchk=${errchk:-err_chk}
 
-# Set resources to propagate NTASKS across cfp call
-NTASKS=${NTASKS:-${npe_node_waveprep}}
-export NTASKS=${NTASKS:?NTASKS required to be set}
-
 # Create and go to DATA directory
 export DATA=${DATA:-${DATAROOT:?}/${jobid}}
 mkdir -p $DATA

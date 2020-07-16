@@ -27,18 +27,12 @@ status=$?
 # PATH for working directory
 export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
+export COMPONENT=${COMPONENT:-wave}
 
 export HOMEgfs=${HOMEgfs:-$NWROOT/gfs.${gfs_ver}}
 
 # Add default errchk = err_chk
 export errchk=${errchk:-err_chk}
-
-# Set HOMEwave to HOMEgfs
-HOMEwave=${HOMEwave:-${HOMEgfs}} 
-
-# Set resources to propagate NTASKS across cfp call
-NTASKS=${NTASKS:-${npe_node_waveprep}}
-export NTASKS=${NTASKS:?NTASKS required to be set}
 
 # Create and go to DATA directory
 export DATA=${DATA:-${DATAROOT:?}/${jobid}}
@@ -62,17 +56,17 @@ export MP_PULSE=0
 export CDO=${CDO_ROOT}/bin/cdo
 
 # Path to HOME Directory
-export FIXwave=${FIXwave:-$HOMEwave/fix/fix_wave_${NET}}
-export PARMwave=${PARMwave:-$HOMEwave/parm/wave}
-export USHwave=${USHwave:-$HOMEwave/ush}
+export FIXwave=${FIXwave:-$HOMEgfs/fix/fix_wave_${NET}}
+export PARMwave=${PARMwave:-$HOMEgfs/parm/wave}
+export USHwave=${USHwave:-$HOMEgfs/ush}
 export EXECwave=${EXECwave:-$HOMEgfs/exec}
 
 # Set COM Paths and GETGES environment
 if [ $RUN_ENVIR = "nco" ]; then
     export ROTDIR=${COMROOT:?}/$NET/$envir
 fi
-export COMIN=${COMIN:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/wave}
-export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/wave}
+export COMIN=${COMIN:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/$COMPONENT}
+export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/$COMPONENT}
 [[ ! -d $COMOUT ]] && mkdir -m 775 -p $COMOUT
 
 if [ $RUN_ENVIR = "nco" ]; then
@@ -101,12 +95,8 @@ fi
 export wavempexec=${launcher:-"mpirun -n"}
 export wave_mpmd=${mpmd:-"cfp"}
 
-# Set wave model ID tag to include member number 
-# if ensemble; waveMEMB var empty in deterministic
-export WAV_MOD_TAG=${CDUMP}wave${waveMEMB}
-
 # Execute the Script  
-$HOMEwave/scripts/exwave_prep.sh
+$HOMEgfs/scripts/exgfs_wave_prep.sh
 
 ##########################################
 # Remove the Temporary working directory

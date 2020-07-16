@@ -48,10 +48,6 @@ export pgmout=OUTPUT.$$
 
 export MP_PULSE=0
 
-# Set resources to propagate NTASKS across cfp call
-NTASKS=${NTASKS:-${npe_node_waveinit}}
-export NTASKS=${NTASKS:?NTASKS required to be set}
-
 # Path to HOME Directory
 export FIXwave=${FIXwave:-$HOMEgfs/fix/fix_wave_${NET}}
 export PARMwave=${PARMwave:-$HOMEgfs/parm/wave}
