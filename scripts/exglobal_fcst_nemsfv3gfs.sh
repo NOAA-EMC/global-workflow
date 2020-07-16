@@ -151,7 +151,11 @@ cd $DATA || exit 8
 mkdir -p $DATA/INPUT
 
 if [ $cplwav = ".true." ]; then 
-    RSTDIR_WAVE=$ROTDIR/${CDUMP}.${PDY}/${cyc}/wave/restart
+    if [ $CDUMP = "gdas" ]; then
+      RSTDIR_WAVE=$ROTDIR/${CDUMP}.${PDY}/${cyc}/wave/restart
+    else
+      RSTDIR_WAVE=${RSTDIR_WAVE:-$ROTDIR/${CDUMP}.${PDY}/${cyc}/wave/restart}
+    fi
     if [ ! -d $RSTDIR_WAVE ]; then mkdir -p $RSTDIR_WAVE ; fi
     $NLN $RSTDIR_WAVE restart_wave
 fi
