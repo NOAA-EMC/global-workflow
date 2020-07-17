@@ -139,7 +139,7 @@ suite: !Cycle
           $HOMEgfs/jobs/{J_JOB}
         rocoto_command: !expand >-
           {rocoto_load_modules} ;
-          /usr/bin/env FHRLST={ATM_FHRLST} FHRGRP={FHR} &HOMEgfs;/jobs/{J_JOB}
+          export FHRLST="{ATM_FHRLST}"; export FHRGRP={FHR}; $HOMEgfs/jobs/{J_JOB}
     #endfamily post
 
     ocnpost: !TaskArray
