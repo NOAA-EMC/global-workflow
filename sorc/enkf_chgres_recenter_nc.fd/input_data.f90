@@ -9,9 +9,9 @@
  private
 
  integer, public                              :: idvc, idsl, idvm, nvcoord
- integer, public                              :: ntrac, ncldt
+ integer, public                              :: nvcoord_input, ntrac, ncldt
  integer, public                              :: ij_input, kgds_input(200)
- integer, public                              :: i_input, j_input, lev
+ integer, public                              :: i_input, j_input, lev, lev_output
  integer, public                              :: idate(6)
  integer, public                              :: icldamt, iicmr,  &
                                                  idelz,idpres,idzdt, &
@@ -19,6 +19,7 @@
 
 
  real, allocatable, public                    :: vcoord(:,:)
+ real, allocatable, public                    :: vcoord_input(:,:)
  real, allocatable, public                    :: clwmr_input(:,:)
  real, allocatable, public                    :: dzdt_input(:,:)
  real, allocatable, public                    :: grle_input(:,:)
@@ -52,7 +53,8 @@
  type(Dataset) :: indset
  type(Dimension) :: ncdim
  real, allocatable                            :: work2d(:,:),work3d(:,:,:)
- integer iret
+ integer iret, k, kk
+ real, allocatable :: ak(:), bk(:)
 
  ! hard code these values that are the same for GFS
  idvc=2
@@ -76,6 +78,21 @@
 
  ij_input = i_input * j_input
 
+
+ call read_attribute(indset, 'ak', ak)
+ print*,'ak ',size(ak),ak
+ call read_attribute(indset, 'bk', bk)
+ print*,'bk ',size(bk),bk
+ 
+ nvcoord_input = 2
+ allocate(vcoord_input(lev+1,nvcoord_input))
+ do k = 1, lev+1
+   kk = lev+2-k
+   vcoord_input(k,1) = ak(kk)
+   vcoord_input(k,2) = bk(kk)
+ enddo
+
+ deallocate(ak, bk)
 
  print*
  print*,"READ SURFACE PRESSURE"
@@ -297,40 +314,34 @@
 
  implicit none
 
- integer                    :: istat, levs_vcoord, n, k
+ integer                    :: istat, n, k, k2
+
+ real, allocatable :: ak(:), bk(:)
+
+ type(Dataset) :: refdset
 
  print*
- print*,"OPEN VERTICAL COORD FILE: ", trim(vcoord_file)
- open(14, file=trim(vcoord_file), form='formatted', iostat=istat)
- if (istat /= 0) then
-   print*,"FATAL ERROR OPENING FILE. ISTAT IS: ", istat
-   call errexit(4)
- endif
+ print*,"OPEN INPUT FILE: ",trim(ref_file)
+ refdset = open_dataset(ref_file)
 
- read(14, *, iostat=istat) nvcoord, levs_vcoord
- if (istat /= 0) then
-   print*,"FATAL ERROR READING FILE HEADER. ISTAT IS: ",istat
-   call errexit(5)
- endif
+ call read_attribute(refdset, 'ak', ak)
+ call read_attribute(refdset, 'bk', bk)
 
-!---------------------------------------------------------------------------------
-! The last value in the file is not used for the fv3 core.  Only read the first 
-! (lev + 1) values.
-!---------------------------------------------------------------------------------
+ call close_dataset(refdset)
+ 
+ lev_output = size(bk) - 1
 
- allocate(vcoord(lev+1, nvcoord))
- read(14, *, iostat=istat) ((vcoord(n,k), k=1,nvcoord), n=1,lev+1)
- if (istat /= 0) then
-   print*,"FATAL ERROR READING FILE. ISTAT IS: ",istat
-   call errexit(6)
- endif
+ nvcoord=2
+ allocate(vcoord(lev_output+1, nvcoord))
 
- print*
- do k = 1, (lev+1)
-   print*,'VCOORD FOR LEV ', k, 'IS: ', vcoord(k,:)
+ do k = 1, (lev_output+1)
+   k2 = lev_output+2 - k
+   vcoord(k,1) = ak(k2)
+   vcoord(k,2) = bk(k2)
+   print*,'vcoord output grid ',k,vcoord(k,:)
  enddo
 
- close(14)
+ deallocate (ak, bk)
 
  end subroutine read_vcoord_info
 
