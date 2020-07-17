@@ -344,7 +344,7 @@ cd $pwd/../parm/config
 #fi
 #------------------------------
 if [ $model = "coupled" ] ; then
- rm -f config.base
+ #rm -f config.base
  #cp -p config.base.emc.dyn_coupled config.base
  cd $pwd/../fix
  # Add fixed files needed for coupled ufs-s2s-model

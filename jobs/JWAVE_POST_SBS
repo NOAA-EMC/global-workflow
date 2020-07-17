@@ -7,7 +7,7 @@ set -x -e
 #############################
 # Source relevant config files
 #############################
-configs="base wave wavepostsbs"
+configs="base wave"
 export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
 config_path=${EXPDIR:-$NWROOT/gfs.${gfs_ver}/parm/config}
 for config in $configs; do
@@ -35,6 +35,9 @@ export errchk=${errchk:-err_chk}
 export DATA=${DATA:-${DATAROOT}/${jobid:?}}
 mkdir -p $DATA
 cd $DATA
+
+cyc=${cyc:-00}
+export cycle=${cycle:-t${cyc}z}
 
 # Set PDY
 setpdy.sh
