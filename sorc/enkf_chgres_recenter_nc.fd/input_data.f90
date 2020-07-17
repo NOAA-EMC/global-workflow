@@ -78,11 +78,8 @@
 
  ij_input = i_input * j_input
 
-
  call read_attribute(indset, 'ak', ak)
- print*,'ak ',size(ak),ak
  call read_attribute(indset, 'bk', bk)
- print*,'bk ',size(bk),bk
  
  nvcoord_input = 2
  allocate(vcoord_input(lev+1,nvcoord_input))
@@ -90,6 +87,7 @@
    kk = lev+2-k
    vcoord_input(k,1) = ak(kk)
    vcoord_input(k,2) = bk(kk)
+   print*,'VCOORD OF INPUT DATA ',k,vcoord_input(k,:)
  enddo
 
  deallocate(ak, bk)
@@ -321,12 +319,11 @@
  type(Dataset) :: refdset
 
  print*
- print*,"OPEN INPUT FILE: ",trim(ref_file)
- refdset = open_dataset(ref_file)
+ print*,"READ OUTPUT VERT COORDINATE INFO FROM REFERENCE FILE: ",trim(ref_file)
 
+ refdset = open_dataset(ref_file)
  call read_attribute(refdset, 'ak', ak)
  call read_attribute(refdset, 'bk', bk)
-
  call close_dataset(refdset)
  
  lev_output = size(bk) - 1
@@ -338,7 +335,7 @@
    k2 = lev_output+2 - k
    vcoord(k,1) = ak(k2)
    vcoord(k,2) = bk(k2)
-   print*,'vcoord output grid ',k,vcoord(k,:)
+   print*,'VCOORD OF OUTPUT GRID ',k,vcoord(k,:)
  enddo
 
  deallocate (ak, bk)

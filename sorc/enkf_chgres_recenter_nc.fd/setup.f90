@@ -7,7 +7,6 @@
  character(len=300), public       :: input_file
  character(len=300), public       :: output_file
  character(len=300), public       :: terrain_file
- character(len=300), public       :: vcoord_file
  character(len=300), public       :: ref_file
 
  integer, public  :: i_output
@@ -27,7 +26,7 @@
  character(len=500)                :: filenamelist
 
  namelist /chgres_setup/ i_output, j_output, input_file, output_file, &
-                      terrain_file, vcoord_file, cld_amt, ref_file
+                      terrain_file, cld_amt, ref_file
 
  cld_amt = .false. ! default option
 
