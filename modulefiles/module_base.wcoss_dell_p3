@@ -30,6 +30,5 @@ module load pm5
 module use -a /gpfs/dell1/nco/ops/nwprod/modulefiles/
 module load gempak/7.3.1
 
-module use /gpfs/dell2/emc/modeling/noscrub/emc.nemspara/soft/modulefiles
-module load esmf/8.0.0bs48
+module load ESMF/8.0.0
 
