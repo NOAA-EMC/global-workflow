@@ -20,16 +20,11 @@ source ../modulefiles/gdas_gridbull.$target             > /dev/null 2>&1
 ### navybull
  cd $cwd
  source ./machine-setup.sh > /dev/null 2>&1
- if [ $USE_PREINST_LIBS = true ]; then
-   export MOD_PATH=/scratch3/NCEPDEV/nwprod/lib/modulefiles
-   source ../modulefiles/gdas_navybull.$target             > /dev/null 2>&1
+ export MOD_PATH=${cwd}/lib/modulefiles
+ if [ $target = wcoss_cray ]; then
+   source ../modulefiles/gdas_navybull.${target}_userlib > /dev/null 2>&1
  else
-   export MOD_PATH=${cwd}/lib/modulefiles
-   if [ $target = wcoss_cray ]; then
-     source ../modulefiles/gdas_navybull.${target}_userlib > /dev/null 2>&1
-   else
-     source ../modulefiles/gdas_navybull.$target           > /dev/null 2>&1
-   fi
+   source ../modulefiles/gdas_navybull.$target           > /dev/null 2>&1
  fi
  cd $cwd/navybull.fd
  make -f makefile.$target
@@ -41,16 +36,11 @@ source ../modulefiles/gdas_gridbull.$target             > /dev/null 2>&1
  source $cwd/ncl.setup                   > /dev/null 2>&1
  export NCARG_LIB=$NCARG_ROOT/lib        > /dev/null 2>&1
 
- if [ $USE_PREINST_LIBS = true ]; then
-   export MOD_PATH=/scratch3/NCEPDEV/nwprod/lib/modulefiles
-   source ../modulefiles/gdas_trpsfcmv.$target             > /dev/null 2>&1
+ export MOD_PATH=${cwd}/lib/modulefiles
+ if [ $target = wcoss_cray ]; then
+   source ../modulefiles/gdas_trpsfcmv.${target}_userlib > /dev/null 2>&1
  else
-   export MOD_PATH=${cwd}/lib/modulefiles
-   if [ $target = wcoss_cray ]; then
-     source ../modulefiles/gdas_trpsfcmv.${target}_userlib > /dev/null 2>&1
-   else
-     source ../modulefiles/gdas_trpsfcmv.$target           > /dev/null 2>&1
-   fi
+   source ../modulefiles/gdas_trpsfcmv.$target           > /dev/null 2>&1
  fi
  cd $cwd/gdas_trpsfcmv.fd
  make -f makefile.$target
