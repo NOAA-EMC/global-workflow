@@ -678,7 +678,7 @@
   if [ "$SENDDBN" = 'YES' ]
   then
        MODCOM=$(echo ${NET}_${COMPONENT} | tr '[a-z]' '[A-Z]')
-       $DBNROOT/bin/dbn_alert MODEL ${MODCOM}_GB2 $job $COMOUT/gridded/${WAV_MOD_TAG}.t${cyc}z.bull_tar
+       $DBNROOT/bin/dbn_alert MODEL ${MODCOM}_GB2 $job $COMOUT/station/${WAV_MOD_TAG}.t${cyc}z.bull_tar
        $DBNROOT/bin/dbn_alert MODEL ${MODCOM}_GB2 $job $COMOUT/station/${WAV_MOD_TAG}.t${cyc}z.station_tar
   fi
 #
