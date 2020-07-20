@@ -57,4 +57,4 @@ module use -a /gpfs/hps3/emc/nems/noscrub/emc.nemspara/soft/modulefiles
 module unload intel
 module load intel/16.3.210
 module load cray-netcdf
-module load esmf/8.0.0bs48
+module load ESMF/8.0.1

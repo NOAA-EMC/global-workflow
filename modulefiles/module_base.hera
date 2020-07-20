@@ -22,4 +22,4 @@ module load prod_util/1.1.0
 
 #Load from emc.nemspara
 module use -a /scratch1/NCEPDEV/nems/emc.nemspara/soft/modulefiles
-module load esmf/8.0.0bs48
+module load esmf/8.0.0

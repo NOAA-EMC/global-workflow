@@ -22,13 +22,6 @@ if [ ! -d "../exec" ]; then
   mkdir ../exec
 fi
 
-USE_PREINST_LIBS=${USE_PREINST_LIBS:-"true"}
-if [ $USE_PREINST_LIBS = true ]; then
-  export MOD_PATH=/scratch3/NCEPDEV/nwprod/lib/modulefiles
-else
-  export MOD_PATH=${cwd}/lib/modulefiles
-fi
-
 source ../modulefiles/modulefile.storm_reloc_v6.0.0.$target
 export FC=mpiifort
 

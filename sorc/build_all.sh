@@ -7,8 +7,6 @@ set -eu
 #                   Anything other than "true"  will use libraries locally.
 #------------------------------------
 
-export USE_PREINST_LIBS="true"
-
 #------------------------------------
 # END USER DEFINED STUFF
 #------------------------------------
