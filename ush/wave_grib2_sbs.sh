@@ -225,7 +225,7 @@
         [[ "$LOUD" = YES ]] && set -x
         MODCOM=$(echo ${NET}_${COMPONENT} | tr '[a-z]' '[A-Z]')
         $DBNROOT/bin/dbn_alert MODEL ${MODCOM}_GB2 $job $COMOUT/gridded/${outfile}
-        $DBNROOT/bin/dbn_alert MODEL ${MODCOM}_GB2_WIDX $job $COMOUT/gridded/${outfile}.idx
+        $DBNROOT/bin/dbn_alert MODEL ${MODCOM}_GB2_IDX $job $COMOUT/gridded/${outfile}.idx
       fi
   
    
