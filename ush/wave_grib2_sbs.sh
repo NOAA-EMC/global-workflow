@@ -223,8 +223,9 @@
         echo "   Alerting GRIB file as $COMOUT/gridded/${outfile}"
         echo "   Alerting GRIB index file as $COMOUT/gridded/${outfile}.idx"
         [[ "$LOUD" = YES ]] && set -x
-        $DBNROOT/bin/dbn_alert MODEL WAVE_GRIB_GB2 $job $COMOUT/gridded/${outfile}
-        $DBNROOT/bin/dbn_alert MODEL WAVE_GRIB_GB2_WIDX $job $COMOUT/gridded/${outfile}.idx
+        MODCOM=$(echo ${NET}_${COMPONENT} | tr '[a-z]' '[A-Z]')
+        $DBNROOT/bin/dbn_alert MODEL ${MODCOM}_GB2 $job $COMOUT/gridded/${outfile}
+        $DBNROOT/bin/dbn_alert MODEL ${MODCOM}_GB2_WIDX $job $COMOUT/gridded/${outfile}.idx
       fi
   
    
