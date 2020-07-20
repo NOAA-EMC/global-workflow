@@ -16,7 +16,8 @@
                        "Build_regrid_nemsio" \
                        "Build_gfs_util" \
                        "Build_prod_util" \
-                       "Build_grib_util")
+                       "Build_grib_util" \
+                       "Build_reg2grb2")
 
 #
 # function parse_cfg: read config file and retrieve the values
