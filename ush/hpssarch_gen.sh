@@ -48,7 +48,7 @@ if [ $type = "gfs" ]; then
   touch gfs_${format}b.txt
   touch gfs_restarta.txt
 
-  dirpath="gfs.${PDY}/${cyc}/$COMPONENTatmos"
+  dirpath="gfs.${PDY}/${cyc}/$COMPONENTatmos/"
   dirname="./${dirpath}"
 
   head="gfs.t${cyc}z."
@@ -150,7 +150,7 @@ if [ $type = "gfs" ]; then
     rm -rf gfswave.txt
     touch gfswave.txt
 
-    dirpath="gfs.${PDY}/${cyc}/$COMPONENTwave"
+    dirpath="gfs.${PDY}/${cyc}/${COMPONENTwave}/"
     dirname="./${dirpath}"
 
     head="gfswave.t${cyc}z."
@@ -178,7 +178,7 @@ if [ $type = "gdas" ]; then
   touch gdas_restarta.txt
   touch gdas_restartb.txt
 
-  dirpath="gdas.${PDY}/${cyc}/$COMPONENTatmos"
+  dirpath="gdas.${PDY}/${cyc}/${COMPONENTatmos}/"
   dirname="./${dirpath}"
   head="gdas.t${cyc}z."
 
@@ -275,7 +275,7 @@ if [ $type = "gdas" ]; then
     rm -rf gdaswave_restart.txt
     touch gdaswave_restart.txt
 
-    dirpath="gdas.${PDY}/${cyc}/$COMPONENTwave"
+    dirpath="gdas.${PDY}/${cyc}/${COMPONENTwave}/"
     dirname="./${dirpath}"
 
     head="gdaswave.t${cyc}z."
@@ -309,7 +309,7 @@ if [ $type = "enkfgdas" -o $type = "enkfgfs" ]; then
 ##NTARS2=$((NTARS/2))  # number of earc groups to include analysis/increments
   NTARS2=$NTARS
 
-  dirpath="enkf${CDUMP}.${PDY}/${cyc}/$COMPONENTatmos"
+  dirpath="enkf${CDUMP}.${PDY}/${cyc}/${COMPONENTatmos}/"
   dirname="./${dirpath}"
   head="${CDUMP}.t${cyc}z."
 
@@ -380,7 +380,7 @@ if [ $type = "enkfgdas" -o $type = "enkfgfs" ]; then
   while [ $m -le $NMEM_EARCGRP ]; do
     nm=$(((n-1)*NMEM_EARCGRP+m))
     mem=$(printf %03i $nm)
-    dirpath="enkf${CDUMP}.${PDY}/${cyc}/$COMPONENTatmos/mem${mem}/"
+    dirpath="enkf${CDUMP}.${PDY}/${cyc}/${COMPONENTatmos}/mem${mem}/"
     dirname="./${dirpath}"
     head="${CDUMP}.t${cyc}z."
 
