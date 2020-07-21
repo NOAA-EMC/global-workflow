@@ -414,6 +414,9 @@ if [ $type = "enkfgdas" -o $type = "enkfgfs" ]; then
 
       fi 
       echo "${dirname}${head}atmf00${FHR}${SUFFIX}       " >>enkf${CDUMP}_grp${n}.txt
+      if [ $FHR -eq 6 ]; then
+	  echo "${dirname}${head}sfcf00${FHR}${SUFFIX}       " >>enkf${CDUMP}_grp${n}.txt
+      fi
     done # loop over FHR
 
     if [[ lobsdiag_forenkf = ".false." ]] ; then
