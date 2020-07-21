@@ -154,8 +154,9 @@ EOF
        fi
        mv $GEMGRD $COMOUT/gempak/$GEMGRD
        if [ $SENDDBN = "YES" ] ; then
-           $DBNROOT/bin/dbn_alert MODEL ${DBN_ALERT_TYPE} $job \
-             $COMOUT/gempak/$GEMGRD
+           MODCOM=$(echo ${NET}_${COMPONENT} | tr '[a-z]' '[A-Z]')
+           $DBNROOT/bin/dbn_alert MODEL ${MODCOM}_GEMPAK $job \
+           $COMOUT/gempak/$GEMGRD
        else
          echo "##### DBN_ALERT_TYPE is: ${DBN_ALERT_TYPE} #####"
        fi
