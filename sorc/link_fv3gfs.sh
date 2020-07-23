@@ -8,31 +8,31 @@ machine=${2}
 
 if [ $# -lt 2 ]; then
     echo '***ERROR*** must specify two arguements: (1) RUN_ENVIR, (2) machine'
-    echo ' Syntax: link_fv3gfs.sh ( prod | dev ) ( wcoss_cray | wcoss_dell_p3 | hera )'
+    echo ' Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | hera )'
     exit 1
 fi
 
-if [ $RUN_ENVIR != dev -a $RUN_ENVIR != prod ]; then
-    echo 'Syntax: link_fv3gfs.sh ( prod | dev ) ( wcoss_cray | wcoss_dell_p3 | hera )'
+if [ $RUN_ENVIR != emc -a $RUN_ENVIR != nco ]; then
+    echo 'Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | hera )'
     exit 1
 fi
-if [ $machine != wcoss_cray -a $machine != wcoss_dell_p3 -a $machine != hera ]; then
-    echo 'Syntax: link_fv3gfs.sh ( prod | dev ) ( wcoss_cray | wcoss_dell_p3 | hera )'
+if [ $machine != cray -a $machine != dell -a $machine != hera ]; then
+    echo 'Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | hera )'
     exit 1
 fi
 
 LINK="ln -fs"
 SLINK="ln -fs"
-[[ $RUN_ENVIR = prod ]] && LINK="cp -rp"
+[[ $RUN_ENVIR = nco ]] && LINK="cp -rp"
 
 pwd=$(pwd -P)
 
 #------------------------------
 #--model fix fields
 #------------------------------
-if [ $machine == "wcoss_cray" ]; then
+if [ $machine == "cray" ]; then
     FIX_DIR="/gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix"
-elif [ $machine = "wcoss_dell_p3" ]; then
+elif [ $machine = "dell" ]; then
     FIX_DIR="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix"
 elif [ $machine = "hera" ]; then
     FIX_DIR="/scratch1/NCEPDEV/global/glopara/fix"
@@ -282,7 +282,7 @@ cd ${pwd}/../sorc   ||   exit 8
 #--choose static config.base for NCO installation 
 cd $pwd/../parm/config
 [[ -s config.base ]] && rm -f config.base 
-if [ $RUN_ENVIR = prod ] ; then
+if [ $RUN_ENVIR = nco ] ; then
  cp -p config.base.nco.static config.base
 else
  cp -p config.base.emc.dyn config.base
