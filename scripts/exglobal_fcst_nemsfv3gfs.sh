@@ -412,24 +412,18 @@ fi
 #-------------wavewave----------------------
 if [ $cplwav = ".true." ]; then
 
-  # Link WW3 files
   for file in $(ls $COMINwave/rundata/rmp_src_to_dst_conserv_*) ; do
     $NLN $file $DATA/
   done
   $NLN $COMINwave/rundata/ww3_multi.${CDUMPwave}${WAV_MEMBER}.${cycle}.inp $DATA/ww3_multi.inp
 
-  # Check for expected wave grids for this run
   array=($WAVECUR_FID $WAVEICE_FID $WAVEWND_FID $waveuoutpGRD $waveGRD $waveesmfGRD $wavesbsGRD $wavepostGRD $waveinterpGRD)
   grdALL=`printf "%s\n" "${array[@]}" | sort -u | tr '\n' ' '`
 
   for wavGRD in ${grdALL}; do
-    # Wave IC (restart) file must exist for warm start on this cycle, if not wave model starts from flat ocean
-    # For IAU needs to use sPDY for adding IAU backup of 3h
     $NLN $COMINwave/rundata/${CDUMPwave}.mod_def.$wavGRD $DATA/mod_def.$wavGRD
   done
 
-  # Wave IC (restart) interval assumes 4 daily cycles (restarts only written by gdas cycle) 
-  # WAVHCYC needs to be consistent with restart write interval in ww3_multi.inp or will FAIL
   export WAVHCYC=${WAVHCYC:-6}
   export WRDATE=`$NDATE -${WAVHCYC} $CDATE`
   export WRPDY=`echo $WRDATE | cut -c1-8`
