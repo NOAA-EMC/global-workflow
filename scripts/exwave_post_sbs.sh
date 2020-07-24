@@ -106,6 +106,15 @@
   [[ "$LOUD" = YES ]] && set -x
 
 
+# 0.c.5 Define CDATE_POST as a function of RERUN variable setting
+  if [ "${RERUN}" = "YES" ]; then
+    export CDATE_POST=${CDATE_RST}
+    export FHRUN=`$NHOUR ${CDATE_RST} ${CDATE}`
+  else # regular run
+    export CDATE_POST=${CDATE}
+    export FHRUN=0
+  fi
+
 # --------------------------------------------------------------------------- #
 # 1.  Get files that are used by most child scripts
 
@@ -252,6 +261,7 @@
         echo '*********************************************** '
         echo ' '
         [[ "$LOUD" = YES ]] && set -x
+        echo "$WAV_MOD_TAG post $date $cycle : GRINT template file missing."
         postmsg "$jlogfile" "NON-FATAL ERROR : NO TEMPLATE FOR GRINT INPUT FILE"
         exit_code=1
         DOGRI_WAV='NO'
@@ -339,7 +349,7 @@
 
   if [ "$DOSPC_WAV" = 'YES' ] || [ "$DOBLL_WAV" = 'YES' ]
   then
-    ymdh=`$NDATE -${WAVHINDH} $CDATE`
+    ymdh=`$NDATE -${WAVHINDH} $CDATE_POST`
     tstart="`echo $ymdh | cut -c1-8` `echo $ymdh | cut -c9-10`0000"
     dtspec=3600.            # default time step (not used here)
     sed -e "s/TIME/$tstart/g" \
@@ -350,9 +360,8 @@
                                ww3_outp_spec.inp.tmpl > ww3_outp.inp
    
     ln -s mod_def.$waveuoutpGRD mod_def.ww3
-    fhr=$FHMIN_WAV
-    YMD=$(echo $CDATE | cut -c1-8)
-    HMS="$(echo $CDATE | cut -c9-10)0000"
+    YMD=$(echo $CDATE_POST | cut -c1-8)
+    HMS="$(echo $CDATE_POST | cut -c9-10)0000"
     tloop=0
     tloopmax=600
     tsleep=10
@@ -385,7 +394,8 @@
       echo '*** FATAL ERROR : ERROR IN ww3_outp *** '
       echo '******************************************** '
       echo ' '
-      cat buoy_tmp.loc 
+      cat buoy_tmp.loc
+      echo "$WAV_MOD_TAG post $date $cycle : buoy log file failed to be created."
       echo $msg
       [[ "$LOUD" = YES ]] && set -x
       err=4;export err;${errchk}
@@ -445,13 +455,15 @@
       else
         set +x
         echo ' '
-        echo '**************************************** '
-        echo '*** ERROR : NO  IBP LOG FILE CREATED *** '
-        echo '**************************************** '
+        echo '********************************************** '
+        echo '*** FATAL ERROR : NO  IBP LOG FILE CREATED *** '
+        echo '********************************************** '
         echo ' '
         [[ "$LOUD" = YES ]] && set -x
+        echo "$WAV_MOD_TAG post $date $cycle : ibp  log file missing." 
         postmsg "$jlogfile" "FATAL ERROR : NO  IBP LOG FILE GENERATED FOR SPEC AND BULLETIN FILES"
         err=6;export err;${errchk}
+        exit $err
         DOIBP_WAV='NO'
       fi
     fi
@@ -489,7 +501,20 @@
 
 # 1.a.2 Loop over forecast time to generate post files 
 # When executed side-by-side, serial mode (cfp when run after the fcst step)
-  fhr=$FHMIN_WAV
+# Contingency for RERUN=YES
+  if [ "${RERUN}" = "YES" ]; then
+    fhr=$((FHRUN + FHMIN_WAV))
+    if [ $FHMAX_HF_WAV -gt 0 ] && [ $FHOUT_HF_WAV -gt 0 ] && [ $fhr -lt $FHMAX_HF_WAV ]; then
+      FHINCG=$FHOUT_HF_WAV
+    else
+      FHINCG=$FHOUT_WAV
+    fi
+# Get minimum value to start count from fhr+min(fhrp,fhrg)
+    fhrinc=`echo $(( $FHINCP_WAV < $FHINCG ? $FHINCP_WAV : $FHINCG ))`
+    fhr=$((fhr + fhrinc))
+  else
+    fhr=$FHMIN_WAV
+  fi
   fhrp=$fhr
   fhrg=$fhr
   iwaitmax=120 # Maximum loop cycles for waiting until wave component output file is ready (fails after max)
@@ -503,8 +528,10 @@
 
     fcmdnow=cmdfile.${FH3}
     fcmdigrd=icmdfile.${FH3}
-    fcmdpnt=pcmdfile.${FH3}
-    fcmdibp=ibpcmdfile.${FH3}
+    if [ "${DOPNT_WAV}" = "YES" ]; then
+      fcmdpnt=pcmdfile.${FH3}
+      fcmdibp=ibpcmdfile.${FH3}
+    fi
     rm -f ${fcmdnow} ${fcmdigrd} ${fcmdpnt} ${fcmdibp}
     touch ${fcmdnow} ${fcmdigrd} ${fcmdpnt} ${fcmdibp}
     mkdir output_$YMDHMS
@@ -521,6 +548,7 @@
 
     if [ $fhr = $fhrg ]
     then
+      iwait=0
       for wavGRD in ${waveGRD} ; do
         gfile=$COMIN/rundata/${WAV_MOD_TAG}.out_grd.${wavGRD}.${YMD}.${HMS}
         while [ ! -s ${gfile} ]; do sleep 10; done
@@ -530,6 +558,7 @@
           echo '*************************************************** '
           echo ' '
           [[ "$LOUD" = YES ]] && set -x
+          echo "$WAV_MOD_TAG post $grdID $date $cycle : field output missing." 
           postmsg "$jlogfile" "NON-FATAL ERROR : NO RAW FIELD OUTPUT FILE out_grd.$grdID"
           DOFLD_WAVE='NO'
           err=7; export err;${errchk}
@@ -686,9 +715,9 @@
     then
       set +x
       echo ' '
-      echo '********************************************'
-      echo '*** CMDFILE FAILED   ***'
-      echo '********************************************'
+      echo '*************************************'
+      echo '*** FATAL ERROR: CMDFILE FAILED   ***'
+      echo '*************************************'
       echo '     See Details Below '
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
@@ -704,6 +733,22 @@
     FHINCG=$(( DTFLD_WAV / 3600 ))
     if [ $fhr = $fhrg ]
     then
+# Check if grib2 file created
+      ENSTAG=""
+      if [ ${waveMEMB} ]; then ENSTAG=".${membTAG}${waveMEMB}" ; fi
+      gribchk=${COMPONENTwave}.${cycle}${ENSTAG}.${GRDNAME}.${GRDRES}.f${FH3}.grib2
+      if [ ! -s ${COMOUT}/gridded/${gribchk} ]; then
+        set +x
+        echo ' '
+        echo '********************************************'
+        echo "*** FATAL ERROR: $gribchk not generated "
+        echo '********************************************'
+        echo '     See Details Below '
+        echo ' '
+        [[ "$LOUD" = YES ]] && set -x
+        err=8; export err;${errchk}
+        exit $err
+      fi
       if [ $FHMAX_HF_WAV -gt 0 ] && [ $FHOUT_HF_WAV -gt 0 ] && [ $fhr -lt $FHMAX_HF_WAV ]; then
         FHINCG=$FHOUT_HF_WAV
       else
@@ -716,8 +761,16 @@
       fhrp=$((fhr+FHINCP))
     fi
     echo $fhrg $fhrp
-    fhr=$([ $fhrg -le $fhrp ] && echo "$fhrg" || echo "$fhrp") # reference fhr is the least between grid and point stride
+
+    if [ "${DOPNT_WAV}" = "YES" ]; then
+      fhr=$([ $fhrg -le $fhrp ] && echo "$fhrg" || echo "$fhrp") # reference fhr is the least between grid and point stride
+    else
+      fhr=$fhrg # no point output, loop with out_grd stride
+    fi
+
   done
+
+  if [ "${DOPNT_WAV}" = "YES" ]; then
 
 # --------------------------------------------------------------------------- #
 # 3. Compress point output data into tar files
@@ -762,6 +815,7 @@
       echo "$USHwave/wave_tar.sh $WAV_MOD_TAG cbull $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
     fi
   fi
+ fi
 
     wavenproc=`wc -l cmdtarfile | awk '{print $1}'`
     wavenproc=`echo $((${wavenproc}<${NTASKS}?${wavenproc}:${NTASKS}))`
@@ -791,9 +845,9 @@
     then
       set +x
       echo ' '
-      echo '********************************************'
-      echo '*** CMDFILE FAILED   ***'
-      echo '********************************************'
+      echo '*************************************'
+      echo '*** FATAL ERROR: CMDFILE FAILED   ***'
+      echo '*************************************'
       echo '     See Details Below '
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
@@ -815,6 +869,7 @@
 
   if [ "$exit_code" -ne '0' ]
   then
+    echo " FATAL ERROR: Problem in MWW3 POST"
     msg="ABNORMAL EXIT: Problem in MWW3 POST"
     postmsg "$jlogfile" "$msg"
     echo $msg
