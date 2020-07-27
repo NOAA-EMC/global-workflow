@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -x
+
 ###############################################################
 ## Abstract:
 ## Create FV3 initial conditions from GFS intitial conditions
@@ -20,7 +22,7 @@ status=$?
 
 ###############################################################
 # Source relevant configs
-configs="base fv3ic"
+configs="base fv3ic wave"
 for config in $configs; do
     . $EXPDIR/config.${config}
     status=$?
@@ -32,15 +34,6 @@ done
 . $BASE_ENV/${machine}.env fv3ic
 status=$?
 [[ $status -ne 0 ]] && exit $status
-
-
-#TODO: make the following configurable variables instead of hardcoded 
-CPL_ATMIC=CFSR
-CPL_OCNIC=CPC3Dvar
-CPL_ICEIC=CPC
-OCNRES=025
-ICERES=025
-ICERES=${ICERES:-"025"}
 
 # Create ICSDIR if needed
 [[ ! -d $ICSDIR/$CDATE ]] && mkdir -p $ICSDIR/$CDATE
@@ -63,11 +56,13 @@ cp -r $ORIGIN_ROOT/$CPL_OCNIC/$CDATE/ocn/$OCNRES/MOM*.nc  $ICSDIR/$CDATE/ocn/
 #Setup Ice IC files 
 cp $ORIGIN_ROOT/$CPL_ICEIC/$CDATE/ice/$ICERES/cice5_model_${ICERESdec}.res_$CDATE.nc $ICSDIR/$CDATE/ice/
 
-#TODO for wave coupling
-#if cplwav=true 
-  #Setup Wave IC files
-#fi 
-
+if [ $cplwav = ".true." ]; then
+  [[ ! -d $ICSDIR/$CDATE/wav ]] && mkdir -p $ICSDIR/$CDATE/wav
+  for grdID in $waveGRD
+  do
+    cp $ORIGIN_ROOT/$CPL_WAVIC/$CDATE/wav/$grdID/*restart.$grdID $ICSDIR/$CDATE/wav/
+  done
+fi
 
 export OUTDIR="$ICSDIR/$CDATE/$CDUMP/$CASE/INPUT"
 
@@ -80,4 +75,6 @@ $NLN $OUTDIR .
 
 ##############################################################
 # Exit cleanly
+
+set +x
 exit 0

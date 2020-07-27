@@ -2,4 +2,6 @@
 
 ice_defaults: &ice_defaults
   MOD: cice5
+  ICERES: "025"
+  CPL_ICEIC: CPC
   ICEPETS: 48

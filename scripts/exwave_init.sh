@@ -14,6 +14,7 @@
 # Script history log:
 # 2019-05-06  J-Henrique Alves First Version.
 # 2019-11-02  J-Henrique Alves Ported to global-workflow.
+# 2020-06-10  J-Henrique Alves Ported to R&D machine Hera
 #
 # $Id$
 #
@@ -125,12 +126,15 @@
         echo ' '
         echo $msg
         [[ "$LOUD" = YES ]] && set -x
-        echo "$COMPONENTwave init config $date $cycle : ww3_grid.inp.$grdID missing." >> $wavelog
         err=2;export err;${errchk}
       fi
 
       [[ ! -d $COMOUT/rundata ]] && mkdir -m 775 -p $COMOUT/rundata
-      echo "$USHwave/wave_grid_moddef.sh $grdID > $grdID.out 2>&1" >> cmdfile
+      if [ ${CFP_MP:-"NO"} = "YES" ]; then
+        echo "$nmoddef $USHwave/wave_grid_moddef.sh $grdID > $grdID.out 2>&1" >> cmdfile
+      else
+        echo "$USHwave/wave_grid_moddef.sh $grdID > $grdID.out 2>&1" >> cmdfile
+      fi
 
       nmoddef=`expr $nmoddef + 1`
 
@@ -163,7 +167,11 @@
   
     if [ "$NTASKS" -gt '1' ]
     then
-      ${wavempexec} ${wavenproc} ${wave_mpmd} cmdfile
+      if [ ${CFP_MP:-"NO"} = "YES" ]; then
+        ${wavempexec} -n ${wavenproc} ${wave_mpmd} cmdfile
+      else
+        ${wavempexec} ${wavenproc} ${wave_mpmd} cmdfile
+      fi
       exit=$?
     else
       ./cmdfile
@@ -208,7 +216,6 @@
       echo $msg
       sed "s/^/$grdID.out : /g"  $grdID.out
       [[ "$LOUD" = YES ]] && set -x
-      echo "$COMPONENTwave prep $date $cycle : mod_def.$grdID missing." >> $wavelog
       err=3;export err;${errchk}
     fi
   done
@@ -224,7 +231,5 @@
   echo ' '
   [[ "$LOUD" = YES ]] && set -x
 
-  msg="$job completed normally"
-  postmsg "$jlogfile" "$msg"
-
+  exit $err
 # End of MWW3 init config script ------------------------------------------- #

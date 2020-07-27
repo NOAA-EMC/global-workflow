@@ -9,7 +9,7 @@ date
 #############################
 # Source relevant config files
 #############################
-configs="base fcst"
+configs="base fcst wave"
 export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
 config_path=${EXPDIR:-$NWROOT/gfs.${gfs_ver}/parm/config}
 for config in $configs; do
@@ -62,6 +62,8 @@ if [ $RUN_ENVIR = "nco" ]; then
     export RSTDIR=${GESROOT:?}/$envir
 fi
 
+export COMPONENTwave=${COMPONENTwave:-${RUN}wave}
+export WAV_MOD_TAG=${COMPONENTwave}${waveMEMB}
 
 ##############################################
 # Begin JOB SPECIFIC work

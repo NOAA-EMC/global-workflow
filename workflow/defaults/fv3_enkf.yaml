@@ -2,7 +2,7 @@ fv3_enkf_defaults: &fv3_enkf_defaults
   CDUMP: gdas
   CASE: C192
   LEVS: 65
-  CCPP_SUITE: GFS
+  CCPP_SUITE: IPD
   FHCYC: 1
   FHCYC_GDAS: 1
   FHCYC_GFS: 24

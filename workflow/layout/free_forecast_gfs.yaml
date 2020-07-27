@@ -52,11 +52,29 @@ suite: !Cycle
     RUN: 'gfs'
     ecflow_def: "edit RUN 'gfs'"
 
+    prep: !Family
+      Disable: !calc doc.settings.cplwav=='.false.'
+
+      waveinit: !Task
+        <<: *exclusive_task_template
+        Trigger: !Depend up.up.ics.jgfs_emc_mom6ic
+        resources: !calc partition.resources.run_prep
+        J_JOB: rocoto/waveinit.sh
+
+      waveprep: !Task
+        <<: *exclusive_task_template
+        Trigger: !Depend waveinit
+        resources: !calc partition.resources.run_prep
+        J_JOB: rocoto/waveprep.sh
+
     forecast: !Family
       medcold: !Task
         <<: *exclusive_task_template
         Disable: !calc doc.settings.cplflx=='.false.'
-        Trigger: !Depend up.up.ics.jgfs_emc_mom6ic
+        Trigger: !FirstTrue
+           - when: !calc doc.settings.cplwav=='.true.'
+             do: !Depend up.prep
+           - otherwise: !Depend up.up.ics.jgfs_emc_mom6ic
         resources_remap: !JobRequest [ { <<: *remap_resource_template } ]
         resources: !calc partition.resources.run_coupled_medcold
         J_JOB: JGLOBAL_FORECAST_MEDCOLD
@@ -153,7 +171,7 @@ suite: !Cycle
         resources: !calc partition.resources.run_one_node_downstream
         Name: !expand p_{dimval.fhr:03d}
         FHR: !expand "{dimval.fhr:03d}"
-        OCN_FHRLST: !calc "tools.seq(dimval.fhr, dimval.fhr+doc.output_settings.OCN_INTERVAL, 6)"
+        OCN_FHRLST: !calc "tools.seq(dimval.fhr, dimval.fhr+doc.output_settings.OCN_INTERVAL-6, 6)"
         J_JOB: rocoto/ocnpost.sh
         Trigger: !Depend up.forecast
         ecflow_def: !expand "edit FHR '{FHR}'"
@@ -164,6 +182,28 @@ suite: !Cycle
           {rocoto_load_modules} ;
           export OCN_FHRLST="{OCN_FHRLST}"; $HOMEgfs/jobs/{J_JOB}
     #endfamily ocnpost
+
+    wavepost: !TaskArray
+      RUN: !calc up.RUN
+      Disable: !calc doc.settings.cplwav=='.false.'
+      Dimensions:
+        fhr: !calc doc.output_settings.ocnpost_hours
+      jgfs_wavepost_fhr_el: !TaskElement
+        <<: *exclusive_task_template
+        Foreach: [ fhr  ]
+        resources: !calc partition.resources.run_one_node_downstream
+        Name: !expand p_{dimval.fhr:03d}
+        FHR: !expand "{dimval.fhr:03d}"
+        OCN_FHRLST: !calc "tools.seq(dimval.fhr, dimval.fhr+doc.output_settings.OCN_INTERVAL, 6)"
+        J_JOB: rocoto/wavepostsbs.sh
+        Trigger: !Depend up.forecast
+        ecflow_def: !expand "edit FHR '{FHR}'"
+        ecflow_command: !expand |
+          export post_times=%FHR% FHRLST=%FHR% FHRGRP=%FHR%
+          $HOMEgfs/jobs/{J_JOB}
+        rocoto_command: !expand >-
+          {rocoto_load_modules} ;
+          export OCN_FHRLST="{OCN_FHRLST}"; $HOMEgfs/jobs/{J_JOB}
 
     jgfs_emc_vrfy: !Task
       <<: *exclusive_task_template

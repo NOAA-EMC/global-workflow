@@ -1,0 +1,12 @@
+# fv3_settings_template - sets the namelist values for the fv3
+# forecast.  See the physcs and model documentation for full
+# information on these variables.
+
+wave_settings_template: !Template &wave_settings_template
+  MOD:
+    type: string
+    allowed: [ ww3, swan ]
+    description: "model selection for wave"
+  CPL_WAVIC:
+    type: string
+    allowed: [ 'CFSR' ]

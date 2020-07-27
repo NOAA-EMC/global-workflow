@@ -2,4 +2,6 @@
 
 ocn_defaults: &ocn_defaults
   MOD: mom6
+  CPL_OCNIC: CPC3Dvar
+  OCNRES: "025"
   OCNPETS: 120
