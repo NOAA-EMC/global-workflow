@@ -19,7 +19,7 @@ case:
 
   output_settings:
     ATM_INTERVAL: 24
-    OCN_INTERVAL: 120
+    OCN_INTERVAL: 24
     FHOUT_GFS: 6
     FHMIN_GFS: 0
     FHMAX_GFS: 48
