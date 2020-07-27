@@ -44,10 +44,17 @@ default_settings: &default_settings
 
   cplflx: .false.
   cplice: !calc cplflx
+  cplwav: .false.
+  cplwav2atm: .false.
+  cplchem: .false.
   cpl: !FirstTrue
     - when: !calc doc.settings.cplflx==".true."
       do: .true.
     - when: !calc doc.settings.cplice==".true."
+      do: .true.
+    - when: !calc doc.settings.cplwav==".true."
+      do: .true.
+    - when: !calc doc.settings.cplchem==".true."
       do: .true.
     - otherwise: .false.
 

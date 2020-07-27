@@ -28,8 +28,8 @@ elif [[ -d /scratch1 ]] ; then
         source /apps/lmod/lmod/init/$__ms_shell
     fi
     module purge
-elif [[ -d /scratch3 ]] ; then
-    # We are on NOAA Theia
+elif [[ -d /work ]] ; then
+    # We are on MSU Orion
     if ( ! eval module help > /dev/null 2>&1 ) ; then
         source /apps/lmod/lmod/init/$__ms_shell
     fi
@@ -83,7 +83,7 @@ elif [[ -d /lustre && -d /ncrc ]] ; then
         __ms_source_etc_profile=no
     fi
     module purge
-# clean up after purge 
+    # clean up after purge 
     unset _LMFILES_
     unset _LMFILES_000
     unset _LMFILES_001

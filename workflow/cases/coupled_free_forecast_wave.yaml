@@ -7,12 +7,14 @@ case:
     SDATE: 2013-04-01t00:00:00
     EDATE: 2013-04-01t00:00:00
 
+    cplwav: .true.
+    cplwav2atm: .true.
     cplflx: .true.
     print_esmf: .true.
-    nems_temp: 'med_atm_ocn_ice'
-    nems_temp_cold: 'medcold_atm_ocn_ice'
+    nems_temp: 'med_atm_ocn_ice_wav'
+    nems_temp_cold: 'medcold_atm_ocn_ice_wav'
     mom6ic_prepared: .false.
-    KEEPDATA: NO
+    KEEPDATA: YES
 
   nsst:
     NST_MODEL: 0
@@ -49,6 +51,9 @@ case:
 
   ice_settings:
     ICEPETS: 48
+
+  wave_settings: 
+    WAVPETS: 40
 
   post:
     downset: 2

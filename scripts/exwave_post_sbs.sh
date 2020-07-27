@@ -108,12 +108,13 @@
 # --------------------------------------------------------------------------- #
 # 1.  Get files that are used by most child scripts
 
-  fieldOK='yes'
-  pointOK='yes'
-   gribOK='yes'
-  grintOK='yes'
-   specOK='yes'
-   bullOK='yes'
+  export DOIBP_WAV='NO'
+  export DOFLD_WAV='YES'
+  export DOPNT_WAV='YES'
+  export DOGRB_WAV='YES'
+  export DOGRI_WAV='YES'
+  export DOSPC_WAV='YES'
+  export DOBLL_WAV='YES'
 
   exit_code=0
 
@@ -144,9 +145,7 @@
 
       cp -f $COMIN/rundata/${COMPONENTwave}.mod_def.${grdID} mod_def.$grdID
       iloop=`expr $iloop + 1`
-
     fi
-
   done
 
   for grdID in $waveGRD $wavesbsGRD $wavepostGRD $waveinterpGRD $waveuoutpGRD
@@ -160,17 +159,15 @@
       echo '*************************************************** '
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
-      echo "$WAV_MOD_TAG post $grdID $date $cycle : mod_def file missing." >> $wavelog
       postmsg "$jlogfile" "FATAL ERROR : NO MOD_DEF file mod_def.$grdID"
-      fieldOK='no'
+      DOFLD_WAV='NO'
       err=2; export err;${errchk}
       exit $err
-      gribOK='no'
+      DOGRB_WAV='NO'
     else
       set +x
       echo "File mod_def.$grdID found. Syncing to all nodes ..."
       [[ "$LOUD" = YES ]] && set -x
-      $FSYNC mod_def.$grdID
     fi
   done
  
@@ -183,12 +180,9 @@
     cp -f $FIXwave/wave_${NET}.buoys buoy.loc.temp
 # Reverse grep to exclude IBP points
     sed -n '/^\$.*/!p' buoy.loc.temp | grep -v IBP > buoy.loc
-# Grep to include IBP points
-    sed -n '/^\$.*/!p' buoy.loc.temp | grep IBP > buoy.ibp
-    rm -f buoy.loc.temp
   fi
 
-  if [ -s buoy.loc ] && [ -s buoy.ibp ]
+  if [ -s buoy.loc ]
   then
     set +x
     echo "   buoy.loc and buoy.ibp copied and processed ($FIXwave/wave_${NET}.buoys)."
@@ -201,18 +195,41 @@
     echo '************************************* '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    echo "$AV_MOD_ID post $date $cycle : buoy location file missing." >> $wavelog
     postmsg "$jlogfile" "FATAL ERROR : NO BUOY LOCATION FILE"
     err=3; export err;${errchk}
     exit $err
-    pointOK='no'
-    specOK='no'
-    bullOK='no'
+    DOPNT_WAV='NO'
+    DOSPC_WAV='NO'
+    DOBLL_WAV='NO'
+  fi
+
+  if [ "$DOIBP_WAV" = 'YES' ]
+  then
+    sed -n '/^\$.*/!p' buoy.loc.temp | grep IBP > buoy.ibp
+    if [ -s buoy.ibp ]; then
+      set +x
+      echo "   buoy.loc and buoy.ibp copied and processed ($FIXwave/wave_${NET}.buoys)."
+      [[ "$LOUD" = YES ]] && set -x
+    else
+      set +x
+      echo ' '
+      echo '************************************* '
+      echo ' FATAL ERROR : NO BUOY LOCATION FILE  '
+      echo '************************************* '
+      echo ' '
+      [[ "$LOUD" = YES ]] && set -x
+      postmsg "$jlogfile" "FATAL ERROR : NO BUOY LOCATION FILE"
+      err=3; export err;${errchk}
+      exit $err
+      DOPNT_WAV='NO'
+      DOSPC_WAV='NO'
+      DOBLL_WAV='NO'
+    fi
   fi
 
 # 1.d Input template files
 
-  if [ "$grintOK" = 'yes' ]
+  if [ "$DOGRI_WAV" = 'YES' ]
   then
     for intGRD in $waveinterpGRD
     do
@@ -226,7 +243,6 @@
         set +x
         echo "   ${intGRD}_interp.inp.tmpl copied. Syncing to all nodes ..."
         [[ "$LOUD" = YES ]] && set -x
-        $FSYNC ${intGRD}_interp.inp.tmpl
       else
         set +x
         echo ' '
@@ -235,15 +251,14 @@
         echo '*********************************************** '
         echo ' '
         [[ "$LOUD" = YES ]] && set -x
-        echo "$WAV_MOD_TAG post $date $cycle : GRINT template file missing." >> $wavelog
         postmsg "$jlogfile" "NON-FATAL ERROR : NO TEMPLATE FOR GRINT INPUT FILE"
         exit_code=1
-        grintOK='no'
+        DOGRI_WAV='NO'
       fi
     done
   fi
 
-  if [ "$gribOK" = 'yes' ]
+  if [ "$DOGRB_WAV" = 'YES' ]
   then
     for grbGRD in $waveinterpGRD $wavepostGRD
     do
@@ -257,7 +272,6 @@
         set +x
         echo "   ww3_grib2.${grbGRD}.inp.tmpl copied. Syncing to all nodes ..."
         [[ "$LOUD" = YES ]] && set -x
-        $FSYNC ww3_grib2.inp.tmpl
       else
         set +x
         echo ' '
@@ -266,10 +280,9 @@
         echo '*********************************************** '
         echo ' '
         [[ "$LOUD" = YES ]] && set -x
-        echo "$WAV_MOD_TAG post $date $cycle : GRIB2 template file missing." >> $wavelog
         postmsg "$jlogfile" "NON-FATAL ERROR : NO TEMPLATE FOR GRIB2 INPUT FILE"
         exit_code=2
-        gribOK='no'
+        DOGRB_WAV='NO'
       fi
     done
   fi
@@ -284,7 +297,6 @@
     set +x
     echo "   ww3_outp_spec.inp.tmpl copied. Syncing to all grids ..."
     [[ "$LOUD" = YES ]] && set -x
-    $FSYNC ww3_outp_spec.inp.tmpl
   else
     set +x
     echo ' '
@@ -293,11 +305,10 @@
     echo '*********************************************** '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    echo "$WAV_MOD_TAG post $date $cycle : ww3_outp_spec.inp.tmpl file missing." >> $wavelog
     postmsg "$jlogfile" "NON-FATAL ERROR : NO TEMPLATE FOR SPEC INPUT FILE"
     exit_code=3
-    specOK='no'
-    bullOK='no'
+    DOSPC_WAV='NO'
+    DOBLL_WAV='NO'
   fi
 
   if [ -f $FIXwave/ww3_outp_bull.inp.tmpl ]
@@ -310,7 +321,6 @@
     set +x
     echo "   ww3_outp_bull.inp.tmpl copied. Syncing to all nodes ..."
     [[ "$LOUD" = YES ]] && set -x
-    $FSYNC ww3_outp_bull.inp.tmpl
   else
     set +x
     echo ' '
@@ -319,15 +329,14 @@
     echo '*************************************************** '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    echo "$WAV_MOD_TAG post $date $cycle : bulletin template file missing." >> $wavelog
     postmsg "$jlogfile" "NON-FATAL ERROR : NO TEMPLATE FOR BULLETIN INPUT FILE"
     exit_code=4
-    bullOK='no'
+    DOBLL_WAV='NO'
   fi
 
 # 1.e Getting buoy information for points
 
-  if [ "$specOK" = 'yes' ] || [ "$bullOK" = 'yes' ]
+  if [ "$DOSPC_WAV" = 'YES' ] || [ "$DOBLL_WAV" = 'YES' ]
   then
     ymdh=`$NDATE -${WAVHINDH} $CDATE`
     tstart="`echo $ymdh | cut -c1-8` `echo $ymdh | cut -c9-10`0000"
@@ -361,7 +370,7 @@
     rm -f buoy_tmp.loc buoy_log.ww3 ww3_oup.inp
     ln -fs ./out_pnt.${waveuoutpGRD} ./out_pnt.ww3
     ln -fs ./mod_def.${waveuoutpGRD} ./mod_def.ww3
-    $EXECcode/ww3_outp > buoy_lst.loc 2>&1 
+    $EXECwave/ww3_outp > buoy_lst.loc 2>&1 
     err=$?
 
     if [ "$err" != '0' ] && [ ! -f buoy_log.ww3 ]
@@ -376,12 +385,11 @@
       echo '******************************************** '
       echo ' '
       cat buoy_tmp.loc 
-      echo "$WAV_MOD_TAG post $date $cycle : buoy log file failed to be created." >> $wavelog
       echo $msg
       [[ "$LOUD" = YES ]] && set -x
       err=4;export err;${errchk}
-      specOK='no'
-      bullOK='no'
+      DOSPC_WAV='NO'
+      DOBLL_WAV='NO'
       exit $err
     fi
 
@@ -401,7 +409,6 @@
     then
       set +x
       echo 'Buoy log file created. Syncing to all nodes ...'
-      $FSYNC buoy_log.dat
       [[ "$LOUD" = YES ]] && set -x
     else
       set +x
@@ -411,49 +418,43 @@
       echo '**************************************** '
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
-      echo "$WAV_MOD_TAG post $date $cycle : buoy log file missing." >> $wavelog
       postmsg "$jlogfile" "FATAL ERROR : NO BUOY LOG FILE GENERATED FOR SPEC AND BULLETIN FILES"
       err=5;export err;${errchk}
-      specOK='no'
-      bullOK='no'
-      OspecOK='no'
-      ObullOK='no'
+      DOSPC_WAV='NO'
+      DOBLL_WAV='NO'
     fi
 
 # Create new buoy_log.ww3 including all IBP files
-    ibspecOK='yes'
-    cat buoy.ibp | awk '{print $3}' | sed 's/'\''//g' > ibp_tags
-    grep -F -f ibp_tags buoy_log.ww3 > buoy_log.tmp
-    rm -f buoy_log.ibp
-    mv buoy_log.tmp buoy_log.ibp
+    if [ "$DOIBP_WAV" = 'YES' ]; then
+      cat buoy.ibp | awk '{print $3}' | sed 's/'\''//g' > ibp_tags
+      grep -F -f ibp_tags buoy_log.ww3 > buoy_log.tmp
+      rm -f buoy_log.ibp
+      mv buoy_log.tmp buoy_log.ibp
 
-    grep -F -f ibp_tags buoy_lst.loc >  buoy_tmp1.loc
-    sed    '$d' buoy_tmp1.loc > buoy_tmp2.loc
-    ibpoints=`awk '{ print $1 }' buoy_tmp2.loc`
-    Nibp=`wc buoy_tmp2.loc | awk '{ print $1 }'`
-    rm -f buoy_tmp1.loc buoy_tmp2.loc
-
-    if [ -s buoy_log.ibp ]
-    then
-      set +x
-      echo 'IBP  log file created. Syncing to all nodes ...'
-      $FSYNC buoy_log.ibp
-      [[ "$LOUD" = YES ]] && set -x
-    else
-      set +x
-      echo ' '
-      echo '**************************************** '
-      echo '*** ERROR : NO  IBP LOG FILE CREATED *** '
-      echo '**************************************** '
-      echo ' '
-      [[ "$LOUD" = YES ]] && set -x
-      echo "$WAV_MOD_TAG post $date $cycle : ibp  log file missing." >> $wavelog
-      postmsg "$jlogfile" "FATAL ERROR : NO  IBP LOG FILE GENERATED FOR SPEC AND BULLETIN FILES"
-      err=6;export err;${errchk}
-      ibspecOK='no'
+      grep -F -f ibp_tags buoy_lst.loc >  buoy_tmp1.loc
+      sed    '$d' buoy_tmp1.loc > buoy_tmp2.loc
+      ibpoints=`awk '{ print $1 }' buoy_tmp2.loc`
+      Nibp=`wc buoy_tmp2.loc | awk '{ print $1 }'`
+      rm -f buoy_tmp1.loc buoy_tmp2.loc
+      if [ -s buoy_log.ibp ]
+      then
+        set +x
+        echo 'IBP  log file created. Syncing to all nodes ...'
+        [[ "$LOUD" = YES ]] && set -x
+      else
+        set +x
+        echo ' '
+        echo '**************************************** '
+        echo '*** ERROR : NO  IBP LOG FILE CREATED *** '
+        echo '**************************************** '
+        echo ' '
+        [[ "$LOUD" = YES ]] && set -x
+        postmsg "$jlogfile" "FATAL ERROR : NO  IBP LOG FILE GENERATED FOR SPEC AND BULLETIN FILES"
+        err=6;export err;${errchk}
+        DOIBP_WAV='NO'
+      fi
     fi
-
-  fi
+ fi
 
 # 1.f Data summary
 
@@ -463,11 +464,11 @@
   echo ' ' 
   echo '   Data summary : '
   echo '   ---------------------------------------------'
-  echo "      Sufficient data for GRID interpolation    : $grintOK"
-  echo "      Sufficient data for GRIB files            : $gribOK"
-  echo "      Sufficient data for spectral files        : $specOK ($Nb points)"
-  echo "      Sufficient data for bulletins             : $bullOK ($Nb points)"
-  echo "      Sufficient data for Input Boundary Points : $ibspecOK ($Nibp points)"
+  echo "      Sufficient data for GRID interpolation    : $DOGRI_WAV"
+  echo "      Sufficient data for GRIB files            : $DOGRB_WAV"
+  echo "      Sufficient data for spectral files        : $DOSPC_WAV ($Nb points)"
+  echo "      Sufficient data for bulletins             : $DOBLL_WAV ($Nb points)"
+  echo "      Sufficient data for Input Boundary Points : $DOIBP_WAV ($Nibp points)"
   echo ' '
   [[ "$LOUD" = YES ]] && set -x
 
@@ -505,10 +506,9 @@
     fcmdibp=ibpcmdfile.${FH3}
     rm -f ${fcmdnow} ${fcmdigrd} ${fcmdpnt} ${fcmdibp}
     touch ${fcmdnow} ${fcmdigrd} ${fcmdpnt} ${fcmdibp}
-#    echo "mkdir output_$YMDHMS" >> ${fcmdnow}
     mkdir output_$YMDHMS
-#    echo "cd output_$YMDHMS" >> ${fcmdnow}
     cd output_$YMDHMS
+
 # Create instances of directories for spec and gridded output
     export SPECDATA=${DATA}/output_$YMDHMS
     export BULLDATA=${DATA}/output_$YMDHMS
@@ -525,14 +525,13 @@
         echo " FATAL ERROR : NO RAW POINT OUTPUT FILE out_pnt.$waveuoutpGRD
         echo ' '
         [[ "$LOUD" = YES ]] && set -x
-        echo "$WAV_MOD_TAG post $waveuoutpGRD $date $cycle : point output missing." >> $wavelog
         postmsg "$jlogfile" "FATAL ERROR : NO RAW POINT OUTPUT FILE out_pnt.$waveuoutpGRD
         err=6; export err;${errchk}
         exit $err
       fi
       ln -fs ${pfile} ./out_pnt.${waveuoutpGRD} 
 
-      if [ "$specOK" = 'yes' ]
+      if [ "$DOSPC_WAV" = 'YES' ]
       then
         export dtspec=3600.
         for buoy in $buoys
@@ -541,7 +540,7 @@
         done
       fi
   
-      if [ "$ibspecOK" = 'yes' ] && [ "$DOIBP_WAV" = "YES" ]
+      if [ "$DOIBP_WAV" = 'YES' ]
       then
         export dtspec=3600.
         for buoy in $ibpoints
@@ -550,7 +549,7 @@
         done
       fi
 
-      if [ "$bullOK" = 'yes' ]
+      if [ "$DOBLL_WAV" = 'YES' ]
       then
         export dtspec=3600.
         for buoy in $buoys
@@ -572,16 +571,15 @@
           echo '*************************************************** '
           echo ' '
           [[ "$LOUD" = YES ]] && set -x
-          echo "$WAV_MOD_TAG post $grdID $date $cycle : field output missing." >> $wavelog
           postmsg "$jlogfile" "NON-FATAL ERROR : NO RAW FIELD OUTPUT FILE out_grd.$grdID"
-          fieldOK='no'
+          DOFLD_WAVE='NO'
           err=7; export err;${errchk}
           exit $err
         fi
         ln -s ${gfile} ./out_grd.${wavGRD} 
       done
 
-      if [ "$grintOK" = 'yes' ]
+      if [ "$DOGRI_WAV" = 'YES' ]
       then
         nigrd=1
         for grdID in $waveinterpGRD
@@ -591,7 +589,7 @@
             glo_30mxt) ymdh_int=`$NDATE -${WAVHINDH} $ymdh`; dt_int=3600.; n_int=9999 ;;
           esac
           echo "$USHwave/wave_grid_interp_sbs.sh $grdID $ymdh_int $dt_int $n_int > grint_$grdID.out 2>&1" >> ${fcmdigrd}.${nigrd}
-          if [ "$gribOK" = 'yes' ]
+          if [ "$DOGRB_WAV" = 'YES' ]
           then
           gribFL=\'`echo ${OUTPARS_WAV}`\'
             case $grdID in
@@ -606,7 +604,7 @@
         done
       fi
 
-      if [ "$gribOK" = 'yes' ]
+      if [ "$DOGRB_WAV" = 'YES' ]
       then
         for grdID in ${wavepostGRD} # First concatenate grib files for sbs grids
         do
@@ -615,6 +613,8 @@
               aoc_9km) GRDNAME='arctic' ; GRDRES=9km ; GRIDNR=255  ; MODNR=11   ;;
               ant_9km) GRDNAME='antarc' ; GRDRES=9km ; GRIDNR=255  ; MODNR=11   ;;
               glo_10m) GRDNAME='global' ; GRDRES=0p16 ; GRIDNR=255  ; MODNR=11   ;;
+              gnh_10m) GRDNAME='global' ; GRDRES=0p16 ; GRIDNR=255  ; MODNR=11   ;;
+              gsh_15m) GRDNAME='gsouth' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=11   ;;
               glo_15m) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=11   ;;
               ao_20m) GRDNAME='arctic' ; GRDRES=0p33 ; GRIDNR=255  ; MODNR=11   ;;
               so_20m) GRDNAME='antarc' ; GRDRES=0p33 ; GRIDNR=255  ; MODNR=11   ;;
@@ -631,7 +631,7 @@
 
     set +x
     echo ' '
-    echo "   Executing the copy command file at : `date`"
+    echo "   Executing the grib2_sbs scripts at : `date`"
     echo '   ------------------------------------'
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
@@ -700,9 +700,12 @@
 
 # 6.b Spectral data files
 
-  if [ "$specOK" = 'yes' ]
+  if [ "$DOIBP_WAV" = 'YES' ]
   then
     echo "$USHwave/wave_tar.sh $WAV_MOD_TAG ibp $Nibp > ${WAV_MOD_TAG}_ibp_tar.out 2>&1 "   >> cmdtarfile
+  fi
+  if [ "$DOSPC_WAV" = 'YES' ]
+  then
     echo "$USHwave/wave_tar.sh $WAV_MOD_TAG spec $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
     echo "$USHwave/wave_tar.sh $WAV_MOD_TAG bull $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
     echo "$USHwave/wave_tar.sh $WAV_MOD_TAG cbull $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
@@ -713,7 +716,7 @@
 
     set +x
     echo ' '
-    echo "   Executing the copy command file at : `date`"
+    echo "   Executing the wave_tar scripts at : `date`"
     echo '   ------------------------------------'
     echo ' '
     [[ "$LOUD" = YES ]] && set -x

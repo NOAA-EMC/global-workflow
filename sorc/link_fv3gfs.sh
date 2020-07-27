@@ -336,19 +336,18 @@ fi
 #--choose dynamic config.base for EMC installation 
 #--choose static config.base for NCO installation 
 cd $pwd/../parm/config
-[[ -s config.base ]] && rm -f config.base 
-if [ $RUN_ENVIR = nco ] ; then
- cp -p config.base.nco.static config.base
-else
- cp -p config.base.emc.dyn config.base
-fi
+#[[ -s config.base ]] && rm -f config.base 
+#if [ $RUN_ENVIR = nco ] ; then
+# cp -p config.base.nco.static config.base
+#else
+# cp -p config.base.emc.dyn config.base
+#fi
 #------------------------------
 if [ $model = "coupled" ] ; then
- rm -f config.base
- cp -p config.base.emc.dyn_coupled config.base
+ #rm -f config.base
+ #cp -p config.base.emc.dyn_coupled config.base
  cd $pwd/../fix
  # Add fixed files needed for coupled ufs-s2s-model
- $LINK $FIX_DIR/fix_ocnice   .
  $LINK $FIX_DIR/fix_cice5    .
  $LINK $FIX_DIR/fix_mom6     .
  $LINK $FIX_DIR/fix_fv3grid  .
