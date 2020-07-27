@@ -50,7 +50,6 @@ export RTMFIX=$CRTM_FIX
 
     # Base directories for various builds
     export BASE_GIT="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git"
-    export BASE_SVN="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git"
 
 
 # Toggle to turn on/off GFS downstream processing.
@@ -75,7 +74,7 @@ export HOMEfv3gfs="$HOMEgfs/sorc/fv3gfs.fd"
 export HOMEpost="$HOMEgfs"
 export HOMEobsproc_prep="$BASE_GIT/obsproc/obsproc_prep.iss-46886.fv3gfs"
 export HOMEobsproc_network="$BASE_GIT/obsproc/obsproc_global.iss-46886.fv3gfs"
-export BASE_VERIF="$BASE_SVN/verif/global/tags/vsdb"
+export BASE_VERIF="$BASE_GIT/verif/global/tags/vsdb"
 
 # CONVENIENT utility scripts and other environment parameters
 export NCP="/bin/cp -p"
