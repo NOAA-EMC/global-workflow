@@ -350,27 +350,27 @@
     do
       nip=${arrpar[$iparam-1]}
       case $nip in
-        HTSGW)   stypes='mean spread probab' ; snip=hs ;;
-        PERPW)   stypes='mean spread probab' ; snip=tp ;;
-        ICEC)    stypes='mean spread probab' ; snip=ice ;;
-        DIRPW)   stypes='mean spread probab' ; snip=pdir ;;
-        IMWF)    stypes='mean spread probab' ; snip=tm ;;
-        MWSP)    stypes='mean spread probab' ; snip=tz ;;
-        WVHGT)   stypes='mean spread probab' ; snip=wshs ;;
-        WVPER)   stypes='mean spread probab' ; snip=wstp ;;
+        HTSGW)   stypes='mean spread prob' ; snip=hs ;;
+        PERPW)   stypes='mean spread prob' ; snip=tp ;;
+        ICEC)    stypes='mean spread prob' ; snip=ice ;;
+        DIRPW)   stypes='mean spread prob' ; snip=pdir ;;
+        IMWF)    stypes='mean spread prob' ; snip=tm ;;
+        MWSP)    stypes='mean spread prob' ; snip=tz ;;
+        WVHGT)   stypes='mean spread prob' ; snip=wshs ;;
+        WVPER)   stypes='mean spread prob' ; snip=wstp ;;
         WVDIR)   stypes='mean spread' ; snip=wsdir ;;
         WWSDIR)  stypes='mean spread' ; snip=wwdir ;;
-        WIND)    stypes='mean spread probab' ; snip=wnd ;;
+        WIND)    stypes='mean spread prob' ; snip=wnd ;;
         WDIR)    stypes='mean spread' ; snip=wnddir ;;
-        SWELL1)  stypes='mean spread probab' ; snip=hswell1 ;;
-        SWELL2)  stypes='mean spread probab' ; snip=hswell2 ;;
-        SWELL3)  stypes='mean spread probab' ; snip=hswell3 ;;
+        SWELL1)  stypes='mean spread prob' ; snip=hswell1 ;;
+        SWELL2)  stypes='mean spread prob' ; snip=hswell2 ;;
+        SWELL3)  stypes='mean spread prob' ; snip=hswell3 ;;
         SWDIR1)  stypes='mean spread' ; snip=dswell1 ;;
         SWDIR2)  stypes='mean spread' ; snip=dswell2 ;;
         SWDIR3)  stypes='mean spread' ; snip=dswell3 ;;
-        SWPER1)  stypes='mean spread probab' ; snip=tswell1 ;;
-        SWPER2)  stypes='mean spread probab' ; snip=tswell2 ;;
-        SWPER3)  stypes='mean spread probab' ; snip=tswell3 ;;
+        SWPER1)  stypes='mean spread prob' ; snip=tswell1 ;;
+        SWPER2)  stypes='mean spread prob' ; snip=tswell2 ;;
+        SWPER3)  stypes='mean spread prob' ; snip=tswell3 ;;
         *)       nnip= ;;
       esac
 
@@ -453,7 +453,7 @@
   while [ "$fhour" -le "$FHMAX_WAV" ]
   do
     FH3=$(printf "%03d" $fhour)
-    for stype in mean spread probab
+    for stype in mean spread prob
     do
       fcopy=${WAV_MOD_TAG}.t${cyc}z.${stype}.f${FH3}.grib2
       if [ -s ${fcopy} ]
@@ -510,7 +510,7 @@
 
 # 3.c Create bundled grib2 file with all parameters
 
-  cat gefswave.t${cyc}z.mean.f???.grib2 | $WGRIB2 - -match "(HTSGW|PERPW|WIND)" -grib gribfile > gribfile.out 2>&1 
+  cat ${WAV_MOD_TAG}.t${cyc}z.mean.f???.grib2 | $WGRIB2 - -match "(HTSGW|PERPW|WIND)" -grib gribfile > gribfile.out 2>&1 
 
   if [ -s gribfile ]
   then
