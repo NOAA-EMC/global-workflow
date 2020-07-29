@@ -85,7 +85,8 @@ export STMPROOT=$RUNDIR/gfsmos.$PDY
 export DATAROOT=$STMPROOT
 ##export MODELROOT=/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/gfsmos
 export MODELROOT=/gpfs/dell2/mdl/mdlstat/noscrub/usr/Scott.Scallion/gfsv16
-export MODELDIR=$MODELROOT/gfsmos.v5.2.0.1
+#export MODELDIR=$MODELROOT/gfsmos.v5.2.0.1
+export MODELDIR=$MODELROOT/gfsmos.v5.2.0.1-restructure
 export CODEDIR=/gpfs/dell1/nco/ops/nwpara/mos_shared.v2.6.5
 #--------------------------------
 
