@@ -201,7 +201,7 @@
            fi
            ENSTAG=${ftype}${me}
            infile=${WAV_MOD_TAG}.${cycle}.${ENSTAG}.${GRDNAME}.${GRDRES}.f${FH3}.grib2
-           outfile=${nnip}_${me}.t${cyc}z.f${FH3}.grib2
+           outfile=${nnip}_${me}.t${cyc}z.${GRDNAME}.${GRDRES}.f${FH3}.grib2
 
            wgfileout=wgrib_${nnip}_${me}.out
            if [ "${npart}" = "0" ]
@@ -389,7 +389,7 @@
         do
 
           ingrib=${snip}_${stype}.${FH3}.grib2
-          outgrib=${WAV_MOD_TAG}.t${cyc}z.${stype}.f${FH3}.grib2 
+          outgrib=${WAV_MOD_TAG}.t${cyc}z.${stype}.${GRDNAME}.${GRDRES}.f${FH3}.grib2 
 
           echo "$WGRIB2  ./${par_dir}/${valtime}/${ingrib} -append -grib ./${outgrib} >> ${FH3}_${stype}.t${cyc}z.out 2>> ${FH3}_${stype}.t${cyc}z.err" >> cmdfile.${fhour}
 
@@ -455,7 +455,7 @@
     FH3=$(printf "%03d" $fhour)
     for stype in mean spread prob
     do
-      fcopy=${WAV_MOD_TAG}.t${cyc}z.${stype}.f${FH3}.grib2
+      fcopy=${WAV_MOD_TAG}.t${cyc}z.${stype}.${GRDNAME}.${GRDRES}.f${FH3}.grib2
       if [ -s ${fcopy} ]
       then
         set +x
@@ -510,7 +510,7 @@
 
 # 3.c Create bundled grib2 file with all parameters
 
-  cat ${WAV_MOD_TAG}.t${cyc}z.mean.f???.grib2 | $WGRIB2 - -match "(HTSGW|PERPW|WIND)" -grib gribfile > gribfile.out 2>&1 
+  cat ${WAV_MOD_TAG}.t${cyc}z.mean.${GRDNAME}.${GRDRES}.f???.grib2 | $WGRIB2 - -match "(HTSGW|PERPW|WIND)" -grib gribfile > gribfile.out 2>&1 
 
   if [ -s gribfile ]
   then
