@@ -42,11 +42,11 @@ fi
 echo gsi checkout ...
 if [[ ! -d gsi.fd ]] ; then
     rm -f ${LOG_DIR}/checkout-gsi.log
-    git clone --recursive gerrit:ProdGSI gsi.fd >> ${LOG_DIR}/checkout-gsi.fd.log 2>&1
+    git clone --recursive https://github.com/NOAA-EMC/GSI.git gsi.fd >> ${LOG_DIR}/checkout-gsi.fd.log 2>&1
     rc=$?
     ((err+=$rc))
     cd gsi.fd
-    git checkout gefs_v12.0.0
+    git checkout gefs_v12.0.1
     git submodule update
     cd ${topdir}
 else
@@ -73,7 +73,7 @@ if [[ ! -d gfs_post.fd ]] ; then
     rc=$?
     ((err+=$rc))
     cd gfs_post.fd
-    git checkout gefs_v12.0.0
+    git checkout gefs_v12.0.1
     cd ${topdir}
 else
     echo 'Skip.  Directory gfs_post.fd already exists.'
@@ -99,7 +99,7 @@ if [[ ! -d gsd_prep_chem.fd ]] ; then
     rc=$?
     ((err+=$rc))
     cd gsd_prep_chem.fd
-    git checkout gefs_v12.0.0-2
+    git checkout gefs_v12.0.1
     cd ${topdir}
 else
     echo 'Skip.  Directory gsd_prep_chem.fd already exists.'

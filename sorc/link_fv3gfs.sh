@@ -45,6 +45,10 @@ for dir in fix_am fix_chem fix_fv3 fix_orog fix_fv3_gmted2010 fix_verif; do
 done
 $LINK $FIX_DIR/* .
 
+if [ -d ${pwd}/ufs_utils.fd ]; then
+  cd ${pwd}/ufs_utils.fd/sorc
+  ./link_fixdirs.sh $RUN_ENVIR $machine
+fi
 
 #---------------------------------------
 #--add files from external repositories
