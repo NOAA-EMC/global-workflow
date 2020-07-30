@@ -80,7 +80,7 @@ while [ $fhcnt -le $FHMAX_WAV ]; do
   echo "fhr3: $fhr3"
   pgm="$NAGRIB for F$fhr $model"
 
-  GRIBIN=$COMIN/gridded/${model}.${cycle}.${ftype}.global.0p25.f${fhr3}.grib2
+  GRIBIN=$COMIN/gridded/gefs.wave.${cycle}.${ftype}.global.0p25.f${fhr3}.grib2
 
   echo "GRIBIN: $GRIBIN"
   GEMGRD=${model}${waveMEMB}_0p25_${PDY}${cyc}f${fhr3}
