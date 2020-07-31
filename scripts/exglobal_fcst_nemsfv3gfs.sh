@@ -281,7 +281,7 @@ if [ $warm_start = ".true." -o $RERUN = "YES" ]; then
       file2=$(echo $(basename $file))
       file2=$(echo $file2 | cut -d. -f3-) 
       testchar=$(echo $file2 | cut -c1-8) 
-      if [ $testchar = "gefswave" ]; then
+      if [ $testchar = "gefs.wave" ]; then
           file2=$(echo $file2 | cut -d. -f2-) 
           $NLN $file $DATA/$file2
       else
@@ -396,7 +396,7 @@ if [ $cplwav = ".true." ]; then
 
   if [ "${RERUN}" != "YES" ]; then
 # Next-cycle restart for GEFS
-    if [ "${COMPONENTwave}" = "gefswave" ]; then
+    if [ "${COMPONENTwave}" = "gefs.wave" ]; then
       mkdir -p $COMOUTWW3/restart
       RDATE=$($NDATE +$WAVHCYC $CDATE)
       rPDY=$(echo $RDATE | cut -c1-8)

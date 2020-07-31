@@ -46,6 +46,8 @@
 
 # Forecast range
   fhour=$3
+  grdname=$5
+  grdres=$6
 
   mkdir -p tmp_${para}
   cd tmp_${para}
@@ -123,7 +125,7 @@
 #
 # set $seton
 
-  rm -f mean.t${cyc}z.grib2 spread.t${cyc}z.grib2 probab.t${cyc}z.grib2
+  rm -f mean.t${cyc}z.grib2 spread.t${cyc}z.grib2 prob.t${cyc}z.grib2
 
   nmemb=${nmembn}
   nmembm1=`expr ${nmemb} - 1`
@@ -146,7 +148,8 @@
 #    while [ ${nme} -lt ${nmemb} ]
     for im in $membn
     do
-      infile=../../${para}_${im}.t${cyc}z.f${FH3}.grib2
+      infile=../../${para}_${im}.t${cyc}z.${grdname}.${grdres}.f${FH3}.grib2
+      echo "infile: ${infile}"
       if [ "${im}" = "00" ]
       then
 
@@ -184,7 +187,7 @@
 #
 # 1.c Execute wave_stat and create grib2 files
 #
-    rm -f mean_out spread_out probab_out test_out
+    rm -f mean_out spread_out prob_out test_out
 #
     $EXECwave/wave_stat  < wave_stat.inp >>$pgmout 2>&1
 #
@@ -217,17 +220,17 @@
    nscale=`echo ${ascale[@]} | wc -w`     
    if [ ${nscale} -gt 1 ]
    then
-     if [ ! -f probab_out ]
+     if [ ! -f prob_out ]
      then
-       msg="ABNORMAL EXIT: ERR probab_out not gerenerated for ${nnip} $FH3."
+       msg="ABNORMAL EXIT: ERR prob_out not gerenerated for ${nnip} $FH3."
        postmsg "$jlogfile" "$msg"
        set +x
-       echo "--- probab_out not gerenerated for ${nnip} $FH3 --- "
+       echo "--- prob_out not gerenerated for ${nnip} $FH3 --- "
        [[ "$LOUD" = YES ]] && set -x
-       echo "probab_out not gerenerated for ${nnip} $FH3" >> $wave_log
+       echo "prob_out not gerenerated for ${nnip} $FH3" >> $wave_log
        err=1;export err;err_chk
      else
-       mv -f probab_out  ${nnip}_probab.$FH3.grib2
+       mv -f prob_out  ${nnip}_prob.$FH3.grib2
      fi
    fi
 
