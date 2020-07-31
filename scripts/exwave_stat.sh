@@ -283,7 +283,7 @@
       else
 # Line for doing per parameter, per time stamp
         echo "nip ngrib fhour: ${nip}, ${ngrib}, ${fhour}"
-        echo "$USHwave/wave_ens_stat.sh ${nip} ${ngrib} ${fhour} 1> wave_ens_stats_${nip}_${fhour}.out 2>&1" >> cmdfile
+        echo "$USHwave/wave_ens_stat.sh ${nip} ${ngrib} ${fhour} 1 ${GRDNAME} ${GRDRES} > wave_ens_stats_${nip}_${fhour}.out 2>&1" >> cmdfile
 
       fi
 
