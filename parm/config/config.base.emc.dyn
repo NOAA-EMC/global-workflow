@@ -265,7 +265,7 @@ export binary_diag=".false."
 export DO_METP="YES"                  # Run MET+ jobs
 
 # Archiving options
-export HPSSARCH="YES"        # save data to HPSS archive
+export HPSSARCH="@HPSSARCH@"        # save data to HPSS archive
 export ARCH_CYC=00           # Archive data at this cycle for warm_start capability
 export ARCH_WARMICFREQ=4     # Archive frequency in days for warm_start capability
 export ARCH_FCSTICFREQ=1     # Archive frequency in days for gdas and gfs forecast-only capability
