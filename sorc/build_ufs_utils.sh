@@ -7,13 +7,9 @@ cwd=`pwd`
 if [ $target = wcoss_dell_p3 ]; then target=dell; fi
 if [ $target = wcoss_cray ]; then target=cray; fi
 
-cd ufs_utils.fd
+cd ufs_utils.fd/sorc
 
-./build_all.sh
-
-cd fix
-
-./link_fixdirs.sh emc $target
+./build_all_ufs_utils.sh
 
 exit
 

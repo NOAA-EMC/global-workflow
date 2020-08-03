@@ -33,8 +33,7 @@ if [[ ! -d gldas.fd ]] ; then
     rm -f ${topdir}/checkout-gldas.log
     git clone https://github.com/NOAA-EMC/GLDAS.git gldas.fd >> ${topdir}/checkout-gldas.fd.log 2>&1
     cd gldas.fd
-    #git checkout gldas_gfsv16_release.v1.3.0
-    git checkout feature/orion_port
+    git checkout gldas_gfsv16_release.v1.3.0
     cd ${topdir}
 else
     echo 'Skip.  Directory gldas.fd already exists.'
@@ -46,8 +45,7 @@ if [[ ! -d ufs_utils.fd ]] ; then
     #git clone https://github.com/NOAA-EMC/UFS_UTILS.git ufs_utils.fd >> ${topdir}/checkout-ufs_utils.fd.log 2>&1
     git clone --recursive https://github.com/GeorgeGayno-NOAA/UFS_UTILS.git ufs_utils.fd >> ${topdir}/checkout-ufs_utils.fd.log 2>&1
     cd ufs_utils.fd
-    #git checkout release/ops-gfsv16 
-    git checkout feature/orion
+    git checkout release/ops-gfsv16 
     cd ${topdir}
 else
     echo 'Skip.  Directory ufs_utils.fd already exists.'
