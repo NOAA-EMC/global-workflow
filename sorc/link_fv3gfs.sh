@@ -45,7 +45,7 @@ $LINK $FIX_DIR/* .
 
 if [ -d ${pwd}/ufs_utils.fd ]; then
   cd ${pwd}/ufs_utils.fd/sorc
-  ./link_fixdirs.sh $RUN_ENVIR $target
+  ./link_fixdirs.sh $RUN_ENVIR $machine
 fi
 
 #---------------------------------------
