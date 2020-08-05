@@ -315,7 +315,7 @@ def get_workflow(dict_configs, cdump='gdas'):
 
     # waveinit
     if do_wave in ['Y', 'YES'] and do_wave_cdump in ['GFS', 'BOTH']:
-        task = wfu.create_wf_task('%swaveinit', cdump=cdump, envar=envars)
+        task = wfu.create_wf_task('waveinit', cdump=cdump, envar=envars)
         tasks.append(task)
         tasks.append('\n')
 
