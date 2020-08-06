@@ -182,27 +182,13 @@ suite: !Cycle
           export OCN_FHRLST="{OCN_FHRLST}"; $HOMEgfs/jobs/{J_JOB}
     #endfamily ocnpost
 
-    wavepost: !TaskArray
+    wavepost: !Task
+      <<: *exclusive_task_template
       RUN: !calc up.RUN
       Disable: !calc doc.settings.cplwav=='.false.'
-      Dimensions:
-        fhr: !calc doc.output_settings.ocnpost_hours
-      jgfs_wavepost_fhr_el: !TaskElement
-        <<: *exclusive_task_template
-        Foreach: [ fhr  ]
-        resources: !calc partition.resources.run_one_node_downstream
-        Name: !expand p_{dimval.fhr:03d}
-        FHR: !expand "{dimval.fhr:03d}"
-        OCN_FHRLST: !calc "tools.seq(dimval.fhr, dimval.fhr+doc.output_settings.OCN_INTERVAL, 6)"
-        J_JOB: rocoto/wavepostsbs.sh
-        Trigger: !Depend up.forecast
-        ecflow_def: !expand "edit FHR '{FHR}'"
-        ecflow_command: !expand |
-          export post_times=%FHR% FHRLST=%FHR% FHRGRP=%FHR%
-          $HOMEgfs/jobs/{J_JOB}
-        rocoto_command: !expand >-
-          {rocoto_load_modules} ;
-          export OCN_FHRLST="{OCN_FHRLST}"; $HOMEgfs/jobs/{J_JOB}
+      resources: !calc partition.resources.run_one_node_downstream
+      J_JOB: rocoto/wavepostsbs.sh
+      Trigger: !Depend forecast
 
     jgfs_emc_vrfy: !Task
       <<: *exclusive_task_template
