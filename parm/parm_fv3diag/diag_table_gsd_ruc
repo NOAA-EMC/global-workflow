@@ -163,7 +163,7 @@
 "gfs_phys",  "v-gwd_ave",     "v-gwd_ave",   "fv3_history2d",         "all",  .false.,  "none",  2
 "gfs_phys",  "dusfc",         "uflx_ave",    "fv3_history2d",         "all",  .false.,  "none",  2
 "gfs_phys",  "dvsfc",         "vflx_ave",    "fv3_history2d",         "all",  .false.,  "none",  2
-"gfs_phys",  "refl_10cm",     "refl10cm",    "fv3_history2d",         "all",  .false.,  "none",  2
+"gfs_dyn",  "refl_10cm",     "refl10cm",    "fv3_history",         "all",  .false.,  "none",  2
 
 "gfs_phys",    "psurf",       "pressfc",   "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_phys",    "u10m",        "ugrd10m",   "fv3_history2d",  "all",  .false.,  "none",  2
@@ -286,8 +286,8 @@
 "gfs_phys",    "nddsf_ave",    "nddsf_ave",     "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_phys",    "trans_ave",    "trans_ave",     "fv3_history2d",  "all",  .false.,  "none",  2
 # Aerosols (CCN, IN) from Thompson microphysics
-"gfs_phys",    "nwfa",         "nwfa",          "fv3_history",    "all",  .false.,  "none",  2
-"gfs_phys",    "nifa",         "nifa",          "fv3_history",    "all",  .false.,  "none",  2
+"gfs_dyn",    "nwfa",         "nwfa",          "fv3_history",    "all",  .false.,  "none",  2
+"gfs_dyn",    "nifa",         "nifa",          "fv3_history",    "all",  .false.,  "none",  2
 "gfs_sfc",     "nwfa2d",       "nwfa2d",        "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_sfc",     "nifa2d",       "nifa2d",        "fv3_history2d",  "all",  .false.,  "none",  2
 # Cloud effective radii from Thompson and WSM6 microphysics
@@ -295,10 +295,10 @@
 "gfs_phys",    "cieffr",       "cieffr",        "fv3_history",    "all",  .false.,  "none",  2
 "gfs_phys",    "cseffr",       "cseffr",        "fv3_history",    "all",  .false.,  "none",  2
 # Prognostic/diagnostic variables from MYNN
-"gfs_phys",    "QC_BL",        "qc_bl",         "fv3_history",    "all",  .false.,  "none",  2
-"gfs_phys",    "CLDFRA_BL",    "cldfra_bl",     "fv3_history",    "all",  .false.,  "none",  2
-"gfs_phys",    "EL_PBL",       "el_pbl",        "fv3_history",    "all",  .false.,  "none",  2
-"gfs_phys",    "QKE",          "qke",           "fv3_history",    "all",  .false.,  "none",  2
+"gfs_dyn",    "QC_BL",        "qc_bl",         "fv3_history",    "all",  .false.,  "none",  2
+"gfs_dyn",    "CLDFRA_BL",    "cldfra_bl",     "fv3_history",    "all",  .false.,  "none",  2
+"gfs_dyn",    "EL_PBL",       "el_pbl",        "fv3_history",    "all",  .false.,  "none",  2
+"gfs_dyn",    "QKE",          "qke",           "fv3_history",    "all",  .false.,  "none",  2
 "gfs_sfc",     "maxmf",        "maxmf",         "fv3_history2d",  "all",  .false.,  "none",  2
 #"gfs_sfc",     "nupdraft",     "nupdrafts",     "fv3_history2d",  "all",  .false.,  "none",  2
 #"gfs_sfc",     "ktop_shallow", "ktop_shallow",  "fv3_history2d",  "all",  .false.,  "none",  2
