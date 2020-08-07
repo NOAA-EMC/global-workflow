@@ -99,7 +99,7 @@ if [[ ! -d gsd_prep_chem.fd ]] ; then
     rc=$?
     ((err+=$rc))
     cd gsd_prep_chem.fd
-    git checkout gefs_v12.0.1-2
+    git checkout gefs_v12.0.1-3
     cd ${topdir}
 else
     echo 'Skip.  Directory gsd_prep_chem.fd already exists.'
