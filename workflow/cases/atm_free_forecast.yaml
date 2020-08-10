@@ -9,8 +9,8 @@ case:
 
     cplflx: .false.
     print_esmf: .true.
-    nems_temp: 'med_atm_ocn_ice'
-    nems_temp_cold: 'medcold_atm_ocn_ice'
+    nems_temp: 'atm'
+    nems_temp_cold: 'atm'
     mom6ic_prepared: .false.
     KEEPDATA: NO
     ic_source: cfsr
@@ -19,7 +19,6 @@ case:
     NST_MODEL: 0
 
   output_settings:
-    OCN_INTERVAL: 24
     FHOUT_GFS: 6
     FHMIN_GFS: 0
     FHMAX_GFS: 48
@@ -44,9 +43,6 @@ case:
        WGRP_NTASKS: 24
        WRTIOBUF: "32M"
     cdmbgwd: "1.0,1.2"
-
-  ocn_settings:
-    OCNPETS: 120
 
   ice_settings:
     ICEPETS: 48
