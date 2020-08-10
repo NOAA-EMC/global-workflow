@@ -7,7 +7,7 @@ case:
     SDATE: 2013-04-01t00:00:00
     EDATE: 2013-04-01t00:00:00
 
-    cplflx: .true.
+    cplflx: .false.
     print_esmf: .true.
     nems_temp: 'med_atm_ocn_ice'
     nems_temp_cold: 'medcold_atm_ocn_ice'
