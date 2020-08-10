@@ -58,7 +58,8 @@ default_settings: &default_settings
       do: .true.
     - otherwise: .false.
 
-  ic_source: coupled_ic  # choices: coupled_ic, fv3_ic; default: coupled_ic
+  ic_source: coupled_ic  # choices: coupled_ic, fv3_ic; default: coupled_ic. This option controls which
+                         # script will be used for IC preparation: coupled_ic.sh or fv3_ic.sh
 
   mom6ic_prepared: .false. # If set True, User need to manually copy mom6ic files into ROTIDR
 
