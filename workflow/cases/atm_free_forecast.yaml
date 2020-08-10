@@ -13,7 +13,7 @@ case:
     nems_temp_cold: 'atm'
     mom6ic_prepared: .false.
     KEEPDATA: NO
-    ic_source: cfsr
+    ic_source: coupled_ic
 
   nsst:
     NST_MODEL: 0

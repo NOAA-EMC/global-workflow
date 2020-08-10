@@ -58,7 +58,7 @@ default_settings: &default_settings
       do: .true.
     - otherwise: .false.
 
-  ic_source: cfsr  # choices: cfsr, gfs; default: cfsr
+  ic_source: coupled_ic  # choices: coupled_ic, fv3_ic; default: coupled_ic
 
   mom6ic_prepared: .false. # If set True, User need to manually copy mom6ic files into ROTIDR
 
