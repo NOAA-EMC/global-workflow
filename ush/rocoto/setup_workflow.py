@@ -670,7 +670,7 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
     # awips
     if cdump in ['gfs'] and do_awips in ['Y', 'YES']:
         deps = []
-        data = '&ROTDIR;/%s.@Y@m@d/@H/atmos/%s.t@Hz.sfluxgrb#dep#.grib2.idx' % (cdump, cdump)
+        data = '&ROTDIR;/%s.@Y@m@d/@H/atmos/%s.t@Hz.pgrb2b.0p25.#dep#.idx' % (cdump, cdump)
         dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'metatask', 'name': '%spost' % cdump}
