@@ -78,5 +78,66 @@ mv tmp1 nems.configure
 
 echo "$(cat nems.configure)"
 
+if [ $cplflx = .true. ]; then
+
+#Create other CMEPS mediator related files 
+cat > pio_in << EOF
+&papi_inparm
+  papi_ctr1_str = "PAPI_FP_OPS"
+  papi_ctr2_str = "PAPI_NO_CTR"
+  papi_ctr3_str = "PAPI_NO_CTR"
+  papi_ctr4_str = "PAPI_NO_CTR"
+/
+&pio_default_inparm
+  pio_async_interface = .false.
+  pio_blocksize = -1
+  pio_buffer_size_limit = -1
+  pio_debug_level = 0
+  pio_rearr_comm_enable_hs_comp2io = .true.
+  pio_rearr_comm_enable_hs_io2comp = .false.
+  pio_rearr_comm_enable_isend_comp2io = .false.
+  pio_rearr_comm_enable_isend_io2comp = .true.
+  pio_rearr_comm_fcd = "2denable"
+  pio_rearr_comm_max_pend_req_comp2io = 0
+  pio_rearr_comm_max_pend_req_io2comp = 64
+  pio_rearr_comm_type = "p2p"
+/
+&prof_inparm
+  profile_add_detail = .false.
+  profile_barrier = .false.
+  profile_depth_limit = 4
+  profile_detail_limit = 2
+  profile_disable = .false.
+  profile_global_stats = .true.
+  profile_outpe_num = 1
+  profile_outpe_stride = 0
+  profile_ovhd_measurement = .false.
+  profile_papi_enable = .false.
+  profile_single_file = .false.
+  profile_timer = 4
+/
+EOF
+
+echo "$(cat pio_in)"
+
+cat > med_modelio.nml << EOF
+&pio_inparm
+  pio_netcdf_format = "64bit_offset"
+  pio_numiotasks = -99
+  pio_rearranger = 1
+  pio_root = 1
+  pio_stride = 36
+  pio_typename = "netcdf"
+/
+EOF
+
+echo "$(cat med_modelio.nml)"
+
+cp $HOMEgfs/sorc/CMEPS/mediator/fd_nems.yaml fd_nems.yaml
+echo "$(cat fd_nems.yaml)"
+
+fi 
+
 echo "SUB ${FUNCNAME[0]}: Nems configured for $confignamevarfornems"
+
 }
