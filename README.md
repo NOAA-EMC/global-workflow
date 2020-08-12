@@ -65,7 +65,7 @@ or
 For Orion: 
 First make sure you have python loaded: 
 module load contrib
-module load rocoto
+module load rocoto #Make sure to use 1.3.2 
 module load intelpython3
 and then replace ORION with HERA in the commands above. 
 
