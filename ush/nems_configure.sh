@@ -44,36 +44,10 @@ ocn_petlist_bounds=${ocn_petlist_bounds:-"$ATMPETS $(( $ATMPETS+$OCNPETS-1 ))"} 
 ice_petlist_bounds=${ice_petlist_bounds:-"$(( $ATMPETS+$OCNPETS )) $(( $ATMPETS+$OCNPETS+$ICEPETS-1 ))"}  #48
 wav_petlist_bounds=${wav_petlist_bounds:-"$(( $ATMPETS+$OCNPETS+$ICEPETS )) $(( $ATMPETS+$OCNPETS+$ICEPETS+$WAVPETS-1 ))"}  #48
 
-#if [ $CASE = "C96" ] ; then
-#  med_petlist_bounds=${med_petlist_bounds:-'0 149'}
-#  atm_petlist_bounds=${atm_petlist_bounds:-'0 149'}
-#  ocn_petlist_bounds=${ocn_petlist_bounds:-'150 389'}
-#  ice_petlist_bounds=${ice_petlist_bounds:-'390 509'}
-#elif [ $CASE = "C384" ] ; then
-  # This is 4x8 layout * 6 - worked
-  #MED_petlist_bounds=${MED_petlist_bounds:-'0 263'}
-  #ATM_petlist_bounds=${ATM_petlist_bounds:-'0 263'}    #192+wrtgrps(72)
-  #OCN_petlist_bounds=${OCN_petlist_bounds:-'264 503'}  #240
-  #ICE_petlist_bounds=${ICE_petlist_bounds:-'504 623'}  #120
-
-#  med_petlist_bounds=${med_petlist_bounds:-'0 311'}
-#  atm_petlist_bounds=${atm_petlist_bounds:-'0 311'}    #6*8*6+wrtgrps(24)
-#  ocn_petlist_bounds=${ocn_petlist_bounds:-'312 431'}  #120
-#  ice_petlist_bounds=${ice_petlist_bounds:-'432 479'}  #48
-
-  # This is 6x12 layout * 6 = 432 + 72 # didn't work
-  #MED_petlist_bounds=${MED_petlist_bounds:-'0 503'}
-  #ATM_petlist_bounds=${ATM_petlist_bounds:-'0 503'}    #432+wrtgrps(72)
-  #OCN_petlist_bounds=${OCN_petlist_bounds:-'504 743'}  #240
-  #ICE_petlist_bounds=${ICE_petlist_bounds:-'744 863'}  #120
-#else
-#  echo "$CASE not supported for coupled yet"
-  # $CASE can only run standalone model
-#fi
 
 # Copy the selected template into run directory
 cp $SCRIPTDIR/nems.configure.$confignamevarfornems.IN tmp1
-sed -i -e "s;@\[med_model\];nems;g" tmp1
+sed -i -e "s;@\[med_model\];cmeps;g" tmp1
 sed -i -e "s;@\[atm_model\];$ATM_model;g" tmp1
 sed -i -e "s;@\[med_petlist_bounds\];$med_petlist_bounds;g" tmp1
 sed -i -e "s;@\[atm_petlist_bounds\];$atm_petlist_bounds;g" tmp1
@@ -86,6 +60,7 @@ if [ $cplflx = .true. ]; then
 	sed -i -e "s;@\[restart_interval\];$restart_interval;g" tmp1
 	sed -i -e "s;@\[CPL_SLOW\];$CPL_SLOW;g" tmp1
 	sed -i -e "s;@\[CPL_FAST\];$CPL_FAST;g" tmp1
+        sed -i -e "s;@\[FV3_RESTART_INTERVAL\];$restart_interval;g" tmp1
 fi
 if [ $cplwav = .true. ]; then
 	sed -i -e "s;@\[wav_model\];ww3;g" tmp1
