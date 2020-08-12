@@ -100,5 +100,7 @@ if [ $cplchem = .true. ]; then
 fi
 mv tmp1 nems.configure
 
+echo "$(cat nems.configure)"
+
 echo "SUB ${FUNCNAME[0]}: Nems configured for $confignamevarfornems"
 }
