@@ -32,17 +32,18 @@ ICE_model=${ICE_model:-'cice'}
 WAV_model=${WAV_model:-'ww3'}
 
 ATMPETS=${ATMPETS:-8}
+MEDPETS=${MEDPETS:-8} 
 OCNPETS=${OCNPETS:-8}
 ICEPETS=${ICEPETS:-8}
 WAVPETS=${WAVPETS:-8}
 
 rm -f $DATA/nems.configure
 
-med_petlist_bounds=${med_petlist_bounds:-"0 $(( $ATMPETS-1 ))"}
-atm_petlist_bounds=${atm_petlist_bounds:-"0 $(( $ATMPETS-1 ))"}    #6*8*6+wrtgrps(24)
-ocn_petlist_bounds=${ocn_petlist_bounds:-"$ATMPETS $(( $ATMPETS+$OCNPETS-1 ))"}  #120
-ice_petlist_bounds=${ice_petlist_bounds:-"$(( $ATMPETS+$OCNPETS )) $(( $ATMPETS+$OCNPETS+$ICEPETS-1 ))"}  #48
-wav_petlist_bounds=${wav_petlist_bounds:-"$(( $ATMPETS+$OCNPETS+$ICEPETS )) $(( $ATMPETS+$OCNPETS+$ICEPETS+$WAVPETS-1 ))"}  #48
+med_petlist_bounds=${med_petlist_bounds:-"0 $(( $MEDPETS-1 ))"}
+atm_petlist_bounds=${atm_petlist_bounds:-"0 $(( $ATMPETS-1 ))"} 
+ocn_petlist_bounds=${ocn_petlist_bounds:-"$ATMPETS $(( $ATMPETS+$OCNPETS-1 ))"}  
+ice_petlist_bounds=${ice_petlist_bounds:-"$(( $ATMPETS+$OCNPETS )) $(( $ATMPETS+$OCNPETS+$ICEPETS-1 ))"} 
+wav_petlist_bounds=${wav_petlist_bounds:-"$(( $ATMPETS+$OCNPETS+$ICEPETS )) $(( $ATMPETS+$OCNPETS+$ICEPETS+$WAVPETS-1 ))"} 
 
 
 # Copy the selected template into run directory
