@@ -85,7 +85,7 @@ cat > ice_in <<eof
 &thermo_nml
     kitd              = 1
   , ktherm            = 1
-  , conduct           = 'bubbly'
+  , conduct           = 'MU71'
   , a_rapid_mode      =  0.5e-3
   , Rac_rapid_mode    =    10.0
   , aspect_rapid_mode =     1.0
