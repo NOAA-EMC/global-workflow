@@ -144,6 +144,9 @@ elif [ $machine = VENUS -o $machine = MARS -o $machine = WCOSS_DELL_P3 ] ; then 
 elif [ $machine = HERA ]; then # For HERA
   machine=hera
   ${USHens_tracker}/extrkr_gfs.sh ${loopnum} ${cmodel} ${CDATE} ${pert} ${DATA}
+elif [ $machine = ORION ]; then # For ORION
+  machine=orion
+  ${USHens_tracker}/extrkr_gfs.sh ${loopnum} ${cmodel} ${CDATE} ${pert} ${DATA}
 fi
 export err=$?; err_chk
 
