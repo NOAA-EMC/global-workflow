@@ -157,11 +157,11 @@ if [ "$VRFYTRAK" = "YES" ]; then
         export FHMAX_CYCLONE=$(( FHMAX_GFS<240 ? FHMAX_GFS : 240 ))
     fi
     if [ $machine = "HERA" ]; then
-       export COMROOTp1="/scratch1/NCEPDEV/global/glopara/com"
-       export COMINsyn=${COMINsyn:-${COMROOTp1}/gfs/prod/syndat}
-    else
-       export COMINsyn=${COMINsyn:-${COMROOT}/gfs/prod/syndat}
+       export COMROOT="/scratch1/NCEPDEV/global/glopara/com"
+    elif [ $machine = "ORION" ]; then
+       export COMROOT="/work/noaa/global/glopara/com"
     fi
+    export COMINsyn=${COMINsyn:-${COMROOT}/gfs/prod/syndat}
 fi
 
 
