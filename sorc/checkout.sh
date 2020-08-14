@@ -56,11 +56,12 @@ fi
 echo ufs_utils checkout ...
 if [[ ! -d ufs_utils.fd ]] ; then
     rm -f ${topdir}/checkout-ufs_utils.log
-    git clone https://github.com/NOAA-EMC/UFS_UTILS.git ufs_utils.fd >> ${LOG_DIR}/checkout-ufs_utils.fd.log 2>&1
+    git clone --recursive https://github.com/NOAA-EMC/UFS_UTILS.git ufs_utils.fd >> ${LOG_DIR}/checkout-ufs_utils.fd.log 2>&1
     rc=$?
     ((err+=$rc))
     cd ufs_utils.fd
-    git checkout ops-gefsv12.0.1
+    # git checkout ops-gefsv12.0.1
+    git checkout 7371eda
     cd ${topdir}
 else
     echo 'Skip.  Directory ufs_utils.fd already exists.'
@@ -115,7 +116,7 @@ if [[ ! -d verif-global.fd ]] ; then
     git checkout verif_global_v1.2.2
     cd ${topdir}
 else
-    echo 'Skip. Directory verif-global.fd already exist.'
+    echo 'Skip. Directory verif-global.fd already exists.'
 fi
 
 #### Exception handling

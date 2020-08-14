@@ -45,11 +45,6 @@ for dir in fix_am fix_chem fix_fv3 fix_orog fix_fv3_gmted2010 fix_verif; do
 done
 $LINK $FIX_DIR/* .
 
-if [ -d ${pwd}/ufs_utils.fd ]; then
-  cd ${pwd}/ufs_utils.fd/sorc
-  ./link_fixdirs.sh $RUN_ENVIR $machine
-fi
-
 #---------------------------------------
 #--add files from external repositories
 #---------------------------------------
@@ -71,7 +66,7 @@ cd ${pwd}/../ush                ||exit 8
     done
     for file in emcsfc_ice_blend.sh  fv3gfs_driver_grid.sh  fv3gfs_make_orog.sh  global_cycle_driver.sh \
         emcsfc_snow.sh  fv3gfs_filter_topo.sh  global_chgres_driver.sh  global_cycle.sh \
-        fv3gfs_chgres.sh  fv3gfs_make_grid.sh  global_chgres.sh ; do
+        fv3gfs_chgres.sh  fv3gfs_make_grid.sh  global_chgres.sh chgres_cube.sh; do
         $LINK ../sorc/ufs_utils.fd/ush/$file                  .
     done
 cd ${pwd}/../util               ||exit 8
@@ -201,7 +196,7 @@ if [ $machine = dell -o $machine = hera ]; then
 fi
 
 for ufs_utilsexe in \
-     chgres_cube.exe   fregrid           make_hgrid           nemsio_get    shave.x \
+     chgres_cube   fregrid           make_hgrid           nemsio_get    shave.x \
      emcsfc_ice_blend  fregrid_parallel  make_hgrid_parallel  nemsio_read \
      emcsfc_snow2mdl   global_chgres     make_solo_mosaic     nst_tf_chg.x \
      filter_topo       global_cycle      mkgfsnemsioctl       orog.x ; do
