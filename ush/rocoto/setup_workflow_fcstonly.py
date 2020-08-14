@@ -295,7 +295,7 @@ def get_workflow(dict_configs, cdump='gdas'):
 
     # waveinit
     if do_wave in ['Y', 'YES']:
-        task = wfu.create_wf_task('%swaveinit', cdump=cdump, envar=envars)
+        task = wfu.create_wf_task('waveinit', cdump=cdump, envar=envars)
         tasks.append(task)
         tasks.append('\n')
 
@@ -355,7 +355,7 @@ def get_workflow(dict_configs, cdump='gdas'):
         data = '&ROTDIR;/%swave.@Y@m@d/@H/rundata/%swave.out_grd.gsh_15m.@Y@m@d.@H0000' % (cdump,cdump)
         dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
         task = wfu.create_wf_task('wavepostsbs', cdump=cdump, envar=envars, dependency=dependencies)
         tasks.append(task)
         tasks.append('\n')
