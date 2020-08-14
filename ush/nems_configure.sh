@@ -48,7 +48,7 @@ wav_petlist_bounds=${wav_petlist_bounds:-"$(( $ATMPETS+$OCNPETS+$ICEPETS )) $(( 
 
 # Copy the selected template into run directory
 cp $SCRIPTDIR/nems.configure.$confignamevarfornems.IN tmp1
-sed -i -e "s;@\[med_model\];cmeps;g" tmp1
+sed -i -e "s;@\[med_model\];nems;g" tmp1
 sed -i -e "s;@\[atm_model\];$ATM_model;g" tmp1
 sed -i -e "s;@\[med_petlist_bounds\];$med_petlist_bounds;g" tmp1
 sed -i -e "s;@\[atm_petlist_bounds\];$atm_petlist_bounds;g" tmp1
@@ -133,8 +133,7 @@ EOF
 
 echo "$(cat med_modelio.nml)"
 
-cp $HOMEgfs/sorc/CMEPS/mediator/fd_nems.yaml fd_nems.yaml
-echo "$(cat fd_nems.yaml)"
+cp $HOMEgfs/sorc/fv3_coupled.fd/CMEPS/mediator/fd_nems.yaml fd_nems.yaml
 
 fi 
 
