@@ -45,7 +45,6 @@ ocn_petlist_bounds=${ocn_petlist_bounds:-"$ATMPETS $(( $ATMPETS+$OCNPETS-1 ))"}
 ice_petlist_bounds=${ice_petlist_bounds:-"$(( $ATMPETS+$OCNPETS )) $(( $ATMPETS+$OCNPETS+$ICEPETS-1 ))"} 
 wav_petlist_bounds=${wav_petlist_bounds:-"$(( $ATMPETS+$OCNPETS+$ICEPETS )) $(( $ATMPETS+$OCNPETS+$ICEPETS+$WAVPETS-1 ))"} 
 
-
 # Copy the selected template into run directory
 cp $SCRIPTDIR/nems.configure.$confignamevarfornems.IN tmp1
 sed -i -e "s;@\[med_model\];nems;g" tmp1

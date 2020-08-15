@@ -36,9 +36,6 @@ cd reg2grb2.fd
 
 pwd
 
-echo 'list modules'
-module list
-
 make -f Makefile clean
 make -f Makefile
 make -f Makefile install

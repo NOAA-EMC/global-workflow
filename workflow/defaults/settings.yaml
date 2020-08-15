@@ -46,7 +46,18 @@ default_settings: &default_settings
   cplice: !calc cplflx
   cplwav: .false.
   cplwav2atm: .false.
-  cpl: .false.
+  cplchem: .false.
+  cpl: !FirstTrue
+    - when: !calc doc.settings.cplflx==".true."
+      do: .true.
+    - when: !calc doc.settings.cplice==".true."
+      do: .true.
+    - when: !calc doc.settings.cplwav==".true."
+      do: .true.
+    - when: !calc doc.settings.cplchem==".true."
+      do: .true.
+    - otherwise: .false.
+
   mom6ic_prepared: .false. # If set True, User need to manually copy mom6ic files into ROTIDR
 
   DOIAU: NO
