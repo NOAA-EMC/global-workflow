@@ -54,6 +54,11 @@ sed -i -e "s;@\[med_petlist_bounds\];$med_petlist_bounds;g" tmp1
 sed -i -e "s;@\[atm_petlist_bounds\];$atm_petlist_bounds;g" tmp1
 
 if [ $cplflx = .true. ]; then
+    if [ $restart_interval  -gt 0]; then 
+      restart_interval_nems=$restart_interval 
+    else 
+      restart_interval_nems=$FHMAX 
+    fi
         sed -i -e "s;@\[ocn_model\];$OCN_model;g" tmp1
 	sed -i -e "s;@\[ocn_petlist_bounds\];$ocn_petlist_bounds;g" tmp1
 	sed -i -e "s;@\[DumpFields\];$DumpFields;g" tmp1
@@ -61,7 +66,7 @@ if [ $cplflx = .true. ]; then
 	sed -i -e "s;@\[restart_interval\];$restart_interval;g" tmp1
 	sed -i -e "s;@\[CPL_SLOW\];$CPL_SLOW;g" tmp1
 	sed -i -e "s;@\[CPL_FAST\];$CPL_FAST;g" tmp1
-        sed -i -e "s;@\[FV3_RESTART_INTERVAL\];$restart_interval;g" tmp1
+        sed -i -e "s;@\[restart_interval_hours\];$restart_interval_nems;g" tmp1
 fi
 if [ $cplwav = .true. ]; then
 	sed -i -e "s;@\[wav_model\];ww3;g" tmp1
