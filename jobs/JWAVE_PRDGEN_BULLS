@@ -1,0 +1,77 @@
+#!/bin/bash
+
+date
+export PS4=' $SECONDS + '
+set -xa
+
+# PATH for working directory
+export NET=${NET:-gfs}
+export RUN=${RUN:-gfs}
+export COMPONENT=${COMPONENT:-wave}
+export RUNwave=${RUNwave:-${RUN}${COMPONENT}}
+export envir=${envir:-ops}
+export HOMEwave=${HOMEwave:-$(dirname $(dirname $0))} # parent directory of current job card
+export DATA=${DATA:-${DATAROOT:?}/${job}.$$}
+mkdir -p $DATA
+cd $DATA
+
+cyc=${cyc:-00}
+export cycle=${cycle:-t${cyc}z}
+export pgmout=OUTPUT.$$
+#export modID=${RUN}${NET}
+
+####################################
+# Path to HOME Directory
+####################################
+export CODEwave=${CODEwave:-${NWROOT}/${NET}_code.${wave_code_ver}/${code_pkg}}
+export EXECwave=${EXECwave:-HOMEwave/exec}
+export FIXwave=${FIXwave:-HOMEwave/fix}
+export PARMwave=${PARMwave:-HOMEwave/parm}
+export USHwave=${USHwave:-HOMEwave/ush}
+export EXECcode=${EXECcode:-CODEwave/exec}
+
+# Set PDY
+setpdy.sh
+. PDY
+
+####################################
+# load modules
+####################################
+module use ${HOMEwave}/modulefiles
+module load modulefile_gfswave_prdgen.wcoss_dell_p3
+
+###################################
+# Set COM Paths and GETGES environment
+###################################
+export COMINwave=${COMINwave:-${COMROOT:?}/${COMPONENT}/${envir}}
+export COMOUTwave=${COMOUTwave:-${COMROOT:?}/${COMPONENT}/${envir}}
+export COMIN=${COMIN:-$(compath.py ${NET}/${envir}/${RUN}.${PDY})/${cyc}/$COMPONENT}
+export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/$COMPONENT/gempak}
+export PCOM=${PCOM:-${COMOUT}/wmo}
+export SENDCOM=${SENDCOM:-YES}
+export SENDDBN_NTC=${SENDDBN_NTC:-YES}
+
+if [ $SENDCOM = YES ]; then
+  mkdir -p $COMOUT $PCOM
+fi
+
+export wavelog=${COMOUTwave}/${COMPONENTwave}_prdgbulls.log
+
+env
+
+###################################
+# Execute the Script  
+###################################
+
+$HOMEwave/scripts/exwave_prdgen_bulls.sh.ecf
+
+###################################
+# Remove temp directories
+###################################
+
+if [ "$KEEPDATA" != "YES" ]; then
+  cd $DATAROOT
+  rm -rf $DATA
+fi
+date
+

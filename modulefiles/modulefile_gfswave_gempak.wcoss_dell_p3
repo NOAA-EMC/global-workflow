@@ -1,0 +1,32 @@
+#%Module
+##      Roberto.Padilla@noaa.gov    IMSG@NOAA/NWS/NCEP/EMC
+##                                                
+## GEMPAK
+##_____________________________________________________
+proc ModulesHelp { } {
+puts stderr "Set environment for PRDGENvX.XX.X "
+puts stderr "codes in the sorc directory.            "
+puts stderr "This module initializes the environment "
+puts stderr "for the DELL implementation.  \n"
+}
+module-whatis " PRDGEN-wave lsf runtime jobs whatis description"
+
+set ver v1.2.0
+
+set sys [uname sysname]
+
+
+module load EnvVars/1.0.2
+module load ips/18.0.1.163
+module load impi/18.0.1
+module load lsf/10.1
+module load HDF5-serial/1.10.1
+module load NetCDF/4.5.0
+module load CFP/2.0.2
+module load prod_util/1.1.2
+module load grib_util/1.1.0
+module load prod_envir/1.0.3
+module load util_shared/1.1.2
+module load bufr/11.2.0
+module load sigio/2.0.1
+module load gempak/7.3.1
