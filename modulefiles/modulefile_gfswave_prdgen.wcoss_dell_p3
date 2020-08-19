@@ -23,7 +23,7 @@ module load lsf/10.1
 module load HDF5-serial/1.10.1
 module load NetCDF/4.5.0
 module load CFP/2.0.2
-module load prod_util/1.1.2
+module load prod_util/1.1.4
 module load grib_util/1.1.0
 module load prod_envir/1.0.3
 module load util_shared/1.1.2
