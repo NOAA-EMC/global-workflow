@@ -40,12 +40,11 @@ PDY_m6hrs=$(echo $GDATE | cut -c1-8)
 cyc_m6hrs=$(echo $GDATE | cut -c9-10)
 export cycle_m6hrs=t${cyc_m6hrs}z
 
-#### Lin Gan request for change
-#### export COMOUT=${COMROOT}/$NET/$envir/$RUN.$PDY/$cyc
-export COMOUT=${COMOUT:-${COMROOT}/$NET/$envir/$RUN.$PDY/$cyc}
+export COMPONENT=${COMPONENT:-atmos}
+export COMOUT=${COMOUT:-${COMROOT}/$NET/$envir/$RUN.$PDY/$cyc/$COMPONENT}
 
-export COMINgfs=${COMINgfs:-$(compath.py $NET/$envir/$RUN.$PDY)/$cyc}
-export COMINgfs_m6hrs=${COMINgfs_m6hrs:-$(compath.py $NET/$envir/$RUN.$PDY_m6hrs)/$cyc_m6hrs} 
+export COMINgfs=${COMINgfs:-$(compath.py $NET/$envir/$RUN.$PDY)/$cyc/$COMPONENT}
+export COMINgfs_m6hrs=${COMINgfs_m6hrs:-$(compath.py $NET/$envir/$RUN.$PDY_m6hrs)/$cyc_m6hrs/$COMPONENT} 
 
 export IMS_FILE=${COMINgfs}/${RUN}.${cycle}.imssnow96.grib2
 export FIVE_MIN_ICE_FILE=${COMINgfs}/${RUN}.${cycle}.seaice.5min.grib2

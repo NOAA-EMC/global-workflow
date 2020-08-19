@@ -14,13 +14,10 @@ export wave_sys_ver=v1.0.0
 # Some others are also used across the workflow in wave component scripts
 
 # General runtime labels
-# export WAV_MOD_ID=${WAV_MOD_ID:-wave} # generic modID=wave valid for GFSv16 and beyond
-# COMPONENTwave stands for model component, in addition to NET/RUN for coupled systems
-export COMPONENTwave=${COMPONENTwave:-${RUN}wave}
+export CDUMPwave="${CDUMP}wave"
 
 # In GFS/GDAS, restart files are generated/read from gdas runs
-# Can I use rCDUMP here????
-export COMPONENTRSTwave=${COMPONENTRSTwave:-gdaswave}
+export CDUMPRSTwave="gdas"
 
 # Grids for wave model
 # GFSv16
@@ -74,7 +71,7 @@ if [ "$CDUMP" = "gdas" ]; then
   WAVNCYC=4
   WAVHCYC=6
   FHMAX_WAV_CUR=${FHMAX_WAV_CUR:-48} # RTOFS forecasts only out to 8 days
-elif [ ${gfs_cyc} -ne 0 ]; then 
+elif [ ${gfs_cyc} -ne 0 ]; then
   FHMAX_WAV_CUR=${FHMAX_WAV_CUR:-192} # RTOFS forecasts only out to 8 days
   WAVHCYC=`expr 24 / ${gfs_cyc}`
 else

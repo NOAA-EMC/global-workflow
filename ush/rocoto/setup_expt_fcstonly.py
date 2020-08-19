@@ -66,7 +66,6 @@ def edit_baseconfig():
                     .replace('@CASECTL@', 'C%d' % res) \
                     .replace('@HOMEgfs@', top) \
                     .replace('@BASE_GIT@', base_git) \
-                    .replace('@BASE_SVN@', base_svn) \
                     .replace('@DMPDIR@', dmpdir) \
                     .replace('@NWPROD@', nwprod) \
                     .replace('@HOMEDIR@', homedir) \
