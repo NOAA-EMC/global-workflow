@@ -70,6 +70,14 @@ if [ $RUN_ENVIR = "nco" ]; then
     export RSTDIR=${GESROOT:?}/$envir
 fi
 
+# Set wave variables
+if [ ${DO_WAVE:-"NO"} = "YES" ]; then
+  # WAVE component directory
+  export CDUMPwave=${CDUMPwave:-${CDUMP}wave}
+  export COMINwave=${COMINwave:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/wave}
+  export COMOUTwave=${COMOUTwave:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/wave}
+fi
+
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################

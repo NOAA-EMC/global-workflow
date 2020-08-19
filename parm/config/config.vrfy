@@ -44,10 +44,10 @@ if [ $VRFYFITS = "YES" ]; then
     fi
 
     if [ $machine = "WCOSS_C" ]; then
-        export fitdir="$BASE_SVN/verif/global/parafits.fv3nems/batrun"
+        export fitdir="$BASE_GIT/verif/global/parafits.fv3nems/batrun"
         export PREPQFITSH="$fitdir/subfits_cray_nems"
     elif [ $machine = "WCOSS_DELL_P3" ]; then
-        export fitdir="$BASE_SVN/verif/global/Fit2Obs/ncf-vqc/batrun"
+        export fitdir="$BASE_GIT/verif/global/Fit2Obs/ncf-vqc/batrun"
         export PREPQFITSH="$fitdir/subfits_dell_nems"
     elif [ $machine = "HERA" ]; then
         #export fitdir="$BASE_GIT/Fit2Obs/batrun"

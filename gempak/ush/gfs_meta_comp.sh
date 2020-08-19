@@ -31,6 +31,8 @@ mkdir -p -m 775 $DATA/COMP  $DATA/GEMPAK_META_COMP
 cd $DATA/COMP
 cp $FIXgempak/datatype.tbl datatype.tbl
 
+export COMPONENT=${COMPONENT:-atmos}
+
 mdl=gfs
 MDL=GFS
 metatype="comp"
@@ -41,11 +43,11 @@ PDY2=`echo $PDY | cut -c3-`
 #XXW export MODEL=$COMROOT/nawips/prod
 # BV export MODEL=$COMROOT/nawips/${envir}
 # BV export HPCGFS=${MODEL}/${mdl}.$PDY
-export HPCGFS=${COMINgempak}/${mdl}.${PDY}/${cyc}/gempak
-export COMIN00=${COMINgempak}/${mdl}.${PDY}/00/gempak
-export COMIN06=${COMINgempak}/${mdl}.${PDY}/06/gempak
-export COMIN12=${COMINgempak}/${mdl}.${PDY}/12/gempak
-export COMIN18=${COMINgempak}/${mdl}.${PDY}/18/gempak
+export HPCGFS=${COMINgempak}/${mdl}.${PDY}/${cyc}/${COMPONENT}/gempak
+export COMIN00=${COMINgempak}/${mdl}.${PDY}/00/${COMPONENT}/gempak
+export COMIN06=${COMINgempak}/${mdl}.${PDY}/06/${COMPONENT}/gempak
+export COMIN12=${COMINgempak}/${mdl}.${PDY}/12/${COMPONENT}/gempak
+export COMIN18=${COMINgempak}/${mdl}.${PDY}/18/${COMPONENT}/gempak
 if [ ${cyc} -eq 00 ] ; then
    cp $COMIN00/gfs_${PDY}00f* $DATA/GEMPAK_META_COMP
 elif [ ${cyc} -eq 06 ] ; then
@@ -116,7 +118,7 @@ if [ ${cyc} -eq 12 ] ; then
                 desc="Y"
                 #XXW export HPCGFS=${MODEL}/gfs.${PDYm1}
                 # BV export HPCGFS=$COMROOT/nawips/${envir}/gfs.${PDYm1}
-                export HPCGFS=${COMINgempak}/${mdl}.${PDYm1}/${cyc2}/gempak
+                export HPCGFS=${COMINgempak}/${mdl}.${PDYm1}/${cyc2}/${COMPONENT}/gempak
 
                 grid2="F-GFSHPC | ${PDY2m1}/1200"
                 add="24"
@@ -126,7 +128,7 @@ if [ ${cyc} -eq 12 ] ; then
                 desc="Y2"
                 #XXW export HPCGFS=${MODEL}/gfs.${PDYm2}
                 # BV export HPCGFS=$COMROOT/nawips/${esnvir}/gfs.${PDYm2}
-                export HPCGFS=${COMINgempak}/${mdl}.${PDYm2}/${cyc2}/gempak
+                export HPCGFS=${COMINgempak}/${mdl}.${PDYm2}/${cyc2}/${COMPONENT}/gempak
 
                 grid2="F-GFSHPC | ${PDY2m2}/1200"
                 add="48"
@@ -478,7 +480,7 @@ if [ ${cyc} -eq 00 ] ; then
                 cyc2="18"
                 desc="Y"
 # BV            export HPCGFS=${MODEL}/gfs.${PDYm1}
-                export HPCGFS=${COMINgempak}/${mdl}.${PDYm1}/${cyc2}/gempak
+                export HPCGFS=${COMINgempak}/${mdl}.${PDYm1}/${cyc2}/${COMPONENT}/gempak
 
                 grid2="F-GFSHPC | ${PDY2m1}/1800"
                 add="06"
@@ -486,7 +488,7 @@ if [ ${cyc} -eq 00 ] ; then
             elif [ ${runtime} = "12" ] ; then
                 cyc2="12"
                 desc="Y"
-                export HPCGFS=${COMINgempak}/${mdl}.${PDYm1}/${cyc2}/gempak
+                export HPCGFS=${COMINgempak}/${mdl}.${PDYm1}/${cyc2}/${COMPONENT}/gempak
 
                 grid2="F-GFSHPC | ${PDY2m1}/1200"
                 add="12"
@@ -494,7 +496,7 @@ if [ ${cyc} -eq 00 ] ; then
             elif [ ${runtime} = "00y" ] ; then
                 cyc2="00"
                 desc="Y"
-                export HPCGFS=${COMINgempak}/${mdl}.${PDYm1}/${cyc2}/gempak
+                export HPCGFS=${COMINgempak}/${mdl}.${PDYm1}/${cyc2}/${COMPONENT}/gempak
 
                 grid2="F-GFSHPC | ${PDY2m1}/0000"
                 add="24"
@@ -502,7 +504,7 @@ if [ ${cyc} -eq 00 ] ; then
             elif [ ${runtime} = "002d" ] ; then
                 cyc2="00"
                 desc="Y2"
-                export HPCGFS=${COMINgempak}/${mdl}.${PDYm2}/${cyc2}/gempak
+                export HPCGFS=${COMINgempak}/${mdl}.${PDYm2}/${cyc2}/${COMPONENT}/gempak
 
                 grid2="F-GFSHPC | ${PDY2m2}/0000"
                 add="48"
@@ -873,7 +875,7 @@ if [ ${cyc} -eq 18 ] ; then
             elif [ ${runtime} = "18y" ] ; then
                 cyc2="18"
                 desc="Y"
-                export HPCGFS=${COMINgempak}/${mdl}.${PDYm1}/${cyc2}/gempak
+                export HPCGFS=${COMINgempak}/${mdl}.${PDYm1}/${cyc2}/${COMPONENT}/gempak
 
                 grid2="F-GFSHPC | ${PDY2m1}/1800"
                 add="24"
@@ -987,7 +989,7 @@ if [ ${cyc} -eq 06 ] ; then
             elif [ ${runtime} -eq 18 ] ; then
                 cyc2="18"
                 desc="Y"
-                export HPCGFS=${COMINgempak}/${mdl}.${PDYm1}/${cyc2}/gempak
+                export HPCGFS=${COMINgempak}/${mdl}.${PDYm1}/${cyc2}/${COMPONENT}/gempak
 
                 grid2="F-GFSHPC | ${PDY2m1}/1800"
                 add="12"
@@ -995,7 +997,7 @@ if [ ${cyc} -eq 06 ] ; then
             elif [ ${runtime} -eq 12 ] ; then
                 cyc2="12"
                 desc="Y"
-                export HPCGFS=${COMINgempak}/${mdl}.${PDYm1}/${cyc2}/gempak
+                export HPCGFS=${COMINgempak}/${mdl}.${PDYm1}/${cyc2}/${COMPONENT}/gempak
 
                 grid2="F-GFSHPC | ${PDY2m1}/1200"
                 add="18"
@@ -1003,7 +1005,7 @@ if [ ${cyc} -eq 06 ] ; then
             elif [ ${runtime} -eq 06 ] ; then
                 cyc2="06"
                 desc="Y"
-                export HPCGFS=${COMINgempak}/${NET}/${envir}/${mdl}.${PDYm1}/${cyc2}/gempak
+                export HPCGFS=${COMINgempak}/${NET}/${envir}/${mdl}.${PDYm1}/${cyc2}/${COMPONENT}/gempak
 
                 grid2="F-GFSHPC | ${PDY2m1}/0600"
                 add="24"

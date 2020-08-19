@@ -44,6 +44,7 @@ else
    format="nemsio"
 fi
 
+
 # Realtime parallels run GFS MOS on 1 day delay
 # If realtime parallel, back up CDATE_MOS one day
 CDATE_MOS=$CDATE
@@ -56,7 +57,7 @@ PDY_MOS=$(echo $CDATE_MOS | cut -c1-8)
 # Archive online for verification and diagnostics
 ###############################################################
 
-COMIN="$ROTDIR/$CDUMP.$PDY/$cyc"
+COMIN=${COMINatmos:-"$ROTDIR/$CDUMP.$PDY/$cyc/atmos"}
 cd $COMIN
 
 [[ ! -d $ARCDIR ]] && mkdir -p $ARCDIR
@@ -303,8 +304,8 @@ RTOFS_DATE=$($NDATE -48 $CDATE)
 while [ $GDATE -le $GDATEEND ]; do
     gPDY=$(echo $GDATE | cut -c1-8)
     gcyc=$(echo $GDATE | cut -c9-10)
-    COMIN="$ROTDIR/$CDUMP.$gPDY/$gcyc"
-    COMINwave="$ROTDIR/${CDUMP}wave.$gPDY/$gcyc"
+    COMIN="$ROTDIR/${CDUMP}.$gPDY/$gcyc/atmos"
+    COMINwave="$ROTDIR/${CDUMP}.$gPDY/$gcyc/wave"
     COMINrtofs="$ROTDIR/rtofs.$gPDY"
     if [ -d $COMIN ]; then
         rocotolog="$EXPDIR/logs/${GDATE}.log"
@@ -329,12 +330,10 @@ while [ $GDATE -le $GDATEEND ]; do
     fi
 
     # Remove any empty directories
-    COMIN="$ROTDIR/$CDUMP.$gPDY"
     if [ -d $COMIN ]; then
         [[ ! "$(ls -A $COMIN)" ]] && rm -rf $COMIN
     fi
 
-    COMINwave="$ROTDIR/${CDUMP}wave.$gPDY"
     if [ -d $COMINwave ]; then
         [[ ! "$(ls -A $COMINwave)" ]] && rm -rf $COMINwave
     fi

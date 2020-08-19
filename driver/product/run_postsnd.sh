@@ -20,7 +20,7 @@ module load EnvVars/1.0.2
 module load ips/18.0.1.163
 module load impi/18.0.1
 module load lsf/10.1
-module load prod_util/1.1.0
+module load prod_util/1.1.4
 module load grib_util/1.0.6
 module load prod_envir/1.0.2
 module load CFP/2.0.1

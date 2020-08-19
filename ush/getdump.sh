@@ -1,10 +1,12 @@
 #!/bin/ksh
 set -x
 
+export COMPONENT=${COMPONENT:-atmos}
+
 CDATE=${1:-""}
 CDUMP=${2:-""}
 SOURCE_DIR=${3:-$DMPDIR/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}}
-TARGET_DIR=${4:-$ROTDIR/${CDUMP}.${PDY}/$cyc}
+TARGET_DIR=${4:-$ROTDIR/${CDUMP}.${PDY}/$cyc/$COMPONENT}
 
 DUMP_SUFFIX=${DUMP_SUFFIX:-""}
 
