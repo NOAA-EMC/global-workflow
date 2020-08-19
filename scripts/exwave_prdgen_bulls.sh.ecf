@@ -48,11 +48,11 @@
 
 # 1.  Get necessary files
  set +x
- echo "   Copying bulletins from $COMINwave"
+ echo "   Copying bulletins from $COMIN"
  [[ "$LOUD" = YES ]] && set -x
 
 # 1.a Link the input file and untar it
- BullIn=$COMINwave/${RUNwave}.$cycle.cbull_tar
+ BullIn=$COMIN/${RUNwave}.$cycle.cbull_tar
  if [ -f $BullIn ]; then
    cp $BullIn cbull.tar
  else

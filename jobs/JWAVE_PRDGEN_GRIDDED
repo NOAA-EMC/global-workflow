@@ -53,10 +53,10 @@ module load modulefile_gfswave_prdgen.wcoss_dell_p3
 ###################################
 # Set COM Paths and GETGES environment
 ###################################
-export COMINwave=${COMINwave:-${COMROOT:?}/${COMPONENT}/${envir}}
-export COMOUTwave=${COMOUTwave:-${COMROOT:?}/${COMPONENT}/${envir}}
-#export COMIN=${COMIN:-$(compath.py ${NET}/${envir}/${RUN}.${PDY})/${cyc}/$COMPONENT}
-#export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/$COMPONENT/gempak}
+#export COMINwave=${COMINwave:-${COMROOT:?}/${COMPONENT}/${envir}}
+#export COMOUTwave=${COMOUTwave:-${COMROOT:?}/${COMPONENT}/${envir}}
+export COMIN=${COMIN:-$(compath.py ${NET}/${envir}/${RUN}.${PDY})/${cyc}/$COMPONENT}
+export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/$COMPONENT/gempak}
 export PCOM=${PCOM:-${COMOUT}/wmo}
 
 if [ $SENDCOM = YES ]; then

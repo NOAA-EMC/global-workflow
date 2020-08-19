@@ -72,7 +72,7 @@
        glo_30m) grdID='global.0p25' ;;
        *)       grdID= ;;
      esac
-     GRIBIN=$COMINwave/$RUNwave.$cycle.$grdID.f${fhr}.grib2
+     GRIBIN=$COMIN/$RUNwave.$cycle.$grdID.f${fhr}.grib2
      GRIBIN_chk=$GRIBIN.idx
 
      icnt=1
