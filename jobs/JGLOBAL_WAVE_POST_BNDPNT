@@ -27,20 +27,13 @@ status=$?
 # PATH for working directory
 export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
-export COMPONENTwave=${COMPONENTwave:-${RUN}wave}
+export COMPONENT=${COMPONENT:-wave}
 
 export HOMEgefs=${HOMEgefs:-$NWROOT/$NET.${gefs_ver}}
 export HOMEgfs=${HOMEgfs:-$NWROOT/$NET.${gfs_ver}}
 
 # Add default errchk = err_chk
 export errchk=${errchk:-err_chk}
-
-# Set HOMEwave to HOMEgefs
-HOMEwave=${HOMEwave:-${HOMEgfs}} 
-
-# Set resources to propagate NTASKS across cfp call
-NTASKS=${NTASKS:-${npe_node_waveprep}}
-export NTASKS=${NTASKS:?NTASKS required to be set}
 
 # Create and go to DATA directory
 export DATA=${DATA:-${DATAROOT:?}/${jobid}}
@@ -59,19 +52,17 @@ export pgmout=OUTPUT.$$
 export MP_PULSE=0
 
 # Path to HOME Directory
-export FIXwave=${FIXwave:-$HOMEwave/fix/fix_wave_${NET}}
-export PARMwave=${PARMwave:-$HOMEwave/parm/wave}
-export USHwave=${USHwave:-$HOMEwave/ush}
+export FIXwave=${FIXwave:-$HOMEgfs/fix/fix_wave_${NET}}
+export PARMwave=${PARMwave:-$HOMEgfs/parm/wave}
+export USHwave=${USHwave:-$HOMEgfs/ush}
 export EXECwave=${EXECwave:-$HOMEgfs/exec}
 
 # Set COM Paths and GETGES environment
 if [ $RUN_ENVIR = "nco" ]; then
     export ROTDIR=${COMROOT:?}/$NET/$envir
 fi
-export COMINwave=${COMINwave:-${ROTDIR:?}}
-export COMOUTwave=${COMOUTwave:-${ROTDIR:?}}
-export COMIN=${COMIN:-${COMINwave}/${COMPONENTwave}.${PDY}/${cyc}}
-export COMOUT=${COMOUT:-${COMOUTwave}/${COMPONENTwave}.${PDY}/${cyc}}
+export COMIN=${COMIN:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/$COMPONENT}
+export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/$COMPONENT}
 
 export COMINice=${COMINice:-${COMROOTp2}/omb/prod}
 export COMINwnd=${COMINwnd:-${COMROOT}/gfs/prod}
@@ -92,12 +83,12 @@ env | sort
 membTAG='p'
 if [ "${waveMEMB}" == "00" ]; then membTAG='c'; fi
 export membTAG
-export WAV_MOD_TAG=${COMPONENTwave}${waveMEMB}
+export WAV_MOD_TAG=${CDUMP}wave${waveMEMB}
 
 export CFP_VERBOSE=1
 
 # Execute the Script  
-$HOMEwave/scripts/exgfs_wave_post_bndpnt.sh
+$HOMEgfs/scripts/exgfs_wave_post_bndpnt.sh
 err=$?
 if [ $err -ne 0 ]; then
   msg="FATAL ERROR: ex-script of GWES_POST failed!"
