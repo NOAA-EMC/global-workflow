@@ -77,7 +77,7 @@ export COMINice=${COMINice:-${COMROOTp2}/omb/prod}
 export COMINwnd=${COMINwnd:-${COMROOT}/gfs/prod}
 export COMIN_WAV_CUR=${COMIN_WAV_CUR:-${COMROOTp2}/rtofs/prod}
 
-mkdir -p $COMOUT/gridded
+mkdir -p $COMOUT/station
 
 # Set mpi serial command
 export wavempexec=${launcher:-"mpirun -n"}
@@ -97,7 +97,7 @@ export WAV_MOD_TAG=${COMPONENTwave}${waveMEMB}
 export CFP_VERBOSE=1
 
 # Execute the Script  
-$HOMEwave/scripts/exwave_post_gridded_sbs.sh 
+$HOMEwave/scripts/exwave_post_points.sh
 err=$?
 if [ $err -ne 0 ]; then
   msg="FATAL ERROR: ex-script of GWES_POST failed!"
