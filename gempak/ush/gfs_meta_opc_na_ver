@@ -14,6 +14,8 @@ mkdir -p -m 775 $DATA/OPC_NA_VER_F${fend}
 cd $DATA/OPC_NA_VER_F${fend}
 cp $FIXgempak/datatype.tbl datatype.tbl
 
+export COMPONENT=${COMPONENT:-atmos}
+
 mdl=gfs
 MDL="GFS"
 metatype="ver"
@@ -147,91 +149,91 @@ for verday in ${verdays}
     cominday=`echo ${verday} | cut -c -8`
     #XXW export HPCGFS=$COMROOT/nawips/prod/${mdl}.${cominday}
     # BV export HPCGFS=$COMROOT/nawips/${envir}/${mdl}.${cominday}
-    export HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cyc}/gempak
+    export HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cyc}/${COMPONENT}/gempak
 
     if [ ${verday} -eq ${dc1} ] ; then
         dgdattim=f006
-        export HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle1}/gempak
+        export HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle1}/${COMPONENT}/gempak
         grid="F-${MDL2} | ${sdate1}/${cycle1}00"
     elif [ ${verday} -eq ${dc2} ] ; then
         dgdattim=f012
-        export HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle2}/gempak
+        export HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle2}/${COMPONENT}/gempak
         grid="F-${MDL2} | ${sdate2}/${cycle2}00"
     elif [ ${verday} -eq ${dc3} ] ; then
         dgdattim=f018
-        export HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle3}/gempak
+        export HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle3}/${COMPONENT}/gempak
         grid="F-${MDL2} | ${sdate3}/${cycle3}00"
     elif [ ${verday} -eq ${dc4} ] ; then
         dgdattim=f024
-        export HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle4}/gempak
+        export HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle4}/${COMPONENT}/gempak
         grid="F-${MDL2} | ${sdate4}/${cycle4}00"
     elif [ ${verday} -eq ${dc5} ] ; then
         dgdattim=f030
-        export HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle5}/gempak
+        export HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle5}/${COMPONENT}/gempak
         grid="F-${MDL2} | ${sdate5}/${cycle5}00"
     elif [ ${verday} -eq ${dc6} ] ; then
         dgdattim=f036
-        export HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle6}/gempak
+        export HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle6}/${COMPONENT}/gempak
         grid="F-${MDL2} | ${sdate6}/${cycle6}00"
     elif [ ${verday} -eq ${dc7} ] ; then
         dgdattim=f042
-        export HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle7}/gempak
+        export HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle7}/${COMPONENT}/gempak
         grid="F-${MDL2} | ${sdate7}/${cycle7}00"
     elif [ ${verday} -eq ${dc8} ] ; then
         dgdattim=f048
-        export HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle8}/gempak
+        export HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle8}/${COMPONENT}/gempak
         grid="F-${MDL2} | ${sdate8}/${cycle8}00"
     elif [ ${verday} -eq ${dc9} ] ; then
         dgdattim=f054
-        export HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle9}/gempak
+        export HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle9}/${COMPONENT}/gempak
         grid="F-${MDL2} | ${sdate9}/${cycle9}00"
     elif [ ${verday} -eq ${dc10} ] ; then
         dgdattim=f060
-        export HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle10}/gempak
+        export HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle10}/${COMPONENT}/gempak
         grid="F-${MDL2} | ${sdate10}/${cycle10}00"
     elif [ ${verday} -eq ${dc11} ] ; then
         dgdattim=f066
-        export HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle11}/gempak
+        export HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle11}/${COMPONENT}/gempak
         grid="F-${MDL2} | ${sdate11}/${cycle11}00"
     elif [ ${verday} -eq ${dc12} ] ; then
         dgdattim=f072
-        export HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle12}/gempak
+        export HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle12}/${COMPONENT}/gempak
         grid="F-${MDL2} | ${sdate12}/${cycle12}00"
     elif [ ${verday} -eq ${dc13} ] ; then
         dgdattim=f078
-        export HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle13}/gempak
+        export HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle13}/${COMPONENT}/gempak
         grid="F-${MDL2} | ${sdate13}/${cycle13}00"
     elif [ ${verday} -eq ${dc14} ] ; then
         dgdattim=f084
-        export HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle14}/gempak
+        export HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle14}/${COMPONENT}/gempak
         grid="F-${MDL2} | ${sdate14}/${cycle14}00"
     elif [ ${verday} -eq ${dc15} ] ; then
         dgdattim=f090
-        export HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle15}/gempak
+        export HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle15}/${COMPONENT}/gempak
         grid="F-${MDL2} | ${sdate15}/${cycle15}00"
     elif [ ${verday} -eq ${dc16} ] ; then
         dgdattim=f096
-        export HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle16}/gempak
+        export HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle16}/${COMPONENT}/gempak
         grid="F-${MDL2} | ${sdate16}/${cycle16}00"
     elif [ ${verday} -eq ${dc17} ] ; then
         dgdattim=f102
-        export HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle17}/gempak
+        export HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle17}/${COMPONENT}/gempak
         grid="F-${MDL2} | ${sdate17}/${cycle17}00"
     elif [ ${verday} -eq ${dc18} ] ; then
         dgdattim=f108
-        export HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle18}/gempak
+        export HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle18}/${COMPONENT}/gempak
         grid="F-${MDL2} | ${sdate18}/${cycle18}00"
     elif [ ${verday} -eq ${dc19} ] ; then
         dgdattim=f114
-        export HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle19}/gempak
+        export HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle19}/${COMPONENT}/gempak
         grid="F-${MDL2} | ${sdate19}/${cycle19}00"
     elif [ ${verday} -eq ${dc20} ] ; then
         dgdattim=f120
-        export HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle20}/gempak
+        export HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle20}/${COMPONENT}/gempak
         grid="F-${MDL2} | ${sdate20}/${cycle20}00"
     elif [ ${verday} -eq ${dc21} ] ; then
         dgdattim=f126
-        export HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle21}/gempak
+        export HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle21}/${COMPONENT}/gempak
         grid="F-${MDL2} | ${sdate21}/${cycle21}00"
     fi
 

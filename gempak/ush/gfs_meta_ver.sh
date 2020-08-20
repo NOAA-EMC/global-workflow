@@ -28,6 +28,8 @@ mkdir -p -m 775 $DATA/VER
 cd $DATA/VER
 cp $FIXgempak/datatype.tbl datatype.tbl
 
+export COMPONENT=${COMPONENT:-atmos}
+
 mdl=gfs
 MDL=GFS
 metatype="ver"
@@ -225,139 +227,139 @@ for verday in ${verdays}
     cominday=`echo ${verday} | cut -c -8`
     #XXW export HPCGFS=$COMROOT/nawips/prod/${mdl}.${cominday}
     # BV export HPCGFS=$COMROOT/nawips/${envir}/${mdl}.${cominday}
-    export HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cyc}/gempak
+    export HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cyc}/${COMPONENT}/gempak
 
     if [ ${verday} -eq ${dc1} ] ; then
         dgdattim=f006
-        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle1}/gempak
+        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle1}/${COMPONENT}/gempak
         grid="F-${MDL2} | ${sdate1}/${cycle1}00"
     elif [ ${verday} -eq ${dc2} ] ; then
         dgdattim=f012
-        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle2}/gempak
+        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle2}/${COMPONENT}/gempak
         grid="F-${MDL2} | ${sdate2}/${cycle2}00"
     elif [ ${verday} -eq ${dc3} ] ; then
         dgdattim=f018
-        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle3}/gempak
+        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle3}/${COMPONENT}/gempak
         grid="F-${MDL2} | ${sdate3}/${cycle3}00"
     elif [ ${verday} -eq ${dc4} ] ; then
         dgdattim=f024
-        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle4}/gempak
+        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle4}/${COMPONENT}/gempak
         grid="F-${MDL2} | ${sdate4}/${cycle4}00"
     elif [ ${verday} -eq ${dc5} ] ; then
         dgdattim=f030
-        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle5}/gempak
+        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle5}/${COMPONENT}/gempak
         grid="F-${MDL2} | ${sdate5}/${cycle5}00"
     elif [ ${verday} -eq ${dc6} ] ; then
         dgdattim=f036
-        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle6}/gempak
+        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle6}/${COMPONENT}/gempak
         grid="F-${MDL2} | ${sdate6}/${cycle6}00"
     elif [ ${verday} -eq ${dc7} ] ; then
         dgdattim=f042
-        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle7}/gempak
+        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle7}/${COMPONENT}/gempak
         grid="F-${MDL2} | ${sdate7}/${cycle7}00"
     elif [ ${verday} -eq ${dc8} ] ; then
         dgdattim=f048
-        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle8}/gempak
+        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle8}/${COMPONENT}/gempak
         grid="F-${MDL2} | ${sdate8}/${cycle8}00"
     elif [ ${verday} -eq ${dc9} ] ; then
         dgdattim=f054
-        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle9}/gempak
+        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle9}/${COMPONENT}/gempak
         grid="F-${MDL2} | ${sdate9}/${cycle9}00"
     elif [ ${verday} -eq ${dc10} ] ; then
         dgdattim=f060
-        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle10}/gempak
+        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle10}/${COMPONENT}/gempak
         grid="F-${MDL2} | ${sdate10}/${cycle10}00"
     elif [ ${verday} -eq ${dc11} ] ; then
         dgdattim=f066
-        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle11}/gempak
+        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle11}/${COMPONENT}/gempak
         grid="F-${MDL2} | ${sdate11}/${cycle11}00"
     elif [ ${verday} -eq ${dc12} ] ; then
         dgdattim=f072
-        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle12}/gempak
+        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle12}/${COMPONENT}/gempak
         grid="F-${MDL2} | ${sdate12}/${cycle12}00"
     elif [ ${verday} -eq ${dc13} ] ; then
         dgdattim=f078
-        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle13}/gempak
+        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle13}/${COMPONENT}/gempak
         grid="F-${MDL2} | ${sdate13}/${cycle13}00"
     elif [ ${verday} -eq ${dc14} ] ; then
         dgdattim=f084
-        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle14}/gempak
+        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle14}/${COMPONENT}/gempak
         grid="F-${MDL2} | ${sdate14}/${cycle14}00"
     elif [ ${verday} -eq ${dc15} ] ; then
         dgdattim=f090
-        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle15}/gempak
+        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle15}/${COMPONENT}/gempak
         grid="F-${MDL2} | ${sdate15}/${cycle15}00"
     elif [ ${verday} -eq ${dc16} ] ; then
         dgdattim=f096
-        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle16}/gempak
+        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle16}/${COMPONENT}/gempak
         grid="F-${MDL2} | ${sdate16}/${cycle16}00"
     elif [ ${verday} -eq ${dc17} ] ; then
         dgdattim=f102
-        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle17}/gempak
+        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle17}/${COMPONENT}/gempak
         grid="F-${MDL2} | ${sdate17}/${cycle17}00"
     elif [ ${verday} -eq ${dc18} ] ; then
         dgdattim=f108
-        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle18}/gempak
+        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle18}/${COMPONENT}/gempak
         grid="F-${MDL2} | ${sdate18}/${cycle18}00"
     elif [ ${verday} -eq ${dc19} ] ; then
         dgdattim=f114
-        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle19}/gempak
+        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle19}/${COMPONENT}/gempak
         grid="F-${MDL2} | ${sdate19}/${cycle19}00"
     elif [ ${verday} -eq ${dc20} ] ; then
         dgdattim=f120
-        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle20}/gempak
+        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle20}/${COMPONENT}/gempak
         grid="F-${MDL2} | ${sdate20}/${cycle20}00"
     elif [ ${verday} -eq ${dc21} ] ; then
         dgdattim=f126
-        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle21}/gempak
+        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle21}/${COMPONENT}/gempak
         grid="F-${MDL2} | ${sdate21}/${cycle21}00"
     elif [ ${verday} -eq ${dc22} ] ; then
         dgdattim=f132
-        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle22}/gempak
+        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle22}/${COMPONENT}/gempak
         grid="F-${MDL2} | ${sdate22}/${cycle22}00"
     elif [ ${verday} -eq ${dc23} ] ; then
         dgdattim=f138
-        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle23}/gempak
+        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle23}/${COMPONENT}/gempak
         grid="F-${MDL2} | ${sdate23}/${cycle23}00"
     elif [ ${verday} -eq ${dc24} ] ; then
         dgdattim=f144
-        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle24}/gempak
+        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle24}/${COMPONENT}/gempak
         grid="F-${MDL2} | ${sdate24}/${cycle24}00"
     elif [ ${verday} -eq ${dc25} ] ; then
         dgdattim=f150
-        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle25}/gempak
+        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle25}/${COMPONENT}/gempak
         grid="F-${MDL2} | ${sdate25}/${cycle25}00"
     elif [ ${verday} -eq ${dc26} ] ; then
         dgdattim=f156
-        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle26}/gempak
+        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle26}/${COMPONENT}/gempak
         grid="F-${MDL2} | ${sdate26}/${cycle26}00"
     elif [ ${verday} -eq ${dc27} ] ; then
         dgdattim=f162
-        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle27}/gempak
+        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle27}/${COMPONENT}/gempak
         grid="F-${MDL2} | ${sdate27}/${cycle27}00"
     elif [ ${verday} -eq ${dc28} ] ; then
         dgdattim=f168
-        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle28}/gempak
+        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle28}/${COMPONENT}/gempak
         grid="F-${MDL2} | ${sdate28}/${cycle28}00"
     elif [ ${verday} -eq ${dc29} ] ; then
         dgdattim=f174
-        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle29}/gempak
+        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle29}/${COMPONENT}/gempak
         grid="F-${MDL2} | ${sdate29}/${cycle29}00"
     elif [ ${verday} -eq ${dc30} ] ; then
         dgdattim=f180
-        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle30}/gempak
+        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle30}/${COMPONENT}/gempak
         grid="F-${MDL2} | ${sdate30}/${cycle30}00"
     elif [ ${verday} -eq ${dc31} ] ; then
         dgdattim=f192
-        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle31}/gempak
+        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle31}/${COMPONENT}/gempak
         grid="F-${MDL2} | ${sdate31}/${cycle31}00"
     elif [ ${verday} -eq ${dc32} ] ; then
         dgdattim=f204
-        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle32}/gempak
+        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle32}/${COMPONENT}/gempak
         grid="F-${MDL2} | ${sdate32}/${cycle32}00"
     elif [ ${verday} -eq ${dc33} ] ; then
         dgdattim=f216
-        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle33}/gempak
+        HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cycle33}/${COMPONENT}/gempak
         grid="F-${MDL2} | ${sdate33}/${cycle33}00"
     fi
 

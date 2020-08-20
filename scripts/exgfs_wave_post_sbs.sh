@@ -39,6 +39,10 @@
   export LOUD=${LOUD:-YES}; [[ $LOUD = yes ]] && export LOUD=YES
   [[ "$LOUD" != YES ]] && set +x
 
+  # Set wave model ID tag to include member number
+  # if ensemble; waveMEMB var empty in deterministic
+  export WAV_MOD_TAG=${CDUMP}wave${waveMEMB}
+
   cd $DATA
 
   postmsg "$jlogfile" "HAS BEGUN on `hostname`"
@@ -147,13 +151,13 @@
 # Copy model definition files
   for grdID in $waveGRD $wavesbsGRD $wavepostGRD $waveinterpGRD $waveuoutpGRD
   do
-    if [ -f "$COMIN/rundata/${COMPONENTwave}.mod_def.${grdID}" ]
+    if [ -f "$COMIN/rundata/${CDUMP}wave.mod_def.${grdID}" ]
     then
       set +x
       echo " Mod def file for $grdID found in ${COMIN}/rundata. copying ...."
       [[ "$LOUD" = YES ]] && set -x
 
-      cp -f $COMIN/rundata/${COMPONENTwave}.mod_def.${grdID} mod_def.$grdID
+      cp -f $COMIN/rundata/${CDUMP}wave.mod_def.${grdID} mod_def.$grdID
       iloop=`expr $iloop + 1`
     fi
   done

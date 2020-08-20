@@ -40,6 +40,7 @@ machine=${machine:-"WCOSS_C"}
 machine=$(echo $machine | tr '[a-z]' '[A-Z]')
 
 # Cycling and forecast hour specific parameters 
+CDUMPwave="${CDUMP}wave"
 CASE=${CASE:-C768}
 CDATE=${CDATE:-2017032500}
 CDUMP=${CDUMP:-gdas}
@@ -151,16 +152,16 @@ mkdir -p $DATA/INPUT
 
 if [ $cplwav = ".true." ]; then 
     if [ $CDUMP = "gdas" ]; then
-        RSTDIR_WAVE=$ROTDIR/${CDUMP}wave.${PDY}/${cyc}/restart
+      RSTDIR_WAVE=$ROTDIR/${CDUMP}.${PDY}/${cyc}/wave/restart
     else
-        RSTDIR_WAVE=${RSTDIR_WAVE:-$ROTDIR/${CDUMP}wave.${PDY}/${cyc}/restart}
+      RSTDIR_WAVE=${RSTDIR_WAVE:-$ROTDIR/${CDUMP}.${PDY}/${cyc}/wave/restart}
     fi
     if [ ! -d $RSTDIR_WAVE ]; then mkdir -p $RSTDIR_WAVE ; fi
     $NLN $RSTDIR_WAVE restart_wave
 fi
 
 if [ $CDUMP = "gfs" -a $rst_invt1 -gt 0 ]; then
-    RSTDIR_ATM=${RSTDIR:-$ROTDIR}/${CDUMP}.${PDY}/${cyc}/RERUN_RESTART
+    RSTDIR_ATM=${RSTDIR:-$ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos/RERUN_RESTART
     if [ ! -d $RSTDIR_ATM ]; then mkdir -p $RSTDIR_ATM ; fi
     $NLN $RSTDIR_ATM RESTART
 else
@@ -202,13 +203,13 @@ else
   rprefix=enkf$rCDUMP
   memchar=mem$(printf %03i $MEMBER)
 fi
-memdir=$ROTDIR/${prefix}.$PDY/$cyc/$memchar
+memdir=$ROTDIR/${prefix}.$PDY/$cyc/atmos/$memchar
 if [ ! -d $memdir ]; then mkdir -p $memdir; fi
 
 GDATE=$($NDATE -$assim_freq $CDATE)
 gPDY=$(echo $GDATE | cut -c1-8)
 gcyc=$(echo $GDATE | cut -c9-10)
-gmemdir=$ROTDIR/${rprefix}.$gPDY/$gcyc/$memchar
+gmemdir=$ROTDIR/${rprefix}.$gPDY/$gcyc/atmos/$memchar
 sCDATE=$($NDATE -3 $CDATE)
 
 if [[ "$DOIAU" = "YES" ]]; then
@@ -410,26 +411,26 @@ fi
 
 #-------------wavewave----------------------
 if [ $cplwav = ".true." ]; then
-#-------------wavewave----------------------
 
-  for file in $(ls $ROTDIR/${CDUMP}wave.${PDY}/${cyc}/rundata/rmp_src_to_dst_conserv_*) ; do
+  for file in $(ls $COMINwave/rundata/rmp_src_to_dst_conserv_*) ; do
     $NLN $file $DATA/
   done
-  $NLN $ROTDIR/${CDUMP}wave.${PDY}/${cyc}/rundata/ww3_multi.${CDUMP}wave${WAV_MEMBER}.${cycle}.inp $DATA/ww3_multi.inp
+  $NLN $COMINwave/rundata/ww3_multi.${CDUMPwave}${WAV_MEMBER}.${cycle}.inp $DATA/ww3_multi.inp
 
   array=($WAVECUR_FID $WAVEICE_FID $WAVEWND_FID $waveuoutpGRD $waveGRD $waveesmfGRD $wavesbsGRD $wavepostGRD $waveinterpGRD)
   grdALL=`printf "%s\n" "${array[@]}" | sort -u | tr '\n' ' '`
+
   for wavGRD in ${grdALL}; do
-    $NLN $ROTDIR/${CDUMP}wave.${PDY}/${cyc}/rundata/${CDUMP}wave.mod_def.$wavGRD $DATA/mod_def.$wavGRD
+    $NLN $COMINwave/rundata/${CDUMPwave}.mod_def.$wavGRD $DATA/mod_def.$wavGRD
   done
 
-  WAVHCYC=${WAVHCYC:-6}
-  WRDATE=`$NDATE -${WAVHCYC} $CDATE`
-  WRPDY=`echo $WRDATE | cut -c1-8`
-  WRcyc=`echo $WRDATE | cut -c9-10`
-  WRDIR=$ROTDIR/gdaswave.${WRPDY}/${WRcyc}/restart
-  datwave=$ROTDIR/${CDUMP}wave.${PDY}/${cyc}/rundata/
-  wavprfx=${CDUMP}wave${WAV_MEMBER}
+  export WAVHCYC=${WAVHCYC:-6}
+  export WRDATE=`$NDATE -${WAVHCYC} $CDATE`
+  export WRPDY=`echo $WRDATE | cut -c1-8`
+  export WRcyc=`echo $WRDATE | cut -c9-10`
+  export WRDIR=${ROTDIR}/${CDUMPRSTwave}.${WRPDY}/${WRcyc}/wave/restart
+  export datwave=$COMOUTwave/rundata
+  export wavprfx=${CDUMPwave}${WAV_MEMBER}
 
   for wavGRD in $waveGRD ; do
     if [ $RERUN = "NO" ]; then
@@ -441,7 +442,7 @@ if [ $cplwav = ".true." ]; then
   done
 
   if [ "$WW3ICEINP" = "YES" ]; then
-    wavicefile=$ROTDIR/${CDUMP}wave.${PDY}/${cyc}/rundata/${CDUMP}wave.${WAVEICE_FID}.${cycle}.ice
+    wavicefile=$COMINwave/rundata/${CDUMPwave}.${WAVEICE_FID}.${cycle}.ice
     if [ ! -f $wavicefile ]; then
       echo "ERROR: WW3ICEINP = ${WW3ICEINP}, but missing ice file"
       echo "Abort!"
@@ -451,7 +452,7 @@ if [ $cplwav = ".true." ]; then
   fi
 
   if [ "$WW3CURINP" = "YES" ]; then
-    wavcurfile=$ROTDIR/${CDUMP}wave.${PDY}/${cyc}/rundata/${CDUMP}wave.${WAVECUR_FID}.${cycle}.cur
+    wavcurfile=$COMINwave/rundata/${CDUMPwave}.${WAVECUR_FID}.${cycle}.cur
     if [ ! -f $wavcurfile ]; then
       echo "ERROR: WW3CURINP = ${WW3CURINP}, but missing current file"
       echo "Abort!"
@@ -463,6 +464,8 @@ if [ $cplwav = ".true." ]; then
   # Link output files
   cd $DATA
   eval $NLN $datwave/${wavprfx}.log.mww3.${PDY}${cyc} log.mww3
+
+  # Loop for gridded output (uses FHINC)
   fhr=$FHMIN_WAV
   while [ $fhr -le $FHMAX_WAV ]; do
     YMDH=`$NDATE $fhr $CDATE`
@@ -489,10 +492,8 @@ if [ $cplwav = ".true." ]; then
     fhr=$((fhr+FHINC))
   done
 
+fi #cplwav=true
 #-------------wavewave----------------------
-fi
-#-------------wavewave----------------------
-
 
 # inline post fix files
 if [ $WRITE_DOPOST = ".true." ]; then
