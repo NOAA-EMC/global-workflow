@@ -97,7 +97,7 @@ export WAV_MOD_TAG=${COMPONENTwave}${waveMEMB}
 export CFP_VERBOSE=1
 
 # Execute the Script  
-$HOMEwave/scripts/exwave_post_points.sh
+$HOMEwave/scripts/exgfs_wave_post_pnt.sh
 err=$?
 if [ $err -ne 0 ]; then
   msg="FATAL ERROR: ex-script of GWES_POST failed!"

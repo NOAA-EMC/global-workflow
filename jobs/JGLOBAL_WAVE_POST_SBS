@@ -88,7 +88,7 @@ export WAV_MOD_TAG=${CDUMP}wave${waveMEMB}
 export CFP_VERBOSE=1
 
 # Execute the Script  
-$HOMEgfs/scripts/exgfs_wave_post_sbs.sh
+$HOMEgfs/scripts/exgfs_wave_post_gridded_sbs.sh
 err=$?
 if [ $err -ne 0 ]; then
   msg="FATAL ERROR: ex-script of GWES_POST failed!"

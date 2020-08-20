@@ -3,8 +3,8 @@
 ################################################################################
 #
 # UNIX Script Documentation Block
-# Script name:         exwave_post_sbs.sh
-# Script description:  Creates output products from binary WW3 data
+# Script name:         exgfs_wave_post_pnt.sh
+# Script description:  Creates point output products from binary WW3 data
 #
 # Author:   Jose-Henrique Alves Org: NCEP/EMC      Date: 2019-12-06
 # Abstract: This script is the postprocessor for the wave component in GFS.
