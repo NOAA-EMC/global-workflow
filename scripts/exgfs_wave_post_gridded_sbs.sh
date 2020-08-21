@@ -37,6 +37,10 @@
   export LOUD=${LOUD:-YES}; [[ $LOUD = yes ]] && export LOUD=YES
   [[ "$LOUD" != YES ]] && set +x
 
+  # Set wave model ID tag to include member number
+  # if ensemble; waveMEMB var empty in deterministic
+  export WAV_MOD_TAG=${CDUMP}wave${waveMEMB}
+
   cd $DATA
 
   postmsg "$jlogfile" "HAS BEGUN on `hostname`"
@@ -116,13 +120,13 @@
 # 1.a.1 Copy model definition files
   for grdID in $waveGRD $wavesbsGRD $wavepostGRD $waveinterpGRD 
   do
-    if [ -f "$COMIN/rundata/${COMPONENTwave}.mod_def.${grdID}" ]
+    if [ -f "$COMIN/rundata/${CDUMP}wave.mod_def.${grdID}" ]
     then
       set +x
       echo " Mod def file for $grdID found in ${COMIN}/rundata. copying ...."
       [[ "$LOUD" = YES ]] && set -x
 
-      cp -f $COMIN/rundata/${COMPONENTwave}.mod_def.${grdID} mod_def.$grdID
+      cp -f $COMIN/rundata/${CDUMP}wave.mod_def.${grdID} mod_def.$grdID
     fi
   done
 
@@ -419,7 +423,7 @@
 # Check if grib2 file created
       ENSTAG=""
       if [ ${waveMEMB} ]; then ENSTAG=".${membTAG}${waveMEMB}" ; fi
-      gribchk=${COMPONENTwave}.${cycle}${ENSTAG}.${GRDNAME}.${GRDRES}.f${FH3}.grib2
+      gribchk=${CDUMP}wave.${cycle}${ENSTAG}.${GRDNAME}.${GRDRES}.f${FH3}.grib2
       if [ ! -s ${COMOUT}/gridded/${gribchk} ]; then
         set +x
         echo ' '
