@@ -8,75 +8,31 @@ set -xa
 export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
 export COMPONENT=${COMPONENT:-wave}
-export RUNwave=${RUNwave:-${RUN}${COMPONENT}}
-export envir=${envir:-ops}
-export fstart=${fstart:-0}
-export FHMAX_WAV=${FHMAX_WAV:-180}       #180 Total of hours to process
-export FHMAX_HF_WAV=${FHMAX_HF_WAV:-72}  #from 00 to  72 inc=3
-export FHOUT_WAV=${FHOUT_WAV:-6}         #from 72 to 180 inc=6
-export FHOUT_HF_WAV=${FHOUT_HF_WAV:-3}
-export maxtries=720
-
-
 export HOMEwave=${HOMEwave:-$(dirname $(dirname $0))} # parent directory of current job card
-export DATA=${DATA:-${DATAROOT:?}/${job}.$$}
-mkdir -p $DATA
-cd $DATA
 
-cyc=${cyc:-00}
-export cycle=${cycle:-t${cyc}z}
-export pgmout=OUTPUT.$$
-#export modID=${RUN}${NET}
-export modID=${modID:-${NET}${COMPONENT}}
-
-####################################
-# Path to HOME Directory
-####################################
-
-export CODEwave=${CODEwave:-${NWROOT}/${COMPONENT}_code.${wave_code_ver}/${code_pkg}}
-
-export EXECwave=${EXECwave:-HOMEwave/exec}
-export FIXwave=${FIXwave:-HOMEwave/fix}
-export PARMwave=${PARMwave:-HOMEwave/parm}
-export USHwave=${USHwave:-HOMEwave/ush}
-export EXECcode=${EXECcode:-CODEwave/exec}
-
-# Set PDY
-setpdy.sh
-. PDY
-####################################
-# load modules
-####################################
 module use ${HOMEwave}/modulefiles
 module load modulefile_gfswave_prdgen.wcoss_dell_p3
 
 ###################################
-# Set COM Paths and GETGES environment
+# Set COM Paths
 ###################################
-#export COMINwave=${COMINwave:-${COMROOT:?}/${COMPONENT}/${envir}}
-#export COMOUTwave=${COMOUTwave:-${COMROOT:?}/${COMPONENT}/${envir}}
 export COMIN=${COMIN:-$(compath.py ${NET}/${envir}/${RUN}.${PDY})/${cyc}/$COMPONENT}
 export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/$COMPONENT/gempak}
 export PCOM=${PCOM:-${COMOUT}/wmo}
-
+export SENDCOM=${SENDCOM:-YES}
+export SENDDBN_NTC=${SENDDBN_NTC:-YES}
 if [ $SENDCOM = YES ]; then
   mkdir -p $COMOUT $PCOM
 fi
 
-export wavelog=${COMOUTwave}/wave.log
-
-env
-
 ###################################
 # Execute the Script  
 ###################################
-
-$HOMEwave/scripts/exwave_prdgen_gridded.sh.ecf
+$HOMEwave/scripts/exgfswave_prdgen_gridded.native.sh.ecf
 
 ###################################
 # Remove temp directories
 ###################################
-
 if [ "$KEEPDATA" != "YES" ]; then
   cd $DATAROOT
   rm -rf $DATA

@@ -22,7 +22,31 @@
  # Use LOUD variable to turn on/off trace.  Defaults to YES (on).
  export LOUD=${LOUD:-YES}; [[ $LOUD = yes ]] && export LOUD=YES
  [[ "$LOUD" != YES ]] && set +x
+
+ export RUNwave=${RUNwave:-${RUN}${COMPONENT}}
+ export envir=${envir:-ops}
+ export fstart=${fstart:-0}
+ export FHMAX_WAV=${FHMAX_WAV:-180}       #180 Total of hours to process
+ export FHMAX_HF_WAV=${FHMAX_HF_WAV:-72}  #from 00 to  72 inc=3
+ export FHOUT_WAV=${FHOUT_WAV:-6}         #from 72 to 180 inc=6
+ export FHOUT_HF_WAV=${FHOUT_HF_WAV:-3}
+ export maxtries=720
+ export FIXwave=${FIXwave:-HOMEwave/fix}
+ export PARMwave=${PARMwave:-HOMEwave/parm}
+ export USHwave=${USHwave:-HOMEwave/ush}
+ export cyc=${cyc:-00}
+ export cycle=${cycle:-t${cyc}z}
+ export pgmout=OUTPUT.$$
+ export DATA=${DATA:-${DATAROOT:?}/${job}.$$}
+ mkdir -p $DATA
  cd $DATA
+ export wavelog=${DATA}/${COMPONENTwave}_prdggridded.log
+ env
+ 
+# Set PDY
+ setpdy.sh
+ . PDY
+
  postmsg "$jlogfile" "HAS BEGUN on `hostname`"
  msg="Starting MWW3 GRIDDED PRODUCTS SCRIPT"
  postmsg "$jlogfile" "$msg"
@@ -76,8 +100,7 @@
      GRIBIN_chk=$GRIBIN.idx
 
      icnt=1
-     while [ $icnt -lt 1000 ]
-     do
+     while [ $icnt -lt 1000 ]; do
        if [ -r $GRIBIN_chk ] ; then
          break
        else
@@ -85,8 +108,7 @@
          let "icnt=icnt+1"
          sleep 5
        fi
-       if [ $icnt -ge $maxtries ]
-       then
+       if [ $icnt -ge $maxtries ]; then
          msg="ABNORMAL EXIT: NO GRIB FILE FOR GRID $GRIBIN"
          postmsg "$jlogfile" "$msg"
          echo ' '
@@ -127,7 +149,7 @@
        iparam=`expr ${iparam} + 1`
      done #end wave param loop
    done #end gridID loop
-    if [ $fhcnt -ge $FHMAX_HF_WAV ]; then
+   if [ $fhcnt -ge $FHMAX_HF_WAV ]; then
      inc=$FHOUT_WAV
    else
      inc=$FHOUT_HF_WAV
@@ -182,8 +204,7 @@
      #
 # 1.d Input template files
      parmfile=$PARMwave/grib2_${RUNwave}.$grdOut.f${fhr}
-     if [ -f $parmfile ]
-     then
+     if [ -f $parmfile ]; then
        ln -s $parmfile awipsgrb.$grdID.f${fhr}
      else
        echo '*** ERROR : NO template  grib2_${RUNwave}.$grdID.f${fhr} *** '
@@ -240,8 +261,7 @@
      #$TOCGRIB2 < awipsgrb.$grdID.f${fhr} parm='KWBJ' > tocgrib2.out 2>&1
      $TOCGRIB2 < awipsgrb.$grdID.f${fhr} > tocgrib2.out 2>&1
      OK=$?
-     if [ "$OK" != '0' ]
-     then
+     if [ "$OK" != '0' ]; then
        cat tocgrib2.out
        msg="ABNORMAL EXIT: ERROR IN tocgrib2"
        postmsg "$jlogfile" "$msg"

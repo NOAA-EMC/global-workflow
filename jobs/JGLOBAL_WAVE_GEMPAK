@@ -1,102 +1,36 @@
 #!/bin/bash
-#
-# March-2020 RPadilla & JHAlves                                       +
-#           - For GEFSv12.0                                           +
-#                                                                     +
-######################################################################
-set -xa
-# #### 08/25/1999 ###################
-# SET SHELL PROCESSING VARIABLES
-# ###################################
-export PS4='$SECONDS + ' 
+
+
 date
+set -xa
+export PS4='$SECONDS + ' 
 # 
-#####################################
-# SET SOME VARIABLES
-export grids=${grids:-'glo_30m at_10m ep_10m wc_10m ao_9km'}
 export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
 export COMPONENT=${COMPONENT:-wave}
-export RUNwave=${RUNwave:-${RUN}${COMPONENT}}
-#export modID=${modID:-${RUN}${NET}}
-export fstart=${fstart:-0}
-export FHMAX_WAV=${FHMAX_WAV:-180}  #180 Total of hours to process
-export FHMAX_HF_WAV=${FHMAX_HF_WAV:-72}
-export FHOUT_WAV=${FHOUT_WAV:-6}
-export FHOUT_HF_WAV=${FHOUT_HF_WAV:-3}
-export maxtries=${maxtries:-720}
 export machine=${machine:-WCOSS_DELL_P3}
-export cycle=${cycle:-t${cyc}z} 
+export HOMEwave=${HOMEwave:-$(dirname $(dirname $0))} 
+###################################
+# Set COM Paths
+export COMIN=${COMIN:-$(compath.py ${NET}/${envir}/${RUN}.${PDY})/${cyc}/$COMPONENT}
+export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/$COMPONENT/gempak}
+#export pid=$$
+export pgmout="OUTPUT.$$"
+##export MP_PULSE=0
+####export sigMODE=post # Only post-processing done here, but may need to be revised by NCO
+
+module use ${HOMEwave}/modulefiles
+module load runtime_gfswave_gempak.wcoss_dell_p3
 export DBN_ALERT_TYPE=NFC_WAVEENS_GEMPAK
 export SENDCOM=${SENDCOM:-YES}
 export SENDDBN=${SENDDBN:-YES}
-export SENDECF=${SENDECF:-YES}
-
-#export COMINwave=${COMINwave:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}}
-#export COMOUTwave=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}/gempak}
-export COMIN=${COMIN:-$(compath.py ${NET}/${envir}/${RUN}.${PDY})/${cyc}/$COMPONENT}
-export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/$COMPONENT/gempak}
-
-if [ ! -f $COMOUT ] ; then
-  mkdir -p -m 775 $COMOUT
-fi
-#
-export pid=$$
-export DATA=${DATA:-${DATAROOT:?}/${jobid}}
-if [ ! -d $DATA ];then
-  mkdir -p $DATA
-fi
-cd $DATA
-
-####################################
-# Determine Job Output Name on System
-####################################
-export pgmout="OUTPUT.$$"
-
-####################################
-# Determine Job Output Name on System
-####################################
-export pgmout="OUTPUT.$$"
-export MP_PULSE=0
-export sigMODE=post # Only post-processing done here, but may need to be revised by NCO
-
-####################################
-# Path to HOME Directory
-####################################
-
-export HOMEwave=${HOMEwave:-$(dirname $(dirname $0))} # parent directory of current job card
-export GEMwave=${GEMwave:-$HOMEwave/gempak}
-export FIXwave=${FIXwave:-HOMEwave/fix}
-
-####################################
-# load modules
-####################################
- module use ${HOMEwave}/modulefiles
- module load runtime_gfswave_gempak.wcoss_dell_p3
-
-# Run setpdy and initialize PDY variables
-sh setpdy.sh
-. PDY
-
-#
-
-#######################
-# Copy job specific GEMPAK table for FNMOC grib2 files
-#######################
-#cp ${GEMwave}/fix/g2varswmo5.tbl .
-#cp ${GEMwave}/fix/g2vcrdwmo5.tbl .
-#cp ${GEMwave}/fix/g2varswmo2.tbl .
-#cp ${GEMwave}/fix/g2vcrdwmo2.tbl .
- 
-env
 
 ########################################################
 # Execute the script.
-/${HOMEwave}/scripts/exwave_nawips.sh.ecf
-########################################################
+/${HOMEwave}/scripts/exgfs_wave_nawips.sh.ecf
 
-cat $pgmout
-
+###################################
+# Remove temp directories
 if [ "$KEEPDATA" != "YES" ]; then
   cd $DATAROOT
   rm -rf $DATA

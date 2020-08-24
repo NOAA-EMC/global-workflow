@@ -1,50 +1,67 @@
 #!/bin/bash
 ###############################################################################
 #                                                                             #
-# This script is the product generator ("graphics job")  for the multi-grid   #
-# MWW3 wave model.                                                            #
+# This script is the product generator ("graphics job")  for the              #
+#  WW3 wave model.                                                            #
 #                                                                             #
 # Remarks :                                                                   #
 # - Supplemental error output is witten to the gfswave_prdgbulls.log file.    #
 #                                                                             #
 #                                                                             #
 # Origination  : 05/02/2007                                                   #
-# Last update  : 05/04/2007                                                   # 
+# Last update  : 08/20/2020                                                   # 
 #                                                                             #
-# May 2020 RPadilla JHAlves - Merging wave scripts to GFSv16 global workflow  #
+# Aug/2020 RPadilla JHAlves - Merging wave scripts to GFSv16 global workflow  #
 #                                                                             #
 ###############################################################################
 # --------------------------------------------------------------------------- #
 # 0.  Preparations
 # 0.a Basic modes of operation
-  set -xa
-  # Use LOUD variable to turn on/off trace.  Defaults to YES (on).
-  export LOUD=${LOUD:-YES}; [[ $LOUD = yes ]] && export LOUD=YES
-  [[ "$LOUD" != YES ]] && set +x
+ set -xa
+ # Use LOUD variable to turn on/off trace.  Defaults to YES (on).
+ export LOUD=${LOUD:-YES}; [[ $LOUD = yes ]] && export LOUD=YES
+ [[ "$LOUD" != YES ]] && set +x
 
-  cd $DATA
+# PATH for working and home directories
+ export RUNwave=${RUNwave:-${RUN}${COMPONENT}}
+ export envir=${envir:-ops}
+ export cyc=${cyc:-00}
+ export cycle=${cycle:-t${cyc}z}
+ export pgmout=OUTPUT.$$
+ export DATA=${DATA:-${DATAROOT:?}/${job}.$$}
+ #export CODEwave=${CODEwave:-${NWROOT}/${NET}_code.${wave_code_ver}/${code_pkg}}
+ export EXECwave=${EXECwave:-HOMEwave/exec}
+ export FIXwave=${FIXwave:-HOMEwave/fix}
+ export PARMwave=${PARMwave:-HOMEwave/parm}
+ export USHwave=${USHwave:-HOMEwave/ush}
+ #export EXECcode=${EXECcode:-CODEwave/exec}
+# Set PDY
+ setpdy.sh
+ . PDY
+ mkdir -p $DATA
+ cd $DATA
+ export wavelog=${DATA}/${RUNwave}_prdgbulls.log
+ env
+ 
+ postmsg "$jlogfile" "HAS BEGUN on `hostname`"
 
-  postmsg "$jlogfile" "HAS BEGUN on `hostname`"
-
-  msg="Starting MWW3 BULLETINS PRODUCTS SCRIPT"
-  postmsg "$jlogfile" "$msg"
-  touch $wavelog
+ msg="Starting MWW3 BULLETINS PRODUCTS SCRIPT"
+ postmsg "$jlogfile" "$msg"
+ touch $wavelog
 # 0.b Date and time stuff
-
-  export date=$PDY
-  export YMDH=${PDY}${cyc}
-
-  set +x
-  echo ' '
-  echo '                  **************************************'
-  echo '                  *** MWW3 BULLETINS PRODUCTS SCRIPT ***'
-  echo '                  **************************************'
-  echo "                                         $date $cycle"
-  echo ' '
-  echo "Starting at : `date`"
-  echo ' '
-  echo ' '
-  [[ "$LOUD" = YES ]] && set -x
+ export date=$PDY
+ export YMDH=${PDY}${cyc}
+ set +x
+ echo ' '
+ echo '                  **************************************'
+ echo '                  *** MWW3 BULLETINS PRODUCTS SCRIPT ***'
+ echo '                  **************************************'
+ echo "                                         $date $cycle"
+ echo ' '
+ echo "Starting at : `date`"
+ echo ' '
+ echo ' '
+ [[ "$LOUD" = YES ]] && set -x
 
 # 1.  Get necessary files
  set +x
