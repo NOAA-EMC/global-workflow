@@ -9,7 +9,7 @@ export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
 export COMPONENT=${COMPONENT:-wave}
 export machine=${machine:-WCOSS_DELL_P3}
-export HOMEwave=${HOMEwave:-$(dirname $(dirname $0))} 
+export HOMEgfs=${HOMEgfs:-$(dirname $(dirname $0))} 
 ###################################
 # Set COM Paths
 export COMIN=${COMIN:-$(compath.py ${NET}/${envir}/${RUN}.${PDY})/${cyc}/$COMPONENT}
@@ -20,10 +20,16 @@ export pgmout="OUTPUT.$$"
 export DBN_ALERT_TYPE=NFC_WAVEENS_GEMPAK
 export SENDCOM=${SENDCOM:-YES}
 export SENDDBN=${SENDDBN:-YES}
+# Set PDY
+sh setpdy.sh
+. PDY
+env
+msg="Begin job for $job"
+postmsg "$jlogfile" "$msg"
 
 ########################################################
 # Execute the script.
-/${HOMEwave}/scripts/exgfs_wave_nawips.sh.ecf
+/${HOMEgfs}/scripts/exgfs_wave_nawips.sh.ecf
 
 ###################################
 # Remove temp directories

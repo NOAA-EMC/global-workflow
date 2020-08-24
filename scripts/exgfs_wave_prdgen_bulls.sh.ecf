@@ -11,7 +11,7 @@
 # Origination  : 05/02/2007                                                   #
 # Last update  : 08/20/2020                                                   # 
 #                                                                             #
-# Aug/2020 RPadilla JHAlves - Merging wave scripts to GFSv16 global workflow  #
+# Aug/2020 RPadilla & JHAlves - Merging wave scripts to GFSv16 global workflow#
 #                                                                             #
 ###############################################################################
 # --------------------------------------------------------------------------- #
@@ -30,18 +30,15 @@
  export pgmout=OUTPUT.$$
  export DATA=${DATA:-${DATAROOT:?}/${job}.$$}
  #export CODEwave=${CODEwave:-${NWROOT}/${NET}_code.${wave_code_ver}/${code_pkg}}
- export EXECwave=${EXECwave:-HOMEwave/exec}
- export FIXwave=${FIXwave:-HOMEwave/fix}
- export PARMwave=${PARMwave:-HOMEwave/parm}
- export USHwave=${USHwave:-HOMEwave/ush}
+ export EXECwave=${EXECwave:-HOMEgfs/exec}
+ export FIXwave=${FIXwave:-HOMEgfs/fix}
+ export PARMwave=${PARMwave:-HOMEgfs/parm}
+ export USHwave=${USHwave:-HOMEgfs/ush}
  #export EXECcode=${EXECcode:-CODEwave/exec}
-# Set PDY
- setpdy.sh
- . PDY
+
  mkdir -p $DATA
  cd $DATA
  export wavelog=${DATA}/${RUNwave}_prdgbulls.log
- env
  
  postmsg "$jlogfile" "HAS BEGUN on `hostname`"
 
@@ -208,24 +205,9 @@
      err=5;export err;err_chk
      exit $err
    fi
-# ======================================================================
-# TEMPORAL FIXING  -didn't work really- 
-
-   #if [ -f tempo ]; then
-   #  rm tempo*
-   #fi
-   #tr -d '\n' < $oname > tempo
-   #rm $oname
-#
-   #sed 's/<<@/\n/g' tempo > tempo2
-   #sed '/<<%/,+1d' < tempo2 > tempo3
-   #sed  "s/'100000 PERL FORMBUL VERSION 20001206.50//g" < tempo3 >$oname 
-#========================================================================
    
    cat $oname >> awipsbull.$cycle.${RUNwave}
-   #mv $oname $PCOM
-   #XXXrm -f formbul.out $oname
-   #mv tempo tempo2 tempo3 $PCOM
+
  done
 
 # 3. Send output files to the proper destination

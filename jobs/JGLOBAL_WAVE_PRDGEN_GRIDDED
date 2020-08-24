@@ -8,7 +8,7 @@ set -xa
 export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
 export COMPONENT=${COMPONENT:-wave}
-export HOMEwave=${HOMEwave:-$(dirname $(dirname $0))} # parent directory of current job card
+export HOMEgfs=${HOMEgfs:-$(dirname $(dirname $0))} # parent directory of current job card
 
 ###################################
 # Set COM Paths
@@ -22,10 +22,15 @@ if [ $SENDCOM = YES ]; then
   mkdir -p $COMOUT $PCOM
 fi
 
+# Set PDY
+ setpdy.sh
+ . PDY
+ env
+
 ###################################
 # Execute the Script  
 ###################################
-$HOMEwave/scripts/exgfswave_prdgen_gridded.native.sh.ecf
+$HOMEgfs/scripts/exgfswave_prdgen_gridded.native.sh.ecf
 
 ###################################
 # Remove temp directories

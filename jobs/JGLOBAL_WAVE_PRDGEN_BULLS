@@ -7,7 +7,7 @@ set -xa
 export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
 export COMPONENT=${COMPONENT:-wave}
-export HOMEwave=${HOMEwave:-$(dirname $(dirname $0))} # parent directory of current job card
+export HOMEgfs=${HOMEgfs:-$(dirname $(dirname $0))} # parent directory of current job card
 
 ###################################
 # Set COM Paths
@@ -20,11 +20,15 @@ export SENDDBN_NTC=${SENDDBN_NTC:-YES}
 if [ $SENDCOM = YES ]; then
   mkdir -p $COMOUT $PCOM
 fi
+# Set PDY
+ setpdy.sh
+ . PDY
+env
 
 ###################################
 # Execute the Script  
 
-$HOMEwave/scripts/exgfs_wave_prdgen_bulls.sh.ecf
+$HOMEgfs/scripts/exgfs_wave_prdgen_bulls.sh.ecf
 
 ###################################
 # Remove temp directories

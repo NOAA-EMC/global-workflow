@@ -31,9 +31,9 @@
  export FHOUT_WAV=${FHOUT_WAV:-6}         #from 72 to 180 inc=6
  export FHOUT_HF_WAV=${FHOUT_HF_WAV:-3}
  export maxtries=720
- export FIXwave=${FIXwave:-HOMEwave/fix}
- export PARMwave=${PARMwave:-HOMEwave/parm}
- export USHwave=${USHwave:-HOMEwave/ush}
+ export FIXwave=${FIXwave:-HOMEgfs/fix}
+ export PARMwave=${PARMwave:-HOMEgfs/parm}
+ export USHwave=${USHwave:-HOMEgfs/ush}
  export cyc=${cyc:-00}
  export cycle=${cycle:-t${cyc}z}
  export pgmout=OUTPUT.$$
@@ -41,12 +41,7 @@
  mkdir -p $DATA
  cd $DATA
  export wavelog=${DATA}/${COMPONENTwave}_prdggridded.log
- env
  
-# Set PDY
- setpdy.sh
- . PDY
-
  postmsg "$jlogfile" "HAS BEGUN on `hostname`"
  msg="Starting MWW3 GRIDDED PRODUCTS SCRIPT"
  postmsg "$jlogfile" "$msg"

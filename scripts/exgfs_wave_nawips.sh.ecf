@@ -11,7 +11,7 @@ echo " March 2020- Modified for GEFSv12.0"
 #####################################################################
 
 set -xa
-#--------------------------
+
 #export grids=${grids:-'glo_30m at_10m ep_10m wc_10m ao_9km'}
 export grids=${grids:-'glo_10m gso_15m ao_9km'}
 export RUNwave=${RUNwave:-${RUN}${COMPONENT}}
@@ -22,20 +22,14 @@ export FHOUT_WAV=${FHOUT_WAV:-6}
 export FHOUT_HF_WAV=${FHOUT_HF_WAV:-3}
 export maxtries=${maxtries:-720}
 export cycle=${cycle:-t${cyc}z}
-export GEMwave=${GEMwave:-$HOMEwave/gempak}
-export FIXwave=${FIXwave:-HOMEwave/fix}
+export GEMwave=${GEMwave:-$HOMEgfs/gempak}
+export FIXwave=${FIXwave:-HOMEgfs/fix}
 export DATA=${DATA:-${DATAROOT:?}/${jobid}}
 if [ ! -d $DATA ];then
   mkdir -p $DATA
 fi
-#--------------------------
+
 cd $DATA
-# Set PDY
-sh setpdy.sh
-. PDY
-env
-msg="Begin job for $job"
-postmsg "$jlogfile" "$msg"
 
 cpyfil=gds
 garea=dset
