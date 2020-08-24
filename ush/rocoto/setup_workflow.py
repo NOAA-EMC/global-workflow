@@ -47,9 +47,9 @@ def main():
     gfs_steps_awips = ['awips']
     #hyb_steps = ['eobs', 'eomg', 'eupd', 'ecen', 'efcs', 'epos', 'earc']
     metp_steps = ['metp']
-    wav_steps = ['waveinit', 'waveprep', 'wavepostsbs']
+    wav_steps = ['waveinit', 'waveprep', 'wavepostsbs', 'wavepostbndpnt', 'wavepostpnt']
     #Implement additional wave jobs at later date
-    #wav_steps = ['waveinit', 'waveprep', 'wavepostsbs', 'wavepost', 'wavestat']
+    #wav_steps = ['waveinit', 'waveprep', 'wavepostsbs', 'wavepostbndpnt', 'wavepostpnt', 'wavestat']
     #wav_steps_gempak = ['wavegempaksbs']
     #wav_steps_awips = ['waveawipssbs', 'waveawips']
 # From gfsv16b latest
@@ -247,14 +247,14 @@ def get_gdasgfs_resources(dict_configs, cdump='gdas'):
     if cdump in ['gdas'] and do_gldas in ['Y', 'YES']:
         tasks += ['gldas']
     if cdump in ['gdas'] and do_wave in ['Y', 'YES'] and do_wave_cdump in ['GDAS', 'BOTH']:
-        #tasks += ['waveinit', 'waveprep', 'wavepostsbs', 'wavepost', 'wavestat']
-        tasks += ['waveinit', 'waveprep', 'wavepostsbs']
+        #tasks += ['waveinit', 'waveprep', 'wavepostsbs', 'wavepostbndpnt', 'wavepostpnt', 'wavestat']
+        tasks += ['waveinit', 'waveprep', 'wavepostsbs', 'wavepostbndpnt', 'wavepostpnt']
 
     tasks += ['fcst', 'post', 'vrfy', 'arch']
 
     if cdump in ['gfs'] and do_wave in ['Y', 'YES'] and do_wave_cdump in ['GFS', 'BOTH']:
-        #tasks += ['waveinit', 'waveprep', 'wavepostsbs', 'wavepost', 'wavestat']
-        tasks += ['waveinit', 'waveprep', 'wavepostsbs']
+        #tasks += ['waveinit', 'waveprep', 'wavepostsbs', 'wavepostbndpnt', 'wavepostpnt', 'wavestat']
+        tasks += ['waveinit', 'waveprep', 'wavepostsbs', 'wavepostbndpnt', 'wavepostpnt']
     if cdump in ['gfs'] and do_bufrsnd in ['Y', 'YES']:
         tasks += ['postsnd']
     if cdump in ['gfs'] and do_gempak in ['Y', 'YES']:
@@ -571,6 +571,25 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
         task = wfu.create_wf_task('wavepostsbs', cdump=cdump, envar=envars, dependency=dependencies)
         dict_tasks['%swavepostsbs' % cdump] = task
 
+    # wavepostbndpnt
+    if do_wave in ['Y', 'YES'] and cdump in ['gfs']:
+        deps = []
+        data = '&ROTDIR;/%s.@Y@m@d/@H/wave/rundata/%swave.out_pnt.points.@Y@m@d.@H0000' % (cdump,cdump)
+        dep_dict = {'type': 'data', 'data': data}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+        task = wfu.create_wf_task('wavepostbndpnt', cdump=cdump, envar=envars, dependency=dependencies)
+        dict_tasks['%swavepostbndpnt' % cdump] = task
+
+    # wavepostpnt
+    if do_wave in ['Y', 'YES'] and cdump in cdumps:
+        deps = []
+        dep_dict = {'type':'task', 'name':'%sfcst' % cdump}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+        task = wfu.create_wf_task('wavepostpnt', cdump=cdump, envar=envars, dependency=dependencies)
+        dict_tasks['%swavepostpnt' % cdump] = task
+
     # wavegempaksbs
     #if do_wave in ['Y', 'YES'] and do_gempak in ['Y', 'YES'] and cdump in ['gfs']:
     #    deps = []
@@ -602,17 +621,6 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
     #    dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
     #    task = wfu.create_wf_task('waveawipssbs', cdump=cdump, envar=envars, dependency=dependencies)
     #    dict_tasks['%swaveawipssbs' % cdump] = task
-
-    # wavepost
-    #if do_wave in ['Y', 'YES'] and cdump in cdumps:
-    #    deps = []
-    #    dep_dict = {'type':'task', 'name':'%sfcst' % cdump}
-    #    deps.append(rocoto.add_dependency(dep_dict))
-    #    dep_dict = {'type':'task', 'name':'%swavepostsbs' % cdump}
-    #    deps.append(rocoto.add_dependency(dep_dict))
-    #    dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
-    #    task = wfu.create_wf_task('wavepost', cdump=cdump, envar=envars, dependency=dependencies)
-    #    dict_tasks['%swavepost' % cdump] = task
 
     # waveawips
     #if do_wave in ['Y', 'YES'] and do_awips in ['Y', 'YES'] and cdump in ['gfs']:
