@@ -39,3 +39,7 @@ module load g2tmpl/1.6.0
 # Load FSU Genesis module
 module use -a /gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/tracker/ens_tracker.v1.1.15.3/ush/FSUgenesisPY/modulefiles
 module load tclogg
+
+# waveprep
+module use -a /usrx/local/dev/modulefiles
+module load cdo/1.9.8
