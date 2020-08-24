@@ -361,7 +361,6 @@
   fi
   fhrp=$fhr
   fhrg=$fhr
-  iwaitmax=120 # Maximum loop cycles for waiting until wave component output file is ready (fails after max)
   while [ $fhr -le $FHMAX_WAV ]; do
     
     ymdh=`$NDATE $fhr $CDATE`
@@ -500,7 +499,7 @@
     fi
     echo $fhrp
 
-    fhr=$fhp # no gridded output, loop with out_pnt stride
+    fhr=$fhrp # no gridded output, loop with out_pnt stride
 
   done
 
