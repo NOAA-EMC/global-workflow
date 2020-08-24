@@ -12,8 +12,8 @@ echo " March 2020- Modified for GEFSv12.0"
 
 set -xa
 
-#export grids=${grids:-'glo_30m at_10m ep_10m wc_10m ao_9km'}
-export grids=${grids:-'glo_10m gso_15m ao_9km'}
+export grids=${grids:-'glo_30m at_10m ep_10m wc_10m ao_9km'} #Interpolated grids
+#export grids=${grids:-'glo_10m gso_15m ao_9km'}  #Native grids
 export RUNwave=${RUNwave:-${RUN}${COMPONENT}}
 export fstart=${fstart:-0}
 export FHMAX_WAV=${FHMAX_WAV:-180}  #180 Total of hours to process
@@ -49,8 +49,8 @@ while [ $fhcnt -le $FHMAX_WAV ]; do
   fhr=$(printf "%03d" $fhcnt)
   for grid in $grids;do
     case $grid in
-#      ao_9km)  grdIDin='arctic.9km'
-#               grdIDout='gfswaveao9km' ;;
+      ao_9km)  grdIDin='arctic.9km'
+               grdIDout='gfswaveao9km' ;;
       at_10m)  grdIDin='atlocn.0p16'
                grdIDout='gfswaveat10m' ;;
       ep_10m)  grdIDin='epacif.0p16'
@@ -59,8 +59,8 @@ while [ $fhcnt -le $FHMAX_WAV ]; do
                grdIDout='gfswavewc10m' ;;
       glo_30m) grdIDin='global.0p25'
                grdIDout='gfswavegl30m' ;;
-      ao_9km)  grdIDin='arctic.9km'
-               grdIDout='gfswavea9k' ;;
+#      ao_9km)  grdIDin='arctic.9km'
+#               grdIDout='gfswavea9k' ;;
       glo_10m) grdIDin='global.0p25'   
                grdIDout='gfswaveg16k' ;;
       gso_15m) grdIDin='gsouth.0p25' 
@@ -96,7 +96,7 @@ while [ $fhcnt -le $FHMAX_WAV ]; do
     fi
     echo $GRIBIN  
 
-    GEMGRD=${grdIDout}${PDY}${cyc}f${fhr}
+    GEMGRD=${grdIDout}_${PDY}${cyc}f${fhr}
     icnt=1
     while [ $icnt -lt 1000 ]; do
       if [ -r $GRIBIN_chk ] ; then
