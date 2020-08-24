@@ -11,9 +11,29 @@ echo " March 2020- Modified for GEFSv12.0"
 #####################################################################
 
 set -xa
-
+#--------------------------
+#export grids=${grids:-'glo_30m at_10m ep_10m wc_10m ao_9km'}
+export grids=${grids:-'glo_10m gso_15m ao_9km'}
+export RUNwave=${RUNwave:-${RUN}${COMPONENT}}
+export fstart=${fstart:-0}
+export FHMAX_WAV=${FHMAX_WAV:-180}  #180 Total of hours to process
+export FHMAX_HF_WAV=${FHMAX_HF_WAV:-72}
+export FHOUT_WAV=${FHOUT_WAV:-6}
+export FHOUT_HF_WAV=${FHOUT_HF_WAV:-3}
+export maxtries=${maxtries:-720}
+export cycle=${cycle:-t${cyc}z}
+export GEMwave=${GEMwave:-$HOMEwave/gempak}
+export FIXwave=${FIXwave:-HOMEwave/fix}
+export DATA=${DATA:-${DATAROOT:?}/${jobid}}
+if [ ! -d $DATA ];then
+  mkdir -p $DATA
+fi
+#--------------------------
 cd $DATA
-
+# Set PDY
+sh setpdy.sh
+. PDY
+env
 msg="Begin job for $job"
 postmsg "$jlogfile" "$msg"
 
@@ -33,11 +53,10 @@ maxtries=15
 fhcnt=$fstart
 while [ $fhcnt -le $FHMAX_WAV ]; do
   fhr=$(printf "%03d" $fhcnt)
-
   for grid in $grids;do
     case $grid in
-      ao_9km)  grdIDin='arctic.9km'
-               grdIDout='gfswaveao9km' ;;
+#      ao_9km)  grdIDin='arctic.9km'
+#               grdIDout='gfswaveao9km' ;;
       at_10m)  grdIDin='atlocn.0p16'
                grdIDout='gfswaveat10m' ;;
       ep_10m)  grdIDin='epacif.0p16'
@@ -46,12 +65,18 @@ while [ $fhcnt -le $FHMAX_WAV ]; do
                grdIDout='gfswavewc10m' ;;
       glo_30m) grdIDin='global.0p25'
                grdIDout='gfswavegl30m' ;;
+      ao_9km)  grdIDin='arctic.9km'
+               grdIDout='gfswavea9k' ;;
+      glo_10m) grdIDin='global.0p25'   
+               grdIDout='gfswaveg16k' ;;
+      gso_15m) grdIDin='gsouth.0p25' 
+               grdIDout='gfswaves25k' ;;
       *)       gridIDin= 
                grdIDout= ;;
     esac
     GRIBIN=$COMIN/$RUNwave.$cycle.$grdIDin.f${fhr}.grib2
     GRIBIN_chk=$GRIBIN.idx
-    if [ "$grdIDin" = "global.0p25" ]; then
+    if [ "$grdIDin" = "global.0p25" && "$grid" = "glo_30m" ]; then
       #cp $GRIBIN  tempgf.$grdID.f${fhr}
       #cp $GRIBIN tempgf.$grdIDin.f${fhr}
       $WGRIB2 -lola 0:720:0.5 -90:361:0.5 gribfile.$grdIDout.f${fhr}  grib \
@@ -77,7 +102,7 @@ while [ $fhcnt -le $FHMAX_WAV ]; do
     fi
     echo $GRIBIN  
 
-    GEMGRD=${grdIDout}_${PDY}${cyc}f${fhr}
+    GEMGRD=${grdIDout}${PDY}${cyc}f${fhr}
     icnt=1
     while [ $icnt -lt 1000 ]; do
       if [ -r $GRIBIN_chk ] ; then
@@ -104,24 +129,24 @@ while [ $fhcnt -le $FHMAX_WAV ]; do
 
     startmsg
 
-    $NAGRIB << EOF
-    GBFILE   = grib_$grid
-    INDXFL   = 
-    GDOUTF   = $GEMGRD
-    PROJ     = $proj
-    GRDAREA  = $grdarea
-    KXKY     = $kxky
-    MAXGRD   = $maxgrd
-    CPYFIL   = $cpyfil
-    GAREA    = $garea
-    OUTPUT   = $output
-    GBTBLS   = $gbtbls
-    G2TBLS   = $g2tbls
-    GBDIAG   = 
-    PDSEXT   = $pdsext
-   l
-   r
-EOF
+	$NAGRIB <<-EOF
+	GBFILE   = grib_$grid
+	INDXFL   = 
+	GDOUTF   = $GEMGRD
+	PROJ     = $proj
+	GRDAREA  = $grdarea
+	KXKY     = $kxky
+	MAXGRD   = $maxgrd
+	CPYFIL   = $cpyfil
+	GAREA    = $garea
+	OUTPUT   = $output
+	GBTBLS   = $gbtbls
+	G2TBLS   = $g2tbls
+	GBDIAG   = 
+	PDSEXT   = $pdsext
+	l
+	r
+	EOF
     export err=$?;pgm=$NAGRIB;err_chk
     #####################################################
     # GEMPAK DOES NOT ALWAYS HAVE A NON ZERO RETURN CODE
@@ -142,7 +167,7 @@ EOF
         $COMOUT/$GEMGRD
       else
         echo "##### DBN_ALERT is: MODEL ${DBN_ALERT_TYPE} $job $COMOUT/$GEMGRD#####"
-     fi
+      fi
     fi
     rm grib_$grid
   done

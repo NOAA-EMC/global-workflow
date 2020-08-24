@@ -8,9 +8,6 @@ export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
 export COMPONENT=${COMPONENT:-wave}
 export HOMEwave=${HOMEwave:-$(dirname $(dirname $0))} # parent directory of current job card
-#
-module use ${HOMEwave}/modulefiles
-module load modulefile_gfswave_prdgen.wcoss_dell_p3
 
 ###################################
 # Set COM Paths

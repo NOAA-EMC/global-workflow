@@ -16,11 +16,7 @@ export COMIN=${COMIN:-$(compath.py ${NET}/${envir}/${RUN}.${PDY})/${cyc}/$COMPON
 export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/$COMPONENT/gempak}
 #export pid=$$
 export pgmout="OUTPUT.$$"
-##export MP_PULSE=0
-####export sigMODE=post # Only post-processing done here, but may need to be revised by NCO
 
-module use ${HOMEwave}/modulefiles
-module load runtime_gfswave_gempak.wcoss_dell_p3
 export DBN_ALERT_TYPE=NFC_WAVEENS_GEMPAK
 export SENDCOM=${SENDCOM:-YES}
 export SENDDBN=${SENDDBN:-YES}
