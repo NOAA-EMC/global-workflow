@@ -53,7 +53,7 @@ sed -i -e "s;@\[med_petlist_bounds\];$med_petlist_bounds;g" tmp1
 sed -i -e "s;@\[atm_petlist_bounds\];$atm_petlist_bounds;g" tmp1
 
 if [ $cplflx = .true. ]; then
-    if [ $restart_interval  -gt 0]; then 
+    if [ $restart_interval  -gt 0 ]; then 
       restart_interval_nems=$restart_interval 
     else 
       restart_interval_nems=$FHMAX 
