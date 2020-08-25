@@ -16,6 +16,7 @@
 #  Update record :                                                            #
 #                                                                             #
 # - Origination: Hendrik Tolman                                01-Mar-2007    #
+# 2019-11-02  J-Henrique Alves Ported to global-workflow.
 #                                                                             #
 # Update log                                                                  #
 # Nov2019 JHAlves - Merging wave scripts to global workflow                   #
@@ -45,7 +46,7 @@
   echo '!         Make ice fields        |'
   echo '+--------------------------------+'
   echo "   Model TAG       : $WAV_MOD_TAG"
-  echo "   Model ID        : $COMPONENTwave"
+  echo "   Model ID        : ${CDUMP}wave"
   echo "   Ice grid ID     : $WAVEICE_FID"
   echo "   Ice file        : $WAVICEFILE"
   echo ' '
@@ -55,7 +56,7 @@
   if [ -z "$YMDH" ] || [ -z "$cycle" ] || \
      [ -z "$COMOUT" ] || [ -z "$FIXwave" ] || [ -z "$EXECwave" ] || \
      [ -z "$WAV_MOD_TAG" ] || [ -z "$WAVEICE_FID" ] || [ -z "$SENDCOM" ] || \
-     [ -z "$COMIN_WAV_ICE" ] || [ -z "$COMPONENTwave" ]
+     [ -z "$COMIN_WAV_ICE" ]
   then
     set $setoff
     echo ' '
@@ -63,7 +64,7 @@
     echo '*** EXPORTED VARIABLES IN preprocessor NOT SET ***'
     echo '**************************************************'
     echo ' '
-    exit 0
+    exit 1
     set $seton
     postmsg "$jlogfile" "NON-FATAL ERROR - EXPORTED VARIABLES IN preprocessor NOT SET"
   fi
@@ -97,7 +98,7 @@
     echo ' '
     set $seton
     postmsg "$jlogfile" "FATAL ERROR - NO ICE FILE (GFS GRIB)"
-    exit 0
+    exit 2
   fi
 
 # --------------------------------------------------------------------------- #
@@ -124,7 +125,7 @@
     echo ' '
     set $seton
     postmsg "$jlogfile" "ERROR IN UNPACKING GRIB ICE FILE."
-    exit 0
+    exit 3
   fi
 
   rm -f wgrib.out
@@ -155,7 +156,7 @@
     echo ' '
     set $seton
     postmsg "$jlogfile" "NON-FATAL ERROR IN waveprep."
-    exit 0
+    exit 4
   fi
 
   rm -f wave_prep.out ww3_prep.inp ice.raw mod_def.ww3
@@ -171,7 +172,7 @@
     icefile=${WAV_MOD_TAG}.${WAVEICE_FID}.$cycle.ice
   elif [ "${WW3ATMIENS}" = "F" ]
   then 
-    icefile=${COMPONENTwave}.${WAVEICE_FID}.$cycle.ice
+    icefile=${CDUMP}wave.${WAVEICE_FID}.$cycle.ice
   fi
  
   set $setoff

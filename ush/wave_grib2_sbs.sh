@@ -11,6 +11,7 @@
 #
 # Script history log:
 # 2019-11-02  J-Henrique Alves Ported to global-workflow.
+# 2020-06-10  J-Henrique Alves Ported to R&D machine Hera
 #
 # $Id$
 #
@@ -71,6 +72,14 @@
   dtgrib=3600 # only one time slice
 # SBS one time slice per file
   FH3=$(printf %03i $fhr)
+
+# Verify if grib2 file exists from interrupted run
+  ENSTAG=""
+  if [ ${waveMEMB} ]; then ENSTAG=".${membTAG}${waveMEMB}" ; fi
+  outfile=${WAV_MOD_TAG}.${cycle}${ENSTAG}.${grdnam}.${grdres}.f${FH3}.grib2
+
+# Only create file if not present in COM
+  if [ ! -s ${COMOUT}/gridded/${outfile}.idx ]; then
 
   set +x
   echo ' '
@@ -136,10 +145,20 @@
   echo "   Run ww3_grib2"
   echo "   Executing $EXECwave/ww3_grib"
   [[ "$LOUD" = YES ]] && set -x
-  ENSTAG=""
-  if [ ${waveMEMB} ]; then ENSTAG=".${membTAG}${waveMEMB}" ; fi
-  outfile=${WAV_MOD_TAG}.${cycle}${ENSTAG}.${grdnam}.${grdres}.f${FH3}.grib2
   $EXECwave/ww3_grib > grib2_${grdnam}_${FH3}.out 2>&1
+
+    if [ ! -s gribfile ]; then
+      set +x
+      echo ' '
+      echo '************************************************ '
+      echo '*** FATAL ERROR : ERROR IN ww3_grib encoding *** '
+      echo '************************************************ '
+      echo ' '
+      [[ "$LOUD" = YES ]] && set -x
+      postmsg "$jlogfile" "FATAL ERROR : ERROR IN ww3_grib2"
+      exit 3
+    fi
+
   $WGRIB2 gribfile -set_date $CDATE -set_ftime "$fhr hour fcst" -grib ${COMOUT}/gridded/${outfile}
   err=$?
 
@@ -224,6 +243,14 @@
 
   cd ../
   mv -f ${gribDIR} done.${gribDIR}
+
+  else
+    set +x
+    echo ' '
+    echo " File ${COMOUT}/gridded/${outfile} found, skipping generation process"
+    echo ' '
+    [[ "$LOUD" = YES ]] && set -x
+  fi
 
   set +x
   echo ' '

@@ -17,6 +17,7 @@
 # Origination: Hendrik Tolman                                March 13, 2007   #
 # Update log                                                                  #
 # Nov2019 JHAlves - Merging wave scripts to global workflow                   #
+# 2020-06-10  J-Henrique Alves Ported R&D machine Hera   
 #                                                                             #
 ###############################################################################
 #
@@ -220,7 +221,7 @@
   cd $DATA
 
   set +x; [[ "$LOUD" = YES ]] && set -v
-  rm -f  ${STA_DIR}/${type}
+  rm -rf  ${STA_DIR}/${type}
   set +v
 
   echo ' '
