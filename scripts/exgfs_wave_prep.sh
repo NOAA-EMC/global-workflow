@@ -30,6 +30,7 @@
 # Nov2012 JHAlves - Transitioning to WCOSS                                    #
 # Apr2019 JHAlves - Transitioning to GEFS workflow                            #
 # Nov2019 JHAlves - Merging wave scripts to global workflow                   #
+# Jun2020 JHAlves - Porting to R&D machine Hera                               #
 #                                                                             #
 #   WAV_MOD_ID and WAV_MOD_TAG replace modID. WAV_MOD_TAG                     # 
 #   is used for ensemble-specific I/O. For deterministic                      #
@@ -44,6 +45,10 @@
   # Use LOUD variable to turn on/off trace.  Defaults to YES (on).
   export LOUD=${LOUD:-YES}; [[ $LOUD = yes ]] && export LOUD=YES
   [[ "$LOUD" != YES ]] && set +x
+
+  # Set wave model ID tag to include member number
+  # if ensemble; waveMEMB var empty in deterministic
+  export WAV_MOD_TAG=${CDUMP}wave${waveMEMB}
 
   cd $DATA
   mkdir outtmp
@@ -65,21 +70,29 @@
   echo ' '
   [[ "$LOUD" = YES ]] && set -x
 
-  FHMAX_WAV=${FHMAX_WAV:-384}
+  #  export MP_PGMMODEL=mpmd
+  #  export MP_CMDFILE=./cmdfile
 
-# 0.b Date and time stuff
+  if [ "$INDRUN" = 'no' ]
+  then
+    FHMAX_WAV=${FHMAX_WAV:-3}
+  else
+    FHMAX_WAV=${FHMAX_WAV:-384}
+  fi
 
-# Beginning time for outpupt may differ from SDATE if DOIAU=YES
+  # 0.b Date and time stuff
+
+  # Beginning time for outpupt may differ from SDATE if DOIAU=YES
   export date=$PDY
   export YMDH=${PDY}${cyc}
-# Roll back $IAU_FHROT hours of DOIAU=YES
+  # Roll back $IAU_FHROT hours of DOIAU=YES
   IAU_FHROT=3
   if [ "$DOIAU" = "YES" ]
   then
     WAVHINDH=$(( WAVHINDH + IAU_FHROT ))
   fi
-# Set time stamps for model start and output
-# For special case when IAU is on but this is an initial half cycle 
+  # Set time stamps for model start and output
+  # For special case when IAU is on but this is an initial half cycle 
   if [ $IAU_OFFSET = 0 ]; then
     ymdh_beg=$YMDH
   else
@@ -91,14 +104,14 @@
   ymdh_beg_out=$YMDH
   time_beg_out="`echo $ymdh_beg_out | cut -c1-8` `echo $ymdh_beg_out | cut -c9-10`0000"
 
-# Restart file times (already has IAU_FHROT in WAVHINDH) 
+  # Restart file times (already has IAU_FHROT in WAVHINDH) 
   RSTOFFSET=$(( ${WAVHCYC} - ${WAVHINDH} ))
-# Update restart time is added offset relative to model start
+  # Update restart time is added offset relative to model start
   RSTOFFSET=$(( ${RSTOFFSET} + ${RSTIOFF_WAV} ))
   ymdh_rst_ini=`$NDATE ${RSTOFFSET} $YMDH`
   RST2OFFSET=$(( DT_2_RST_WAV / 3600 ))
   ymdh_rst2_ini=`$NDATE ${RST2OFFSET} $YMDH` # DT2 relative to first-first-cycle restart file
-# First restart file for cycling
+  # First restart file for cycling
   time_rst_ini="`echo $ymdh_rst_ini | cut -c1-8` `echo $ymdh_rst_ini | cut -c9-10`0000"
   if [ ${DT_1_RST_WAV} = 1 ]; then
     time_rst1_end=${time_rst_ini}
@@ -107,11 +120,11 @@
     ymdh_rst1_end=`$NDATE $RST1OFFSET $ymdh_rst_ini`
     time_rst1_end="`echo $ymdh_rst1_end | cut -c1-8` `echo $ymdh_rst1_end | cut -c9-10`0000"
   fi
-# Second restart file for checkpointing
+  # Second restart file for checkpointing
   if [ "${RSTTYPE_WAV}" = "T" ]; then
     time_rst2_ini="`echo $ymdh_rst2_ini | cut -c1-8` `echo $ymdh_rst2_ini | cut -c9-10`0000"
     time_rst2_end=$time_end
-# Condition for gdas run or any other run when checkpoint stamp is > ymdh_end
+  # Condition for gdas run or any other run when checkpoint stamp is > ymdh_end
     if [ $ymdh_rst2_ini -ge $ymdh_end ]; then
       ymdh_rst2_ini=`$NDATE 3 $ymdh_end`
       time_rst2_ini="`echo $ymdh_rst2_ini | cut -c1-8` `echo $ymdh_rst2_ini | cut -c9-10`0000"
@@ -132,16 +145,16 @@
   echo ' '
   [[ "$LOUD" = YES ]] && set -x
 
-# Script will run only if pre-defined NTASKS
-#     The actual work is distributed over these tasks.
+  # Script will run only if pre-defined NTASKS
+  #     The actual work is distributed over these tasks.
   if [ -z ${NTASKS} ]        
   then
     echo "FATAL ERROR: Requires NTASKS to be set "
     err=1; export err;${errchk}
   fi
 
-# --------------------------------------------------------------------------- #
-# 1.  Get files that are used by most child scripts
+  # --------------------------------------------------------------------------- #
+  # 1.  Get files that are used by most child scripts
 
   set +x
   echo 'Preparing input files :'
@@ -149,7 +162,7 @@
   echo ' '
   [[ "$LOUD" = YES ]] && set -x
 
-# 1.a Model definition files
+  # 1.a Model definition files
 
   rm -f cmdfile
   touch cmdfile
@@ -163,12 +176,12 @@
 
   for grdID in $grdINP $waveGRD
   do
-    if [ -f "$COMIN/rundata/${COMPONENTwave}.mod_def.${grdID}" ]
+    if [ -f "$COMIN/rundata/${CDUMP}wave.mod_def.${grdID}" ]
     then
       set +x
       echo " Mod def file for $grdID found in ${COMIN}/rundata. copying ...."
       [[ "$LOUD" = YES ]] && set -x
-      cp $COMIN/rundata/${COMPONENTwave}.mod_def.${grdID} mod_def.$grdID
+      cp $COMIN/rundata/${CDUMP}wave.mod_def.${grdID} mod_def.$grdID
 
     else
       msg="FATAL ERROR: NO MODEL DEFINITION FILE"
@@ -186,7 +199,7 @@
     fi
   done
 
-# 1.b Netcdf Preprocessor template files
+  # 1.b Netcdf Preprocessor template files
    if [ "$WW3ATMINP" = 'YES' ]; then itype="$itype wind" ; fi 
    if [ "$WW3ICEINP" = 'YES' ]; then itype="$itype ice" ; fi 
    if [ "$WW3CURINP" = 'YES' ]; then itype="$itype cur" ; fi 
@@ -609,7 +622,7 @@
   fi
 
 #-------------------------------------------------------------------
-# CURR processing (not functional, TBD for uncoupled and GFSv16 cases)
+# CURR processing 
 
   if [ "${WW3CURINP}" = 'YES' ]; then
 
@@ -654,6 +667,11 @@
           FLGHF='F'
         else
           echo ' '
+          if [ "${FLGHF}" = "T" ] ; then
+             curfile=${curfile1h}
+          else 
+             curfile=${curfile3h}
+          fi
           set $setoff
           echo ' '
           echo '************************************** '
@@ -663,7 +681,7 @@
           set $seton
           postmsg "$jlogfile" "FATAL ERROR - NO CURRENT FILE (RTOFS)"
           err=11;export err;${errchk}
-          exit 0
+          exit $err
           echo ' '
         fi
 
@@ -741,7 +759,7 @@
         cat $file >> cur.${WAVECUR_FID}
       done
 
-      cp -f cur.${WAVECUR_FID} ${COMOUT}/rundata/${COMPONENTwave}.${WAVECUR_FID}.$cycle.cur 
+      cp -f cur.${WAVECUR_FID} ${COMOUT}/rundata/${CDUMP}wave.${WAVECUR_FID}.$cycle.cur 
 
     else
       echo ' '
@@ -834,14 +852,9 @@
       WINDFLAG="$WAVEWND_FID"
     ;;
     'CPL' )
+      WINDFLAG="CPL:${waveesmfGRD}"
       WNDIFLAG='T'
-      if [ ${waveesmfGRD} ]
-      then
-        WINDFLAG="CPL:${waveesmfGRD}"
-        CPLILINE="  '${waveesmfGRD}' F F T F F F F"
-      else 
-        WINDFLAG="CPL:native"
-      fi
+      CPLILINE="  '${waveesmfGRD}' F F T F F F F"
     ;;
   esac
   
@@ -853,14 +866,9 @@
       ICEFLAG="$WAVEICE_FID"
     ;;
     'CPL' )
+      ICEFLAG="CPL:${waveesmfGRD}"
       ICEIFLAG='T'
-      if [ ${waveesmfGRD} ]
-      then
-        ICEFLAG="CPL:${waveesmfGRD}"
-        CPLILINE="  '${waveesmfGRD}' F F ${WNDIFLAG} T F F F"
-      else 
-        ICEFLAG="CPL:native"
-      fi
+      CPLILINE="  '${waveesmfGRD}' F F ${WNDIFLAG} T F F F"
     ;;
   esac
 
@@ -876,14 +884,9 @@
       fi
     ;;
     'CPL' )
+      CURRFLAG="CPL:${waveesmfGRD}"
       CURIFLAG='T'
-      if [ ${waveesmfGRD} ]
-      then
-        CURRFLAG="CPL:${waveesmfGRD}"
-        CPLILINE="  '${waveesmfGRD}' F T ${WNDIFLAG} ${ICEFLAG} F F F"
-      else 
-        CURRFLAG="CPL:native"
-      fi
+      CPLILINE="  '${waveesmfGRD}' F T ${WNDIFLAG} ${ICEFLAG} F F F"
     ;;
   esac
 
@@ -925,8 +928,6 @@
       -e "s/OUT_BEG/$time_beg_out/g" \
       -e "s/OUT_END/$time_end/g" \
       -e "s/DTFLD/ $DTFLD_WAV/g" \
-      -e "s/FLAGMASKCOMP/ $FLAGMASKCOMP/g" \
-      -e "s/FLAGMASKOUT/ $FLAGMASKOUT/g" \
       -e "s/GOFILETYPE/ $GOFILETYPE/g" \
       -e "s/POFILETYPE/ $POFILETYPE/g" \
       -e "s/FIELDS/$FIELDS/g" \
@@ -948,9 +949,9 @@
   if [ -f ww3_multi.inp ]
   then
     echo " Copying file ww3_multi.${WAV_MOD_TAG}.inp to $COMOUT "
-    cp ww3_multi.inp ${COMOUT}/rundata/ww3_multi.${WAV_MOD_TAG}.${cycle}.inp
+    cp ww3_multi.inp ${COMOUT}/rundata/ww3_multi.${WAV_MOD_TAG}.$cycle.inp
   else
-    echo "FATAL ERROR: file ww3_multi.${WAV_MOD_TAG}.${cycle}.inp NOT CREATED, ABORTING"
+    echo "FATAL ERROR: file ww3_multi.${WAV_MOD_TAG}.$cycle.inp NOT CREATED, ABORTING"
     err=13;export err;${errchk}
   fi 
 
