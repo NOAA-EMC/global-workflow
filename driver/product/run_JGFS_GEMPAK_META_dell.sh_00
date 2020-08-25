@@ -33,7 +33,7 @@ module load ips/18.0.1.163
 module load CFP/2.0.1
 module load impi/18.0.1
 module load lsf/10.1
-module load prod_util/1.1.3
+module load prod_util/1.1.4
 module load prod_envir/1.0.3
 module load grib_util/1.1.0
 ###########################################
@@ -47,7 +47,7 @@ module list
 ##############################################
 # set envir=para or para to test with data in prod or para
  export envir=para
- export envir=prod
+ export envir=para
 
 export SENDCOM=YES
 export KEEPDATA=YES
@@ -111,18 +111,15 @@ if [ $envir = "prod" ] ; then
   export COMIN=${COMIN:-$(compath.py ${NET}/${envir}/${RUN}.${PDY})/${cyc}/gempak}
   export COMINgempak=${COMINgempak:-${COMROOT}/${NET}/${envir}}
 else
-#  export COMIN=/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/prfv3rt1/gfs.${PDY}/${cyc}/gempak   ### EMC PARA Realtime
-#  export COMINgempak=/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/prfv3rt1                          ### EMC PARA Realtime
+   export COMIN=/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/v16rt2c/gfs/para/${RUN}.${PDY}/${cyc}/atmos/gempak ### EMC PARA Realtime
+   export COMINgempak=/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/v16rt2c/gfs/para                             ### EMC PARA Realtime
 
-  export COMIN=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/git/${NET}/${envir}/${RUN}.${PDY}/${cyc}/gempak   ### Boi PARA
-  export COMINgempak=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/git/${NET}/${envir}                         ### Boi PARA
 fi
+export COMOUT=${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/atmos/gempak/meta
 
 export COMINukmet=${COMINukmet:-$(compath.py nawips/prod/ukmet)}
 export COMINecmwf=${COMINecmwf:-$(compath.py ecmwf/prod/ecmwf)}
 export COMINnam=${COMINnam:-$(compath.py nam/prod/nam)}
-
-export COMOUT=${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/gempak/meta
 
 if [ ! -f $COMOUT ] ; then
   mkdir -p -m 775 $COMOUT

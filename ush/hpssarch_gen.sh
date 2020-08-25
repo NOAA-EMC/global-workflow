@@ -46,7 +46,7 @@ if [ $type = "gfs" ]; then
   touch gfs_${format}b.txt
   touch gfs_restarta.txt
 
-  dirpath="gfs.${PDY}/${cyc}/"
+  dirpath="gfs.${PDY}/${cyc}/atmos/"
   dirname="./${dirpath}"
 
   head="gfs.t${cyc}z."
@@ -148,7 +148,7 @@ if [ $type = "gfs" ]; then
     rm -rf gfswave.txt
     touch gfswave.txt
 
-    dirpath="gfswave.${PDY}/${cyc}/"
+    dirpath="gfs.${PDY}/${cyc}/wave/"
     dirname="./${dirpath}"
 
     head="gfswave.t${cyc}z."
@@ -176,7 +176,7 @@ if [ $type = "gdas" ]; then
   touch gdas_restarta.txt
   touch gdas_restartb.txt
 
-  dirpath="gdas.${PDY}/${cyc}/"
+  dirpath="gdas.${PDY}/${cyc}/atmos/"
   dirname="./${dirpath}"
   head="gdas.t${cyc}z."
 
@@ -273,7 +273,7 @@ if [ $type = "gdas" ]; then
     rm -rf gdaswave_restart.txt
     touch gdaswave_restart.txt
 
-    dirpath="gdaswave.${PDY}/${cyc}/"
+    dirpath="gdas.${PDY}/${cyc}/wave/"
     dirname="./${dirpath}"
 
     head="gdaswave.t${cyc}z."
@@ -307,7 +307,7 @@ if [ $type = "enkfgdas" -o $type = "enkfgfs" ]; then
 ##NTARS2=$((NTARS/2))  # number of earc groups to include analysis/increments
   NTARS2=$NTARS
 
-  dirpath="enkf${CDUMP}.${PDY}/${cyc}/"
+  dirpath="enkf${CDUMP}.${PDY}/${cyc}/atmos/"
   dirname="./${dirpath}"
   head="${CDUMP}.t${cyc}z."
 
@@ -378,7 +378,7 @@ if [ $type = "enkfgdas" -o $type = "enkfgfs" ]; then
   while [ $m -le $NMEM_EARCGRP ]; do
     nm=$(((n-1)*NMEM_EARCGRP+m))
     mem=$(printf %03i $nm)
-    dirpath="enkf${CDUMP}.${PDY}/${cyc}/mem${mem}/"
+    dirpath="enkf${CDUMP}.${PDY}/${cyc}/atmos/mem${mem}/"
     dirname="./${dirpath}"
     head="${CDUMP}.t${cyc}z."
 
@@ -412,6 +412,9 @@ if [ $type = "enkfgdas" -o $type = "enkfgfs" ]; then
 
       fi 
       echo "${dirname}${head}atmf00${FHR}${SUFFIX}       " >>enkf${CDUMP}_grp${n}.txt
+      if [ $FHR -eq 6 ]; then
+	  echo "${dirname}${head}sfcf00${FHR}${SUFFIX}       " >>enkf${CDUMP}_grp${n}.txt
+      fi
     done # loop over FHR
 
     if [[ lobsdiag_forenkf = ".false." ]] ; then

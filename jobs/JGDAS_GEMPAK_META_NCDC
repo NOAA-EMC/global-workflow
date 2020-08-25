@@ -50,6 +50,7 @@ cp $FIXgempak/datatype.tbl datatype.tbl
 ####################################
 export NET=${NET:-gfs}
 export RUN=${RUN:-gdas}
+export COMPONENT=${COMPONENT:-atmos}
 export MODEL=GDAS
 export GRID_NAME=gdas
 export fend=09
@@ -65,10 +66,10 @@ export DBN_ALERT_TYPE=GDAS_METAFILE
 ##############################################
 # Define COM directories
 ##############################################
-export COMIN=${COMIN:-$(compath.py ${NET}/${envir}/${RUN}.${PDY})/${cyc}/gempak}
+export COMIN=${COMIN:-$(compath.py ${NET}/${envir}/${RUN}.${PDY})/${cyc}/$COMPONENT/gempak}
 export COMINgdas=${COMINgdas:-$(compath.py ${NET}/${envir}/${RUN})}
-export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/gempak/meta}
-export COMOUTncdc=${COMOUTncdc:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}/${cyc}}
+export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/$COMPONENT/gempak/meta}
+export COMOUTncdc=${COMOUTncdc:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/$COMPONENT}
 
 export COMINukmet=${COMINukmet:-$(compath.py nawips/prod/ukmet)}
 export COMINecmwf=${COMINecmwf:-$(compath.py ecmwf/prod/ecmwf)}
