@@ -574,7 +574,7 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
     # wavepostbndpnt
     if do_wave in ['Y', 'YES'] and cdump in ['gfs']:
         deps = []
-        data = '&ROTDIR;/%s.@Y@m@d/@H/wave/rundata/%swave.out_pnt.points.@Y@m@d.@H0000' % (cdump,cdump)
+        data = '&ROTDIR;/%s.@Y@m@d/@H/atmos/%s.t@Hz.logf192.txt' % (cdump,cdump)
         dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
