@@ -42,6 +42,7 @@
   # Set wave model ID tag to include member number
   # if ensemble; waveMEMB var empty in deterministic
   export WAV_MOD_TAG=${CDUMP}wave${waveMEMB}
+  FHMAX_WAV_IBP=192
 
   postmsg "$jlogfile" "HAS BEGUN on `hostname`"
 
@@ -361,7 +362,7 @@
   fi
   fhrp=$fhr
   fhrg=$fhr
-  while [ $fhr -le $FHMAX_WAV ]; do
+  while [ $fhr -le $FHMAX_WAV_IBP ]; do
     
     ymdh=`$NDATE $fhr $CDATE`
     YMD=$(echo $ymdh | cut -c1-8)
@@ -526,56 +527,26 @@
 
   if [ "$DOIBP_WAV" = 'YES' ]
   then
-    if [ ${CFP_MP:-"NO"} = "YES" ]; then
-      echo "$nm $USHwave/wave_tar.sh $WAV_MOD_TAG ibp $Nibp > ${WAV_MOD_TAG}_ibp_tar.out 2>&1 "   >> cmdtarfile
-      nm=$(( nm + 1 ))
-    else
-      echo "$USHwave/wave_tar.sh $WAV_MOD_TAG ibp $Nibp > ${WAV_MOD_TAG}_ibp_tar.out 2>&1 "   >> cmdtarfile
-    fi
-  fi
-  if [ "$DOSPC_WAV" = 'YES' ]
-  then
-    if [ ${CFP_MP:-"NO"} = "YES" ]; then
-      echo "$nm $USHwave/wave_tar.sh $WAV_MOD_TAG spec $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
-      nm=$(( nm + 1 ))
-      echo "$nm $USHwave/wave_tar.sh $WAV_MOD_TAG bull $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
-      nm=$(( nm + 1 ))
-      echo "$nm $USHwave/wave_tar.sh $WAV_MOD_TAG cbull $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
-      nm=$(( nm + 1 ))
-    else
-      echo "$USHwave/wave_tar.sh $WAV_MOD_TAG spec $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
-      echo "$USHwave/wave_tar.sh $WAV_MOD_TAG bull $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
-      echo "$USHwave/wave_tar.sh $WAV_MOD_TAG cbull $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
-    fi
+    echo "$USHwave/wave_tar.sh $WAV_MOD_TAG ibp $Nibp > ${WAV_MOD_TAG}_ibp_tar.out 2>&1 "   >> cmdtarfile
   fi
  fi
 
-    wavenproc=`wc -l cmdtarfile | awk '{print $1}'`
-    wavenproc=`echo $((${wavenproc}<${NTASKS}?${wavenproc}:${NTASKS}))`
+  wavenproc=`wc -l cmdtarfile | awk '{print $1}'`
+  wavenproc=`echo $((${wavenproc}<${NTASKS}?${wavenproc}:${NTASKS}))`
 
-    set +x
-    echo ' '
-    echo "   Executing the wave_tar scripts at : `date`"
-    echo '   ------------------------------------'
-    echo ' '
-    [[ "$LOUD" = YES ]] && set -x
+  set +x
+  echo ' '
+  echo "   Executing the wave_tar scripts at : `date`"
+  echo '   ------------------------------------'
+  echo ' '
+  [[ "$LOUD" = YES ]] && set -x
 
-    if [ "$wavenproc" -gt '1' ]
-    then
-      if [ ${CFP_MP:-"NO"} = "YES" ]; then
-        ${wavempexec} -n ${wavenproc} ${wave_mpmd} cmdtarfile
-      else
-        ${wavempexec} ${wavenproc} ${wave_mpmd} cmdtarfile
-      fi
-      exit=$?
-    else
-      chmod 744 cmdtarfile
-      ./cmdtarfile
-      exit=$?
-    fi
+  chmod 744 cmdtarfile
+  ./cmdtarfile
+  exit=$?
 
-    if [ "$exit" != '0' ]
-    then
+  if [ "$exit" != '0' ]
+  then
       set +x
       echo ' '
       echo '*************************************'
@@ -586,7 +557,7 @@
       [[ "$LOUD" = YES ]] && set -x
       err=11; export err;${errchk}
       exit $err
-    fi
+  fi
 
 # --------------------------------------------------------------------------- #
 # 7.  Ending output
