@@ -32,44 +32,18 @@ ICE_model=${ICE_model:-'cice'}
 WAV_model=${WAV_model:-'ww3'}
 
 ATMPETS=${ATMPETS:-8}
+MEDPETS=${MEDPETS:-8} 
 OCNPETS=${OCNPETS:-8}
 ICEPETS=${ICEPETS:-8}
 WAVPETS=${WAVPETS:-8}
 
 rm -f $DATA/nems.configure
 
-med_petlist_bounds=${med_petlist_bounds:-"0 $(( $ATMPETS-1 ))"}
-atm_petlist_bounds=${atm_petlist_bounds:-"0 $(( $ATMPETS-1 ))"}    #6*8*6+wrtgrps(24)
-ocn_petlist_bounds=${ocn_petlist_bounds:-"$ATMPETS $(( $ATMPETS+$OCNPETS-1 ))"}  #120
-ice_petlist_bounds=${ice_petlist_bounds:-"$(( $ATMPETS+$OCNPETS )) $(( $ATMPETS+$OCNPETS+$ICEPETS-1 ))"}  #48
-wav_petlist_bounds=${wav_petlist_bounds:-"$(( $ATMPETS+$OCNPETS+$ICEPETS )) $(( $ATMPETS+$OCNPETS+$ICEPETS+$WAVPETS-1 ))"}  #48
-
-#if [ $CASE = "C96" ] ; then
-#  med_petlist_bounds=${med_petlist_bounds:-'0 149'}
-#  atm_petlist_bounds=${atm_petlist_bounds:-'0 149'}
-#  ocn_petlist_bounds=${ocn_petlist_bounds:-'150 389'}
-#  ice_petlist_bounds=${ice_petlist_bounds:-'390 509'}
-#elif [ $CASE = "C384" ] ; then
-  # This is 4x8 layout * 6 - worked
-  #MED_petlist_bounds=${MED_petlist_bounds:-'0 263'}
-  #ATM_petlist_bounds=${ATM_petlist_bounds:-'0 263'}    #192+wrtgrps(72)
-  #OCN_petlist_bounds=${OCN_petlist_bounds:-'264 503'}  #240
-  #ICE_petlist_bounds=${ICE_petlist_bounds:-'504 623'}  #120
-
-#  med_petlist_bounds=${med_petlist_bounds:-'0 311'}
-#  atm_petlist_bounds=${atm_petlist_bounds:-'0 311'}    #6*8*6+wrtgrps(24)
-#  ocn_petlist_bounds=${ocn_petlist_bounds:-'312 431'}  #120
-#  ice_petlist_bounds=${ice_petlist_bounds:-'432 479'}  #48
-
-  # This is 6x12 layout * 6 = 432 + 72 # didn't work
-  #MED_petlist_bounds=${MED_petlist_bounds:-'0 503'}
-  #ATM_petlist_bounds=${ATM_petlist_bounds:-'0 503'}    #432+wrtgrps(72)
-  #OCN_petlist_bounds=${OCN_petlist_bounds:-'504 743'}  #240
-  #ICE_petlist_bounds=${ICE_petlist_bounds:-'744 863'}  #120
-#else
-#  echo "$CASE not supported for coupled yet"
-  # $CASE can only run standalone model
-#fi
+med_petlist_bounds=${med_petlist_bounds:-"0 $(( $MEDPETS-1 ))"}
+atm_petlist_bounds=${atm_petlist_bounds:-"0 $(( $ATMPETS-1 ))"} 
+ocn_petlist_bounds=${ocn_petlist_bounds:-"$ATMPETS $(( $ATMPETS+$OCNPETS-1 ))"}  
+ice_petlist_bounds=${ice_petlist_bounds:-"$(( $ATMPETS+$OCNPETS )) $(( $ATMPETS+$OCNPETS+$ICEPETS-1 ))"} 
+wav_petlist_bounds=${wav_petlist_bounds:-"$(( $ATMPETS+$OCNPETS+$ICEPETS )) $(( $ATMPETS+$OCNPETS+$ICEPETS+$WAVPETS-1 ))"} 
 
 # Copy the selected template into run directory
 cp $SCRIPTDIR/nems.configure.$confignamevarfornems.IN tmp1
@@ -79,6 +53,11 @@ sed -i -e "s;@\[med_petlist_bounds\];$med_petlist_bounds;g" tmp1
 sed -i -e "s;@\[atm_petlist_bounds\];$atm_petlist_bounds;g" tmp1
 
 if [ $cplflx = .true. ]; then
+    if [ $restart_interval  -gt 0]; then 
+      restart_interval_nems=$restart_interval 
+    else 
+      restart_interval_nems=$FHMAX 
+    fi
         sed -i -e "s;@\[ocn_model\];$OCN_model;g" tmp1
 	sed -i -e "s;@\[ocn_petlist_bounds\];$ocn_petlist_bounds;g" tmp1
 	sed -i -e "s;@\[DumpFields\];$DumpFields;g" tmp1
@@ -86,6 +65,7 @@ if [ $cplflx = .true. ]; then
 	sed -i -e "s;@\[restart_interval\];$restart_interval;g" tmp1
 	sed -i -e "s;@\[CPL_SLOW\];$CPL_SLOW;g" tmp1
 	sed -i -e "s;@\[CPL_FAST\];$CPL_FAST;g" tmp1
+        sed -i -e "s;@\[restart_interval_hours\];$restart_interval_nems;g" tmp1
 fi
 if [ $cplwav = .true. ]; then
 	sed -i -e "s;@\[wav_model\];ww3;g" tmp1
@@ -100,5 +80,67 @@ if [ $cplchem = .true. ]; then
 fi
 mv tmp1 nems.configure
 
+echo "$(cat nems.configure)"
+
+if [ $cplflx = .true. ]; then
+
+#Create other CMEPS mediator related files 
+cat > pio_in << EOF
+&papi_inparm
+  papi_ctr1_str = "PAPI_FP_OPS"
+  papi_ctr2_str = "PAPI_NO_CTR"
+  papi_ctr3_str = "PAPI_NO_CTR"
+  papi_ctr4_str = "PAPI_NO_CTR"
+/
+&pio_default_inparm
+  pio_async_interface = .false.
+  pio_blocksize = -1
+  pio_buffer_size_limit = -1
+  pio_debug_level = 0
+  pio_rearr_comm_enable_hs_comp2io = .true.
+  pio_rearr_comm_enable_hs_io2comp = .false.
+  pio_rearr_comm_enable_isend_comp2io = .false.
+  pio_rearr_comm_enable_isend_io2comp = .true.
+  pio_rearr_comm_fcd = "2denable"
+  pio_rearr_comm_max_pend_req_comp2io = 0
+  pio_rearr_comm_max_pend_req_io2comp = 64
+  pio_rearr_comm_type = "p2p"
+/
+&prof_inparm
+  profile_add_detail = .false.
+  profile_barrier = .false.
+  profile_depth_limit = 4
+  profile_detail_limit = 2
+  profile_disable = .false.
+  profile_global_stats = .true.
+  profile_outpe_num = 1
+  profile_outpe_stride = 0
+  profile_ovhd_measurement = .false.
+  profile_papi_enable = .false.
+  profile_single_file = .false.
+  profile_timer = 4
+/
+EOF
+
+echo "$(cat pio_in)"
+
+cat > med_modelio.nml << EOF
+&pio_inparm
+  pio_netcdf_format = "64bit_offset"
+  pio_numiotasks = -99
+  pio_rearranger = 1
+  pio_root = 1
+  pio_stride = 36
+  pio_typename = "netcdf"
+/
+EOF
+
+echo "$(cat med_modelio.nml)"
+
+cp $HOMEgfs/sorc/fv3_coupled.fd/CMEPS/mediator/fd_nems.yaml fd_nems.yaml
+
+fi 
+
 echo "SUB ${FUNCNAME[0]}: Nems configured for $confignamevarfornems"
+
 }

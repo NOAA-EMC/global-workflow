@@ -16,7 +16,7 @@ suite: !Cycle
       <<: *service_task_template
       RUN: 'gfs'
 #      Disable: !calc doc.settings.get("IC_CDUMP","")
-      Disable: !calc doc.settings.get("IC_CDUMP","") or doc.settings.cpl
+      Disable: !calc doc.settings.get("IC_CDUMP","") or doc.settings.cpl=='.true.'
       resources: !calc partition.resources.run_getic
       J_JOB: rocoto/getic.sh
       ecf_module_commands: "# getics.sh will load modules instead"
@@ -26,7 +26,7 @@ suite: !Cycle
       <<: *exclusive_task_template
       RUN: 'gfs'
 #      Disable: !calc not doc.settings.chgres_and_convert_ics
-      Disable: !calc not doc.settings.chgres_and_convert_ics or doc.settings.cpl
+      Disable: !calc doc.settings.chgres_and_convert_ics=='.false.' or doc.settings.cpl=='.true.'
       Trigger: !Depend jgfs_emc_getics
       resources: !calc partition.resources.run_fv3ic
       J_JOB: rocoto/crow_fv3ic.sh
@@ -182,27 +182,13 @@ suite: !Cycle
           export OCN_FHRLST="{OCN_FHRLST}"; $HOMEgfs/jobs/{J_JOB}
     #endfamily ocnpost
 
-    wavepost: !TaskArray
+    wavepost: !Task
+      <<: *exclusive_task_template
       RUN: !calc up.RUN
       Disable: !calc doc.settings.cplwav=='.false.'
-      Dimensions:
-        fhr: !calc doc.output_settings.ocnpost_hours
-      jgfs_wavepost_fhr_el: !TaskElement
-        <<: *exclusive_task_template
-        Foreach: [ fhr  ]
-        resources: !calc partition.resources.run_one_node_downstream
-        Name: !expand p_{dimval.fhr:03d}
-        FHR: !expand "{dimval.fhr:03d}"
-        OCN_FHRLST: !calc "tools.seq(dimval.fhr, dimval.fhr+doc.output_settings.OCN_INTERVAL, 6)"
-        J_JOB: rocoto/wavepostsbs.sh
-        Trigger: !Depend up.forecast
-        ecflow_def: !expand "edit FHR '{FHR}'"
-        ecflow_command: !expand |
-          export post_times=%FHR% FHRLST=%FHR% FHRGRP=%FHR%
-          $HOMEgfs/jobs/{J_JOB}
-        rocoto_command: !expand >-
-          {rocoto_load_modules} ;
-          export OCN_FHRLST="{OCN_FHRLST}"; $HOMEgfs/jobs/{J_JOB}
+      resources: !calc partition.resources.run_one_node_downstream
+      J_JOB: rocoto/wavepostsbs.sh
+      Trigger: !Depend forecast
 
     jgfs_emc_vrfy: !Task
       <<: *exclusive_task_template
