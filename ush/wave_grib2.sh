@@ -74,7 +74,7 @@
   echo "   Model ID         : $WAV_MOD_TAG"
   [[ "$LOUD" = YES ]] && set -x
 
-  if [ -z "$YMDH" ] || [ -z "$cycle" ] || [ -z "$EXECwave" ] || [ -z "$EXECcode" ] || \
+  if [ -z "$YMDH" ] || [ -z "$cycle" ] || [ -z "$EXECwave" ]  \
      [ -z "$COMOUT" ] || [ -z "$WAV_MOD_TAG" ] || [ -z "$SENDCOM" ] || \
      [ -z "$dtgrib" ] || [ -z "$ngrib" ] || [ -z "$gribflags" ] || \
      [ -z "$GRIDNR" ] || [ -z "$MODNR" ] || [ -z "$SENDDBN" ]
@@ -129,11 +129,11 @@
 
   set +x
   echo "   Run ww3_grib2"
-  echo "   Executing $EXECcode/ww3_grib"
+  echo "   Executing $EXECwave/ww3_grib"
   [[ "$LOUD" = YES ]] && set -x
 
   ln -sf ../$WAV_MOD_TAG.$grdID.${cycle}.grib2 gribfile
-  $EXECcode/ww3_grib
+  $EXECwave/ww3_grib
   err=$?
 
   if [ $err != 0 ]
