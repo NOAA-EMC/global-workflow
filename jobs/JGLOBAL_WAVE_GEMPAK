@@ -1,0 +1,41 @@
+#!/bin/bash
+
+
+date
+set -xa
+export PS4='$SECONDS + ' 
+# 
+export NET=${NET:-gfs}
+export RUN=${RUN:-gfs}
+export COMPONENT=${COMPONENT:-wave}
+export machine=${machine:-WCOSS_DELL_P3}
+export HOMEgfs=${HOMEgfs:-$(dirname $(dirname $0))} 
+###################################
+# Set COM Paths
+export COMIN=${COMIN:-$(compath.py ${NET}/${envir}/${RUN}.${PDY})/${cyc}/$COMPONENT}
+export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/$COMPONENT/gempak}
+#export pid=$$
+export pgmout="OUTPUT.$$"
+
+export DBN_ALERT_TYPE=NFC_WAVEENS_GEMPAK
+export SENDCOM=${SENDCOM:-YES}
+export SENDDBN=${SENDDBN:-YES}
+# Set PDY
+sh setpdy.sh
+. PDY
+env
+msg="Begin job for $job"
+postmsg "$jlogfile" "$msg"
+
+########################################################
+# Execute the script.
+/${HOMEgfs}/scripts/exgfs_wave_nawips.sh.ecf
+
+###################################
+# Remove temp directories
+if [ "$KEEPDATA" != "YES" ]; then
+  cd $DATAROOT
+  rm -rf $DATA
+fi
+
+date
