@@ -1,0 +1,11 @@
+#!/bin/ksh -x
+
+########## config.wavegempak ##########
+# Wave steps specific
+
+echo "BEGIN: config.wavegempak"
+
+# Get task specific resources
+. $EXPDIR/config.resources wavegempak
+
+echo "END: config.wavegempak"

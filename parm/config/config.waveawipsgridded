@@ -1,0 +1,11 @@
+#!/bin/ksh -x
+
+########## config.waveawipsgridded ##########
+# Wave steps specific
+
+echo "BEGIN: config.waveawipsgridded"
+
+# Get task specific resources
+. $EXPDIR/config.resources waveawipsgridded
+
+echo "END: config.waveawipsgridded"

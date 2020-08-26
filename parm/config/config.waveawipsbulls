@@ -1,0 +1,11 @@
+#!/bin/ksh -x
+
+########## config.waveawipsbulls ##########
+# Wave steps specific
+
+echo "BEGIN: config.waveawipsbulls"
+
+# Get task specific resources
+. $EXPDIR/config.resources waveawipsbulls
+
+echo "END: config.waveawipsbulls"
