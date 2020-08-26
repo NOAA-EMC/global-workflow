@@ -287,35 +287,33 @@
 
 
 # Create new buoy_log.ww3 including all IBP files
-    if [ "$DOIBP_WAV" = 'YES' ]; then
-      cat buoy.ibp | awk '{print $3}' | sed 's/'\''//g' > ibp_tags
-      grep -F -f ibp_tags buoy_log.ww3 > buoy_log.tmp
-      rm -f buoy_log.ibp
-      mv buoy_log.tmp buoy_log.ibp
+    cat buoy.ibp | awk '{print $3}' | sed 's/'\''//g' > ibp_tags
+    grep -F -f ibp_tags buoy_log.ww3 > buoy_log.tmp
+    rm -f buoy_log.ibp
+    mv buoy_log.tmp buoy_log.ibp
 
-      grep -F -f ibp_tags buoy_lst.loc >  buoy_tmp1.loc
-      sed    '$d' buoy_tmp1.loc > buoy_tmp2.loc
-      ibpoints=`awk '{ print $1 }' buoy_tmp2.loc`
-      Nibp=`wc buoy_tmp2.loc | awk '{ print $1 }'`
-      rm -f buoy_tmp1.loc buoy_tmp2.loc
-      if [ -s buoy_log.ibp ]
-      then
-        set +x
-        echo 'IBP  log file created. Syncing to all nodes ...'
-        [[ "$LOUD" = YES ]] && set -x
-      else
-        set +x
-        echo ' '
-        echo '********************************************** '
-        echo '*** FATAL ERROR : NO  IBP LOG FILE CREATED *** '
-        echo '********************************************** '
-        echo ' '
-        [[ "$LOUD" = YES ]] && set -x
-        echo "$WAV_MOD_TAG post $date $cycle : ibp  log file missing." 
-        postmsg "$jlogfile" "FATAL ERROR : NO  IBP LOG FILE GENERATED FOR SPEC AND BULLETIN FILES"
-        err=8;export err;${errchk}
-        exit $err
-      fi
+    grep -F -f ibp_tags buoy_lst.loc >  buoy_tmp1.loc
+    sed    '$d' buoy_tmp1.loc > buoy_tmp2.loc
+    ibpoints=`awk '{ print $1 }' buoy_tmp2.loc`
+    Nibp=`wc buoy_tmp2.loc | awk '{ print $1 }'`
+    rm -f buoy_tmp1.loc buoy_tmp2.loc
+    if [ -s buoy_log.ibp ]
+    then
+      set +x
+      echo 'IBP  log file created. Syncing to all nodes ...'
+      [[ "$LOUD" = YES ]] && set -x
+    else
+      set +x
+      echo ' '
+      echo '********************************************** '
+      echo '*** FATAL ERROR : NO  IBP LOG FILE CREATED *** '
+      echo '********************************************** '
+      echo ' '
+      [[ "$LOUD" = YES ]] && set -x
+      echo "$WAV_MOD_TAG post $date $cycle : ibp  log file missing."  
+      postmsg "$jlogfile" "FATAL ERROR : NO  IBP LOG FILE GENERATED FOR SPEC AND BULLETIN FILES"
+      err=8;export err;${errchk}
+      exit $err
     fi
 
 # 1.f Data summary
@@ -337,7 +335,7 @@
 # 2.a Command file set-up
 
   set +x
-  echo '   Making command file for sbs grib2 and GRID Interpolation '
+  echo '   Making command file for wave boundary points '
   [[ "$LOUD" = YES ]] && set -x
 
   rm -f cmdfile
@@ -346,24 +344,12 @@
 
 # 1.a.2 Loop over forecast time to generate post files 
 # When executed side-by-side, serial mode (cfp when run after the fcst step)
-# Contingency for RERUN=YES
-  if [ "${RERUN}" = "YES" ]; then
-    fhr=$((FHRUN + FHMIN_WAV))
-    if [ $FHMAX_HF_WAV -gt 0 ] && [ $FHOUT_HF_WAV -gt 0 ] && [ $fhr -lt $FHMAX_HF_WAV ]; then
-      FHINCG=$FHOUT_HF_WAV
-    else
-      FHINCG=$FHOUT_WAV
-    fi
-# Get minimum value to start count from fhr+min(fhrp,fhrg)
-    fhrinc=`echo $(( $FHINCP_WAV < $FHINCG ? $FHINCP_WAV : $FHINCG ))`
-    fhr=$((fhr + fhrinc))
-  else
-    fhr=$FHMIN_WAV
-  fi
+  fhr=$FHMIN_WAV
   fhrp=$fhr
-  fhrg=$fhr
   while [ $fhr -le $FHMAX_WAV_IBP ]; do
     
+    echo " Starting processing wave boundary points for FHR=$fhr at: `date`"
+
     ymdh=`$NDATE $fhr $CDATE`
     YMD=$(echo $ymdh | cut -c1-8)
     HMS="$(echo $ymdh | cut -c9-10)0000"
@@ -383,9 +369,6 @@
 
 # Create instances of directories for spec and gridded output
     export SPECDATA=${DATA}/output_$YMDHMS
-    export BULLDATA=${DATA}/output_$YMDHMS
-    export GRIBDATA=${DATA}/output_$YMDHMS
-    export GRDIDATA=${DATA}/output_$YMDHMS
     ln -fs $DATA/mod_def.${waveuoutpGRD} mod_def.ww3
 
 # Point output part (can be split or become meta-task to reduce resource usage)
@@ -404,23 +387,11 @@
         exit $err
       fi
 
-      if [ "$DOSPC_WAV" = 'YES' ]
-      then
-        export dtspec=3600.
-        for buoy in $buoys
-        do
-            echo "$USHwave/wave_outp_spec.sh $buoy $ymdh spec > spec_$buoy.out 2>&1" >> ${fcmdnow}
-        done
-      fi
-
-      if [ "$DOIBP_WAV" = 'YES' ]
-      then
-        export dtspec=3600.
-        for buoy in $ibpoints
-        do
-            echo "$USHwave/wave_outp_spec.sh $buoy $ymdh ibp > ibp_$buoy.out 2>&1" >> ${fcmdnow}
-        done
-      fi
+      export dtspec=3600.
+      for buoy in $ibpoints
+      do
+        echo "$USHwave/wave_outp_spec.sh $buoy $ymdh ibp > ibp_$buoy.out 2>&1" >> ${fcmdnow}
+      done
 
     fi
 
@@ -456,7 +427,7 @@
 
     set +x
     echo ' '
-    echo "   Executing the grib2_sbs scripts at : `date`"
+    echo "   Executing the boundary point scripts at : `date`"
     echo '   ------------------------------------'
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
@@ -504,8 +475,6 @@
 
   done
 
-  if [ "${DOPNT_WAV}" = "YES" ]; then
-
 # --------------------------------------------------------------------------- #
 # 3. Compress point output data into tar files
 
@@ -523,13 +492,7 @@
 
 # 6.b Spectral data files
 
-  if [ ${CFP_MP:-"NO"} = "YES" ]; then nm=0; fi
-
-  if [ "$DOIBP_WAV" = 'YES' ]
-  then
-    echo "$USHwave/wave_tar.sh $WAV_MOD_TAG ibp $Nibp > ${WAV_MOD_TAG}_ibp_tar.out 2>&1 "   >> cmdtarfile
-  fi
- fi
+  echo "$USHwave/wave_tar.sh $WAV_MOD_TAG ibp $Nibp > ${WAV_MOD_TAG}_ibp_tar.out 2>&1 "   >> cmdtarfile
 
   wavenproc=`wc -l cmdtarfile | awk '{print $1}'`
   wavenproc=`echo $((${wavenproc}<${NTASKS}?${wavenproc}:${NTASKS}))`
