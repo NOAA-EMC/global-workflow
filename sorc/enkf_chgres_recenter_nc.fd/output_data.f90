@@ -102,7 +102,6 @@
  real, allocatable, dimension (:,:) :: out2d
  real, allocatable, dimension (:,:,:) :: out3d
 
-
 !-------------------------------------------------------------------
 ! Set up some header info.
 !-------------------------------------------------------------------
@@ -119,7 +118,7 @@
  print*
  print*,'OPEN OUTPUT FILE: ',trim(output_file)
  allocate(out2d(i_output,j_output))
- allocate(out3d(i_output,j_output,lev))
+ allocate(out3d(i_output,j_output,lev_output))
 
  print*,"WRITE SURFACE HEIGHT"
  out2d = reshape(hgt_external_output, (/i_output,j_output/))
@@ -132,48 +131,48 @@
  deallocate(sfcp_output)
 
  print*,"WRITE TEMPERATURE"
- do n=1,lev
-    nrev = lev+1-n
+ do n=1,lev_output
+    nrev = lev_output+1-n
     out3d(:,:,n) = reshape(tmp_output(:,nrev), (/i_output,j_output/))
  end do
  call write_vardata(outdset, 'tmp', out3d)
  deallocate(tmp_output)
 
  print*,"WRITE CLOUD LIQUID WATER"
- do n=1,lev
-    nrev = lev+1-n
+ do n=1,lev_output
+    nrev = lev_output+1-n
     out3d(:,:,n) = reshape(clwmr_output(:,nrev), (/i_output,j_output/))
  end do
  call write_vardata(outdset, 'clwmr', out3d)
  deallocate(clwmr_output)
 
  print*,"WRITE SPECIFIC HUMIDITY"
- do n=1,lev
-    nrev = lev+1-n
+ do n=1,lev_output
+    nrev = lev_output+1-n
     out3d(:,:,n) = reshape(spfh_output(:,nrev), (/i_output,j_output/))
  end do
  call write_vardata(outdset, 'spfh', out3d)
  deallocate(spfh_output)
 
  print*,"WRITE OZONE"
- do n=1,lev
-    nrev = lev+1-n
+ do n=1,lev_output
+    nrev = lev_output+1-n
     out3d(:,:,n) = reshape(o3mr_output(:,nrev), (/i_output,j_output/))
  end do
  call write_vardata(outdset, 'o3mr', out3d)
  deallocate(o3mr_output)
 
  print*,"WRITE U-WINDS"
- do n=1,lev
-    nrev = lev+1-n
+ do n=1,lev_output
+    nrev = lev_output+1-n
     out3d(:,:,n) = reshape(ugrd_output(:,nrev), (/i_output,j_output/))
  end do
  call write_vardata(outdset, 'ugrd', out3d)
  deallocate(ugrd_output)
 
  print*,"WRITE V-WINDS"
- do n=1,lev
-    nrev = lev+1-n
+ do n=1,lev_output
+    nrev = lev_output+1-n
     out3d(:,:,n) = reshape(vgrd_output(:,nrev), (/i_output,j_output/))
  end do
  call write_vardata(outdset, 'vgrd', out3d)
@@ -181,8 +180,8 @@
 
  if (idzdt == 1) then
  print*,"WRITE DZDT"
- do n=1,lev
-    nrev = lev+1-n
+ do n=1,lev_output
+    nrev = lev_output+1-n
     out3d(:,:,n) = reshape(dzdt_output(:,nrev), (/i_output,j_output/))
  end do
  call write_vardata(outdset, 'dzdt', out3d)
@@ -191,8 +190,8 @@
 
  if (idpres == 1) then
  print*,"WRITE DPRES"
- do n=1,lev
-    nrev = lev+1-n
+ do n=1,lev_output
+    nrev = lev_output+1-n
     out3d(:,:,n) = reshape(dpres_output(:,nrev), (/i_output,j_output/))
  end do
  call write_vardata(outdset, 'dpres', out3d)
@@ -201,8 +200,8 @@
 
  if (idelz == 1) then
  print*,"WRITE DELZ"
- do n=1,lev
-    nrev = lev+1-n
+ do n=1,lev_output
+    nrev = lev_output+1-n
     out3d(:,:,n) = reshape(delz_output(:,nrev), (/i_output,j_output/))
  end do
  call write_vardata(outdset, 'delz', out3d)
@@ -211,8 +210,8 @@
 
  if (irwmr == 1) then
  print*,"WRITE RAIN WATER"
- do n=1,lev
-    nrev = lev+1-n
+ do n=1,lev_output
+    nrev = lev_output+1-n
     out3d(:,:,n) = reshape(rwmr_output(:,nrev), (/i_output,j_output/))
  end do
  call write_vardata(outdset, 'rwmr', out3d)
@@ -221,8 +220,8 @@
 
  if (isnmr == 1) then
  print*,"WRITE SNOW WATER"
- do n=1,lev
-    nrev = lev+1-n
+ do n=1,lev_output
+    nrev = lev_output+1-n
     out3d(:,:,n) = reshape(snmr_output(:,nrev), (/i_output,j_output/))
  end do
  call write_vardata(outdset, 'snmr', out3d)
@@ -231,8 +230,8 @@
 
  if (iicmr == 1) then
  print*,"WRITE ICE WATER"
- do n=1,lev
-    nrev = lev+1-n
+ do n=1,lev_output
+    nrev = lev_output+1-n
     out3d(:,:,n) = reshape(icmr_output(:,nrev), (/i_output,j_output/))
  end do
  call write_vardata(outdset, 'icmr', out3d)
@@ -241,8 +240,8 @@
 
  if (igrle == 1) then
  print*,"WRITE GRAUPEL"
- do n=1,lev
-    nrev = lev+1-n
+ do n=1,lev_output
+    nrev = lev_output+1-n
     out3d(:,:,n) = reshape(grle_output(:,nrev), (/i_output,j_output/))
  end do
  call write_vardata(outdset, 'grle', out3d)
@@ -251,8 +250,8 @@
 
  if (icldamt == 1) then
  print*,"WRITE CLD_AMT"
- do n = 1, lev
-    nrev = lev+1-n
+ do n = 1, lev_output
+    nrev = lev_output+1-n
     out3d(:,:,n) = reshape(cldamt_output(:,nrev), (/i_output,j_output/))
  end do
  call write_vardata(outdset, 'cld_amt', out3d)
@@ -281,8 +280,8 @@
  print*
  print*,"SET HEADER INFO FOR OUTPUT FILE."
 
- indset = open_dataset(terrain_file)
- outdset = create_dataset(output_file, indset)
+ indset = open_dataset(ref_file)
+ outdset = create_dataset(output_file, indset, nocompress=.true.)
 
  end subroutine header_set
 
