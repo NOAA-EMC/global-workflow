@@ -8,6 +8,6 @@ echo "BEGIN: config.echgres"
 # Get task specific resources
 . $EXPDIR/config.resources echgres
 
-export CHGRESFCSTSH=$HOMEgfs/scripts/exglobal_enkf_chgres_fv3gfs.sh.ecf
+export CHGRESFCSTSH=$HOMEgfs/scripts/exglobal_chgres_forenkf_fv3gfs.sh.ecf
 
 echo "END: config.echgres"
