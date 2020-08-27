@@ -8,7 +8,7 @@ echo "BEGIN: config.ecen"
 # Get task specific resources
 . $EXPDIR/config.resources ecen
 
-export ENKFRECENSH="$HOMEgsi/scripts/exglobal_enkf_recenter_fv3gfs.sh.ecf"
+export ENKFRECENSH="$HOMEgsi/scripts/exglobal_enkf_recenter_fv3gfs.sh"
 
 export CHGRESEXEC="$HOMEgfs/exec/chgres_recenter.exe"
 

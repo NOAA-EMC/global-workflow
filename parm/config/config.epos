@@ -8,7 +8,7 @@ echo "BEGIN: config.epos"
 # Get task specific resources
 . $EXPDIR/config.resources epos
 
-export ENKFPOSTSH="$HOMEgsi/scripts/exglobal_enkf_post_fv3gfs.sh.ecf"
+export ENKFPOSTSH="$HOMEgsi/scripts/exglobal_enkf_post_fv3gfs.sh"
 
 # No. of concurrent epos jobs [1 implies sequential]
 export NEPOSGRP=7

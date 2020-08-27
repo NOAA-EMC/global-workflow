@@ -19,7 +19,7 @@ if [[ "$CDUMP" = "gfs" ]] ; then
     export DIAG_TARBALL="NO"
 fi
 
-export ANALYSISSH="$HOMEgsi/scripts/exglobal_analysis_fv3gfs.sh.ecf"
+export ANALYSISSH="$HOMEgsi/scripts/exglobal_analysis_fv3gfs.sh"
 export npe_gsi=$npe_anal
 
 # Set parameters specific to L127
