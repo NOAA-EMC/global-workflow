@@ -60,23 +60,23 @@ elif [ $step = "waveprep" ]; then
 elif [ $step = "wavepostsbs" ]; then
 
     export wtime_wavepostsbs="06:00:00"
-    export npe_wavepostsbs=280
+    export npe_wavepostsbs=10
     export nth_wavepostsbs=1
     export npe_node_wavepostsbs=$(echo "$npe_node_max / $nth_wavepostsbs" | bc)
     export NTASKS=${npe_wavepostsbs}
 
 elif [ $step = "wavepostbndpnt" ]; then
 
-    export wtime_wavepostbndpnt="01:00:00"
-    export npe_wavepostbndpnt=280
+    export wtime_wavepostbndpnt="02:00:00"
+    export npe_wavepostbndpnt=56
     export nth_wavepostbndpnt=1
     export npe_node_wavepostbndpnt=$(echo "$npe_node_max / $nth_wavepostbndpnt" | bc)
     export NTASKS=${npe_wavepostbndpnt}
 
 elif [ $step = "wavepostpnt" ]; then
 
-    export wtime_wavepostpnt="01:00:00"
-    export npe_wavepostpnt=280
+    export wtime_wavepostpnt="02:00:00"
+    export npe_wavepostpnt=56
     export nth_wavepostpnt=1
     export npe_node_wavepostpnt=$(echo "$npe_node_max / $nth_wavepostpnt" | bc)
     export NTASKS=${npe_wavepostpnt}
