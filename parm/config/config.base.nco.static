@@ -56,6 +56,7 @@ export RTMFIX=$CRTM_FIX
 export DO_BUFRSND="YES"
 export DO_GEMPAK="YES"
 export DO_AWIPS="YES"
+export WAFSF="YES"         # WAFS products
 
 # NO for retrospective parallel; YES for real-time parallel
 export REALTIME="YES"
