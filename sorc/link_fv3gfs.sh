@@ -61,11 +61,11 @@ cd ${pwd}/../parm               ||exit 8
     [[ -d gldas ]] && rm -rf gldas
     $LINK ../sorc/gldas.fd/parm                              gldas
 cd ${pwd}/../scripts            ||exit 8
-    $LINK ../sorc/gfs_post.fd/scripts/exgdas_nceppost.sh.ecf .
-    $LINK ../sorc/gfs_post.fd/scripts/exgfs_nceppost.sh.ecf  .
-    $LINK ../sorc/gfs_post.fd/scripts/exglobal_pmgr.sh.ecf   .
+    $LINK ../sorc/gfs_post.fd/scripts/exgdas_nceppost.sh .
+    $LINK ../sorc/gfs_post.fd/scripts/exgfs_nceppost.sh  .
+    $LINK ../sorc/gfs_post.fd/scripts/exglobal_pmgr.sh   .
     $LINK ../sorc/ufs_utils.fd/scripts/exemcsfc_global_sfc_prep.sh.ecf .
-    $LINK ../sorc/gldas.fd/scripts/exgdas_gldas.sh.ecf .             
+    $LINK ../sorc/gldas.fd/scripts/exgdas_gldas.sh .
 cd ${pwd}/../ush                ||exit 8
     for file in fv3gfs_downstream_nems.sh fv3gfs_dwn_nems.sh gfs_nceppost.sh  \
         gfs_transfer.sh mod_icec.sh link_crtm_fix.sh trim_rh.sh fix_precip.sh; do
@@ -118,19 +118,19 @@ cd ${pwd}/../jobs               ||exit 8
     $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_SURFACE         .    
     $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_FCST            .
     $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_POST            .
-    $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_CHGRES          .
+    $LINK ../sorc/gsi.fd/jobs/JGDAS_CHGRES_FORENKF       .
 cd ${pwd}/../scripts            ||exit 8
-    $LINK ../sorc/gsi.fd/scripts/exglobal_analysis_fv3gfs.sh.ecf           .
-    $LINK ../sorc/gsi.fd/scripts/exglobal_analcalc_fv3gfs.sh.ecf           .
-    $LINK ../sorc/gsi.fd/scripts/exglobal_analdiag_fv3gfs.sh.ecf           .
-    $LINK ../sorc/gsi.fd/scripts/exglobal_innovate_obs_fv3gfs.sh.ecf       .
-    $LINK ../sorc/gsi.fd/scripts/exglobal_enkf_innovate_obs_fv3gfs.sh.ecf  .
-    $LINK ../sorc/gsi.fd/scripts/exglobal_enkf_update_fv3gfs.sh.ecf        .
-    $LINK ../sorc/gsi.fd/scripts/exglobal_enkf_recenter_fv3gfs.sh.ecf      .
-    $LINK ../sorc/gsi.fd/scripts/exglobal_enkf_surface_fv3gfs.sh.ecf       .
-    $LINK ../sorc/gsi.fd/scripts/exglobal_enkf_fcst_fv3gfs.sh.ecf          .
-    $LINK ../sorc/gsi.fd/scripts/exglobal_enkf_post_fv3gfs.sh.ecf          .
-    $LINK ../sorc/gsi.fd/scripts/exglobal_enkf_chgres_fv3gfs.sh.ecf        .
+    $LINK ../sorc/gsi.fd/scripts/exglobal_analysis_fv3gfs.sh           .
+    $LINK ../sorc/gsi.fd/scripts/exglobal_analcalc_fv3gfs.sh           .
+    $LINK ../sorc/gsi.fd/scripts/exglobal_analdiag_fv3gfs.sh           .
+    $LINK ../sorc/gsi.fd/scripts/exglobal_innovate_obs_fv3gfs.sh       .
+    $LINK ../sorc/gsi.fd/scripts/exglobal_enkf_innovate_obs_fv3gfs.sh  .
+    $LINK ../sorc/gsi.fd/scripts/exglobal_enkf_update_fv3gfs.sh        .
+    $LINK ../sorc/gsi.fd/scripts/exglobal_enkf_recenter_fv3gfs.sh      .
+    $LINK ../sorc/gsi.fd/scripts/exglobal_enkf_surface_fv3gfs.sh       .
+    $LINK ../sorc/gsi.fd/scripts/exglobal_enkf_fcst_fv3gfs.sh          .
+    $LINK ../sorc/gsi.fd/scripts/exglobal_enkf_post_fv3gfs.sh          .
+    $LINK ../sorc/gsi.fd/scripts/exglobal_chgres_forenkf_fv3gfs.sh     .
 cd ${pwd}/../fix                ||exit 8
     [[ -d fix_gsi ]] && rm -rf fix_gsi
     $LINK ../sorc/gsi.fd/fix  fix_gsi
@@ -170,10 +170,10 @@ cd ${pwd}/../parm               ||exit 8
     $LINK ../../sorc/gsi.fd/util/Ozone_Monitor/nwprod/gdas_oznmon.v2.0.0/parm/gdas_oznmon.parm               .
 #   $LINK ../../sorc/gsi.fd/util/Radiance_Monitor/nwprod/gdas_radmon.v3.0.0/parm/gdas_radmon.parm            .
 cd ${pwd}/../scripts            ||exit 8
-    $LINK ../sorc/gsi.fd/util/Minimization_Monitor/nwprod/gdas.v1.0.0/scripts/exgdas_vrfminmon.sh.ecf        .
-    $LINK ../sorc/gsi.fd/util/Minimization_Monitor/nwprod/gfs.v1.0.0/scripts/exgfs_vrfminmon.sh.ecf          .
-    $LINK ../sorc/gsi.fd/util/Ozone_Monitor/nwprod/gdas_oznmon.v2.0.0/scripts/exgdas_vrfyozn.sh.ecf          .
-    $LINK ../sorc/gsi.fd/util/Radiance_Monitor/nwprod/gdas_radmon.v3.0.0/scripts/exgdas_vrfyrad.sh.ecf       .
+    $LINK ../sorc/gsi.fd/util/Minimization_Monitor/nwprod/gdas.v1.0.0/scripts/exgdas_vrfminmon.sh        .
+    $LINK ../sorc/gsi.fd/util/Minimization_Monitor/nwprod/gfs.v1.0.0/scripts/exgfs_vrfminmon.sh          .
+    $LINK ../sorc/gsi.fd/util/Ozone_Monitor/nwprod/gdas_oznmon.v2.0.0/scripts/exgdas_vrfyozn.sh          .
+    $LINK ../sorc/gsi.fd/util/Radiance_Monitor/nwprod/gdas_radmon.v3.0.0/scripts/exgdas_vrfyrad.sh       .
 cd ${pwd}/../ush                ||exit 8
     $LINK ../sorc/gsi.fd/util/Minimization_Monitor/nwprod/minmon_shared.v1.0.1/ush/minmon_xtrct_costs.pl     .
     $LINK ../sorc/gsi.fd/util/Minimization_Monitor/nwprod/minmon_shared.v1.0.1/ush/minmon_xtrct_gnorms.pl    .

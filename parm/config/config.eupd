@@ -8,7 +8,7 @@ echo "BEGIN: config.eupd"
 # Get task specific resources
 . $EXPDIR/config.resources eupd
 
-export ENKFUPDSH="$HOMEgsi/scripts/exglobal_enkf_update_fv3gfs.sh.ecf"
+export ENKFUPDSH="$HOMEgsi/scripts/exglobal_enkf_update_fv3gfs.sh"
 export npe_enkf=$npe_eupd
 
 # Use NAM_ENKF below for serial EnKF
