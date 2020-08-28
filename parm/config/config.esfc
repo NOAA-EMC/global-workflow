@@ -8,8 +8,6 @@ echo "BEGIN: config.esfc"
 # Get task specific resources
 . $EXPDIR/config.resources esfc
 
-export ENKFRESFCSH="$HOMEgsi/scripts/exglobal_enkf_surface_fv3gfs.sh"
-
 # With IAU only need surface analysis at start of IAU window.
 # Set DOSFCANL_ENKF=NO to prevent creation of sfcanl at 
 # center of analysis window.  

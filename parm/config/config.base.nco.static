@@ -68,7 +68,6 @@ export REALTIME="YES"
 # CLEAR
 ####################################################
 # Build paths relative to $HOMEgfs
-export HOMEgsi="$HOMEgfs"
 export FIXgsi="$HOMEgfs/fix/fix_gsi"
 export HOMEfv3gfs="$HOMEgfs/sorc/fv3gfs.fd"
 export HOMEpost="$HOMEgfs"
