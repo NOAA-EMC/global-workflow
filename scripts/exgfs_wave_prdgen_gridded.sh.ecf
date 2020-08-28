@@ -31,9 +31,9 @@
  export FHOUT_WAV=${FHOUT_WAV:-6}         #from 72 to 180 inc=6
  export FHOUT_HF_WAV=${FHOUT_HF_WAV:-3}
  export maxtries=720
- export FIXwave=${FIXwave:-HOMEgfs/fix}
- export PARMwave=${PARMwave:-HOMEgfs/parm}
- export USHwave=${USHwave:-HOMEgfs/ush}
+ export FIXwave=${FIXwave:-$HOMEgfs/fix}
+ export PARMwave=${PARMwave:-$HOMEgfs/parm/parm_wave}
+ export USHwave=${USHwave:-$HOMEgfs/ush}
  export cyc=${cyc:-00}
  export cycle=${cycle:-t${cyc}z}
  export pgmout=OUTPUT.$$
@@ -91,7 +91,7 @@
        glo_30m) grdID='global.0p25' ;;
        *)       grdID= ;;
      esac
-     GRIBIN=$COMIN/$RUNwave.$cycle.$grdID.f${fhr}.grib2
+     GRIBIN=$COMIN/gridded/$RUNwave.$cycle.$grdID.f${fhr}.grib2
      GRIBIN_chk=$GRIBIN.idx
 
      icnt=1

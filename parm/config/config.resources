@@ -67,7 +67,7 @@ elif [ $step = "wavepostsbs" ]; then
 
 elif [ $step = "wavegempak" ]; then
 
-    export wtime_wavegempak="06:00:00"
+    export wtime_wavegempak="01:00:00"
     export npe_wavegempak=$npe_node_max
     export nth_wavegempak=1
     export npe_node_wavegempak=$(echo "$npe_node_max / $nth_wavegempak" | bc)
@@ -75,7 +75,7 @@ elif [ $step = "wavegempak" ]; then
 
 elif [ $step = "waveawipsbulls" ]; then
 
-    export wtime_waveawipsbulls="06:00:00"
+    export wtime_waveawipsbulls="00:30:00"
     export npe_waveawipsbulls=$npe_node_max
     export nth_waveawipsbulls=1
     export npe_node_waveawipsbulls=$(echo "$npe_node_max / $nth_waveawipsbulls" | bc)
@@ -83,7 +83,7 @@ elif [ $step = "waveawipsbulls" ]; then
 
 elif [ $step = "waveawipsgridded" ]; then
 
-    export wtime_waveawipsgridded="06:00:00"
+    export wtime_waveawipsgridded="00:30:00"
     export npe_waveawipsgridded=$npe_node_max
     export nth_waveawipsgridded=1
     export npe_node_waveawipsgridded=$(echo "$npe_node_max / $nth_waveawipsgridded" | bc)

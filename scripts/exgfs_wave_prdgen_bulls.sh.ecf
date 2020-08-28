@@ -30,10 +30,10 @@
  export pgmout=OUTPUT.$$
  export DATA=${DATA:-${DATAROOT:?}/${job}.$$}
  #export CODEwave=${CODEwave:-${NWROOT}/${NET}_code.${wave_code_ver}/${code_pkg}}
- export EXECwave=${EXECwave:-HOMEgfs/exec}
- export FIXwave=${FIXwave:-HOMEgfs/fix}
- export PARMwave=${PARMwave:-HOMEgfs/parm}
- export USHwave=${USHwave:-HOMEgfs/ush}
+ export EXECwave=${EXECwave:-$HOMEgfs/exec}
+ export FIXwave=${FIXwave:-$HOMEgfs/fix}
+ export PARMwave=${PARMwave:-$HOMEgfs/parm/parm_wave}
+ export USHwave=${USHwave:-$HOMEgfs/ush}
  #export EXECcode=${EXECcode:-CODEwave/exec}
 
  mkdir -p $DATA
@@ -66,7 +66,7 @@
  [[ "$LOUD" = YES ]] && set -x
 
 # 1.a Link the input file and untar it
- BullIn=$COMIN/${RUNwave}.$cycle.cbull_tar
+ BullIn=$COMIN/station/${RUNwave}.$cycle.cbull_tar
  if [ -f $BullIn ]; then
    cp $BullIn cbull.tar
  else
