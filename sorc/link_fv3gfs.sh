@@ -61,11 +61,11 @@ cd ${pwd}/../parm               ||exit 8
     [[ -d gldas ]] && rm -rf gldas
     $LINK ../sorc/gldas.fd/parm                              gldas
 cd ${pwd}/../scripts            ||exit 8
-    $LINK ../sorc/gfs_post.fd/scripts/exgdas_nceppost.sh.ecf .
-    $LINK ../sorc/gfs_post.fd/scripts/exgfs_nceppost.sh.ecf  .
-    $LINK ../sorc/gfs_post.fd/scripts/exglobal_pmgr.sh.ecf   .
+    $LINK ../sorc/gfs_post.fd/scripts/exgdas_nceppost.sh .
+    $LINK ../sorc/gfs_post.fd/scripts/exgfs_nceppost.sh  .
+    $LINK ../sorc/gfs_post.fd/scripts/exglobal_pmgr.sh   .
     $LINK ../sorc/ufs_utils.fd/scripts/exemcsfc_global_sfc_prep.sh.ecf .
-    $LINK ../sorc/gldas.fd/scripts/exgdas_gldas.sh.ecf .             
+    $LINK ../sorc/gldas.fd/scripts/exgdas_gldas.sh .
 cd ${pwd}/../ush                ||exit 8
     for file in fv3gfs_downstream_nems.sh fv3gfs_dwn_nems.sh gfs_nceppost.sh  \
         gfs_transfer.sh mod_icec.sh link_crtm_fix.sh trim_rh.sh fix_precip.sh; do

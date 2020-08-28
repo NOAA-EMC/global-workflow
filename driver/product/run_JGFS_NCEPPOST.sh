@@ -16,7 +16,7 @@
 #############################################################
 #  Function been tested:            GFS master pgb file for a giving hour.
 #
-#  Calling sequence:                run_JGFS_NCEPPOST.sh -> JGFS_NCEPPOST -> exgfs_nceppost.sh.ecf -> global_nceppost.sh -> ncep_post
+#  Calling sequence:                run_JGFS_NCEPPOST.sh -> JGFS_NCEPPOST -> exgfs_nceppost.sh -> global_nceppost.sh -> ncep_post
 #
 #  Initial condition:               CDATE=2016020900 (where /global/noscrub/emc.glopara/com/gfs/para/gfs.${PDY}${cyc} has data
 #                                   post_times="12" (Which hour of the master grib2 file to generate)
