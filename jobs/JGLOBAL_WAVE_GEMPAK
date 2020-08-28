@@ -43,7 +43,7 @@ postmsg "$jlogfile" "$msg"
 
 ########################################################
 # Execute the script.
-${HOMEgfs}/scripts/exgfs_wave_nawips.sh.ecf
+${HOMEgfs}/scripts/exgfs_wave_nawips.sh
 
 ###################################
 # Remove temp directories
