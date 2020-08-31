@@ -81,7 +81,7 @@ cd ${pwd}/../ush                ||exit 8
     done
 cd ${pwd}/../util               ||exit 8
     for file in sub_slurm sub_wcoss_c sub_wcoss_d ; do
-        $LINK ../sorc/ufs_utils.fd/util/$file
+        $LINK ../sorc/ufs_utils.fd/util/$file .
     done
 
 

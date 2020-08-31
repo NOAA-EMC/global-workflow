@@ -714,6 +714,16 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
 
         dict_tasks['%swafs' % cdump] = task
 
+    # wafsgcip
+    if cdump in ['gfs'] and do_wafs in ['Y', 'YES']:
+        deps = []
+        dep_dict = {'type': 'metatask', 'name': '%spost' % cdump}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+        task = wfu.create_wf_task('wafsgcip', cdump=cdump, envar=envars, dependency=dependencies)
+
+        dict_tasks['%swafsgcip' % cdump] = task
+
     # wafsgrib2
     if cdump in ['gfs'] and do_wafs in ['Y', 'YES']:
         deps = []
@@ -724,6 +734,16 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
 
         dict_tasks['%swafsgrib2' % cdump] = task
 
+    # wafsgrib20p25
+    if cdump in ['gfs'] and do_wafs in ['Y', 'YES']:
+        deps = []
+        dep_dict = {'type': 'metatask', 'name': '%spost' % cdump}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+        task = wfu.create_wf_task('wafsgrib20p25', cdump=cdump, envar=envars, dependency=dependencies)
+
+        dict_tasks['%swafsgrib20p25' % cdump] = task
+
     # wafsblending
     if cdump in ['gfs'] and do_wafs in ['Y', 'YES']:
         deps = []
@@ -733,26 +753,6 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
         task = wfu.create_wf_task('wafsblending', cdump=cdump, envar=envars, dependency=dependencies)
 
         dict_tasks['%swafsblending' % cdump] = task
-
-    # wafsgcip
-    if cdump in ['gfs'] and do_wafs in ['Y', 'YES']:
-        deps = []
-        dep_dict = {'type': 'task', 'name': '%spost' % cdump}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
-        task = wfu.create_wf_task('wafsgcip', cdump=cdump, envar=envars, dependency=dependencies)
-
-        dict_tasks['%swafsgcip' % cdump] = task
-
-    # wafsgrib20p25
-    if cdump in ['gfs'] and do_wafs in ['Y', 'YES']:
-        deps = []
-        dep_dict = {'type': 'task', 'name': '%spost' % cdump}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
-        task = wfu.create_wf_task('wafsgrib20p25', cdump=cdump, envar=envars, dependency=dependencies)
-
-        dict_tasks['%swafsgrib20p25' % cdump] = task
 
     # wafsblending0p25
     if cdump in ['gfs'] and do_wafs in ['Y', 'YES']:

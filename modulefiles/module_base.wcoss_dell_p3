@@ -28,7 +28,8 @@ module load esmf/8.0.1bs08
 module use -a /gpfs/dell1/nco/ops/nwprod/modulefiles/
 module load gempak/7.3.1
 
-# Load dumpjb utility
+# Load for WAFS
+module load bufr_dumplist/2.0.0
 module load dumpjb/5.0.3
 
 # python
