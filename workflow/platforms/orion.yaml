@@ -36,7 +36,6 @@ platform: !Platform
   BASE_GIT: "/work/noaa/marine/place_holder"
 
   #BASE_CPLIC - is the base directory of ICs for coupled s2s runs
-  #BASE_CPLIC: "/work/noaa/marine/jmeixner/tempFixICdir/IC"
   BASE_CPLIC: "/work/noaa/marine/Partha.Bhattacharjee/IC_Dir"
   #ncks - NCO netcdf operator used in ocean post 
   ncks: "/apps/intel-2020/nco-4.8.1/bin/ncks"
