@@ -74,7 +74,7 @@
   echo "   Model ID         : $WAV_MOD_TAG"
   [[ "$LOUD" = YES ]] && set -x
 
-  if [ -z "$YMDH" ] || [ -z "$cycle" ] || [ -z "$EXECwave" ] || [ -z "$EXECcode" ] || \
+  if [ -z "$YMDH" ] || [ -z "$cycle" ] || [ -z "$EXECwave" ] || \
      [ -z "$COMOUT" ] || [ -z "$WAV_MOD_TAG" ] || [ -z "$SENDCOM" ] || \
      [ -z "$SENDDBN" ]
   then

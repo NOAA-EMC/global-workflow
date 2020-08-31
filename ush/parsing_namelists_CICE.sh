@@ -85,7 +85,7 @@ cat > ice_in <<eof
 &thermo_nml
     kitd              = 1
   , ktherm            = 1
-  , conduct           = 'bubbly'
+  , conduct           = 'MU71'
   , a_rapid_mode      =  0.5e-3
   , Rac_rapid_mode    =    10.0
   , aspect_rapid_mode =     1.0
@@ -251,8 +251,8 @@ cat > ice_in <<eof
   , f_fsurf_ai      = 'xxxxx'
   , f_fcondtop_ai   = 'xxxxx'
   , f_fmeltt_ai     = 'xxxxx' 
-  , f_strairx       = 'x' 
-  , f_strairy       = 'x' 
+  , f_strairx       = 'mdhxx' 
+  , f_strairy       = 'mdhxx' 
   , f_strtltx       = 'x' 
   , f_strtlty       = 'x' 
   , f_strcorx       = 'x' 

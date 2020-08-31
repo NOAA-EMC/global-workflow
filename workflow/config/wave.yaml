@@ -130,7 +130,7 @@ config_wave:
       export FIXwave="{doc.places.FIXwave}"
       export PARMwave="{doc.places.HOMEgfs}/parm/wave"
       export USHwave="{doc.places.HOMEgfs}/ush"
-      export EXECcode="{doc.places.HOMEgfs}/sorc/fv3_coupled.fd/WW3/exec"
+      export EXECwave="{doc.places.HOMEgfs}/sorc/fv3_coupled.fd/WW3/exec"
       #
       export MP_PULSE=0
       

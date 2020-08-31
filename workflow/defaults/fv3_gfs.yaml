@@ -156,7 +156,12 @@ fv3_gfs_defaults: &fv3_gfs_defaults
            nord: 2
            dddmp: 0.1
            d4_bg: 0.12
-           
+
+  MEDPETS: !FirstTrue
+    - when: !calc QUILTING
+      do: !calc layout.x * layout.y * 6
+    - otherwise: !calc layout.x * layout.y * 6         
+ 
   ATMPETS: !FirstTrue
     - when: !calc QUILTING
       do: !calc layout.x * layout.y * 6 + layout.WGRP * layout.WGRP_NTASKS

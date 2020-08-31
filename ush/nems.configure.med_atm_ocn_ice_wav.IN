@@ -11,13 +11,6 @@ EARTH_attributes::
 # MED #
 MED_model:                      @[med_model]
 MED_petlist_bounds:             @[med_petlist_bounds]
-MED_attributes::
-  Verbosity = 0
-  DumpFields = @[DumpFields]
-  DumpRHs = false
-  coldstart = false
-  restart_interval = 0
-  ProfileMemory = false
 ::
 
 # ATM #
@@ -27,7 +20,7 @@ ATM_attributes::
   Verbosity = 0
   DumpFields = @[DumpFields]
   ProfileMemory = false
-  OverwriteSlice = false
+  OverwriteSlice = true
 ::
 
 # OCN #
@@ -36,9 +29,9 @@ OCN_petlist_bounds:             @[ocn_petlist_bounds]
 OCN_attributes::
   Verbosity = 0
   DumpFields = @[DumpFields]
-  restart_interval = 0
   ProfileMemory = false
-  OverwriteSlice = false
+  OverwriteSlice = true
+  dbug_flag = 0
 ::
 
 # ICE #
@@ -48,10 +41,11 @@ ICE_attributes::
   Verbosity = 0
   DumpFields = @[DumpFields]
   ProfileMemory = false
-  OverwriteSlice = false
+  OverwriteSlice = true
+  dbug_flag = 0 
 ::
 
-# WAV # 
+# WAV #
 WAV_model:                      @[wav_model]
 WAV_petlist_bounds:             @[wav_petlist_bounds]
 WAV_attributes::
@@ -59,31 +53,60 @@ WAV_attributes::
   OverwriteSlice = false
 ::
 
-# Run Sequence #
+# CMEPS warm run sequence
 runSeq::
-  @@[CPL_SLOW]
-    MED MedPhase_prep_ocn
-    MED -> OCN :remapMethod=redist
-    OCN -> WAV 
-    WAV -> OCN :srcMaskValues=1
-    OCN
-    @@[CPL_FAST]
-      MED MedPhase_prep_ice
-      MED MedPhase_prep_atm
-      MED -> ATM :remapMethod=redist
-      MED -> ICE :remapMethod=redist
-      WAV -> ATM :srcMaskValues=1
-      ATM -> WAV
-      ICE -> WAV
-      ATM
-      ICE
-      WAV 
-      ATM -> MED :remapMethod=redist
-      ICE -> MED :remapMethod=redist
-      MED MedPhase_atm_ocn_flux
-      MED MedPhase_accum_fast
-    @
-    OCN -> MED :remapMethod=redist
-    MED MedPhase_write_restart
-  @
+@@[CPL_SLOW]
+   MED med_phases_prep_ocn_accum_avg
+   MED -> OCN :remapMethod=redist
+   OCN -> WAV
+   WAV -> OCN :srcMaskValues=1
+   OCN
+   @@[CPL_FAST]
+     MED med_phases_prep_atm
+     MED med_phases_prep_ice
+     MED -> ATM :remapMethod=redist
+     MED -> ICE :remapMethod=redist
+     WAV -> ATM :srcMaskValues=1
+     ATM -> WAV
+     ICE -> WAV
+     ATM
+     ICE
+     WAV
+     ATM -> MED :remapMethod=redist
+     ICE -> MED :remapMethod=redist
+     MED med_fraction_set
+     MED med_phases_prep_ocn_map
+     MED med_phases_prep_ocn_merge
+     MED med_phases_prep_ocn_accum_fast
+     MED med_phases_profile
+   @
+   OCN -> MED :remapMethod=redist
+   MED med_phases_restart_write
+@
+::
+
+# CMEPS variables
+
+DRIVER_attributes::
+      mediator_read_restart = .true.
+::
+MED_attributes::
+      ATM_model = @[atm_model]
+      ICE_model = @[ice_model]
+      OCN_model = @[ocn_model]
+      history_n = 0
+      history_option = nhours
+      history_ymd = -999
+      coupling_mode = nems_orig
+::
+ALLCOMP_attributes::
+      ScalarFieldCount = 2
+      ScalarFieldIdxGridNX = 1
+      ScalarFieldIdxGridNY = 2
+      ScalarFieldName = cpl_scalars
+      start_type = startup
+      case_name = ufs.s2s
+      restart_n = @[restart_interval_hours]
+      restart_option = nhours
+      restart_ymd = -999
 ::

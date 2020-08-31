@@ -16,7 +16,12 @@ if [ ! -d "../exec" ]; then
   mkdir ../exec
 fi
 
+if [ $target = hera ]; then target=hera.intel ; fi
+if [ $target = orion ]; then target=orion.intel ; fi
 
-cd fv3_coupled.fd/NEMS 
-make -j 8 app=coupledFV3_CCPP_MOM6_CICE_WW3 build
-mv ./exe/NEMS.x ./exe/nems_fv3_ccpp_mom6_cice5_ww3.x
+cd fv3_coupled.fd/
+FV3=$( pwd -P )/FV3
+cd tests/
+./compile.sh "$FV3" "$target" "CCPP=Y SUITES=FV3_GFS_2017_coupled,FV3_GFS_2017_satmedmf_coupled,FV3_GFS_v15p2_coupled MOM6=Y CICE=Y WW3=Y CMEPS=Y" 1
+mv -f fcst_1.exe ../NEMS/exe/nems_fv3_ccpp_mom6_cice5_ww3.x
+
