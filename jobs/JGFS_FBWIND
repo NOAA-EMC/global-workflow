@@ -63,7 +63,7 @@ env
 
 ########################################################
 # Execute the script.
-$HOMEgfs/scripts/exgfs_fbwind.sh.ecf
+$HOMEgfs/scripts/exgfs_fbwind.sh
 export err=$?;err_chk
 ########################################################
 

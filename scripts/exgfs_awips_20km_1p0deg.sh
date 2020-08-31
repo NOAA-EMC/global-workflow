@@ -1,6 +1,6 @@
 #!/bin/ksh
 ##############################################################################
-#  UTILITY SCRIPT NAME :  exgfs_awips_20km_1p0deg.sh.ecf
+#  UTILITY SCRIPT NAME :  exgfs_awips_20km_1p0deg.sh
 #         DATE WRITTEN :  11/01/2017
 #
 #  Abstract:  This utility script produces the GFS AWIPS 20km and 1.0 deg

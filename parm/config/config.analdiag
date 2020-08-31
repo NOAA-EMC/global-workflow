@@ -8,6 +8,4 @@ echo "BEGIN: config.analdiag"
 # Get task specific resources
 . $EXPDIR/config.resources analdiag
 
-export ANALDIAGSH=$HOMEgsi/scripts/exglobal_analdiag_fv3gfs.sh
-
 echo "END: config.analdiag"

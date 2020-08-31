@@ -30,7 +30,7 @@ fi
 ###################################
 # Execute the Script  
 ###################################
-$HOMEgfs/scripts/exgfswave_prdgen_gridded.native.sh.ecf
+$HOMEgfs/scripts/exgfswave_prdgen_gridded.native.sh
 
 ###################################
 # Remove temp directories

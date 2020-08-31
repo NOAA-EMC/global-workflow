@@ -8,8 +8,7 @@ echo "BEGIN: config.eobs"
 # Get task specific resources
 . $EXPDIR/config.resources eobs
 
-export INVOBSSH="$HOMEgsi/scripts/exglobal_innovate_obs_fv3gfs.sh"
-export ENKFINVOBSSH="$HOMEgsi/scripts/exglobal_enkf_innovate_obs_fv3gfs.sh"
+# Number of enkf members per innovation job
 export NMEM_EOMGGRP=8  
 export RERUN_EOMGGRP="YES"
 export npe_gsi=$npe_eobs

@@ -78,12 +78,12 @@ fi
 
 ########################################################
 # Execute the script.
-echo "$SRCgfs/exgdas_nawips.sh.ecf gdas 009 GDAS_GEMPAK " >> poescript
+echo "$SRCgfs/exgdas_nawips.sh gdas 009 GDAS_GEMPAK " >> poescript
 ########################################################
 
 ########################################################
 # Execute the script for quater-degree grib
-echo "$SRCgfs/exgdas_nawips.sh.ecf gdas_0p25 009 GDAS_GEMPAK " >>poescript
+echo "$SRCgfs/exgdas_nawips.sh gdas_0p25 009 GDAS_GEMPAK " >>poescript
 ########################################################
 
 cat poescript

@@ -106,7 +106,7 @@ postmsg "$jlogfile" "$msg"
 $LOGSCRIPT
 
 
-${FORECASTSH:-$SCRgfs/exglobal_fcst_nemsfv3gfs.sh.ecf}
+${FORECASTSH:-$SCRgfs/exglobal_fcst_nemsfv3gfs.sh}
 status=$?
 [[ $status -ne 0 ]] && exit $status
 

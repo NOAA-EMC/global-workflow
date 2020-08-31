@@ -117,7 +117,7 @@ fi
 
 #############################################################
 # Execute the script
-$HOMEgfs/scripts/exglobal_grib2_special_npoess.sh.ecf
+$HOMEgfs/scripts/exglobal_grib2_special_npoess.sh
 export err=$?;err_chk
 #############################################################
 
