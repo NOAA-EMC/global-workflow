@@ -102,7 +102,7 @@ fi
 ##
 ##  Initial condition:               provide hours (cyc=?)
 ##
-##  Usage:                           bsub < test_jgfs_cyclone_tracker.ecf
+##  Usage:                           bsub < test_jgfs_cyclone_tracker
 ##
 ##  Data_In:                         COMINgfs=/com/gfs/prod/gfs.${PDY}
 ##                                   COMINgdas=/com/gfs/prod/gdas.${PDY}

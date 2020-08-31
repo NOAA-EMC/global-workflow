@@ -179,7 +179,7 @@ env
 
 ########################################################
 # Execute the script.
-#$SCRbufrsnd/exgfs_postsnd.sh.ecf
+#$SCRbufrsnd/exgfs_postsnd.sh
 ${HOMEbufrsnd}/jobs/JGFS_POSTSND
 ########################################################
 

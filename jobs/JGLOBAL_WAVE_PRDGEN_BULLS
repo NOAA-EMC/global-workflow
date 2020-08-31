@@ -28,7 +28,7 @@ env
 ###################################
 # Execute the Script  
 
-$HOMEgfs/scripts/exgfs_wave_prdgen_bulls.sh.ecf
+$HOMEgfs/scripts/exgfs_wave_prdgen_bulls.sh
 
 ###################################
 # Remove temp directories
