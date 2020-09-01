@@ -1,0 +1,15 @@
+#!/bin/ksh -x
+
+########## config.wafs ##########
+
+echo "BEGIN: config.wafs"
+
+# Get task specific resources
+. $EXPDIR/config.resources wafs
+
+export fcsthrs=120
+export COMIN=$COMINatmos
+export COMOUT=$COMOUTatmos
+export SENDCOM="YES"
+
+echo "END: config.wafs"

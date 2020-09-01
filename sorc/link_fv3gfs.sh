@@ -209,7 +209,10 @@ fi
 $LINK ../sorc/gfs_post.fd/exec/ncep_post gfs_ncep_post
 
 if [ -d ${pwd}/gfs_wafs.fd ]; then 
-    for wafsexe in wafs_awc_wafavn  wafs_blending  wafs_cnvgrib2  wafs_gcip  wafs_makewafs  wafs_setmissing; do
+    for wafsexe in \
+          wafs_awc_wafavn  wafs_blending  wafs_blending_0p25 \
+          wafs_cnvgrib2  wafs_gcip  wafs_grib2_0p25 \
+          wafs_makewafs  wafs_setmissing; do
         [[ -s $wafsexe ]] && rm -f $wafsexe
         $LINK ../sorc/gfs_wafs.fd/exec/$wafsexe .
     done

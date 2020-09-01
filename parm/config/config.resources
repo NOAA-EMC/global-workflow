@@ -13,6 +13,7 @@ if [ $# -ne 1 ]; then
     echo "waveinit waveprep wavepostsbs wavegempaksbs waveawipssbs"
     echo "wavepost waveawips wavestat"
     echo "postsnd awips gempak"
+    echo "wafs wafsgrib2 wafsblending wafsgrib20p25 wafsblending0p25 wafsgcip"
     exit 1
 
 fi
@@ -169,6 +170,48 @@ elif [ $step = "post" ]; then
     export npe_node_dwn=$npe_node_max
     if [[ "$machine" = "WCOSS_DELL_P3" ]]; then export npe_node_post=14 ; fi
     if [[ "$machine" == "WCOSS_C" ]]; then export memory_post="3072M"; fi
+
+elif [ $step = "wafs" ]; then
+
+    export wtime_wafs="00:30:00"
+    export npe_wafs=1
+    export npe_node_wafs=1
+    export nth_wafs=1
+
+elif [ $step = "wafsgcip" ]; then
+
+    export wtime_wafsgcip="00:30:00"
+    export npe_wafsgcip=2
+    export npe_node_wafsgcip=1
+    export nth_wafsgcip=1
+
+elif [ $step = "wafsgrib2" ]; then
+
+    export wtime_wafsgrib2="00:30:00"
+    export npe_wafsgrib2=1
+    export npe_node_wafsgrib2=1
+    export nth_wafsgrib2=1
+
+elif [ $step = "wafsblending" ]; then
+
+    export wtime_wafsblending="00:30:00"
+    export npe_wafsblending=1
+    export npe_node_wafsblending=1
+    export nth_wafsblending=1
+
+elif [ $step = "wafsgrib20p25" ]; then
+
+    export wtime_wafsgrib20p25="00:30:00"
+    export npe_wafsgrib20p25=1
+    export npe_node_wafsgrib20p25=1
+    export nth_wafsgrib20p25=1
+
+elif [ $step = "wafsblending0p25" ]; then
+
+    export wtime_wafsblending0p25="00:30:00"
+    export npe_wafsblending0p25=1
+    export npe_node_wafsblending0p25=1
+    export nth_wafsblending0p25=1
 
 elif [ $step = "vrfy" ]; then
 
