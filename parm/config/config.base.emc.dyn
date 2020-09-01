@@ -125,6 +125,7 @@ export REDERR="2>"
 export SENDECF="NO"
 export SENDCOM="NO"
 export SENDDBN="NO"
+export SENDDBN_NTC="NO"
 export SENDSDM="NO"
 
 # Resolution specific parameters
