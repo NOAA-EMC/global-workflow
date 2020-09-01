@@ -5,7 +5,7 @@ M       jobs/JGFS_POSTSND
 A       parm/bufr_gfs_class1.tbl
 A       parm/bufr_stalist.meteo.gfs
 D       parm/bufr_stalist.meteo.gfs3.update
-M       scripts/exgfs_postsnd.sh.ecf
+M       scripts/exgfs_postsnd.sh
 M       sorc/build_gfs_bufrsnd.sh
 M       sorc/gfs_bufr.fd/buff.f
 M       sorc/gfs_bufr.fd/gfsbufr.f
@@ -29,7 +29,7 @@ D       parm/bufr_stalist.meteo.gfs3.update
     parm/bufr_stalist.meteo.gfs3.update is deleted for it is no longer needed.
     The two files names have been changed by removing "3" in the file names.
 -------------------------------------------------------------
-M       scripts/exgfs_postsnd.sh.ecf
+M       scripts/exgfs_postsnd.sh
 M       sorc/gfs_bufr.fd/buff.f
 M       sorc/gfs_bufr.fd/gfsbufr.f
 M       sorc/gfs_bufr.fd/meteorg.f
