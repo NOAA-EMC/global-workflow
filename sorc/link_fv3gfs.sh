@@ -39,7 +39,10 @@ elif [ $machine = "hera" ]; then
 fi
 cd ${pwd}/../fix                ||exit 8
 for dir in fix_am fix_chem fix_fv3 fix_fv3_gmted2010 fix_gldas fix_orog fix_sfc_climo fix_verif fix_wave_gfs ; do
-    [[ -d $dir ]] && rm -rf $dir
+    if [ -d $dir ]; then
+      [[ $RUN_ENVIR = nco ]] && chmod -R 755 $dir
+      rm -rf $dir
+    fi
 done
 $LINK $FIX_DIR/* .
 
@@ -81,7 +84,7 @@ cd ${pwd}/../ush                ||exit 8
     done
 cd ${pwd}/../util               ||exit 8
     for file in sub_slurm sub_wcoss_c sub_wcoss_d ; do
-        $LINK ../sorc/ufs_utils.fd/util/$file
+        $LINK ../sorc/ufs_utils.fd/util/$file .
     done
 
 
@@ -99,6 +102,7 @@ if [ -d ${pwd}/gfs_wafs.fd ]; then
  cd ${pwd}/../ush                ||exit 8
     $LINK ../sorc/gfs_wafs.fd/ush/*                          .
  cd ${pwd}/../fix                ||exit 8
+    [[ -d wafs ]] && rm -rf wafs
     $LINK ../sorc/gfs_wafs.fd/fix/*                          .
 fi
 
