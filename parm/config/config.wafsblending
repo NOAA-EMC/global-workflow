@@ -1,0 +1,14 @@
+#!/bin/ksh -x
+
+########## config.wafsblending ##########
+
+echo "BEGIN: config.wafsblending"
+
+# Get task specific resources
+. $EXPDIR/config.resources wafsblending
+
+export COMIN=$COMINatmos
+export COMOUT=$COMOUTatmos
+export SENDCOM="YES"
+
+echo "END: config.wafsblending"
