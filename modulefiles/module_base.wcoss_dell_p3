@@ -41,5 +41,4 @@ module use -a /gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/tracker/ens_track
 module load tclogg
 
 # waveprep
-module use -a /usrx/local/dev/modulefiles
 module load cdo/1.9.8
