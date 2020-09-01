@@ -216,7 +216,7 @@ if [ -d ${pwd}/gfs_wafs.fd ]; then
 fi
 
 for ufs_utilsexe in \
-     chgres_cube.exe   fregrid           make_hgrid           nemsio_get    shave.x \
+     fregrid           make_hgrid           nemsio_get    shave.x \
      emcsfc_ice_blend  fregrid_parallel  make_hgrid_parallel  nemsio_read \
      emcsfc_snow2mdl   global_chgres     make_solo_mosaic     nst_tf_chg.x \
      filter_topo       global_cycle      mkgfsnemsioctl       orog.x ; do
@@ -265,7 +265,7 @@ cd ${pwd}/../sorc   ||   exit 8
     for prog in filter_topo fregrid make_hgrid make_solo_mosaic ; do
         $SLINK ufs_utils.fd/sorc/fre-nctools.fd/tools/$prog                                ${prog}.fd                                
     done
-    for prog in  chgres_cube.fd       global_cycle.fd   nemsio_read.fd  nemsio_chgdate.fd \
+    for prog in  global_cycle.fd   nemsio_read.fd  nemsio_chgdate.fd \
         emcsfc_ice_blend.fd  nst_tf_chg.fd \
         emcsfc_snow2mdl.fd   global_chgres.fd  nemsio_get.fd    orog.fd ;do
         $SLINK ufs_utils.fd/sorc/$prog                                                     $prog
