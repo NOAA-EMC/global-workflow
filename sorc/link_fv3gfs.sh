@@ -39,7 +39,10 @@ elif [ $machine = "hera" ]; then
 fi
 cd ${pwd}/../fix                ||exit 8
 for dir in fix_am fix_chem fix_fv3 fix_fv3_gmted2010 fix_gldas fix_orog fix_sfc_climo fix_verif fix_wave_gfs ; do
-    [[ -d $dir ]] && rm -rf $dir
+    if [ -d $dir ]; then
+      [[ $RUN_ENVIR = nco ]] && chmod -R 755 $dir
+      rm -rf $dir
+    fi
 done
 $LINK $FIX_DIR/* .
 
@@ -99,6 +102,7 @@ if [ -d ${pwd}/gfs_wafs.fd ]; then
  cd ${pwd}/../ush                ||exit 8
     $LINK ../sorc/gfs_wafs.fd/ush/*                          .
  cd ${pwd}/../fix                ||exit 8
+    [[ -d wafs ]] && rm -rf wafs
     $LINK ../sorc/gfs_wafs.fd/fix/*                          .
 fi
 
@@ -215,7 +219,7 @@ if [ -d ${pwd}/gfs_wafs.fd ]; then
 fi
 
 for ufs_utilsexe in \
-     chgres_cube.exe   fregrid           make_hgrid           nemsio_get    shave.x \
+     fregrid           make_hgrid           nemsio_get    shave.x \
      emcsfc_ice_blend  fregrid_parallel  make_hgrid_parallel  nemsio_read \
      emcsfc_snow2mdl   global_chgres     make_solo_mosaic     nst_tf_chg.x \
      filter_topo       global_cycle      mkgfsnemsioctl       orog.x ; do
@@ -264,7 +268,7 @@ cd ${pwd}/../sorc   ||   exit 8
     for prog in filter_topo fregrid make_hgrid make_solo_mosaic ; do
         $SLINK ufs_utils.fd/sorc/fre-nctools.fd/tools/$prog                                ${prog}.fd                                
     done
-    for prog in  chgres_cube.fd       global_cycle.fd   nemsio_read.fd  nemsio_chgdate.fd \
+    for prog in  global_cycle.fd   nemsio_read.fd  nemsio_chgdate.fd \
         emcsfc_ice_blend.fd  nst_tf_chg.fd \
         emcsfc_snow2mdl.fd   global_chgres.fd  nemsio_get.fd    orog.fd ;do
         $SLINK ufs_utils.fd/sorc/$prog                                                     $prog
