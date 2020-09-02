@@ -20,7 +20,7 @@ done
 ##########################################
 # Source machine runtime environment
 ##########################################
-. $HOMEgfs/env/${machine}.env wavepostsbs
+. $HOMEgfs/env/${machine}.env wavepostbndpnt
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
