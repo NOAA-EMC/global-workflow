@@ -87,10 +87,6 @@ else
   export COMIN_WAV_CUR=${ROTDIR}/${WAVECUR_DID}.${RPDY}
 fi
 
-# Set mpi serial command
-export wavempexec=${launcher:-"mpirun -n"}
-export wave_mpmd=${mpmd:-"cfp"}
-
 # Execute the Script  
 $HOMEgfs/scripts/exgfs_wave_prep.sh
 
