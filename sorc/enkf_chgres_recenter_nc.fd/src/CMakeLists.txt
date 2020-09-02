@@ -1,0 +1,11 @@
+cmake_minimum_required(VERSION 2.6)
+  file(GLOB LOCAL_SRC ${CMAKE_CURRENT_SOURCE_DIR}/*.f90)
+
+  set(Util_MODULE_DIRECTORY "${PROJECT_BINARY_DIR}/include/chgres_ncio")
+  set_source_files_properties( ${LOCAL_SRC} PROPERTIES COMPILE_FLAGS ${UTIL_Fortran_FLAGS} )
+  add_executable( chgres_recenter_ncio.exe  ${LOCAL_SRC} )
+  set_target_properties( chgres_recenter_ncio.exe PROPERTIES COMPILE_FLAGS ${UTIL_Fortran_FLAGS} )
+  set_target_properties( chgres_recenter_ncio.exe PROPERTIES Fortran_MODULE_DIRECTORY ${Util_MODULE_DIRECTORY} )
+  SET( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_Fortran_FLAGS} ${UTIL_Fortran_FLAGS}" )
+  include_directories( ${UTIL_INC} ${NETCDF_INCLUDES} ${MPI_Fortran_INCLUDE_PATH} ${FV3GFS_NCIO_INCS}) 
+  target_link_libraries( chgres_recenter_ncio.exe ${FV3GFS_NCIO_LIBRARIES} ${BACIO_4_LIBRARY} ${W3NCO_4_LIBRARY} ${IP_4_LIBRARY} ${SP_4_LIBRARY} ${NETCDF_LIBRARIES} ${MPI_Fortran_LIBRARIES} ${HDF5_HL_LIBRARIES} ${HDF5_LIBRARIES} ${ZLIB_LIBRARIES} ${CURL_LIBRARIES})

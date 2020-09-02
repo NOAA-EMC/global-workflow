@@ -104,6 +104,21 @@ echo " .... Building enkf_chgres_recenter .... "
 ./build_enkf_chgres_recenter.sh > $logs_dir/build_enkf_chgres_recenter.log 2>&1
 }
 
+
+#------------------------------------
+# build enkf_chgres_recenter_nc
+#------------------------------------
+$Build_enkf_chgres_recenter_nc && {
+echo " .... Building enkf_chgres_recenter_nc .... "
+./build_enkf_chgres_recenter_nc.sh > $logs_dir/build_enkf_chgres_recenter_nc.log 2>&1
+rc=$?
+if [[ $rc -ne 0 ]] ; then
+    echo "Fatal error in building enkf_chgres_recenter_nc."
+    echo "The log file is in $logs_dir/build_enkf_chgres_recenter_nc.log"
+fi
+((err+=$rc))
+}
+
 #------------------------------------
 # build tropcy_NEMS
 #------------------------------------

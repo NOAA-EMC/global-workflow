@@ -1,0 +1,29 @@
+#%Module#####################################################
+## enkf_chgres_recenter component - wcoss_cray
+#############################################################
+
+module load ncep/1.0
+module load PrgEnv-intel/5.2.56
+module unload intel/15.0.3.187
+module load intel/18.1.163
+module load craype-haswell
+module load cray-mpich/7.2.0
+
+# Loading netcdf modules
+module use /usrx/local/dev/modulefiles
+module load NetCDF-intel-sandybridge/4.7.4
+module load HDF5-parallel-intel-sandybridge/1.10.6
+
+module use /gpfs/hps/nco/ops/nwprod/lib/modulefiles
+module load ip-intel/3.0.0
+module load sp-intel/2.0.2
+module load w3nco-intel/2.0.6
+
+module use /usrx/local/nceplibs/modulefiles
+module load bacio-intel/2.0.2
+
+module use /usrx/local/dev/modulefiles
+module load cmake/3.6.2
+module unuse /usrx/local/dev/modulefiles
+
+export FC=ftn
