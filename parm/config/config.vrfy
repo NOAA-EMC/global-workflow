@@ -139,7 +139,7 @@ fi
 
 export ens_tracker_ver=v1.1.15.1
 if [ $machine = "WCOSS_DELL_P3" ] ; then
-    export ens_tracker_ver=v1.1.15.2
+    export ens_tracker_ver=v1.1.15.3
 fi
 export HOMEens_tracker=$BASE_GIT/tracker/ens_tracker.${ens_tracker_ver}
 

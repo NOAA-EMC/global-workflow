@@ -110,7 +110,7 @@ postmsg "$jlogfile" "$msg"
 $LOGSCRIPT
 
 
-${TROPCYQCRELOSH:-$SCRgfs/extropcy_qc_reloc.sh.ecf}         
+${TROPCYQCRELOSH:-$SCRgfs/extropcy_qc_reloc.sh}
 status=$?
 [[ $status -ne 0 ]] && exit $status
 

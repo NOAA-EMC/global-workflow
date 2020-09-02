@@ -30,7 +30,7 @@ SCRIPTS CHANGES
    The following script have been removed from GFS v16.0.0
    - exgfs_grib_awips_g2.sh.ecf  (retired in June 12, 2019)
    - exgdas_bulls_navy.sh.ecf    (Plan to retire in GFSS v16.0.0) GDAS and NAVY bulletins
-   - Removed WINTEMV bulltin in script exgfs_fbwind.sh.ecf (WINTEMV bulletin plan to retire in GFS v16.0.0)
+   - Removed WINTEMV bulltin in script exgfs_fbwind.sh (WINTEMV bulletin plan to retire in GFS v16.0.0)
 
 PARM/wmo
    - Removed parm in grid 160,161,213,254,225  -----> Retired in GFS v15.2.7
@@ -84,18 +84,18 @@ JOB CHANGES  (no changes)
      JGFS_PGRB2_SPEC_NPOESS
 
 SCRIPTS CHANGES
-     exgdas_nawips.sh.ecf
-     exgempak_gdas_gif_ncdc.sh.ecf
-     exgempak_gfs_gif_ncdc_skew_t.sh.ecf
-     exgfs_awips_20km_1p0deg.sh.ecf
-     exgfs_fbwind.sh.ecf
-     exgfs_gempak_meta.sh.ecf
-     exgfs_grib_awips_g2.sh.ecf
-     exgfs_grib_awips.sh.ecf
-     exgfs_nawips.sh.ecf
-     exglobal_grib2_special_npoess.sh.ecf
-     exgoes_nawips.sh.ecf                     -removed dependencies for gempak on phase 1 
-     exnawips.sh.ecf                          -removed dependencies for gempak on phase 1
+     exgdas_nawips.sh
+     exgempak_gdas_gif_ncdc.sh
+     exgempak_gfs_gif_ncdc_skew_t.sh
+     exgfs_awips_20km_1p0deg.sh
+     exgfs_fbwind.sh
+     exgfs_gempak_meta.sh
+     exgfs_grib_awips_g2.sh
+     exgfs_grib_awips.sh
+     exgfs_nawips.sh
+     exglobal_grib2_special_npoess.sh
+     exgoes_nawips.sh                    -removed dependencies for gempak on phase 1
+     exnawips.sh                         -removed dependencies for gempak on phase 1
 
 PARM CHANGES
     Removed 5WAVH in parm cards for AWIPS products in GFS v16.0.0

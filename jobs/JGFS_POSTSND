@@ -63,7 +63,7 @@ env
 
 ########################################################
 # Execute the script.
-$SCRbufrsnd/exgfs_postsnd.sh.ecf
+$SCRbufrsnd/exgfs_postsnd.sh
 ########################################################
 
 if [ -e "$pgmout" ] ; then
