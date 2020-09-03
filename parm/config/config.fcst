@@ -241,6 +241,10 @@ elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
     # Write each restart file in 16 small files to save time
     export io_layout="4,4"
 
+    # Set number of layers from the top over 
+    # which two delta-Z filter is applied
+    export n_sponge=42
+
     # Debug load balancing 
     #export KEEPDATA="YES"
     #export ESMF_RUNTIME_PROFILE=ON

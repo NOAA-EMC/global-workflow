@@ -68,9 +68,9 @@ while [ $fhcnt -le $FHMAX_WAV ]; do
       *)       gridIDin= 
                grdIDout= ;;
     esac
-    GRIBIN=$COMIN/$RUNwave.$cycle.$grdIDin.f${fhr}.grib2
+    GRIBIN=$COMIN/gridded/$RUNwave.$cycle.$grdIDin.f${fhr}.grib2
     GRIBIN_chk=$GRIBIN.idx
-    if [ "$grdIDin" = "global.0p25" && "$grid" = "glo_30m" ]; then
+    if [ "$grdIDin" = "global.0p25" ] && [ "$grid" = "glo_30m" ]; then
       #cp $GRIBIN  tempgf.$grdID.f${fhr}
       #cp $GRIBIN tempgf.$grdIDin.f${fhr}
       $WGRIB2 -lola 0:720:0.5 -90:361:0.5 gribfile.$grdIDout.f${fhr}  grib \
