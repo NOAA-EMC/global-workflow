@@ -2,7 +2,7 @@ extern /prod18/gdas/jgdas_forecast
 extern /prod18/gdas/atmos/post/gdas_post
 extern /prod18/gdas/enkf/atmos/post
 #### ecen
-extern /prod18/gdas/jgdas_chgres_forenkf
+extern /prod18/gdas/atmos/post_processing/jgdas_chgres_forenkf
 
 suite prod00
   repeat day 1
@@ -28,32 +28,32 @@ suite prod00
     edit QUEUESERV 'prod_transfer'
     edit QUEUE 'prod'
     family atmos
-      family dump
-        task jgfs_tropcy_qc_reloc
-          event 1 jtwc_bull_email
-          time 02:41
-        task jgfs_dump
-          event 1 release_sfcprep
-          time 02:47
-        task jgfs_dump_post
-          trigger jgfs_dump == complete
-          event 1 release_gfs00_dump_alert
-        task jgfs_dump_alert
-          trigger jgfs_dump_post:release_gfs00_dump_alert
-        task jmodel_realtime_gfs
-          trigger jgfs_dump_alert == complete
-      endfamily
-      family prep
-        task jgfs_emcsfc_sfc_prep
-          trigger ../dump/jgfs_dump:release_sfcprep
-        task jgfs_prep
-          trigger ../dump/jgfs_dump == complete and ../dump/jgfs_tropcy_qc_reloc == complete
-        task jgfs_prep_post
-          trigger ./jgfs_prep == complete and ../analysis/jgfs_analysis == complete  
+      family obsproc
+        family dump
+          task jgfs_tropcy_qc_reloc
+            event 1 jtwc_bull_email
+            time 02:41
+          task jgfs_dump
+            event 1 release_sfcprep
+            time 02:47
+          task jgfs_dump_post
+            trigger jgfs_dump == complete
+            event 1 release_gfs00_dump_alert
+          task jgfs_dump_alert
+            trigger jgfs_dump_post:release_gfs00_dump_alert
+        endfamily
+        family prep
+          task jgfs_emcsfc_sfc_prep
+            trigger ../dump/jgfs_dump:release_sfcprep
+          task jgfs_prep
+            trigger ../dump/jgfs_dump == complete and ../dump/jgfs_tropcy_qc_reloc == complete
+          task jgfs_prep_post
+            trigger ./jgfs_prep == complete and ../../analysis/jgfs_analysis == complete
+        endfamily
       endfamily
       family analysis
         task jgfs_analysis
-          trigger ../prep/jgfs_prep == complete and ../prep/jgfs_emcsfc_sfc_prep == complete
+          trigger ../obsproc/prep/jgfs_prep == complete and ../obsproc/prep/jgfs_emcsfc_sfc_prep == complete
           event 1 release_fcst
         task jgfs_analysis_calc
           trigger ./jgfs_analysis == complete 
@@ -2210,7 +2210,7 @@ suite prod00
     family wave
       family init
         task jgfs_wave_init
-          trigger ../../atmos/prep/jgfs_prep == complete
+          trigger ../../atmos/obsproc/prep/jgfs_prep == complete
       endfamily
       family prep
         task jgfs_wave_prep
@@ -2218,9 +2218,9 @@ suite prod00
       endfamily
       family post
         task jgfs_wave_postsbs
-          trigger ../../jgfs_forecast_high == complete
+          trigger ../../jgfs_forecast == complete
         task jgfs_wave_postpnt
-          trigger ../../jgfs_forecast_high == complete
+          trigger ../../jgfs_forecast == complete
         task jgfs_wave_post_bndpnt
           trigger ../../atmos/post/jgfs_post_manager:release_post192
         task jgfs_wave_prdgen_gridded
@@ -2233,7 +2233,7 @@ suite prod00
           trigger ../post/jgfs_wave_postsbs == complete
       endfamily
     endfamily
-    task jgfs_forecast_high
+    task jgfs_forecast
       trigger ./atmos/analysis/jgfs_analysis:release_fcst and ./wave/prep/jgfs_wave_prep == complete
   endfamily
   family gdas
@@ -2247,44 +2247,44 @@ suite prod00
     edit QUEUESERV 'prod_transfer'
     edit QUEUE 'prod'
     family atmos
+      family obsproc
+        family dump
+          task jgdas_tropcy_qc_reloc
+            time 05:45
+          task jgdas_dump
+            event 1 release_sfcprep
+            time 05:50
+          task jgdas_dump_post
+            trigger jgdas_dump == complete
+            event 1 release_gdas00_dump_alert
+          task jgdas_dump_alert
+            trigger jgdas_dump_post:release_gdas00_dump_alert
+        endfamily
+        family prep
+          task jgdas_emcsfc_sfc_prep
+            trigger ../dump/jgdas_dump:release_sfcprep
+          task jgdas_prep
+            trigger ../dump/jgdas_dump == complete and ../dump/jgdas_tropcy_qc_reloc == complete
+          task jgdas_prep_post
+            trigger ./jgdas_prep == complete and ../../analysis/jgdas_analysis == complete
+        endfamily
+      endfamily
       family init
         task jgdas_gldas
-          trigger ../analysis/jgdas_analysis_high == complete
-      endfamily
-      family dump
-        task jgdas_tropcy_qc_reloc
-          time 05:45
-        task jgdas_dump
-          event 1 release_sfcprep
-          time 05:50
-        task jgdas_dump_post
-          trigger jgdas_dump == complete
-          event 1 release_gdas00_dump_alert
-        task jgdas_dump_alert
-          trigger jgdas_dump_post:release_gdas00_dump_alert
-        task jmodel_realtime_gdas
-          trigger jgdas_dump_alert == complete
-      endfamily
-      family prep
-        task jgdas_emcsfc_sfc_prep
-          trigger ../dump/jgdas_dump:release_sfcprep
-        task jgdas_prep
-          trigger ../dump/jgdas_dump == complete and ../dump/jgdas_tropcy_qc_reloc == complete
-        task jgdas_prep_post
-          trigger ./jgdas_prep == complete and ../analysis/jgdas_analysis_high == complete
+          trigger ../analysis/jgdas_analysis == complete
       endfamily
       family analysis
-        task jgdas_analysis_high
-         trigger ../prep/jgdas_prep == complete and ../prep/jgdas_emcsfc_sfc_prep == complete
+        task jgdas_analysis
+         trigger ../obsproc/prep/jgdas_prep == complete and ../obsproc/prep/jgdas_emcsfc_sfc_prep == complete
          event 1 release_fcst
         task jgdas_analysis_calc
-          trigger ./jgdas_analysis_high == complete
+          trigger ./jgdas_analysis == complete
         task jgdas_analysis_diag
-          trigger ./jgdas_analysis_high == complete
+          trigger ./jgdas_analysis == complete
       endfamily
       family post
         task jgdas_post_manager
-          trigger ../../jgdas_forecast_high == active
+          trigger ../../jgdas_forecast == active
           event 1 release_postanl
           event 2 release_post000
           event 3 release_post001
@@ -2364,15 +2364,19 @@ suite prod00
           edit FHRGRP '010'
           edit FHRLST 'f009'
       endfamily
+      family post_processing
+        task jgdas_chgres_forenkf
+          trigger ../../jgdas_forecast == complete and ../../enkf/forecast == complete
+      endfamily
       family gempak
         task jgdas_gempak
-          trigger ../../jgdas_forecast_high == complete
+          trigger ../../jgdas_forecast == complete
         task jgdas_gempak_meta_ncdc
           trigger ./jgdas_gempak == complete
       endfamily
       family verf
         task jgdas_vminmon
-          trigger ../analysis/jgdas_analysis_high == complete
+          trigger ../analysis/jgdas_analysis == complete
         task jgdas_verfrad
           trigger ../analysis/jgdas_analysis_diag == complete
         task jgdas_verfozn
@@ -2382,7 +2386,7 @@ suite prod00
     family wave
       family init
         task jgdas_wave_init
-          trigger ../../atmos/prep/jgdas_prep == complete
+          trigger ../../atmos/obsproc/prep/jgdas_prep == complete
       endfamily
       family prep
         task jgdas_wave_prep
@@ -2390,235 +2394,237 @@ suite prod00
       endfamily
       family post
         task jgdas_wave_postsbs
-          trigger ../../jgdas_forecast_high == complete
+          trigger ../../jgdas_forecast == complete
         task jgdas_wave_postpnt
-          trigger ../../jgdas_forecast_high == complete
+          trigger ../../jgdas_forecast == complete
       endfamily
     endfamily
-    task jgdas_forecast_high
-      trigger ./atmos/analysis/jgdas_analysis_high:release_fcst and ./wave/prep/jgdas_wave_prep == complete and ./atmos/init/jgdas_gldas == complete
-    task jgdas_chgres_forenkf
-      trigger ./jgdas_forecast_high == complete and ./enkf/atmos/forecast == complete
+    task jgdas_forecast
+      trigger ./atmos/analysis/jgdas_analysis:release_fcst and ./wave/prep/jgdas_wave_prep == complete and ./atmos/init/jgdas_gldas == complete
     family enkf
-      family atmos
-        task jgdas_enkf_select_obs
-          trigger ../../atmos/prep/jgdas_prep == complete and /prod18/gdas/enkf/atmos/post == complete
-        task jgdas_enkf_diag
-          trigger ./jgdas_enkf_select_obs == complete
-        task jgdas_enkf_update
-          trigger ./jgdas_enkf_diag == complete
-        task jgdas_enkf_sfc
-          trigger ./jgdas_enkf_update == complete and ../../atmos/analysis/jgdas_analysis_calc == complete
-        family ecen
-          trigger ./jgdas_enkf_update == complete and ../../atmos/analysis/jgdas_analysis_calc == complete and /prod18/gdas/jgdas_chgres_forenkf == complete
-          family grp1
-            edit FHRGRP '003'
-            task jgdas_enkf_ecen
-          endfamily
-          family grp2
-            edit FHRGRP '006'
-            task jgdas_enkf_ecen
-          endfamily
-          family grp3
-            edit FHRGRP '009'
-            task jgdas_enkf_ecen
-          endfamily
+      family analysis
+        family create
+          task jgdas_enkf_select_obs
+            trigger ../../../atmos/obsproc/prep/jgdas_prep == complete and /prod18/gdas/enkf/atmos/post == complete
+          task jgdas_enkf_diag
+            trigger ./jgdas_enkf_select_obs == complete
+          task jgdas_enkf_update
+            trigger ./jgdas_enkf_diag == complete
         endfamily
-        family forecast
-          trigger ./ecen == complete and ./jgdas_enkf_sfc == complete
-          family grp1
-            edit ENSGRP '01'
-            task jgdas_enkf_fcst
+        family recenter
+          family ecen
+            trigger ../create/jgdas_enkf_update == complete and ../../../atmos/analysis/jgdas_analysis_calc == complete and /prod18/gdas/atmos/post_processing/jgdas_chgres_forenkf == complete
+            family grp1
+              edit FHRGRP '003'
+              task jgdas_enkf_ecen
+            endfamily
+            family grp2
+              edit FHRGRP '006'
+              task jgdas_enkf_ecen
+            endfamily
+            family grp3
+              edit FHRGRP '009'
+              task jgdas_enkf_ecen
+            endfamily
           endfamily
-          family grp2
-            edit ENSGRP '02'
-            task jgdas_enkf_fcst
-          endfamily
-          family grp3
-            edit ENSGRP '03'
-            task jgdas_enkf_fcst
-          endfamily
-          family grp4
-            edit ENSGRP '04'
-            task jgdas_enkf_fcst
-          endfamily
-          family grp5
-            edit ENSGRP '05'
-            task jgdas_enkf_fcst
-          endfamily
-          family grp6
-            edit ENSGRP '06'
-            task jgdas_enkf_fcst
-          endfamily
-          family grp7
-            edit ENSGRP '07'
-            task jgdas_enkf_fcst
-          endfamily
-          family grp8
-            edit ENSGRP '08'
-            task jgdas_enkf_fcst
-          endfamily
-          family grp9
-            edit ENSGRP '09'
-            task jgdas_enkf_fcst
-          endfamily
-          family grp10
-            edit ENSGRP '10'
-            task jgdas_enkf_fcst
-          endfamily
-          family grp11
-            edit ENSGRP '11'
-            task jgdas_enkf_fcst
-          endfamily
-          family grp12
-            edit ENSGRP '12'
-            task jgdas_enkf_fcst
-          endfamily
-          family grp13
-            edit ENSGRP '13'
-            task jgdas_enkf_fcst
-          endfamily
-          family grp14
-            edit ENSGRP '14'
-            task jgdas_enkf_fcst
-          endfamily
-          family grp15
-            edit ENSGRP '15'
-            task jgdas_enkf_fcst
-          endfamily
-          family grp16
-            edit ENSGRP '16'
-            task jgdas_enkf_fcst
-          endfamily
-          family grp17
-            edit ENSGRP '17'
-            task jgdas_enkf_fcst
-          endfamily
-          family grp18
-            edit ENSGRP '18'
-            task jgdas_enkf_fcst
-          endfamily
-          family grp19
-            edit ENSGRP '19'
-            task jgdas_enkf_fcst
-          endfamily
-          family grp20
-            edit ENSGRP '20'
-            task jgdas_enkf_fcst
-          endfamily
-          family grp21
-            edit ENSGRP '21'
-            task jgdas_enkf_fcst
-          endfamily
-          family grp22
-            edit ENSGRP '22'
-            task jgdas_enkf_fcst
-          endfamily
-          family grp23
-            edit ENSGRP '23'
-            task jgdas_enkf_fcst
-          endfamily
-          family grp24
-            edit ENSGRP '24'
-            task jgdas_enkf_fcst
-          endfamily
-          family grp25
-            edit ENSGRP '25'
-            task jgdas_enkf_fcst
-          endfamily
-          family grp26
-            edit ENSGRP '26'
-            task jgdas_enkf_fcst
-          endfamily
-          family grp27
-            edit ENSGRP '27'
-            task jgdas_enkf_fcst
-          endfamily
-          family grp28
-            edit ENSGRP '28'
-            task jgdas_enkf_fcst
-          endfamily
-          family grp29
-            edit ENSGRP '29'
-            task jgdas_enkf_fcst
-          endfamily
-          family grp30
-            edit ENSGRP '30'
-            task jgdas_enkf_fcst
-          endfamily
-          family grp31
-            edit ENSGRP '31'
-            task jgdas_enkf_fcst
-          endfamily
-          family grp32
-            edit ENSGRP '32'
-            task jgdas_enkf_fcst
-          endfamily
-          family grp33
-            edit ENSGRP '33'
-            task jgdas_enkf_fcst
-          endfamily
-          family grp34
-            edit ENSGRP '34'
-            task jgdas_enkf_fcst
-          endfamily
-          family grp35
-            edit ENSGRP '35'
-            task jgdas_enkf_fcst
-          endfamily
-          family grp36
-            edit ENSGRP '36'
-            task jgdas_enkf_fcst
-          endfamily
-          family grp37
-            edit ENSGRP '37'
-            task jgdas_enkf_fcst
-          endfamily
-          family grp38
-            edit ENSGRP '38'
-            task jgdas_enkf_fcst
-          endfamily
-          family grp39
-            edit ENSGRP '39'
-            task jgdas_enkf_fcst
-          endfamily
-          family grp40
-            edit ENSGRP '40'
-            task jgdas_enkf_fcst
-          endfamily
+          task jgdas_enkf_sfc
+            trigger ../create/jgdas_enkf_update == complete and ../../../atmos/analysis/jgdas_analysis_calc == complete
         endfamily
-        family post
-          trigger ./forecast == complete
-          family f003
-            edit FHOUT_EPOS '003'
-            task jgdas_enkf_post
-          endfamily
-          family f004
-            edit FHOUT_EPOS '004'
-            task jgdas_enkf_post
-          endfamily
-          family f005
-            edit FHOUT_EPOS '005'
-            task jgdas_enkf_post
-          endfamily
-          family f006
-            edit FHOUT_EPOS '006'
-            task jgdas_enkf_post
-          endfamily
-          family f007
-            edit FHOUT_EPOS '007'
-            task jgdas_enkf_post
-          endfamily
-          family f008
-            edit FHOUT_EPOS '008'
-            task jgdas_enkf_post
-          endfamily
-          family f009
-            edit FHOUT_EPOS '009'
-            task jgdas_enkf_post
-          endfamily
-        endfamily                    #### post
-      endfamily                      #### atmos
+      endfamily
+      family forecast
+        trigger ./analysis/recenter/ecen == complete and ./analysis/recenter/jgdas_enkf_sfc == complete
+        family grp1
+          edit ENSGRP '01'
+          task jgdas_enkf_fcst
+        endfamily
+        family grp2
+          edit ENSGRP '02'
+          task jgdas_enkf_fcst
+        endfamily
+        family grp3
+          edit ENSGRP '03'
+          task jgdas_enkf_fcst
+        endfamily
+        family grp4
+          edit ENSGRP '04'
+          task jgdas_enkf_fcst
+        endfamily
+        family grp5
+          edit ENSGRP '05'
+          task jgdas_enkf_fcst
+        endfamily
+        family grp6
+          edit ENSGRP '06'
+          task jgdas_enkf_fcst
+        endfamily
+        family grp7
+          edit ENSGRP '07'
+          task jgdas_enkf_fcst
+        endfamily
+        family grp8
+          edit ENSGRP '08'
+          task jgdas_enkf_fcst
+        endfamily
+        family grp9
+          edit ENSGRP '09'
+          task jgdas_enkf_fcst
+        endfamily
+        family grp10
+          edit ENSGRP '10'
+          task jgdas_enkf_fcst
+        endfamily
+        family grp11
+          edit ENSGRP '11'
+          task jgdas_enkf_fcst
+        endfamily
+        family grp12
+          edit ENSGRP '12'
+          task jgdas_enkf_fcst
+        endfamily
+        family grp13
+          edit ENSGRP '13'
+          task jgdas_enkf_fcst
+        endfamily
+        family grp14
+          edit ENSGRP '14'
+          task jgdas_enkf_fcst
+        endfamily
+        family grp15
+          edit ENSGRP '15'
+          task jgdas_enkf_fcst
+        endfamily
+        family grp16
+          edit ENSGRP '16'
+          task jgdas_enkf_fcst
+        endfamily
+        family grp17
+          edit ENSGRP '17'
+          task jgdas_enkf_fcst
+        endfamily
+        family grp18
+          edit ENSGRP '18'
+          task jgdas_enkf_fcst
+        endfamily
+        family grp19
+          edit ENSGRP '19'
+          task jgdas_enkf_fcst
+        endfamily
+        family grp20
+          edit ENSGRP '20'
+          task jgdas_enkf_fcst
+        endfamily
+        family grp21
+          edit ENSGRP '21'
+          task jgdas_enkf_fcst
+        endfamily
+        family grp22
+          edit ENSGRP '22'
+          task jgdas_enkf_fcst
+        endfamily
+        family grp23
+          edit ENSGRP '23'
+          task jgdas_enkf_fcst
+        endfamily
+        family grp24
+          edit ENSGRP '24'
+          task jgdas_enkf_fcst
+        endfamily
+        family grp25
+          edit ENSGRP '25'
+          task jgdas_enkf_fcst
+        endfamily
+        family grp26
+          edit ENSGRP '26'
+          task jgdas_enkf_fcst
+        endfamily
+        family grp27
+          edit ENSGRP '27'
+          task jgdas_enkf_fcst
+        endfamily
+        family grp28
+          edit ENSGRP '28'
+          task jgdas_enkf_fcst
+        endfamily
+        family grp29
+          edit ENSGRP '29'
+          task jgdas_enkf_fcst
+        endfamily
+        family grp30
+          edit ENSGRP '30'
+          task jgdas_enkf_fcst
+        endfamily
+        family grp31
+          edit ENSGRP '31'
+          task jgdas_enkf_fcst
+        endfamily
+        family grp32
+          edit ENSGRP '32'
+          task jgdas_enkf_fcst
+        endfamily
+        family grp33
+          edit ENSGRP '33'
+          task jgdas_enkf_fcst
+        endfamily
+        family grp34
+          edit ENSGRP '34'
+          task jgdas_enkf_fcst
+        endfamily
+        family grp35
+          edit ENSGRP '35'
+          task jgdas_enkf_fcst
+        endfamily
+        family grp36
+          edit ENSGRP '36'
+          task jgdas_enkf_fcst
+        endfamily
+        family grp37
+          edit ENSGRP '37'
+          task jgdas_enkf_fcst
+        endfamily
+        family grp38
+          edit ENSGRP '38'
+          task jgdas_enkf_fcst
+        endfamily
+        family grp39
+          edit ENSGRP '39'
+          task jgdas_enkf_fcst
+        endfamily
+        family grp40
+          edit ENSGRP '40'
+          task jgdas_enkf_fcst
+        endfamily
+      endfamily
+      family post
+        trigger ./forecast == complete
+        task jgdas_enkf_post_f003
+          edit FHMIN_EPOS '003'
+          edit FHMAX_EPOS '003'
+          edit FHOUT_EPOS '003'
+        task jgdas_enkf_post_f004
+          edit FHMIN_EPOS '004'
+          edit FHMAX_EPOS '004'
+          edit FHOUT_EPOS '004'
+        task jgdas_enkf_post_f005
+          edit FHMIN_EPOS '005'
+          edit FHMAX_EPOS '005'
+          edit FHOUT_EPOS '005'
+        task jgdas_enkf_post_f006
+          edit FHMIN_EPOS '006'
+          edit FHMAX_EPOS '006'
+          edit FHOUT_EPOS '006'
+        task jgdas_enkf_post_f007
+          edit FHMIN_EPOS '007'
+          edit FHMAX_EPOS '007'
+          edit FHOUT_EPOS '007'
+        task jgdas_enkf_post_f008
+          edit FHMIN_EPOS '008'
+          edit FHMAX_EPOS '008'
+          edit FHOUT_EPOS '008'
+        task jgdas_enkf_post_f009
+          edit FHMIN_EPOS '009'
+          edit FHMAX_EPOS '009'
+          edit FHOUT_EPOS '009'
+      endfamily                      #### epos
     endfamily                        #### enkf
   endfamily                          #### gdas
 endsuite
