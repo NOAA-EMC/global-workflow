@@ -362,10 +362,9 @@
 
     cd $DATA
     export dtspec=3600.
-    echo "cd ${DATA}/output_$YMDHMS" >> ${fcmdnow}
     for buoy in $ibpoints
     do
-      echo "$USHwave/wave_outp_spec.sh $buoy $ymdh ibp > ibp_$buoy.out 2>&1" >> ${fcmdnow}
+      echo "$USHwave/wave_outp_spec.sh $buoy $ymdh ibp $SPECDATA > $SPECDATA/ibp_$buoy.out 2>&1" >> ${fcmdnow}
     done
     echo "cd $DATA"
 
@@ -411,7 +410,7 @@
     done
   fi
 
-  wavenproc=`wc -l ${fcmdnow} | awk '{print $1}'`
+  wavenproc=`wc -l cmdfile | awk '{print $1}'`
   wavenproc=`echo $((${wavenproc}<${NTASKS}?${wavenproc}:${NTASKS}))`
 
   set +x
@@ -426,12 +425,12 @@
     if [ ${CFP_MP:-"NO"} = "YES" ]; then
       ${wavempexec} -n ${wavenproc} ${wave_mpmd} cmdmprog
     else
-      ${wavempexec} ${wavenproc} ${wave_mpmd} ${fcmdnow}
+      ${wavempexec} ${wavenproc} ${wave_mpmd} cmdfile
     fi
     exit=$?
   else
-    chmod 744 ${fcmdnow}
-    ./${fcmdnow}
+    chmod 744 cmdfile
+    ./cmdfile
     exit=$?
   fi
 
@@ -452,13 +451,15 @@
 
 # 2.b Loop over each buoy to cat the final buoy file for all fhr 
 
+  cd $DATA
+
   rm -f cmdfile.bouy
   touch cmdfile.bouy
   chmod 744 cmdfile.bouy
 
   for buoy in $ibpoints
   do
-    echo "$USHwave/wave_outp_cat.sh $buoy ibp > ibp_cat_$buoy.out 2>&1" >> cmdfile.bouy
+    echo "$USHwave/wave_outp_cat.sh $buoy $FHMAX_WAV_IBP ibp > ibp_cat_$buoy.out 2>&1" >> cmdfile.bouy
   done
 
   if [ ${CFP_MP:-"NO"} = "YES" ]; then

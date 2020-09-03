@@ -35,10 +35,11 @@
   bloc=$1
   ymdh=$2
   specdir=$3
+  workdir=$4
 
   YMDHE=`$NDATE $FHMAX_WAV $CDATE`
 
-  cd $SPECDATA
+  cd $workdir
 
   rm -rf ${specdir}_${bloc}
   mkdir ${specdir}_${bloc}

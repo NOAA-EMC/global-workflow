@@ -101,12 +101,13 @@ case $case_in in
         ;;
     "C768")
         export DELTIM=150
-        export layout_x=12
-        export layout_y=8
+##      export DELTIM=120
+        export layout_x=8 
+        export layout_y=12
         export layout_x_gfs=16
         export layout_y_gfs=12
-        export npe_wav=70  
-        export npe_wav_gfs=70  
+        export npe_wav=140
+        export npe_wav_gfs=140
         export nth_fv3=4
         export cdmbgwd="4.0,0.15,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=2
