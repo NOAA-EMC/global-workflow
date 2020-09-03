@@ -8,7 +8,7 @@ set -x -e
 #############################
 # Source relevant config files
 #############################
-configs="base wave wavepostsbs"
+configs="base wave wavepostsbs wavepostpnt"
 export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
 config_path=${EXPDIR:-$NWROOT/gfs.${gfs_ver}/parm/config}
 for config in $configs; do
@@ -20,7 +20,7 @@ done
 ##########################################
 # Source machine runtime environment
 ##########################################
-. $HOMEgfs/env/${machine}.env wavepostsbs
+. $HOMEgfs/env/${machine}.env wavepostpnt
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
@@ -68,7 +68,7 @@ export COMINice=${COMINice:-${COMROOTp2}/omb/prod}
 export COMINwnd=${COMINwnd:-${COMROOT}/gfs/prod}
 export COMIN_WAV_CUR=${COMIN_WAV_CUR:-${COMROOTp2}/rtofs/prod}
 
-mkdir -p $COMOUT/gridded
+mkdir -p $COMOUT/station
 
 env | sort
 
@@ -84,7 +84,7 @@ export WAV_MOD_TAG=${CDUMP}wave${waveMEMB}
 export CFP_VERBOSE=1
 
 # Execute the Script  
-$HOMEgfs/scripts/exgfs_wave_post_gridded_sbs.sh
+$HOMEgfs/scripts/exgfs_wave_post_pnt.sh
 err=$?
 if [ $err -ne 0 ]; then
   msg="FATAL ERROR: ex-script of GWES_POST failed!"

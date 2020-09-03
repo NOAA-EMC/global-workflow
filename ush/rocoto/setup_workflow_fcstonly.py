@@ -28,7 +28,7 @@ import rocoto
 import workflow_utils as wfu
 
 #taskplan = ['getic', 'fv3ic', 'waveinit', 'waveprep', 'fcst', 'post', 'wavepostsbs', 'wavegempak', 'waveawipsbulls', 'waveawipsgridded', 'wavepost', 'wavestat', 'wafs', 'wafsgrib2', 'wafsblending', 'wafsgcip', 'wafsgrib20p25', 'wafsblending0p25', 'vrfy', 'metp', 'arch']
-taskplan = ['getic', 'fv3ic', 'waveinit', 'waveprep', 'fcst', 'post', 'wavepostsbs', 'wavegempak', 'waveawipsbulls', 'waveawipsgridded', 'wafs', 'wafsgrib2', 'wafsblending', 'wafsgcip', 'wafsgrib20p25', 'wafsblending0p25', 'vrfy', 'metp', 'arch']
+taskplan = ['getic', 'fv3ic', 'waveinit', 'waveprep', 'fcst', 'post', 'wavepostsbs', 'wavepostbndpnt', 'wavepostpnt', 'wavegempak', 'waveawipsbulls', 'waveawipsgridded', 'wafs', 'wafsgrib2', 'wafsblending', 'wafsgcip', 'wafsgrib20p25', 'wafsblending0p25', 'vrfy', 'metp', 'arch']
 
 def main():
     parser = ArgumentParser(description='Setup XML workflow and CRONTAB for a forecast only experiment.', formatter_class=ArgumentDefaultsHelpFormatter)
@@ -361,17 +361,26 @@ def get_workflow(dict_configs, cdump='gdas'):
         tasks.append(task)
         tasks.append('\n')
 
-    # wavepost
-    #if do_wave in ['Y', 'YES']:
-    #    deps = []
-    #    dep_dict = {'type':'task', 'name':'%sfcst' % cdump}
-    #    deps.append(rocoto.add_dependency(dep_dict))
-    #    dep_dict = {'type':'task', 'name':'%swavepostsbs' % cdump}
-    #    deps.append(rocoto.add_dependency(dep_dict))
-    #    dependencies = rocoto.create_dependency(dep=deps)
-    #    task = wfu.create_wf_task('wavepost', cdump=cdump, envar=envars, dependency=dependencies)
-    #    tasks.append(task)
-    #    tasks.append('\n')
+    # wavepostbndpnt
+    if do_wave in ['Y', 'YES']:
+        deps = []
+        data = '&ROTDIR;/%s.@Y@m@d/@H/atmos/%s.t@Hz.logf192.txt' % (cdump,cdump)
+        dep_dict = {'type': 'data', 'data': data}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+        task = wfu.create_wf_task('wavepostbndpnt', cdump=cdump, envar=envars, dependency=dependencies)
+        tasks.append(task)
+        tasks.append('\n')
+
+    # wavepostpnt
+    if do_wave in ['Y', 'YES']:
+        deps = []
+        dep_dict = {'type':'task', 'name':'%sfcst' % cdump}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+        task = wfu.create_wf_task('wavepostpnt', cdump=cdump, envar=envars, dependency=dependencies)
+        tasks.append(task)
+        tasks.append('\n')
 
     # wavestat
     #if do_wave in ['Y', 'YES']:

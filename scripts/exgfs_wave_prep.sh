@@ -622,7 +622,7 @@
   fi
 
 #-------------------------------------------------------------------
-# CURR processing (not functional, TBD for uncoupled and GFSv16 cases)
+# CURR processing 
 
   if [ "${WW3CURINP}" = 'YES' ]; then
 
@@ -667,6 +667,11 @@
           FLGHF='F'
         else
           echo ' '
+          if [ "${FLGHF}" = "T" ] ; then
+             curfile=${curfile1h}
+          else 
+             curfile=${curfile3h}
+          fi
           set $setoff
           echo ' '
           echo '************************************** '
@@ -676,7 +681,7 @@
           set $seton
           postmsg "$jlogfile" "FATAL ERROR - NO CURRENT FILE (RTOFS)"
           err=11;export err;${errchk}
-          exit 0
+          exit $err
           echo ' '
         fi
 
