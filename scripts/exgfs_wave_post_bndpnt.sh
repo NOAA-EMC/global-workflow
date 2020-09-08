@@ -459,7 +459,7 @@
 
   for buoy in $ibpoints
   do
-    echo "$USHwave/wave_outp_cat.sh $buoy $FHMAX_WAV_IBP ibp > ibp_cat_$buoy.out 2>&1" >> cmdfile.bouy
+    echo "$USHwave/wave_outp_cat.sh $buoy $FHMAX_WAV_IBP ibp > $DATA/ibp_cat_$buoy.out 2>&1" >> cmdfile.bouy
   done
 
   if [ ${CFP_MP:-"NO"} = "YES" ]; then
@@ -467,18 +467,18 @@
     ifile=0
     iline=1
     ifirst='yes'
-    nlines=$( wc -l cmdfile | awk '{print $1}' )
+    nlines=$( wc -l cmdfile.bouy | awk '{print $1}' )
     while [ $iline -le $nlines ]; do
-      line=$( sed -n ''$iline'p' cmdfile )
+      line=$( sed -n ''$iline'p' cmdfile.bouy )
       if [ -z "$line" ]; then
         break
       else
         if [ "$ifirst" = 'yes' ]; then
-          echo "#!/bin/sh" > cmdmfile.$nfile
-          echo "$nfile cmdmfile.$nfile" >> cmdmprog
-          chmod 744 cmdmfile.$nfile
+          echo "#!/bin/sh" > cmdfile.bouy.$nfile
+          echo "$nfile cmdfile.bouy.$nfile" >> cmdmprog
+          chmod 744 cmdfile.bouy.$nfile
         fi
-        echo $line >> cmdmfile.$nfile
+        echo $line >> cmdfile.bouy.$nfile
         nfile=$(( nfile + 1 ))
         if [ $nfile -eq $NTASKS ]; then
           nfile=0
@@ -489,7 +489,7 @@
     done
   fi
 
-  wavenproc=`wc -l ${fcmdnow} | awk '{print $1}'`
+  wavenproc=`wc -l cmdfile.bouy | awk '{print $1}'`
   wavenproc=`echo $((${wavenproc}<${NTASKS}?${wavenproc}:${NTASKS}))`
 
   set +x
@@ -502,9 +502,9 @@
   if [ "$wavenproc" -gt '1' ]
   then
     if [ ${CFP_MP:-"NO"} = "YES" ]; then
-      ${wavempexec} -n ${wavenproc} ${wave_mpmd} cmdmprog
+      ${wavempexec} -n ${wavenproc} ${wave_mpmd} cmdfile.bouy
     else
-      ${wavempexec} ${wavenproc} ${wave_mpmd} ${fcmdnow}
+      ${wavempexec} ${wavenproc} ${wave_mpmd} cmdfile.bouy
     fi
     exit=$?
   else

@@ -68,7 +68,7 @@ elif [ $step = "wavepostsbs" ]; then
 elif [ $step = "wavepostbndpnt" ]; then
 
     export wtime_wavepostbndpnt="02:00:00"
-    export npe_wavepostbndpnt=56
+    export npe_wavepostbndpnt=192
     export nth_wavepostbndpnt=1
     export npe_node_wavepostbndpnt=$(echo "$npe_node_max / $nth_wavepostbndpnt" | bc)
     export NTASKS=${npe_wavepostbndpnt}

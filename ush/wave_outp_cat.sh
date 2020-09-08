@@ -51,34 +51,7 @@
     exit 1
   else
     buoy=$bloc
-    grep $buoy ${DATA}/buoy_log.ww3 > tmp_list.loc
-    while read line
-    do
-      buoy_name=`echo $line | awk '{print $2}'`
-      if [ $buoy = $buoy_name ]
-      then
-        point=`echo $line | awk '{ print $1 }'`
-        set +x
-        echo "              Location ID/#   : $buoy (${point})"
-        echo "   Spectral output start time : $ymdh "
-        echo ' '
-        [[ "$LOUD" = YES ]] && set -x
-        break
-      fi
-    done < tmp_list.loc
-    if [ -z "$point" ]
-    then
-      set +x
-      echo '******************************************************'
-      echo '*** LOCATION ID IN ww3_outp_spec.sh NOT RECOGNIZED ***'
-      echo '******************************************************'
-      echo ' '
-      [[ "$LOUD" = YES ]] && set -x
-      postmsg "$jlogfile" "LOCATION ID IN ww3_outp_spec.sh NOT RECOGNIZED"
-      exit 2
-    fi
   fi
-
 
 # 0.c Define directories and the search path.
 #     The tested variables should be exported by the postprocessor script.
@@ -119,6 +92,7 @@
   fhrp=$fhr
   while [ $fhr -le $MAXHOUR ]; do
 
+    ymdh=`$NDATE $fhr $CDATE`
     if [ "$specdir" = "bull" ]
     then
       outfilefhr=${STA_DIR}/${specdir}/$WAV_MOD_TAG.${ymdh}.$buoy.bull
