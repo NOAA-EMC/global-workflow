@@ -1,0 +1,21 @@
+set -x
+cp jgfs_wafs_f00.ecf jgfs_wafs_f06.ecf
+cp jgfs_wafs_f00.ecf jgfs_wafs_f102.ecf
+cp jgfs_wafs_f00.ecf jgfs_wafs_f108.ecf
+cp jgfs_wafs_f00.ecf jgfs_wafs_f114.ecf
+cp jgfs_wafs_f00.ecf jgfs_wafs_f12.ecf
+cp jgfs_wafs_f00.ecf jgfs_wafs_f120.ecf
+cp jgfs_wafs_f00.ecf jgfs_wafs_f18.ecf
+cp jgfs_wafs_f00.ecf jgfs_wafs_f24.ecf
+cp jgfs_wafs_f00.ecf jgfs_wafs_f30.ecf
+cp jgfs_wafs_f00.ecf jgfs_wafs_f36.ecf
+cp jgfs_wafs_f00.ecf jgfs_wafs_f42.ecf
+cp jgfs_wafs_f00.ecf jgfs_wafs_f48.ecf
+cp jgfs_wafs_f00.ecf jgfs_wafs_f54.ecf
+cp jgfs_wafs_f00.ecf jgfs_wafs_f60.ecf
+cp jgfs_wafs_f00.ecf jgfs_wafs_f66.ecf
+cp jgfs_wafs_f00.ecf jgfs_wafs_f72.ecf
+cp jgfs_wafs_f00.ecf jgfs_wafs_f78.ecf
+cp jgfs_wafs_f00.ecf jgfs_wafs_f84.ecf
+cp jgfs_wafs_f00.ecf jgfs_wafs_f90.ecf
+cp jgfs_wafs_f00.ecf jgfs_wafs_f96.ecf

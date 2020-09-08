@@ -1,0 +1,74 @@
+#! /bin/sh
+#BSUB -q %QUEUE%
+#BSUB -P %PROJ%
+#BSUB -J %E%gfs_forecast_high_%CYC%
+#BSUB -o %COM%/output/%ENVIR%/today/gfs_forecast_high_%CYC%.o%J
+#BSUB -W 6:00
+#BSUB -n 1519
+#BSUB -R affinity[core(4)]
+#BSUB -R span[ptile=7]
+#BSUB -cwd /tmp
+
+module purge
+%include <head.h>
+%include <envir-p3.h>
+
+set -x
+
+export NODES=217
+export ntasks=1519
+export ptile=7
+export threads=4
+
+export NET=%NET:gfs%
+export RUN=%RUN%
+export CDUMP=%RUN%
+
+model=gfs
+%include <model_ver.h>
+
+############################################################
+# Load modules
+############################################################
+module load lsf/$lsf_ver
+module load impi/$impi_ver
+module load prod_util/${prod_util_ver}
+module load prod_envir/${prod_envir_ver}
+module use -a /usrx/local/nceplibs/dev/NCEPLIBS/modulefiles
+module load hdf5_parallel/${hdf5_parallel_ver}
+module load netcdf_parallel/${netcdf_parallel_ver}
+module load CFP/${CFP_ver}
+module load grib_util/${grib_util_ver}
+module use /gpfs/dell2/emc/modeling/noscrub/emc.nemspara/soft/modulefiles
+module load esmf/8.0.1bs08
+
+module list
+
+#############################################################
+# WCOSS environment settings
+#############################################################
+export ECF_PORT=%ECF_PORT%
+export DATAROOT=%DATAROOT%
+export jlogfile=%COM%/logs/jlogfile
+export COMROOT=%COM%
+export ROTDIR=%COM%
+export cyc=%CYC%
+export cycle=t%CYC%z
+export CDATE=$PDY$cyc
+export USE_CFP=YES
+
+############################################################
+# CALL executable job script here
+############################################################
+${HOMEgfs}/jobs/JGLOBAL_FORECAST
+
+if [ $? -ne 0 ]; then
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+   ecflow_client --abort
+   exit
+fi
+
+%include <tail.h>
+%manual
+
+%end

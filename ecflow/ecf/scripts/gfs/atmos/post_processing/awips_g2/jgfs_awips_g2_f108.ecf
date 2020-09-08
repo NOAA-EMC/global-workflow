@@ -1,0 +1,75 @@
+#! /bin/sh
+#BSUB -q %QUEUESHARED%
+#BSUB -P %PROJ%
+#BSUB -J %E%gfs_awips_g2_%FCSTHR%_%CYC%
+#BSUB -o %COM%/output/%ENVIR%/today/gfs_awips_g2_%FCSTHR%_%CYC%.o%J
+#BSUB -W 0:30
+#BSUB -n 1
+#BSUB -M 1000
+#BSUB -R affinity[core(1)]
+#BSUB -R span[ptile=1]
+#BSUB -cwd /tmp
+
+module purge
+%include <head.h>
+%include <envir-p3.h>
+
+set -x
+
+export NET=%NET:gfs%
+export RUN=%RUN%
+export CDUMP=%RUN%
+
+model=gfs
+%include <model_ver.h>
+
+export FHRGRP=%FHRGRP%
+export FHRLST=%FHRLST%
+export fcsthrs=%FCSTHR%
+
+############################################################
+# Load modules
+############################################################
+module load impi/$impi_ver
+module load lsf/$lsf_ver
+module load prod_envir/${prod_envir_ver}
+module load prod_util/${prod_util_ver}
+module load grib_util/$grib_util_ver
+module use -a /usrx/local/nceplibs/dev/NCEPLIBS/modulefiles
+module load CFP/${CFP_ver}
+
+module list
+
+#############################################################
+# WCOSS environment settings
+#############################################################
+export COMPONENT=${COMPONENT:-atmos}
+export COM_IN=%COM%
+export ROTDIR=%COM%
+export cyc=%CYC%
+export cycle=t%CYC%z
+export COMIN=$COM_IN/${RUN}.${PDY}/${cyc}/${COMPONENT}
+export COMOUT=$COM_IN/${RUN}.${PDY}/${cyc}/${COMPONENT}
+export USE_CFP=YES
+export CDATE=$PDY$cyc
+export USE_CFP=YES
+trdrun=%TRDRUN%
+export job="jgfs_awips_f${fcsthrs}_${cyc}"
+
+############################################################
+# CALL executable job script here
+############################################################
+$HOMEgfs/jobs/JGFS_AWIPS_G2
+
+###############################################################
+
+if [ $? -ne 0 ]; then
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+   ecflow_client --abort
+   exit
+fi
+
+%include <tail.h>
+%manual
+
+%end

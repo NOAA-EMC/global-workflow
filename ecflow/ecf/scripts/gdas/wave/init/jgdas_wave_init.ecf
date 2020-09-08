@@ -1,0 +1,77 @@
+#! /bin/sh
+#BSUB -J %E%%RUN%_wave_init_%CYC%
+#BSUB -o %COM%/output/%ENVIR%/today/%RUN%_wave_init_%CYC%.o%J
+#BSUB -cwd /tmp
+#BSUB -q %QUEUE%
+#BSUB -P %PROJ%
+#BSUB -W 00:10
+#BSUB -R span[ptile=28]; -R affinity[core]
+#BSUB -n 28
+
+module purge
+%include <head.h>
+%include <envir-p3.h>
+
+set -x
+
+export NODES=1
+export ntasks=28
+export ptile=28
+export threads=1
+
+export NET=%NET:gfs%
+export RUN=%RUN%
+export CDUMP=%RUN%
+
+model=gfs
+%include <model_ver.h>
+
+############################################################
+## Load modules
+############################################################
+#### change this after developer report on module list detail
+. ${HOMEgfs}/ush/load_fv3gfs_modules.sh
+
+module list
+
+############################################################
+## WCOSS_C environment settings
+############################################################
+export COMPONENT=${COMPONENT:-wave}
+export ECF_PORT=%ECF_PORT%
+export DATAROOT=%DATAROOT%
+export jlogfile=%COM%/logs/jlogfile
+export COMROOT=%COM%
+export ROTDIR=%COM%
+export CDUMP=gdas
+export cyc=%CYC%
+export cycle=t%CYC%z
+export CDATE=$PDY$cyc
+
+############################################################
+# CALL executable job script here
+############################################################
+${HOMEgfs}/jobs/JGLOBAL_WAVE_INIT
+
+if [ $? -ne 0 ]; then
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+   ecflow_client --abort
+   exit
+fi
+
+%include <tail.h>
+%manual
+######################################################################
+# Purpose:
+#
+#
+######################################################################
+
+######################################################################
+# Job specific troubleshooting instructions:
+#  see generic troubleshoot manual page
+#
+######################################################################
+
+# include manual page below
+%end

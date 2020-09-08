@@ -1,0 +1,95 @@
+#! /bin/sh
+#BSUB -q %QUEUE%
+#BSUB -P %PROJ%
+#BSUB -J %E%gdas_analysis_high_%CYC%
+#BSUB -o %COM%/output/%ENVIR%/today/gdas_analysis_high_%CYC%.o%J
+#BSUB -W 2:00
+#BSUB -n 800
+#BSUB -R affinity[core(7)]
+#BSUB -R span[ptile=4]
+#BSUB -cwd /tmp
+
+module purge
+%include <head.h>
+%include <envir-p3.h>
+
+set -x
+
+export NODES=200
+export ntasks=800
+export ptile=4
+export threads=7
+
+export NET=%NET:gfs%
+export RUN=%RUN%
+export CDUMP=%RUN%
+
+export model=gfs
+%include <model_ver.h>
+
+############################################################
+# Load modules
+############################################################
+module load lsf/${lsf_ver}
+module load impi/${impi_ver}
+module load prod_util/${prod_util_ver}
+module load prod_envir/${prod_envir_ver}
+module use -a /usrx/local/nceplibs/dev/NCEPLIBS/modulefiles
+module load CFP/${CFP_ver}
+module load python/${python_ver}
+module load hdf5_parallel/${hdf5_parallel_ver}
+module load netcdf_parallel/${netcdf_parallel_ver}
+module load crtm/${crtm_ver}
+
+module list
+
+#%include <ecf_client.h>
+#############################################################
+# WCOSS environment settings
+#############################################################
+export KMP_AFFINITY=scatter
+export OMP_NUM_THREADS=$threads
+export FORT_BUFFERED=true
+export OMP_NUM_THREADS_CY=28
+export NTHREADS=$OMP_NUM_THREADS_CY
+export NTHREADS_GSI=$threads
+
+#export ECF_PORT=%ECF_PORT%
+export COMPONENT=${COMPONENT:-atmos}
+export DATAROOT=%DATAROOT%
+export jlogfile=%COM%/logs/jlogfile
+export COMROOT=%COM%
+export ROTDIR=%COM%
+export CDUMP=gdas
+export cyc=%CYC%
+export cycle=t%CYC%z
+export CDATE=$PDY$cyc
+export USE_CFP=YES
+export PREINP=''
+#### export SENDECF=YES
+
+############################################################
+# CALL executable job script here
+############################################################
+${HOMEgfs}/jobs/JGLOBAL_ANALYSIS
+if [ $? -ne 0 ]; then
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+   ecflow_client --abort
+   exit
+fi
+
+%include <tail.h>
+%manual
+######################################################################
+# Purpose: To execute the job that prepares initial condition for
+#          gdas.
+######################################################################
+
+######################################################################
+# Job specific troubleshooting instructions:
+#  see generic troubleshoot manual page
+#
+######################################################################
+
+# include manual page below
+%end

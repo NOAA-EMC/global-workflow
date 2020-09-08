@@ -1,0 +1,69 @@
+#! /bin/sh
+#BSUB -q %QUEUE%
+#BSUB -P %PROJ%
+#BSUB -J %E%gdas_enkf_diag_%CYC%
+#BSUB -o %COM%/output/%ENVIR%/today/gdas_enkf_diag_%CYC%.o%J
+#BSUB -W 2:00
+#BSUB -n 56
+#BSUB -R affinity[core(1)]
+#BSUB -R span[ptile=28]
+#BSUB -cwd /tmp
+
+module purge
+%include <head.h>
+%include <envir-p3.h>
+
+set -x
+
+export NODES=2
+export ntasks=56
+export ptile=28
+export threads=1
+
+export NET=%NET:gfs%
+export RUN=%RUN%
+export CDUMP=%RUN%
+
+model=gfs
+%include <model_ver.h>
+
+############################################################
+# Load modules
+############################################################
+module load lsf/${lsf_ver}
+module load impi/${impi_ver}
+module load prod_envir/${prod_envir_ver}
+module load prod_util/${prod_util_ver}
+module load CFP/${CFP_ver}
+
+module list
+
+#############################################################
+# WCOSS environment settings
+#############################################################
+export ECF_PORT=%ECF_PORT%
+export DATAROOT=%DATAROOT%
+export jlogfile=%COM%/logs/jlogfile
+export COMROOT=%COM%
+export ROTDIR=%COM%
+export CDUMP=gdas
+export cyc=%CYC%
+export cycle=t%CYC%z
+export CDATE=$PDY$cyc
+export USE_CFP=YES
+
+############################################################
+# CALL executable job script here
+############################################################
+${HOMEgfs}/jobs/JGLOBAL_ENKF_ANALDIAG
+
+if [ $? -ne 0 ]; then
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+   ecflow_client --abort
+   exit
+fi
+
+%include <tail.h>
+%manual
+
+%end

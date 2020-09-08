@@ -1,0 +1,81 @@
+#! /bin/sh
+#BSUB -q %QUEUE%
+#BSUB -P %PROJ%
+#BSUB -J %E%gfs_analysis_calc_%CYC%
+#BSUB -o %COM%/output/%ENVIR%/today/gfs_analysis_calc_%CYC%.o%J
+#BSUB -W 2:00
+#BSUB -n 140
+#BSUB -R affinity[core(1)]
+#BSUB -R span[ptile=28]
+#BSUB -cwd /tmp
+
+module purge
+%include <head.h>
+%include <envir-p3.h>
+
+set -x
+
+export NODES=5
+export ntasks=140
+export ptile=28
+export threads=1
+
+export NET=%NET:gfs%
+export RUN=%RUN%
+export CDUMP=%RUN%
+
+model=gfs
+%include <model_ver.h>
+
+############################################################
+# Load modules
+############################################################
+module load lsf/${lsf_ver}
+module load impi/${impi_ver}
+module load prod_util/${prod_util_ver}
+module load prod_envir/${prod_envir_ver}
+module use -a /usrx/local/nceplibs/dev/NCEPLIBS/modulefiles
+module load python/${python_ver}
+module load hdf5_parallel/${hdf5_parallel_ver}
+module load netcdf_parallel/${netcdf_parallel_ver}
+
+module list
+
+#############################################################
+# WCOSS environment settings
+#############################################################
+export ECF_PORT=%ECF_PORT%
+export DATAROOT=%DATAROOT%
+export jlogfile=%COM%/logs/jlogfile
+export COMROOT=%COM%
+export ROTDIR=%COM%
+export cyc=%CYC%
+export cycle=t%CYC%z
+export CDATE=$PDY$cyc
+export USE_CFP=YES
+
+############################################################
+# CALL executable job script here
+############################################################
+${HOMEgfs}/jobs/JGLOBAL_ANALCALC
+if [ $? -ne 0 ]; then
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+   ecflow_client --abort
+   exit
+fi
+
+%include <tail.h>
+%manual
+######################################################################
+# Purpose: To execute the job that prepares initial condition for
+#          gdas.
+######################################################################
+
+######################################################################
+# Job specific troubleshooting instructions:
+#  see generic troubleshoot manual page
+#
+######################################################################
+
+# include manual page below
+%end
