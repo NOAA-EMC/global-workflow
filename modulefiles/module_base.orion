@@ -13,8 +13,8 @@ module load contrib noaatools
 ## this typically includes compiler, MPI and job scheduler
 ##
 # Core modules
-module load intel/2018
-module load impi/2018
+#module load intel/2018
+#module load impi/2018
 
 module load ncl/6.6.2
 module load nco/4.8.1
