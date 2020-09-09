@@ -60,22 +60,13 @@ sed -e "s/DIST/SHRD/g"\
     -e "s/PDLIB/ /g"\
        ${WW3_BINDIR}/tempswitch > ${WW3_BINDIR}/switch
 
-#set +x
-#module list
-#echo "G2_LIB4=${G2_LIB4}" 
-#echo "W3NCO_LIB4=${W3NCO_LIB4}" 
-#echo "BACIO_LIB4=${BACIO_LIB4}"
-#echo "JASPER_LIB=${JASPER_LIB}"
-#echo "PNG_LIB=${PNG_LIB}" 
-#echo "Z_LIB=${Z_LIB}"
-#set -x
-
 #Build exes for prep jobs: 
 ${WW3_BINDIR}/w3_make ww3_grid 
 
 #Build exes for post jobs (except grib)"
-${WW3_BINDIR}/w3_make ww3_point ww3_ounf
+${WW3_BINDIR}/w3_make ww3_outp 
 
+exit
 #Update switch for grib: 
 echo $(cat ${SWITCHFILE}) > ${WW3_BINDIR}/tempswitch
 
