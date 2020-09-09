@@ -102,7 +102,11 @@ if [ $CDUMP = "gfs" ]; then
     $NCP trak.gfso.atcfunix.$CDATE        ${ARCDIR}/.
     $NCP trak.gfso.atcfunix.altg.$CDATE   ${ARCDIR}/.
 
-    cp -rp tracker                        ${ARCDIR}/tracker.$CDATE
+    mkdir -p ${ARCDIR}/tracker.$CDATE/$CDUMP
+    blist="epac natl"
+    for basin in $blist; do
+	cp -rp $basin                     ${ARCDIR}/tracker.$CDATE/$CDUMP
+    done
 fi
 
 # Archive atmospheric gaussian gfs forecast files for fit2obs

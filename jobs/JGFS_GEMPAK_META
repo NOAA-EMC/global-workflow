@@ -93,7 +93,7 @@ env
 
 ########################################################
 # Execute the script.
-$SRCgfs/exgfs_gempak_meta.sh.ecf
+$SRCgfs/exgfs_gempak_meta.sh
 export err=$?; err_chk
 ########################################################
 

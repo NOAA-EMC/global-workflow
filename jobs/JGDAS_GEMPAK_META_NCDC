@@ -100,7 +100,7 @@ export err=$?; err_chk
 
 ########################################################
 # Execute the script.
-$SRCgfs/exgempak_gdas_gif_ncdc.sh.ecf
+$SRCgfs/exgempak_gdas_gif_ncdc.sh
 export err=$?; err_chk
 ########################################################
 

@@ -62,7 +62,7 @@ env
 msg="HAS BEGUN on `hostname`"
 postmsg "$jlogfile" "$msg"
 
-${EMCSFCPREPSH:-$SCRgfs/exemcsfc_global_sfc_prep.sh.ecf}
+${EMCSFCPREPSH:-$SCRgfs/exemcsfc_global_sfc_prep.sh}
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
