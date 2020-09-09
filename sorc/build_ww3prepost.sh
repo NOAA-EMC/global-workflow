@@ -6,9 +6,14 @@ if [ ! -d "../exec" ]; then
   mkdir ../exec
 fi
 
+finalexecdir=$( pwd -P )/../exec
+
+set +x
 source ./machine-setup.sh > /dev/null 2>&1
 
-source ../modulefiles/module_base.$target
+source ../modulefiles/modulefile.ww3.$target
+set -x 
+
 
 cd fv3_coupled.fd/WW3
 export WW3_DIR=$( pwd -P )/model
@@ -21,8 +26,11 @@ export WW3_F90=gfortran
 export SWITCHFILE="${WW3_DIR}/esmf/switch"
 
 export WWATCH3_ENV=${WW3_BINDIR}/wwatch3.env
+export PNG_LIB=$PNG_ROOT/lib64/libpng.a
+export Z_LIB=$ZLIB_ROOT/lib/libz.a
+export JASPER_LIB=$JASPER_ROOT/lib64/libjasper.a
 export WWATCH3_NETCDF=NC4
-export NETCDF_CONFIG=$( which nc-config )
+export NETCDF_CONFIG=$NETCDF_ROOT/bin/nc-config
 
 rm  $WWATCH3_ENV
 echo '#'                                              > $WWATCH3_ENV
@@ -39,6 +47,7 @@ echo 'WWATCH3_SOURCE   yes'                           >> $WWATCH3_ENV
 echo 'WWATCH3_LIST     yes'                           >> $WWATCH3_ENV
 echo ''                                               >> $WWATCH3_ENV
 
+${WW3_BINDIR}/w3_clean -m 
 ${WW3_BINDIR}/w3_setup -q -c $WW3_COMP $WW3_DIR
 
 echo $(cat ${SWITCHFILE}) > ${WW3_BINDIR}/tempswitch
@@ -51,12 +60,21 @@ sed -e "s/DIST/SHRD/g"\
     -e "s/PDLIB/ /g"\
        ${WW3_BINDIR}/tempswitch > ${WW3_BINDIR}/switch
 
+#set +x
+#module list
+#echo "G2_LIB4=${G2_LIB4}" 
+#echo "W3NCO_LIB4=${W3NCO_LIB4}" 
+#echo "BACIO_LIB4=${BACIO_LIB4}"
+#echo "JASPER_LIB=${JASPER_LIB}"
+#echo "PNG_LIB=${PNG_LIB}" 
+#echo "Z_LIB=${Z_LIB}"
+#set -x
+
 #Build exes for prep jobs: 
-#${WW3_BINDIR}/w3_make ww3_grid 
+${WW3_BINDIR}/w3_make ww3_grid 
 
 #Build exes for post jobs (except grib)"
-#${WW3_BINDIR}/w3_make ww3_point
-
+${WW3_BINDIR}/w3_make ww3_point ww3_ounf
 
 #Update switch for grib: 
 echo $(cat ${SWITCHFILE}) > ${WW3_BINDIR}/tempswitch
@@ -70,4 +88,7 @@ sed -e "s/DIST/SHRD/g"\
     -e "s/NOGRB/NCEP2 NCO/g"\
        ${WW3_BINDIR}/tempswitch > ${WW3_BINDIR}/switch
 #Build exe for grib
-###${WW3_BINDIR}/w3_make ww3_grib
+${WW3_BINDIR}/w3_make ww3_grib
+
+cp $WW3_EXEDIR/ww3_* $finalexecdir/
+${WW3_BINDIR}/w3_clean -c
