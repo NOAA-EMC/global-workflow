@@ -36,8 +36,8 @@ module load g2/3.4.0
 module load g2tmpl/1.9.0
 module load jasper/2.0.15
 module load png/1.6.35
-module load netcdf_parallel/4.7.4
-module load hdf5_parallel/1.10.6
+module load netcdf/4.7.4
+module load hdf5/1.10.6
 module load wgrib/2.0.8
 
 module use /apps/contrib/NCEPLIBS/orion/modulefiles
