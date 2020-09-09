@@ -66,7 +66,6 @@ ${WW3_BINDIR}/w3_make ww3_grid
 #Build exes for post jobs (except grib)"
 ${WW3_BINDIR}/w3_make ww3_outp 
 
-exit
 #Update switch for grib: 
 echo $(cat ${SWITCHFILE}) > ${WW3_BINDIR}/tempswitch
 
