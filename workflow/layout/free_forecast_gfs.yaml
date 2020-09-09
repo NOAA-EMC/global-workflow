@@ -59,13 +59,13 @@ suite: !Cycle
         <<: *exclusive_task_template
         Trigger: !Depend up.up.ics.jgfs_emc_mom6ic
         resources: !calc partition.resources.run_prep
-        J_JOB: rocoto/waveinit.sh
+        J_JOB: JGLOBAL_WAVE_INIT 
 
       waveprep: !Task
         <<: *exclusive_task_template
         Trigger: !Depend waveinit
         resources: !calc partition.resources.run_prep
-        J_JOB: rocoto/waveprep.sh
+        J_JOB: JGLOBAL_WAVE_PREP
 
     forecast: !Family
       medcold: !Task
@@ -187,7 +187,15 @@ suite: !Cycle
       RUN: !calc up.RUN
       Disable: !calc doc.settings.cplwav=='.false.'
       resources: !calc partition.resources.run_one_node_downstream
-      J_JOB: rocoto/wavepostsbs.sh
+      J_JOB: JGLOBAL_WAVE_POST_SBS 
+      Trigger: !Depend forecast
+
+    wavepostpnt: !Task
+      <<: *exclusive_task_template
+      RUN: !calc up.RUN
+      Disable: !calc doc.settings.cplwav=='.false.'
+      resources: !calc partition.resources.run_one_node_downstream
+      J_JOB: JGLOBAL_WAVE_POST_PNT
       Trigger: !Depend forecast
 
     jgfs_emc_vrfy: !Task
