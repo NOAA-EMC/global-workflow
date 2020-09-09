@@ -159,8 +159,13 @@
       exit 3
     fi
 
-  $WGRIB2 gribfile -set_date $CDATE -set_ftime "$fhr hour fcst" -grib ${COMOUT}/gridded/${outfile}
-  err=$?
+  if [ $fht -gt 0 ]; then 
+    $WGRIB2 gribfile -set_date $CDATE -set_ftime "$fhr hour fcst" -grib ${COMOUT}/gridded/${outfile}
+    err=$?
+  else 
+    $WGRIB2 gribfile -set_date $CDATE -set_ftime "$fhr hour fcst" -set table_1.4 1 -set table_1.2 1 -grib ${COMOUT}/gridded/${outfile}   
+    err=$?
+  fi 
 
   if [ $err != 0 ]
   then

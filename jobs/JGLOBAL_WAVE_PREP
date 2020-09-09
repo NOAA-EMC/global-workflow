@@ -1,8 +1,7 @@
 #!/bin/bash
 
-set -x
-
 date
+export RUN_ENVIR=${RUN_ENVIR:-"nco"}
 export PS4=' $SECONDS + '
 set -x -e
 
@@ -28,14 +27,13 @@ status=$?
 # PATH for working directory
 export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
-
-export COMPONENTwave=${COMPONENTwave:-${RUN}wave}
-export WAV_MOD_TAG=${COMPONENTwave}${waveMEMB}
+export COMPONENT=${COMPONENT:-wave}
 
 # Add default errchk = err_chk
 export errchk=${errchk:-err_chk}
 
-export DATA=${DATA:-${DATAROOT}/${jobid:?}}
+# Create and go to DATA directory
+export DATA=${DATA:-${DATAROOT:?}/${jobid}}
 mkdir -p $DATA
 cd $DATA
 
@@ -50,51 +48,45 @@ export RPDY=$PDY
 
 export pgmout=OUTPUT.$$
 
-export COMINice=${COMINice:-${COMROOTp2}/omb/prod}
-export COMINwnd=${COMINwnd:-${COMROOT}/gfs/prod}
-export COMIN_WAV_CUR=${COMIN_WAV_CUR:-${COMROOTp2}/rtofs/prod}
 
-export COMINwave=${COMINwave:-${ROTDIR:?}}
-export COMOUTwave=${COMOUTwave:-${ROTDIR:?}}
-export COMIN=${COMIN:-${COMINwave}/${COMPONENTwave}.${PDY}/${cyc}}
-export COMOUT=${COMOUT:-${COMOUTwave}/${COMPONENTwave}.${PDY}/${cyc}}
+# Set COM Paths and GETGES environment
+if [ $RUN_ENVIR = "nco" ]; then
+    export ROTDIR=${COMROOT:?}/$NET/$envir
+fi
+export COMIN=${COMIN:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/$COMPONENT}
+export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/$COMPONENT}
 [[ ! -d $COMOUT ]] && mkdir -m 775 -p $COMOUT
 
+if [ $WW3CURINP = "YES" ];then
+# CDO required for processing RTOFS currents
+export CDO=${CDO_ROOT}/bin/cdo
 if [ $RUN_ENVIR = "nco" ]; then
-  export COMIN_WAV_ICE=${COMIN_WAV_ICE:-$(compath.py gfs/prod)}/${CDUMP}.${PDY}/${cyc}
-  export COMIN_WAV_WND=${COMIN_WAV_WND:-$(compath.py gfs/prod)}/${CDUMP}.${PDY}/${cyc}
+  export COMIN_WAV_ICE=${COMIN_WAV_ICE:-$(compath.py gfs/prod)}/${CDUMP}.${PDY}/${cyc}/atmos
   export COMIN_WAV_CUR=${COMIN_WAV_CUR:-$(compath.py ${WAVECUR_DID}/prod)}/${WAVECUR_DID}.${RPDY}
   if [ ! -d $COMIN_WAV_CUR ]; then
     export RPDY=`$NDATE -24 ${PDY}00 | cut -c1-8`
     export COMIN_WAV_CUR=$(compath.py ${WAVECUR_DID}/prod)/${WAVECUR_DID}.${RPDY}
   fi
-else
-  if [ ! -d $DMPDIR/${WAVECUR_DID}.${RPDY} ]; then export RPDY=`$NDATE -24 ${PDY}00 | cut -c1-8`; fi
+else 
   if [ ! -L $ROTDIR/${WAVECUR_DID}.${RPDY} ]; then # Check if symlink already exists in ROTDIR
     $NLN $DMPDIR/${WAVECUR_DID}.${RPDY} $ROTDIR/${WAVECUR_DID}.${RPDY}
   fi
-  $NLN $DMPDIR/$CDUMP.${PDY}/$cyc/${WAVICEFILE} $ROTDIR/$CDUMP.${PDY}/$cyc/${WAVICEFILE}
-  export COMIN_OBS=${COMIN_OBS:-$ROTDIR/$RUN.$PDY/$cyc}
-  export COMIN_WAV_ICE=${COMIN_OBS}
-  export COMIN_WAV_WND=${COMIN_OBS}
+  if [ ! -L $ROTDIR/${CDUMP}.${PDY}/${cyc}/atmos/${WAVICEFILE} ]; then # Check if symlink already exists in ROTDIR
+    $NLN $DMPDIR/$CDUMP.${PDY}/$cyc/${WAVICEFILE} $ROTDIR/$CDUMP.${PDY}/$cyc/atmos/${WAVICEFILE}
+  fi
+  export COMIN_WAV_ICE=${COMIN_WAV_ICE:-$ROTDIR/$RUN.$PDY/$cyc/atmos}
   export COMIN_WAV_CUR=${ROTDIR}/${WAVECUR_DID}.${RPDY}
 fi
-
-if [ $SENDCOM = YES ]; then
-  mkdir -p $COMOUT
-fi
-
-# Set mpi serial command
-export wavempexec=${launcher:-"mpirun -n"}
-export wave_mpmd=${mpmd:-"cfp"}
+fi 
 
 # Execute the Script  
-$HOMEwave/scripts/exwave_prep.sh
+$HOMEgfs/scripts/exgfs_wave_prep.sh
 
-# Remove temp directories
-if [ "$KEEPDATA" != "YES" ]; then
-  cd $DATAROOT
-  rm -rf $DATA
-fi
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd $DATAROOT
+[[ $KEEPDATA = "NO" ]] && rm -rf $DATA
+
 date
 exit 0

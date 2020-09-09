@@ -403,7 +403,7 @@
 # 2.a Command file set-up
 
   set +x
-  echo '   Making command file for sbs grib2 and GRID Interpolation '
+  echo '   Making command file for wave post points '
   [[ "$LOUD" = YES ]] && set -x
 
   rm -f cmdfile
@@ -411,25 +411,11 @@
   chmod 744 cmdfile
 
 # 1.a.2 Loop over forecast time to generate post files 
-# When executed side-by-side, serial mode (cfp when run after the fcst step)
-# Contingency for RERUN=YES
-  if [ "${RERUN}" = "YES" ]; then
-    fhr=$((FHRUN + FHMIN_WAV))
-    if [ $FHMAX_HF_WAV -gt 0 ] && [ $FHOUT_HF_WAV -gt 0 ] && [ $fhr -lt $FHMAX_HF_WAV ]; then
-      FHINCG=$FHOUT_HF_WAV
-    else
-      FHINCG=$FHOUT_WAV
-    fi
-# Get minimum value to start count from fhr+min(fhrp,fhrg)
-    fhrinc=`echo $(( $FHINCP_WAV < $FHINCG ? $FHINCP_WAV : $FHINCG ))`
-    fhr=$((fhr + fhrinc))
-  else
-    fhr=$FHMIN_WAV
-  fi
+  fhr=$FHMIN_WAV
   fhrp=$fhr
-  fhrg=$fhr
   while [ $fhr -le $FHMAX_WAV ]; do
     
+    echo "   Creating the wave point scripts at : `date`"
     ymdh=`$NDATE $fhr $CDATE`
     YMD=$(echo $ymdh | cut -c1-8)
     HMS="$(echo $ymdh | cut -c9-10)0000"
@@ -450,8 +436,6 @@
 # Create instances of directories for spec and gridded output
     export SPECDATA=${DATA}/output_$YMDHMS
     export BULLDATA=${DATA}/output_$YMDHMS
-    export GRIBDATA=${DATA}/output_$YMDHMS
-    export GRDIDATA=${DATA}/output_$YMDHMS
     ln -fs $DATA/mod_def.${waveuoutpGRD} mod_def.ww3
 
 # Point output part (can be split or become meta-task to reduce resource usage)
@@ -531,7 +515,7 @@
 
     set +x
     echo ' '
-    echo "   Executing the grib2_sbs scripts at : `date`"
+    echo "   Executing the wave point scripts at : `date`"
     echo '   ------------------------------------'
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
@@ -579,7 +563,6 @@
 
   done
 
-  if [ "${DOPNT_WAV}" = "YES" ]; then
 
 # --------------------------------------------------------------------------- #
 # 3. Compress point output data into tar files
@@ -624,7 +607,6 @@
       echo "$USHwave/wave_tar.sh $WAV_MOD_TAG cbull $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
     fi
   fi
- fi
 
     wavenproc=`wc -l cmdtarfile | awk '{print $1}'`
     wavenproc=`echo $((${wavenproc}<${NTASKS}?${wavenproc}:${NTASKS}))`
