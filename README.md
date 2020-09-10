@@ -12,6 +12,7 @@ sh checkout.sh coupled                                    # Check out the couple
 ## Compile code used in ufs-s2s-model and EMC_post and link fixed files and executable programs:
 ```
 sh build_ncep_post.sh        #This command will build ncep_post
+sh build_ww3prepost.sh       #This command will build ww3 prep and post exes
 sh build_fv3_coupled.sh      #This command will build ufs-s2s-model
 sh build_reg2grb2.sh         #This command will build exes for ocean-ice post
 
