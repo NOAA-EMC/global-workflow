@@ -1,7 +1,9 @@
 # default settings for fv3 core
 
 ice_defaults: &ice_defaults
-  MOD: cice5
+  MOD: cice6
   ICERES: "025"
   CPL_ICEIC: CPC
   ICEPETS: 48
+  NX_GLB: 1440
+  NY_GLB: 1080
