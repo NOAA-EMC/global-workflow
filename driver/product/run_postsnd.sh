@@ -5,10 +5,10 @@
 #BSUB -J postsnd
 #BSUB -W 01:30
 #BSUB -q dev
-#BSUB -P FV3GFS-T2O
-#BSUB -cwd /gpfs/dell2/emc/verification/noscrub/Guang.Ping.Lou/fv3gfs/driver/product
-#BSUB -R span[ptile=4]
-#BSUB -n 12
+#BSUB -P GFS-DEV
+#BSUB -cwd /gpfs/dell2/emc/verification/noscrub/Guang.Ping.Lou/gfsv16bnetcdf2/driver/product
+#BSUB -R span[ptile=13]
+#BSUB -n 127
 #BSUB -R affinity[core(1):distribute=balance]
 
 ############################################
@@ -20,15 +20,20 @@ module load EnvVars/1.0.2
 module load ips/18.0.1.163
 module load impi/18.0.1
 module load lsf/10.1
-module load prod_util/1.1.0
+module load prod_util/1.1.4
 module load grib_util/1.0.6
 module load prod_envir/1.1.0
 module load CFP/2.0.1
+##module load NetCDF/4.5.0
+##module load HDF5-parallel/1.10.1
+module load python/3.6.3
 
-#module use -a /gpfs/dell1/nco/ops/nwpara/modulefiles/
-#module load gempak/7.3.1
-module use  /gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/modulefiles
-module load gempak/7.3.0
+module use -a /gpfs/dell1/nco/ops/nwpara/modulefiles/
+module load gempak/7.3.1
+module use /usrx/local/nceplibs/dev/NCEPLIBS/modulefiles
+module load hdf5_parallel/1.10.6
+module load netcdf_parallel/4.7.4
+module load w3emc_para/2.4.0
 module list
 
 #module use /usrx/local/dev/modulefiles
@@ -46,24 +51,44 @@ export MP_STDOUTMODE=ordered
 
 #export machine="WCOSS_C"
 machine="WCOSS_DELL_P3"
+#machine="THEIA"
+#machine="JET"
+export npe_postsnd=127
+export npe_postsndcfp=10
+##export OUTPUT_FILE="nemsio"
+export OUTPUT_FILE=${OUTPUT_FILE:-netcdf}
 if [ $machine == "WCOSS_C" ]; then
 ##For WCOSS-Cray##################
+export FHMAX_HF_GFS=120
+export FHOUT_HF_GFS=6
 export launcher="aprun"
-export npe_postsnd=12
 export npe_node_postsnd=3
 export NTHREADS_POSTSND=1
-export npe_postsndcfp=10
 export npe_node_postsndcfp=3
 export NTHREADS_POSTSNDCFP=1
 export APRUN_POSTSND="$launcher -j 1 -n $npe_postsnd -N $npe_node_postsnd -d $NTHREADS_POSTSND -cc depth"
 export APRUN_POSTSNDCFP="$launcher -j 1 -n $npe_postsndcfp -N $npe_node_postsndcfp -d $NTHREADS_POSTSNDCFP cfp"
-else
-##For WCOSS-Dell and Theia, Jet################
+elif [ $machine == "WCOSS_DELL_P3" ]; then
+##For WCOSS-Dell ################
+  if [ $OUTPUT_FILE == "netcdf" ]; then
+   export FHMAX_HF_GFS=120
+   export FHOUT_HF_GFS=3
+   export FHOUT_GFS=3
+  else
+   export FHMAX_HF_GFS=120
+   export FHOUT_HF_GFS=1
+   export FHOUT_GFS=3
+  fi
 export launcher="mpirun -n"
-export npe_postsnd=12
-export npe_postsndcfp=10
 export APRUN_POSTSND="$launcher $npe_postsnd"
 export APRUN_POSTSNDCFP="$launcher $npe_postsndcfp cfp"
+else
+##For Theia, Jet################
+export FHMAX_HF_GFS=0
+export FHOUT_HF_GFS=0
+export launcher="mpirun -np"
+export APRUN_POSTSND="$launcher $npe_postsnd"
+export APRUN_POSTSNDCFP="$launcher $npe_postsndcfp"
 fi
 
 #export PS4='$SECONDS + '
@@ -90,10 +115,11 @@ export DATA_IN=${DATA_IN:-/gpfs/dell2/ptmp/$USER}
 export DATA=$DATA_IN/postsnd.${pid}
 mkdir -p $DATA
 cd $DATA
-export PDY=20180502
+export PDY=20200203
 export cyc=00
 export STARTHOUR=00
 export ENDHOUR=180
+export KEEPDATA="YES"
 
 ####################################
 # File To Log Msgs
@@ -124,14 +150,22 @@ mkdir -p $pcom
 # Set up the UTILITIES
 ###################################
 
-export HOMEbufrsnd=/gpfs/dell2/emc/verification/noscrub/Guang.Ping.Lou/fv3gfs
+export HOMEgfs=/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/global-workflow/feature_gfsv16b
+export HOMEbufrsnd=/gpfs/dell2/emc/verification/noscrub/Guang.Ping.Lou/gfsv16bnetcdf2
+##export HOMEbufrsnd=/gpfs/dell2/emc/verification/noscrub/Guang.Ping.Lou/fv3gfs
 ##export HOMEbufrsnd=/gpfs/hps3/emc/meso/noscrub/Guang.Ping.Lou/fv3gfs
 
 ##############################
 # Define COM Directories
 ##############################
-export EXPDIR=/gpfs/dell2/emc/verification/noscrub/Guang.Ping.Lou
-export COMIN=${EXPDIR}/fv3gfs_data/${RUN}.${PDY}/$cyc
+  if [ $OUTPUT_FILE == "netcdf" ]; then
+export COMIN=/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/v16rt2/${RUN}.${PDY}/$cyc
+  else
+export COMIN=/gpfs/dell1/nco/ops/com/gfs/prod/${RUN}.${PDY}/$cyc
+  fi
+##export EXPDIR=/gpfs/dell2/emc/verification/noscrub/Guang.Ping.Lou
+##export COMIN=${EXPDIR}/data_netcdf/${RUN}.${PDY}
+#export COMIN=${EXPDIR}/fv3gfs_data/${RUN}.${PDY}/$cyc
 #export COMIN=/gpfs/dell2/ptmp/Russ.Treadon/ROTDIRS/prfv3rt1/${RUN}.${PDY}/$cyc
 #export COMIN=/gpfs/dell2/emc/verification/noscrub/Guang.Ping.Lou/fv3gfs_data/${RUN}.${PDY}/$cyc
 #export COMIN=/gpfs/hps3/ptmp/emc.glopara/fv3fy18retro2/${RUN}.${PDY}/$cyc
@@ -145,7 +179,7 @@ env
 
 ########################################################
 # Execute the script.
-#$SCRbufrsnd/exgfs_postsnd.sh.ecf
+#$SCRbufrsnd/exgfs_postsnd.sh
 ${HOMEbufrsnd}/jobs/JGFS_POSTSND
 ########################################################
 

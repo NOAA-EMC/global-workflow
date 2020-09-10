@@ -27,9 +27,9 @@ export BPATH
 
 #  Set output directory:
 
-COMAWP=${COMAWP:-$COMROOT/nawips/${envir}/${RUN}.${PDY}}
+COMAWP=${COMAWP:-$COMOUT/gempak}
 OUTDIR=$COMAWP
-mkdir -p $OUTDIR
+if [ ! -d $OUTDIR ]; then mkdir -p $OUTDIR; fi
 
 outfilbase=gfs_${PDY}${cyc}
 
@@ -49,7 +49,7 @@ SNOUTF   = ${outfilbase}.snd
 SFOUTF   = ${outfilbase}.sfc
 SNPRMF   = sngfs.prm
 SFPRMF   = sfgfs.prm
-TIMSTN   = 170/2100
+TIMSTN   = 170/2150
 r
 
 ex

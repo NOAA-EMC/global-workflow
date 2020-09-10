@@ -28,6 +28,8 @@ for config in $configs; do
     [[ $status -ne 0 ]] && exit $status
 done
 
+export COMPONENT=${COMPONENT:-atmos}
+
 n=$((ENSGRP))
 
 # ICS are restarts and always lag INC by $assim_freq hours.
@@ -40,7 +42,7 @@ fi
 # EnKF update in GFS, GDAS or both
 CDUMP_ENKF=$(echo ${EUPD_CYC:-"gdas"} | tr a-z A-Z)
 
-ARCH_LIST="$ROTDIR/enkf${CDUMP}.$PDY/$cyc/earc$ENSGRP"
+ARCH_LIST="$ROTDIR/enkf${CDUMP}.$PDY/$cyc/$COMPONENT/earc$ENSGRP"
 [[ -d $ARCH_LIST ]] && rm -rf $ARCH_LIST
 mkdir -p $ARCH_LIST
 cd $ARCH_LIST
@@ -130,12 +132,12 @@ if [ $ENSGRP -eq 0 ]; then
     [[ ! -d $ARCDIR ]] && mkdir -p $ARCDIR
     cd $ARCDIR
 
-    $NCP $ROTDIR/enkf${CDUMP}.$PDY/$cyc/${CDUMP}.t${cyc}z.enkfstat       enkfstat.${CDUMP}.$CDATE
-    $NCP $ROTDIR/enkf$CDUMP.$PDY/$cyc/${CDUMP}.t${cyc}z.gsistat.ensmean  gsistat.${CDUMP}.${CDATE}.ensmean
+    $NCP $ROTDIR/enkf${CDUMP}.$PDY/$cyc/$COMPONENT/${CDUMP}.t${cyc}z.enkfstat         enkfstat.${CDUMP}.$CDATE
+    $NCP $ROTDIR/enkf${CDUMP}.$PDY/$cyc/$COMPONENT/${CDUMP}.t${cyc}z.gsistat.ensmean  gsistat.${CDUMP}.${CDATE}.ensmean
 
     if [ $CDUMP_ENKF != "GDAS" ]; then
-		$NCP $ROTDIR/enkfgfs.$PDY/$cyc/${CDUMP}.t${cyc}z.enkfstat         enkfstat.gfs.$CDATE
-		$NCP $ROTDIR/enkfgfs.$PDY/$cyc/${CDUMP}.t${cyc}z.gsistat.ensmean  gsistat.gfs.${CDATE}.ensmean
+		$NCP $ROTDIR/enkfgfs.$PDY/$cyc/$COMPONENT/${CDUMP}.t${cyc}z.enkfstat         enkfstat.gfs.$CDATE
+		$NCP $ROTDIR/enkfgfs.$PDY/$cyc/$COMPONENT/${CDUMP}.t${cyc}z.gsistat.ensmean  gsistat.gfs.${CDATE}.ensmean
 	fi
 
 fi
@@ -148,33 +150,35 @@ fi
 ###############################################################
 # ENSGRP 0 also does clean-up
 if [ $ENSGRP -eq 0 ]; then
-    ###############################################################
-    # Clean up previous cycles; various depths
-    # PRIOR CYCLE: Leave the prior cycle alone
-    GDATE=$($NDATE -$assim_freq $CDATE)
 
-    # PREVIOUS to the PRIOR CYCLE
-    # Now go 2 cycles back and remove the directory
-    GDATE=$($NDATE -$assim_freq $GDATE)
-    gPDY=$(echo $GDATE | cut -c1-8)
-    gcyc=$(echo $GDATE | cut -c9-10)
+    # Start start and end dates to remove
+    GDATEEND=$($NDATE -${RMOLDEND_ENKF:-24}  $CDATE)
+    GDATE=$($NDATE -${RMOLDSTD_ENKF:-120} $CDATE)
+    while [ $GDATE -le $GDATEEND ]; do
+
+	gPDY=$(echo $GDATE | cut -c1-8)
+	gcyc=$(echo $GDATE | cut -c9-10)
 
 	# Handle GDAS and GFS EnKF directories separately
-    COMIN_ENS="$ROTDIR/enkfgdas.$gPDY/$gcyc"
-    [[ -d $COMIN_ENS ]] && rm -rf $COMIN_ENS
-    COMIN_ENS="$ROTDIR/enkfgfs.$gPDY/$gcyc"
-    [[ -d $COMIN_ENS ]] && rm -rf $COMIN_ENS
+	COMIN_ENS="$ROTDIR/enkfgdas.$gPDY/$gcyc/$COMPONENT"
+	[[ -d $COMIN_ENS ]] && rm -rf $COMIN_ENS
+	COMIN_ENS="$ROTDIR/enkfgfs.$gPDY/$gcyc/$COMPONENT"
+	[[ -d $COMIN_ENS ]] && rm -rf $COMIN_ENS
 
-    # PREVIOUS day 00Z remove the whole day
-    GDATE=$($NDATE -48 $CDATE)
-    gPDY=$(echo $GDATE | cut -c1-8)
-    gcyc=$(echo $GDATE | cut -c9-10)
+	# Remove any empty directories
+	COMIN_ENS="$ROTDIR/enkfgdas.$gPDY/$COMPONENT"
+	if [ -d $COMIN_ENS ] ; then
+	    [[ ! "$(ls -A $COMIN_ENS)" ]] && rm -rf $COMIN_ENS
+	fi
+	COMIN_ENS="$ROTDIR/enkfgfs.$gPDY/$COMPONENT"
+	if [ -d $COMIN_ENS ] ; then
+	    [[ ! "$(ls -A $COMIN_ENS)" ]] && rm -rf $COMIN_ENS
+	fi
 
-	# Handle GDAS and GFS EnKF directories separately
-    COMIN_ENS="$ROTDIR/enkfgdas.$gPDY"
-    [[ -d $COMIN_ENS ]] && rm -rf $COMIN_ENS
-    COMIN_ENS="$ROTDIR/enkfgfs.$gPDY"
-    [[ -d $COMIN_ENS ]] && rm -rf $COMIN_ENS
+	# Advance to next cycle
+	GDATE=$($NDATE +$assim_freq $GDATE)
+
+    done
 
 fi
 

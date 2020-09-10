@@ -1,0 +1,11 @@
+#!/bin/ksh -x
+
+########## config.ediag ##########
+# GFS ensemble post-eobs specific
+
+echo "BEGIN: config.ediag"
+
+# Get task specific resources
+. $EXPDIR/config.resources ediag
+
+echo "END: config.ediag"

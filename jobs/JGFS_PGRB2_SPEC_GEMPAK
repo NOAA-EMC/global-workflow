@@ -45,6 +45,7 @@ export SRCgfs=${SRCgfs:-$HOMEgfs/scripts}
 ####################################
 export NET=gfs
 export RUN=gfs_goessim
+export COMPONENT=${COMPONENT:-atmos}
 export finc=3
 export model=gfs
 export EXT=""
@@ -52,8 +53,8 @@ export EXT=""
 ##############################################
 # Define COM directories
 ##############################################
-export COMIN=${COMIN:-$(compath.py ${NET}/${envir}/${NET}.${PDY})/${cyc}}
-export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${NET}.${PDY}/${cyc}/gempak}
+export COMIN=${COMIN:-$(compath.py ${NET}/${envir}/${NET}.${PDY})/${cyc}/$COMPONENT}
+export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${NET}.${PDY}/${cyc}/$COMPONENT/gempak}
 
 if [ $SENDCOM = YES ] ; then
   mkdir -m 775 -p $COMOUT
@@ -74,7 +75,7 @@ mkdir -p $DATA
 cd $DATA
 
 export DBN_ALERT_TYPE=GFS_GOESSIM_GEMPAK
-export GRIB=goessimpgrb2.1p00.f
+export GRIB=goessimpgrb2.0p25.f
 export EXT=" "
 export fend=180
 export finc=3
@@ -85,7 +86,7 @@ set -xa
 
 ########################################################
 # Execute the script.
-$SRCgfs/exgoes_nawips.sh.ecf
+$SRCgfs/exgoes_nawips.sh
 
 #################################################################
 # Execute the script for the 221 grib
@@ -107,7 +108,7 @@ set -xa
 
 ########################################################
 # Execute the script.
-$SRCgfs/exgoes_nawips.sh.ecf
+$SRCgfs/exgoes_nawips.sh
 export err=$?; err_chk
 ########################################################
 

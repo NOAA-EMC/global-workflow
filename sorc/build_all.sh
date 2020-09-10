@@ -112,6 +112,20 @@ fi
 }
 
 #------------------------------------
+# build gldas
+#------------------------------------
+$Build_gldas && {
+echo " .... Building gldas .... "
+./build_gldas.sh > $logs_dir/build_gldas.log 2>&1
+rc=$?
+if [[ $rc -ne 0 ]] ; then
+    echo "Fatal error in building gldas."
+    echo "The log file is in $logs_dir/build_gldas.log"
+fi
+((err+=$rc))
+}
+
+#------------------------------------
 # build gfs_wafs - optional checkout 
 #------------------------------------
 if [ -d gfs_wafs.fd ]; then
@@ -128,15 +142,15 @@ if [ -d gfs_wafs.fd ]; then
 fi
 
 #------------------------------------
-# build sfcanl_nsttfchg 
+# build gaussian_sfcanl
 #------------------------------------
-$Build_sfcanl_nsttfchg && {
-echo " .... Building gaussian_sfcanl and nst_tf_chg .... "
-./build_sfcanl_nsttfchg.sh > $logs_dir/build_sfcanl_nsttfchg.log 2>&1
+$Build_gaussian_sfcanl && {
+echo " .... Building gaussian_sfcanl .... "
+./build_gaussian_sfcanl.sh > $logs_dir/build_gaussian_sfcanl.log 2>&1
 rc=$?
 if [[ $rc -ne 0 ]] ; then
-    echo "Fatal error in building gaussian_sfcanl and nst_tf_chg."
-    echo "The log file is in $logs_dir/build_sfcanl_nsttfchg.log"
+    echo "Fatal error in building gaussian_sfcanl."
+    echo "The log file is in $logs_dir/build_gaussian_sfcanl.log"
 fi
 ((err+=$rc))
 }
@@ -156,6 +170,20 @@ fi
 }
 
 #------------------------------------
+# build enkf_chgres_recenter_nc
+#------------------------------------
+$Build_enkf_chgres_recenter_nc && {
+echo " .... Building enkf_chgres_recenter_nc .... "
+./build_enkf_chgres_recenter_nc.sh > $logs_dir/build_enkf_chgres_recenter_nc.log 2>&1
+rc=$?
+if [[ $rc -ne 0 ]] ; then
+    echo "Fatal error in building enkf_chgres_recenter_nc."
+    echo "The log file is in $logs_dir/build_enkf_chgres_recenter_nc.log"
+fi
+((err+=$rc))
+}
+
+#------------------------------------
 # build tropcy_NEMS
 #------------------------------------
 $Build_tropcy && {
@@ -170,20 +198,6 @@ fi
 }
 
 #------------------------------------
-# build gdas
-#------------------------------------
-$Build_gdas && {
-echo " .... Building gdas .... "
-./build_gdas.sh > $logs_dir/build_gdas.log 2>&1
-rc=$?
-if [[ $rc -ne 0 ]] ; then
-    echo "Fatal error in building gdas."
-    echo "The log file is in $logs_dir/build_gdas.log"
-fi
-((err+=$rc))
-}
-
-#------------------------------------
 # build gfs_fbwndgfs
 #------------------------------------
 $Build_gfs_fbwndgfs && {
@@ -193,34 +207,6 @@ rc=$?
 if [[ $rc -ne 0 ]] ; then
     echo "Fatal error in building gfs_fbwndgfs."
     echo "The log file is in $logs_dir/build_gfs_fbwndgfs.log"
-fi
-((err+=$rc))
-}
-
-#------------------------------------
-# build gfs_overpdtg2
-#------------------------------------
-$Build_gfs_overpdtg2 && {
-echo " .... Building gfs_overpdtg2 .... "
-./build_gfs_overpdtg2.sh > $logs_dir/build_gfs_overpdtg2.log 2>&1
-rc=$?
-if [[ $rc -ne 0 ]] ; then
-    echo "Fatal error in building gfs_overpdtg2."
-    echo "The log file is in $logs_dir/build_gfs_overpdtg2.log"
-fi
-((err+=$rc))
-}
-
-#------------------------------------
-# build gfs_wintemv
-#------------------------------------
-$Build_gfs_wintemv && {
-echo " .... Building gfs_wintemv .... "
-./build_gfs_wintemv.sh > $logs_dir/build_gfs_wintemv.log 2>&1
-rc=$?
-if [[ $rc -ne 0 ]] ; then
-    echo "Fatal error in building gfs_wintemv."
-    echo "The log file is in $logs_dir/build_gfs_wintemv.log"
 fi
 ((err+=$rc))
 }

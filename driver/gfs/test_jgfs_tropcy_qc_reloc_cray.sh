@@ -129,13 +129,13 @@ fi
 #############################################################
 #  Function been tested:            TCvital quality control and archive, hurricane relocation
 #
-#  Calling sequence:                JGFS_TROPCY_QC_RELOC, extropcy_qc_reloc.sh.ecf, 
+#  Calling sequence:                JGFS_TROPCY_QC_RELOC, extropcy_qc_reloc.sh,
 #  #                                   syndat_qctropcy.sh, tropcy_relocate.sh,syndat_getjtbul.sh,
 #  #                                   tropcy_relocate_extrkr.sh,parse-storm-type.pl
 #
 #  Initial condition:               provide hours (cyc=?)
 #
-#  Usage:                           bsub < test_jgfs_tropcy_qc_reloc.ecf
+#  Usage:                           bsub < test_jgfs_tropcy_qc_reloc
 #
 #  Data_In:                         COMINgfs=/com/gfs/prod/gfs.${PDY}
 #                                   COMINgdas=/com/gfs/prod/gdas.${PDY}

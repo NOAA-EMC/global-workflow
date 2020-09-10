@@ -1,0 +1,148 @@
+#!/bin/ksh
+set -x
+
+export RUN_ENVIR=${RUN_ENVIR:-"nco"}
+export PS4='$SECONDS + '
+date
+
+
+#############################
+# Source relevant config files
+#############################
+configs="base vrfy"
+config_path=${EXPDIR:-$NWROOT/gfs.${gfs_ver}/parm/config}
+for config in $configs; do
+    . $config_path/config.$config
+    status=$?
+    [[ $status -ne 0 ]] && exit $status
+done
+
+##exit
+
+##########################################
+# Source machine runtime environment
+##########################################
+. $HOMEgfs/env/${machine}.env vrfy
+status=$?
+[[ $status -ne 0 ]] && exit $status
+
+
+##############################################
+# Obtain unique process id (pid) and make temp directory
+##############################################
+if [ $RUN_ENVIR = "nco" ]; then
+    export DATA=${DATA:-${DATAROOT}/${jobid:?}}
+else
+    export job="gfs_fsu_genesis"
+    export DATA="$DATAROOT/${job}$$"
+    [[ -d $DATA ]] && rm -rf $DATA
+fi
+mkdir -p $DATA
+cd $DATA
+
+
+##############################################
+# Run setpdy and initialize PDY variables
+##############################################
+export cycle="t${cyc}z"
+setpdy.sh
+. ./PDY
+
+
+####################################
+# Specify NET and RUN Name and model
+####################################
+export NET=${NET:-gfs}
+export RUN=${RUN:-gfs}
+export COMPONENT=${COMPONENT:-atmos}
+
+
+##############################################
+# Determine Job Output Name on System
+##############################################
+export pgmout="OUTPUT.${pid}"
+export pgmerr=errfile
+
+
+##############################################
+# Set variables used in the exglobal script
+##############################################
+export CDATE=${CDATE:-${PDY}${cyc}}
+export CDUMP=${CDUMP:-${RUN:-"gfs"}}
+if [ $RUN_ENVIR = "nco" ]; then
+    export ROTDIR=${COMROOT:?}/$NET/$envir
+fi
+
+
+####################################
+# SENDCOM  - Copy Files From TMPDIR to $COMOUT
+# SENDDBN  - Issue DBNet Client Calls
+####################################
+export SENDCOM=YES
+export SENDDBN=${SENDDBN:-NO}
+export SENDECF=${SENDECF:-NO}
+
+####################################
+# Specify Execution Areas
+####################################
+export HOMEens_tracker=${HOMEens_tracker:-${NWROOT:?}/ens_tracker.${ens_tracker_ver}}
+export EXECens_tracker=${EXECens_tracker:-$HOMEens_tracker/exec}
+export FIXens_tracker=${FIXens_tracker:-$HOMEens_tracker/fix}
+export USHens_tracker=${USHens_tracker:-$HOMEens_tracker/ush}
+export SCRIPTens_tracker=${SCRIPTens_tracker:-$HOMEens_tracker/scripts}
+export BINens_tracker=${BINens_tracker:-$HOMEens_tracker/ush/FSUgenesisPY/bin}
+
+##############################################
+# Define COM and Data directories
+##############################################
+export COMIN=${ROTDIR}/${RUN}.${PDY}/${cyc}/${COMPONENT}
+export COMINgfs=${COMIN}
+#export gfsdir=${COMINgfs}
+export gfsdir=${ROTDIR}
+export COMINgdas=${COMIN}
+export gdasdir=${COMINgdas}
+export COMOUT=${ROTDIR}/${RUN}.${PDY}/${cyc}/${COMPONENT}
+export COMINsyn=${COMINsyn:-$(compath.py arch/prod/syndat)}
+
+if [ $RUN_ENVIR = "nco" ]; then
+    export COMOUThur=${COMROOTp1:?}/hur/${envir}/global
+    export COMOUTatcf=${COMROOTp1:?}/nhc/${envir}/atcf
+    mkdir -m 775 -p $COMOUThur $COMOUTatcf
+else
+#    export COMOUThur=$COMOUT         
+#    export COMOUTatcf=$COMOUT
+    export COMOUThur=$DATA
+    export COMOUTatcf=$DATA
+fi
+
+##############################################
+# Run relevant script
+##############################################
+env
+msg="HAS BEGUN on `hostname`"
+postmsg "$jlogfile" "$msg"
+$LOGSCRIPT
+
+#############################################################
+# Execute the script
+${SCRIPTens_tracker}/exgfs_fsu_genesis.sh
+export err=$?; err_chk
+
+##############################################
+# Final processing
+##############################################
+if [ -e "$pgmout" ] ; then
+  cat $pgmout
+fi
+
+msg="ENDED NORMALLY."
+postmsg "$jlogfile" "$msg"
+
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd $DATAROOT
+[[ $KEEPDATA = "NO" ]] && rm -rf $DATA
+
+date
+exit 0

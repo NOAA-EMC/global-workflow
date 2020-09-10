@@ -36,7 +36,14 @@ fi
 
 # CURRENT CYCLE
 APREFIX="${CDUMP}.t${cyc}z."
-ASUFFIX=".nemsio"
+ASUFFIX=${ASUFFIX:-$SUFFIX}
+
+if [ $ASUFFIX = ".nc" ]; then
+   format="netcdf"
+else
+   format="nemsio"
+fi
+
 
 # Realtime parallels run GFS MOS on 1 day delay
 # If realtime parallel, back up CDATE_MOS one day
@@ -50,30 +57,30 @@ PDY_MOS=$(echo $CDATE_MOS | cut -c1-8)
 # Archive online for verification and diagnostics
 ###############################################################
 
-COMIN="$ROTDIR/$CDUMP.$PDY/$cyc"
+COMIN=${COMINatmos:-"$ROTDIR/$CDUMP.$PDY/$cyc/atmos"}
 cd $COMIN
 
 [[ ! -d $ARCDIR ]] && mkdir -p $ARCDIR
 $NCP ${APREFIX}gsistat $ARCDIR/gsistat.${CDUMP}.${CDATE}
-$NCP ${APREFIX}pgrb.1p00.anl $ARCDIR/pgbanl.${CDUMP}.${CDATE}
+$NCP ${APREFIX}pgrb2.1p00.anl $ARCDIR/pgbanl.${CDUMP}.${CDATE}.grib2
 
-# Archive 1 degree forecast GRIB1 files for verification
+# Archive 1 degree forecast GRIB2 files for verification
 if [ $CDUMP = "gfs" ]; then
     fhmax=$FHMAX_GFS
     fhr=0
     while [ $fhr -le $fhmax ]; do
         fhr2=$(printf %02i $fhr)
         fhr3=$(printf %03i $fhr)
-        $NCP ${APREFIX}pgrb.1p00.f$fhr3 $ARCDIR/pgbf${fhr2}.${CDUMP}.${CDATE}
+        $NCP ${APREFIX}pgrb2.1p00.f$fhr3 $ARCDIR/pgbf${fhr2}.${CDUMP}.${CDATE}.grib2
         (( fhr = $fhr + $FHOUT_GFS ))
     done
 fi
 if [ $CDUMP = "gdas" ]; then
     flist="000 003 006 009"
     for fhr in $flist; do
-        fname=${APREFIX}pgrb.1p00.f${fhr}
+        fname=${APREFIX}pgrb2.1p00.f${fhr}
         fhr2=$(printf %02i $fhr)
-        $NCP $fname $ARCDIR/pgbf${fhr2}.${CDUMP}.${CDATE}
+        $NCP $fname $ARCDIR/pgbf${fhr2}.${CDUMP}.${CDATE}.grib2
     done
 fi
 
@@ -82,15 +89,28 @@ if [ -s avno.t${cyc}z.cyclone.trackatcfunix ]; then
     cat avno.t${cyc}z.cyclone.trackatcfunix | sed s:AVNO:${PLSOT4}:g  > ${ARCDIR}/atcfunix.${CDUMP}.$CDATE
     cat avnop.t${cyc}z.cyclone.trackatcfunix | sed s:AVNO:${PLSOT4}:g  > ${ARCDIR}/atcfunixp.${CDUMP}.$CDATE
 fi
+
+if [ $CDUMP = "gdas" -a -s gdas.t${cyc}z.cyclone.trackatcfunix ]; then
+    PLSOT4=`echo $PSLOT|cut -c 1-4 |tr '[a-z]' '[A-Z]'`
+    cat gdas.t${cyc}z.cyclone.trackatcfunix | sed s:AVNO:${PLSOT4}:g  > ${ARCDIR}/atcfunix.${CDUMP}.$CDATE
+    cat gdasp.t${cyc}z.cyclone.trackatcfunix | sed s:AVNO:${PLSOT4}:g  > ${ARCDIR}/atcfunixp.${CDUMP}.$CDATE
+fi
+
 if [ $CDUMP = "gfs" ]; then
     $NCP storms.gfso.atcf_gen.$CDATE      ${ARCDIR}/.
     $NCP storms.gfso.atcf_gen.altg.$CDATE ${ARCDIR}/.
     $NCP trak.gfso.atcfunix.$CDATE        ${ARCDIR}/.
     $NCP trak.gfso.atcfunix.altg.$CDATE   ${ARCDIR}/.
+
+    mkdir -p ${ARCDIR}/tracker.$CDATE/$CDUMP
+    blist="epac natl"
+    for basin in $blist; do
+	cp -rp $basin                     ${ARCDIR}/tracker.$CDATE/$CDUMP
+    done
 fi
 
-# Archive atmospheric nemsio gfs forecast files for fit2obs
-VFYARC=$ROTDIR/vrfyarch
+# Archive atmospheric gaussian gfs forecast files for fit2obs
+VFYARC=${VFYARC:-$ROTDIR/vrfyarch}
 [[ ! -d $VFYARC ]] && mkdir -p $VFYARC
 if [ $CDUMP = "gfs" -a $FITSARC = "YES" ]; then
     mkdir -p $VFYARC/${CDUMP}.$PDY/$cyc
@@ -98,8 +118,8 @@ if [ $CDUMP = "gfs" -a $FITSARC = "YES" ]; then
     fhr=0
     while [[ $fhr -le $fhmax ]]; do
       fhr3=$(printf %03i $fhr)
-      sfcfile=${CDUMP}.t${cyc}z.sfcf${fhr3}.nemsio
-      sigfile=${CDUMP}.t${cyc}z.atmf${fhr3}.nemsio
+      sfcfile=${CDUMP}.t${cyc}z.sfcf${fhr3}${ASUFFIX}
+      sigfile=${CDUMP}.t${cyc}z.atmf${fhr3}${ASUFFIX}
       $NCP $sfcfile $VFYARC/${CDUMP}.$PDY/$cyc/
       $NCP $sigfile $VFYARC/${CDUMP}.$PDY/$cyc/
       (( fhr = $fhr + 6 ))
@@ -112,7 +132,7 @@ fi
 if [ $HPSSARCH = "YES" ]; then
 ###############################################################
 
-#--determine when to save ICs for warm start and forecat-only runs 
+#--determine when to save ICs for warm start and forecast-only runs 
 SAVEWARMICA="NO"
 SAVEWARMICB="NO"
 SAVEFCSTIC="NO"
@@ -159,16 +179,31 @@ if [ $CDUMP = "gfs" ]; then
         htar -P -cvf $ATARDIR/$CDATE/${targrp}.tar `cat $ARCH_LIST/${targrp}.txt`
     done
 
-    #for targrp in gfs_flux gfs_nemsio gfs_pgrb2b; do
-    for targrp in gfs_flux gfs_nemsioa gfs_nemsiob; do
-        htar -P -cvf $ATARDIR/$CDATE/${targrp}.tar `cat $ARCH_LIST/${targrp}.txt`
-        status=$?
-        if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
-            echo "HTAR $CDATE ${targrp}.tar failed"
-            exit $status
-        fi
-    done
-    
+    #for targrp in gfs_flux gfs_netcdf/nemsio gfs_pgrb2b; do
+    if [ ${SAVEFCSTNEMSIO:-"YES"} = "YES" ]; then
+        for targrp in gfs_flux gfs_${format}a gfs_${format}b gfs_pgrb2b; do
+            htar -P -cvf $ATARDIR/$CDATE/${targrp}.tar `cat $ARCH_LIST/${targrp}.txt`
+            status=$?
+            if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
+                echo "HTAR $CDATE ${targrp}.tar failed"
+                exit $status
+            fi
+        done
+    fi
+
+    #for targrp in gfswave
+    if [ $DO_WAVE = "YES" -a "$WAVE_CDUMP" != "gdas" ]; then
+        for targrp in gfswave; do
+            htar -P -cvf $ATARDIR/$CDATE/${targrp}.tar `cat $ARCH_LIST/${targrp}.txt`
+            status=$?
+            if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
+                echo "HTAR $CDATE ${targrp}.tar failed"
+                exit $status
+            fi
+        done
+    fi
+
+    #for restarts    
     if [ $SAVEFCSTIC = "YES" ]; then
         htar -P -cvf $ATARDIR/$CDATE/gfs_restarta.tar `cat $ARCH_LIST/gfs_restarta.txt`
         status=$?
@@ -200,6 +235,16 @@ if [ $CDUMP = "gdas" ]; then
         exit $status
     fi
 
+    #gdaswave
+    if [ $DO_WAVE = "YES" ]; then
+        htar -P -cvf $ATARDIR/$CDATE/gdaswave.tar `cat $ARCH_LIST/gdaswave.txt`
+        status=$?
+        if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
+            echo "HTAR $CDATE gdaswave.tar failed"
+            exit $status
+        fi
+    fi
+
     if [ $SAVEWARMICA = "YES" -o $SAVEFCSTIC = "YES" ]; then
         htar -P -cvf $ATARDIR/$CDATE/gdas_restarta.tar `cat $ARCH_LIST/gdas_restarta.txt`
         status=$?
@@ -207,7 +252,16 @@ if [ $CDUMP = "gdas" ]; then
             echo "HTAR $CDATE gdas_restarta.tar failed"
             exit $status
         fi
+        if [ $DO_WAVE = "YES" ]; then
+            htar -P -cvf $ATARDIR/$CDATE/gdaswave_restart.tar `cat $ARCH_LIST/gdaswave_restart.txt`
+            status=$?
+            if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
+                echo "HTAR $CDATE gdaswave_restart.tar failed"
+                exit $status
+            fi
+        fi
     fi
+
     if [ $SAVEWARMICB = "YES" -o $SAVEFCSTIC = "YES" ]; then
         htar -P -cvf $ATARDIR/$CDATE/gdas_restartb.tar `cat $ARCH_LIST/gdas_restartb.txt`
         status=$?
@@ -216,6 +270,7 @@ if [ $CDUMP = "gdas" ]; then
             exit $status
         fi
     fi
+
 fi
 
 ###############################################################
@@ -245,25 +300,46 @@ fi
 # Step back every assim_freq hours
 # and remove old rotating directories for successful cycles
 # defaults from 24h to 120h
+DO_GLDAS=${DO_GLDAS:-"NO"}
 GDATEEND=$($NDATE -${RMOLDEND:-24}  $CDATE)
-GDATE=$(   $NDATE -${RMOLDSTD:-120} $CDATE)
+GDATE=$($NDATE -${RMOLDSTD:-120} $CDATE)
+GLDAS_DATE=$($NDATE -96 $CDATE)
+RTOFS_DATE=$($NDATE -48 $CDATE)
 while [ $GDATE -le $GDATEEND ]; do
     gPDY=$(echo $GDATE | cut -c1-8)
     gcyc=$(echo $GDATE | cut -c9-10)
-    COMIN="$ROTDIR/$CDUMP.$gPDY/$gcyc"
+    COMIN="$ROTDIR/${CDUMP}.$gPDY/$gcyc/atmos"
+    COMINwave="$ROTDIR/${CDUMP}.$gPDY/$gcyc/wave"
+    COMINrtofs="$ROTDIR/rtofs.$gPDY"
     if [ -d $COMIN ]; then
         rocotolog="$EXPDIR/logs/${GDATE}.log"
 	if [ -f $rocotolog ]; then
             testend=$(tail -n 1 $rocotolog | grep "This cycle is complete: Success")
             rc=$?
-            [[ $rc -eq 0 ]] && rm -rf $COMIN
+            if [ $rc -eq 0 ]; then
+                if [ -d $COMINwave ]; then rm -rf $COMINwave ; fi
+                if [ -d $COMINrtofs -a $GDATE -lt $RTOFS_DATE ]; then rm -rf $COMINrtofs ; fi
+                if [ $CDUMP != "gdas" -o $DO_GLDAS = "NO" -o $GDATE -lt $GLDAS_DATE ]; then 
+                    rm -rf $COMIN 
+                else
+                    for file in `ls $COMIN |grep -v sflux |grep -v RESTART`; do
+                        rm -rf $COMIN/$file
+                    done
+                    for file in `ls $COMIN/RESTART |grep -v sfcanl `; do
+                        rm -rf $COMIN/RESTART/$file
+                    done
+                fi
+            fi
 	fi
     fi
 
     # Remove any empty directories
-    COMIN="$ROTDIR/$CDUMP.$gPDY"
     if [ -d $COMIN ]; then
         [[ ! "$(ls -A $COMIN)" ]] && rm -rf $COMIN
+    fi
+
+    if [ -d $COMINwave ]; then
+        [[ ! "$(ls -A $COMINwave)" ]] && rm -rf $COMINwave
     fi
 
     # Remove mdl gfsmos directory
@@ -275,13 +351,23 @@ while [ $GDATE -le $GDATEEND ]; do
     GDATE=$($NDATE +$assim_freq $GDATE)
 done
 
-# Remove archived stuff in $VFYARC that are (48+$FHMAX_GFS) hrs behind
-# 1. atmospheric nemsio files used for fit2obs
+# Remove archived atmospheric gaussian files used for fit2obs in $VFYARC that are $FHMAX_FITS hrs behind.
+# touch existing files to prevent the files from being removed by the operation system.
 if [ $CDUMP = "gfs" ]; then
-    GDATE=$($NDATE -$FHMAX_GFS $GDATE)
-    gPDY=$(echo $GDATE | cut -c1-8)
-    COMIN="$VFYARC/$CDUMP.$gPDY"
+    fhmax=$((FHMAX_FITS+36))       
+    RDATE=$($NDATE -$fhmax $CDATE)
+    rPDY=$(echo $RDATE | cut -c1-8)
+    COMIN="$VFYARC/$CDUMP.$rPDY"
     [[ -d $COMIN ]] && rm -rf $COMIN
+
+    TDATE=$($NDATE -$FHMAX_FITS $CDATE)
+    while [ $TDATE -lt $CDATE ]; do
+        tPDY=$(echo $TDATE | cut -c1-8)
+        tcyc=$(echo $TDATE | cut -c9-10)
+        TDIR=$VFYARC/$CDUMP.$tPDY/$tcyc
+        [[ -d $TDIR ]] && touch $TDIR/*
+        TDATE=$($NDATE +6 $TDATE)
+    done
 fi
 
 ###############################################################

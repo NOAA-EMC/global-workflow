@@ -17,9 +17,8 @@ fi
 
 export FORECASTSH="$HOMEgfs/scripts/exglobal_fcst_nemsfv3gfs.sh"
 export FCSTEXECDIR="$HOMEgfs/exec"
-#export FCSTEXECDIR="$HOMEfv3gfs/NEMS/exe"
 export FCSTEXEC="global_fv3gfs.x"
-export npe_fv3=$npe_fcst # This is model resolution dependent, see note above
+export npe_fv3=$npe_fcst 
 
 if [[ "$CDUMP" == "gfs" ]] ; then
    export npe_fv3=$npe_fcst_gfs
@@ -33,6 +32,14 @@ if [ $QUILTING = ".true." ]; then
     export npe_fv3=$(echo " $npe_fv3 + $WRITE_GROUP * $WRTTASK_PER_GROUP" | bc)
     export npe_fcst=$npe_fv3
     export npe_fcst_gfs=$(echo " $npe_fcst_gfs  + $WRITE_GROUP_GFS * $WRTTASK_PER_GROUP_GFS" | bc)
+fi
+
+if [ $DO_WAVE = "YES" ] ; then
+  export npe_fcst=$((npe_fcst + npe_wav))
+  if [ "$WAVE_CDUMP" = "gfs" -o "$WAVE_CDUMP" = "both" ]; then
+     export npe_fcst_gfs=$((npe_fcst_gfs + npe_wav_gfs))
+     if [ "$CDUMP" = "gfs" ]; then npe_wav=$npe_wav_gfs ; fi
+  fi
 fi
 
 # Model configuration
@@ -52,7 +59,7 @@ export do_tofd=".true."
 export launch_level=$(echo "$LEVS/2.35" |bc)
 
 # Sponge layer settings for L127
-if [ $LEVS = "128" ]; then
+if [ $LEVS = "128" -a "$CDUMP" = "gdas" ]; then
    export  tau=5.0
    export  rf_cutoff=1.0e3
    export  d2_bg_k1=0.20
@@ -72,7 +79,7 @@ if [ $lsm -eq 2 ]; then
     export lheatstrg=".false."
     export landice=".false."
 else
-    export lheatstrg=".true."
+    export lheatstrg=".false."
     export landice=".true."
 fi
 
@@ -138,6 +145,31 @@ export ishuffle=0
 export shuffle=1
 export deflate_level=1
 
+export OUTPUT_FILETYPES="$OUTPUT_FILE"
+if [[ "$OUTPUT_FILE" == "netcdf" ]]; then
+    export  ichunk2d=0; export jchunk2d=0
+    export  ichunk3d=0; export jchunk3d=0;  export kchunk3d=0
+    RESTILE=`echo $CASE |cut -c 2-`
+    if [[ "$machine" == "WCOSS_DELL_P3" ]]; then
+        if [ $RESTILE -ge 768 ]; then
+            export OUTPUT_FILETYPES=" 'netcdf_parallel' 'netcdf_parallel' "
+            export ichunk3d=$((4*RESTILE)) 
+            export jchunk3d=$((2*RESTILE))
+            export kchunk3d=1
+        else
+            export OUTPUT_FILETYPES=" 'netcdf_parallel' 'netcdf' "
+        fi
+    fi
+    if [[ "$machine" == "HERA" ]]; then
+        export OUTPUT_FILETYPES=" 'netcdf_parallel' 'netcdf_parallel' "
+        if [ $RESTILE -le 192 ]; then
+            export OUTPUT_FILETYPES=" 'netcdf_parallel' 'netcdf' "
+        fi
+    fi
+fi
+
+
+#---------------------------------------------------------------------
 # Disable the use of coupler.res; get model start time from model_configure
 export USE_COUPLER_RES="NO"
 
@@ -150,11 +182,27 @@ if [[ "$CDUMP" == "gdas" ]] ; then # GDAS cycle specific parameters
         export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_da_orig"
     fi
 
-    # Write restart files at next assimilation time
+    # Write restart files, where $number is current model start time. 
+    # restart_interval:        $number
+    #    number=0, writes out restart files at the end of forecast. 
+    #    number>0, writes out restart files at the frequency of $number and at the end of forecast.
+    # restart_interval:        "$number -1"
+    #    writes out restart files only once at $number forecast hour.
+    # restart_interval:        "$number1 $number2 $number3 ..."
+    #    writes out restart file at the specified forecast hours 
     export restart_interval=${restart_interval:-6}
 
     # For IAU, write restarts at beginning of window also
-    if [ $DOIAU = "YES" ]; then export restart_interval=3; fi
+    if [ $DOIAU = "YES" ]; then
+       export restart_interval="6 9"
+       if [[ "$SDATE" = "$CDATE" ]]; then export restart_interval="3 6"; fi
+    fi
+
+    # Choose coupling with wave
+    if [ $DO_WAVE = "YES" ]; then export cplwav=".true." ; fi
+
+    # Turn on dry mass adjustment in GDAS
+    export adjust_dry_mass=".true."
 
 elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
 
@@ -166,7 +214,42 @@ elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
     fi
 
     # Write gfs restart files to rerun fcst from any break point         
-     export restart_interval=${restart_interval_gfs:-0}
+    export restart_interval_gfs=${restart_interval_gfs:-0}
+    if [ $restart_interval_gfs -le 0 ]; then
+        export restart_interval=0
+    else
+        rst_list=""
+        IAU_OFFSET=${IAU_OFFSET:-0}
+        [[ $DOIAU = "NO" ]] && export IAU_OFFSET=0
+        xfh=$((restart_interval_gfs+(IAU_OFFSET/2)))
+        while [ $xfh -le $FHMAX_GFS ]; do
+          rst_list="$rst_list $xfh"
+          xfh=$((xfh+restart_interval_gfs))
+        done
+        export restart_interval="$rst_list"
+    fi
+
+    
+    # Choose coupling with wave
+    if [ $DO_WAVE = "YES" -a "$WAVE_CDUMP" != "gdas" ]; then 
+        export cplwav=".true."
+    fi
+
+    # Turn off dry mass adjustment in GFS
+    export adjust_dry_mass=".false."
+
+    # Write each restart file in 16 small files to save time
+    export io_layout="4,4"
+
+    # Set number of layers from the top over 
+    # which two delta-Z filter is applied
+    export n_sponge=42
+
+    # Debug load balancing 
+    #export KEEPDATA="YES"
+    #export ESMF_RUNTIME_PROFILE=ON
+    #export ESMF_RUNTIME_PROFILE_OUTPUT=SUMMARY
+
 fi
 
 

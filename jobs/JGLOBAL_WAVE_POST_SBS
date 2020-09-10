@@ -1,0 +1,109 @@
+#!/bin/bash
+
+date
+export RUN_ENVIR=${RUN_ENVIR:-"nco"}
+export PS4=' $SECONDS + '
+set -x -e
+
+#############################
+# Source relevant config files
+#############################
+configs="base wave wavepostsbs"
+export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
+config_path=${EXPDIR:-$NWROOT/gfs.${gfs_ver}/parm/config}
+for config in $configs; do
+    . $config_path/config.$config
+    status=$?
+    [[ $status -ne 0 ]] && exit $status
+done
+
+##########################################
+# Source machine runtime environment
+##########################################
+. $HOMEgfs/env/${machine}.env wavepostsbs
+status=$?
+[[ $status -ne 0 ]] && exit $status
+
+# PATH for working directory
+export NET=${NET:-gfs}
+export RUN=${RUN:-gfs}
+export COMPONENT=${COMPONENT:-wave}
+
+export HOMEgefs=${HOMEgefs:-$NWROOT/$NET.${gefs_ver}}
+export HOMEgfs=${HOMEgfs:-$NWROOT/$NET.${gfs_ver}}
+
+# Add default errchk = err_chk
+export errchk=${errchk:-err_chk}
+
+# Create and go to DATA directory
+export DATA=${DATA:-${DATAROOT:?}/${jobid}}
+mkdir -p $DATA
+cd $DATA
+
+export cyc=${cyc:-00}
+export cycle=${cycle:-t${cyc}z}
+ 
+# Set PDY
+setpdy.sh
+sh ./PDY
+
+export pgmout=OUTPUT.$$
+
+export MP_PULSE=0
+
+# Path to HOME Directory
+export FIXwave=${FIXwave:-$HOMEgfs/fix/fix_wave_${NET}}
+export PARMwave=${PARMwave:-$HOMEgfs/parm/wave}
+export USHwave=${USHwave:-$HOMEgfs/ush}
+export EXECwave=${EXECwave:-$HOMEgfs/exec}
+
+# Set COM Paths and GETGES environment
+if [ $RUN_ENVIR = "nco" ]; then
+    export ROTDIR=${COMROOT:?}/$NET/$envir
+fi
+export COMIN=${COMIN:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/$COMPONENT}
+export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/$COMPONENT}
+
+export COMINice=${COMINice:-${COMROOTp2}/omb/prod}
+export COMINwnd=${COMINwnd:-${COMROOT}/gfs/prod}
+export COMIN_WAV_CUR=${COMIN_WAV_CUR:-${COMROOTp2}/rtofs/prod}
+
+mkdir -p $COMOUT/gridded
+mkdir -p $COMOUT/station
+mkdir -p $COMOUT/stats
+
+# Set mpi serial command
+export wavempexec=${launcher:-"mpirun -n"}
+export wave_mpmd=${mpmd:-"cfp"}
+
+env | sort
+
+# Set wave model ID tag to include member number 
+# if ensemble; waveMEMB var empty in deterministic
+# Set wave model ID tag to include member number
+# if ensemble; waveMEMB var empty in deterministic
+membTAG='p'
+if [ "${waveMEMB}" == "00" ]; then membTAG='c'; fi
+export membTAG
+export WAV_MOD_TAG=${CDUMP}wave${waveMEMB}
+
+export CFP_VERBOSE=1
+
+# Execute the Script  
+$HOMEgfs/scripts/exgfs_wave_post_sbs.sh
+err=$?
+if [ $err -ne 0 ]; then
+  msg="FATAL ERROR: ex-script of GWES_POST failed!"
+else
+  msg="$job completed normally!"
+fi
+postmsg "$jlogfile" "$msg"
+
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd $DATAROOT
+[[ $KEEPDATA = "NO" ]] && rm -rf $DATA
+
+date
+exit 0

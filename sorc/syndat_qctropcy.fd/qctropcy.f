@@ -11991,41 +11991,13 @@ c     Interpret the abbreviations
 
          IF(CACCES(NF) .NE. 'DIRECT')  THEN
             if(cpos(nf) .eq. ' ')  then
-               if (cstat(nf).eq.'OLD') then
-                  OPEN(UNIT=IUNIT(NF),FORM=cform(nf),STATUS='OLD',
-     1                 ACCESS=cacces(nf),FILE=FILNAM(NF)(1:LENGTH),
-     2                 ERR=95,IOSTAT=IOS)
-               elseif (cstat(nf).eq.'NEW') then
-                  OPEN(UNIT=IUNIT(NF),FORM=cform(nf),STATUS='NEW',
-     1                 ACCESS=cacces(nf),FILE=FILNAM(NF)(1:LENGTH),
-     2                 ERR=95,IOSTAT=IOS)
-               elseif (cstat(nf).eq.'UNKNOWN') then
-                  OPEN(UNIT=IUNIT(NF),FORM=cform(nf),STATUS='UNKNOWN',
-     1                 ACCESS=cacces(nf),FILE=FILNAM(NF)(1:LENGTH),
-     2                 ERR=95,IOSTAT=IOS)
-               else
-                  OPEN(UNIT=IUNIT(NF),FORM=cform(nf),STATUS=cstat(nf),
-     1                 ACCESS=cacces(nf),
-     2                 ERR=95,IOSTAT=IOS)
-               endif
+               OPEN(UNIT=IUNIT(NF),FORM=cform(nf),STATUS=cstat(nf),
+     1              ACCESS=cacces(nf),FILE=FILNAM(NF)(1:LENGTH),
+     2              ERR=95,IOSTAT=IOS)
             else
-               if (cstat(nf).eq.'OLD') then
-                  open(unit=iunit(nf),form=cform(nf),status='OLD',
-     1                 access=cacces(nf),position=cpos(nf),
-     2                 file=filnam(nf)(1:length),err=95,iostat=ios)
-               elseif (cstat(nf).eq.'NEW') then
-                  open(unit=iunit(nf),form=cform(nf),status='NEW',
-     1                 access=cacces(nf),position=cpos(nf),
-     2                 file=filnam(nf)(1:length),err=95,iostat=ios)
-               elseif (cstat(nf).eq.'UNKNOWN') then
-                  open(unit=iunit(nf),form=cform(nf),status='UNKNOWN',
-     1                 access=cacces(nf),position=cpos(nf),
-     2                 file=filnam(nf)(1:length),err=95,iostat=ios)
-               else
-                  open(unit=iunit(nf),form=cform(nf),status=cstat(nf),
-     1                 access=cacces(nf),position=cpos(nf),
-     2                 err=95,iostat=ios)
-               endif
+               open(unit=iunit(nf),form=cform(nf),status=cstat(nf),
+     1              access=cacces(nf),position=cpos(nf),
+     2              file=filnam(nf)(1:length),err=95,iostat=ios)
             endif
          ELSE
             read(filnam(nf)(length+2:length+2+idgmax-1),37) lrec
@@ -12033,41 +12005,13 @@ c     Interpret the abbreviations
             write(6,39)  lrec
    39       format('...Direct access record length:',i7,'...')
             if(cpos(nf) .eq. ' ')  then
-               if (cstat(nf).eq.'OLD') then
-                  OPEN(UNIT=IUNIT(NF),FORM=CFORM(NF),STATUS='OLD',
-     1                 ACCESS=CACCES(NF),FILE=FILNAM(NF)(1:LENGTH),
-     2                 ERR=95,IOSTAT=IOS,RECL=lrec)
-               elseif (cstat(nf).eq.'NEW') then
-                  OPEN(UNIT=IUNIT(NF),FORM=CFORM(NF),STATUS='NEW',
-     1                 ACCESS=CACCES(NF),FILE=FILNAM(NF)(1:LENGTH),
-     2                 ERR=95,IOSTAT=IOS,RECL=lrec)
-               elseif (cstat(nf).eq.'UNKNOWN') then
-                  OPEN(UNIT=IUNIT(NF),FORM=CFORM(NF),STATUS='UNKNOWN',
-     1                 ACCESS=CACCES(NF),FILE=FILNAM(NF)(1:LENGTH),
-     2                 ERR=95,IOSTAT=IOS,RECL=lrec)
-               else
-                  OPEN(UNIT=IUNIT(NF),FORM=CFORM(NF),STATUS=CSTAT(NF),
-     1                 ACCESS=CACCES(NF),
-     2                 ERR=95,IOSTAT=IOS,RECL=lrec)
-               endif
+               OPEN(UNIT=IUNIT(NF),FORM=CFORM(NF),STATUS=CSTAT(NF),
+     1              ACCESS=CACCES(NF),FILE=FILNAM(NF)(1:LENGTH),
+     2              ERR=95,IOSTAT=IOS,RECL=lrec)
             else
-               if (cstat(nf).eq.'OLD') then
-                  open(unit=iunit(nf),form=cform(nf),status='OLD',
-     1                 access=cacces(nf),file=filnam(nf)(1:length),
-     2                 position=cpos(nf),err=95,iostat=ios,recl=lrec)
-               elseif (cstat(nf).eq.'NEW') then
-                  open(unit=iunit(nf),form=cform(nf),status='NEW',
-     1                 access=cacces(nf),file=filnam(nf)(1:length),
-     2                 position=cpos(nf),err=95,iostat=ios,recl=lrec)
-               elseif (cstat(nf).eq.'UNKNOWN') then
-                  open(unit=iunit(nf),form=cform(nf),status='UNKNOWN',
-     1                 access=cacces(nf),file=filnam(nf)(1:length),
-     2                 position=cpos(nf),err=95,iostat=ios,recl=lrec)
-               else
-                  open(unit=iunit(nf),form=cform(nf),status=cstat(nf),
-     1                 access=cacces(nf),
-     2                 position=cpos(nf),err=95,iostat=ios,recl=lrec)
-               endif
+               open(unit=iunit(nf),form=cform(nf),status=cstat(nf),
+     1              access=cacces(nf),file=filnam(nf)(1:length),
+     2              position=cpos(nf),err=95,iostat=ios,recl=lrec)
             endif
          ENDIF
       ENDDO

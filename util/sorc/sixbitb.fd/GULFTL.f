@@ -1,3 +1,0 @@
-        subroutine GULFTL()
-         return 
-        end
