@@ -36,4 +36,4 @@ module load z/1.2.11
 
 #Load from emc.nemspara
 module use -a /scratch1/NCEPDEV/nems/emc.nemspara/soft/modulefiles
-module load esmf/8.0.0
+module load esmflocal/8.1.0.27bs.release
