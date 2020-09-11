@@ -37,8 +37,7 @@ cd rtofs_${ymdh_rtofs}
 ncks -x -v sst,sss,layer_density  $curfile cur_uv_${PDY}_${fext}${fh3}.nc
 ncks -O -a -h -x -v Layer cur_uv_${PDY}_${fext}${fh3}.nc cur_temp1.nc
 ncwa -h -O -a Layer cur_temp1.nc cur_temp2.nc
-ncrename -h -O -v MT,time cur_temp2.nc
-ncrename -h -O -d MT,time cur_temp2.nc
+ncrename -h -O -v MT,time -d MT,time cur_temp2.nc
 ncks -v u_velocity,v_velocity cur_temp2.nc cur_temp3.nc
 mv -f cur_temp3.nc cur_uv_${PDY}_${fext}${fh3}_flat.nc
 

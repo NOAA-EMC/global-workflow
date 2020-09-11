@@ -71,29 +71,21 @@ export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/$COMPONENT}
 
 if [ $RUN_ENVIR = "nco" ]; then
   export COMIN_WAV_ICE=${COMIN_WAV_ICE:-$(compath.py gfs/prod)}/${CDUMP}.${PDY}/${cyc}/atmos
-  export COMIN_WAV_WND=${COMIN_WAV_WND:-$(compath.py gfs/prod)}/${CDUMP}.${PDY}/${cyc}/atmos
   export COMIN_WAV_CUR=${COMIN_WAV_CUR:-$(compath.py ${WAVECUR_DID}/prod)}/${WAVECUR_DID}.${RPDY}
   if [ ! -d $COMIN_WAV_CUR ]; then
     export RPDY=`$NDATE -24 ${PDY}00 | cut -c1-8`
     export COMIN_WAV_CUR=$(compath.py ${WAVECUR_DID}/prod)/${WAVECUR_DID}.${RPDY}
   fi
 else 
-  if [ ! -d $DMPDIR/${WAVECUR_DID}.${RPDY} ]; then export RPDY=`$NDATE -24 ${PDY}00 | cut -c1-8`; fi
   if [ ! -L $ROTDIR/${WAVECUR_DID}.${RPDY} ]; then # Check if symlink already exists in ROTDIR
     $NLN $DMPDIR/${WAVECUR_DID}.${RPDY} $ROTDIR/${WAVECUR_DID}.${RPDY}
   fi
   if [ ! -L $ROTDIR/${CDUMP}.${PDY}/${cyc}/atmos/${WAVICEFILE} ]; then # Check if symlink already exists in ROTDIR
     $NLN $DMPDIR/$CDUMP.${PDY}/$cyc/${WAVICEFILE} $ROTDIR/$CDUMP.${PDY}/$cyc/atmos/${WAVICEFILE}
   fi
-  export COMIN_OBS=${COMIN_OBS:-$ROTDIR/$RUN.$PDY/$cyc/atmos}
-  export COMIN_WAV_ICE=${COMIN_OBS}
-  export COMIN_WAV_WND=${COMIN_OBS}
+  export COMIN_WAV_ICE=${COMIN_WAV_ICE:-$ROTDIR/$RUN.$PDY/$cyc/atmos}
   export COMIN_WAV_CUR=${ROTDIR}/${WAVECUR_DID}.${RPDY}
 fi
-
-# Set mpi serial command
-export wavempexec=${launcher:-"mpirun -n"}
-export wave_mpmd=${mpmd:-"cfp"}
 
 # Execute the Script  
 $HOMEgfs/scripts/exgfs_wave_prep.sh
