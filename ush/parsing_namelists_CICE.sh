@@ -51,7 +51,7 @@ cat > ice_in <<eof
 
 &grid_nml
    grid_format  = 'nc'
-   grid_type    = 'displaced_pole'
+   grid_type    = 'tripole'
    grid_file    = '$ice_grid_file'
    kmt_file     = '$ice_kmt_file'
    use_bathymetry = .false.
@@ -460,15 +460,15 @@ cat > ice_in <<eof
    f_taubx         = 'x'
    f_tauby         = 'x'
    f_strength      = 'x'
-   f_divu          = 'mdhxx'
-   f_shear         = 'mdhxx'
+   f_divu          = 'x'
+   f_shear         = 'x'
    f_sig1          = 'x' 
    f_sig2          = 'x'
    f_sigP          = 'x' 
-   f_dvidtt        = 'mdhxx' 
-   f_dvidtd        = 'mdhxx' 
-   f_daidtt        = 'mdhxx'
-   f_daidtd        = 'mdhxx' 
+   f_dvidtt        = 'x' 
+   f_dvidtd        = 'x' 
+   f_daidtt        = 'x'
+   f_daidtd        = 'x' 
    f_dagedtt       = 'x'
    f_dagedtd       = 'x'
    f_mlt_onset     = 'mdhxx'
@@ -572,9 +572,9 @@ cat > ice_in <<eof
 /
 
 &icefields_drag_nml
-   f_drag         = 'mdhxx'
-   f_Cdn_atm      = 'mdhxx'
-   f_Cdn_ocn      = 'mdhxx'
+   f_drag         = 'x'
+   f_Cdn_atm      = 'x'
+   f_Cdn_ocn      = 'x'
 /
 
 &icefields_fsd_nml
