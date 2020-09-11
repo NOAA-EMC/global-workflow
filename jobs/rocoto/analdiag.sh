@@ -8,6 +8,6 @@ status=$?
 
 ###############################################################
 # Execute the JJOB
-$HOMEgfs/jobs/JGLOBAL_ANALDIAG
+$HOMEgfs/jobs/JGDAS_ATMOS_ANALYSIS_DIAG
 status=$?
 exit $status

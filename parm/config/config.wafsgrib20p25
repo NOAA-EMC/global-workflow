@@ -11,6 +11,4 @@ export COMIN=$COMINatmos
 export COMOUT=$COMOUTatmos
 export SENDCOM="YES"
 
-export HOURLY="NO"
-
 echo "END: config.wafsgrib20p25"
