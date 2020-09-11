@@ -82,6 +82,7 @@ config_fcst:
     # CICE parameters
     export NX_GLB="{doc.ice_settings.NX_GLB}"
     export NY_GLB="{doc.ice_settings.NY_GLB}"
+    export MESHICE="mesh.mx${doc.ice_settings.ICERES}.nc"
 
     if [[ "$machine" == "WCOSS_C" ]]; then
         export memory_fcst="1024M"
