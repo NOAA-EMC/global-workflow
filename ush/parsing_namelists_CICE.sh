@@ -149,7 +149,6 @@ cat > ice_in <<eof
   , hs1             = 0.03
   , dpscale         = 1.0e-3
   , frzpnd          = 'hlid'
-  , snowinfil       = .true.
   , rfracmin        = 0.15
   , rfracmax        = 1.
   , pndaspect       = 0.8
@@ -197,8 +196,8 @@ cat > ice_in <<eof
     nprocs = $ICEPETS
   , nx_global         = $NX_GLB
   , ny_global         = $NY_GLB
-  , block_size_x      = `expr 2 * $NX_GLB / $ICEPETS`
-  , block_size_y      = `expr $NY_GLB / 2`
+  , block_size_x      = $(( 2 * ( $NX_GLB / $ICEPETS ) ))
+  , block_size_y      = $(( $NY_GLB / 2 ))
   , max_blocks        = -1
   , processor_shape   = 'slenderX2'
   , distribution_type = 'cartesian'

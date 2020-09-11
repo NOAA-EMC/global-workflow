@@ -65,6 +65,12 @@ config_fcst:
     export memory_fcst="1024M"
 
     #######################################################################
+    # COUPLING COMPONENTS
+    export OCN_model="{doc.ocn_settings.MOD}"
+    export ICE_model="{doc.ice_settings.MOD}"
+    export WAV_model="{doc.wave_settings.MOD}"
+
+    #######################################################################
     # PE Mapping
     export ATMPETS="{doc.fv3_gfs_settings.ATMPETS}"
     export MEDPETS="{doc.fv3_gfs_settings.MEDPETS}"
