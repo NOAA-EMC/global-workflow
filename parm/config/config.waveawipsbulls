@@ -1,0 +1,17 @@
+#!/bin/ksh -x
+
+########## config.waveawipsbulls ##########
+# Wave steps specific
+
+echo "BEGIN: config.waveawipsbulls"
+
+# Get task specific resources
+. $EXPDIR/config.resources waveawipsbulls
+
+export DBNROOT=/dev/null
+export SENDCOM="YES"
+export COMPONENT=${COMPONENT:-wave}
+export COMIN="$ROTDIR/$CDUMP.$PDY/$cyc/$COMPONENT"
+export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc/$COMPONENT"
+
+echo "END: config.waveawipsbulls"

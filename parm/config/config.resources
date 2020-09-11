@@ -10,9 +10,10 @@ if [ $# -ne 1 ]; then
     echo "argument can be any one of the following:"
     echo "anal analcalc analdiag gldas fcst post vrfy metp arch echgres"
     echo "eobs ediag eomg eupd ecen esfc efcs epos earc"
-    echo "waveinit waveprep wavepostsbs wavegempaksbs waveawipssbs"
-    echo "wavepost waveawips wavestat"
+    echo "waveinit waveprep wavepostsbs"
+    echo "wavegempak waveawipsbulls waveawipsgridded"
     echo "postsnd awips gempak"
+    echo "wafs wafsgrib2 wafsblending wafsgrib20p25 wafsblending0p25 wafsgcip"
     exit 1
 
 fi
@@ -65,45 +66,29 @@ elif [ $step = "wavepostsbs" ]; then
     export npe_node_wavepostsbs=$(echo "$npe_node_max / $nth_wavepostsbs" | bc)
     export NTASKS=${npe_wavepostsbs}
 
-elif [ $step = "wavegempaksbs" ]; then
+elif [ $step = "wavegempak" ]; then
 
-    export wtime_wavegempaksbs="06:00:00"
-    export npe_wavegempaksbs=$npe_node_max
-    export nth_wavegempaksbs=1
-    export npe_node_wavegempaksbs=$(echo "$npe_node_max / $nth_wavegempaksbs" | bc)
-    export NTASKS=${npe_wavegempaksbs}
+    export wtime_wavegempak="01:00:00"
+    export npe_wavegempak=$npe_node_max
+    export nth_wavegempak=1
+    export npe_node_wavegempak=$(echo "$npe_node_max / $nth_wavegempak" | bc)
+    export NTASKS=${npe_wavegempak}
 
-elif [ $step = "waveawipssbs" ]; then
+elif [ $step = "waveawipsbulls" ]; then
 
-    export wtime_waveawipssbs="08:00:00"
-    export npe_waveawipssbs=$npe_node_max
-    export nth_waveawipssbs=1
-    export npe_node_waveawipssbs=$(echo "$npe_node_max / $nth_waveawipssbs" | bc)
-    export NTASKS=${npe_waveawipssbs}
+    export wtime_waveawipsbulls="00:30:00"
+    export npe_waveawipsbulls=$npe_node_max
+    export nth_waveawipsbulls=1
+    export npe_node_waveawipsbulls=$(echo "$npe_node_max / $nth_waveawipsbulls" | bc)
+    export NTASKS=${npe_waveawipsbulls}
 
-elif [ $step = "wavepost" ]; then
+elif [ $step = "waveawipsgridded" ]; then
 
-    export wtime_wavepost="01:00:00"
-    export npe_wavepost=560
-    export nth_wavepost=1
-    export npe_node_wavepost=$(echo "$npe_node_max / $nth_wavepost" | bc)
-    export NTASKS=${npe_wavepost}
-
-elif [ $step = "waveawips" ]; then
-
-    export wtime_waveawips="06:00:00"
-    export npe_waveawips=$npe_node_max
-    export nth_waveawips=1
-    export npe_node_waveawips=$(echo "$npe_node_max / $nth_waveawips" | bc)
-    export NTASKS=${npe_waveawips}
-
-elif [ $step = "wavestat" ]; then
-
-    export wtime_wavestat="01:00:00"
-    export npe_wavestat=$npe_node_max
-    export nth_wavestat=1
-    export npe_node_wavestat=$(echo "$npe_node_max / $nth_wavestat" | bc)
-    export NTASKS=${npe_wavestats}
+    export wtime_waveawipsgridded="00:30:00"
+    export npe_waveawipsgridded=$npe_node_max
+    export nth_waveawipsgridded=1
+    export npe_node_waveawipsgridded=$(echo "$npe_node_max / $nth_waveawipsgridded" | bc)
+    export NTASKS=${npe_waveawipsgridded}
 
 elif [ $step = "anal" ]; then
 
@@ -127,7 +112,6 @@ elif [ $step = "analcalc" ]; then
     export nth_analcalc=1
     export npe_node_analcalc=$npe_node_max
     if [[ "$machine" = "WCOSS_DELL_P3" ]]; then export npe_analcalc=127 ; fi
-    if [[ "$machine" == "WCOSS_C" ]]; then export memory_analcalc="3072M"; fi
 
 elif [ $step = "analdiag" ]; then
 
@@ -169,6 +153,48 @@ elif [ $step = "post" ]; then
     export npe_node_dwn=$npe_node_max
     if [[ "$machine" = "WCOSS_DELL_P3" ]]; then export npe_node_post=14 ; fi
     if [[ "$machine" == "WCOSS_C" ]]; then export memory_post="3072M"; fi
+
+elif [ $step = "wafs" ]; then
+
+    export wtime_wafs="00:30:00"
+    export npe_wafs=1
+    export npe_node_wafs=1
+    export nth_wafs=1
+
+elif [ $step = "wafsgcip" ]; then
+
+    export wtime_wafsgcip="00:30:00"
+    export npe_wafsgcip=2
+    export npe_node_wafsgcip=1
+    export nth_wafsgcip=1
+
+elif [ $step = "wafsgrib2" ]; then
+
+    export wtime_wafsgrib2="00:30:00"
+    export npe_wafsgrib2=1
+    export npe_node_wafsgrib2=1
+    export nth_wafsgrib2=1
+
+elif [ $step = "wafsblending" ]; then
+
+    export wtime_wafsblending="00:30:00"
+    export npe_wafsblending=1
+    export npe_node_wafsblending=1
+    export nth_wafsblending=1
+
+elif [ $step = "wafsgrib20p25" ]; then
+
+    export wtime_wafsgrib20p25="00:30:00"
+    export npe_wafsgrib20p25=1
+    export npe_node_wafsgrib20p25=1
+    export nth_wafsgrib20p25=1
+
+elif [ $step = "wafsblending0p25" ]; then
+
+    export wtime_wafsblending0p25="00:30:00"
+    export npe_wafsblending0p25=1
+    export npe_node_wafsblending0p25=1
+    export nth_wafsblending0p25=1
 
 elif [ $step = "vrfy" ]; then
 

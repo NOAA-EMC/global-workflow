@@ -14,13 +14,22 @@ export HOMEgfs=${HOMEgfs:-$(dirname $(dirname $0))} # parent directory of curren
 # Set COM Paths
 ###################################
 export COMIN=${COMIN:-$(compath.py ${NET}/${envir}/${RUN}.${PDY})/${cyc}/$COMPONENT}
-export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/$COMPONENT/gempak}
+export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/$COMPONENT}
 export PCOM=${PCOM:-${COMOUT}/wmo}
 export SENDCOM=${SENDCOM:-YES}
 export SENDDBN_NTC=${SENDDBN_NTC:-YES}
 if [ $SENDCOM = YES ]; then
   mkdir -p $COMOUT $PCOM
 fi
+
+export DATA=${DATA:-${DATAROOT}/${jobid:?}}
+mkdir -p $DATA
+cd $DATA
+
+######################################
+# Set up the cycle variable
+######################################
+export cycle=${cycle:-t${cyc}z}
 
 # Set PDY
  setpdy.sh
@@ -30,7 +39,7 @@ fi
 ###################################
 # Execute the Script  
 ###################################
-$HOMEgfs/scripts/exgfswave_prdgen_gridded.native.sh.ecf
+$HOMEgfs/scripts/exgfs_wave_prdgen_gridded.sh
 
 ###################################
 # Remove temp directories

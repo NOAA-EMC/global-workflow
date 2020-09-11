@@ -88,7 +88,7 @@ postmsg "$jlogfile" "$msg"
 
 ########################################################
 # Execute the script.
-$SRCgfs/exgempak_gfs_gif_ncdc_skew_t.sh.ecf
+$SRCgfs/exgempak_gfs_gif_ncdc_skew_t.sh
 export err=$?; err_chk
 ########################################################
 

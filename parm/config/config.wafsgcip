@@ -1,0 +1,15 @@
+#!/bin/ksh -x
+
+########## config.wafsgcip ##########
+
+echo "BEGIN: config.wafsgcip"
+
+# Get task specific resources
+. $EXPDIR/config.resources wafsgcip
+
+export COMIN=$COMINatmos
+export COMINgfs=$COMIN
+export COMOUT=$COMOUTatmos
+export SENDCOM="YES"
+
+echo "END: config.wafsgcip"

@@ -1,0 +1,17 @@
+#!/bin/ksh -x
+
+########## config.waveawipsgridded ##########
+# Wave steps specific
+
+echo "BEGIN: config.waveawipsgridded"
+
+# Get task specific resources
+. $EXPDIR/config.resources waveawipsgridded
+
+export DBNROOT=/dev/null
+export SENDCOM="YES"
+export COMPONENT=${COMPONENT:-wave}
+export COMIN="$ROTDIR/$CDUMP.$PDY/$cyc/$COMPONENT"
+export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc/$COMPONENT"
+
+echo "END: config.waveawipsgridded"

@@ -1,6 +1,6 @@
 #!/bin/ksh
 ######################################################################
-#  UTILITY SCRIPT NAME :  exgfs_grib_awips.sh.ecf
+#  UTILITY SCRIPT NAME :  exgfs_grib_awips.sh
 #         DATE WRITTEN :  10/04/2004
 #
 #  Abstract:  This utility script produces the  GFS AWIPS GRIB
@@ -14,7 +14,7 @@ echo "JGFS_AWIPS_00/06/12/18 GFS postprocessing"
 echo "------------------------------------------------"
 echo "History: OCT 2004 - First implementation of this new script."
 echo "         JUN 2014 - Modified to remove process for AWIPS in GRIB2"
-echo "                    to script exgfs_grib_awips_g2.sh.ecf and this "
+echo "                    to script exgfs_grib_awips_g2.sh and this "
 echo "                    script only process AWIPS GRIB1 (211 and 225)"
 echo "         AUG 2015 - Modified for WCOSS phase2"
 echo "         FEB 2019 - Removed grid 225"

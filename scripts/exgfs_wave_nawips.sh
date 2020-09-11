@@ -63,8 +63,9 @@ while [ $fhcnt -le $FHMAX_WAV ]; do
       *)       gridIDin= 
                grdIDout= ;;
     esac
-    GRIBIN=$COMIN/$RUNwave.$cycle.$grdIDin.f${fhr}.grib2
+    GRIBIN=$COMIN/gridded/$RUNwave.$cycle.$grdIDin.f${fhr}.grib2
     GRIBIN_chk=$GRIBIN.idx
+
     icnt=1
     while [ $icnt -lt 1000 ]; do
       if [ -r $GRIBIN_chk ] ; then

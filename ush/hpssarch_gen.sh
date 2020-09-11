@@ -98,7 +98,7 @@ if [ $type = "gfs" ]; then
     echo  "${dirname}${head}pgrb2.0p25.f${fhr}.idx          " >>gfsa.txt
     echo  "${dirname}${head}logf${fhr}.txt                  " >>gfsa.txt
 
-    if [ -s $ROTDIR/${dirpath}}${head}pgrb2.0p50.f${fhr} ]; then
+    if [ -s $ROTDIR/${dirpath}${head}pgrb2.0p50.f${fhr} ]; then
        echo  "${dirname}${head}pgrb2.0p50.f${fhr}          " >>gfsb.txt
        echo  "${dirname}${head}pgrb2.0p50.f${fhr}.idx      " >>gfsb.txt
     fi

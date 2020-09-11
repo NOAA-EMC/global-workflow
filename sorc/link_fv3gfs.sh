@@ -38,10 +38,13 @@ elif [ $machine = "hera" ]; then
     FIX_DIR="/scratch1/NCEPDEV/global/glopara/fix"
 fi
 cd ${pwd}/../fix                ||exit 8
-for dir in fix_am fix_chem fix_fv3 fix_fv3_gmted2010 fix_gldas fix_orog fix_sfc_climo fix_verif fix_wave_gfs ; do
-    [[ -d $dir ]] && rm -rf $dir
+for dir in fix_am fix_fv3_gmted2010 fix_gldas fix_orog fix_verif fix_wave_gfs ; do
+    if [ -d $dir ]; then
+      [[ $RUN_ENVIR = nco ]] && chmod -R 755 $dir
+      rm -rf $dir
+    fi
+    $LINK $FIX_DIR/$dir .
 done
-$LINK $FIX_DIR/* .
 
 if [ -d ${pwd}/ufs_utils.fd ]; then
   cd ${pwd}/ufs_utils.fd/sorc
@@ -61,11 +64,11 @@ cd ${pwd}/../parm               ||exit 8
     [[ -d gldas ]] && rm -rf gldas
     $LINK ../sorc/gldas.fd/parm                              gldas
 cd ${pwd}/../scripts            ||exit 8
-    $LINK ../sorc/gfs_post.fd/scripts/exgdas_nceppost.sh.ecf .
-    $LINK ../sorc/gfs_post.fd/scripts/exgfs_nceppost.sh.ecf  .
-    $LINK ../sorc/gfs_post.fd/scripts/exglobal_pmgr.sh.ecf   .
-    $LINK ../sorc/ufs_utils.fd/scripts/exemcsfc_global_sfc_prep.sh.ecf .
-    $LINK ../sorc/gldas.fd/scripts/exgdas_gldas.sh.ecf .             
+    $LINK ../sorc/gfs_post.fd/scripts/exgdas_nceppost.sh .
+    $LINK ../sorc/gfs_post.fd/scripts/exgfs_nceppost.sh  .
+    $LINK ../sorc/gfs_post.fd/scripts/exglobal_pmgr.sh   .
+    $LINK ../sorc/ufs_utils.fd/scripts/exemcsfc_global_sfc_prep.sh .
+    $LINK ../sorc/gldas.fd/scripts/exgdas_gldas.sh .
 cd ${pwd}/../ush                ||exit 8
     for file in fv3gfs_downstream_nems.sh fv3gfs_dwn_nems.sh gfs_nceppost.sh  \
         gfs_transfer.sh mod_icec.sh link_crtm_fix.sh trim_rh.sh fix_precip.sh; do
@@ -81,7 +84,7 @@ cd ${pwd}/../ush                ||exit 8
     done
 cd ${pwd}/../util               ||exit 8
     for file in sub_slurm sub_wcoss_c sub_wcoss_d ; do
-        $LINK ../sorc/ufs_utils.fd/util/$file
+        $LINK ../sorc/ufs_utils.fd/util/$file .
     done
 
 
@@ -99,6 +102,7 @@ if [ -d ${pwd}/gfs_wafs.fd ]; then
  cd ${pwd}/../ush                ||exit 8
     $LINK ../sorc/gfs_wafs.fd/ush/*                          .
  cd ${pwd}/../fix                ||exit 8
+    [[ -d wafs ]] && rm -rf wafs
     $LINK ../sorc/gfs_wafs.fd/fix/*                          .
 fi
 
@@ -112,25 +116,23 @@ cd ${pwd}/../jobs               ||exit 8
     $LINK ../sorc/gsi.fd/jobs/JGLOBAL_ANALDIAG           .
     $LINK ../sorc/gsi.fd/jobs/JGLOBAL_ENKF_SELECT_OBS    .
     $LINK ../sorc/gsi.fd/jobs/JGLOBAL_ENKF_ANALDIAG      .
-    $LINK ../sorc/gsi.fd/jobs/JGLOBAL_ENKF_INNOVATE_OBS  .
     $LINK ../sorc/gsi.fd/jobs/JGLOBAL_ENKF_UPDATE        .
     $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_RECENTER        .
     $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_SURFACE         .    
     $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_FCST            .
     $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_POST            .
-    $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_CHGRES          .
+    $LINK ../sorc/gsi.fd/jobs/JGDAS_CHGRES_FORENKF       .
 cd ${pwd}/../scripts            ||exit 8
-    $LINK ../sorc/gsi.fd/scripts/exglobal_analysis_fv3gfs.sh.ecf           .
-    $LINK ../sorc/gsi.fd/scripts/exglobal_analcalc_fv3gfs.sh.ecf           .
-    $LINK ../sorc/gsi.fd/scripts/exglobal_analdiag_fv3gfs.sh.ecf           .
-    $LINK ../sorc/gsi.fd/scripts/exglobal_innovate_obs_fv3gfs.sh.ecf       .
-    $LINK ../sorc/gsi.fd/scripts/exglobal_enkf_innovate_obs_fv3gfs.sh.ecf  .
-    $LINK ../sorc/gsi.fd/scripts/exglobal_enkf_update_fv3gfs.sh.ecf        .
-    $LINK ../sorc/gsi.fd/scripts/exglobal_enkf_recenter_fv3gfs.sh.ecf      .
-    $LINK ../sorc/gsi.fd/scripts/exglobal_enkf_surface_fv3gfs.sh.ecf       .
-    $LINK ../sorc/gsi.fd/scripts/exglobal_enkf_fcst_fv3gfs.sh.ecf          .
-    $LINK ../sorc/gsi.fd/scripts/exglobal_enkf_post_fv3gfs.sh.ecf          .
-    $LINK ../sorc/gsi.fd/scripts/exglobal_enkf_chgres_fv3gfs.sh.ecf        .
+    $LINK ../sorc/gsi.fd/scripts/exglobal_analysis_fv3gfs.sh           .
+    $LINK ../sorc/gsi.fd/scripts/exglobal_analcalc_fv3gfs.sh           .
+    $LINK ../sorc/gsi.fd/scripts/exglobal_analdiag_fv3gfs.sh           .
+    $LINK ../sorc/gsi.fd/scripts/exglobal_innovate_obs_fv3gfs.sh       .
+    $LINK ../sorc/gsi.fd/scripts/exglobal_enkf_update_fv3gfs.sh        .
+    $LINK ../sorc/gsi.fd/scripts/exglobal_enkf_recenter_fv3gfs.sh      .
+    $LINK ../sorc/gsi.fd/scripts/exglobal_enkf_surface_fv3gfs.sh       .
+    $LINK ../sorc/gsi.fd/scripts/exglobal_enkf_fcst_fv3gfs.sh          .
+    $LINK ../sorc/gsi.fd/scripts/exglobal_enkf_post_fv3gfs.sh          .
+    $LINK ../sorc/gsi.fd/scripts/exglobal_chgres_forenkf_fv3gfs.sh     .
 cd ${pwd}/../fix                ||exit 8
     [[ -d fix_gsi ]] && rm -rf fix_gsi
     $LINK ../sorc/gsi.fd/fix  fix_gsi
@@ -170,10 +172,10 @@ cd ${pwd}/../parm               ||exit 8
     $LINK ../../sorc/gsi.fd/util/Ozone_Monitor/nwprod/gdas_oznmon.v2.0.0/parm/gdas_oznmon.parm               .
 #   $LINK ../../sorc/gsi.fd/util/Radiance_Monitor/nwprod/gdas_radmon.v3.0.0/parm/gdas_radmon.parm            .
 cd ${pwd}/../scripts            ||exit 8
-    $LINK ../sorc/gsi.fd/util/Minimization_Monitor/nwprod/gdas.v1.0.0/scripts/exgdas_vrfminmon.sh.ecf        .
-    $LINK ../sorc/gsi.fd/util/Minimization_Monitor/nwprod/gfs.v1.0.0/scripts/exgfs_vrfminmon.sh.ecf          .
-    $LINK ../sorc/gsi.fd/util/Ozone_Monitor/nwprod/gdas_oznmon.v2.0.0/scripts/exgdas_vrfyozn.sh.ecf          .
-    $LINK ../sorc/gsi.fd/util/Radiance_Monitor/nwprod/gdas_radmon.v3.0.0/scripts/exgdas_vrfyrad.sh.ecf       .
+    $LINK ../sorc/gsi.fd/util/Minimization_Monitor/nwprod/gdas.v1.0.0/scripts/exgdas_vrfminmon.sh        .
+    $LINK ../sorc/gsi.fd/util/Minimization_Monitor/nwprod/gfs.v1.0.0/scripts/exgfs_vrfminmon.sh          .
+    $LINK ../sorc/gsi.fd/util/Ozone_Monitor/nwprod/gdas_oznmon.v2.0.0/scripts/exgdas_vrfyozn.sh          .
+    $LINK ../sorc/gsi.fd/util/Radiance_Monitor/nwprod/gdas_radmon.v3.0.0/scripts/exgdas_vrfyrad.sh       .
 cd ${pwd}/../ush                ||exit 8
     $LINK ../sorc/gsi.fd/util/Minimization_Monitor/nwprod/minmon_shared.v1.0.1/ush/minmon_xtrct_costs.pl     .
     $LINK ../sorc/gsi.fd/util/Minimization_Monitor/nwprod/minmon_shared.v1.0.1/ush/minmon_xtrct_gnorms.pl    .
@@ -205,14 +207,17 @@ fi
 $LINK ../sorc/gfs_post.fd/exec/ncep_post gfs_ncep_post
 
 if [ -d ${pwd}/gfs_wafs.fd ]; then 
-    for wafsexe in wafs_awc_wafavn  wafs_blending  wafs_cnvgrib2  wafs_gcip  wafs_makewafs  wafs_setmissing; do
+    for wafsexe in \
+          wafs_awc_wafavn  wafs_blending  wafs_blending_0p25 \
+          wafs_cnvgrib2  wafs_gcip  wafs_grib2_0p25 \
+          wafs_makewafs  wafs_setmissing; do
         [[ -s $wafsexe ]] && rm -f $wafsexe
         $LINK ../sorc/gfs_wafs.fd/exec/$wafsexe .
     done
 fi
 
 for ufs_utilsexe in \
-     chgres_cube.exe   fregrid           make_hgrid           nemsio_get    shave.x \
+     fregrid           make_hgrid           nemsio_get    shave.x \
      emcsfc_ice_blend  fregrid_parallel  make_hgrid_parallel  nemsio_read \
      emcsfc_snow2mdl   global_chgres     make_solo_mosaic     nst_tf_chg.x \
      filter_topo       global_cycle      mkgfsnemsioctl       orog.x ; do
@@ -220,10 +225,10 @@ for ufs_utilsexe in \
     $LINK ../sorc/ufs_utils.fd/exec/$ufs_utilsexe .
 done
 
-for gsiexe in  global_gsi.x global_enkf.x calc_increment_ens.x  getsfcensmeanp.x  getsigensmeanp_smooth.x  \
-    calc_increment_ens_ncio.x calc_analysis.x interp_inc.x \
-    getsigensstatp.x  nc_diag_cat_serial.x nc_diag_cat.x recentersigp.x oznmon_horiz.x oznmon_time.x \
-    radmon_angle.x radmon_bcoef.x radmon_bcor.x radmon_time.x interp_inc.x;do
+for gsiexe in  calc_analysis.x calc_increment_ens_ncio.x calc_increment_ens.x \
+    getsfcensmeanp.x getsigensmeanp_smooth.x getsigensstatp.x global_enkf.x global_gsi.x \
+    interp_inc.x nc_diag_cat_serial.x oznmon_horiz.x oznmon_time.x radmon_angle.x \
+    radmon_bcoef.x radmon_bcor.x radmon_time.x recentersigp.x;do
     [[ -s $gsiexe ]] && rm -f $gsiexe
     $LINK ../sorc/gsi.fd/exec/$gsiexe .
 done
@@ -238,21 +243,55 @@ done
 #------------------------------
 
 cd ${pwd}/../sorc   ||   exit 8
+    [[ -d calc_analysis.fd ]] && rm -rf calc_analysis.fd
     $SLINK gsi.fd/util/netcdf_io/calc_analysis.fd                                          calc_analysis.fd
-    $SLINK gsi.fd/util/netcdf_io/interp_inc.fd                                             interp_inc.fd 
+
+    [[ -d calc_increment_ens.fd ]] && rm -rf calc_increment_ens.fd
     $SLINK gsi.fd/util/EnKF/gfs/src/calc_increment_ens.fd                                  calc_increment_ens.fd
+
+    [[ -d calc_increment_ens_ncio.fd ]] && rm -rf calc_increment_ens_ncio.fd
     $SLINK gsi.fd/util/EnKF/gfs/src/calc_increment_ens_ncio.fd                             calc_increment_ens_ncio.fd
+
+    [[ -d getsfcensmeanp.fd ]] && rm -rf getsfcensmeanp.fd
     $SLINK gsi.fd/util/EnKF/gfs/src/getsfcensmeanp.fd                                      getsfcensmeanp.fd
+
+    [[ -d getsigensmeanp_smooth.fd ]] && rm -rf getsigensmeanp_smooth.fd
     $SLINK gsi.fd/util/EnKF/gfs/src/getsigensmeanp_smooth.fd                               getsigensmeanp_smooth.fd
+
+    [[ -d getsigensstatp.fd ]] && rm -rf getsigensstatp.fd
     $SLINK gsi.fd/util/EnKF/gfs/src/getsigensstatp.fd                                      getsigensstatp.fd
-    $SLINK gsi.fd/src                                                                      global_enkf.fd
-    $SLINK gsi.fd/src                                                                      global_gsi.fd
+
+    [[ -d global_enkf.fd ]] && rm -rf global_enkf.fd
+    $SLINK gsi.fd/src/enkf                                                                 global_enkf.fd
+
+    [[ -d global_gsi.fd ]] && rm -rf global_gsi.fd
+    $SLINK gsi.fd/src/gsi                                                                  global_gsi.fd
+
+    [[ -d interp_inc.fd ]] && rm -rf interp_inc.fd
+    $SLINK gsi.fd/util/netcdf_io/interp_inc.fd                                             interp_inc.fd
+
+    [[ -d ncdiag.fd ]] && rm -rf ncdiag.fd
+    $SLINK gsi.fd/src/ncdiag                                                               ncdiag.fd
+
+    [[ -d oznmon_horiz.fd ]] && rm -rf oznmon_horiz.fd
     $SLINK gsi.fd/util/Ozone_Monitor/nwprod/oznmon_shared.v2.0.0/sorc/oznmon_horiz.fd      oznmon_horiz.fd
+
+    [[ -d oznmon_time.fd ]] && rm -rf oznmon_time.fd
     $SLINK gsi.fd/util/Ozone_Monitor/nwprod/oznmon_shared.v2.0.0/sorc/oznmon_time.fd       oznmon_time.fd
+
+    [[ -d radmon_angle.fd ]] && rm -rf radmon_angle.fd
     $SLINK gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared.v3.0.0/sorc/verf_radang.fd    radmon_angle.fd
+
+    [[ -d radmon_bcoef.fd ]] && rm -rf radmon_bcoef.fd
     $SLINK gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared.v3.0.0/sorc/verf_radbcoef.fd  radmon_bcoef.fd
+
+    [[ -d radmon_bcor.fd ]] && rm -rf radmon_bcor.fd
     $SLINK gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared.v3.0.0/sorc/verf_radbcor.fd   radmon_bcor.fd 
+
+    [[ -d radmon_time.fd ]] && rm -rf radmon_time.fd
     $SLINK gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared.v3.0.0/sorc/verf_radtime.fd   radmon_time.fd 
+
+    [[ -d recentersigp.fd ]] && rm -rf recentersigp.fd
     $SLINK gsi.fd/util/EnKF/gfs/src/recentersigp.fd                                        recentersigp.fd
 
     $SLINK gfs_post.fd/sorc/ncep_post.fd                                                   gfs_ncep_post.fd
@@ -261,7 +300,7 @@ cd ${pwd}/../sorc   ||   exit 8
     for prog in filter_topo fregrid make_hgrid make_solo_mosaic ; do
         $SLINK ufs_utils.fd/sorc/fre-nctools.fd/tools/$prog                                ${prog}.fd                                
     done
-    for prog in  chgres_cube.fd       global_cycle.fd   nemsio_read.fd  nemsio_chgdate.fd \
+    for prog in  global_cycle.fd   nemsio_read.fd  nemsio_chgdate.fd \
         emcsfc_ice_blend.fd  nst_tf_chg.fd \
         emcsfc_snow2mdl.fd   global_chgres.fd  nemsio_get.fd    orog.fd ;do
         $SLINK ufs_utils.fd/sorc/$prog                                                     $prog
