@@ -2202,6 +2202,18 @@ suite prod00
             edit TRDRUN 'YES'
         endfamily
       endfamily
+      family gempak
+        task jgfs_gempak
+          trigger ../../atmos/analysis/jgfs_analysis == complete
+        task jgfs_gempak_meta
+          trigger ../../atmos/analysis/jgfs_analysis == complete
+        task jgfs_gempak_ncdc_upapgif
+          trigger ./jgfs_gempak == active or ./jgfs_gempak == complete
+        task jgfs_npoess_pgrb2_0p5deg
+          trigger ../../atmos/post/jgfs_post_anl == active or ../../atmos/post/jgfs_post_anl == complete
+        task jgfs_pgrb2_spec_gempak
+          trigger ./jgfs_npoess_pgrb2_0p5deg == complete
+      endfamily
       family verf
         task jgfs_vminmon
           trigger ../analysis/jgfs_analysis == complete
