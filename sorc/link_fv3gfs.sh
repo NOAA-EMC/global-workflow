@@ -113,7 +113,7 @@ fi
 cd ${pwd}/../jobs               ||exit 8
     $LINK ../sorc/gsi.fd/jobs/JGLOBAL_ATMOS_ANALYSIS        .
     $LINK ../sorc/gsi.fd/jobs/JGLOBAL_ATMOS_ANALYSIS_CALC   .
-    $LINK ../sorc/gsi.fd/jobs/JGLOBAL_ATMOS_ANALYSIS_DIAG   .
+    $LINK ../sorc/gsi.fd/jobs/JGDAS_ATMOS_ANALYSIS_DIAG     .
     $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_SELECT_OBS         .
     $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_DIAG               .
     $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_UPDATE             .
@@ -126,7 +126,7 @@ cd ${pwd}/../scripts            ||exit 8
     $LINK ../sorc/gsi.fd/scripts/exglobal_atmos_analysis.sh       .
     $LINK ../sorc/gsi.fd/scripts/exglobal_atmos_analysis_calc.sh  .
     $LINK ../sorc/gsi.fd/scripts/exglobal_diag.sh                 .
-    $LINK ../sorc/gsi.fd/scripts/exgdas_enkf_innovate_obs.sh      .
+    $LINK ../sorc/gsi.fd/scripts/exgdas_enkf_select_obs.sh        .
     $LINK ../sorc/gsi.fd/scripts/exgdas_enkf_update.sh            .
     $LINK ../sorc/gsi.fd/scripts/exgdas_enkf_ecen.sh              .
     $LINK ../sorc/gsi.fd/scripts/exgdas_enkf_sfc.sh               .
