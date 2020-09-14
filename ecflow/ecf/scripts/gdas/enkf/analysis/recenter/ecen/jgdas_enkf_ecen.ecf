@@ -43,11 +43,7 @@ module list
 # WCOSS environment settings
 #############################################################
 export FHRGRP=%FHRGRP%
-export ECF_PORT=%ECF_PORT%
-export DATAROOT=%DATAROOT%
-export jlogfile=%COM%/logs/jlogfile
-export COMROOT=%COM%
-export ROTDIR=%COM%
+export ROTDIR=%COM%/$NET/$envir
 export CDUMP=gdas
 export cyc=%CYC%
 export cycle=t%CYC%z

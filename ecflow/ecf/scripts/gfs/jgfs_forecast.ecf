@@ -1,8 +1,8 @@
 #! /bin/sh
 #BSUB -q %QUEUE%
 #BSUB -P %PROJ%
-#BSUB -J %E%gfs_forecast_high_%CYC%
-#BSUB -o %COM%/output/%ENVIR%/today/gfs_forecast_high_%CYC%.o%J
+#BSUB -J %E%gfs_forecast_%CYC%
+#BSUB -o %COM%/output/%ENVIR%/today/gfs_forecast_%CYC%.o%J
 #BSUB -W 6:00
 #BSUB -n 1519
 #BSUB -R affinity[core(4)]
@@ -47,11 +47,7 @@ module list
 #############################################################
 # WCOSS environment settings
 #############################################################
-export ECF_PORT=%ECF_PORT%
-export DATAROOT=%DATAROOT%
-export jlogfile=%COM%/logs/jlogfile
-export COMROOT=%COM%
-export ROTDIR=%COM%
+export ROTDIR=%COM%/$NET/$envir
 export cyc=%CYC%
 export cycle=t%CYC%z
 export CDATE=$PDY$cyc

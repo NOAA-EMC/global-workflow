@@ -1,8 +1,8 @@
 #! /bin/sh
 #BSUB -q %QUEUE%
 #BSUB -P %PROJ%
-#BSUB -J %E%gdas_forecast_high_%CYC%
-#BSUB -o %COM%/output/%ENVIR%/today/gdas_forecast_high_%CYC%.o%J
+#BSUB -J %E%gdas_forecast_%CYC%
+#BSUB -o %COM%/output/%ENVIR%/today/gdas_forecast_%CYC%.o%J
 #BSUB -W 0:25
 #BSUB -n 833
 #BSUB -R affinity[core(4)]
@@ -48,11 +48,7 @@ module list
 # WCOSS environment settings
 #############################################################
 export COMPONENT=${COMPONENT:-atmos}
-export ECF_PORT=%ECF_PORT%
-export DATAROOT=%DATAROOT%
-export jlogfile=%COM%/logs/jlogfile
-export COMROOT=%COM%
-export ROTDIR=%COM%
+export ROTDIR=%COM%/$NET/$envir
 export CDUMP=gdas
 export cyc=%CYC%
 export cycle=t%CYC%z
