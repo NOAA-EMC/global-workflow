@@ -76,7 +76,8 @@ if [ $RUN_ENVIR = "nco" ]; then
     export RPDY=`$NDATE -24 ${PDY}00 | cut -c1-8`
     export COMIN_WAV_CUR=$(compath.py ${WAVECUR_DID}/prod)/${WAVECUR_DID}.${RPDY}
   fi
-else 
+else
+  if [ ! -d $DMPDIR/${WAVECUR_DID}.${RPDY} ]; then export RPDY=`$NDATE -24 ${PDY}00 | cut -c1-8`; fi 
   if [ ! -L $ROTDIR/${WAVECUR_DID}.${RPDY} ]; then # Check if symlink already exists in ROTDIR
     $NLN $DMPDIR/${WAVECUR_DID}.${RPDY} $ROTDIR/${WAVECUR_DID}.${RPDY}
   fi
