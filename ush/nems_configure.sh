@@ -74,6 +74,8 @@ fi
 if [ $cplice = .true. ]; then
 	sed -i -e "s;@\[ice_model\];$ICE_model;g" tmp1
 	sed -i -e "s;@\[ice_petlist_bounds\];$ice_petlist_bounds;g" tmp1
+        sed -i -e "s;@\[MESHICE\];$MESHICE;g" tmp1
+        sed -i -e "s;@\[FHMAX\];$FHMAX_GFS;g" tmp1
 fi
 if [ $cplchem = .true. ]; then
 	sed -i -e "s;@\[chem_model\];gsd;g" tmp1

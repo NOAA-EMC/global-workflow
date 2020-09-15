@@ -31,7 +31,6 @@ OCN_attributes::
   DumpFields = @[DumpFields]
   ProfileMemory = false
   OverwriteSlice = true
-  dbug_flag = 0
 ::
 
 # ICE #
@@ -42,7 +41,10 @@ ICE_attributes::
   DumpFields = @[DumpFields]
   ProfileMemory = false
   OverwriteSlice = true
-  dbug_flag = 0 
+  mesh_ice = @[MESHICE]
+  stop_n = @[FHMAX]
+  stop_option = nhours
+  stop_ymd = -999
 ::
 
 # WAV #
@@ -109,4 +111,6 @@ ALLCOMP_attributes::
       restart_n = @[restart_interval_hours]
       restart_option = nhours
       restart_ymd = -999
+      dbug_flag = 0
+      use_coldstart = .true.
 ::
