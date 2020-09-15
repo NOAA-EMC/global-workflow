@@ -63,6 +63,7 @@ if [[ ! -d ufs_utils.fd ]] ; then
     cd ufs_utils.fd
     # git checkout ops-gefsv12.0.1
     git checkout 7371eda
+    git submodule update --init --recursive
     cd ${topdir}
 else
     echo 'Skip.  Directory ufs_utils.fd already exists.'
