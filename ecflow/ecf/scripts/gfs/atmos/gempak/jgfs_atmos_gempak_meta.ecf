@@ -45,6 +45,7 @@ export ROTDIR=%COM%/$NET/$envir
 export cyc=%CYC%
 export cycle=t%CYC%z
 export COMIN=$COM_IN/${RUN}.${PDY}/${cyc}/${COMPONENT}/gempak
+export COMINgempak=$COM_IN
 export COMOUT=$COM_IN/${RUN}.${PDY}/${cyc}/${COMPONENT}/gempak/meta
 export USE_CFP=YES
 export CDATE=$PDY$cyc

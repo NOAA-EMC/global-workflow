@@ -51,7 +51,7 @@ export USE_CFP=YES
 ############################################################
 # CALL executable job script here
 ############################################################
-${HOMEgfs}/jobs/JGLOBAL_ENKF_ANALDIAG
+${HOMEgfs}/jobs/JGDAS_ENKF_DIAG
 
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"

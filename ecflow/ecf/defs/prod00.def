@@ -1,8 +1,8 @@
 extern /prod18/gdas/jgdas_forecast
 extern /prod18/gdas/atmos/post/gdas_post
-extern /prod18/gdas/enkf/atmos/post
+extern /prod18/gdas/enkf/post
 #### ecen
-extern /prod18/gdas/atmos/post_processing/jgdas_chgres_forenkf
+extern /prod18/gdas/atmos/post_processing/jgdas_atmos_chgres_forenkf
 
 suite prod00
   repeat day 1
@@ -2229,19 +2229,19 @@ suite prod00
       endfamily
       family post
         task jgfs_wave_postsbs
-          trigger ../../jgfs_forecast == complete
+          trigger ../../atmos/post/jgfs_atmos_post_manager:release_post000
         task jgfs_wave_postpnt
           trigger ../../jgfs_forecast == complete
         task jgfs_wave_post_bndpnt
           trigger ../../atmos/post/jgfs_atmos_post_manager:release_post192
         task jgfs_wave_prdgen_gridded
-          trigger ./jgfs_wave_postsbs == complete
+          trigger ./jgfs_wave_postsbs == active or ./jgfs_wave_postsbs == complete 
         task jgfs_wave_prdgen_bulls
           trigger ./jgfs_wave_postpnt == complete
       endfamily
       family gempak
         task jgfs_wave_gempak
-          trigger ../post/jgfs_wave_postsbs == complete
+          trigger ../post/jgfs_wave_postsbs == active or ../post/jgfs_wave_postsbs == complete
       endfamily
     endfamily
     task jgfs_forecast
@@ -2404,7 +2404,7 @@ suite prod00
       endfamily
       family post
         task jgdas_wave_postsbs
-          trigger ../../jgdas_forecast == complete
+          trigger ../../atmos/post/jgdas_atmos_post_manager:release_post000
         task jgdas_wave_postpnt
           trigger ../../jgdas_forecast == complete
       endfamily
@@ -2415,7 +2415,7 @@ suite prod00
       family analysis
         family create
           task jgdas_enkf_select_obs
-            trigger ../../../atmos/obsproc/prep/jgdas_atmos_prep == complete and /prod18/gdas/enkf/atmos/post == complete
+            trigger ../../../atmos/obsproc/prep/jgdas_atmos_prep == complete and /prod18/gdas/enkf/post == complete
           task jgdas_enkf_diag
             trigger ./jgdas_enkf_select_obs == complete
           task jgdas_enkf_update

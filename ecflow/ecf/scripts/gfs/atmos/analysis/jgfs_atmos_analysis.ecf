@@ -65,7 +65,7 @@ export PREINP=''
 ############################################################
 # CALL executable job script here
 ############################################################
-${HOMEgfs}/jobs/JGLOBAL_ANALYSIS
+${HOMEgfs}/jobs/JGLOBAL_ATMOS_ANALYSIS
 
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"

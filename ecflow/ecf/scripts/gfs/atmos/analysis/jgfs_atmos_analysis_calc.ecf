@@ -53,7 +53,7 @@ export USE_CFP=YES
 ############################################################
 # CALL executable job script here
 ############################################################
-${HOMEgfs}/jobs/JGLOBAL_ANALCALC
+${HOMEgfs}/jobs/JGLOBAL_ATMOS_ANALCALC
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
    ecflow_client --abort

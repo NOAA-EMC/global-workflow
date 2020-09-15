@@ -51,7 +51,7 @@ export COMOUT=$COM_IN/${RUN}.${PDY}/${cyc}/${COMPONENT}
 export USE_CFP=YES
 export CDATE=$PDY$cyc
 export SHOUR=06
-export EHOUR=36
+export EHOUR=120
 export FHINC=03
 
 ############################################################

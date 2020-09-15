@@ -55,7 +55,7 @@ export HOMEgfs_ozn=$HOMEgfs
 ############################################################
 # CALL executable job script here
 ############################################################
-$HOMEgfs/jobs/JGDAS_VERFOZN
+$HOMEgfs/jobs/JGDAS_ATMOS_VERFOZN
 
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"

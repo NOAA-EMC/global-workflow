@@ -29,8 +29,12 @@ model=gfs
 ############################################################
 ## Load modules
 ############################################################
-#### change this after developer report on module list detail
-. ${HOMEgfs}/ush/load_fv3gfs_modules.sh
+module load lsf/${lsf_ver}
+module load impi/${impi_ver}
+module load prod_util/${prod_util_ver}
+module load prod_envir/${prod_envir_ver}
+module use -a /usrx/local/nceplibs/dev/NCEPLIBS/modulefiles
+module load CFP/${CFP_ver}
 
 module list
 
