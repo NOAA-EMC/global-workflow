@@ -673,7 +673,15 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
         dep_dict = {'type': 'metatask', 'name': '%spost' % cdump}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
-        task = wfu.create_wf_task('awips', cdump=cdump, envar=envars, dependency=dependencies)
+        fhrgrp = rocoto.create_envar(name='FHRGRP', value='#grp#')
+        fhrlst = rocoto.create_envar(name='FHRLST', value='#lst#')
+        ROTDIR = rocoto.create_envar(name='ROTDIR', value='&ROTDIR;')
+        awipsenvars = envars + [fhrgrp] + [fhrlst] + [ROTDIR]
+        varname1, varname2, varname3 = 'grp', 'dep', 'lst'
+        varval1, varval2, varval3 = get_awipsgroups(dict_configs['awips'], cdump=cdump)
+        vardict = {varname2: varval2, varname3: varval3}
+        task = wfu.create_wf_task('awips', cdump=cdump, envar=awipsenvars, dependency=dependencies,
+                                  metatask='awips', varname=varname1, varval=varval1, vardict=vardict)
 
         dict_tasks['%sawips' % cdump] = task
 
