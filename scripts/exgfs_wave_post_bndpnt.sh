@@ -321,6 +321,10 @@
   touch cmdfile
   chmod 744 cmdfile
 
+  rm -f cmdfile.bouy
+  touch cmdfile.bouy
+  chmod 744 cmdfile.bouy
+
 # 2.a.1 Loop over forecast time to generate post files 
 # When executed side-by-side, serial mode (cfp when run after the fcst step)
   fhr=$FHMIN_WAV
@@ -334,11 +338,6 @@
     HMS="$(echo $ymdh | cut -c9-10)0000"
     YMDHMS=${YMD}${HMS}
     FH3=$(printf %03i $fhr)
-
-    fcmdnow=cmdfile.${FH3}
-    rm -f ${fcmdnow} 
-    touch ${fcmdnow}
-    chmod 744 ${fcmdnow}
 
     mkdir output_$YMDHMS
     cd output_$YMDHMS
@@ -362,26 +361,41 @@
 
     cd $DATA
     export dtspec=3600.
-    for buoy in $ibpoints
-    do
-      echo "$USHwave/wave_outp_spec.sh $buoy $ymdh ibp $SPECDATA > $SPECDATA/ibp_$buoy.out 2>&1" >> ${fcmdnow}
-    done
-    echo "cd $DATA"
-
-    echo "${fcmdnow}" >> cmdfile 
 
     FHINCP=$(( DTPNT_WAV / 3600 ))
     if [ $fhr = $fhrp ]
     then
       fhrp=$((fhr+FHINCP))
     fi
-    echo $fhrp
 
     fhr=$fhrp # no gridded output, loop with out_pnt stride
 
   done
-  echo "   create first round of cmdfiles JDM : `date`"
 
+  export dtspec=3600.
+  for buoy in $ibpoints
+  do
+    fhr=$FHMIN_WAV
+    fhrp=$fhr
+    while [ $fhr -le $FHMAX_WAV_IBP ]; do
+      ymdh=`$NDATE $fhr $CDATE`
+      YMD=$(echo $ymdh | cut -c1-8)
+      HMS="$(echo $ymdh | cut -c9-10)0000"
+      YMDHMS=${YMD}${HMS}
+      export SPECDATA=${DATA}/output_$YMDHMS
+
+      echo "$USHwave/wave_outp_spec.sh $buoy $ymdh ibp $SPECDATA > $SPECDATA/ibp_$buoy.out 2>&1" >> cmdfile
+
+      if [ $fhr = $fhrp ]
+      then
+        fhrp=$((fhr+FHINCP))
+      fi
+      fhr=$fhrp # no gridded output, loop with out_pnt stride
+    done
+    echo "$USHwave/wave_outp_cat.sh $buoy $FHMAX_WAV_IBP ibp > $DATA/ibp_cat_$buoy.out 2>&1" >> cmdfile.bouy
+  done
+
+  echo "   create first round of cmdfiles JDM : `date`"
 
   if [ ${CFP_MP:-"NO"} = "YES" ]; then
     nfile=0
@@ -453,15 +467,6 @@
 
   cd $DATA
 
-  rm -f cmdfile.bouy
-  touch cmdfile.bouy
-  chmod 744 cmdfile.bouy
-
-  for buoy in $ibpoints
-  do
-    echo "$USHwave/wave_outp_cat.sh $buoy $FHMAX_WAV_IBP ibp > $DATA/ibp_cat_$buoy.out 2>&1" >> cmdfile.bouy
-  done
-
   if [ ${CFP_MP:-"NO"} = "YES" ]; then
     nfile=0
     ifile=0
@@ -475,7 +480,7 @@
       else
         if [ "$ifirst" = 'yes' ]; then
           echo "#!/bin/sh" > cmdfile.bouy.$nfile
-          echo "$nfile cmdfile.bouy.$nfile" >> cmdmprog
+          echo "$nfile cmdfile.bouy.$nfile" >> cmdmprogbouy
           chmod 744 cmdfile.bouy.$nfile
         fi
         echo $line >> cmdfile.bouy.$nfile
@@ -502,7 +507,7 @@
   if [ "$wavenproc" -gt '1' ]
   then
     if [ ${CFP_MP:-"NO"} = "YES" ]; then
-      ${wavempexec} -n ${wavenproc} ${wave_mpmd} cmdfile.bouy
+      ${wavempexec} -n ${wavenproc} ${wave_mpmd} cmdmprogbouy
     else
       ${wavempexec} ${wavenproc} ${wave_mpmd} cmdfile.bouy
     fi
