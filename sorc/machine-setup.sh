@@ -24,14 +24,14 @@ if [[ -d /work ]] ; then
     # We are on MSU Orion
     if ( ! eval module help > /dev/null 2>&1 ) ; then
         echo load the module command 1>&2
-        source /apps/lmod/init/$__ms_shell
+        source /apps/lmod/lmod/init/$__ms_shell
     fi
     target=orion
     module purge
     module load intel/2018.4
     module load impi/2018.4
     export NCEPLIBS=/apps/contrib/NCEPLIBS/orion
-    export WRFPATH=$NCEPLIBS/wrf.shared.new/v1.1.1/src
+    #export WRFPATH=$NCEPLIBS/wrf.shared.new/v1.1.1/src
     module use $NCEPLIBS/modulefiles
     export myFC=mpiifort
     export FCOMP=mpiifort

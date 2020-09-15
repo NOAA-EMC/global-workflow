@@ -56,7 +56,10 @@ export COMOUT=${COMOUT:-${COMOUTwave}/${COMPONENTwave}.${PDY}/${cyc}}
 
 mkdir -p $COMOUT/gridded
 mkdir -p $COMOUT/station
-mkdir -p $COMOUT/stats
+
+# Set mpi serial command
+export wavempexec=${launcher:-"mpirun -n"}
+export wave_mpmd=${mpmd:-"cfp"}
 
 env | sort
 

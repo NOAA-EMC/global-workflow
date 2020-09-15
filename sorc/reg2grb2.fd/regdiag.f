@@ -377,7 +377,7 @@ contains
 !           check why fac=-8.64e6 for evap minus precip 
 !-------------------------------------------------------------------
       data fac/    0.0, 0.001,1.0,1.0,    1.0,    1.0,    1.0,1.0,1.0,1.0, &
-                   1.0,273.15,1.0,1.0,-8.64e6,    1.0,    1.0,1.0,1.0,1.0, &
+                   1.0,273.15,1.0,1.0,-8.64e3,    1.0,    1.0,1.0,1.0,1.0, &
                    1.0,   1.0,1.0,1.0,    1.0,    1.0,    1.0,1.0,1.0,1.0, &
                    1.0,   1.0,1.0,1.0,    1.0,    1.0,    1.0/
 
@@ -784,10 +784,11 @@ contains
       endif
 ! pme
       if (nv.eq.15) then
-       varsfc=pme
+       varsfc=lprec-evap !pme
        do j=1,jm
        do i=1,im
-          if (varsfc(i,j) .LE. spv_pme) varsfc(i,j)=undef
+!          if (varsfc(i,j) .LE. spv_pme) varsfc(i,j)=undef
+          if (lprec(i,j) .LE. spv_pme) varsfc(i,j)=undef
        enddo
        enddo
       endif
