@@ -8,6 +8,6 @@ status=$?
 
 ###############################################################
 # Execute the JJOB
-$HOMEgfs/jobs/JGLOBAL_ENKF_ANALDIAG
+$HOMEgfs/jobs/JGDAS_ENKF_DIAG
 status=$?
 exit $status

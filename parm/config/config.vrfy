@@ -103,7 +103,7 @@ if [ $VRFYRAD = "YES" -o $VRFYMINMON = "YES" -o $VRFYOZN = "YES" ]; then
 
         export RADMON_SUFFIX=$PSLOT
         export TANKverf="$NOSCRUB/monitor/radmon"
-        export VRFYRADSH="$HOMEgfs/jobs/JGDAS_VERFRAD"
+        export VRFYRADSH="$HOMEgfs/jobs/JGDAS_ATMOS_VERFRAD"
 
     fi
 
@@ -113,9 +113,9 @@ if [ $VRFYRAD = "YES" -o $VRFYMINMON = "YES" -o $VRFYOZN = "YES" ]; then
         export MINMON_SUFFIX=$PSLOT
         export M_TANKverf="$NOSCRUB/monitor/minmon"
         if [[ "$CDUMP" = "gdas" ]] ; then
-            export VRFYMINSH="$HOMEgfs/jobs/JGDAS_VMINMON"
+            export VRFYMINSH="$HOMEgfs/jobs/JGDAS_ATMOS_VMINMON"
         elif [[ "$CDUMP" = "gfs" ]] ; then
-            export VRFYMINSH="$HOMEgfs/jobs/JGFS_VMINMON"
+            export VRFYMINSH="$HOMEgfs/jobs/JGFS_ATMOS_VMINMON"
         fi
 
     fi
@@ -126,7 +126,7 @@ if [ $VRFYRAD = "YES" -o $VRFYMINMON = "YES" -o $VRFYOZN = "YES" ]; then
         export HOMEgfs_ozn="$HOMEgfs"
         export OZNMON_SUFFIX=$PSLOT
         export TANKverf_ozn="$NOSCRUB/monitor/oznmon"
-        export VRFYOZNSH="$HOMEgfs/jobs/JGDAS_VERFOZN"
+        export VRFYOZNSH="$HOMEgfs/jobs/JGDAS_ATMOS_VERFOZN"
 
     fi
 
