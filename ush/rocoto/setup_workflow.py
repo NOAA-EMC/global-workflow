@@ -238,7 +238,6 @@ def get_gdasgfs_resources(dict_configs, cdump='gdas'):
     do_metp = base.get('DO_METP', 'NO').upper()
     do_gldas = base.get('DO_GLDAS', 'NO').upper()
     do_wave = base.get('DO_WAVE', 'NO').upper()
-    do_waveprdgen = base.get('DO_WAVEPRDGEN', 'NO').upper()
     do_wave_cdump = base.get('WAVE_CDUMP', 'BOTH').upper()
     reservation = base.get('RESERVATION', 'NONE').upper()
 
@@ -761,6 +760,14 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
     deps.append(rocoto.add_dependency(dep_dict))
     dep_dict = {'type': 'streq', 'left': '&ARCHIVE_TO_HPSS;', 'right': 'YES'}
     deps.append(rocoto.add_dependency(dep_dict))
+    if do_wave in ['Y', 'YES']:
+      dep_dict = {'type': 'task', 'name': '%swavepostsbs' % cdump}
+      deps.append(rocoto.add_dependency(dep_dict))
+      dep_dict = {'type': 'task', 'name': '%swavepostpnt' % cdump}
+      deps.append(rocoto.add_dependency(dep_dict))
+      if cdump in ['gfs']:
+        dep_dict = {'type': 'task', 'name': '%swavepostbndpnt' % cdump}
+        deps.append(rocoto.add_dependency(dep_dict))
     dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
     task = wfu.create_wf_task('arch', cdump=cdump, envar=envars, dependency=dependencies)
 

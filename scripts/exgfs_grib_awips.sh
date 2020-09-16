@@ -38,7 +38,7 @@ then
    echo ""
 else
    echo ""
-   echo " Number of arguments were not passed "
+   echo " FATAL ERROR: Number of arguments were not passed."
    echo ""
    echo ""
    echo "Usage: $0  \$fcsthrs  (3-digit) "
