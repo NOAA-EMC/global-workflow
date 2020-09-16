@@ -570,7 +570,8 @@ WW3_nml()
 WW3_out()
 {
 	echo "SUB ${FUNCNAME[0]}: Copying output data for WW3"
-	# soft link commands insert here
+        $NCP $DATA/ww3_multi.inp $ROTDIR/${COMPONENTwave}.${PDY}/${cyc}/
+        $NCP $DATA/mod_def.* $ROTDIR/${COMPONENTwave}.${PDY}/${cyc}/
 }
 
 MOM6_postdet()

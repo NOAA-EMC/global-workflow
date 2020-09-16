@@ -118,7 +118,7 @@ config_base:
     export ROTDIR="{doc.places.ROTDIR}"
     export ROTDIR_DUMP="YES"
     export DUMP_SUFFIX="{doc.settings.DUMP_SUFFIX}"
-    export RUNDIR="{doc.places.DATAROOT}"
+    export RUNDIR="{doc.places.RUNDIR}"
     export ARCDIR="$NOSCRUB/archive/$PSLOT"
     export ICSDIR="{doc.places.ICSDIR}"
     export ATARDIR="{doc.archiving.ATARDIR}"
