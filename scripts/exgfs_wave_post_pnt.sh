@@ -42,7 +42,7 @@
 
   # Set wave model ID tag to include member number
   # if ensemble; waveMEMB var empty in deterministic
-  export WAV_MOD_TAG=${CDUMP}wave${waveMEMB}
+  export WAV_MOD_TAG=${RUN}${COMPONENT}${waveMEMB} 
 
   postmsg "$jlogfile" "HAS BEGUN on `hostname`"
 
