@@ -746,6 +746,7 @@ CICE_postdet()
         echo "Link CICE fixed files"
         $NLN -sf $FIXcice/${ice_grid_file} $DATA/
         $NLN -sf $FIXcice/${ice_kmt_file} $DATA/
+        $NLN -sf $FIXcice/$MESHICE $DATA/
 }
 
 CICE_nml()

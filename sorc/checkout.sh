@@ -16,7 +16,7 @@ rm -f ${topdir}/checkout-fv3_coupled.log
 if [[ ! -d fv3_coupled.fd ]] ; then
     git clone https://github.com/ufs-community/ufs-s2s-model fv3_coupled.fd >> ${topdir}/checkout-fv3_coupled.log 2>&1
     cd fv3_coupled.fd
-    git checkout d7b7081f410eb84902a43c7479e14d44dfed0144 
+    git checkout s2s_prototype5.0
     git submodule update --init --recursive
     cd ${topdir}
 else
