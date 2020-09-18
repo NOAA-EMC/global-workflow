@@ -19,8 +19,23 @@ fi
 target=""
 USERNAME=`echo $LOGNAME | awk '{ print tolower($0)'}`
 ##---------------------------------------------------------------------------
-export hname=`hostname | cut -c 1,1`
-if [[ -d /work ]] ; then
+export hname=`hostname -d`
+if [[ $hname = 'stampede2.tacc.utexas.edu' ]] ; then
+    # We are on MSU Orion
+    if ( ! eval module help > /dev/null 2>&1 ) ; then
+        echo load the module command 1>&2
+        source /apps/lmod/lmod/init/$__ms_shell
+    fi
+    target=stampede2
+    module purge
+    module use /work/07738/kgerheis/stampede2/hpc-stack/v1.0.0-beta1/modulefiles/stack
+    module load hpc/1.0.0-beta1
+    module load hpc-intel/18.0.2
+    module load impi/18.0.2
+    export myFC=mpiifort
+    export FCOMP=mpiifort
+
+elif [[ $hname = 'HPC.MsState.Edu' ]] ; then
     # We are on MSU Orion
     if ( ! eval module help > /dev/null 2>&1 ) ; then
         echo load the module command 1>&2
