@@ -56,11 +56,11 @@ generate a 3-day run case (test_3d) starting from 2016040100. From the /workflow
 ```
 mkdir -p $EXPROOT
 (Note that $EXPROOT is the experiment directory that has been set in the user.yaml file.)
-./setup_case.sh -p HERA coupled_free_forecast test_3d
+./setup_case.sh -p HERA prototype-5 test_3d
 
 or
 
-./setup_case.sh -p HERA ../cases/coupled_free_forecast.yaml test_3d
+./setup_case.sh -p HERA ../cases/prototype_5.yaml prototype_5_exp
 
 
 For Orion: 
