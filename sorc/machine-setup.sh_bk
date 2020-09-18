@@ -43,10 +43,10 @@ elif [[ $hname = 'HPC.MsState.Edu' ]] ; then
     fi
     target=orion
     module purge
-    export NCEPLIBS=/apps/contrib/NCEP/libs/modulefiles/stack
-    module load hpc/1.0.0-beta1
-    module load hpc-intel/18.0.2
-    module load impi/18.0.2
+    module load intel/2018.4
+    module load impi/2018.4
+    export NCEPLIBS=/apps/contrib/NCEPLIBS/orion
+    #export WRFPATH=$NCEPLIBS/wrf.shared.new/v1.1.1/src
     module use $NCEPLIBS/modulefiles
     export myFC=mpiifort
     export FCOMP=mpiifort
