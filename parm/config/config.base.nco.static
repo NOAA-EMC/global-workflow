@@ -121,9 +121,10 @@ export REDERR="2>"
 
 export SENDECF=${SENDECF:-"NO"}
 export SENDCOM=${SENDCOM:-"YES"}
-export SENDDBN=${SENDDBN:-"YES"}
-export SENDDBN_NTC=${SENDDBN_NTC:-"YES"}
 export SENDSDM=${SENDSDM:-"NO"}
+export SENDDBN_NTC=${SENDDBN_NTC:-"YES"}
+export SENDDBN=${SENDDBN:-"YES"}
+export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
 # Resolution specific parameters
 export LEVS=128

@@ -233,7 +233,7 @@ for gsiexe in  calc_analysis.x calc_increment_ens_ncio.x calc_increment_ens.x \
     $LINK ../sorc/gsi.fd/exec/$gsiexe .
 done
 
-for gldasexe in gdas2gldas  gldas2gdas  gldas_forcing  gldas_noah gldas_noah_rst  gldas_post; do
+for gldasexe in gdas2gldas  gldas2gdas  gldas_forcing  gldas_model  gldas_post  gldas_rst; do
     [[ -s $gldasexe ]] && rm -f $gldasexe
     $LINK ../sorc/gldas.fd/exec/$gldasexe .
 done
