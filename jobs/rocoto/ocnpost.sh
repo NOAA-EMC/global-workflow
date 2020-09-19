@@ -40,6 +40,9 @@ export pid=${pid:-$$}
 export outid=${outid:-"LL$job"}
 export jobid=${jobid:-"${outid}.o${pid}"}
 
+export DATAROOT="$RUNDIR/$CDATE/$CDUMP"
+[[ ! -d $DATAROOT ]] && mkdir -p $DATAROOT
+
 export DATA="$DATAROOT/${job}.${pid}"
 # DATA dir not used for now.
 

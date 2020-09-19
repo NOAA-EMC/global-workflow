@@ -20,6 +20,9 @@ set -x
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
+export DATAROOT="$RUNDIR/$CDATE/$CDUMP"
+[[ ! -d $DATAROOT ]] && mkdir -p $DATAROOT
+
 ###############################################################
 # Source relevant configs
 configs="base fv3ic wave"
