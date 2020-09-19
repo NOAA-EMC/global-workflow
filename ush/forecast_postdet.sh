@@ -497,7 +497,7 @@ if [ $SEND = "YES" ]; then
   fi
 fi
         
-$NCP -p $DATA/input.nml $COMOUT/
+$NCP $DATA/input.nml $ROTDIR/${CDUMP}.${PDY}/${cyc}/
 
 echo "SUB ${FUNCNAME[0]}: Output data for FV3 copied"
 }

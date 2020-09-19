@@ -101,7 +101,7 @@ config_base:
     export NMV="/bin/mv"
     export NLN="/bin/ln -sf"
     export VERBOSE="YES"
-    export KEEPDATA="{doc.settings.KEEPDATA}"
+    export KEEPDATA="{tools.YES_NO(doc.settings.KEEPDATA)}"
     export CHGRP_CMD="{doc.platform.CHGRP_RSTPROD_COMMAND}"
     export NEMSIOGET="$HOMEgfs/exec/nemsio_get"
 
