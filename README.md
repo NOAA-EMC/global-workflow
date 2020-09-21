@@ -56,12 +56,17 @@ generate a 3-day run case (test_3d) starting from 2016040100. From the /workflow
 ```
 mkdir -p $EXPROOT
 (Note that $EXPROOT is the experiment directory that has been set in the user.yaml file.)
-./setup_case.sh -p HERA prototype-5 test_3d
+./setup_case.sh -p HERA $CASE test2d
 
 or
 
-./setup_case.sh -p HERA ../cases/prototype_5.yaml prototype_5_exp
+./setup_case.sh -p HERA ../cases/$CASE.yaml test2d
 
+where $CASE is one of the following:
+- prototype_5: Used for UFS S2S Prototype 5 (Runs 35 day cases with atm-ocn-ice-wav coupling)
+- coupled_free_forecast: 2 day tests for atm-ocn-ice coupling 
+- coupled_free_forecast_wave: 2 day test for atm-ocn-ice-wav coupling (same as p5 except shorter) 
+- atm_free_forecast:  Run the atm only case with same ICs as coupled tests 
 
 For Orion: 
 First make sure you have python loaded: 
