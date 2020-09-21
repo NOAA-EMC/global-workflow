@@ -43,6 +43,7 @@
   # if ensemble; waveMEMB var empty in deterministic
   export WAV_MOD_TAG=${CDUMP}wave${waveMEMB}
   FHMAX_WAV_IBP=192
+  FHMAX_WAV_IBP=180
 
   postmsg "$jlogfile" "HAS BEGUN on `hostname`"
 
@@ -83,6 +84,7 @@
   fi
   mkdir -p ${STA_DIR}
   mkdir -p ${STA_DIR}/ibp
+  mkdir -p ${STA_DIR}/ibpfhr
 
   set +x
   echo ' '
@@ -106,6 +108,8 @@
 # 1.a Model definition files and output files (set up using poe) 
 
 # 1.a.1 Set up the parallel command tasks
+
+  echo "Make More CMDFILE parts: `date`"
 
   rm -f cmdfile
   touch cmdfile
@@ -321,23 +325,25 @@
   touch cmdfile
   chmod 744 cmdfile
 
-  rm -f cmdfile.bouy
-  touch cmdfile.bouy
-  chmod 744 cmdfile.bouy
-
 # 2.a.1 Loop over forecast time to generate post files 
 # When executed side-by-side, serial mode (cfp when run after the fcst step)
   fhr=$FHMIN_WAV
   fhrp=$fhr
+  echo " Starting processing wave boundary points for FHR=$fhr at: `date`"
+
   while [ $fhr -le $FHMAX_WAV_IBP ]; do
     
-    echo " Starting processing wave boundary points for FHR=$fhr at: `date`"
+    #echo " Starting processing wave boundary points for FHR=$fhr at: `date`"
 
     ymdh=`$NDATE $fhr $CDATE`
     YMD=$(echo $ymdh | cut -c1-8)
     HMS="$(echo $ymdh | cut -c9-10)0000"
     YMDHMS=${YMD}${HMS}
     FH3=$(printf %03i $fhr)
+
+
+    rm -f tmpcmdfile.$FH3
+    touch tmpcmdfile.$FH3 
 
     mkdir output_$YMDHMS
     cd output_$YMDHMS
@@ -361,6 +367,34 @@
 
     cd $DATA
     export dtspec=3600.
+    for buoy in $ibpoints
+    do
+      echo "$USHwave/wave_outp_spec.sh $buoy $ymdh ibp $SPECDATA > $SPECDATA/ibp_$buoy.out 2>&1" >> tmpcmdfile.$FH3
+    done
+    split -n l/1/10  tmpcmdfile.$FH3 > cmdfile.${FH3}.01
+    split -n l/2/10  tmpcmdfile.$FH3 > cmdfile.${FH3}.02
+    split -n l/3/10  tmpcmdfile.$FH3 > cmdfile.${FH3}.03
+    split -n l/4/10  tmpcmdfile.$FH3 > cmdfile.${FH3}.04
+    split -n l/5/10  tmpcmdfile.$FH3 > cmdfile.${FH3}.05
+    split -n l/6/10  tmpcmdfile.$FH3 > cmdfile.${FH3}.06
+    split -n l/7/10  tmpcmdfile.$FH3 > cmdfile.${FH3}.07
+    split -n l/8/10  tmpcmdfile.$FH3 > cmdfile.${FH3}.08
+    split -n l/9/10  tmpcmdfile.$FH3 > cmdfile.${FH3}.09
+    split -n l/10/10 tmpcmdfile.$FH3 > cmdfile.${FH3}.10
+    rm tmpcmdfile.$FH3
+    chmod 744 cmdfile.${FH3}.01 cmdfile.${FH3}.02 cmdfile.${FH3}.03 cmdfile.${FH3}.04
+    chmod 744 cmdfile.${FH3}.05 cmdfile.${FH3}.06 cmdfile.${FH3}.07 cmdfile.${FH3}.08
+    chmod 744 cmdfile.${FH3}.09 cmdfile.${FH3}.10 
+    echo "$DATA/cmdfile.${FH3}.01" >> cmdfile
+    echo "$DATA/cmdfile.${FH3}.02" >> cmdfile
+    echo "$DATA/cmdfile.${FH3}.03" >> cmdfile
+    echo "$DATA/cmdfile.${FH3}.04" >> cmdfile
+    echo "$DATA/cmdfile.${FH3}.05" >> cmdfile
+    echo "$DATA/cmdfile.${FH3}.06" >> cmdfile
+    echo "$DATA/cmdfile.${FH3}.07" >> cmdfile
+    echo "$DATA/cmdfile.${FH3}.08" >> cmdfile
+    echo "$DATA/cmdfile.${FH3}.09" >> cmdfile
+    echo "$DATA/cmdfile.${FH3}.10" >> cmdfile
 
     FHINCP=$(( DTPNT_WAV / 3600 ))
     if [ $fhr = $fhrp ]
@@ -372,30 +406,7 @@
 
   done
 
-  export dtspec=3600.
-  for buoy in $ibpoints
-  do
-    fhr=$FHMIN_WAV
-    fhrp=$fhr
-    while [ $fhr -le $FHMAX_WAV_IBP ]; do
-      ymdh=`$NDATE $fhr $CDATE`
-      YMD=$(echo $ymdh | cut -c1-8)
-      HMS="$(echo $ymdh | cut -c9-10)0000"
-      YMDHMS=${YMD}${HMS}
-      export SPECDATA=${DATA}/output_$YMDHMS
-
-      echo "$USHwave/wave_outp_spec.sh $buoy $ymdh ibp $SPECDATA > $SPECDATA/ibp_$buoy.out 2>&1" >> cmdfile
-
-      if [ $fhr = $fhrp ]
-      then
-        fhrp=$((fhr+FHINCP))
-      fi
-      fhr=$fhrp # no gridded output, loop with out_pnt stride
-    done
-    echo "$USHwave/wave_outp_cat.sh $buoy $FHMAX_WAV_IBP ibp > $DATA/ibp_cat_$buoy.out 2>&1" >> cmdfile.bouy
-  done
-
-  echo "   create first round of cmdfiles JDM : `date`"
+  echo "Make More CMDFILE parts: `date`"
 
   if [ ${CFP_MP:-"NO"} = "YES" ]; then
     nfile=0
@@ -467,6 +478,19 @@
 
   cd $DATA
 
+  echo "Before create cmdfile for cat bouy : `date`"
+  rm -f cmdfile.bouy
+  touch cmdfile.bouy
+  chmod 744 cmdfile.bouy
+  CATOUTDIR=${DATA}/ibp_cat_out
+  mkdir -p ${CATOUTDIR}
+  for buoy in $ibpoints
+  do
+    echo "$USHwave/wave_outp_cat.sh $buoy $FHMAX_WAV_IBP ibp > ${CATOUTDIR}/ibp_cat_$buoy.out 2>&1" >> cmdfile.bouy
+  done
+
+  echo "Make More CMDFILE parts: `date`"
+
   if [ ${CFP_MP:-"NO"} = "YES" ]; then
     nfile=0
     ifile=0
@@ -499,7 +523,7 @@
 
   set +x
   echo ' '
-  echo "   Executing the boundary point scripts at : `date`"
+  echo "   Executing the boundary point cat script at : `date`"
   echo '   ------------------------------------'
   echo ' '
   [[ "$LOUD" = YES ]] && set -x
@@ -564,6 +588,10 @@
   chmod 744 cmdtarfile
   ./cmdtarfile
   exit=$?
+
+##delete me. temporary: 
+  cat ${WAV_MOD_TAG}_ibp_tar.out
+##delete me. temporary: 
 
   if [ "$exit" != '0' ]
   then

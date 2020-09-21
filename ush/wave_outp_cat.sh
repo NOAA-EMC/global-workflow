@@ -35,7 +35,6 @@
   MAXHOUR=$2
   specdir=$3
 
-
 # 0.b Check if buoy location set
 
   if [ "$#" -lt '1' ]
@@ -95,10 +94,10 @@
     ymdh=`$NDATE $fhr $CDATE`
     if [ "$specdir" = "bull" ]
     then
-      outfilefhr=${STA_DIR}/${specdir}/$WAV_MOD_TAG.${ymdh}.$buoy.bull
-      coutfilefhr=${STA_DIR}/c${specdir}/$WAV_MOD_TAG.${ymdh}.$buoy.cbull
+      outfilefhr=${STA_DIR}/${specdir}fhr/$WAV_MOD_TAG.${ymdh}.$buoy.bull
+      coutfilefhr=${STA_DIR}/c${specdir}fhr/$WAV_MOD_TAG.${ymdh}.$buoy.cbull
     else 
-      outfilefhr=${STA_DIR}/${specdir}/$WAV_MOD_TAG.${ymdh}.$buoy.spec
+      outfilefhr=${STA_DIR}/${specdir}fhr/$WAV_MOD_TAG.${ymdh}.$buoy.spec
     fi 
 
     if [ -f $outfilefhr ]
@@ -110,7 +109,7 @@
         rm $outfilefhr $coutfilefhr
       else 
         cat $outfilefhr >> ${STA_DIR}/${specdir}/$WAV_MOD_TAG.$buoy.spec
-        rm $outfilefhr
+        #rm $outfilefhr
       fi
     else
       set +x
