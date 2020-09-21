@@ -38,15 +38,15 @@ case:
     DO_SPPT: false
     layout:
        x: 6
-       y: 8
-       nth: 2
+       y: 12
+       nth: 1
        WGRP: 1
        WGRP_NTASKS: 24
        WRTIOBUF: "32M"
     cdmbgwd: "1.0,1.2"
 
   ocn_settings:
-    OCNPETS: 120
+    OCNPETS: 240
 
   ice_settings:
     ICEPETS: 48
