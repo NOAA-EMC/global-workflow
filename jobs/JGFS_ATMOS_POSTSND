@@ -63,7 +63,7 @@ env
 
 ########################################################
 # Execute the script.
-$SCRbufrsnd/exgfs_postsnd.sh
+$SCRbufrsnd/exgfs_atmos_postsnd.sh
 ########################################################
 
 if [ -e "$pgmout" ] ; then

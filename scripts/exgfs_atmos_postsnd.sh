@@ -1,6 +1,6 @@
 #!/bin/ksh
 ################################################################
-# Script Name:		exgfs_postsnd.sh.sms
+# Script Name:		exgfs_atmos_postsnd.sh.sms
 # Script Description:	Generate GFS BUFR sounding files
 # Script History Log:
 #   1) 2003-03-25       Hualu Pan       First Implementation
