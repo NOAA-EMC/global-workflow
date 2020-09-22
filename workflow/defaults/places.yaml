@@ -15,6 +15,7 @@ default_places: &default_places
 
   EXPDIR: !expand "{doc.platform.EXPROOT}/{doc.names.experiment}"
   ROTDIR: !expand "{doc.platform.COMROOT}/{doc.names.experiment}"
+  RUNDIR: !expand "{doc.platform.DATAROOT}/{doc.names.experiment}"
   ICSDIR: !expand "{ROTDIR}/FV3ICS"
   BASE_CPLIC: !calc doc.platform.BASE_CPLIC
   DATAROOT: !expand "{doc.platform.DATAROOT}/{doc.names.experiment}"

@@ -7,6 +7,9 @@ echo "=============== START TO SOURCE FV3GFS WORKFLOW MODULES ==============="
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
+export DATAROOT="$RUNDIR/$CDATE/$CDUMP"
+[[ ! -d $DATAROOT ]] && mkdir -p $DATAROOT
+
 ###############################################################
 echo
 echo "=============== START TO RUN WAVE POST_SBS ==============="
