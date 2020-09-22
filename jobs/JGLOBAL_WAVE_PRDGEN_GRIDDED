@@ -1,0 +1,52 @@
+#!/bin/bash
+
+date
+export PS4=' $SECONDS + '
+set -xa
+
+# PATH for working directory
+export NET=${NET:-gfs}
+export RUN=${RUN:-gfs}
+export COMPONENT=${COMPONENT:-wave}
+export HOMEgfs=${HOMEgfs:-$(dirname $(dirname $0))} # parent directory of current job card
+
+###################################
+# Set COM Paths
+###################################
+export COMIN=${COMIN:-$(compath.py ${NET}/${envir}/${RUN}.${PDY})/${cyc}/$COMPONENT}
+export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/$COMPONENT}
+export PCOM=${PCOM:-${COMOUT}/wmo}
+export SENDCOM=${SENDCOM:-YES}
+export SENDDBN_NTC=${SENDDBN_NTC:-YES}
+if [ $SENDCOM = YES ]; then
+  mkdir -p $COMOUT $PCOM
+fi
+
+export DATA=${DATA:-${DATAROOT}/${jobid:?}}
+mkdir -p $DATA
+cd $DATA
+
+######################################
+# Set up the cycle variable
+######################################
+export cycle=${cycle:-t${cyc}z}
+
+# Set PDY
+ setpdy.sh
+ . PDY
+ env
+
+###################################
+# Execute the Script  
+###################################
+$HOMEgfs/scripts/exgfs_wave_prdgen_gridded.sh
+
+###################################
+# Remove temp directories
+###################################
+if [ "$KEEPDATA" != "YES" ]; then
+  cd $DATAROOT
+  rm -rf $DATA
+fi
+date
+

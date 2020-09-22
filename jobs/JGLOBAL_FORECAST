@@ -70,12 +70,12 @@ if [ $RUN_ENVIR = "nco" ]; then
     export RSTDIR=${GESROOT:?}/$envir
 fi
 
-# Source additional configs
+# Set wave variables
 if [ ${DO_WAVE:-"NO"} = "YES" ]; then
-# WAVE component directory
-  export WAV_MOD_ID=${WAV_MOD_ID:-wave}
-  export COMINWW3=${COMINWW3:-${ROTDIR:?}}
-  export COMOUTWW3=${COMOUTWW3:-${ROTDIR:?}}
+  # WAVE component directory
+  export CDUMPwave=${CDUMPwave:-${CDUMP}wave}
+  export COMINwave=${COMINwave:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/wave}
+  export COMOUTwave=${COMOUTwave:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/wave}
 fi
 
 ##############################################
@@ -106,7 +106,7 @@ postmsg "$jlogfile" "$msg"
 $LOGSCRIPT
 
 
-${FORECASTSH:-$SCRgfs/exglobal_fcst_nemsfv3gfs.sh.ecf}
+${FORECASTSH:-$SCRgfs/exglobal_fcst_nemsfv3gfs.sh}
 status=$?
 [[ $status -ne 0 ]] && exit $status
 

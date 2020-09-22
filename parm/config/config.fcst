@@ -150,6 +150,8 @@ elif [ $imp_physics -eq 6 ]; then # WSM6
     export nwat=6
 
 elif [ $imp_physics -eq 8 ]; then # Thompson
+    export ncld=2
+    export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_thompson${tbf}"
     export nwat=6
     if [[ "$CCPP_SUITE" == "FV3_GSD_v0" || "$CCPP_SUITE" == "FV3_GSD_noah" ]] ; then
         export ncld=5
@@ -309,7 +311,11 @@ elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
     export adjust_dry_mass=".false."
 
     # Write each restart file in 16 small files to save time
-    #export io_layout="4,4"                   ## JKH
+    export io_layout="4,4"
+
+    # Set number of layers from the top over 
+    # which two delta-Z filter is applied
+    export n_sponge=42
 
     # Debug load balancing 
     #export KEEPDATA="YES"

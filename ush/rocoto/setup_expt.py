@@ -92,7 +92,6 @@ def edit_baseconfig():
                     .replace('@NMEM_ENKF@', '%d' % nens) \
                     .replace('@HOMEgfs@', top) \
                     .replace('@BASE_GIT@', base_git) \
-                    .replace('@BASE_SVN@', base_svn) \
                     .replace('@DMPDIR@', dmpdir) \
                     .replace('@NWPROD@', nwprod) \
                     .replace('@HOMEDIR@', homedir) \

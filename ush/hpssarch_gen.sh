@@ -21,6 +21,12 @@ else
   format="nemsio"
 fi
 
+# Set whether to archive downstream products
+DO_DOWN=${DO_DOWN:-"NO"}
+if [ $DO_BUFRSND = "YES" -o $WAFSF = "YES" ]; then
+  export DO_DOWN="YES"
+fi
+
 #-----------------------------------------------------
 if [ $type = "gfs" ]; then
 #-----------------------------------------------------
@@ -46,7 +52,12 @@ if [ $type = "gfs" ]; then
   touch gfs_${format}b.txt
   touch gfs_restarta.txt
 
-  dirpath="gfs.${PDY}/${cyc}/"
+  if [ $DO_DOWN = "YES" ]; then
+    rm -f gfs_downstream.txt
+    touch gfs_downstream.txt
+  fi
+
+  dirpath="gfs.${PDY}/${cyc}/atmos/"
   dirname="./${dirpath}"
 
   head="gfs.t${cyc}z."
@@ -57,6 +68,7 @@ if [ $type = "gfs" ]; then
   echo  "${dirname}${head}pgrb2b.0p50.anl                  " >>gfs_pgrb2b.txt
   echo  "${dirname}${head}pgrb2b.0p50.anl.idx              " >>gfs_pgrb2b.txt
 
+  echo  "./logs/${CDATE}/gfs*.log                          " >>gfsa.txt
   echo  "${dirname}${head}gsistat                          " >>gfsa.txt
   echo  "${dirname}${head}nsstbufr                         " >>gfsa.txt
   echo  "${dirname}${head}prepbufr                         " >>gfsa.txt
@@ -70,10 +82,26 @@ if [ $type = "gfs" ]; then
   echo  "${dirname}trak.gfso.atcfunix.altg.${PDY}${cyc}    " >>gfsa.txt
   echo  "${dirname}storms.gfso.atcf_gen.${PDY}${cyc}       " >>gfsa.txt
   echo  "${dirname}storms.gfso.atcf_gen.altg.${PDY}${cyc}  " >>gfsa.txt
-  echo  "${dirname}gempak/gfs_${PDY}${cyc}.sfc             " >>gfsa.txt
-  echo  "${dirname}gempak/gfs_${PDY}${cyc}.snd             " >>gfsa.txt
-  echo  "${dirname}bufr.t${cyc}z                           " >>gfsa.txt
-  echo  "./logs/${CDATE}/gfs*.log                          " >>gfsa.txt
+
+  if [ $DO_DOWN = "YES" ]; then
+   if [ $DO_BUFRSND = "YES" ]; then
+    echo  "${dirname}gempak/gfs_${PDY}${cyc}.sfc              " >>gfs_downstream.txt
+    echo  "${dirname}gempak/gfs_${PDY}${cyc}.snd              " >>gfs_downstream.txt
+    echo  "${dirname}wmo/gfs_collective*.postsnd_${cyc}       " >>gfs_downstream.txt
+    echo  "${dirname}bufr.t${cyc}z                            " >>gfs_downstream.txt
+    echo  "${dirname}gfs.t${cyc}z.bufrsnd.tar.gz              " >>gfs_downstream.txt
+   fi
+   if [ $WAFSF = "YES" ]; then
+    echo  "${dirname}wafsgfs*.t${cyc}z.gribf*.grib2           " >>gfs_downstream.txt
+    echo  "${dirname}gfs.t${cyc}z.wafs_grb45f*.grib2          " >>gfs_downstream.txt
+    echo  "${dirname}gfs.t${cyc}z.wafs_grb45f*.nouswafs.grib2 " >>gfs_downstream.txt
+    echo  "${dirname}WAFS_blended_${PDY}${cyc}f*.grib2        " >>gfs_downstream.txt
+    echo  "${dirname}gfs.t*z.gcip.f*.grib2                    " >>gfs_downstream.txt
+    echo  "${dirname}gfs.t${cyc}z.wafs_0p25.f*.grib2          " >>gfs_downstream.txt
+    echo  "${dirname}gfs.t${cyc}z.wafs_0p25_unblended.f*.grib2" >>gfs_downstream.txt
+    echo  "${dirname}WAFS_0p25_blended_${PDY}${cyc}f*.grib2   " >>gfs_downstream.txt
+   fi
+  fi
 
   echo  "${dirname}${head}pgrb2.0p50.anl                   " >>gfsb.txt
   echo  "${dirname}${head}pgrb2.0p50.anl.idx               " >>gfsb.txt
@@ -98,7 +126,7 @@ if [ $type = "gfs" ]; then
     echo  "${dirname}${head}pgrb2.0p25.f${fhr}.idx          " >>gfsa.txt
     echo  "${dirname}${head}logf${fhr}.txt                  " >>gfsa.txt
 
-    if [ -s $ROTDIR/${dirpath}}${head}pgrb2.0p50.f${fhr} ]; then
+    if [ -s $ROTDIR/${dirpath}${head}pgrb2.0p50.f${fhr} ]; then
        echo  "${dirname}${head}pgrb2.0p50.f${fhr}          " >>gfsb.txt
        echo  "${dirname}${head}pgrb2.0p50.f${fhr}.idx      " >>gfsb.txt
     fi
@@ -148,7 +176,7 @@ if [ $type = "gfs" ]; then
     rm -rf gfswave.txt
     touch gfswave.txt
 
-    dirpath="gfswave.${PDY}/${cyc}/"
+    dirpath="gfs.${PDY}/${cyc}/wave/"
     dirname="./${dirpath}"
 
     head="gfswave.t${cyc}z."
@@ -176,7 +204,7 @@ if [ $type = "gdas" ]; then
   touch gdas_restarta.txt
   touch gdas_restartb.txt
 
-  dirpath="gdas.${PDY}/${cyc}/"
+  dirpath="gdas.${PDY}/${cyc}/atmos/"
   dirname="./${dirpath}"
   head="gdas.t${cyc}z."
 
@@ -273,7 +301,7 @@ if [ $type = "gdas" ]; then
     rm -rf gdaswave_restart.txt
     touch gdaswave_restart.txt
 
-    dirpath="gdaswave.${PDY}/${cyc}/"
+    dirpath="gdas.${PDY}/${cyc}/wave/"
     dirname="./${dirpath}"
 
     head="gdaswave.t${cyc}z."
@@ -307,7 +335,7 @@ if [ $type = "enkfgdas" -o $type = "enkfgfs" ]; then
 ##NTARS2=$((NTARS/2))  # number of earc groups to include analysis/increments
   NTARS2=$NTARS
 
-  dirpath="enkf${CDUMP}.${PDY}/${cyc}/"
+  dirpath="enkf${CDUMP}.${PDY}/${cyc}/atmos/"
   dirname="./${dirpath}"
   head="${CDUMP}.t${cyc}z."
 
@@ -378,7 +406,7 @@ if [ $type = "enkfgdas" -o $type = "enkfgfs" ]; then
   while [ $m -le $NMEM_EARCGRP ]; do
     nm=$(((n-1)*NMEM_EARCGRP+m))
     mem=$(printf %03i $nm)
-    dirpath="enkf${CDUMP}.${PDY}/${cyc}/mem${mem}/"
+    dirpath="enkf${CDUMP}.${PDY}/${cyc}/atmos/mem${mem}/"
     dirname="./${dirpath}"
     head="${CDUMP}.t${cyc}z."
 
@@ -412,6 +440,9 @@ if [ $type = "enkfgdas" -o $type = "enkfgfs" ]; then
 
       fi 
       echo "${dirname}${head}atmf00${FHR}${SUFFIX}       " >>enkf${CDUMP}_grp${n}.txt
+      if [ $FHR -eq 6 ]; then
+	  echo "${dirname}${head}sfcf00${FHR}${SUFFIX}       " >>enkf${CDUMP}_grp${n}.txt
+      fi
     done # loop over FHR
 
     if [[ lobsdiag_forenkf = ".false." ]] ; then

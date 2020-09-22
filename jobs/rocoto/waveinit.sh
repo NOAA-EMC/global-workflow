@@ -11,7 +11,7 @@ status=$?
 echo
 echo "=============== START TO RUN WAVE INIT ==============="
 # Execute the JJOB
-$HOMEgfs/jobs/JWAVE_INIT
+$HOMEgfs/jobs/JGLOBAL_WAVE_INIT
 status=$?
 exit $status
 

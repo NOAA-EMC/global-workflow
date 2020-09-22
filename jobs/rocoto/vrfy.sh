@@ -39,10 +39,11 @@ status=$?
 [[ $status -ne 0 ]] && exit $status
 
 ###############################################################
+export COMPONENT=${COMPONENT:-atmos}
 export CDATEm1=$($NDATE -24 $CDATE)
 export PDYm1=$(echo $CDATEm1 | cut -c1-8)
 
-export COMIN="$ROTDIR/$CDUMP.$PDY/$cyc"
+export COMIN="$ROTDIR/$CDUMP.$PDY/$cyc/$COMPONENT"
 export DATAROOT="$RUNDIR/$CDATE/$CDUMP/vrfy"
 [[ -d $DATAROOT ]] && rm -rf $DATAROOT
 mkdir -p $DATAROOT
@@ -55,7 +56,7 @@ if [ $MKPGB4PRCP = "YES" -a $CDUMP = "gfs" ]; then
     nthreads_env=${OMP_NUM_THREADS:-1} # get threads set in env
     export OMP_NUM_THREADS=1
     cd $COMIN
-    fhmax=$vhr_rain
+    fhmax=${vhr_rain:-$FHMAX_GFS}
     fhr=0
     while [ $fhr -le $fhmax ]; do
        fhr2=$(printf %02i $fhr)
@@ -122,7 +123,7 @@ echo "=============== START TO RUN RADMON DATA EXTRACTION ==============="
 if [ $VRFYRAD = "YES" -a $CDUMP = $CDFNL -a $CDATE != $SDATE ]; then
 
     export EXP=$PSLOT
-    export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc"
+    export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc/$COMPONENT"
     export jlogfile="$ROTDIR/logs/$CDATE/${CDUMP}radmon.log"
     export TANKverf_rad="$TANKverf/stats/$PSLOT/$CDUMP.$PDY"
     export TANKverf_radM1="$TANKverf/stats/$PSLOT/$CDUMP.$PDYm1"
@@ -139,7 +140,7 @@ echo "=============== START TO RUN OZMON DATA EXTRACTION ==============="
 if [ $VRFYOZN = "YES" -a $CDUMP = $CDFNL -a $CDATE != $SDATE ]; then
 
     export EXP=$PSLOT
-    export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc"
+    export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc/$COMPONENT"
     export jlogfile="$ROTDIR/logs/$CDATE/${CDUMP}oznmon.log"
     export TANKverf_ozn="$TANKverf_ozn/stats/$PSLOT/$CDUMP.$PDY"
     export TANKverf_oznM1="$TANKverf_ozn/stats/$PSLOT/$CDUMP.$PDYm1"
@@ -155,7 +156,7 @@ echo
 echo "=============== START TO RUN MINMON ==============="
 if [ $VRFYMINMON = "YES" -a $CDATE != $SDATE ]; then
 
-    export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc"
+    export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc/$COMPONENT"
     export jlogfile="$ROTDIR/logs/$CDATE/${CDUMP}minmon.log"
     export M_TANKverfM0="$M_TANKverf/stats/$PSLOT/$CDUMP.$PDY"
     export M_TANKverfM1="$M_TANKverf/stats/$PSLOT/$CDUMP.$PDYm1"

@@ -47,12 +47,13 @@ export FIXgfs=${FIXgfs:-$HOMEgfs/fix}
 export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
 export model=${model:-gfs}
+export COMPONENT=${COMPONENT:-atmos}
 
 ##############################################
 # Define COM directories
 ##############################################
-export COMIN=${COMIN:-$(compath.py ${NET}/${envir}/${RUN}.${PDY})/${cyc}}
-export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}/${cyc}}
+export COMIN=${COMIN:-$(compath.py ${NET}/${envir}/${RUN}.${PDY})/${cyc}/$COMPONENT}
+export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/$COMPONENT}
 export COMOUTwmo=${COMOUTwmo:-${COMOUT}/wmo}
 
 if [ $SENDCOM = YES ] ; then
@@ -116,7 +117,7 @@ fi
 
 #############################################################
 # Execute the script
-$HOMEgfs/scripts/exglobal_grib2_special_npoess.sh.ecf
+$HOMEgfs/scripts/exglobal_grib2_special_npoess.sh
 export err=$?;err_chk
 #############################################################
 

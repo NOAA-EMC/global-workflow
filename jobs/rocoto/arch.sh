@@ -44,6 +44,7 @@ else
    format="nemsio"
 fi
 
+
 # Realtime parallels run GFS MOS on 1 day delay
 # If realtime parallel, back up CDATE_MOS one day
 CDATE_MOS=$CDATE
@@ -56,7 +57,7 @@ PDY_MOS=$(echo $CDATE_MOS | cut -c1-8)
 # Archive online for verification and diagnostics
 ###############################################################
 
-COMIN="$ROTDIR/$CDUMP.$PDY/$cyc"
+COMIN=${COMINatmos:-"$ROTDIR/$CDUMP.$PDY/$cyc/atmos"}
 cd $COMIN
 
 [[ ! -d $ARCDIR ]] && mkdir -p $ARCDIR
@@ -101,7 +102,11 @@ if [ $CDUMP = "gfs" ]; then
     $NCP trak.gfso.atcfunix.$CDATE        ${ARCDIR}/.
     $NCP trak.gfso.atcfunix.altg.$CDATE   ${ARCDIR}/.
 
-    cp -rp tracker                        ${ARCDIR}/tracker.$CDATE
+    mkdir -p ${ARCDIR}/tracker.$CDATE/$CDUMP
+    blist="epac natl"
+    for basin in $blist; do
+	cp -rp $basin                     ${ARCDIR}/tracker.$CDATE/$CDUMP
+    done
 fi
 
 # Archive atmospheric gaussian gfs forecast files for fit2obs
@@ -208,15 +213,25 @@ if [ $CDUMP = "gfs" ]; then
         fi
     fi
 
-   #--save mdl gfsmos output from all cycles in the 18Z archive directory
-   if [ -d gfsmos.$PDY_MOS -a $cyc -eq 18 ]; then
+    #for downstream products
+    if [ $DO_BUFRSND = "YES" -o $WAFSF = "YES" ]; then
+        htar -P -cvf $ATARDIR/$CDATE/gfs_downstream.tar `cat $ARCH_LIST/gfs_downstream.txt`
+        status=$?
+        if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
+            echo "HTAR $CDATE gfs_downstream.tar failed"
+            exit $status
+        fi
+    fi
+
+    #--save mdl gfsmos output from all cycles in the 18Z archive directory
+    if [ -d gfsmos.$PDY_MOS -a $cyc -eq 18 ]; then
         htar -P -cvf $ATARDIR/$CDATE_MOS/gfsmos.tar ./gfsmos.$PDY_MOS
         status=$?
         if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
             echo "HTAR $CDATE gfsmos.tar failed"
             exit $status
         fi
-   fi
+    fi
 
 fi
 
@@ -303,8 +318,8 @@ RTOFS_DATE=$($NDATE -48 $CDATE)
 while [ $GDATE -le $GDATEEND ]; do
     gPDY=$(echo $GDATE | cut -c1-8)
     gcyc=$(echo $GDATE | cut -c9-10)
-    COMIN="$ROTDIR/$CDUMP.$gPDY/$gcyc"
-    COMINwave="$ROTDIR/${CDUMP}wave.$gPDY/$gcyc"
+    COMIN="$ROTDIR/${CDUMP}.$gPDY/$gcyc/atmos"
+    COMINwave="$ROTDIR/${CDUMP}.$gPDY/$gcyc/wave"
     COMINrtofs="$ROTDIR/rtofs.$gPDY"
     if [ -d $COMIN ]; then
         rocotolog="$EXPDIR/logs/${GDATE}.log"
@@ -329,12 +344,10 @@ while [ $GDATE -le $GDATEEND ]; do
     fi
 
     # Remove any empty directories
-    COMIN="$ROTDIR/$CDUMP.$gPDY"
     if [ -d $COMIN ]; then
         [[ ! "$(ls -A $COMIN)" ]] && rm -rf $COMIN
     fi
 
-    COMINwave="$ROTDIR/${CDUMP}wave.$gPDY"
     if [ -d $COMINwave ]; then
         [[ ! "$(ls -A $COMINwave)" ]] && rm -rf $COMINwave
     fi

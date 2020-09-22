@@ -44,10 +44,10 @@ if [ $VRFYFITS = "YES" ]; then
     fi
 
     if [ $machine = "WCOSS_C" ]; then
-        export fitdir="$BASE_SVN/verif/global/parafits.fv3nems/batrun"
+        export fitdir="$BASE_GIT/verif/global/parafits.fv3nems/batrun"
         export PREPQFITSH="$fitdir/subfits_cray_nems"
     elif [ $machine = "WCOSS_DELL_P3" ]; then
-        export fitdir="$BASE_SVN/verif/global/Fit2Obs/ncf-vqc/batrun"
+        export fitdir="$BASE_GIT/verif/global/Fit2Obs/ncf-vqc/batrun"
         export PREPQFITSH="$fitdir/subfits_dell_nems"
     elif [ $machine = "HERA" ]; then
         #export fitdir="$BASE_GIT/Fit2Obs/batrun"
@@ -103,7 +103,7 @@ if [ $VRFYRAD = "YES" -o $VRFYMINMON = "YES" -o $VRFYOZN = "YES" ]; then
 
         export RADMON_SUFFIX=$PSLOT
         export TANKverf="$NOSCRUB/monitor/radmon"
-        export VRFYRADSH="$HOMEgfs/jobs/JGDAS_VERFRAD"
+        export VRFYRADSH="$HOMEgfs/jobs/JGDAS_ATMOS_VERFRAD"
 
     fi
 
@@ -113,9 +113,9 @@ if [ $VRFYRAD = "YES" -o $VRFYMINMON = "YES" -o $VRFYOZN = "YES" ]; then
         export MINMON_SUFFIX=$PSLOT
         export M_TANKverf="$NOSCRUB/monitor/minmon"
         if [[ "$CDUMP" = "gdas" ]] ; then
-            export VRFYMINSH="$HOMEgfs/jobs/JGDAS_VMINMON"
+            export VRFYMINSH="$HOMEgfs/jobs/JGDAS_ATMOS_VMINMON"
         elif [[ "$CDUMP" = "gfs" ]] ; then
-            export VRFYMINSH="$HOMEgfs/jobs/JGFS_VMINMON"
+            export VRFYMINSH="$HOMEgfs/jobs/JGFS_ATMOS_VMINMON"
         fi
 
     fi
@@ -126,7 +126,7 @@ if [ $VRFYRAD = "YES" -o $VRFYMINMON = "YES" -o $VRFYOZN = "YES" ]; then
         export HOMEgfs_ozn="$HOMEgfs"
         export OZNMON_SUFFIX=$PSLOT
         export TANKverf_ozn="$NOSCRUB/monitor/oznmon"
-        export VRFYOZNSH="$HOMEgfs/jobs/JGDAS_VERFOZN"
+        export VRFYOZNSH="$HOMEgfs/jobs/JGDAS_ATMOS_VERFOZN"
 
     fi
 
@@ -139,7 +139,7 @@ fi
 
 export ens_tracker_ver=v1.1.15.1
 if [ $machine = "WCOSS_DELL_P3" ] ; then
-    export ens_tracker_ver=v1.1.15.2
+    export ens_tracker_ver=v1.1.15.3
 fi
 export HOMEens_tracker=$BASE_GIT/tracker/ens_tracker.${ens_tracker_ver}
 

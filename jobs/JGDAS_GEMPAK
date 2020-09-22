@@ -56,12 +56,13 @@ export DBN_ALERT_TYPE=GDAS_GEMPAK
 export NET=${NET:-gfs}
 export RUN=${RUN:-gdas}
 export model=${model:-gdas}
+export COMPONENT=${COMPONENT:-atmos}
 
 ##############################################
 # Define COM directories
 ##############################################
-export COMIN=${COMIN:-$(compath.py ${NET}/${envir}/${RUN}.${PDY})/${cyc}}
-export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/gempak}
+export COMIN=${COMIN:-$(compath.py ${NET}/${envir}/${RUN}.${PDY})/${cyc}/$COMPONENT}
+export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/$COMPONENT/gempak}
 
 if [ $SENDCOM = YES ] ; then
   mkdir -m 775 -p $COMOUT
@@ -77,12 +78,12 @@ fi
 
 ########################################################
 # Execute the script.
-echo "$SRCgfs/exgdas_nawips.sh.ecf gdas 009 GDAS_GEMPAK " >> poescript
+echo "$SRCgfs/exgdas_nawips.sh gdas 009 GDAS_GEMPAK " >> poescript
 ########################################################
 
 ########################################################
 # Execute the script for quater-degree grib
-echo "$SRCgfs/exgdas_nawips.sh.ecf gdas_0p25 009 GDAS_GEMPAK " >>poescript
+echo "$SRCgfs/exgdas_nawips.sh gdas_0p25 009 GDAS_GEMPAK " >>poescript
 ########################################################
 
 cat poescript

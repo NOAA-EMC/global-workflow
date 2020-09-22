@@ -41,6 +41,8 @@ mm=$(echo $CDATE | cut -c5-6)
 dd=$(echo $CDATE | cut -c7-8)
 cyc=${cyc:-$(echo $CDATE | cut -c9-10)}
 
+export COMPONENT=${COMPONENT:-atmos}
+
 ###############################################################
 
 target_dir=$ICSDIR/$CDATE/$CDUMP
@@ -187,7 +189,7 @@ fi
 
 # Copy pgbanl file to COMROT for verification - GFSv14 only
 if [ $CDATE -le "2019061118" ]; then #GFSv14
-  COMROT=$ROTDIR/${CDUMP}.$PDY/$cyc
+  COMROT=$ROTDIR/${CDUMP}.$PDY/$cyc/$COMPONENT
   [[ ! -d $COMROT ]] && mkdir -p $COMROT
   $NCP ${fanal[4]} $COMROT/${CDUMP}.t${cyc}z.pgrbanl
 fi

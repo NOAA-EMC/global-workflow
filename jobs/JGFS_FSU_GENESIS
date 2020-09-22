@@ -54,6 +54,7 @@ setpdy.sh
 ####################################
 export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
+export COMPONENT=${COMPONENT:-atmos}
 
 
 ##############################################
@@ -88,18 +89,19 @@ export HOMEens_tracker=${HOMEens_tracker:-${NWROOT:?}/ens_tracker.${ens_tracker_
 export EXECens_tracker=${EXECens_tracker:-$HOMEens_tracker/exec}
 export FIXens_tracker=${FIXens_tracker:-$HOMEens_tracker/fix}
 export USHens_tracker=${USHens_tracker:-$HOMEens_tracker/ush}
-
+export SCRIPTens_tracker=${SCRIPTens_tracker:-$HOMEens_tracker/scripts}
+export BINens_tracker=${BINens_tracker:-$HOMEens_tracker/ush/FSUgenesisPY/bin}
 
 ##############################################
 # Define COM and Data directories
 ##############################################
-export COMIN=${ROTDIR}/${RUN}.${PDY}/${cyc}
+export COMIN=${ROTDIR}/${RUN}.${PDY}/${cyc}/${COMPONENT}
 export COMINgfs=${COMIN}
 #export gfsdir=${COMINgfs}
 export gfsdir=${ROTDIR}
 export COMINgdas=${COMIN}
 export gdasdir=${COMINgdas}
-export COMOUT=${ROTDIR}/${RUN}.${PDY}/${cyc}
+export COMOUT=${ROTDIR}/${RUN}.${PDY}/${cyc}/${COMPONENT}
 export COMINsyn=${COMINsyn:-$(compath.py arch/prod/syndat)}
 
 if [ $RUN_ENVIR = "nco" ]; then
@@ -123,50 +125,8 @@ $LOGSCRIPT
 
 #############################################################
 # Execute the script
-#export pert="p01"
-export cmodel=$CDUMP
-#export loopnum=1
-
-#-----------input data checking -----------------
-#${USHens_tracker}/data_check_gfs.sh
-${USHens_tracker}/data_check_gfs_180hr.sh
-# exit code 6 = missing data of opportunity
-if [ $? -eq 6 ]; then exit; fi
-#------------------------------------------------
-
-machine=${machine:-`echo ${SITE}`}
-if [ $machine = TIDE -o $machine = GYRE ] ; then # For WCOSS
-  machine=wcoss
-#  ${USHens_tracker}/extrkr_gfs.sh ${loopnum} ${cmodel} ${CDATE} ${pert} ${DATA} 
-  ${USHens_tracker}/extrkr_fsu.sh ${cmodel} ${CDATE} ${DATA} ${gfsdir}
-
-elif [ $machine = LUNA -o $machine = SURGE -o $machine = WCOSS_C ] ; then # For CRAY
-  machine=cray
-#  ${APRUNTRACK} ${USHens_tracker}/extrkr_gfs.sh ${loopnum} ${cmodel} ${CDATE} ${pert} ${DATA} 
-  ${APRUNTRACK} ${USHens_tracker}/extrkr_fsu.sh ${cmodel} ${CDATE} ${DATA} ${gfsdir}
-
-elif [ $machine = VENUS -o $machine = MARS -o $machine = WCOSS_DELL_P3 ] ; then # For DELL
-  machine=dell
-#  mpirun -n 1 ${USHens_tracker}/extrkr_gfs.sh ${loopnum} ${cmodel} ${CDATE} ${pert} ${DATA}
-   mpirun -n 1 ${USHens_tracker}/extrkr_fsu.sh ${cmodel} ${CDATE} ${DATA} ${gfsdir}
-
-elif [ $machine = HERA ]; then # For HERA
-  machine=hera
-#  ${USHens_tracker}/extrkr_gfs.sh ${loopnum} ${cmodel} ${CDATE} ${pert} ${DATA}
-  ${USHens_tracker}/extrkr_fsu.sh ${cmodel} ${CDATE} ${DATA} ${gfsdir}
-fi
+${SCRIPTens_tracker}/exgfs_fsu_genesis.sh
 export err=$?; err_chk
-
-
-#if [ "$SENDCOM" = 'YES' ]; then
-#  cat ${DATA}/trak.avnx.atcfunix.${PDY}${cyc} | \
-#      sed s:AVNX:GFSO:g \
-#    > ${COMOUT}/gfso.t${cyc}z.cyclone.trackatcfunix
-#
-#  cat ${DATA}/trak.avnx.atcfunix.${PDY}${cyc} | \
-#      sed s:AVNX:AVNO:g \
-#    > ${COMOUT}/avn.t${cyc}z.cyclone.trackatcfunix
-#fi
 
 ##############################################
 # Final processing
@@ -175,10 +135,8 @@ if [ -e "$pgmout" ] ; then
   cat $pgmout
 fi
 
-
 msg="ENDED NORMALLY."
 postmsg "$jlogfile" "$msg"
-
 
 ##########################################
 # Remove the Temporary working directory

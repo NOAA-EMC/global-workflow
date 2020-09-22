@@ -43,16 +43,16 @@ export NOSCRUB="@NOSCRUB@"
 
 # Base directories for various builds
 export BASE_GIT="@BASE_GIT@"
-export BASE_SVN="@BASE_SVN@"
 
 #### CCPP Suite
 #### export CCPP_SUITE="FV3_GSD_noah"      # GSDsuite + NOAH LSM  
 export CCPP_SUITE="FV3_GFS_v16beta"        # EMC v16beta
 
 # Toggle to turn on/off GFS downstream processing.
-export DO_BUFRSND="YES"
-export DO_GEMPAK="NO"
-export DO_AWIPS="NO"
+export DO_BUFRSND="YES"    # BUFR sounding products
+export DO_GEMPAK="NO"      # GEMPAK products
+export DO_AWIPS="NO"       # AWIPS products
+export WAFSF="NO"          # WAFS products
 
 # NO for retrospective parallel; YES for real-time parallel
 #  arch.sh uses REALTIME for MOS.  Need to set REALTIME=YES
@@ -68,14 +68,13 @@ export REALTIME="YES"
 # CLEAR
 ####################################################
 # Build paths relative to $HOMEgfs
-export HOMEgsi="$HOMEgfs"
 export FIXgsi="$HOMEgfs/fix/fix_gsi"
 export HOMEfv3gfs="$HOMEgfs/sorc/fv3gfs.fd"
 export HOMEpost="$HOMEgfs"
-export HOMEobsproc_prep="$BASE_GIT/obsproc/gfsv16/obsproc_prep.iss70457.netcdfhistory_new"
-export HOMEobsproc_network="$BASE_GIT/obsproc/gfsv16/obsproc_global.iss71402.supportGFSv16"
+export HOMEobsproc_prep="$BASE_GIT/obsproc/gfsv16b/obsproc_prep.iss70457.netcdfhistory"
+export HOMEobsproc_network="$BASE_GIT/obsproc/gfsv16b/obsproc_global.iss71402.supportGFSv16"
 export HOMEobsproc_global=$HOMEobsproc_network
-export BASE_VERIF="$BASE_SVN/verif/global/tags/vsdb"
+export BASE_VERIF="$BASE_GIT/verif/global/tags/vsdb"
 
 # CONVENIENT utility scripts and other environment parameters
 export NCP="/bin/cp -p"
@@ -114,6 +113,11 @@ export ATARDIR="/NCEPDEV/$HPSS_PROJECT/1year/$USER/$machine/scratch/$PSLOT"
 export envir=${envir:-"prod"}
 export NET="gfs"
 export RUN=${RUN:-${CDUMP:-"gfs"}}
+export COMINatmos=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos
+export COMOUTatmos=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos
+export COMINwave=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/wave
+export COMOUTwave=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/wave
+
 export jlogfile="${EXPDIR}/logs/jlogfile"
 export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 export LOGSCRIPT=${LOGSCRIPT:-""}
@@ -122,10 +126,12 @@ export LOGSCRIPT=${LOGSCRIPT:-""}
 export REDOUT="1>"
 export REDERR="2>"
 
-export SENDECF="NO"
-export SENDCOM="NO"
-export SENDDBN="NO"
-export SENDSDM="NO"
+export SENDECF=${SENDECF:-"NO"}
+export SENDCOM=${SENDCOM:-"NO"}
+export SENDSDM=${SENDSDM:-"NO"}
+export SENDDBN_NTC=${SENDDBN_NTC:-"NO"}
+export SENDDBN=${SENDDBN:-"NO"}
+export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
 # Resolution specific parameters
 export LEVS=128
