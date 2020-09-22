@@ -120,7 +120,7 @@ fi
 
 #############################################################
 # Execute the script
-$HOMEgfs/scripts/exglobal_grib2_special_npoess.sh
+$HOMEgfs/scripts/exgfs_atmos_grib2_special_npoess.sh
 export err=$?;err_chk
 #############################################################
 

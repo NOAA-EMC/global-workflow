@@ -89,7 +89,7 @@ set -xa
 
 ########################################################
 # Execute the script.
-$SRCgfs/exgoes_nawips.sh
+$SRCgfs/exgfs_atmos_goes_nawips.sh
 
 #################################################################
 # Execute the script for the 221 grib
@@ -111,7 +111,7 @@ set -xa
 
 ########################################################
 # Execute the script.
-$SRCgfs/exgoes_nawips.sh
+$SRCgfs/exgfs_atmos_goes_nawips.sh
 export err=$?; err_chk
 ########################################################
 

@@ -70,7 +70,7 @@ env
 #########################################################
 mkdir -m 775 awips_g1
 cd $DATA/awips_g1
-$HOMEgfs/scripts/exgfs_grib_awips.sh $fcsthrs
+$HOMEgfs/scripts/exgfs_atmos_grib_awips.sh $fcsthrs
 export err=$?; err_chk
 
 msg="JOB $job HAS COMPLETED NORMALLY!"

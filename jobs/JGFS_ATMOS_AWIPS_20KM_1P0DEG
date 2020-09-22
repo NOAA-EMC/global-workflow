@@ -72,7 +72,7 @@ env
 
 ########################################################
 # Execute the script.
-$HOMEgfs/scripts/exgfs_awips_20km_1p0deg.sh $fcsthrs
+$HOMEgfs/scripts/exgfs_atmos_awips_20km_1p0deg.sh $fcsthrs
 export err=$?; err_chk
 ########################################################
 
