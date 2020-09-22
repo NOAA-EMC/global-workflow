@@ -116,4 +116,4 @@ fi
 #############################################
 # run the GFS job
 #############################################
-sh $HOMEgfs/jobs/JGFS_GEMPAK
+sh $HOMEgfs/jobs/JGFS_ATMOS_GEMPAK

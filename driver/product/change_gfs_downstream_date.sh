@@ -21,25 +21,25 @@ export gdastestmeta=/gpfs/dell2/ptmp/Boi.Vuong/com/gfs/prod/gdas.${PDY}/${cyc}/g
 for cyc in 00 06 12 18
 # for cyc in 00
 do
-sed -i "s/${olddate}/${newdate}/g"  run_JGDAS_GEMPAK_dell.sh_${cyc}
-sed -i "s/${olddate}/${newdate}/g"  run_JGDAS_GEMPAK_META_NCDC_dell.sh_${cyc}
-sed -i "s/${olddate}/${newdate}/g"  run_JGFS_GEMPAK_dell.sh_${cyc}
-sed -i "s/${olddate}/${newdate}/g"  run_JGFS_AWIPS_20KM_1P0DEG_dell.sh_${cyc} 
-sed -i "s/${olddate}/${newdate}/g"  run_JGFS_AWIPS_G2_dell.sh_${cyc}   
-sed -i "s/${olddate}/${newdate}/g"  run_JGFS_FBWIND_dell.sh_${cyc} 
-sed -i "s/${olddate}/${newdate}/g"  run_JGFS_GEMPAK_META_dell.sh_${cyc}
-sed -i "s/${olddate}/${newdate}/g"  run_JGFS_GEMPAK_NCDC_UPAPGIF_dell.sh_${cyc} 
+sed -i "s/${olddate}/${newdate}/g"  run_JGDAS_ATMOS_GEMPAK_dell.sh_${cyc}
+sed -i "s/${olddate}/${newdate}/g"  run_JGDAS_ATMOS_GEMPAK_META_NCDC_dell.sh_${cyc}
+sed -i "s/${olddate}/${newdate}/g"  run_JGFS_ATMOS_GEMPAK_dell.sh_${cyc}
+sed -i "s/${olddate}/${newdate}/g"  run_JGFS_AWIPS_20KM_1P0DEG_dell.sh_${cyc}
+sed -i "s/${olddate}/${newdate}/g"  run_JGFS_AWIPS_G2_dell.sh_${cyc}
+sed -i "s/${olddate}/${newdate}/g"  run_JGFS_FBWIND_dell.sh_${cyc}
+sed -i "s/${olddate}/${newdate}/g"  run_JGFS_ATMOS_GEMPAK_META_dell.sh_${cyc}
+sed -i "s/${olddate}/${newdate}/g"  run_JGFS_ATMOS_GEMPAK_NCDC_UPAPGIF_dell.sh_${cyc}
 sed -i "s/${olddate}/${newdate}/g"  run_JGFS_PGRB2_SPEC_NPOESS_dell.sh_${cyc}
-sed -i "s/${olddate}/${newdate}/g"  run_JGFS_PGRB2_SPEC_GEMPAK_dell.sh_${cyc} 
+sed -i "s/${olddate}/${newdate}/g"  run_JGFS_PGRB2_SPEC_GEMPAK_dell.sh_${cyc}
 
-sed -i s/envir=prod/envir=para/g  run_JGDAS_GEMPAK_dell.sh_${cyc}
-sed -i s/envir=prod/envir=para/g  run_JGDAS_GEMPAK_META_NCDC_dell.sh_${cyc}
-sed -i s/envir=prod/envir=para/g  run_JGFS_GEMPAK_dell.sh_${cyc}
+sed -i s/envir=prod/envir=para/g  run_JGDAS_ATMOS_GEMPAK_dell.sh_${cyc}
+sed -i s/envir=prod/envir=para/g  run_JGDAS_ATMOS_GEMPAK_META_NCDC_dell.sh_${cyc}
+sed -i s/envir=prod/envir=para/g  run_JGFS_ATMOS_GEMPAK_dell.sh_${cyc}
 sed -i s/envir=prod/envir=para/g  run_JGFS_AWIPS_20KM_1P0DEG_dell.sh_${cyc}
 sed -i s/envir=prod/envir=para/g  run_JGFS_AWIPS_G2_dell.sh_${cyc}
 sed -i s/envir=prod/envir=para/g  run_JGFS_FBWIND_dell.sh_${cyc}
-sed -i s/envir=prod/envir=para/g  run_JGFS_GEMPAK_META_dell.sh_${cyc}
-sed -i s/envir=prod/envir=para/g  run_JGFS_GEMPAK_NCDC_UPAPGIF_dell.sh_${cyc}
+sed -i s/envir=prod/envir=para/g  run_JGFS_ATMOS_GEMPAK_META_dell.sh_${cyc}
+sed -i s/envir=prod/envir=para/g  run_JGFS_ATMOS_GEMPAK_NCDC_UPAPGIF_dell.sh_${cyc}
 sed -i s/envir=prod/envir=para/g  run_JGFS_PGRB2_SPEC_NPOESS_dell.sh_${cyc}
 sed -i s/envir=prod/envir=para/g  run_JGFS_PGRB2_SPEC_GEMPAK_dell.sh_${cyc}
 

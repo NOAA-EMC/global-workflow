@@ -56,6 +56,9 @@ export EXT=""
 export COMIN=${COMIN:-$(compath.py ${NET}/${envir}/${NET}.${PDY})/${cyc}/$COMPONENT}
 export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${NET}.${PDY}/${cyc}/$COMPONENT/gempak}
 
+export SENDDBN=${SENDDBN:-NO}
+export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
+
 if [ $SENDCOM = YES ] ; then
   mkdir -m 775 -p $COMOUT
 fi

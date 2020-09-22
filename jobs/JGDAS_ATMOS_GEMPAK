@@ -50,6 +50,9 @@ export GRIB=pgrb2f
 export EXT=""
 export DBN_ALERT_TYPE=GDAS_GEMPAK
 
+export SENDDBN=${SENDDBN:-NO}
+export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
+
 ###################################
 # Specify NET and RUN Name and model
 ####################################
@@ -78,12 +81,12 @@ fi
 
 ########################################################
 # Execute the script.
-echo "$SRCgfs/exgdas_nawips.sh gdas 009 GDAS_GEMPAK " >> poescript
+echo "$SRCgfs/exgdas_atmos_nawips.sh gdas 009 GDAS_GEMPAK " >> poescript
 ########################################################
 
 ########################################################
 # Execute the script for quater-degree grib
-echo "$SRCgfs/exgdas_nawips.sh gdas_0p25 009 GDAS_GEMPAK " >>poescript
+echo "$SRCgfs/exgdas_atmos_nawips.sh gdas_0p25 009 GDAS_GEMPAK " >>poescript
 ########################################################
 
 cat poescript

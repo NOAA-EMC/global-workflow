@@ -80,6 +80,9 @@ export COMINukmet=${COMINukmet:-$(compath.py nawips/prod/ukmet)}
 export COMINecmwf=${COMINecmwf:-$(compath.py ecmwf/prod/ecmwf)}
 export COMINnam=${COMINnam:-$(compath.py nam/prod/nam)}
 
+export SENDDBN=${SENDDBN:-NO}
+export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
+
 msg="Begin job for $job"
 postmsg "$jlogfile" "$msg"
 
@@ -93,7 +96,7 @@ env
 
 ########################################################
 # Execute the script.
-$SRCgfs/exgfs_gempak_meta.sh
+$SRCgfs/exgfs_atmos_gempak_meta.sh
 export err=$?; err_chk
 ########################################################
 

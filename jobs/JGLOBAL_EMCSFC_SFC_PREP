@@ -29,6 +29,8 @@ setpdy.sh
 export pgmout="OUTPUT.${pid}"
 export pgmerr=errfile
 
+export SENDDBN=${SENDDBN:-NO}
+export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
 ##############################################
 # Set CDATE

@@ -1,14 +1,14 @@
 #!/bin/sh
 
-#BSUB -J gfs_gempak_06
-#BSUB -o /gpfs/dell2/ptmp/Boi.Vuong/output/gfs_gempak_06.o%J
+#BSUB -J jgfs_gempak_upapgif_06
+#BSUB -o /gpfs/dell2/ptmp/Boi.Vuong/output/gfs_gempak_upapgif_06.o%J
 #BSUB -q debug
+#BSUB -n 1                      # number of tasks
+#BSUB -R span[ptile=1]          # 1 task per node
 #BSUB -cwd /gpfs/dell2/ptmp/Boi.Vuong/output
 #BSUB -W 00:30
 #BSUB -P GFS-DEV
-#BSUB -n 24                                     # 24 tasks 
-#BSUB -R span[ptile=12]                         # 12 task per node
-#BSUB -R affinity[core(1):distribute=balance]   # using 12 cores on node and bind to 1 core per task and distribute across sockets
+#BSUB -R affinity[core(1):distribute=balance]
 
 export KMP_AFFINITY=disabled
 
@@ -41,16 +41,17 @@ module load grib_util/1.1.0
 module load gempak/7.3.1
 module list
 
-############################################
+##############################################
 # Define COM, COMOUTwmo, COMIN  directories
-############################################
+##############################################
+
 # set envir=para or para to test with data in prod or para
  export envir=para
  export envir=para
 
 export SENDCOM=YES
 export KEEPDATA=YES
-export job=gfs_gempak_${cyc}
+export job=gfs_gempak_upapgif_${cyc}
 export pid=${pid:-$$}
 export jobid=${job}.${pid}
 
@@ -94,26 +95,29 @@ export SRCgfs=${SRCgfs:-$HOMEgfs/scripts}
 export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
 export model=${model:-gfs}
+export MODEL=GFS
 
 ##############################################
 # Define COM directories
 ##############################################
 if [ $envir = "prod" ] ; then
 #  This setting is for testing with GFS (production)
-  export COMIN=${COMIN:-$(compath.py ${NET}/${envir}/${RUN}.${PDY})/${cyc}}        ### NCO PROD
+  export COMIN=${COMIN:-$(compath.py ${NET}/${envir}/${RUN}.${PDY})/${cyc}/gempak}
+  export COMINgfs=${COMINgfs:-$(compath.py ${NET}/${envir}/${RUN}.${PDY})/${cyc}}
 else
-#  export COMIN=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/git/${RUN}.${PDY}/${cyc}    ### Boi PARA
-   export COMIN=/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/v16rt2c/gfs/para/gfs.${PDY}/${cyc}/atmos ### EMC PARA Realtime
-   export ILPOST=3
+   export COMIN=/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/v16rt2c/gfs/para/${RUN}.${PDY}/${cyc}/atmos/gempak ### EMC PARA Realtime
+   export COMINgfs=/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/v16rt2c/gfs/para/${RUN}.${PDY}/${cyc}/atmos ### EMC PARA Realtime
+
 fi
 
-export COMOUT=${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/atmos/gempak
+export COMOUT=${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/atmos
+export COMOUTwmo=${COMOUTwmo:-${COMOUT}/wmo}
 
 if [ $SENDCOM = YES ] ; then
-  mkdir -m 775 -p $COMOUT
+  mkdir -m 775 -p $COMOUT $COMOUTwmo
 fi
 
 #############################################
 # run the GFS job
 #############################################
-sh $HOMEgfs/jobs/JGFS_GEMPAK
+sh $HOMEgfs/jobs/JGFS_ATMOS_GEMPAK_NCDC_UPAPGIF

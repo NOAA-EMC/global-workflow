@@ -36,6 +36,9 @@ export RUN=${RUN:-gfs}
 export model=${model:-gfs}
 export COMPONENT=${COMPONENT:-atmos}
 
+export SENDDBN=${SENDDBN:-NO}
+export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
+
 ###################################
 # Set up the UTILITIES
 ###################################

@@ -53,6 +53,9 @@ export COMIN=${COMIN:-$(compath.py ${NET}/${envir}/${RUN}.${PDY})/${cyc}/$COMPON
 export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/$COMPONENT}
 export COMOUTwmo=${COMOUTwmo:-${COMOUT}/wmo}
 
+export SENDDBN=${SENDDBN:-NO}
+export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
+
 if [ $SENDCOM = YES ] ; then
   mkdir -m 775 -p $COMOUT $COMOUTwmo
 fi

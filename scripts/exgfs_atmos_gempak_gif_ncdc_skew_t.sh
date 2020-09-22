@@ -114,7 +114,7 @@ fi
 ############################################################
 # GOOD RUN
 set +x
-echo "********** JGFS_GEMPAK_NCDC_UPAPGIF COMPLETED"
+echo "********** JGFS_ATMOS_GEMPAK_NCDC_UPAPGIF COMPLETED"
 set -x
 ############################################################
 if [ -e "$pgmout" ] ; then
