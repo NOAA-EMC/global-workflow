@@ -1,7 +1,7 @@
 #!/bin/sh
 
-#BSUB -J jgfs_awips_f012_20km_1p00_12
-#BSUB -o /gpfs/dell2/ptmp/Boi.Vuong/output/gfs_awips_f012_20km_1p00_12.o%J
+#BSUB -J jgfs_awips_f012_20km_1p00_18
+#BSUB -o /gpfs/dell2/ptmp/Boi.Vuong/output/gfs_awips_f012_20km_1p00_18.o%J
 #BSUB -q debug
 #BSUB -n 1                      # number of tasks
 #BSUB -R span[ptile=1]          # 1 task per node
@@ -13,11 +13,11 @@
 export KMP_AFFINITY=disabled
 
 export PDY=`date -u +%Y%m%d`
-export PDY=20200712
+export PDY=20200922
 
 export PDY1=`expr $PDY - 1`
 
-export cyc=12
+export cyc=18
 export cycle=t${cyc}z
 
 set -xa
@@ -48,7 +48,7 @@ export fcsthrs=012
 ############################################
 # set envir=para or para to test with data in prod or para
  export envir=para
-# export envir=para
+ export envir=para
 
 export SENDCOM=YES
 export KEEPDATA=YES
@@ -97,7 +97,7 @@ if [ $envir = "prod" ] ; then
 #  This setting is for testing with GFS (production)
   export COMIN=${COMIN:-$(compath.py ${NET}/${envir}/${RUN}.${PDY})/${cyc}}        ### NCO PROD
 else
-   export COMIN=/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/v16rt2c/gfs/para/${RUN}.${PDY}/${cyc}/atmos ### EMC PARA Realtime
+   export COMIN=/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/v16rt2/gfs/para/${RUN}.${PDY}/${cyc}/atmos ### EMC PARA Realtime
 
 fi
 
@@ -120,4 +120,4 @@ cd $DATA
 #############################################
 # run the GFS job
 #############################################
-sh $HOMEgfs/jobs/JGFS_AWIPS_20KM_1P0DEG
+sh $HOMEgfs/jobs/JGFS_ATMOS_AWIPS_20KM_1P0DEG

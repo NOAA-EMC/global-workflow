@@ -24,12 +24,12 @@ do
  vi run_JGDAS_ATMOS_GEMPAK_dell.sh_${cyc}
  vi run_JGDAS_ATMOS_GEMPAK_META_NCDC_dell.sh_${cyc}
  vi run_JGFS_ATMOS_GEMPAK_dell.sh_${cyc}
- vi run_JGFS_AWIPS_20KM_1P0DEG_dell.sh_${cyc}
- vi run_JGFS_AWIPS_G2_dell.sh_${cyc}
- vi run_JGFS_FBWIND_dell.sh_${cyc}
+ vi run_JGFS_ATMOS_AWIPS_20KM_1P0DEG_dell.sh_${cyc}
+ vi run_JGFS_ATMOS_AWIPS_G2_dell.sh_${cyc}
+ vi run_JGFS_ATMOS_FBWIND_dell.sh_${cyc}
  vi run_JGFS_ATMOS_GEMPAK_META_dell.sh_${cyc}
  vi run_JGFS_ATMOS_GEMPAK_NCDC_UPAPGIF_dell.sh_${cyc}
- vi run_JGFS_PGRB2_SPEC_NPOESS_dell.sh_${cyc}
- vi run_JGFS_PGRB2_SPEC_GEMPAK_dell.sh_${cyc}
+ vi run_JGFS_ATMOS_PGRB2_SPEC_NPOESS_dell.sh_${cyc}
+ vi run_JGFS_ATMOS_GEMPAK_PGRB2_SPEC_dell.sh_${cyc}
 
 done

@@ -1,7 +1,7 @@
 #!/bin/sh
 
-#BSUB -J gfs_fbwind_06
-#BSUB -o /gpfs/dell2/ptmp/Boi.Vuong/output/gfs_fbwind_06.o%J
+#BSUB -J jgfs_pgrb2_spec_npoess_12
+#BSUB -o /gpfs/dell2/ptmp/Boi.Vuong/output/gfs_pgrb2_spec_npoess_12.o%J
 #BSUB -q debug
 #BSUB -n 1                      # number of tasks
 #BSUB -R span[ptile=1]          # 1 task per node
@@ -13,11 +13,11 @@
 export KMP_AFFINITY=disabled
 
 export PDY=`date -u +%Y%m%d`
-export PDY=20200712
+export PDY=20200922
 
 export PDY1=`expr $PDY - 1`
 
-export cyc=06
+export cyc=12
 export cycle=t${cyc}z
 
 set -xa
@@ -37,16 +37,16 @@ module load prod_envir/1.0.3
 module load grib_util/1.1.0
 module list
 
-##############################################
-# Define COM, COMOUTwmo, COMIN  directories
-##############################################
+############################################
+# GFS PGRB2_SPECIAL_POST PRODUCT GENERATION
+############################################
 # set envir=para or para to test with data in prod or para
  export envir=para
  export envir=para
 
 export SENDCOM=YES
 export KEEPDATA=YES
-export job=gfs_fbwind_${cyc}
+export job=gfs_pgrb2_spec_npoess_${cyc}
 export pid=${pid:-$$}
 export jobid=${job}.${pid}
 
@@ -58,13 +58,20 @@ export DATAROOT=/gpfs/dell2/ptmp/Boi.Vuong/output
 export NWROOT=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/git
 export COMROOT2=/gpfs/dell2/ptmp/Boi.Vuong/com
 
-mkdir -m 775 -p ${COMROOT2} ${COMROOT2}/logs ${COMROOT2}/logs/jlogfiles
+mkdir -m 775 -p ${COMROOT2} ${COMROOT2}/logs ${COMROOT2}/logs/jlogfiles 
 export jlogfile=${COMROOT2}/logs/jlogfiles/jlogfile.${jobid}
 
 #############################################################
 # Specify versions
 #############################################################
 export gfs_ver=v16.0.0
+
+##########################################################
+# obtain unique process id (pid) and make temp directory
+##########################################################
+export DATA=${DATA:-${DATAROOT}/${jobid}}
+mkdir -p $DATA
+cd $DATA
 
 ################################
 # Set up the HOME directory
@@ -73,6 +80,9 @@ export HOMEgfs=${HOMEgfs:-${NWROOT}/gfs.${gfs_ver}}
 export USHgfs=${USHgfs:-$HOMEgfs/ush}
 export EXECgfs=${EXECgfs:-$HOMEgfs/exec}
 export PARMgfs=${PARMgfs:-$HOMEgfs/parm}
+export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
+export PARMwmo=${PARMwmo:-$HOMEgfs/parm/wmo}
+export PARMproduct=${PARMproduct:-$HOMEgfs/parm/product}
 export FIXgfs=${FIXgfs:-$HOMEgfs/fix}
 
 ###################################
@@ -83,13 +93,14 @@ export RUN=${RUN:-gfs}
 export model=${model:-gfs}
 
 ##############################################
-# Define COM, COMOUTwmo, COMIN  directories
+# Define COM directories
 ##############################################
 if [ $envir = "prod" ] ; then
 #  This setting is for testing with GFS (production)
   export COMIN=${COMIN:-$(compath.py ${NET}/${envir}/${RUN}.${PDY})/${cyc}}        ### NCO PROD
+  export COMIN=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/git/gfs.20200922/12
 else
-   export COMIN=/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/v16rt2c/gfs/para/${RUN}.${PDY}/${cyc}/atmos ### EMC PARA Realtime
+   export COMIN=/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/v16rt2/gfs/para/${RUN}.${PDY}/${cyc}/atmos ### EMC PARA Realtime
 
 fi
 
@@ -100,14 +111,7 @@ if [ $SENDCOM = YES ] ; then
   mkdir -m 775 -p $COMOUT $COMOUTwmo
 fi
 
-#########################################################
-# obtain unique process id (pid) and make temp directory
-#########################################################
-export DATA=${DATA:-${DATAROOT}/${jobid}}
-mkdir -p $DATA
-cd $DATA
-
 #############################################
 # run the GFS job
 #############################################
-sh $HOMEgfs/jobs/JGFS_FBWIND
+sh $HOMEgfs/jobs/JGFS_ATMOS_PGRB2_SPEC_NPOESS

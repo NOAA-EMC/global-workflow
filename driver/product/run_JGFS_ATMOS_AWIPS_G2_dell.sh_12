@@ -1,10 +1,10 @@
 #!/bin/sh
 
-#BSUB -J jgfs_awips_f012_20km_1p00_06
-#BSUB -o /gpfs/dell2/ptmp/Boi.Vuong/output/gfs_awips_f012_20km_1p00_06.o%J
+#BSUB -J jgfs_awips_f12_12
+#BSUB -o /gpfs/dell2/ptmp/Boi.Vuong/output/gfs_awips_f12_12.o%J
 #BSUB -q debug
-#BSUB -n 1                      # number of tasks
-#BSUB -R span[ptile=1]          # 1 task per node
+#BSUB -n 4                      # number of tasks 
+#BSUB -R span[ptile=2]          # 1 task per node
 #BSUB -cwd /gpfs/dell2/ptmp/Boi.Vuong/output
 #BSUB -W 00:30
 #BSUB -P GFS-DEV
@@ -13,11 +13,11 @@
 export KMP_AFFINITY=disabled
 
 export PDY=`date -u +%Y%m%d`
-export PDY=20200712
+export PDY=20200922
 
 export PDY1=`expr $PDY - 1`
 
-export cyc=06
+export cyc=12
 export cycle=t${cyc}z
 
 set -xa
@@ -37,14 +37,14 @@ module load prod_envir/1.0.3
 module load grib_util/1.1.0
 module list
 
-################################################
-# GFS_AWIPS_20KM_1P00 AWIPS PRODUCT GENERATION
-################################################
+########################################
+# GFS_AWIPS_G2 AWIPS PRODUCT GENERATION
+########################################
 
 export fcsthrs=012
 
 ############################################
-# user defined
+# User Define COM, COMOUTwmo, COMIN  directories
 ############################################
 # set envir=para or para to test with data in prod or para
  export envir=para
@@ -97,7 +97,7 @@ if [ $envir = "prod" ] ; then
 #  This setting is for testing with GFS (production)
   export COMIN=${COMIN:-$(compath.py ${NET}/${envir}/${RUN}.${PDY})/${cyc}}        ### NCO PROD
 else
-   export COMIN=/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/v16rt2c/gfs/para/${RUN}.${PDY}/${cyc}/atmos ### EMC PARA Realtime
+   export COMIN=/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/v16rt2/gfs/para/${RUN}.${PDY}/${cyc}/atmos ### EMC PARA Realtime
 
 fi
 
@@ -107,8 +107,6 @@ export COMOUTwmo=${COMOUTwmo:-${COMOUT}/wmo}
 if [ $SENDCOM = YES ] ; then
   mkdir -m 775 -p $COMOUT $COMOUTwmo
 fi
-
-export MPIRUN_AWIPSCFP="mpirun -n 4 cfp "
 
 #########################################################
 # obtain unique process id (pid) and make temp directory
@@ -120,4 +118,4 @@ cd $DATA
 #############################################
 # run the GFS job
 #############################################
-sh $HOMEgfs/jobs/JGFS_AWIPS_20KM_1P0DEG
+sh $HOMEgfs/jobs/JGFS_ATMOS_AWIPS_G2
