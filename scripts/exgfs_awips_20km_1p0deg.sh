@@ -100,7 +100,7 @@ cat tmpfile2${fcsthrs}   tmpfile2b${fcsthrs}  >  tmpfile${fcsthrs}
 $WGRIB2 tmpfile${fcsthrs} | grep  -F -f $PARMproduct/gfs_awips_parmlist_g2 | $WGRIB2 -i -grib masterfile  tmpfile${fcsthrs}
 export err=$?
 if [[ $err -ne 0 ]] ; then
-   echo " File: masterfile does not exist."
+   echo " FATAL ERROR: masterfile does not exist."
    exit $err
 fi
 
