@@ -55,8 +55,8 @@ fi
 #--add files from external repositories
 #---------------------------------------
 cd ${pwd}/../jobs               ||exit 8
-    $LINK ../sorc/gfs_post.fd/jobs/JGLOBAL_POST_MANAGER      .
-    $LINK ../sorc/gfs_post.fd/jobs/JGLOBAL_NCEPPOST          .
+    $LINK ../sorc/gfs_post.fd/jobs/JGLOBAL_ATMOS_POST_MANAGER      .
+    $LINK ../sorc/gfs_post.fd/jobs/JGLOBAL_ATMOS_NCEPPOST          .
     $LINK ../sorc/gldas.fd/jobs/JGDAS_ATMOS_GLDAS            .             
 cd ${pwd}/../parm               ||exit 8
     [[ -d post ]] && rm -rf post
@@ -64,9 +64,9 @@ cd ${pwd}/../parm               ||exit 8
     [[ -d gldas ]] && rm -rf gldas
     $LINK ../sorc/gldas.fd/parm                              gldas
 cd ${pwd}/../scripts            ||exit 8
-    $LINK ../sorc/gfs_post.fd/scripts/exgdas_nceppost.sh .
-    $LINK ../sorc/gfs_post.fd/scripts/exgfs_nceppost.sh  .
-    $LINK ../sorc/gfs_post.fd/scripts/exglobal_pmgr.sh   .
+    $LINK ../sorc/gfs_post.fd/scripts/exgdas_atmos_nceppost.sh .
+    $LINK ../sorc/gfs_post.fd/scripts/exgfs_atmos_nceppost.sh  .
+    $LINK ../sorc/gfs_post.fd/scripts/exglobal_atmos_pmgr.sh   .
     $LINK ../sorc/ufs_utils.fd/scripts/exemcsfc_global_sfc_prep.sh .
     $LINK ../sorc/gldas.fd/scripts/exgdas_atmos_gldas.sh .
 cd ${pwd}/../ush                ||exit 8
