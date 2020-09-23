@@ -55,6 +55,8 @@ elif [ $target == "hera" ]; then
     FIX_DIR="/scratch2/NCEPDEV/climate/climpara/S2S/FIX/fix_UFSp4"
 elif [ $target == "orion" ]; then
     FIX_DIR="/work/noaa/marine/jmeixner/tempFixICdir/fix_UFSp4"
+elif [ $target == "stampede2" ]; then
+    FIX_DIR="/work/noaa/marine/jmeixner/tempFixICdir/fix_UFSp4"
 else
     echo 'CRITICAL: links to fix files not set'
     [[ $machine != orion ]] && exit 1
