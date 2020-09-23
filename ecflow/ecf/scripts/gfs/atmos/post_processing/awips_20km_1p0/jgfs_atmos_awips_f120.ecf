@@ -1,8 +1,8 @@
 #! /bin/sh
 #BSUB -q %QUEUE%
 #BSUB -P %PROJ%
-#BSUB -J %E%gfs_awips_%FCSTHR%_%CYC%
-#BSUB -o %COM%/output/%ENVIR%/today/gfs_awips_%FCSTHR%_%CYC%.o%J
+#BSUB -J %E%gfs_atmos_awips_%FCSTHR%_%CYC%
+#BSUB -o %COM%/output/%ENVIR%/today/gfs_atmos_awips_%FCSTHR%_%CYC%.o%J
 #BSUB -W 0:10
 #BSUB -n 1
 #BSUB -R affinity[core(1)]

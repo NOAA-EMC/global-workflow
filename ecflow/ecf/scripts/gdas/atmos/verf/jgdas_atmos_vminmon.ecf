@@ -1,8 +1,8 @@
 #! /bin/sh
 #BSUB -q %QUEUE%
 #BSUB -P %PROJ%
-#BSUB -J %E%gdas_vminmon_%CYC%
-#BSUB -o %COM%/output/%ENVIR%/today/gdas_vminmon_%CYC%.o%J
+#BSUB -J %E%gdas_atmos_vminmon_%CYC%
+#BSUB -o %COM%/output/%ENVIR%/today/gdas_atmos_vminmon_%CYC%.o%J
 #BSUB -W 0:05
 #BSUB -n 1
 #BSUB -R affinity[core(1)]

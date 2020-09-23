@@ -1,8 +1,8 @@
 #! /bin/sh
 #BSUB -q %QUEUE%
 #BSUB -P %PROJ%
-#BSUB -J %E%gfs_vminmon_%CYC%
-#BSUB -o %COM%/output/%ENVIR%/today/gfs_vminmon_%CYC%.o%J
+#BSUB -J %E%gfs_atmos_vminmon_%CYC%
+#BSUB -o %COM%/output/%ENVIR%/today/gfs_atmos_vminmon_%CYC%.o%J
 #BSUB -W 0:05
 #BSUB -n 1
 #BSUB -R affinity[core(1)]
@@ -53,7 +53,7 @@ export VERBOSE=YES
 ############################################################
 # CALL executable job script here
 ############################################################
-$HOMEgfs/jobs/JGFS_VMINMON
+$HOMEgfs/jobs/JGFS_ATMOS_VMINMON
 
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"

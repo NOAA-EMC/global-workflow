@@ -1,8 +1,8 @@
 #! /bin/sh
 #BSUB -q %QUEUE%
 #BSUB -P %PROJ%
-#BSUB -J %E%gfs_gempak_%CYC%
-#BSUB -o %COM%/output/%ENVIR%/today/gfs_gempak_%CYC%.o%J
+#BSUB -J %E%gfs_atmos_gempak_%CYC%
+#BSUB -o %COM%/output/%ENVIR%/today/gfs_atmos_gempak_%CYC%.o%J
 #BSUB -W 3:00
 #BSUB -n 24
 #BSUB -R affinity[core(1)]

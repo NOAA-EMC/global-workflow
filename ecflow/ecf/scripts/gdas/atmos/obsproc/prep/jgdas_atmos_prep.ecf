@@ -1,6 +1,6 @@
 #! /bin/sh
-#BSUB -J %E%%RUN%_prep_%CYC%
-#BSUB -o %COM%/output/%ENVIR%/today/%RUN%_prep_%CYC%.o%J
+#BSUB -J %E%%RUN%_atmos_prep_%CYC%
+#BSUB -o %COM%/output/%ENVIR%/today/%RUN%_atmos_prep_%CYC%.o%J
 #BSUB -cwd /tmp
 #BSUB -q %QUEUE%
 #BSUB -P %PROJ%

@@ -1,5 +1,5 @@
-#BSUB -J %E%%RUN%_dump_%CYC%
-#BSUB -o %COM%/output/%ENVIR%/today/%RUN%_dump_%CYC%.o%J
+#BSUB -J %E%%RUN%_atmos_dump_%CYC%
+#BSUB -o %COM%/output/%ENVIR%/today/%RUN%_atmos_dump_%CYC%.o%J
 #BSUB -cwd /tmp
 #BSUB -q %QUEUE%
 #BSUB -W 00:15
@@ -37,6 +37,9 @@ module list
 
 set -x
 export cyc=%CYC%
+
+####
+export ECF_PORT=%ECF_PORT%
 
 # CALL executable job script here
 ${HOMEobsproc_global}/jobs/JGLOBAL_DUMP

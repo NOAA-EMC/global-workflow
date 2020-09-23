@@ -1,8 +1,8 @@
 #! /bin/sh
 #BSUB -q %QUEUE%
 #BSUB -P %PROJ%
-#BSUB -J %E%gdas_analysis_calc_%CYC%
-#BSUB -o %COM%/output/%ENVIR%/today/gdas_analysis_calc_%CYC%.o%J
+#BSUB -J %E%gdas_atmos_analysis_calc_%CYC%
+#BSUB -o %COM%/output/%ENVIR%/today/gdas_atmos_analysis_calc_%CYC%.o%J
 #BSUB -W 2:00
 #BSUB -n 140
 #BSUB -R affinity[core(1)]

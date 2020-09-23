@@ -2209,7 +2209,7 @@ suite prod18
         task jgfs_atmos_gempak_ncdc_upapgif
           trigger ./jgfs_atmos_gempak == active or ./jgfs_atmos_gempak == complete
         task jgfs_atmos_npoess_pgrb2_0p5deg
-          trigger ../../atmos/post/jgfs_atmos_post_anl == active or ../../atmos/post/jgfs_atmos_post_anl == complete
+          trigger ../post/jgfs_atmos_post_manager:release_post180
         task jgfs_atmos_pgrb2_spec_gempak
           trigger ./jgfs_atmos_npoess_pgrb2_0p5deg == complete
       endfamily
@@ -2415,7 +2415,7 @@ suite prod18
       family analysis
         family create
           task jgdas_enkf_select_obs
-            trigger ../../../atmos/obsproc/prep/jgdas_atmos_prep == complete and /prod12/gdas/enkf/post == complete
+            trigger ../../../atmos/analysis/jgdas_atmos_analysis_calc == complete and /prod12/gdas/enkf/post == complete
           task jgdas_enkf_diag
             trigger ./jgdas_enkf_select_obs == complete
           task jgdas_enkf_update

@@ -1,5 +1,5 @@
-#BSUB -J %E%gdas_dump_alert_%CYC%
-#BSUB -o %COM%/output/%ENVIR%/today/gdas_dump_alert_%CYC%.o%J
+#BSUB -J %E%gdas_atmos_dump_alert_%CYC%
+#BSUB -o %COM%/output/%ENVIR%/today/gdas_atmos_dump_alert_%CYC%.o%J
 #BSUB -q %QUEUESERV%
 #BSUB -R rusage[mem=1000]
 #BSUB -R affinity[core] 
@@ -31,6 +31,9 @@ set -x
 export cyc=%CYC%
 export NET=gfs
 export RUN=gdas
+
+####
+export ECF_PORT=%ECF_PORT%
 
 # CALL executable job script here
 $HOMEobsproc_dump_alert/jobs/JDUMP_ALERT

@@ -1,8 +1,8 @@
 #! /bin/sh
 #BSUB -q %QUEUE%
 #BSUB -P %PROJ%
-#BSUB -J %E%gfs_analysis_calc_%CYC%
-#BSUB -o %COM%/output/%ENVIR%/today/gfs_analysis_calc_%CYC%.o%J
+#BSUB -J %E%gfs_atmos_analysis_calc_%CYC%
+#BSUB -o %COM%/output/%ENVIR%/today/gfs_atmos_analysis_calc_%CYC%.o%J
 #BSUB -W 2:00
 #BSUB -n 140
 #BSUB -R affinity[core(1)]
@@ -53,7 +53,7 @@ export USE_CFP=YES
 ############################################################
 # CALL executable job script here
 ############################################################
-${HOMEgfs}/jobs/JGLOBAL_ATMOS_ANALCALC
+${HOMEgfs}/jobs/JGLOBAL_ATMOS_ANALYSIS_CALC
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
    ecflow_client --abort

@@ -1,8 +1,8 @@
 #! /bin/sh
 #BSUB -q %QUEUE%
 #BSUB -P %PROJ%
-#BSUB -J %E%gfs_gempak_upapgif_%CYC%
-#BSUB -o %COM%/output/%ENVIR%/today/gfs_gempak_upapgif_%CYC%.o%J
+#BSUB -J %E%gfs_atmos_gempak_upapgif_%CYC%
+#BSUB -o %COM%/output/%ENVIR%/today/gfs_atmos_gempak_upapgif_%CYC%.o%J
 #BSUB -W 3:00
 #BSUB -n 1
 #BSUB -R affinity[core(1)]
@@ -47,7 +47,7 @@ export cycle=t%CYC%z
 export COMIN=$COM_IN/${RUN}.${PDY}/${cyc}/${COMPONENT}/gempak
 export COMOUT=$COM_IN/${RUN}.${PDY}/${cyc}/${COMPONENT}
 export USE_CFP=YES
-export COMINgfs=${COMIN}
+export COMINgfs=$COM_IN/${RUN}.${PDY}/${cyc}/${COMPONENT}
 export COMOUTwmo=${COMOUT}/wmo
 ############################################################
 # CALL executable job script here

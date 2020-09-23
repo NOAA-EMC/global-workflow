@@ -1,5 +1,5 @@
-#BSUB -J %E%%RUN%_prep_post_%CYC%
-#BSUB -o %COM%/output/%ENVIR%/today/%RUN%_prep_post_%CYC%.o%J
+#BSUB -J %E%%RUN%_atmos_prep_post_%CYC%
+#BSUB -o %COM%/output/%ENVIR%/today/%RUN%_atmos_prep_post_%CYC%.o%J
 #BSUB -q %QUEUESERV%
 #BSUB -cwd /tmp
 #BSUB -W 00:10
