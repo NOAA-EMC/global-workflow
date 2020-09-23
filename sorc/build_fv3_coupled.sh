@@ -18,6 +18,7 @@ fi
 
 if [ $target = hera ]; then target=hera.intel ; fi
 if [ $target = orion ]; then target=orion.intel ; fi
+if [ $target = stampede2 ]; then target=stampede.intel ; fi
 
 cd fv3_coupled.fd/
 FV3=$( pwd -P )/FV3

@@ -4,7 +4,6 @@
 ## load contrib environment
 ## load slurm utils (arbitrary.pl  layout.pl)
 ##
-
 module use /work/07738/kgerheis/stampede2/hpc-stack/v1.0.0-beta1/modulefiles/stack
 
 module load hpc/1.0.0-beta1
