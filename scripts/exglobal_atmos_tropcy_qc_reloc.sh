@@ -1,6 +1,6 @@
 ############################################################################
 echo "---------------------------------------------------------------------"
-echo "extropcy_qc_reloc.sh - Tropical Cyclone QC/Relocation Prcocessing"
+echo "exglobal_atmos_tropcy_qc_reloc.sh - Tropical Cyclone QC/Relocation Prcocessing"
 echo "---------------------------------------------------------------------"
 echo "History: Jun 13 2006 - Original script."
 echo "          March 2013 - No changes needed for WCOSS transition"

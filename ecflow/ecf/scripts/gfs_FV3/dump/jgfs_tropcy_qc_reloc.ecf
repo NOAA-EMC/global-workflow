@@ -46,7 +46,7 @@ export cycle=t%CYC%z
 ############################################################
 # CALL executable job script here
 ############################################################
-${HOMEgfs}/jobs/JGLOBAL_TROPCY_QC_RELOC
+${HOMEgfs}/jobs/JGLOBAL_ATMOS_TROPCY_QC_RELOC
 
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
