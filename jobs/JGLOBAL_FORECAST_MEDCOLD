@@ -32,6 +32,9 @@ status=$?
 ##############################################
 export pid=${pid:-$$}
 export outid=${outid:-"LL$job"}
+
+export DATAROOT="$RUNDIR/$CDATE/$CDUMP"
+[[ ! -d $DATAROOT ]] && mkdir -p $DATAROOT
 export DATA=${DATA:-${DATAROOT}/${jobid:?}}
 mkdir -p $DATA
 cd $DATA
