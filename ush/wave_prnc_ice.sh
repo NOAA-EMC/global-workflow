@@ -64,7 +64,7 @@
     echo '*** EXPORTED VARIABLES IN preprocessor NOT SET ***'
     echo '**************************************************'
     echo ' '
-    exit 0
+    exit 1
     set $seton
     postmsg "$jlogfile" "NON-FATAL ERROR - EXPORTED VARIABLES IN preprocessor NOT SET"
   fi
@@ -98,7 +98,7 @@
     echo ' '
     set $seton
     postmsg "$jlogfile" "FATAL ERROR - NO ICE FILE (GFS GRIB)"
-    exit 0
+    exit 2
   fi
 
 # --------------------------------------------------------------------------- #
@@ -125,7 +125,7 @@
     echo ' '
     set $seton
     postmsg "$jlogfile" "ERROR IN UNPACKING GRIB ICE FILE."
-    exit 0
+    exit 3
   fi
 
   rm -f wgrib.out
@@ -156,7 +156,7 @@
     echo ' '
     set $seton
     postmsg "$jlogfile" "NON-FATAL ERROR IN waveprep."
-    exit 0
+    exit 4
   fi
 
   rm -f wave_prep.out ww3_prep.inp ice.raw mod_def.ww3

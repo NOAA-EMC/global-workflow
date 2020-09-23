@@ -120,8 +120,8 @@ export JOBGLOBAL=$HOMEgldas/jobs
 #############################################################
 # Execute job
 #############################################################
-echo $JOBGLOBAL/JGDAS_GLDAS
-$JOBGLOBAL/JGDAS_GLDAS
+echo $JOBGLOBAL/JGDAS_ATMOS_GLDAS
+$JOBGLOBAL/JGDAS_ATMOS_GLDAS
 
 exit
 
