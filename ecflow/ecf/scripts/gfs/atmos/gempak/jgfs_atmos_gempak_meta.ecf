@@ -53,7 +53,7 @@ export CDATE=$PDY$cyc
 ############################################################
 # CALL executable job script here
 ############################################################
-${HOMEgfs}/jobs/JGFS_GEMPAK_META
+${HOMEgfs}/jobs/JGFS_ATMOS_GEMPAK_META
 
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"

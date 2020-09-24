@@ -58,7 +58,7 @@ export FHINC=03
 ############################################################
 # CALL executable job script here
 ############################################################
-${HOMEgfs}/jobs/JGFS_WAFS_BLENDING
+${HOMEgfs}/jobs/JGFS_ATMOS_WAFS_BLENDING
 
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"

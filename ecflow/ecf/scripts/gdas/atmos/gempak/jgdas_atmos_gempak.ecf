@@ -48,7 +48,7 @@ export USE_CFP=YES
 # CALL executable job script here
 ############################################################
 export model=gdas
-${HOMEgfs}/jobs/JGDAS_GEMPAK
+${HOMEgfs}/jobs/JGDAS_ATMOS_GEMPAK
 
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"

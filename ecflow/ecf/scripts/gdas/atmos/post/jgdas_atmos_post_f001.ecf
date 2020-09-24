@@ -62,7 +62,7 @@ export g2tmpl_ver=v${g2tmpl_ver}
 ############################################################
 # CALL executable job script here
 ############################################################
-$HOMEgfs/jobs/JGLOBAL_NCEPPOST
+$HOMEgfs/jobs/JGLOBAL_ATMOS_NCEPPOST
 
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"

@@ -59,7 +59,7 @@ export job="jgfs_awips_f${fcsthrs}_${cyc}"
 ############################################################
 # CALL executable job script here
 ############################################################
-$HOMEgfs/jobs/JGFS_AWIPS_G2
+$HOMEgfs/jobs/JGFS_ATMOS_AWIPS_G2
 
 ###############################################################
 

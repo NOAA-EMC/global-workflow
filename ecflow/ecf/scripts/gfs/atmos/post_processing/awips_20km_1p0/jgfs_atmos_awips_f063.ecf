@@ -54,7 +54,7 @@ export job=jgfs_awips_f%FCSTHR%_%CYC%
 ############################################################
 # CALL executable job script here
 ############################################################
-$HOMEgfs/jobs/JGFS_AWIPS_20KM_1P0DEG
+$HOMEgfs/jobs/JGFS_ATMOS_AWIPS_20KM_1P0DEG
 
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
