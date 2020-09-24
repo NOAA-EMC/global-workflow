@@ -38,7 +38,7 @@ for fhr in $fhrlst; do
     pgb0p25=$ROTDIR/${CDUMP}.${PDY}/${cyc}/$COMPONENT/${CDUMP}.t${cyc}z.pgrb2.0p25.f${fhr}
     if [ ! -s $pgb0p25 ]; then
         export post_times=$fhr
-        $HOMEgfs/jobs/JGLOBAL_NCEPPOST
+        $HOMEgfs/jobs/JGLOBAL_ATMOS_NCEPPOST
         status=$?
         [[ $status -ne 0 ]] && exit $status
     fi

@@ -112,7 +112,7 @@ export HOMERELO=$shared_global_home
 #export HOMERELO=${NWROOT}/tropcy_qc_reloc.${tropcy_qc_reloc_ver}_r62774_phase2
 export HOMESYND=${HOMERELO}
 #export envir_getges=prod
-$gdas_global_home/jobs/JGDAS_TROPCY_QC_RELOC
+$gdas_global_home/jobs/JGLOBAL_ATMOS_TROPCY_QC_RELOC
 
 if [ $? -ne 0 ]; then
 #  ecflow_client --abort
@@ -122,12 +122,12 @@ fi
 #%include <tail.h> 
 #%manual
 ######################################################################
-#PURPOSE:  Executes the job JGDAS_TROPCY_QC_RELOC
+#PURPOSE:  Executes the job JGLOBAL_ATMOS_TROPCY_QC_RELOC
 ######################################################################
 #############################################################
 #  Function been tested:            TCvital quality control and archive, hurricane relocation
 #
-#  Calling sequence:                JGFS_TROPCY_QC_RELOC, extropcy_qc_reloc.sh,
+#  Calling sequence:                JGLOBAL_ATMOS_TROPCY_QC_RELOC, exglobal_atmos_tropcy_qc_reloc.sh,
 #  #                                   syndat_qctropcy.sh, tropcy_relocate.sh,syndat_getjtbul.sh,
 #  #                                   tropcy_relocate_extrkr.sh,parse-storm-type.pl
 #

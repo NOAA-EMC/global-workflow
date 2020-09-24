@@ -31,7 +31,7 @@ echo
 echo "=============== START TO RUN WAFS ==============="
 
 # Execute the JJOB
-$HOMEgfs/jobs/JGFS_WAFS
+$HOMEgfs/jobs/JGFS_ATMOS_WAFS
 status=$?
 exit $status
 
