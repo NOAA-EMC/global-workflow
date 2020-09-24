@@ -20,8 +20,8 @@ export pgmout="OUTPUT.$$"
 
 export DBN_ALERT_TYPE=NFC_WAVEENS_GEMPAK
 export SENDCOM=${SENDCOM:-YES}
-export SENDDBN=${SENDDBN:-YES}
-
+export SENDDBN=${SENDDBN:-NO}  
+export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}  
 export DATA=${DATA:-${DATAROOT}/${jobid:?}}
 mkdir -p $DATA
 cd $DATA
