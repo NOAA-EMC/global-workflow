@@ -30,7 +30,7 @@ export DATA="${DATAROOT}/$job"
 echo
 echo "=============== START TO RUN WAFSGCIP ==============="
 # Execute the JJOB
-$HOMEgfs/jobs/JGFS_WAFS_GCIP
+$HOMEgfs/jobs/JGFS_ATMOS_WAFS_GCIP
 status=$?
 exit $status
 
