@@ -21,6 +21,12 @@ else
   format="nemsio"
 fi
 
+# Set whether to archive downstream products
+DO_DOWN=${DO_DOWN:-"NO"}
+if [ $DO_BUFRSND = "YES" -o $WAFSF = "YES" ]; then
+  export DO_DOWN="YES"
+fi
+
 #-----------------------------------------------------
 if [ $type = "gfs" ]; then
 #-----------------------------------------------------
@@ -46,6 +52,11 @@ if [ $type = "gfs" ]; then
   touch gfs_${format}b.txt
   touch gfs_restarta.txt
 
+  if [ $DO_DOWN = "YES" ]; then
+    rm -f gfs_downstream.txt
+    touch gfs_downstream.txt
+  fi
+
   dirpath="gfs.${PDY}/${cyc}/atmos/"
   dirname="./${dirpath}"
 
@@ -57,6 +68,7 @@ if [ $type = "gfs" ]; then
   echo  "${dirname}${head}pgrb2b.0p50.anl                  " >>gfs_pgrb2b.txt
   echo  "${dirname}${head}pgrb2b.0p50.anl.idx              " >>gfs_pgrb2b.txt
 
+  echo  "./logs/${CDATE}/gfs*.log                          " >>gfsa.txt
   echo  "${dirname}${head}gsistat                          " >>gfsa.txt
   echo  "${dirname}${head}nsstbufr                         " >>gfsa.txt
   echo  "${dirname}${head}prepbufr                         " >>gfsa.txt
@@ -70,10 +82,26 @@ if [ $type = "gfs" ]; then
   echo  "${dirname}trak.gfso.atcfunix.altg.${PDY}${cyc}    " >>gfsa.txt
   echo  "${dirname}storms.gfso.atcf_gen.${PDY}${cyc}       " >>gfsa.txt
   echo  "${dirname}storms.gfso.atcf_gen.altg.${PDY}${cyc}  " >>gfsa.txt
-  echo  "${dirname}gempak/gfs_${PDY}${cyc}.sfc             " >>gfsa.txt
-  echo  "${dirname}gempak/gfs_${PDY}${cyc}.snd             " >>gfsa.txt
-  echo  "${dirname}bufr.t${cyc}z                           " >>gfsa.txt
-  echo  "./logs/${CDATE}/gfs*.log                          " >>gfsa.txt
+
+  if [ $DO_DOWN = "YES" ]; then
+   if [ $DO_BUFRSND = "YES" ]; then
+    echo  "${dirname}gempak/gfs_${PDY}${cyc}.sfc              " >>gfs_downstream.txt
+    echo  "${dirname}gempak/gfs_${PDY}${cyc}.snd              " >>gfs_downstream.txt
+    echo  "${dirname}wmo/gfs_collective*.postsnd_${cyc}       " >>gfs_downstream.txt
+    echo  "${dirname}bufr.t${cyc}z                            " >>gfs_downstream.txt
+    echo  "${dirname}gfs.t${cyc}z.bufrsnd.tar.gz              " >>gfs_downstream.txt
+   fi
+   if [ $WAFSF = "YES" ]; then
+    echo  "${dirname}wafsgfs*.t${cyc}z.gribf*.grib2           " >>gfs_downstream.txt
+    echo  "${dirname}gfs.t${cyc}z.wafs_grb45f*.grib2          " >>gfs_downstream.txt
+    echo  "${dirname}gfs.t${cyc}z.wafs_grb45f*.nouswafs.grib2 " >>gfs_downstream.txt
+    echo  "${dirname}WAFS_blended_${PDY}${cyc}f*.grib2        " >>gfs_downstream.txt
+    echo  "${dirname}gfs.t*z.gcip.f*.grib2                    " >>gfs_downstream.txt
+    echo  "${dirname}gfs.t${cyc}z.wafs_0p25.f*.grib2          " >>gfs_downstream.txt
+    echo  "${dirname}gfs.t${cyc}z.wafs_0p25_unblended.f*.grib2" >>gfs_downstream.txt
+    echo  "${dirname}WAFS_0p25_blended_${PDY}${cyc}f*.grib2   " >>gfs_downstream.txt
+   fi
+  fi
 
   echo  "${dirname}${head}pgrb2.0p50.anl                   " >>gfsb.txt
   echo  "${dirname}${head}pgrb2.0p50.anl.idx               " >>gfsb.txt
@@ -98,7 +126,7 @@ if [ $type = "gfs" ]; then
     echo  "${dirname}${head}pgrb2.0p25.f${fhr}.idx          " >>gfsa.txt
     echo  "${dirname}${head}logf${fhr}.txt                  " >>gfsa.txt
 
-    if [ -s $ROTDIR/${dirpath}}${head}pgrb2.0p50.f${fhr} ]; then
+    if [ -s $ROTDIR/${dirpath}${head}pgrb2.0p50.f${fhr} ]; then
        echo  "${dirname}${head}pgrb2.0p50.f${fhr}          " >>gfsb.txt
        echo  "${dirname}${head}pgrb2.0p50.f${fhr}.idx      " >>gfsb.txt
     fi

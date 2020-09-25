@@ -150,33 +150,35 @@ fi
 ###############################################################
 # ENSGRP 0 also does clean-up
 if [ $ENSGRP -eq 0 ]; then
-    ###############################################################
-    # Clean up previous cycles; various depths
-    # PRIOR CYCLE: Leave the prior cycle alone
-    GDATE=$($NDATE -$assim_freq $CDATE)
 
-    # PREVIOUS to the PRIOR CYCLE
-    # Now go 2 cycles back and remove the directory
-    GDATE=$($NDATE -$assim_freq $GDATE)
-    gPDY=$(echo $GDATE | cut -c1-8)
-    gcyc=$(echo $GDATE | cut -c9-10)
+    # Start start and end dates to remove
+    GDATEEND=$($NDATE -${RMOLDEND_ENKF:-24}  $CDATE)
+    GDATE=$($NDATE -${RMOLDSTD_ENKF:-120} $CDATE)
+    while [ $GDATE -le $GDATEEND ]; do
 
-    # Handle GDAS and GFS EnKF directories separately
-    COMIN_ENS="$ROTDIR/enkfgdas.$gPDY/$gcyc/$COMPONENT"
-    [[ -d $COMIN_ENS ]] && rm -rf $COMIN_ENS
-    COMIN_ENS="$ROTDIR/enkfgfs.$gPDY/$gcyc/$COMPONENT"
-    [[ -d $COMIN_ENS ]] && rm -rf $COMIN_ENS
+	gPDY=$(echo $GDATE | cut -c1-8)
+	gcyc=$(echo $GDATE | cut -c9-10)
 
-    # PREVIOUS day 00Z remove the whole day
-    GDATE=$($NDATE -48 $CDATE)
-    gPDY=$(echo $GDATE | cut -c1-8)
-    gcyc=$(echo $GDATE | cut -c9-10)
+	# Handle GDAS and GFS EnKF directories separately
+	COMIN_ENS="$ROTDIR/enkfgdas.$gPDY/$gcyc/$COMPONENT"
+	[[ -d $COMIN_ENS ]] && rm -rf $COMIN_ENS
+	COMIN_ENS="$ROTDIR/enkfgfs.$gPDY/$gcyc/$COMPONENT"
+	[[ -d $COMIN_ENS ]] && rm -rf $COMIN_ENS
 
-    # Handle GDAS and GFS EnKF directories separately
-    COMIN_ENS="$ROTDIR/enkfgdas.$gPDY"
-    [[ -d $COMIN_ENS ]] && rm -rf $COMIN_ENS
-    COMIN_ENS="$ROTDIR/enkfgfs.$gPDY"
-    [[ -d $COMIN_ENS ]] && rm -rf $COMIN_ENS
+	# Remove any empty directories
+	COMIN_ENS="$ROTDIR/enkfgdas.$gPDY/$COMPONENT"
+	if [ -d $COMIN_ENS ] ; then
+	    [[ ! "$(ls -A $COMIN_ENS)" ]] && rm -rf $COMIN_ENS
+	fi
+	COMIN_ENS="$ROTDIR/enkfgfs.$gPDY/$COMPONENT"
+	if [ -d $COMIN_ENS ] ; then
+	    [[ ! "$(ls -A $COMIN_ENS)" ]] && rm -rf $COMIN_ENS
+	fi
+
+	# Advance to next cycle
+	GDATE=$($NDATE +$assim_freq $GDATE)
+
+    done
 
 fi
 

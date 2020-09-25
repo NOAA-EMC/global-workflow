@@ -113,7 +113,7 @@ if [ $CDUMP = "gfs" ]; then
         export rundir="$RUNDIR/$CDUMP/$CDATE/vrfy/vsdb_exp"
         export COMROT="$ARCDIR1/dummy"
 
-        $VSDBSH $xdate $xdate $vlength $cyc $PSLOT $CDATE $CDUMP $gfs_cyc $rain_bucket
+        $VSDBJOBSH $VSDBSH $xdate $vlength $cyc $PSLOT $CDATE $CDUMP $gfs_cyc $rain_bucket $machine
     fi
 fi
 

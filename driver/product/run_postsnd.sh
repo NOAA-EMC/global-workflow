@@ -179,8 +179,8 @@ env
 
 ########################################################
 # Execute the script.
-#$SCRbufrsnd/exgfs_postsnd.sh.ecf
-${HOMEbufrsnd}/jobs/JGFS_POSTSND
+#$SCRbufrsnd/exgfs_atmos_postsnd.sh
+${HOMEbufrsnd}/jobs/JGFS_ATMOS_POSTSND
 ########################################################
 
 #cat $pgmout

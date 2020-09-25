@@ -15,7 +15,7 @@ if [ $DONST = "YES" ]; then
     . $EXPDIR/config.nsst
 fi
 
-export FORECASTSH="$HOMEgfs/scripts/exglobal_fcst_nemsfv3gfs.sh"
+export FORECASTSH="$HOMEgfs/scripts/exglobal_forecast.sh"
 export FCSTEXECDIR="$HOMEgfs/exec"
 export FCSTEXEC="global_fv3gfs.x"
 export npe_fv3=$npe_fcst 
@@ -240,6 +240,10 @@ elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
 
     # Write each restart file in 16 small files to save time
     export io_layout="4,4"
+    export n_sponge=42
+
+    # Set number of layers from the top over 
+    # which two delta-Z filter is applied
     export n_sponge=42
 
     # Debug load balancing 

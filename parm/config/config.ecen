@@ -8,10 +8,6 @@ echo "BEGIN: config.ecen"
 # Get task specific resources
 . $EXPDIR/config.resources ecen
 
-export ENKFRECENSH="$HOMEgsi/scripts/exglobal_enkf_recenter_fv3gfs.sh.ecf"
-
-export CHGRESEXEC="$HOMEgfs/exec/chgres_recenter.exe"
-
 # Number of concurrent ecen jobs [1 implies sequential]
 # Usually IAUFHRS_ENKF=3,6,9, so NECENGRP=3.  Scripting
 # below queries IAUFHRS_ENKF to determine NECENGRP
