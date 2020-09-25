@@ -3,7 +3,7 @@
 #BSUB -P %PROJ%
 #BSUB -J %E%gfs_atmos_post_%FHR%_%CYC%
 #BSUB -o %COM%/output/%ENVIR%/today/gfs_atmos_post_%FHR%_%CYC%.o%J
-#BSUB -W 0:30
+#BSUB -W 6:00
 #BSUB -n 56
 #BSUB -R affinity[core(1)]
 #BSUB -R span[ptile=14]
