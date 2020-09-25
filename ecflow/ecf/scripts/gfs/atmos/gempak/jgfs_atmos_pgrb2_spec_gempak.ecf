@@ -51,11 +51,7 @@ export USE_CFP=YES
 ############################################################
 # CALL executable job script here
 ############################################################
-<<<<<<< HEAD:ecflow/ecf/scripts/gfs/atmos/gempak/jgfs_atmos_pgrb2_spec_gempak.ecf
 ${HOMEgfs}/jobs/JGFS_ATMOS_GEMPAK_PGRB2_SPEC
-=======
-${HOMEgfs}/jobs/JGFS_ATMOS_GEMPAK_NCDC_UPAPGIF
->>>>>>> upstream/feature/gfsv16b:ecflow/ecf/scripts/gfs_FV3/gempak_20190514/jgfs_gempak_ncdc_upapgif.ecf
 
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
