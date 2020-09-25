@@ -30,10 +30,24 @@ export DATA="${DATAROOT}/$job"
 echo
 echo "=============== START TO RUN WAFS ==============="
 
-# Execute the JJOB
-$HOMEgfs/jobs/JGFS_ATMOS_WAFS
-status=$?
-exit $status
+# Loop through fcsthrs
+hr=0
+while [ $hr -le 120 ]; do
+
+  if [ $hr -le 100 ]; then
+    export fcsthrs="$(printf "%02d" $(( 10#$hr )) )"
+  else
+    export fcsthrs=$hr
+  fi
+
+  # Execute the JJOB
+  $HOMEgfs/jobs/JGFS_ATMOS_WAFS
+  status=$?
+  [[ $status -ne 0 ]] && exit $status
+
+  hr=`expr $hr + 6`
+
+done
 
 ###############################################################
 # Force Exit out cleanly
