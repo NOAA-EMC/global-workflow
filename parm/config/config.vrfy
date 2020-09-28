@@ -73,6 +73,7 @@ if [ "$CDUMP" = "gfs" ] ; then
         export vsdbsave="$NOSCRUB/archive/vsdb_data"    # place to save vsdb database
         export vsdbhome=$BASE_VERIF                     # location of global verification scripts
         export VSDBSH="$vsdbhome/vsdbjob.sh"            # VSDB job script
+        export VSDBJOBSH=$SCRgfs/vsdbjob_submit.sh      # VSDB submission job
         export vlength=$FHMAX_GFS                       # verification length
         export vhr_rain=$FHMAX_GFS                      # verification length for precip
         export ftyplist="pgbq"                          # verif. files used for computing QPF ETS scores
