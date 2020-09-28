@@ -30,7 +30,7 @@ export DATA="${DATAROOT}/$job"
 echo
 echo "=============== START TO RUN WAFSBLENDING ==============="
 # Execute the JJOB
-$HOMEgfs/jobs/JGFS_WAFS_BLENDING
+$HOMEgfs/jobs/JGFS_ATMOS_WAFS_BLENDING
 status=$?
 exit $status
 

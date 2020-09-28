@@ -73,6 +73,7 @@ if [ "$CDUMP" = "gfs" ] ; then
         export vsdbsave="$NOSCRUB/archive/vsdb_data"    # place to save vsdb database
         export vsdbhome=$BASE_VERIF                     # location of global verification scripts
         export VSDBSH="$vsdbhome/vsdbjob.sh"            # VSDB job script
+        export VSDBJOBSH=$SCRgfs/vsdbjob_submit.sh      # VSDB submission job
         export vlength=$FHMAX_GFS                       # verification length
         export vhr_rain=$FHMAX_GFS                      # verification length for precip
         export ftyplist="pgbq"                          # verif. files used for computing QPF ETS scores
@@ -146,7 +147,7 @@ export HOMEens_tracker=$BASE_GIT/tracker/ens_tracker.${ens_tracker_ver}
 
 if [ "$VRFYTRAK" = "YES" ]; then
 
-    export TRACKERSH="$HOMEgfs/jobs/JGFS_CYCLONE_TRACKER"
+    export TRACKERSH="$HOMEgfs/jobs/JGFS_ATMOS_CYCLONE_TRACKER"
     if [ "$CDUMP" = "gdas" ]; then
         export FHOUT_CYCLONE=3            
         export FHMAX_CYCLONE=$FHMAX
@@ -165,12 +166,12 @@ fi
 
 if [[ "$VRFYGENESIS" == "YES" && "$CDUMP" == "gfs" ]]; then
 
-    export GENESISSH="$HOMEgfs/jobs/JGFS_CYCLONE_GENESIS"
+    export GENESISSH="$HOMEgfs/jobs/JGFS_ATMOS_CYCLONE_GENESIS"
 fi
 
 if [[ "$VRFYFSU" == "YES" && "$CDUMP" == "gfs" ]]; then
 
-    export GENESISFSU="$HOMEgfs/jobs/JGFS_FSU_GENESIS"
+    export GENESISFSU="$HOMEgfs/jobs/JGFS_ATMOS_FSU_GENESIS"
 fi
 
 if [[ "$RUNMOS" == "YES" && "$CDUMP" == "gfs" ]]; then

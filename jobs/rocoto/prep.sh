@@ -71,7 +71,7 @@ if [ $PROCESS_TROPCY = "YES" ]; then
 
     [[ $ROTDIR_DUMP = "YES" ]] && rm $COMOUT${CDUMP}.t${cyc}z.syndata.tcvitals.tm00
 
-    $HOMEgfs/jobs/JGLOBAL_TROPCY_QC_RELOC
+    $HOMEgfs/jobs/JGLOBAL_ATMOS_TROPCY_QC_RELOC
     status=$?
     [[ $status -ne 0 ]] && exit $status
 

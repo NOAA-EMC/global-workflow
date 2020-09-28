@@ -45,7 +45,7 @@ export cycle=t%CYC%z
 ############################################################
 # CALL executable job script here
 ############################################################
-${HOMEgfs}/jobs/JGDAS_GEMPAK_META_NCDC
+${HOMEgfs}/jobs/JGDAS_ATMOS_GEMPAK_META_NCDC
 
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"

@@ -18,6 +18,9 @@ export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/$COMPONE
 export PCOM=${PCOM:-${COMOUT}/wmo}
 export SENDCOM=${SENDCOM:-YES}
 export SENDDBN_NTC=${SENDDBN_NTC:-YES}
+export SENDDBN=${SENDDBN:-NO}
+export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
+
 if [ $SENDCOM = YES ]; then
   mkdir -p $COMOUT $PCOM
 fi
