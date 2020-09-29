@@ -155,7 +155,7 @@
     exit 3
   fi
 
-  if [ "$filext" = 'spec' ]
+  if [ "$type" = 'spec' ]
   then
     if [ -s $ID.$cycle.${type}_tar ]
     then

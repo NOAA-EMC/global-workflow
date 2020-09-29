@@ -7,18 +7,17 @@
 # Script description:  Creates output products from binary WW3 data
 #
 # Author:   Jose-Henrique Alves Org: NCEP/EMC      Date: 2019-12-06
-# Abstract: This script is the postprocessor for the wave component in GFS.
-#           This version runs side-by-side with the GFS fcst step. 
-#           It executes several scripts forpreparing and creating output data
-#           as follows:
+# Abstract: This script is the boundary point postprocessor for the wave component in GFS.
 #
-#  wave_outp_spec.sh         : generates spectral data for output locations.                                      
+#  wave_outp_spec.sh         : generates spectral data for output locations                                      
+#  wave_outp_cat.sh          : cats the by hour into the single output file
 #  wave_tar.sh               : tars the spectral and bulletin multiple files  
 #
 # Script history log:
 # 2019-12-06  J-Henrique Alves: First Version adapted from HTolman post.sh 2007 
 # 2020-06-10  J-Henrique Alves: Porting to R&D machine Hera
 # 2020-07-30  Jessica Meixner: Points only - no gridded data + optimization 
+# 2020-09-29  Jessica Meixner: optimized by changing loop structures
 #
 # $Id$
 #
@@ -42,19 +41,18 @@
   # Set wave model ID tag to include member number
   # if ensemble; waveMEMB var empty in deterministic
   export WAV_MOD_TAG=${CDUMP}wave${waveMEMB}
-  FHMAX_WAV_IBP=192
   FHMAX_WAV_IBP=180
 
   postmsg "$jlogfile" "HAS BEGUN on `hostname`"
 
-  msg="Starting WAVE POSTPROCESSOR SCRIPT for $WAV_MOD_TAG"
+  msg="Starting WAVE BNDPNT POSTPROCESSOR SCRIPT for $WAV_MOD_TAG"
   postmsg "$jlogfile" "$msg"
 
   set +x
   echo ' '
-  echo '                     *********************************'
-  echo '                     *** WAVE POSTPROCESSOR SCRIPT ***'
-  echo '                     *********************************'
+  echo '                     *****************************************'
+  echo '                     *** WAVE BND PNT POSTPROCESSOR SCRIPT ***'
+  echo '                     *****************************************'
   echo ' '
   echo "Starting at : `date`"
   echo '-------------'
@@ -108,8 +106,6 @@
 # 1.a Model definition files and output files (set up using poe) 
 
 # 1.a.1 Set up the parallel command tasks
-
-  echo "Make More CMDFILE parts: `date`"
 
   rm -f cmdfile
   touch cmdfile
@@ -312,8 +308,7 @@
   [[ "$LOUD" = YES ]] && set -x
 
 # --------------------------------------------------------------------------- #
-# 2.  Make consolidated grib2 file for side-by-side grids and interpolate
-#     onto extended grids
+# 2.  Make files for processing boundary points 
 #
 # 2.a Command file set-up
 
@@ -326,14 +321,11 @@
   chmod 744 cmdfile
 
 # 2.a.1 Loop over forecast time to generate post files 
-# When executed side-by-side, serial mode (cfp when run after the fcst step)
   fhr=$FHMIN_WAV
   fhrp=$fhr
-  echo " Starting processing wave boundary points for FHR=$fhr at: `date`"
+  echo " Starting processing wave boundary points at: `date`"
 
   while [ $fhr -le $FHMAX_WAV_IBP ]; do
-    
-    #echo " Starting processing wave boundary points for FHR=$fhr at: `date`"
 
     ymdh=`$NDATE $fhr $CDATE`
     YMD=$(echo $ymdh | cut -c1-8)
@@ -348,7 +340,7 @@
     mkdir output_$YMDHMS
     cd output_$YMDHMS
 
-# Create instances of directories for spec and gridded output
+# Create instances of directories for spec output
     export SPECDATA=${DATA}/output_$YMDHMS
     ln -fs $DATA/mod_def.${waveuoutpGRD} mod_def.ww3
 
@@ -405,8 +397,6 @@
     fhr=$fhrp # no gridded output, loop with out_pnt stride
 
   done
-
-  echo "Make More CMDFILE parts: `date`"
 
   if [ ${CFP_MP:-"NO"} = "YES" ]; then
     nfile=0
@@ -478,7 +468,7 @@
 
   cd $DATA
 
-  echo "Before create cmdfile for cat bouy : `date`"
+  echo "Creating cmdfile for cat bouy : `date`"
   rm -f cmdfile.bouy
   touch cmdfile.bouy
   chmod 744 cmdfile.bouy
@@ -488,8 +478,6 @@
   do
     echo "$USHwave/wave_outp_cat.sh $buoy $FHMAX_WAV_IBP ibp > ${CATOUTDIR}/ibp_cat_$buoy.out 2>&1" >> cmdfile.bouy
   done
-
-  echo "Make More CMDFILE parts: `date`"
 
   if [ ${CFP_MP:-"NO"} = "YES" ]; then
     nfile=0
@@ -571,8 +559,6 @@
 
   [[ "$LOUD" = YES ]] && set -x
 
-# 6.b Spectral data files
-
   echo "$USHwave/wave_tar.sh $WAV_MOD_TAG ibp $Nibp > ${WAV_MOD_TAG}_ibp_tar.out 2>&1 "   >> cmdtarfile
 
   wavenproc=`wc -l cmdtarfile | awk '{print $1}'`
@@ -589,10 +575,6 @@
   ./cmdtarfile
   exit=$?
 
-##delete me. temporary: 
-  cat ${WAV_MOD_TAG}_ibp_tar.out
-##delete me. temporary: 
-
   if [ "$exit" != '0' ]
   then
       set +x
@@ -608,30 +590,30 @@
   fi
 
 # --------------------------------------------------------------------------- #
-# 7.  Ending output
+# 4.  Ending output
 
   set +x
   echo ' '
   echo "Ending at : `date`"
   echo '-----------'
   echo ' '
-  echo '                     *** End of MWW3 postprocessor ***'
+  echo '                     *** End of MWW3 bnd pnt postprocessor ***'
   echo ' '
   [[ "$LOUD" = YES ]] && set -x
 
   if [ "$exit_code" -ne '0' ]
   then
-    echo " FATAL ERROR: Problem in MWW3 POST"
-    msg="ABNORMAL EXIT: Problem in MWW3 POST"
+    echo " FATAL ERROR: Problem in MWW3 BND PNT POST"
+    msg="ABNORMAL EXIT: Problem in MWW3 BND PNT POST"
     postmsg "$jlogfile" "$msg"
     echo $msg
     err=12; export err;${errchk}
     exit $err
   else
-    echo " Side-by-Side Wave Post Completed Normally "
+    echo " Wave BndPnt Post Completed Normally "
     msg="$job completed normally"
     postmsg "$jlogfile" "$msg"
     exit 0
   fi
 
-# End of MWW3 prostprocessor script ---------------------------------------- #
+# End of MWW3 bnd pnt prostprocessor script ---------------------------------------- #
