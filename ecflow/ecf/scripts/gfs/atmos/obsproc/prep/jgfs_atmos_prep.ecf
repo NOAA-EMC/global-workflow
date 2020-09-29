@@ -5,9 +5,10 @@
 #BSUB -q %QUEUE%
 #BSUB -P %PROJ%
 #BSUB -W 00:20
-#BSUB -R span[ptile=3]; -R affinity[core]
-#BSUB -n 3
+#BSUB -R span[ptile=2]; -R affinity[core(1)]
+#BSUB -n 4
 
+module purge
 %include <head.h>
 %include <envir-p3.h>
 
@@ -23,84 +24,43 @@ model=obsproc_global
 #############################################################
 ## Load modules
 ##############################################################
-#. $MODULESHOME/init/sh
-module load ips/$ips_ver
-module load impi/$impi_ver
-module load CFP/$cfp_ver
+module load lsf/${lsf_ver}
+module load impi/${impi_ver}
+module load prod_util/${prod_util_ver}
+module load prod_envir/${prod_envir_ver}
+module use -a /usrx/local/nceplibs/dev/NCEPLIBS/modulefiles
+module load hdf5_parallel/${hdf5_parallel_ver}
+module load netcdf_parallel/${netcdf_parallel_ver}
+module load CFP/${CFP_ver}
+
 module list
 
 #############################################################
 ## WCOSS_C environment settings
 ##############################################################
-export BACK="YES"
-export POE="NO"
-export ROTDIR=%COM%/$NET/$envir
+# export BACK="NO"
+# export POE="YES"
 export COMPONENT=${COMPONENT:-atmos}
 export cyc=%CYC%
-export COMIN_ROOT=/gpfs/dell1/nco/ops/com
-export COMIN="%COM%/$NET/$envir/$CDUMP.$PDY/$cyc/${COMPONENT}"
-export COMOUT="%COM%/$NET/$envir/$CDUMP.$PDY/$cyc/${COMPONENT}"
+#### export COMIN_ROOT=/gpfs/dell1/nco/ops/com
+export COMIN_ROOT=%COM%
+export COMIN="%COM%/${NET}/${envir}/${CDUMP}.${PDY}/${cyc}/${COMPONENT}"
+export COMOUT_ROOT=%COM%
+export COMOUT="%COM%/${NET}/${envir}/${CDUMP}.${PDY}/${cyc}/${COMPONENT}"
 export COMINgdas=$COMIN
 export COMINgfs="%COM%/$NET/$envir/gfs.$PDY/$cyc/${COMPONENT}"
+export COMINgdas=/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/v16rt2/gfs/para/gdas.${PDY}/${cyc}/atmos
+export COMINgfs=/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/v16rt2/gfs/para/gfs.${PDY}/${cyc}/atmos
 export DO_MAKEPREPBUFR=YES
 export ROTDIR_DUMP=YES
 export OPREFIX=$CDUMP.t${cyc}z.
 export EXPDIR="$HOMEgfs/parm/config"
+export ROTDIR=%COM%/$NET/$envir
 export CDATE=${PDY}${cyc}
-
-################################################
-###############################################################
-## Source FV3GFS workflow modules
-. $HOMEgfs/ush/load_fv3gfs_modules.sh
-status=$?
-[[ $status -ne 0 ]] && exit $status
-
-###############################################################
-# Source relevant configs
-configs="base prep prepbufr"
-for config in $configs; do
-    . $EXPDIR/config.${config}
-    status=$?
-    [[ $status -ne 0 ]] && exit $status
-done
-
-###############################################################
-# Source machine runtime environment
-. $BASE_ENV/${machine}.env prep
-status=$?
-[[ $status -ne 0 ]] && exit $status
-
-###############################################################
-
 
 set -x
 
-
-# CALL executable job script here
-if [ $DO_MAKEPREPBUFR = "YES" ]; then
-    if [ $ROTDIR_DUMP = "YES" ]; then
-      if [ -s $COMOUT/${OPREFIX}prepbufr ]; then
-        rm $COMOUT/${OPREFIX}prepbufr
-        rm $COMOUT/${OPREFIX}prepbufr.acft_profiles
-        rm $COMOUT/${OPREFIX}nsstbufr
-      fi
-    fi
-    if [ $machine = "WCOSS_C" -o $machine = "WCOSS_DELL_P3" -o $machine = "THEIA" ]; then
-
-        export job="j${CDUMP}_prep_${cyc}"
-        export DATAROOT="$RUNDIR/$CDATE/$CDUMP/prepbufr"
-        ${HOMEobsproc_global}/jobs/JGLOBAL_PREP
-        status=$?
-        [[ $status -ne 0 ]] && exit $status
-
-    else
-        echo "WARNING:  prep step is not supported on $machine, exit"
-        exit 1
-    fi
-fi
-
-
-# ${HOMEobsproc_global}/jobs/JGLOBAL_PREP
+${HOMEobsproc_global}/jobs/JGLOBAL_PREP
 
 %include <tail.h>
 %manual

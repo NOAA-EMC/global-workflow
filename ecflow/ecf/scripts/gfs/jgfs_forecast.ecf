@@ -3,8 +3,8 @@
 #BSUB -P %PROJ%
 #BSUB -J %E%gfs_forecast_%CYC%
 #BSUB -o %COM%/output/%ENVIR%/today/gfs_forecast_%CYC%.o%J
-#BSUB -W 8:00
-#BSUB -n 1519
+#BSUB -W 2:05
+#BSUB -n 3388
 #BSUB -R affinity[core(4)]
 #BSUB -R span[ptile=7]
 #BSUB -cwd /tmp
@@ -15,8 +15,8 @@ module purge
 
 set -x
 
-export NODES=217
-export ntasks=1519
+export NODES=484
+export ntasks=3388
 export ptile=7
 export threads=4
 

@@ -13,6 +13,10 @@
 
 set -x
 
+export NET=%NET:gfs%
+export RUN=%RUN%
+export CDUMP=%RUN%
+
 export model=obsproc_global
 %include <model_ver.h>
 
@@ -35,8 +39,12 @@ module list
 
 set -x
 export cyc=%CYC%
+export COMPONENT=${COMPONENT:-atmos}
+export COMIN_ROOT=%COM%
+export COMIN=%COM%/${NET}/${envir}/${RUN}.${PDY}/${cyc}/${COMPONENT}
+export COMOUT_ROOT=%COM%
+export COMOUT=%COM%/${NET}/${envir}/${RUN}.${PDY}/${cyc}/${COMPONENT}
 
-#export PROCESS_DATACOUNTS=NO
 ####
 export ECF_PORT=%ECF_PORT%
 

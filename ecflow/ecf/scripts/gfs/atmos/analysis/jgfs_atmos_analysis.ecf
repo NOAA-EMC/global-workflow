@@ -3,8 +3,8 @@
 #BSUB -P %PROJ%
 #BSUB -J %E%gfs_atmos_analysis_%CYC%
 #BSUB -o %COM%/output/%ENVIR%/today/gfs_atmos_analysis_%CYC%.o%J
-#BSUB -W 0:50
-#BSUB -n 800
+#BSUB -W 0:29
+#BSUB -n 1000
 #BSUB -R affinity[core(7)]
 #BSUB -R span[ptile=4]
 #BSUB -cwd /tmp
@@ -15,8 +15,8 @@ module purge
 
 set -x
 
-export NODES=200
-export ntasks=800
+export NODES=250
+export ntasks=1000
 export ptile=4
 export threads=7
 

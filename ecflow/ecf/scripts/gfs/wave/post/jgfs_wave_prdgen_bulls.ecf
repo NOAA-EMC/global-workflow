@@ -45,6 +45,7 @@ export ROTDIR=%COM%/$NET/$envir
 export cyc=%CYC%
 export cycle=t%CYC%z
 export CDATE=$PDY$cyc
+export COMIN=%COM%/${NET}/${envir}/${RUN}.${PDY}/${cyc}/${COMPONENT}
 
 ############################################################
 # CALL executable job script here

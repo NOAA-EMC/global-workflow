@@ -2415,7 +2415,7 @@ suite prod00
       family analysis
         family create
           task jgdas_enkf_select_obs
-            trigger ../../../atmos/analysis/jgdas_atmos_analysis_calc == complete and /prod18/gdas/enkf/post == complete
+            trigger ../../../atmos/obsproc/prep/jgdas_atmos_prep == complete and /prod18/gdas/enkf/post == complete
           task jgdas_enkf_diag
             trigger ./jgdas_enkf_select_obs == complete
           task jgdas_enkf_update
