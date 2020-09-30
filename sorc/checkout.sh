@@ -28,7 +28,7 @@ if [[ ! -d fv3gfs.fd ]] ; then
     cd fv3gfs.fd
 ####    git checkout  GFS.v16.0.10
 ####    git submodule update --init --recursive
-    git checkout b8c5c22b2a2effe7b925fae1fa449ddec96be848
+    git checkout d021e7b0395ccac2b7a30b414b58a8c924d2784f 
     git submodule update --init --recursive 
     cd ${topdir}
 else
