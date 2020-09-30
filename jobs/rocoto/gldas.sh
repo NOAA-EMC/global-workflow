@@ -9,7 +9,7 @@ status=$?
 ###############################################################
 # Execute the JJOB. GLDAS only runs once per day.
 
-$HOMEgfs/jobs/JGDAS_GLDAS
+$HOMEgfs/jobs/JGDAS_ATMOS_GLDAS
 status=$?
 
 exit $status

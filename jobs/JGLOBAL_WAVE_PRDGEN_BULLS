@@ -14,10 +14,12 @@ export HOMEgfs=${HOMEgfs:-$(dirname $(dirname $0))} # parent directory of curren
 export COMIN=${COMIN:-$(compath.py ${NET}/${envir}/${RUN}.${PDY})/${cyc}/$COMPONENT}
 export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/$COMPONENT}
 export PCOM=${PCOM:-${COMOUT}/wmo}
-export SENDDBN=${SENDDBN:-NO}  
-export SENDCOM=${SENDCOM:-NO}
-export SENDDBN_NTC=${SENDDBN_NTC:-NO}
-export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn} 
+
+export SENDCOM=${SENDCOM:-YES}
+export SENDDBN_NTC=${SENDDBN_NTC:-YES}
+export SENDDBN=${SENDDBN:-NO}
+export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
+
 
 if [ $SENDCOM = YES ]; then
   mkdir -p $COMOUT $PCOM

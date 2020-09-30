@@ -10,7 +10,7 @@ if [ $# -ne 1 ]; then
     echo "argument can be any one of the following:"
     echo "anal analcalc analdiag gldas fcst post vrfy metp arch echgres"
     echo "eobs ediag eomg eupd ecen esfc efcs epos earc"
-    echo "waveinit waveprep wavepostsbs"
+    echo "waveinit waveprep wavepostsbs wavepostbndpnt wavepostpnt"
     echo "wavegempak waveawipsbulls waveawipsgridded"
     echo "postsnd awips gempak"
     echo "wafs wafsgrib2 wafsblending wafsgrib20p25 wafsblending0p25 wafsgcip"
@@ -53,7 +53,7 @@ elif [ $step = "waveinit" ]; then
 elif [ $step = "waveprep" ]; then
 
     export wtime_waveprep="00:30:00"
-    export npe_waveprep=115
+    export npe_waveprep=65
     export nth_waveprep=1
     export npe_node_waveprep=$(echo "$npe_node_max / $nth_waveprep" | bc)
     export NTASKS=${npe_waveprep}
@@ -61,10 +61,26 @@ elif [ $step = "waveprep" ]; then
 elif [ $step = "wavepostsbs" ]; then
 
     export wtime_wavepostsbs="06:00:00"
-    export npe_wavepostsbs=280
+    export npe_wavepostsbs=10
     export nth_wavepostsbs=1
     export npe_node_wavepostsbs=$(echo "$npe_node_max / $nth_wavepostsbs" | bc)
     export NTASKS=${npe_wavepostsbs}
+
+elif [ $step = "wavepostbndpnt" ]; then
+
+    export wtime_wavepostbndpnt="03:00:00"
+    export npe_wavepostbndpnt=56
+    export nth_wavepostbndpnt=1
+    export npe_node_wavepostbndpnt=$(echo "$npe_node_max / $nth_wavepostbndpnt" | bc)
+    export NTASKS=${npe_wavepostbndpnt}
+
+elif [ $step = "wavepostpnt" ]; then
+
+    export wtime_wavepostpnt="03:00:00"
+    export npe_wavepostpnt=56
+    export nth_wavepostpnt=1
+    export npe_node_wavepostpnt=$(echo "$npe_node_max / $nth_wavepostpnt" | bc)
+    export NTASKS=${npe_wavepostpnt}
 
 elif [ $step = "wavegempak" ]; then
 
