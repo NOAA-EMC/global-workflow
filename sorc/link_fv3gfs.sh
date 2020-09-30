@@ -227,7 +227,7 @@ done
 
 for gsiexe in  calc_analysis.x calc_increment_ens_ncio.x calc_increment_ens.x \
     getsfcensmeanp.x getsigensmeanp_smooth.x getsigensstatp.x global_enkf.x global_gsi.x \
-    interp_inc.x nc_diag_cat_serial.x oznmon_horiz.x oznmon_time.x radmon_angle.x \
+    interp_inc.x ncdiag_cat.x oznmon_horiz.x oznmon_time.x radmon_angle.x \
     radmon_bcoef.x radmon_bcor.x radmon_time.x recentersigp.x;do
     [[ -s $gsiexe ]] && rm -f $gsiexe
     $LINK ../sorc/gsi.fd/exec/$gsiexe .
@@ -271,7 +271,7 @@ cd ${pwd}/../sorc   ||   exit 8
     $SLINK gsi.fd/util/netcdf_io/interp_inc.fd                                             interp_inc.fd
 
     [[ -d ncdiag.fd ]] && rm -rf ncdiag.fd
-    $SLINK gsi.fd/src/ncdiag                                                               ncdiag.fd
+    $SLINK gsi.fd/src/ncdiag                                                               ncdiag_cat.fd
 
     [[ -d oznmon_horiz.fd ]] && rm -rf oznmon_horiz.fd
     $SLINK gsi.fd/util/Ozone_Monitor/nwprod/oznmon_shared.v2.0.0/sorc/oznmon_horiz.fd      oznmon_horiz.fd
