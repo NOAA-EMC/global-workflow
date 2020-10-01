@@ -46,7 +46,8 @@ export cycle=${cycle:-t${cyc}z}
 # Execute the Script  
 ###################################
 $HOMEgfs/scripts/exgfs_wave_prdgen_gridded.sh
-
+status=$?
+[[ $status -ne 0 ]] && exit $status
 ###################################
 # Remove temp directories
 ###################################
@@ -55,4 +56,5 @@ if [ "$KEEPDATA" != "YES" ]; then
   rm -rf $DATA
 fi
 date
+exit 0
 
