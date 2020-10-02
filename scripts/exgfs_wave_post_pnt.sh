@@ -273,8 +273,10 @@
     rm -f buoy_tmp.loc buoy_log.ww3 ww3_oup.inp
     ln -fs ./out_pnt.${waveuoutpGRD} ./out_pnt.ww3
     ln -fs ./mod_def.${waveuoutpGRD} ./mod_def.ww3
+    export pgm=ww3_outp;. prep_step
     $EXECwave/ww3_outp > buoy_lst.loc 2>&1 
-    err=$?
+    export err=$?;err_chk
+
 
     if [ "$err" != '0' ] && [ ! -f buoy_log.ww3 ]
     then
