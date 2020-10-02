@@ -26,7 +26,7 @@ if [[ $hname = 'stampede2.tacc.utexas.edu' ]] ; then
         echo load the module command 1>&2
         source /apps/lmod/lmod/init/$__ms_shell
     fi
-    target=stampede2
+    target=stampede
     module purge
     module use /work/07738/kgerheis/stampede2/hpc-stack/v1.0.0-beta1/modulefiles/stack
     module load hpc/1.0.0-beta1

@@ -36,7 +36,7 @@ platform: !Platform
   BASE_GIT: "/work/noaa/marine/place_holder"
 
   #BASE_CPLIC - is the base directory of ICs for coupled s2s runs
-  BASE_CPLIC: "/work/noaa/marine/Partha.Bhattacharjee/IC_Dir"
+  BASE_CPLIC: "/work/07738/jkuang/stampede2/IC-S2S"
   #ncks - NCO netcdf operator used in ocean post 
   ncks: "/apps/intel-2020/nco-4.8.1/bin/ncks"
 
@@ -47,13 +47,13 @@ platform: !Platform
 
   partitions:
     Evaluate: false
-    default_shared: !calc doc.platform.partitions.batch
-    default_exclusive: !calc doc.platform.partitions.batch
-    default_service: !calc doc.platform.partitions.batch
-    default_bigmem: !calc doc.platform.partitions.batch
-    batch:
+    default_shared: !calc doc.platform.partitions.skynormal
+    default_exclusive: !calc doc.platform.partitions.skynormal
+    default_service: !calc doc.platform.partitions.skynormal
+    default_bigmem: !calc doc.platform.partitions.skynormal
+    skynormal:
       <<: *global_partition_common
-      specification: batch
+      specification: skx-normal
       # Queues to use for each job type
       shared_queue: skx-normal
       exclusive_queue: skx-normal
@@ -61,7 +61,7 @@ platform: !Platform
 
       # Details about the scheduler on this cluster.
       scheduler_settings:
-        scheduler_name: Slurm
+        scheduler_name: Slurm_Xsede
         parallelism_name: HydraIMPI
         node_type: generic
         physical_cores_per_node: 48
