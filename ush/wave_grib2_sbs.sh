@@ -148,7 +148,10 @@
   echo "   Run ww3_grib2"
   echo "   Executing $EXECwave/ww3_grib"
   [[ "$LOUD" = YES ]] && set -x
+
+  export pgm=ww3_grib;. prep_step
   $EXECwave/ww3_grib > grib2_${grdnam}_${FH3}.out 2>&1
+  export err=$?;err_chk
 
     if [ ! -s gribfile ]; then
       set +x

@@ -184,8 +184,10 @@
   echo "   Executing $EXECwave/ww3_outp"
   [[ "$LOUD" = YES ]] && set -x
 
+  export pgm=ww3_outp;. prep_step
   $EXECwave/ww3_outp 1> outp_${specdir}_${buoy}.out 2>&1
-  err=$?
+  export err=$?;err_chk
+
 
   if [ "$err" != '0' ]
   then
