@@ -407,7 +407,9 @@ def get_workflow(dict_configs, cdump='gdas'):
         deps = []
         dep_dict = {'type':'task', 'name':'%swavepostsbs' % cdump}
         deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
+        dep_dict = {'type':'task', 'name':'%swavepostpnt' % cdump}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
         task = wfu.create_wf_task('waveawipsbulls', cdump=cdump, envar=envars, dependency=dependencies)
         tasks.append(task)
         tasks.append('\n')
