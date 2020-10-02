@@ -392,6 +392,8 @@
       exit $err
     fi
 
+    cd $DATA
+    
     if [ "$DOSPC_WAV" = 'YES' ]
     then
       export dtspec=3600.
@@ -436,7 +438,6 @@
     echo "$DATA/cmdfile.${FH3}.09" >> cmdfile
     echo "$DATA/cmdfile.${FH3}.10" >> cmdfile
 
-    cd $DATA
 
     FHINCP=$(( DTPNT_WAV / 3600 ))
     fhrp=$((fhr+FHINCP))
