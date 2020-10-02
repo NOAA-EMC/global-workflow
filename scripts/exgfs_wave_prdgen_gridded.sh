@@ -287,7 +287,7 @@
        #set +x
      fi
 
-     if [ "$SENDDBN_NTC" = 'YES' ]
+     if [ "$SENDDBN" = 'YES' ]
      then
        echo "      Sending $AWIPSGRB.$grdID.f${fhr} to DBRUN."
        $DBNROOT/bin/dbn_alert GRIB_LOW $RUN $job $PCOM/grib2.$cycle.f${fhr}.awipsww3_${grdOut}
