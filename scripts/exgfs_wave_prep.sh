@@ -275,12 +275,12 @@
         echo ' '
         echo '      FATAL ERROR: ice field not generated '
         echo ' '
-        sed "s/^/ice.out : /g" ice.out
+        sed "s/^/wave_prnc_ice.out : /g" wave_prnc_ice.out
         echo ' '
         [[ "$LOUD" = YES ]] && set -x
         err=5;export err;${errchk}
       else
-        mv -f ice.out $DATA/outtmp
+        mv -f wave_prnc_ice.out $DATA/outtmp
         set +x
         echo ' '
         echo '      Ice field unpacking successful.'
@@ -289,18 +289,18 @@
       fi
     else
       echo ' '
-      echo " Ice input is not perturbed, single ice file generated, skipping ${WAV_MOD_TAG}"
+      echo "WARNING: Ice input is not perturbed, single ice file generated, skipping ${WAV_MOD_TAG}"
       echo ' '
     fi 
   else
       echo ' '
-      echo ' No input ice file generated, this run did not request pre-processed ice data '
+      echo 'WARNING: No input ice file generated, this run did not request pre-processed ice data '
       echo ' '
   fi
 
 # --------------------------------------------------------------------------- #
-# WIND processing (not functional, TBD for uncoupled cases)
-
+# WIND processing 
+# This block of code is not used by GFSv16b and is here for un-coupled wave runs
   if [ "${WW3ATMINP}" = 'YES' ]; then
 
 # --------------------------------------------------------------------------- #
@@ -360,9 +360,9 @@
       then
         set +x
         echo ' '
-        echo '********************************************'
-        echo '*** CMDFILE FAILED IN WIND GENERATION   ***'
-        echo '********************************************'
+        echo '********************************************************'
+        echo '*** FATAL ERROR: CMDFILE FAILED IN WIND GENERATION   ***'
+        echo '********************************************************'
         echo '     See Details Below '
         echo ' '
         [[ "$LOUD" = YES ]] && set -x
@@ -452,7 +452,7 @@
         echo ' '
         [[ "$LOUD" = YES ]] && set -x
         mv -f grb_*.out $DATA/outtmp
-        postmsg "$jlogfile" "NON-FATAL ERROR in wave_g2ges.sh, possibly in multiple calls."
+        postmsg "$jlogfile" "WARNING: NON-FATAL ERROR in wave_g2ges.sh, possibly in multiple calls."
       fi
     
       if [ "$nr_err" -gt "$err_max" ]
@@ -592,12 +592,12 @@
         then
           set +x
           echo ' '
-          echo '************************************************'
-          echo '*** ERROR : WIND DATA INCREMENT INCORRECT !! ***'
-          echo '************************************************'
+          echo '******************************************************'
+          echo '*** FATAL ERROR : WIND DATA INCREMENT INCORRECT !! ***'
+          echo '******************************************************'
           echo ' '
           [[ "$LOUD" = YES ]] && set -x
-          postmsg "$jlogfile" "$WAV_MOD_TAG prep $grdID $date $cycle : error in wind increment."
+          postmsg "$jlogfile" "FATAL ERROR: $WAV_MOD_TAG prep $grdID $date $cycle : error in wind increment."
           err=10;export err;${errchk}
         fi
     
