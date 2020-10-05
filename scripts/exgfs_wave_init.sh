@@ -182,9 +182,9 @@
     then
       set +x
       echo ' '
-      echo '********************************************'
-      echo '*** POE FAILURE DURING RAW DATA COPYING ***'
-      echo '********************************************'
+      echo '********************************************************'
+      echo '*** FATAL ERROR: POE FAILURE DURING RAW DATA COPYING ***'
+      echo '********************************************************'
       echo '     See Details Below '
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
