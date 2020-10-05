@@ -7,19 +7,20 @@
 # Script description:  Creates point output products from binary WW3 data
 #
 # Author:   Jose-Henrique Alves Org: NCEP/EMC      Date: 2019-12-06
-# Abstract: This script is the postprocessor for the wave component in GFS.
-#           This version runs side-by-side with the GFS fcst step. 
+# Abstract: This script is the point postprocessor for the wave component in GFS.
 #           It executes several scripts forpreparing and creating output data
 #           as follows:
 #
-#  wave_outp_spec.sh         : generates spectral data for output locations.                                      
-#  wave_outp_bull.sh         : generates bulletins for output locations.      
+#  wave_outp_spec.sh         : generates spectral data for output locations                                      
+#  wave_outp_bull.sh         : generates bulletins for output locations      
+#  wave_outp_cat.sh          : cats the by hour into the single output file
 #  wave_tar.sh               : tars the spectral and bulletin multiple files  
 #
 # Script history log:
 # 2019-12-06  J-Henrique Alves: First Version adapted from HTolman post.sh 2007 
 # 2020-06-10  J-Henrique Alves: Porting to R&D machine Hera
 # 2020-07-30  Jessica Meixner: Points only - no gridded data
+# 2020-09-29  Jessica Meixner: optimized by changing loop structures
 #
 # $Id$
 #
@@ -46,14 +47,14 @@
 
   postmsg "$jlogfile" "HAS BEGUN on `hostname`"
 
-  msg="Starting WAVE POSTPROCESSOR SCRIPT for $WAV_MOD_TAG"
+  msg="Starting WAVE PNT POSTPROCESSOR SCRIPT for $WAV_MOD_TAG"
   postmsg "$jlogfile" "$msg"
 
   set +x
   echo ' '
-  echo '                     *********************************'
-  echo '                     *** WAVE POSTPROCESSOR SCRIPT ***'
-  echo '                     *********************************'
+  echo '                     *************************************'
+  echo '                     *** WAVE PNT POSTPROCESSOR SCRIPT ***'
+  echo '                     *************************************'
   echo ' '
   echo "Starting at : `date`"
   echo '-------------'
@@ -73,7 +74,7 @@
 
   waveuoutpGRD=${waveuoutpGRD:?buoyNotSet}
 
-# 0.c.4 Define a temporary directory for storing ascii point output files
+# 0.c.1 Define a temporary directory for storing ascii point output files
 #       and flush it
 
   export STA_DIR=$DATA/station_ascii_files
@@ -83,9 +84,11 @@
   fi
   mkdir -p ${STA_DIR}
   mkdir -p ${STA_DIR}/spec
-  mkdir -p ${STA_DIR}/ibp
   mkdir -p ${STA_DIR}/bull
   mkdir -p ${STA_DIR}/cbull
+  mkdir -p ${STA_DIR}/specfhr
+  mkdir -p ${STA_DIR}/bullfhr
+  mkdir -p ${STA_DIR}/cbullfhr
 
   set +x
   echo ' '
@@ -98,7 +101,6 @@
 # --------------------------------------------------------------------------- #
 # 1.  Get files that are used by most child scripts
 
-  export DOIBP_WAV='NO'  # Input boundary points
   export DOPNT_WAV='YES' # Station data
   export DOSPC_WAV='YES' # Spectral post
   export DOBLL_WAV='YES' # Bulletin post
@@ -188,28 +190,6 @@
     DOBLL_WAV='NO'
   fi
 
-  if [ "$DOIBP_WAV" = 'YES' ]
-  then
-    sed -n '/^\$.*/!p' buoy.loc.temp | grep IBP > buoy.ibp
-    if [ -s buoy.ibp ]; then
-      set +x
-      echo "   buoy.loc and buoy.ibp copied and processed ($FIXwave/wave_${NET}.buoys)."
-      [[ "$LOUD" = YES ]] && set -x
-    else
-      set +x
-      echo ' '
-      echo '***************************************** '
-      echo ' FATAL ERROR : NO IBP BUOY LOCATION FILE  '
-      echo '***************************************** '
-      echo ' '
-      [[ "$LOUD" = YES ]] && set -x
-      postmsg "$jlogfile" "FATAL ERROR : NO IBP BUOY LOCATION FILE"
-      err=4; export err;${errchk}
-      exit $err
-      DOIBP_WAV='NO'
-    fi
-  fi
-
 # 1.d Input template files
 
   if [ -f $FIXwave/ww3_outp_spec.inp.tmpl ]
@@ -287,14 +267,16 @@
       [[ "$LOUD" = YES ]] && set -x
       echo "$WAV_MOD_TAG post $waveuoutpGRD $CDATE $cycle : field output missing." 
       postmsg "$jlogfile" "FATAL ERROR : NO RAW POINT OUTPUT FILE out_pnt.${waveuoutpGRD}.${YMD}.${HMS}"
-      err=5; export err;${errchk}
+      err=4; export err;${errchk}
     fi
     
     rm -f buoy_tmp.loc buoy_log.ww3 ww3_oup.inp
     ln -fs ./out_pnt.${waveuoutpGRD} ./out_pnt.ww3
     ln -fs ./mod_def.${waveuoutpGRD} ./mod_def.ww3
+    export pgm=ww3_outp;. prep_step
     $EXECwave/ww3_outp > buoy_lst.loc 2>&1 
-    err=$?
+    export err=$?;err_chk
+
 
     if [ "$err" != '0' ] && [ ! -f buoy_log.ww3 ]
     then
@@ -311,7 +293,7 @@
       echo "$WAV_MOD_TAG post $date $cycle : buoy log file failed to be created."
       echo $msg
       [[ "$LOUD" = YES ]] && set -x
-      err=6;export err;${errchk}
+      err=5;export err;${errchk}
       DOSPC_WAV='NO'
       DOBLL_WAV='NO'
       exit $err
@@ -343,43 +325,11 @@
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
       postmsg "$jlogfile" "FATAL ERROR : NO BUOY LOG FILE GENERATED FOR SPEC AND BULLETIN FILES"
-      err=7;export err;${errchk}
+      err=6;export err;${errchk}
       DOSPC_WAV='NO'
       DOBLL_WAV='NO'
     fi
 
-# Create new buoy_log.ww3 including all IBP files
-    if [ "$DOIBP_WAV" = 'YES' ]; then
-      cat buoy.ibp | awk '{print $3}' | sed 's/'\''//g' > ibp_tags
-      grep -F -f ibp_tags buoy_log.ww3 > buoy_log.tmp
-      rm -f buoy_log.ibp
-      mv buoy_log.tmp buoy_log.ibp
-
-      grep -F -f ibp_tags buoy_lst.loc >  buoy_tmp1.loc
-      sed    '$d' buoy_tmp1.loc > buoy_tmp2.loc
-      ibpoints=`awk '{ print $1 }' buoy_tmp2.loc`
-      Nibp=`wc buoy_tmp2.loc | awk '{ print $1 }'`
-      rm -f buoy_tmp1.loc buoy_tmp2.loc
-      if [ -s buoy_log.ibp ]
-      then
-        set +x
-        echo 'IBP  log file created. Syncing to all nodes ...'
-        [[ "$LOUD" = YES ]] && set -x
-      else
-        set +x
-        echo ' '
-        echo '********************************************** '
-        echo '*** FATAL ERROR : NO  IBP LOG FILE CREATED *** '
-        echo '********************************************** '
-        echo ' '
-        [[ "$LOUD" = YES ]] && set -x
-        echo "$WAV_MOD_TAG post $date $cycle : ibp  log file missing." 
-        postmsg "$jlogfile" "FATAL ERROR : NO  IBP LOG FILE GENERATED FOR SPEC AND BULLETIN FILES"
-        err=8;export err;${errchk}
-        exit $err
-        DOIBP_WAV='NO'
-      fi
-    fi
  fi
 
 # 1.f Data summary
@@ -392,13 +342,11 @@
   echo '   ---------------------------------------------'
   echo "      Sufficient data for spectral files        : $DOSPC_WAV ($Nb points)"
   echo "      Sufficient data for bulletins             : $DOBLL_WAV ($Nb points)"
-  echo "      Sufficient data for Input Boundary Points : $DOIBP_WAV ($Nibp points)"
   echo ' '
   [[ "$LOUD" = YES ]] && set -x
 
 # --------------------------------------------------------------------------- #
-# 2.  Make consolidated grib2 file for side-by-side grids and interpolate
-#     onto extended grids
+# 2. Make files for processing boundary points 
 #
 # 2.a Command file set-up
 
@@ -412,7 +360,6 @@
 
 # 1.a.2 Loop over forecast time to generate post files 
   fhr=$FHMIN_WAV
-  fhrp=$fhr
   while [ $fhr -le $FHMAX_WAV ]; do
     
     echo "   Creating the wave point scripts at : `date`"
@@ -422,14 +369,8 @@
     YMDHMS=${YMD}${HMS}
     FH3=$(printf %03i $fhr)
 
-    fcmdnow=cmdfile.${FH3}
-    fcmdigrd=icmdfile.${FH3}
-    if [ "${DOPNT_WAV}" = "YES" ]; then
-      fcmdpnt=pcmdfile.${FH3}
-      fcmdibp=ibpcmdfile.${FH3}
-    fi
-    rm -f ${fcmdnow} ${fcmdigrd} ${fcmdpnt} ${fcmdibp}
-    touch ${fcmdnow} ${fcmdigrd} ${fcmdpnt} ${fcmdibp}
+    rm -f tmpcmdfile.${FH3}
+    touch tmpcmdfile.${FH3} 
     mkdir output_$YMDHMS
     cd output_$YMDHMS
 
@@ -438,130 +379,229 @@
     export BULLDATA=${DATA}/output_$YMDHMS
     ln -fs $DATA/mod_def.${waveuoutpGRD} mod_def.ww3
 
-# Point output part (can be split or become meta-task to reduce resource usage)
-    if [ $fhr = $fhrp ]
-    then
-      pfile=$COMIN/rundata/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS}
-      if [ -f  ${pfile} ]
-      then 
-         ln -fs ${pfile} ./out_pnt.${waveuoutpGRD}
-      else 
-        echo " FATAL ERROR : NO RAW POINT OUTPUT FILE out_pnt.$waveuoutpGRD.${YMD}.${HMS}
-        echo ' '
-        [[ "$LOUD" = YES ]] && set -x
-        postmsg "$jlogfile" "FATAL ERROR : NO RAW POINT OUTPUT FILE out_pnt.$waveuoutpGRD.${YMD}.${HMS}
-        err=9; export err;${errchk}
-        exit $err
-      fi
-
-      if [ "$DOSPC_WAV" = 'YES' ]
-      then
-        export dtspec=3600.
-        for buoy in $buoys
-        do
-            echo "$USHwave/wave_outp_spec.sh $buoy $ymdh spec > spec_$buoy.out 2>&1" >> ${fcmdnow}
-        done
-      fi
-
-      if [ "$DOIBP_WAV" = 'YES' ]
-      then
-        export dtspec=3600.
-        for buoy in $ibpoints
-        do
-            echo "$USHwave/wave_outp_spec.sh $buoy $ymdh ibp > ibp_$buoy.out 2>&1" >> ${fcmdnow}
-        done
-      fi
-
-      if [ "$DOBLL_WAV" = 'YES' ]
-      then
-        export dtspec=3600.
-        for buoy in $buoys
-        do
-            echo "$USHwave/wave_outp_spec.sh $buoy $ymdh bull > bull_$buoy.out 2>&1" >> ${fcmdnow}
-        done
-      fi
-
-    fi
-
-    if [ ${CFP_MP:-"NO"} = "YES" ]; then
-      nfile=0
-      ifile=0
-      iline=1
-      ifirst='yes'
-      nlines=$( wc -l ${fcmdnow} | awk '{print $1}' )
-      while [ $iline -le $nlines ]; do
-        line=$( sed -n ''$iline'p' ${fcmdnow} )
-        if [ -z "$line" ]; then  
-          break
-        else
-          if [ "$ifirst" = 'yes' ]; then 
-            echo "#!/bin/sh" > cmdmfile.$nfile 
-            echo "$nfile cmdmfile.$nfile" >> cmdmprog
-            chmod 744 cmdmfile.$nfile
-          fi
-          echo $line >> cmdmfile.$nfile
-          nfile=$(( nfile + 1 ))
-          if [ $nfile -eq $NTASKS ]; then
-            nfile=0 
-            ifirst='no'
-          fi
-          iline=$(( iline + 1 ))
-        fi
-      done
-    fi
-
-    wavenproc=`wc -l ${fcmdnow} | awk '{print $1}'`
-    wavenproc=`echo $((${wavenproc}<${NTASKS}?${wavenproc}:${NTASKS}))`
-
-    set +x
-    echo ' '
-    echo "   Executing the wave point scripts at : `date`"
-    echo '   ------------------------------------'
-    echo ' '
-    [[ "$LOUD" = YES ]] && set -x
-
-    if [ "$wavenproc" -gt '1' ]
-    then
-      if [ ${CFP_MP:-"NO"} = "YES" ]; then
-        ${wavempexec} -n ${wavenproc} ${wave_mpmd} cmdmprog
-      else
-        ${wavempexec} ${wavenproc} ${wave_mpmd} ${fcmdnow}
-      fi
-      exit=$?
-    else
-      chmod 744 ${fcmdnow}
-      ./${fcmdnow}
-      exit=$?
-    fi
-
-    if [ "$exit" != '0' ]
-    then
-      set +x
-      echo ' '
-      echo '*************************************'
-      echo '*** FATAL ERROR: CMDFILE FAILED   ***'
-      echo '*************************************'
-      echo '     See Details Below '
+    pfile=$COMIN/rundata/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS}
+    if [ -f  ${pfile} ]
+    then 
+      ln -fs ${pfile} ./out_pnt.${waveuoutpGRD}
+    else 
+      echo " FATAL ERROR : NO RAW POINT OUTPUT FILE out_pnt.$waveuoutpGRD.${YMD}.${HMS} "
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
-      err=10; export err;${errchk}
+      postmsg "$jlogfile" "FATAL ERROR : NO RAW POINT OUTPUT FILE out_pnt.$waveuoutpGRD.${YMD}.${HMS}"
+      err=7; export err;${errchk}
       exit $err
     fi
 
-    rm -f out_grd.* # Remove large binary grid output files
-
     cd $DATA
+    
+    if [ "$DOSPC_WAV" = 'YES' ]
+    then
+      export dtspec=3600.
+      for buoy in $buoys
+      do
+        echo "$USHwave/wave_outp_spec.sh $buoy $ymdh spec $SPECDATA > $SPECDATA/spec_$buoy.out 2>&1" >> tmpcmdfile.$FH3
+      done
+    fi
+
+    if [ "$DOBLL_WAV" = 'YES' ]
+    then
+      export dtspec=3600.
+      for buoy in $buoys
+      do
+        echo "$USHwave/wave_outp_spec.sh $buoy $ymdh bull $SPECDATA > $SPECDATA/bull_$buoy.out 2>&1" >> tmpcmdfile.$FH3
+      done
+    fi
+
+    split -n l/1/10  tmpcmdfile.$FH3 > cmdfile.${FH3}.01
+    split -n l/2/10  tmpcmdfile.$FH3 > cmdfile.${FH3}.02
+    split -n l/3/10  tmpcmdfile.$FH3 > cmdfile.${FH3}.03
+    split -n l/4/10  tmpcmdfile.$FH3 > cmdfile.${FH3}.04
+    split -n l/5/10  tmpcmdfile.$FH3 > cmdfile.${FH3}.05
+    split -n l/6/10  tmpcmdfile.$FH3 > cmdfile.${FH3}.06
+    split -n l/7/10  tmpcmdfile.$FH3 > cmdfile.${FH3}.07
+    split -n l/8/10  tmpcmdfile.$FH3 > cmdfile.${FH3}.08
+    split -n l/9/10  tmpcmdfile.$FH3 > cmdfile.${FH3}.09
+    split -n l/10/10 tmpcmdfile.$FH3 > cmdfile.${FH3}.10
+
+    rm tmpcmdfile.$FH3
+    chmod 744 cmdfile.${FH3}.01 cmdfile.${FH3}.02 cmdfile.${FH3}.03 cmdfile.${FH3}.04
+    chmod 744 cmdfile.${FH3}.05 cmdfile.${FH3}.06 cmdfile.${FH3}.07 cmdfile.${FH3}.08
+    chmod 744 cmdfile.${FH3}.09 cmdfile.${FH3}.10
+    echo "$DATA/cmdfile.${FH3}.01" >> cmdfile
+    echo "$DATA/cmdfile.${FH3}.02" >> cmdfile
+    echo "$DATA/cmdfile.${FH3}.03" >> cmdfile
+    echo "$DATA/cmdfile.${FH3}.04" >> cmdfile
+    echo "$DATA/cmdfile.${FH3}.05" >> cmdfile
+    echo "$DATA/cmdfile.${FH3}.06" >> cmdfile
+    echo "$DATA/cmdfile.${FH3}.07" >> cmdfile
+    echo "$DATA/cmdfile.${FH3}.08" >> cmdfile
+    echo "$DATA/cmdfile.${FH3}.09" >> cmdfile
+    echo "$DATA/cmdfile.${FH3}.10" >> cmdfile
+
 
     FHINCP=$(( DTPNT_WAV / 3600 ))
-    if [ $fhr = $fhrp ]
-    then
-      fhrp=$((fhr+FHINCP))
-    fi
-    echo $fhrp
-
+    fhrp=$((fhr+FHINCP))
     fhr=$fhrp # no gridded output, loop with out_pnt stride
 
   done
+
+
+  if [ ${CFP_MP:-"NO"} = "YES" ]; then
+    nfile=0
+    ifile=0
+    iline=1
+    ifirst='yes'
+    nlines=$( wc -l cmdfile | awk '{print $1}' )
+    while [ $iline -le $nlines ]; do
+      line=$( sed -n ''$iline'p' cmdfile )
+      if [ -z "$line" ]; then  
+        break
+      else
+        if [ "$ifirst" = 'yes' ]; then 
+          echo "#!/bin/sh" > cmdmfile.$nfile 
+          echo "$nfile cmdmfile.$nfile" >> cmdmprog
+          chmod 744 cmdmfile.$nfile
+        fi
+        echo $line >> cmdmfile.$nfile
+        nfile=$(( nfile + 1 ))
+        if [ $nfile -eq $NTASKS ]; then
+          nfile=0 
+          ifirst='no'
+        fi
+        iline=$(( iline + 1 ))
+      fi
+    done
+  fi
+
+  wavenproc=`wc -l cmdfile | awk '{print $1}'`
+  wavenproc=`echo $((${wavenproc}<${NTASKS}?${wavenproc}:${NTASKS}))`
+
+  set +x
+  echo ' '
+  echo "   Executing the wave point scripts at : `date`"
+  echo '   ------------------------------------'
+  echo ' '
+  [[ "$LOUD" = YES ]] && set -x
+
+  if [ "$wavenproc" -gt '1' ]
+  then
+    if [ ${CFP_MP:-"NO"} = "YES" ]; then
+      ${wavempexec} -n ${wavenproc} ${wave_mpmd} cmdmprog
+    else
+      ${wavempexec} ${wavenproc} ${wave_mpmd} cmdfile
+    fi
+    exit=$?
+  else
+    chmod 744 cmdfile
+    ./cmdfile 
+    exit=$?
+  fi
+
+  if [ "$exit" != '0' ]
+  then
+    set +x
+    echo ' '
+    echo '*************************************'
+    echo '*** FATAL ERROR: CMDFILE FAILED   ***'
+    echo '*************************************'
+    echo '     See Details Below '
+    echo ' '
+    [[ "$LOUD" = YES ]] && set -x
+    err=8; export err;${errchk}
+    exit $err
+  fi
+
+# 2.b Loop over each buoy to cat the final buoy file for all fhr 
+
+  cd $DATA
+
+  echo "Before create cmdfile for cat bouy : `date`"
+  rm -f cmdfile.bouy
+  touch cmdfile.bouy
+  chmod 744 cmdfile.bouy
+  CATOUTDIR=${DATA}/pnt_cat_out
+  mkdir -p ${CATOUTDIR}
+
+  if [ "$DOSPC_WAV" = 'YES' ]
+  then
+    for buoy in $buoys
+    do
+      echo "$USHwave/wave_outp_cat.sh $buoy $FHMAX_WAV spec > ${CATOUTDIR}/spec_cat_$buoy.out 2>&1" >> cmdfile.bouy
+    done
+  fi
+
+  if [ "$DOBLL_WAV" = 'YES' ]
+  then
+    for buoy in $buoys
+    do
+      echo "$USHwave/wave_outp_cat.sh $buoy $FHMAX_WAV bull > ${CATOUTDIR}/bull_cat_$buoy.out 2>&1" >> cmdfile.bouy
+    done
+  fi
+
+  if [ ${CFP_MP:-"NO"} = "YES" ]; then
+    nfile=0
+    ifile=0
+    iline=1
+    ifirst='yes'
+    nlines=$( wc -l cmdfile.bouy | awk '{print $1}' )
+    while [ $iline -le $nlines ]; do
+      line=$( sed -n ''$iline'p' cmdfile.bouy )
+      if [ -z "$line" ]; then
+        break
+      else
+        if [ "$ifirst" = 'yes' ]; then
+          echo "#!/bin/sh" > cmdfile.bouy.$nfile
+          echo "$nfile cmdfile.bouy.$nfile" >> cmdmprogbouy
+          chmod 744 cmdfile.bouy.$nfile
+        fi
+        echo $line >> cmdfile.bouy.$nfile
+        nfile=$(( nfile + 1 ))
+        if [ $nfile -eq $NTASKS ]; then
+          nfile=0
+          ifirst='no'
+        fi
+        iline=$(( iline + 1 ))
+      fi
+    done
+  fi
+
+  wavenproc=`wc -l cmdfile.bouy | awk '{print $1}'`
+  wavenproc=`echo $((${wavenproc}<${NTASKS}?${wavenproc}:${NTASKS}))`
+
+  set +x
+  echo ' '
+  echo "   Executing the boundary point cat script at : `date`"
+  echo '   ------------------------------------'
+  echo ' '
+  [[ "$LOUD" = YES ]] && set -x
+
+  if [ "$wavenproc" -gt '1' ]
+  then
+    if [ ${CFP_MP:-"NO"} = "YES" ]; then
+      ${wavempexec} -n ${wavenproc} ${wave_mpmd} cmdmprogbouy
+    else
+      ${wavempexec} ${wavenproc} ${wave_mpmd} cmdfile.bouy
+    fi
+    exit=$?
+  else
+    chmod 744 ${fcmdnow}
+    ./${fcmdnow}
+    exit=$?
+  fi
+
+  if [ "$exit" != '0' ]
+  then
+    set +x
+    echo ' '
+    echo '*************************************'
+    echo '*** FATAL ERROR: CMDFILE FAILED   ***'
+    echo '*************************************'
+    echo '     See Details Below '
+    echo ' '
+    [[ "$LOUD" = YES ]] && set -x
+    err=9; export err;${errchk}
+    exit $err
+  fi
 
 
 # --------------------------------------------------------------------------- #
@@ -583,94 +623,82 @@
 
   if [ ${CFP_MP:-"NO"} = "YES" ]; then nm=0; fi
 
-  if [ "$DOIBP_WAV" = 'YES' ]
-  then
-    if [ ${CFP_MP:-"NO"} = "YES" ]; then
-      echo "$nm $USHwave/wave_tar.sh $WAV_MOD_TAG ibp $Nibp > ${WAV_MOD_TAG}_ibp_tar.out 2>&1 "   >> cmdtarfile
-      nm=$(( nm + 1 ))
-    else
-      echo "$USHwave/wave_tar.sh $WAV_MOD_TAG ibp $Nibp > ${WAV_MOD_TAG}_ibp_tar.out 2>&1 "   >> cmdtarfile
-    fi
-  fi
-  if [ "$DOSPC_WAV" = 'YES' ]
-  then
-    if [ ${CFP_MP:-"NO"} = "YES" ]; then
-      echo "$nm $USHwave/wave_tar.sh $WAV_MOD_TAG spec $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
-      nm=$(( nm + 1 ))
-      echo "$nm $USHwave/wave_tar.sh $WAV_MOD_TAG bull $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
-      nm=$(( nm + 1 ))
-      echo "$nm $USHwave/wave_tar.sh $WAV_MOD_TAG cbull $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
-      nm=$(( nm + 1 ))
-    else
-      echo "$USHwave/wave_tar.sh $WAV_MOD_TAG spec $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
-      echo "$USHwave/wave_tar.sh $WAV_MOD_TAG bull $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
-      echo "$USHwave/wave_tar.sh $WAV_MOD_TAG cbull $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
-    fi
+  if [ ${CFP_MP:-"NO"} = "YES" ]; then
+    echo "$nm $USHwave/wave_tar.sh $WAV_MOD_TAG spec $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
+    nm=$(( nm + 1 ))
+    echo "$nm $USHwave/wave_tar.sh $WAV_MOD_TAG bull $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
+    nm=$(( nm + 1 ))
+    echo "$nm $USHwave/wave_tar.sh $WAV_MOD_TAG cbull $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
+    nm=$(( nm + 1 ))
+  else
+    echo "$USHwave/wave_tar.sh $WAV_MOD_TAG spec $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
+    echo "$USHwave/wave_tar.sh $WAV_MOD_TAG bull $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
+    echo "$USHwave/wave_tar.sh $WAV_MOD_TAG cbull $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
   fi
 
-    wavenproc=`wc -l cmdtarfile | awk '{print $1}'`
-    wavenproc=`echo $((${wavenproc}<${NTASKS}?${wavenproc}:${NTASKS}))`
+  wavenproc=`wc -l cmdtarfile | awk '{print $1}'`
+  wavenproc=`echo $((${wavenproc}<${NTASKS}?${wavenproc}:${NTASKS}))`
 
+  set +x
+  echo ' '
+  echo "   Executing the wave_tar scripts at : `date`"
+  echo '   ------------------------------------'
+  echo ' '
+  [[ "$LOUD" = YES ]] && set -x
+
+  if [ "$wavenproc" -gt '1' ]
+  then
+    if [ ${CFP_MP:-"NO"} = "YES" ]; then
+      ${wavempexec} -n ${wavenproc} ${wave_mpmd} cmdtarfile
+    else
+      ${wavempexec} ${wavenproc} ${wave_mpmd} cmdtarfile
+    fi
+    exit=$?
+  else
+    chmod 744 cmdtarfile
+    ./cmdtarfile
+    exit=$?
+  fi
+
+  if [ "$exit" != '0' ]
+  then
     set +x
     echo ' '
-    echo "   Executing the wave_tar scripts at : `date`"
-    echo '   ------------------------------------'
+    echo '*************************************'
+    echo '*** FATAL ERROR: CMDFILE FAILED   ***'
+    echo '*************************************'
+    echo '     See Details Below '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-
-    if [ "$wavenproc" -gt '1' ]
-    then
-      if [ ${CFP_MP:-"NO"} = "YES" ]; then
-        ${wavempexec} -n ${wavenproc} ${wave_mpmd} cmdtarfile
-      else
-        ${wavempexec} ${wavenproc} ${wave_mpmd} cmdtarfile
-      fi
-      exit=$?
-    else
-      chmod 744 cmdtarfile
-      ./cmdtarfile
-      exit=$?
-    fi
-
-    if [ "$exit" != '0' ]
-    then
-      set +x
-      echo ' '
-      echo '*************************************'
-      echo '*** FATAL ERROR: CMDFILE FAILED   ***'
-      echo '*************************************'
-      echo '     See Details Below '
-      echo ' '
-      [[ "$LOUD" = YES ]] && set -x
-      err=11; export err;${errchk}
-      exit $err
-    fi
+    err=10; export err;${errchk}
+  exit $err
+  fi
 
 # --------------------------------------------------------------------------- #
-# 7.  Ending output
+# 4.  Ending output
 
   set +x
   echo ' '
   echo "Ending at : `date`"
   echo '-----------'
   echo ' '
-  echo '                     *** End of MWW3 postprocessor ***'
+  echo '                     *** End of MWW3 pnt postprocessor ***'
   echo ' '
   [[ "$LOUD" = YES ]] && set -x
 
   if [ "$exit_code" -ne '0' ]
   then
-    echo " FATAL ERROR: Problem in MWW3 POST"
-    msg="ABNORMAL EXIT: Problem in MWW3 POST"
+    echo " FATAL ERROR: Problem in MWW3 PNT POST"
+    msg="ABNORMAL EXIT: Problem in MWW3 PNT POST"
     postmsg "$jlogfile" "$msg"
     echo $msg
-    err=12; export err;${errchk}
+    err=11; export err;${errchk}
     exit $err
   else
-    echo " Side-by-Side Wave Post Completed Normally "
+    echo " Point Wave Post Completed Normally "
     msg="$job completed normally"
     postmsg "$jlogfile" "$msg"
     exit 0
   fi
 
-# End of MWW3 prostprocessor script ---------------------------------------- #
+# End of MWW3 point prostprocessor script ---------------------------------------- #
