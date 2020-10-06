@@ -66,7 +66,6 @@ if [ $MKPGB4PRCP = "YES" -a $CDUMP = "gfs" ]; then
        $WGRIB2 $fname -match "(:PRATE:surface:)|(:TMP:2 m above ground:)" -grib $fileout
        (( fhr = $fhr + 6 ))
     done
-    cd $DATAROOT
     export OMP_NUM_THREADS=$nthreads_env # revert to threads set in env
 fi
 
