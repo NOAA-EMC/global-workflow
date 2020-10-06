@@ -39,7 +39,7 @@ if [ $step = "prep" -o $step = "prepbufr" ]; then
 
     eval "export wtime_$step='00:45:00'"
     eval "export npe_$step=4"
-    eval "export npe_node_$step=4"
+    eval "export npe_node_$step=2"
     eval "export nth_$step=1"
 
 elif [ $step = "waveinit" ]; then
