@@ -58,7 +58,7 @@ cat << EOF > gfsparm
   dird="$COMOUT/bufr.${cycle}/bufr",
   nstart=$FSTART,nend=$FEND,nint=$FINT,
   nend1=$NEND1,nint1=$NINT1,nint3=$NINT3,
-  nsfc=80,f00=$f00flag,fformat=$fformat
+  nsfc=80,f00=$f00flag,fformat=$fformat,np1=0
 /
 EOF
 

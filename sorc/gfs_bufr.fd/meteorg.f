@@ -1,7 +1,7 @@
       subroutine meteorg(npoint,rlat,rlon,istat,cstat,elevstn,
      &             nf,nfile,fnsig,jdate,idate,
      &       levs,im,jm,kdim,
-     &       landwater,nend1,nint1,nint3,iidum,jjdum,
+     &       landwater,nend1,nint1,nint3,iidum,jjdum,np1,
      &       fformat,iocomms,iope,ionproc)
 
 !$$$  SUBPROGRAM DOCUMENTATION BLOCK
@@ -834,8 +834,6 @@
 !
 !  get the nearest neighbor i,j from the table
 !
-        np1=0
-!     
       do np=1, npoint
 ! use read in predetermined i,j
       if (np1==0) then

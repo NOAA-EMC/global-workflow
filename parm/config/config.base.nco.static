@@ -39,17 +39,13 @@ export RTMFIX=$CRTM_FIX
 # Machine specific paths used everywhere
 
 # USER specific paths
-#    export HOMEDIR="/gpfs/dell2/emc/modeling/noscrub/$USER"
-    export HOMEDIR=$EXPDIR/HOMEDIR
-#    export STMP="/gpfs/dell3/stmp/$USER"
-    export STMP=$DATAROOT
-#    export PTMP="/gpfs/dell3/ptmp/$USER"
-    export PTMP=$ROTDIR
-#    export NOSCRUB="/gpfs/dell2/emc/modeling/noscrub/$USER"
-    export NOSCRUB=$EXPDIR/NOSCRUB
+export HOMEDIR=$EXPDIR/HOMEDIR
+export STMP=$DATAROOT
+export PTMP=$ROTDIR
+export NOSCRUB=$EXPDIR/NOSCRUB
 
-    # Base directories for various builds
-    export BASE_GIT="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git"
+# Base directories for various builds
+export BASE_GIT="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git"
 
 
 # Toggle to turn on/off GFS downstream processing.
@@ -222,7 +218,7 @@ export imp_physics=11
 # Shared parameters
 # Hybrid related
 export DOHYBVAR="YES"
-export NMEM_ENKF=80
+export NMEM_ENKF="80"
 export SMOOTH_ENKF="NO"
 export l4densvar=".true."
 export lwrite4danl=".true."

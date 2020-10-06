@@ -7,12 +7,6 @@ echo "=============== START TO SOURCE FV3GFS WORKFLOW MODULES ==============="
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
-# Load job specific modulefile
-module use -a $HOMEgfs/modulefiles
-module load modulefile_gfswave_gempak.wcoss_dell_p3
-status=$?
-[[ $status -ne 0 ]] && exit $status
-
 ###############################################################
 echo
 echo "=============== BEGIN TO SOURCE RELEVANT CONFIGS ==============="
