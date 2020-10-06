@@ -10,11 +10,6 @@ echo "BEGIN: config.prep"
 
 export DO_MAKEPREPBUFR="YES"   # if NO, will copy prepbufr from globaldump
 
-if [[ "$machine" == "WCOSS_DELL_P3" ]]; then
-  export POE="YES"
-  export BACK="off"
-fi
-
 # Relocation and syndata QC
 export PROCESS_TROPCY=${PROCESS_TROPCY:-NO}
 [[ $RUN_ENVIR == "nco" && $envir == "prod" ]] && export PROCESS_TROPCY="YES"
