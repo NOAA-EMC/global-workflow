@@ -38,7 +38,7 @@ if [[ ! -d gsi.fd ]] ; then
     rm -f ${topdir}/checkout-gsi.log
     git clone --recursive https://github.com/NOAA-EMC/GSI.git gsi.fd >> ${topdir}/checkout-gsi.log 2>&1
     cd gsi.fd
-    git checkout release/gfsda.v16.0.0
+    git checkout 56652c2fe2879a37666abefaf51608ed38f2d814
     git submodule update
     cd ${topdir}
 else
