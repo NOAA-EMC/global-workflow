@@ -3,7 +3,7 @@
 #BSUB -P %PROJ%
 #BSUB -J %E%gdas_enkf_diag_%CYC%
 #BSUB -o %COM%/output/%ENVIR%/today/gdas_enkf_diag_%CYC%.o%J
-#BSUB -W 2:00
+#BSUB -W 0:06
 #BSUB -n 56
 #BSUB -R affinity[core(1)]
 #BSUB -R span[ptile=28]

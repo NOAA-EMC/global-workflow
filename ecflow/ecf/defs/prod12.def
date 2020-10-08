@@ -1,5 +1,5 @@
 extern /prod06/gdas/jgdas_forecast
-extern /prod06/gdas/atmos/post/gdas_post
+extern /prod06/gdas/atmos/post
 extern /prod06/gdas/enkf/post
 #### ecen
 extern /prod06/gdas/atmos/post_processing/jgdas_atmos_chgres_forenkf
@@ -1603,9 +1603,9 @@ suite prod12
         endfamily
         family grib2_wafs
           task jgfs_atmos_wafs_grib2
-            trigger ../../post/jgfs_atmos_post_f000 == complete
+            trigger ../../post/jgfs_atmos_post_f036 == complete
           task jgfs_atmos_wafs_grib2_0p25
-            trigger ../../post/jgfs_atmos_post_f000 == complete
+            trigger ../../post/jgfs_atmos_post_f036 == complete
           task jgfs_atmos_wafs_blending
             trigger ./jgfs_atmos_wafs_grib2 == complete
             time 04:33
@@ -2233,11 +2233,11 @@ suite prod12
         task jgfs_wave_postpnt
           trigger ../../jgfs_forecast == complete
         task jgfs_wave_post_bndpnt
-          trigger ../../atmos/post/jgfs_atmos_post_manager:release_post192
+          trigger ../../atmos/post/jgfs_atmos_post_manager:release_post180
         task jgfs_wave_prdgen_gridded
           trigger ./jgfs_wave_postsbs == active or ./jgfs_wave_postsbs == complete 
         task jgfs_wave_prdgen_bulls
-          trigger ./jgfs_wave_postpnt == complete
+          trigger ./jgfs_wave_postpnt == complete and ./jgfs_wave_postsbs == complete
       endfamily
       family gempak
         task jgfs_wave_gempak

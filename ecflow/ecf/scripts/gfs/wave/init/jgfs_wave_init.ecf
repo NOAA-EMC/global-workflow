@@ -5,7 +5,7 @@
 #BSUB -q %QUEUE%
 #BSUB -P %PROJ%
 #BSUB -W 00:10
-#BSUB -R span[ptile=28]; -R affinity[core]
+#BSUB -R span[ptile=28]; -R affinity[core(1)]
 #BSUB -n 28
 
 module purge
@@ -33,7 +33,6 @@ module load lsf/${lsf_ver}
 module load impi/${impi_ver}
 module load prod_util/${prod_util_ver}
 module load prod_envir/${prod_envir_ver}
-module use -a /usrx/local/nceplibs/dev/NCEPLIBS/modulefiles
 module load CFP/${CFP_ver}
 
 module list
