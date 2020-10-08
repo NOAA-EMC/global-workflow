@@ -265,11 +265,11 @@ elif [ $step = "eobs" -o $step = "eomg" ]; then
     if [ $CASE = "C768" ]; then
       export npe_eobs=100
     elif [ $CASE = "C384" ]; then
-      export npe_eobs=42
+      export npe_eobs=60
     elif [ $CASE = "C192" ]; then
-      export npe_eobs=28
+      export npe_eobs=40
     elif [ $CASE = "C96" -o $CASE = "C48" ]; then
-      export npe_eobs=14
+      export npe_eobs=20
     fi
     export nth_eobs=2
     if [[ "$machine" = "WCOSS_DELL_P3" ]]; then export nth_eobs=7; fi
