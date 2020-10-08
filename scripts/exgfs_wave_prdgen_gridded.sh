@@ -9,9 +9,9 @@
 #                                                                             #
 #                                                                             #
 # Origination  : 05/02/2007                                                   #
-# Last update  : 05/04/2007                                                   # 
+# Last update  : 10/08/2020                                                   # 
 #                                                                             #
-# May 2020  Roberto.Padilla@noaa.gov, Henrique.HAlves@noaa.gov                # 
+# Oct, 2020  Roberto.Padilla@noaa.gov, Henrique.HAlves@noaa.gov                # 
 #         - Merging wave scripts to GFSv16 global workflow                    #
 #                                                                             #
 ###############################################################################
@@ -46,7 +46,8 @@
  msg="Starting MWW3 GRIDDED PRODUCTS SCRIPT"
  postmsg "$jlogfile" "$msg"
 # Output grids
- grids=${grids:-ao_9km at_10m ep_10m wc_10m glo_30m}
+# grids=${grids:-ao_9km at_10m ep_10m wc_10m glo_30m}
+ grids=${grids:-ak_10m at_10m ep_10m wc_10m glo_30m}
  maxtries=${maxtries:-720}
 # 0.b Date and time stuff
  export date=$PDY
@@ -79,6 +80,9 @@
  #export arrpar=(WIND UGRD VGRD HTSGW PERPW DIRPW WVHGT WVPER WVDIR WDIR ${ASWELL[@]} ${ASWDIR[@]} ${ASWPER[@]})
  export arrpar=(WIND WDIR UGRD VGRD HTSGW PERPW DIRPW WVHGT ${ASWELL[@]} WVPER ${ASWPER[@]} WVDIR ${ASWDIR[@]} )
  export nparam=`echo ${arrpar[@]} | wc -w`
+
+
+# 1.a Grib file (AWIPS and FAX charts)
  fhcnt=$fstart
  while [ $fhcnt -le $FHMAX_WAV ]; do
    fhr=$(printf "%03d" $fhcnt)
@@ -88,9 +92,13 @@
        at_10m)  grdID='atlocn.0p16' ;;
        ep_10m)  grdID='epacif.0p16' ;;
        wc_10m)  grdID='wcoast.0p16' ;;
-       glo_30m) grdID='global.0p25' ;;
+#       glo_30m) grdID='global.0p25' ;;
+       glo_30m) grdID='global.0p50' ;;
+       ak_10m)  grdID='alaska.0p16' ;;
        *)       grdID= ;;
      esac
+     #
+
      GRIBIN=$COMIN/gridded/$RUNwave.$cycle.$grdID.f${fhr}.grib2
      GRIBIN_chk=$GRIBIN.idx
 
@@ -117,6 +125,7 @@
          err=1;export err;${errchk} || exit ${err}
        fi
      done
+
      GRIBOUT=$RUNwave.$cycle.$grdID.f${fhr}.clipped.grib2
 
      iparam=1
@@ -143,59 +152,12 @@
        fi
        iparam=`expr ${iparam} + 1`
      done #end wave param loop
-   done #end gridID loop
-   if [ $fhcnt -ge $FHMAX_HF_WAV ]; then
-     inc=$FHOUT_WAV
-   else
-     inc=$FHOUT_HF_WAV
-   fi
-   let fhcnt=fhcnt+inc
- done #end time loop
-
-#=======================================================================
-
-# 1.a Grib file (AWIPS and FAX charts)
- fhcnt=$fstart
- while [ $fhcnt -le $FHMAX_WAV ]; do
-   fhr=$(printf "%03d" $fhcnt)
-   for grdOut in $grids;do
-     case $grdOut in
-       ao_9km)  grdID='arctic.9km' ;;
-       at_10m)  grdID='atlocn.0p16' ;;
-       ep_10m)  grdID='epacif.0p16' ;;
-       wc_10m)  grdID='wcoast.0p16' ;;
-       glo_30m) grdID='global.0p25' ;;
-       *)       grdID= ;;
-     esac
-     #
+#======================================================================
      GRIBIN=$RUNwave.$cycle.$grdID.f${fhr}.clipped.grib2
      GRIBIN_chk=$GRIBIN.idx
 
-# 1.c.1 If gridID eq to global.0p25 interpolate it to global_30m
-     if [ "$grdID" = "global.0p25" ]; then
-       #cp $GRIBIN  tempgf.$grdID.f${fhr}
-       ln -s $GRIBIN tempgf.$grdID.f${fhr}
-       $WGRIB2 -lola 0:720:0.5 -90:361:0.5 gribfile.$grdID.f${fhr}  grib \
-                                           tempgf.$grdID.f${fhr} 1> out 2>&1
-       OK=$?
-       if [ "$OK" != '0' ]; then 
-         msg="ABNORMAL EXIT: ERROR IN interpolation the global grid"
-         postmsg "$jlogfile" "$msg"
-         #set +x
-         echo ' '
-         echo '************************************************************* '
-         echo '*** FATAL ERROR : ERROR IN making  gribfile.$grdID.f${fhr}*** '
-         echo '************************************************************* '
-         echo ' '
-         echo $msg
-         #[[ "$LOUD" = YES ]] && set -x
-         echo "$RUNwave $grdID prdgen $date $cycle : error in grbindex." >> $wavelog
-         err=2;export err;err_chk
-       fi
-     else
-       #cp $GRIBIN gribfile.$grdID.f${fhr}
-       ln -s $GRIBIN gribfile.$grdID.f${fhr}
-     fi
+     ln -s $GRIBIN gribfile.$grdID.f${fhr}
+
      #
 # 1.d Input template files
      parmfile=$PARMwave/grib2_${RUNwave}.$grdOut.f${fhr}
@@ -250,10 +212,8 @@
 
      export FORT11="gribfile.$grdID.f${fhr}"
      export FORT31="gribindex.$grdID.f${fhr}"
-     #export FORT51="$AWIPSGRB.$grdOut.f${fhr}"
      export FORT51="$AWIPSGRB.$grdID.f${fhr}"
 
-     #$TOCGRIB2 < awipsgrb.$grdID.f${fhr} parm='KWBJ' > tocgrib2.out 2>&1
      $TOCGRIB2 < awipsgrb.$grdID.f${fhr} > tocgrib2.out 2>&1
      OK=$?
      if [ "$OK" != '0' ]; then
@@ -310,7 +270,6 @@
 
   set +x; [[ "$LOUD" = YES ]] && set -v
   rm -f gribfile gribindex.* awipsgrb.* awipsbull.data
-#XXX   rm -f $RUNwave.*.cbull
   set +v
 
 # --------------------------------------------------------------------------- #
