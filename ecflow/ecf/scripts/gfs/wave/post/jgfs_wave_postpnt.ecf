@@ -4,9 +4,9 @@
 #BSUB -cwd /tmp
 #BSUB -q %QUEUE%
 #BSUB -P %PROJ%
-#BSUB -W 03:00
+#BSUB -W 01:30
 #BSUB -R span[ptile=28]; -R affinity[core]
-#BSUB -n 56 
+#BSUB -n 280
 
 module purge
 %include <head.h>
@@ -14,8 +14,8 @@ module purge
 
 set -x
 
-export NODES=2
-export ntasks=56
+export NODES=10
+export ntasks=280
 export ptile=28
 export threads=1
 
@@ -33,7 +33,6 @@ module load lsf/${lsf_ver}
 module load impi/${impi_ver}
 module load prod_util/${prod_util_ver}
 module load prod_envir/${prod_envir_ver}
-module use -a /usrx/local/nceplibs/dev/NCEPLIBS/modulefiles
 module load CFP/${CFP_ver}
 
 module list

@@ -32,9 +32,7 @@ export SCRgfs=$HOMEgfs/scripts
 # GLOBAL static environment parameters
 
 export NWPROD="/gpfs/dell1/nco/ops/nwprod"
-export DMPDIR="/gpfs/dell3/emc/global/dump"
 export RTMFIX=$CRTM_FIX
-
 
 # Machine specific paths used everywhere
 
@@ -47,7 +45,6 @@ export NOSCRUB=$EXPDIR/NOSCRUB
 # Base directories for various builds
 export BASE_GIT="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git"
 
-
 # Toggle to turn on/off GFS downstream processing.
 export DO_BUFRSND="YES"    # BUFR sounding products
 export DO_GEMPAK="YES"     # GEMPAK products
@@ -56,7 +53,6 @@ export WAFSF="YES"         # WAFS products
 
 # NO for retrospective parallel; YES for real-time parallel
 export REALTIME="YES"
-
 
 ####################################################
 # DO NOT ADD MACHINE DEPENDENT STUFF BELOW THIS LINE
@@ -99,7 +95,6 @@ export ROTDIR_DUMP="YES"
 export DUMP_SUFFIX=""
 export RUNDIR="$DATAROOT"
 export ARCDIR="$NOSCRUB/archive/$PSLOT"
-export ICSDIR="/gpfs/dell2/ptmp/$USER/FV3ICS"
 export ATARDIR="/NCEPDEV/$HPSS_PROJECT/1year/$USER/$machine/scratch/$PSLOT"
 
 # Commonly defined parameters in JJOBS

@@ -17,11 +17,6 @@ export DO_RELOCATE="NO"
 export TROPCYQCRELOSH="$HOMEgfs/scripts/exglobal_atmos_tropcy_qc_reloc.sh"
 export SENDCOM=YES
 
-if [[ "$machine" == "WCOSS_DELL_P3" ]]; then
-    export POE="YES"
-    export BACK="off"
-fi
-
 export HOMERELO=$HOMEgfs
 export EXECRELO=${HOMERELO}/exec
 export FIXRELO=${HOMERELO}/fix/fix_am
