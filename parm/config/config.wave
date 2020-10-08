@@ -38,7 +38,7 @@ export WAVEWND_FID=
 
 # Grids for output fields (used in all steps)
 export waveuoutpGRD=points
-export waveinterpGRD='glo_15mxt' # Grids that need to be interpolated from native
+export waveinterpGRD='glo_15mxt at_10m ep_10m wc_10m ak_10m' # Grids that need to be interpolated from native
                              # in POST will generate grib unless gribOK not set
 export wavesbsGRD=''  # side-by-side grids generated as wave model runs, writes to com
 export wavepostGRD='gnh_10m aoc_9km gsh_15m' # Native grids that will be post-processed (grib2)
@@ -64,7 +64,7 @@ export DTPNT_WAV=3600
 export FHINCP_WAV=`expr $DTPNT_WAV / 3600`
 
 # Selected output parameters (gridded)
-export OUTPARS_WAV="WND CUR ICE HS T01 T02 DIR FP DP PHS PTP PDIR CHA"
+export OUTPARS_WAV="WND HS FP DP PHS PTP PDIR"
 
 # Restart file config
 if [ "$CDUMP" = "gdas" ]; then
