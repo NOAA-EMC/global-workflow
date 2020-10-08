@@ -587,7 +587,15 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
         dict_tasks['%swavepostbndpnt' % cdump] = task
 
     # wavepostpnt
-    if do_wave in ['Y', 'YES'] and cdump in cdumps:
+    if do_wave in ['Y', 'YES'] and cdump in ['gdas']:
+        deps = []
+        dep_dict = {'type':'task', 'name':'%sfcst' % cdump}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+        task = wfu.create_wf_task('wavepostpnt', cdump=cdump, envar=envars, dependency=dependencies)
+        dict_tasks['%swavepostpnt' % cdump] = task
+
+    if do_wave in ['Y', 'YES'] and cdump in ['gfs']:
         deps = []
         dep_dict = {'type':'task', 'name':'%sfcst' % cdump}
         deps.append(rocoto.add_dependency(dep_dict))
