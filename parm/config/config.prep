@@ -10,7 +10,6 @@ echo "BEGIN: config.prep"
 
 export DO_MAKEPREPBUFR="YES"   # if NO, will copy prepbufr from globaldump
 
-
 # Relocation and syndata QC
 export PROCESS_TROPCY=${PROCESS_TROPCY:-NO}
 [[ $RUN_ENVIR == "nco" && $envir == "prod" ]] && export PROCESS_TROPCY="YES"
@@ -22,7 +21,6 @@ export HOMERELO=$HOMEgfs
 export EXECRELO=${HOMERELO}/exec
 export FIXRELO=${HOMERELO}/fix/fix_am
 export USHRELO=${HOMERELO}/ush
-
 
 # Adjust observation error for GFS v16 parallels
 #

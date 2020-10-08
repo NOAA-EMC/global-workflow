@@ -139,13 +139,19 @@
       -e "s/FLAGS/$gribflags/g" \
                                ${DATA}/ww3_grib2.${grdID}.inp.tmpl > ww3_grib.inp
 
+
+  echo "ww3_grib.inp" 
+  cat ww3_grib.inp
 # 1.b Run GRIB packing program
 
   set +x
   echo "   Run ww3_grib2"
   echo "   Executing $EXECwave/ww3_grib"
   [[ "$LOUD" = YES ]] && set -x
+
+  export pgm=ww3_grib;. prep_step
   $EXECwave/ww3_grib > grib2_${grdnam}_${FH3}.out 2>&1
+  export err=$?;err_chk
 
     if [ ! -s gribfile ]; then
       set +x

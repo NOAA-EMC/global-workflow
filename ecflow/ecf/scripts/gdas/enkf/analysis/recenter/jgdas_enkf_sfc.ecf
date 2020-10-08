@@ -3,7 +3,7 @@
 #BSUB -P %PROJ%
 #BSUB -J %E%gdas_enkf_sfc_%CYC%
 #BSUB -o %COM%/output/%ENVIR%/today/gdas_enkf_sfc_%CYC%.o%J
-#BSUB -W 3:00
+#BSUB -W 0:06
 #BSUB -n 84
 #BSUB -R affinity[core(1)]
 #BSUB -R span[ptile=28]
@@ -34,10 +34,10 @@ module load lsf/${lsf_ver}
 module load impi/${impi_ver}
 module load prod_envir/${prod_envir_ver}
 module load prod_util/${prod_util_ver}
-module use -a /usrx/local/nceplibs/dev/NCEPLIBS/modulefiles
+module load NetCDF-parallel/${netcdf_parallel_ver}
+module load HDF5-parallel/${hdf5_parallel_ver}
+module use -a /gpfs/dell1/nco/ops/nwprod/modulefiles/
 module load python/${python_ver}
-module load hdf5_parallel/${hdf5_parallel_ver}
-module load netcdf_parallel/${netcdf_parallel_ver}
 
 module list
 

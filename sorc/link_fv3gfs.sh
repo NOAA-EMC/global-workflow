@@ -31,11 +31,11 @@ pwd=$(pwd -P)
 #--model fix fields
 #------------------------------
 if [ $machine == "cray" ]; then
-    FIX_DIR="/gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix"
+    FIX_DIR="/gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix_nco_gfsv16"
 elif [ $machine = "dell" ]; then
-    FIX_DIR="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix"
+    FIX_DIR="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix_nco_gfsv16"
 elif [ $machine = "hera" ]; then
-    FIX_DIR="/scratch1/NCEPDEV/global/glopara/fix"
+    FIX_DIR="/scratch1/NCEPDEV/global/glopara/fix_nco_gfsv16"
 fi
 cd ${pwd}/../fix                ||exit 8
 for dir in fix_am fix_fv3_gmted2010 fix_gldas fix_orog fix_verif fix_wave_gfs ; do
@@ -217,10 +217,7 @@ if [ -d ${pwd}/gfs_wafs.fd ]; then
 fi
 
 for ufs_utilsexe in \
-     fregrid           make_hgrid           nemsio_get    shave.x \
-     emcsfc_ice_blend  fregrid_parallel  make_hgrid_parallel  nemsio_read \
-     emcsfc_snow2mdl   global_chgres     make_solo_mosaic     nst_tf_chg.x \
-     filter_topo       global_cycle      mkgfsnemsioctl       orog.x ; do
+     emcsfc_ice_blend  emcsfc_snow2mdl  global_chgres  global_cycle ; do
     [[ -s $ufs_utilsexe ]] && rm -f $ufs_utilsexe
     $LINK ../sorc/ufs_utils.fd/exec/$ufs_utilsexe .
 done

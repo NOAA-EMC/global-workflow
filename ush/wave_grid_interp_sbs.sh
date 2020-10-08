@@ -148,8 +148,9 @@
   echo "   Executing $EXECwave/ww3_gint
   [[ "$LOUD" = YES ]] && set -x
 
+  export pgm=ww3_gint;. prep_step
   $EXECwave/ww3_gint 1> gint.${grdID}.out 2>&1
-  err=$?
+  export err=$?;err_chk
 
 # Write interpolation file to main TEMP dir area if not there yet
   if [ "wht_OK" = 'no' ]

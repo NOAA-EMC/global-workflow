@@ -61,6 +61,7 @@ export COMIN=${COMIN:-$COMROOT/${NET}/${envir}/${RUN}.${PDY}/${cyc}/$COMPONENT}
 export COMOUT=${COMOUT:-$COMROOT/${NET}/${envir}/${RUN}.${PDY}/${cyc}/$COMPONENT}
 export pcom=${pcom:-${COMOUT}/wmo}
 export COMAWP=${COMAWP:-${COMOUT}/gempak}
+export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 mkdir -p $COMOUT $pcom $COMAWP
 env
 
