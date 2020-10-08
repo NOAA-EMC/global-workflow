@@ -1603,7 +1603,7 @@ suite prod00
         endfamily
         family grib2_wafs
           task jgfs_atmos_wafs_grib2
-            trigger ../../post/jgfs_atmos_post_f036 == complete
+            trigger ../../post/jgfs_atmos_post_f000 == complete
           task jgfs_atmos_wafs_grib2_0p25
             trigger ../../post/jgfs_atmos_post_f036 == complete
           task jgfs_atmos_wafs_blending
@@ -2237,7 +2237,7 @@ suite prod00
         task jgfs_wave_prdgen_gridded
           trigger ./jgfs_wave_postsbs == active or ./jgfs_wave_postsbs == complete 
         task jgfs_wave_prdgen_bulls
-          trigger ./jgfs_wave_postpnt == complete and ./jgfs_wave_postsbst == complete
+          trigger ./jgfs_wave_postpnt == complete and ./jgfs_wave_postsbs == complete
       endfamily
       family gempak
         task jgfs_wave_gempak

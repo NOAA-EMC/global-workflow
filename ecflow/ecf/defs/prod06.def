@@ -1603,7 +1603,7 @@ suite prod06
         endfamily
         family grib2_wafs
           task jgfs_atmos_wafs_grib2
-            trigger ../../post/jgfs_atmos_post_f036 == complete
+            trigger ../../post/jgfs_atmos_post_f000 == complete
           task jgfs_atmos_wafs_grib2_0p25
             trigger ../../post/jgfs_atmos_post_f036 == complete
           task jgfs_atmos_wafs_blending
