@@ -364,7 +364,7 @@ def get_workflow(dict_configs, cdump='gdas'):
     # wavepostbndpnt
     if do_wave in ['Y', 'YES']:
         deps = []
-        data = '&ROTDIR;/%s.@Y@m@d/@H/atmos/%s.t@Hz.logf192.txt' % (cdump,cdump)
+        data = '&ROTDIR;/%s.@Y@m@d/@H/atmos/%s.t@Hz.logf180.txt' % (cdump,cdump)
         dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
@@ -377,7 +377,9 @@ def get_workflow(dict_configs, cdump='gdas'):
         deps = []
         dep_dict = {'type':'task', 'name':'%sfcst' % cdump}
         deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
+        dep_dict = {'type':'task', 'name':'%swavepostbndpnt' % cdump}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
         task = wfu.create_wf_task('wavepostpnt', cdump=cdump, envar=envars, dependency=dependencies)
         tasks.append(task)
         tasks.append('\n')
@@ -407,7 +409,9 @@ def get_workflow(dict_configs, cdump='gdas'):
         deps = []
         dep_dict = {'type':'task', 'name':'%swavepostsbs' % cdump}
         deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
+        dep_dict = {'type':'task', 'name':'%swavepostpnt' % cdump}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
         task = wfu.create_wf_task('waveawipsbulls', cdump=cdump, envar=envars, dependency=dependencies)
         tasks.append(task)
         tasks.append('\n')
@@ -425,7 +429,8 @@ def get_workflow(dict_configs, cdump='gdas'):
     # wafs
     if do_wafs in ['Y', 'YES']:
         deps = []
-        dep_dict = {'type': 'metatask', 'name': '%spost' % cdump}
+        data = '&ROTDIR;/%s.@Y@m@d/@H/atmos/%s.t@Hz.wafs.grb2f036' % (cdump,cdump)
+        dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
         task = wfu.create_wf_task('wafs', cdump=cdump, envar=envars, dependency=dependencies)
@@ -435,7 +440,8 @@ def get_workflow(dict_configs, cdump='gdas'):
     # wafsgcip
     if do_wafs in ['Y', 'YES']:
         deps = []
-        dep_dict = {'type': 'metatask', 'name': '%spost' % cdump}
+        data = '&ROTDIR;/%s.@Y@m@d/@H/atmos/%s.t@Hz.wafs.grb2f036' % (cdump,cdump)
+        dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
         task = wfu.create_wf_task('wafsgcip', cdump=cdump, envar=envars, dependency=dependencies)
@@ -445,7 +451,8 @@ def get_workflow(dict_configs, cdump='gdas'):
     # wafsgrib2
     if do_wafs in ['Y', 'YES']:
         deps = []
-        dep_dict = {'type': 'metatask', 'name': '%spost' % cdump}
+        data = '&ROTDIR;/%s.@Y@m@d/@H/atmos/%s.t@Hz.wafs.grb2f036' % (cdump,cdump)
+        dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
         task = wfu.create_wf_task('wafsgrib2', cdump=cdump, envar=envars, dependency=dependencies)
@@ -455,7 +462,8 @@ def get_workflow(dict_configs, cdump='gdas'):
     # wafsgrib20p25
     if do_wafs in ['Y', 'YES']:
         deps = []
-        dep_dict = {'type': 'metatask', 'name': '%spost' % cdump}
+        data = '&ROTDIR;/%s.@Y@m@d/@H/atmos/%s.t@Hz.wafs.grb2f036' % (cdump,cdump)
+        dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
         task = wfu.create_wf_task('wafsgrib20p25', cdump=cdump, envar=envars, dependency=dependencies)

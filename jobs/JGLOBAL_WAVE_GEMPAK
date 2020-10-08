@@ -23,6 +23,7 @@ export SENDCOM=${SENDCOM:-YES}
 export SENDDBN=${SENDDBN:-YES}
 export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
+
 export DATA=${DATA:-${DATAROOT}/${jobid:?}}
 mkdir -p $DATA
 cd $DATA
@@ -45,7 +46,8 @@ postmsg "$jlogfile" "$msg"
 ########################################################
 # Execute the script.
 ${HOMEgfs}/scripts/exgfs_wave_nawips.sh
-
+status=$?
+[[ $status -ne 0 ]] && exit $status
 ###################################
 # Remove temp directories
 if [ "$KEEPDATA" != "YES" ]; then
@@ -54,3 +56,4 @@ if [ "$KEEPDATA" != "YES" ]; then
 fi
 
 date
+exit 0

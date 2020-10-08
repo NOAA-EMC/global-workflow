@@ -39,7 +39,7 @@ if [ $step = "prep" -o $step = "prepbufr" ]; then
 
     eval "export wtime_$step='00:45:00'"
     eval "export npe_$step=4"
-    eval "export npe_node_$step=4"
+    eval "export npe_node_$step=2"
     eval "export nth_$step=1"
 
 elif [ $step = "waveinit" ]; then
@@ -68,16 +68,16 @@ elif [ $step = "wavepostsbs" ]; then
 
 elif [ $step = "wavepostbndpnt" ]; then
 
-    export wtime_wavepostbndpnt="03:00:00"
-    export npe_wavepostbndpnt=56
+    export wtime_wavepostbndpnt="01:00:00"
+    export npe_wavepostbndpnt=280
     export nth_wavepostbndpnt=1
     export npe_node_wavepostbndpnt=$(echo "$npe_node_max / $nth_wavepostbndpnt" | bc)
     export NTASKS=${npe_wavepostbndpnt}
 
 elif [ $step = "wavepostpnt" ]; then
 
-    export wtime_wavepostpnt="03:00:00"
-    export npe_wavepostpnt=56
+    export wtime_wavepostpnt="01:30:00"
+    export npe_wavepostpnt=280
     export nth_wavepostpnt=1
     export npe_node_wavepostpnt=$(echo "$npe_node_max / $nth_wavepostpnt" | bc)
     export NTASKS=${npe_wavepostpnt}
@@ -108,9 +108,10 @@ elif [ $step = "waveawipsgridded" ]; then
 
 elif [ $step = "anal" ]; then
 
-    export wtime_anal="02:00:00"
-    export npe_anal=800
+    export wtime_anal="00:45:00"
+    export npe_anal=1000
     export nth_anal=4  
+    export npe_anal_gfs=1000
     if [ $CASE = "C384" ]; then
       export npe_anal=160
       export nth_anal=10
@@ -123,7 +124,7 @@ elif [ $step = "anal" ]; then
 
 elif [ $step = "analcalc" ]; then
 
-    export wtime_analcalc="02:00:00"
+    export wtime_analcalc="00:10:00"
     export npe_analcalc=127
     export nth_analcalc=1
     export npe_node_analcalc=$npe_node_max
@@ -131,7 +132,7 @@ elif [ $step = "analcalc" ]; then
 
 elif [ $step = "analdiag" ]; then
 
-    export wtime_analdiag="02:00:00"
+    export wtime_analdiag="00:10:00"
     export npe_analdiag=112
     export nth_analdiag=1
     export npe_node_analdiag=$npe_node_max
@@ -139,7 +140,7 @@ elif [ $step = "analdiag" ]; then
 
 elif [ $step = "gldas" ]; then
 
-    export wtime_gldas="02:00:00"
+    export wtime_gldas="00:10:00"
     export npe_gldas=96  
     export nth_gldas=1 
     export npe_node_gldas=$npe_node_max
@@ -151,8 +152,8 @@ elif [ $step = "gldas" ]; then
 
 elif [ $step = "fcst" ]; then
 
-    export wtime_fcst="01:00:00"
-    export wtime_fcst_gfs="08:00:00"
+    export wtime_fcst="00:30:00"
+    export wtime_fcst_gfs="02:30:00"
     export npe_fcst=$(echo "$layout_x * $layout_y * 6" | bc)
     export npe_fcst_gfs=$(echo "$layout_x_gfs * $layout_y_gfs * 6" | bc)
     export nth_fcst=${nth_fv3:-2}
@@ -163,7 +164,7 @@ elif [ $step = "post" ]; then
 
     export wtime_post="02:00:00"
     export wtime_post_gfs="06:00:00"
-    export npe_post=48 
+    export npe_post=96
     export nth_post=1
     export npe_node_post=12
     export npe_node_dwn=$npe_node_max
@@ -244,7 +245,7 @@ elif [ $step = "metp" ]; then
 
 elif [ $step = "echgres" ]; then
 
-    export wtime_echgres="01:00:00"
+    export wtime_echgres="00:10:00"
     export npe_echgres=3
     export nth_echgres=$npe_node_max
     export npe_node_echgres=1
@@ -260,10 +261,10 @@ elif [ $step = "arch" -o $step = "earc" -o $step = "getic" ]; then
 elif [ $step = "eobs" -o $step = "eomg" ]; then
 
 
-    export wtime_eobs="00:30:00"
+    export wtime_eobs="00:10:00"
     export wtime_eomg="01:00:00"
     if [ $CASE = "C768" ]; then
-      export npe_eobs=100
+      export npe_eobs=480
     elif [ $CASE = "C384" ]; then
       export npe_eobs=42
     elif [ $CASE = "C192" ]; then
@@ -278,7 +279,7 @@ elif [ $step = "eobs" -o $step = "eomg" ]; then
 
 elif [ $step = "ediag" ]; then
 
-    export wtime_ediag="02:00:00"
+    export wtime_ediag="00:06:00"
     export npe_ediag=56
     export nth_ediag=1
     export npe_node_ediag=$npe_node_max
@@ -286,12 +287,12 @@ elif [ $step = "ediag" ]; then
 
 elif [ $step = "eupd" ]; then
 
-    export wtime_eupd="01:30:00"
+    export wtime_eupd="00:30:00"
     if [ $CASE = "C768" ]; then
-      export npe_eupd=540
+      export npe_eupd=960
       export nth_eupd=6
       if [[ "$machine" = "WCOSS_DELL_P3" ]]; then
-        export nth_eupd=9
+        export nth_eupd=7
       fi
     elif [ $CASE = "C384" ]; then
       export npe_eupd=270
@@ -314,7 +315,7 @@ elif [ $step = "eupd" ]; then
 
 elif [ $step = "ecen" ]; then
 
-    export wtime_ecen="00:30:00"
+    export wtime_ecen="00:10:00"
     export npe_ecen=80
     export nth_ecen=6
     if [[ "$machine" = "WCOSS_DELL_P3" ]]; then export nth_ecen=7; fi
@@ -325,7 +326,7 @@ elif [ $step = "ecen" ]; then
 
 elif [ $step = "esfc" ]; then
 
-    export wtime_esfc="03:00:00"
+    export wtime_esfc="00:06:00"
     export npe_esfc=80
     export npe_node_esfc=$npe_node_max
     export nth_esfc=1
@@ -334,7 +335,7 @@ elif [ $step = "esfc" ]; then
 
 elif [ $step = "efcs" ]; then
 
-    export wtime_efcs="03:00:00"
+    export wtime_efcs="00:40:00"
     export npe_efcs=$(echo "$layout_x * $layout_y * 6" | bc)
     export nth_efcs=${nth_fv3:-2}
     export npe_node_efcs=$(echo "$npe_node_max / $nth_efcs" | bc)
@@ -342,7 +343,7 @@ elif [ $step = "efcs" ]; then
 
 elif [ $step = "epos" ]; then
 
-    export wtime_epos="03:00:00"
+    export wtime_epos="00:15:00"
     export npe_epos=80
     export nth_epos=6
     if [[ "$machine" = "WCOSS_DELL_P3" ]]; then export nth_epos=7; fi
@@ -354,7 +355,7 @@ elif [ $step = "postsnd" ]; then
     export wtime_postsnd="02:00:00"
     export npe_postsnd=40
     export nth_postsnd=1
-    export npe_node_postsnd=4
+    export npe_node_postsnd=5
     export npe_postsndcfp=9
     export npe_node_postsndcfp=3
     if [ $OUTPUT_FILE == "nemsio" ]; then

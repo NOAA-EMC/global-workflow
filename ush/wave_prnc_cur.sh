@@ -72,7 +72,24 @@ rm -f cur.nc
 ln -s cur_glo_uv_${PDY}_${fext}${fh3}_5min.nc cur.nc
 ln -s ${DATA}/mod_def.${WAVECUR_FID} ./mod_def.ww3
 
+export pgm=ww3_prnc;. prep_step
 $EXECwave/ww3_prnc 1> prnc_${WAVECUR_FID}_${ymdh_rtofs}.out 2>&1
+
+export err=$?; err_chk
+
+if [ "$err" != '0' ]
+then
+  cat prnc_${WAVECUR_FID}_${ymdh_rtofs}.out
+  set $setoff
+  echo ' '
+  echo '******************************************** '
+  echo '*** WARNING: NON-FATAL ERROR IN ww3_prnc *** '
+  echo '******************************************** '
+  echo ' '
+  set $seton
+  postmsg "$jlogfile" "WARNING: NON-FATAL ERROR IN ww3_prnc."
+  exit 4
+fi
 
 mv -f current.ww3 ${DATA}/${WAVECUR_DID}.${ymdh_rtofs}
 
