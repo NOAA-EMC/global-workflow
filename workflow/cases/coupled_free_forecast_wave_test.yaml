@@ -4,8 +4,8 @@ case:
     #BASE_CPLIC: /scratch2/NCEPDEV/climate/climpara/S2S/IC
 
   settings: 
-    SDATE: 2014-01-01t00:00:00
-    EDATE: 2014-01-01t00:00:00
+    SDATE: 2013-04-01t00:00:00
+    EDATE: 2013-04-01t00:00:00
 
     cplwav: .true.
     cplwav2atm: .true.
