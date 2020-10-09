@@ -12,12 +12,16 @@
 #
 # Script history log:
 # 2018-01-30  Gayno  initial script
+# 2019-1030   Gayno  updates to output analysis file in netcdf or nemsio
 #
 # Usage:  gaussian_sfcanl.sh
 #
 #   Imported Shell Variables:
 #     CASE          Model resolution.  Defaults to C768.
 #     DONST         Process NST fields when 'yes'.  Default is 'no'.
+#     OUTPUT_FILE   Output gaussian analysis file format.  Default is "nemsio"
+#                   Set to "netcdf" for netcdf output file
+#                   Otherwise, output in nemsio.
 #     BASEDIR       Root directory where all scripts and fixed files reside.
 #                   Default is /nwprod2.
 #     HOMEgfs       Directory for gfs version.  Default is
@@ -119,7 +123,14 @@ LATB_CASE=$((res*2))
 LONB_SFC=${LONB_SFC:-$LONB_CASE}
 LATB_SFC=${LATB_SFC:-$LATB_CASE}
 DONST=${DONST:-"NO"}
-
+LEVS=${LEVS:-64}
+LEVSP1=$(($LEVS+1))
+OUTPUT_FILE=${OUTPUT_FILE:-"nemsio"}
+if [ $OUTPUT_FILE = "netcdf" ]; then
+    export NETCDF_OUT=".true."
+else
+    export NETCDF_OUT=".false."
+fi
 
 #  Directories.
 gfs_ver=${gfs_ver:-v15.0.0}
@@ -135,6 +146,7 @@ COMOUT=${COMOUT:-$(pwd)}
 #  Filenames.
 XC=${XC}
 GAUSFCANLEXE=${GAUSFCANLEXE:-$EXECgfs/gaussian_sfcanl.exe}
+SIGLEVEL=${SIGLEVEL:-$FIXam/global_hyblev.l${LEVSP1}.txt}
 
 CDATE=${CDATE:?}
 
@@ -195,10 +207,10 @@ $NLN $FIXfv3/$CASE/${CASE}_oro_data.tile4.nc   ./orog.tile4.nc
 $NLN $FIXfv3/$CASE/${CASE}_oro_data.tile5.nc   ./orog.tile5.nc
 $NLN $FIXfv3/$CASE/${CASE}_oro_data.tile6.nc   ./orog.tile6.nc
 
-$NLN $FIXam/global_hyblev.l65.txt             ./vcoord.txt
+$NLN $SIGLEVEL                                 ./vcoord.txt
 
 # output gaussian global surface analysis files
-$NLN $COMOUT/${APREFIX}sfcanl${ASUFFIX} ./sfc.gaussian.nemsio
+$NLN $COMOUT/${APREFIX}sfcanl${ASUFFIX} ./sfc.gaussian.analysis.file
 
 # Executable namelist
 cat <<EOF > fort.41
@@ -209,7 +221,8 @@ cat <<EOF > fort.41
   hh=$ih,
   igaus=$LONB_SFC,
   jgaus=$LATB_SFC,
-  donst=$DONST
+  donst=$DONST,
+  netcdf_out=$NETCDF_OUT
  /
 EOF
 

@@ -15,9 +15,9 @@ module use "$HOMEgfs/modulefiles"
 if [[ -d /lfs3 ]] ; then
     # We are on NOAA Jet
 	module load module_base.jet 
-elif [[ -d /scratch3 ]] ; then
-    # We are on NOAA Theia
-	module load module_base.theia 
+elif [[ -d /scratch1 ]] ; then
+    # We are on NOAA Hera
+	module load module_base.hera
 elif [[ -d /gpfs/hps && -e /etc/SuSE-release ]] ; then
     # We are on NOAA Luna or Surge
 	module load module_base.wcoss_c 

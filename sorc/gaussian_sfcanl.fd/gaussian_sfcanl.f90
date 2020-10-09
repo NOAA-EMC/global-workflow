@@ -2,9 +2,10 @@
 ! 
 ! Read in surface and nst data on the cubed-sphere grid,
 ! interpolate it to the gaussian grid, and output the result
-! to a nemsio file.  The output file mimics those produced by
-! the legacy spectral GFS system.  To not process nst
-! data, set flag 'donst' to 'no'.  To process nst, set to 'yes'.
+! to a nemsio or netcdf file.  To not process nst data,
+! set flag 'donst' to 'no'.  To process nst, set to 'yes'.
+! To output gaussian file in netcdf, set netcdf_out=.true.
+! Otherwise, nemsio format will be output.
 !
 ! Input files:
 ! ------------
@@ -17,7 +18,8 @@
 !
 ! Output files:
 ! -------------
-! sfc.gaussian.nemsio     surface data on gaussian grid - nemsio
+! sfc.gaussian.analysis.file  surface data on gaussian grid - 
+!                             nemsio or netcdf.
 !
 ! Namelist variables:
 ! -------------------
@@ -25,8 +27,12 @@
 ! i/jgaus                 i/j dimension of gaussian grid.
 ! donst                   When 'no' do not process nst data.
 !                         When 'yes' process nst data.
+! netcdf_out              When 'true', output gaussian file in
+!                         netcdf.  Otherwise output nemsio format.
 !
 ! 2018-Jan-30 Gayno       Initial version
+! 2019-Oct-30 Gayno       Option to output gaussian analysis file
+!                         in netcdf.
 !
 !------------------------------------------------------------------
 
@@ -105,6 +111,10 @@
 
  end module io
 
+!------------------------------------------------------------------------------
+! Main program 
+!------------------------------------------------------------------------------
+
  program main
 
  use netcdf
@@ -119,13 +129,17 @@
  integer                 :: yy, mm, dd, hh
  integer, allocatable    :: col(:), row(:)
 
+ logical                 :: netcdf_out
+
  real(kind=8), allocatable :: s(:)
 
- namelist /setup/ yy, mm, dd, hh, igaus, jgaus, donst
+ namelist /setup/ yy, mm, dd, hh, igaus, jgaus, donst, netcdf_out
 
  call w3tagb('GAUSSIAN_SFCANL',2018,0179,0055,'NP20')
 
  print*,"- BEGIN EXECUTION"
+
+ netcdf_out = .true.
 
  donst = 'no'
 
@@ -364,10 +378,14 @@
  endif
 
 !------------------------------------------------------------------------------
-! Write gaussian data to nemsio file.
+! Write gaussian data to either netcdf or nemsio file.
 !------------------------------------------------------------------------------
 
- call write_sfc_data
+ if (netcdf_out) then
+   call write_sfc_data_netcdf
+ else
+   call write_sfc_data_nemsio
+ endif
 
  deallocate(gaussian_data%orog)
  deallocate(gaussian_data%t2m)
@@ -426,17 +444,623 @@
  endif
 
  print*
- print*,'- NORMAL INTERPOLATION'
+ print*,'- NORMAL TERMINATION'
 
  call w3tage('GAUSSIAN_SFCANL')
 
  end program main
 
 !-------------------------------------------------------------------------------------------
+! Write gaussian surface data to netcdf file.
+!-------------------------------------------------------------------------------------------
+
+ subroutine write_sfc_data_netcdf
+
+ use netcdf
+ use io
+
+ implicit none
+
+ character(len=50)       :: outfile
+ character(len=31)       :: date_string
+ character(len=4)        :: year
+ character(len=2)        :: mon, day, hour
+
+ integer                 :: header_buffer_val = 16384
+ integer                 :: i, error, ncid, dim_xt, dim_yt, dim_time
+ integer                 :: id_xt, id_yt, id_lon, id_lat, id_time
+ integer                 :: n
+
+! noah variables
+ integer, parameter      :: num_noah=44
+ character(len=30)       :: noah_var(num_noah)
+ character(len=70)       :: noah_name(num_noah)
+ character(len=30)       :: noah_units(num_noah)
+ 
+! nst variables
+ integer, parameter      :: num_nst=16
+ character(len=30)       :: nst_var(num_nst)
+ character(len=70)       :: nst_name(num_nst)
+ character(len=30)       :: nst_units(num_nst)
+
+! variables to be output
+ integer                              :: num_vars
+ character(len=30), allocatable       :: var(:)
+ character(len=70), allocatable       :: name(:)
+ character(len=30), allocatable       :: units(:)
+ integer, allocatable                 :: id_var(:)
+
+ real, parameter         :: missing = 9.99e20
+
+ real(kind=4), allocatable :: dummy(:,:), slat(:), wlat(:)
+
+! define noah fields
+
+ data noah_var /"alnsf", &
+                "alnwf", &
+                "alvsf", &
+                "alvwf", &
+                "cnwat", &
+                "crain",&
+                "f10m", &
+                "facsf", &
+                "facwf", &
+                "ffhh", &
+                "ffmm", &
+                "fricv", &
+                "icec", &
+                "icetk", &
+                "land", &
+                "orog", &
+                "sfcr", &
+                "shdmax", &
+                "shdmin", &
+                "sltyp", &
+                "snoalb", &
+                "snod", &
+                "soill1", &
+                "soill2", &
+                "soill3", &
+                "soill4", &
+                "soilt1", &
+                "soilt2", &
+                "soilt3", &
+                "soilt4", &
+                "soilw1", &
+                "soilw2", &
+                "soilw3", &
+                "soilw4", &
+                "sotyp", &
+                "spfh2m", &
+                "tg3" , &
+                "tisfc", &
+                "tmp2m", &
+                "tmpsfc", &
+                "tprcp", &
+                "veg", &
+                "vtype", &
+                "weasd"  /
+
+ data noah_name /"mean nir albedo with strong cosz dependency", &
+                 "mean nir albedo with weak cosz dependency", &
+                 "mean vis albedo with strong cosz dependency", &
+                 "mean vis albedo with weak cosz dependency", &
+                 "canopy water (cnwat in gfs data)" , &
+                 "instantaneous categorical rain", &
+                 "10-meter wind speed divided by lowest model wind speed", &
+                 "fractional coverage with strong cosz dependency", &
+                 "fractional coverage with weak cosz dependency", &
+                 "fh parameter from PBL scheme" , &
+                 "fm parameter from PBL scheme" , &
+                 "uustar surface frictional wind", &
+                 "surface ice concentration (ice=1; no ice=0)", &
+                 "sea ice thickness (icetk in gfs_data)", &
+                 "sea-land-ice mask (0-sea, 1-land, 2-ice)", &
+                 "surface geopotential height", &
+                 "surface roughness", &
+                 "maximum fractional coverage of green vegetation", &
+                 "minimum fractional coverage of green vegetation", &
+                 "surface slope type" , &
+                 "maximum snow albedo in fraction", &
+                 "surface snow depth", &
+                 "liquid soil moisture at layer-1", &
+                 "liquid soil moisture at layer-2", &
+                 "liquid soil moisture at layer-3", &
+                 "liquid soil moisture at layer-4", &
+                 "soil temperature 0-10cm", &
+                 "soil temperature 10-40cm", &
+                 "soil temperature 40-100cm", &
+                 "soil temperature 100-200cm", &
+                 "volumetric soil moisture 0-10cm", &
+                 "volumetric soil moisture 10-40cm", &
+                 "volumetric soil moisture 40-100cm", &
+                 "volumetric soil moisture 100-200cm", &
+                 "soil type in integer", &
+                 "2m specific humidity" , &
+                 "deep soil temperature" , &
+                 "surface temperature over ice fraction", &
+                 "2m temperature", &
+                 "surface temperature", &
+                 "total precipitation" , &
+                 "vegetation fraction", &
+                 "vegetation type in integer", &
+                 "surface snow water equivalent"  /
+
+ data noah_units /"%", &
+                  "%", &
+                  "%", &
+                  "%", &
+                  "XXX", &
+                  "number", &
+                  "N/A", &
+                  "XXX", &
+                  "XXX", &
+                  "XXX", &
+                  "XXX", &
+                  "XXX", &
+                  "fraction", &
+                  "XXX", &
+                  "numerical", &
+                  "gpm", &
+                  "m", &
+                  "XXX", &
+                  "XXX", &
+                  "XXX", &
+                  "XXX", &
+                  "m", &
+                  "XXX", &
+                  "XXX", &
+                  "XXX", &
+                  "XXX", &
+                  "K", &
+                  "K", &
+                  "K", &
+                  "K", &
+                  "fraction", &
+                  "fraction", &
+                  "fraction", &
+                  "fraction", &
+                  "number", &
+                  "kg/kg", & 
+                  "K", &
+                  "K", &
+                  "K", &
+                  "K", &
+                  "kg/m**2", &
+                  "fraction", &
+                  "number" , &
+                  "kg/m**2" /
+
+! define nst fields
+
+ data nst_var /"c0", &
+               "cd", &
+               "dconv", &
+               "dtcool", &
+               "qrain", &
+               "tref", &
+               "w0", &
+               "wd", &
+               "xs", &
+               "xt", &
+               "xtts", &
+               "xu", &
+               "xv", &
+               "xz", &
+               "xzts", &
+               "zc" /
+
+ data nst_name /"nsst coefficient1 to calculate d(tz)/d(ts)", &
+                "nsst coefficient2 to calculate d(tz)/d(ts)", &
+                "nsst thickness of free convection layer", &
+                "nsst sub-layer cooling amount", &
+                "nsst sensible heat flux due to rainfall", &
+                "nsst reference or foundation temperature", &
+                "nsst coefficient3 to calculate d(tz)/d(ts)", &
+                "nsst coefficient4 to calculate d(tz)/d(ts)", &
+                "nsst salinity content in diurnal thermocline layer", &
+                "nsst heat content in diurnal thermocline layer", &
+                "nsst d(xt)/d(ts)", &
+                "nsst u-current content in diurnal thermocline layer", &
+                "nsst v-current content in diurnal thermocline layer", &
+                "nsst diurnal thermocline layer thickness", &
+                "nsst d(xt)/d(ts)", &
+                "nsst sub-layer cooling thickness"/
+
+ data nst_units /"numerical", &
+                 "n/a", &
+                 "m", &
+                 "k", &
+                 "w/m2", &
+                 "K", &
+                 "n/a", &
+                 "n/a", &
+                 "n/a", &
+                 "k*m", &
+                 "m", &
+                 "m2/s", &
+                 "m2/s", &
+                 "m", &
+                 "m/k", &
+                 "m"/
+
+ outfile = "./sfc.gaussian.analysis.file"
+
+ print*,"- WRITE SURFACE DATA TO NETCDF FILE: ", trim(outfile)
+
+ error = nf90_create(outfile, cmode=IOR(IOR(NF90_CLOBBER,NF90_NETCDF4),NF90_CLASSIC_MODEL), ncid=ncid)
+ call netcdf_err(error, 'CREATING NETCDF FILE')
+
+! dimensions
+
+ error = nf90_def_dim(ncid, 'grid_xt', igaus, dim_xt)
+ call netcdf_err(error, 'DEFINING GRID_XT DIMENSION')
+
+ error = nf90_def_dim(ncid, 'grid_yt', jgaus, dim_yt)
+ call netcdf_err(error, 'DEFINING GRID_YT DIMENSION')
+
+ error = nf90_def_dim(ncid, 'time', 1, dim_time)
+ call netcdf_err(error, 'DEFINING TIME DIMENSION')
+
+! global attributes
+
+ error = nf90_put_att(ncid, nf90_global, 'nsoil', 4)
+ call netcdf_err(error, 'DEFINING NSOIL ATTRIBUTE')
+
+ error = nf90_put_att(ncid, nf90_global, 'source', "FV3GFS")
+ call netcdf_err(error, 'DEFINING SOURCE ATTRIBUTE')
+
+ error = nf90_put_att(ncid, nf90_global, 'grid', "gaussian")
+ call netcdf_err(error, 'DEFINING GRID ATTRIBUTE')
+
+ error = nf90_put_att(ncid, nf90_global, 'im', igaus)
+ call netcdf_err(error, 'DEFINING IM ATTRIBUTE')
+
+ error = nf90_put_att(ncid, nf90_global, 'jm', jgaus)
+ call netcdf_err(error, 'DEFINING JM ATTRIBUTE')
+
+! variables
+
+! grid_xt
+
+ error = nf90_def_var(ncid, 'grid_xt', NF90_DOUBLE, dim_xt, id_xt)
+ call netcdf_err(error, 'DEFINING GRID_XT')
+
+ error = nf90_put_att(ncid, id_xt, "cartesian_axis", "X")
+ call netcdf_err(error, 'DEFINING GRID_XT ATTRIBUTE')
+
+ error = nf90_put_att(ncid, id_xt, "long_name", "T-cell longitude")
+ call netcdf_err(error, 'DEFINING GRID_XT ATTRIBUTE')
+
+ error = nf90_put_att(ncid, id_xt, "units", "degrees_E")
+ call netcdf_err(error, 'DEFINING GRID_XT ATTRIBUTE')
+
+! lon
+
+ error = nf90_def_var(ncid, 'lon', NF90_DOUBLE, (/dim_xt,dim_yt/), id_lon)
+ call netcdf_err(error, 'DEFINING LON')
+
+ error = nf90_put_att(ncid, id_lon, "long_name", "T-cell longitude")
+ call netcdf_err(error, 'DEFINING LON ATTRIBUTE')
+
+ error = nf90_put_att(ncid, id_lon, "units", "degrees_E")
+ call netcdf_err(error, 'DEFINING LON ATTRIBUTE')
+
+! grid_yt
+
+ error = nf90_def_var(ncid, 'grid_yt', NF90_DOUBLE, dim_yt, id_yt)
+ call netcdf_err(error, 'DEFINING GRID_YT')
+
+ error = nf90_put_att(ncid, id_yt, "cartesian_axis", "Y")
+ call netcdf_err(error, 'DEFINING GRID_YT ATTRIBUTE')
+
+ error = nf90_put_att(ncid, id_yt, "long_name", "T-cell latitude")
+ call netcdf_err(error, 'DEFINING GRID_YT ATTRIBUTE')
+
+ error = nf90_put_att(ncid, id_yt, "units", "degrees_N")
+ call netcdf_err(error, 'DEFINING GRID_YT ATTRIBUTE')
+
+! lat
+
+ error = nf90_def_var(ncid, 'lat', NF90_DOUBLE, (/dim_xt,dim_yt/), id_lat)
+ call netcdf_err(error, 'DEFINING LAT')
+
+ error = nf90_put_att(ncid, id_lat, "long_name", "T-cell latitude")
+ call netcdf_err(error, 'DEFINING LAT ATTRIBUTE')
+
+ error = nf90_put_att(ncid, id_lat, "units", "degrees_N")
+ call netcdf_err(error, 'DEFINING LAT ATTRIBUTE')
+
+! time
+
+ error = nf90_def_var(ncid, 'time', NF90_DOUBLE, dim_time, id_time)
+ call netcdf_err(error, 'DEFINING TIME')
+
+ error = nf90_put_att(ncid, id_time, "long_name", "time")
+ call netcdf_err(error, 'DEFINING TIME ATTRIBUTE')
+
+ write(year, "(i4)") idate(1)
+ write(mon, "(i2.2)") idate(2)
+ write(day, "(i2.2)") idate(3)
+ write(hour, "(i2.2)") idate(4)
+
+ date_string="hours since " // year // "-" // mon // "-" // day // " " // hour // ":00:00"
+
+ error = nf90_put_att(ncid, id_time, "units", date_string)
+ call netcdf_err(error, 'DEFINING TIME ATTRIBUTE')
+
+ error = nf90_put_att(ncid, id_time, "cartesian_axis", "T")
+ call netcdf_err(error, 'DEFINING TIME ATTRIBUTE')
+
+ error = nf90_put_att(ncid, id_time, "calendar_type", "JULIAN")
+ call netcdf_err(error, 'DEFINING TIME ATTRIBUTE')
+
+ error = nf90_put_att(ncid, id_time, "calendar", "JULIAN")
+ call netcdf_err(error, 'DEFINING TIME ATTRIBUTE')
+
+!-------------------------------------------------------------------------------------------
+! Determine what variables to output (noah, or noah plus nst).
+!-------------------------------------------------------------------------------------------
+ 
+ if (trim(donst) == "yes" .or. trim(donst) == "YES") then
+   num_vars = num_noah + num_nst
+ else
+   num_vars = num_noah
+ endif
+   
+ allocate(var(num_vars))
+ allocate(name(num_vars))
+ allocate(units(num_vars))
+ allocate(id_var(num_vars))
+
+ var(1:num_noah) = noah_var
+ name(1:num_noah) = noah_name
+ units(1:num_noah) = noah_units
+
+ if (trim(donst) == "yes" .or. trim(donst) == "YES") then
+   do n = 1, num_nst
+     var(n+num_noah) = nst_var(n)
+     name(n+num_noah) = nst_name(n)
+     units(n+num_noah) = nst_units(n)
+   enddo
+ endif
+
+!-------------------------------------------------------------------------------------------
+! Define variables in netcdf file.
+!-------------------------------------------------------------------------------------------
+
+ do n = 1, num_vars
+
+   print*,'- DEFINE VARIABLE ',trim(var(n))
+   error = nf90_def_var(ncid, trim(var(n)), NF90_FLOAT, (/dim_xt,dim_yt,dim_time/), id_var(n))
+   call netcdf_err(error, 'DEFINING variable')
+   error = nf90_def_var_deflate(ncid, id_var(n), 1, 1, 1)
+   call netcdf_err(error, 'DEFINING variable with compression')
+
+   error = nf90_put_att(ncid, id_var(n), "long_name", trim(name(n)))
+   call netcdf_err(error, 'DEFINING name ATTRIBUTE')
+
+   error = nf90_put_att(ncid, id_var(n), "units", trim(units(n)))
+   call netcdf_err(error, 'DEFINING units ATTRIBUTE')
+
+   error = nf90_put_att(ncid, id_var(n), "missing", missing)
+   call netcdf_err(error, 'DEFINING missing ATTRIBUTE')
+
+   error = nf90_put_att(ncid, id_var(n), "cell_methods", "time: point")
+   call netcdf_err(error, 'DEFINING cell method ATTRIBUTE')
+
+   error = nf90_put_att(ncid, id_var(n), "output_file", "sfc")
+   call netcdf_err(error, 'DEFINING out file ATTRIBUTE')
+
+ enddo
+
+! end variable defs
+
+ error = nf90_enddef(ncid, header_buffer_val,4,0,4)
+ call netcdf_err(error, 'DEFINING HEADER')
+
+!-------------------------------------------------------------------------------------------
+! Write variables to netcdf file.
+!-------------------------------------------------------------------------------------------
+
+ allocate(dummy(igaus,jgaus))
+ do i = 1, igaus
+   dummy(i,:) = real((i-1),4) * 360.0_4 / real(igaus,4)
+ enddo
+
+ error = nf90_put_var(ncid, id_xt, dummy(:,1))
+ call netcdf_err(error, 'WRITING GRID_XT')
+
+ error = nf90_put_var(ncid, id_lon, dummy)
+ call netcdf_err(error, 'WRITING LON')
+
+ allocate(slat(jgaus))
+ allocate(wlat(jgaus))
+ call splat(4, jgaus, slat, wlat)
+
+ do i = (jgaus/2+1), jgaus
+   dummy(:,i) = 90.0 - (acos(slat(i)) * 180.0 / (4.0*atan(1.0)))
+ enddo
+
+ do i = 1, (jgaus/2)
+   dummy(:,i) = -(dummy(:,(jgaus-i+1)))
+ enddo
+
+ deallocate(slat, wlat)
+
+ error = nf90_put_var(ncid, id_yt, dummy(1,:))
+ call netcdf_err(error, 'WRITING GRID_YT')
+
+ error = nf90_put_var(ncid, id_lat, dummy)
+ call netcdf_err(error, 'WRITING LAT')
+
+ error = nf90_put_var(ncid, id_time, 0)
+ call netcdf_err(error, 'WRITING TIME')
+
+ do n = 1, num_vars
+   print*,'- WRITE VARIABLE ',trim(var(n))
+   call get_netcdf_var(var(n), dummy)
+   error = nf90_put_var(ncid, id_var(n), dummy, start=(/1,1,1/), count=(/igaus,jgaus,1/))
+   call netcdf_err(error, 'WRITING variable')
+ enddo
+
+ deallocate (dummy)
+
+ error = nf90_close(ncid)
+
+ end subroutine write_sfc_data_netcdf
+
+!-------------------------------------------------------------------------------------------
+! Retrieve variable based on its netcdf identifier.
+!-------------------------------------------------------------------------------------------
+
+ subroutine get_netcdf_var(var, dummy)
+
+ use io
+
+ implicit none
+ 
+ character(len=*), intent(in) :: var
+
+ real(kind=4), intent(out) :: dummy(igaus,jgaus)
+
+ select case (var)
+   case ('alnsf')
+     dummy = reshape(gaussian_data%alnsf, (/igaus,jgaus/))
+   case ('alnwf')
+     dummy = reshape(gaussian_data%alnwf, (/igaus,jgaus/))
+   case ('alvsf')
+     dummy = reshape(gaussian_data%alvsf, (/igaus,jgaus/))
+   case ('alvwf')
+     dummy = reshape(gaussian_data%alvwf, (/igaus,jgaus/))
+   case ('cnwat')
+     dummy = reshape(gaussian_data%canopy, (/igaus,jgaus/))
+   case ('f10m')
+     dummy = reshape(gaussian_data%f10m, (/igaus,jgaus/))
+   case ('facsf')
+     dummy = reshape(gaussian_data%facsf, (/igaus,jgaus/))
+   case ('facwf')
+     dummy = reshape(gaussian_data%facwf, (/igaus,jgaus/))
+   case ('ffhh')
+     dummy = reshape(gaussian_data%ffhh, (/igaus,jgaus/))
+   case ('ffmm')
+     dummy = reshape(gaussian_data%ffmm, (/igaus,jgaus/))
+   case ('fricv')
+     dummy = reshape(gaussian_data%uustar, (/igaus,jgaus/))
+   case ('land')
+     dummy = reshape(gaussian_data%slmask, (/igaus,jgaus/))
+   case ('orog')
+     dummy = reshape(gaussian_data%orog, (/igaus,jgaus/))
+   case ('sltyp')
+     dummy = reshape(gaussian_data%slope, (/igaus,jgaus/))
+   case ('icec')
+     dummy = reshape(gaussian_data%fice, (/igaus,jgaus/))
+   case ('icetk')
+     dummy = reshape(gaussian_data%hice, (/igaus,jgaus/))
+   case ('snoalb')
+     dummy = reshape(gaussian_data%snoalb, (/igaus,jgaus/))
+   case ('shdmin')
+     dummy = reshape(gaussian_data%shdmin, (/igaus,jgaus/))
+   case ('shdmax')
+     dummy = reshape(gaussian_data%shdmax, (/igaus,jgaus/))
+   case ('snod')
+     dummy = reshape(gaussian_data%snwdph, (/igaus,jgaus/)) / 1000.0
+   case ('weasd')
+     dummy = reshape(gaussian_data%sheleg, (/igaus,jgaus/))
+   case ('veg')
+     dummy = reshape(gaussian_data%vfrac, (/igaus,jgaus/)) * 100.0
+   case ('sfcr')
+     dummy = reshape(gaussian_data%zorl, (/igaus,jgaus/)) / 100.0
+   case ('crain')
+     dummy = reshape(gaussian_data%srflag, (/igaus,jgaus/))
+   case ('sotyp')
+     dummy = reshape(gaussian_data%stype, (/igaus,jgaus/))
+   case ('spfh2m')
+     dummy = reshape(gaussian_data%q2m, (/igaus,jgaus/))
+   case ('tmp2m')
+     dummy = reshape(gaussian_data%t2m, (/igaus,jgaus/))
+   case ('tmpsfc')
+     dummy = reshape(gaussian_data%tsea, (/igaus,jgaus/))
+   case ('tg3')
+     dummy = reshape(gaussian_data%tg3, (/igaus,jgaus/))
+   case ('tisfc')
+     dummy = reshape(gaussian_data%tisfc, (/igaus,jgaus/))
+   case ('tprcp')
+     dummy = reshape(gaussian_data%tprcp, (/igaus,jgaus/))
+   case ('vtype')
+     dummy = reshape(gaussian_data%vtype, (/igaus,jgaus/))
+   case ('soill1')
+     dummy = reshape(gaussian_data%slc(:,1), (/igaus,jgaus/))
+     where (dummy > 0.99) dummy = 0.0  ! replace flag value at water/landice
+   case ('soill2')
+     dummy = reshape(gaussian_data%slc(:,2), (/igaus,jgaus/))
+     where (dummy > 0.99) dummy = 0.0  ! replace flag value at water/landice
+   case ('soill3')
+     dummy = reshape(gaussian_data%slc(:,3), (/igaus,jgaus/))
+     where (dummy > 0.99) dummy = 0.0  ! replace flag value at water/landice
+   case ('soill4')
+     dummy = reshape(gaussian_data%slc(:,4), (/igaus,jgaus/))
+     where (dummy > 0.99) dummy = 0.0  ! replace flag value at water/landice
+   case ('soilt1')
+     dummy = reshape(gaussian_data%stc(:,1), (/igaus,jgaus/))
+   case ('soilt2')
+     dummy = reshape(gaussian_data%stc(:,2), (/igaus,jgaus/))
+   case ('soilt3')
+     dummy = reshape(gaussian_data%stc(:,3), (/igaus,jgaus/))
+   case ('soilt4')
+     dummy = reshape(gaussian_data%stc(:,4), (/igaus,jgaus/))
+   case ('soilw1')
+     dummy = reshape(gaussian_data%smc(:,1), (/igaus,jgaus/))
+   case ('soilw2')
+     dummy = reshape(gaussian_data%smc(:,2), (/igaus,jgaus/))
+   case ('soilw3')
+     dummy = reshape(gaussian_data%smc(:,3), (/igaus,jgaus/))
+   case ('soilw4')
+     dummy = reshape(gaussian_data%smc(:,4), (/igaus,jgaus/))
+   case ('c0')
+     dummy = reshape(gaussian_data%c0, (/igaus,jgaus/))
+   case ('cd')
+     dummy = reshape(gaussian_data%cd, (/igaus,jgaus/))
+   case ('dconv')
+     dummy = reshape(gaussian_data%dconv, (/igaus,jgaus/))
+   case ('dtcool')
+     dummy = reshape(gaussian_data%dtcool, (/igaus,jgaus/))
+   case ('qrain')
+     dummy = reshape(gaussian_data%qrain, (/igaus,jgaus/))
+   case ('tref')
+     dummy = reshape(gaussian_data%tref, (/igaus,jgaus/))
+   case ('w0')
+     dummy = reshape(gaussian_data%w0, (/igaus,jgaus/))
+   case ('wd')
+     dummy = reshape(gaussian_data%wd, (/igaus,jgaus/))
+   case ('xs')
+     dummy = reshape(gaussian_data%xs, (/igaus,jgaus/))
+   case ('xt')
+     dummy = reshape(gaussian_data%xt, (/igaus,jgaus/))
+   case ('xtts')
+     dummy = reshape(gaussian_data%xtts, (/igaus,jgaus/))
+   case ('xu')
+     dummy = reshape(gaussian_data%xu, (/igaus,jgaus/))
+   case ('xv')
+     dummy = reshape(gaussian_data%xv, (/igaus,jgaus/))
+   case ('xz')
+     dummy = reshape(gaussian_data%xz, (/igaus,jgaus/))
+   case ('xzts')
+     dummy = reshape(gaussian_data%xzts, (/igaus,jgaus/))
+   case ('zc')
+     dummy = reshape(gaussian_data%zc, (/igaus,jgaus/))
+   case default
+     print*,'- FATAL ERROR: UNKNOWN VAR IN GET_VAR: ', var
+     call errexit(67)
+ end select
+
+ end subroutine get_netcdf_var
+
+!-------------------------------------------------------------------------------------------
 ! Write gaussian surface data to nemsio file.
 !-------------------------------------------------------------------------------------------
 
- subroutine write_sfc_data
+ subroutine write_sfc_data_nemsio
 
  use nemsio_module
  use io
@@ -607,7 +1231,7 @@
  print*
  print*,"- OPEN GAUSSIAN NEMSIO SURFACE FILE"
 
- call nemsio_open(gfileo, "sfc.gaussian.nemsio", 'write',   &
+ call nemsio_open(gfileo, "sfc.gaussian.analysis.file", 'write',   &
                   modelname="FV3GFS", gdatatype="bin4", version=version,  &
                   nmeta=8, nrec=nrec, dimx=igaus, dimy=jgaus, dimz=(levs_vcoord-1),     &
                   nframe=0, nsoil=4, ntrac=8, jcap=-9999,  &
@@ -945,7 +1569,7 @@
  call errexit(15)
  stop
 
- end subroutine write_sfc_data
+ end subroutine write_sfc_data_nemsio
 
 !-------------------------------------------------------------------------------------------
 ! Read tile data.

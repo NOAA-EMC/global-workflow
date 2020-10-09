@@ -1,0 +1,19 @@
+#!/bin/ksh -x
+
+########## config.esfc ##########
+# Ensemble surface specific
+
+echo "BEGIN: config.esfc"
+
+# Get task specific resources
+. $EXPDIR/config.resources esfc
+
+# With IAU only need surface analysis at start of IAU window.
+# Set DOSFCANL_ENKF=NO to prevent creation of sfcanl at 
+# center of analysis window.  
+
+if [ $DOIAU_ENKF = "YES" ]; then
+   export DOSFCANL_ENKF="NO"
+fi
+
+echo "END: config.esfc"

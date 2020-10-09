@@ -216,6 +216,10 @@
 003 192 001 000 Sim Brightness T, Channel 3      K                    SBT123           0  -9999.00
 003 192 002 000 Sim Brightness T, Channel 4      K                    SBT124           0  -9999.00
 003 192 003 000 Sim Brightness T, Channel 6      K                    SBT126           0  -9999.00
+003 192 053 000 Sim Brightness T ABI, Band-8     K                    SBTAGR8          0  -9999.00
+003 192 054 000 Sim Brightness T ABI, Band-9     K                    SBTAGR9          0  -9999.00
+003 192 055 000 Sim Brightness T ABI, Band-10    K                    SBTAGR10         0  -9999.00
+003 192 058 000 Sim Brightness T ABI, Band-13    K                    SBTAGR13         0  -9999.00
 !
 ! Product Discipline 10 - Oceanographic Products
 ! CATEGORY 0 - Waves category

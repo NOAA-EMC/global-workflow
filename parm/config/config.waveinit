@@ -1,0 +1,14 @@
+#!/bin/ksh -x
+
+########## config.waveinit ##########
+# Wave steps specific
+
+echo "BEGIN: config.waveinit"
+
+# Get task specific resources
+. $EXPDIR/config.resources waveinit
+
+# Step label
+export sigMODE=${sigMODE:-init}
+
+echo "END: config.waveinit"

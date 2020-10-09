@@ -16,11 +16,7 @@ if [ ! -d "../exec" ]; then
   mkdir ../exec
 fi
 
-if [ $target = wcoss_dell_p3 ]; then 
- cd gfs_wafs.fd/sorc
- sh build_wafs_dell.sh
-else
- echo "This version of wafs only works on Dell. exit"
-fi
+cd gfs_wafs.fd/sorc
+sh build_wafs.sh
 
 exit
