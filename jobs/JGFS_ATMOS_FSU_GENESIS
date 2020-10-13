@@ -91,6 +91,7 @@ export FIXens_tracker=${FIXens_tracker:-$HOMEens_tracker/fix}
 export USHens_tracker=${USHens_tracker:-$HOMEens_tracker/ush}
 export SCRIPTens_tracker=${SCRIPTens_tracker:-$HOMEens_tracker/scripts}
 export BINens_tracker=${BINens_tracker:-$HOMEens_tracker/ush/FSUgenesisPY/bin}
+export PYTHONPATH=${USHens_tracker}/FSUgenesisPY:${PYTHONPATH}
 
 ##############################################
 # Define COM and Data directories

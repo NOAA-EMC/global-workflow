@@ -13,7 +13,7 @@ echo "=============== START TO RUN WAVE_POST_PNT ==============="
 # Execute the JJOB
 $HOMEgfs/jobs/JGLOBAL_WAVE_POST_PNT
 status=$?
-exit $status
+[[ $status -ne 0 ]] && exit $status
 
 ###############################################################
 # Force Exit out cleanly
