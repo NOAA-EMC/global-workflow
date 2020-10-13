@@ -26,10 +26,8 @@ if [[ ! -d fv3gfs.fd ]] ; then
     rm -f ${topdir}/checkout-fv3gfs.log
     git clone https://github.com/ufs-community/ufs-weather-model fv3gfs.fd >> ${topdir}/checkout-fv3gfs.log 2>&1
     cd fv3gfs.fd
-####    git checkout  GFS.v16.0.10
-####    git submodule update --init --recursive
-    git checkout d021e7b0395ccac2b7a30b414b58a8c924d2784f 
-    git submodule update --init --recursive 
+    git checkout GFS.v16.0.13
+    git submodule update --init --recursive
     cd ${topdir}
 else
     echo 'Skip.  Directory fv3gfs.fd already exists.'
@@ -40,7 +38,7 @@ if [[ ! -d gsi.fd ]] ; then
     rm -f ${topdir}/checkout-gsi.log
     git clone --recursive https://github.com/NOAA-EMC/GSI.git gsi.fd >> ${topdir}/checkout-gsi.log 2>&1
     cd gsi.fd
-    git checkout release/gfsda.v16.0.0
+    git checkout gfsda.v16.0.0
     git submodule update
     cd ${topdir}
 else
@@ -52,7 +50,7 @@ if [[ ! -d gldas.fd ]] ; then
     rm -f ${topdir}/checkout-gldas.log
     git clone https://github.com/NOAA-EMC/GLDAS  gldas.fd >> ${topdir}/checkout-gldas.fd.log 2>&1
     cd gldas.fd
-    git checkout gldas_gfsv16_release.v1.7.0
+    git checkout gldas_gfsv16_release.v1.11.0
     cd ${topdir}
 else
     echo 'Skip.  Directory gldas.fd already exists.'
@@ -74,7 +72,7 @@ if [[ ! -d gfs_post.fd ]] ; then
     rm -f ${topdir}/checkout-gfs_post.log
     git clone https://github.com/NOAA-EMC/EMC_post.git gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
     cd gfs_post.fd
-    git checkout upp_gfsv16_release.v1.0.15
+    git checkout upp_gfsv16_release.v1.1.0
     ################################################################################
     # checkout_gtg
     ## yes: The gtg code at NCAR private repository is available for ops. GFS only.
@@ -85,7 +83,7 @@ if [[ ! -d gfs_post.fd ]] ; then
     if [[ ${checkout_gtg} == "YES" ]] ; then
       ./manage_externals/checkout_externals
       cp sorc/post_gtg.fd/*f90 sorc/ncep_post.fd/.
-      cp sorc/post_gtg.fd/gtg.config.gfs parm/.
+      cp sorc/post_gtg.fd/gtg.config.gfs parm/gtg.config.gfs
     fi
     cd ${topdir}
 else
@@ -97,7 +95,7 @@ if [[ ! -d gfs_wafs.fd ]] ; then
     rm -f ${topdir}/checkout-gfs_wafs.log
     git clone --recursive https://github.com/NOAA-EMC/EMC_gfs_wafs.git gfs_wafs.fd >> ${topdir}/checkout-gfs_wafs.log 2>&1
     cd gfs_wafs.fd
-    git checkout gfs_wafs.v6.0.6
+    git checkout gfs_wafs.v6.0.10
     cd ${topdir}
 else
     echo 'Skip.  Directory gfs_wafs.fd already exists.'
@@ -108,18 +106,10 @@ if [[ ! -d verif-global.fd ]] ; then
     rm -f ${topdir}/checkout-verif-global.log
     git clone --recursive https://github.com/NOAA-EMC/EMC_verif-global.git verif-global.fd >> ${topdir}/checkout-verif-global.log 2>&1
     cd verif-global.fd
-    git checkout verif_global_v1.10.1
+    git checkout verif_global_v1.11.0
     cd ${topdir}
 else
     echo 'Skip. Directory verif-global.fd already exist.'
 fi
-
-# echo aeroconv checkout ...
-# if [[ ! -d aeroconv ]] ; then
-#     rm -f ${topdir}/checkout-aero.log
-#     git clone https://github.com/NCAR/aeroconv aeroconv >> ${topdir}/checkout-aero.log 2>&1
-# else
-#     echo 'Skip.  Directory aeroconv already exists.'
-# fi
 
 exit 0
