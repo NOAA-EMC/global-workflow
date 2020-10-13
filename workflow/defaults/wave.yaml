@@ -2,7 +2,7 @@ wave_defaults: &wave_defaults
    MOD: ww3
    CPL_WAVIC: CFSR
    WAVPETS: !FirstTrue
-     - when: !calc doc.settings.cplwav
+     - when: !calc doc.settings.cplwav==".true."
        do: 24
      - otherwise: 0
    COMPONENTRSTwave: gdaswave

@@ -20,6 +20,8 @@ else
     restart_file=$ROTDIR/${CDUMP}.${PDY}/${cyc}/${CDUMP}.t${cyc}z.logf
 fi
 
+export DATAROOT="$RUNDIR/$CDATE/$CDUMP"
+[[ ! -d $DATAROOT ]] && mkdir -p $DATAROOT
 
 #---------------------------------------------------------------
 for fhr in $fhrlst; do
