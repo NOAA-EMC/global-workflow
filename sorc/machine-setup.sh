@@ -19,7 +19,8 @@ fi
 target=""
 USERNAME=`echo $LOGNAME | awk '{ print tolower($0)'}`
 ##---------------------------------------------------------------------------
-export hname=`hostname -d`
+hname_orig=`hostname -d`
+export hname=${hname_orig,,}
 if [[ $hname = 'stampede2.tacc.utexas.edu' ]] ; then
     # We are on MSU Orion
     if ( ! eval module help > /dev/null 2>&1 ) ; then
@@ -35,7 +36,7 @@ if [[ $hname = 'stampede2.tacc.utexas.edu' ]] ; then
     export myFC=mpiifort
     export FCOMP=mpiifort
 
-elif [[ $hname = 'HPC.MsState.Edu' ]] ; then
+elif [[ $hname = 'hpc.msstate.edu' ]] ; then
     # We are on MSU Orion
     if ( ! eval module help > /dev/null 2>&1 ) ; then
         echo load the module command 1>&2
@@ -44,9 +45,9 @@ elif [[ $hname = 'HPC.MsState.Edu' ]] ; then
     target=orion
     module purge
     export NCEPLIBS=/apps/contrib/NCEP/libs/modulefiles/stack
-    module load hpc/1.0.0-beta1
-    module load hpc-intel/18.0.2
-    module load impi/18.0.2
+    module load hpc/1.0.0
+    module load hpc-intel/2018.4
+    module load hpc-impi/2018.4
     module use $NCEPLIBS/modulefiles
     export myFC=mpiifort
     export FCOMP=mpiifort

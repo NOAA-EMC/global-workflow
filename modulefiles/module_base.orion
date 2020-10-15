@@ -6,57 +6,38 @@
 ## load contrib environment
 ## load slurm utils (arbitrary.pl  layout.pl)
 ##
-module load contrib noaatools
 
-##
-## load programming environment
-## this typically includes compiler, MPI and job scheduler
-##
-module load intel/2018
-module load impi/2018
+module use /apps/contrib/NCEP/libs/modulefiles/stack
 
-#For ocean post: 
-module load ncl/6.6.2
-module load nco/4.8.1
+module load hpc/1.0.0
+module load hpc-intel/2018.4
+module load hpc-impi/2018.4
 
-##
-## NCEP libraries (temporary version to match the CCPP requirements)
-##
-module use -a /apps/contrib/NCEPLIBS/orion/cmake/install/NCEPLIBS/modules
+module load jasper/2.0.15
+module load png/1.6.35
+module load zlib/1.2.11
+
+module load hdf5/1.10.6
+module load netcdf/4.7.4
+module load netcdf/4.7.4-parallel
+module load esmf/8_1_0_beta_snapshot_21
+
 module load bacio/2.4.0
-module load crtm_dev/2.3.0
+module load ip/3.3.0
+module load sp/2.3.0
 module load g2/3.4.0
 module load g2tmpl/1.9.0
-module load ip/3.3.0
-module load nceppost/dceca26
-module load nemsio/2.5.1
-module load sp/2.3.0
-module load w3emc/2.7.0
 module load w3nco/2.4.0
+module load w3emc/2.7.0
 
-module load gfsio/1.4.0
-module load sfcio/1.4.0
-module load sigio/2.3.0
+module load crtm/2.3.0
+module load nceppost/dceca26
+
+#module load prod_util/develop
+module load grib_util/develop
 
 module use /apps/contrib/NCEPLIBS/orion/modulefiles
-module load jasper/1.900.2
-module load png/1.2.44
-module load z/1.2.6
-
 module load prod_util/1.2.0
-##
-## load ESMF library for above compiler / MPI combination
-## use pre-compiled EMSF library for above compiler / MPI combination
-##
-module use /apps/contrib/NCEPLIBS/lib/modulefiles
-module load netcdfp/4.7.4.release
-module load esmflocal/8.1.0.27bs.release
-module load post-intel-sandybridge/8.0.5
-
-module load wgrib/2.0.8
-module load grib_util/1.2.0
-
-module load slurm/19.05.3-2
 
 ##
 ### load cmake

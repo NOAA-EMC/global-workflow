@@ -1,5 +1,5 @@
 #!/bin/sh
-#set -x
+set -x
 
 ###############################################################
 # Setup runtime environment by loading modules
@@ -11,12 +11,12 @@ source "$HOMEgfs/modulefiles/module-setup.sh.inc"
 
 # Load our modules:
 module use "$HOMEgfs/modulefiles" 
+hname=`hostname -d`
 
-export hname=`hostname -d`
 if [[ $hname = 'stampede2.tacc.utexas.edu' ]] ; then
     # We are on Xsede stampede2
       module load module_base.stampede
-elif [[ $hname = 'HPC.MsState.Edu' ]] ; then
+elif [[ $hname = 'hpc.msstate.edu' ]] ; then
     # We are on MSU Orion
        module load module_base.orion
 elif [[ -d /lfs3 ]] ; then
