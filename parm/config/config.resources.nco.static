@@ -1,0 +1,398 @@
+#!/bin/ksh -x
+
+########## config.resources ##########
+# Set resource information for job tasks
+# e.g. walltime, node, cores per node, memory etc.
+
+if [ $# -ne 1 ]; then
+
+    echo "Must specify an input task argument to set resource variables!"
+    echo "argument can be any one of the following:"
+    echo "anal analcalc analdiag gldas fcst post vrfy metp arch echgres"
+    echo "eobs ediag eomg eupd ecen esfc efcs epos earc"
+    echo "waveinit waveprep wavepostsbs wavepostbndpnt wavepostpnt"
+    echo "wavegempak waveawipsbulls waveawipsgridded"
+    echo "postsnd awips gempak"
+    echo "wafs wafsgrib2 wafsblending wafsgrib20p25 wafsblending0p25 wafsgcip"
+    exit 1
+
+fi
+
+step=$1
+
+echo "BEGIN: config.resources"
+
+if [[ "$machine" = "WCOSS_DELL_P3" ]]; then
+   export npe_node_max=28
+   if [ "$QUEUE" = "dev2" -o "$QUEUE" = "devonprod2" -o "$QUEUE" = "devmax2" ]; then # WCOSS Dell 3.5
+     export npe_node_max=40
+   fi
+elif [[ "$machine" = "WCOSS_C" ]]; then
+   export npe_node_max=24
+elif [[ "$machine" = "JET" ]]; then
+   export npe_node_max=24
+elif [[ "$machine" = "HERA" ]]; then
+   export npe_node_max=40
+elif [[ "$machine" = "ORION" ]]; then
+   export npe_node_max=40
+fi
+
+if [ $step = "prep" -o $step = "prepbufr" ]; then
+
+    eval "export wtime_$step='00:45:00'"
+    eval "export npe_$step=4"
+    eval "export npe_node_$step=2"
+    eval "export nth_$step=1"
+
+elif [ $step = "waveinit" ]; then
+
+    export wtime_waveinit="00:10:00"
+    export npe_waveinit=10
+    export nth_waveinit=1
+    export npe_node_waveinit=$(echo "$npe_node_max / $nth_waveinit" | bc)
+    export NTASKS=${npe_waveinit}
+
+elif [ $step = "waveprep" ]; then
+
+    export wtime_waveprep="00:30:00"
+    export npe_waveprep=65
+    export nth_waveprep=1
+    export npe_node_waveprep=$(echo "$npe_node_max / $nth_waveprep" | bc)
+    export NTASKS=${npe_waveprep}
+
+elif [ $step = "wavepostsbs" ]; then
+
+    export wtime_wavepostsbs="06:00:00"
+    export npe_wavepostsbs=10
+    export nth_wavepostsbs=1
+    export npe_node_wavepostsbs=$(echo "$npe_node_max / $nth_wavepostsbs" | bc)
+    export NTASKS=${npe_wavepostsbs}
+
+elif [ $step = "wavepostbndpnt" ]; then
+
+    export wtime_wavepostbndpnt="01:00:00"
+    export npe_wavepostbndpnt=280
+    export nth_wavepostbndpnt=1
+    export npe_node_wavepostbndpnt=$(echo "$npe_node_max / $nth_wavepostbndpnt" | bc)
+    export NTASKS=${npe_wavepostbndpnt}
+
+elif [ $step = "wavepostpnt" ]; then
+
+    export wtime_wavepostpnt="01:30:00"
+    export npe_wavepostpnt=280
+    export nth_wavepostpnt=1
+    export npe_node_wavepostpnt=$(echo "$npe_node_max / $nth_wavepostpnt" | bc)
+    export NTASKS=${npe_wavepostpnt}
+
+elif [ $step = "wavegempak" ]; then
+
+    export wtime_wavegempak="01:00:00"
+    export npe_wavegempak=$npe_node_max
+    export nth_wavegempak=1
+    export npe_node_wavegempak=$(echo "$npe_node_max / $nth_wavegempak" | bc)
+    export NTASKS=${npe_wavegempak}
+
+elif [ $step = "waveawipsbulls" ]; then
+
+    export wtime_waveawipsbulls="00:30:00"
+    export npe_waveawipsbulls=$npe_node_max
+    export nth_waveawipsbulls=1
+    export npe_node_waveawipsbulls=$(echo "$npe_node_max / $nth_waveawipsbulls" | bc)
+    export NTASKS=${npe_waveawipsbulls}
+
+elif [ $step = "waveawipsgridded" ]; then
+
+    export wtime_waveawipsgridded="00:30:00"
+    export npe_waveawipsgridded=$npe_node_max
+    export nth_waveawipsgridded=1
+    export npe_node_waveawipsgridded=$(echo "$npe_node_max / $nth_waveawipsgridded" | bc)
+    export NTASKS=${npe_waveawipsgridded}
+
+elif [ $step = "anal" ]; then
+
+    export wtime_anal="00:45:00"
+    export npe_anal=1000
+    export nth_anal=4  
+    export npe_anal_gfs=1000
+    if [ $CASE = "C384" ]; then
+      export npe_anal=160
+      export nth_anal=10
+    fi
+    if [ $CASE = "C192" -o $CASE = "C96" -o $CASE = "C48" ]; then export npe_anal=84; fi
+    if [[ "$machine" = "WCOSS_DELL_P3" ]]; then export nth_anal=7; fi
+    export npe_node_anal=$(echo "$npe_node_max / $nth_anal" | bc)
+    export nth_cycle=$npe_node_max
+    if [[ "$machine" == "WCOSS_C" ]]; then export memory_anal="3072M"; fi
+
+elif [ $step = "analcalc" ]; then
+
+    export wtime_analcalc="00:10:00"
+    export npe_analcalc=127
+    export nth_analcalc=1
+    export npe_node_analcalc=$npe_node_max
+    if [[ "$machine" = "WCOSS_DELL_P3" ]]; then export npe_analcalc=127 ; fi
+
+elif [ $step = "analdiag" ]; then
+
+    export wtime_analdiag="00:10:00"
+    export npe_analdiag=112
+    export nth_analdiag=1
+    export npe_node_analdiag=$npe_node_max
+    if [[ "$machine" == "WCOSS_C" ]]; then export memory_analdiag="3072M"; fi
+
+elif [ $step = "gldas" ]; then
+
+    export wtime_gldas="00:10:00"
+    export npe_gldas=96  
+    export nth_gldas=1 
+    export npe_node_gldas=$npe_node_max
+    export npe_gaussian=96  
+    export nth_gaussian=1 
+    export npe_node_gaussian=24           
+    if [[ "$machine" = "WCOSS_DELL_P3" ]]; then export npe_gldas=112 ; fi
+    if [[ "$machine" == "WCOSS_C" ]]; then export memory_gldas="3072M"; fi
+
+elif [ $step = "fcst" ]; then
+
+    export wtime_fcst="00:30:00"
+    export wtime_fcst_gfs="02:30:00"
+    export npe_fcst=$(echo "$layout_x * $layout_y * 6" | bc)
+    export npe_fcst_gfs=$(echo "$layout_x_gfs * $layout_y_gfs * 6" | bc)
+    export nth_fcst=${nth_fv3:-2}
+    export npe_node_fcst=$(echo "$npe_node_max / $nth_fcst" | bc)
+    if [[ "$machine" == "WCOSS_C" ]]; then export memory_fcst="1024M"; fi
+
+elif [ $step = "post" ]; then
+
+    export wtime_post="02:00:00"
+    export wtime_post_gfs="06:00:00"
+    export npe_post=96
+    export nth_post=1
+    export npe_node_post=12
+    export npe_node_dwn=$npe_node_max
+    if [[ "$machine" = "WCOSS_DELL_P3" ]]; then export npe_node_post=14 ; fi
+    if [[ "$machine" == "WCOSS_C" ]]; then export memory_post="3072M"; fi
+
+elif [ $step = "wafs" ]; then
+
+    export wtime_wafs="00:30:00"
+    export npe_wafs=1
+    export npe_node_wafs=1
+    export nth_wafs=1
+
+elif [ $step = "wafsgcip" ]; then
+
+    export wtime_wafsgcip="00:30:00"
+    export npe_wafsgcip=2
+    export npe_node_wafsgcip=1
+    export nth_wafsgcip=1
+
+elif [ $step = "wafsgrib2" ]; then
+
+    export wtime_wafsgrib2="00:30:00"
+    export npe_wafsgrib2=1
+    export npe_node_wafsgrib2=1
+    export nth_wafsgrib2=1
+
+elif [ $step = "wafsblending" ]; then
+
+    export wtime_wafsblending="00:30:00"
+    export npe_wafsblending=1
+    export npe_node_wafsblending=1
+    export nth_wafsblending=1
+
+elif [ $step = "wafsgrib20p25" ]; then
+
+    export wtime_wafsgrib20p25="00:30:00"
+    export npe_wafsgrib20p25=1
+    export npe_node_wafsgrib20p25=1
+    export nth_wafsgrib20p25=1
+
+elif [ $step = "wafsblending0p25" ]; then
+
+    export wtime_wafsblending0p25="00:30:00"
+    export npe_wafsblending0p25=1
+    export npe_node_wafsblending0p25=1
+    export nth_wafsblending0p25=1
+
+elif [ $step = "vrfy" ]; then
+
+    export wtime_vrfy="03:00:00"
+    export wtime_vrfy_gfs="06:00:00"
+    export npe_vrfy=3
+    export nth_vrfy=1
+    export npe_node_vrfy=1
+    export npe_vrfy_gfs=1
+    export npe_node_vrfy_gfs=1
+    if [[ "$machine" == "WCOSS_C" ]]; then
+	    export memory_vrfy="3072M"
+    elif [[ "$machine" == "HERA" ]]; then
+	    export memory_vrfy="16384M"
+    fi
+
+elif [ $step = "metp" ]; then
+    
+    export nth_metp=1
+    export wtime_metp="03:00:00"
+    export npe_metp=4
+    export npe_node_metp=4
+    export wtime_metp_gfs="06:00:00"
+    export npe_metp_gfs=4
+    export npe_node_metp_gfs=4
+    if [[ "$machine" == "WCOSS_C" ]]; then
+            export memory_metp="3072M"
+    elif [[ "$machine" == "THEIA" ]]; then
+            export memory_metp="16384M"
+    fi
+
+elif [ $step = "echgres" ]; then
+
+    export wtime_echgres="00:10:00"
+    export npe_echgres=3
+    export nth_echgres=$npe_node_max
+    export npe_node_echgres=1
+
+elif [ $step = "arch" -o $step = "earc" -o $step = "getic" ]; then
+
+    eval "export wtime_$step='06:00:00'"
+    eval "export npe_$step=1"
+    eval "export npe_node_$step=1"
+    eval "export nth_$step=1"
+    eval "export memory_$step=2048M"
+
+elif [ $step = "eobs" -o $step = "eomg" ]; then
+
+
+    export wtime_eobs="00:10:00"
+    export wtime_eomg="01:00:00"
+    if [ $CASE = "C768" ]; then
+      export npe_eobs=480
+    elif [ $CASE = "C384" ]; then
+      export npe_eobs=42
+    elif [ $CASE = "C192" ]; then
+      export npe_eobs=28
+    elif [ $CASE = "C96" -o $CASE = "C48" ]; then
+      export npe_eobs=14
+    fi
+    export nth_eobs=2
+    if [[ "$machine" = "WCOSS_DELL_P3" ]]; then export nth_eobs=7; fi
+    export npe_node_eobs=$(echo "$npe_node_max / $nth_eobs" | bc)
+    if [[ "$machine" == "WCOSS_C" ]]; then export memory_eobs="3072M"; fi
+
+elif [ $step = "ediag" ]; then
+
+    export wtime_ediag="00:06:00"
+    export npe_ediag=56
+    export nth_ediag=1
+    export npe_node_ediag=$npe_node_max
+    if [[ "$machine" == "WCOSS_C" ]]; then export memory_ediag="3072M"; fi
+
+elif [ $step = "eupd" ]; then
+
+    export wtime_eupd="00:30:00"
+    if [ $CASE = "C768" ]; then
+      export npe_eupd=960
+      export nth_eupd=6
+      if [[ "$machine" = "WCOSS_DELL_P3" ]]; then
+        export nth_eupd=7
+      fi
+    elif [ $CASE = "C384" ]; then
+      export npe_eupd=270
+      export nth_eupd=2
+      if [[ "$machine" = "WCOSS_DELL_P3" ]]; then
+        export nth_eupd=9
+      fi
+      if [[ "$machine" = "HERA" ]]; then
+        export npe_eupd=84
+        export nth_eupd=10
+      fi
+    elif [ $CASE = "C192" -o $CASE = "C96" -o $CASE = "C48" ]; then
+      export npe_eupd=42
+      export nth_eupd=2
+    fi
+    export npe_node_eupd=$(echo "$npe_node_max / $nth_eupd" | bc)
+    if [[ "$machine" == "WCOSS_C" ]]; then
+        export memory_eupd="3072M"
+    fi
+
+elif [ $step = "ecen" ]; then
+
+    export wtime_ecen="00:10:00"
+    export npe_ecen=80
+    export nth_ecen=6
+    if [[ "$machine" = "WCOSS_DELL_P3" ]]; then export nth_ecen=7; fi
+    if [ $CASE = "C384" -o $CASE = "C192" -o $CASE = "C96" -o $CASE = "C48" ]; then export nth_ecen=2; fi
+    export npe_node_ecen=$(echo "$npe_node_max / $nth_ecen" | bc)
+    export nth_cycle=$nth_ecen
+    if [[ "$machine" == "WCOSS_C" ]]; then export memory_ecen="3072M"; fi
+
+elif [ $step = "esfc" ]; then
+
+    export wtime_esfc="00:06:00"
+    export npe_esfc=80
+    export npe_node_esfc=$npe_node_max
+    export nth_esfc=1
+    export nth_cycle=$nth_esfc
+    if [[ "$machine" == "WCOSS_C" ]]; then export memory_esfc="3072M"; fi
+
+elif [ $step = "efcs" ]; then
+
+    export wtime_efcs="00:40:00"
+    export npe_efcs=$(echo "$layout_x * $layout_y * 6" | bc)
+    export nth_efcs=${nth_fv3:-2}
+    export npe_node_efcs=$(echo "$npe_node_max / $nth_efcs" | bc)
+    if [[ "$machine" == "WCOSS_C" ]]; then export memory_efcs="254M"; fi
+
+elif [ $step = "epos" ]; then
+
+    export wtime_epos="00:15:00"
+    export npe_epos=80
+    export nth_epos=6
+    if [[ "$machine" = "WCOSS_DELL_P3" ]]; then export nth_epos=7; fi
+    export npe_node_epos=$(echo "$npe_node_max / $nth_epos" | bc)
+    if [[ "$machine" == "WCOSS_C" ]]; then export memory_epos="254M"; fi
+
+elif [ $step = "postsnd" ]; then
+
+    export wtime_postsnd="02:00:00"
+    export npe_postsnd=40
+    export nth_postsnd=1
+    export npe_node_postsnd=5
+    export npe_postsndcfp=9
+    export npe_node_postsndcfp=3
+    if [ $OUTPUT_FILE == "nemsio" ]; then
+        export npe_postsnd=13
+        export npe_node_postsnd=4
+    fi
+    if [[ "$machine" = "HERA" ]]; then export npe_node_postsnd=2; fi
+    if [[ "$machine" == "WCOSS_C" ]]; then export memory_postsnd="254M"; fi
+
+elif [ $step = "awips" ]; then
+
+    export wtime_awips="03:30:00"
+    export npe_awips=4
+    export npe_node_awips=4
+    export nth_awips=2
+    if [[ "$machine" == "WCOSS_DELL_P3" ]]; then
+        export npe_awips=2
+        export npe_node_awips=2
+        export nth_awips=1
+    fi
+    if [[ "$machine" == "WCOSS_C" ]]; then export memory_awips="2048M"; fi
+
+elif [ $step = "gempak" ]; then
+
+    export wtime_gempak="02:00:00"
+    export npe_gempak=17
+    export npe_node_gempak=4
+    export nth_gempak=3
+    if [[ "$machine" == "WCOSS_C" ]]; then export memory_gempak="254M"; fi
+
+else
+
+    echo "Invalid step = $step, ABORT!"
+    exit 2
+
+fi
+
+echo "END: config.resources"
