@@ -16,6 +16,14 @@ fix/fix_*
 fix/gdas/
 fix/wafs
 
+# Ignore parm file symlinks
+#--------------------------
+parm/config/config.base
+parm/gldas
+parm/mon
+parm/post
+parm/wafs
+
 # Ignore sorc and logs folders from externals
 #--------------------------------------------
 sorc/*log
@@ -75,13 +83,6 @@ sorc/wafs_cnvgrib2.fd
 sorc/wafs_gcip.fd
 sorc/wafs_makewafs.fd
 sorc/wafs_setmissing.fd
-
-# Ignore parm file symlinks
-#--------------------------
-parm/config/config.base
-parm/gldas
-parm/post
-parm/wafs
 
 # Ignore scripts from externals
 #------------------------------
