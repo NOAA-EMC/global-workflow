@@ -242,7 +242,6 @@ def create_firstcyc_task(cdump='gdas'):
                  'native': '&NATIVE_ARCH_%s;' % cdump.upper(), \
                  'resources': '&RESOURCES_ARCH_%s;' % cdump.upper(), \
                  'log': '&ROTDIR;/logs/@Y@m@d@H/%s.log' % taskstr, \
-                 'queue': '&QUEUE_SERVICE_%s;' % cdump.upper(), \
                  'dependency': dependencies}
 
     if get_scheduler(detectMachine()) in ['slurm']:
