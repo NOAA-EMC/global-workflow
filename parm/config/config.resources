@@ -157,6 +157,8 @@ elif [ $step = "fcst" ]; then
     export wtime_fcst="00:30:00"
     if [ $CASE = "C768" ]; then
       export wtime_fcst_gfs="06:00:00"
+    elif [ $CASE = "C384" ]; then
+      export wtime_fcst_gfs="04:00:00"
     else
       export wtime_fcst_gfs="02:30:00"
     fi
