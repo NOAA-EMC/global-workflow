@@ -12,7 +12,7 @@ if [ $DONST = "YES" ]; then
     . $EXPDIR/config.nsst
 fi
 
-if [[ "$SDATE" = "$FDATE" && $EXP_WARM_START = ".false." ]]; then # Cold starting
+if [[ "$CDATE" = "$FDATE" && $EXP_WARM_START = ".false." ]]; then # Cold starting
     export USE_RADSTAT="NO"
 fi
 
