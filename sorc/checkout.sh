@@ -26,8 +26,8 @@ if [[ ! -d fv3gfs.fd ]] ; then
     rm -f ${topdir}/checkout-fv3gfs.log
     git clone https://github.com/ufs-community/ufs-weather-model fv3gfs.fd >> ${topdir}/checkout-fv3gfs.log 2>&1
     cd fv3gfs.fd
-####    git checkout GFS.v16.0.13
     git checkout d021e7b0395ccac2b7a30b414b58a8c924d2784f
+####    git checkout GFS.v16.0.14
     git submodule update --init --recursive
     cd ${topdir}
 else
@@ -49,7 +49,7 @@ fi
 echo gldas checkout ...
 if [[ ! -d gldas.fd ]] ; then
     rm -f ${topdir}/checkout-gldas.log
-    git clone https://github.com/NOAA-EMC/GLDAS  gldas.fd >> ${topdir}/checkout-gldas.fd.log 2>&1
+    git clone https://github.com/NOAA-EMC/GLDAS.git gldas.fd >> ${topdir}/checkout-gldas.fd.log 2>&1
     cd gldas.fd
     git checkout gldas_gfsv16_release.v1.11.0
     cd ${topdir}

@@ -100,7 +100,12 @@ def edit_baseconfig():
                     .replace('@NOSCRUB@', noscrub) \
                     .replace('@ACCOUNT@', account) \
                     .replace('@QUEUE@', queue) \
-                    .replace('@QUEUE_ARCH@', queue_arch) \
+                    .replace('@QUEUE_SERVICE@', queue_service) \
+                    .replace('@PARTITION_BATCH@', partition_batch) \
+                    .replace('@EXP_WARM_START@', exp_warm_start) \
+                    .replace('@CHGRP_RSTPROD@', chgrp_rstprod) \
+                    .replace('@CHGRP_CMD@', chgrp_cmd) \
+                    .replace('@HPSSARCH@', hpssarch) \
                     .replace('@gfs_cyc@', '%d' % gfs_cyc)
                 if expdir is not None:
                     line = line.replace('@EXPDIR@', os.path.dirname(expdir))
@@ -140,6 +145,7 @@ link initial condition files from $ICSDIR to $COMROT'''
     parser.add_argument('--cdump', help='CDUMP to start the experiment', type=str, required=False, default='gdas')
     parser.add_argument('--gfs_cyc', help='GFS cycles to run', type=int, choices=[0, 1, 2, 4], default=1, required=False)
     parser.add_argument('--partition', help='partition on machine', type=str, required=False, default=None)
+    parser.add_argument('--start', help='restart mode: warm or cold', type=str, choices=['warm', 'cold'], required=False, default='cold')
 
     args = parser.parse_args()
 
@@ -161,6 +167,13 @@ link initial condition files from $ICSDIR to $COMROT'''
     cdump = args.cdump
     gfs_cyc = args.gfs_cyc
     partition = args.partition
+    start = args.start
+
+    # Set restart setting in config.base
+    if start == 'cold':
+      exp_warm_start = '.false.'
+    elif start == 'warm':
+      exp_warm_start = '.true.'
 
     # Set machine defaults
     if machine == 'WCOSS_DELL_P3':
@@ -174,10 +187,14 @@ link initial condition files from $ICSDIR to $COMROT'''
       noscrub = '/gpfs/dell2/emc/modeling/noscrub/$USER'
       account = 'GFS-DEV'
       queue = 'dev'
-      queue_arch = 'dev_transfer'
+      queue_service = 'dev_transfer'
+      partition_batch = ''
       if partition in ['3p5']:
         queue = 'dev2'
-        queue_arch = 'dev2_transfer'
+        queue_service = 'dev2_transfer'
+      chgrp_rstprod = 'YES'
+      chgrp_cmd = 'chgrp rstprod'
+      hpssarch = 'YES'
     elif machine == 'WCOSS_C':
       base_git = '/gpfs/hps3/emc/global/noscrub/emc.glopara/git'
       base_svn = '/gpfs/hps3/emc/global/noscrub/emc.glopara/svn'
@@ -189,7 +206,11 @@ link initial condition files from $ICSDIR to $COMROT'''
       noscrub = '/gpfs/hps3/emc/global/noscrub/$USER'
       account = 'GFS-DEV'
       queue = 'dev'
-      queue_arch = 'dev_transfer'
+      queue_service = 'dev_transfer'
+      partition_batch = ''
+      chgrp_rstprod = 'YES'
+      chgrp_cmd = 'chgrp rstprod'
+      hpssarch = 'YES'
     elif machine == 'HERA':
       base_git = '/scratch1/NCEPDEV/global/glopara/git'
       base_svn = '/scratch1/NCEPDEV/global/glopara/svn'
@@ -201,7 +222,27 @@ link initial condition files from $ICSDIR to $COMROT'''
       noscrub = '$HOMEDIR'
       account = 'fv3-cpu'
       queue = 'batch'
-      queue_arch = 'service'
+      queue_service = 'service'
+      partition_batch = ''
+      chgrp_rstprod = 'YES'
+      chgrp_cmd = 'chgrp rstprod'
+      hpssarch = 'YES'
+    elif machine == 'ORION':
+      base_git = '/work/noaa/global/glopara/git'
+      base_svn = '/work/noaa/global/glopara/svn'
+      dmpdir = '/work/noaa/global/glopara/dump'
+      nwprod = '/work/noaa/global/glopara/nwpara'
+      homedir = '/work/noaa/global/$USER'
+      stmp = '/work/noaa/stmp/$USER'
+      ptmp = '/work/noaa/stmp/$USER'
+      noscrub = '$HOMEDIR'
+      account = 'fv3-cpu'
+      queue = 'batch'
+      queue_service = 'service'
+      partition_batch = 'orion'
+      chgrp_rstprod = 'NO'
+      chgrp_cmd = 'ls'
+      hpssarch = 'NO'
 
     if args.icsdir is not None and not os.path.exists(icsdir):
         msg = 'Initial conditions do not exist in %s' % icsdir

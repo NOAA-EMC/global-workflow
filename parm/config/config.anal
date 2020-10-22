@@ -12,6 +12,10 @@ if [ $DONST = "YES" ]; then
     . $EXPDIR/config.nsst
 fi
 
+if [[ "$CDATE" = "$FDATE" && $EXP_WARM_START = ".false." ]]; then # Cold starting
+    export USE_RADSTAT="NO"
+fi
+
 if [[ "$CDUMP" = "gfs" ]] ; then
     export USE_RADSTAT="NO" # This can be only used when bias correction is not-zero.
     export GENDIAG="NO"

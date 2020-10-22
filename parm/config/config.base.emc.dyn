@@ -14,7 +14,8 @@ export RUN_ENVIR="emc"
 # Account, queue, etc.
 export ACCOUNT="@ACCOUNT@"
 export QUEUE="@QUEUE@"
-export QUEUE_ARCH="@QUEUE_ARCH@"
+export QUEUE_SERVICE="@QUEUE_SERVICE@"
+export PARTITION_BATCH="@PARTITION_BATCH@"
 
 # Project to use in mass store:
 HPSS_PROJECT=emc-global
@@ -71,7 +72,7 @@ export REALTIME="YES"
 export FIXgsi="$HOMEgfs/fix/fix_gsi"
 export HOMEfv3gfs="$HOMEgfs/sorc/fv3gfs.fd"
 export HOMEpost="$HOMEgfs"
-export HOMEobsproc_prep="$BASE_GIT/obsproc/gfsv16b/obsproc_prep.iss70457.netcdfhistory"
+export HOMEobsproc_prep="$BASE_GIT/obsproc/gfsv16b/obsproc_prep_RB-5.4.0"
 export HOMEobsproc_network="$BASE_GIT/obsproc/gfsv16b/obsproc_global_RB-3.4.0"
 export HOMEobsproc_global=$HOMEobsproc_network
 export BASE_VERIF="$BASE_GIT/verif/global/tags/vsdb"
@@ -82,7 +83,8 @@ export NMV="/bin/mv"
 export NLN="/bin/ln -sf"
 export VERBOSE="YES"
 export KEEPDATA="NO"
-export CHGRP_CMD="chgrp rstprod"
+export CHGRP_RSTPROD="@CHGRP_RSTPROD@"
+export CHGRP_CMD="@CHGRP_CMD@"
 export NEMSIOGET="$HOMEgfs/exec/nemsio_get"
 export NCDUMP="$NETCDF/bin/ncdump"
 export NCLEN="$HOMEgfs/ush/getncdimlen"
@@ -94,7 +96,9 @@ export BASE_JOB="$HOMEgfs/jobs/rocoto"
 # EXPERIMENT specific environment parameters
 export SDATE=@SDATE@
 export EDATE=@EDATE@
+export EXP_WARM_START="@EXP_WARM_START@"
 export assim_freq=6
+export FDATE=$($NDATE +$assim_freq $SDATE)
 export PSLOT="@PSLOT@"
 export EXPDIR="@EXPDIR@/$PSLOT"
 export ROTDIR="@ROTDIR@/$PSLOT"
@@ -208,7 +212,7 @@ export IAU_OFFSET=6
 export DOIAU_ENKF="YES"   # Enable 4DIAU for EnKF ensemble
 export IAUFHRS_ENKF="3,6,9"
 export IAU_DELTHRS_ENKF=6
-if [[ "$SDATE" = "$CDATE" ]]; then
+if [[ "$SDATE" = "$CDATE" && $EXP_WARM_START = ".false." ]]; then # Cold starting
   export IAU_OFFSET=0
   export IAU_FHROT=0
 fi
@@ -217,11 +221,11 @@ fi
 export lobsdiag_forenkf=".true."
 
 # run GLDAS to spin up land ICs
-export DO_GLDAS=YES
+export DO_GLDAS="YES"
 export gldas_cyc=00
 
 # run wave component
-export DO_WAVE=YES
+export DO_WAVE="YES"
 export WAVE_CDUMP="both"
 
 # Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL
@@ -280,7 +284,7 @@ export binary_diag=".false."
 export DO_METP="YES"                  # Run MET+ jobs
 
 # Archiving options
-export HPSSARCH="YES"        # save data to HPSS archive
+export HPSSARCH="@HPSSARCH@"        # save data to HPSS archive
 export ARCH_CYC=00           # Archive data at this cycle for warm_start capability
 export ARCH_WARMICFREQ=4     # Archive frequency in days for warm_start capability
 export ARCH_FCSTICFREQ=1     # Archive frequency in days for gdas and gfs forecast-only capability
