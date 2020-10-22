@@ -70,7 +70,7 @@ suite: !Cycle
     forecast: !Family
       medcold: !Task
         <<: *exclusive_task_template
-        Disable: !calc doc.settings.cplflx=='.false.'
+        Disable: !calc doc.settings.cplflx == '.false.' or doc.settings.onestep == '.true.'
         Trigger: !FirstTrue
            - when: !calc doc.settings.cplwav=='.true.'
              do: !Depend up.prep
@@ -82,9 +82,11 @@ suite: !Cycle
       highres: !Task
         <<: *exclusive_task_template
         Trigger: !FirstTrue
-           - when: !calc doc.settings.cplflx=='.true.'
+           - when: !calc doc.settings.cplflx=='.true.' and doc.settings.onestep=='.false.'
              do: !Depend medcold
-           - otherwise: !Depend up.up.ics.jgfs_emc_fv3ic
+           - when: !calc doc.settings.cplwav=='.true.'
+             do: !Depend up.prep
+           - otherwise: !Depend up.up.ics.jgfs_emc_mom6ic
         resources_remap: !JobRequest [ { <<: *remap_resource_template } ]
         resources: !FirstTrue
            - when: !calc doc.settings.cplflx=='.true.'

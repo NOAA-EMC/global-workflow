@@ -80,6 +80,11 @@ fi
 if [ $cplchem = .true. ]; then
 	sed -i -e "s;@\[chem_model\];gsd;g" tmp1
 fi
+
+sed -i -e "s;@\[read_mediator\];$read_mediator;g" tmp1
+
+read_mediator
+
 mv tmp1 nems.configure
 
 echo "$(cat nems.configure)"

@@ -90,7 +90,7 @@ runSeq::
 # CMEPS variables
 
 DRIVER_attributes::
-      mediator_read_restart = .true.
+      mediator_read_restart = @[read_mediator]
 ::
 MED_attributes::
       ATM_model = @[atm_model]
@@ -112,5 +112,5 @@ ALLCOMP_attributes::
       restart_option = nhours
       restart_ymd = -999
       dbug_flag = 0
-      use_coldstart = .true.
+      use_coldstart = @[read_mediator]
 ::
