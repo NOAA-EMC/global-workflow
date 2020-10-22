@@ -45,11 +45,7 @@ export SPPT_LOGIT=".true."
 export SPPT_SFCLIMIT=".true."
 
 if [ $QUILTING = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]; then
-    if [[ "$CCPP_SUITE" == "FV3_GSD_v0" || "$CCPP_SUITE" == "FV3_GSD_noah" ]] ; then
-      export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_da_gsd"
-    else
-      export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_da"
-    fi
+    export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_da"
 else
     export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_da_orig"
 fi
@@ -60,7 +56,8 @@ export restart_interval=${restart_interval:-6}
 # For IAU, write restarts at beginning of window also
 if [ $DOIAU_ENKF = "YES" ]; then
     export restart_interval="6 -1"
-    if [[ "$SDATE" = "$CDATE" ]]; then export restart_interval="3 -1"; fi
+#### temp remove to test
+####    if [[ "$SDATE" = "$CDATE" ]]; then export restart_interval="3 -1"; fi
 fi
 
 export OUTPUT_FILETYPES="$OUTPUT_FILE"

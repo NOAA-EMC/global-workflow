@@ -152,8 +152,8 @@ elif [ $step = "gldas" ]; then
 
 elif [ $step = "fcst" ]; then
 
-    export wtime_fcst="00:30:00"
-    export wtime_fcst_gfs="02:30:00"
+    export wtime_fcst="01:00:00"
+    export wtime_fcst_gfs="05:00:00"
     export npe_fcst=$(echo "$layout_x * $layout_y * 6" | bc)
     export npe_fcst_gfs=$(echo "$layout_x_gfs * $layout_y_gfs * 6" | bc)
     export nth_fcst=${nth_fv3:-2}
@@ -164,7 +164,7 @@ elif [ $step = "post" ]; then
 
     export wtime_post="02:00:00"
     export wtime_post_gfs="06:00:00"
-    export npe_post=96
+    export npe_post=48
     export nth_post=1
     export npe_node_post=12
     export npe_node_dwn=$npe_node_max
