@@ -115,10 +115,13 @@ elif [ $step = "anal" ]; then
     export nth_anal=5
     export npe_anal_gfs=1000
     if [ $CASE = "C384" ]; then
-      export npe_anal=160
-      export nth_anal=10
+      export npe_anal=400
+      export npe_anal_gfs=400
     fi
-    if [ $CASE = "C192" -o $CASE = "C96" -o $CASE = "C48" ]; then export npe_anal=84; fi
+    if [ $CASE = "C192" -o $CASE = "C96" -o $CASE = "C48" ]; then
+      export npe_anal=84
+      export npe_anal_gfs=84
+    fi
     if [[ "$machine" = "WCOSS_DELL_P3" ]]; then export nth_anal=7; fi
     export npe_node_anal=$(echo "$npe_node_max / $nth_anal" | bc)
     export nth_cycle=$npe_node_max
@@ -274,7 +277,7 @@ elif [ $step = "eobs" -o $step = "eomg" ]; then
     if [ $CASE = "C768" ]; then
       export npe_eobs=200
     elif [ $CASE = "C384" ]; then
-      export npe_eobs=60
+      export npe_eobs=100
     elif [ $CASE = "C192" ]; then
       export npe_eobs=40
     elif [ $CASE = "C96" -o $CASE = "C48" ]; then
@@ -297,10 +300,14 @@ elif [ $step = "eupd" ]; then
 
     export wtime_eupd="00:30:00"
     if [ $CASE = "C768" ]; then
-      export npe_eupd=150
-      export nth_eupd=40
+      export npe_eupd=960
+      export nth_eupd=6
       if [[ "$machine" = "WCOSS_DELL_P3" ]]; then
         export nth_eupd=7
+      fi
+      if [[ "$machine" = "HERA" ]]; then
+        export npe_eupd=150
+        export nth_eupd=40
       fi
     elif [ $CASE = "C384" ]; then
       export npe_eupd=270
@@ -309,12 +316,16 @@ elif [ $step = "eupd" ]; then
         export nth_eupd=9
       fi
       if [[ "$machine" = "HERA" ]]; then
-        export npe_eupd=84
-        export nth_eupd=10
+        export npe_eupd=100
+        export nth_eupd=40
       fi
     elif [ $CASE = "C192" -o $CASE = "C96" -o $CASE = "C48" ]; then
       export npe_eupd=42
       export nth_eupd=2
+      if [[ "$machine" = "HERA" ]]; then
+        export npe_eupd=40
+        export nth_eupd=40
+      fi
     fi
     export npe_node_eupd=$(echo "$npe_node_max / $nth_eupd" | bc)
     if [[ "$machine" == "WCOSS_C" ]]; then
