@@ -79,19 +79,6 @@ else
     echo 'Skip.  Directory gfs_post.fd already exists.'
 fi
 
-echo EMC_gfs_wafs checkout ...
-if [[ ! -d gfs_wafs.fd ]] ; then
-    rm -f ${topdir}/checkout-gfs_wafs.log
-    git clone --recursive https://github.com/NOAA-EMC/EMC_gfs_wafs.git gfs_wafs.fd >> ${LOG_DIR}/checkout-gfs_wafs.log 2>&1
-    rc=$?
-    ((err+=$rc))
-    cd gfs_wafs.fd
-    git checkout gfs_wafs.v5.0.11
-    cd ${topdir}
-else
-   echo 'Skip.  Directory gfs_wafs.fd already exists.'
-fi
-
 echo GSD-prep-chem checkout ...
 if [[ ! -d gsd_prep_chem.fd ]] ; then
     rm -f ${LOG_DIR}/checkout-gsd-prep-chem.log
@@ -103,19 +90,6 @@ if [[ ! -d gsd_prep_chem.fd ]] ; then
     cd ${topdir}
 else
     echo 'Skip.  Directory gsd_prep_chem.fd already exists.'
-fi
-
-echo EMC_verif-global checkout ...
-if [[ ! -d verif-global.fd ]] ; then
-    rm -f ${topdir}/checkout-verif-global.log
-    git clone --recursive gerrit:EMC_verif-global verif-global.fd >> ${LOG_DIR}/checkout-verif-global.log 2>&1
-    rc=$?
-    ((err+=$rc))
-    cd verif-global.fd
-    git checkout verif_global_v1.2.2
-    cd ${topdir}
-else
-    echo 'Skip. Directory verif-global.fd already exist.'
 fi
 
 #### Exception handling
