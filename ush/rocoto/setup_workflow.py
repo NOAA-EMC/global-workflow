@@ -1112,7 +1112,7 @@ def get_hyb_tasks(dict_configs, cycledef='enkf'):
     fhrlst = rocoto.create_envar(name='FHRLST', value='#lst#')
     eposenvars = envars1 + [fhrgrp] + [fhrlst]
     varname1, varname2, varname3 = 'grp', 'dep', 'lst'
-    varval1, varval2, varval3 = get_eposgroups(dict_configs, dict_configs['epos'], cdump=cdump)
+    varval1, varval2, varval3 = get_eposgroups(dict_configs['epos'], cdump=cdump)
     vardict = {varname2: varval2, varname3: varval3}
     task = wfu.create_wf_task('epos', cdump=cdump, envar=eposenvars, dependency=dependencies,
                               metatask='epmn', varname=varname1, varval=varval1, vardict=vardict)
@@ -1264,31 +1264,23 @@ def get_ecengroups(dict_configs, ecen, cdump='gdas'):
 
     return fhrgrp, fhrdep, fhrlst
 
-def get_eposgroups(dict_configs, epos, cdump='gdas'):
+def get_eposgroups(epos, cdump='gdas'):
 
-    base = dict_configs['base']
+    fhmin = epos['FHMIN_ENKF']
+    fhmax = epos['FHMAX_ENKF']
+    fhout = epos['FHOUT_ENKF']
+    fhrs = range(fhmin, fhmax+fhout, fhout)
 
-    if base.get('DOIAU_ENKF', 'NO') == 'YES' :
-        fhmin = epos['FHMIN_ENKF']
-        fhmax = epos['FHMAX_ENKF']
-        fhout = epos['FHOUT_ENKF']
-        fhrs = range(fhmin, fhmax+fhout, fhout)
+    neposgrp = epos['NEPOSGRP']
+    ngrps = neposgrp if len(fhrs) > neposgrp else len(fhrs)
 
-        neposgrp = epos['NEPOSGRP']
-        ngrps = neposgrp if len(fhrs) > neposgrp else len(fhrs)
+    fhrs = ['f%03d' % f for f in fhrs]
+    fhrs = np.array_split(fhrs, ngrps)
+    fhrs = [f.tolist() for f in fhrs]
 
-        fhrs = ['f%03d' % f for f in fhrs]
-        fhrs = np.array_split(fhrs, ngrps)
-        fhrs = [f.tolist() for f in fhrs]
-
-        fhrgrp = ' '.join(['%03d' % x for x in range(0, ngrps)])
-        fhrdep = ' '.join([f[-1] for f in fhrs])
-        fhrlst = ' '.join(['_'.join(f) for f in fhrs])
-
-    else:
-        fhrgrp='000'
-        fhrdep='f003'
-        fhrlst='f003'
+    fhrgrp = ' '.join(['%03d' % x for x in range(0, ngrps)])
+    fhrdep = ' '.join([f[-1] for f in fhrs])
+    fhrlst = ' '.join(['_'.join(f) for f in fhrs])
 
     return fhrgrp, fhrdep, fhrlst
 
