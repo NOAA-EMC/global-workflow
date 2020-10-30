@@ -2,7 +2,7 @@
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
-# Script name:         exglobal_anlcalc_fv3gfs.sh.ecf.sh
+# Script name:         exglobal_atmos_analysis_calc.sh
 # Script description:  Runs non-diagnostic file tasks after GSI analysis is performed
 #
 # Author: Cory Martin      Org: NCEP/EMC     Date: 2020-03-03
@@ -26,17 +26,7 @@ fi
 
 #  Directories.
 pwd=$(pwd)
-export NWPROD=${NWPROD:-$pwd}
-export HOMEgfs=${HOMEgfs:-$NWPROD}
-export HOMEgsi=${HOMEgsi:-$NWPROD}
 export FIXgsm=${FIXgsm:-$HOMEgfs/fix/fix_am}
-export DATA=${DATA:-$pwd/anlcalc.$$}
-export COMIN=${COMIN:-$pwd}
-export COMIN_OBS=${COMIN_OBS:-$COMIN}
-export COMIN_GES=${COMIN_GES:-$COMIN}
-export COMIN_GES_ENS=${COMIN_GES_ENS:-$COMIN_GES}
-export COMIN_GES_OBS=${COMIN_GES_OBS:-$COMIN_GES}
-export COMOUT=${COMOUT:-$COMIN}
 
 # Base variables
 CDATE=${CDATE:-"2001010100"}
@@ -58,7 +48,6 @@ export NLN=${NLN:-"/bin/ln -sf"}
 export CHGRP_CMD=${CHGRP_CMD:-"chgrp ${group_name:-rstprod}"}
 export NEMSIOGET=${NEMSIOGET:-${NWPROD}/exec/nemsio_get}
 export NCLEN=${NCLEN:-$HOMEgfs/ush/getncdimlen}
-export CATEXEC=${CATEXEC:-$HOMEgsi/exec/nc_diag_cat_serial.x}
 export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 COMPRESS=${COMPRESS:-gzip}
 UNCOMPRESS=${UNCOMPRESS:-gunzip}
@@ -78,12 +67,12 @@ export APRUN_CALCINC=${APRUN_CALCINC:-${APRUN:-""}}
 export APRUN_CALCANL=${APRUN_CALCANL:-${APRUN:-""}}
 export APRUN_CHGRES=${APRUN_CALCANL:-${APRUN:-""}}
 
-export CALCANLEXEC=${CALCANLEXEC:-$HOMEgsi/exec/calc_analysis.x}
-export CHGRESNCEXEC=${CHGRESNCEXEC:-$HOMEgfs/exec/chgres_recenter_ncio.exe}
-export CHGRESINCEXEC=${CHGRESINCEXEC:-$HOMEgsi/exec/interp_inc.x}
+export CALCANLEXEC=${CALCANLEXEC:-$HOMEgfs/exec/calc_analysis.x}
+export CHGRESNCEXEC=${CHGRESNCEXEC:-$HOMEgfs/exec/enkf_chgres_recenter_nc.x}
+export CHGRESINCEXEC=${CHGRESINCEXEC:-$HOMEgfs/exec/interp_inc.x}
 export NTHREADS_CHGRES=${NTHREADS_CHGRES:-1}
-CALCINCPY=${CALCINCPY:-$HOMEgsi/ush/calcinc_gfs.py}
-CALCANLPY=${CALCANLPY:-$HOMEgsi/ush/calcanl_gfs.py}
+CALCINCPY=${CALCINCPY:-$HOMEgfs/ush/calcinc_gfs.py}
+CALCANLPY=${CALCANLPY:-$HOMEgfs/ush/calcanl_gfs.py}
 
 DOGAUSFCANL=${DOGAUSFCANL-"NO"}
 GAUSFCANLSH=${GAUSFCANLSH:-$HOMEgfs/ush/gaussian_sfcanl.sh}
@@ -106,9 +95,6 @@ ATMGES=${ATMGES:-${COMIN_GES}/${GPREFIX}atmf006${GSUFFIX}}
 ATMG07=${ATMG07:-${COMIN_GES}/${GPREFIX}atmf007${GSUFFIX}}
 ATMG08=${ATMG08:-${COMIN_GES}/${GPREFIX}atmf008${GSUFFIX}}
 ATMG09=${ATMG09:-${COMIN_GES}/${GPREFIX}atmf009${GSUFFIX}}
-GBIAS=${GBIAS:-${COMIN_GES}/${GPREFIX}abias}
-GBIASPC=${GBIASPC:-${COMIN_GES}/${GPREFIX}abias_pc}
-GBIASAIR=${GBIASAIR:-${COMIN_GES}/${GPREFIX}abias_air}
 
 # Analysis files
 export APREFIX=${APREFIX:-""}
@@ -223,14 +209,6 @@ if [ $DOGAUSFCANL = "YES" ]; then
 fi
 
 echo "$CDUMP $CDATE atmanl and sfcanl done at `date`" > $COMOUT/${APREFIX}loganl.txt
-
-################################################################################
-# Send alerts
-if [ $SENDDBN = "YES" ]; then
-    if [ $RUN = "gfs" ]; then
-       $DBNROOT/bin/dbn_alert MODEL GFS_abias $job $ABIAS
-    fi
-fi
 
 ################################################################################
 # Postprocessing

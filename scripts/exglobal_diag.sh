@@ -2,7 +2,7 @@
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
-# Script name:         exglobal_analdiag_fv3gfs.sh.ecf.sh
+# Script name:         exglobal_diag.sh
 # Script description:  Creates diagnostic files after GSI analysis is performed
 #
 # Author: Cory Martin      Org: NCEP/EMC     Date: 2020-03-03
@@ -19,24 +19,13 @@
 
 #  Set environment.
 export VERBOSE=${VERBOSE:-"YES"}
-if [ $VERBOSE = "YES" ]; then
+if [[ "$VERBOSE" = "YES" ]]; then
    echo $(date) EXECUTING $0 $* >&2
    set -x
 fi
 
 #  Directories.
 pwd=$(pwd)
-export NWPROD=${NWPROD:-$pwd}
-export HOMEgfs=${HOMEgfs:-$NWPROD}
-export HOMEgsi=${HOMEgsi:-$NWPROD}
-export FIXgsm=${FIXgsm:-$HOMEgfs/fix/fix_am}
-export DATA=${DATA:-$pwd/analdiag.$$}
-export COMIN=${COMIN:-$pwd}
-export COMIN_OBS=${COMIN_OBS:-$COMIN}
-export COMIN_GES=${COMIN_GES:-$COMIN}
-export COMIN_GES_ENS=${COMIN_GES_ENS:-$COMIN_GES}
-export COMIN_GES_OBS=${COMIN_GES_OBS:-$COMIN_GES}
-export COMOUT=${COMOUT:-$COMIN}
 
 # Base variables
 CDATE=${CDATE:-"2001010100"}
@@ -58,7 +47,7 @@ export NLN=${NLN:-"/bin/ln -sf"}
 export CHGRP_CMD=${CHGRP_CMD:-"chgrp ${group_name:-rstprod}"}
 export NEMSIOGET=${NEMSIOGET:-${NWPROD}/exec/nemsio_get}
 export NCLEN=${NCLEN:-$HOMEgfs/ush/getncdimlen}
-export CATEXEC=${CATEXEC:-$HOMEgsi/exec/nc_diag_cat_serial.x}
+export CATEXEC=${CATEXEC:-$HOMEgfs/exec/ncdiag_cat.x}
 export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 COMPRESS=${COMPRESS:-gzip}
 UNCOMPRESS=${UNCOMPRESS:-gunzip}
@@ -84,10 +73,10 @@ CNVSTAT=${CNVSTAT:-${COMOUT}/${APREFIX}cnvstat}
 OZNSTAT=${OZNSTAT:-${COMOUT}/${APREFIX}oznstat}
 
 # Remove stat file if file already exists
-if [ -s $RADSTAT ]; then rm -f $RADSTAT; fi
-if [ -s $PCPSTAT ]; then rm -f $PCPSTAT; fi
-if [ -s $CNVSTAT ]; then rm -f $CNVSTAT; fi
-if [ -s $OZNSTAT ]; then rm -f $OZNSTAT; fi
+[[ -s $RADSTAT ]] && rm -f $RADSTAT
+[[ -s $PCPSTAT ]] && rm -f $PCPSTAT
+[[ -s $CNVSTAT ]] && rm -f $CNVSTAT
+[[ -s $OZNSTAT ]] && rm -f $OZNSTAT
 
 # Obs diag
 GENDIAG=${GENDIAG:-"YES"}
@@ -98,7 +87,13 @@ fi
 DIAG_COMPRESS=${DIAG_COMPRESS:-"YES"}
 DIAG_TARBALL=${DIAG_TARBALL:-"YES"}
 USE_CFP=${USE_CFP:-"NO"}
-DIAG_DIR=${COMOUT}/${APREFIX}gsidiags/
+CFP_MP=${CFP_MP:-"NO"}
+nm=""
+if [ $CFP_MP = "YES" ]; then
+    nm=0
+fi
+DIAG_DIR=${DIAG_DIR:-${COMOUT}/gsidiags}
+REMOVE_DIAG_DIR=${REMOVE_DIAG_DIR:-"NO"}
 
 # Set script / GSI control parameters
 lrun_subdirs=${lrun_subdirs:-".true."}
@@ -114,13 +109,15 @@ if [ $GENDIAG = "YES" ] ; then
       done
    else
       echo "lrun_subdirs must be true; exit with error"
+      export ERR=$?
+      export err=$ERR
       $ERRSCRIPT || exit 2
    fi
 
    # Set up lists and variables for various types of diagnostic files.
    ntype=3
 
-   diagtype[0]="conv conv_gps conv_ps conv_pw conv_q conv_sst conv_t conv_tcp conv_uv"
+   diagtype[0]="conv conv_gps conv_ps conv_pw conv_q conv_sst conv_t conv_tcp conv_uv conv_spd"
    diagtype[1]="pcp_ssmi_dmsp pcp_tmi_trmm"
    diagtype[2]="sbuv2_n16 sbuv2_n17 sbuv2_n18 sbuv2_n19 gome_metop-a gome_metop-b omi_aura mls30_aura ompsnp_npp ompstc8_npp gome_metop-c"
    diagtype[3]="hirs2_n14 msu_n14 sndr_g08 sndr_g11 sndr_g12 sndr_g13 sndr_g08_prep sndr_g11_prep sndr_g12_prep sndr_g13_prep sndrd1_g11 sndrd2_g11 sndrd3_g11 sndrd4_g11 sndrd1_g12 sndrd2_g12 sndrd3_g12 sndrd4_g12 sndrd1_g13 sndrd2_g13 sndrd3_g13 sndrd4_g13 sndrd1_g14 sndrd2_g14 sndrd3_g14 sndrd4_g14 sndrd1_g15 sndrd2_g15 sndrd3_g15 sndrd4_g15 hirs3_n15 hirs3_n16 hirs3_n17 amsua_n15 amsua_n16 amsua_n17 amsub_n15 amsub_n16 amsub_n17 hsb_aqua airs_aqua amsua_aqua imgr_g08 imgr_g11 imgr_g12 imgr_g14 imgr_g15 ssmi_f13 ssmi_f15 hirs4_n18 hirs4_metop-a amsua_n18 amsua_metop-a mhs_n18 mhs_metop-a amsre_low_aqua amsre_mid_aqua amsre_hig_aqua ssmis_f16 ssmis_f17 ssmis_f18 ssmis_f19 ssmis_f20 iasi_metop-a hirs4_n19 amsua_n19 mhs_n19 seviri_m08 seviri_m09 seviri_m10 seviri_m11 cris_npp cris-fsr_npp cris-fsr_n20 atms_npp atms_n20 hirs4_metop-b amsua_metop-b mhs_metop-b iasi_metop-b avhrr_metop-b avhrr_n18 avhrr_n19 avhrr_metop-a amsr2_gcom-w1 gmi_gpm saphir_meghat ahi_himawari8 abi_g16 abi_g17 amsua_metop-c mhs_metop-c iasi_metop-c avhrr_metop-c"
@@ -148,7 +145,8 @@ if [ $GENDIAG = "YES" ] ; then
    fi
 
    if [ $USE_CFP = "YES" ]; then
-      rm $DATA/diag.sh $DATA/mp_diag.sh
+      [[ -f $DATA/diag.sh ]] && rm $DATA/diag.sh
+      [[ -f $DATA/mp_diag.sh ]] && rm $DATA/mp_diag.sh
       cat > $DATA/diag.sh << EOFdiag
 #!/bin/sh
 lrun_subdirs=\$1
@@ -199,10 +197,13 @@ EOFdiag
       n=-1
       while [ $((n+=1)) -le $ntype ] ;do
          for type in $(echo ${diagtype[n]}); do
-            count=$(ls ${prefix}${type}_${loop}* | wc -l)
-            if [ $count -gt 0 ]; then
+            count=$(ls ${prefix}${type}_${loop}* 2>/dev/null | wc -l)
+            if [ $count -gt 1 ]; then
                if [ $USE_CFP = "YES" ]; then
-                  echo "$DATA/diag.sh $lrun_subdirs $binary_diag $type $loop $string $CDATE $DIAG_COMPRESS $DIAG_SUFFIX" | tee -a $DATA/mp_diag.sh
+                  echo "$nm $DATA/diag.sh $lrun_subdirs $binary_diag $type $loop $string $CDATE $DIAG_COMPRESS $DIAG_SUFFIX" | tee -a $DATA/mp_diag.sh
+		  if [ ${CFP_MP:-"NO"} = "YES" ]; then
+		      nm=$((nm+1))
+		  fi
                else
                   if [ $binary_diag = ".true." ]; then
                      cat ${prefix}${type}_${loop}* > diag_${type}_${string}.${CDATE}${DIAG_SUFFIX}
@@ -212,6 +213,13 @@ EOFdiag
                fi
                echo "diag_${type}_${string}.${CDATE}*" >> ${diaglist[n]}
                numfile[n]=$(expr ${numfile[n]} + 1)
+            elif [ $count -eq 1 ]; then
+                cat ${prefix}${type}_${loop}* > diag_${type}_${string}.${CDATE}${DIAG_SUFFIX}
+                if [ $DIAG_COMPRESS = "YES" ]; then
+		    $COMPRESS diag_${type}_${string}.${CDATE}${DIAG_SUFFIX}
+                fi
+                echo "diag_${type}_${string}.${CDATE}*" >> ${diaglist[n]}
+                numfile[n]=$(expr ${numfile[n]} + 1)
             fi
          done
       done
@@ -236,18 +244,10 @@ EOFdiag
       if [ $ncmd -gt 0 ]; then
          ncmd_max=$((ncmd < npe_node_max ? ncmd : npe_node_max))
          APRUNCFP_DIAG=$(eval echo $APRUNCFP)
-         if [ ${CFP_MP:-"NO"} = "YES" ]; then
-             if [ -s $DATA/mp_diag_srun.sh ]; then rm -f $DATA/mp_diag_srun.sh; fi
-             touch $DATA/mp_diag_srun.sh
-             nm=0
-             cat $DATA/mp_diag.sh | while read line; do
-                 echo "$nm  $line" >> $DATA/mp_diag_srun.sh
-                 nm=$((nm+1))
-             done
-             $APRUNCFP_DIAG -n $nm --multi-prog $DATA/mp_diag_srun.sh 
-         else
-             $APRUNCFP_DIAG $DATA/mp_diag.sh
-         fi
+         $APRUNCFP_DIAG $DATA/mp_diag.sh
+         export ERR=$?
+         export err=$ERR
+         $ERRSCRIPT || exit 3
       fi
    fi
 
@@ -262,6 +262,9 @@ EOFdiag
          fi
          if [ ${numfile[n]} -gt 0 ]; then
             tar $TAROPTS ${diagfile[n]} $(cat ${diaglist[n]})
+            export ERR=$?
+            export err=$ERR
+            $ERRSCRIPT || exit 4
          fi
       done
 
@@ -278,20 +281,17 @@ EOFdiag
 fi # End diagnostic file generation block - if [ $GENDIAG = "YES" ]
 
 ################################################################################
-# Send alerts
-if [ $SENDDBN = "YES" ]; then
-    if [ $RUN = "gdas" ]; then
-       $DBNROOT/bin/dbn_alert MODEL GDASRADSTAT $job $RADSTAT
-    fi
+# Postprocessing
+# If no processing error, remove $DIAG_DIR
+if [[ "$REMOVE_DIAG_DIR" = "YES" && "$err" = "0" ]]; then
+    rm -rf $DIAG_DIR
 fi
 
-################################################################################
-# Postprocessing
 cd $pwd
 [[ $mkdata = "YES" ]] && rm -rf $DATA
 
 set +x
-if [ $VERBOSE = "YES" ]; then
+if [[ "$VERBOSE" = "YES" ]]; then
    echo $(date) EXITING $0 with return code $err >&2
 fi
 exit $err

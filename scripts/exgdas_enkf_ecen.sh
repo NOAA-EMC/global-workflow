@@ -2,7 +2,7 @@
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
-# Script name:         exglobal_enkf_recenter_fv3gfs.sh.ecf
+# Script name:         exgdas_enkf_ecen.sh
 # Script description:  recenter ensemble around hi-res deterministic analysis
 #
 # Author:        Rahul Mahajan      Org: NCEP/EMC     Date: 2017-03-02
@@ -26,22 +26,10 @@ fi
 
 # Directories.
 pwd=$(pwd)
-export NWPROD=${NWPROD:-$pwd}
-export HOMEgfs=${HOMEgfs:-$NWPROD}
-HOMEgsi=${HOMEgsi:-$NWPROD}
-export DATA=${DATA:-$pwd}
-COMIN=${COMIN:-$pwd}
-COMIN_ENS=${COMIN_ENS:-$COMIN}
-COMIN_OBS=${COMIN_OBS:-$COMIN}
-COMIN_GES=${COMIN_GES:-$COMIN}
-COMIN_GES_ENS=${COMIN_GES_ENS:-$COMIN_ENS}
-COMIN_GES_OBS=${COMIN_GES_OBS:-$COMIN_GES}
-COMOUT=${COMOUT:-$COMIN}
-COMOUT_ENS=${COMOUT_ENS:-$COMIN_ENS}
 
+# Base variables
 CDATE=${CDATE:-"2010010100"}
 DONST=${DONST:-"NO"}
-
 export CASE=${CASE:-384}
 ntiles=${ntiles:-6}
 
@@ -55,11 +43,11 @@ NCLEN=${NCLEN:-$HOMEgfs/ush/getncdimlen}
 # Scripts
 
 # Executables.
-GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-$HOMEgsi/exec/getsigensmeanp_smooth.x}
-GETSFCENSMEANEXEC=${GETSFCENSMEANEXEC:-$HOMEgsi/exec/getsfcensmeanp.x}
-RECENATMEXEC=${RECENATMEXEC:-$HOMEgsi/exec/recentersigp.x}
-CALCINCNEMSEXEC=${CALCINCNEMSEXEC:-$HOMEgsi/exec/calc_increment_ens.x}
-CALCINCNCEXEC=${CALCINCEXEC:-$HOMEgsi/exec/calc_increment_ens_ncio.x}
+GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-$HOMEgfs/exec/getsigensmeanp_smooth.x}
+GETSFCENSMEANEXEC=${GETSFCENSMEANEXEC:-$HOMEgfs/exec/getsfcensmeanp.x}
+RECENATMEXEC=${RECENATMEXEC:-$HOMEgfs/exec/recentersigp.x}
+CALCINCNEMSEXEC=${CALCINCNEMSEXEC:-$HOMEgfs/exec/calc_increment_ens.x}
+CALCINCNCEXEC=${CALCINCEXEC:-$HOMEgfs/exec/calc_increment_ens_ncio.x}
 
 # Files.
 OPREFIX=${OPREFIX:-""}
@@ -83,8 +71,8 @@ DO_CALC_INCREMENT=${DO_CALC_INCREMENT:-"NO"}
 
 
 # global_chgres stuff
-CHGRESNEMS=${CHGRESNEMS:-$HOMEgfs/exec/chgres_recenter.exe}
-CHGRESNC=${CHGRESNC:-$HOMEgfs/exec/chgres_recenter_ncio.exe}
+CHGRESNEMS=${CHGRESNEMS:-$HOMEgfs/exec/enkf_chgres_recenter.x}
+CHGRESNC=${CHGRESNC:-$HOMEgfs/exec/enkf_chgres_recenter_nc.x}
 NTHREADS_CHGRES=${NTHREADS_CHGRES:-24}
 APRUN_CHGRES=${APRUN_CHGRES:-""}
 
@@ -171,6 +159,8 @@ if [ $DO_CALC_INCREMENT = "YES" ]; then
    ATMANLMEANNAME="atmanl_ensmean"
 
    export OMP_NUM_THREADS=$NTHREADS_ECEN
+   export pgm=$GETATMENSMEANEXEC
+   . prep_step
 
    $NCP $GETATMENSMEANEXEC $DATA
    $APRUN_ECEN ${DATA}/$(basename $GETATMENSMEANEXEC) $DATAPATH $ATMANLMEANNAME $ATMANLNAME $NMEM_ENKF
@@ -193,6 +183,8 @@ else
    ATMINCMEANNAME="atminc_ensmean"
 
    export OMP_NUM_THREADS=$NTHREADS_ECEN
+   export pgm=$GETATMENSMEANEXEC
+   . prep_step
 
    $NCP $GETATMENSMEANEXEC $DATA
    $APRUN_ECEN ${DATA}/$(basename $GETATMENSMEANEXEC) $DATAPATH $ATMINCMEANNAME $ATMINCNAME $NMEM_ENKF
@@ -211,6 +203,8 @@ else
        ATMGESMEANNAME="atmges_ensmean"
 
        export OMP_NUM_THREADS=$NTHREADS_ECEN
+       export pgm=$GETATMENSMEANEXEC
+       . prep_step
 
        $NCP $GETATMENSMEANEXEC $DATA
        $APRUN_ECEN ${DATA}/$(basename $GETATMENSMEANEXEC) $DATAPATH $ATMGESMEANNAME $ATMGESNAME $NMEM_ENKF
@@ -277,7 +271,7 @@ if [ $RECENTER_ENKF = "YES" ]; then
 
       export OMP_NUM_THREADS=$NTHREADS_CHGRES
 
-      rm -f $chgresnml
+      [[ -f $chgresnml ]] && rm -f $chgresnml
       cat > $chgresnml << EOF
 &${nmltitle}_setup
   i_output=$LONB_ENKF
@@ -308,6 +302,8 @@ EOF
       FILENAMEOUT="ratmanl"
 
       export OMP_NUM_THREADS=$NTHREADS_ECEN
+      export pgm=$RECENATMEXEC
+      . prep_step
 
       $NCP $RECENATMEXEC $DATA
       $APRUN_ECEN ${DATA}/$(basename $RECENATMEXEC) $FILENAMEIN $FILENAME_MEANIN $FILENAME_MEANOUT $FILENAMEOUT $NMEM_ENKF
@@ -317,13 +313,6 @@ EOF
       export err=$ERR
       $ERRSCRIPT || exit 2
 
-      # Optionally alert recentered files
-      if [ ${SENDDBN:-"NO"} = "YES" ]; then
-         for imem in $(seq 1 $NMEM_ENKF); do
-            memchar="mem"$(printf %03i $imem)
-            $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job $COMOUT_ENS/$memchar/${APREFIX}ratmanl$ASUFFIX
-         done
-      fi
    else
       ################################################################################
       # Recenter ensemble member atmospheric increments about hires analysis
@@ -338,13 +327,16 @@ EOF
 
       # make the small namelist file for incvars_to_zero
 
-      rm recenter.nml
+      [[ -f recenter.nml ]] && rm recenter.nml
       cat > recenter.nml << EOF
 &recenter
   incvars_to_zero = $INCREMENTS_TO_ZERO
 /
 EOF
 cat recenter.nml
+
+      export pgm=$RECENATMEXEC
+      . prep_step
 
       $NCP $RECENATMEXEC $DATA
       $APRUN_ECEN ${DATA}/$(basename $RECENATMEXEC) $FILENAMEIN $FILENAME_INCMEANIN $FILENAME_GSIDET $FILENAMEOUT $NMEM_ENKF $FILENAME_GESMEANIN
@@ -354,13 +346,6 @@ cat recenter.nml
       export err=$ERR
       $ERRSCRIPT || exit 2
 
-      # Optionally alert recentered files
-      if [ ${SENDDBN:-"NO"} = "YES" ]; then
-         for imem in $(seq 1 $NMEM_ENKF); do
-            memchar="mem"$(printf %03i $imem)
-            $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job $COMOUT_ENS/$memchar/${APREFIX}ratminc$ASUFFIX
-         done
-      fi
    fi
 fi
 
@@ -375,11 +360,14 @@ if [ $DO_CALC_INCREMENT = "YES" ]; then
 
    export OMP_NUM_THREADS=$NTHREADS_CALCINC
    if [ ${SUFFIX} = ".nc" ]; then
-
       CALCINCEXEC=$CALCINCNCEXEC
    else
       CALCINCEXEC=$CALCINCNEMSEXEC
    fi
+
+   export pgm=$CALCINCEXEC
+   . prep_step
+
    $NCP $CALCINCEXEC $DATA
 
    rm calc_increment.nml

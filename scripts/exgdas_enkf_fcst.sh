@@ -2,7 +2,7 @@
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
-# Script name:         exglobal_enkf_fcst_fv3gfs.sh.ecf
+# Script name:         exgdas_enkf_fcst.sh
 # Script description:  Run ensemble forecasts
 #
 # Author:        Rahul Mahajan      Org: NCEP/EMC     Date: 2017-03-02
@@ -27,15 +27,8 @@ fi
 
 # Directories.
 pwd=$(pwd)
-export NWPROD=${NWPROD:-$pwd}
-export HOMEgfs=${HOMEgfs:-$NWPROD}
 export FIX_DIR=${FIX_DIR:-$HOMEgfs/fix}
 export FIX_AM=${FIX_AM:-$FIX_DIR/fix_am}
-export DATA=${DATA:-$pwd/enkf_fcst.$$}
-export COMIN=${COMIN:-$pwd}
-export COMOUT=${COMOUT:-$COMIN}
-
-GSUFFIX=${GSUFFIX:-$SUFFIX}
 
 # Utilities
 export NCP=${NCP:-"/bin/cp -p"}
@@ -45,7 +38,7 @@ export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 export NDATE=${NDATE:-/$NWPROD/util/exec/ndate}
 
 # Scripts.
-FORECASTSH=${FORECASTSH:-$HOMEgfs/scripts/exglobal_fcst_nemsfv3gfs.sh.ecf}
+FORECASTSH=${FORECASTSH:-$HOMEgfs/scripts/exglobal_forecast.sh}
 
 # Enemble group, begin and end
 ENSGRP=${ENSGRP:-1}
@@ -74,6 +67,7 @@ export PREFIX_ATMINC=${PREFIX_ATMINC:-""}
 # Ops related stuff
 SENDECF=${SENDECF:-"NO"}
 SENDDBN=${SENDDBN:-"NO"}
+GSUFFIX=${GSUFFIX:-$SUFFIX}
 
 ################################################################################
 # Preprocessing
@@ -196,7 +190,7 @@ for imem in $(seq $ENSBEG $ENSEND); do
      while [ $fhr -le $FHMAX ]; do
        FH3=$(printf %03i $fhr)
        if [ $(expr $fhr % 3) -eq 0 ]; then
-         $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job $COMOUT/$memchar/${CDUMP}.t${cyc}z.sfcf${FH3}.${GSUFFIX}
+         $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job $COMOUT/$memchar/${CDUMP}.t${cyc}z.sfcf${FH3}${GSUFFIX}
        fi
        fhr=$((fhr+FHOUT))
      done
@@ -204,14 +198,21 @@ for imem in $(seq $ENSBEG $ENSEND); do
 
    cd $DATATOP
 
-   $NCP $EFCSGRP log_old
-   rm log log_new
+   if [ -s $EFCSGRP ]; then
+       $NCP $EFCSGRP log_old
+   fi
+   [[ -f log ]] && rm log
+   [[ -f log_new ]] && rm log_new
    if [ $ra -ne 0 ]; then
       echo "MEMBER $cmem : FAIL" > log
    else
       echo "MEMBER $cmem : PASS" > log
    fi
-   cat log_old log > log_new
+   if [ -s log_old ] ; then
+       cat log_old log > log_new
+   else
+       cat log > log_new
+   fi
    $NCP log_new $EFCSGRP
 
 done
@@ -221,7 +222,7 @@ done
 cd $DATATOP
 echo "Status of ensemble members in group $ENSGRP:"
 cat $EFCSGRP
-rm ${EFCSGRP}.fail
+[[ -f ${EFCSGRP}.fail ]] && rm ${EFCSGRP}.fail
 
 ################################################################################
 # If any members failed, error out

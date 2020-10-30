@@ -2,7 +2,7 @@
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
-# Script name:         exglobal_enkf_update_fv3gfs.sh.ecf
+# Script name:         exgdas_enkf_update.sh
 # Script description:  Make global_enkf update
 #
 # Author:        Rahul Mahajan      Org: NCEP/EMC     Date: 2017-03-02
@@ -26,14 +26,6 @@ fi
 
 # Directories.
 pwd=$(pwd)
-NWPROD=${NWPROD:-$pwd}
-HOMEgsi=${HOMEgsi:-$NWPROD}
-FIXgsi=${FIXgsi:-$HOMEgsi/fix}
-DATA=${DATA:-$pwd/enkf_update.$$}
-COMIN=${COMIN:-$pwd}
-COMIN_GES_ENS=${COMIN_GES_ENS:-$COMIN}
-COMOUT=${COMOUT:-$COMIN}
-COMOUT_ANL_ENS=${COMOUT_ANL_ENS:-$COMOUT}
 
 # Utilities
 NCP=${NCP:-"/bin/cp -p"}
@@ -42,12 +34,17 @@ ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 NEMSIOGET=${NEMSIOGET:-$NWPROD/utils/exec/nemsio_get}
 NCLEN=${NCLEN:-$HOMEgfs/ush/getncdimlen}
 USE_CFP=${USE_CFP:-"NO"}
+CFP_MP=${CFP_MP:-"NO"}
+nm=""
+if [ $CFP_MP = "YES" ]; then
+    nm=0
+fi
 APRUNCFP=${APRUNCFP:-""}
 APRUN_ENKF=${APRUN_ENKF:-${APRUN:-""}}
 NTHREADS_ENKF=${NTHREADS_ENKF:-${NTHREADS:-1}}
 
 # Executables
-ENKFEXEC=${ENKFEXEC:-$HOMEgsi/exec/global_enkf.x}
+ENKFEXEC=${ENKFEXEC:-$HOMEgfs/exec/global_enkf.x}
 
 # Cycling and forecast hour specific parameters
 CDATE=${CDATE:-"2001010100"}
@@ -144,13 +141,6 @@ fi
 cd $DATA || exit 99
 
 ################################################################################
-# Clean up the run directory
-rm convinfo satinfo ozinfo hybens_info anavinfo
-rm satbias_angle satbias_in
-rm enkf.nml
-rm sanl*
-
-################################################################################
 # Fixed files
 $NLN $SATANGL    satbias_angle
 $NLN $SATINFO    satinfo
@@ -167,7 +157,8 @@ $NLN $COMOUT_ANL_ENS/$GBIASe satbias_in
 ################################################################################
 
 if [ $USE_CFP = "YES" ]; then
-   rm $DATA/untar.sh $DATA/mp_untar.sh
+   [[ -f $DATA/untar.sh ]] && rm $DATA/untar.sh
+   [[ -f $DATA/mp_untar.sh ]] && rm $DATA/mp_untar.sh
    set +x
    cat > $DATA/untar.sh << EOFuntar
 #!/bin/sh
@@ -191,7 +182,10 @@ fi
 
 flist="$CNVSTAT $OZNSTAT $RADSTAT"
 if [ $USE_CFP = "YES" ]; then
-   echo "$DATA/untar.sh ensmean" | tee -a $DATA/mp_untar.sh
+   echo "$nm $DATA/untar.sh ensmean" | tee -a $DATA/mp_untar.sh
+   if [ ${CFP_MP:-"NO"} = "YES" ]; then
+       nm=$((nm+1))
+   fi
 else
    for ftype in $flist; do
       fname=$COMOUT_ANL_ENS/${ftype}.ensmean
@@ -203,7 +197,10 @@ for imem in $(seq 1 $NMEM_ENKF); do
    memchar="mem"$(printf %03i $imem)
    if [ $lobsdiag_forenkf = ".false." ]; then
       if [ $USE_CFP = "YES" ]; then
-         echo "$DATA/untar.sh $memchar" | tee -a $DATA/mp_untar.sh
+         echo "$nm $DATA/untar.sh $memchar" | tee -a $DATA/mp_untar.sh
+         if [ ${CFP_MP:-"NO"} = "YES" ]; then
+             nm=$((nm+1))
+         fi
       else
          for ftype in $flist; do
             fname=$COMOUT_ANL_ENS/$memchar/$ftype
@@ -248,10 +245,9 @@ if [ $USE_CFP = "YES" ]; then
       ncmd_max=$((ncmd < npe_node_max ? ncmd : npe_node_max))
       APRUNCFP=$(eval echo $APRUNCFP)
       $APRUNCFP $DATA/mp_untar.sh
-      rc=$?
-      export ERR=$rc
+      export ERR=$?
       export err=$ERR
-      $ERRSCRIPT || exit 2
+      $ERRSCRIPT || exit 3
    fi
 fi
 
@@ -375,13 +371,13 @@ EOFnml
 
 ################################################################################
 # Run enkf update
+
 export OMP_NUM_THREADS=$NTHREADS_ENKF
+export pgm=$ENKFEXEC
+. prep_step
 
-PGM=$DATA/enkf.x
-$NCP $ENKFEXEC $PGM
-
-# Execute EnKF using same number of mpi tasks on all nodes
-$APRUN_ENKF $PGM 1>stdout 2>stderr
+$NCP $ENKFEXEC $DATA
+$APRUN_ENKF ${DATA}/$(basename $ENKFEXEC) 1>stdout 2>stderr
 rc=$?
 
 export ERR=$rc
