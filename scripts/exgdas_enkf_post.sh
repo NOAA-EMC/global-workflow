@@ -2,7 +2,7 @@
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
-# Script name:         exglobal_enkf_post_fv3gfs.sh.ecf
+# Script name:         exgdas_enkf_post.sh
 # Script description:  Global ensemble forecast post processing
 #
 # Author:        Rahul Mahajan      Org: NCEP/EMC     Date: 2017-03-02
@@ -26,12 +26,6 @@ fi
 
 # Directories.
 pwd=$(pwd)
-NWPROD=${NWPROD:-$pwd}
-HOMEgsi=${HOMEgsi:-$NWPROD}
-FIXgsi=${FIXgsi:-$HOMEgsi/fix}
-DATA=${DATA:-$pwd}
-COMIN=${COMIN:-$pwd}
-COMOUT=${COMOUT:-$COMIN}
 
 # Utilities
 ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
@@ -49,8 +43,8 @@ LEVS=${LEVS:-64}
 HYBENSMOOTH=${HYBENSMOOTH:-$FIXgsi/global_hybens_smoothinfo.l${LEVS}.txt}
 
 # Executables.
-GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-$HOMEgsi/exec/getsigensmeanp_smooth.x}
-GETSFCENSMEANEXEC=${GETSFCENSMEANEXEC:-$HOMEgsi/exec/getsfcensmeanp.x}
+GETATMENSMEANEXEC=${GETATMENSMEANEXEC:-$HOMEgfs/exec/getsigensmeanp_smooth.x}
+GETSFCENSMEANEXEC=${GETSFCENSMEANEXEC:-$HOMEgfs/exec/getsfcensmeanp.x}
 
 # Other variables.
 PREFIX=${PREFIX:-""}
@@ -109,15 +103,22 @@ done
 ################################################################################
 # Generate ensemble mean surface and atmospheric files
 
-rm ./hybens_smoothinfo
 [[ $SMOOTH_ENKF = "YES" ]] && $NCP $HYBENSMOOTH ./hybens_smoothinfo
 
 rc=0
 for fhr in $(seq $FHMIN $FHOUT $FHMAX); do
    fhrchar=$(printf %03i $fhr)
+
+   export pgm=$GETSFCENSMEANEXEC
+   . prep_step
+
    $APRUN_EPOS ${DATA}/$(basename $GETSFCENSMEANEXEC) ./ sfcf${fhrchar}.ensmean sfcf${fhrchar} $NMEM_ENKF
    ra=$?
    ((rc+=ra))
+
+   export_pgm=$GETATMENSMEANEXEC
+   . prep_step
+
    if [ $ENKF_SPREAD = "YES" ]; then
       $APRUN_EPOS ${DATA}/$(basename $GETATMENSMEANEXEC) ./ atmf${fhrchar}.ensmean atmf${fhrchar} $NMEM_ENKF atmf${fhrchar}.ensspread
    else
@@ -158,15 +159,6 @@ if [ $SENDDBN = "YES" ]; then
          fi
       fi
    done
-
-#  Maintain gfs.v14 dbn_alerts of 6 and 9 hour EnKF forecasts
-   if [ $FHMIN -eq 6 -o $FHMIN -eq 9 ]; then
-       fhrchar=$(printf %03i $FHMIN)
-       for imem in $(seq 1 $NMEM_ENKF); do
-           memchar="mem"$(printf %03i $imem)
-           $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job $COMOUT/$memchar/${PREFIX}atmf${fhrchar}${ENKF_SUFFIX}${SUFFIX}
-       done
-   fi
 
 fi
 

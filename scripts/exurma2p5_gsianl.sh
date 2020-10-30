@@ -3,7 +3,7 @@
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
-# Script name:         exuma2p5_gsianl.sh.sms
+# Script name:         exuma2p5_gsianl.sh
 # Script description:  Runs regional GSI variational analysis
 #
 # Author:        Manuel Pondeca      Org: NP22        Date: 2006-06-23

@@ -53,10 +53,11 @@ export pgmerr=errfile
 
 
 ##############################################
-# Set variables used in the exglobal script
+# Set variables used in the script
 ##############################################
 export CDATE=${CDATE:-${PDY}${cyc}}
 export CDUMP=${CDUMP:-${RUN:-"gdas"}}
+export COMPONENT=${COMPONENT:-atmos}
 if [ $RUN_ENVIR = "nco" ]; then
     export ROTDIR=${COMROOT:?}/$NET/$envir
 fi
@@ -68,9 +69,8 @@ fi
 
 export CASE=$CASE_ENKF
 
-# COMOUT is used in exglobal script
-# TO DO: Map NCO's directory into these variables
-export COMOUT="$ROTDIR/enkf$CDUMP.$PDY/$cyc"
+# COMOUT is used in script
+export COMOUT="$ROTDIR/enkf$CDUMP.$PDY/$cyc/$COMPONENT"
 
 
 # Forecast length for EnKF forecast
@@ -85,14 +85,14 @@ export ENSBEG=$((ENSEND - NMEM_EFCSGRP + 1))
 
 
 ###############################################################
-# Run relevant exglobal script
+# Run relevant script
 env
 msg="HAS BEGUN on `hostname`"
 postmsg "$jlogfile" "$msg"
 $LOGSCRIPT
 
 
-${ENKFFCSTSH:-$SCRgsi/exglobal_enkf_fcst_fv3gfs.sh.ecf}
+${ENKFFCSTSH:-$SCRgfs/exgdas_enkf_fcst.sh}
 status=$?
 [[ $status -ne 0 ]] && exit $status
 

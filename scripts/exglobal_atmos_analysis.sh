@@ -2,7 +2,7 @@
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
-# Script name:         exglobal_analysis_fv3gfs.sh.ecf.sh
+# Script name:         exglobal_atmos_analysis.sh
 # Script description:  Makes a global model upper air analysis with GSI
 #
 # Author: Rahul Mahajan      Org: NCEP/EMC     Date: 2017-03-02
@@ -26,18 +26,6 @@ fi
 
 #  Directories.
 pwd=$(pwd)
-export NWPROD=${NWPROD:-$pwd}
-export HOMEgfs=${HOMEgfs:-$NWPROD}
-export HOMEgsi=${HOMEgsi:-$NWPROD}
-FIXgsi=${FIXgsi:-$HOMEgsi/fix}
-GSIEXEC=${GSIEXEC:-$HOMEgsi/exec/global_gsi.x}
-export DATA=${DATA:-$pwd/analysis.$$}
-export COMIN=${COMIN:-$pwd}
-export COMIN_OBS=${COMIN_OBS:-$COMIN}
-export COMIN_GES=${COMIN_GES:-$COMIN}
-export COMIN_GES_ENS=${COMIN_GES_ENS:-$COMIN_GES}
-export COMIN_GES_OBS=${COMIN_GES_OBS:-$COMIN_GES}
-export COMOUT=${COMOUT:-$COMIN}
 
 # Base variables
 CDATE=${CDATE:-"2001010100"}
@@ -59,7 +47,6 @@ export NLN=${NLN:-"/bin/ln -sf"}
 export CHGRP_CMD=${CHGRP_CMD:-"chgrp ${group_name:-rstprod}"}
 export NEMSIOGET=${NEMSIOGET:-${NWPROD}/exec/nemsio_get}
 export NCLEN=${NCLEN:-$HOMEgfs/ush/getncdimlen}
-export CATEXEC=${CATEXEC:-$HOMEgsi/exec/nc_diag_cat_serial.x}
 export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 COMPRESS=${COMPRESS:-gzip}
 UNCOMPRESS=${UNCOMPRESS:-gunzip}
@@ -105,19 +92,20 @@ DOIAU=${DOIAU:-"NO"}
 export IAUFHRS=${IAUFHRS:-"6"}
 
 # Dependent Scripts and Executables
+GSIEXEC=${GSIEXEC:-$HOMEgfs/exec/global_gsi.x}
 export NTHREADS_CALCINC=${NTHREADS_CALCINC:-1}
 export APRUN_CALCINC=${APRUN_CALCINC:-${APRUN:-""}}
 export APRUN_CALCANL=${APRUN_CALCANL:-${APRUN:-""}}
 export APRUN_CHGRES=${APRUN_CALCANL:-${APRUN:-""}}
-export CALCINCEXEC=${CALCINCEXEC:-$HOMEgsi/exec/calc_increment_ens.x}
-export CALCINCNCEXEC=${CALCINCNCEXEC:-$HOMEgsi/exec/calc_increment_ens_ncio.x}
-export CALCANLEXEC=${CALCANLEXEC:-$HOMEgsi/exec/calc_analysis.x}
-export CHGRESNCEXEC=${CHGRESNCEXEC:-$HOMEgfs/exec/chgres_recenter_ncio.exe}
-export CHGRESINCEXEC=${CHGRESINCEXEC:-$HOMEgsi/exec/interp_inc.x}
-CHGRESEXEC=${CHGRESEXEC:-$HOMEgfs/exec/chgres_recenter.exe}
+export CALCINCEXEC=${CALCINCEXEC:-$HOMEgfs/exec/calc_increment_ens.x}
+export CALCINCNCEXEC=${CALCINCNCEXEC:-$HOMEgfs/exec/calc_increment_ens_ncio.x}
+export CALCANLEXEC=${CALCANLEXEC:-$HOMEgfs/exec/calc_analysis.x}
+export CHGRESNCEXEC=${CHGRESNCEXEC:-$HOMEgfs/exec/enkf_chgres_recenter_nc.x}
+export CHGRESINCEXEC=${CHGRESINCEXEC:-$HOMEgfs/exec/interp_inc.x}
+CHGRESEXEC=${CHGRESEXEC:-$HOMEgfs/exec/enkf_chgres_recenter.x}
 export NTHREADS_CHGRES=${NTHREADS_CHGRES:-24}
-CALCINCPY=${CALCINCPY:-$HOMEgsi/ush/calcinc_gfs.py}
-CALCANLPY=${CALCANLPY:-$HOMEgsi/ush/calcanl_gfs.py}
+CALCINCPY=${CALCINCPY:-$HOMEgfs/ush/calcinc_gfs.py}
+CALCANLPY=${CALCANLPY:-$HOMEgfs/ush/calcanl_gfs.py}
 
 # OPS flags
 RUN=${RUN:-""}
@@ -188,6 +176,7 @@ GPSROBF=${GPSROBF:-${COMIN_OBS}/${OPREFIX}gpsro.tm00.bufr_d${OSUFFIX}}
 TCVITL=${TCVITL:-${COMIN_OBS}/${OPREFIX}syndata.tcvitals.tm00}
 B1AVHAM=${B1AVHAM:-${COMIN_OBS}/${OPREFIX}avcsam.tm00.bufr_d${OSUFFIX}}
 B1AVHPM=${B1AVHPM:-${COMIN_OBS}/${OPREFIX}avcspm.tm00.bufr_d${OSUFFIX}}
+HDOB=${HDOB:-${COMIN_OBS}/${OPREFIX}hdob.tm00.bufr_d${OSUFFIX}}
 
 # Guess files
 GPREFIX=${GPREFIX:-""}
@@ -243,7 +232,12 @@ fi
 DIAG_COMPRESS=${DIAG_COMPRESS:-"YES"}
 DIAG_TARBALL=${DIAG_TARBALL:-"YES"}
 USE_CFP=${USE_CFP:-"NO"}
-DIAG_DIR=${COMOUT}/${APREFIX}gsidiags
+CFP_MP=${CFP_MP:-"NO"}
+nm=""
+if [ $CFP_MP = "YES" ]; then
+    nm=0
+fi
+DIAG_DIR=${DIAG_DIR:-${COMOUT}/gsidiags}
 
 # Set script / GSI control parameters
 DOHYBVAR=${DOHYBVAR:-"NO"}
@@ -417,45 +411,6 @@ fi
 
 cd $DATA || exit 99
 
-################################################################################
-# Clean the run-directory
-rm berror_stats hybens_info
-rm scaninfo satbias_angle satinfo
-rm anavinfo convinfo ozinfo pcpinfo aeroinfo vqctp001.dat
-rm errtable atms_beamwidth.txt
-rm cloudy_radiance_info.txt
-
-rm prepbufr prepbufr_profl
-rm gpsrobufr
-rm tcvitl
-rm gsndrbufr gsnd1bufr
-rm ssmisbufr ssmitbufr ssmirrbufr tmirrbufr
-rm sbuvbufr gomebufr omibufr mlsbufr msubufr ompsnpbufr ompstcbufr
-rm airsbufr
-rm iasibufr iasibufrears iasibufr_db
-rm amsrebufr amsr2bufr
-rm gmibufr saphirbufr
-rm hirs2bufr hirs3bufr hirs4bufr hirs3bufr_db hirs3bufrears
-rm amsuabufr amsuabufr_db amsuabufrears
-rm amsubbufr amsubbufr_db amsubbufrears
-rm mhsbufr mhsbufr_db mhsbufrears
-rm seviribufr ahibufr abibufr
-rm crisbufr crisbufrears crisbufr_db crisfsbufr crisfsbufrears crisfsbufr_db
-rm atmsbufr atmsbufr_db atmsbufrears
-
-rm satbias_in satbias_ang.in satbias_out satbias_pc satbias_pc.out satbias_out.int
-rm aircftbias_in aircftbias_out
-
-rm sfcf* sigf* nstf*
-rm sfca* siga* nsta*
-rm sigi*
-
-rm gsiparm.anl
-
-rm -rf dir*
-rm -rf crtm_coeffs
-rm -rf ensemble_data
-
 ##############################################################
 # Fixed files
 $NLN $BERROR       berror_stats
@@ -481,12 +436,12 @@ if [ $USE_CORRELATED_OBERRS == "YES" ];  then
        $NLN ${FIXgsi}/Rcov* $DATA
        echo "using correlated obs error"
      else
-       echo "Error: Satellite error covariance files are missing."
+       echo "FATAL ERROR: Satellite error covariance files (Rcov) are missing."
        echo "Check for the required Rcov files in " $ANAVINFO
        exit 1
      fi
   else
-     echo "Error: Satellite error covariance info missing in " $ANAVINFO
+     echo "FATAL ERROR: Satellite error covariance info missing in " $ANAVINFO
      exit 1
   fi
 
@@ -577,6 +532,7 @@ $NLN $B1AVHAM          avhambufr
 $NLN $B1AVHPM          avhpmbufr
 $NLN $AHIBF            ahibufr
 $NLN $ABIBF            abibufr
+$NLN $HDOB             hdobbufr
 
 [[ $DONST = "YES" ]] && $NLN $NSSTBF nsstbufr
 
@@ -668,7 +624,7 @@ if [ $GENDIAG = "YES" ] ; then
         $NLN $DIAG_DIR/$pedir $pedir
       done
    else
-      echo "lrun_subdirs must be true; exit with error"
+      echo "FATAL ERROR: lrun_subdirs must be true. lrun_subdirs=$lrun_subdirs"
       $ERRSCRIPT || exit 2
    fi
 fi
@@ -721,7 +677,8 @@ fi
 # If requested, copy and de-tar guess radstat file
 if [ $USE_RADSTAT = "YES" ]; then
    if [ $USE_CFP = "YES" ]; then
-     rm $DATA/unzip.sh $DATA/mp_unzip.sh
+     [[ -f $DATA/unzip.sh ]] && rm $DATA/unzip.sh
+     [[ -f $DATA/mp_unzip.sh ]] && rm $DATA/mp_unzip.sh
      cat > $DATA/unzip.sh << EOFunzip
 #!/bin/sh
    diag_file=\$1
@@ -739,7 +696,10 @@ EOFunzip
    for type in $listdiag; do
       diag_file=$(echo $type | cut -d',' -f1)
       if [ $USE_CFP = "YES" ] ; then
-         echo "$DATA/unzip.sh $diag_file $DIAG_SUFFIX" | tee -a $DATA/mp_unzip.sh
+         echo "$nm $DATA/unzip.sh $diag_file $DIAG_SUFFIX" | tee -a $DATA/mp_unzip.sh
+	 if [ ${CFP_MP:-"NO"} = "YES" ]; then
+             nm=$((nm+1))
+	 fi
       else
          fname=$(echo $diag_file | cut -d'.' -f1)
          date=$(echo $diag_file | cut -d'.' -f2)
@@ -756,6 +716,9 @@ EOFunzip
          ncmd_max=$((ncmd < npe_node_max ? ncmd : npe_node_max))
          APRUNCFP_UNZIP=$(eval echo $APRUNCFP)
          $APRUNCFP_UNZIP $DATA/mp_unzip.sh
+	 export ERR=$?
+         export err=$ERR
+         $ERRSCRIPT || exit 3
       fi
    fi
 fi # if [ $USE_RADSTAT = "YES" ]
@@ -850,13 +813,17 @@ OBS_INPUT::
    prepbufr       ps          null        ps                  0.0     0     0
    prepbufr       t           null        t                   0.0     0     0
    prepbufr_profl t           null        t                   0.0     0     0
+   hdobbufr       t           null        t                   0.0     0     0
    prepbufr       q           null        q                   0.0     0     0
    prepbufr_profl q           null        q                   0.0     0     0
+   hdobbufr       q           null        q                   0.0     0     0
    prepbufr       pw          null        pw                  0.0     0     0
    prepbufr       uv          null        uv                  0.0     0     0
    prepbufr_profl uv          null        uv                  0.0     0     0
    satwndbufr     uv          null        uv                  0.0     0     0
+   hdobbufr       uv          null        uv                  0.0     0     0
    prepbufr       spd         null        spd                 0.0     0     0
+   hdobbufr       spd         null        spd                 0.0     0     0
    prepbufr       dw          null        dw                  0.0     0     0
    radarbufr      rw          null        rw                  0.0     0     0
    nsstbufr       sst         nsst        sst                 0.0     0     0
@@ -983,14 +950,19 @@ EOF
 cat gsiparm.anl
 
 ##############################################################
-#  Make atmospheric analysis
-$NCP $GSIEXEC $DATA/gsi.x
-export OMP_NUM_THREADS=$NTHREADS_GSI
-$APRUN_GSI ${DATA}/gsi.x 1>&1 2>&2
+#  Run gsi analysis
 
-export ERR=$?
+export OMP_NUM_THREADS=$NTHREADS_GSI
+export pgm=$GSIEXEC
+. prep_step
+
+$NCP $GSIEXEC $DATA
+$APRUN_GSI ${DATA}/$(basename $GSIEXEC) 1>&1 2>&2
+rc=$?
+
+export ERR=$rc
 export err=$ERR
-$ERRSCRIPT || exit 2
+$ERRSCRIPT || exit 4
 
 
 ##############################################################
@@ -1002,7 +974,7 @@ if [ $DO_CALC_INCREMENT = "YES" ]; then
 
   export ERR=$rc
   export err=$ERR
-  $ERRSCRIPT || exit 3
+  $ERRSCRIPT || exit 5
 fi
 
 ##############################################################
@@ -1098,13 +1070,21 @@ cat fort.2* > $GSISTAT
 # If requested, create obsinput tarball from obs_input.* files
 if [ $RUN_SELECT = "YES" ]; then
   echo $(date) START tar obs_input >&2
-  rm obsinput.tar
+  [[ -s obsinput.tar ]] && rm obsinput.tar
   $NLN $SELECT_OBS obsinput.tar
   tar -cvf obsinput.tar obs_input.*
   chmod 750 $SELECT_OBS
   ${CHGRP_CMD} $SELECT_OBS
   rm obsinput.tar
   echo $(date) END tar obs_input >&2
+fi
+
+################################################################################
+# Send alerts
+if [ $SENDDBN = "YES" ]; then
+    if [ $RUN = "gfs" ]; then
+       $DBNROOT/bin/dbn_alert MODEL GFS_abias $job $ABIAS
+    fi
 fi
 
 ################################################################################

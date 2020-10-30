@@ -10,7 +10,7 @@ date
 # Source relevant config files
 #############################
 export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
-configs="base anal eobs ediag"
+configs="base anal eobs analdiag ediag"
 config_path=${EXPDIR:-$NWROOT/gfs.${gfs_ver}/parm/config}
 for config in $configs; do
     . $config_path/config.$config
@@ -53,10 +53,11 @@ export pgmerr=errfile
 
 
 ##############################################
-# Set variables used in the exglobal script
+# Set variables used in the script
 ##############################################
 export CDATE=${CDATE:-${PDY}${cyc}}
 export CDUMP=${CDUMP:-${RUN:-"gdas"}}
+export COMPONENT=${COMPONENT:-atmos}
 if [ $RUN_ENVIR = "nco" ]; then
     export ROTDIR=${COMROOT:?}/$NET/$envir
 fi
@@ -81,20 +82,19 @@ export GSUFFIX="${GSUFFIX:-".ensmean${SUFFIX}"}"
 export ASUFFIX="${ASUFFIX:-"${SUFFIX}"}"
 
 if [ $RUN_ENVIR = "nco" -o ${ROTDIR_DUMP:-NO} = "YES" ]; then
-    export COMIN_OBS=${COMIN_OBS:-$ROTDIR/$RUN.$PDY/$cyc}
-    export COMIN_GES_OBS=${COMIN_GES_OBS:-$ROTDIR/$GDUMP.$gPDY/$gcyc}
+    export COMIN_OBS=${COMIN_OBS:-$ROTDIR/$RUN.$PDY/$cyc/$COMPONENT}
+    export COMIN_GES_OBS=${COMIN_GES_OBS:-$ROTDIR/$GDUMP.$gPDY/$gcyc/$COMPONENT}
 else
     export COMIN_OBS="$DMPDIR/$CDATE/$CDUMP"
     export COMIN_GES_OBS="$DMPDIR/$GDATE/$GDUMP"
 fi
 
-# COMIN_GES, COMIN_ANL COMIN_GES_ENS, and COMOUT  are used in exglobal script
-# TO DO: Map NCO's directory into these variables
-COMIN_GES_CTL="$ROTDIR/gdas.$gPDY/$gcyc"
-export COMIN_ANL="$ROTDIR/$CDUMP.$PDY/$cyc"
-export COMIN_GES_ENS="$ROTDIR/enkfgdas.$gPDY/$gcyc"
+# COMIN_GES, COMIN_ANL COMIN_GES_ENS, and COMOUT  are used in script
+COMIN_GES_CTL="$ROTDIR/gdas.$gPDY/$gcyc/$COMPONENT"
+export COMIN_ANL="$ROTDIR/$CDUMP.$PDY/$cyc/$COMPONENT"
+export COMIN_GES_ENS="$ROTDIR/enkfgdas.$gPDY/$gcyc/$COMPONENT"
 export COMIN_GES=$COMIN_GES_ENS
-export COMOUT="$ROTDIR/enkf$CDUMP.$PDY/$cyc"
+export COMOUT="$ROTDIR/enkf$CDUMP.$PDY/$cyc/$COMPONENT"
 
 
 export ATMGES_ENSMEAN="$COMIN_GES_ENS/${GPREFIX}atmf006$GSUFFIX"
@@ -154,24 +154,16 @@ done
 
 
 ###############################################################
-# Run relevant exglobal script
+# Run relevant script
 env
 msg="HAS BEGUN on `hostname`"
 postmsg "$jlogfile" "$msg"
 $LOGSCRIPT
 
 
-${ANALDIAGSH:-$SCRgsi/exglobal_analdiag_fv3gfs.sh.ecf}
+${ANALDIAGSH:-$SCRgfs/exglobal_diag.sh}
 status=$?
 [[ $status -ne 0 ]] && exit $status
-
-
-##############################################
-# Send Alerts
-##############################################
-if [ $SENDDBN = YES ] ; then
-   $DBNROOT/bin/dbn_alert MODEL ENKF1_MSC_gsistat $job $GSISTAT
-fi
 
 
 ##############################################

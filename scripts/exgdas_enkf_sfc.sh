@@ -2,7 +2,7 @@
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
-# Script name:         exglobal_enkf_surface_fv3gfs.sh.ecf
+# Script name:         exgdas_enkf_sfc.sh
 # Script description:  generate ensemble surface analyses on tiles
 #
 # Author:        Rahul Mahajan      Org: NCEP/EMC     Date: 2017-03-02
@@ -26,23 +26,11 @@ fi
 
 # Directories.
 pwd=$(pwd)
-export NWPROD=${NWPROD:-$pwd}
-export HOMEgfs=${HOMEgfs:-$NWPROD}
-HOMEgsi=${HOMEgsi:-$NWPROD}
-export DATA=${DATA:-$pwd}
-COMIN=${COMIN:-$pwd}
-COMIN_ENS=${COMIN_ENS:-$COMIN}
-COMIN_OBS=${COMIN_OBS:-$COMIN}
-COMIN_GES=${COMIN_GES:-$COMIN}
-COMIN_GES_ENS=${COMIN_GES_ENS:-$COMIN_ENS}
-COMIN_GES_OBS=${COMIN_GES_OBS:-$COMIN_GES}
-COMOUT=${COMOUT:-$COMIN}
-COMOUT_ENS=${COMOUT_ENS:-$COMIN_ENS}
 
+# Base variables
 CDATE=${CDATE:-"2010010100"}
 DONST=${DONST:-"NO"}
 DOSFCANL_ENKF=${DOSFCANL_ENKF:-"YES"}
-
 export CASE=${CASE:-384}
 ntiles=${ntiles:-6}
 

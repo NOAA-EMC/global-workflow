@@ -2,7 +2,7 @@
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
-# Script name:         exglobal_innovate_obs_fv3gfs.sh.ecf
+# Script name:         exgdas_enkf_select_obs.sh
 # Script description:  Compute global_gsi innovations
 #
 # Author: Rahul Mahajan     Org: NCEP/EMC     Date: 2017-03-02
@@ -26,19 +26,13 @@ fi
 
 # Directories.
 pwd=$(pwd)
-export NWPROD=${NWPROD:-$pwd}
-export HOMEgsi=${HOMEgsi:-$NWPROD}
-export DATA=${DATA:-$pwd/innovate_obs.$$}
-export COMIN=${COMIN:-$pwd}
-export COMIN_GES=${COMIN_GES:-$COMIN}
-export COMOUT=${COMOUT:-$COMIN}
 
 # Utilities
 export NLN=${NLN:-"/bin/ln -sf"}
 export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 
 # Scripts.
-ANALYSISSH=${ANALYSISSH:-$HOMEgsi/scripts/exglobal_analysis_fv3gfs.sh.ecf}
+ANALYSISSH=${ANALYSISSH:-$HOMEgfs/scripts/exglobal_atmos_analysis.sh}
 
 # Prefix and Suffix Variables.
 export APREFIX=${APREFIX:-""}

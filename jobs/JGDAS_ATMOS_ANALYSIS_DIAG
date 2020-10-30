@@ -10,7 +10,7 @@ date
 # Source relevant config files
 #############################
 export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
-configs="base anal analcalc"
+configs="base anal analdiag"
 config_path=${EXPDIR:-$NWROOT/gfs.${gfs_ver}/parm/config}
 for config in $configs; do
     . $config_path/config.$config
@@ -54,10 +54,11 @@ export pgmerr=errfile
 
 
 ##############################################
-# Set variables used in the exglobal script
+# Set variables used in the script
 ##############################################
 export CDATE=${CDATE:-${PDY}${cyc}}
 export CDUMP=${CDUMP:-${RUN:-"gfs"}}
+export COMPONENT=${COMPONENT:-atmos}
 if [ $RUN_ENVIR = "nco" ]; then
     export ROTDIR=${COMROOT:?}/$NET/$envir
 fi
@@ -81,20 +82,19 @@ export ASUFFIX=${ASUFFIX:-$SUFFIX}
 
 
 if [ $RUN_ENVIR = "nco" -o ${ROTDIR_DUMP:-NO} = "YES" ]; then
-    export COMIN=${COMIN:-$ROTDIR/$RUN.$PDY/$cyc}
-    export COMOUT=${COMOUT:-$ROTDIR/$RUN.$PDY/$cyc}
-    export COMIN_OBS=${COMIN_OBS:-$ROTDIR/$RUN.$PDY/$cyc}
-    export COMIN_GES_OBS=${COMIN_GES_OBS:-$ROTDIR/$GDUMP.$gPDY/$gcyc}
+    export COMIN=${COMIN:-$ROTDIR/$RUN.$PDY/$cyc/$COMPONENT}
+    export COMOUT=${COMOUT:-$ROTDIR/$RUN.$PDY/$cyc/$COMPONENT}
+    export COMIN_OBS=${COMIN_OBS:-$ROTDIR/$RUN.$PDY/$cyc/$COMPONENT}
+    export COMIN_GES_OBS=${COMIN_GES_OBS:-$ROTDIR/$GDUMP.$gPDY/$gcyc/$COMPONENT}
 else
-    export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc"
+    export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc/$COMPONENT"
     export COMIN_OBS="$DMPDIR/$CDATE/$CDUMP"
     export COMIN_GES_OBS="$DMPDIR/$GDATE/$GDUMP"
 fi
 mkdir -m 775 -p $COMOUT
-# COMIN_GES and COMIN_GES_ENS are used in exglobal script
-# TO DO: Map NCO's directory into these variables
-export COMIN_GES="$ROTDIR/$GDUMP.$gPDY/$gcyc"
-export COMIN_GES_ENS="$ROTDIR/enkfgdas.$gPDY/$gcyc"
+# COMIN_GES and COMIN_GES_ENS are used in script
+export COMIN_GES="$ROTDIR/$GDUMP.$gPDY/$gcyc/$COMPONENT"
+export COMIN_GES_ENS="$ROTDIR/enkfgdas.$gPDY/$gcyc/$COMPONENT"
 
 
 export ATMGES="$COMIN_GES/${GPREFIX}atmf006${GSUFFIX}"
@@ -134,14 +134,14 @@ export DOGAUSFCANL=${DOGAUSFCANL:-"YES"}
 
 
 ###############################################################
-# Run relevant exglobal script
+# Run relevant script
 env
 msg="HAS BEGUN on `hostname`"
 postmsg "$jlogfile" "$msg"
 $LOGSCRIPT
 
 
-${ANALCALCSH:-$HOMEgsi/scripts/exglobal_analcalc_fv3gfs.sh.ecf}
+${ANALDIAGSH:-$SCRgfs/exglobal_diag.sh}
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
