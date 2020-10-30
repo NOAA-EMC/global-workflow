@@ -1,78 +1,119 @@
-#!/bin/sh
+#!/bin/ksh
+set -x
+
+export RUN_ENVIR=${RUN_ENVIR:-"nco"}
 export PS4='$SECONDS + '
 date
-set -xa
+
+#############################
+# Source relevant config files
+#############################
+configs="base postsnd"
+export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
+config_path=${EXPDIR:-$NWROOT/gfs.${gfs_ver}/parm/config}
+for config in $configs; do
+    . $config_path/config.$config
+    status=$?
+    [[ $status -ne 0 ]] && exit $status
+done
+
+
+##########################################
+# Source machine runtime environment
+##########################################
+. $HOMEgfs/env/${machine}.env postsnd
+status=$?
+[[ $status -ne 0 ]] && exit $status
+
+
+##############################################
+# Obtain unique process id (pid) and make temp directory
+##############################################
+export pid=${pid:-$$}
+export outid=${outid:-"LL$job"}
+export DATA=${DATA:-${DATAROOT}/${jobid:?}}
+mkdir -p $DATA
+cd $DATA
+
+
+##############################################
+# Run setpdy and initialize PDY variables
+##############################################
+export cycle="t${cyc}z"
+setpdy.sh
+. ./PDY
+
+##############################################
+# Determine Job Output Name on System
+##############################################
+export pgmout="OUTPUT.${pid}"
+export pgmerr=errfile
+
+
+##############################################
+# Set variables used in the exglobal script
+##############################################
+export CDATE=${CDATE:-${PDY}${cyc}}
+export CDUMP=${CDUMP:-${RUN:-"gfs"}}
+if [ $RUN_ENVIR = "nco" ]; then
+    export ROTDIR=${COMROOT:?}/$NET/$envir
+fi
+
+
 ########################################
 # Runs GFS BUFR SOUNDINGS
 ########################################
 
-############################
-export MP_EUIDEVELOP=min
-export KMP_STACKSIZE=2048m
-export MPICH_ALLTOALL_THROTTLE=0
-export MP_SINGLE_THREAD=yes
-export MP_EAGER_LIMIT=65536
-export MP_USE_BULK_XFER=no
-export MP_COLLECTIVE_OFFLOAD=no
-export MP_SHARED_MEMORY=yes
-export MP_MPILIB=mpich2
-export MP_LABELIO=yes
-####################################
-# obtain unique process id (pid) and make temp directories
-export DATA=${DATA:-${DATAROOT}/${jobid:?}}
-mkdir $DATA
-cd $DATA 
-
-####################################
-# Determine Job Output Name on System
-####################################
-export outid="LL$job"
-export pgmout="OUTPUT.${pid}"
-
-export cycle=t${cyc}z 
-
-export NET=${NET:-gfs}
-export RUN=${RUN:-gfs}
 export model=${model:-gfs}
-export COMPONENT=${COMPONENT:-atmos}
-
-export SENDDBN=${SENDDBN:-NO}
+export SENDCOM=${SENDCOM:-YES}
+export SENDDBN=${SENDDBN:-YES}
 export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
 ###################################
-# Set up the UTILITIES
+# Set up the source directories
 ###################################
 
-export HOMEbufrsnd=${HOMEbufrsnd:-$NWROOT/gfs.${gfs_ver}}
+export HOMEbufrsnd=${HOMEbufrsnd:-$HOMEgfs}
 export EXECbufrsnd=${EXECbufrsnd:-$HOMEbufrsnd/exec}
 export FIXbufrsnd=${FIXbufrsnd:-$HOMEbufrsnd/fix/product}
 export PARMbufrsnd=${PARMbufrsnd:-$HOMEbufrsnd/parm/product}
 export USHbufrsnd=${USHbufrsnd:-$HOMEbufrsnd/ush}
 export SCRbufrsnd=${SCRbufrsnd:-$HOMEbufrsnd/scripts}
 
-# Run setpdy and initialize PDY variables
-setpdy.sh
-. ./PDY
-
 ##############################
 # Define COM Directories
 ##############################
-export COMIN=${COMIN:-$COMROOT/${NET}/${envir}/${RUN}.${PDY}/${cyc}/$COMPONENT}
-export COMOUT=${COMOUT:-$COMROOT/${NET}/${envir}/${RUN}.${PDY}/${cyc}/$COMPONENT}
+export COMIN=${COMIN:-$ROTDIR/${CDUMP}.${PDY}/${cyc}/atmos}
+export COMOUT=${COMOUT:-$ROTDIR/${CDUMP}.${PDY}/${cyc}/atmos}
 export pcom=${pcom:-${COMOUT}/wmo}
 export COMAWP=${COMAWP:-${COMOUT}/gempak}
 export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
-mkdir -p $COMOUT $pcom $COMAWP
+[[ ! -d $COMOUT ]] && mkdir -p $COMOUT
+[[ ! -d $pcom ]] && mkdir -p $pcom
+[[ ! -d $COMAWP ]] && mkdir -p $COMAWP
+
 env
 
 ########################################################
 # Execute the script.
 $SCRbufrsnd/exgfs_atmos_postsnd.sh
-########################################################
+status=$?
+[[ $status -ne 0 ]] && exit $status
 
+
+##############################################
+# End JOB SPECIFIC work
+##############################################
+
+##############################################
+# Final processing
+##############################################
 if [ -e "$pgmout" ] ; then
   cat $pgmout
 fi
+
+msg="ENDED NORMALLY."
+postmsg "$jlogfile" "$msg"
 
 ##########################################
 # Remove the Temporary working directory
@@ -82,3 +123,4 @@ cd $DATAROOT
 
 date
 exit 0
+
