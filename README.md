@@ -5,7 +5,7 @@
 git clone https://github.com/NOAA-EMC/global-workflow coupled-workflow
 cd coupled-workflow
 git checkout feature/coupled-crow
-git submodule update --init --recursive                   #Update submodules if necessary
+git submodule update --init --recursive                   #Update submodules 
 cd sorc
 sh checkout.sh coupled                                    # Check out the coupled code, EMC_post, gsi, ...
 ```
@@ -32,8 +32,6 @@ be worked with.
 The user file is a short text file in YAML format, telling CROW the information of the user. Such as scratch space for EXPDIR, 
 account information and email for cron job notification purpose. A template named user.yaml.default is included in the repository.
 
-2020/03: Please use FIX_SCRUB: True option on Hera until further notice. 
-
 ```
 cd ../workflow
 cp user.yaml.default user.yaml
@@ -42,6 +40,7 @@ Then, open and edit user.yaml:
 - EXPROOT: Place for experiment directory, make sure you have write access.
 - FIX_SCRUB: True if you would like to fix the path to ROTDIR(under COMROOT) and RUNDIR(under DATAROOT)
              False if you would like CROW to detect available disk space automatically.
+             *** Please use FIX_SCRUB: True on Hera/Orion until further notice (2020/03)
 - COMROOT: Place to generate ROTDIR for this experiment.
 - DATAROOT: Place for temporary storage for each job of this experiment.
 - cpu_project: cpu project that you are working with.
@@ -67,6 +66,8 @@ where $CASE is one of the following:
 - coupled_free_forecast: 2 day tests for atm-ocn-ice coupling 
 - coupled_free_forecast_wave: 2 day test for atm-ocn-ice-wav coupling (same as p5 except shorter) 
 - atm_free_forecast:  Run the atm only case with same ICs as coupled tests 
+Please see the bottom of the README for information about particular versions and ICs
+
 
 For Orion: 
 First make sure you have python loaded: 
@@ -91,6 +92,77 @@ cd $EXPERIMENT_DIRECTORY
 module load rocoto
 rocotorun -w workflow.xml -d workflow.db
 ```
+The first jobs will be submitted and should now be queued or running. Note, you will need to continue 
+to run rocotorun until the workflow is complete. This can be done via cron jobs or manually submitting 
+rocotorun until the workflow is complete.
+
+Rocotodocumentation can be found here: https://github.com/christopherwharrop/rocoto/wiki/documentation
+
+# Monitor your rocoto-based run
+
+Click here to view full rocoto documentation on GitHub:
+
+https://github.com/christopherwharrop/rocoto/wiki/documentation
+
+## Use rocoto commands on the command line
+
+Start or continue a run:
+
+```
+rocotorun -d /path/to/workflow/database/file -w /path/to/workflow/xml/file
+```
+
+Check the status of the workflow:
+
+```
+rocotostat -d /path/to/workflow/database/file -w /path/to/workflow/xml/file [-c YYYYMMDDCCmm,[YYYYMMDDCCmm,...]] [-t taskname,[taskname,...]] [-s] [-T]
+```
+
+Note: YYYYMMDDCCmm = YearMonthDayCycleMinute ...where mm/Minute is ’00’ for all cycles currently.
+
+Check the status of a job:
+
+```
+rocotocheck -d /path/to/workflow/database/file -w /path/to/workflow/xml/file -c YYYYMMDDCCmm -t taskname
+```
+
+Force a task to run (ignores dependencies - USE CAREFULLY!):
+
+```
+rocotoboot -d /path/to/workflow/database/file -w /path/to/workflow/xml/file -c YYYYMMDDCCmm -t taskname
+```
+
+Rerun task(s):
+
+```
+rocotorewind -d /path/to/workflow/database/file -w /path/to/workflow/xml/file -c YYYYMMDDCCmm -t taskname
+```
+
+Several dates and task names may be specified in the same command by adding more -c and -t options. However, lists are not allowed.
+
+
+
+## Set up your experiment cron
+
+### HPCs with access to directly edit your crontab files (WCOSS-Cray, Hera, Jet)
+
+`
+crontab -e
+`
+
+or
+
+`
+crontab workflow.crontab
+`
+
+_(WARNING: "crontab workflow.crontab" command will overwrite existing crontab file on your login node. If running multiple crons recommend editing crontab file with "crontab -e" command._
+
+Check your crontab setting:
+
+`
+crontab -l
+`
 
 ## Using crons on Orion 
 
@@ -121,3 +193,14 @@ If you would like to update clock time limit for primary or medcold forecast job
 If you want more advanced changes in the resource settings, contact a EIB person.
 
 After changing this file, you NEED to start a new experiment instead of overwriting the existing one. The reason is that, the "resources_sum.yaml" within $EXPDIR has the highest priority so that any changes in default_resources.yaml will be overwritten.
+
+
+## Initial Conditions 
+
+Currently this is set up for benchmark runs which have ICs which are already generated.  Currently available dates are the 1st and the 15th of the month starting April 1, 2011 thourgh March 15, 2018. 
+
+## Particular versions 
+
+Prototype 5 was run with global-workflow hash 005468b9299ea6fc9afdbeace33c336c6797833a
+
+
