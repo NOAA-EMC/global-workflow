@@ -13,7 +13,7 @@ import sys
 import glob
 import shutil
 import socket
-from datetime import datetime
+from datetime import datetime, timedelta
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 import workflow_utils as wfu
 
@@ -86,6 +86,7 @@ def edit_baseconfig():
                 line = line.replace('@MACHINE@', machine.upper()) \
                     .replace('@PSLOT@', pslot) \
                     .replace('@SDATE@', idate.strftime('%Y%m%d%H')) \
+                    .replace('@FDATE@', fdate.strftime('%Y%m%d%H')) \
                     .replace('@EDATE@', edate.strftime('%Y%m%d%H')) \
                     .replace('@CASEENS@', 'C%d' % resens) \
                     .replace('@CASECTL@', 'C%d' % resdet) \
@@ -174,6 +175,9 @@ link initial condition files from $ICSDIR to $COMROT'''
       exp_warm_start = '.false.'
     elif start == 'warm':
       exp_warm_start = '.true.'
+
+    # Set FDATE (first full cycle)
+    fdate = idate + timedelta(hours=6)
 
     # Set machine defaults
     if machine == 'WCOSS_DELL_P3':
