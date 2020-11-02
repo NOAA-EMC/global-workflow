@@ -31,6 +31,7 @@
 # Apr2019 JHAlves - Transitioning to GEFS workflow                            #
 # Nov2019 JHAlves - Merging wave scripts to global workflow                   #
 # Jun2020 JHAlves - Porting to R&D machine Hera                               #
+# Oct2020 JMeixner - Updating RTOFS dates for processing minimal amount       #
 #                                                                             #
 #   WAV_MOD_ID and WAV_MOD_TAG replace modID. WAV_MOD_TAG                     # 
 #   is used for ensemble-specific I/O. For deterministic                      #
@@ -643,22 +644,57 @@
       touch cmdfile
       chmod 744 cmdfile
 
-      ymdh_rtofs=${PDY}00 # RTOFS runs once daily use ${PDY}00
-      ymdh_end=`$NDATE ${FHMAX_WAV_CUR} ${PDY}00`
+      ymdh_rtofs=${RPDY}00 # RTOFS runs once daily use ${PDY}00
+      if [ "$ymdh_beg" -lt "$ymdh_rtofs" ];then 
+         #If the start time is before the first hour of RTOFS, use the previous cycle
+         export RPDY=`$NDATE -24 ${RPDY}00 | cut -c1-8`
+      fi 
+      #Set the first time for RTOFS files to be the beginning time of simulation
+      ymdh_rtofs=$ymdh_beg      
+
+      if [  "$FHMAX_WAV_CUR" -le 72 ]; then 
+        rtofsfile1=$COMIN_WAV_RTOFS/${WAVECUR_DID}.${RPDY}/rtofs_glo_2ds_f024_prog.nc
+        rtofsfile2=$COMIN_WAV_RTOFS/${WAVECUR_DID}.${RPDY}/rtofs_glo_2ds_f048_prog.nc
+        rtofsfile3=$COMIN_WAV_RTOFS/${WAVECUR_DID}.${RPDY}/rtofs_glo_2ds_f072_prog.nc
+        if [ ! -f $rtofsfile1 ] || [ ! -f $rtofsfile2 ] || [ ! -f $rtofsfile3 ]; then 
+           #Needed current files are not available, so use RTOFS from previous day 
+           export RPDY=`$NDATE -24 ${RPDY}00 | cut -c1-8`
+        fi 
+      else
+        rtofsfile1=$COMIN_WAV_RTOFS/${WAVECUR_DID}.${RPDY}/rtofs_glo_2ds_f096_prog.nc   
+        rtofsfile2=$COMIN_WAV_RTOFS/${WAVECUR_DID}.${RPDY}/rtofs_glo_2ds_f120_prog.nc
+        rtofsfile3=$COMIN_WAV_RTOFS/${WAVECUR_DID}.${RPDY}/rtofs_glo_2ds_f144_prog.nc
+        rtofsfile4=$COMIN_WAV_RTOFS/${WAVECUR_DID}.${RPDY}/rtofs_glo_2ds_f168_prog.nc
+        rtofsfile5=$COMIN_WAV_RTOFS/${WAVECUR_DID}.${RPDY}/rtofs_glo_2ds_f192_prog.nc
+        if [ ! -f $rtofsfile1 ] || [ ! -f $rtofsfile2 ] || [ ! -f $rtofsfile3 ] ||
+            [ ! -f $rtofsfile4 ] || [ ! -f $rtofsfile5 ]; then
+            #Needed current files are not available, so use RTOFS from previous day 
+            export RPDY=`$NDATE -24 ${RPDY}00 | cut -c1-8`
+        fi
+      fi
+
+      export COMIN_WAV_CUR=$COMIN_WAV_RTOFS/${WAVECUR_DID}.${RPDY}
+
+      ymdh_end_rtofs=`$NDATE ${FHMAX_WAV_CUR} ${RPDY}00`
+      if [ "$ymdh_end" -lt "$ymdh_end_rtofs" ]; then 
+         ymdh_end_rtofs=$ymdh_end
+      fi
+
       NDATE_DT=${WAV_CUR_HF_DT}
       FLGHF='T'
-
+      FLGFIRST='T'
+      fext='f'
+  
       if [ ${CFP_MP:-"NO"} = "YES" ]; then nm=0 ; fi # Counter for MP CFP
-      while [ "$ymdh_rtofs" -le "$ymdh_end" ]
+      while [ "$ymdh_rtofs" -le "$ymdh_end_rtofs" ]
       do
-# Timing has to be made relative to the single 00z RTOFS cycle for that PDY
-        fhr_rtofs=`${NHOUR} ${ymdh_rtofs} ${PDY}00`
-        fext='f'
-
+        # Timing has to be made relative to the single 00z RTOFS cycle for RTOFS PDY (RPDY)
+        # Start at first fhr for 
+        fhr_rtofs=`${NHOUR} ${ymdh_rtofs} ${RPDY}00`
         fh3_rtofs=`printf "%03d" "${fhr_rtofs#0}"`
 
-        curfile1h=${COMIN_WAV_CUR}/rtofs_glo_2ds_${fext}${fh3_rtofs}_1hrly_prog.nc
-        curfile3h=${COMIN_WAV_CUR}/rtofs_glo_2ds_${fext}${fh3_rtofs}_3hrly_prog.nc
+        curfile1h=${COMIN_WAV_CUR}/rtofs_glo_2ds_${fext}${fh3_rtofs}_prog.nc
+        curfile3h=${COMIN_WAV_CUR}/rtofs_glo_2ds_${fext}${fh3_rtofs}_prog.nc
 
         if [ -s ${curfile1h} ]  && [ "${FLGHF}" = "T" ] ; then
           curfile=${curfile1h}
@@ -686,11 +722,15 @@
         fi
 
         if [ ${CFP_MP:-"NO"} = "YES" ]; then
-          echo "$nm $USHwave/wave_prnc_cur.sh $ymdh_rtofs $curfile $fhr_rtofs > cur_$ymdh_rtofs.out 2>&1" >> cmdfile
+          echo "$nm $USHwave/wave_prnc_cur.sh $ymdh_rtofs $curfile $fhr_rtofs $FLGFIRST > cur_$ymdh_rtofs.out 2>&1" >> cmdfile
           nm=`expr $nm + 1`
         else
-          echo "$USHwave/wave_prnc_cur.sh $ymdh_rtofs $curfile $fhr_rtofs > cur_$ymdh_rtofs.out 2>&1" >> cmdfile
+          echo "$USHwave/wave_prnc_cur.sh $ymdh_rtofs $curfile $fhr_rtofs $FLGFIRST > cur_$ymdh_rtofs.out 2>&1" >> cmdfile
         fi
+
+        if [ "${FLGFIRST}" = "T" ] ; then
+            FLGFIRST='F'
+        fi 
 
         if [ $fhr_rtofs -ge ${WAV_CUR_HF_FH} ] ; then
           NDATE_DT=${WAV_CUR_DT}
