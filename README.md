@@ -1,16 +1,16 @@
 # How to use the unified workflow for the ufs-s2s-model application (work in progress)
 
 Note, currently the wave post does not work. There is work actively ongoing to fix it. 
-This message will be deleted when the working wave post is committed. 
+This message will be deleted when the fix for wave post is committed. 
 
 ## Checkout the source code and scripts
 ```
 git clone https://github.com/NOAA-EMC/global-workflow coupled-workflow
 cd coupled-workflow
 git checkout feature/coupled-crow
-git submodule update --init --recursive                   #Update submodules 
+git submodule update --init --recursive     #Update submodules 
 cd sorc
-sh checkout.sh coupled                                    # Check out the coupled code, EMC_post, gsi, ...
+sh checkout.sh coupled                      # Check out the coupled code, EMC_post, gsi, ...
 ```
 ## Compile code used in ufs-s2s-model and EMC_post and link fixed files and executable programs:
 ```
@@ -38,6 +38,8 @@ account information and email for cron job notification purpose. A template name
 ```
 cd ../workflow
 cp user.yaml.default user.yaml
+```
+
 Then, open and edit user.yaml:
 
 - EXPROOT: Place for experiment directory, make sure you have write access.
@@ -48,7 +50,6 @@ Then, open and edit user.yaml:
 - DATAROOT: Place for temporary storage for each job of this experiment.
 - cpu_project: cpu project that you are working with.
 - hpss_project: hpss project that you are working with.
-```
 
 ## Create experiment directory using CROW
 CROW gets information of the targeted experiment from case files. A case file is a text file in YAML format, describing the information
@@ -63,7 +64,7 @@ mkdir -p $EXPROOT
 or
 
 ./setup_case.sh -p HERA ../cases/$CASE.yaml test2d
-
+```
 where $CASE is one of the following:
 - prototype_5: Used for UFS S2S Prototype 5 (Runs 35 day cases with atm-ocn-ice-wav coupling)
 - coupled_free_forecast: 2 day tests for atm-ocn-ice coupling 
@@ -71,16 +72,16 @@ where $CASE is one of the following:
 - atm_free_forecast:  Run the atm only case with same ICs as coupled tests 
 Please see the bottom of the README for information about particular versions and ICs
 
+This will create a experiment directory ($EXPERIMENT_DIRECTORY). In the current example, $EXPERIMENT_DIRECTORY=$EXPROOT/test_3d.
 
 For Orion: 
 First make sure you have python loaded: 
+```
 module load contrib
 module load rocoto #Make sure to use 1.3.2 
 module load intelpython3
-and then replace ORION with HERA in the commands above. 
-
 ```
-This will create a experiment directory ($EXPERIMENT_DIRECTORY). In the current example, $EXPERIMENT_DIRECTORY=$EXPROOT/test_3d.
+and then replace ORION with HERA in the commands above. 
 
 ## Create Rocoto XML using CROW
 The final process of workflow configuration is to generate a XML file for Rocoto. After the previous step, CROW will pop-up the
@@ -200,7 +201,7 @@ After changing this file, you NEED to start a new experiment instead of overwrit
 
 ## Initial Conditions 
 
-Currently this is set up for benchmark runs which have ICs which are already generated.  Currently available dates are the 1st and the 15th of the month starting April 1, 2011 thourgh March 15, 2018. 
+Currently this is set up for benchmark runs which have ICs which are already generated.  Available dates are the 1st and the 15th of the month starting April 1, 2011 thourgh March 15, 2018. 
 
 ## Particular versions 
 
