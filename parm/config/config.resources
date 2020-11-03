@@ -163,7 +163,7 @@ elif [ $step = "fcst" ]; then
     elif [ $CASE = "C384" ]; then
       export wtime_fcst_gfs="04:00:00"
     else
-      export wtime_fcst_gfs="02:30:00"
+      export wtime_fcst_gfs="03:00:00"
     fi
     export npe_fcst=$(echo "$layout_x * $layout_y * 6" | bc)
     export npe_fcst_gfs=$(echo "$layout_x_gfs * $layout_y_gfs * 6" | bc)
