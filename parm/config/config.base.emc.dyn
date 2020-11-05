@@ -33,6 +33,7 @@ export SCRgfs=$HOMEgfs/scripts
 
 # GLOBAL static environment parameters
 export NWPROD="@NWPROD@"
+export COMROOT="@COMROOT@"
 export DMPDIR="@DMPDIR@"
 export RTMFIX=$CRTM_FIX
 
@@ -269,7 +270,8 @@ export netcdf_diag=".true."
 export binary_diag=".false."
 
 # Verification options
-export DO_METP="YES"                  # Run MET+ jobs
+export DO_METP="YES"         # Run METPLUS jobs - set METPLUS settings in config.metp
+export DO_VSDB="YES"         # Run VSDB package - set VSDB settings in config.vrfy
 
 # Archiving options
 export HPSSARCH="@HPSSARCH@"        # save data to HPSS archive
