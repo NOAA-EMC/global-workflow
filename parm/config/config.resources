@@ -273,7 +273,7 @@ elif [ $step = "arch" -o $step = "earc" -o $step = "getic" ]; then
 elif [ $step = "eobs" -o $step = "eomg" ]; then
 
 
-    export wtime_eobs="00:10:00"
+    export wtime_eobs="00:15:00"
     export wtime_eomg="01:00:00"
     if [ $CASE = "C768" ]; then
       export npe_eobs=200
