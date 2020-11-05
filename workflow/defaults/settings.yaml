@@ -42,6 +42,8 @@ default_settings: &default_settings
   parexp: prnemsrn
   HPSS_PAR_PATH: !expand "/5year/NCEPDEV/emc-global/emc.glopara/WCOSS_C/{parexp}"
 
+  onestep: .false.
+  read_mediator: !calc not onestep
   cplflx: .false.
   cplice: !calc cplflx
   cplwav: .false.

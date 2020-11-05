@@ -71,6 +71,10 @@ config_fcst:
     export WAV_model="{doc.wave_settings.MOD}"
 
     #######################################################################
+    # COUPLING COMPONENTS
+    export read_mediator="{tools.fort(doc.settings.read_mediator)}"
+
+    #######################################################################
     # PE Mapping
     export ATMPETS="{doc.fv3_gfs_settings.ATMPETS}"
     export MEDPETS="{doc.fv3_gfs_settings.MEDPETS}"
