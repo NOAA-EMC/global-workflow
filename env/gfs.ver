@@ -14,7 +14,7 @@ export gempak_ver=7.3.0
 export old_gempak_ver=6.32.0
 export NCL_gnu_sandybridge_ver=6.3.0
 export ncarg_intel_sandybridge_ver=6.1.0 
-export dumpjb_ver=4.0.0
+export dumpjb_ver=5.1.0
 
 ## FOLLOWING are used by JGDAS_TROPC
 export obsproc_dump_ver=v4.0.0
