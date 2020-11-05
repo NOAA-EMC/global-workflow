@@ -10,17 +10,17 @@ fi
 model=${model:-"uncoupled"}
 
 if [ $model = "coupled" ]; then
-echo fv3_mom6_cice5 checkout ...
-rm -f ${topdir}/checkout-fv3_coupled.log
+echo UFS coupled model checkout ...
+rm -f ${topdir}/checkout-ufs_coupled.log
 
-if [[ ! -d fv3_coupled.fd ]] ; then
-    git clone https://github.com/ufs-community/ufs-s2s-model fv3_coupled.fd >> ${topdir}/checkout-fv3_coupled.log 2>&1
-    cd fv3_coupled.fd
-    git checkout f710412c08f730458c33ffb3ee9dc29064a9aed1
+if [[ ! -d ufs_coupled.fd ]] ; then
+    git clone https://github.com/ufs-community/ufs-weather-model ufs_coupled.fd >> ${topdir}/checkout-ufs_coupled.log 2>&1
+    cd ufs_coupled.fd
+    git checkout develop  
     git submodule update --init --recursive
     cd ${topdir}
 else
-    echo 'Skip.  Directory fv3_coupled.fd already exists.'
+    echo 'Skip.  Directory ufs_coupled.fd already exists.'
 fi
 fi
 

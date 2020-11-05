@@ -202,8 +202,8 @@ cd ${pwd}/../ush                ||exit 8
 
 cd $pwd/../exec
 if [ $model == "coupled" ]; then
-[[ -s nems_fv3_ccpp_mom6_cice5_ww3.x ]] && rm -f nems_fv3_ccpp_mom6_cice5_ww3.x
-$LINK ../sorc/fv3_coupled.fd/NEMS/exe/nems_fv3_ccpp_mom6_cice5_ww3.x .
+[[ -s ufs_model ]] && rm -f ufs_model
+$LINK ../sorc/ufs_coupled.fd/build/ufs_model . 
 else
 [[ -s global_fv3gfs.x ]] && rm -f global_fv3gfs.x
 $LINK ../sorc/fv3gfs.fd/NEMS/exe/global_fv3gfs.x .
@@ -325,7 +325,7 @@ cd ${pwd}/../sorc   ||   exit 8
 cd $pwd/../fix
 [[ -d fix_ccpp_suites ]] && rm -rf fix_ccpp_suites
 if [ $model == "coupled" ]; then
-$SLINK ../sorc/fv3_coupled.fd/FV3/ccpp/suites fix_ccpp_suites
+$SLINK ../sorc/ufs_coupled.fd/FV3/ccpp/suites fix_ccpp_suites
 else
 $SLINK ../sorc/fv3gfs.fd/FV3/ccpp/suites fix_ccpp_suites
 fi
