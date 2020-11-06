@@ -27,6 +27,7 @@ set -x
 ymdh_rtofs=$1
 curfile=$2
 fhr=$3
+flagfirst=$4
 fh3=`printf "%03d" "${fhr#0}"`
 
 # Timing has to be made relative to the single 00z RTOFS cycle for that PDY
@@ -61,11 +62,11 @@ fi
 # Cleanup
 rm -f cur_temp[123].nc cur_5min_??.nc cur_glo_uv_${PDY}_${fext}${fh3}.nc weights.nc
 
-if [ ${fhr} -gt 0 ] 
+if [ ${flagfirst}  = "T" ] 
 then
-  sed -e "s/HDRFL/F/g" ${FIXwave}/ww3_prnc.cur.${WAVECUR_FID}.inp.tmpl > ww3_prnc.inp
-else
   sed -e "s/HDRFL/T/g" ${FIXwave}/ww3_prnc.cur.${WAVECUR_FID}.inp.tmpl > ww3_prnc.inp
+else
+  sed -e "s/HDRFL/F/g" ${FIXwave}/ww3_prnc.cur.${WAVECUR_FID}.inp.tmpl > ww3_prnc.inp
 fi
 
 rm -f cur.nc
