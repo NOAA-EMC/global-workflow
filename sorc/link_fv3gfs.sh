@@ -15,18 +15,24 @@ fi
 
 if [ $# -lt 2 ]; then
     echo '***ERROR*** must specify two arguements: (1) RUN_ENVIR, (2) machine'
-    echo ' Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | theia | hera | orion )'
+    echo ' Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | hera | orion )'
+    echo ' A third argument is needed when coupled: '
+    echo ' Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | hera | orion ) coupled'
     exit 1
 fi
 
 RUN_ENVIR=${1:-emc}
 
 if [ $RUN_ENVIR != emc -a $RUN_ENVIR != nco ]; then
-    echo 'Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | theia | hera | orion )'
+    echo 'Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | hera | orion )'
+    echo 'If coupling add a third argument: '
+    echo ' Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | hera | orion ) coupled'
     exit 1
 fi
-if [ $machine != cray -a $machine != theia -a $machine != dell -a $machine != hera -a $machine != orion]; then
-    echo 'Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | theia | hera | orion )'
+if [ $machine != cray -a $machine != dell -a $machine != hera -a $machine != orion]; then
+    echo 'Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | hera | orion )'
+    echo 'If coupling add a third argument: '
+    echo ' Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | hera | orion ) coupled'
     exit 1
 fi
 
@@ -52,9 +58,9 @@ elif [ $target == "gaea" ]; then
 elif [ $target == "jet" ]; then
     FIX_DIR="/lfs3/projects/hfv3gfs/glopara/git/fv3gfs/fix"
 elif [ $target == "hera" ]; then
-    FIX_DIR="/scratch2/NCEPDEV/climate/climpara/S2S/FIX/fix_UFSp4"
+    FIX_DIR="/scratch2/NCEPDEV/climate/climpara/S2S/FIX/fix_UFSp6"
 elif [ $target == "orion" ]; then
-    FIX_DIR="/work/noaa/marine/jmeixner/tempFixICdir/fix_UFSp4"
+    FIX_DIR="/work/noaa/marine/jmeixner/tempFixICdir/fix_UFSp6"
 else
     echo 'CRITICAL: links to fix files not set'
     [[ $machine != orion ]] && exit 1
@@ -63,7 +69,7 @@ fi
 if [ ! -z $FIX_DIR ]; then
  if [ ! -d ${pwd}/../fix ]; then mkdir ${pwd}/../fix; fi
  cd ${pwd}/../fix                ||exit 8
- for dir in fix_am fix_fv3 fix_orog fix_fv3_gmted2010 fix_verif ; do
+ for dir in fix_am fix_orog fix_fv3_gmted2010 fix_verif ; do
      [[ -d $dir ]] && rm -rf $dir
  done
  $LINK $FIX_DIR/* .
@@ -348,11 +354,10 @@ if [ $model = "coupled" ] ; then
  #cp -p config.base.emc.dyn_coupled config.base
  cd $pwd/../fix
  # Add fixed files needed for coupled ufs-s2s-model
- $LINK $FIX_DIR/fix_cice5    .
+ $LINK $FIX_DIR/fix_cice    .
  $LINK $FIX_DIR/fix_mom6     .
- $LINK $FIX_DIR/fix_fv3grid  .
  $LINK $FIX_DIR/fix_cpl      .
- $LINK $FIX_DIR/fix_wav      .
+ $LINK $FIX_DIR/fix_wave      .
 fi
 
 exit 0

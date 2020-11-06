@@ -52,7 +52,6 @@ config_base:
 
     export FIXcice=$HOMEgfs/fix/fix_cice5
     export FIXmom=$HOMEgfs/fix/fix_mom6
-    export FIXgrid=$HOMEgfs/fix/fix_fv3grid
     export OCNFIXDIR=$HOMEgfs/fix/fix_reg2grb2
 
     # GLOBAL static environment parameters
