@@ -4,13 +4,12 @@
 #               EMC/NCEP/NOAA
 #
 #  excutables created from build_tropcy.sh:
-#        1) relocate_mv_nvortex.fd/relocate_mv_nvortex
-#        2) vint.fd/vint.x
-#        3) tave.fd/tave.x
-#        4) syndat_qctropcy.fd/syndat_qctropcy
-#        5) syndat_maksynrc.fd/syndat_maksynrc
-#        6) syndat_getjtbul.fd/syndat_getjtbul
-#        7) supvit.fd/supvit
+#        1) vint.fd/vint.x
+#        2) tave.fd/tave.x
+#        3) syndat_qctropcy.fd/syndat_qctropcy
+#        4) syndat_maksynrc.fd/syndat_maksynrc
+#        5) syndat_getjtbul.fd/syndat_getjtbul
+#        6) supvit.fd/supvit
 #
 set -eux
 
@@ -31,6 +30,7 @@ fi
 
 source ../modulefiles/modulefile.storm_reloc_v6.0.0.$target
 export FC=mpiifort
+export JASPER_LIB=${JASPER_LIB:-$JASPER_LIBRARY_DIRS/libjasper.a}
 
 export INC="${G2_INCd} -I${NEMSIO_INC}"
 export LIBS="${W3EMC_LIBd} ${W3NCO_LIBd} ${BACIO_LIB4} ${G2_LIBd} ${PNG_LIB} ${JASPER_LIB} ${Z_LIB}"
@@ -46,12 +46,6 @@ export LIBS_SYN_QCT="${W3NCO_LIB8}"
 echo $LIBS_REL
 echo NEXT
 
-#cd relocate_mv_nvortex.fd
-#   make clean
-#   make -f makefile_$targetx
-#   make install
-#   make clean
-#   cd ../
 cd vint.fd
    make clean
    make -f makefile

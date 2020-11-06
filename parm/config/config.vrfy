@@ -75,6 +75,7 @@ if [ "$CDUMP" = "gfs" ] ; then
         export vsdbsave="$NOSCRUB/archive/vsdb_data"    # place to save vsdb database
         export vsdbhome=$BASE_VERIF                     # location of global verification scripts
         export VSDBSH="$vsdbhome/vsdbjob.sh"            # VSDB job script
+        export VSDBJOBSH=$SCRgfs/vsdbjob_submit.sh      # VSDB submission job
         export vlength=$FHMAX_GFS                       # verification length
         export vhr_rain=$FHMAX_GFS                      # verification length for precip
         export ftyplist="pgbq"                          # verif. files used for computing QPF ETS scores
@@ -105,7 +106,7 @@ if [ $VRFYRAD = "YES" -o $VRFYMINMON = "YES" -o $VRFYOZN = "YES" ]; then
 
         export RADMON_SUFFIX=$PSLOT
         export TANKverf="$NOSCRUB/monitor/radmon"
-        export VRFYRADSH="$HOMEgfs/jobs/JGDAS_VERFRAD"
+        export VRFYRADSH="$HOMEgfs/jobs/JGDAS_ATMOS_VERFRAD"
 
     fi
 
@@ -115,9 +116,9 @@ if [ $VRFYRAD = "YES" -o $VRFYMINMON = "YES" -o $VRFYOZN = "YES" ]; then
         export MINMON_SUFFIX=$PSLOT
         export M_TANKverf="$NOSCRUB/monitor/minmon"
         if [[ "$CDUMP" = "gdas" ]] ; then
-            export VRFYMINSH="$HOMEgfs/jobs/JGDAS_VMINMON"
+            export VRFYMINSH="$HOMEgfs/jobs/JGDAS_ATMOS_VMINMON"
         elif [[ "$CDUMP" = "gfs" ]] ; then
-            export VRFYMINSH="$HOMEgfs/jobs/JGFS_VMINMON"
+            export VRFYMINSH="$HOMEgfs/jobs/JGFS_ATMOS_VMINMON"
         fi
 
     fi
@@ -128,7 +129,7 @@ if [ $VRFYRAD = "YES" -o $VRFYMINMON = "YES" -o $VRFYOZN = "YES" ]; then
         export HOMEgfs_ozn="$HOMEgfs"
         export OZNMON_SUFFIX=$PSLOT
         export TANKverf_ozn="$NOSCRUB/monitor/oznmon"
-        export VRFYOZNSH="$HOMEgfs/jobs/JGDAS_VERFOZN"
+        export VRFYOZNSH="$HOMEgfs/jobs/JGDAS_ATMOS_VERFOZN"
 
     fi
 
@@ -144,11 +145,13 @@ if [ $machine = "WCOSS_DELL_P3" ] ; then
     export ens_tracker_ver=v1.1.15.3
 fi
 export HOMEens_tracker=$BASE_GIT/tracker/ens_tracker.${ens_tracker_ver}
-
+if [ $machine = "ORION" ] ; then
+    export HOMEens_tracker=$BASE_GIT/tracker/TC_tracker.v1.1.15.2
+fi
 
 if [ "$VRFYTRAK" = "YES" ]; then
 
-    export TRACKERSH="$HOMEgfs/jobs/JGFS_CYCLONE_TRACKER"
+    export TRACKERSH="$HOMEgfs/jobs/JGFS_ATMOS_CYCLONE_TRACKER"
     if [ "$CDUMP" = "gdas" ]; then
         export FHOUT_CYCLONE=3            
         export FHMAX_CYCLONE=$FHMAX
@@ -157,22 +160,22 @@ if [ "$VRFYTRAK" = "YES" ]; then
         export FHMAX_CYCLONE=$(( FHMAX_GFS<240 ? FHMAX_GFS : 240 ))
     fi
     if [ $machine = "HERA" ]; then
-       export COMROOTp1="/scratch1/NCEPDEV/global/glopara/com"
-       export COMINsyn=${COMINsyn:-${COMROOTp1}/gfs/prod/syndat}
-    else
-        export COMINsyn=${COMINsyn:-$(compath.py gfs/prod/syndat)}
+       export COMROOT="/scratch1/NCEPDEV/global/glopara/com"
+    elif [ $machine = "ORION" ]; then
+       export COMROOT="/work/noaa/global/glopara/com"
     fi
+    export COMINsyn=${COMINsyn:-${COMROOT}/gfs/prod/syndat}
 fi
 
 
 if [[ "$VRFYGENESIS" == "YES" && "$CDUMP" == "gfs" ]]; then
 
-    export GENESISSH="$HOMEgfs/jobs/JGFS_CYCLONE_GENESIS"
+    export GENESISSH="$HOMEgfs/jobs/JGFS_ATMOS_CYCLONE_GENESIS"
 fi
 
 if [[ "$VRFYFSU" == "YES" && "$CDUMP" == "gfs" ]]; then
 
-    export GENESISFSU="$HOMEgfs/jobs/JGFS_FSU_GENESIS"
+    export GENESISFSU="$HOMEgfs/jobs/JGFS_ATMOS_FSU_GENESIS"
 fi
 
 if [[ "$RUNMOS" == "YES" && "$CDUMP" == "gfs" ]]; then

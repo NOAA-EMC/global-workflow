@@ -53,6 +53,7 @@ mkdir -p $DATAROOT
 echo
 echo "=============== START TO GENERATE QUARTER DEGREE GRIB1 FILES ==============="
 if [ $MKPGB4PRCP = "YES" -a $CDUMP = "gfs" ]; then
+    if [ ! -d $ARCDIR ]; then mkdir $ARCDIR ; fi
     nthreads_env=${OMP_NUM_THREADS:-1} # get threads set in env
     export OMP_NUM_THREADS=1
     cd $COMIN
@@ -66,7 +67,6 @@ if [ $MKPGB4PRCP = "YES" -a $CDUMP = "gfs" ]; then
        $WGRIB2 $fname -match "(:PRATE:surface:)|(:TMP:2 m above ground:)" -grib $fileout
        (( fhr = $fhr + 6 ))
     done
-    cd $DATAROOT
     export OMP_NUM_THREADS=$nthreads_env # revert to threads set in env
 fi
 
@@ -113,7 +113,7 @@ if [ $CDUMP = "gfs" ]; then
         export rundir="$RUNDIR/$CDUMP/$CDATE/vrfy/vsdb_exp"
         export COMROT="$ARCDIR1/dummy"
 
-        $VSDBSH $xdate $xdate $vlength $cyc $PSLOT $CDATE $CDUMP $gfs_cyc $rain_bucket
+        $VSDBJOBSH $VSDBSH $xdate $vlength $cyc $PSLOT $CDATE $CDUMP $gfs_cyc $rain_bucket $machine
     fi
 fi
 

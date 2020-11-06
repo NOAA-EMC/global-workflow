@@ -30,7 +30,7 @@ export DATA="${DATAROOT}/$job"
 echo
 echo "=============== START TO RUN WAFSGRIB2 ==============="
 # Execute the JJOB
-$HOMEgfs/jobs/JGFS_WAFS_GRIB2
+$HOMEgfs/jobs/JGFS_ATMOS_WAFS_GRIB2
 status=$?
 exit $status
 

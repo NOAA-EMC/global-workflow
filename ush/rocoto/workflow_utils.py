@@ -16,6 +16,7 @@ import rocoto
 
 DATE_ENV_VARS=['CDATE','SDATE','EDATE']
 SCHEDULER_MAP={'HERA':'slurm',
+               'ORION':'slurm',
                'WCOSS':'lsf',
                'WCOSS_DELL_P3':'lsf',
                'WCOSS_C':'lsfcray'}
@@ -144,10 +145,12 @@ def config_parser(files):
 
 def detectMachine():
 
-    machines = ['HERA', 'WCOSS_C', 'WCOSS_DELL_P3']
+    machines = ['HERA', 'ORION' 'WCOSS_C', 'WCOSS_DELL_P3']
 
     if os.path.exists('/scratch1/NCEPDEV'):
         return 'HERA'
+    elif os.path.exists('/work/noaa'):
+        return 'ORION'
     elif os.path.exists('/gpfs') and os.path.exists('/etc/SuSE-release'):
         return 'WCOSS_C'
     elif os.path.exists('/gpfs/dell2'):
@@ -195,7 +198,11 @@ def create_wf_task(task, cdump='gdas', cycledef=None, envar=None, dependency=Non
                  'dependency': dependency, \
                  'final': final}
 
-    if task in ['getic','arch','earc'] and get_scheduler(detectMachine()) in ['slurm']:
+    # Add PARTITION_BATCH to all non-service jobs on Orion (SLURM)
+    if get_scheduler(detectMachine()) in ['slurm'] and detectMachine() in ['ORION']:
+        task_dict['partition'] = '&PARTITION_BATCH;'
+    # Add PARTITION_SERVICE to all service jobs (SLURM)
+    if get_scheduler(detectMachine()) in ['slurm'] and task in ['getic','arch','earc']:
         task_dict['partition'] = '&PARTITION_%s_%s;' % (task.upper(),cdump.upper())
 
     if metatask is None:
@@ -230,17 +237,16 @@ def create_firstcyc_task(cdump='gdas'):
                  'command': 'sleep 1', \
                  'jobname': '&PSLOT;_%s_@H' % taskstr, \
                  'account': '&ACCOUNT;', \
-                 'queue': '&QUEUE_ARCH;', \
+                 'queue': '&QUEUE_SERVICE;', \
                  'walltime': '&WALLTIME_ARCH_%s;' % cdump.upper(), \
                  'native': '&NATIVE_ARCH_%s;' % cdump.upper(), \
                  'resources': '&RESOURCES_ARCH_%s;' % cdump.upper(), \
                  'log': '&ROTDIR;/logs/@Y@m@d@H/%s.log' % taskstr, \
-                 'queue': '&QUEUE_ARCH_%s;' % cdump.upper(), \
                  'dependency': dependencies}
 
     if get_scheduler(detectMachine()) in ['slurm']:
         task_dict['queue'] = '&QUEUE;'
-        task_dict['partition'] = '&PARTITION_ARCH;'
+        task_dict['partition'] = '&PARTITION_SERVICE;'
 
     task = rocoto.create_task(task_dict)
 
@@ -288,7 +294,7 @@ def get_resources(machine, cfg, task, reservation, cdump='gdas'):
     else:
         ppn = cfg['npe_node_%s' % ltask]
 
-    if machine in [ 'WCOSS_DELL_P3', 'HERA']:
+    if machine in [ 'WCOSS_DELL_P3', 'HERA', 'ORION']:
         threads = cfg['nth_%s' % ltask]
 
     nodes = np.int(np.ceil(np.float(tasks) / np.float(ppn)))
@@ -299,9 +305,9 @@ def get_resources(machine, cfg, task, reservation, cdump='gdas'):
     if scheduler in ['slurm']:
         natstr = '--export=NONE'
 
-    if machine in ['HERA', 'WCOSS_C', 'WCOSS_DELL_P3']:
+    if machine in ['HERA', 'ORION', 'WCOSS_C', 'WCOSS_DELL_P3']:
 
-        if machine in ['HERA']:
+        if machine in ['HERA', 'ORION']:
             resstr = '<nodes>%d:ppn=%d:tpp=%d</nodes>' % (nodes, ppn, threads)
         else:
             resstr = '<nodes>%d:ppn=%d</nodes>' % (nodes, ppn)
@@ -323,7 +329,7 @@ def get_resources(machine, cfg, task, reservation, cdump='gdas'):
         resstr = '<cores>%d</cores>' % tasks
 
     if task in ['arch', 'earc', 'getic']:
-        queuestr = '&QUEUE;' if scheduler in ['slurm'] else '&QUEUE_ARCH;'
+        queuestr = '&QUEUE;' if scheduler in ['slurm'] else '&QUEUE_SERVICE;'
     else:
         queuestr = '&QUEUE;'
 
@@ -372,7 +378,7 @@ def create_crontab(base, cronint=5):
 
     # On WCOSS, rocoto module needs to be loaded everytime cron runs
     if base['machine'] in ['WCOSS']:
-        rocotoloadstr = '. /usrx/local/Modules/default/init/sh; module use -a /usrx/local/emc_rocoto/modulefiles; module load rocoto/20170119-master)'
+        rocotoloadstr = '. /usrx/local/Modules/default/init/sh; module use -a /usrx/local/emc_rocoto/modulefiles; module load rocoto/1.3.0rc2)'
         rocotorunstr = '(%s %s)' % (rocotoloadstr, rocotorunstr)
 
     try:

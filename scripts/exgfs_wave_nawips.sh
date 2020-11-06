@@ -12,8 +12,8 @@ echo " March 2020- Modified for GEFSv12.0"
 
 set -xa
 
-export grids=${grids:-'glo_30m at_10m ep_10m wc_10m ao_9km'} #Interpolated grids
-#export grids=${grids:-'glo_10m gso_15m ao_9km'}  #Native grids
+#export grids=${grids:-'glo_30m at_10m ep_10m wc_10m ao_9km'} #Interpolated grids
+export grids=${grids:-'glo_10m gso_15m ao_9km'}  #Native grids
 export RUNwave=${RUNwave:-${RUN}${COMPONENT}}
 export fstart=${fstart:-0}
 export FHMAX_WAV=${FHMAX_WAV:-180}  #180 Total of hours to process
@@ -30,6 +30,7 @@ if [ ! -d $DATA ];then
 fi
 
 cd $DATA
+cp $GEMwave/fix/g2varswmo2.tbl .
 
 cpyfil=gds
 garea=dset
@@ -59,9 +60,7 @@ while [ $fhcnt -le $FHMAX_WAV ]; do
                grdIDout='gfswavewc10m' ;;
       glo_30m) grdIDin='global.0p25'
                grdIDout='gfswavegl30m' ;;
-#      ao_9km)  grdIDin='arctic.9km'
-#               grdIDout='gfswavea9k' ;;
-      glo_10m) grdIDin='global.0p25'   
+      glo_10m) grdIDin='global.0p16'   
                grdIDout='gfswaveg16k' ;;
       gso_15m) grdIDin='gsouth.0p25' 
                grdIDout='gfswaves25k' ;;
@@ -70,9 +69,32 @@ while [ $fhcnt -le $FHMAX_WAV ]; do
     esac
     GRIBIN=$COMIN/gridded/$RUNwave.$cycle.$grdIDin.f${fhr}.grib2
     GRIBIN_chk=$GRIBIN.idx
-    if [ "$grdIDin" = "global.0p25" ] && [ "$grid" = "glo_30m" ]; then
-      #cp $GRIBIN  tempgf.$grdID.f${fhr}
-      #cp $GRIBIN tempgf.$grdIDin.f${fhr}
+
+    icnt=1
+    while [ $icnt -lt 1000 ]; do
+      if [ -r $GRIBIN_chk ] ; then
+        break
+      else
+        let "icnt=icnt+1"
+        sleep 20
+      fi
+      if [ $icnt -ge $maxtries ]; then
+        msg="ABORTING after 5 minutes of waiting for $GRIBIN."
+        postmsg "$jlogfile" "$msg"
+        echo ' '
+        echo '**************************** '
+        echo '*** ERROR : NO GRIB FILE *** '
+        echo '**************************** '
+        echo ' '
+        echo $msg
+        [[ "$LOUD" = YES ]] && set -x
+        echo "$RUNwave $grdID ${fhr} prdgen $date $cycle : GRIB file missing." >> $wavelog
+        err=1;export err;${errchk} || exit ${err}
+      fi
+    done
+
+    #if [ "$grdIDin" = "global.0p25" && "$grid" = "glo_30m" ]; then
+    if [ "$grdIDin" = "global.0p25" ]; then
       $WGRIB2 -lola 0:720:0.5 -90:361:0.5 gribfile.$grdIDout.f${fhr}  grib \
                                           $GRIBIN 1> out 2>&1
       OK=$?
@@ -97,28 +119,7 @@ while [ $fhcnt -le $FHMAX_WAV ]; do
     echo $GRIBIN  
 
     GEMGRD=${grdIDout}_${PDY}${cyc}f${fhr}
-    icnt=1
-    while [ $icnt -lt 1000 ]; do
-      if [ -r $GRIBIN_chk ] ; then
-        break
-      else
-        let "icnt=icnt+1"
-        sleep 20
-      fi
-      if [ $icnt -ge $maxtries ]; then
-        msg="ABORTING after 5 minutes of waiting for $GRIBIN."
-        postmsg "$jlogfile" "$msg"
-        echo ' '
-        echo '**************************** '
-        echo '*** ERROR : NO GRIB FILE *** '
-        echo '**************************** '
-        echo ' '
-        echo $msg
-        [[ "$LOUD" = YES ]] && set -x
-        echo "$RUNwave $grdID ${fhr} prdgen $date $cycle : GRIB file missing." >> $wavelog
-        err=1;export err;${errchk} || exit ${err}
-      fi
-    done
+
     cp $GRIBIN grib_$grid
 
     startmsg

@@ -13,7 +13,7 @@ echo "=============== START TO RUN WAVE INIT ==============="
 # Execute the JJOB
 $HOMEgfs/jobs/JGLOBAL_WAVE_INIT
 status=$?
-exit $status
+[[ $status -ne 0 ]] && exit $status
 
 ###############################################################
 # Force Exit out cleanly

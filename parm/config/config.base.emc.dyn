@@ -14,7 +14,8 @@ export RUN_ENVIR="emc"
 # Account, queue, etc.
 export ACCOUNT="@ACCOUNT@"
 export QUEUE="@QUEUE@"
-export QUEUE_ARCH="@QUEUE_ARCH@"
+export QUEUE_SERVICE="@QUEUE_SERVICE@"
+export PARTITION_BATCH="@PARTITION_BATCH@"
 
 # Project to use in mass store:
 HPSS_PROJECT=emc-global
@@ -68,8 +69,8 @@ export REALTIME="YES"
 export FIXgsi="$HOMEgfs/fix/fix_gsi"
 export HOMEfv3gfs="$HOMEgfs/sorc/fv3gfs.fd"
 export HOMEpost="$HOMEgfs"
-export HOMEobsproc_prep="$BASE_GIT/obsproc/gfsv16b/obsproc_prep.iss70457.netcdfhistory"
-export HOMEobsproc_network="$BASE_GIT/obsproc/gfsv16b/obsproc_global.iss71402.supportGFSv16"
+export HOMEobsproc_prep="$BASE_GIT/obsproc/gfsv16b/obsproc_prep_RB-5.4.0"
+export HOMEobsproc_network="$BASE_GIT/obsproc/gfsv16b/obsproc_global_RB-3.4.0"
 export HOMEobsproc_global=$HOMEobsproc_network
 export BASE_VERIF="$BASE_GIT/verif/global/tags/vsdb"
 
@@ -79,7 +80,8 @@ export NMV="/bin/mv"
 export NLN="/bin/ln -sf"
 export VERBOSE="YES"
 export KEEPDATA="NO"
-export CHGRP_CMD="chgrp rstprod"
+export CHGRP_RSTPROD="@CHGRP_RSTPROD@"
+export CHGRP_CMD="@CHGRP_CMD@"
 export NEMSIOGET="$HOMEgfs/exec/nemsio_get"
 export NCDUMP="$NETCDF/bin/ncdump"
 export NCLEN="$HOMEgfs/ush/getncdimlen"
@@ -90,7 +92,9 @@ export BASE_JOB="$HOMEgfs/jobs/rocoto"
 
 # EXPERIMENT specific environment parameters
 export SDATE=@SDATE@
+export FDATE=@FDATE@
 export EDATE=@EDATE@
+export EXP_WARM_START="@EXP_WARM_START@"
 export assim_freq=6
 export PSLOT="@PSLOT@"
 export EXPDIR="@EXPDIR@/$PSLOT"
@@ -123,11 +127,12 @@ export LOGSCRIPT=${LOGSCRIPT:-""}
 export REDOUT="1>"
 export REDERR="2>"
 
-export SENDECF="NO"
-export SENDCOM="NO"
-export SENDDBN="NO"
-export SENDDBN_NTC="NO"
-export SENDSDM="NO"
+export SENDECF=${SENDECF:-"NO"}
+export SENDCOM=${SENDCOM:-"NO"}
+export SENDSDM=${SENDSDM:-"NO"}
+export SENDDBN_NTC=${SENDDBN_NTC:-"NO"}
+export SENDDBN=${SENDDBN:-"NO"}
+export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
 # Resolution specific parameters
 export LEVS=128
@@ -197,10 +202,10 @@ export IAUFHRS="3,6,9"
 export IAU_FHROT=`echo $IAUFHRS | cut -c1`
 export IAU_DELTHRS=6
 export IAU_OFFSET=6
-export DOIAU_ENKF="YES"   # Enable 4DIAU for EnKF ensemble
+export DOIAU_ENKF=${DOIAU:-"YES"}   # Enable 4DIAU for EnKF ensemble
 export IAUFHRS_ENKF="3,6,9"
 export IAU_DELTHRS_ENKF=6
-if [[ "$SDATE" = "$CDATE" ]]; then
+if [[ "$SDATE" = "$CDATE" && $EXP_WARM_START = ".false." ]] || [[ "$DOIAU" = "NO" ]] ; then # Cold starting or IAU off
   export IAU_OFFSET=0
   export IAU_FHROT=0
 fi
@@ -209,11 +214,11 @@ fi
 export lobsdiag_forenkf=".true."
 
 # run GLDAS to spin up land ICs
-export DO_GLDAS=YES
+export DO_GLDAS="YES"
 export gldas_cyc=00
 
 # run wave component
-export DO_WAVE=YES
+export DO_WAVE="YES"
 export WAVE_CDUMP="both"
 
 # Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL
@@ -269,7 +274,7 @@ export DO_METP="YES"         # Run METPLUS jobs - set METPLUS settings in config
 export DO_VSDB="YES"         # Run VSDB package - set VSDB settings in config.vrfy
 
 # Archiving options
-export HPSSARCH="YES"        # save data to HPSS archive
+export HPSSARCH="@HPSSARCH@"        # save data to HPSS archive
 export ARCH_CYC=00           # Archive data at this cycle for warm_start capability
 export ARCH_WARMICFREQ=4     # Archive frequency in days for warm_start capability
 export ARCH_FCSTICFREQ=1     # Archive frequency in days for gdas and gfs forecast-only capability
