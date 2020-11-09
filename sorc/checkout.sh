@@ -16,7 +16,9 @@ rm -f ${topdir}/checkout-ufs_coupled.log
 if [[ ! -d ufs_coupled.fd ]] ; then
     git clone https://github.com/ufs-community/ufs-weather-model ufs_coupled.fd >> ${topdir}/checkout-ufs_coupled.log 2>&1
     cd ufs_coupled.fd
-    git checkout develop  
+    #git checkout develop  
+    #checkout develop branch hash from 11/9/2020: 
+    git checkout 4e8ef6a879ceefb719cc9cebd8ac9c2208a58b16 
     git submodule update --init --recursive
     cd ${topdir}
 else
