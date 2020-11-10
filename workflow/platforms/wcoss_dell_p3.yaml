@@ -192,6 +192,16 @@ platform: !Platform
   # short_term_temp - area for data that is only needed within one job:
   short_term_temp: !expand "{least_used_stmp}/{tools.env('USER')}"
 
+  COMROOT: !FirstTrue
+       - do: !expand "{doc.user_places.COMROOT}"
+         when: !calc doc.user_places.FIX_SCRUB
+       - otherwise: !expand "{doc.platform.least_used_temp}/{tools.env('USER')}"
+
+  DATAROOT: !FirstTrue
+       - do: !expand "{doc.user_places.DATAROOT}"
+         when: !calc doc.user_places.FIX_SCRUB
+       - otherwise: !expand "{doc.platform.least_used_temp}/{tools.env('USER')}"
+
   # EXPROOT - Parent directory  of the expdir (experiment directory)
   EXPROOT: !expand "{doc.user_places.EXPROOT}"
 
