@@ -144,7 +144,7 @@ EOF
 
 echo "$(cat med_modelio.nml)"
 
-cp $HOMEgfs/sorc/fv3_coupled.fd/CMEPS/mediator/fd_nems.yaml fd_nems.yaml
+cp $HOMEgfs/sorc/ufs_coupled.fd/CMEPS/mediator/fd_nems.yaml fd_nems.yaml
 
 fi 
 
