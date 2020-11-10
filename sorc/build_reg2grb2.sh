@@ -28,9 +28,11 @@ export LIBSM="${LANDSFCUTIL_LIBd} \
               ${BACIO_LIB4} \
               -L${NETCDF}/lib -lnetcdff -lnetcdf"
 
-WGRIB2DIR=$WGRIB2_ROOT
-export LIB2="-L$WGRIB2DIR/lib -lwgrib2 -lwgrib2_api"
-export MOD2="-I$WGRIB2DIR/lib"
+WGRIB2_LIB=${WGRIB2_LIB:-"$WGRIB2_ROOT/lib/wgrib2"}
+WGRIB2_LIBAPI=${WGRIB2_LIBAPI:-"$WGRIB2_ROOT/lib/wgrib2_api"}
+WGRIB2_INC=${WGRIB2_INC:-$WGRIB2_ROOT/lib}
+export LIB2="${WGRIB2_LIB} ${WGRIB2_LIBAPI}"
+export MOD2="-I${WGRIB2_INC}"
 
 cd reg2grb2.fd
 

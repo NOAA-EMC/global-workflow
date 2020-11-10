@@ -1,0 +1,28 @@
+#%Module######################################################################
+
+module load ips/18.0.1.163
+module load impi/18.0.1    
+module load lsf/10.1       
+module load EnvVars/1.0.2
+
+module load jasper/1.900.29
+module load zlib/1.2.11
+module load libpng/1.2.59
+
+module load HDF5-parallel/1.10.6
+module load NetCDF-parallel/4.7.4
+
+module use /gpfs/dell2/emc/modeling/noscrub/emc.nemspara/soft/modulefiles
+module load esmf/8.1.0bs27
+
+module use /usrx/local/nceplibs/dev/NCEPLIBS/cmake/install/NCEPLIBS-v1.2.0/modules
+module load bacio/2.4.1
+module load crtm/2.3.0
+module load g2/3.4.1
+module load g2tmpl/1.9.1
+module load ip/3.3.3
+module load nceppost/dceca26
+module load nemsio/2.5.2
+module load sp/2.3.3
+module load w3emc/2.7.3
+module load w3nco/2.4.1
