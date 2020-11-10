@@ -728,26 +728,28 @@ CICE_postdet()
 
         ICERES=${ICERES:-"025"} 
         if [ $ICERES = '025' ]; then
-          ICERESmx="mx025"
           ICERESdec="0.25"
         fi
         if [ $ICERES = '050' ]; then
-          ICERESmx="mx050"
           ICERESdec="0.50"
         fi 
+        if [ $ICERES = '100' ]; then
+          ICERESdec="1.00"
+        fi
 
-        ice_grid_file=${ice_grid_file:-"grid_cice_NEMS_${ICERESmx}.nc"}
-        ice_kmt_file=${ice_kmt_file:-"kmtu_cice_NEMS_${ICERESmx}.nc"}
 
-        iceic="cice5_model.res_$CDATE.nc"
+        ice_grid_file=${ice_grid_file:-"grid_cice_NEMS_mx${ICERES}.nc"}
+        ice_kmt_file=${ice_kmt_file:-"kmtu_cice_NEMS_mx${ICERES}.nc"}
 
-	# Copy CICE5 IC 
-        $NCP -p $ICSDIR/$CDATE/ice/cice5_model_${ICERESdec}.res_$CDATE.nc $DATA/$iceic
+        iceic="cice_model.res_$CDATE.nc"
+
+	# Copy CICE IC 
+        $NCP -p $ICSDIR/$CDATE/ice/cice_model_${ICERESdec}.res_$CDATE.nc $DATA/$iceic
 
         echo "Link CICE fixed files"
-        $NLN -sf $FIXcice/${ice_grid_file} $DATA/
-        $NLN -sf $FIXcice/${ice_kmt_file} $DATA/
-        $NLN -sf $FIXcice/$MESHICE $DATA/
+        $NLN -sf $FIXcice/$ICERES/${ice_grid_file} $DATA/
+        $NLN -sf $FIXcice/$ICERES/${ice_kmt_file} $DATA/
+        $NLN -sf $FIXcice/$ICERES/$MESHICE $DATA/
 }
 
 CICE_nml()

@@ -196,6 +196,7 @@ FV3_GFS_predet(){
 	fi
         cd $DATA || exit 8
         mkdir -p $DATA/INPUT
+        echo "restart_interval=$restart_interval"
         if [ $CDUMP = "gfs" -a $restart_interval -gt 0 ]; then
             RSTDIR_TMP=${RSTDIR:-$ROTDIR}/${CDUMP}.${PDY}/${cyc}/RERUN_RESTART
             if [ ! -d $RSTDIR_TMP ]; then mkdir -p $RSTDIR_TMP ; fi

@@ -50,7 +50,7 @@ config_base:
     export EXECgfs=$HOMEgfs/exec
     export SCRgfs=$HOMEgfs/scripts
 
-    export FIXcice=$HOMEgfs/fix/fix_cice5
+    export FIXcice=$HOMEgfs/fix/fix_cice
     export FIXmom=$HOMEgfs/fix/fix_mom6
     export OCNFIXDIR=$HOMEgfs/fix/fix_reg2grb2
 
