@@ -586,14 +586,6 @@ MOM6_postdet()
 	# Copy MOM6 fixed files
         $NCP -pf $FIXmom/$OCNRES/* $DATA/INPUT/
 
-        # Copy MOM6 input file 
-        if [ $cplwav = ".true." ] ; then
-          $NCP -pf $HOMEgfs/parm/mom6/MOM_input_${OCNRES}_wav $DATA/INPUT/MOM_input
-        else 
-          $NCP -pf $HOMEgfs/parm/mom6/MOM_input_$OCNRES $DATA/INPUT/MOM_input 
-        fi 
-        #TODO: update to make MOM_input configurable 
-
 	# Copy coupled grid_spec
         $NCP -pf $FIX_DIR/fix_cpl/a${CASE}o${OCNRES}/grid_spec.nc $DATA/INPUT/
 
