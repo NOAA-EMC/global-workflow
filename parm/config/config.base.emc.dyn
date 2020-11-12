@@ -33,7 +33,6 @@ export SCRgfs=$HOMEgfs/scripts
 
 # GLOBAL static environment parameters
 export NWPROD="@NWPROD@"
-export COMROOT="@COMROOT@"
 export DMPDIR="@DMPDIR@"
 export RTMFIX=$CRTM_FIX
 
@@ -96,10 +95,10 @@ export BASE_JOB="$HOMEgfs/jobs/rocoto"
 
 # EXPERIMENT specific environment parameters
 export SDATE=@SDATE@
-export FDATE=@FDATE@
 export EDATE=@EDATE@
 export EXP_WARM_START="@EXP_WARM_START@"
 export assim_freq=6
+export FDATE=$($NDATE +$assim_freq $SDATE)
 export PSLOT="@PSLOT@"
 export EXPDIR="@EXPDIR@/$PSLOT"
 export ROTDIR="@ROTDIR@/$PSLOT"
@@ -210,10 +209,10 @@ export IAUFHRS="3,6,9"
 export IAU_FHROT=`echo $IAUFHRS | cut -c1`
 export IAU_DELTHRS=6
 export IAU_OFFSET=6
-export DOIAU_ENKF=${DOIAU:-"YES"}   # Enable 4DIAU for EnKF ensemble
+export DOIAU_ENKF="YES"   # Enable 4DIAU for EnKF ensemble
 export IAUFHRS_ENKF="3,6,9"
 export IAU_DELTHRS_ENKF=6
-if [[ "$SDATE" = "$CDATE" && $EXP_WARM_START = ".false." ]] || [[ "$DOIAU" = "NO" ]] ; then # Cold starting or IAU off
+if [[ "$SDATE" = "$CDATE" && $EXP_WARM_START = ".false." ]]; then # Cold starting
   export IAU_OFFSET=0
   export IAU_FHROT=0
 fi
@@ -282,8 +281,7 @@ export netcdf_diag=".true."
 export binary_diag=".false."
 
 # Verification options
-export DO_METP="YES"         # Run METPLUS jobs - set METPLUS settings in config.metp
-export DO_VSDB="YES"         # Run VSDB package - set VSDB settings in config.vrfy
+export DO_METP="YES"                  # Run MET+ jobs
 
 # Archiving options
 export HPSSARCH="@HPSSARCH@"        # save data to HPSS archive

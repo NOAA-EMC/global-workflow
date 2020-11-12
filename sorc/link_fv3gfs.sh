@@ -205,7 +205,6 @@ if [ -d ../sorc/fv3gfs.fd/WW3/exec ]; then # Wave execs
   done
 fi
 
-
 [[ -s gfs_ncep_post ]] && rm -f gfs_ncep_post
 $LINK ../sorc/gfs_post.fd/exec/ncep_post gfs_ncep_post
 
