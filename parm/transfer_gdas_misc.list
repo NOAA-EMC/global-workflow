@@ -22,13 +22,16 @@
 # Rules higher in the list take precedence over lower ones.  By default, all files in a
 # directory are included, so if no exclude patterns match that file, it will be
 # transferred.
+#com/arch/_ENVIR_/VOS/
+#+ ship_names
+#+ activeShiprev
+#- *
+#B 4500000
+
 
 com/gfs/_ENVIR_/syndat/
 B 180
  
-com/realtime/_ENVIR_/gds._PDY_/
-B 11000000
-
 com/gfs/_ENVIR_/gdascounts/
 + /data_counts._MONPREV_/***
 - *
@@ -70,12 +73,3 @@ com/gfs/_ENVIR_/gdascounts/
 - *
 B 6
 
-com/arch/_ENVIR_/VOS/
-+ ship_names
-+ activeShiprev
-- *
-B 4500000
-
-com/realtime/_ENVIR_/gds._PDYm1_/
-B 11000000
- 
