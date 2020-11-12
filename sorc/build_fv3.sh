@@ -21,5 +21,5 @@ if [ $target = orion ]; then target=orion.intel ; fi
 
 cd fv3gfs.fd/
 cd tests/
-./compile.sh "$target" "CCPP=Y 32BIT=Y SUITES=FV3_GFS_v15,FV3_GSD_v0,FV3_GSD_noah,FV3_GFS_v16beta" 2 NO NO
+./compile.sh "$target" "CCPP=Y 32BIT=Y SUITES=FV3_GFS_v15,FV3_GFS_v16beta" 2 NO NO
 mv -f fv3_2.exe ../NEMS/exe/global_fv3gfs.x

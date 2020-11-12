@@ -46,7 +46,6 @@ export NOSCRUB="@NOSCRUB@"
 export BASE_GIT="@BASE_GIT@"
 
 #### CCPP Suite
-#### export CCPP_SUITE="FV3_GSD_noah"      # GSDsuite + NOAH LSM  
 export CCPP_SUITE="FV3_GFS_v16beta"        # EMC v16beta
 
 # Toggle to turn on/off GFS downstream processing.
