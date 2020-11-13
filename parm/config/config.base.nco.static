@@ -126,6 +126,10 @@ export LEVS=128
 export CASE="C768"
 export CASE_ENKF="C384"
 
+# Run with CCPP physics
+export RUN_CCPP="NO"
+export CCPP_SUITE="FV3_GFS_v16beta"
+
 # Surface cycle update frequency
 if [[ "$CDUMP" == "gdas" ]] ; then
    export FHCYC=1
