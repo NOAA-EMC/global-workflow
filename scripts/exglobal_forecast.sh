@@ -727,11 +727,13 @@ $NCP $DATA_TABLE  data_table
 $NCP $FIELD_TABLE field_table
 
 # copy CCN_ACTIVATE.BIN for Thompson microphysics
+if [  "$RUN_CCPP" = 'YES' ]; then
 if [ "$CCPP_SUITE" = 'FV3_GSD_v0' -o "$CCPP_SUITE" = 'FV3_GSD_noah' ]; then 
   $NLN $FIX_AM/CCN_ACTIVATE.BIN  CCN_ACTIVATE.BIN
   $NLN $FIX_AM/freezeH2O.dat  freezeH2O.dat
   $NLN $FIX_AM/qr_acr_qg.dat  qr_acr_qg.dat
   $NLN $FIX_AM/qr_acr_qs.dat  qr_acr_qs.dat
+fi
 fi
 
 #------------------------------------------------------------------
