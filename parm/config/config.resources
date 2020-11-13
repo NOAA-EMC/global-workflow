@@ -301,8 +301,8 @@ elif [ $step = "eupd" ]; then
 
     export wtime_eupd="00:30:00"
     if [ $CASE = "C768" ]; then
-      export npe_eupd=480
-      export nth_eupd=40
+      export npe_eupd=960
+      export nth_eupd=6
       if [[ "$machine" = "WCOSS_DELL_P3" ]]; then
         export nth_eupd=7
       fi

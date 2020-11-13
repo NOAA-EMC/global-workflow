@@ -46,9 +46,6 @@ export NOSCRUB="@NOSCRUB@"
 # Base directories for various builds
 export BASE_GIT="@BASE_GIT@"
 
-#### CCPP Suite
-export CCPP_SUITE="FV3_GFS_v16beta"        # EMC v16beta
-
 # Toggle to turn on/off GFS downstream processing.
 export DO_BUFRSND="YES"    # BUFR sounding products
 export DO_GEMPAK="NO"      # GEMPAK products
@@ -142,16 +139,16 @@ export LEVS=128
 export CASE="@CASECTL@"
 export CASE_ENKF="@CASEENS@"
 
+# Run with CCPP physics
+export RUN_CCPP="NO"
+export CCPP_SUITE="FV3_GFS_v16beta"
+
 # Surface cycle update frequency
 if [[ "$CDUMP" == "gdas" ]] ; then
    export FHCYC=1
    export FTSFS=10
 elif [[ "$CDUMP" == "gfs" ]] ; then
-   if [[ "$CCPP_SUITE" == "FV3_GSD_v0" ]] ; then
-       export FHCYC=0
-   else
-       export FHCYC=24
-   fi
+   export FHCYC=24
 fi
 
 # Output frequency of the forecast model (for cycling)
@@ -229,11 +226,7 @@ export DO_WAVE="YES"
 export WAVE_CDUMP="both"
 
 # Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL
-if [[ "$CCPP_SUITE" == "FV3_GSD_v0" || "$CCPP_SUITE" == "FV3_GSD_noah" ]] ; then
-       export imp_physics=8
-else
-       export imp_physics=11
-fi
+export imp_physics=11
 
 # Shared parameters
 # Hybrid related

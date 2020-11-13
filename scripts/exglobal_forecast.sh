@@ -867,17 +867,8 @@ EOF
 #  $coupler_nml
 #/
 
+if [ ${RUN_CCPP:-"NO"} = "YES" ]; then
 cat > input.nml <<EOF
-&amip_interp_nml
-  interp_oi_sst = .true.
-  use_ncep_sst = .true.
-  use_ncep_ice = .false.
-  no_anom_sst = .false.
-  data_set = 'reynolds_oi'
-  date_out_of_range = 'climo'
-  $amip_interp_nml
-/
-
 &atmos_model_nml
   blocksize = $blocksize
   chksum_debug = $chksum_debug
@@ -889,6 +880,34 @@ cat > input.nml <<EOF
   fhmaxhf = $FHMAX_HF
   fhouthf = $FHOUT_HF
   $atmos_model_nml
+/
+EOF
+else
+cat > input.nml <<EOF
+&atmos_model_nml
+  blocksize = $blocksize
+  chksum_debug = $chksum_debug
+  dycore_only = $dycore_only
+  fdiag = $FDIAG
+  fhmax = $FHMAX
+  fhout = $FHOUT
+  fhmaxhf = $FHMAX_HF
+  fhouthf = $FHOUT_HF
+  $atmos_model_nml
+/
+EOF
+fi
+
+
+cat > input.nml <<EOF
+&amip_interp_nml
+  interp_oi_sst = .true.
+  use_ncep_sst = .true.
+  use_ncep_ice = .false.
+  no_anom_sst = .false.
+  data_set = 'reynolds_oi'
+  date_out_of_range = 'climo'
+  $amip_interp_nml
 /
 
 &diag_manager_nml
@@ -1326,9 +1345,6 @@ else
     eval $NLN atmos_4xdaily.tile${n}.nc $memdir/atmos_4xdaily.tile${n}.nc
   done
 fi
-
-# Copy namelist file
-$NCP input.nml $memdir
 
 #------------------------------------------------------------------
 # run the executable
