@@ -58,6 +58,7 @@ echo " .... Library build not currently supported .... "
 #------------------------------------
 # build fv3
 #------------------------------------
+export RUN_CCPP="YES"
 $Build_fv3gfs && {
 echo " .... Building fv3 .... "
 ./build_fv3.sh > $logs_dir/build_fv3.log 2>&1
