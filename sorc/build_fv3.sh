@@ -20,13 +20,16 @@ if [ $target = hera ]; then target=hera.intel ; fi
 if [ $target = orion ]; then target=orion.intel ; fi
 
 cd fv3gfs.fd/
+
+version=`eval git branch|cut -c 3-`
+
 FV3=$( pwd -P )/FV3
 cd tests/
 
-if [ ${RUN_CCPP:-${1:-"NO"}} = "NO" ]; then
- ./compile.sh "$FV3" "$target" "WW3=Y 32BIT=Y" 1
- mv -f fv3_1.exe ../NEMS/exe/global_fv3gfs.x
-else
+if [ $version = "develop" ]; then
  ./compile.sh "$target" "CCPP=Y 32BIT=Y SUITES=FV3_GFS_v15,FV3_GFS_v16beta" 2 NO NO
  mv -f fv3_2.exe ../NEMS/exe/global_fv3gfs.x
+else
+ ./compile.sh "$FV3" "$target" "WW3=Y 32BIT=Y" 1
+ mv -f fv3_1.exe ../NEMS/exe/global_fv3gfs.x
 fi
