@@ -37,7 +37,7 @@
 
   msg="HAS BEGUN on `hostname`"
   postmsg "$jlogfile" "$msg"
-  msg="Starting MWW3 INIT CONFIG SCRIPT for $COMPONENTwave"
+  msg="Starting MWW3 INIT CONFIG SCRIPT for ${CDUMP}wave"
   postmsg "$jlogfile" "$msg"
 
   set +x
@@ -46,7 +46,7 @@
   echo '                      *** MWW3 INIT CONFIG  SCRIPT ***'
   echo '                      ********************************'
   echo '                          Initial configuration script'
-  echo "                          Model identifier : $COMPONENTwave"
+  echo "                       Model identifier : ${CDUMP}wave"
   echo ' '
   echo "Starting at : `date`"
   echo ' '
@@ -90,12 +90,12 @@
 
   for grdID in ${grdALL}
   do
-    if [ -f "$COMIN/rundata/${COMPONENTwave}.mod_def.${grdID}" ]
+    if [ -f "$COMIN/rundata/${CDUMP}wave.mod_def.${grdID}" ]
     then
       set +x
       echo " Mod def file for $grdID found in ${COMIN}/rundata. copying ...."
       [[ "$LOUD" = YES ]] && set -x
-      cp $COMIN/rundata/${COMPONENTwave}.mod_def.${grdID} mod_def.$grdID
+      cp $COMIN/rundata/${CDUMP}wave.mod_def.${grdID} mod_def.$grdID
 
     else
       set +x
@@ -196,7 +196,7 @@
 
   for grdID in ${grdALL}
   do
-    if [ -f ${COMOUT}/rundata/${COMPONENTwave}.mod_def.$grdID ]
+    if [ -f ${COMOUT}/rundata/${CDUMP}wave.mod_def.$grdID ]
     then
       set +x
       echo ' '
@@ -232,4 +232,5 @@
   [[ "$LOUD" = YES ]] && set -x
 
   exit $err
+
 # End of MWW3 init config script ------------------------------------------- #

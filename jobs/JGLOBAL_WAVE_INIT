@@ -1,6 +1,7 @@
 #!/bin/bash
 
 date
+export RUN_ENVIR=${RUN_ENVIR:-"nco"}
 export PS4=' $SECONDS + '
 set -x -e
 
@@ -26,13 +27,13 @@ status=$?
 # PATH for working directory
 export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
-
-export COMPONENTwave=${COMPONENTwave:-${RUN}wave}
+export COMPONENT=${COMPONENT:-wave}
 
 # Add default errchk = err_chk
 export errchk=${errchk:-err_chk}
 
-export DATA=${DATA:-${DATAROOT}/${jobid:?}}
+# Create and go to DATA directory
+export DATA=${DATA:-${DATAROOT:?}/${jobid}}
 mkdir -p $DATA
 cd $DATA
 
@@ -45,28 +46,26 @@ sh ./PDY
 
 export pgmout=OUTPUT.$$
 
-export COMINice=${COMINice:-$COMROOTp2/omb/prod}
-export COMINwnd=${COMINwnd:-$COMROOT/gfs/prod}
-export COMIN_WAV_CUR=${COMIN_WAV_CUR:-$COMROOTp2/rtofs/prod} 
-
-export COMINwave=${COMINwave:-${ROTDIR:?}}
-export COMOUTwave=${COMOUTwave:-${ROTDIR:?}}
-export COMIN=${COMIN:-${COMINwave}/${COMPONENTwave}.${PDY}/${cyc}}
-export COMOUT=${COMOUT:-${COMOUTwave}/${COMPONENTwave}.${PDY}/${cyc}}
+# Set COM Paths and GETGES environment
+if [ $RUN_ENVIR = "nco" ]; then
+    export ROTDIR=${COMROOT:?}/$NET/$envir
+fi
+export COMIN=${COMIN:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/$COMPONENT}
+export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/$COMPONENT}
 [[ ! -d $COMOUT ]] && mkdir -m 775 -p $COMOUT
 
 if [ $SENDCOM = YES ]; then
   mkdir -p $COMOUT/rundata
 fi
 
-# Set mpi serial command
-export wavempexec=${launcher:-"mpirun -n"}
-export wave_mpmd=${mpmd:-"cfp"}
-
 # Execute the Script  
-$HOMEwave/scripts/exwave_init.sh
+$HOMEgfs/scripts/exgfs_wave_init.sh
 
-# Remove temp directories
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd $DATAROOT
 [[ $KEEPDATA = "NO" ]] && rm -rf $DATA
 
 date
+exit 0

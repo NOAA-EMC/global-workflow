@@ -512,7 +512,7 @@ WW3_postdet()
   echo "Wave Grids: $WAVECUR_FID $WAVEICE_FID $WAVEWND_FID $waveuoutpGRD $waveGRD $waveesmfGRD $wavesbsGRD $wavepostGRD $waveinterpGRD"
   grdALL=`printf "%s\n" "${array[@]}" | sort -u | tr '\n' ' '`
   for wavGRD in ${grdALL}; do
-    $NCP $ROTDIR/${COMPONENTwave}.${PDY}/${cyc}/rundata/${COMPONENTwave}.mod_def.$wavGRD $DATA/mod_def.$wavGRD
+    $NCP $ROTDIR/${CDUMP}.${PDY}/${cyc}/wave/rundata/${COMPONENTwave}.mod_def.$wavGRD $DATA/mod_def.$wavGRD
   done
 
   #Copy initial condition files: 
@@ -522,13 +522,13 @@ WW3_postdet()
     # Link IC for S2S benchmarks: 
     $NCP -pf $ICSDIR/$CDATE/wav/${PDY}.${cyc}0000.restart.$wavGRD $DATA/restart.$wavGRD
     # Link log files for computational grids: 
-    eval $NLN  $ROTDIR/${COMPONENTwave}.${PDY}/${cyc}/rundata/${COMPONENTwave}${WAV_MEMBER}.log.${wavGRD}.${PDY}${cyc} $DATA/log.${wavGRD}
+    eval $NLN  $ROTDIR/${CDUMP}.${PDY}/${cyc}/wave/rundata/${COMPONENTwave}${WAV_MEMBER}.log.${wavGRD}.${PDY}${cyc} $DATA/log.${wavGRD}
   done
 
   #link more log files: 
-  eval $NLN $ROTDIR/${COMPONENTwave}.${PDY}/${cyc}/rundata/${COMPONENTwave}${WAV_MEMBER}.log.mww3.${PDY}${cyc} $DATA/log.mww3
+  eval $NLN $ROTDIR/${CDUMP}.${PDY}/${cyc}/wave/rundata/${COMPONENTwave}${WAV_MEMBER}.log.mww3.${PDY}${cyc} $DATA/log.mww3
 
-  datwave=$ROTDIR/${COMPONENTwave}.${PDY}/${cyc}/rundata
+  datwave=$ROTDIR/${CDUMP}.${PDY}/${cyc}/wave/rundata
   wavprfx=${COMPONENTwave}${WAV_MEMBER}
   # Loop for gridded output (uses FHINC)
   fhr=$FHMIN_WAV
@@ -564,7 +564,7 @@ WW3_nml()
 {
 	echo "SUB ${FUNCNAME[0]}: Copying input files for WW3"
 	COMPONENTwave=${COMPONENTwave:-${RUN}wave}
-        $NCP $ROTDIR/${COMPONENTwave}.${PDY}/${cyc}/rundata/ww3_multi.${WAV_MOD_TAG}.${cycle}.inp  $DATA/ww3_multi.inp 
+        $NCP $ROTDIR/${CDUMP}.${PDY}/${cyc}/wave/rundata/ww3_multi.${WAV_MOD_TAG}.${cycle}.inp  $DATA/ww3_multi.inp 
 }
 
 WW3_out()

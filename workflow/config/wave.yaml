@@ -131,7 +131,6 @@ config_wave:
       export PARMwave="{doc.places.HOMEgfs}/parm/wave"
       export USHwave="{doc.places.HOMEgfs}/ush"
       #
-      export MP_PULSE=0
       
       export wavelog=$COMOUTwave/wave.log
       

@@ -1,6 +1,6 @@
 # How to use the unified workflow for the ufs-s2s-model application (work in progress)
 
-Note, currently the wave post does not work. There is work actively ongoing to fix it. 
+Note, currently the wave gridded post does not work properly. There is work actively ongoing to fix it. 
 This message will be deleted when the fix for wave post is committed. 
 
 ## Checkout the source code and scripts
