@@ -901,7 +901,7 @@ EOF
 fi
 
 
-cat > input.nml <<EOF
+cat >> input.nml <<EOF
 &amip_interp_nml
   interp_oi_sst = .true.
   use_ncep_sst = .true.
