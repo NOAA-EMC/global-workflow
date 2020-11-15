@@ -21,15 +21,15 @@ if [ $target = orion ]; then target=orion.intel ; fi
 
 cd fv3gfs.fd/
 
-version=`eval git branch|cut -c 3-`
+version=`eval git branch|cut -c 3-9`
 
 FV3=$( pwd -P )/FV3
 cd tests/
 
-if [ $version = "develop" ]; then
- ./compile.sh "$target" "CCPP=Y 32BIT=Y SUITES=FV3_GFS_v15,FV3_GFS_v16beta" 2 NO NO
- mv -f fv3_2.exe ../NEMS/exe/global_fv3gfs.x
-else
+if [ $version = "GFS.v16" ]; then
  ./compile.sh "$FV3" "$target" "WW3=Y 32BIT=Y" 1
  mv -f fv3_1.exe ../NEMS/exe/global_fv3gfs.x
+else
+ ./compile.sh "$target" "CCPP=Y 32BIT=Y SUITES=FV3_GFS_v15,FV3_GFS_v16beta" 2 NO NO
+ mv -f fv3_2.exe ../NEMS/exe/global_fv3gfs.x
 fi
