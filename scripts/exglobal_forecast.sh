@@ -116,6 +116,7 @@ NTASKS_FV3=${NTASKS_FV3:-$npe_fv3}
 
 TYPE=${TYPE:-"nh"}                  # choices:  nh, hydro
 MONO=${MONO:-"non-mono"}            # choices:  mono, non-mono
+RUN_CCPP=${RUN_CCPP:-"NO"}
 
 QUILTING=${QUILTING:-".true."}
 OUTPUT_GRID=${OUTPUT_GRID:-"gaussian_grid"}
@@ -727,7 +728,7 @@ $NCP $DATA_TABLE  data_table
 $NCP $FIELD_TABLE field_table
 
 # copy CCN_ACTIVATE.BIN for Thompson microphysics
-if [  "$RUN_CCPP" = 'YES' ]; then
+if [ $RUN_CCPP = "YES" ]; then
 if [ "$CCPP_SUITE" = 'FV3_GSD_v0' -o "$CCPP_SUITE" = 'FV3_GSD_noah' ]; then 
   $NLN $FIX_AM/CCN_ACTIVATE.BIN  CCN_ACTIVATE.BIN
   $NLN $FIX_AM/freezeH2O.dat  freezeH2O.dat
@@ -869,6 +870,11 @@ EOF
 #  $coupler_nml
 #/
 
+atmos_model_nml=""
+if [ $RUN_CCPP = "YES" ]; then
+ atmos_model_nml="ccpp_suite = $CCPP_SUITE"
+fi
+
 cat > input.nml <<EOF
 &amip_interp_nml
   interp_oi_sst = .true.
@@ -879,25 +885,7 @@ cat > input.nml <<EOF
   date_out_of_range = 'climo'
   $amip_interp_nml
 /
-EOF
 
-if [ ${RUN_CCPP:-"NO"} = "YES" ]; then
-cat >> input.nml <<EOF
-&atmos_model_nml
-  blocksize = $blocksize
-  chksum_debug = $chksum_debug
-  dycore_only = $dycore_only
-  ccpp_suite = $CCPP_SUITE
-  fdiag = $FDIAG
-  fhmax = $FHMAX
-  fhout = $FHOUT
-  fhmaxhf = $FHMAX_HF
-  fhouthf = $FHOUT_HF
-  $atmos_model_nml
-/
-EOF
-else
-cat >> input.nml <<EOF
 &atmos_model_nml
   blocksize = $blocksize
   chksum_debug = $chksum_debug
@@ -909,10 +897,6 @@ cat >> input.nml <<EOF
   fhouthf = $FHOUT_HF
   $atmos_model_nml
 /
-EOF
-fi
-
-cat >> input.nml <<EOF
 
 &diag_manager_nml
   prepend_date = .false.
@@ -1044,8 +1028,6 @@ deflate_level=${deflate_level:-1}
   pre_rad      = ${pre_rad:-".false."}
   ncld         = ${ncld:-1}
   imp_physics  = ${imp_physics:-"99"}
-  ltaerosol    = ${ltaerosol:-".F."}
-  lradar       = ${lradar:-".F."}
   pdfcld       = ${pdfcld:-".false."}
   fhswr        = ${FHSWR:-"3600."}
   fhlwr        = ${FHLWR:-"3600."}
@@ -1053,8 +1035,6 @@ deflate_level=${deflate_level:-1}
   iems         = ${IEMS:-"1"}
   iaer         = $IAER
   icliq_sw     = ${icliq_sw:-"2"}
-  iovr_lw      = ${iovr_lw:-"3"}
-  iovr_sw      = ${iovr_sw:-"3"}
   ico2         = $ICO2
   isubc_sw     = ${isubc_sw:-"2"}
   isubc_lw     = ${isubc_lw:-"2"}
@@ -1070,12 +1050,9 @@ deflate_level=${deflate_level:-1}
   satmedmf     = ${satmedmf-".true."}
   isatmedmf    = ${isatmedmf-"1"}
   lheatstrg    = ${lheatstrg-".false."}
-  do_mynnedmf  = ${do_mynnedmf:-".false."}
-  do_mynnsfclay= ${do_mynnsfclay:-".false."}
   random_clds  = ${random_clds:-".true."}
   trans_trac   = ${trans_trac:-".true."}
   cnvcld       = ${cnvcld:-".true."}
-  ttendlim     = ${ttendlim:-"0.005"}
   imfshalcnv   = ${imfshalcnv:-"2"}
   imfdeepcnv   = ${imfdeepcnv:-"2"}
   cdmbgwd      = ${cdmbgwd:-"3.5,0.25"}
@@ -1084,7 +1061,6 @@ deflate_level=${deflate_level:-1}
   isot         = ${isot:-"1"}
   lsoil        = ${lsoil:-"4"}
   lsm          = ${lsm:-"2"}
-  lsoil_lsm    = ${lsoil_lsm:-"4"}
   iopt_dveg    = ${iopt_dveg:-"1"}
   iopt_crs     = ${iopt_crs:-"1"}
   iopt_btr     = ${iopt_btr:-"1"}
@@ -1098,12 +1074,6 @@ deflate_level=${deflate_level:-1}
   iopt_tbot    = ${iopt_tbot:-"2"}
   iopt_stc     = ${iopt_stc:-"1"}
   debug        = ${gfs_phys_debug:-".false."}
-  oz_phys      = ${oz_phys:-".false."}
-  oz_phys_2015 = ${oz_phys_2015:-".true."}
-  icloud_bl    = ${icloud_bl:-"1"}
-  bl_mynn_edmf = ${bl_mynn_edmf:-"1"}
-  bl_mynn_tkeadvect=${bl_mynn_tkeadvect:-".true."}
-  bl_mynn_edmf_mom=${bl_mynn_edmf_mom:-"1"}
   nstf_name    = $nstf_name
   nst_anl      = $nst_anl
   psautco      = ${psautco:-"0.0008,0.0005"}
@@ -1118,6 +1088,31 @@ deflate_level=${deflate_level:-1}
   do_shum      = ${do_shum:-".false."}
   do_skeb      = ${do_skeb:-".false."}
 EOF
+
+if [ $RUN_CCPP = "YES" ]; then
+  cat >> input.nml << EOF
+  iovr         = ${iovr:-"3"}
+  ltaerosol    = ${ltaerosol:-".false."}
+  lradar       = ${lradar:-".false."}
+  ttendlim     = ${ttendlim:-"0.005"}
+  oz_phys      = ${oz_phys:-".false."}
+  oz_phys_2015 = ${oz_phys_2015:-".true."}
+  lsoil_lsm    = ${lsoil_lsm:-"4"}
+  do_mynnedmf  = ${do_mynnedmf:-".false."}
+  do_mynnsfclay = ${do_mynnsfclay:-".false."}
+  icloud_bl    = ${icloud_bl:-"1"}
+  bl_mynn_edmf = ${bl_mynn_edmf:-"1"}
+  bl_mynn_tkeadvect = ${bl_mynn_tkeadvect:-".true."}
+  bl_mynn_edmf_mom = ${bl_mynn_edmf_mom:-"1"}
+  min_lakeice  = ${min_lakeice:-"0.15"}
+  min_seaice   = ${min_seaice:-"0.15"}
+EOF
+else
+  cat >> input.nml << EOF
+  iovr_lw      = ${iovr_lw:-"3"}
+  iovr_sw      = ${iovr_sw:-"3"}
+EOF
+fi
 
 # Add namelist for IAU
 if [ $DOIAU = "YES" ]; then
@@ -1349,6 +1344,9 @@ else
     eval $NLN atmos_4xdaily.tile${n}.nc $memdir/atmos_4xdaily.tile${n}.nc
   done
 fi
+
+# Copy namelist file
+$NCP input.nml $memdir
 
 #------------------------------------------------------------------
 # run the executable
