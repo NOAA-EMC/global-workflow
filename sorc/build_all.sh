@@ -9,7 +9,7 @@ set +x
 #                   Anything other than "true"  will use libraries locally.
 #------------------------------------
 
-while getopts "oc" option;
+while getopts "c" option;
 do
  case $option in
   c)
