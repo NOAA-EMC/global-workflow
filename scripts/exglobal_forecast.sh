@@ -869,8 +869,20 @@ EOF
 #  $coupler_nml
 #/
 
-if [ ${RUN_CCPP:-"NO"} = "YES" ]; then
 cat > input.nml <<EOF
+&amip_interp_nml
+  interp_oi_sst = .true.
+  use_ncep_sst = .true.
+  use_ncep_ice = .false.
+  no_anom_sst = .false.
+  data_set = 'reynolds_oi'
+  date_out_of_range = 'climo'
+  $amip_interp_nml
+/
+EOF
+
+if [ ${RUN_CCPP:-"NO"} = "YES" ]; then
+cat >> input.nml <<EOF
 &atmos_model_nml
   blocksize = $blocksize
   chksum_debug = $chksum_debug
@@ -885,7 +897,7 @@ cat > input.nml <<EOF
 /
 EOF
 else
-cat > input.nml <<EOF
+cat >> input.nml <<EOF
 &atmos_model_nml
   blocksize = $blocksize
   chksum_debug = $chksum_debug
@@ -900,17 +912,7 @@ cat > input.nml <<EOF
 EOF
 fi
 
-
-cat > input.nml <<EOF
-&amip_interp_nml
-  interp_oi_sst = .true.
-  use_ncep_sst = .true.
-  use_ncep_ice = .false.
-  no_anom_sst = .false.
-  data_set = 'reynolds_oi'
-  date_out_of_range = 'climo'
-  $amip_interp_nml
-/
+cat >> input.nml <<EOF
 
 &diag_manager_nml
   prepend_date = .false.
