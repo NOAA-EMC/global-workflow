@@ -33,6 +33,8 @@ if [[ ! -d fv3gfs.fd ]] ; then
     cd fv3gfs.fd
     if [ ${run_ccpp:-"NO"} = "NO" ]; then
      git checkout GFS.v16.0.14
+    else
+     git checkout 2e25df5fe952d27355ed58963148f46b82565469
     fi
     git submodule update --init --recursive
     cd ${topdir}
