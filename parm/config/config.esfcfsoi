@@ -1,0 +1,24 @@
+#!/bin/ksh -x
+
+########## config.esfcfsoi ##########
+# Ensemble surface specific
+
+echo "BEGIN: config.esfcfsoi"
+
+# Get task specific resources
+
+# edited by liaofan on 2020.05.18
+. $EXPDIR/config.resources esfcfsoi
+
+# Edited by liaofan on 2020.05.18
+export ENKFRESFCSH="$HOMEgfs/scripts/exglobal_efsoi_surface_fv3gfs.sh.ecf"
+
+# With IAU only need surface analysis at start of IAU window.
+# Set DOSFCANL_ENKF=NO to prevent creation of sfcanl at 
+# center of analysis window.  
+
+if [ $DOIAU_ENKF = "YES" ]; then
+   export DOSFCANL_ENKF="NO"
+fi
+
+echo "END: config.esfcfsoi"

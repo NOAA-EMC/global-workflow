@@ -1,0 +1,156 @@
+#!/bin/ksh
+set -x
+
+export RUN_ENVIR=${RUN_ENVIR:-"nco"}
+export PS4='$SECONDS + '
+date
+
+
+#############################
+# Source relevant config files
+#############################
+export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
+config_path=${EXPDIR:-$NWROOT/gfs.${gfs_ver}/parm/config}
+
+# Edited by liaofan on 2020.05.26
+#configs="base fcst efcs"
+configs="base fcst efcsfsoi"
+
+for config in $configs; do
+    . $config_path/config.$config
+    status=$?
+    [[ $status -ne 0 ]] && exit $status
+done
+
+
+##########################################
+# Source machine runtime environment
+##########################################
+# Edited by liaofan on 2020.05.26
+#. $HOMEgfs/env/${machine}.env efcs
+. $HOMEgfs/env/${machine}.env efcsfsoi
+
+status=$?
+[[ $status -ne 0 ]] && exit $status
+
+
+##############################################
+# Obtain unique process id (pid) and make temp directory
+##############################################
+export pid=${pid:-$$}
+export outid=${outid:-"LL$job"}
+export DATA=${DATA:-${DATAROOT}/${jobid:?}}
+mkdir -p $DATA
+cd $DATA
+
+
+##############################################
+# Run setpdy and initialize PDY variables
+##############################################
+export cycle="t${cyc}z"
+setpdy.sh
+. ./PDY
+
+
+##############################################
+# Determine Job Output Name on System
+##############################################
+export pgmout="OUTPUT.${pid}"
+export pgmerr=errfile
+
+
+##############################################
+# Set variables used in the exglobal script
+##############################################
+export CDATE=${CDATE:-${PDY}${cyc}}
+export CDUMP=${CDUMP:-${RUN:-"gdas"}}
+if [ $RUN_ENVIR = "nco" ]; then
+    export ROTDIR=${COMROOT:?}/$NET/$envir
+fi
+
+
+##############################################
+# Begin JOB SPECIFIC work
+##############################################
+
+export CASE=$CASE_ENKF
+
+# COMOUT is used in exglobal script
+# TO DO: Map NCO's directory into these variables
+# Edited by liaofan on 2020.05.26
+#export COMOUT="$ROTDIR/enkf$CDUMP.$PDY/$cyc"
+export COMOUT="$ROTDIR/fsoi$CDUMP.$PDY/$cyc"
+
+# Forecast length for EnKF forecast
+export FHMIN=$FHMIN_ENKF
+export FHOUT=$FHOUT_ENKF
+export FHMAX=$FHMAX_ENKF
+
+
+# Get ENSBEG/ENSEND from ENSGRP and NMEM_EFCSGRP
+export ENSEND=$((NMEM_EFCSGRP * ENSGRP))
+export ENSBEG=$((ENSEND - NMEM_EFCSGRP + 1))
+
+
+###############################################################
+# Run relevant exglobal script
+env
+msg="HAS BEGUN on `hostname`"
+postmsg "$jlogfile" "$msg"
+$LOGSCRIPT
+
+# Edited by liaofan on 2020.05.26
+#${ENKFFCSTSH:-$SCRgsi/exglobal_enkf_fcst_fv3gfs.sh.ecf}
+${ENKFFCSTSH:-$SCRgfs/exglobal_efsoi_fcst_fv3gfs.sh.ecf}
+
+
+status=$?
+[[ $status -ne 0 ]] && exit $status
+
+
+# Double check the status of members in ENSGRP
+EFCSGRP=$COMOUT/efcs.grp${ENSGRP}
+npass=0
+if [ -f $EFCSGRP ]; then
+    npass=$(grep "PASS" $EFCSGRP | wc -l)
+fi
+echo "$npass/$NMEM_EFCSGRP members successfull in efcs.grp$ENSGRP"
+if [ $npass -ne $NMEM_EFCSGRP ]; then
+    echo "FATAL ERROR: Failed members in group $ENSGRP, ABORT!"
+    cat $EFCSGRP
+    exit 99
+fi
+
+
+##############################################
+# Send Alerts
+##############################################
+if [ $SENDDBN = YES ] ; then
+   $DBNROOT/bin/dbn_alert MODEL ENKF1_MSC_fcsstat $job $EFCSGRP
+fi
+
+
+##############################################
+# End JOB SPECIFIC work
+##############################################
+
+##############################################
+# Final processing
+##############################################
+if [ -e "$pgmout" ] ; then
+  cat $pgmout
+fi
+
+
+msg="ENDED NORMALLY."
+postmsg "$jlogfile" "$msg"
+
+
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd $DATAROOT
+[[ $KEEPDATA = "NO" ]] && rm -rf $DATA
+
+date
+exit 0

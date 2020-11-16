@@ -1,0 +1,128 @@
+#!/bin/ksh
+set -x
+
+export RUN_ENVIR=${RUN_ENVIR:-"nco"}
+export PS4='$SECONDS + '
+date
+
+
+#############################
+# Source relevant config files
+#############################
+export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
+
+# edited by liaofan on 2020.06.03
+#configs="base epos"
+configs="base eposfsoi"
+
+config_path=${EXPDIR:-$NWROOT/gfs.${gfs_ver}/parm/config}
+for config in $configs; do
+    . $config_path/config.$config
+    status=$?
+    [[ $status -ne 0 ]] && exit $status
+done
+
+
+##########################################
+# Source machine runtime environment
+##########################################
+# Edited by liaofan on 2020.06.03
+#. $HOMEgfs/env/${machine}.env epos
+. $HOMEgfs/env/${machine}.env eposfsoi
+
+status=$?
+[[ $status -ne 0 ]] && exit $status
+
+
+##############################################
+# Obtain unique process id (pid) and make temp directory
+##############################################
+export pid=${pid:-$$}
+export outid=${outid:-"LL$job"}
+export DATA=${DATA:-${DATAROOT}/${jobid:?}}
+mkdir -p $DATA
+cd $DATA
+
+
+##############################################
+# Run setpdy and initialize PDY variables
+##############################################
+export cycle="t${cyc}z"
+setpdy.sh
+. ./PDY
+
+
+##############################################
+# Determine Job Output Name on System
+##############################################
+export pgmout="OUTPUT.${pid}"
+export pgmerr=errfile
+
+
+##############################################
+# Set variables used in the exglobal script
+##############################################
+export CDATE=${CDATE:-${PDY}${cyc}}
+export CDUMP=${CDUMP:-${RUN:-"gdas"}}
+if [ $RUN_ENVIR = "nco" ]; then
+    export ROTDIR=${COMROOT:?}/$NET/$envir
+fi
+
+
+##############################################
+# Begin JOB SPECIFIC work
+##############################################
+export GFS_NCIO=${GFS_NCIO:-"YES"}
+
+export PREFIX="${CDUMP}.t${cyc}z."
+
+# COMIN, COMOUT are used in exglobal script
+# TO DO: Map NCO's directory into these variables
+# Edited by liaofan on 2020.06.03
+#export COMIN="$ROTDIR/enkf$CDUMP.$PDY/$cyc"
+#export COMOUT="$ROTDIR/enkf$CDUMP.$PDY/$cyc"
+export COMIN="$ROTDIR/fsoi$CDUMP.$PDY/$cyc"
+export COMOUT="$ROTDIR/fsoi$CDUMP.$PDY/$cyc"
+
+export LEVS=$((LEVS-1))
+
+
+###############################################################
+# Run relevant exglobal script
+env
+msg="HAS BEGUN on `hostname`"
+postmsg "$jlogfile" "$msg"
+$LOGSCRIPT
+
+# edited by liaofan on 2020.06.03
+#${ENKFPOSTSH:-$SCRgsi/exglobal_enkf_post_fv3gfs.sh.ecf}
+${ENKFPOSTSH:-$SCRgfs/exglobal_efsoi_post_fv3gfs.sh.ecf}
+
+status=$?
+[[ $status -ne 0 ]] && exit $status
+
+
+##############################################
+# End JOB SPECIFIC work
+##############################################
+
+##############################################
+# Final processing
+##############################################
+if [ -e "$pgmout" ] ; then
+  cat $pgmout
+fi
+
+
+msg="ENDED NORMALLY."
+postmsg "$jlogfile" "$msg"
+
+
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd $DATAROOT
+[[ $KEEPDATA = "NO" ]] && rm -rf $DATA
+
+date
+exit 0

@@ -1,0 +1,167 @@
+#!/bin/ksh
+set -x
+
+export RUN_ENVIR=${RUN_ENVIR:-"nco"}
+export PS4='$SECONDS + '
+date
+
+
+#############################
+# Source relevant config files
+#############################
+export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
+
+# edited by liaofan on 2020.05.06
+#configs="base anal eupd"
+configs="base anal eupdfsoi"
+config_path=${EXPDIR:-$NWROOT/gfs.${gfs_ver}/parm/config}
+for config in $configs; do
+    . $config_path/config.$config
+    status=$?
+    [[ $status -ne 0 ]] && exit $status
+done
+
+
+##########################################
+# Source machine runtime environment
+##########################################
+# edited by liaofan on 2020.05.06
+#. $HOMEgfs/env/${machine}.env eupd
+. $HOMEgfs/env/${machine}.env eupdfsoi
+
+
+status=$?
+[[ $status -ne 0 ]] && exit $status
+
+
+##############################################
+# Obtain unique process id (pid) and make temp directory
+##############################################
+export pid=${pid:-$$}
+export outid=${outid:-"LL$job"}
+export DATA=${DATA:-${DATAROOT}/${jobid:?}}
+mkdir -p $DATA
+cd $DATA
+
+
+##############################################
+# Run setpdy and initialize PDY variables
+##############################################
+export cycle="t${cyc}z"
+setpdy.sh
+. ./PDY
+
+
+##############################################
+# Determine Job Output Name on System
+##############################################
+export pgmout="OUTPUT.${pid}"
+export pgmerr=errfile
+
+
+##############################################
+# Set variables used in the exglobal script
+##############################################
+export CDATE=${CDATE:-${PDY}${cyc}}
+export CDUMP=${CDUMP:-${RUN:-"gdas"}}
+if [ $RUN_ENVIR = "nco" ]; then
+    export ROTDIR=${COMROOT:?}/$NET/$envir
+fi
+
+
+##############################################
+# Begin JOB SPECIFIC work
+##############################################
+
+GDATE=$($NDATE -$assim_freq $CDATE)
+gPDY=$(echo $GDATE | cut -c1-8)
+gcyc=$(echo $GDATE | cut -c9-10)
+
+export APREFIX="${CDUMP}.t${cyc}z."
+export GPREFIX="gdas.t${gcyc}z."
+export ASUFFIX=${ASUFFIX:-$SUFFIX}
+export GSUFFIX=${GSUFFIX:-$SUFFIX}
+
+
+# COMIN_GES_ENS and COMOUT_ANL_ENS are used in exglobal script
+# TO DO: Map NCO's directory into these variables
+
+# ======= Edited by liaofan on 2020.05.06 ==============
+#export COMIN_GES_ENS="$ROTDIR/enkfgdas.$gPDY/$gcyc"
+#export COMOUT_ANL_ENS="$ROTDIR/enkf$CDUMP.$PDY/$cyc"
+
+# Copy enkfgdas data on the current cycle to fsoigdas folder!
+#   - see rn200502
+#   - Do not copy the folders of each member, which were created in eupd
+#   - Copy only files created before gdaseupd
+mkdir -p $ROTDIR/fsoigdas.$PDY/$cyc
+cp -u -ir $ROTDIR/enkfgdas.$PDY/$cyc/gdas.*.radstat.*  $ROTDIR/fsoigdas.$PDY/$cyc/
+cp -u -ir $ROTDIR/enkfgdas.$PDY/$cyc/gdas.*.cnvstat.*  $ROTDIR/fsoigdas.$PDY/$cyc/
+cp -u -ir $ROTDIR/enkfgdas.$PDY/$cyc/gdas.*.oznstat.*  $ROTDIR/fsoigdas.$PDY/$cyc/
+cp -u -ir $ROTDIR/enkfgdas.$PDY/$cyc/gdas.*.loginc.txt $ROTDIR/fsoigdas.$PDY/$cyc/
+cp -u -ir $ROTDIR/enkfgdas.$PDY/$cyc/gdas.*.obsinput.* $ROTDIR/fsoigdas.$PDY/$cyc/
+cp -u -ir $ROTDIR/enkfgdas.$PDY/$cyc/gdas.*.gsistat.*  $ROTDIR/fsoigdas.$PDY/$cyc/
+cp -u -ir $ROTDIR/enkfgdas.$PDY/$cyc/gdas.*.abias*     $ROTDIR/fsoigdas.$PDY/$cyc/
+cp -u -ir $ROTDIR/enkfgdas.$PDY/$cyc/gdas.*.gsidiags   $ROTDIR/fsoigdas.$PDY/$cyc/
+
+# The first guess from enkfgdas
+export COMIN_GES_ENS="$ROTDIR/enkfgdas.$gPDY/$gcyc"
+
+# The output analysis to efsoi
+export COMOUT_ANL_ENS="$ROTDIR/fsoi$CDUMP.$PDY/$cyc"
+
+# ========================================================
+
+###############################################################
+# Run relevant exglobal script
+env
+msg="HAS BEGUN on `hostname`"
+postmsg "$jlogfile" "$msg"
+$LOGSCRIPT
+
+# Edited by liaofan on 2020.05.06
+#${ENKFUPDSH:-$SCRgsi/exglobal_enkf_update_fv3gfs.sh.ecf}
+${ENKFUPDSH:-$SCRgsi/exglobal_efsoi_update_fv3gfs.sh.ecf}
+
+status=$?
+[[ $status -ne 0 ]] && exit $status
+
+
+##############################################
+# Send Alerts
+##############################################
+if [ $SENDDBN = YES  ] ; then
+   $DBNROOT/bin/dbn_alert MODEL ENKF1_MSC_enkfstat $job $COMOUT_ANL_ENS/${APREFIX}enkfstat
+fi
+
+
+##############################################
+# End JOB SPECIFIC work
+##############################################
+
+##############################################
+# Final processing
+##############################################
+if [ -e "$pgmout" ] ; then
+  cat $pgmout
+fi
+
+
+msg="ENDED NORMALLY."
+postmsg "$jlogfile" "$msg"
+
+
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd $DATAROOT
+
+echo " ====== (JGLOBAL_EFSOI_UPDATE) liaofan on 2020.05.07 === "
+echo "DATAROOT="$DATAROOT
+echo "DATA="$DATA
+echo " ======================================================= "
+
+[[ $KEEPDATA = "NO" ]] && rm -rf $DATA
+
+date
+exit 0

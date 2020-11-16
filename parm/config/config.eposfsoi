@@ -1,0 +1,29 @@
+#!/bin/ksh -x
+
+########## config.eposfsoi ##########
+# Ensemble post processing specific
+
+echo "BEGIN: config.eposfsoi"
+
+# Get task specific resources
+# Edited by liaofan on 2020.06.03
+#. $EXPDIR/config.resources epos
+. $EXPDIR/config.resources eposfsoi
+
+#export ENKFPOSTSH="$HOMEgsi/scripts/exglobal_enkf_post_fv3gfs.sh.ecf"
+export ENKFPOSTSH="$HOMEgsi/scripts/exglobal_efsoi_post_fv3gfs.sh.ecf"
+
+# No. of concurrent epos jobs [1 implies sequential]
+export NEPOSGRP=7
+
+if [ $l4densvar = ".false." ]; then
+	# Edited by liaofan on 2020.06.03
+    # for 6 groups: the lead times of 0, 6, 12, 18, 24, & 30 hours
+	#export NEPOSGRP=3
+	export NEPOSGRP=6
+fi
+
+# Generate ensemble spread files
+export ENKF_SPREAD="YES"
+
+echo "END: config.eposfsoi"
