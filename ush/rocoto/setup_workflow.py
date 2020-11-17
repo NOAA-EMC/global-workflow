@@ -65,6 +65,10 @@ def main():
     steps = steps + wav_steps_gempak if _base.get('DO_GEMPAK', 'NO') == 'YES' else steps
     steps = steps + wav_steps_awips if _base.get('DO_AWIPS', 'NO') == 'YES' else steps
 
+# for EFSOI
+    efsoi_steps = ['eupdfsoi', 'esfcfsoi', 'ecenfsoi', 'efcsfsoi', 'eposfsoi']
+    steps = steps + efsoi_steps if _base.get('DO_EFSOI','NO') == 'YES' else steps
+
     dict_configs = wfu.source_configs(configs, steps)
 
     # Check and set gfs_cyc specific variables
@@ -314,11 +318,21 @@ def get_hyb_resources(dict_configs):
 
     dict_resources = OrderedDict()
 
+    do_efsoi = base.get('DO_EFSOI', 'NO').upper()
+
     # These tasks can be run in either or both cycles
     if lobsdiag_forenkf in ['.T.', '.TRUE.']:
-        tasks1 = ['eobs', 'ediag', 'eupd', 'echgres']
+
+        if do_efsoi in ['Y', 'YES']:
+            tasks1 = ['eobs', 'ediag', 'eupd', 'echgres', 'eupdfsoi']
+        else:
+            tasks1 = ['eobs', 'ediag', 'eupd', 'echgres']
+
     else:
-        tasks1 = ['eobs', 'eomg', 'eupd', 'echgres']
+        if do_efsoi in ['Y', 'YES']:
+            tasks1 = ['eobs', 'eomg',  'eupd', 'echgres', 'eupdfsoi']
+        else:
+            tasks1 = ['eobs', 'eomg', 'eupd', 'echgres']
 
     if eupd_cyc in ['BOTH']:
         cdumps = ['gfs', 'gdas']
@@ -350,7 +364,13 @@ def get_hyb_resources(dict_configs):
 
     # These tasks are always run as part of the GDAS cycle
     cdump = 'gdas'
-    tasks2 = ['ecen', 'esfc', 'efcs', 'epos', 'earc']
+
+    do_efsoi = base.get('DO_EFSOI', 'NO').upper()
+
+    if do_efsoi in ['Y', 'YES']:
+        tasks2 = ['ecen', 'ecenfsoi', 'esfc', 'esfcfsoi', 'efcs', 'efcsfsoi', 'epos', 'eposfsoi', 'earc']
+    else:
+        tasks2 = ['ecen', 'esfc', 'efcs', 'epos', 'earc']
     for task in tasks2:
 
         cfg = dict_configs[task]
@@ -407,6 +427,8 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
     do_wave_cdump = base.get('WAVE_CDUMP', 'BOTH').upper()
     dumpsuffix = base.get('DUMP_SUFFIX', '')
     gridsuffix = base.get('SUFFIX', '')
+
+    do_efsoi = base.get('DO_EFSOI', 'NO').upper()
 
     dict_tasks = OrderedDict()
 
@@ -1021,6 +1043,22 @@ def get_hyb_tasks(dict_configs, cycledef='enkf'):
 
         dict_tasks['%seupd' % cdump] = task
 
+        # # eupdfsoi
+        do_efsoi = base.get('DO_EFSOI', 'NO').upper()
+
+        if do_efsoi in ['Y', 'YES']:
+
+            deps = []
+            if lobsdiag_forenkf in ['.F.', '.FALSE.']:
+                dep_dict = {'type': 'metatask', 'name': '%seomn' % cdump}
+            else:
+                dep_dict = {'type': 'task', 'name': '%sediag' % cdump}
+            deps.append(rocoto.add_dependency(dep_dict))
+            dependencies = rocoto.create_dependency(dep=deps)
+            task = wfu.create_wf_task('eupdfsoi', cdump=cdump, envar=envars1, dependency=dependencies, cycledef=cycledef)
+
+            dict_tasks['%seupdfsoi' % cdump] = task
+
     # All hybrid tasks beyond this point are always executed in the GDAS cycle
     cdump = 'gdas'
     envar_cdump = rocoto.create_envar(name='CDUMP', value='%s' % cdump)
@@ -1053,6 +1091,32 @@ def get_hyb_tasks(dict_configs, cycledef='enkf'):
 
     dict_tasks['%secmn' % cdump] = task
 
+    # ecmnfsoi, ecenfsoi
+    deps1 = []
+    data = '&ROTDIR;/%s.@Y@m@d/@H/%s.t@Hz.loganl.txt' % (cdump, cdump)
+    dep_dict = {'type': 'data', 'data': data}
+    deps1.append(rocoto.add_dependency(dep_dict))
+    dep_dict = {'type': 'task', 'name': '%sanalcalc' % cdump}
+    deps1.append(rocoto.add_dependency(dep_dict))
+    dependencies1 = rocoto.create_dependency(dep_condition='or', dep=deps1)
+
+    deps2 = []
+    deps2 = dependencies1
+    dep_dict = {'type': 'task', 'name': '%seupdfsoi' % cdump_eupd}
+    deps2.append(rocoto.add_dependency(dep_dict))
+    dependencies2 = rocoto.create_dependency(dep_condition='and', dep=deps2)
+
+    fhrgrp = rocoto.create_envar(name='FHRGRP', value='#grp#')
+    fhrlst = rocoto.create_envar(name='FHRLST', value='#lst#')
+    ecenenvars = envars1 + [fhrgrp] + [fhrlst]
+    varname1, varname2, varname3 = 'grp', 'dep', 'lst'
+    varval1, varval2, varval3 = get_ecengroups(dict_configs, dict_configs['ecenfsoi'], cdump=cdump)
+    vardict = {varname2: varval2, varname3: varval3}
+    task = wfu.create_wf_task('ecenfsoi', cdump=cdump, envar=ecenenvars, dependency=dependencies2,
+                              metatask='ecmnfsoi', varname=varname1, varval=varval1, vardict=vardict)
+
+    dict_tasks['%secmnfsoi' % cdump] = task
+
     # esfc
     deps1 = []
     data = '&ROTDIR;/%s.@Y@m@d/@H/atmos/%s.t@Hz.loganl.txt' % (cdump, cdump)
@@ -1070,6 +1134,24 @@ def get_hyb_tasks(dict_configs, cycledef='enkf'):
     task = wfu.create_wf_task('esfc', cdump=cdump, envar=envars1, dependency=dependencies2, cycledef=cycledef)
 
     dict_tasks['%sesfc' % cdump] = task
+
+    # esfcfsoi
+    deps1 = []
+    data = '&ROTDIR;/%s.@Y@m@d/@H/%s.t@Hz.loganl.txt' % (cdump, cdump)
+    dep_dict = {'type': 'data', 'data': data}
+    deps1.append(rocoto.add_dependency(dep_dict))
+    dep_dict = {'type': 'task', 'name': '%sanalcalc' % cdump}
+    deps1.append(rocoto.add_dependency(dep_dict))
+    dependencies1 = rocoto.create_dependency(dep_condition='or', dep=deps1)
+
+    deps2 = []
+    deps2 = dependencies1
+    dep_dict = {'type': 'task', 'name': '%seupdfsoi' % cdump_eupd}
+    deps2.append(rocoto.add_dependency(dep_dict))
+    dependencies2 = rocoto.create_dependency(dep_condition='and', dep=deps2)
+    task = wfu.create_wf_task('esfcfsoi', cdump=cdump, envar=envars1, dependency=dependencies2, cycledef=cycledef)
+
+    dict_tasks['%sesfcfsoi' % cdump] = task
 
     # efmn, efcs
     deps1 = []
@@ -1102,6 +1184,28 @@ def get_hyb_tasks(dict_configs, cycledef='enkf'):
 
     dict_tasks['%sechgres' % cdump] = task
 
+    # efmnfsoi, efcsfsoi
+    deps1 = []
+    dep_dict = {'type': 'metatask', 'name': '%secmnfsoi' % cdump}
+    deps1.append(rocoto.add_dependency(dep_dict))
+    dep_dict = {'type': 'task', 'name': '%sesfcfsoi' % cdump}
+    deps1.append(rocoto.add_dependency(dep_dict))
+    dependencies1 = rocoto.create_dependency(dep_condition='and', dep=deps1)
+
+    deps2 = []
+    deps2 = dependencies1
+
+    # liaofan: remove the option to run efcsfsoi in the cold start (2020.05.26)
+    #dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': '-06:00:00'}
+    #deps2.append(rocoto.add_dependency(dep_dict))
+    dependencies2 = rocoto.create_dependency(dep_condition='and', dep=deps2)
+
+    efcsenvars = envars1 + [ensgrp]
+    task = wfu.create_wf_task('efcsfsoi', cdump=cdump, envar=efcsenvars, dependency=dependencies2,
+                              metatask='efmnfsoi', varname='grp', varval=EFCSGROUPS, cycledef=cycledef)
+
+    dict_tasks['%sefmnfsoi' % cdump] = task
+
     # epmn, epos
     deps = []
     dep_dict = {'type': 'metatask', 'name': '%sefmn' % cdump}
@@ -1117,6 +1221,22 @@ def get_hyb_tasks(dict_configs, cycledef='enkf'):
                               metatask='epmn', varname=varname1, varval=varval1, vardict=vardict)
 
     dict_tasks['%sepmn' % cdump] = task
+
+    # epmnfsoi, eposfsoi
+    deps = []
+    dep_dict = {'type': 'metatask', 'name': '%sefmnfsoi' % cdump}
+    deps.append(rocoto.add_dependency(dep_dict))
+    dependencies = rocoto.create_dependency(dep=deps)
+    fhrgrp = rocoto.create_envar(name='FHRGRP', value='#grp#')
+    fhrlst = rocoto.create_envar(name='FHRLST', value='#lst#')
+    eposenvars = envars1 + [fhrgrp] + [fhrlst]
+    varname1, varname2, varname3 = 'grp', 'dep', 'lst'
+    varval1, varval2, varval3 = get_eposfsoigroups(dict_configs['eposfsoi'], cdump=cdump)
+    vardict = {varname2: varval2, varname3: varval3}
+    task = wfu.create_wf_task('eposfsoi', cdump=cdump, envar=eposenvars, dependency=dependencies,
+                              metatask='epmnfsoi', varname=varname1, varval=varval1, vardict=vardict)
+
+    dict_tasks['%sepmnfsoi' % cdump] = task
 
     # eamn, earc
     deps = []
@@ -1293,6 +1413,26 @@ def dict_to_strings(dict_in):
 
     return ''.join(strings)
 
+def get_eposfsoigroups(epos, cdump='gdas'):
+
+    fhmin = 0
+    fhmax = 30
+    fhout = 6
+
+    fhrs = range(fhmin, fhmax+fhout, fhout)
+
+    neposgrp = epos['NEPOSGRP']
+    ngrps = neposgrp if len(fhrs) > neposgrp else len(fhrs)
+
+    fhrs = ['f%03d' % f for f in fhrs]
+    fhrs = np.array_split(fhrs, ngrps)
+    fhrs = [f.tolist() for f in fhrs]
+
+    fhrgrp = ' '.join(['%03d' % x for x in range(0, ngrps)])
+    fhrdep = ' '.join([f[-1] for f in fhrs])
+    fhrlst = ' '.join(['_'.join(f) for f in fhrs])
+
+    return fhrgrp, fhrdep, fhrlst
 
 def create_xml(dict_configs):
     '''
@@ -1324,16 +1464,35 @@ def create_xml(dict_configs):
         dict_hyb_tasks = get_hyb_tasks(dict_configs)
 
         # Removes <memory>&MEMORY_JOB_DUMP</memory> post mortem from hyb tasks
-        hyp_tasks = {'gdaseobs':'gdaseobs',
-                     'gdasediag':'gdasediag',
-                     'gdaseomg':'gdaseomn',
-                     'gdaseupd':'gdaseupd',
-                     'gdasecen':'gdasecmn',
-                     'gdasesfc':'gdasesfc',
-                     'gdasefcs':'gdasefmn',
-                     'gdasepos':'gdasepmn',
-                     'gdasearc':'gdaseamn',
-                     'gdasechgres':'gdasechgres'}
+        do_efsoi = base.get('DO_EFSOI', 'NO').upper()
+
+        if do_efsoi in ['Y', 'YES']:
+            hyp_tasks = {'gdaseobs':'gdaseobs',
+                         'gdasediag':'gdasediag',
+                         'gdaseomg':'gdaseomn',
+                         'gdaseupd':'gdaseupd',
+                         'gdaseupdfsoi':'gdaseupdfsoi',
+                         'gdasecen':'gdasecmn',
+                         'gdasecenfsoi':'gdasecmnfsoi',
+                         'gdasesfc':'gdasesfc',
+                         'gdasesfcfsoi':'gdasesfcfsoi',
+                         'gdasefcs':'gdasefmn',
+                         'gdasefcsfsoi':'gdasefmnfsoi',
+                         'gdasepos':'gdasepmn',
+                         'gdaseposfsoi':'gdasepmnfsoi',
+                         'gdasearc':'gdaseamn'}
+
+        else:
+            hyp_tasks = {'gdaseobs':'gdaseobs',
+                         'gdasediag':'gdasediag',
+                         'gdaseomg':'gdaseomn',
+                         'gdaseupd':'gdaseupd',
+                         'gdasecen':'gdasecmn',
+                         'gdasesfc':'gdasesfc',
+                         'gdasefcs':'gdasefmn',
+                         'gdasepos':'gdasepmn',
+                         'gdasearc':'gdaseamn',
+                         'gdasechgres':'gdasechgres'}
         for each_task, each_resource_string in dict_hyb_resources.iteritems():
             #print each_task,hyp_tasks[each_task]
             #print dict_hyb_tasks[hyp_tasks[each_task]]
