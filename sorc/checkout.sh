@@ -1,12 +1,17 @@
 #!/bin/sh
-set -xue
+#set -xue
+set -x
 
-while getopts "o" option;
+while getopts "oc" option;
 do
  case $option in
   o)
    echo "Received -o flag for optional checkout of GTG, will check out GTG with EMC_post"
    checkout_gtg="YES"
+   ;;
+  c)
+   echo "Received -c flag, check out ufs-weather-model develop branch with CCPP physics"  
+   run_ccpp="YES"
    ;;
   :)
    echo "option -$OPTARG needs an argument"
@@ -26,7 +31,11 @@ if [[ ! -d fv3gfs.fd ]] ; then
     rm -f ${topdir}/checkout-fv3gfs.log
     git clone https://github.com/ufs-community/ufs-weather-model fv3gfs.fd >> ${topdir}/checkout-fv3gfs.log 2>&1
     cd fv3gfs.fd
-    git checkout GFS.v16.0.14
+    if [ ${run_ccpp:-"NO"} = "NO" ]; then
+     git checkout GFS.v16.0.14
+    else
+     git checkout 2e25df5fe952d27355ed58963148f46b82565469
+    fi
     git submodule update --init --recursive
     cd ${topdir}
 else
