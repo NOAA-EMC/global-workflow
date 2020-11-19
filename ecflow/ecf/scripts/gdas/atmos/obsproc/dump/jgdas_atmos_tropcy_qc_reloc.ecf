@@ -1,5 +1,6 @@
 #! /bin/sh
 #BSUB -q %QUEUE%
+#BSUB -U GFSV16
 #BSUB -P %PROJ%
 #BSUB -J %E%gdas_atmos_tropcy_qc_reloc_%CYC%
 #BSUB -o %COM%/output/%ENVIR%/today/gdas_atmos_tropcy_qc_reloc_%CYC%.o%J
@@ -37,7 +38,7 @@ module list
 export USE_CFP=YES
 export PROCESS_TROPCY=YES
 export DO_RELOCATE=YES
-export ROTDIR=%COM%/$NET/$envir
+# JY export ROTDIR=%COM%/$NET/$envir
 export cyc=%CYC%
 export cycle=t%CYC%z
 

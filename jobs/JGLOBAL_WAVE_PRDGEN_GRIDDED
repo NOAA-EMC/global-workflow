@@ -4,6 +4,22 @@ date
 export PS4=' $SECONDS + '
 set -xa
 
+# JY - 10/27/20 move this part to the front so that the PDY is set in front of COMIN...
+
+export DATA=${DATA:-${DATAROOT}/${jobid:?}}
+mkdir -p $DATA
+cd $DATA
+
+######################################
+# Set up the cycle variable
+######################################
+export cycle=${cycle:-t${cyc}z}
+
+# Set PDY
+ setpdy.sh
+ . PDY
+ env
+
 # PATH for working directory
 export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
@@ -28,19 +44,20 @@ if [ $SENDCOM = YES ]; then
   mkdir -p $COMOUT $PCOM
 fi
 
-export DATA=${DATA:-${DATAROOT}/${jobid:?}}
-mkdir -p $DATA
-cd $DATA
+# JY - move up
+#export DATA=${DATA:-${DATAROOT}/${jobid:?}}
+#mkdir -p $DATA
+#cd $DATA
+#
+#######################################
+### Set up the cycle variable
+#######################################
+#export cycle=${cycle:-t${cyc}z}
 
-######################################
-# Set up the cycle variable
-######################################
-export cycle=${cycle:-t${cyc}z}
-
-# Set PDY
- setpdy.sh
- . PDY
- env
+## Set PDY
+# setpdy.sh
+# . PDY
+# env
 
 ###################################
 # Execute the Script  

@@ -26,16 +26,17 @@
 #com/gfs/_ENVIR_/enkfgdas._PDY_/
 /gpfs/dell1/nco/ops/com/gfs/_ENVIR_/enkfgdas._PDY_/
 + /??/
-+ /??/mem021/
-+ /??/mem021/**
-+ /??/mem022/
-+ /??/mem022/**
-+ /??/mem023/
-+ /??/mem023/**
-+ /??/mem024/
-+ /??/mem024/**
-+ /??/mem025/
-+ /??/mem025/**
++ /??/atmos/
++ /??/atmos/mem021/
++ /??/atmos/mem021/**
++ /??/atmos/mem022/
++ /??/atmos/mem022/**
++ /??/atmos/mem023/
++ /??/atmos/mem023/**
++ /??/atmos/mem024/
++ /??/atmos/mem024/**
++ /??/atmos/mem025/
++ /??/atmos/mem025/**
 - *
 
 B 100
@@ -43,16 +44,17 @@ B 100
 #com/gfs/_ENVIR_/enkfgdas._PDYm1_/
 /gpfs/dell1/nco/ops/com/gfs/_ENVIR_/enkfgdas._PDYm1_/
 + /??/
-+ /??/mem021/
-+ /??/mem021/**
-+ /??/mem022/
-+ /??/mem022/**
-+ /??/mem023/
-+ /??/mem023/**
-+ /??/mem024/
-+ /??/mem024/**
-+ /??/mem025/
-+ /??/mem025/**
++ /??/atmos/
++ /??/atmos/mem021/
++ /??/atmos/mem021/**
++ /??/atmos/mem022/
++ /??/atmos/mem022/**
++ /??/atmos/mem023/
++ /??/atmos/mem023/**
++ /??/atmos/mem024/
++ /??/atmos/mem024/**
++ /??/atmos/mem025/
++ /??/atmos/mem025/**
 - *
 
 B 100

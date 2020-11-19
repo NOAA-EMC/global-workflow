@@ -26,7 +26,8 @@
 #com/gfs/_ENVIR_/enkfgdas._PDY_/
 /gpfs/dell1/nco/ops/com/gfs/_ENVIR_/enkfgdas._PDY_/
 + /??/
-+ /??/*
++ /??/atmos/
++ /??/atmos/*
 - *
 
 B 100
@@ -34,7 +35,8 @@ B 100
 #com/gfs/_ENVIR_/enkfgdas._PDYm1_/
 /gpfs/dell1/nco/ops/com/gfs/_ENVIR_/enkfgdas._PDYm1_/
 + /??/
-+ /??/*
++ /??/atmos/
++ /??/atmos/*
 - *
 
 B 100

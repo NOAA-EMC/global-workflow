@@ -25,24 +25,26 @@
 
 com/gfs/_ENVIR_/gdas._PDY_/
 + /??/
-+ /??/*atmf007*
-+ /??/*atmf008*
-+ /??/*atmf009*
-+ /??/*atmg*
-+ /??/*atmanl*
-- /??/*
++ /??/atmos/
++ /??/atmos/*atmf007*
++ /??/atmos/*atmf008*
++ /??/atmos/*atmf009*
++ /??/atmos/*atmg*
++ /??/atmos/*atmanl*
+- /??/atmos/*
 - *
 
 B 100
 
 com/gfs/_ENVIR_/gdas._PDYm1_/
 + /??/
-+ /??/*atmf007*
-+ /??/*atmf008*
-+ /??/*atmf009*
-+ /??/*atmg*
-+ /??/*atmanl*
-- /??/*
++ /??/atmos/
++ /??/atmos/*atmf007*
++ /??/atmos/*atmf008*
++ /??/atmos/*atmf009*
++ /??/atmos/*atmg*
++ /??/atmos/*atmanl*
+- /??/atmos/*
 - *
 
 B 100

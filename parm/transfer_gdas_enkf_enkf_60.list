@@ -26,16 +26,17 @@
 #com/gfs/_ENVIR_/enkfgdas._PDY_/
 /gpfs/dell1/nco/ops/com/gfs/_ENVIR_/enkfgdas._PDY_/
 + /??/
-+ /??/mem056/
-+ /??/mem056/**
-+ /??/mem057/
-+ /??/mem057/**
-+ /??/mem058/
-+ /??/mem058/**
-+ /??/mem059/
-+ /??/mem059/**
-+ /??/mem060/
-+ /??/mem060/**
++ /??/atmos/
++ /??/atmos/mem056/
++ /??/atmos/mem056/**
++ /??/atmos/mem057/
++ /??/atmos/mem057/**
++ /??/atmos/mem058/
++ /??/atmos/mem058/**
++ /??/atmos/mem059/
++ /??/atmos/mem059/**
++ /??/atmos/mem060/
++ /??/atmos/mem060/**
 - *
 
 B 100
@@ -43,16 +44,17 @@ B 100
 #com/gfs/_ENVIR_/enkfgdas._PDYm1_/
 /gpfs/dell1/nco/ops/com/gfs/_ENVIR_/enkfgdas._PDYm1_/
 + /??/
-+ /??/mem056/
-+ /??/mem056/**
-+ /??/mem057/
-+ /??/mem057/**
-+ /??/mem058/
-+ /??/mem058/**
-+ /??/mem059/
-+ /??/mem059/**
-+ /??/mem060/
-+ /??/mem060/**
++ /??/atmos/
++ /??/atmos/mem056/
++ /??/atmos/mem056/**
++ /??/atmos/mem057/
++ /??/atmos/mem057/**
++ /??/atmos/mem058/
++ /??/atmos/mem058/**
++ /??/atmos/mem059/
++ /??/atmos/mem059/**
++ /??/atmos/mem060/
++ /??/atmos/mem060/**
 - *
 
 B 100
