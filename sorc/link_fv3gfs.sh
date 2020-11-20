@@ -55,36 +55,36 @@ fi
 #--add files from external repositories
 #---------------------------------------
 cd ${pwd}/../jobs               ||exit 8
-    $LINK ../sorc/gfs_post.fd/jobs/JGLOBAL_ATMOS_POST_MANAGER      .
-    $LINK ../sorc/gfs_post.fd/jobs/JGLOBAL_ATMOS_NCEPPOST          .
-    $LINK ../sorc/gldas.fd/jobs/JGDAS_ATMOS_GLDAS            .             
+    $SLINK ../sorc/gfs_post.fd/jobs/JGLOBAL_ATMOS_POST_MANAGER      .
+    $SLINK ../sorc/gfs_post.fd/jobs/JGLOBAL_ATMOS_NCEPPOST          .
+    $SLINK ../sorc/gldas.fd/jobs/JGDAS_ATMOS_GLDAS            .             
 cd ${pwd}/../parm               ||exit 8
     [[ -d post ]] && rm -rf post
-    $LINK ../sorc/gfs_post.fd/parm                           post
+    $SLINK ../sorc/gfs_post.fd/parm                           post
     [[ -d gldas ]] && rm -rf gldas
-    $LINK ../sorc/gldas.fd/parm                              gldas
+    $SLINK ../sorc/gldas.fd/parm                              gldas
 cd ${pwd}/../scripts            ||exit 8
-    $LINK ../sorc/gfs_post.fd/scripts/exgdas_atmos_nceppost.sh .
-    $LINK ../sorc/gfs_post.fd/scripts/exgfs_atmos_nceppost.sh  .
-    $LINK ../sorc/gfs_post.fd/scripts/exglobal_atmos_pmgr.sh   .
-    $LINK ../sorc/ufs_utils.fd/scripts/exemcsfc_global_sfc_prep.sh .
-    $LINK ../sorc/gldas.fd/scripts/exgdas_atmos_gldas.sh .
+    $SLINK ../sorc/gfs_post.fd/scripts/exgdas_atmos_nceppost.sh .
+    $SLINK ../sorc/gfs_post.fd/scripts/exgfs_atmos_nceppost.sh  .
+    $SLINK ../sorc/gfs_post.fd/scripts/exglobal_atmos_pmgr.sh   .
+    $SLINK ../sorc/ufs_utils.fd/scripts/exemcsfc_global_sfc_prep.sh .
+    $SLINK ../sorc/gldas.fd/scripts/exgdas_atmos_gldas.sh .
 cd ${pwd}/../ush                ||exit 8
     for file in fv3gfs_downstream_nems.sh fv3gfs_dwn_nems.sh gfs_nceppost.sh  \
         gfs_transfer.sh mod_icec.sh link_crtm_fix.sh trim_rh.sh fix_precip.sh; do
-        $LINK ../sorc/gfs_post.fd/ush/$file                  .
+        $SLINK ../sorc/gfs_post.fd/ush/$file                  .
     done
     for file in emcsfc_ice_blend.sh  fv3gfs_driver_grid.sh  fv3gfs_make_orog.sh  global_cycle_driver.sh \
         emcsfc_snow.sh  fv3gfs_filter_topo.sh  global_chgres_driver.sh  global_cycle.sh \
         fv3gfs_chgres.sh  fv3gfs_make_grid.sh  global_chgres.sh  ; do
-        $LINK ../sorc/ufs_utils.fd/ush/$file                  .
+        $SLINK ../sorc/ufs_utils.fd/ush/$file                  .
     done
     for file in gldas_archive.sh  gldas_forcing.sh gldas_get_data.sh  gldas_process_data.sh gldas_liscrd.sh  gldas_post.sh ; do
-        $LINK ../sorc/gldas.fd/ush/$file                  .
+        $SLINK ../sorc/gldas.fd/ush/$file                  .
     done
 cd ${pwd}/../util               ||exit 8
     for file in sub_slurm sub_wcoss_c sub_wcoss_d ; do
-        $LINK ../sorc/ufs_utils.fd/util/$file .
+        $SLINK ../sorc/ufs_utils.fd/util/$file .
     done
 
 
@@ -93,17 +93,17 @@ cd ${pwd}/../util               ||exit 8
 if [ -d ${pwd}/gfs_wafs.fd ]; then 
 #-----------------------------------
  cd ${pwd}/../jobs               ||exit 8
-     $LINK ../sorc/gfs_wafs.fd/jobs/*                         .
+     $SLINK ../sorc/gfs_wafs.fd/jobs/*                         .
  cd ${pwd}/../parm               ||exit 8
      [[ -d wafs ]] && rm -rf wafs
-    $LINK ../sorc/gfs_wafs.fd/parm/wafs                      wafs
+    $SLINK ../sorc/gfs_wafs.fd/parm/wafs                      wafs
  cd ${pwd}/../scripts            ||exit 8
-    $LINK ../sorc/gfs_wafs.fd/scripts/*                      .
+    $SLINK ../sorc/gfs_wafs.fd/scripts/*                      .
  cd ${pwd}/../ush                ||exit 8
-    $LINK ../sorc/gfs_wafs.fd/ush/*                          .
+    $SLINK ../sorc/gfs_wafs.fd/ush/*                          .
  cd ${pwd}/../fix                ||exit 8
     [[ -d wafs ]] && rm -rf wafs
-    $LINK ../sorc/gfs_wafs.fd/fix/*                          .
+    $SLINK ../sorc/gfs_wafs.fd/fix/*                          .
 fi
 
 
@@ -111,36 +111,36 @@ fi
 #--add GSI/EnKF file
 #------------------------------
 cd ${pwd}/../jobs               ||exit 8
-    $LINK ../sorc/gsi.fd/jobs/JGLOBAL_ATMOS_ANALYSIS        .
-    $LINK ../sorc/gsi.fd/jobs/JGLOBAL_ATMOS_ANALYSIS_CALC   .
-    $LINK ../sorc/gsi.fd/jobs/JGDAS_ATMOS_ANALYSIS_DIAG     .
-    $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_SELECT_OBS         .
-    $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_DIAG               .
-    $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_UPDATE             .
-    $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_ECEN               .
-    $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_SFC                .    
-    $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_FCST               .
-    $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_POST               .
-    $LINK ../sorc/gsi.fd/jobs/JGDAS_ATMOS_CHGRES_FORENKF    .
+    $SLINK ../sorc/gsi.fd/jobs/JGLOBAL_ATMOS_ANALYSIS        .
+    $SLINK ../sorc/gsi.fd/jobs/JGLOBAL_ATMOS_ANALYSIS_CALC   .
+    $SLINK ../sorc/gsi.fd/jobs/JGDAS_ATMOS_ANALYSIS_DIAG     .
+    $SLINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_SELECT_OBS         .
+    $SLINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_DIAG               .
+    $SLINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_UPDATE             .
+    $SLINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_ECEN               .
+    $SLINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_SFC                .    
+    $SLINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_FCST               .
+    $SLINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_POST               .
+    $SLINK ../sorc/gsi.fd/jobs/JGDAS_ATMOS_CHGRES_FORENKF    .
 cd ${pwd}/../scripts            ||exit 8
-    $LINK ../sorc/gsi.fd/scripts/exglobal_atmos_analysis.sh       .
-    $LINK ../sorc/gsi.fd/scripts/exglobal_atmos_analysis_calc.sh  .
-    $LINK ../sorc/gsi.fd/scripts/exglobal_diag.sh                 .
-    $LINK ../sorc/gsi.fd/scripts/exgdas_enkf_select_obs.sh        .
-    $LINK ../sorc/gsi.fd/scripts/exgdas_enkf_update.sh            .
-    $LINK ../sorc/gsi.fd/scripts/exgdas_enkf_ecen.sh              .
-    $LINK ../sorc/gsi.fd/scripts/exgdas_enkf_sfc.sh               .
-    $LINK ../sorc/gsi.fd/scripts/exgdas_enkf_fcst.sh              .
-    $LINK ../sorc/gsi.fd/scripts/exgdas_enkf_post.sh              .
-    $LINK ../sorc/gsi.fd/scripts/exgdas_atmos_chgres_forenkf.sh   .
+    $SLINK ../sorc/gsi.fd/scripts/exglobal_atmos_analysis.sh       .
+    $SLINK ../sorc/gsi.fd/scripts/exglobal_atmos_analysis_calc.sh  .
+    $SLINK ../sorc/gsi.fd/scripts/exglobal_diag.sh                 .
+    $SLINK ../sorc/gsi.fd/scripts/exgdas_enkf_select_obs.sh        .
+    $SLINK ../sorc/gsi.fd/scripts/exgdas_enkf_update.sh            .
+    $SLINK ../sorc/gsi.fd/scripts/exgdas_enkf_ecen.sh              .
+    $SLINK ../sorc/gsi.fd/scripts/exgdas_enkf_sfc.sh               .
+    $SLINK ../sorc/gsi.fd/scripts/exgdas_enkf_fcst.sh              .
+    $SLINK ../sorc/gsi.fd/scripts/exgdas_enkf_post.sh              .
+    $SLINK ../sorc/gsi.fd/scripts/exgdas_atmos_chgres_forenkf.sh   .
 cd ${pwd}/../fix                ||exit 8
     [[ -d fix_gsi ]] && rm -rf fix_gsi
-    $LINK ../sorc/gsi.fd/fix  fix_gsi
+    $SLINK ../sorc/gsi.fd/fix  fix_gsi
 cd ${pwd}/../ush                ||exit 8
-    $LINK ../sorc/gsi.fd/ush/gsi_utils.py        .
-    $LINK ../sorc/gsi.fd/ush/calcanl_gfs.py      .
-    $LINK ../sorc/gsi.fd/ush/calcinc_gfs.py      .
-    $LINK ../sorc/gsi.fd/ush/getncdimlen         .
+    $SLINK ../sorc/gsi.fd/ush/gsi_utils.py        .
+    $SLINK ../sorc/gsi.fd/ush/calcanl_gfs.py      .
+    $SLINK ../sorc/gsi.fd/ush/calcinc_gfs.py      .
+    $SLINK ../sorc/gsi.fd/ush/getncdimlen         .
 
 
 #------------------------------
@@ -150,43 +150,43 @@ cd ${pwd}/../fix                ||exit 8
     [[ -d gdas ]] && rm -rf gdas
     mkdir -p gdas
     cd gdas
-    $LINK ../../sorc/gsi.fd/util/Minimization_Monitor/nwprod/gdas.v1.0.0/fix/gdas_minmon_cost.txt            .
-    $LINK ../../sorc/gsi.fd/util/Minimization_Monitor/nwprod/gdas.v1.0.0/fix/gdas_minmon_gnorm.txt           .
-    $LINK ../../sorc/gsi.fd/util/Ozone_Monitor/nwprod/gdas_oznmon.v2.0.0/fix/gdas_oznmon_base.tar            .
-    $LINK ../../sorc/gsi.fd/util/Ozone_Monitor/nwprod/gdas_oznmon.v2.0.0/fix/gdas_oznmon_satype.txt          .
-    $LINK ../../sorc/gsi.fd/util/Radiance_Monitor/nwprod/gdas_radmon.v3.0.0/fix/gdas_radmon_base.tar         .
-    $LINK ../../sorc/gsi.fd/util/Radiance_Monitor/nwprod/gdas_radmon.v3.0.0/fix/gdas_radmon_satype.txt       .
-    $LINK ../../sorc/gsi.fd/util/Radiance_Monitor/nwprod/gdas_radmon.v3.0.0/fix/gdas_radmon_scaninfo.txt     .
+    $SLINK ../../sorc/gsi.fd/util/Minimization_Monitor/nwprod/gdas.v1.0.0/fix/gdas_minmon_cost.txt            .
+    $SLINK ../../sorc/gsi.fd/util/Minimization_Monitor/nwprod/gdas.v1.0.0/fix/gdas_minmon_gnorm.txt           .
+    $SLINK ../../sorc/gsi.fd/util/Ozone_Monitor/nwprod/gdas_oznmon.v2.0.0/fix/gdas_oznmon_base.tar            .
+    $SLINK ../../sorc/gsi.fd/util/Ozone_Monitor/nwprod/gdas_oznmon.v2.0.0/fix/gdas_oznmon_satype.txt          .
+    $SLINK ../../sorc/gsi.fd/util/Radiance_Monitor/nwprod/gdas_radmon.v3.0.0/fix/gdas_radmon_base.tar         .
+    $SLINK ../../sorc/gsi.fd/util/Radiance_Monitor/nwprod/gdas_radmon.v3.0.0/fix/gdas_radmon_satype.txt       .
+    $SLINK ../../sorc/gsi.fd/util/Radiance_Monitor/nwprod/gdas_radmon.v3.0.0/fix/gdas_radmon_scaninfo.txt     .
 cd ${pwd}/../jobs               ||exit 8
-    $LINK ../sorc/gsi.fd/util/Minimization_Monitor/nwprod/gdas.v1.0.0/jobs/JGDAS_ATMOS_VMINMON               .
-    $LINK ../sorc/gsi.fd/util/Minimization_Monitor/nwprod/gfs.v1.0.0/jobs/JGFS_ATMOS_VMINMON                 .
-    $LINK ../sorc/gsi.fd/util/Ozone_Monitor/nwprod/gdas_oznmon.v2.0.0/jobs/JGDAS_ATMOS_VERFOZN               .
-    $LINK ../sorc/gsi.fd/util/Radiance_Monitor/nwprod/gdas_radmon.v3.0.0/jobs/JGDAS_ATMOS_VERFRAD            .
+    $SLINK ../sorc/gsi.fd/util/Minimization_Monitor/nwprod/gdas.v1.0.0/jobs/JGDAS_ATMOS_VMINMON               .
+    $SLINK ../sorc/gsi.fd/util/Minimization_Monitor/nwprod/gfs.v1.0.0/jobs/JGFS_ATMOS_VMINMON                 .
+    $SLINK ../sorc/gsi.fd/util/Ozone_Monitor/nwprod/gdas_oznmon.v2.0.0/jobs/JGDAS_ATMOS_VERFOZN               .
+    $SLINK ../sorc/gsi.fd/util/Radiance_Monitor/nwprod/gdas_radmon.v3.0.0/jobs/JGDAS_ATMOS_VERFRAD            .
 cd ${pwd}/../parm               ||exit 8
     [[ -d mon ]] && rm -rf mon
     mkdir -p mon
     cd mon
-    $LINK ../../sorc/gsi.fd/util/Radiance_Monitor/nwprod/gdas_radmon.v3.0.0/parm/gdas_radmon.parm            da_mon.parm
-#   $LINK ../../sorc/gsi.fd/util/Minimization_Monitor/nwprod/gdas.v1.0.0/parm/gdas_minmon.parm               .
-#   $LINK ../../sorc/gsi.fd/util/Minimization_Monitor/nwprod/gfs.v1.0.0/parm/gfs_minmon.parm                 .
-    $LINK ../../sorc/gsi.fd/util/Ozone_Monitor/nwprod/gdas_oznmon.v2.0.0/parm/gdas_oznmon.parm               .
-#   $LINK ../../sorc/gsi.fd/util/Radiance_Monitor/nwprod/gdas_radmon.v3.0.0/parm/gdas_radmon.parm            .
+    $SLINK ../../sorc/gsi.fd/util/Radiance_Monitor/nwprod/gdas_radmon.v3.0.0/parm/gdas_radmon.parm            da_mon.parm
+#   $SLINK ../../sorc/gsi.fd/util/Minimization_Monitor/nwprod/gdas.v1.0.0/parm/gdas_minmon.parm               .
+#   $SLINK ../../sorc/gsi.fd/util/Minimization_Monitor/nwprod/gfs.v1.0.0/parm/gfs_minmon.parm                 .
+    $SLINK ../../sorc/gsi.fd/util/Ozone_Monitor/nwprod/gdas_oznmon.v2.0.0/parm/gdas_oznmon.parm               .
+#   $SLINK ../../sorc/gsi.fd/util/Radiance_Monitor/nwprod/gdas_radmon.v3.0.0/parm/gdas_radmon.parm            .
 cd ${pwd}/../scripts            ||exit 8
-    $LINK ../sorc/gsi.fd/util/Minimization_Monitor/nwprod/gdas.v1.0.0/scripts/exgdas_atmos_vminmon.sh        .
-    $LINK ../sorc/gsi.fd/util/Minimization_Monitor/nwprod/gfs.v1.0.0/scripts/exgfs_atmos_vminmon.sh          .
-    $LINK ../sorc/gsi.fd/util/Ozone_Monitor/nwprod/gdas_oznmon.v2.0.0/scripts/exgdas_atmos_verfozn.sh        .
-    $LINK ../sorc/gsi.fd/util/Radiance_Monitor/nwprod/gdas_radmon.v3.0.0/scripts/exgdas_atmos_verfrad.sh     .
+    $SLINK ../sorc/gsi.fd/util/Minimization_Monitor/nwprod/gdas.v1.0.0/scripts/exgdas_atmos_vminmon.sh        .
+    $SLINK ../sorc/gsi.fd/util/Minimization_Monitor/nwprod/gfs.v1.0.0/scripts/exgfs_atmos_vminmon.sh          .
+    $SLINK ../sorc/gsi.fd/util/Ozone_Monitor/nwprod/gdas_oznmon.v2.0.0/scripts/exgdas_atmos_verfozn.sh        .
+    $SLINK ../sorc/gsi.fd/util/Radiance_Monitor/nwprod/gdas_radmon.v3.0.0/scripts/exgdas_atmos_verfrad.sh     .
 cd ${pwd}/../ush                ||exit 8
-    $LINK ../sorc/gsi.fd/util/Minimization_Monitor/nwprod/minmon_shared.v1.0.1/ush/minmon_xtrct_costs.pl     .
-    $LINK ../sorc/gsi.fd/util/Minimization_Monitor/nwprod/minmon_shared.v1.0.1/ush/minmon_xtrct_gnorms.pl    .
-    $LINK ../sorc/gsi.fd/util/Minimization_Monitor/nwprod/minmon_shared.v1.0.1/ush/minmon_xtrct_reduct.pl    .
-    $LINK ../sorc/gsi.fd/util/Ozone_Monitor/nwprod/oznmon_shared.v2.0.0/ush/ozn_xtrct.sh                     .
-    $LINK ../sorc/gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared.v3.0.0/ush/radmon_ck_stdout.sh           .
-    $LINK ../sorc/gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared.v3.0.0/ush/radmon_err_rpt.sh             .
-    $LINK ../sorc/gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared.v3.0.0/ush/radmon_verf_angle.sh          .
-    $LINK ../sorc/gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared.v3.0.0/ush/radmon_verf_bcoef.sh          .
-    $LINK ../sorc/gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared.v3.0.0/ush/radmon_verf_bcor.sh           .
-    $LINK ../sorc/gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared.v3.0.0/ush/radmon_verf_time.sh           .
+    $SLINK ../sorc/gsi.fd/util/Minimization_Monitor/nwprod/minmon_shared.v1.0.1/ush/minmon_xtrct_costs.pl     .
+    $SLINK ../sorc/gsi.fd/util/Minimization_Monitor/nwprod/minmon_shared.v1.0.1/ush/minmon_xtrct_gnorms.pl    .
+    $SLINK ../sorc/gsi.fd/util/Minimization_Monitor/nwprod/minmon_shared.v1.0.1/ush/minmon_xtrct_reduct.pl    .
+    $SLINK ../sorc/gsi.fd/util/Ozone_Monitor/nwprod/oznmon_shared.v2.0.0/ush/ozn_xtrct.sh                     .
+    $SLINK ../sorc/gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared.v3.0.0/ush/radmon_ck_stdout.sh           .
+    $SLINK ../sorc/gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared.v3.0.0/ush/radmon_err_rpt.sh             .
+    $SLINK ../sorc/gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared.v3.0.0/ush/radmon_verf_angle.sh          .
+    $SLINK ../sorc/gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared.v3.0.0/ush/radmon_verf_bcoef.sh          .
+    $SLINK ../sorc/gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared.v3.0.0/ush/radmon_verf_bcor.sh           .
+    $SLINK ../sorc/gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared.v3.0.0/ush/radmon_verf_time.sh           .
     
 
 #------------------------------
