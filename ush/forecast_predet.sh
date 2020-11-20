@@ -14,6 +14,8 @@
 common_predet(){
 	echo "SUB ${FUNCNAME[0]}: Defining variables for shared through models"
 	pwd=$(pwd)
+        machine=${machine:-"WCOSS_C"}
+        machine=$(echo $machine | tr '[a-z]' '[A-Z]')
 	CASE=${CASE:-C768}
 	CDATE=${CDATE:-2017032500}
 	DATA=${DATA:-$pwd/fv3tmp$$}    # temporary running directory
@@ -38,6 +40,7 @@ cd $DATA
 FV3_GFS_predet(){
 	echo "SUB ${FUNCNAME[0]}: Defining variables for FV3GFS"
 	CDUMP=${CDUMP:-gdas}
+        CDUMPwave="${CDUMP}wave"
 	FHMIN=${FHMIN:-0}
 	FHMAX=${FHMAX:-9}
 	FHOUT=${FHOUT:-3}
@@ -49,6 +52,10 @@ FV3_GFS_predet(){
 	FDIAG=$FHOUT
 	if [ $FHMAX_HF -gt 0 -a $FHOUT_HF -gt 0 ]; then FDIAG=$FHOUT_HF; fi
 
+        WRITE_DOPOST=${WRITE_DOPOST:-".false."}
+        restart_interval=${restart_interval:-0}
+        rst_invt1=`echo $restart_interval |cut -d " " -f 1`
+
 	PDY=$(echo $CDATE | cut -c1-8)
 	cyc=$(echo $CDATE | cut -c9-10)
 
@@ -59,6 +66,8 @@ FV3_GFS_predet(){
 	FIX_DIR=${FIX_DIR:-$HOMEgfs/fix}
 	FIX_AM=${FIX_AM:-$FIX_DIR/fix_am}
 	FIXfv3=${FIXfv3:-$FIX_DIR/fix_fv3_gmted2010}
+        DATA=${DATA:-$pwd/fv3tmp$$}    # temporary running directory
+        ROTDIR=${ROTDIR:-$pwd}         # rotating archive directory
 	ICSDIR=${ICSDIR:-$pwd}         # cold start initial conditions
 	DMPDIR=${DMPDIR:-$pwd}         # global dumps for seaice, snow and sst analysis
 
@@ -81,16 +90,19 @@ FV3_GFS_predet(){
 	# Other options
 	MEMBER=${MEMBER:-"-1"} # -1: control, 0: ensemble mean, >0: ensemble member $MEMBER
 	ENS_NUM=${ENS_NUM:-1}  # Single executable runs multiple members (e.g. GEFS)
+        PREFIX_ATMINC=${PREFIX_ATMINC:-""} # allow ensemble to use recentered increment
 
         # IAU options
         DOIAU=${DOIAU:-"NO"}
         IAUFHRS=${IAUFHRS:-0}
         IAU_DELTHRS=${IAU_DELTHRS:-0}
+        IAU_OFFSET=${IAU_OFFSET:-0}
 
 	# Model specific stuff
 	FCSTEXECDIR=${FCSTEXECDIR:-$HOMEgfs/sorc/fv3gfs.fd/NEMS/exe}
 	FCSTEXEC=${FCSTEXEC:-fv3_gfs.x}
 	PARM_FV3DIAG=${PARM_FV3DIAG:-$HOMEgfs/parm/parm_fv3diag}
+        PARM_POST=${PARM_POST:-$HOMEgfs/parm/post}
 
 	# Model config options
 	APRUN_FV3=${APRUN_FV3:-${APRUN_FCST:-${APRUN:-""}}}
@@ -111,6 +123,8 @@ FV3_GFS_predet(){
 	OUTPUT_FILE=${OUTPUT_FILE:-"nemsio"}
 	WRITE_NEMSIOFLIP=${WRITE_NEMSIOFLIP:-".true."}
 	WRITE_FSYNCFLAG=${WRITE_FSYNCFLAG:-".true."}
+        affix="nemsio"
+        [[ "$OUTPUT_FILE" = "netcdf" ]] && affix="nc"
 
 	rCDUMP=${rCDUMP:-$CDUMP}
 
@@ -196,10 +210,11 @@ FV3_GFS_predet(){
 	fi
         cd $DATA || exit 8
         mkdir -p $DATA/INPUT
-        if [ $CDUMP = "gfs" -a $restart_interval -gt 0 ]; then
-            RSTDIR_TMP=${RSTDIR:-$ROTDIR}/${CDUMP}.${PDY}/${cyc}/RERUN_RESTART
-            if [ ! -d $RSTDIR_TMP ]; then mkdir -p $RSTDIR_TMP ; fi
-            $NLN $RSTDIR_TMP RESTART
+
+        if [ $CDUMP = "gfs" -a $rst_invt1 -gt 0 ]; then
+            RSTDIR_ATM=${RSTDIR:-$ROTDIR}/${CDUMP}.${PDY}/${cyc}s/RERUN_RESTART
+            if [ ! -d $RSTDIR_ATM ]; then mkdir -p $RSTDIR_ATM ; fi
+            $NLN $RSTDIR_ATM RESTART
         else
             mkdir -p $DATA/RESTART
         fi
@@ -215,8 +230,6 @@ FV3_GFS_predet(){
 	  rprefix=enkf$rCDUMP
 	  memchar=mem$(printf %03i $MEMBER)
 	fi
-	PDY=$(echo $CDATE | cut -c1-8)
-	cyc=$(echo $CDATE | cut -c9-10)
 	memdir=$ROTDIR/${prefix}.$PDY/$cyc/$memchar
 	if [ ! -d $memdir ]; then mkdir -p $memdir; fi
 
@@ -230,21 +243,28 @@ FV3_GFS_predet(){
           sCDATE=$($NDATE -3 $CDATE)
           sPDY=$(echo $sCDATE | cut -c1-8)
           scyc=$(echo $sCDATE | cut -c9-10)
+          tPDY=$gPDY
+          tcyc=$gcyc
         else
           sCDATE=$CDATE
           sPDY=$PDY
           scyc=$cyc
+          tPDY=$sPDY
+          tcyc=$cyc
         fi
 
 	echo "SUB ${FUNCNAME[0]}: pre-determination variables set"
 }
 
-FV3_GEFS_def(){
-	echo "SUB ${FUNCNAME[0]}: Defining variables for FV3GEFS"
-}
-
-WW3_def(){
+WW3_predet(){
 	echo "SUB ${FUNCNAME[0]}: Defining variables for WW3"
+        if [ $CDUMP = "gdas" ]; then
+           RSTDIR_WAVE=$ROTDIR/${CDUMP}.${PDY}/${cyc}/wave/restart
+        else
+           RSTDIR_WAVE=${RSTDIR_WAVE:-$ROTDIR/${CDUMP}.${PDY}/${cyc}/wave/restart}
+        fi
+        if [ ! -d $RSTDIR_WAVE ]; then mkdir -p $RSTDIR_WAVE ; fi
+        $NLN $RSTDIR_WAVE restart_wave
 }
 
 CICE_predet(){
