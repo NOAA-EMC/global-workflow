@@ -4,7 +4,6 @@ date
 export PS4=' $SECONDS + '
 set -xa
 
-# JY - 10/29. move up here, otherwise the COMIN does not work.
 export DATA=${DATA:-${DATAROOT}/${jobid:?}}
 mkdir -p $DATA
 cd $DATA

@@ -47,7 +47,6 @@ export cycle=${cycle:-t${cyc}z}
 setpdy.sh
 . ./PDY
 
-# JY - 10/28 added the CDATE, cleaned up from ecflow script
 export CDATE=$PDY$cyc
 
 export pgmout=OUTPUT.$$

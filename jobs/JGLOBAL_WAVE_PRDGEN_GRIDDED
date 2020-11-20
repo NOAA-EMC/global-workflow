@@ -4,8 +4,6 @@ date
 export PS4=' $SECONDS + '
 set -xa
 
-# JY - 10/27/20 move this part to the front so that the PDY is set in front of COMIN...
-
 export DATA=${DATA:-${DATAROOT}/${jobid:?}}
 mkdir -p $DATA
 cd $DATA

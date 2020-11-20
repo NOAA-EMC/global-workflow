@@ -5,7 +5,6 @@ date
 set -xa
 export PS4='$SECONDS + ' 
 
-# JY - 10/29, move the block in the front, otherwise PDY is not defined for COMIN
 export DATA=${DATA:-${DATAROOT}/${jobid:?}}
 mkdir -p $DATA
 cd $DATA
