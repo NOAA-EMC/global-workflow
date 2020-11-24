@@ -11,6 +11,7 @@
 #
 # Script history log:
 # 2019-11-02  J-Henrique Alves Ported to global-workflow.
+# 2020-06-10  J-Henrique Alves Ported to R&D machine Hera
 #
 # $Id$
 #
@@ -245,8 +246,8 @@
 
 # 3.b Clean up the rest
 
-#  rm -f ww3_outp.inp
-#  rm -f mod_def.ww3 out_pnt.ww3
+  rm -f ww3_outp.inp
+  rm -f mod_def.ww3 out_pnt.ww3
 
   cd ..
   rm -rf ${specdir}_${bloc}

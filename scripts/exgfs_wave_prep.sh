@@ -163,12 +163,12 @@
 
   for grdID in $grdINP $waveGRD
   do
-    if [ -f "$COMIN/rundata/${COMPONENTwave}.mod_def.${grdID}" ]
+    if [ -f "$COMIN/rundata/${CDUMP}wave.mod_def.${grdID}" ]
     then
       set +x
       echo " Mod def file for $grdID found in ${COMIN}/rundata. copying ...."
       [[ "$LOUD" = YES ]] && set -x
-      cp $COMIN/rundata/${COMPONENTwave}.mod_def.${grdID} mod_def.$grdID
+      cp $COMIN/rundata/${CDUMP}wave.mod_def.${grdID} mod_def.$grdID
 
     else
       msg="FATAL ERROR: NO MODEL DEFINITION FILE"
@@ -741,7 +741,7 @@
         cat $file >> cur.${WAVECUR_FID}
       done
 
-      cp -f cur.${WAVECUR_FID} ${COMOUT}/rundata/${COMPONENTwave}.${WAVECUR_FID}.$cycle.cur 
+      cp -f cur.${WAVECUR_FID} ${COMOUT}/rundata/${CDUMP}wave.${WAVECUR_FID}.$cycle.cur 
 
     else
       echo ' '
