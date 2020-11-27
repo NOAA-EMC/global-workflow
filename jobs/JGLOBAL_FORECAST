@@ -5,15 +5,6 @@ export RUN_ENVIR=${RUN_ENVIR:-"nco"}
 export PS4='$SECONDS + '
 date
 
-##############################################
-# Obtain unique process id (pid) and make temp directory
-##############################################
-export pid=${pid:-$$}
-export outid=${outid:-"LL$job"}
-export DATA=${DATA:-${DATAROOT}/${jobid:?}}
-mkdir -p $DATA
-cd $DATA
-
 
 ##############################################
 # Run setpdy and initialize PDY variables
@@ -70,6 +61,16 @@ fi
 . $HOMEgfs/env/${machine}.env fcst
 status=$?
 [[ $status -ne 0 ]] && exit $status
+
+
+##############################################
+# Obtain unique process id (pid) and make temp directory
+##############################################
+export pid=${pid:-$$}
+export outid=${outid:-"LL$job"}
+export DATA=${DATA:-${DATAROOT}/${jobid:?}}
+mkdir -p $DATA
+cd $DATA
 
 
 # Set wave variables
