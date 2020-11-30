@@ -105,11 +105,9 @@ fi
 ##########################################
 # Source machine runtime environment
 ##########################################
-if [ $RUN_ENVIR = "nco" ]; then
 . $HOMEgfs/env/${machine}.env fcst
 status=$?
 [[ $status -ne 0 ]] && exit $status
-fi
 
 #--------------------------------
 fi
