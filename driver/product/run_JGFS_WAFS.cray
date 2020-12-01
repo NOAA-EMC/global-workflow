@@ -1,0 +1,195 @@
+#!/bin/sh
+
+#BSUB -J gfs_wafs
+#BSUB -cwd /gpfs/hps/ptmp/Yali.Mao
+#BSUB -oo /gpfs/hps/ptmp/Yali.Mao/gfs_wafs.o%J
+#BSUB -eo /gpfs/hps/ptmp/Yali.Mao/gfs_wafs.o%J
+##BSUB -L /bin/sh
+#BSUB -q debug
+#BSUB -W 00:30
+#BSUB -P GFS-T2O
+#BSUB -M 500
+#BSUB -extsched 'CRAYLINUX[]' -R '1*{select[craylinux && !vnode]} + 1*{select[craylinux && vnode]span[ptile=1] cu[type=cabinet]}'
+
+# The following two lines will speed up 'cnvgrib'
+module load iobuf
+
+# 8 means octants
+
+############################################
+# Loading module
+############################################
+. $MODULESHOME/init/ksh
+module load PrgEnv-intel ESMF-intel-haswell/3_1_0rp5 cfp-intel-sandybridge iobuf craype-hugepages2M craype-haswell
+#module load cfp-intel-sandybridge/1.1.0
+module use /gpfs/hps/nco/ops/nwprod/modulefiles
+module load prod_envir
+module load prod_util
+module load prod_util/1.0.4
+module load grib_util/1.0.3
+
+set -xa
+
+export OMP_NUM_THREADS=1
+export KMP_AFFINITY=disabled
+export OMP_STACKSIZE=1024m
+export MP_LABELIO=yes
+export MP_STDOUTMODE=ordered 
+
+####export OMP_NUM_THREADS=1
+####export MP_MPILIB=mpich2
+####export MP_EUILIB=us
+####export MP_LABELIO=yes
+####export MP_COMPILER=intel
+
+############################################
+# required exports!
+############################################
+### envir: prod/dev/para/bkup/ges/test bkup2/ges2/para2/prod2/prd_p6
+export envir=para
+
+export cyc=${cyc:-00}
+# 00 06 12 30 33
+export fcsthrs=30
+
+# gfs_wafs for octants (8 WAFS files)
+export job=gfs_wafs_f${fcsthrs}_${cyc}
+
+############################################
+# set NET RUN
+############################################
+### NET: gfs/para/parallel-test/nam/rap/ dump/ens/nawips/nesdis/
+export NET=gfs
+export RUN=gfs
+
+
+############################################
+# Specify versions
+############################################
+export gfs_ver=v4.0.0
+
+
+############################################
+# user defined
+############################################
+export pid=${pid:-$$}
+export jobid=${job}.${pid}
+
+#needs to be the current date to make sure comparison is good at $PCOM
+#export PDY=`$NDATE -24 | cut -c 1-8`
+export PDY=`cut -c 7-14 $COMROOT/date/t00z`
+export PDY=20161101
+
+USER=`whoami`
+
+############################################
+# SENDCOM=YES--Copy output file to /com
+# SENDECF=YES--Allow to talk back to ECF
+# SENDDBN=YES--Alert output file to TOC
+# KEEPDATA=NO--Remove temporary working
+############################################
+export SENDCOM=YES
+export SENDDBN=NO
+export SENDDBN_NTC=NO
+export KEEPDATA=YES
+ 
+############################################
+# Define ROOT directories
+############################################
+export COMROOT=/gpfs/hps/emc/global/noscrub/Yali.Mao/datainput/com2
+#export NWROOTp1=/nwprod
+export PCOMROOT=/gpfs/hps/ptmp/${USER}/pcom
+export NWROOT=/gpfs/hps/emc/global/noscrub/Yali.Mao/project
+export DATAROOT=/gpfs/hps/ptmp/${USER}
+
+############################################
+# Define DATA PCOM, COMOUT and COMIN
+############################################
+export DATA=${DATA:-${DATAROOT}/${jobid}}
+export PCOM=${PCOM:-$PCOMROOT/${NET}}
+export COMOUT=/gpfs/hps/ptmp/${USER}/gfs_wafs.$PDY
+export COMIN=$COMROOT/gfs/$envir/gfs.$PDY
+
+export jlogfile=/$DATA/jlogfile.${jobid}
+
+################################
+# Set up the HOME directory
+################################
+export HOMEgfs=${HOMEgfs:-${NWROOT}/wafs_cray.${gfs_ver}}
+
+#############################################
+# run the job
+#############################################
+sh $HOMEgfs/jobs/JGFS_WAFS
+
+exit
+
+
+#############################################
+# compare the output (optional)
+#############################################
+
+DIFFGB="/gpfs/hps/emc/global/noscrub/Yali.Mao/save/bin/diffgb -x"
+
+stdpcom=/gpfs/gp1/ptmp/Yali.Mao/pcomop
+files=`ls $PCOM/` 
+for file in $files ; do 
+    $DIFFGB $PCOM/$file $stdpcom/$file > $file.diff
+done
+
+
+stdcom=/gpfs/gp2/nco/ops/com/gfs/prod/gfs.$PDY
+files=`ls $COMOUT/`
+for file in $files ; do
+    $DIFFGB $COMOUT/$file $stdcom/$file > $file.diff
+done
+
+if [ $USER = 'Yali.Mao' ] ; then
+  # the standard data to be compared to
+  stdout=/com/${NET}/$envir/${RUN}.${PDY}
+  if [ $envir = prod ]; then
+    stdpcom=/pcom/gfs
+  else
+    stdpcom=/pcom/${envir}/gfs
+  fi
+
+  for gid in 37 38 39 40 41 42 43 44 ; do
+
+    # comparing $COMOUT products
+    cmp $COMOUT/wafs${NET}${gid}.t${cyc}z.gribf${fcsthrs} $stdout/wafs${NET}${gid}.t${cyc}z.gribf${fcsthrs}
+    cmp $COMOUT/wafs${NET}${gid}.t${cyc}z.gribf${fcsthrs}.grib2 $stdout/wafs${NET}${gid}.t${cyc}z.gribf${fcsthrs}.grib2
+
+    # $PCOM data on develop machine may be out of date, so skip the comparison
+    continue
+    #stdpcom=/ptmpp2/Jiayi.Peng/data
+
+    # comparing $PCOM products
+    if [ $fcsthrs -eq 30 ] ; then
+      sets=b
+      for fhr in 12 18 24 30 ; do
+        cmp $PCOM/com.wafs${cyc}${fhr}${sets}.$job $stdpcom/com.wafs${cyc}${fhr}${sets}.$job
+	  cmp $PCOM/xtrn.wfs${NET}${cyc}${fhr}${sets}.$job $stdpcom/xtrn.wfs${NET}${cyc}${fhr}${sets}.$job
+      done
+      sets=
+      for fhr in 00 06 ; do
+        cmp $PCOM/com.wafs${cyc}${fhr}${sets}.$job $stdpcom/com.wafs${cyc}${fhr}${sets}.$job
+	  cmp $PCOM/xtrn.wfs${NET}${cyc}${fhr}${sets}.$job $stdpcom/xtrn.wfs${NET}${cyc}${fhr}${sets}.$job
+      done
+    fi
+    if [ $fcsthrs -ge 12 -a $fcsthrs -le 30 ] ; then
+      sets=a
+      cmp $PCOM/com.wafs${cyc}${fcsthrs}${sets}.$job $stdpcom/com.wafs${cyc}${fcsthrs}${sets}.$job
+      cmp $PCOM/xtrn.wfs${NET}${cyc}${fcsthrs}${sets}.$job $stdpcom/xtrn.wfs${NET}${cyc}${fcsthrs}${sets}.$job
+    elif  [ $fcsthrs -ge 36 ] ; then
+      sets=
+      cmp $PCOM/com.wafs${cyc}${fcsthrs}${sets}.$job $stdpcom/com.wafs${cyc}${fcsthrs}${sets}.$job
+      cmp $PCOM/xtrn.wfs${NET}${cyc}${fcsthrs}${sets}.$job $stdpcom/xtrn.wfs${NET}${cyc}${fcsthrs}${sets}.$job
+    # elif [ $fcsthrs -le 36 ] ; then 
+    #   no comparison
+    fi
+
+  done
+
+fi
+
+exit

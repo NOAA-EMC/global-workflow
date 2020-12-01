@@ -18,13 +18,15 @@ if [ -d /opt/modules ]; then
     . /opt/modules/default/init/sh
     module load ecflow
     POST_OUT=/gpfs/hps/tmpfs/ecflow/ecflow_post_in.$LSB_BATCH_JID
+elif [ -d /usrx/local/Modules ]; then
+    # WCOSS Phase 1 & 2 (IBM iDataPlex)
+    . /usrx/local/Modules/default/init/sh
+    module load ecflow
+    POST_OUT=/var/lsf/ecflow_post_in.$LSB_BATCH_JID
 else
     # WCOSS Phase 3 (Dell PowerEdge)
     . /usrx/local/prod/lmod/lmod/init/sh
-    . /gpfs/dell1/nco/ops/nwprod/versions/ecflow_p3.ver
-    module load ips/$ips_ver
-    module load EnvVars/$EnvVars_ver
-    module load ecflow/$ecflow_ver
+    module load ips/18.0.1.163 ecflow/%ECF_VERSION%
     POST_OUT=/var/lsf/ecflow_post_in.$USER.$LSB_BATCH_JID
 fi
 ecflow_client --init=${ECF_RID}

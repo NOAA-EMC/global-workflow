@@ -47,6 +47,7 @@ export MP_STDOUTMODE=ordered
 
 #export machine="WCOSS_C"
 #machine="WCOSS_DELL_P3"
+#machine="THEIA"
 machine="JET"
 export npe_postsnd=12
 export npe_postsndcfp=10
@@ -160,8 +161,8 @@ env
 export KEEPDATA=YES
 ########################################################
 # Execute the script.
-#$SCRbufrsnd/exgfs_atmos_postsnd.sh
-${HOMEbufrsnd}/jobs/JGFS_ATMOS_POSTSND
+#$SCRbufrsnd/exgfs_postsnd.sh.ecf
+${HOMEbufrsnd}/jobs/JGFS_POSTSND
 ########################################################
 
 #cat $pgmout

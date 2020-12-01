@@ -82,7 +82,7 @@ fi
 export HOMERELO=$shared_global_home
 export HOMESYND=${HOMERELO}
 #export envir_getges=prod
-$gfs_global_home/jobs/JGFS_ATMOS_CYCLONE_TRACKER
+$gfs_global_home/jobs/JGFS_CYCLONE_TRACKER
 
 if [ $? -ne 0 ]; then
 #  ecflow_client --abort
@@ -93,16 +93,16 @@ fi
 #%manual
 ########################################################################
 ######################################################################
-#PURPOSE:  Executes the job JGFS_ATMOS_CYCLONE_TRACKER
+#PURPOSE:  Executes the job JGFS_CYCLONE_TRACKER
 ######################################################################
 ###############################################################
 ##  Function been tested:            creates GFS TC forecast track
 ##
-##  Calling sequence:                JGFS_ATMOS_CYCLONE_TRACKER, global_extrkr.sh
+##  Calling sequence:                JGFS_CYCLONE_TRACKER, global_extrkr.sh
 ##
 ##  Initial condition:               provide hours (cyc=?)
 ##
-##  Usage:                           bsub < test_jgfs_cyclone_tracker
+##  Usage:                           bsub < test_jgfs_cyclone_tracker.ecf
 ##
 ##  Data_In:                         COMINgfs=/com/gfs/prod/gfs.${PDY}
 ##                                   COMINgdas=/com/gfs/prod/gdas.${PDY}

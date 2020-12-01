@@ -1,0 +1,120 @@
+#!/bin/sh
+
+#BSUB -J gfs_wafs_gcip
+#BSUB -oo /ptmpp1/Yali.Mao/gfs_wafs_gcip.o%J
+#BSUB -eo /ptmpp1/Yali.Mao/gfs_wafs_gcip.o%J
+#BSUB -L /bin/sh
+#BSUB -q debug
+#BSUB -W 00:30
+#BSUB -P GFS-T2O
+#BSUB -R affinity[core]
+
+set -xa
+
+export OMP_NUM_THREADS=1
+export MP_MPILIB=mpich2
+export MP_EUILIB=us
+export MP_LABELIO=yes
+export MP_COMPILER=intel
+
+
+############################################
+# Loading module
+############################################
+. /usrx/local/Modules/default/init/ksh
+module load prod_util/v1.0.2
+module load grib_util/v1.0.1
+
+############################################
+# required exports!
+############################################
+### envir: prod/dev/para/bkup/ges/test bkup2/ges2/para2/prod2/prd_p6
+export envir=prod
+
+export cyc=${cyc:-00}
+
+# gfs_wafs_gcip for generating global icing analysis for every 3 hours
+export job=gfs_wafs_gcip_${cyc}
+
+############################################
+# set NET RUN
+############################################
+### NET: gfs/para/parallel-test/nam/rap/ dump/ens/nawips/nesdis/
+export NET=gfs
+export RUN=gfs
+
+
+############################################
+# Specify versions
+############################################
+export gfs_ver=v13.0.0
+export obsproc_dump_ver=v3.2.0
+export obsproc_shared_bufr_dumplist_ver=v1.1.0 
+
+############################################
+# user defined
+############################################
+export pid=${pid:-$$}
+export jobid=${job}.${pid}
+
+#needs to be the current date to make sure comparison is good at $PCOM
+export PDY=`cut -c 7-14 /com2/date/t00z`
+
+USER=`whoami`
+
+############################################
+# SENDCOM=YES--Copy output file to /com
+# SENDECF=YES--Allow to talk back to ECF
+# SENDDBN=YES--Alert output file to TOC
+# KEEPDATA=NO--Remove temporary working
+############################################
+export SENDCOM=YES
+export SENDDBN=NO
+#export SENDDBN_NTC=NO
+#export SENDDBN_GB2=NO
+export KEEPDATA=YES
+ 
+############################################
+# Define ROOT directories
+############################################
+export COMROOT=/com
+export NWROOTp1=/nwprod
+export PCOMROOT=/ptmpp1/${USER}/pcom
+export NWROOT=/global/save/Yali.Mao/project
+export DATAROOT=/ptmpp1/${USER}
+#export DCOMROOT=/dcom
+
+############################################
+# Define DATA PCOM, COMOUT and COMIN
+############################################
+export DATA=${DATA:-${DATAROOT}/${jobid}}
+export PCOM=${PCOM:-$PCOMROOT/wafs}
+export COMOUT=/ptmpp1/${USER}/gfs_wafs_gcip.$PDY
+
+export COMINsat=${COMINsat:-/dcom/us007003/$PDY/mcidas}
+export COMINradar=${COMINradar:-/com/hourly/prod/radar.$PDY}
+
+export jlogfile=/$DATA/jlogfile.${jobid}
+
+################################
+# Set up the HOME directory
+################################
+export HOMEgfs=${HOMEgfs:-${NWROOT}/gfs.${gfs_ver}}
+
+
+############################################
+# run the job
+#############################################
+export SHOUR=00
+export EHOUR=03
+export FHINC=03
+
+sh $HOMEgfs/jobs/JGFS_WAFS_GCIP
+
+#############################################
+# compare the output (optional)
+#############################################
+if [ $USER = 'Yali.Mao' ] ; then
+  echo ""
+fi
+exit

@@ -83,7 +83,7 @@ export HOMERELO=$shared_global_home
 #export HOMERELO=${NWROOT}/tropcy_qc_reloc.${tropcy_qc_reloc_ver}_r62774_phase2
 export HOMESYND=${HOMERELO}
 #export envir_getges=prod
-$gfs_global_home/jobs/JGLOBAL_ATMOS_TROPCY_QC_RELOC
+$gfs_global_home/jobs/JGFS_TROPCY_QC_RELOC
 
 if [ $? -ne 0 ]; then
 #  ecflow_client --abort
@@ -93,18 +93,18 @@ fi
 #%include <tail.h> 
 #%manual
 ######################################################################
-##PURPOSE:  Executes the job JGLOBAL_ATMOS_TROPCY_QC_RELOC
+##PURPOSE:  Executes the job JGFS_TROPCY_QC_RELOC
 #######################################################################
 ##############################################################
 #  Function been tested:            TCvital quality control and archive, hurricane relocation
 #
-#  Calling sequence:                JGLOBAL_ATMOS_TROPCY_QC_RELOC, exglobal_atmos_tropcy_qc_reloc.sh,
+#  Calling sequence:                JGFS_TROPCY_QC_RELOC, extropcy_qc_reloc.sh.ecf, 
 #                                   syndat_qctropcy.sh, tropcy_relocate.sh,syndat_getjtbul.sh,
 #                                   tropcy_relocate_extrkr.sh,parse-storm-type.pl
 #
 #  Initial condition:               provide hours (cyc=?)
 #
-#  Usage:                           bsub < test_jgfs_tropcy_qc_reloc
+#  Usage:                           bsub < test_jgfs_tropcy_qc_reloc.ecf
 #
 #  Data_In:                         COMINgfs=/com/gfs/prod/gfs.${PDY}
 #                                   COMINgdas=/com/gfs/prod/gdas.${PDY}

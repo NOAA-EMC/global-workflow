@@ -14,7 +14,6 @@
 
 module use /gpfs/hps/nco/ops/nwprod/modulefiles
 module load prod_util
-module load prod_envir/1.1.0
 module unload grib_util
 module load grib_util/1.0.3
 ##module load crtm-intel/2.2.3
@@ -81,7 +80,7 @@ export PDY=20140814
 #export COMINgdas=/gpfs/tp1/nco/ops/com/gfs/prod/gdas.${PDY}
 export COMINgfs=/gpfs/hps/emc/global/noscrub/Qingfu.Liu/com/gfs/$envir/gfs.${PDY}
 export COMINgdas=/gpfs/hps/emc/global/noscrub/Qingfu.Liu/com/gfs/$envir/gdas.${PDY}
-export ARCHSYND=${COMINsyn:-$(compath.py gfs/prod/syndat)}
+export ARCHSYND=/gpfs/tp1/nco/ops/com/arch/prod/syndat
 export HOMENHC=/gpfs/hps/emc/global/noscrub/Qingfu.Liu/guidance/storm-data/ncep
 #export GETGES_COM=/gpfs/tp1/nco/ops/com
 export GETGES_COM=/gpfs/hps/emc/global/noscrub/Qingfu.Liu/com
@@ -113,7 +112,7 @@ export HOMERELO=$shared_global_home
 #export HOMERELO=${NWROOT}/tropcy_qc_reloc.${tropcy_qc_reloc_ver}_r62774_phase2
 export HOMESYND=${HOMERELO}
 #export envir_getges=prod
-$gdas_global_home/jobs/JGLOBAL_ATMOS_TROPCY_QC_RELOC
+$gdas_global_home/jobs/JGDAS_TROPCY_QC_RELOC
 
 if [ $? -ne 0 ]; then
 #  ecflow_client --abort
@@ -123,18 +122,18 @@ fi
 #%include <tail.h> 
 #%manual
 ######################################################################
-#PURPOSE:  Executes the job JGLOBAL_ATMOS_TROPCY_QC_RELOC
+#PURPOSE:  Executes the job JGDAS_TROPCY_QC_RELOC
 ######################################################################
 #############################################################
 #  Function been tested:            TCvital quality control and archive, hurricane relocation
 #
-#  Calling sequence:                JGLOBAL_ATMOS_TROPCY_QC_RELOC, exglobal_atmos_tropcy_qc_reloc.sh,
+#  Calling sequence:                JGFS_TROPCY_QC_RELOC, extropcy_qc_reloc.sh.ecf, 
 #  #                                   syndat_qctropcy.sh, tropcy_relocate.sh,syndat_getjtbul.sh,
 #  #                                   tropcy_relocate_extrkr.sh,parse-storm-type.pl
 #
 #  Initial condition:               provide hours (cyc=?)
 #
-#  Usage:                           bsub < test_jgdas_tropcy_qc_reloc
+#  Usage:                           bsub < test_jgdas_tropcy_qc_reloc.ecf
 #
 #  Data_In:                         COMINgfs=/com/gfs/prod/gfs.${PDY}
 #                                   COMINgdas=/com/gfs/prod/gdas.${PDY}
