@@ -67,6 +67,8 @@ NWPROD=${NWPROD:-${NWROOT:-$pwd}}
 HOMEgfs=${HOMEgfs:-$NWPROD}
 FIX_DIR=${FIX_DIR:-$HOMEgfs/fix}
 FIX_AM=${FIX_AM:-$FIX_DIR/fix_am}
+export FIX_AER=${FIX_AER:-$FIX_DIR/fix_aer}
+export FIX_LUT=${FIX_LUT:-$FIX_DIR/fix_lut}
 FIXfv3=${FIXfv3:-$FIX_DIR/fix_fv3_gmted2010}
 DATA=${DATA:-$pwd/fv3tmp$$}    # temporary running directory
 ROTDIR=${ROTDIR:-$pwd}         # rotating archive directory
@@ -394,6 +396,16 @@ $NLN $FIX_AM/${O3FORC}                         $DATA/global_o3prdlos.f77
 $NLN $FIX_AM/${H2OFORC}                        $DATA/global_h2oprdlos.f77
 $NLN $FIX_AM/global_solarconstant_noaa_an.txt  $DATA/solarconstant_noaa_an.txt
 $NLN $FIX_AM/global_sfc_emissivity_idx.txt     $DATA/sfc_emissivity_idx.txt
+
+## merra2 aerosol climo
+for n in 01 02 03 04 05 06 07 08 09 10 11 12; do
+$NLN $FIX_AER/merra2C.aerclim.2003-2014.m${n}.nc $DATA/aeroclim.m${n}.nc
+done
+cp -f $FIX_LUT/optics_BC.v1_3.dat $DATA/optics_BC.dat
+cp -f $FIX_LUT/optics_OC.v1_3.dat $DATA/optics_OC.dat
+cp -f $FIX_LUT/optics_DU.v15_3.dat $DATA/optics_DU.dat
+cp -f $FIX_LUT/optics_SS.v3_3.dat $DATA/optics_SS.dat
+cp -f $FIX_LUT/optics_SU.v1_3.dat $DATA/optics_SU.dat
 
 $NLN $FIX_AM/global_co2historicaldata_glob.txt $DATA/co2historicaldata_glob.txt
 $NLN $FIX_AM/co2monthlycyc.txt                 $DATA/co2monthlycyc.txt
