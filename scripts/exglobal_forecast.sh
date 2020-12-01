@@ -399,7 +399,7 @@ $NLN $FIX_AM/global_sfc_emissivity_idx.txt     $DATA/sfc_emissivity_idx.txt
 
 ## merra2 aerosol climo
 for n in 01 02 03 04 05 06 07 08 09 10 11 12; do
-$NLN $FIX_AER/merra2C.aerclim.2003-2014.m${n}.nc $DATA/aeroclim.m${n}.nc
+$NLN $FIX_AER/merra2.aerclim.2003-2014.m${n}.nc $DATA/aeroclim.m${n}.nc
 done
 cp -f $FIX_LUT/optics_BC.v1_3.dat $DATA/optics_BC.dat
 cp -f $FIX_LUT/optics_OC.v1_3.dat $DATA/optics_OC.dat
