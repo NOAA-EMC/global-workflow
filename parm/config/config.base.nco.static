@@ -12,9 +12,9 @@ export machine="WCOSS_DELL_P3"
 export RUN_ENVIR="nco"
 
 # Account, queue, etc.
-export ACCOUNT="FV3GFS-T2O"
+export ACCOUNT="GFS-T2O"
 export QUEUE="prod"
-export QUEUE_ARCH="dev_transfer"
+export QUEUE_SERVICE="dev_transfer"
 
 # Project to use in mass store:
 HPSS_PROJECT=emc-global
@@ -32,34 +32,27 @@ export SCRgfs=$HOMEgfs/scripts
 # GLOBAL static environment parameters
 
 export NWPROD="/gpfs/dell1/nco/ops/nwprod"
-export DMPDIR="/gpfs/dell3/emc/global/dump"
 export RTMFIX=$CRTM_FIX
-
 
 # Machine specific paths used everywhere
 
 # USER specific paths
-#    export HOMEDIR="/gpfs/dell2/emc/modeling/noscrub/$USER"
-    export HOMEDIR=$EXPDIR/HOMEDIR
-#    export STMP="/gpfs/dell3/stmp/$USER"
-    export STMP=$DATAROOT
-#    export PTMP="/gpfs/dell3/ptmp/$USER"
-    export PTMP=$ROTDIR
-#    export NOSCRUB="/gpfs/dell2/emc/modeling/noscrub/$USER"
-    export NOSCRUB=$EXPDIR/NOSCRUB
+export HOMEDIR=$EXPDIR/HOMEDIR
+export STMP=$DATAROOT
+export PTMP=$ROTDIR
+export NOSCRUB=$EXPDIR/NOSCRUB
 
-    # Base directories for various builds
-    export BASE_GIT="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git"
-    export BASE_SVN="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git"
+# Base directories for various builds
+export BASE_GIT="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git"
 
 # Toggle to turn on/off GFS downstream processing.
-export DO_BUFRSND="YES"
-export DO_GEMPAK="YES"
-export DO_AWIPS="YES"
+export DO_BUFRSND="YES"    # BUFR sounding products
+export DO_GEMPAK="YES"     # GEMPAK products
+export DO_AWIPS="YES"      # AWIPS products
+export WAFSF="YES"         # WAFS products
 
 # NO for retrospective parallel; YES for real-time parallel
 export REALTIME="YES"
-
 
 ####################################################
 # DO NOT ADD MACHINE DEPENDENT STUFF BELOW THIS LINE
@@ -68,13 +61,13 @@ export REALTIME="YES"
 # CLEAR
 ####################################################
 # Build paths relative to $HOMEgfs
-export HOMEgsi="$HOMEgfs"
 export FIXgsi="$HOMEgfs/fix/fix_gsi"
 export HOMEfv3gfs="$HOMEgfs/sorc/fv3gfs.fd"
 export HOMEpost="$HOMEgfs"
-export HOMEobsproc_prep="$BASE_GIT/obsproc/obsproc_prep.iss-46886.fv3gfs"
-export HOMEobsproc_network="$BASE_GIT/obsproc/obsproc_global.iss-46886.fv3gfs"
-export BASE_VERIF="$BASE_SVN/verif/global/tags/vsdb"
+export HOMEobsproc_prep="$BASE_GIT/obsproc/gfsv16b/obsproc_prep.iss70457.netcdfhistory"
+export HOMEobsproc_network="$BASE_GIT/obsproc/gfsv16b/obsproc_global.iss71402.supportGFSv16"
+export HOMEobsproc_global=$HOMEobsproc_network
+export BASE_VERIF="$BASE_GIT/verif/global/tags/vsdb"
 
 # CONVENIENT utility scripts and other environment parameters
 export NCP="/bin/cp -p"
@@ -84,6 +77,8 @@ export VERBOSE="YES"
 export KEEPDATA="NO"
 export CHGRP_CMD="chgrp rstprod"
 export NEMSIOGET="$HOMEgfs/exec/nemsio_get"
+export NCDUMP="$NETCDF/bin/ncdump"
+export NCLEN="$HOMEgfs/ush/getncdimlen"
 
 # Machine environment, jobs, and other utility scripts
 export BASE_ENV="$HOMEgfs/env"
@@ -93,20 +88,25 @@ export BASE_JOB="$HOMEgfs/jobs/rocoto"
 export SDATE=2018080600
 export EDATE=2039123100
 export assim_freq=6
-export PSLOT="rtecffv3"
+export PSLOT="test"
 export EXPDIR="$EXPDIR"
 export ROTDIR="$ROTDIR"
 export ROTDIR_DUMP="YES"
 export DUMP_SUFFIX=""
 export RUNDIR="$DATAROOT"
 export ARCDIR="$NOSCRUB/archive/$PSLOT"
-export ICSDIR="/gpfs/dell2/ptmp/$USER/FV3ICS"
 export ATARDIR="/NCEPDEV/$HPSS_PROJECT/1year/$USER/$machine/scratch/$PSLOT"
 
 # Commonly defined parameters in JJOBS
 export envir=${envir:-"prod"}
 export NET="gfs"
 export RUN=${RUN:-${CDUMP:-"gfs"}}
+export COMINatmos=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos
+export COMOUTatmos=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos
+export COMINwave=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/wave
+export COMOUTwave=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/wave
+
+export jlogfile="${EXPDIR}/logs/jlogfile"
 export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 export LOGSCRIPT=${LOGSCRIPT:-""}
 #export ERRSCRIPT=${ERRSCRIPT:-"err_chk"}
@@ -114,15 +114,21 @@ export LOGSCRIPT=${LOGSCRIPT:-""}
 export REDOUT="1>"
 export REDERR="2>"
 
-export SENDECF=${SENDECF:-"NO"}
+export SENDECF=${SENDECF:-"YES"}
 export SENDCOM=${SENDCOM:-"YES"}
+export SENDSDM=${SENDSDM:-"YES"}
+export SENDDBN_NTC=${SENDDBN_NTC:-"YES"}
 export SENDDBN=${SENDDBN:-"YES"}
-export SENDSDM=${SENDSDM:-"NO"}
+export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
 # Resolution specific parameters
-export LEVS=65
+export LEVS=128
 export CASE="C768"
 export CASE_ENKF="C384"
+
+# Run with CCPP physics
+export RUN_CCPP="NO"
+export CCPP_SUITE="FV3_GFS_v16beta"
 
 # Surface cycle update frequency
 if [[ "$CDUMP" == "gdas" ]] ; then
@@ -132,11 +138,13 @@ elif [[ "$CDUMP" == "gfs" ]] ; then
    export FHCYC=24
 fi
 
-
 # Output frequency of the forecast model (for cycling)
 export FHMIN=0
 export FHMAX=9
 export FHOUT=3
+
+# Cycle to run EnKF  (set to BOTH for both gfs and gdas)
+export EUPD_CYC="gdas"
 
 # GFS cycle info
 export gfs_cyc=4 # 0: no GFS cycle, 1: 00Z only, 2: 00Z and 12Z only, 4: all 4 cycles.
@@ -153,25 +161,55 @@ export FHMAX_GFS=$(eval echo \${FHMAX_GFS_$cyc})
 export FHOUT_GFS=3
 export FHMAX_HF_GFS=120
 export FHOUT_HF_GFS=1
+export ILPOST=1           # gempak output frequency up to F120
 
 # frequency for saving restart files. set to 6,12,24,48 etc 
 export restart_interval_gfs=12
 
-
 # I/O QUILTING, true--use Write Component; false--use GFDL FMS
 # if quilting=true, choose OUTPUT_GRID as cubed_sphere_grid in netcdf or gaussian_grid
 # if gaussian_grid, set OUTPUT_FILE for nemsio or netcdf
+# WRITE_DOPOST=true, use inline POST
 export QUILTING=".true."
 export OUTPUT_GRID="gaussian_grid"
-export OUTPUT_FILE="nemsio"
+export OUTPUT_FILE="netcdf"
+export WRITE_DOPOST=".true."
+
+# suffix options depending on file format
+if [ $OUTPUT_FILE = "netcdf" ]; then
+    export SUFFIX=".nc"
+    export NEMSIO_IN=".false."
+    export NETCDF_IN=".true."
+else
+    export SUFFIX=".nemsio"
+    export NEMSIO_IN=".true."
+    export NETCDF_IN=".false."
+fi
 
 # IAU related parameters
-export DOIAU="NO"
-export IAUFHRS=6
+export DOIAU="YES"        # Enable 4DIAU for control with 3 increments
+export IAUFHRS="3,6,9"
+export IAU_FHROT=`echo $IAUFHRS | cut -c1`
 export IAU_DELTHRS=6
-export DOIAU_ENKF="NO"
-export IAUFHRS_ENKF=6
+export IAU_OFFSET=6
+export DOIAU_ENKF=${DOIAU:-"YES"}   # Enable 4DIAU for EnKF ensemble
+export IAUFHRS_ENKF="3,6,9"
 export IAU_DELTHRS_ENKF=6
+if [[ "$SDATE" = "$CDATE" ]]; then
+  export IAU_OFFSET=0
+  export IAU_FHROT=0
+fi
+
+# Use Jacobians in eupd and thereby remove need to run eomg
+export lobsdiag_forenkf=".true."
+
+# run GLDAS to spin up land ICs
+export DO_GLDAS=YES
+export gldas_cyc=00
+
+# run wave component
+export DO_WAVE=YES
+export WAVE_CDUMP="both"
 
 # Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL
 export imp_physics=11
@@ -179,10 +217,10 @@ export imp_physics=11
 # Shared parameters
 # Hybrid related
 export DOHYBVAR="YES"
-export NMEM_ENKF=80
-export SMOOTH_ENKF="YES"
+export NMEM_ENKF="80"
+export SMOOTH_ENKF="NO"
 export l4densvar=".true."
-export lwrite4danl=".false."
+export lwrite4danl=".true."
 
 # EnKF output frequency
 if [ $DOHYBVAR = "YES" ]; then
@@ -205,15 +243,31 @@ if [ $DONST = "YES" ]; then export FNTSFA="        "; fi
 export nst_anl=.true.
 
 # Analysis increments to zero in CALCINCEXEC
-export INCREMENTS_TO_ZERO="'delz_inc','clwmr_inc','icmr_inc'"
+export INCREMENTS_TO_ZERO="'liq_wat_inc','icmr_inc'"
 
+if [ $OUTPUT_FILE = "nemsio" ]; then
+    export DO_CALC_INCREMENT="YES"
+    export DO_CALC_ANALYSIS="NO"
+fi
+
+# Stratospheric increments to zero
+export INCVARS_ZERO_STRAT="'sphum_inc','liq_wat_inc','icmr_inc'"
+export INCVARS_EFOLD="5"
+
+# Swith to generate netcdf or binary diagnostic files.  If not specified,
+# script default to binary diagnostic files.   Set diagnostic file
+# variables here since used in both DA and vrfy jobs
+export netcdf_diag=".true."
+export binary_diag=".false."
+
+# Verification options
+export DO_METP="NO"                  # Run MET+ jobs
 
 # Archiving options
-export DELETE_COM_IN_ARCHIVE_JOB=YES
 export HPSSARCH="NO"         # save data to HPSS archive
 export ARCH_CYC=00           # Archive data at this cycle for warm_start capability
 export ARCH_WARMICFREQ=1     # Archive frequency in days for warm_start capability
 export ARCH_FCSTICFREQ=1     # Archive frequency in days for gdas and gfs forecast-only capability
-
+export DELETE_COM_IN_ARCHIVE_JOB="YES"   # NO=retain ROTDIR.  YES default in arch.sh and earc.sh.
 
 echo "END: config.base"

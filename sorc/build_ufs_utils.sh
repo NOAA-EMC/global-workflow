@@ -11,7 +11,5 @@ cd ufs_utils.fd/sorc
 
 ./build_all_ufs_utils.sh
 
-./link_fixdirs.sh emc $target
-
 exit
 

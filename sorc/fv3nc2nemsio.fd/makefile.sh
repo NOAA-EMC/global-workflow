@@ -3,17 +3,6 @@ set -x
 
 machine=${1:-"cray"}
 
-if [ $machine = "cray" ]; then
-:
-elif [ $machine = "theia" ]; then
-:
-else
-
-    echo "machine $machine is unsupported, ABORT!"
-    exit 1
-
-fi
-
 source ../../modulefiles/module-setup.sh.inc
 module use ../../modulefiles
 module load modulefile.fv3nc2nemsio.$machine

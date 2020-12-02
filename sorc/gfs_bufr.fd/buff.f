@@ -4,7 +4,7 @@
 !!      integer nint, nend, npoint, idate(4), levs, jdate
       integer nint1, nend1, nint3, nend3
       integer npoint, idate(4), levs, jdate
-      real*8 data(6*levs+24), wrkd(1)
+      real*8 data(6*levs+25), wrkd(1)
       integer idtln, nf, nfile, np
       integer lss, istat(npoint), ios
       CHARACTER*150  FILESEQ

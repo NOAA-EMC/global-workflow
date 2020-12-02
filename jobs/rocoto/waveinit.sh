@@ -14,7 +14,12 @@ export DATAROOT="$RUNDIR/$CDATE/$CDUMP"
 echo
 echo "=============== START TO RUN WAVE INIT ==============="
 # Execute the JJOB
-$HOMEgfs/jobs/JWAVE_INIT
-status=$?
-exit $status
 
+$HOMEgfs/jobs/JGLOBAL_WAVE_INIT
+status=$?
+[[ $status -ne 0 ]] && exit $status
+
+###############################################################
+# Force Exit out cleanly
+if [ ${KEEPDATA:-"NO"} = "NO" ] ; then rm -rf $DATAROOT ; fi
+exit 0

@@ -1,0 +1,833 @@
+#!/bin/sh
+#######################################################################
+# run_gfsmos.sh
+#
+#  History:             
+#     03/29/13   Scallion      Created (Adapted from Eric Engle's 
+#                              "master" scripts)
+#     12/03/13   Scallion      Added ptype/wxgrid
+#
+#  Purpose:
+#      To run the GFS-MOS operational suite
+#
+#######################################################################
+set -x
+
+if (( $# > 1 )); then
+   echo "Incorrect number of arguments."
+   echo "Syntax: $0 [PDYCYC (optional)]"
+   echo "Exiting..."
+   exit 1
+fi
+
+export PATH=./:$PATH
+
+#######################################################################
+#  Only run on the dev machine
+#######################################################################
+#/u/Scott.Scallion/bin/run-on-dev.sh
+#[[ $? -eq 1 ]] && exit 1
+
+#######################################################################
+#  Source bash_profile to run with proper modules on cron
+#######################################################################
+#elim . ~/.bash_profile 1> /dev/null 2>&1
+#. ~/.bash_profile 
+
+#######################################################################
+#  Check the host to determine whether tide or gyre is prod
+#######################################################################
+#chkhost=`hostname | cut -c1`
+#if [[ $SITE == "GYRE" ]] || [[ $SITE == "SURGE" ]] || [[ $SITE == "VENUS" ]]; then
+#   gort="g"
+#elif [[ $SITE == "TIDE" ]] || [[ $SITE == "LUNA" ]] || [[ $SITE == "MARS" ]]; then
+#   gort="t"
+#fi
+
+#######################################################################
+#  Set global variables neede in the run script and/or each individual
+#  job script.
+#######################################################################
+#. $MODULESHOME/init/bash 
+#module purge                  2>/dev/null
+#module load EnvVars/1.0.2     2>/dev/null
+#module load ips/18.0.1.163    2>/dev/null
+#module load impi/18.0.1       2>/dev/null
+#module load lsf/10.1          2>/dev/null
+#module load prod_envir/1.0.3  2>/dev/null
+#module load prod_util/1.1.3   2>/dev/null
+#module load CFP/2.0.1         2>/dev/null
+# 
+#module use -a /gpfs/dell1/nco/ops/nwpara/modulefiles/compiler_prod/ips/18.0.1
+#module load grib_util/1.1.1   2>/dev/null
+
+# HERA
+module load intel/18.0.5.274
+module load impi/2018.0.4
+
+module use /scratch2/NCEPDEV/nwprod/NCEPLIBS/modulefiles
+module load bacio/2.0.3
+module load bufr/11.3.0
+module load g2/3.1.1
+module load jasper/1.900.1
+module load png/1.2.44
+module load w3emc/2.4.0
+module load w3nco/2.0.7
+module load z/1.2.11
+
+module use /scratch1/NCEPDEV/mdl/nwprod/modulefiles
+module load prod_util/1.0.14
+
+module use /scratch1/NCEPDEV/mdl/apps/modulefiles
+module load CFP/2.0.1
+
+export FORT_BUFFERED=TRUE
+export KMP_AFFINITY=disabled
+export envir=prod
+export RUN_ENVIR=${RUN_ENVIR:-""}
+#export QUEUE=dev
+
+#------------------
+export SENDCOM=YES
+export SENDCOM_SAVE=$SENDCOM
+#------------------
+
+#--------------------------------
+# COMDATEROOT defined by module prod_util
+##export PTMPROOT=/gpfs/dell2/ptmp/$USER
+##export STMPROOT=/gpfs/dell2/stmp/$USER
+##export MODELROOT=/gpfs/dell2/mdl/mdlstat/noscrub/usr/$USER/nwprod
+##export MODELDIR=$MODELROOT/gfsmos.v5.0.6
+##export CODEDIR=$MODELROOT/mos_shared.v2.6.1
+
+export PTMPROOT=$ROTDIR/gfsmos.$PDY
+export STMPROOT=$RUNDIR/gfsmos.$PDY
+export DATAROOT=$STMPROOT
+##export MODELROOT=/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/gfsmos
+#export MODELROOT=/gpfs/dell2/mdl/mdlstat/noscrub/usr/Scott.Scallion/gfsv16
+#export MODELROOT=/scratch1/NCEPDEV/mdl/nwprod
+export MODELROOT=/scratch1/NCEPDEV/global/glopara/git/global-workflow
+#export MODELDIR=$MODELROOT/gfsmos.v5.2.0.1
+export MODELDIR=$MODELROOT/gfsmos.v5.2.0
+#export CODEDIR=/gpfs/dell1/nco/ops/nwpara/mos_shared.v2.6.5
+export CODEDIR=$MODELROOT/mos_shared.v2.6.5
+#--------------------------------
+
+#--------------------------------
+##export PDY=20180419
+##export PDY=`date -u +%Y%m%d`
+##export prevday=`date -u --date="${PDY} 0000 UTC 24 hours ago" +%Y%m%d`
+
+dateIn=$1
+#if [ $REALTIME = "YES" ]; then
+#    GDATE=`$NDATE -24 $dateIn`
+#    dateIn=$GDATE
+#fi
+export PDY=`echo $dateIn | cut -c 1-8`
+export cyc=`echo $dateIn | cut -c 9-10`
+export prevday=`$NDATE -24 ${PDY}00 | cut -c1-8`
+#--------------------------------
+
+
+#--------------------------------
+##let hour=`date -u +"%-H"`
+##if [[ $hour -ge 4 && $hour -lt 10 ]]; then
+##   export cyc=00
+##   export range=both
+##elif [[ $hour -ge 10 && $hour -lt 16 ]]; then
+##   export cyc=06
+##   export range=both
+##elif [[ $hour -ge 16 && $hour -lt 22 ]]; then
+##   export cyc=12
+##   export range=both
+##elif [[ $hour -ge 22 && $hour -le 23 ]]; then
+##   export cyc=18
+##   export range=both
+##else
+##   export cyc=18
+##   export PDY=$prevday
+##   export range=both
+##fi
+##
+##cyc_list="00 06 12 18"
+##if [[ $# == 1 ]] && [[ $cyc_list =~ $1 ]]; then
+##   export cyc=$1
+##   if [ "$cyc" == "00" -o "$cyc" == "12" ]; then
+##      export range=both
+##   else
+##      export range=both
+##   fi
+##elif [[ $# == 1 ]]; then
+##   echo "$1 is not a valid cycle (choose 00 or 12)" 
+##   exit 1
+##fi
+
+# ERIC ENGLE 05/30/2018 - PATCH FOR FV3GFS WINTER 17/18 PARALLEL
+export range=${range:-"both"}
+
+#if [ $cyc -eq 00 -o $cyc -eq 12 ]; then
+# if [ $cyc -eq 00 ]; then
+#    export range=both
+# else
+#    export range=short
+# fi
+# ERIC ENGLE 05/30/2018 - PATCH FOR FV3GFS WINTER 17/18 PARALLEL
+export stnonly='Y'
+export skipmodel=n
+export skipprep=n
+export cycle="t${cyc}z"
+export pid="gfs_qprod.$$"
+export dailylog=$PTMPROOT/dailylog/log.$PDY
+export jlogfile=$dailylog/jlogfile_gfsmos
+mkdir -p $dailylog
+
+export SENDDBN=NO
+export SENDDBN_NTC=NO
+export GET_IOPROFILE=NO
+
+# Specify Execution Areas
+export HOMEmdl=$MODELDIR
+export HOMEcode=$CODEDIR
+#export utilscript=/gpfs/hps/mdl/mdlstat/noscrub/usr/Scott.Scallion/ush
+
+if [ ! -d $HOMEmdl ]; then
+   echo  "$HOMEmdl does not exist"
+   exit 1
+fi
+
+if [ ! -d $HOMEcode ]; then
+   echo  "$HOMEcode does not exist"
+   exit 1
+fi
+
+
+#-------------------------------------
+# Define COMOUT (COMIN will vary by job)
+#export GFSDIR=$COMROOThps/gfs/prod/gfs.$PDY
+##export GFSDIR=$COMROOThps/gfs/prod/gfs.$PDY
+##export COMINgfs=$GFSDIR
+##export COMOUT=$PTMPROOT/qprod/gfsmos.$PDY
+
+export GFSDIR=$COMROOT/gfs/prod/gfs.${PDY}
+if [[ "$RUN_ENVIR" = "emc" ]] ; then
+    export GFSDIR=$ROTDIR/gfs.${PDY}
+fi
+export COMINgfs=$GFSDIR
+export COMOUT=$ROTDIR/gfsmos.$PDY
+
+#export COMINm1=$PTMPROOT/gfsmos.$prevday
+#export COMINm1=$PTMPROOT/qprod/gfsmos_gmos_pre-nbmv2.$prevday
+#export COMINm1=$PTMPROOT/qprod/gfsmos.$prevday
+
+if [[ ! -d $PTMPROOT/qprod ]]; then
+   mkdir -p $PTMPROOT/qprod
+fi
+
+if [[ ! -d $COMOUT ]]; then
+   mkdir -p $COMOUT
+fi
+
+export COMOUTwmo=$PTMPROOT/wmo
+
+if [[ ! -d $COMOUTwmo ]]; then
+   mkdir -p $COMOUTwmo
+fi
+
+
+# NOTE: On WCOSS_DELL_P3 the directory from which bsub
+# is executed must exist when the submitted job
+# begins.  Otherwise, the submitted job fails
+# with TERM_CWD_NOTEXIST error.
+
+mkdir -p $DATAROOT
+cd $DATAROOT
+
+
+if [ "$range" == "short" -o "$range" == "both" ]; then
+########################################################################
+########################################################################
+#             SHORT-RANGE JOBS
+########################################################################
+########################################################################
+
+######################################################################## 
+#  Wait for 1 degree model data
+######################################################################## 
+##if [ "$skipmodel" != "y" ]; then
+##let attempts=1
+##while [[ $attempts -le 120 ]]
+##do
+##   if [[ -f $GFSDIR/gfs.$cycle.pgrb2.1p00.f096 ]]; then
+##      echo "Model file found.  Proceeding..."
+##      break
+##   else
+##      if [[ $attempts -le 60 ]]; then
+##         sleep 60
+##      else
+##         sleep 180 
+##      fi  
+##      attempts=$((attempts+1))
+##   fi  
+##done
+##
+##if [[ $attempts -gt 120 ]]; then
+##   echo "Waited 4 hours for model file, but it did not appear."
+##   echo "Exiting..."
+##   exit 1
+##fi
+##
+##fi #endif for skipmodel
+
+######################################################################## 
+#  Wait for 1/4 degree model data
+######################################################################## 
+##if [ "$skipmodel" != "y" ]; then
+##let attempts=1
+##while [[ $attempts -le 120 ]]
+##do
+##   if [[ -f $GFSDIR/gfs.$cycle.pgrb2.0p25.f096 ]]; then
+##      echo "Model file found.  Proceeding..."
+##      break
+##   else
+##      if [[ $attempts -le 60 ]]; then
+##         sleep 60
+##      else
+##         sleep 180
+##      fi
+##      attempts=$((attempts+1))
+##   fi
+##done
+
+##if [[ $attempts -gt 120 ]]; then
+##   echo "Waited 4 hours for model file, but it did not appear."
+##   echo "Exiting..."
+##   exit 1
+##fi
+##
+##fi #endif for skipmodel
+
+######################################################################## 
+#  Wait for 1.0 degree GFS model files before running (Pacific MOS)
+######################################################################## 
+##if [ "$skipmodel" != "y" ]; then
+##let attempts=1
+##while [[ $attempts -le 120 ]]
+##do
+##   if [[ -f $GFSDIR/gfs.$cycle.pgrb2.1p00.f096 ]]; then
+##      echo "1.0 degree model file found.  Proceeding..."
+##      break
+##   else
+##      if [[ $attempts -le 60 ]]; then
+##         sleep 60
+##      else
+##         sleep 180
+##      fi
+##      attempts=$((attempts+1))
+##   fi
+##done
+##
+##if [[ $attempts -gt 120 ]]; then
+##   echo "Waited 4 hours for model file, but it did not appear."
+##   echo "Exiting..."
+##   exit 1
+##fi
+##
+##fi #endif for skipmodel
+
+
+######################################################################## 
+#  JGFSMOS_PREP47
+######################################################################## 
+if [[ "$skipprep" != "y" ]]; then
+   export job=gfsmos_prep_${cyc}_${pid}
+   export COMIN=$GFSDIR
+   jobCard=$HOMEmdl/jobs/JGFSMOS_STN_PREP
+#    Define DATA and create directory
+   export DATA=$STMPROOT/qprod/gfsmos_prep_${cyc}
+   export logfile=$dailylog/$job.out
+   export out_dir=$dailylog
+
+   export NTASK=3
+   export PTILE=3
+   export OMP_NUM_THREADS=1
+
+#   bsub -J $job \
+#        -o $logfile \
+#        -q $QUEUE \
+#        -x \
+#        -n $NTASK \
+#        -R "span[ptile=$PTILE]" \
+#        -W 0:25 \
+#        -P $ACCOUNT \
+#        $jobCard
+
+# HERA (Slurm)
+#sbatch -A $ACCOUNT -J $job -q batch -n $NTASK --ntasks-per-node=$PTILE --mem-per-cpu=1g -t 00:25:00 -o $logfile $jobCard
+sbatch -A $ACCOUNT -J $job -q batch -n $NTASK --ntasks-per-node=$PTILE --mem-per-cpu=1g -t 01:00:00 -o $logfile $jobCard 1> temp
+JGFSMOS_STN_PREP_JOBID=$(cat temp | sed 's/[A-Za-z ]//g')
+
+fi #end for skipprep
+
+######################################################################## 
+#  JGFSMOS_FORECAST
+######################################################################## 
+#if [[ ! -d /gpfs/dell1/nco/ops/com/mos/prod/hry_mos.$PDY ]]; then
+#   export ROTATE=/gpfs/dell2/mdl/mdlstat/noscrub/rotate
+#   #export COMINhry_mos=$PTMPROOT/hourly.$PDY
+#   export COMINhry_mos=/scratch1/NCEPDEV/mdl/Michael.N.Baker/hry/hry_mos.$PDY
+#   if [[ ! -d $COMINhry_mos ]]; then
+#      mkdir -p $COMINhry_mos
+#   fi
+#   \cp $ROTATE/hry/${PDY}03 $COMINhry_mos/sfctbl.03
+#   \cp $ROTATE/hry/${PDY}09 $COMINhry_mos/sfctbl.09
+#   \cp $ROTATE/hry/${PDY}15 $COMINhry_mos/sfctbl.15
+#   \cp $ROTATE/hry/${PDY}21 $COMINhry_mos/sfctbl.21
+#fi
+export COMINhry_mos=/scratch1/NCEPDEV/mdl/Michael.N.Baker/hry/hry_mos.$PDY
+
+# Change COMIN to get files from user's PTMP "qprod" area 
+export COMIN=$COMOUT
+
+export job=gfsmos_fcst_${cyc}_${pid}
+jobCard=$HOMEmdl/jobs/JGFSMOS_STN_FORECAST
+export DATA=$STMPROOT/qprod/gfsmos_fcst_${cyc}
+export logfile=$dailylog/$job.out
+export out_dir=$dailylog
+# Set dependencies
+if [[ "$skipprep" != "y" ]]; then
+   #ORIG deps="done(gfsmos_prep_${cyc}_${pid})"
+   deps="afterany:$JGFSMOS_STN_PREP_JOBID"
+else
+   deps=""
+fi
+if [[ $cyc == "00" || $cyc == "12" ]] && [[ "$stnonly" != "Y" ]]; then
+   complist="metar pac cooprfcmeso goe higoe akgoe tstms"
+   complist2="copopo3 coptype akpopo3 akptype"
+else
+   complist="metar cooprfcmeso tstms"
+   complist2=""
+fi
+
+if [[ $cyc == "00" || $cyc == "12" ]] && [[ "$stnonly" != "Y" ]]; then
+   export NTASK=11
+   export PTILE=1
+   export OMP_NUM_THREADS=1
+elif [[ $cyc == "00" || $cyc == "12" ]] && [[ "$stnonly" == "Y" ]]; then
+   export NTASK=5
+   export PTILE=5
+   export OMP_NUM_THREADS=1
+else
+   export NTASK=4
+   export PTILE=4
+   export OMP_NUM_THREADS=1
+fi
+
+#bsub -J ${job} \
+#     -o $logfile \
+#     -q ${QUEUE}  \
+#     -x \
+#     -n $NTASK \
+#     -R "span[ptile=$PTILE]" \
+#     -W 0:20 \
+#     -P $ACCOUNT \
+#     -w "$deps" \
+#     $jobCard
+
+# HERA (Slurm)
+#sbatch -A $ACCOUNT -J $job -q batch -n $NTASK --ntasks-per-node=$PTILE --mem-per-cpu=4g -t 00:20:00 -o $logfile $jobCard
+sbatch -A $ACCOUNT -J $job -q batch -n $NTASK --ntasks-per-node=$PTILE --mem-per-cpu=4g -t 01:00:00 -o $logfile --dependency=$deps $jobCard 1> temp
+JGFSMOS_STN_FORECAST_JOBID=$(cat temp | sed 's/[A-Za-z ]//g')
+
+######################################################################## 
+#     JGFSMOS_PRDGEN
+######################################################################## 
+jobCard=$HOMEmdl/jobs/JGFSMOS_STN_PRDGEN
+export job=gfsmos_prdgen_${cyc}_${pid}
+# Change COMIN back to COMOUT
+export COMIN=$COMOUT
+# Define DATA and create directory
+export DATA=$STMPROOT/qprod/gfsmos_prdgen_${cyc}
+export logfile=$dailylog/$job.out
+export out_dir=$dailylog
+# Set dependencies
+#ORIG deps="done(gfsmos_fcst_${cyc}_${pid})"
+deps="afterany:$JGFSMOS_STN_FORECAST_JOBID"
+# Set Nodes
+if [ $cyc -eq 00 -o $cyc -eq 12 ] && [[ "$stnonly" != "Y" ]]; then
+   #nodes='1*{select[craylinux && !vnode]} + 168*{select[craylinux && vnode]span[ptile=24]}'
+   export NTASK=1
+   export PTILE=1
+   #ORIG export OMP_NUM_THREADS=20
+   export OMP_NUM_THREADS=1
+else
+   #nodes='1*{select[craylinux && !vnode]} + 24*{select[craylinux && vnode]span[ptile=24]}'
+   export NTASK=1
+   export PTILE=1
+   export OMP_NUM_THREADS=1
+fi
+
+#bsub -J ${job} \
+#     -o $logfile \
+#     -q ${QUEUE}  \
+#     -x \
+#     -n $NTASK \
+#     -R "span[ptile=$PTILE]" \
+#     -W 0:30 \
+#     -P $ACCOUNT \
+#     -w "$deps" \
+#     $jobCard
+
+# HERA (Slurm)
+#sbatch -A $ACCOUNT -J $job -q batch -n $NTASK --ntasks-per-node=$PTILE --mem-per-cpu=4g -t 00:30:00 -o $logfile $jobCard
+#sbatch -A $ACCOUNT -J $job -q batch -n $NTASK --ntasks-per-node=$PTILE --mem-per-cpu=4g -t 02:00:00 -o $logfile --dependency=$deps $jobCard 1> temp
+sbatch -A $ACCOUNT -J $job -q batch -n $NTASK --ntasks-per-node=$PTILE --exclusive  -t 02:00:00 -o $logfile --dependency=$deps $jobCard 1> temp
+JGFSMOS_STN_PRDGEN_JOBID=$(cat temp | sed 's/[A-Za-z ]//g')
+
+########################################################################
+#   JGFSMOS_WX_PRDGEN (00z and 12z only)
+########################################################################
+#if [ $cyc -eq 00 -o $cyc -eq 12 ]; then
+#   jobCard=$HOMEmdl/jobs/JGFSMOS_WX_PRDGEN
+#   export job=gfsmos_wx_prdgen_${cyc}_${pid}
+#   # Change COMIN back to COMOUT
+#   export COMIN=$COMOUT
+#   # Define DATA and create directory
+#   export DATA=$STMPROOT/qprod/gfsmos_wx_prdgen_${cyc}
+#   export logfile=$dailylog/$job.out
+#   export out_dir=$dailylog
+#   # Set dependencies
+#   deps="done(gfsmos_prdgen_${cyc}_${pid})"
+#
+#   export NTASK=2
+#   export PTILE=1
+#   export OMP_NUM_THREADS=20
+#
+#   #bsub -J ${job} -oo $logfile -q ${QUEUE} -P MDLST-T2O \
+#   #     -W 1:00 -M 1000 \
+#   #     -extsched 'CRAYLINUX[]' \
+#   #     -R '1*{select[craylinux && !vnode]} + 48*{select[craylinux && vnode]span[ptile=24]}' \
+#   #     -w "$deps" \
+#   #     $jobCard
+#
+#   bsub -J ${job} \
+#        -o $logfile \
+#        -q ${QUEUE} -x \
+#        -n $NTASK \
+#        -R "span[ptile=$PTILE]" \
+#        -W 1:00 \
+#        -M 3000 \
+#        -P $ACCOUNT \
+#        -w "$deps" \
+#        $jobCard
+#fi
+
+fi #endif short
+
+########################################################################
+########################################################################
+#             EXTENDED-RANGE JOBS
+########################################################################
+########################################################################
+
+if [ "$range" == "ext" -o "$range" == "both" ]; then
+
+######################################################################## 
+#  Wait for 1/4 degree model data
+######################################################################## 
+#if [ "$skipmodel" != "y" ]; then
+#let attempts=1
+#proj_list=`seq -f %03g 252 12 384`
+#for tau in $proj_list
+#do
+#   while [[ $attempts -le 120 ]]
+#   do
+#      if [[ -f $GFSDIR/gfs.$cycle.pgrb2.0p25.f${tau} && -f $GFSDIR/gfs.$cycle.pgrb2.0p50.f${tau} ]]; then
+#         echo "Model file found.  Proceeding to next..."
+#         break
+#      else
+#         if [[ $attempts -le 60 ]]; then
+#            sleep 60
+#         else
+#            sleep 180
+#         fi
+#         attempts=$((attempts+1))
+#      fi
+#   done
+#done
+#
+#if [[ $attempts -gt 120 ]]; then
+#   echo "Waited 4 hours for model file, but it did not appear."
+#   echo "Exiting..."
+#   exit 1
+#fi
+
+#fi #endif for skipmodel
+
+######################################################################## 
+#  Wait for 1.0/2.5 degree GFS model files before running (Pacific GFS)
+######################################################################## 
+#if [ "$skipmodel" != "y" ]; then
+#let attempts1deg=1
+#proj_list=`seq -f %03g 204 12 384`
+#for tau in $proj_list
+#do
+#   while [[ $attempts1deg -le 120 ]]
+#   do
+## ERIC ENGLE 05/30/2018 - PATCH FOR FV3GFS WINTER 17/18 PARALLEL
+#      #if [[ -f $GFSDIR/gfs.$cycle.pgrb2.1p00.f384 && -f $GFSDIR/gfs.$cycle.pgrb2.2p50.f240 ]]; then
+#      if [ $cyc  -eq 00 ]; then
+#         waitfile=$GFSDIR/gfs.$cycle.pgrb2.1p00.f384
+#      else
+#         waitfile=$GFSDIR/gfs.$cycle.pgrb2.1p00.f180
+#      fi
+#      if [[ -f $waitfile ]]; then
+## ERIC ENGLE 05/30/2018 - PATCH FOR FV3GFS WINTER 17/18 PARALLEL
+#         #echo "1.0/2.5 degree model files found.  Proceeding to next..."
+#         echo "1.0 degree model files found.  Proceeding to next..."
+#         break
+#      else
+#         if [[ $attempts1deg -le 60 ]]; then
+#            sleep 60
+#         else
+#            sleep 180
+#         fi
+#         attempts1deg=$((aattempts1deg+1))
+#      fi
+#   done
+#done
+#
+#if [[ $attempts1deg -gt 120 ]]; then
+#   echo "Waited 4 hours for 1.0 degree model file, but it did not appear."
+#   echo "Exiting..."
+#   exit 1
+#fi
+
+#fi #endif for skipmodel
+
+########################################################################
+#  JGFSMOS_EXT_PREP47
+########################################################################
+if [[ "$skipprep" != "y" ]]; then
+   export job=gfsmos_extprep_${cyc}_${pid}
+   export COMIN=$GFSDIR
+   jobCard=$HOMEmdl/jobs/JGFSMOS_EXT_STN_PREP
+#    Define DATA and create directory
+   export DATA=$STMPROOT/qprod/gfsmos_extprep_${cyc}
+   export logfile=$dailylog/$job.out
+   export out_dir=$dailylog
+
+   export NTASK=2
+   export PTILE=2
+   export OMP_NUM_THREADS=1
+
+#   bsub -J $job \
+#        -o $logfile \
+#        -q $QUEUE \
+#        -W 2:00 \
+#        -M 2500 \
+#        -P MDLST-T2O \
+#        -extsched 'CRAYLINUX[]' \
+#        -R '1*{select[craylinux && !vnode]} + 24*{select[craylinux && vnode]span[ptile=24]}' \
+#        $jobCard
+
+#bsub -J ${job} \
+#     -o $logfile \
+#     -q ${QUEUE}  \
+#     -n $NTASK \
+#     -R "span[ptile=$PTILE]" \
+#     -W 2:00 \
+#     -P $ACCOUNT \
+#     $jobCard
+
+# HERA (Slurm)
+#sbatch -A $ACCOUNT -J $job -q batch -n $NTASK --ntasks-per-node=$PTILE --mem-per-cpu=4g -t 00:10:00 -o $logfile $jobCard
+sbatch -A $ACCOUNT -J $job -q batch -n $NTASK --ntasks-per-node=$PTILE --mem-per-cpu=4g -t 01:00:00 -o $logfile $jobCard 1> temp
+JGFSMOS_EXT_STN_PREP_JOBID=$(cat temp | sed 's/[A-Za-z ]//g')
+
+fi #end for skipprep
+
+#  Skip EXT_FORECAST for 06/18
+if [ $cyc -eq 00 -o $cyc -eq 12 ]; then
+######################################################################## 
+#  JGFSMOS_EXT_FORECAST
+######################################################################## 
+#if [[ ! -d /gpfs/dell1/nco/ops/com/mos/prod/hry_mos.$PDY ]]; then
+#   export ROTATE=/gpfs/dell2/mdl/mdlstat/noscrub/rotate
+#   #export COMINhry_mos=$PTMPROOT/hourly.$PDY
+#   export COMINhry_mos=/scratch1/NCEPDEV/mdl/Michael.N.Baker/hry/hry_mos.$PDY
+#   if [[ ! -d $COMINhry_mos ]]; then
+#      mkdir -p $COMINhry_mos
+#   fi  
+#   \cp $ROTATE/hry/${PDY}03 $COMINhry_mos/sfctbl.03
+#   \cp $ROTATE/hry/${PDY}09 $COMINhry_mos/sfctbl.09
+#   \cp $ROTATE/hry/${PDY}15 $COMINhry_mos/sfctbl.15
+#   \cp $ROTATE/hry/${PDY}21 $COMINhry_mos/sfctbl.21
+#fi
+export COMINhry_mos=/scratch1/NCEPDEV/mdl/Michael.N.Baker/hry/hry_mos.$PDY
+
+# Change COMIN to get files from user's PTMP "qprod" area 
+export COMIN=$COMOUT
+
+export job=gfsmos_extfcst_${cyc}_${pid}
+jobCard=$HOMEmdl/jobs/JGFSMOS_EXT_STN_FORECAST
+export DATA=$STMPROOT/qprod/gfsmos_extfcst_${cyc}
+export logfile=$dailylog/$job.out
+export out_dir=$dailylog
+# Set dependencies
+if [[ "$skipprep" != "y" && "$range" == "both" ]]; then
+   #ORIG deps="done(gfsmos_extprep_${cyc}_${pid}) && done(gfsmos_fcst_${cyc}_${pid})"
+   deps="afterany:${JGFSMOS_EXT_STN_PREP_JOBID},${JGFSMOS_STN_FORECAST_JOBID}"
+elif [[ "$skipprep" != "y" && "$range" == "ext" ]]; then
+   #ORIG deps="done(gfsmos_extprep_${cyc}_${pid})"
+   deps="afterany:$JGFSMOS_EXT_STN_PREP_JOBID"
+elif [[ "$skipprep" == "y" && "$range" == "ext" ]]; then
+   deps=""
+else
+   #ORIG deps="done(gfsmos_fcst_${cyc}_${pid})"
+   deps="afterany:$JGFSMOS_STN_FORECAST_JOBID"
+fi
+
+if [[ $stnonly != "Y" ]]; then
+   export NTASK=10
+   export PTILE=1
+   export OMP_NUM_THREADS=1
+else
+   export NTASK=3
+   export PTILE=3
+   export OMP_NUM_THREADS=1
+fi
+
+#bsub -J ${job} -oo $logfile -q $QUEUE -P MDLST-T2O \
+#     -W 1:00 -M 2000 \
+#     -extsched 'CRAYLINUX[]' \
+#     -R '1*{select[craylinux && !vnode]} + 24*{select[craylinux && vnode]span[ptile=24]}' \
+#     -w "$deps" \
+#     $jobCard
+
+#bsub -J ${job} \
+#     -o $logfile \
+#     -q ${QUEUE} \
+#     -x \
+#     -n $NTASK \
+#     -R "span[ptile=$PTILE]" \
+#     -W 1:00 \
+#     -P $ACCOUNT \
+#     -w "$deps" \
+#     $jobCard
+
+# HERA (Slurm)
+#sbatch -A $ACCOUNT -J $job -q batch -n $NTASK --ntasks-per-node=$PTILE --mem-per-cpu=4g -t 01:00:00 -o $logfile $jobCard
+sbatch -A $ACCOUNT -J $job -q batch -n $NTASK --ntasks-per-node=$PTILE --mem-per-cpu=4g -t 02:00:00 -o $logfile --dependency=$deps $jobCard 1> temp
+JGFSMOS_EXT_STN_FORECAST_JOBID=$(cat temp | sed 's/[A-Za-z ]//g')
+
+fi #endif for skipping 06/18 ext_fcst
+######################################################################## 
+#  JGFSMOS_EXT_PRDGEN
+######################################################################## 
+jobCard=$HOMEmdl/jobs/JGFSMOS_EXT_STN_PRDGEN
+export job=gfsmos_extprdgen_${cyc}_${pid}
+# Change COMIN back to COMOUT
+export COMIN=$COMOUT
+# Define DATA and create directory
+export DATA=$STMPROOT/qprod/gfsmos_extprdgen_${cyc}
+export logfile=$dailylog/$job.out
+export out_dir=$dailylog
+# Set dependencies
+if [[ "$cyc" == "06" || "$cyc" == "18" ]]; then
+   #ORIG deps="done(gfsmos_prdgen_${cyc}_${pid})"
+   deps="afterany:$JGFSMOS_STN_PRDGEN_JOBID"
+elif [[ "$range" == "both" ]]; then
+   #ORIG deps="done(gfsmos_extfcst_${cyc}_${pid}) && done(gfsmos_prdgen_${cyc}_${pid})"
+   deps="afterany:${JGFSMOS_EXT_STN_FORECAST_JOBID},${JGFSMOS_STN_PRDGEN_JOBID}"
+else
+   #ORIG deps="done(gfsmos_extfcst_${cyc}_${pid})"
+   deps="afterany:$JGFSMOS_EXT_STN_FORECAST"
+fi
+# Set Nodes
+if [ $cyc -eq 00 -o $cyc -eq 12 ] && [[ "$stnonly" != "Y" ]]; then
+   #nodes='1*{select[craylinux && !vnode]} + 168*{select[craylinux && vnode]span[ptile=24]}'
+   export NTASK=1
+   export PTILE=1
+   #ORIG export OMP_NUM_THREADS=20
+   export OMP_NUM_THREADS=1
+else
+   #nodes='1*{select[craylinux && !vnode]} + 24*{select[craylinux && vnode]span[ptile=24]}'
+   export NTASK=1
+   export PTILE=1
+   export OMP_NUM_THREADS=1
+fi
+
+
+#bsub -J ${job} -oo $logfile -q ${QUEUE} -P MDLST-T2O \
+#     -W 1:00 -M 2000 \
+#     -extsched 'CRAYLINUX[]' \
+#     -R "$nodes" \
+#     -w "$deps" \
+#     $jobCard
+
+#bsub -J ${job} \
+#     -o $logfile \
+#     -q ${QUEUE} \
+#     -x \
+#     -n $NTASK \
+#     -R "span[ptile=$PTILE]" \
+#     -W 1:00 \
+#     -P $ACCOUNT \
+#     -w "$deps" \
+#     $jobCard
+
+# HERA (Slurm)
+#sbatch -A $ACCOUNT -J $job -q batch -n $NTASK --ntasks-per-node=$PTILE --mem-per-cpu=4g -t 01:00:00 -o $logfile $jobCard
+#sbatch -A $ACCOUNT -J $job -q batch -n $NTASK --ntasks-per-node=$PTILE --mem-per-cpu=4g -t 02:00:00 -o $logfile --dependency=$deps $jobCard #NOTE: No need to redirect stdout.
+sbatch -A $ACCOUNT -J $job -q batch -n $NTASK --ntasks-per-node=$PTILE --exclusive  -t 02:00:00 -o $logfile --dependency=$deps $jobCard #NOTE: No need to redirect stdout.
+
+#  Exit here with $cyc is 06 or 18
+if [ $cyc -eq 06 -o $cyc -eq 18 ]; then
+   exit 0
+fi
+########################################################################
+#   JGFSMOS_WX_EXT_PRDGEN
+########################################################################
+#jobCard=$HOMEmdl/jobs/JGFSMOS_WX_EXT_PRDGEN
+#export job=gfsmos_wx_extprdgen_${cyc}_${pid}
+## Change COMIN back to COMOUT
+#export COMIN=$COMOUT
+## Define DATA and create directory
+#export DATA=$STMPROOT/qprod/gfsmos_wx_extprdgen_${cyc}
+#export logfile=$dailylog/$job.out
+#export out_dir=$dailylog
+## Set dependencies
+#if [[ "$range" == "both" ]]; then
+#   deps="done(gfsmos_extprdgen_${cyc}_${pid}) && done(gfsmos_wx_prdgen_${cyc}_${pid})"
+#else
+#   deps="done(gfsmos_extprdgen_${cyc}_${pid})"
+#fi
+#
+#export NTASK=1
+#export PTILE=1
+#export OMP_NUM_THREADS=20
+
+##bsub -J ${job} -oo $logfile -q ${QUEUE} -P MDLST-T2O \
+##     -W 1:00 -M 1000 \
+##     -extsched 'CRAYLINUX[]' \
+##     -R '1*{select[craylinux && !vnode]} + 48*{select[craylinux && vnode]span[ptile=24]}' \
+##     -w "$deps" \
+##     $jobCard
+
+#bsub -J ${job} \
+#     -o $logfile \
+#     -q ${QUEUE} -x \
+#     -n $NTASK \
+#     -R "span[ptile=$PTILE]" \
+#     -W 1:00 \
+#     -M 3000 \
+#     -P $ACCOUNT \
+#     -w "$deps" \
+#     $jobCard
+
+fi #endif for ext/both
+
+#---------------------
+export SENDCOM=$SENDCOM_SAVE
+
+exit 0

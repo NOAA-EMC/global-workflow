@@ -287,7 +287,7 @@ export homesyndir=${homesyndir:-${HOMERELO}}
 export homesyndir=${homesyndir:-$NWPROD/util}
 export exectrkdir=${exectrkdir:-${homesyndir}/exec}
 export ushtrkdir=${ushtrkdir:-${homesyndir}/ush}
-export archsyndir=${archsyndir:-${COMDIR}${COMROOTp1}/arch/prod/syndat}
+export archsyndir=${archsyndir:-${COMINsyn:-$(compath.py gfs/prod/syndat)}}
 
 ##cp /com/date/t${CYL}z ncepdate
 ##export CENT=` cut -c7-8 ncepdate `

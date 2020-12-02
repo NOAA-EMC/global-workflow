@@ -14,9 +14,9 @@ export DATAROOT="$RUNDIR/$CDATE/$CDUMP"
 echo
 echo "=============== START TO RUN WAVE PREP ==============="
 # Execute the JJOB
-$HOMEgfs/jobs/JWAVE_PREP
+$HOMEgfs/jobs/JGLOBAL_WAVE_PREP
 status=$?
-exit $status
+[[ $status -ne 0 ]] && exit $status
 
 ###############################################################
 # Force Exit out cleanly

@@ -31,7 +31,7 @@
 # --------------------------------------------------------------------------- #
 # 0.  Preparations
 # 0.a Basic modes of operation
-  PS4=" \${SECONDS} ${0##*/} L\${LINENO} + "
+
   set -x
   # Use LOUD variable to turn on/off trace.  Defaults to YES (on).
   export LOUD=${LOUD:-YES}; [[ $LOUD = yes ]] && export LOUD=YES
@@ -39,7 +39,7 @@
 
   # Set wave model ID tag to include member number
   # if ensemble; waveMEMB var empty in deterministic
-  export WAV_MOD_TAG=${RUN}${COMPONENT}${waveMEMB}
+  export WAV_MOD_TAG=${CDUMP}wave${waveMEMB}
 
   cd $DATA
 
@@ -105,7 +105,7 @@
 # 1.  Get files that are used by most child scripts
 
   export DOGRB_WAV='YES' #Create grib2 files 
-  export DOGRI_WAV='NO' #Create interpolated grids 
+  export DOGRI_WAV='YES' #Create interpolated grids 
 
   exit_code=0
 
@@ -246,7 +246,17 @@
 # 1.a.2 Loop over forecast time to generate post files 
 # When executed side-by-side, serial mode (cfp when run after the fcst step)
 # Contingency for RERUN=YES
-  fhr=$FHMIN_WAV
+  if [ "${RERUN}" = "YES" ]; then
+    fhr=$((FHRUN + FHMIN_WAV))
+    if [ $FHMAX_HF_WAV -gt 0 ] && [ $FHOUT_HF_WAV -gt 0 ] && [ $fhr -lt $FHMAX_HF_WAV ]; then
+      FHINCG=$FHOUT_HF_WAV
+    else
+      FHINCG=$FHOUT_WAV
+    fi
+    fhr=$((fhr + FHINCG))
+  else
+    fhr=$FHMIN_WAV
+  fi
   fhrg=$fhr
   iwaitmax=120 # Maximum loop cycles for waiting until wave component output file is ready (fails after max)
   while [ $fhr -le $FHMAX_WAV ]; do
@@ -275,7 +285,7 @@
       iwait=0
       for wavGRD in ${waveGRD} ; do
         gfile=$COMIN/rundata/${WAV_MOD_TAG}.out_grd.${wavGRD}.${YMD}.${HMS}
-        while [ ! -s ${gfile} ]; do sleep 10; done
+        while [ ! -s ${gfile} ]; do sleep 10; iwait=iwait+1; done
         if [ $iwait -eq $iwaitmax ]; then 
           echo '*************************************************** '
           echo " FATAL ERROR : NO RAW FIELD OUTPUT FILE out_grd.$grdID "
@@ -295,11 +305,7 @@
         nigrd=1
         for grdID in $waveinterpGRD
         do
-          case $grdID in
-            glo_15mxt) ymdh_int=`$NDATE -${WAVHINDH} $ymdh`; dt_int=3600.; n_int=9999 ;;
-            glo_30mxt) ymdh_int=`$NDATE -${WAVHINDH} $ymdh`; dt_int=3600.; n_int=9999 ;;
-            gwes_30m)  ymdh_int=`$NDATE -${WAVHINDH} $ymdh`; dt_int=3600.; n_int=9999 ;; 
-          esac
+            ymdh_int=`$NDATE -${WAVHINDH} $ymdh`; dt_int=3600.; n_int=9999 ;
             echo "$USHwave/wave_grid_interp_sbs.sh $grdID $ymdh_int $dt_int $n_int > grint_$grdID.out 2>&1" >> ${fcmdigrd}.${nigrd}
           if [ "$DOGRB_WAV" = 'YES' ]
           then
@@ -307,10 +313,15 @@
             case $grdID in
               glo_15mxt) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=11 ;;
               glo_30mxt) GRDNAME='global' ; GRDRES=0p50 ; GRIDNR=255  ; MODNR=11 ;;
+              glo_30m) GRDNAME='global' ; GRDRES=0p50 ; GRIDNR=255  ; MODNR=11 ;;
+              at_10m) GRDNAME='atlocn' ; GRDRES=0p16 ; GRIDNR=255  ; MODNR=11   ;;
+              ep_10m) GRDNAME='epacif' ; GRDRES=0p16 ; GRIDNR=255  ; MODNR=11   ;;
+              wc_10m) GRDNAME='wcoast' ; GRDRES=0p16 ; GRIDNR=255  ; MODNR=11   ;;
+              ak_10m) GRDNAME='alaska' ; GRDRES=0p16 ; GRIDNR=255  ; MODNR=11   ;;
             esac
               echo "$USHwave/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDNAME $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdigrd}.${nigrd}
           fi
-          echo "pwd" >> ${fcmdnow}
+          #echo "pwd" >> ${fcmdnow}
           echo "${GRIBDATA}/${fcmdigrd}.${nigrd}" >> ${fcmdnow}
           chmod 744 ${fcmdigrd}.${nigrd}
           nigrd=$((nigrd+1)) 
@@ -332,7 +343,6 @@
               ao_20m) GRDNAME='arctic' ; GRDRES=0p33 ; GRIDNR=255  ; MODNR=11   ;;
               so_20m) GRDNAME='antarc' ; GRDRES=0p33 ; GRIDNR=255  ; MODNR=11   ;;
               glo_15mxt) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=11   ;;
-              gwes_30m) GRDNAME='global' ; GRDRES=0p50 ; GRIDNR=255  ; MODNR=10 ;;
           esac
             echo "$USHwave/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDNAME $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdnow}
         done

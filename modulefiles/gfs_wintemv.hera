@@ -1,8 +1,0 @@
-#%Module#####################################################
-## Module file for wintemv
-#############################################################
-
-module use -a /scratch2/NCEPDEV/nwprod/NCEPLIBS/modulefiles
-module load bacio/2.0.3
-module load w3emc/2.3.1
-module load w3nco/2.0.6

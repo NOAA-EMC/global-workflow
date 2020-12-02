@@ -142,20 +142,22 @@
 
   cp -f ${DATA}/ww3_prnc.ice.$WAVEICE_FID.inp.tmpl ww3_prnc.inp
 
+  export pgm=ww3_prnc;. prep_step
+
   $EXECwave/ww3_prnc 1> prnc_${WAVEICE_FID}_${cycle}.out 2>&1 
-  err=$?
+  export err=$?; err_chk
 
   if [ "$err" != '0' ]
   then
-    cat wave_prep.out
+    cat prnc_${WAVEICE_FID}_${cycle}.out 
     set $setoff
     echo ' '
-    echo '************************* '
-    echo '*** ERROR IN waveprep *** '
-    echo '************************* '
+    echo '******************************************** '
+    echo '*** WARNING: NON-FATAL ERROR IN ww3_prnc *** '
+    echo '******************************************** '
     echo ' '
     set $seton
-    postmsg "$jlogfile" "NON-FATAL ERROR IN waveprep."
+    postmsg "$jlogfile" "WARNING: NON-FATAL ERROR IN ww3_prnc."
     exit 4
   fi
 

@@ -4,7 +4,7 @@
 ###############################################################
 # Setup runtime environment by loading modules
 ulimit_s=$( ulimit -S -s )
-ulimit -S -s 10000
+#ulimit -S -s 10000
 
 # Find module command and purge:
 source "$HOMEgfs/modulefiles/module-setup.sh.inc" 

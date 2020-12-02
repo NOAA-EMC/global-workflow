@@ -1,0 +1,14 @@
+#!/bin/ksh -x
+
+########## config.wafsgrib20p25 ##########
+
+echo "BEGIN: config.wafsgrib20p25"
+
+# Get task specific resources
+. $EXPDIR/config.resources wafsgrib20p25
+
+export COMIN=$COMINatmos
+export COMOUT=$COMOUTatmos
+export SENDCOM="YES"
+
+echo "END: config.wafsgrib20p25"

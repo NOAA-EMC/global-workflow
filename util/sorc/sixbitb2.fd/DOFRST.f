@@ -1,3 +1,0 @@
-       SUBROUTINE DOFRST()
-       return
-         end
