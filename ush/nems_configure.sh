@@ -18,6 +18,12 @@ fi
 
 # Setup nems.configure
 DumpFields=${NEMSDumpFields:-false}
+cap_dbug_flag=${cap_dbug_flag:-0}          
+if [ $warm_start = ".true." ]; then
+  cmeps_run_type='startup'
+else 
+  cmeps_run_type='continue'
+fi
 if [[ $inistep = "cold" ]]; then
   restart_interval=0
   coldstart=true     # this is the correct setting
@@ -61,11 +67,15 @@ if [ $cplflx = .true. ]; then
         sed -i -e "s;@\[ocn_model\];$OCN_model;g" tmp1
 	sed -i -e "s;@\[ocn_petlist_bounds\];$ocn_petlist_bounds;g" tmp1
 	sed -i -e "s;@\[DumpFields\];$DumpFields;g" tmp1
+        sed -i -e "s;@\[cap_dbug_flag\];$cap_dbug_flag;g" tmp1
 	sed -i -e "s;@\[coldstart\];$coldstart;g" tmp1
+        sed -i -e "s;@\[use_coldstart\];$use_coldstart;g" tmp1
+        sed -i -e "s;@\[RUNTYPE\];$cmeps_run_type;g" tmp1
+        sed -i -e "s;@\[CPLMODE\];$cplmode;g" tmp1
 	sed -i -e "s;@\[restart_interval\];$restart_interval;g" tmp1
-	sed -i -e "s;@\[CPL_SLOW\];$CPL_SLOW;g" tmp1
-	sed -i -e "s;@\[CPL_FAST\];$CPL_FAST;g" tmp1
-        sed -i -e "s;@\[restart_interval_hours\];$restart_interval_nems;g" tmp1
+	sed -i -e "s;@\[coupling_interval_slow_sec\];$CPL_SLOW;g" tmp1
+	sed -i -e "s;@\[coupling_interval_fast_sec\];$CPL_FAST;g" tmp1
+        sed -i -e "s;@\[RESTART_N\];$restart_interval_nems;g" tmp1
 fi
 if [ $cplwav = .true. ]; then
 	sed -i -e "s;@\[wav_model\];ww3;g" tmp1
@@ -80,10 +90,6 @@ fi
 if [ $cplchem = .true. ]; then
 	sed -i -e "s;@\[chem_model\];gsd;g" tmp1
 fi
-
-sed -i -e "s;@\[read_mediator\];$read_mediator;g" tmp1
-
-read_mediator
 
 mv tmp1 nems.configure
 

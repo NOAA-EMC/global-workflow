@@ -72,7 +72,7 @@ config_fcst:
 
     #######################################################################
     # COUPLING COMPONENTS
-    export read_mediator="{tools.fort(doc.settings.read_mediator)}"
+    export use_coldstart="{tools.fort(doc.settings.use_coldstart)}"
 
     #######################################################################
     # PE Mapping
