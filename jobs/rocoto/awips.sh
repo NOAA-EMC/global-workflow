@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/ksh -x
 
 ###############################################################
 ## Abstract:
@@ -11,8 +11,6 @@
 ## PDY    : current date (YYYYMMDD)
 ## cyc    : current cycle (HH)
 ###############################################################
-
-set -x
 
 ###############################################################
 echo
@@ -32,8 +30,7 @@ for config in $configs; do
     [[ $status -ne 0 ]] && exit $status
 done
 
-#fhrlst=$(echo $FHRLST | sed -e 's/_/ /g; s/f/ /g; s/,/ /g')
-fhrlst=${fhrlst:-$(echo $FHRLST | sed -e 's/_/ /g; s/f/ /g; s/,/ /g')}
+fhrlst=$(echo $FHRLST | sed -e 's/_/ /g; s/f/ /g; s/,/ /g')
 
 ###############################################################
 echo
@@ -59,7 +56,7 @@ echo "=============== BEGIN AWIPS ==============="
 export SENDCOM="YES"
 export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc/$COMPONENT"
 export PCOM="$COMOUT/wmo"
-export jlogfile=${jlogfile:-"$ROTDIR/logs/$CDATE/jgfs_awips.log"}
+export jlogfile="$ROTDIR/logs/$CDATE/jgfs_awips.log"
 
 SLEEP_TIME=1800
 SLEEP_INT=5
