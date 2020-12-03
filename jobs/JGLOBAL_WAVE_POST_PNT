@@ -48,6 +48,7 @@ setpdy.sh
 sh ./PDY
 
 export pgmout=OUTPUT.$$
+
 export MP_PULSE=0
 
 # Path to HOME Directory
