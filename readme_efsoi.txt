@@ -19,15 +19,17 @@ way to handle this regarding repo.]
    * parm/config/config.base.emc.dyn
    * parm/config/config.efcs
    * parm/config/config.eobs
-[AFE 2020-11-16 also config.resources!]
+[AFE 2020-11-16 also config.resources! committed because it should be pretty static]
     
 (2) Files that are added for EFSOI and then git-pushed
 [AFE 2020-11-16: these have been added and committed]
 
    for gdaseupdfsoi:
       * jobs/JGLOBAL_EFSOI_UPDATE
+[AFE 2020-12-03 renamed jobs/JGDAS_EFSOI_UPDATE ]
       * jobs/rocoto/eupdfsoi.sh
       * scripts/exglobal_efsoi_update_fv3gfs.sh.ecf
+[AFE 2020-12-03 renamed scrpts/exgdas_efsoi_update.sh ]
       * parm/config/config.eupdfsoi
 
    for gdasesfcfsoi:
@@ -57,15 +59,16 @@ way to handle this regarding repo.]
 (3) Files that exist and are updated for EFSOI and then git-pushed
 
    for all EFSOI tasks
-      * env/HERA.env
-      * parm/config/config.resources   
-      * ush/rocoto/setup_workflow.py
+      * env/HERA.env [ merged and committed ]
+      * parm/config/config.resources  [ committed, see above] 
+      * ush/rocoto/setup_workflow.py  [ merged and committed ]
+
 
    for gdasefcsfsoi only
       * scripts/exglobal_fcst_nemsfv3gfs.sh 	  
 	     
 (4) Files that exist and are updated but not git-pushed:
-
+[these are in the gsi repository
    * scripts/exglobal_enkf_update_fv3gfs.sh.ecf
    * scripts/exglobal_enkf_surface_fv3gfs.sh.ecf
    * scripts/exglobal_enkf_recenter_fv3gfs.sh.ecf

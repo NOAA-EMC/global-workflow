@@ -5,15 +5,11 @@
 
 echo "BEGIN: config.eupdfsoi"
 
-# edited by liaofan on 2020.05.06 ========
 # Get task specific resources
 . $EXPDIR/config.resources eupdfsoi
 
-export ENKFUPDSH="$HOMEgfs/scripts/exglobal_efsoi_update_fv3gfs.sh.ecf"
 export npe_enkf=$npe_eupd
 
-echo "ENKFUPDSH="$ENKFUPDSH
-# ============================================
 
 # Use NAM_ENKF below for serial EnKF
 ##export NAM_ENKF="analpertwtnh=0.9,analpertwtsh=0.9,analpertwttr=0.9"

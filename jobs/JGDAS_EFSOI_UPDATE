@@ -11,8 +11,6 @@ date
 #############################
 export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
 
-# edited by liaofan on 2020.05.06
-#configs="base anal eupd"
 configs="base anal eupdfsoi"
 config_path=${EXPDIR:-$NWROOT/gfs.${gfs_ver}/parm/config}
 for config in $configs; do
@@ -25,8 +23,6 @@ done
 ##########################################
 # Source machine runtime environment
 ##########################################
-# edited by liaofan on 2020.05.06
-#. $HOMEgfs/env/${machine}.env eupd
 . $HOMEgfs/env/${machine}.env eupdfsoi
 
 
@@ -64,6 +60,7 @@ export pgmerr=errfile
 ##############################################
 export CDATE=${CDATE:-${PDY}${cyc}}
 export CDUMP=${CDUMP:-${RUN:-"gdas"}}
+export COMPONENT=${COMPONENT:-atmos}
 if [ $RUN_ENVIR = "nco" ]; then
     export ROTDIR=${COMROOT:?}/$NET/$envir
 fi
@@ -83,8 +80,13 @@ export ASUFFIX=${ASUFFIX:-$SUFFIX}
 export GSUFFIX=${GSUFFIX:-$SUFFIX}
 
 
-# COMIN_GES_ENS and COMOUT_ANL_ENS are used in exglobal script
-# TO DO: Map NCO's directory into these variables
+
+# COMIN_GES_ENS and COMOUT_ANL_ENS are used in script
+export COMIN_GES_ENS="$ROTDIR/enkfgdas.$gPDY/$gcyc/$COMPONENT"
+export COMOUT_ANL_ENS="$ROTDIR/enkf$CDUMP.$PDY/$cyc/$COMPONENT"
+export COMOUT_ANL_ENSFSOI="$ROTDIR/efsoi$CDUMP.$PDY/$cyc/$COMPONENT"
+
+
 
 # ======= Edited by liaofan on 2020.05.06 ==============
 #export COMIN_GES_ENS="$ROTDIR/enkfgdas.$gPDY/$gcyc"
@@ -94,21 +96,31 @@ export GSUFFIX=${GSUFFIX:-$SUFFIX}
 #   - see rn200502
 #   - Do not copy the folders of each member, which were created in eupd
 #   - Copy only files created before gdaseupd
-mkdir -p $ROTDIR/fsoigdas.$PDY/$cyc
-cp -u -ir $ROTDIR/enkfgdas.$PDY/$cyc/gdas.*.radstat.*  $ROTDIR/fsoigdas.$PDY/$cyc/
-cp -u -ir $ROTDIR/enkfgdas.$PDY/$cyc/gdas.*.cnvstat.*  $ROTDIR/fsoigdas.$PDY/$cyc/
-cp -u -ir $ROTDIR/enkfgdas.$PDY/$cyc/gdas.*.oznstat.*  $ROTDIR/fsoigdas.$PDY/$cyc/
-cp -u -ir $ROTDIR/enkfgdas.$PDY/$cyc/gdas.*.loginc.txt $ROTDIR/fsoigdas.$PDY/$cyc/
-cp -u -ir $ROTDIR/enkfgdas.$PDY/$cyc/gdas.*.obsinput.* $ROTDIR/fsoigdas.$PDY/$cyc/
-cp -u -ir $ROTDIR/enkfgdas.$PDY/$cyc/gdas.*.gsistat.*  $ROTDIR/fsoigdas.$PDY/$cyc/
-cp -u -ir $ROTDIR/enkfgdas.$PDY/$cyc/gdas.*.abias*     $ROTDIR/fsoigdas.$PDY/$cyc/
-cp -u -ir $ROTDIR/enkfgdas.$PDY/$cyc/gdas.*.gsidiags   $ROTDIR/fsoigdas.$PDY/$cyc/
+
+
+
+# AFE some of these might be superfluous for EFSOI, unless changed for v16
+# AFE also cping should probably be done in script
+
 
 # The first guess from enkfgdas
-export COMIN_GES_ENS="$ROTDIR/enkfgdas.$gPDY/$gcyc"
+#export COMIN_GES_ENS="$ROTDIR/enkfgdas.$gPDY/$gcyc/$COMPONENT"
 
 # The output analysis to efsoi
-export COMOUT_ANL_ENS="$ROTDIR/fsoi$CDUMP.$PDY/$cyc"
+#export COMOUT_ANL_ENS="$ROTDIR/fsoi$CDUMP.$PDY/$cyc/$COMPONENT"
+
+
+
+mkdir -p $COMOUT_ANL_ENSFSOI
+#cp -u -ir $COMOUT_ANL_ENS/gdas.*.radstat.*  $COMOUT_ANL_ENSFSOI
+#cp -u -ir $COMOUT_ANL_ENS/gdas.*.cnvstat.*  $COMOUT_ANL_ENSFSOI
+#cp -u -ir $COMOUT_ANL_ENS/gdas.*.oznstat.*  $COMOUT_ANL_ENSFSOI
+#cp -u -ir $COMOUT_ANL_ENS/gdas.*.loginc.txt $COMOUT_ANL_ENSFSOI
+#cp -u -ir $COMOUT_ANL_ENS/gdas.*.obsinput.* $COMOUT_ANL_ENSFSOI
+#cp -u -ir $COMOUT_ANL_ENS/gdas.*.gsistat.*  $COMOUT_ANL_ENSFSOI
+#cp -u -ir $COMOUT_ANL_ENS/gdas.*.abias*     $COMOUT_ANL_ENSFSOI
+#cp -u -ir $COMOUT_ANL_ENS/gdas.*.gsidiags   $COMOUT_ANL_ENSFSOI
+
 
 # ========================================================
 
@@ -119,10 +131,7 @@ msg="HAS BEGUN on `hostname`"
 postmsg "$jlogfile" "$msg"
 $LOGSCRIPT
 
-# Edited by liaofan on 2020.05.06
-#${ENKFUPDSH:-$SCRgsi/exglobal_enkf_update_fv3gfs.sh.ecf}
-${ENKFUPDSH:-$SCRgsi/exglobal_efsoi_update_fv3gfs.sh.ecf}
-
+${EFSOIUPDSH:-$SCRgfs/exgdas_efsoi_update.sh}
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
@@ -131,7 +140,7 @@ status=$?
 # Send Alerts
 ##############################################
 if [ $SENDDBN = YES  ] ; then
-   $DBNROOT/bin/dbn_alert MODEL ENKF1_MSC_enkfstat $job $COMOUT_ANL_ENS/${APREFIX}enkfstat
+   $DBNROOT/bin/dbn_alert MODEL ENKF1_MSC_enkfstat $job $COMOUT_ANL_ENSFSOI/${APREFIX}enkfstat
 fi
 
 
@@ -156,7 +165,7 @@ postmsg "$jlogfile" "$msg"
 ##########################################
 cd $DATAROOT
 
-echo " ====== (JGLOBAL_EFSOI_UPDATE) liaofan on 2020.05.07 === "
+echo " ====== (JDAS_EFSOI_UPDATE) liaofan on 2020.05.07 === "
 echo "DATAROOT="$DATAROOT
 echo "DATA="$DATA
 echo " ======================================================= "

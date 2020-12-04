@@ -8,9 +8,7 @@ status=$?
 
 ###############################################################
 # Execute the JJOB
-# Updated by liaofan on 2020.05.07
-#$HOMEgfs/jobs/JGLOBAL_ENKF_UPDATE
-$HOMEgfs/jobs/JGLOBAL_EFSOI_UPDATE
+$HOMEgfs/jobs/JGDAS_EFSOI_UPDATE
 
 status=$?
 exit $status
