@@ -16,10 +16,7 @@ for fhr in $fhrlst; do
     export FHOUT_ECEN=$fhr
     export job=ecen${fhr}
 
-    # edited by liaofan on 2020.05.20
-    #$HOMEgfs/jobs/JGDAS_ENKF_RECENTER
-	$HOMEgfs/jobs/JGDAS_EFSOI_RECENTER
-	
+    $HOMEgfs/jobs/JGDAS_EFSOI_ECEN
     status=$?
     [[ $status -ne 0 ]] && exit $status
 

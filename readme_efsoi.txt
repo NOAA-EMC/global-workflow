@@ -41,7 +41,9 @@ way to handle this regarding repo.]
    for gdasecenfsoi
       * jobs/rocoto/ecenfsoi.sh
       * jobs/JGDAS_EFSOI_RECENTER
+[AFE 2020-12-04 renamed jobs/JGDAS_EFSOI_ECEN ]
       * scripts/exglobal_efsoi_recenter_fv3gfs.sh.ecf
+[AFE 2020-12-04 renamed scripts/exgdas_efsoi_ecen.sh, may be superfluous ]
       * parm/config/config.ecenfsoi
  
    for gdasefcsfsoi
