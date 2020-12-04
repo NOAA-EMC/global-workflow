@@ -57,6 +57,7 @@ scripts/exglobal_innovate_obs_fv3gfs.sh.ecf
 scripts/exglobal_pmgr.sh.ecf
 sorc/calc_increment_ens.fd
 sorc/checkout-fv3gfs.log
+sorc/checkout-ufs_coupled.log
 sorc/checkout-gfs_post.log
 sorc/checkout-gfs_wafs.log
 sorc/checkout-gsi.log
@@ -118,6 +119,7 @@ sorc/recentersigp.fd
 sorc/shave.fd
 sorc/tocsbufr.fd/tocsbufr.o
 sorc/ufs_utils.fd/
+sorc/ufs_coupled.fd/
 sorc/verif-global.fd/
 sorc/wafs_awc_wafavn.fd
 sorc/wafs_blending.fd
