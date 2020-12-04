@@ -11,7 +11,5 @@ config_waveinit:
     # Common to all steps
 
       echo "BEGIN: config.waveinit"
-
-      export sigMODE="{doc.wave_settings.sigMODE}"
       
       echo "END: config.waveinit"

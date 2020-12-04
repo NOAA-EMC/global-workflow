@@ -13,31 +13,28 @@ config_wave:
       echo "BEGIN: config.wave"
       export wave_sys_ver=v1.0.0
 
-      export COMPONENTRSTwave={doc.wave_settings.COMPONENTRSTwave}
-      export HOMEwave={doc.places.HOMEgfs}
-      export HOMEgefs={doc.places.HOMEgfs}
-      
+      export CDUMPRSTwave="gdas"
+ 
       # Grids for wave model
       export waveGRD='{doc.wave_settings.waveGRD}'
       export waveGRDN='{doc.wave_settings.waveGRDN}' # gridnumber for ww3_multi
-      export waveGRDG='10 20 30' # gridgroup for ww3_multi
+      export waveGRDG='{doc.wave_settings.waveGRDG}' # gridgroup for ww3_multi
       export USE_WAV_RMP='{doc.wave_settings.USE_WAV_RMP}' #yes/no rmp grid remapping pre-processed coefficients
       
       # ESMF input grid
-      export waveesmfGRD='' # input grid
+      export waveesmfGRD='{doc.wave_settings.waveesmfGRD}' # input grid
       
       # Grids for output fields
       export waveuoutpGRD=points
-      export waveinterpGRD='' # Grids that need to be interpolated from native
+      export waveinterpGRD='{doc.wave_settings.waveinterpGRD}' # Grids that need to be interpolated from native
       # in POST will generate grib unless gribOK not set
       export wavesbsGRD=''  # side-by-side grids generated as wave model runs, writes to com
-      export wavepostGRD='gwes_30m' # Native grids that will be post-processed (grib2)
-      
+      export wavepostGRD='{doc.wave_settings.wavepostGRD}' # Native grids that will be post-processed (grib2)
+     
+      export FHMAX_WAV={doc.output_settings.FHMAX_GFS} 
       if [ "$CDUMP" = "gdas" ]
       then
-        export FHMAX_WAV={doc.output_settings.FHMAX_GDAS}  #for coupled model, use GDAS
-      else
-        export FHMAX_WAV={doc.output_settings.FHMAX_GFS} #for coupled model, use GFS 
+        export FHMAX_WAV={doc.output_settings.FHMAX_GDAS}  #if GDAS use GDAS
       fi
       export WAVHINDH={doc.wave_settings.WAVHINDH}
       export FHMIN_WAV={doc.output_settings.FHMIN_WAV}
@@ -125,17 +122,9 @@ config_wave:
       export NTASKS={doc.partition_common.resources.run_prep[0].mpi_ranks}
       #
       # # Path to HOME Directory
-      export CODEwave="{doc.places.HOMEgfs}/sorc/fv3_coupled.fd/WW3"
       export EXECwave="{doc.places.HOMEgfs}/exec"
       export FIXwave="{doc.places.FIXwave}"
-      export PARMwave="{doc.places.HOMEgfs}/parm/wave"
       export USHwave="{doc.places.HOMEgfs}/ush"
       #
-      
-      export wavelog=$COMOUTwave/wave.log
-      
-      # # Set wave model ID tag to include member number
-      # # if ensemble; waveMEMB var empty in deterministic
-      export WAV_MOD_TAG=$COMPONENTwave$waveMEMB
       #
       echo "END: config.wave"
