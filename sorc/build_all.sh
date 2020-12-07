@@ -54,7 +54,6 @@ source ./machine-setup.sh > /dev/null 2>&1
 #------------------------------------
 # INCLUDE PARTIAL BUILD 
 #------------------------------------
-set -x 
 . ./partial_build.sh
 
 #------------------------------------
@@ -196,6 +195,7 @@ if [ -d gfs_wafs.fd ]; then
   fi
   ((err+=$rc))
 }
+fi
 
 #------------------------------------
 # build gaussian_sfcanl
