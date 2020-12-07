@@ -43,8 +43,6 @@ export waveinterpGRD='glo_15mxt at_10m ep_10m wc_10m ak_10m glo_30m' # Grids tha
 export wavesbsGRD=''  # side-by-side grids generated as wave model runs, writes to com
 export wavepostGRD='gnh_10m aoc_9km gsh_15m' # Native grids that will be post-processed (grib2)
 
-# CDATE
-export CDATE=${PDY}${cyc}
 
 # The start time reflects the number of hindcast hours prior to the cycle initial time
 if [ "$CDUMP" = "gdas" ]; then

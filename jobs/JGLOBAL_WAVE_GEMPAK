@@ -4,6 +4,24 @@
 date
 set -xa
 export PS4='$SECONDS + ' 
+
+export DATA=${DATA:-${DATAROOT}/${jobid:?}}
+mkdir -p $DATA
+cd $DATA
+
+
+######################################
+# Set up the cycle variable
+######################################
+export cycle=${cycle:-t${cyc}z}
+
+setpdy.sh
+. PDY
+env
+msg="Begin job for $job"
+postmsg "$jlogfile" "$msg"
+
+
 # 
 export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
@@ -24,24 +42,10 @@ export SENDDBN=${SENDDBN:-YES}
 export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
 
-export DATA=${DATA:-${DATAROOT}/${jobid:?}}
-mkdir -p $DATA
-cd $DATA
-
 if [ $SENDCOM = YES ] ; then
   mkdir -m 775 -p $COMOUT
 fi
 
-######################################
-# Set up the cycle variable
-######################################
-export cycle=${cycle:-t${cyc}z}
-
-setpdy.sh
-. PDY
-env
-msg="Begin job for $job"
-postmsg "$jlogfile" "$msg"
 
 ########################################################
 # Execute the script.
