@@ -12,15 +12,14 @@ config_waveprep:
 
       echo "BEGIN: config.waveprep"
 
-      export sigMODE="{doc.wave_settings.sigMODE}"
-      
-      export HOUR_INC=3      # This value should match with the one used in
-      export GOFILETYPE=1
-      export POFILETYPE=1
-      
-      export FUNIPNT="T"
+      export HOUR_INC=3     
+      export GOFILETYPE=1  # GOFILETYPE=1 one gridded file per output step 
+      export POFILETYPE=1  # POFILETYPE=1 one point file per output step
+     
+      #Unified point output T or F
+      export FUNIPNT="T" #Unified point output T or F 
       # Unified output server type (see ww3_multi.inp in WW3 repo)
-      export IOSRV="1"
+      export IOSRV="1"  
       # # Flag for dedicated output process for unified points
       export FPNTPROC="T"
       # # Flag for grids sharing dedicated output processes
@@ -30,4 +29,4 @@ config_waveprep:
       # Flag for masking at printout time. 
       export FLAGMASKOUT="F"
       #
-      echo "END: config.waveprep"
+      echo "END: config.waveprep" 

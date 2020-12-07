@@ -55,6 +55,11 @@ case:
 
   wave_settings: 
     WAVPETS: 136
+    CPL_WAVIC: CFSR
+    waveGRD: 'gwes_30m'
+    wavepostGRD: 'gwes_30m'
+    waveesmfGRD: ''
+    waveinterpGRD: ''    
 
   post:
     downset: 2

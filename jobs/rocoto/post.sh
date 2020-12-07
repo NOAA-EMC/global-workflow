@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/ksh -x
 
 ###############################################################
 ## NCEP post driver script
@@ -21,8 +21,6 @@ else
     restart_file=$ROTDIR/${CDUMP}.${PDY}/${cyc}/$COMPONENT/${CDUMP}.t${cyc}z.logf
 fi
 
-export DATAROOT="$RUNDIR/$CDATE/$CDUMP"
-[[ ! -d $DATAROOT ]] && mkdir -p $DATAROOT
 
 #---------------------------------------------------------------
 for fhr in $fhrlst; do

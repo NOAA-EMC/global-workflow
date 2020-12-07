@@ -5,13 +5,14 @@ wave_defaults: &wave_defaults
      - when: !calc doc.settings.cplwav==".true."
        do: 24
      - otherwise: 0
-   COMPONENTRSTwave: gdaswave
    WAVHINDH: 0
    RUNMEM: -1
-   sigMODE: prep
-   waveGRD: 'gwes_30m' 
+   waveGRD: 'gnh_10m aoc_9km gsh_15m'
    waveGRDN: '1 2 3'
    waveGRDG: '10 20 30'
+   waveesmfGRD: 'glox_10m'
+   waveinterpGRD: 'glo_15mxt at_10m ep_10m wc_10m ak_10m glo_30m'
+   wavepostGRD: 'gnh_10m aoc_9km gsh_15m'
    USE_WAV_RMP: 'NO'
    WAV_CUR_DT: 3
    WAV_CUR_HF_DT: 1

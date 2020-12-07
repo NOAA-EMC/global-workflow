@@ -5,11 +5,6 @@
 module load intel/2018.4
 module load impi/2018.4
 
-module use -a /apps/contrib/NCEPLIBS/lib/modulefiles
-module load bacio-intel-sandybridge/2.0.2
-module load w3nco-intel-sandybridge/2.0.6
-module load nemsio-intel-sandybridge/2.2.3
-module load sp-intel-sandybridge/2.0.2
 module use -a /apps/contrib/NCEPLIBS/orion/modulefiles
 module load hdf5_parallel/1.10.6
 module load netcdf_parallel/4.7.4

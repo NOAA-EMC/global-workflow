@@ -20,8 +20,7 @@ elif [[ -d /scratch1 ]] ; then
 	module load module_base.hera
 elif [[ -d /work ]] ; then
     # We are on MSU Orion
-       module load module_base.orion
-
+	module load module_base.orion
 elif [[ -d /gpfs/hps && -e /etc/SuSE-release ]] ; then
     # We are on NOAA Luna or Surge
 	module load module_base.wcoss_c 

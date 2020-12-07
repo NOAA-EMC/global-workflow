@@ -583,15 +583,13 @@ WW3_postdet()
 WW3_nml()
 {
 	echo "SUB ${FUNCNAME[0]}: Copying input files for WW3"
-	COMPONENTwave=${COMPONENTwave:-${RUN}wave}
+        WAV_MOD_TAG=${CDUMP}wave${waveMEMB}
         $NCP $ROTDIR/${CDUMP}.${PDY}/${cyc}/wave/rundata/ww3_multi.${WAV_MOD_TAG}.${cycle}.inp  $DATA/ww3_multi.inp 
 }
 
 WW3_out()
 {
 	echo "SUB ${FUNCNAME[0]}: Copying output data for WW3"
-        $NCP $DATA/ww3_multi.inp $ROTDIR/${COMPONENTwave}.${PDY}/${cyc}/
-        $NCP $DATA/mod_def.* $ROTDIR/${COMPONENTwave}.${PDY}/${cyc}/
 }
 
 MOM6_postdet()
