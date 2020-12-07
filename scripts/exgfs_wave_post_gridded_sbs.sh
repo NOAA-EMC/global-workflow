@@ -285,7 +285,7 @@
       iwait=0
       for wavGRD in ${waveGRD} ; do
         gfile=$COMIN/rundata/${WAV_MOD_TAG}.out_grd.${wavGRD}.${YMD}.${HMS}
-        while [ ! -s ${gfile} ]; do sleep 10; iwait=iwait+1; done
+        while [ ! -s ${gfile} ]; do sleep 10; let iwait=iwait+1; done
         if [ $iwait -eq $iwaitmax ]; then 
           echo '*************************************************** '
           echo " FATAL ERROR : NO RAW FIELD OUTPUT FILE out_grd.$grdID "

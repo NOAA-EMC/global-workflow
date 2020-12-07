@@ -5,6 +5,7 @@ date
 set -xa
 export PS4='$SECONDS + ' 
 
+# JY - 10/29, move the block in the front, otherwise PDY is not defined for COMIN
 export DATA=${DATA:-${DATAROOT}/${jobid:?}}
 mkdir -p $DATA
 cd $DATA
@@ -36,7 +37,7 @@ export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/$COMPONE
 #export pid=$$
 export pgmout="OUTPUT.$$"
 
-export DBN_ALERT_TYPE=NFC_WAVEENS_GEMPAK
+export DBN_ALERT_TYPE=GFS_WAVE_GEMPAK
 export SENDCOM=${SENDCOM:-YES}
 export SENDDBN=${SENDDBN:-YES}
 export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
