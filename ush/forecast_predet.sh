@@ -211,7 +211,7 @@ FV3_GFS_predet(){
         cd $DATA || exit 8
         mkdir -p $DATA/INPUT
         if [ $CDUMP = "gfs" -a $rst_invt1 -gt 0 ]; then
-             RSTDIR_ATM=${RSTDIR:-$ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos/RERUN_RESTART\
+             RSTDIR_ATM=${RSTDIR:-$ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos/RERUN_RESTART
              if [ ! -d $RSTDIR_ATM ]; then mkdir -p $RSTDIR_ATM ; fi
              $NLN $RSTDIR_ATM RESTART
         else
