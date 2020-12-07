@@ -9,12 +9,17 @@ set +x
 #                   Anything other than "true"  will use libraries locally.
 #------------------------------------
 
-while getopts "c" option;
+while getopts "cp" option;
 do
  case $option in
   c)
    echo "Received -c flag, check out ufs-weather-model develop branch with CCPP physics"
    RUN_CCPP="YES"
+   ;;
+  p)
+   echo "Received -p flag, build coupled execs and build ufs-weather-model develop branch with CCPP physics"
+   RUN_CCPP="YES"
+   COUPLED="YES" 
    ;;
  esac
 done
@@ -49,7 +54,7 @@ source ./machine-setup.sh > /dev/null 2>&1
 #------------------------------------
 # INCLUDE PARTIAL BUILD 
 #------------------------------------
-
+set -x 
 . ./partial_build.sh
 
 #------------------------------------
@@ -67,17 +72,56 @@ echo " .... Library build not currently supported .... "
 #./build_libs.sh > $logs_dir/build_libs.log 2>&1
 }
 
+
 #------------------------------------
-# build fv3
+# build WW3 pre & post execs 
+#------------------------------------
+$Build_ww3_prepost && {
+echo " .... Building WW3 pre and post execs .... "
+./build_ww3prepost.sh > $logs_dir/build_ww3_prepost.log 2>&1
+rc=$?
+if [[ $rc -ne 0 ]] ; then
+    echo "Fatal error in building WW3 pre/post processing."
+    echo "The log file is in $logs_dir/build_ww3_prepost.log"
+fi
+((err+=$rc))
+}
+
+#------------------------------------
+# build forecast model 
 #------------------------------------
 $Build_fv3gfs && {
-echo " .... Building fv3 .... "
+echo " .... Building forecast model .... "
+if [ ${COUPLED:-"NO"} = "NO" ]; then 
 export RUN_CCPP=${RUN_CCPP:-"NO"}
 ./build_fv3.sh > $logs_dir/build_fv3.log 2>&1
 rc=$?
 if [[ $rc -ne 0 ]] ; then
     echo "Fatal error in building fv3."
     echo "The log file is in $logs_dir/build_fv3.log"
+fi
+((err+=$rc))
+else 
+./build_ufs_coupled.sh > $logs_dir/build_ufs_coupled.log 2>&1
+rc=$?
+if [[ $rc -ne 0 ]] ; then
+    echo "Fatal error in building ufs coupled forecast model."
+    echo "The log file is in $logs_dir/build_ufs_coupled.log"
+fi
+((err+=$rc))
+fi
+}
+
+#------------------------------------
+# build reg2grb2
+#------------------------------------
+$Build_reg2grb2 && {
+echo " .... Building reg2grb2 for ocean/ice post .... "
+./build_reg2grb2.sh > $logs_dir/build_reg2grb2.log 2>&1
+rc=$?
+if [[ $rc -ne 0 ]] ; then
+    echo "Fatal error in building reg2grb2."
+    echo "The log file is in $logs_dir/build_reg2grb2.log"
 fi
 ((err+=$rc))
 }
@@ -152,7 +196,6 @@ if [ -d gfs_wafs.fd ]; then
   fi
   ((err+=$rc))
 }
-fi
 
 #------------------------------------
 # build gaussian_sfcanl

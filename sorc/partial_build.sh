@@ -3,6 +3,8 @@
 #
  declare -a Build_prg=("Build_libs" "Build_fv3gfs" \
                        "Build_gsi" \
+                       "Build_ww3_prepost" \
+                       "Build_reg2grb2" \
                        "Build_gldas" \
                        "Build_ncep_post" \
                        "Build_ufs_utils" \
@@ -152,9 +154,12 @@
        echo "Usage: $0 [ALL|config=config_file|[select=][prog1[,prog2[,...]]]" 2>&1
        exit 2
      }
-     ( [[ $1 == "-v" ]] || [[ ${1,,} == "--verbose" ]] || [[ $1 == "-c" ]] ) && {
+     ( [[ $1 == "-v" ]] || [[ ${1,,} == "--verbose" ]] || [[ $1 == "-p" ]] || [[ $1 == "-c" ]] ) && {
        if [[ $1 == "-v" ]]; then
          verbose=true
+       fi
+       if [[ $1 == "-p" ]]; then
+         coupled=true
        fi
        num_arg=0
      } || {
@@ -166,8 +171,12 @@
  if (( num_arg == 0 )); then
 #
 # set default values for partial build
-#
-   parse_cfg 1 "config=fv3gfs_build.cfg" ${Build_prg[@]}
+#   
+   if [[ $coupled ]]; then 
+     parse_cfg 1 "config=cpl_build.cfg" ${Build_prg[@]}
+   else 
+     parse_cfg 1 "config=fv3gfs_build.cfg" ${Build_prg[@]}
+   fi 
  else
 
 #
