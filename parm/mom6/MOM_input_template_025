@@ -19,19 +19,19 @@ THICKNESSDIFFUSE = True         !   [Boolean] default = False
 THICKNESSDIFFUSE_FIRST = True   !   [Boolean] default = False
                                 ! If true, do thickness diffusion before dynamics.
                                 ! This is only used if THICKNESSDIFFUSE is true.
-DT = 900.0                      !   [s]
+DT = DT_DYNAM_MOM6              !   [s]
                                 ! The (baroclinic) dynamics time step.  The time-step that
                                 ! is actually used will be an integer fraction of the
                                 ! forcing time-step (DT_FORCING in ocean-only mode or the
                                 ! coupling timestep in coupled mode.)
-DT_THERM = 1800.0               !   [s] default = 900.0
+DT_THERM = DT_THERM_MOM6        !   [s] default = 900.0
                                 ! The thermodynamic and tracer advection time step.
                                 ! Ideally DT_THERM should be an integer multiple of DT
                                 ! and less than the forcing or coupling time-step, unless
                                 ! THERMO_SPANS_COUPLING is true, in which case DT_THERM
                                 ! can be an integer multiple of the coupling timestep.  By
                                 ! default DT_THERM is set to DT.
-THERMO_SPANS_COUPLING = True    !   [Boolean] default = False
+THERMO_SPANS_COUPLING = MOM6_THERMO_SPAN   !   [Boolean] default = False
                                 ! If true, the MOM will take thermodynamic and tracer
                                 ! timesteps that can be longer than the coupling timestep.
                                 ! The actual thermodynamic timestep that is used in this
@@ -82,11 +82,11 @@ WRITE_GEOM = 2                  ! default = 1
 TRIPOLAR_N = True               !   [Boolean] default = False
                                 ! Use tripolar connectivity at the northern edge of the
                                 ! domain.  With TRIPOLAR_N, NIGLOBAL must be even.
-NIGLOBAL = 1440                 !
+NIGLOBAL = NX_GLB               !
                                 ! The total number of thickness grid points in the
                                 ! x-direction in the physical domain. With STATIC_MEMORY_
                                 ! this is set in MOM_memory.h at compile time.
-NJGLOBAL = 1080                 !
+NJGLOBAL = NY_GLB               !
                                 ! The total number of thickness grid points in the
                                 ! y-direction in the physical domain. With STATIC_MEMORY_
                                 ! this is set in MOM_memory.h at compile time.
@@ -187,7 +187,6 @@ DTFREEZE_DP = -7.75E-08         !   [deg C Pa-1] default = 0.0
                                 ! temperature with pressure.
 
 ! === module MOM_restart ===
-RESTART_CHECKSUMS_REQUIRED = False
 PARALLEL_RESTARTFILES = True    !   [Boolean] default = False
                                 ! If true, each processor writes its own restart file,
                                 ! otherwise a single restart file is generated
@@ -774,7 +773,7 @@ EPBL_TRANSITION_SCALE = 0.01    !   [nondim] default = 0.1
                                 ! A scale for the mixing length in the transition layer
                                 ! at the edge of the boundary layer as a fraction of the
                                 ! boundary layer thickness.  The default is 0.1.
-USE_LA_LI2016 = True            !   [nondim] default = False
+USE_LA_LI2016 = MOM6_REPRO_LA   !   [nondim] default = False
                                 ! A logical to use the Li et al. 2016 (submitted) formula to
                                 !  determine the Langmuir number.
 LT_ENHANCE = 3                  !   [nondim] default = 0
@@ -784,6 +783,29 @@ LT_ENHANCE = 3                  !   [nondim] default = 0
                                 !          1 - Van Roekel et al. 2014/Li et al., 2016
                                 !          2 - Multiplied w/ adjusted La.
                                 !          3 - Added w/ adjusted La.
+USE_WAVES = MOM6_USE_WAVES      !   [Boolean] default = False
+                                ! If true, enables surface wave modules.
+WAVE_METHOD = "SURFACE_BANDS"   ! default = "EMPTY"
+                                ! Choice of wave method, valid options include:
+                                !  TEST_PROFILE  - Prescribed from surface Stokes drift
+                                !                  and a decay wavelength.
+                                !  SURFACE_BANDS - Computed from multiple surface values
+                                !                  and decay wavelengths.
+                                !  DHH85         - Uses Donelan et al. 1985 empirical
+                                !                  wave spectrum with prescribed values.
+                                !  LF17          - Infers Stokes drift profile from wind
+                                !                  speed following Li and Fox-Kemper 2017.
+SURFBAND_SOURCE = "COUPLER"     ! default = "EMPTY"
+                                ! Choice of SURFACE_BANDS data mode, valid options include:
+                                !  DATAOVERRIDE  - Read from NetCDF using FMS DataOverride.
+                                !  COUPLER       - Look for variables from coupler pass
+                                !  INPUT         - Testing with fixed values.
+STK_BAND_COUPLER = 3            ! default = 1
+                                ! STK_BAND_COUPLER is the number of Stokes drift bands in the coupler. This has
+                                ! to be consistent with the number of Stokes drift bands in WW3, or the model
+                                ! will fail.
+SURFBAND_WAVENUMBERS = 0.04, 0.11, 0.3305 !   [rad/m] default = 0.12566
+                                ! Central wavenumbers for surface Stokes drift bands.
 LT_ENHANCE_COEF = 0.044         !   [nondim] default = 0.447
                                 ! Coefficient for Langmuir enhancement if LT_ENHANCE > 1
 LT_ENHANCE_EXP = -1.5           !   [nondim] default = -1.33
@@ -808,9 +830,7 @@ VAR_PEN_SW = True               !   [Boolean] default = False
                                 ! If true, use one of the CHL_A schemes specified by
                                 ! OPACITY_SCHEME to determine the e-folding depth of
                                 ! incoming short wave radiation.
-!CHL_FILE = "seawifs_1998-2006_smoothed_2X.v20140616.nc" !
-CHL_FILE = "seawifs-clim-1997-2010.1440x1080.v20180328.nc"
-                                ! CHL_FILE is the file containing chl_a concentrations in
+CHL_FILE = CHLCLIM              ! CHL_FILE is the file containing chl_a concentrations in
                                 ! the variable CHL_A. It is used when VAR_PEN_SW and
                                 ! CHL_FROM_FILE are true.
 CHL_VARNAME = "chlor_a"         ! default = "CHL_A"
@@ -871,11 +891,11 @@ USE_RIGID_SEA_ICE = True        !   [Boolean] default = False
 SEA_ICE_RIGID_MASS = 100.0      !   [kg m-2] default = 1000.0
                                 ! The mass of sea-ice per unit area at which the sea-ice
                                 ! starts to exhibit rigidity
-LIQUID_RUNOFF_FROM_DATA = True  !   [Boolean] default = False
+LIQUID_RUNOFF_FROM_DATA = MOM6_RIVER_RUNOFF  !   [Boolean] default = False
                                 ! If true, allows liquid river runoff to be specified via
                                 ! the data_table using the component name 'OCN'.
 ! === module MOM_restart ===
-
+RESTART_CHECKSUMS_REQUIRED = False
 ! === module MOM_sum_output ===
 CALCULATE_APE = False           !   [Boolean] default = True
                                 ! If true, calculate the available potential energy of
