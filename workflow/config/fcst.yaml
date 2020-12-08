@@ -123,8 +123,7 @@ config_fcst:
     export ICO2=2
 
     export icliq_sw=1
-    export iovr_lw=1
-    export iovr_sw=1
+    export iovr=1
     export isubc_sw=2
     export isubc_lw=2
     

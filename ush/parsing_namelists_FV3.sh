@@ -232,8 +232,7 @@ cat >> input.nml <<EOF
   iems         = ${IEMS:-"1"}           ! In config.fcst
   iaer         = $IAER			! In config.fcst
   icliq_sw     = ${icliq_sw:-"2"}	! In config.fcst
-  iovr_lw      = ${iovr_lw:-"3"}	! In config.fcst
-  iovr_sw      = ${iovr_sw:-"3"}	! In config.fcst
+  iovr         = ${iovr:-"3"}		! In config.fcst
   ico2         = $ICO2			! In config.fcst
   isubc_sw     = ${isubc_sw:-"2"}	! In config.fcst
   isubc_lw     = ${isubc_lw:-"2"}	! In config.fcst
