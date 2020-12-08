@@ -2,7 +2,7 @@
 #set -xue
 set -x
 
-while getopts "ocp" option;
+while getopts "oc" option;
 do
  case $option in
   o)
@@ -12,10 +12,7 @@ do
   c)
    echo "Received -c flag, check out ufs-weather-model develop branch with CCPP physics"  
    run_ccpp="YES"
-   ;;
-  p)
-   echo "Received -cpl flag, check out ufs-weather-model develop branch with CCPP physics"
-   RUN_CCPP="YES"
+   echo "Also setting COUPLED to YES" 
    COUPLED="YES"
    ;;
   :)

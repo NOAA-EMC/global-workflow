@@ -9,15 +9,12 @@ set +x
 #                   Anything other than "true"  will use libraries locally.
 #------------------------------------
 
-while getopts "cp" option;
+while getopts "c" option;
 do
  case $option in
   c)
-   echo "Received -c flag, check out ufs-weather-model develop branch with CCPP physics"
-   RUN_CCPP="YES"
-   ;;
-  p)
-   echo "Received -p flag, build coupled execs and build ufs-weather-model develop branch with CCPP physics"
+   echo "Received -c flag, build ufs-weather-model develop branch with CCPP physics"
+   echo "setting coupled=yes and skipping builds not needed for prototype runs"
    RUN_CCPP="YES"
    COUPLED="YES" 
    ;;

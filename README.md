@@ -10,11 +10,11 @@ cd coupled-workflow
 git checkout feature/coupled-crow
 git submodule update --init --recursive     #Update submodules 
 cd sorc
-sh checkout.sh -p                    # Check out forecast model with CCPP=YES
+sh checkout.sh -c                    # Check out forecast model with CCPP=YES/COUPLED=YES
 ```
 ## Compile code used in ufs-s2s-model and EMC_post and link fixed files and executable programs:
 ```
-sh build_all.sh -p           #This command will build only execs for coupled
+sh build_all.sh -c           #This command will build only execs for coupled
 
 To link fixed files and executable programs for the coupled application:
 On Hera: 

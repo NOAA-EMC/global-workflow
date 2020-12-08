@@ -154,11 +154,11 @@
        echo "Usage: $0 [ALL|config=config_file|[select=][prog1[,prog2[,...]]]" 2>&1
        exit 2
      }
-     ( [[ $1 == "-v" ]] || [[ ${1,,} == "--verbose" ]] || [[ $1 == "-p" ]] || [[ $1 == "-c" ]] ) && {
+     ( [[ $1 == "-v" ]] || [[ ${1,,} == "--verbose" ]] || [[ $1 == "-c" ]] ) && {
        if [[ $1 == "-v" ]]; then
          verbose=true
        fi
-       if [[ $1 == "-p" ]]; then
+       if [[ $1 == "-c" ]]; then
          coupled=true
        fi
        num_arg=0
