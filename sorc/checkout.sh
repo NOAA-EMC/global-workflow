@@ -17,8 +17,8 @@ if [[ ! -d ufs_coupled.fd ]] ; then
     git clone https://github.com/ufs-community/ufs-weather-model ufs_coupled.fd >> ${topdir}/checkout-ufs_coupled.log 2>&1
     cd ufs_coupled.fd
     #git checkout develop  
-    #checkout develop branch hash from 11/9/2020: 
-    git checkout 63591b60481543267408513f1a6cb850279221c3 
+    #checkout develop branch hash from 12/7/2020: 
+    git checkout 0cf031edc217707f3b5c912e0844e2c2b885ff82 
     git submodule update --init --recursive
     cd ${topdir}
 else
