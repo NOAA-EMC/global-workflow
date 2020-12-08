@@ -65,7 +65,7 @@ cat > ice_in <<eof
 /
 
 &tracer_nml
-   n_aero       = 1
+   n_aero       = 0
    n_zaero      = 0
    n_algae      = 0
    n_doc        = 0
