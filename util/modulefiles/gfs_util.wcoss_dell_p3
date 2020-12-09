@@ -10,7 +10,7 @@
 
 # Loading GEMPAK module
    module use -a /gpfs/dell1/nco/ops/nwprod/modulefiles/
-   module load gempak/7.3.1
+   module load gempak/7.3.3
 
 # Loading Intel-Compiled NCEP Libraries
    module load bacio/2.0.3
