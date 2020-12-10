@@ -284,6 +284,7 @@ cat >> input.nml <<EOF
   do_sppt      = ${DO_SPPT:-".false."}
   do_shum      = ${DO_SHUM:-".false."}
   do_skeb      = ${DO_SKEB:-".false."}
+  frac_grid    = ${FRAC_GRID:-".false."}
 EOF
 
 if [ $cpl = .true. ]; then

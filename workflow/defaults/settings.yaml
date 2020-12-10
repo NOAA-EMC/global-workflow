@@ -45,6 +45,7 @@ default_settings: &default_settings
   onestep: .false.
   use_coldstart: !calc not onestep
   cplmode: nems_orig 
+  FRAC_GRID: .false.
   cplflx: .false.
   cplice: !calc cplflx
   cplwav: .false.

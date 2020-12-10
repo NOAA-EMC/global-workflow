@@ -20,9 +20,9 @@ fi
 DumpFields=${NEMSDumpFields:-false}
 cap_dbug_flag=${cap_dbug_flag:-0}          
 if [ $warm_start = ".true." ]; then
-  cmeps_run_type='startup'
-else 
   cmeps_run_type='continue'
+else 
+  cmeps_run_type='startup'
 fi
 if [[ $inistep = "cold" ]]; then
   restart_interval=0

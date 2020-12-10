@@ -143,6 +143,11 @@ config_fcst:
     {more_exports_for_microphys}
     {level_127}
 
+
+    #coupling settings 
+    export FRAC_GRID="{doc.settings.FRAC_GRID}"
+    export cplmode="{doc.settings.cplmode}"
+
     # Stochastic physics parameters
     # nam_stochy section
     export SEEDLET="{doc.fv3_gfs_settings.SEEDLET}"

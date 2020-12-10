@@ -9,6 +9,7 @@ case:
 
     onestep: .true.
     cplmode: nems_orig
+    FRAC_GRID: .false.
     cplflx: .true.
     print_esmf: .true.
     nems_temp: 'cpld'
