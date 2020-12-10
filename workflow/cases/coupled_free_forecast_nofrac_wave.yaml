@@ -8,15 +8,15 @@ case:
     EDATE: 2013-04-01t00:00:00
 
     onestep: .true.
-    cplmode: nems_frac
-    FRAC_GRID: .true.
+    cplmode: nems_orig
+    FRAC_GRID: .false.
     cplwav: .true.
     cplwav2atm: .true.
     cplflx: .true.
     print_esmf: .true.
     nems_temp: 'cpld_wave'
     mom6ic_prepared: .false.
-    KEEPDATA: YES
+    KEEPDATA: NO
 
   nsst:
     NST_MODEL: 0
@@ -35,7 +35,6 @@ case:
     DELTIM: 450
     SEEDLET: 10
     CCPP_SUITE: FV3_GFS_v15p2_coupled
-    CPL_ATMIC: CFSRfracL64
     nst_anl: no
     DO_SKEB: false
     DO_SHUM: false
