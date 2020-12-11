@@ -153,6 +153,7 @@ cat >> input.nml <<EOF
   hord_dp = -$hord_xx		! CROW configured
   hord_tr = ${hord_tr:-"8"}	
   adjust_dry_mass = ${adjust_dry_mass:-".false."}
+  dry_mass=${dry_mass:-98320.0}
   consv_te = $consv_te
   do_sat_adj = ${do_sat_adj:-".false."}	! CROW configured
   consv_am = .false.
