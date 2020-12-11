@@ -31,7 +31,6 @@ OCN_attributes::
   DumpFields = @[DumpFields]
   ProfileMemory = false
   OverwriteSlice = true
-  dbug_flag = 0 
 ::
 
 # ICE #
@@ -43,18 +42,18 @@ ICE_attributes::
   ProfileMemory = false
   OverwriteSlice = true
   mesh_ice = @[MESHICE]
-  stop_n = @[FHMAX]
+  stop_n = @[RESTART_N]
   stop_option = nhours
   stop_ymd = -999
 ::
 
 # CMEPS warm run sequence
 runSeq::
-@@[CPL_SLOW]
+@@[coupling_interval_slow_sec]
    MED med_phases_prep_ocn_accum_avg
    MED -> OCN :remapMethod=redist
    OCN
-   @@[CPL_FAST]
+   @@[coupling_interval_fast_sec]
      MED med_phases_prep_atm
      MED med_phases_prep_ice
      MED -> ATM :remapMethod=redist
@@ -77,7 +76,7 @@ runSeq::
 # CMEPS variables
 
 DRIVER_attributes::
-      mediator_read_restart = @[read_mediator]
+      mediator_read_restart = @[use_coldstart]
 ::
 MED_attributes::
       ATM_model = @[atm_model]
@@ -86,18 +85,18 @@ MED_attributes::
       history_n = 0
       history_option = nhours
       history_ymd = -999
-      coupling_mode = nems_orig
+      coupling_mode = @[CPLMODE]
 ::
 ALLCOMP_attributes::
       ScalarFieldCount = 2
       ScalarFieldIdxGridNX = 1
       ScalarFieldIdxGridNY = 2
       ScalarFieldName = cpl_scalars
-      start_type = startup
-      case_name = ufs.s2s
-      restart_n = @[restart_interval_hours]
+      start_type = @[RUNTYPE]
+      case_name = ./RESTART/ufs.cpld
+      restart_n = @[RESTART_N]
       restart_option = nhours
       restart_ymd = -999
-      dbug_flag = 0
-      use_coldstart = @[read_mediator]
+      dbug_flag = @[cap_dbug_flag]
+      use_coldstart = @[use_coldstart]
 ::

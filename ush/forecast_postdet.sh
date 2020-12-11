@@ -591,7 +591,7 @@ MOM6_postdet()
 
         # Copy mediator restart files to RUNDIR
         if [ $inistep = 'restart' ]; then
-           $NCP $ROTDIR/$CDUMP.$PDY/$cyc/ufs.s2s*.nc $DATA/
+           $NCP $ROTDIR/$CDUMP.$PDY/$cyc/ufs.cpld*.nc $DATA/
            $NCP $ROTDIR/$CDUMP.$PDY/$cyc/rpointer.cpl $DATA/
         fi
 
@@ -623,7 +623,7 @@ MOM6_out()
 	[[ ! -d $COMOUT ]] && mkdir -m 775 -p $COMOUT
 
         if [ $inistep = 'cold' ]; then
-               cp $DATA/ufs.s2s.cold.cpl.r.*.nc $COMOUT/
+               cp $DATA/ufs.cpld.cold.cpl.r.*.nc $COMOUT/
                cp $DATA/rpointer.cpl $COMOUT/
                status=$?
                exit $status

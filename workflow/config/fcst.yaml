@@ -72,7 +72,7 @@ config_fcst:
 
     #######################################################################
     # COUPLING COMPONENTS
-    export read_mediator="{tools.fort(doc.settings.read_mediator)}"
+    export use_coldstart="{tools.fort(doc.settings.use_coldstart)}"
 
     #######################################################################
     # PE Mapping
@@ -123,8 +123,7 @@ config_fcst:
     export ICO2=2
 
     export icliq_sw=1
-    export iovr_lw=1
-    export iovr_sw=1
+    export iovr=1
     export isubc_sw=2
     export isubc_lw=2
     
@@ -143,6 +142,11 @@ config_fcst:
     export FIELD_TABLE="{doc.fv3_gfs_settings.phy_dependent_var.FIELD_TABLE}"
     {more_exports_for_microphys}
     {level_127}
+
+
+    #coupling settings 
+    export FRAC_GRID="{doc.settings.FRAC_GRID}"
+    export cplmode="{doc.settings.cplmode}"
 
     # Stochastic physics parameters
     # nam_stochy section

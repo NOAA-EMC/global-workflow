@@ -58,10 +58,10 @@ WAV_attributes::
 # CMEPS cold run sequence
 
 runSeq::
-  @@[CPL_SLOW]
+  @@[coupling_interval_slow_sec]
     OCN -> WAV
     WAV -> OCN ::srcMaskValues=1
-    @@[CPL_FAST]
+    @@[coupling_interval_fast_sec]
       MED med_phases_prep_atm
       MED -> ATM :remapMethod=redist
       WAV -> ATM :srcMaskValues=1
@@ -107,7 +107,7 @@ ALLCOMP_attributes::
       ScalarFieldIdxGridNY = 2
       ScalarFieldName = cpl_scalars
       start_type = startup
-      case_name = ufs.s2s.cold
+      case_name = ufs.cpld.cold
       restart_n = 1
       restart_option = nhours
       restart_ymd = -999

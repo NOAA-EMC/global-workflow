@@ -2,6 +2,13 @@
 
 CICE_namelists(){
 
+if [ $warm_start = ".true." ]; then
+  cmeps_run_type='continue'
+else 
+  cmeps_run_type='startup'
+fi
+
+
 cat > ice_in <<eof  
 &setup_nml
    days_per_year  = 365
@@ -11,7 +18,7 @@ cat > ice_in <<eof
    dt             = $ICETIM
    npt            = $npt
    ndtd           = 1
-   runtype        = '$RUNTYPE' 
+   runtype        = '$cmeps_run_type' 
    runid          = 'cpcice' 
    ice_ic         = '$iceic'
    restart        = .true.
@@ -65,7 +72,7 @@ cat > ice_in <<eof
 /
 
 &tracer_nml
-   n_aero       = 1
+   n_aero       = 0
    n_zaero      = 0
    n_algae      = 0
    n_doc        = 0
@@ -147,7 +154,7 @@ cat > ice_in <<eof
    hp1             = 0.01
    hs0             = 0.
    hs1             = 0.03
-   dpscale         = 1.0e-3
+   dpscale         = 1.e-3
    frzpnd          = 'hlid'
    rfracmin        = 0.15
    rfracmax        = 1.
@@ -375,7 +382,7 @@ cat > ice_in <<eof
    f_VGRDi         = .false.
    f_VGRDs         = .false.
    f_VGRDb         = .false.
-   f_VGRDa         = .false.
+   f_VGRDa         = .true.
    f_bounds        = .false.
    f_aice          = 'mdhxx' 
    f_hi            = 'mdhxx'
