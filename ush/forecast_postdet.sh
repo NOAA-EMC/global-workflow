@@ -433,15 +433,24 @@ FV3_GFS_postdet(){
 	          fhr=$FHMIN
 	          while [ $fhr -le $FHMAX ]; do
 	            FH3=$(printf %03i $fhr)
+                    FH2=$(printf %02i $fhr)
 	            atmi=atmf${FH3}.$OUTPUT_FILE
 	            sfci=sfcf${FH3}.$OUTPUT_FILE
 	            logi=logf${FH3}
+                    pgbi=GFSPRS.GrbF${FH2}
+                    flxi=GFSFLX.GrbF${FH2}
 	            atmo=$memdir/${CDUMP}.t${cyc}z.atmf${FH3}.$OUTPUT_FILE
 	            sfco=$memdir/${CDUMP}.t${cyc}z.sfcf${FH3}.$OUTPUT_FILE
 	            logo=$memdir/${CDUMP}.t${cyc}z.logf${FH3}.$OUTPUT_FILE
+                    pgbo=$memdir/${CDUMP}.t${cyc}z.master.grb2f${FH3}
+                    flxo=$memdir/${CDUMP}.t${cyc}z.sfluxgrbf${FH3}.grib2
 	            eval $NLN $atmo $atmi
 	            eval $NLN $sfco $sfci
 	            eval $NLN $logo $logi
+                    if [ $WRITE_DOPOST = ".true." ]; then
+                      eval $NLN $pgbo $pgbi
+                      eval $NLN $flxo $flxi
+                    fi
 	            FHINC=$FHOUT
 	            if [ $FHMAX_HF -gt 0 -a $FHOUT_HF -gt 0 -a $fhr -lt $FHMAX_HF ]; then
 	              FHINC=$FHOUT_HF

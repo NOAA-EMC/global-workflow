@@ -38,6 +38,7 @@ default_settings: &default_settings
   nems_temp: 'atm'
   nems_temp_cold: 'atm'
   ics_from: opsgfs
+  inline_post: .true.
 
   parexp: prnemsrn
   HPSS_PAR_PATH: !expand "/5year/NCEPDEV/emc-global/emc.glopara/WCOSS_C/{parexp}"

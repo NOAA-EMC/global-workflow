@@ -70,7 +70,6 @@ if [ $cpl = .true. ]; then
 cat >> model_configure <<EOF
 atm_coupling_interval_sec:      $DELTIM
 output_history:          ${OUTPUT_HISTORY:-".true."}
-write_dopost:            ${WRITE_DOPOST:-".false."}
 EOF
 elif [ $cpl = .false. ]; then
 cat >> model_configure <<EOF

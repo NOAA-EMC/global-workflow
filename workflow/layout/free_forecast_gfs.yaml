@@ -96,6 +96,7 @@ suite: !Cycle
 
     post: !TaskArray
       RUN: !calc up.RUN
+      Disable: !calc doc.settings.inline_post == '.true.'
       Dimensions:
         fhr: !calc doc.output_settings.gfs_forecast_hours
       jgfs_post_manager_el: !TaskElement
