@@ -2,7 +2,6 @@
 #BSUB -J %E%gfs_atmos_gempak_meta_%CYC%
 #BSUB -o %COM%/output/%ENVIR%/today/gfs_atmos_gempak_meta_%CYC%.o%J
 #BSUB -q %QUEUE%
-#BSUB -U GFSV16
 #BSUB -P %PROJ%
 #BSUB -W 3:00
 #BSUB -n 28
@@ -10,7 +9,6 @@
 #BSUB -R span[ptile=14]
 #BSUB -cwd /tmp
 
-module purge
 %include <head.h>
 %include <envir-p3.h>
 

@@ -2,7 +2,6 @@
 #BSUB -J %E%gdas_atmos_gempak_meta_ncdc_%CYC%
 #BSUB -o %COM%/output/%ENVIR%/today/gdas_atmos_gempak_meta_ncdc_%CYC%.o%J
 #BSUB -q %QUEUE%
-#BSUB -U GFSV16
 #BSUB -P %PROJ%
 #BSUB -W 0:30
 #BSUB -n 2

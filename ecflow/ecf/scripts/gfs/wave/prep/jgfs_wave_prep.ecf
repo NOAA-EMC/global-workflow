@@ -2,14 +2,12 @@
 #BSUB -J %E%%RUN%_wave_prep_%CYC%
 #BSUB -o %COM%/output/%ENVIR%/today/%RUN%_wave_prep_%CYC%.o%J
 #BSUB -q %QUEUE%
-#BSUB -U GFSV16
 #BSUB -P %PROJ%
 #BSUB -cwd /tmp
 #BSUB -W 00:30
 #BSUB -R span[ptile=28]; -R affinity[core]
 #BSUB -n 84
 
-module purge
 %include <head.h>
 %include <envir-p3.h>
 

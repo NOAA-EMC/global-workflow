@@ -2,14 +2,12 @@
 #BSUB -o %COM%/output/%ENVIR%/today/%RUN%_atmos_prep_%CYC%.o%J
 #BSUB -cwd /tmp
 #BSUB -q %QUEUE%
-#BSUB -U GFSV16
 #BSUB -L /bin/sh
 #BSUB -P %PROJ%
 #BSUB -W 00:20
 #BSUB -R span[ptile=2]; -R affinity[core(1)]
 #BSUB -n 4
 
-module purge
 %include <head.h>
 %include <envir-p3.h>
 

@@ -2,7 +2,6 @@
 #BSUB -o %COM%/output/%ENVIR%/today/%RUN%_atmos_dump_%CYC%.o%J
 #BSUB -cwd /tmp
 #BSUB -q %QUEUE%
-#BSUB -U GFSV16
 ##BSUB -W 00:20
 #BSUB -W 00:30
 #BSUB -P %PROJ%

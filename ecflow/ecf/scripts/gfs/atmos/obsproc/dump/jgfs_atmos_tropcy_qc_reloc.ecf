@@ -1,5 +1,4 @@
 #BSUB -q %QUEUE%
-#BSUB -U GFSV16
 #BSUB -P %PROJ%
 #BSUB -J %E%gfs_atmos_tropcy_qc_reloc_%CYC%
 #BSUB -o %COM%/output/%ENVIR%/today/gfs_atmos_tropcy_qc_reloc_%CYC%.o%J

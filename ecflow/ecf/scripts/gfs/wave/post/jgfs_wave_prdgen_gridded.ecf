@@ -2,14 +2,12 @@
 #BSUB -J %E%%RUN%_wave_prdgen_gridded_%CYC%
 #BSUB -o %COM%/output/%ENVIR%/today/%RUN%_wave_prdgen_gridded_%CYC%.o%J
 #BSUB -q %QUEUE%
-#BSUB -U GFSV16
 #BSUB -P %PROJ%
 #BSUB -cwd /tmp
 #BSUB -W 02:00
 #BSUB -R span[ptile=1]; -R affinity[core(1)]
 #BSUB -n 1
 
-module purge
 %include <head.h>
 %include <envir-p3.h>
 
