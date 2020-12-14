@@ -101,7 +101,7 @@ cd ${pwd}/../parm               ||exit 8
 cd ${pwd}/../scripts            ||exit 8
     $LINK ../sorc/gfs_post.fd/scripts/exgdas_atmos_nceppost.sh .
     if [ $model = "coupled" ]; then
-      $LINK exgfs_nceppost_cpl.sh.ecf exgfs_nceppost.sh.ecf
+      $LINK exgfs_nceppost_cpl.sh.ecf exgfs_atmos_nceppost.sh
     else 
       $LINK ../sorc/gfs_post.fd/scripts/exgfs_atmos_nceppost.sh  .
     fi 

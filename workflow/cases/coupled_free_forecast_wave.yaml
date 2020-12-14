@@ -16,6 +16,7 @@ case:
     print_esmf: .true.
     nems_temp: 'cpld_wave'
     mom6ic_prepared: .false.
+    inline_post: .false. 
     KEEPDATA: NO
 
   nsst:

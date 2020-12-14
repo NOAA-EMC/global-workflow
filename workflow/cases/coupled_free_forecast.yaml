@@ -14,6 +14,7 @@ case:
     print_esmf: .true.
     nems_temp: 'cpld'
     mom6ic_prepared: .false.
+    inline_post: .false.
     KEEPDATA: YES
     ic_source: coupled_ic
 

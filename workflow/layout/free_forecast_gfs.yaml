@@ -134,7 +134,7 @@ suite: !Cycle
         ecflow_def: !expand "edit FHR '{FHR}'"
         release_pgrb2_anl: !DataEvent {file="/dev/null"}
         resources: !calc partition.resources.run_gfspost
-        J_JOB: JGLOBAL_NCEPPOST
+        J_JOB: JGLOBAL_ATMOS_NCEPPOST 
         ecflow_command: !expand |
           export post_times=%FHR% FHRLST=%FHR% FHRGRP=%FHR%
           $HOMEgfs/jobs/{J_JOB}
@@ -149,7 +149,7 @@ suite: !Cycle
         resources: !calc partition.resources.run_gfspost
         Name: !expand p_{dimval.fhr:03d}
         FHR: !expand "{dimval.fhr:03d}"
-        J_JOB: JGLOBAL_NCEPPOST
+        J_JOB: JGLOBAL_ATMOS_NCEPPOST
         Trigger: !FirstTrue
           - when: !calc not doc.settings.dev_safeguards
             take: !Depend jgfs_post_manager.depend("release_post{F:03d}",F=[dimval.fhr])
