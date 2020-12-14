@@ -64,7 +64,7 @@ if [ ! -z $FIX_DIR ]; then
 fi
 cd ${pwd}/../fix                ||exit 8
 if [ $model = "coupled" ] ; then
-  for dir in fix_am fix_fv3_gmted2010 fix_gldas fix_orog fix_verif fix_cice fix_mom6 fix_cpl fix_wave fix_reg2grb2 ; do 
+  for dir in fix_am fix_fv3_gmted2010 fix_fv3_fracoro fix_gldas fix_orog fix_verif fix_cice fix_mom6 fix_cpl fix_wave fix_reg2grb2 ; do 
     if [ -d $dir ]; then
       [[ $RUN_ENVIR = nco ]] && chmod -R 755 $dir
       rm -rf $dir
