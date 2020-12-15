@@ -66,9 +66,10 @@ or
 ./setup_case.sh -p HERA ../cases/$CASE.yaml test2d
 ```
 where $CASE is one of the following:
-- prototype_5: Used for UFS S2S Prototype 5 (Runs 35 day cases with atm-ocn-ice-wav coupling)
+- prototype_5: Used for UFS S2S Prototype 5 (Runs 35 day cases with atm-ocn-ice-wav coupling, use with p5 workflow only)
 - coupled_free_forecast: 2 day tests for atm-ocn-ice coupling 
-- coupled_free_forecast_wave: 2 day test for atm-ocn-ice-wav coupling (same as p5 except shorter) 
+- coupled_free_forecast_wave: 2 day test for atm-ocn-ice-wav coupling (frac grid)
+- coupled_free_forecast_nofrac_wave: 2 day test for atm-ocn-ice-wav coupling (non frac grid)
 - atm_free_forecast:  Run the atm only case with same ICs as coupled tests 
 Please see the bottom of the README for information about particular versions and ICs
 
