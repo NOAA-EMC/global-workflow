@@ -1,21 +1,12 @@
 #!/bin/ksh -x
 
-########## config.ecenfsoi ##########
+########## config.ecen ##########
 # Ensemble recentering specific
 
 echo "BEGIN: config.ecenfsoi"
 
 # Get task specific resources
-
-# Edited by liaofan on 2020.05.20
-#. $EXPDIR/config.resources ecen
-. $EXPDIR/config.resources ecenfsoi
-
-# Edited by liaofan on 2020.05.20
-#export ENKFRECENSH="$HOMEgsi/scripts/exglobal_enkf_recenter_fv3gfs.sh.ecf"
-export ENKFRECENSH="$HOMEgfs/scripts/exglobal_efsoi_recenter_fv3gfs.sh.ecf"
-
-export CHGRESEXEC="$HOMEgfs/exec/chgres_recenter.exe"
+. $EXPDIR/config.resources ecen
 
 # Number of concurrent ecen jobs [1 implies sequential]
 # Usually IAUFHRS_ENKF=3,6,9, so NECENGRP=3.  Scripting
