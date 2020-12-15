@@ -1,7 +1,7 @@
 #!/bin/ksh -x
 
-########## config.efcsfsoi ##########
-# Ensemble forecast specific, dependency: config.fcstfsoi
+########## config.efcs ##########
+# Ensemble forecast specific, dependency: config.fcst
 
 echo "BEGIN: config.efcsfsoi"
 
@@ -9,38 +9,20 @@ echo "BEGIN: config.efcsfsoi"
 . $EXPDIR/config.fv3 $CASE_ENKF
 
 # Get task specific resources
-# === Edited by liaofan on 2020.05.26 ====
-#. $EXPDIR/config.resources efcs
 . $EXPDIR/config.resources efcsfsoi
 
-#export npe_fv3=$npe_efcs
 export npe_fv3=$npe_efcsfsoi
-# ========================================
 
 if [ $QUILTING = ".true." ]; then
     export npe_fv3=$(echo " $npe_fv3 + $WRITE_GROUP * $WRTTASK_PER_GROUP" | bc)
     export npe_efcs=$npe_fv3
-	
-	# Edited by liaofan
-	export npe_efcsfsoi=$npe_fv3
+    export npe_efcsfsoi=$npe_fv3
 fi
 
-# === Edited by liaofan on 2020.05.26 ====
-#export ENKFFCSTSH="$HOMEgsi/scripts/exglobal_enkf_fcst_fv3gfs.sh.ecf"
-export ENKFFCSTSH="$HOMEgsi/scripts/exglobal_efsoi_fcst_fv3gfs.sh.ecf"
-# ========================================
-
-
-# === Edited by liaofan on 2020.05.26 ===
+# Number of enkf members per fcst job
+#AFE 2020-11-16 changing to LL's EFSOI config
 #export NMEM_EFCSGRP=2
 export NMEM_EFCSGRP=4
-
-# newly added below
-export NMEM_EFSOIGRP=$NMEM_EFCSGRP
-export EFSOI_STR_FCST="YES"
-# =======================================
-
-
 export RERUN_EFCSGRP="NO"
 
 # Turn off inline UPP for EnKF forecast
@@ -77,7 +59,7 @@ export restart_interval=${restart_interval:-6}
 # For IAU, write restarts at beginning of window also
 if [ $DOIAU_ENKF = "YES" ]; then
     export restart_interval="6 -1"
-    if [[ "$SDATE" = "$CDATE" ]]; then export restart_interval="3 -1"; fi
+    if [[ "$SDATE" = "$CDATE" && $EXP_WARM_START = ".false." ]]; then export restart_interval="3 -1"; fi # Cold starting
 fi
 
 export OUTPUT_FILETYPES="$OUTPUT_FILE"
@@ -98,10 +80,7 @@ if [[ "$OUTPUT_FILE" == "netcdf" ]]; then
         fi
     fi
     if [[ "$machine" == "HERA" ]]; then
-        export OUTPUT_FILETYPES=" 'netcdf_parallel' 'netcdf_parallel' "
-        if [ $RESTILE -le 192 ]; then
-            export OUTPUT_FILETYPES=" 'netcdf_parallel' 'netcdf' "
-        fi
+        export OUTPUT_FILETYPES=" 'netcdf' 'netcdf' "
     fi
 fi
 
