@@ -9,8 +9,11 @@
    module load NCL/6.4.0
 
 # Loading GEMPAK module
-   module use -a /gpfs/dell1/nco/ops/nwprod/modulefiles/
-   module load gempak/7.3.1
+  module use -a /gpfs/dell1/nco/ops/nwpara/modulefiles/compiler_prod/ips/18.0.1
+  module load gempak/7.3.3
+
+# module use -a /gpfs/dell1/nco/ops/nwprod/modulefiles/
+#  module load gempak/7.3.1
 
 # Loading Intel-Compiled NCEP Libraries
    module load bacio/2.0.2
@@ -19,6 +22,6 @@
    module load ip/3.0.1
    module load sp/2.0.2
    module load g2/3.1.0
-   module load bufr/11.2.0
+   module load bufr/11.3.0
 
 module load graphics/2.0.0
