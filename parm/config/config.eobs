@@ -9,7 +9,9 @@ echo "BEGIN: config.eobs"
 . $EXPDIR/config.resources eobs
 
 # Number of enkf members per innovation job
-export NMEM_EOMGGRP=8  
+# AFE 2020-11-16 changed to LL's EFSOI configuration
+#export NMEM_EOMGGRP=8  
+export NMEM_EOMGGRP=6  
 export RERUN_EOMGGRP="YES"
 export npe_gsi=$npe_eobs
 

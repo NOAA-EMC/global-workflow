@@ -17,8 +17,6 @@ for fhr in $fhrlst; do
     export FHOUT_EPOS=$fhr
     export job=epos${fhr}
     
-	# Edited by liaofan on 2020.06.03
-    #$HOMEgfs/jobs/JGDAS_ENKF_POST 
 	$HOMEgfs/jobs/JGDAS_EFSOI_POST
 	
     status=$?

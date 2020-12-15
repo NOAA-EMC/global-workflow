@@ -199,8 +199,10 @@ if [ $MEMBER -lt 0 ]; then
   rprefix=$rCDUMP
   memchar=""
 else
+  # needs a previous ens forecast to do a warm start
   prefix=efsoi$CDUMP
-  rprefix=enkf$rCDUMP
+  #rprefix=enkf$rCDUMP
+  rprefix=efsoi$rCDUMP
   memchar=mem$(printf %03i $MEMBER)
 fi
 memdir=$ROTDIR/${prefix}.$PDY/$cyc/atmos/$memchar

@@ -1,14 +1,14 @@
 #!/bin/ksh
 ################################################################################
 ####  UNIX Script Documentation Block
-#                      .            
-#                                  .
-# Script name:         exglobal_efsoi_update_fv3gfs.sh.ecf
-# Script description:  modified from exglobal_enkf_update_fv3gfs.sh.ecf
+#                      .                                             .
+# Script name:         exgdas_efsoi_update.sh
+# Script description:  Make global_enkf update for efsoi
 #
 # Author:        Rahul Mahajan      Org: NCEP/EMC     Date: 2017-03-02
-# 
-# Abstract: This script runs the global_efsoi update
+# Author:        Liaofan Lin/Andrew Eichmann          Date: 2020-12-03
+#
+# Abstract: This script runs the global_enkf update for efsoi
 #
 # $Id$
 #
@@ -27,14 +27,6 @@ fi
 
 # Directories.
 pwd=$(pwd)
-NWPROD=${NWPROD:-$pwd}
-HOMEgsi=${HOMEgsi:-$NWPROD}
-FIXgsi=${FIXgsi:-$HOMEgsi/fix}
-DATA=${DATA:-$pwd/enkf_update.$$}
-COMIN=${COMIN:-$pwd}
-COMIN_GES_ENS=${COMIN_GES_ENS:-$COMIN}
-COMOUT=${COMOUT:-$COMIN}
-COMOUT_ANL_ENS=${COMOUT_ANL_ENS:-$COMOUT}
 
 # Utilities
 NCP=${NCP:-"/bin/cp -p"}
@@ -43,12 +35,17 @@ ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 NEMSIOGET=${NEMSIOGET:-$NWPROD/utils/exec/nemsio_get}
 NCLEN=${NCLEN:-$HOMEgfs/ush/getncdimlen}
 USE_CFP=${USE_CFP:-"NO"}
+CFP_MP=${CFP_MP:-"NO"}
+nm=""
+if [ $CFP_MP = "YES" ]; then
+    nm=0
+fi
 APRUNCFP=${APRUNCFP:-""}
 APRUN_ENKF=${APRUN_ENKF:-${APRUN:-""}}
 NTHREADS_ENKF=${NTHREADS_ENKF:-${NTHREADS:-1}}
 
 # Executables
-ENKFEXEC=${ENKFEXEC:-$HOMEgsi/exec/global_enkf.x}
+ENKFEXEC=${ENKFEXEC:-$HOMEgfs/exec/global_enkf.x}
 
 # Cycling and forecast hour specific parameters
 CDATE=${CDATE:-"2001010100"}
@@ -145,13 +142,6 @@ fi
 cd $DATA || exit 99
 
 ################################################################################
-# Clean up the run directory
-rm convinfo satinfo ozinfo hybens_info anavinfo
-rm satbias_angle satbias_in
-rm enkf.nml
-rm sanl*
-
-################################################################################
 # Fixed files
 $NLN $SATANGL    satbias_angle
 $NLN $SATINFO    satinfo
@@ -168,7 +158,8 @@ $NLN $COMOUT_ANL_ENS/$GBIASe satbias_in
 ################################################################################
 
 if [ $USE_CFP = "YES" ]; then
-   rm $DATA/untar.sh $DATA/mp_untar.sh
+   [[ -f $DATA/untar.sh ]] && rm $DATA/untar.sh
+   [[ -f $DATA/mp_untar.sh ]] && rm $DATA/mp_untar.sh
    set +x
    cat > $DATA/untar.sh << EOFuntar
 #!/bin/sh
@@ -192,20 +183,25 @@ fi
 
 flist="$CNVSTAT $OZNSTAT $RADSTAT"
 if [ $USE_CFP = "YES" ]; then
-   echo "$DATA/untar.sh ensmean" | tee -a $DATA/mp_untar.sh
+   echo "$nm $DATA/untar.sh ensmean" | tee -a $DATA/mp_untar.sh
+   if [ ${CFP_MP:-"NO"} = "YES" ]; then
+       nm=$((nm+1))
+   fi
 else
    for ftype in $flist; do
       fname=$COMOUT_ANL_ENS/${ftype}.ensmean
       tar -xvf $fname
    done
 fi
-
 nfhrs=`echo $IAUFHRS_ENKF | sed 's/,/ /g'`
 for imem in $(seq 1 $NMEM_ENKF); do
    memchar="mem"$(printf %03i $imem)
    if [ $lobsdiag_forenkf = ".false." ]; then
       if [ $USE_CFP = "YES" ]; then
-         echo "$DATA/untar.sh $memchar" | tee -a $DATA/mp_untar.sh
+         echo "$nm $DATA/untar.sh $memchar" | tee -a $DATA/mp_untar.sh
+         if [ ${CFP_MP:-"NO"} = "YES" ]; then
+             nm=$((nm+1))
+         fi
       else
          for ftype in $flist; do
             fname=$COMOUT_ANL_ENS/$memchar/$ftype
@@ -213,33 +209,29 @@ for imem in $(seq 1 $NMEM_ENKF); do
          done
       fi
    fi
-   mkdir -p $COMOUT_ANL_ENS/$memchar
+   mkdir -p $COMOUT_ANL_ENSFSOI/$memchar
    for FHR in $nfhrs; do
       $NLN $COMIN_GES_ENS/$memchar/${GPREFIX}atmf00${FHR}${ENKF_SUFFIX}${GSUFFIX}  sfg_${CDATE}_fhr0${FHR}_${memchar}
       if [ $cnvw_option = ".true." ]; then
          $NLN $COMIN_GES_ENS/$memchar/${GPREFIX}sfcf00${FHR}${GSUFFIX} sfgsfc_${CDATE}_fhr0${FHR}_${memchar}
       fi
-
-      # ==== Edited by liaofan on 2020.05.08 ======
       if [ $FHR -eq 6 ]; then
          if [ $DO_CALC_INCREMENT = "YES" ]; then
-            #$NLN $COMOUT_ANL_ENS/$memchar/${APREFIX}atmanl${ASUFFIX}            sanl_${CDATE}_fhr0${FHR}_${memchar}
-            $NLN $COMOUT_ANL_ENS/$memchar/${APREFIX}atmanl${ASUFFIX}             sanl_${CDATE}_fhr0${FHR}_ni${memchar}
+            #$NLN $COMOUT_ANL_ENS/$memchar/${APREFIX}atmanl${ASUFFIX}             sanl_${CDATE}_fhr0${FHR}_${memchar}
+            $NLN $COMOUT_ANL_ENSFSOI/$memchar/${APREFIX}atmanl${ASUFFIX}             sanl_${CDATE}_fhr0${FHR}_ni${memchar}
          else
-			#$NLN $COMOUT_ANL_ENS/$memchar/${APREFIX}atminc${ASUFFIX}            incr_${CDATE}_fhr0${FHR}_${memchar}
-			$NLN $COMOUT_ANL_ENS/$memchar/${APREFIX}atminc${ASUFFIX}             incr_${CDATE}_fhr0${FHR}_ni${memchar}
+            #$NLN $COMOUT_ANL_ENS/$memchar/${APREFIX}atminc${ASUFFIX}             incr_${CDATE}_fhr0${FHR}_${memchar}
+            $NLN $COMOUT_ANL_ENSFSOI/$memchar/${APREFIX}atminc${ASUFFIX}             incr_${CDATE}_fhr0${FHR}_ni${memchar}
          fi
       else
          if [ $DO_CALC_INCREMENT = "YES" ]; then
-            #$NLN $COMOUT_ANL_ENS/$memchar/${APREFIX}atma00${FHR}${ASUFFIX}            sanl_${CDATE}_fhr0${FHR}_${memchar}
-            $NLN $COMOUT_ANL_ENS/$memchar/${APREFIX}atma00${FHR}${ASUFFIX}             sanl_${CDATE}_fhr0${FHR}_ni${memchar}
+            #$NLN $COMOUT_ANL_ENS/$memchar/${APREFIX}atma00${FHR}${ASUFFIX}             sanl_${CDATE}_fhr0${FHR}_${memchar}
+            $NLN $COMOUT_ANL_ENSFSOI/$memchar/${APREFIX}atma00${FHR}${ASUFFIX}             sanl_${CDATE}_fhr0${FHR}_ni${memchar}
          else
-			#$NLN $COMOUT_ANL_ENS/$memchar/${APREFIX}atmi00${FHR}${ASUFFIX}            incr_${CDATE}_fhr0${FHR}_${memchar} 
-            $NLN $COMOUT_ANL_ENS/$memchar/${APREFIX}atmi00${FHR}${ASUFFIX}             incr_${CDATE}_fhr0${FHR}_ni${memchar}
+            #$NLN $COMOUT_ANL_ENS/$memchar/${APREFIX}atmi00${FHR}${ASUFFIX}             incr_${CDATE}_fhr0${FHR}_${memchar}
+            $NLN $COMOUT_ANL_ENSFSOI/$memchar/${APREFIX}atmi00${FHR}${ASUFFIX}             incr_${CDATE}_fhr0${FHR}_ni${memchar}
          fi
       fi
-      # =============================================
-
    done
 done
 
@@ -258,24 +250,16 @@ if [ $USE_CFP = "YES" ]; then
       ncmd_max=$((ncmd < npe_node_max ? ncmd : npe_node_max))
       APRUNCFP=$(eval echo $APRUNCFP)
       $APRUNCFP $DATA/mp_untar.sh
-      rc=$?
-      export ERR=$rc
+      export ERR=$?
       export err=$ERR
-      $ERRSCRIPT || exit 2
+      $ERRSCRIPT || exit 3
    fi
 fi
 
-# ===== liaofan on 2020.05.15 ================================
 # Keep osense data in comrot
-$NLN $COMOUT_ANL_ENS/osense_${CDATE}.dat  osense_${CDATE}.dat
-# ============================================================
-
-
+$NLN $COMOUT_ANL_ENSFSOI/osense_${CDATE}_init.dat  osense_${CDATE}.dat
 
 ################################################################################
-# liaofan on 2020.05.06
-#	- add "fso_cycling=.true.," in the name list
-#
 # Create global_enkf namelist
 cat > enkf.nml << EOFnml
 &nam_enkf
@@ -302,9 +286,9 @@ cat > enkf.nml << EOFnml
    use_correlated_oberrs=${use_correlated_oberrs},
    netcdf_diag=$netcdf_diag,cnvw_option=$cnvw_option,
    paranc=$paranc,write_fv3_incr=$write_fv3_incr,
-   $WRITE_INCR_ZERO
-   $NAM_ENKF
    fso_cycling=.true.,
+   $WRITE_INCR_ZERO
+   $NAM_ENKF  
 /
 &satobs_enkf
    sattypes_rad(1) = 'amsua_n15',     dsis(1) = 'amsua_n15',
@@ -396,39 +380,31 @@ EOFnml
 
 ################################################################################
 # Run enkf update
+
 export OMP_NUM_THREADS=$NTHREADS_ENKF
+export pgm=$ENKFEXEC
+. prep_step
 
-PGM=$DATA/enkf.x
-$NCP $ENKFEXEC $PGM
-
-# Execute EnKF using same number of mpi tasks on all nodes
-$APRUN_ENKF $PGM 1>stdout 2>stderr
+$NCP $ENKFEXEC $DATA
+$APRUN_ENKF ${DATA}/$(basename $ENKFEXEC) 1>stdout 2>stderr
 rc=$?
 
 export ERR=$rc
 export err=$ERR
 $ERRSCRIPT || exit 2
 
+# save for EFSOI task (still needed?)
+$NCP $COMIN_ANL_ENS/$GBIASe $COMOUT_ANL_ENSFSOI
+
 # Cat runtime output files.
-cat stdout stderr > $COMOUT_ANL_ENS/$ENKFSTAT
+cat stdout stderr > $COMOUT_ANL_ENSFSOI/$ENKFSTAT
 
 ################################################################################
 #  Postprocessing
+######## AFE remove after testing
+cp -r $DATA /scratch1/NCEPDEV/stmp4/Andrew.Eichmann/efsoi
+######## AFE
 cd $pwd
-
-# =========================================
-echo "=== edited by liaofan (2020.04.12) ======="
-pwd
-
-cd $DATA
-cd ../../..
-mkdir -p ${CDATE}_liaofan
-mkdir -p ${CDATE}_liaofan/${CDUMP}
-cp -ir $DATA ${DATA}_liaofan_from_exglobal_efsoi_update_fv3gfs_sh_ecf
-cp -u -ir ${CDATE}/gdas/*_liaofan_from_exglobal_efsoi_update_fv3gfs_sh_ecf ${CDATE}_liaofan/gdas/
-echo "========================================="
-# ==========================================
-
 [[ $mkdata = "YES" ]] && rm -rf $DATA
 set +x
 if [ $VERBOSE = "YES" ]; then

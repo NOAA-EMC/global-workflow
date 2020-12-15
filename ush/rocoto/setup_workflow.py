@@ -1415,7 +1415,8 @@ def dict_to_strings(dict_in):
 
 def get_eposfsoigroups(epos, cdump='gdas'):
 
-    fhmin = 0
+   # fhmin = 0
+    fhmin = 6
     fhmax = 30
     fhout = 6
 
@@ -1480,7 +1481,8 @@ def create_xml(dict_configs):
                          'gdasefcsfsoi':'gdasefmnfsoi',
                          'gdasepos':'gdasepmn',
                          'gdaseposfsoi':'gdasepmnfsoi',
-                         'gdasearc':'gdaseamn'}
+                         'gdasearc':'gdaseamn',
+                         'gdasechgres':'gdasechgres'}
 
         else:
             hyp_tasks = {'gdaseobs':'gdaseobs',
