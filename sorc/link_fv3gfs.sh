@@ -64,7 +64,7 @@ if [ ! -z $FIX_DIR ]; then
 fi
 cd ${pwd}/../fix                ||exit 8
 if [ $model = "coupled" ] ; then
-  for dir in fix_am fix_fv3_gmted2010 fix_gldas fix_orog fix_verif fix_cice fix_mom6 fix_cpl fix_wave fix_reg2grb2 ; do 
+  for dir in fix_am fix_fv3_gmted2010 fix_fv3_fracoro fix_gldas fix_orog fix_verif fix_cice fix_mom6 fix_cpl fix_wave fix_reg2grb2 ; do 
     if [ -d $dir ]; then
       [[ $RUN_ENVIR = nco ]] && chmod -R 755 $dir
       rm -rf $dir
@@ -101,7 +101,7 @@ cd ${pwd}/../parm               ||exit 8
 cd ${pwd}/../scripts            ||exit 8
     $LINK ../sorc/gfs_post.fd/scripts/exgdas_atmos_nceppost.sh .
     if [ $model = "coupled" ]; then
-      $LINK exgfs_nceppost_cpl.sh.ecf exgfs_nceppost.sh.ecf
+      $LINK exgfs_nceppost_cpl.sh.ecf exgfs_atmos_nceppost.sh
     else 
       $LINK ../sorc/gfs_post.fd/scripts/exgfs_atmos_nceppost.sh  .
     fi 
