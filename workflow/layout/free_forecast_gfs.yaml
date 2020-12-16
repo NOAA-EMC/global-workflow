@@ -112,12 +112,12 @@ suite: !Cycle
         resources: !calc partition.resources.run_gfs_post_manager
         release_postanl: !DataEvent
           file: !expand >-
-            {metasched.varref("COM")}/gfs.{metasched.datestring("%Y%m%d/%H/")}gfs.t{metasched.datestring("%H")}z.logf000.nemsio
+            {metasched.varref("COM")}/gfs.{metasched.datestring("%Y%m%d/%H/")}atmos/gfs.t{metasched.datestring("%H")}z.logf000.nemsio
         release_post_fhr: !DataEventElement
           Name: !expand "release_post{dimval.fhr:03d}"
           Foreach: [ fhr ]
           file: !expand >-
-            {metasched.varref("COM")}/gfs.{metasched.datestring("%Y%m%d/%H/")}gfs.t{metasched.datestring("%H")}z.logf{dimval.fhr:03d}.nemsio
+            {metasched.varref("COM")}/gfs.{metasched.datestring("%Y%m%d/%H/")}atmos/gfs.t{metasched.datestring("%H")}z.logf{dimval.fhr:03d}.nemsio
         # NOTE: the above files must match post_manager.yaml
 
       jgfs_post_anl_el: !TaskElement
