@@ -71,6 +71,7 @@ cat >> model_configure <<EOF
 atm_coupling_interval_sec:      $DELTIM
 output_history:          ${OUTPUT_HISTORY:-".true."}
 EOF
+fi
 
 echo "$(cat model_configure)"
 }
