@@ -64,7 +64,7 @@ PARM/wmo
    ###########################################
    # Now set up GEMPAK/NTRANS environment
    ###########################################
-   module load gempak/7.3.1
+   module load gempak/7.3.3
    module list
 
 FV3 GFS DRIVER:

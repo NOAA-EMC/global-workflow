@@ -4,6 +4,20 @@ date
 export PS4=' $SECONDS + '
 set -xa
 
+export DATA=${DATA:-${DATAROOT}/${jobid:?}}
+mkdir -p $DATA
+cd $DATA
+
+######################################
+# Set up the cycle variable
+######################################
+export cycle=${cycle:-t${cyc}z}
+
+# Set PDY
+ setpdy.sh
+ . PDY
+env
+
 export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
 export COMPONENT=${COMPONENT:-wave}
@@ -25,19 +39,6 @@ if [ $SENDCOM = YES ]; then
   mkdir -p $COMOUT $PCOM
 fi
 
-export DATA=${DATA:-${DATAROOT}/${jobid:?}}
-mkdir -p $DATA
-cd $DATA
-
-######################################
-# Set up the cycle variable
-######################################
-export cycle=${cycle:-t${cyc}z}
-
-# Set PDY
- setpdy.sh
- . PDY
-env
 
 ###################################
 # Execute the Script  
