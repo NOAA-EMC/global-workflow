@@ -183,8 +183,17 @@ FV3_GFS_postdet(){
 	# Grid and orography data
 	for n in $(seq 1 $ntiles); do
 	  $NLN $FIXfv3/$CASE/${CASE}_grid.tile${n}.nc     $DATA/INPUT/${CASE}_grid.tile${n}.nc
-	  $NLN $FIXfv3/$CASE/${CASE}_oro_data.tile${n}.nc $DATA/INPUT/oro_data.tile${n}.nc
 	done
+        if  [ $FRAC_GRID ]; then 
+          FIXoro=${FIXoro:-$FIX_DIR/fix_fv3_fracoro}
+          for n in $(seq 1 $ntiles); do 
+            $NLN $FIXoro/${CASE}.mx${OCNRES}_frac/${CASE}.mx${OCNRES}_tile${n}.nc $DATA/INPUT/oro_data.tile${n}.nc
+          done 
+        else 
+          for n in $(seq 1 $ntiles); do
+            $NLN $FIXfv3/$CASE/${CASE}_oro_data.tile${n}.nc $DATA/INPUT/oro_data.tile${n}.nc
+          done
+        fi 
         if [ $cplflx = ".false." ] ; then
 	  $NLN $FIXfv3/$CASE/${CASE}_mosaic.nc  $DATA/INPUT/grid_spec.nc
         else 
