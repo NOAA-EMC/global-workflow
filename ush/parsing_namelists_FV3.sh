@@ -33,6 +33,11 @@ fi
 $NCP $DATA_TABLE  data_table
 $NCP $FIELD_TABLE field_table
 
+atmos_model_nml=""
+if [ $CCPP_SUITE != "IPD" ]; then
+ atmos_model_nml="ccpp_suite = $CCPP_SUITE"
+fi
+
 cat > input.nml <<EOF
 &amip_interp_nml
   interp_oi_sst = .true.
@@ -48,15 +53,6 @@ cat > input.nml <<EOF
   blocksize = $blocksize
   chksum_debug = $chksum_debug
   dycore_only = $dycore_only
-EOF
-
-if [ $CCPP_SUITE != "IPD" ]; then
-  cat >> input.nml << EOF
-  ccpp_suite = ${CCPP_SUITE:-"FV3_GFS_v15"}
-EOF
-fi
-
-cat >> input.nml <<EOF
   fdiag = $FDIAG
   fhmax = $FHMAX
   fhout = $FHOUT
@@ -220,6 +216,29 @@ elif [ $CCPP_SUITE = "FV3_GSD_v0" ]; then
   bl_mynn_edmf_mom=${bl_mynn_edmf_mom:-"1"}	! In config.fcst
   min_lakeice  = ${min_lakeice:-"0.15"}
   min_seaice   = ${min_seaice:-"0.15"}
+EOF
+elif [ $CCPP_SUITE = "FV3_GFS_v16beta_coupled" ]; then
+  cat >> input.nml << EOF
+  iovr         = ${iovr:-"3"}
+  ltaerosol    = ${ltaerosol:-".false."}
+  lradar       = ${lradar:-".false."}
+  ttendlim     = ${ttendlim:-"0.005"}
+  oz_phys      = ${oz_phys:-".false."}
+  oz_phys_2015 = ${oz_phys_2015:-".true."}
+  lsoil_lsm    = ${lsoil_lsm:-"4"}
+  do_mynnedmf  = ${do_mynnedmf:-".false."}
+  do_mynnsfclay = ${do_mynnsfclay:-".false."}
+  icloud_bl    = ${icloud_bl:-"1"}
+  bl_mynn_edmf = ${bl_mynn_edmf:-"1"}
+  bl_mynn_tkeadvect = ${bl_mynn_tkeadvect:-".true."}
+  bl_mynn_edmf_mom = ${bl_mynn_edmf_mom:-"1"}
+  min_lakeice  = ${min_lakeice:-"0.15"}
+  min_seaice   = ${min_seaice:-"0.15"}
+EOF
+else
+  cat >> input.nml << EOF
+  iovr_lw      = ${iovr_lw:-"3"}
+  iovr_sw      = ${iovr_sw:-"3"}
 EOF
 fi
 
