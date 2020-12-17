@@ -97,7 +97,6 @@ $LOGSCRIPT
 
 
 ${ENKFFCSTSH:-$SCRgfs/exgdas_enkf_fcst.sh}
-#${ENKFFCSTSH:-$SCRgfs/exgdas_efsoi_fcst.sh}
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
