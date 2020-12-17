@@ -145,7 +145,7 @@ cat >> input.nml <<EOF
   hord_tm = $hord_xx		! CROW configured
   hord_dp = -$hord_xx		! CROW configured
   hord_tr = ${hord_tr:-"8"}	
-  adjust_dry_mass = ${adjust_dry_mass:-".false."}
+  adjust_dry_mass = ${adjust_dry_mass:-".true."}
   dry_mass=${dry_mass:-98320.0}
   consv_te = $consv_te
   do_sat_adj = ${do_sat_adj:-".false."}	! CROW configured
@@ -247,7 +247,7 @@ cat >> input.nml <<EOF
   hybedmf      = ${hybedmf:-".false."}
   satmedmf     = ${satmedmf-".true."}
   isatmedmf    = ${isatmedmf-"1"}
-  lheatstrg    = ${lheatstrg-".true."}
+  lheatstrg    = ${lheatstrg-".false."}
   random_clds  = ${random_clds:-".true."} ! CROW configured
   trans_trac   = ${trans_trac:-".true."}
   cnvcld       = ${cnvcld:-".true."}
@@ -276,12 +276,12 @@ cat >> input.nml <<EOF
   nst_anl      = $nst_anl            ! In Workflow
   psautco      = ${psautco:-"0.0008,0.0005"}
   prautco      = ${prautco:-"0.00015,0.00015"}
-  lgfdlmprad   = ${lgfdlmprad:-".true."}
-  effr_in      = ${effr_in:-".true."}
-  cplwav       = ${cplwav}              ! CROW configured
+  lgfdlmprad   = ${lgfdlmprad:-".false."}
+  effr_in      = ${effr_in:-".false."}
+  cplwav       = ${cplwav:-".false."}              ! CROW configured
   ldiag_ugwp   = ${ldiag_ugwp:-".false."}
-  do_ugwp      = ${do_ugwp:-".false."}
-  do_tofd      = ${do_tofd:-".false."}
+  do_ugwp      = ${do_ugwp:-".true."}
+  do_tofd      = ${do_tofd:-".true."}
   do_sppt      = ${DO_SPPT:-".false."}
   do_shum      = ${DO_SHUM:-".false."}
   do_skeb      = ${DO_SKEB:-".false."}
@@ -360,7 +360,7 @@ cat >> input.nml <<EOF
   fix_negative = .true.
   icloud_f = 1
   mp_time = 150.
-  reiflag = ${reiflag:-"1"}
+  reiflag = ${reiflag:-"2"}
 
   $gfdl_cloud_microphysics_nml
 /
