@@ -71,13 +71,6 @@ cat >> model_configure <<EOF
 atm_coupling_interval_sec:      $DELTIM
 output_history:          ${OUTPUT_HISTORY:-".true."}
 EOF
-elif [ $cpl = .false. ]; then
-cat >> model_configure <<EOF
-ideflate:                ${ideflate:-1}
-nbits:                   ${nbits:-14}
-iau_offset:              ${IAU_OFFSET:-0}
-EOF
-fi
 
 echo "$(cat model_configure)"
 }

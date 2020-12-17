@@ -76,18 +76,11 @@ cat >> input.nml <<EOF
   max_files_w = 100
   $fms_io_nml
 /
-EOF
 
-if [ $cpl = ".false." ]; then
-cat >> input.nml <<EOF
 &mpp_io_nml
   shuffle=${shuffle:-1}
   deflate_level=${deflate_level:-1}
 /
-EOF
-fi
-
-cat >> input.nml <<EOF
 
 &fms_nml
   clock_grain = 'ROUTINE'
@@ -212,16 +205,21 @@ if [ $CCPP_SUITE = "FV3_GFS_v15p2_coupled" ]; then
 EOF
 elif [ $CCPP_SUITE = "FV3_GSD_v0" ]; then
   cat >> input.nml << EOF
+  iovr         = ${iovr:-"3"}
   ltaerosol    = ${ltaerosol:-".F."}    ! In config.fcst
   lradar       = ${lradar:-".F."}	! In config.fcst
-  do_mynnedmf  = ${do_mynnedmf:-".false."}	! In config.fcst
-  do_mynnsfclay= ${do_mynnsfclay:-".false."}	! In config.fcst
-  lsoil_lsm    = ${lsoil_lsm:-"4"}	! In config.fcst
   ttendlim     = ${ttendlim:-0.005}	! In config.fcst
+  oz_phys      = ${oz_phys:-".false."}
+  oz_phys_2015 = ${oz_phys_2015:-".true."}
+  lsoil_lsm    = ${lsoil_lsm:-"4"}
+  do_mynnedmf  = ${do_mynnedmf:-".false."}
+  do_mynnsfclay = ${do_mynnsfclay:-".false."}
   icloud_bl    = ${icloud_bl:-"1"}	! In config.fcst
   bl_mynn_edmf = ${bl_mynn_edmf:-"1"}	! In config.fcst
   bl_mynn_tkeadvect=${bl_mynn_tkeadvect:-".true."}	! In config.fcst
   bl_mynn_edmf_mom=${bl_mynn_edmf_mom:-"1"}	! In config.fcst
+  min_lakeice  = ${min_lakeice:-"0.15"}
+  min_seaice   = ${min_seaice:-"0.15"}
 EOF
 fi
 
@@ -233,7 +231,8 @@ cat >> input.nml <<EOF
   iems         = ${IEMS:-"1"}           ! In config.fcst
   iaer         = $IAER			! In config.fcst
   icliq_sw     = ${icliq_sw:-"2"}	! In config.fcst
-  iovr         = ${iovr:-"3"}		! In config.fcst
+  iovr_lw      = ${iovr_lw:-"3"}
+  iovr_sw      = ${iovr_sw:-"3"}  
   ico2         = $ICO2			! In config.fcst
   isubc_sw     = ${isubc_sw:-"2"}	! In config.fcst
   isubc_lw     = ${isubc_lw:-"2"}	! In config.fcst
@@ -279,6 +278,7 @@ cat >> input.nml <<EOF
   prautco      = ${prautco:-"0.00015,0.00015"}
   lgfdlmprad   = ${lgfdlmprad:-".true."}
   effr_in      = ${effr_in:-".true."}
+  cplwav       = ${cplwav}              ! CROW configured
   ldiag_ugwp   = ${ldiag_ugwp:-".false."}
   do_ugwp      = ${do_ugwp:-".false."}
   do_tofd      = ${do_tofd:-".false."}
@@ -291,7 +291,6 @@ EOF
 if [ $cpl = .true. ]; then
   cat >> input.nml << EOF
   cplflx       = $cplflx
-  cplwav       = ${cplwav}              ! CROW configured
   cplwav2atm   = ${cplwav2atm}          ! CROW configured
 EOF
 fi
@@ -302,6 +301,7 @@ if [ $DOIAU = "YES" ]; then
   iaufhrs      = ${IAUFHRS}
   iau_delthrs  = ${IAU_DELTHRS}
   iau_inc_files= ${IAU_INC_FILES}
+  iau_drymassfixer = .false.
 EOF
 fi
 
@@ -360,14 +360,8 @@ cat >> input.nml <<EOF
   fix_negative = .true.
   icloud_f = 1
   mp_time = 150.
-EOF
-if [ $cplflx = .true. ]; then
-  cat >> input.nml << EOF
   reiflag = ${reiflag:-"1"}
-EOF
-fi
 
-cat >> input.nml <<EOF
   $gfdl_cloud_microphysics_nml
 /
 
