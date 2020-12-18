@@ -101,7 +101,7 @@ suite: !Cycle
       jgfs_post_manager_el: !TaskElement
         <<: *exclusive_task_template
         RUN: !calc up.RUN
-        Disable: !calc metasched.type == 'rocoto'
+        Disable: !calc metasched.type == 'rocoto' or doc.settings.inline_post == '.true.'
         Trigger: !FirstTrue
           - when: !calc not doc.settings.dev_safeguards
             take: !Depend ( up.forecast.is_running() )
@@ -112,17 +112,18 @@ suite: !Cycle
         resources: !calc partition.resources.run_gfs_post_manager
         release_postanl: !DataEvent
           file: !expand >-
-            {metasched.varref("COM")}/gfs.{metasched.datestring("%Y%m%d/%H/")}gfs.t{metasched.datestring("%H")}z.logf000.nemsio
+            {metasched.varref("COM")}/gfs.{metasched.datestring("%Y%m%d/%H/")}atmos/gfs.t{metasched.datestring("%H")}z.logf000.nemsio
         release_post_fhr: !DataEventElement
           Name: !expand "release_post{dimval.fhr:03d}"
           Foreach: [ fhr ]
           file: !expand >-
-            {metasched.varref("COM")}/gfs.{metasched.datestring("%Y%m%d/%H/")}gfs.t{metasched.datestring("%H")}z.logf{dimval.fhr:03d}.nemsio
+            {metasched.varref("COM")}/gfs.{metasched.datestring("%Y%m%d/%H/")}atmos/gfs.t{metasched.datestring("%H")}z.logf{dimval.fhr:03d}.nemsio
         # NOTE: the above files must match post_manager.yaml
 
       jgfs_post_anl_el: !TaskElement
         <<: *exclusive_task_template
         Foreach: []
+        Disable: !calc doc.settings.inline_post == '.true.'
         FHR: anl
         Name: p_anl
         Trigger: !FirstTrue
@@ -133,7 +134,7 @@ suite: !Cycle
         ecflow_def: !expand "edit FHR '{FHR}'"
         release_pgrb2_anl: !DataEvent {file="/dev/null"}
         resources: !calc partition.resources.run_gfspost
-        J_JOB: JGLOBAL_NCEPPOST
+        J_JOB: JGLOBAL_ATMOS_NCEPPOST 
         ecflow_command: !expand |
           export post_times=%FHR% FHRLST=%FHR% FHRGRP=%FHR%
           $HOMEgfs/jobs/{J_JOB}
@@ -144,10 +145,11 @@ suite: !Cycle
       jgfs_post_fhr_el: !TaskElement
         <<: *exclusive_task_template
         Foreach: [ fhr  ]
+        Disable: !calc doc.settings.inline_post == '.true.'
         resources: !calc partition.resources.run_gfspost
         Name: !expand p_{dimval.fhr:03d}
         FHR: !expand "{dimval.fhr:03d}"
-        J_JOB: JGLOBAL_NCEPPOST
+        J_JOB: JGLOBAL_ATMOS_NCEPPOST
         Trigger: !FirstTrue
           - when: !calc not doc.settings.dev_safeguards
             take: !Depend jgfs_post_manager.depend("release_post{F:03d}",F=[dimval.fhr])
@@ -161,44 +163,44 @@ suite: !Cycle
           /usr/bin/env post_times={FHR} FHRLST={FHR} FHRGRP={FHR} &HOMEgfs;/jobs/{J_JOB}
     #endfamily post
 
-    ocnpost: !TaskArray
-      RUN: !calc up.RUN
-      Disable: !calc doc.settings.cplflx==".false."
-      Dimensions:
-        fhr: !calc doc.output_settings.ocnpost_hours
-      jgfs_ocnpost_fhr_el: !TaskElement
+      ocnpost: !TaskArray
+        RUN: !calc up.RUN
+        Disable: !calc doc.settings.cplflx==".false."
+        Dimensions:
+          fhr: !calc doc.output_settings.ocnpost_hours
+        jgfs_ocnpost_fhr_el: !TaskElement
+          <<: *exclusive_task_template
+          Foreach: [ fhr  ]
+          resources: !calc partition.resources.run_one_node_downstream
+          Name: !expand p_{dimval.fhr:03d}
+          FHR: !expand "{dimval.fhr:03d}"
+          OCN_FHRLST: !calc "tools.seq(dimval.fhr, dimval.fhr+doc.output_settings.OCN_INTERVAL-6, 6)"
+          J_JOB: rocoto/ocnpost.sh
+          Trigger: !Depend up.up.forecast
+          ecflow_def: !expand "edit FHR '{FHR}'"
+          ecflow_command: !expand |
+            export post_times=%FHR% FHRLST=%FHR% FHRGRP=%FHR%
+            $HOMEgfs/jobs/{J_JOB}
+          rocoto_command: !expand >-
+            {rocoto_load_modules} ;
+            export OCN_FHRLST="{OCN_FHRLST}"; $HOMEgfs/jobs/{J_JOB}
+      #endfamily ocnpost
+
+      wavepost: !Task
         <<: *exclusive_task_template
-        Foreach: [ fhr  ]
-        resources: !calc partition.resources.run_one_node_downstream
-        Name: !expand p_{dimval.fhr:03d}
-        FHR: !expand "{dimval.fhr:03d}"
-        OCN_FHRLST: !calc "tools.seq(dimval.fhr, dimval.fhr+doc.output_settings.OCN_INTERVAL-6, 6)"
-        J_JOB: rocoto/ocnpost.sh
+        RUN: !calc up.RUN
+        Disable: !calc doc.settings.cplwav=='.false.'
+        resources: !calc partition.resources.run_fv3ic
+        J_JOB: JGLOBAL_WAVE_POST_SBS 
         Trigger: !Depend up.forecast
-        ecflow_def: !expand "edit FHR '{FHR}'"
-        ecflow_command: !expand |
-          export post_times=%FHR% FHRLST=%FHR% FHRGRP=%FHR%
-          $HOMEgfs/jobs/{J_JOB}
-        rocoto_command: !expand >-
-          {rocoto_load_modules} ;
-          export OCN_FHRLST="{OCN_FHRLST}"; $HOMEgfs/jobs/{J_JOB}
-    #endfamily ocnpost
 
-    wavepost: !Task
-      <<: *exclusive_task_template
-      RUN: !calc up.RUN
-      Disable: !calc doc.settings.cplwav=='.false.'
-      resources: !calc partition.resources.run_fv3ic
-      J_JOB: JGLOBAL_WAVE_POST_SBS 
-      Trigger: !Depend forecast
-
-    wavepostpnt: !Task
-      <<: *exclusive_task_template
-      RUN: !calc up.RUN
-      Disable: !calc doc.settings.cplwav=='.false.'
-      resources: !calc partition.resources.run_fv3ic
-      J_JOB: JGLOBAL_WAVE_POST_PNT
-      Trigger: !Depend forecast
+      wavepostpnt: !Task
+        <<: *exclusive_task_template
+        RUN: !calc up.RUN
+        Disable: !calc doc.settings.cplwav=='.false.'
+        resources: !calc partition.resources.run_fv3ic
+        J_JOB: JGLOBAL_WAVE_POST_PNT
+        Trigger: !Depend up.forecast
 
     jgfs_emc_vrfy: !Task
       <<: *exclusive_task_template

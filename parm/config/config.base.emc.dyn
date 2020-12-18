@@ -12,25 +12,10 @@ export machine="@MACHINE@"
 export RUN_ENVIR="emc"
 
 # Account, queue, etc.
-if [ $machine = "THEIA" -o $machine = "HERA" ]; then
-
-    export ACCOUNT="fv3-cpu"
-    export QUEUE="batch"
-    export QUEUE_ARCH="service"
-
-elif [ $machine = "WCOSS_C" -o $machine = "WCOSS_DELL_P3" ]; then
-
-    export ACCOUNT="FV3GFS-T2O"
-    export QUEUE="dev"
-    export QUEUE_ARCH="dev_transfer"
-
-elif [ $machine = "GAEA" ]; then
-
-    export ACCOUNT="nggps_emc"
-    export QUEUE="batch"
-    export QUEUE_ARCH="rdtn"
-
-fi
+export ACCOUNT="@ACCOUNT@"
+export QUEUE="@QUEUE@"
+export QUEUE_SERVICE="@QUEUE_SERVICE@"
+export PARTITION_BATCH="@PARTITION_BATCH@"
 
 # Project to use in mass store:
 HPSS_PROJECT=emc-global
@@ -44,138 +29,35 @@ export UTILgfs=$HOMEgfs/util
 export EXECgfs=$HOMEgfs/exec
 export SCRgfs=$HOMEgfs/scripts
 
+########################################################################
+
 # GLOBAL static environment parameters
-if [ $machine = "GAEA" ]; then
+export NWPROD="@NWPROD@"
+export COMROOT="@COMROOT@"
+export DMPDIR="@DMPDIR@"
+export RTMFIX=$CRTM_FIX
 
-    export NWPROD="/lustre/f1/unswept/ncep"
-    export DMPDIR="/lustre/f1/pdata/ncep/gdump"
-    export RTMFIX="/lustre/f1/pdata/ncep_shared/NCEPLIBS/lib/crtm/v2.0.6/src/fix"
+# USER specific paths
+export HOMEDIR="@HOMEDIR@"
+export STMP="@STMP@"
+export PTMP="@PTMP@"
+export NOSCRUB="@NOSCRUB@"
 
-elif [ $machine = "THEIA" ]; then
-
-    export NWPROD="/scratch4/NCEPDEV/global/save/glopara/nwpara"
-    export DMPDIR="/scratch4/NCEPDEV/global/noscrub/dump"
-    export RTMFIX="/scratch4/NCEPDEV/da/save/Michael.Lueken/nwprod/lib/crtm/2.2.3/fix_update"
-
-elif [ $machine = "HERA" ]; then
-
-    #export NWPROD="/scratch1/NCEPDEV/global/glopara/nwpara"
-    export DMPDIR="/scratch1/NCEPDEV/global/glopara/dump"
-    export RTMFIX=$CRTM_FIX
-
-elif [ $machine = "WCOSS_C" ]; then
-
-    export NWPROD="/gpfs/hps/nco/ops/nwprod"
-    export DMPDIR="/gpfs/dell3/emc/global/dump"
-    export RTMFIX=$CRTM_FIX
-
-elif [ $machine = "WCOSS_DELL_P3" ]; then
-
-    export NWPROD="/gpfs/dell1/nco/ops/nwprod"
-    export DMPDIR="/gpfs/dell3/emc/global/dump"
-    export RTMFIX=$CRTM_FIX
-fi
-
-
-# Machine specific paths used everywhere
-if [ $machine = "GAEA" ]; then
-
-    # USER specific paths
-    export HOMEDIR="/lustre/f1/unswept/ncep/$USER"
-    export STMP="/lustre/f1/pdata/ncep/$USER"
-    export PTMP="/lustre/f1/pdata/ncep/$USER"
-    export NOSCRUB="/lustre/f1/unswept/ncep/$USER"
-
-    # Base directories for various builds
-    export BASE_GIT="/lustre/f1/unswept/ncep/$USER"
-    export BASE_SVN="/scratch4/NCEPDEV/global/save/glopara/svn"
-
-elif [ $machine = "THEIA" ]; then
-
-    # USER specific paths
-    export HOMEDIR="/scratch4/NCEPDEV/global/save/$USER"
-    export STMP="/scratch4/NCEPDEV/stmp3/$USER"
-    export PTMP="/scratch4/NCEPDEV/stmp4/$USER"
-    export NOSCRUB="/scratch4/NCEPDEV/global/noscrub/$USER"
-
-    # Base directories for various builds
-    export BASE_GIT="/scratch4/NCEPDEV/global/save/glopara/git"
-    export BASE_SVN="/scratch4/NCEPDEV/global/save/glopara/svn"
-
-elif [ $machine = "HERA" ]; then
-
-    # USER specific paths
-    export HOMEDIR="/scratch1/NCEPDEV/global/$USER"
-    export STMP="/scratch1/NCEPDEV/stmp2/$USER"
-    export PTMP="/scratch1/NCEPDEV/stmp4/$USER"
-    export NOSCRUB="$HOMEDIR"
-
-    # Base directories for various builds
-    export BASE_GIT="/scratch1/NCEPDEV/global/glopara/git"
-    export BASE_SVN="/scratch1/NCEPDEV/global/glopara/svn"
-
-elif [ $machine = "WCOSS_C" ]; then
-
-    # USER specific paths
-    export HOMEDIR="/gpfs/hps3/emc/global/noscrub/$USER"
-    export STMP="/gpfs/hps2/stmp/$USER"
-    export PTMP="/gpfs/hps2/ptmp/$USER"
-    export NOSCRUB="/gpfs/hps3/emc/global/noscrub/$USER"
-
-    # Base directories for various builds
-    export BASE_GIT="/gpfs/hps3/emc/global/noscrub/emc.glopara/git"
-    export BASE_SVN="/gpfs/hps3/emc/global/noscrub/emc.glopara/svn"
-
-elif [ $machine = "WCOSS_DELL_P3" ]; then
-
-    # USER specific paths
-    export HOMEDIR="/gpfs/dell2/emc/modeling/noscrub/$USER"
-    export STMP="/gpfs/dell3/stmp/$USER"
-    export PTMP="/gpfs/dell3/ptmp/$USER"
-    export NOSCRUB="/gpfs/dell2/emc/modeling/noscrub/$USER"
-
-    # Base directories for various builds
-    export BASE_GIT="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git"
-    export BASE_SVN="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git"
-
-fi
-
-# Utilities needed in the scripts (mostly post)
-if [ $machine = "GAEA" ]; then
-
-    module use /lustre/f1/pdata/ncep_shared/fv3/modulefiles
-    module load grib_util
-    export NHOUR="/lustre/f1/pdata/ncep_shared/emc.nemspara/soft/prod_util/1.0.18/exec/nhour"
-    export GRBINDEX2="/lustre/f1/pdata/ncep_shared/fv3/exec/grb2index"
-    export CNVGRIB21_GFS="/lustre/f1/pdata/ncep_shared/fv3/exec/cnvgrib21_gfs"
-    export COMPUTE_PARTITION="c3:c4"
-    export SERVICE_PARTITION="es"
-    export COMPUTE_PARTITION_LINE="-l partition=&COMPUTE_PARTITION;"
-    export SERVICE_PARTITION_LINE="-l partition=&SERVICE_PARTITION;"
-
-elif [ $machine = "THEIA" ]; then
-
-    export NDATE="$NWPROD/util/exec/ndate"
-    export NHOUR="$NWPROD/util/exec/nhour"
-    export WGRIB="$NWPROD/util/exec/wgrib"
-    export WGRIB2="/scratch3/NCEPDEV/nwprod/utils/wgrib2.v2.0.6c/wgrib2/wgrib2"
-    export COPYGB="$NWPROD/util/exec/copygb"
-    export COPYGB2="$NWPROD/util/exec/copygb2"
-    export GRBINDEX="$NWPROD/util/exec/grbindex"
-    export GRB2INDEX="$NWPROD/util/exec/grb2index"
-    export GRBINDEX2="$NWPROD/util/exec/grb2index"
-    export CNVGRIB="/apps/cnvgrib/1.4.0/bin/cnvgrib"
-    export POSTGRB2TBL="/scratch3/NCEPDEV/nwprod/lib/g2tmpl/v1.5.0/sorc/params_grib2_tbl_new"
-
-fi
+# Base directories for various builds
+export BASE_GIT="@BASE_GIT@"
 
 # Toggle to turn on/off GFS downstream processing.
-export DO_BUFRSND="NO"
-export DO_GEMPAK="NO"
-export DO_AWIPS="NO"
+export DO_BUFRSND="YES"    # BUFR sounding products
+export DO_GEMPAK="NO"      # GEMPAK products
+export DO_AWIPS="NO"       # AWIPS products
+export WAFSF="NO"          # WAFS products
 
 # NO for retrospective parallel; YES for real-time parallel
-export REALTIME="NO"
+#  arch.sh uses REALTIME for MOS.  Need to set REALTIME=YES
+#  if want MOS written to HPSS.   Should update arch.sh to
+#  use RUNMOS flag (currently in config.vrfy)
+export REALTIME="YES"
+
 
 ####################################################
 # DO NOT ADD MACHINE DEPENDENT STUFF BELOW THIS LINE
@@ -184,13 +66,13 @@ export REALTIME="NO"
 # CLEAR
 ####################################################
 # Build paths relative to $HOMEgfs
-export HOMEgsi="$HOMEgfs"
 export FIXgsi="$HOMEgfs/fix/fix_gsi"
 export HOMEfv3gfs="$HOMEgfs/sorc/fv3gfs.fd"
 export HOMEpost="$HOMEgfs"
-export HOMEobsproc_prep="$BASE_GIT/obsproc/OT-obsproc_prep.v5.2.0-20190614"
-export HOMEobsproc_network="$BASE_GIT/obsproc/OT-obsproc_global.v3.2.1-20190613"
-export BASE_VERIF="$BASE_SVN/verif/global/tags/vsdb"
+export HOMEobsproc_prep="$BASE_GIT/obsproc/gfsv16b/obsproc_prep_RB-5.4.0"
+export HOMEobsproc_network="$BASE_GIT/obsproc/gfsv16b/obsproc_global_RB-3.4.0"
+export HOMEobsproc_global=$HOMEobsproc_network
+export BASE_VERIF="$BASE_GIT/verif/global/tags/vsdb"
 
 # CONVENIENT utility scripts and other environment parameters
 export NCP="/bin/cp -p"
@@ -198,8 +80,11 @@ export NMV="/bin/mv"
 export NLN="/bin/ln -sf"
 export VERBOSE="YES"
 export KEEPDATA="NO"
-export CHGRP_CMD="chgrp rstprod"
+export CHGRP_RSTPROD="@CHGRP_RSTPROD@"
+export CHGRP_CMD="@CHGRP_CMD@"
 export NEMSIOGET="$HOMEgfs/exec/nemsio_get"
+export NCDUMP="$NETCDF/bin/ncdump"
+export NCLEN="$HOMEgfs/ush/getncdimlen"
 
 # Machine environment, jobs, and other utility scripts
 export BASE_ENV="$HOMEgfs/env"
@@ -207,13 +92,18 @@ export BASE_JOB="$HOMEgfs/jobs/rocoto"
 
 # EXPERIMENT specific environment parameters
 export SDATE=@SDATE@
+export FDATE=@FDATE@
 export EDATE=@EDATE@
+export EXP_WARM_START="@EXP_WARM_START@"
 export assim_freq=6
 export PSLOT="@PSLOT@"
 export EXPDIR="@EXPDIR@/$PSLOT"
 export ROTDIR="@ROTDIR@/$PSLOT"
 export ROTDIR_DUMP="YES"                #Note: A value of "NO" does not currently work
 export DUMP_SUFFIX=""
+if [[ "$CDATE" -ge "2019092100" && "$CDATE" -le "2019110700" ]]; then
+    export DUMP_SUFFIX="p"              # Use dumps from NCO GFS v15.3 parallel
+fi
 export RUNDIR="$STMP/RUNDIRS/$PSLOT"
 export DATAROOT="$RUNDIR/$CDATE/$CDUMP"
 export ARCDIR="$NOSCRUB/archive/$PSLOT"
@@ -224,6 +114,11 @@ export ATARDIR="/NCEPDEV/$HPSS_PROJECT/1year/$USER/$machine/scratch/$PSLOT"
 export envir=${envir:-"prod"}
 export NET="gfs"
 export RUN=${RUN:-${CDUMP:-"gfs"}}
+export COMINatmos=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos
+export COMOUTatmos=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos
+export COMINwave=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/wave
+export COMOUTwave=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/wave
+
 export jlogfile="${EXPDIR}/logs/jlogfile"
 export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 export LOGSCRIPT=${LOGSCRIPT:-""}
@@ -232,15 +127,21 @@ export LOGSCRIPT=${LOGSCRIPT:-""}
 export REDOUT="1>"
 export REDERR="2>"
 
-export SENDECF="NO"
-export SENDCOM="NO"
-export SENDDBN="NO"
-export SENDSDM="NO"
+export SENDECF=${SENDECF:-"NO"}
+export SENDCOM=${SENDCOM:-"NO"}
+export SENDSDM=${SENDSDM:-"NO"}
+export SENDDBN_NTC=${SENDDBN_NTC:-"NO"}
+export SENDDBN=${SENDDBN:-"NO"}
+export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
 # Resolution specific parameters
-export LEVS=65
+export LEVS=128
 export CASE="@CASECTL@"
 export CASE_ENKF="@CASEENS@"
+
+# Run with CCPP physics
+export RUN_CCPP="NO"
+export CCPP_SUITE="FV3_GFS_v16beta"
 
 # Surface cycle update frequency
 if [[ "$CDUMP" == "gdas" ]] ; then
@@ -255,37 +156,74 @@ export FHMIN=0
 export FHMAX=9
 export FHOUT=3
 
+# Cycle to run EnKF  (set to BOTH for both gfs and gdas)
+export EUPD_CYC="gdas"
+
 # GFS cycle info
 export gfs_cyc=@gfs_cyc@ # 0: no GFS cycle, 1: 00Z only, 2: 00Z and 12Z only, 4: all 4 cycles.
 
 # GFS output and frequency
 export FHMIN_GFS=0
 
-export FHMAX_GFS_00=240
-export FHMAX_GFS_06=240
-export FHMAX_GFS_12=240
-export FHMAX_GFS_18=240
+export FHMAX_GFS_00=384
+export FHMAX_GFS_06=384
+export FHMAX_GFS_12=384
+export FHMAX_GFS_18=384
 export FHMAX_GFS=$(eval echo \${FHMAX_GFS_$cyc})
 
 export FHOUT_GFS=3
 export FHMAX_HF_GFS=0
 export FHOUT_HF_GFS=1
+export ILPOST=1           # gempak output frequency up to F120
+
+# GFS restart interval in hours
+export restart_interval_gfs=0
+
 
 # I/O QUILTING, true--use Write Component; false--use GFDL FMS
 # if quilting=true, choose OUTPUT_GRID as cubed_sphere_grid in netcdf or gaussian_grid
 # if gaussian_grid, set OUTPUT_FILE for nemsio or netcdf
+# WRITE_DOPOST=true, use inline POST
 export QUILTING=".true."
 export OUTPUT_GRID="gaussian_grid"
-export OUTPUT_FILE="nemsio"
+export OUTPUT_FILE="netcdf"
+export WRITE_DOPOST=".true."
+
+# suffix options depending on file format
+if [ $OUTPUT_FILE = "netcdf" ]; then
+    export SUFFIX=".nc"
+    export NEMSIO_IN=".false."
+    export NETCDF_IN=".true."
+else
+    export SUFFIX=".nemsio"
+    export NEMSIO_IN=".true."
+    export NETCDF_IN=".false."
+fi
 
 # IAU related parameters
-export DOIAU="NO"
-export IAUFHRS=6
+export DOIAU="YES"        # Enable 4DIAU for control with 3 increments
+export IAUFHRS="3,6,9"
+export IAU_FHROT=`echo $IAUFHRS | cut -c1`
 export IAU_DELTHRS=6
-export DOIAU_ENKF="NO"
-export IAUFHRS_ENKF=6
+export IAU_OFFSET=6
+export DOIAU_ENKF=${DOIAU:-"YES"}   # Enable 4DIAU for EnKF ensemble
+export IAUFHRS_ENKF="3,6,9"
 export IAU_DELTHRS_ENKF=6
-[[ "$SDATE" = "$CDATE" ]] && ( export DOIAU="NO"; export DOIAU_ENKF="NO" )
+if [[ "$SDATE" = "$CDATE" && $EXP_WARM_START = ".false." ]] || [[ "$DOIAU" = "NO" ]] ; then # Cold starting or IAU off
+  export IAU_OFFSET=0
+  export IAU_FHROT=0
+fi
+
+# Use Jacobians in eupd and thereby remove need to run eomg
+export lobsdiag_forenkf=".true."
+
+# run GLDAS to spin up land ICs
+export DO_GLDAS="YES"
+export gldas_cyc=00
+
+# run wave component
+export DO_WAVE="YES"
+export WAVE_CDUMP="both"
 
 # Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL
 export imp_physics=11
@@ -294,9 +232,9 @@ export imp_physics=11
 # Hybrid related
 export DOHYBVAR="YES"
 export NMEM_ENKF=@NMEM_ENKF@
-export SMOOTH_ENKF="YES"
+export SMOOTH_ENKF="NO"
 export l4densvar=".true."
-export lwrite4danl=".false."
+export lwrite4danl=".true."
 
 # EnKF output frequency
 if [ $DOHYBVAR = "YES" ]; then
@@ -318,12 +256,33 @@ if [ $DONST = "YES" ]; then export FNTSFA="        "; fi
 export nst_anl=.true.
 
 # Analysis increments to zero in CALCINCEXEC
-export INCREMENTS_TO_ZERO="'delz_inc','clwmr_inc','icmr_inc'"
+export INCREMENTS_TO_ZERO="'liq_wat_inc','icmr_inc'"
+
+if [ $OUTPUT_FILE = "nemsio" ]; then
+    export DO_CALC_INCREMENT="YES"
+    export DO_CALC_ANALYSIS="NO"
+fi
+
+# Stratospheric increments to zero
+export INCVARS_ZERO_STRAT="'sphum_inc','liq_wat_inc','icmr_inc'"
+export INCVARS_EFOLD="5"
+
+# Swith to generate netcdf or binary diagnostic files.  If not specified,
+# script default to binary diagnostic files.   Set diagnostic file
+# variables here since used in both DA and vrfy jobs
+export netcdf_diag=".true."
+export binary_diag=".false."
+
+# Verification options
+export DO_METP="YES"         # Run METPLUS jobs - set METPLUS settings in config.metp
+export DO_VSDB="YES"         # Run VSDB package - set VSDB settings in config.vrfy
 
 # Archiving options
-export HPSSARCH="NO"         # save data to HPSS archive
+export HPSSARCH="@HPSSARCH@"        # save data to HPSS archive
 export ARCH_CYC=00           # Archive data at this cycle for warm_start capability
 export ARCH_WARMICFREQ=4     # Archive frequency in days for warm_start capability
 export ARCH_FCSTICFREQ=1     # Archive frequency in days for gdas and gfs forecast-only capability
+
+export DELETE_COM_IN_ARCHIVE_JOB="YES"   # NO=retain ROTDIR.  YES default in arch.sh and earc.sh.
 
 echo "END: config.base"

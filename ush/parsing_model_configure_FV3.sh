@@ -17,12 +17,13 @@ cat >> model_configure <<EOF
 total_member:            $ENS_NUM
 print_esmf:              ${print_esmf:-.true.}
 PE_MEMBER01:             $NTASKS_TOT
-start_year:              ${sPDY:0:4}
-start_month:             ${sPDY:4:2}
-start_day:               ${sPDY:6:2}
-start_hour:              ${scyc}
+start_year:              ${tPDY:0:4}
+start_month:             ${tPDY:4:2}
+start_day:               ${tPDY:6:2}
+start_hour:              ${tcyc}
 start_minute:            0
 start_second:            0
+fhrot:                   ${IAU_FHROT:-0}
 nhours_fcst:             $FHMAX
 RUN_CONTINUE:            ${RUN_CONTINUE:-".false."}
 ENS_SPS:                 ${ENS_SPS:-".false."}
@@ -40,11 +41,19 @@ restart_interval:        $restart_interval
 quilting:                $QUILTING
 write_groups:            ${WRITE_GROUP:-1}
 write_tasks_per_group:   ${WRTTASK_PER_GROUP:-24}
+output_history:          ${OUTPUT_HISTORY:-".true."}
+write_dopost:            ${WRITE_DOPOST:-".false."}
 num_files:               ${NUM_FILES:-2}
 filename_base:           'atm' 'sfc'
 output_grid:             $OUTPUT_GRID
 output_file:             $OUTPUT_FILE
-
+ichunk2d:                ${ichunk2d:-0}
+jchunk2d:                ${jchunk2d:-0}
+ichunk3d:                ${ichunk3d:-0}
+jchunk3d:                ${jchunk3d:-0}
+kchunk3d:                ${kchunk3d:-0}
+ideflate:                ${ideflate:-1}
+nbits:                   ${nbits:-14}
 write_nemsioflip:        $WRITE_NEMSIOFLIP
 write_fsyncflag:         $WRITE_FSYNCFLAG
 imo:                     $LONB_IMO
@@ -61,13 +70,6 @@ if [ $cpl = .true. ]; then
 cat >> model_configure <<EOF
 atm_coupling_interval_sec:      $DELTIM
 output_history:          ${OUTPUT_HISTORY:-".true."}
-write_dopost:            ${WRITE_DOPOST:-".false."}
-EOF
-elif [ $cpl = .false. ]; then
-cat >> model_configure <<EOF
-ideflate:                ${ideflate:-1}
-nbits:                   ${nbits:-14}
-iau_offset:              ${IAU_OFFSET:-0}
 EOF
 fi
 

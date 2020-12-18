@@ -8,7 +8,7 @@ set -x -e
 #############################
 # Source relevant config files
 #############################
-configs="base wave"
+configs="base wave waveinit"
 export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
 config_path=${EXPDIR:-$NWROOT/gfs.${gfs_ver}/parm/config}
 for config in $configs; do
@@ -46,6 +46,14 @@ sh ./PDY
 
 export pgmout=OUTPUT.$$
 
+export MP_PULSE=0
+
+# Path to HOME Directory
+export FIXwave=${FIXwave:-$HOMEgfs/fix/fix_wave_${NET}}
+export PARMwave=${PARMwave:-$HOMEgfs/parm/wave}
+export USHwave=${USHwave:-$HOMEgfs/ush}
+export EXECwave=${EXECwave:-$HOMEgfs/exec}
+
 # Set COM Paths and GETGES environment
 if [ $RUN_ENVIR = "nco" ]; then
     export ROTDIR=${COMROOT:?}/$NET/$envir
@@ -57,6 +65,10 @@ export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/$COMPONENT}
 if [ $SENDCOM = YES ]; then
   mkdir -p $COMOUT/rundata
 fi
+
+# Set mpi serial command
+export wavempexec=${launcher:-"mpirun -n"}
+export wave_mpmd=${mpmd:-"cfp"}
 
 # Execute the Script  
 $HOMEgfs/scripts/exgfs_wave_init.sh

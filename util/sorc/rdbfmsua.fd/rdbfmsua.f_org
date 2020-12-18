@@ -26,10 +26,12 @@ C 2012-01-24 J. Cahoon -- Modified from original RDBFUA to include
 C			significant and standard together in output
 C 2012-02-15 B. Mabe -- Changed Program name and output file to reflect
 C                        change to output for sig and man data
+C 2016-10-18 B. Vuong -- Removed hardwire '/nwprod/dictionaries/' in CALL FL_TBOP
 C
 C USAGE:
 C   INPUT FILES:
 C     UNIT 40  - adpupa dumpfile (contains data from BUFR tank b002/xx001)
+C
 C     sonde.land.tbl                                           
 C     metar.tbl                                                
 C
@@ -88,7 +90,7 @@ C*----------------------------------------------------------------------
 C*----------------------------------------------------------------------
 C*	Open and read the sonde land station table.
 C*----------------------------------------------------------------------
-        CALL FL_TBOP ( '/nwprod/dictionaries/sonde.land.tbl',
+        CALL FL_TBOP ( 'sonde.land.tbl',
      +                 'stns', iunltb, iertop )
         IF ( iertop .ne. 0 ) THEN
            print*,' error opening sonde land station table'
@@ -145,7 +147,7 @@ C*----------------------------------------------------------------------
 C*	Open the BUFR file.
 C*----------------------------------------------------------------------
 
-	CALL OPENBF  ( 40, 'IN', 40 )
+        CALL OPENBF  ( 40, 'IN', 40 )
 
 C*----------------------------------------------------------------------
 C*	Read a BUFR subset from the BUFR file.

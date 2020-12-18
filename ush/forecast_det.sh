@@ -17,50 +17,51 @@ FV3_GFS_det(){
 	# warm start?
 	warm_start=${warm_start:-".false."}
 	read_increment=${read_increment:-".false."}
-	restart_interval=${restart_interval:-0}
         res_latlon_dynamics="''"
 
         # Determine if this is a warm start or cold start
-	if [ -f $gmemdir/RESTART/${PDY}.${cyc}0000.coupler.res ]; then
+	if [ -f $gmemdir/RESTART/${sPDY}.${scyc}0000.coupler.res ]; then
 	  export warm_start=".true."
 	fi
 
         # turn IAU off for cold start
-        DOIAU_coldstart="NO"
-        if [ $DOIAU = "YES" -a $warm_start = ".false." ]; then
+        DOIAU_coldstart=${DOIAU_coldstart:-"NO"}
+        if [ $DOIAU = "YES" -a $warm_start = ".false." ] || [ $DOIAU_coldstart = "YES" -a $warm_start = ".true." ]; then
           export DOIAU="NO"
           echo "turning off IAU since warm_start = $warm_start"
           DOIAU_coldstart="YES"
+          IAU_OFFSET=0
           sCDATE=$CDATE
           sPDY=$PDY
           scyc=$cyc
-          #echo "ERROR: DOIAU = $DOIAU and warm_start = $warm_start are incompatible."
-          #echo "Abort!"
-          #exit 99
+          tPDY=$sPDY
+          tcyc=$cyc
         fi
 
 	#-------------------------------------------------------
 	# determine if restart IC exists to continue from a previous forecast
-	RERUN="NO"
-	filecount=$(find $RSTDIR_TMP -type f | wc -l)
-	if [ $CDUMP = "gfs" -a $restart_interval -gt 0 -a $FHMAX -gt $restart_interval -a $filecount -gt 10 ]; then
-	    SDATE=$($NDATE +$FHMAX $CDATE)
-	    EDATE=$($NDATE +$restart_interval $CDATE)
-	    while [ $SDATE -gt $EDATE ]; do
-	        PDYS=$(echo $SDATE | cut -c1-8)
-	        cycs=$(echo $SDATE | cut -c9-10)
-	        flag1=$RSTDIR_TMP/${PDYS}.${cycs}0000.coupler.res
-	        flag2=$RSTDIR_TMP/coupler.res
-	        if [ -s $flag1 ]; then
-	            mv $flag1 ${flag1}.old
-	            if [ -s $flag2 ]; then mv $flag2 ${flag2}.old ;fi
-	            RERUN="YES"
-	            CDATE_RST=$($NDATE -$restart_interval $SDATE)
-	            break
-	        fi
-	        SDATE=$($NDATE -$restart_interval $SDATE)
-	    done
-	fi
+        RERUN="NO"
+        filecount=$(find $RSTDIR_ATM -type f | wc -l)
+        if [ $CDUMP = "gfs" -a $rst_invt1 -gt 0 -a $FHMAX -gt $rst_invt1 -a $filecount -gt 10 ]; then
+            reverse=$(echo "${restart_interval[@]} " | tac -s ' ')
+            for xfh in $reverse ; do
+                yfh=$((xfh-(IAU_OFFSET/2)))
+                SDATE=$($NDATE +$yfh $CDATE)
+                PDYS=$(echo $SDATE | cut -c1-8)
+                cycs=$(echo $SDATE | cut -c9-10)
+                flag1=$RSTDIR_ATM/${PDYS}.${cycs}0000.coupler.res
+                flag2=$RSTDIR_ATM/coupler.res
+                if [ -s $flag1 ]; then
+                    CDATE_RST=$SDATE
+                    [[ $RERUN = "YES" ]] && break
+                    mv $flag1 ${flag1}.old
+                    if [ -s $flag2 ]; then mv $flag2 ${flag2}.old ;fi
+                    RERUN="YES"
+                    [[ $xfh = $rst_invt1 ]] && RERUN="NO"
+                fi
+            done
+        fi
+
 	#-------------------------------------------------------
 }
 

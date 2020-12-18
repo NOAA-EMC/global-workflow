@@ -13,7 +13,7 @@ import sys
 import glob
 import shutil
 import socket
-from datetime import datetime
+from datetime import datetime, timedelta
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 import workflow_utils as wfu
 
@@ -76,21 +76,38 @@ def edit_baseconfig():
     top = os.path.abspath(os.path.join(
         os.path.abspath(here), '../..'))
 
-    # make a copy of the default before editing
-    shutil.copy(base_config, base_config + '.default')
+    if os.path.exists(base_config):
+        os.unlink(base_config)
 
     print '\nSDATE = %s\nEDATE = %s' % (idate, edate)
-    with open(base_config + '.default', 'rt') as fi:
-        with open(base_config + '.new', 'wt') as fo:
+    with open(base_config + '.emc.dyn', 'rt') as fi:
+        with open(base_config, 'wt') as fo:
             for line in fi:
                 line = line.replace('@MACHINE@', machine.upper()) \
                     .replace('@PSLOT@', pslot) \
                     .replace('@SDATE@', idate.strftime('%Y%m%d%H')) \
+                    .replace('@FDATE@', fdate.strftime('%Y%m%d%H')) \
                     .replace('@EDATE@', edate.strftime('%Y%m%d%H')) \
                     .replace('@CASEENS@', 'C%d' % resens) \
                     .replace('@CASECTL@', 'C%d' % resdet) \
                     .replace('@NMEM_ENKF@', '%d' % nens) \
                     .replace('@HOMEgfs@', top) \
+                    .replace('@BASE_GIT@', base_git) \
+                    .replace('@DMPDIR@', dmpdir) \
+                    .replace('@NWPROD@', nwprod) \
+                    .replace('@COMROOT@', comroot) \
+                    .replace('@HOMEDIR@', homedir) \
+                    .replace('@STMP@', stmp) \
+                    .replace('@PTMP@', ptmp) \
+                    .replace('@NOSCRUB@', noscrub) \
+                    .replace('@ACCOUNT@', account) \
+                    .replace('@QUEUE@', queue) \
+                    .replace('@QUEUE_SERVICE@', queue_service) \
+                    .replace('@PARTITION_BATCH@', partition_batch) \
+                    .replace('@EXP_WARM_START@', exp_warm_start) \
+                    .replace('@CHGRP_RSTPROD@', chgrp_rstprod) \
+                    .replace('@CHGRP_CMD@', chgrp_cmd) \
+                    .replace('@HPSSARCH@', hpssarch) \
                     .replace('@gfs_cyc@', '%d' % gfs_cyc)
                 if expdir is not None:
                     line = line.replace('@EXPDIR@', os.path.dirname(expdir))
@@ -99,12 +116,10 @@ def edit_baseconfig():
                 if 'ICSDIR' in line:
                     continue
                 fo.write(line)
-    os.unlink(base_config)
-    os.rename(base_config + '.new', base_config)
 
     print ''
     print 'EDITED:  %s/config.base as per user input.' % expdir
-    print 'DEFAULT: %s/config.base.default is for reference only.' % expdir
+    print 'DEFAULT: %s/config.base.emc.dyn is for reference only.' % expdir
     print 'Please verify and delete the default file before proceeding.'
     print ''
 
@@ -131,6 +146,8 @@ link initial condition files from $ICSDIR to $COMROT'''
     parser.add_argument('--nens', help='number of ensemble members', type=int, required=False, default=20)
     parser.add_argument('--cdump', help='CDUMP to start the experiment', type=str, required=False, default='gdas')
     parser.add_argument('--gfs_cyc', help='GFS cycles to run', type=int, choices=[0, 1, 2, 4], default=1, required=False)
+    parser.add_argument('--partition', help='partition on machine', type=str, required=False, default=None)
+    parser.add_argument('--start', help='restart mode: warm or cold', type=str, choices=['warm', 'cold'], required=False, default='cold')
 
     args = parser.parse_args()
 
@@ -151,6 +168,90 @@ link initial condition files from $ICSDIR to $COMROT'''
     nens = args.nens
     cdump = args.cdump
     gfs_cyc = args.gfs_cyc
+    partition = args.partition
+    start = args.start
+
+    # Set restart setting in config.base
+    if start == 'cold':
+      exp_warm_start = '.false.'
+    elif start == 'warm':
+      exp_warm_start = '.true.'
+
+    # Set FDATE (first full cycle)
+    fdate = idate + timedelta(hours=6)
+
+    # Set machine defaults
+    if machine == 'WCOSS_DELL_P3':
+      base_git = '/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git'
+      base_svn = '/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git'
+      dmpdir = '/gpfs/dell3/emc/global/dump'
+      nwprod = '${NWROOT:-"/gpfs/dell1/nco/ops/nwprod"}'
+      comroot = '${COMROOT:-"/gpfs/dell1/nco/ops/com"}'
+      homedir = '/gpfs/dell2/emc/modeling/noscrub/$USER'
+      stmp = '/gpfs/dell3/stmp/$USER'
+      ptmp = '/gpfs/dell3/ptmp/$USER'
+      noscrub = '/gpfs/dell2/emc/modeling/noscrub/$USER'
+      account = 'GFS-DEV'
+      queue = 'dev'
+      queue_service = 'dev_transfer'
+      partition_batch = ''
+      if partition in ['3p5']:
+        queue = 'dev2'
+        queue_service = 'dev2_transfer'
+      chgrp_rstprod = 'YES'
+      chgrp_cmd = 'chgrp rstprod'
+      hpssarch = 'YES'
+    elif machine == 'WCOSS_C':
+      base_git = '/gpfs/hps3/emc/global/noscrub/emc.glopara/git'
+      base_svn = '/gpfs/hps3/emc/global/noscrub/emc.glopara/svn'
+      dmpdir = '/gpfs/dell3/emc/global/dump'
+      nwprod = '${NWROOT:-"/gpfs/hps/nco/ops/nwprod"}'
+      comroot = '${COMROOT:-"/gpfs/hps/nco/ops/com"}'
+      homedir = '/gpfs/hps3/emc/global/noscrub/$USER'
+      stmp = '/gpfs/hps2/stmp/$USER'
+      ptmp = '/gpfs/hps2/ptmp/$USER'
+      noscrub = '/gpfs/hps3/emc/global/noscrub/$USER'
+      account = 'GFS-DEV'
+      queue = 'dev'
+      queue_service = 'dev_transfer'
+      partition_batch = ''
+      chgrp_rstprod = 'YES'
+      chgrp_cmd = 'chgrp rstprod'
+      hpssarch = 'YES'
+    elif machine == 'HERA':
+      base_git = '/scratch1/NCEPDEV/global/glopara/git'
+      base_svn = '/scratch1/NCEPDEV/global/glopara/svn'
+      dmpdir = '/scratch1/NCEPDEV/global/glopara/dump'
+      nwprod = '/scratch1/NCEPDEV/global/glopara/nwpara'
+      comroot = '/scratch1/NCEPDEV/rstprod/com'
+      homedir = '/scratch1/NCEPDEV/global/$USER'
+      stmp = '/scratch1/NCEPDEV/stmp2/$USER'
+      ptmp = '/scratch1/NCEPDEV/stmp4/$USER'
+      noscrub = '$HOMEDIR'
+      account = 'fv3-cpu'
+      queue = 'batch'
+      queue_service = 'service'
+      partition_batch = ''
+      chgrp_rstprod = 'YES'
+      chgrp_cmd = 'chgrp rstprod'
+      hpssarch = 'YES'
+    elif machine == 'ORION':
+      base_git = '/work/noaa/global/glopara/git'
+      base_svn = '/work/noaa/global/glopara/svn'
+      dmpdir = '/work/noaa/global/glopara/dump'
+      nwprod = '/work/noaa/global/glopara/nwpara'
+      comroot = '/work/noaa/global/glopara/com'
+      homedir = '/work/noaa/global/$USER'
+      stmp = '/work/noaa/stmp/$USER'
+      ptmp = '/work/noaa/stmp/$USER'
+      noscrub = '$HOMEDIR'
+      account = 'fv3-cpu'
+      queue = 'batch'
+      queue_service = 'service'
+      partition_batch = 'orion'
+      chgrp_rstprod = 'NO'
+      chgrp_cmd = 'ls'
+      hpssarch = 'NO'
 
     if args.icsdir is not None and not os.path.exists(icsdir):
         msg = 'Initial conditions do not exist in %s' % icsdir

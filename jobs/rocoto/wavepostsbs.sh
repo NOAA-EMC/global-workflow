@@ -7,16 +7,13 @@ echo "=============== START TO SOURCE FV3GFS WORKFLOW MODULES ==============="
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
-export DATAROOT="$RUNDIR/$CDATE/$CDUMP"
-[[ ! -d $DATAROOT ]] && mkdir -p $DATAROOT
-
 ###############################################################
 echo
 echo "=============== START TO RUN WAVE POST_SBS ==============="
 # Execute the JJOB
-$HOMEgfs/jobs/JWAVE_POST_SBS
+$HOMEgfs/jobs/JGLOBAL_WAVE_POST_SBS
 status=$?
-exit $status
+[[ $status -ne 0 ]] && exit $status
 
 ###############################################################
 # Force Exit out cleanly

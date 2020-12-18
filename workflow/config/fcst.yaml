@@ -87,6 +87,9 @@ config_fcst:
     export NX_GLB="{doc.ice_settings.NX_GLB}"
     export NY_GLB="{doc.ice_settings.NY_GLB}"
     export MESHICE="mesh.mx{doc.ice_settings.ICERES}.nc"
+    
+    # inline post
+    export WRITE_DOPOST="{doc.settings.inline_post}"
 
     if [[ "$machine" == "WCOSS_C" ]]; then
         export memory_fcst="1024M"
@@ -94,7 +97,7 @@ config_fcst:
         export memory_fcst="1024M"
     fi
     
-    export FORECASTSH="$HOMEgfs/scripts/exglobal_fcst_nemsfv3gfs.sh"
+    export FORECASTSH="$HOMEgfs/scripts/exglobal_forecast.sh"
     export FCSTEXECDIR="$HOMEgfs/exec"
     export FCSTEXEC="{FCSTEXEC}"
    
@@ -169,6 +172,12 @@ config_fcst:
     export sppt_sfclimit=.true.
     export use_zmtnblck=.true.
 
+
+    if [[ $cplwav = ".true." ]]; then 
+       export DO_WAVE="YES"
+    else 
+       export DO_WAVE="NO"
+    fi
     #---------------------------------------------------------------------
     # Disable the use of coupler.res; get model start time from model_configure
     export USE_COUPLER_RES="NO"

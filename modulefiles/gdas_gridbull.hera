@@ -1,7 +1,0 @@
-#%Module################################################
-# Module file for gdas_gridbull - Hera
-########################################################
-
-module use -a /scratch2/NCEPDEV/nwprod/NCEPLIBS/modulefiles
-module load bacio/2.0.2
-module load w3nco/2.0.6
