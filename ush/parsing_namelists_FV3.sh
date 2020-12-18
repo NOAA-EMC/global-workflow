@@ -33,11 +33,6 @@ fi
 $NCP $DATA_TABLE  data_table
 $NCP $FIELD_TABLE field_table
 
-atmos_model_nml=""
-if [ $CCPP_SUITE != "IPD" ]; then
- atmos_model_nml="ccpp_suite = $CCPP_SUITE"
-fi
-
 cat > input.nml <<EOF
 &amip_interp_nml
   interp_oi_sst = .true.
@@ -53,6 +48,7 @@ cat > input.nml <<EOF
   blocksize = $blocksize
   chksum_debug = $chksum_debug
   dycore_only = $dycore_only
+  ccpp_suite = ${CCPP_SUITE:-"FV3_GFS_v15"}
   fdiag = $FDIAG
   fhmax = $FHMAX
   fhout = $FHOUT
@@ -250,8 +246,6 @@ cat >> input.nml <<EOF
   iems         = ${IEMS:-"1"}           ! In config.fcst
   iaer         = $IAER			! In config.fcst
   icliq_sw     = ${icliq_sw:-"2"}	! In config.fcst
-  iovr_lw      = ${iovr_lw:-"3"}
-  iovr_sw      = ${iovr_sw:-"3"}  
   ico2         = $ICO2			! In config.fcst
   isubc_sw     = ${isubc_sw:-"2"}	! In config.fcst
   isubc_lw     = ${isubc_lw:-"2"}	! In config.fcst
