@@ -4,6 +4,25 @@
 date
 set -xa
 export PS4='$SECONDS + ' 
+
+# JY - 10/29, move the block in the front, otherwise PDY is not defined for COMIN
+export DATA=${DATA:-${DATAROOT}/${jobid:?}}
+mkdir -p $DATA
+cd $DATA
+
+
+######################################
+# Set up the cycle variable
+######################################
+export cycle=${cycle:-t${cyc}z}
+
+setpdy.sh
+. PDY
+env
+msg="Begin job for $job"
+postmsg "$jlogfile" "$msg"
+
+
 # 
 export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
@@ -18,30 +37,16 @@ export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/$COMPONE
 #export pid=$$
 export pgmout="OUTPUT.$$"
 
-export DBN_ALERT_TYPE=NFC_WAVEENS_GEMPAK
+export DBN_ALERT_TYPE=GFS_WAVE_GEMPAK
 export SENDCOM=${SENDCOM:-YES}
 export SENDDBN=${SENDDBN:-YES}
 export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
 
-export DATA=${DATA:-${DATAROOT}/${jobid:?}}
-mkdir -p $DATA
-cd $DATA
-
 if [ $SENDCOM = YES ] ; then
   mkdir -m 775 -p $COMOUT
 fi
 
-######################################
-# Set up the cycle variable
-######################################
-export cycle=${cycle:-t${cyc}z}
-
-setpdy.sh
-. PDY
-env
-msg="Begin job for $job"
-postmsg "$jlogfile" "$msg"
 
 ########################################################
 # Execute the script.

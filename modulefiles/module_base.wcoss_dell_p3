@@ -25,7 +25,7 @@ module load ESMF/8.0.1
 module load HDF5-parallel/1.10.6
 
 module use -a /gpfs/dell1/nco/ops/nwprod/modulefiles/
-module load gempak/7.3.1
+module load gempak/7.3.3
 module load g2tmpl/1.6.0
 
 # Load for WAFS

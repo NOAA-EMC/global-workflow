@@ -17,6 +17,7 @@
 #  B  bytes, relative size of the path in relation to the other paths in the list
 #  D  delete, delete extraneous files from destination directories (takes no arg)
 #  E  encrypt, enables data encryption [two cores should be allocated] (takes no arg)
+#  W  whole files, copy whole files rather than use delta-xfer algorithm (takes no arg)  (v2.2.3+)
 #  T  two-way syncronization will update both sides with latest changes (takes no arg)
 #  Z  compress data as it is sent, accepts optional compression level argument (1-9)
 # Rules higher in the list take precedence over lower ones.  By default, all files in a
@@ -25,43 +26,44 @@
 
 com/gfs/_ENVIR_/gfs._PDY_/ _REMOTEPATH_/com/gfs/_ENVIR_/gfs._PDY_/
 + /??/
-+ /??/gfs.t??z.*bufr*
-+ /??/gfs.t??z.sstgrb
-+ /??/gfs.t??z.engicegrb
-+ /??/gfs.t??z.*tcvitals*tm00
-+ /??/gfs.t??z.atmanl.nemsio
-+ /??/gfs.t??z.sfcanl.nemsio
-+ /??/gfs.t??z.master.grb2f*
-+ /??/gfs.t??z.pgrb2.0p25.f*
-+ /??/gfs.t??z.sfluxgrbf*
-+ /??/gfs.t??z.gtg.grb2f*
-+ /??/gfs.t??z.gcip.f00.grib2
-+ /??/gfs.t??z.atmf000.nemsio
-+ /??/gfs.t??z.atmf003.nemsio
-+ /??/gfs.t??z.atmf006.nemsio
-+ /??/gfs.t??z.atmf009.nemsio
-+ /??/gfs.t??z.atmf012.nemsio
-+ /??/gfs.t??z.atmf015.nemsio
-+ /??/gfs.t??z.atmf018.nemsio
-+ /??/gfs.t??z.atmf021.nemsio
-+ /??/gfs.t??z.atmf024.nemsio
-+ /??/gfs.t??z.atmf027.nemsio
-+ /??/gfs.t??z.atmf030.nemsio
-+ /??/gfs.t??z.atmf033.nemsio
-+ /??/gfs.t??z.atmf036.nemsio
-+ /??/gfs.t??z.atmf039.nemsio
-+ /??/gfs.t??z.atmf042.nemsio
-+ /??/gfs.t??z.atmf045.nemsio
-+ /??/gfs.t??z.atmf048.nemsio
-+ /??/gfs.t??z.sfcf024.nemsio
-+ /??/gfs.t??z.sfcf027.nemsio
-+ /??/gfs.t??z.sfcf030.nemsio
-+ /??/gfs.t??z.sfcf033.nemsio
-+ /??/gfs.t??z.sfcf036.nemsio
-+ /??/gfs.t??z.sfcf039.nemsio
-+ /??/gfs.t??z.sfcf042.nemsio
-+ /??/gfs.t??z.sfcf045.nemsio
-+ /??/gfs.t??z.sfcf048.nemsio
++ /??/atmos/
++ /??/atmos/gfs.t??z.*bufr*
++ /??/atmos/gfs.t??z.sstgrb
++ /??/atmos/gfs.t??z.engicegrb
++ /??/atmos/gfs.t??z.*tcvitals*tm00
++ /??/atmos/gfs.t??z.atmanl.nc
++ /??/atmos/gfs.t??z.sfcanl.nc
++ /??/atmos/gfs.t??z.master.grb2f*
++ /??/atmos/gfs.t??z.pgrb2.0p25.f*
++ /??/atmos/gfs.t??z.sfluxgrbf*
++ /??/atmos/gfs.t??z.gtg.grb2f*
++ /??/atmos/gfs.t??z.gcip.f00.grib2
++ /??/atmos/gfs.t??z.atmf000.nc
++ /??/atmos/gfs.t??z.atmf003.nc
++ /??/atmos/gfs.t??z.atmf006.nc
++ /??/atmos/gfs.t??z.atmf009.nc
++ /??/atmos/gfs.t??z.atmf012.nc
++ /??/atmos/gfs.t??z.atmf015.nc
++ /??/atmos/gfs.t??z.atmf018.nc
++ /??/atmos/gfs.t??z.atmf021.nc
++ /??/atmos/gfs.t??z.atmf024.nc
++ /??/atmos/gfs.t??z.atmf027.nc
++ /??/atmos/gfs.t??z.atmf030.nc
++ /??/atmos/gfs.t??z.atmf033.nc
++ /??/atmos/gfs.t??z.atmf036.nc
++ /??/atmos/gfs.t??z.atmf039.nc
++ /??/atmos/gfs.t??z.atmf042.nc
++ /??/atmos/gfs.t??z.atmf045.nc
++ /??/atmos/gfs.t??z.atmf048.nc
++ /??/atmos/gfs.t??z.sfcf024.nc
++ /??/atmos/gfs.t??z.sfcf027.nc
++ /??/atmos/gfs.t??z.sfcf030.nc
++ /??/atmos/gfs.t??z.sfcf033.nc
++ /??/atmos/gfs.t??z.sfcf036.nc
++ /??/atmos/gfs.t??z.sfcf039.nc
++ /??/atmos/gfs.t??z.sfcf042.nc
++ /??/atmos/gfs.t??z.sfcf045.nc
++ /??/atmos/gfs.t??z.sfcf048.nc
 - *
 E
 # This directory is a good candidate for compression
