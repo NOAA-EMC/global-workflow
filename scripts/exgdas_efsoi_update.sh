@@ -394,7 +394,7 @@ export err=$ERR
 $ERRSCRIPT || exit 2
 
 # save for EFSOI task (still needed?)
-$NCP $COMIN_ANL_ENS/$GBIASe $COMOUT_ANL_ENSFSOI
+$NCP $COMOUT_ANL_ENS/$GBIASe $COMOUT_ANL_ENSFSOI
 
 # Cat runtime output files.
 cat stdout stderr > $COMOUT_ANL_ENSFSOI/$ENKFSTAT
