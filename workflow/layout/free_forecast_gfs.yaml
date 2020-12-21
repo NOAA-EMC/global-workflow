@@ -101,7 +101,7 @@ suite: !Cycle
       jgfs_post_manager_el: !TaskElement
         <<: *exclusive_task_template
         RUN: !calc up.RUN
-        Disable: !calc metasched.type == 'rocoto' or doc.settings.inline_post == '.true.'
+        Disable: !calc metasched.type == 'rocoto'
         Trigger: !FirstTrue
           - when: !calc not doc.settings.dev_safeguards
             take: !Depend ( up.forecast.is_running() )
@@ -123,7 +123,6 @@ suite: !Cycle
       jgfs_post_anl_el: !TaskElement
         <<: *exclusive_task_template
         Foreach: []
-        Disable: !calc doc.settings.inline_post == '.true.'
         FHR: anl
         Name: p_anl
         Trigger: !FirstTrue
@@ -145,7 +144,6 @@ suite: !Cycle
       jgfs_post_fhr_el: !TaskElement
         <<: *exclusive_task_template
         Foreach: [ fhr  ]
-        Disable: !calc doc.settings.inline_post == '.true.'
         resources: !calc partition.resources.run_gfspost
         Name: !expand p_{dimval.fhr:03d}
         FHR: !expand "{dimval.fhr:03d}"

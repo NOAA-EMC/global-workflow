@@ -16,6 +16,7 @@ case:
     print_esmf: .true.
     nems_temp: 'cpld_wave'
     mom6ic_prepared: .false.
+    inline_post: .false.
     KEEPDATA: NO
 
   nsst:
@@ -35,6 +36,7 @@ case:
     DELTIM: 450
     SEEDLET: 10
     CCPP_SUITE: FV3_GFS_v15p2_coupled
+    CPL_ATMIC: CFSRfracL64
     nst_anl: no
     DO_SKEB: false
     DO_SHUM: false
@@ -56,6 +58,11 @@ case:
 
   wave_settings: 
     WAVPETS: 136
+    CPL_WAVIC: CFSR
+    waveGRD: 'gwes_30m'
+    wavepostGRD: 'gwes_30m'
+    waveesmfGRD: ''
+    waveinterpGRD: ''
 
   post:
     downset: 2

@@ -17,6 +17,9 @@ config_post:
     
     # Convert nemsio files to grib files using post job
     #-------------------------------------------
+
+    # Inline post control
+    export INLINE_POST={doc.settings.inline_post}
     
     # No. of concurrent post jobs [0 implies sequential]
     export NPOSTGRP={doc.post.NPOSTGRP}
