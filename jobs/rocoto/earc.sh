@@ -54,6 +54,14 @@ if [ $status -ne 0 ]; then
    exit $status
 fi
 
+$HOMEgfs/ush/hpssarch_gen.sh efsoigdas 
+status=$?
+if [ $status -ne 0 ]; then
+   echo "$HOMEgfs/ush/hpssarch_gen_EFSOI.sh enkf${CDUMP} failed, ABORT!"
+   exit $status
+fi
+
+
 cd $ROTDIR
 
 
@@ -109,6 +117,32 @@ if [[ $ENSGRP -gt 0 ]] && [[ $HPSSARCH = "YES" ]]; then
        fi
      fi
 
+     htar -P -cvf $ATARDIR/$CDATE/efsoi${CDUMP}_grp${ENSGRP}.tar `cat $ARCH_LIST/efsoi${CDUMP}_grp${n}.txt`
+     status=$?
+     if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
+         echo "HTAR $CDATE efsoi${CDUMP}_grp${ENSGRP}.tar failed"
+         exit $status
+     fi
+
+     if [ $SAVEWARMICA = "YES" -a $cyc -eq $EARCINC_CYC ]; then
+       htar -P -cvf $ATARDIR/$CDATE/efsoi${CDUMP}_restarta_grp${ENSGRP}.tar `cat $ARCH_LIST/efsoi${CDUMP}_restarta_grp${n}.txt`
+       status=$?
+       if [ $status -ne 0 ]; then
+           echo "HTAR $CDATE efsoi${CDUMP}_restarta_grp${ENSGRP}.tar failed"
+           exit $status
+       fi
+     fi
+
+     if [ $SAVEWARMICB = "YES"  -a $cyc -eq $EARCICS_CYC ]; then
+       htar -P -cvf $ATARDIR/$CDATE/efsoi${CDUMP}_restartb_grp${ENSGRP}.tar `cat $ARCH_LIST/efsoi${CDUMP}_restartb_grp${n}.txt`
+       status=$?
+       if [ $status -ne 0 ]; then
+           echo "HTAR $CDATE efsoi${CDUMP}_restartb_grp${ENSGRP}.tar failed"
+           exit $status
+       fi
+     fi
+
+
    fi # CDATE>SDATE
 
 fi
@@ -126,6 +160,14 @@ if [ $ENSGRP -eq 0 ]; then
             echo "HTAR $CDATE enkf${CDUMP}.tar failed"
             exit $status
         fi
+
+        htar -P -cvf $ATARDIR/$CDATE/efsoi${CDUMP}.tar `cat $ARCH_LIST/efsoi${CDUMP}.txt`
+        status=$?
+        if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
+            echo "HTAR $CDATE efsoi${CDUMP}.tar failed"
+            exit $status
+        fi
+
     fi
 
     #-- Archive online for verification and diagnostics
@@ -139,6 +181,16 @@ if [ $ENSGRP -eq 0 ]; then
 		$NCP $ROTDIR/enkfgfs.$PDY/$cyc/$COMPONENT/${CDUMP}.t${cyc}z.enkfstat         enkfstat.gfs.$CDATE
 		$NCP $ROTDIR/enkfgfs.$PDY/$cyc/$COMPONENT/${CDUMP}.t${cyc}z.gsistat.ensmean  gsistat.gfs.${CDATE}.ensmean
 	fi
+
+
+    $NCP $ROTDIR/efsoi${CDUMP}.$PDY/$cyc/$COMPONENT/${CDUMP}.t${cyc}z.enkfstat         efsoistat.${CDUMP}.$CDATE
+    $NCP $ROTDIR/efsoi${CDUMP}.$PDY/$cyc/$COMPONENT/${CDUMP}.t${cyc}z.gsistat.ensmean  efsoigsistat.${CDUMP}.${CDATE}.ensmean
+
+    if [ $CDUMP_ENKF != "GDAS" ]; then
+		$NCP $ROTDIR/efsoigfs.$PDY/$cyc/$COMPONENT/${CDUMP}.t${cyc}z.enkfstat         efsoistat.gfs.$CDATE
+		$NCP $ROTDIR/efsoigfs.$PDY/$cyc/$COMPONENT/${CDUMP}.t${cyc}z.gsistat.ensmean  efsoigsistat.gfs.${CDATE}.ensmean
+	fi
+
 
 fi
 
