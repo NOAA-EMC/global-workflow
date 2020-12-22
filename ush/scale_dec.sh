@@ -16,8 +16,10 @@ export WGRIB2=${WGRIB2:-${NWROOT}/grib_util.v1.1.0/exec/wgrib2}
 # export WGRIB2=/gpfs/dell1/nco/ops/nwprod/grib_util.v1.1.0/exec/wgrib2
 
 $WGRIB2 $f -not_if ':(TMP|PWAT|WEASD):' -grib $f.new \
-        -if ':(TMP|PWAT|WEASD):' -set_grib_type same \
-        -set_scaling -1 0 -grib_out $f.new
+        -if ':(TMP|PWAT):' -set_grib_type same \
+        -set_scaling -1 0 -grib_out $f.new \
+        -if ':(WEASD):' -set_grib_type same \
+        -set_scaling 0 0 -grib_out $f.new
 export err=$?; err_chk
 mv $f.new $f
 exit 0
