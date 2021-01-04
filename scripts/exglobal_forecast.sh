@@ -338,6 +338,13 @@ EOF
       IAU_INC_FILES="''"
     fi
 
+    rst_list_rerun=""
+    xfh=$restart_interval_gfs
+    while [ $xfh -le $FHMAX_GFS ]; do
+      rst_list_rerun="$rst_list_rerun $xfh"
+      xfh=$((xfh+restart_interval_gfs))
+    done
+    restart_interval="$rst_list_rerun"
 
   fi
 #.............................
