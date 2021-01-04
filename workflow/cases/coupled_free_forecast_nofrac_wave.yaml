@@ -36,7 +36,7 @@ case:
     DELTIM: 450
     SEEDLET: 10
     CCPP_SUITE: FV3_GFS_v15p2_coupled
-    CPL_ATMIC: CFSRfracL64
+    CPL_ATMIC: CFSR
     nst_anl: no
     DO_SKEB: false
     DO_SHUM: false
