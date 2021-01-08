@@ -216,6 +216,8 @@ if [ $ENSGRP -eq 0 ]; then
 	[[ -d $COMIN_ENS ]] && rm -rf $COMIN_ENS
 	COMIN_ENS="$ROTDIR/enkfgfs.$gPDY/$gcyc/$COMPONENT"
 	[[ -d $COMIN_ENS ]] && rm -rf $COMIN_ENS
+        COMIN_ENS="$ROTDIR/efsoigdas.$gPDY/$gcyc/$COMPONENT"
+	[[ -d $COMIN_ENS ]] && rm -rf $COMIN_ENS
 
 	# Remove any empty directories
 	COMIN_ENS="$ROTDIR/enkfgdas.$gPDY/$COMPONENT"
@@ -226,7 +228,11 @@ if [ $ENSGRP -eq 0 ]; then
 	if [ -d $COMIN_ENS ] ; then
 	    [[ ! "$(ls -A $COMIN_ENS)" ]] && rm -rf $COMIN_ENS
 	fi
-
+	COMIN_ENS="$ROTDIR/efsoigdas.$gPDY/$COMPONENT"
+	if [ -d $COMIN_ENS ] ; then
+	    [[ ! "$(ls -A $COMIN_ENS)" ]] && rm -rf $COMIN_ENS
+	fi
+ 
 	# Advance to next cycle
 	GDATE=$($NDATE +$assim_freq $GDATE)
 
