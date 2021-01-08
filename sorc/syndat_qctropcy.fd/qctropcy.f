@@ -4237,6 +4237,8 @@ c       The new id will be transferred to all records. It must be a bang
 c       record with only one observing rsmc. It must also be entered int
 c       the alias file.
 
+      istidn=0     ! Qingfu added to skip the changes of storm ID number
+
       if(istidn .eq. 1)  then
 
       if(rsmcz(1:1) .eq. '!')  then

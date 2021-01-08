@@ -79,8 +79,8 @@
 
 ! ANALYSIS MSLP/1000-500 THICKNESS
 
-  restore $NTS/base_nh
-  restore $NTS/sfc_mslp_thk
+  restore $NTS/base_nh.nts
+  restore $NTS/sfc_mslp_thk.nts
 
   CLEAR   = yes
   GDFILE  = ${gdfile}
@@ -109,8 +109,8 @@
 
 ! 500MB ANALYSIS  HEIGHTS/VORTICITY
 
-  restore $NTS/base_nh
-  restore $NTS/500_hgt_vor
+  restore $NTS/base_nh.nts
+  restore $NTS/500_hgt_vor.nts
 
   CLEAR   = yes
   GDFILE  = ${gdfile}
@@ -138,8 +138,8 @@
 
 ! 500MB ANALYSIS  HEIGHTS/VORTICITY (US/CANADA)
 
-  restore $NTS/base_uscan
-  restore $NTS/500_hgt_vor
+  restore $NTS/base_uscan.nts
+  restore $NTS/500_hgt_vor.nts
 
   CLEAR   = yes
   GDFILE  = ${gdfile}
@@ -167,8 +167,8 @@
 
 ! ANALYSIS 700MB RELATIVE HUMIDITY AND VERTICAL VELOCITY
 
-  restore $NTS/base_nh
-  restore $NTS/700_rel_vvel
+  restore $NTS/base_nh.nts
+  restore $NTS/700_rel_vvel.nts
 
   CLEAR   = yes
   GDFILE  = ${gdfile}

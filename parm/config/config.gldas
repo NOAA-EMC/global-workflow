@@ -1,0 +1,16 @@
+#!/bin/ksh -x
+
+########## config.gldas ##########
+# GDAS gldas step specific
+
+echo "BEGIN: config.gldas"
+
+# Get task specific resources
+. $EXPDIR/config.resources gldas
+
+export GLDASSH=$HOMEgfs/scripts/exgdas_atmos_gldas.sh
+export gldas_spinup_hours=72
+export CPCGAUGE=$DMPDIR
+export FINDDATE=$HOMEgfs/util/ush/finddate.sh
+
+echo "END: config.gldas"

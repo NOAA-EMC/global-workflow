@@ -1,0 +1,16 @@
+#!/bin/ksh -x
+
+########## config.wavegempak ##########
+# Wave steps specific
+
+echo "BEGIN: config.wavegempak"
+
+# Get task specific resources
+. $EXPDIR/config.resources wavegempak
+
+export SENDCOM="YES"
+export COMPONENT=${COMPONENT:-wave}
+export COMIN="$ROTDIR/$CDUMP.$PDY/$cyc/$COMPONENT"
+export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc/$COMPONENT/gempak"
+
+echo "END: config.wavegempak"

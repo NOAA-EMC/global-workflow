@@ -16,10 +16,6 @@ elif [ $machine = WCOSS_C ] ; then
  FFOPTS="-i4 -O3 -r8  -convert big_endian -fp-model precise -openmp"
  LIBS="${W3EMC_LIBd} ${W3NCO_LIBd} ${BACIO_LIB4} ${SP_LIBd}"
  LDOPTS="-openmp -mkl"
-elif [ $machine = THEIA ] ; then
- CF=ftn
- FFOPTS="-i4 -O3 -r8  -convert big_endian -fp-model precise -openmp"
- LIBS="${W3EMC_LIBd} ${W3NCO_LIBd} ${BACIO_LIB4} ${SP_LIBd}"
 fi
 
 f=mtnlm7_slm30g.f 

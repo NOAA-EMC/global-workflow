@@ -1,6 +1,6 @@
 # How to use the unified workflow for the ufs-s2s-model application (work in progress)
 
-Note, currently the wave post does not work. There is work actively ongoing to fix it. 
+Note, currently the wave gridded post does not work properly. There is work actively ongoing to fix it. 
 This message will be deleted when the fix for wave post is committed. 
 
 ## Checkout the source code and scripts
@@ -10,14 +10,11 @@ cd coupled-workflow
 git checkout feature/coupled-crow
 git submodule update --init --recursive     #Update submodules 
 cd sorc
-sh checkout.sh coupled                      # Check out the coupled code, EMC_post, gsi, ...
+sh checkout.sh -c                    # Check out forecast model with CCPP=YES/COUPLED=YES
 ```
 ## Compile code used in ufs-s2s-model and EMC_post and link fixed files and executable programs:
 ```
-sh build_ncep_post.sh        #This command will build ncep_post
-sh build_ww3prepost.sh       #This command will build ww3 prep and post exes
-sh build_fv3_coupled.sh      #This command will build ufs-s2s-model
-sh build_reg2grb2.sh         #This command will build exes for ocean-ice post
+sh build_all.sh -c           #This command will build only execs for coupled
 
 To link fixed files and executable programs for the coupled application:
 On Hera: 
@@ -66,9 +63,10 @@ or
 ./setup_case.sh -p HERA ../cases/$CASE.yaml test2d
 ```
 where $CASE is one of the following:
-- prototype_5: Used for UFS S2S Prototype 5 (Runs 35 day cases with atm-ocn-ice-wav coupling)
+- prototype_5: Used for UFS S2S Prototype 5 (Runs 35 day cases with atm-ocn-ice-wav coupling, use with p5 workflow only)
 - coupled_free_forecast: 2 day tests for atm-ocn-ice coupling 
-- coupled_free_forecast_wave: 2 day test for atm-ocn-ice-wav coupling (same as p5 except shorter) 
+- coupled_free_forecast_wave: 2 day test for atm-ocn-ice-wav coupling (frac grid)
+- coupled_free_forecast_nofrac_wave: 2 day test for atm-ocn-ice-wav coupling (non frac grid)
 - atm_free_forecast:  Run the atm only case with same ICs as coupled tests 
 Please see the bottom of the README for information about particular versions and ICs
 

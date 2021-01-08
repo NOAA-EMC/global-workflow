@@ -1,0 +1,156 @@
+#!/bin/ksh -x
+
+########## config.fv3 ##########
+# FV3 model resolution specific parameters
+# e.g. time-step, processor layout, physics and dynamics parameters
+# This config sets default variables for FV3 for a given resolution
+# User can over-ride after sourcing this config file
+
+if [ $# -ne 1 ]; then
+
+    echo "Must specify an input resolution argument to set variables!"
+    echo "argument can be any one of the following:"
+    echo "C48 C96 C192 C384 C768 C1152 C3072"
+    exit 1
+
+fi
+
+case_in=$1
+
+echo "BEGIN: config.fv3"
+
+
+if [[ "$machine" = "WCOSS_DELL_P3" ]]; then
+   export npe_node_max=28
+elif [[ "$machine" = "WCOSS_C" ]]; then
+   export npe_node_max=24
+elif [[ "$machine" = "JET" ]]; then
+   export npe_node_max=24
+elif [[ "$machine" = "HERA" ]]; then
+   export npe_node_max=40
+elif [[ "$machine" = "ORION" ]]; then
+   export npe_node_max=40
+fi
+
+
+# (Standard) Model resolution dependent variables
+case $case_in in
+    "C48")
+        export DELTIM=450
+        export layout_x=2
+        export layout_y=4
+        export layout_x_gfs=2
+        export layout_y_gfs=4
+        export npe_wav=14
+        export npe_wav_gfs=14
+        export nth_fv3=1
+        export cdmbgwd="0.071,2.1,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
+        export WRITE_GROUP=1
+        export WRTTASK_PER_GROUP=$npe_node_max
+        export WRITE_GROUP_GFS=1
+        export WRTTASK_PER_GROUP_GFS=$npe_node_max
+        export WRTIOBUF="4M"
+        ;;
+    "C96")
+        export DELTIM=450
+        export layout_x=4
+        export layout_y=4
+        export layout_x_gfs=4
+        export layout_y_gfs=4
+        export npe_wav=14
+        export npe_wav_gfs=14
+        export nth_fv3=1
+        export cdmbgwd="0.14,1.8,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
+        export WRITE_GROUP=1
+        export WRTTASK_PER_GROUP=$npe_node_max
+        export WRITE_GROUP_GFS=1
+        export WRTTASK_PER_GROUP_GFS=$npe_node_max
+        export WRTIOBUF="4M"
+        ;;
+    "C192")
+        export DELTIM=450
+        export layout_x=4
+        export layout_y=6
+        export layout_x_gfs=4
+        export layout_y_gfs=6
+        export npe_wav=21
+        export npe_wav_gfs=21
+        export nth_fv3=2
+        export cdmbgwd="0.23,1.5,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
+        export WRITE_GROUP=1
+        export WRTTASK_PER_GROUP=$npe_node_max
+        export WRITE_GROUP_GFS=2
+        export WRTTASK_PER_GROUP_GFS=$npe_node_max
+        export WRTIOBUF="8M"
+        ;;
+    "C384")
+        export DELTIM=240
+        export layout_x=8
+        export layout_y=8
+        export layout_x_gfs=6
+        export layout_y_gfs=6
+        export npe_wav=35  
+        export npe_wav_gfs=35  
+        export nth_fv3=1
+        export cdmbgwd="1.1,0.72,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
+        export WRITE_GROUP=1
+        export WRTTASK_PER_GROUP=$npe_node_max
+        export WRITE_GROUP_GFS=2
+        export WRTTASK_PER_GROUP_GFS=$npe_node_max
+        export WRTIOBUF="16M"
+        ;;
+    "C768")
+        export DELTIM=150
+        export layout_x=8
+        export layout_y=12
+        export layout_x_gfs=16
+        export layout_y_gfs=24
+        export npe_wav=140
+        export npe_wav_gfs=630
+        export nth_fv3=4
+        export cdmbgwd="4.0,0.15,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
+        export WRITE_GROUP=2
+        export WRTTASK_PER_GROUP=$(echo "2*$npe_node_max" |bc)
+        export WRITE_GROUP_GFS=8
+        export WRTTASK_PER_GROUP_GFS=$(echo "2*$npe_node_max" |bc)
+        export WRTIOBUF="32M"
+        ;;
+    "C1152")
+        export DELTIM=120
+        export layout_x=8
+        export layout_y=16
+        export layout_x_gfs=8
+        export layout_y_gfs=16
+        export npe_wav=140
+        export npe_wav_gfs=140
+        export nth_fv3=4
+        export cdmbgwd="4.0,0.10,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
+        export WRITE_GROUP=4
+        export WRTTASK_PER_GROUP=$(echo "2*$npe_node_max" |bc)
+        export WRITE_GROUP_GFS=4
+        export WRTTASK_PER_GROUP_GFS=$(echo "2*$npe_node_max" |bc)
+        export WRTIOBUF="48M"
+        ;;
+    "C3072")
+        export DELTIM=90
+        export layout_x=16
+        export layout_y=32
+        export layout_x_gfs=16
+        export layout_y_gfs=32
+        export npe_wav=140
+        export npe_wav_gfs=140
+        export nth_fv3=4
+        export cdmbgwd="4.0,0.05,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
+        export WRITE_GROUP=4
+        export WRTTASK_PER_GROUP=$(echo "3*$npe_node_max" |bc)
+        export WRITE_GROUP_GFS=4
+        export WRTTASK_PER_GROUP_GFS=$(echo "3*$npe_node_max" |bc)
+        export WRTIOBUF="64M"
+        ;;
+    *)
+        echo "grid $case_in not supported, ABORT!"
+        exit 1
+        ;;
+esac
+
+echo "END: config.fv3"

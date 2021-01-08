@@ -78,8 +78,8 @@ $GEMEXE/gdplot2_gif << EOF
 
 ! 850MB HEIGHTS/TEMPERATURES
 
-  restore $NTS/base_nh
-  restore $NTS/850_hgt_tmp
+  restore $NTS/base_nh.nts
+  restore $NTS/850_hgt_tmp.nts
 
   CLEAR   = yes
   GDFILE  = $gdfile
@@ -107,8 +107,8 @@ $GEMEXE/gdplot2_gif << EOF
 
 ! 700MB HEIGHTS/TEMPERATURES
 
-  restore $NTS/base_nh
-  restore $NTS/700_hgt_tmp
+  restore $NTS/base_nh.nts
+  restore $NTS/700_hgt_tmp.nts
 
   CLEAR   = yes
   GDFILE  = $gdfile
@@ -136,8 +136,8 @@ $GEMEXE/gdplot2_gif << EOF
 
 ! 500MB HEIGHTS/TEMPERATURES
 
-  restore $NTS/base_nh
-  restore $NTS/500_hgt_tmp
+  restore $NTS/base_nh.nts
+  restore $NTS/500_hgt_tmp.nts
 
   CLEAR   = yes
   GDFILE  = $gdfile
@@ -165,8 +165,8 @@ $GEMEXE/gdplot2_gif << EOF
 
 ! 300MB HEIGHTS/ISOTACHS
 
-  restore $NTS/base_nh
-  restore $NTS/300_hgt_iso
+  restore $NTS/base_nh.nts
+  restore $NTS/300_hgt_iso.nts
 
   CLEAR   = yes
   GDFILE  = $gdfile
@@ -194,8 +194,8 @@ $GEMEXE/gdplot2_gif << EOF
 
 ! 250MB ANALYSIS HEIGHTS/ISOTACHS
 
-  restore $NTS/base_nh
-  restore $NTS/250_hgt_iso
+  restore $NTS/base_nh.nts
+  restore $NTS/250_hgt_iso.nts
 
   CLEAR   = yes 
   GDFILE  = ${gdfile}
@@ -224,8 +224,8 @@ $GEMEXE/gdplot2_gif << EOF
 
 ! 200MB HEIGHTS/ISOTACHS
 
-  restore $NTS/base_nh
-  restore $NTS/200_hgt_iso
+  restore $NTS/base_nh.nts
+  restore $NTS/200_hgt_iso.nts
 
   CLEAR   = yes
   GDFILE  = $gdfile
@@ -253,8 +253,8 @@ $GEMEXE/gdplot2_gif << EOF
 
 ! ANALYSIS MSLP/1000-500 THICKNESS
 
-  restore $NTS/base_nh
-  restore $NTS/sfc_mslp_thk
+  restore $NTS/base_nh.nts
+  restore $NTS/sfc_mslp_thk.nts
 
   CLEAR   = yes
   GDFILE  = ${gdfile}
@@ -341,8 +341,8 @@ $GEMEXE/gdplot2_gif << EOF
 
 ! ANALYSIS MSLP/1000-500 THICKNESS
 
-  restore $NTS/base_sh
-  restore $NTS/sfc_mslp_thk
+  restore $NTS/base_sh.nts
+  restore $NTS/sfc_mslp_thk.nts
 
   CLEAR   = yes
   GDFILE  = ${gdfile}
@@ -371,8 +371,9 @@ $GEMEXE/gdplot2_gif << EOF
 
 ! 500MB ANALYSIS  HEIGHTS/TEMPERATURES
 
-  restore $NTS/base_sh
-  restore $NTS/500_hgt_tmp
+  restore $NTS/base_sh.nts
+  restore $NTS/500_hgt_tmp.nts
+
 
   CLEAR   = yes
   GDFILE  = ${gdfile}
@@ -400,8 +401,8 @@ $GEMEXE/gdplot2_gif << EOF
 
 ! 300MB HEIGHTS/ISOTACHS
 
-  restore $NTS/base_sh
-  restore $NTS/300_hgt_iso
+  restore $NTS/base_sh.nts
+  restore $NTS/300_hgt_iso.nts
 
   CLEAR   = yes
   GDFILE  = $gdfile
@@ -429,8 +430,8 @@ $GEMEXE/gdplot2_gif << EOF
 
 ! 250MB ANALYSIS HEIGHTS/ISOTACHS
 
-  restore $NTS/base_sh
-  restore $NTS/250_hgt_iso
+  restore $NTS/base_sh.nts
+  restore $NTS/250_hgt_iso.nts
 
   CLEAR   = yes
   GDFILE  = ${gdfile}

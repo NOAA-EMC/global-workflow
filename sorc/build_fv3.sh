@@ -1,9 +1,7 @@
 #! /usr/bin/env bash
 set -eux
 
-set +e
 source ./machine-setup.sh > /dev/null 2>&1
-set -e
 cwd=`pwd`
 
 USE_PREINST_LIBS=${USE_PREINST_LIBS:-"true"}
@@ -18,11 +16,17 @@ if [ ! -d "../exec" ]; then
   mkdir ../exec
 fi
 
-if [ $target = theia ]; then target=theia.intel ; fi
 if [ $target = hera ]; then target=hera.intel ; fi
+if [ $target = orion ]; then target=orion.intel ; fi
 
 cd fv3gfs.fd/
 FV3=$( pwd -P )/FV3
 cd tests/
-./compile.sh "$FV3" "$target" "NCEP64LEV=Y HYDRO=N 32BIT=Y" 1 NO NO
-mv -f fv3_1.exe ../NEMS/exe/global_fv3gfs.x
+
+if [ ${RUN_CCPP:-${1:-"NO"}} = "NO" ]; then
+ ./compile.sh "$FV3" "$target" "WW3=Y 32BIT=Y" 1
+ mv -f fv3_1.exe ../NEMS/exe/global_fv3gfs.x
+else
+ ./compile.sh "$target" "CCPP=Y 32BIT=Y SUITES=FV3_GFS_v15,FV3_GFS_v16beta" 2 NO NO
+ mv -f fv3_2.exe ../NEMS/exe/global_fv3gfs.x
+fi

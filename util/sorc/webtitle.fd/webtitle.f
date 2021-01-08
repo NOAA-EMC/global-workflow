@@ -61,7 +61,7 @@ C     Start by reading in the date/time
 C
       READ(5,102) block
  102  FORMAT(a14)
-      READ(block,100) tb1(1), tb1(2), tb2(1), tb2(2), tb2(3), tb2(4)
+      READ(block,100) tb1(1), tb1(2), tb2(1), tb2(2), tb2(3)
  100  FORMAT(2a4,4a2)
       
       read(tb1(1),*) jtau

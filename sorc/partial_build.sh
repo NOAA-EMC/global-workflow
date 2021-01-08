@@ -2,22 +2,23 @@
 # define the array of the name of build program
 #
  declare -a Build_prg=("Build_libs" "Build_fv3gfs" \
-                       "Build_gsi" "Build_ncep_post" \
+                       "Build_gsi" \
+                       "Build_ww3_prepost" \
+                       "Build_reg2grb2" \
+                       "Build_gldas" \
+                       "Build_ncep_post" \
                        "Build_ufs_utils" \
+                       "Build_gldas" \
                        "Build_gfs_wafs" \
-                       "Build_gdas" \
-                       "Build_sfcanl_nsttfchg" \
+                       "Build_gaussian_sfcanl" \
                        "Build_tropcy" \
                        "Build_enkf_chgres_recenter" \
-                       "Build_gfs_fbwndgfs" "Build_gfs_overpdtg2" \
-                       "Build_gfs_wintemv" \
+                       "Build_enkf_chgres_recenter_nc" \
+                       "Build_gfs_fbwndgfs" \
                        "Build_gfs_bufrsnd" \
                        "Build_fv3nc2nemsio" \
                        "Build_regrid_nemsio" \
-                       "Build_gfs_util" \
-                       "Build_prod_util" \
-                       "Build_grib_util" \
-                       "Build_reg2grb2")
+                       "Build_gfs_util")
 
 #
 # function parse_cfg: read config file and retrieve the values
@@ -153,8 +154,13 @@
        echo "Usage: $0 [ALL|config=config_file|[select=][prog1[,prog2[,...]]]" 2>&1
        exit 2
      }
-     ( [[ $1 == "-v" ]] || [[ ${1,,} == "--verbose" ]] ) && {
-       verbose=true
+     ( [[ $1 == "-v" ]] || [[ ${1,,} == "--verbose" ]] || [[ $1 == "-c" ]] ) && {
+       if [[ $1 == "-v" ]]; then
+         verbose=true
+       fi
+       if [[ $1 == "-c" ]]; then
+         coupled=true
+       fi
        num_arg=0
      } || {
        echo "Usage: $0 [ALL|config=config_file|[select=][prog1[,prog2[,...]]]" 2>&1
@@ -165,8 +171,12 @@
  if (( num_arg == 0 )); then
 #
 # set default values for partial build
-#
-   parse_cfg 1 "config=fv3gfs_build.cfg" ${Build_prg[@]}
+#   
+   if [[ $coupled ]]; then 
+     parse_cfg 1 "config=cpl_build.cfg" ${Build_prg[@]}
+   else 
+     parse_cfg 1 "config=fv3gfs_build.cfg" ${Build_prg[@]}
+   fi 
  else
 
 #

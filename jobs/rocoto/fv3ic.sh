@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/ksh -x
 
 ###############################################################
 ## Abstract:
@@ -33,19 +33,17 @@ done
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
+# Set component
+export COMPONENT=${COMPONENT:-atmos}
+
 # Temporary runtime directory
 export DATA="$RUNDIR/$CDATE/$CDUMP/fv3ic$$"
 [[ -d $DATA ]] && rm -rf $DATA
 
-# Input GFS initial condition files
-export INIDIR="$ICSDIR/$CDATE/$CDUMP"
-export ATMANL="$ICSDIR/$CDATE/$CDUMP/siganl.${CDUMP}.$CDATE"
-export SFCANL="$ICSDIR/$CDATE/$CDUMP/sfcanl.${CDUMP}.$CDATE"
-if [ -f $ICSDIR/$CDATE/$CDUMP/nstanl.${CDUMP}.$CDATE ]; then
-    export NSTANL="$ICSDIR/$CDATE/$CDUMP/nstanl.${CDUMP}.$CDATE"
-fi
+# Input GFS initial condition directory
+export INIDIR="$ICSDIR/$CDATE/$CDUMP/$CDUMP.$PDY/$cyc"
 
-# Output FV3 initial condition files
+# Output FV3 initial condition directory
 export OUTDIR="$ICSDIR/$CDATE/$CDUMP/$CASE/INPUT"
 
 export OMP_NUM_THREADS_CH=$NTHREADS_CHGRES
@@ -60,7 +58,7 @@ if [ $status -ne 0 ]; then
 fi
 
 # Stage the FV3 initial conditions to ROTDIR
-COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc"
+COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc/$COMPONENT"
 [[ ! -d $COMOUT ]] && mkdir -p $COMOUT
 cd $COMOUT || exit 99
 rm -rf INPUT

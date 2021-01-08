@@ -40,6 +40,7 @@ status=$?
 
 # Create ICSDIR if needed
 [[ ! -d $ICSDIR/$CDATE ]] && mkdir -p $ICSDIR/$CDATE
+[[ ! -d $ICSDIR/$CDATE/atmos ]] && mkdir -p $ICSDIR/$CDATE/atmos
 [[ ! -d $ICSDIR/$CDATE/ocn ]] && mkdir -p $ICSDIR/$CDATE/ocn
 [[ ! -d $ICSDIR/$CDATE/ice ]] && mkdir -p $ICSDIR/$CDATE/ice
 
@@ -51,13 +52,13 @@ if [ $ICERES = '050' ]; then
 fi 
 
 # Setup ATM initial condition files
-cp -r $ORIGIN_ROOT/$CPL_ATMIC/$CDATE/$CDUMP  $ICSDIR/$CDATE/
+cp -r $ORIGIN_ROOT/$CPL_ATMIC/$CDATE/$CDUMP/*  $ICSDIR/$CDATE/atmos/
 
 # Setup Ocean IC files 
 cp -r $ORIGIN_ROOT/$CPL_OCNIC/$CDATE/ocn/$OCNRES/MOM*.nc  $ICSDIR/$CDATE/ocn/
 
 #Setup Ice IC files 
-cp $ORIGIN_ROOT/$CPL_ICEIC/$CDATE/ice/$ICERES/cice5_model_${ICERESdec}.res_$CDATE.nc $ICSDIR/$CDATE/ice/
+cp $ORIGIN_ROOT/$CPL_ICEIC/$CDATE/ice/$ICERES/cice5_model_${ICERESdec}.res_$CDATE.nc $ICSDIR/$CDATE/ice/cice_model_${ICERESdec}.res_$CDATE.nc
 
 if [ $cplwav = ".true." ]; then
   [[ ! -d $ICSDIR/$CDATE/wav ]] && mkdir -p $ICSDIR/$CDATE/wav
@@ -67,10 +68,9 @@ if [ $cplwav = ".true." ]; then
   done
 fi
 
-export OUTDIR="$ICSDIR/$CDATE/$CDUMP/$CASE/INPUT"
-
 # Stage the FV3 initial conditions to ROTDIR
-COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc"
+export OUTDIR="$ICSDIR/$CDATE/atmos/$CASE/INPUT"
+COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc/atmos"
 [[ ! -d $COMOUT ]] && mkdir -p $COMOUT
 cd $COMOUT || exit 99
 rm -rf INPUT

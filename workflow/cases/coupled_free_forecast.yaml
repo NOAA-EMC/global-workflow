@@ -7,11 +7,14 @@ case:
     SDATE: 2013-04-01t00:00:00
     EDATE: 2013-04-01t00:00:00
 
+    onestep: .true.
+    cplmode: nems_orig
+    FRAC_GRID: .false.
     cplflx: .true.
     print_esmf: .true.
-    nems_temp: 'med_atm_ocn_ice'
-    nems_temp_cold: 'medcold_atm_ocn_ice'
+    nems_temp: 'cpld'
     mom6ic_prepared: .false.
+    inline_post: .false.
     KEEPDATA: YES
     ic_source: coupled_ic
 

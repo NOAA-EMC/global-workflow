@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/ksh -x
 
 ###############################################################
 ## NCEP post driver script
@@ -11,30 +11,37 @@
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
+export COMPONENT=${COMPONENT:-atmos}
 
 if [ $FHRGRP -eq 0 ]; then
     fhrlst="anl"
-    restart_file=$ROTDIR/${CDUMP}.${PDY}/${cyc}/${CDUMP}.t${cyc}z.atm
+    restart_file=$ROTDIR/${CDUMP}.${PDY}/${cyc}/$COMPONENT/${CDUMP}.t${cyc}z.atm
 else
     fhrlst=$(echo $FHRLST | sed -e 's/_/ /g; s/f/ /g; s/,/ /g')
-    restart_file=$ROTDIR/${CDUMP}.${PDY}/${cyc}/${CDUMP}.t${cyc}z.logf
+    restart_file=$ROTDIR/${CDUMP}.${PDY}/${cyc}/$COMPONENT/${CDUMP}.t${cyc}z.logf
 fi
 
-export DATAROOT="$RUNDIR/$CDATE/$CDUMP"
-[[ ! -d $DATAROOT ]] && mkdir -p $DATAROOT
 
 #---------------------------------------------------------------
 for fhr in $fhrlst; do
 
-    if [ ! -f $restart_file${fhr}.nemsio ]; then
-        echo "Nothing to process for FHR = $fhr, cycle"
+    if [ ! -f $restart_file${fhr}.nemsio -a ! -f $restart_file${fhr}.nc  -a ! -f $restart_file${fhr}.txt ]; then
+        echo "Nothing to process for FHR = $fhr, cycle, wait for 5 minutes"
+        sleep 300
+    fi
+    if [ ! -f $restart_file${fhr}.nemsio -a ! -f $restart_file${fhr}.nc  -a ! -f $restart_file${fhr}.txt ]; then
+        echo "Nothing to process for FHR = $fhr, cycle, skip"
         continue
     fi
 
-    export post_times=$fhr
-    $HOMEgfs/jobs/JGLOBAL_NCEPPOST
-    status=$?
-    [[ $status -ne 0 ]] && exit $status
+    #master=$ROTDIR/${CDUMP}.${PDY}/${cyc}/$COMPONENT/${CDUMP}.t${cyc}z.master.grb2f${fhr}
+    pgb0p25=$ROTDIR/${CDUMP}.${PDY}/${cyc}/$COMPONENT/${CDUMP}.t${cyc}z.pgrb2.0p25.f${fhr}
+    if [ ! -s $pgb0p25 ]; then
+        export post_times=$fhr
+        $HOMEgfs/jobs/JGLOBAL_ATMOS_NCEPPOST
+        status=$?
+        [[ $status -ne 0 ]] && exit $status
+    fi
 
 done
 

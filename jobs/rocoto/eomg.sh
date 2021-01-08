@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/ksh -x
 
 ###############################################################
 # Source FV3GFS workflow modules
@@ -8,6 +8,6 @@ status=$?
 
 ###############################################################
 # Execute the JJOB
-$HOMEgfs/jobs/JGLOBAL_ENKF_INNOVATE_OBS
+$HOMEgfs/jobs/JGDAS_ENKF_INNOVATE_OBS
 status=$?
 exit $status

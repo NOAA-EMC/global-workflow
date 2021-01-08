@@ -7,7 +7,7 @@ export dir=` pwd `
 cd ../util/sorc
 
 # Check for gfs_util folders exist
-if [ ! -d "./faxmakrx.fd" ]; then 
+if [ ! -d "./mkgfsawps.fd" ]; then 
    echo " "
    echo "  GFS_UTIL folders DO NOT exist "
    echo "  "

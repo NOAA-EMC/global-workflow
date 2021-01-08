@@ -40,13 +40,9 @@ output_settings_defaults: &output_settings_defaults
 
 wave_output_settings_defaults: &wave_output_settings_defaults
   FHMIN_WAV: 0
-  FHMAX_WAV: 9
-  FHMAX_WAV_GFS: 384
   FHOUT_WAV: 3
 
   FHMAX_HF_WAV: 120
   FHOUT_HF_WAV: 3
-
-  FHMAX_WAV_CUR: 48
 
   OUTPARS_WAV: "WND CUR ICE HS T01 T02 DIR FP DP PHS PTP PDIR CHAR"
