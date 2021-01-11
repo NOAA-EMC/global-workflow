@@ -66,7 +66,7 @@ def main():
     steps = steps + wav_steps_awips if _base.get('DO_AWIPS', 'NO') == 'YES' else steps
 
 # for EFSOI
-    efsoi_steps = ['eupdfsoi', 'esfcfsoi', 'ecenfsoi', 'efcsfsoi', 'eposfsoi']
+    efsoi_steps = ['eupdfsoi', 'esfcfsoi', 'ecenfsoi', 'efcsfsoi', 'eposfsoi','efsoi']
     steps = steps + efsoi_steps if _base.get('DO_EFSOI','NO') == 'YES' else steps
 
     dict_configs = wfu.source_configs(configs, steps)
@@ -368,7 +368,7 @@ def get_hyb_resources(dict_configs):
     do_efsoi = base.get('DO_EFSOI', 'NO').upper()
 
     if do_efsoi in ['Y', 'YES']:
-        tasks2 = ['ecen', 'ecenfsoi', 'esfc', 'esfcfsoi', 'efcs', 'efcsfsoi', 'epos', 'eposfsoi', 'earc']
+        tasks2 = ['ecen', 'ecenfsoi', 'esfc', 'esfcfsoi', 'efcs', 'efcsfsoi', 'epos', 'eposfsoi', 'earc', 'efsoi']
     else:
         tasks2 = ['ecen', 'esfc', 'efcs', 'epos', 'earc']
     for task in tasks2:
@@ -1238,10 +1238,31 @@ def get_hyb_tasks(dict_configs, cycledef='enkf'):
 
     dict_tasks['%sepmnfsoi' % cdump] = task
 
-    # eamn, earc
+    # efsoi 
+    deps = []
+    dep_dict = {'type': 'metatask', 'name': '%sepmnfsoi' % cdump}
+    deps.append(rocoto.add_dependency(dep_dict))
+    dep_dict = {'type': 'metatask', 'name': '%sepmnsfsoi' % cdump, 'offset': '-6:00:00'}
+    deps.append(rocoto.add_dependency(dep_dict))
+    data = '&ROTDIR;/enkfgdas.@Y@m@d/@H/gdas.t@Hz.atmanl.ensmean.nemsio'
+    dep_dict = {'type': 'data', 'data': data, 'offset': '24:00:00'}
+    deps.append(rocoto.add_dependency(dep_dict))
+
+    dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+    task = wfu.create_wf_task('efsoi', cdump=cdump, envar=envars1, dependency=dependencies, cycledef=cycledef)
+
+    dict_tasks['%sefsoi' % cdump] = task
+
+     # eamn, earc
     deps = []
     dep_dict = {'type': 'metatask', 'name': '%sepmn' % cdump}
     deps.append(rocoto.add_dependency(dep_dict))
+    dep_dict = {'type': 'metatask', 'name': '%sepmnfsoi' % cdump}
+    deps.append(rocoto.add_dependency(dep_dict))
+    data = '&ROTDIR;/enkfgdas.@Y@m@d/@H/gdas.t@Hz.atmanl.ensmean.nemsio'
+    dep_dict = {'type': 'data', 'data': data, 'offset': '24:00:00'}
+    deps.append(rocoto.add_dependency(dep_dict))
+
     dependencies = rocoto.create_dependency(dep=deps)
     earcenvars = envars1 + [ensgrp]
     task = wfu.create_wf_task('earc', cdump=cdump, envar=earcenvars, dependency=dependencies,
@@ -1481,6 +1502,7 @@ def create_xml(dict_configs):
                          'gdasefcsfsoi':'gdasefmnfsoi',
                          'gdasepos':'gdasepmn',
                          'gdaseposfsoi':'gdasepmnfsoi',
+                         'gdasefsoi':'gdasefsoi',
                          'gdasearc':'gdaseamn',
                          'gdasechgres':'gdasechgres'}
 

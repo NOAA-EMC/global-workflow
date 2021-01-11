@@ -8,8 +8,7 @@ status=$?
 
 ###############################################################
 # Execute the JJOB
-#$HOMEgfs/jobs/JGDAS_EFSOI
-echo 'run efsoi job here'
+$HOMEgfs/jobs/JGDAS_EFSOI
 
 status=$?
 exit $status

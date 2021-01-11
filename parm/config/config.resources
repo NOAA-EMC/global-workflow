@@ -369,6 +369,42 @@ elif [ $step = "eupdfsoi" ]; then
         export memory_eupdfsoi="3072M"
     fi
 
+elif [ $step = "efsoi" ]; then
+
+    export wtime_efsoi="00:30:00"
+    if [ $CASE = "C768" ]; then
+      export npe_efsoi=960
+      export nth_efsoi=6
+      if [[ "$machine" = "WCOSS_DELL_P3" ]]; then
+        export nth_efsoi=7
+      fi
+      if [[ "$machine" = "HERA" ]]; then
+        export npe_efsoi=150
+        export nth_efsoi=40
+      fi
+    elif [ $CASE = "C384" ]; then
+      export npe_efsoi=270
+      export nth_efsoi=2
+      if [[ "$machine" = "WCOSS_DELL_P3" ]]; then
+        export nth_efsoi=9
+      fi
+      if [[ "$machine" = "HERA" ]]; then
+        export npe_efsoi=100
+        export nth_efsoi=40
+      fi
+    elif [ $CASE = "C192" -o $CASE = "C96" -o $CASE = "C48" ]; then
+      export npe_efsoi=42
+      export nth_efsoi=2
+      if [[ "$machine" = "HERA" ]]; then
+        export npe_efsoi=40
+        export nth_efsoi=40
+      fi
+    fi
+    export npe_node_efsoi=$(echo "$npe_node_max / $nth_efsoi" | bc)
+    if [[ "$machine" == "WCOSS_C" ]]; then
+        export memory_efsoi="3072M"
+    fi
+
 
 elif [ $step = "ecen" ]; then
 
