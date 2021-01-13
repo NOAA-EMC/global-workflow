@@ -29,7 +29,7 @@ default_places: &default_places
   NOSCRUB: !FirstTrue
       - when: !calc doc.platform.get('NOSCRUB_DIR','')
         do: !calc doc.platform.NOSCRUB_DIR
-      - otherwise: !expand "{doc.places.EXPROOT}/noscrub/{tools.env('USER')}"
+      - otherwise: !calc ROTDIR
 
   BASE_SVN: !calc doc.platform.BASE_SVN
   BASE_GIT: !calc doc.platform.BASE_GIT
