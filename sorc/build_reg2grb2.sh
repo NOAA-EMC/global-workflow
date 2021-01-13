@@ -28,10 +28,10 @@ export LIBSM="${LANDSFCUTIL_LIBd} \
               ${BACIO_LIB4} \
               -L${NETCDF}/lib -lnetcdff -lnetcdf"
 
-WGRIB2_LIB=${WGRIB2_LIB:-"$WGRIB2_ROOT/lib/wgrib2"}
-WGRIB2_LIBAPI=${WGRIB2_LIBAPI:-"$WGRIB2_ROOT/lib/wgrib2_api"}
+WGRIB2_LIB=${WGRIB2_LIB:-"$WGRIB2_ROOT/lib/wgrib2.a"}
+WGRIB2_LIBAPI=${WGRIB2_LIBAPI:-"$WGRIB2_ROOT/lib/wgrib2_api.a"}
 WGRIB2_INC=${WGRIB2_INC:-$WGRIB2_ROOT/lib}
-JASPER_LIB=${JASPER_LIB:-$Jasper_ROOT/lib/jasper}
+JASPER_LIB=${JASPER_LIB:-$Jasper_ROOT/lib/jasper.a}
 export LIB2="${WGRIB2_LIB} ${WGRIB2_LIBAPI} ${JASPER_LIB}"
 export MOD2="-I${WGRIB2_INC}"
 
