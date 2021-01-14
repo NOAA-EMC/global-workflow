@@ -32,11 +32,11 @@ case:
 
   fv3_gfs_settings:
     CASE: C384
-    LEVS: 128
+    LEVS: 65
     DELTIM: 450
     SEEDLET: 10
-    CCPP_SUITE: FV3_GFS_v16beta_coupled
-    CPL_ATMIC: CFSRfracL127
+    CCPP_SUITE: FV3_GFS_v15p2_coupled
+    CPL_ATMIC: CFSRfracL64
     nst_anl: no
     DO_SKEB: false
     DO_SHUM: false
