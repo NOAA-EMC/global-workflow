@@ -207,7 +207,7 @@ Prototype 5 was run with global-workflow hash 005468b9299ea6fc9afdbeace33c336c67
 
 ## Managing Default / Adding new configuration variables
 
-workflow/default is the central place of managing default values of configuration variables. In principle, every single variable that could be configured by CROW need to have a default value included in workflow/default. A series of YAML files are used to storage these values. 
+workflow/default is the central place of managing default values of configuration variables. In principle, every single variable that could be configured by CROW need to have a default value included in workflow/default. A series of YAML files are used to storage these values. During the configuration step, CROW will load values from workflow/default first, and then customized by the overriding values in the YAML file selected by the user within workflow/cases/.
 
 defaults/case.yaml is the top-level structure of the configuration system, consisted of a series of XX_settings blocks. Each of the blocks describes the source of information that it got from, and form a "!MergeMapping" object in YAML. Typically, these information started from "defaults" and then overriden by the case file.
 
