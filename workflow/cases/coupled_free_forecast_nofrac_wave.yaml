@@ -48,7 +48,6 @@ case:
        WGRP: 1
        WGRP_NTASKS: 24
        WRTIOBUF: "32M"
-    cdmbgwd: "1.0,1.2"
 
   ocn_settings:
     OCNPETS: 240

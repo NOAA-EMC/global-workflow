@@ -1,7 +1,6 @@
 case:
   places:
     workflow_file: layout/free_forecast_gfs.yaml
-    #BASE_CPLIC: /scratch2/NCEPDEV/climate/climpara/S2S/IC
 
   settings: 
     SDATE: 2013-04-01t00:00:00
@@ -48,7 +47,6 @@ case:
        WGRP: 1
        WGRP_NTASKS: 24
        WRTIOBUF: "32M"
-    cdmbgwd: "1.0,1.2"
 
   ocn_settings:
     OCNPETS: 240
