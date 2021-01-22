@@ -44,12 +44,13 @@ elif [[ -d /scratch1 ]] ; then
         source /apps/lmod/lmod/init/$__ms_shell
     fi
     target=hera
+
     module purge
-    module load intel
-    module load impi
-    export NCEPLIBS=/scratch2/NCEPDEV/nwprod/NCEPLIBS
-    module use $NCEPLIBS/modulefiles
-    #export WRFPATH=$NCEPLIBS/wrf.shared.new/v1.1.1/src
+    module use /scratch2/NCEPDEV/nwprod/hpc-stack/libs/hpc-stack/modulefiles/stack
+    module load hpc/1.1.0
+    module load hpc-intel/18.0.5.274
+    module load hpc-impi/2018.0.4
+
     export myFC=mpiifort
     export FCOMP=mpiifort
 
