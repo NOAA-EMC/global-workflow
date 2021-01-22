@@ -12,10 +12,11 @@ set +x
 source ./machine-setup.sh > /dev/null 2>&1
 
 source ../modulefiles/modulefile.ww3.$target
+#source ../modulefiles/module_base.$target
 set -x 
 
 
-cd ufs_coupled.fd/WW3
+cd fv3_coupled.fd/WW3
 export WW3_DIR=$( pwd -P )/model
 export WW3_BINDIR="${WW3_DIR}/bin"
 export WW3_TMPDIR=${WW3_DIR}/tmp
@@ -26,12 +27,13 @@ export WW3_F90=gfortran
 export SWITCHFILE="${WW3_DIR}/esmf/switch"
 
 export WWATCH3_ENV=${WW3_BINDIR}/wwatch3.env
-export PNG_LIB=$PNG_ROOT/lib64/libpng.a
-export Z_LIB=$ZLIB_ROOT/lib/libz.a
-export JASPER_LIB=$JASPER_ROOT/lib64/libjasper.a
-export WWATCH3_NETCDF=NC4
-export NETCDF_CONFIG=$NETCDF_ROOT/bin/nc-config
-
+if [ $target = orion ]; then
+  export PNG_LIB=$PNG_ROOT/lib64/libpng.a
+  export Z_LIB=$ZLIB_ROOT/lib/libz.a
+  export JASPER_LIB=$JASPER_ROOT/lib/libjasper.a
+ export WWATCH3_NETCDF=NC4
+ export NETCDF_CONFIG=$NETCDF_ROOT/bin/nc-config
+fi
 rm  $WWATCH3_ENV
 echo '#'                                              > $WWATCH3_ENV
 echo '# ---------------------------------------'      >> $WWATCH3_ENV
