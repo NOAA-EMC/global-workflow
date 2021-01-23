@@ -216,8 +216,6 @@ if [ $ENSGRP -eq 0 ]; then
 	[[ -d $COMIN_ENS ]] && rm -rf $COMIN_ENS
 	COMIN_ENS="$ROTDIR/enkfgfs.$gPDY/$gcyc/$COMPONENT"
 	[[ -d $COMIN_ENS ]] && rm -rf $COMIN_ENS
-        COMIN_ENS="$ROTDIR/efsoigdas.$gPDY/$gcyc/$COMPONENT"
-	[[ -d $COMIN_ENS ]] && rm -rf $COMIN_ENS
 
 	# Remove any empty directories
 	COMIN_ENS="$ROTDIR/enkfgdas.$gPDY/$COMPONENT"
@@ -228,6 +226,25 @@ if [ $ENSGRP -eq 0 ]; then
 	if [ -d $COMIN_ENS ] ; then
 	    [[ ! "$(ls -A $COMIN_ENS)" ]] && rm -rf $COMIN_ENS
 	fi
+ 
+	# Advance to next cycle
+	GDATE=$($NDATE +$assim_freq $GDATE)
+
+    done
+
+    # Now do EFSOI - needs to be kept around longer
+    # Start start and end dates to remove
+    GDATEEND=$($NDATE -${RMOLDEND_ENKF:-48}  $CDATE)
+    GDATE=$($NDATE -${RMOLDSTD_ENKF:-120} $CDATE)
+    while [ $GDATE -le $GDATEEND ]; do
+
+	gPDY=$(echo $GDATE | cut -c1-8)
+	gcyc=$(echo $GDATE | cut -c9-10)
+
+        COMIN_ENS="$ROTDIR/efsoigdas.$gPDY/$gcyc/$COMPONENT"
+	[[ -d $COMIN_ENS ]] && rm -rf $COMIN_ENS
+
+	# Remove any empty directories
 	COMIN_ENS="$ROTDIR/efsoigdas.$gPDY/$COMPONENT"
 	if [ -d $COMIN_ENS ] ; then
 	    [[ ! "$(ls -A $COMIN_ENS)" ]] && rm -rf $COMIN_ENS
@@ -237,6 +254,7 @@ if [ $ENSGRP -eq 0 ]; then
 	GDATE=$($NDATE +$assim_freq $GDATE)
 
     done
+
 
 fi
 
