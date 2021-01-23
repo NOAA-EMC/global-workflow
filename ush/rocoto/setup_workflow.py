@@ -1242,9 +1242,9 @@ def get_hyb_tasks(dict_configs, cycledef='enkf'):
     deps = []
     dep_dict = {'type': 'metatask', 'name': '%sepmnfsoi' % cdump}
     deps.append(rocoto.add_dependency(dep_dict))
-    dep_dict = {'type': 'metatask', 'name': '%sepmnsfsoi' % cdump, 'offset': '-6:00:00'}
-    deps.append(rocoto.add_dependency(dep_dict))
-    data = '&ROTDIR;/enkfgdas.@Y@m@d/@H/gdas.t@Hz.atmanl.ensmean.nemsio'
+#    dep_dict = {'type': 'metatask', 'name': '%sepmnsfsoi' % cdump, 'offset': '-6:00:00'}
+#    deps.append(rocoto.add_dependency(dep_dict))
+    data = '&ROTDIR;/gdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmanl.ensres.nc'
     dep_dict = {'type': 'data', 'data': data, 'offset': '24:00:00'}
     deps.append(rocoto.add_dependency(dep_dict))
 
@@ -1259,11 +1259,7 @@ def get_hyb_tasks(dict_configs, cycledef='enkf'):
     deps.append(rocoto.add_dependency(dep_dict))
     dep_dict = {'type': 'metatask', 'name': '%sepmnfsoi' % cdump}
     deps.append(rocoto.add_dependency(dep_dict))
-    data = '&ROTDIR;/enkfgdas.@Y@m@d/@H/gdas.t@Hz.atmanl.ensmean.nemsio'
-    dep_dict = {'type': 'data', 'data': data, 'offset': '24:00:00'}
-    deps.append(rocoto.add_dependency(dep_dict))
-
-    dependencies = rocoto.create_dependency(dep=deps)
+    dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
     earcenvars = envars1 + [ensgrp]
     task = wfu.create_wf_task('earc', cdump=cdump, envar=earcenvars, dependency=dependencies,
                               metatask='eamn', varname='grp', varval=EARCGROUPS, cycledef=cycledef)
