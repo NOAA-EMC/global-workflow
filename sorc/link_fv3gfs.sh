@@ -59,7 +59,7 @@ fi
 cd ${pwd}/../jobs               ||exit 8
     $LINK ../sorc/gfs_post.fd/jobs/JGLOBAL_ATMOS_POST_MANAGER      .
     $LINK ../sorc/gfs_post.fd/jobs/JGLOBAL_ATMOS_NCEPPOST          .
-    $LINK ../sorc/gldas.fd/jobs/JGDAS_ATMOS_GLDAS            .             
+    $LINK ../sorc/gldas.fd/jobs/JGDAS_ATMOS_GLDAS            .
 cd ${pwd}/../parm               ||exit 8
     [[ -d post ]] && rm -rf post
     $LINK ../sorc/gfs_post.fd/parm                           post
@@ -120,7 +120,7 @@ cd ${pwd}/../jobs               ||exit 8
     $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_DIAG               .
     $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_UPDATE             .
     $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_ECEN               .
-    $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_SFC                .    
+    $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_SFC                .
     $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_FCST               .
     $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_POST               .
     $LINK ../sorc/gsi.fd/jobs/JGDAS_ATMOS_CHGRES_FORENKF    .

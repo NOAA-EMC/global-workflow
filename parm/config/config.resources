@@ -301,7 +301,7 @@ elif [ $step = "eupd" ]; then
 
     export wtime_eupd="00:30:00"
     if [ $CASE = "C768" ]; then
-      export npe_eupd=960
+      export npe_eupd=480
       export nth_eupd=6
       if [[ "$machine" = "WCOSS_DELL_P3" ]]; then
         export nth_eupd=7
@@ -448,7 +448,11 @@ elif [ $step = "esfcfsoi" ]; then
 
 elif [ $step = "efcs" ]; then
 
-    export wtime_efcs="00:40:00"
+    if [ $CASE = "C768" ]; then
+      export wtime_efcs="01:00:00"
+    else
+      export wtime_efcs="00:40:00"
+    fi
     export npe_efcs=$(echo "$layout_x * $layout_y * 6" | bc)
     export nth_efcs=${nth_fv3:-2}
     export npe_node_efcs=$(echo "$npe_node_max / $nth_efcs" | bc)

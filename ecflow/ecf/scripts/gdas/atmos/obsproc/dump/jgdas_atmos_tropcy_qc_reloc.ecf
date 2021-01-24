@@ -37,7 +37,7 @@ module list
 export USE_CFP=YES
 export PROCESS_TROPCY=YES
 export DO_RELOCATE=YES
-export ROTDIR=%COM%/$NET/$envir
+# JY export ROTDIR=%COM%/$NET/$envir
 export cyc=%CYC%
 export cycle=t%CYC%z
 

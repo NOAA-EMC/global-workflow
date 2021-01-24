@@ -17,6 +17,7 @@
 #  B  bytes, relative size of the path in relation to the other paths in the list
 #  D  delete, delete extraneous files from destination directories (takes no arg)
 #  E  encrypt, enables data encryption [two cores should be allocated] (takes no arg)
+#  W  whole files, copy whole files rather than use delta-xfer algorithm (takes no arg)  (v2.2.3+)
 #  T  two-way syncronization will update both sides with latest changes (takes no arg)
 #  Z  compress data as it is sent, accepts optional compression level argument (1-9)
 # Rules higher in the list take precedence over lower ones.  By default, all files in a
@@ -29,8 +30,8 @@
 com/gfs/_ENVIR_/enkfgdas._PDYm1_/ _REMOTEPATH_/com/gfs/_ENVIR_/enkfgdas._PDYm1_/
 + /06/
 + /06/mem???/
-+ /06/mem???/gdas.t??z.atmf006s.nemsio
-+ /06/mem???/gdas.t??z.atmf009s.nemsio
++ /06/mem???/gdas.t??z.atmf006s.nc
++ /06/mem???/gdas.t??z.atmf009s.nc
 - *
 E
 # This directory is a good candidate for compression
@@ -38,8 +39,8 @@ E
 com/gfs/_ENVIR_/enkfgdas._PDY_/ _REMOTEPATH_/com/gfs/_ENVIR_/enkfgdas._PDY_/
 + /06/
 + /06/mem???/
-+ /06/mem???/gdas.t??z.atmf006s.nemsio
-+ /06/mem???/gdas.t??z.atmf009s.nemsio
++ /06/mem???/gdas.t??z.atmf006s.nc
++ /06/mem???/gdas.t??z.atmf009s.nc
 - *
 E
 # This directory is a good candidate for compression
