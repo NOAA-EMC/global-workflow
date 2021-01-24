@@ -97,6 +97,7 @@ $LOGSCRIPT
 
 #${EFSOIUPDSH:-$SCRgfs/exgdas_efsoi_update.sh}
 echo 'run efsoi script here'
+error_out
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
