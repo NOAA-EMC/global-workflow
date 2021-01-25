@@ -41,6 +41,8 @@
  mkdir -p $DATA
  cd $DATA
  export wavelog=${DATA}/${COMPONENTwave}_prdggridded.log
+
+ export errchk=${errchk:-err_chk}
  
  postmsg "$jlogfile" "HAS BEGUN on `hostname`"
  msg="Starting MWW3 GRIDDED PRODUCTS SCRIPT"

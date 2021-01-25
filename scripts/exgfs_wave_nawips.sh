@@ -25,6 +25,9 @@ export cycle=${cycle:-t${cyc}z}
 export GEMwave=${GEMwave:-$HOMEgfs/gempak}
 export FIXwave=${FIXwave:-HOMEgfs/fix}
 export DATA=${DATA:-${DATAROOT:?}/${jobid}}
+
+export errchk=${errchk:-err_chk}
+
 if [ ! -d $DATA ];then
   mkdir -p $DATA
 fi
