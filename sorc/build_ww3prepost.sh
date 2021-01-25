@@ -15,8 +15,7 @@ source ../modulefiles/modulefile.ww3.$target
 #source ../modulefiles/module_base.$target
 set -x 
 
-
-cd fv3_coupled.fd/WW3
+cd ufs_coupled.fd/WW3
 export WW3_DIR=$( pwd -P )/model
 export WW3_BINDIR="${WW3_DIR}/bin"
 export WW3_TMPDIR=${WW3_DIR}/tmp
