@@ -1,7 +1,7 @@
 #
 # define the array of the name of build program
 #
- declare -a Build_prg=("Build_libs" "Build_fv3gfs" \
+ declare -a Build_prg=("Build_fv3gfs" \
                        "Build_gsi" \
                        "Build_gldas" \
                        "Build_ncep_post" \
