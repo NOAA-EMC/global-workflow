@@ -36,8 +36,6 @@
  export USHwave=${USHwave:-$HOMEgfs/ush}
  #export EXECcode=${EXECcode:-CODEwave/exec}
 
- export errchk=${errchk:-err_chk}
-
  mkdir -p $DATA
  cd $DATA
  export wavelog=${DATA}/${RUNwave}_prdgbulls.log
