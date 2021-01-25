@@ -3,7 +3,7 @@
 #BSUB -o %COM%/output/%ENVIR%/today/gfs_atmos_gempak_upapgif_%CYC%.o%J
 #BSUB -q %QUEUE%
 #BSUB -P %PROJ%
-#BSUB -W 3:00
+#BSUB -W 2:00
 #BSUB -n 1
 #BSUB -R affinity[core(1)]
 #BSUB -R span[ptile=1]

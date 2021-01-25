@@ -31,7 +31,7 @@ model=gfs
 ############################################################
 module load lsf/${lsf_ver}
 module load pm5/${pm5_ver}
-# module load metplus/${metplus_ver}
+#module load metplus/${metplus_ver}
 module load util_shared/${util_shared_ver}
 
 module list
