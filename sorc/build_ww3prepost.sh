@@ -12,8 +12,8 @@ set +x
 source ./machine-setup.sh > /dev/null 2>&1
 
 source ../modulefiles/modulefile.ww3.$target
+#source ../modulefiles/module_base.$target
 set -x 
-
 
 cd ufs_coupled.fd/WW3
 export WW3_DIR=$( pwd -P )/model
