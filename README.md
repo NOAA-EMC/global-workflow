@@ -205,4 +205,12 @@ Currently this is set up for benchmark runs which have ICs which are already gen
 
 Prototype 5 was run with global-workflow hash 005468b9299ea6fc9afdbeace33c336c6797833a
 
+## Managing Default / Adding new configuration variables
 
+workflow/default is the central place of managing default values of configuration variables. In principle, every single variable that could be configured by CROW needs to have a default value included in workflow/default. A series of YAML files are used to store these values. During the configuration step, CROW will load values from workflow/default first, and then will be customized by the overriding values in the YAML file selected by the user within workflow/cases/.
+
+workflow/defaults/case.yaml is the top-level structure of the configuration system, consisted of a series of XX_settings blocks. Each of the blocks describes the source of information that it got from, and form a "!MergeMapping" object in YAML. Typically, these information started from "defaults" and then overriden by the case file.
+
+In each of the XX_settings file, the first line is the title and label of this piece of file. For example: "ice_defaults: &ice_defaults". By doing this, CROW will be able to locate "ice_defaults" to here when reads "doc.ice_defaults" in the defaults/case.yaml. The following lines are standard key-value pairs. Each of the key-value pair serves the purpose of adding one configuration variable and setting it's default value.
+
+In order to add new variable and set a default, you could either add "Varname : Value" pair into an existing YAML files in workflow/default, or create a new YAML file under workflow/default. The later solution should only be chosen when the earlier one doesn't work out. Once this is done, user could override the default values in the corresponding section of the case file (ie, fv3_gfs_settings in case file could override values in fv3_gfs_defaults, per the definition in workflow/defaults/case.yaml), and if user do not override, the default value will be used. This value, referenced by "doc.$section_name.$var_name", could be used anywhere in the config files (ie, doc.fv3_gfs_settings.DELTIM) and layout files (ie, doc.settings.onestep).
