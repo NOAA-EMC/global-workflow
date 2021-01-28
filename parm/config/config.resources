@@ -262,6 +262,13 @@ elif [ $step = "echgres" ]; then
     export nth_echgres=$npe_node_max
     export npe_node_echgres=1
 
+elif [ $step = "init" ]; then
+
+    export wtime_init="00:15:00"
+    export npe_init=24
+    export nth_init=1
+    export npe_node_init=6
+
 elif [ $step = "arch" -o $step = "earc" -o $step = "getic" ]; then
 
     eval "export wtime_$step='06:00:00'"

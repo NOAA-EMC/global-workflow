@@ -8,13 +8,9 @@ echo "BEGIN: config.getic"
 # Get task specific resources
 . $EXPDIR/config.resources getic
 
-# We should just be supporting the OPSGFS only
-export ics_from="opsgfs" # initial conditions from opsgfs or pargfs
+UFS_DIR=${HOMEgfs}/sorc/ufs_utils.fd
+GDASINIT_DIR=${UFS_DIR}/util/gdas_init
 
-# Provide a parallel experiment name and path to HPSS archive
-if [ $ics_from = "pargfs" ]; then
-    export parexp="prnemsrn"
-    export HPSS_PAR_PATH="/5year/NCEPDEV/emc-global/emc.glopara/WCOSS_C/$parexp"
-fi
+EXTRACT_DATA="yes"
 
 echo "END: config.getic"

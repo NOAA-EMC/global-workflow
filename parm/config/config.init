@@ -1,0 +1,19 @@
+#!/bin/ksh -x
+
+########## config.init ##########
+# Prepare initial conditions 
+
+echo "BEGIN: config.init"
+
+# Get task specific resources
+. $EXPDIR/config.resources init
+
+UFS_DIR=${HOMEgfs}/sorc/ufs_utils.fd
+GDASINIT_DIR=${UFS_DIR}/util/gdas_init
+
+RUN_CHGRES="yes"
+
+CRES_HIRES=$CASE
+CRES_ENKF=$CASE_ENKF
+
+echo "END: config.init"

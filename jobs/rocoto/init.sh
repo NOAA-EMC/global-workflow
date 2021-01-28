@@ -20,7 +20,7 @@ status=$?
 
 ###############################################################
 # Source relevant configs
-configs="base getic"
+configs="base init"
 for config in $configs; do
     . $EXPDIR/config.${config}
     status=$?
@@ -29,7 +29,7 @@ done
 
 ###############################################################
 # Source machine runtime environment
-. $BASE_ENV/${machine}.env getic
+. $BASE_ENV/${machine}.env init
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
@@ -42,13 +42,11 @@ dd=$(echo $CDATE | cut -c7-8)
 hh=${cyc:-$(echo $CDATE | cut -c9-10)}
 
 EXTRACT_DIR=${PTMP}/gdas.init_${CDATE}/input
-OUTDIR=${PTMP}/gdas.init_${CDATE}/output
-PRODHPSSDIR=/NCEPPROD/hpssprod/runhistory/rh${yy}/${yy}${mm}/${yy}${mm}${dd}
-
-COMPONENT="atmos"
+WORKDIR=${PTMP}/gdas.init_${CDATE}/output
+OUTDIR=${ROTDIR}
 
 gfs_ver=v16
-GETICSH=${GDASINIT_DIR}/get_v16.data.sh
+RUNICSH=${GDASINIT_DIR}/run_v16.chgres.sh
 
 # No ENKF data prior to 2012/05/21/00z
 if [ $yy$mm$dd$hh -lt 2012052100 ]; then
@@ -57,48 +55,26 @@ if [ $yy$mm$dd$hh -lt 2012052100 ]; then
   exit 2
 elif [ $yy$mm$dd$hh -lt 2016051000 ]; then
   gfs_ver=v12
-  GETICSH=${GDASINIT_DIR}/get_pre-v14.data.sh
+  RUNICSH=${GDASINIT_DIR}/run_pre-v14.chgres.sh
 elif [ $yy$mm$dd$hh -lt 2017072000 ]; then
   gfs_ver=v13
-  GETICSH=${GDASINIT_DIR}/get_pre-v14.data.sh
+  RUNICSH=${GDASINIT_DIR}/run_pre-v14.chgres.sh
 elif [ $yy$mm$dd$hh -lt 2019061200 ]; then
   gfs_ver=v14
-  GETICSH=${GDASINIT_DIR}/get_${gfs_ver}.data.sh
+  RUNICSH=${GDASINIT_DIR}/run_${gfs_ver}.chgres.sh
 elif [ $yy$mm$dd$hh -lt 2021020300 ]; then
   gfs_ver=v15
-  GETICSH=${GDASINIT_DIR}/get_${gfs_ver}.data.sh
+  RUNICSH=${GDASINIT_DIR}/run_${gfs_ver}.chgres.gfs.sh
 fi
 
 export EXTRACT_DIR yy mm dd hh UFS_DIR OUTDIR CRES_HIRES CRES_ENKF
 export LEVS gfs_ver
 
-# Run get data script
-if [ ! -d $EXTRACT_DIR ]; then mkdir -p $EXTRACT_DIR ; fi
-sh ${GETICSH} ${CDUMP}
+# Run chgres_cube
+if [ ! -d $OUTDIR ]; then mkdir -p $OUTDIR ; fi
+sh ${RUNICSH} ${CDUMP}
 status=$?
 [[ $status -ne 0 ]] && exit $status
-
-# Copy pgbanl file to ROTDIR for verification/archival - v14+
-cd $EXTRACT_DIR
-OUTDIR2=${ROTDIR}/gfs.${yy}${mm}${dd}/${hh}/${COMPONENT}
-if [ ! -d ${OUTDIR2} ]; then mkdir -p ${OUTDIR2} ; fi
-if [ $gfs_ver = v14 ]; then
-  for grid in 0p25 0p50 1p00
-  do
-    tarball=gpfs_hps_nco_ops_com_gfs_prod_gfs.${yy}${mm}${dd}_${hh}.pgrb2_${grid}.tar
-    file=gfs.t${hh}z.pgrb2.${grid}.anl
-    htar -xvf ${PRODHPSSDIR}/${tarball} ./gfs.${yy}${mm}${dd}/${hh}/${file}
-    mv ${EXTRACT_DIR}/gfs.${yy}${mm}${dd}/${hh}/${file} ${OUTDIR2}/${file}
-  done
-elif [ $gfs_ver = v15 ]; then
-  tarball=com_gfs_prod_gfs.${yy}${mm}${dd}_${hh}.gfs_pgrb2.tar  
-  for grid in 0p25 0p50 1p00
-  do
-    file=gfs.t${hh}z.pgrb2.${grid}.anl
-    htar -xvf ${PRODHPSSDIR}/${tarball} ./gfs.${yy}${mm}${dd}/${hh}/${file}
-    mv ${EXTRACT_DIR}/gfs.${yy}${mm}${dd}/${hh}/${file} ${OUTDIR2}/${file}
-  done
-fi
 
 ###############################################################
 # Exit out cleanly

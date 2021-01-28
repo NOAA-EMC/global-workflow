@@ -49,7 +49,7 @@ for dir in fix_am fix_fv3_gmted2010 fix_gldas fix_orog fix_verif fix_wave_gfs ; 
 done
 
 if [ -d ${pwd}/ufs_utils.fd ]; then
-  cd ${pwd}/ufs_utils.fd/sorc
+  cd ${pwd}/ufs_utils.fd/fix
   ./link_fixdirs.sh $RUN_ENVIR $machine
 fi
 
