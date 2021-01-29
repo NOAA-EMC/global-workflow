@@ -188,7 +188,7 @@ suite: !Cycle
         <<: *exclusive_task_template
         RUN: !calc up.RUN
         Disable: !calc doc.settings.cplwav=='.false.'
-        resources: !calc partition.resources.run_fv3ic
+        resources: !calc partition.resources.run_wavepostgrd
         J_JOB: JGLOBAL_WAVE_POST_SBS 
         Trigger: !Depend up.forecast
 
@@ -196,7 +196,7 @@ suite: !Cycle
         <<: *exclusive_task_template
         RUN: !calc up.RUN
         Disable: !calc doc.settings.cplwav=='.false.'
-        resources: !calc partition.resources.run_fv3ic
+        resources: !calc partition.resources.run_wavepostpnt
         J_JOB: JGLOBAL_WAVE_POST_PNT
         Trigger: !Depend up.forecast
 
