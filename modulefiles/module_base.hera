@@ -17,8 +17,8 @@ module load gempak/7.4.2
 module load prod_util/1.2.2
 module load grib_util/1.2.2
 module load g2tmpl/1.9.1
-module load crtm/2.3.0
 
+module load crtm/2.3.0
 setenv CRTM_FIX /scratch2/NCEPDEV/nwprod/NCEPLIBS/fix/crtm_v2.3.0
 
 module load netcdf/4.7.4
