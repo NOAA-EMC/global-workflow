@@ -88,6 +88,7 @@ cat > input.nml <<EOF
   npy = $npy
   ntiles = $ntiles
   npz = $npz
+  dz_min =  6
   grid_type = -1
   make_nh = $make_nh
   fv_debug = ${fv_debug:-".false."}
