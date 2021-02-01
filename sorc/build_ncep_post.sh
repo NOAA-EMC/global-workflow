@@ -27,5 +27,7 @@ if [[ $target == 'jet' || $target == 'gaea' ]]; then
     exit 0
 fi
 
-cd gfs_post.fd/sorc
-sh build_ncep_post.sh
+cd gfs_post.fd
+git submodule update --init CMakeModules
+cd tests
+./compile_upp.sh
