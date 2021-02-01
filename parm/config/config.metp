@@ -1,0 +1,69 @@
+#!/bin/ksh -x
+
+########## config.metp ##########
+# METplus verification step specific
+
+echo "BEGIN: config.metp"
+
+# Get task specific resources
+. $EXPDIR/config.resources metp
+
+export RUN_GRID2GRID_STEP1="YES" # Run grid-to-grid verification using METplus
+export RUN_GRID2OBS_STEP1="YES"  # Run grid-to-obs verification using METplus
+export RUN_PRECIP_STEP1="YES"    # Run precip verification using METplus
+
+
+#----------------------------------------------------------
+# METplus, Verify grid-to-grid, and/or grid-to-obs, and/or precipitation options
+#----------------------------------------------------------
+
+if [ "$CDUMP" = "gfs" ] ; then
+    if [ $RUN_GRID2GRID_STEP1 = "YES" -o $RUN_GRID2OBS_STEP1 = "YES" -o $RUN_PRECIP_STEP1 = "YES" ]; then
+        export HOMEverif_global=${HOMEgfs}/sorc/verif-global.fd
+        export VERIF_GLOBALSH=$HOMEverif_global/ush/run_verif_global_in_global_workflow.sh
+        ## INPUT DATA SETTINGS
+        export model_list=$PSLOT
+        export model_data_dir_list=$ARCDIR/..
+        export model_fileformat_list="pgbf{lead?fmt=%H}.${CDUMP}.{init?fmt=%Y%m%d%H}.grib2"
+        export model_hpssdir_list=$ATARDIR/.. 
+        export get_data_from_hpss="NO"
+        export hpss_walltime="10"
+        ## OUTPUT SETTINGS
+        export OUTPUTROOT=$RUNDIR/$CDUMP/$CDATE/vrfy/metplus_exp
+        export model_arch_dir_list=$ARCDIR/..
+        export make_met_data_by="VALID"
+        export gather_by="VSDB"
+        ## DATE SETTINGS
+        export VRFYBACK_HRS="24"
+        ## METPLUS SETTINGS
+        export METplus_verbosity="INFO"
+        export MET_verbosity="2"
+        export log_MET_output_to_METplus="yes"
+        ## FORECAST VERIFICATION SETTINGS
+        export fhr_min=$FHMIN_GFS
+        export fhr_max=$FHMAX_GFS
+        # GRID-TO-GRID STEP 1
+        export g2g1_type_list="anom pres sfc"
+        export g2g1_anl_name="self_anl"
+        export g2g1_anl_fileformat_list="pgbanl.gfs.{valid?fmt=%Y%m%d%H}.grib2"
+        export g2g1_grid="G002"
+        # GRID-TO-OBS STEP 1
+        export g2o1_type_list="upper_air conus_sfc"
+        export g2o1_obtype_upper_air="ADPUPA"
+        export g2o1_grid_upper_air="G003"
+        export g2o1_fhr_out_upper_air="6"
+        export g2o1_obtype_conus_sfc="ONLYSF ADPUPA"
+        export g2o1_grid_conus_sfc="G104"
+        export g2o1_fhr_out_conus_sfc="3"
+        export g2o1_prepbufr_data_runhpss="YES"
+        # PRECIP STEP 1
+        export precip1_obtype="ccpa"
+        export precip1_accum_length="24"
+        export precip1_model_bucket_list="06"
+        export precip1_model_varname_list="APCP"
+        export precip1_model_fileformat_list="pgbf{lead?fmt=%H}.gfs.{init?fmt=%Y%m%d%H}.grib2"
+        export precip1_grid="G211"
+    fi
+fi
+
+echo "END: config.metp"

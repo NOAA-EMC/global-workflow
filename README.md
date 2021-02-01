@@ -1,20 +1,20 @@
 # How to use the unified workflow for the ufs-s2s-model application (work in progress)
 
+Note, currently the wave gridded post does not work properly. There is work actively ongoing to fix it. 
+This message will be deleted when the fix for wave post is committed. 
+
 ## Checkout the source code and scripts
 ```
 git clone https://github.com/NOAA-EMC/global-workflow coupled-workflow
 cd coupled-workflow
 git checkout feature/coupled-crow
-git submodule update --init --recursive                   #Update submodules if necessary
+git submodule update --init --recursive     #Update submodules 
 cd sorc
-sh checkout.sh coupled                                    # Check out the coupled code, EMC_post, gsi, ...
+sh checkout.sh -c                    # Check out forecast model with CCPP=YES/COUPLED=YES
 ```
 ## Compile code used in ufs-s2s-model and EMC_post and link fixed files and executable programs:
 ```
-sh build_ncep_post.sh        #This command will build ncep_post
-sh build_ww3prepost.sh       #This command will build ww3 prep and post exes
-sh build_fv3_coupled.sh      #This command will build ufs-s2s-model
-sh build_reg2grb2.sh         #This command will build exes for ocean-ice post
+sh build_all.sh -c           #This command will build only execs for coupled
 
 To link fixed files and executable programs for the coupled application:
 On Hera: 
@@ -32,21 +32,21 @@ be worked with.
 The user file is a short text file in YAML format, telling CROW the information of the user. Such as scratch space for EXPDIR, 
 account information and email for cron job notification purpose. A template named user.yaml.default is included in the repository.
 
-2020/03: Please use FIX_SCRUB: True option on Hera until further notice. 
-
 ```
 cd ../workflow
 cp user.yaml.default user.yaml
+```
+
 Then, open and edit user.yaml:
 
 - EXPROOT: Place for experiment directory, make sure you have write access.
 - FIX_SCRUB: True if you would like to fix the path to ROTDIR(under COMROOT) and RUNDIR(under DATAROOT)
              False if you would like CROW to detect available disk space automatically.
+             *** Please use FIX_SCRUB: True on Hera/Orion until further notice (2020/03)
 - COMROOT: Place to generate ROTDIR for this experiment.
 - DATAROOT: Place for temporary storage for each job of this experiment.
 - cpu_project: cpu project that you are working with.
 - hpss_project: hpss project that you are working with.
-```
 
 ## Create experiment directory using CROW
 CROW gets information of the targeted experiment from case files. A case file is a text file in YAML format, describing the information
@@ -61,22 +61,25 @@ mkdir -p $EXPROOT
 or
 
 ./setup_case.sh -p HERA ../cases/$CASE.yaml test2d
-
+```
 where $CASE is one of the following:
-- prototype_5: Used for UFS S2S Prototype 5 (Runs 35 day cases with atm-ocn-ice-wav coupling)
+- prototype_5: Used for UFS S2S Prototype 5 (Runs 35 day cases with atm-ocn-ice-wav coupling, use with p5 workflow only)
 - coupled_free_forecast: 2 day tests for atm-ocn-ice coupling 
-- coupled_free_forecast_wave: 2 day test for atm-ocn-ice-wav coupling (same as p5 except shorter) 
+- coupled_free_forecast_wave: 2 day test for atm-ocn-ice-wav coupling (frac grid)
+- coupled_free_forecast_nofrac_wave: 2 day test for atm-ocn-ice-wav coupling (non frac grid)
 - atm_free_forecast:  Run the atm only case with same ICs as coupled tests 
+Please see the bottom of the README for information about particular versions and ICs
+
+This will create a experiment directory ($EXPERIMENT_DIRECTORY). In the current example, $EXPERIMENT_DIRECTORY=$EXPROOT/test_3d.
 
 For Orion: 
 First make sure you have python loaded: 
+```
 module load contrib
 module load rocoto #Make sure to use 1.3.2 
 module load intelpython3
-and then replace ORION with HERA in the commands above. 
-
 ```
-This will create a experiment directory ($EXPERIMENT_DIRECTORY). In the current example, $EXPERIMENT_DIRECTORY=$EXPROOT/test_3d.
+and then replace ORION with HERA in the commands above. 
 
 ## Create Rocoto XML using CROW
 The final process of workflow configuration is to generate a XML file for Rocoto. After the previous step, CROW will pop-up the
@@ -91,6 +94,77 @@ cd $EXPERIMENT_DIRECTORY
 module load rocoto
 rocotorun -w workflow.xml -d workflow.db
 ```
+The first jobs will be submitted and should now be queued or running. Note, you will need to continue 
+to run rocotorun until the workflow is complete. This can be done via cron jobs or manually submitting 
+rocotorun until the workflow is complete.
+
+Rocotodocumentation can be found here: https://github.com/christopherwharrop/rocoto/wiki/documentation
+
+# Monitor your rocoto-based run
+
+Click here to view full rocoto documentation on GitHub:
+
+https://github.com/christopherwharrop/rocoto/wiki/documentation
+
+## Use rocoto commands on the command line
+
+Start or continue a run:
+
+```
+rocotorun -d /path/to/workflow/database/file -w /path/to/workflow/xml/file
+```
+
+Check the status of the workflow:
+
+```
+rocotostat -d /path/to/workflow/database/file -w /path/to/workflow/xml/file [-c YYYYMMDDCCmm,[YYYYMMDDCCmm,...]] [-t taskname,[taskname,...]] [-s] [-T]
+```
+
+Note: YYYYMMDDCCmm = YearMonthDayCycleMinute ...where mm/Minute is ’00’ for all cycles currently.
+
+Check the status of a job:
+
+```
+rocotocheck -d /path/to/workflow/database/file -w /path/to/workflow/xml/file -c YYYYMMDDCCmm -t taskname
+```
+
+Force a task to run (ignores dependencies - USE CAREFULLY!):
+
+```
+rocotoboot -d /path/to/workflow/database/file -w /path/to/workflow/xml/file -c YYYYMMDDCCmm -t taskname
+```
+
+Rerun task(s):
+
+```
+rocotorewind -d /path/to/workflow/database/file -w /path/to/workflow/xml/file -c YYYYMMDDCCmm -t taskname
+```
+
+Several dates and task names may be specified in the same command by adding more -c and -t options. However, lists are not allowed.
+
+
+
+## Set up your experiment cron
+
+### HPCs with access to directly edit your crontab files (WCOSS-Cray, Hera, Jet)
+
+`
+crontab -e
+`
+
+or
+
+`
+crontab workflow.crontab
+`
+
+_(WARNING: "crontab workflow.crontab" command will overwrite existing crontab file on your login node. If running multiple crons recommend editing crontab file with "crontab -e" command._
+
+Check your crontab setting:
+
+`
+crontab -l
+`
 
 ## Using crons on Orion 
 
@@ -121,3 +195,22 @@ If you would like to update clock time limit for primary or medcold forecast job
 If you want more advanced changes in the resource settings, contact a EIB person.
 
 After changing this file, you NEED to start a new experiment instead of overwriting the existing one. The reason is that, the "resources_sum.yaml" within $EXPDIR has the highest priority so that any changes in default_resources.yaml will be overwritten.
+
+
+## Initial Conditions 
+
+Currently this is set up for benchmark runs which have ICs which are already generated.  Available dates are the 1st and the 15th of the month starting April 1, 2011 thourgh March 15, 2018. 
+
+## Particular versions 
+
+Prototype 5 was run with global-workflow hash 005468b9299ea6fc9afdbeace33c336c6797833a
+
+## Managing Default / Adding new configuration variables
+
+workflow/default is the central place of managing default values of configuration variables. In principle, every single variable that could be configured by CROW needs to have a default value included in workflow/default. A series of YAML files are used to store these values. During the configuration step, CROW will load values from workflow/default first, and then will be customized by the overriding values in the YAML file selected by the user within workflow/cases/.
+
+workflow/defaults/case.yaml is the top-level structure of the configuration system, consisted of a series of XX_settings blocks. Each of the blocks describes the source of information that it got from, and form a "!MergeMapping" object in YAML. Typically, these information started from "defaults" and then overriden by the case file.
+
+In each of the XX_settings file, the first line is the title and label of this piece of file. For example: "ice_defaults: &ice_defaults". By doing this, CROW will be able to locate "ice_defaults" to here when reads "doc.ice_defaults" in the defaults/case.yaml. The following lines are standard key-value pairs. Each of the key-value pair serves the purpose of adding one configuration variable and setting it's default value.
+
+In order to add new variable and set a default, you could either add "Varname : Value" pair into an existing YAML files in workflow/default, or create a new YAML file under workflow/default. The later solution should only be chosen when the earlier one doesn't work out. Once this is done, user could override the default values in the corresponding section of the case file (ie, fv3_gfs_settings in case file could override values in fv3_gfs_defaults, per the definition in workflow/defaults/case.yaml), and if user do not override, the default value will be used. This value, referenced by "doc.$section_name.$var_name", could be used anywhere in the config files (ie, doc.fv3_gfs_settings.DELTIM) and layout files (ie, doc.settings.onestep).

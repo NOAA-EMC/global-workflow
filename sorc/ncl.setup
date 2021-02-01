@@ -14,16 +14,12 @@ then
 module load ncarg/v6.1.0
 fi
 
-if [ $target == theia ]
-then
-module load ncl/6.3.0
-fi
-
 if [ $target ==  jet ]
 then
 module load  ncl/6.5.0 
 export NCARG_LIB=$NCARG_ROOT/lib
 fi
+
 if [ $target ==  hera ]
 then
 module load  ncl/6.5.0 

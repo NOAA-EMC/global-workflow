@@ -28,8 +28,7 @@ export MP_STDOUTMODE=ordered
 module load PrgEnv-intel ESMF-intel-haswell/3_1_0rp5 cfp-intel-sandybridge iobuf craype-hugepages2M craype-haswell
 #module load cfp-intel-sandybridge/1.1.0
 module use /gpfs/hps/nco/ops/nwprod/modulefiles
-module load prod_envir
-#module load prod_util
+module load prod_envir/1.1.0
 module load prod_util/1.0.4
 module load grib_util/1.0.3
 

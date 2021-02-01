@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/ksh -x
 
 ###############################################################
 # Source FV3GFS workflow modules
@@ -8,6 +8,6 @@ status=$?
 
 ###############################################################
 # Execute the JJOB
-$HOMEgfs/jobs/JGLOBAL_ANALYSIS
+$HOMEgfs/jobs/JGLOBAL_ATMOS_ANALYSIS
 status=$?
 exit $status

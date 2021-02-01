@@ -1,19 +1,21 @@
 case:
   places:
     workflow_file: layout/free_forecast_gfs.yaml
-    #BASE_CPLIC: /scratch2/NCEPDEV/climate/climpara/S2S/IC
 
   settings: 
     SDATE: 2013-04-01t00:00:00
     EDATE: 2013-04-01t00:00:00
 
+    onestep: .true.
+    cplmode: nems_frac
+    FRAC_GRID: .true.
     cplwav: .true.
     cplwav2atm: .true.
     cplflx: .true.
     print_esmf: .true.
-    nems_temp: 'med_atm_ocn_ice_wav'
-    nems_temp_cold: 'medcold_atm_ocn_ice_wav'
+    nems_temp: 'cpld_wave'
     mom6ic_prepared: .false.
+    inline_post: .true. 
     KEEPDATA: NO
 
   nsst:
@@ -29,10 +31,11 @@ case:
 
   fv3_gfs_settings:
     CASE: C384
-    LEVS: 65
-    DELTIM: 450
+    LEVS: 128
+    DELTIM: 300
     SEEDLET: 10
-    CCPP_SUITE: FV3_GFS_v15p2_coupled
+    CCPP_SUITE: FV3_GFS_v16beta_coupled
+    CPL_ATMIC: CFSRfracL127
     nst_anl: no
     DO_SKEB: false
     DO_SHUM: false
@@ -44,7 +47,6 @@ case:
        WGRP: 1
        WGRP_NTASKS: 24
        WRTIOBUF: "32M"
-    cdmbgwd: "1.0,1.2"
 
   ocn_settings:
     OCNPETS: 240
@@ -54,6 +56,11 @@ case:
 
   wave_settings: 
     WAVPETS: 136
+    CPL_WAVIC: CFSR
+    waveGRD: 'gwes_30m'
+    wavepostGRD: 'gwes_30m'
+    waveesmfGRD: ''
+    waveinterpGRD: ''    
 
   post:
     downset: 2

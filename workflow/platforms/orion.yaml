@@ -24,16 +24,17 @@ platform: !Platform
 
   # DMPDIR - location of the global dump data.  This is used by the observation
   # processing scripts, which are not included in the public release.
-  DMPDIR: "/work/noaa/marine/place_holder"
-  NWPROD: "/work/noaa/marine/place_holder"
-  RTMFIX: "/work/noaa/marine/place_holder"
-  BASE_SVN: "/work/noaa/marine/place_holder"
+  DMPDIR: "/work/noaa/global/glopara/dump"
+  NWPROD: "/work/noaa/global/glopara/nwpara"
+  RTMFIX: "/apps/contrib/NCEPLIBS/orion/fix/crtm_v2.3.0"
+  BASE_SVN: "/work/noaa/global/glopara/svn"
 
   # BASE_GIT - a directory maintained by emc global model developers
   # that contains recent versions of source code and executables for
   # various git repositories. This is used on some platforms to find
   # executables for this workflow.
-  BASE_GIT: "/work/noaa/marine/place_holder"
+  BASE_GIT: "/work/noaa/global/glopara/git" 
+
 
   #BASE_CPLIC - is the base directory of ICs for coupled s2s runs
   BASE_CPLIC: "/work/noaa/marine/Partha.Bhattacharjee/IC_Dir"

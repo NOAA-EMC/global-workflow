@@ -6,7 +6,7 @@ config_fcst:
   filename: config.fcst
   FCSTEXEC: !FirstTrue
     - when: !calc doc.settings.cplflx==".true."
-      do: "nems_fv3_ccpp_mom6_cice5_ww3.x"
+      do: "ufs_model"
     - otherwise: "global_fv3gfs.x"
   more_exports_for_microphys: !FirstTrue
     - when: !calc ( doc.fv3_gfs_settings.imp_physics=="11" )
@@ -23,9 +23,9 @@ config_fcst:
     - when: !calc doc.fv3_gfs_settings.LEVS==128
       do: !expand |
          export  tau=5.0
-         export  rf_cutoff=1.0e3
+         export  rf_cutoff=7.5e2
          export  d2_bg_k1=0.20
-         export  d2_bg_k2=0.0
+         export  d2_bg_k2=0.04
     - otherwise: ""
 
   resource_a: !FirstTrue
@@ -71,6 +71,10 @@ config_fcst:
     export WAV_model="{doc.wave_settings.MOD}"
 
     #######################################################################
+    # COUPLING COMPONENTS
+    export use_coldstart="{tools.fort(doc.settings.use_coldstart)}"
+
+    #######################################################################
     # PE Mapping
     export ATMPETS="{doc.fv3_gfs_settings.ATMPETS}"
     export MEDPETS="{doc.fv3_gfs_settings.MEDPETS}"
@@ -83,6 +87,9 @@ config_fcst:
     export NX_GLB="{doc.ice_settings.NX_GLB}"
     export NY_GLB="{doc.ice_settings.NY_GLB}"
     export MESHICE="mesh.mx{doc.ice_settings.ICERES}.nc"
+    
+    # inline post
+    export WRITE_DOPOST="{doc.settings.inline_post}"
 
     if [[ "$machine" == "WCOSS_C" ]]; then
         export memory_fcst="1024M"
@@ -90,17 +97,27 @@ config_fcst:
         export memory_fcst="1024M"
     fi
     
-    export FORECASTSH="$HOMEgfs/scripts/exglobal_fcst_nemsfv3gfs.sh"
+    export FORECASTSH="$HOMEgfs/scripts/exglobal_forecast.sh"
     export FCSTEXECDIR="$HOMEgfs/exec"
     export FCSTEXEC="{FCSTEXEC}"
    
     # Model configuration
     export TYPE="{doc.fv3_gfs_settings.nh_type}"
     export MONO="{doc.fv3_gfs_settings.MONO}"
-    export launch_level=27
+    #export launch_level=27
+    #This should be: export launch_level=$(echo "$LEVS/2.35" |bc)
+    # hard coding for 128 LEVS for now: 
+    export launch_level=54
 
     # Options of stratosphere O3 physics reaction coefficients
     export new_o3forc="{tools.YES_NO(doc.fv3_gfs_settings.new_o3force)}"
+
+    export  n_sponge=42
+    export  d2_bg_k1=0.20
+    export  d2_bg_k2=0.04
+
+    export do_ugwp=".false."
+    export do_tofd=".true."
 
     # fv3_core_nml section
     export dnats={doc.fv3_gfs_settings.phy_dependent_var.dnats}
@@ -112,22 +129,28 @@ config_fcst:
 
     export ncld={doc.fv3_gfs_settings.phy_dependent_var.ncld}
 
+    export n_split={doc.fv3_gfs_settings.n_split}
+    export adjust_dry_mass=".false."
+
     export IALB=1
     export IEMS=1
     export ISOL=2
-    export IAER=111
+    export IAER=5111
     export ICO2=2
 
-    export icliq_sw=1
-    export iovr_lw=1
-    export iovr_sw=1
+    export icliq_sw=2
+    export iovr=3
     export isubc_sw=2
     export isubc_lw=2
     
     export cal_pre="{tools.fort(doc.fv3_gfs_settings.phy_dependent_var.cal_pre)}"
-    export hybedmf=.true.
-    export satmedmf=.false.
-    export isatmedmf=0
+
+    export lgfdlmprad=".true."
+    export effr_in=".true."
+    export reiflag=2
+    export hybedmf=.false.
+    export satmedmf=.true.
+    export isatmedmf=1
     tbf=""
     if [ $satmedmf = ".true." ]; then tbf="_satmedmf" ; fi
 
@@ -139,6 +162,11 @@ config_fcst:
     export FIELD_TABLE="{doc.fv3_gfs_settings.phy_dependent_var.FIELD_TABLE}"
     {more_exports_for_microphys}
     {level_127}
+
+
+    #coupling settings 
+    export FRAC_GRID="{doc.settings.FRAC_GRID}"
+    export cplmode="{doc.settings.cplmode}"
 
     # Stochastic physics parameters
     # nam_stochy section
@@ -161,6 +189,12 @@ config_fcst:
     export sppt_sfclimit=.true.
     export use_zmtnblck=.true.
 
+
+    if [[ $cplwav = ".true." ]]; then 
+       export DO_WAVE="YES"
+    else 
+       export DO_WAVE="NO"
+    fi
     #---------------------------------------------------------------------
     # Disable the use of coupler.res; get model start time from model_configure
     export USE_COUPLER_RES="NO"

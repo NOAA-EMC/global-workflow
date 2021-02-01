@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/ksh -x
 
 ###############################################################
 # Source FV3GFS workflow modules
@@ -23,8 +23,9 @@ status=$?
 
 ###############################################################
 # Set script and dependency variables
+export COMPONENT=${COMPONENT:-atmos}
 export OPREFIX="${CDUMP}.t${cyc}z."
-export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc"
+export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc/$COMPONENT"
 [[ ! -d $COMOUT ]] && mkdir -p $COMOUT
 
 ###############################################################
@@ -39,7 +40,7 @@ if [ $ROTDIR_DUMP = "YES" ]; then
    gPDY=$(echo $GDATE | cut -c1-8)
    gcyc=$(echo $GDATE | cut -c9-10)
    GDUMP=gdas
-   gCOMOUT="$ROTDIR/$GDUMP.$gPDY/$gcyc"
+   gCOMOUT="$ROTDIR/$GDUMP.$gPDY/$gcyc/$COMPONENT"
    if [ ! -s $gCOMOUT/$GDUMP.t${gcyc}z.updated.status.tm00.bufr_d ]; then
      $HOMEgfs/ush/getdump.sh $GDATE $GDUMP $DMPDIR/${GDUMP}${DUMP_SUFFIX}.${gPDY}/${gcyc} $gCOMOUT
      status=$?
@@ -57,20 +58,20 @@ fi
 
 if [ $PROCESS_TROPCY = "YES" ]; then
 
-    export ARCHSYNDNCO=$COMROOTp1/arch/prod/syndat
+    export COMINsyn=${COMINsyn:-$(compath.py gfs/prod/syndat)}
     if [ $RUN_ENVIR != "nco" ]; then
         export ARCHSYND=${ROTDIR}/syndat
         if [ ! -d ${ARCHSYND} ]; then mkdir -p $ARCHSYND; fi
         if [ ! -s $ARCHSYND/syndat_akavit ]; then 
             for file in syndat_akavit syndat_dateck syndat_stmcat.scr syndat_stmcat syndat_sthisto syndat_sthista ; do
-                cp $ARCHSYNDNCO/$file $ARCHSYND/. 
+                cp $COMINsyn/$file $ARCHSYND/.
             done
         fi
     fi
 
     [[ $ROTDIR_DUMP = "YES" ]] && rm $COMOUT${CDUMP}.t${cyc}z.syndata.tcvitals.tm00
 
-    $HOMEgfs/jobs/JGLOBAL_TROPCY_QC_RELOC
+    $HOMEgfs/jobs/JGLOBAL_ATMOS_TROPCY_QC_RELOC
     status=$?
     [[ $status -ne 0 ]] && exit $status
 
@@ -82,7 +83,6 @@ fi
 ###############################################################
 # Generate prepbufr files from dumps or copy from OPS
 if [ $DO_MAKEPREPBUFR = "YES" ]; then
-
     if [ $ROTDIR_DUMP = "YES" ]; then
 	rm $COMOUT/${OPREFIX}prepbufr
 	rm $COMOUT/${OPREFIX}prepbufr.acft_profiles
@@ -91,13 +91,16 @@ if [ $DO_MAKEPREPBUFR = "YES" ]; then
 
     export job="j${CDUMP}_prep_${cyc}"
     export DATAROOT="$RUNDIR/$CDATE/$CDUMP/prepbufr"
+    #export COMIN=${COMIN:-$ROTDIR/$CDUMP.$PDY/$cyc/$COMPONENT}
+    export COMIN=${COMIN:-$ROTDIR}
+    export COMINgdas=${COMINgdas:-$ROTDIR/gdas.$PDY/$cyc/$COMPONENT}
+    export COMINgfs=${COMINgfs:-$ROTDIR/gfs.$PDY/$cyc/$COMPONENT}
     if [ $ROTDIR_DUMP = "NO" ]; then
       COMIN_OBS=${COMIN_OBS:-$DMPDIR/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}}
       export COMSP=${COMSP:-$COMIN_OBS/$CDUMP.t${cyc}z.}
+    else
+      export COMSP=${COMSP:-$ROTDIR/${CDUMP}.${PDY}/${cyc}/$COMPONENT/$CDUMP.t${cyc}z.}
     fi
-    export COMIN=${COMIN:-$ROTDIR/$CDUMP.$PDY/$cyc}
-    export COMINgdas=${COMINgdas:-$ROTDIR/gdas.$PDY/$cyc}
-    export COMINgfs=${COMINgfs:-$ROTDIR/gfs.$PDY/$cyc}
 
     $HOMEobsproc_network/jobs/JGLOBAL_PREP
     status=$?

@@ -17,10 +17,7 @@ edate="2017080112"
 # USER NEED NOT MODIFY BELOW THIS LINE
 ######################################
 
-if [ -d /scratch4/NCEPDEV ]; then
-    machine="theia"
-    icsdir="/scratch4/NCEPDEV/global/noscrub/glopara/ICS/FV3GFS"
-elif [ -d /gpfs/hps3 ]; then
+if [ -d /gpfs/hps3 ]; then
     machine="cray"
     icsdir="/gpfs/hps3/emc/global/noscrub/emc.glopara/ICS"
 else
