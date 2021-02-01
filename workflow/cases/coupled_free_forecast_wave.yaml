@@ -36,7 +36,7 @@ case:
     SEEDLET: 10
     CCPP_SUITE: FV3_GFS_v16beta_coupled
     CPL_ATMIC: CFSRfracL127
-    nst_anl: no
+    nst_anl: yes
     DO_SKEB: false
     DO_SHUM: false
     DO_SPPT: false
