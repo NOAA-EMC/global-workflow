@@ -18,5 +18,5 @@ module purge
 module use $MOD_PATH 
 module load fv3 
 cd ufs_coupled.fd/
-CMAKE_FLAGS="-DS2S=ON -DWW3=ON" CCPP_SUITES="FV3_GFS_v15p2_coupled,FV3_GFS_v16beta_coupled,FV3_GFS_v16beta" ./build.sh 
+CMAKE_FLAGS="-DS2S=ON -DWW3=ON" CCPP_SUITES="FV3_GFS_v15p2_coupled,FV3_GFS_v16_coupled,FV3_GFS_v16" ./build.sh 
 

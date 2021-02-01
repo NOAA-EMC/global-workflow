@@ -34,7 +34,7 @@ case:
     LEVS: 128
     DELTIM: 300
     SEEDLET: 10
-    CCPP_SUITE: FV3_GFS_v16beta_coupled
+    CCPP_SUITE: FV3_GFS_v16_coupled
     CPL_ATMIC: CFSR
     nst_anl: yes
     DO_SKEB: false
