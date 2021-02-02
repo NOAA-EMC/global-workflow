@@ -34,7 +34,7 @@ export RUNMOS="NO"                # whether to run entire MOS package
 
 if [ $VRFYFITS = "YES" ]; then
 
-    export fit_ver="newm.1.2"
+    export fit_ver="newm.1.3"
     export fitdir="$BASE_GIT/verif/global/Fit2Obs/${fit_ver}/batrun"
     export PRVT=$HOMEgfs/fix/fix_gsi/prepobs_errtable.global
     export HYBLEVS=$HOMEgfs/fix/fix_am/global_hyblev.l${LEVS}.txt
