@@ -75,12 +75,14 @@
 !     idsl              Integer(sigio_intkind) semi-lagrangian id
 !     idvc              Integer(sigio_intkind) vertical coordinate id
 !                       (=1 for sigma, =2 for ec-hybrid, =3 for ncep hybrid)
-      integer,parameter :: nvcoord=2 
-      integer :: idate(4),nij,nflx,np,k,l,nf,nfhour,np1
+      integer,parameter :: nvcoord=2
+      integer,parameter :: levso=64
+      integer :: idate(4),nij,nflx2,np,k,l,nf,nfhour,np1
       integer :: idate_nems(7)
       integer :: iret,jdate,leveta,lm,lp1
       character*150 :: fnsig,fngrib
-      real*8 :: data(6*levs+25)
+!!      real*8 :: data(6*levs+25)
+      real*8 :: data2(6*levso+25)
       real*8 :: rstat1
       character*8 :: cstat1
       character*4 :: cstat(npoint)
@@ -138,7 +140,8 @@
       integer iocomms,iope,ionproc
 
       nij = 12
-      nflx = 6 * levs
+!!      nflx = 6 * levs
+      nflx2 = 6 * levso
           recn_dpres = 0
           recn_delz = 0
           recn_dzdt = 0
@@ -1112,15 +1115,22 @@ CC due to rounding and interpolation errors, correct it here -G.P. Lou:
           enddo
 !!     ==ivalence (cstat1,rstat1)
           cstat1=cstat(np)
-          data(1) = ifix(fhour+.2) * 3600    ! FORECAST TIME (SEC)
-          data(2) = istat(np)                ! STATION NUMBER
-          data(3) = rstat1                   ! STATION CHARACTER ID
-          data(4) = rlat(np)                 ! LATITUDE  (DEG N)
-          data(5) = rlon(np)                 ! LONGITUDE (DEG E)
-          data(6) = elevstn(np)              ! STATION ELEVATION (M)
+!!          data(1) = ifix(fhour+.2) * 3600    ! FORECAST TIME (SEC)
+!!          data(2) = istat(np)                ! STATION NUMBER
+!!          data(3) = rstat1                   ! STATION CHARACTER ID
+!!          data(4) = rlat(np)                 ! LATITUDE  (DEG N)
+!!          data(5) = rlon(np)                 ! LONGITUDE (DEG E)
+!!          data(6) = elevstn(np)              ! STATION ELEVATION (M)
+          data2(1) = ifix(fhour+.2) * 3600    ! FORECAST TIME (SEC)
+          data2(2) = istat(np)                ! STATION NUMBER
+          data2(3) = rstat1                   ! STATION CHARACTER ID
+          data2(4) = rlat(np)                 ! LATITUDE  (DEG N)
+          data2(5) = rlon(np)                 ! LONGITUDE (DEG E)
+          data2(6) = elevstn(np)              ! STATION ELEVATION (M)
           psfc = 10. * psn(np)               ! convert to MB
           leveta = 1
           do k = 1, levs
+              kk= k/2 + 1
 !
 !  look for the layer above 500 mb for precip type computation
 !
@@ -1130,22 +1140,35 @@ CC due to rounding and interpolation errors, correct it here -G.P. Lou:
             q = max(1.e-8,grids(np,2+k+levs))
             u = gridu(np,k)
             v = gridv(np,k)
-            data((k-1)*6+7) = p1(np,k)                 ! PRESSURE (PA) at integer layer
-            data((k-1)*6+8) = t                        ! TEMPERATURE (K)
-            data((k-1)*6+9) = u                        ! U WIND (M/S)
-            data((k-1)*6+10) = v                       ! V WIND (M/S)
-            data((k-1)*6+11) = q                       ! HUMIDITY (KG/KG)
-            data((k-1)*6+12) = omega(np,k)*100.        ! Omega (pa/sec) !changed to dzdt(cm/s) if available
+!!            data((k-1)*6+7) = p1(np,k)                 ! PRESSURE (PA) at integer layer
+!!            data((k-1)*6+8) = t                        ! TEMPERATURE (K)
+!!            data((k-1)*6+9) = u                        ! U WIND (M/S)
+!!            data((k-1)*6+10) = v                       ! V WIND (M/S)
+!!            data((k-1)*6+11) = q                       ! HUMIDITY (KG/KG)
+!!            data((k-1)*6+12) = omega(np,k)*100.        ! Omega (pa/sec) !changed to dzdt(cm/s) if available
+           if (mod(k,2)>0) then
+            data2((kk-1)*6+7) = p1(np,k)
+            data2((kk-1)*6+8) = t
+            data2((kk-1)*6+9) = u   
+            data2((kk-1)*6+10) = v 
+            data2((kk-1)*6+11) = q
+            data2((kk-1)*6+12) = omega(np,k)*100.
+           endif
+!changed to dzdt(cm/s) if available
           enddo
 !
 !  process surface flux file fields
 !
-          data(8+nflx) = psfc * 100.                   ! SURFACE PRESSURE (PA)
-          data(7+nflx) = pmsl(np)                           
+!!          data(8+nflx) = psfc * 100.                   ! SURFACE PRESSURE (PA)
+!!          data(7+nflx) = pmsl(np)                           
+          data2(8+nflx2) = psfc * 100.                   ! SURFACE PRESSURE (PA)
+          data2(7+nflx2) = pmsl(np)                           
 !!          dtemp = .0065 * (grids(np,1) - elevstn(np))
 !!          dtemp = .0100 * (grids(np,1) - elevstn(np))
 !!          sfc(37,np) = data(6+nflx) * .01
-          sfc(37,np) = data(7+nflx) * .01
+!!          sfc(37,np) = data(7+nflx) * .01
+!!          sfc(39,np) = zp2(2)   !500 hPa height       
+          sfc(37,np) = data2(7+nflx2) * .01
           sfc(39,np) = zp2(2)   !500 hPa height       
 !
 !  do height correction if there is no snow or if the temp is less than 0
@@ -1174,25 +1197,45 @@ CC due to rounding and interpolation errors, correct it here -G.P. Lou:
 !         equivament to 2.54/0.0864 = 28.3565 
         if(debugprint)
      +   print*,'evaporation (stn 000692)= ',sfc(17,np)
-          data(9+nflx) = sfc(5,np)                       ! tsfc (K)
-          data(10+nflx) = sfc(6,np)                      ! 10cm soil temp (K)
-!!          data(11+nflx) = sfc(17,np)/28.3565             ! evaporation (kg/m**2) from (W m-2)
-          data(11+nflx) = sfc(17,np)*0.035265            ! evaporation (kg/m**2) from (W m-2)
-          data(12+nflx) = sfc(12,np)                     ! total precip (m)
-          data(13+nflx) = sfc(11,np)                     ! convective precip (m)
-          data(14+nflx) = sfc(10,np)                     ! water equi. snow (m)
-          data(15+nflx) = sfc(27,np)                     ! low cloud (%)
-          data(16+nflx) = sfc(26,np)                     ! mid cloud
-          data(17+nflx) = sfc(25,np)                     ! high cloud
-          data(18+nflx) = sfc(34,np)                     ! U10 (m/s)
-          data(19+nflx) = sfc(35,np)                     ! V10 (m/s)
-          data(20+nflx) = sfc(30,np)                     ! T2 (K)
-          data(21+nflx) = sfc(31,np)                     ! Q2 (K)
+!!          data(9+nflx) = sfc(5,np)                       ! tsfc (K)
+!!          data(10+nflx) = sfc(6,np)                      ! 10cm soil temp (K)
+!!!          data(11+nflx) = sfc(17,np)/28.3565             ! evaporation (kg/m**2) from (W m-2)
+!!          data(11+nflx) = sfc(17,np)*0.035265            ! evaporation (kg/m**2) from (W m-2)
+!!          data(12+nflx) = sfc(12,np)                     ! total precip (m)
+!!          data(13+nflx) = sfc(11,np)                     ! convective precip (m)
+!!          data(14+nflx) = sfc(10,np)                     ! water equi. snow (m)
+!!          data(15+nflx) = sfc(27,np)                     ! low cloud (%)
+!!          data(16+nflx) = sfc(26,np)                     ! mid cloud
+!!          data(17+nflx) = sfc(25,np)                     ! high cloud
+!!          data(18+nflx) = sfc(34,np)                     ! U10 (m/s)
+!!          data(19+nflx) = sfc(35,np)                     ! V10 (m/s)
+!!          data(20+nflx) = sfc(30,np)                     ! T2 (K)
+!!          data(21+nflx) = sfc(31,np)                     ! Q2 (K)
 
-          data(22+nflx) = 0.
-          data(23+nflx) = 0.
-          data(24+nflx) = 0.
-          data(25+nflx) = 0.
+!!          data(22+nflx) = 0.
+!!          data(23+nflx) = 0.
+!!          data(24+nflx) = 0.
+!!          data(25+nflx) = 0.
+!! create 64 level bufr files
+          data2(9+nflx2) = sfc(5,np)                       ! tsfc (K)
+          data2(10+nflx2) = sfc(6,np)                      ! 10cm soil temp (K)
+!!          data2(11+nflx2) = sfc(17,np)/28.3565             ! evaporation (kg/m**2) from (W m-2)
+          data2(11+nflx2) = sfc(17,np)*0.035265            ! evaporation (kg/m**2) from (W m-2)
+          data2(12+nflx2) = sfc(12,np)                     ! total precip (m)
+          data2(13+nflx2) = sfc(11,np)                     ! convective precip (m)
+          data2(14+nflx2) = sfc(10,np)                     ! water equi. snow (m)
+          data2(15+nflx2) = sfc(27,np)                     ! low cloud (%)
+          data2(16+nflx2) = sfc(26,np)                     ! mid cloud
+          data2(17+nflx2) = sfc(25,np)                     ! high cloud
+          data2(18+nflx2) = sfc(34,np)                     ! U10 (m/s)
+          data2(19+nflx2) = sfc(35,np)                     ! V10 (m/s)
+          data2(20+nflx2) = sfc(30,np)                     ! T2 (K)
+          data2(21+nflx2) = sfc(31,np)                     ! Q2 (K)
+
+          data2(22+nflx2) = 0.
+          data2(23+nflx2) = 0.
+          data2(24+nflx2) = 0.
+          data2(25+nflx2) = 0.
           nd = 0
           trace = .false.
           DOMS=0.
@@ -1230,7 +1273,8 @@ CC due to rounding and interpolation errors, correct it here -G.P. Lou:
             xlon=rlon(np)
             lm=leveta
             lp1=leveta+1
-            PREC=data(12+nflx)
+!!            PREC=data(12+nflx)
+            PREC=data2(12+nflx2)
             n3dfercld=1  !if =3 then use Ferriers Explicit Precip Type
             TSKIN=1.     !used in Ferriers Explicit Precip Scheme
             SR=1.        !used in Ferriers Explicit Precip Scheme
@@ -1241,20 +1285,25 @@ CC due to rounding and interpolation errors, correct it here -G.P. Lou:
      &      gt0,gq0,prsl,prsi,PREC,phii,n3dfercld,TSKIN,SR,phy_f3d, !input
      &      DOMR,DOMZR,DOMIP,DOMS)  ! Output vars
           endif
-          data(nflx + 22) = DOMS
-          data(nflx + 23) = DOMIP
-          data(nflx + 24) = DOMZR
-          data(nflx + 25) = DOMR
+!!          data(nflx + 22) = DOMS
+!!          data(nflx + 23) = DOMIP
+!!          data(nflx + 24) = DOMZR
+!!          data(nflx + 25) = DOMR
+          data2(nflx2 + 22) = DOMS
+          data2(nflx2 + 23) = DOMIP
+          data2(nflx2 + 24) = DOMZR
+          data2(nflx2 + 25) = DOMR
           if(np==1.or.np==100) then
             print *, ' surface fields for hour', nf, 'np =', np
-            print *, (data(l+nflx),l=1,25)
+            print *, (data2(l+nflx2),l=1,25)
             print *, ' temperature sounding'
-            print 6101, (data((k-1)*6+8),k=1,levs)
+            print 6101, (data2((k-1)*6+8),k=1,levso)
             print *, ' omega sounding'
-            print *, (data((k-1)*6+12),k=1,levs)
+            print *, (data2((k-1)*6+12),k=1,levso)
           endif
 C        print *, 'in meteorg nfile1= ', nfile1
-          write(nfile) data
+!!          write(nfile) data
+          write(nfile) data2
         enddo  !End loop over stations np
       call date_and_time(date,time,zone,clocking)
 !      print *,'13reading write data end= ', clocking

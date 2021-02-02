@@ -3,8 +3,7 @@
 #BSUB -o %COM%/output/%ENVIR%/today/gfs_atmos_analysis_%CYC%.o%J
 #BSUB -q %QUEUE%
 #BSUB -P %PROJ%
-##BSUB -W 0:40  #11/02/2020 temporarily change
-#BSUB -W 1:00
+#BSUB -W 0:40
 #BSUB -n 1000
 #BSUB -R affinity[core(7)]
 #BSUB -R span[ptile=4]

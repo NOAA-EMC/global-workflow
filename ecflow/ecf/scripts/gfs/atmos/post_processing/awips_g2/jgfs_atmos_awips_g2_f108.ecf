@@ -3,7 +3,7 @@
 #BSUB -o %COM%/output/%ENVIR%/today/gfs_atmos_awips_g2_%FCSTHR%_%CYC%.o%J
 #BSUB -q %QUEUESHARED%
 #BSUB -P %PROJ%
-#BSUB -W 0:30
+#BSUB -W 0:05
 #BSUB -n 1
 #BSUB -M 1000
 #BSUB -R affinity[core(1)]

@@ -4,7 +4,7 @@
 #BSUB -q %QUEUE%
 #BSUB -P %PROJ%
 #BSUB -cwd /tmp
-#BSUB -W 06:00
+#BSUB -W 03:00
 #BSUB -R span[ptile=28]; -R affinity[core]
 #BSUB -n 280
 

@@ -3,7 +3,7 @@
 #BSUB -o %COM%/output/%ENVIR%/today/gdas_atmos_gldas_%CYC%.o%J
 #BSUB -q %QUEUE%
 #BSUB -P %PROJ%
-#BSUB -W 2:00
+#BSUB -W 0:20
 #BSUB -n 112
 #BSUB -R affinity[core(1)]
 #BSUB -R span[ptile=28]
