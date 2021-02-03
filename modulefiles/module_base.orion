@@ -32,6 +32,7 @@ module load w3emc/2.7.0
 
 module load crtm/2.3.0
 module load nceppost/dceca26
+module load wgrib2/2.0.8
 
 #module load prod_util/develop
 module load grib_util/develop

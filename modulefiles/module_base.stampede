@@ -28,6 +28,7 @@ module load w3emc
 
 module load crtm/2.3.0
 module load nceppost
+module load wgrib2/2.0.8
 
 module load prod_util
 module load grib_util
