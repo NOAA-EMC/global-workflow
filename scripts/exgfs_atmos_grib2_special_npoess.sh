@@ -194,8 +194,8 @@ do
 
        if test $SENDDBN = "YES"
        then
-          $DBNROOT/bin/dbn_alert MODEL GFS_GOESSIMPGB2_1P0 $job $COMOUT/${RUN}.${cycle}.goessimpgrb2.0p25.f${fhr}
-          $DBNROOT/bin/dbn_alert MODEL GFS_GOESSIMPGB2_1P0_WIDX $job $COMOUT/${RUN}.${cycle}.goessimpgrb2.0p25.f${fhr}.idx
+          $DBNROOT/bin/dbn_alert MODEL GFS_GOESSIMPGB2_0P25 $job $COMOUT/${RUN}.${cycle}.goessimpgrb2.0p25.f${fhr}
+          $DBNROOT/bin/dbn_alert MODEL GFS_GOESSIMPGB2_0P25_WIDX $job $COMOUT/${RUN}.${cycle}.goessimpgrb2.0p25.f${fhr}.idx
           $DBNROOT/bin/dbn_alert MODEL GFS_GOESSIMGRD221_PGB2 $job $COMOUT/${RUN}.${cycle}.goessimpgrb2f${fhr}.grd221
        fi
 

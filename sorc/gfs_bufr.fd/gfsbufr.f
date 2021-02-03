@@ -49,6 +49,7 @@ C$$$
 !!      include 'mpif.h'
       integer,parameter:: nsta=3000
       integer,parameter:: ifile=11
+      integer,parameter:: levso=64
       integer(sigio_intkind):: irets
       type(nemsio_gfile) :: gfile
       integer ncfsig, nsig
@@ -251,7 +252,7 @@ c     do nf = nss, nend, nint
           call meteorg(npoint,rlat,rlon,istat,cstat,elevstn,
      &             nf,nfile,fnsig,jdate,idate,
      &      levs,im,jm,nsfc,
-     &      landwater,nend1, nint1, nint3, iidum,jjdum,
+     &      landwater,nend1, nint1, nint3, iidum,jjdum,np1,
      &      fformat,iocomms(ntask),iope,ionproc)
         endif  
         endif  
@@ -267,7 +268,7 @@ c     do nf = nss, nend, nint
       if(makebufr) then
           nend3 = nend
          call buff(nint1,nend1,nint3,nend3,
-     &        npoint,idate,jdate,levs,
+     &        npoint,idate,jdate,levso,
      &        dird,lss,istat,sbset,seqflg,clist,npp,wrkd)
       CALL W3TAGE('METEOMRF')
       endif

@@ -27,6 +27,7 @@ job_name=`echo $job|sed 's/[jpt]gfs/gfs/'`
 typeset -Z3 fcsthrs
 
 export PS4='gfs_grib_awips:f$fcsthrs:$SECONDS + '
+export SCALEDEC=${SCALDEC:-$USHgfs/scale_dec.sh}
 
 #if [ $fhcsthrs -t 100 ]; then
 #  fcsthrs=0$fcsthrs
@@ -91,6 +92,7 @@ set -x
    cp $COMIN/gfs.t${cyc}z.pgrb2b.0p25.f${fcsthrs}  tmpfile2b
    cat tmpfile2    tmpfile2b   >  tmpfile
    $WGRIB2 tmpfile | grep  -F -f $PARMproduct/gfs_awips_parmlist_g2 | $WGRIB2 -i -grib masterfile  tmpfile
+   $SCALEDEC masterfile
    $CNVGRIB -g21  masterfile  masterfile.grib1
 
    ln -s masterfile.grib1   fort.11
