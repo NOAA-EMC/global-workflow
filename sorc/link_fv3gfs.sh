@@ -254,7 +254,7 @@ fi
 fi 
 
 [[ -s gfs_ncep_post ]] && rm -f gfs_ncep_post
-$LINK ../sorc/gfs_post.fd/exec/ncep_post gfs_ncep_post
+$LINK ../sorc/gfs_post.fd/exec/upp.x gfs_ncep_post
 
 if [ -d ${pwd}/gfs_wafs.fd ]; then 
     for wafsexe in \
