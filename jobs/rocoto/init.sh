@@ -45,6 +45,8 @@ EXTRACT_DIR=${PTMP}/gdas.init_${CDATE}/input
 WORKDIR=${PTMP}/gdas.init_${CDATE}/output
 OUTDIR=${ROTDIR}
 
+COMPONENT="atmos"
+
 gfs_ver=v16
 RUNICSH=${GDASINIT_DIR}/run_v16.chgres.sh
 
@@ -75,6 +77,19 @@ if [ ! -d $OUTDIR ]; then mkdir -p $OUTDIR ; fi
 sh ${RUNICSH} ${CDUMP}
 status=$?
 [[ $status -ne 0 ]] && exit $status
+
+# Copy pgbanl file to ROTDIR for verification/archival - v14+
+if [ $gfs_ver = v14 -o $gfs_ver = v15 ]; then
+  cd $EXTRACT_DIR
+  for grid in 0p25 0p50 1p00
+  do
+    file=gfs.t${hh}z.pgrb2.${grid}.anl
+    mv ${EXTRACT_DIR}/${CDUMP}.${yy}${mm}${dd}/${hh}/${file} ${OUTDIR}/${CDUMP}.${yy}${mm}${dd}/${hh}/${COMPONENT}/${file}
+  done
+fi
+
+# Clean up EXTRACT_DIR
+rm -rf $EXTRACT_DIR
 
 ###############################################################
 # Exit out cleanly

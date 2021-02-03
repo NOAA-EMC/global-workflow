@@ -79,6 +79,7 @@ def edit_baseconfig():
                     .replace('@QUEUE_SERVICE@', queue_service) \
                     .replace('@PARTITION_BATCH@', partition_batch) \
                     .replace('@EXP_WARM_START@', exp_warm_start) \
+                    .replace('@MODE@', 'free') \
                     .replace('@CHGRP_RSTPROD@', chgrp_rstprod) \
                     .replace('@CHGRP_CMD@', chgrp_cmd) \
                     .replace('@HPSSARCH@', hpssarch) \

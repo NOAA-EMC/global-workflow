@@ -245,10 +245,10 @@ def get_workflow(dict_configs, cdump='gdas'):
 
     # getic
     deps = []
-    data = '&ROTDIR;/&CDUMP;.@Y@m@d/@H/INPUT/sfc_data.tile6.nc'
+    data = '&ROTDIR;/&CDUMP;.@Y@m@d/@H/atmos/INPUT/sfc_data.tile6.nc'
     dep_dict = {'type':'data', 'data':data}
     deps.append(rocoto.add_dependency(dep_dict))
-    data = '&ROTDIR;/&CDUMP;.@Y@m@d/@H/RESTART/@Y@m@d.@H0000.sfcanl_data.tile6.nc'
+    data = '&ROTDIR;/&CDUMP;.@Y@m@d/@H/atmos/RESTART/@Y@m@d.@H0000.sfcanl_data.tile6.nc'
     dep_dict = {'type':'data', 'data':data}
     deps.append(rocoto.add_dependency(dep_dict))
     dependencies = rocoto.create_dependency(dep_condition='nor', dep=deps)
@@ -259,10 +259,10 @@ def get_workflow(dict_configs, cdump='gdas'):
 
     # init - chgres_cube
     deps = []
-    data = '&ROTDIR;/&CDUMP;.@Y@m@d/@H/INPUT/sfc_data.tile6.nc'
+    data = '&ROTDIR;/&CDUMP;.@Y@m@d/@H/atmos/INPUT/sfc_data.tile6.nc'
     dep_dict = {'type':'data', 'data':data}
     deps.append(rocoto.add_dependency(dep_dict))
-    data = '&ROTDIR;/&CDUMP;.@Y@m@d/@H/RESTART/@Y@m@d.@H0000.sfcanl_data.tile6.nc'
+    data = '&ROTDIR;/&CDUMP;.@Y@m@d/@H/atmos/RESTART/@Y@m@d.@H0000.sfcanl_data.tile6.nc'
     dep_dict = {'type':'data', 'data':data}
     deps.append(rocoto.add_dependency(dep_dict))
     dependencies = rocoto.create_dependency(dep_condition='nor', dep=deps)
@@ -379,16 +379,6 @@ def get_workflow(dict_configs, cdump='gdas'):
         task = wfu.create_wf_task('wavepostpnt', cdump=cdump, envar=envars, dependency=dependencies)
         tasks.append(task)
         tasks.append('\n')
-
-    # wavestat
-    #if do_wave in ['Y', 'YES'] and do_wave_cdump in ['GFS', 'BOTH']:
-    #    deps = []
-    #    dep_dict = {'type':'task', 'name':'%swavepost' % cdump}
-    #    deps.append(rocoto.add_dependency(dep_dict))
-    #    dependencies = rocoto.create_dependency(dep=deps)
-    #    task = wfu.create_wf_task('wavestat', cdump=cdump, envar=envars, dependency=dependencies)
-    #    tasks.append(task)
-    #    tasks.append('\n')
 
     # wavegempak
     if do_wave in ['Y', 'YES'] and do_gempak in ['Y', 'YES']:

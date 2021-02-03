@@ -45,8 +45,6 @@ EXTRACT_DIR=${PTMP}/gdas.init_${CDATE}/input
 OUTDIR=${PTMP}/gdas.init_${CDATE}/output
 PRODHPSSDIR=/NCEPPROD/hpssprod/runhistory/rh${yy}/${yy}${mm}/${yy}${mm}${dd}
 
-COMPONENT="atmos"
-
 gfs_ver=v16
 GETICSH=${GDASINIT_DIR}/get_v16.data.sh
 
@@ -64,9 +62,11 @@ elif [ $yy$mm$dd$hh -lt 2017072000 ]; then
 elif [ $yy$mm$dd$hh -lt 2019061200 ]; then
   gfs_ver=v14
   GETICSH=${GDASINIT_DIR}/get_${gfs_ver}.data.sh
+  tarball=gpfs_hps_nco_ops_com_gfs_prod_gfs.${yy}${mm}${dd}_${hh}.pgrb2_${grid}.tar
 elif [ $yy$mm$dd$hh -lt 2021020300 ]; then
   gfs_ver=v15
   GETICSH=${GDASINIT_DIR}/get_${gfs_ver}.data.sh
+  tarball=com_gfs_prod_gfs.${yy}${mm}${dd}_${hh}.gfs_pgrb2.tar
 fi
 
 export EXTRACT_DIR yy mm dd hh UFS_DIR OUTDIR CRES_HIRES CRES_ENKF
@@ -78,25 +78,13 @@ sh ${GETICSH} ${CDUMP}
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
-# Copy pgbanl file to ROTDIR for verification/archival - v14+
-cd $EXTRACT_DIR
-OUTDIR2=${ROTDIR}/gfs.${yy}${mm}${dd}/${hh}/${COMPONENT}
-if [ ! -d ${OUTDIR2} ]; then mkdir -p ${OUTDIR2} ; fi
-if [ $gfs_ver = v14 ]; then
-  for grid in 0p25 0p50 1p00
-  do
-    tarball=gpfs_hps_nco_ops_com_gfs_prod_gfs.${yy}${mm}${dd}_${hh}.pgrb2_${grid}.tar
-    file=gfs.t${hh}z.pgrb2.${grid}.anl
-    htar -xvf ${PRODHPSSDIR}/${tarball} ./gfs.${yy}${mm}${dd}/${hh}/${file}
-    mv ${EXTRACT_DIR}/gfs.${yy}${mm}${dd}/${hh}/${file} ${OUTDIR2}/${file}
-  done
-elif [ $gfs_ver = v15 ]; then
-  tarball=com_gfs_prod_gfs.${yy}${mm}${dd}_${hh}.gfs_pgrb2.tar  
+# Pull pgbanl file for verification/archival - v14+
+if [ $gfs_ver = v14 -o $gfs_ver = v15 ]; then
+  cd $EXTRACT_DIR
   for grid in 0p25 0p50 1p00
   do
     file=gfs.t${hh}z.pgrb2.${grid}.anl
     htar -xvf ${PRODHPSSDIR}/${tarball} ./gfs.${yy}${mm}${dd}/${hh}/${file}
-    mv ${EXTRACT_DIR}/gfs.${yy}${mm}${dd}/${hh}/${file} ${OUTDIR2}/${file}
   done
 fi
 
