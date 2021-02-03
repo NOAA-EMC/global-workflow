@@ -44,9 +44,9 @@ elif [[ $hname = 'hpc.msstate.edu' ]] ; then
     fi
     target=orion
     module purge
-    export NCEPLIBS=/apps/contrib/NCEP/libs/modulefiles/stack
-    module use -a /apps/contrib/NCEP/libs/modulefiles/stack
-    module load hpc/1.0.0
+    export NCEPLIBS=/apps/contrib/NCEP/libs/hpc-stack/modulefiles/stack
+    module use -a /apps/contrib/NCEP/libs/hpc-stack/modulefiles/stack
+    module load hpc/1.1.0
     module load hpc-intel/2018.4
     module load hpc-impi/2018.4
     export myFC=mpiifort
