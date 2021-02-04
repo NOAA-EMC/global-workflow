@@ -234,6 +234,7 @@ def get_workflow(dict_configs, cdump='gdas'):
     envars.append(rocoto.create_envar(name='cyc', value='<cyclestr>@H</cyclestr>'))
 
     base = dict_configs['base']
+    machine = base.get('machine', wfu.detectMachine())
     do_wave = base.get('DO_WAVE', 'NO').upper()
     do_wave_cdump = base.get('WAVE_CDUMP', 'BOTH').upper()
     do_gempak = base.get('DO_GEMPAK', 'NO').upper()
@@ -244,38 +245,44 @@ def get_workflow(dict_configs, cdump='gdas'):
     tasks = []
 
     # getic
+    if machine not in ['ORION']:
+      deps = []
+      data = '&ROTDIR;/&CDUMP;.@Y@m@d/@H/atmos/INPUT/sfc_data.tile6.nc'
+      dep_dict = {'type':'data', 'data':data}
+      deps.append(rocoto.add_dependency(dep_dict))
+      data = '&ROTDIR;/&CDUMP;.@Y@m@d/@H/atmos/RESTART/@Y@m@d.@H0000.sfcanl_data.tile6.nc'
+      dep_dict = {'type':'data', 'data':data}
+      deps.append(rocoto.add_dependency(dep_dict))
+      dependencies = rocoto.create_dependency(dep_condition='nor', dep=deps)
+
+      task = wfu.create_wf_task('getic', cdump=cdump, envar=envars, dependency=dependencies)
+      tasks.append(task)
+      tasks.append('\n')
+
+    # init
     deps = []
-    data = '&ROTDIR;/&CDUMP;.@Y@m@d/@H/atmos/INPUT/sfc_data.tile6.nc'
+    data = '&ROTDIR;/&CDUMP;.@Y@m@d/@H/atmos/gfs.t@Hz.sanl'
+    dep_dict = {'type':'data', 'data':data}
+    deps.append(rocoto.add_dependency(dep_dict))
+    data = '&ROTDIR;/&CDUMP;.@Y@m@d/@H/atmos/gfs.t@Hz.atmanl.nemsio'
     dep_dict = {'type':'data', 'data':data}
     deps.append(rocoto.add_dependency(dep_dict))
     data = '&ROTDIR;/&CDUMP;.@Y@m@d/@H/atmos/RESTART/@Y@m@d.@H0000.sfcanl_data.tile6.nc'
     dep_dict = {'type':'data', 'data':data}
     deps.append(rocoto.add_dependency(dep_dict))
-    dependencies = rocoto.create_dependency(dep_condition='nor', dep=deps)
+    dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
 
-    task = wfu.create_wf_task('getic', cdump=cdump, envar=envars, dependency=dependencies)
-    tasks.append(task)
-    tasks.append('\n')
-
-    # init - chgres_cube
-    deps = []
-    data = '&ROTDIR;/&CDUMP;.@Y@m@d/@H/atmos/INPUT/sfc_data.tile6.nc'
-    dep_dict = {'type':'data', 'data':data}
-    deps.append(rocoto.add_dependency(dep_dict))
-    data = '&ROTDIR;/&CDUMP;.@Y@m@d/@H/atmos/RESTART/@Y@m@d.@H0000.sfcanl_data.tile6.nc'
-    dep_dict = {'type':'data', 'data':data}
-    deps.append(rocoto.add_dependency(dep_dict))
-    dependencies = rocoto.create_dependency(dep_condition='nor', dep=deps)
-
-    deps = []
-    dep_dict = {'type': 'task', 'name': '%sgetic' % cdump}
-    deps.append(rocoto.add_dependency(dep_dict))
-    dependencies2 = rocoto.create_dependency(dep=deps)
+    if machine not in ['ORION']:
+      deps = []
+      dep_dict = {'type': 'task', 'name': '%sgetic' % cdump}
+      deps.append(rocoto.add_dependency(dep_dict))
+      dependencies2 = rocoto.create_dependency(dep=deps)
 
     deps = []
     deps.append(dependencies)
-    deps.append(dependencies2)
-    dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+    if machine not in ['ORION']:
+      deps.append(dependencies2)
+      dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
     task = wfu.create_wf_task('init', cdump=cdump, envar=envars, dependency=dependencies)
     tasks.append(task)

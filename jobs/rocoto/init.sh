@@ -41,9 +41,11 @@ mm=$(echo $CDATE | cut -c5-6)
 dd=$(echo $CDATE | cut -c7-8)
 hh=${cyc:-$(echo $CDATE | cut -c9-10)}
 
-EXTRACT_DIR=${PTMP}/gdas.init_${CDATE}/input
-WORKDIR=${PTMP}/gdas.init_${CDATE}/output
-OUTDIR=${ROTDIR}
+export DATA=${DATA:-${DATAROOT}/init}
+
+EXTRACT_DIR=${EXTRACT_DIR:-$ROTDIR}
+WORKDIR=${WORKDIR:-$DATA}
+OUTDIR=${OUTDIR:-$ROTDIR}
 
 COMPONENT="atmos"
 
@@ -78,18 +80,11 @@ sh ${RUNICSH} ${CDUMP}
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
-# Copy pgbanl file to ROTDIR for verification/archival - v14+
-if [ $gfs_ver = v14 -o $gfs_ver = v15 ]; then
-  cd $EXTRACT_DIR
-  for grid in 0p25 0p50 1p00
-  do
-    file=gfs.t${hh}z.pgrb2.${grid}.anl
-    mv ${EXTRACT_DIR}/${CDUMP}.${yy}${mm}${dd}/${hh}/${file} ${OUTDIR}/${CDUMP}.${yy}${mm}${dd}/${hh}/${COMPONENT}/${file}
-  done
-fi
-
-# Clean up EXTRACT_DIR
-rm -rf $EXTRACT_DIR
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd $DATAROOT
+[[ $KEEPDATA = "NO" ]] && rm -rf $DATA
 
 ###############################################################
 # Exit out cleanly

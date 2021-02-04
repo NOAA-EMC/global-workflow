@@ -41,8 +41,11 @@ mm=$(echo $CDATE | cut -c5-6)
 dd=$(echo $CDATE | cut -c7-8)
 hh=${cyc:-$(echo $CDATE | cut -c9-10)}
 
-EXTRACT_DIR=${PTMP}/gdas.init_${CDATE}/input
-OUTDIR=${PTMP}/gdas.init_${CDATE}/output
+export DATA=${DATA:-${DATAROOT}/init}
+
+EXTRACT_DIR=${EXTRACT_DIR:-$ROTDIR}
+WORKDIR=${WORKDIR:-$DATA}
+OUTDIR=${OUTDIR:-$ROTDIR}
 PRODHPSSDIR=/NCEPPROD/hpssprod/runhistory/rh${yy}/${yy}${mm}/${yy}${mm}${dd}
 
 gfs_ver=v16
@@ -84,7 +87,8 @@ if [ $gfs_ver = v14 -o $gfs_ver = v15 ]; then
   for grid in 0p25 0p50 1p00
   do
     file=gfs.t${hh}z.pgrb2.${grid}.anl
-    htar -xvf ${PRODHPSSDIR}/${tarball} ./gfs.${yy}${mm}${dd}/${hh}/${file}
+    htar -xvf ${PRODHPSSDIR}/${tarball} ./${CDUMP}.${yy}${mm}${dd}/${hh}/${file}
+    mv ${EXTRACT_DIR}/${CDUMP}.${yy}${mm}${dd}/${hh}/${file} ${OUTDIR}/${CDUMP}.${yy}${mm}${dd}/${hh}/${COMPONENT}/${file}
   done
 fi
 
