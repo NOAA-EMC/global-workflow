@@ -15,10 +15,6 @@ if [ $target = orion ]; then target=orion.intel ; fi
 MOD_PATH=$cwd/ufs_coupled.fd/modulefiles/$target
 
 module purge 
-if [ $target = orion.intel ]; then
-  #temporary orion build fix
-  module load python/3.7.5
-fi
 module use $MOD_PATH 
 module load fv3 
 cd ufs_coupled.fd/

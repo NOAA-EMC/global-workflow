@@ -10,9 +10,7 @@ do
    checkout_gtg="YES"
    ;;
   c)
-   echo "Received -c flag, check out ufs-weather-model develop branch with CCPP physics"  
-   run_ccpp="YES"
-   echo "Also setting COUPLED to YES" 
+   echo "Received -c flag, running coupled model" 
    COUPLED="YES"
    ;;
   :)
@@ -34,11 +32,7 @@ if [ ${COUPLED:-"NO"} = "NO" ]; then
     rm -f ${topdir}/checkout-fv3gfs.log
     git clone https://github.com/ufs-community/ufs-weather-model fv3gfs.fd >> ${topdir}/checkout-fv3gfs.log 2>&1
     cd fv3gfs.fd
-    if [ ${run_ccpp:-"NO"} = "NO" ]; then
-     git checkout GFS.v16.0.14
-    else
-     git checkout b771e5be7e35eaea5ee7f762d644afccab019ed3
-    fi
+    git checkout b771e5be7e35eaea5ee7f762d644afccab019ed3
     git submodule update --init --recursive
     cd ${topdir}
   else 
@@ -48,7 +42,7 @@ else
   if [[ ! -d ufs_coupled.fd ]] ; then
     git clone https://github.com/ufs-community/ufs-weather-model ufs_coupled.fd >> ${topdir}/checkout-ufs_coupled.log 2>&1
     cd ufs_coupled.fd
-    git checkout e3983a03a62a0f77286495ce227a0c94d2b7ee2a 
+    git checkout 13053c1aa0e296cab00cf7ba2a802be211f57136 
     git submodule update --init --recursive
     cd ${topdir} 
   else 
