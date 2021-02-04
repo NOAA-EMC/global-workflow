@@ -43,9 +43,9 @@ hh=${cyc:-$(echo $CDATE | cut -c9-10)}
 
 export DATA=${DATA:-${DATAROOT}/init}
 
-EXTRACT_DIR=${EXTRACT_DIR:-$ROTDIR}
-WORKDIR=${WORKDIR:-$DATA}
-OUTDIR=${OUTDIR:-$ROTDIR}
+export EXTRACT_DIR=${EXTRACT_DIR:-$ROTDIR}
+export WORKDIR=${WORKDIR:-$DATA}
+export OUTDIR=${OUTDIR:-$ROTDIR}
 PRODHPSSDIR=/NCEPPROD/hpssprod/runhistory/rh${yy}/${yy}${mm}/${yy}${mm}${dd}
 
 gfs_ver=v16
