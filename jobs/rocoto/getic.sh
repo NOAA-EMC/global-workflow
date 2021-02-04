@@ -48,6 +48,8 @@ export WORKDIR=${WORKDIR:-$DATA}
 export OUTDIR=${OUTDIR:-$ROTDIR}
 PRODHPSSDIR=/NCEPPROD/hpssprod/runhistory/rh${yy}/${yy}${mm}/${yy}${mm}${dd}
 
+COMPONENT="atmos"
+
 gfs_ver=v16
 GETICSH=${GDASINIT_DIR}/get_v16.data.sh
 
