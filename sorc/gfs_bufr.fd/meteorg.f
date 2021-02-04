@@ -115,8 +115,8 @@
       integer :: n3dfercld,iseedl
       integer :: istat(npoint)
       logical :: trace
-      logical, parameter :: debugprint=.true.
-!!      logical, parameter :: debugprint=.false.
+!!      logical, parameter :: debugprint=.true.
+      logical, parameter :: debugprint=.false.
       character             lprecip_accu*3
       real, parameter :: ERAD=6.371E6
       real, parameter :: DTR=3.1415926/180.
@@ -1108,6 +1108,7 @@ CC due to rounding and interpolation errors, correct it here -G.P. Lou:
 !
 !  prepare buffer data
 !
+        if(iope == 0) then
         do np = 1, npoint
           pi3(np,1)=psn(np)*1000
           do k=1,levs
@@ -1305,6 +1306,7 @@ C        print *, 'in meteorg nfile1= ', nfile1
 !!          write(nfile) data
           write(nfile) data2
         enddo  !End loop over stations np
+       endif
       call date_and_time(date,time,zone,clocking)
 !      print *,'13reading write data end= ', clocking
       print *,'13date, time, zone',date, time, zone
