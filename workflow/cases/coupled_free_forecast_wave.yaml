@@ -17,7 +17,7 @@ case:
     nems_temp: 'cpld_wave'
     mom6ic_prepared: .false.
     inline_post: .true. 
-    KEEPDATA: YES
+    KEEPDATA: NO
 
   nsst:
     NST_MODEL: 0
