@@ -38,6 +38,7 @@ postmsg "$jlogfile" "$msg"
 
 export POSTGPSH=${POSTGPSH:-$USHgfs/gfs_nceppost.sh}
 export GFSDOWNSH=${GFSDOWNSH:-$USHgfs/fv3gfs_downstream_nems.sh}
+export GFSDOWNSHF=${GFSDOWNSHF:-$USHgfs/inter_flux.sh}
 export GFSDWNSH=${GFSDWNSH:-$USHgfs/fv3gfs_dwn_nems.sh}
 export TRIMRH=${TRIMRH:-$USHgfs/trim_rh.sh}
 export MODICEC=${MODICEC:-$USHgfs/mod_icec.sh}
@@ -55,6 +56,7 @@ export IO=${LONB:-1440}
 export JO=${LATB:-721}
 export OUTTYP=${OUTTYP:-4}
 export FLXF=${FLXF:-"YES"}
+export FLXGF=${FLXGF:-"YES"} 
 export GOESF=${GOESF:-"YES"}
 export WAFSF=${WAFSF:-"NO"}
 export PGBF=${PGBF:-"YES"}
@@ -408,6 +410,7 @@ do
     fi
     [[ -f pgbfile.grib2 ]] && rm pgbfile.grib2
 
+
 # use post to generate GFS Grib2 Flux file as model generated Flux file
 # will be in nemsio format after FY17 upgrade.
     if [ $OUTTYP -eq 4 -a $FLXF = "YES" ] ; then
@@ -421,8 +424,16 @@ do
       fi
       export PGBOUT=fluxfile
       export FILTER=0
-      FLUXFL=${PREFIX}sfluxgrbf${fhr}.grib2
+      export FLUXFL=${PREFIX}sfluxgrbf${fhr}.grib2
       FLUXFLIDX=${PREFIX}sfluxgrbf${fhr}.grib2.idx
+    
+      #Add extra flux.1p00 file for coupled
+      if test "$FLXGF" = 'YES'            
+      then                    
+        export FH=`expr $fhr + 0`     
+        $GFSDOWNSHF                  
+        export err=$?; err_chk      
+      fi   
 
       if [ $INLINE_POST = ".false." ]; then
         $POSTGPSH
