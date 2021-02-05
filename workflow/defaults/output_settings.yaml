@@ -21,7 +21,7 @@ output_settings_defaults: &output_settings_defaults
   OCN_INTERVAL: 120
 
   NCO_NAMING_CONV: YES
-  OUTPUT_FILE_TYPE: "'netcdf_parallel' 'netcdf'"
+  OUTPUT_FILE: netcdf
   OUTPUT_GRID: gaussian_grid
 
   gfs_forecast_hours: !calc >-

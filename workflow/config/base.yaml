@@ -186,8 +186,8 @@ config_base:
     # if gaussian_grid, set OUTPUT_FILE for nemsio or netcdf
     export QUILTING="{tools.fort(doc.fv3_gdas_settings.QUILTING)}"
     export OUTPUT_GRID="{doc.output_settings.OUTPUT_GRID}"
-    export OUTPUT_FILE="{doc.output_settings.OUTPUT_FILE_TYPE}"
-   
+    export OUTPUT_FILE="{doc.output_settings.OUTPUT_FILE}"
+
     # Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL
     export imp_physics={doc.fv3_gfs_settings.imp_physics}
     
