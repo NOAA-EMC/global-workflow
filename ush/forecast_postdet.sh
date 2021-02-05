@@ -608,6 +608,15 @@ WW3_out()
 	echo "SUB ${FUNCNAME[0]}: Copying output data for WW3"
 }
 
+
+CPL_out()
+{
+        echo "SUB ${FUNCNAME[0]}: Copying output data for general cpl fields"
+        if [ $esmf_profile = ".true." ]; then 
+          $NCP $DATA/ESMF_Profile.summary $ROTDIR/$CDUMP.$PDY/$cyc/    
+        fi 
+}
+
 MOM6_postdet()
 {
 	echo "SUB ${FUNCNAME[0]}: MOM6 after run type determination"

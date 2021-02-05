@@ -26,6 +26,7 @@ config_base:
     export cplwav="{doc.settings.cplwav}"
     export cplwav2atm="{doc.settings.cplwav2atm}"
     export print_esmf="{doc.settings.print_esmf}"
+    export esmf_profile="{doc.settings.esmf_profile}"
 
     export nems_temp="{doc.settings.nems_temp}"
     export nems_temp_cold="{doc.settings.nems_temp_cold}"
