@@ -168,6 +168,9 @@ config_fcst:
     export FRAC_GRID="{doc.settings.FRAC_GRID}"
     export cplmode="{doc.settings.cplmode}"
 
+    export min_lakeice="{doc.fv3_gfs_settings.min_lakeice}"
+    export min_seaice="{doc.fv3_gfs_settings.min_seaice}" 
+
     # Stochastic physics parameters
     # nam_stochy section
     export SEEDLET="{doc.fv3_gfs_settings.SEEDLET}"

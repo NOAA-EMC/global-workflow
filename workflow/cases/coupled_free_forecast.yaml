@@ -33,6 +33,8 @@ case:
     CASE: C384
     LEVS: 128
     DELTIM: 300
+    min_lakeice: 0.15
+    min_seaice: 1.0e-11
     SEEDLET: 10
     CCPP_SUITE: FV3_GFS_v16_coupled
     CPL_ATMIC: CFSRfracL127

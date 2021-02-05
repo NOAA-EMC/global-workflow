@@ -12,11 +12,12 @@ case:
     cplwav: .true.
     cplwav2atm: .true.
     cplflx: .true.
-    print_esmf: .true.
+    print_esmf: .false.
+    esmf_profile: .true.
     nems_temp: 'cpld_wave'
     mom6ic_prepared: .false.
     inline_post: .true. 
-    KEEPDATA: NO
+    KEEPDATA: YES
 
   nsst:
     NST_MODEL: 0
@@ -33,6 +34,8 @@ case:
     CASE: C384
     LEVS: 128
     DELTIM: 300
+    min_lakeice: 0.15
+    min_seaice: 1.0e-11
     SEEDLET: 10
     CCPP_SUITE: FV3_GFS_v16_coupled
     CPL_ATMIC: CFSRfracL127
