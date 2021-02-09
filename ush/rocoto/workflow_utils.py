@@ -262,7 +262,7 @@ def get_gfs_interval(gfs_cyc):
     if gfs_cyc == 0:
         interval = None
     if gfs_cyc == 1:
-        interval = '120:00:00'
+        interval = '24:00:00'
     elif gfs_cyc == 2:
         interval = '12:00:00'
     elif gfs_cyc == 4:

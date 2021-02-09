@@ -165,10 +165,10 @@ export gfs_cyc=@gfs_cyc@ # 0: no GFS cycle, 1: 00Z only, 2: 00Z and 12Z only, 4:
 # GFS output and frequency
 export FHMIN_GFS=0
 
-export FHMAX_GFS_00=240
-export FHMAX_GFS_06=240
-export FHMAX_GFS_12=240
-export FHMAX_GFS_18=240
+export FHMAX_GFS_00=384
+export FHMAX_GFS_06=384
+export FHMAX_GFS_12=384
+export FHMAX_GFS_18=384
 export FHMAX_GFS=$(eval echo \${FHMAX_GFS_$cyc})
 
 export FHOUT_GFS=3
@@ -284,18 +284,5 @@ export ARCH_WARMICFREQ=4     # Archive frequency in days for warm_start capabili
 export ARCH_FCSTICFREQ=1     # Archive frequency in days for gdas and gfs forecast-only capability
 
 export DELETE_COM_IN_ARCHIVE_JOB="YES"   # NO=retain ROTDIR.  YES default in arch.sh and earc.sh.
-if [ $machine = "HERA" ]; then
-    export FIX_AER="/scratch2/NCEPDEV/climate/Anning.Cheng/MERRA2"
-    export FIX_LUT="/scratch2/NCEPDEV/climate/Anning.Cheng/aer_data/LUTS"
-elif [ $machine = "WCOSS_C" ]; then
-    export FIX_AER="/gpfs/dell2/emc/modeling/noscrub/Anning.Cheng/MERRA2"
-    export FIX_LUT="/gpfs/dell2/emc/modeling/noscrub/Anning.Cheng/aer_data/LUTS"
-elif [ $machine = "WCOSS_DELL_P3" ]; then
-    export FIX_AER="/gpfs/dell2/emc/modeling/noscrub/Anning.Cheng/MERRA2"
-    export FIX_LUT="/gpfs/dell2/emc/modeling/noscrub/Anning.Cheng/aer_data/LUTS"
-elif [ $machine = "ORION" ]; then
-    export FIX_AER="/work/noaa/global/acheng/MERRA2"
-    export FIX_LUT="/work/noaa/global/acheng/aer_data/LUTS"
-fi
 
 echo "END: config.base"
