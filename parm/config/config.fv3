@@ -59,7 +59,7 @@ case $case_in in
         export layout_y_gfs=4
         export npe_wav=140
         export npe_wav_gfs=140
-        export nth_fv3=1
+        export nth_fv3=4
         export cdmbgwd="0.14,1.8,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=1
         export WRTTASK_PER_GROUP=$npe_node_max

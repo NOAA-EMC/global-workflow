@@ -68,7 +68,7 @@ elif [ $yy$mm$dd$hh -lt 2019061200 ]; then
   gfs_ver=v14
   GETICSH=${GDASINIT_DIR}/get_${gfs_ver}.data.sh
   tarball=gpfs_hps_nco_ops_com_gfs_prod_gfs.${yy}${mm}${dd}_${hh}.pgrb2_${grid}.tar
-elif [ $yy$mm$dd$hh -lt 2021020300 ]; then
+elif [ $yy$mm$dd$hh -lt 2021031700 ]; then
   gfs_ver=v15
   GETICSH=${GDASINIT_DIR}/get_${gfs_ver}.data.sh
   tarball=com_gfs_prod_gfs.${yy}${mm}${dd}_${hh}.gfs_pgrb2.tar

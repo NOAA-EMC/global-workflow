@@ -66,7 +66,7 @@ elif [ $yy$mm$dd$hh -lt 2017072000 ]; then
 elif [ $yy$mm$dd$hh -lt 2019061200 ]; then
   gfs_ver=v14
   RUNICSH=${GDASINIT_DIR}/run_${gfs_ver}.chgres.sh
-elif [ $yy$mm$dd$hh -lt 2021020300 ]; then
+elif [ $yy$mm$dd$hh -lt 2021031700 ]; then
   gfs_ver=v15
   RUNICSH=${GDASINIT_DIR}/run_${gfs_ver}.chgres.gfs.sh
 fi
