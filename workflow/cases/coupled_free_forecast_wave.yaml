@@ -1,7 +1,6 @@
 case:
   places:
     workflow_file: layout/free_forecast_gfs.yaml
-    #BASE_CPLIC: /scratch2/NCEPDEV/climate/climpara/S2S/IC
 
   settings: 
     SDATE: 2013-04-01t00:00:00
@@ -13,7 +12,8 @@ case:
     cplwav: .true.
     cplwav2atm: .true.
     cplflx: .true.
-    print_esmf: .true.
+    print_esmf: .false.
+    esmf_profile: .true.
     nems_temp: 'cpld_wave'
     mom6ic_prepared: .false.
     inline_post: .true. 
@@ -32,12 +32,14 @@ case:
 
   fv3_gfs_settings:
     CASE: C384
-    LEVS: 65
-    DELTIM: 450
+    LEVS: 128
+    DELTIM: 300
+    min_lakeice: 0.15
+    min_seaice: 1.0e-11
     SEEDLET: 10
-    CCPP_SUITE: FV3_GFS_v15p2_coupled
-    CPL_ATMIC: CFSRfracL64
-    nst_anl: no
+    CCPP_SUITE: FV3_GFS_v16_coupled
+    CPL_ATMIC: CFSRfracL127
+    nst_anl: yes
     DO_SKEB: false
     DO_SHUM: false
     DO_SPPT: false
@@ -48,7 +50,6 @@ case:
        WGRP: 1
        WGRP_NTASKS: 24
        WRTIOBUF: "32M"
-    cdmbgwd: "1.0,1.2"
 
   ocn_settings:
     OCNPETS: 240

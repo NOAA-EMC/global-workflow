@@ -17,12 +17,15 @@ fv3_gfs_defaults: &fv3_gfs_defaults
   MEMBER: -1
   d4_bg: 0.15
   dddmp: 0.2
+  min_lakeice: 0.15
+  min_seaice: 0.15 
   ISEED: 0
   SEEDLET: 1
   SET_STP_SEED: YES
   DO_SHUM: false
   DO_SKEB: false
   DO_SPPT: false
+  n_split: 8
 
   RUN_EFCSGRP: NO
   zhao_mic: YES
@@ -145,7 +148,7 @@ fv3_gfs_defaults: &fv3_gfs_defaults
         "11":
            ncld: 5
            nwat: 6
-           FIELD_TABLE: "$HOMEgfs/parm/parm_fv3diag/field_table_gfdl"
+           FIELD_TABLE: "$HOMEgfs/parm/parm_fv3diag/field_table_gfdl_satmedmf"
            dnats: 1
            cal_pre: false
            do_sat_adjust: true

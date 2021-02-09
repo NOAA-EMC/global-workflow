@@ -82,3 +82,4 @@ ${WW3_BINDIR}/w3_make ww3_grib
 
 cp $WW3_EXEDIR/ww3_* $finalexecdir/
 ${WW3_BINDIR}/w3_clean -c
+rm ${WW3_BINDIR}/tempswitch 

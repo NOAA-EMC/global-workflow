@@ -45,7 +45,7 @@ output_settings_template: !Template &output_settings_template
     type: bool
     description: "YES = use standard, operational, naming conventions.  NO = use non-standard naming conventions"
 
-  OUTPUT_FILE_TYPE:
+  OUTPUT_FILE:
     type: string
     description: "Type of model output file"
 
