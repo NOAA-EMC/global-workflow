@@ -26,6 +26,7 @@ config_base:
     export cplwav="{doc.settings.cplwav}"
     export cplwav2atm="{doc.settings.cplwav2atm}"
     export print_esmf="{doc.settings.print_esmf}"
+    export esmf_profile="{doc.settings.esmf_profile}"
 
     export nems_temp="{doc.settings.nems_temp}"
     export nems_temp_cold="{doc.settings.nems_temp_cold}"
@@ -185,8 +186,11 @@ config_base:
     # if gaussian_grid, set OUTPUT_FILE for nemsio or netcdf
     export QUILTING="{tools.fort(doc.fv3_gdas_settings.QUILTING)}"
     export OUTPUT_GRID="{doc.output_settings.OUTPUT_GRID}"
-    export OUTPUT_FILE="{doc.output_settings.OUTPUT_FILE_TYPE}"
-   
+    export OUTPUT_FILE="{doc.output_settings.OUTPUT_FILE}"
+
+    # inline post
+    export WRITE_DOPOST="{doc.settings.inline_post}"
+
     # Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL
     export imp_physics={doc.fv3_gfs_settings.imp_physics}
     

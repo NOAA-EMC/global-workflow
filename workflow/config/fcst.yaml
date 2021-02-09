@@ -88,9 +88,6 @@ config_fcst:
     export NY_GLB="{doc.ice_settings.NY_GLB}"
     export MESHICE="mesh.mx{doc.ice_settings.ICERES}.nc"
     
-    # inline post
-    export WRITE_DOPOST="{doc.settings.inline_post}"
-
     if [[ "$machine" == "WCOSS_C" ]]; then
         export memory_fcst="1024M"
     elif [[ "$machine" == "GAEA" ]]; then
@@ -167,6 +164,9 @@ config_fcst:
     #coupling settings 
     export FRAC_GRID="{doc.settings.FRAC_GRID}"
     export cplmode="{doc.settings.cplmode}"
+
+    export min_lakeice="{doc.fv3_gfs_settings.min_lakeice}"
+    export min_seaice="{doc.fv3_gfs_settings.min_seaice}" 
 
     # Stochastic physics parameters
     # nam_stochy section

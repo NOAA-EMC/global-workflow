@@ -88,6 +88,7 @@ cat > input.nml <<EOF
   npy = $npy
   ntiles = $ntiles
   npz = $npz
+  dz_min =  6
   grid_type = -1
   make_nh = $make_nh
   fv_debug = ${fv_debug:-".false."}
@@ -213,7 +214,7 @@ elif [ $CCPP_SUITE = "FV3_GSD_v0" ]; then
   min_lakeice  = ${min_lakeice:-"0.15"}
   min_seaice   = ${min_seaice:-"0.15"}
 EOF
-elif [ $CCPP_SUITE = "FV3_GFS_v16beta_coupled" ]; then
+elif [ $CCPP_SUITE = "FV3_GFS_v16_coupled" ]; then
   cat >> input.nml << EOF
   iovr         = ${iovr:-"3"}
   ltaerosol    = ${ltaerosol:-".false."}
