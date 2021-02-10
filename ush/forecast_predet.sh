@@ -123,8 +123,6 @@ FV3_GFS_predet(){
 	OUTPUT_FILE=${OUTPUT_FILE:-"nemsio"}
 	WRITE_NEMSIOFLIP=${WRITE_NEMSIOFLIP:-".true."}
 	WRITE_FSYNCFLAG=${WRITE_FSYNCFLAG:-".true."}
-        affix="nemsio"
-        [[ "$OUTPUT_FILE" = "netcdf" ]] && affix="nc"
 
 	rCDUMP=${rCDUMP:-$CDUMP}
 

@@ -16,7 +16,7 @@ post_manager_job_contents: &post_manager_job_contents !expand |
       event=release_post$fhr2
     fi
 
-    file=%COM%/$CDUMP.%PDY%/%CYC%/$CDUMP.t%CYC%z.logf$fhr3.nemsio
+    file=%COM%/$CDUMP.%PDY%/%CYC%/$CDUMP.t%CYC%z.logf$fhr3.txt
 
     while [[ ! -s "$file" ]] ; do
       echo "$file: nope"

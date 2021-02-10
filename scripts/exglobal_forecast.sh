@@ -188,6 +188,11 @@ echo "MAIN: NEMS configured"
 #------------------------------------------------------------------
 # run the executable
 
+if [ $esmf_profile ]; then 
+  export ESMF_RUNTIME_PROFILE=ON
+  export ESMF_RUNTIME_PROFILE_OUTPUT=SUMMARY
+fi
+
 if [ $machine != 'sandbox' ]; then
         $NCP $FCSTEXECDIR/$FCSTEXEC $DATA/.
         export OMP_NUM_THREADS=$NTHREADS_FV3
@@ -210,6 +215,7 @@ if [ $machine != 'sandbox' ]; then
         [[ $cplwav = .true. ]] && WW3_out
         [[ $cplice = .true. ]] && CICE_out
         [[ $cplchem = .true. ]] && GSD_out
+        [[ $esmf_profile = .true. ]] && CPL_out
 else
         echo "MAIN: Running on sandbox mode, no output linking"
 fi
