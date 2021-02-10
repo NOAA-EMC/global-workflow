@@ -1,5 +1,5 @@
 #!/bin/sh
-set -x
+#set -x
 
 ###############################################################
 # Setup runtime environment by loading modules
