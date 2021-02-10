@@ -27,6 +27,8 @@ for config in $configs; do
     [[ $status -ne 0 ]] && exit $status
 done
 
+set -x
+
 # ICS are restarts and always lag INC by $assim_freq hours
 ARCHINC_CYC=$ARCH_CYC
 ARCHICS_CYC=$((ARCH_CYC-assim_freq))
@@ -174,6 +176,33 @@ cd $ROTDIR
 
 if [ $CDUMP = "gfs" ]; then
 
+
+  if [ $cplflx = ".true." ]; then
+    # ocn and ice files
+    echo "current location is $ROTDIR"
+    echo `date`
+    echo "starting gzip netcdf files, this will take a while ......"
+    gzip $COMIN/../ocn_2D*nc $COMIN/../ice*nc $COMIN/../ocn_daily*nc
+    echo `date`
+    echo "gzip done !"
+    for targrp in ocn ocn_2D ocn_3D ocn_xsect ice ocn_daily log wavocn wave; do
+       htar -P -cvf $ATARDIR/$CDATE/${targrp}.tar `cat $ARCH_LIST/${targrp}.txt`
+    done
+
+    #rearrangement of atm files
+    htar -P -cvf $ATARDIR/$CDATE/gfs_pgrb2_0p25.tar `cat $ARCH_LIST/gfsa.txt`
+    htar -P -cvf $ATARDIR/$CDATE/gfs_pgrb2_1p00.tar `cat $ARCH_LIST/gfsb.txt`
+
+    for targrp in gfs_flux gfs_flux_1p00 gfs_pgrb2_1p00 gfs_pgrb2_0p25 gfs_pgrb2b_1p00 gfs_pgrb2b_0p25; do
+       htar -P -cvf $ATARDIR/$CDATE/${targrp}.tar `cat $ARCH_LIST/${targrp}.txt`
+       status=$?
+       if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
+          echo "HTAR $CDATE ${targrp}.tar failed"
+          exit $status
+       fi
+    done
+  else  #if not cplflx, normal: 
+
     #for targrp in gfsa gfsb - NOTE - do not check htar error status
     for targrp in gfsa gfsb; do
         htar -P -cvf $ATARDIR/$CDATE/${targrp}.tar `cat $ARCH_LIST/${targrp}.txt`
@@ -190,6 +219,7 @@ if [ $CDUMP = "gfs" ]; then
             fi
         done
     fi
+  fi #end if cplflx
 
     #for targrp in gfswave
     if [ $DO_WAVE = "YES" -a "$WAVE_CDUMP" != "gdas" ]; then

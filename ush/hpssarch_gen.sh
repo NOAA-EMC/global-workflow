@@ -187,6 +187,56 @@ if [ $type = "gfs" ]; then
 
   fi
 
+
+  # for coupled model
+  if [ $cplflx = ".true." ]; then
+
+    dirpath="gfs.${PDY}/${cyc}/"
+    dirname="./${dirpath}"
+
+    head="gfs.t${cyc}z."
+
+    echo "cplflx=",$cplflx
+    rm -f gfs_pgrb2b_1p00.txt
+    rm -f gfs_pgrb2b_0p25.txt
+    rm -f gfs_flux_1p00.txt
+    rm -f ocn.txt
+    rm -f ocn_2D.txt
+    rm -f ocn_3D.txt
+    rm -f ocn_xsect.txt
+    rm -f log.txt
+    rm -f ice.txt
+    rm -f ocn_daily.txt
+    rm -f wavocn.txt
+    touch gfs_flux_1p00.txt
+    touch gfs_pgrb2b_1p00.txt
+    touch gfs_pgrb2b_0p25.txt
+    touch ocn.txt
+    touch ocn_2D.txt
+    touch ocn_3D.txt
+    touch ocn_xsect.txt
+    touch ocn_daily.txt
+    touch log.txt
+    touch ice.txt
+    touch wavocn.txt
+    echo  "${dirname}ice*nc                     " >>ice.txt
+    echo  "${dirname}ocn_2D*                    " >>ocn_2D.txt
+    echo  "${dirname}ocn_3D*                    " >>ocn_3D.txt
+    echo  "${dirname}ocn*EQ*                    " >>ocn_xsect.txt
+    echo  "${dirname}ocn_daily*                 " >>ocn_daily.txt
+    echo  "${dirname}wavocn*                    " >>wavocn.txt
+    echo  "${dirname}/atmos/input.nml           " >>log.txt
+    echo  "${dirname}ice_in                     " >>log.txt
+    echo  "${dirname}MOM_input                  " >>log.txt
+    echo  "./logs/${CDATE}/gfs*.log             " >>log.txt
+    echo  "${dirname}/atmos/${head}logf*.txt    " >>log.txt
+    echo  "${dirname}/wave/rundata/ww3_multi*   " >>log.txt
+    echo  "${dirname}ocn_ice*grb2               " >>ocn.txt
+    echo  "${dirname}${head}flux.1p00.f???      " >>gfs_flux_1p00.txt
+    echo  "${dirname}${head}flux.1p00.f???.idx  " >>gfs_flux_1p00.txt
+  fi
+
+
 #-----------------------------------------------------
 fi   ##end of gfs
 #-----------------------------------------------------
