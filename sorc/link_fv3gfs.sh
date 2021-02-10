@@ -58,7 +58,7 @@ elif [ $machine = "orion" ]; then
        FIX_DIR="/work/noaa/global/glopara/fix_nco_gfsv16"
     fi
 elif [ $target == "stampede" ]; then
-    FIX_DIR="/work/07738/jkuang/stampede2/tempFixICdir/fix_UFSp4"
+    FIX_DIR="/work/07738/jkuang/stampede2/tempFixICdir/fix_UFSp6"
 fi
 
 if [ ! -z $FIX_DIR ]; then
