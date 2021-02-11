@@ -28,6 +28,12 @@ config_base:
     export print_esmf="{doc.settings.print_esmf}"
     export esmf_profile="{doc.settings.esmf_profile}"
 
+    if [[ $cplwav = ".true." ]]; then
+       export DO_WAVE="YES"
+    else
+       export DO_WAVE="NO"
+    fi
+
     export nems_temp="{doc.settings.nems_temp}"
     export nems_temp_cold="{doc.settings.nems_temp_cold}"
                

@@ -36,7 +36,8 @@ fi
 
 # CURRENT CYCLE
 APREFIX="${CDUMP}.t${cyc}z."
-ASUFFIX=${ASUFFIX:-$SUFFIX}
+AASUFFIX=${SUFFIX:-".nc"}
+ASUFFIX=${ASUFFIX:-$AASUFFIX}
 
 if [ $ASUFFIX = ".nc" ]; then
    format="netcdf"
@@ -174,6 +175,27 @@ cd $ROTDIR
 
 if [ $CDUMP = "gfs" ]; then
 
+
+  if [ $cplflx = ".true." ]; then
+    # ocn and ice files
+    for targrp in ocn_ice_grib2_0p5 ocn_ice_grib2_0p25  ocn_2D ocn_3D ocn_xsect ice ocn_daily log wavocn wave; do
+       htar -P -cvf $ATARDIR/$CDATE/${targrp}.tar `cat $ARCH_LIST/${targrp}.txt`
+    done
+
+    #rearrangement of atm files
+    htar -P -cvf $ATARDIR/$CDATE/gfs_pgrb2_0p25.tar `cat $ARCH_LIST/gfsa.txt`
+    htar -P -cvf $ATARDIR/$CDATE/gfs_pgrb2_1p00.tar `cat $ARCH_LIST/gfsb.txt`
+
+    for targrp in gfs_flux gfs_${format}a gfs_sfc_${format}b gfs_atm_${format}b gfs_flux_1p00 gfs_pgrb2_1p00 gfs_pgrb2_0p25 gfs_pgrb2b_1p00 gfs_pgrb2b_0p25; do
+       htar -P -cvf $ATARDIR/$CDATE/${targrp}.tar `cat $ARCH_LIST/${targrp}.txt`
+       status=$?
+       if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
+          echo "HTAR $CDATE ${targrp}.tar failed"
+          exit $status
+       fi
+    done
+  else  #if not cplflx, normal: 
+
     #for targrp in gfsa gfsb - NOTE - do not check htar error status
     for targrp in gfsa gfsb; do
         htar -P -cvf $ATARDIR/$CDATE/${targrp}.tar `cat $ARCH_LIST/${targrp}.txt`
@@ -190,6 +212,7 @@ if [ $CDUMP = "gfs" ]; then
             fi
         done
     fi
+  fi #end if cplflx
 
     #for targrp in gfswave
     if [ $DO_WAVE = "YES" -a "$WAVE_CDUMP" != "gdas" ]; then

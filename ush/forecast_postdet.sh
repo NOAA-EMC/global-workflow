@@ -535,7 +535,7 @@ if [ $SEND = "YES" ]; then
   fi
 fi
         
-$NCP $DATA/input.nml $ROTDIR/${CDUMP}.${PDY}/${cyc}/
+$NCP $DATA/input.nml $ROTDIR/${CDUMP}.${PDY}/${cyc}/atmos/
 
 echo "SUB ${FUNCNAME[0]}: Output data for FV3 copied"
 }
