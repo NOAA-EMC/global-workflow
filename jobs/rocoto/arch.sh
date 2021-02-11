@@ -27,8 +27,6 @@ for config in $configs; do
     [[ $status -ne 0 ]] && exit $status
 done
 
-set -x
-
 # ICS are restarts and always lag INC by $assim_freq hours
 ARCHINC_CYC=$ARCH_CYC
 ARCHICS_CYC=$((ARCH_CYC-assim_freq))
