@@ -14,4 +14,6 @@ export NMEM_EARCGRP=10
 export RMOLDSTD_ENKF=144
 export RMOLDEND_ENKF=24
 
+export RMOLDEND_EFSOI=48
+
 echo "END: config.earc"
