@@ -234,7 +234,7 @@ if [ $ENSGRP -eq 0 ]; then
 
     # Now do EFSOI - needs to be kept around longer
     # Start start and end dates to remove
-    GDATEEND=$($NDATE -${RMOLDEND_ENKF:-48}  $CDATE)
+    GDATEEND=$($NDATE -${RMOLDEND_EFSOI:-48}  $CDATE)
     GDATE=$($NDATE -${RMOLDSTD_ENKF:-120} $CDATE)
     while [ $GDATE -le $GDATEEND ]; do
 

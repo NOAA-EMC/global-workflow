@@ -2,13 +2,13 @@
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
-# Script name:         exgdas_efsoi_update.sh
+# Script name:         exgdas_efsoi.sh
 # Script description:  Make global_enkf update for efsoi
 #
 # Author:        Rahul Mahajan      Org: NCEP/EMC     Date: 2017-03-02
 # Author:        Liaofan Lin/Andrew Eichmann          Date: 2020-12-03
 #
-# Abstract: This script runs the global_enkf update for efsoi
+# Abstract: This script runs the efsoi executable
 #
 # $Id$
 #
@@ -45,7 +45,8 @@ APRUN_ENKF=${APRUN_ENKF:-${APRUN:-""}}
 NTHREADS_ENKF=${NTHREADS_ENKF:-${NTHREADS:-1}}
 
 # Executables
-ENKFEXEC=${ENKFEXEC:-$HOMEgfs/exec/global_enkf.x}
+#ENKFEXEC=${ENKFEXEC:-$HOMEgfs/exec/global_enkf.x}
+EFSOIEXEC=${EFSOIEXEC:-$HOMEgfs/exec/efsoi.x}
 
 # Cycling and forecast hour specific parameters
 CDATE=${CDATE:-"2001010100"}
@@ -59,10 +60,24 @@ ASUFFIX=${ASUFFIX:-$SUFFIX}
 SMOOTH_ENKF=${SMOOTH_ENKF:-"YES"}
 
 GBIASe=${GBIASe:-${APREFIX}abias_int.ensmean}
-CNVSTAT=${CNVSTAT:-${APREFIX}cnvstat}
-OZNSTAT=${OZNSTAT:-${APREFIX}oznstat}
-RADSTAT=${RADSTAT:-${APREFIX}radstat}
-ENKFSTAT=${ENKFSTAT:-${APREFIX}enkfstat}
+CNVSTAT=${CNVSTAT:-${APREFIX}cnvstat} # AFE not needed?
+OZNSTAT=${OZNSTAT:-${APREFIX}oznstat} # AFE not needed?
+RADSTAT=${RADSTAT:-${APREFIX}radstat} # AFE not needed?
+#ENKFSTAT=${ENKFSTAT:-${APREFIX}enkfstat}
+EFSOISTAT=${EFSOISTAT:-${APREFIX}efsoistat}
+
+#AFE for EFSOI
+#VERFANL=${VERFANL:-${APREFIX}atmanl.nemsio}
+VERFANL=${VERFANL:-${APREFIX}atmanl.ensres.nc}
+FCSTLONG=${GPREFIX}atmf030.ensmean.nc
+FCSTSHORT=${APREFIX}atmf024.ensmean.nc
+FCST6HRS=${PPREFIX}atmf006.ensmean.nc
+OSENSEIN=osense_${CDATE}_init.dat
+OSENSEOUT=osense_${CDATE}_final.dat
+
+
+
+
 
 # Namelist parameters
 USE_CORRELATED_OBERRS=${USE_CORRELATED_OBERRS:-"NO"}
@@ -75,11 +90,13 @@ if [ $USE_CORRELATED_OBERRS == "YES" ]; then
    use_correlated_oberrs=".true."
 fi
 imp_physics=${imp_physics:-"99"}
-lupp=${lupp:-".true."}
+#lupp=${lupp:-".true."}
+lupp=${lupp:-".false."} # AFE to match old EFSOI
 corrlength=${corrlength:-1250}
 lnsigcutoff=${lnsigcutoff:-2.5}
 analpertwt=${analpertwt:-0.85}
-readin_localization_enkf=${readin_localization_enkf:-".true."}
+#readin_localization_enkf=${readin_localization_enkf:-".true."}
+readin_localization_enkf=${readin_localization_enkf:-".false."} # AFE
 reducedgrid=${reducedgrid:-".true."}
 letkf_flag=${letkf_flag:-".false."}
 getkf=${getkf:-".false."}
@@ -95,7 +112,8 @@ DO_CALC_INCREMENT=${DO_CALC_INCREMENT:-"NO"}
 INCREMENTS_TO_ZERO=${INCREMENTS_TO_ZERO:-"'NONE'"}
 
 ################################################################################
-ATMGES_ENSMEAN=$COMIN_GES_ENS/${GPREFIX}atmf006.ensmean${GSUFFIX}
+#ATMGES_ENSMEAN=$COMIN_GES_ENS/${GPREFIX}atmf006.ensmean${GSUFFIX}
+ATMGES_ENSMEAN=$COMIN_ANL/$VERFANL
 if [ $SUFFIX = ".nc" ]; then
    LONB_ENKF=${LONB_ENKF:-$($NCLEN $ATMGES_ENSMEAN grid_xt)} # get LONB_ENKF
    LATB_ENKF=${LATB_ENKF:-$($NCLEN $ATMGES_ENSMEAN grid_yt)} # get LATB_ENFK
@@ -153,95 +171,118 @@ $NLN $ANAVINFO   anavinfo
 $NLN $VLOCALEIG  vlocal_eig.dat
 
 # Bias correction coefficients based on the ensemble mean
-$NLN $COMOUT_ANL_ENS/$GBIASe satbias_in
+$NLN $COMOUT_ANL_ENSFSOI/$GBIASe satbias_in
 
 ################################################################################
 
-if [ $USE_CFP = "YES" ]; then
-   [[ -f $DATA/untar.sh ]] && rm $DATA/untar.sh
-   [[ -f $DATA/mp_untar.sh ]] && rm $DATA/mp_untar.sh
-   set +x
-   cat > $DATA/untar.sh << EOFuntar
-#!/bin/sh
-memchar=\$1
-flist="$CNVSTAT $OZNSTAT $RADSTAT"
-for ftype in \$flist; do
-   if [ \$memchar = "ensmean" ]; then
-      fname=$COMOUT_ANL_ENS/\${ftype}.ensmean
-   else
-      fname=$COMOUT_ANL_ENS/\$memchar/\$ftype
-   fi
-   tar -xvf \$fname
-done
-EOFuntar
-   set -x
-   chmod 755 $DATA/untar.sh
-fi
+#if [ $USE_CFP = "YES" ]; then
+#   [[ -f $DATA/untar.sh ]] && rm $DATA/untar.sh
+#   [[ -f $DATA/mp_untar.sh ]] && rm $DATA/mp_untar.sh
+#   set +x
+#   cat > $DATA/untar.sh << EOFuntar
+##!/bin/sh
+#memchar=\$1
+#flist="$CNVSTAT $OZNSTAT $RADSTAT"
+#for ftype in \$flist; do
+#   if [ \$memchar = "ensmean" ]; then
+#      fname=$COMOUT_ANL_ENS/\${ftype}.ensmean
+#   else
+#      fname=$COMOUT_ANL_ENS/\$memchar/\$ftype
+#   fi
+#   tar -xvf \$fname
+#done
+#EOFuntar
+#   set -x
+#   chmod 755 $DATA/untar.sh
+#fi
 
 ################################################################################
 # Ensemble guess, observational data and analyses/increments
 
-flist="$CNVSTAT $OZNSTAT $RADSTAT"
-if [ $USE_CFP = "YES" ]; then
-   echo "$nm $DATA/untar.sh ensmean" | tee -a $DATA/mp_untar.sh
-   if [ ${CFP_MP:-"NO"} = "YES" ]; then
-       nm=$((nm+1))
-   fi
-else
-   for ftype in $flist; do
-      fname=$COMOUT_ANL_ENS/${ftype}.ensmean
-      tar -xvf $fname
-   done
-fi
+#flist="$CNVSTAT $OZNSTAT $RADSTAT"
+#if [ $USE_CFP = "YES" ]; then
+#   echo "$nm $DATA/untar.sh ensmean" | tee -a $DATA/mp_untar.sh
+#   if [ ${CFP_MP:-"NO"} = "YES" ]; then
+#       nm=$((nm+1))
+#   fi
+#else
+#   for ftype in $flist; do
+#      fname=$COMOUT_ANL_ENS/${ftype}.ensmean
+#      tar -xvf $fname
+#   done
+#fi
 nfhrs=`echo $IAUFHRS_ENKF | sed 's/,/ /g'`
 for imem in $(seq 1 $NMEM_ENKF); do
    memchar="mem"$(printf %03i $imem)
-   if [ $lobsdiag_forenkf = ".false." ]; then
-      if [ $USE_CFP = "YES" ]; then
-         echo "$nm $DATA/untar.sh $memchar" | tee -a $DATA/mp_untar.sh
-         if [ ${CFP_MP:-"NO"} = "YES" ]; then
-             nm=$((nm+1))
-         fi
-      else
-         for ftype in $flist; do
-            fname=$COMOUT_ANL_ENS/$memchar/$ftype
-            tar -xvf $fname
-         done
-      fi
-   fi
-   mkdir -p $COMOUT_ANL_ENSFSOI/$memchar
-   for FHR in $nfhrs; do
-      $NLN $COMIN_GES_ENS/$memchar/${GPREFIX}atmf00${FHR}${ENKF_SUFFIX}${GSUFFIX}  sfg_${CDATE}_fhr0${FHR}_${memchar}
-      if [ $cnvw_option = ".true." ]; then
-         $NLN $COMIN_GES_ENS/$memchar/${GPREFIX}sfcf00${FHR}${GSUFFIX} sfgsfc_${CDATE}_fhr0${FHR}_${memchar}
-      fi
-      if [ $FHR -eq 6 ]; then
-         if [ $DO_CALC_INCREMENT = "YES" ]; then
-            #$NLN $COMOUT_ANL_ENS/$memchar/${APREFIX}atmanl${ASUFFIX}             sanl_${CDATE}_fhr0${FHR}_${memchar}
-            $NLN $COMOUT_ANL_ENSFSOI/$memchar/${APREFIX}atmanl${ASUFFIX}             sanl_${CDATE}_fhr0${FHR}_ni${memchar}
-         else
-            #$NLN $COMOUT_ANL_ENS/$memchar/${APREFIX}atminc${ASUFFIX}             incr_${CDATE}_fhr0${FHR}_${memchar}
-            $NLN $COMOUT_ANL_ENSFSOI/$memchar/${APREFIX}atminc${ASUFFIX}             incr_${CDATE}_fhr0${FHR}_ni${memchar}
-         fi
-      else
-         if [ $DO_CALC_INCREMENT = "YES" ]; then
-            #$NLN $COMOUT_ANL_ENS/$memchar/${APREFIX}atma00${FHR}${ASUFFIX}             sanl_${CDATE}_fhr0${FHR}_${memchar}
-            $NLN $COMOUT_ANL_ENSFSOI/$memchar/${APREFIX}atma00${FHR}${ASUFFIX}             sanl_${CDATE}_fhr0${FHR}_ni${memchar}
-         else
-            #$NLN $COMOUT_ANL_ENS/$memchar/${APREFIX}atmi00${FHR}${ASUFFIX}             incr_${CDATE}_fhr0${FHR}_${memchar}
-            $NLN $COMOUT_ANL_ENSFSOI/$memchar/${APREFIX}atmi00${FHR}${ASUFFIX}             incr_${CDATE}_fhr0${FHR}_ni${memchar}
-         fi
-      fi
-   done
+   mkdir ${memchar}
+   $NLN $COMOUT_ANL_ENSFSOI/$memchar/${APREFIX}atmf024.nc ${memchar}
+#   if [ $lobsdiag_forenkf = ".false." ]; then
+#      if [ $USE_CFP = "YES" ]; then
+#         echo "$nm $DATA/untar.sh $memchar" | tee -a $DATA/mp_untar.sh
+#         if [ ${CFP_MP:-"NO"} = "YES" ]; then
+#             nm=$((nm+1))
+#         fi
+#      else
+#         for ftype in $flist; do
+#            fname=$COMOUT_ANL_ENS/$memchar/$ftype
+#            tar -xvf $fname
+#         done
+#      fi
+#   fi
+#####   mkdir -p $COMOUT_ANL_ENSFSOI/$memchar
+#   for FHR in $nfhrs; do
+#      $NLN $COMIN_GES_ENS/$memchar/${GPREFIX}atmf00${FHR}${ENKF_SUFFIX}${GSUFFIX}  sfg_${CDATE}_fhr0${FHR}_${memchar}
+#      if [ $cnvw_option = ".true." ]; then
+#         $NLN $COMIN_GES_ENS/$memchar/${GPREFIX}sfcf00${FHR}${GSUFFIX} sfgsfc_${CDATE}_fhr0${FHR}_${memchar}
+#      fi
+#      if [ $FHR -eq 6 ]; then
+#         if [ $DO_CALC_INCREMENT = "YES" ]; then
+#            #$NLN $COMOUT_ANL_ENS/$memchar/${APREFIX}atmanl${ASUFFIX}             sanl_${CDATE}_fhr0${FHR}_${memchar}
+#            $NLN $COMOUT_ANL_ENSFSOI/$memchar/${APREFIX}atmanl${ASUFFIX}             sanl_${CDATE}_fhr0${FHR}_ni${memchar}
+#         else
+#            #$NLN $COMOUT_ANL_ENS/$memchar/${APREFIX}atminc${ASUFFIX}             incr_${CDATE}_fhr0${FHR}_${memchar}
+#            $NLN $COMOUT_ANL_ENSFSOI/$memchar/${APREFIX}atminc${ASUFFIX}             incr_${CDATE}_fhr0${FHR}_ni${memchar}
+#         fi
+#      else
+#         if [ $DO_CALC_INCREMENT = "YES" ]; then
+#            #$NLN $COMOUT_ANL_ENS/$memchar/${APREFIX}atma00${FHR}${ASUFFIX}             sanl_${CDATE}_fhr0${FHR}_${memchar}
+#            $NLN $COMOUT_ANL_ENSFSOI/$memchar/${APREFIX}atma00${FHR}${ASUFFIX}             sanl_${CDATE}_fhr0${FHR}_ni${memchar}
+#         else
+#            #$NLN $COMOUT_ANL_ENS/$memchar/${APREFIX}atmi00${FHR}${ASUFFIX}             incr_${CDATE}_fhr0${FHR}_${memchar}
+#            $NLN $COMOUT_ANL_ENSFSOI/$memchar/${APREFIX}atmi00${FHR}${ASUFFIX}             incr_${CDATE}_fhr0${FHR}_ni${memchar}
+#         fi
+#      fi
+#   done
 done
 
 # Ensemble mean guess
-for FHR in $nfhrs; do
-   $NLN $COMIN_GES_ENS/${GPREFIX}atmf00${FHR}.ensmean${GSUFFIX} sfg_${CDATE}_fhr0${FHR}_ensmean
-   if [ $cnvw_option = ".true." ]; then
-      $NLN $COMIN_GES_ENS/${GPREFIX}sfcf00${FHR}.ensmean${GSUFFIX} sfgsfc_${CDATE}_fhr0${FHR}_ensmean
-   fi
-done
+#for FHR in $nfhrs; do
+#   $NLN $COMIN_GES_ENS/${GPREFIX}atmf00${FHR}.ensmean${GSUFFIX} sfg_${CDATE}_fhr0${FHR}_ensmean
+#   if [ $cnvw_option = ".true." ]; then
+#      $NLN $COMIN_GES_ENS/${GPREFIX}sfcf00${FHR}.ensmean${GSUFFIX} sfgsfc_${CDATE}_fhr0${FHR}_ensmean
+#   fi
+#done
+
+$NLN $COMIN_GES_ENS/${GPREFIX}atmf006.ensmean${GSUFFIX} sfg_${CDATE}_fhr06_ensmean
+$NLN $COMIN_GES_ENS/${GPREFIX}atmf006.ensmean${GSUFFIX} sfg_${CDATE}_fhr03_ensmean
+
+# verifying analysis
+$NLN ${COMIN_ANL}/${VERFANL} .
+# the above way is the proper one, but this bit of subterfuge
+# is necessary because ensmean is hard coded into GSI - needs
+# to changed
+$NLN ${COMIN_ANL}/${VERFANL} ${APREFIX}atmanl.ensmean.nc
+
+# forecasts
+$NLN $COMIN_GES_ENS/$FCSTLONG .
+$NLN $COMOUT_ANL_ENSFSOI/$FCSTSHORT .
+
+# inital osense file
+# efsoi.x will read then clobber this
+$NCP $COMOUT_ANL_ENSFSOI/$OSENSEIN osense_${CDATE}.dat
+
+
+
 
 if [ $USE_CFP = "YES" ]; then
    chmod 755 $DATA/mp_untar.sh
@@ -256,14 +297,24 @@ if [ $USE_CFP = "YES" ]; then
    fi
 fi
 
-# Keep osense data in comrot
-$NLN $COMOUT_ANL_ENSFSOI/osense_${CDATE}_init.dat  osense_${CDATE}.dat
-
 ################################################################################
 # Create global_enkf namelist
+# AFE changed from original:
+# gdatehr, datehr, andataname added
+# analpertwt and lnsigcutoff changed upstream
+# numiter from 0 to 1
+#   fso_cycling=.true.,
+#   efsoi_flag=.true.,
+#   wmoist=1.0,adrate=0.75
+
+
+
 cat > enkf.nml << EOFnml
 &nam_enkf
    datestring="$CDATE",datapath="$DATA/",
+   gdatehr=$gcyc,
+   datehr=$cyc,
+   andataname="$VERFANL",
    analpertwtnh=${analpertwt},analpertwtsh=${analpertwt},analpertwttr=${analpertwt},
    covinflatemax=1.e2,covinflatemin=1,pseudo_rh=.true.,iassim_order=0,
    corrlengthnh=${corrlength},corrlengthsh=${corrlength},corrlengthtr=${corrlength},
@@ -271,7 +322,7 @@ cat > enkf.nml << EOFnml
    lnsigcutoffpsnh=${lnsigcutoff},lnsigcutoffpssh=${lnsigcutoff},lnsigcutoffpstr=${lnsigcutoff},
    lnsigcutoffsatnh=${lnsigcutoff},lnsigcutoffsatsh=${lnsigcutoff},lnsigcutoffsattr=${lnsigcutoff},
    obtimelnh=1.e30,obtimelsh=1.e30,obtimeltr=1.e30,
-   saterrfact=1.0,numiter=0,
+   saterrfact=1.0,numiter=1,
    sprd_tol=1.e30,paoverpb_thresh=0.98,
    nlons=$LONA_ENKF,nlats=$LATA_ENKF,nlevs=$LEVS_ENKF,nanals=$NMEM_ENKF,
    deterministic=.true.,sortinc=.true.,lupd_satbiasc=.false.,
@@ -286,7 +337,9 @@ cat > enkf.nml << EOFnml
    use_correlated_oberrs=${use_correlated_oberrs},
    netcdf_diag=$netcdf_diag,cnvw_option=$cnvw_option,
    paranc=$paranc,write_fv3_incr=$write_fv3_incr,
-   fso_cycling=.true.,
+   efsoi_cycling=.true.,
+   efsoi_flag=.true.,
+   wmoist=1.0,adrate=0.75
    $WRITE_INCR_ZERO
    $NAM_ENKF  
 /
@@ -382,27 +435,33 @@ EOFnml
 # Run enkf update
 
 export OMP_NUM_THREADS=$NTHREADS_ENKF
-export pgm=$ENKFEXEC
+#export pgm=$ENKFEXEC AFE
+export pgm=$EFSOIEXEC
 . prep_step
 
-$NCP $ENKFEXEC $DATA
-$APRUN_ENKF ${DATA}/$(basename $ENKFEXEC) 1>stdout 2>stderr
+#$NCP $ENKFEXEC $DATA AFE
+#$APRUN_ENKF ${DATA}/$(basename $ENKFEXEC) 1>stdout 2>stderr AFE
+$NCP $EFSOIEXEC $DATA
+$APRUN_ENKF ${DATA}/$(basename $EFSOIEXEC) 1>stdout 2>stderr
 rc=$?
 
 export ERR=$rc
 export err=$ERR
 $ERRSCRIPT || exit 2
 
-# save for EFSOI task (still needed?)
-$NCP $COMOUT_ANL_ENS/$GBIASe $COMOUT_ANL_ENSFSOI
+## save for EFSOI task (still needed?)
+#$NCP $COMOUT_ANL_ENS/$GBIASe $COMOUT_ANL_ENSFSOI
 
 # Cat runtime output files.
-cat stdout stderr > $COMOUT_ANL_ENSFSOI/$ENKFSTAT
+cat stdout stderr > $COMOUT_ANL_ENSFSOI/$EFSOISTAT
+
+$NCP osense_${CDATE}.dat $COMOUT_ANL_ENSFSOI/$OSENSEOUT
+$NCP osense_${CDATE}.dat $OSENSE_SAVE_DIR/$OSENSEOUT
 
 ################################################################################
 #  Postprocessing
 ######## AFE remove after testing
-#cp -r $DATA /scratch1/NCEPDEV/stmp4/Andrew.Eichmann/efsoi
+cp -r $DATA /scratch1/NCEPDEV/stmp4/Andrew.Eichmann/efsoi
 ######## AFE
 cd $pwd
 [[ $mkdata = "YES" ]] && rm -rf $DATA
