@@ -20,7 +20,7 @@ status=$?
 
 ###############################################################
 # Source relevant configs
-configs="base getic"
+configs="base init"
 for config in $configs; do
     . $EXPDIR/config.${config}
     status=$?
@@ -53,25 +53,32 @@ COMPONENT="atmos"
 gfs_ver=v16
 GETICSH=${GDASINIT_DIR}/get_v16.data.sh
 
-# No ENKF data prior to 2012/05/21/00z
-if [ $yy$mm$dd$hh -lt 2012052100 ]; then
-  set +x
-  echo FATAL ERROR: SCRIPTS DO NOT SUPPORT OLD GFS DATA
-  exit 2
-elif [ $yy$mm$dd$hh -lt 2016051000 ]; then
-  gfs_ver=v12
-  GETICSH=${GDASINIT_DIR}/get_pre-v14.data.sh
-elif [ $yy$mm$dd$hh -lt 2017072000 ]; then
-  gfs_ver=v13
-  GETICSH=${GDASINIT_DIR}/get_pre-v14.data.sh
-elif [ $yy$mm$dd$hh -lt 2019061200 ]; then
-  gfs_ver=v14
-  GETICSH=${GDASINIT_DIR}/get_${gfs_ver}.data.sh
-  tarball=gpfs_hps_nco_ops_com_gfs_prod_gfs.${yy}${mm}${dd}_${hh}.pgrb2_${grid}.tar
-elif [ $yy$mm$dd$hh -lt 2021031700 ]; then
-  gfs_ver=v15
-  GETICSH=${GDASINIT_DIR}/get_${gfs_ver}.data.sh
-  tarball=com_gfs_prod_gfs.${yy}${mm}${dd}_${hh}.gfs_pgrb2.tar
+RETRO=${RETRO:-"NO"}
+if [ $RETRO = "YES" ]; then
+  GETICSH=${GDASINIT_DIR}/get_v16retro.data.sh
+fi
+
+if [ $RETRO = "NO" ]; then # Operational input
+  # No ENKF data prior to 2012/05/21/00z
+  if [ $yy$mm$dd$hh -lt 2012052100 ]; then
+    set +x
+    echo FATAL ERROR: SCRIPTS DO NOT SUPPORT OLD GFS DATA
+    exit 2
+  elif [ $yy$mm$dd$hh -lt 2016051000 ]; then
+    gfs_ver=v12
+    GETICSH=${GDASINIT_DIR}/get_pre-v14.data.sh
+  elif [ $yy$mm$dd$hh -lt 2017072000 ]; then
+    gfs_ver=v13
+    GETICSH=${GDASINIT_DIR}/get_pre-v14.data.sh
+  elif [ $yy$mm$dd$hh -lt 2019061200 ]; then
+    gfs_ver=v14
+    GETICSH=${GDASINIT_DIR}/get_${gfs_ver}.data.sh
+    tarball=gpfs_hps_nco_ops_com_gfs_prod_gfs.${yy}${mm}${dd}_${hh}.pgrb2_${grid}.tar
+  elif [ $yy$mm$dd$hh -lt 2021031700 ]; then
+    gfs_ver=v15
+    GETICSH=${GDASINIT_DIR}/get_${gfs_ver}.data.sh
+    tarball=com_gfs_prod_gfs.${yy}${mm}${dd}_${hh}.gfs_pgrb2.tar
+  fi
 fi
 
 export EXTRACT_DIR yy mm dd hh UFS_DIR OUTDIR CRES_HIRES CRES_ENKF

@@ -13,4 +13,6 @@ GDASINIT_DIR=${UFS_DIR}/util/gdas_init
 
 EXTRACT_DATA="yes"
 
+RETRO="NO" # YES = Pull v16 inputs from retrospective parallels; NO = use operational inputs
+
 echo "END: config.getic"

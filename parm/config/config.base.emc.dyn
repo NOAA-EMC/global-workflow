@@ -226,6 +226,7 @@ export gldas_cyc=00
 
 # run wave component
 export DO_WAVE="YES"
+if [[ "$SDATE" -lt "2019020100" ]]; then DO_WAVE="NO" ; fi # no rtofs in GDA
 export WAVE_CDUMP="both"
 
 # Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL
