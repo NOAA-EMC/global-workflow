@@ -6,15 +6,15 @@
 
 !$$$  SUBPROGRAM DOCUMENTATION BLOCK
 !                .      .    .                                       .
-! SUBPROGRAM:    meteorg                           
+! SUBPROGRAM:    meteorg
 !   PRGMMR: HUALU PAN        ORG: W/NMC23    DATE: 1999-07-21
 !
 ! ABSTRACT: Creates BUFR meteogram files for the AVN and MRF.
 !
 ! PROGRAM HISTORY LOG:
-!   1999-07-21  HUALU PAN                            
-!   2007-02-02  FANGLIN YANG  EXPAND FOR HYBRID COORDINATES USING SIGIO 
-!   2009-07-24  FANGLIN YANG  CHANGE OUTPUT PRESSURE TO INTEGER-LAYER 
+!   1999-07-21  HUALU PAN
+!   2007-02-02  FANGLIN YANG  EXPAND FOR HYBRID COORDINATES USING SIGIO
+!   2009-07-24  FANGLIN YANG  CHANGE OUTPUT PRESSURE TO INTEGER-LAYER
 !                             PRESSURE (line 290)
 !                             CORRECT THE TEMPERATURE ADJUSTMENT (line 238)
 !   2014-03-27  DANA CARLIS   UNIFY CODE WITH GFS FORECAST MODEL PRECIP
@@ -22,14 +22,14 @@
 !   2016-09-27  HUIYA CHUANG  MODIFY TO READ GFS NEMS OUTPUT ON GRID SPACE
 !   2017-02-27  GUANG PING LOU CHANGE OUTPUT PRECIPITATION TO HOURLY AMOUNT
 !                              TO 120 HOURS AND 3 HOURLY TO 180 HOURS.
-!   2018-02-01  GUANG PING LOU INGEST FV3GFS NEMSIO ACCUMULATED PRECIPITATION 
+!   2018-02-01  GUANG PING LOU INGEST FV3GFS NEMSIO ACCUMULATED PRECIPITATION
 !                              AND RECALCULATE HOURLY AND 3 HOURLY OUTPUT DEPENDING
-!                               ON LOGICAL VALUE OF precip_accu. 
+!                               ON LOGICAL VALUE OF precip_accu.
 !   2018-02-08  GUANG PING LOU ADDED READING IN AND USING DZDT AS VERTICAL VELOCITY
 !   2018-02-16  GUANG PING LOU ADDED READING IN AND USING MODEL DELP AND DELZ
 !   2018-02-21  GUANG PING LOU THIS VERSION IS BACKWARD COMPATIBLE TO GFS MODEL
 !   2018-03-27  GUANG PING LOU CHANGE STATION ELEVATION CORRECTION LAPSE RATE FROM 0.01 TO 0.0065
-!   2018-03-28  GUANG PING LOU GENERALIZE TIME INTERVAL 
+!   2018-03-28  GUANG PING LOU GENERALIZE TIME INTERVAL
 !   2019-07-08  GUANG PING LOU ADDED STATION CHARACTER IDS
 !   2019-10-08  GUANG PING LOU MODIFY TO READ IN NetCDF FILES. RETAIN NEMSIO
 !                              RELATED CALLS AND CLEAN UP THE CODE.
@@ -43,28 +43,28 @@
 !     rlon(npoint)      - longtitude
 !     istat(npoint)    - station id
 !     elevstn(npoint)  - station elevation (m)
-!     nf               - forecast cycle         
-!     fnsig            - sigma file name        
-!     idate(4)         - date                   
+!     nf               - forecast cycle
+!     fnsig            - sigma file name
+!     idate(4)         - date
 !     levs             - input vertical layers
-!     kdim             - sfc file dimension         
+!     kdim             - sfc file dimension
 !
-!   OUTPUT:    
-!     nfile            - output data file channel       
-!     jdate            - date YYYYMMDDHH       
+!   OUTPUT:
+!     nfile            - output data file channel
+!     jdate            - date YYYYMMDDHH
 !
 ! ATTRIBUTES:
-!   LANGUAGE: 
+!   LANGUAGE:
 !   MACHINE:  IBM SP
 !
 !$$$
       use netcdf
       use nemsio_module
-      use sigio_module 
+      use sigio_module
       use physcons
       use mersenne_twister
       use funcphys
-      implicit none 
+      implicit none
       include 'mpif.h'
       type(nemsio_gfile) :: gfile
       type(nemsio_gfile) :: ffile
@@ -93,6 +93,7 @@
       real,dimension(im,jm)::  apcp, cpcp
       real,dimension(npoint,2+levs*3):: grids
       real,dimension(npoint) :: rlat,rlon,pmsl,ps,psn,elevstn
+      real,dimension(1) :: psone
       real,dimension(im*jm) :: dum1d,dum1d2
       real,dimension(im,jm) :: gdlat, hgt, gdlon
       real,dimension(im,jm,15) :: dum2d
@@ -188,7 +189,7 @@
           error=nf90_inq_varid(ncid, "lat", id_var)
           error=nf90_get_var(ncid, id_var, gdlat)
 !!end read NetCDF hearder info, read nemsio below if necessary
-       else 
+       else
 
       call nemsio_open(gfile,trim(fnsig),'read',iret=iret)
       call nemsio_getfilehead(gfile,iret=iret
@@ -218,14 +219,14 @@
           gdlon(i,j)=dum1d2((j-1)*im+i)
         end do
       end do
-   
-      endif !end read in nemsio hearder 
+
+      endif !end read in nemsio hearder
 
       if(debugprint) then
-      do k=1,levs+1 
+      do k=1,levs+1
       print*,'vcoord(k,1)= ', k, vcoord(k,1)
       end do
-      do k=1,levs+1 
+      do k=1,levs+1
       print*,'vcoord(k,2)= ', k, vcoord(k,2)
       end do
       print*,'sample lat= ',gdlat(im/5,jm/4)
@@ -240,7 +241,7 @@
       call read_netcdf_p(ncid,im,jm,1,VarName,hgt,Zreverse,
      &     iope,ionproc,iocomms,error)
         if (error /= 0) print*,'surface hgt not found'
-       else 
+       else
       VarName='hgt'
       LayName='sfc'
        call  read_nemsio(gfile,im,jm,1,VarName,LayName,hgt,
@@ -258,7 +259,7 @@
      &       Zreverse,
      &     iope,ionproc,iocomms,error)
         if (error /= 0) print*,'surface pressure not found'
-       else 
+       else
       VarName='pres'
       LayName='sfc'
         call  read_nemsio(gfile,im,jm,1,VarName,
@@ -275,7 +276,7 @@
        call read_netcdf_p(ncid,im,jm,levs,VarName,t3d,Zreverse,
      &     iope,ionproc,iocomms,error)
         if (error /= 0) print*,'temp not found'
-       else 
+       else
       VarName='tmp'
       LayName='mid layer'
         call  read_nemsio(gfile,im,jm,levs,VarName,LayName,t3d,error)
@@ -294,7 +295,7 @@
        call read_netcdf_p(ncid,im,jm,levs,VarName,q3d,Zreverse,
      &     iope,ionproc,iocomms,error)
         if (error /= 0) print*,'spfh not found'
-       else 
+       else
       VarName='spfh'
       LayName='mid layer'
         call  read_nemsio(gfile,im,jm,levs,VarName,LayName,q3d,error)
@@ -313,7 +314,7 @@
        call read_netcdf_p(ncid,im,jm,levs,VarName,uh,Zreverse,
      &     iope,ionproc,iocomms,error)
         if (error /= 0) print*,'ugrd not found'
-       else 
+       else
       VarName='ugrd'
       LayName='mid layer'
         call  read_nemsio(gfile,im,jm,levs,VarName,LayName,uh,error)
@@ -332,7 +333,7 @@
        call read_netcdf_p(ncid,im,jm,levs,VarName,vh,Zreverse,
      &     iope,ionproc,iocomms,error)
         if (error /= 0) print*,'vgrd not found'
-       else 
+       else
       VarName='vgrd'
       LayName='mid layer'
         call  read_nemsio(gfile,im,jm,levs,VarName,LayName,vh,error)
@@ -351,7 +352,7 @@
       call read_netcdf_p(ncid,im,jm,levs,VarName,omega3d,Zreverse,
      &     iope,ionproc,iocomms,error)
         if (error /= 0) print*,'dzdt not found'
-       else 
+       else
       VarName='dzdt'
       LayName='mid layer'
         call  read_nemsio(gfile,im,jm,levs,VarName,LayName,
@@ -371,7 +372,7 @@
        call read_netcdf_p(ncid,im,jm,levs,VarName,delpz,Zreverse,
      &     iope,ionproc,iocomms,error)
         if (error /= 0) print*,'dpres not found'
-       else 
+       else
       VarName='dpres'
       LayName='mid layer'
         call  read_nemsio(gfile,im,jm,levs,VarName,LayName,
@@ -390,7 +391,7 @@
         do j=1,jm
           do i=1,im
             pint(i,j,k)=vcoord(k,1)
-     +           +vcoord(k,2)*pint(i,j,1) 
+     +           +vcoord(k,2)*pint(i,j,1)
           end do
         end do
        end do
@@ -433,7 +434,7 @@
        call read_netcdf_p(ncid,im,jm,levs,VarName,delpz,Zreverse,
      &     iope,ionproc,iocomms,error)
         if (error /= 0) print*,'delz not found'
-       else 
+       else
       VarName='delz'
       LayName='mid layer'
         call read_nemsio(gfile,im,jm,levs,VarName,LayName,delpz,error)
@@ -521,7 +522,7 @@
 !open T-nint below
           error=nf90_open(trim(fngrib2),nf90_nowrite,ncid2)
        if(error /= 0)print*,'file not open',trim(fngrib), trim(fngrib2)
-       else 
+       else
       call nemsio_open(ffile,trim(fngrib),'read',iret=error)
       call nemsio_open(ffile2,trim(fngrib2),'read',iret=error)
        if(error /= 0)print*,'file not open',trim(fngrib), trim(fngrib2)
@@ -533,7 +534,7 @@
        call read_netcdf_p(ncid,im,jm,1,VarName,lwmask,Zreverse,
      &     iope,ionproc,iocomms,error)
         if (error /= 0) print*,'lwmask not found'
-       else 
+       else
       VarName='land'
       LayName='sfc'
         call  read_nemsio(ffile,im,jm,1,VarName,LayName,lwmask,error)
@@ -551,7 +552,7 @@
      &       Zreverse,
      &     iope,ionproc,iocomms,error)
         if (error /= 0) print*,'tmpsfc not found'
-       else 
+       else
       VarName='tmp'
       LayName='sfc'
         call  read_nemsio(ffile,im,jm,1,VarName,LayName,
@@ -569,7 +570,7 @@
      &              Zreverse,
      &     iope,ionproc,iocomms,error)
         if (error /= 0) print*,'tmp2m not found'
-       else 
+       else
       VarName='tmp'
       LayName='2 m above gnd'
         call  read_nemsio(ffile,im,jm,1,VarName,LayName,
@@ -588,7 +589,7 @@
      &           Zreverse,
      &     iope,ionproc,iocomms,error)
         if (error /= 0) print*,'spfh2m not found'
-       else 
+       else
       VarName='spfh'
       LayName='2 m above gnd'
         call  read_nemsio(ffile,im,jm,1,VarName,LayName,
@@ -607,7 +608,7 @@
      &              Zreverse,
      &     iope,ionproc,iocomms,error)
         if (error /= 0) print*,'ugrd10m not found'
-       else 
+       else
       VarName='ugrd'
       LayName='10 m above gnd'
         call  read_nemsio(ffile,im,jm,1,VarName,LayName,
@@ -623,7 +624,7 @@
      &             Zreverse,
      &     iope,ionproc,iocomms,error)
         if (error /= 0) print*,'vgrd10m not found'
-       else 
+       else
       VarName='vgrd'
       LayName='10 m above gnd'
         call  read_nemsio(ffile,im,jm,1,VarName,LayName,
@@ -639,7 +640,7 @@
      &              Zreverse,
      &     iope,ionproc,iocomms,error)
         if (error /= 0) print*,'soilt1 not found'
-       else 
+       else
       VarName='tmp'
       LayName='0-10 cm down'
         call  read_nemsio(ffile,im,jm,1,VarName,LayName,
@@ -658,7 +659,7 @@
      &          Zreverse,
      &     iope,ionproc,iocomms,error)
         if (error /= 0) print*,'snod not found'
-       else 
+       else
       VarName='snod'
       LayName='sfc'
         call  read_nemsio(ffile,im,jm,1,VarName,LayName,
@@ -675,7 +676,7 @@
      &            Zreverse,
      &     iope,ionproc,iocomms,error)
         if (error /= 0) print*,'lhtfl not found'
-       else 
+       else
       VarName='lhtfl'
       LayName='sfc'
         call  read_nemsio(ffile,im,jm,1,VarName,LayName,
@@ -706,7 +707,7 @@
        call read_netcdf_p(ncid2,im,jm,1,VarName,cpcp,Zreverse,
      &     iope,ionproc,iocomms,error)
         if (error /= 0) print*,'prate_ave not found'
-       else 
+       else
       VarName='prate_ave'
       LayName='sfc'
         call  read_nemsio(ffile,im,jm,1,VarName,LayName,
@@ -739,7 +740,7 @@
        call read_netcdf_p(ncid2,im,jm,1,VarName,cpcp,Zreverse,
      &     iope,ionproc,iocomms,error)
         if (error /= 0) print*,'cprat_ave not found'
-       else 
+       else
       VarName='cprat_ave'
       LayName='sfc'
         call  read_nemsio(ffile,im,jm,1,VarName,LayName,
@@ -752,7 +753,7 @@
         do j=1,jm
           do i=1,im
            dum2d(i,j,10)=(apcp(i,j)*fhour-cpcp(i,j)*ap)*3600.0
-     &                       
+     &
           end do
         end do
 
@@ -764,7 +765,7 @@
      &                Zreverse,
      &     iope,ionproc,iocomms,error)
         if (error /= 0) print*,'weasd not found'
-       else 
+       else
       VarName='weasd'
       LayName='sfc'
         call  read_nemsio(ffile,im,jm,1,VarName,LayName,
@@ -780,7 +781,7 @@
      &               dum2d(:,:,12),Zreverse,
      &     iope,ionproc,iocomms,error)
         if (error /= 0) print*,'tcdc_avelcl not found'
-       else 
+       else
       VarName='tcdc_ave'
       LayName='low cld lay'
         call  read_nemsio(ffile,im,jm,1,VarName,LayName,
@@ -796,7 +797,7 @@
      &               dum2d(:,:,13),Zreverse,
      &     iope,ionproc,iocomms,error)
         if (error /= 0) print*,'tcdc_avemcl not found'
-       else 
+       else
       VarName='tcdc_ave'
       LayName='mid cld lay'
         call  read_nemsio(ffile,im,jm,1,VarName,LayName,
@@ -812,7 +813,7 @@
      &               dum2d(:,:,14),Zreverse,
      &     iope,ionproc,iocomms,error)
         if (error /= 0) print*,'tcdc_avehcl not found'
-       else 
+       else
       VarName='tcdc_ave'
       LayName='high cld lay'
         call  read_nemsio(ffile,im,jm,1,VarName,LayName,
@@ -844,7 +845,7 @@
         jdum=jjdum(np)
 
       else
-!  find nearest neighbor 
+!  find nearest neighbor
         rdum=rlon(np)
         if(rdum<0.)rdum=rdum+360.
 
@@ -862,7 +863,7 @@
             exit
               else if(landwater(np) == lwmask(i+1,j))then
                idum=i+1
-               jdum=j      ! 2 
+               jdum=j      ! 2
             exit
               else if(landwater(np) == lwmask(i-1,j))then
                idum=i-1
@@ -1001,7 +1002,7 @@ CC             print*, ' So it takes i,j '
 
         grids(np,1)=hgt(idum,jdum)
         grids(np,2)=pint(idum,jdum,1)
-        
+
         sfc(5,np)=dum2d(idum,jdum,1)
         sfc(6,np)=dum2d(idum,jdum,6)
         sfc(17,np)=dum2d(idum,jdum,8)
@@ -1018,10 +1019,10 @@ CC             print*, ' So it takes i,j '
 
 CC There may be cases where convective precip is greater than total precip
 CC due to rounding and interpolation errors, correct it here -G.P. Lou:
-        if(sfc(11,np) .gt. sfc(12,np)) sfc(11,np)=sfc(12,np) 
+        if(sfc(11,np) .gt. sfc(12,np)) sfc(11,np)=sfc(12,np)
 
         do k=1,levs
-          grids(np,k+2)=t3d(idum,jdum,k) 
+          grids(np,k+2)=t3d(idum,jdum,k)
           grids(np,k+2+levs)=q3d(idum,jdum,k)
           grids(np,k+2+2*levs)=omega3d(idum,jdum,k)
           gridu(np,k)=uh(idum,jdum,k)
@@ -1030,10 +1031,10 @@ CC due to rounding and interpolation errors, correct it here -G.P. Lou:
           z1(np,k)=zint(idum,jdum,k+1)
 !!          p1(np,k)=0.5*(pint(idum,jdum,k)+pint(idum,jdum,k+1))
 !!          z1(np,k)=0.5*(zint(idum,jdum,k)+zint(idum,jdum,k+1))
- 
+
         end do
-      end do 
-      
+      end do
+
       print*,'finish finding nearest neighbor for each station'
 
         do np = 1, npoint
@@ -1048,7 +1049,7 @@ CC due to rounding and interpolation errors, correct it here -G.P. Lou:
 !!      if(recn_dzdt == 0 ) then !!DZDT
           do k = 1, levs
             do np = 1, npoint
-              omega(np,k) = grids(np,2+levs*2+k) 
+              omega(np,k) = grids(np,2+levs*2+k)
             enddo
           enddo
                  if(debugprint)
@@ -1064,9 +1065,10 @@ CC due to rounding and interpolation errors, correct it here -G.P. Lou:
 !          print *, "elevstn = ", elevstn(np)
           if(elevstn(np)==-999.) elevstn(np) = grids(np,1)
           psn(np) = ps(np)
+          psone = ps(np)
           call sigio_modpr(1,1,levs,nvcoord,idvc,
      &         idsl,vcoord,iret,
-     &         ps=psn(np)*1000,pd=pd3(np,1:levs))
+     &         ps=psone*1000,pd=pd3(np,1:levs))
           grids(np,2) = log(psn(np))
           if(np==11)print*,'station H,grud H,psn,ps,new pm',
      &     elevstn(np),grids(np,1),psn(np),ps(np)
@@ -1092,7 +1094,7 @@ CC due to rounding and interpolation errors, correct it here -G.P. Lou:
      &      pmsl(np),zp(np,1:levs),zp2(1:2))
         enddo
             print *, 'call gslp pmsl= ', (pmsl(np),np=1,20)
-      if(recn_delz == -9999) then 
+      if(recn_delz == -9999) then
         print*, 'using calculated height '
        else
         print*, 'using model height m'
@@ -1135,7 +1137,7 @@ CC due to rounding and interpolation errors, correct it here -G.P. Lou:
 !  look for the layer above 500 mb for precip type computation
 !
             if(pi3(np,k).ge.50000.) leveta = k
-            ppi = pi3(np,k)                 
+            ppi = pi3(np,k)
             t = grids(np,k+2)
             q = max(1.e-8,grids(np,2+k+levs))
             u = gridu(np,k)
@@ -1149,8 +1151,8 @@ CC due to rounding and interpolation errors, correct it here -G.P. Lou:
            if (mod(k,2)>0) then
             data2((kk-1)*6+7) = p1(np,k)
             data2((kk-1)*6+8) = t
-            data2((kk-1)*6+9) = u   
-            data2((kk-1)*6+10) = v 
+            data2((kk-1)*6+9) = u
+            data2((kk-1)*6+10) = v
             data2((kk-1)*6+11) = q
             data2((kk-1)*6+12) = omega(np,k)*100.
            endif
@@ -1160,16 +1162,16 @@ CC due to rounding and interpolation errors, correct it here -G.P. Lou:
 !  process surface flux file fields
 !
 !!          data(8+nflx) = psfc * 100.                   ! SURFACE PRESSURE (PA)
-!!          data(7+nflx) = pmsl(np)                           
+!!          data(7+nflx) = pmsl(np)
           data2(8+nflx2) = psfc * 100.                   ! SURFACE PRESSURE (PA)
-          data2(7+nflx2) = pmsl(np)                           
+          data2(7+nflx2) = pmsl(np)
 !!          dtemp = .0065 * (grids(np,1) - elevstn(np))
 !!          dtemp = .0100 * (grids(np,1) - elevstn(np))
 !!          sfc(37,np) = data(6+nflx) * .01
 !!          sfc(37,np) = data(7+nflx) * .01
-!!          sfc(39,np) = zp2(2)   !500 hPa height       
+!!          sfc(39,np) = zp2(2)   !500 hPa height
           sfc(37,np) = data2(7+nflx2) * .01
-          sfc(39,np) = zp2(2)   !500 hPa height       
+          sfc(39,np) = zp2(2)   !500 hPa height
 !
 !  do height correction if there is no snow or if the temp is less than 0
 ! G.P.LOU:
@@ -1191,10 +1193,10 @@ CC due to rounding and interpolation errors, correct it here -G.P. Lou:
 !
 !G.P. Lou 20200501:
 !convert instantaneous surface latent heat net flux to surface
-!evapolation  1 W m-2 = 0.0864 MJ m-2 day-1 
+!evapolation  1 W m-2 = 0.0864 MJ m-2 day-1
 !         and 1 mm day-1 = 2.45 MJ m-2 day-1
 !         equivament to 0.0864/2.54 = 0.035265
-!         equivament to 2.54/0.0864 = 28.3565 
+!         equivament to 2.54/0.0864 = 28.3565
         if(debugprint)
      +   print*,'evaporation (stn 000692)= ',sfc(17,np)
 !!          data(9+nflx) = sfc(5,np)                       ! tsfc (K)
@@ -1247,8 +1249,8 @@ CC due to rounding and interpolation errors, correct it here -G.P. Lou:
 
           if(sfc(12,np).gt.0.) then !check for precip then calc precip type
           do k = 1, leveta+1
-            pp = p1(np,k)              
-            ppi = pi3(np,k)               
+            pp = p1(np,k)
+            ppi = pi3(np,k)
             t = grids(np,k+2)
             q = max(0.,grids(np,2+k+levs))
             u = gridu(np,k)
@@ -1266,7 +1268,7 @@ CC due to rounding and interpolation errors, correct it here -G.P. Lou:
             gq0(1,k) = q
             prsl(1,k) = pp
             prsi(1,k)=ppi
-            phii(1,k)=zp(np,k)     !height in meters 
+            phii(1,k)=zp(np,k)     !height in meters
           enddo
 !       Use GFS routine calpreciptype.f to calculate precip type
             xlat=rlat(np)
