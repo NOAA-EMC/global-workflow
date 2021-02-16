@@ -27,7 +27,7 @@ fi
 git clone -b develop https://github.com/noaa-emc/nceplibs-ncio
 cd nceplibs-ncio
 mkdir -p build && cd build
-cmake -DCMAKE_INSTALL_PREFIX=../install
+cmake -DCMAKE_INSTALL_PREFIX=../install ..
 make -j ${BUILD_JOBS:-4} VERBOSE=${BUILD_VERBOSE:-}
 make install
 cd ../..

@@ -1,6 +1,6 @@
  module output_data
 
- use module_fv3gfs_ncio
+ use module_ncio
 
  implicit none
 
@@ -81,7 +81,7 @@
  print*,"READ SURFACE HEIGHT"
  call read_vardata(indset, 'hgtsfc', work2d)
 
- hgt_external_output = reshape(work2d,(/ij_output/)) 
+ hgt_external_output = reshape(work2d,(/ij_output/))
 
  call close_dataset(indset)
 
