@@ -267,6 +267,20 @@ fi
 }
 
 #------------------------------------
+# build workflow_utils
+#------------------------------------
+$Build_workflow_utils && {
+echo " .... Building workflow_utils .... "
+./build_workflow_utils.sh > $logs_dir/build_workflow_utils.log 2>&1
+rc=$?
+if [[ $rc -ne 0 ]] ; then
+    echo "Fatal error in building workflow_utils."
+    echo "The log file is in $logs_dir/build_workflow_utils.log"
+fi
+((err+=$rc))
+}
+
+#------------------------------------
 # build gfs_util       
 #------------------------------------
 # Only build on WCOSS

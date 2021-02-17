@@ -16,6 +16,7 @@
                        "Build_gfs_bufrsnd" \
                        "Build_fv3nc2nemsio" \
                        "Build_regrid_nemsio" \
+                       "Build_workflow_utils" \
                        "Build_gfs_util")
 
 #

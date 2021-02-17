@@ -5,11 +5,11 @@ set -eux
 readonly UTILS_DIR=$(cd "$(dirname "$($cmd -f -n "${BASH_SOURCE[0]}" )" )" && pwd -P)
 
 # Adapt for global-workflow structure.
+source ${UTILS_DIR}/machine-setup.sh > /dev/null 2>&1
 target=${target:-"NULL"}
 modulefile=${UTILS_DIR}/../modulefiles/workflow_utils.$target
 if [[ -f $modulefile ]]; then
   set +x
-  source ${UTILS_DIR}/machine-setup.sh > /dev/null 2>&1
   source $modulefile
   module list
   set -x
