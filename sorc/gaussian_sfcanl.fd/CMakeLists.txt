@@ -14,7 +14,7 @@ target_link_libraries(
   ${exe_name}
   nemsio::nemsio
   bacio::bacio_4
-  sp::sp_d
+  sp::sp_4
   w3nco::w3nco_d
   NetCDF::NetCDF_Fortran)
 
