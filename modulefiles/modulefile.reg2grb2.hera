@@ -16,6 +16,6 @@ module load sp/2.3.3
 module load w3nco/2.4.1
 module load bacio/2.4.1
 module load landsfcutil/2.4.1
-module load jasper/2.0.22
+module load jasper/2.0.25
 module load zlib/1.2.11
 module load wgrib2/2.0.8
