@@ -271,7 +271,7 @@ fi
 #------------------------------------
 $Build_workflow_utils && {
 echo " .... Building workflow_utils .... "
-./build_workflow_utils.sh > $logs_dir/build_workflow_utils.log 2>&1
+target=$target ./build_workflow_utils.sh > $logs_dir/build_workflow_utils.log 2>&1
 rc=$?
 if [[ $rc -ne 0 ]] ; then
     echo "Fatal error in building workflow_utils."
