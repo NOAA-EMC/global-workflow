@@ -5,10 +5,6 @@ fv3_module.f90
 kinds.f90
 )
 
-if(CMAKE_Fortran_COMPILER_ID MATCHES "^(Intel)$")
-  set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -fp-model precise")
-endif()
-
 set(exe_name fv3nc2nemsio.x)
 add_executable(${exe_name} ${fortran_src})
 target_link_libraries(
