@@ -30,9 +30,7 @@ export lnsigcutoff=2.75          # ignored if modelspace_vloc=.true.
 export lobsdiag_forenkf=".true." # use jacobian.  must be .true. if modelspace_vloc=".true."
                                  # need to specify .true. setting since config.anal sets to .false.
 
-#export EFSOIEXEC="/scratch1/NCEPDEV/da/Andrew.Eichmann/GSI_07_09/exec/global_efsoi.x"
-#export EFSOIEXEC="/scratch1/NCEPDEV/da/Andrew.Eichmann/200601_EFSOI_03/GSI_07_08/exec/global_efsoi.x"
-export EFSOIEXEC="/scratch1/NCEPDEV/da/Andrew.Eichmann/gsidev/ll-gsi/GSI/build_efsoi/bin/global_efsoi.x"
+export EFSOIEXEC="/scratch1/NCEPDEV/da/Andrew.Eichmann/gsidev/afe-efsoi/GSI/build/bin/global_efsoi.x"
 export ANAVINFO="/scratch1/NCEPDEV/da/Andrew.Eichmann/para_gfs/nutria/global_anavinfo_efsoi.l127.txt"
 
 export NAM_ENKF="smoothparm=35,"

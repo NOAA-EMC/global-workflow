@@ -19,9 +19,7 @@ if [ $QUILTING = ".true." ]; then
 fi
 
 # Number of enkf members per fcst job
-#AFE 2020-11-16 changing to LL's EFSOI config
-#export NMEM_EFCSGRP=2
-export NMEM_EFCSGRP=4
+export NMEM_EFCSGRP=2
 export RERUN_EFCSGRP="NO"
 
 # Turn off inline UPP for EnKF forecast

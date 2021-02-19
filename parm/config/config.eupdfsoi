@@ -32,4 +32,6 @@ export lobsdiag_forenkf=".true." # use jacobian.  must be .true. if modelspace_v
 
 export NAM_ENKF="smoothparm=35,"
 
+export ENKFEXEC=/scratch1/NCEPDEV/da/Andrew.Eichmann/gsidev/afe-efsoi/GSI/build/bin/enkf_gfs.x
+
 echo "END: config.eupdfsoi"
