@@ -13,10 +13,6 @@ regrid_nemsio_interface.f90
 variable_interface.f90
 )
 
-if(CMAKE_Fortran_COMPILER_ID MATCHES "^(Intel)$")
-  set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -fp-model precise")
-endif()
-
 set(exe_name regrid_nemsio.x)
 add_executable(${exe_name} ${fortran_src})
 target_link_libraries(
