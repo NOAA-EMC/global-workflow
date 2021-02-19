@@ -286,7 +286,7 @@ cat > enkf.nml << EOFnml
    use_correlated_oberrs=${use_correlated_oberrs},
    netcdf_diag=$netcdf_diag,cnvw_option=$cnvw_option,
    paranc=$paranc,write_fv3_incr=$write_fv3_incr,
-   fso_cycling=.true.,
+   efsoi_cycling=.true.,
    $WRITE_INCR_ZERO
    $NAM_ENKF  
 /

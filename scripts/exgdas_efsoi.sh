@@ -75,11 +75,13 @@ FCST6HRS=${PPREFIX}atmf006.ensmean.nc
 OSENSEIN=osense_${CDATE}_init.dat
 OSENSEOUT=osense_${CDATE}_final.dat
 
+# this needs to be set manually because params in enkf will default to fhr03
+fgfileprefixes=sfg_${CDATE}_fhr06_
 
 
 
 
-# Namelist parameters
+#analysise Namelst parameters
 USE_CORRELATED_OBERRS=${USE_CORRELATED_OBERRS:-"NO"}
 NMEM_ENKF=${NMEM_ENKF:-80}
 NAM_ENKF=${NAM_ENKF:-""}
@@ -314,6 +316,7 @@ cat > enkf.nml << EOFnml
    datestring="$CDATE",datapath="$DATA/",
    gdatehr=$gcyc,
    datehr=$cyc,
+   fgfileprefixes=$fgfileprefixes
    andataname="$VERFANL",
    analpertwtnh=${analpertwt},analpertwtsh=${analpertwt},analpertwttr=${analpertwt},
    covinflatemax=1.e2,covinflatemin=1,pseudo_rh=.true.,iassim_order=0,
