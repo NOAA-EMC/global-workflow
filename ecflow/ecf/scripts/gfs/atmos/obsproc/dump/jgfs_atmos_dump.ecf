@@ -2,8 +2,7 @@
 #BSUB -o %COM%/output/%ENVIR%/today/%RUN%_atmos_dump_%CYC%.o%J
 #BSUB -cwd /tmp
 #BSUB -q %QUEUE%
-##BSUB -W 00:20
-#BSUB -W 00:30
+#BSUB -W 00:20
 #BSUB -P %PROJ%
 #BSUB -n 14
 #BSUB -R span[ptile=14]

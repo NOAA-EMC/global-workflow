@@ -98,7 +98,7 @@ if [[ ! -d gfs_wafs.fd ]] ; then
     rm -f ${topdir}/checkout-gfs_wafs.log
     git clone --recursive https://github.com/NOAA-EMC/EMC_gfs_wafs.git gfs_wafs.fd >> ${topdir}/checkout-gfs_wafs.log 2>&1
     cd gfs_wafs.fd
-    git checkout gfs_wafs.v6.0.17
+    git checkout gfs_wafs.v6.0.18
     cd ${topdir}
 else
     echo 'Skip.  Directory gfs_wafs.fd already exists.'
@@ -109,7 +109,7 @@ if [[ ! -d verif-global.fd ]] ; then
     rm -f ${topdir}/checkout-verif-global.log
     git clone --recursive https://github.com/NOAA-EMC/EMC_verif-global.git verif-global.fd >> ${topdir}/checkout-verif-global.log 2>&1
     cd verif-global.fd
-    git checkout verif_global_v1.13.1
+    git checkout verif_global_v1.13.4
     cd ${topdir}
 else
     echo 'Skip. Directory verif-global.fd already exist.'

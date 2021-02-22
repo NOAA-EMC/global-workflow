@@ -195,7 +195,22 @@ cd ${pwd}/../ush                ||exit 8
 #--link executables 
 #------------------------------
 
+if [ ! -d $pwd/../exec ]; then mkdir $pwd/../exec ; fi
 cd $pwd/../exec
+
+[[ -s gaussian_sfcanl.exe ]] && rm -f gaussian_sfcanl.exe
+$LINK ../sorc/install/bin/gaussian_sfcanl.x gaussian_sfcanl.exe
+for workflowexec in fbwndgfs gfs_bufr regrid_nemsio supvit syndat_getjtbul \
+    syndat_maksynrc syndat_qctropcy tocsbufr ; do
+  [[ -s $workflowexec ]] && rm -f $workflowexec
+  $LINK ../sorc/install/bin/${workflowexec}.x $workflowexec
+done
+for workflowexec in enkf_chgres_recenter.x enkf_chgres_recenter_nc.x fv3nc2nemsio.x \
+    tave.x vint.x ; do
+  [[ -s $workflowexec ]] && rm -f $workflowexec
+  $LINK ../sorc/install/bin/$workflowexec .
+done
+
 [[ -s global_fv3gfs.x ]] && rm -f global_fv3gfs.x
 $LINK ../sorc/fv3gfs.fd/NEMS/exe/global_fv3gfs.x .
 if [ -d ../sorc/fv3gfs.fd/WW3/exec ]; then # Wave execs

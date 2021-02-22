@@ -63,13 +63,13 @@ program fv3_main
    if (nhcas == 0 ) then  !non-hydrostatic case
     nvar3d=9
     allocate (name3din(nvar3d), name3dout(nvar3d))
-    name3din=(/'ucomp','vcomp','temp','sphum','o3mr','nhpres','w','clwmr','delp'/)
-    name3dout=(/'ugrd','vgrd','tmp','spfh','o3mr','pres','vvel','clwmr','dpres'/)
+    name3din=(/'ucomp ','vcomp ','temp  ','sphum ','o3mr  ','nhpres','w     ','clwmr ','delp  '/)
+    name3dout=(/'ugrd ','vgrd ','tmp  ','spfh ','o3mr ','pres ','vvel ','clwmr','dpres'/)
    else
     nvar3d=8
     allocate (name3din(nvar3d), name3dout(nvar3d))
-    name3din=(/'ucomp','vcomp','temp','sphum','o3mr','hypres','clwmr','delp'/)
-    name3dout=(/'ugrd','vgrd','tmp','spfh','o3mr','pres','clwmr','dpres'/)
+    name3din=(/'ucomp ','vcomp ','temp  ','sphum ','o3mr  ','hypres','clwmr ','delp  '/)
+    name3dout=(/'ugrd ','vgrd ','tmp  ','spfh ','o3mr ','pres ','clwmr','dpres'/)
    endif
     
     ! open netcdf files

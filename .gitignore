@@ -2,12 +2,14 @@
 #--------------------------
 __pycache__
 *.pyc
-*.o
+*.[aox]
 *.mod
 
-# Ignore exec folder
+# Ignore folders
 #-------------------
 exec/
+build*/
+install*/
 
 # Ignore fix directory symlinks
 #------------------------------

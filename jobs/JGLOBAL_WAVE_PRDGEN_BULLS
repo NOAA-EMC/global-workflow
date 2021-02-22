@@ -23,6 +23,9 @@ export RUN=${RUN:-gfs}
 export COMPONENT=${COMPONENT:-wave}
 export HOMEgfs=${HOMEgfs:-$(dirname $(dirname $0))} # parent directory of current job card
 
+# Add default errchk = err_chk
+export errchk=${errchk:-err_chk}
+
 ###################################
 # Set COM Paths
 export COMIN=${COMIN:-$(compath.py ${NET}/${envir}/${RUN}.${PDY})/${cyc}/$COMPONENT}
