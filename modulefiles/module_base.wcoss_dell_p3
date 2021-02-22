@@ -1,46 +1,49 @@
 #%Module######################################################################
-##
-##      FV3GFS prerequisites
 
-# From default environment
+# Remaining modules availble through hpc-stack
+module use /usrx/local/nceplibs/dev/hpc-stack/libs/hpc-stack/modulefiles/stack
+module load hpc/1.1.0
+module load hpc-ips/18.0.1.163
+module load hpc-impi/18.0.1
 
-module load ips/18.0.1.163
-module load impi/18.0.1    
-module load lsf/10.1       
-module load EnvVars/1.0.3
-
-module load HPSS/5.0.2.5
-module load prod_util/1.1.4
-module load prod_envir/1.1.0
-module unload grib_util/1.0.6   
-module load grib_util/1.1.0
-
-module load NCO/4.7.0
+# Not hpc-stack, but must come after impi load
 module load CFP/2.0.2
 setenv USE_CFP YES
-module load pm5
 
-module load NetCDF-parallel/4.7.4
-module load ESMF/8.0.1
-module load HDF5-parallel/1.10.6
+# Non-MPI
+module load g2/3.4.1
+module load g2tmpl/1.9.1
+module load grib_util/1.2.2
+module load crtm 2.3.0
+module load prod_util/1.2.2
+module load ip/3.3.3
+module load sp/2.3.3
+module load w3nco/2.4.1
+module load bacio/2.4.1
+module load landsfcutil/2.4.1
+module load jasper/2.0.25
+module load zlib/1.2.11
+module load png/1.6.35
 
-module use -a /gpfs/dell1/nco/ops/nwprod/modulefiles/
-module load gempak/7.3.1
-module load g2tmpl/1.6.0
+# MPI
+module load netcdf/4.7.4
+module load hdf5/1.10.6
+module load esmf/8_1_0_beta_snapshot_27
+module load w3emc/2.7.3
+module load wgrib2/2.0.8
+setenv WGRIB2 wgrib2
 
-# Load for WAFS
-module load bufr_dumplist/2.0.0
-module load dumpjb/5.1.0
-module load util_shared/1.1.2
 
-# python
-module load python/3.6.3
-
-# Load crtm
-module load crtm/2.3.0
-
-# waveprep
+# Modules not under hpc-stack
+module load HPSS/5.0.2.5
+module load NCO/4.7.0
+module load gempak/7.3.3
+module load NCL/6.4.0
 module load cdo/1.9.8
 
-# oceanpost
-module load NCL/6.4.0
+# WCOSS-specific
+module load lsf/10.1
+module load EnvVars/1.0.3
+module load prod_envir/1.1.0
+module load pm5/1.0
+
