@@ -39,3 +39,4 @@ module load hdf5/1.10.6
 module load esmf/8_1_0_beta_snapshot_27
 module load w3emc/2.7.3
 module load wgrib2/2.0.8
+setenv WGRIB2 wgrib2

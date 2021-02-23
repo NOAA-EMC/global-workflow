@@ -35,8 +35,6 @@
   export LOUD=${LOUD:-YES}; [[ $LOUD = yes ]] && export LOUD=YES
   [[ "$LOUD" != YES ]] && set +x
 
-  WGRIB2=${WGRIB2:-${WGRIB2_ROOT:-${wgrib2_ROOT:?}}/bin/wgrib2}
-
   cd $GRIBDATA
 #  postmsg "$jlogfile" "Making GRIB2 Files."   # commented to reduce unnecessary output to jlogfile
 
