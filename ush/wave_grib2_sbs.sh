@@ -234,7 +234,8 @@
       exit 4
     fi
 
-    if [ "$SENDDBN" = 'YES' ]
+    # if [ "$SENDDBN" = 'YES' ]
+    if [[ "$SENDDBN" = 'YES' ]] && [[ ${outfile} != *global.0p50* ]]
     then
       set +x
       echo "   Alerting GRIB file as $COMOUT/gridded/${outfile}"
@@ -243,6 +244,8 @@
       # $DBNROOT/bin/dbn_alert MODEL WAVE_GRIB_GB2 $job $COMOUT/gridded/${outfile}
       $DBNROOT/bin/dbn_alert MODEL ${alertName}_WAVE_GB2 $job $COMOUT/gridded/${outfile}
       $DBNROOT/bin/dbn_alert MODEL ${alertName}_WAVE_GB2_WIDX $job $COMOUT/gridded/${outfile}.idx
+    else
+      echo "${outfile} is global.0p50, not alert out"
     fi
 
  

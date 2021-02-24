@@ -51,7 +51,8 @@ while [ $fhcnt -le $FHMAX_WAV ]; do
   for grid in $grids;do
     case $grid in
       ao_9km)  grdIDin='arctic.9km'
-               grdIDout='gfswaveao9km' ;;
+               #grdIDout='gfswaveao9km' ;;
+               grdIDout='gfswavearc' ;;
       at_10m)  grdIDin='atlocn.0p16'
                grdIDout='gfswaveat10m' ;;
       ep_10m)  grdIDin='epacif.0p16'
@@ -61,9 +62,11 @@ while [ $fhcnt -le $FHMAX_WAV ]; do
       glo_30m) grdIDin='global.0p25'
                grdIDout='gfswavegl30m' ;;
       glo_10m) grdIDin='global.0p16'   
-               grdIDout='gfswaveg16k' ;;
+               #grdIDout='gfswaveg16k' ;;
+               grdIDout='gfswavenh' ;;
       gso_15m) grdIDin='gsouth.0p25' 
-               grdIDout='gfswaves25k' ;;
+               #grdIDout='gfswaves25k' ;;
+               grdIDout='gfswavesh' ;;
       *)       gridIDin= 
                grdIDout= ;;
     esac
