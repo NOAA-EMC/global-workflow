@@ -34,9 +34,9 @@ platform: !Platform
   # DMPDIR - location of the global dump data.  This is used by the observation
   # processing scripts, which are not included in the public release.
   DMPDIR: !FirstTrue
-    - do: "/gpfs/gp1/emc/globaldump"
+    - do: "/gpfs/dell3/emc/global/dump"
       when: !calc tools.isdir(do)
-    - do: "/gpfs/tp1/emc/globaldump"
+    - do: "/gpfs/hps3/emc/global/dump"
       when: !calc tools.isdir(do)
     - otherwise: !error "Cannot find globaldump directory."
 
@@ -58,9 +58,9 @@ platform: !Platform
   BASE_GIT: "/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git"
 
   #BASE_CPLIC - is the base directory of ICs for coupled s2s runs
-  BASE_CPLIC: "/path/to/base/dir/of/IC"
-  #ncks - NCO netcdf operator used in ocean post 
-  ncks: "/path/to/ncks"
+  BASE_CPLIC: "/gpfs/dell2/emc/modeling/noscrub/Walter.Kolczynski/global-workflow/IC"
+  #ncks - NCO netcdf operator used in ocean post
+  ncks: "/usrx/local/prod/packages/ips/18.0.1/nco/4.7.0/bin/ncks"
 
   # config_base_extras - Additional configuration data to put in the
   # config.base file
