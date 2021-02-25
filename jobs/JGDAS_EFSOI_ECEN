@@ -112,7 +112,6 @@ postmsg "$jlogfile" "$msg"
 $LOGSCRIPT
 
 
-#${ENKFRECENSH:-$SCRgfs/exgdas_efsoi_ecen.sh}
 ${ENKFRECENSH:-$SCRgfs/exgdas_enkf_ecen.sh}
 status=$?
 [[ $status -ne 0 ]] && exit $status
