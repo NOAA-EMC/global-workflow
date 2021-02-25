@@ -2,12 +2,14 @@
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
-# Script name:         exgdas_enkf_fcst.sh
+# Script name:         exgdas_efsoi_fcst.sh
 # Script description:  Run ensemble forecasts
 #
 # Author:        Rahul Mahajan      Org: NCEP/EMC     Date: 2017-03-02
+# Author:        Andrew Eichmann    Org: NCEP/EMC     Date: 2021-02-25
 #
 # Abstract: This script runs ensemble forecasts serially one-after-another
+#           for EFSOI.  Based on exgdas_enkf_fcst.sh
 #
 # $Id$
 #
