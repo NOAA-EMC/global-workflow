@@ -4,6 +4,7 @@ module use /usrx/local/nceplibs/dev/hpc-stack/libs/hpc-stack/modulefiles/stack
 module load hpc/1.1.0
 module load hpc-ips/18.0.1.163
 module load hpc-impi/18.0.1
+export FCMP=$MPI_FC
 
 module load jasper/2.0.25
 module load zlib/1.2.11
