@@ -88,41 +88,7 @@ export COMOUT_ANL_ENSFSOI="$ROTDIR/efsoi$CDUMP.$PDY/$cyc/$COMPONENT"
 
 
 
-# ======= Edited by liaofan on 2020.05.06 ==============
-#export COMIN_GES_ENS="$ROTDIR/enkfgdas.$gPDY/$gcyc"
-#export COMOUT_ANL_ENS="$ROTDIR/enkf$CDUMP.$PDY/$cyc"
-
-# Copy enkfgdas data on the current cycle to fsoigdas folder!
-#   - see rn200502
-#   - Do not copy the folders of each member, which were created in eupd
-#   - Copy only files created before gdaseupd
-
-
-
-# AFE some of these might be superfluous for EFSOI, unless changed for v16
-# AFE also cping should probably be done in script
-
-
-# The first guess from enkfgdas
-#export COMIN_GES_ENS="$ROTDIR/enkfgdas.$gPDY/$gcyc/$COMPONENT"
-
-# The output analysis to efsoi
-#export COMOUT_ANL_ENS="$ROTDIR/fsoi$CDUMP.$PDY/$cyc/$COMPONENT"
-
-
-
 mkdir -p $COMOUT_ANL_ENSFSOI
-#cp -u -ir $COMOUT_ANL_ENS/gdas.*.radstat.*  $COMOUT_ANL_ENSFSOI
-#cp -u -ir $COMOUT_ANL_ENS/gdas.*.cnvstat.*  $COMOUT_ANL_ENSFSOI
-#cp -u -ir $COMOUT_ANL_ENS/gdas.*.oznstat.*  $COMOUT_ANL_ENSFSOI
-#cp -u -ir $COMOUT_ANL_ENS/gdas.*.loginc.txt $COMOUT_ANL_ENSFSOI
-#cp -u -ir $COMOUT_ANL_ENS/gdas.*.obsinput.* $COMOUT_ANL_ENSFSOI
-#cp -u -ir $COMOUT_ANL_ENS/gdas.*.gsistat.*  $COMOUT_ANL_ENSFSOI
-#cp -u -ir $COMOUT_ANL_ENS/gdas.*.abias*     $COMOUT_ANL_ENSFSOI
-#cp -u -ir $COMOUT_ANL_ENS/gdas.*.gsidiags   $COMOUT_ANL_ENSFSOI
-
-
-# ========================================================
 
 ###############################################################
 # Run relevant exglobal script
@@ -164,11 +130,6 @@ postmsg "$jlogfile" "$msg"
 # Remove the Temporary working directory
 ##########################################
 cd $DATAROOT
-
-echo " ====== (JDAS_EFSOI_UPDATE) liaofan on 2020.05.07 === "
-echo "DATAROOT="$DATAROOT
-echo "DATA="$DATA
-echo " ======================================================= "
 
 [[ $KEEPDATA = "NO" ]] && rm -rf $DATA
 

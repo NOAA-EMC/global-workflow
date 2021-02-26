@@ -136,11 +136,6 @@ postmsg "$jlogfile" "$msg"
 ##########################################
 cd $DATAROOT
 
-echo " ====== (JDAS_EFSOI_UPDATE) liaofan on 2020.05.07 === "
-echo "DATAROOT="$DATAROOT
-echo "DATA="$DATA
-echo " ======================================================= "
-
 [[ $KEEPDATA = "NO" ]] && rm -rf $DATA
 
 date
