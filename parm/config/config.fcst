@@ -88,7 +88,7 @@ else
 fi
 
 # Radiation options 
-export IAER=1111    ;#spectral band mapping method for aerosol optical properties
+export IAER=1011    ;#spectral band mapping method for aerosol optical properties
 export iovr_lw=3    ;#de-correlation length cloud overlap method (Barker, 2008) 
 export iovr_sw=3    ;#de-correlation length cloud overlap method (Barker, 2008) 
 export iovr=3       ;#de-correlation length cloud overlap method (Barker, 2008) 
