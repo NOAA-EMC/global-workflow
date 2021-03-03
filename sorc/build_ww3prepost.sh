@@ -26,13 +26,12 @@ export WW3_F90=gfortran
 export SWITCHFILE="${WW3_DIR}/esmf/switch"
 
 export WWATCH3_ENV=${WW3_BINDIR}/wwatch3.env
-if [ $target = orion ]; then
-  export PNG_LIB=$PNG_ROOT/lib64/libpng.a
-  export Z_LIB=$ZLIB_ROOT/lib/libz.a
-  export JASPER_LIB=$JASPER_ROOT/lib/libjasper.a
- export WWATCH3_NETCDF=NC4
- export NETCDF_CONFIG=$NETCDF_ROOT/bin/nc-config
-fi
+export PNG_LIB=${PNG_LIB:-$PNG_ROOT/lib64/libpng.a}
+export Z_LIB=${Z_LIB:-$ZLIB_ROOT/lib/libz.a}
+export JASPER_LIB=${JASPER_LIB:-$JASPER_ROOT/lib64/libjasper.a}
+export WWATCH3_NETCDF=NC4
+export NETCDF_CONFIG=$NETCDF_ROOT/bin/nc-config
+
 rm  $WWATCH3_ENV
 echo '#'                                              > $WWATCH3_ENV
 echo '# ---------------------------------------'      >> $WWATCH3_ENV
