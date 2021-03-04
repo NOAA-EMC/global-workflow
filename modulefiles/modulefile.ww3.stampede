@@ -1,6 +1,6 @@
 #%Module######################################################################
 # module for ww3 before base uses hpc-stack
-module load contrib noaatools
+#module load contrib noaatools
 
 module load cmake/3.17.3
 

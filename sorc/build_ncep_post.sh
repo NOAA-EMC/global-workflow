@@ -27,7 +27,5 @@ if [[ $target == 'jet' || $target == 'gaea' ]]; then
     exit 0
 fi
 
-cd gfs_post.fd
-git submodule update --init CMakeModules
-cd tests
+cd gfs_post.fd/tests
 ./compile_upp.sh
