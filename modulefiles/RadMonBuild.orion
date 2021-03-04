@@ -11,7 +11,5 @@ export FFLAGS="-O3 -fp-model strict -D_REAL8_ -traceback -convert big_endian -as
 export CHECK_LIBS="/gpfs/hps/nco/ops/nwprod/spa_util/check_libs.bash"
 export D_FFLAGS="-O3 -fp-model strict -D_REAL8_ -traceback -convert big_endian -assume byterecl -debug"
 
-module load intel/2018.4
-#module load w3nco/2.0.6
-module use -a /work/noaa/noaatest/NCEPLIBS/lib/modulefiles
-module load w3nco-intel-sandybridge/2.0.6
+module load hpc-intel/2018.4
+module load w3nco/2.4.1

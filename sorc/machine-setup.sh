@@ -27,12 +27,13 @@ if [[ -d /work ]] ; then
         source /apps/lmod/lmod/init/$__ms_shell
     fi
     target=orion
+
     module purge
-    module load intel/2018.4
-    module load impi/2018.4
-    export NCEPLIBS=/apps/contrib/NCEPLIBS/orion
-    export WRFPATH=$NCEPLIBS/wrf.shared.new/v1.1.1/src
-    module use $NCEPLIBS/modulefiles
+    module use /apps/contrib/NCEP/libs/hpc-stack/modulefiles/stack
+    module load hpc/1.1.0
+    module load hpc-intel/2018.4
+    module load hpc-impi/2018.4
+
     export myFC=mpiifort
     export FCOMP=mpiifort
 
@@ -97,7 +98,7 @@ elif [[ -L /usrx && "$( readlink /usrx 2> /dev/null )" =~ dell ]] ; then
     target=wcoss_dell_p3
 
     module purge 
-    module use module use /usrx/local/nceplibs/dev/hpc-stack/libs/hpc-stack/modulefiles/stack
+    module use /usrx/local/nceplibs/dev/hpc-stack/libs/hpc-stack/modulefiles/stack
     module load hpc/1.1.0
     module load hpc-ips/18.0.1.163
     module load hpc-impi/18.0.1
