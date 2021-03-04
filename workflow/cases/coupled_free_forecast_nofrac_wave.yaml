@@ -32,7 +32,7 @@ case:
   fv3_gfs_settings:
     CASE: C384
     LEVS: 128
-    DELTIM: 300
+    DELTIM: 225
     min_lakeice: 0.15
     min_seaice: 1.0e-11
     SEEDLET: 10
@@ -42,8 +42,10 @@ case:
     DO_SKEB: false
     DO_SHUM: false
     DO_SPPT: false
+    k_split: 2
+    n_split: 6
     layout:
-       x: 6
+       x: 12
        y: 12
        nth: 1
        WGRP: 1
