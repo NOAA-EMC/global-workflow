@@ -272,6 +272,9 @@ def get_workflow(dict_configs, cdump='gdas'):
     data = '&ROTDIR;/&CDUMP;.@Y@m@d/@H/gfs.t@Hz.atmanl.nc'
     dep_dict = {'type':'data', 'data':data}
     deps.append(rocoto.add_dependency(dep_dict))
+    data = '&ROTDIR;/&CDUMP;.@Y@m@d/@H/atmos/gfs.t@Hz.atmanl.nc'
+    dep_dict = {'type':'data', 'data':data}
+    deps.append(rocoto.add_dependency(dep_dict))
     data = '&ROTDIR;/&CDUMP;.@Y@m@d/@H/atmos/RESTART/@Y@m@d.@H0000.sfcanl_data.tile6.nc'
     dep_dict = {'type':'data', 'data':data}
     deps.append(rocoto.add_dependency(dep_dict))

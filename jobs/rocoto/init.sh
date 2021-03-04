@@ -20,7 +20,7 @@ status=$?
 
 ###############################################################
 # Source relevant configs
-configs="base init"
+configs="base getic init"
 for config in $configs; do
     . $EXPDIR/config.${config}
     status=$?

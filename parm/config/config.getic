@@ -8,11 +8,39 @@ echo "BEGIN: config.getic"
 # Get task specific resources
 . $EXPDIR/config.resources getic
 
-UFS_DIR=${HOMEgfs}/sorc/ufs_utils.fd
-GDASINIT_DIR=${UFS_DIR}/util/gdas_init
+export RETRO="NO" # YES = Pull v16 inputs from retrospective parallels; NO = use operational inputs
+export gfs_ver="v16" # Default = v16
 
-EXTRACT_DATA="yes"
+export UFS_DIR=${HOMEgfs}/sorc/ufs_utils.fd
+export GDASINIT_DIR=${UFS_DIR}/util/gdas_init
 
-RETRO="NO" # YES = Pull v16 inputs from retrospective parallels; NO = use operational inputs
+export PRODHPSSDIR=/NCEPPROD/hpssprod/runhistory
+export GETICSH=${GDASINIT_DIR}/get_v16.data.sh
+
+if [ ${RETRO:-"NO"} = "YES" ]; then
+  export GETICSH=${GDASINIT_DIR}/get_v16retro.data.sh
+fi
+
+if [ ${RETRO:-"NO"} = "NO" ]; then # Operational input
+  # No ENKF data prior to 2012/05/21/00z
+  if [[ "$CDATE" -lt "2012052100" ]]; then
+    set +x
+    echo FATAL ERROR: SCRIPTS DO NOT SUPPORT OLD GFS DATA
+  elif [[ "$CDATE" -lt "2016051000" ]]; then
+    export gfs_ver=v12
+    export GETICSH=${GDASINIT_DIR}/get_pre-v14.data.sh
+  elif [[ "$CDATE" -lt "2017072000" ]]; then
+    export gfs_ver=v13
+    export GETICSH=${GDASINIT_DIR}/get_pre-v14.data.sh
+  elif [[ "$CDATE" -lt "2019061200" ]]; then
+    export gfs_ver=v14
+    export GETICSH=${GDASINIT_DIR}/get_${gfs_ver}.data.sh
+    export tarball=gpfs_hps_nco_ops_com_gfs_prod_gfs.${PDY}_${cyc}.pgrb2_${grid}.tar
+  elif [[ "$CDATE" -lt "2021031700" ]]; then
+    export gfs_ver=v15
+    export GETICSH=${GDASINIT_DIR}/get_${gfs_ver}.data.sh
+    export tarball=com_gfs_prod_gfs.${PDY}_${cyc}.gfs_pgrb2.tar
+  fi
+fi
 
 echo "END: config.getic"
