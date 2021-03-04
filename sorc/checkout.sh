@@ -37,9 +37,11 @@ fi
 echo gsi checkout ...
 if [[ ! -d gsi.fd ]] ; then
     rm -f ${topdir}/checkout-gsi.log
-    git clone --recursive https://github.com/NOAA-EMC/GSI.git gsi.fd >> ${topdir}/checkout-gsi.log 2>&1
+    #git clone --recursive https://github.com/NOAA-EMC/GSI.git gsi.fd >> ${topdir}/checkout-gsi.log 2>&1
+    git clone --recursive https://github.com/RussTreadon-NOAA/GSI.git gsi.fd >> ${topdir}/checkout-gsi.log 2>&1
     cd gsi.fd
-    git checkout gfsda.v16.0.0
+    #git checkout gfsda.v16.0.0
+    git checkout feature/hpc-stack
     git submodule update
     cd ${topdir}
 else
@@ -60,9 +62,11 @@ fi
 echo ufs_utils checkout ...
 if [[ ! -d ufs_utils.fd ]] ; then
     rm -f ${topdir}/checkout-ufs_utils.log
-    git clone --recursive https://github.com/NOAA-EMC/UFS_UTILS.git ufs_utils.fd >> ${topdir}/checkout-ufs_utils.fd.log 2>&1
+    #git clone --recursive https://github.com/NOAA-EMC/UFS_UTILS.git ufs_utils.fd >> ${topdir}/checkout-ufs_utils.fd.log 2>&1
+    git clone --recursive https://github.com/GeorgeGayno-NOAA/UFS_UTILS.git ufs_utils.fd >> ${topdir}/checkout-ufs_utils.fd.log 2>&1
     cd ufs_utils.fd
     #git checkout ops-gfsv16.0.0
+    git checkout feature/stack
     cd ${topdir}
 else
     echo 'Skip.  Directory ufs_utils.fd already exists.'
@@ -73,7 +77,7 @@ if [[ ! -d gfs_post.fd ]] ; then
     rm -f ${topdir}/checkout-gfs_post.log
     git clone https://github.com/NOAA-EMC/EMC_post.git gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
     cd gfs_post.fd
-    git checkout upp_v10.0.3
+    git checkout 33eb60e5b486d9ff670c76b799f886b7f47c2022
     git submodule update --init CMakeModules
 
     ################################################################################

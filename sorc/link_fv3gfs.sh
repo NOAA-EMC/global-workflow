@@ -213,12 +213,6 @@ done
 
 [[ -s global_fv3gfs.x ]] && rm -f global_fv3gfs.x
 $LINK ../sorc/fv3gfs.fd/NEMS/exe/global_fv3gfs.x .
-if [ -d ../sorc/fv3gfs.fd/WW3/exec ]; then # Wave execs
-  for waveexe in ww3_gint ww3_grib ww3_grid ww3_multi ww3_ounf ww3_ounp ww3_outf ww3_outp ww3_prep ww3_prnc; do
-    [[ -s $waveexe ]] && rm -f $waveexe
-    $LINK ../sorc/fv3gfs.fd/WW3/exec/$waveexe .
-  done
-fi
 
 [[ -s gfs_ncep_post ]] && rm -f gfs_ncep_post
 $LINK ../sorc/gfs_post.fd/exec/upp.x gfs_ncep_post
