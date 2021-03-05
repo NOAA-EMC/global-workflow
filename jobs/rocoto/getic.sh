@@ -52,9 +52,39 @@ export GETICSH=${GETICSH:-${GDASINIT_DIR}/get_v16.data.sh}
 
 # Run get data script
 if [ ! -d $EXTRACT_DIR ]; then mkdir -p $EXTRACT_DIR ; fi
-sh ${GETICSH} ${CDUMP}
-status=$?
-[[ $status -ne 0 ]] && exit $status
+
+# Check if init is needed and run if so
+if [[ $gfs_ver = "v16" && $EXP_WARM_START = ".true." && $CASE = "C768" ]]; then
+  # Pull RESTART files off HPSS
+
+  if [ ! -d $ROTDIR ]; then mkdir $ROTDIR ; fi
+  cd $ROTDIR
+
+  if [ ${RETRO:-"NO"} = "YES" ]; then # Retrospective parallel input
+
+    # Pull prior cycle restart files
+    BDATE=`$NDATE -06 ${yy}${mm}${dd}${hh}`
+    htar -xvf ${HPSSDIR}/${BDATE}/gdas_restartb.tar
+    status=$?
+    [[ $status -ne 0 ]] && exit $status
+
+    # Pull current cycle restart files
+    htar -xvf ${HPSSDIR}/${CDATE}/gfs_restarta.tar
+    status=$?
+    [[ $status -ne 0 ]] && exit $status
+
+# else # Opertional input
+#   # ADD AFTER IMPLEMENTATION
+  fi
+
+else
+
+  # Run UFS_UTILS GETICSH
+  sh ${GETICSH} ${CDUMP}
+  status=$?
+  [[ $status -ne 0 ]] && exit $status
+
+fi
 
 # Pull pgbanl file for verification/archival - v14+
 if [ $gfs_ver = v14 -o $gfs_ver = v15 ]; then

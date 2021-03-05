@@ -17,11 +17,20 @@ export GDASINIT_DIR=${UFS_DIR}/util/gdas_init
 export PRODHPSSDIR=/NCEPPROD/hpssprod/runhistory
 export GETICSH=${GDASINIT_DIR}/get_v16.data.sh
 
-if [ ${RETRO:-"NO"} = "YES" ]; then
+if [ ${RETRO:-"NO"} = "YES" ]; then # Retrospective parallel input
   export GETICSH=${GDASINIT_DIR}/get_v16retro.data.sh
-fi
-
-if [ ${RETRO:-"NO"} = "NO" ]; then # Operational input
+  if [[ "$CDATE" -lt "2019060106" ]]; then
+    HPSSDIR=/NCEPDEV/emc-global/5year/emc.glopara/WCOSS_D/gfsv16/v16retro0e
+  elif [[ "$CDATE" -lt "2019090100" ]]; then
+    HPSSDIR=/NCEPDEV/emc-global/5year/emc.glopara/WCOSS_D/gfsv16/v16retro1e
+  elif [[ "$CDATE" -lt "2019101706" ]]; then
+    HPSSDIR=/NCEPDEV/emc-global/5year/emc.glopara/WCOSS_D/gfsv16/v16retro2e
+  elif [[ "$CDATE" -lt "2020122206" ]]; then
+    HPSSDIR=/NCEPDEV/emc-global/5year/emc.glopara/WCOSS_D/gfsv16/v16rt2
+  else
+    HPSSDIR=/NCEPDEV/emc-global/5year/emc.gloparadev/WCOSS_D/gfsv16/v16rt2n
+  fi
+elif [ ${RETRO:-"NO"} = "NO" ]; then # Operational input
   # No ENKF data prior to 2012/05/21/00z
   if [[ "$CDATE" -lt "2012052100" ]]; then
     set +x
