@@ -40,6 +40,7 @@ case:
     CPL_ATMIC: CFSR
     nst_anl: yes
     psm_bc: 1
+    dddmp: 0.2
     FSICL: 0
     DO_SKEB: false
     DO_SHUM: false
