@@ -88,19 +88,20 @@ cat > input.nml <<EOF
   npy = $npy
   ntiles = $ntiles
   npz = $npz
-  dz_min =  6
+  dz_min =  ${dz_min:-"6"}    ! CROW configured
+  psm_bc = ${psm_bc:-"0"}    ! CROW configured
   grid_type = -1
-  make_nh = $make_nh
+  make_nh = $make_nh 
   fv_debug = ${fv_debug:-".false."}
   range_warn = ${range_warn:-".false."}
   reset_eta = .false.
-  n_sponge = ${n_sponge:-"10"}
+  n_sponge = ${n_sponge:-"10"}    ! CROW configured
   nudge_qv = ${nudge_qv:-".true."}
   nudge_dz = ${nudge_dz:-".false."}
   tau = ${tau:-10.}
   rf_cutoff = ${rf_cutoff:-"7.5e2"}
-  d2_bg_k1 = ${d2_bg_k1:-"0.15"}
-  d2_bg_k2 = ${d2_bg_k2:-"0.02"}
+  d2_bg_k1 = ${d2_bg_k1:-"0.15"}    ! CROW configured
+  d2_bg_k2 = ${d2_bg_k2:-"0.02"}    ! CROW configured
   kord_tm = ${kord_tm:-"-9"}
   kord_mt = ${kord_mt:-"9"}
   kord_wz = ${kord_wz:-"9"}
@@ -416,15 +417,15 @@ cat >> input.nml <<EOF
   FAISS = ${FAISS:-99999}
   FSNOL = ${FSNOL:-99999}
   FSNOS = ${FSNOS:-99999}
-  FSICL = 99999
-  FSICS = 99999
-  FTSFL = 99999
-  FVETL = 99999
-  FSOTL = 99999
-  FvmnL = 99999
-  FvmxL = 99999
-  FSLPL = 99999
-  FABSL = 99999
+  FSICL = ${FSICL:-99999}
+  FSICS = ${FSICS:-99999}
+  FTSFL = ${FTSFL:-99999}
+  FVETL = ${FVETL:-99999}
+  FSOTL = ${FSOTL:-99999}
+  FvmnL = ${FvmnL:-99999}
+  FvmxL = ${FvmxL:-99999}
+  FSLPL = ${FSLPL:-99999}
+  FABSL = ${FABSL:-99999}
   $namsfc_nml
 /
 
