@@ -326,6 +326,7 @@ cd $pwd/../parm/config
 [[ -s config.base ]] && rm -f config.base 
 if [ $RUN_ENVIR = nco ] ; then
  cp -p config.base.nco.static config.base
+ cp -p config.resources.nco.static config.resources
 else
  cp -p config.base.emc.dyn config.base
 fi
