@@ -39,6 +39,9 @@ case:
     CCPP_SUITE: FV3_GFS_v16_coupled
     CPL_ATMIC: CFSRfracL127
     nst_anl: yes
+    psm_bc: 1
+    dddmp: 0.2
+    FSICL: 0
     DO_SKEB: false
     DO_SHUM: false
     DO_SPPT: false

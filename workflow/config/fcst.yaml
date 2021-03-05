@@ -163,9 +163,12 @@ config_fcst:
     #coupling settings 
     export FRAC_GRID="{doc.settings.FRAC_GRID}"
     export cplmode="{doc.settings.cplmode}"
+    export psm_bc="{doc.fv3_gfs_settings.psm_bc}"
 
     export min_lakeice="{doc.fv3_gfs_settings.min_lakeice}"
     export min_seaice="{doc.fv3_gfs_settings.min_seaice}" 
+
+    export FSICL="{doc.fv3_gfs_settings.FSICL}"
 
     # Stochastic physics parameters
     # nam_stochy section

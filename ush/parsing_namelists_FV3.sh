@@ -89,6 +89,7 @@ cat > input.nml <<EOF
   ntiles = $ntiles
   npz = $npz
   dz_min =  ${dz_min:-"6"}    ! CROW configured
+  psm_bc = ${psm_bc:-"0"}    ! CROW configured
   grid_type = -1
   make_nh = $make_nh 
   fv_debug = ${fv_debug:-".false."}
@@ -416,15 +417,15 @@ cat >> input.nml <<EOF
   FAISS = ${FAISS:-99999}
   FSNOL = ${FSNOL:-99999}
   FSNOS = ${FSNOS:-99999}
-  FSICL = 99999
-  FSICS = 99999
-  FTSFL = 99999
-  FVETL = 99999
-  FSOTL = 99999
-  FvmnL = 99999
-  FvmxL = 99999
-  FSLPL = 99999
-  FABSL = 99999
+  FSICL = ${FSICL:-99999}
+  FSICS = ${FSICS:-99999}
+  FTSFL = ${FTSFL:-99999}
+  FVETL = ${FVETL:-99999}
+  FSOTL = ${FSOTL:-99999}
+  FvmnL = ${FvmnL:-99999}
+  FvmxL = ${FvmxL:-99999}
+  FSLPL = ${FSLPL:-99999}
+  FABSL = ${FABSL:-99999}
   $namsfc_nml
 /
 
