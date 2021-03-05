@@ -50,7 +50,7 @@ case:
        y: 12
        nth: 1
        WGRP: 1
-       WGRP_NTASKS: 24
+       WGRP_NTASKS: 96
        WRTIOBUF: "32M"
 
   ocn_settings:
@@ -60,8 +60,8 @@ case:
     ICEPETS: 48
 
   wave_settings: 
-    WAVPETS: 136
-    CPL_WAVIC: CFSR
+    WAVPETS: 152
+    CPL_WAVIC: CFSRwave20200925
     waveGRD: 'gwes_30m'
     wavepostGRD: 'gwes_30m'
     waveesmfGRD: ''
