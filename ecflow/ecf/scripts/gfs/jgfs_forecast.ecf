@@ -4,7 +4,7 @@
 #BSUB -q %QUEUE%
 #BSUB -P %PROJ%
 #BSUB -W 2:30
-#BSUB -n 2344
+#BSUB -n 2424
 #BSUB -R affinity[core(7)]
 #BSUB -R span[ptile=4]
 #BSUB -cwd /tmp
@@ -14,8 +14,8 @@
 
 set -x
 
-export NODES=586
-export ntasks=2344
+export NODES=606
+export ntasks=2424
 export ptile=4
 export threads=7
 
