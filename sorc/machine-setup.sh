@@ -29,7 +29,7 @@ if [[ $hname = 'stampede2.tacc.utexas.edu' ]] ; then
     fi
     target=stampede
     module purge
-    module use /work/07738/kgerheis/stampede2/hpc-stack/v1.0.0-beta1/modulefiles/stack
+    module use /work/08048/hanglei/NCEP/install/hpc-stack/modulefiles/stack
     module load hpc/1.0.0-beta1
     module load hpc-intel/18.0.2
     module load impi/18.0.2
