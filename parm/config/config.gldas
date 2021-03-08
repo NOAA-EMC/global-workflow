@@ -11,5 +11,6 @@ echo "BEGIN: config.gldas"
 export GLDASSH=$HOMEgfs/scripts/exgdas_atmos_gldas.sh
 export gldas_spinup_hours=72
 export CPCGAUGE=$DMPDIR
+export FINDDATE=$HOMEgfs/util/ush/finddate.sh
 
 echo "END: config.gldas"

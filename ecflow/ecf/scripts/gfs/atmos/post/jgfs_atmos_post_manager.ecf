@@ -1,15 +1,14 @@
-#! /bin/sh
-#BSUB -q %QUEUE%
-#BSUB -P %PROJ%
+#BSUB -L /bin/sh
 #BSUB -J %E%gfs_atmos_post_manager_%CYC%
 #BSUB -o %COM%/output/%ENVIR%/today/gfs_atmos_post_manager_%CYC%.o%J
+#BSUB -q %QUEUE%
+#BSUB -P %PROJ%
 #BSUB -W 4:00
 #BSUB -n 1
 #BSUB -R affinity[core(1)]
 #BSUB -R span[ptile=1]
 #BSUB -cwd /tmp
 
-module purge
 %include <head.h>
 %include <envir-p3.h>
 
@@ -35,13 +34,8 @@ module load impi/${impi_ver}
 
 module list
 
-export COMPONENT=${COMPONENT:-atmos}
-export COM_IN=%COM%/$NET/$envir
-export ROTDIR=%COM%/$NET/$envir
 export cyc=%CYC%
 export cycle=t%CYC%z
-export COMIN=$COM_IN/${RUN}.${PDY}/${cyc}/${COMPONENT}
-export COMOUT=$COMIN
 export USE_CFP=YES
 
 ############################################################

@@ -36,6 +36,7 @@
   cd $DATA
   postmsg "$jlogfile" "Making TAR FILE"
 
+  alertName=`echo $RUN|tr [a-z] [A-Z]`
 
   set +x
   echo ' '
@@ -205,14 +206,14 @@
     exit 4
   fi
 
-  if [ "$SENDDBN" = 'YES' ]
+  if [ "$SENDDBN" = 'YES' -a  $type != "ibp" ]
   then
     set +x
     echo ' '
     echo "   Alerting TAR file as $COMOUT/station/${file_name}"
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    $DBNROOT/bin/dbn_alert MODEL OMBWAVE $job $COMOUT/station/${file_name}
+    $DBNROOT/bin/dbn_alert MODEL ${alertName}_WAVE_TAR $job $COMOUT/station/${file_name}
   fi
 
 # --------------------------------------------------------------------------- #
