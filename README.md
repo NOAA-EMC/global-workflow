@@ -1,7 +1,4 @@
-# How to use the unified workflow for the ufs-s2s-model application (work in progress)
-
-Note, currently the wave gridded post does not work properly. There is work actively ongoing to fix it. 
-This message will be deleted when the fix for wave post is committed. 
+# How to use the unified workflow for the coupled ufs-weather-model (work in progress)
 
 ## Checkout the source code and scripts
 ```
@@ -10,9 +7,9 @@ cd coupled-workflow
 git checkout feature/coupled-crow
 git submodule update --init --recursive     #Update submodules 
 cd sorc
-sh checkout.sh -c                    # Check out forecast model with COUPLED=YES
+sh checkout.sh -c                           #Check out forecast model with COUPLED=YES
 ```
-## Compile code used in ufs-s2s-model and EMC_post and link fixed files and executable programs:
+## Compile code needed to run prototype and link fixed files and executable programs:
 ```
 sh build_all.sh -c           #This command will build only execs for coupled
 
@@ -63,12 +60,11 @@ or
 ./setup_case.sh -p HERA ../cases/$CASE.yaml test2d
 ```
 where $CASE is one of the following:
-- prototype_5: Used for UFS S2S Prototype 5 (Runs 35 day cases with atm-ocn-ice-wav coupling, use with p5 workflow only)
 - coupled_free_forecast: 2 day tests for atm-ocn-ice coupling 
 - coupled_free_forecast_wave: 2 day test for atm-ocn-ice-wav coupling (frac grid)
 - coupled_free_forecast_nofrac_wave: 2 day test for atm-ocn-ice-wav coupling (non frac grid)
 - atm_free_forecast:  Run the atm only case with same ICs as coupled tests 
-Please see the bottom of the README for information about particular versions and ICs
+Please see the bottom of the README for information about particular versions/prototype and ICs
 
 This will create a experiment directory ($EXPERIMENT_DIRECTORY). In the current example, $EXPERIMENT_DIRECTORY=$EXPROOT/test_3d.
 

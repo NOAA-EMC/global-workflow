@@ -15,7 +15,6 @@ config_fcst:
         export hord_xx_nh_nonmono={doc.fv3_gfs_settings.phy_dependent_var.hord_xx_nh_nonmono}
         export vtdm4_nh_nonmono={doc.fv3_gfs_settings.phy_dependent_var.vtdm4_nh_nonmono}
         export nord={doc.fv3_gfs_settings.phy_dependent_var.nord}
-        export dddmp={doc.fv3_gfs_settings.phy_dependent_var.dddmp}
         export d4_bg={doc.fv3_gfs_settings.phy_dependent_var.d4_bg}
     - otherwise: ""
 
@@ -119,6 +118,7 @@ config_fcst:
     export dnats={doc.fv3_gfs_settings.phy_dependent_var.dnats}
     export do_sat_adj="{tools.fort(doc.fv3_gfs_settings.phy_dependent_var.do_sat_adjust)}"
     export nwat={doc.fv3_gfs_settings.phy_dependent_var.nwat}
+    export dddmp={doc.fv3_gfs_settings.dddmp}
 
     # gfs_physics_nml section
     export h2o_phys="{tools.fort(doc.fv3_gfs_settings.h2o_phys)}"

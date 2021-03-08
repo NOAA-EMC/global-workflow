@@ -558,7 +558,7 @@ WW3_postdet()
     # Link wave IC for current cycle
     # $NLN ${WRDIR}/${sPDY}.${scyc}0000.restart.${wavGRD} $DATA/restart.${wavGRD}
     # Link IC for S2S benchmarks:
- ##temporary##   $NCP -pf $ICSDIR/$CDATE/wav/${PDY}.${cyc}0000.restart.$wavGRD $DATA/restart.$wavGRD
+    $NCP -pf $ICSDIR/$CDATE/wav/${PDY}.${cyc}0000.restart.$wavGRD $DATA/restart.$wavGRD
     # Link log files for computational grids:
     eval $NLN  $ROTDIR/${CDUMP}.${PDY}/${cyc}/wave/rundata/${COMPONENTwave}${WAV_MEMBER}.log.${wavGRD}.${PDY}${cyc} $DATA/log.${wavGRD}
   done
