@@ -73,6 +73,11 @@ if [[ $gfs_ver = "v16" && $EXP_WARM_START = ".true." && $CASE = "C768" ]]; then
     status=$?
     [[ $status -ne 0 ]] && exit $status
 
+    # Pull IAU increment files
+    htar -xvf ${HPSSDIR}/${CDATE}/gfs_netcdfa.tar
+    status=$?
+    [[ $status -ne 0 ]] && exit $status
+
 # else # Opertional input
 #   # ADD AFTER IMPLEMENTATION
   fi
