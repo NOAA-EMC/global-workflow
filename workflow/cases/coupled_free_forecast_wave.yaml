@@ -3,8 +3,8 @@ case:
     workflow_file: layout/free_forecast_gfs.yaml
 
   settings: 
-    SDATE: 2013-04-01t00:00:00
-    EDATE: 2013-04-01t00:00:00
+    SDATE: 2013-01-01t00:00:00
+    EDATE: 2013-01-01t00:00:00
 
     onestep: .true.
     cplmode: nems_frac
@@ -42,7 +42,7 @@ case:
     nst_anl: yes
     psm_bc: 1
     dddmp: 0.2
-    FSICL: 0
+    FSICL: 99999
     DO_SKEB: false
     DO_SHUM: false
     DO_SPPT: false
@@ -50,20 +50,20 @@ case:
     n_split: 6
     layout:
        x: 12
-       y: 12
-       nth: 1
+       y: 16
+       nth: 2
        WGRP: 1
-       WGRP_NTASKS: 96
+       WGRP_NTASKS: 88
        WRTIOBUF: "32M"
 
   ocn_settings:
-    OCNPETS: 240
+    OCNPETS: 220
 
   ice_settings:
-    ICEPETS: 48
+    ICEPETS: 80
 
   wave_settings: 
-    WAVPETS: 152
+    WAVPETS: 160
     CPL_WAVIC: CFSRwave20200925
     waveGRD: 'gwes_30m'
     wavepostGRD: 'gwes_30m'
