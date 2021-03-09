@@ -77,8 +77,8 @@ cd ${pwd}/../ush                ||exit 8
         $LINK ../sorc/gfs_post.fd/ush/$file                  .
     done
     for file in emcsfc_ice_blend.sh  fv3gfs_driver_grid.sh  fv3gfs_make_orog.sh  global_cycle_driver.sh \
-        emcsfc_snow.sh  fv3gfs_filter_topo.sh  global_chgres_driver.sh  global_cycle.sh \
-        chgres_cube.sh  fv3gfs_make_grid.sh  global_chgres.sh  ; do
+        emcsfc_snow.sh  fv3gfs_filter_topo.sh  global_cycle.sh \
+        chgres_cube.sh  fv3gfs_make_grid.sh ; do
         $LINK ../sorc/ufs_utils.fd/ush/$file                  .
     done
     for file in gldas_archive.sh  gldas_forcing.sh gldas_get_data.sh  gldas_process_data.sh gldas_liscrd.sh  gldas_post.sh ; do
@@ -307,9 +307,7 @@ cd ${pwd}/../sorc   ||   exit 8
     for prog in fregrid make_hgrid make_solo_mosaic ; do
         $SLINK ufs_utils.fd/sorc/fre-nctools.fd/tools/$prog                                ${prog}.fd                                
     done
-    for prog in  global_cycle.fd \
-        emcsfc_ice_blend.fd  nst_tf_chg.fd \
-        emcsfc_snow2mdl.fd   global_chgres.fd ;do
+    for prog in global_cycle.fd emcsfc_ice_blend.fd emcsfc_snow2mdl.fd ;do
         $SLINK ufs_utils.fd/sorc/$prog                                                     $prog
     done
 
