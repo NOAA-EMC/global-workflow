@@ -20,8 +20,9 @@ module load g2tmpl/1.9.1
 module load crtm/2.3.0
 setenv CRTM_FIX /scratch2/NCEPDEV/nwprod/NCEPLIBS/fix/crtm_v2.3.0
 
-module load netcdf/4.7.4
+module load zlib/1.2.11
 module load hdf5/1.10.6
+module load netcdf/4.7.4
 module load esmf/8_1_0_beta_snapshot_27
 
 module load wgrib2/2.0.8
