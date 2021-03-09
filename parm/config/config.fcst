@@ -7,6 +7,7 @@ echo "BEGIN: config.fcst"
 
 # Source model specific information that is resolution dependent
 . $EXPDIR/config.fv3 $CASE
+[[ "$CDUMP" == "gfs" ]] && export nth_fv3=$nth_fv3_gfs
 
 # Get task specific resources
 . $EXPDIR/config.resources fcst
@@ -253,12 +254,13 @@ elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
       export io_layout="1,1"
     fi
 
-    # Debug load balancing 
-    #export KEEPDATA="YES"
-    #export ESMF_RUNTIME_PROFILE=ON
-    #export ESMF_RUNTIME_PROFILE_OUTPUT=SUMMARY
 
 fi
+
+    ## Debug load balancing
+    # export KEEPDATA="YES"
+    # export ESMF_RUNTIME_PROFILE=ON
+    # export ESMF_RUNTIME_PROFILE_OUTPUT=SUMMARY
 
 
 # Regrid tiles to global Gaussian grid in NEMSIO
