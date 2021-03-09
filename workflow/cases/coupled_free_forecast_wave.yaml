@@ -3,8 +3,8 @@ case:
     workflow_file: layout/free_forecast_gfs.yaml
 
   settings: 
-    SDATE: 2013-01-01t00:00:00
-    EDATE: 2013-01-01t00:00:00
+    SDATE: 2013-04-01t00:00:00
+    EDATE: 2013-04-01t00:00:00
 
     onestep: .true.
     cplmode: nems_frac

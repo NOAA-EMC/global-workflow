@@ -7,12 +7,13 @@ case:
     EDATE: 2013-04-01t00:00:00
 
     onestep: .true.
-    cplmode: nems_orig
-    FRAC_GRID: .false.
+    cplmode: nems_frac
+    FRAC_GRID: .true.
     cplwav: .true.
     cplwav2atm: .true.
     cplflx: .true.
-    print_esmf: .true.
+    print_esmf: .false.
+    esmf_profile: .false.
     nems_temp: 'cpld_wave'
     mom6ic_prepared: .false.
     inline_post: .true. 
@@ -25,7 +26,7 @@ case:
     OCN_INTERVAL: 24
     FHOUT_GFS: 6
     FHMIN_GFS: 0
-    FHMAX_GFS: 48
+    FHMAX_GFS: 840
     FHMAX_HF_GFS: 0
     FHOUT_HF_GFS: -1
 
@@ -37,11 +38,11 @@ case:
     min_seaice: 1.0e-11
     SEEDLET: 10
     CCPP_SUITE: FV3_GFS_v16_coupled
-    CPL_ATMIC: CFSR
+    CPL_ATMIC: CFSRfracL127
     nst_anl: yes
     psm_bc: 1
     dddmp: 0.2
-    FSICL: 9999
+    FSICL: 99999
     DO_SKEB: false
     DO_SHUM: false
     DO_SPPT: false
