@@ -200,7 +200,7 @@ Currently this is set up for benchmark runs which have ICs which are already gen
 ## Particular versions 
 
 Prototype 5: global-workflow hash 005468b9299ea6fc9afdbeace33c336c6797833a
-Prototype 6: global-wofklow hash 8a7694a2ab7ac95cd5530c0b14f7971602504cf9
+Prototype 6: global-workflow hash 8a7694a2ab7ac95cd5530c0b14f7971602504cf9
 
 ## Managing Default / Adding new configuration variables
 
