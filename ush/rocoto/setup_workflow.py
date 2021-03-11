@@ -1240,10 +1240,16 @@ def get_hyb_tasks(dict_configs, cycledef='enkf'):
 
     # efsoi 
     deps = []
-    dep_dict = {'type': 'metatask', 'name': '%sepmnfsoi' % cdump}
-    deps.append(rocoto.add_dependency(dep_dict))
+#    dep_dict = {'type': 'metatask', 'name': '%sepmnfsoi' % cdump}
+#    deps.append(rocoto.add_dependency(dep_dict))
 #    dep_dict = {'type': 'metatask', 'name': '%sepmnsfsoi' % cdump, 'offset': '-6:00:00'}
 #    deps.append(rocoto.add_dependency(dep_dict))
+    data = '&ROTDIR;/efsoigdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmf030.ensmean.nc'
+    dep_dict = {'type': 'data', 'data': data, 'offset': '-6:00:00'}
+    deps.append(rocoto.add_dependency(dep_dict))
+    data = '&ROTDIR;/efsoigdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmf024.ensmean.nc'
+    dep_dict = {'type': 'data', 'data': data}
+    deps.append(rocoto.add_dependency(dep_dict))
     data = '&ROTDIR;/gdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmanl.ensres.nc'
     dep_dict = {'type': 'data', 'data': data, 'offset': '24:00:00'}
     deps.append(rocoto.add_dependency(dep_dict))
