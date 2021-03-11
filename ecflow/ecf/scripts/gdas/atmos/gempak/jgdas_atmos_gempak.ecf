@@ -3,9 +3,7 @@
 #BSUB -o %COM%/output/%ENVIR%/today/gdas_atmos_gempak_%CYC%.o%J
 #BSUB -q %QUEUE%
 #BSUB -P %PROJ%
-## JY temporarily increase wall clock as the submit time is long 
-##BSUB -W 0:15
-#BSUB -W 0:30
+#BSUB -W 0:15
 #BSUB -n 2
 #BSUB -R affinity[core(1)]
 #BSUB -R span[ptile=1]

@@ -3,7 +3,7 @@
 #BSUB -q %QUEUE%
 #BSUB -P %PROJ%
 #BSUB -L /bin/sh
-#BSUB -W 0:10
+#BSUB -W 0:08
 #BSUB -n 1
 #BSUB -R affinity[core(1)]
 #BSUB -R span[ptile=1]
