@@ -30,30 +30,30 @@
 #B 4500000
 
 
-com/gfs/_ENVIR_/syndat/
+/gpfs/dell1/nco/ops/com/gfs/prod/syndat/ com/gfs/_ENVIR_/syndat/
 B 180
  
-com/gfs/_ENVIR_/gdascounts/
+/gpfs/dell1/nco/ops/com/gfs/prod/gdascounts/ com/gfs/_ENVIR_/gdascounts/
 + /data_counts._MONPREV_/***
 - *
 B 16000000
  
-com/gfs/_ENVIR_/gdascounts/
+/gpfs/dell1/nco/ops/com/gfs/prod/gdascounts/ com/gfs/_ENVIR_/gdascounts/
 + /data_counts._MONCUR_/***
 - *
 B 16000000
  
-com/gfs/_ENVIR_/gdascounts/
+/gpfs/dell1/nco/ops/com/gfs/prod/gdascounts/ com/gfs/_ENVIR_/gdascounts/
 + /satcounts._MONPREV_/***
 - *
 B 16000000
  
-com/gfs/_ENVIR_/gdascounts/
+/gpfs/dell1/nco/ops/com/gfs/prod/gdascounts/ com/gfs/_ENVIR_/gdascounts/
 + /satcounts._MONCUR_/***
 - *
 B 16000000
  
-com/gfs/_ENVIR_/sdm_rtdm/
+/gpfs/dell1/nco/ops/com/gfs/prod/sdm_rtdm/ com/gfs/_ENVIR_/sdm_rtdm/
 + /obcount_30day/
 + /obcount_30day/gdas/
 + /obcount_30day/gdas/gdas._PDYm1_/***
@@ -61,14 +61,14 @@ com/gfs/_ENVIR_/sdm_rtdm/
 - *
 B 2000000
  
-com/gfs/_ENVIR_/sdm_rtdm/
+/gpfs/dell1/nco/ops/com/gfs/prod/sdm_rtdm/ com/gfs/_ENVIR_/sdm_rtdm/
 + /avgdata/
 + /avgdata/obcount_30davg.gdas._MONPREV_
 + /avgdata/obcount_30davg.gdas.current
 - *
 B 256000
  
-com/gfs/_ENVIR_/gdascounts/
+/gpfs/dell1/nco/ops/com/gfs/prod/gdascounts/ com/gfs/_ENVIR_/gdascounts/
 + /index.shtml
 + /index_backup.shtml
 - *
