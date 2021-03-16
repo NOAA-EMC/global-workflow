@@ -115,7 +115,7 @@ FV3_GFS_predet(){
 	cores_per_node=${cores_per_node:-${npe_node_fcst:-24}}
 	ntiles=${ntiles:-6}
         if [ $MEMBER -lt 0 ]; then
-                NTASKS_TOT=${NTASKS_TOT:-$npe_fcst}
+                NTASKS_TOT=${NTASKS_TOT:-$npe_fcst_gfs}
         else
                 NTASKS_TOT=${NTASKS_TOT:-$npe_efcs}
         fi

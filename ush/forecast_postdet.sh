@@ -487,7 +487,11 @@ FV3_GFS_nml(){
                 echo "MAIN: !!!Sandbox mode, writing to current directory!!!"
         fi
         # Call child scripts in current script directory
-        source $SCRIPTDIR/parsing_namelists_FV3.sh
+        if [ $cplgocart = .true. ]; then
+          source $SCRIPTDIR/parsing_namelists_FV3_GOCART.sh
+        else
+          source $SCRIPTDIR/parsing_namelists_FV3.sh
+        fi
         FV3_namelists
         echo SUB ${FUNCNAME[0]}: FV3 name lists and model configure file created
 }
@@ -836,6 +840,23 @@ CICE_out()
 
         done
         fi
+}
+
+GOCART_rc()
+{
+        echo "SUB ${FUNCNAME[0]}: Linking input data and copying config files for GOCART"
+        # set input directory containing GOCART input data and configuration files
+        # this variable is platform-dependent and should be set via a YAML file
+        GOCARTINPUTDIR=/scratch1/NCEPDEV/nems/Raffaele.Montuoro/data/NASA
+
+        # link directory containing GOCART input dataset
+        $NLN -sf ${GOCARTINPUTDIR}/ExtData $DATA
+        status=$?
+        [[ $status -ne 0 ]] && exit $status
+        # copying GOCART configuration files
+        $NCP     ${GOCARTINPUTDIR}/rc/*.rc $DATA
+        status=$?
+        [[ $status -ne 0 ]] && exit $status
 }
 
 GSD_in()

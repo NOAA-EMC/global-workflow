@@ -20,13 +20,25 @@ config_base:
     # Machine environment
     export machine="{doc.platform.name}"
 
+    export print_esmf="{doc.settings.print_esmf}"
+    export esmf_profile="{doc.settings.esmf_profile}"
+
+    # Coupling settings
     export cpl="{doc.settings.cpl}"
     export cplflx="{doc.settings.cplflx}"
+    export cplgocart="{doc.settings.cplgocart}"
     export cplice="{doc.settings.cplice}"
     export cplwav="{doc.settings.cplwav}"
     export cplwav2atm="{doc.settings.cplwav2atm}"
-    export print_esmf="{doc.settings.print_esmf}"
-    export esmf_profile="{doc.settings.esmf_profile}"
+
+    # Temporarily override settings for aerosol coupling
+    if [ $cplgocart = ".true." ]; then
+        export cplflx=".false."
+        export cplice=".false."
+        export cplocn=".false."
+        export cplwav=".false."
+        export cplwav2atm=".false."
+    fi
 
     if [[ $cplwav = ".true." ]]; then
        export DO_WAVE="YES"

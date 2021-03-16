@@ -1,0 +1,5 @@
+# default settings for chemistry model core
+
+chem_defaults: &chem_defaults
+  MOD: gsdchem
+  OCNPETS: 0
