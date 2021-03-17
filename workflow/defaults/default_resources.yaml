@@ -117,7 +117,7 @@ util_resource_table:
       #                    ranks ppn  wallclock          threads  MB_batch MB_per_rank
   prepbufr:              [    4,    4, !timedelta "00:15:00",   1, 3072M,      null   ]
   fv3ic:                 [   24,   24, !timedelta "00:30:00",   1, 3072M,      null   ]
-  wavepostpnt:           [   80,   40, !timedelta "00:30:00",   1, 3072M,      null   ]
+  wavepostpnt:           [   80,   40, !timedelta "01:00:00",   1, 3072M,      null   ]
   wavepostgrd:           [   10,   10, !timedelta "00:30:00",   1, 3072M,      null   ]
   dump_waiter:           [    1,    1, !timedelta "01:00:00",   1,  300M,      null   ]
   make_next_cycles:      [    1,    1, !timedelta "00:15:00",   1,  600M,      null   ]

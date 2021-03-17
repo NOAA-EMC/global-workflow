@@ -15,17 +15,18 @@ config_fcst:
         export hord_xx_nh_nonmono={doc.fv3_gfs_settings.phy_dependent_var.hord_xx_nh_nonmono}
         export vtdm4_nh_nonmono={doc.fv3_gfs_settings.phy_dependent_var.vtdm4_nh_nonmono}
         export nord={doc.fv3_gfs_settings.phy_dependent_var.nord}
-        export dddmp={doc.fv3_gfs_settings.phy_dependent_var.dddmp}
         export d4_bg={doc.fv3_gfs_settings.phy_dependent_var.d4_bg}
     - otherwise: ""
 
-  level_127: !FirstTrue
+  level_exports: !FirstTrue
     - when: !calc doc.fv3_gfs_settings.LEVS==128
       do: !expand |
-         export  tau=5.0
-         export  rf_cutoff=7.5e2
-         export  d2_bg_k1=0.20
-         export  d2_bg_k2=0.04
+        export  tau=10.0
+        export  rf_cutoff=7.5e2
+        export  d2_bg_k1=0.20
+        export  d2_bg_k2=0.04
+        export  dz_min=2
+        export  n_sponge=42
     - otherwise: ""
 
   resource_a: !FirstTrue
@@ -109,9 +110,6 @@ config_fcst:
     # Options of stratosphere O3 physics reaction coefficients
     export new_o3forc="{tools.YES_NO(doc.fv3_gfs_settings.new_o3force)}"
 
-    export  n_sponge=42
-    export  d2_bg_k1=0.20
-    export  d2_bg_k2=0.04
 
     export do_ugwp=".false."
     export do_tofd=".true."
@@ -120,6 +118,7 @@ config_fcst:
     export dnats={doc.fv3_gfs_settings.phy_dependent_var.dnats}
     export do_sat_adj="{tools.fort(doc.fv3_gfs_settings.phy_dependent_var.do_sat_adjust)}"
     export nwat={doc.fv3_gfs_settings.phy_dependent_var.nwat}
+    export dddmp={doc.fv3_gfs_settings.dddmp}
 
     # gfs_physics_nml section
     export h2o_phys="{tools.fort(doc.fv3_gfs_settings.h2o_phys)}"
@@ -158,15 +157,18 @@ config_fcst:
 
     export FIELD_TABLE="{doc.fv3_gfs_settings.phy_dependent_var.FIELD_TABLE}"
     {more_exports_for_microphys}
-    {level_127}
+    {level_exports}
 
 
     #coupling settings 
     export FRAC_GRID="{doc.settings.FRAC_GRID}"
     export cplmode="{doc.settings.cplmode}"
+    export psm_bc="{doc.fv3_gfs_settings.psm_bc}"
 
     export min_lakeice="{doc.fv3_gfs_settings.min_lakeice}"
     export min_seaice="{doc.fv3_gfs_settings.min_seaice}" 
+
+    export FSICL="{doc.fv3_gfs_settings.FSICL}"
 
     # Stochastic physics parameters
     # nam_stochy section

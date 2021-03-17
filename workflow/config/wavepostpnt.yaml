@@ -12,4 +12,6 @@ config_wavepostpnt:
 
       echo "BEGIN: config.wavepostpnt"
 
+      # Set resources to propagate NTASKS across cfp call
+      export NTASKS={doc.partition_common.resources.run_wavepostpnt[0].mpi_ranks}
       echo "END: config.wavepostpnt"

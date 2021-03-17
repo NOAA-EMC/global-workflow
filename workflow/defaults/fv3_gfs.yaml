@@ -22,6 +22,7 @@ fv3_gfs_defaults: &fv3_gfs_defaults
   ISEED: 0
   SEEDLET: 1
   SET_STP_SEED: YES
+  psm_bc: 0
   DO_SHUM: false
   DO_SKEB: false
   DO_SPPT: false
@@ -115,7 +116,6 @@ fv3_gfs_defaults: &fv3_gfs_defaults
            hord_xx_nh_nonmono: 5
            vtdm4_nh_nonmono: 0.02
            nord: 2
-           dddmp: 0.1
            d4_bg: 0.12
         "6": 
            ncld: 2 
@@ -129,7 +129,6 @@ fv3_gfs_defaults: &fv3_gfs_defaults
            hord_xx_nh_nonmono: 5
            vtdm4_nh_nonmono: 0.02
            nord: 2
-           dddmp: 0.1
            d4_bg: 0.12
         "8": 
            ncld: 2
@@ -143,7 +142,6 @@ fv3_gfs_defaults: &fv3_gfs_defaults
            hord_xx_nh_nonmono: 5
            vtdm4_nh_nonmono: 0.02
            nord: 2
-           dddmp: 0.1
            d4_bg: 0.12
         "11":
            ncld: 5
@@ -157,8 +155,9 @@ fv3_gfs_defaults: &fv3_gfs_defaults
            hord_xx_nh_nonmono: 5
            vtdm4_nh_nonmono: 0.02
            nord: 2
-           dddmp: 0.1
            d4_bg: 0.12
+
+  FSICL: 99999
 
   MEDPETS: !FirstTrue
     - when: !calc QUILTING

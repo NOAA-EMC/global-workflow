@@ -53,7 +53,7 @@ config_fv3:
               export layout_x_gfs={doc.fv3_gfs_settings.layout.x}
               export layout_y_gfs={doc.fv3_gfs_settings.layout.y}
               export npe_node_fcst={doc.partition_common.resources.run_gdasfcst[0].max_ppn}
-              export nth_fv3=2
+              export nth_fv3="{doc.fv3_gfs_settings.layout.nth}"
               export npe_fv3={doc.partition_common.resources.run_gdasfcst[0].mpi_ranks}
               export cdmbgwd={doc.fv3_gfs_settings.cdmbgwd}  
                        # mountain blocking and gravity wave drag
@@ -73,7 +73,7 @@ config_fv3:
               export layout_x_gfs={doc.fv3_gdas_settings.layout.x}
               export layout_y_gfs={doc.fv3_gdas_settings.layout.y}
               export npe_node_fcst={doc.partition_common.resources.run_gdasfcst[0].max_ppn}
-              export nth_fv3=2
+              export nth_fv3="{doc.fv3_gfs_settings.layout.nth}"
               export npe_fv3={doc.partition_common.resources.run_gdasfcst[0].mpi_ranks}
               export cdmbgwd={doc.fv3_gdas_settings.cdmbgwd}
               export WRITE_GROUP={doc.fv3_gdas_settings.layout.WGRP}
@@ -92,7 +92,7 @@ config_fv3:
               export layout_x_gfs={doc.fv3_enkf_settings.layout.x}
               export layout_y_gfs={doc.fv3_enkf_settings.layout.y}
               export npe_node_fcst={doc.partition_common.resources.run_efcs[0].max_ppn}
-              export nth_fv3=2
+              export nth_fv3="{doc.fv3_gfs_settings.layout.nth}"
               export npe_fv3={doc.partition_common.resources.run_efcs[0].mpi_ranks}
               export cdmbgwd={doc.fv3_enkf_settings.cdmbgwd}
               export WRITE_GROUP={doc.fv3_enkf_settings.layout.WGRP}

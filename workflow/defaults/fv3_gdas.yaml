@@ -111,7 +111,6 @@ fv3_gdas_defaults: &fv3_gdas_defaults
            hord_xx_nh_nonmono: 5
            vtdm4_nh_nonmono: 0.02
            nord: 2
-           dddmp: 0.1
            d4_bg: 0.12
         "6": 
            ncld: 2 
@@ -125,7 +124,6 @@ fv3_gdas_defaults: &fv3_gdas_defaults
            hord_xx_nh_nonmono: 5
            vtdm4_nh_nonmono: 0.02
            nord: 2
-           dddmp: 0.1
            d4_bg: 0.12
         "8": 
            ncld: 2
@@ -139,7 +137,6 @@ fv3_gdas_defaults: &fv3_gdas_defaults
            hord_xx_nh_nonmono: 5
            vtdm4_nh_nonmono: 0.02
            nord: 2
-           dddmp: 0.1
            d4_bg: 0.12
         "11":
            ncld: 5
@@ -153,7 +150,6 @@ fv3_gdas_defaults: &fv3_gdas_defaults
            hord_xx_nh_nonmono: 5
            vtdm4_nh_nonmono: 0.02
            nord: 2
-           dddmp: 0.1
            d4_bg: 0.12
 
   MEDPETS: !FirstTrue

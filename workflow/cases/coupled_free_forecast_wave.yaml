@@ -33,33 +33,38 @@ case:
   fv3_gfs_settings:
     CASE: C384
     LEVS: 128
-    DELTIM: 300
+    DELTIM: 225
     min_lakeice: 0.15
     min_seaice: 1.0e-11
     SEEDLET: 10
     CCPP_SUITE: FV3_GFS_v16_coupled
     CPL_ATMIC: CFSRfracL127
     nst_anl: yes
+    psm_bc: 1
+    dddmp: 0.2
+    FSICL: 99999
     DO_SKEB: false
     DO_SHUM: false
     DO_SPPT: false
+    k_split: 2
+    n_split: 6
     layout:
-       x: 6
-       y: 12
-       nth: 1
+       x: 12
+       y: 16
+       nth: 2
        WGRP: 1
-       WGRP_NTASKS: 24
+       WGRP_NTASKS: 88
        WRTIOBUF: "32M"
 
   ocn_settings:
-    OCNPETS: 240
+    OCNPETS: 220
 
   ice_settings:
-    ICEPETS: 48
+    ICEPETS: 80
 
   wave_settings: 
-    WAVPETS: 136
-    CPL_WAVIC: CFSR
+    WAVPETS: 160
+    CPL_WAVIC: CFSRwave20200925
     waveGRD: 'gwes_30m'
     wavepostGRD: 'gwes_30m'
     waveesmfGRD: ''
