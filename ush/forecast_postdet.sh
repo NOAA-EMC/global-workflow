@@ -862,16 +862,20 @@ GOCART_rc()
         echo "SUB ${FUNCNAME[0]}: Linking input data and copying config files for GOCART"
         # set input directory containing GOCART input data and configuration files
         # this variable is platform-dependent and should be set via a YAML file
-        GOCARTINPUTDIR=/scratch1/NCEPDEV/nems/Raffaele.Montuoro/data/NASA
 
-        # link directory containing GOCART input dataset
-        $NLN -sf ${GOCARTINPUTDIR}/ExtData $DATA
-        status=$?
-        [[ $status -ne 0 ]] && exit $status
+        # link directory containing GOCART input dataset, if provided
+        if [ ! -z "${CHM_INPDIR}" ]; then
+          $NLN -sf ${CHM_INPDIR} $DATA
+          status=$?
+          [[ $status -ne 0 ]] && exit $status
+        fi
+
         # copying GOCART configuration files
-        $NCP     ${GOCARTINPUTDIR}/rc/*.rc $DATA
-        status=$?
-        [[ $status -ne 0 ]] && exit $status
+        if [ ! -z "${CHM_CFGDIR}" ]; then
+          $NCP     ${CHM_CFGDIR}/*.rc $DATA
+          status=$?
+          [[ $status -ne 0 ]] && exit $status
+        fi
 }
 
 GSD_in()

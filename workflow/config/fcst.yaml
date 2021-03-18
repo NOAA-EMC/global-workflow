@@ -228,6 +228,8 @@ config_fcst:
     if [ $cplgocart = .true. ]; then # temporary settings for aerosol coupling
         export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_aer"
         export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_aer"
+        export CHM_CFGDIR="{doc.chem_settings.CFGDIR}"
+        export CHM_INPDIR="{doc.chem_settings.INPDIR}"
     elif [[ $cpl == .true. ]] ; then # coupled model
         export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_cpl"
     fi
