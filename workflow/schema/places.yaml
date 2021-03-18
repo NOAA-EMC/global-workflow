@@ -53,3 +53,6 @@ places_schema: &places_schema !Template
     type: string
     allowed: [ opsgfs, pargfs ]
     description: initial conditions from opsgfs or pargfs
+
+  OROFIX: { type: string, optional: true }
+  GRDFIX: { type: string, optional: true }

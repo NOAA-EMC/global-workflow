@@ -181,24 +181,39 @@ FV3_GFS_postdet(){
 
         #--------------------------------------------------------------------------
         # Grid and orography data
-        for n in $(seq 1 $ntiles); do
-          $NLN $FIXfv3/$CASE/${CASE}_grid.tile${n}.nc     $DATA/INPUT/${CASE}_grid.tile${n}.nc
-        done
-        if  [ $FRAC_GRID ]; then 
-          FIXoro=${FIXoro:-$FIX_DIR/fix_fv3_fracoro}
-          for n in $(seq 1 $ntiles); do 
-            $NLN $FIXoro/${CASE}.mx${OCNRES}_frac/${CASE}.mx${OCNRES}_tile${n}.nc $DATA/INPUT/oro_data.tile${n}.nc
-          done 
-        else 
-          for n in $(seq 1 $ntiles); do
-            $NLN $FIXfv3/$CASE/${CASE}_oro_data.tile${n}.nc $DATA/INPUT/oro_data.tile${n}.nc
-          done
-        fi 
-        if [ $cplflx = ".false." ] ; then
-          $NLN $FIXfv3/$CASE/${CASE}_mosaic.nc  $DATA/INPUT/grid_spec.nc
-        else 
-          $NLN $FIXfv3/$CASE/${CASE}_mosaic.nc  $DATA/INPUT/${CASE}_mosaic.nc
+        if [ -z ${GRDFIX} ] ; then
+          FIXgrd=$FIXfv3/$CASE
+        else
+          FIXgrd=${GRDFIX}
         fi
+        for n in $(seq 1 $ntiles); do
+          $NLN ${FIXgrd}/${CASE}_grid.tile${n}.nc $DATA/INPUT/${CASE}_grid.tile${n}.nc
+        done
+
+        if [ -f ${FIXgrd}/${CASE}_mosaic.nc ] ; then
+          src_grid_spec=${FIXgrd}/${CASE}_mosaic.nc
+        else
+          src_grid_spec=${FIXgrd}/grid_spec.nc
+        fi
+
+        if [ $cplflx = ".false." ] ; then
+          $NLN ${src_grid_spec} $DATA/INPUT/grid_spec.nc
+        else 
+          $NLN ${src_grid_spec} $DATA/INPUT/${CASE}_mosaic.nc
+        fi
+
+        if [ -z ${OROFIX} ]; then
+          if [ $FRAC_GRID ]; then
+            FIXoro=${FIXoro:-$FIX_DIR/fix_fv3_fracoro}/${CASE}.mx${OCNRES}_frac/${CASE}.mx${OCNRES}_
+          else
+            FIXoro=$FIXfv3/$CASE/${CASE}_oro_data.
+          fi
+        else
+          FIXoro=${OROFIX}/oro_data.
+        fi
+        for n in $(seq 1 $ntiles); do
+          $NLN ${FIXoro}tile${n}.nc $DATA/INPUT/oro_data.tile${n}.nc
+        done
 
         # GFS standard input data
 

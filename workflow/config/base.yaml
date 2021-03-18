@@ -141,6 +141,8 @@ config_base:
     export ARCDIR="$NOSCRUB/archive/$PSLOT"
     export ICSDIR="{doc.places.ICSDIR}"
     export ATARDIR="{doc.archiving.ATARDIR}"
+    export OROFIX="{doc.places.OROFIX}"
+    export GRDFIX="{doc.places.GRDFIX}"
     
     # Commonly defined parameters in JJOBS
     export envir=${{envir:-"prod"}}
