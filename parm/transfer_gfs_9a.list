@@ -24,7 +24,7 @@
 # directory are included, so if no exclude patterns match that file, it will be
 # tranatmferred.
 
-/gpfs/dell1/nco/ops/com/gfs/prod/gfs._PDY_/ com/gfs/_ENVIR_/gfs._PDY_/
+com/gfs/_ENVIR_/gfs._PDY_/
 + /??/
 + /??/atmos/
 + /??/atmos/gfs.t??z.sfcf??0.nc
@@ -36,7 +36,7 @@
 
 B 100
 
-/gpfs/dell1/nco/ops/com/gfs/prod/gfs._PDYm1_/ com/gfs/_ENVIR_/gfs._PDYm1_/
+com/gfs/_ENVIR_/gfs._PDYm1_/
 + /??/
 + /??/atmos/
 + /??/atmos/gfs.t??z.sfcf??0.nc

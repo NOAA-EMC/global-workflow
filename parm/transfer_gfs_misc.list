@@ -24,7 +24,7 @@
 # directory are included, so if no exclude patterns match that file, it will be
 # tranatmferred.
 
-/gpfs/dell1/nco/ops/com/gfs/prod/sdm_rtdm/ com/gfs/_ENVIR_/sdm_rtdm/
+com/gfs/_ENVIR_/sdm_rtdm/
 + /avgdata/
 + /avgdata/obcount_30davg.gfs._MONPREV_
 + /avgdata/obcount_30davg.gfs.current
@@ -32,7 +32,7 @@
 B 256000
  
 
-/gpfs/dell1/nco/ops/com/gfs/prod/sdm_rtdm/ com/gfs/_ENVIR_/sdm_rtdm/
+com/gfs/_ENVIR_/sdm_rtdm/
 + /obcount_30day/
 + /obcount_30day/gfs/
 + /obcount_30day/gfs/gfs._PDYm1_/***
