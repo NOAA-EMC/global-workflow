@@ -1,0 +1,59 @@
+case:
+  places:
+    workflow_file: layout/free_forecast_gfs.yaml
+    BASE_CPLIC: /scratch1/NCEPDEV/nems/Raffaele.Montuoro/data
+    OROFIX:     /scratch1/NCEPDEV/nems/emc.nemspara/RT/NEMSfv3gfs/develop-20200914/INTEL/FV3_input_data_c384/INPUT
+    GRDFIX:     /scratch1/NCEPDEV/nems/emc.nemspara/RT/NEMSfv3gfs/develop-20200914/INTEL/FV3_input_data_c384/INPUT
+
+  settings: 
+    SDATE: 2019-07-01t00:00:00
+    EDATE: 2019-07-15t00:00:00
+
+    gfs_cyc: 1
+
+    cplgocart: .true.
+    print_esmf: .true.
+    nems_temp: 'atm_aer'
+
+    run_gsi: No
+    ic_source: fv3_ic
+    mom6ic_prepared: .false.
+    chgres_and_convert_ics: Yes
+    IC_CDUMP: gfs
+
+    KEEPDATA: Yes
+
+  nsst:
+    NST_MODEL: 0
+
+  output_settings:
+    FHOUT_GFS: 6
+    FHMIN_GFS: 0
+    FHMAX_GFS: 24
+    FHMAX_HF_GFS: 0
+    FHOUT_HF_GFS: -1
+
+  fv3_gfs_settings:
+    CASE: C384
+    LEVS: 65
+    DELTIM: 450
+    layout:
+       x: 6
+       y: 8
+       nth: 2
+       WGRP: 1
+       WGRP_NTASKS: 24
+       WRTIOBUF: "32M"
+    CPL_ATMIC: FV3ICS
+
+  chem_settings:
+    MOD: gsdchem
+    CFGDIR: /scratch1/NCEPDEV/nems/Raffaele.Montuoro/data/NASA/rc.firex
+    INPDIR: /scratch1/NCEPDEV/nems/Raffaele.Montuoro/data/NASA/ExtData
+
+  post:
+    downset: 2
+    GOESF: no
+
+  archiving:
+    archive_to_hpss: No
