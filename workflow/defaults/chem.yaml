@@ -2,4 +2,3 @@
 
 chem_defaults: &chem_defaults
   MOD: gsdchem
-  OCNPETS: 0
