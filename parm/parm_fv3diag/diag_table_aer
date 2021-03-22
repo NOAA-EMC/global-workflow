@@ -124,9 +124,8 @@
 ###
 "gfs_dyn",     "so2",         "so2",       "fv3_history",    "all",  .false.,  "none",  2
 "gfs_dyn",     "sulf",        "sulf",      "fv3_history",    "all",  .false.,  "none",  2
-"gfs_dyn",     "DMS",         "DMS",       "fv3_history",    "all",  .false.,  "none",  2
+"gfs_dyn",     "dms",         "dms",       "fv3_history",    "all",  .false.,  "none",  2
 "gfs_dyn",     "msa",         "msa",       "fv3_history",    "all",  .false.,  "none",  2
-"gfs_dyn",     "pp25",        "pp25",      "fv3_history",    "all",  .false.,  "none",  2
 "gfs_dyn",     "bc1",         "bc1",       "fv3_history",    "all",  .false.,  "none",  2
 "gfs_dyn",     "bc2",         "bc2",       "fv3_history",    "all",  .false.,  "none",  2
 "gfs_dyn",     "oc1",         "oc1",       "fv3_history",    "all",  .false.,  "none",  2
@@ -146,6 +145,7 @@
 "gfs_dyn",     "no3an1",      "no3an1",    "fv3_history",    "all",  .false.,  "none",  2
 "gfs_dyn",     "no3an2",      "no3an2",    "fv3_history",    "all",  .false.,  "none",  2
 "gfs_dyn",     "no3an3",      "no3an3",    "fv3_history",    "all",  .false.,  "none",  2
+"gfs_dyn",     "pp25",        "pp25",      "fv3_history",    "all",  .false.,  "none",  2
 "gfs_dyn",     "pp10",        "pp10",      "fv3_history",    "all",  .false.,  "none",  2
 
 "gfs_phys",  "ALBDO_ave",     "albdo_ave",   "fv3_history2d",         "all",  .false.,  "none",  2

@@ -33,12 +33,6 @@ case:
     CASE: C384
     LEVS: 65
     DELTIM: 450
-    SEEDLET: 10
-#   CCPP_SUITE: FV3_GFS_v15p2_coupled
-    nst_anl: no
-    DO_SKEB: false
-    DO_SHUM: false
-    DO_SPPT: false
     layout:
        x: 6
        y: 8
@@ -46,10 +40,13 @@ case:
        WGRP: 1
        WGRP_NTASKS: 24
        WRTIOBUF: "32M"
-    cdmbgwd: "1.0,1.2"
+    CPL_ATMIC: FV3ICS
 
   chem_settings:
     MOD: gsdchem
+    ntdiag: 2
+    CFGDIR: /scratch1/NCEPDEV/nems/Raffaele.Montuoro/data/NASA/rc
+    INPDIR: /scratch1/NCEPDEV/nems/Raffaele.Montuoro/data/NASA/ExtData
 
   post:
     downset: 2

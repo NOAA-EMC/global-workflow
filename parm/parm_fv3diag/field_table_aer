@@ -41,7 +41,7 @@
            "units",        "ug/kg"
        "profile_type", "fixed", "surface_value=3.e-6" /
 # prognostic DMS mixing ratio tracer
- "TRACER", "atmos_mod", "DMS"
+ "TRACER", "atmos_mod", "dms"
            "longname",     "DMS mixing ratio"
            "units",        "ppm"
        "profile_type", "fixed", "surface_value=1.e-7" /
@@ -50,11 +50,6 @@
            "longname",     "msa mixing ratio"
            "units",        "ppm"
        "profile_type", "fixed", "surface_value=1.e-7" /
-# prognostic pp25 mixing ratio tracer
- "TRACER", "atmos_mod", "pp25"
-           "longname",     "primary PM25 mixing ratio"
-           "units",        "ug/kg"
-       "profile_type", "fixed", "surface_value=1.e+0" /
 # prognostic bc1 mixing ratio tracer
  "TRACER", "atmos_mod", "bc1"
            "longname",     "hydrophobic black carbon mixing ratio"
@@ -146,10 +141,15 @@
            "longname",     "primary NO3an3 mixing ratio"
            "units",        "ug/kg"
        "profile_type", "fixed", "surface_value=1.e+0" /
-# prognostic pp10 mixing ratio tracer
+# diagnostic pm2.5 tracer
+ "TRACER", "atmos_mod", "pp25"
+           "longname",     "primary PM25 mixing ratio"
+           "units",        "ug/m3"
+       "profile_type", "fixed", "surface_value=1.e+0" /
+# diagnostic pm10 tracer
  "TRACER", "atmos_mod", "pp10"
            "longname",     "primary PM10 mixing ratio"
-           "units",        "ug/kg"
+           "units",        "ug/m3"
        "profile_type", "fixed", "surface_value=1.e+0" /
 # non-prognostic cloud amount
  "TRACER", "atmos_mod", "cld_amt"
