@@ -2,3 +2,4 @@
 
 chem_defaults: &chem_defaults
   MOD: gsdchem
+  ntdiag: 0

@@ -230,6 +230,7 @@ config_fcst:
         export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_aer"
         export CHM_CFGDIR="{doc.chem_settings.CFGDIR}"
         export CHM_INPDIR="{doc.chem_settings.INPDIR}"
+        export dnats="$(( $dnats + {doc.chem_settings.ntdiag} ))"
     elif [[ $cpl == .true. ]] ; then # coupled model
         export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_cpl"
     fi
