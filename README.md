@@ -50,9 +50,11 @@ CROW gets information of the targeted experiment from case files. A case file is
 of the experiment to be configured. A series of pre-generated case files are given under /workflow/cases. You could generate your
 own case from scratch as well. 
 
-The "aerosol_free_forecast.yaml" case file is included as a template to help run the UFS-Aerosols application.
-This case file will setup a 48-hour forecast run with active aerosols starting from 2013040100. To use this case,
-please run the command below from the `workflow/CROW` subdirectory:
+The following case files are included as templates to help run the UFS-Aerosols application:
+- `aerosol_free_forecast.yaml`
+- `aerosol_firex_forecast.yaml`    (includes fire emissions for FIREX-AQ)
+
+Each of these case files will setup a free forecast run with active aerosols after running the command below from the `workflow/CROW` subdirectory:
 ```
 ./setup_case.sh -p HERA ../cases/aerosol_free_forecast.yaml test_aero
 ```
