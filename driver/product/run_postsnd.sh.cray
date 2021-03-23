@@ -39,7 +39,6 @@ export MP_STDOUTMODE=ordered
 
 export machine="WCOSS_C"
 #machine="WCOSS_DELL_P3"
-#machine="THEIA"
 #machine="JET"
 export FHMAX_HF_GFS=120
 export FHOUT_HF_GFS=1
@@ -150,8 +149,8 @@ env
 
 ########################################################
 # Execute the script.
-#$SCRbufrsnd/exgfs_postsnd.sh.ecf
-${HOMEbufrsnd}/jobs/JGFS_POSTSND
+#$SCRbufrsnd/exgfs_atmos_postsnd.sh
+${HOMEbufrsnd}/jobs/JGFS_ATMOS_POSTSND
 ########################################################
 
 #cat $pgmout

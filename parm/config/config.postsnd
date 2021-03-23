@@ -8,6 +8,6 @@ echo "BEGIN: config.postsnd"
 # Get task specific resources
 . $EXPDIR/config.resources postsnd
 
-export POSTSNDSH=$HOMEgfs/jobs/JGFS_POSTSND
+export POSTSNDSH=$HOMEgfs/jobs/JGFS_ATMOS_POSTSND
 
 echo "END: config.postsnd"

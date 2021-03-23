@@ -1,0 +1,46 @@
+#!/bin/ksh -x
+
+########## config.waveprep ##########
+# Wave steps specific
+
+echo "BEGIN: config.waveprep"
+
+# Get task specific resources
+. $EXPDIR/config.resources waveprep
+
+# Step label
+export sigMODE=${sigMODE:-prep}
+
+export HOUR_INC=3      # This value should match with the one used in
+                         # the wind update script
+export GOFILETYPE=1     # GOFILETYPE=1 one gridded file per output step
+export POFILETYPE=1     # POFILETYPE=1 one point file per output step
+
+# Parameters for ww3_multi.inp
+# Unified output T or F
+export FUNIPNT='T'
+# Output server type (see ww3_multi.inp in WW3 repo)
+export IOSRV='3'
+# Flag for dedicated output process for unified points
+export FPNTPROC='T'
+# Flag for grids sharing dedicated output processes
+export FGRDPROC='F'
+
+# Wind interval for standalone file-based runs
+# Output stride
+export WAV_WND_HOUR_INC=1      # This value should match with the one used in
+                         # the wind update script
+# Intake currents settings
+export WAV_CUR_DT=${WAV_CUR_DT:-3}
+export WAV_CUR_HF_DT=${WAV_CUR_HF_DT:-3} # Defaults to 3h for GEFSv12
+export WAV_CUR_HF_FH=${WAV_CUR_HF_FH:-0} # Constant DT for GFSv16 from getgo
+export WAV_CUR_CDO_SMOOTH="NO"
+
+# Location of CDO module
+export CDO_ROOT=${CDO_ROOT:-/usrx/local/dev/packages/cdo/1.9.8}
+
+if [ "${WW3ICEINP}" = "YES" ]; then
+  export WAVICEFILE=${CDUMP}.t${cyc}z.seaice.5min.grib2
+fi
+
+echo "END: config.waveprep"

@@ -4,7 +4,7 @@ They are saved locally on all platforms
 
 Venus/Mars:  /gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix
 Surge/Luna: /gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix
-THEIA: /scratch4/NCEPDEV/global/save/glopara/git/fv3gfs/fix 
+Hera: /scratch1/NCEPDEV/global/glopara/fix 
 
 ------------------------------------------------------------------------------
 09/28/2018

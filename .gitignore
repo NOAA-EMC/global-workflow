@@ -1,0 +1,16 @@
+# Ignore all compiled files
+*.pyc
+*.o
+*.mod
+
+# Ignore exec folder
+exec/
+
+# Ignore sorc folders from externals
+sorc/logs/
+sorc/fv3gfs.fd/
+sorc/gfs_post.fd/
+sorc/gsi.fd/
+sorc/ufs_utils.fd/
+sorc/gfs_wafs.fd/
+sorc/verif-global.fd/
