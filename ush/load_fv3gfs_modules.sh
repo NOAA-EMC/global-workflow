@@ -18,13 +18,17 @@ if [[ -d /lfs3 ]] ; then
 elif [[ -d /scratch1 ]] ; then
     # We are on NOAA Hera
 	module load module_base.hera
-        if [[ -d  $HOMEgfs/sorc/ufs_coupled.fd/GOCART ]] ; then
+        if [[ -d $HOMEgfs/sorc/ufs_coupled.fd/GOCART ]] ; then
           module use "$HOMEgfs/sorc/ufs_coupled.fd/modulefiles/hera.intel"
           module load fv3
         fi
 elif [[ -d /work ]] ; then
     # We are on MSU Orion
 	module load module_base.orion
+        if [[ -d $HOMEgfs/sorc/ufs_coupled.fd/GOCART ]] ; then
+          module use "$HOMEgfs/sorc/ufs_coupled.fd/modulefiles/orion.intel"
+          module load fv3
+        fi
 elif [[ -d /gpfs/hps && -e /etc/SuSE-release ]] ; then
     # We are on NOAA Luna or Surge
 	module load module_base.wcoss_c 
