@@ -1,3 +1,6 @@
+# Note: This case is configured for Hera. All file paths should be properly updated on other platforms.
+##
+##
 case:
   places:
     workflow_file: layout/free_forecast_gfs.yaml
