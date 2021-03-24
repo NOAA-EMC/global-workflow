@@ -42,7 +42,7 @@ else
   if [[ ! -d ufs_coupled.fd ]] ; then
     git clone https://github.com/ufs-community/ufs-weather-model ufs_coupled.fd >> ${topdir}/checkout-ufs_coupled.log 2>&1
     cd ufs_coupled.fd
-    git checkout Prototype-6.0beta 
+    git checkout 3e46f5b7050e18884a0bed13691823ad88d443c3 
     git submodule update --init --recursive
     cd ${topdir} 
   else 

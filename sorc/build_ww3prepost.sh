@@ -15,6 +15,11 @@ source ../modulefiles/modulefile.ww3.$target
 #source ../modulefiles/module_base.$target
 set -x 
 
+
+if [ $target = hera ]; then target=hera.intel ; fi
+if [ $target = orion ]; then target=orion.intel ; fi
+if [ $target = stampede ]; then target=stampede.intel ; fi
+
 cd ufs_coupled.fd/WW3
 export WW3_DIR=$( pwd -P )/model
 export WW3_BINDIR="${WW3_DIR}/bin"
