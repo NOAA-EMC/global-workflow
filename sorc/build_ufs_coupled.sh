@@ -11,6 +11,7 @@ fi
 
 if [ $target = hera ]; then target=hera.intel ; fi
 if [ $target = orion ]; then target=orion.intel ; fi
+if [ $target = stampede ]; then target=stampede.intel ; fi
 
 MOD_PATH=$cwd/ufs_coupled.fd/modulefiles/$target
 

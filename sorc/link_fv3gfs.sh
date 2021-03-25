@@ -13,22 +13,22 @@ fi
 
 if [ $# -lt 2 ]; then
     echo '***ERROR*** must specify two arguements: (1) RUN_ENVIR, (2) machine'
-    echo ' Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | hera | orion )'
+    echo ' Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | hera | orion | stampede )'
     echo ' A third argument is needed when coupled: '
-    echo ' Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | hera | orion ) coupled'
+    echo ' Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | hera | orion | stampede ) coupled'
     exit 1
 fi
 
 if [ $RUN_ENVIR != emc -a $RUN_ENVIR != nco ]; then
-    echo 'Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | hera | orion )'
+    echo ' Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | hera | orion | stampede )'
     echo ' A third argument is needed when coupled: '
-    echo ' Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | hera | orion ) coupled'
+    echo ' Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | hera | orion | stampede ) coupled'
     exit 1
 fi
-if [ $machine != cray -a $machine != dell -a $machine != hera -a $machine != orion ]; then
-    echo 'Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | hera | orion )'
+if [ $machine != cray -a $machine != dell -a $machine != hera -a $machine != orion -a $machine != stampede ]; then
+    echo ' Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | hera | orion | stampede )'
     echo ' A third argument is needed when coupled: '
-    echo ' Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | hera | orion ) coupled'
+    echo ' Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | hera | orion | stampede ) coupled'
     exit 1
 fi
 
@@ -41,7 +41,7 @@ pwd=$(pwd -P)
 #------------------------------
 #--model fix fields
 #------------------------------
-if [ $machine == "cray" ]; then
+if [ $machine = "cray" ]; then
     FIX_DIR="/gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix_nco_gfsv16"
 elif [ $machine = "dell" ]; then
     # FIX_DIR="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix_nco_gfsv16"
@@ -58,6 +58,8 @@ elif [ $machine = "orion" ]; then
     else
        FIX_DIR="/work/noaa/global/glopara/fix_nco_gfsv16"
     fi
+elif [ $machine = "stampede" ]; then
+    FIX_DIR="/work/07738/jkuang/stampede2/tempFixICdir/fix_UFSp6"
 fi
 
 if [ ! -z $FIX_DIR ]; then
@@ -253,7 +255,7 @@ fi
 fi 
 
 [[ -s gfs_ncep_post ]] && rm -f gfs_ncep_post
-$LINK ../sorc/gfs_post.fd/exec/ncep_post gfs_ncep_post
+$LINK ../sorc/gfs_post.fd/exec/upp.x gfs_ncep_post
 
 if [ -d ${pwd}/gfs_wafs.fd ]; then 
     for wafsexe in \

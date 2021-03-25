@@ -19,8 +19,24 @@ fi
 target=""
 USERNAME=`echo $LOGNAME | awk '{ print tolower($0)'}`
 ##---------------------------------------------------------------------------
-export hname=`hostname | cut -c 1,1`
-if [[ -d /work ]] ; then
+hname_orig=`hostname -d`
+export hname=${hname_orig,,}
+if [[ $hname = 'stampede2.tacc.utexas.edu' ]] ; then
+    # We are on MSU Orion
+    if ( ! eval module help > /dev/null 2>&1 ) ; then
+        echo load the module command 1>&2
+        source /apps/lmod/lmod/init/$__ms_shell
+    fi
+    target=stampede
+    module purge
+    module use /work/08048/hanglei/NCEP/install/hpc-stack/modulefiles/stack
+    module load hpc/1.1.0
+    module load hpc-intel/18.0.2
+    module load impi/18.0.2
+    export myFC=mpiifort
+    export FCOMP=mpiifort
+
+elif [[ $hname = 'hpc.msstate.edu' ]] ; then
     # We are on MSU Orion
     if ( ! eval module help > /dev/null 2>&1 ) ; then
         echo load the module command 1>&2
@@ -28,11 +44,11 @@ if [[ -d /work ]] ; then
     fi
     target=orion
     module purge
-    module load intel/2018.4
-    module load impi/2018.4
-    export NCEPLIBS=/apps/contrib/NCEPLIBS/orion
-    export WRFPATH=$NCEPLIBS/wrf.shared.new/v1.1.1/src
-    module use $NCEPLIBS/modulefiles
+    export NCEPLIBS=/apps/contrib/NCEP/libs/hpc-stack/modulefiles/stack
+    module use -a /apps/contrib/NCEP/libs/hpc-stack/modulefiles/stack
+    module load hpc/1.1.0
+    module load hpc-intel/2018.4
+    module load hpc-impi/2018.4
     export myFC=mpiifort
     export FCOMP=mpiifort
 

@@ -123,6 +123,7 @@ config_base:
     export PSLOT="{doc.names.experiment}"
     export EXPDIR="{doc.places.EXPDIR}"
     export ROTDIR="{doc.places.ROTDIR}"
+    export COMROOT="{doc.places.COMROOT}"
     export ROTDIR_DUMP="YES"
     export DUMP_SUFFIX="{doc.settings.DUMP_SUFFIX}"
     export RUNDIR="{doc.places.RUNDIR}"

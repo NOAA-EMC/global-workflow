@@ -11,16 +11,20 @@ source "$HOMEgfs/modulefiles/module-setup.sh.inc"
 
 # Load our modules:
 module use "$HOMEgfs/modulefiles" 
+hname=`hostname -d`
 
-if [[ -d /lfs3 ]] ; then
+if [[ $hname = 'stampede2.tacc.utexas.edu' ]] ; then
+    # We are on Xsede stampede2
+      module load module_base.stampede
+elif [[ $hname = 'hpc.msstate.edu' ]] ; then
+    # We are on MSU Orion
+       module load module_base.orion
+elif [[ -d /lfs3 ]] ; then
     # We are on NOAA Jet
 	module load module_base.jet 
 elif [[ -d /scratch1 ]] ; then
     # We are on NOAA Hera
 	module load module_base.hera
-elif [[ -d /work ]] ; then
-    # We are on MSU Orion
-	module load module_base.orion
 elif [[ -d /gpfs/hps && -e /etc/SuSE-release ]] ; then
     # We are on NOAA Luna or Surge
 	module load module_base.wcoss_c 
