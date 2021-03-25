@@ -160,7 +160,7 @@
   if [ "$specdir" = "bull" ]
   then
     tstart="`echo $ymdh | cut -c1-8` `echo $ymdh | cut -c9-10`0000"
-    truntime="`echo $CDATE | cut -c1-8` `echo $YMDH | cut -c9-10`0000"
+    truntime="`echo $CDATE | cut -c1-8` `echo $CDATE | cut -c9-10`0000"
     sed -e "s/TIME/$tstart/g" \
       -e "s/DT/$dtspec/g" \
       -e "s/POINT/$point/g" \
