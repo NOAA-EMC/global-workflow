@@ -103,9 +103,6 @@ if [ ! -f $ATMGES_ENSMEAN ]; then
     exit 1
 fi
 
-export LEVS=$($NCDUMP -h $ATMGES_ENSMEAN | grep -i "pfull" | head -1 | awk -F" = " '{print $2}' | awk -F" " '{print $1}') # get LEVS
-status=$?
-[[ $status -ne 0 ]] && exit $status
 
 # Link observational data
 export PREPQC="$COMIN_ANL/${OPREFIX}prepbufr"
