@@ -104,17 +104,6 @@ if [ ! -f $ATMGES ]; then
 fi
 
 
-# Get LEVS
-if [ ${GSUFFIX} = ".nc" ]; then
-    export LEVS=$($NCLEN $ATMGES pfull) 
-    status=$?
-else
-    export LEVS=$($NEMSIOGET $ATMGES dimz | awk '{print $2}')
-    status=$?
-fi
-[[ $status -ne 0 ]] && exit $status
-
-
 if [ $DOHYBVAR = "YES" ]; then
     export ATMGES_ENSMEAN="$COMIN_GES_ENS/${GPREFIX}atmf006.ensmean$GSUFFIX"
     if [ ! -f $ATMGES_ENSMEAN ]; then
