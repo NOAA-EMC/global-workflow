@@ -2234,6 +2234,8 @@ suite prod18
           trigger ../../jgfs_forecast == complete
         task jgfs_wave_post_bndpnt
           trigger ../../atmos/post/jgfs_atmos_post_manager:release_post180
+        task jgfs_wave_post_bndpntbll
+          trigger ./jgfs_wave_post_bndpnt == complete
         task jgfs_wave_prdgen_gridded
           trigger ./jgfs_wave_postsbs == active or ./jgfs_wave_postsbs == complete 
         task jgfs_wave_prdgen_bulls
