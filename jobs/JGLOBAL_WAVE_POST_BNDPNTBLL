@@ -20,7 +20,7 @@ done
 ##########################################
 # Source machine runtime environment
 ##########################################
-. $HOMEgfs/env/${machine}.env wavepostbndpnt
+. $HOMEgfs/env/${machine}.env wavepostbndpntbll
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
@@ -66,6 +66,7 @@ fi
 export COMIN=${COMIN:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/$COMPONENT}
 export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/$COMPONENT}
 
+
 mkdir -p $COMOUT/station
 
 env | sort
@@ -81,17 +82,17 @@ export WAV_MOD_TAG=${CDUMP}wave${waveMEMB}
 
 export CFP_VERBOSE=1
 
-export FHMAX_WAV_PNT=180
+export FHMAX_WAV_PNT=180 
 if [ $FHMAX_WAV -lt $FHMAX_WAV_PNT ] ; then export FHMAX_WAV_IBP=$FHMAX_WAV ; fi
-export DOSPC_WAV='YES' # Spectral post
-export DOBLL_WAV='NO' # Bulletin post
-export DOBNDPNT_WAV='YES'  #not boundary points  
+export DOSPC_WAV='NO' # Spectral post
+export DOBLL_WAV='YES' # Bulletin post
+export DOBNDPNT_WAV='YES'  #boundary points  
 
 # Execute the Script  
 $HOMEgfs/scripts/exgfs_wave_post_pnt.sh
 err=$?
 if [ $err -ne 0 ]; then
-  msg="FATAL ERROR: ex-script of GWES_POST failed!"
+  msg="FATAL ERROR: ex-script of GFS_WAVE_POST_PNT failed!"
 else
   msg="$job completed normally!"
 fi
