@@ -5,6 +5,7 @@ case:
   settings: 
     SDATE: 2013-04-01t00:00:00
     EDATE: 2013-04-01t00:00:00
+    max_job_tries: 1
 
     cplgocart: .true.
     print_esmf: .true.
@@ -36,7 +37,7 @@ case:
     layout:
        x: 6
        y: 8
-       nth: 2
+       nth: 1
        WGRP: 1
        WGRP_NTASKS: 24
        WRTIOBUF: "32M"
