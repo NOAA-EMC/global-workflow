@@ -190,5 +190,19 @@ if [ $ENSGRP -eq 0 ]; then
 
 fi
 
+# Remove enkf*.$rPDY for the older of GDATE or RDATE
+GDATE=$($NDATE -${RMOLDSTD_ENKF:-120} $CDATE)
+fhmax=$FHMAX_GFS
+RDATE=$($NDATE -$fhmax $CDATE)
+if [ $GDATE -lt $RDATE ]; then
+    RDATE=$GDATE
+fi
+rPDY=$(echo $RDATE | cut -c1-8)
+clist="gdas gfs"
+for ctype in $clist; do
+    COMIN="$ROTDIR/enkf$ctype.$rPDY"
+    [[ -d $COMIN ]] && rm -rf $COMIN
+done
+
 ###############################################################
 exit 0
