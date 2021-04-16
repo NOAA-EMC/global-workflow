@@ -37,7 +37,7 @@
   specdir=$3
   workdir=$4
 
-  YMDHE=`$NDATE $FHMAX_WAV $CDATE`
+  YMDHE=`$NDATE $FHMAX_WAV_PNT $CDATE`
 
   cd $workdir
 
@@ -146,7 +146,7 @@
 
 # 0.f Links to mother directory
 
-  ln -s ${DATA}/mod_def.${waveuoutpGRD} ./mod_def.ww3
+  ln -s ${DATA}/output_${ymdh}0000/mod_def.${waveuoutpGRD} ./mod_def.ww3
   ln -s ${DATA}/output_${ymdh}0000/out_pnt.${waveuoutpGRD} ./out_pnt.ww3
 
 # --------------------------------------------------------------------------- #
@@ -248,9 +248,6 @@
   fi
 
 # 3.b Clean up the rest
-
-  rm -f ww3_outp.inp
-  rm -f mod_def.ww3 out_pnt.ww3
 
   cd ..
   rm -rf ${specdir}_${bloc}
