@@ -253,6 +253,8 @@ config_fcst:
     # Remember config.efcs will over-ride these values for ensemble forecasts
     # if these variables are re-defined there.
     # Otherwise, the ensemble forecast will inherit from config.fcst
+
+    # export KMP_INIT_AT_FORK=FALSE
     
     echo "END: config.fcst"
     
