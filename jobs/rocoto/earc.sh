@@ -227,6 +227,18 @@ if [ $ENSGRP -eq 0 ]; then
 	    [[ ! "$(ls -A $COMIN_ENS)" ]] && rm -rf $COMIN_ENS
 	fi
  
+        COMIN_ENS="$ROTDIR/efsoigdas.$gPDY/$gcyc/$COMPONENT"
+	if [ -d $COMIN_ENS ] ; then
+	    rm -rf $COMIN_ENS/*f012*nc
+	    rm -rf $COMIN_ENS/*f018*nc
+            for imem in $(seq 1 $NMEM_ENKF); do
+                memchar="mem"$(printf %03i $imem)
+	        for file in `ls $COMIN_ENS/$memchar |grep -v atmf024`; do
+                    rm -rf $COMIN_ENS/$memchar/$file
+                done
+            done
+	fi
+
 	# Advance to next cycle
 	GDATE=$($NDATE +$assim_freq $GDATE)
 
@@ -234,7 +246,7 @@ if [ $ENSGRP -eq 0 ]; then
 
     # Now do EFSOI - needs to be kept around longer
     # Start start and end dates to remove
-    GDATEEND=$($NDATE -${RMOLDEND_EFSOI:-48}  $CDATE)
+    GDATEEND=$($NDATE -${RMOLDEND_EFSOI:-36}  $CDATE)
     GDATE=$($NDATE -${RMOLDSTD_ENKF:-120} $CDATE)
     while [ $GDATE -le $GDATEEND ]; do
 

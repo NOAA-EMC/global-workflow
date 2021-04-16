@@ -3,9 +3,8 @@
 ####  UNIX Script Documentation Block
 #                      .                                             .
 # Script name:         exgdas_efsoi.sh
-# Script description:  Make global_enkf update for efsoi
+# Script description:  Runs efsoi to make observation sensitivities
 #
-# Author:        Rahul Mahajan      Org: NCEP/EMC     Date: 2017-03-02
 # Author:        Liaofan Lin/Andrew Eichmann          Date: 2020-12-03
 #
 # Abstract: This script runs the efsoi executable
@@ -14,7 +13,7 @@
 #
 # Attributes:
 #   Language: POSIX shell
-#   Machine: WCOSS-Cray/Theia
+#   Machine: Hera
 #
 ################################################################################
 
@@ -45,7 +44,6 @@ APRUN_ENKF=${APRUN_ENKF:-${APRUN:-""}}
 NTHREADS_ENKF=${NTHREADS_ENKF:-${NTHREADS:-1}}
 
 # Executables
-#ENKFEXEC=${ENKFEXEC:-$HOMEgfs/exec/global_enkf.x}
 EFSOIEXEC=${EFSOIEXEC:-$HOMEgfs/exec/efsoi.x}
 
 # Cycling and forecast hour specific parameters
@@ -176,94 +174,14 @@ $NLN $VLOCALEIG  vlocal_eig.dat
 $NLN $COMOUT_ANL_ENSFSOI/$GBIASe satbias_in
 
 ################################################################################
-
-#if [ $USE_CFP = "YES" ]; then
-#   [[ -f $DATA/untar.sh ]] && rm $DATA/untar.sh
-#   [[ -f $DATA/mp_untar.sh ]] && rm $DATA/mp_untar.sh
-#   set +x
-#   cat > $DATA/untar.sh << EOFuntar
-##!/bin/sh
-#memchar=\$1
-#flist="$CNVSTAT $OZNSTAT $RADSTAT"
-#for ftype in \$flist; do
-#   if [ \$memchar = "ensmean" ]; then
-#      fname=$COMOUT_ANL_ENS/\${ftype}.ensmean
-#   else
-#      fname=$COMOUT_ANL_ENS/\$memchar/\$ftype
-#   fi
-#   tar -xvf \$fname
-#done
-#EOFuntar
-#   set -x
-#   chmod 755 $DATA/untar.sh
-#fi
-
-################################################################################
 # Ensemble guess, observational data and analyses/increments
 
-#flist="$CNVSTAT $OZNSTAT $RADSTAT"
-#if [ $USE_CFP = "YES" ]; then
-#   echo "$nm $DATA/untar.sh ensmean" | tee -a $DATA/mp_untar.sh
-#   if [ ${CFP_MP:-"NO"} = "YES" ]; then
-#       nm=$((nm+1))
-#   fi
-#else
-#   for ftype in $flist; do
-#      fname=$COMOUT_ANL_ENS/${ftype}.ensmean
-#      tar -xvf $fname
-#   done
-#fi
 nfhrs=`echo $IAUFHRS_ENKF | sed 's/,/ /g'`
 for imem in $(seq 1 $NMEM_ENKF); do
    memchar="mem"$(printf %03i $imem)
    mkdir ${memchar}
    $NLN $COMOUT_ANL_ENSFSOI/$memchar/${APREFIX}atmf024.nc ${memchar}
-#   if [ $lobsdiag_forenkf = ".false." ]; then
-#      if [ $USE_CFP = "YES" ]; then
-#         echo "$nm $DATA/untar.sh $memchar" | tee -a $DATA/mp_untar.sh
-#         if [ ${CFP_MP:-"NO"} = "YES" ]; then
-#             nm=$((nm+1))
-#         fi
-#      else
-#         for ftype in $flist; do
-#            fname=$COMOUT_ANL_ENS/$memchar/$ftype
-#            tar -xvf $fname
-#         done
-#      fi
-#   fi
-#####   mkdir -p $COMOUT_ANL_ENSFSOI/$memchar
-#   for FHR in $nfhrs; do
-#      $NLN $COMIN_GES_ENS/$memchar/${GPREFIX}atmf00${FHR}${ENKF_SUFFIX}${GSUFFIX}  sfg_${CDATE}_fhr0${FHR}_${memchar}
-#      if [ $cnvw_option = ".true." ]; then
-#         $NLN $COMIN_GES_ENS/$memchar/${GPREFIX}sfcf00${FHR}${GSUFFIX} sfgsfc_${CDATE}_fhr0${FHR}_${memchar}
-#      fi
-#      if [ $FHR -eq 6 ]; then
-#         if [ $DO_CALC_INCREMENT = "YES" ]; then
-#            #$NLN $COMOUT_ANL_ENS/$memchar/${APREFIX}atmanl${ASUFFIX}             sanl_${CDATE}_fhr0${FHR}_${memchar}
-#            $NLN $COMOUT_ANL_ENSFSOI/$memchar/${APREFIX}atmanl${ASUFFIX}             sanl_${CDATE}_fhr0${FHR}_ni${memchar}
-#         else
-#            #$NLN $COMOUT_ANL_ENS/$memchar/${APREFIX}atminc${ASUFFIX}             incr_${CDATE}_fhr0${FHR}_${memchar}
-#            $NLN $COMOUT_ANL_ENSFSOI/$memchar/${APREFIX}atminc${ASUFFIX}             incr_${CDATE}_fhr0${FHR}_ni${memchar}
-#         fi
-#      else
-#         if [ $DO_CALC_INCREMENT = "YES" ]; then
-#            #$NLN $COMOUT_ANL_ENS/$memchar/${APREFIX}atma00${FHR}${ASUFFIX}             sanl_${CDATE}_fhr0${FHR}_${memchar}
-#            $NLN $COMOUT_ANL_ENSFSOI/$memchar/${APREFIX}atma00${FHR}${ASUFFIX}             sanl_${CDATE}_fhr0${FHR}_ni${memchar}
-#         else
-#            #$NLN $COMOUT_ANL_ENS/$memchar/${APREFIX}atmi00${FHR}${ASUFFIX}             incr_${CDATE}_fhr0${FHR}_${memchar}
-#            $NLN $COMOUT_ANL_ENSFSOI/$memchar/${APREFIX}atmi00${FHR}${ASUFFIX}             incr_${CDATE}_fhr0${FHR}_ni${memchar}
-#         fi
-#      fi
-#   done
 done
-
-# Ensemble mean guess
-#for FHR in $nfhrs; do
-#   $NLN $COMIN_GES_ENS/${GPREFIX}atmf00${FHR}.ensmean${GSUFFIX} sfg_${CDATE}_fhr0${FHR}_ensmean
-#   if [ $cnvw_option = ".true." ]; then
-#      $NLN $COMIN_GES_ENS/${GPREFIX}sfcf00${FHR}.ensmean${GSUFFIX} sfgsfc_${CDATE}_fhr0${FHR}_ensmean
-#   fi
-#done
 
 $NLN $COMIN_GES_ENS/${GPREFIX}atmf006.ensmean${GSUFFIX} sfg_${CDATE}_fhr06_ensmean
 $NLN $COMIN_GES_ENS/${GPREFIX}atmf006.ensmean${GSUFFIX} sfg_${CDATE}_fhr03_ensmean
@@ -452,9 +370,6 @@ export ERR=$rc
 export err=$ERR
 $ERRSCRIPT || exit 2
 
-## save for EFSOI task (still needed?)
-#$NCP $COMOUT_ANL_ENS/$GBIASe $COMOUT_ANL_ENSFSOI
-
 # Cat runtime output files.
 cat stdout stderr > $COMOUT_ANL_ENSFSOI/$EFSOISTAT
 
@@ -463,9 +378,7 @@ $NCP osense_${CDATE}.dat $OSENSE_SAVE_DIR/$OSENSEOUT
 
 ################################################################################
 #  Postprocessing
-######## AFE remove after testing
-cp -r $DATA /scratch1/NCEPDEV/stmp4/Andrew.Eichmann/efsoi
-######## AFE
+
 cd $pwd
 [[ $mkdata = "YES" ]] && rm -rf $DATA
 set +x
