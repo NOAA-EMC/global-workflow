@@ -181,24 +181,39 @@ FV3_GFS_postdet(){
 
         #--------------------------------------------------------------------------
         # Grid and orography data
-        for n in $(seq 1 $ntiles); do
-          $NLN $FIXfv3/$CASE/${CASE}_grid.tile${n}.nc     $DATA/INPUT/${CASE}_grid.tile${n}.nc
-        done
-        if  [ $FRAC_GRID ]; then 
-          FIXoro=${FIXoro:-$FIX_DIR/fix_fv3_fracoro}
-          for n in $(seq 1 $ntiles); do 
-            $NLN $FIXoro/${CASE}.mx${OCNRES}_frac/${CASE}.mx${OCNRES}_tile${n}.nc $DATA/INPUT/oro_data.tile${n}.nc
-          done 
-        else 
-          for n in $(seq 1 $ntiles); do
-            $NLN $FIXfv3/$CASE/${CASE}_oro_data.tile${n}.nc $DATA/INPUT/oro_data.tile${n}.nc
-          done
-        fi 
-        if [ $cplflx = ".false." ] ; then
-          $NLN $FIXfv3/$CASE/${CASE}_mosaic.nc  $DATA/INPUT/grid_spec.nc
-        else 
-          $NLN $FIXfv3/$CASE/${CASE}_mosaic.nc  $DATA/INPUT/${CASE}_mosaic.nc
+        if [ -z ${GRDFIX} ] ; then
+          FIXgrd=$FIXfv3/$CASE
+        else
+          FIXgrd=${GRDFIX}
         fi
+        for n in $(seq 1 $ntiles); do
+          $NLN ${FIXgrd}/${CASE}_grid.tile${n}.nc $DATA/INPUT/${CASE}_grid.tile${n}.nc
+        done
+
+        if [ -f ${FIXgrd}/${CASE}_mosaic.nc ] ; then
+          src_grid_spec=${FIXgrd}/${CASE}_mosaic.nc
+        else
+          src_grid_spec=${FIXgrd}/grid_spec.nc
+        fi
+
+        if [ $cplflx = ".false." ] ; then
+          $NLN ${src_grid_spec} $DATA/INPUT/grid_spec.nc
+        else 
+          $NLN ${src_grid_spec} $DATA/INPUT/${CASE}_mosaic.nc
+        fi
+
+        if [ -z ${OROFIX} ]; then
+          if [ $FRAC_GRID ]; then
+            FIXoro=${FIXoro:-$FIX_DIR/fix_fv3_fracoro}/${CASE}.mx${OCNRES}_frac/${CASE}.mx${OCNRES}_
+          else
+            FIXoro=$FIXfv3/$CASE/${CASE}_oro_data.
+          fi
+        else
+          FIXoro=${OROFIX}/oro_data.
+        fi
+        for n in $(seq 1 $ntiles); do
+          $NLN ${FIXoro}tile${n}.nc $DATA/INPUT/oro_data.tile${n}.nc
+        done
 
         # GFS standard input data
 
@@ -487,7 +502,11 @@ FV3_GFS_nml(){
                 echo "MAIN: !!!Sandbox mode, writing to current directory!!!"
         fi
         # Call child scripts in current script directory
-        source $SCRIPTDIR/parsing_namelists_FV3.sh
+        if [ $cplgocart = .true. ]; then
+          source $SCRIPTDIR/parsing_namelists_FV3_GOCART.sh
+        else
+          source $SCRIPTDIR/parsing_namelists_FV3.sh
+        fi
         FV3_namelists
         echo SUB ${FUNCNAME[0]}: FV3 name lists and model configure file created
 }
@@ -835,6 +854,27 @@ CICE_out()
           fi
 
         done
+        fi
+}
+
+GOCART_rc()
+{
+        echo "SUB ${FUNCNAME[0]}: Linking input data and copying config files for GOCART"
+        # set input directory containing GOCART input data and configuration files
+        # this variable is platform-dependent and should be set via a YAML file
+
+        # link directory containing GOCART input dataset, if provided
+        if [ ! -z "${CHM_INPDIR}" ]; then
+          $NLN -sf ${CHM_INPDIR} $DATA
+          status=$?
+          [[ $status -ne 0 ]] && exit $status
+        fi
+
+        # copying GOCART configuration files
+        if [ ! -z "${CHM_CFGDIR}" ]; then
+          $NCP     ${CHM_CFGDIR}/*.rc $DATA
+          status=$?
+          [[ $status -ne 0 ]] && exit $status
         fi
 }
 

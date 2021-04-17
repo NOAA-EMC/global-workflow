@@ -5,7 +5,7 @@
 config_fcst:
   filename: config.fcst
   FCSTEXEC: !FirstTrue
-    - when: !calc doc.settings.cplflx==".true."
+    - when: !calc ( doc.settings.cplflx==".true." or doc.settings.cplgocart==".true." )
       do: "ufs_model"
     - otherwise: "global_fv3gfs.x"
   more_exports_for_microphys: !FirstTrue
@@ -70,6 +70,7 @@ config_fcst:
     export OCN_model="{doc.ocn_settings.MOD}"
     export ICE_model="{doc.ice_settings.MOD}"
     export WAV_model="{doc.wave_settings.MOD}"
+    export CHM_model="{doc.chem_settings.MOD}"
 
     #######################################################################
     # COUPLING COMPONENTS
@@ -82,6 +83,7 @@ config_fcst:
     export OCNPETS="{doc.ocn_settings.OCNPETS}"
     export ICEPETS="{doc.ice_settings.ICEPETS}"
     export WAVPETS="{doc.wave_settings.WAVPETS}"
+    export CHMPETS="{resource_a[0].mpi_ranks}"
     #
     #######################################################################    
     # CICE parameters
@@ -220,9 +222,16 @@ config_fcst:
         export npe_remap={doc.partition_common.resources.fallback_run_gfsremap[0].mpi_ranks}
         export nth_remap={doc.partition_common.resources.fallback_run_gfsremap[0].OMP_NUM_THREADS}
 
+
     fi
 
-    if [[ $cpl == .true. ]] ; then # coupled model
+    if [ $cplgocart = .true. ]; then # temporary settings for aerosol coupling
+        export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_aer"
+        export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_aer"
+        export CHM_CFGDIR="{doc.chem_settings.CFGDIR}"
+        export CHM_INPDIR="{doc.chem_settings.INPDIR}"
+        export dnats="$(( $dnats + {doc.chem_settings.ntdiag} ))"
+    elif [[ $cpl == .true. ]] ; then # coupled model
         export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_cpl"
     fi
     

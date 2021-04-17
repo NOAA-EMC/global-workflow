@@ -24,7 +24,7 @@ CHM_attributes::
 
 # Run Sequence #
 runSeq::
-  @@[coupling_interval_sec]
+  @@[coupling_interval_fast_sec]
     ATM phase1
     ATM -> CHM
     CHM

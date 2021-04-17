@@ -1,0 +1,18 @@
+# fv3_settings_template - sets the namelist values for the fv3
+# forecast.  See the physcs and model documentation for full
+# information on these variables.
+
+chem_settings_template: !Template &chem_settings_template
+  MOD:
+    type: string
+    allowed: [ gsdchem ]
+    description: "model selection for aerosols"
+  CFGDIR:
+    type: string
+    description: "directory containing model resource files"
+  INPDIR:
+    type: string
+    description: "directory containing model input data"
+  ntdiag:
+    type: int
+    description: "number of diagnostic tracers"

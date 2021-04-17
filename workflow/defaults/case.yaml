@@ -3,6 +3,13 @@
 # of the case files, default files, platform file, and everywhere
 # else, and applies any validation from the schema/ directory.
 
+chem_settings: !Immediate
+  - !MergeMapping
+    - CDUMP: gfs
+      Template: *chem_settings_template
+    - !calc doc.chem_defaults
+    - !calc doc.case.get('chem_settings',{})
+
 ocn_settings: !Immediate
   - !MergeMapping
     - CDUMP: gfs

@@ -1,4 +1,4 @@
-# How to use the unified workflow for the coupled ufs-weather-model (work in progress)
+# How to use the unified workflow for the coupled ufs-weather-model or ufs-aerosol app (work in progress)
 
 ## Checkout the source code and scripts
 ```
@@ -7,13 +7,20 @@ cd coupled-workflow
 git checkout feature/coupled-crow
 git submodule update --init --recursive     #Update submodules 
 cd sorc
+```
+For coupled:
+```
 sh checkout.sh -c                           #Check out forecast model with COUPLED=YES
+```
+For aerosols:
+```
+sh checkout.sh -a                           #Check out forecast model with active aerosols
 ```
 ## Compile code needed to run prototype and link fixed files and executable programs:
 ```
-sh build_all.sh -c           #This command will build only execs for coupled
+sh build_all.sh -c           #This command will build only execs for coupled and aerosol-enabled model
 
-To link fixed files and executable programs for the coupled application:
+To link fixed files and executable programs for the coupled/aerosol application:
 On Hera: 
 sh link_fv3gfs.sh emc hera coupled
 On Orion: 
@@ -48,25 +55,31 @@ Then, open and edit user.yaml:
 ## Create experiment directory using CROW
 CROW gets information of the targeted experiment from case files. A case file is a text file in YAML format, describing the information
 of the experiment to be configured. A series of pre-generated case files are given under /workflow/cases. You could generate your
-own case from scratch as well. For this project, we start with "coupled_free_forecast.yaml". The "coupled_free_forecast.yaml" will
-generate a 3-day run case (test_3d) starting from 2016040100. From the /workflow/CROW directory:
+own case from scratch as well. From the workflow/CROW/directory:
+
 ```
 mkdir -p $EXPROOT
 (Note that $EXPROOT is the experiment directory that has been set in the user.yaml file.)
-./setup_case.sh -p HERA $CASE test2d
+./setup_case.sh -p HERA $CASE $EXP_NAME
 
 or
 
-./setup_case.sh -p HERA ../cases/$CASE.yaml test2d
+./setup_case.sh -p HERA ../cases/$CASE.yaml $EXP_NAME
 ```
 where $CASE is one of the following:
-- coupled_free_forecast: 2 day tests for atm-ocn-ice coupling 
-- coupled_free_forecast_wave: 2 day test for atm-ocn-ice-wav coupling (frac grid)
-- coupled_free_forecast_nofrac_wave: 2 day test for atm-ocn-ice-wav coupling (non frac grid)
-- atm_free_forecast:  Run the atm only case with same ICs as coupled tests 
-Please see the bottom of the README for information about particular versions/prototype and ICs
+- Coupled cases:
+-- coupled_free_forecast: 2 day tests for atm-ocn-ice coupling 
+-- coupled_free_forecast_wave: 2 day test for atm-ocn-ice-wav coupling (frac grid)
+-- coupled_free_forecast_nofrac_wave: 2 day test for atm-ocn-ice-wav coupling (non frac grid)
+-- atm_free_forecast:  Run the atm only case with same ICs as coupled tests 
 
-This will create a experiment directory ($EXPERIMENT_DIRECTORY). In the current example, $EXPERIMENT_DIRECTORY=$EXPROOT/test_3d.
+- Aerosol cases:
+-- aerosol_free_forecast.yaml
+-- aerosol_firex_forecast.yaml    (includes fire emissions for FIREX-AQ)
+
+This will create a experiment directory (`$EXPERIMENT_DIRECTORY`). In the current example, `EXPERIMENT_DIRECTORY=$EXPROOT/$EXP_NAME`.
+
+Please see the bottom of the README for information about particular versions/prototype and ICs
 
 For Orion: 
 First make sure you have python loaded: 
@@ -177,7 +190,7 @@ If you would like to only change the resource settings for an experiment that al
 cd $EXPDIR
 (edit resources_sum.yaml)
 cd ~/workflow/CROW
-./setup_case.sh -p HERA -f ../cases/coupled_free_forecast.yaml test_3d
+./setup_case.sh -p HERA -f ../cases/$CASE.yaml $EXP_NAME
 ./make_rocoto_xml_for.sh $EXPERIMENT_DIRECTORY
 ```
 In this way, both your config files and rocoto xml will be updated with the new resource settings.
