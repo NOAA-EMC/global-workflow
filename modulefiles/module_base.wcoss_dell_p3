@@ -26,6 +26,9 @@ module load CFP/2.0.2
 setenv USE_CFP YES
 module load pm5
 
+module load wgrib2/2.0.8
+setenv WGRIB2 wgrib2
+
 module load netcdf/4.7.4
 module load hdf5/1.10.6
 module load esmf/8_1_0_beta_snapshot_27
