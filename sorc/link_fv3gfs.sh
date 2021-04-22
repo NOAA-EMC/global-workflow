@@ -31,13 +31,13 @@ pwd=$(pwd -P)
 #--model fix fields
 #------------------------------
 if [ $machine == "cray" ]; then
-    FIX_DIR="/gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix_nco_gfsv16"
+    FIX_DIR="/gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix"
 elif [ $machine = "dell" ]; then
-    FIX_DIR="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix_nco_gfsv16"
+    FIX_DIR="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix"
 elif [ $machine = "hera" ]; then
-    FIX_DIR="/scratch1/NCEPDEV/global/glopara/fix_nco_gfsv16"
+    FIX_DIR="/scratch1/NCEPDEV/global/glopara/fix"
 elif [ $machine = "orion" ]; then
-    FIX_DIR="/work/noaa/global/glopara/fix_nco_gfsv16"
+    FIX_DIR="/work/noaa/global/glopara/fix"
 fi
 cd ${pwd}/../fix                ||exit 8
 for dir in fix_am fix_fv3_gmted2010 fix_gldas fix_orog fix_verif fix_wave_gfs ; do
