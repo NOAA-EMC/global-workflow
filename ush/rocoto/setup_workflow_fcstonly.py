@@ -644,8 +644,9 @@ def get_workflow(dict_configs, cdump='gdas'):
         dep_dict = {'type':'task', 'name':'%sarch' % cdump, 'offset':'-&INTERVAL;'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+        sdate_gfs = rocoto.create_envar(name='SDATE_GFS', value='&SDATE_GFS;')
         metpcase = rocoto.create_envar(name='METPCASE', value='#metpcase#')
-        metpenvars = envars + [metpcase]
+        metpenvars = envars + [sdate_gfs] + [metpcase]
         varname1 = 'metpcase'
         varval1 = 'g2g1 g2o1 pcp1'
         task = wfu.create_wf_task('metp', cdump=cdump, envar=metpenvars, dependency=dependencies,
