@@ -408,11 +408,11 @@ $NLN $FIX_AM/global_sfc_emissivity_idx.txt     $DATA/sfc_emissivity_idx.txt
 for n in 01 02 03 04 05 06 07 08 09 10 11 12; do
 $NLN $FIX_AER/merra2.aerclim.2003-2014.m${n}.nc $DATA/aeroclim.m${n}.nc
 done
-cp -f $FIX_LUT/optics_BC.v1_3.dat $DATA/optics_BC.dat
-cp -f $FIX_LUT/optics_OC.v1_3.dat $DATA/optics_OC.dat
-cp -f $FIX_LUT/optics_DU.v15_3.dat $DATA/optics_DU.dat
-cp -f $FIX_LUT/optics_SS.v3_3.dat $DATA/optics_SS.dat
-cp -f $FIX_LUT/optics_SU.v1_3.dat $DATA/optics_SU.dat
+$NLN $FIX_LUT/optics_BC.v1_3.dat $DATA/optics_BC.dat
+$NLN $FIX_LUT/optics_OC.v1_3.dat $DATA/optics_OC.dat
+$NLN $FIX_LUT/optics_DU.v15_3.dat $DATA/optics_DU.dat
+$NLN $FIX_LUT/optics_SS.v3_3.dat $DATA/optics_SS.dat
+$NLN $FIX_LUT/optics_SU.v1_3.dat $DATA/optics_SU.dat
 
 $NLN $FIX_AM/global_co2historicaldata_glob.txt $DATA/co2historicaldata_glob.txt
 $NLN $FIX_AM/co2monthlycyc.txt                 $DATA/co2monthlycyc.txt

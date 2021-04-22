@@ -27,6 +27,6 @@ if [ ${RUN_CCPP:-${1:-"NO"}} = "NO" ]; then
  ./compile.sh "$FV3" "$target" "WW3=Y 32BIT=Y" 1
  mv -f fv3_1.exe ../NEMS/exe/global_fv3gfs.x
 else
- ./compile.sh "$target" "CCPP=Y 32BIT=Y SUITES=FV3_GFS_v15,FV3_GFS_v16beta" 2 YES NO
+ ./compile.sh "$target" "CCPP=Y 32BIT=Y SUITES=FV3_GFS_v15,FV3_GFS_v16beta" 2 NO NO
  mv -f fv3_2.exe ../NEMS/exe/global_fv3gfs.x
 fi
