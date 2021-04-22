@@ -6,8 +6,9 @@ while getopts "o" option;
 do
  case $option in
   o)
-   echo "Received -o flag for optional checkout of GTG, will check out GTG with EMC_post"
+   echo "Received -o flag for optional checkout of operational-only codes"
    checkout_gtg="YES"
+   checkout_wafs="YES"
    ;;
   :)
    echo "option -$OPTARG needs an argument"
@@ -93,15 +94,18 @@ else
     echo 'Skip.  Directory gfs_post.fd already exists.'
 fi
 
-echo EMC_gfs_wafs checkout ...
-if [[ ! -d gfs_wafs.fd ]] ; then
+checkout_wafs=${checkout_wafs:-"NO"}
+if [[ ${checkout_wafs} == "YES" ]] ; then
+  echo EMC_gfs_wafs checkout ...
+  if [[ ! -d gfs_wafs.fd ]] ; then
     rm -f ${topdir}/checkout-gfs_wafs.log
     git clone --recursive https://github.com/NOAA-EMC/EMC_gfs_wafs.git gfs_wafs.fd >> ${topdir}/checkout-gfs_wafs.log 2>&1
     cd gfs_wafs.fd
     git checkout gfs_wafs.v6.0.19
     cd ${topdir}
-else
+  else
     echo 'Skip.  Directory gfs_wafs.fd already exists.'
+  fi
 fi
 
 echo EMC_verif-global checkout ...
