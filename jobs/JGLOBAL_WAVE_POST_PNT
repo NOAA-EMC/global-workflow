@@ -45,7 +45,9 @@ export cycle=${cycle:-t${cyc}z}
  
 # Set PDY
 setpdy.sh
-sh ./PDY
+. ./PDY
+
+export CDATE=$PDY$cyc
 
 export pgmout=OUTPUT.$$
 

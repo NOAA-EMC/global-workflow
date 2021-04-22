@@ -56,16 +56,16 @@ elif [[ $hname = 'hpc.msstate.edu' ]] ; then
 elif [[ -d /scratch1 ]] ; then
     # We are on NOAA Hera
     if ( ! eval module help > /dev/null 2>&1 ) ; then
-	echo load the module command 1>&2
+        echo load the module command 1>&2
         source /apps/lmod/lmod/init/$__ms_shell
     fi
-    target=hera
+    target=orion
     module purge
-    module load intel
-    module load impi
-    export NCEPLIBS=/scratch2/NCEPDEV/nwprod/NCEPLIBS
-    module use $NCEPLIBS/modulefiles
+    module load intel/2018.4
+    module load impi/2018.4
+    export NCEPLIBS=/apps/contrib/NCEPLIBS/orion
     #export WRFPATH=$NCEPLIBS/wrf.shared.new/v1.1.1/src
+    module use $NCEPLIBS/modulefiles
     export myFC=mpiifort
     export FCOMP=mpiifort
 

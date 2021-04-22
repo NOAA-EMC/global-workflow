@@ -1,15 +1,14 @@
-#! /bin/sh
-#BSUB -q %QUEUE%
-#BSUB -P %PROJ%
+#BSUB -L /bin/sh
 #BSUB -J %E%gdas_atmos_verfrad_%CYC%
 #BSUB -o %COM%/output/%ENVIR%/today/gdas_atmos_verfrad_%CYC%.o%J
+#BSUB -q %QUEUE%
+#BSUB -P %PROJ%
 #BSUB -W 0:20
 #BSUB -n 1
 #BSUB -R affinity[core(1)]
 #BSUB -R span[ptile=1]
 #BSUB -cwd /tmp
 
-module purge
 %include <head.h>
 %include <envir-p3.h>
 
@@ -32,10 +31,7 @@ model=gfs
 ############################################################
 module load lsf/${lsf_ver}
 module load impi/${impi_ver}
-module load prod_envir/${prod_envir_ver}
-module load prod_util/${prod_util_ver}
 module load grib_util/${grib_util_ver}
-module use -a /gpfs/dell1/nco/ops/nwprod/modulefiles/
 module load util_shared/${util_shared_ver}
 
 module list
@@ -43,13 +39,8 @@ module list
 #############################################################
 # WCOSS environment settings
 #############################################################
-export COMPONENT=${COMPONENT:-atmos}
-export COM_IN=%COM%/$NET/$envir
-export ROTDIR=%COM%/$NET/$envir
 export cyc=%CYC%
 export cycle=t%CYC%z
-export COMIN=$COM_IN/${RUN}.${PDY}/${cyc}/${COMPONENT}
-export TANKverf=$COM_IN
 export VERBOSE=YES
 
 ############################################################

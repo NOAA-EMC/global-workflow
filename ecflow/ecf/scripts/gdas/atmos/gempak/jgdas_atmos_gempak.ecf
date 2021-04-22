@@ -1,8 +1,8 @@
-#! /bin/sh
-#BSUB -q %QUEUE%
-#BSUB -P %PROJ%
+#BSUB -L /bin/sh
 #BSUB -J %E%gdas_atmos_gempak_%CYC%
 #BSUB -o %COM%/output/%ENVIR%/today/gdas_atmos_gempak_%CYC%.o%J
+#BSUB -q %QUEUE%
+#BSUB -P %PROJ%
 #BSUB -W 0:15
 #BSUB -n 2
 #BSUB -R affinity[core(1)]
@@ -30,19 +30,13 @@ module load EnvVars/$EnvVars_ver
 module load lsf/$lsf_ver                               
 module load CFP/$CFP_ver
 module load grib_util/$grib_util_ver
-module use -a /gpfs/dell1/nco/ops/nwprod/modulefiles/
 module load gempak/$gempak_ver
 
 module list
 
 #%include <ecf_client.h>
-export COMPONENT=${COMPONENT:-atmos}
-export COM_IN=%COM%/$NET/$envir
-export ROTDIR=%COM%/$NET/$envir
 export cyc=%CYC%
 export cycle=t%CYC%z
-export COMIN=$COM_IN/${RUN}.${PDY}/${cyc}/${COMPONENT}
-export COMOUT=$COM_IN/${RUN}.${PDY}/${cyc}/${COMPONENT}/gempak
 export USE_CFP=YES
 
 ############################################################

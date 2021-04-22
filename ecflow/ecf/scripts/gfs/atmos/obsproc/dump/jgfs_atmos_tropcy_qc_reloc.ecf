@@ -1,9 +1,9 @@
-#! /bin/sh
 #BSUB -q %QUEUE%
 #BSUB -P %PROJ%
 #BSUB -J %E%gfs_atmos_tropcy_qc_reloc_%CYC%
 #BSUB -o %COM%/output/%ENVIR%/today/gfs_atmos_tropcy_qc_reloc_%CYC%.o%J
-#BSUB -W 0:10
+#BSUB -W 0:05
+#BSUB -L /bin/sh
 #BSUB -n 1
 #BSUB -R affinity[core(1)]
 #BSUB -R span[ptile=1]
@@ -27,7 +27,6 @@ export EXPDIR=${HOMEgfs}/parm/config
 ############################################################
 # Load modules
 ############################################################
-module load EnvVars/$EnvVars_ver
 module load lsf/$lsf_ver
 module load ips/$ips_ver
 module load impi/$impi_ver
@@ -39,7 +38,7 @@ module list
 export USE_CFP=YES
 export PROCESS_TROPCY=YES
 export DO_RELOCATE=YES
-export ROTDIR=%COM%/$NET/$envir
+#export ROTDIR=%COM%/$NET/$envir
 export cyc=%CYC%
 export cycle=t%CYC%z
 

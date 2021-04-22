@@ -23,10 +23,9 @@ export model=obsproc_global
 #############################################################
 ## Load modules
 ##############################################################
-module load EnvVars/$EnvVars_ver
 module load ips/$ips_ver
 module load impi/$impi_ver
-module load CFP/$cfp_ver
+module load CFP/$CFP_ver
 
 module load grib_util/${grib_util_ver}
 module list
@@ -41,13 +40,6 @@ module list
 set -x
 export cyc=%CYC%
 export COMPONENT=${COMPONENT:-atmos}
-export COMIN_ROOT=%COM%
-export COMIN=%COM%/${NET}/${envir}/${RUN}.${PDY}/${cyc}/${COMPONENT}
-export COMOUT_ROOT=%COM%
-export COMOUT=%COM%/${NET}/${envir}/${RUN}.${PDY}/${cyc}/${COMPONENT}
-
-####
-export ECF_PORT=%ECF_PORT%
 
 # CALL executable job script here
 ${HOMEobsproc_global}/jobs/JGLOBAL_DUMP

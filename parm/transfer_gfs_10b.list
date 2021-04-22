@@ -17,6 +17,7 @@
 #  B  bytes, relative size of the path in relation to the other paths in the list
 #  D  delete, delete extraneous files from destination directories (takes no arg)
 #  E  encrypt, enables data encryption [two cores should be allocated] (takes no arg)
+#  W  whole files, copy whole files rather than use delta-xfer algorithm (takes no arg)  (v2.2.3+)
 #  T  two-way syncronization will update both sides with latest changes (takes no arg)
 #  Z  compress data as it is sent, accepts optional compression level argument (1-9)
 # Rules higher in the list take precedence over lower ones.  By default, all files in a
@@ -25,21 +26,23 @@
 
 com/gfs/_ENVIR_/gfs._PDY_/
 + /??/
-+ /??/gfs.t??z.master.*0
-+ /??/gfs.t??z.master.*2
-+ /??/gfs.t??z.master.*4
-+ /??/gfs.t??z.master.*6
-+ /??/gfs.t??z.master.*8
++ /??/atmos/
++ /??/atmos/gfs.t??z.master.*0
++ /??/atmos/gfs.t??z.master.*2
++ /??/atmos/gfs.t??z.master.*4
++ /??/atmos/gfs.t??z.master.*6
++ /??/atmos/gfs.t??z.master.*8
 - *
 B 100
 
 com/gfs/_ENVIR_/gfs._PDYm1_/
 + /??/
-+ /??/gfs.t??z.master.*0
-+ /??/gfs.t??z.master.*2
-+ /??/gfs.t??z.master.*4
-+ /??/gfs.t??z.master.*6
-+ /??/gfs.t??z.master.*8
++ /??/atmos/
++ /??/atmos/gfs.t??z.master.*0
++ /??/atmos/gfs.t??z.master.*2
++ /??/atmos/gfs.t??z.master.*4
++ /??/atmos/gfs.t??z.master.*6
++ /??/atmos/gfs.t??z.master.*8
 - *
  
 B 100

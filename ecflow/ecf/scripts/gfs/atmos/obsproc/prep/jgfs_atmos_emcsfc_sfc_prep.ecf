@@ -1,9 +1,9 @@
-#! /bin/sh
-#BSUB -q %QUEUE%
-#BSUB -P %PROJ%
 #BSUB -J %E%gfs_atmos_emcsfc_sfc_prep_%CYC%
 #BSUB -o %COM%/output/%ENVIR%/today/gfs_atmos_emcsfc_sfc_prep_%CYC%.o%J
-#BSUB -W 0:10
+#BSUB -q %QUEUE%
+#BSUB -P %PROJ%
+#BSUB -L /bin/sh
+#BSUB -W 0:07
 #BSUB -n 1
 #BSUB -R affinity[core(1)]
 #BSUB -R span[ptile=1]
@@ -30,10 +30,10 @@ module list
 
 #%include <ecf_client.h>
 export USE_CFP=YES
-export ROTDIR=%COM%/$NET/$envir
+#export ROTDIR=%COM%/$NET/$envir
 export cyc=%CYC%
 export cycle=t%CYC%z
-export SCRgfs=${HOMEgfs}/scripts
+# JY 10/20 export SCRgfs=${HOMEgfs}/scripts
 
 ############################################################
 # CALL executable job script here

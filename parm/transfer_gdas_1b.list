@@ -17,6 +17,7 @@
 #  B  bytes, relative size of the path in relation to the other paths in the list
 #  D  delete, delete extraneous files from destination directories (takes no arg)
 #  E  encrypt, enables data encryption [two cores should be allocated] (takes no arg)
+#  W  whole files, copy whole files rather than use delta-xfer algorithm (takes no arg)  (v2.2.3+)
 #  T  two-way syncronization will update both sides with latest changes (takes no arg)
 #  Z  compress data as it is sent, accepts optional compression level argument (1-9)
 # Rules higher in the list take precedence over lower ones.  By default, all files in a
@@ -25,24 +26,26 @@
 
 com/gfs/_ENVIR_/gdas._PDY_/
 + /??/
-+ /??/*atmf007*
-+ /??/*atmf008*
-+ /??/*atmf009*
-+ /??/*atmg*
-+ /??/*atmanl*
-- /??/*
++ /??/atmos/
++ /??/atmos/*atmf007*
++ /??/atmos/*atmf008*
++ /??/atmos/*atmf009*
++ /??/atmos/*atmg*
++ /??/atmos/*atmanl*
+- /??/atmos/*
 - *
 
 B 100
 
 com/gfs/_ENVIR_/gdas._PDYm1_/
 + /??/
-+ /??/*atmf007*
-+ /??/*atmf008*
-+ /??/*atmf009*
-+ /??/*atmg*
-+ /??/*atmanl*
-- /??/*
++ /??/atmos/
++ /??/atmos/*atmf007*
++ /??/atmos/*atmf008*
++ /??/atmos/*atmf009*
++ /??/atmos/*atmg*
++ /??/atmos/*atmanl*
+- /??/atmos/*
 - *
 
 B 100
