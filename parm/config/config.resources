@@ -168,10 +168,8 @@ elif [ $step = "fcst" ]; then
     export npe_fcst=$(echo "$layout_x * $layout_y * 6" | bc)
     export npe_fcst_gfs=$(echo "$layout_x_gfs * $layout_y_gfs * 6" | bc)
     export nth_fcst=${nth_fv3:-2}
-    export nth_fcst_gfs=${nth_fv3_gfs:-2}
     if [[ "$CASE" == "C384" ]]; then nth_fcst=4; fi
     export npe_node_fcst=$(echo "$npe_node_max / $nth_fcst" | bc)
-    export npe_node_fcst_gfs=$(echo "$npe_node_max / $nth_fcst_gfs" | bc)
     if [[ "$machine" == "WCOSS_C" ]]; then export memory_fcst="1024M"; fi
 
 elif [ $step = "post" ]; then

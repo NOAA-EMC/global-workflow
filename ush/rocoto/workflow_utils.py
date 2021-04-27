@@ -295,10 +295,7 @@ def get_resources(machine, cfg, task, reservation, cdump='gdas'):
         ppn = cfg['npe_node_%s' % ltask]
 
     if machine in [ 'WCOSS_DELL_P3', 'HERA', 'ORION']:
-        if cdump in ['gfs'] and 'nth_%s_gfs' % task in cfg.keys():
-            threads = cfg['nth_%s_gfs' % ltask]
-        else:
-            threads = cfg['nth_%s' % ltask]
+        threads = cfg['nth_%s' % ltask]
 
     nodes = np.int(np.ceil(np.float(tasks) / np.float(ppn)))
 
