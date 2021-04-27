@@ -94,6 +94,16 @@ JOBS CHANGES
 * No change from GFS v16.0
 
 
+PARM/CONFIG CHANGES
+
+* No change from GFS v16.0
+
+
+SCRIPT CHANGES
+
+* No change from GFS v16.0
+
+
 FIX CHANGES
 
 * The contents of fix/fix_gsi have been updated.  See release notes 
