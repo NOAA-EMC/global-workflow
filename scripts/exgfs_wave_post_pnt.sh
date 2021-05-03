@@ -306,10 +306,10 @@
     mv buoy_log.tmp buoy_log.dat
 
     grep -F -f ibp_tags buoy_lst.loc >  buoy_tmp1.loc
-    sed    '$d' buoy_tmp1.loc > buoy_tmp2.loc
-    buoys=`awk '{ print $1 }' buoy_tmp2.loc`
-    Nb=`wc buoy_tmp2.loc | awk '{ print $1 }'`
-    rm -f buoy_tmp1.loc buoy_tmp2.loc
+    #sed    '$d' buoy_tmp1.loc > buoy_tmp2.loc
+    buoys=`awk '{ print $1 }' buoy_tmp1.loc`
+    Nb=`wc buoy_tmp1.loc | awk '{ print $1 }'`
+    rm -f buoy_tmp1.loc 
 
     if [ -s buoy_log.dat ]
     then
