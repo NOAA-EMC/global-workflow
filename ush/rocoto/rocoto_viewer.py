@@ -5,7 +5,7 @@
 #
 # @anchor rocoto_viewer
 ## This Python script allows users to see and interact with a running Rocoto Workflow in real time.
-# \image html pythonCurses.jpeg "Rocoto Viewer for Displaying Real-time Status of Workflow" 
+# \image html pythonCurses.jpeg "Rocoto Viewer for Displaying Real-time Status of Workflow"
 #
 # To launch this viewer simply give it the database and the XML files being used by the \b Rocoto system for your experiment:
 #
@@ -18,16 +18,20 @@
 #
 ##@cond ROCOTO_VIEWER_CURSES
 
-from __future__ import division 
+from __future__ import division
 
 import curses
-
-import os, sys, getpass, getopt, signal, tempfile
+import os
+import sys
+import getpass
+import getopt
+import signal
+import tempfile
 from os.path import basename
 import subprocess
 from math import *
 
-from  __builtin__ import any as b_any
+from  builtins import any as b_any
 from os.path import realpath, normpath, dirname, getsize
 from io import StringIO
 from itertools import groupby
@@ -38,9 +42,11 @@ from datetime import datetime, timedelta
 import uuid
 import shutil
 
-import sqlite3,datetime,collections
+import sqlite3
+import datetime
+import collections
 import xml.etree.ElementTree as ET
-import cPickle
+import _pickle as cPickle
 
 try:
     from dateutil.relativedelta import relativedelta
@@ -118,8 +124,8 @@ def sigwinch_handler(signum, frame):
 
 def usage(message=None):
     curses.endwin()
-    print>>sys.stderr, '''
-Usage: rocoto_status_viewer.py  -w workflow.xml -d database.db [--listtasks]\n                                                               [--html=filename.html]\n                                                               [--perfmetrics={True,False}]
+    print_str = '''
+Usage: rocoto_status_viewer.py  -w workflow.xml -d database.db [--listtasks]\n                                                              [--html=filename.html]\n                                                               [--perfmetrics={True,False}]
 
 Mandatory arguments:
   -w workflow.xml
@@ -127,11 +133,12 @@ Mandatory arguments:
 Optional arguments:
   --listtasks             --- print out a list of all tasks
   --html=filename.html    --- creates an HTML document of status
-  --perfmetrics=True      --- turn on/off extra columns for performance metrics 
+  --perfmetrics=True      --- turn on/off extra columns for performance metrics
   --help                  --- print this usage message'''
+    print(print_str, file=sys.stderr)
 
     if message is not None:
-        print>>sys.stderr,'\n'+str(message).rstrip()+'\n'
+        print(f'\n{str(message).rstrip()}\n', file=sys.stderr)
     sys.exit(-1)
 
 def augment_SQLite3(filename):
@@ -191,7 +198,7 @@ def load_produtil_pythonpath():
     except ImportError:
         pass
 
-    PRODUTIL = collections.defaultdict(list) 
+    PRODUTIL = collections.defaultdict(list)
     PRODUTIL['hera'] = '/scratch1/NCEPDEV/global/glopara/svn/nceplibs/produtil/trunk/ush'
     PRODUTIL['orion'] = '/work/noaa/global/glopara/svn/nceplibs/produtil/trunk/ush'
     PRODUTIL['luna']  = '/gpfs/hps3/emc/global/noscrub/emc.glopara/svn/nceplibs/produtil/trunk/ush'
@@ -216,8 +223,8 @@ def get_arguments():
     try:
         opts, args = getopt.getopt(sys.argv[1:], short_opts, long_opts)
     except getopt.GetoptError as err:
-        print str(err)
-        print
+        print(str(err))
+        print()
         usage('SCRIPT IS ABORTING DUE TO UNRECOGNIZED ARGUMENT')
 
     global save_checkfile_path
@@ -261,12 +268,12 @@ def get_arguments():
         use_performance_metrics = False
     elif perfmetrics_on is not None:
                 usage('perfmetrics must be either set to true or false (e.g. --perfmetrics=True')
-        
+
     send_html_to_rzdm = False
     if len(rzdm_path) != 0:
         if ':' not in rzdm_path or '@' not in rzdm_path:
-            print 'No user name or path found for sending html directory to server, no files will be sent to rzdm'
-            print 'Creating html folder in: %s'%rzdm_path
+            print('No user name or path found for sending html directory to server, no files will be sent to rzdm')
+            print(f'Creating html folder in: {rzdm_path}')
         else:
             send_html_to_rzdm = True
 
@@ -282,9 +289,9 @@ def get_arguments():
     if (not list_tasks) and (workflow_file is not None and database_file is not None):
         #debug.write('database_file_agmented: '+database_file_agmented+'\n')
         if not isSQLite3( database_file ):
-            usage('%s is not SQLite3 database file'%database_file)
+            usage(f'{database_file} is not SQLite3 database file')
         if not isRocotoWorkflow( workflow_file ):
-            usage('%s is not an Rocoto XML file'%workflow_file)
+            usage(f'{workflow_file} is not an Rocoto XML file')
 
     #global use_multiprocessing
     #if getsize(database_file) < 104857600:
@@ -323,7 +330,7 @@ def get_aug_perf_values( username ):
     cmd = batchexe('which') ['bjobs']
     try:
         which_bjobs = runstr(cmd).strip()
-    except Exception,e:
+    except Exception as e:
         return None
     bjobs = collections.defaultdict(dict)
     aug_perf = collections.defaultdict(dict)
@@ -339,7 +346,7 @@ def get_aug_perf_values( username ):
             continue
         for i, value in enumerate(split_line):
             if i == 0:
-                key = value 
+                key = value
             else:
                 if format_keys[i] in ('RUN_TIME','CPU_USED'):
                     value_list = value.split()
@@ -408,7 +415,7 @@ def help_screen( screen ):
     box.border(0)
     box.addstr( 0 , 23, '<q> when done', curses.A_BOLD )
     helpstr= [ '<c>heck  : run rocotocheck  on selected task(s)',
-               '<b>oot   : run rocotoboot   on selected task(s)', 
+               '<b>oot   : run rocotoboot   on selected task(s)',
                '<r>ewind : run rocotorewind on selected task(s)',
                '<R>un    : run rocotorun    on selected task(s)',
                ' ',
@@ -437,7 +444,7 @@ def help_screen( screen ):
     while x != ord('q'):
         x = screen.getch()
         box.refresh()
-        
+
 def list_selector( screen, selected_strings, strings ):
 
     global screen_resized
@@ -448,11 +455,11 @@ def list_selector( screen, selected_strings, strings ):
     global normalText
 
     def define_box():
-    
+
         if len( strings ) < mlines:
             max_row = len( strings )
         else:
-            max_row =  mlines - 12 
+            max_row =  mlines - 12
         max_mcols = max(18,len(max( strings, key=len )))
         if max_mcols + 8 < mcols:
             box_cols = max_mcols + 8
@@ -629,15 +636,15 @@ def list_selector( screen, selected_strings, strings ):
                 if each_sting in strings_selected:
                     if len(strings_selected) > 0:
                         strings_selected.remove(each_sting)
-            
+
         for i in range( 1 + ( max_row * ( page - 1 ) ), max_row + 1 + ( max_row * ( page - 1 ) ) ):
             if row_num == 0:
                 box.addstr( 1, 1, "There aren't strings",  highlightText )
             else:
                 if strings[ i - 1 ] == string_ctr_selected_prior:
-                    string_print = '* '+strings[ i - 1 ]+' ' 
+                    string_print = '* '+strings[ i - 1 ]+' '
                 else:
-                    string_print = '  '+strings[ i - 1 ]+' ' 
+                    string_print = '  '+strings[ i - 1 ]+' '
 
                 start_pos =  i - ( max_row * ( page - 1 ) ) + 1
                 if ( i + ( max_row * ( page - 1 ) ) == position + ( max_row * ( page - 1 ) ) ):
@@ -666,7 +673,7 @@ def get_rocoto_check(params, queue_check):
     check=runstr(cmd)
     if check is None:
         curses.endwin()
-        print 'rcotocheck falied: %d'%stat
+        print(f'rcotocheck falied: {stat}')
         sys.exit(-1)
     queue_check.put(check)
 
@@ -704,7 +711,7 @@ def rocoto_run(params):
     stat = ''
     if stat is None:
         curses.endwin()
-        print 'rcotorun falied: %d'%stat
+        print(f'rocotorun failed: {stat}')
         sys.exit(-1)
     return stat
 
@@ -716,9 +723,9 @@ def get_tasklist(workflow_file):
     root = tree.getroot()
     cycledef_group_cycles = collections.defaultdict(list)
     if list_tasks:
-        curses.endwin() 
-        print
-    cycle_noname = 'default_cycle' 
+        curses.endwin()
+        print()
+    cycle_noname = 'default_cycle'
     for child in root:
         if child.tag == 'cycledef':
             if len(child.attrib) != 0:
@@ -752,8 +759,8 @@ def get_tasklist(workflow_file):
                         start_cycle = start_cycle + relativedelta(months=+inc_cycle)
                     except AttributeError:
                         curses.endwin()
-                        print;print
-                        print 'dateutil which uses relativedelta to increment monthly (used by UGCS) is not supported with this version of python.\nUse Anaconda the native version in /user/bin'
+                        print();print()
+                        print('dateutil which uses relativedelta to increment monthly (used by UGCS) is not supported with this version of python.\nUse Anaconda the native version in /user/bin')
                         sys.exit(-1)
                 else:
                     start_cycle = start_cycle + inc_cycle
@@ -772,7 +779,7 @@ def get_tasklist(workflow_file):
             else:
                 task_cycledefs = cycle_noname
             if list_tasks:
-                print task_name,task_cycledefs
+                print(f'{task_name}{task_cycledefs}')
                 #dependancies = child.getiterator('dependency')
                 #for dependency in dependancies:
                 #   for them in dependency.getchildren():
@@ -788,7 +795,7 @@ def get_tasklist(workflow_file):
                 except:
                     pass
                 if list_tasks:
-                    print ' '*i+'metatask:',metatask_name
+                    print(' '*i+f'metatask: {metatask_name}')
                 all_vars_list = metatasks.findall('var')
                 all_tasks_list = metatasks.findall('task')
                 for var in all_vars_list:
@@ -839,7 +846,8 @@ def get_tasklist(workflow_file):
                                     else:
                                         metatask_list[first_task_resolved_name].append(task[0])
                                     if list_tasks:
-                                        print ' '+' '*i+task[0],task[1],'LOG:',task[2]
+                                        print(' '+' '*i+task[0],task[1],'LOG:',task[2])
+                                        print(' '+' '*i+f'{task[0]} {task[1]} Log: {task[2]}')
 
     # Default expantion of metatasks True = collapsed
     #for metatask,metatasks in metatask_list.iteritems():
@@ -900,7 +908,7 @@ def get_rocoto_stat(params, queue_stat):
     for row in q:
         (theid, groupname, cycledef) = row
         cycledifitions.append( (theid, groupname, cycledef) )
-        
+
     cycle_done_stat = dict()
     q=c.execute('SELECT id,cycle,done FROM cycles')
     for row in q:
@@ -912,7 +920,7 @@ def get_rocoto_stat(params, queue_stat):
         q=c.execute('SELECT id,jobid,taskname,cycle,state,exit_status,duration,tries,qtime,cputime,runtime,slots FROM jobs_augment')
     else:
         q=c.execute('SELECT id,jobid,taskname,cycle,state,exit_status,duration,tries FROM jobs')
-        
+
     q_get = []
     entered_jobids = []
     last_task_index = 0
@@ -931,7 +939,7 @@ def get_rocoto_stat(params, queue_stat):
                 last_task_index = task_index
             else:
                 task_index = last_task_index
-            
+
             if use_performance_metrics:
                 q_get.append( (theid,jobid,task_index,taskname,cycle,state,exit_status,duration,tries,qtime,cputime,runtime,slots) )
             else:
@@ -950,9 +958,9 @@ def get_rocoto_stat(params, queue_stat):
             (theid,jobid,task_order,taskname,cycle,state,exit_status,duration,tries)=row
         if jobid != '-':
             if use_performance_metrics:
-                line = '%s %s %s %s %s %s %s %s %s %s %s'%(datetime.datetime.fromtimestamp(cycle).strftime('%Y%m%d%H%M'),taskname,str(jobid),str(state),str(exit_status),str(tries),str(duration).split('.')[0],str(slots),str(qtime),str(cputime).split('.')[0],str(runtime))
+                line = f"{datetime.datetime.fromtimestamp(cycle).strftime('%Y%m%d%H%M')} {taskname} {str(jobid)} {str(state)} {str(exit_status)} {str(tries)} {str(duration).split('.')[0]} {str(slots)} {str(qtime)} {str(cputime).split('.')[0]} {str(runtime)}"
             else:
-                line = '%s %s %s %s %s %s %s'%(datetime.datetime.fromtimestamp(cycle).strftime('%Y%m%d%H%M'),taskname,str(jobid),str(state),str(exit_status),str(tries),str(duration).split('.')[0])
+                line = f"{datetime.datetime.fromtimestamp(cycle).strftime('%Y%m%d%H%M')} {taskname} {str(jobid)} {str(state)} {str(exit_status)} {str(tries)} {str(duration).split('.')[0]}"
             #debug.write('LINE: '+line+'\n')
             info[cycle].append(line)
 
@@ -991,7 +999,7 @@ def get_rocoto_stat(params, queue_stat):
                         skip_task = True
                         break
             if skip_task:
-                continue    
+                continue
             line = datetime.datetime.fromtimestamp(each_cycle).strftime('%Y%m%d%H%M')+' '*7+task[0]+' - - - - -'
             cycle_string = datetime.datetime.fromtimestamp(each_cycle).strftime('%Y%m%d%H%M')
             cycledefs = task[1].split(',')
@@ -1024,7 +1032,7 @@ def get_rocoto_stat(params, queue_stat):
         queue_stat.put((rocoto_stat, tasks_ordered, metatask_list, cycledef_group_cycles))
     else:
         return (rocoto_stat, tasks_ordered, metatask_list, cycledef_group_cycles)
-            
+
 
 def display_results(results,screen,params):
     from produtil.fileop import check_file
@@ -1046,7 +1054,7 @@ def display_results(results,screen,params):
             extra_1 = '<Page Up>/<Page Down> Scroll'
         if len(params) != 0:
             extra_2 = '<s>ave results to a file'
-        screen.addstr(mlines-1,0,'<ENTER> Return %s %s'%(extra_1,extra_2),curses.A_BOLD)
+        screen.addstr(mlines-1,0,f'<ENTER> Return {extra_1} {extra_2}',curses.A_BOLD)
         event = screen.getch()
         if event == curses.KEY_RESIZE:
             screen.refresh()
@@ -1073,15 +1081,15 @@ def display_results(results,screen,params):
                 save_results_file = '_'.join(strg)+'.txt'
             inc_int = 0
             while check_file(save_results_file):
-                if '(%d)'%inc_int in save_results_file:
-                    save_results_file = save_results_file.replace('(%d)'%inc_int,'(%d)'%(inc_int+1))
+                if f'({inc_int})' in save_results_file:
+                    save_results_file = save_results_file.replace(f'({inc_int})',f'({inc_int+1})')
                     inc_int += 1
                 else:
-                    save_results_file = basename(save_results_file.split('.')[0])+'(%d)'%inc_int+'.txt'
+                    save_results_file = basename(save_results_file.split('.')[0])+f'({inc_int})'+'.txt'
             out_file = open(save_results_file,'w')
             out_file.write(results)
             out_file.close()
-            screen.addstr(mlines-1,0,'Saved file %s'%save_results_file+' '*10)
+            screen.addstr(mlines-1,0,f"Saved file {save_results_file+' '*10}")
             screen.refresh()
             std_time.sleep(0.5)
 
@@ -1104,7 +1112,7 @@ def main(screen):
 
     if not sys.stdin.isatty():
         if screen != 'dummy':
-            print 'There seems to be a problem with the curses init'
+            print('There seems to be a problem with the curses init')
             sys.exit(-1)
         else:
             mlines = 100
@@ -1119,13 +1127,13 @@ def main(screen):
 
     if not load_produtil_pythonpath():
         curses.endwin()
-        print '\n\nCRITICAL ERROR: The produtil package could not be loaded from your system'
+        print('\n\nCRITICAL ERROR: The produtil package could not be loaded from your system')
         sys.exit(-1)
 
     if html_output:
         if sys.stdin.isatty():
             curses.endwin()
-        print '\nPreparing to write out an html folder'
+        print('\nPreparing to write out an html folder')
         use_multiprocessing = False
 
     import produtil.run, produtil.numerics
@@ -1173,30 +1181,30 @@ def main(screen):
         EXPDIR = entity_values['EXPDIR']
     else:
         EXPDIR = '.'
-    
+
     if html_output:
         html_ptr = None
         if not send_html_to_rzdm and len(rzdm_path) != 0:
             html_output_dir = shbackslash(rzdm_path)
         else:
-            html_output_dir = shbackslash('%s/pr%s'%(workflow_name,PSLOT))
-        print 'writing html to directory:',html_output_dir
+            html_output_dir = shbackslash(f'{workflow_name}/pr{PSLOT}')
+        print('writing html to directory:',html_output_dir)
         html_output_file = shbackslash( html_output_dir+'/index.html' )
         html_header_line = '<table>\n<thead><tr><td>CYCLE</td><td>TASK</td><td>JOBID</td><td>STATE</td><td>EXIT</td><td>TRIES</td><td>DURATION</td>'
         if use_performance_metrics:
             html_header_line = html_header_line+'<td>SLOTS</td><td>QTIME</td><td>CPU</td><td>RUN</td>'+'</tr></thead>\n<tbody>'
         else:
             html_header_line = html_header_line+'</tr></thead>\n<tbody>'
-        print 'Generating html folder html: %s ...'%html_output_file
+        print(f'Generating html folder html: {html_output_file} ...')
         cmd = batchexe('rm') ['-Rf', html_output_dir ]
         stat=runstr(cmd)
-        makedirs( html_output_dir ) 
+        makedirs( html_output_dir )
         html_ptr = open(html_output_file,'w')
         html_ptr.write(ccs_html)
         break_file = False
         stat_update_time = str(datetime.datetime.now()).rsplit(':',1)[0]
-        html_discribe_line  = '\n<table>\n<thead>\n<tr><td><a href="index_exp.html">Expand</a></td><td>Refreshed: %s</td><td>PSLOT: %s</td></tr>\n'%(stat_update_time,PSLOT)
-        html_discribe_line += '<tr><td colspan="2">ROTDIR: %s</td><td><a href="../%s_perf_%s.pdf">Turn Around Times</a></td></tr>\n</thead>\n</table>\n<br>\n'%(workflow_name,ROTDIR,PSLOT)
+        html_discribe_line  = f'\n<table>\n<thead>\n<tr><td><a href="index_exp.html">Expand</a></td><td>Refreshed: {stat_update_time}</td><td>PSLOT: {PSLOT}</td></tr>\n'
+        html_discribe_line += f'<tr><td colspan="2">ROTDIR: {ROTDIR}</td><td><a href="../{workflow_name}_perf_{PSLOT}.pdf">Turn Around Times</a></td></tr>\n</thead>\n</table>\n<br>\n'
         html_discribe_line += html_header_line
         html_ptr.write( html_discribe_line )
     else:
@@ -1220,9 +1228,9 @@ def main(screen):
         cmd = batchexe('which') ['rocotorun']
         try:
             which_rocoto = runstr(cmd).strip()
-        except Exception,e:
+        except Exception as e:
             curses.endwin()
-            print '\n\nCRITICAL ERROR: rocotorun is not in your path, user "module load rocoto"'
+            print('\n\nCRITICAL ERROR: rocotorun is not in your path, user "module load rocoto"')
             sys.exit(0)
 
     os.environ['TZ']='UTC'
@@ -1263,7 +1271,7 @@ def main(screen):
     if only_check_point:
         curses.endwin()
         sys.stdout = os.fdopen(0,'w',0)
-        print 'Creating check point file ...'
+        print('Creating check point file ...')
         params = (workflow_file, database_file, tasks_ordered, metatask_list, cycledef_group_cycles )
         get_rocoto_stat( params, queue_stat )
 
@@ -1276,12 +1284,12 @@ def main(screen):
 
     cycle = 0
     if html_output:
-        mlines = 100 
-        mcols = 125 
+        mlines = 100
+        mcols = 125
     if not html_output and mcols < default_column_length:
         curses.endwin()
-        print
-        print 'Your terminal is only %d characters must be at least %d to display workflow status'%(mcols,default_column_length)
+        print()
+        print(f'Your terminal is only {mcols} characters must be at least {default_column_length} to display workflow status')
         sys.exit(-1)
     if not html_output:
         screen.refresh()
@@ -1289,7 +1297,7 @@ def main(screen):
     rocoto_stat_params_tmp = ''
     step = 0.0 ; i = 0
     dots = ('.    ','..   ','...  ','.... ','.....',' ....','  ...','    .')
-    dot_stat = 0 ; dot_check = 0 
+    dot_stat = 0 ; dot_check = 0
     current_time = time()
     meta_tasklist = collections.defaultdict(list)
 
@@ -1343,12 +1351,12 @@ def main(screen):
             if reduce_header_size > 0:
                 header = header[:-reduce_header_size]
                 header = header[reduce_header_size:]
-            
+
         while use_multiprocessing:
             if  mcols < default_column_length:
                 curses.endwin()
-                print
-                print 'Your terminal is only %d characters must be at least %d to display workflow status'%(mcols,default_column_length)
+                print()
+                print(f'Your terminal is only {mcols} characters must be at least {default_column_length} to display workflow status')
                 sys.exit(-1)
             step += 0.001
             if step > 100:
@@ -1441,7 +1449,7 @@ def main(screen):
             meta_tasks_state[check_metatask] = True
             meta_tasks_state_string[check_metatask] = ''
         meta_tasks_state['False'] = False
-                    
+
         meta_tasks.append(meta_tasks_in_cycle)
         metatasks_state_cycle.append(meta_tasks_state)
         metatasks_state_string_cycle.append(meta_tasks_state_string)
@@ -1451,12 +1459,12 @@ def main(screen):
 # This lists each metatask and its elements
 # for the first cycle for code edification
     curses.endwin()
-    print
+    print()
     for each_metatask in meta_tasks[0]:
         if each_metatask[1]:
-            print metatask_name[each_metatask[2][0]]
+            print(metatask_name[each_metatask[2][0]])
             for task in each_metatask[2]:
-                print '',task
+                print(f'{task}')
     sys.exit(0)
     '''
 
@@ -1557,14 +1565,14 @@ def main(screen):
                                                         get_state_list.append(split_check_metatask_line[3])
                                         metatask_state = columns[3]
                                         if 'SUCCEEDED' in get_state_list:
-                                            metatask_state = '(%d/%d) SUCCEEDED'%(get_state_list.count('SUCCEEDED'),total_numer_of_tasks)
+                                            metatask_state = f"({get_state_list.count('SUCCEEDED')}/{total_numer_of_tasks}) SUCCEEDED"
                                         if 'QUEUED' in get_state_list:
-                                            metatask_state = '(%d/%d) QUEUED'%(get_state_list.count('QUEUED'),total_numer_of_tasks)
+                                            metatask_state = f"({get_state_list.count('QUEUED')}/{total_numer_of_tasks}) QUEUED"
                                         if 'RUNNING' in get_state_list:
-                                            metatask_state = '(%d/%d) RUNNING'%(get_state_list.count('RUNNING'),total_numer_of_tasks)
+                                            metatask_state = f"({get_state_list.count('RUNNING')}/{total_numer_of_tasks}) RUNNING"
                                         if 'DEAD' in get_state_list:
-                                            metatask_state = '(%d/%d) DEAD'%(get_state_list.count('DEAD'),total_numer_of_tasks)
-                                        metatasks_state_string_cycle[cycle][ columns[1] ] = metatask_state  
+                                            metatask_state = f"({get_state_list.count('DEAD')}/{total_numer_of_tasks}) DEAD"
+                                        metatasks_state_string_cycle[cycle][ columns[1] ] = metatask_state
                             html_line += '<td>'+column+'</td>'
                         elif i == 1:
                             save_column = column
@@ -1582,8 +1590,8 @@ def main(screen):
                                 if check_file(shbackslash( log_file )):
                                     deliver_file( log_file, html_output_dir )
                                     log_file_base = os.path.basename(log_file)
-                                    html_line +=  '<td><a href="%s">'%log_file_base+display_column+'</a></td>'
-                                else:       
+                                    html_line +=  f'<td><a href="{log_file_base+display_column}"></a></td>'
+                                else:
                                     html_line +=  '<td>'+display_column+'</td>'
                         elif i == 2:
                             if len(column) > 7:
@@ -1655,7 +1663,7 @@ def main(screen):
                 html_line += html_header_line
                 html_ptr.write(html_line)
                 get_number_of_stats -= 1
-            else:   
+            else:
                 html_line = '</tbody>\n'
                 html_line += '</table>\n'
                 html_line += '</html>\n'
@@ -1669,26 +1677,26 @@ def main(screen):
                     html_ptr = open(html_output_file,'w')
                     html_ptr.write(ccs_html)
                     stat_update_time = str(datetime.datetime.now()).rsplit(':',1)[0]
-                    html_discribe_line  = '\n<table>\n<thead>\n<tr><td><a href="index.html">Collapse</a></td><td>Refreshed: %s</td><td>PSLOT: %s</td></tr>\n'%(stat_update_time,PSLOT)
-                    html_discribe_line += '<tr><td colspan="2">ROTDIR: %s</td><td><a href="../%s_perf_%s.pdf">Turn Around Times</a></td></tr>\n</thead>\n</table>\n<br>\n'%(workflow_name,ROTDIR,PSLOT)
+                    html_discribe_line  = f'\n<table>\n<thead>\n<tr><td><a href="index.html">Collapse</a></td><td>Refreshed: {stat_update_time}</td><td>PSLOT: {PSLOT}</td></tr>\n'
+                    html_discribe_line += f'<tr><td colspan="2">ROTDIR: {ROTDIR}</td><td><a href="../{workflow_name}_perf_{PSLOT}.pdf">Turn Around Times</a></td></tr>\n</thead>\n</table>\n<br>\n'
                     html_discribe_line += html_header_line
                     html_ptr.write( html_discribe_line )
                     html_output_firstpass = False
                     #cycle = html_start_cycle
             if not html_output_firstpass:
                 if send_html_to_rzdm:
-                    print 'sending html files to rzdm using rsync ...'
+                    print('sending html files to rzdm using rsync ...')
                     cmd=batchexe('rsync')['-avzr','--delete', html_output_dir, rzdm_path]
                     stat=runstr(cmd)
                     if stat is None:
-                        print 'warning rsync to %s failed'%html_output_dir
+                        print(f'warning rsync to {html_output_dir} failed')
                         sys.exit(-1)
                     else:
-                        print 'done'
+                        print('done')
                 sys.exit(0)
     else:
 
-        # Main Curses Screen Loop 
+        # Main Curses Screen Loop
         # Write to curses screen when HTML is not outputted
         highlight_CYCLE = False
         highlight_WORKFLOW = False
@@ -1703,8 +1711,8 @@ def main(screen):
         while True:
             if not check_file(workflow_file) or not check_file(database_file):
                 curses.endwin()
-                print;print
-                print 'rocoto_viwer quit because the Rocoto database or XML file used by this session when missing'
+                print();print()
+                print('rocoto_viwer quit because the Rocoto database or XML file used by this session when missing')
                 sys.exit(-1)
             job_id = None
             curses.noecho()
@@ -1727,7 +1735,7 @@ def main(screen):
                 update_pad = False
                 if mlines > num_lines:
                     pad = curses.newpad(mlines ,num_columns)
-                else:   
+                else:
                     pad = curses.newpad(num_lines+1 ,num_columns)
                 line_number = -1
                 for line_num,line in enumerate(rocoto_stat[cycle]):
@@ -1774,18 +1782,18 @@ def main(screen):
                                         red_override = False
                                         metatask_state = columns[3]
                                         if 'SUCCEEDED' in get_state_list:
-                                            metatask_state = '(%d/%d) SUCCEEDED'%(get_state_list.count('SUCCEEDED'),total_numer_of_tasks)
+                                            metatask_state = f"({get_state_list.count('SUCCEEDED')}/{total_numer_of_tasks}) SUCCEEDED"
                                         if 'QUEUED' in get_state_list:
-                                            metatask_state = '(%d/%d) QUEUED'%(get_state_list.count('QUEUED'),total_numer_of_tasks)
+                                            metatask_state = f"({get_state_list.count('QUEUED')}/{total_numer_of_tasks}) QUEUED"
                                         if 'RUNNING' in get_state_list:
-                                            metatask_state = '(%d/%d) RUNNING'%(get_state_list.count('RUNNING'),total_numer_of_tasks)
+                                            metatask_state = f"({get_state_list.count('RUNNING')}/{total_numer_of_tasks}) RUNNING"
                                         if 'FAILED' in get_state_list:
-                                            metatask_state = '(%d/%d) FAILED'%(get_state_list.count('FAILED'),total_numer_of_tasks)
+                                            metatask_state = f"({get_state_list.count('FAILED')}/{total_numer_of_tasks}) FAILED"
                                             red_override = True
                                         if 'DEAD' in get_state_list:
                                             red_override = True
-                                            metatask_state = '(%d/%d) DEAD'%(get_state_list.count('DEAD'),total_numer_of_tasks)
-                                        metatasks_state_string_cycle[cycle][ columns[1] ] = metatask_state  
+                                            metatask_state = f"({get_state_list.count('DEAD')}/{total_numer_of_tasks}) DEAD"
+                                        metatasks_state_string_cycle[cycle][ columns[1] ] = metatask_state
                                 else:
                                     if highlight_CYCLE:
                                         pad.addstr(column, curses.A_STANDOUT)
@@ -1863,7 +1871,7 @@ def main(screen):
             update_metatask_state_status_message = False
             pad.refresh( pad_pos, 0, 2,0,  mlines-4,mcols)
 
-            entire_workflow = 'Hit <ENTER> to open cycle based information page (implementation pending)' 
+            entire_workflow = 'Hit <ENTER> to open cycle based information page (implementation pending)'
             entire_cycle = '********* The ENTIRE CYCLE has been selected for an action **********'
 
             try:
@@ -1887,8 +1895,8 @@ def main(screen):
 
             if num_columns > mcols:
                 curses.endwin()
-                print   
-                print 'Your terminal is only %s characters must be at least %s to display workflow status'%(str(mcols),str(num_columns))
+                print()
+                print(f'Your terminal is only {str(mcols)} characters must be at least {str(num_columns)} to display workflow status')
                 sys.exit(-1)
 
             if loading_stat:
@@ -1914,16 +1922,16 @@ def main(screen):
                     if reduce_header_size > 0:
                         header = header[:-reduce_header_size]
                         header = header[reduce_header_size:]
-                    screen.addstr(mlines-2,0,'Updated new rocotostatus: %s'%stat_update_time+' '*48)
+                    screen.addstr(mlines-2,0,f"Updated new rocotostatus: {stat_update_time+' '*48}")
                     screen.refresh()
                     std_time.sleep(0.5)
                     screen.addstr(mlines-2,0,' '*100)
                     screen.refresh()
-        
+
             if loading_check:
                 if  time() - current_check_time > 5:
                     dot_check = (0 if dot_check == len(dots)-1 else dot_check+1 )
-                    loc = (0 if not loading_stat else 27)       
+                    loc = (0 if not loading_stat else 27)
                     screen.addstr(mlines-2,loc,'Running rocotocheck ')
                     screen.addstr(mlines-2,loc+20,dots[dot_check])
                 try:
@@ -1938,7 +1946,7 @@ def main(screen):
                         event = screen.getch()
                         time_inc = 0.0
                         while event != curses.KEY_ENTER and event != 10:
-                            message_string = 'rocotocheck for %s %s is ready for vieweing'%(params_check[2],params_check[3])
+                            message_string = f'rocotocheck for {params_check[2]} {params_check[3]} is ready for viewing'
                             message_string = (message_string if len(message_string) < mcols  else message_string[:mcols-1])
                             time_inc += 1
                             if time_inc > 4:
@@ -1951,7 +1959,7 @@ def main(screen):
                                 event = screen.getch()
                     display_results(rocoto_check,screen,params_check)
                     rocoto_check = ''
-                    
+
             curses.curs_set(0)
             curses.halfdelay(2)
             screen.keypad(1)
@@ -2010,8 +2018,8 @@ def main(screen):
                 #debug.write('SCREEN RESIZED %s (%d,%d)\n'%(pad_pos,mlines,mcols))
                 if  mcols < default_column_length:
                     curses.endwin()
-                    print
-                    print 'Your terminal is only %d characters must be at least %d to display workflow status'%(mcols,default_column_length)
+                    print()
+                    print(f'Your terminal is only {mcols} characters must be at least {default_column_length} to display workflow status')
                     sys.exit(-1)
             elif event in ( curses.KEY_NPAGE, ord('d') ):
                 highlight_CYCLE = False
@@ -2040,7 +2048,7 @@ def main(screen):
                     if highlight_CYCLE:
                         highlight_CYCLE = False
                         highlight_WORKFLOW = True
-                    if not highlight_WORKFLOW: 
+                    if not highlight_WORKFLOW:
                         highlight_CYCLE = True
                 if task != pad_pos:
                     update_pad = True
@@ -2064,7 +2072,7 @@ def main(screen):
                 update_pad = True
             elif event in ( curses.KEY_DOWN, curses.KEY_SF ):
                 if highlight_CYCLE or highlight_WORKFLOW:
-                    task = -1 
+                    task = -1
                 highlight_CYCLE = False
                 highlight_WORKFLOW = False
                 if task != num_lines-1 and task < pad_pos+mlines-6:
@@ -2094,7 +2102,7 @@ def main(screen):
                     screen.addstr(mlines-2,0,' '*100)
                     screen.refresh()
                 else:
-                    loc = (0 if not loading_stat else 27)       
+                    loc = (0 if not loading_stat else 27)
                     screen.addstr(mlines-2,loc,'Running rocotocheck ')
                     screen.refresh()
                     params_check = (workflow_file, database_file, execute_task, execute_cycle, 'check')
@@ -2125,18 +2133,18 @@ def main(screen):
                             selected_tasks[execute_cycle].remove(execute_task)
                     else:
                         selected_tasks[execute_cycle].append(execute_task)
-                
+
             elif event == ord('r'):
                 screen.clear()
                 process = ''
                 if highlight_CYCLE:
-                    screen.addstr('Are you sure you want to rewind all the tasks in the cycle %s by running:\n\n'%execute_cycle)
+                    screen.addstr(f'Are you sure you want to rewind all the tasks in the cycle {execute_cycle} by running:\n\n')
                     process = '-a'
                 #highlight_WORKFLOW = False
                 elif execute_metatask_check and len(selected_tasks[execute_cycle]) == 0:
                     for tasks in metatask_list_of_selected_metatask:
                         process += '-t ' + tasks+' '
-                    screen.addstr('Are you sure you want to rewind all the tasks in the metatask (%s) by running:\n\n'%execute_task)
+                    screen.addstr(f'Are you sure you want to rewind all the tasks in the metatask ({execute_task}) by running:\n\n')
                 elif len(selected_tasks[execute_cycle]) != 0 or len(selected_meta_tasks[execute_cycle]) != 0:
                     if  len(selected_tasks[execute_cycle]) != 0:
                         selected_tasks_string = ''
@@ -2147,7 +2155,7 @@ def main(screen):
                         screen.addstr(selected_tasks_string+'\n\n')
                     if  len(selected_meta_tasks[execute_cycle]) != 0:
                         selected_tasks_string = ''
-                        screen.addstr('Selected %d entire meta-tasks and their tasks:\n\n'%len( selected_meta_tasks[execute_cycle]))
+                        screen.addstr(f'Selected {len( selected_meta_tasks[execute_cycle])} entire meta-tasks and their tasks:\n\n')
                         for meta_task_selected in selected_meta_tasks[execute_cycle]:
                             for tasks in metatask_list_by_name[meta_task_selected]:
                                 selected_tasks_string += tasks+'\t'
@@ -2156,8 +2164,8 @@ def main(screen):
                     screen.addstr('\nAre you sure you want to rewind all these seleted tasks by running:\n\n')
                 elif len(selected_tasks[execute_cycle]) == 0:
                     process = '-t '+ execute_task
-                    screen.addstr('Are you sure you want to rewind the single task %s by running:\n\n'%execute_task)
-                screen.addstr('rocotorewind -c %s -d %s -w %s %s\n\n'%(execute_cycle,basename(database_file),basename(workflow_file),process))
+                    screen.addstr(f'Are you sure you want to rewind the single task {execute_task} by running:\n\n')
+                screen.addstr(f'rocotorewind -c {execute_cycle} -d {basename(database_file)} -w {basename(workflow_file)} {process}\n\n')
                 screen.addstr('Enter: <Y>es or <N>o',curses.A_BOLD)
                 while True:
                     event = screen.getch()
@@ -2177,7 +2185,7 @@ def main(screen):
                                 event = screen.getch()
                                 if event in (curses.KEY_ENTER, 10, 13):
                                     break
-                        selected_tasks[execute_cycle] = [] 
+                        selected_tasks[execute_cycle] = []
                         break
                     elif event == ord('n') or event == ord('N'):
                         break
@@ -2195,19 +2203,19 @@ def main(screen):
                 boot_task_list = '' ; tasks_to_boot = []
                 boot_metatask_list = '' ; metatasks_to_boot = []
                 if highlight_CYCLE:
-                    screen.addstr('You have selected to boot the entire cycle %s:\n\n'%execute_cycle,curses.A_BOLD)
-                    metatasks_to_boot = metatask_list_per_cycle[cycle] 
+                    screen.addstr(f'You have selected to boot the entire cycle {execute_cycle}:\n\n',curses.A_BOLD)
+                    metatasks_to_boot = metatask_list_per_cycle[cycle]
                     tasks_to_boot = tasks_in_cycle[cycle]
                 elif len(selected_tasks[execute_cycle]) != 0 or len(selected_meta_tasks[execute_cycle]) != 0:
                     screen.addstr('You have a list selected tasks and/or metatasks to boot:\n\n',curses.A_BOLD)
                     metatasks_to_boot = selected_tasks[execute_cycle]
                     tasks_to_boot = selected_tasks[execute_cycle]
                 elif execute_metatask_check:
-                    screen.addstr('Are you sure you want boot the entire meta task %s by running:\n\n'%execute_metatask)
+                    screen.addstr(f'Are you sure you want boot the entire meta task {execute_metatask} by running:\n\n')
                     metatasks_to_boot.append(execute_metatask)
                 elif len(selected_tasks[execute_cycle]) == 0:
                     tasks_to_boot.append(execute_task)
-                    screen.addstr('Are you sure you want boot the task %s by running rocotoboot with:'%execute_task)
+                    screen.addstr(f'Are you sure you want boot the task {execute_task} by running rocotoboot with:')
                 else:
                     update_pad = True
                     continue
@@ -2229,12 +2237,12 @@ def main(screen):
                     boot_task_list = boot_task_list[:-1]
                     screen.addstr( list_of_tasks )
 
-                screen.addstr('\n\nAre you sure you want to boot all the tasks and/or metatasks in the cycle %s by running:\n\n'%execute_cycle,curses.A_BOLD)
+                screen.addstr(f'\n\nAre you sure you want to boot all the tasks and/or metatasks in the cycle {execute_cycle} by running:\n\n',curses.A_BOLD)
                 if len(boot_metatask_list) != 0:
                     list_meta_tasks = '--metatasks '+"'"+boot_metatask_list+"'"
                 if len(boot_task_list) != 0:
                     list_of_tasks = ' --tasks '+"'"+boot_task_list+"'"
-                screen.addstr('rocotoboot -d %s -w %s %s\n\n'%(basename(database_file),basename(workflow_file),list_meta_tasks+list_of_tasks))
+                screen.addstr(f'rocotoboot -d {basename(database_file)} -w {basename(workflow_file)} {list_meta_tasks+list_of_tasks}\n\n')
                 screen.addstr('Enter: <Y>es or <N>o',curses.A_BOLD)
 
                 while True:
@@ -2367,7 +2375,7 @@ def main(screen):
 
 if __name__ == '__main__':
     if not load_produtil_pythonpath():
-        print '\n\nCRITICAL ERROR: The produtil package could not be loaded from your system'
+        print('\n\nCRITICAL ERROR: The produtil package could not be loaded from your system')
         sys.exit(-1)
     from produtil.fileop import remove_file
     try:
@@ -2381,5 +2389,5 @@ if __name__ == '__main__':
             main(screen)
         remove_file(temp_workflow_file)
     except KeyboardInterrupt:
-        print "Got KeyboardInterrupt exception. Exiting..."
+        print('Got KeyboardInterrupt exception. Exiting...')
         sys.exit(-1)
