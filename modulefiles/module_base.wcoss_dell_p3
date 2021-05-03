@@ -17,6 +17,7 @@ module load prod_util/1.2.2
 module load prod_envir/1.1.0
 module load grib_util/1.2.2
 module load g2tmpl/1.9.1
+module load util_shared/1.3.0
 
 module load crtm/2.3.0
 setenv CRTM_FIX /gpfs/dell1/nco/ops/nwprod/lib/crtm/v2.3.0/fix
@@ -39,7 +40,6 @@ module load gempak/7.3.3
 # Load for WAFS
 module load bufr_dumplist/2.0.0
 module load dumpjb/5.1.0
-module load util_shared/1.1.2
 
 # python
 module load python/3.6.3
