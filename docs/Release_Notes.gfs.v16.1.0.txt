@@ -35,11 +35,14 @@ PRELUDE
   began assimilating the GeoOptics data so both changes were tested in one 
   package.
 
-  There are several wave related fixes being included in this update. The 
-  first is including the RW-NHC* boundary points which are used in NHC's 
-  offline NWPS system were removed from multi_1 to GFSv16.  The second is 
-  to fix the interpolation to the East Pacific wave grid to include all 
-  of the American Samoa islands.  
+  There are several wave related fixes being included in this update:
+  * Including the RW-NH* boundary points which are used in NHC's 
+    offline NWPS system were removed from multi_1 to GFSv16, which 
+    also requires a minor script bug fix.  
+  * Fix the interpolation to the East Pacific wave grid to include 
+    all of the American Samoa islands. 
+  * Unmask the Gulf of California, Red Sea and Persian Gulf in the 
+    global 0p25 interpolated wave output grid. 
 
 
 CHANGES TO RESOURCES AND FILE SIZES
@@ -125,7 +128,8 @@ PARM/CONFIG CHANGES
 
 SCRIPT CHANGES
 
-* No change from GFS v16.0
+* There is one bug fix for waves that is a script change in scripts/exgfs_wave_post_pnt.sh 
+  to ensure all point output is created (for example for the RW-NH* points). 
 
 
 FIX CHANGES
@@ -134,7 +138,7 @@ FIX CHANGES
   doc/Release_Notes.gfsda.v16.1.0.txt in the NOAA-EMC/GSI tag gfsda.v16.1.0 
   for details.
 
-* For the wave fix to include the RW-NHC-* boundary points for the wave 
+* For the wave fix to include the RW-NH-* boundary points for the wave 
   point output, the following two fix files can be copied to the 
   fix/fix_wave_gfs folder: 
   /gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix_wave_gfs_v16.1.1/wave_gfs.buoys 
@@ -142,11 +146,11 @@ FIX CHANGES
 
 
 * For the wave fix to the East Pacific wave grid interpolation the following 
-  fix file with fix can be copied to the  fix/fix_wave_gfs folder: 
+  fix file with fix can be copied to the fix/fix_wave_gfs folder: 
   /gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix_wave_gfs_v16.1.1/ep_10m_interp.inp.tmpl
 
-* For the wave fix to include the Persian Gulf the following to fix files 
-  need to be copied to the  fix/fix_wave_gfs folder:
+* For the wave fix to include the Gulf of California, Red Sea, and Persian Gulf 
+  the following to fix files need to be copied to the fix/fix_wave_gfs folder:
   /gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix_wave_gfs_v16.1.1/ww3_grid.inp.glo_15mxt
   /gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix_wave_gfs_v16.1.1/WHTGRIDINT.bin.glo_15mxt
 
