@@ -35,6 +35,26 @@ PRELUDE
   began assimilating the GeoOptics data so both changes were tested in one 
   package.
 
+  There are several wave related fixes being included in this update. The 
+  first is including the RW-NHC* boundary points which are used in NHC's 
+  offline NWPS system were removed from multi_1 to GFSv16.  The second is 
+  to fix the interpolation to the East Pacific wave grid to include all 
+  of the American Samoa islands.  
+
+
+CHANGES TO RESOURCES AND FILE SIZES
+
+  Impact of including RW-NHC points is: There should be no impact to the 
+  forecast job timing, however the *wave.out_pnt.points* files in the 
+  wave/rundata com directories will each increase in size by 6MB. The 
+  JGLOBAL_WAVE_POST_BNDPNTBLL and JGLOBAL_WAVE_POST_BNDPNT will now take 
+  approximately 20 minutes longer.  The gfswave.tZZz.ibpbull_tar will 
+  increase in size to be 78M, gfswave.tZZz.ibpcbull_tar will now be 42M 
+  and the gfswave.tZZz.ibp_tar file will now be 11 GB.  
+
+  Impact of East Pacific and global 0p25 wave grid fixes: There are no 
+  impacts in terms of resources or file size. 
+
 
 IMPLEMENTATION INSTRUCTIONS
 
@@ -76,6 +96,10 @@ SORC CHANGES
 
 * sorc/
   * checkout.sh will checkout the following changed model tags:
+    * MODEL; tag GFS.v16.0.16 - There are no changes in this tag 
+      compared to operations.  The tag number was updated from 
+      tag GFS.v16.0.15 to incorporate the local changes made in operations.
+
     * GSI; tag gfsda.v16.1.0 - See release notes 
       doc/Release_Notes.gfsda.v16.1.0.txt in the GSI tag for details.
 
@@ -110,11 +134,21 @@ FIX CHANGES
   doc/Release_Notes.gfsda.v16.1.0.txt in the NOAA-EMC/GSI tag gfsda.v16.1.0 
   for details.
 
+* For the wave fix to include the RW-NHC-* boundary points for the wave 
+  point output, the following two fix files can be copied to the 
+  fix/fix_wave_gfs folder: 
+  /gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix_wave_gfs_v16.1.1/wave_gfs.buoys 
+  /gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix_wave_gfs_v16.1.1/wave_gfs.buoys.full 
 
-RESOURCE INFORMATION
 
-* No change from GFS v16.0 in terms of modules, computational resources, 
-  run time, or disk space.
+* For the wave fix to the East Pacific wave grid interpolation the following 
+  fix file with fix can be copied to the  fix/fix_wave_gfs folder: 
+  /gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix_wave_gfs_v16.1.1/ep_10m_interp.inp.tmpl
+
+* For the wave fix to include the Persian Gulf the following to fix files 
+  need to be copied to the  fix/fix_wave_gfs folder:
+  /gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix_wave_gfs_v16.1.1/ww3_grid.inp.glo_15mxt
+  /gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix_wave_gfs_v16.1.1/WHTGRIDINT.bin.glo_15mxt
 
 
 PRE-IMPLEMENTATION TESTING REQUIREMENTS
