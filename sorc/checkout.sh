@@ -63,7 +63,7 @@ if [[ ! -d ufs_utils.fd ]] ; then
     rm -f ${topdir}/checkout-ufs_utils.log
     git clone --recursive https://github.com/NOAA-EMC/UFS_UTILS.git ufs_utils.fd >> ${topdir}/checkout-ufs_utils.fd.log 2>&1
     cd ufs_utils.fd
-    git checkout 9d9dd23e37a51fcc5ff6b7499b834c85ab32e5f3
+    git checkout ufs_utils_1_3_0
     cd ${topdir}
 else
     echo 'Skip.  Directory ufs_utils.fd already exists.'
@@ -74,7 +74,7 @@ if [[ ! -d gfs_post.fd ]] ; then
     rm -f ${topdir}/checkout-gfs_post.log
     git clone https://github.com/NOAA-EMC/EMC_post.git gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
     cd gfs_post.fd
-    git checkout 33eb60e5b486d9ff670c76b799f886b7f47c2022
+    git checkout ff42e0227d6100285d4179a2572b700fd5a959cb
     git submodule update --init CMakeModules
 
     ################################################################################
@@ -86,7 +86,7 @@ if [[ ! -d gfs_post.fd ]] ; then
     checkout_gtg=${checkout_gtg:-"NO"}
     if [[ ${checkout_gtg} == "YES" ]] ; then
       ./manage_externals/checkout_externals
-      cp sorc/post_gtg.fd/*f90 sorc/ncep_post.fd/.
+      cp sorc/post_gtg.fd/*F90 sorc/ncep_post.fd/.
       cp sorc/post_gtg.fd/gtg.config.gfs parm/gtg.config.gfs
     fi
     cd ${topdir}
@@ -101,7 +101,7 @@ if [[ ${checkout_wafs} == "YES" ]] ; then
     rm -f ${topdir}/checkout-gfs_wafs.log
     git clone --recursive https://github.com/NOAA-EMC/EMC_gfs_wafs.git gfs_wafs.fd >> ${topdir}/checkout-gfs_wafs.log 2>&1
     cd gfs_wafs.fd
-    git checkout gfs_wafs.v6.0.19
+    git checkout c2a29a67d9432b4d6fba99eac7797b81d05202b6
     cd ${topdir}
   else
     echo 'Skip.  Directory gfs_wafs.fd already exists.'
