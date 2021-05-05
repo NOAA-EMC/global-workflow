@@ -1,0 +1,11 @@
+#!/bin/ksh -x
+
+########## config.analcalc ##########
+# GFS post-anal specific (non-diag)
+
+echo "BEGIN: config.analcalc"
+
+# Get task specific resources
+. $EXPDIR/config.resources analcalc
+
+echo "END: config.analcalc"

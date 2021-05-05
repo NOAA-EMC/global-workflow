@@ -27,6 +27,7 @@ C			significant and standard together in output
 C 2012-02-15 B. Mabe -- Changed Program name and output file to reflect
 C                        change to output for sig and man data
 C 2016-10-18 B. Vuong -- Removed hardwire '/nwprod/dictionaries/' in CALL FL_TBOP
+C 2020-01-15 B. Vuong -- Increased dimensional array r8lvl(6,200)
 C
 C USAGE:
 C   INPUT FILES:
@@ -74,7 +75,7 @@ C*----------------------------------------------------------------------
 	PARAMETER	( GPMSNG = -9999.0 )
 	PARAMETER	( MAXSTN = 10000 )
 	
-	REAL*8		r8hdr ( 9, 1 ), r8lvl ( 6, 100 ), r8arr( 1, 1 )
+	REAL*8		r8hdr ( 9, 1 ), r8lvl ( 6, 200 ), r8arr( 1, 1 )
 	REAL*8		r8tmp ( 6, 100 ), r8out ( 6, 300 ),swpbuf
 	REAL*8		r8tmptot ( 6, 300 )
 

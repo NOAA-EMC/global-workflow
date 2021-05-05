@@ -1,0 +1,30 @@
+#!/bin/ksh -x
+
+########## config.wavepostsbs ##########
+# Wave steps specific
+
+echo "BEGIN: config.wavepostsbs"
+
+# Get task specific resources
+. $EXPDIR/config.resources wavepostsbs
+
+
+# Subgrid info for grib2 encoding
+export WAV_SUBGRBSRC=""
+export WAV_SUBGRB=""
+#export WAV_SUBGRBSRC="gnh_10m"
+#export WAV_SUBGRB="WAV_ATLO_GRB WAV_EPAC_GRB WAV_WCST_GRB"
+#export WAV_ATLO_GRB="0 6 0 0 0 0 0 0 301 331 0 0 55000000 260000000 48 0 310000000 166667 166667 0 atlocn 0p16"
+#export WAV_EPAC_GRB="0 6 0 0 0 0 0 0 511 301 0 0 30000002 130000000 48 -20000000 215000000 166667 166667 0 epacif 0p16"
+#export WAV_WCST_GRB="0 6 0 0 0 0 0 0 241 151 0 0 50000000 210000000 48 25000000 250000000 166667 166667 0 wcoast 0p16"
+
+# Options for point output (switch on/off boundary point output)
+export DOIBP_WAV='NO' # Input boundary points
+export DOFLD_WAV='YES' # Field data
+export DOPNT_WAV='YES' # Station data
+export DOGRB_WAV='YES' # Create grib2 files
+export DOGRI_WAV='YES' # Create interpolated grids
+export DOSPC_WAV='YES' # Spectral post
+export DOBLL_WAV='YES' # Bulletin post
+
+echo "END: config.wavepostsbs"

@@ -2,7 +2,7 @@ SHELL=	/bin/sh
 
 LIBS= $(NEMSIO_LIB) $(BACIO_LIB4) $(W3NCO_LIBd) $(IP_LIBd) $(SP_LIBd)
 
-CMD= chgres_recenter.exe
+CMD= enkf_chgres_recenter.x
 
 OBJS = driver.o input_data.o interp.o output_data.o utils.o setup.o
 

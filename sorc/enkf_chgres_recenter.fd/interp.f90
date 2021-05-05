@@ -235,7 +235,7 @@
  delz_output = 0.0
 
  call compute_delz(ij_output, lev, vcoord(:,1), vcoord(:,2), sfcp_output, hgt_output, &
-                   tmp_output, spfh_output, delz_output)
+                   tmp_output, spfh_output, delz_output, flipdelz)
 
  deallocate(hgt_output)
 

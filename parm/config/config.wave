@@ -1,0 +1,119 @@
+#!/bin/ksh -x
+
+########## config.wave ##########
+# Wave steps specific
+
+echo "BEGIN: config.wave"
+
+# Parameters that are common to all wave model steps
+
+# System and version
+export wave_sys_ver=v1.0.0
+
+# This config contains variables/parameters used in the fcst step
+# Some others are also used across the workflow in wave component scripts
+
+# General runtime labels
+export CDUMPwave="${CDUMP}wave"
+
+# In GFS/GDAS, restart files are generated/read from gdas runs
+export CDUMPRSTwave="gdas"
+
+# Grids for wave model
+# GFSv16
+export waveGRD='gnh_10m aoc_9km gsh_15m'
+export waveGRDN='1 2 3' # gridnumber for ww3_multi
+export waveGRDG='10 20 30' # gridgroup for ww3_multi
+
+# ESMF input grid
+export waveesmfGRD='glox_10m' # input grid
+
+# Grids for input fields
+export WAVEICE_DID=sice
+export WAVEICE_FID=glix_10m
+export WAVECUR_DID=rtofs
+export WAVECUR_FID=glix_10m
+export WAVEWND_DID=
+export WAVEWND_FID=
+
+# Grids for output fields (used in all steps)
+export waveuoutpGRD=points
+export waveinterpGRD='glo_15mxt at_10m ep_10m wc_10m glo_30m' # Grids that need to be interpolated from native
+                             # in POST will generate grib unless gribOK not set
+export wavesbsGRD=''  # side-by-side grids generated as wave model runs, writes to com
+export wavepostGRD='gnh_10m aoc_9km gsh_15m' # Native grids that will be post-processed (grib2)
+
+
+# The start time reflects the number of hindcast hours prior to the cycle initial time
+if [ "$CDUMP" = "gdas" ]; then
+  export FHMAX_WAV=${FHMAX:-9}
+else
+  export FHMAX_WAV=$FHMAX_GFS
+fi
+export WAVHINDH=${WAVHINDH:-0}
+export FHMIN_WAV=${FHMIN_WAV:-0}
+export FHOUT_WAV=${FHOUT_WAV:-3}
+export FHMAX_HF_WAV=${FHMAX_HF_WAV:-120}
+export FHOUT_HF_WAV=${FHOUT_HF_WAV:-1}
+
+# gridded and point output rate
+export DTFLD_WAV=`expr $FHOUT_HF_WAV \* 3600`
+export DTPNT_WAV=3600
+export FHINCP_WAV=`expr $DTPNT_WAV / 3600`
+
+# Selected output parameters (gridded)
+export OUTPARS_WAV="WND HS FP DP PHS PTP PDIR"
+
+# Restart file config
+if [ "$CDUMP" = "gdas" ]; then
+  WAVNCYC=4
+  WAVHCYC=${assim_freq:-6}
+  FHMAX_WAV_CUR=${FHMAX_WAV_CUR:-48} # RTOFS forecasts only out to 8 days
+elif [ ${gfs_cyc} -ne 0 ]; then
+  FHMAX_WAV_CUR=${FHMAX_WAV_CUR:-192} # RTOFS forecasts only out to 8 days
+  WAVHCYC=${assim_freq:-6}
+else
+  WAVHCYC=0
+  FHMAX_WAV_CUR=${FHMAX_WAV_CUR:-192} # RTOFS forecasts only out to 8 days
+fi
+export FHMAX_WAV_CUR WAVHCYC WAVNCYC
+
+# Restart timing business
+if [ "${CDUMP}" != gfs ]; then    # Setting is valid for GDAS and GEFS 
+  export RSTTYPE_WAV='T'          # generate second tier of restart files
+  export DT_1_RST_WAV=10800       # time between restart files, set to DTRST=1 for a single restart file
+  export DT_2_RST_WAV=43200       # restart stride for checkpointing restart
+  export RSTIOFF_WAV=0            # first restart file offset relative to model start
+else                              # This is a GFS run
+  rst_dt_gfs=$(( restart_interval_gfs * 3600 ))
+  export RSTTYPE_WAV='F'                 # generate second tier of restart files
+  if [ $rst_dt_gfs -gt 0 ]; then export RSTTYPE_WAV='T' ; fi
+  export DT_1_RST_WAV=${rst_dt_gfs:-0}   # time between restart files, set to DTRST=1 for a single restart file
+  export DT_2_RST_WAV=${rst_dt_gfs:-0}   # restart stride for checkpointing restart
+  export RSTIOFF_WAV=0                   # first restart file offset relative to model start
+fi
+#
+# Set runmember to default value if not GEFS cpl run
+#  (for a GFS coupled run, RUNMEN would be unset, this should default to -1)
+export RUNMEM=${RUNMEM:--1}
+# Set wave model member tags if ensemble run
+# -1: no suffix, deterministic; xxxNN: extract two last digits to make ofilename prefix=gwesNN
+if [ $RUNMEM = -1 ]; then
+# No suffix added to model ID in case of deterministic run
+  export waveMEMB=
+else
+# Extract member number only
+  export waveMEMB=`echo $RUNMEM | grep -o '..$'`
+fi
+
+# Determine if wave component needs input and/or is coupled
+export WW3ATMINP='CPL'
+export WW3ICEINP='YES'
+export WW3CURINP='YES'
+
+# Determine if input is from perturbed ensemble (T) or single input file (F) for all members
+export WW3ATMIENS='F'
+export WW3ICEIENS='F'
+export WW3CURIENS='F'
+
+echo "END: config.wave"

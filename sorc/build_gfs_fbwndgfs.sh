@@ -24,6 +24,6 @@ if [ ! -d "../exec" ]; then
 fi
 
 cd fbwndgfs.fd
-make -f makefile.$target
-make -f makefile.$target clean
+make -f makefile.GENERIC
+make -f makefile.GENERIC clean
 mv fbwndgfs   ../../exec/

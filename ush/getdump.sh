@@ -1,11 +1,14 @@
 #!/bin/ksh
 set -x
 
+export COMPONENT=${COMPONENT:-atmos}
+
 CDATE=${1:-""}
 CDUMP=${2:-""}
-SOURCE_DIR=${3:-$DMPDIR/$CDATE/$CDUMP}
-TARGET_DIR=${4:-$ROTDIR/${CDUMP}.${PDY}/$cyc}
+SOURCE_DIR=${3:-$DMPDIR/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}}
+TARGET_DIR=${4:-$ROTDIR/${CDUMP}.${PDY}/$cyc/$COMPONENT}
 
+DUMP_SUFFIX=${DUMP_SUFFIX:-""}
 
 # Exit if SORUCE_DIR does not exist
 if [ ! -s $SOURCE_DIR ]; then 

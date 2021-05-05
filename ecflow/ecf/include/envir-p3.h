@@ -8,7 +8,9 @@ export SENDDBN=${SENDDBN:-%SENDDBN:YES%}
 export SENDDBN_NTC=${SENDDBN_NTC:-%SENDDBN_NTC:YES%}
 FILESYSTEMROOT=/gpfs/%FILESYSTEM:dell1%
 
-module load prod_envir/%prod_envir_ver% prod_util/%prod_util_ver%
+module load prod_envir/%prod_envir_ver% prod_util/%prod_util_ver% EnvVars/%EnvVars_ver%
+
+if [ -n "%PARATEST:%" ]; then export PARATEST=${PARATEST:-%PARATEST:%}; fi
 
 case $envir in
   prod)
@@ -23,7 +25,11 @@ case $envir in
     export envir=para
     export DATAROOT=${DATAROOT:-${FILESYSTEMROOT}/nco/ops/tmpnwprd}
     if [ "$SENDDBN" == "YES" ]; then
-       export DBNROOT=${UTILROOT}/para_dbn
+       if [ "$PARATEST" == "YES" ]; then
+         export DBNROOT=${UTILROOT}/fakedbn
+       else
+         export DBNROOT=${UTILROOT}/para_dbn
+       fi
        SENDDBN_NTC=NO
     else
        export DBNROOT=${UTILROOT}/fakedbn
@@ -40,11 +46,13 @@ case $envir in
 esac
 
 export COMROOT=${FILESYSTEMROOT}/nco/ops/com
+export GESROOT=${FILESYSTEMROOT}/nco/ops/nwges
 export COREROOT=${FILESYSTEMROOT}/ptmp/production.core/$jobid
 export NWROOT=/gpfs/dell1/nco/ops/nw${envir}
 export SENDECF=${SENDECF:-YES}
 export SENDCOM=${SENDCOM:-YES}
 export KEEPDATA=${KEEPDATA:-%KEEPDATA:NO%}
+export TMPDIR=${TMPDIR:-${DATAROOT:?}}
 
 if [ -n "%PDY:%" ]; then export PDY=${PDY:-%PDY:%}; fi
 if [ -n "%COMPATH:%" ]; then export COMPATH=${COMPATH:-%COMPATH:%}; fi

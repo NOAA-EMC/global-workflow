@@ -17,6 +17,7 @@
 #  B  bytes, relative size of the path in relation to the other paths in the list
 #  D  delete, delete extraneous files from destination directories (takes no arg)
 #  E  encrypt, enables data encryption [two cores should be allocated] (takes no arg)
+#  W  whole files, copy whole files rather than use delta-xfer algorithm (takes no arg)  (v2.2.3+)
 #  T  two-way syncronization will update both sides with latest changes (takes no arg)
 #  Z  compress data as it is sent, accepts optional compression level argument (1-9)
 # Rules higher in the list take precedence over lower ones.  By default, all files in a
@@ -26,16 +27,17 @@
 #com/gfs/_ENVIR_/enkfgdas._PDY_/
 /gpfs/dell1/nco/ops/com/gfs/_ENVIR_/enkfgdas._PDY_/
 + /??/
-+ /??/mem016/
-+ /??/mem016/**
-+ /??/mem017/
-+ /??/mem017/**
-+ /??/mem018/
-+ /??/mem018/**
-+ /??/mem019/
-+ /??/mem019/**
-+ /??/mem020/
-+ /??/mem020/**
++ /??/atmos/
++ /??/atmos/mem016/
++ /??/atmos/mem016/**
++ /??/atmos/mem017/
++ /??/atmos/mem017/**
++ /??/atmos/mem018/
++ /??/atmos/mem018/**
++ /??/atmos/mem019/
++ /??/atmos/mem019/**
++ /??/atmos/mem020/
++ /??/atmos/mem020/**
 - *
 
 B 100
@@ -43,16 +45,17 @@ B 100
 #com/gfs/_ENVIR_/enkfgdas._PDYm1_/
 /gpfs/dell1/nco/ops/com/gfs/_ENVIR_/enkfgdas._PDYm1_/
 + /??/
-+ /??/mem016/
-+ /??/mem016/**
-+ /??/mem017/
-+ /??/mem017/**
-+ /??/mem018/
-+ /??/mem018/**
-+ /??/mem019/
-+ /??/mem019/**
-+ /??/mem020/
-+ /??/mem020/**
++ /??/atmos/
++ /??/atmos/mem016/
++ /??/atmos/mem016/**
++ /??/atmos/mem017/
++ /??/atmos/mem017/**
++ /??/atmos/mem018/
++ /??/atmos/mem018/**
++ /??/atmos/mem019/
++ /??/atmos/mem019/**
++ /??/atmos/mem020/
++ /??/atmos/mem020/**
 - *
 
 B 100

@@ -22,6 +22,12 @@ if [[ -d /lfs3 ]] ; then
         source /apps/lmod/lmod/init/$__ms_shell
     fi
     module purge
+elif [[ -d /scratch1 ]] ; then
+    # We are on NOAA Hera
+    if ( ! eval module help > /dev/null 2>&1 ) ; then
+        source /apps/lmod/lmod/init/$__ms_shell
+    fi
+    module purge
 elif [[ -d /scratch3 ]] ; then
     # We are on NOAA Theia
     if ( ! eval module help > /dev/null 2>&1 ) ; then
