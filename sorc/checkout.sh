@@ -28,7 +28,7 @@ if [[ ! -d fv3gfs.fd ]] ; then
     rm -f ${topdir}/checkout-fv3gfs.log
     git clone https://github.com/ufs-community/ufs-weather-model fv3gfs.fd >> ${topdir}/checkout-fv3gfs.log 2>&1
     cd fv3gfs.fd
-    git checkout 06bc77ba3640358b54b6ff03f542e2ce0d3242be
+    git checkout 554aedcd63e4a7c5012570406132eaf76e249ca9
     git submodule update --init --recursive
     cd ${topdir}
 else

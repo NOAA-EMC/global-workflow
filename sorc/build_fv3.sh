@@ -23,9 +23,11 @@ cd fv3gfs.fd/
 FV3=$( pwd -P )/FV3
 cd tests/
 
-# GFSv16 with waves
-# ./compile.sh "$FV3" "$target" "WW3=Y 32BIT=Y" 1
-# mv -f fv3_1.exe ../NEMS/exe/global_fv3gfs.x
+# Standalone FV3 (no WW3)
+#./compile.sh "$target" "APP=ATM 32BIT=Y SUITES=FV3_GFS_v16" 2 NO NO
 
- ./compile.sh "$target" "CCPP=Y 32BIT=Y SUITES=FV3_GFS_v15,FV3_GFS_v16beta" 2 NO NO
- mv -f fv3_2.exe ../NEMS/exe/global_fv3gfs.x
+# FV3 + WW3
+./compile.sh "$target" "APP=ATMW 32BIT=Y SUITES=FV3_GFS_v16" 2 NO NO
+
+if [ ! -d ../NEMS/exe ]; then mkdir ../NEMS/exe ; fi
+mv -f fv3_2.exe ../NEMS/exe/global_fv3gfs.x
