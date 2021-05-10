@@ -10,10 +10,15 @@ finalexecdir=$( pwd -P )/../exec
 
 set +x
 source ./machine-setup.sh > /dev/null 2>&1
-
-source ../modulefiles/modulefile.ww3.$target
+source ../modulefiles/module_base.$target
 set -x 
 
+
+if [ $target = hera ]; then target=hera.intel ; fi
+if [ $target = orion ]; then target=orion.intel ; fi
+if [ $target = stampede ]; then target=stampede.intel ; fi
+
+#cd ufs_coupled.fd/WW3
 cd fv3gfs.fd/WW3
 export WW3_DIR=$( pwd -P )/model
 export WW3_BINDIR="${WW3_DIR}/bin"
@@ -61,9 +66,16 @@ sed -e "s/DIST/SHRD/g"\
 
 #Build exes for prep jobs: 
 ${WW3_BINDIR}/w3_make ww3_grid 
+${WW3_BINDIR}/w3_make ww3_prep
+${WW3_BINDIR}/w3_make ww3_prnc
 
 #Build exes for post jobs (except grib)"
 ${WW3_BINDIR}/w3_make ww3_outp 
+${WW3_BINDIR}/w3_make ww3_outf
+${WW3_BINDIR}/w3_make ww3_outp
+${WW3_BINDIR}/w3_make ww3_gint
+${WW3_BINDIR}/w3_make ww3_ounf
+${WW3_BINDIR}/w3_make ww3_ounp
 
 #Update switch for grib: 
 echo $(cat ${SWITCHFILE}) > ${WW3_BINDIR}/tempswitch
