@@ -8,7 +8,7 @@ set -x -e
 #############################
 # Source relevant config files
 #############################
-configs="base wave wavepostsbs wavepostpnt"
+configs="base wave wavepostsbs wavepostbndpnt"
 export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
 config_path=${EXPDIR:-$NWROOT/gfs.${gfs_ver}/parm/config}
 for config in $configs; do
@@ -20,7 +20,7 @@ done
 ##########################################
 # Source machine runtime environment
 ##########################################
-. $HOMEgfs/env/${machine}.env wavepostpnt
+. $HOMEgfs/env/${machine}.env wavepostbndpntbll
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
@@ -42,10 +42,10 @@ cd $DATA
 
 export cyc=${cyc:-00}
 export cycle=${cycle:-t${cyc}z}
- 
+
 # Set PDY
 setpdy.sh
-. ./PDY
+. PDY
 
 export CDATE=$PDY$cyc
 
@@ -66,11 +66,12 @@ fi
 export COMIN=${COMIN:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/$COMPONENT}
 export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/$COMPONENT}
 
+
 mkdir -p $COMOUT/station
 
 env | sort
 
-# Set wave model ID tag to include member number 
+# Set wave model ID tag to include member number
 # if ensemble; waveMEMB var empty in deterministic
 # Set wave model ID tag to include member number
 # if ensemble; waveMEMB var empty in deterministic
@@ -81,17 +82,17 @@ export WAV_MOD_TAG=${CDUMP}wave${waveMEMB}
 
 export CFP_VERBOSE=1
 
-export FHMAX_WAV_PNT=${FHMAX_WAV}
-export DOSPC_WAV='YES' # Spectral post
+export FHMAX_WAV_PNT=180
+if [ $FHMAX_WAV -lt $FHMAX_WAV_PNT ] ; then export FHMAX_WAV_IBP=$FHMAX_WAV ; fi
+export DOSPC_WAV='NO' # Spectral post
 export DOBLL_WAV='YES' # Bulletin post
-export DOBNDPNT_WAV='NO'  #not boundary points
+export DOBNDPNT_WAV='YES'  #boundary points
 
-
-# Execute the Script  
+# Execute the Script
 $HOMEgfs/scripts/exgfs_wave_post_pnt.sh
 err=$?
 if [ $err -ne 0 ]; then
-  msg="FATAL ERROR: ex-script of GWES_POST failed!"
+  msg="FATAL ERROR: ex-script of GFS_WAVE_POST_PNT failed!"
 else
   msg="$job completed normally!"
 fi

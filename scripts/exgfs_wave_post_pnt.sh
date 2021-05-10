@@ -101,10 +101,6 @@
 # --------------------------------------------------------------------------- #
 # 1.  Get files that are used by most child scripts
 
-  export DOPNT_WAV='YES' # Station data
-  export DOSPC_WAV='YES' # Spectral post
-  export DOBLL_WAV='YES' # Bulletin post
-
   exit_code=0
 
   set +x
@@ -165,8 +161,13 @@
   if [ -f $FIXwave/wave_${NET}.buoys ]
   then
     cp -f $FIXwave/wave_${NET}.buoys buoy.loc.temp
-# Reverse grep to exclude IBP points
-    sed -n '/^\$.*/!p' buoy.loc.temp | grep -v IBP > buoy.loc
+    if [ "$DOBNDPNT_WAV" = YES ]; then
+      #only do boundary points
+      sed -n '/^\$.*/!p' buoy.loc.temp | grep IBP > buoy.loc
+    else
+      #exclude boundary points
+      sed -n '/^\$.*/!p' buoy.loc.temp | grep -v IBP > buoy.loc
+    fi
   fi
 
   if [ -s buoy.loc ]
@@ -185,7 +186,6 @@
     postmsg "$jlogfile" "FATAL ERROR : NO BUOY LOCATION FILE"
     err=3; export err;${errchk}
     exit $err
-    DOPNT_WAV='NO'
     DOSPC_WAV='NO'
     DOBLL_WAV='NO'
   fi
@@ -299,17 +299,17 @@
       exit $err
     fi
 
-# Create new buoy_log.ww3 excluding all IBP files
+# Create new buoy_log.ww3
     cat buoy.loc | awk '{print $3}' | sed 's/'\''//g' > ibp_tags
     grep -F -f ibp_tags buoy_log.ww3 > buoy_log.tmp
     rm -f buoy_log.dat
     mv buoy_log.tmp buoy_log.dat
 
-    grep -F -f ibp_tags buoy_lst.loc >  buoy_tmp1.loc
-    sed    '$d' buoy_tmp1.loc > buoy_tmp2.loc
-    buoys=`awk '{ print $1 }' buoy_tmp2.loc`
-    Nb=`wc buoy_tmp2.loc | awk '{ print $1 }'`
-    rm -f buoy_tmp1.loc buoy_tmp2.loc
+    grep -F -f ibp_tags buoy_lst.loc > buoy_tmp1.loc
+    #sed    '$d' buoy_tmp1.loc > buoy_tmp2.loc
+    buoys=`awk '{ print $1 }' buoy_tmp1.loc`
+    Nb=`wc buoy_tmp1.loc | awk '{ print $1 }'`
+    rm -f buoy_tmp1.loc
 
     if [ -s buoy_log.dat ]
     then
@@ -342,6 +342,7 @@
   echo '   ---------------------------------------------'
   echo "      Sufficient data for spectral files        : $DOSPC_WAV ($Nb points)"
   echo "      Sufficient data for bulletins             : $DOBLL_WAV ($Nb points)"
+  echo "      Boundary points                           : $DOBNDPNT_WAV"
   echo ' '
   [[ "$LOUD" = YES ]] && set -x
 
@@ -360,7 +361,7 @@
 
 # 1.a.2 Loop over forecast time to generate post files 
   fhr=$FHMIN_WAV
-  while [ $fhr -le $FHMAX_WAV ]; do
+  while [ $fhr -le $FHMAX_WAV_PNT ]; do
     
     echo "   Creating the wave point scripts at : `date`"
     ymdh=`$NDATE $fhr $CDATE`
@@ -377,7 +378,7 @@
 # Create instances of directories for spec and gridded output
     export SPECDATA=${DATA}/output_$YMDHMS
     export BULLDATA=${DATA}/output_$YMDHMS
-    ln -fs $DATA/mod_def.${waveuoutpGRD} mod_def.ww3
+    cp $DATA/mod_def.${waveuoutpGRD} mod_def.${waveuoutpGRD}
 
     pfile=$COMIN/rundata/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS}
     if [ -f  ${pfile} ]
@@ -526,7 +527,7 @@
   then
     for buoy in $buoys
     do
-      echo "$USHwave/wave_outp_cat.sh $buoy $FHMAX_WAV spec > ${CATOUTDIR}/spec_cat_$buoy.out 2>&1" >> cmdfile.bouy
+      echo "$USHwave/wave_outp_cat.sh $buoy $FHMAX_WAV_PNT spec > ${CATOUTDIR}/spec_cat_$buoy.out 2>&1" >> cmdfile.bouy
     done
   fi
 
@@ -534,7 +535,7 @@
   then
     for buoy in $buoys
     do
-      echo "$USHwave/wave_outp_cat.sh $buoy $FHMAX_WAV bull > ${CATOUTDIR}/bull_cat_$buoy.out 2>&1" >> cmdfile.bouy
+      echo "$USHwave/wave_outp_cat.sh $buoy $FHMAX_WAV_PNT bull > ${CATOUTDIR}/bull_cat_$buoy.out 2>&1" >> cmdfile.bouy
     done
   fi
 
@@ -624,16 +625,47 @@
   if [ ${CFP_MP:-"NO"} = "YES" ]; then nm=0; fi
 
   if [ ${CFP_MP:-"NO"} = "YES" ]; then
-    echo "$nm $USHwave/wave_tar.sh $WAV_MOD_TAG spec $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
-    nm=$(( nm + 1 ))
-    echo "$nm $USHwave/wave_tar.sh $WAV_MOD_TAG bull $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
-    nm=$(( nm + 1 ))
-    echo "$nm $USHwave/wave_tar.sh $WAV_MOD_TAG cbull $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
-    nm=$(( nm + 1 ))
+    if [ "$DOBNDPNT_WAV" = YES ]; then
+      if [ "$DOSPC_WAV" = YES ]; then
+        echo "$nm $USHwave/wave_tar.sh $WAV_MOD_TAG ibp $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
+        nm=$(( nm + 1 ))
+      fi
+      if [ "$DOBLL_WAV" = YES ]; then
+        echo "$nm $USHwave/wave_tar.sh $WAV_MOD_TAG ibpbull $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
+        nm=$(( nm + 1 ))
+        echo "$nm $USHwave/wave_tar.sh $WAV_MOD_TAG ibpcbull $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
+        nm=$(( nm + 1 ))
+      fi
+    else
+      if [ "$DOSPC_WAV" = YES ]; then
+        echo "$nm $USHwave/wave_tar.sh $WAV_MOD_TAG spec $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
+        nm=$(( nm + 1 ))
+      fi
+      if [ "$DOBLL_WAV" = YES ]; then
+        echo "$nm $USHwave/wave_tar.sh $WAV_MOD_TAG bull $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
+        nm=$(( nm + 1 ))
+        echo "$nm $USHwave/wave_tar.sh $WAV_MOD_TAG cbull $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
+        nm=$(( nm + 1 ))
+      fi
+    fi
   else
-    echo "$USHwave/wave_tar.sh $WAV_MOD_TAG spec $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
-    echo "$USHwave/wave_tar.sh $WAV_MOD_TAG bull $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
-    echo "$USHwave/wave_tar.sh $WAV_MOD_TAG cbull $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
+    if [ "$DOBNDPNT_WAV" = YES ]; then
+      if [ "$DOSPC_WAV" = YES ]; then
+        echo "$USHwave/wave_tar.sh $WAV_MOD_TAG ibp $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
+      fi
+      if [ "$DOBLL_WAV" = YES ]; then
+        echo "$USHwave/wave_tar.sh $WAV_MOD_TAG ibpbull $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
+        echo "$USHwave/wave_tar.sh $WAV_MOD_TAG ibpcbull $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
+      fi
+    else
+      if [ "$DOSPC_WAV" = YES ]; then
+        echo "$USHwave/wave_tar.sh $WAV_MOD_TAG spec $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
+      fi
+      if [ "$DOBLL_WAV" = YES ]; then
+        echo "$USHwave/wave_tar.sh $WAV_MOD_TAG bull $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
+        echo "$USHwave/wave_tar.sh $WAV_MOD_TAG cbull $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile
+      fi
+    fi
   fi
 
   wavenproc=`wc -l cmdtarfile | awk '{print $1}'`

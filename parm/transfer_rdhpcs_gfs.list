@@ -28,7 +28,6 @@ com/gfs/_ENVIR_/gfs._PDY_/ _REMOTEPATH_/com/gfs/_ENVIR_/gfs._PDY_/
 + /??/
 + /??/atmos/
 + /??/atmos/gfs.t??z.*bufr*
-+ /??/atmos/gfs.t??z.sstgrb
 + /??/atmos/gfs.t??z.engicegrb
 + /??/atmos/gfs.t??z.*tcvitals*tm00
 + /??/atmos/gfs.t??z.atmanl.nc
@@ -36,7 +35,6 @@ com/gfs/_ENVIR_/gfs._PDY_/ _REMOTEPATH_/com/gfs/_ENVIR_/gfs._PDY_/
 + /??/atmos/gfs.t??z.master.grb2f*
 + /??/atmos/gfs.t??z.pgrb2.0p25.f*
 + /??/atmos/gfs.t??z.sfluxgrbf*
-+ /??/atmos/gfs.t??z.gtg.grb2f*
 + /??/atmos/gfs.t??z.gcip.f00.grib2
 + /??/atmos/gfs.t??z.atmf000.nc
 + /??/atmos/gfs.t??z.atmf003.nc
