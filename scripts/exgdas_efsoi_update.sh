@@ -401,9 +401,7 @@ cat stdout stderr > $COMOUT_ANL_ENSFSOI/$ENKFSTAT
 
 ################################################################################
 #  Postprocessing
-######## AFE remove after testing
-#cp -r $DATA /scratch1/NCEPDEV/stmp4/Andrew.Eichmann/efsoi
-######## AFE
+
 cd $pwd
 [[ $mkdata = "YES" ]] && rm -rf $DATA
 set +x
