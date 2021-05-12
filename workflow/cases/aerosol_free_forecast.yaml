@@ -1,0 +1,57 @@
+case:
+  places:
+    workflow_file: layout/free_forecast_gfs.yaml
+
+  settings: 
+    SDATE: 2013-04-01t00:00:00
+    EDATE: 2013-04-01t00:00:00
+    max_job_tries: 1
+
+    cplgocart: .true.
+    print_esmf: .true.
+    nems_temp: 'atm_aer'
+    nems_temp_cold: 'atm_aer'
+
+    run_gsi: No
+    ic_source: fv3_ic
+    mom6ic_prepared: .false.
+    chgres_and_convert_ics: Yes
+    IC_CDUMP: gfs
+
+    KEEPDATA: Yes
+
+  nsst:
+    NST_MODEL: 0
+
+  output_settings:
+    FHOUT_GFS: 6
+    FHMIN_GFS: 0
+    FHMAX_GFS: 48
+    FHMAX_HF_GFS: 0
+    FHOUT_HF_GFS: -1
+
+  fv3_gfs_settings:
+    CASE: C384
+    LEVS: 65
+    DELTIM: 450
+    layout:
+       x: 6
+       y: 8
+       nth: 1
+       WGRP: 1
+       WGRP_NTASKS: 24
+       WRTIOBUF: "32M"
+
+  chem_settings:
+    MOD: gsdchem
+    ntdiag: 2
+    # On Hera
+    CFGDIR: /scratch1/NCEPDEV/nems/Raffaele.Montuoro/data/NASA/rc
+    INPDIR: /scratch1/NCEPDEV/nems/Raffaele.Montuoro/data/NASA/ExtData
+    # On Orion
+    # CFGDIR: /work/noaa/stmp/rmontuor/nasa/data/rc
+    # INPDIR: /work/noaa/stmp/rmontuor/nasa/data/ExtData
+
+  post:
+    downset: 2
+    GOESF: no

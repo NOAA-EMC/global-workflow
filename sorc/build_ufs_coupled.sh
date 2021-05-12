@@ -11,6 +11,7 @@ fi
 
 if [ $target = hera ]; then target=hera.intel ; fi
 if [ $target = orion ]; then target=orion.intel ; fi
+if [ $target = stampede ]; then target=stampede.intel ; fi
 
 MOD_PATH=$cwd/ufs_coupled.fd/modulefiles/$target
 
@@ -18,5 +19,9 @@ module purge
 module use $MOD_PATH 
 module load fv3 
 cd ufs_coupled.fd/
-CMAKE_FLAGS="-DS2S=ON -DWW3=ON" CCPP_SUITES="FV3_GFS_v15p2_coupled,FV3_GFS_v16_coupled,FV3_GFS_v16" ./build.sh 
-
+if [[ -d build ]]; then rm -Rf build; fi
+if [[ -d GOCART ]]; then
+  ./build.sh
+else
+  CMAKE_FLAGS="-DS2S=ON -DWW3=ON" CCPP_SUITES="FV3_GFS_v15p2_coupled,FV3_GFS_v16_coupled,FV3_GFS_v16" ./build.sh
+fi

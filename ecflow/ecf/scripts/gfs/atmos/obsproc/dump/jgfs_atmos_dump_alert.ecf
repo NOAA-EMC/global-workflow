@@ -4,7 +4,7 @@
 #BSUB -R rusage[mem=1000]
 #BSUB -R affinity[core]
 #BSUB -cwd /tmp
-#BSUB -W 00:10
+#BSUB -W 00:05
 #BSUB -P %PROJ%
 
 %include <head.h>
@@ -30,9 +30,6 @@ set -x
 export cyc=%CYC%
 export NET=gfs
 export RUN=gfs
-
-####
-export ECF_PORT=%ECF_PORT%
 
 # CALL executable job script here
 $HOMEobsproc_dump_alert/jobs/JDUMP_ALERT

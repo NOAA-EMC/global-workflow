@@ -13,22 +13,22 @@ fi
 
 if [ $# -lt 2 ]; then
     echo '***ERROR*** must specify two arguements: (1) RUN_ENVIR, (2) machine'
-    echo ' Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | hera | orion )'
+    echo ' Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | hera | orion | stampede )'
     echo ' A third argument is needed when coupled: '
-    echo ' Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | hera | orion ) coupled'
+    echo ' Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | hera | orion | stampede ) coupled'
     exit 1
 fi
 
 if [ $RUN_ENVIR != emc -a $RUN_ENVIR != nco ]; then
-    echo 'Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | hera | orion )'
+    echo ' Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | hera | orion | stampede )'
     echo ' A third argument is needed when coupled: '
-    echo ' Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | hera | orion ) coupled'
+    echo ' Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | hera | orion | stampede ) coupled'
     exit 1
 fi
-if [ $machine != cray -a $machine != dell -a $machine != hera -a $machine != orion ]; then
-    echo 'Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | hera | orion )'
+if [ $machine != cray -a $machine != dell -a $machine != hera -a $machine != orion -a $machine != stampede ]; then
+    echo ' Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | hera | orion | stampede )'
     echo ' A third argument is needed when coupled: '
-    echo ' Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | hera | orion ) coupled'
+    echo ' Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | hera | orion | stampede ) coupled'
     exit 1
 fi
 
@@ -41,10 +41,14 @@ pwd=$(pwd -P)
 #------------------------------
 #--model fix fields
 #------------------------------
-if [ $machine == "cray" ]; then
+if [ $machine = "cray" ]; then
     FIX_DIR="/gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix_nco_gfsv16"
 elif [ $machine = "dell" ]; then
-    FIX_DIR="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix_nco_gfsv16"
+    if [ $model = "coupled" ]; then
+      FIX_DIR="/gpfs/dell2/emc/modeling/noscrub/Walter.Kolczynski/global-workflow/fix_UFSp6"
+    else 
+      FIX_DIR="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix_nco_gfsv16"
+    fi 
 elif [ $machine = "hera" ]; then
     if [ $model = "coupled" ]; then
        FIX_DIR="/scratch2/NCEPDEV/climate/climpara/S2S/FIX/fix_UFSp6"
@@ -57,6 +61,8 @@ elif [ $machine = "orion" ]; then
     else
        FIX_DIR="/work/noaa/global/glopara/fix_nco_gfsv16"
     fi
+elif [ $machine = "stampede" ]; then
+    FIX_DIR="/work/07738/jkuang/stampede2/tempFixICdir/fix_UFSp6"
 fi
 
 if [ ! -z $FIX_DIR ]; then
@@ -92,7 +98,7 @@ fi
 cd ${pwd}/../jobs               ||exit 8
     $LINK ../sorc/gfs_post.fd/jobs/JGLOBAL_ATMOS_POST_MANAGER      .
     $LINK ../sorc/gfs_post.fd/jobs/JGLOBAL_ATMOS_NCEPPOST          .
-    $LINK ../sorc/gldas.fd/jobs/JGDAS_ATMOS_GLDAS            .             
+    $LINK ../sorc/gldas.fd/jobs/JGDAS_ATMOS_GLDAS            .
 cd ${pwd}/../parm               ||exit 8
     [[ -d post ]] && rm -rf post
     $LINK ../sorc/gfs_post.fd/parm                           post
@@ -161,7 +167,7 @@ cd ${pwd}/../jobs               ||exit 8
     $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_DIAG               .
     $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_UPDATE             .
     $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_ECEN               .
-    $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_SFC                .    
+    $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_SFC                .
     $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_FCST               .
     $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_POST               .
     $LINK ../sorc/gsi.fd/jobs/JGDAS_ATMOS_CHGRES_FORENKF    .
@@ -236,23 +242,38 @@ cd ${pwd}/../ush                ||exit 8
 #--link executables 
 #------------------------------
 
+if [ ! -d $pwd/../exec ]; then mkdir $pwd/../exec ; fi
 cd $pwd/../exec
+
+[[ -s gaussian_sfcanl.exe ]] && rm -f gaussian_sfcanl.exe
+$LINK ../sorc/install/bin/gaussian_sfcanl.x gaussian_sfcanl.exe
+for workflowexec in fbwndgfs gfs_bufr regrid_nemsio supvit syndat_getjtbul \
+    syndat_maksynrc syndat_qctropcy tocsbufr ; do
+  [[ -s $workflowexec ]] && rm -f $workflowexec
+  $LINK ../sorc/install/bin/${workflowexec}.x $workflowexec
+done
+for workflowexec in enkf_chgres_recenter.x enkf_chgres_recenter_nc.x fv3nc2nemsio.x \
+    tave.x vint.x ; do
+  [[ -s $workflowexec ]] && rm -f $workflowexec
+  $LINK ../sorc/install/bin/$workflowexec .
+done
+
 if  [ $model == "coupled" ]; then
  [[ -s ufs_model ]] && rm -f ufs_model
   $LINK ../sorc/ufs_coupled.fd/build/ufs_model . 
 else
-[[ -s global_fv3gfs.x ]] && rm -f global_fv3gfs.x
-$LINK ../sorc/fv3gfs.fd/NEMS/exe/global_fv3gfs.x .
-if [ -d ../sorc/fv3gfs.fd/WW3/exec ]; then # Wave execs
-  for waveexe in ww3_gint ww3_grib ww3_grid ww3_multi ww3_ounf ww3_ounp ww3_outf ww3_outp ww3_prep ww3_prnc; do
-    [[ -s $waveexe ]] && rm -f $waveexe
-    $LINK ../sorc/fv3gfs.fd/WW3/exec/$waveexe .
-  done
+  [[ -s global_fv3gfs.x ]] && rm -f global_fv3gfs.x
+  $LINK ../sorc/fv3gfs.fd/NEMS/exe/global_fv3gfs.x .
+  if [ -d ../sorc/fv3gfs.fd/WW3/exec ]; then # Wave execs
+    for waveexe in ww3_gint ww3_grib ww3_grid ww3_multi ww3_ounf ww3_ounp ww3_outf ww3_outp ww3_prep ww3_prnc; do
+      [[ -s $waveexe ]] && rm -f $waveexe
+      $LINK ../sorc/fv3gfs.fd/WW3/exec/$waveexe .
+    done
+  fi
 fi
-fi 
 
 [[ -s gfs_ncep_post ]] && rm -f gfs_ncep_post
-$LINK ../sorc/gfs_post.fd/exec/ncep_post gfs_ncep_post
+$LINK ../sorc/gfs_post.fd/exec/upp.x gfs_ncep_post
 
 if [ -d ${pwd}/gfs_wafs.fd ]; then 
     for wafsexe in \
@@ -355,8 +376,10 @@ cd ${pwd}/../sorc   ||   exit 8
     if [ -d ${pwd}/gfs_wafs.fd ]; then 
         $SLINK gfs_wafs.fd/sorc/wafs_awc_wafavn.fd                                              wafs_awc_wafavn.fd
         $SLINK gfs_wafs.fd/sorc/wafs_blending.fd                                                wafs_blending.fd
+        $SLINK gfs_wafs.fd/sorc/wafs_blending_0p25.fd                                           wafs_blending_0p25.fd
         $SLINK gfs_wafs.fd/sorc/wafs_cnvgrib2.fd                                                wafs_cnvgrib2.fd
         $SLINK gfs_wafs.fd/sorc/wafs_gcip.fd                                                    wafs_gcip.fd
+        $SLINK gfs_wafs.fd/sorc/wafs_grib2_0p25.fd                                              wafs_grib2_0p25.fd
         $SLINK gfs_wafs.fd/sorc/wafs_makewafs.fd                                                wafs_makewafs.fd
         $SLINK gfs_wafs.fd/sorc/wafs_setmissing.fd                                              wafs_setmissing.fd
     fi
@@ -372,6 +395,7 @@ cd $pwd/../parm/config
 [[ -s config.base ]] && rm -f config.base 
 if [ $RUN_ENVIR = nco ] ; then
  cp -p config.base.nco.static config.base
+ cp -p config.resources.nco.static config.resources
 else
  cp -p config.base.emc.dyn config.base
 fi

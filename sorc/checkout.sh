@@ -2,7 +2,7 @@
 #set -xue
 set -x
 
-while getopts "oc" option;
+while getopts "oca" option;
 do
  case $option in
   o)
@@ -11,6 +11,11 @@ do
    ;;
   c)
    echo "Received -c flag, running coupled model" 
+   COUPLED="YES"
+   ;;
+  a)
+   echo "Received -a flag, running coupled aerosols model"
+   AEROSOL="YES"
    COUPLED="YES"
    ;;
   :)
@@ -40,12 +45,18 @@ if [ ${COUPLED:-"NO"} = "NO" ]; then
   fi 
 else 
   if [[ ! -d ufs_coupled.fd ]] ; then
-    git clone https://github.com/ufs-community/ufs-weather-model ufs_coupled.fd >> ${topdir}/checkout-ufs_coupled.log 2>&1
-    cd ufs_coupled.fd
-    git checkout 13053c1aa0e296cab00cf7ba2a802be211f57136 
+    if [ "${AEROSOL}" = "YES" ] ; then
+      git clone https://github.com/NOAA-EMC/FV3-GOCART ufs_coupled.fd >> ${topdir}/checkout-ufs_coupled.log 2>&1
+      cd ufs_coupled.fd
+      git checkout develop
+    else
+      git clone https://github.com/ufs-community/ufs-weather-model ufs_coupled.fd >> ${topdir}/checkout-ufs_coupled.log 2>&1
+      cd ufs_coupled.fd
+      git checkout 3e46f5b7050e18884a0bed13691823ad88d443c3
+    fi
     git submodule update --init --recursive
     cd ${topdir} 
-  else 
+  else
     echo 'Skip.  Directory ufs_coupled.fd already exists.'
   fi 
 fi
@@ -67,7 +78,7 @@ if [[ ! -d gldas.fd ]] ; then
     rm -f ${topdir}/checkout-gldas.log
     git clone https://github.com/NOAA-EMC/GLDAS.git gldas.fd >> ${topdir}/checkout-gldas.fd.log 2>&1
     cd gldas.fd
-    git checkout gldas_gfsv16_release.v1.11.0
+    git checkout gldas_gfsv16_release.v1.13.0
     cd ${topdir}
 else
     echo 'Skip.  Directory gldas.fd already exists.'
@@ -89,7 +100,8 @@ if [[ ! -d gfs_post.fd ]] ; then
     rm -f ${topdir}/checkout-gfs_post.log
     git clone https://github.com/NOAA-EMC/EMC_post.git gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
     cd gfs_post.fd
-    git checkout upp_gfsv16_release.v1.1.0
+    git checkout upp_v10.0.3
+    git submodule update --init CMakeModules
     ################################################################################
     # checkout_gtg
     ## yes: The gtg code at NCAR private repository is available for ops. GFS only.
@@ -112,7 +124,7 @@ if [[ ! -d gfs_wafs.fd ]] ; then
     rm -f ${topdir}/checkout-gfs_wafs.log
     git clone --recursive https://github.com/NOAA-EMC/EMC_gfs_wafs.git gfs_wafs.fd >> ${topdir}/checkout-gfs_wafs.log 2>&1
     cd gfs_wafs.fd
-    git checkout gfs_wafs.v6.0.14
+    git checkout gfs_wafs.v6.0.19
     cd ${topdir}
 else
     echo 'Skip.  Directory gfs_wafs.fd already exists.'
@@ -123,7 +135,7 @@ if [[ ! -d verif-global.fd ]] ; then
     rm -f ${topdir}/checkout-verif-global.log
     git clone --recursive https://github.com/NOAA-EMC/EMC_verif-global.git verif-global.fd >> ${topdir}/checkout-verif-global.log 2>&1
     cd verif-global.fd
-    git checkout verif_global_v1.11.0
+    git checkout verif_global_v1.13.5
     cd ${topdir}
 else
     echo 'Skip. Directory verif-global.fd already exist.'

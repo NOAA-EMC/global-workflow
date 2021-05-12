@@ -13,7 +13,7 @@ platform: !Platform
 
   # detect: this is a function that returns true iff the user is on GAEA
   # and false otherwise
-  detect: !calc tools.isdir("/work")
+  detect: !calc tools.machine_name=="HPC.MsState.Edu"
 
   # Additional variables to send to Rocoto XML entities or ecflow edits.
   metasched_more: !expand |

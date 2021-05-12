@@ -2,7 +2,7 @@
 
  use utils
  use setup
- use module_fv3gfs_ncio
+ use module_ncio
 
  implicit none
 
@@ -23,7 +23,7 @@
  real, allocatable, public                    :: clwmr_input(:,:)
  real, allocatable, public                    :: dzdt_input(:,:)
  real, allocatable, public                    :: grle_input(:,:)
- real, allocatable, public                    :: cldamt_input(:,:) 
+ real, allocatable, public                    :: cldamt_input(:,:)
  real, allocatable, public                    :: hgt_input(:)
  real, allocatable, public                    :: icmr_input(:,:)
  real, allocatable, public                    :: o3mr_input(:,:)
@@ -80,7 +80,7 @@
 
  call read_attribute(indset, 'ak', ak)
  call read_attribute(indset, 'bk', bk)
- 
+
  nvcoord_input = 2
  allocate(vcoord_input(lev+1,nvcoord_input))
  do k = 1, lev+1
@@ -114,7 +114,7 @@
  call read_vardata(indset, 'ugrd', work3d)
  do vlev = 1, lev
    rvlev = lev+1-vlev
-   ugrd_input(:,vlev) = reshape(work3d(:,:,rvlev),(/ij_input/)) 
+   ugrd_input(:,vlev) = reshape(work3d(:,:,rvlev),(/ij_input/))
    print*,'MAX/MIN U WIND AT LEVEL ',vlev, "IS: ", maxval(ugrd_input(:,vlev)), minval(ugrd_input(:,vlev))
  enddo
 
@@ -124,7 +124,7 @@
  call read_vardata(indset, 'vgrd', work3d)
  do vlev = 1, lev
    rvlev = lev+1-vlev
-   vgrd_input(:,vlev) = reshape(work3d(:,:,rvlev),(/ij_input/)) 
+   vgrd_input(:,vlev) = reshape(work3d(:,:,rvlev),(/ij_input/))
    print*,'MAX/MIN V WIND AT LEVEL ', vlev, "IS: ", maxval(vgrd_input(:,vlev)), minval(vgrd_input(:,vlev))
  enddo
 
@@ -134,7 +134,7 @@
  call read_vardata(indset, 'tmp', work3d)
  do vlev = 1, lev
    rvlev = lev+1-vlev
-   tmp_input(:,vlev) = reshape(work3d(:,:,rvlev),(/ij_input/)) 
+   tmp_input(:,vlev) = reshape(work3d(:,:,rvlev),(/ij_input/))
    print*,'MAX/MIN TEMPERATURE AT LEVEL ', vlev, 'IS: ', maxval(tmp_input(:,vlev)), minval(tmp_input(:,vlev))
  enddo
 
@@ -144,7 +144,7 @@
  call read_vardata(indset, 'spfh', work3d)
  do vlev = 1, lev
    rvlev = lev+1-vlev
-   spfh_input(:,vlev) = reshape(work3d(:,:,rvlev),(/ij_input/)) 
+   spfh_input(:,vlev) = reshape(work3d(:,:,rvlev),(/ij_input/))
    print*,'MAX/MIN SPECIFIC HUMIDITY AT LEVEL ', vlev, 'IS: ', maxval(spfh_input(:,vlev)), minval(spfh_input(:,vlev))
  enddo
 
@@ -154,7 +154,7 @@
  call read_vardata(indset, 'clwmr', work3d)
  do vlev = 1, lev
    rvlev = lev+1-vlev
-   clwmr_input(:,vlev) = reshape(work3d(:,:,rvlev),(/ij_input/)) 
+   clwmr_input(:,vlev) = reshape(work3d(:,:,rvlev),(/ij_input/))
    print*,'MAX/MIN CLOUD LIQUID WATER AT LEVEL ', vlev, 'IS: ', maxval(clwmr_input(:,vlev)), minval(clwmr_input(:,vlev))
  enddo
 
@@ -182,7 +182,7 @@
  else
     dzdt_input = missing_value
     print*,'DZDT NOT IN INPUT FILE'
-    idzdt = 0 
+    idzdt = 0
  endif
 
 
@@ -200,7 +200,7 @@
  else
     rwmr_input = missing_value
     print*,'RWMR NOT IN INPUT FILE'
-    irwmr = 0 
+    irwmr = 0
  endif
 
  print*
@@ -210,14 +210,14 @@
  if (iret == 0) then
     do vlev = 1, lev
       rvlev = lev+1-vlev
-      icmr_input(:,vlev) = reshape(work3d(:,:,rvlev),(/ij_input/)) 
+      icmr_input(:,vlev) = reshape(work3d(:,:,rvlev),(/ij_input/))
       print*,'MAX/MIN ICMR AT LEVEL ', vlev, 'IS: ', maxval(icmr_input(:,vlev)), minval(icmr_input(:,vlev))
     enddo
     iicmr = 1
  else
     icmr_input = missing_value
     print*,'ICMR NOT IN INPUT FILE'
-    iicmr = 0 
+    iicmr = 0
  endif
 
  print*
@@ -227,14 +227,14 @@
  if (iret == 0) then
     do vlev = 1, lev
       rvlev = lev+1-vlev
-      snmr_input(:,vlev) = reshape(work3d(:,:,rvlev),(/ij_input/)) 
+      snmr_input(:,vlev) = reshape(work3d(:,:,rvlev),(/ij_input/))
       print*,'MAX/MIN SNMR AT LEVEL ', vlev, 'IS: ', maxval(snmr_input(:,vlev)), minval(snmr_input(:,vlev))
     enddo
     isnmr = 1
  else
     snmr_input = missing_value
     print*,'SNMR NOT IN INPUT FILE'
-    isnmr = 0 
+    isnmr = 0
  endif
 
  print*
@@ -244,14 +244,14 @@
  if (iret == 0) then
     do vlev = 1, lev
       rvlev = lev+1-vlev
-      grle_input(:,vlev) = reshape(work3d(:,:,rvlev),(/ij_input/)) 
+      grle_input(:,vlev) = reshape(work3d(:,:,rvlev),(/ij_input/))
       print*,'MAX/MIN GRLE AT LEVEL ', vlev, 'IS: ', maxval(grle_input(:,vlev)), minval(grle_input(:,vlev))
     enddo
     igrle = 1
  else
     grle_input = missing_value
     print*,'GRLE NOT IN INPUT FILE'
-    igrle = 0 
+    igrle = 0
  endif
 
  print*
@@ -269,12 +269,12 @@
     else
        cldamt_input = missing_value
        print*,'CLDAMT NOT IN INPUT FILE'
-       icldamt = 0 
+       icldamt = 0
     endif
  else
     cldamt_input = missing_value
     print*,'CLDAMT NOT READ - CLD_AMT NAMELIST OPTION NOT SET TO TRUE'
-    icldamt = 0 
+    icldamt = 0
  end if
 
  call read_vardata(indset, 'dpres', work3d, errcode=iret)
@@ -325,7 +325,7 @@
  call read_attribute(refdset, 'ak', ak)
  call read_attribute(refdset, 'bk', bk)
  call close_dataset(refdset)
- 
+
  lev_output = size(bk) - 1
 
  nvcoord=2

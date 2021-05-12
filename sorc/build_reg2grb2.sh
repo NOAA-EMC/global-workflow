@@ -16,9 +16,9 @@ export CPP=fpp
 
 export INCS="-I${LANDSFCUTIL_INCd} \
              -I${IP_INCd} \
-             -I${NETCDF}/include"
+             -I${NETCDF_INCLUDES}"
 
-export FFLAGSM="-O3 -free -convert big_endian -traceback -qopenmp -fp-model precise  -assume byterecl ${INCS}"
+export FFLAGSM="-O3 -free -convert big_endian -traceback -qopenmp -fp-model precise -assume byterecl ${INCS}"
 export FFLAGSM2="-O3 -free -r8"
 
 export LIBSM="${LANDSFCUTIL_LIBd} \
@@ -26,11 +26,15 @@ export LIBSM="${LANDSFCUTIL_LIBd} \
               ${SP_LIBd} \
               ${W3NCO_LIB4} \
               ${BACIO_LIB4} \
-              -L${NETCDF}/lib -lnetcdff -lnetcdf"
+              -L${NETCDF_LIBRARIES} -lnetcdff -lnetcdf -L${HDF5_LIBRARIES} -lhdf5_hl -lhdf5 -L${ZLIB_LIBRARIES} -lz -ldl -lm"
 
-WGRIB2DIR=$wgrib2_ROOT
-export LIB2="-L$WGRIB2DIR/lib -lwgrib2_api -lwgrib2 -L$Jasper_ROOT/lib -ljasper -L$PNG_ROOT/lib -lpng"
-export MOD2="-I$WGRIB2DIR/include"
+WGRIB2_ROOT=${WGRIB2_ROOT:-$wgrib2_ROOT}
+WGRIB2_LIB=${WGRIB2_LIB:-${WGRIB_LIB:-"$WGRIB2_ROOT/lib/libwgrib2.a"}}
+WGRIB2_LIBAPI=${WGRIB2_LIBAPI:-"$WGRIB2_ROOT/lib/libwgrib2_api.a"}
+WGRIB2_INC=${WGRIB2_INC:-"$WGRIB2_ROOT/include"}
+JASPER_LIB=${JASPER_LIB:-"$JASPER_LIBRARIES/libjasper.a"}
+export LIB2="${WGRIB2_LIBAPI} ${WGRIB2_LIB} ${JASPER_LIB}"
+export MOD2="-I${WGRIB2_INC}"
 
 cd reg2grb2.fd
 

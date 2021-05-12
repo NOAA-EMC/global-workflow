@@ -55,6 +55,7 @@ default_settings: &default_settings
   cplwav: .false.
   cplwav2atm: .false.
   cplchem: .false.
+  cplgocart: .false.
   cpl: !FirstTrue
     - when: !calc doc.settings.cplflx==".true."
       do: .true.
@@ -63,6 +64,8 @@ default_settings: &default_settings
     - when: !calc doc.settings.cplwav==".true."
       do: .true.
     - when: !calc doc.settings.cplchem==".true."
+      do: .true.
+    - when: !calc doc.settings.cplgocart==".true."
       do: .true.
     - otherwise: .false.
 

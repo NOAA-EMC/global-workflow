@@ -36,12 +36,14 @@ ATM_model=${ATM_model:-'fv3'}
 OCN_model=${OCN_model:-'mom6'}
 ICE_model=${ICE_model:-'cice'}
 WAV_model=${WAV_model:-'ww3'}
+CHM_model=${CHM_model:-'gsdchem'}
 
 ATMPETS=${ATMPETS:-8}
 MEDPETS=${MEDPETS:-8} 
 OCNPETS=${OCNPETS:-8}
 ICEPETS=${ICEPETS:-8}
 WAVPETS=${WAVPETS:-8}
+CHMPETS=${CHMPETS:-${ATMPETS}}
 
 rm -f $DATA/nems.configure
 
@@ -50,6 +52,7 @@ atm_petlist_bounds=${atm_petlist_bounds:-"0 $(( $ATMPETS-1 ))"}
 ocn_petlist_bounds=${ocn_petlist_bounds:-"$ATMPETS $(( $ATMPETS+$OCNPETS-1 ))"}  
 ice_petlist_bounds=${ice_petlist_bounds:-"$(( $ATMPETS+$OCNPETS )) $(( $ATMPETS+$OCNPETS+$ICEPETS-1 ))"} 
 wav_petlist_bounds=${wav_petlist_bounds:-"$(( $ATMPETS+$OCNPETS+$ICEPETS )) $(( $ATMPETS+$OCNPETS+$ICEPETS+$WAVPETS-1 ))"} 
+chm_petlist_bounds=${chm_petlist_bounds:-"0 $(( $CHMPETS-1 ))"}
 
 # Copy the selected template into run directory
 cp $SCRIPTDIR/nems.configure.$confignamevarfornems.IN tmp1
@@ -87,8 +90,10 @@ if [ $cplice = .true. ]; then
         sed -i -e "s;@\[MESHICE\];$MESHICE;g" tmp1
         sed -i -e "s;@\[FHMAX\];$FHMAX_GFS;g" tmp1
 fi
-if [ $cplchem = .true. ]; then
-	sed -i -e "s;@\[chem_model\];gsd;g" tmp1
+if [ $cplchem = .true. -o $cplgocart = .true. ]; then
+	sed -i -e "s;@\[chm_model\];$CHM_model;g" tmp1
+	sed -i -e "s;@\[chm_petlist_bounds\];$chm_petlist_bounds;g" tmp1
+	sed -i -e "s;@\[coupling_interval_fast_sec\];$CPL_FAST;g" tmp1
 fi
 
 mv tmp1 nems.configure

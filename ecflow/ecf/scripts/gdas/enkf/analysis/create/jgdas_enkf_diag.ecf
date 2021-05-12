@@ -1,15 +1,14 @@
-#! /bin/sh
-#BSUB -q %QUEUE%
-#BSUB -P %PROJ%
+#BSUB -L /bin/sh
 #BSUB -J %E%gdas_enkf_diag_%CYC%
 #BSUB -o %COM%/output/%ENVIR%/today/gdas_enkf_diag_%CYC%.o%J
+#BSUB -q %QUEUE%
+#BSUB -P %PROJ%
 #BSUB -W 0:06
 #BSUB -n 56
 #BSUB -R affinity[core(1)]
 #BSUB -R span[ptile=28]
 #BSUB -cwd /tmp
 
-module purge
 %include <head.h>
 %include <envir-p3.h>
 
@@ -32,8 +31,6 @@ model=gfs
 ############################################################
 module load lsf/${lsf_ver}
 module load impi/${impi_ver}
-module load prod_envir/${prod_envir_ver}
-module load prod_util/${prod_util_ver}
 module load CFP/${CFP_ver}
 
 module list
@@ -41,11 +38,8 @@ module list
 #############################################################
 # WCOSS environment settings
 #############################################################
-export ROTDIR=%COM%/$NET/$envir
-export CDUMP=gdas
 export cyc=%CYC%
 export cycle=t%CYC%z
-export CDATE=$PDY$cyc
 export USE_CFP=YES
 
 ############################################################

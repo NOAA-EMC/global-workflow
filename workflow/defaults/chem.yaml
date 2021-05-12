@@ -1,0 +1,13 @@
+# default settings for chemistry model core
+
+chem_defaults: &chem_defaults
+  MOD: gsdchem
+  ntdiag: 0
+  CFGDIR: !FirstTrue
+    - when: !calc (doc.settings.cplgocart != ".true.")
+      do: "not_set"
+    - otherwise:
+  INPDIR: !FirstTrue
+    - when: !calc (doc.settings.cplgocart != ".true.")
+      do: "not_set"
+    - otherwise:

@@ -21,8 +21,12 @@
 from __future__ import division 
 
 import curses
-
-import os, sys, getpass, getopt, signal, tempfile
+import os
+import sys
+import getpass
+import getopt
+import signal
+import tempfile
 from os.path import basename
 import subprocess
 from math import *
@@ -38,7 +42,9 @@ from datetime import datetime, timedelta
 import uuid
 import shutil
 
-import sqlite3,datetime,collections
+import sqlite3
+import datetime
+import collections
 import xml.etree.ElementTree as ET
 import cPickle
 
