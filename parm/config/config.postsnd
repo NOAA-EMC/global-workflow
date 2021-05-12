@@ -9,5 +9,7 @@ echo "BEGIN: config.postsnd"
 . $EXPDIR/config.resources postsnd
 
 export POSTSNDSH=$HOMEgfs/jobs/JGFS_ATMOS_POSTSND
+export ENDHOUR=180
+if [[ "$FHMAX_GFS" -lt "$ENDHOUR" ]] ; then export ENDHOUR=$FHMAX_GFS ; fi
 
 echo "END: config.postsnd"

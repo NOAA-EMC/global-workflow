@@ -34,6 +34,8 @@ export RUNMOS="NO"                # whether to run entire MOS package
 
 if [ $VRFYFITS = "YES" ]; then
 
+    export fit_ver="newm.1.3"
+    export fitdir="$BASE_GIT/verif/global/Fit2Obs/${fit_ver}/batrun"
     export PRVT=$HOMEgfs/fix/fix_gsi/prepobs_errtable.global
     export HYBLEVS=$HOMEgfs/fix/fix_am/global_hyblev.l${LEVS}.txt
     export CUE2RUN=$QUEUE
@@ -49,16 +51,16 @@ if [ $VRFYFITS = "YES" ]; then
         export fitdir="$BASE_GIT/verif/global/parafits.fv3nems/batrun"
         export PREPQFITSH="$fitdir/subfits_cray_nems"
     elif [ $machine = "WCOSS_DELL_P3" ]; then
-        export fitdir="$BASE_GIT/verif/global/Fit2Obs/ncf-vqc/batrun"
         export PREPQFITSH="$fitdir/subfits_dell_nems"
     elif [ $machine = "HERA" ]; then
-        #export fitdir="$BASE_GIT/Fit2Obs/batrun"
-        export fitdir="$BASE_GIT/verif/global/Fit2Obs/ncf-vqc/batrun"
         export PREPQFITSH="$fitdir/subfits_hera_slurm"
+    elif [ $machine = "ORION" ]; then
+        export PREPQFITSH="$fitdir/subfits_orion_netcdf"
+    else
+        echo "Fit2Obs NOT supported on this machine"
     fi
 
 fi
-
 
 #----------------------------------------------------------
 # VSDB STEP1, Verify Precipipation and Grid To Obs options

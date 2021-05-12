@@ -24,7 +24,7 @@ export model=obsproc_global
 ##############################################################
 module load ips/$ips_ver
 module load impi/$impi_ver
-module load CFP/$cfp_ver
+module load CFP/$CFP_ver
 module list
 
 #############################################################
@@ -37,53 +37,6 @@ module list
 set -x
 export cyc=%CYC%
 export COMPONENT=${COMPONENT:-atmos}
-export COMIN_ROOT=%COM%
-export COMIN=%COM%/${NET}/${envir}/${RUN}.${PDY}/${cyc}/${COMPONENT}
-export COMOUT_ROOT=%COM%
-export COMOUT=%COM%/${NET}/${envir}/${RUN}.${PDY}/${cyc}/${COMPONENT}
-
-####
-export ECF_PORT=%ECF_PORT%
-
-####
-TTT=gdas
-if [ $TTT = "gdas" ]; then
-  ppdy=$PDY
-  if [ "$cyc" = "00" ]; then
-    pcyc=18
-    ppdy=20200927
-  elif [ "$cyc" = "06" ]; then
-    pcyc=00
-  elif [ "$cyc" = "12" ]; then
-    pcyc=06
-  elif [ "$cyc" = "18" ]; then
-    pcyc=12
-  else
-    echo "not a valid cycle time"
-  fi
-  pCOMOUT=${COMIN_ROOT}/${NET}/${envir}/${RUN}.${ppdy}/${pcyc}/${COMPONENT}
-  comin_prod=${COMIN_ROOT}/gfs/prod/gdas.${ppdy}/${pcyc}
-  comin_v16rt2=${COMIN_ROOT}/${NET}/${envir}/gdas.${ppdy}/${pcyc}/atmos
-
-  cd $pCOMOUT
-  for f in $(ls $comin_prod/upa_his_twinwind.*)  # link upa files
-  do
-    echo "$f"
-    if [ ! -f "${pCOMOUT}/$(basename $f)" ]; then
-      ln -s $f
-    fi
-  done
-
-  for f in $(ls $comin_v16rt2/*gsistat)            # link gsistat file
-  do
-    echo "$f"
-    if [ ! -f "${pCOMOUT}/$(basename $f)" ]; then
-      ln -s $f
-    fi
-  done
-fi
-export VERSION_FILE_gfs=/gpfs/dell2/emc/obsproc/noscrub/Shelley.Melchior/gitstatic/gfs.ver.GFSv16-atmos
-####
 
 # CALL executable job script here
 $HOMEobsproc_global/jobs/JGLOBAL_PREP_POST

@@ -1160,7 +1160,7 @@ C ... NO CONVERSION NECESSARY SINCE THIS SUBSEQUENT LOGIC EXPECTS THIS
          PRINT '(a,a,a)', '==> Read in RECORD from tcvitals file -- ',
      $    ' contains a 4-digit year "',OVRREC(MAXOVR-NRECHO)(20:23),'"'
          PRINT *, ' '
-         PRINT '(a,i,a,a)',
+         PRINT '(a,i2,a,a)',
      $    'From unit ',iuntho,'; OVRREC(MAXOVR-NRECHO)-2: ',
      $    OVRREC(MAXOVR-NRECHO)
          PRINT *, ' '

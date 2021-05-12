@@ -41,7 +41,7 @@
   # Set wave model ID tag to include member number
   # if ensemble; waveMEMB var empty in deterministic
   export WAV_MOD_TAG=${CDUMP}wave${waveMEMB}
-  FHMAX_WAV_IBP=180
+  FHMAX_WAV_IBP=${FHMAX_WAV_IBP:-180}
 
   postmsg "$jlogfile" "HAS BEGUN on `hostname`"
 

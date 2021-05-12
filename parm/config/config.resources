@@ -176,11 +176,11 @@ elif [ $step = "post" ]; then
 
     export wtime_post="02:00:00"
     export wtime_post_gfs="06:00:00"
-    export npe_post=96
+    export npe_post=112
     export nth_post=1
     export npe_node_post=12
     export npe_node_dwn=$npe_node_max
-    if [[ "$machine" = "WCOSS_DELL_P3" ]]; then export npe_node_post=14 ; fi
+    if [[ "$machine" = "WCOSS_DELL_P3" ]]; then export npe_node_post=28 ; fi
     if [[ "$machine" == "WCOSS_C" ]]; then export memory_post="3072M"; fi
 
 elif [ $step = "wafs" ]; then

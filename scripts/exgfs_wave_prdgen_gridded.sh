@@ -46,8 +46,8 @@
  msg="Starting MWW3 GRIDDED PRODUCTS SCRIPT"
  postmsg "$jlogfile" "$msg"
 # Output grids
-# grids=${grids:-ao_9km at_10m ep_10m wc_10m glo_30m}
- grids=${grids:-ak_10m at_10m ep_10m wc_10m glo_30m}
+ grids=${grids:-ao_9km at_10m ep_10m wc_10m glo_30m}
+# grids=${grids:-ak_10m at_10m ep_10m wc_10m glo_30m}
  maxtries=${maxtries:-720}
 # 0.b Date and time stuff
  export date=$PDY

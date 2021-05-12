@@ -38,6 +38,8 @@
   cd $GRIBDATA
 #  postmsg "$jlogfile" "Making GRIB2 Files."   # commented to reduce unnecessary output to jlogfile
 
+  alertName=`echo $RUN|tr [a-z] [A-Z]`
+
   grdID=$1 
   gribDIR=${grdID}_grib 
   rm -rfd ${gribDIR}
@@ -232,14 +234,16 @@
       exit 4
     fi
 
-    if [ "$SENDDBN" = 'YES' ]
+    if [[ "$SENDDBN" = 'YES' ]] && [[ ${outfile} != *global.0p50* ]]
     then
       set +x
       echo "   Alerting GRIB file as $COMOUT/gridded/${outfile}"
       echo "   Alerting GRIB index file as $COMOUT/gridded/${outfile}.idx"
       [[ "$LOUD" = YES ]] && set -x
-      $DBNROOT/bin/dbn_alert MODEL WAVE_GRIB_GB2 $job $COMOUT/gridded/${outfile}
-      $DBNROOT/bin/dbn_alert MODEL WAVE_GRIB_GB2_WIDX $job $COMOUT/gridded/${outfile}.idx
+      $DBNROOT/bin/dbn_alert MODEL ${alertName}_WAVE_GB2 $job $COMOUT/gridded/${outfile}
+      $DBNROOT/bin/dbn_alert MODEL ${alertName}_WAVE_GB2_WIDX $job $COMOUT/gridded/${outfile}.idx
+    else
+      echo "${outfile} is global.0p50, not alert out"
     fi
 
  

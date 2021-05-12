@@ -1,7 +1,7 @@
 #
 # define the array of the name of build program
 #
- declare -a Build_prg=("Build_libs" "Build_fv3gfs" \
+ declare -a Build_prg=("Build_fv3gfs" \
                        "Build_gsi" \
                        "Build_ww3_prepost" \
                        "Build_reg2grb2" \
@@ -10,14 +10,7 @@
                        "Build_ufs_utils" \
                        "Build_gldas" \
                        "Build_gfs_wafs" \
-                       "Build_gaussian_sfcanl" \
-                       "Build_tropcy" \
-                       "Build_enkf_chgres_recenter" \
-                       "Build_enkf_chgres_recenter_nc" \
-                       "Build_gfs_fbwndgfs" \
-                       "Build_gfs_bufrsnd" \
-                       "Build_fv3nc2nemsio" \
-                       "Build_regrid_nemsio" \
+                       "Build_workflow_utils" \
                        "Build_gfs_util")
 
 #
