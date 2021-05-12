@@ -21,8 +21,6 @@ do
  esac
 done
 
-
-
 export USE_PREINST_LIBS="true"
 
 #------------------------------------
@@ -58,15 +56,6 @@ source ./machine-setup.sh > /dev/null 2>&1
 #------------------------------------
 ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 err=0
-
-#------------------------------------
-# build libraries first
-#------------------------------------
-$Build_libs && {
-echo " .... Library build not currently supported .... "
-#echo " .... Building libraries .... "
-#./build_libs.sh > $logs_dir/build_libs.log 2>&1
-}
 
 
 #------------------------------------
@@ -195,113 +184,15 @@ if [ -d gfs_wafs.fd ]; then
 fi
 
 #------------------------------------
-# build gaussian_sfcanl
+# build workflow_utils
 #------------------------------------
-$Build_gaussian_sfcanl && {
-echo " .... Building gaussian_sfcanl .... "
-./build_gaussian_sfcanl.sh > $logs_dir/build_gaussian_sfcanl.log 2>&1
+$Build_workflow_utils && {
+echo " .... Building workflow_utils .... "
+target=$target ./build_workflow_utils.sh > $logs_dir/build_workflow_utils.log 2>&1
 rc=$?
 if [[ $rc -ne 0 ]] ; then
-    echo "Fatal error in building gaussian_sfcanl."
-    echo "The log file is in $logs_dir/build_gaussian_sfcanl.log"
-fi
-((err+=$rc))
-}
-
-#------------------------------------
-# build enkf_chgres_recenter
-#------------------------------------
-$Build_enkf_chgres_recenter && {
-echo " .... Building enkf_chgres_recenter .... "
-./build_enkf_chgres_recenter.sh > $logs_dir/build_enkf_chgres_recenter.log 2>&1
-rc=$?
-if [[ $rc -ne 0 ]] ; then
-    echo "Fatal error in building enkf_chgres_recenter."
-    echo "The log file is in $logs_dir/build_enkf_chgres_recenter.log"
-fi
-((err+=$rc))
-}
-
-#------------------------------------
-# build enkf_chgres_recenter_nc
-#------------------------------------
-$Build_enkf_chgres_recenter_nc && {
-echo " .... Building enkf_chgres_recenter_nc .... "
-./build_enkf_chgres_recenter_nc.sh > $logs_dir/build_enkf_chgres_recenter_nc.log 2>&1
-rc=$?
-if [[ $rc -ne 0 ]] ; then
-    echo "Fatal error in building enkf_chgres_recenter_nc."
-    echo "The log file is in $logs_dir/build_enkf_chgres_recenter_nc.log"
-fi
-((err+=$rc))
-}
-
-#------------------------------------
-# build tropcy_NEMS
-#------------------------------------
-$Build_tropcy && {
-echo " .... Building tropcy_NEMS .... "
-./build_tropcy_NEMS.sh > $logs_dir/build_tropcy_NEMS.log 2>&1
-rc=$?
-if [[ $rc -ne 0 ]] ; then
-    echo "Fatal error in building tropcy_NEMS."
-    echo "The log file is in $logs_dir/build_tropcy_NEMS.log"
-fi
-((err+=$rc))
-}
-
-#------------------------------------
-# build gfs_fbwndgfs
-#------------------------------------
-$Build_gfs_fbwndgfs && {
-echo " .... Building gfs_fbwndgfs .... "
-./build_gfs_fbwndgfs.sh > $logs_dir/build_gfs_fbwndgfs.log 2>&1
-rc=$?
-if [[ $rc -ne 0 ]] ; then
-    echo "Fatal error in building gfs_fbwndgfs."
-    echo "The log file is in $logs_dir/build_gfs_fbwndgfs.log"
-fi
-((err+=$rc))
-}
-
-#------------------------------------
-# build gfs_bufrsnd
-#------------------------------------
-$Build_gfs_bufrsnd && {
-echo " .... Building gfs_bufrsnd .... "
-./build_gfs_bufrsnd.sh > $logs_dir/build_gfs_bufrsnd.log 2>&1
-rc=$?
-if [[ $rc -ne 0 ]] ; then
-    echo "Fatal error in building gfs_bufrsnd."
-    echo "The log file is in $logs_dir/build_gfs_bufrsnd.log"
-fi
-((err+=$rc))
-}
-
-#------------------------------------
-# build fv3nc2nemsio
-#------------------------------------
-$Build_fv3nc2nemsio && {
-echo " .... Building fv3nc2nemsio .... "
-./build_fv3nc2nemsio.sh > $logs_dir/build_fv3nc2nemsio.log 2>&1
-rc=$?
-if [[ $rc -ne 0 ]] ; then
-    echo "Fatal error in building fv3nc2nemsio."
-    echo "The log file is in $logs_dir/build_fv3nc2nemsio.log"
-fi
-((err+=$rc))
-}
-
-#------------------------------------
-# build regrid_nemsio
-#------------------------------------
-$Build_regrid_nemsio && {
-echo " .... Building regrid_nemsio .... "
-./build_regrid_nemsio.sh > $logs_dir/build_regrid_nemsio.log 2>&1
-rc=$?
-if [[ $rc -ne 0 ]] ; then
-    echo "Fatal error in building regrid_nemsio."
-    echo "The log file is in $logs_dir/build_regrid_nemsio.log"
+    echo "Fatal error in building workflow_utils."
+    echo "The log file is in $logs_dir/build_workflow_utils.log"
 fi
 ((err+=$rc))
 }

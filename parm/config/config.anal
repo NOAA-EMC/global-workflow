@@ -52,7 +52,15 @@ export SSMITBF=${SSMITBF:-/dev/null}
 export AMSR2BF=${AMSR2BF:-/dev/null}
 
 
-# Use experimental dumps in GFS v16 parallels
+# Set default values for info files and observation error
+#  NOTE:  Remember to set PRVT in config.prep as OBERROR is set below
+export CONVINFO=$FIXgsi/global_convinfo.txt
+export OZINFO=$FIXgsi/global_ozinfo.txt
+export SATINFO=$FIXgsi/global_satinfo.txt
+export OBERROR=$FIXgsi/prepobs_errtable.global
+
+
+# Use experimental dumps in EMC GFS v16 parallels
 if [[ $RUN_ENVIR == "emc" ]]; then
     export ABIBF="/dev/null"
     if [[ "$CDATE" -ge "2019022800" ]] ; then
@@ -68,71 +76,67 @@ if [[ $RUN_ENVIR == "emc" ]]; then
     fi
 
     export HDOB=$DMPDIR/${CDUMP}x.${PDY}/${cyc}/${CDUMP}.t${cyc}z.hdob.tm00.bufr_d
-fi
 
+#   Use dumps from NCO GFS v16 parallel
+    if [[ "$CDATE" -ge "2020103012" ]]; then
+	export ABIBF=""
+	export AHIBF=""
+	export HDOB=""
+    fi
 
-# Adjust data usage for GFS v16 parallels
-#
-#   NOTE:  Remember to set PRVT in config.prep as OBERROR is set below
-#
-# Set default values
-export CONVINFO=$FIXgsi/global_convinfo.txt
-export OZINFO=$FIXgsi/global_ozinfo.txt
-export SATINFO=$FIXgsi/global_satinfo.txt
-export OBERROR=$FIXgsi/prepobs_errtable.global
+#   Set info files and prepobs.errtable.global for GFS v16 retrospective parallels
+    if [[ "$CDATE" -ge "2019021900" && "$CDATE" -lt "2019110706" ]]; then
+	export CONVINFO=$FIXgsi/gfsv16_historical/global_convinfo.txt.2019021900
+	export OBERROR=$FIXgsi/gfsv16_historical/prepobs_errtable.global.2019021900
+    fi
 
+#   Place GOES-15 AMVs in monitor, assimilate GOES-17 AMVs, assimilate KOMPSAT-5 gps
+    if [[ "$CDATE" -ge "2019110706" && "$CDATE" -lt "2020040718" ]]; then
+	export CONVINFO=$FIXgsi/gfsv16_historical/global_convinfo.txt.2019110706
+	export OBERROR=$FIXgsi/gfsv16_historical/prepobs_errtable.global.2019110706
+    fi
 
-# Set convinfo and prepobs.errtable.global for start of GFS v16 parallels
-if [[ "$CDATE" -ge "2019021900" && "$CDATE" -lt "2019110706" ]]; then
-    export CONVINFO=$FIXgsi/gfsv16_historical/global_convinfo.txt.2019021900
-    export OBERROR=$FIXgsi/gfsv16_historical/prepobs_errtable.global.2019021900
-fi
+#   Assimilate 135 (T) & 235 (uv) Canadian AMDAR observations
+    if [[ "$CDATE" -ge "2020040718" && "$CDATE" -lt "2020052612" ]]; then
+	export CONVINFO=$FIXgsi/gfsv16_historical/global_convinfo.txt.2020040718
+    fi
 
-# Place GOES-15 AMVs in monitor, assimilate GOES-17 AMVs, assimilate KOMPSAT-5 gps
-if [[ "$CDATE" -ge "2019110706" && "$CDATE" -lt "2020040718" ]]; then
-    export CONVINFO=$FIXgsi/gfsv16_historical/global_convinfo.txt.2019110706
-    export OBERROR=$FIXgsi/gfsv16_historical/prepobs_errtable.global.2019110706
-fi
-
-# Assimilate 135 (T) & 235 (uv) Canadian AMDAR observations
-if [[ "$CDATE" -ge "2020040718" && "$CDATE" -lt "2020052612" ]]; then
-    export CONVINFO=$FIXgsi/gfsv16_historical/global_convinfo.txt.2020040718
-fi
-
-# NOTE:
+#   NOTE:
 #   As of 2020052612, gfsv16_historical/global_convinfo.txt.2020052612 is
 #   identical to ../global_convinfo.txt.  Thus, the logic below is not
 #   needed at this time.
-# Assimilate COSMIC-2 GPS
-##if [[ "$CDATE" -ge "2020052612" && "$CDATE" -lt "YYYYMMDDHH" ]]; then
-##    export CONVINFO=$FIXgsi/gfsv16_historical/global_convinfo.txt.2020052612
-##fi
+#   Assimilate COSMIC-2 GPS
+#   if [[ "$CDATE" -ge "2020052612" && "$CDATE" -lt "YYYYMMDDHH" ]]; then
+#     export CONVINFO=$FIXgsi/gfsv16_historical/global_convinfo.txt.2020052612
+#   fi
 
 
-# Turn off assmilation of OMPS during period of bad data
-if [[ "$CDATE" -ge "2020011600" && "$CDATE" -lt "2020011806" ]]; then
-    export OZINFO=$FIXgsi/gfsv16_historical/global_ozinfo.txt.2020011600
-fi
+#   Turn off assmilation of OMPS during period of bad data
+    if [[ "$CDATE" -ge "2020011600" && "$CDATE" -lt "2020011806" ]]; then
+	export OZINFO=$FIXgsi/gfsv16_historical/global_ozinfo.txt.2020011600
+    fi
 
 
-# Set satinfo for start of GFS v16 parallels
-if [[ "$CDATE" -ge "2019021900" && "$CDATE" -lt "2019110706" ]]; then
-    export SATINFO=$FIXgsi/gfsv16_historical/global_satinfo.txt.2019021900
-fi
+#   Set satinfo for start of GFS v16 parallels
+    if [[ "$CDATE" -ge "2019021900" && "$CDATE" -lt "2019110706" ]]; then
+	export SATINFO=$FIXgsi/gfsv16_historical/global_satinfo.txt.2019021900
+    fi
 
-# Turn on assimilation of Metop-C AMSUA and MHS
-if [[ "$CDATE" -ge "2019110706" && "$CDATE" -lt "2020022012" ]]; then
-    export SATINFO=$FIXgsi/gfsv16_historical/global_satinfo.txt.2019110706
-fi
+#   Turn on assimilation of Metop-C AMSUA and MHS
+    if [[ "$CDATE" -ge "2019110706" && "$CDATE" -lt "2020022012" ]]; then
+	export SATINFO=$FIXgsi/gfsv16_historical/global_satinfo.txt.2019110706
+    fi
 
-# NOTE:  
+#   NOTE:  
 #   As of 2020022012, gfsv16_historical/global_satinfo.txt.2020022012 is
 #   identical to ../global_satinfo.txt.  Thus, the logic below is not
 #   needed at this time
 #
-# Turn off assmilation of all Metop-A MHS
-##  if [[ "$CDATE" -ge "2020022012" && "$CDATE" -lt "YYYYMMDDHH" ]]; then
-##      export SATINFO=$FIXgsi/gfsv16_historical/global_satinfo.txt.2020022012
-##  fi
+#   Turn off assmilation of all Metop-A MHS
+#   if [[ "$CDATE" -ge "2020022012" && "$CDATE" -lt "YYYYMMDDHH" ]]; then
+#       export SATINFO=$FIXgsi/gfsv16_historical/global_satinfo.txt.2020022012
+#   fi
+
+fi
 
 echo "END: config.anal"

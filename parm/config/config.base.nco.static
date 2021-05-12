@@ -74,7 +74,6 @@ export NCP="/bin/cp -p"
 export NMV="/bin/mv"
 export NLN="/bin/ln -sf"
 export VERBOSE="YES"
-export KEEPDATA="NO"
 export CHGRP_CMD="chgrp rstprod"
 export NEMSIOGET="$HOMEgfs/exec/nemsio_get"
 export NCDUMP="$NETCDF/bin/ncdump"
@@ -106,7 +105,6 @@ export COMOUTatmos=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos
 export COMINwave=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/wave
 export COMOUTwave=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/wave
 
-export jlogfile="${EXPDIR}/logs/jlogfile"
 export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 export LOGSCRIPT=${LOGSCRIPT:-""}
 #export ERRSCRIPT=${ERRSCRIPT:-"err_chk"}

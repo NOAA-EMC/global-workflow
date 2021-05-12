@@ -29,7 +29,7 @@ module load CFP/2.0.1
 module load python/3.6.3
 
 module use -a /gpfs/dell1/nco/ops/nwpara/modulefiles/
-module load gempak/7.3.1
+module load gempak/7.3.3
 module use /usrx/local/nceplibs/dev/NCEPLIBS/modulefiles
 module load hdf5_parallel/1.10.6
 module load netcdf_parallel/4.7.4

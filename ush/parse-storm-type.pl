@@ -5,7 +5,7 @@ use strict;
 
 while(defined($_=<>)) {
     chomp;
-    /^((?:NHC |JTWC) [0-59]\d[A-Z]) (\S+)\s+(.*\d\d\d\d\d\d\d\d \d\d\d\d.{34} .. .*)/ or do {
+    /^((?:NHC |JTWC) [0-589]\d[A-Z]) (\S+)\s+(.*\d\d\d\d\d\d\d\d \d\d\d\d.{34} .. .*)/ or do {
         warn "Ignoring invalid line: \"$_\"\n";
         next;
     };
@@ -19,7 +19,8 @@ while(defined($_=<>)) {
     if(length($line)>=152) {
 	$tctype=substr($_,150,2);
     } else {
-	warn "MISSING STORM TYPE (ASSUME XX): $_\n";
+	# warn "MISSING STORM TYPE (ASSUME XX): $_\n";
+	warn "NO STORM TYPE: $_\n";
     }
     if($tctype =~ /DB|EX|LO|WV|XX/i) {
         warn "Ignoring line due to TC type $tctype: $_";

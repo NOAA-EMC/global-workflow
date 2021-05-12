@@ -1,14 +1,13 @@
-#! /bin/sh
 #BSUB -J %E%%RUN%_atmos_prep_%CYC%
 #BSUB -o %COM%/output/%ENVIR%/today/%RUN%_atmos_prep_%CYC%.o%J
 #BSUB -cwd /tmp
 #BSUB -q %QUEUE%
+#BSUB -L /bin/sh
 #BSUB -P %PROJ%
 #BSUB -W 00:20
 #BSUB -R span[ptile=2]; -R affinity[core(1)]
 #BSUB -n 4
 
-module purge
 %include <head.h>
 %include <envir-p3.h>
 
@@ -24,39 +23,29 @@ model=obsproc_global
 #############################################################
 ## Load modules
 ##############################################################
-module load lsf/${lsf_ver}
+# JY module load lsf/${lsf_ver}
 module load impi/${impi_ver}
-module load prod_util/${prod_util_ver}
-module load prod_envir/${prod_envir_ver}
-module use -a /usrx/local/nceplibs/dev/NCEPLIBS/modulefiles
-module load hdf5_parallel/${hdf5_parallel_ver}
-module load netcdf_parallel/${netcdf_parallel_ver}
 module load CFP/${CFP_ver}
+#module load HDF5-parallel/${hdf5_parallel_ver}
+module load NetCDF-parallel/${netcdf_parallel_ver}
 
 module list
 
 #############################################################
 ## WCOSS_C environment settings
-#############################################################
+##############################################################
 # export BACK="NO"
 # export POE="YES"
 export COMPONENT=${COMPONENT:-atmos}
 export cyc=%CYC%
-#### export COMIN_ROOT=/gpfs/dell1/nco/ops/com
-export COMIN_ROOT=%COM%
-export COMIN="%COM%/${NET}/${envir}/${CDUMP}.${PDY}/${cyc}/${COMPONENT}"
-export COMOUT_ROOT=%COM%
-export COMOUT="%COM%/${NET}/${envir}/${CDUMP}.${PDY}/${cyc}/${COMPONENT}"
-export COMINgdas=$COMIN
-export COMINgfs="%COM%/$NET/$envir/gfs.$PDY/$cyc/$COMPONENT"
-export COMINgdas=/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/v16rt2/gfs/para/gdas.${PDY}/${cyc}/atmos
-export COMINgfs=/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/v16rt2/gfs/para/gfs.${PDY}/${cyc}/atmos
-export DO_MAKEPREPBUFR=YES
-export ROTDIR_DUMP=YES
-export OPREFIX=$CDUMP.t${cyc}z.
-export EXPDIR="$HOMEgfs/parm/config"
-export ROTDIR=%COM%/$NET/$envir
-export CDATE=${PDY}${cyc}
+
+# Not sure if need the following , comment them now - JY 10/20
+#export DO_MAKEPREPBUFR=YES
+#export ROTDIR_DUMP=YES
+#export OPREFIX=$CDUMP.t${cyc}z.
+#export EXPDIR="$HOMEgfs/parm/config"
+#export ROTDIR=%COM%/$NET/$envir
+#export CDATE=${PDY}${cyc}
 
 set -x
 
