@@ -22,7 +22,7 @@ if [ $target = orion ]; then target=orion.intel ; fi
 cd fv3gfs.fd/
 FV3=$( pwd -P )/FV3
 cd tests/
-mkdir ../NEMS/exe
+if [ ! -d ../NEMS/exe ]; then mkdir ../NEMS/exe ; fi
 if [ ${RUN_CCPP:-${1:-"YES"}} = "NO" ]; then
  ./compile.sh "$FV3" "$target" "WW3=Y 32BIT=Y" 1
  mv -f fv3_1.exe ../NEMS/exe/global_fv3gfs.x
