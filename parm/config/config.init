@@ -18,7 +18,7 @@ export CRES_HIRES=$CASE
 export CRES_ENKF=$CASE_ENKF
 
 export RUNICSH=${GDASINIT_DIR}/run_v16.chgres.sh
-if [ ${RETRO:-"NO"} = "YES" || $CDUMP = "gdas" ]; then
+if [ "${RETRO:-"NO"}" = "YES" ] || [ "$CDUMP" = "gdas" ]; then
   export RUNICSH=${GDASINIT_DIR}/run_v16retro.chgres.sh
 fi
 
