@@ -3,14 +3,7 @@
 ##      S2S prerequisites
 ##
 
-# Modules not under hpc-stack
-module load hpss/hpss
-module load nco/4.9.1
-module load gempak/7.4.2
-module load ncl/6.5.0
-module load cdo/1.9.5
-
-# Remaining modules availble through hpc-stack
+# Modules availble through hpc-stack
 module use /scratch2/NCEPDEV/nwprod/hpc-stack/libs/hpc-stack/modulefiles/stack
 
 module load hpc/1.1.0
@@ -40,3 +33,10 @@ module load esmf/8_1_0_beta_snapshot_27
 module load w3emc/2.7.3
 module load wgrib2/2.0.8
 setenv WGRIB2 wgrib2
+
+# Modules not under hpc-stack
+module load hpss/hpss
+module load nco/4.9.1
+module load gempak/7.4.2
+module load ncl/6.5.0
+module load cdo/1.9.5
