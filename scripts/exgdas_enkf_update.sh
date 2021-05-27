@@ -30,7 +30,6 @@ pwd=$(pwd)
 # Utilities
 NCP=${NCP:-"/bin/cp -p"}
 NLN=${NLN:-"/bin/ln -sf"}
-ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 NEMSIOGET=${NEMSIOGET:-$NWPROD/utils/exec/nemsio_get}
 NCLEN=${NCLEN:-$HOMEgfs/ush/getncdimlen}
 USE_CFP=${USE_CFP:-"NO"}
@@ -245,9 +244,7 @@ if [ $USE_CFP = "YES" ]; then
       ncmd_max=$((ncmd < npe_node_max ? ncmd : npe_node_max))
       APRUNCFP=$(eval echo $APRUNCFP)
       $APRUNCFP $DATA/mp_untar.sh
-      export ERR=$?
-      export err=$ERR
-      $ERRSCRIPT || exit 3
+      export err=$?; err_chk
    fi
 fi
 
@@ -378,11 +375,7 @@ export pgm=$ENKFEXEC
 
 $NCP $ENKFEXEC $DATA
 $APRUN_ENKF ${DATA}/$(basename $ENKFEXEC) 1>stdout 2>stderr
-rc=$?
-
-export ERR=$rc
-export err=$ERR
-$ERRSCRIPT || exit 2
+export err=$?; err_chk
 
 # Cat runtime output files.
 cat stdout stderr > $COMOUT_ANL_ENS/$ENKFSTAT
