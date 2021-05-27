@@ -34,8 +34,6 @@ export FIX_AM=${FIX_AM:-$FIX_DIR/fix_am}
 export NCP=${NCP:-"/bin/cp -p"}
 export NMV=${NMV:-"/bin/mv"}
 export NLN=${NLN:-"/bin/ln -sf"}
-export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
-export NDATE=${NDATE:-/$NWPROD/util/exec/ndate}
 
 # Scripts.
 FORECASTSH=${FORECASTSH:-$HOMEgfs/scripts/exglobal_forecast.sh}
@@ -170,15 +168,13 @@ for imem in $(seq $ENSBEG $ENSEND); do
       export MEMBER=$imem
       export DATA=$DATATOP/$memchar
       if [ -d $DATA ]; then rm -rf $DATA; fi
+      mkdir -p $DATA
       $FORECASTSH
       ra=$?
 
       # Notify a member forecast failed and abort
       if [ $ra -ne 0 ]; then
-         msg="FATAL ERROR:  forecast of member $cmem FAILED.  Aborting job"
-         print $msg
-         export err=$ra
-         $ERRSCRIPT || exit 2
+         err_exit "FATAL ERROR:  forecast of member $cmem FAILED.  Aborting job"
       fi
 
       ((rc+=ra))
@@ -226,9 +222,7 @@ cat $EFCSGRP
 
 ################################################################################
 # If any members failed, error out
-export ERR=$rc
-export err=$ERR
-$ERRSCRIPT || exit 2
+export err=$rc; err_chk
 
 ################################################################################
 #  Postprocessing
