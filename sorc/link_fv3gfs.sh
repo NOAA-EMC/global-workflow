@@ -8,16 +8,16 @@ machine=${2}
 
 if [ $# -lt 2 ]; then
     echo '***ERROR*** must specify two arguements: (1) RUN_ENVIR, (2) machine'
-    echo ' Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | hera | orion )'
+    echo ' Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | hera | orion | jet )'
     exit 1
 fi
 
 if [ $RUN_ENVIR != emc -a $RUN_ENVIR != nco ]; then
-    echo 'Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | hera | orion )'
+    echo 'Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | hera | orion | jet )'
     exit 1
 fi
-if [ $machine != cray -a $machine != dell -a $machine != hera -a $machine != orion ]; then
-    echo 'Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | hera | orion )'
+if [ $machine != cray -a $machine != dell -a $machine != hera -a $machine != orion -a $machine != jet ]; then
+    echo 'Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | hera | orion | jet )'
     exit 1
 fi
 
@@ -38,6 +38,8 @@ elif [ $machine = "hera" ]; then
     FIX_DIR="/scratch1/NCEPDEV/global/glopara/fix"
 elif [ $machine = "orion" ]; then
     FIX_DIR="/work/noaa/global/glopara/fix"
+elif [ $machine = "jet" ]; then
+    FIX_DIR="/lfs4/HFIP/hfv3gfs/glopara/git/fv3gfs/fix"
 fi
 cd ${pwd}/../fix                ||exit 8
 for dir in fix_aer fix_am fix_chem fix_fv3_gmted2010 fix_gldas fix_lut fix_orog fix_sfc_climo fix_verif fix_wave_gfs ; do

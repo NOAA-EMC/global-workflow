@@ -18,4 +18,4 @@ echo ""
 echo " Building ... Executables for GFS_UTILITIES "
 echo ""
 
-source ./compile_gfs_util_wcoss.sh
+source ./compile_gfs_util_${target}.sh
