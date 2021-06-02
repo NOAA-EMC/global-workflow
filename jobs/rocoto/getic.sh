@@ -69,14 +69,13 @@ if [[ $gfs_ver = "v16" && $EXP_WARM_START = ".true." && $CASE = $OPS_RES ]]; the
   if [ ${RETRO:-"NO"} = "YES" ]; then # Retrospective parallel input
 
     # Pull prior cycle restart files
-    BDATE=`$NDATE -06 ${yy}${mm}${dd}${hh}`
-    htar -xvf ${HPSSDIR}/${BDATE}/gdas_restartb.tar
+    htar -xvf ${HPSSDIR}/${GDATE}/gdas_restartb.tar
     status=$?
     [[ $status -ne 0 ]] && exit $status
 
     if [ $DO_WAVE = "YES" ]; then
       # Pull prior cycle wave restart files
-      htar -xvf ${HPSSDIR}/${BDATE}/gdaswave_restart.tar
+      htar -xvf ${HPSSDIR}/${GDATE}/gdaswave_restart.tar
       status=$?
       [[ $status -ne 0 ]] && exit $status
     fi
