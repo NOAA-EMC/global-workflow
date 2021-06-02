@@ -95,6 +95,9 @@ elif [[ -L /usrx && "$( readlink /usrx 2> /dev/null )" =~ dell ]] ; then
     fi
     target=wcoss_dell_p3
     module purge 
+    module use /gpfs/dell2/usrx/local/nceplibs/dev/hpc-stack/libs/hpc-stack/modulefiles
+    module load hpc/1.1.0
+    module load cmake/3.20.0
 
 ##---------------------------------------------------------------------------
 
