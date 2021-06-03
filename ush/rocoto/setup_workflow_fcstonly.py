@@ -91,6 +91,7 @@ def get_definitions(base):
 
     machine = base.get('machine', wfu.detectMachine())
     scheduler = wfu.get_scheduler(machine)
+    hpssarch = base.get('HPSSARCH', 'NO').upper()
 
     strings = []
 
@@ -131,7 +132,7 @@ def get_definitions(base):
     strings.append('\t<!ENTITY SCHEDULER  "%s">\n' % scheduler)
     strings.append('\n')
     strings.append('\t<!-- Toggle HPSS archiving -->\n')
-    strings.append('\t<!ENTITY ARCHIVE_TO_HPSS "YES">\n')
+    strings.append('\t<!ENTITY ARCHIVE_TO_HPSS "%s">\n' % base['HPSSARCH'])
     strings.append('\n')
     strings.append('\t<!-- ROCOTO parameters that control workflow -->\n')
     strings.append('\t<!ENTITY CYCLETHROTTLE "2">\n')
@@ -236,6 +237,7 @@ def get_workflow(dict_configs, cdump='gdas'):
 
     base = dict_configs['base']
     machine = base.get('machine', wfu.detectMachine())
+    hpssarch = base.get('HPSSARCH', 'NO').upper()
     do_wave = base.get('DO_WAVE', 'NO').upper()
     do_wave_cdump = base.get('WAVE_CDUMP', 'BOTH').upper()
     do_bufrsnd = base.get('DO_BUFRSND', 'NO').upper()
@@ -247,7 +249,7 @@ def get_workflow(dict_configs, cdump='gdas'):
     tasks = []
 
     # getic
-    if machine not in ['ORION']:
+    if hpssarch in ['YES']:
       deps = []
       data = '&ROTDIR;/&CDUMP;.@Y@m@d/@H/atmos/INPUT/sfc_data.tile6.nc'
       dep_dict = {'type':'data', 'data':data}
@@ -280,7 +282,7 @@ def get_workflow(dict_configs, cdump='gdas'):
     deps.append(rocoto.add_dependency(dep_dict))
     dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
 
-    if machine not in ['ORION']:
+    if hpssarch in ['YES']:
       deps = []
       dep_dict = {'type': 'task', 'name': '%sgetic' % cdump}
       deps.append(rocoto.add_dependency(dep_dict))
@@ -288,7 +290,7 @@ def get_workflow(dict_configs, cdump='gdas'):
 
     deps = []
     deps.append(dependencies)
-    if machine not in ['ORION']:
+    if hpssarch in ['YES']:
       deps.append(dependencies2)
       dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
