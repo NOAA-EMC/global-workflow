@@ -9,10 +9,6 @@ do
    echo "Received -o flag for optional checkout of GTG, will check out GTG with EMC_post"
    checkout_gtg="YES"
    ;;
-  c)
-   echo "Received -c flag, check out ufs-weather-model develop branch with CCPP physics"  
-   run_ccpp="YES"
-   ;;
   :)
    echo "option -$OPTARG needs an argument"
    ;;
@@ -31,11 +27,7 @@ if [[ ! -d fv3gfs.fd ]] ; then
     rm -f ${topdir}/checkout-fv3gfs.log
     git clone https://github.com/ufs-community/ufs-weather-model fv3gfs.fd >> ${topdir}/checkout-fv3gfs.log 2>&1
     cd fv3gfs.fd
-    if [ ${run_ccpp:-"NO"} = "NO" ]; then
-     git checkout GFS.v16.0.16
-    else
-     git checkout 9350745855aebe0790813e0ed2ba5ad680e3f75c
-    fi
+    git checkout 9350745855aebe0790813e0ed2ba5ad680e3f75c
     git submodule update --init --recursive
     cd ${topdir}
 else
