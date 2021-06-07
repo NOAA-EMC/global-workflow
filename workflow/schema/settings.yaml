@@ -1,15 +1,4 @@
 settings_schema: !Template &settings_schema
-  gfs_cyc:
-    type: int
-    allowed: [ 0, 1, 2, 4 ]
-    description: |
-      When to run GFS forecast.  Data assimilation is run for every
-      cycle regardless of these values
-        * 0: no GFS cycle
-        * 1: 00Z only
-        * 2: 00Z and 12Z only
-        * 4: all 4 cycles (0, 6, 12, 18 Z)
-
   dev_safeguards:
     type: bool
     description: "Add backup triggers in workflow to handle scheduling delays, such as the forecast finishing any posts start.  Only turn this off for NCO operational deliveries."
@@ -99,6 +88,18 @@ settings_schema: !Template &settings_schema
   EDATE:
     type: datetime
     description: Last cycle to run GDAS.
+
+  STEP_DA:
+    type: timedelta
+    optional: true
+    description: |
+      Cadence to run DA.
+  
+  STEP_GFS:
+    type: timedelta
+    optional: true
+    description: |
+      Cadence to run GFS.
   
   ics_from:
     type: string

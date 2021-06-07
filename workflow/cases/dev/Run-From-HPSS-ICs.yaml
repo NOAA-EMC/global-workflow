@@ -57,10 +57,7 @@ case:
     # files instead.
     chgres_and_convert_ics: yes
 
-    # gfs_cyc: this setting is used in a full data assimilation cycled
-    # workflow to only run the GFS every N cycles.  Keep this at "4" to
-    # ensure it is run every cycle.  
-    gfs_cyc: 4
+    STEP_GFS: !timedelta "06:00:00"
 
   places:
     # workflow_file: which workflow we're running.  This specifies the

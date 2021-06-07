@@ -141,7 +141,7 @@ case:
     EDATE: 2018-08-10t18:00:00
     chgres_and_convert_ics: No
     realtime: true
-    gfs_cyc: 4
+    STEP_GFS: !timedelta "06:00:00"
     run_gsi: Yes
 
   schedvar:

@@ -12,6 +12,7 @@ suite: !Cycle
     Disable: !calc >-
       doc.settings.get("IC_CDUMP","") and not doc.settings.chgres_and_convert_ics or doc.settings.mom6ic_prepared=='.true.'
 #    RUN: 'gfs'
+    AlarmName: gfs
     jgfs_emc_getics: !Task
       <<: *service_task_template
       RUN: 'gfs'
@@ -50,6 +51,7 @@ suite: !Cycle
   gfs: !Family
 #    AlarmName: gdas                    ##!!"gdas" mean to run every 6 hrs from sdate to edate!!"
     RUN: 'gfs'
+    AlarmName: gfs
     ecflow_def: "edit RUN 'gfs'"
 
     prep: !Family
@@ -223,7 +225,7 @@ suite: !Cycle
 
     jgfs_archive: !Task
       <<: *service_task_template
-      Disable: !calc doc.settings.gfs_cyc == 0
+      Disable: !calc doc.settings.STEP_GFS == doc.zero_dt
       AlarmName: gfs
       Trigger: !Depend up.gfs
       resources: !calc partition.resources.run_arch
@@ -241,6 +243,7 @@ suite: !Cycle
   final: !Task
     <<: *service_task_template
     Disable: !calc not metasched.type=="rocoto"
+    AlarmName: gfs
     resources: !calc partition.resources.run_final
     rocoto_command: /bin/true
     model: gfs # useless but required

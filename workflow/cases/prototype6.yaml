@@ -5,6 +5,8 @@ case:
   settings: 
     SDATE: 2013-04-01t00:00:00
     EDATE: 2013-04-01t00:00:00
+    STEP_GFS: !timedelta "24:00:00"
+    STEP_DA: !timedelta "00:00:00"
 
     onestep: .true.
     cplmode: nems_frac
