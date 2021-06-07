@@ -117,6 +117,7 @@ util_resource_table:
       #                    ranks ppn  wallclock          threads  MB_batch MB_per_rank
   prepbufr:              [    4,    4, !timedelta "00:15:00",   1, 3072M,      null   ]
   fv3ic:                 [   24,   24, !timedelta "00:30:00",   1, 3072M,      null   ]
+  init_chem:             [    1,    1, !timedelta "00:05:00",   1,  600M,      null   ]
   wavepostpnt:           [   80,   40, !timedelta "01:00:00",   1, 3072M,      null   ]
   wavepostgrd:           [   10,   10, !timedelta "00:30:00",   1, 3072M,      null   ]
   dump_waiter:           [    1,    1, !timedelta "01:00:00",   1,  300M,      null   ]
@@ -193,6 +194,12 @@ default_resources: &default_resources
       mpi_ranks: !icalc doc.util_resource_table.fv3ic[0]
       max_ppn: !icalc doc.util_resource_table.fv3ic[1]
       walltime: !icalc doc.util_resource_table.fv3ic[2]
+
+  run_init_chem: !JobRequest
+    - batch_memory: !icalc doc.util_resource_table.init_chem[4]
+      mpi_ranks: !icalc doc.util_resource_table.init_chem[0]
+      max_ppn: !icalc doc.util_resource_table.init_chem[1]
+      walltime: !icalc doc.util_resource_table.init_chem[2]
 
   run_wavepostpnt: !JobRequest
     - batch_memory: !icalc doc.util_resource_table.wavepostpnt[4]

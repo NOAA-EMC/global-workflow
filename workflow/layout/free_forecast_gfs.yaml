@@ -44,6 +44,17 @@ suite: !Cycle
       ecf_module_commands: "# fv3ic.sh will load modules instead"
       model: gfs
 
+    jgfs_init_chem: !Task
+      <<: *exclusive_task_template
+      RUN: 'gfs'
+      Disable: !calc doc.settings.cplgocart != '.true.'
+      Trigger: !Depend jgfs_emc_mom6ic & up.gfs.forecast.at('-' + tools.dt_to_HMS(doc.settings.STEP_GFS))
+      resources: !calc partition.resources.run_init_chem
+      J_JOB: rocoto/init_chem.sh
+      ecf_module_commands: "# init_chem.sh will load modules instead"
+      model: gfs
+      Complete: !Depend ~ suite.has_cycle('-' + tools.dt_to_HMS(doc.settings.STEP_GFS))
+
   #####################################################################
   ## GFS FAMILY #######################################################
   #####################################################################
@@ -88,6 +99,8 @@ suite: !Cycle
              do: !Depend medcold
            - when: !calc doc.settings.cplwav=='.true.'
              do: !Depend up.prep
+           - when: !calc doc.settings.cplgocart=='.true.'
+             do: !Depend up.up.ics.jgfs_init_chem & up.up.ics.jgfs_emc_mom6ic
            - otherwise: !Depend up.up.ics.jgfs_emc_mom6ic
         resources_remap: !JobRequest [ { <<: *remap_resource_template } ]
         resources: !FirstTrue
