@@ -61,18 +61,6 @@ else
   [[ $status -ne 0 ]] && exit $status
 fi
 
-# Check for pgbanl files and move
-if [ $gfs_ver = v14 -o $gfs_ver = v15 ]; then
-  cd $EXTRACT_DIR
-  for grid in 0p25 0p50 1p00
-  do
-    file=gfs.t${hh}z.pgrb2.${grid}.anl
-    if [ -f ${EXTRACT_DIR}/${CDUMP}.${yy}${mm}${dd}/${hh}/${file} ]; then
-      mv ${EXTRACT_DIR}/${CDUMP}.${yy}${mm}${dd}/${hh}/${file} ${OUTDIR}/${CDUMP}.${yy}${mm}${dd}/${hh}/${COMPONENT}/${file}
-    fi
-  done
-fi
-
 ##########################################
 # Remove the Temporary working directory
 ##########################################
