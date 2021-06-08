@@ -7,7 +7,7 @@ case:
     EDATE: 2013-04-01t00:00:00
     max_job_tries: 1
 
-    cplgocart: .true.
+    cplchem: .true.
     print_esmf: .true.
     nems_temp: 'atm_aer'
     nems_temp_cold: 'atm_aer'
@@ -21,7 +21,8 @@ case:
     KEEPDATA: Yes
 
   nsst:
-    NST_MODEL: 0
+    NST_MODEL:  2
+    NST_SPINUP: 1
 
   output_settings:
     FHOUT_GFS: 6
@@ -41,9 +42,11 @@ case:
        WGRP: 1
        WGRP_NTASKS: 24
        WRTIOBUF: "32M"
+    CCPP_SUITE: FV3_GFS_v16
+    fscav_aero: [ '*:0.6', 'seas1:1.0', 'seas2:1.0' ]
 
   chem_settings:
-    MOD: gsdchem
+    MOD: gocart
     ntdiag: 2
     # On Hera
     CFGDIR: /scratch1/NCEPDEV/nems/Raffaele.Montuoro/data/NASA/rc
