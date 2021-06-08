@@ -24,10 +24,10 @@ elif [[ -d /lfs3 ]] ; then
 	module load module_base.jet 
 elif [[ -d /scratch1 ]] ; then
 	# We are on NOAA Hera
-	module load module_base.hera
+	module use "$HOMEgfs/sorc/ufs_coupled.fd/modulefiles"
+	module load ufs_hera.intel
 	if [[ -d $HOMEgfs/sorc/ufs_coupled.fd/GOCART ]] ; then
-		module use "$HOMEgfs/sorc/ufs_coupled.fd/modulefiles/hera.intel"
-		module load fv3
+		module load ufs_aerosols_hera.intel
 	fi
 elif [[ -d /work ]] ; then
 	# We are on MSU Orion
