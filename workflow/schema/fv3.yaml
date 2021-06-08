@@ -32,6 +32,10 @@ fv3_settings_template: !Template &fv3_settings_template
   agrid_vel_rst:
     type: bool
     description: "write velocity restarts on A grid?"
+  fscav_aero:
+    type: string list
+    description: aerosol convective scavenging coefficients
+    optional: true
 
 #  cal_pre:            { type: bool }
 #  do_sat_adjust:      { type: bool }
