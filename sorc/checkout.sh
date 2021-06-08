@@ -46,9 +46,9 @@ if [ ${COUPLED:-"NO"} = "NO" ]; then
 else 
   if [[ ! -d ufs_coupled.fd ]] ; then
     if [ "${AEROSOL}" = "YES" ] ; then
-      git clone https://github.com/NOAA-EMC/FV3-GOCART ufs_coupled.fd >> ${topdir}/checkout-ufs_coupled.log 2>&1
+      git clone https://github.com/rmontuoro/ufs-weather-model.git ufs_coupled.fd >> ${topdir}/checkout-ufs_coupled.log 2>&1
       cd ufs_coupled.fd
-      git checkout develop
+      git checkout feature/gocart
     else
       git clone https://github.com/ufs-community/ufs-weather-model ufs_coupled.fd >> ${topdir}/checkout-ufs_coupled.log 2>&1
       cd ufs_coupled.fd
