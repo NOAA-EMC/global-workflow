@@ -6,7 +6,7 @@ config_nsst:
   filename: config.nsst
   nst_spinup_logic: !FirstTrue
     - when: !calc doc.nsst.get("NST_SPINUP","")
-      do: !expand "export NST_SPINUP=$NST_SPINUP"
+      do: !expand "export NST_SPINUP={doc.nsst.NST_SPINUP}"
     - otherwise: |
         export NST_SPINUP=0
         #if [[ "$CDATE" = $SDATE ]]; then

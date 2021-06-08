@@ -5,6 +5,10 @@ nsst_schema: &nsst_schema !Template
     description: >-
       nstf_name(1) : NST_MODEL (NSST Model) : 0 = OFF, 
       1 = ON but uncoupled, 2 = ON and coupled
+  NST_SPINUP:
+    type: int
+    allowed: [ 0, 1]
+    optional: yes
   NST_RESV:
     type: int
     allowed: [ 0, 1 ]
@@ -24,7 +28,3 @@ nsst_schema: &nsst_schema !Template
   NSTINFO:
     type: int
     description: number of elements added in obs. data array
-  NST_SPINUP:
-    type: int
-    allowed: [ 0, 1]
-    optional: yes
