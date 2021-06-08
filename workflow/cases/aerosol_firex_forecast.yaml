@@ -51,6 +51,7 @@ case:
        WRTIOBUF: "32M"
     CPL_ATMIC: FV3ICS
     CCPP_SUITE: FV3_GFS_v16
+    fscav_aero: [ '*:0.6', 'seas1:1.0', 'seas2:1.0', 'seas3:1.0', 'seas4:1.0', 'seas5:1.0' ]
 
   chem_settings:
     MOD: gocart
