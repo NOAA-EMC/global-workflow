@@ -191,13 +191,14 @@ cat > input.nml <<EOF
   imp_physics  = ${imp_physics:-"99"}	! CROW configured
 EOF
 
-
-if [ $CCPP_SUITE = "FV3_GFS_v15p2_coupled" ]; then
+case "${CCPP_SUITE:-}" in
+  "FV3_GFS_v15p2_coupled")
   cat >> input.nml << EOF
   oz_phys      = .false.
   oz_phys_2015 = .true.
 EOF
-elif [ $CCPP_SUITE = "FV3_GSD_v0" ]; then
+  ;;
+  "FV3_GSD_v0")
   cat >> input.nml << EOF
   iovr         = ${iovr:-"3"}
   ltaerosol    = ${ltaerosol:-".F."}    ! In config.fcst
@@ -215,7 +216,8 @@ elif [ $CCPP_SUITE = "FV3_GSD_v0" ]; then
   min_lakeice  = ${min_lakeice:-"0.15"}
   min_seaice   = ${min_seaice:-"0.15"}
 EOF
-elif [ $CCPP_SUITE = "FV3_GFS_v16_coupled" ]; then
+ ;;
+  "FV3_GFS_v16_coupled")
   cat >> input.nml << EOF
   iovr         = ${iovr:-"3"}
   ltaerosol    = ${ltaerosol:-".false."}
@@ -233,12 +235,25 @@ elif [ $CCPP_SUITE = "FV3_GFS_v16_coupled" ]; then
   min_lakeice  = ${min_lakeice:-"0.15"}
   min_seaice   = ${min_seaice:-"0.15"}
 EOF
-else
+  ;;
+  "FV3_GFS_v16")
   cat >> input.nml << EOF
-  iovr_lw      = ${iovr_lw:-"3"}
-  iovr_sw      = ${iovr_sw:-"3"}
+  iovr         = ${iovr:-"3"}
+  ltaerosol    = ${ltaerosol:-".false."}
+  oz_phys      = ${oz_phys:-".false."}
+  oz_phys_2015 = ${oz_phys_2015:-".true."}
+  lsoil        = ${lsoil:-"4"}
+  icloud_bl    = ${icloud_bl:-"1"}
+  min_lakeice  = ${min_lakeice:-"0.15"}
+  min_seaice   = ${min_seaice:-"0.15"}
 EOF
-fi
+  ;;
+  *)
+  cat >> input.nml << EOF
+  iovr         = ${iovr:-"3"}
+EOF
+  ;;
+esac
 
 cat >> input.nml <<EOF
   pdfcld       = ${pdfcld:-".false."}
@@ -301,10 +316,12 @@ cat >> input.nml <<EOF
   do_shum      = ${DO_SHUM:-".false."}
   do_skeb      = ${DO_SKEB:-".false."}
   frac_grid    = ${FRAC_GRID:-".false."}
+  fscav_aero   = ${fscav_aero:-'*:0.0'}
 EOF
 
 if [ $cpl = .true. ]; then
   cat >> input.nml << EOF
+  cplchm       = ${cplchem:-".false."}
   cplflx       = $cplflx
   cplwav2atm   = ${cplwav2atm}          ! CROW configured
 EOF
