@@ -5,7 +5,7 @@
 config_fcst:
   filename: config.fcst
   FCSTEXEC: !FirstTrue
-    - when: !calc ( doc.settings.cplflx==".true." or doc.settings.cplgocart==".true." )
+    - when: !calc ( doc.settings.cplflx==".true." or doc.settings.cplchem==".true." )
       do: "ufs_model"
     - otherwise: "global_fv3gfs.x"
   more_exports_for_microphys: !FirstTrue
@@ -123,6 +123,8 @@ config_fcst:
     export dddmp={doc.fv3_gfs_settings.dddmp}
 
     # gfs_physics_nml section
+    export fscav_aero="{tools.fort(doc.fv3_gfs_settings.fscav_aero)}"
+
     export h2o_phys="{tools.fort(doc.fv3_gfs_settings.h2o_phys)}"
 
     export ncld={doc.fv3_gfs_settings.phy_dependent_var.ncld}
@@ -225,7 +227,7 @@ config_fcst:
 
     fi
 
-    if [ $cplgocart = .true. ]; then # temporary settings for aerosol coupling
+    if [ $cplchem = .true. ]; then # temporary settings for aerosol coupling
         export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_aer"
         export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_aer"
         export CHM_CFGDIR="{doc.chem_settings.CFGDIR}"

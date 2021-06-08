@@ -102,7 +102,6 @@ cpl=${cpl:-.false.}
 cplflx=${cplflx:-.false.} # default off,import from outside source
 cplwav=${cplwav:-.false.} # ? how to control 1-way/2-way?
 cplchem=${cplchem:-.false.} # Chemistry model
-cplgocart=${cplgocart:-.false.} # Chemistry model
 cplice=${cplice:-.false.} # ICE model
 
 OCNTIM=${OCNTIM:-3600}
@@ -134,7 +133,6 @@ esac
 [[ $cplflx = .true. ]] && MOM6_predet
 #[[ $cplwav = .true. ]] && WW3_predet #no WW3_predet at this time
 [[ $cplice = .true. ]] && CICE_predet
-[[ $cplchem = .true. ]] && GSD_predet
 
 case $RUN in
 	'gfs') FV3_GFS_det;;
@@ -144,7 +142,6 @@ esac				#no run type determination for data atmosphere
 [[ $cplflx = .true. ]] && MOM6_det
 [[ $cplwav = .true. ]] && WW3_det
 [[ $cplice = .true. ]] && CICE_det
-[[ $cplchem = .true. ]] && GSD_det
 
 echo "MAIN: RUN Type Determined"
 
@@ -159,7 +156,6 @@ esac				#no post determination set up for data atmosphere
 [[ $cplflx = .true. ]] && MOM6_postdet
 [[ $cplwav = .true. ]] && WW3_postdet
 [[ $cplice = .true. ]] && CICE_postdet
-[[ $cplchem = .true. ]] && GSD_postdet
 echo "MAIN: Post-determination set up of run type finished"
 
 echo "MAIN: Writing name lists and model configuration"
@@ -172,8 +168,7 @@ esac				#no namelist for data atmosphere
 [[ $cplflx = .true. ]] && MOM6_nml
 [[ $cplwav = .true. ]] && WW3_nml
 [[ $cplice = .true. ]] && CICE_nml
-[[ $cplchem = .true. ]] && GSD_nml
-[[ $cplgocart = .true. ]] && GOCART_rc
+[[ $cplchem = .true. ]] && GOCART_rc
 
 case $RUN in
 	'data') DATM_model_configure;;
@@ -216,7 +211,6 @@ if [ $machine != 'sandbox' ]; then
 	[[ $cplflx = .true. ]] && MOM6_out
 	[[ $cplwav = .true. ]] && WW3_out
 	[[ $cplice = .true. ]] && CICE_out
-	[[ $cplchem = .true. ]] && GSD_out
 	[[ $esmf_profile = .true. ]] && CPL_out
 else
 	echo "MAIN: Running on sandbox mode, no output linking"

@@ -498,11 +498,7 @@ FV3_GFS_nml(){
 		echo "MAIN: !!!Sandbox mode, writing to current directory!!!"
 	fi
 	# Call child scripts in current script directory
-	if [ $cplgocart = .true. ]; then
-		source $SCRIPTDIR/parsing_namelists_FV3_GOCART.sh
-	else
-		source $SCRIPTDIR/parsing_namelists_FV3.sh
-	fi
+	source $SCRIPTDIR/parsing_namelists_FV3.sh
 	FV3_namelists
 	echo SUB ${FUNCNAME[0]}: FV3 name lists and model configure file created
 }
@@ -868,7 +864,7 @@ GSD_in() {
 
 GSD_nml() {
 	echo "SUB ${FUNCNAME[0]}: Creating name list for GSD"
-	sh parsing_namelists_GSD.sh
+	# generate GSD-specific input
 }
 
 GSD_out() {
