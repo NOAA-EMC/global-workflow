@@ -36,7 +36,7 @@ ATM_model=${ATM_model:-'fv3'}
 OCN_model=${OCN_model:-'mom6'}
 ICE_model=${ICE_model:-'cice'}
 WAV_model=${WAV_model:-'ww3'}
-CHM_model=${CHM_model:-'gsdchem'}
+CHM_model=${CHM_model:-'gocart'}
 
 ATMPETS=${ATMPETS:-8}
 MEDPETS=${MEDPETS:-8} 
@@ -90,7 +90,7 @@ if [ $cplice = .true. ]; then
         sed -i -e "s;@\[MESHICE\];$MESHICE;g" tmp1
         sed -i -e "s;@\[FHMAX\];$FHMAX_GFS;g" tmp1
 fi
-if [ $cplchem = .true. -o $cplgocart = .true. ]; then
+if [ $cplchem = .true. ]; then
 	sed -i -e "s;@\[chm_model\];$CHM_model;g" tmp1
 	sed -i -e "s;@\[chm_petlist_bounds\];$chm_petlist_bounds;g" tmp1
 	sed -i -e "s;@\[coupling_interval_fast_sec\];$CPL_FAST;g" tmp1
@@ -155,9 +155,9 @@ EOF
 
 echo "$(cat med_modelio.nml)"
 
-cp $HOMEgfs/sorc/ufs_coupled.fd/CMEPS-interface/CMEPS/mediator/fd_nems.yaml fd_nems.yaml
-
 fi 
+
+cp $HOMEgfs/sorc/ufs_coupled.fd/tests/parm/fd_nems.yaml fd_nems.yaml
 
 echo "SUB ${FUNCNAME[0]}: Nems configured for $confignamevarfornems"
 
