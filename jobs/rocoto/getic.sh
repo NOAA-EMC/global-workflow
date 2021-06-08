@@ -59,8 +59,8 @@ if [ ! -d $ROTDIR ]; then mkdir -p $ROTDIR ; fi
 if [ ! -d $EXTRACT_DIR ]; then mkdir -p $EXTRACT_DIR ; fi
 cd $EXTRACT_DIR
 
-# Check if init is needed and run if so
-if [[ $gfs_ver = "v16" && $EXP_WARM_START = ".true." && $CASE = $OPS_RES ]]; then
+# Check version, cold/warm start, and resolution
+if [[ $gfs_ver = "v16" && $EXP_WARM_START = ".true." && $CASE = $OPS_RES ]]; then # Pull warm start ICs - no chgres
 
   # Pull RESTART files off HPSS
   if [ ${RETRO:-"NO"} = "YES" ]; then # Retrospective parallel input
@@ -95,7 +95,7 @@ if [[ $gfs_ver = "v16" && $EXP_WARM_START = ".true." && $CASE = $OPS_RES ]]; the
     htar -xvf ${PRODHPSSDIR}/rh${gyy}/${gyy}${gmm}/${gyy}${gmm}${gdd}/com_gfs_prod_gdas.${gyy}${gmm}${gdd}_${ghh}.gdas_restart.tar
   fi
 
-else
+else # Pull chgres cube inputs for cold start IC generation
 
   # Run UFS_UTILS GETICSH
   sh ${GETICSH} ${CDUMP}
