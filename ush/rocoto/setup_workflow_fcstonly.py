@@ -685,8 +685,6 @@ def get_workflow(dict_configs, cdump='gdas'):
     deps.append(rocoto.add_dependency(dep_dict))
     dep_dict = {'type':'task', 'name':'%svrfy' % cdump}
     deps.append(rocoto.add_dependency(dep_dict))
-    dep_dict = {'type':'streq', 'left':'&ARCHIVE_TO_HPSS;', 'right':'YES'}
-    deps.append(rocoto.add_dependency(dep_dict))
     if do_wave in ['Y', 'YES']:
       dep_dict = {'type': 'task', 'name': '%swavepostsbs' % cdump}
       deps.append(rocoto.add_dependency(dep_dict))
