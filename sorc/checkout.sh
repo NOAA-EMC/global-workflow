@@ -49,6 +49,7 @@ else
       git clone https://github.com/rmontuoro/ufs-weather-model.git ufs_coupled.fd >> ${topdir}/checkout-ufs_coupled.log 2>&1
       cd ufs_coupled.fd
       git checkout feature/gocart
+      echo > .build_aerosols
     else
       git clone https://github.com/ufs-community/ufs-weather-model ufs_coupled.fd >> ${topdir}/checkout-ufs_coupled.log 2>&1
       cd ufs_coupled.fd
