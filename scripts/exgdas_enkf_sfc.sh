@@ -35,7 +35,6 @@ export CASE=${CASE:-384}
 ntiles=${ntiles:-6}
 
 # Utilities
-ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 NCP=${NCP:-"/bin/cp -p"}
 NLN=${NLN:-"/bin/ln -sf"}
 NEMSIOGET=${NEMSIOGET:-${NWPROD}/exec/nemsio_get}
@@ -163,10 +162,7 @@ if [ $DOIAU = "YES" ]; then
         done
 
         $CYCLESH
-        rc=$?
-        export ERR=$rc
-        export err=$ERR
-        $ERRSCRIPT || exit 11
+        export err=$?; err_chk
 
     done
 
@@ -192,10 +188,7 @@ if [ $DOSFCANL_ENKF = "YES" ]; then
     done
 
     $CYCLESH
-    rc=$?
-    export ERR=$rc
-    export err=$ERR
-    $ERRSCRIPT || exit 11
+    export err=$?; err_chk
 
  done
 fi

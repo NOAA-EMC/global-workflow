@@ -34,7 +34,6 @@ export CASE=${CASE:-384}
 ntiles=${ntiles:-6}
 
 # Utilities
-ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 NCP=${NCP:-"/bin/cp -p"}
 NLN=${NLN:-"/bin/ln -sf"}
 NEMSIOGET=${NEMSIOGET:-${NWPROD}/exec/nemsio_get}
@@ -164,11 +163,7 @@ if [ $DO_CALC_INCREMENT = "YES" ]; then
 
    $NCP $GETATMENSMEANEXEC $DATA
    $APRUN_ECEN ${DATA}/$(basename $GETATMENSMEANEXEC) $DATAPATH $ATMANLMEANNAME $ATMANLNAME $NMEM_ENKF
-   rc=$?
-
-   export ERR=$rc
-   export err=$ERR
-   $ERRSCRIPT || exit 2
+   export err=$?; err_chk
 else
    # Link ensemble mean increment
    if [ $FHR -eq 6 ]; then
@@ -188,11 +183,7 @@ else
 
    $NCP $GETATMENSMEANEXEC $DATA
    $APRUN_ECEN ${DATA}/$(basename $GETATMENSMEANEXEC) $DATAPATH $ATMINCMEANNAME $ATMINCNAME $NMEM_ENKF
-   rc=$?
-
-   export ERR=$rc
-   export err=$ERR
-   $ERRSCRIPT || exit 2
+   export err=$?; err_chk
 
    # If available, link to ensemble mean guess.  Otherwise, compute ensemble mean guess
    if [ -s $COMIN_GES_ENS/${GPREFIX}atmf00${FHR}.ensmean$GSUFFIX ]; then
@@ -208,11 +199,7 @@ else
 
        $NCP $GETATMENSMEANEXEC $DATA
        $APRUN_ECEN ${DATA}/$(basename $GETATMENSMEANEXEC) $DATAPATH $ATMGESMEANNAME $ATMGESNAME $NMEM_ENKF
-       rc=$?
-
-       export ERR=$rc
-       export err=$ERR
-       $ERRSCRIPT || exit 2
+       export err=$?; err_chk
    fi
 fi
 
@@ -284,12 +271,7 @@ if [ $RECENTER_ENKF = "YES" ]; then
 EOF
       cat $chgresnml
       $APRUN_CHGRES ./chgres.x
-      rc=$?
-
-      export ERR=$rc
-      export err=$ERR
-      $ERRSCRIPT || exit 3
-
+      export err=$?; err_chk
    fi
 
    if [ $DO_CALC_INCREMENT = "YES" ]; then
@@ -307,12 +289,7 @@ EOF
 
       $NCP $RECENATMEXEC $DATA
       $APRUN_ECEN ${DATA}/$(basename $RECENATMEXEC) $FILENAMEIN $FILENAME_MEANIN $FILENAME_MEANOUT $FILENAMEOUT $NMEM_ENKF
-      rc=$?
-
-      export ERR=$rc
-      export err=$ERR
-      $ERRSCRIPT || exit 2
-
+      export err=$?; err_chk
    else
       ################################################################################
       # Recenter ensemble member atmospheric increments about hires analysis
@@ -340,12 +317,7 @@ cat recenter.nml
 
       $NCP $RECENATMEXEC $DATA
       $APRUN_ECEN ${DATA}/$(basename $RECENATMEXEC) $FILENAMEIN $FILENAME_INCMEANIN $FILENAME_GSIDET $FILENAMEOUT $NMEM_ENKF $FILENAME_GESMEANIN
-      rc=$?
-
-      export ERR=$rc
-      export err=$ERR
-      $ERRSCRIPT || exit 2
-
+      export err=$?; err_chk
    fi
 fi
 
@@ -388,11 +360,7 @@ EOF
 cat calc_increment.nml
 
    $APRUN_CALCINC ${DATA}/$(basename $CALCINCEXEC)
-   rc=$?
-
-   export ERR=$rc
-   export err=$rc
-   $ERRSCRIPT || exit 4
+   export err=$?; err_chk
 fi
 done # loop over analysis times in window
 

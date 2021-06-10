@@ -29,7 +29,6 @@ pwd=$(pwd)
 
 # Utilities
 export NLN=${NLN:-"/bin/ln -sf"}
-export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 
 # Scripts.
 ANALYSISSH=${ANALYSISSH:-$HOMEgfs/scripts/exglobal_atmos_analysis.sh}
@@ -115,10 +114,7 @@ export CHEM="$CHEM_INVOBS"
 # Execute GSI as a forward operator
 
 $ANALYSISSH
-
-export ERR=$?
-export err=$ERR
-$ERRSCRIPT || exit 2
+export err=$?; err_chk
 
 ################################################################################
 # Postprocessing

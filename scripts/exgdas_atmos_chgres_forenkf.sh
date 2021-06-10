@@ -48,7 +48,6 @@ export NMV=${NMV:-"/bin/mv"}
 export NLN=${NLN:-"/bin/ln -sf"}
 export CHGRP_CMD=${CHGRP_CMD:-"chgrp ${group_name:-rstprod}"}
 export NCLEN=${NCLEN:-$HOMEgfs/ush/getncdimlen}
-export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 
 # IAU
 DOIAU=${DOIAU:-"NO"}
@@ -176,10 +175,7 @@ EOF
          . prep_step
 
 	 $APRUN_CHGRES $CHGRESNCEXEC chgres_nc_gauss0$FHR.nml
-	 rc=$?
-	 export ERR=$rc
-	 export err=$ERR
-	 $ERRSCRIPT || exit 1
+         export err=$?; err_chk
      fi
    done
 
@@ -194,9 +190,7 @@ EOF
          . prep_step
 
          $APRUNCFP_CHGRES $DATA/mp_chgres.sh
-         export ERR=$?
-         export err=$ERR
-         $ERRSCRIPT || exit 3
+         export err=$?; err_chk
       fi
    fi
 
