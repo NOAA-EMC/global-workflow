@@ -93,7 +93,7 @@
   rm -f ${DATA}/output_${ymdh}0000/out_grd.$grdID
   
   if [ ! -f ${DATA}/${grdID}_interp.inp.tmpl ]; then
-    cp $FIXwave/${grdID}_interp.inp.tmpl ${DATA}
+    cp $PARMwave/${grdID}_interp.inp.tmpl ${DATA}
   fi
   ln -sf ${DATA}/${grdID}_interp.inp.tmpl . 
 

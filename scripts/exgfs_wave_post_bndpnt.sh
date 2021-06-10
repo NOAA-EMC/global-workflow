@@ -145,15 +145,15 @@
 
   rm -f buoy.loc
 
-  if [ -f $FIXwave/wave_${NET}.buoys ]
+  if [ -f $PARMwave/wave_${NET}.buoys ]
   then
-    cp -f $FIXwave/wave_${NET}.buoys buoy.loc
+    cp -f $PARMwave/wave_${NET}.buoys buoy.loc
   fi
 
   if [ -s buoy.loc ]
   then
     set +x
-    echo "   buoy.loc and buoy.ibp copied and processed ($FIXwave/wave_${NET}.buoys)."
+    echo "   buoy.loc and buoy.ibp copied and processed ($PARMwave/wave_${NET}.buoys)."
     [[ "$LOUD" = YES ]] && set -x
   else
     set +x
@@ -171,7 +171,7 @@
   sed -n '/^\$.*/!p' buoy.loc | grep IBP > buoy.ibp
   if [ -s buoy.ibp ]; then
     set +x
-    echo "   buoy.loc and buoy.ibp copied and processed ($FIXwave/wave_${NET}.buoys)."
+    echo "   buoy.loc and buoy.ibp copied and processed ($PARMwave/wave_${NET}.buoys)."
     [[ "$LOUD" = YES ]] && set -x
   else
     set +x
@@ -188,9 +188,9 @@
 
 # 1.c Input template files
 
-  if [ -f $FIXwave/ww3_outp_spec.inp.tmpl ]
+  if [ -f $PARMwave/ww3_outp_spec.inp.tmpl ]
   then
-    cp -f $FIXwave/ww3_outp_spec.inp.tmpl ww3_outp_spec.inp.tmpl
+    cp -f $PARMwave/ww3_outp_spec.inp.tmpl ww3_outp_spec.inp.tmpl
   fi
 
   if [ -f ww3_outp_spec.inp.tmpl ]

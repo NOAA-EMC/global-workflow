@@ -160,9 +160,9 @@
   then
     for intGRD in $waveinterpGRD
     do
-      if [ -f $FIXwave/${intGRD}_interp.inp.tmpl ]
+      if [ -f $PARMwave/${intGRD}_interp.inp.tmpl ]
       then
-        cp -f $FIXwave/${intGRD}_interp.inp.tmpl ${intGRD}_interp.inp.tmpl
+        cp -f $PARMwave/${intGRD}_interp.inp.tmpl ${intGRD}_interp.inp.tmpl
       fi
   
       if [ -f ${intGRD}_interp.inp.tmpl ]
@@ -190,9 +190,9 @@
   then
     for grbGRD in $waveinterpGRD $wavepostGRD
     do
-      if [ -f $FIXwave/ww3_grib2.${grbGRD}.inp.tmpl ]
+      if [ -f $PARMwave/ww3_grib2.${grbGRD}.inp.tmpl ]
       then
-        cp -f $FIXwave/ww3_grib2.${grbGRD}.inp.tmpl ww3_grib2.${grbGRD}.inp.tmpl
+        cp -f $PARMwave/ww3_grib2.${grbGRD}.inp.tmpl ww3_grib2.${grbGRD}.inp.tmpl
       fi
 
       if [ -f ww3_grib2.${grbGRD}.inp.tmpl ]

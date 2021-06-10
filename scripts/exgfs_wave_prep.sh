@@ -224,16 +224,16 @@
               ;;
      esac 
 
-     if [ -f $FIXwave/ww3_prnc.${type}.$grdID.inp.tmpl ]
+     if [ -f $PARMwave/ww3_prnc.${type}.$grdID.inp.tmpl ]
      then
-       cp $FIXwave/ww3_prnc.${type}.$grdID.inp.tmpl .
+       cp $PARMwave/ww3_prnc.${type}.$grdID.inp.tmpl .
      fi
 
      if [ -f ww3_prnc.${type}.$grdID.inp.tmpl ]
      then
        set +x
        echo ' '
-       echo "   ww3_prnc.${type}.$grdID.inp.tmpl copied ($FIXwave)."
+       echo "   ww3_prnc.${type}.$grdID.inp.tmpl copied ($PARMwave)."
        echo ' '
        [[ "$LOUD" = YES ]] && set -x
      else
@@ -820,9 +820,9 @@
 
 # 5.a ww3_multi template
 
-  if [ -f $FIXwave/ww3_multi.${NET}.inp.tmpl ]
+  if [ -f $PARMwave/ww3_multi.${NET}.inp.tmpl ]
   then
-    cp $FIXwave/ww3_multi.${NET}.inp.tmpl ww3_multi.inp.tmpl
+    cp $PARMwave/ww3_multi.${NET}.inp.tmpl ww3_multi.inp.tmpl
   fi
 
   if [ ! -f ww3_multi.inp.tmpl ]
@@ -842,21 +842,21 @@
 
 # 5.b Buoy location file
 
-  if [ -f $FIXwave/wave_${NET}.buoys ]
+  if [ -f $PARMwave/wave_${NET}.buoys ]
   then
-    cp $FIXwave/wave_${NET}.buoys buoy.loc
+    cp $PARMwave/wave_${NET}.buoys buoy.loc
   fi
 
   if [ -f buoy.loc ]
   then
     set +x
-    echo "   buoy.loc copied ($FIXwave/wave_${NET}.buoys)."
+    echo "   buoy.loc copied ($PARMwave/wave_${NET}.buoys)."
     [[ "$LOUD" = YES ]] && set -x
   else
     set +x
     echo "   buoy.loc not found.                           **** WARNING **** "
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" " FATAL ERROR : buoy.loc ($FIXwave/wave_${NET}.buoys) NOT FOUND"
+    postmsg "$jlogfile" " FATAL ERROR : buoy.loc ($PARMwave/wave_${NET}.buoys) NOT FOUND"
     touch buoy.loc
     err=13;export err;${errchk}
   fi
