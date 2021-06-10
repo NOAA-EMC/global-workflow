@@ -44,11 +44,9 @@ elif [ ${RETRO:-"NO"} = "NO" ]; then # Operational input
   elif [[ "$CDATE" -lt "2019061200" ]]; then
     export gfs_ver=v14
     export GETICSH=${GDASINIT_DIR}/get_${gfs_ver}.data.sh
-    export tarball=gpfs_hps_nco_ops_com_gfs_prod_gfs.${PDY}_${cyc}.pgrb2_${grid}.tar
   elif [[ "$CDATE" -lt "2021032100" ]]; then
     export gfs_ver=v15
     export GETICSH=${GDASINIT_DIR}/get_${gfs_ver}.data.sh
-    export tarball=com_gfs_prod_gfs.${PDY}_${cyc}.gfs_pgrb2.tar
   elif [[ "$CDATE" -lt "2021032106" ]]; then
     # The way the v16 switch over was done, there is no complete
     # set of v16 or v15 data for 2021032100.  And although
