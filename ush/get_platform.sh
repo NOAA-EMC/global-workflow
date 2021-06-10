@@ -20,7 +20,7 @@ get_platform() {
     pname="jet"
   elif [[ -d /scratch1 ]] ; then
     # We are on NOAA Hera
-    pname="hera.intel"
+    pname="hera"
   elif [[ -d /gpfs/hps && -e /etc/SuSE-release ]] ; then
     # We are on NOAA Luna or Surge
     pname="wcoss_c"
