@@ -105,26 +105,56 @@ else # Pull chgres cube inputs for cold start IC generation
 fi
 
 # Move extracted data to ROTDIR
-if [ ! -d ${ROTDIR}/${CDUMP}.${yy}${mm}${dd}/${hh} ]; then mkdir -p ${ROTDIR}/${CDUMP}.${yy}${mm}${dd}/${hh} ; fi
-mv ${EXTRACT_DIR}/${CDUMP}.${yy}${mm}${dd}/${hh}/* ${ROTDIR}/${CDUMP}.${yy}${mm}${dd}/${hh}
+if [ ! -d ${ROTDIR}/${CDUMP}.${yy}${mm}${dd}/${hh}/${COMPONENT} ]; then mkdir -p ${ROTDIR}/${CDUMP}.${yy}${mm}${dd}/${hh}/${COMPONENT} ; fi
+if [ $gfs_ver = v16 -a $RETRO = "YES" ]; then
+  mv ${EXTRACT_DIR}/${CDUMP}.${yy}${mm}${dd}/${hh}/* ${ROTDIR}/${CDUMP}.${yy}${mm}${dd}/${hh}/${COMPONENT}
+else
+  mv ${EXTRACT_DIR}/${CDUMP}.${yy}${mm}${dd}/${hh}/* ${ROTDIR}/${CDUMP}.${yy}${mm}${dd}/${hh}
+fi
 
 # Pull pgbanl file for verification/archival - v14+
-if [ $gfs_ver = v14 -o $gfs_ver = v15 ]; then
+if [ $gfs_ver = v14 -o $gfs_ver = v15 -o $gfs_ver = v16 ]; then
   for grid in 0p25 0p50 1p00
   do
     file=gfs.t${hh}z.pgrb2.${grid}.anl
-    if [ $gfs_ver = v14 ]; then
+
+    if [ $gfs_ver = v14 ]; then # v14 production source
+
       cd $ROTDIR/${CDUMP}.${yy}${mm}${dd}/${hh}/${COMPONENT}
       export tarball="gpfs_hps_nco_ops_com_gfs_prod_gfs.${yy}${mm}${dd}${hh}.pgrb2_${grid}.tar"
       htar -xvf ${PRODHPSSDIR}/rh${yy}/${yy}${mm}/${yy}${mm}${dd}/${tarball} ./${file}
-    elif [ $gfs_ver = v15 ]; then
+
+    elif [ $gfs_ver = v15 ]; then # v15 production source
+
       cd $EXTRACT_DIR
       export tarball="com_gfs_prod_gfs.${yy}${mm}${dd}_${hh}.gfs_pgrb2.tar"
       htar -xvf ${PRODHPSSDIR}/rh${yy}/${yy}${mm}/${yy}${mm}${dd}/${tarball} ./${CDUMP}.${yy}${mm}${dd}/${hh}/${file}
       mv ${EXTRACT_DIR}/${CDUMP}.${yy}${mm}${dd}/${hh}/${file} ${ROTDIR}/${CDUMP}.${yy}${mm}${dd}/${hh}/${COMPONENT}/${file}
-    fi
-  done
-fi
+
+    elif [ $gfs_ver = v16 ]; then # v16 - determine RETRO or production source next
+
+      if [ $RETRO = "YES" ]; then # Retrospective parallel source
+
+        cd $EXTRACT_DIR
+        if [ $grid = "0p25" ]; then # anl file spread across multiple tarballs
+          export tarball="gfsa.tar"
+        elif [ $grid = "0p50" -o $grid = "1p00" ]; then
+          export tarball="gfsb.tar"
+        fi
+        htar -xvf ${HPSSDIR}/${yy}${mm}${dd}${hh}/${tarball} ./${CDUMP}.${yy}${mm}${dd}/${hh}/${file}
+        mv ${EXTRACT_DIR}/${CDUMP}.${yy}${mm}${dd}/${hh}/${file} ${ROTDIR}/${CDUMP}.${yy}${mm}${dd}/${hh}/${COMPONENT}/${file}
+
+      else # Production source
+
+        cd $ROTDIR
+        export tarball="com_gfs_prod_gfs.${yy}${mm}${dd}_${hh}.gfs_pgrb2.tar"
+        htar -xvf ${PRODHPSSDIR}/rh${yy}/${yy}${mm}/${yy}${mm}${dd}/${tarball} ./${CDUMP}.${yy}${mm}${dd}/${hh}/atmos/${file}
+
+      fi # RETRO vs production
+
+    fi # Version check
+  done # grid loop
+fi # v14-v16 pgrb anl file pull
 
 ##########################################
 # Remove the Temporary working directory
