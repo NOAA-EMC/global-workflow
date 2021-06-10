@@ -273,7 +273,7 @@ elif [ $step = "echgres" ]; then
 
 elif [ $step = "init" ]; then
 
-    export wtime_init="00:15:00"
+    export wtime_init="00:30:00"
     export npe_init=24
     export nth_init=1
     export npe_node_init=6
