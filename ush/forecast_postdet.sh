@@ -856,21 +856,3 @@ GOCART_rc() {
 		[[ $status -ne 0 ]] && exit $status
 	fi
 }
-
-GSD_in() {
-	echo "SUB ${FUNCNAME[0]}: Linking input data for GSD"
-	# soft link commands insert here
-}
-
-GSD_nml() {
-	echo "SUB ${FUNCNAME[0]}: Creating name list for GSD"
-	# generate GSD-specific input
-}
-
-GSD_out() {
-	echo "SUB ${FUNCNAME[0]}: Copying output data for GSD"
-	# soft link commands insert here
-}
-
-
-
