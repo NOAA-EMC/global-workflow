@@ -140,8 +140,8 @@ export CASE="@CASECTL@"
 export CASE_ENKF="@CASEENS@"
 
 # Run with CCPP physics
-export RUN_CCPP="NO"
-export CCPP_SUITE="FV3_GFS_v16beta"
+export RUN_CCPP="YES"
+export CCPP_SUITE="FV3_GFS_v16"
 
 # Surface cycle update frequency
 if [[ "$CDUMP" == "gdas" ]] ; then
@@ -222,7 +222,7 @@ export DO_GLDAS="YES"
 export gldas_cyc=00
 
 # run wave component
-export DO_WAVE="YES"
+export DO_WAVE="NO"
 export WAVE_CDUMP="both"
 
 # Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL
