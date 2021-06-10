@@ -1,59 +1,49 @@
 #!/bin/sh
-#set -x
 
 ###############################################################
 # Setup runtime environment by loading modules
+###############################################################
+
 ulimit_s=$( ulimit -S -s )
-#ulimit -S -s 10000
 
 # Find module command and purge:
 source "$HOMEgfs/modulefiles/module-setup.sh.inc" 
+source "$HOMEgfs/ush/get_platform.sh"
+
+platform=$( get_platform )
+
+moduledir=
+modulelist=
+case "${platform}" in
+  hera.intel)
+    moduledir="$HOMEgfs/sorc/ufs_coupled.fd/modulefiles"
+    if [[ -r ${moduledir}/${platform}/fv3 ]] ; then
+      moduledir="$HOMEgfs/sorc/ufs_coupled.fd/modulefiles/${platform}"
+      modulelist=fv3
+    elif [[ -r ${moduledir}/ufs_${platform} ]] ; then
+      modulelist=ufs_${platform}
+      if [[ "$( grep UFS_GOCART ${HOMEgfs}/sorc/ufs_coupled.fd/build/CMakeCache.txt 2>/dev/null | cut -d= -f2 )" = "ON" ]] ; then
+        # add aerosols modulefile
+        modulelist="${modulelist} ufs_aerosols_${platform}"
+      fi
+    else
+      echo "Unable to load modulefiles on ${platform}"
+      exit 1
+    fi
+    ;;
+  unknown)
+    echo "Unknown platform"
+    exit 1
+    ;;
+  *)
+    moduledir="$HOMEgfs/modulefiles"
+    modulelist="module_base.${platform}"
+    ;;
+esac
 
 # Load our modules:
-module use "$HOMEgfs/modulefiles" 
-hname=`hostname -d`
-
-if [[ $hname = 'stampede2.tacc.utexas.edu' ]] ; then
-	# We are on Xsede stampede2
-	module load module_base.stampede
-elif [[ $hname = 'hpc.msstate.edu' ]] ; then
-	# We are on MSU Orion
-	module load module_base.orion
-elif [[ -d /lfs3 ]] ; then
-	# We are on NOAA Jet
-	module load module_base.jet 
-elif [[ -d /scratch1 ]] ; then
-	# We are on NOAA Hera
-	module use "$HOMEgfs/sorc/ufs_coupled.fd/modulefiles"
-	module load ufs_hera.intel
-	if [[ -d $HOMEgfs/sorc/ufs_coupled.fd/GOCART ]] ; then
-		module load ufs_aerosols_hera.intel
-	fi
-elif [[ -d /work ]] ; then
-	# We are on MSU Orion
-	module load module_base.orion
-	if [[ -d $HOMEgfs/sorc/ufs_coupled.fd/GOCART ]] ; then
-		module use "$HOMEgfs/sorc/ufs_coupled.fd/modulefiles/orion.intel"
-		module load fv3
-	fi
-elif [[ -d /gpfs/hps && -e /etc/SuSE-release ]] ; then
-	# We are on NOAA Luna or Surge
-	module load module_base.wcoss_c 
-elif [[ -L /usrx && "$( readlink /usrx 2> /dev/null )" =~ dell ]] ; then
-	# We are on NOAA Mars or Venus
-	module load module_base.wcoss_dell_p3 
-elif [[ -d /dcom && -d /hwrf ]] ; then
-	# We are on NOAA Tide or Gyre
-	module load module_base.wcoss 
-elif [[ -d /glade ]] ; then
-	# We are on NCAR Yellowstone
-	module load module_base.cheyenne 
-elif [[ -d /lustre && -d /ncrc ]] ; then
-	# We are on GAEA.
-	module load module_base.gaea 
-else
-	echo WARNING: UNKNOWN PLATFORM 
-fi
+module use ${moduledir}
+module load ${modulelist}
 
 # Restore stack soft limit:
 ulimit -S -s "$ulimit_s"
