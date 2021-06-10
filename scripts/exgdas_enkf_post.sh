@@ -28,7 +28,6 @@ fi
 pwd=$(pwd)
 
 # Utilities
-ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 NCP=${NCP:-"/bin/cp"}
 NLN=${NLN:-"/bin/ln -sf"}
 
@@ -127,10 +126,7 @@ for fhr in $(seq $FHMIN $FHOUT $FHMAX); do
    ra=$?
    ((rc+=ra))
 done
-
-export ERR=$rc
-export err=$ERR
-$ERRSCRIPT || exit 2
+export err=$rc; err_chk
 
 ################################################################################
 # If smoothing on but no smoothing output, copy smoothed ensemble atmospheric files

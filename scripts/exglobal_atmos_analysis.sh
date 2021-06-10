@@ -47,7 +47,6 @@ export NLN=${NLN:-"/bin/ln -sf"}
 export CHGRP_CMD=${CHGRP_CMD:-"chgrp ${group_name:-rstprod}"}
 export NEMSIOGET=${NEMSIOGET:-${NWPROD}/exec/nemsio_get}
 export NCLEN=${NCLEN:-$HOMEgfs/ush/getncdimlen}
-export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 COMPRESS=${COMPRESS:-gzip}
 UNCOMPRESS=${UNCOMPRESS:-gunzip}
 APRUNCFP=${APRUNCFP:-""}
@@ -624,8 +623,7 @@ if [ $GENDIAG = "YES" ] ; then
         $NLN $DIAG_DIR/$pedir $pedir
       done
    else
-      echo "FATAL ERROR: lrun_subdirs must be true. lrun_subdirs=$lrun_subdirs"
-      $ERRSCRIPT || exit 2
+      err_exit "FATAL ERROR: lrun_subdirs must be true. lrun_subdirs=$lrun_subdirs"
    fi
 fi
 
@@ -716,9 +714,7 @@ EOFunzip
          ncmd_max=$((ncmd < npe_node_max ? ncmd : npe_node_max))
          APRUNCFP_UNZIP=$(eval echo $APRUNCFP)
          $APRUNCFP_UNZIP $DATA/mp_unzip.sh
-	 export ERR=$?
-         export err=$ERR
-         $ERRSCRIPT || exit 3
+         export err=$?; err_chk
       fi
    fi
 fi # if [ $USE_RADSTAT = "YES" ]
@@ -753,7 +749,7 @@ cat > gsiparm.anl << EOF
   iguess=-1,
   tzr_qc=$TZR_QC,
   oneobtest=.false.,retrieval=.false.,l_foto=.false.,
-  use_pbl=.false.,use_compress=.true.,nsig_ext=12,gpstop=50.,
+  use_pbl=.false.,use_compress=.true.,nsig_ext=12,gpstop=50.,commgpstop=45.,commgpserrinf=1.0,
   use_gfs_nemsio=${use_gfs_nemsio},use_gfs_ncio=${use_gfs_ncio},sfcnst_comb=.true.,
   use_readin_anl_sfcmask=${USE_READIN_ANL_SFCMASK},
   lrun_subdirs=$lrun_subdirs,
@@ -958,11 +954,7 @@ export pgm=$GSIEXEC
 
 $NCP $GSIEXEC $DATA
 $APRUN_GSI ${DATA}/$(basename $GSIEXEC) 1>&1 2>&2
-rc=$?
-
-export ERR=$rc
-export err=$ERR
-$ERRSCRIPT || exit 4
+export err=$?; err_chk
 
 
 ##############################################################
@@ -970,11 +962,7 @@ $ERRSCRIPT || exit 4
 # here before releasing FV3 forecast
 if [ $DO_CALC_INCREMENT = "YES" ]; then
   $CALCINCPY
-  rc=$?
-
-  export ERR=$rc
-  export err=$ERR
-  $ERRSCRIPT || exit 5
+  export err=$?; err_chk
 fi
 
 ##############################################################
@@ -1030,10 +1018,7 @@ if [ $DOGCYCLE = "YES" ]; then
         export MAX_TASKS_CY=$ntiles
 
         $CYCLESH
-        rc=$?
-        export ERR=$rc
-        export err=$ERR
-        $ERRSCRIPT || exit 11
+        export err=$?; err_chk
     fi
     # update surface restarts at middle of window
     for n in $(seq 1 $ntiles); do
@@ -1048,11 +1033,7 @@ if [ $DOGCYCLE = "YES" ]; then
     export MAX_TASKS_CY=$ntiles
 
     $CYCLESH
-    rc=$?
-    export ERR=$rc
-    export err=$ERR
-    $ERRSCRIPT || exit 11
-
+    export err=$?; err_chk
 fi
 
 
@@ -1072,6 +1053,7 @@ if [ $RUN_SELECT = "YES" ]; then
   echo $(date) START tar obs_input >&2
   [[ -s obsinput.tar ]] && rm obsinput.tar
   $NLN $SELECT_OBS obsinput.tar
+  ${CHGRP_CMD} obs_input.*
   tar -cvf obsinput.tar obs_input.*
   chmod 750 $SELECT_OBS
   ${CHGRP_CMD} $SELECT_OBS

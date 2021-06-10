@@ -48,7 +48,6 @@ export CHGRP_CMD=${CHGRP_CMD:-"chgrp ${group_name:-rstprod}"}
 export NEMSIOGET=${NEMSIOGET:-${NWPROD}/exec/nemsio_get}
 export NCLEN=${NCLEN:-$HOMEgfs/ush/getncdimlen}
 export CATEXEC=${CATEXEC:-$HOMEgfs/exec/ncdiag_cat.x}
-export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 COMPRESS=${COMPRESS:-gzip}
 UNCOMPRESS=${UNCOMPRESS:-gunzip}
 APRUNCFP=${APRUNCFP:-""}
@@ -108,10 +107,7 @@ if [ $GENDIAG = "YES" ] ; then
          $NLN $pe $DATA/$pedir
       done
    else
-      echo "lrun_subdirs must be true; exit with error"
-      export ERR=$?
-      export err=$ERR
-      $ERRSCRIPT || exit 2
+      err_exit "***FATAL ERROR*** lrun_subdirs must be true.  Abort job"
    fi
 
    # Set up lists and variables for various types of diagnostic files.
@@ -245,12 +241,16 @@ EOFdiag
          ncmd_max=$((ncmd < npe_node_max ? ncmd : npe_node_max))
          APRUNCFP_DIAG=$(eval echo $APRUNCFP)
          $APRUNCFP_DIAG $DATA/mp_diag.sh
-         export ERR=$?
-         export err=$ERR
-         $ERRSCRIPT || exit 3
+         export err=$?; err_chk
       fi
    fi
 
+   # Restrict diagnostic files containing rstprod data
+   rlist="conv_gps conv_ps conv_pw conv_q conv_sst conv_t conv_uv saphir"
+   for rtype in $rlist; do
+       ${CHGRP_CMD} *${rtype}*
+   done
+   
    # If requested, create diagnostic file tarballs
    if [ $DIAG_TARBALL = "YES" ]; then
       echo $(date) START tar diagnostic files >&2
@@ -262,9 +262,7 @@ EOFdiag
          fi
          if [ ${numfile[n]} -gt 0 ]; then
             tar $TAROPTS ${diagfile[n]} $(cat ${diaglist[n]})
-            export ERR=$?
-            export err=$ERR
-            $ERRSCRIPT || exit 4
+            export err=$?; err_chk
          fi
       done
 
