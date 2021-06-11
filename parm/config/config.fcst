@@ -7,6 +7,7 @@ echo "BEGIN: config.fcst"
 
 # Source model specific information that is resolution dependent
 . $EXPDIR/config.fv3 $CASE
+[[ "$CDUMP" == "gfs" ]] && export nth_fv3=$nth_fv3_gfs
 
 # Get task specific resources
 . $EXPDIR/config.resources fcst
@@ -88,7 +89,7 @@ else
 fi
 
 # Radiation options 
-export IAER=5111    ;#spectral band mapping method for aerosol optical properties
+export IAER=1011    ;#spectral band mapping method for aerosol optical properties
 export iovr_lw=3    ;#de-correlation length cloud overlap method (Barker, 2008) 
 export iovr_sw=3    ;#de-correlation length cloud overlap method (Barker, 2008) 
 export iovr=3       ;#de-correlation length cloud overlap method (Barker, 2008) 
@@ -185,7 +186,8 @@ if [[ "$CDUMP" == "gdas" ]] ; then # GDAS cycle specific parameters
 
     # Variables used in DA cycling
     if [ $QUILTING = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]; then
-        export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_da"
+        ##export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_da"
+        export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_aod"
     else
         export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_da_orig"
     fi
@@ -216,7 +218,7 @@ elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
 
     # Write more variables to output
     if [ $QUILTING = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]; then
-        export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table"
+        export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_aod"
     else
         export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_orig"
     fi
@@ -253,12 +255,13 @@ elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
       export io_layout="1,1"
     fi
 
-    # Debug load balancing 
-    #export KEEPDATA="YES"
-    #export ESMF_RUNTIME_PROFILE=ON
-    #export ESMF_RUNTIME_PROFILE_OUTPUT=SUMMARY
 
 fi
+
+    ## Debug load balancing
+    # export KEEPDATA="YES"
+    # export ESMF_RUNTIME_PROFILE=ON
+    # export ESMF_RUNTIME_PROFILE_OUTPUT=SUMMARY
 
 
 # Regrid tiles to global Gaussian grid in NEMSIO

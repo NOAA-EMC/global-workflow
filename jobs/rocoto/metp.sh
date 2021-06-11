@@ -10,6 +10,7 @@
 ## CDUMP  : cycle name (gdas / gfs)
 ## PDY    : current date (YYYYMMDD)
 ## cyc    : current cycle (HH)
+## SDATE_GFS  : first date of GFS cycle (YYYYMMDDHHMM)
 ## METPCASE : METplus verification use case (g2g1 | g2o1 | pcp1)
 ###############################################################
 
@@ -24,7 +25,7 @@ status=$?
 ###############################################################
 echo
 echo "=============== START TO SOURCE RELEVANT CONFIGS ==============="
-configs="base vrfy metp"
+configs="base metp"
 for config in $configs; do
     . $EXPDIR/config.${config}
     status=$?
@@ -41,8 +42,7 @@ status=$?
 
 ###############################################################
 export COMPONENT=${COMPONENT:-atmos}
-export CDATEm1=$($NDATE -24 $CDATE)
-export PDYm1=$(echo $CDATEm1 | cut -c1-8)
+export VDATE="$(echo $($NDATE -${VRFYBACK_HRS} $CDATE) | cut -c1-8)"
 
 export COMIN="$ROTDIR/$CDUMP.$PDY/$cyc/$COMPONENT"
 export DATAROOT="$RUNDIR/$CDATE/$CDUMP/vrfy"
@@ -58,7 +58,9 @@ if [ $CDUMP = "gfs" ]; then
     if [ $RUN_GRID2GRID_STEP1 = "YES" -o $RUN_GRID2OBS_STEP1 = "YES" -o $RUN_PRECIP_STEP1 = "YES" ]; then
 
         $VERIF_GLOBALSH 
- 
+        status=$?
+        [[ $status -ne 0 ]] && exit $status
+        [[ $status -eq 0 ]] && echo "Succesfully ran $VERIF_GLOBALSH"
     fi
 fi
 

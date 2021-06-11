@@ -211,22 +211,31 @@ if [ $ENSGRP -eq 0 ]; then
 	gPDY=$(echo $GDATE | cut -c1-8)
 	gcyc=$(echo $GDATE | cut -c9-10)
 
-	# Handle GDAS and GFS EnKF directories separately
-	COMIN_ENS="$ROTDIR/enkfgdas.$gPDY/$gcyc/$COMPONENT"
-	[[ -d $COMIN_ENS ]] && rm -rf $COMIN_ENS
-	COMIN_ENS="$ROTDIR/enkfgfs.$gPDY/$gcyc/$COMPONENT"
-	[[ -d $COMIN_ENS ]] && rm -rf $COMIN_ENS
 
-	# Remove any empty directories
-	COMIN_ENS="$ROTDIR/enkfgdas.$gPDY/$COMPONENT"
-	if [ -d $COMIN_ENS ] ; then
-	    [[ ! "$(ls -A $COMIN_ENS)" ]] && rm -rf $COMIN_ENS
-	fi
-	COMIN_ENS="$ROTDIR/enkfgfs.$gPDY/$COMPONENT"
-	if [ -d $COMIN_ENS ] ; then
-	    [[ ! "$(ls -A $COMIN_ENS)" ]] && rm -rf $COMIN_ENS
-	fi
- 
+	# Loop over GDAS and GFS EnKF directories separately.
+        clist="gdas gfs"
+	for ctype in $clist; do
+	    COMIN_ENS="$ROTDIR/enkf$ctype.$gPDY/$gcyc/$COMPONENT"
+            if [ -d $COMIN_ENS ]; then
+		rocotolog="$EXPDIR/logs/${GDATE}.log"
+		if [ -f $rocotolog ]; then
+		    testend=$(tail -n 1 $rocotolog | grep "This cycle is complete: Success")
+		    rc=$?
+		    if [ $rc -eq 0 ]; then
+                        # Retain f006.ens files.  Remove everything else
+			for file in `ls $COMIN_ENS | grep -v f006.ens`; do
+			    rm -rf $COMIN_ENS/$file
+			done
+		    fi
+		fi
+	    fi
+
+	    # Remove empty directories
+	    if [ -d $COMIN_ENS ] ; then
+		[[ ! "$(ls -A $COMIN_ENS)" ]] && rm -rf $COMIN_ENS
+	    fi
+	done
+
         COMIN_ENS="$ROTDIR/efsoigdas.$gPDY/$gcyc/$COMPONENT"
 	if [ -d $COMIN_ENS ] ; then
 	    rm -rf $COMIN_ENS/*f012*nc
@@ -269,6 +278,20 @@ if [ $ENSGRP -eq 0 ]; then
 
 
 fi
+
+# Remove enkf*.$rPDY for the older of GDATE or RDATE
+GDATE=$($NDATE -${RMOLDSTD_ENKF:-120} $CDATE)
+fhmax=$FHMAX_GFS
+RDATE=$($NDATE -$fhmax $CDATE)
+if [ $GDATE -lt $RDATE ]; then
+    RDATE=$GDATE
+fi
+rPDY=$(echo $RDATE | cut -c1-8)
+clist="gdas gfs"
+for ctype in $clist; do
+    COMIN="$ROTDIR/enkf$ctype.$rPDY"
+    [[ -d $COMIN ]] && rm -rf $COMIN
+done
 
 ###############################################################
 exit 0

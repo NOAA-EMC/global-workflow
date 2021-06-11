@@ -31,16 +31,16 @@ pwd=$(pwd -P)
 #--model fix fields
 #------------------------------
 if [ $machine == "cray" ]; then
-    FIX_DIR="/gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix_nco_gfsv16"
+    FIX_DIR="/gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix"
 elif [ $machine = "dell" ]; then
-    FIX_DIR="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix_nco_gfsv16"
+    FIX_DIR="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix"
 elif [ $machine = "hera" ]; then
-    FIX_DIR="/scratch1/NCEPDEV/global/glopara/fix_nco_gfsv16"
+    FIX_DIR="/scratch1/NCEPDEV/global/glopara/fix"
 elif [ $machine = "orion" ]; then
-    FIX_DIR="/work/noaa/global/glopara/fix_nco_gfsv16"
+    FIX_DIR="/work/noaa/global/glopara/fix"
 fi
 cd ${pwd}/../fix                ||exit 8
-for dir in fix_am fix_fv3_gmted2010 fix_gldas fix_orog fix_verif fix_wave_gfs ; do
+for dir in fix_aer fix_am fix_chem fix_fv3_gmted2010 fix_gldas fix_lut fix_orog fix_sfc_climo fix_verif fix_wave_gfs ; do
     if [ -d $dir ]; then
       [[ $RUN_ENVIR = nco ]] && chmod -R 755 $dir
       rm -rf $dir
@@ -324,8 +324,10 @@ cd ${pwd}/../sorc   ||   exit 8
     if [ -d ${pwd}/gfs_wafs.fd ]; then 
         $SLINK gfs_wafs.fd/sorc/wafs_awc_wafavn.fd                                              wafs_awc_wafavn.fd
         $SLINK gfs_wafs.fd/sorc/wafs_blending.fd                                                wafs_blending.fd
+        $SLINK gfs_wafs.fd/sorc/wafs_blending_0p25.fd                                           wafs_blending_0p25.fd
         $SLINK gfs_wafs.fd/sorc/wafs_cnvgrib2.fd                                                wafs_cnvgrib2.fd
         $SLINK gfs_wafs.fd/sorc/wafs_gcip.fd                                                    wafs_gcip.fd
+        $SLINK gfs_wafs.fd/sorc/wafs_grib2_0p25.fd                                              wafs_grib2_0p25.fd
         $SLINK gfs_wafs.fd/sorc/wafs_makewafs.fd                                                wafs_makewafs.fd
         $SLINK gfs_wafs.fd/sorc/wafs_setmissing.fd                                              wafs_setmissing.fd
     fi

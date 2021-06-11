@@ -109,20 +109,21 @@ if [ $CDUMP = "gfs" ]; then
     done
 fi
 
-# Archive atmospheric gaussian gfs forecast files for fit2obs
-VFYARC=${VFYARC:-$ROTDIR/vrfyarch}
-[[ ! -d $VFYARC ]] && mkdir -p $VFYARC
+# Archive required gaussian gfs forecast files for Fit2Obs
 if [ $CDUMP = "gfs" -a $FITSARC = "YES" ]; then
+    VFYARC=${VFYARC:-$ROTDIR/vrfyarch}
+    [[ ! -d $VFYARC ]] && mkdir -p $VFYARC
     mkdir -p $VFYARC/${CDUMP}.$PDY/$cyc
+    prefix=${CDUMP}.t${cyc}z
     fhmax=${FHMAX_FITS:-$FHMAX_GFS}
     fhr=0
     while [[ $fhr -le $fhmax ]]; do
-      fhr3=$(printf %03i $fhr)
-      sfcfile=${CDUMP}.t${cyc}z.sfcf${fhr3}${ASUFFIX}
-      sigfile=${CDUMP}.t${cyc}z.atmf${fhr3}${ASUFFIX}
-      $NCP $sfcfile $VFYARC/${CDUMP}.$PDY/$cyc/
-      $NCP $sigfile $VFYARC/${CDUMP}.$PDY/$cyc/
-      (( fhr = $fhr + 6 ))
+	fhr3=$(printf %03i $fhr)
+	sfcfile=${prefix}.sfcf${fhr3}${ASUFFIX}
+	sigfile=${prefix}.atmf${fhr3}${ASUFFIX}
+	$NCP $sfcfile $VFYARC/${CDUMP}.$PDY/$cyc/
+	$NCP $sigfile $VFYARC/${CDUMP}.$PDY/$cyc/
+	(( fhr = $fhr + 6 ))
     done
 fi
 
@@ -307,9 +308,10 @@ if [[ "${DELETE_COM_IN_ARCHIVE_JOB:-YES}" == NO ]] ; then
     exit 0
 fi
 
-# Step back every assim_freq hours
-# and remove old rotating directories for successful cycles
-# defaults from 24h to 120h
+# Step back every assim_freq hours and remove old rotating directories 
+# for successful cycles (defaults from 24h to 120h).  If GLDAS is
+# active, retain files needed by GLDAS update.  Independent of GLDAS, 
+# retain files needed by Fit2Obs
 DO_GLDAS=${DO_GLDAS:-"NO"}
 GDATEEND=$($NDATE -${RMOLDEND:-24}  $CDATE)
 GDATE=$($NDATE -${RMOLDSTD:-120} $CDATE)
@@ -330,14 +332,26 @@ while [ $GDATE -le $GDATEEND ]; do
                 if [ -d $COMINwave ]; then rm -rf $COMINwave ; fi
                 if [ -d $COMINrtofs -a $GDATE -lt $RTOFS_DATE ]; then rm -rf $COMINrtofs ; fi
                 if [ $CDUMP != "gdas" -o $DO_GLDAS = "NO" -o $GDATE -lt $GLDAS_DATE ]; then 
-                    rm -rf $COMIN 
+		    if [ $CDUMP = "gdas" ]; then
+                        for file in `ls $COMIN |grep -v prepbufr |grep -v cnvstat |grep -v atmanl.nc`; do
+                            rm -rf $COMIN/$file
+                        done
+		    else
+			rm -rf $COMIN
+		    fi
                 else
-                    for file in `ls $COMIN |grep -v sflux |grep -v RESTART`; do
-                        rm -rf $COMIN/$file
-                    done
-                    for file in `ls $COMIN/RESTART |grep -v sfcanl `; do
-                        rm -rf $COMIN/RESTART/$file
-                    done
+		    if [ $DO_GLDAS = "YES" ]; then
+			for file in `ls $COMIN |grep -v sflux |grep -v RESTART |grep -v prepbufr |grep -v cnvstat |grep -v atmanl.nc`; do
+                            rm -rf $COMIN/$file
+			done
+			for file in `ls $COMIN/RESTART |grep -v sfcanl `; do
+                            rm -rf $COMIN/RESTART/$file
+			done
+		    else
+                        for file in `ls $COMIN |grep -v prepbufr |grep -v cnvstat |grep -v atmanl.nc`; do
+                            rm -rf $COMIN/$file
+                        done
+		    fi
                 fi
             fi
 	fi
@@ -361,10 +375,13 @@ while [ $GDATE -le $GDATEEND ]; do
     GDATE=$($NDATE +$assim_freq $GDATE)
 done
 
-# Remove archived atmospheric gaussian files used for fit2obs in $VFYARC that are $FHMAX_FITS hrs behind.
-# touch existing files to prevent the files from being removed by the operation system.
+# Remove archived gaussian files used for Fit2Obs in $VFYARC that are 
+# $FHMAX_FITS plus a delta before $CDATE.  Touch existing archived 
+# gaussian files to prevent the files from being removed by automatic 
+# scrubber present on some machines.
+
 if [ $CDUMP = "gfs" ]; then
-    fhmax=$((FHMAX_FITS+36))       
+    fhmax=$((FHMAX_FITS+36))
     RDATE=$($NDATE -$fhmax $CDATE)
     rPDY=$(echo $RDATE | cut -c1-8)
     COMIN="$VFYARC/$CDUMP.$rPDY"
@@ -379,6 +396,18 @@ if [ $CDUMP = "gfs" ]; then
         TDATE=$($NDATE +6 $TDATE)
     done
 fi
+
+# Remove $CDUMP.$rPDY for the older of GDATE or RDATE
+GDATE=$($NDATE -${RMOLDSTD:-120} $CDATE)
+fhmax=$FHMAX_GFS
+RDATE=$($NDATE -$fhmax $CDATE)
+if [ $GDATE -lt $RDATE ]; then
+    RDATE=$GDATE
+fi
+rPDY=$(echo $RDATE | cut -c1-8)
+COMIN="$ROTDIR/$CDUMP.$rPDY"
+[[ -d $COMIN ]] && rm -rf $COMIN
+
 
 ###############################################################
 exit 0
