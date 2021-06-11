@@ -1054,7 +1054,10 @@ def get_hyb_tasks(dict_configs, cycledef='enkf'):
             else:
                 dep_dict = {'type': 'task', 'name': '%sediag' % cdump}
             deps.append(rocoto.add_dependency(dep_dict))
-            dependencies = rocoto.create_dependency(dep=deps)
+            data = '&ROTDIR;/gdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmanl.ensres.nc'
+            dep_dict = {'type': 'data', 'data': data }
+            deps.append(rocoto.add_dependency(dep_dict))
+            dependencies = rocoto.create_dependency(dep_condition='and',dep=deps)
             task = wfu.create_wf_task('eupdfsoi', cdump=cdump, envar=envars1, dependency=dependencies, cycledef=cycledef)
 
             dict_tasks['%seupdfsoi' % cdump] = task
