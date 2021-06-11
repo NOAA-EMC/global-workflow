@@ -12,6 +12,7 @@ default_places: &default_places
   RTMFIX:      !calc doc.platform.RTMFIX
  
   FIXwave: !expand "{HOMEgfs}/fix/fix_wave"
+  PARMwave: !expand "{HOMEgfs}/parm/wave"
 
   EXPDIR: !expand "{doc.platform.EXPROOT}/{doc.names.experiment}"
   ROTDIR: !expand "{doc.platform.COMROOT}/{doc.names.experiment}"
