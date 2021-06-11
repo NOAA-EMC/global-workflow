@@ -66,10 +66,6 @@ fi
 export COMIN=${COMIN:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/$COMPONENT}
 export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/$COMPONENT}
 
-export COMINice=${COMINice:-${COMROOTp2}/omb/prod}
-export COMINwnd=${COMINwnd:-${COMROOT}/gfs/prod}
-export COMIN_WAV_CUR=${COMIN_WAV_CUR:-${COMROOTp2}/rtofs/prod}
-
 mkdir -p $COMOUT/station
 
 env | sort
@@ -85,8 +81,14 @@ export WAV_MOD_TAG=${CDUMP}wave${waveMEMB}
 
 export CFP_VERBOSE=1
 
+export FHMAX_WAV_PNT=180
+if [ $FHMAX_WAV -lt $FHMAX_WAV_PNT ] ; then export FHMAX_WAV_IBP=$FHMAX_WAV ; fi
+export DOSPC_WAV='YES' # Spectral post
+export DOBLL_WAV='NO' # Bulletin post
+export DOBNDPNT_WAV='YES'  #not boundary points
+
 # Execute the Script  
-$HOMEgfs/scripts/exgfs_wave_post_bndpnt.sh
+$HOMEgfs/scripts/exgfs_wave_post_pnt.sh
 err=$?
 if [ $err -ne 0 ]; then
   msg="FATAL ERROR: ex-script of GWES_POST failed!"

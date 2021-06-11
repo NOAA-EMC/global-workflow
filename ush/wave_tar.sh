@@ -70,6 +70,9 @@
 
   filext=$type
   if [ "$type" = "ibp" ]; then filext='spec'; fi
+  if [ "$type" = "ibpbull" ]; then filext='bull'; fi
+  if [ "$type" = "ibpcbull" ]; then filext='cbull'; fi
+
 
   rm -rf TAR_${filext}_$ID 
   mkdir  TAR_${filext}_$ID
@@ -92,7 +95,7 @@
     exit 2
   fi
 
-  cd ${STA_DIR}/${type}
+  cd ${STA_DIR}/${filext}
 
 # --------------------------------------------------------------------------- #
 # 2.  Generate tar file (spectral files are compressed)
