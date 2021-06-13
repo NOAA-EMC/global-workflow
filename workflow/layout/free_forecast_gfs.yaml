@@ -69,7 +69,7 @@ suite: !Cycle
 
     forecast: !Family
       medcold: !Task
-        <<: *exclusive_task_template
+        <<: *forecast_task_template
         Disable: !calc doc.settings.cplflx == '.false.' or doc.settings.onestep == '.true.'
         Trigger: !FirstTrue
            - when: !calc doc.settings.cplwav=='.true.'
@@ -80,7 +80,7 @@ suite: !Cycle
         J_JOB: JGLOBAL_FORECAST_MEDCOLD
 
       highres: !Task
-        <<: *exclusive_task_template
+        <<: *forecast_task_template
         Trigger: !FirstTrue
            - when: !calc doc.settings.cplflx=='.true.' and doc.settings.onestep=='.false.'
              do: !Depend medcold

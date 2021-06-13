@@ -2,6 +2,10 @@
 
 ###############################################################
 # Setup runtime environment by loading modules
+#
+# This script accepts an optional argument for the task type.
+# Acceptable types are: exclusive, forecast, service, shared
+#
 ###############################################################
 
 ulimit_s=$( ulimit -S -s )
@@ -9,6 +13,19 @@ ulimit_s=$( ulimit -S -s )
 # Find module command and purge:
 source "$HOMEgfs/modulefiles/module-setup.sh.inc" 
 source "$HOMEgfs/ush/get_platform.sh"
+
+tasktype=
+if [ $# -eq 1 ] ; then
+  case "${1}" in
+    exclusive|forecast|service|shared)
+      tasktype="${1}"
+      ;;
+    *)
+      echo "Unsupported task type"
+      exit 1
+      ;;
+  esac
+fi
 
 platform=$( get_platform )
 
@@ -18,7 +35,7 @@ case "${platform}" in
   hera)
     moduledir="$HOMEgfs/sorc/ufs_coupled.fd/modulefiles"
     target=${platform}.intel
-    if [[ -r ${moduledir}/ufs_${target} ]] ; then
+    if [[ "${tasktype}" = "forecast" && -r ${moduledir}/ufs_${target} ]] ; then
       modulelist=ufs_${target}
       if [[ "$( grep UFS_GOCART ${HOMEgfs}/sorc/ufs_coupled.fd/build/CMakeCache.txt 2>/dev/null | cut -d= -f2 )" = "ON" ]] ; then
         # add aerosols modulefile
