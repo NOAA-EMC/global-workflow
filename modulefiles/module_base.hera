@@ -4,8 +4,7 @@
 ##
 
 # Modules availble through hpc-stack
-# module use /scratch2/NCEPDEV/nwprod/hpc-stack/libs/hpc-stack/modulefiles/stack
-module use /scratch1/NCEPDEV/nems/Raffaele.Montuoro/dev/nasa/libs/hpc-stack/1.1.0-nasa/modulefiles/stack
+module use /scratch2/NCEPDEV/nwprod/hpc-stack/libs/hpc-stack/modulefiles/stack
 
 module load hpc/1.1.0
 module load hpc-intel/18.0.5.274
