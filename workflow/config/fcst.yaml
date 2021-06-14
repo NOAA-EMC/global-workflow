@@ -40,7 +40,7 @@ config_fcst:
     - otherwise: !calc doc.partition_common.resources.run_gfsfcst
 
   restart_interval_gfs: !FirstTrue
-    - when: !calc doc.settings.cplgocart == ".false."
+    - when: !calc doc.settings.cplchem == ".false."
       do: !calc doc.fv3_gfs_settings.restart_interval
     - otherwise: !FirstTrue
       - when: !calc doc.fv3_gfs_settings.restart_interval == "0"
