@@ -35,7 +35,6 @@ default_settings: &default_settings
   ecflow_virtual_clock: no
   ecflow_hybrid_clock: no
 
-  gfs_cyc: 4
   nems_temp: 'atm'
   nems_temp_cold: 'atm'
   ics_from: opsgfs
@@ -74,6 +73,9 @@ default_settings: &default_settings
   DOIAU: NO
   IAUFHRS: 6
   IAU_DELTHRS: 6
+
+  STEP_DA: !timedelta "06:00:00"
+  STEP_GFS: !timedelta "06:00:00"
 
   KEEPDATA: NO
   DUMP_SUFFIX: ""

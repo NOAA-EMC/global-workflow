@@ -4,8 +4,11 @@ case:
 
   settings: 
     SDATE: 2013-04-01t00:00:00
-    EDATE: 2013-04-01t00:00:00
+    EDATE: 2013-04-02t00:00:00    
+    STEP_GFS: !timedelta "24:00:00"
+    STEP_DA: !timedelta "00:00:00"
     max_job_tries: 1
+    rocoto_cycle_throttle: 1
 
     cplchem: .true.
     print_esmf: .true.
@@ -58,3 +61,6 @@ case:
   post:
     downset: 2
     GOESF: no
+
+  archiving:
+    archive_to_hpss: False

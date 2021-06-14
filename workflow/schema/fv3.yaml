@@ -57,7 +57,7 @@ fv3_settings_template: !Template &fv3_settings_template
   ICO2:               { type: int }
   warm_start:         { type: bool }
   read_increment:     { type: bool }
-  restart_interval:   { type: int }
+  restart_interval:   { type: string }
 #  FIELD_TABLE:        { type: string }
 
   LEVS:

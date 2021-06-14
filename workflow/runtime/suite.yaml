@@ -2,6 +2,9 @@
 # suites in the workflow/ directory.  Most of these variables are
 # specific to the cycled workflow which is not in this release.
 
+day_dt: !timedelta "24:00:00"
+zero_dt: !timedelta "00:00:00"
+
 # gfs_clock_1 - run GFS only at 0 UTC daily
 gfs_clock_1: !Clock
   start: !calc tools.day_of(suite.Clock.start+suite.Clock.step)
@@ -13,12 +16,12 @@ gfs_clock_2: !Clock
   step: !timedelta "12:00:00"
 
 # gfs_clock_4 - run GFS every cycle
-gfs_clock_4: !Clock
-  start: !FirstTrue
-      - when: !calc doc.places.workflow_file == "layout/free_forecast_gfs.yaml"
-        do: !calc suite.Clock.start
-      - otherwise: !calc suite.Clock.start+suite.Clock.step
-  step: !timedelta "06:00:00"
+# gfs_clock_4: !Clock
+#   start: !FirstTrue
+#       - when: !calc doc.settings.STEP_DA == doc.zero_dt
+#         do: !calc suite.Clock.start
+#       - otherwise: !calc suite.Clock.start+suite.Clock.step
+#   step: !timedelta "06:00:00"
 
 # cycled_suite_alarms - this is used to define which cycles various
 # jobs run in.  In the workflow suite definition, jobs may have an
@@ -39,20 +42,26 @@ cycled_suite_alarms: &cycled_suite_alarms
 
   # gfs - cycles for which the gfs is run
   gfs: !FirstTrue
-    - when: !calc doc.settings.gfs_cyc == 0
+    # No free forecast
+    - when: !calc doc.settings.STEP_GFS == doc.zero_dt
       do: !Clock  # required but ignored because gfs is disabled
         start: !calc suite.Clock.start
         end: !calc suite.Clock.end
         step: !calc suite.Clock.step
-    - when: !calc doc.settings.gfs_cyc == 1
-      do: !calc suite.Clock.for_alarm(doc.gfs_clock_1)
-    - when: !calc doc.settings.gfs_cyc == 2
-      do: !calc suite.Clock.for_alarm(doc.gfs_clock_2)
-    - when: !calc doc.settings.gfs_cyc == 4
-      do: !calc suite.Clock.for_alarm(doc.gfs_clock_4)
-    - otherwise: !error Unknown gfs clock settings {doc.settings.gfs_cyc}
+    - otherwise: !Clock
+        start: !FirstTrue
+          - when: !calc doc.settings.STEP_DA == doc.zero_dt
+            # No DA
+            do: !calc suite.Clock.start
+            # Run one DA-only cycle before starting GFS
+          - otherwise: !calc suite.Clock.start+suite.Clock.step
+        end: !calc suite.Clock.end
+        step: !calc doc.settings.STEP_GFS
 
-  gfs_00_12: !calc suite.Clock.for_alarm(doc.gfs_clock_2)
+  gfs_00_12: !FirstTrue
+    - when: !calc doc.settings.STEP_GFS >= doc.day_dt
+      do: !calc suite.Clock.for_alarm(doc.gfs_clock_1)
+    - otherwise: !calc suite.Clock.for_alarm(doc.gfs_clock_2)
 
 
 # suite_defaults - this is inherited by the actual suite definitions
@@ -60,10 +69,14 @@ cycled_suite_alarms: &cycled_suite_alarms
 suite_defaults: &suite_defaults
   # Clock - the list of cycles to run
   Clock: !Clock
-    # NEED TO FIX FOR LESS FREQUENT GFS
     start: !calc doc.settings.SDATE
     end: !calc doc.settings.EDATE
-    step: !timedelta "6:00:00"
+    step: !FirstTrue
+      - when: !calc doc.settings.STEP_DA == doc.zero_dt
+        # No DA, use GFS step
+        do: !calc doc.settings.STEP_GFS
+        # Use DA step, which might be shorter than GFS step
+      - otherwise: !calc doc.settings.STEP_DA
 
   Overrides:
     allowed: [ 'queue', 'partition', 'resources', 'rocoto_command', 'rocoto_log_path',

@@ -12,6 +12,7 @@ suite: !Cycle
     Disable: !calc >-
       doc.settings.get("IC_CDUMP","") and not doc.settings.chgres_and_convert_ics or doc.settings.mom6ic_prepared=='.true.'
 #    RUN: 'gfs'
+    AlarmName: gfs
     jgfs_emc_getics: !Task
       <<: *service_task_template
       RUN: 'gfs'
@@ -43,6 +44,17 @@ suite: !Cycle
       ecf_module_commands: "# fv3ic.sh will load modules instead"
       model: gfs
 
+    jgfs_init_chem: !Task
+      <<: *exclusive_task_template
+      RUN: 'gfs'
+      Disable: !calc doc.settings.cplgocart != '.true.'
+      Trigger: !Depend jgfs_emc_mom6ic & up.gfs.forecast.at('-' + tools.dt_to_HMS(doc.settings.STEP_GFS))
+      resources: !calc partition.resources.run_init_chem
+      J_JOB: rocoto/init_chem.sh
+      ecf_module_commands: "# init_chem.sh will load modules instead"
+      model: gfs
+      Complete: !Depend ~ suite.has_cycle('-' + tools.dt_to_HMS(doc.settings.STEP_GFS))
+
   #####################################################################
   ## GFS FAMILY #######################################################
   #####################################################################
@@ -50,6 +62,7 @@ suite: !Cycle
   gfs: !Family
 #    AlarmName: gdas                    ##!!"gdas" mean to run every 6 hrs from sdate to edate!!"
     RUN: 'gfs'
+    AlarmName: gfs
     ecflow_def: "edit RUN 'gfs'"
 
     prep: !Family
@@ -86,6 +99,8 @@ suite: !Cycle
              do: !Depend medcold
            - when: !calc doc.settings.cplwav=='.true.'
              do: !Depend up.prep
+           - when: !calc doc.settings.cplgocart=='.true.'
+             do: !Depend up.up.ics.jgfs_init_chem & up.up.ics.jgfs_emc_mom6ic
            - otherwise: !Depend up.up.ics.jgfs_emc_mom6ic
         resources_remap: !JobRequest [ { <<: *remap_resource_template } ]
         resources: !FirstTrue
@@ -223,7 +238,7 @@ suite: !Cycle
 
     jgfs_archive: !Task
       <<: *service_task_template
-      Disable: !calc doc.settings.gfs_cyc == 0
+      Disable: !calc doc.settings.STEP_GFS == doc.zero_dt
       AlarmName: gfs
       Trigger: !Depend up.gfs
       resources: !calc partition.resources.run_arch
@@ -241,6 +256,7 @@ suite: !Cycle
   final: !Task
     <<: *service_task_template
     Disable: !calc not metasched.type=="rocoto"
+    AlarmName: gfs
     resources: !calc partition.resources.run_final
     rocoto_command: /bin/true
     model: gfs # useless but required

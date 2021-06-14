@@ -280,7 +280,7 @@ suite: !Cycle
   ######################################################################
 
   gfs: !Family
-    Disable: !calc doc.settings.gfs_cyc==0
+    Disable: !calc doc.settings.STEP_GFS == doc.zero_dt
     Complete: !Depend ~ suite.has_cycle('-6:00:00')
     AlarmName: gfs
     RUN: 'gfs'

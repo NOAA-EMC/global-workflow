@@ -39,6 +39,27 @@ config_fcst:
       do: !calc doc.partition_common.resources.run_coupled_fcst
     - otherwise: !calc doc.partition_common.resources.run_gfsfcst
 
+  restart_interval_gfs: !FirstTrue
+    - when: !calc doc.settings.cplgocart == ".false."
+      do: !calc doc.fv3_gfs_settings.restart_interval
+    - otherwise: !FirstTrue
+      - when: !calc doc.fv3_gfs_settings.restart_interval == "0"
+        # Add restart file at forecast cadence in addition to end of forecast
+        do: !calc tools.dt_to_HMS(doc.settings.STEP_GFS).split(':')[0] + " " + str(doc.output_settings.FHMAX_GFS)
+      - when: !calc len(doc.fv3_gfs_settings.restart_interval.split(' ')) == 1
+        # Make sure forecast cadence is included in restart interval
+        do: !FirstTrue
+          # STEP_GFS is already a multiple of the restart interval, don't change
+          - when: !calc int(tools.dt_to_HMS(doc.settings.STEP_GFS).split(':')[0])%int(doc.fv3_gfs_settings.restart_interval) == 0
+            do: !calc doc.fv3_gfs_settings.restart_interval
+          # STEP_GFS is not a multiple of the restart interval, convert to explicit list and add
+          - otherwise: !calc tools.join(tools.seq(0,doc.output_settings.FHMAX_GFS,int(doc.fv3_gfs_settings.restart_interval)) + [tools.dt_to_HMS(doc.settings.STEP_GFS).split(':')[0]], ' ')
+      # restart_interval is already an explicit list, make sure STEP_GFS is in the list
+      - otherwise: !FirstTrue
+        - when: !calc doc.fv3_gfs_settings.restart_interval.split(' ')[-1] == "-1"
+          do: !calc tools.join(doc.fv3_gfs_settings.restart_interval.split(' ')[:-1], ' ') + " " + tools.dt_to_HMS(doc.settings.STEP_GFS).split(':')[0]
+        - otherwise: !calc doc.fv3_gfs_settings.restart_interval + " " + tools.dt_to_HMS(doc.settings.STEP_GFS).split(':')[0]
+
   content: !expand |
     #!/bin/ksh -x
     
@@ -209,7 +230,7 @@ config_fcst:
         fi
     
         # Write restart files at next assimilation time
-        export restart_interval=6
+        export restart_interval={doc.fv3_enkf_settings.restart_interval}
         export npe_remap={doc.partition_common.resources.fallback_run_gfsremap[0].mpi_ranks}
         export nth_remap={doc.partition_common.resources.fallback_run_gfsremap[0].OMP_NUM_THREADS}
 
@@ -221,10 +242,9 @@ config_fcst:
         else
             export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_orig"
         fi
+        export restart_interval={restart_interval_gfs}
         export npe_remap={doc.partition_common.resources.fallback_run_gfsremap[0].mpi_ranks}
         export nth_remap={doc.partition_common.resources.fallback_run_gfsremap[0].OMP_NUM_THREADS}
-
-
     fi
 
     if [ $cplchem = .true. ]; then # temporary settings for aerosol coupling
@@ -233,6 +253,7 @@ config_fcst:
         export CHM_CFGDIR="{doc.chem_settings.CFGDIR}"
         export CHM_INPDIR="{doc.chem_settings.INPDIR}"
         export dnats="$(( $dnats + {doc.chem_settings.ntdiag} ))"
+        export KMP_INIT_AT_FORK=FALSE # Temporary setting
     elif [[ $cpl == .true. ]] ; then # coupled model
         export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_cpl"
     fi

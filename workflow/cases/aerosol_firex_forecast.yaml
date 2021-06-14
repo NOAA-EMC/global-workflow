@@ -11,9 +11,9 @@ case:
   settings: 
     SDATE: 2019-07-01t00:00:00
     EDATE: 2019-07-15t00:00:00
+    STEP_GFS: !timedelta "24:00:00"
+    STEP_DA: !timedelta "00:00:00"
     max_job_tries: 1
-
-    gfs_cyc: 1
 
     cplchem: .true.
     print_esmf: .true.

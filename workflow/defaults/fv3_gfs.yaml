@@ -99,7 +99,7 @@ fv3_gfs_defaults: &fv3_gfs_defaults
   ICO2: 2
   warm_start: true
   read_increment: no
-  restart_interval: 6
+  restart_interval: "0"
   imp_physics: "11"
   phy_dependent_var: !Select
      select: !calc imp_physics

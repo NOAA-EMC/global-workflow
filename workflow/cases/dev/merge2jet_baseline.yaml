@@ -181,5 +181,5 @@ case:
     EDATE: 2019-05-02t00:00:00
     chgres_and_convert_ics: No
     realtime: false
-    gfs_cyc: 4 # run gfs at 0z, 12z
+    STEP_GFS: !timedelta "06:00:00"
     run_gsi: Yes
