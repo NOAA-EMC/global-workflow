@@ -10,7 +10,7 @@ if [ $# -ne 1 ]; then
     echo "argument can be any one of the following:"
     echo "anal analcalc analdiag gldas fcst post vrfy metp arch echgres"
     echo "eobs ediag eomg eupd ecen esfc efcs epos earc"
-    echo "waveinit waveprep wavepostsbs wavepostbndpnt wavepostpnt"
+    echo "waveinit waveprep wavepostsbs wavepostbndpnt wavepostbndpntbll wavepostpnt"
     echo "wavegempak waveawipsbulls waveawipsgridded"
     echo "postsnd awips gempak"
     echo "wafs wafsgrib2 wafsblending wafsgrib20p25 wafsblending0p25 wafsgcip"
@@ -75,6 +75,14 @@ elif [ $step = "wavepostbndpnt" ]; then
     export nth_wavepostbndpnt=1
     export npe_node_wavepostbndpnt=$(echo "$npe_node_max / $nth_wavepostbndpnt" | bc)
     export NTASKS=${npe_wavepostbndpnt}
+
+elif [ $step = "wavepostbndpntbll" ]; then
+
+    export wtime_wavepostbndpntbll="01:00:00"
+    export npe_wavepostbndpntbll=280
+    export nth_wavepostbndpntbll=1
+    export npe_node_wavepostbndpntbll=$(echo "$npe_node_max / $nth_wavepostbndpntbll" | bc)
+    export NTASKS=${npe_wavepostbndpntbll}
 
 elif [ $step = "wavepostpnt" ]; then
 

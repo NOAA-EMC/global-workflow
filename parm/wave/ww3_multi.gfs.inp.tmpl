@@ -1,0 +1,38 @@
+$ WAVEWATCH III multi-grid input file
+$ ------------------------------------
+  NMGRIDS NFGRIDS FUNIPNT IOSRV FPNTPROC FGRDPROC
+$
+CPLILINE
+WINDLINE
+ICELINE
+CURRLINE
+UNIPOINTS
+GRIDLINE
+$
+   RUN_BEG   RUN_END
+$
+   FLAGMASKCOMP  FLAGMASKOUT
+$
+   OUT_BEG  DTFLD  OUT_END GOFILETYPE 
+   N
+   OUTPARS
+$
+   OUT_BEG  DTPNT  OUT_END POFILETYPE
+BUOY_FILE
+$
+   OUT_BEG      0  OUT_END
+$
+$ Keep next two lines formatting as is to allow proper parsing
+   RST_BEG   DTRST  RST_END RSTTYPE
+RST_2_BEG   DT_2_RST  RST_2_END
+$
+   OUT_BEG      0  OUT_END
+$
+   OUT_BEG      0  OUT_END
+$
+  'the_end'  0
+$
+  'STP'
+$
+$ End of input file
+
