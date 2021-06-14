@@ -240,7 +240,7 @@ config_fcst:
         else
             export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_orig"
         fi
-        export restart_interval={restart_interval_gfs}
+        export restart_interval="{restart_interval_gfs}"
         export npe_remap={doc.partition_common.resources.fallback_run_gfsremap[0].mpi_ranks}
         export nth_remap={doc.partition_common.resources.fallback_run_gfsremap[0].OMP_NUM_THREADS}
     fi
