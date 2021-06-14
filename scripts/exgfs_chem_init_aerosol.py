@@ -97,7 +97,7 @@ def get_atm_files(path: str) -> typing.List[str]:
 
 # Find last cycle with tracer data available via restart files
 def get_tracer_files(time: datetime, incr: int, max_lookback: int, rot_dir: str, cdump: str) -> typing.List[str]:
-	print(f"Looking for tracer files in {rot_dir}")
+	print(f"Looking for restart tracer files in {rot_dir}")
 	for lookback in map(lambda i: incr * (i + 1), range(max_lookback)):
 		last_time = time - timedelta(hours=lookback)
 		if(debug):
@@ -105,7 +105,7 @@ def get_tracer_files(time: datetime, incr: int, max_lookback: int, rot_dir: str,
 		tracer_base = last_time.strftime(tracer_base_pattern.format(**locals()))
 		files = list(map(lambda tile: time.strftime(tracer_file_pattern.format(tracer_base=tracer_base, tile=tile)), tiles))
 		if(debug):
-			print("\t\tLooking for files {files} in directory {tracer_base}")
+			print(f"\t\tLooking for files {files} in directory {tracer_base}")
 		found = [file for file in files if os.path.isfile(file)]
 		if(found):
 			if(debug):
