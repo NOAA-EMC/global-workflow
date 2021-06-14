@@ -199,6 +199,7 @@ config_base:
     export FHMAX_HF_GFS={doc.output_settings.FHMAX_HF_GFS}
     export FHOUT_HF_GFS={doc.output_settings.FHOUT_HF_GFS}
     export FHRLST="{doc.output_settings.gfs_forecast_hours}"
+    export STEP_GFS="{tools.dt_to_HMS(doc.settings.STEP_GFS).split(':')[0]}"
 
     # I/O QUILTING, true--use Write Component; false--use GFDL FMS
     # if quilting=true, choose OUTPUT_GRID as cubed_sphere_grid in netcdf or gaussian_grid
