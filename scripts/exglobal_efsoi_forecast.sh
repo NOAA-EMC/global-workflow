@@ -67,6 +67,8 @@ NWPROD=${NWPROD:-${NWROOT:-$pwd}}
 HOMEgfs=${HOMEgfs:-$NWPROD}
 FIX_DIR=${FIX_DIR:-$HOMEgfs/fix}
 FIX_AM=${FIX_AM:-$FIX_DIR/fix_am}
+export FIX_AER=${FIX_AER:-$FIX_DIR/fix_aer}
+export FIX_LUT=${FIX_LUT:-$FIX_DIR/fix_lut}
 FIXfv3=${FIXfv3:-$FIX_DIR/fix_fv3_gmted2010}
 DATA=${DATA:-$pwd/fv3tmp$$}    # temporary running directory
 ROTDIR=${ROTDIR:-$pwd}         # rotating archive directory
@@ -116,6 +118,7 @@ NTASKS_FV3=${NTASKS_FV3:-$npe_fv3}
 
 TYPE=${TYPE:-"nh"}                  # choices:  nh, hydro
 MONO=${MONO:-"non-mono"}            # choices:  mono, non-mono
+RUN_CCPP=${RUN_CCPP:-"NO"}
 
 QUILTING=${QUILTING:-".true."}
 OUTPUT_GRID=${OUTPUT_GRID:-"gaussian_grid"}
@@ -201,8 +204,8 @@ if [ $MEMBER -lt 0 ]; then
 else
   # needs a previous ens forecast to do a warm start
   prefix=efsoi$CDUMP
+  #prefix=enkf$CDUMP
   rprefix=enkf$rCDUMP
-  #rprefix=efsoi$rCDUMP
   memchar=mem$(printf %03i $MEMBER)
 fi
 memdir=$ROTDIR/${prefix}.$PDY/$cyc/atmos/$memchar
@@ -339,6 +342,13 @@ EOF
       IAU_INC_FILES="''"
     fi
 
+    rst_list_rerun=""
+    xfh=$restart_interval_gfs
+    while [ $xfh -le $FHMAX_GFS ]; do
+      rst_list_rerun="$rst_list_rerun $xfh"
+      xfh=$((xfh+restart_interval_gfs))
+    done
+    restart_interval="$rst_list_rerun"
 
   fi
 #.............................
@@ -395,6 +405,16 @@ $NLN $FIX_AM/${O3FORC}                         $DATA/global_o3prdlos.f77
 $NLN $FIX_AM/${H2OFORC}                        $DATA/global_h2oprdlos.f77
 $NLN $FIX_AM/global_solarconstant_noaa_an.txt  $DATA/solarconstant_noaa_an.txt
 $NLN $FIX_AM/global_sfc_emissivity_idx.txt     $DATA/sfc_emissivity_idx.txt
+
+## merra2 aerosol climo
+for n in 01 02 03 04 05 06 07 08 09 10 11 12; do
+$NLN $FIX_AER/merra2.aerclim.2003-2014.m${n}.nc $DATA/aeroclim.m${n}.nc
+done
+$NLN $FIX_LUT/optics_BC.v1_3.dat $DATA/optics_BC.dat
+$NLN $FIX_LUT/optics_OC.v1_3.dat $DATA/optics_OC.dat
+$NLN $FIX_LUT/optics_DU.v15_3.dat $DATA/optics_DU.dat
+$NLN $FIX_LUT/optics_SS.v3_3.dat $DATA/optics_SS.dat
+$NLN $FIX_LUT/optics_SU.v1_3.dat $DATA/optics_SU.dat
 
 $NLN $FIX_AM/global_co2historicaldata_glob.txt $DATA/co2historicaldata_glob.txt
 $NLN $FIX_AM/co2monthlycyc.txt                 $DATA/co2monthlycyc.txt
@@ -728,6 +748,16 @@ fi
 $NCP $DATA_TABLE  data_table
 $NCP $FIELD_TABLE field_table
 
+# copy CCN_ACTIVATE.BIN for Thompson microphysics
+if [ $RUN_CCPP = "YES" ]; then
+if [ "$CCPP_SUITE" = 'FV3_GSD_v0' -o "$CCPP_SUITE" = 'FV3_GSD_noah' ]; then 
+  $NLN $FIX_AM/CCN_ACTIVATE.BIN  CCN_ACTIVATE.BIN
+  $NLN $FIX_AM/freezeH2O.dat  freezeH2O.dat
+  $NLN $FIX_AM/qr_acr_qg.dat  qr_acr_qg.dat
+  $NLN $FIX_AM/qr_acr_qs.dat  qr_acr_qs.dat
+fi
+fi
+
 #------------------------------------------------------------------
 rm -f nems.configure
 
@@ -860,6 +890,11 @@ EOF
 #  restart_secs = $restart_secs
 #  $coupler_nml
 #/
+
+atmos_model_nml=""
+if [ $RUN_CCPP = "YES" ]; then
+ atmos_model_nml="ccpp_suite = $CCPP_SUITE"
+fi
 
 cat > input.nml <<EOF
 &amip_interp_nml
@@ -1021,8 +1056,6 @@ deflate_level=${deflate_level:-1}
   iems         = ${IEMS:-"1"}
   iaer         = $IAER
   icliq_sw     = ${icliq_sw:-"2"}
-  iovr_lw      = ${iovr_lw:-"3"}
-  iovr_sw      = ${iovr_sw:-"3"}
   ico2         = $ICO2
   isubc_sw     = ${isubc_sw:-"2"}
   isubc_lw     = ${isubc_lw:-"2"}
@@ -1076,6 +1109,31 @@ deflate_level=${deflate_level:-1}
   do_shum      = ${do_shum:-".false."}
   do_skeb      = ${do_skeb:-".false."}
 EOF
+
+if [ $RUN_CCPP = "YES" ]; then
+  cat >> input.nml << EOF
+  iovr         = ${iovr:-"3"}
+  ltaerosol    = ${ltaerosol:-".false."}
+  lradar       = ${lradar:-".false."}
+  ttendlim     = ${ttendlim:-"0.005"}
+  oz_phys      = ${oz_phys:-".false."}
+  oz_phys_2015 = ${oz_phys_2015:-".true."}
+  lsoil_lsm    = ${lsoil_lsm:-"4"}
+  do_mynnedmf  = ${do_mynnedmf:-".false."}
+  do_mynnsfclay = ${do_mynnsfclay:-".false."}
+  icloud_bl    = ${icloud_bl:-"1"}
+  bl_mynn_edmf = ${bl_mynn_edmf:-"1"}
+  bl_mynn_tkeadvect = ${bl_mynn_tkeadvect:-".true."}
+  bl_mynn_edmf_mom = ${bl_mynn_edmf_mom:-"1"}
+  min_lakeice  = ${min_lakeice:-"0.15"}
+  min_seaice   = ${min_seaice:-"0.15"}
+EOF
+else
+  cat >> input.nml << EOF
+  iovr_lw      = ${iovr_lw:-"3"}
+  iovr_sw      = ${iovr_sw:-"3"}
+EOF
+fi
 
 # Add namelist for IAU
 if [ $DOIAU = "YES" ]; then
@@ -1307,6 +1365,9 @@ else
     eval $NLN atmos_4xdaily.tile${n}.nc $memdir/atmos_4xdaily.tile${n}.nc
   done
 fi
+
+# Copy namelist file
+$NCP input.nml $memdir
 
 #------------------------------------------------------------------
 # run the executable
