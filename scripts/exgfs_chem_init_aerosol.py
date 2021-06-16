@@ -12,8 +12,8 @@ from functools import partial
 # Constants
 atm_base_pattern = "{ics_dir}/%Y%m%d%H/atmos/{case}/INPUT"                    # Location of atmosphere ICs
 atm_file_pattern = "{path}/gfs_data.{tile}.nc"                                # Atm IC file names
-tracer_base_pattern = "{rot_dir}/{cdump}.%Y%m%d/%H/atmos/RERUN_RESTART"        # Time of previous run
-tracer_file_pattern = "{tracer_base}/%Y%m%d.%H0000.fv_tracer.res.{tile}.nc"   # Time when restart is valid (current run)
+tracer_base_pattern = "{rot_dir}/{cdump}.%Y%m%d/%H/atmos/RERUN_RESTART"       # Location of restart files (time of previous run)
+tracer_file_pattern = "{tracer_base}/{timestamp}fv_tracer.res.{tile}.nc"      # Name of restart files (time when restart is valid)
 tracer_list_file_pattern = "{parm_gfs}/chem/gocart_tracer.list"               # Text list of tracer names to copy
 merge_script_pattern = "{ush_gfs}/merge_fv3_chem_tile.py"
 n_tiles = 6
@@ -32,7 +32,8 @@ tiles = list(map(lambda t: "tile{t}".format(t=t), range(1, n_tiles + 1)))
 def main() -> None:
 	# Read in environment variables and make sure they exist
 	cdate = get_env_var("CDATE")
-	incr = int(get_env_var('FHCYC'))
+	incr = int(get_env_var('STEP_GFS'))
+	fcst_length = int(get_env_var('FHMAX_GFS'))
 	cdump = get_env_var("CDUMP")
 	rot_dir = get_env_var("ROTDIR")
 	ics_dir = get_env_var("ICSDIR")
@@ -54,7 +55,7 @@ def main() -> None:
 			print(f'{var} = {f"{var}"}')
 
 	atm_files = get_atm_files(atm_source_path)
-	tracer_files = get_tracer_files(time, incr, max_lookback, rot_dir, cdump)
+	tracer_files = get_tracer_files(time, incr, max_lookback, fcst_length, rot_dir, cdump)
 
 	if (tracer_files is not None):
 		merge_tracers(merge_script, atm_files, tracer_files, tracer_list_file)
@@ -96,14 +97,24 @@ def get_atm_files(path: str) -> typing.List[str]:
 
 
 # Find last cycle with tracer data available via restart files
-def get_tracer_files(time: datetime, incr: int, max_lookback: int, rot_dir: str, cdump: str) -> typing.List[str]:
+def get_tracer_files(time: datetime, incr: int, max_lookback: int, fcst_length: int, rot_dir: str, cdump: str) -> typing.List[str]:
 	print(f"Looking for restart tracer files in {rot_dir}")
 	for lookback in map(lambda i: incr * (i + 1), range(max_lookback)):
+		if(lookback > fcst_length):
+			# Trying to look back farther than the length of a forecast
+			break
+		elif(lookback == fcst_length):
+			# Restart files at the end of the cycle don't have a timestamp
+			timestamp = ""
+		else:
+			timestamp = time.strftime("%Y%m%d.%H0000.")
+
 		last_time = time - timedelta(hours=lookback)
+
 		if(debug):
 			print(f"\tChecking {last_time}")
 		tracer_base = last_time.strftime(tracer_base_pattern.format(**locals()))
-		files = list(map(lambda tile: time.strftime(tracer_file_pattern.format(tracer_base=tracer_base, tile=tile)), tiles))
+		files = list(map(lambda tile: tracer_file_pattern.format(timestamp=timestamp, tracer_base=tracer_base, tile=tile), tiles))
 		if(debug):
 			print(f"\t\tLooking for files {files} in directory {tracer_base}")
 		found = [file for file in files if os.path.isfile(file)]
