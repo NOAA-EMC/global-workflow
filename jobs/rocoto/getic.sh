@@ -70,13 +70,6 @@ if [[ $gfs_ver = "v16" && $EXP_WARM_START = ".true." && $CASE = $OPS_RES ]]; the
     status=$?
     [[ $status -ne 0 ]] && exit $status
 
-    if [ $DO_WAVE = "YES" ]; then
-      # Pull prior cycle wave restart files
-      htar -xvf ${HPSSDIR}/${GDATE}/gdaswave_restart.tar
-      status=$?
-      [[ $status -ne 0 ]] && exit $status
-    fi
-
     # Pull current cycle restart files
     htar -xvf ${HPSSDIR}/${CDATE}/gfs_restarta.tar
     status=$?
