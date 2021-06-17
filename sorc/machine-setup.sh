@@ -45,11 +45,10 @@ elif [[ -d /scratch1 ]] ; then
     fi
     target=hera
     module purge
-    module load intel
-    module load impi
-    export NCEPLIBS=/scratch2/NCEPDEV/nwprod/NCEPLIBS
-    module use $NCEPLIBS/modulefiles
-    #export WRFPATH=$NCEPLIBS/wrf.shared.new/v1.1.1/src
+    module use /scratch2/NCEPDEV/nwprod/hpc-stack/libs/hpc-stack/modulefiles/stack
+    module load hpc/1.1.0
+    module load cmake/3.20.0
+
     export myFC=mpiifort
     export FCOMP=mpiifort
 
@@ -95,6 +94,9 @@ elif [[ -L /usrx && "$( readlink /usrx 2> /dev/null )" =~ dell ]] ; then
     fi
     target=wcoss_dell_p3
     module purge 
+    module use /gpfs/dell2/usrx/local/nceplibs/dev/hpc-stack/libs/hpc-stack/modulefiles
+    module load hpc/1.1.0
+    module load cmake/3.20.0
 
 ##---------------------------------------------------------------------------
 
