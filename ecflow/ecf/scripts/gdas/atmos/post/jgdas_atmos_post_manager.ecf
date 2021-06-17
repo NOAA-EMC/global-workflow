@@ -34,9 +34,37 @@ module load impi/${impi_ver}
 
 module list
 
+#export COMPONENT=${COMPONENT:-atmos}
+#export COM_IN=%COM%/$NET/$envir
+#export ROTDIR=%COM%/$NET/$envir
 export cyc=%CYC%
 export cycle=t%CYC%z
+#export CDATE=$PDY$cyc
+#export COMIN=$COM_IN/${RUN}.${PDY}/${cyc}/${COMPONENT}
+#export COMOUT=$COMIN
 export USE_CFP=YES
+
+############################################################
+# Ensure analysis file created before proceed
+############################################################
+#ic=1
+#while [ $ic -le 30 ]
+#  do
+#    if test -f ${COMIN}/${RUN}.${cycle}.atmanl.nc
+#    then
+#      sleep 60
+#      break
+#    else
+#      ic=`expr $ic + 1`
+#      sleep 10
+#    fi
+#    if [ $ic -eq 30 ]
+#    then
+#      ecflow_client --msg="***JOB ${ECF_NAME} ERROR Waiting for ATMANL File***"
+#      ecflow_client --abort
+#      exit 9
+#    fi
+#  done
 
 ############################################################
 # CALL executable job script here
@@ -46,7 +74,7 @@ ${HOMEgfs}/jobs/JGLOBAL_ATMOS_POST_MANAGER
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
    ecflow_client --abort
-   exit
+   exit 7
 fi
 
 %include <tail.h>

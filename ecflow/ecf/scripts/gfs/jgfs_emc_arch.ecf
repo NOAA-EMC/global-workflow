@@ -1,0 +1,68 @@
+#BSUB -L /bin/sh
+#BSUB -q %QUEUESERV%
+#BSUB -P %PROJ%
+#BSUB -J %E%gfs_emc_arch_%CYC%
+#BSUB -o %COM%/output/%ENVIR%/today/gfs_emc_arch_%CYC%.o%J
+#BSUB -W 6:00
+#BSUB -M 2048
+#BSUB -n 1
+#BSUB -R affinity[core(1)]
+#BSUB -R span[ptile=1]
+#BSUB -cwd /tmp
+
+%include <head.h>
+%include <envir-p3.h>
+
+set -x
+
+export model=%model:gfs%
+export NET=%NET:gfs%
+export RUN=%RUN%
+export CDUMP=%RUN%
+
+%include <model_ver.h>
+
+############################################################
+# Load modules
+############################################################
+module load lsf/$lsf_ver
+module load impi/$impi_ver
+module load HPSS/5.0.2.5
+
+module list
+
+#############################################################
+# WCOSS environment settings
+#############################################################
+export ROTDIR=%COM%
+export cyc=%CYC%
+export cycle=t%CYC%z
+export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
+%include <emc_cdate.h>
+
+#############################################################
+# Tag up log files for transfer
+#############################################################
+archive_log_dir=%COM%/gfs/prod/logs/${CDATE}
+mkdir -p $archive_log_dir
+ecf_log_dir=%COM%/output/%ENVIR%/today
+cd $ecf_log_dir
+[[ -s gfs_${CDATE}_archive_list.sh ]] && rm -f gfs_${CDATE}_archive_list.sh
+grep "export CDATE=$CDATE" gfs_*|grep -v "Binary file" | awk -F  ":" -v target_n=$archive_log_dir '{print "cp -p",$1,target_n"/gfs_"$1".log"}' &> gfs_${CDATE}_archive_list.sh
+sh gfs_${CDATE}_archive_list.sh
+
+#############################################################
+# CALL executable job script here
+#############################################################
+${HOMEgfs}/jobs/rocoto/arch.sh
+
+if [ $? -ne 0 ]; then
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+   ecflow_client --abort
+   exit
+fi
+
+%include <tail.h>
+%manual
+
+%end

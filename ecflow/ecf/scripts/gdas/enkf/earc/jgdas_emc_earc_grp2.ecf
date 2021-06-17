@@ -1,0 +1,83 @@
+#BSUB -L /bin/sh
+#BSUB -J %E%gdas_emc_earc_%ENSGRP%_%CYC%
+#BSUB -o %COM%/output/%ENVIR%/today/gdas_emc_earc_%ENSGRP%_%CYC%.o%J
+#BSUB -q %QUEUESERV%
+#BSUB -P %PROJ%
+#BSUB -W 6:00
+#BSUB -M 2048
+#BSUB -n 1
+#BSUB -R affinity[core(1)]
+#BSUB -R span[ptile=1]
+#BSUB -cwd /tmp
+
+%include <head.h>
+%include <envir-p3.h>
+
+set -x
+
+export NET=%NET:gfs%
+export RUN=%RUN%
+export CDUMP=%RUN%
+
+model=gfs
+%include <model_ver.h>
+
+export ENSGRP=%ENSGRP%
+
+#############################################################
+# Load modules
+#############################################################
+module load lsf/$lsf_ver
+module load impi/$impi_ver
+module load CFP/$CFP_ver
+
+module list
+
+#############################################################
+# WCOSS environment settings
+#############################################################
+export USE_CFP=YES
+export ROTDIR=%COM%
+export cyc=%CYC%
+export cycle=t%CYC%z
+export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
+%include <emc_cdate.h>
+
+#############################################################
+# Tag up log files for transfer
+#############################################################
+if [ $ENSGRP -eq 0 ]; then
+  archive_log_dir=%COM%/gfs/prod/logs/${CDATE}
+  mkdir -p $archive_log_dir
+  ecf_log_dir=%COM%/output/%ENVIR%/today
+  cd $ecf_log_dir
+  [[ -s gdas_enkf_${CDATE}_archive_list.sh ]] && rm -f gdas_enkf_${CDATE}_archive_list.sh
+  for fstep in eobs ecen esfc eupd efcs epos ; do
+    ecfstep=$fstep
+    [[ $fstep == eobs ]] && ecfstep=select_obs
+    [[ $fstep == esfc ]] && ecfstep=sfc
+    [[ $fstep == eupd ]] && ecfstep=update
+    [[ $fstep == efcs ]] && ecfstep=fcst
+    [[ $fstep == epos ]] && ecfstep=post
+    target_n=$archive_log_dir/${CDUMP}${fstep}
+    # grep "export CDATE=$CDATE" gdas_*|grep -v "gdas_enkf" | grep -v "emc_arch" |grep -v "Binary file"|grep $ecfstep | awk -F  ":" -v target_n=$target_n '{print "cp -p",$1,target_n"/gdaspost_"$1".log"}' &>> gdas_${CDATE}_archive_list.sh
+    grep "export CDATE=$CDATE" gdas_enkf_* | grep -v "emc_arch" |grep -v "Binary file"|grep $ecfstep | awk -F  ":" -v target_n=$target_n '{print "cp -p",$1,target_n"_"$1".log"}' &>> gdas_${CDATE}_archive_list.sh
+  done
+  sh gdas_${CDATE}_archive_list.sh
+fi
+
+#############################################################
+# CALL executable job script here
+#############################################################
+${HOMEgfs}/jobs/rocoto/earc.sh
+
+if [ $? -ne 0 ]; then
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+   ecflow_client --abort
+   exit
+fi
+
+%include <tail.h>
+%manual
+
+%end

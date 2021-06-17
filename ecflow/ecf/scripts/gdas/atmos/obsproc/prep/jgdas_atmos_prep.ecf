@@ -1,12 +1,12 @@
+#BSUB -L /bin/sh
 #BSUB -J %E%%RUN%_atmos_prep_%CYC%
 #BSUB -o %COM%/output/%ENVIR%/today/%RUN%_atmos_prep_%CYC%.o%J
-#BSUB -cwd /tmp
 #BSUB -q %QUEUE%
-#BSUB -L /bin/sh
 #BSUB -P %PROJ%
-#BSUB -W 00:20
-#BSUB -R span[ptile=2]; -R affinity[core(1)]
+#BSUB -W 00:10
 #BSUB -n 4
+#BSUB -R span[ptile=2]; -R affinity[core(1)*1]
+#BSUB -cwd /tmp
 
 %include <head.h>
 %include <envir-p3.h>
@@ -20,50 +20,87 @@ export CDUMP=%RUN%
 model=obsproc_global
 %include <model_ver.h>
 
+status=0
 #############################################################
 ## Load modules
-##############################################################
-# JY module load lsf/${lsf_ver}
-module load impi/${impi_ver}
-module load CFP/${CFP_ver}
-#module load HDF5-parallel/${hdf5_parallel_ver}
-module load NetCDF-parallel/${netcdf_parallel_ver}
+#############################################################
+. $HOMEgfs/ush/load_fv3gfs_modules.sh
+status=$?
+[[ $status -ne 0 ]] && exit $status
 
 module list
 
+export NODES=2
+export ntasks=4
+export ptile=2
+export threads=1
+
 #############################################################
 ## WCOSS_C environment settings
-##############################################################
-# export BACK="NO"
-# export POE="YES"
+#############################################################
+export BACK="YES"
+export POE="NO"
 export COMPONENT=${COMPONENT:-atmos}
 export cyc=%CYC%
+export COMIN_ROOT=/gpfs/dell1/nco/ops/com
+export COMIN="%COM%/$NET/$envir/$CDUMP.$PDY/$cyc/$COMPONENT"
+export COMOUT="%COM%/$NET/$envir/$CDUMP.$PDY/$cyc/$COMPONENT"
+export COMINgdas=$COMIN
+export COMINgfs="%COM%/$NET/$envir/gfs.$PDY/$cyc/$COMPONENT"
+export DO_MAKEPREPBUFR=YES
+export ROTDIR_DUMP=YES
+export OPREFIX=$CDUMP.t${cyc}z.
+export EXPDIR="$HOMEgfs/parm/config"
+export ROTDIR=%COM%/$NET/$envir
+export CDATE=${PDY}${cyc}
 
-# Not sure if need the following , comment them now - JY 10/20
-#export DO_MAKEPREPBUFR=YES
-#export ROTDIR_DUMP=YES
-#export OPREFIX=$CDUMP.t${cyc}z.
-#export EXPDIR="$HOMEgfs/parm/config"
-#export ROTDIR=%COM%/$NET/$envir
-#export CDATE=${PDY}${cyc}
+#############################################################
+# Source relevant configs
+#############################################################
+configs="base prep prepbufr"
+for config in $configs; do
+    . $EXPDIR/config.${config}
+    status=$?
+    [[ $status -ne 0 ]] && exit $status
+done
 
-set -x
+#############################################################
+# Source machine runtime environment
+#############################################################
+. $BASE_ENV/${machine}.env prep
+status=$?
+[[ $status -ne 0 ]] && exit $status
 
-${HOMEobsproc_global}/jobs/JGLOBAL_PREP
+#############################################################
+# CALL executable job script here
+#############################################################
+if [ $DO_MAKEPREPBUFR = "YES" ]; then
+  if [ $ROTDIR_DUMP = "YES" ]; then
+    if [ -s $COMOUT/${OPREFIX}prepbufr ]; then
+      rm $COMOUT/${OPREFIX}prepbufr
+      rm $COMOUT/${OPREFIX}prepbufr.acft_profiles
+      rm $COMOUT/${OPREFIX}nsstbufr
+    fi
+  fi
+  if [ $machine = "WCOSS_C" -o $machine = "WCOSS_DELL_P3" -o $machine = "THEIA" ]; then
+    export job="j${CDUMP}_prep_${cyc}"
+    export DATAROOT="$RUNDIR/$CDATE/$CDUMP/prepbufr"
+    ${HOMEobsproc_global}/jobs/JGLOBAL_PREP
+    status=$?
+    [[ $status -ne 0 ]] && exit $status
+  else
+    echo "WARNING:  prep step is not supported on $machine, exit"
+    status=9
+  fi
+fi
+
+if [ $status -ne 0 ]; then
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+   ecflow_client --abort
+   exit
+fi
 
 %include <tail.h>
 %manual
-######################################################################
-# Purpose:
-#
-#
-######################################################################
 
-######################################################################
-# Job specific troubleshooting instructions:
-#  see generic troubleshoot manual page
-#
-######################################################################
-
-# include manual page below
 %end

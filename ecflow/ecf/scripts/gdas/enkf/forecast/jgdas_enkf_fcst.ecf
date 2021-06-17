@@ -3,8 +3,8 @@
 #BSUB -o %COM%/output/%ENVIR%/today/gdas_enkf_fcst_%ENSGRP%_%CYC%.o%J
 #BSUB -q %QUEUE%
 #BSUB -P %PROJ%
-#BSUB -W 0:40
-#BSUB -n 420
+#BSUB -W 0:10
+#BSUB -n 140
 #BSUB -R affinity[core(1)]
 #BSUB -R span[ptile=28]
 #BSUB -cwd /tmp
@@ -14,8 +14,8 @@
 
 set -x
 
-export NODES=15
-export ntasks=420
+export NODES=5
+export ntasks=140
 export ptile=28
 export threads=1
 
@@ -32,7 +32,7 @@ model=gfs
 module load lsf/$lsf_ver
 module load impi/$impi_ver
 module load CFP/${CFP_ver}
-module load grib_util/${grib_util_ver} 
+module load grib_util/${grib_util_ver}
 module load NetCDF-parallel/${netcdf_parallel_ver}
 module load ESMF/${ESMF_ver}
 module load HDF5-parallel/${hdf5_parallel_ver}
@@ -41,7 +41,7 @@ module list
 
 #############################################################
 # WCOSS environment settings
-###############i#############################################
+#############################################################
 export ENSGRP=%ENSGRP%
 export cyc=%CYC%
 export cycle=t%CYC%z

@@ -1,5 +1,5 @@
 #BSUB -L /bin/sh
-#BSUB -J %E%gdas_atmos_enkf_chgres_%CYC%
+#BSUB -J %E%gdasi_atmos_enkf_chgres_%CYC%
 #BSUB -o %COM%/output/%ENVIR%/today/gdas_atmos_enkf_chgres_%CYC%.o%J
 #BSUB -q %QUEUE%
 #BSUB -P %PROJ%

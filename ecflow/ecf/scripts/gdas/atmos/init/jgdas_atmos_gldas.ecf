@@ -3,7 +3,7 @@
 #BSUB -o %COM%/output/%ENVIR%/today/gdas_atmos_gldas_%CYC%.o%J
 #BSUB -q %QUEUE%
 #BSUB -P %PROJ%
-#BSUB -W 0:20
+#BSUB -W 0:10
 #BSUB -n 112
 #BSUB -R affinity[core(1)]
 #BSUB -R span[ptile=28]
@@ -35,7 +35,6 @@ module load CFP/${CFP_ver}
 module load grib_util/${grib_util_ver}
 module load NetCDF-parallel/${netcdf_parallel_ver}
 module load HDF5-parallel/${hdf5_parallel_ver}
-
 module list
 
 #############################################################

@@ -3,8 +3,8 @@
 #BSUB -o %COM%/output/%ENVIR%/today/gdas_enkf_select_obs_%CYC%.o%J
 #BSUB -q %QUEUE%
 #BSUB -P %PROJ%
-#BSUB -W 0:10
-#BSUB -n 480
+#BSUB -W 0:15
+#BSUB -n 40
 #BSUB -R affinity[core(7)]
 #BSUB -R span[ptile=4]
 #BSUB -cwd /tmp
@@ -14,8 +14,8 @@
 
 set -x
 
-export NODES=120
-export ntasks=480
+export NODES=10
+export ntasks=40
 export ptile=4
 
 export NET=%NET:gfs%
