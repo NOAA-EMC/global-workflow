@@ -308,7 +308,7 @@ cd ${pwd}/../sorc   ||   exit 8
     for prog in fregrid make_hgrid make_solo_mosaic ; do
         $SLINK ufs_utils.fd/sorc/fre-nctools.fd/tools/$prog                                ${prog}.fd                                
     done
-    for prog in global_cycle.fd emcsfc_ice_blend.fd emcsfc_snow2mdl.fd ;do
+    for prog in global_cycle.fd emcsfc_ice_blend.fd emcsfc_snow2mdl.fd ; do
         $SLINK ufs_utils.fd/sorc/$prog                                                     $prog
     done
 

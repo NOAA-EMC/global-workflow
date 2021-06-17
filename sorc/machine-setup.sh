@@ -51,6 +51,7 @@ elif [[ -d /scratch1 ]] ; then
     module load hpc/1.1.0
     module load hpc-intel/18.0.5.274
     module load hpc-impi/2018.0.4
+    module load cmake/3.20.0
 
     export myFC=mpiifort
     export FCOMP=mpiifort
@@ -96,12 +97,12 @@ elif [[ -L /usrx && "$( readlink /usrx 2> /dev/null )" =~ dell ]] ; then
 	source /usrx/local/prod/lmod/lmod/init/$__ms_shell
     fi
     target=wcoss_dell_p3
-
     module purge 
     module use /usrx/local/nceplibs/dev/hpc-stack/libs/hpc-stack/modulefiles/stack
     module load hpc/1.1.0
     module load hpc-ips/18.0.1.163
     module load hpc-impi/18.0.1
+    module load cmake/3.20.0
 
 ##---------------------------------------------------------------------------
 elif [[ -d /glade ]] ; then

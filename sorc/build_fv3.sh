@@ -24,6 +24,5 @@ FV3=$( pwd -P )/FV3
 cd tests/
 if [ ! -d ../NEMS/exe ]; then mkdir ../NEMS/exe ; fi
 
-./compile.sh "$target" "APP=ATMW CCPP=Y 32BIT=Y SUITES=FV3_GFS_v16,FV3_GFS_v16_RRTMGP" 2 YES NO
-
+./compile.sh "$target" "APP=ATM CCPP=Y 32BIT=Y SUITES=FV3_GFS_v16,FV3_GFS_v16_RRTMGP" 2 YES NO
 mv -f fv3_2.exe ../NEMS/exe/global_fv3gfs.x
