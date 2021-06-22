@@ -4,8 +4,11 @@ case:
 
   settings: 
     SDATE: 2013-04-01t00:00:00
-    EDATE: 2013-04-01t00:00:00
+    EDATE: 2013-04-02t00:00:00    
+    STEP_GFS: !timedelta "24:00:00"
+    STEP_DA: !timedelta "00:00:00"
     max_job_tries: 1
+    rocoto_cycle_throttle: 1
 
     cplgocart: .true.
     print_esmf: .true.
@@ -35,12 +38,12 @@ case:
     LEVS: 65
     DELTIM: 450
     layout:
-       x: 6
-       y: 8
-       nth: 1
-       WGRP: 1
-       WGRP_NTASKS: 24
-       WRTIOBUF: "32M"
+      x: 6
+      y: 8
+      nth: 1
+      WGRP: 1
+      WGRP_NTASKS: 24
+      WRTIOBUF: "32M"
 
   chem_settings:
     MOD: gsdchem
@@ -55,3 +58,6 @@ case:
   post:
     downset: 2
     GOESF: no
+
+  archiving:
+    archive_to_hpss: False

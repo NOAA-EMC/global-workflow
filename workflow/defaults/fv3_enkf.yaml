@@ -120,7 +120,7 @@ fv3_enkf_defaults: &fv3_enkf_defaults
   ICO2: 2
   warm_start: true
   read_increment: no
-  restart_interval: 6
+  restart_interval: "6"
   imp_physics: "11"
 #     if_present: !FirstTrue
 #      - when: !calc ( imp_physics==99 )

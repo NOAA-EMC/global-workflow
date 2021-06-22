@@ -14,11 +14,12 @@ case:
   settings: 
     SDATE: 2019-05-01t00:00:00
     EDATE: 2019-05-01t00:00:00
+    STEP_GFS: !timedelta "06:00:00"
+    STEP_DA: !timedelta "00:00:00"
 
     DUMP_SUFFIX: "p"
     run_gsi: No
     chgres_and_convert_ics: Yes
-    gfs_cyc: 4 # run gfs every cycle
 
   suite_overrides: !FirstTrue
     - when: !calc (doc.platform.name=="JET")

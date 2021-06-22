@@ -42,6 +42,6 @@ case:
     EDATE: 2018-06-04t12:00:00
     chgres_and_convert_ics: No
     realtime: true
-    gfs_cyc: 4 # run gfs at 0z, 12z
+    STEP_GFS: !timedelta "06:00:00"
     run_gsi: Yes
 

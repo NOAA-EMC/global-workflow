@@ -17,4 +17,4 @@ case:
     KEEPDATA: Yes
     run_gsi: Yes
     chgres_and_convert_ics: No
-    gfs_cyc: 4 # run gfs every cycle
+    STEP_GFS: !timedelta "06:00:00"
