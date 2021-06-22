@@ -21,5 +21,5 @@ case:
     SDATE: 2015-11-26t00:00:00
     EDATE: 2015-11-26t00:00:00
     realtime: false
-    STEP_GFS: !timedelta "06:00:00"
+    gfs_cyc: 4 # run gfs four cycles a day
     run_gsi: No # disable data assimilation
