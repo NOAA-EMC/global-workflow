@@ -52,7 +52,7 @@ else
     else
       git clone https://github.com/ufs-community/ufs-weather-model ufs_coupled.fd >> ${topdir}/checkout-ufs_coupled.log 2>&1
       cd ufs_coupled.fd
-      git checkout 3e46f5b7050e18884a0bed13691823ad88d443c3
+      git checkout aa2ab44
     fi
     git submodule update --init --recursive
     cd ${topdir} 
