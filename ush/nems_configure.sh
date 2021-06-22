@@ -155,9 +155,9 @@ EOF
 
 echo "$(cat med_modelio.nml)"
 
-cp $HOMEgfs/sorc/ufs_coupled.fd/CMEPS-interface/CMEPS/mediator/fd_nems.yaml fd_nems.yaml
+cp $HOMEgfs/sorc/ufs_coupled.fd/tests/parm/fd_nems.yaml fd_nems.yaml
 
-fi 
+fi
 
 echo "SUB ${FUNCNAME[0]}: Nems configured for $confignamevarfornems"
 
