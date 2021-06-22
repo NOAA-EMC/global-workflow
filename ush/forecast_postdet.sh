@@ -729,9 +729,11 @@ CICE_postdet() {
 	echo "SUB ${FUNCNAME[0]}: CICE after run type determination"
 
 	year=$(echo $CDATE|cut -c 1-4)
+	month=$(echo $CDATE|cut -c 5-6)
+	day=$(echo $CDATE|cut -c 7-8)
+
 	stepsperhr=$((3600/$ICETIM))
 	nhours=$($NHOUR $CDATE ${year}010100)
-	istep0=$((nhours*stepsperhr))
 	steps=$((nhours*stepsperhr))
 	npt=$((FHMAX*$stepsperhr))      # Need this in order for dump_last to work
 
@@ -746,6 +748,8 @@ CICE_postdet() {
 	cice_hist_avg=${cice_hist_avg:-".true."}
 
 	FRAZIL_FWSALT=${FRAZIL_FWSALT:-".true."}
+	ktherm=${ktherm:-1}
+	tfrz_option=${tfrz_option:-"linear_salt"}
 	tr_pond_lvl=${tr_pond_lvl:-".true."} # Use level melt ponds tr_pond_lvl=true
 
 	# restart_pond_lvl (if tr_pond_lvl=true):
