@@ -4,14 +4,12 @@
 case:
   places:
     workflow_file: layout/free_forecast_gfs.yaml
-    BASE_CPLIC: /scratch1/NCEPDEV/nems/Raffaele.Montuoro/data
-    OROFIX:     /scratch1/NCEPDEV/nems/emc.nemspara/RT/NEMSfv3gfs/input-data-20210528/FV3_input_data384/INPUT
-    GRDFIX:     /scratch1/NCEPDEV/nems/emc.nemspara/RT/NEMSfv3gfs/input-data-20210528/FV3_input_data384/INPUT
+    BASE_CPLIC: /scratch1/NCEPDEV/nems/Raffaele.Montuoro/data/ICS
 
   settings: 
     SDATE: 2019-07-01t00:00:00
-    EDATE: 2019-07-15t00:00:00
-    STEP_GFS: !timedelta "24:00:00"
+    EDATE: 2019-07-02t00:00:00
+    STEP_GFS: !timedelta "06:00:00"
     STEP_DA: !timedelta "00:00:00"
     max_job_tries: 1
 
@@ -34,7 +32,7 @@ case:
   output_settings:
     FHOUT_GFS: 6
     FHMIN_GFS: 0
-    FHMAX_GFS: 24
+    FHMAX_GFS: 6
     FHMAX_HF_GFS: 0
     FHOUT_HF_GFS: -1
 
@@ -45,7 +43,7 @@ case:
     layout:
        x: 6
        y: 8
-       nth: 1
+       nth: 2
        WGRP: 1
        WGRP_NTASKS: 24
        WRTIOBUF: "32M"
