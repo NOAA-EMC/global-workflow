@@ -8,20 +8,20 @@
 FC = $(myFC) $(myFCFLAGS)
 CPP = $(myCPP) $(myCPPFLAGS)
 
-FFLAGS   = -I$(NETCDF_INC) \
+FFLAGS   = -I$(NETCDF_INCLUDES) \
     	   -I$(NEMSIO_INC) \
-           -I$(SIGIO_INC4) \
+           -I$(SIGIO_INC) \
            -I$(W3EMC_INC4)
 
-LIBS =    -L$(NETCDF_LIB) -lnetcdf -lnetcdff \
-          -L$(HDF5_LIB) -lhdf5_hl -lhdf5 \
+LIBS =    -L$(NETCDF_LIBRARIES) -lnetcdff -lnetcdf \
+          -L$(HDF5_LIBRARIES) -lhdf5_hl -lhdf5 -lz \
 	       $(NEMSIO_LIB) \
            $(W3EMC_LIB4) \
            $(W3NCO_LIB4) \
            $(BUFR_LIB4) \
            $(BACIO_LIB4) \
            $(SP_LIB4) \
-           $(SIGIO_LIB4)
+           $(SIGIO_LIB)
 
 SRCM    = gfsbufr.f
 OBJS    = physcons.o funcphys.o meteorg.o bfrhdr.o newsig1.o terp3.o\

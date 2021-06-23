@@ -61,6 +61,20 @@ fi
 }
 
 #------------------------------------
+# build WW3 pre & post execs 
+#------------------------------------
+$Build_ww3_prepost && {
+echo " .... Building WW3 pre and post execs .... "
+./build_ww3prepost.sh > $logs_dir/build_ww3_prepost.log 2>&1
+rc=$?
+if [[ $rc -ne 0 ]] ; then
+    echo "Fatal error in building WW3 pre/post processing."
+    echo "The log file is in $logs_dir/build_ww3_prepost.log"
+fi
+((err+=$rc))
+}
+
+#------------------------------------
 # build gsi
 #------------------------------------
 $Build_gsi && {
@@ -149,19 +163,16 @@ fi
 #------------------------------------
 # build gfs_util       
 #------------------------------------
-# Only build on WCOSS
-if [ $target = wcoss -o $target = wcoss_cray -o $target = wcoss_dell_p3 ]; then
- $Build_gfs_util && {
- echo " .... Building gfs_util .... "
- ./build_gfs_util.sh > $logs_dir/build_gfs_util.log 2>&1
- rc=$?
- if [[ $rc -ne 0 ]] ; then
-     echo "Fatal error in building gfs_util."
-     echo "The log file is in $logs_dir/build_gfs_util.log"
- fi
- ((err+=$rc))
- }
+$Build_gfs_util && {
+echo " .... Building gfs_util .... "
+./build_gfs_util.sh > $logs_dir/build_gfs_util.log 2>&1
+rc=$?
+if [[ $rc -ne 0 ]] ; then
+    echo "Fatal error in building gfs_util."
+    echo "The log file is in $logs_dir/build_gfs_util.log"
 fi
+((err+=$rc))
+}
 
 #------------------------------------
 # Exception Handling

@@ -71,8 +71,8 @@ export MODE="@MODE@" # cycled/free
 export FIXgsi="$HOMEgfs/fix/fix_gsi"
 export HOMEfv3gfs="$HOMEgfs/sorc/fv3gfs.fd"
 export HOMEpost="$HOMEgfs"
-export HOMEobsproc_prep="$BASE_GIT/obsproc/gfsv16b/obsproc_prep_RB-5.4.0"
-export HOMEobsproc_network="$BASE_GIT/obsproc/gfsv16b/obsproc_global_RB-3.4.0"
+export HOMEobsproc_prep="$BASE_GIT/obsproc/obsproc_prep_RB-5.4.0_hpc-stack"
+export HOMEobsproc_network="$BASE_GIT/obsproc/obsproc_global_RB-3.4.0_hpc-stack"
 export HOMEobsproc_global=$HOMEobsproc_network
 export BASE_VERIF="$BASE_GIT/verif/global/tags/vsdb"
 
