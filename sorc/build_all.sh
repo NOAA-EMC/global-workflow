@@ -98,20 +98,6 @@ fi
 }
 
 #------------------------------------
-# build reg2grb2
-#------------------------------------
-$Build_reg2grb2 && {
-echo " .... Building reg2grb2 for ocean/ice post .... "
-./build_reg2grb2.sh > $logs_dir/build_reg2grb2.log 2>&1
-rc=$?
-if [[ $rc -ne 0 ]] ; then
-    echo "Fatal error in building reg2grb2."
-    echo "The log file is in $logs_dir/build_reg2grb2.log"
-fi
-((err+=$rc))
-}
-
-#------------------------------------
 # build gsi
 #------------------------------------
 $Build_gsi && {
