@@ -112,6 +112,13 @@ export ARCDIR="$NOSCRUB/archive/$PSLOT"
 export ICSDIR="@ICSDIR@"
 export ATARDIR="/NCEPDEV/$HPSS_PROJECT/1year/$USER/$machine/scratch/$PSLOT"
 
+# Set operational version variables
+export OPS_RES="C768" # Do not change
+export gfs_ver="v16" # Do not change
+if [[ $gfs_ver = "v16" && $CASE = $OPS_RES ]]; then # Force EXP_WARM_START=true if v16 C768
+  export EXP_WARM_START=".true."
+fi
+
 # Commonly defined parameters in JJOBS
 export envir=${envir:-"prod"}
 export NET="gfs"
@@ -140,7 +147,6 @@ export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 export LEVS=128
 export CASE="@CASECTL@"
 export CASE_ENKF="@CASEENS@"
-export OPS_RES="C768"
 
 # Run with CCPP physics
 export RUN_CCPP="YES"
