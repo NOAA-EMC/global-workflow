@@ -202,7 +202,12 @@ if [ $MEMBER -lt 0 ]; then
   rprefix=$rCDUMP
   memchar=""
 else
-  prefix=enkf$CDUMP
+  # needs a previous ens forecast to do a warm start
+  if [[ "$EFSOI_TASK" = "YES" ]]; then
+    prefix=efsoi$CDUMP
+  else
+    prefix=enkf$CDUMP
+  fi
   rprefix=enkf$rCDUMP
   memchar=mem$(printf %03i $MEMBER)
 fi

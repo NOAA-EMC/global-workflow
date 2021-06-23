@@ -288,6 +288,7 @@ cat > enkf.nml << EOFnml
    netcdf_diag=$netcdf_diag,cnvw_option=$cnvw_option,
    paranc=$paranc,write_fv3_incr=$write_fv3_incr,
    efsoi_cycling=.true.,
+   lupd_obspace_serial=.true.,
    $WRITE_INCR_ZERO
    $NAM_ENKF  
 /
