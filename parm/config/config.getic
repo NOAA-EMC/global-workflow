@@ -12,10 +12,6 @@ export RETRO="NO" # YES = Pull v16 inputs from retrospective parallels; NO = use
 export gfs_ver="v16" # Default = v16
 export OPS_RES=${OPS_RES:-"C768"} # Operational resolution
 
-if [[ $gfs_ver = "v16" && $CASE = $OPS_RES ]]; then # Going to be using warm starts
-  export EXP_WARM_START=".true."
-fi
-
 export UFS_DIR=${HOMEgfs}/sorc/ufs_utils.fd
 export GDASINIT_DIR=${UFS_DIR}/util/gdas_init
 
