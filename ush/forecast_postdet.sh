@@ -789,7 +789,7 @@ CICE_postdet() {
 	echo "Link CICE fixed files"
 	$NLN -sf $FIXcice/$ICERES/${ice_grid_file} $DATA/
 	$NLN -sf $FIXcice/$ICERES/${ice_kmt_file} $DATA/
-	$NLN -sf $FIXcice/$ICERES/$MESHICE $DATA/
+	$NLN -sf $FIXcice/$ICERES/$MESH_OCN_ICE $DATA/
 }
 
 CICE_nml() {

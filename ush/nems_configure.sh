@@ -45,6 +45,8 @@ ICEPETS=${ICEPETS:-8}
 WAVPETS=${WAVPETS:-8}
 CHMPETS=${CHMPETS:-${ATMPETS}}
 
+USE_MOMMESH=${USE_MOMMESH:-"true"}
+
 rm -f $DATA/nems.configure
 
 med_petlist_bounds=${med_petlist_bounds:-"0 $(( $MEDPETS-1 ))"}
@@ -79,6 +81,7 @@ if [ $cplflx = .true. ]; then
 	sed -i -e "s;@\[coupling_interval_slow_sec\];$CPL_SLOW;g" tmp1
 	sed -i -e "s;@\[coupling_interval_fast_sec\];$CPL_FAST;g" tmp1
         sed -i -e "s;@\[RESTART_N\];$restart_interval_nems;g" tmp1
+  sed -i -e "s;@\[use_mommesh\];$USE_MOMMESH;g" tmp1
 fi
 if [ $cplwav = .true. ]; then
 	sed -i -e "s;@\[wav_model\];ww3;g" tmp1
@@ -87,7 +90,7 @@ fi
 if [ $cplice = .true. ]; then
 	sed -i -e "s;@\[ice_model\];$ICE_model;g" tmp1
 	sed -i -e "s;@\[ice_petlist_bounds\];$ice_petlist_bounds;g" tmp1
-        sed -i -e "s;@\[MESHICE\];$MESHICE;g" tmp1
+        sed -i -e "s;@\[MESH_OCN_ICE\];$MESH_OCN_ICE;g" tmp1
         sed -i -e "s;@\[FHMAX\];$FHMAX_GFS;g" tmp1
 fi
 if [ $cplchem = .true. -o $cplgocart = .true. ]; then
