@@ -35,8 +35,8 @@ export WWATCH3_ENV=${WW3_BINDIR}/wwatch3.env
 export PNG_LIB=${PNG_LIB:-$PNG_ROOT/lib64/libpng.a}
 export Z_LIB=${Z_LIB:-$ZLIB_ROOT/lib/libz.a}
 export JASPER_LIB=${JASPER_LIB:-$JASPER_ROOT/lib64/libjasper.a}
-# export WWATCH3_NETCDF=NC4
-# export NETCDF_CONFIG=$NETCDF_ROOT/bin/nc-config
+export WWATCH3_NETCDF=NC4
+export NETCDF_CONFIG=$NETCDF_ROOT/bin/nc-config
 export PRINTER=${PRINTER:-""}
 
 rm  $WWATCH3_ENV
@@ -50,6 +50,7 @@ echo "WWATCH3_F90      $WW3_F90"                      >> $WWATCH3_ENV
 echo "WWATCH3_CC       $WW3_CC"                       >> $WWATCH3_ENV
 echo "WWATCH3_DIR      $WW3_DIR"                      >> $WWATCH3_ENV
 echo "WWATCH3_TMP      $WW3_TMPDIR"                   >> $WWATCH3_ENV
+echo "WWATCH3_NETCDF   $WWATCH3_NETCDF"               >> $WWATCH3_ENV
 echo 'WWATCH3_SOURCE   yes'                           >> $WWATCH3_ENV
 echo 'WWATCH3_LIST     yes'                           >> $WWATCH3_ENV
 echo ''                                               >> $WWATCH3_ENV
