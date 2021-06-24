@@ -42,7 +42,7 @@ fi
 echo gsi checkout ...
 if [[ ! -d gsi.fd ]] ; then
     rm -f ${LOG_DIR}/checkout-gsi.log
-    git clone --recursive https://github.com/NOAA-EMC/GSI.git gsi.fd >> ${LOG_DIR}/checkout-gsi.fd.log 2>&1
+    git clone --recursive https://github.com/XianwuXue-NOAA/GSI.git gsi.fd >> ${LOG_DIR}/checkout-gsi.fd.log 2>&1
     rc=$?
     ((err+=$rc))
     cd gsi.fd
@@ -56,7 +56,7 @@ fi
 echo ufs_utils checkout ...
 if [[ ! -d ufs_utils.fd ]] ; then
     rm -f ${topdir}/checkout-ufs_utils.log
-    git clone --recursive https://github.com/NOAA-EMC/UFS_UTILS.git ufs_utils.fd >> ${LOG_DIR}/checkout-ufs_utils.fd.log 2>&1
+    git clone --recursive https://github.com/XianwuXue-NOAA/UFS_UTILS.git ufs_utils.fd >> ${LOG_DIR}/checkout-ufs_utils.fd.log 2>&1
     rc=$?
     ((err+=$rc))
     cd ufs_utils.fd
@@ -70,7 +70,7 @@ fi
 echo EMC_post checkout ...
 if [[ ! -d gfs_post.fd ]] ; then
     rm -f ${topdir}/checkout-gfs_post.log
-    git clone --recursive https://github.com/NOAA-EMC/EMC_post.git gfs_post.fd >> ${LOG_DIR}/checkout-gfs_post.log 2>&1
+    git clone --recursive https://github.com/XianwuXue-NOAA/EMC_post.git gfs_post.fd >> ${LOG_DIR}/checkout-gfs_post.log 2>&1
     rc=$?
     ((err+=$rc))
     cd gfs_post.fd
@@ -83,7 +83,7 @@ fi
 echo GSD-prep-chem checkout ...
 if [[ ! -d gsd_prep_chem.fd ]] ; then
     rm -f ${LOG_DIR}/checkout-gsd-prep-chem.log
-    git clone https://github.com/NOAA-GSL/GSL-prep-chem.git gsd_prep_chem.fd >> ${LOG_DIR}/checkout-gsd-prep-chem.log 2>&1
+    git clone https://github.com/XianwuXue-NOAA/GSL-prep-chem.git gsd_prep_chem.fd >> ${LOG_DIR}/checkout-gsd-prep-chem.log 2>&1
     rc=$?
     ((err+=$rc))
     cd gsd_prep_chem.fd
