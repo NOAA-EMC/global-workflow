@@ -144,6 +144,10 @@ Create COMROT experiment directory structure'''
     elif start == 'warm':
       exp_warm_start = '.true.'
 
+    # Check resolution for start setting - assume warm start if ops res
+    if res == 768:
+      exp_warm_start = '.true.'
+
     # Set FDATE (first full cycle)
     fdate = idate + timedelta(hours=6)
 
