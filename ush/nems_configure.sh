@@ -58,7 +58,7 @@ chm_petlist_bounds=${chm_petlist_bounds:-"0 $(( $CHMPETS-1 ))"}
 
 # Copy the selected template into run directory
 cp $SCRIPTDIR/nems.configure.$confignamevarfornems.IN tmp1
-sed -i -e "s;@\[med_model\];nems;g" tmp1
+sed -i -e "s;@\[med_model\];cmeps;g" tmp1
 sed -i -e "s;@\[atm_model\];$ATM_model;g" tmp1
 sed -i -e "s;@\[med_petlist_bounds\];$med_petlist_bounds;g" tmp1
 sed -i -e "s;@\[atm_petlist_bounds\];$atm_petlist_bounds;g" tmp1
