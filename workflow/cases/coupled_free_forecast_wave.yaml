@@ -66,7 +66,7 @@ case:
 
   wave_settings: 
     WAVPETS: 160
-    CPL_WAVIC: CFSRwave20200925
+    CPL_WAVIC: GEFSwave20210623
     waveGRD: 'gwes_30m'
     wavepostGRD: 'gwes_30m'
     waveesmfGRD: ''
