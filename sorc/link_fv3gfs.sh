@@ -253,7 +253,7 @@ for workflowexec in fbwndgfs gfs_bufr regrid_nemsio supvit syndat_getjtbul \
   $LINK ../sorc/install/bin/${workflowexec}.x $workflowexec
 done
 for workflowexec in enkf_chgres_recenter.x enkf_chgres_recenter_nc.x fv3nc2nemsio.x \
-    tave.x vint.x ; do
+    tave.x vint.x reg2grb2.x ; do
   [[ -s $workflowexec ]] && rm -f $workflowexec
   $LINK ../sorc/install/bin/$workflowexec .
 done
