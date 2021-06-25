@@ -1,0 +1,26 @@
+#%Module#####################################################
+## bufrsnd
+#############################################################
+
+# Loading pe environment
+module load intel/19.1.3.304 PrgEnv-intel
+module load intel/19.1.3.304/cray-mpich/8.1.2
+
+# Loding nceplibs modules
+module load nemsio/2.5.2
+module load bacio/2.4.1
+module load w3emc/2.7.3
+module load w3nco/2.4.1
+module load bufr/11.4.0
+module load sigio/2.3.2
+
+#module use -a /gpfs/dell1/nco/ops/nwprod/modulefiles/
+#module load gempak/7.3.1
+export SIGIO_INC4=$SIGIO_INC
+export SIGIO_LIB4=$SIGIO_LIB
+
+export myFC=ftn
+export myFCFLAGS="-O3 -convert big_endian -traceback -g -fp-model source -qopenmp"
+export myCPP=/lib/cpp
+export myCPPFLAGS="-P"
+
