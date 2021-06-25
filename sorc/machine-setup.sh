@@ -189,6 +189,22 @@ export NCEPLIBS=/mnt/lfs3/projects/hfv3gfs/gwv/NCEPLIBS.15X
 export WRFPATH=$NCEPLIBS/wrf.shared.new/v1.1.1/src
 export myFC=mpiifort
 
+##---------------------------------------------------------------------------
+elif [[ -d /apps/prod ]]; then
+
+	# We are on WCOSS2/Acorn
+    target=acorn
+
+    module purge
+    source /apps/prod/lmodules/startLmod
+    #module use -a /apps/prod/modules
+    # For gefs_nemsio2nc
+    #module use /lfs/h1/ops/prod/libs/modulefiles/stack
+    #module load hpc
+    #module load hpc-intel
+    #module load hpc-cray-mpich
+    module load envvar/1.0
+
 else
     echo WARNING: UNKNOWN PLATFORM 1>&2
 fi
