@@ -5,34 +5,18 @@ set -eux
 readonly UTILS_DIR=$(cd "$(dirname "$($cmd -f -n "${BASH_SOURCE[0]}" )" )" && pwd -P)
 
 # Adapt for global-workflow structure.
-target=${target:-"NULL"}
+source ${UTILS_DIR}/machine-setup.sh > /dev/null 2>&1
 modulefile=${UTILS_DIR}/../modulefiles/workflow_utils.$target
 if [[ -f $modulefile ]]; then
   set +x
-  source ${UTILS_DIR}/machine-setup.sh > /dev/null 2>&1
   source $modulefile
   module list
   set -x
+else
+  echo "FATAL: modulefile $modulefile not found!"
+  exit 1
 fi
 # End adaptation
-
-# Begin hack
-# In place until nceplibs-ncio is in hpc-stack and available as a module
-# After nceplibs-ncio is in hpc-stack, add the following line to
-# ${UTILS_DIR}/../modulefiles/workflow_utils.<platform>
-# "module load ncio/<ncio-version>"
-# and remove this hack
-
-[[ -d nceplibs-ncio ]] && rm -rf nceplibs-ncio
-git clone -b develop https://github.com/noaa-emc/nceplibs-ncio
-cd nceplibs-ncio
-mkdir -p build && cd build
-cmake -DCMAKE_INSTALL_PREFIX=../install ..
-make -j ${BUILD_JOBS:-4} VERBOSE=${BUILD_VERBOSE:-}
-make install
-cd ../..
-export ncio_ROOT=$PWD/nceplibs-ncio/install
-# End hack
 
 BUILD_DIR=${BUILD_DIR:-${UTILS_DIR}/build}
 [[ -d $BUILD_DIR ]] && rm -rf $BUILD_DIR
