@@ -45,9 +45,11 @@ fi
 echo gsi checkout ...
 if [[ ! -d gsi.fd ]] ; then
     rm -f ${topdir}/checkout-gsi.log
-    git clone --recursive https://github.com/NOAA-EMC/GSI.git gsi.fd >> ${topdir}/checkout-gsi.log 2>&1
+#    git clone --recursive https://github.com/NOAA-EMC/GSI.git gsi.fd >> ${topdir}/checkout-gsi.log 2>&1
+    git clone --recursive git@github.com:AndrewEichmann-NOAA/GSI.git gsi.fd >> ${topdir}/checkout-gsi.log 2>&1
     cd gsi.fd
-    git checkout gfsda.v16.1.0
+#    git checkout gfsda.v16.1.0
+    git checkout EXP-efso_fv3
     git submodule update
     cd ${topdir}
 else

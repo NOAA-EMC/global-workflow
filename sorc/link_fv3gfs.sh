@@ -124,6 +124,12 @@ cd ${pwd}/../jobs               ||exit 8
     $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_FCST               .
     $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_POST               .
     $LINK ../sorc/gsi.fd/jobs/JGDAS_ATMOS_CHGRES_FORENKF    .
+    $LINK ../sorc/gsi.fd/jobs/JGDAS_EFSOI_UPDATE            .
+    $LINK ../sorc/gsi.fd/jobs/JGDAS_EFSOI_ECEN              .
+    $LINK ../sorc/gsi.fd/jobs/JGDAS_EFSOI_SFC               .
+    $LINK ../sorc/gsi.fd/jobs/JGDAS_EFSOI_FCST              .
+    $LINK ../sorc/gsi.fd/jobs/JGDAS_EFSOI_POST              .
+    $LINK ../sorc/gsi.fd/jobs/JGDAS_EFSOI                   .
 cd ${pwd}/../scripts            ||exit 8
     $LINK ../sorc/gsi.fd/scripts/exglobal_atmos_analysis.sh       .
     $LINK ../sorc/gsi.fd/scripts/exglobal_atmos_analysis_calc.sh  .
@@ -135,6 +141,8 @@ cd ${pwd}/../scripts            ||exit 8
     $LINK ../sorc/gsi.fd/scripts/exgdas_enkf_fcst.sh              .
     $LINK ../sorc/gsi.fd/scripts/exgdas_enkf_post.sh              .
     $LINK ../sorc/gsi.fd/scripts/exgdas_atmos_chgres_forenkf.sh   .
+    $LINK ../sorc/gsi.fd/scripts/exgdas_efsoi_update.sh           .
+    $LINK ../sorc/gsi.fd/scripts/exgdas_efsoi.sh                  .
 cd ${pwd}/../fix                ||exit 8
     [[ -d fix_gsi ]] && rm -rf fix_gsi
     $LINK ../sorc/gsi.fd/fix  fix_gsi
@@ -241,7 +249,7 @@ done
 
 for gsiexe in  calc_analysis.x calc_increment_ens_ncio.x calc_increment_ens.x \
     getsfcensmeanp.x getsigensmeanp_smooth.x getsigensstatp.x global_enkf.x global_gsi.x \
-    interp_inc.x ncdiag_cat.x oznmon_horiz.x oznmon_time.x radmon_angle.x \
+    interp_inc.x ncdiag_cat.x oznmon_horiz.x oznmon_time.x radmon_angle.x global_efsoi.x \
     radmon_bcoef.x radmon_bcor.x radmon_time.x recentersigp.x;do
     [[ -s $gsiexe ]] && rm -f $gsiexe
     $LINK ../sorc/gsi.fd/exec/$gsiexe .
