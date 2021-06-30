@@ -72,7 +72,8 @@ cd $DATA || exit 8
 ################################################################################
 # ObsInput file from ensemble mean
 rm -f obs_input*
-$NLN $SELECT_OBS obs_input.tar
+rm -f obsinput.tar
+$NLN $SELECT_OBS obsinput.tar
 
 # Whether to save or skip obs
 if [ $RUN_SELECT = "YES" -a $USE_SELECT = "NO" ]; then
