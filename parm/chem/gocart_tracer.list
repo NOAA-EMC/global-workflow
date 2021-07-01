@@ -2,8 +2,6 @@ so2
 so4
 dms
 msa
-pm25
-pm10
 bc1
 bc2
 oc1
@@ -18,3 +16,10 @@ seas2
 seas3
 seas4
 seas5
+nh3
+nh4a
+no3an1
+no3an2
+no3an3
+pm25
+pm10
