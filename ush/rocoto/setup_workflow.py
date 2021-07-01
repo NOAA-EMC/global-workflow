@@ -165,7 +165,9 @@ def get_definitions(base):
 
     machine = base.get('machine', wfu.detectMachine())
     scheduler = wfu.get_scheduler(machine)
+    do_efsoi = base.get('DO_EFSOI', 'NO').upper()
 
+ 
     strings = []
 
     strings.append('\n')
@@ -205,7 +207,10 @@ def get_definitions(base):
     strings.append('\t<!ENTITY ARCHIVE_TO_HPSS "YES">\n')
     strings.append('\n')
     strings.append('\t<!-- ROCOTO parameters that control workflow -->\n')
-    strings.append('\t<!ENTITY CYCLETHROTTLE "3">\n')
+    if do_efsoi in ['Y', 'YES']:
+        strings.append('\t<!ENTITY CYCLETHROTTLE "6">\n')
+    else:
+        strings.append('\t<!ENTITY CYCLETHROTTLE "3">\n')
     strings.append('\t<!ENTITY TASKTHROTTLE  "25">\n')
     strings.append('\t<!ENTITY MAXTRIES      "2">\n')
     strings.append('\n')
@@ -368,7 +373,8 @@ def get_hyb_resources(dict_configs):
     do_efsoi = base.get('DO_EFSOI', 'NO').upper()
 
     if do_efsoi in ['Y', 'YES']:
-        tasks2 = ['ecen', 'ecenfsoi', 'esfc', 'esfcfsoi', 'efcs', 'efcsfsoi', 'epos', 'eposfsoi', 'earc', 'efsoi']
+        #tasks2 = ['ecen', 'ecenfsoi', 'esfc', 'esfcfsoi', 'efcs', 'efcsfsoi', 'epos', 'eposfsoi', 'earc', 'efsoi']
+        tasks2 = ['ecenfsoi', 'esfcfsoi', 'efcsfsoi', 'eposfsoi', 'efsoi', 'ecen', 'esfc', 'efcs', 'epos', 'earc' ]
     else:
         tasks2 = ['ecen', 'esfc', 'efcs', 'epos', 'earc']
     for task in tasks2:
@@ -1107,31 +1113,32 @@ def get_hyb_tasks(dict_configs, cycledef='enkf'):
 
     dict_tasks['%secmn' % cdump] = task
 
+    if do_efsoi in ['Y', 'YES']:
     # ecmnfsoi, ecenfsoi
-    deps1 = []
-    data = '&ROTDIR;/%s.@Y@m@d/@H/%s.t@Hz.loganl.txt' % (cdump, cdump)
-    dep_dict = {'type': 'data', 'data': data}
-    deps1.append(rocoto.add_dependency(dep_dict))
-    dep_dict = {'type': 'task', 'name': '%sanalcalc' % cdump}
-    deps1.append(rocoto.add_dependency(dep_dict))
-    dependencies1 = rocoto.create_dependency(dep_condition='or', dep=deps1)
+        deps1 = []
+	data = '&ROTDIR;/%s.@Y@m@d/@H/%s.t@Hz.loganl.txt' % (cdump, cdump)
+        dep_dict = {'type': 'data', 'data': data}
+        deps1.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'task', 'name': '%sanalcalc' % cdump}
+        deps1.append(rocoto.add_dependency(dep_dict))
+        dependencies1 = rocoto.create_dependency(dep_condition='or', dep=deps1)
 
-    deps2 = []
-    deps2 = dependencies1
-    dep_dict = {'type': 'task', 'name': '%seupdfsoi' % cdump_eupd}
-    deps2.append(rocoto.add_dependency(dep_dict))
-    dependencies2 = rocoto.create_dependency(dep_condition='and', dep=deps2)
+        deps2 = []
+        deps2 = dependencies1
+        dep_dict = {'type': 'task', 'name': '%seupdfsoi' % cdump_eupd}
+        deps2.append(rocoto.add_dependency(dep_dict))
+        dependencies2 = rocoto.create_dependency(dep_condition='and', dep=deps2)
 
-    fhrgrp = rocoto.create_envar(name='FHRGRP', value='#grp#')
-    fhrlst = rocoto.create_envar(name='FHRLST', value='#lst#')
-    ecenenvars = envars1 + [fhrgrp] + [fhrlst]
-    varname1, varname2, varname3 = 'grp', 'dep', 'lst'
-    varval1, varval2, varval3 = get_ecengroups(dict_configs, dict_configs['ecenfsoi'], cdump=cdump)
-    vardict = {varname2: varval2, varname3: varval3}
-    task = wfu.create_wf_task('ecenfsoi', cdump=cdump, envar=ecenenvars, dependency=dependencies2,
+        fhrgrp = rocoto.create_envar(name='FHRGRP', value='#grp#')
+        fhrlst = rocoto.create_envar(name='FHRLST', value='#lst#')
+        ecenenvars = envars1 + [fhrgrp] + [fhrlst]
+        varname1, varname2, varname3 = 'grp', 'dep', 'lst'
+        varval1, varval2, varval3 = get_ecengroups(dict_configs, dict_configs['ecenfsoi'], cdump=cdump)
+        vardict = {varname2: varval2, varname3: varval3}
+        task = wfu.create_wf_task('ecenfsoi', cdump=cdump, envar=ecenenvars, dependency=dependencies2,
                               metatask='ecmnfsoi', varname=varname1, varval=varval1, vardict=vardict)
 
-    dict_tasks['%secmnfsoi' % cdump] = task
+        dict_tasks['%secmnfsoi' % cdump] = task
 
     # esfc
     deps1 = []
@@ -1151,23 +1158,25 @@ def get_hyb_tasks(dict_configs, cycledef='enkf'):
 
     dict_tasks['%sesfc' % cdump] = task
 
+
+    if do_efsoi in ['Y', 'YES']:
     # esfcfsoi
-    deps1 = []
-    data = '&ROTDIR;/%s.@Y@m@d/@H/%s.t@Hz.loganl.txt' % (cdump, cdump)
-    dep_dict = {'type': 'data', 'data': data}
-    deps1.append(rocoto.add_dependency(dep_dict))
-    dep_dict = {'type': 'task', 'name': '%sanalcalc' % cdump}
-    deps1.append(rocoto.add_dependency(dep_dict))
-    dependencies1 = rocoto.create_dependency(dep_condition='or', dep=deps1)
+         deps1 = []
+         data = '&ROTDIR;/%s.@Y@m@d/@H/%s.t@Hz.loganl.txt' % (cdump, cdump)
+         dep_dict = {'type': 'data', 'data': data}
+         deps1.append(rocoto.add_dependency(dep_dict))
+         dep_dict = {'type': 'task', 'name': '%sanalcalc' % cdump}
+         deps1.append(rocoto.add_dependency(dep_dict))
+         dependencies1 = rocoto.create_dependency(dep_condition='or', dep=deps1)
 
-    deps2 = []
-    deps2 = dependencies1
-    dep_dict = {'type': 'task', 'name': '%seupdfsoi' % cdump_eupd}
-    deps2.append(rocoto.add_dependency(dep_dict))
-    dependencies2 = rocoto.create_dependency(dep_condition='and', dep=deps2)
-    task = wfu.create_wf_task('esfcfsoi', cdump=cdump, envar=envars1, dependency=dependencies2, cycledef=cycledef)
+         deps2 = []
+         deps2 = dependencies1
+         dep_dict = {'type': 'task', 'name': '%seupdfsoi' % cdump_eupd}
+         deps2.append(rocoto.add_dependency(dep_dict))
+         dependencies2 = rocoto.create_dependency(dep_condition='and', dep=deps2)
+         task = wfu.create_wf_task('esfcfsoi', cdump=cdump, envar=envars1, dependency=dependencies2, cycledef=cycledef)
 
-    dict_tasks['%sesfcfsoi' % cdump] = task
+         dict_tasks['%sesfcfsoi' % cdump] = task
 
     # efmn, efcs
     deps1 = []
@@ -1200,27 +1209,28 @@ def get_hyb_tasks(dict_configs, cycledef='enkf'):
 
     dict_tasks['%sechgres' % cdump] = task
 
-    # efmnfsoi, efcsfsoi
-    deps1 = []
-    dep_dict = {'type': 'metatask', 'name': '%secmnfsoi' % cdump}
-    deps1.append(rocoto.add_dependency(dep_dict))
-    dep_dict = {'type': 'task', 'name': '%sesfcfsoi' % cdump}
-    deps1.append(rocoto.add_dependency(dep_dict))
-    dependencies1 = rocoto.create_dependency(dep_condition='and', dep=deps1)
+    if do_efsoi in ['Y', 'YES']:
+         # efmnfsoi, efcsfsoi
+         deps1 = []
+         dep_dict = {'type': 'metatask', 'name': '%secmnfsoi' % cdump}
+         deps1.append(rocoto.add_dependency(dep_dict))
+         dep_dict = {'type': 'task', 'name': '%sesfcfsoi' % cdump}
+         deps1.append(rocoto.add_dependency(dep_dict))
+         dependencies1 = rocoto.create_dependency(dep_condition='and', dep=deps1)
 
-    deps2 = []
-    deps2 = dependencies1
+         deps2 = []
+         deps2 = dependencies1
 
-    # liaofan: remove the option to run efcsfsoi in the cold start (2020.05.26)
-    #dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': '-06:00:00'}
-    #deps2.append(rocoto.add_dependency(dep_dict))
-    dependencies2 = rocoto.create_dependency(dep_condition='and', dep=deps2)
+         # liaofan: remove the option to run efcsfsoi in the cold start (2020.05.26)
+         #dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': '-06:00:00'}
+         #deps2.append(rocoto.add_dependency(dep_dict))
+         dependencies2 = rocoto.create_dependency(dep_condition='and', dep=deps2)
 
-    efcsenvars = envars1 + [ensgrp]
-    task = wfu.create_wf_task('efcsfsoi', cdump=cdump, envar=efcsenvars, dependency=dependencies2,
-                              metatask='efmnfsoi', varname='grp', varval=EFCSGROUPS, cycledef=cycledef)
+         efcsenvars = envars1 + [ensgrp]
+         task = wfu.create_wf_task('efcsfsoi', cdump=cdump, envar=efcsenvars, dependency=dependencies2,
+                                   metatask='efmnfsoi', varname='grp', varval=EFCSGROUPS, cycledef=cycledef)
 
-    dict_tasks['%sefmnfsoi' % cdump] = task
+         dict_tasks['%sefmnfsoi' % cdump] = task
 
     # epmn, epos
     deps = []
@@ -1238,50 +1248,54 @@ def get_hyb_tasks(dict_configs, cycledef='enkf'):
 
     dict_tasks['%sepmn' % cdump] = task
 
-    # epmnfsoi, eposfsoi
-    deps = []
-    dep_dict = {'type': 'metatask', 'name': '%sefmnfsoi' % cdump}
-    deps.append(rocoto.add_dependency(dep_dict))
-    dependencies = rocoto.create_dependency(dep=deps)
-    fhrgrp = rocoto.create_envar(name='FHRGRP', value='#grp#')
-    fhrlst = rocoto.create_envar(name='FHRLST', value='#lst#')
-    eposenvars = envars1 + [fhrgrp] + [fhrlst]
-    varname1, varname2, varname3 = 'grp', 'dep', 'lst'
-    varval1, varval2, varval3 = get_eposfsoigroups(dict_configs['eposfsoi'], cdump=cdump)
-    vardict = {varname2: varval2, varname3: varval3}
-    task = wfu.create_wf_task('eposfsoi', cdump=cdump, envar=eposenvars, dependency=dependencies,
-                              metatask='epmnfsoi', varname=varname1, varval=varval1, vardict=vardict)
+    if do_efsoi in ['Y', 'YES']:
+         # epmnfsoi, eposfsoi
+         deps = []
+         dep_dict = {'type': 'metatask', 'name': '%sefmnfsoi' % cdump}
+         deps.append(rocoto.add_dependency(dep_dict))
+         dependencies = rocoto.create_dependency(dep=deps)
+         fhrgrp = rocoto.create_envar(name='FHRGRP', value='#grp#')
+         fhrlst = rocoto.create_envar(name='FHRLST', value='#lst#')
+         eposenvars = envars1 + [fhrgrp] + [fhrlst]
+         varname1, varname2, varname3 = 'grp', 'dep', 'lst'
+         varval1, varval2, varval3 = get_eposfsoigroups(dict_configs['eposfsoi'], cdump=cdump)
+         vardict = {varname2: varval2, varname3: varval3}
+         task = wfu.create_wf_task('eposfsoi', cdump=cdump, envar=eposenvars, dependency=dependencies,
+                                   metatask='epmnfsoi', varname=varname1, varval=varval1, vardict=vardict)
 
-    dict_tasks['%sepmnfsoi' % cdump] = task
+         dict_tasks['%sepmnfsoi' % cdump] = task
 
-    # efsoi 
-    deps = []
-#    dep_dict = {'type': 'metatask', 'name': '%sepmnfsoi' % cdump}
-#    deps.append(rocoto.add_dependency(dep_dict))
-#    dep_dict = {'type': 'metatask', 'name': '%sepmnsfsoi' % cdump, 'offset': '-6:00:00'}
-#    deps.append(rocoto.add_dependency(dep_dict))
-    data = '&ROTDIR;/efsoigdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmf030.ensmean.nc'
-    dep_dict = {'type': 'data', 'data': data, 'offset': '-6:00:00'}
-    deps.append(rocoto.add_dependency(dep_dict))
-    data = '&ROTDIR;/efsoigdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmf024.ensmean.nc'
-    dep_dict = {'type': 'data', 'data': data}
-    deps.append(rocoto.add_dependency(dep_dict))
-    data = '&ROTDIR;/gdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmanl.ensres.nc'
-    dep_dict = {'type': 'data', 'data': data, 'offset': '24:00:00'}
-    deps.append(rocoto.add_dependency(dep_dict))
+         # efsoi 
+         deps = []
+     #    dep_dict = {'type': 'metatask', 'name': '%sepmnfsoi' % cdump}
+     #    deps.append(rocoto.add_dependency(dep_dict))
+     #    dep_dict = {'type': 'metatask', 'name': '%sepmnsfsoi' % cdump, 'offset': '-6:00:00'}
+     #    deps.append(rocoto.add_dependency(dep_dict))
+         data = '&ROTDIR;/efsoigdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmf030.ensmean.nc'
+         dep_dict = {'type': 'data', 'data': data, 'offset': '-6:00:00'}
+         deps.append(rocoto.add_dependency(dep_dict))
+         data = '&ROTDIR;/efsoigdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmf024.ensmean.nc'
+         dep_dict = {'type': 'data', 'data': data}
+         deps.append(rocoto.add_dependency(dep_dict))
+         data = '&ROTDIR;/gdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmanl.ensres.nc'
+         dep_dict = {'type': 'data', 'data': data, 'offset': '24:00:00'}
+         deps.append(rocoto.add_dependency(dep_dict))
 
-    dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
-    task = wfu.create_wf_task('efsoi', cdump=cdump, envar=envars1, dependency=dependencies, cycledef=cycledef)
+         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+         task = wfu.create_wf_task('efsoi', cdump=cdump, envar=envars1, dependency=dependencies, cycledef=cycledef)
 
-    dict_tasks['%sefsoi' % cdump] = task
+         dict_tasks['%sefsoi' % cdump] = task
 
      # eamn, earc
     deps = []
     dep_dict = {'type': 'metatask', 'name': '%sepmn' % cdump}
     deps.append(rocoto.add_dependency(dep_dict))
-    dep_dict = {'type': 'metatask', 'name': '%sepmnfsoi' % cdump}
-    deps.append(rocoto.add_dependency(dep_dict))
-    dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+    if do_efsoi in ['Y', 'YES']:
+         dep_dict = {'type': 'metatask', 'name': '%sepmnfsoi' % cdump}
+         deps.append(rocoto.add_dependency(dep_dict))
+         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+    else:
+         dependencies = rocoto.create_dependency(dep=deps)
     earcenvars = envars1 + [ensgrp]
     task = wfu.create_wf_task('earc', cdump=cdump, envar=earcenvars, dependency=dependencies,
                               metatask='eamn', varname='grp', varval=EARCGROUPS, cycledef=cycledef)
@@ -1511,14 +1525,14 @@ def create_xml(dict_configs):
                          'gdasediag':'gdasediag',
                          'gdaseomg':'gdaseomn',
                          'gdaseupd':'gdaseupd',
-                         'gdaseupdfsoi':'gdaseupdfsoi',
                          'gdasecen':'gdasecmn',
-                         'gdasecenfsoi':'gdasecmnfsoi',
                          'gdasesfc':'gdasesfc',
-                         'gdasesfcfsoi':'gdasesfcfsoi',
                          'gdasefcs':'gdasefmn',
-                         'gdasefcsfsoi':'gdasefmnfsoi',
                          'gdasepos':'gdasepmn',
+                         'gdaseupdfsoi':'gdaseupdfsoi',
+                         'gdasecenfsoi':'gdasecmnfsoi',
+                         'gdasesfcfsoi':'gdasesfcfsoi',
+                         'gdasefcsfsoi':'gdasefmnfsoi',
                          'gdaseposfsoi':'gdasepmnfsoi',
                          'gdasefsoi':'gdasefsoi',
                          'gdasearc':'gdaseamn',

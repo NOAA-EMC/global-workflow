@@ -97,6 +97,12 @@ jobs/JGDAS_ATMOS_GLDAS
 jobs/JGDAS_ATMOS_VERFOZN
 jobs/JGDAS_ATMOS_VERFRAD
 jobs/JGDAS_ATMOS_VMINMON
+jobs/JGDAS_EFSOI
+jobs/JGDAS_EFSOI_ECEN
+jobs/JGDAS_EFSOI_FCST
+jobs/JGDAS_EFSOI_POST
+jobs/JGDAS_EFSOI_SFC
+jobs/JGDAS_EFSOI_UPDATE
 jobs/JGDAS_ENKF_DIAG
 jobs/JGDAS_ENKF_ECEN
 jobs/JGDAS_ENKF_FCST
@@ -123,6 +129,8 @@ scripts/exgdas_atmos_nceppost.sh
 scripts/exgdas_atmos_verfozn.sh
 scripts/exgdas_atmos_verfrad.sh
 scripts/exgdas_atmos_vminmon.sh
+scripts/exgdas_efsoi.sh
+scripts/exgdas_efsoi_update.sh
 scripts/exgdas_enkf_ecen.sh
 scripts/exgdas_enkf_fcst.sh
 scripts/exgdas_enkf_post.sh
