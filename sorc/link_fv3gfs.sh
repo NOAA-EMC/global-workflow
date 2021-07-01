@@ -42,24 +42,24 @@ pwd=$(pwd -P)
 #--model fix fields
 #------------------------------
 if [ $machine = "cray" ]; then
-    FIX_DIR="/gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix_nco_gfsv16"
+    FIX_DIR="/gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix"
 elif [ $machine = "dell" ]; then
     if [ $model = "coupled" ]; then
       FIX_DIR="/gpfs/dell2/emc/modeling/noscrub/Walter.Kolczynski/global-workflow/fix_UFSp6"
     else 
-      FIX_DIR="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix_nco_gfsv16"
+      FIX_DIR="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix"
     fi 
 elif [ $machine = "hera" ]; then
     if [ $model = "coupled" ]; then
        FIX_DIR="/scratch2/NCEPDEV/climate/climpara/S2S/FIX/fix_UFSp6"
     else
-       FIX_DIR="/scratch1/NCEPDEV/global/glopara/fix_nco_gfsv16"
+       FIX_DIR="/scratch1/NCEPDEV/global/glopara/fix"
     fi
 elif [ $machine = "orion" ]; then
     if [ $model = "coupled" ]; then
        FIX_DIR="/work/noaa/marine/jmeixner/tempFixICdir/fix_UFSp6"
     else
-       FIX_DIR="/work/noaa/global/glopara/fix_nco_gfsv16"
+       FIX_DIR="/work/noaa/global/glopara/fix"
     fi
 elif [ $machine = "stampede" ]; then
     FIX_DIR="/work/07738/jkuang/stampede2/tempFixICdir/fix_UFSp6"
@@ -70,15 +70,15 @@ if [ ! -z $FIX_DIR ]; then
 fi
 cd ${pwd}/../fix                ||exit 8
 if [ $model = "coupled" ] ; then
-  for dir in fix_am fix_fv3_gmted2010 fix_fv3_fracoro fix_gldas fix_orog fix_verif fix_cice fix_mom6 fix_cpl fix_wave fix_reg2grb2 ; do 
+  for dir in fix_aer fix_am fix_chem fix_fv3_gmted2010 fix_gldas fix_lut fix_fv3_fracoro fix_orog fix_sfc_climo fix_verif fix_cice fix_mom6 fix_cpl fix_wave fix_reg2grb2 ; do
     if [ -d $dir ]; then
       [[ $RUN_ENVIR = nco ]] && chmod -R 755 $dir
       rm -rf $dir
     fi
     $LINK $FIX_DIR/$dir .
   done
-else 
-  for dir in fix_am fix_fv3_gmted2010 fix_gldas fix_orog fix_verif fix_wave_gfs ; do
+else
+  for dir in fix_aer fix_am fix_chem fix_fv3_gmted2010 fix_gldas fix_lut fix_orog fix_sfc_climo fix_verif fix_wave_gfs ; do
     if [ -d $dir ]; then
       [[ $RUN_ENVIR = nco ]] && chmod -R 755 $dir
       rm -rf $dir
@@ -253,7 +253,7 @@ for workflowexec in fbwndgfs gfs_bufr regrid_nemsio supvit syndat_getjtbul \
   $LINK ../sorc/install/bin/${workflowexec}.x $workflowexec
 done
 for workflowexec in enkf_chgres_recenter.x enkf_chgres_recenter_nc.x fv3nc2nemsio.x \
-    tave.x vint.x ; do
+    tave.x vint.x reg2grb2.x ; do
   [[ -s $workflowexec ]] && rm -f $workflowexec
   $LINK ../sorc/install/bin/$workflowexec .
 done
@@ -395,7 +395,6 @@ cd $pwd/../parm/config
 [[ -s config.base ]] && rm -f config.base 
 if [ $RUN_ENVIR = nco ] ; then
  cp -p config.base.nco.static config.base
- cp -p config.resources.nco.static config.resources
 else
  cp -p config.base.emc.dyn config.base
 fi

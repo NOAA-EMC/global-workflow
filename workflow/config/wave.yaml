@@ -120,6 +120,7 @@ config_wave:
       # # Path to HOME Directory
       export EXECwave="{doc.places.HOMEgfs}/exec"
       export FIXwave="{doc.places.FIXwave}"
+      export PARMwave="{doc.places.PARMwave}"
       export USHwave="{doc.places.HOMEgfs}/ush"
       #
       #
