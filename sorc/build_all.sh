@@ -9,14 +9,25 @@ set +x
 #                   Anything other than "true"  will use libraries locally.
 #------------------------------------
 
-while getopts "c" option;
+_build_ufs_options=""
+
+while getopts "ac" option;
 do
  case $option in
+  a)
+   echo "Received -a flag, build ufs-weather-model develop branch with aerosols and CCPP physics"
+   echo "setting coupled=yes and skipping builds not needed for prototype runs"
+   _build_ufs_options=-a
+   RUN_CCPP="YES"
+   COUPLED="YES"
+   break
+   ;;
   c)
    echo "Received -c flag, build ufs-weather-model develop branch with CCPP physics"
    echo "setting coupled=yes and skipping builds not needed for prototype runs"
    RUN_CCPP="YES"
    COUPLED="YES" 
+   break
    ;;
  esac
 done
@@ -49,7 +60,7 @@ source ./machine-setup.sh > /dev/null 2>&1
 #------------------------------------
 # INCLUDE PARTIAL BUILD 
 #------------------------------------
-. ./partial_build.sh
+. ./partial_build.sh $@
 
 #------------------------------------
 # Exception Handling Init
@@ -87,7 +98,7 @@ if [[ $rc -ne 0 ]] ; then
 fi
 ((err+=$rc))
 else 
-./build_ufs_coupled.sh > $logs_dir/build_ufs_coupled.log 2>&1
+./build_ufs_coupled.sh ${_build_ufs_options} > $logs_dir/build_ufs_coupled.log 2>&1
 rc=$?
 if [[ $rc -ne 0 ]] ; then
     echo "Fatal error in building ufs coupled forecast model."

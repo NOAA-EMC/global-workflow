@@ -13,11 +13,6 @@ do
    echo "Received -c flag, running coupled model" 
    COUPLED="YES"
    ;;
-  a)
-   echo "Received -a flag, running coupled aerosols model"
-   AEROSOL="YES"
-   COUPLED="YES"
-   ;;
   :)
    echo "option -$OPTARG needs an argument"
    ;;
@@ -45,16 +40,9 @@ if [ ${COUPLED:-"NO"} = "NO" ]; then
   fi 
 else 
   if [[ ! -d ufs_coupled.fd ]] ; then
-    if [ "${AEROSOL}" = "YES" ] ; then
-      git clone https://github.com/rmontuoro/ufs-weather-model.git ufs_coupled.fd >> ${topdir}/checkout-ufs_coupled.log 2>&1
-      cd ufs_coupled.fd
-      git checkout feature/gocart
-      echo > .build_aerosols
-    else
-      git clone https://github.com/ufs-community/ufs-weather-model ufs_coupled.fd >> ${topdir}/checkout-ufs_coupled.log 2>&1
-      cd ufs_coupled.fd
-      git checkout 3e46f5b7050e18884a0bed13691823ad88d443c3
-    fi
+    git clone https://github.com/ufs-community/ufs-weather-model ufs_coupled.fd >> ${topdir}/checkout-ufs_coupled.log 2>&1
+    cd ufs_coupled.fd
+    git checkout a842d57f9c352acd3771fbccd8d8eb044558d090
     git submodule update --init --recursive
     cd ${topdir} 
   else
