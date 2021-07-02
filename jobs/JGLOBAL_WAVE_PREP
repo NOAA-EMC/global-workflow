@@ -77,6 +77,10 @@ else
   if [ ! -L $ROTDIR/${WAVECUR_DID}.${RPDY} ]; then # Check if symlink already exists in ROTDIR
     $NLN $DMPDIR/${WAVECUR_DID}.${RPDY} $ROTDIR/${WAVECUR_DID}.${RPDY}
   fi
+  BRPDY=`$NDATE -24 ${RPDY}00 | cut -c1-8`
+  if [ ! -L $ROTDIR/${WAVECUR_DID}.${BRPDY} ]; then # Check if symlink already exists in ROTDIR
+    $NLN $DMPDIR/${WAVECUR_DID}.${BRPDY} $ROTDIR/${WAVECUR_DID}.${BRPDY}
+  fi
   if [ ! -L $ROTDIR/${CDUMP}.${PDY}/${cyc}/atmos/${WAVICEFILE} ]; then # Check if symlink already exists in ROTDIR
     $NLN $DMPDIR/$CDUMP.${PDY}/$cyc/${WAVICEFILE} $ROTDIR/$CDUMP.${PDY}/$cyc/atmos/${WAVICEFILE}
   fi
