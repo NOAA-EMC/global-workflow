@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 #
 ##@namespace rocoto_viewer
 # @brief A Curses based terminal viewer to interact and display the status of a Rocoto Workflow in real time.
@@ -41,7 +41,7 @@ import re
 
 #from subprocess import run
 import sqlite3,datetime,collections
-import xml.etree.ElementTree as ET
+from lxml import etree as ET
 import cPickle
 
 try:
@@ -54,6 +54,7 @@ except ImportError:
 # Global Variables
 database_file_agmented = None
 use_performance_metrics = False
+job_name_length_max = 50
 default_column_length_master = 125
 stat_read_time_delay = 3*60
 header_string = ''
@@ -742,7 +743,8 @@ def get_tasklist(workflow_file):
     import produtil.run, produtil.numerics
     tasks_ordered = []
     metatask_list = collections.defaultdict(list)
-    tree = ET.parse(workflow_file)
+    parser = ET.XMLParser(load_dtd=True, resolve_entities=True)
+    tree = ET.parse(workflow_file, parser=parser)
     root = tree.getroot()
     cycledef_group_cycles = collections.defaultdict(list)
     if list_tasks:
@@ -1202,7 +1204,8 @@ def main(screen):
     from produtil.fileop import check_file, makedirs, deliver_file, remove_file, make_symlinks_in
     from produtil.prog import shbackslash
 
-    header_string       = ' '*18+'CYCLE'+' '*17+'TASK'+' '*39+'JOBID'+' '*6+'STATE'+' '*9+'EXIT'+' '*2+'TRIES'+' '*2+'DURATION'
+    # header_string       = ' '*18+'CYCLE'+' '*17+'TASK'+' '*39+'JOBID'+' '*6+'STATE'+' '*9+'EXIT'+' '*2+'TRIES'+' '*2+'DURATION'
+    header_string       = ' '*7+'CYCLE'+' '*(int(job_name_length_max/2)+3)+'TASK'+' '*(int(job_name_length_max/2)+3)+'JOBID'+' '*6+'STATE'+' '*9+'EXIT'+' '*1+'TRIES'+' '*1+'DURATION'
     header_string_under = '=== (updated:tttttttttttttttt) =================== PSLOT: pslot '+'='*44
 
     global use_performance_metrics
@@ -2295,7 +2298,7 @@ def main(screen):
                 screen.refresh()
                 screen.addstr(mlines-3,0,'/')
                 screen.refresh()
-                search_string = screen.getstr(mlines-3,1,50)
+                search_string = screen.getstr(mlines-3,1,job_name_length_max)
                 break_twice = False
                 screen.addstr(mlines-3,0,' '*100)
                 screen.refresh()
