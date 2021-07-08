@@ -215,7 +215,7 @@ elif [ $CCPP_SUITE = "FV3_GSD_v0" ]; then
   min_lakeice  = ${min_lakeice:-"0.15"}
   min_seaice   = ${min_seaice:-"0.15"}
 EOF
-elif [ $CCPP_SUITE = "FV3_GFS_v16_coupled" ]; then
+elif [ $CCPP_SUITE = "FV3_GFS_v16_coupled" -o $CCPP_SUITE = "FV3_GFS_v16_couplednsst" ]; then
   cat >> input.nml << EOF
   iovr         = ${iovr:-"3"}
   ltaerosol    = ${ltaerosol:-".false."}
