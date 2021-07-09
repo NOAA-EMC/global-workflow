@@ -22,7 +22,11 @@ case:
     KEEPDATA: NO
 
   nsst:
-    NST_MODEL: 0
+    NST_MODEL: 2
+    NST_SPINUP: 1
+    NST_RESV: 0
+    ZSEA1: 0
+    ZSEA2: 0
 
   output_settings:
     OCN_INTERVAL: 24
@@ -39,7 +43,7 @@ case:
     min_lakeice: 0.15
     min_seaice: 1.0e-11
     SEEDLET: 10
-    CCPP_SUITE: FV3_GFS_v16_coupled
+    CCPP_SUITE: FV3_GFS_v16_couplednsst
     CPL_ATMIC: CFSRfracL127
     nst_anl: yes
     psm_bc: 1
