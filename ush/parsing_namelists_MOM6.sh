@@ -9,8 +9,9 @@ MOM_INPUT=MOM_input_template_$OCNRES
 #TODO: Make these variables configurable 
 
 #Set to False for restart reproducibility   
-MOM6_REPRO_LA='True'
-MOM6_THERMO_SPAN='False'
+MOM6_REPRO_LA=${MOM6_REPRO_LA:-'True'}
+MOM6_THERMO_SPAN=${MOM6_THERMO_SPAN:-'False'}
+MOM6_ALLOW_LANDMASK_CHANGES=${MOM6_ALLOW_LANDMASK_CHANGES:-'False'}
 
 if [ $cplwav = ".true." ] ; then
   MOM6_USE_WAVES='True'
@@ -74,6 +75,7 @@ sed -e "s/DT_THERM_MOM6/$DT_THERM_MOM6/g" \
     -e "s/MOM6_THERMO_SPAN/$MOM6_THERMO_SPAN/g" \
     -e "s/MOM6_REPRO_LA/$MOM6_REPRO_LA/g" \
     -e "s/MOM6_USE_WAVES/$MOM6_USE_WAVES/g" \
+    -e "s/MOM6_ALLOW_LANDMASK_CHANGES/$MOM6_ALLOW_LANDMASK_CHANGES/g" \
     -e "s/NX_GLB/$NX_GLB/g" \
     -e "s/NY_GLB/$NY_GLB/g" \
     -e "s/CHLCLIM/$CHLCLIM/g" $DATA/INPUT/MOM_input_template_$OCNRES > $DATA/INPUT/MOM_input

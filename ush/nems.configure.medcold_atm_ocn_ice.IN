@@ -32,6 +32,7 @@ OCN_attributes::
   ProfileMemory = false
   OverwriteSlice = true
   dbug_flag = 0  
+  mesh_ocn = @[MESH_OCN_ICE]
 ::
 
 # ICE #
@@ -42,7 +43,7 @@ ICE_attributes::
   DumpFields = @[DumpFields]
   ProfileMemory = false
   OverwriteSlice = true
-  mesh_ice = @[MESHICE]
+  mesh_ice = @[MESH_OCN_ICE]
   stop_n = @[FHMAX]
   stop_option = nhours
   stop_ymd = -999
