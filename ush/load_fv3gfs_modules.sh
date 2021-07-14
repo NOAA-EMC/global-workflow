@@ -29,32 +29,8 @@ fi
 
 platform=$( get_platform )
 
-moduledir=
-modulelist=
-case "${platform}" in
-  hera)
-    moduledir="$HOMEgfs/sorc/ufs_coupled.fd/modulefiles"
-    target=${platform}.intel
-    if [[ "${tasktype}" = "forecast" && -r ${moduledir}/ufs_${target} ]] ; then
-      modulelist=ufs_${target}
-      if [[ "$( grep UFS_GOCART ${HOMEgfs}/sorc/ufs_coupled.fd/build/CMakeCache.txt 2>/dev/null | cut -d= -f2 )" = "ON" ]] ; then
-        # add aerosols modulefile
-        modulelist="${modulelist} ufs_aerosols_${target}"
-      fi
-    else
-      moduledir="$HOMEgfs/modulefiles"
-      modulelist="module_base.${platform}"
-    fi
-    ;;
-  unknown)
-    echo "Unknown platform"
-    exit 1
-    ;;
-  *)
-    moduledir="$HOMEgfs/modulefiles"
-    modulelist="module_base.${platform}"
-    ;;
-esac
+moduledir="$HOMEgfs/modulefiles"
+modulelist="module_base.${platform}"
 
 # Load our modules:
 module use ${moduledir}
