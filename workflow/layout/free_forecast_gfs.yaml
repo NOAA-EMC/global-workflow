@@ -47,7 +47,7 @@ suite: !Cycle
     jgfs_init_chem: !Task
       <<: *exclusive_task_template
       RUN: 'gfs'
-      Disable: !calc doc.settings.cplgocart != '.true.'
+      Disable: !calc doc.settings.cplchem != '.true.'
       Trigger: !Depend jgfs_emc_mom6ic & up.gfs.forecast.at('-' + tools.dt_to_HMS(doc.settings.STEP_GFS))
       resources: !calc partition.resources.run_init_chem
       J_JOB: rocoto/init_chem.sh
@@ -82,7 +82,7 @@ suite: !Cycle
 
     forecast: !Family
       medcold: !Task
-        <<: *exclusive_task_template
+        <<: *forecast_task_template
         Disable: !calc doc.settings.cplflx == '.false.' or doc.settings.onestep == '.true.'
         Trigger: !FirstTrue
            - when: !calc doc.settings.cplwav=='.true.'
@@ -93,13 +93,13 @@ suite: !Cycle
         J_JOB: JGLOBAL_FORECAST_MEDCOLD
 
       highres: !Task
-        <<: *exclusive_task_template
+        <<: *forecast_task_template
         Trigger: !FirstTrue
            - when: !calc doc.settings.cplflx=='.true.' and doc.settings.onestep=='.false.'
              do: !Depend medcold
            - when: !calc doc.settings.cplwav=='.true.'
              do: !Depend up.prep
-           - when: !calc doc.settings.cplgocart=='.true.'
+           - when: !calc doc.settings.cplchem=='.true.'
              do: !Depend up.up.ics.jgfs_init_chem & up.up.ics.jgfs_emc_mom6ic
            - otherwise: !Depend up.up.ics.jgfs_emc_mom6ic
         resources_remap: !JobRequest [ { <<: *remap_resource_template } ]

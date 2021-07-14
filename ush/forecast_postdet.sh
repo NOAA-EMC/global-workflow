@@ -498,11 +498,7 @@ FV3_GFS_nml(){
 		echo "MAIN: !!!Sandbox mode, writing to current directory!!!"
 	fi
 	# Call child scripts in current script directory
-	if [ $cplgocart = .true. ]; then
-		source $SCRIPTDIR/parsing_namelists_FV3_GOCART.sh
-	else
-		source $SCRIPTDIR/parsing_namelists_FV3.sh
-	fi
+	source $SCRIPTDIR/parsing_namelists_FV3.sh
 	FV3_namelists
 	echo SUB ${FUNCNAME[0]}: FV3 name lists and model configure file created
 }
@@ -729,9 +725,11 @@ CICE_postdet() {
 	echo "SUB ${FUNCNAME[0]}: CICE after run type determination"
 
 	year=$(echo $CDATE|cut -c 1-4)
+	month=$(echo $CDATE|cut -c 5-6)
+	day=$(echo $CDATE|cut -c 7-8)
+
 	stepsperhr=$((3600/$ICETIM))
 	nhours=$($NHOUR $CDATE ${year}010100)
-	istep0=$((nhours*stepsperhr))
 	steps=$((nhours*stepsperhr))
 	npt=$((FHMAX*$stepsperhr))      # Need this in order for dump_last to work
 
@@ -746,6 +744,8 @@ CICE_postdet() {
 	cice_hist_avg=${cice_hist_avg:-".true."}
 
 	FRAZIL_FWSALT=${FRAZIL_FWSALT:-".true."}
+	ktherm=${ktherm:-1}
+	tfrz_option=${tfrz_option:-"linear_salt"}
 	tr_pond_lvl=${tr_pond_lvl:-".true."} # Use level melt ponds tr_pond_lvl=true
 
 	# restart_pond_lvl (if tr_pond_lvl=true):
@@ -785,7 +785,7 @@ CICE_postdet() {
 	echo "Link CICE fixed files"
 	$NLN -sf $FIXcice/$ICERES/${ice_grid_file} $DATA/
 	$NLN -sf $FIXcice/$ICERES/${ice_kmt_file} $DATA/
-	$NLN -sf $FIXcice/$ICERES/$MESHICE $DATA/
+	$NLN -sf $FIXcice/$ICERES/$MESH_OCN_ICE $DATA/
 }
 
 CICE_nml() {
@@ -860,21 +860,3 @@ GOCART_rc() {
 		[[ $status -ne 0 ]] && exit $status
 	fi
 }
-
-GSD_in() {
-	echo "SUB ${FUNCNAME[0]}: Linking input data for GSD"
-	# soft link commands insert here
-}
-
-GSD_nml() {
-	echo "SUB ${FUNCNAME[0]}: Creating name list for GSD"
-	sh parsing_namelists_GSD.sh
-}
-
-GSD_out() {
-	echo "SUB ${FUNCNAME[0]}: Copying output data for GSD"
-	# soft link commands insert here
-}
-
-
-

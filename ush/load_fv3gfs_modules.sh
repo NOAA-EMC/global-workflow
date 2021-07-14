@@ -1,59 +1,40 @@
 #!/bin/sh
-#set -x
 
 ###############################################################
 # Setup runtime environment by loading modules
+#
+# This script accepts an optional argument for the task type.
+# Acceptable types are: exclusive, forecast, service, shared
+#
+###############################################################
+
 ulimit_s=$( ulimit -S -s )
-#ulimit -S -s 10000
 
 # Find module command and purge:
 source "$HOMEgfs/modulefiles/module-setup.sh.inc" 
+source "$HOMEgfs/ush/get_platform.sh"
+
+tasktype=
+if [ $# -eq 1 ] ; then
+  case "${1}" in
+    exclusive|forecast|service|shared)
+      tasktype="${1}"
+      ;;
+    *)
+      echo "Unsupported task type"
+      exit 1
+      ;;
+  esac
+fi
+
+platform=$( get_platform )
+
+moduledir="$HOMEgfs/modulefiles"
+modulelist="module_base.${platform}"
 
 # Load our modules:
-module use "$HOMEgfs/modulefiles" 
-hname=`hostname -d`
-
-if [[ $hname = 'stampede2.tacc.utexas.edu' ]] ; then
-	# We are on Xsede stampede2
-	module load module_base.stampede
-elif [[ $hname = 'hpc.msstate.edu' ]] ; then
-	# We are on MSU Orion
-	module load module_base.orion
-elif [[ -d /lfs3 ]] ; then
-	# We are on NOAA Jet
-	module load module_base.jet 
-elif [[ -d /scratch1 ]] ; then
-	# We are on NOAA Hera
-	module load module_base.hera
-	if [[ -d $HOMEgfs/sorc/ufs_coupled.fd/GOCART ]] ; then
-		module use "$HOMEgfs/sorc/ufs_coupled.fd/modulefiles/hera.intel"
-		module load fv3
-	fi
-elif [[ -d /work ]] ; then
-	# We are on MSU Orion
-	module load module_base.orion
-	if [[ -d $HOMEgfs/sorc/ufs_coupled.fd/GOCART ]] ; then
-		module use "$HOMEgfs/sorc/ufs_coupled.fd/modulefiles/orion.intel"
-		module load fv3
-	fi
-elif [[ -d /gpfs/hps && -e /etc/SuSE-release ]] ; then
-	# We are on NOAA Luna or Surge
-	module load module_base.wcoss_c 
-elif [[ -L /usrx && "$( readlink /usrx 2> /dev/null )" =~ dell ]] ; then
-	# We are on NOAA Mars or Venus
-	module load module_base.wcoss_dell_p3 
-elif [[ -d /dcom && -d /hwrf ]] ; then
-	# We are on NOAA Tide or Gyre
-	module load module_base.wcoss 
-elif [[ -d /glade ]] ; then
-	# We are on NCAR Yellowstone
-	module load module_base.cheyenne 
-elif [[ -d /lustre && -d /ncrc ]] ; then
-	# We are on GAEA.
-	module load module_base.gaea 
-else
-	echo WARNING: UNKNOWN PLATFORM 
-fi
+module use ${moduledir}
+module load ${modulelist}
 
 # Restore stack soft limit:
 ulimit -S -s "$ulimit_s"

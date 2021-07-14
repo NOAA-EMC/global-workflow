@@ -20,8 +20,8 @@ module load hpc-intel/2018.4
 module load hpc-impi/2018.4
 
 # Non-MPI
-module load g2/3.4.1
-module load g2tmpl/1.9.1
+module load g2/3.4.2
+module load g2tmpl/1.10.0
 module load grib_util/1.2.2
 module load crtm 2.3.0
 module load prod_util/1.2.2
@@ -38,7 +38,7 @@ module load png/1.6.35
 # MPI
 module load netcdf/4.7.4
 module load hdf5/1.10.6
-module load esmf/8_1_0_beta_snapshot_27
+module load esmf/8_1_1
 module load w3emc/2.7.3
 module load wgrib2/2.0.8
 setenv WGRIB2 wgrib2
