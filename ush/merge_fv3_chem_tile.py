@@ -111,21 +111,18 @@ def merge_tile(base_file_name: str, ctrl_file_name: str, core_file_name: str, re
 	old_ntracer = base_file.dimensions["ntracer"].size
 	new_ntracer = old_ntracer + len(tracers_to_append)
 
-	# Copy over chemistry dimensions
-	for dim_name in append_file.dimensions:
-		base_file.createDimension(dim_name, append_file.dimensions[dim_name].size)
-
 	print("Adding the following variables to " + base_file_name + ":\n")
 
 	print(" Name   | Total mass (restart) | Total mass (IC)      | Max column abs. diff.")
 	print("-"*8 + "+" + "-"*22 + "+" + "-"*22 + "+" + "-"*24)
 	for variable_name in tracers_to_append:
 		variable = append_file[variable_name]
-		base_file.createVariable(variable_name, variable.datatype, variable.dimensions[1:])
-		base_file[variable_name][:] = scale_factor * variable[0,:]
+		base_file.createVariable(variable_name, variable.datatype, base_file["sphum"].dimensions)
+		base_file[variable_name][0,:,:]  = 0.
+		base_file[variable_name][1:,:,:] = scale_factor * variable[0,:,:,:]
 		base_file[variable_name].setncatts(variable.__dict__)
 		msrc = variable * delp
-		mdst = base_file[variable_name][:] * dp
+		mdst = base_file[variable_name][1:,:,:] * dp
 		print(' {0:6}   {1:20}   {2:20}    {3:22}'.format(variable_name, np.sum(msrc), np.sum(mdst), np.max(np.abs(msrc-mdst))))
 		# print("Done adding " + variable_name)
 
