@@ -2,8 +2,8 @@
 set -eux
 
 # Build S2S by default
-CMAKE_FLAGS="-DS2S=ON -DWW3=ON"
-CCPP_SUITES="FV3_GFS_v15p2_coupled,FV3_GFS_v16_coupled,FV3_GFS_v16"
+CMAKE_FLAGS="-DAPP=S2SW"
+CCPP_SUITES="FV3_GFS_v16_coupled,FV3_GFS_v16_couplednsst,FV3_GFS_v16"
 
 while [ ${#} -gt 0 ]
 do
@@ -37,7 +37,7 @@ esac
 
 MOD_PATH=$cwd/ufs_coupled.fd/modulefiles
 
-module purge 
+module purge
 
 cd ufs_coupled.fd/
 module use ${MOD_PATH}

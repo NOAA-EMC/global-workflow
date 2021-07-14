@@ -89,22 +89,22 @@ fi
 $Build_fv3gfs && {
 echo " .... Building forecast model .... "
 if [ ${COUPLED:-"NO"} = "NO" ]; then 
-export RUN_CCPP=${RUN_CCPP:-"NO"}
-./build_fv3.sh > $logs_dir/build_fv3.log 2>&1
-rc=$?
-if [[ $rc -ne 0 ]] ; then
+  export RUN_CCPP=${RUN_CCPP:-"NO"}
+  ./build_fv3.sh > $logs_dir/build_fv3.log 2>&1
+  rc=$?
+  if [[ $rc -ne 0 ]] ; then
     echo "Fatal error in building fv3."
     echo "The log file is in $logs_dir/build_fv3.log"
-fi
-((err+=$rc))
-else 
-./build_ufs_coupled.sh ${_build_ufs_options} > $logs_dir/build_ufs_coupled.log 2>&1
-rc=$?
-if [[ $rc -ne 0 ]] ; then
+  fi
+  ((err+=$rc))
+else
+    ./build_ufs_coupled.sh ${_build_ufs_options} > $logs_dir/build_ufs_coupled.log 2>&1
+    rc=$?
+    if [[ $rc -ne 0 ]] ; then
     echo "Fatal error in building ufs coupled forecast model."
     echo "The log file is in $logs_dir/build_ufs_coupled.log"
-fi
-((err+=$rc))
+  fi
+  ((err+=$rc))
 fi
 }
 
