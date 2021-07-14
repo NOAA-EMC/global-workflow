@@ -37,10 +37,6 @@ case "${platform}" in
     target=${platform}.intel
     if [[ "${tasktype}" = "forecast" && -r ${moduledir}/ufs_${target} ]] ; then
       modulelist=ufs_${target}
-      if [[ "$( grep UFS_GOCART ${HOMEgfs}/sorc/ufs_coupled.fd/build/CMakeCache.txt 2>/dev/null | cut -d= -f2 )" = "ON" ]] ; then
-        # add aerosols modulefile
-        modulelist="${modulelist} ufs_aerosols_${target}"
-      fi
     else
       moduledir="$HOMEgfs/modulefiles"
       modulelist="module_base.${platform}"
