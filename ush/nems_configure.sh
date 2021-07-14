@@ -47,6 +47,7 @@ CHMPETS=${CHMPETS:-${ATMPETS}}
 
 USE_MOMMESH=${USE_MOMMESH:-"true"}
 
+
 rm -f $DATA/nems.configure
 
 med_petlist_bounds=${med_petlist_bounds:-"0 $(( $MEDPETS-1 ))"}
@@ -82,6 +83,7 @@ if [ $cplflx = .true. ]; then
 	sed -i -e "s;@\[coupling_interval_fast_sec\];$CPL_FAST;g" tmp1
         sed -i -e "s;@\[RESTART_N\];$restart_interval_nems;g" tmp1
   sed -i -e "s;@\[use_mommesh\];$USE_MOMMESH;g" tmp1
+  sed -i -e "s;@\[eps_imesh\];$ICERESdec;g" tmp1
 fi
 if [ $cplwav = .true. ]; then
 	sed -i -e "s;@\[wav_model\];ww3;g" tmp1

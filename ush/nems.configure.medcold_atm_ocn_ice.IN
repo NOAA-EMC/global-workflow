@@ -100,4 +100,5 @@ ALLCOMP_attributes::
       restart_option = nhours
       restart_ymd = -999
       dbug_flag = 0
+      eps_imesh = @[eps_imesh]
 ::
