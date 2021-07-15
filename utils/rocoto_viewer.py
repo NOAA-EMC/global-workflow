@@ -44,32 +44,23 @@ import pickle
 import sqlite3
 import collections
 try:
-    """
-    The stock XML parser does not expand external entities, so
-    try to load lxml instead.
-    """
+    # The stock XML parser does not expand external entities, so
+    # try to load lxml instead.
     from lxml import etree as ET
     using_lxml = True
 except ImportError:
-    """
-    Don't raise the exception yet in case the workflow doesn't
-    have external entities.
-    """
+    # Don't raise the exception yet in case the workflow doesn't
+    # have external entities.
     from xml.etree import ElementTree as ET
     using_lxml = False
 
 try:
-    """
-    UGCS uses a timedelta of months, which requires the extended
-    capabilities of relativedelta. The base timedelta only handles
-    intervals measured in days.
-    """
+    # UGCS uses a timedelta of months, which requires the extended
+    # capabilities of relativedelta. The base timedelta only handles
+    # intervals measured in days.
     from dateutil.relativedelta import relativedelta
 except ImportError:
-    """
-    Don't raise the exception yet until relativedelta is actually
-    needed.
-    """
+    # Don't raise the exception yet until relativedelta is actually needed.
     pass
 
 # Global Variables
@@ -134,23 +125,70 @@ debug = None
 mlines = 0
 mcols = 0
 
-
 def eprint(message: str) -> None:
     """
     Print to stderr instead of stdout
+
+    Parameters
+    ----------
+    message: str
+        Messaga to be printed to stderr
+
     """
     print(message, file=sys.stderr)
 
 
 def syscall(args: list) -> str:
     """
-    Shortcut to call subprocess, get the output, and strip off the trailing new line
+    Wrapper to call a shell command and return the output
+
+    Parameters
+    ----------
+    args: list
+        A list of command line arguments, identical to those used by subprocess.run
+
+    Returns
+    ----------
+    output: str
+        A string representation of the stdout produced by the given shell command,
+        with any leading/trailing whitespace/newlines stripped.
+
     """
     return subprocess.run(args, check=True, stdout=subprocess.PIPE, encoding='utf-8').stdout.strip()
 
 
+# Shamelessly stolen and updated from produtils
 def string_to_timedelta(td_string: str) -> timedelta:
-    # Shamelessly stolen and updated from produtils
+    """
+    Converts a string to a timedelta object
+
+    Parameters
+    ----------
+    td_string: str
+        A string specifying a time interval in hours and minutes (and optionally
+        seconds), separated by colons. Negative values are permitted.
+
+    Returns
+    ----------
+    delta: timedelta
+        A timedelta object representing the interval specified by the string.
+
+    Raises
+    ----------
+    TypeError, ValueError, AttributeError
+
+    Examples
+    ----------
+    >>> string_to_timedelta("3:00")
+    A timedelta object representing a change of three hours
+
+    >>> string_to_timedelta("-6:00")
+    A timedelta object representing a change of negative six hours
+
+    >>> string_to_timedelta("0:0:30")
+    A timedelta object representing a change of thirty seconds
+
+    """
     try:
         m = re.search(r'''(?ix) \A \s* (?P<negative>-)? 0* (?P<hours>\d+)
             :0*(?P<minutes>\d+)
@@ -174,10 +212,22 @@ def string_to_timedelta(td_string: str) -> timedelta:
         raise
 
 
-def shstrok(s):
-    """!Returns True if the specified string can be expressed as a
-    POSIX sh string, and false otherwise.
-    @param s a string"""
+# Shamelessly stolen and updated from produtils
+def is_posix(s: str) -> bool:
+    """
+    Determines whether a string can be expressed as a POSIX sh string.
+
+    Parameters
+    ----------
+    s: str
+        String to be tested
+
+    Returns
+    ----------
+    is_posix: bool
+        Whether the string given can be expressed in POSIX
+
+    """
     # Only allow non-whitespace ASCII and space (chr(32)-chr(126)):
     if re.search(r'\A[a-zA-Z0-9 !"#$%&?()*+,./:;<=>?@^_`{|}~\\\]\[\'-]*\Z', s):
         return True
@@ -185,18 +235,52 @@ def shstrok(s):
         return False
 
 
-def shbackslash(s):
+# Shamelessly stolen and updated from produtils
+def convert_to_posix(s):
+    """
+    Converts a string to an escaped POSIX sh string
+
+    Parameters
+    ----------
+    s: str
+        String to be escaped to POSIX using backslashes
+
+    Returns
+    ----------
+    escaped_s: str
+        New string that has been properly escaped with backslashed for use in sh
+
+    Raises
+    ----------
+    NotValidPosixShString
+        If the string cannot produce a valid POSIX string
+
+    See Also
+    ----------
+    is_posix
+
+    """
     """!Given a Python str, returns a backslashed POSIX sh string, or
     raises NotValidPosixShString if that cannot be done.
     @param s a string to backslash"""
-    if not shstrok(s):
+    if not is_posix(s):
         raise NotValidPosixShString(f'String is not expressable in POSIX sh: {repr(s)}')
     if re.search(r'(?ms)[^a-zA-Z0-9_+.,/-]', s):
         return '"' + re.sub(r'(["\\\\$])', r"\\\1", s) + '"'
     return s
 
 
-def get_rocoto_commands():
+def get_rocoto_commands() -> bool:
+    """
+    Sets global variables for the location of rocoto executables
+    using shell which command.
+
+    Return
+    ----------
+    is_successful: bool
+        Whether all commands were successfully set
+
+    """
     global rocotoboot
     global rocotorun
     global rocotocheck
@@ -1270,11 +1354,11 @@ def main(screen):
     if html_output:
         html_ptr = None
         if not send_html_to_rzdm and len(rzdm_path) != 0:
-            html_output_dir = shbackslash(rzdm_path)
+            html_output_dir = convert_to_posix(rzdm_path)
         else:
-            html_output_dir = shbackslash(f'{workflow_name}/pr{PSLOT}')
+            html_output_dir = convert_to_posix(f'{workflow_name}/pr{PSLOT}')
         print(f'writing html to directory: {html_output_dir}')
-        html_output_file = shbackslash(html_output_dir + '/index.html')
+        html_output_file = convert_to_posix(html_output_dir + '/index.html')
         html_header_line = '<table>\n<thead><tr><td>CYCLE</td><td>TASK</td><td>JOBID</td><td>STATE</td><td>EXIT</td><td>TRIES</td><td>DURATION</td>'
         if use_performance_metrics:
             html_header_line = html_header_line + '<td>SLOTS</td><td>QTIME</td><td>CPU</td><td>RUN</td>' + '</tr></thead>\n<tbody>'
@@ -1640,7 +1724,7 @@ def main(screen):
                                 for find_task in tasks_ordered:
                                     if find_task[0] == column:
                                         log_file = find_task[2].replace('CYCLE', execute_cycle[:-2])
-                                if os.path.isfile(shbackslash(log_file)):
+                                if os.path.isfile(convert_to_posix(log_file)):
                                     shutil.copy(log_file, html_output_dir)
                                     log_file_base = os.path.basename(log_file)
                                     html_line += f'<td><a href="{log_file_base}">{display_column}</a></td>'
@@ -1726,7 +1810,7 @@ def main(screen):
                     for meta_cycle in range(0, len(rocoto_stat)):
                         for execute_task in metatasks_state_cycle[meta_cycle]:
                             metatasks_state_cycle[meta_cycle][execute_task] = False
-                    html_output_file = shbackslash(html_output_dir + '/index_exp.html')
+                    html_output_file = convert_to_posix(html_output_dir + '/index_exp.html')
                     html_ptr = open(html_output_file, 'w')
                     html_ptr.write(ccs_html)
                     stat_update_time = str(datetime.now()).rsplit(':', 1)[0]
