@@ -624,7 +624,7 @@
 
   if [ ${CFP_MP:-"NO"} = "YES" ]; then nm=0; fi
 
-  if [ ${CFP_MP:-"NO"} = "YES" ]; then
+  if [ ${CFP_MP:-"NO"} = "YES" ] && [ "$DOBLL_WAV" = "YES" ]; then
     if [ "$DOBNDPNT_WAV" = YES ]; then
       if [ "$DOSPC_WAV" = YES ]; then
         echo "$nm $USHwave/wave_tar.sh $WAV_MOD_TAG ibp $Nb > ${WAV_MOD_TAG}_spec_tar.out 2>&1 "   >> cmdtarfile

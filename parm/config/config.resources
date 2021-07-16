@@ -8,6 +8,7 @@ if [ $# -ne 1 ]; then
 
     echo "Must specify an input task argument to set resource variables!"
     echo "argument can be any one of the following:"
+    echo "getic init"
     echo "anal analcalc analdiag gldas fcst post vrfy metp arch echgres"
     echo "eobs ediag eomg eupd ecen esfc efcs epos earc"
     echo "waveinit waveprep wavepostsbs wavepostbndpnt wavepostbndpntbll wavepostpnt"
@@ -269,6 +270,13 @@ elif [ $step = "echgres" ]; then
     export npe_echgres=3
     export nth_echgres=$npe_node_max
     export npe_node_echgres=1
+
+elif [ $step = "init" ]; then
+
+    export wtime_init="00:30:00"
+    export npe_init=24
+    export nth_init=1
+    export npe_node_init=6
 
 elif [ $step = "arch" -o $step = "earc" -o $step = "getic" ]; then
 

@@ -888,7 +888,7 @@
   case ${WW3ATMINP} in
     'YES' )
       NFGRIDS=`expr $NFGRIDS + 1`
-      WINDLINE="  '$WAVEWND_FID'  F F T F F F F"
+      WINDLINE="  '$WAVEWND_FID'  F F T F F F F F F"
       WINDFLAG="$WAVEWND_FID"
     ;;
     'CPL' )
@@ -896,7 +896,7 @@
       if [ ${waveesmfGRD} ]
       then
         WINDFLAG="CPL:${waveesmfGRD}"
-        CPLILINE="  '${waveesmfGRD}' F F T F F F F"
+        CPLILINE="  '${waveesmfGRD}' F F T F F F F F F"
       else 
         WINDFLAG="CPL:native"
       fi
@@ -907,7 +907,7 @@
     'YES' ) 
       NFGRIDS=`expr $NFGRIDS + 1`
       ICEIFLAG='T'
-      ICELINE="  '$WAVEICE_FID'  F F F T F F F"
+      ICELINE="  '$WAVEICE_FID'  F F F T F F F F F"
       ICEFLAG="$WAVEICE_FID"
     ;;
     'CPL' )
@@ -915,7 +915,7 @@
       if [ ${waveesmfGRD} ]
       then
         ICEFLAG="CPL:${waveesmfGRD}"
-        CPLILINE="  '${waveesmfGRD}' F F ${WNDIFLAG} T F F F"
+        CPLILINE="  '${waveesmfGRD}' F F ${WNDIFLAG} T F F F F F"
       else 
         ICEFLAG="CPL:native"
       fi
@@ -926,10 +926,10 @@
     'YES' ) 
       if [ "$WAVECUR_FID" != "$WAVEICE_FID" ]; then
         NFGRIDS=`expr $NFGRIDS + 1`
-        CURRLINE="  '$WAVECUR_FID'  F T F F F F F"
+        CURRLINE="  '$WAVECUR_FID'  F T F F F F F F F"
         CURRFLAG="$WAVECUR_FID"
       else # cur fields share the same grid as ice grid
-        ICELINE="  '$WAVEICE_FID'  F T F ${ICEIFLAG} F F F"
+        ICELINE="  '$WAVEICE_FID'  F T F ${ICEIFLAG} F F F F F"
         CURRFLAG="$WAVEICE_FID"
       fi
     ;;
@@ -938,7 +938,7 @@
       if [ ${waveesmfGRD} ]
       then
         CURRFLAG="CPL:${waveesmfGRD}"
-        CPLILINE="  '${waveesmfGRD}' F T ${WNDIFLAG} ${ICEFLAG} F F F"
+        CPLILINE="  '${waveesmfGRD}' F T ${WNDIFLAG} ${ICEFLAG} F F F F F"
       else 
         CURRFLAG="CPL:native"
       fi
@@ -957,7 +957,7 @@
     NMGRIDS=`expr $NMGRIDS + 1`
     gridN=`echo $waveGRDN | awk -v i=$GRDN '{print $i}'`
     gridG=`echo $waveGRDG | awk -v i=$GRDN '{print $i}'`
-    gline="${gline}'${grid}'  'no' 'CURRFLAG' 'WINDFLAG' 'ICEFLAG'  'no' 'no' 'no'  ${gridN} ${gridG}  0.00 1.00  F\n"
+    gline="${gline}'${grid}'  'no' 'CURRFLAG' 'WINDFLAG' 'ICEFLAG'  'no' 'no' 'no' 'no' 'no'  ${gridN} ${gridG}  0.00 1.00  F\n"
   done
   gline="${gline}\$"
   echo $gline

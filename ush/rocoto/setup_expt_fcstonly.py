@@ -79,6 +79,7 @@ def edit_baseconfig():
                     .replace('@QUEUE_SERVICE@', queue_service) \
                     .replace('@PARTITION_BATCH@', partition_batch) \
                     .replace('@EXP_WARM_START@', exp_warm_start) \
+                    .replace('@MODE@', 'free') \
                     .replace('@CHGRP_RSTPROD@', chgrp_rstprod) \
                     .replace('@CHGRP_CMD@', chgrp_cmd) \
                     .replace('@HPSSARCH@', hpssarch) \
@@ -117,7 +118,7 @@ Create COMROT experiment directory structure'''
     parser.add_argument('--configdir', help='full path to directory containing the config files', type=str, required=False, default=None)
     parser.add_argument('--gfs_cyc', help='GFS cycles to run', type=int, choices=[0, 1, 2, 4], default=1, required=False)
     parser.add_argument('--partition', help='partition on machine', type=str, required=False, default=None)
-    parser.add_argument('--start', help='restart mode: warm or cold', type=str, choices=['warm', 'cold'], required=False, default='cold')
+    parser.add_argument('--start', help='restart mode: warm or cold', type=str, choices=['warm', 'cold'], required=False)
 
     args = parser.parse_args()
 
@@ -138,7 +139,12 @@ Create COMROT experiment directory structure'''
     start = args.start
 
     # Set restart setting in config.base
-    if start == 'cold':
+    if start is None:
+      if res == 768:
+        exp_warm_start = '.true.'
+      else:
+        exp_warm_start = '.false.'
+    elif start == 'cold':
       exp_warm_start = '.false.'
     elif start == 'warm':
       exp_warm_start = '.true.'
