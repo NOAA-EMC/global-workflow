@@ -58,6 +58,8 @@ export WAFSF="NO"          # WAFS products
 #  use RUNMOS flag (currently in config.vrfy)
 export REALTIME="YES"
 
+# Experiment mode (cycled or free-forecast)
+export MODE="@MODE@" # cycled/free
 
 ####################################################
 # DO NOT ADD MACHINE DEPENDENT STUFF BELOW THIS LINE
@@ -69,8 +71,8 @@ export REALTIME="YES"
 export FIXgsi="$HOMEgfs/fix/fix_gsi"
 export HOMEfv3gfs="$HOMEgfs/sorc/fv3gfs.fd"
 export HOMEpost="$HOMEgfs"
-export HOMEobsproc_prep="$BASE_GIT/obsproc/gfsv16b/obsproc_prep_RB-5.4.0"
-export HOMEobsproc_network="$BASE_GIT/obsproc/gfsv16b/obsproc_global_RB-3.4.0"
+export HOMEobsproc_prep="$BASE_GIT/obsproc/obsproc_prep_RB-5.4.0_hpc-stack"
+export HOMEobsproc_network="$BASE_GIT/obsproc/obsproc_global_RB-3.4.0_hpc-stack"
 export HOMEobsproc_global=$HOMEobsproc_network
 export BASE_VERIF="$BASE_GIT/verif/global/tags/vsdb"
 
@@ -138,6 +140,7 @@ export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 export LEVS=128
 export CASE="@CASECTL@"
 export CASE_ENKF="@CASEENS@"
+export OPS_RES="C768"
 
 # Run with CCPP physics
 export RUN_CCPP="YES"
@@ -209,7 +212,8 @@ export IAU_OFFSET=6
 export DOIAU_ENKF=${DOIAU:-"YES"}   # Enable 4DIAU for EnKF ensemble
 export IAUFHRS_ENKF="3,6,9"
 export IAU_DELTHRS_ENKF=6
-if [[ "$SDATE" = "$CDATE" && $EXP_WARM_START = ".false." ]] || [[ "$DOIAU" = "NO" ]] ; then # Cold starting or IAU off
+# Check if cycle is cold starting, DOIAU off, or free-forecast mode
+if [[ "$MODE" = "cycled" && "$SDATE" = "$CDATE" && $EXP_WARM_START = ".false." ]] || [[ "$DOIAU" = "NO" ]] || [[ "$MODE" = "free" && $EXP_WARM_START = ".false." ]] ; then
   export IAU_OFFSET=0
   export IAU_FHROT=0
 fi
@@ -223,6 +227,7 @@ export gldas_cyc=00
 
 # run wave component
 export DO_WAVE="NO"
+if [[ "$SDATE" -lt "2019020100" ]]; then DO_WAVE="NO" ; fi # no rtofs in GDA
 export WAVE_CDUMP="both"
 
 # Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL

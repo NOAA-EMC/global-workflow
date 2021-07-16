@@ -12,8 +12,7 @@ set +x
 source ./machine-setup.sh > /dev/null 2>&1
 
 source ../modulefiles/modulefile.ww3.$target
-#source ../modulefiles/module_base.$target
-set -x 
+set -x
 
 set -u # Error on undefined variables
 

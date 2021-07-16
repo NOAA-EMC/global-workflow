@@ -98,9 +98,9 @@ if [ ${COUPLED:-"NO"} = "NO" ]; then
   fi
   ((err+=$rc))
 else
-    ./build_ufs_coupled.sh ${_build_ufs_options} > $logs_dir/build_ufs_coupled.log 2>&1
-    rc=$?
-    if [[ $rc -ne 0 ]] ; then
+  ./build_ufs_coupled.sh ${_build_ufs_options} > $logs_dir/build_ufs_coupled.log 2>&1
+  rc=$?
+  if [[ $rc -ne 0 ]] ; then
     echo "Fatal error in building ufs coupled forecast model."
     echo "The log file is in $logs_dir/build_ufs_coupled.log"
   fi
@@ -197,19 +197,16 @@ fi
 #------------------------------------
 # build gfs_util       
 #------------------------------------
-# Only build on WCOSS
-if [ $target = wcoss -o $target = wcoss_cray -o $target = wcoss_dell_p3 ]; then
- $Build_gfs_util && {
- echo " .... Building gfs_util .... "
- ./build_gfs_util.sh > $logs_dir/build_gfs_util.log 2>&1
- rc=$?
- if [[ $rc -ne 0 ]] ; then
-     echo "Fatal error in building gfs_util."
-     echo "The log file is in $logs_dir/build_gfs_util.log"
- fi
- ((err+=$rc))
- }
+$Build_gfs_util && {
+echo " .... Building gfs_util .... "
+./build_gfs_util.sh > $logs_dir/build_gfs_util.log 2>&1
+rc=$?
+if [[ $rc -ne 0 ]] ; then
+    echo "Fatal error in building gfs_util."
+    echo "The log file is in $logs_dir/build_gfs_util.log"
 fi
+((err+=$rc))
+}
 
 #------------------------------------
 # Exception Handling

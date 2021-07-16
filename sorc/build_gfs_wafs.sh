@@ -17,6 +17,6 @@ if [ ! -d "../exec" ]; then
 fi
 
 cd gfs_wafs.fd/sorc
-sh build_wafs.sh
+./build_wafs_cmake.sh
 
 exit

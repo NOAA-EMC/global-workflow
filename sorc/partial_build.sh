@@ -2,6 +2,7 @@
 # define the array of the name of build program
 #
  declare -a Build_prg=("Build_fv3gfs" \
+                       "Build_ww3_prepost" \
                        "Build_gsi" \
                        "Build_ww3_prepost" \
                        "Build_reg2grb2" \
