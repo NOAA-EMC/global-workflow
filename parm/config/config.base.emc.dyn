@@ -136,11 +136,13 @@ export SENDDBN_NTC=${SENDDBN_NTC:-"NO"}
 export SENDDBN=${SENDDBN:-"NO"}
 export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
+# Set operational resolution
+export OPS_RES="C768" # Do not change
+
 # Resolution specific parameters
 export LEVS=128
 export CASE="@CASECTL@"
 export CASE_ENKF="@CASEENS@"
-export OPS_RES="C768"
 
 # Run with CCPP physics
 export RUN_CCPP="YES"
