@@ -357,7 +357,7 @@ def get_aug_perf_values( username ):
     year = str(datetime.datetime.now().year)+' '
     sub_time = None
     bstart_time = None
-    for jobid,keys in bjobs.iteritems():
+    for jobid,keys in bjobs.items():
         #debug.write(jobid+'\n')
         for key in keys:
             #debug.write('   '+key+":"+bjobs[jobid][key]+'\n')
@@ -821,7 +821,7 @@ def get_tasklist(workflow_file):
                     first_task_resolved_name = ''
                     add_task[:] = []
                     add_task.append(task_name)
-                    for name,vars in all_vars.iteritems():
+                    for name,vars in all_vars.items():
                         replace_var = '#'+name+'#'
                         #print 'TASK_NAME: %s | %s'%(task_name,replace_var)
                         for each_task_name in add_task:
@@ -895,8 +895,8 @@ def get_rocoto_stat(params, queue_stat):
         sq_command = 'UPDATE jobs_augment_tmp SET '
         sqlite_update_command = "%s = '%s' WHERE jobs_augment_tmp.jobid = %s"
         #debug.write('WRITING TO DATABASE'+'\n')
-        for perf_jobid,perf_values in aug_perf.iteritems():
-            for name,each_value in perf_values.iteritems():
+        for perf_jobid,perf_values in aug_perf.items():
+            for name,each_value in perf_values.items():
                  q=c.execute(sq_command+sqlite_update_command%(name,each_value,perf_jobid))
                 #debug.write('SQL: '+sq_command+sqlite_update_command%(name,each_value,perf_jobid+'\n'))
 
@@ -971,7 +971,7 @@ def get_rocoto_stat(params, queue_stat):
     new_info=collections.defaultdict(list)
     job_ids = []
     job_id = ''
-    for each_cycle,lines_in_cycle in info.iteritems():
+    for each_cycle,lines_in_cycle in info.items():
         for task in tasks_ordered:
             skip_task = False
             for each_line in lines_in_cycle:
@@ -1423,7 +1423,7 @@ def main(screen):
         meta_tasks_in_cycle = []
         for each_line in each_cycle:
             line_has_metatask = False
-            for check_metatask, check_metatask_list in metatask_list.iteritems():
+            for check_metatask, check_metatask_list in metatask_list.items():
                 if check_metatask in each_line:
                     meta_tasks_in_cycle.append( (check_metatask, True, check_metatask_list ) )
                     line_has_metatask = True
@@ -1445,7 +1445,7 @@ def main(screen):
 
         meta_tasks_state = dict()
         meta_tasks_state_string = dict()
-        for check_metatask, check_metatask_list in metatask_list.iteritems():
+        for check_metatask, check_metatask_list in metatask_list.items():
             meta_tasks_state[check_metatask] = True
             meta_tasks_state_string[check_metatask] = ''
         meta_tasks_state['False'] = False
@@ -2377,7 +2377,7 @@ if __name__ == '__main__':
     if not load_produtil_pythonpath():
         print('\n\nCRITICAL ERROR: The produtil package could not be loaded from your system')
         sys.exit(-1)
-    from produtil.fileop import remove_file
+    #from produtil.fileop import remove_file
     try:
         signal.signal(signal.SIGWINCH, sigwinch_handler)
         sys.stdout = sys.__stdout__
@@ -2387,7 +2387,8 @@ if __name__ == '__main__':
         else:
             screen = 'dummy'
             main(screen)
-        remove_file(temp_workflow_file)
+        os.remove(temp_workflow_file)
+        #remove_file(temp_workflow_file)
     except KeyboardInterrupt:
         print('Got KeyboardInterrupt exception. Exiting...')
         sys.exit(-1)
