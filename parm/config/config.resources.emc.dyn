@@ -70,7 +70,7 @@ elif [ $step = "wavepostsbs" ]; then
 
 elif [ $step = "wavepostbndpnt" ]; then
 
-    export wtime_wavepostbndpnt="01:00:00"
+    export wtime_wavepostbndpnt="02:00:00"
     export npe_wavepostbndpnt=280
     export nth_wavepostbndpnt=1
     export npe_node_wavepostbndpnt=$(echo "$npe_node_max / $nth_wavepostbndpnt" | bc)
@@ -86,7 +86,7 @@ elif [ $step = "wavepostbndpntbll" ]; then
 
 elif [ $step = "wavepostpnt" ]; then
 
-    export wtime_wavepostpnt="01:30:00"
+    export wtime_wavepostpnt="02:00:00"
     export npe_wavepostpnt=280
     export nth_wavepostpnt=1
     export npe_node_wavepostpnt=$(echo "$npe_node_max / $nth_wavepostpnt" | bc)
@@ -131,7 +131,10 @@ elif [ $step = "anal" ]; then
       export npe_anal=160
       export nth_anal=10
     fi
-    if [ $CASE = "C192" -o $CASE = "C96" -o $CASE = "C48" ]; then export npe_anal=84; fi
+    if [ $CASE = "C192" -o $CASE = "C96" -o $CASE = "C48" ]; then
+      export npe_anal=84
+      export npe_anal_gfs=84
+    fi
     export npe_node_anal=$(echo "$npe_node_max / $nth_anal" | bc)
     export nth_cycle=$npe_node_max
     if [[ "$machine" == "WCOSS_C" ]]; then export memory_anal="3072M"; fi
@@ -166,11 +169,18 @@ elif [ $step = "gldas" ]; then
 
 elif [ $step = "fcst" ]; then
 
-    export wtime_fcst="01:30:00"
-    export wtime_fcst_gfs="02:30:00"
+    export wtime_fcst="00:30:00"
+    if [ $CASE = "C768" ]; then
+      export wtime_fcst_gfs="06:00:00"
+    elif [ $CASE = "C384" ]; then
+      export wtime_fcst_gfs="04:00:00"
+    else
+      export wtime_fcst_gfs="03:00:00"
+    fi
     export npe_fcst=$(echo "$layout_x * $layout_y * 6" | bc)
     export npe_fcst_gfs=$(echo "$layout_x_gfs * $layout_y_gfs * 6" | bc)
     export nth_fcst=${nth_fv3:-2}
+    if [[ "$CASE" == "C384" ]]; then nth_fcst=4; fi
     export npe_node_fcst=$(echo "$npe_node_max / $nth_fcst" | bc)
     if [[ "$machine" == "WCOSS_C" ]]; then export memory_fcst="1024M"; fi
 
@@ -275,16 +285,16 @@ elif [ $step = "arch" -o $step = "earc" -o $step = "getic" ]; then
 elif [ $step = "eobs" -o $step = "eomg" ]; then
 
 
-    export wtime_eobs="00:10:00"
+    export wtime_eobs="00:15:00"
     export wtime_eomg="01:00:00"
     if [ $CASE = "C768" ]; then
-      export npe_eobs=480
+      export npe_eobs=200
     elif [ $CASE = "C384" ]; then
-      export npe_eobs=42
+      export npe_eobs=100
     elif [ $CASE = "C192" ]; then
-      export npe_eobs=28
+      export npe_eobs=40
     elif [ $CASE = "C96" -o $CASE = "C48" ]; then
-      export npe_eobs=14
+      export npe_eobs=20
     fi
     export nth_eobs=2
     if [[ "$machine" = "WCOSS_DELL_P3" ]]; then export nth_eobs=7; fi
@@ -303,10 +313,14 @@ elif [ $step = "eupd" ]; then
 
     export wtime_eupd="00:30:00"
     if [ $CASE = "C768" ]; then
-      export npe_eupd=960
+      export npe_eupd=480
       export nth_eupd=6
       if [[ "$machine" = "WCOSS_DELL_P3" ]]; then
         export nth_eupd=7
+      fi
+      if [[ "$machine" = "HERA" ]]; then
+        export npe_eupd=150
+        export nth_eupd=40
       fi
     elif [ $CASE = "C384" ]; then
       export npe_eupd=270
@@ -315,12 +329,16 @@ elif [ $step = "eupd" ]; then
         export nth_eupd=9
       fi
       if [[ "$machine" = "HERA" ]]; then
-        export npe_eupd=84
-        export nth_eupd=10
+        export npe_eupd=100
+        export nth_eupd=40
       fi
     elif [ $CASE = "C192" -o $CASE = "C96" -o $CASE = "C48" ]; then
       export npe_eupd=42
       export nth_eupd=2
+      if [[ "$machine" = "HERA" ]]; then
+        export npe_eupd=40
+        export nth_eupd=40
+      fi
     fi
     export npe_node_eupd=$(echo "$npe_node_max / $nth_eupd" | bc)
     if [[ "$machine" == "WCOSS_C" ]]; then
@@ -349,7 +367,11 @@ elif [ $step = "esfc" ]; then
 
 elif [ $step = "efcs" ]; then
 
-    export wtime_efcs="00:40:00"
+    if [ $CASE = "C768" ]; then
+      export wtime_efcs="01:00:00"
+    else
+      export wtime_efcs="00:40:00"
+    fi
     export npe_efcs=$(echo "$layout_x * $layout_y * 6" | bc)
     export nth_efcs=${nth_fv3:-2}
     export npe_node_efcs=$(echo "$npe_node_max / $nth_efcs" | bc)
