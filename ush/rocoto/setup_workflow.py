@@ -48,7 +48,7 @@ def main():
     gfs_steps_wafs = ['wafs', 'wafsgrib2', 'wafsblending', 'wafsgcip', 'wafsgrib20p25', 'wafsblending0p25']
     #hyb_steps = ['eobs', 'eomg', 'eupd', 'ecen', 'efcs', 'epos', 'earc']
     metp_steps = ['metp']
-    wav_steps = ['waveinit', 'waveprep', 'wavepostsbs', 'wavepostbndpnt', 'wavepostpnt']
+    wav_steps = ['waveinit', 'waveprep', 'wavepostsbs', 'wavepostbndpnt', 'wavepostbndpntbll', 'wavepostpnt']
     #Implement additional wave jobs at later date
     wav_steps_gempak = ['wavegempak']
     wav_steps_awips = ['waveawipsbulls', 'waveawipsgridded']
@@ -161,6 +161,7 @@ def get_definitions(base):
 
     machine = base.get('machine', wfu.detectMachine())
     scheduler = wfu.get_scheduler(machine)
+    hpssarch = base.get('HPSSARCH', 'NO').upper()
 
     strings = []
 
@@ -198,7 +199,7 @@ def get_definitions(base):
     strings.append(f'\t<!ENTITY SCHEDULER  "{scheduler}">\n')
     strings.append('\n')
     strings.append('\t<!-- Toggle HPSS archiving -->\n')
-    strings.append('\t<!ENTITY ARCHIVE_TO_HPSS "YES">\n')
+    strings.append('\t<!ENTITY ARCHIVE_TO_HPSS "%s">\n' % base['HPSSARCH'])
     strings.append('\n')
     strings.append('\t<!-- ROCOTO parameters that control workflow -->\n')
     strings.append('\t<!ENTITY CYCLETHROTTLE "3">\n')
@@ -252,13 +253,13 @@ def get_gdasgfs_resources(dict_configs, cdump='gdas'):
         tasks += ['gldas']
     if cdump in ['gdas'] and do_wave in ['Y', 'YES'] and do_wave_cdump in ['GDAS', 'BOTH']:
         #tasks += ['waveinit', 'waveprep', 'wavepostsbs', 'wavepostbndpnt', 'wavepostpnt', 'wavestat']
-        tasks += ['waveinit', 'waveprep', 'wavepostsbs', 'wavepostbndpnt', 'wavepostpnt']
+        tasks += ['waveinit', 'waveprep', 'wavepostsbs', 'wavepostbndpnt', 'wavepostbndpntbll', 'wavepostpnt']
 
     tasks += ['fcst', 'post', 'vrfy', 'arch']
 
     if cdump in ['gfs'] and do_wave in ['Y', 'YES'] and do_wave_cdump in ['GFS', 'BOTH']:
         #tasks += ['waveinit', 'waveprep', 'wavepostsbs', 'wavepostbndpnt', 'wavepostpnt', 'wavestat']
-        tasks += ['waveinit', 'waveprep', 'wavepostsbs', 'wavepostbndpnt', 'wavepostpnt']
+        tasks += ['waveinit', 'waveprep', 'wavepostsbs', 'wavepostbndpnt', 'wavepostbndpntbll', 'wavepostpnt']
     if cdump in ['gfs'] and do_bufrsnd in ['Y', 'YES']:
         tasks += ['postsnd']
     if cdump in ['gfs'] and do_gempak in ['Y', 'YES']:
@@ -719,6 +720,18 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
         task = wfu.create_wf_task('wavepostbndpnt', cdump=cdump, envar=envars, dependency=dependencies)
         dict_tasks['%swavepostbndpnt' % cdump] = task
 
+    # wavepostbndpntbll
+    if do_wave in ['Y', 'YES'] and cdump in ['gfs']:
+        deps = []
+        data = '&ROTDIR;/%s.@Y@m@d/@H/atmos/%s.t@Hz.logf180.txt' % (cdump,cdump)
+        dep_dict = {'type': 'data', 'data': data}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type':'task', 'name':'%swavepostbndpnt' % cdump}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+        task = wfu.create_wf_task('wavepostbndpntbll', cdump=cdump, envar=envars, dependency=dependencies)
+        dict_tasks['%swavepostbndpntbll' % cdump] = task
+
     # wavepostpnt
     if do_wave in ['Y', 'YES'] and cdump in ['gdas']:
         deps = []
@@ -732,7 +745,7 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
         deps = []
         dep_dict = {'type':'task', 'name':'%sfcst' % cdump}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type':'task', 'name':'%swavepostbndpnt' % cdump}
+        dep_dict = {'type':'task', 'name':'%swavepostbndpntbll' % cdump}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
         task = wfu.create_wf_task('wavepostpnt', cdump=cdump, envar=envars, dependency=dependencies)
@@ -793,8 +806,9 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
         dep_dict = {'type':'task', 'name':f'{cdump}arch', 'offset':'-&INTERVAL_GFS;'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+        sdate_gfs = rocoto.create_envar(name='SDATE_GFS', value='&SDATE_GFS;')
         metpcase = rocoto.create_envar(name='METPCASE', value='#metpcase#')
-        metpenvars = envars + [metpcase]
+        metpenvars = envars + [sdate_gfs] + [metpcase]
         varname1 = 'metpcase'
         varval1 = 'g2g1 g2o1 pcp1'
         task = wfu.create_wf_task('metp', cdump=cdump, envar=metpenvars, dependency=dependencies,
@@ -1186,8 +1200,6 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
     # arch
     deps = []
     dep_dict = {'type': 'task', 'name': f'{cdump}vrfy'}
-    deps.append(rocoto.add_dependency(dep_dict))
-    dep_dict = {'type': 'streq', 'left': '&ARCHIVE_TO_HPSS;', 'right': 'YES'}
     deps.append(rocoto.add_dependency(dep_dict))
     if do_wave in ['Y', 'YES']:
       dep_dict = {'type': 'task', 'name': f'{cdump}wavepostsbs'}
