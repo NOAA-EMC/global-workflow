@@ -21,6 +21,8 @@ fix/wafs
 # Ignore parm file symlinks
 #--------------------------
 parm/config/config.base
+parm/config/config.fv3
+parm/config/config.resources
 parm/gldas
 parm/mon
 parm/post
