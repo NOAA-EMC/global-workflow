@@ -231,7 +231,7 @@ Create COMROT experiment directory structure'''
         print()
         print(f'COMROT already exists in {comrot}')
         print()
-        overwrite_comrot = raw_input('Do you wish to over-write COMROT [y/N]: ')
+        overwrite_comrot = input('Do you wish to over-write COMROT [y/N]: ')
         create_comrot = True if overwrite_comrot in ['y', 'yes', 'Y', 'YES'] else False
         if create_comrot:
             shutil.rmtree(comrot)
@@ -245,7 +245,7 @@ Create COMROT experiment directory structure'''
         print()
         print(f'EXPDIR already exists in {expdir}')
         print()
-        overwrite_expdir = raw_input('Do you wish to over-write EXPDIR [y/N]: ')
+        overwrite_expdir = input('Do you wish to over-write EXPDIR [y/N]: ')
         create_expdir = True if overwrite_expdir in ['y', 'yes', 'Y', 'YES'] else False
         if create_expdir:
             shutil.rmtree(expdir)
