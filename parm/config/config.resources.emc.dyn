@@ -118,16 +118,20 @@ elif [ $step = "waveawipsgridded" ]; then
 
 elif [ $step = "anal" ]; then
 
-    export wtime_anal="00:45:00"
-    export npe_anal=1000
-    export nth_anal=4  
-    export npe_anal_gfs=1000
+    export wtime_anal="02:30:00"
+    export npe_anal=480
+    export npe_node_anal=2
+    export nth_anal=12
+    export nth_cycle=24
+    if [[ "$machine" = "WCOSS_DELL_P3" ]]; then
+        export nth_anal=14
+        export nth_cycle=28
+    fi
     if [ $CASE = "C384" ]; then
       export npe_anal=160
       export nth_anal=10
     fi
     if [ $CASE = "C192" -o $CASE = "C96" -o $CASE = "C48" ]; then export npe_anal=84; fi
-    if [[ "$machine" = "WCOSS_DELL_P3" ]]; then export nth_anal=7; fi
     export npe_node_anal=$(echo "$npe_node_max / $nth_anal" | bc)
     export nth_cycle=$npe_node_max
     if [[ "$machine" == "WCOSS_C" ]]; then export memory_anal="3072M"; fi
