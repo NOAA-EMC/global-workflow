@@ -132,7 +132,7 @@ def get_definitions(base):
     strings.append(f'\t<!ENTITY SCHEDULER  "{scheduler}">\n')
     strings.append('\n')
     strings.append('\t<!-- Toggle HPSS archiving -->\n')
-    strings.append('\t<!ENTITY ARCHIVE_TO_HPSS "%s">\n' % base['HPSSARCH'])
+    strings.append(f'''\t<!ENTITY ARCHIVE_TO_HPSS "{base['HPSSARCH']}">\n''')
     strings.append('\n')
     strings.append('\t<!-- ROCOTO parameters that control workflow -->\n')
     strings.append('\t<!ENTITY CYCLETHROTTLE "2">\n')
@@ -284,7 +284,7 @@ def get_workflow(dict_configs, cdump='gdas'):
 
     if hpssarch in ['YES']:
       deps = []
-      dep_dict = {'type': 'task', 'name': '%sgetic' % cdump}
+      dep_dict = {'type': 'task', 'name': f'{cdump}getic'}
       deps.append(rocoto.add_dependency(dep_dict))
       dependencies2 = rocoto.create_dependency(dep=deps)
 
@@ -309,7 +309,7 @@ def get_workflow(dict_configs, cdump='gdas'):
         deps = []
         dep_dict = {'type': 'task', 'name': f'{cdump}waveinit'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'task', 'name': '%sinit' % cdump}
+        dep_dict = {'type': 'task', 'name': f'{cdump}init'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
         task = wfu.create_wf_task('waveprep', cdump=cdump, envar=envars, dependency=dependencies)
@@ -390,7 +390,7 @@ def get_workflow(dict_configs, cdump='gdas'):
     # wavepostbndpntbll
     if do_wave in ['Y', 'YES']:
         deps = []
-        data = '&ROTDIR;/%s.@Y@m@d/@H/atmos/%s.t@Hz.logf180.txt' % (cdump,cdump)
+        data = f'&ROTDIR;/{cdump}.@Y@m@d/@H/atmos/{cdump}.t@Hz.logf180.txt'
         dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
@@ -617,7 +617,7 @@ def get_workflow(dict_configs, cdump='gdas'):
     #postsnd
     if do_bufrsnd in ['Y', 'YES']:
         deps = []
-        dep_dict = {'type': 'task', 'name': '%sfcst' % cdump}
+        dep_dict = {'type': 'task', 'name': f'{cdump}fcst'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
         task = wfu.create_wf_task('postsnd', cdump=cdump, envar=envars, dependency=dependencies)
@@ -627,7 +627,7 @@ def get_workflow(dict_configs, cdump='gdas'):
     # awips
     if do_awips in ['Y', 'YES']:
         deps = []
-        dep_dict = {'type': 'metatask', 'name': '%spost' % cdump}
+        dep_dict = {'type': 'metatask', 'name': f'{cdump}post'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
         fhrgrp = rocoto.create_envar(name='FHRGRP', value='#grp#')
@@ -645,7 +645,7 @@ def get_workflow(dict_configs, cdump='gdas'):
     # gempak
     if do_gempak in ['Y', 'YES']:
         deps = []
-        dep_dict = {'type': 'metatask', 'name': '%spost' % cdump}
+        dep_dict = {'type': 'metatask', 'name': f'{cdump}post'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
         task = wfu.create_wf_task('gempak', cdump=cdump, envar=envars, dependency=dependencies)
@@ -686,11 +686,11 @@ def get_workflow(dict_configs, cdump='gdas'):
     dep_dict = {'type':'task', 'name':f'{cdump}vrfy'}
     deps.append(rocoto.add_dependency(dep_dict))
     if do_wave in ['Y', 'YES']:
-      dep_dict = {'type': 'task', 'name': '%swavepostsbs' % cdump}
+      dep_dict = {'type': 'task', 'name': f'{cdump}wavepostsbs'}
       deps.append(rocoto.add_dependency(dep_dict))
-      dep_dict = {'type': 'task', 'name': '%swavepostpnt' % cdump}
+      dep_dict = {'type': 'task', 'name': f'{cdump}wavepostpnt'}
       deps.append(rocoto.add_dependency(dep_dict))
-      dep_dict = {'type': 'task', 'name': '%swavepostbndpnt' % cdump}
+      dep_dict = {'type': 'task', 'name': f'{cdump}wavepostbndpnt'}
       deps.append(rocoto.add_dependency(dep_dict))
     dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
     task = wfu.create_wf_task('arch', cdump=cdump, envar=envars, dependency=dependencies, final=True)
