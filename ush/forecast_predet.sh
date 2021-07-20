@@ -50,7 +50,6 @@ FV3_GFS_predet(){
 	NSOUT=${NSOUT:-"-1"}
 	FDIAG=$FHOUT
 	if [ $FHMAX_HF -gt 0 -a $FHOUT_HF -gt 0 ]; then FDIAG=$FHOUT_HF; fi
-
 	WRITE_DOPOST=${WRITE_DOPOST:-".false."}
 	restart_interval=${restart_interval:-0}
 	rst_invt1=`echo $restart_interval |cut -d " " -f 1`
@@ -64,6 +63,8 @@ FV3_GFS_predet(){
 	HOMEgfs=${HOMEgfs:-$NWPROD}
 	FIX_DIR=${FIX_DIR:-$HOMEgfs/fix}
 	FIX_AM=${FIX_AM:-$FIX_DIR/fix_am}
+        export FIX_AER=${FIX_AER:-$FIX_DIR/fix_aer}
+        export FIX_LUT=${FIX_LUT:-$FIX_DIR/fix_lut}
 	FIXfv3=${FIXfv3:-$FIX_DIR/fix_fv3_gmted2010}
 	DATA=${DATA:-$pwd/fv3tmp$$}    # temporary running directory
 	ROTDIR=${ROTDIR:-$pwd}         # rotating archive directory
