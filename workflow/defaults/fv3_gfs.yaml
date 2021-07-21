@@ -82,6 +82,7 @@ fv3_gfs_defaults: &fv3_gfs_defaults
 # WRTTASK_PER_GROUP: layout.WGRP_NTASKS
 # WRTIOBUF: layout.WRTIOBUF
 
+  fscav_aero: [ '*:0.0' ]
   new_o3force: yes
   h2o_phys: yes
   do_vort_damp: yes

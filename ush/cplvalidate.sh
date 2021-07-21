@@ -29,7 +29,7 @@ case $confignamevarfornems in
 	*) echo "SUB cplvalidate: Combination not supported" 
 		exit 1 ;;
 esac
-control=$cpl$cplflx$cplice$cplwav$cplgocart
+control=$cpl$cplflx$cplice$cplwav$cplchem
 #echo $control
 if [ $control != $combination ]; then
 	echo "SUB cplvalidate: inconsistent cpl setting!"

@@ -9,4 +9,4 @@ wave_settings_template: !Template &wave_settings_template
     description: "model selection for wave"
   CPL_WAVIC:
     type: string
-    allowed: [ 'CFSR', 'CFSRwave20200925' ]
+    allowed: [ 'CFSR', 'CFSRwave20200925', 'GEFSwave20210623' ]

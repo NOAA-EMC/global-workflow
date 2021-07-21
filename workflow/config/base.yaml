@@ -26,13 +26,13 @@ config_base:
     # Coupling settings
     export cpl="{doc.settings.cpl}"
     export cplflx="{doc.settings.cplflx}"
-    export cplgocart="{doc.settings.cplgocart}"
+    export cplchem="{doc.settings.cplchem}"
     export cplice="{doc.settings.cplice}"
     export cplwav="{doc.settings.cplwav}"
     export cplwav2atm="{doc.settings.cplwav2atm}"
 
     # Temporarily override settings for aerosol coupling
-    if [ $cplgocart = ".true." ]; then
+    if [ $cplchem = ".true." ]; then
         export cplflx=".false."
         export cplice=".false."
         export cplocn=".false."

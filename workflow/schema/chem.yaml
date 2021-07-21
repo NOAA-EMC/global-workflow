@@ -5,7 +5,7 @@
 chem_settings_template: !Template &chem_settings_template
   MOD:
     type: string
-    allowed: [ gsdchem ]
+    allowed: [ gocart ]
     description: "model selection for aerosols"
   CFGDIR:
     type: string

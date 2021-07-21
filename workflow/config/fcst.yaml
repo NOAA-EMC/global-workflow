@@ -4,10 +4,7 @@
 
 config_fcst:
   filename: config.fcst
-  FCSTEXEC: !FirstTrue
-    - when: !calc ( doc.settings.cplflx==".true." or doc.settings.cplgocart==".true." )
-      do: "ufs_model"
-    - otherwise: "global_fv3gfs.x"
+  FCSTEXEC: ufs_model
   more_exports_for_microphys: !FirstTrue
     - when: !calc ( doc.fv3_gfs_settings.imp_physics=="11" )
       do: !expand |
@@ -40,7 +37,7 @@ config_fcst:
     - otherwise: !calc doc.partition_common.resources.run_gfsfcst
 
   restart_interval_gfs: !FirstTrue
-    - when: !calc doc.settings.cplgocart == ".false."
+    - when: !calc doc.settings.cplchem == ".false."
       do: !calc doc.fv3_gfs_settings.restart_interval
     - otherwise: !FirstTrue
       - when: !calc doc.fv3_gfs_settings.restart_interval == "0"
@@ -110,7 +107,7 @@ config_fcst:
     # CICE parameters
     export NX_GLB="{doc.ice_settings.NX_GLB}"
     export NY_GLB="{doc.ice_settings.NY_GLB}"
-    export MESHICE="mesh.mx{doc.ice_settings.ICERES}.nc"
+    export MESH_OCN_ICE="mesh.mx{doc.ice_settings.ICERES}.nc"
     
     if [[ "$machine" == "WCOSS_C" ]]; then
         export memory_fcst="1024M"
@@ -144,6 +141,8 @@ config_fcst:
     export dddmp={doc.fv3_gfs_settings.dddmp}
 
     # gfs_physics_nml section
+    export fscav_aero="{tools.fort(doc.fv3_gfs_settings.fscav_aero)}"
+
     export h2o_phys="{tools.fort(doc.fv3_gfs_settings.h2o_phys)}"
 
     export ncld={doc.fv3_gfs_settings.phy_dependent_var.ncld}
@@ -245,7 +244,7 @@ config_fcst:
         export nth_remap={doc.partition_common.resources.fallback_run_gfsremap[0].OMP_NUM_THREADS}
     fi
 
-    if [ $cplgocart = .true. ]; then # temporary settings for aerosol coupling
+    if [ $cplchem = .true. ]; then # temporary settings for aerosol coupling
         export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_aer"
         export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_aer"
         export CHM_CFGDIR="{doc.chem_settings.CFGDIR}"

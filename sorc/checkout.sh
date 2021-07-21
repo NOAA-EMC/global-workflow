@@ -2,8 +2,7 @@
 #set -xue
 set -x
 
-while getopts "oca" option;
-do
+while getopts "oc" option; do
  case $option in
   o)
    echo "Received -o flag for optional checkout of GTG, will check out GTG with EMC_post"
@@ -11,11 +10,6 @@ do
    ;;
   c)
    echo "Received -c flag, running coupled model" 
-   COUPLED="YES"
-   ;;
-  a)
-   echo "Received -a flag, running coupled aerosols model"
-   AEROSOL="YES"
    COUPLED="YES"
    ;;
   :)
@@ -45,15 +39,9 @@ if [ ${COUPLED:-"NO"} = "NO" ]; then
   fi 
 else 
   if [[ ! -d ufs_coupled.fd ]] ; then
-    if [ "${AEROSOL}" = "YES" ] ; then
-      git clone https://github.com/NOAA-EMC/FV3-GOCART ufs_coupled.fd >> ${topdir}/checkout-ufs_coupled.log 2>&1
-      cd ufs_coupled.fd
-      git checkout develop
-    else
-      git clone https://github.com/ufs-community/ufs-weather-model ufs_coupled.fd >> ${topdir}/checkout-ufs_coupled.log 2>&1
-      cd ufs_coupled.fd
-      git checkout 3e46f5b7050e18884a0bed13691823ad88d443c3
-    fi
+    git clone https://github.com/ufs-community/ufs-weather-model ufs_coupled.fd >> ${topdir}/checkout-ufs_coupled.log 2>&1
+    cd ufs_coupled.fd
+    git checkout 22613e8
     git submodule update --init --recursive
     cd ${topdir} 
   else
