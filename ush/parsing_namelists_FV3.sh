@@ -187,7 +187,6 @@ cat > input.nml <<EOF
   fhcyc        = $FHCYC			! CROW configured
   use_ufo      = ${use_ufo:-".true."}
   pre_rad      = ${pre_rad:-".false."}
-  ncld         = ${ncld:-1}		! CROW configured
   imp_physics  = ${imp_physics:-"99"}	! CROW configured
 EOF
 

@@ -2,14 +2,13 @@
 set -eux
 
 # Build S2S by default
-CMAKE_FLAGS="-DAPP=S2SW"
-CCPP_SUITES="FV3_GFS_v16_coupled,FV3_GFS_v16_couplednsst,FV3_GFS_v16"
+APP="S2SW"
+CCPP_SUITES="FV3_GFS_v16,FV3_GFS_v16_coupled,FV3_GFS_v16_couplednsst"
 
-while [ ${#} -gt 0 ]
-do
-  case "${1}" in
-    -a|--aerosols)
-      CMAKE_FLAGS="-DAPP=ATMAERO"
+while getopts "a" option; do
+  case $option in
+    a)
+      APP="ATMAERO"
       CCPP_SUITES="FV3_GFS_v16"
       shift
       ;;
@@ -42,4 +41,4 @@ module purge
 cd ufs_coupled.fd/
 module use ${MOD_PATH}
 module load ufs_${target}
-CMAKE_FLAGS="${CMAKE_FLAGS}" CCPP_SUITES="${CCPP_SUITES}" ./build.sh
+CMAKE_FLAGS="-DAPP=${APP} -DCCPP_SUITES=${CCPP_SUITES}" ./build.sh

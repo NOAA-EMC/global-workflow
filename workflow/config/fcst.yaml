@@ -4,10 +4,7 @@
 
 config_fcst:
   filename: config.fcst
-  FCSTEXEC: !FirstTrue
-    - when: !calc ( doc.settings.cplflx==".true." or doc.settings.cplchem==".true." )
-      do: "ufs_model"
-    - otherwise: "global_fv3gfs.x"
+  FCSTEXEC: ufs_model
   more_exports_for_microphys: !FirstTrue
     - when: !calc ( doc.fv3_gfs_settings.imp_physics=="11" )
       do: !expand |
