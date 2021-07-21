@@ -169,39 +169,16 @@ EOF
 
 	#--------------------------------------------------------------------------
 	# Grid and orography data
-	if [ -z ${GRDFIX} ] ; then
-		FIXgrd=$FIXfv3/$CASE
-	else
-		FIXgrd=${GRDFIX}
-	fi
 	for n in $(seq 1 $ntiles); do
-		$NLN ${FIXgrd}/${CASE}_grid.tile${n}.nc $DATA/INPUT/${CASE}_grid.tile${n}.nc
+                $NLN $FIXfv3/$CASE/${CASE}_grid.tile${n}.nc     $DATA/INPUT/${CASE}_grid.tile${n}.nc
+                $NLN $FIXfv3/$CASE/${CASE}_oro_data.tile${n}.nc $DATA/INPUT/oro_data.tile${n}.nc
 	done
-
-	if [ -f ${FIXgrd}/${CASE}_mosaic.nc ] ; then
-		src_grid_spec=${FIXgrd}/${CASE}_mosaic.nc
-	else
-		src_grid_spec=${FIXgrd}/grid_spec.nc
-	fi
 
 	if [ $cplflx = ".false." ] ; then
-		$NLN ${src_grid_spec} $DATA/INPUT/grid_spec.nc
+		$NLN $FIXfv3/$CASE/${CASE}_mosaic.nc $DATA/INPUT/grid_spec.nc
 	else 
-		$NLN ${src_grid_spec} $DATA/INPUT/${CASE}_mosaic.nc
+		$NLN $FIXfv3/${CASE}_mosaic.nc $DATA/INPUT/${CASE}_mosaic.nc
 	fi
-
-	if [ -z ${OROFIX} ]; then
-		if [ $FRAC_GRID ]; then
-			FIXoro=${FIXoro:-$FIX_DIR/fix_fv3_fracoro}/${CASE}.mx${OCNRES}_frac/${CASE}.mx${OCNRES}_
-		else
-			FIXoro=$FIXfv3/$CASE/${CASE}_oro_data.
-		fi
-	else
-		FIXoro=${OROFIX}/oro_data.
-	fi
-	for n in $(seq 1 $ntiles); do
-		$NLN ${FIXoro}tile${n}.nc $DATA/INPUT/oro_data.tile${n}.nc
-	done
 
 	# GFS standard input data
 
@@ -231,6 +208,16 @@ EOF
 	$NLN $FIX_AM/${H2OFORC}                        $DATA/global_h2oprdlos.f77
 	$NLN $FIX_AM/global_solarconstant_noaa_an.txt  $DATA/solarconstant_noaa_an.txt
 	$NLN $FIX_AM/global_sfc_emissivity_idx.txt     $DATA/sfc_emissivity_idx.txt
+
+        ## merra2 aerosol climo
+        for n in 01 02 03 04 05 06 07 08 09 10 11 12; do
+              $NLN $FIX_AER/merra2.aerclim.2003-2014.m${n}.nc $DATA/aeroclim.m${n}.nc
+        done
+        $NLN $FIX_LUT/optics_BC.v1_3.dat $DATA/optics_BC.dat
+        $NLN $FIX_LUT/optics_OC.v1_3.dat $DATA/optics_OC.dat
+        $NLN $FIX_LUT/optics_DU.v15_3.dat $DATA/optics_DU.dat
+        $NLN $FIX_LUT/optics_SS.v3_3.dat $DATA/optics_SS.dat
+        $NLN $FIX_LUT/optics_SU.v1_3.dat $DATA/optics_SU.dat
 
 	$NLN $FIX_AM/global_co2historicaldata_glob.txt $DATA/co2historicaldata_glob.txt
 	$NLN $FIX_AM/co2monthlycyc.txt                 $DATA/co2monthlycyc.txt
@@ -270,9 +257,6 @@ EOF
 	JCAP_CASE=$((2*res-2))
 	LONB_CASE=$((4*res))
 	LATB_CASE=$((2*res))
-	if [ $LATB_CASE -eq 192 ]; then
-		LATB_CASE=190 # berror file is at this resolution
-	fi
 
 	JCAP=${JCAP:-$JCAP_CASE}
 	LONB=${LONB:-$LONB_CASE}
@@ -291,11 +275,7 @@ EOF
 	FNAISC=${FNAISC:-"$FIX_AM/CFSR.SEAICE.1982.2012.monthly.clim.grb"}
 	FNTG3C=${FNTG3C:-"$FIX_AM/global_tg3clim.2.6x1.5.grb"}
 	FNVEGC=${FNVEGC:-"$FIX_AM/global_vegfrac.0.144.decpercent.grb"}
-	#if [ $cpl = ".true." ]; then
-	#        export FNMSKH=${FNMSKH:-"$FIX_AM/seaice_newland.grb"}
-	#else
-	export FNMSKH=${FNMSKH:-"$FIX_AM/global_slmask.t1534.3072.1536.grb"}
-	#fi
+	FNMSKH=${FNMSKH:-"$FIX_AM/global_slmask.t1534.3072.1536.grb"}
 	FNVMNC=${FNVMNC:-"$FIX_AM/global_shdmin.0.144x0.144.grb"}
 	FNVMXC=${FNVMXC:-"$FIX_AM/global_shdmax.0.144x0.144.grb"}
 	FNSLPC=${FNSLPC:-"$FIX_AM/global_slope.1x1.grb"}
@@ -448,12 +428,14 @@ EOF
 	#------------------------------------------------------------------
 	# make symbolic links to write forecast files directly in memdir
 	cd $DATA
+        if [ $RUN_CCPP = "YES" ]; then
 	if [ "$CCPP_SUITE" = 'FV3_GSD_v0' -o "$CCPP_SUITE" = 'FV3_GSD_noah' ]; then
 		$NLN $FIX_AM/CCN_ACTIVATE.BIN  CCN_ACTIVATE.BIN
 		$NLN $FIX_AM/freezeH2O.dat  freezeH2O.dat
 		$NLN $FIX_AM/qr_acr_qg.dat  qr_acr_qg.dat
 		$NLN $FIX_AM/qr_acr_qs.dat  qr_acr_qs.dat
 	fi
+        fi
 
 	affix="nc"
 	if [ "$OUTPUT_FILE" = "nemsio" ]; then
@@ -463,7 +445,7 @@ EOF
 	if [ $QUILTING = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]; then
 		fhr=$FHMIN
 		while [ $fhr -le $FHMAX ]; do
-		FH3=$(printf %03i $fhr)
+		        FH3=$(printf %03i $fhr)
 			FH2=$(printf %02i $fhr)
 			atmi=atmf${FH3}.$affix
 			sfci=sfcf${FH3}.$affix
@@ -571,25 +553,59 @@ WW3_postdet() {
 	array=($WAVECUR_FID $WAVEICE_FID $WAVEWND_FID $waveuoutpGRD $waveGRD $waveesmfGRD $wavesbsGRD $wavepostGRD $waveinterpGRD)
 	echo "Wave Grids: $WAVECUR_FID $WAVEICE_FID $WAVEWND_FID $waveuoutpGRD $waveGRD $waveesmfGRD $wavesbsGRD $wavepostGRD $waveinterpGRD"
 	grdALL=`printf "%s\n" "${array[@]}" | sort -u | tr '\n' ' '`
+
 	for wavGRD in ${grdALL}; do
 		$NCP $ROTDIR/${CDUMP}.${PDY}/${cyc}/wave/rundata/${COMPONENTwave}.mod_def.$wavGRD $DATA/mod_def.$wavGRD
 	done
 
+        export WAVHCYC=${WAVHCYC:-6}
+        export WRDATE=`$NDATE -${WAVHCYC} $CDATE`
+        export WRPDY=`echo $WRDATE | cut -c1-8`
+        export WRcyc=`echo $WRDATE | cut -c9-10`
+        export WRDIR=${ROTDIR}/${CDUMPRSTwave}.${WRPDY}/${WRcyc}/wave/restart
+        export datwave=$COMOUTwave/rundata
+        export wavprfx=${CDUMPwave}${WAV_MEMBER}
+
 	#Copy initial condition files:
 	for wavGRD in $waveGRD ; do
-		# Link wave IC for current cycle
-		# $NLN ${WRDIR}/${sPDY}.${scyc}0000.restart.${wavGRD} $DATA/restart.${wavGRD}
-		# Link IC for S2S benchmarks:
-		$NCP -pf $ICSDIR/$CDATE/wav/${PDY}.${cyc}0000.restart.$wavGRD $DATA/restart.$wavGRD
-		# Link log files for computational grids:
-		eval $NLN  $ROTDIR/${CDUMP}.${PDY}/${cyc}/wave/rundata/${COMPONENTwave}${WAV_MEMBER}.log.${wavGRD}.${PDY}${cyc} $DATA/log.${wavGRD}
+               if [ $RERUN = "NO" ]; then
+                     if [ ! -f ${WRDIR}/${sPDY}.${scyc}0000.restart.${wavGRD} ]; then
+                            echo "WARNING: NON-FATAL ERROR wave IC is missing, will start from rest"
+                     fi
+                     $NLN ${WRDIR}/${sPDY}.${scyc}0000.restart.${wavGRD} $DATA/restart.${wavGRD}
+               else
+                     if [ ! -f ${RSTDIR_WAVE}/${PDYT}.${cyct}0000.restart.${wavGRD} ]; then
+                            echo "WARNING: NON-FATAL ERROR wave IC is missing, will start from rest"
+                     fi
+                     $NLN ${RSTDIR_WAVE}/${PDYT}.${cyct}0000.restart.${wavGRD} $DATA/restart.${wavGRD}
+               fi
+               eval $NLN $datwave/${wavprfx}.log.${wavGRD}.${PDY}${cyc} log.${wavGRD}
 	done
 
-	#link more log files:
-	eval $NLN $ROTDIR/${CDUMP}.${PDY}/${cyc}/wave/rundata/${COMPONENTwave}${WAV_MEMBER}.log.mww3.${PDY}${cyc} $DATA/log.mww3
+        if [ "$WW3ICEINP" = "YES" ]; then
+               wavicefile=$COMINwave/rundata/${CDUMPwave}.${WAVEICE_FID}.${cycle}.ice
+               if [ ! -f $wavicefile ]; then
+                     echo "ERROR: WW3ICEINP = ${WW3ICEINP}, but missing ice file"
+                     echo "Abort!"
+                     exit 1
+               fi
+               $NLN ${wavicefile} $DATA/ice.${WAVEICE_FID}
+        fi
 
-	datwave=$ROTDIR/${CDUMP}.${PDY}/${cyc}/wave/rundata
-	wavprfx=${COMPONENTwave}${WAV_MEMBER}
+        if [ "$WW3CURINP" = "YES" ]; then
+               wavcurfile=$COMINwave/rundata/${CDUMPwave}.${WAVECUR_FID}.${cycle}.cur
+               if [ ! -f $wavcurfile ]; then
+                     echo "ERROR: WW3CURINP = ${WW3CURINP}, but missing current file"
+                     echo "Abort!"
+                     exit 1
+               fi
+               $NLN $wavcurfile $DATA/current.${WAVECUR_FID}
+        fi
+
+        # Link output files
+        cd $DATA
+        eval $NLN $datwave/${wavprfx}.log.mww3.${PDY}${cyc} log.mww3
+
 	# Loop for gridded output (uses FHINC)
 	fhr=$FHMIN_WAV
 	while [ $fhr -le $FHMAX_WAV ]; do
@@ -605,6 +621,7 @@ WW3_postdet() {
 		fi
 		fhr=$((fhr+FHINC))
 	done
+
 	# Loop for point output (uses DTPNT)
 	fhr=$FHMIN_WAV
 	while [ $fhr -le $FHMAX_WAV ]; do
@@ -621,7 +638,10 @@ WW3_postdet() {
 WW3_nml() {
 	echo "SUB ${FUNCNAME[0]}: Copying input files for WW3"
 	WAV_MOD_TAG=${CDUMP}wave${waveMEMB}
-	$NCP $ROTDIR/${CDUMP}.${PDY}/${cyc}/wave/rundata/ww3_multi.${WAV_MOD_TAG}.${cycle}.inp  $DATA/ww3_multi.inp 
+        for file in $(ls $COMINwave/rundata/rmp_src_to_dst_conserv_*) ; do
+                $NLN $file $DATA/
+        done
+        $NLN $COMINwave/rundata/ww3_multi.${CDUMPwave}${WAV_MEMBER}.${cycle}.inp $DATA/ww3_multi.inp
 }
 
 WW3_out() {
