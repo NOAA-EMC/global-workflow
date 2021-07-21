@@ -84,8 +84,6 @@ FV3_GFS_predet(){
 	SEND=${SEND:-"YES"}   #move final result to rotating directory
 	ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 	KEEPDATA=${KEEPDATA:-"NO"}
-	NEMSIOCHGDATE=${NEMSIOCHGDATE:-"${HOMEgfs}/exec/nemsio_chgdate"}
-	IAU_CHGDATE=${IAU_CHGDATE:-"YES"}
 
 	# Other options
 	MEMBER=${MEMBER:-"-1"} # -1: control, 0: ensemble mean, >0: ensemble member $MEMBER
@@ -103,6 +101,9 @@ FV3_GFS_predet(){
 	FCSTEXEC=${FCSTEXEC:-fv3_gfs.x}
 	PARM_FV3DIAG=${PARM_FV3DIAG:-$HOMEgfs/parm/parm_fv3diag}
 	PARM_POST=${PARM_POST:-$HOMEgfs/parm/post}
+
+        # Wave coupling parameter defaults to false
+        cplwav=${cplwav:-.false.}
 
 	# Model config options
 	APRUN_FV3=${APRUN_FV3:-${APRUN_FCST:-${APRUN:-""}}}
@@ -128,6 +129,8 @@ FV3_GFS_predet(){
 	OUTPUT_FILE=${OUTPUT_FILE:-"nemsio"}
 	WRITE_NEMSIOFLIP=${WRITE_NEMSIOFLIP:-".true."}
 	WRITE_FSYNCFLAG=${WRITE_FSYNCFLAG:-".true."}
+        affix="nemsio"
+        [[ "$OUTPUT_FILE" = "netcdf" ]] && affix="nc"
 
 	rCDUMP=${rCDUMP:-$CDUMP}
 
@@ -143,7 +146,16 @@ FV3_GFS_predet(){
 		export NC_BLKSZ=${NC_BLKSZ:-"4M"}
 		export IOBUF_PARAMS="*nemsio:verbose:size=${WRTIOBUF},*:verbose:size=${NC_BLKSZ}"
 	fi
+
 	#-------------------------------------------------------
+        if [ ! -d $ROTDIR ]; then mkdir -p $ROTDIR; fi
+        mkdata=NO
+        if [ ! -d $DATA ]; then
+                mkdata=YES
+                mkdir -p $DATA ;
+        fi
+        cd $DATA || exit 8
+        mkdir -p $DATA/INPUT
 
 	#------------------------------------------------------------------
 	# changeable parameters
@@ -205,14 +217,6 @@ FV3_GFS_predet(){
 	print_freq=${print_freq:-6}
 
 	#-------------------------------------------------------
-	if [ ! -d $ROTDIR ]; then mkdir -p $ROTDIR; fi
-	mkdata=NO
-	if [ ! -d $DATA ]; then
-		mkdata=YES 
-		mkdir -p $DATA ;
-	fi
-	cd $DATA || exit 8
-	mkdir -p $DATA/INPUT
 	if [ $CDUMP = "gfs" -a $rst_invt1 -gt 0 ]; then
 		RSTDIR_ATM=${RSTDIR:-$ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos/RERUN_RESTART
 		if [ ! -d $RSTDIR_ATM ]; then mkdir -p $RSTDIR_ATM ; fi

@@ -38,22 +38,6 @@ FV3_GFS_postdet(){
 	echo $warm_start
 	echo $RERUN
 
-	if [ ${TYPE} = "nh" ]; then # non-hydrostatic options
-		hydrostatic=".false."
-		phys_hydrostatic=".false."     # enable heating in hydrostatic balance in non-hydrostatic simulation
-		use_hydro_pressure=".false."   # use hydrostatic pressure for physics
-		if [ $warm_start = ".true." ]; then
-			make_nh=".false."              # restarts contain non-hydrostatic state
-		else
-			make_nh=".true."               # re-initialize non-hydrostatic state
-		fi
-	else # hydrostatic options
-		hydrostatic=".true."
-		phys_hydrostatic=".false."     # ignored when hydrostatic = T
-		use_hydro_pressure=".false."   # ignored when hydrostatic = T
-		make_nh=".false."              # running in hydrostatic mode
-	fi
-
 	#-------------------------------------------------------
 	if [ $warm_start = ".true." -o $RERUN = "YES" ]; then
 		#-------------------------------------------------------
@@ -83,14 +67,14 @@ FV3_GFS_postdet(){
 			done
 
 			# Need a coupler.res when doing IAU
-			#          if [ $DOIAU = "YES" ]; then
-			#             rm -f $DATA/INPUT/coupler.res
-			#             cat >> $DATA/INPUT/coupler.res << EOF
-			#              2        (Calendar: no_calendar=0, thirty_day_months=1, julian=2, gregorian=3, noleap=4)
-			#          ${gPDY:0:4}  ${gPDY:4:2}  ${gPDY:6:2}  ${gcyc}     0     0        Model start time:   year, month, day, hour, minute, second
-			#          ${sPDY:0:4}  ${sPDY:4:2}  ${sPDY:6:2}  ${scyc}     0     0        Current model time: year, month, day, hour, minute, second
-			#EOF
-			#          fi
+			if [ $DOIAU = "YES" ]; then
+			        rm -f $DATA/INPUT/coupler.res
+			        cat >> $DATA/INPUT/coupler.res << EOF
+		                2        (Calendar: no_calendar=0, thirty_day_months=1, julian=2, gregorian=3, noleap=4)
+			        ${gPDY:0:4}  ${gPDY:4:2}  ${gPDY:6:2}  ${gcyc}     0     0        Model start time:   year, month, day, hour, minute, second
+			        ${sPDY:0:4}  ${sPDY:4:2}  ${sPDY:6:2}  ${scyc}     0     0        Current model time: year, month, day, hour, minute, second
+EOF
+	                fi
 
 			# Link increments
 			if [ $DOIAU = "YES" ]; then
@@ -139,6 +123,14 @@ FV3_GFS_postdet(){
 				IAU_DELTHRS=0
 				IAU_INC_FILES="''"
 			fi
+
+                        rst_list_rerun=""
+                        xfh=$restart_interval_gfs
+                        while [ $xfh -le $FHMAX_GFS ]; do
+                                rst_list_rerun="$rst_list_rerun $xfh"
+                                xfh=$((xfh+restart_interval_gfs))
+                        done
+                        restart_interval="$rst_list_rerun"
 
 		fi
 		#.............................
@@ -358,6 +350,23 @@ FV3_GFS_postdet(){
 	dycore_only=${adiabatic:-".false."}
 	chksum_debug=${chksum_debug:-".false."}
 	print_freq=${print_freq:-6}
+
+        if [ ${TYPE} = "nh" ]; then # non-hydrostatic options
+               hydrostatic=".false."
+               phys_hydrostatic=".false."     # enable heating in hydrostatic balance in non-hydrostatic simulation
+               use_hydro_pressure=".false."   # use hydrostatic pressure for physics
+               if [ $warm_start = ".true." ]; then
+                     make_nh=".false."              # restarts contain non-hydrostatic state
+               else
+                     make_nh=".true."               # re-initialize non-hydrostatic state
+               fi
+
+        else # hydrostatic options
+               hydrostatic=".true."
+               phys_hydrostatic=".false."     # ignored when hydrostatic = T
+               use_hydro_pressure=".false."   # ignored when hydrostatic = T
+               make_nh=".false."              # running in hydrostatic mode
+        fi
 
 	# Conserve total energy as heat globally
 	consv_te=${consv_te:-1.} # range 0.-1., 1. will restore energy to orig. val. before physics
