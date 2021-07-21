@@ -2,8 +2,7 @@
 #set -xue
 set -x
 
-while getopts "oca" option;
-do
+while getopts "oc" option; do
  case $option in
   o)
    echo "Received -o flag for optional checkout of GTG, will check out GTG with EMC_post"
@@ -42,7 +41,7 @@ else
   if [[ ! -d ufs_coupled.fd ]] ; then
     git clone https://github.com/ufs-community/ufs-weather-model ufs_coupled.fd >> ${topdir}/checkout-ufs_coupled.log 2>&1
     cd ufs_coupled.fd
-    git checkout a842d57f9c352acd3771fbccd8d8eb044558d090
+    git checkout 22613e8
     git submodule update --init --recursive
     cd ${topdir} 
   else

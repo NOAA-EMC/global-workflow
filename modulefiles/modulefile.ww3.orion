@@ -16,3 +16,5 @@ module load png/1.6.35
 
 module load bacio/2.4.1
 module load g2/3.4.1
+
+module load netcdf/4.7.4

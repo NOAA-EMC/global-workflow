@@ -187,7 +187,6 @@ cat > input.nml <<EOF
   fhcyc        = $FHCYC			! CROW configured
   use_ufo      = ${use_ufo:-".true."}
   pre_rad      = ${pre_rad:-".false."}
-  ncld         = ${ncld:-1}		! CROW configured
   imp_physics  = ${imp_physics:-"99"}	! CROW configured
 EOF
 
@@ -217,7 +216,7 @@ EOF
   min_seaice   = ${min_seaice:-"0.15"}
 EOF
  ;;
-  "FV3_GFS_v16_coupled")
+  "FV3_GFS_v16_coupled" | "FV3_GFS_v16_couplednsst")
   cat >> input.nml << EOF
   iovr         = ${iovr:-"3"}
   ltaerosol    = ${ltaerosol:-".false."}

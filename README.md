@@ -23,14 +23,15 @@ sh checkout.sh -c            #Check out forecast model with COUPLED=YES
 ```
 
 ## Compile code needed to run prototype and link fixed files and executable programs:
-For coupled:
+For coupled (UFS APP=S2SW):
 ```
-sh build_all.sh -c           #This command will build only execs for coupled model
+sh build_all.sh -c
 ```
-For aerosols:
+For aerosols (UFS APP=ATMAERO):
 ```
-sh build_all.sh -a           #This command will build only execs for aerosol-enabled model
+sh build_all.sh -a
 ```
+
 To link fixed files and executable programs for the coupled/aerosol application:
 
 On Hera: 

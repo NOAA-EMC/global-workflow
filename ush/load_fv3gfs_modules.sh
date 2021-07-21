@@ -29,28 +29,8 @@ fi
 
 platform=$( get_platform )
 
-moduledir=
-modulelist=
-case "${platform}" in
-  hera)
-    moduledir="$HOMEgfs/sorc/ufs_coupled.fd/modulefiles"
-    target=${platform}.intel
-    if [[ "${tasktype}" = "forecast" && -r ${moduledir}/ufs_${target} ]] ; then
-      modulelist=ufs_${target}
-    else
-      moduledir="$HOMEgfs/modulefiles"
-      modulelist="module_base.${platform}"
-    fi
-    ;;
-  unknown)
-    echo "Unknown platform"
-    exit 1
-    ;;
-  *)
-    moduledir="$HOMEgfs/modulefiles"
-    modulelist="module_base.${platform}"
-    ;;
-esac
+moduledir="$HOMEgfs/modulefiles"
+modulelist="module_base.${platform}"
 
 # Load our modules:
 module use ${moduledir}
