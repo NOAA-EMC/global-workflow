@@ -249,6 +249,7 @@ config_fcst:
         export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_aer"
         export CHM_CFGDIR="{doc.chem_settings.CFGDIR}"
         export CHM_INPDIR="{doc.chem_settings.INPDIR}"
+        export CHM_EXPID="{doc.chem_settings.EXPID}"
         export dnats="$(( $dnats + {doc.chem_settings.ntdiag} ))"
         export KMP_INIT_AT_FORK=FALSE # Temporary setting
     elif [[ $cpl == .true. ]] ; then # coupled model

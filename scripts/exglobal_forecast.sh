@@ -211,6 +211,7 @@ if [ $machine != 'sandbox' ]; then
 	[[ $cplflx = .true. ]] && MOM6_out
 	[[ $cplwav = .true. ]] && WW3_out
 	[[ $cplice = .true. ]] && CICE_out
+	[[ $cplchem = .true. ]] && GOCART_out
 	[[ $esmf_profile = .true. ]] && CPL_out
 else
 	echo "MAIN: Running on sandbox mode, no output linking"

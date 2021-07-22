@@ -860,3 +860,17 @@ GOCART_rc() {
 		[[ $status -ne 0 ]] && exit $status
 	fi
 }
+
+GOCART_out() {
+	echo "SUB ${FUNCNAME[0]}: Moving output data for GOCART"
+
+	# move GOCART diagnostic files if available
+	diagfiles=$(ls ${DATA}/${CHM_EXPID}.*.nc4 2>/dev/null)
+        if [ ! -z "${diagfiles}" ]; then
+		COMOUT=$ROTDIR/$CDUMP.$PDY/$cyc/chem
+		[[ ! -d ${COMOUT} ]] && mkdir -m 775 -p ${COMOUT}
+		$NMV ${diagfiles} ${COMOUT}
+		status=$?
+		[[ $status -ne 0 ]] && exit $status
+	fi
+}
