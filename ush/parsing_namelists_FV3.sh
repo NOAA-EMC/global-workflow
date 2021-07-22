@@ -88,8 +88,16 @@ cat > input.nml <<EOF
   npy = $npy
   ntiles = $ntiles
   npz = $npz
-  dz_min =  ${dz_min:-"6"}    ! CROW configured
-  psm_bc = ${psm_bc:-"0"}    ! CROW configured
+EOF
+
+if [ $cpl = .true. ]; then
+  cat >> input.nml << EOF
+  dz_min =  ${dz_min:-"6"}    ! no longer in develop branch
+  psm_bc = ${psm_bc:-"0"}    ! no longer in develop branch
+EOF
+fi
+
+cat >> input.nml << EOF
   grid_type = -1
   make_nh = $make_nh 
   fv_debug = ${fv_debug:-".false."}
@@ -437,15 +445,10 @@ EOF
 
 # Add namelist for stochastic physics options
 echo "" >> input.nml
-#if [ $MEMBER -gt 0 ]; then
-if [ $DO_SPPT = .true. -o $DO_SHUM = .true. -o $DO_SKEB = .true. ]; then
+if [ $MEMBER -gt 0 ]; then
 
     cat >> input.nml << EOF
 &nam_stochy
-  new_lscale = .true.
-  ntrunc = $JCAP_STP
-  lon_s = $LONB_STP
-  lat_s = $LATB_STP
 EOF
 
   if [ $DO_SKEB = ".true." ]; then
