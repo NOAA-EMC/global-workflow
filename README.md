@@ -1,18 +1,10 @@
 # How to use the unified workflow for the coupled ufs-weather-model or ufs-aerosol app (work in progress)
 
 ## Clone the unified workflow repository
-For coupled:
 ```
 git clone https://github.com/NOAA-EMC/global-workflow coupled-workflow
 cd coupled-workflow
 git checkout feature/coupled-crow
-git submodule update --init --recursive     #Update submodules 
-```
-For aerosols:
-```
-git clone https://github.com/rmontuoro/global-workflow aerosols-workflow
-cd aerosols-workflow
-git checkout feature/aerosols
 git submodule update --init --recursive     #Update submodules 
 ```
 
@@ -20,6 +12,10 @@ git submodule update --init --recursive     #Update submodules
 ``` 
 cd sorc
 sh checkout.sh -c            #Check out forecast model with COUPLED=YES
+```
+A given ufs-weather-model revision can be checked out using option `-r <hash>`:
+```
+sh checkout.sh -c -r a842d57
 ```
 
 ## Compile code needed to run prototype and link fixed files and executable programs:
