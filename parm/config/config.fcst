@@ -28,15 +28,6 @@ export CHM_model="gsdchem"
 export use_coldstart=".false."
 
 #######################################################################
-# PE Mapping
-export ATMPETS="1240"
-export MEDPETS="1152"
-export OCNPETS="220"
-export ICEPETS="80"
-export WAVPETS="160"
-export CHMPETS="1700"
-
-#######################################################################
 # CICE parameters
 export NX_GLB="1440"
 export NY_GLB="1080"
@@ -59,18 +50,28 @@ if [[ "$CDUMP" == "gfs" ]] ; then
 fi
 
 if [ $QUILTING = ".true." ]; then
-    export npe_fv3=$(echo " $npe_fv3 + $WRITE_GROUP * $WRTTASK_PER_GROUP" | bc)
-    export npe_fcst=$npe_fv3
-    export npe_fcst_gfs=$(echo " $npe_fcst_gfs  + $WRITE_GROUP_GFS * $WRTTASK_PER_GROUP_GFS" | bc)
+   export npe_fv3=$(echo " $npe_fv3 + $WRITE_GROUP * $WRTTASK_PER_GROUP" | bc)
+   export npe_fcst=$npe_fv3
+   export npe_fcst_gfs=$(echo " $npe_fcst_gfs  + $WRITE_GROUP_GFS * $WRTTASK_PER_GROUP_GFS" | bc)
+   export ATMPETS=$(echo " $layout_x * $layout_y * 6 + $WRITE_GROUP * $WRTTASK_PER_GROUP" | bc)
+else
+   export ATMPETS=$(echo " $layout_x * $layout_y * 6" |bc) 
 fi
 
 if [ $DO_WAVE = "YES" ] ; then
   export npe_fcst=$((npe_fcst + npe_wav))
   if [ "$WAVE_CDUMP" = "gfs" -o "$WAVE_CDUMP" = "both" ]; then
-     export npe_fcst_gfs=$((npe_fcst_gfs + npe_wav_gfs))
-     if [ "$CDUMP" = "gfs" ]; then npe_wav=$npe_wav_gfs ; fi
+    export npe_fcst_gfs=$((npe_fcst_gfs + npe_wav_gfs))
+    if [ "$CDUMP" = "gfs" ]; then npe_wav=$npe_wav_gfs ; fi
   fi
 fi
+
+# Additional PE Mapping
+export MEDPETS=$(echo " $layout_x * $layout_y * 6" |bc) 
+export OCNPETS="220"
+export ICEPETS="80"
+export WAVPETS="160"
+export CHMPETS="1700"
 
 #######################################################################
 # Model configuration
@@ -172,7 +173,7 @@ elif [ $imp_physics -eq 11 ]; then # GFDL
     export vtdm4_nh_nonmono=0.02
     export nord=2
     export d4_bg=0.12
-    export dddmp=0.2
+    export dddmp=0.1
 
 else
     echo "Unknown microphysics option, ABORT!"
@@ -192,9 +193,9 @@ export FSICL="99999"
 # Stochastic physics parameters
 # nam_stochy section
 export SEEDLET="10"
-export DO_SKEB=".false."
-export DO_SHUM=".false."
-export DO_SPPT=".false."
+export DO_SKEB="YES"
+export DO_SHUM="YES"
+export DO_SPPT="YES"
 
 export SKEB=0.6,-999,-999,-999,-999
 export iseed_skeb=$ISEED_SKEB
@@ -206,7 +207,7 @@ export SPPT=0.8,0.4,0.2,0.08,0.04
 export iseed_sppt=$ISEED_SPPT
 export SPPT_TAU=2.16E4,2.592E5,2.592E6,7.776E6,3.1536E7
 export SPPT_LSCALE=500.E3,1000.E3,2000.E3,2000.E3,2000.E3
-export sppt_logit=".TRUE."
+export sppt_logit=".true."
 export sppt_sfclimit=".true."
 export use_zmtnblck=".true."
 
@@ -332,7 +333,6 @@ if [ $cplgocart = .true. ]; then # temporary settings for aerosol coupling
     export CHM_CFGDIR="not_set"
     export CHM_INPDIR="not_set"
     export dnats="$(( $dnats + 0 ))"
-    export KMP_INIT_AT_FORK=FALSE # Temporary setting
 elif [[ $cpl == .true. ]] ; then # coupled model
     export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_cpl"
 fi
