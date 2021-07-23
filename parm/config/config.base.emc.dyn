@@ -153,10 +153,6 @@ export CASE_ENKF="@CASEENS@"
 export ICERES=025
 export OCNRES=025
 
-# Run with CCPP physics
-export RUN_CCPP="YES"
-export CCPP_SUITE="FV3_GFS_v16"
-
 # Surface cycle update frequency
 if [[ "$CDUMP" == "gdas" ]] ; then
    export FHCYC=1
@@ -194,7 +190,6 @@ export ILPOST=1           # gempak output frequency up to F120
 
 # GFS restart interval in hours
 export restart_interval_gfs=0
-
 
 # I/O QUILTING, true--use Write Component; false--use GFDL FMS
 # if quilting=true, choose OUTPUT_GRID as cubed_sphere_grid in netcdf or gaussian_grid
@@ -238,31 +233,73 @@ export lobsdiag_forenkf=".true."
 export DO_GLDAS="YES"
 export gldas_cyc=00
 
+# APP settings
+export APP="ATM"
+
+if [ $APP = "ATM" ]; then
+  export DO_WAVE="NO"
+  export DO_MOM6="NO"
+  export DO_CICE="NO"
+  export DO_GOCART="NO"
+  export CCPP_SUITE="FV3_GFS_v16,FV3_GFS_v16_ugwpv1"
+elif [ $APP = "ATMW" ]; then
+  export DO_WAVE="YES"
+  export DO_MOM6="NO"
+  export DO_CICE="NO"
+  export DO_GOCART="NO"
+  export CCPP_SUITE="FV3_GFS_v16,FV3_GFS_v16_ugwpv1"
+elif [ $APP = "S2S" ]; then
+  export DO_WAVE="NO"
+  export DO_MOM6="YES"
+  export DO_CICE="YES"
+  export DO_GOCART="NO"
+  export CCPP_SUITE="FV3_GFS_v16,FV3_GFS_v16_coupled_nsstNoahmpUGWPv1"
+elif [ $APP = "S2SW" ]; then
+  export DO_WAVE="YES"
+  export DO_MOM6="YES"
+  export DO_CICE="YES"
+  export DO_GOCART="NO"
+  export CCPP_SUITE="FV3_GFS_v16,FV3_GFS_v16_coupled_nsstNoahmpUGWPv1"
+elif [ $APP = "ATMAERO" ]; then
+  export DO_WAVE="NO"
+  export DO_MOM6="NO"
+  export DO_CICE="NO"
+  export DO_GOCART="YES"
+  export CCPP_SUITE="FV3_GFS_v16,FV3_GFS_v16_ugwpv1"
+fi
+
+if [[ "$SDATE" -lt "2019020100" ]]; then DO_WAVE="NO" ; fi # no rtofs in GDA
+export WAVE_CDUMP="both"
+
 # Coupling settings
 export cpl=".true."
 export cplflx=".true."
-export cplgocart=".false."
-export cplice=".true."
-export cplwav=".true."
-export cplwav2atm=".true."
+if [ $DO_CIC = "YES" ]; then
+  export cplice=".true."
+else
+  export cplice=".false."
+fi
+if [ $DO_GOCART = "YES" ]; then
+  export cplgocart=".true."
+else
+  export cplgocart=".false."
+fi
+if [ $DO_WAVE = "YES" ]; then
+  export cplwav=".true."
+  export cplwav2atm=".true."
+else
+  export cplwav=".false."
+  export cplwav2atm=".false."
+fi
 
 # Temporarily override settings for aerosol coupling
 if [ $cplgocart = ".true." ]; then
-    export cplflx=".false."
-    export cplice=".false."
-    export cplocn=".false."
-    export cplwav=".false."
-    export cplwav2atm=".false."
+  export cplflx=".false."
+  export cplice=".false."
+  export cplocn=".false."
+  export cplwav=".false."
+  export cplwav2atm=".false."
 fi
-
-# Wave component
-if [[ $cplwav = ".true." ]]; then
-   export DO_WAVE="YES"
-else
-   export DO_WAVE="NO"
-fi
-if [[ "$SDATE" -lt "2019020100" ]]; then DO_WAVE="NO" ; fi # no rtofs in GDA
-export WAVE_CDUMP="both"
 
 export nems_temp="cpld_wave"
 export nems_temp_cold="atm"
