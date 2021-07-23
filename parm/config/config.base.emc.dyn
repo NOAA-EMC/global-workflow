@@ -29,6 +29,10 @@ export UTILgfs=$HOMEgfs/util
 export EXECgfs=$HOMEgfs/exec
 export SCRgfs=$HOMEgfs/scripts
 
+export FIXcice=$HOMEgfs/fix/fix_cice
+export FIXmom=$HOMEgfs/fix/fix_mom6
+export OCNFIXDIR=$HOMEgfs/fix/fix_reg2grb2
+
 ########################################################################
 
 # GLOBAL static environment parameters
@@ -136,6 +140,9 @@ export SENDDBN_NTC=${SENDDBN_NTC:-"NO"}
 export SENDDBN=${SENDDBN:-"NO"}
 export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
+export print_esmf=".false."
+export esmf_profile=".true."
+
 # Set operational resolution
 export OPS_RES="C768" # Do not change
 
@@ -143,6 +150,8 @@ export OPS_RES="C768" # Do not change
 export LEVS=128
 export CASE="@CASECTL@"
 export CASE_ENKF="@CASEENS@"
+export ICERES=025
+export OCNRES=025
 
 # Run with CCPP physics
 export RUN_CCPP="YES"
@@ -179,6 +188,8 @@ export FHMAX_GFS=$(eval echo \${FHMAX_GFS_$cyc})
 export FHOUT_GFS=3
 export FHMAX_HF_GFS=0
 export FHOUT_HF_GFS=1
+export FHRLST="[0, 6, 12, 18, 24, 30, 36, 42, 48]"
+export STEP_GFS="24"
 export ILPOST=1           # gempak output frequency up to F120
 
 # GFS restart interval in hours
@@ -227,10 +238,34 @@ export lobsdiag_forenkf=".true."
 export DO_GLDAS="YES"
 export gldas_cyc=00
 
-# run wave component
-export DO_WAVE="NO"
+# Coupling settings
+export cpl=".true."
+export cplflx=".true."
+export cplgocart=".false."
+export cplice=".true."
+export cplwav=".true."
+export cplwav2atm=".true."
+
+# Temporarily override settings for aerosol coupling
+if [ $cplgocart = ".true." ]; then
+    export cplflx=".false."
+    export cplice=".false."
+    export cplocn=".false."
+    export cplwav=".false."
+    export cplwav2atm=".false."
+fi
+
+# Wave component
+if [[ $cplwav = ".true." ]]; then
+   export DO_WAVE="YES"
+else
+   export DO_WAVE="NO"
+fi
 if [[ "$SDATE" -lt "2019020100" ]]; then DO_WAVE="NO" ; fi # no rtofs in GDA
 export WAVE_CDUMP="both"
+
+export nems_temp="cpld_wave"
+export nems_temp_cold="atm"
 
 # Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL
 export imp_physics=11
