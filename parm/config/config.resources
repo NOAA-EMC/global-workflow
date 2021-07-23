@@ -11,6 +11,7 @@ if [ $# -ne 1 ]; then
     echo "getic init"
     echo "anal analcalc analdiag gldas fcst post vrfy metp arch echgres"
     echo "eobs ediag eomg eupd ecen esfc efcs epos earc"
+    echo "ocnpost"
     echo "waveinit waveprep wavepostsbs wavepostbndpnt wavepostbndpntbll wavepostpnt"
     echo "wavegempak waveawipsbulls waveawipsgridded"
     echo "postsnd awips gempak"
@@ -47,7 +48,7 @@ if [ $step = "prep" -o $step = "prepbufr" ]; then
 
 elif [ $step = "waveinit" ]; then
 
-    export wtime_waveinit="00:10:00"
+    export wtime_waveinit="00:15:00"
     export npe_waveinit=12
     export nth_waveinit=1
     export npe_node_waveinit=$(echo "$npe_node_max / $nth_waveinit" | bc)
@@ -55,8 +56,8 @@ elif [ $step = "waveinit" ]; then
 
 elif [ $step = "waveprep" ]; then
 
-    export wtime_waveprep="00:30:00"
-    export npe_waveprep=65
+    export wtime_waveprep="00:15:00"
+    export npe_waveprep=12
     export nth_waveprep=1
     export npe_node_waveprep=$(echo "$npe_node_max / $nth_waveprep" | bc)
     export NTASKS=${npe_waveprep}
@@ -71,8 +72,8 @@ elif [ $step = "wavepostsbs" ]; then
 
 elif [ $step = "wavepostbndpnt" ]; then
 
-    export wtime_wavepostbndpnt="02:00:00"
-    export npe_wavepostbndpnt=280
+    export wtime_wavepostbndpnt="01:00:00"
+    export npe_wavepostbndpnt=80
     export nth_wavepostbndpnt=1
     export npe_node_wavepostbndpnt=$(echo "$npe_node_max / $nth_wavepostbndpnt" | bc)
     export NTASKS=${npe_wavepostbndpnt}
@@ -181,6 +182,13 @@ elif [ $step = "fcst" ]; then
     export npe_node_fcst=$(echo "$npe_node_max / $nth_fcst" | bc)
     if [[ "$machine" == "WCOSS_C" ]]; then export memory_fcst="1024M"; fi
 
+elif [ $step = "ocnpost" ]; then
+
+    export wtime_ocnpost="00:30:00"
+    export npe_ocnpost=1
+    export npe_node_ocnpost=1
+    export nth_ocnpost=1
+
 elif [ $step = "post" ]; then
 
     export wtime_post="02:00:00"
@@ -278,6 +286,18 @@ elif [ $step = "init" ]; then
     export nth_init=1
     export npe_node_init=6
 
+elif [ $step = "init_chem" ]; then
+
+    export wtime_init_chem="00:30:00"
+    export npe_init_chem=1
+    export npe_node_init_chem=1
+
+elif [ $step = "mom6ic" ]; then
+
+    export wtime_mom6ic="00:30:00"
+    export npe_mom6ic=24
+    export npe_node_mom6ic=24
+
 elif [ $step = "arch" -o $step = "earc" -o $step = "getic" ]; then
 
     eval "export wtime_$step='06:00:00'"
@@ -287,7 +307,6 @@ elif [ $step = "arch" -o $step = "earc" -o $step = "getic" ]; then
     eval "export memory_$step=2048M"
 
 elif [ $step = "eobs" -o $step = "eomg" ]; then
-
 
     export wtime_eobs="00:15:00"
     export wtime_eomg="01:00:00"
