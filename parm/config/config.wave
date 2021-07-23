@@ -10,6 +10,11 @@ echo "BEGIN: config.wave"
 # System and version
 export wave_sys_ver=v1.0.0
 
+export EXECwave="$HOMEgfs/exec"
+export FIXwave="$HOMEgfs/fix/fix_wave"
+export PARMwave="$HOMEgfs/parm/wave"
+export USHwave="$HOMEgfs/ush"
+
 # This config contains variables/parameters used in the fcst step
 # Some others are also used across the workflow in wave component scripts
 
@@ -24,6 +29,7 @@ export CDUMPRSTwave="gdas"
 export waveGRD='gnh_10m aoc_9km gsh_15m'
 export waveGRDN='1 2 3' # gridnumber for ww3_multi
 export waveGRDG='10 20 30' # gridgroup for ww3_multi
+export USE_WAV_RMP='NO' #yes/no rmp grid remapping pre-processed coefficients
 
 # ESMF input grid
 export waveesmfGRD='glox_10m' # input grid
@@ -56,6 +62,10 @@ export FHOUT_WAV=${FHOUT_WAV:-3}
 export FHMAX_HF_WAV=${FHMAX_HF_WAV:-120}
 export FHOUT_HF_WAV=${FHOUT_HF_WAV:-1}
 
+# Output stride
+export WAV_WND_HOUR_INC=1 # This value should match with the one used in
+                          # the wind update script
+
 # gridded and point output rate
 export DTFLD_WAV=`expr $FHOUT_HF_WAV \* 3600`
 export DTPNT_WAV=3600
@@ -64,19 +74,24 @@ export FHINCP_WAV=`expr $DTPNT_WAV / 3600`
 # Selected output parameters (gridded)
 export OUTPARS_WAV="WND HS FP DP PHS PTP PDIR"
 
+# Options for point output (switch on/off boundary point output)
+# export DOIBP_WAV='NO'
+
+# Number of cycles to look back for restart files
+export nback=
+
 # Restart file config
 if [ "$CDUMP" = "gdas" ]; then
-  WAVNCYC=4
-  WAVHCYC=${assim_freq:-6}
-  FHMAX_WAV_CUR=${FHMAX_WAV_CUR:-48} # RTOFS forecasts only out to 8 days
+  export WAVNCYC=4
+  export WAVHCYC=${assim_freq:-6}
+  export FHMAX_WAV_CUR=${FHMAX_WAV_CUR:-48} # RTOFS forecasts only out to 8 days
 elif [ ${gfs_cyc} -ne 0 ]; then
-  FHMAX_WAV_CUR=${FHMAX_WAV_CUR:-192} # RTOFS forecasts only out to 8 days
-  WAVHCYC=${assim_freq:-6}
+  export WAVHCYC=${assim_freq:-6}
+  export FHMAX_WAV_CUR=${FHMAX_WAV_CUR:-192} # RTOFS forecasts only out to 8 days
 else
-  WAVHCYC=0
-  FHMAX_WAV_CUR=${FHMAX_WAV_CUR:-192} # RTOFS forecasts only out to 8 days
+  export WAVHCYC=0
+  export FHMAX_WAV_CUR=${FHMAX_WAV_CUR:-192} # RTOFS forecasts only out to 8 days
 fi
-export FHMAX_WAV_CUR WAVHCYC WAVNCYC
 
 # Restart timing business
 if [ "${CDUMP}" != gfs ]; then    # Setting is valid for GDAS and GEFS 
