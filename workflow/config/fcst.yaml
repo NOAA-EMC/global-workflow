@@ -130,10 +130,6 @@ config_fcst:
     # Options of stratosphere O3 physics reaction coefficients
     export new_o3forc="{tools.YES_NO(doc.fv3_gfs_settings.new_o3force)}"
 
-
-    export do_ugwp=".false."
-    export do_tofd=".true."
-
     # fv3_core_nml section
     export dnats={doc.fv3_gfs_settings.phy_dependent_var.dnats}
     export do_sat_adj="{tools.fort(doc.fv3_gfs_settings.phy_dependent_var.do_sat_adjust)}"

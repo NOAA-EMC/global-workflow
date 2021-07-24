@@ -156,21 +156,6 @@ cat > input.nml <<EOF
   $fv_core_nml
 /
 
-&cires_ugwp_nml
-       knob_ugwp_solver  = ${knob_ugwp_solver:-2}
-       knob_ugwp_source  = ${knob_ugwp_source:-1,1,0,0}
-       knob_ugwp_wvspec  = ${knob_ugwp_wvspec:-1,25,25,25}
-       knob_ugwp_azdir   = ${knob_ugwp_azdir:-2,4,4,4}
-       knob_ugwp_stoch   = ${knob_ugwp_stoch:-0,0,0,0}
-       knob_ugwp_effac   = ${knob_ugwp_effac:-1,1,1,1}
-       knob_ugwp_doaxyz  = ${knob_ugwp_doaxyz:-1}
-       knob_ugwp_doheat  = ${knob_ugwp_doheat:-1}
-       knob_ugwp_dokdis  = ${knob_ugwp_dokdis:-1}
-       knob_ugwp_ndx4lh  = ${knob_ugwp_ndx4lh:-1}
-       knob_ugwp_version = ${knob_ugwp_version:-0}
-       launch_level      = ${launch_level:-54}                   
-/
-
 &external_ic_nml
   filtered_terrain = $filtered_terrain
   levp = $LEVS
@@ -215,8 +200,8 @@ EOF
   min_lakeice  = ${min_lakeice:-"0.15"}
   min_seaice   = ${min_seaice:-"0.15"}
 EOF
- ;;
-  "FV3_GFS_v16_coupled" | "FV3_GFS_v16_couplednsst")
+ ;;  
+  FV3_GFS_v16_coupled*)
   cat >> input.nml << EOF
   iovr         = ${iovr:-"3"}
   ltaerosol    = ${ltaerosol:-".false."}
@@ -224,7 +209,6 @@ EOF
   ttendlim     = ${ttendlim:-"0.005"}
   oz_phys      = ${oz_phys:-".false."}
   oz_phys_2015 = ${oz_phys_2015:-".true."}
-  lsoil_lsm    = ${lsoil_lsm:-"4"}
   do_mynnedmf  = ${do_mynnedmf:-".false."}
   do_mynnsfclay = ${do_mynnsfclay:-".false."}
   icloud_bl    = ${icloud_bl:-"1"}
@@ -235,7 +219,7 @@ EOF
   min_seaice   = ${min_seaice:-"0.15"}
 EOF
   ;;
-  "FV3_GFS_v16")
+  FV3_GFS_v16*)
   cat >> input.nml << EOF
   iovr         = ${iovr:-"3"}
   ltaerosol    = ${ltaerosol:-".false."}
@@ -287,7 +271,7 @@ cat >> input.nml <<EOF
   ivegsrc      = ${ivegsrc:-"1"}
   isot         = ${isot:-"1"}
   lsoil        = ${lsoil:-"4"}
-  lsm          = ${lsm:-"1"}
+  lsm          = ${lsm:-"2"}
   iopt_dveg    = ${iopt_dveg:-"1"}
   iopt_crs     = ${iopt_crs:-"1"}
   iopt_btr     = ${iopt_btr:-"1"}
@@ -310,7 +294,7 @@ cat >> input.nml <<EOF
   cplwav       = ${cplwav:-".false."}              ! CROW configured
   ldiag_ugwp   = ${ldiag_ugwp:-".false."}
   do_ugwp      = ${do_ugwp:-".true."}
-  do_tofd      = ${do_tofd:-".true."}
+  do_tofd      = ${do_tofd:-".false."}
   do_sppt      = ${DO_SPPT:-".false."}
   do_shum      = ${DO_SHUM:-".false."}
   do_skeb      = ${DO_SKEB:-".false."}
@@ -336,12 +320,80 @@ if [ $DOIAU = "YES" ]; then
 EOF
 fi
 
-cat >> input.nml <<EOF
+case ${gwd_opt:-"2"} in
+  1)
+  cat >> input.nml << EOF
+  gwd_opt      = 1
+  do_ugwp      = .false.
+  do_ugwp_v0   = .false.
+  do_ugwp_v1   = .false.
+  do_tofd      = .true.
   $gfs_physics_nml
 /
-EOF
 
-echo "" >> input.nml
+&cires_ugwp_nml
+  knob_ugwp_version = ${knob_ugwp_version:-0}
+  knob_ugwp_solver  = ${knob_ugwp_solver:-2}
+  knob_ugwp_source  = ${knob_ugwp_source:-1,1,0,0}
+  knob_ugwp_wvspec  = ${knob_ugwp_wvspec:-1,25,25,25}
+  knob_ugwp_azdir   = ${knob_ugwp_azdir:-2,4,4,4}
+  knob_ugwp_stoch   = ${knob_ugwp_stoch:-0,0,0,0}
+  knob_ugwp_effac   = ${knob_ugwp_effac:-1,1,1,1}
+  knob_ugwp_doaxyz  = ${knob_ugwp_doaxyz:-1}
+  knob_ugwp_doheat  = ${knob_ugwp_doheat:-1}
+  knob_ugwp_dokdis  = ${knob_ugwp_dokdis:-1}
+  knob_ugwp_ndx4lh  = ${knob_ugwp_ndx4lh:-1}
+  launch_level      = ${launch_level:-54}
+  $cires_ugwp_nml
+/
+
+EOF
+    ;;
+  2)
+  cat >> input.nml << EOF
+  gwd_opt      = 2
+  do_ugwp      = .true.
+  do_ugwp_v0   = .false.
+  do_ugwp_v1   = .true.
+  do_tofd      = .false.
+  do_ugwp_v1_orog_only = .false.
+  do_gsl_drag_ls_bl    = ${do_gsl_drag_ls_bl:-".true."}
+  do_gsl_drag_ss       = ${do_gsl_drag_ss:-".true."}
+  do_gsl_drag_tofd     = ${do_gsl_drag_tofd:-".true."}
+  $gfs_physics_nml
+/
+
+&cires_ugwp_nml
+  knob_ugwp_version = ${knob_ugwp_version:-1}
+  knob_ugwp_solver  = ${knob_ugwp_solver:-2}
+  knob_ugwp_source  = ${knob_ugwp_source:-1,1,0,0}
+  knob_ugwp_wvspec  = ${knob_ugwp_wvspec:-1,25,25,25}
+  knob_ugwp_azdir   = ${knob_ugwp_azdir:-2,4,4,4}
+  knob_ugwp_stoch   = ${knob_ugwp_stoch:-0,0,0,0}
+  knob_ugwp_effac   = ${knob_ugwp_effac:-1,1,1,1}
+  knob_ugwp_doaxyz  = ${knob_ugwp_doaxyz:-1}
+  knob_ugwp_doheat  = ${knob_ugwp_doheat:-1}
+  knob_ugwp_dokdis  = ${knob_ugwp_dokdis:-2}
+  knob_ugwp_ndx4lh  = ${knob_ugwp_ndx4lh:-4}
+  knob_ugwp_palaunch = ${knob_ugwp_palaunch:-275.0e2}
+  knob_ugwp_nslope   = ${knob_ugwp_nslope:-1}
+  knob_ugwp_lzmax    = ${knob_ugwp_lzmax:-15.750e3}
+  knob_ugwp_lzmin    = ${knob_ugwp_lzmin:-0.75e3}
+  knob_ugwp_lzstar   = ${knob_ugwp_lzstar:-2.0e3}
+  knob_ugwp_taumin   = ${knob_ugwp_taumin:-0.25e-3}
+  knob_ugwp_tauamp   = ${knob_ugwp_tauamp:-3.0e-3}
+  knob_ugwp_lhmet    = ${knob_ugwp_lhmet:-200.0e3}
+  knob_ugwp_orosolv  = ${knob_ugwp_orosolv:-'pss-1986'}       
+  $cires_ugwp_nml
+/
+
+EOF
+    ;;
+  *)
+    echo "FATAL: Invalid gwd_opt specified: $gwd_opt"
+    exit 1
+    ;;
+esac
 
 cat >> input.nml <<EOF
 &gfdl_cloud_microphysics_nml
