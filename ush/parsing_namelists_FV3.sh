@@ -243,8 +243,7 @@ elif [ $CCPP_SUITE = "FV3_GFS_v16_coupled" ]; then
 EOF
 else
   cat >> input.nml << EOF
-  iovr_lw      = ${iovr_lw:-"3"}
-  iovr_sw      = ${iovr_sw:-"3"}
+  iovr         = ${iovr:-"3"}
 EOF
 fi
 
