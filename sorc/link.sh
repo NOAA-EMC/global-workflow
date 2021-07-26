@@ -5,19 +5,30 @@ set -ex
 
 RUN_ENVIR=${1}
 machine=${2}
+if [ $# -eq 3 ]; then
+  model=${3}
+else
+  model="uncoupled"
+fi
 
 if [ $# -lt 2 ]; then
     echo '***ERROR*** must specify two arguements: (1) RUN_ENVIR, (2) machine'
-    echo ' Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | hera | orion )'
+    echo ' Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | hera | orion | stampede )'
+    echo ' A third argument is needed when coupled: '
+    echo ' Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | hera | orion | stampede ) coupled'
     exit 1
 fi
 
 if [ $RUN_ENVIR != emc -a $RUN_ENVIR != nco ]; then
-    echo 'Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | hera | orion )'
+    echo ' Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | hera | orion | stampede )'
+    echo ' A third argument is needed when coupled: '
+    echo ' Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | hera | orion | stampede ) coupled'
     exit 1
 fi
-if [ $machine != cray -a $machine != dell -a $machine != hera -a $machine != orion ]; then
-    echo 'Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | hera | orion )'
+if [ $machine != cray -a $machine != dell -a $machine != hera -a $machine != orion -a $machine != stampede ]; then
+    echo ' Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | hera | orion | stampede )'
+    echo ' A third argument is needed when coupled: '
+    echo ' Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | hera | orion | stampede ) coupled'
     exit 1
 fi
 
@@ -30,18 +41,39 @@ pwd=$(pwd -P)
 #------------------------------
 #--model fix fields
 #------------------------------
-if [ $machine == "cray" ]; then
+if [ $machine = "cray" ]; then
     FIX_DIR="/gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix"
 elif [ $machine = "dell" ]; then
-    FIX_DIR="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix"
+    FIX_DIR="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix_NEW"
 elif [ $machine = "hera" ]; then
-    FIX_DIR="/scratch1/NCEPDEV/global/glopara/fix"
+    FIX_DIR="/scratch1/NCEPDEV/global/glopara/fix_NEW"
 elif [ $machine = "orion" ]; then
-    FIX_DIR="/work/noaa/global/glopara/fix"
+    FIX_DIR="/work/noaa/global/glopara/fix_NEW"
+elif [ $machine = "stampede" ]; then
+    FIX_DIR="/work/07738/jkuang/stampede2/tempFixICdir/fix_UFSp6"
+fi
+
+if [ ! -z $FIX_DIR ]; then
+ if [ ! -d ${pwd}/../fix ]; then mkdir ${pwd}/../fix; fi
 fi
 cd ${pwd}/../fix                ||exit 8
-dirs=`ls $FIX_DIR`
-for dir in $dirs ; do
+for dir in fix_aer \
+            fix_am \
+            fix_chem \
+            fix_fv3_gmted2010 \
+            fix_gldas \
+            fix_lut \
+            fix_fv3_fracoro \
+            fix_orog \
+            fix_sfc_climo \
+            fix_verif \
+            fix_cice \
+            fix_mom6 \
+            fix_cpl \
+            fix_wave \
+            fix_reg2grb2 \
+            fix_ugwd
+            do
     if [ -d $dir ]; then
       [[ $RUN_ENVIR = nco ]] && chmod -R 755 $dir
       rm -rf $dir
@@ -68,7 +100,11 @@ cd ${pwd}/../parm               ||exit 8
     $LINK ../sorc/gldas.fd/parm                              gldas
 cd ${pwd}/../scripts            ||exit 8
     $LINK ../sorc/gfs_post.fd/scripts/exgdas_atmos_nceppost.sh .
-    $LINK ../sorc/gfs_post.fd/scripts/exgfs_atmos_nceppost.sh  .
+    if [ $model = "coupled" ]; then
+      $LINK exgfs_nceppost_cpl.sh exgfs_atmos_nceppost.sh
+    else 
+      $LINK ../sorc/gfs_post.fd/scripts/exgfs_atmos_nceppost.sh  .
+    fi 
     $LINK ../sorc/gfs_post.fd/scripts/exglobal_atmos_pmgr.sh   .
     $LINK ../sorc/ufs_utils.fd/scripts/exemcsfc_global_sfc_prep.sh .
     $LINK ../sorc/gldas.fd/scripts/exgdas_atmos_gldas.sh .
@@ -77,9 +113,13 @@ cd ${pwd}/../ush                ||exit 8
         gfs_transfer.sh mod_icec.sh link_crtm_fix.sh trim_rh.sh fix_precip.sh; do
         $LINK ../sorc/gfs_post.fd/ush/$file                  .
     done
+    if [ $model = "coupled" ]; then
+       rm fv3gfs_downstream_nems.sh
+       $LINK fv3gfs_downstream_nems_cpl.sh fv3gfs_downstream_nems.sh
+    fi
     for file in emcsfc_ice_blend.sh  fv3gfs_driver_grid.sh  fv3gfs_make_orog.sh  global_cycle_driver.sh \
-        emcsfc_snow.sh  fv3gfs_filter_topo.sh  global_cycle.sh \
-        chgres_cube.sh  fv3gfs_make_grid.sh ; do
+        emcsfc_snow.sh  fv3gfs_filter_topo.sh  global_chgres_driver.sh  global_cycle.sh \
+        fv3gfs_make_grid.sh  global_chgres.sh  ; do
         $LINK ../sorc/ufs_utils.fd/ush/$file                  .
     done
     for file in gldas_archive.sh  gldas_forcing.sh gldas_get_data.sh  gldas_process_data.sh gldas_liscrd.sh  gldas_post.sh ; do
@@ -207,29 +247,29 @@ for workflowexec in fbwndgfs gfs_bufr regrid_nemsio supvit syndat_getjtbul \
   $LINK ../sorc/install/bin/${workflowexec}.x $workflowexec
 done
 for workflowexec in enkf_chgres_recenter.x enkf_chgres_recenter_nc.x fv3nc2nemsio.x \
-    tave.x vint.x ; do
+    tave.x vint.x reg2grb2.x ; do
   [[ -s $workflowexec ]] && rm -f $workflowexec
   $LINK ../sorc/install/bin/$workflowexec .
 done
 
-[[ -s global_fv3gfs.x ]] && rm -f global_fv3gfs.x
-$LINK ../sorc/fv3gfs.fd/NEMS/exe/global_fv3gfs.x .
+[[ -s ufs_model ]] && rm -f ufs_model
+$LINK ../sorc/ufs_model.fd/build/ufs_model .
 
 [[ -s gfs_ncep_post ]] && rm -f gfs_ncep_post
 $LINK ../sorc/gfs_post.fd/exec/upp.x gfs_ncep_post
 
 if [ -d ${pwd}/gfs_wafs.fd ]; then 
     for wafsexe in \
-          wafs_awc_wafavn.x  wafs_blending.x  wafs_blending_0p25.x \
-          wafs_cnvgrib2.x  wafs_gcip.x  wafs_grib2_0p25.x \
-          wafs_makewafs.x  wafs_setmissing.x ; do
+          wafs_awc_wafavn  wafs_blending  wafs_blending_0p25 \
+          wafs_cnvgrib2  wafs_gcip  wafs_grib2_0p25 \
+          wafs_makewafs  wafs_setmissing; do
         [[ -s $wafsexe ]] && rm -f $wafsexe
         $LINK ../sorc/gfs_wafs.fd/exec/$wafsexe .
     done
 fi
 
 for ufs_utilsexe in \
-     emcsfc_ice_blend  emcsfc_snow2mdl  global_cycle ; do
+     emcsfc_ice_blend  emcsfc_snow2mdl  global_chgres  global_cycle ; do
     [[ -s $ufs_utilsexe ]] && rm -f $ufs_utilsexe
     $LINK ../sorc/ufs_utils.fd/exec/$ufs_utilsexe .
 done
@@ -308,7 +348,9 @@ cd ${pwd}/../sorc   ||   exit 8
     for prog in fregrid make_hgrid make_solo_mosaic ; do
         $SLINK ufs_utils.fd/sorc/fre-nctools.fd/tools/$prog                                ${prog}.fd                                
     done
-    for prog in global_cycle.fd emcsfc_ice_blend.fd emcsfc_snow2mdl.fd ; do
+    for prog in  global_cycle.fd   nemsio_read.fd \
+        emcsfc_ice_blend.fd \
+        emcsfc_snow2mdl.fd ;do
         $SLINK ufs_utils.fd/sorc/$prog                                                     $prog
     done
 

@@ -9,6 +9,25 @@ set +x
 #                   Anything other than "true"  will use libraries locally.
 #------------------------------------
 
+_build_ufs_options=""
+
+while getopts "ac" option;do
+ case $option in
+  a)
+   echo "Received -a flag, building ufs-weather-model for ATMAERO app"
+   echo "skipping builds not needed for prototype runs"
+   _build_ufs_options=-a
+   break
+   ;;
+  c)
+   echo "Received -c flag, building ufs-weather-model for S2SW app"
+   echo "skipping builds not needed for prototype runs"
+   _build_ufs_options=-c
+   break
+   ;;
+ esac
+done
+
 export USE_PREINST_LIBS="true"
 
 #------------------------------------
@@ -37,8 +56,7 @@ source ./machine-setup.sh > /dev/null 2>&1
 #------------------------------------
 # INCLUDE PARTIAL BUILD 
 #------------------------------------
-
-. ./partial_build.sh
+. ./partial_build.sh $@
 
 #------------------------------------
 # Exception Handling Init
@@ -46,19 +64,6 @@ source ./machine-setup.sh > /dev/null 2>&1
 ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 err=0
 
-#------------------------------------
-# build fv3
-#------------------------------------
-$Build_fv3gfs && {
-echo " .... Building fv3 .... "
-./build_fv3.sh > $logs_dir/build_fv3.log 2>&1
-rc=$?
-if [[ $rc -ne 0 ]] ; then
-    echo "Fatal error in building fv3."
-    echo "The log file is in $logs_dir/build_fv3.log"
-fi
-((err+=$rc))
-}
 
 #------------------------------------
 # build WW3 pre & post execs 
@@ -72,6 +77,20 @@ if [[ $rc -ne 0 ]] ; then
     echo "The log file is in $logs_dir/build_ww3_prepost.log"
 fi
 ((err+=$rc))
+}
+
+#------------------------------------
+# build forecast model 
+#------------------------------------
+$Build_ufs_model && {
+    echo " .... Building forecast model .... "
+    ./build_ufs.sh ${_build_ufs_options} > $logs_dir/build_ufs.log 2>&1
+    rc=$?
+    if [[ $rc -ne 0 ]] ; then
+        echo "Fatal error in building UFS model."
+        echo "The log file is in $logs_dir/build_ufs.log"
+    fi
+    ((err+=$rc))
 }
 
 #------------------------------------
