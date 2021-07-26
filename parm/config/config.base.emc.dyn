@@ -262,24 +262,23 @@ if [[ "$SDATE" -lt "2019020100" ]]; then DO_WAVE="NO" ; fi # no rtofs in GDA
 export WAVE_CDUMP="both"
 
 # Coupling settings
+
 export cpl=".true."
 export cplflx=".true."
+export cplice=".false."
+export cplgocart=".false."
+export cplwav=".false."
+export cplwav2atm=".false."
+
 if [ $DO_CICE = "YES" ]; then
   export cplice=".true."
-else
-  export cplice=".false."
 fi
 if [ $DO_GOCART = "YES" ]; then
   export cplgocart=".true."
-else
-  export cplgocart=".false."
 fi
 if [ $DO_WAVE = "YES" ]; then
   export cplwav=".true."
   export cplwav2atm=".true."
-else
-  export cplwav=".false."
-  export cplwav2atm=".false."
 fi
 
 # Temporarily override settings for aerosol coupling
