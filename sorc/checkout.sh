@@ -35,7 +35,7 @@ if [[ ! -d ufs_model.fd ]] ; then
     git submodule update --init --recursive
     cd ${topdir}
 else
-    echo 'Skip.  Directory ufs.fd already exists.'
+    echo 'Skip.  Directory ufs_model.fd already exists.'
 fi 
 
 echo gsi checkout ...
