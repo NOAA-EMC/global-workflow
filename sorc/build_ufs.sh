@@ -27,10 +27,6 @@ done
 source ./machine-setup.sh > /dev/null 2>&1
 cwd=$(pwd)
 
-# Remove previous build directory if it exists
-if [ -d ufs_model.fd/build ]; then
-  rm -R ufs_model.fd/build
-fi
 
 # Set target platform
 case "${target}" in
@@ -46,4 +42,11 @@ module purge
 cd ufs_model.fd/
 module use ${MOD_PATH}
 module load ufs_${target}
-CMAKE_FLAGS="-DAPP=${APP} -DCCPP_SUITES=${CCPP_SUITES}" ./build.sh
+
+# Remove previous build directory if it exists
+if [ -d build ]; then
+  rm -R build
+fi
+mkdir -p build && cd build
+cmake -DAPP=${APP} -DCCPP_SUITES=${CCPP_SUITES} ..
+OMP_NUM_THREADS=1 make -j ${BUILD_JOBS:-8} VERBOSE=${BUILD_VERBOSE:-}
