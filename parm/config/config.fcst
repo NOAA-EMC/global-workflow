@@ -327,7 +327,7 @@ elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
 
 fi
 
-if [ $cplgocart = .true. ]; then # temporary settings for aerosol coupling
+if [ $DO_GOCART = "YES" ]; then # temporary settings for aerosol coupling
     export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_aer"
     export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_aer"
     export CHM_CFGDIR="not_set"
