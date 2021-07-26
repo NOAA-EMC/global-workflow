@@ -278,7 +278,6 @@ if [ $DO_GOCART = "YES" ]; then
 fi
 if [ $DO_WAVE = "YES" ]; then
   export cplwav=".true."
-  export cplwav2atm=".true."
 fi
 
 # Temporarily override settings for aerosol coupling
