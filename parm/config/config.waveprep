@@ -38,7 +38,7 @@ export WAV_WND_HOUR_INC=1      # This value should match with the one used in
 export WAV_CUR_DT=${WAV_CUR_DT:-3}
 export WAV_CUR_HF_DT=${WAV_CUR_HF_DT:-1}
 export WAV_CUR_HF_FH=${WAV_CUR_HF_FH:-72}
-export WAV_CUR_CDO_SMOOTH="False"
+export WAV_CUR_CDO_SMOOTH="NO"
 
 # Location of CDO module
 export CDO_ROOT=${CDO_ROOT:-/usrx/local/dev/packages/cdo/1.9.8}
