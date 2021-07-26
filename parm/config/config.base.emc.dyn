@@ -274,7 +274,7 @@ export WAVE_CDUMP="both"
 # Coupling settings
 export cpl=".true."
 export cplflx=".true."
-if [ $DO_CIC = "YES" ]; then
+if [ $DO_CICE = "YES" ]; then
   export cplice=".true."
 else
   export cplice=".false."
