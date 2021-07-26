@@ -140,9 +140,6 @@ export SENDDBN_NTC=${SENDDBN_NTC:-"NO"}
 export SENDDBN=${SENDDBN:-"NO"}
 export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
-export print_esmf=".false."
-export esmf_profile=".true."
-
 # Set operational resolution
 export OPS_RES="C768" # Do not change
 

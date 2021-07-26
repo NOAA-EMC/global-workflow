@@ -16,6 +16,9 @@ if [ $DONST = "YES" ]; then
     . $EXPDIR/config.nsst
 fi
 
+export print_esmf=".false."
+export esmf_profile=".false."
+
 #######################################################################
 # COUPLING COMPONENTS
 export OCN_model="mom6"
