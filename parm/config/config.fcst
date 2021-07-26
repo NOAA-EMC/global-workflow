@@ -193,9 +193,9 @@ export FSICL="99999"
 # Stochastic physics parameters
 # nam_stochy section
 export SEEDLET="10"
-export DO_SKEB="YES"
-export DO_SHUM="YES"
-export DO_SPPT="YES"
+export DO_SKEB="NO"
+export DO_SHUM="NO"
+export DO_SPPT="NO"
 
 export SKEB=0.6,-999,-999,-999,-999
 export iseed_skeb=$ISEED_SKEB
