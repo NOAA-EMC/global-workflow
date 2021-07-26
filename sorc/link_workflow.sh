@@ -260,9 +260,9 @@ $LINK ../sorc/gfs_post.fd/exec/upp.x gfs_ncep_post
 
 if [ -d ${pwd}/gfs_wafs.fd ]; then 
     for wafsexe in \
-          wafs_awc_wafavn  wafs_blending  wafs_blending_0p25 \
-          wafs_cnvgrib2  wafs_gcip  wafs_grib2_0p25 \
-          wafs_makewafs  wafs_setmissing; do
+          wafs_awc_wafavn.x  wafs_blending.x  wafs_blending_0p25.x \
+          wafs_cnvgrib2.x  wafs_gcip.x  wafs_grib2_0p25.x \
+          wafs_makewafs.x  wafs_setmissing.x; do
         [[ -s $wafsexe ]] && rm -f $wafsexe
         $LINK ../sorc/gfs_wafs.fd/exec/$wafsexe .
     done
@@ -348,7 +348,7 @@ cd ${pwd}/../sorc   ||   exit 8
     for prog in fregrid make_hgrid make_solo_mosaic ; do
         $SLINK ufs_utils.fd/sorc/fre-nctools.fd/tools/$prog                                ${prog}.fd                                
     done
-    for prog in  global_cycle.fd   nemsio_read.fd \
+    for prog in  global_cycle.fd \
         emcsfc_ice_blend.fd \
         emcsfc_snow2mdl.fd ;do
         $SLINK ufs_utils.fd/sorc/$prog                                                     $prog
