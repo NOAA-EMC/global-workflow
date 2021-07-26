@@ -236,36 +236,26 @@ export gldas_cyc=00
 # APP settings
 export APP="ATM"
 
-if [ $APP = "ATM" ]; then
-  export DO_WAVE="NO"
-  export DO_MOM6="NO"
-  export DO_CICE="NO"
-  export DO_GOCART="NO"
-  export CCPP_SUITE="FV3_GFS_v16,FV3_GFS_v16_ugwpv1"
-elif [ $APP = "ATMW" ]; then
+# Defaults:
+export DO_WAVE="NO"
+export DO_MOM6="NO"
+export DO_CICE="NO"
+export DO_GOCART="NO"
+export CCPP_SUITE="FV3_GFS_v16,FV3_GFS_v16_ugwpv1"
+
+if [ $APP = "ATMW" ]; then
   export DO_WAVE="YES"
-  export DO_MOM6="NO"
-  export DO_CICE="NO"
-  export DO_GOCART="NO"
-  export CCPP_SUITE="FV3_GFS_v16,FV3_GFS_v16_ugwpv1"
 elif [ $APP = "S2S" ]; then
-  export DO_WAVE="NO"
   export DO_MOM6="YES"
   export DO_CICE="YES"
-  export DO_GOCART="NO"
   export CCPP_SUITE="FV3_GFS_v16,FV3_GFS_v16_coupled_nsstNoahmpUGWPv1"
 elif [ $APP = "S2SW" ]; then
   export DO_WAVE="YES"
   export DO_MOM6="YES"
   export DO_CICE="YES"
-  export DO_GOCART="NO"
   export CCPP_SUITE="FV3_GFS_v16,FV3_GFS_v16_coupled_nsstNoahmpUGWPv1"
 elif [ $APP = "ATMAERO" ]; then
-  export DO_WAVE="NO"
-  export DO_MOM6="NO"
-  export DO_CICE="NO"
   export DO_GOCART="YES"
-  export CCPP_SUITE="FV3_GFS_v16,FV3_GFS_v16_ugwpv1"
 fi
 
 if [[ "$SDATE" -lt "2019020100" ]]; then DO_WAVE="NO" ; fi # no rtofs in GDA
