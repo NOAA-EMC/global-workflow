@@ -212,7 +212,13 @@ FV3_GFS_postdet(){
 		done
 	fi
 
+	export CCPP_SUITE=${CCPP_SUITE:-"FV3_GFS_v16"}
 	_suite_file=$HOMEgfs/sorc/ufs_coupled.fd/FV3/ccpp/suites/suite_${CCPP_SUITE}.xml
+
+	if [ ! -f ${_suite_file} ]; then
+		echo "FATAL: CCPP Suite file ${_suite_file} does not exist!"
+		exit 2
+	fi
 
 	# Scan suite file to determine whether it uses Noah-MP
 	if [ $(grep noahmpdrv ${_suite_file} | wc -l ) -gt 0 ]; then

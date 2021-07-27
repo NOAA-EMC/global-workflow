@@ -48,7 +48,7 @@ cat > input.nml <<EOF
   blocksize = $blocksize
   chksum_debug = $chksum_debug
   dycore_only = $dycore_only
-  ccpp_suite = ${CCPP_SUITE:-"FV3_GFS_v15"}
+  ccpp_suite = $CCPP_SUITE
   fdiag = $FDIAG
   fhmax = $FHMAX
   fhout = $FHOUT
