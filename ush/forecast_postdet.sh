@@ -242,7 +242,7 @@ FV3_GFS_postdet(){
        	knob_ugwp_version="0"
        	launch_level=${launch_level:-$(echo "$LEVS/2.35" |bc)}
 	fi
-
+	
 	# GFS standard input data
 	IALB=${IALB:-1}
 	IEMS=${IEMS:-1}
