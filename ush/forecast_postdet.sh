@@ -247,7 +247,7 @@ FV3_GFS_postdet(){
 	IALB=${IALB:-1}
 	IEMS=${IEMS:-1}
 	ISOL=${ISOL:-2}
-	IAER=${IAER:-111}
+	IAER=${IAER:-1011}
 	ICO2=${ICO2:-2}
 
 	if [ ${new_o3forc:-YES} = YES ]; then
@@ -284,6 +284,21 @@ FV3_GFS_postdet(){
 		for file in $(ls $FIX_AM/global_volcanic_aerosols*) ; do
 			$NLN $file $DATA/$(echo $(basename $file) | sed -e "s/global_//g")
 		done
+	fi
+
+	# MERRA 2
+	if [ $IAER -eq "1011" ]; then
+		FIX_AER="${FIX_DIR}/fix_aer"
+		for month in $(seq 1 12); do
+			MM=$(printf %02d $month)
+			$NLN "${FIX_AER}/merra2.aerclim.2003-2014.m${MM}.nc" "aeroclim.m${MM}.nc"
+		done
+		FIX_LUT="${FIX_DIR}/fix_lut"
+		$NLN "${FIX_LUT}/optics_BC.v1_3.dat" "optics_BC.dat"
+		$NLN "${FIX_LUT}/optics_OC.v1_3.dat" "optics_OC.dat"
+		$NLN "${FIX_LUT}/optics_DU.v15_3.dat" "optics_DU.dat"
+		$NLN "${FIX_LUT}/optics_SS.v3_3.dat" "optics_SS.dat"
+		$NLN "${FIX_LUT}/optics_SU.v1_3.dat" "optics_SU.dat"
 	fi
 
 	# inline post fix files
