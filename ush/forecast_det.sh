@@ -1,7 +1,7 @@
 #! /bin/sh
 
 ##### 
-## "forecast_def.sh"
+## "forecast_det.sh"
 ## This script sets value of all variables
 ##
 ## This is the child script of ex-global forecast,
