@@ -44,23 +44,11 @@ pwd=$(pwd -P)
 if [ $machine = "cray" ]; then
     FIX_DIR="/gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix"
 elif [ $machine = "dell" ]; then
-    if [ $model = "coupled" ]; then
-      FIX_DIR="/gpfs/dell2/emc/modeling/noscrub/Walter.Kolczynski/global-workflow/fix_UFSp6"
-    else 
-      FIX_DIR="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix"
-    fi 
+    FIX_DIR="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix_NEW"
 elif [ $machine = "hera" ]; then
-    if [ $model = "coupled" ]; then
-       FIX_DIR="/scratch2/NCEPDEV/climate/climpara/S2S/FIX/fix_UFSp6"
-    else
-       FIX_DIR="/scratch1/NCEPDEV/global/glopara/fix"
-    fi
+    FIX_DIR="/scratch1/NCEPDEV/global/glopara/fix_NEW"
 elif [ $machine = "orion" ]; then
-    if [ $model = "coupled" ]; then
-       FIX_DIR="/work/noaa/marine/jmeixner/tempFixICdir/fix_UFSp6"
-    else
-       FIX_DIR="/work/noaa/global/glopara/fix"
-    fi
+    FIX_DIR="/work/noaa/global/glopara/fix_NEW"
 elif [ $machine = "stampede" ]; then
     FIX_DIR="/work/07738/jkuang/stampede2/tempFixICdir/fix_UFSp6"
 fi
@@ -70,7 +58,7 @@ if [ ! -z $FIX_DIR ]; then
 fi
 cd ${pwd}/../fix                ||exit 8
 if [ $model = "coupled" ] ; then
-  for dir in fix_aer fix_am fix_chem fix_fv3_gmted2010 fix_gldas fix_lut fix_fv3_fracoro fix_orog fix_sfc_climo fix_verif fix_cice fix_mom6 fix_cpl fix_wave fix_reg2grb2 ; do
+  for dir in fix_aer fix_am fix_chem fix_fv3_gmted2010 fix_gldas fix_lut fix_fv3_fracoro fix_orog fix_sfc_climo fix_verif fix_cice fix_mom6 fix_cpl fix_wave fix_reg2grb2 fix_ugwd; do
     if [ -d $dir ]; then
       [[ $RUN_ENVIR = nco ]] && chmod -R 755 $dir
       rm -rf $dir
