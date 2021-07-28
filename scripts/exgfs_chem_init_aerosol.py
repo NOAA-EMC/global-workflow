@@ -84,7 +84,7 @@ def get_env_var(varname: str, fail_on_missing: bool = True) -> str:
 
 
 # Check if atm files exist
-def get_atm_files(path: str) -> typing.List[str]:
+def get_atm_files(path: str) -> typing.List[typing.List[str]]:
 	print(f'Checking for atm files in {path}')
 
 	file_list = []
@@ -102,7 +102,7 @@ def get_atm_files(path: str) -> typing.List[str]:
 	return file_list
 
 # Find last cycle with restart files available
-def get_restart_files(time: datetime, incr: int, max_lookback: int, fcst_length: int, rot_dir: str, cdump: str) -> typing.List[str]:
+def get_restart_files(time: datetime, incr: int, max_lookback: int, fcst_length: int, rot_dir: str, cdump: str) -> typing.List[typing.List[str]]:
 	print(f"Looking for restart tracer files in {rot_dir}")
 	for lookback in map(lambda i: incr * (i + 1), range(max_lookback)):
 		if(lookback > fcst_length):
