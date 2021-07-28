@@ -236,9 +236,9 @@ export APP="ATM"
 # Defaults:
 export DO_COUPLED="NO"
 export DO_WAVE="NO"
-export DO_MOM6="NO"
-export DO_CICE="NO"
-export DO_GOCART="NO"
+export DO_OCN="NO"
+export DO_ICE="NO"
+export DO_AERO="NO"
 export CCPP_SUITES="FV3_GFS_v16,FV3_GFS_v16_ugwpv1"
 
 case "${APP}" in
@@ -248,20 +248,20 @@ case "${APP}" in
     ;;
   S2S)
     export DO_COUPLED="YES"
-    export DO_MOM6="YES"
-    export DO_CICE="YES"
+    export DO_OCN="YES"
+    export DO_ICE="YES"
     export CCPP_SUITES="FV3_GFS_v16,FV3_GFS_v16_coupled_nsstNoahmpUGWPv1"
     ;;
   S2SW)
     export DO_COUPLED="YES"
     export DO_WAVE="YES"
-    export DO_MOM6="YES"
-    export DO_CICE="YES"
+    export DO_OCN="YES"
+    export DO_ICE="YES"
     export CCPP_SUITES="FV3_GFS_v16,FV3_GFS_v16_coupled_nsstNoahmpUGWPv1"
     ;;
   ATMAERO)
     export DO_COUPLED="YES"
-    export DO_GOCART="YES"
+    export DO_AERO="YES"
     ;;
   *)
     echo "Unrecognized APP: ${1}"
