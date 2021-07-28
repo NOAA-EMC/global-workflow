@@ -26,6 +26,23 @@ export ICE_model="cice6"
 export WAV_model="ww3"
 export CHM_model="gsdchem"
 
+export cpl=".true."
+export cplflx=".true."
+export cplice=".false."
+export cplgocart=".false."
+export cplwav=".false."
+export cplwav2atm=".false."
+
+if [ $DO_CICE = "YES" ]; then
+  export cplice=".true."
+fi
+if [ $DO_GOCART = "YES" ]; then
+  export cplgocart=".true."
+fi
+if [ $DO_WAVE = "YES" ]; then
+  export cplwav=".true."
+fi
+
 #######################################################################
 # COUPLING COMPONENTS
 export use_coldstart=".false."
@@ -193,27 +210,6 @@ export min_seaice="1e-11"
 
 export FSICL="99999"
 
-# Stochastic physics parameters
-# nam_stochy section
-export SEEDLET="10"
-export DO_SKEB="NO"
-export DO_SHUM="NO"
-export DO_SPPT="NO"
-
-export SKEB=0.6,-999,-999,-999,-999
-export iseed_skeb=$ISEED_SKEB
-export SKEB_TAU=2.16E4,1.728E5,2.592E6,7.776E6,3.1536E7
-export SKEB_LSCALE=500.E3,1000.E3,2000.E3,2000.E3,2000.E3
-export SKEBNORM=1
-
-export SPPT=0.8,0.4,0.2,0.08,0.04
-export iseed_sppt=$ISEED_SPPT
-export SPPT_TAU=2.16E4,2.592E5,2.592E6,7.776E6,3.1536E7
-export SPPT_LSCALE=500.E3,1000.E3,2000.E3,2000.E3,2000.E3
-export sppt_logit=".true."
-export sppt_sfclimit=".true."
-export use_zmtnblck=".true."
-
 #---------------------------------------------------------------------
 
 # ideflate: netcdf zlib lossless compression (0-9): 0 no compression
@@ -336,33 +332,12 @@ if [ $DO_GOCART = "YES" ]; then # temporary settings for aerosol coupling
     export CHM_CFGDIR="not_set"
     export CHM_INPDIR="not_set"
     export dnats="$(( $dnats + 0 ))"
-elif [[ $cpl == .true. ]] ; then # coupled model
+elif [[ $DO_COUPLED == "YES" ]] ; then # coupled model
     export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_cpl"
 fi
-
-# Regrid tiles to global Gaussian grid in NEMSIO
-export REGRID_NEMSIO_SH="$HOMEgfs/ush/fv3gfs_regrid_nemsio.sh"
-if [ $DONST = YES ]; then
-    export REGRID_NEMSIO_TBL="$HOMEgfs/parm/parm_fv3diag/variable_table_da.txt"
-else
-    export REGRID_NEMSIO_TBL="$HOMEgfs/parm/parm_fv3diag/variable_table_da_nonsst.txt"
-fi
-
-# Remap tiles to global latlon grid in NetCDF
-export REMAPSH="$HOMEgfs/ush/fv3gfs_remap.sh"
-export master_grid="0p25deg"                   # 1deg 0p5deg 0p25deg 0p125deg etc
-export npe_remap=$((npe_fcst < 240 ? npe_fcst : 240))
-
-# Global latlon NetCDF to nemsio utility parameters
-export NC2NEMSIOSH="$HOMEgfs/ush/fv3gfs_nc2nemsio.sh"
 
 # Remember config.efcs will over-ride these values for ensemble forecasts
 # if these variables are re-defined there.
 # Otherwise, the ensemble forecast will inherit from config.fcst
-
-    ## Debug load balancing
-    # export KEEPDATA="YES"
-    # export ESMF_RUNTIME_PROFILE=ON
-    # export ESMF_RUNTIME_PROFILE_OUTPUT=SUMMARY
 
 echo "END: config.fcst"
