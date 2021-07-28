@@ -9,6 +9,5 @@ echo "BEGIN: config.ocnpost"
 
 # No. of concurrent post jobs [0 implies sequential]
 export NPOSTGRP=1
-export ncks="/apps/intel-2020/nco-4.8.1/bin/ncks"
 
 echo "END: config.ocnpost"
