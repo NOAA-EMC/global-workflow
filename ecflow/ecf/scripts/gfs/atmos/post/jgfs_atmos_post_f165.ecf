@@ -1,9 +1,9 @@
 #BSUB -L /bin/sh
-#BSUB -q %QUEUE%
-#BSUB -P %PROJ%
 #BSUB -J %E%gfs_atmos_post_%FHR%_%CYC%
 #BSUB -o %COM%/output/%ENVIR%/today/gfs_atmos_post_%FHR%_%CYC%.o%J
-#BSUB -W 0:06
+#BSUB -q %QUEUE%
+#BSUB -P %PROJ%
+#BSUB -W 0:20
 #BSUB -n 112
 #BSUB -R affinity[core(1)]
 #BSUB -R span[ptile=28]

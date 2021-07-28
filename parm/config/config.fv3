@@ -36,13 +36,13 @@ fi
 # (Standard) Model resolution dependent variables
 case $case_in in
     "C48")
-        export DELTIM=450
-        export layout_x=2
-        export layout_y=4
-        export layout_x_gfs=2
-        export layout_y_gfs=4
-        export npe_wav=140
-        export npe_wav_gfs=140
+        export DELTIM=1200
+        export layout_x=3
+        export layout_y=2
+        export layout_x_gfs=3
+        export layout_y_gfs=2
+        export npe_wav=16
+        export npe_wav_gfs=16
         export nth_fv3=1
         export nth_fv3_gfs=1
         export cdmbgwd="0.071,2.1,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
@@ -50,16 +50,16 @@ case $case_in in
         export WRTTASK_PER_GROUP=$npe_node_max
         export WRITE_GROUP_GFS=1
         export WRTTASK_PER_GROUP_GFS=$npe_node_max
-        export WRTIOBUF="4M"
+        export WRTIOBUF="1M"
         ;;
     "C96")
-        export DELTIM=450
-        export layout_x=4
+        export DELTIM=720
+        export layout_x=6
         export layout_y=4
-        export layout_x_gfs=4
+        export layout_x_gfs=6
         export layout_y_gfs=4
-        export npe_wav=140
-        export npe_wav_gfs=140
+        export npe_wav=40
+        export npe_wav_gfs=40
         export nth_fv3=1
         export nth_fv3_gfs=1
         export cdmbgwd="0.14,1.8,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
@@ -68,6 +68,7 @@ case $case_in in
         export WRITE_GROUP_GFS=1
         export WRTTASK_PER_GROUP_GFS=$npe_node_max
         export WRTIOBUF="4M"
+        export n_split=6
         ;;
     "C192")
         export DELTIM=450
@@ -88,14 +89,14 @@ case $case_in in
         ;;
     "C384")
         export DELTIM=240
-        export layout_x=8
+        export layout_x=6
         export layout_y=8
         export layout_x_gfs=6
-        export layout_y_gfs=6
+        export layout_y_gfs=8
         export npe_wav=140
         export npe_wav_gfs=140
-        export nth_fv3=1
-        export nth_fv3_gfs=1
+        export nth_fv3=2
+        export nth_fv3_gfs=2
         export cdmbgwd="1.1,0.72,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=1
         export WRTTASK_PER_GROUP=$npe_node_max
@@ -108,15 +109,15 @@ case $case_in in
         export layout_x=8
         export layout_y=12
         export layout_x_gfs=16
-        export layout_y_gfs=16
+        export layout_y_gfs=12
         export npe_wav=140
-        export npe_wav_gfs=440
+        export npe_wav_gfs=140
         export nth_fv3=4
-        export nth_fv3_gfs=7
+        export nth_fv3_gfs=4
         export cdmbgwd="4.0,0.15,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=2
         export WRTTASK_PER_GROUP=$(echo "2*$npe_node_max" |bc)
-        export WRITE_GROUP_GFS=8
+        export WRITE_GROUP_GFS=4
         export WRTTASK_PER_GROUP_GFS=$(echo "2*$npe_node_max" |bc)
         export WRTIOBUF="32M"
         ;;

@@ -4,9 +4,9 @@
 #BSUB -q %QUEUE%
 #BSUB -P %PROJ%
 #BSUB -W 0:10
-#BSUB -n 84
-#BSUB -R affinity[core(2)]
-#BSUB -R span[ptile=14]
+#BSUB -n 80
+#BSUB -R affinity[core(7)]
+#BSUB -R span[ptile=4]
 #BSUB -cwd /tmp
 
 %include <head.h>
@@ -14,9 +14,9 @@
 
 set -x
 
-export NODES=6
-export ntasks=84
-export ptile=14
+export NODES=20
+export ntasks=80
+export ptile=4
 
 export NET=%NET:gfs%
 export RUN=%RUN%

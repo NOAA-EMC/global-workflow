@@ -20,7 +20,7 @@ status=$?
 
 ###############################################################
 # Source relevant configs
-configs="base getic"
+configs="base getic init"
 for config in $configs; do
     . $EXPDIR/config.${config}
     status=$?
@@ -36,167 +36,125 @@ status=$?
 ###############################################################
 # Set script and dependency variables
 
-yyyy=$(echo $CDATE | cut -c1-4)
-mm=$(echo $CDATE | cut -c5-6)
-dd=$(echo $CDATE | cut -c7-8)
-cyc=${cyc:-$(echo $CDATE | cut -c9-10)}
+export yy=$(echo $CDATE | cut -c1-4)
+export mm=$(echo $CDATE | cut -c5-6)
+export dd=$(echo $CDATE | cut -c7-8)
+export hh=${cyc:-$(echo $CDATE | cut -c9-10)}
+export GDATE=$($NDATE -${assim_freq:-"06"} $CDATE)
+export gyy=$(echo $GDATE | cut -c1-4)
+export gmm=$(echo $GDATE | cut -c5-6)
+export gdd=$(echo $GDATE | cut -c7-8)
+export ghh=$(echo $GDATE | cut -c9-10)
 
-export COMPONENT=${COMPONENT:-atmos}
+export DATA=${DATA:-${DATAROOT}/getic}
+export EXTRACT_DIR=${DATA:-$EXTRACT_DIR}
+export PRODHPSSDIR=${PRODHPSSDIR:-/NCEPPROD/hpssprod/runhistory}
+export COMPONENT="atmos"
+export gfs_ver=${gfs_ver:-"v16"}
+export OPS_RES=${OPS_RES:-"C768"}
+export GETICSH=${GETICSH:-${GDASINIT_DIR}/get_v16.data.sh}
 
-###############################################################
+# Create ROTDIR/EXTRACT_DIR
+if [ ! -d $ROTDIR ]; then mkdir -p $ROTDIR ; fi
+if [ ! -d $EXTRACT_DIR ]; then mkdir -p $EXTRACT_DIR ; fi
+cd $EXTRACT_DIR
 
-target_dir=$ICSDIR/$CDATE/$CDUMP
-mkdir -p $target_dir
-cd $target_dir
+# Check version, cold/warm start, and resolution
+if [[ $gfs_ver = "v16" && $EXP_WARM_START = ".true." && $CASE = $OPS_RES ]]; then # Pull warm start ICs - no chgres
 
-# Initialize return code to 0
-rc=1
+  # Pull RESTART files off HPSS
+  if [ ${RETRO:-"NO"} = "YES" ]; then # Retrospective parallel input
 
-if [ $ics_from = "opsgfs" ]; then
+    # Pull prior cycle restart files
+    htar -xvf ${HPSSDIR}/${GDATE}/gdas_restartb.tar
+    status=$?
+    [[ $status -ne 0 ]] && exit $status
 
-    # Location of production tarballs on HPSS
-    hpssdir="/NCEPPROD/hpssprod/runhistory/rh$yyyy/$yyyy$mm/$PDY"
+    # Pull current cycle restart files
+    htar -xvf ${HPSSDIR}/${CDATE}/gfs_restarta.tar
+    status=$?
+    [[ $status -ne 0 ]] && exit $status
 
-    # Handle nemsio and pre-nemsio GFS filenames
-    if [ $CDATE -le "2019061118" ]; then #GFSv14
-        # Add CDUMP.PDY/CYC to target_dir
-        target_dir=$ICSDIR/$CDATE/$CDUMP/${CDUMP}.$yyyy$mm$dd/$cyc
-        mkdir -p $target_dir
-        cd $target_dir
+    # Pull IAU increment files
+    htar -xvf ${HPSSDIR}/${CDATE}/gfs_netcdfa.tar
+    status=$?
+    [[ $status -ne 0 ]] && exit $status
 
-        nfanal=4
-        fanal[1]="./${CDUMP}.t${cyc}z.atmanl.nemsio"
-        fanal[2]="./${CDUMP}.t${cyc}z.sfcanl.nemsio"
-        fanal[3]="./${CDUMP}.t${cyc}z.nstanl.nemsio"
-        fanal[4]="./${CDUMP}.t${cyc}z.pgrbanl"
-        flanal="${fanal[1]} ${fanal[2]} ${fanal[3]} ${fanal[4]}"
-        tarpref="gpfs_hps_nco_ops_com"
-        if [ $CDUMP = "gdas" ]; then
-            tarball="$hpssdir/${tarpref}_gfs_prod_${CDUMP}.${CDATE}.tar"
-        elif [ $CDUMP = "gfs" ]; then
-            tarball="$hpssdir/${tarpref}_gfs_prod_${CDUMP}.${CDATE}.anl.tar"
-        fi
-    else #GFSv15
-        nfanal=2
-        fanal[1]="./${CDUMP}.$yyyy$mm$dd/$cyc/${CDUMP}.t${cyc}z.atmanl.nemsio"
-        fanal[2]="./${CDUMP}.$yyyy$mm$dd/$cyc/${CDUMP}.t${cyc}z.sfcanl.nemsio"
-        flanal="${fanal[1]} ${fanal[2]}"
-        if [ $CDATE -ge "2020022600" ]; then 
-          tarpref="com"
-        else 
-          tarpref="gpfs_dell1_nco_ops_com"
-        fi
-        if [ $CDUMP = "gdas" ]; then
-            tarball="$hpssdir/${tarpref}_gfs_prod_${CDUMP}.${yyyy}${mm}${dd}_${cyc}.${CDUMP}_nemsio.tar"
-        elif [ $CDUMP = "gfs" ]; then
-            tarball="$hpssdir/${tarpref}_gfs_prod_${CDUMP}.${yyyy}${mm}${dd}_${cyc}.${CDUMP}_nemsioa.tar"
-        fi
-    fi
+  else # Opertional input - warm starts
 
-    # First check the COMROOT for files, if present copy over
-    if [ $machine = "WCOSS_C" ]; then
+    cd $ROTDIR
+    # Pull CDATE gfs restart tarball
+    htar -xvf ${PRODHPSSDIR}/rh${yy}/${yy}${mm}/${yy}${mm}${dd}/com_gfs_prod_gfs.${yy}${mm}${dd}_${hh}.gfs_restart.tar
+    # Pull GDATE gdas restart tarball
+    htar -xvf ${PRODHPSSDIR}/rh${gyy}/${gyy}${gmm}/${gyy}${gmm}${gdd}/com_gfs_prod_gdas.${gyy}${gmm}${gdd}_${ghh}.gdas_restart.tar
+  fi
 
-        # Need COMROOT
-        module load prod_envir/1.1.0 >> /dev/null 2>&1
+else # Pull chgres cube inputs for cold start IC generation
 
-        comdir="$COMROOT/$CDUMP/prod/$CDUMP.$PDY"
-        rc=0
-        for i in `seq 1 $nfanal`; do
-            if [ -f $comdir/${fanal[i]} ]; then
-                $NCP $comdir/${fanal[i]} ${fanal[i]}
-            else
-                rb=1 ; ((rc+=rb))
-            fi
-        done
+  # Run UFS_UTILS GETICSH
+  sh ${GETICSH} ${CDUMP}
+  status=$?
+  [[ $status -ne 0 ]] && exit $status
 
-    fi
+fi
 
-    # Get initial conditions from HPSS
-    if [ $rc -ne 0 ]; then
-
-        # check if the tarball exists
-        hsi ls -l $tarball
-        rc=$?
-        if [ $rc -ne 0 ]; then
-            echo "$tarball does not exist and should, ABORT!"
-            exit $rc
-        fi
-        # get the tarball
-        htar -xvf $tarball $flanal
-        rc=$?
-        if [ $rc -ne 0 ]; then
-            echo "untarring $tarball failed, ABORT!"
-            exit $rc
-        fi
-
-        # Move the files to legacy EMC filenames
-        if [ $CDATE -le "2019061118" ]; then #GFSv14
-           for i in `seq 1 $nfanal`; do
-             $NMV ${fanal[i]} ${flanal[i]}
-           done
-        fi
-
-    fi
-
-    # If found, exit out
-    if [ $rc -ne 0 ]; then
-        echo "Unable to obtain operational GFS initial conditions, ABORT!"
-        exit 1
-    fi
-
-elif [ $ics_from = "pargfs" ]; then
-
-    # Add CDUMP.PDY/CYC to target_dir
-    target_dir=$ICSDIR/$CDATE/$CDUMP/${CDUMP}.$yyyy$mm$dd/$cyc
-    mkdir -p $target_dir
-    cd $target_dir
-
-    # Filenames in parallel
-    nfanal=4
-    fanal[1]="gfnanl.${CDUMP}.$CDATE"
-    fanal[2]="sfnanl.${CDUMP}.$CDATE"
-    fanal[3]="nsnanl.${CDUMP}.$CDATE"
-    fanal[4]="pgbanl.${CDUMP}.$CDATE"
-    flanal="${fanal[1]} ${fanal[2]} ${fanal[3]} ${fanal[4]}"
-
-    # Get initial conditions from HPSS from retrospective parallel
-    tarball="$HPSS_PAR_PATH/${CDATE}${CDUMP}.tar"
-
-    # check if the tarball exists
-    hsi ls -l $tarball
-    rc=$?
-    if [ $rc -ne 0 ]; then
-        echo "$tarball does not exist and should, ABORT!"
-        exit $rc
-    fi
-    # get the tarball
-    htar -xvf $tarball $flanal
-    rc=$?
-    if [ $rc -ne 0 ]; then
-        echo "untarring $tarball failed, ABORT!"
-        exit $rc
-    fi
-
-    # If found, exit out
-    if [ $rc -ne 0 ]; then
-        echo "Unable to obtain parallel GFS initial conditions, ABORT!"
-        exit 1
-    fi
-
+# Move extracted data to ROTDIR
+if [ ! -d ${ROTDIR}/${CDUMP}.${yy}${mm}${dd}/${hh}/${COMPONENT} ]; then mkdir -p ${ROTDIR}/${CDUMP}.${yy}${mm}${dd}/${hh}/${COMPONENT} ; fi
+if [ $gfs_ver = v16 -a $RETRO = "YES" ]; then
+  mv ${EXTRACT_DIR}/${CDUMP}.${yy}${mm}${dd}/${hh}/* ${ROTDIR}/${CDUMP}.${yy}${mm}${dd}/${hh}/${COMPONENT}
 else
-
-    echo "ics_from = $ics_from is not supported, ABORT!"
-    exit 1
-
+  mv ${EXTRACT_DIR}/${CDUMP}.${yy}${mm}${dd}/${hh}/* ${ROTDIR}/${CDUMP}.${yy}${mm}${dd}/${hh}
 fi
-###############################################################
 
-# Copy pgbanl file to COMROT for verification - GFSv14 only
-if [ $CDATE -le "2019061118" ]; then #GFSv14
-  COMROT=$ROTDIR/${CDUMP}.$PDY/$cyc/$COMPONENT
-  [[ ! -d $COMROT ]] && mkdir -p $COMROT
-  $NCP ${fanal[4]} $COMROT/${CDUMP}.t${cyc}z.pgrbanl
-fi
+# Pull pgbanl file for verification/archival - v14+
+if [ $gfs_ver = v14 -o $gfs_ver = v15 -o $gfs_ver = v16 ]; then
+  for grid in 0p25 0p50 1p00
+  do
+    file=gfs.t${hh}z.pgrb2.${grid}.anl
+
+    if [ $gfs_ver = v14 ]; then # v14 production source
+
+      cd $ROTDIR/${CDUMP}.${yy}${mm}${dd}/${hh}/${COMPONENT}
+      export tarball="gpfs_hps_nco_ops_com_gfs_prod_gfs.${yy}${mm}${dd}${hh}.pgrb2_${grid}.tar"
+      htar -xvf ${PRODHPSSDIR}/rh${yy}/${yy}${mm}/${yy}${mm}${dd}/${tarball} ./${file}
+
+    elif [ $gfs_ver = v15 ]; then # v15 production source
+
+      cd $EXTRACT_DIR
+      export tarball="com_gfs_prod_gfs.${yy}${mm}${dd}_${hh}.gfs_pgrb2.tar"
+      htar -xvf ${PRODHPSSDIR}/rh${yy}/${yy}${mm}/${yy}${mm}${dd}/${tarball} ./${CDUMP}.${yy}${mm}${dd}/${hh}/${file}
+      mv ${EXTRACT_DIR}/${CDUMP}.${yy}${mm}${dd}/${hh}/${file} ${ROTDIR}/${CDUMP}.${yy}${mm}${dd}/${hh}/${COMPONENT}/${file}
+
+    elif [ $gfs_ver = v16 ]; then # v16 - determine RETRO or production source next
+
+      if [ $RETRO = "YES" ]; then # Retrospective parallel source
+
+        cd $EXTRACT_DIR
+        if [ $grid = "0p25" ]; then # anl file spread across multiple tarballs
+          export tarball="gfsa.tar"
+        elif [ $grid = "0p50" -o $grid = "1p00" ]; then
+          export tarball="gfsb.tar"
+        fi
+        htar -xvf ${HPSSDIR}/${yy}${mm}${dd}${hh}/${tarball} ./${CDUMP}.${yy}${mm}${dd}/${hh}/${file}
+        mv ${EXTRACT_DIR}/${CDUMP}.${yy}${mm}${dd}/${hh}/${file} ${ROTDIR}/${CDUMP}.${yy}${mm}${dd}/${hh}/${COMPONENT}/${file}
+
+      else # Production source
+
+        cd $ROTDIR
+        export tarball="com_gfs_prod_gfs.${yy}${mm}${dd}_${hh}.gfs_pgrb2.tar"
+        htar -xvf ${PRODHPSSDIR}/rh${yy}/${yy}${mm}/${yy}${mm}${dd}/${tarball} ./${CDUMP}.${yy}${mm}${dd}/${hh}/atmos/${file}
+
+      fi # RETRO vs production
+
+    fi # Version check
+  done # grid loop
+fi # v14-v16 pgrb anl file pull
+
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd $DATAROOT
+[[ $KEEPDATA = "NO" ]] && rm -rf $DATA
 
 ###############################################################
 # Exit out cleanly

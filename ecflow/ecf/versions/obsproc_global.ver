@@ -31,8 +31,12 @@ export PROCESS_MASTER_SHIP_STNLST=NO             # turn off the ship/names/stn_l
 export PATH=$PATH:.
 export BACK=off
 
-#### TEST 9/21
-export HOMEobsproc_global=/gpfs/dell2/emc/obsproc/noscrub/Shelley.Melchior/forLG/obsproc_global.iss71402.supportGFSv16
-export HOMEobsproc_dump=/gpfs/dell2/emc/obsproc/noscrub/Shelley.Melchior/forLG/obsproc_dump_RB-5.1.0
-export HOMEobsproc_shared_bufr_dumplist=/gpfs/dell2/emc/obsproc/noscrub/Shelley.Melchior/forLG/obsproc_shared_bufr_dumplist_RB-2.3.0
-export KEEPDATA=YES
+gfs_ver=v16.0.0
+export HOMEobsproc_global=/gpfs/dell1/nco/ops/nwpara/obsproc_global.v3.4.0
+export HOMEobsproc_dump=/gpfs/dell1/nco/ops/nwpara/obsproc_dump.v5.1.0
+export HOMEobsproc_shared_bufr_dumplist=/gpfs/dell1/nco/ops/nwpara/obsproc_shared/bufr_dumplist.v2.3.0
+export HOMEobsproc_dump_post=/gpfs/dell1/nco/ops/nwpara/obsproc_dump_post.v3.4.0
+export HOMEobsproc_shared_bufr_remorest=/gpfs/dell1/nco/ops/nwpara/obsproc_shared/bufr_remorest.v2.1.1
+export HOMEobsproc_prep=/gpfs/dell1/nco/ops/nwpara/obsproc_prep.v5.4.0
+export HOMEobsproc_prep_post=/gpfs/dell1/nco/ops/nwpara/obsproc_prep_post.v3.2.0
+export HOMEobsproc_network=$HOMEobsproc_global

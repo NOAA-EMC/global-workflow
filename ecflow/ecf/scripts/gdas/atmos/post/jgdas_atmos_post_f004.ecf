@@ -3,10 +3,10 @@
 #BSUB -o %COM%/output/%ENVIR%/today/gdas_atmos_post_%FHR%_%CYC%.o%J
 #BSUB -q %QUEUE%
 #BSUB -P %PROJ%
-#BSUB -W 0:10
-#BSUB -n 112
+#BSUB -W 0:12
+#BSUB -n 98
 #BSUB -R affinity[core(1)]
-#BSUB -R span[ptile=28]
+#BSUB -R span[ptile=14]
 #BSUB -cwd /tmp
 
 %include <head.h>
@@ -14,9 +14,9 @@
 
 set -x
 
-export NODES=4
-export ntasks=112
-export ptile=28
+export NODES=7
+export ntasks=98
+export ptile=14
 export threads=1
 
 export NET=%NET:gfs%
