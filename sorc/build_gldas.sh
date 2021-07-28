@@ -4,6 +4,12 @@ set -eux
 source ./machine-setup.sh > /dev/null 2>&1
 cwd=`pwd`
 
+if [ $target = jet ]; then
+   echo "  GLDAS does not support JET "
+   echo "  "
+   exit
+fi
+
 USE_PREINST_LIBS=${USE_PREINST_LIBS:-"true"}
 if [ $USE_PREINST_LIBS = true ]; then
   export MOD_PATH=/scratch3/NCEPDEV/nwprod/lib/modulefiles
