@@ -137,40 +137,6 @@ def get_restart_files(time: datetime, incr: int, max_lookback: int, fcst_length:
 			print("WARNING: Unable to find restart files, will use zero fields")
 			return None
 
-# Find last cycle with tracer data available via restart files
-def get_tracer_files(time: datetime, incr: int, max_lookback: int, fcst_length: int, rot_dir: str, cdump: str) -> typing.List[str]:
-	print(f"Looking for restart tracer files in {rot_dir}")
-	for lookback in map(lambda i: incr * (i + 1), range(max_lookback)):
-		if(lookback > fcst_length):
-			# Trying to look back farther than the length of a forecast
-			break
-		elif(lookback == fcst_length):
-			# Restart files at the end of the cycle don't have a timestamp
-			timestamp = ""
-		else:
-			timestamp = time.strftime("%Y%m%d.%H0000.")
-
-		last_time = time - timedelta(hours=lookback)
-
-		if(debug):
-			print(f"\tChecking {last_time}")
-		tracer_base = last_time.strftime(tracer_base_pattern.format(**locals()))
-		files = list(map(lambda tile: tracer_file_pattern.format(timestamp=timestamp, tracer_base=tracer_base, tile=tile), tiles))
-		if(debug):
-			print(f"\t\tLooking for files {files} in directory {tracer_base}")
-		found = [file for file in files if os.path.isfile(file)]
-		if(found):
-			if(debug):
-				print(f"\t\tAll files found!")
-			return files
-		else:
-			print(last_time.strftime("Tracer files not found for %Y%m%d_%H"))
-
-	if(not found):
-		print("WARNING: Unable to find tracer files, will use zero fields")
-		return None
-
-
 # Merge tracer data into atmospheric data
 def merge_tracers(merge_script: str, atm_files: typing.List[str], tracer_files: typing.List[str], rest_files: typing.List[str], core_file: str, ctrl_file: str, tracer_list_file: str) -> None:
 	print(f"Merging tracers")
