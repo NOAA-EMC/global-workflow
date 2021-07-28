@@ -89,7 +89,7 @@ fv3_gdas_defaults: &fv3_gdas_defaults
   IEMS: 1
   IALB: 1
   ISOL: 2
-  IAER: 111
+  IAER: 1011
   ICO2: 2
   warm_start: true
   read_increment: no

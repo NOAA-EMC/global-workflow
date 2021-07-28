@@ -146,11 +146,11 @@ config_fcst:
     export n_split={doc.fv3_gfs_settings.n_split}
     export adjust_dry_mass=".false."
 
-    export IALB=1
-    export IEMS=1
-    export ISOL=2
-    export IAER=5111
-    export ICO2=2
+    export IALB={doc.fv3_gfs_settings.IALB}
+    export IEMS={doc.fv3_gfs_settings.IEMS}
+    export ISOL={doc.fv3_gfs_settings.ISOL}
+    export IAER={doc.fv3_gfs_settings.IAER}
+    export ICO2={doc.fv3_gfs_settings.ICO2}
 
     export icliq_sw=2
     export iovr=3
