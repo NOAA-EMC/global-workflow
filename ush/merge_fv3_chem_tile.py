@@ -121,9 +121,12 @@ def merge_tile(base_file_name: str, ctrl_file_name: str, core_file_name: str, re
 		base_file[variable_name][0,:,:] = 0.
 		base_file[variable_name][1:,:,:] = scale_factor * variable[0,:,:,:]
 		base_file[variable_name].setncatts(variable.__dict__)
-		msrc = variable * delp
-		mdst = base_file[variable_name][1:,:,:] * dp
-		print(' {0:6}   {1:20}   {2:20}    {3:22}'.format(variable_name, np.sum(msrc), np.sum(mdst), np.max(np.abs(msrc-mdst))))
+		mass_src = variable * delp
+		mass_dst = base_file[variable_name][1:,:,:] * dp
+		mass_err_max = np.max(np.abs(mass_src-mass_dst))
+		total_mass_src = np.sum(mass_src)
+		total_mass_dst = np.sum(mass_dst)
+		print(f' {variable_name:6}   {total_mass_src:20}   {total_mass_dst:20}    {mass_err_max:22}')
 		# print("Done adding " + variable_name)
 
 	print("-" * 79 + "\n")
