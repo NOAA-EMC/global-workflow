@@ -118,7 +118,7 @@ def merge_tile(base_file_name: str, ctrl_file_name: str, core_file_name: str, re
 	for variable_name in tracers_to_append:
 		variable = append_file[variable_name]
 		base_file.createVariable(variable_name, variable.datatype, base_file["sphum"].dimensions)
-		base_file[variable_name][0,:,:]  = 0.
+		base_file[variable_name][0,:,:] = 0.
 		base_file[variable_name][1:,:,:] = scale_factor * variable[0,:,:,:]
 		base_file[variable_name].setncatts(variable.__dict__)
 		msrc = variable * delp

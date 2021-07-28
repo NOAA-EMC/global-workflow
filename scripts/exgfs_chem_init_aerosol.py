@@ -98,7 +98,7 @@ def get_atm_files(path: str) -> typing.List[str]:
 				exit(101)
 			elif(debug):
 				print(f"\t\tFound {file_name}")
-		file_list = file_list + [ files ]
+		file_list = file_list + [files]
 	return file_list
 
 # Find last cycle with restart files available
@@ -126,7 +126,7 @@ def get_restart_files(time: datetime, incr: int, max_lookback: int, fcst_length:
 				print(f"\t\tLooking for files {files} in directory {file_base}")
 			found = [file for file in files if os.path.isfile(file)]
 			if(found):
-				file_list = file_list + [ files ]
+				file_list = file_list + [files]
 			else:
 				print(last_time.strftime("Restart files not found for %Y%m%d_%H"))
 				break
