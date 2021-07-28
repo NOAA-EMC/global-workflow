@@ -26,18 +26,28 @@ export ICE_model="cice6"
 export WAV_model="ww3"
 export CHM_model="gsdchem"
 
-export cpl=".true."
-export cplflx=".true."
+# cpl defaults
+
+export cpl=".false."
+export cplflx=".false."
 export cplice=".false."
 export cplgocart=".false."
 export cplwav=".false."
 export cplwav2atm=".false."
 
-if [ $DO_CICE = "YES" ]; then
+# cpl changes based on APP
+
+if [ $DO_COUPLED = "YES" ]; then
+  export cpl=".true."
+fi
+if [ $DO_AERO = "YES" ]; then
+  export cplgocart=".true."
+fi
+if [ $DO_ICE = "YES" ]; then
   export cplice=".true."
 fi
-if [ $DO_GOCART = "YES" ]; then
-  export cplgocart=".true."
+if [ $DO_OCN = "YES" -o $DO_ICE = "YES" ]; then
+  export cplflx=".true."
 fi
 if [ $DO_WAVE = "YES" ]; then
   export cplwav=".true."
@@ -326,7 +336,7 @@ elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
 
 fi
 
-if [ $DO_GOCART = "YES" ]; then # temporary settings for aerosol coupling
+if [ $DO_AERO = "YES" ]; then # temporary settings for aerosol coupling
     export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_aer"
     export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_aer"
     export CHM_CFGDIR="not_set"
