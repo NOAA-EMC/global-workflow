@@ -1,8 +1,6 @@
 #!/bin/bash
 set -eux
 
-source ./machine-setup.sh > /dev/null 2>&1
-
 [[ $(uname -s) == Darwin ]] && cmd=$(which greadlink) || cmd=$(which readlink)
 readonly UTILS_DIR=$(cd "$(dirname "$($cmd -f -n "${BASH_SOURCE[0]}" )" )" && pwd -P)
 

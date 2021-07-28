@@ -8,11 +8,7 @@ USE_PREINST_LIBS=${USE_PREINST_LIBS:-"true"}
 if [ $USE_PREINST_LIBS = true ]; then
   export MOD_PATH=/scratch3/NCEPDEV/nwprod/lib/modulefiles
 else
-  if [ $target = jet ]; then
-    export MOD_PATH=/lfs4/HFIP/hfv3gfs/nwprod/hpc-stack/libs/modulefiles/stack
-  else
-    export MOD_PATH=${cwd}/lib/modulefiles
-  fi
+  export MOD_PATH=${cwd}/lib/modulefiles
 fi
 
 # Check final exec folder exists
