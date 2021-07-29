@@ -240,17 +240,22 @@ export DO_OCN="NO"
 export DO_ICE="NO"
 export DO_AERO="NO"
 export CCPP_SUITES="FV3_GFS_v16,FV3_GFS_v16_ugwpv1"
+export WAVE_CDUMP="" # When to include wave suite: gdas, gfs, or both
+export nems_temp="atm" # For APP=ATM
 
 case "${APP}" in
   ATMW)
     export DO_COUPLED="YES"
     export DO_WAVE="YES"
+    export WAVE_CDUMP="both"
+    export nems_temp="leapfrog_atm_wav"
     ;;
   S2S)
     export DO_COUPLED="YES"
     export DO_OCN="YES"
     export DO_ICE="YES"
     export CCPP_SUITES="FV3_GFS_v16,FV3_GFS_v16_coupled_nsstNoahmpUGWPv1"
+    export nems_temp="cpld"
     ;;
   S2SW)
     export DO_COUPLED="YES"
@@ -258,10 +263,13 @@ case "${APP}" in
     export DO_OCN="YES"
     export DO_ICE="YES"
     export CCPP_SUITES="FV3_GFS_v16,FV3_GFS_v16_coupled_nsstNoahmpUGWPv1"
+    export WAVE_CDUMP="both"
+    export nems_temp="cpld_wave"
     ;;
   ATMAERO)
     export DO_COUPLED="YES"
     export DO_AERO="YES"
+    export nems_temp="atm_aer"
     ;;
   *)
     echo "Unrecognized APP: ${1}"
@@ -273,10 +281,6 @@ if [[ "$SDATE" -lt "2019020100" ]]; then # no rtofs in GDA
   export DO_WAVE="NO"
   echo "WARNING: Wave suite turned off due to lack of RTOFS in GDA for SDATE"
 fi
-export WAVE_CDUMP="both" # When to include wave suite: gdas, gfs, or both
-
-export nems_temp="cpld_wave"
-export nems_temp_cold="atm"
 
 # Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL
 export imp_physics=11
