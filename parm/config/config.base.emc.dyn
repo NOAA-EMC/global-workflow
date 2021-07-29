@@ -244,6 +244,9 @@ export WAVE_CDUMP="" # When to include wave suite: gdas, gfs, or both
 export nems_temp="atm" # For APP=ATM
 
 case "${APP}" in
+  ATM)
+    echo "APP=ATM; will use defaults"
+    ;;
   ATMW)
     export DO_COUPLED="YES"
     export DO_WAVE="YES"
