@@ -176,13 +176,59 @@ EOF
   else 
     $NLN $FIXfv3/${CASE}_mosaic.nc $DATA/INPUT/${CASE}_mosaic.nc
   fi
+
+  # Fractional grid related
+  if [ $FRAC_GRID = ".true." ]; then
+    OROFIX=${OROFIX:-"${FIX_DIR}/fix_fv3_fracoro/${CASE}.mx${OCNRES}_frac"}
+    FIX_SFC=${FIX_SFC:-"${OROFIX}/fix_sfc"}
+    for n in $(seq 1 $ntiles); do
+      $NLN ${OROFIX}/oro_${CASE}.mx${OCNRES}.tile${n}.nc $DATA/INPUT/oro_data.tile${n}.nc
+    done
+  else
+    OROFIX=${OROFIX:-"${FIXfv3}/${CASE}"}
+    FIX_SFC=${FIX_SFC:-"${FIXgrd}/fix_sfc"}
+    for n in $(seq 1 $ntiles); do
+      $NLN ${OROFIX}/${CASE}_oro_data.tile${n}.nc $DATA/INPUT/oro_data.tile${n}.nc
+    done
+  fi 
+
+  export CCPP_SUITE=${CCPP_SUITE:-"FV3_GFS_v16"}
+  _suite_file=$HOMEgfs/sorc/ufs_coupled.fd/FV3/ccpp/suites/suite_${CCPP_SUITE}.xml
   
+  if [ ! -f ${_suite_file} ]; then
+    echo "FATAL: CCPP Suite file ${_suite_file} does not exist!"
+    exit 2
+  fi
+  
+  # Scan suite file to determine whether it uses Noah-MP
+  if [ $(grep noahmpdrv ${_suite_file} | wc -l ) -gt 0 ]; then
+    lsm="2"
+  else
+    lsm="1"
+  fi
+  
+  # Scan suite file to determine whether it uses UGWP v1
+  if [ $(grep -i ugwpv1_gsldrag ${_suite_file} | wc -l ) -gt 0 ]; then
+    gwd_opt="2"
+    knob_ugwp_version="1"
+    OROFIX_ugwd=${OROFIX_ugwd:-"${FIX_DIR}/fix_ugwd"}
+    $NLN ${OROFIX_ugwd}/ugwp_limb_tau.nc $DATA/ugwp_limb_tau.nc
+    for n in $(seq 1 $ntiles); do
+      $NLN ${OROFIX_ugwd}/$CASE/${CASE}_oro_data_ls.tile${n}.nc $DATA/INPUT/oro_data_ls.tile${n}.nc
+      $NLN ${OROFIX_ugwd}/$CASE/${CASE}_oro_data_ss.tile${n}.nc $DATA/INPUT/oro_data_ss.tile${n}.nc
+    done
+  else
+    gwd_opt="1"
+    knob_ugwp_version="0"
+    launch_level=${launch_level:-$(echo "$LEVS/2.35" |bc)}
+  fi
+ 
   # GFS standard input data
   
   IALB=${IALB:-1}
   IEMS=${IEMS:-1}
   ISOL=${ISOL:-2}
-  IAER=${IAER:-111}
+  IAER=${IAER:-1011}
   ICO2=${ICO2:-2}
   
   if [ ${new_o3forc:-YES} = YES ]; then
@@ -207,14 +253,19 @@ EOF
   $NLN $FIX_AM/global_sfc_emissivity_idx.txt     $DATA/sfc_emissivity_idx.txt
   
   ## merra2 aerosol climo
-  for n in 01 02 03 04 05 06 07 08 09 10 11 12; do
-    $NLN $FIX_AER/merra2.aerclim.2003-2014.m${n}.nc $DATA/aeroclim.m${n}.nc
-  done
-  $NLN $FIX_LUT/optics_BC.v1_3.dat $DATA/optics_BC.dat
-  $NLN $FIX_LUT/optics_OC.v1_3.dat $DATA/optics_OC.dat
-  $NLN $FIX_LUT/optics_DU.v15_3.dat $DATA/optics_DU.dat
-  $NLN $FIX_LUT/optics_SS.v3_3.dat $DATA/optics_SS.dat
-  $NLN $FIX_LUT/optics_SU.v1_3.dat $DATA/optics_SU.dat
+  if [ $IAER -eq "1011" ]; then
+    FIX_AER="${FIX_DIR}/fix_aer"
+    for month in $(seq 1 12); do
+      MM=$(printf %02d $month)
+      $NLN "${FIX_AER}/merra2.aerclim.2003-2014.m${MM}.nc" "aeroclim.m${MM}.nc"
+    done
+    FIX_LUT="${FIX_DIR}/fix_lut"
+    $NLN $FIX_LUT/optics_BC.v1_3.dat $DATA/optics_BC.dat
+    $NLN $FIX_LUT/optics_OC.v1_3.dat $DATA/optics_OC.dat
+    $NLN $FIX_LUT/optics_DU.v15_3.dat $DATA/optics_DU.dat
+    $NLN $FIX_LUT/optics_SS.v3_3.dat $DATA/optics_SS.dat
+    $NLN $FIX_LUT/optics_SU.v1_3.dat $DATA/optics_SU.dat
+  fi
   
   $NLN $FIX_AM/global_co2historicaldata_glob.txt $DATA/co2historicaldata_glob.txt
   $NLN $FIX_AM/co2monthlycyc.txt                 $DATA/co2monthlycyc.txt
@@ -268,18 +319,32 @@ EOF
   FNTSFC=${FNTSFC:-"$FIX_AM/RTGSST.1982.2012.monthly.clim.grb"}
   FNSNOC=${FNSNOC:-"$FIX_AM/global_snoclim.1.875.grb"}
   FNZORC=${FNZORC:-"igbp"}
-  FNALBC2=${FNALBC2:-"$FIX_AM/global_albedo4.1x1.grb"}
   FNAISC=${FNAISC:-"$FIX_AM/CFSR.SEAICE.1982.2012.monthly.clim.grb"}
-  FNTG3C=${FNTG3C:-"$FIX_AM/global_tg3clim.2.6x1.5.grb"}
-  FNVEGC=${FNVEGC:-"$FIX_AM/global_vegfrac.0.144.decpercent.grb"}
-  FNMSKH=${FNMSKH:-"$FIX_AM/global_slmask.t1534.3072.1536.grb"}
-  FNVMNC=${FNVMNC:-"$FIX_AM/global_shdmin.0.144x0.144.grb"}
-  FNVMXC=${FNVMXC:-"$FIX_AM/global_shdmax.0.144x0.144.grb"}
-  FNSLPC=${FNSLPC:-"$FIX_AM/global_slope.1x1.grb"}
-  FNALBC=${FNALBC:-"$FIX_AM/global_snowfree_albedo.bosu.t${JCAP}.${LONB}.${LATB}.rg.grb"}
-  FNVETC=${FNVETC:-"$FIX_AM/global_vegtype.igbp.t${JCAP}.${LONB}.${LATB}.rg.grb"}
-  FNSOTC=${FNSOTC:-"$FIX_AM/global_soiltype.statsgo.t${JCAP}.${LONB}.${LATB}.rg.grb"}
-  FNABSC=${FNABSC:-"$FIX_AM/global_mxsnoalb.uariz.t${JCAP}.${LONB}.${LATB}.rg.grb"}
+  if [ $cplflx = ".false." ] ; then
+    FNALBC2=${FNALBC2:-"$FIX_AM/global_albedo4.1x1.grb"}
+    FNTG3C=${FNTG3C:-"$FIX_AM/global_tg3clim.2.6x1.5.grb"}
+    FNVEGC=${FNVEGC:-"$FIX_AM/global_vegfrac.0.144.decpercent.grb"}
+    FNMSKH=${FNMSKH:-"$FIX_AM/global_slmask.t1534.3072.1536.grb"}
+    FNVMNC=${FNVMNC:-"$FIX_AM/global_shdmin.0.144x0.144.grb"}
+    FNVMXC=${FNVMXC:-"$FIX_AM/global_shdmax.0.144x0.144.grb"}
+    FNSLPC=${FNSLPC:-"$FIX_AM/global_slope.1x1.grb"}
+    FNALBC=${FNALBC:-"$FIX_AM/global_snowfree_albedo.bosu.t${JCAP}.${LONB}.${LATB}.rg.grb"}
+    FNVETC=${FNVETC:-"$FIX_AM/global_vegtype.igbp.t${JCAP}.${LONB}.${LATB}.rg.grb"}
+    FNSOTC=${FNSOTC:-"$FIX_AM/global_soiltype.statsgo.t${JCAP}.${LONB}.${LATB}.rg.grb"}
+    FNABSC=${FNABSC:-"$FIX_AM/global_mxsnoalb.uariz.t${JCAP}.${LONB}.${LATB}.rg.grb"}
+  else
+    FNALBC2=${FNALBC2:-"${FIX_SFC}/${CASE}.facsf.tileX.nc"}
+    FNTG3C=${FNTG3C:-"${FIX_SFC}/${CASE}.substrate_temperature.tileX.nc"}
+    FNVEGC=${FNVEGC:-"${FIX_SFC}/${CASE}.vegetation_greenness.tileX.nc"}
+    FNMSKH=${FNMSKH:-"$FIX_AM/global_slmask.t1534.3072.1536.grb"}
+    FNVMNC=${FNVMNC:-"${FIX_SFC}/${CASE}.vegetation_greenness.tileX.nc"}
+    FNVMXC=${FNVMXC:-"${FIX_SFC}/${CASE}.vegetation_greenness.tileX.nc"}
+    FNSLPC=${FNSLPC:-"${FIX_SFC}/${CASE}.slope_type.tileX.nc"}
+    FNALBC=${FNALBC:-"${FIX_SFC}/${CASE}.snowfree_albedo.tileX.nc"}
+    FNVETC=${FNVETC:-"${FIX_SFC}/${CASE}.vegetation_type.tileX.nc"}
+    FNSOTC=${FNSOTC:-"${FIX_SFC}/${CASE}.soil_type.tileX.nc"}
+    FNABSC=${FNABSC:-"${FIX_SFC}/${CASE}.maximum_snow_albedo.tileX.nc"}
+  fi
   FNSMCC=${FNSMCC:-"$FIX_AM/global_soilmgldas.statsgo.t${JCAP}.${LONB}.${LATB}.grb"}
   
   # If the appropriate resolution fix file is not present, use the highest resolution available (T1534)
@@ -480,11 +545,7 @@ FV3_GFS_nml(){
     echo "MAIN: !!!Sandbox mode, writing to current directory!!!"
   fi
   # Call child scripts in current script directory
-  if [ $cplgocart = .true. ]; then
-    source $SCRIPTDIR/parsing_namelists_FV3_GOCART.sh
-  else
-    source $SCRIPTDIR/parsing_namelists_FV3.sh
-  fi
+  source $SCRIPTDIR/parsing_namelists_FV3.sh
   FV3_namelists
   echo SUB ${FUNCNAME[0]}: FV3 name lists and model configure file created
 }
@@ -746,6 +807,8 @@ CICE_postdet() {
   echo "SUB ${FUNCNAME[0]}: CICE after run type determination"
   
   year=$(echo $CDATE|cut -c 1-4)
+  month=$(echo $CDATE|cut -c 5-6)
+  day=$(echo $CDATE|cut -c 7-8)
   stepsperhr=$((3600/$ICETIM))
   nhours=$($NHOUR $CDATE ${year}010100)
   istep0=$((nhours*stepsperhr))
@@ -763,6 +826,8 @@ CICE_postdet() {
   cice_hist_avg=${cice_hist_avg:-".true."}
   
   FRAZIL_FWSALT=${FRAZIL_FWSALT:-".true."}
+  ktherm=${ktherm:-1}
+  tfrz_option=${tfrz_option:-"linear_salt"}
   tr_pond_lvl=${tr_pond_lvl:-".true."} # Use level melt ponds tr_pond_lvl=true
   
   # restart_pond_lvl (if tr_pond_lvl=true):
@@ -802,7 +867,7 @@ CICE_postdet() {
   echo "Link CICE fixed files"
   $NLN -sf $FIXcice/$ICERES/${ice_grid_file} $DATA/
   $NLN -sf $FIXcice/$ICERES/${ice_kmt_file} $DATA/
-  $NLN -sf $FIXcice/$ICERES/$MESHICE $DATA/
+  $NLN -sf $FIXcice/$ICERES/$MESH_OCN_ICE $DATA/
 }
 
 CICE_nml() {

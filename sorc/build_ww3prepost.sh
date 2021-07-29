@@ -10,16 +10,18 @@ finalexecdir=$( pwd -P )/../exec
 
 set +x
 source ./machine-setup.sh > /dev/null 2>&1
+
 source ../modulefiles/modulefile.ww3.$target
+#source ../modulefiles/module_base.$target
 set -x 
 
+set -u # Error on undefined variables
 
 if [ $target = hera ]; then target=hera.intel ; fi
 if [ $target = orion ]; then target=orion.intel ; fi
 if [ $target = stampede ]; then target=stampede.intel ; fi
 
-#cd ufs_coupled.fd/WW3
-cd fv3gfs.fd/WW3
+cd ufs_coupled.fd/WW3
 export WW3_DIR=$( pwd -P )/model
 export WW3_BINDIR="${WW3_DIR}/bin"
 export WW3_TMPDIR=${WW3_DIR}/tmp
@@ -35,6 +37,7 @@ export Z_LIB=${Z_LIB:-$ZLIB_ROOT/lib/libz.a}
 export JASPER_LIB=${JASPER_LIB:-$JASPER_ROOT/lib64/libjasper.a}
 export WWATCH3_NETCDF=NC4
 export NETCDF_CONFIG=$NETCDF_ROOT/bin/nc-config
+export PRINTER=${PRINTER:-""}
 
 rm  $WWATCH3_ENV
 echo '#'                                              > $WWATCH3_ENV
@@ -47,6 +50,7 @@ echo "WWATCH3_F90      $WW3_F90"                      >> $WWATCH3_ENV
 echo "WWATCH3_CC       $WW3_CC"                       >> $WWATCH3_ENV
 echo "WWATCH3_DIR      $WW3_DIR"                      >> $WWATCH3_ENV
 echo "WWATCH3_TMP      $WW3_TMPDIR"                   >> $WWATCH3_ENV
+echo "WWATCH3_NETCDF   $WWATCH3_NETCDF"               >> $WWATCH3_ENV
 echo 'WWATCH3_SOURCE   yes'                           >> $WWATCH3_ENV
 echo 'WWATCH3_LIST     yes'                           >> $WWATCH3_ENV
 echo ''                                               >> $WWATCH3_ENV
@@ -65,17 +69,20 @@ sed -e "s/DIST/SHRD/g"\
        ${WW3_BINDIR}/tempswitch > ${WW3_BINDIR}/switch
 
 #Build exes for prep jobs: 
-${WW3_BINDIR}/w3_make ww3_grid 
-${WW3_BINDIR}/w3_make ww3_prep
-${WW3_BINDIR}/w3_make ww3_prnc
+${WW3_BINDIR}/w3_make ww3_grid
+rc=$?
+if [[ $rc -ne 0 ]] ; then
+    echo "FATAL: Error building ww3_grid (Error code $rc)"
+    exit $rc
+fi
 
 #Build exes for post jobs (except grib)"
 ${WW3_BINDIR}/w3_make ww3_outp 
-${WW3_BINDIR}/w3_make ww3_outf
-${WW3_BINDIR}/w3_make ww3_outp
-${WW3_BINDIR}/w3_make ww3_gint
-${WW3_BINDIR}/w3_make ww3_ounf
-${WW3_BINDIR}/w3_make ww3_ounp
+rc=$?
+if [[ $rc -ne 0 ]] ; then
+    echo "FATAL: Error building ww3_outp (Error code $rc)"
+    exit $rc
+fi
 
 #Update switch for grib: 
 echo $(cat ${SWITCHFILE}) > ${WW3_BINDIR}/tempswitch
@@ -90,7 +97,22 @@ sed -e "s/DIST/SHRD/g"\
        ${WW3_BINDIR}/tempswitch > ${WW3_BINDIR}/switch
 #Build exe for grib
 ${WW3_BINDIR}/w3_make ww3_grib
+rc=$?
+if [[ $rc -ne 0 ]] ; then
+    echo "FATAL: Error building ww3_grib (Error code $rc)"
+    exit $rc
+fi
 
-cp $WW3_EXEDIR/ww3_* $finalexecdir/
+for prog in ww3_grid ww3_outp ww3_grib; do
+    cp $WW3_EXEDIR/$prog $finalexecdir/
+    rc=$?
+    if [[ $rc -ne 0 ]] ; then
+        echo "FATAL: Unable to copy $WW3_EXEDIR/$prog to $finalexecdir (Error code $rc)"
+        exit $rc
+    fi
+done
+
 ${WW3_BINDIR}/w3_clean -c
-rm ${WW3_BINDIR}/tempswitch 
+rm ${WW3_BINDIR}/tempswitch
+
+exit 0

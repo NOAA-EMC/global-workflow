@@ -12,6 +12,7 @@ FV3_namelists(){
 
 # copy over the tables
 DIAG_TABLE=${DIAG_TABLE:-$PARM_FV3DIAG/diag_table}
+DIAG_TABLE_AOD=${DIAG_TABLE_AOD:-$PARM_FV3DIAG/diag_table_aod}
 DATA_TABLE=${DATA_TABLE:-$PARM_FV3DIAG/data_table}
 FIELD_TABLE=${FIELD_TABLE:-$PARM_FV3DIAG/field_table}
 
@@ -28,6 +29,11 @@ FV3 Forecast
 ${sPDY:0:4} ${sPDY:4:2} ${sPDY:6:2} ${scyc} 0 0
 EOF
 cat $DIAG_TABLE >> diag_table
+fi
+
+# Append AOD diag table for MERRA2
+if [ $IAER = "1011" ]; then
+  cat $DIAG_TABLE_AOD >> diag_table
 fi
 
 $NCP $DATA_TABLE  data_table
@@ -48,7 +54,7 @@ cat > input.nml <<EOF
   blocksize = $blocksize
   chksum_debug = $chksum_debug
   dycore_only = $dycore_only
-  ccpp_suite = ${CCPP_SUITE:-"FV3_GFS_v15"}
+  ccpp_suite = $CCPP_SUITE
   fdiag = $FDIAG
   fhmax = $FHMAX
   fhout = $FHOUT
@@ -199,18 +205,19 @@ cat >> input.nml << EOF
   imp_physics  = ${imp_physics:-"99"}	! CROW configured
 EOF
 
-
-if [ $CCPP_SUITE = "FV3_GFS_v15p2_coupled" ]; then
+case "${CCPP_SUITE:-}" in
+  "FV3_GFS_v15p2_coupled")
   cat >> input.nml << EOF
   oz_phys      = .false.
   oz_phys_2015 = .true.
 EOF
-elif [ $CCPP_SUITE = "FV3_GSD_v0" ]; then
+  ;;
+  "FV3_GSD_v0")
   cat >> input.nml << EOF
   iovr         = ${iovr:-"3"}
-  ltaerosol    = ${ltaerosol:-".F."}    ! In config.fcst
-  lradar       = ${lradar:-".F."}	! In config.fcst
-  ttendlim     = ${ttendlim:-0.005}	! In config.fcst
+  ltaerosol    = ${ltaerosol:-".F."}    
+  lradar       = ${lradar:-".F."}	
+  ttendlim     = ${ttendlim:-0.005}
   oz_phys      = ${oz_phys:-".false."}
   oz_phys_2015 = ${oz_phys_2015:-".true."}
   lsoil_lsm    = ${lsoil_lsm:-"4"}
@@ -223,7 +230,26 @@ elif [ $CCPP_SUITE = "FV3_GSD_v0" ]; then
   min_lakeice  = ${min_lakeice:-"0.15"}
   min_seaice   = ${min_seaice:-"0.15"}
 EOF
-elif [ $CCPP_SUITE = "FV3_GFS_v16_coupled" ]; then
+  ;;
+  FV3_GFS_v16_coupled*)
+  cat >> input.nml << EOF
+  iovr         = ${iovr:-"3"}
+  ltaerosol    = ${ltaerosol:-".false."}
+  lradar       = ${lradar:-".false."}
+  ttendlim     = ${ttendlim:-"0.005"}
+  oz_phys      = ${oz_phys:-".false."}
+  oz_phys_2015 = ${oz_phys_2015:-".true."}
+  do_mynnedmf  = ${do_mynnedmf:-".false."}
+  do_mynnsfclay = ${do_mynnsfclay:-".false."}
+  icloud_bl    = ${icloud_bl:-"1"}
+  bl_mynn_edmf = ${bl_mynn_edmf:-"1"}
+  bl_mynn_tkeadvect = ${bl_mynn_tkeadvect:-".true."}
+  bl_mynn_edmf_mom = ${bl_mynn_edmf_mom:-"1"}
+  min_lakeice  = ${min_lakeice:-"0.15"}
+  min_seaice   = ${min_seaice:-"0.15"}
+EOF
+  ;;
+  FV3_GFS_v16*)
   cat >> input.nml << EOF
   iovr         = ${iovr:-"3"}
   ltaerosol    = ${ltaerosol:-".false."}
@@ -241,11 +267,13 @@ elif [ $CCPP_SUITE = "FV3_GFS_v16_coupled" ]; then
   min_lakeice  = ${min_lakeice:-"0.15"}
   min_seaice   = ${min_seaice:-"0.15"}
 EOF
-else
+  ;;
+  *)
   cat >> input.nml << EOF
   iovr         = ${iovr:-"3"}
 EOF
-fi
+  ;;
+esac
 
 cat >> input.nml <<EOF
   pdfcld       = ${pdfcld:-".false."}
@@ -280,7 +308,7 @@ cat >> input.nml <<EOF
   ivegsrc      = ${ivegsrc:-"1"}
   isot         = ${isot:-"1"}
   lsoil        = ${lsoil:-"4"}
-  lsm          = ${lsm:-"1"}
+  lsm          = ${lsm:-"2"}
   iopt_dveg    = ${iopt_dveg:-"1"}
   iopt_crs     = ${iopt_crs:-"1"}
   iopt_btr     = ${iopt_btr:-"1"}
@@ -300,10 +328,23 @@ cat >> input.nml <<EOF
   prautco      = ${prautco:-"0.00015,0.00015"}
   lgfdlmprad   = ${lgfdlmprad:-".false."}
   effr_in      = ${effr_in:-".false."}
-  cplwav       = ${cplwav:-".false."}              ! CROW configured
+  cplwav       = ${cplwav:-".false."}        
   ldiag_ugwp   = ${ldiag_ugwp:-".false."}
   do_ugwp      = ${do_ugwp:-".true."}
+EOF
+
+if [ $cpl = .true. ]; then
+  cat >> input.nml << EOF
+  do_tofd      = ${do_tofd:-".false."}
+  fscav_aero = ${fscav_aero:-'*:0.0'}
+EOF
+else
+cat >> input.nml <<EOF
   do_tofd      = ${do_tofd:-".true."}
+EOF
+fi
+
+cat >> input.nml <<EOF
   do_sppt      = ${DO_SPPT:-".false."}
   do_shum      = ${DO_SHUM:-".false."}
   do_skeb      = ${DO_SKEB:-".false."}
@@ -312,8 +353,9 @@ EOF
 
 if [ $cpl = .true. ]; then
   cat >> input.nml << EOF
+  cplchm = ${cplchem:-".false."}
   cplflx       = $cplflx
-  cplwav2atm   = ${cplwav2atm}          ! CROW configured
+  cplwav2atm   = ${cplwav2atm}       
 EOF
 fi
 
@@ -327,10 +369,77 @@ if [ $DOIAU = "YES" ]; then
 EOF
 fi
 
-cat >> input.nml <<EOF
+case ${gwd_opt:-"2"} in
+  1)
+  cat >> input.nml <<EOF
+  gwd_opt      = 1
+  do_ugwp      = .false.
+  do_ugwp_v0   = .false.
+  do_ugwp_v1   = .false.
+  do_tofd      = .true.
   $gfs_physics_nml
 /
+&cires_ugwp_nml
+  knob_ugwp_version = ${knob_ugwp_version:-0}
+  knob_ugwp_solver  = ${knob_ugwp_solver:-2}
+  knob_ugwp_source  = ${knob_ugwp_source:-1,1,0,0}
+  knob_ugwp_wvspec  = ${knob_ugwp_wvspec:-1,25,25,25}
+  knob_ugwp_azdir   = ${knob_ugwp_azdir:-2,4,4,4}
+  knob_ugwp_stoch   = ${knob_ugwp_stoch:-0,0,0,0}
+  knob_ugwp_effac   = ${knob_ugwp_effac:-1,1,1,1}
+  knob_ugwp_doaxyz  = ${knob_ugwp_doaxyz:-1}
+  knob_ugwp_doheat  = ${knob_ugwp_doheat:-1}
+  knob_ugwp_dokdis  = ${knob_ugwp_dokdis:-1}
+  knob_ugwp_ndx4lh  = ${knob_ugwp_ndx4lh:-1}
+  launch_level      = ${launch_level:-54}
+  $cires_ugwp_nml
+/
+
 EOF
+  ;;
+  2)
+  cat >> input.nml << EOF
+  gwd_opt      = 2
+  do_ugwp      = .true.
+  do_ugwp_v0   = .false.
+  do_ugwp_v1   = .true.
+  do_tofd      = .false.
+  do_ugwp_v1_orog_only = .false.
+  do_gsl_drag_ls_bl    = ${do_gsl_drag_ls_bl:-".true."}
+  do_gsl_drag_ss       = ${do_gsl_drag_ss:-".true."}
+  do_gsl_drag_tofd     = ${do_gsl_drag_tofd:-".true."}
+  $gfs_physics_nml
+/
+&cires_ugwp_nml
+  knob_ugwp_version = ${knob_ugwp_version:-1}
+  knob_ugwp_solver  = ${knob_ugwp_solver:-2}
+  knob_ugwp_source  = ${knob_ugwp_source:-1,1,0,0}
+  knob_ugwp_wvspec  = ${knob_ugwp_wvspec:-1,25,25,25}
+  knob_ugwp_azdir   = ${knob_ugwp_azdir:-2,4,4,4}
+  knob_ugwp_stoch   = ${knob_ugwp_stoch:-0,0,0,0}
+  knob_ugwp_effac   = ${knob_ugwp_effac:-1,1,1,1}
+  knob_ugwp_doaxyz  = ${knob_ugwp_doaxyz:-1}
+  knob_ugwp_doheat  = ${knob_ugwp_doheat:-1}
+  knob_ugwp_dokdis  = ${knob_ugwp_dokdis:-2}
+  knob_ugwp_ndx4lh  = ${knob_ugwp_ndx4lh:-4}
+  knob_ugwp_palaunch = ${knob_ugwp_palaunch:-275.0e2}
+  knob_ugwp_nslope   = ${knob_ugwp_nslope:-1}
+  knob_ugwp_lzmax    = ${knob_ugwp_lzmax:-15.750e3}
+  knob_ugwp_lzmin    = ${knob_ugwp_lzmin:-0.75e3}
+  knob_ugwp_lzstar   = ${knob_ugwp_lzstar:-2.0e3}
+  knob_ugwp_taumin   = ${knob_ugwp_taumin:-0.25e-3}
+  knob_ugwp_tauamp   = ${knob_ugwp_tauamp:-3.0e-3}
+  knob_ugwp_lhmet    = ${knob_ugwp_lhmet:-200.0e3}
+  knob_ugwp_orosolv  = ${knob_ugwp_orosolv:-'pss-1986'}       
+  $cires_ugwp_nml
+/
+EOF
+  ;;
+  *)
+    echo "FATAL: Invalid gwd_opt specified: $gwd_opt"
+    exit 1
+  ;;
+esac
 
 echo "" >> input.nml
 
