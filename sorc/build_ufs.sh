@@ -40,8 +40,10 @@ MOD_PATH=$cwd/ufs_model.fd/modulefiles
 module purge
 
 cd ufs_model.fd/
+set +x
 module use ${MOD_PATH}
 module load ufs_${target}
+set -x
 
 # Remove previous build directory if it exists
 if [ -d build ]; then
