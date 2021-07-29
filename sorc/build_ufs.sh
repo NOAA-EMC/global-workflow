@@ -37,10 +37,10 @@ esac
 
 MOD_PATH=$cwd/ufs_model.fd/modulefiles
 
-module purge
 
 cd ufs_model.fd/
 set +x
+module purge
 module use ${MOD_PATH}
 module load ufs_${target}
 set -x
