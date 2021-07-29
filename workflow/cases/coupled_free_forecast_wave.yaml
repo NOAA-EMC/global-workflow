@@ -44,7 +44,7 @@ case:
     min_seaice: 1.0e-11
     SEEDLET: 10
     CCPP_SUITE: FV3_GFS_v16_coupled_nsstNoahmpUGWPv1
-    CPL_ATMIC: CFSRfracL127
+    CPL_ATMIC: GEFSwithNOAHMP
     nst_anl: yes
     psm_bc: 1
     dddmp: 0.2
@@ -70,7 +70,7 @@ case:
 
   wave_settings: 
     WAVPETS: 160
-    CPL_WAVIC: GEFSwave20210623
+    CPL_WAVIC: GEFSwave20210528
     waveGRD: 'gwes_30m'
     wavepostGRD: 'gwes_30m'
     waveesmfGRD: ''
