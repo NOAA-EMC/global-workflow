@@ -56,8 +56,8 @@ elif [ $step = "waveinit" ]; then
 
 elif [ $step = "waveprep" ]; then
 
-    export wtime_waveprep="00:15:00"
-    export npe_waveprep=12
+    export wtime_waveprep="00:30:00"
+    export npe_waveprep=65
     export nth_waveprep=1
     export npe_node_waveprep=$(echo "$npe_node_max / $nth_waveprep" | bc)
     export NTASKS=${npe_waveprep}
@@ -72,8 +72,8 @@ elif [ $step = "wavepostsbs" ]; then
 
 elif [ $step = "wavepostbndpnt" ]; then
 
-    export wtime_wavepostbndpnt="01:00:00"
-    export npe_wavepostbndpnt=80
+    export wtime_wavepostbndpnt="02:00:00"
+    export npe_wavepostbndpnt=280
     export nth_wavepostbndpnt=1
     export npe_node_wavepostbndpnt=$(echo "$npe_node_max / $nth_wavepostbndpnt" | bc)
     export NTASKS=${npe_wavepostbndpnt}
