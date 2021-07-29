@@ -326,6 +326,22 @@ if [ $DOIAU = "YES" ]; then
 EOF
 fi
 
+if [ ${DO_CA:-"YES"} = "YES" ]; then
+  cat >> input.nml << EOF
+  do_ca      = .True.
+  ca_sgs     = ${ca_sgs:-".True."}
+  nca        = ${nca:-"1"}
+  scells     = ${scells:-"2600"}
+  tlives     = ${tlives:-"1800"}
+  nseed      = ${nseed:-"1"}
+  nfracseed  = ${nfracseed:-"0.5"}
+  rcell      = ${rcell:-"0.72"}
+  ca_trigger = ${ca_trigger:-".True."}
+  nspinup    = ${nspinup:-"1"}
+  iseed_ca   = ${iseed_ca:-"12345"}
+EOF
+fi
+
 case ${gwd_opt:-"2"} in
   1)
   cat >> input.nml << EOF
@@ -485,7 +501,7 @@ cat >> input.nml <<EOF
   FSMCL(2) = ${FSMCL2:-99999}
   FSMCL(3) = ${FSMCL3:-99999}
   FSMCL(4) = ${FSMCL4:-99999}
-  LANDICE  = ${landice:-".true."}
+  LANDICE  = ${landice:-".false."}
   FTSFS = ${FTSFS:-90}
   FAISL = ${FAISL:-99999}
   FAISS = ${FAISS:-99999}

@@ -113,8 +113,8 @@ fv3_enkf_defaults: &fv3_enkf_defaults
   dspheat: YES
   shal_cnv: NO
   agrid_vel_rst: yes
-  IEMS: 1
-  IALB: 1
+  IEMS: 2
+  IALB: 2
   ISOL: 2
   IAER: 1011
   ICO2: 2
