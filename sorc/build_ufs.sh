@@ -30,7 +30,7 @@ cwd=$(pwd)
 
 # Set target platform
 case "${target}" in
-  hera|orion|stampede)
+  hera|orion|stampede|jet|cheyenne)
     target=${target}.intel
     ;;
 esac
