@@ -224,16 +224,16 @@
               ;;
      esac 
 
-     if [ -f $PARMwave/ww3_prnc.${type}.$grdID.inp.tmpl ]
+     if [ -f $FIXwave/ww3_prnc.${type}.$grdID.inp.tmpl ]
      then
-       cp $PARMwave/ww3_prnc.${type}.$grdID.inp.tmpl .
+       cp $FIXwave/ww3_prnc.${type}.$grdID.inp.tmpl .
      fi
 
      if [ -f ww3_prnc.${type}.$grdID.inp.tmpl ]
      then
        set +x
        echo ' '
-       echo "   ww3_prnc.${type}.$grdID.inp.tmpl copied ($PARMwave)."
+       echo "   ww3_prnc.${type}.$grdID.inp.tmpl copied ($FIXwave)."
        echo ' '
        [[ "$LOUD" = YES ]] && set -x
      else
@@ -820,9 +820,9 @@
 
 # 5.a ww3_multi template
 
-  if [ -f $PARMwave/ww3_multi.${NET}.inp.tmpl ]
+  if [ -f $FIXwave/ww3_multi.${NET}.inp.tmpl ]
   then
-    cp $PARMwave/ww3_multi.${NET}.inp.tmpl ww3_multi.inp.tmpl
+    cp $FIXwave/ww3_multi.${NET}.inp.tmpl ww3_multi.inp.tmpl
   fi
 
   if [ ! -f ww3_multi.inp.tmpl ]
@@ -842,21 +842,21 @@
 
 # 5.b Buoy location file
 
-  if [ -f $PARMwave/wave_${NET}.buoys ]
+  if [ -f $FIXwave/wave_${NET}.buoys ]
   then
-    cp $PARMwave/wave_${NET}.buoys buoy.loc
+    cp $FIXwave/wave_${NET}.buoys buoy.loc
   fi
 
   if [ -f buoy.loc ]
   then
     set +x
-    echo "   buoy.loc copied ($PARMwave/wave_${NET}.buoys)."
+    echo "   buoy.loc copied ($FIXwave/wave_${NET}.buoys)."
     [[ "$LOUD" = YES ]] && set -x
   else
     set +x
     echo "   buoy.loc not found.                           **** WARNING **** "
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" " FATAL ERROR : buoy.loc ($PARMwave/wave_${NET}.buoys) NOT FOUND"
+    postmsg "$jlogfile" " FATAL ERROR : buoy.loc ($FIXwave/wave_${NET}.buoys) NOT FOUND"
     touch buoy.loc
     err=13;export err;${errchk}
   fi
@@ -888,18 +888,13 @@
   case ${WW3ATMINP} in
     'YES' )
       NFGRIDS=`expr $NFGRIDS + 1`
-      WINDLINE="  '$WAVEWND_FID'  F F T F F F F F F"
+      WINDLINE="  '$WAVEWND_FID'  F F T F F F F"
       WINDFLAG="$WAVEWND_FID"
     ;;
     'CPL' )
+      WINDFLAG="CPL:${waveesmfGRD}"
       WNDIFLAG='T'
-      if [ ${waveesmfGRD} ]
-      then
-        WINDFLAG="CPL:${waveesmfGRD}"
-        CPLILINE="  '${waveesmfGRD}' F F T F F F F F F"
-      else 
-        WINDFLAG="CPL:native"
-      fi
+      CPLILINE="  '${waveesmfGRD}' F F T F F F F"
     ;;
   esac
   
@@ -907,18 +902,13 @@
     'YES' ) 
       NFGRIDS=`expr $NFGRIDS + 1`
       ICEIFLAG='T'
-      ICELINE="  '$WAVEICE_FID'  F F F T F F F F F"
+      ICELINE="  '$WAVEICE_FID'  F F F T F F F"
       ICEFLAG="$WAVEICE_FID"
     ;;
     'CPL' )
+      ICEFLAG="CPL:${waveesmfGRD}"
       ICEIFLAG='T'
-      if [ ${waveesmfGRD} ]
-      then
-        ICEFLAG="CPL:${waveesmfGRD}"
-        CPLILINE="  '${waveesmfGRD}' F F ${WNDIFLAG} T F F F F F"
-      else 
-        ICEFLAG="CPL:native"
-      fi
+      CPLILINE="  '${waveesmfGRD}' F F ${WNDIFLAG} T F F F"
     ;;
   esac
 
@@ -926,22 +916,17 @@
     'YES' ) 
       if [ "$WAVECUR_FID" != "$WAVEICE_FID" ]; then
         NFGRIDS=`expr $NFGRIDS + 1`
-        CURRLINE="  '$WAVECUR_FID'  F T F F F F F F F"
+        CURRLINE="  '$WAVECUR_FID'  F T F F F F F"
         CURRFLAG="$WAVECUR_FID"
       else # cur fields share the same grid as ice grid
-        ICELINE="  '$WAVEICE_FID'  F T F ${ICEIFLAG} F F F F F"
+        ICELINE="  '$WAVEICE_FID'  F T F ${ICEIFLAG} F F F"
         CURRFLAG="$WAVEICE_FID"
       fi
     ;;
     'CPL' )
+      CURRFLAG="CPL:${waveesmfGRD}"
       CURIFLAG='T'
-      if [ ${waveesmfGRD} ]
-      then
-        CURRFLAG="CPL:${waveesmfGRD}"
-        CPLILINE="  '${waveesmfGRD}' F T ${WNDIFLAG} ${ICEFLAG} F F F F F"
-      else 
-        CURRFLAG="CPL:native"
-      fi
+      CPLILINE="  '${waveesmfGRD}' F T ${WNDIFLAG} ${ICEFLAG} F F F"
     ;;
   esac
 
@@ -957,7 +942,7 @@
     NMGRIDS=`expr $NMGRIDS + 1`
     gridN=`echo $waveGRDN | awk -v i=$GRDN '{print $i}'`
     gridG=`echo $waveGRDG | awk -v i=$GRDN '{print $i}'`
-    gline="${gline}'${grid}'  'no' 'CURRFLAG' 'WINDFLAG' 'ICEFLAG'  'no' 'no' 'no' 'no' 'no'  ${gridN} ${gridG}  0.00 1.00  F\n"
+    gline="${gline}'${grid}'  'no' 'CURRFLAG' 'WINDFLAG' 'ICEFLAG'  'no' 'no' 'no'  ${gridN} ${gridG}  0.00 1.00  F\n"
   done
   gline="${gline}\$"
   echo $gline
@@ -983,8 +968,6 @@
       -e "s/OUT_BEG/$time_beg_out/g" \
       -e "s/OUT_END/$time_end/g" \
       -e "s/DTFLD/ $DTFLD_WAV/g" \
-      -e "s/FLAGMASKCOMP/ $FLAGMASKCOMP/g" \
-      -e "s/FLAGMASKOUT/ $FLAGMASKOUT/g" \
       -e "s/GOFILETYPE/ $GOFILETYPE/g" \
       -e "s/POFILETYPE/ $POFILETYPE/g" \
       -e "s/FIELDS/$FIELDS/g" \
@@ -1006,9 +989,9 @@
   if [ -f ww3_multi.inp ]
   then
     echo " Copying file ww3_multi.${WAV_MOD_TAG}.inp to $COMOUT "
-    cp ww3_multi.inp ${COMOUT}/rundata/ww3_multi.${WAV_MOD_TAG}.${cycle}.inp
+    cp ww3_multi.inp ${COMOUT}/rundata/ww3_multi.${WAV_MOD_TAG}.$cycle.inp
   else
-    echo "FATAL ERROR: file ww3_multi.${WAV_MOD_TAG}.${cycle}.inp NOT CREATED, ABORTING"
+    echo "FATAL ERROR: file ww3_multi.${WAV_MOD_TAG}.$cycle.inp NOT CREATED, ABORTING"
     err=13;export err;${errchk}
   fi 
 
