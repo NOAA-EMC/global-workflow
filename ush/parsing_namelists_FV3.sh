@@ -95,11 +95,11 @@ cat > input.nml <<EOF
   ntiles = $ntiles
   npz = $npz
   dz_min =  ${dz_min:-"6"}    ! CROW configured
-  psm_bc = ${psm_bc:-"0"}    ! CROW configured
+  psm_bc = ${psm_bc:-"1"}    ! CROW configured
   grid_type = -1
   make_nh = $make_nh 
   fv_debug = ${fv_debug:-".false."}
-  range_warn = ${range_warn:-".false."}
+  range_warn = ${range_warn:-".true."}
   reset_eta = .false.
   n_sponge = ${n_sponge:-"10"}    ! CROW configured
   nudge_qv = ${nudge_qv:-".true."}
@@ -127,7 +127,7 @@ cat > input.nml <<EOF
   fv_sg_adj = ${fv_sg_adj:-"450"}
   d2_bg = 0.
   nord = ${nord:-3}		! CROW configured
-  dddmp = ${dddmp:-0.2}		! CROW configured
+  dddmp = ${dddmp:-0.1}		! CROW configured
   d4_bg = ${d4_bg:-0.15}	! CROW configured
   vtdm4 = $vtdm4
   delt_max = ${delt_max:-"0.002"}
@@ -264,9 +264,10 @@ cat >> input.nml <<EOF
   redrag       = ${redrag:-".true."}
   dspheat      = ${dspheat:-".true."}
   hybedmf      = ${hybedmf:-".false."}
-  satmedmf     = ${satmedmf-".true."}
-  isatmedmf    = ${isatmedmf-"1"}
-  lheatstrg    = ${lheatstrg-".false."}
+  satmedmf     = ${satmedmf:-".true."}
+  isatmedmf    = ${isatmedmf:-"1"}
+  lheatstrg    = ${lheatstrg:-".true."}
+  lseaspray    = ${lseaspray:-".true."}
   random_clds  = ${random_clds:-".true."} ! CROW configured
   trans_trac   = ${trans_trac:-".true."}
   cnvcld       = ${cnvcld:-".true."}
@@ -299,8 +300,6 @@ cat >> input.nml <<EOF
   effr_in      = ${effr_in:-".false."}
   cplwav       = ${cplwav:-".false."}              ! CROW configured
   ldiag_ugwp   = ${ldiag_ugwp:-".false."}
-  do_ugwp      = ${do_ugwp:-".true."}
-  do_tofd      = ${do_tofd:-".false."}
   do_sppt      = ${DO_SPPT:-".false."}
   do_shum      = ${DO_SHUM:-".false."}
   do_skeb      = ${DO_SKEB:-".false."}
@@ -374,7 +373,7 @@ EOF
   2)
   cat >> input.nml << EOF
   gwd_opt      = 2
-  do_ugwp      = .true.
+  do_ugwp      = .false.
   do_ugwp_v0   = .false.
   do_ugwp_v1   = .true.
   do_tofd      = .false.

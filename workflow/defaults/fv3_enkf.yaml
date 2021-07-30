@@ -19,7 +19,7 @@ fv3_enkf_defaults: &fv3_enkf_defaults
   MONO: "non-mono"
   MEMBER: -1
   d4_bg: 0.15
-  dddmp: 0.2
+  dddmp: 0.1
   ISEED: 0
   SET_STP_SEED: YES
 
