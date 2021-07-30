@@ -250,7 +250,11 @@ elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
     export adjust_dry_mass=".false."
 
     # Write each restart file in 16 small files to save time
-    export io_layout="4,4"
+    if [ $CASE = C768 ]; then
+      export io_layout="4,4"
+    else
+      export io_layout="1,1"
+    fi
 
 
 fi
