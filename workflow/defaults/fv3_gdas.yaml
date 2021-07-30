@@ -16,6 +16,7 @@ fv3_gdas_defaults: &fv3_gdas_defaults
   MEMBER: -1
   d4_bg: 0.15
   dddmp: 0.1
+  lheatstrg: true
   min_lakeice: 0.15
   min_seaice: 0.15
   ISEED: 0

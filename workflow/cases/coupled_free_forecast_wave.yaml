@@ -47,7 +47,7 @@ case:
     CPL_ATMIC: GEFSwithNOAHMP
     nst_anl: yes
     psm_bc: 1
-    dddmp: 0.2
+    dddmp: 0.1
     FSICL: 99999
     DO_SKEB: false
     DO_SHUM: false
