@@ -196,7 +196,6 @@ elif [[ -d /apps/prod ]]; then
     target=acorn
 
     module purge
-    source /apps/prod/lmodules/startLmod
     #module use -a /apps/prod/modules
     # For gefs_nemsio2nc
     #module use /lfs/h1/ops/prod/libs/modulefiles/stack
