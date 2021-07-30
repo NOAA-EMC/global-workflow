@@ -809,7 +809,6 @@ CICE_postdet() {
   day=$(echo $CDATE|cut -c 7-8)
   stepsperhr=$((3600/$ICETIM))
   nhours=$($NHOUR $CDATE ${year}010100)
-  istep0=$((nhours*stepsperhr))
   steps=$((nhours*stepsperhr))
   npt=$((FHMAX*$stepsperhr))      # Need this in order for dump_last to work
   
@@ -939,21 +938,4 @@ GOCART_rc() {
     [[ $status -ne 0 ]] && exit $status
   fi
 }
-
-GSD_in() {
-  echo "SUB ${FUNCNAME[0]}: Linking input data for GSD"
-  # soft link commands insert here
-}
-
-GSD_nml() {
-  echo "SUB ${FUNCNAME[0]}: Creating name list for GSD"
-  sh parsing_namelists_GSD.sh
-}
-
-GSD_out() {
-  echo "SUB ${FUNCNAME[0]}: Copying output data for GSD"
-  # soft link commands insert here
-}
-
-
 
