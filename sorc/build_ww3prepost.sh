@@ -12,16 +12,13 @@ set +x
 source ./machine-setup.sh > /dev/null 2>&1
 
 source ../modulefiles/modulefile.ww3.$target
-#source ../modulefiles/module_base.$target
-set -x 
-
-set -u # Error on undefined variables
+set -x
 
 if [ $target = hera ]; then target=hera.intel ; fi
 if [ $target = orion ]; then target=orion.intel ; fi
 if [ $target = stampede ]; then target=stampede.intel ; fi
 
-cd ufs_coupled.fd/WW3
+cd ufs_model.fd/WW3
 export WW3_DIR=$( pwd -P )/model
 export WW3_BINDIR="${WW3_DIR}/bin"
 export WW3_TMPDIR=${WW3_DIR}/tmp
@@ -68,23 +65,19 @@ sed -e "s/DIST/SHRD/g"\
     -e "s/PDLIB/ /g"\
        ${WW3_BINDIR}/tempswitch > ${WW3_BINDIR}/switch
 
-#Build exes for prep jobs: 
-${WW3_BINDIR}/w3_make ww3_grid
-rc=$?
-if [[ $rc -ne 0 ]] ; then
-    echo "FATAL: Error building ww3_grid (Error code $rc)"
-    exit $rc
-fi
+# Build exes for prep jobs and post jobs (except grib):
+prep_exes="ww3_grid ww3_prep ww3_prnc ww3_grid"
+post_exes="ww3_outp ww3_outf ww3_outp ww3_gint ww3_ounf ww3_ounp"
+for prog in $prep_exes $post_exes; do
+    ${WW3_BINDIR}/w3_make ${prog}
+    rc=$?
+    if [[ $rc -ne 0 ]] ; then
+        echo "FATAL: Error building ${prog} (Error code ${rc})"
+        exit $rc
+    fi
+done
 
-#Build exes for post jobs (except grib)"
-${WW3_BINDIR}/w3_make ww3_outp 
-rc=$?
-if [[ $rc -ne 0 ]] ; then
-    echo "FATAL: Error building ww3_outp (Error code $rc)"
-    exit $rc
-fi
-
-#Update switch for grib: 
+# Update switch for grib: 
 echo $(cat ${SWITCHFILE}) > ${WW3_BINDIR}/tempswitch
 
 sed -e "s/DIST/SHRD/g"\
@@ -95,15 +88,16 @@ sed -e "s/DIST/SHRD/g"\
     -e "s/PDLIB/ /g"\
     -e "s/NOGRB/NCEP2 NCO/g"\
        ${WW3_BINDIR}/tempswitch > ${WW3_BINDIR}/switch
-#Build exe for grib
+# Build exe for grib
 ${WW3_BINDIR}/w3_make ww3_grib
 rc=$?
 if [[ $rc -ne 0 ]] ; then
-    echo "FATAL: Error building ww3_grib (Error code $rc)"
+    echo "FATAL: Unable to build ww3_grib (Error code $rc)"
     exit $rc
 fi
 
-for prog in ww3_grid ww3_outp ww3_grib; do
+# Copy to top-level exe directory
+for prog in $prep_exes $post_exes ww3_grib; do
     cp $WW3_EXEDIR/$prog $finalexecdir/
     rc=$?
     if [[ $rc -ne 0 ]] ; then
