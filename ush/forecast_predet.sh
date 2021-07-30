@@ -63,8 +63,8 @@ FV3_GFS_predet(){
   HOMEgfs=${HOMEgfs:-$NWPROD}
   FIX_DIR=${FIX_DIR:-$HOMEgfs/fix}
   FIX_AM=${FIX_AM:-$FIX_DIR/fix_am}
-  export FIX_AER=${FIX_AER:-$FIX_DIR/fix_aer}
-  export FIX_LUT=${FIX_LUT:-$FIX_DIR/fix_lut}
+  FIX_AER=${FIX_AER:-$FIX_DIR/fix_aer}
+  FIX_LUT=${FIX_LUT:-$FIX_DIR/fix_lut}
   FIXfv3=${FIXfv3:-$FIX_DIR/fix_fv3_gmted2010}
   DATA=${DATA:-$pwd/fv3tmp$$}    # temporary running directory
   ROTDIR=${ROTDIR:-$pwd}         # rotating archive directory
@@ -101,9 +101,6 @@ FV3_GFS_predet(){
   FCSTEXEC=${FCSTEXEC:-fv3_gfs.x}
   PARM_FV3DIAG=${PARM_FV3DIAG:-$HOMEgfs/parm/parm_fv3diag}
   PARM_POST=${PARM_POST:-$HOMEgfs/parm/post}
-  
-  # Wave coupling parameter defaults to false
-  cplwav=${cplwav:-.false.}
   
   # Model config options
   APRUN_FV3=${APRUN_FV3:-${APRUN_FCST:-${APRUN:-""}}}
