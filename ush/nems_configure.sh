@@ -13,7 +13,7 @@ writing_nems_configure()
 {
 echo "SUB ${FUNCNAME[0]}: parsing_nems_configure begins"
 if [ -e $SCRIPTDIR/nems.configure ]; then
-	rm -f $SCRIPTDIR/nems.configure
+  rm -f $SCRIPTDIR/nems.configure
 fi
 
 # Setup nems.configure
@@ -65,40 +65,40 @@ sed -i -e "s;@\[med_petlist_bounds\];$med_petlist_bounds;g" tmp1
 sed -i -e "s;@\[atm_petlist_bounds\];$atm_petlist_bounds;g" tmp1
 
 if [ $cplflx = .true. ]; then
-    if [ $restart_interval  -gt 0 ]; then 
-      restart_interval_nems=$restart_interval 
-    else 
-      restart_interval_nems=$FHMAX 
-    fi
-        sed -i -e "s;@\[ocn_model\];$OCN_model;g" tmp1
-	sed -i -e "s;@\[ocn_petlist_bounds\];$ocn_petlist_bounds;g" tmp1
-	sed -i -e "s;@\[DumpFields\];$DumpFields;g" tmp1
-        sed -i -e "s;@\[cap_dbug_flag\];$cap_dbug_flag;g" tmp1
-	sed -i -e "s;@\[coldstart\];$coldstart;g" tmp1
-        sed -i -e "s;@\[use_coldstart\];$use_coldstart;g" tmp1
-        sed -i -e "s;@\[RUNTYPE\];$cmeps_run_type;g" tmp1
-        sed -i -e "s;@\[CPLMODE\];$cplmode;g" tmp1
-	sed -i -e "s;@\[restart_interval\];$restart_interval;g" tmp1
-	sed -i -e "s;@\[coupling_interval_slow_sec\];$CPL_SLOW;g" tmp1
-	sed -i -e "s;@\[coupling_interval_fast_sec\];$CPL_FAST;g" tmp1
-        sed -i -e "s;@\[RESTART_N\];$restart_interval_nems;g" tmp1
+  if [ $restart_interval  -gt 0 ]; then 
+    restart_interval_nems=$restart_interval 
+  else 
+    restart_interval_nems=$FHMAX 
+  fi
+  sed -i -e "s;@\[ocn_model\];$OCN_model;g" tmp1
+  sed -i -e "s;@\[ocn_petlist_bounds\];$ocn_petlist_bounds;g" tmp1
+  sed -i -e "s;@\[DumpFields\];$DumpFields;g" tmp1
+  sed -i -e "s;@\[cap_dbug_flag\];$cap_dbug_flag;g" tmp1
+  sed -i -e "s;@\[coldstart\];$coldstart;g" tmp1
+  sed -i -e "s;@\[use_coldstart\];$use_coldstart;g" tmp1
+  sed -i -e "s;@\[RUNTYPE\];$cmeps_run_type;g" tmp1
+  sed -i -e "s;@\[CPLMODE\];$cplmode;g" tmp1
+  sed -i -e "s;@\[restart_interval\];$restart_interval;g" tmp1
+  sed -i -e "s;@\[coupling_interval_slow_sec\];$CPL_SLOW;g" tmp1
+  sed -i -e "s;@\[coupling_interval_fast_sec\];$CPL_FAST;g" tmp1
+  sed -i -e "s;@\[RESTART_N\];$restart_interval_nems;g" tmp1
   sed -i -e "s;@\[use_mommesh\];$USE_MOMMESH;g" tmp1
   sed -i -e "s;@\[eps_imesh\];$ICERESdec;g" tmp1
 fi
 if [ $cplwav = .true. ]; then
-	sed -i -e "s;@\[wav_model\];ww3;g" tmp1
-        sed -i -e "s;@\[wav_petlist_bounds\];$wav_petlist_bounds;g" tmp1
+  sed -i -e "s;@\[wav_model\];ww3;g" tmp1
+  sed -i -e "s;@\[wav_petlist_bounds\];$wav_petlist_bounds;g" tmp1
 fi
 if [ $cplice = .true. ]; then
-	sed -i -e "s;@\[ice_model\];$ICE_model;g" tmp1
-	sed -i -e "s;@\[ice_petlist_bounds\];$ice_petlist_bounds;g" tmp1
-        sed -i -e "s;@\[MESH_OCN_ICE\];$MESH_OCN_ICE;g" tmp1
-        sed -i -e "s;@\[FHMAX\];$FHMAX_GFS;g" tmp1
+  sed -i -e "s;@\[ice_model\];$ICE_model;g" tmp1
+  sed -i -e "s;@\[ice_petlist_bounds\];$ice_petlist_bounds;g" tmp1
+  sed -i -e "s;@\[MESH_OCN_ICE\];$MESH_OCN_ICE;g" tmp1
+  sed -i -e "s;@\[FHMAX\];$FHMAX_GFS;g" tmp1
 fi
 if [ $cplchem = .true. ]; then
-	sed -i -e "s;@\[chm_model\];$CHM_model;g" tmp1
-	sed -i -e "s;@\[chm_petlist_bounds\];$chm_petlist_bounds;g" tmp1
-	sed -i -e "s;@\[coupling_interval_fast_sec\];$CPL_FAST;g" tmp1
+  sed -i -e "s;@\[chm_model\];$CHM_model;g" tmp1
+  sed -i -e "s;@\[chm_petlist_bounds\];$chm_petlist_bounds;g" tmp1
+  sed -i -e "s;@\[coupling_interval_fast_sec\];$CPL_FAST;g" tmp1
 fi
 
 mv tmp1 nems.configure

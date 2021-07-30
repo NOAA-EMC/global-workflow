@@ -193,7 +193,7 @@ EOF
   fi 
 
   export CCPP_SUITE=${CCPP_SUITE:-"FV3_GFS_v16"}
-  _suite_file=$HOMEgfs/sorc/ufs_coupled.fd/FV3/ccpp/suites/suite_${CCPP_SUITE}.xml
+  _suite_file=$HOMEgfs/sorc/ufs_model.fd/FV3/ccpp/suites/suite_${CCPP_SUITE}.xml
   
   if [ ! -f ${_suite_file} ]; then
     echo "FATAL: CCPP Suite file ${_suite_file} does not exist!"
