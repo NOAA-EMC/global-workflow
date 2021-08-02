@@ -21,7 +21,4 @@ module load g2tmpl/1.6.0
 module load crtm/2.3.0
 module load esmf/8_1_1
 module load netcdf/4.7.4
-setenv NCEPLIBS  /lfs4/HFIP/hfv3gfs/gwv/l0701/lib/
-module use -a /mnt/lfs4/HFIP/hfv3gfs/gwv/l0701/lib/modulefiles
-module load netcdfp/4.7.4
 module load rocoto
