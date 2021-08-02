@@ -168,7 +168,7 @@ config_fcst:
     tbf=""
     if [ $satmedmf = ".true." ]; then tbf="_satmedmf" ; fi
 
-    export lheatstrg=.false.
+    export lheatstrg="{tools.fort(doc.fv3_gfs_settings.lheatstrg)}"
 
     export random_clds="{tools.fort(doc.fv3_gfs_settings.phy_dependent_var.random_clds)}"
     #export cnvcld="{tools.fort(doc.fv3_gfs_settings.cnvcld)}"
