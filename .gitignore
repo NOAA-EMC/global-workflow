@@ -1,6 +1,5 @@
 # Ignore all compiled files
 #--------------------------
-sorc/nceplibs-ncio/
 __pycache__
 *.pyc
 *.[aox]
