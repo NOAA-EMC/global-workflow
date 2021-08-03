@@ -11,8 +11,8 @@
 FV3_namelists(){
 
 # copy over the tables
-DIAG_TABLE=${DIAG_TABLE:-$PARM_FV3DIAG/diag_table}
-DIAG_TABLE_AOD=${DIAG_TABLE_AOD:-$PARM_FV3DIAG/diag_table_aod}
+DIAG_TABLE_BASE=${DIAG_TABLE_BASE:-$PARM_FV3DIAG/diag_table}
+DIAG_TABLE=${DIAG_TABLE:-$PARM_FV3DIAG/diag_table_aod}
 DATA_TABLE=${DATA_TABLE:-$PARM_FV3DIAG/data_table}
 FIELD_TABLE=${FIELD_TABLE:-$PARM_FV3DIAG/field_table}
 
@@ -22,18 +22,18 @@ cat > diag_table << EOF
 FV3 Forecast
 ${gPDY:0:4} ${gPDY:4:2} ${gPDY:6:2} ${gcyc} 0 0
 EOF
-cat $DIAG_TABLE >> diag_table
+cat $DIAG_TABLE_BASE >> diag_table
 else
 cat > diag_table << EOF
 FV3 Forecast
 ${sPDY:0:4} ${sPDY:4:2} ${sPDY:6:2} ${scyc} 0 0
 EOF
-cat $DIAG_TABLE >> diag_table
+cat $DIAG_TABLE_BASE >> diag_table
 fi
 
 # Append AOD diag table for MERRA2
 if [ $IAER = "1011" ]; then
-  cat $DIAG_TABLE_AOD >> diag_table
+  cat $DIAG_TABLE >> diag_table
 fi
 
 $NCP $DATA_TABLE  data_table
@@ -58,8 +58,8 @@ cat > input.nml <<EOF
   fdiag = $FDIAG
   fhmax = $FHMAX
   fhout = $FHOUT
-  fhmaxhf = $FHMAX_HF     ! CROW configured
-  fhouthf = $FHOUT_HF     ! CROW configured
+  fhmaxhf = $FHMAX_HF     
+  fhouthf = $FHOUT_HF    
   $atmos_model_nml
 /
 
@@ -109,13 +109,13 @@ cat >> input.nml << EOF
   fv_debug = ${fv_debug:-".false."}
   range_warn = ${range_warn:-".false."}
   reset_eta = .false.
-  n_sponge = ${n_sponge:-"10"}    ! CROW configured
+  n_sponge = ${n_sponge:-"10"}    
   nudge_qv = ${nudge_qv:-".true."}
   nudge_dz = ${nudge_dz:-".false."}
   tau = ${tau:-10.}
   rf_cutoff = ${rf_cutoff:-"7.5e2"}
-  d2_bg_k1 = ${d2_bg_k1:-"0.15"}    ! CROW configured
-  d2_bg_k2 = ${d2_bg_k2:-"0.02"}    ! CROW configured
+  d2_bg_k1 = ${d2_bg_k1:-"0.15"}    
+  d2_bg_k2 = ${d2_bg_k2:-"0.02"}    
   kord_tm = ${kord_tm:-"-9"}
   kord_mt = ${kord_mt:-"9"}
   kord_wz = ${kord_wz:-"9"}
@@ -128,15 +128,15 @@ cat >> input.nml << EOF
   p_fac = 0.1
   k_split = $k_split
   n_split = $n_split
-  nwat = ${nwat:-2}		! CROW configured
+  nwat = ${nwat:-2}	
   na_init = $na_init
   d_ext = 0.
-  dnats = ${dnats:-0}		! CROW configured
+  dnats = ${dnats:-0}		
   fv_sg_adj = ${fv_sg_adj:-"450"}
   d2_bg = 0.
-  nord = ${nord:-3}		! CROW configured
-  dddmp = ${dddmp:-0.2}		! CROW configured
-  d4_bg = ${d4_bg:-0.15}	! CROW configured
+  nord = ${nord:-3}		
+  dddmp = ${dddmp:-0.2}	
+  d4_bg = ${d4_bg:-0.15}
   vtdm4 = $vtdm4
   delt_max = ${delt_max:-"0.002"}
   ke_bg = 0.
@@ -148,15 +148,15 @@ cat >> input.nml << EOF
   mountain = $mountain
   ncep_ic = $ncep_ic
   d_con = $d_con
-  hord_mt = $hord_mt		! CROW configured
-  hord_vt = $hord_xx		! CROW configured
-  hord_tm = $hord_xx		! CROW configured
-  hord_dp = -$hord_xx		! CROW configured
+  hord_mt = $hord_mt	
+  hord_vt = $hord_xx
+  hord_tm = $hord_xx
+  hord_dp = -$hord_xx		
   hord_tr = ${hord_tr:-"8"}	
   adjust_dry_mass = ${adjust_dry_mass:-".true."}
   dry_mass=${dry_mass:-98320.0}
   consv_te = $consv_te
-  do_sat_adj = ${do_sat_adj:-".false."}	! CROW configured
+  do_sat_adj = ${do_sat_adj:-".false."}	
   consv_am = .false.
   fill = .true.
   dwind_2d = .false.
@@ -196,13 +196,13 @@ cat >> input.nml << EOF
 
 &gfs_physics_nml
   fhzero       = $FHZER
-  h2o_phys     = ${h2o_phys:-".true."}	! CROW configured
+  h2o_phys     = ${h2o_phys:-".true."}	
   ldiag3d      = ${ldiag3d:-".false."}
-  fhcyc        = $FHCYC			! CROW configured
+  fhcyc        = $FHCYC			
   use_ufo      = ${use_ufo:-".true."}
   pre_rad      = ${pre_rad:-".false."}
-  ncld         = ${ncld:-1}		! CROW configured
-  imp_physics  = ${imp_physics:-"99"}	! CROW configured
+  ncld         = ${ncld:-1}		
+  imp_physics  = ${imp_physics:-"99"}	
 EOF
 
 case "${CCPP_SUITE:-}" in
@@ -291,19 +291,19 @@ cat >> input.nml <<EOF
   swhtr        = ${swhtr:-".true."}
   cnvgwd       = ${cnvgwd:-".true."}
   shal_cnv     = ${shal_cnv:-".true."}
-  cal_pre      = ${cal_pre:-".true."}	! CROW configured
+  cal_pre      = ${cal_pre:-".true."}	
   redrag       = ${redrag:-".true."}
   dspheat      = ${dspheat:-".true."}
   hybedmf      = ${hybedmf:-".false."}
   satmedmf     = ${satmedmf-".true."}
   isatmedmf    = ${isatmedmf-"1"}
   lheatstrg    = ${lheatstrg-".false."}
-  random_clds  = ${random_clds:-".true."} ! CROW configured
+  random_clds  = ${random_clds:-".true."} 
   trans_trac   = ${trans_trac:-".true."}
   cnvcld       = ${cnvcld:-".true."}
   imfshalcnv   = ${imfshalcnv:-"2"}
   imfdeepcnv   = ${imfdeepcnv:-"2"}
-  cdmbgwd      = ${cdmbgwd:-"3.5,0.25"}   ! CROW configured
+  cdmbgwd      = ${cdmbgwd:-"3.5,0.25"}   
   prslrd0      = ${prslrd0:-"0."}
   ivegsrc      = ${ivegsrc:-"1"}
   isot         = ${isot:-"1"}
