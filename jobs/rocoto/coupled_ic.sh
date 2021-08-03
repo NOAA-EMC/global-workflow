@@ -53,18 +53,40 @@ fi
 
 # Setup ATM initial condition files
 cp -r $ORIGIN_ROOT/$CPL_ATMIC/$CDATE/$CDUMP/*  $ICSDIR/$CDATE/atmos/
+rc=$?
+if [[ $rc -ne 0 ]] ; then
+  echo "FATAL: Unable to copy $ORIGIN_ROOT/$CPL_ATMIC/$CDATE/$CDUMP/* to $ICSDIR/$CDATE/atmos/ (Error code $rc)"
+  exit $rc    
+fi
+
 
 # Setup Ocean IC files 
 cp -r $ORIGIN_ROOT/$CPL_OCNIC/$CDATE/ocn/$OCNRES/MOM*.nc  $ICSDIR/$CDATE/ocn/
+rc=$?
+if [[ $rc -ne 0 ]] ; then
+  echo "FATAL: Unable to copy $ORIGIN_ROOT/$CPL_OCNIC/$CDATE/ocn/$OCNRES/MOM*.nc to $ICSDIR/$CDATE/ocn/ (Error code $rc)"
+  exit $rc
+fi
 
 #Setup Ice IC files 
 cp $ORIGIN_ROOT/$CPL_ICEIC/$CDATE/ice/$ICERES/cice5_model_${ICERESdec}.res_$CDATE.nc $ICSDIR/$CDATE/ice/cice_model_${ICERESdec}.res_$CDATE.nc
+rc=$?
+if [[ $rc -ne 0 ]] ; then
+  echo "FATAL: Unable to copy $ORIGIN_ROOT/$CPL_ICEIC/$CDATE/ice/$ICERES/cice5_model_${ICERESdec}.res_$CDATE.nc to $ICSDIR/$CDATE/ice/cice_model_${ICERESdec}.res_$CDATE.nc (Error code $rc)"
+  exit $rc
+fi
 
 if [ $cplwav = ".true." ]; then
   [[ ! -d $ICSDIR/$CDATE/wav ]] && mkdir -p $ICSDIR/$CDATE/wav
   for grdID in $waveGRD
   do
     cp $ORIGIN_ROOT/$CPL_WAVIC/$CDATE/wav/$grdID/*restart.$grdID $ICSDIR/$CDATE/wav/
+    rc=$?
+    if [[ $rc -ne 0 ]] ; then
+      echo "FATAL: Unable to copy $ORIGIN_ROOT/$CPL_WAVIC/$CDATE/wav/$grdID/*restart.$grdID to $ICSDIR/$CDATE/wav/ (Error code $rc)" 
+      exit $rc
+    fi
+
   done
 fi
 
