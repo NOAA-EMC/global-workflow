@@ -14,12 +14,6 @@ if [ ! -d "./mkgfsawps.fd" ]; then
    exit
 fi 
 
-if [ $target = jet ]; then
-   echo "  GFS_UTIL does not support JET "
-   echo "  "
-   exit
-fi
-
 echo ""
 echo " Building ... Executables for GFS_UTILITIES "
 echo ""

@@ -248,7 +248,7 @@ def get_workflow(dict_configs, cdump='gdas'):
     do_gempak = base.get('DO_GEMPAK', 'NO').upper()
     do_awips = base.get('DO_AWIPS', 'NO').upper()
     do_wafs = base.get('WAFSF', 'NO').upper()
-    do_vrfy = base.get('DO_VRFY', 'NO').upper()
+    do_vrfy = base.get('DO_VRFY', 'YES').upper()
     do_metp = base.get('DO_METP', 'NO').upper()
 
     tasks = []
@@ -692,7 +692,8 @@ def get_workflow(dict_configs, cdump='gdas'):
     if do_vrfy in ['Y', 'YES']:
         dep_dict = {'type':'task', 'name':f'{cdump}vrfy'}
         deps.append(rocoto.add_dependency(dep_dict))
-    dep_dict = {'type':'streq', 'left':'&ARCHIVE_TO_HPSS;', 'right':'YES'}
+#    dep_dict = {'type':'streq', 'left':'&ARCHIVE_TO_HPSS;', 'right':'YES'}
+    dep_dict = {'type':'streq', 'left':'&ARCHIVE_TO_HPSS;', 'right':f'{hpssarch}'}
     deps.append(rocoto.add_dependency(dep_dict))
     if do_wave in ['Y', 'YES']:
       dep_dict = {'type': 'task', 'name': f'{cdump}wavepostsbs'}
