@@ -487,6 +487,8 @@ FV3_GFS_postdet(){
 		ISEED_SKEB=$((CDATE*1000 + MEMBER*10 + 1))
 		ISEED_SHUM=$((CDATE*1000 + MEMBER*10 + 2))
 		ISEED_SPPT=$((CDATE*1000 + MEMBER*10 + 3))
+		# CA Seed is only 32-bit
+		ISEED_CA=$(( (CDATE*1000 + MEMBER*10 + 4) % 2147483647 ))
 	else
 		ISEED=${ISEED:-0}
 	fi

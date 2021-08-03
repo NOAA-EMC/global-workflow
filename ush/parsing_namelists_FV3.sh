@@ -337,7 +337,7 @@ if [ ${DO_CA:-"YES"} = "YES" ]; then
   rcell      = ${rcell:-"0.72"}
   ca_trigger = ${ca_trigger:-".True."}
   nspinup    = ${nspinup:-"1"}
-  iseed_ca   = ${iseed_ca:-"12345"}
+  iseed_ca   = ${ISEED_CA:-"12345"}
 EOF
 fi
 
