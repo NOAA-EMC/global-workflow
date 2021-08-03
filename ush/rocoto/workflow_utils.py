@@ -35,13 +35,14 @@ class ShellScriptException(Exception):
 
 def get_shell_env(scripts):
     vars=dict()
-    runme=''.join([ 'source %s ; '%(s,) for s in scripts ])
-    magic='--- ENVIRONMENT BEGIN %d ---'%random.randint(0,64**5)
-    runme+='/bin/echo -n "%s" ; /usr/bin/env -0'%(magic,)
-    with open('/dev/null','wb+') as null:
+    runme=''.join([ f'source {s} ; ' for s in scripts ])
+    magic=f'--- ENVIRONMENT BEGIN {random.randint(0,64**5)} ---'
+    runme+=f'/bin/echo -n "{(magic,)}" ; /usr/bin/env -0'
+    with open('/dev/null','w') as null:
         env=subprocess.Popen(runme,shell=True,stdin=null.fileno(),
                        stdout=subprocess.PIPE)
         (out,err)=env.communicate()
+    out = out.decode()
     begin=out.find(magic)
     if begin<0:
         raise ShellScriptException(scripts,'Cannot find magic string; '
@@ -71,7 +72,7 @@ def get_configs(expdir):
         return a list of configs minus the ones ending with ".default"
     """
     result=list()
-    for config in glob.glob('%s/config.*' % expdir):
+    for config in glob.glob(f'{expdir}/config.*'):
         if not config.endswith('.default'):
             result.append(config)
     return result
@@ -82,8 +83,7 @@ def find_config(config_name, configs):
         if config_name == os.path.basename(config):
             return config
 
-    raise UnknownConfigError("%s does not exist (known: %s), ABORT!" % (
-        config_name,repr(config_name)))
+    raise UnknownConfigError(f'{config_name} does not exist (known: {repr(config_name)}), ABORT!')
 
 def source_configs(configs, tasks):
     '''
@@ -114,9 +114,9 @@ def source_configs(configs, tasks):
             files.append(find_config('config.fcst', configs))
             files.append(find_config('config.efcs', configs))
         else:
-            files.append(find_config('config.%s' % task, configs))
+            files.append(find_config(f'config.{task}', configs))
 
-        print 'sourcing config.%s' % task
+        print(f'sourcing config.{task}')
         dict_configs[task] = config_parser(files)
 
     return dict_configs
@@ -131,10 +131,10 @@ def config_parser(files):
             in the script.
     :rtype: dict
     """
-    if isinstance(files,basestring):
+    if isinstance(files,(str, bytes)):
         files=[files]
     varbles=dict()
-    for key,value in get_script_env(files).iteritems():
+    for key,value in get_script_env(files).items():
         if key in DATE_ENV_VARS: # likely a date, convert to datetime
             varbles[key] = datetime.strptime(value,'%Y%m%d%H')
         elif '.' in value: # Likely a number and that too a float
@@ -159,44 +159,44 @@ def detectMachine():
     elif os.path.exists('/lfs4/HFIP'):
         return 'JET'
     else:
-        print 'workflow is currently only supported on: %s' % ' '.join(machines)
+        print(f'workflow is currently only supported on: {machines}')
         raise NotImplementedError('Cannot auto-detect platform, ABORT!')
 
 def get_scheduler(machine):
     try:
         return SCHEDULER_MAP[machine]
     except KeyError:
-        raise UnknownMachineError('Unknown machine: %s, ABORT!' % machine)
+        raise UnknownMachineError(f'Unknown machine: {machine}, ABORT!')
 
 def create_wf_task(task, cdump='gdas', cycledef=None, envar=None, dependency=None, \
                    metatask=None, varname=None, varval=None, vardict=None, \
                    final=False):
 
     if metatask is None:
-        taskstr = '%s' % task
+        taskstr = f'{task}'
     else:
-        taskstr = '%s#%s#' % (task, varname)
-        metataskstr = '%s%s' % (cdump, metatask)
+        taskstr = f'{task}#{varname}#'
+        metataskstr = f'{cdump}{metatask}'
         metatask_dict = {'metataskname': metataskstr, \
-                         'varname': '%s' % varname, \
-                         'varval': '%s' % varval, \
+                         'varname': f'{varname}', \
+                         'varval': f'{varval}', \
                          'vardict': vardict}
 
-    taskstr = '%s%s' % (cdump, taskstr)
+    taskstr = f'{cdump}{taskstr}'
     cycledefstr = cdump if cycledef is None else cycledef
 
-    task_dict = {'taskname': '%s' % taskstr, \
-                 'cycledef': '%s' % cycledefstr, \
+    task_dict = {'taskname': f'{taskstr}', \
+                 'cycledef': f'{cycledefstr}', \
                  'maxtries': '&MAXTRIES;', \
-                 'command': '&JOBS_DIR;/%s.sh' % task, \
-                 'jobname': '&PSLOT;_%s_@H' % taskstr, \
+                 'command': f'&JOBS_DIR;/{task}.sh', \
+                 'jobname': f'&PSLOT;_{taskstr}_@H', \
                  'account': '&ACCOUNT;', \
-                 'queue': '&QUEUE_%s_%s;' % (task.upper(), cdump.upper()), \
-                 'walltime': '&WALLTIME_%s_%s;' % (task.upper(), cdump.upper()), \
-                 'native': '&NATIVE_%s_%s;' % (task.upper(), cdump.upper()), \
-                 'memory': '&MEMORY_%s_%s;' % (task.upper(), cdump.upper()), \
-                 'resources': '&RESOURCES_%s_%s;' % (task.upper(), cdump.upper()), \
-                 'log': '&ROTDIR;/logs/@Y@m@d@H/%s.log' % taskstr, \
+                 'queue': f'&QUEUE_{task.upper()}_{cdump.upper()};', \
+                 'walltime': f'&WALLTIME_{task.upper()}_{cdump.upper()};', \
+                 'native': f'&NATIVE_{task.upper()}_{cdump.upper()};', \
+                 'memory': f'&MEMORY_{task.upper()}_{cdump.upper()};', \
+                 'resources': f'&RESOURCES_{task.upper()}_{cdump.upper()};', \
+                 'log': f'&ROTDIR;/logs/@Y@m@d@H/{taskstr}.log', \
                  'envar': envar, \
                  'dependency': dependency, \
                  'final': final}
@@ -206,10 +206,10 @@ def create_wf_task(task, cdump='gdas', cycledef=None, envar=None, dependency=Non
         task_dict['partition'] = '&PARTITION_BATCH;'
     # Add PARTITION_SERVICE to all service jobs on Hera (SLURM)
     if get_scheduler(detectMachine()) in ['slurm'] and task in ['getic','arch','earc'] and detectMachine() in ['HERA']:
-        task_dict['partition'] = '&PARTITION_%s_%s;' % (task.upper(),cdump.upper())
+        task_dict['partition'] = f'&PARTITION_{task.upper()}_{cdump.upper()};'
     # Add PARTITION_SERVICE to all service jobs on JET (SLURM)
     if get_scheduler(detectMachine()) in ['slurm'] and task in ['getic','arch','earc','fcst'] and detectMachine() in ['JET']:
-        task_dict['partition'] = '&PARTITION_%s_%s;' % (task.upper(),cdump.upper())
+        task_dict['partition'] = f'&PARTITION_{task.upper()}_{cdump.upper()};'
 
     if metatask is None:
         task = rocoto.create_task(task_dict)
@@ -226,7 +226,7 @@ def create_firstcyc_task(cdump='gdas'):
     '''
 
     task = 'firstcyc'
-    taskstr = '%s' % task
+    taskstr = f'{task}'
 
     deps = []
     data = '&EXPDIR;/logs/@Y@m@d@H.log'
@@ -236,18 +236,18 @@ def create_firstcyc_task(cdump='gdas'):
     deps.append(rocoto.add_dependency(dep_dict))
     dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
-    task_dict = {'taskname': '%s' % taskstr, \
+    task_dict = {'taskname': f'{taskstr}' , \
                  'cycledef': 'first', \
                  'maxtries': '&MAXTRIES;', \
                  'final' : True, \
                  'command': 'sleep 1', \
-                 'jobname': '&PSLOT;_%s_@H' % taskstr, \
+                 'jobname': f'&PSLOT;_{taskstr}_@H', \
                  'account': '&ACCOUNT;', \
                  'queue': '&QUEUE_SERVICE;', \
-                 'walltime': '&WALLTIME_ARCH_%s;' % cdump.upper(), \
-                 'native': '&NATIVE_ARCH_%s;' % cdump.upper(), \
-                 'resources': '&RESOURCES_ARCH_%s;' % cdump.upper(), \
-                 'log': '&ROTDIR;/logs/@Y@m@d@H/%s.log' % taskstr, \
+                 'walltime': f'&WALLTIME_ARCH_{cdump.upper()};', \
+                 'native': f'&NATIVE_ARCH_{cdump.upper()};', \
+                 'resources': f'&RESOURCES_ARCH_{cdump.upper()};', \
+                 'log': f'&ROTDIR;/logs/@Y@m@d@H/{taskstr}.log', \
                  'dependency': dependencies}
 
     if get_scheduler(detectMachine()) in ['slurm']:
@@ -281,27 +281,33 @@ def get_resources(machine, cfg, task, reservation, cdump='gdas'):
 
     scheduler = get_scheduler(machine)
 
-    if cdump in ['gfs'] and 'wtime_%s_gfs' % task in cfg.keys():
-        wtimestr = cfg['wtime_%s_gfs' % task]
+    if cdump in ['gfs'] and f'wtime_{task}_gfs' in cfg.keys():
+        wtimestr = cfg[f'wtime_{task}_gfs']
     else:
-        wtimestr = cfg['wtime_%s' % task]
+        wtimestr = cfg[f'wtime_{task}']
 
     ltask = 'eobs' if task in ['eomg'] else task
 
-    memory = cfg.get('memory_%s' % ltask, None)
+    memory = cfg.get(f'memory_{ltask}', None)
 
-    if cdump in ['gfs'] and 'npe_%s_gfs' % task in cfg.keys():
-        tasks = cfg['npe_%s_gfs' % ltask]
+    if cdump in ['gfs'] and f'npe_{task}_gfs' in cfg.keys():
+        tasks = cfg[f'npe_{ltask}_gfs']
     else:
-        tasks = cfg['npe_%s' % ltask]
+        try:
+            tasks = cfg[f'npe_{ltask}']
+        except KeyError:
+            tasks = cfg["',)npe_waveawipsgridded"]
 
-    if cdump in ['gfs'] and 'npe_node_%s_gfs' % task in cfg.keys():
-        ppn = cfg['npe_node_%s_gfs' % ltask]
-    else:
-        ppn = cfg['npe_node_%s' % ltask]
+    if cdump in ['gfs'] and f'npe_node_{task}_gfs' in cfg.keys():
+        ppn = cfg[f'npe_node_{ltask}_gfs']
+    else:        
+        ppn = cfg[f'npe_node_{ltask}']
 
     if machine in [ 'WCOSS_DELL_P3', 'HERA', 'ORION', 'JET' ]:
-        threads = cfg['nth_%s' % ltask]
+        try:
+            threads = cfg[f'nth_{ltask}']
+        except KeyError:
+            threads = cfg["',)nth_epos"]
 
     nodes = np.int(np.ceil(np.float(tasks) / np.float(ppn)))
 
@@ -311,28 +317,28 @@ def get_resources(machine, cfg, task, reservation, cdump='gdas'):
     if scheduler in ['slurm']:
         natstr = '--export=NONE'
 
-    if machine in ['HERA', 'JET',  'ORION', 'WCOSS_C', 'WCOSS_DELL_P3']:
+    if machine in ['HERA', 'JET', 'ORION', 'WCOSS_C', 'WCOSS_DELL_P3']:
 
         if machine in ['HERA', 'JET', 'ORION']:
-            resstr = '<nodes>%d:ppn=%d:tpp=%d</nodes>' % (nodes, ppn, threads)
+            resstr = f'<nodes>{nodes}:ppn={ppn}:tpp={threads}</nodes>'
         else:
-            resstr = '<nodes>%d:ppn=%d</nodes>' % (nodes, ppn)
+            resstr = f'<nodes>{nodes}:ppn={ppn}</nodes>'
 
         if machine in ['WCOSS_C'] and task in ['arch', 'earc', 'getic']:
             resstr += '<shared></shared>'
 
         if machine in ['WCOSS_DELL_P3']:
             if not reservation in ['NONE']:
-               natstr = "-U %s -R 'affinity[core(%d)]'" % (reservation, threads)
+               natstr = f"-U {reservation} -R 'affinity[core({threads})]'"
             else:
-               natstr = "-R 'affinity[core(%d)]'" % (threads)
+               natstr = f"-R 'affinity[core({threads})]'"
 
             if task in ['arch', 'earc', 'getic']:
                   natstr = "-R 'affinity[core(1)]'"
 
 
     elif machine in ['WCOSS']:
-        resstr = '<cores>%d</cores>' % tasks
+        resstr = f'<cores>{tasks}</cores>'
 
     if task in ['arch', 'earc', 'getic']:
         queuestr = '&QUEUE;' if scheduler in ['slurm'] else '&QUEUE_SERVICE;'
@@ -350,7 +356,7 @@ def create_crontab(base, cronint=5):
     # No point creating a crontab if rocotorun is not available.
     rocotoruncmd = find_executable('rocotorun')
     if rocotoruncmd is None:
-        print 'Failed to find rocotorun, crontab will not be created'
+        print('Failed to find rocotorun, crontab will not be created')
         return
 
 # Leaving the code for a wrapper around crontab file if needed again later
@@ -379,13 +385,13 @@ def create_crontab(base, cronint=5):
 #
 #    else:
 
-    rocotorunstr = '%s -d %s/%s.db -w %s/%s.xml' % (rocotoruncmd, base['EXPDIR'], base['PSLOT'], base['EXPDIR'], base['PSLOT'])
-    cronintstr = '*/%d * * * *' % cronint
+    rocotorunstr = f'''{rocotoruncmd} -d {base['EXPDIR']}/{base['PSLOT']}.db -w {base['EXPDIR']}/{base['PSLOT']}.xml'''
+    cronintstr = f'*/{cronint} * * * *'
 
     # On WCOSS, rocoto module needs to be loaded everytime cron runs
     if base['machine'] in ['WCOSS']:
         rocotoloadstr = '. /usrx/local/Modules/default/init/sh; module use -a /usrx/local/emc_rocoto/modulefiles; module load rocoto/1.3.0rc2)'
-        rocotorunstr = '(%s %s)' % (rocotoloadstr, rocotorunstr)
+        rocotorunstr = f'({rocotoloadstr} {rocotorunstr})'
 
     try:
         REPLYTO = os.environ['REPLYTO']
@@ -395,13 +401,13 @@ def create_crontab(base, cronint=5):
     strings = []
 
     strings.append('\n')
-    strings.append('#################### %s ####################\n' % base['PSLOT'])
-    strings.append('MAILTO="%s"\n' % REPLYTO)
-    strings.append('%s %s\n' % (cronintstr, rocotorunstr))
+    strings.append(f'''#################### {base['PSLOT']} ####################\n''')
+    strings.append(f'MAILTO="{REPLYTO}"\n')
+    strings.append(f'{cronintstr} {rocotorunstr}\n')
     strings.append('#################################################################\n')
     strings.append('\n')
 
-    fh = open(os.path.join(base['EXPDIR'], '%s.crontab' % base['PSLOT']), 'w')
+    fh = open(os.path.join(base['EXPDIR'], f'''{base['PSLOT']}.crontab'''), 'w')
     fh.write(''.join(strings))
     fh.close()
 
