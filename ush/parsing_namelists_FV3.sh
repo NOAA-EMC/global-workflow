@@ -223,10 +223,10 @@ EOF
   lsoil_lsm    = ${lsoil_lsm:-"4"}
   do_mynnedmf  = ${do_mynnedmf:-".false."}
   do_mynnsfclay = ${do_mynnsfclay:-".false."}
-  icloud_bl    = ${icloud_bl:-"1"}	! In config.fcst
-  bl_mynn_edmf = ${bl_mynn_edmf:-"1"}	! In config.fcst
-  bl_mynn_tkeadvect=${bl_mynn_tkeadvect:-".true."}	! In config.fcst
-  bl_mynn_edmf_mom=${bl_mynn_edmf_mom:-"1"}	! In config.fcst
+  icloud_bl    = ${icloud_bl:-"1"}
+  bl_mynn_edmf = ${bl_mynn_edmf:-"1"}	
+  bl_mynn_tkeadvect=${bl_mynn_tkeadvect:-".true."}
+  bl_mynn_edmf_mom=${bl_mynn_edmf_mom:-"1"}	
   min_lakeice  = ${min_lakeice:-"0.15"}
   min_seaice   = ${min_seaice:-"0.15"}
 EOF
@@ -279,14 +279,14 @@ cat >> input.nml <<EOF
   pdfcld       = ${pdfcld:-".false."}
   fhswr        = ${FHSWR:-"3600."}
   fhlwr        = ${FHLWR:-"3600."}
-  ialb         = ${IALB:-"1"}           ! In config.fcst
-  iems         = ${IEMS:-"1"}           ! In config.fcst
-  iaer         = $IAER			! In config.fcst
-  icliq_sw     = ${icliq_sw:-"2"}	! In config.fcst
-  ico2         = $ICO2			! In config.fcst
-  isubc_sw     = ${isubc_sw:-"2"}	! In config.fcst
-  isubc_lw     = ${isubc_lw:-"2"}	! In config.fcst
-  isol         = ${ISOL:-"2"}		! In config.fcst
+  ialb         = ${IALB:-"1"}           
+  iems         = ${IEMS:-"1"}           
+  iaer         = $IAER			
+  icliq_sw     = ${icliq_sw:-"2"}	
+  ico2         = $ICO2			
+  isubc_sw     = ${isubc_sw:-"2"}	
+  isubc_lw     = ${isubc_lw:-"2"}	
+  isol         = ${ISOL:-"2"}	
   lwhtr        = ${lwhtr:-".true."}
   swhtr        = ${swhtr:-".true."}
   cnvgwd       = ${cnvgwd:-".true."}
@@ -323,7 +323,7 @@ cat >> input.nml <<EOF
   iopt_stc     = ${iopt_stc:-"1"}
   debug        = ${gfs_phys_debug:-".false."}
   nstf_name    = $nstf_name
-  nst_anl      = $nst_anl            ! In Workflow
+  nst_anl      = $nst_anl           
   psautco      = ${psautco:-"0.0008,0.0005"}
   prautco      = ${prautco:-"0.00015,0.00015"}
   lgfdlmprad   = ${lgfdlmprad:-".false."}
