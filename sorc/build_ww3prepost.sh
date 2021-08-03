@@ -10,7 +10,6 @@ finalexecdir=$( pwd -P )/../exec
 
 set +x
 source ./machine-setup.sh > /dev/null 2>&1
-
 source ../modulefiles/modulefile.ww3.$target
 set -x 
 
