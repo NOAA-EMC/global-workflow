@@ -85,7 +85,6 @@ if [ $cplwav = ".true." ]; then
     rc=$?
     if [[ $rc -ne 0 ]] ; then
       echo "FATAL: Unable to copy $ORIGIN_ROOT/$CPL_WAVIC/$CDATE/wav/$grdID/*restart.$grdID to $ICSDIR/$CDATE/wav/ (Error code $rc)" 
-      exit $rc
     fi
     ((err+=$rc))
   done
