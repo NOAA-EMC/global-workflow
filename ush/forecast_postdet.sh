@@ -198,25 +198,82 @@ FV3_GFS_postdet(){
 		$NLN ${src_grid_spec} $DATA/INPUT/${CASE}_mosaic.nc
 	fi
 
-	if [ -z ${OROFIX} ]; then
-		if [ $FRAC_GRID ]; then
-			FIXoro=${FIXoro:-$FIX_DIR/fix_fv3_fracoro}/${CASE}.mx${OCNRES}_frac/${CASE}.mx${OCNRES}_
-		else
-			FIXoro=$FIXfv3/$CASE/${CASE}_oro_data.
-		fi
+	if [ $FRAC_GRID = ".true." ]; then
+		OROFIX=${OROFIX:-"${FIX_DIR}/fix_fv3_fracoro/${CASE}.mx${OCNRES}_frac"}
+		FIX_SFC=${FIX_SFC:-"${OROFIX}/fix_sfc"}
+		for n in $(seq 1 $ntiles); do
+			$NLN ${OROFIX}/oro_${CASE}.mx${OCNRES}.tile${n}.nc $DATA/INPUT/oro_data.tile${n}.nc
+		done
 	else
-		FIXoro=${OROFIX}/oro_data.
+		OROFIX=${OROFIX:-"${FIXfv3}/${CASE}"}
+		FIX_SFC=${FIX_SFC:-"${FIXgrd}/fix_sfc"}
+		for n in $(seq 1 $ntiles); do
+			$NLN ${OROFIX}/${CASE}_oro_data.tile${n}.nc $DATA/INPUT/oro_data.tile${n}.nc
+		done
 	fi
-	for n in $(seq 1 $ntiles); do
-		$NLN ${FIXoro}tile${n}.nc $DATA/INPUT/oro_data.tile${n}.nc
-	done
 
+	export CCPP_SUITE=${CCPP_SUITE:-"FV3_GFS_v16"}
+	_suite_file=$HOMEgfs/sorc/ufs_coupled.fd/FV3/ccpp/suites/suite_${CCPP_SUITE}.xml
+
+	if [ ! -f ${_suite_file} ]; then
+		echo "FATAL: CCPP Suite file ${_suite_file} does not exist!"
+		exit 2
+	fi
+
+	# Scan suite file to determine whether it uses Noah-MP
+	if [ $(grep noahmpdrv ${_suite_file} | wc -l ) -gt 0 ]; then
+		lsm="2"
+		landice=".false."
+		iopt_dveg=${iopt_dveg:-"4"}
+		iopt_crs=${iopt_crs:-"2"}
+		iopt_btr=${iopt_btr:-"1"}
+		iopt_run=${iopt_run:-"1"}
+		iopt_sfc=${iopt_sfc:-"1"}
+		iopt_frz=${iopt_frz:-"1"}
+		iopt_inf=${iopt_inf:-"1"}
+		iopt_rad=${iopt_rad:-"3"}
+		iopt_alb=${iopt_alb:-"1"}
+		iopt_snf=${iopt_snf:-"4"}
+		iopt_tbot=${iopt_tbot:-"2"}
+		iopt_stc=${iopt_stc:-"3"}
+	else
+		lsm="1"
+		landice=".true."
+		iopt_dveg=${iopt_dveg:-"1"}
+		iopt_crs=${iopt_crs:-"1"}
+		iopt_btr=${iopt_btr:-"1"}
+		iopt_run=${iopt_run:-"1"}
+		iopt_sfc=${iopt_sfc:-"1"}
+		iopt_frz=${iopt_frz:-"1"}
+		iopt_inf=${iopt_inf:-"1"}
+		iopt_rad=${iopt_rad:-"1"}
+		iopt_alb=${iopt_alb:-"2"}
+		iopt_snf=${iopt_snf:-"4"}
+		iopt_tbot=${iopt_tbot:-"2"}
+		iopt_stc=${iopt_stc:-"1"}
+	fi
+
+	# Scan suite file to determine whether it uses UGWP v1
+	if [ $(grep -i ugwpv1_gsldrag ${_suite_file} | wc -l ) -gt 0 ]; then
+		gwd_opt="2"
+       	knob_ugwp_version="1"
+		OROFIX_ugwd=${OROFIX_ugwd:-"${FIX_DIR}/fix_ugwd"}
+		$NLN ${OROFIX_ugwd}/ugwp_limb_tau.nc $DATA/ugwp_limb_tau.nc
+		for n in $(seq 1 $ntiles); do
+			$NLN ${OROFIX_ugwd}/$CASE/${CASE}_oro_data_ls.tile${n}.nc $DATA/INPUT/oro_data_ls.tile${n}.nc
+			$NLN ${OROFIX_ugwd}/$CASE/${CASE}_oro_data_ss.tile${n}.nc $DATA/INPUT/oro_data_ss.tile${n}.nc
+		done
+	else
+		gwd_opt="1"
+       	knob_ugwp_version="0"
+       	launch_level=${launch_level:-$(echo "$LEVS/2.35" |bc)}
+	fi
+	
 	# GFS standard input data
-
 	IALB=${IALB:-1}
 	IEMS=${IEMS:-1}
 	ISOL=${ISOL:-2}
-	IAER=${IAER:-111}
+	IAER=${IAER:-1011}
 	ICO2=${ICO2:-2}
 
 	if [ ${new_o3forc:-YES} = YES ]; then
@@ -253,6 +310,21 @@ FV3_GFS_postdet(){
 		for file in $(ls $FIX_AM/global_volcanic_aerosols*) ; do
 			$NLN $file $DATA/$(echo $(basename $file) | sed -e "s/global_//g")
 		done
+	fi
+
+	# MERRA 2
+	if [ $IAER -eq "1011" ]; then
+		FIX_AER="${FIX_DIR}/fix_aer"
+		for month in $(seq 1 12); do
+			MM=$(printf %02d $month)
+			$NLN "${FIX_AER}/merra2.aerclim.2003-2014.m${MM}.nc" "aeroclim.m${MM}.nc"
+		done
+		FIX_LUT="${FIX_DIR}/fix_lut"
+		$NLN "${FIX_LUT}/optics_BC.v1_3.dat" "optics_BC.dat"
+		$NLN "${FIX_LUT}/optics_OC.v1_3.dat" "optics_OC.dat"
+		$NLN "${FIX_LUT}/optics_DU.v15_3.dat" "optics_DU.dat"
+		$NLN "${FIX_LUT}/optics_SS.v3_3.dat" "optics_SS.dat"
+		$NLN "${FIX_LUT}/optics_SU.v1_3.dat" "optics_SU.dat"
 	fi
 
 	# inline post fix files
@@ -295,30 +367,19 @@ FV3_GFS_postdet(){
 	FNTSFC=${FNTSFC:-"$FIX_AM/RTGSST.1982.2012.monthly.clim.grb"}
 	FNSNOC=${FNSNOC:-"$FIX_AM/global_snoclim.1.875.grb"}
 	FNZORC=${FNZORC:-"igbp"}
-	FNALBC2=${FNALBC2:-"$FIX_AM/global_albedo4.1x1.grb"}
+	FNALBC2=${FNALBC2:-"${FIX_SFC}/${CASE}.facsf.tileX.nc"}
 	FNAISC=${FNAISC:-"$FIX_AM/CFSR.SEAICE.1982.2012.monthly.clim.grb"}
-	FNTG3C=${FNTG3C:-"$FIX_AM/global_tg3clim.2.6x1.5.grb"}
-	FNVEGC=${FNVEGC:-"$FIX_AM/global_vegfrac.0.144.decpercent.grb"}
-	#if [ $cpl = ".true." ]; then
-	#        export FNMSKH=${FNMSKH:-"$FIX_AM/seaice_newland.grb"}
-	#else
-	export FNMSKH=${FNMSKH:-"$FIX_AM/global_slmask.t1534.3072.1536.grb"}
-	#fi
-	FNVMNC=${FNVMNC:-"$FIX_AM/global_shdmin.0.144x0.144.grb"}
-	FNVMXC=${FNVMXC:-"$FIX_AM/global_shdmax.0.144x0.144.grb"}
-	FNSLPC=${FNSLPC:-"$FIX_AM/global_slope.1x1.grb"}
-	FNALBC=${FNALBC:-"$FIX_AM/global_snowfree_albedo.bosu.t${JCAP}.${LONB}.${LATB}.rg.grb"}
-	FNVETC=${FNVETC:-"$FIX_AM/global_vegtype.igbp.t${JCAP}.${LONB}.${LATB}.rg.grb"}
-	FNSOTC=${FNSOTC:-"$FIX_AM/global_soiltype.statsgo.t${JCAP}.${LONB}.${LATB}.rg.grb"}
-	FNABSC=${FNABSC:-"$FIX_AM/global_mxsnoalb.uariz.t${JCAP}.${LONB}.${LATB}.rg.grb"}
+	FNTG3C=${FNTG3C:-"${FIX_SFC}/${CASE}.substrate_temperature.tileX.nc"}
+	FNVEGC=${FNVEGC:-"${FIX_SFC}/${CASE}.vegetation_greenness.tileX.nc"}
+	FNMSKH=${FNMSKH:-"$FIX_AM/global_slmask.t1534.3072.1536.grb"}
+	FNVMNC=${FNVMNC:-"${FIX_SFC}/${CASE}.vegetation_greenness.tileX.nc"}
+	FNVMXC=${FNVMXC:-"${FIX_SFC}/${CASE}.vegetation_greenness.tileX.nc"}
+	FNSLPC=${FNSLPC:-"${FIX_SFC}/${CASE}.slope_type.tileX.nc"}
+	FNALBC=${FNALBC:-"${FIX_SFC}/${CASE}.snowfree_albedo.tileX.nc"}
+	FNVETC=${FNVETC:-"${FIX_SFC}/${CASE}.vegetation_type.tileX.nc"}
+	FNSOTC=${FNSOTC:-"${FIX_SFC}/${CASE}.soil_type.tileX.nc"}
+	FNABSC=${FNABSC:-"${FIX_SFC}/${CASE}.maximum_snow_albedo.tileX.nc"}
 	FNSMCC=${FNSMCC:-"$FIX_AM/global_soilmgldas.statsgo.t${JCAP}.${LONB}.${LATB}.grb"}
-
-	# If the appropriate resolution fix file is not present, use the highest resolution available (T1534)
-	[[ ! -f $FNALBC ]] && FNALBC="$FIX_AM/global_snowfree_albedo.bosu.t1534.3072.1536.rg.grb"
-	[[ ! -f $FNVETC ]] && FNVETC="$FIX_AM/global_vegtype.igbp.t1534.3072.1536.rg.grb"
-	[[ ! -f $FNSOTC ]] && FNSOTC="$FIX_AM/global_soiltype.statsgo.t1534.3072.1536.rg.grb"
-	[[ ! -f $FNABSC ]] && FNABSC="$FIX_AM/global_mxsnoalb.uariz.t1534.3072.1536.rg.grb"
-	[[ ! -f $FNSMCC ]] && FNSMCC="$FIX_AM/global_soilmgldas.statsgo.t1534.3072.1536.grb"
 
 	# NSST Options
 	# nstf_name contains the NSST related parameters
@@ -426,6 +487,8 @@ FV3_GFS_postdet(){
 		ISEED_SKEB=$((CDATE*1000 + MEMBER*10 + 1))
 		ISEED_SHUM=$((CDATE*1000 + MEMBER*10 + 2))
 		ISEED_SPPT=$((CDATE*1000 + MEMBER*10 + 3))
+		# CA Seed is only 32-bit
+		ISEED_CA=$(( (CDATE*1000 + MEMBER*10 + 4) % 2147483647 ))
 	else
 		ISEED=${ISEED:-0}
 	fi

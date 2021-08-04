@@ -58,6 +58,7 @@ fv3_settings_template: !Template &fv3_settings_template
   warm_start:         { type: bool }
   read_increment:     { type: bool }
   restart_interval:   { type: string }
+  lheatstrg:          { type: bool }
 #  FIELD_TABLE:        { type: string }
 
   LEVS:

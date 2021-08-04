@@ -130,10 +130,6 @@ config_fcst:
     # Options of stratosphere O3 physics reaction coefficients
     export new_o3forc="{tools.YES_NO(doc.fv3_gfs_settings.new_o3force)}"
 
-
-    export do_ugwp=".false."
-    export do_tofd=".true."
-
     # fv3_core_nml section
     export dnats={doc.fv3_gfs_settings.phy_dependent_var.dnats}
     export do_sat_adj="{tools.fort(doc.fv3_gfs_settings.phy_dependent_var.do_sat_adjust)}"
@@ -150,11 +146,11 @@ config_fcst:
     export n_split={doc.fv3_gfs_settings.n_split}
     export adjust_dry_mass=".false."
 
-    export IALB=1
-    export IEMS=1
-    export ISOL=2
-    export IAER=5111
-    export ICO2=2
+    export IALB={doc.fv3_gfs_settings.IALB}
+    export IEMS={doc.fv3_gfs_settings.IEMS}
+    export ISOL={doc.fv3_gfs_settings.ISOL}
+    export IAER={doc.fv3_gfs_settings.IAER}
+    export ICO2={doc.fv3_gfs_settings.ICO2}
 
     export icliq_sw=2
     export iovr=3
@@ -172,7 +168,7 @@ config_fcst:
     tbf=""
     if [ $satmedmf = ".true." ]; then tbf="_satmedmf" ; fi
 
-    export lheatstrg=.false.
+    export lheatstrg="{tools.fort(doc.fv3_gfs_settings.lheatstrg)}"
 
     export random_clds="{tools.fort(doc.fv3_gfs_settings.phy_dependent_var.random_clds)}"
     #export cnvcld="{tools.fort(doc.fv3_gfs_settings.cnvcld)}"

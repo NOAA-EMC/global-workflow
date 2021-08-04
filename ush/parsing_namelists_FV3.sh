@@ -12,6 +12,7 @@ FV3_namelists(){
 
 # copy over the tables
 DIAG_TABLE=${DIAG_TABLE:-$PARM_FV3DIAG/diag_table}
+DIAG_TABLE_AOD=${DIAG_TABLE_AOD:-$PARM_FV3DIAG/diag_table_aod}
 DATA_TABLE=${DATA_TABLE:-$PARM_FV3DIAG/data_table}
 FIELD_TABLE=${FIELD_TABLE:-$PARM_FV3DIAG/field_table}
 
@@ -28,6 +29,11 @@ FV3 Forecast
 ${sPDY:0:4} ${sPDY:4:2} ${sPDY:6:2} ${scyc} 0 0
 EOF
 cat $DIAG_TABLE >> diag_table
+fi
+
+# Append AOD diag table for MERRA2
+if [ $IAER = "1011" ]; then
+  cat $DIAG_TABLE_AOD >> diag_table
 fi
 
 $NCP $DATA_TABLE  data_table
@@ -48,7 +54,7 @@ cat > input.nml <<EOF
   blocksize = $blocksize
   chksum_debug = $chksum_debug
   dycore_only = $dycore_only
-  ccpp_suite = ${CCPP_SUITE:-"FV3_GFS_v15"}
+  ccpp_suite = $CCPP_SUITE
   fdiag = $FDIAG
   fhmax = $FHMAX
   fhout = $FHOUT
@@ -89,11 +95,11 @@ cat > input.nml <<EOF
   ntiles = $ntiles
   npz = $npz
   dz_min =  ${dz_min:-"6"}    ! CROW configured
-  psm_bc = ${psm_bc:-"0"}    ! CROW configured
+  psm_bc = ${psm_bc:-"1"}    ! CROW configured
   grid_type = -1
   make_nh = $make_nh 
   fv_debug = ${fv_debug:-".false."}
-  range_warn = ${range_warn:-".false."}
+  range_warn = ${range_warn:-".true."}
   reset_eta = .false.
   n_sponge = ${n_sponge:-"10"}    ! CROW configured
   nudge_qv = ${nudge_qv:-".true."}
@@ -121,7 +127,7 @@ cat > input.nml <<EOF
   fv_sg_adj = ${fv_sg_adj:-"450"}
   d2_bg = 0.
   nord = ${nord:-3}		! CROW configured
-  dddmp = ${dddmp:-0.2}		! CROW configured
+  dddmp = ${dddmp:-0.1}		! CROW configured
   d4_bg = ${d4_bg:-0.15}	! CROW configured
   vtdm4 = $vtdm4
   delt_max = ${delt_max:-"0.002"}
@@ -154,21 +160,6 @@ cat > input.nml <<EOF
   read_increment = $read_increment
   res_latlon_dynamics = $res_latlon_dynamics
   $fv_core_nml
-/
-
-&cires_ugwp_nml
-       knob_ugwp_solver  = ${knob_ugwp_solver:-2}
-       knob_ugwp_source  = ${knob_ugwp_source:-1,1,0,0}
-       knob_ugwp_wvspec  = ${knob_ugwp_wvspec:-1,25,25,25}
-       knob_ugwp_azdir   = ${knob_ugwp_azdir:-2,4,4,4}
-       knob_ugwp_stoch   = ${knob_ugwp_stoch:-0,0,0,0}
-       knob_ugwp_effac   = ${knob_ugwp_effac:-1,1,1,1}
-       knob_ugwp_doaxyz  = ${knob_ugwp_doaxyz:-1}
-       knob_ugwp_doheat  = ${knob_ugwp_doheat:-1}
-       knob_ugwp_dokdis  = ${knob_ugwp_dokdis:-1}
-       knob_ugwp_ndx4lh  = ${knob_ugwp_ndx4lh:-1}
-       knob_ugwp_version = ${knob_ugwp_version:-0}
-       launch_level      = ${launch_level:-54}                   
 /
 
 &external_ic_nml
@@ -215,8 +206,8 @@ EOF
   min_lakeice  = ${min_lakeice:-"0.15"}
   min_seaice   = ${min_seaice:-"0.15"}
 EOF
- ;;
-  "FV3_GFS_v16_coupled" | "FV3_GFS_v16_couplednsst")
+ ;;  
+  FV3_GFS_v16_coupled*)
   cat >> input.nml << EOF
   iovr         = ${iovr:-"3"}
   ltaerosol    = ${ltaerosol:-".false."}
@@ -224,7 +215,6 @@ EOF
   ttendlim     = ${ttendlim:-"0.005"}
   oz_phys      = ${oz_phys:-".false."}
   oz_phys_2015 = ${oz_phys_2015:-".true."}
-  lsoil_lsm    = ${lsoil_lsm:-"4"}
   do_mynnedmf  = ${do_mynnedmf:-".false."}
   do_mynnsfclay = ${do_mynnsfclay:-".false."}
   icloud_bl    = ${icloud_bl:-"1"}
@@ -235,7 +225,7 @@ EOF
   min_seaice   = ${min_seaice:-"0.15"}
 EOF
   ;;
-  "FV3_GFS_v16")
+  FV3_GFS_v16*)
   cat >> input.nml << EOF
   iovr         = ${iovr:-"3"}
   ltaerosol    = ${ltaerosol:-".false."}
@@ -274,9 +264,10 @@ cat >> input.nml <<EOF
   redrag       = ${redrag:-".true."}
   dspheat      = ${dspheat:-".true."}
   hybedmf      = ${hybedmf:-".false."}
-  satmedmf     = ${satmedmf-".true."}
-  isatmedmf    = ${isatmedmf-"1"}
-  lheatstrg    = ${lheatstrg-".false."}
+  satmedmf     = ${satmedmf:-".true."}
+  isatmedmf    = ${isatmedmf:-"1"}
+  lheatstrg    = ${lheatstrg:-".true."}
+  lseaspray    = ${lseaspray:-".true."}
   random_clds  = ${random_clds:-".true."} ! CROW configured
   trans_trac   = ${trans_trac:-".true."}
   cnvcld       = ${cnvcld:-".true."}
@@ -287,7 +278,7 @@ cat >> input.nml <<EOF
   ivegsrc      = ${ivegsrc:-"1"}
   isot         = ${isot:-"1"}
   lsoil        = ${lsoil:-"4"}
-  lsm          = ${lsm:-"1"}
+  lsm          = ${lsm:-"2"}
   iopt_dveg    = ${iopt_dveg:-"1"}
   iopt_crs     = ${iopt_crs:-"1"}
   iopt_btr     = ${iopt_btr:-"1"}
@@ -309,8 +300,6 @@ cat >> input.nml <<EOF
   effr_in      = ${effr_in:-".false."}
   cplwav       = ${cplwav:-".false."}              ! CROW configured
   ldiag_ugwp   = ${ldiag_ugwp:-".false."}
-  do_ugwp      = ${do_ugwp:-".true."}
-  do_tofd      = ${do_tofd:-".true."}
   do_sppt      = ${DO_SPPT:-".false."}
   do_shum      = ${DO_SHUM:-".false."}
   do_skeb      = ${DO_SKEB:-".false."}
@@ -336,12 +325,96 @@ if [ $DOIAU = "YES" ]; then
 EOF
 fi
 
-cat >> input.nml <<EOF
+if [ ${DO_CA:-"YES"} = "YES" ]; then
+  cat >> input.nml << EOF
+  do_ca      = .True.
+  ca_sgs     = ${ca_sgs:-".True."}
+  nca        = ${nca:-"1"}
+  scells     = ${scells:-"2600"}
+  tlives     = ${tlives:-"1800"}
+  nseed      = ${nseed:-"1"}
+  nfracseed  = ${nfracseed:-"0.5"}
+  rcell      = ${rcell:-"0.72"}
+  ca_trigger = ${ca_trigger:-".True."}
+  nspinup    = ${nspinup:-"1"}
+  iseed_ca   = ${ISEED_CA:-"12345"}
+EOF
+fi
+
+case ${gwd_opt:-"2"} in
+  1)
+  cat >> input.nml << EOF
+  gwd_opt      = 1
+  do_ugwp      = .false.
+  do_ugwp_v0   = .false.
+  do_ugwp_v1   = .false.
+  do_tofd      = .true.
   $gfs_physics_nml
 /
-EOF
 
-echo "" >> input.nml
+&cires_ugwp_nml
+  knob_ugwp_version = ${knob_ugwp_version:-0}
+  knob_ugwp_solver  = ${knob_ugwp_solver:-2}
+  knob_ugwp_source  = ${knob_ugwp_source:-1,1,0,0}
+  knob_ugwp_wvspec  = ${knob_ugwp_wvspec:-1,25,25,25}
+  knob_ugwp_azdir   = ${knob_ugwp_azdir:-2,4,4,4}
+  knob_ugwp_stoch   = ${knob_ugwp_stoch:-0,0,0,0}
+  knob_ugwp_effac   = ${knob_ugwp_effac:-1,1,1,1}
+  knob_ugwp_doaxyz  = ${knob_ugwp_doaxyz:-1}
+  knob_ugwp_doheat  = ${knob_ugwp_doheat:-1}
+  knob_ugwp_dokdis  = ${knob_ugwp_dokdis:-1}
+  knob_ugwp_ndx4lh  = ${knob_ugwp_ndx4lh:-1}
+  launch_level      = ${launch_level:-54}
+  $cires_ugwp_nml
+/
+
+EOF
+    ;;
+  2)
+  cat >> input.nml << EOF
+  gwd_opt      = 2
+  do_ugwp      = .false.
+  do_ugwp_v0   = .false.
+  do_ugwp_v1   = .true.
+  do_tofd      = .false.
+  do_ugwp_v1_orog_only = .false.
+  do_gsl_drag_ls_bl    = ${do_gsl_drag_ls_bl:-".true."}
+  do_gsl_drag_ss       = ${do_gsl_drag_ss:-".true."}
+  do_gsl_drag_tofd     = ${do_gsl_drag_tofd:-".true."}
+  $gfs_physics_nml
+/
+
+&cires_ugwp_nml
+  knob_ugwp_version = ${knob_ugwp_version:-1}
+  knob_ugwp_solver  = ${knob_ugwp_solver:-2}
+  knob_ugwp_source  = ${knob_ugwp_source:-1,1,0,0}
+  knob_ugwp_wvspec  = ${knob_ugwp_wvspec:-1,25,25,25}
+  knob_ugwp_azdir   = ${knob_ugwp_azdir:-2,4,4,4}
+  knob_ugwp_stoch   = ${knob_ugwp_stoch:-0,0,0,0}
+  knob_ugwp_effac   = ${knob_ugwp_effac:-1,1,1,1}
+  knob_ugwp_doaxyz  = ${knob_ugwp_doaxyz:-1}
+  knob_ugwp_doheat  = ${knob_ugwp_doheat:-1}
+  knob_ugwp_dokdis  = ${knob_ugwp_dokdis:-2}
+  knob_ugwp_ndx4lh  = ${knob_ugwp_ndx4lh:-4}
+  knob_ugwp_palaunch = ${knob_ugwp_palaunch:-275.0e2}
+  knob_ugwp_nslope   = ${knob_ugwp_nslope:-1}
+  knob_ugwp_lzmax    = ${knob_ugwp_lzmax:-15.750e3}
+  knob_ugwp_lzmin    = ${knob_ugwp_lzmin:-0.75e3}
+  knob_ugwp_lzstar   = ${knob_ugwp_lzstar:-2.0e3}
+  knob_ugwp_taumin   = ${knob_ugwp_taumin:-0.25e-3}
+  knob_ugwp_tauamp   = ${knob_ugwp_tauamp:-3.0e-3}
+  knob_ugwp_lhmet    = ${knob_ugwp_lhmet:-200.0e3}
+  knob_ugwp_orosolv  = ${knob_ugwp_orosolv:-'pss-1986'}       
+  $cires_ugwp_nml
+/
+
+EOF
+    ;;
+  *)
+    echo "FATAL: Invalid gwd_opt specified: $gwd_opt"
+    exit 1
+    ;;
+esac
 
 cat >> input.nml <<EOF
 &gfdl_cloud_microphysics_nml
@@ -427,7 +500,7 @@ cat >> input.nml <<EOF
   FSMCL(2) = ${FSMCL2:-99999}
   FSMCL(3) = ${FSMCL3:-99999}
   FSMCL(4) = ${FSMCL4:-99999}
-  LANDICE  = ${landice:-".true."}
+  LANDICE  = ${landice:-".false."}
   FTSFS = ${FTSFS:-90}
   FAISL = ${FAISL:-99999}
   FAISS = ${FAISS:-99999}
