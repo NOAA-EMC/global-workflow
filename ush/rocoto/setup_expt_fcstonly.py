@@ -222,7 +222,7 @@ Create COMROT experiment directory structure'''
       queue_service = 'service'
       partition_batch = '$PARTITION_BATCH'
       chgrp_rstprod = 'YES'
-      chgrp_cmd = 'chgrp rstprrod'
+      chgrp_cmd = 'chgrp rstprod'
       exp_warm_start = '.false.'
       hpssarch = 'YES'
     elif machine == 'ORION':
