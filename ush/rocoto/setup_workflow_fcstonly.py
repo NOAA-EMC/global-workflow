@@ -173,14 +173,14 @@ def get_resources(dict_configs, cdump='gdas'):
         taskstr = f'{task.upper()}_{cdump.upper()}'
 
         strings.append(f'\t<!ENTITY QUEUE_{taskstr}     "{queuestr}">\n')
-        if scheduler in ['slurm'] and machine in ['ORION'] and task not in ['getic', 'arch']:
+        if scheduler in ['slurm'] and machine in ['ORION', 'JET'] and task not in ['getic', 'arch']:
             strings.append(f'\t<!ENTITY PARTITION_{taskstr} "&PARTITION_BATCH;">\n')
         if scheduler in ['slurm'] and task in ['getic', 'arch']:
             strings.append(f'\t<!ENTITY PARTITION_{taskstr} "&PARTITION_SERVICE;">\n')
-        if scheduler in ['slurm'] and machine in ['JET'] and task in ['fcst']:
-            strings.append(f'\t<!ENTITY PARTITION_{taskstr} "&PARTITION_BATCH;">\n')
-        if scheduler in ['slurm'] and machine in ['JET'] and task in ['post']:
-            strings.append(f'\t<!ENTITY PARTITION_{taskstr} "&PARTITION_BATCH;">\n')
+#        if scheduler in ['slurm'] and machine in ['JET'] and task in ['fcst']:
+#            strings.append(f'\t<!ENTITY PARTITION_{taskstr} "&PARTITION_BATCH;">\n')
+#        if scheduler in ['slurm'] and machine in ['JET'] and task in ['post']:
+#            strings.append(f'\t<!ENTITY PARTITION_{taskstr} "&PARTITION_BATCH;">\n')
         strings.append(f'\t<!ENTITY WALLTIME_{taskstr}  "{wtimestr}">\n')
         strings.append(f'\t<!ENTITY RESOURCES_{taskstr} "{resstr}">\n')
         if len(memstr) != 0:
