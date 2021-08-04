@@ -223,7 +223,6 @@ Create COMROT experiment directory structure'''
       partition_batch = '$PARTITION_BATCH'
       chgrp_rstprod = 'YES'
       chgrp_cmd = 'chgrp rstprod'
-      exp_warm_start = '.false.'
       hpssarch = 'YES'
     elif machine == 'ORION':
       base_git = '/work/noaa/global/glopara/git'
