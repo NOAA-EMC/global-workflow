@@ -688,7 +688,6 @@ def get_workflow(dict_configs, cdump='gdas'):
     if do_vrfy in ['Y', 'YES']:
         dep_dict = {'type':'task', 'name':f'{cdump}vrfy'}
         deps.append(rocoto.add_dependency(dep_dict))
-#    dep_dict = {'type':'streq', 'left':'&ARCHIVE_TO_HPSS;', 'right':'YES'}
     dep_dict = {'type':'streq', 'left':'&ARCHIVE_TO_HPSS;', 'right':f'{hpssarch}'}
     deps.append(rocoto.add_dependency(dep_dict))
     if do_wave in ['Y', 'YES']:
