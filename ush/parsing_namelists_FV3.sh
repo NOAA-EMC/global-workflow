@@ -54,7 +54,7 @@ cat > input.nml <<EOF
   blocksize = $blocksize
   chksum_debug = $chksum_debug
   dycore_only = $dycore_only
-  ccpp_suite = $CCPP_SUITE
+  ccpp_suite = '$CCPP_SUITE'
   fdiag = $FDIAG
   fhmax = $FHMAX
   fhout = $FHOUT
@@ -170,21 +170,6 @@ cat >> input.nml << EOF
   $fv_core_nml
 /
 
-&cires_ugwp_nml
-       knob_ugwp_solver  = ${knob_ugwp_solver:-2}
-       knob_ugwp_source  = ${knob_ugwp_source:-1,1,0,0}
-       knob_ugwp_wvspec  = ${knob_ugwp_wvspec:-1,25,25,25}
-       knob_ugwp_azdir   = ${knob_ugwp_azdir:-2,4,4,4}
-       knob_ugwp_stoch   = ${knob_ugwp_stoch:-0,0,0,0}
-       knob_ugwp_effac   = ${knob_ugwp_effac:-1,1,1,1}
-       knob_ugwp_doaxyz  = ${knob_ugwp_doaxyz:-1}
-       knob_ugwp_doheat  = ${knob_ugwp_doheat:-1}
-       knob_ugwp_dokdis  = ${knob_ugwp_dokdis:-1}
-       knob_ugwp_ndx4lh  = ${knob_ugwp_ndx4lh:-1}
-       knob_ugwp_version = ${knob_ugwp_version:-0}
-       launch_level      = ${launch_level:-54}                   
-/
-
 &external_ic_nml
   filtered_terrain = $filtered_terrain
   levp = $LEVS
@@ -201,7 +186,6 @@ cat >> input.nml << EOF
   fhcyc        = $FHCYC			
   use_ufo      = ${use_ufo:-".true."}
   pre_rad      = ${pre_rad:-".false."}
-  ncld         = ${ncld:-1}		
   imp_physics  = ${imp_physics:-"99"}	
 EOF
 
@@ -348,11 +332,11 @@ cat >> input.nml <<EOF
   do_sppt      = ${DO_SPPT:-".false."}
   do_shum      = ${DO_SHUM:-".false."}
   do_skeb      = ${DO_SKEB:-".false."}
-  frac_grid    = ${FRAC_GRID:-".false."}
 EOF
 
 if [ $cpl = .true. ]; then
   cat >> input.nml << EOF
+  frac_grid    = ${FRAC_GRID:-".true."}
   cplchm = ${cplchem:-".false."}
   cplflx       = $cplflx
   cplwav2atm   = ${cplwav2atm}       

@@ -97,8 +97,8 @@ FV3_GFS_predet(){
   IAU_OFFSET=${IAU_OFFSET:-0}
   
   # Model specific stuff
-  FCSTEXECDIR=${FCSTEXECDIR:-$HOMEgfs/sorc/fv3gfs.fd/NEMS/exe}
-  FCSTEXEC=${FCSTEXEC:-fv3_gfs.x}
+  FCSTEXECDIR=${FCSTEXECDIR:-$HOMEgfs/sorc/ufs_model.fd/build}
+  FCSTEXEC=${FCSTEXEC:-ufs_model}
   PARM_FV3DIAG=${PARM_FV3DIAG:-$HOMEgfs/parm/parm_fv3diag}
   PARM_POST=${PARM_POST:-$HOMEgfs/parm/post}
   

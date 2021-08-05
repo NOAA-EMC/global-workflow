@@ -1,9 +1,9 @@
 #!/bin/sh
 
 #####
-## This script writes nems.configure file 
-## first, select a "*.IN" templates based on 
-## $confignamevarfornems and parse values based on 
+## This script writes nems.configure file
+## first, select a "*.IN" templates based on
+## $confignamevarfornems and parse values based on
 ## $cpl** switches.
 ##
 ## This is a child script of modular
@@ -18,10 +18,10 @@ fi
 
 # Setup nems.configure
 DumpFields=${NEMSDumpFields:-false}
-cap_dbug_flag=${cap_dbug_flag:-0}          
+cap_dbug_flag=${cap_dbug_flag:-0}
 if [ $warm_start = ".true." ]; then
   cmeps_run_type='continue'
-else 
+else
   cmeps_run_type='startup'
 fi
 if [[ $inistep = "cold" ]]; then
@@ -39,7 +39,7 @@ WAV_model=${WAV_model:-'ww3'}
 CHM_model=${CHM_model:-'gocart'}
 
 ATMPETS=${ATMPETS:-8}
-MEDPETS=${MEDPETS:-8} 
+MEDPETS=${MEDPETS:-8}
 OCNPETS=${OCNPETS:-8}
 ICEPETS=${ICEPETS:-8}
 WAVPETS=${WAVPETS:-8}
@@ -51,10 +51,10 @@ USE_MOMMESH=${USE_MOMMESH:-"true"}
 rm -f $DATA/nems.configure
 
 med_petlist_bounds=${med_petlist_bounds:-"0 $(( $MEDPETS-1 ))"}
-atm_petlist_bounds=${atm_petlist_bounds:-"0 $(( $ATMPETS-1 ))"} 
-ocn_petlist_bounds=${ocn_petlist_bounds:-"$ATMPETS $(( $ATMPETS+$OCNPETS-1 ))"}  
-ice_petlist_bounds=${ice_petlist_bounds:-"$(( $ATMPETS+$OCNPETS )) $(( $ATMPETS+$OCNPETS+$ICEPETS-1 ))"} 
-wav_petlist_bounds=${wav_petlist_bounds:-"$(( $ATMPETS+$OCNPETS+$ICEPETS )) $(( $ATMPETS+$OCNPETS+$ICEPETS+$WAVPETS-1 ))"} 
+atm_petlist_bounds=${atm_petlist_bounds:-"0 $(( $ATMPETS-1 ))"}
+ocn_petlist_bounds=${ocn_petlist_bounds:-"$ATMPETS $(( $ATMPETS+$OCNPETS-1 ))"}
+ice_petlist_bounds=${ice_petlist_bounds:-"$(( $ATMPETS+$OCNPETS )) $(( $ATMPETS+$OCNPETS+$ICEPETS-1 ))"}
+wav_petlist_bounds=${wav_petlist_bounds:-"$(( $ATMPETS+$OCNPETS+$ICEPETS )) $(( $ATMPETS+$OCNPETS+$ICEPETS+$WAVPETS-1 ))"}
 chm_petlist_bounds=${chm_petlist_bounds:-"0 $(( $CHMPETS-1 ))"}
 
 # Copy the selected template into run directory
@@ -65,10 +65,10 @@ sed -i -e "s;@\[med_petlist_bounds\];$med_petlist_bounds;g" tmp1
 sed -i -e "s;@\[atm_petlist_bounds\];$atm_petlist_bounds;g" tmp1
 
 if [ $cplflx = .true. ]; then
-  if [ $restart_interval  -gt 0 ]; then 
-    restart_interval_nems=$restart_interval 
-  else 
-    restart_interval_nems=$FHMAX 
+  if [ $restart_interval  -gt 0 ]; then
+    restart_interval_nems=$restart_interval
+  else
+    restart_interval_nems=$FHMAX
   fi
   sed -i -e "s;@\[ocn_model\];$OCN_model;g" tmp1
   sed -i -e "s;@\[ocn_petlist_bounds\];$ocn_petlist_bounds;g" tmp1
@@ -107,7 +107,7 @@ echo "$(cat nems.configure)"
 
 if [ $cplflx = .true. ]; then
 
-#Create other CMEPS mediator related files 
+#Create other CMEPS mediator related files
 cat > pio_in << EOF
 &papi_inparm
   papi_ctr1_str = "PAPI_FP_OPS"
