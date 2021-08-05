@@ -41,6 +41,6 @@ else
 fi
 
 export GRIBVERSION='grib2'
-export SENDCOM="YES"
+export SENDCOM=${SENDCOM:-"YES"}
 
 echo "END: config.post"
