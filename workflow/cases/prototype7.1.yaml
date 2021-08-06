@@ -14,9 +14,10 @@ case:
     cplwav: .true.
     cplwav2atm: .true.
     cplflx: .true.
+    cplchem: .true.
     print_esmf: .false.
     esmf_profile: .false.
-    nems_temp: 'cpld_wave'
+    nems_temp: 'cpld_wave_aer'
     mom6ic_prepared: .false.
     inline_post: .true. 
     KEEPDATA: NO
