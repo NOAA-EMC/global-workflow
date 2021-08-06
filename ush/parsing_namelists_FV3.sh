@@ -107,7 +107,7 @@ cat >> input.nml << EOF
   grid_type = -1
   make_nh = $make_nh 
   fv_debug = ${fv_debug:-".false."}
-  range_warn = ${range_warn:-".false."}
+  range_warn = ${range_warn:-".true."}
   reset_eta = .false.
   n_sponge = ${n_sponge:-"10"}    
   nudge_qv = ${nudge_qv:-".true."}
@@ -135,7 +135,7 @@ cat >> input.nml << EOF
   fv_sg_adj = ${fv_sg_adj:-"450"}
   d2_bg = 0.
   nord = ${nord:-3}		
-  dddmp = ${dddmp:-0.2}	
+  dddmp = ${dddmp:-0.1}	
   d4_bg = ${d4_bg:-0.15}
   vtdm4 = $vtdm4
   delt_max = ${delt_max:-"0.002"}
@@ -282,6 +282,7 @@ cat >> input.nml <<EOF
   satmedmf     = ${satmedmf-".true."}
   isatmedmf    = ${isatmedmf-"1"}
   lheatstrg    = ${lheatstrg-".false."}
+  lseaspray    = ${lseaspray:-".false."}
   random_clds  = ${random_clds:-".true."} 
   trans_trac   = ${trans_trac:-".true."}
   cnvcld       = ${cnvcld:-".true."}
@@ -314,12 +315,10 @@ cat >> input.nml <<EOF
   effr_in      = ${effr_in:-".false."}
   cplwav       = ${cplwav:-".false."}        
   ldiag_ugwp   = ${ldiag_ugwp:-".false."}
-  do_ugwp      = ${do_ugwp:-".true."}
 EOF
 
 if [ $cpl = .true. ]; then
   cat >> input.nml << EOF
-  do_tofd      = ${do_tofd:-".false."}
   fscav_aero = ${fscav_aero:-'*:0.0'}
 EOF
 else
@@ -350,6 +349,22 @@ if [ $DOIAU = "YES" ]; then
   iau_delthrs  = ${IAU_DELTHRS}
   iau_inc_files= ${IAU_INC_FILES}
   iau_drymassfixer = .false.
+EOF
+fi
+
+if [ ${DO_CA:-"NO"} = "YES" ]; then
+  cat >> input.nml << EOF
+  do_ca      = .True.
+  ca_sgs     = ${ca_sgs:-".True."}
+  nca        = ${nca:-"1"}
+  scells     = ${scells:-"2600"}
+  tlives     = ${tlives:-"1800"}
+  nseed      = ${nseed:-"1"}
+  nfracseed  = ${nfracseed:-"0.5"}
+  rcell      = ${rcell:-"0.72"}
+  ca_trigger = ${ca_trigger:-".True."}
+  nspinup    = ${nspinup:-"1"}
+  iseed_ca   = ${ISEED_CA:-"12345"}
 EOF
 fi
 

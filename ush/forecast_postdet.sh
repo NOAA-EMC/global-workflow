@@ -203,8 +203,34 @@ EOF
   # Scan suite file to determine whether it uses Noah-MP
   if [ $(grep noahmpdrv ${_suite_file} | wc -l ) -gt 0 ]; then
     lsm="2"
+    landice=".false."
+    iopt_dveg=${iopt_dveg:-"4"}
+    iopt_crs=${iopt_crs:-"2"}
+    iopt_btr=${iopt_btr:-"1"}
+    iopt_run=${iopt_run:-"1"}
+    iopt_sfc=${iopt_sfc:-"1"}
+    iopt_frz=${iopt_frz:-"1"}
+    iopt_inf=${iopt_inf:-"1"}
+    iopt_rad=${iopt_rad:-"3"}
+    iopt_alb=${iopt_alb:-"1"}
+    iopt_snf=${iopt_snf:-"4"}
+    iopt_tbot=${iopt_tbot:-"2"}
+    iopt_stc=${iopt_stc:-"3"}
   else
     lsm="1"
+    landice=".true."
+    iopt_dveg=${iopt_dveg:-"1"}
+    iopt_crs=${iopt_crs:-"1"}
+    iopt_btr=${iopt_btr:-"1"}
+    iopt_run=${iopt_run:-"1"}
+    iopt_sfc=${iopt_sfc:-"1"}
+    iopt_frz=${iopt_frz:-"1"}
+    iopt_inf=${iopt_inf:-"1"}
+    iopt_rad=${iopt_rad:-"1"}
+    iopt_alb=${iopt_alb:-"2"}
+    iopt_snf=${iopt_snf:-"4"}
+    iopt_tbot=${iopt_tbot:-"2"}
+    iopt_stc=${iopt_stc:-"1"}
   fi
   
   # Scan suite file to determine whether it uses UGWP v1
@@ -471,6 +497,7 @@ EOF
     ISEED_SKEB=$((CDATE*1000 + MEMBER*10 + 1))
     ISEED_SHUM=$((CDATE*1000 + MEMBER*10 + 2))
     ISEED_SPPT=$((CDATE*1000 + MEMBER*10 + 3))
+    ISEED_CA=$(( (CDATE*1000 + MEMBER*10 + 4) % 2147483647 ))
   else
     ISEED=${ISEED:-0}
   fi
