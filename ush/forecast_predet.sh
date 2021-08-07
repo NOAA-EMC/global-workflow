@@ -1,6 +1,6 @@
-#! /bin/sh
+#!/bin/sh
 
-##### 
+#####
 ## "forecast_def.sh"
 ## This script sets value of all variables
 ##
@@ -32,7 +32,7 @@ DATM_predet(){
   if [ ! -d $DATA ]; then mkdir -p $DATA; fi
   if [ ! -d $DATA/DATM_INPUT ]; then mkdir -p $DATA/DATM_INPUT; fi
   FHMAX=${FHMAX:-9}
-  # Go to Run Directory (DATA)         
+  # Go to Run Directory (DATA)
   cd $DATA
 }
 
@@ -53,10 +53,10 @@ FV3_GFS_predet(){
   WRITE_DOPOST=${WRITE_DOPOST:-".false."}
   restart_interval=${restart_interval:-0}
   rst_invt1=`echo $restart_interval |cut -d " " -f 1`
-  
+
   PDY=$(echo $CDATE | cut -c1-8)
   cyc=$(echo $CDATE | cut -c9-10)
-  
+
   # Directories.
   pwd=$(pwd)
   NWPROD=${NWPROD:-${NWROOT:-$pwd}}
@@ -70,13 +70,13 @@ FV3_GFS_predet(){
   ROTDIR=${ROTDIR:-$pwd}         # rotating archive directory
   ICSDIR=${ICSDIR:-$pwd}         # cold start initial conditions
   DMPDIR=${DMPDIR:-$pwd}         # global dumps for seaice, snow and sst analysis
-  
+
   # Model resolution specific parameters
   DELTIM=${DELTIM:-225}
   layout_x=${layout_x:-8}
   layout_y=${layout_y:-16}
   LEVS=${LEVS:-65}
-  
+
   # Utilities
   NCP=${NCP:-"/bin/cp -p"}
   NLN=${NLN:-"/bin/ln -sf"}
@@ -84,32 +84,32 @@ FV3_GFS_predet(){
   SEND=${SEND:-"YES"}   #move final result to rotating directory
   ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
   KEEPDATA=${KEEPDATA:-"NO"}
-  
+
   # Other options
   MEMBER=${MEMBER:-"-1"} # -1: control, 0: ensemble mean, >0: ensemble member $MEMBER
   ENS_NUM=${ENS_NUM:-1}  # Single executable runs multiple members (e.g. GEFS)
   PREFIX_ATMINC=${PREFIX_ATMINC:-""} # allow ensemble to use recentered increment
-  
+
   # IAU options
   DOIAU=${DOIAU:-"NO"}
   IAUFHRS=${IAUFHRS:-0}
   IAU_DELTHRS=${IAU_DELTHRS:-0}
   IAU_OFFSET=${IAU_OFFSET:-0}
-  
+
   # Model specific stuff
   FCSTEXECDIR=${FCSTEXECDIR:-$HOMEgfs/sorc/ufs_model.fd/build}
   FCSTEXEC=${FCSTEXEC:-ufs_model}
   PARM_FV3DIAG=${PARM_FV3DIAG:-$HOMEgfs/parm/parm_fv3diag}
   PARM_POST=${PARM_POST:-$HOMEgfs/parm/post}
-  
+
   # Model config options
   APRUN_FV3=${APRUN_FV3:-${APRUN_FCST:-${APRUN:-""}}}
-  #the following NTHREAD_FV3 line is commented out because NTHREAD_FCST is not defined 
+  #the following NTHREAD_FV3 line is commented out because NTHREAD_FCST is not defined
   #and because NTHREADS_FV3 gets overwritten by what is in the env/${macine}.env
   #file and the value of npe_node_fcst is not correctly defined when using more than
   #one thread and sets NTHREADS_FV3=1 even when the number of threads is appropraitely >1
   #NTHREADS_FV3=${NTHREADS_FV3:-${NTHREADS_FCST:-${nth_fv3:-1}}}
-  NTHREADS_FV3=${nth_fv3:-1} 
+  NTHREADS_FV3=${nth_fv3:-1}
   cores_per_node=${cores_per_node:-${npe_node_fcst:-24}}
   ntiles=${ntiles:-6}
   if [ $MEMBER -lt 0 ]; then
@@ -117,10 +117,10 @@ FV3_GFS_predet(){
   else
     NTASKS_TOT=${NTASKS_TOT:-$npe_efcs}
   fi
-  
+
   TYPE=${TYPE:-"nh"}                  # choices:  nh, hydro
   MONO=${MONO:-"non-mono"}            # choices:  mono, non-mono
-  
+
   QUILTING=${QUILTING:-".true."}
   OUTPUT_GRID=${OUTPUT_GRID:-"gaussian_grid"}
   OUTPUT_FILE=${OUTPUT_FILE:-"nemsio"}
@@ -128,9 +128,9 @@ FV3_GFS_predet(){
   WRITE_FSYNCFLAG=${WRITE_FSYNCFLAG:-".true."}
   affix="nemsio"
   [[ "$OUTPUT_FILE" = "netcdf" ]] && affix="nc"
-  
+
   rCDUMP=${rCDUMP:-$CDUMP}
-  
+
   #------------------------------------------------------------------
   # setup the runtime environment
   if [ $machine = "WCOSS_C" ] ; then
@@ -143,7 +143,7 @@ FV3_GFS_predet(){
     export NC_BLKSZ=${NC_BLKSZ:-"4M"}
     export IOBUF_PARAMS="*nemsio:verbose:size=${WRTIOBUF},*:verbose:size=${NC_BLKSZ}"
   fi
-  
+
   #-------------------------------------------------------
   if [ ! -d $ROTDIR ]; then mkdir -p $ROTDIR; fi
   mkdata=NO
@@ -153,7 +153,7 @@ FV3_GFS_predet(){
   fi
   cd $DATA || exit 8
   mkdir -p $DATA/INPUT
-  
+
   #------------------------------------------------------------------
   # changeable parameters
   # dycore definitions
@@ -164,7 +164,7 @@ FV3_GFS_predet(){
   npz=$((LEVS-1))
   io_layout="1,1"
   #ncols=$(( (${npx}-1)*(${npy}-1)*3/2 ))
-  
+
   # spectral truncation and regular grid resolution based on FV3 resolution
   JCAP_CASE=$((2*res-2))
   LONB_CASE=$((4*res))
@@ -172,14 +172,14 @@ FV3_GFS_predet(){
   if [ $LATB_CASE -eq 192 ]; then
     LATB_CASE=190 # berror file is at this resolution
   fi
-  
+
   JCAP=${JCAP:-$JCAP_CASE}
   LONB=${LONB:-$LONB_CASE}
   LATB=${LATB:-$LATB_CASE}
-  
+
   LONB_IMO=${LONB_IMO:-$LONB_CASE}
   LATB_JMO=${LATB_JMO:-$LATB_CASE}
-  
+
   # NSST Options
   # nstf_name contains the NSST related parameters
   # nstf_name(1) : NST_MODEL (NSST Model) : 0 = OFF, 1 = ON but uncoupled, 2 = ON and coupled
@@ -195,24 +195,24 @@ FV3_GFS_predet(){
   ZSEA2=${ZSEA2:-0}
   nstf_name=${nstf_name:-"$NST_MODEL,$NST_SPINUP,$NST_RESV,$ZSEA1,$ZSEA2"}
   nst_anl=${nst_anl:-".false."}
-  
-  
+
+
   # blocking factor used for threading and general physics performance
   #nyblocks=`expr \( $npy - 1 \) \/ $layout_y `
   #nxblocks=`expr \( $npx - 1 \) \/ $layout_x \/ 32`
   #if [ $nxblocks -le 0 ]; then nxblocks=1 ; fi
   blocksize=${blocksize:-32}
-  
+
   # variables for controlling initialization of NCEP/NGGPS ICs
   filtered_terrain=${filtered_terrain:-".true."}
   gfs_dwinds=${gfs_dwinds:-".true."}
-  
+
   # various debug options
   no_dycore=${no_dycore:-".false."}
   dycore_only=${adiabatic:-".false."}
   chksum_debug=${chksum_debug:-".false."}
   print_freq=${print_freq:-6}
-  
+
   #-------------------------------------------------------
   if [ $CDUMP = "gfs" -a $rst_invt1 -gt 0 ]; then
     RSTDIR_ATM=${RSTDIR:-$ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos/RERUN_RESTART
@@ -221,7 +221,7 @@ FV3_GFS_predet(){
   else
     mkdir -p $DATA/RESTART
   fi
-  
+
   #-------------------------------------------------------
   # member directory
   if [ $MEMBER -lt 0 ]; then
@@ -235,13 +235,13 @@ FV3_GFS_predet(){
   fi
   memdir=$ROTDIR/${prefix}.$PDY/$cyc/atmos/$memchar
   if [ ! -d $memdir ]; then mkdir -p $memdir; fi
-  
+
   GDATE=$($NDATE -$assim_freq $CDATE)
   gPDY=$(echo $GDATE | cut -c1-8)
   gcyc=$(echo $GDATE | cut -c9-10)
   gmemdir=$ROTDIR/${rprefix}.$gPDY/$gcyc/atmos/$memchar
   sCDATE=$($NDATE -3 $CDATE)
-  
+
   if [[ "$DOIAU" = "YES" ]]; then
     sCDATE=$($NDATE -3 $CDATE)
     sPDY=$(echo $sCDATE | cut -c1-8)
@@ -255,7 +255,7 @@ FV3_GFS_predet(){
     tPDY=$sPDY
     tcyc=$cyc
   fi
-  
+
   echo "SUB ${FUNCNAME[0]}: pre-determination variables set"
 }
 

@@ -6,16 +6,16 @@ MOM6_namelists(){
 OCNRES=${OCNRES:-"025"}
 MOM_INPUT=MOM_input_template_$OCNRES
 
-#TODO: Make these variables configurable 
+#TODO: Make these variables configurable
 
-#Set to False for restart reproducibility   
+#Set to False for restart reproducibility
 MOM6_REPRO_LA=${MOM6_REPRO_LA:-'True'}
 MOM6_THERMO_SPAN=${MOM6_THERMO_SPAN:-'False'}
 MOM6_ALLOW_LANDMASK_CHANGES=${MOM6_ALLOW_LANDMASK_CHANGES:-'False'}
 
 if [ $cplwav = ".true." ] ; then
   MOM6_USE_WAVES='True'
-else 
+else
   MOM6_USE_WAVES='False'
 fi
 
@@ -37,7 +37,7 @@ elif [ $OCNRES = '050' ]; then
   FRUNOFF="runoff.daitren.clim.${NX_GLB}x${NY_GLB}.v20180328.nc"
   MOM6_RESTART_SETTING='n'
   MOM6_RIVER_RUNOFF='True'
-elif [ $OCNRES = '100' ]; then 
+elif [ $OCNRES = '100' ]; then
   NX_GLB=360
   NY_GLB=320
   DT_DYNAM_MOM6='1800'
@@ -46,10 +46,10 @@ elif [ $OCNRES = '100' ]; then
   CHLCLIM="seawifs_1998-2006_smoothed_2X.nc"
   MOM6_RESTART_SETTING='n'
   MOM6_RIVER_RUNOFF='False'
-else 
+else
   echo "FATAL ERROR: do not have MOM6 settings defined for desired OCNRES=$OCNRES"
-  exit 1 
-fi 
+  exit 1
+fi
 
 
   cat >> input.nml <<EOF
@@ -67,7 +67,7 @@ EOF
 echo "$(cat input.nml)"
 
 
-#Copy MOM_input and edit: 
+#Copy MOM_input and edit:
 $NCP -pf $HOMEgfs/parm/mom6/MOM_input_template_$OCNRES $DATA/INPUT/
 sed -e "s/DT_THERM_MOM6/$DT_THERM_MOM6/g" \
     -e "s/DT_DYNAM_MOM6/$DT_DYNAM_MOM6/g" \
@@ -81,7 +81,7 @@ sed -e "s/DT_THERM_MOM6/$DT_THERM_MOM6/g" \
     -e "s/CHLCLIM/$CHLCLIM/g" $DATA/INPUT/MOM_input_template_$OCNRES > $DATA/INPUT/MOM_input
 rm $DATA/INPUT/MOM_input_template_$OCNRES
 
-#data table for runoff: 
+#data table for runoff:
 DATA_TABLE=${DATA_TABLE:-$PARM_FV3DIAG/data_table}
 $NCP $DATA_TABLE $DATA/data_table_template
 sed -e "s/FRUNOFF/$FRUNOFF/g" $DATA/data_table_template > $DATA/data_table

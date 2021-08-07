@@ -26,11 +26,10 @@ case $confignamevarfornems in
   'med_atm_ocn_ice_wav1waywcurr') combination=.true..true..true..true..false.;;
   'medcold_atm_ocn_ice_wav') combination=.true..true..true..true..false.;;
   'medcold_atm_ocn_ice') combination=.true..true..true..false..false.;;
-  *) echo "SUB cplvalidate: Combination not supported" 
-	exit 1 ;;
+  *) echo "SUB cplvalidate: Combination not supported"
+  exit 1 ;;
 esac
 control=$cpl$cplflx$cplice$cplwav$cplchem
-#echo $control
 if [ $control != $combination ]; then
   echo "SUB cplvalidate: inconsistent cpl setting!"
   exit 2

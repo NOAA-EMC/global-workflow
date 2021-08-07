@@ -1,6 +1,6 @@
-#! /bin/sh
+#!/bin/sh
 
-##### 
+#####
 ## "forecast_det.sh"
 ## This script sets value of all variables
 ##

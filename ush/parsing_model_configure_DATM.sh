@@ -1,6 +1,6 @@
 #! /bin/sh
 
-##### 
+#####
 ## "parsing_model_configure_DATM.sh"
 ## This script writes model configure file
 ## for DATM model
@@ -33,7 +33,7 @@ atm_coupling_interval_sec: ${coupling_interval_fast_sec}
 iatm:                      ${IATM}
 jatm:                      ${JATM}
 cdate0:                    ${CDATE}
-nfhout:                    ${NFHOUT} 
+nfhout:                    ${NFHOUT}
 filename_base:             ${DATM_FILENAME_BASE}
 EOF
 echo "$(cat model_configure)"

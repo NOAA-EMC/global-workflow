@@ -16,7 +16,7 @@
 ## 2017-03-24  Fanglin Yang   Updated to use NEMS FV3GFS with IPD4
 ## 2017-05-24  Rahul Mahajan  Updated for cycling with NEMS FV3GFS
 ## 2017-09-13  Fanglin Yang   Updated for using GFDL MP and Write Component
-## 2019-04-02  
+## 2019-04-02
 ##
 ## Attributes:
 ##   Language: Portable Operating System Interface (POSIX) Shell
@@ -36,7 +36,7 @@
 ##		1. initial condition, $memdir/INPUT/*.nc
 ##	Restart files:
 ##
-##	Fix files: 
+##	Fix files:
 ##		1. computing grid, $FIXfv3/$CASE/${CASE}_grid.tile${n}.nc
 ##		2. orography data, $FIXfv3/$CASE/${CASE}_oro_data.tile${n}.nc
 ##		3. mosaic data, $FIXfv3/$CASE/${CASE}_mosaic.nc
@@ -47,7 +47,7 @@
 ##		8. Global CO2 historical data, $FIX_AM/global_co2historicaldata_glob.txt
 ##		8. Global CO2 monthly data, $FIX_AM/co2monthlycyc.txt
 ##		10. Additional global CO2 data, $FIX_AM/fix_co2_proj/global_co2historicaldata
-##		11. Climatological aerosol global distribution 
+##		11. Climatological aerosol global distribution
 ##			$FIX_AM/global_climaeropac_global.txt
 ## 		12. Monthly volcanic forcing $FIX_AM/global_volcanic_aerosols_YYYY-YYYY.txt
 ##
@@ -63,8 +63,8 @@
 ##	   4. atmospheric static tiles, $memdir/atmos_static.tile${n}.nc
 ##	   5. atmospheric 4x daily tiles, $memdir/atmos_4xdaily.tile${n}.nc
 ##
-## Status output 
-##	0: Normal 
+## Status output
+##	0: Normal
 ##	others: Error
 ##
 ## Namelist input, in RUNDIR,
@@ -185,7 +185,7 @@ echo "MAIN: NEMS configured"
 #------------------------------------------------------------------
 # run the executable
 
-if [ $esmf_profile ]; then 
+if [ $esmf_profile ]; then
   export ESMF_RUNTIME_PROFILE=ON
   export ESMF_RUNTIME_PROFILE_OUTPUT=SUMMARY
 fi

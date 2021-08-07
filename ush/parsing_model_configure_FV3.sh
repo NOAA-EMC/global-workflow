@@ -1,6 +1,6 @@
 #! /bin/sh
 
-##### 
+#####
 ## "parsing_model_configure_FV3.sh"
 ## This script writes model configure file
 ## for FV3 model
