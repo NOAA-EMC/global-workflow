@@ -552,7 +552,8 @@ EOF
 
 # Add namelist for stochastic physics options
 echo "" >> input.nml
-if [ $MEMBER -gt 0 ]; then
+#if [ $MEMBER -gt 0 ]; then
+if [ $DO_SPPT = .true. -o $DO_SHUM = .true. -o $DO_SKEB = .true. ]; then
 
     cat >> input.nml << EOF
 &nam_stochy
