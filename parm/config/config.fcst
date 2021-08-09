@@ -103,6 +103,9 @@ export ICEPETS="80"
 export WAVPETS="160"
 export CHMPETS="1700"
 
+[[ "$CDUMP" = "gfs" ]] && ntasks_fcst=$npe_fcst_gfs || ntasks_fcst=$npe_fcst
+export ntasks_fcst
+
 #######################################################################
 # Model configuration
 export TYPE="nh"
