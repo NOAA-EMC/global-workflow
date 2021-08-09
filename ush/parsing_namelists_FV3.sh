@@ -399,7 +399,7 @@ EOF
   2)
   cat >> input.nml << EOF
   gwd_opt      = 2
-  do_ugwp      = .true.
+  do_ugwp      = .false.
   do_ugwp_v0   = .false.
   do_ugwp_v1   = .true.
   do_tofd      = .false.
