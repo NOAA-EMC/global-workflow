@@ -5,7 +5,7 @@ CICE_namelists(){
 if [ $warm_start = ".true." ]; then
   cmeps_run_type='continue'
 else 
-  cmeps_run_type='initial'
+  cmeps_run_type='startup'
 fi
 
 

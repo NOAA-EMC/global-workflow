@@ -39,7 +39,7 @@ case:
   fv3_gfs_settings:
     CASE: C384
     LEVS: 128
-    DELTIM: 225
+    DELTIM: 300
     min_lakeice: 0.15
     min_seaice: 1.0e-11
     SEEDLET: 10
