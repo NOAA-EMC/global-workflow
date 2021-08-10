@@ -192,8 +192,8 @@ export myFC=mpiifort
 ##---------------------------------------------------------------------------
 elif [[ -d /apps/prod ]]; then
 
-	# We are on WCOSS2/Acorn
-    target=acorn
+	# We are on WCOSS2
+    target=wcoss2
 
     module purge
     #module use -a /apps/prod/modules
