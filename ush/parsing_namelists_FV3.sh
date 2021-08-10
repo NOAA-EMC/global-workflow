@@ -328,9 +328,9 @@ EOF
 fi
 
 cat >> input.nml <<EOF
-  do_sppt      = ${DO_SPPT:-".false."}
-  do_shum      = ${DO_SHUM:-".false."}
-  do_skeb      = ${DO_SKEB:-".false."}
+  do_sppt      = ${do_sppt:-".false."}
+  do_shum      = ${do_shum:-".false."}
+  do_skeb      = ${do_skeb:-".false."}
 EOF
 
 if [ $cpl = .true. ]; then
@@ -553,13 +553,13 @@ EOF
 # Add namelist for stochastic physics options
 echo "" >> input.nml
 #if [ $MEMBER -gt 0 ]; then
-if [ $DO_SPPT = .true. -o $DO_SHUM = .true. -o $DO_SKEB = .true. ]; then
+if [ $do_sppt = .true. -o $do_shum = .true. -o $do_skeb = .true. ]; then
 
     cat >> input.nml << EOF
 &nam_stochy
 EOF
 
-  if [ $DO_SKEB = ".true." ]; then
+  if [ $do_skeb = ".true." ]; then
     cat >> input.nml << EOF
   skeb = $SKEB
   iseed_skeb = ${ISEED_SKEB:-$ISEED}
@@ -571,7 +571,7 @@ EOF
 EOF
   fi
 
-  if [ $DO_SHUM = ".true." ]; then
+  if [ $do_shum = ".true." ]; then
     cat >> input.nml << EOF
   shum = $SHUM
   iseed_shum = ${ISEED_SHUM:-$ISEED}
@@ -580,7 +580,7 @@ EOF
 EOF
   fi
 
-  if [ $DO_SPPT = ".true." ]; then
+  if [ $do_sppt = ".true." ]; then
     cat >> input.nml << EOF
   sppt = $SPPT
   iseed_sppt = ${ISEED_SPPT:-$ISEED}

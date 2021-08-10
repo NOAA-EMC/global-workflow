@@ -501,9 +501,15 @@ EOF
   else
     ISEED=${ISEED:-0}
   fi
-  DO_SKEB=${DO_SKEB:-".false."}
-  DO_SPPT=${DO_SPPT:-".false."}
-  DO_SHUM=${DO_SHUM:-".false."}
+  if [ $DO_SKEB = "YES" ]; then
+    do_skeb=".true."
+  fi
+  if [ $DO_SPPT = "YES" ]; then
+    do_sppt=".true."
+  fi
+  if [ $DO_SHUM = "YES" ]; then
+    do_shum=".true."
+  fi
   JCAP_STP=${JCAP_STP:-$JCAP_CASE}
   LONB_STP=${LONB_STP:-$LONB_CASE}
   LATB_STP=${LATB_STP:-$LATB_CASE}

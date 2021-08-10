@@ -51,6 +51,7 @@ case $case_in in
         export WRITE_GROUP_GFS=1
         export WRTTASK_PER_GROUP_GFS=$npe_node_max
         export WRTIOBUF="1M"
+	export OCNRES=100
         ;;
     "C96")
         export DELTIM=720
@@ -69,6 +70,7 @@ case $case_in in
         export WRTTASK_PER_GROUP_GFS=$npe_node_max
         export WRTIOBUF="4M"
         export n_split=6
+	export OCNRES=100
         ;;
     "C192")
         export DELTIM=450
@@ -86,6 +88,7 @@ case $case_in in
         export WRITE_GROUP_GFS=2
         export WRTTASK_PER_GROUP_GFS=$npe_node_max
         export WRTIOBUF="8M"
+	export OCNRES=050
         ;;
     "C384")
         export DELTIM=240
@@ -103,6 +106,7 @@ case $case_in in
         export WRITE_GROUP_GFS=2
         export WRTTASK_PER_GROUP_GFS=$npe_node_max
         export WRTIOBUF="16M"
+	export OCNRES=025
         ;;
     "C768")
         export DELTIM=150
@@ -120,6 +124,7 @@ case $case_in in
         export WRITE_GROUP_GFS=4
         export WRTTASK_PER_GROUP_GFS=$(echo "2*$npe_node_max" |bc)
         export WRTIOBUF="32M"
+	export OCNRES=025
         ;;
     "C1152")
         export DELTIM=120
@@ -137,6 +142,7 @@ case $case_in in
         export WRITE_GROUP_GFS=4
         export WRTTASK_PER_GROUP_GFS=$(echo "2*$npe_node_max" |bc)
         export WRTIOBUF="48M"
+	export OCNRES=025
         ;;
     "C3072")
         export DELTIM=90
@@ -154,6 +160,7 @@ case $case_in in
         export WRITE_GROUP_GFS=4
         export WRTTASK_PER_GROUP_GFS=$(echo "3*$npe_node_max" |bc)
         export WRTIOBUF="64M"
+	export OCNRES=050
         ;;
     *)
         echo "grid $case_in not supported, ABORT!"
