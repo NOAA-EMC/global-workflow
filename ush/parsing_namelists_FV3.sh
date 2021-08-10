@@ -11,8 +11,8 @@
 FV3_namelists(){
 
 # copy over the tables
-DIAG_TABLE_BASE=${DIAG_TABLE_BASE:-$PARM_FV3DIAG/diag_table}
-DIAG_TABLE=${DIAG_TABLE:-$PARM_FV3DIAG/diag_table_aod}
+DIAG_TABLE=${DIAG_TABLE:-$PARM_FV3DIAG/diag_table}
+DIAG_TABLE_APPEND=${DIAG_TABLE_APPEND:-$PARM_FV3DIAG/diag_table_aod}
 DATA_TABLE=${DATA_TABLE:-$PARM_FV3DIAG/data_table}
 FIELD_TABLE=${FIELD_TABLE:-$PARM_FV3DIAG/field_table}
 
@@ -22,18 +22,18 @@ cat > diag_table << EOF
 FV3 Forecast
 ${gPDY:0:4} ${gPDY:4:2} ${gPDY:6:2} ${gcyc} 0 0
 EOF
-cat $DIAG_TABLE_BASE >> diag_table
+cat $DIAG_TABLE >> diag_table
 else
 cat > diag_table << EOF
 FV3 Forecast
 ${sPDY:0:4} ${sPDY:4:2} ${sPDY:6:2} ${scyc} 0 0
 EOF
-cat $DIAG_TABLE_BASE >> diag_table
+cat $DIAG_TABLE >> diag_table
 fi
 
 # Append AOD diag table for MERRA2
 if [ $IAER = "1011" ]; then
-  cat $DIAG_TABLE >> diag_table
+  cat $DIAG_TABLE_APPEND >> diag_table
 fi
 
 $NCP $DATA_TABLE  data_table
