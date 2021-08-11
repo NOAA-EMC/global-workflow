@@ -103,6 +103,12 @@ export ICEPETS="80"
 export WAVPETS="160"
 export CHMPETS="1700"
 
+if [ "$CDUMP" = "gfs" ]; then 
+  export ntasks_fcst=$npe_fcst_gfs 
+else
+  export ntasks_fcst=$npe_fcst
+fi
+
 #######################################################################
 # Model configuration
 export TYPE="nh"
@@ -266,7 +272,7 @@ if [[ "$CDUMP" == "gdas" ]] ; then # GDAS cycle specific parameters
 
     # Variables used in DA cycling
     if [ $QUILTING = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]; then
-        export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_aod"
+        export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_da"
     else
         export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_da_orig"
     fi
@@ -297,7 +303,7 @@ elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
 
     # Write more variables to output
     if [ $QUILTING = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]; then
-        export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_aod"
+        export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table"
     else
         export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_orig"
     fi
@@ -345,6 +351,15 @@ if [ $DO_AERO = "YES" ]; then # temporary settings for aerosol coupling
 elif [[ $DO_COUPLED = "YES" ]] ; then # coupled model
     export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_cpl"
 fi
+
+case "$CASE" in
+    "C48") export OCNRES=100;;
+    "C96") export OCNRES=100;;
+    "C192") export OCNRES=050;;
+    "C384") export OCNRES=025;;
+    "C768") export OCNRES=025;;
+    *) export OCNRES=025;;
+esac
 
 # Remember config.efcs will over-ride these values for ensemble forecasts
 # if these variables are re-defined there.
