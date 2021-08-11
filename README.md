@@ -7,15 +7,9 @@ cd coupled-workflow
 git checkout feature/coupled-crow
 git submodule update --init --recursive     #Update submodules 
 cd sorc
-```
-For coupled:
-```
 sh checkout.sh -c                           #Check out forecast model with COUPLED=YES
 ```
-For aerosols:
-```
-sh checkout.sh -a                           #Check out forecast model with active aerosols
-```
+
 ## Compile code needed to run prototype and link fixed files and executable programs:
 For coupled (UFS APP=S2SW):
 ```
