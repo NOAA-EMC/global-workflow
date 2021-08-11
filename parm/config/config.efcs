@@ -18,7 +18,6 @@ if [ $QUILTING = ".true." ]; then
     export npe_efcs=$npe_fv3
 fi
 
-export ntasks_efcs=$npe_efcs
 # Number of enkf members per fcst job
 export NMEM_EFCSGRP=2
 export RERUN_EFCSGRP="NO"

@@ -103,8 +103,11 @@ export ICEPETS="80"
 export WAVPETS="160"
 export CHMPETS="1700"
 
-[[ "$CDUMP" = "gfs" ]] && ntasks_fcst=$npe_fcst_gfs || ntasks_fcst=$npe_fcst
-export ntasks_fcst
+if [ "$CDUMP" = "gfs" ]; then 
+  export ntasks_fcst=$npe_fcst_gfs 
+else
+  export ntasks_fcst=$npe_fcst
+fi
 
 #######################################################################
 # Model configuration
@@ -340,14 +343,23 @@ elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
 fi
 
 if [ $DO_AERO = "YES" ]; then # temporary settings for aerosol coupling
-    export DIAG_TABLE_APPEND="$HOMEgfs/parm/parm_fv3diag/diag_table_aer"
+    export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_aer"
     export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_aer"
     export CHM_CFGDIR="not_set"
     export CHM_INPDIR="not_set"
     export dnats="$(( $dnats + 0 ))"
 elif [[ $DO_COUPLED = "YES" ]] ; then # coupled model
-    export DIAG_TABLE_APPEND="$HOMEgfs/parm/parm_fv3diag/diag_table_cpl"
+    export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_cpl"
 fi
+
+case "$CASE" in
+    "C48") export OCNRES=100;;
+    "C96") export OCNRES=100;;
+    "C192") export OCNRES=050;;
+    "C384") export OCNRES=025;;
+    "C768") export OCNRES=025;;
+    *) export OCNRES=025;;
+esac
 
 # Remember config.efcs will over-ride these values for ensemble forecasts
 # if these variables are re-defined there.

@@ -553,13 +553,13 @@ EOF
 # Add namelist for stochastic physics options
 echo "" >> input.nml
 #if [ $MEMBER -gt 0 ]; then
-if [ $do_sppt = .true. -o $do_shum = .true. -o $do_skeb = .true. ]; then
+if [ $DO_SPPT = "YES" -o $DO_SHUM = "YES" -o $DO_SKEB = "YES" ]; then
 
     cat >> input.nml << EOF
 &nam_stochy
 EOF
 
-  if [ $do_skeb = ".true." ]; then
+  if [ $DO_SKEB = "YES" ]; then
     cat >> input.nml << EOF
   skeb = $SKEB
   iseed_skeb = ${ISEED_SKEB:-$ISEED}
@@ -571,7 +571,7 @@ EOF
 EOF
   fi
 
-  if [ $do_shum = ".true." ]; then
+  if [ $DO_SHUM = "YES" ]; then
     cat >> input.nml << EOF
   shum = $SHUM
   iseed_shum = ${ISEED_SHUM:-$ISEED}
@@ -580,7 +580,7 @@ EOF
 EOF
   fi
 
-  if [ $do_sppt = ".true." ]; then
+  if [ $DO_SPPT = "YES" ]; then
     cat >> input.nml << EOF
   sppt = $SPPT
   iseed_sppt = ${ISEED_SPPT:-$ISEED}
