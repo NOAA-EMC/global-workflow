@@ -26,7 +26,7 @@ export GFSDWNSH="$HOMEpost/ush/fv3gfs_dwn_nems.sh"
 
 export POSTGPSH="$HOMEpost/ush/gfs_nceppost.sh"
 export POSTGPEXEC="$HOMEpost/exec/gfs_ncep_post"
-export GOESF=YES                              # goes image
+export GOESF=NO                              # goes image
 export FLXF=YES                               # grib2 flux file written by post
 
 export npe_postgp=$npe_post
@@ -41,6 +41,6 @@ else
 fi
 
 export GRIBVERSION='grib2'
-export SENDCOM="YES"
+export SENDCOM=${SENDCOM:-"YES"}
 
 echo "END: config.post"
