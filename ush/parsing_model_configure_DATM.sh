@@ -14,9 +14,7 @@ DATM_model_configure(){
 
 rm -f model_configure
 cat > model_configure <<EOF
-total_member:              ${ENS_NUM:-1}
 print_esmf:                ${print_esmf:-.true.}
-PE_MEMBER01:               $NTASKS_TOT
 start_year:                $SYEAR
 start_month:               $SMONTH
 start_day:                 $SDAY

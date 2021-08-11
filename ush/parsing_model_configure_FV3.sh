@@ -19,9 +19,7 @@ fi
 
 rm -f model_configure
 cat >> model_configure <<EOF
-total_member:            $ENS_NUM
 print_esmf:              ${print_esmf:-.true.}
-PE_MEMBER01:             $NTASKS_TOT
 start_year:              ${tPDY:0:4}
 start_month:             ${tPDY:4:2}
 start_day:               ${tPDY:6:2}
