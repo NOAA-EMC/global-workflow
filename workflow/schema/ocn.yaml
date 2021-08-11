@@ -9,7 +9,7 @@ ocn_settings_template: !Template &ocn_settings_template
     description: "model selection for ocean"
   OCNRES:
     type: string
-    allowed: [ '025', '050' ]
+    allowed: [ '025', '050', '100' ]
   CPL_OCNIC:
     type: string
     allowed: [ 'CFSR', 'CPC3Dvar' ]
