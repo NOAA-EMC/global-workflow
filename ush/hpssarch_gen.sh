@@ -41,16 +41,22 @@ if [ $type = "gfs" ]; then
   rm -f gfsb.txt
   rm -f gfs_pgrb2b.txt
   rm -f gfs_flux.txt
-  rm -f gfs_${format}a.txt
-  rm -f gfs_${format}b.txt
   rm -f gfs_restarta.txt
   touch gfsa.txt
   touch gfsb.txt
   touch gfs_pgrb2b.txt
   touch gfs_flux.txt
-  touch gfs_${format}a.txt
-  touch gfs_${format}b.txt
   touch gfs_restarta.txt
+
+  if [ $MODE = "cycled" ]; then
+    rm -f gfs_${format}a.txt
+    touch gfs_${format}a.txt
+  fi
+
+  if [ $OUTPUT_HISTORY = ".true." ]; then
+    rm -f gfs_${format}b.txt
+    touch gfs_${format}b.txt
+  fi
 
   if [ $DO_DOWN = "YES" ]; then
     rm -f gfs_downstream.txt
@@ -69,11 +75,13 @@ if [ $type = "gfs" ]; then
   echo  "${dirname}${head}pgrb2b.0p50.anl.idx              " >>gfs_pgrb2b.txt
 
   echo  "./logs/${CDATE}/gfs*.log                          " >>gfsa.txt
-  echo  "${dirname}${head}gsistat                          " >>gfsa.txt
-  echo  "${dirname}${head}nsstbufr                         " >>gfsa.txt
-  echo  "${dirname}${head}prepbufr                         " >>gfsa.txt
-  echo  "${dirname}${head}prepbufr_pre-qc                  " >>gfsa.txt
-  echo  "${dirname}${head}prepbufr.acft_profiles           " >>gfsa.txt
+  if [ $MODE = "cycled" ]; then
+    echo  "${dirname}${head}gsistat                          " >>gfsa.txt
+    echo  "${dirname}${head}nsstbufr                         " >>gfsa.txt
+    echo  "${dirname}${head}prepbufr                         " >>gfsa.txt
+    echo  "${dirname}${head}prepbufr_pre-qc                  " >>gfsa.txt
+    echo  "${dirname}${head}prepbufr.acft_profiles           " >>gfsa.txt
+  fi
   echo  "${dirname}${head}pgrb2.0p25.anl                   " >>gfsa.txt
   echo  "${dirname}${head}pgrb2.0p25.anl.idx               " >>gfsa.txt
   echo  "${dirname}avno.t${cyc}z.cyclone.trackatcfunix     " >>gfsa.txt
@@ -145,11 +153,13 @@ if [ $type = "gfs" ]; then
 
 
   #..................
-  echo  "${dirname}${head}atmanl${SUFFIX}            " >>gfs_${format}a.txt
-  echo  "${dirname}${head}sfcanl${SUFFIX}            " >>gfs_${format}a.txt
-  echo  "${dirname}${head}atmi*.nc                   " >>gfs_${format}a.txt
-  echo  "${dirname}${head}dtfanl.nc                  " >>gfs_${format}a.txt
-  echo  "${dirname}${head}loginc.txt                 " >>gfs_${format}a.txt
+  if [ $MODE = "cycled" ]; then
+    echo  "${dirname}${head}atmanl${SUFFIX}            " >>gfs_${format}a.txt
+    echo  "${dirname}${head}sfcanl${SUFFIX}            " >>gfs_${format}a.txt
+    echo  "${dirname}${head}atmi*.nc                   " >>gfs_${format}a.txt
+    echo  "${dirname}${head}dtfanl.nc                  " >>gfs_${format}a.txt
+    echo  "${dirname}${head}loginc.txt                 " >>gfs_${format}a.txt
+  fi
 
   #..................
   if [ $OUTPUT_HISTORY = ".true." ]; then
@@ -163,12 +173,28 @@ if [ $type = "gfs" ]; then
   fi
 
   #..................
-  echo  "${dirname}RESTART/*0000.sfcanl_data.tile1.nc  " >>gfs_restarta.txt
-  echo  "${dirname}RESTART/*0000.sfcanl_data.tile2.nc  " >>gfs_restarta.txt
-  echo  "${dirname}RESTART/*0000.sfcanl_data.tile3.nc  " >>gfs_restarta.txt
-  echo  "${dirname}RESTART/*0000.sfcanl_data.tile4.nc  " >>gfs_restarta.txt
-  echo  "${dirname}RESTART/*0000.sfcanl_data.tile5.nc  " >>gfs_restarta.txt
-  echo  "${dirname}RESTART/*0000.sfcanl_data.tile6.nc  " >>gfs_restarta.txt
+  if [ $MODE = "cycled" ]; then
+    echo  "${dirname}RESTART/*0000.sfcanl_data.tile1.nc  " >>gfs_restarta.txt
+    echo  "${dirname}RESTART/*0000.sfcanl_data.tile2.nc  " >>gfs_restarta.txt
+    echo  "${dirname}RESTART/*0000.sfcanl_data.tile3.nc  " >>gfs_restarta.txt
+    echo  "${dirname}RESTART/*0000.sfcanl_data.tile4.nc  " >>gfs_restarta.txt
+    echo  "${dirname}RESTART/*0000.sfcanl_data.tile5.nc  " >>gfs_restarta.txt
+    echo  "${dirname}RESTART/*0000.sfcanl_data.tile6.nc  " >>gfs_restarta.txt
+  elif [ $MODE = "free" ]; then
+    echo  "${dirname}INPUT/gfs_ctrl.nc        " >>gfs_restarta.txt
+    echo  "${dirname}INPUT/gfs_data.tile1.nc  " >>gfs_restarta.txt
+    echo  "${dirname}INPUT/gfs_data.tile2.nc  " >>gfs_restarta.txt
+    echo  "${dirname}INPUT/gfs_data.tile3.nc  " >>gfs_restarta.txt
+    echo  "${dirname}INPUT/gfs_data.tile4.nc  " >>gfs_restarta.txt
+    echo  "${dirname}INPUT/gfs_data.tile5.nc  " >>gfs_restarta.txt
+    echo  "${dirname}INPUT/gfs_data.tile6.nc  " >>gfs_restarta.txt
+    echo  "${dirname}INPUT/sfc_data.tile1.nc  " >>gfs_restarta.txt
+    echo  "${dirname}INPUT/sfc_data.tile2.nc  " >>gfs_restarta.txt
+    echo  "${dirname}INPUT/sfc_data.tile3.nc  " >>gfs_restarta.txt
+    echo  "${dirname}INPUT/sfc_data.tile4.nc  " >>gfs_restarta.txt
+    echo  "${dirname}INPUT/sfc_data.tile5.nc  " >>gfs_restarta.txt
+    echo  "${dirname}INPUT/sfc_data.tile6.nc  " >>gfs_restarta.txt
+  fi
 
   #..................
   if [ $DO_WAVE = "YES" ]; then

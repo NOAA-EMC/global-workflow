@@ -9,16 +9,6 @@ set +x
 #                   Anything other than "true"  will use libraries locally.
 #------------------------------------
 
-while getopts "c" option;
-do
- case $option in
-  c)
-   echo "Received -c flag, check out ufs-weather-model develop branch with CCPP physics"
-   RUN_CCPP="YES"
-   ;;
- esac
-done
-
 export USE_PREINST_LIBS="true"
 
 #------------------------------------
@@ -50,6 +40,12 @@ source ./machine-setup.sh > /dev/null 2>&1
 
 . ./partial_build.sh
 
+if [ $target = jet ]; then
+  Build_gldas=false
+  Build_gfs_util=false
+  Build_ww3_prepost=false
+fi
+
 #------------------------------------
 # Exception Handling Init
 #------------------------------------
@@ -61,12 +57,25 @@ err=0
 #------------------------------------
 $Build_fv3gfs && {
 echo " .... Building fv3 .... "
-export RUN_CCPP=${RUN_CCPP:-"NO"}
 ./build_fv3.sh > $logs_dir/build_fv3.log 2>&1
 rc=$?
 if [[ $rc -ne 0 ]] ; then
     echo "Fatal error in building fv3."
     echo "The log file is in $logs_dir/build_fv3.log"
+fi
+((err+=$rc))
+}
+
+#------------------------------------
+# build WW3 pre & post execs 
+#------------------------------------
+$Build_ww3_prepost && {
+echo " .... Building WW3 pre and post execs .... "
+./build_ww3prepost.sh > $logs_dir/build_ww3_prepost.log 2>&1
+rc=$?
+if [[ $rc -ne 0 ]] ; then
+    echo "Fatal error in building WW3 pre/post processing."
+    echo "The log file is in $logs_dir/build_ww3_prepost.log"
 fi
 ((err+=$rc))
 }
@@ -160,19 +169,16 @@ fi
 #------------------------------------
 # build gfs_util       
 #------------------------------------
-# Only build on WCOSS
-if [ $target = wcoss -o $target = wcoss_cray -o $target = wcoss_dell_p3 ]; then
- $Build_gfs_util && {
- echo " .... Building gfs_util .... "
- ./build_gfs_util.sh > $logs_dir/build_gfs_util.log 2>&1
- rc=$?
- if [[ $rc -ne 0 ]] ; then
-     echo "Fatal error in building gfs_util."
-     echo "The log file is in $logs_dir/build_gfs_util.log"
- fi
- ((err+=$rc))
- }
+$Build_gfs_util && {
+echo " .... Building gfs_util .... "
+./build_gfs_util.sh > $logs_dir/build_gfs_util.log 2>&1
+rc=$?
+if [[ $rc -ne 0 ]] ; then
+    echo "Fatal error in building gfs_util."
+    echo "The log file is in $logs_dir/build_gfs_util.log"
 fi
+((err+=$rc))
+}
 
 #------------------------------------
 # Exception Handling

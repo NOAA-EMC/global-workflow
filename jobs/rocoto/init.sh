@@ -46,12 +46,13 @@ export EXTRACT_DIR=${EXTRACT_DIR:-$ROTDIR}
 export WORKDIR=${WORKDIR:-$DATA}
 export OUTDIR=${OUTDIR:-$ROTDIR}
 export COMPONENT="atmos"
-export gfs_ver=${gfs_ver:-v16}
+export gfs_ver=${gfs_ver:-"v16"}
+export OPS_RES=${OPS_RES:-"C768"}
 export RUNICSH=${RUNICSH:-${GDASINIT_DIR}/run_v16.chgres.sh}
 
 # Check if init is needed and run if so
-if [[ $gfs_ver = "v16" && $EXP_WARM_START = ".true." && $CASE = "C768" ]]; then
-  echo "Detected v16 C768 warm starts, will not run init. Exiting..."
+if [[ $gfs_ver = "v16" && $EXP_WARM_START = ".true." && $CASE = $OPS_RES ]]; then
+  echo "Detected v16 $OPS_RES warm starts, will not run init. Exiting..."
   exit 0
 else
   # Run chgres_cube
@@ -59,18 +60,6 @@ else
   sh ${RUNICSH} ${CDUMP}
   status=$?
   [[ $status -ne 0 ]] && exit $status
-fi
-
-# Check for pgbanl files and move
-if [ $gfs_ver = v14 -o $gfs_ver = v15 ]; then
-  cd $EXTRACT_DIR
-  for grid in 0p25 0p50 1p00
-  do
-    file=gfs.t${hh}z.pgrb2.${grid}.anl
-    if [ -f ${EXTRACT_DIR}/${CDUMP}.${yy}${mm}${dd}/${hh}/${file} ]; then
-      mv ${EXTRACT_DIR}/${CDUMP}.${yy}${mm}${dd}/${hh}/${file} ${OUTDIR}/${CDUMP}.${yy}${mm}${dd}/${hh}/${COMPONENT}/${file}
-    fi
-  done
 fi
 
 ##########################################

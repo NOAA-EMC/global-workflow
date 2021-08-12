@@ -50,6 +50,7 @@ export DO_BUFRSND="YES"    # BUFR sounding products
 export DO_GEMPAK="YES"     # GEMPAK products
 export DO_AWIPS="YES"      # AWIPS products
 export WAFSF="YES"         # WAFS products
+export DO_VRFY="NO"        # VRFY step
 
 # NO for retrospective parallel; YES for real-time parallel
 export REALTIME="YES"
@@ -125,8 +126,8 @@ export CASE="C768"
 export CASE_ENKF="C384"
 
 # Run with CCPP physics
-export RUN_CCPP="NO"
-export CCPP_SUITE="FV3_GFS_v16beta"
+export RUN_CCPP="YES"
+export CCPP_SUITE="FV3_GFS_v16"
 
 # Surface cycle update frequency
 if [[ "$CDUMP" == "gdas" ]] ; then

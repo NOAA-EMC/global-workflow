@@ -33,6 +33,7 @@ sorc/logs
 sorc/fv3gfs.fd
 sorc/gfs_post.fd
 sorc/gfs_wafs.fd
+sorc/gldas.fd
 sorc/gsi.fd
 sorc/ufs_utils.fd
 sorc/verif-global.fd
@@ -44,14 +45,12 @@ sorc/calc_increment_ens.fd
 sorc/calc_increment_ens_ncio.fd
 sorc/emcsfc_ice_blend.fd
 sorc/emcsfc_snow2mdl.fd
-sorc/filter_topo.fd
 sorc/fregrid.fd
 sorc/gdas2gldas.fd
 sorc/getsfcensmeanp.fd
 sorc/getsigensmeanp_smooth.fd
 sorc/getsigensstatp.fd
 sorc/gfs_ncep_post.fd
-sorc/gldas.fd
 sorc/gldas2gdas.fd
 sorc/gldas_forcing.fd
 sorc/gldas_model.fd
@@ -64,13 +63,8 @@ sorc/global_gsi.fd
 sorc/interp_inc.fd
 sorc/make_hgrid.fd
 sorc/make_solo_mosaic.fd
-sorc/mkgfsnemsioctl.fd
 sorc/ncdiag_cat.fd
-sorc/nemsio_chgdate.fd
-sorc/nemsio_get.fd
-sorc/nemsio_read.fd
 sorc/nst_tf_chg.fd
-sorc/orog.fd
 sorc/oznmon_horiz.fd
 sorc/oznmon_time.fd
 sorc/radmon_angle.fd
@@ -78,7 +72,6 @@ sorc/radmon_bcoef.fd
 sorc/radmon_bcor.fd
 sorc/radmon_time.fd
 sorc/recentersigp.fd
-sorc/shave.fd
 sorc/wafs_awc_wafavn.fd
 sorc/wafs_blending.fd
 sorc/wafs_blending_0p25.fd
@@ -144,10 +137,10 @@ scripts/exglobal_diag.sh
 # ush symlinks
 ush/calcanl_gfs.py
 ush/calcinc_gfs.py
+ush/chgres_cube.sh
 ush/emcsfc_ice_blend.sh
 ush/emcsfc_snow.sh
 ush/fix_precip.sh
-ush/fv3gfs_chgres.sh
 ush/fv3gfs_downstream_nems.sh
 ush/fv3gfs_driver_grid.sh
 ush/fv3gfs_dwn_nems.sh
