@@ -31,15 +31,6 @@ config_base:
     export cplwav="{doc.settings.cplwav}"
     export cplwav2atm="{doc.settings.cplwav2atm}"
 
-    # Temporarily override settings for aerosol coupling
-    if [ $cplchem = ".true." ]; then
-        export cplflx=".false."
-        export cplice=".false."
-        export cplocn=".false."
-        export cplwav=".false."
-        export cplwav2atm=".false."
-    fi
-
     if [[ $cplwav = ".true." ]]; then
        export DO_WAVE="YES"
     else
