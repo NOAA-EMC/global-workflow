@@ -82,6 +82,7 @@ if [[ $gfs_ver = "v16" && $EXP_WARM_START = ".true." && $CASE = $OPS_RES ]]; the
 
   else # Opertional input - warm starts
 
+    cd $ROTDIR
     # Pull CDATE gfs restart tarball
     htar -xvf ${PRODHPSSDIR}/rh${yy}/${yy}${mm}/${yy}${mm}${dd}/com_gfs_prod_gfs.${yy}${mm}${dd}_${hh}.gfs_restart.tar
     # Pull GDATE gdas restart tarball
