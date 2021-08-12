@@ -58,6 +58,12 @@ source ./machine-setup.sh > /dev/null 2>&1
 #------------------------------------
 . ./partial_build.sh $@
 
+if [ $target = jet ]; then
+  Build_gldas=false
+  Build_gfs_util=false
+  Build_ww3_prepost=false
+fi
+
 #------------------------------------
 # Exception Handling Init
 #------------------------------------
