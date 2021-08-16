@@ -26,3 +26,8 @@ module load  ncl/6.5.0
 export NCARG_LIB=$NCARG_ROOT/lib
 fi
 
+if [ $target ==  s4 ]
+then
+module load  ncl/6.4.0-precompiled
+export NCARG_LIB=$NCARG_ROOT/lib
+fi

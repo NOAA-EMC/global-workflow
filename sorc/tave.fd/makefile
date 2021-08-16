@@ -6,7 +6,7 @@ COMP=   ifort
 ##LIBS=    -L/contrib/nceplibs/nwprod/lib -lw3emc_d -lw3nco_d -lg2_d -lbacio_4 -ljasper -lpng -lz
 LDFLAGS= 
 # DEBUG= -check all -debug all -traceback
-FFLAGS= -O2 -g -traceback -I $(INC)  -i$(ISIZE) -r$(RSIZE)
+FFLAGS= -O2 -g -traceback -I $(INC)  -i$(ISIZE) -r$(RSIZE) $(EXTRA_WORKFLOW_BUILD_FLAGS)
 # FFLAGS= -O3 -I $(INC)  -i$(ISIZE) -r$(RSIZE) 
 
 tave:      tave.f

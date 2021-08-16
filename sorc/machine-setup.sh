@@ -57,6 +57,25 @@ elif [[ -d /scratch1 ]] ; then
     export FCOMP=mpiifort
 
 ##---------------------------------------------------------------------------
+elif [[ -d /data/prod ]] ; then
+    # We are on SSEC S4
+    if ( ! eval module help > /dev/null 2>&1 ) ; then
+	     echo load the module command 1>&2
+        source /usr/share/lmod/lmod/init/$__ms_shell
+    fi
+    target=s4
+
+    module purge
+    module load license_intel/S4
+    module use /data/prod/hpc-stack/modulefiles/stack
+    module load hpc/1.1.0
+    module load hpc-intel/18.0.4
+    module load hpc-impi/18.0.4
+
+    export myFC=mpiifort
+    export FCOMP=mpiifort
+
+##---------------------------------------------------------------------------
 elif [[ -d /gpfs/hps && -e /etc/SuSE-release ]] ; then
     # We are on NOAA Luna or Surge
     if ( ! eval module help > /dev/null 2>&1 ) ; then

@@ -13,6 +13,7 @@ The global-workflow current supports the following machines:
 * WCOSS-Cray
 * Hera
 * Orion
+* S4
 
 Quick-start instructions are below. Full instructions are available in the [wiki](https://github.com/NOAA-EMC/global-workflow/wiki/Run-Global-Workflow)
 

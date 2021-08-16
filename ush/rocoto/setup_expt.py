@@ -256,6 +256,30 @@ link initial condition files from $ICSDIR to $COMROT'''
       chgrp_rstprod = 'YES'
       chgrp_cmd = 'chgrp rstprod'
       hpssarch = 'NO'
+    elif machine == 'S4':
+      base_git = '/data/prod/glopara/git'
+      base_svn = '/data/prod/glopara/svn'
+      dmpdir = '/data/prod/glopara/dump'
+      nwprod = '/data/prod/glopara/nwpara'
+      homedir = '/data/users/$USER'
+      comroot = '/data/prod/glopara/com'
+      stmp = '/scratch/short/users/$USER'
+      ptmp = '/scratch/users/$USER'
+      noscrub = '$HOMEDIR'
+      account = 'star'
+      queue_service = 'serial'
+      # Set partition_batch; can be s4 or ivy (s4 by default)
+      if partition is not None:
+         partition_batch = partition
+      else:
+         partition_batch = 's4'
+      if partition == "ivy":
+         queue = 'ivy'
+      else:
+         queue = 's4'
+      chgrp_rstprod = 'NO'          # No rstprod on S4
+      chgrp_cmd = 'ls'
+      hpssarch = 'NO'
 
     if args.icsdir is not None and not os.path.exists(icsdir):
         msg = f'Initial conditions do not exist in {icsdir}'

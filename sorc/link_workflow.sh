@@ -13,22 +13,22 @@ fi
 
 if [ $# -lt 2 ]; then
     echo '***ERROR*** must specify two arguements: (1) RUN_ENVIR, (2) machine'
-    echo ' Syntax: link_workflow.sh ( nco | emc ) ( cray | dell | hera | orion | jet | stampede )'
+    echo ' Syntax: link_workflow.sh ( nco | emc ) ( cray | dell | hera | orion | jet | stampede | s4 )'
     echo ' A third argument is needed when coupled: '
-    echo ' Syntax: link_workflow.sh ( nco | emc ) ( cray | dell | hera | orion | jet | stampede ) coupled'
+    echo ' Syntax: link_workflow.sh ( nco | emc ) ( cray | dell | hera | orion | jet | stampede | s4 ) coupled'
     exit 1
 fi
 
 if [ $RUN_ENVIR != emc -a $RUN_ENVIR != nco ]; then
-    echo ' Syntax: link_workflow.sh ( nco | emc ) ( cray | dell | hera | orion | jet | stampede )'
+    echo ' Syntax: link_workflow.sh ( nco | emc ) ( cray | dell | hera | orion | jet | stampede | s4 )'
     echo ' A third argument is needed when coupled: '
-    echo ' Syntax: link_workflow.sh ( nco | emc ) ( cray | dell | hera | orion | jet | stampede ) coupled'
+    echo ' Syntax: link_workflow.sh ( nco | emc ) ( cray | dell | hera | orion | jet | stampede | s4 ) coupled'
     exit 1
 fi
 if [ $machine != cray -a $machine != dell -a $machine != hera -a $machine != orion -a $machine != jet -a $machine != stampede ]; then
-    echo ' Syntax: link_workflow.sh ( nco | emc ) ( cray | dell | hera | orion | jet | stampede )'
+    echo ' Syntax: link_workflow.sh ( nco | emc ) ( cray | dell | hera | orion | jet | stampede | s4 )'
     echo ' A third argument is needed when coupled: '
-    echo ' Syntax: link_workflow.sh ( nco | emc ) ( cray | dell | hera | orion | jet | stampede ) coupled'
+    echo ' Syntax: link_workflow.sh ( nco | emc ) ( cray | dell | hera | orion | jet | stampede | s4 ) coupled'
     exit 1
 fi
 
@@ -53,6 +53,8 @@ elif [ $machine = "jet" ]; then
     FIX_DIR="/lfs4/HFIP/hfv3gfs/glopara/git/fv3gfs/fix_NEW"
 elif [ $machine = "stampede" ]; then
     FIX_DIR="/work/07738/jkuang/stampede2/tempFixICdir/fix_UFSp6"
+elif [ $machine = "s4" ]; then
+    FIX_DIR="/data/prod/glopara/fix"
 fi
 
 if [ ! -z $FIX_DIR ]; then
@@ -324,22 +326,22 @@ cd ${pwd}/../sorc   ||   exit 8
     $SLINK gsi.fd/src/ncdiag                                                               ncdiag_cat.fd
 
     [[ -d oznmon_horiz.fd ]] && rm -rf oznmon_horiz.fd
-    $SLINK gsi.fd/util/Ozone_Monitor/nwprod/oznmon_shared.v2.0.0/sorc/oznmon_horiz.fd      oznmon_horiz.fd
+    $SLINK gsi.fd/util/Ozone_Monitor/nwprod/oznmon_shared/sorc/oznmon_horiz.fd             oznmon_horiz.fd
 
     [[ -d oznmon_time.fd ]] && rm -rf oznmon_time.fd
-    $SLINK gsi.fd/util/Ozone_Monitor/nwprod/oznmon_shared.v2.0.0/sorc/oznmon_time.fd       oznmon_time.fd
+    $SLINK gsi.fd/util/Ozone_Monitor/nwprod/oznmon_shared/sorc/oznmon_time.fd              oznmon_time.fd
 
     [[ -d radmon_angle.fd ]] && rm -rf radmon_angle.fd
-    $SLINK gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared.v3.0.0/sorc/verf_radang.fd    radmon_angle.fd
+    $SLINK gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared/sorc/verf_radang.fd           radmon_angle.fd
 
     [[ -d radmon_bcoef.fd ]] && rm -rf radmon_bcoef.fd
-    $SLINK gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared.v3.0.0/sorc/verf_radbcoef.fd  radmon_bcoef.fd
+    $SLINK gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared/sorc/verf_radbcoef.fd         radmon_bcoef.fd
 
     [[ -d radmon_bcor.fd ]] && rm -rf radmon_bcor.fd
-    $SLINK gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared.v3.0.0/sorc/verf_radbcor.fd   radmon_bcor.fd 
+    $SLINK gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared/sorc/verf_radbcor.fd          radmon_bcor.fd 
 
     [[ -d radmon_time.fd ]] && rm -rf radmon_time.fd
-    $SLINK gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared.v3.0.0/sorc/verf_radtime.fd   radmon_time.fd 
+    $SLINK gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared/sorc/verf_radtime.fd          radmon_time.fd 
 
     [[ -d recentersigp.fd ]] && rm -rf recentersigp.fd
     $SLINK gsi.fd/util/EnKF/gfs/src/recentersigp.fd                                        recentersigp.fd

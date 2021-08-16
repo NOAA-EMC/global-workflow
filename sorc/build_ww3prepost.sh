@@ -16,6 +16,7 @@ set -x
 
 if [ $target = hera ]; then target=hera.intel ; fi
 if [ $target = orion ]; then target=orion.intel ; fi
+if [ $target = s4 ]; then target=s4.intel ; fi
 if [ $target = stampede ]; then target=stampede.intel ; fi
 
 cd ufs_model.fd/WW3

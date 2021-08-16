@@ -18,6 +18,7 @@ DATE_ENV_VARS=['CDATE','SDATE','EDATE']
 SCHEDULER_MAP={'HERA':'slurm',
                'JET':'slurm',
                'ORION':'slurm',
+               'S4':'slurm',
                'WCOSS':'lsf',
                'WCOSS_DELL_P3':'lsf',
                'WCOSS_C':'lsfcray'}
@@ -149,7 +150,7 @@ def config_parser(files):
 
 def detectMachine():
 
-    machines = ['HERA', 'ORION', 'WCOSS_C', 'WCOSS_DELL_P3', 'JET']
+    machines = ['HERA', 'ORION', 'WCOSS_C', 'WCOSS_DELL_P3', 'JET', 'S4']
 
     if os.path.exists('/scratch1/NCEPDEV'):
         return 'HERA'
@@ -161,6 +162,8 @@ def detectMachine():
         return 'WCOSS_DELL_P3'
     elif os.path.exists('/lfs4/HFIP'):
         return 'JET'
+    elif os.path.exists('/data/prod'):
+        return 'S4'
     else:
         print(f'workflow is currently only supported on: {machines}')
         raise NotImplementedError('Cannot auto-detect platform, ABORT!')
@@ -258,7 +261,7 @@ def get_resources(machine, cfg, task, reservation, cdump='gdas'):
     else:        
         ppn = cfg[f'npe_node_{ltask}']
 
-    if machine in [ 'WCOSS_DELL_P3', 'HERA', 'ORION', 'JET' ]:
+    if machine in [ 'WCOSS_DELL_P3', 'HERA', 'ORION', 'JET' , 'S4' ]:
         threads = cfg[f'nth_{ltask}']
 
     nodes = np.int(np.ceil(np.float(tasks) / np.float(ppn)))
@@ -269,9 +272,9 @@ def get_resources(machine, cfg, task, reservation, cdump='gdas'):
     if scheduler in ['slurm']:
         natstr = '--export=NONE'
 
-    if machine in ['HERA', 'JET', 'ORION', 'WCOSS_C', 'WCOSS_DELL_P3']:
+    if machine in ['HERA', 'JET', 'ORION', 'S4', 'WCOSS_C', 'WCOSS_DELL_P3']:
 
-        if machine in ['HERA', 'JET', 'ORION']:
+        if machine in ['HERA', 'JET', 'ORION', 'S4']:
             resstr = f'<nodes>{nodes}:ppn={ppn}:tpp={threads}</nodes>'
         else:
             resstr = f'<nodes>{nodes}:ppn={ppn}</nodes>'
@@ -293,7 +296,7 @@ def get_resources(machine, cfg, task, reservation, cdump='gdas'):
         resstr = f'<cores>{tasks}</cores>'
 
     if task in ['arch', 'earc', 'getic']:
-        queuestr = '&QUEUE;' if scheduler in ['slurm'] else '&QUEUE_SERVICE;'
+        queuestr = '&QUEUE;' if scheduler in ['slurm'] and machine not in ['S4'] else '&QUEUE_SERVICE;'
     else:
         queuestr = '&QUEUE;'
 
@@ -344,6 +347,10 @@ def create_crontab(base, cronint=5):
     if base['machine'] in ['WCOSS']:
         rocotoloadstr = '. /usrx/local/Modules/default/init/sh; module use -a /usrx/local/emc_rocoto/modulefiles; module load rocoto/1.3.0rc2)'
         rocotorunstr = f'({rocotoloadstr} {rocotorunstr})'
+
+    if base['machine'] in ['S4']:
+        limit_str = 'ulimit -S -s unlimited;'
+        rocotorunstr = '%s %s' % (limit_str, rocotorunstr)
 
     try:
         REPLYTO = os.environ['REPLYTO']

@@ -226,6 +226,12 @@ if [[ "$OUTPUT_FILE" == "netcdf" ]]; then
             export OUTPUT_FILETYPES=" 'netcdf_parallel' 'netcdf' "
         fi
     fi
+    if [[ "$machine" == "S4" ]]; then
+        export OUTPUT_FILETYPES=" 'netcdf_parallel' 'netcdf' "
+        if [[ "$PARTITION_BATCH" == "ivy" ]]; then
+           export OUTPUT_FILETYPES=" 'netcdf' 'netcdf' "
+        fi
+    fi
 fi
 
 

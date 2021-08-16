@@ -34,6 +34,12 @@ elif [[ "$machine" = "JET" ]]; then
    fi
 elif [[ "$machine" = "HERA" ]]; then
    export npe_node_max=40
+elif [[ "$machine" = "S4" ]]; then
+   if [[ "$PARTITION_BATCH" = "s4" ]]; then
+      export npe_node_max=32
+   elif [[ "$PARTITION_BATCH" = "ivy" ]]; then
+      export npe_node_max=20
+   fi
 elif [[ "$machine" = "ORION" ]]; then
    export npe_node_max=40
 fi
@@ -62,6 +68,9 @@ case $case_in in
         export layout_y=4
         export layout_x_gfs=6
         export layout_y_gfs=4
+        if [[ "$machine" == "S4" ]]; then
+           export layout_x=4
+        fi
         export nth_fv3=1
         export nth_fv3_gfs=1
         export cdmbgwd="0.14,1.8,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
@@ -80,6 +89,12 @@ case $case_in in
         export layout_y_gfs=6
         export nth_fv3=2
         export nth_fv3_gfs=2
+        if [[ "$machine" == "S4" ]]; then
+           if [[ "$CASE_ENKF" == "C192" ]]; then
+              export layout_y=4
+              export nth_fv3=1
+           fi
+        fi
         export cdmbgwd="0.23,1.5,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=1
         export WRTTASK_PER_GROUP=$npe_node_max

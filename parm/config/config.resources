@@ -41,6 +41,16 @@ elif [[ "$machine" = "JET" ]]; then
    fi
 elif [[ "$machine" = "HERA" ]]; then
    export npe_node_max=40
+elif [[ "$machine" = "S4" ]]; then
+   if [[ "$PARTITION_BATCH" = "s4" ]]; then
+      export npe_node_max=32
+   elif [[ "$PARTITION_BATCH" = "ivy" ]]; then
+      export npe_node_max=20
+   fi
+   if [[ "$CASE" == "C768" || "$CASE" == "C1152" || "$CASE" == "C3072" ]]; then
+      echo "S4 does not support resolutions of C768 or finer!"
+      exit 3
+   fi
 elif [[ "$machine" = "ORION" ]]; then
    export npe_node_max=40
 fi
@@ -134,10 +144,30 @@ elif [ $step = "anal" ]; then
     if [ $CASE = "C384" ]; then
       export npe_anal=400
       export npe_anal_gfs=400
+      if [[ "$machine" = "S4" ]]; then
+         if [[ "$PARTITION_BATCH" = "s4" ]]; then
+            export npe_anal=416
+            export npe_anal_gfs=416
+         fi
+         export nth_anal=1
+         export nth_anal_gfs=1
+         export wtime_anal="02:00:00"
+      fi
     fi
     if [ $CASE = "C192" -o $CASE = "C96" -o $CASE = "C48" ]; then
       export npe_anal=84
       export npe_anal_gfs=84
+      if [[ "$machine" = "S4" ]]; then
+         export nth_anal=4
+         export nth_anal_gfs=4
+         if [[ "$PARTITION_BATCH" = "s4" ]]; then
+            export npe_anal=88
+            export npe_anal_gfs=88
+         elif [[ "$PARTITION_BATCH" = "ivy" ]]; then
+            export npe_anal=90
+            export npe_anal_gfs=90
+         fi
+      fi
     fi
     if [[ "$machine" = "WCOSS_DELL_P3" ]]; then
         export nth_anal=4
@@ -178,6 +208,9 @@ elif [ $step = "gldas" ]; then
 elif [ $step = "fcst" ]; then
 
     export wtime_fcst="00:30:00"
+    if [[ "$machine" == "S4" ]]; then
+       export wtime_fcst="01:00:00"
+    fi
     if [ $CASE = "C768" ]; then
       export wtime_fcst_gfs="06:00:00"
     elif [ $CASE = "C384" ]; then
@@ -210,7 +243,14 @@ elif [ $step = "fcst" ]; then
 
         export nth_fcst=${nth_fv3:-2}
 
+        if [[ "$machine" == "S4" ]]; then
+           if [[ "$CASE" == "C192" || "$CASE" == "C384" ]]; then
+               export nth_fcst=2
+           fi
+        fi
+
         export npe_node_fcst=$(echo "$npe_node_max / $nth_fcst" | bc)
+
         if [[ "$machine" == "WCOSS_C" ]]; then export memory_fcst="1024M"; fi
 
         if [[ $DO_WAVE == "YES" ]]; then
@@ -283,6 +323,15 @@ elif [ $step = "post" ]; then
     export npe_node_dwn=$npe_node_max
     if [[ "$machine" = "WCOSS_DELL_P3" ]]; then export npe_node_post=28 ; fi
     if [[ "$machine" == "WCOSS_C" ]]; then export memory_post="3072M"; fi
+    if [[ "$machine" == "S4" ]]; then
+       if [[ "$PARTITION_BATCH" = "s4" ]]; then
+          export npe_post=32
+          export npe_node_post=32
+       elif [[ "$PARTITION_BATCH" = "ivy" ]]; then
+          export npe_post=40
+          export npe_node_post=20
+       fi
+    fi
 
 elif [ $step = "wafs" ]; then
 
@@ -331,6 +380,7 @@ elif [ $step = "vrfy" ]; then
     export wtime_vrfy="03:00:00"
     export wtime_vrfy_gfs="06:00:00"
     export npe_vrfy=3
+    if [[ "$machine" == "S4" ]]; then export npe_vrfy=1; fi
     export nth_vrfy=1
     export npe_node_vrfy=1
     export npe_vrfy_gfs=1
@@ -413,6 +463,10 @@ elif [ $step = "eobs" -o $step = "eomg" ]; then
     export nth_eobs=2
     if [[ "$machine" = "WCOSS_DELL_P3" ]]; then export nth_eobs=7; fi
     export npe_node_eobs=$(echo "$npe_node_max / $nth_eobs" | bc)
+    if [[ "$machine" = "S4" ]]; then
+       export npe_node_eobs=10
+       export wtime_eobs="00:30:00"
+    fi
     if [[ "$machine" == "WCOSS_C" ]]; then export memory_eobs="3072M"; fi
 
 elif [ $step = "ediag" ]; then
@@ -445,6 +499,11 @@ elif [ $step = "eupd" ]; then
       if [[ "$machine" = "HERA" ]]; then
         export npe_eupd=100
         export nth_eupd=40
+      fi
+      if [[ "$machine" = "S4" ]]; then
+         export npe_eupd=160
+         export nth_eupd=2
+         export wtime_eupd="01:00:00"
       fi
     elif [ $CASE = "C192" -o $CASE = "C96" -o $CASE = "C48" ]; then
       export npe_eupd=42
@@ -496,6 +555,10 @@ elif [ $step = "epos" ]; then
     export wtime_epos="00:15:00"
     export npe_epos=80
     export nth_epos=6
+    if [[ "$machine" = "S4" ]]; then
+       export nth_epos=1
+       export wtime_epos="00:30:00"
+    fi
     if [[ "$machine" = "WCOSS_DELL_P3" ]]; then export nth_epos=7; fi
     export npe_node_epos=$(echo "$npe_node_max / $nth_epos" | bc)
     if [[ "$machine" == "WCOSS_C" ]]; then export memory_epos="254M"; fi

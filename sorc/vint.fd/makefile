@@ -7,7 +7,7 @@ COMP=   ifort
 LDFLAGS=
 # FFLAGS= -O3 -I $(INC)  -i$(ISIZE) -r$(RSIZE)
 # DEBUG= -check all -debug all -traceback
-FFLAGS= -O2 -g -traceback -I $(INC)  -i$(ISIZE) -r$(RSIZE)
+FFLAGS= -O2 -g -traceback -I $(INC)  -i$(ISIZE) -r$(RSIZE) $(EXTRA_WORKFLOW_BUILD_FLAGS)
 
 vint:      vint.f
 	@echo " "
