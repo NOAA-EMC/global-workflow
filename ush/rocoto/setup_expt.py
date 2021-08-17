@@ -250,8 +250,8 @@ link initial condition files from $ICSDIR to $COMROT'''
       queue = 'batch'
       queue_service = 'service'
       partition_batch = 'orion'
-      chgrp_rstprod = 'NO'
-      chgrp_cmd = 'ls'
+      chgrp_rstprod = 'YES'
+      chgrp_cmd = 'chgrp rstprod'
       hpssarch = 'NO'
 
     if args.icsdir is not None and not os.path.exists(icsdir):

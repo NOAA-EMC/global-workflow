@@ -238,8 +238,8 @@ Create COMROT experiment directory structure'''
       queue = 'batch'
       queue_service = 'service'
       partition_batch = 'orion'
-      chgrp_rstprod = 'NO'          # No rstprod on Orion
-      chgrp_cmd = 'ls'
+      chgrp_rstprod = 'YES'
+      chgrp_cmd = 'chgrp rstprod'
       hpssarch = 'NO'
 
     # COMROT directory
