@@ -149,12 +149,13 @@ for fhr in $fhrlst; do
   fi
 
 done
+
 # Restore CDATE to what is expected
-  export CDATE=$IDATE
-  echo $pwd
-  $NMV ocn_ice*.grb2 $COMOUT
-  status=$?
-  [[ $status -ne 0 ]] && exit $status
+export CDATE=$IDATE
+echo $pwd
+$NMV ocn_ice*.grb2 $COMOUT
+status=$?
+[[ $status -ne 0 ]] && exit $status
 
 # clean up working folder
 if [ ${KEEPDATA:-"NO"} = "NO" ] ; then rm -rf $DATA ; fi
