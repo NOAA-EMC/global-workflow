@@ -239,7 +239,7 @@ export DO_WAVE="NO"
 export DO_OCN="NO"
 export DO_ICE="NO"
 export DO_AERO="NO"
-export CCPP_SUITES="FV3_GFS_v16,FV3_GFS_v16_ugwpv1"
+export CCPP_SUITE="FV3_GFS_v16"
 export WAVE_CDUMP="" # When to include wave suite: gdas, gfs, or both
 export nems_temp="atm" # For APP=ATM
 
@@ -257,7 +257,7 @@ case "${APP}" in
     export DO_COUPLED="YES"
     export DO_OCN="YES"
     export DO_ICE="YES"
-    export CCPP_SUITES="FV3_GFS_v16,FV3_GFS_v16_coupled_nsstNoahmpUGWPv1"
+    export CCPP_SUITE="FV3_GFS_v16_coupled_nsstNoahmpUGWPv1"
     export nems_temp="cpld"
     ;;
   S2SW)
@@ -265,7 +265,7 @@ case "${APP}" in
     export DO_WAVE="YES"
     export DO_OCN="YES"
     export DO_ICE="YES"
-    export CCPP_SUITES="FV3_GFS_v16,FV3_GFS_v16_coupled_nsstNoahmpUGWPv1"
+    export CCPP_SUITE="FV3_GFS_v16_coupled_nsstNoahmpUGWPv1"
     export WAVE_CDUMP="both"
     export nems_temp="cpld_wave"
     ;;
