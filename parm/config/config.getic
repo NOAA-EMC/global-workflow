@@ -26,10 +26,14 @@ if [ ${RETRO:-"NO"} = "YES" ]; then # Retrospective parallel input
     HPSSDIR=/NCEPDEV/emc-global/5year/emc.glopara/WCOSS_D/gfsv16/v16retro1e
   elif [[ "$CDATE" -lt "2019101706" ]]; then
     HPSSDIR=/NCEPDEV/emc-global/5year/emc.glopara/WCOSS_D/gfsv16/v16retro2e
-  elif [[ "$CDATE" -lt "2020122206" ]]; then
+  elif [[ "$CDATE" -lt "2020122200" ]]; then
     HPSSDIR=/NCEPDEV/emc-global/5year/emc.glopara/WCOSS_D/gfsv16/v16rt2
+  elif [[ "$CDATE" -le "2021032506" ]]; then
+    HPSSDIR=/NCEPDEV/emc-global/5year/emc.glopara/WCOSS_D/gfsv16/v16rt2n
   else
-    HPSSDIR=/NCEPDEV/emc-global/5year/emc.gloparadev/WCOSS_D/gfsv16/v16rt2n
+    set +x
+    echo NO DATA FOR $CDATE
+    exit 3
   fi
 elif [ ${RETRO:-"NO"} = "NO" ]; then # Operational input
   # No ENKF data prior to 2012/05/21/00z
