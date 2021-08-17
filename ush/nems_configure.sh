@@ -47,6 +47,11 @@ CHMPETS=${CHMPETS:-${ATMPETS}}
 
 USE_MOMMESH=${USE_MOMMESH:-"true"}
 
+if [[ $OCNRES = "100" ]];  then
+  EPS_IMESH='2.5e-1'
+else
+  EPS_IMESH='1.0e-1'
+fi
 
 rm -f $DATA/nems.configure
 
@@ -83,7 +88,7 @@ if [ $cplflx = .true. ]; then
   sed -i -e "s;@\[coupling_interval_fast_sec\];$CPL_FAST;g" tmp1
   sed -i -e "s;@\[RESTART_N\];$restart_interval_nems;g" tmp1
   sed -i -e "s;@\[use_mommesh\];$USE_MOMMESH;g" tmp1
-  sed -i -e "s;@\[eps_imesh\];$ICERESdec;g" tmp1
+  sed -i -e "s;@\[eps_imesh\];$EPS_IMESH;g" tmp1
 fi
 if [ $cplwav = .true. ]; then
   sed -i -e "s;@\[wav_model\];ww3;g" tmp1

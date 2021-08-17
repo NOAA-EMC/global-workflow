@@ -26,20 +26,13 @@ start_day:               ${tPDY:6:2}
 start_hour:              ${tcyc}
 start_minute:            0
 start_second:            0
-fhrot:                   ${IAU_FHROT:-0}
 nhours_fcst:             $FHMAX
-RUN_CONTINUE:            ${RUN_CONTINUE:-".false."}
-ENS_SPS:                 ${ENS_SPS:-".false."}
+fhrot:                   ${IAU_FHROT:-0}
 
 dt_atmos:                $DELTIM
-output_1st_tstep_rst:    .false.
 calendar:                ${calendar:-'julian'}
-cpl:                     ${cpl:-".false."}
-memuse_verbose:          ${memuse_verbose:-".false."}
-atmos_nthreads:          $NTHREADS_FV3
-use_hyper_thread:        ${hyperthread:-".false."}
-ncores_per_node:         $cores_per_node
 restart_interval:        $restart_interval
+output_1st_tstep_rst:    .false.
 
 quilting:                $QUILTING
 write_groups:            ${WRITE_GROUP:-1}
@@ -57,8 +50,6 @@ jchunk3d:                ${jchunk3d:-0}
 kchunk3d:                ${kchunk3d:-0}
 ideflate:                ${ideflate:-1}
 nbits:                   ${nbits:-14}
-write_nemsioflip:        $WRITE_NEMSIOFLIP
-write_fsyncflag:         $WRITE_FSYNCFLAG
 imo:                     $LONB_IMO
 jmo:                     $LATB_JMO
 
