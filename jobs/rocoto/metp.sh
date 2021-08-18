@@ -44,8 +44,10 @@ status=$?
 export COMPONENT=${COMPONENT:-atmos}
 export VDATE="$(echo $($NDATE -${VRFYBACK_HRS} $CDATE) | cut -c1-8)"
 
+export pid=${pid:-$$}
+export jobid=${job}.${pid}
 export COMIN="$ROTDIR/$CDUMP.$PDY/$cyc/$COMPONENT"
-export DATAROOT="$RUNDIR/$CDATE/$CDUMP/vrfy"
+export DATAROOT="$RUNDIR/$CDATE/$CDUMP/metp.${jobid}"
 [[ -d $DATAROOT ]] && rm -rf $DATAROOT
 mkdir -p $DATAROOT
 
