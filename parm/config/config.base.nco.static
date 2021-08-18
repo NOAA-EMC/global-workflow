@@ -64,8 +64,8 @@ export REALTIME="YES"
 export FIXgsi="$HOMEgfs/fix/fix_gsi"
 export HOMEfv3gfs="$HOMEgfs/sorc/fv3gfs.fd"
 export HOMEpost="$HOMEgfs"
-export HOMEobsproc_prep="$NWPROD/obsproc_prep.v5.4.0"
-export HOMEobsproc_network="$NWPROD/obsproc_global.v3.4.1"
+export HOMEobsproc_prep="$NWPROD/obsproc_prep.v5.5.0"
+export HOMEobsproc_network="$NWPROD/obsproc_global.v3.4.2"
 export HOMEobsproc_global=$HOMEobsproc_network
 export BASE_VERIF="$BASE_GIT/verif/global/tags/vsdb"
 
