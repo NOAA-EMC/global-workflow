@@ -280,10 +280,10 @@ case "${APP}" in
     ;;
 esac
 
-if [[ "$SDATE" -lt "2019020100" ]]; then # no rtofs in GDA
-  export DO_WAVE="NO"
-  echo "WARNING: Wave suite turned off due to lack of RTOFS in GDA for SDATE"
-fi
+# if [[ "$SDATE" -lt "2019020100" ]]; then # no rtofs in GDA
+#   export DO_WAVE="NO"
+#   echo "WARNING: Wave suite turned off due to lack of RTOFS in GDA for SDATE"
+# fi
 
 # Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL
 export imp_physics=11
