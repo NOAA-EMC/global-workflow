@@ -20,7 +20,7 @@ esac
 # Source component configs if necessary
 for component in WAVE OCN ICE AERO; do
   control="DO_${component}"
-  if [[ ${!control} == "YES" ]]; then
+  if [[ $(eval echo \$$control) == "YES" ]]; then
     . $EXPDIR/config.$(echo "$component" | awk '{ print tolower($1) }')
   fi
 done
