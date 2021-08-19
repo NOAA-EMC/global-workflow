@@ -113,8 +113,17 @@ fi
 
 # Determine if wave component needs input and/or is coupled
 export WW3ATMINP='CPL'
-export WW3ICEINP='YES'
-export WW3CURINP='YES'
+if [[ $DO_ICE == "YES" ]]; then
+  export WW3ICEINP='CPL'
+else
+  export WW3ICEINP='YES'
+fi
+
+if [[ $DO_OCN == "YES" ]]; then
+  export WW3CURINP='CPL'
+else
+  export WW3CURINP='YES'
+fi
 
 # Determine if input is from perturbed ensemble (T) or single input file (F) for all members
 export WW3ATMIENS='F'
