@@ -5,9 +5,25 @@
 
 echo "BEGIN: config.fcst"
 
+# set -eu
+
 # Source model specific information that is resolution dependent
 . $EXPDIR/config.fv3 $CASE
 [[ "$CDUMP" == "gfs" ]] && export nth_fv3=$nth_fv3_gfs
+
+# Turn off waves if not used for this CDUMP
+case $WAVE_CDUMP in
+  both | $CDUMP ) ;; # Don't change
+  *) DO_WAVE="NO" ;; # Turn waves off
+esac
+
+# Source component configs if necessary
+for component in WAVE OCN ICE AERO; do
+  control="DO_${component}"
+  if [[ ${!control} == "YES" ]]; then
+    . $EXPDIR/config.$(echo "$component" | awk '{ print tolower($1) }')
+  fi
+done
 
 # Get task specific resources
 . $EXPDIR/config.resources fcst
@@ -57,57 +73,12 @@ fi
 # COUPLING COMPONENTS
 export use_coldstart=".false."
 
-#######################################################################
-# CICE parameters
-export NX_GLB="1440"
-export NY_GLB="1080"
-export MESHICE="mesh.mx025.nc"
 
 #######################################################################
 
 export FORECASTSH="$HOMEgfs/scripts/exglobal_forecast.sh"
 export FCSTEXECDIR="$HOMEgfs/exec"
 export FCSTEXEC="ufs_model"
-
-export npe_fv3=$npe_fcst 
-
-if [[ "$CDUMP" == "gfs" ]] ; then
-   export npe_fv3=$npe_fcst_gfs
-   export layout_x=$layout_x_gfs
-   export layout_y=$layout_y_gfs
-   export WRITE_GROUP=$WRITE_GROUP_GFS
-   export WRTTASK_PER_GROUP=$WRTTASK_PER_GROUP_GFS
-fi
-
-if [ $QUILTING = ".true." ]; then
-   export npe_fv3=$(echo " $npe_fv3 + $WRITE_GROUP * $WRTTASK_PER_GROUP" | bc)
-   export npe_fcst=$npe_fv3
-   export npe_fcst_gfs=$(echo " $npe_fcst_gfs  + $WRITE_GROUP_GFS * $WRTTASK_PER_GROUP_GFS" | bc)
-   export ATMPETS=$(echo " $layout_x * $layout_y * 6 + $WRITE_GROUP * $WRTTASK_PER_GROUP" | bc)
-else
-   export ATMPETS=$(echo " $layout_x * $layout_y * 6" |bc) 
-fi
-
-if [ $DO_WAVE = "YES" ] ; then
-  export npe_fcst=$((npe_fcst + npe_wav))
-  if [ "$WAVE_CDUMP" = "gfs" -o "$WAVE_CDUMP" = "both" ]; then
-    export npe_fcst_gfs=$((npe_fcst_gfs + npe_wav_gfs))
-    if [ "$CDUMP" = "gfs" ]; then npe_wav=$npe_wav_gfs ; fi
-  fi
-fi
-
-# Additional PE Mapping
-export MEDPETS=$(echo " $layout_x * $layout_y * 6" |bc) 
-export OCNPETS="220"
-export ICEPETS="80"
-export WAVPETS="160"
-export CHMPETS="1700"
-
-if [ "$CDUMP" = "gfs" ]; then 
-  export ntasks_fcst=$npe_fcst_gfs 
-else
-  export ntasks_fcst=$npe_fcst
-fi
 
 #######################################################################
 # Model configuration
@@ -120,11 +91,7 @@ export h2o_phys=".true."
 # Options of stratosphere O3 physics reaction coefficients
 export new_o3forc="YES"
 
-# do_ugwp=T: use unified CGWD and OGWD, and turbulent orographic form drag (TOFD)
-# do_ugwp=F: use unified CGWD but old OGWD, TOFD is not uded.
-export do_ugwp=".false."
-export do_tofd=".true."
-export launch_level=$(echo "$LEVS/2.35" |bc)
+# export launch_level=$(echo "$LEVS/2.35" |bc)
 
 # Sponge layer settings
 export tau=10.0
@@ -215,6 +182,12 @@ else
     echo "Unknown microphysics option, ABORT!"
 
 fi
+
+# Stochastic physics
+DO_SPPT=${DO_SPPT:-"NO"}
+DO_SKEB=${DO_SKEB:-"NO"}
+DO_SHUM=${DO_SHUM:-"NO"}
+DO_CA=${DO_CA:-"NO"}
 
 #coupling settings
 export FRAC_GRID=".true."
@@ -351,15 +324,6 @@ if [ $DO_AERO = "YES" ]; then # temporary settings for aerosol coupling
 elif [[ $DO_COUPLED = "YES" ]] ; then # coupled model
     export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_cpl"
 fi
-
-case "$CASE" in
-    "C48") export OCNRES=100;;
-    "C96") export OCNRES=100;;
-    "C192") export OCNRES=050;;
-    "C384") export OCNRES=025;;
-    "C768") export OCNRES=025;;
-    *) export OCNRES=025;;
-esac
 
 # Remember config.efcs will over-ride these values for ensemble forecasts
 # if these variables are re-defined there.
