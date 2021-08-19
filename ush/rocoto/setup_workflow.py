@@ -363,10 +363,12 @@ def get_hyb_resources(dict_configs):
 
         strings = []
         strings.append(f'\t<!ENTITY QUEUE_{taskstr}     "{queuestr}">\n')
-        if scheduler in ['slurm'] and machine in ['ORION'] and task not in ['earc']:
-            strings.append(f'\t<!ENTITY PARTITION_{taskstr} "&PARTITION_BATCH;">\n')
-        if scheduler in ['slurm'] and task in ['earc']:
-            strings.append(f'\t<!ENTITY PARTITION_{taskstr} "&PARTITION_SERVICE;">\n')
+        if scheduler in ['slurm']:
+            if task in ['earc']:
+                strings.append(f'\t<!ENTITY PARTITION_{taskstr} "&PARTITION_SERVICE;">\n')
+            else:
+                strings.append(f'\t<!ENTITY PARTITION_{taskstr} "&PARTITION_BATCH;">\n')
+
         strings.append(f'\t<!ENTITY WALLTIME_{taskstr}  "{wtimestr}">\n')
         strings.append(f'\t<!ENTITY RESOURCES_{taskstr} "{resstr}">\n')
         if len(memstr) != 0:
