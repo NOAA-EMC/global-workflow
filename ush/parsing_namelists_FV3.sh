@@ -54,7 +54,7 @@ cat > input.nml <<EOF
   blocksize = $blocksize
   chksum_debug = $chksum_debug
   dycore_only = $dycore_only
-  ccpp_suite = '$CCPP_SUITE'
+  ccpp_suite = $CCPP_SUITE
   $atmos_model_nml
 /
 
@@ -276,8 +276,8 @@ cat >> input.nml <<EOF
   hybedmf      = ${hybedmf:-".false."}
   satmedmf     = ${satmedmf-".true."}
   isatmedmf    = ${isatmedmf-"1"}
-  lheatstrg    = ${lheatstrg-".false."}
-  lseaspray    = ${lseaspray:-".false."}
+  lheatstrg    = ${lheatstrg-".true."}
+  lseaspray    = ${lseaspray:-".true."}
   random_clds  = ${random_clds:-".true."}
   trans_trac   = ${trans_trac:-".true."}
   cnvcld       = ${cnvcld:-".true."}
