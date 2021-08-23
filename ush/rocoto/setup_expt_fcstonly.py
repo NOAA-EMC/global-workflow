@@ -227,7 +227,7 @@ Create COMROT experiment directory structure'''
     elif machine == 'ORION':
       base_git = '/work/noaa/global/glopara/git'
       base_svn = '/work/noaa/global/glopara/svn'
-      dmpdir = '/work/noaa/global/glopara/dump'
+      dmpdir = '/work/noaa/rstprod/dump'
       nwprod = '/work/noaa/global/glopara/nwpara'
       comroot = '/work/noaa/global/glopara/com'
       homedir = '/work/noaa/global/$USER'
@@ -238,8 +238,8 @@ Create COMROT experiment directory structure'''
       queue = 'batch'
       queue_service = 'service'
       partition_batch = 'orion'
-      chgrp_rstprod = 'NO'          # No rstprod on Orion
-      chgrp_cmd = 'ls'
+      chgrp_rstprod = 'YES'
+      chgrp_cmd = 'chgrp rstprod'
       hpssarch = 'NO'
 
     # COMROT directory
