@@ -46,6 +46,7 @@ WAVPETS=${WAVPETS:-8}
 CHMPETS=${CHMPETS:-${ATMPETS}}
 
 USE_MOMMESH=${USE_MOMMESH:-"true"}
+MESH_OCN_ICE=${MESH_OCN_ICE:-"mesh.mx${ICERES}.nc"}
 
 if [[ $OCNRES = "100" ]];  then
   EPS_IMESH='2.5e-1'
