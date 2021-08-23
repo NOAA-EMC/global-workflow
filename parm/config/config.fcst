@@ -49,7 +49,6 @@ export cplflx=".false."
 export cplice=".false."
 export cplgocart=".false."
 export cplwav=".false."
-export cplwav2atm=".false."
 
 # cpl changes based on APP
 

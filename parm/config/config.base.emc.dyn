@@ -242,6 +242,7 @@ export DO_AERO="NO"
 export CCPP_SUITE="FV3_GFS_v16"
 export WAVE_CDUMP="" # When to include wave suite: gdas, gfs, or both
 export confignamevarfornems="atm" # For APP=ATM
+export cplwav2atm=".false."
 
 case "${APP}" in
   ATM)
@@ -268,6 +269,7 @@ case "${APP}" in
     export CCPP_SUITE="FV3_GFS_v16_coupled_nsstNoahmpUGWPv1"
     export WAVE_CDUMP="both"
     export confignamevarfornems="cpld_wave"
+    export cplwav2atm=".true."
     ;;
   ATMAERO)
     export DO_COUPLED="YES"
