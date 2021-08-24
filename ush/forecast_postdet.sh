@@ -174,7 +174,7 @@ EOF
   if [ $cplflx = ".false." ] ; then
     $NLN $FIXfv3/$CASE/${CASE}_mosaic.nc $DATA/INPUT/grid_spec.nc
   else
-    $NLN $FIXfv3/${CASE}_mosaic.nc $DATA/INPUT/${CASE}_mosaic.nc
+    $NLN $FIXfv3/$CASE/${CASE}_mosaic.nc $DATA/INPUT/${CASE}_mosaic.nc
   fi
 
   # Fractional grid related
@@ -888,6 +888,7 @@ CICE_postdet() {
 
   ice_grid_file=${ice_grid_file:-"grid_cice_NEMS_mx${ICERES}.nc"}
   ice_kmt_file=${ice_kmt_file:-"kmtu_cice_NEMS_mx${ICERES}.nc"}
+  export MESH_OCN_ICE=${MESH_OCN_ICE:-"mesh.mx${ICERES}.nc"}
 
   iceic="cice_model.res_$CDATE.nc"
 
