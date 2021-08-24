@@ -186,7 +186,6 @@ elif [ $step = "fcst" ]; then
     CDUMP_LIST=${CDUMP:-"gfs gdas"}
     for CDUMP in $CDUMP_LIST; do
         if [[ "$CDUMP" == "gfs" ]]; then
-            suffix="_gfs"
             export layout_x=$layout_x_gfs
             export layout_y=$layout_y_gfs
             export WRITE_GROUP=$WRITE_GROUP_GFS
