@@ -40,6 +40,7 @@ case:
     CASE: C384
     LEVS: 128
     DELTIM: 450
+    IAER: 5111
     IALB: 1
     IEMS: 1
     layout:
