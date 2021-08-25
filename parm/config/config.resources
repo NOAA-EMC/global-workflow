@@ -206,7 +206,6 @@ elif [ $step = "fcst" ]; then
 
         export nth_fcst=${nth_fv3:-2}
 
-        if [[ "$CASE" == "C384" ]]; then nth_fcst=4; fi
         export npe_node_fcst=$(echo "$npe_node_max / $nth_fcst" | bc)
         if [[ "$machine" == "WCOSS_C" ]]; then export memory_fcst="1024M"; fi
 
