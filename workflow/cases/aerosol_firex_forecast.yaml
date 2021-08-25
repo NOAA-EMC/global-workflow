@@ -56,8 +56,8 @@ case:
   chem_settings:
     MOD: gocart
     ntdiag: 2
-    CFGDIR: /scratch1/NCEPDEV/nems/Raffaele.Montuoro/data/NASA/rc.firex
-    INPDIR: /scratch1/NCEPDEV/nems/Raffaele.Montuoro/data/NASA/ExtData
+    CFGDIR: /scratch1/NCEPDEV/nems/Raffaele.Montuoro/data/NASA/rc.firex # please replace with proper rc file set - see: https://github.com/noaa-oar-arl/UFS-Aerosol-Config
+    INPDIR: /scratch1/NCEPDEV/nems/Raffaele.Montuoro/data/NASA/ExtData  # must be consistent with rc file set above
 
   post:
     downset: 2
