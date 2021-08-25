@@ -4,12 +4,12 @@
 case:
   places:
     workflow_file: layout/free_forecast_gfs.yaml
-    BASE_CPLIC: /scratch1/NCEPDEV/nems/Raffaele.Montuoro/data/ICS
+    BASE_CPLIC: /scratch1/BMC/gsd-fv3-dev/Shan.Sun/judy_ic_only/FV3GFSrun
 
   settings: 
     SDATE: 2019-07-01t00:00:00
     EDATE: 2019-07-02t00:00:00
-    STEP_GFS: !timedelta "06:00:00"
+    STEP_GFS: !timedelta "24:00:00"
     STEP_DA: !timedelta "00:00:00"
     max_job_tries: 1
 
@@ -38,7 +38,7 @@ case:
 
   fv3_gfs_settings:
     CASE: C384
-    LEVS: 65
+    LEVS: 128
     DELTIM: 450
     IALB: 1
     IEMS: 1
