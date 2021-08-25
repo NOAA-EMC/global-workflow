@@ -40,6 +40,8 @@ case:
     CASE: C384
     LEVS: 65
     DELTIM: 450
+    IALB: 1
+    IEMS: 1
     layout:
        x: 6
        y: 8
