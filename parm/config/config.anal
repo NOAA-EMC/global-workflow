@@ -95,7 +95,30 @@ if [[ $RUN_ENVIR == "emc" ]]; then
 #   Assimilate 135 (T) & 235 (uv) Canadian AMDAR observations
     if [[ "$CDATE" -ge "2020040718" && "$CDATE" -lt "2020052612" ]]; then
 	export CONVINFO=$FIXgsi/gfsv16_historical/global_convinfo.txt.2020040718
+	export OBERROR=$FIXgsi/gfsv16_historical/prepobs_errtable.global.2020040718
     fi
+
+#   Assimilate COSMIC-2
+    if [[ "$CDATE" -ge "2020052612" && "$CDATE" -lt "2020082412" ]]; then
+        export CONVINFO=$FIXgsi/gfsv16_historical/global_convinfo.txt.2020052612
+	export OBERROR=$FIXgsi/gfsv16_historical/prepobs_errtable.global.2020040718
+    fi
+
+#   Assimilate HDOB
+    if [[ "$CDATE" -ge "2020082412" && "$CDATE" -lt "2020091612" ]]; then
+        export CONVINFO=$FIXgsi/gfsv16_historical/global_convinfo.txt.2020082412
+    fi
+
+#   Assimilate Metop-C GNSSRO
+    if [[ "$CDATE" -ge "2020091612" && "$CDATE" -lt "2021031712" ]]; then
+        export CONVINFO=$FIXgsi/gfsv16_historical/global_convinfo.txt.2020091612
+    fi
+
+#   Assimilate DO-2 GeoOptics
+    if [[ "$CDATE" -ge "2021031712" && "$CDATE" -lt "2021091612" ]]; then
+        export CONVINFO=$FIXgsi/gfsv16_historical/global_convinfo.txt.2021031712
+    fi
+
 
 #   NOTE:
 #   As of 2020052612, gfsv16_historical/global_convinfo.txt.2020052612 is
