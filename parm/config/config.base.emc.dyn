@@ -196,6 +196,7 @@ export QUILTING=".true."
 export OUTPUT_GRID="gaussian_grid"
 export OUTPUT_FILE="netcdf"
 export WRITE_DOPOST=".true."
+export WRITE_NSFLIP=".true."
 
 # suffix options depending on file format
 if [ $OUTPUT_FILE = "netcdf" ]; then
