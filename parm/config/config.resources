@@ -226,7 +226,7 @@ elif [ $step = "fcst" ]; then
                 # Except for 025, these are guesses for now
                 100) export OCNPETS=20 ;;
                 050) export OCNPETS=60 ;;
-                025) export OCNPETS=225 ;;
+                025) export OCNPETS=220 ;;
                 *)
                     echo "FATAL: Number of PEs not defined for ocean resolution '$OCNRES'"
                     echo "  Please add an entry to config.resources within fcst for this resolution"
