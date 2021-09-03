@@ -27,7 +27,7 @@ WAV_attributes::
 
 # Run Sequence #
 runSeq::
-  @@[coupling_interval_sec]
+  @@[coupling_interval_slow_sec]
     ATM
     ATM -> WAV 
     WAV

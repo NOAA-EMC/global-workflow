@@ -70,6 +70,10 @@ sed -i -e "s;@\[atm_model\];$ATM_model;g" tmp1
 sed -i -e "s;@\[med_petlist_bounds\];$med_petlist_bounds;g" tmp1
 sed -i -e "s;@\[atm_petlist_bounds\];$atm_petlist_bounds;g" tmp1
 
+if [ $cpl = ".true." ]; then
+  sed -i -e "s;@\[coupling_interval_slow_sec\];$CPL_SLOW;g" tmp1
+fi
+
 if [ $cplflx = .true. ]; then
   if [ $restart_interval  -gt 0 ]; then
     restart_interval_nems=$restart_interval
@@ -85,7 +89,6 @@ if [ $cplflx = .true. ]; then
   sed -i -e "s;@\[RUNTYPE\];$cmeps_run_type;g" tmp1
   sed -i -e "s;@\[CPLMODE\];$cplmode;g" tmp1
   sed -i -e "s;@\[restart_interval\];$restart_interval;g" tmp1
-  sed -i -e "s;@\[coupling_interval_slow_sec\];$CPL_SLOW;g" tmp1
   sed -i -e "s;@\[coupling_interval_fast_sec\];$CPL_FAST;g" tmp1
   sed -i -e "s;@\[RESTART_N\];$restart_interval_nems;g" tmp1
   sed -i -e "s;@\[use_mommesh\];$USE_MOMMESH;g" tmp1
