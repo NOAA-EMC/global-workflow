@@ -188,7 +188,7 @@ for ufs_utilsexe in chgres_cube nemsio_get nemsio_read global_chgres ; do
     $LINK ../sorc/ufs_utils.fd/exec/$ufs_utilsexe .
 done
 
-for gsiexe in  global_gsi.x global_enkf.x calc_increment_ens.x getsfcensmeanp.x \
+for gsiexe in  global_gsi.x global_enkf.x calc_increment_ens.x getsfcensmeanp.x calc_increment_ens_ncio.x \
     getsigensmeanp_smooth.x getsigensstatp.x recentersigp.x oznmon_horiz.x \
     oznmon_time.x radmon_angle.x radmon_bcoef.x radmon_bcor.x radmon_time.x ;do
     [[ -s $gsiexe ]] && rm -f $gsiexe
