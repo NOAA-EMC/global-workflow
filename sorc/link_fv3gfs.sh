@@ -8,16 +8,16 @@ machine=${2}
 
 if [ $# -lt 2 ]; then
     echo '***ERROR*** must specify two arguements: (1) RUN_ENVIR, (2) machine'
-    echo ' Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | theia | hera )'
+    echo ' Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | theia | hera | wcoss2 )'
     exit 1
 fi
 
 if [ $RUN_ENVIR != emc -a $RUN_ENVIR != nco ]; then
-    echo 'Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | theia | hera )'
+    echo 'Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | theia | hera | wcoss2 )'
     exit 1
 fi
-if [ $machine != cray -a $machine != theia -a $machine != dell -a $machine != hera ]; then
-    echo 'Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | theia | hera )'
+if [ $machine != cray -a $machine != theia -a $machine != dell -a $machine != hera -a $machine != wcoss2 ]; then
+    echo 'Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | theia | hera | wcoss2 )'
     exit 1
 fi
 
@@ -38,6 +38,8 @@ elif [ $machine = "theia" ]; then
     FIX_DIR="/scratch4/NCEPDEV/global/save/glopara/git/fv3gfs/fix"
 elif [ $machine = "hera" ]; then
     FIX_DIR="/scratch1/NCEPDEV/global/glopara/fix"
+elif [ $machine = "wcoss2" ]; then
+    FIX_DIR="/lfs/h2/emc/ens/noscrub/common/git/gw/fix_nco_gfsv15"
 fi
 cd ${pwd}/../fix                ||exit 8
 for dir in fix_am fix_chem fix_fv3 fix_orog fix_fv3_gmted2010 fix_verif; do
@@ -155,7 +157,8 @@ cd ${pwd}/../jobs               ||exit 8
     $LINK ../sorc/gsd_prep_chem.fd/workflow/emc-global/jobs/JGLOBAL_PREP_CHEM          .
 cd ${pwd}/../scripts            ||exit 8
     $LINK ../sorc/gsd_prep_chem.fd/workflow/emc-global/scripts/exglobal_prep_chem.sh .
-
+cd ${pwd}/../parm
+    $LINK ../sorc/gsd_prep_chem.fd/workflow/emc-global/parm/prep_chem_sources.inp.IN .
 #------------------------------
 #--link executables 
 #------------------------------
