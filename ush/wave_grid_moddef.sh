@@ -28,7 +28,8 @@
   export LOUD=${LOUD:-YES}; [[ $LOUD = yes ]] && export LOUD=YES
   [[ "$LOUD" != YES ]] && set +x
 
-  postmsg "$jlogfile" "Generating mod_def file"
+  #postmsg "$jlogfile" "Generating mod_def file"
+  echo "Generating mod_def file"
 
   mkdir -p moddef_${1}
   cd moddef_${1}
@@ -55,7 +56,9 @@
     echo '**************************************************'
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" "GRID IN ww3_mod_def.sh NOT SET"
+    #postmsg "$jlogfile" "GRID IN ww3_mod_def.sh NOT SET"
+    echo "GRID IN ww3_mod_def.sh NOT SET"
+
     exit 1
   else
     grdID=$1
@@ -73,7 +76,8 @@
     echo '*********************************************************'
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" "EXPORTED VARIABLES IN ww3_mod_def.sh NOT SET"
+    #postmsg "$jlogfile" "EXPORTED VARIABLES IN ww3_mod_def.sh NOT SET"
+    echo "EXPORTED VARIABLES IN ww3_mod_def.sh NOT SET"
     exit 2
   fi
 
@@ -102,7 +106,8 @@
     echo '******************************************** '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" "FATAL ERROR : ERROR IN ww3_grid"
+    #postmsg "$jlogfile" "FATAL ERROR : ERROR IN ww3_grid"
+    echo "FATAL ERROR : ERROR IN ww3_grid"
     exit 3
   fi
  
@@ -118,7 +123,8 @@
     echo '******************************************** '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" "FATAL ERROR : Mod def File creation FAILED"
+    #postmsg "$jlogfile" "FATAL ERROR : Mod def File creation FAILED"
+    echo "FATAL ERROR : Mod def File creation FAILED"
     exit 4
   fi
 
