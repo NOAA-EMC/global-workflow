@@ -26,8 +26,8 @@ err=0
 echo fv3gfs checkout ...
 if [[ ! -d fv3gfs.fd ]] ; then
     rm -f ${topdir}/checkout-fv3gfs.log
-    # git clone https://github.com/XianwuXue-NOAA/FV3-GSDCHEM-WW3.git fv3gfs.fd >> ${LOG_DIR}/checkout-fv3gfs.log 2>&1
-    git clone git@github.com:XianwuXue-NOAA/FV3-GSDCHEM-WW3.git fv3gfs.fd >> ${LOG_DIR}/checkout-fv3gfs.log 2>&1
+    git clone https://github.com/XianwuXue-NOAA/FV3-GSDCHEM-WW3.git fv3gfs.fd >> ${LOG_DIR}/checkout-fv3gfs.log 2>&1
+    #git clone git@github.com:XianwuXue-NOAA/FV3-GSDCHEM-WW3.git fv3gfs.fd >> ${LOG_DIR}/checkout-fv3gfs.log 2>&1
     rc=$?
     ((err+=$rc))
     cd fv3gfs.fd
@@ -43,12 +43,13 @@ fi
 echo gsi checkout ...
 if [[ ! -d gsi.fd ]] ; then
     rm -f ${LOG_DIR}/checkout-gsi.log
-    git clone --recursive https://github.com/XianwuXue-NOAA/GSI.git gsi.fd >> ${LOG_DIR}/checkout-gsi.fd.log 2>&1
+    git clone https://github.com/XianwuXue-NOAA/GSI.git gsi.fd >> ${LOG_DIR}/checkout-gsi.fd.log 2>&1
+	#git clone git@github.com:XianwuXue-NOAA/GSI.git gsi.fd >> ${LOG_DIR}/checkout-gsi.fd.log 2>&1
     rc=$?
     ((err+=$rc))
     cd gsi.fd
     git checkout feature/gfsda.v16.0.0_port2acorn #gfsda.v16.0.0
-    git submodule update
+    git submodule update --init --recursive
     cd ${topdir}
 else
     echo 'Skip.  Directory gsi.fd already exists.'
@@ -58,6 +59,7 @@ echo ufs_utils checkout ...
 if [[ ! -d ufs_utils.fd ]] ; then
     rm -f ${topdir}/checkout-ufs_utils.log
     git clone https://github.com/XianwuXue-NOAA/UFS_UTILS.git ufs_utils.fd >> ${LOG_DIR}/checkout-ufs_utils.fd.log 2>&1
+	#git clone git@github.com:XianwuXue-NOAA/UFS_UTILS.git ufs_utils.fd >> ${LOG_DIR}/checkout-ufs_utils.fd.log 2>&1
     rc=$?
     ((err+=$rc))
     cd ufs_utils.fd
@@ -71,7 +73,8 @@ fi
 echo EMC_post checkout ...
 if [[ ! -d gfs_post.fd ]] ; then
     rm -f ${topdir}/checkout-gfs_post.log
-    git clone --recursive https://github.com/XianwuXue-NOAA/EMC_post.git gfs_post.fd >> ${LOG_DIR}/checkout-gfs_post.log 2>&1
+    git clone --recursive https://github.com/XianwuXue-NOAA/UPP.git gfs_post.fd >> ${LOG_DIR}/checkout-gfs_post.log 2>&1
+	#git clone --recursive git@github.com:XianwuXue-NOAA/UPP.git gfs_post.fd >> ${LOG_DIR}/checkout-gfs_post.log 2>&1
     rc=$?
     ((err+=$rc))
     cd gfs_post.fd
@@ -85,6 +88,7 @@ echo GSD-prep-chem checkout ...
 if [[ ! -d gsd_prep_chem.fd ]] ; then
     rm -f ${LOG_DIR}/checkout-gsd-prep-chem.log
     git clone https://github.com/XianwuXue-NOAA/GSL-prep-chem.git gsd_prep_chem.fd >> ${LOG_DIR}/checkout-gsd-prep-chem.log 2>&1
+	#git clone git@github.com:XianwuXue-NOAA/GSL-prep-chem.git gsd_prep_chem.fd >> ${LOG_DIR}/checkout-gsd-prep-chem.log 2>&1
     rc=$?
     ((err+=$rc))
     cd gsd_prep_chem.fd
