@@ -316,10 +316,6 @@ if [ $cpl = .true. ]; then
   cat >> input.nml << EOF
   fscav_aero = ${fscav_aero:-'*:0.0'}
 EOF
-else
-cat >> input.nml <<EOF
-  do_tofd      = ${do_tofd:-".true."}
-EOF
 fi
 
 cat >> input.nml <<EOF
