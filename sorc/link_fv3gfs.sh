@@ -204,7 +204,7 @@ $LINK ../sorc/gsd_prep_chem.fd/workflow/emc-global/exec/prep_chem_sources_RADM_F
 
 cd ${pwd}/../sorc   ||   exit 8
     $SLINK gsi.fd/util/EnKF/gfs/src/calc_increment_ens.fd                                  calc_increment_ens.fd
-    $SLINK gsi.fd/util/EnKF/gfs/src/calc_increment_ens_gsdchem.fd                          calc_increment_ens_gsdchem.fd
+    #$SLINK gsi.fd/util/EnKF/gfs/src/calc_increment_ens_gsdchem.fd                          calc_increment_ens_gsdchem.fd
     $SLINK gsi.fd/util/EnKF/gfs/src/getsfcensmeanp.fd                                      getsfcensmeanp.fd
     $SLINK gsi.fd/util/EnKF/gfs/src/getsigensmeanp_smooth.fd                               getsigensmeanp_smooth.fd
     $SLINK gsi.fd/util/EnKF/gfs/src/getsigensstatp.fd                                      getsigensstatp.fd
@@ -220,13 +220,13 @@ cd ${pwd}/../sorc   ||   exit 8
 
     $SLINK gfs_post.fd/sorc/ncep_post.fd                                                   gfs_ncep_post.fd
 
-    $SLINK ufs_utils.fd/sorc/fre-nctools.fd/tools/shave.fd                                 shave.fd
-    for prog in filter_topo fregrid make_hgrid make_solo_mosaic ; do
+    #$SLINK ufs_utils.fd/sorc/fre-nctools.fd/tools/shave.fd                                 shave.fd
+    for prog in fregrid make_hgrid make_solo_mosaic ; do
         $SLINK ufs_utils.fd/sorc/fre-nctools.fd/tools/$prog                                ${prog}.fd                                
     done
     for prog in  chgres_cube.fd       global_cycle.fd   nemsio_read.fd \
                  mkgfsnemsioctl.fd  nst_tf_chg.fd \
-                 global_chgres.fd  nemsio_get.fd      orog.fd ;do
+                 global_chgres.fd  nemsio_get.fd      ;do
         $SLINK ufs_utils.fd/sorc/$prog                                                     $prog
     done
 
