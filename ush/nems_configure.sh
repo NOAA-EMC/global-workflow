@@ -40,12 +40,13 @@ CHM_model=${CHM_model:-'gocart'}
 
 ATMPETS=${ATMPETS:-8}
 MEDPETS=${MEDPETS:-8}
-OCNPETS=${OCNPETS:-8}
-ICEPETS=${ICEPETS:-8}
-WAVPETS=${WAVPETS:-8}
+OCNPETS=${OCNPETS:-0}
+ICEPETS=${ICEPETS:-0}
+WAVPETS=${WAVPETS:-0}
 CHMPETS=${CHMPETS:-${ATMPETS}}
 
 USE_MOMMESH=${USE_MOMMESH:-"true"}
+MESH_OCN_ICE=${MESH_OCN_ICE:-"mesh.mx${ICERES}.nc"}
 
 if [[ $OCNRES = "100" ]];  then
   EPS_IMESH='2.5e-1'
@@ -69,6 +70,10 @@ sed -i -e "s;@\[atm_model\];$ATM_model;g" tmp1
 sed -i -e "s;@\[med_petlist_bounds\];$med_petlist_bounds;g" tmp1
 sed -i -e "s;@\[atm_petlist_bounds\];$atm_petlist_bounds;g" tmp1
 
+if [ $cpl = ".true." ]; then
+  sed -i -e "s;@\[coupling_interval_slow_sec\];$CPL_SLOW;g" tmp1
+fi
+
 if [ $cplflx = .true. ]; then
   if [ $restart_interval  -gt 0 ]; then
     restart_interval_nems=$restart_interval
@@ -84,7 +89,6 @@ if [ $cplflx = .true. ]; then
   sed -i -e "s;@\[RUNTYPE\];$cmeps_run_type;g" tmp1
   sed -i -e "s;@\[CPLMODE\];$cplmode;g" tmp1
   sed -i -e "s;@\[restart_interval\];$restart_interval;g" tmp1
-  sed -i -e "s;@\[coupling_interval_slow_sec\];$CPL_SLOW;g" tmp1
   sed -i -e "s;@\[coupling_interval_fast_sec\];$CPL_FAST;g" tmp1
   sed -i -e "s;@\[RESTART_N\];$restart_interval_nems;g" tmp1
   sed -i -e "s;@\[use_mommesh\];$USE_MOMMESH;g" tmp1
