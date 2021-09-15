@@ -47,6 +47,13 @@ else if ( { test -L /usrx && sh -c "readlink /usrx 2> /dev/null | grep dell" } )
         source /usrx/local/prod/lmod/lmod/init/$__ms_shell
     endif
     module purge
+else if ( { test -d /lfs/h2 } ) then
+    # We are on NOAA Cactus or Dogwood
+    if ( ! { module help >& /dev/null } ) then
+        source /usr/share/lmod/lmod/init/$__ms_shell
+    fi
+    module purge
+    module load envvar/1.0
 else if ( { test -d /glade } ) then
     # We are on NCAR Yellowstone
     if ( ! { module help >& /dev/null } ) then
