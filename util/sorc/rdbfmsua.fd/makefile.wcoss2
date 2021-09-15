@@ -1,0 +1,84 @@
+SHELL=/bin/sh
+#
+# This makefile was produced by /usr/bin/fmgen at 11:21:07 AM on 10/28/94
+# If it is invoked by the command line
+#	make -f makefile
+# it will compile the fortran modules indicated by SRCS into the object
+# modules indicated by OBJS and produce an executable named a.out.
+#
+# If it is invoked by the command line
+#	make -f makefile a.out.prof
+# it will compile the fortran modules indicated by SRCS into the object
+# modules indicated by OBJS and produce an executable which profiles
+# named a.out.prof.
+#
+# To remove all the objects but leave the executables use the command line
+#	make -f makefile clean
+#
+# To remove everything but the source files use the command line
+#	make -f makefile clobber
+#
+# To remove the source files created by /usr/bin/fmgen and this makefile
+# use the command line
+#	make -f makefile void
+#
+# The parameters SRCS and OBJS should not need to be changed.  If, however,
+# you need to add a new module add the name of the source module to the
+# SRCS parameter and add the name of the resulting object file to the OBJS
+# parameter.  The new modules are not limited to fortran, but may be C, YACC,
+# LEX, or CAL.  An explicit rule will need to be added for PASCAL modules.
+#
+OBJS=	rdbfmsua.o
+ 
+
+# Tunable parameters
+#
+# FC		Name of the fortran compiling system to use
+# LDFLAGS	Flags to the loader
+# LIBS		List of libraries
+# CMD		Name of the executable
+#
+FC =		ifort	
+# FFLAGS =	-O3 -q32 -I${GEMINC} -I${NAWIPS}/os/${NA_OS}/include
+# FFLAGS =	-I${GEMINC} -I${NAWIPS}/os/${NA_OS}/include
+FFLAGS =	-I${GEMINC} -I${OS_INC}
+# LDFLAGS =       -O3 -q32 -s
+# LDFLAGS =       -Wl,-Map,MAPFILE
+
+# BRIDGE=/gpfs/dell1/nco/ops/nwpara/gempak.v7.3.1/nawips/os/linux3.10.0_x86_64/lib/libbridge.a
+BRIDGE=${GEMOLB}/libbridge.a
+
+LIBS =    ${DECOD_UT_LIB} ${BUFR_LIB4} \
+	-L${GEMOLB} -lgemlib -lappl -lsyslib -lcgemlib -lgfortran ${BRIDGE}
+
+#	-L${GEMOLB} -lgemlib -lappl -lsyslib -lcgemlib -lgfortran ${BRIDGE}
+#          -L/nwprod/gempak/nawips1/os/linux2.6.32_x86_64/lib -lgemlib -lappl -lsyslib -lcgemlib -lbridge -lncepBUFR \
+#           -lgfortran
+
+CMD =           rdbfmsua
+
+# To perform the default compilation, use the first line
+# To compile with flowtracing turned on, use the second line
+# To compile giving profile additonal information, use the third line
+# CFLAGS=		-O3 -q32 
+
+# Lines from here on down should not need to be changed.  They are the
+# actual rules which make uses to build a.out.
+#
+
+$(CMD):         $(OBJS)
+	$(FC) $(LDFLAGS) -o $(@) $(OBJS) $(LIBS)
+
+
+# The following rule reads the required NAWIPS definitions and then recursively
+# runs this same makefile with a new target in the spawned shell.
+#
+	
+clean:
+	-rm -f ${OBJS}
+
+clobber:	clean
+	-rm -f ${CMD}
+
+void:	clobber
+	-rm -f ${SRCS} makefile
