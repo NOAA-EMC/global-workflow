@@ -1,39 +1,38 @@
-#!/bin/sh
-#PBS -o postsnd.out.01
-#PBS -e postsnd.out.01
-#PBS -N postsnd
-#PBS -A hfv3gfs
-#PBS -l partition=xjet:sjet:vjet:tjet
-#PBS -l nodes=6:ppn=2
-#PBS -l walltime=02:30:00
+#!/bin/ksh -l
+#SBATCH -A fv3-cam        # Use a valid account
+#SBATCH --time=2:30:00    # For big directories you may want 8:00:00 hrs
+#SBATCH -N 40              # Probably 2 to 4 depending on amount of data
+#SBATCH --partition=xjet
+#SBATCH -n 24
+#SBATCH -o %x.o%j
+#SBATCH -J postsnd
 
 ############################################
 # Loading module
 ############################################
 . $MODULESHOME/init/ksh
 
-module load newdefaults intel/15.0.3.187 impi/5.1.3.181 szip hdf5 netcdf4/4.2.1.1
+module load intel/18.0.5.274
+impi/2018.4.274
 
-module use /lfs3/projects/hfv3gfs/nwprod/lib/modulefiles
+module use /lfs4/HFIP/hfv3gfs/nwprod/NCEPLIBS/modulefiles
+
+# Loding nceplibs modules
+module load sigio/2.1.1
 module load bacio/v2.0.2
 module load sp/v2.0.2
-module load ip/v2.0.0
-module load w3nco/v2.0.6
 module load w3emc/v2.2.0
-module load nemsio/v2.2.2
-
-module use /lfs3/projects/hwrf-vd/soft/modulefiles
-
-module use /lfs3/projects/hwrf-vd/soft/modulefiles
-module load prod_util
-module load grib_util
-module load hpss
-
-# mpiserial on Jet includes a cfp wrapper
-module load mpiserial
-
+module load w3nco/v2.0.6
+module load bufr/v10.2.5
+module load nemsio/v2.2.4
 module load gempak/7.4.2
+module load prod_util
 
+module load netcdf_parallel/4.7.4
+module load hdf5_parallel/1.10.6
+module load intelpython/3.6.5
+
+#TODO Check if anaconda2 is required
 ########################################
 # Runs GFS BUFR SOUNDINGS
 ########################################
@@ -48,8 +47,9 @@ export MP_STDOUTMODE=ordered
 #export machine="WCOSS_C"
 #machine="WCOSS_DELL_P3"
 machine="JET"
-export npe_postsnd=12
+export npe_postsnd=24
 export npe_postsndcfp=10
+export OUTPUT_FILE=${OUTPUT_FILE:-netcdf}
 if [ $machine == "WCOSS_C" ]; then
 ##For WCOSS-Cray##################
 export FHMAX_HF_GFS=120
@@ -71,7 +71,7 @@ export APRUN_POSTSNDCFP="$launcher $npe_postsndcfp"
 else
 ##For Theia, Jet################
 export FHMAX_HF_GFS=0
-export FHOUT_HF_GFS=0
+export FHOUT_HF_GFS=3
 export launcher="mpirun -np"
 export APRUN_POSTSND="$launcher $npe_postsnd"
 export APRUN_POSTSNDCFP="$launcher $npe_postsndcfp"
@@ -97,6 +97,7 @@ export util_ver=${util_ver:-v1.0.0}
 # obtain unique process id (pid) and make temp directories
 #
 export pid=$$
+#TODO Change location
 export DATA_IN=${DATA_IN:-/mnt/lfs3/projects/hfv3gfs/$USER/scrub}
 export DATA=$DATA_IN/postsnd.${pid}
 mkdir -p $DATA
@@ -135,6 +136,7 @@ mkdir -p $pcom
 # Set up the UTILITIES
 ###################################
 
+#TODO Change location
 export HOMEbufrsnd=/mnt/lfs3/projects/hfv3gfs/Guang.Ping.Lou/fv3gfs
 #export HOMEbufrsnd=/scratch4/NCEPDEV/meso/save/Guang.Ping.Lou/fv3gfs
 #export HOMEbufrsnd=/gpfs/hps3/emc/meso/noscrub/Guang.Ping.Lou/fv3gfs
@@ -149,6 +151,7 @@ export HOMEbufrsnd=/mnt/lfs3/projects/hfv3gfs/Guang.Ping.Lou/fv3gfs
 ##export COMIN=/gpfs/hps/nco/ops/com/gfs/para/${RUN}.${PDY}
 ##export COMIN=/gpfs/hps/nco/ops/com/gfs/prod/${RUN}.${PDY}
 ##export COMIN=/scratch4/NCEPDEV/meso/save/Guang.Ping.Lou/fv3data/${RUN}.${PDY}/$cyc
+#TODO Change location
 export COMIN=/mnt/lfs3/projects/hfv3gfs/glopara/comrot/fv3q2fy19retro5/${RUN}.${PDY}/$cyc
 
 export COMOUT=$DATA_IN/com2/${NET}/${envir}/${RUN}.${PDY}

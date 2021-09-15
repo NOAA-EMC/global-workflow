@@ -16,6 +16,8 @@ else
     __ms_shell=sh
 fi
 
+set -x
+
 target=""
 USERNAME=`echo $LOGNAME | awk '{ print tolower($0)'}`
 ##---------------------------------------------------------------------------
@@ -172,7 +174,7 @@ export FCOMP=ftn
 # END GWV ADD
 
 ##---------------------------------------------------------------------------
-elif [[ -d /lfs3 ]] ; then
+elif [[ -d /jetmon ]] ; then
     # We are on NOAA Jet
     if ( ! eval module help > /dev/null 2>&1 ) ; then
         echo load the module command 1>&2
@@ -180,14 +182,14 @@ elif [[ -d /lfs3 ]] ; then
     fi
     target=jet
     module purge
-module load intel/15.0.3.187
-module load  impi
-#export  NCEPLIBS=/mnt/lfs3/projects/hfv3gfs/gwv/ljtjet/lib
-     export NCEPLIBS=/mnt/lfs3/projects/hfv3gfs/gwv/ljtjet/lib
-export NCEPLIBS=/mnt/lfs3/projects/hfv3gfs/gwv/NCEPLIBS.15X
-     module use $NCEPLIBS/modulefiles
-export WRFPATH=$NCEPLIBS/wrf.shared.new/v1.1.1/src
-export myFC=mpiifort
+    module use /lfs4/HFIP/hfv3gfs/nwprod/hpc-stack/libs/modulefiles/stack
+    module load hpc/1.1.0
+    module load hpc-intel/18.0.5.274
+    module load hpc-impi/2018.4.274
+    module load cmake/3.20.1
+
+    export myFC=mpiifort
+    export FCOMP=mpiifort
 
 else
     echo WARNING: UNKNOWN PLATFORM 1>&2

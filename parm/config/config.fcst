@@ -226,6 +226,9 @@ if [[ "$OUTPUT_FILE" == "netcdf" ]]; then
             export OUTPUT_FILETYPES=" 'netcdf_parallel' 'netcdf' "
         fi
     fi
+    if [[ "$machine" == "JET" ]]; then
+        export OUTPUT_FILETYPES=" 'netcdf_parallel' 'netcdf' "
+    fi
 fi
 
 

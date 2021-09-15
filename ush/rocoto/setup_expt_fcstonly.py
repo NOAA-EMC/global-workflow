@@ -229,7 +229,7 @@ Create COMROT experiment directory structure'''
       hpssarch = 'YES'
     elif machine == 'JET':
       base_git = '/lfs4/HFIP/hfv3gfs/glopara/git'
-      base_svn = '/dev/null/global/save/glopara/svn/'
+      base_svn = '/lfs4/HFIP/hfv3gfs/glopara/svn/'
       dmpdir = '/lfs4/HFIP/hfv3gfs/glopara/dump'
       nwprod = '/lfs4/HFIP/hfv3gfs/glopara/nwpara'
       comroot = '/lfs4/HFIP/hfv3gfs/glopara/com'

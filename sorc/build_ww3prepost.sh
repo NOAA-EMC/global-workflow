@@ -17,6 +17,7 @@ set -x
 if [ $target = hera ]; then target=hera.intel ; fi
 if [ $target = orion ]; then target=orion.intel ; fi
 if [ $target = stampede ]; then target=stampede.intel ; fi
+if [ $target = jet ]; then target=jet.intel ; fi
 
 cd ufs_model.fd/WW3
 export WW3_DIR=$( pwd -P )/model

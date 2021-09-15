@@ -239,6 +239,27 @@ link initial condition files from $ICSDIR to $COMROT'''
       chgrp_rstprod = 'YES'
       chgrp_cmd = 'chgrp rstprod'
       hpssarch = 'YES'
+    elif machine == 'JET':
+      base_git = '/lfs4/HFIP/hfv3gfs/glopara/git'
+      base_svn = '/lfs4/HFIP/hfv3gfs/glopara/svn'
+      dmpdir = '/lfs4/HFIP/hfv3gfs/glopara/dump'
+      nwprod = '/lfs4/HFIP/hfv3gfs/glopara/nwpara'
+      comroot = '/lfs4/HFIP/hfv3gfs/glopara/com'
+      homedir = '/lfs4/HFIP/hfv3gfs$USER'
+      stmp = '/lfs4/HFIP/hfv3gfs/$USER/stmp'
+      ptmp = '/lfs4/HFIP/hfv3gfs/$USER/ptmp'
+      noscrub = '$HOMEDIR'
+      account = 'hfv3gfs'
+      queue = 'batch'
+      queue_service = 'service'
+      # Set partition_batch; can be xjet or kjet (xjet is the default)
+      if partition is not None:
+         partition_batch = partition
+      else:
+         partition_batch = 'xjet'
+      chgrp_rstprod = 'YES'
+      chgrp_cmd = 'chgrp rstprod'
+      hpssarch = 'YES'
     elif machine == 'ORION':
       base_git = '/work/noaa/global/glopara/git'
       base_svn = '/work/noaa/global/glopara/svn'
