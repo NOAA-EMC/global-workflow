@@ -10,7 +10,7 @@ LMOD_EXACT_MATCH=no
 source ../../sorc/machine-setup.sh > /dev/null 2>&1
 cwd=`pwd`
 
-if [ "$target" = "wcoss_dell_p3" ] || [ "$target" = "wcoss_cray" ] || [ "$target" = "hera" ] ; then
+if [ "$target" = "wcoss_dell_p3" ] || [ "$target" = "wcoss_cray" ] || [ "$target" = "hera" ] || [ "$target" = "wcoss2" ] ; then
    echo " "
    echo " You are on WCOSS:  $target "
    echo " "
