@@ -29,6 +29,11 @@ else
 fi
 
 source ../modulefiles/modulefile.storm_reloc_v6.0.0.$target
+if [ $target = "wcoss2" ]; then
+  SIGIO_LIB4=$SIGIO_LIB
+  SIGIO_INC4=$SIGIO_INC
+fi
+
 export FC=mpiifort
 export JASPER_LIB=${JASPER_LIB:-$JASPER_LIBRARY_DIRS/libjasper.a}
 
