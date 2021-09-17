@@ -53,7 +53,6 @@ else if ( { test -d /lfs/h2 } ) then
         source /usr/share/lmod/lmod/init/$__ms_shell
     fi
     module purge
-    module load envvar/1.0
 else if ( { test -d /glade } ) then
     # We are on NCAR Yellowstone
     if ( ! { module help >& /dev/null } ) then
