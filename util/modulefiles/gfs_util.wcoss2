@@ -16,9 +16,10 @@ module load gempak/7.14.0
 
 # Loading Intel-Compiled NCEP Libraries
 module load bacio/2.4.1
-module load w3emc/2.7.3
 module load w3nco/2.4.1
+module load nemsio/2.5.2
+module load sigio/2.3.2
+module load w3emc/2.7.3
 module load ip/3.3.3
 module load sp/2.3.3
-module load g2/3.4.1
 module load bufr/11.4.0
