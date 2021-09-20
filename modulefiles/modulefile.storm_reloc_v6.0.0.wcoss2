@@ -18,6 +18,6 @@ module load nemsiogfs/2.5.3
 module load sigio/2.3.2
 module load w3emc/2.7.3
 module load sp/2.3.3
-module load g2/3.4.1
+module load g2/3.4.5
 
 export FC=ifort
