@@ -11,8 +11,8 @@ module load hdf5/1.10.6
 module load netcdf/4.7.4
 
 module load bacio/2.4.1
-module load nemsio/2.5.2
 module load w3nco/2.4.1
+module load nemsio/2.5.2
 
 export FCMP="ifort"
 export FFLAGS="-free -O3 -xHOST"
