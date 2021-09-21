@@ -14,6 +14,10 @@ if [ "$target" = "wcoss_dell_p3" ] || [ "$target" = "wcoss_cray" ] || [ "$target
    echo " "
    echo " You are on WCOSS:  $target "
    echo " "
+elif [ "$target" = "hera" ]; then
+   echo " "
+   echo " You are on $target "
+   echo " "
 elif [ "$target" = "wcoss" ] ; then
    echo " "
    echo " "
