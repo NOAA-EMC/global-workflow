@@ -8,16 +8,16 @@ machine=${2}
 
 if [ $# -lt 2 ]; then
     echo '***ERROR*** must specify two arguements: (1) RUN_ENVIR, (2) machine'
-    echo ' Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | hera | orion )'
+    echo ' Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | wcoss2 | hera | orion )'
     exit 1
 fi
 
 if [ $RUN_ENVIR != emc -a $RUN_ENVIR != nco ]; then
-    echo 'Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | hera | orion )'
+    echo 'Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | wcoss2 | hera | orion )'
     exit 1
 fi
-if [ $machine != cray -a $machine != dell -a $machine != hera -a $machine != orion ]; then
-    echo 'Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | hera | orion)'
+if [ $machine != cray -a $machine != dell -a $machine != wcoss2 -a $machine != hera -a $machine != orion ]; then
+    echo 'Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | wcoss2 | hera | orion)'
     exit 1
 fi
 
@@ -34,6 +34,8 @@ if [ $machine == "cray" ]; then
     FIX_DIR="/gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix_nco_gfsv16"
 elif [ $machine = "dell" ]; then
     FIX_DIR="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix_nco_gfsv16"
+elif [ $machine = "wcoss2" ]; then
+    FIX_DIR="/lfs/h2/emc/eib/noscrub/Kate.Friedman/glopara/fix_nco_gfsv16"
 elif [ $machine = "hera" ]; then
     FIX_DIR="/scratch1/NCEPDEV/global/glopara/fix_nco_gfsv16"
 elif [ $machine = "orion" ]; then

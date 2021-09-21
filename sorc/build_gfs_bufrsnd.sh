@@ -21,6 +21,11 @@ if [ ! -d "../exec" ]; then
   mkdir ../exec
 fi
 
+if [ $target = "wcoss2" ]; then
+  export SIGIO_LIB4=$SIGIO_LIB
+  export SIGIO_INC4=$SIGIO_INC
+fi
+
 if [ -f gfs_bufr.fd/getncdimlen ]; then
 	   cp gfs_bufr.fd/getncdimlen ../exec
    fi

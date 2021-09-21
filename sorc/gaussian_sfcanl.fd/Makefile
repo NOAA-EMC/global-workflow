@@ -13,7 +13,7 @@ gaussian_sfcanl.o:  gaussian_sfcanl.f90
 	$(FCOMP) $(FFLAGS) -I$(NEMSIO_INC) $(NETCDF_INCLUDE) -c gaussian_sfcanl.f90
 
 install:
-	cp ${CMD} ../../exec
+	cp ${CMD} ../../exec/${CMD}
 
 clean:
 	rm -f *.o *.mod ${CMD} ../../exec/${CMD}
