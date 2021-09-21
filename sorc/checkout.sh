@@ -24,10 +24,8 @@ echo $topdir
 echo fv3gfs checkout ...
 if [[ ! -d fv3gfs.fd ]] ; then
     rm -f ${topdir}/checkout-fv3gfs.log
-    #git clone https://github.com/ufs-community/ufs-weather-model fv3gfs.fd >> ${topdir}/checkout-fv3gfs.log 2>&1
     git clone --recursive --branch gfs_v16.0.16_on_cactus_dogwood https://github.com/DusanJovic-NOAA/ufs-weather-model fv3gfs.fd >> ${topdir}/checkout-fv3gfs.log 2>&1
     cd fv3gfs.fd
-    #git checkout GFS.v16.0.16
     git submodule update --init --recursive
     cd ${topdir}
 else
@@ -71,10 +69,8 @@ fi
 echo EMC_post checkout ...
 if [[ ! -d gfs_post.fd ]] ; then
     rm -f ${topdir}/checkout-gfs_post.log
-    #git clone https://github.com/NOAA-EMC/EMC_post.git gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
     git clone https://github.com/WenMeng-NOAA/UPP.git gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
     cd gfs_post.fd
-    #git checkout upp_gfsv16_release.v1.1.4
     git checkout post_gfsv16_wcoss2
     ################################################################################
     # checkout_gtg
