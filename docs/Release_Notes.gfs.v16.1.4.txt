@@ -1,4 +1,4 @@
-GFS V16.1.3 RELEASE NOTES
+GFS V16.1.4 RELEASE NOTES
 
 
 PRELUDE
@@ -41,7 +41,7 @@ PRELUDE
 IMPLEMENTATION INSTRUCTIONS
 
   The NOAA VLab and both the NOAA-EMC and NCAR organization spaces on GitHub.com 
-  are used to manage the GFS.v16.1.3 code. The SPA(s) handling the GFS.v16.1.3 
+  are used to manage the GFS.v16.1.4 code. The SPA(s) handling the GFS.v16.1.4 
   implementation need to have permissions to clone VLab gerrit repositories and 
   the private NCAR UPP_GTG repository. All NOAA-EMC organization repositories are 
   publicly readable and do not require access permissions.  Please follow the 
@@ -49,18 +49,18 @@ IMPLEMENTATION INSTRUCTIONS
 
   1) cd $NWROOTp3
 
-  2) mkdir gfs.v16.1.3
+  2) mkdir gfs.v16.1.4
 
-  3) cd gfs.v16.1.3
+  3) cd gfs.v16.1.4
 
-  4) git clone -b EMC-v16.1.3  https://github.com/NOAA-EMC/global-workflow.git .
+  4) git clone -b EMC-v16.1.4  https://github.com/NOAA-EMC/global-workflow.git .
 
   5) cd sorc
 
   6) ./checkout.sh -o
      * This script extracts the following GFS components:
          MODEL     tag GFS.v16.0.16                  Jun.Wang@noaa.gov
-         GSI       tag gfsda.v16.1.3                 Russ.Treadon@noaa.gov
+         GSI       tag gfsda.v16.1.4                 Russ.Treadon@noaa.gov
          GLDAS     tag gldas_gfsv16_release.v1.12.0  Helin.Wei@noaa.gov
          UFS_UTILS tag ops-gfsv16.0.0                George.Gayno@noaa.gov
          POST      tag upp_gfsv16_release.v1.1.4     Wen.Meng@noaa.gov
@@ -78,7 +78,7 @@ SORC CHANGES
 
 * sorc/
   * checkout.sh will checkout the following changed model tags:
-    * GSI; tag gfsda.v16.1.3 
+    * GSI; tag gfsda.v16.1.4
       * src/gsi/setupbend.f90:  Add two fixes for handling of 
         super-refractivity layer, change the observation errors
         of the commercial data, relax stricter gross check back to 
@@ -103,12 +103,12 @@ PARM/CONFIG CHANGES
 
 JOBS CHANGES
 
-* No change from GFS v16.1.2
+* No change from GFS v16.1.3
 
 
 SCRIPT CHANGES
 
-* No change from GFS v16.1.2
+* No change from GFS v16.1.3
 
 
 CHANGES TO RESOURCES AND FILE SIZES
@@ -120,7 +120,7 @@ CHANGES TO RESOURCES AND FILE SIZES
 PRE-IMPLEMENTATION TESTING REQUIREMENTS
 
 * Which production jobs should be tested as part of this implementation?
-  * The entire GFS v16.1.3 package needs to be installed and tested. 
+  * The entire GFS v16.1.4 package needs to be installed and tested. 
 
 * Does this change require a 30-day evaluation?
   * No.
@@ -129,27 +129,27 @@ PRE-IMPLEMENTATION TESTING REQUIREMENTS
 DISSEMINATION INFORMATION
 
 * Where should this output be sent?
-  * No change from GFS v16.1.2
+  * No change from GFS v16.1.3
 
 * Who are the users?
-  * No change from GFS v16.1.2
+  * No change from GFS v16.1.3
 
 * Which output files should be transferred from PROD WCOSS to DEV WCOSS?
-  * No change from GFS v16.1.2
+  * No change from GFS v16.1.3
 
 * Directory changes
-  * No change from GFS v16.1.2
+  * No change from GFS v16.1.3
 
 * File changes
-  * No change from GFS v16.1.2
+  * No change from GFS v16.1.3
 
 
 HPSS ARCHIVE
 
-* No change from GFS v16.1.2
+* No change from GFS v16.1.3
 
 
 JOB DEPENDENCIES AND FLOW DIAGRAM
 
-* No change from GFS v16.1.2
+* No change from GFS v16.1.3
 
