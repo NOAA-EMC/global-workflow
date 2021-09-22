@@ -37,6 +37,9 @@ PRELUDE
 
   These changes only affect two files within the GSI tag of the global workflow.
 
+  In addition, a small bug fix is required to correct the ingest of new BUFR
+  observations from ships that was previously causing erroneous observations
+  to be assimilated.  This alters one additional file in the GSI tag.
 
 IMPLEMENTATION INSTRUCTIONS
 
@@ -83,6 +86,8 @@ SORC CHANGES
         super-refractivity layer, change the observation errors
         of the commercial data, relax stricter gross check back to 
         original values 
+      * src/read_nsstbufr.f90: Changes to handle NC001013, NC001101
+        and NC001113 marine bufr subsets.
 
 
 FIX CHANGES
