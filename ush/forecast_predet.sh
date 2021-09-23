@@ -169,9 +169,6 @@ FV3_GFS_predet(){
   JCAP_CASE=$((2*res-2))
   LONB_CASE=$((4*res))
   LATB_CASE=$((2*res))
-  if [ $LATB_CASE -eq 192 ]; then
-    LATB_CASE=190 # berror file is at this resolution
-  fi
 
   JCAP=${JCAP:-$JCAP_CASE}
   LONB=${LONB:-$LONB_CASE}
