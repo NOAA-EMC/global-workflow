@@ -13,8 +13,8 @@ module load ip/3.3.3
 module load sp/2.3.3
 module load cmake/3.18.4
 
-module load hdf5-parallel/1.10.6
-module load netcdf-hdf5parallel/4.7.4
+module load hdf5/1.10.6
+module load netcdf/4.7.4
 
 module load curl/7.72.0
 
