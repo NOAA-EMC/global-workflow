@@ -31,7 +31,7 @@ echo ufs-weather-model checkout ...
 if [[ ! -d ufs_model.fd ]] ; then
     git clone https://github.com/ufs-community/ufs-weather-model ufs_model.fd >> ${logdir}/checkout-ufs_model.log 2>&1
     cd ufs_model.fd
-    git checkout ${ufs_model_hash:-9bbb6d466368d46797e2c72a9d08955fda39cf33}
+    git checkout ${ufs_model_hash:-b26a896f2c9bada438414a51218bc72236925b8c}
     git submodule update --init --recursive
     cd ${topdir}
 else
