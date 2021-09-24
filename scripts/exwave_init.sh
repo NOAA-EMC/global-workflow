@@ -35,10 +35,10 @@
   cd $DATA
 
   msg="HAS BEGUN on `hostname`"
-  #postmsg "$jlogfile" "$msg"
+  postmsg "$msg"
   echo $msg
   msg="Starting MWW3 INIT CONFIG SCRIPT for $COMPONENTwave"
-  #postmsg "$jlogfile" "$msg"
+  postmsg "$msg"
   echo $msg
 
   set +x
@@ -118,7 +118,7 @@
         [[ "$LOUD" = YES ]] && set -x
       else
         msg="ABNORMAL EXIT: NO INP FILE FOR MODEL DEFINITION FILE"
-        #postmsg "$jlogfile" "$msg"
+        postmsg "$msg"
         echo $msg
         set +x
         echo ' '
@@ -203,7 +203,7 @@
       [[ "$LOUD" = YES ]] && set -x
     else 
       msg="ABNORMAL EXIT: NO MODEL DEFINITION FILE"
-      #postmsg "$jlogfile" "$msg"
+      postmsg "$msg"
       echo $msg
       set +x
       echo ' '
@@ -233,7 +233,7 @@
   [[ "$LOUD" = YES ]] && set -x
 
   msg="$job completed normally"
-  #postmsg "$jlogfile" "$msg"
+  postmsg "$msg"
   echo $msg
 
 # End of MWW3 init config script ------------------------------------------- #

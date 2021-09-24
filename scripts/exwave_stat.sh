@@ -81,7 +81,7 @@
     echo " $FIXwave/${buoyfile} copied to buoy_file.data."
   else
     msg="ABNORMAL EXIT: ERR in coping ${buoyfile}."
-    postmsg "$jlogfile" "$msg"
+    postmsg "$msg"
     set +x
     echo ' '
     echo '******************************************************* '
@@ -92,7 +92,7 @@
     [[ "$LOUD" = YES ]] && set -x
     echo "$FIXwave/wave_${NET}_buoy.data  missing." >> $ensemb_log
     msg="ABNORMAL EXIT: NO FILE $buoyfile"
-    postmsg "$jlogfile" "$msg"
+    postmsg "$msg"
     export err=1;${errchk};
     exit ${err}
   fi
@@ -126,7 +126,7 @@
           ln -s  $cpfile  ./. 
         else
           msg="ABNORMAL EXIT: ERR in coping $cpfile "
-          postmsg "$jlogfile" "$msg"
+          postmsg "$msg"
           echo ' '
           echo '******************************************************* '
           echo "*** FATAL ERROR: No $cpfile copied. *** "
@@ -236,7 +236,8 @@
 
   if [ "$wavenproc" -gt '1' ]
   then
-    ${wavempexec} ${wavenproc} ${wave_mpmd} cmdfile
+    #${wavempexec} ${wavenproc} ${wave_mpmd} cmdfile
+    ${wavempexec} ${wave_mpmd} cmdfile
     exit=$?
   else
     chmod 744 cmdfile
@@ -312,7 +313,8 @@
 
   if [ "$wavenproc" -gt '1' ]
   then
-    ${wavempexec} ${wavenproc} ${wave_mpmd} cmdfile
+    #${wavempexec} ${wavenproc} ${wave_mpmd} cmdfile
+    ${wavempexec} ${wave_mpmd} cmdfile
     exit=$?
   else
     chmod 744 cmdfile
@@ -423,7 +425,8 @@
 
   if [ "$wavenproc" -gt '1' ]
   then
-    ${wavempexec} ${wavenproc} ${wave_mpmd} cmdfile
+    #${wavempexec} ${wavenproc} ${wave_mpmd} cmdfile
+    ${wavempexec} ${wave_mpmd} cmdfile
     exit=$?
   else
     chmod 744 cmdfile
@@ -559,7 +562,8 @@
 
   if [ "$wavenproc" -gt '1' ]
   then
-    ${wavempexec} ${wavenproc} ${wave_mpmd} cmdfile
+    #${wavempexec} ${wavenproc} ${wave_mpmd} cmdfile
+    ${wavempexec} ${wave_mpmd} cmdfile
     exit=$?
   else
     chmod 744 cmdfile
@@ -595,7 +599,7 @@
     if [ ! -s ${modID}.${bnom}.bull ]
     then
      msg="ABNORMAL EXIT: ERR in generating bulettin file"
-     postmsg "$jlogfile" "$msg"
+     postmsg "$msg"
      set +x
      echo ' '
      echo '***************************************** '
@@ -686,14 +690,14 @@
   then
      echo "FATAL ERROR: Problem in WAVE STAT"
      msg="ABNORMAL EXIT: Problem in WAVE STAT"
-     postmsg "$jlogfile" "$msg"
+     postmsg "$msg"
      echo $msg
      export err=12;${errchk}
      exit $err
   fi
 
   msg="$job completed normally"
-  postmsg "$jlogfile" "$msg"
+  postmsg "$msg"
 #
   echo "Ending at : `date`"
 #

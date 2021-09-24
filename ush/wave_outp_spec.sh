@@ -51,7 +51,7 @@
     echo '****************************************************************************** '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" "FATAL ERROR : ERROR IN ww3_outp_spec (Could not create temp directory)"
+    postmsg "FATAL ERROR : ERROR IN ww3_outp_spec (Could not create temp directory)"
     exit 1
   fi
 
@@ -76,7 +76,7 @@
     echo '***********************************************'
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" "LOCATION ID IN ww3_outp_spec.sh NOT SET"
+    postmsg "LOCATION ID IN ww3_outp_spec.sh NOT SET"
     exit 1
   else
     buoy=$bloc
@@ -103,7 +103,7 @@
       echo '******************************************************'
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
-      postmsg "$jlogfile" "LOCATION ID IN ww3_outp_spec.sh NOT RECOGNIZED"
+      postmsg "LOCATION ID IN ww3_outp_spec.sh NOT RECOGNIZED"
       exit 2
     fi
   fi
@@ -122,7 +122,7 @@
     echo '******************************************************'
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" "EXPORTED VARIABLES IN ww3_outp_spec.sh NOT SET"
+    postmsg "EXPORTED VARIABLES IN ww3_outp_spec.sh NOT SET"
     exit 3
   fi
 
@@ -194,7 +194,7 @@
     echo '******************************************** '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" "FATAL ERROR : ERROR IN ww3_outp"
+    postmsg "FATAL ERROR : ERROR IN ww3_outp"
     exit 4
   fi
 
@@ -239,7 +239,7 @@
     echo '***************************************************************** '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" "FATAL ERROR : OUTPUT DATA FILE FOR BOUY $bouy NOT FOUND"
+    postmsg "FATAL ERROR : OUTPUT DATA FILE FOR BOUY $bouy NOT FOUND"
     exit 5
   fi
 

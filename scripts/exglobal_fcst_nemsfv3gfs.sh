@@ -321,7 +321,7 @@ nfiles=$(ls -1 $DATA/INPUT/* | wc -l)
 if [ $nfiles -le 0 ]; then
   msg="FATAL ERROR: Initial conditions must exist in $DATA/INPUT, ABORT!"
   echo "$msg"
-  postmsg "$jlogfile" "$msg"
+  postmsg "$msg"
   exit 1
 fi
 

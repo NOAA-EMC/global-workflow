@@ -70,7 +70,7 @@
     echo '******************************************************* '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    ../postmsg "$jlogfile" "FATAL ERROR in ${scripname}: Could not create temp directory"
+    postmsg "FATAL ERROR in ${scripname}: Could not create temp directory"
     exit 1
   fi
 
@@ -100,7 +100,7 @@
     echo '******************************************************* '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    ../postmsg "$jlogfile" "FATAL ERROR creating grbint.${bnom} in ${scripname}"
+    postmsg "FATAL ERROR creating grbint.${bnom} in ${scripname}"
     exit 2
   fi
 #   
@@ -154,7 +154,7 @@
     echo '******************************************************* '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    ../postmsg "$jlogfile" "FATAL ERROR reading parameters from grbint.${bnom} in ${scripname}"
+    postmsg "FATAL ERROR reading parameters from grbint.${bnom} in ${scripname}"
     exit 3
   fi
 #
@@ -172,7 +172,7 @@
     echo '******************************************************* '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    ../postmsg "$jlogfile" "WARNING: parameter is UNDEFINED in grbint.${bnom} in ${scripname}"
+    postmsg "WARNING: parameter is UNDEFINED in grbint.${bnom} in ${scripname}"
   fi
 #
 # 2. Generate bulletin
@@ -247,7 +247,7 @@
     echo '******************************************************* '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    ../postmsg "$jlogfile" "FATAL ERROR : BULL/TS FILES NOT FOUND"
+    postmsg "FATAL ERROR : BULL/TS FILES NOT FOUND"
     exit 4
   fi
 #

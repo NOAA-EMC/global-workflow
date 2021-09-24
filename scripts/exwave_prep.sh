@@ -49,9 +49,9 @@
   mkdir outtmp
 
   msg="HAS BEGUN on `hostname`"
-  postmsg "$jlogfile" "$msg"
+  postmsg "$msg"
   msg="Starting MWW3 PREPROCESSOR SCRIPT for $WAV_MOD_TAG"
-  postmsg "$jlogfile" "$msg"
+  postmsg "$msg"
 
   set +x
   echo ' '
@@ -179,7 +179,7 @@
 
     else
       msg="FATAL ERROR: NO MODEL DEFINITION FILE"
-      postmsg "$jlogfile" "$msg"
+      postmsg "$msg"
       set +x
       echo ' '
       echo '*********************************************************** '
@@ -231,7 +231,7 @@
        [[ "$LOUD" = YES ]] && set -x
      else
        msg="ABNORMAL EXIT: NO FILE $file"
-       ./postmsg "$jlogfile" "$msg"
+       ./postmsg "$msg"
        set +x
        echo ' '
        echo '************************************** '
@@ -266,7 +266,7 @@
     
       if [ -d ice ]
       then
-        postmsg "$jlogfile" "FATAL ERROR ice field not generated."
+        postmsg "FATAL ERROR ice field not generated."
         set +x
         echo ' '
         echo '      FATAL ERROR: ice field not generated '
@@ -387,7 +387,7 @@
           echo "         File for $ymdh : error in wave_g2ges.sh"
           echo ' '
           [[ "$LOUD" = YES ]] && set -x
-          postmsg "$jlogfile" "    File for $ymdh : error in wave_g2ges.sh"
+          postmsg "    File for $ymdh : error in wave_g2ges.sh"
           nr_err=`expr $nr_err + 1`
           rm -f gwnd.$ymdh
         else
@@ -442,13 +442,13 @@
         echo ' '
         [[ "$LOUD" = YES ]] && set -x
         mv -f grb_*.out $DATA/outtmp
-        postmsg "$jlogfile" "NON-FATAL ERROR in wave_g2ges.sh, possibly in multiple calls."
+        postmsg "NON-FATAL ERROR in wave_g2ges.sh, possibly in multiple calls."
       fi
     
       if [ "$nr_err" -gt "$err_max" ]
       then
         msg="ABNORMAL EXIT: TOO MANY MISSING WIND INPUT GRB2 FILES"
-        postmsg "$jlogfile" "$msg"
+        postmsg "$msg"
         set +x
         echo ' '
         echo '********************************************* '
@@ -477,7 +477,7 @@
       if [ -z "$files" ]
       then
         msg="ABNORMAL EXIT: NO gwnd.* FILES FOUND"
-        postmsg "$jlogfile" "$msg"
+        postmsg "$msg"
         set +x
         echo ' '
         echo '******************************************** '
@@ -525,7 +525,7 @@
         if [ "$err" != '0' ]
         then
           msg="ABNORMAL EXIT: ERROR IN waveprnc"
-          postmsg "$jlogfile" "$msg"
+          postmsg "$msg"
           set +x
           echo ' '
           echo '*************************************** '
@@ -541,7 +541,7 @@
         if [ ! -f wind.ww3 ]
         then
           msg="ABNORMAL EXIT: FILE wind.ww3 MISSING"
-          postmsg "$jlogfile" "$msg"
+          postmsg "$msg"
           set +x
           echo ' '
           cat waveprep.out
@@ -679,7 +679,7 @@
         echo '************************************** '
         echo ' '
         set $seton
-        postmsg "$jlogfile" "FATAL ERROR - NO CURRENT FILE (RTOFS)"
+        postmsg "FATAL ERROR - NO CURRENT FILE (RTOFS)"
         export err=12;${errchk}
         exit $err
         echo ' '
@@ -731,7 +731,7 @@
       if [ -z "$files" ]
       then
         msg="ABNORMAL EXIT: NO ${WAVECUR_FID}.* FILES FOUND"
-        postmsg "$jlogfile" "$msg"
+        postmsg "$msg"
         set +x
         echo ' '
         echo '******************************************** '
@@ -781,7 +781,7 @@
   if [ ! -f ww3_multi.inp.tmpl ]
   then
     msg="ABNORMAL EXIT: NO TEMPLATE FOR INPUT FILE"
-    postmsg "$jlogfile" "$msg"
+    postmsg "$msg"
     set +x
     echo ' '
     echo '************************************************ '
@@ -816,7 +816,7 @@
     echo '*** FATAL ERROR : buoy.loc NOT FOUND *** '
     echo '**************************************** '
     echo ' '
-    postmsg "$jlogfile" " FATAL ERROR : buoy.loc ($FIXwave/wave_${NET}.buoys) NOT FOUND"
+    postmsg " FATAL ERROR : buoy.loc ($FIXwave/wave_${NET}.buoys) NOT FOUND"
     touch buoy.loc
     echo "$WAV_MOD_TAG fcst $date $cycle : no buoy locations file ($FIXwave/wave_${NET}.buoys)." >> $wavelog
     export err=15;${errchk}
@@ -967,7 +967,7 @@
       done
     else
       msg="NO rmp precomputed nc files found, is this OK???"
-      postmsg "$jlogfile" "$msg"
+      postmsg "$msg"
       set +x
       echo ' '
       echo '************************************************ '
@@ -1034,6 +1034,6 @@
   [[ "$LOUD" = YES ]] && set -x
 
   msg="$job completed normally"
-  postmsg "$jlogfile" "$msg"
+  postmsg "$msg"
 
 # End of MWW3 preprocessor script ------------------------------------------- #
