@@ -217,45 +217,6 @@ def create_wf_task(task, cdump='gdas', cycledef=None, envar=None, dependency=Non
     return task
 
 
-def create_firstcyc_task(cdump='gdas'):
-    '''
-    This task is needed to run to finalize the first half cycle
-    '''
-
-    task = 'firstcyc'
-    taskstr = f'{task}'
-
-    deps = []
-    data = '&EXPDIR;/logs/@Y@m@d@H.log'
-    dep_dict = {'type':'data', 'data':data, 'offset':'24:00:00'}
-    deps.append(rocoto.add_dependency(dep_dict))
-    dep_dict = {'type':'cycleexist', 'condition':'not', 'offset':'-06:00:00'}
-    deps.append(rocoto.add_dependency(dep_dict))
-    dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
-
-    task_dict = {'taskname': f'{taskstr}' , \
-                 'cycledef': 'first', \
-                 'maxtries': '&MAXTRIES;', \
-                 'final' : True, \
-                 'command': 'sleep 1', \
-                 'jobname': f'&PSLOT;_{taskstr}_@H', \
-                 'account': '&ACCOUNT;', \
-                 'queue': '&QUEUE_SERVICE;', \
-                 'walltime': f'&WALLTIME_ARCH_{cdump.upper()};', \
-                 'native': f'&NATIVE_ARCH_{cdump.upper()};', \
-                 'resources': f'&RESOURCES_ARCH_{cdump.upper()};', \
-                 'log': f'&ROTDIR;/logs/@Y@m@d@H/{taskstr}.log', \
-                 'dependency': dependencies}
-
-    if get_scheduler(detectMachine()) in ['slurm']:
-        task_dict['queue'] = '&QUEUE;'
-        task_dict['partition'] = '&PARTITION_SERVICE;'
-
-    task = rocoto.create_task(task_dict)
-
-    return ''.join(task)
-
-
 def get_gfs_interval(gfs_cyc):
     '''
         return interval in hours based on gfs_cyc
