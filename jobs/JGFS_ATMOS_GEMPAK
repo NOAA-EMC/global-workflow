@@ -29,7 +29,7 @@ setpdy.sh
 ################################
 # Set up the HOME directory
 ################################
-export HOMEgfs=${HOMEgfs:-${PACKAGEROOT}/gfs.${version}}
+export HOMEgfs=${HOMEgfs:-${PACKAGEROOT}/gfs.${gfs_ver}}
 export EXECgfs=${EXECgfs:-$HOMEgfs/exec}
 export PARMgfs=${PARMgfs:-$HOMEgfs/parm}
 export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
@@ -141,7 +141,8 @@ ntasks=${NTASKS_GEMPAK:-$(cat $DATA/poescript | wc -l)}
 ptile=${PTILE_GEMPAK:-4}
 threads=${NTHREADS_GEMPAK:-1}
 export OMP_NUM_THREADS=$threads
-APRUN="mpiexec -n $ntasks -ppn $ntasks --cpu-bind core cfp"
+# APRUN="mpiexec -n $ntasks -ppn $ntasks --cpu-bind core cfp"
+APRUN="mpiexec -n $ntasks -ppn $ntasks --cpu-bind verbose,core cfp"
 
 APRUN_GEMPAKCFP=${APRUN_GEMPAKCFP:-$APRUN}
 APRUNCFP=$(eval echo $APRUN_GEMPAKCFP)
