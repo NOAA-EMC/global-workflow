@@ -11,7 +11,7 @@ date
 ##########################################################
 # obtain unique process id (pid) and make temp directory
 ##########################################################
-export DATA=${DATA:-${DATAROOT}/${jobid:?}}
+export DATA=${DATA:-${DATAROOT}/${PBS_JOBNAME}.${PBS_JOBID}}
 mkdir -p $DATA
 cd $DATA
 
@@ -29,7 +29,7 @@ setpdy.sh
 ################################
 # Set up the HOME directory
 ################################
-export HOMEgfs=${HOMEgfs:-${NWROOT}/gfs.${gfs_ver}}
+export HOMEgfs=${HOMEgfs:-${PACKAGEROOT}/gfs.${version}}
 export EXECgfs=${EXECgfs:-$HOMEgfs/exec}
 export PARMgfs=${PARMgfs:-$HOMEgfs/parm}
 export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
@@ -70,9 +70,9 @@ export COMPONENT=${COMPONENT:-atmos}
 ##############################################
 # Define COM directories
 ##############################################
-export COMIN=${COMIN:-$(compath.py ${NET}/${envir}/${RUN}.${PDY})/${cyc}/$COMPONENT/gempak}
-export COMINgfs=${COMINgfs:-$(compath.py ${NET}/${envir}/${RUN}.${PDY})/${cyc}/$COMPONENT}
-export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/$COMPONENT}
+export COMIN=${COMIN:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/$COMPONENT/gempak}
+export COMINgfs=${COMINgfs:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/$COMPONENT}
+export COMOUT=${COMOUT:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/$COMPONENT}
 export COMOUTwmo=${COMOUTwmo:-${COMOUT}/wmo}
 
 export SENDDBN=${SENDDBN:-NO}
@@ -87,7 +87,7 @@ export pgmout=OUTPUT.$$
 env
 
 msg="Begin job for $job"
-postmsg "$jlogfile" "$msg"
+postmsg "$msg"
 
 ########################################################
 # Execute the script.
@@ -96,7 +96,7 @@ export err=$?; err_chk
 ########################################################
 
 msg="JOB $job HAS COMPLETED NORMALLY!"
-postmsg $jlogfile "$msg"
+postmsg "$msg"
 
 ############################################
 # print exec I/O output

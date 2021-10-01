@@ -1,9 +1,8 @@
 #!/bin/sh
-#PBS -N gfs_atmos_gempak_00
+#PBS -N gfs_pgrb2_spec_gempak_00
 #PBS -j oe
-### PBS -l place=vscatter,select=4:ncpus=32:mpiprocs=32:mem=5GB   24'38"
-### PBS -l place=vscatter,select=4:ncpus=32:mpiprocs=32:mem=5GB  exceeded wall time
-#PBS -l place=vscatter,select=4:ncpus=64:mpiprocs=28:mem=5GB
+## #PBS -l place=vscatter,select=1:ncpus=24:mpiprocs=24:mem=1GB 22'08"
+#PBS -l place=vscatter,select=1:ncpus=24:mpiprocs=24:mem=1GB
 #PBS -q debug
 #PBS -l walltime=00:30:00
 #PBS -A GFS-DEV
@@ -41,7 +40,7 @@ export driver=/lfs/h2/emc/vpppg/noscrub/$USER/packages/gfs.$gfs_ver/driver
 #############################################################
 # Load module version on WCOSS2
 #############################################################
-. ${driver}/product/run.version
+  . ${driver}/product/run.version
 
 ####################################
 ##  Load the GRIB Utilities module
@@ -66,11 +65,26 @@ module load gempak/$gempak_ver
 module list
 
 ############################################
-# Define COM, COMOUTwmo, COMIN  directories
+# GFS_PGRB2_SPEC_GEMPAK PRODUCT GENERATION
 ############################################
+
+export LAUNCH_MODE=MPI
+
+###############################################
+# Set MP variables
+###############################################
+export OMP_NUM_THREADS=1
+export MP_LABELIO=yes
+export MP_PULSE=0
+export MP_DEBUG_NOTIMEOUT=yes
+
+##############################################
+# Define COM, COMOUTwmo, COMIN  directories
+##############################################
+
 # set envir=para or para to test with data in prod or para
  export envir=para
-export envir=para
+ export envir=para
 
 export SENDCOM=YES
 export KEEPDATA=YES
@@ -100,6 +114,7 @@ cd $DATA
 # Set up the HOME directory
 ################################
 export HOMEgfs=${HOMEgfs:-${PACKAGEROOT}/gfs.${gfs_ver}}
+export HOMEgfs=${HOMEgfs:-${NWROOT}/gfs.${gfs_ver}}
 export EXECgfs=${EXECgfs:-$HOMEgfs/exec}
 export PARMgfs=${PARMgfs:-$HOMEgfs/parm}
 export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
@@ -113,17 +128,18 @@ export SRCgfs=${SRCgfs:-$HOMEgfs/scripts}
 export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
 export model=${model:-gfs}
+export MODEL=GFS
 export COMPONENT=${COMPONENT:-atmos}
 
 ##############################################
-# Define COM, COMOUTwmo, COMIN  directories
+# Define COM directories
 ##############################################
 if [ $envir = "prod" ] ; then
 #  This setting is for testing with GFS (production)
   export COMIN=${COMIN:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/$COMPONENT} ### NCO PROD
 else
 #  export COMIN=/lfs/h1/ops/canned/com/gfs/v16.2/${RUN}.20210824/${cyc}/${COMPONENT} ## canned data
-   export COMIN=/lfs/h2/emc/vpppg/noscrub/Boi.Vuong/gfs.20210922/${cyc}/${COMPONENT} ## BOI canned data
+  export COMIN=/lfs/h2/emc/vpppg/noscrub/Boi.Vuong/gfs.20210922/${cyc}/${COMPONENT}  ## BOI canned data
 fi
 
 export COMOUT=${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/${COMPONENT}/gempak
@@ -132,7 +148,15 @@ if [ $SENDCOM = YES ] ; then
   mkdir -m 775 -p $COMOUT
 fi
 
+#################################################################
+# Execute the script for the regular grib
+#################################################################
+export DATA_HOLD=$DATA
+export DATA=$DATA_HOLD/SPECIAL
+mkdir -p $DATA
+cd $DATA
+
 #############################################
 # run the GFS job
 #############################################
-sh $HOMEgfs/jobs/JGFS_ATMOS_GEMPAK
+sh $HOMEgfs/jobs/JGFS_ATMOS_GEMPAK_PGRB2_SPEC

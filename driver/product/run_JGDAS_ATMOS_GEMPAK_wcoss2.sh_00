@@ -1,9 +1,8 @@
 #!/bin/sh
-#PBS -N gfs_atmos_gempak_00
+#PBS -N gdas_gempak_00
 #PBS -j oe
-### PBS -l place=vscatter,select=4:ncpus=32:mpiprocs=32:mem=5GB   24'38"
-### PBS -l place=vscatter,select=4:ncpus=32:mpiprocs=32:mem=5GB  exceeded wall time
-#PBS -l place=vscatter,select=4:ncpus=64:mpiprocs=28:mem=5GB
+## PBS -l place=vscatter,select=4:ncpus=32:mpiprocs=32:mem=5GB  4'59"
+#PBS-l place=vscatter,select=4:ncpus=32:mpiprocs=32:mem=5GB
 #PBS -q debug
 #PBS -l walltime=00:30:00
 #PBS -A GFS-DEV
@@ -13,8 +12,8 @@
 cd $PBS_O_WORKDIR
 
 export PDY=`date -u +%Y%m%d`
-# export PDY=20210824
-export PDY=20210922
+export PDY=20210824
+# export PDY=20210922
 
 export PDY1=`expr $PDY - 1`
 
@@ -102,7 +101,8 @@ cd $DATA
 export HOMEgfs=${HOMEgfs:-${PACKAGEROOT}/gfs.${gfs_ver}}
 export EXECgfs=${EXECgfs:-$HOMEgfs/exec}
 export PARMgfs=${PARMgfs:-$HOMEgfs/parm}
-export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
+export PARMwmo=${PARMwmo:-$HOMEgfs/parm/wmo}
+export PARMproduct=${PARMproduct:-$HOMEgfs/parm/product}
 export FIXgempak=${FIXgempak:-$HOMEgfs/gempak/fix}
 export USHgempak=${USHgempak:-$HOMEgfs/gempak/ush}
 export SRCgfs=${SRCgfs:-$HOMEgfs/scripts}
@@ -111,8 +111,8 @@ export SRCgfs=${SRCgfs:-$HOMEgfs/scripts}
 # Specify NET and RUN Name and model
 ####################################
 export NET=${NET:-gfs}
-export RUN=${RUN:-gfs}
-export model=${model:-gfs}
+export RUN=${RUN:-gdas}
+export model=${model:-gdas}
 export COMPONENT=${COMPONENT:-atmos}
 
 ##############################################
@@ -122,8 +122,7 @@ if [ $envir = "prod" ] ; then
 #  This setting is for testing with GFS (production)
   export COMIN=${COMIN:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/$COMPONENT} ### NCO PROD
 else
-#  export COMIN=/lfs/h1/ops/canned/com/gfs/v16.2/${RUN}.20210824/${cyc}/${COMPONENT} ## canned data
-   export COMIN=/lfs/h2/emc/vpppg/noscrub/Boi.Vuong/gfs.20210922/${cyc}/${COMPONENT} ## BOI canned data
+  export COMIN=/lfs/h1/ops/canned/com/gfs/v16.2/${RUN}.20210824/${cyc}/${COMPONENT} ## canned data
 fi
 
 export COMOUT=${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/${COMPONENT}/gempak
@@ -135,4 +134,4 @@ fi
 #############################################
 # run the GFS job
 #############################################
-sh $HOMEgfs/jobs/JGFS_ATMOS_GEMPAK
+sh $HOMEgfs/jobs/JGDAS_ATMOS_GEMPAK

@@ -1,9 +1,8 @@
 #!/bin/sh
-#PBS -N gfs_atmos_gempak_00
+
+#PBS -N gfs_gempak_upapgif_00
 #PBS -j oe
-### PBS -l place=vscatter,select=4:ncpus=32:mpiprocs=32:mem=5GB   24'38"
-### PBS -l place=vscatter,select=4:ncpus=32:mpiprocs=32:mem=5GB  exceeded wall time
-#PBS -l place=vscatter,select=4:ncpus=64:mpiprocs=28:mem=5GB
+#PBS -l place=vscatter,select=1:ncpus=1:mpiprocs=1:mem=1GB
 #PBS -q debug
 #PBS -l walltime=00:30:00
 #PBS -A GFS-DEV
@@ -28,7 +27,7 @@ set -xa
 export PS4='$SECONDS + '
 date
 
-#############################################################
+############################################################
 # Specify GFS versions
 #############################################################
 export gfs_ver=v16.0.0
@@ -65,12 +64,13 @@ module load wgrib2/$wgrib2_ver
 module load gempak/$gempak_ver
 module list
 
-############################################
+##############################################
 # Define COM, COMOUTwmo, COMIN  directories
-############################################
+##############################################
+
 # set envir=para or para to test with data in prod or para
  export envir=para
-export envir=para
+ export envir=para
 
 export SENDCOM=YES
 export KEEPDATA=YES
@@ -100,6 +100,7 @@ cd $DATA
 # Set up the HOME directory
 ################################
 export HOMEgfs=${HOMEgfs:-${PACKAGEROOT}/gfs.${gfs_ver}}
+export HOMEgfs=${HOMEgfs:-${NWROOT}/gfs.${gfs_ver}}
 export EXECgfs=${EXECgfs:-$HOMEgfs/exec}
 export PARMgfs=${PARMgfs:-$HOMEgfs/parm}
 export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
@@ -113,26 +114,31 @@ export SRCgfs=${SRCgfs:-$HOMEgfs/scripts}
 export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
 export model=${model:-gfs}
+export MODEL=GFS
 export COMPONENT=${COMPONENT:-atmos}
 
 ##############################################
-# Define COM, COMOUTwmo, COMIN  directories
+# Define COM directories
 ##############################################
 if [ $envir = "prod" ] ; then
 #  This setting is for testing with GFS (production)
-  export COMIN=${COMIN:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/$COMPONENT} ### NCO PROD
+  export COMIN=${COMIN:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/$COMPONENT}/gempak ### NCO PROD
+  export COMINgfs=${COMINgfs:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/$COMPONENT}/gempak ### NCO PROD
 else
-#  export COMIN=/lfs/h1/ops/canned/com/gfs/v16.2/${RUN}.20210824/${cyc}/${COMPONENT} ## canned data
-   export COMIN=/lfs/h2/emc/vpppg/noscrub/Boi.Vuong/gfs.20210922/${cyc}/${COMPONENT} ## BOI canned data
+#  export COMIN=/lfs/h1/ops/canned/com/gfs/v16.2/${RUN}.20210824/${cyc}/${COMPONENT}/gempak ## canned data
+#  export COMINgfs=/lfs/h1/ops/canned/com/gfs/v16.2/${RUN}.20210824/${cyc}/${COMPONENT} ## canned data
+   export COMIN=/lfs/h2/emc/ptmp/Boi.Vuong/output/com/gfs/para/gfs.20210922/00/atmos/gempak ## BOI canned data
+   export COMINgfs=/lfs/h2/emc/vpppg/noscrub/Boi.Vuong/gfs.20210922/${cyc}/${COMPONENT} ## BOI canned data
 fi
 
-export COMOUT=${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/${COMPONENT}/gempak
+export COMOUT=${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/${COMPONENT}
+export COMOUTwmo=${COMOUTwmo:-${COMOUT}/wmo}
 
 if [ $SENDCOM = YES ] ; then
-  mkdir -m 775 -p $COMOUT
+  mkdir -m 775 -p $COMOUT $COMOUTwmo
 fi
 
 #############################################
 # run the GFS job
 #############################################
-sh $HOMEgfs/jobs/JGFS_ATMOS_GEMPAK
+sh $HOMEgfs/jobs/JGFS_ATMOS_GEMPAK_NCDC_UPAPGIF

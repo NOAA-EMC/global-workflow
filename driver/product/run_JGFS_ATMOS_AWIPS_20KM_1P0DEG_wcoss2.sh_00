@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #PBS -N gfs_atmos_awips_f012_00
 #PBS -j oe
 #PBS -l place=vscatter,select=1:ncpus=4:mpiprocs=4:mem=1GB

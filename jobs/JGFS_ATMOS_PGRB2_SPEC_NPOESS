@@ -28,7 +28,6 @@ export cycle=${cycle:-t${cyc}z}
 setpdy.sh
 . PDY
 
-
 ################################
 # Set up the HOME directory
 ################################

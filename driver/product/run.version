@@ -1,6 +1,9 @@
-export model=gfs
 export version=v16.0.0
 export gfs_ver=v16.0.0
+export ukmet_ver=v2.2.0
+export ecmwf_ver=v2.1.0
+export nam_ver=v4.2.0
+export COMPATH=/lfs/h1/ops/canned/com/ukmet:/lfs/h1/ops/canned/com/gfs:/lfs/h1/ops/canned/com/ecmwf:/lfs/h1/ops/canned/com/nam
 
 export envvar_ver=1.0
 export PrgEnv_intel_ver=8.1.0

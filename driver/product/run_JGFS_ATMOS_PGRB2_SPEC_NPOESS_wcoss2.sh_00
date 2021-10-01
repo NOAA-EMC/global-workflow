@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #PBS -N gfs_pgrb2_spec_npoess_00
 #PBS -j oe
 #PBS -l place=vscatter,select=1:ncpus=1:mpiprocs=1:mem=1GB
