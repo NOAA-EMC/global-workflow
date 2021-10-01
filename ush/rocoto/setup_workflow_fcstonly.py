@@ -125,7 +125,7 @@ def get_definitions(base):
     strings.append(f'''\t<!ENTITY ACCOUNT    "{base['ACCOUNT']}">\n''')
     strings.append(f'''\t<!ENTITY QUEUE      "{base['QUEUE']}">\n''')
     strings.append(f'''\t<!ENTITY QUEUE_SERVICE "{base['QUEUE_SERVICE']}">\n''')
-    if scheduler in ['slurm'] and machine in ['ORION','JET']:
+    if scheduler in ['slurm'] and machine in ['ORION']:
        strings.append(f'''\t<!ENTITY PARTITION_BATCH "{base['PARTITION_BATCH']}">\n''')
     if scheduler in ['slurm']:
        strings.append(f'''\t<!ENTITY PARTITION_SERVICE "{base['QUEUE_SERVICE']}">\n''')
@@ -173,7 +173,7 @@ def get_resources(dict_configs, cdump='gdas'):
         taskstr = f'{task.upper()}_{cdump.upper()}'
 
         strings.append(f'\t<!ENTITY QUEUE_{taskstr}     "{queuestr}">\n')
-        if scheduler in ['slurm'] and machine in ['ORION', 'JET'] and task not in ['getic', 'arch']:
+        if scheduler in ['slurm'] and machine in ['ORION'] and task not in ['getic', 'arch']:
             strings.append(f'\t<!ENTITY PARTITION_{taskstr} "&PARTITION_BATCH;">\n')
         if scheduler in ['slurm'] and task in ['getic', 'arch']:
             strings.append(f'\t<!ENTITY PARTITION_{taskstr} "&PARTITION_SERVICE;">\n')
