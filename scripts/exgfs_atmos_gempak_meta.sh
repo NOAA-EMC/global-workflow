@@ -117,7 +117,6 @@ do
    export fend=$fhr
 
   sleep 20
-#   mpirun.lsf
   ntasks=${NTASKS_META:-$(cat $DATA/poescript | wc -l)}
   ptile=${PTILE_META:-4}
   threads=${NTHREADS_META:-1}
