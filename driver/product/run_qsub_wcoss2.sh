@@ -1,11 +1,11 @@
 set -x
-qsub run_JGFS_ATMOS_GEMPAK_wcoss2.sh_00
-qsub run_JGDAS_ATMOS_GEMPAK_META_NCDC_wcoss2.sh_00
-qsub run_JGDAS_ATMOS_GEMPAK_wcoss2.sh_00
 qsub run_JGFS_ATMOS_AWIPS_20KM_1P0DEG_wcoss2.sh_00
 qsub run_JGFS_ATMOS_AWIPS_G2_wcoss2.sh_00
 qsub run_JGFS_ATMOS_PGRB2_SPEC_NPOESS_wcoss2.sh_00
 qsub run_JGFS_ATMOS_FBWIND_wcoss2.sh_00
+qsub run_JGDAS_ATMOS_GEMPAK_wcoss2.sh_00
+# qsub run_JGFS_ATMOS_GEMPAK_wcoss2.sh_00
+qsub run_JGDAS_ATMOS_GEMPAK_META_NCDC_wcoss2.sh_00
 qsub run_JGFS_ATMOS_GEMPAK_NCDC_UPAPGIF_wcoss2.sh_00
 qsub run_JGFS_ATMOS_GEMPAK_PGRB2_SPEC_wcoss2.sh_00
 qsub run_JGFS_ATMOS_GEMPAK_META_wcoss2.sh_00

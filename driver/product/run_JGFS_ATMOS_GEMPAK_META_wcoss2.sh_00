@@ -133,9 +133,6 @@ else
 #  export COMIN=/lfs/h2/emc/ptmp/Boi.Vuong/output/com/gfs/para/gfs.20210922/00/atmos/gempak ## BOI canned data
 #  export COMINgfs=/lfs/h2/emc/ptmp/Boi.Vuong/output/com/gfs/para                           ## BOI canned data
 
-   export COMIN=/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/v16rt2/gfs/para/${RUN}.${PDY}/${cyc}/atmos/gempak ### EMC PARA Realtime
-   export COMINgempak=/gpfs/dell3/ptmp/emc.glopara/ROTDIRS/v16rt2/gfs/para                             ### EMC PARA Realtime
-
 fi
 export COMOUT=${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/atmos/gempak/meta
 
