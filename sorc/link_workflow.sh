@@ -326,22 +326,22 @@ cd ${pwd}/../sorc   ||   exit 8
     $SLINK gsi.fd/src/ncdiag                                                               ncdiag_cat.fd
 
     [[ -d oznmon_horiz.fd ]] && rm -rf oznmon_horiz.fd
-    $SLINK gsi.fd/util/Ozone_Monitor/nwprod/oznmon_shared/sorc/oznmon_horiz.fd             oznmon_horiz.fd
+    $SLINK gsi.fd/util/Ozone_Monitor/nwprod/oznmon_shared.v2.0.0/sorc/oznmon_horiz.fd      oznmon_horiz.fd
 
     [[ -d oznmon_time.fd ]] && rm -rf oznmon_time.fd
-    $SLINK gsi.fd/util/Ozone_Monitor/nwprod/oznmon_shared/sorc/oznmon_time.fd              oznmon_time.fd
+    $SLINK gsi.fd/util/Ozone_Monitor/nwprod/oznmon_shared.v2.0.0/sorc/oznmon_time.fd       oznmon_time.fd
 
     [[ -d radmon_angle.fd ]] && rm -rf radmon_angle.fd
-    $SLINK gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared/sorc/verf_radang.fd           radmon_angle.fd
+    $SLINK gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared.v3.0.0/sorc/verf_radang.fd    radmon_angle.fd
 
     [[ -d radmon_bcoef.fd ]] && rm -rf radmon_bcoef.fd
-    $SLINK gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared/sorc/verf_radbcoef.fd         radmon_bcoef.fd
+    $SLINK gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared.v3.0.0/sorc/verf_radbcoef.fd  radmon_bcoef.fd
 
     [[ -d radmon_bcor.fd ]] && rm -rf radmon_bcor.fd
-    $SLINK gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared/sorc/verf_radbcor.fd          radmon_bcor.fd 
+    $SLINK gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared.v3.0.0/sorc/verf_radbcor.fd   radmon_bcor.fd 
 
     [[ -d radmon_time.fd ]] && rm -rf radmon_time.fd
-    $SLINK gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared/sorc/verf_radtime.fd          radmon_time.fd 
+    $SLINK gsi.fd/util/Radiance_Monitor/nwprod/radmon_shared.v3.0.0/sorc/verf_radtime.fd   radmon_time.fd 
 
     [[ -d recentersigp.fd ]] && rm -rf recentersigp.fd
     $SLINK gsi.fd/util/EnKF/gfs/src/recentersigp.fd                                        recentersigp.fd

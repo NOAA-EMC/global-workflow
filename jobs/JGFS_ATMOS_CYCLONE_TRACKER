@@ -147,6 +147,7 @@ elif [ $machine = HERA ]; then # For HERA
   ${USHens_tracker}/extrkr_gfs.sh ${loopnum} ${cmodel} ${CDATE} ${pert} ${DATA}
 elif [ $machine = S4 ]; then # For S4
   machine=s4
+  ${USHens_tracker}/extrkr_gfs.sh ${loopnum} ${cmodel} ${CDATE} ${pert} ${DATA}
 elif [ $machine = ORION ]; then # For ORION
   machine=orion
   ${USHens_tracker}/extrkr_gfs.sh ${loopnum} ${cmodel} ${CDATE} ${pert} ${DATA}
