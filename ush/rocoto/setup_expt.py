@@ -270,10 +270,10 @@ link initial condition files from $ICSDIR to $COMROT'''
       queue_service = 'serial'
       # Set partition_batch; can be s4 or ivy (s4 by default)
       if partition is not None:
-         partition_batch = partition
+         partition_batch = partition.lower()
       else:
          partition_batch = 's4'
-      if partition == "ivy":
+      if partition_batch == "ivy":
          queue = 'ivy'
       else:
          queue = 's4'
