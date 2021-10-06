@@ -1,5 +1,5 @@
 #!/bin/sh
-#PBS -N gfs_atmos_gempak_00
+#PBS -N gfs_atmos_gempak_12
 #PBS -j oe
 ### PBS -l place=vscatter,select=4:ncpus=32:mpiprocs=32:mem=5GB   24'38"
 ### PBS -l place=vscatter,select=4:ncpus=32:mpiprocs=32:mem=5GB  exceeded wall time
@@ -19,7 +19,7 @@ export PDY=20210922
 
 export PDY1=`expr $PDY - 1`
 
-export cyc=00
+export cyc=12
 export cycle=t${cyc}z
 
 export threads=1

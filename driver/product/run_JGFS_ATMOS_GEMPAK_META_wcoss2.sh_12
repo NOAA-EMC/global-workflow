@@ -1,12 +1,9 @@
 #!/bin/sh
-#PBS -N gfs_atmos_gempak_00
+#PBS -N gfs_gempak_meta_12
 #PBS -j oe
-### PBS -l place=vscatter,select=4:ncpus=32:mpiprocs=32:mem=5GB   24'38"
-### PBS -l place=vscatter,select=4:ncpus=32:mpiprocs=32:mem=5GB  exceeded wall time
-#PBS -l place=vscatter,select=4:ncpus=64:mpiprocs=32:mem=5GB
-## PBS -q debug
-#PBS -q dev
-#PBS -l walltime=02:00:00
+#PBS -l place=vscatter,select=4:ncpus=32:mpiprocs=32:mem=5GB
+#PBS -q debug
+#PBS -l walltime=00:30:00
 #PBS -A GFS-DEV
 #PBS -V
 #PBS -W umask=022
@@ -14,12 +11,12 @@
 cd $PBS_O_WORKDIR
 
 export PDY=`date -u +%Y%m%d`
-# export PDY=20210824
-export PDY=20210922
+ export PDY=20210824
+# export PDY=20210922
 
 export PDY1=`expr $PDY - 1`
 
-export cyc=00
+export cyc=12
 export cycle=t${cyc}z
 
 export threads=1
@@ -97,6 +94,13 @@ export DATA=${DATA:-${DATAROOT}/${PBS_JOBNAME}.${PBS_JOBID}}
 mkdir -p $DATA
 cd $DATA
 
+#############################################
+#set the fcst hrs for all the cycles
+#############################################
+export fhbeg=00
+export fhend=384
+export fhinc=12
+
 ################################
 # Set up the HOME directory
 ################################
@@ -117,23 +121,33 @@ export model=${model:-gfs}
 export COMPONENT=${COMPONENT:-atmos}
 
 ##############################################
-# Define COM, COMOUTwmo, COMIN  directories
+# Define COM directories
 ##############################################
 if [ $envir = "prod" ] ; then
 #  This setting is for testing with GFS (production)
-  export COMIN=${COMIN:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/$COMPONENT} ### NCO PROD
+  export COMIN=${COMIN:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/$COMPONENT}/gempak ### NCO PROD
+  export COMINgempak=${COMINgempak:-$(compath.py -o ${NET}/${gfs_ver})}
 else
-#  export COMIN=/lfs/h1/ops/canned/com/gfs/v16.2/${RUN}.20210824/${cyc}/${COMPONENT} ## canned data
-   export COMIN=/lfs/h2/emc/vpppg/noscrub/Boi.Vuong/gfs.20210922/${cyc}/${COMPONENT} ## BOI canned data
+  export COMIN=/lfs/h1/ops/canned/com/gfs/v16.2/${RUN}.20210824/${cyc}/${COMPONENT}/gempak ## canned data
+  export COMINgempak=/lfs/h1/ops/canned/com/gfs/v16.2                                      ## canned data
+#  export COMIN=/lfs/h2/emc/ptmp/Boi.Vuong/output/com/gfs/para/gfs.20210922/00/atmos/gempak ## BOI canned data
+#  export COMINgfs=/lfs/h2/emc/ptmp/Boi.Vuong/output/com/gfs/para                           ## BOI canned data
+
 fi
+export COMOUT=${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/atmos/gempak/meta
 
-export COMOUT=${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/${COMPONENT}/gempak
+# export ukmet_ver=v2.2.0
+export COMINukmet=${COMINukmet:-$(compath.py -o ukmet/${ukmet_ver}/ukmet)}
+# export ecmwf_ver=v2.1.0
+export COMINecmwf=${COMINecmwf:-$(compath.py -o ecmwf/${ecmwf_ver}/ecmwf)}
+# export nam_ver=v4.2.0
+export COMINnam=${COMINnam:-$(compath.py -o nam/${nam_ver}/nam)}
 
-if [ $SENDCOM = YES ] ; then
-  mkdir -m 775 -p $COMOUT
+if [ ! -f $COMOUT ] ; then
+  mkdir -p -m 775 $COMOUT
 fi
 
 #############################################
 # run the GFS job
 #############################################
-sh $HOMEgfs/jobs/JGFS_ATMOS_GEMPAK
+sh $HOMEgfs/jobs/JGFS_ATMOS_GEMPAK_META
