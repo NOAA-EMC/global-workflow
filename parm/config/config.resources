@@ -145,10 +145,14 @@ elif [ $step = "anal" ]; then
       export npe_anal=400
       export npe_anal_gfs=400
       if [[ "$machine" = "S4" ]]; then
+         #For the analysis jobs, the number of tasks and cores used must be equal
+         #On the S4-s4 partition, this is accomplished by increasing the task
+         #count to a multiple of 32
          if [[ "$PARTITION_BATCH" = "s4" ]]; then
             export npe_anal=416
             export npe_anal_gfs=416
          fi
+         #S4 is small, so run this task with just 1 thread
          export nth_anal=1
          export nth_anal_gfs=1
          export wtime_anal="02:00:00"
@@ -160,6 +164,7 @@ elif [ $step = "anal" ]; then
       if [[ "$machine" = "S4" ]]; then
          export nth_anal=4
          export nth_anal_gfs=4
+         #Adjust job count for S4
          if [[ "$PARTITION_BATCH" = "s4" ]]; then
             export npe_anal=88
             export npe_anal_gfs=88
@@ -463,6 +468,8 @@ elif [ $step = "eobs" -o $step = "eomg" ]; then
     export nth_eobs=2
     if [[ "$machine" = "WCOSS_DELL_P3" ]]; then export nth_eobs=7; fi
     export npe_node_eobs=$(echo "$npe_node_max / $nth_eobs" | bc)
+    #The number of tasks and number of CPUs used must be the same for eobs
+    #For S4, this is accomplished by running 10 tasks/node
     if [[ "$machine" = "S4" ]]; then
        export npe_node_eobs=10
        export wtime_eobs="00:30:00"
