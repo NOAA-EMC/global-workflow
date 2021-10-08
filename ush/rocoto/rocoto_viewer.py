@@ -958,6 +958,7 @@ def get_tasklist(workflow_file):
                     pass
                 if list_tasks:
                     print(f"{' ' * i}, {metatask_name}")
+
                 all_vars_list = metatasks.findall('var')
                 all_tasks_list = metatasks.findall('task')
                 for var in all_vars_list:
@@ -1005,41 +1006,6 @@ def get_tasklist(workflow_file):
     # Default expantion of metatasks True = collapsed
     # for metatask,metatasks in metatask_list.iteritems():
     #   metatask_list[metatask].append(True)
-
-    metatask_list = {}
-    dotask_list = []
-    dotask_check_justlast = ''
-    dotask_check_justlast_base = ''
-    base_delemiter = '_'
-    first_found = True
-    for dotasks in tasks_ordered:
-        dotask_check = dotasks[0]
-        if dotask_check[:9] == 'final_for':
-            continue
-        base_delemiter = re.search(r'\_|\.', dotask_check[::-1])
-        if base_delemiter is not None:
-            base_delemiter = base_delemiter.group()
-        else:
-            continue
-        dotask_check_base = dotasks[0].rsplit(base_delemiter, 1)[0]
-        if dotask_check_base == dotask_check_justlast_base:
-            if first_found:
-                first_found = False
-                dotask_list.append(dotask_check_justlast)
-            dotask_list.append(dotask_check)
-        else:
-            first_found = True
-        dotask_check_justlast = dotask_check
-        dotask_check_justlast_base = dotask_check_base
-
-        if not len(dotask_list) == 0 and first_found is True:
-            new_metatask = []
-            base_delemiter = re.search(r'\_|\.', dotask_list[0][::-1]).group()
-            new_metatask.append(dotask_list[0].rsplit(base_delemiter, 1)[0])
-            for dotask_get in dotask_list:
-                new_metatask.append(dotask_get)
-            metatask_list[dotask_list[0]] = new_metatask
-            dotask_list = []
 
     if list_tasks:
         print()
