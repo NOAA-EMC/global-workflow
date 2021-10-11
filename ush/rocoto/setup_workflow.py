@@ -693,8 +693,6 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
         deps = []
         dep_dict = {'type':'metatask', 'name':f'{cdump}post'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type':'task', 'name':f'{cdump}arch', 'offset':'-&INTERVAL_GFS;'}
-        deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
         sdate_gfs = rocoto.create_envar(name='SDATE_GFS', value='&SDATE_GFS;')
         metpcase = rocoto.create_envar(name='METPCASE', value='#metpcase#')
