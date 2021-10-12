@@ -178,6 +178,8 @@ cat >> input.nml << EOF
   fhzero       = $FHZER
   h2o_phys     = ${h2o_phys:-".true."}
   ldiag3d      = ${ldiag3d:-".false."}
+  qdiag3d      = ${qdiag3d:-".false."}
+  print_diff_pgr = ${print_diff_pgr:-".false."}
   fhcyc        = $FHCYC
   use_ufo      = ${use_ufo:-".true."}
   pre_rad      = ${pre_rad:-".false."}
@@ -283,6 +285,7 @@ cat >> input.nml <<EOF
   cnvcld       = ${cnvcld:-".true."}
   imfshalcnv   = ${imfshalcnv:-"2"}
   imfdeepcnv   = ${imfdeepcnv:-"2"}
+  ras          = ${ras:-".false."}
   cdmbgwd      = ${cdmbgwd:-"3.5,0.25"}
   prslrd0      = ${prslrd0:-"0."}
   ivegsrc      = ${ivegsrc:-"1"}
@@ -346,6 +349,7 @@ fi
 if [ ${DO_CA:-"NO"} = "YES" ]; then
   cat >> input.nml << EOF
   do_ca      = .True.
+  ca_global  = ${ca_global:-".False."}
   ca_sgs     = ${ca_sgs:-".True."}
   nca        = ${nca:-"1"}
   scells     = ${scells:-"2600"}
@@ -356,6 +360,13 @@ if [ ${DO_CA:-"NO"} = "YES" ]; then
   ca_trigger = ${ca_trigger:-".True."}
   nspinup    = ${nspinup:-"1"}
   iseed_ca   = ${ISEED_CA:-"12345"}
+EOF
+fi
+
+if [ ${DO_LAND_PERT:-"NO"} = "YES" ]; then
+  cat >> input.nml << EOF
+  lndp_type = ${lndp_type:-2}
+  n_var_lndp = ${n_var_lndp:-0}
 EOF
 fi
 
@@ -544,7 +555,7 @@ EOF
 # Add namelist for stochastic physics options
 echo "" >> input.nml
 #if [ $MEMBER -gt 0 ]; then
-if [ $DO_SPPT = "YES" -o $DO_SHUM = "YES" -o $DO_SKEB = "YES" ]; then
+if [ $DO_SPPT = "YES" -o $DO_SHUM = "YES" -o $DO_SKEB = "YES" -o $DO_LAND_PERT = "YES" ]; then
 
     cat >> input.nml << EOF
 &nam_stochy
@@ -588,12 +599,19 @@ EOF
 /
 EOF
 
-
+  if [ $DO_LAND_PERT = "YES" ]; then
     cat >> input.nml << EOF
 &nam_sfcperts
+  lndp_type = ${lndp_type}
+  LNDP_TAU = ${LNDP_TAU}
+  LNDP_SCALE = ${LNDP_SCALE}
+  ISEED_LNDP = ${ISEED_LNDP:-$ISEED}
+  lndp_var_list = ${lndp_var_list}
+  lndp_prt_list = ${lndp_prt_list}
   $nam_sfcperts_nml
 /
 EOF
+  fi
 
 else
 

@@ -9,9 +9,14 @@ MOM_INPUT=MOM_input_template_$OCNRES
 #TODO: Make these variables configurable
 
 #Set to False for restart reproducibility
-MOM6_REPRO_LA=${MOM6_REPRO_LA:-'True'}
+MOM6_USE_LI2016=${MOM6_USE_LI2016:-'True'}
 MOM6_THERMO_SPAN=${MOM6_THERMO_SPAN:-'False'}
 MOM6_ALLOW_LANDMASK_CHANGES=${MOM6_ALLOW_LANDMASK_CHANGES:-'False'}
+
+DO_OCN_SPPT=${DO_OCN_SPPT:-'False'}
+PERT_EPBL=${PERT_EPBL:-'False'}
+
+MOM_IAU_HRS=${MOM_IAU_HRS:-'3.0'}
 
 if [ $cplwav = ".true." ] ; then
   MOM6_USE_WAVES='True'
@@ -51,8 +56,7 @@ else
   exit 1
 fi
 
-
-  cat >> input.nml <<EOF
+cat >> input.nml <<EOF
 
 &MOM_input_nml
   output_directory = 'MOM6_OUTPUT/',
@@ -62,6 +66,39 @@ fi
   parameter_filename = 'INPUT/MOM_input',
                        'INPUT/MOM_override'
 /
+
+&nam_stochy
+  new_lscale=.true.
+EOF
+
+OCN_SPPT="False"
+if [ $DO_OCN_SPPT = "YES" ]; then
+  OCN_SPPT="True"
+  cat >> input.nml <<EOF
+  OCNSPPT=${OCNSPPT:-1.0}
+  OCNSPPT_LSCALE=${OCNSPPT_LSCALE:-500e3}
+  OCNSPPT_TAU=${OCNSPPT_TAU:-21600}
+  ISEED_OCNSPPT=${ISEED_OCNSPPT:-$ISEED}
+EOF
+  fi
+
+PERT_EPBL="False"
+if [ $DO_OCN_PERT_EPBL = "YES" ]; then
+  PERT_EPBL="True"
+  cat >> input.nml <<EOF
+  EPBL=${EPBL:-1.0}
+  EPBL_LSCALE=${EPBL_LSCALE:-500e3}
+  EPBL_TAU=${EPBL_TAU:-21600}
+  ISEED_EPBL=${ISEED_EPBL:-$ISEED}
+EOF
+  fi
+
+cat >> input.nml <<EOF
+/
+
+&nam_sfcperts
+/
+
 EOF
 
 echo "$(cat input.nml)"
@@ -69,22 +106,25 @@ echo "$(cat input.nml)"
 
 #Copy MOM_input and edit:
 $NCP -pf $HOMEgfs/parm/mom6/MOM_input_template_$OCNRES $DATA/INPUT/
-sed -e "s/DT_THERM_MOM6/$DT_THERM_MOM6/g" \
-    -e "s/DT_DYNAM_MOM6/$DT_DYNAM_MOM6/g" \
-    -e "s/MOM6_RIVER_RUNOFF/$MOM6_RIVER_RUNOFF/g" \
-    -e "s/MOM6_THERMO_SPAN/$MOM6_THERMO_SPAN/g" \
-    -e "s/MOM6_REPRO_LA/$MOM6_REPRO_LA/g" \
-    -e "s/MOM6_USE_WAVES/$MOM6_USE_WAVES/g" \
-    -e "s/MOM6_ALLOW_LANDMASK_CHANGES/$MOM6_ALLOW_LANDMASK_CHANGES/g" \
-    -e "s/NX_GLB/$NX_GLB/g" \
-    -e "s/NY_GLB/$NY_GLB/g" \
-    -e "s/CHLCLIM/$CHLCLIM/g" $DATA/INPUT/MOM_input_template_$OCNRES > $DATA/INPUT/MOM_input
+sed -e "s/@\[DT_THERM_MOM6\]/$DT_THERM_MOM6/g" \
+    -e "s/@\[DT_DYNAM_MOM6\]/$DT_DYNAM_MOM6/g" \
+    -e "s/@\[MOM6_RIVER_RUNOFF\]/$MOM6_RIVER_RUNOFF/g" \
+    -e "s/@\[MOM6_THERMO_SPAN\]/$MOM6_THERMO_SPAN/g" \
+    -e "s/@\[MOM6_USE_LI2016\]/$MOM6_USE_LI2016/g" \
+    -e "s/@\[MOM6_USE_WAVES\]/$MOM6_USE_WAVES/g" \
+    -e "s/@\[MOM6_ALLOW_LANDMASK_CHANGES\]/$MOM6_ALLOW_LANDMASK_CHANGES/g" \
+    -e "s/@\[NX_GLB\]/$NX_GLB/g" \
+    -e "s/@\[NY_GLB\]/$NY_GLB/g" \
+    -e "s/@\[CHLCLIM\]/$CHLCLIM/g" \
+    -e "s/@\[DO_OCN_SPPT\]/$OCN_SPPT/g" \
+    -e "s/@\[PERT_EPBL\]/$PERT_EPBL/g" \
+    -e "s/@\[MOM_IAU_HRS\]/$MOM_IAU_HRS/g" $DATA/INPUT/MOM_input_template_$OCNRES > $DATA/INPUT/MOM_input
 rm $DATA/INPUT/MOM_input_template_$OCNRES
 
 #data table for runoff:
 DATA_TABLE=${DATA_TABLE:-$PARM_FV3DIAG/data_table}
 $NCP $DATA_TABLE $DATA/data_table_template
-sed -e "s/FRUNOFF/$FRUNOFF/g" $DATA/data_table_template > $DATA/data_table
+sed -e "s/@\[FRUNOFF\]/$FRUNOFF/g" $DATA/data_table_template > $DATA/data_table
 rm $DATA/data_table_template
 
 }

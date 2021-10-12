@@ -189,7 +189,6 @@ export FHMAX_GFS=$(eval echo \${FHMAX_GFS_$cyc})
 export FHOUT_GFS=3
 export FHMAX_HF_GFS=0
 export FHOUT_HF_GFS=1
-export FHRLST="[0, 6, 12, 18, 24, 30, 36, 42, 48]"
 export STEP_GFS="24"
 export ILPOST=1           # gempak output frequency up to F120
 
