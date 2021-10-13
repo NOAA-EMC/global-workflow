@@ -16,6 +16,7 @@ cat > ice_in <<eof
    year_init      = $year
    month_init     = $month
    day_init       = $day
+   sec_init       = $sec
    dt             = $ICETIM
    npt            = $npt
    ndtd           = 1
