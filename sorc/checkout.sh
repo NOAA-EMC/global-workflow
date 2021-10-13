@@ -49,7 +49,7 @@ if [[ ! -d gldas.fd ]] ; then
     rm -f ${topdir}/checkout-gldas.log
     git clone https://github.com/NOAA-EMC/GLDAS  gldas.fd >> ${topdir}/checkout-gldas.fd.log 2>&1
     cd gldas.fd
-    git checkout gldas_gfsv16_release.v1.16.0
+    git checkout gldas_gfsv16_release.v1.18
     cd ${topdir}
 else
     echo 'Skip.  Directory gldas.fd already exists.'
@@ -58,9 +58,9 @@ fi
 echo ufs_utils checkout ...
 if [[ ! -d ufs_utils.fd ]] ; then
     rm -f ${topdir}/checkout-ufs_utils.log
-    git clone https://github.com/NOAA-EMC/UFS_UTILS.git ufs_utils.fd >> ${topdir}/checkout-ufs_utils.fd.log 2>&1
+    git clone https://github.com/GeorgeGayno-NOAA/UFS_UTILS.git ufs_utils.fd >> ${topdir}/checkout-ufs_utils.fd.log 2>&1
     cd ufs_utils.fd
-    git checkout ops-gfsv16.0.0
+    git checkout feature/gfsv16.0.0-wcoss2
     cd ${topdir}
 else
     echo 'Skip.  Directory ufs_utils.fd already exists.'
