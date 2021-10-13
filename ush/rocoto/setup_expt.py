@@ -182,7 +182,24 @@ link initial condition files from $ICSDIR to $COMROT'''
     fdate = idate + timedelta(hours=6)
 
     # Set machine defaults
-    if machine == 'WCOSS_DELL_P3':
+    if machine == 'WCOSS2':
+      base_git = '/lfs/h2/emc/global/noscrub/Kate.Friedman/glopara/git'
+      base_svn = '/lfs/h2/emc/global/noscrub/Kate.Friedman/glopara/git'
+      dmpdir = '/lfs/h2/emc/global/noscrub/Kate.Friedman/dump'
+      nwprod = '${NWROOT:-"/lfs/h1/ops/prod/nwprod"}'
+      comroot = '${COMROOT:-"/lfs/h1/ops/prod/com"}'
+      homedir = '/lfs/h2/emc/global/noscrub/$USER'
+      stmp = '/lfs/h2/emc/stmp/$USER'
+      ptmp = '/lfs/h2/emc/ptmp/$USER'
+      noscrub = '/lfs/h2/emc/global/noscrub/$USER'
+      account = 'GFS-DEV'
+      queue = 'dev'
+      queue_service = 'dev_transfer'
+      partition_batch = ''
+      chgrp_rstprod = 'YES'
+      chgrp_cmd = 'chgrp rstprod'
+      hpssarch = 'YES'
+    elif machine == 'WCOSS_DELL_P3':
       base_git = '/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git'
       base_svn = '/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git'
       dmpdir = '/gpfs/dell3/emc/global/dump'
