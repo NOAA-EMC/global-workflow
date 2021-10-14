@@ -19,7 +19,8 @@ SCHEDULER_MAP={'HERA':'slurm',
                'ORION':'slurm',
                'WCOSS':'lsf',
                'WCOSS_DELL_P3':'lsf',
-               'WCOSS_C':'lsfcray'}
+               'WCOSS_C':'lsfcray',
+               'WCOSS2':'pbspro'}
 
 class UnknownMachineError(Exception): pass
 class UnknownConfigError(Exception): pass
@@ -145,7 +146,7 @@ def config_parser(files):
 
 def detectMachine():
 
-    machines = ['HERA', 'ORION', 'WCOSS_C', 'WCOSS_DELL_P3']
+    machines = ['HERA', 'ORION', 'WCOSS_C', 'WCOSS_DELL_P3', 'WCOSS2']
 
     if os.path.exists('/scratch1/NCEPDEV'):
         return 'HERA'
@@ -155,6 +156,8 @@ def detectMachine():
         return 'WCOSS_C'
     elif os.path.exists('/gpfs/dell2'):
         return 'WCOSS_DELL_P3'
+    elif os.path.exists('/lfs/h2'):
+        return 'WCOSS2'
     else:
         print(f'workflow is currently only supported on: {machines}')
         raise NotImplementedError('Cannot auto-detect platform, ABORT!')
@@ -297,7 +300,7 @@ def get_resources(machine, cfg, task, reservation, cdump='gdas'):
     else:
         ppn = cfg[f'npe_node_{ltask}']
 
-    if machine in [ 'WCOSS_DELL_P3', 'HERA', 'ORION' ]:
+    if machine in [ 'WCOSS2', 'WCOSS_DELL_P3', 'HERA', 'ORION' ]:
         try:
             threads = cfg[f'nth_{ltask}']
         except KeyError:
@@ -311,9 +314,9 @@ def get_resources(machine, cfg, task, reservation, cdump='gdas'):
     if scheduler in ['slurm']:
         natstr = '--export=NONE'
 
-    if machine in ['HERA', 'ORION', 'WCOSS_C', 'WCOSS_DELL_P3']:
+    if machine in ['HERA', 'ORION', 'WCOSS_C', 'WCOSS_DELL_P3', 'WCOSS2' ]:
 
-        if machine in ['HERA', 'ORION']:
+        if machine in ['HERA', 'ORION', 'WCOSS2']:
             resstr = f'<nodes>{nodes}:ppn={ppn}:tpp={threads}</nodes>'
         else:
             resstr = f'<nodes>{nodes}:ppn={ppn}</nodes>'
