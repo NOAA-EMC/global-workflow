@@ -114,11 +114,11 @@ tbf=""
 if [ $satmedmf = ".true." ]; then tbf="_satmedmf" ; fi
 
 # Radiation options 
-export IAER=1011    ;#spectral band mapping method for aerosol optical properties
-export iovr_lw=3    ;#de-correlation length cloud overlap method (Barker, 2008) 
-export iovr_sw=3    ;#de-correlation length cloud overlap method (Barker, 2008) 
-export iovr=3       ;#de-correlation length cloud overlap method (Barker, 2008) 
-export icliq_sw=2   ;#cloud optical coeffs from AER's newer version v3.9-v4.0 for hu and stamnes
+export IAER=1011    ; #spectral band mapping method for aerosol optical properties
+export iovr_lw=3    ; #de-correlation length cloud overlap method (Barker, 2008) 
+export iovr_sw=3    ; #de-correlation length cloud overlap method (Barker, 2008) 
+export iovr=3       ; #de-correlation length cloud overlap method (Barker, 2008) 
+export icliq_sw=2   ; #cloud optical coeffs from AER's newer version v3.9-v4.0 for hu and stamnes
 export isubc_sw=2
 export isubc_lw=2
 
@@ -176,7 +176,10 @@ fi
 export DO_SPPT=${DO_SPPT:-"NO"}
 export DO_SKEB=${DO_SKEB:-"NO"}
 export DO_SHUM=${DO_SHUM:-"NO"}
+export DO_LAND_PERT=${DO_LAND_PERT:-"NO"}
 export DO_CA=${DO_CA:-"NO"}
+export DO_OCN_SPPT=${DO_OCN_SPPT:-"NO"}
+export DO_OCN_PERT_EPBL=${DO_OCN_PERT_EPBL:-"NO"}
 
 #coupling settings
 export FRAC_GRID=".true."

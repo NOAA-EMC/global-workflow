@@ -16,6 +16,7 @@ cat > ice_in <<eof
    year_init      = $year
    month_init     = $month
    day_init       = $day
+   sec_init       = $sec
    dt             = $ICETIM
    npt            = $npt
    ndtd           = 1
@@ -105,7 +106,7 @@ cat > ice_in <<eof
    kdyn            = 1
    ndte            = 120
    revised_evp     = .false.
-   kevp_kernel     = 0
+   evp_algorithm   = 'standard_2d'
    brlx            = 300.0
    arlx            = 300.0
    ssh_stress      = 'coupled'
@@ -148,6 +149,10 @@ cat > ice_in <<eof
    rfracmin        = 0.15
    rfracmax        = 1.
    pndaspect       = 0.8
+/
+
+&snow_nml
+   snwredist       = 'none'
 /
 
 &forcing_nml

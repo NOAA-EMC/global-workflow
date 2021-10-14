@@ -53,10 +53,7 @@ ideflate:                ${ideflate:-1}
 nbits:                   ${nbits:-14}
 imo:                     $LONB_IMO
 jmo:                     $LATB_JMO
-
-nfhout:                  $FHOUT
-nfhmax_hf:               $FHMAX_HF
-nfhout_hf:               $FHOUT_HF
+output_fh:               $OUTPUT_FH
 nsout:                   $NSOUT
 iau_offset:              ${IAU_OFFSET:-0}
 EOF

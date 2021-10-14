@@ -496,6 +496,7 @@ EOF
     ISEED_SHUM=$((CDATE*1000 + MEMBER*10 + 2))
     ISEED_SPPT=$((CDATE*1000 + MEMBER*10 + 3))
     ISEED_CA=$(( (CDATE*1000 + MEMBER*10 + 4) % 2147483647 ))
+    ISEED_LNDP=$(( (CDATE*1000 + MEMBER*10 + 5) % 2147483647 ))
   else
     ISEED=${ISEED:-0}
   fi
@@ -507,6 +508,15 @@ EOF
   fi
   if [ $DO_SHUM = "YES" ]; then
     do_shum=".true."
+  fi
+  if [ $DO_LAND_PERT = "YES" ]; then
+    lndp_type=${lndp_type:-2}
+    LNDP_TAU=${LNDP_TAU:-21600}
+    LNDP_SCALE=${LNDP_SCALE:-500000}
+    ISEED_LNDP=${ISEED_LNDP:-$ISEED}
+    lndp_var_list=${lndp_var_list:-"'smc', 'vgf',"}
+    lndp_prt_list=${lndp_prt_list:-"0.2,0.1"}
+    n_var_lndp=$(echo "$lndp_var_list" | wc -w)
   fi
   JCAP_STP=${JCAP_STP:-$JCAP_CASE}
   LONB_STP=${LONB_STP:-$LONB_CASE}
@@ -529,7 +539,7 @@ EOF
 
   if [ $QUILTING = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]; then
     fhr=$FHMIN
-    while [ $fhr -le $FHMAX ]; do
+    for fhr in $OUTPUT_FH; do
       FH3=$(printf %03i $fhr)
       FH2=$(printf %02i $fhr)
       atmi=atmf${FH3}.$affix
@@ -549,11 +559,6 @@ EOF
         eval $NLN $pgbo $pgbi
         eval $NLN $flxo $flxi
       fi
-      FHINC=$FHOUT
-      if [ $FHMAX_HF -gt 0 -a $FHOUT_HF -gt 0 -a $fhr -lt $FHMAX_HF ]; then
-        FHINC=$FHOUT_HF
-      fi
-      fhr=$((fhr+FHINC))
     done
   else
     for n in $(seq 1 $ntiles); do
@@ -761,6 +766,15 @@ MOM6_postdet() {
   fi
 
   echo "SUB ${FUNCNAME[0]}: MOM6 input data linked/copied"
+
+  if [ $DO_OCN_SPPT = "YES" -o $DO_OCN_PERT_EPBL = "YES" ]; then
+    if [ ${SET_STP_SEED:-"YES"} = "YES" ]; then
+      ISEED_OCNSPPT=$(( (CDATE*1000 + MEMBER*10 + 6) % 2147483647 ))
+      ISEED_EPBL=$(( (CDATE*1000 + MEMBER*10 + 7) % 2147483647 ))
+    else
+      ISEED=${ISEED:-0}
+    fi
+  fi
 }
 
 MOM6_nml() {
@@ -794,7 +808,7 @@ MOM6_out() {
     if [ $FHRGRP -eq 0 ]; then
       fhrlst="anl"
     else
-      fhrlst=$(echo $FHRLST | sed -e 's/_/ /g; s/\[/ /g; s/\]/ /g; s/f/ /g; s/,/ /g')
+      fhrlst=$OUTPUT_HF
     fi
 
     # copy ocn files
@@ -842,6 +856,7 @@ CICE_postdet() {
   year=$(echo $CDATE|cut -c 1-4)
   month=$(echo $CDATE|cut -c 5-6)
   day=$(echo $CDATE|cut -c 7-8)
+  sec=$(echo $CDATE|cut -c 9-10)  
   stepsperhr=$((3600/$ICETIM))
   nhours=$($NHOUR $CDATE ${year}010100)
   steps=$((nhours*stepsperhr))

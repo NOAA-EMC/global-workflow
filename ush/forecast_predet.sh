@@ -54,6 +54,19 @@ FV3_GFS_predet(){
   restart_interval=${restart_interval:-0}
   rst_invt1=`echo $restart_interval |cut -d " " -f 1`
 
+  # Convert output settings into an explicit list
+  OUTPUT_FH=""
+  FHMIN_LF=$FHMIN
+  if (( FHOUT_HF > 0 && FHMAX_HF > 0 )); then
+    for (( fh = FHMIN; fh < FHMAX_HF; fh = fh + FHOUT_HF )); do
+      OUTPUT_FH="$OUTPUT_FH $fh"
+    done
+    FHMIN_LF=$FHMAX_HF
+  fi
+  for (( fh = FHMIN_LF; fh <= FHMAX; fh = fh + FHOUT )); do
+    OUTPUT_FH="$OUTPUT_FH $fh"
+  done
+
   PDY=$(echo $CDATE | cut -c1-8)
   cyc=$(echo $CDATE | cut -c9-10)
 
