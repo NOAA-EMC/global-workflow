@@ -155,7 +155,7 @@ if [[ "$OUTPUT_FILE" == "netcdf" ]]; then
     export  ichunk2d=0; export jchunk2d=0
     export  ichunk3d=0; export jchunk3d=0;  export kchunk3d=0
     RESTILE=`echo $CASE |cut -c 2-`
-    if [[ "$machine" == "WCOSS_DELL_P3" ]]; then
+    if [[ "$machine" == "WCOSS_DELL_P3" ]] || [[ "$machine" == "WCOSS2" ]]; then
         if [ $RESTILE -ge 768 ]; then
             export OUTPUT_FILETYPES=" 'netcdf_parallel' 'netcdf_parallel' "
             export ichunk3d=$((4*RESTILE)) 
