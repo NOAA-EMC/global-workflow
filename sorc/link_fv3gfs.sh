@@ -39,7 +39,7 @@ elif [ $machine = "theia" ]; then
 elif [ $machine = "hera" ]; then
     FIX_DIR="/scratch1/NCEPDEV/global/glopara/fix"
 elif [ $machine = "wcoss2" ]; then
-    FIX_DIR="/lfs/h2/emc/ens/noscrub/common/git/gw/fix_nco_gfsv15"
+    FIX_DIR="/lfs/h2/emc/global/noscrub/Kate.Friedman/glopara/FIX/fix_nco_gfsv15"
 fi
 cd ${pwd}/../fix                ||exit 8
 for dir in fix_am fix_chem fix_fv3 fix_orog fix_fv3_gmted2010 fix_verif; do
@@ -183,7 +183,7 @@ if [ $machine = dell -o $machine = hera ]; then
     done
 fi
 
-for ufs_utilsexe in chgres_cube nemsio_get nemsio_read global_chgres ; do
+for ufs_utilsexe in chgres_cube ; do # nemsio_get nemsio_read global_chgres ; do
     [[ -s $ufs_utilsexe ]] && rm -f $ufs_utilsexe
     $LINK ../sorc/ufs_utils.fd/exec/$ufs_utilsexe .
 done
