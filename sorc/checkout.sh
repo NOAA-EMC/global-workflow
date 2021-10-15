@@ -41,9 +41,9 @@ fi
 echo gsi checkout ...
 if [[ ! -d gsi.fd ]] ; then
     rm -f ${topdir}/checkout-gsi.log
-    git clone --recursive https://github.com/NOAA-EMC/GSI.git gsi.fd >> ${logdir}/checkout-gsi.log 2>&1
+    git clone --recursive https://github.com/DavidHuber-NOAA/GSI.git gsi.fd >> ${topdir}/checkout-gsi.log 2>&1
     cd gsi.fd
-    git checkout 9c1fc15d42573b398037319bbf8d5143ad126fb6
+    git checkout port_9c1fc15_2_jet
     git submodule update
     cd ${topdir}
 else
@@ -53,9 +53,9 @@ fi
 echo gldas checkout ...
 if [[ ! -d gldas.fd ]] ; then
     rm -f ${topdir}/checkout-gldas.log
-    git clone https://github.com/NOAA-EMC/GLDAS.git gldas.fd >> ${logdir}/checkout-gldas.fd.log 2>&1
+    git clone https://github.com/DavidHuber-NOAA/GLDAS.git gldas.fd >> ${topdir}/checkout-gldas.fd.log 2>&1
     cd gldas.fd
-    git checkout gldas_gfsv16_release.v1.15.0
+    git checkout port_v1.15.0_2_jet
     cd ${topdir}
 else
     echo 'Skip.  Directory gldas.fd already exists.'
@@ -75,9 +75,9 @@ fi
 echo UPP checkout ...
 if [[ ! -d gfs_post.fd ]] ; then
     rm -f ${topdir}/checkout-gfs_post.log
-    git clone https://github.com/NOAA-EMC/UPP.git gfs_post.fd >> ${logdir}/checkout-gfs_post.log 2>&1
+    git clone https://github.com/DavidHuber-NOAA/UPP.git gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
     cd gfs_post.fd
-    git checkout upp_v10.0.8
+    git checkout upp_v10.0.8_port_2_jet
     git submodule update --init CMakeModules
     ################################################################################
     # checkout_gtg
