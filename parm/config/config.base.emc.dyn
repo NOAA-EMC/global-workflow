@@ -141,6 +141,59 @@ export SENDDBN_NTC=${SENDDBN_NTC:-"NO"}
 export SENDDBN=${SENDDBN:-"NO"}
 export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
+# APP settings
+export APP=@APP@
+
+# Defaults:
+export DO_COUPLED="NO"
+export DO_WAVE="NO"
+export DO_OCN="NO"
+export DO_ICE="NO"
+export DO_AERO="NO"
+export CCPP_SUITE="FV3_GFS_v16"
+export WAVE_CDUMP="" # When to include wave suite: gdas, gfs, or both
+export confignamevarfornems="atm" # For APP=ATM
+export cplwav2atm=".false."
+
+case "${APP}" in
+  ATM)
+    echo "APP=ATM; will use defaults"
+    ;;
+  ATMW)
+    export DO_COUPLED="YES"
+    export DO_WAVE="YES"
+    export WAVE_CDUMP="both"
+    export confignamevarfornems="leapfrog_atm_wav"
+    ;;
+  S2S)
+    export DO_COUPLED="YES"
+    export DO_OCN="YES"
+    export DO_ICE="YES"
+    export CCPP_SUITE="FV3_GFS_v16_coupled_nsstNoahmpUGWPv1"
+    export confignamevarfornems="cpld"
+    ;;
+  S2SW)
+    export DO_COUPLED="YES"
+    export DO_WAVE="YES"
+    export DO_OCN="YES"
+    export DO_ICE="YES"
+    export CCPP_SUITE="FV3_GFS_v16_coupled_nsstNoahmpUGWPv1"
+    export WAVE_CDUMP="both"
+    export confignamevarfornems="cpld_wave"
+    export cplwav2atm=".true."
+    source $EXPDIR/config.defaults.s2sw
+    ;;
+  ATMAERO)
+    export DO_COUPLED="YES"
+    export DO_AERO="YES"
+    export confignamevarfornems="atm_aer"
+    ;;
+  *)
+    echo "Unrecognized APP: ${1}"
+    exit 1
+    ;;
+esac
+
 # Set operational resolution
 export OPS_RES="C768" # Do not change
 
@@ -180,15 +233,15 @@ export gfs_cyc=@gfs_cyc@ # 0: no GFS cycle, 1: 00Z only, 2: 00Z and 12Z only, 4:
 # GFS output and frequency
 export FHMIN_GFS=0
 
-export FHMAX_GFS_00=384
-export FHMAX_GFS_06=384
-export FHMAX_GFS_12=384
-export FHMAX_GFS_18=384
+export FHMAX_GFS_00=${FHMAX_GFS_00:-384}
+export FHMAX_GFS_06=${FHMAX_GFS_06:-384}
+export FHMAX_GFS_12=${FHMAX_GFS_12:-384}
+export FHMAX_GFS_18=${FHMAX_GFS_18:-384}
 export FHMAX_GFS=$(eval echo \${FHMAX_GFS_$cyc})
 
-export FHOUT_GFS=3
-export FHMAX_HF_GFS=0
-export FHOUT_HF_GFS=1
+export FHOUT_GFS=${FHOUT_GFS:-3}
+export FHMAX_HF_GFS=${FHMAX_HF_GFS:-0}
+export FHOUT_HF_GFS=${FHOUT_HF_GFS:-1}
 export STEP_GFS="24"
 export ILPOST=1           # gempak output frequency up to F120
 
@@ -237,58 +290,6 @@ export lobsdiag_forenkf=".true."
 # run GLDAS to spin up land ICs
 export DO_GLDAS="YES"
 export gldas_cyc=00
-
-# APP settings
-export APP="ATM"
-
-# Defaults:
-export DO_COUPLED="NO"
-export DO_WAVE="NO"
-export DO_OCN="NO"
-export DO_ICE="NO"
-export DO_AERO="NO"
-export CCPP_SUITE="FV3_GFS_v16"
-export WAVE_CDUMP="" # When to include wave suite: gdas, gfs, or both
-export confignamevarfornems="atm" # For APP=ATM
-export cplwav2atm=".false."
-
-case "${APP}" in
-  ATM)
-    echo "APP=ATM; will use defaults"
-    ;;
-  ATMW)
-    export DO_COUPLED="YES"
-    export DO_WAVE="YES"
-    export WAVE_CDUMP="both"
-    export confignamevarfornems="leapfrog_atm_wav"
-    ;;
-  S2S)
-    export DO_COUPLED="YES"
-    export DO_OCN="YES"
-    export DO_ICE="YES"
-    export CCPP_SUITE="FV3_GFS_v16_coupled_nsstNoahmpUGWPv1"
-    export confignamevarfornems="cpld"
-    ;;
-  S2SW)
-    export DO_COUPLED="YES"
-    export DO_WAVE="YES"
-    export DO_OCN="YES"
-    export DO_ICE="YES"
-    export CCPP_SUITE="FV3_GFS_v16_coupled_nsstNoahmpUGWPv1"
-    export WAVE_CDUMP="both"
-    export confignamevarfornems="cpld_wave"
-    export cplwav2atm=".true."
-    ;;
-  ATMAERO)
-    export DO_COUPLED="YES"
-    export DO_AERO="YES"
-    export confignamevarfornems="atm_aer"
-    ;;
-  *)
-    echo "Unrecognized APP: ${1}"
-    exit 1
-    ;;
-esac
 
 # if [[ "$SDATE" -lt "2019020100" ]]; then # no rtofs in GDA
 #   export DO_WAVE="NO"
