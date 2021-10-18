@@ -63,16 +63,16 @@ if [[ ! -d ufs_utils.fd ]] ; then
     rm -f ${topdir}/checkout-ufs_utils.log
     git clone --recursive https://github.com/NOAA-EMC/UFS_UTILS.git ufs_utils.fd >> ${topdir}/checkout-ufs_utils.fd.log 2>&1
     cd ufs_utils.fd
-    git checkout ufs_utils_1_4_0
+    git checkout ufs_utils_1_6_0
     cd ${topdir}
 else
     echo 'Skip.  Directory ufs_utils.fd already exists.'
 fi
 
-echo EMC_post checkout ...
+echo UPP checkout ...
 if [[ ! -d gfs_post.fd ]] ; then
     rm -f ${topdir}/checkout-gfs_post.log
-    git clone https://github.com/NOAA-EMC/EMC_post.git gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
+    git clone https://github.com/NOAA-EMC/UPP.git gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
     cd gfs_post.fd
     git checkout ff42e0227d6100285d4179a2572b700fd5a959cb
     git submodule update --init CMakeModules
@@ -113,7 +113,7 @@ if [[ ! -d verif-global.fd ]] ; then
     rm -f ${topdir}/checkout-verif-global.log
     git clone --recursive https://github.com/NOAA-EMC/EMC_verif-global.git verif-global.fd >> ${topdir}/checkout-verif-global.log 2>&1
     cd verif-global.fd
-    git checkout verif_global_v2.0.2
+    git checkout verif_global_v2.5.2
     cd ${topdir}
 else
     echo 'Skip. Directory verif-global.fd already exist.'
