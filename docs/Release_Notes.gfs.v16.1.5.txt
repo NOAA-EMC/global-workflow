@@ -14,16 +14,7 @@ This implementation plans to:
 
 These changes affect one source code and several fix files within the GSI tag of the global workflow.
 
-Also bundled into this update are the new 2022 CO2 fix files:
-
-* fix_am/co2dat_4a/global_co2historicaldata_2020.txt
-* fix_am/co2dat_4a/global_co2historicaldata_2021.txt_proj_u
-* fix_am/co2dat_4a/global_co2historicaldata_2022.txt_proj
-* fix_am/fix_co2_proj/global_co2historicaldata_2022.txt
-* fix_am/fix_co2_update/global_co2historicaldata_2021.txt
-
-The files will be included during the link setup step. The CO2 fix file update does not impact results.
-
+Also bundled into this update are the new 2022 CO2 fix files. See files listed below. The files will be included during the link setup step. The CO2 fix file update does not impact results.
 
 IMPLEMENTATION INSTRUCTIONS
  
@@ -69,6 +60,14 @@ FIX CHANGES
     * Rcov_crisn20: recomputed from recent operations
     * Rcov_crisnpp: updated and the MW channels are deleted from Rcov
     * gfsv16_historical/: Add fix files for retrospective parallels.  Does not impact operations.
+* fix_am/co2dat_4a:
+  * global_co2historicaldata_2020.txt
+  * global_co2historicaldata_2021.txt_proj_u
+  * global_co2historicaldata_2022.txt_proj
+* fix_am/fix_co2_proj:
+  * global_co2historicaldata_2022.txt
+* fix_am/fix_co2_update:
+  * global_co2historicaldata_2021.txt
  
 PARM/CONFIG CHANGES
 
