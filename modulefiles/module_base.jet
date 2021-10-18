@@ -16,7 +16,7 @@ module load nco/4.9.1
 module load gempak/7.4.2
 module load prod_util/1.2.2
 module load grib_util/1.2.2
-module load g2tmpl/1.10.0 
+module load g2tmpl/1.10.0
 module load crtm/2.3.0
 setenv CRTM_FIX /lfs4/HFIP/hfv3gfs/glopara/crtm_v2.3.0
 
@@ -46,5 +46,5 @@ module use /contrib/anaconda/modulefiles
 module load anaconda/5.3.1
 
 # waveprep
-module load cdo/1.9.5 
+module load cdo/1.9.5
 
