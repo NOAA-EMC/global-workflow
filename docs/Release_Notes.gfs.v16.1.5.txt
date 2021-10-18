@@ -14,6 +14,17 @@ This implementation plans to:
 
 These changes affect one source code and several fix files within the GSI tag of the global workflow.
 
+Also bundled into this update are the new 2022 CO2 fix files:
+
+* fix_am/co2dat_4a/global_co2historicaldata_2020.txt
+* fix_am/co2dat_4a/global_co2historicaldata_2021.txt_proj_u
+* fix_am/co2dat_4a/global_co2historicaldata_2022.txt_proj
+* fix_am/fix_co2_proj/global_co2historicaldata_2022.txt
+* fix_am/fix_co2_update/global_co2historicaldata_2021.txt
+
+The files will be included during the link setup step. The CO2 fix file update does not impact results.
+
+
 IMPLEMENTATION INSTRUCTIONS
  
 The NOAA VLab and both the NOAA-EMC and NCAR organization spaces on GitHub.com are used to manage the GFS.v16.1.5 code. The SPA(s) handling the GFS.v16.1.5 implementation need to have permissions to clone VLab gerrit repositories and the private NCAR UPP_GTG repository (the “nwprod” account has access to the GTG repository). All NOAA-EMC organization repositories are publicly readable and do not require access permissions. Please follow the following steps to install the package on WCOSS-Dell.
