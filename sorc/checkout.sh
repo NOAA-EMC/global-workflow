@@ -1,6 +1,5 @@
 #!/bin/sh
 #set -xue
-set -x
 
 while getopts "om:" option; do
  case $option in
