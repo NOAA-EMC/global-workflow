@@ -3,8 +3,8 @@
 #BSUB -o %COM%/output/%ENVIR%/today/gdas_forecast_%CYC%.o%J
 #BSUB -q %QUEUE%
 #BSUB -P %PROJ%
-#BSUB -W 0:10
-#BSUB -n 175
+#BSUB -W 1:00
+#BSUB -n 833
 #BSUB -R affinity[core(4)]
 #BSUB -R span[ptile=7]
 #BSUB -cwd /tmp
@@ -14,8 +14,8 @@
 
 set -x
 
-export NODES=25
-export ntasks=175
+export NODES=119
+export ntasks=833
 export ptile=7
 export threads=4
 

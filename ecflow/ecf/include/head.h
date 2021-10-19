@@ -1,4 +1,4 @@
-set -x  # print commands as they are executed and enable signal trapping
+set -xe  # print commands as they are executed and enable signal trapping
 
 export PS4='+ $SECONDS + ' 
 
@@ -22,22 +22,10 @@ else
     # WCOSS Phase 3 (Dell PowerEdge)
     . /usrx/local/prod/lmod/lmod/init/sh
     . /gpfs/dell1/nco/ops/nwprod/versions/ecflow_p3.ver
-    module purge
-#    export EnvVars_ver=1.0.3
-#    export ips_ver=18.0.1.163
-    export ecflow_ver=4.7.1
     module load ips/$ips_ver
     module load EnvVars/$EnvVars_ver
     module load ecflow/$ecflow_ver
-    
     POST_OUT=/var/lsf/ecflow_post_in.$USER.$LSB_BATCH_JID
-#    LSB_BATCH_POST_OUT_DIR=/gpfs/dell3/stmp/$USER
-#    mkdir -p $LSB_BATCH_POST_OUT_DIR
-#    POST_OUT=$LSB_BATCH_POST_OUT_DIR/ecflow_post_in.$USER.$LSB_BATCH_JID
-#    touch $POST_OUT
-
-    export ECF_PORT=31867
-
 fi
 ecflow_client --init=${ECF_RID}
 
@@ -49,8 +37,6 @@ ECF_PASS=${ECF_PASS}
 ECF_TRYNO=${ECF_TRYNO}
 ECF_RID=${ECF_RID}
 ENDFILE
-
-# more $POST_OUT
 
 # Define error handler
 ERROR() {
