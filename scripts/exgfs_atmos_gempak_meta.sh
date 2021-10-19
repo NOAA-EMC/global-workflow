@@ -117,13 +117,11 @@ do
    export fend=$fhr
 
   sleep 20
-#   mpirun.lsf
   ntasks=${NTASKS_META:-$(cat $DATA/poescript | wc -l)}
   ptile=${PTILE_META:-4}
   threads=${NTHREADS_META:-1}
   export OMP_NUM_THREADS=$threads
-  APRUN="mpirun -n $ntasks cfp "
-
+  APRUN="mpiexec -n $ntasks -ppn $ntasks --cpu-bind verbose,core cfp"
   APRUN_METACFP=${APRUN_METACFP:-$APRUN}
   APRUNCFP=$(eval echo $APRUN_METACFP)
 
