@@ -129,7 +129,6 @@ elif [ $step = "anal" ]; then
     export npe_anal=1000
     export nth_anal=5
     export npe_anal_gfs=1000
-    export nth_anal_gfs=$nth_anal
     if [ $CASE = "C384" ]; then
       export npe_anal=400
       export npe_anal_gfs=400
@@ -144,7 +143,7 @@ elif [ $step = "anal" ]; then
         export nth_anal=5
       fi
     fi
-    export nth_anal_gfs=${nth_anal_gfs:-nth_anal}
+    export nth_anal_gfs=$nth_anal
     export npe_node_anal=$(echo "$npe_node_max / $nth_anal" | bc)
     export nth_cycle=$nth_anal
     if [[ "$machine" == "WCOSS_C" ]]; then export memory_anal="3072M"; fi
