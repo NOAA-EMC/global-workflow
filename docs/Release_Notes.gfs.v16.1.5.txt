@@ -14,7 +14,7 @@ This implementation plans to:
 
 These changes affect one source code and several fix files within the GSI tag of the global workflow.
 
-Also bundled into this update are the new 2022 CO2 fix files. See files listed below. The files will be included during the link setup step. The CO2 fix file update does not impact results.
+Also bundled into this update are the new 2022 CO2 fix files (see files listed below) and a new FV3 model tag that adds traceback flags to compilation by default. The CO2 fix files will be included during the link setup step. Neither the CO2 fix file nor the FV3 tag updates impact model results.
 
 IMPLEMENTATION INSTRUCTIONS
  
@@ -29,7 +29,7 @@ While logged in under the “nwprod” account:
 5) cd sorc
 6) ./checkout.sh -o
    * This script extracts the following GFS components:
-     MODEL      tag GFS.v16.0.16			Jun.Wang@noaa.gov
+     MODEL      tag GFS.v16.0.17			Jun.Wang@noaa.gov
      GSI        tag gfsda.v16.1.5   	    		Russ.Treadon@noaa.gov
      GLDAS     	tag gldas_gfsv16_release.v1.12.0     	Helin.Wei@noaa.gov
      UFS_UTILS 	tag ops-gfsv16.0.0  	               	George.Gayno@noaa.gov
@@ -43,6 +43,8 @@ While logged in under the “nwprod” account:
 SORC CHANGES
 
 * checkout.sh will checkout the following changed model tags:
+  * MODEL tag GFS.v16.0.17
+    * conf/configure.fv3.wcoss_dell_p3 and other platform configure.fv3 files: add “-g -traceback” to FFLAGS_OPT, CFLAGS_OPT, and CFLAGS_REPRO compilation settings
   * GSI tag gfsda.v16.1.5
     * src/gsi/genqsat.f90: add a lower bound of qsat to avoid unphysical saturation specific humidity to be generated.
 
