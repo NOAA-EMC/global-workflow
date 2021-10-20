@@ -4,22 +4,23 @@ CICE_namelists(){
 
 if [ $warm_start = ".true." ]; then
   cmeps_run_type='continue'
-else 
+else
   cmeps_run_type='initial'
 fi
 
 
-cat > ice_in <<eof  
+cat > ice_in <<eof
 &setup_nml
    days_per_year  = 365
    use_leap_years = .true.
    year_init      = $year
    month_init     = $month
    day_init       = $day
+   sec_init       = $sec
    dt             = $ICETIM
    npt            = $npt
    ndtd           = 1
-   runtype        = '$cmeps_run_type' 
+   runtype        = '$cmeps_run_type'
    runid          = 'cpcice'
    ice_ic         = '$iceic'
    restart        = .true.
@@ -34,7 +35,7 @@ cat > ice_in <<eof
    pointer_file   = './ice.restart_file'
    dumpfreq       = '$dumpfreq'
    dumpfreq_n     =  $dumpfreq_n
-   dump_last      = .false.  
+   dump_last      = .false.
    bfbflag        = 'off'
    diagfreq       = 6
    diag_type      = 'file'
@@ -105,7 +106,7 @@ cat > ice_in <<eof
    kdyn            = 1
    ndte            = 120
    revised_evp     = .false.
-   kevp_kernel     = 0
+   evp_algorithm   = 'standard_2d'
    brlx            = 300.0
    arlx            = 300.0
    ssh_stress      = 'coupled'
@@ -128,7 +129,7 @@ cat > ice_in <<eof
    albicev         = 0.78
    albicei         = 0.36
    albsnowv        = 0.98
-   albsnowi        = 0.70 
+   albsnowi        = 0.70
    ahmax           = 0.3
    R_ice           = 0.
    R_pnd           = 0.
@@ -148,6 +149,10 @@ cat > ice_in <<eof
    rfracmin        = 0.15
    rfracmax        = 1.
    pndaspect       = 0.8
+/
+
+&snow_nml
+   snwredist       = 'none'
 /
 
 &forcing_nml
@@ -205,32 +210,32 @@ cat > ice_in <<eof
    f_VGRDb         = .false.
    f_VGRDa         = .true.
    f_bounds        = .false.
-   f_aice          = 'mdhxx' 
+   f_aice          = 'mdhxx'
    f_hi            = 'mdhxx'
-   f_hs            = 'mdhxx' 
-   f_Tsfc          = 'mdhxx' 
-   f_sice          = 'mdhxx' 
-   f_uvel          = 'mdhxx' 
+   f_hs            = 'mdhxx'
+   f_Tsfc          = 'mdhxx'
+   f_sice          = 'mdhxx'
+   f_uvel          = 'mdhxx'
    f_vvel          = 'mdhxx'
    f_uatm          = 'mdhxx'
    f_vatm          = 'mdhxx'
-   f_fswdn         = 'mdhxx' 
+   f_fswdn         = 'mdhxx'
    f_flwdn         = 'mdhxx'
    f_snowfrac      = 'x'
-   f_snow          = 'mdhxx' 
-   f_snow_ai       = 'x' 
-   f_rain          = 'mdhxx' 
-   f_rain_ai       = 'x' 
-   f_sst           = 'mdhxx' 
-   f_sss           = 'mdhxx' 
-   f_uocn          = 'mdhxx' 
-   f_vocn          = 'mdhxx' 
+   f_snow          = 'mdhxx'
+   f_snow_ai       = 'x'
+   f_rain          = 'mdhxx'
+   f_rain_ai       = 'x'
+   f_sst           = 'mdhxx'
+   f_sss           = 'mdhxx'
+   f_uocn          = 'mdhxx'
+   f_vocn          = 'mdhxx'
    f_frzmlt        = 'mdhxx'
    f_fswfac        = 'mdhxx'
    f_fswint_ai     = 'x'
-   f_fswabs        = 'mdhxx' 
-   f_fswabs_ai     = 'x' 
-   f_albsni        = 'mdhxx' 
+   f_fswabs        = 'mdhxx'
+   f_fswabs_ai     = 'x'
+   f_albsni        = 'mdhxx'
    f_alvdr         = 'mdhxx'
    f_alidr         = 'mdhxx'
    f_alvdf         = 'mdhxx'
@@ -243,22 +248,22 @@ cat > ice_in <<eof
    f_albsno        = 'x'
    f_albpnd        = 'x'
    f_coszen        = 'x'
-   f_flat          = 'mdhxx' 
-   f_flat_ai       = 'x' 
-   f_fsens         = 'mdhxx' 
-   f_fsens_ai      = 'x' 
+   f_flat          = 'mdhxx'
+   f_flat_ai       = 'x'
+   f_fsens         = 'mdhxx'
+   f_fsens_ai      = 'x'
    f_fswup         = 'x'
-   f_flwup         = 'mdhxx' 
-   f_flwup_ai      = 'x' 
-   f_evap          = 'mdhxx' 
-   f_evap_ai       = 'x' 
-   f_Tair          = 'mdhxx' 
-   f_Tref          = 'mdhxx' 
+   f_flwup         = 'mdhxx'
+   f_flwup_ai      = 'x'
+   f_evap          = 'mdhxx'
+   f_evap_ai       = 'x'
+   f_Tair          = 'mdhxx'
+   f_Tref          = 'mdhxx'
    f_Qref          = 'mdhxx'
-   f_congel        = 'mdhxx' 
-   f_frazil        = 'mdhxx' 
-   f_snoice        = 'mdhxx' 
-   f_dsnow         = 'mdhxx' 
+   f_congel        = 'mdhxx'
+   f_frazil        = 'mdhxx'
+   f_snoice        = 'mdhxx'
+   f_dsnow         = 'mdhxx'
    f_melts         = 'mdhxx'
    f_meltt         = 'mdhxx'
    f_meltb         = 'mdhxx'
@@ -268,31 +273,31 @@ cat > ice_in <<eof
    f_fsalt         = 'mdhxx'
    f_fsalt_ai      = 'x'
    f_fbot          = 'mdhxx'
-   f_fhocn         = 'mdhxx' 
-   f_fhocn_ai      = 'x' 
-   f_fswthru       = 'x' 
-   f_fswthru_ai    = 'x' 
+   f_fhocn         = 'mdhxx'
+   f_fhocn_ai      = 'x'
+   f_fswthru       = 'x'
+   f_fswthru_ai    = 'x'
    f_fsurf_ai      = 'x'
    f_fcondtop_ai   = 'x'
-   f_fmeltt_ai     = 'x' 
+   f_fmeltt_ai     = 'x'
    f_strairx       = 'mdhxx'
    f_strairy       = 'mdhxx'
-   f_strtltx       = 'x' 
-   f_strtlty       = 'x' 
-   f_strcorx       = 'x' 
-   f_strcory       = 'x' 
-   f_strocnx       = 'mdhxx' 
-   f_strocny       = 'mdhxx' 
-   f_strintx       = 'x' 
+   f_strtltx       = 'x'
+   f_strtlty       = 'x'
+   f_strcorx       = 'x'
+   f_strcory       = 'x'
+   f_strocnx       = 'mdhxx'
+   f_strocny       = 'mdhxx'
+   f_strintx       = 'x'
    f_strinty       = 'x'
    f_taubx         = 'x'
    f_tauby         = 'x'
    f_strength      = 'x'
    f_divu          = 'mdhxx'
    f_shear         = 'mdhxx'
-   f_sig1          = 'x' 
+   f_sig1          = 'x'
    f_sig2          = 'x'
-   f_sigP          = 'x' 
+   f_sigP          = 'x'
    f_dvidtt        = 'mdhxx'
    f_dvidtd        = 'mdhxx'
    f_daidtt        = 'mdhxx'
@@ -368,4 +373,4 @@ cat > ice_in <<eof
 /
 eof
 
-} 
+}
