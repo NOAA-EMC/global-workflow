@@ -20,7 +20,7 @@ export POFILETYPE=1     # POFILETYPE=1 one point file per output step
 # Unified output T or F
 export FUNIPNT='T'
 # Output server type (see ww3_multi.inp in WW3 repo)
-export IOSRV='3'
+export IOSRV=${IOSRV:-'3'}
 # Flag for dedicated output process for unified points
 export FPNTPROC='T'
 # Flag for grids sharing dedicated output processes

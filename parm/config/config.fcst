@@ -122,8 +122,8 @@ export icliq_sw=2   ; #cloud optical coeffs from AER's newer version v3.9-v4.0 f
 export isubc_sw=2
 export isubc_lw=2
 
-export IALB=1
-export IEMS=1
+export IALB=${IALB:-1}
+export IEMS=${IEMS:-1}
 export ISOL=2
 export ICO2=2
 

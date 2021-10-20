@@ -83,7 +83,8 @@ def edit_baseconfig():
                     .replace('@CHGRP_RSTPROD@', chgrp_rstprod) \
                     .replace('@CHGRP_CMD@', chgrp_cmd) \
                     .replace('@HPSSARCH@', hpssarch) \
-                    .replace('@gfs_cyc@', f'{gfs_cyc}')
+                    .replace('@gfs_cyc@', f'{gfs_cyc}') \
+                    .replace('@APP@', f'{app}')
                 if expdir is not None:
                     line = line.replace('@EXPDIR@', os.path.dirname(expdir))
                 if comrot is not None:
@@ -109,6 +110,7 @@ Create EXPDIR, copy config files
 Create COMROT experiment directory structure'''
 
     parser = ArgumentParser(description=description, formatter_class=ArgumentDefaultsHelpFormatter)
+    parser.add_argument('--app', help='UFS application', type=str, choices=['ATM', 'ATMW', 'S2S', 'S2SW'], required=False, default='ATM')
     parser.add_argument('--pslot', help='parallel experiment name', type=str, required=False, default='test')
     parser.add_argument('--res', help='resolution of the model forecast', type=int, required=False, default=192)
     parser.add_argument('--comrot', help='full path to COMROT', type=str, required=False, default=None)
@@ -128,6 +130,7 @@ Create COMROT experiment directory structure'''
     if not configdir:
         configdir = os.path.abspath(os.path.dirname(__file__) + '/../parm/config')
 
+    app = args.app
     pslot = args.pslot
     idate = datetime.strptime(args.idate, '%Y%m%d%H')
     edate = datetime.strptime(args.edate, '%Y%m%d%H')
