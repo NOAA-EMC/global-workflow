@@ -187,6 +187,7 @@ config_fcst:
     export min_seaice="{doc.fv3_gfs_settings.min_seaice}" 
 
     export FSICL="{doc.fv3_gfs_settings.FSICL}"
+    export FSICS="{doc.fv3_gfs_settings.FSICS}"
 
     # Stochastic physics parameters
     # nam_stochy section
