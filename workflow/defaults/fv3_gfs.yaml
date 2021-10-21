@@ -41,7 +41,7 @@ fv3_gfs_defaults: &fv3_gfs_defaults
     - when: !calc CASE=="C192"
       do: "0.23,1.5,1.0,1.0"
     - when: !calc CASE=="C384" 
-      do: "1.1,0.72,1.0,1.0"
+      do: "1.0,2.2,1.0,1.0"
     - when: !calc CASE=="C768" 
       do: "4.0,0.15,1.0,1.0"
     - when: !calc CASE=="C1152"
@@ -160,6 +160,7 @@ fv3_gfs_defaults: &fv3_gfs_defaults
            d4_bg: 0.12
 
   FSICL: 99999
+  FSICS: 99999
 
   MEDPETS: !FirstTrue
     - when: !calc QUILTING

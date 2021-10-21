@@ -7,7 +7,7 @@ ufs_repo_url=https://github.com/ufs-community/ufs-weather-model
 
 # default code revisions
 ufs_fv3gfs_hash=9350745
-ufs_coupled_hash=22613e8
+ufs_coupled_hash=c1d6d19
 
 ufs_checkout_repo=
 ufs_checkout_hash=
