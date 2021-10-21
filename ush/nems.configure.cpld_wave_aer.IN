@@ -27,7 +27,7 @@ ATM_attributes::
 CHM_model:                      @[chm_model]
 CHM_petlist_bounds:             @[chm_petlist_bounds]
 CHM_attributes::
-  Verbosity = max
+  Verbosity = 0
 ::
 
 # OCN #
