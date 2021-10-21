@@ -49,3 +49,5 @@ module load anaconda/2.3.0
 # waveprep
 module load cdo/1.9.5 
 
+# MPI settings for GOCART
+setenv I_MPI_DAPL_UD enable
