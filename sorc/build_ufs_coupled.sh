@@ -2,7 +2,7 @@
 set -eux
 
 # Build S2S by default
-APP="S2SW"
+APP="S2SW -DUFS_GOCART=ON"
 CCPP_SUITES="FV3_GFS_v16,FV3_GFS_v16_coupled,FV3_GFS_v16_couplednsst,FV3_GFS_v16_coupled_nsstNoahmpUGWPv1"
 
 while getopts "a" option; do
