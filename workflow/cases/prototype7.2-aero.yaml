@@ -45,7 +45,7 @@ case:
     min_seaice: 1.0e-11
     SEEDLET: 10
     CCPP_SUITE: 'FV3_GFS_v16_coupled_nsstNoahmpUGWPv1'
-    CPL_ATMIC: GEFSwithNOAHMP-GLDASdatm-ERAsnow
+    CPL_ATMIC: GEFSwithNOAHMP-GLDASdatm-ERAsnow-aerosols
     nst_anl: yes
     psm_bc: 1
     dddmp: 0.1
