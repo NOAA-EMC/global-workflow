@@ -242,7 +242,11 @@ config_fcst:
     fi
 
     if [ $cplchem = .true. ]; then # temporary settings for aerosol coupling
-        export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_aer"
+        if [[ $cpl == .true. ]] ; then # coupled model
+          export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_cpl_aer"
+        else
+          export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_aer"
+        fi
         export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_aer"
         export CHM_CFGDIR="{doc.chem_settings.CFGDIR}"
         export CHM_INPDIR="{doc.chem_settings.INPDIR}"
