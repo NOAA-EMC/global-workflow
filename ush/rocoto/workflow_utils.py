@@ -16,6 +16,7 @@ import rocoto
 
 DATE_ENV_VARS=['CDATE','SDATE','EDATE']
 SCHEDULER_MAP={'HERA':'slurm',
+               'JET':'slurm',
                'ORION':'slurm',
                'WCOSS':'lsf',
                'WCOSS_DELL_P3':'lsf',
@@ -145,7 +146,7 @@ def config_parser(files):
 
 def detectMachine():
 
-    machines = ['HERA', 'ORION', 'WCOSS_C', 'WCOSS_DELL_P3']
+    machines = ['HERA', 'ORION', 'WCOSS_C', 'WCOSS_DELL_P3', 'JET']
 
     if os.path.exists('/scratch1/NCEPDEV'):
         return 'HERA'
@@ -155,6 +156,8 @@ def detectMachine():
         return 'WCOSS_C'
     elif os.path.exists('/gpfs/dell2'):
         return 'WCOSS_DELL_P3'
+    elif os.path.exists('/lfs4/HFIP'):
+        return 'JET'
     else:
         print(f'workflow is currently only supported on: {machines}')
         raise NotImplementedError('Cannot auto-detect platform, ABORT!')
@@ -199,7 +202,7 @@ def create_wf_task(task, cdump='gdas', cycledef=None, envar=None, dependency=Non
                  'final': final}
 
     # Add PARTITION_BATCH to all non-service jobs on Orion (SLURM)
-    if get_scheduler(detectMachine()) in ['slurm'] and detectMachine() in ['ORION']:
+    if get_scheduler(detectMachine()) in ['slurm'] and detectMachine() in ['ORION','JET']:
         task_dict['partition'] = '&PARTITION_BATCH;'
     # Add PARTITION_SERVICE to all service jobs (SLURM)
     if get_scheduler(detectMachine()) in ['slurm'] and task in ['getic','arch','earc']:
@@ -212,45 +215,6 @@ def create_wf_task(task, cdump='gdas', cycledef=None, envar=None, dependency=Non
     task = ''.join(task)
 
     return task
-
-
-def create_firstcyc_task(cdump='gdas'):
-    '''
-    This task is needed to run to finalize the first half cycle
-    '''
-
-    task = 'firstcyc'
-    taskstr = f'{task}'
-
-    deps = []
-    data = '&EXPDIR;/logs/@Y@m@d@H.log'
-    dep_dict = {'type':'data', 'data':data, 'offset':'24:00:00'}
-    deps.append(rocoto.add_dependency(dep_dict))
-    dep_dict = {'type':'cycleexist', 'condition':'not', 'offset':'-06:00:00'}
-    deps.append(rocoto.add_dependency(dep_dict))
-    dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
-
-    task_dict = {'taskname': f'{taskstr}' , \
-                 'cycledef': 'first', \
-                 'maxtries': '&MAXTRIES;', \
-                 'final' : True, \
-                 'command': 'sleep 1', \
-                 'jobname': f'&PSLOT;_{taskstr}_@H', \
-                 'account': '&ACCOUNT;', \
-                 'queue': '&QUEUE_SERVICE;', \
-                 'walltime': f'&WALLTIME_ARCH_{cdump.upper()};', \
-                 'native': f'&NATIVE_ARCH_{cdump.upper()};', \
-                 'resources': f'&RESOURCES_ARCH_{cdump.upper()};', \
-                 'log': f'&ROTDIR;/logs/@Y@m@d@H/{taskstr}.log', \
-                 'dependency': dependencies}
-
-    if get_scheduler(detectMachine()) in ['slurm']:
-        task_dict['queue'] = '&QUEUE;'
-        task_dict['partition'] = '&PARTITION_SERVICE;'
-
-    task = rocoto.create_task(task_dict)
-
-    return ''.join(task)
 
 
 def get_gfs_interval(gfs_cyc):
@@ -297,7 +261,7 @@ def get_resources(machine, cfg, task, reservation, cdump='gdas'):
     else:        
         ppn = cfg[f'npe_node_{ltask}']
 
-    if machine in [ 'WCOSS_DELL_P3', 'HERA', 'ORION']:
+    if machine in [ 'WCOSS_DELL_P3', 'HERA', 'ORION', 'JET' ]:
         try:
             threads = cfg[f'nth_{ltask}']
         except KeyError:
@@ -311,9 +275,9 @@ def get_resources(machine, cfg, task, reservation, cdump='gdas'):
     if scheduler in ['slurm']:
         natstr = '--export=NONE'
 
-    if machine in ['HERA', 'ORION', 'WCOSS_C', 'WCOSS_DELL_P3']:
+    if machine in ['HERA', 'JET', 'ORION', 'WCOSS_C', 'WCOSS_DELL_P3']:
 
-        if machine in ['HERA', 'ORION']:
+        if machine in ['HERA', 'JET', 'ORION']:
             resstr = f'<nodes>{nodes}:ppn={ppn}:tpp={threads}</nodes>'
         else:
             resstr = f'<nodes>{nodes}:ppn={ppn}</nodes>'

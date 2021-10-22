@@ -125,7 +125,7 @@ def get_definitions(base):
     strings.append(f'''\t<!ENTITY ACCOUNT    "{base['ACCOUNT']}">\n''')
     strings.append(f'''\t<!ENTITY QUEUE      "{base['QUEUE']}">\n''')
     strings.append(f'''\t<!ENTITY QUEUE_SERVICE "{base['QUEUE_SERVICE']}">\n''')
-    if scheduler in ['slurm'] and machine in ['ORION']:
+    if scheduler in ['slurm'] and machine in ['ORION','JET']:
        strings.append(f'''\t<!ENTITY PARTITION_BATCH "{base['PARTITION_BATCH']}">\n''')
     if scheduler in ['slurm']:
        strings.append(f'''\t<!ENTITY PARTITION_SERVICE "{base['QUEUE_SERVICE']}">\n''')
@@ -173,7 +173,7 @@ def get_resources(dict_configs, cdump='gdas'):
         taskstr = f'{task.upper()}_{cdump.upper()}'
 
         strings.append(f'\t<!ENTITY QUEUE_{taskstr}     "{queuestr}">\n')
-        if scheduler in ['slurm'] and machine in ['ORION'] and task not in ['getic', 'arch']:
+        if scheduler in ['slurm'] and machine in ['ORION', 'JET'] and task not in ['getic', 'arch']:
             strings.append(f'\t<!ENTITY PARTITION_{taskstr} "&PARTITION_BATCH;">\n')
         if scheduler in ['slurm'] and task in ['getic', 'arch']:
             strings.append(f'\t<!ENTITY PARTITION_{taskstr} "&PARTITION_SERVICE;">\n')
@@ -244,6 +244,7 @@ def get_workflow(dict_configs, cdump='gdas'):
     do_gempak = base.get('DO_GEMPAK', 'NO').upper()
     do_awips = base.get('DO_AWIPS', 'NO').upper()
     do_wafs = base.get('WAFSF', 'NO').upper()
+    do_vrfy = base.get('DO_VRFY', 'YES').upper()
     do_metp = base.get('DO_METP', 'NO').upper()
 
     tasks = []
@@ -653,13 +654,14 @@ def get_workflow(dict_configs, cdump='gdas'):
         tasks.append('\n')
 
     # vrfy
-    deps = []
-    dep_dict = {'type':'metatask', 'name':f'{cdump}post'}
-    deps.append(rocoto.add_dependency(dep_dict))
-    dependencies = rocoto.create_dependency(dep=deps)
-    task = wfu.create_wf_task('vrfy', cdump=cdump, envar=envars, dependency=dependencies)
-    tasks.append(task)
-    tasks.append('\n')
+    if do_vrfy in ['Y', 'YES']:
+        deps = []
+        dep_dict = {'type':'metatask', 'name':f'{cdump}post'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+        task = wfu.create_wf_task('vrfy', cdump=cdump, envar=envars, dependency=dependencies)
+        tasks.append(task)
+        tasks.append('\n')
 
     # metp
     if do_metp in ['Y', 'YES']:
@@ -683,7 +685,10 @@ def get_workflow(dict_configs, cdump='gdas'):
     deps = []
     dep_dict = {'type':'metatask', 'name':f'{cdump}post'}
     deps.append(rocoto.add_dependency(dep_dict))
-    dep_dict = {'type':'task', 'name':f'{cdump}vrfy'}
+    if do_vrfy in ['Y', 'YES']:
+        dep_dict = {'type':'task', 'name':f'{cdump}vrfy'}
+        deps.append(rocoto.add_dependency(dep_dict))
+    dep_dict = {'type':'streq', 'left':'&ARCHIVE_TO_HPSS;', 'right':f'{hpssarch}'}
     deps.append(rocoto.add_dependency(dep_dict))
     if do_wave in ['Y', 'YES']:
       dep_dict = {'type': 'task', 'name': f'{cdump}wavepostsbs'}

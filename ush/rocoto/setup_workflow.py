@@ -1624,8 +1624,6 @@ def create_xml(dict_configs):
         xmlfile.append(dict_gfs_tasks['gfsprep'])
         xmlfile.append('\n')
 
-    xmlfile.append(wfu.create_firstcyc_task())
-
     xmlfile.append(workflow_footer)
 
     # Write the XML file
