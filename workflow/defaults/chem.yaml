@@ -11,4 +11,4 @@ chem_defaults: &chem_defaults
   INPDIR: !FirstTrue
     - when: !calc (doc.settings.cplchem != ".true.")
       do: "not_set"
-    - otherwise:
+    - otherwise: ""
