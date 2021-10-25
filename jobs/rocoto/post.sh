@@ -1,4 +1,4 @@
-#!/bin/ksh -x
+#!/bin/ksh
 
 ###############################################################
 ## NCEP post driver script
@@ -10,6 +10,8 @@
 . $HOMEgfs/ush/load_fv3gfs_modules.sh
 status=$?
 [[ $status -ne 0 ]] && exit $status
+
+set -x
 
 export COMPONENT=${COMPONENT:-atmos}
 

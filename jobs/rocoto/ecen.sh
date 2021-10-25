@@ -1,10 +1,12 @@
-#!/bin/ksh -x
+#!/bin/ksh
 
 ###############################################################
 # Source FV3GFS workflow modules
 . $HOMEgfs/ush/load_fv3gfs_modules.sh
 status=$?
 [[ $status -ne 0 ]] && exit $status
+
+set -x
 
 ###############################################################
 # Loop over groups to Execute the JJOB
