@@ -255,6 +255,21 @@ if [ $type = "gfs" ]; then
 
   fi
 
+  #...............
+  if [ $cplchem = ".true." ]; then
+    rm -rf chem.txt
+    touch chem.txt
+
+    dirpath="gfs.${PDY}/${cyc}/chem"
+    dirname="./${dirpath}"    
+
+    head="gocart"
+    
+    #...........................
+    echo "${dirname}/${head}*      " >>chem.txt
+    echo "${dirname}/${head}*      " >>chem.txt
+
+  fi
 #-----------------------------------------------------
 fi   ##end of gfs
 #-----------------------------------------------------
