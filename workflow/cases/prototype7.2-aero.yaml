@@ -68,8 +68,8 @@ case:
   chem_settings:
     MOD: gocart
     ntdiag: 2
-    CFGDIR: /scratch2/NAGAPE/arl/Barry.Baker/UFS_AERO_CONFIGS/develop/rc.hera # please replace with proper rc file set - see: https://github.com/noaa-oar-arl/UFS-Aerosol-Config
-    INPDIR: /scratch1/NCEPDEV/nems/Raffaele.Montuoro/data/NASA/ExtData        # must be consistent with rc file set above
+    CFGDIR: /work/noaa/global/ufs/inputs/rc # please replace with proper rc file set - see: https://github.com/noaa-oar-arl/UFS-Aerosol-Config
+#   INPDIR: # if provided, a link to this path will be created in the model's run directory - useful if relative paths are set in the aerosol config files
 
   ocn_settings:
     OCNPETS: 220
