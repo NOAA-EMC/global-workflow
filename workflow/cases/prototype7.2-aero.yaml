@@ -69,7 +69,7 @@ case:
     MOD: gocart
     ntdiag: 2
     CFGDIR: /work/noaa/global/ufs/inputs/rc # please replace with proper rc file set - see: https://github.com/noaa-oar-arl/UFS-Aerosol-Config
-#   INPDIR: # if provided, a link to this path will be created in the model's run directory - useful if relative paths are set in the aerosol config files
+    INPDIR: /work/noaa/global/ufs/data/NASA/ExtData # if provided, a link to this path will be created in the model's run directory - useful if relative paths are set in the aerosol config files
 
   ocn_settings:
     OCNPETS: 220
