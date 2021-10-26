@@ -58,11 +58,11 @@ case:
     n_split: 6
     fscav_aero: [ '*:0.4', 'so2:0.0', 'msa:0.0', 'dms:0.0', 'nh3:0.0', 'so4:0.5', 'bc1:0.6', 'bc2:0.6', 'dust1:0.7', 'dust2:0.7', 'dust3:0.7', 'dust4:0.7', 'dust5:0.7' ]
     layout:
-       x: 12
-       y: 24
+       x: 24
+       y: 12
        nth: 2
        WGRP: 1
-       WGRP_NTASKS: 88
+       WGRP_NTASKS: 96
        WRTIOBUF: "32M"
 
   chem_settings:
