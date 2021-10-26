@@ -51,3 +51,6 @@ module load python/3.7.5
 # waveprep
 module load cdo/1.9.5
 module load ncl/6.6.2
+
+# MPI settings for GOCART
+setenv I_MPI_DAPL_UD enable
