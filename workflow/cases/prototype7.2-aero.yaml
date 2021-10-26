@@ -62,7 +62,7 @@ case:
        y: 12
        nth: 2
        WGRP: 1
-       WGRP_NTASKS: 96
+       WGRP_NTASKS: 88
        WRTIOBUF: "32M"
 
   chem_settings:
