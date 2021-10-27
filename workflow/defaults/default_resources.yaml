@@ -126,7 +126,7 @@ downstream_resource_table:
   gfs_gempak:            [   28,    4, !timedelta "03:00:00",   3, 3072M,      null   ]
   gdas_gempak:           [    2,    1, !timedelta "00:30:00",   1, 3072M,      null   ]
   gdas_gempak_meta_ncdc: [    2,    1, !timedelta "00:30:00",   1, 3072M,      null   ]
-  one_node_downstream:   [    1,    1, !timedelta "00:30:00",   1, 3072M,      null   ]
+  one_node_downstream:   [    1,    1, !timedelta "01:30:00",   1, 3072M,      null   ]
   big_downstream:        [    2,    1, !timedelta "00:30:00",   1, 3072M,      null   ]
   small_downstream:      [    2,    2, !timedelta "00:02:00",   1, 3072M,      null   ]
 
