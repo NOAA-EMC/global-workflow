@@ -4,12 +4,12 @@
 case:
   places:
     workflow_file: layout/free_forecast_gfs.yaml
-    BASE_CPLIC: /scratch1/NCEPDEV/nems/Raffaele.Montuoro/data/ICS
+    BASE_CPLIC: /scratch1/BMC/gsd-fv3-dev/Shan.Sun/judy_ic_only/FV3GFSrun
 
   settings: 
     SDATE: 2019-07-01t00:00:00
     EDATE: 2019-07-02t00:00:00
-    STEP_GFS: !timedelta "06:00:00"
+    STEP_GFS: !timedelta "24:00:00"
     STEP_DA: !timedelta "00:00:00"
     max_job_tries: 1
 
@@ -38,8 +38,11 @@ case:
 
   fv3_gfs_settings:
     CASE: C384
-    LEVS: 65
+    LEVS: 128
     DELTIM: 450
+    IAER: 5111
+    IALB: 1
+    IEMS: 1
     layout:
        x: 6
        y: 8
@@ -48,14 +51,14 @@ case:
        WGRP_NTASKS: 24
        WRTIOBUF: "32M"
     CPL_ATMIC: FV3ICS
-    CCPP_SUITE: FV3_GFS_v16_ugwpv1
-    fscav_aero: [ '*:0.6', 'seas1:1.0', 'seas2:1.0', 'seas3:1.0', 'seas4:1.0', 'seas5:1.0' ]
+    CCPP_SUITE: FV3_GFS_v16
+    fscav_aero: [ '*:0.2', 'so4:0.3','dust1:0.7', 'dust2:0.7', 'dust3:0.7', 'dust4:0.7', 'dust5:0.7','seas1:0.6', 'seas2:0.6', 'seas3:0.6', 'seas4:0.6', 'seas5:0.6' ]
 
   chem_settings:
     MOD: gocart
     ntdiag: 2
-    CFGDIR: /scratch1/NCEPDEV/nems/Raffaele.Montuoro/data/NASA/rc.firex
-    INPDIR: /scratch1/NCEPDEV/nems/Raffaele.Montuoro/data/NASA/ExtData
+    CFGDIR: /scratch1/NCEPDEV/nems/Raffaele.Montuoro/data/NASA/rc.firex # please replace with proper rc file set - see: https://github.com/noaa-oar-arl/UFS-Aerosol-Config
+    INPDIR: /scratch1/NCEPDEV/nems/Raffaele.Montuoro/data/NASA/ExtData  # must be consistent with rc file set above
 
   post:
     downset: 2

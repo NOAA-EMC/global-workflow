@@ -1,0 +1,90 @@
+case:
+  places:
+    workflow_file: layout/free_forecast_gfs.yaml
+
+  settings: 
+    SDATE: 2013-04-01t00:00:00
+    EDATE: 2013-04-01t00:00:00
+    STEP_GFS: !timedelta "24:00:00"
+    STEP_DA: !timedelta "00:00:00"
+
+    onestep: .true.
+    cplmode: nems_frac
+    FRAC_GRID: .true.
+    cplwav: .true.
+    cplwav2atm: .true.
+    cplflx: .true.
+    cplchem: .true.
+    print_esmf: .false.
+    esmf_profile: .false.
+    nems_temp: 'cpld_wave_aer'
+    mom6ic_prepared: .false.
+    inline_post: .true. 
+    KEEPDATA: NO
+
+  nsst:
+    NST_MODEL: 2
+    NST_SPINUP: 1
+    NST_RESV: 0
+    ZSEA1: 0
+    ZSEA2: 0
+
+  output_settings:
+    OCN_INTERVAL: 24
+    FHOUT_GFS: 6
+    FHMIN_GFS: 0
+    FHMAX_GFS: 840
+    FHMAX_HF_GFS: 0
+    FHOUT_HF_GFS: -1
+
+  fv3_gfs_settings:
+    CASE: C384
+    LEVS: 128
+    DELTIM: 300
+    min_lakeice: 0.15
+    min_seaice: 1.0e-11
+    SEEDLET: 10
+    CCPP_SUITE: 'FV3_GFS_v16_coupled_nsstNoahmpUGWPv1'
+    CPL_ATMIC: GEFSwithNOAHMP-GLDASdatm-ERAsnow-aerosols
+    nst_anl: yes
+    psm_bc: 1
+    dddmp: 0.1
+    FSICL: 0
+    FSICS: 0 
+    DO_SKEB: false
+    DO_SHUM: false
+    DO_SPPT: false
+    k_split: 2
+    n_split: 6
+    fscav_aero: [ '*:0.4', 'so2:0.0', 'msa:0.0', 'dms:0.0', 'nh3:0.0', 'so4:0.5', 'bc1:0.6', 'bc2:0.6', 'dust1:0.7', 'dust2:0.7', 'dust3:0.7', 'dust4:0.7', 'dust5:0.7' ]
+    layout:
+       x: 24
+       y: 12
+       nth: 2
+       WGRP: 1
+       WGRP_NTASKS: 88
+       WRTIOBUF: "32M"
+
+  chem_settings:
+    MOD: gocart
+    ntdiag: 2
+    CFGDIR: /work/noaa/global/ufs/inputs/rc # please replace with proper rc file set - see: https://github.com/noaa-oar-arl/UFS-Aerosol-Config
+    INPDIR: /work/noaa/global/ufs/data/NASA/ExtData # if provided, a link to this path will be created in the model's run directory - useful if relative paths are set in the aerosol config files
+
+  ocn_settings:
+    OCNPETS: 220
+
+  ice_settings:
+    ICEPETS: 80
+
+  wave_settings: 
+    WAVPETS: 160
+    CPL_WAVIC: GEFSwave20210528v2 
+    waveGRD: 'gwes_30m'
+    wavepostGRD: 'gwes_30m'
+    waveesmfGRD: ''
+    waveinterpGRD: ''    
+
+  post:
+    downset: 2
+    GOESF: no

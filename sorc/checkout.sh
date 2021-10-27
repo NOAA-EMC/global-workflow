@@ -2,7 +2,17 @@
 #set -xue
 set -x
 
-while getopts "oc" option; do
+# default code repository
+ufs_repo_url=https://github.com/ufs-community/ufs-weather-model
+
+# default code revisions
+ufs_fv3gfs_hash=9350745
+ufs_coupled_hash=c1d6d19
+
+ufs_checkout_repo=
+ufs_checkout_hash=
+
+while getopts "ocr:u:" option; do
  case $option in
   o)
    echo "Received -o flag for optional checkout of GTG, will check out GTG with EMC_post"
@@ -11,6 +21,15 @@ while getopts "oc" option; do
   c)
    echo "Received -c flag, running coupled model" 
    COUPLED="YES"
+   ufs_checkout_hash=${ufs_checkout_hash:-${ufs_coupled_hash}}
+   ;;
+  r)
+   echo "Received -r flag with argument, checking out ufs-weather-model hash $OPTARG"
+   ufs_checkout_hash=$OPTARG
+   ;;
+  u)
+   echo "Received -u flag with argument, checking out ufs-weather-model repo $OPTARG"
+   ufs_checkout_repo=$OPTARG
    ;;
   :)
    echo "option -$OPTARG needs an argument"
@@ -22,16 +41,19 @@ while getopts "oc" option; do
  esac
 done
 
+ufs_checkout_hash=${ufs_checkout_hash:-${ufs_fv3gfs_hash}}
+ufs_checkout_repo=${ufs_checkout_repo:-${ufs_repo_url}}
+
 topdir=$(pwd)
 echo $topdir
 
-echo ufs-weather-model checkout ...
+echo ufs-weather-model checkout revision ${ufs_checkout_hash} ...
 if [ ${COUPLED:-"NO"} = "NO" ]; then
   if [[ ! -d fv3gfs.fd ]] ; then
     rm -f ${topdir}/checkout-fv3gfs.log
-    git clone https://github.com/ufs-community/ufs-weather-model fv3gfs.fd >> ${topdir}/checkout-fv3gfs.log 2>&1
+    git clone ${ufs_checkout_repo} fv3gfs.fd >> ${topdir}/checkout-fv3gfs.log 2>&1
     cd fv3gfs.fd
-    git checkout 9350745855aebe0790813e0ed2ba5ad680e3f75c 
+    git checkout ${ufs_checkout_hash}
     git submodule update --init --recursive
     cd ${topdir}
   else 
@@ -39,9 +61,9 @@ if [ ${COUPLED:-"NO"} = "NO" ]; then
   fi 
 else 
   if [[ ! -d ufs_coupled.fd ]] ; then
-    git clone https://github.com/ufs-community/ufs-weather-model ufs_coupled.fd >> ${topdir}/checkout-ufs_coupled.log 2>&1
+    git clone ${ufs_checkout_repo} ufs_coupled.fd >> ${topdir}/checkout-ufs_coupled.log 2>&1
     cd ufs_coupled.fd
-    git checkout c1d6d19d615363d8443ddc15c2a7a9c3dc7bc5f9 
+    git checkout ${ufs_checkout_hash}
     git submodule update --init --recursive
     cd ${topdir} 
   else

@@ -2,6 +2,7 @@
 
 chem_defaults: &chem_defaults
   MOD: gocart
+  EXPID: gocart
   ntdiag: 0
   CFGDIR: !FirstTrue
     - when: !calc (doc.settings.cplchem != ".true.")
@@ -10,4 +11,4 @@ chem_defaults: &chem_defaults
   INPDIR: !FirstTrue
     - when: !calc (doc.settings.cplchem != ".true.")
       do: "not_set"
-    - otherwise:
+    - otherwise: ""

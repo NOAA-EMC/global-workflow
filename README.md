@@ -1,13 +1,21 @@
 # How to use the unified workflow for the coupled ufs-weather-model or ufs-aerosol app (work in progress)
 
-## Checkout the source code and scripts
+## Clone the unified workflow repository
 ```
 git clone https://github.com/NOAA-EMC/global-workflow coupled-workflow
 cd coupled-workflow
 git checkout feature/coupled-crow
 git submodule update --init --recursive     #Update submodules 
+```
+
+## Checkout the source code for model and tools
+``` 
 cd sorc
-sh checkout.sh -c                           #Check out forecast model with COUPLED=YES
+sh checkout.sh -c            #Check out forecast model with COUPLED=YES
+```
+A given ufs-weather-model revision can be checked out using option `-r <hash>`:
+```
+sh checkout.sh -c -r a842d57
 ```
 
 ## Compile code needed to run prototype and link fixed files and executable programs:
@@ -21,9 +29,13 @@ sh build_all.sh -a
 ```
 
 To link fixed files and executable programs for the coupled/aerosol application:
+
 On Hera: 
+```
 sh link_fv3gfs.sh emc hera coupled
-On Orion: 
+```
+On Orion:
+```
 sh link_fv3gfs.sh emc orion coupled
 ```
 
@@ -55,7 +67,24 @@ Then, open and edit user.yaml:
 ## Create experiment directory using CROW
 CROW gets information of the targeted experiment from case files. A case file is a text file in YAML format, describing the information
 of the experiment to be configured. A series of pre-generated case files are given under /workflow/cases. You could generate your
-own case from scratch as well. From the workflow/CROW/directory:
+own case from scratch as well.
+
+CROW requires Python 3 to generate workflow files for your case, which can be executed using the Rocoto workflow management engine.
+Please make sure both packages are available on your platform before proceeding. Additional information on Rocoto can be found here: https://github.com/christopherwharrop/rocoto/wiki/documentation
+
+On Hera:
+```
+module load intelpython/3.6.8
+module load rocoto/1.3.3
+```
+On Orion: 
+```
+module load contrib
+module load rocoto #Make sure to use 1.3.2 or higher
+module load intelpython3
+```
+
+From the workflow/CROW/directory:
 
 ```
 mkdir -p $EXPROOT
@@ -68,27 +97,20 @@ or
 ```
 where $CASE is one of the following:
 - Coupled cases:
--- coupled_free_forecast: 2 day tests for atm-ocn-ice coupling 
--- coupled_free_forecast_wave: 2 day test for atm-ocn-ice-wav coupling (frac grid)
--- coupled_free_forecast_nofrac_wave: 2 day test for atm-ocn-ice-wav coupling (non frac grid)
--- atm_free_forecast:  Run the atm only case with same ICs as coupled tests 
+  - coupled_free_forecast: 2 day tests for atm-ocn-ice coupling 
+  - coupled_free_forecast_wave: 2 day test for atm-ocn-ice-wav coupling (frac grid)
+  - coupled_free_forecast_nofrac_wave: 2 day test for atm-ocn-ice-wav coupling (non frac grid)
+  - atm_free_forecast:  Run the atm only case with same ICs as coupled tests 
 
 - Aerosol cases:
--- aerosol_free_forecast.yaml
--- aerosol_firex_forecast.yaml    (includes fire emissions for FIREX-AQ)
+  - aerosol_free_forecast: 24-hour test run with prognostic aerosols
+  - aerosol_firex_forecast: 24-hour cycled test with prognostic aerosols, including QFED fire emissions
 
 This will create a experiment directory (`$EXPERIMENT_DIRECTORY`). In the current example, `EXPERIMENT_DIRECTORY=$EXPROOT/$EXP_NAME`.
 
 Please see the bottom of the README for information about particular versions/prototype and ICs
 
-For Orion: 
-First make sure you have python loaded: 
-```
-module load contrib
-module load rocoto #Make sure to use 1.3.2 or higher
-module load intelpython3
-```
-and then replace ORION with HERA in the commands above. 
+
 
 ## Create Rocoto XML using CROW
 The final process of workflow configuration is to generate a XML file for Rocoto. After the previous step, CROW will pop-up the
@@ -106,8 +128,6 @@ rocotorun -w workflow.xml -d workflow.db
 The first jobs will be submitted and should now be queued or running. Note, you will need to continue 
 to run rocotorun until the workflow is complete. This can be done via cron jobs or manually submitting 
 rocotorun until the workflow is complete.
-
-Rocotodocumentation can be found here: https://github.com/christopherwharrop/rocoto/wiki/documentation
 
 # Monitor your rocoto-based run
 

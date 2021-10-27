@@ -77,7 +77,7 @@ cat > input.nml <<EOF
 
 &fms_nml
   clock_grain = 'ROUTINE'
-  domains_stack_size = ${domains_stack_size:-3000000}
+  domains_stack_size = ${domains_stack_size:-6000000}
   print_memory_usage = ${print_memory_usage:-".false."}
   $fms_nml
 /
