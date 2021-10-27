@@ -73,12 +73,11 @@ fi
 echo EMC_post checkout ...
 if [[ ! -d gfs_post.fd ]] ; then
     rm -f ${topdir}/checkout-gfs_post.log
-    git clone --recursive https://github.com/XianwuXue-NOAA/UPP.git gfs_post.fd >> ${LOG_DIR}/checkout-gfs_post.log 2>&1
-	#git clone --recursive git@github.com:XianwuXue-NOAA/UPP.git gfs_post.fd >> ${LOG_DIR}/checkout-gfs_post.log 2>&1
+    git clone --recursive https://github.com/NOAA-EMC/UPP.git gfs_post.fd >> ${LOG_DIR}/checkout-gfs_post.log 2>&1
     rc=$?
     ((err+=$rc))
     cd gfs_post.fd
-    git checkout feature/gefs_v12.0.1_port2acorn
+    git checkout release/gefs_v12
     cd ${topdir}
 else
     echo 'Skip.  Directory gfs_post.fd already exists.'
