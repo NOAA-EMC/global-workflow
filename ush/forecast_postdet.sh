@@ -791,8 +791,6 @@ MOM6_postdet() {
   if [ ${inistep:-"restart"} = 'cold' ]; then
     $NLN $COMOUT/ocean/ufs.cpld.cold.cpl.r.*.nc $DATA/ufs.cpld.cold.cpl.r.*.nc
     $NLN $COMOUT/ocean/rpointer.cpl $DATA/rpointer.cpl
-    status=$?
-    exit $status
   else
     fhrlst=$OUTPUT_FH
 
@@ -823,21 +821,15 @@ MOM6_postdet() {
       source_file="ocn_${YYYY_MID}_${MM_MID}_${DD_MID}_${HH_MID}.nc"
       dest_file="ocn${VDATE}.${ENSMEM}.${IDATE}.nc"
       ${NLN} ${COMOUT}/ocean/${dest_file} ${DATA}/${source_file}
-      status=$?
-      [[ $status -ne 0 ]] && exit $status
 
       source_file="wavocn_${YYYY_MID}_${MM_MID}_${DD_MID}_${HH_MID}.nc"
       dest_file=${source_file}
       ${NLN} ${COMOUT}/ocean/${dest_file} ${DATA}/${source_file}
-      status=$?
-      [[ $status -ne 0 ]] && exit $status
 
       source_file="ocn_daily_${YYYY}_${MM}_${DD}.nc"
       dest_file=${source_file}
       if [ ! -a "${DATA}/${source_file}" ]; then
         $NLN ${COMOUT}/ocean/${dest_file} ${DATA}/${source_file}
-        status=$?
-        [[ $status -ne 0 ]] && exit $status
       fi
 
       last_fhr=$fhr
@@ -947,13 +939,9 @@ CICE_postdet() {
 
       if [[ 10#$fhr -eq 0 ]]; then
         $NLN $COMOUT/ice/iceic$VDATE.$ENSMEM.$IDATE.nc $DATA/history/iceh_ic.${YYYY}-${MM}-${DD}-$(printf "%5.5d" ${SS}).nc
-        status=$?
-        [[ $status -ne 0 ]] && exit $status
       else
         (( interval = fhr - last_fhr ))
         $NLN $COMOUT/ice/ice$VDATE.$ENSMEM.$IDATE.nc $DATA/history/iceh_$(printf "%0.2d" $interval)h.${YYYY}-${MM}-${DD}-$(printf "%5.5d" ${SS}).nc
-        status=$?
-        [[ $status -ne 0 ]] && exit $status
       fi
       last_fhr=$fhr
     done
