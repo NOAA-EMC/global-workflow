@@ -760,12 +760,10 @@ MOM6_postdet() {
   $NCP -pf $FIX_DIR/fix_cpl/a${CASE}o${OCNRES}/grid_spec.nc $DATA/INPUT/
 
   # Copy mediator restart files to RUNDIR
-  if [ $inistep = 'restart' ]; then
+  if [ ${inistep:-"restart"} = 'restart' ]; then
     $NCP $ROTDIR/$CDUMP.$PDY/$cyc/ufs.cpld*.nc $DATA/
     $NCP $ROTDIR/$CDUMP.$PDY/$cyc/rpointer.cpl $DATA/
   fi
-
-  echo "SUB ${FUNCNAME[0]}: MOM6 input data linked/copied"
 
   if [ $DO_OCN_SPPT = "YES" -o $DO_OCN_PERT_EPBL = "YES" ]; then
     if [ ${SET_STP_SEED:-"YES"} = "YES" ]; then
@@ -775,6 +773,80 @@ MOM6_postdet() {
       ISEED=${ISEED:-0}
     fi
   fi
+
+  # Link output files
+
+  export ENSMEM=${ENSMEM:-01}
+  export IDATE=$CDATE
+
+  if [ $RUN_ENVIR = "nco" ]; then
+    export COMIN=${COMIN:-$ROTDIR/$RUN.$PDY/$cyc}
+    export COMOUT=${COMOUT:-$ROTDIR/$RUN.$PDY/$cyc}
+  else
+    export COMIN="$ROTDIR/$CDUMP.$PDY/$cyc"
+    export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc"
+  fi
+  [[ ! -d $COMOUT/ocean ]] && mkdir -m 775 -p $COMOUT/ocean
+
+  if [ ${inistep:-"restart"} = 'cold' ]; then
+    $NLN $COMOUT/ocean/ufs.cpld.cold.cpl.r.*.nc $DATA/ufs.cpld.cold.cpl.r.*.nc
+    $NLN $COMOUT/ocean/rpointer.cpl $DATA/rpointer.cpl
+    status=$?
+    exit $status
+  else
+    fhrlst=$OUTPUT_FH
+
+    for fhr in $fhrlst; do
+      if [ $fhr = 'anl' ]; then
+        continue
+      fi
+      if [ -z $last_fhr ]; then
+        last_fhr=$fhr
+        continue
+      fi
+      (( interval = fhr - last_fhr ))
+      (( midpoint = last_fhr + interval/2 ))
+      VDATE=$($NDATE $fhr $IDATE)
+      YYYY=$(echo $VDATE | cut -c1-4)
+      MM=$(echo $VDATE | cut -c5-6)
+      DD=$(echo $VDATE | cut -c7-8)
+      HH=$(echo $VDATE | cut -c9-10)
+      SS=$((10#$HH*3600))
+
+      VDATE_MID=$($NDATE $midpoint $IDATE)
+      YYYY_MID=$(echo $VDATE_MID | cut -c1-4)
+      MM_MID=$(echo $VDATE_MID | cut -c5-6)
+      DD_MID=$(echo $VDATE_MID | cut -c7-8)
+      HH_MID=$(echo $VDATE_MID | cut -c9-10)
+      SS_MID=$((10#$HH_MID*3600))
+
+      source_file="ocn_${YYYY_MID}_${MM_MID}_${DD_MID}_${HH_MID}.nc"
+      dest_file="ocn${VDATE}.${ENSMEM}.${IDATE}.nc"
+      ${NLN} ${COMOUT}/ocean/${dest_file} ${DATA}/${source_file}
+      status=$?
+      [[ $status -ne 0 ]] && exit $status
+
+      source_file="wavocn_${YYYY_MID}_${MM_MID}_${DD_MID}_${HH_MID}.nc"
+      dest_file=${source_file}
+      ${NLN} ${COMOUT}/ocean/${dest_file} ${DATA}/${source_file}
+      status=$?
+      [[ $status -ne 0 ]] && exit $status
+
+      source_file="ocn_daily_${YYYY}_${MM}_${DD}.nc"
+      dest_file=${source_file}
+      if [ ! -a "${DATA}/${source_file}" ]; then
+        $NLN ${COMOUT}/ocean/${dest_file} ${DATA}/${source_file}
+        status=$?
+        [[ $status -ne 0 ]] && exit $status
+      fi
+
+      last_fhr=$fhr
+    done
+    $NLN $COMOUT/ocean/MOM_input $DATA/INPUT/MOM_input
+  fi
+
+  echo "SUB ${FUNCNAME[0]}: MOM6 input data linked/copied"
+
 }
 
 MOM6_nml() {
@@ -785,69 +857,6 @@ MOM6_nml() {
 
 MOM6_out() {
   echo "SUB ${FUNCNAME[0]}: Copying output data for MOM6"
-
-  export ENSMEM=${ENSMEM:-01}
-
-  export IDATE=$CDATE
-
-  if [ $RUN_ENVIR = "nco" ]; then
-    export COMIN=${COMIN:-$ROTDIR/$RUN.$PDY/$cyc}
-    export COMOUT=${COMOUT:-$ROTDIR/$RUN.$PDY/$cyc}
-  else
-    export COMIN="$ROTDIR/$CDUMP.$PDY/$cyc"
-    export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc"
-  fi
-  [[ ! -d $COMOUT ]] && mkdir -m 775 -p $COMOUT
-
-  if [ $inistep = 'cold' ]; then
-    cp $DATA/ufs.cpld.cold.cpl.r.*.nc $COMOUT/
-    cp $DATA/rpointer.cpl $COMOUT/
-    status=$?
-    exit $status
-  else
-    if [ $FHRGRP -eq 0 ]; then
-      fhrlst="anl"
-    else
-      fhrlst=$OUTPUT_HF
-    fi
-
-    # copy ocn files
-    for fhr in $fhrlst; do
-      export fhr=$fhr
-      if [[ 10#$fhr -ge 6 ]]; then
-        hh_inc_m=$((10#$FHOUT/2))
-        hh_inc_o=$((10#$FHOUT  ))
-
-        # ------------------------------------------------------
-        #  adjust the dates on the mom filenames and save
-        # ------------------------------------------------------
-        VDATE=$($NDATE $fhr $IDATE)
-        YYYY=`echo $VDATE | cut -c1-4`
-        MM=`echo $VDATE | cut -c5-6`
-        DD=`echo $VDATE | cut -c7-8`
-        HH=`echo $VDATE | cut -c9-10`
-        SS=$((10#$HH*3600))
-
-        m_date=$($NDATE -$hh_inc_m $VDATE)
-        p_date=$VDATE
-
-        year=`echo $m_date | cut -c1-4`
-        month=`echo $m_date | cut -c5-6`
-        day=`echo $m_date | cut -c7-8`
-        hh=`echo $m_date | cut -c9-10`
-
-        export ocnfile=ocn_${year}_${month}_${day}_${hh}.nc
-
-        echo "$NCP -p $ocnfile $COMOUT/ocn$p_date.$ENSMEM.$IDATE.nc"
-        $NCP -p $ocnfile $COMOUT/ocn$p_date.$ENSMEM.$IDATE.nc
-        status=$?
-        [[ $status -ne 0 ]] && exit $status
-      fi
-    done
-    $NCP -p $DATA/ocn_daily*nc $COMOUT/
-    $NCP -p $DATA/wavocn*nc $COMOUT/ #temporary for p4
-    $NCP -p $DATA/INPUT/MOM_input $COMOUT/
-  fi
 }
 
 CICE_postdet() {
@@ -863,7 +872,7 @@ CICE_postdet() {
   npt=$((FHMAX*$stepsperhr))      # Need this in order for dump_last to work
 
   histfreq_n=${histfreq_n:-6}
-  if [ $inistep = 'cold' ]; then
+  if [ ${inistep:-"restart"}  = 'cold' ]; then
     dumpfreq_n=${dumpfreq_n:-3600}  # restart write interval in seconds, default 1 hour
     dumpfreq="s"
   else
@@ -916,6 +925,39 @@ CICE_postdet() {
   $NLN -sf $FIXcice/$ICERES/${ice_grid_file} $DATA/
   $NLN -sf $FIXcice/$ICERES/${ice_kmt_file} $DATA/
   $NLN -sf $FIXcice/$ICERES/$MESH_OCN_ICE $DATA/
+
+  # Link output files
+  export ENSMEM=${ENSMEM:-01}
+  export IDATE=$CDATE
+  [[ ! -d $COMOUT/ice ]] && mkdir -m 775 -p $COMOUT/ice
+  $NLN $COMOUT/ice/ice_in $DATA/ice_in
+  fhrlst=$OUTPUT_FH
+
+  if [ ${inistep:-"restart"} != 'cold' ]; then
+    for fhr in $fhrlst; do
+      if [ $fhr = 'anl' ]; then
+        continue
+      fi
+      VDATE=$($NDATE $fhr $IDATE)
+      YYYY=$(echo $VDATE | cut -c1-4)
+      MM=$(echo $VDATE | cut -c5-6)
+      DD=$(echo $VDATE | cut -c7-8)
+      HH=$(echo $VDATE | cut -c9-10)
+      SS=$((10#$HH*3600))
+
+      if [[ 10#$fhr -eq 0 ]]; then
+        $NLN $COMOUT/ice/iceic$VDATE.$ENSMEM.$IDATE.nc $DATA/history/iceh_ic.${YYYY}-${MM}-${DD}-$(printf "%5.5d" ${SS}).nc
+        status=$?
+        [[ $status -ne 0 ]] && exit $status
+      else
+        (( interval = fhr - last_fhr ))
+        $NLN $COMOUT/ice/ice$VDATE.$ENSMEM.$IDATE.nc $DATA/history/iceh_$(printf "%0.2d" $interval)h.${YYYY}-${MM}-${DD}-$(printf "%5.5d" ${SS}).nc
+        status=$?
+        [[ $status -ne 0 ]] && exit $status
+      fi
+      last_fhr=$fhr
+    done
+  fi
 }
 
 CICE_nml() {
@@ -926,48 +968,6 @@ CICE_nml() {
 
 CICE_out() {
   echo "SUB ${FUNCNAME[0]}: Copying output data for CICE"
-  if [ $inistep = 'cold' ]; then
-    echo "mediator cold start, no copying of data for CICE"
-  else
-    export ENSMEM=${ENSMEM:-01}
-    export IDATE=$CDATE
-    $NCP -p $DATA/ice_in $COMOUT/
-    if [ $FHRGRP -eq 0 ]; then
-      fhrlst="anl"
-    else
-      fhrlst=$(echo $FHRLST | sed -e 's/_/ /g; s/\[/ /g; s/\]/ /g; s/f/ /g; s/,/ /g')
-    fi
-
-    for fhr in $fhrlst; do
-      export fhr=$fhr
-      #  --------------------------------------
-      #  cp cice data to COMOUT directory
-      #  --------------------------------------
-      YYYY0=`echo $IDATE | cut -c1-4`
-      MM0=`echo $IDATE | cut -c5-6`
-      DD0=`echo $IDATE | cut -c7-8`
-      HH0=`echo $IDATE | cut -c9-10`
-      SS0=$((10#$HH0*3600))
-
-      VDATE=$($NDATE $fhr $IDATE)
-      YYYY=`echo $VDATE | cut -c1-4`
-      MM=`echo $VDATE | cut -c5-6`
-      DD=`echo $VDATE | cut -c7-8`
-      HH=`echo $VDATE | cut -c9-10`
-      SS=$((10#$HH*3600))
-
-      if [[ 10#$fhr -eq 0 ]]; then
-        $NCP -p $DATA/history/iceh_ic.${YYYY0}-${MM0}-${DD0}-`printf "%5.5d" ${SS0}`.nc $COMOUT/iceic$VDATE.$ENSMEM.$IDATE.nc
-        status=$?
-        [[ $status -ne 0 ]] && exit $status
-        echo "fhr is 0, only copying ice initial conditions... exiting"
-      else
-        $NCP -p $DATA/history/iceh_`printf "%0.2d" $FHOUT`h.${YYYY}-${MM}-${DD}-`printf "%5.5d" ${SS}`.nc $COMOUT/ice$VDATE.$ENSMEM.$IDATE.nc
-        status=$?
-        [[ $status -ne 0 ]] && exit $status
-      fi
-    done
-  fi
 }
 
 GOCART_rc() {
