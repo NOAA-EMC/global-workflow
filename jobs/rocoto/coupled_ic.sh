@@ -21,9 +21,6 @@ status=$?
 [[ $status -ne 0 ]] && exit $status
 err=0
 
-export DATAROOT="$RUNDIR/$CDATE/$CDUMP"
-[[ ! -d $DATAROOT ]] && mkdir -p $DATAROOT
-
 ###############################################################
 # Source relevant configs
 configs="base coupled_ic wave"
