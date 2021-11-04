@@ -1,8 +1,11 @@
 #!/bin/ksh -x
 
-########## config.fv3ic ##########
+########## config.coupled_ic ##########
 
-echo "BEGIN: config.fv3ic"
+echo "BEGIN: config.coupled_ic"
+
+# Get task specific resources
+source $EXPDIR/config.resources coupled_ic
 
 if [[ "$machine" == "WCOSS_DELL_P3" ]]; then
   BASE_CPLIC="/gpfs/dell2/emc/modeling/noscrub/Walter.Kolczynski/global-workflow/IC"
@@ -18,4 +21,4 @@ export CPL_ICEIC=CPC
 export CPL_OCNIC=CPC3Dvar
 export CPL_WAVIC=CFSRwave20200925
 
-echo "END: config.fv3ic"
+echo "END: config.coupled_ic"
