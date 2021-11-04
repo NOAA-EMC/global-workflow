@@ -19,6 +19,6 @@ export NCL=$NCARG_ROOT/bin/ncl
 
 ls -alrt
 
-$NCL $USH_DIR/icepost.ncl > regrid_CICE.log 2>&1
-$NCL $USH_DIR/ocnpost.ncl > regrid_MOM6.log 2>&1
+$NCL $USH_DIR/icepost.ncl
+$NCL $USH_DIR/ocnpost.ncl
 #####################################################################
