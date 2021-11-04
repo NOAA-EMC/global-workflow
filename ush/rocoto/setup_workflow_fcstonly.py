@@ -260,7 +260,7 @@ def get_workflow(dict_configs, cdump='gdas'):
         base_cplic = dict_configs['coupled_ic']['ORIGIN_ROOT']
 
         # ATM ICs
-        for file in ['gfs_ctrl.nc'] + [f'{a}_data.tile{n}.nc' for a in ['gfs', 'sfc'] for n in range(1, 7)]:
+        for file in ['gfs_ctrl.nc'] + [f'{datatype}_data.tile{tile_index}.nc' for datatype in ['gfs', 'sfc'] for tile_index in range(1, 7)]:
             data = f"{base_cplic}/{dict_configs['coupled_ic'][f'CPL_ATMIC']}/@Y@m@d@H/&CDUMP;/{base.get('CASE','C384')}/INPUT/{file}"
             dep_dict = {'type': 'data', 'data': data}
             deps.append(rocoto.add_dependency(dep_dict))
@@ -268,7 +268,7 @@ def get_workflow(dict_configs, cdump='gdas'):
         # Ocean ICs
         if do_ocean in ["YES"]:
             ocn_res = base.get('OCNRES', '025')
-            for res in ['res'] + [f'res_{n}' for n in range(1, 5)]:
+            for res in ['res'] + [f'res_{res_index}' for res_index in range(1, 5)]:
                 data = f"{base_cplic}/{dict_configs['coupled_ic'][f'CPL_OCNIC']}/@Y@m@d@H/ocn/{ocn_res:03d}/MOM.{res}.nc"
                 dep_dict = {'type': 'data', 'data': data}
                 deps.append(rocoto.add_dependency(dep_dict))
