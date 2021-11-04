@@ -786,7 +786,7 @@ MOM6_postdet() {
     export COMIN="$ROTDIR/$CDUMP.$PDY/$cyc"
     export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc"
   fi
-  [[ ! -d $COMOUT/ocean ]] && mkdir -m 775 -p $COMOUT/ocean
+  [[ ! -d $COMOUT/ocean ]] && mkdir -p $COMOUT/ocean
 
   if [ ${inistep:-"restart"} = 'cold' ]; then
     $NLN $COMOUT/ocean/ufs.cpld.cold.cpl.r.*.nc $DATA/ufs.cpld.cold.cpl.r.*.nc
@@ -921,7 +921,7 @@ CICE_postdet() {
   # Link output files
   export ENSMEM=${ENSMEM:-01}
   export IDATE=$CDATE
-  [[ ! -d $COMOUT/ice ]] && mkdir -m 775 -p $COMOUT/ice
+  [[ ! -d $COMOUT/ice ]] && mkdir -p $COMOUT/ice
   $NLN $COMOUT/ice/ice_in $DATA/ice_in
   fhrlst=$OUTPUT_FH
 

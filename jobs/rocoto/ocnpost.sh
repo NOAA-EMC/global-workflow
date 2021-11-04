@@ -89,8 +89,8 @@ else
     export COMIN="$ROTDIR/$CDUMP.$PDY/$cyc"
     export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc"
 fi
-[[ ! -d $COMOUT/ocean ]] && mkdir -m 775 -p $COMOUT/ocean
-[[ ! -d $COMOUT/ice ]] && mkdir -m 775 -p $COMOUT/ice
+[[ ! -d $COMOUT/ocean ]] && mkdir -p $COMOUT/ocean
+[[ ! -d $COMOUT/ice ]] && mkdir -p $COMOUT/ice
 
 fhrlst=$(echo $FHRLST | sed -e 's/_/ /g; s/f/ /g; s/,/ /g')
 
