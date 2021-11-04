@@ -759,8 +759,9 @@ def get_workflow(dict_configs, cdump='gdas'):
       deps.append(rocoto.add_dependency(dep_dict))
       dep_dict = {'type': 'task', 'name': f'{cdump}wavepostpnt'}
       deps.append(rocoto.add_dependency(dep_dict))
-      dep_dict = {'type': 'task', 'name': f'{cdump}wavepostbndpnt'}
-      deps.append(rocoto.add_dependency(dep_dict))
+      if do_wave_bnd in ['YES'] :
+          dep_dict = {'type': 'task', 'name': f'{cdump}wavepostbndpnt'}
+          deps.append(rocoto.add_dependency(dep_dict))
     dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
     task = wfu.create_wf_task('arch', cdump=cdump, envar=envars, dependency=dependencies, final=True)
     tasks.append(task)
