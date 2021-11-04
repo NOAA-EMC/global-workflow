@@ -48,7 +48,7 @@ if [[ ! -d gsi.fd ]] ; then
     rc=$?
     ((err+=$rc))
     cd gsi.fd
-    git checkout feature/gfsda.v16.0.0_port2acorn #gfsda.v16.0.0
+    git checkout feature/gefs_v12_port2wcoss2
     git submodule update --init --recursive
     cd ${topdir}
 else
