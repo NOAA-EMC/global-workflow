@@ -26,7 +26,7 @@ if [[ ! -d fv3gfs.fd ]] ; then
     rm -f ${topdir}/checkout-fv3gfs.log
     git clone https://github.com/ufs-community/ufs-weather-model fv3gfs.fd >> ${topdir}/checkout-fv3gfs.log 2>&1
     cd fv3gfs.fd
-    git checkout GFS.v16.0.16
+    git checkout GFS.v16.0.17
     git submodule update --init --recursive
     cd ${topdir}
 else
@@ -38,7 +38,7 @@ if [[ ! -d gsi.fd ]] ; then
     rm -f ${topdir}/checkout-gsi.log
     git clone --recursive https://github.com/NOAA-EMC/GSI.git gsi.fd >> ${topdir}/checkout-gsi.log 2>&1
     cd gsi.fd
-    git checkout gfsda.v16.1.4
+    git checkout gfsda.v16.1.5
     git submodule update
     cd ${topdir}
 else
