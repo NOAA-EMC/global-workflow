@@ -125,24 +125,29 @@ for fhr in $fhrlst; do
       echo "File $COMOUT/ocean/ocn_2D_$VDATE.$ENSMEM.$IDATE.nc already exists"
     else
       ncks -x -v vo,uo,so,temp $COMOUT/ocean/ocn$VDATE.$ENSMEM.$IDATE.nc $COMOUT/ocean/ocn_2D_$VDATE.$ENSMEM.$IDATE.nc
+      status=$?
+      [[ $status -ne 0 ]] && exit $status
     fi 
     if [ -f $COMOUT/ocean/ocn_3D_$VDATE.$ENSMEM.$IDATE.nc ]; then 
        echo "File $COMOUT/ocean/ocn_3D_$VDATE.$ENSMEM.$IDATE.nc already exists" 
     else 
       ncks -x -v Heat_PmE,LW,LwLatSens,MLD_003,MLD_0125,SSH,SSS,SST,SSU,SSV,SW,cos_rot,ePBL,evap,fprec,frazil,latent,lprec,lrunoff,sensible,sin_rot,speed,taux,tauy,wet_c,wet_u,wet_v $COMOUT/ocean/ocn$VDATE.$ENSMEM.$IDATE.nc $COMOUT/ocean/ocn_3D_$VDATE.$ENSMEM.$IDATE.nc
+      status=$?
+      [[ $status -ne 0 ]] && exit $status
     fi 
     if [ -f $COMOUT/ocean/ocn-temp-EQ_$VDATE.$ENSMEM.$IDATE.nc ]; then 
        echo "File $COMOUT/ocean/ocn-temp-EQ_$VDATE.$ENSMEM.$IDATE.nc already exists" 
     else 
-       ncks -v temp -d yh,503 -d xh,-299.92,60.03 $COMOUT/ocean/ocn_3D_$VDATE.$ENSMEM.$IDATE.nc $COMOUT/ocean/ocn-temp-EQ_$VDATE.$ENSMEM.$IDATE.nc
-    fi 
+      ncks -v temp -d yh,503 -d xh,-299.92,60.03 $COMOUT/ocean/ocn_3D_$VDATE.$ENSMEM.$IDATE.nc $COMOUT/ocean/ocn-temp-EQ_$VDATE.$ENSMEM.$IDATE.nc
+      status=$?
+      [[ $status -ne 0 ]] && exit $status    fi 
     if [ -f $COMOUT/ocean/ocn-uo-EQ_$VDATE.$ENSMEM.$IDATE.nc ]; then 
        echo "File $COMOUT/ocean/ocn-uo-EQ_$VDATE.$ENSMEM.$IDATE.nc already exists" 
     else 
       ncks -v uo -d yh,503 -d xh,-299.92,60.03 $COMOUT/ocean/ocn_3D_$VDATE.$ENSMEM.$IDATE.nc $COMOUT/ocean/ocn-uo-EQ_$VDATE.$ENSMEM.$IDATE.nc
+      status=$?
+      [[ $status -ne 0 ]] && exit $status
     fi
-    status=$?
-    [[ $status -ne 0 ]] && exit $status
   fi
 
 done
