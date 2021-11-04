@@ -154,7 +154,6 @@ done
 
 # Restore CDATE to what is expected
 export CDATE=$IDATE
-echo $pwd
 $NMV ocn_ice*.grb2 $COMOUT/ocean/
 status=$?
 [[ $status -ne 0 ]] && exit $status
