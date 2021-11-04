@@ -215,7 +215,7 @@ def get_postgroups(post, cdump='gdas'):
     fhrs = np.array_split(fhrs, ngrps)
     fhrs = [f.tolist() for f in fhrs]
 
-    fhrgrp = ' '.join([f'{x:03d}' for x in range(1, ngrps+1)])
+    fhrgrp = ' '.join([f'_{f[0]}-{f[-1]}' for f in fhrs])
     fhrdep = ' '.join([f[-1] for f in fhrs])
     fhrlst = ' '.join(['_'.join(f) for f in fhrs])
 
