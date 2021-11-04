@@ -27,7 +27,7 @@ begin
   FHR             = getenv("FHR")
   ENSMEM          = getenv("ENSMEM")
   DATA_TMP        = getenv("DATA")
-  nemsrc          = getenv("OCNFIXDIR")
+  nemsrc          = getenv("FIXreg2grb2")
 ;   nemsrc     = "/scratch2/NCEPDEV/climate/Bin.Li/S2S/fix/ocean_ice_post/FIXDIR/"
 
 ; calculate verification date

@@ -10,7 +10,7 @@ export IDATE=$IDATE
 export ENSMEM=$ENSMEM
 export FHR=$fhr
 export DATA=$DATA
-export OCNFIXDIR=$OCNFIXDIR
+export FIXreg2grb2=$FIXreg2grb2
 
 ###### DO NOT MODIFY BELOW UNLESS YOU KNOW WHAT YOU ARE DOING #######
 #Need NCL module to be loaded:
