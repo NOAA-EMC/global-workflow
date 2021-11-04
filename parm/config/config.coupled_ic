@@ -15,7 +15,6 @@ elif [[ "$machine" == "ORION" ]]; then
   BASE_CPLIC="/work/noaa/global/wkolczyn/noscrub/global-workflow/IC"
 fi
 
-export ORIGIN_ROOT=$BASE_CPLIC
 export CPL_ATMIC=CFSRfracL127
 export CPL_ICEIC=CPC
 export CPL_OCNIC=CPC3Dvar
