@@ -207,6 +207,10 @@ else
     echo WARNING: UNKNOWN PLATFORM 1>&2
 fi
 
+# Source versions file for build
+
+. ../versions/build.ver
+
 unset __ms_shell
 unset __ms_ksh_test
 unset __ms_bash_test
