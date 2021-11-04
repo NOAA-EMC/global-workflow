@@ -410,6 +410,7 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
     do_metp = base.get('DO_METP', 'NO').upper()
     do_gldas = base.get('DO_GLDAS', 'NO').upper()
     do_wave = base.get('DO_WAVE', 'NO').upper()
+    do_wave_bnd = dict_configs['wavepostsbs'].get('DOBNDPNT_WAVE', "YES").upper()
     do_wave_cdump = base.get('WAVE_CDUMP', 'BOTH').upper()
     dumpsuffix = base.get('DUMP_SUFFIX', '')
     gridsuffix = base.get('SUFFIX', '')
@@ -607,41 +608,34 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
         dict_tasks[f'{cdump}wavepostsbs'] = task
 
     # wavepostbndpnt
-    if do_wave in ['Y', 'YES'] and cdump in ['gfs']:
+    if do_wave in ['Y', 'YES'] and do_wave_bnd in ['YES'] and cdump in ['gfs']:
         deps = []
-        dep_dict = {'type':'task', 'name':f'{cdump}fcst'}
+        dep_dict = {'type': 'task', 'name': f'{cdump}fcst'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
         task = wfu.create_wf_task('wavepostbndpnt', cdump=cdump, envar=envars, dependency=dependencies)
         dict_tasks[f'{cdump}wavepostbndpnt'] = task
 
     # wavepostbndpntbll
-    if do_wave in ['Y', 'YES'] and cdump in ['gfs']:
+    if do_wave in ['Y', 'YES'] and do_wave_bnd in ['YES'] and cdump in ['gfs']:
         deps = []
         data = f'&ROTDIR;/{cdump}.@Y@m@d/@H/atmos/{cdump}.t@Hz.logf180.txt'
         dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type':'task', 'name':f'{cdump}wavepostbndpnt'}
+        dep_dict = {'type': 'task', 'name': f'{cdump}wavepostbndpnt'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
         task = wfu.create_wf_task('wavepostbndpntbll', cdump=cdump, envar=envars, dependency=dependencies)
         dict_tasks[f'{cdump}wavepostbndpntbll'] = task
 
     # wavepostpnt
-    if do_wave in ['Y', 'YES'] and cdump in ['gdas']:
+    if do_wave in ['Y', 'YES'] and cdump in ['gdas', 'gfs']:
         deps = []
-        dep_dict = {'type':'task', 'name':f'{cdump}fcst'}
+        dep_dict = {'type': 'task', 'name': f'{cdump}fcst'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
-        task = wfu.create_wf_task('wavepostpnt', cdump=cdump, envar=envars, dependency=dependencies)
-        dict_tasks[f'{cdump}wavepostpnt'] = task
-
-    if do_wave in ['Y', 'YES'] and cdump in ['gfs']:
-        deps = []
-        dep_dict = {'type':'task', 'name':f'{cdump}fcst'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type':'task', 'name':f'{cdump}wavepostbndpntbll'}
-        deps.append(rocoto.add_dependency(dep_dict))
+        if do_wave_bnd in ['YES'] and cdump in ['gfs']:
+            dep_dict = {'type': 'task', 'name': f'{cdump}wavepostbndpntbll'}
+            deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
         task = wfu.create_wf_task('wavepostpnt', cdump=cdump, envar=envars, dependency=dependencies)
         dict_tasks[f'{cdump}wavepostpnt'] = task

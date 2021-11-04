@@ -113,6 +113,9 @@ def source_configs(configs, tasks):
         elif task in ['efcs']:
             files.append(find_config('config.fcst', configs))
             files.append(find_config('config.efcs', configs))
+        elif task[0:4] in ['wave']:
+            files.append(find_config(f'config.wave', configs))
+            files.append(find_config(f'config.{task}', configs))
         else:
             files.append(find_config(f'config.{task}', configs))
 
