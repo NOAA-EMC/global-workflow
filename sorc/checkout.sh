@@ -86,12 +86,11 @@ fi
 echo GSD-prep-chem checkout ...
 if [[ ! -d gsd_prep_chem.fd ]] ; then
     rm -f ${LOG_DIR}/checkout-gsd-prep-chem.log
-    git clone https://github.com/XianwuXue-NOAA/GSL-prep-chem.git gsd_prep_chem.fd >> ${LOG_DIR}/checkout-gsd-prep-chem.log 2>&1
-	#git clone git@github.com:XianwuXue-NOAA/GSL-prep-chem.git gsd_prep_chem.fd >> ${LOG_DIR}/checkout-gsd-prep-chem.log 2>&1
+    git clone https://github.com/NOAA-GSL/GSL-prep-chem.git gsd_prep_chem.fd >> ${LOG_DIR}/checkout-gsd-prep-chem.log 2>&1
     rc=$?
     ((err+=$rc))
     cd gsd_prep_chem.fd
-    git checkout feature/gefs_v12_port2acorn
+    git checkout gefs_v12.2.0
     cd ${topdir}
 else
     echo 'Skip.  Directory gsd_prep_chem.fd already exists.'
