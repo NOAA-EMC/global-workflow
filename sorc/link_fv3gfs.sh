@@ -35,7 +35,7 @@ if [ $machine == "cray" ]; then
 elif [ $machine = "dell" ]; then
     FIX_DIR="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix_nco_gfsv16"
 elif [ $machine = "wcoss2" ]; then
-    FIX_DIR="/lfs/h2/emc/eib/noscrub/Kate.Friedman/glopara/fix_nco_gfsv16"
+    FIX_DIR="/lfs/h2/emc/global/noscrub/Kate.Friedman/glopara/FIX/fix_nco_gfsv16"
 elif [ $machine = "hera" ]; then
     FIX_DIR="/scratch1/NCEPDEV/global/glopara/fix_nco_gfsv16"
 elif [ $machine = "orion" ]; then
@@ -221,7 +221,7 @@ if [ -d ${pwd}/gfs_wafs.fd ]; then
 fi
 
 for ufs_utilsexe in \
-     emcsfc_ice_blend  emcsfc_snow2mdl  global_chgres  global_cycle ; do
+     emcsfc_ice_blend  emcsfc_snow2mdl  global_cycle ; do
     [[ -s $ufs_utilsexe ]] && rm -f $ufs_utilsexe
     $LINK ../sorc/ufs_utils.fd/exec/$ufs_utilsexe .
 done
