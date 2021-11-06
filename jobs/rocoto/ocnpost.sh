@@ -140,7 +140,8 @@ for fhr in $fhrlst; do
     else 
       ncks -v temp -d yh,503 -d xh,-299.92,60.03 $COMOUT/ocean/ocn_3D_$VDATE.$ENSMEM.$IDATE.nc $COMOUT/ocean/ocn-temp-EQ_$VDATE.$ENSMEM.$IDATE.nc
       status=$?
-      [[ $status -ne 0 ]] && exit $status    fi 
+      [[ $status -ne 0 ]] && exit $status
+    fi 
     if [ -f $COMOUT/ocean/ocn-uo-EQ_$VDATE.$ENSMEM.$IDATE.nc ]; then 
        echo "File $COMOUT/ocean/ocn-uo-EQ_$VDATE.$ENSMEM.$IDATE.nc already exists" 
     else 
