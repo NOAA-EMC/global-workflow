@@ -257,7 +257,7 @@ def get_workflow(dict_configs, cdump='gdas'):
     if app in ['S2S', 'S2SW']:
         # Copy prototype ICs
         deps = []
-        base_cplic = dict_configs['coupled_ic']['ORIGIN_ROOT']
+        base_cplic = dict_configs['coupled_ic']['BASE_CPLIC']
 
         # ATM ICs
         for file in ['gfs_ctrl.nc'] + [f'{datatype}_data.tile{tile_index}.nc' for datatype in ['gfs', 'sfc'] for tile_index in range(1, 7)]:
