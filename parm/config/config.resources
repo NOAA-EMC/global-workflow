@@ -8,7 +8,7 @@ if [ $# -ne 1 ]; then
 
     echo "Must specify an input task argument to set resource variables!"
     echo "argument can be any one of the following:"
-    echo "getic init"
+    echo "getic init coupled_ic"
     echo "anal analcalc analdiag gldas fcst post vrfy metp arch echgres"
     echo "eobs ediag eomg eupd ecen esfc efcs epos earc"
     echo "init_chem mom6ic ocnpost"
@@ -267,6 +267,7 @@ elif [ $step = "ocnpost" ]; then
     export npe_ocnpost=1
     export npe_node_ocnpost=1
     export nth_ocnpost=1
+    export memory_ocnpost="96G"
 
 elif [ $step = "post" ]; then
 
@@ -384,6 +385,13 @@ elif [ $step = "arch" -o $step = "earc" -o $step = "getic" ]; then
     eval "export npe_node_$step=1"
     eval "export nth_$step=1"
     eval "export memory_$step=2048M"
+
+elif [ $step = "coupled_ic" ]; then
+
+    export wtime_coupled_ic="00:15:00"
+    export npe_coupled_ic=1
+    export npe_node_coupled_ic=1
+    export nth_coupled_ic=1
 
 elif [ $step = "eobs" -o $step = "eomg" ]; then
 

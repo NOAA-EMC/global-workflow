@@ -10,7 +10,7 @@ export IDATE=$IDATE
 export ENSMEM=$ENSMEM
 export FHR=$fhr
 export DATA=$DATA
-export OCNFIXDIR=$OCNFIXDIR
+export FIXreg2grb2=$FIXreg2grb2
 
 ###### DO NOT MODIFY BELOW UNLESS YOU KNOW WHAT YOU ARE DOING #######
 #Need NCL module to be loaded:
@@ -19,6 +19,6 @@ export NCL=$NCARG_ROOT/bin/ncl
 
 ls -alrt
 
-$NCL $USH_DIR/icepost.ncl > regrid_CICE.log 2>&1
-$NCL $USH_DIR/ocnpost.ncl > regrid_MOM6.log 2>&1
+$NCL $USH_DIR/icepost.ncl
+$NCL $USH_DIR/ocnpost.ncl
 #####################################################################

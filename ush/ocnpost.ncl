@@ -91,13 +91,13 @@
 begin
 ; <BL.
 ; pull from environment
-  COMDIR          = getenv("COMOUT")
+  COMDIR          = getenv("COMOUT")+"/ocean"
   IDATE           = getenv("IDATE")
   FHR2             = getenv("FHR")
   FHR=FHR2
   ENSMEM          = getenv("ENSMEM")
   DATA_TMP        = getenv("DATA")
-  nemsrc          = getenv("OCNFIXDIR")
+  nemsrc          = getenv("FIXreg2grb2")
 ;  nemsrc     = "/scratch2/NCEPDEV/climate/Bin.Li/S2S/fix/ocean_ice_post/FIXDIR/"
 
 ; calculate and break apart verification date
