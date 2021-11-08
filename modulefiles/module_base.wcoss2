@@ -8,7 +8,8 @@ module load cray-mpich/${cray_mpich_ver}
 module load cray-pals/${cray_pals_ver}
 module load esmf/${esmf_ver}
 module load cfp/${cfp_ver}
-setenv USE_CFP YES
+#setenv USE_CFP YES
+export USE_CFP=YES
 
 module load python/${python_ver}
 module load prod_envir/${prod_envir_ver}
