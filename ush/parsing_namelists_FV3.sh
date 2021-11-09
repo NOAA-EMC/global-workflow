@@ -611,6 +611,12 @@ EOF
   $nam_sfcperts_nml
 /
 EOF
+  else
+    cat >> input.nml << EOF
+&nam_sfcperts
+  $nam_sfcperts_nml
+/
+EOF
   fi
 
 else
