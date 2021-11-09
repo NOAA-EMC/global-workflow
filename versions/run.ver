@@ -31,7 +31,7 @@ export bufr_dump_ver=2.0.0
 export util_shared_ver=1.4.0
 export prod_util_ver=2.0.9
 export grib_util_ver=1.2.3
-export wgrib2_ver=2.0.8
+export wgrib2_ver=2.0.7
 
 export crtm_ver=2.3.0
 
