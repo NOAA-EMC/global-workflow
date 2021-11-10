@@ -43,12 +43,11 @@ fi
 echo gsi checkout ...
 if [[ ! -d gsi.fd ]] ; then
     rm -f ${LOG_DIR}/checkout-gsi.log
-    git clone https://github.com/XianwuXue-NOAA/GSI.git gsi.fd >> ${LOG_DIR}/checkout-gsi.fd.log 2>&1
-	#git clone git@github.com:XianwuXue-NOAA/GSI.git gsi.fd >> ${LOG_DIR}/checkout-gsi.fd.log 2>&1
+    git clone https://github.com/NOAA-EMC/GSI.git gsi.fd >> ${LOG_DIR}/checkout-gsi.fd.log 2>&1
     rc=$?
     ((err+=$rc))
     cd gsi.fd
-    git checkout feature/gefs_v12_port2wcoss2
+    git checkout gefs.v12.2.0
     git submodule update --init --recursive
     cd ${topdir}
 else
