@@ -29,7 +29,7 @@ export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc/$COMPONENT"
 [[ ! -d $COMOUT ]] && mkdir -p $COMOUT
 
 ###############################################################
-# If ROTDIR_DUMP=YES, copy dump files to rotdir 
+# If ROTDIR_DUMP=YES, copy dump files to rotdir
 if [ $ROTDIR_DUMP = "YES" ]; then
    $HOMEgfs/ush/getdump.sh $CDATE $CDUMP $DMPDIR/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc} $COMOUT
    status=$?
@@ -52,7 +52,7 @@ fi
 ###############################################################
 
 ###############################################################
-# For running real-time parallels on WCOSS_C, execute tropcy_qc and 
+# For running real-time parallels on WCOSS_C, execute tropcy_qc and
 # copy files from operational syndata directory to a local directory.
 # Otherwise, copy existing tcvital data from globaldump.
 
@@ -62,7 +62,7 @@ if [ $PROCESS_TROPCY = "YES" ]; then
     if [ $RUN_ENVIR != "nco" ]; then
         export ARCHSYND=${ROTDIR}/syndat
         if [ ! -d ${ARCHSYND} ]; then mkdir -p $ARCHSYND; fi
-        if [ ! -s $ARCHSYND/syndat_akavit ]; then 
+        if [ ! -s $ARCHSYND/syndat_akavit ]; then
             for file in syndat_akavit syndat_dateck syndat_stmcat.scr syndat_stmcat syndat_sthisto syndat_sthista ; do
                 cp $COMINsyn/$file $ARCHSYND/.
             done
@@ -84,9 +84,9 @@ fi
 # Generate prepbufr files from dumps or copy from OPS
 if [ $DO_MAKEPREPBUFR = "YES" ]; then
     if [ $ROTDIR_DUMP = "YES" ]; then
-	rm $COMOUT/${OPREFIX}prepbufr
-	rm $COMOUT/${OPREFIX}prepbufr.acft_profiles
-	rm $COMOUT/${OPREFIX}nsstbufr
+        rm $COMOUT/${OPREFIX}prepbufr
+        rm $COMOUT/${OPREFIX}prepbufr.acft_profiles
+        rm $COMOUT/${OPREFIX}nsstbufr
     fi
 
     export job="j${CDUMP}_prep_${cyc}"
@@ -96,21 +96,31 @@ if [ $DO_MAKEPREPBUFR = "YES" ]; then
     export COMINgdas=${COMINgdas:-$ROTDIR/gdas.$PDY/$cyc/$COMPONENT}
     export COMINgfs=${COMINgfs:-$ROTDIR/gfs.$PDY/$cyc/$COMPONENT}
     if [ $ROTDIR_DUMP = "NO" ]; then
-      COMIN_OBS=${COMIN_OBS:-$DMPDIR/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}}
-      export COMSP=${COMSP:-$COMIN_OBS/$CDUMP.t${cyc}z.}
+        COMIN_OBS=${COMIN_OBS:-$DMPDIR/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}}
+        export COMSP=${COMSP:-$COMIN_OBS/$CDUMP.t${cyc}z.}
     else
-      export COMSP=${COMSP:-$ROTDIR/${CDUMP}.${PDY}/${cyc}/$COMPONENT/$CDUMP.t${cyc}z.}
+        export COMSP=${COMSP:-$ROTDIR/${CDUMP}.${PDY}/${cyc}/$COMPONENT/$CDUMP.t${cyc}z.}
+    fi
+
+    # Disable creating NSSTBUFR if desired, copy from DMPDIR instead
+    if [[ ${DO_MAKE_NSSTBUFR:-"NO"} = "NO" ]]; then
+        export MAKE_NSSTBUFR="NO"
     fi
 
     $HOMEobsproc_network/jobs/JGLOBAL_PREP
     status=$?
     [[ $status -ne 0 ]] && exit $status
 
+    # If creating NSSTBUFR was disabled, copy from DMPDIR if appropriate.
+    if [[ ${DO_MAKE_NSSTBUFR:-"NO"} = "NO" ]]; then
+        [[ $DONST = "YES" ]] && $NCP $DMPDIR/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}/${OPREFIX}nsstbufr $COMOUT/${OPREFIX}nsstbufr
+    fi
+
 else
     if [ $ROTDIR_DUMP = "NO" ]; then
-	$NCP $DMPDIR/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}/${OPREFIX}prepbufr               $COMOUT/${OPREFIX}prepbufr
-	$NCP $DMPDIR/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}/${OPREFIX}prepbufr.acft_profiles $COMOUT/${OPREFIX}prepbufr.acft_profiles
-	[[ $DONST = "YES" ]] && $NCP $DMPDIR/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}/${OPREFIX}nsstbufr $COMOUT/${OPREFIX}nsstbufr
+        $NCP $DMPDIR/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}/${OPREFIX}prepbufr               $COMOUT/${OPREFIX}prepbufr
+        $NCP $DMPDIR/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}/${OPREFIX}prepbufr.acft_profiles $COMOUT/${OPREFIX}prepbufr.acft_profiles
+        [[ $DONST = "YES" ]] && $NCP $DMPDIR/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}/${OPREFIX}nsstbufr $COMOUT/${OPREFIX}nsstbufr
     fi
 fi
 
