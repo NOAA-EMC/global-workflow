@@ -410,7 +410,8 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
     do_metp = base.get('DO_METP', 'NO').upper()
     do_gldas = base.get('DO_GLDAS', 'NO').upper()
     do_wave = base.get('DO_WAVE', 'NO').upper()
-    do_wave_bnd = dict_configs['wavepostsbs'].get('DOBNDPNT_WAVE', "YES").upper()
+    if do_wave in ['YES']:
+        do_wave_bnd = dict_configs['wavepostsbs'].get('DOBNDPNT_WAVE', "YES").upper()
     do_wave_cdump = base.get('WAVE_CDUMP', 'BOTH').upper()
     dumpsuffix = base.get('DUMP_SUFFIX', '')
     gridsuffix = base.get('SUFFIX', '')

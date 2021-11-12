@@ -244,7 +244,8 @@ def get_workflow(dict_configs, cdump='gdas'):
     do_ocean = base.get('DO_OCN', 'NO').upper()
     do_ice = base.get('DO_ICE', 'NO').upper()
     do_wave_cdump = base.get('WAVE_CDUMP', 'BOTH').upper()
-    do_wave_bnd = dict_configs['wavepostsbs'].get('DOBNDPNT_WAVE', "YES").upper()
+    if do_wave in ['YES']:
+        do_wave_bnd = dict_configs['wavepostsbs'].get('DOBNDPNT_WAVE', "YES").upper()
     do_bufrsnd = base.get('DO_BUFRSND', 'NO').upper()
     do_gempak = base.get('DO_GEMPAK', 'NO').upper()
     do_awips = base.get('DO_AWIPS', 'NO').upper()
