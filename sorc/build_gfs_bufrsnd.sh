@@ -5,6 +5,7 @@ source ./machine-setup.sh > /dev/null 2>&1
 cwd=`pwd`
 
 USE_PREINST_LIBS=${USE_PREINST_LIBS:-"true"}
+source ../versions/build.ver
 if [ $USE_PREINST_LIBS = true ]; then
 	    source ../modulefiles/gfs_bufr.$target             > /dev/null 2>&1
 	else
@@ -24,6 +25,9 @@ fi
 if [ $target = "wcoss2" ]; then
   export SIGIO_LIB4=$SIGIO_LIB
   export SIGIO_INC4=$SIGIO_INC
+  export NETCDF_INC=$NETCDF_INCLUDES
+  export NETCDF_LIB=$NETCDF_LIBRARIES
+  export HDF5_LIB=$HDF5_LIBRARIES
 fi
 
 if [ -f gfs_bufr.fd/getncdimlen ]; then
