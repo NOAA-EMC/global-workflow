@@ -1,35 +1,34 @@
 #%Module######################################################################
 ##
 
-module load PrgEnv-intel/8.1.0
-module load craype/2.7.8
-module load intel/19.1.3.304
-module load cray-mpich/8.1.7
-module load cray-pals/1.0.12
-module load esmf/8.1.0
-module load cfp/2.0.4
-setenv USE_CFP YES
+module load PrgEnv-intel/${PrgEnv_intel_ver}
+module load craype/${craype_ver}
+module load intel/${intel_ver}
+module load cray-mpich/${cray_mpich_ver}
+module load cray-pals/${cray_pals_ver}
+module load esmf/${esmf_ver}
+module load cfp/${cfp_ver}
+#setenv USE_CFP YES
+export USE_CFP=YES
 
-module load cray-python/3.8.5.1
-module load prod_envir/2.0.4
-module load gempak/7.14.0
-module load perl/5.32.0
-module load libjpeg/9c
+module load python/${python_ver}
+module load prod_envir/${prod_envir_ver}
+module load gempak/${gempak_ver}
+module load perl/${perl_ver}
+module load libjpeg/${libjpeg_ver}
 
 # Load for waveprep
-#module load cdo/1.9.8
+module load cdo/${cdo_ver}
 
-module load hdf5/1.10.6
-module load netcdf/4.7.4
+module load hdf5/${hdf5_ver}
+module load netcdf/${netcdf_ver}
 
-module load nco/4.7.9
-module load prod_util/2.0.9
-module load grib_util/1.2.3
-module load bufr_dump/2.0.0
-module load util_shared/1.4.0
-module load crtm/2.3.0
-module load g2tmpl/1.9.1
-module load wgrib2/2.0.8
+module load nco/${nco_ver}
+module load prod_util/${prod_util_ver}
+module load grib_util/${grib_util_ver}
+module load bufr_dump/${bufr_dump_ver}
+module load util_shared/${util_shared_ver}
+module load crtm/${crtm_ver}
+module load g2tmpl/${g2tmpl_ver}
+module load wgrib2/${wgrib2_ver}
 
-module use /u/Wen.Meng/noscrub/ncep_post/LIBS/modulefiles/mpi/intel/19.1.3.304/cray-mpich/8.1.4
-module load upp/8.1.0

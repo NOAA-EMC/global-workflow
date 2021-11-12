@@ -121,7 +121,7 @@ do
   ptile=${PTILE_META:-4}
   threads=${NTHREADS_META:-1}
   export OMP_NUM_THREADS=$threads
-  APRUN="mpiexec -n $ntasks -ppn $ntasks --cpu-bind verbose,core cfp"
+  APRUN="mpiexec -l -n $ntasks -ppn $ntasks --cpu-bind verbose,core cfp"
   APRUN_METACFP=${APRUN_METACFP:-$APRUN}
   APRUNCFP=$(eval echo $APRUN_METACFP)
 
