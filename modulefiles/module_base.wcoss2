@@ -8,10 +8,11 @@ module load cray-mpich/${cray_mpich_ver}
 module load cray-pals/${cray_pals_ver}
 module load esmf/${esmf_ver}
 module load cfp/${cfp_ver}
-setenv USE_CFP YES
+#setenv USE_CFP YES
+export USE_CFP=YES
 
-module load prod_envir/${prod_envir_ver}
 module load python/${python_ver}
+module load prod_envir/${prod_envir_ver}
 module load gempak/${gempak_ver}
 module load perl/${perl_ver}
 module load libjpeg/${libjpeg_ver}
@@ -30,3 +31,4 @@ module load util_shared/${util_shared_ver}
 module load crtm/${crtm_ver}
 module load g2tmpl/${g2tmpl_ver}
 module load wgrib2/${wgrib2_ver}
+
