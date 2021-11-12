@@ -27,6 +27,9 @@ elif [[ -d /gpfs/hps && -e /etc/SuSE-release ]] ; then
 elif [[ -L /usrx && "$( readlink /usrx 2> /dev/null )" =~ dell ]] ; then
     # We are on NOAA Mars or Venus
 	module load module_base.wcoss_dell_p3 
+elif [[ -d /lfs/h2 ]]; then
+    # We are on WCOSS2 (Cactus or Dogwood)
+	module load module_base.wcoss2
 elif [[ -d /dcom && -d /hwrf ]] ; then
     # We are on NOAA Tide or Gyre
 	module load module_base.wcoss 
