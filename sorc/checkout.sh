@@ -75,7 +75,7 @@ if [[ ! -d gfs_post.fd ]] ; then
     rc=$?
     ((err+=$rc))
     cd gfs_post.fd
-    git checkout release/gefs_v12
+    git checkout gefs_v12.2.0
     cd ${topdir}
 else
     echo 'Skip.  Directory gfs_post.fd already exists.'
