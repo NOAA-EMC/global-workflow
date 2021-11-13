@@ -26,12 +26,11 @@ err=0
 echo fv3gfs checkout ...
 if [[ ! -d fv3gfs.fd ]] ; then
     rm -f ${topdir}/checkout-fv3gfs.log
-    git clone https://github.com/XianwuXue-NOAA/FV3-GSDCHEM-WW3.git fv3gfs.fd >> ${LOG_DIR}/checkout-fv3gfs.log 2>&1
-    #git clone git@github.com:XianwuXue-NOAA/FV3-GSDCHEM-WW3.git fv3gfs.fd >> ${LOG_DIR}/checkout-fv3gfs.log 2>&1
+    git clone https://github.com/NOAA-EMC/FV3-GSDCHEM-WW3.git fv3gfs.fd >> ${LOG_DIR}/checkout-fv3gfs.log 2>&1
     rc=$?
     ((err+=$rc))
     cd fv3gfs.fd
-	git checkout feature/gefs_v12_github
+	git checkout release/gefs_v12
 	git submodule update --init --recursive
     rc=$?
     ((err+=$rc))
