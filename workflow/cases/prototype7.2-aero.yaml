@@ -49,8 +49,8 @@ case:
     nst_anl: yes
     psm_bc: 1
     dddmp: 0.1
-    FSICL: 0
-    FSICS: 0 
+    FSICL: 99999
+    FSICS: 99999
     DO_SKEB: false
     DO_SHUM: false
     DO_SPPT: false
