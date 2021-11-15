@@ -6,6 +6,8 @@
 ulimit_s=$( ulimit -S -s )
 #ulimit -S -s 10000
 
+set +x
+
 # Find module command and purge:
 source "$HOMEgfs/modulefiles/module-setup.sh.inc" 
 
@@ -13,7 +15,7 @@ source "$HOMEgfs/modulefiles/module-setup.sh.inc"
 source "$HOMEgfs/versions/run.ver"
 
 # Load our modules:
-module use "$HOMEgfs/modulefiles" 
+module use $HOMEgfs/modulefiles
 
 if [[ -d /lfs3 ]] ; then
     # We are on NOAA Jet
@@ -32,8 +34,7 @@ elif [[ -L /usrx && "$( readlink /usrx 2> /dev/null )" =~ dell ]] ; then
 	module load module_base.wcoss_dell_p3 
 elif [[ -d /lfs/h2 ]]; then
     # We are on WCOSS2 (Cactus or Dogwood)
-	#module load module_base.wcoss2
-	source $HOMEgfs/modulefiles/module_base.wcoss2
+	module load module_base.wcoss2
 elif [[ -d /dcom && -d /hwrf ]] ; then
     # We are on NOAA Tide or Gyre
 	module load module_base.wcoss 
@@ -46,6 +47,8 @@ elif [[ -d /lustre && -d /ncrc ]] ; then
 else
     echo WARNING: UNKNOWN PLATFORM 
 fi
+
+set -x
 
 # Restore stack soft limit:
 ulimit -S -s "$ulimit_s"
