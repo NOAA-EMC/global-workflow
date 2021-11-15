@@ -196,13 +196,7 @@ elif [[ -d /apps/prod ]]; then
     target=wcoss2
 
     module purge
-    #module use -a /apps/prod/modules
-    # For gefs_nemsio2nc
-    #module use /lfs/h1/ops/prod/libs/modulefiles/stack
-    #module load hpc
-    #module load hpc-intel
-    #module load hpc-cray-mpich
-    module load envvar/1.0
+    module load envvar/${envvar_ver:-1.0}
 
 else
     echo WARNING: UNKNOWN PLATFORM 1>&2

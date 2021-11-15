@@ -337,7 +337,6 @@
   
       if [ "$wavenproc" -gt '1' ]
       then
-        #${wavempexec} ${wavenproc} ${wave_mpmd} cmdfile
         ${wavempexec} ${wave_mpmd} cmdfile
         exit=$?
       else
@@ -705,7 +704,6 @@
 
       if [ $wavenproc -gt '1' ]
       then
-        #${wavempexec} ${wavenproc} ${wave_mpmd} cmdfile
         ${wavempexec} ${wave_mpmd} cmdfile
         exit=$?
       else

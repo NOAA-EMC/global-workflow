@@ -36,10 +36,10 @@
 
   msg="HAS BEGUN on `hostname`"
   postmsg "$msg"
-  echo $msg
+
   msg="Starting MWW3 INIT CONFIG SCRIPT for $COMPONENTwave"
   postmsg "$msg"
-  echo $msg
+
 
   set +x
   echo ' '
@@ -119,7 +119,7 @@
       else
         msg="ABNORMAL EXIT: NO INP FILE FOR MODEL DEFINITION FILE"
         postmsg "$msg"
-        echo $msg
+
         set +x
         echo ' '
         echo '*********************************************************** '
@@ -168,8 +168,7 @@
   
     if [ "$NTASKS" -gt '1' ]
     then
-      #${wavempexec} ${wavenproc} ${wave_mpmd} cmdfile
-      ${wavempexec} ${wave_mpmd} cmdfile #${wavenproc} ${wave_mpmd} cmdfile
+      ${wavempexec} ${wave_mpmd} cmdfile
       exit=$?
     else
       ./cmdfile
@@ -204,7 +203,7 @@
     else 
       msg="ABNORMAL EXIT: NO MODEL DEFINITION FILE"
       postmsg "$msg"
-      echo $msg
+
       set +x
       echo ' '
       echo '********************************************** '
@@ -234,6 +233,6 @@
 
   msg="$job completed normally"
   postmsg "$msg"
-  echo $msg
+
 
 # End of MWW3 init config script ------------------------------------------- #
