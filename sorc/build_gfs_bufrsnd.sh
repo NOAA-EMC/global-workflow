@@ -5,7 +5,6 @@ source ./machine-setup.sh > /dev/null 2>&1
 cwd=`pwd`
 
 USE_PREINST_LIBS=${USE_PREINST_LIBS:-"true"}
-source ../versions/build.ver
 if [ $USE_PREINST_LIBS = true ]; then
 	    source ../modulefiles/gfs_bufr.$target             > /dev/null 2>&1
 	else
