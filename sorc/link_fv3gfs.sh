@@ -183,7 +183,7 @@ if [ $machine = dell -o $machine = hera ]; then
     done
 fi
 
-for ufs_utilsexe in chgres_cube ; do # nemsio_get nemsio_read global_chgres ; do
+for ufs_utilsexe in chgres_cube ; do
     [[ -s $ufs_utilsexe ]] && rm -f $ufs_utilsexe
     $LINK ../sorc/ufs_utils.fd/exec/$ufs_utilsexe .
 done
@@ -204,7 +204,6 @@ $LINK ../sorc/gsd_prep_chem.fd/workflow/emc-global/exec/prep_chem_sources_RADM_F
 
 cd ${pwd}/../sorc   ||   exit 8
     $SLINK gsi.fd/util/EnKF/gfs/src/calc_increment_ens.fd                                  calc_increment_ens.fd
-    #$SLINK gsi.fd/util/EnKF/gfs/src/calc_increment_ens_gsdchem.fd                          calc_increment_ens_gsdchem.fd
     $SLINK gsi.fd/util/EnKF/gfs/src/getsfcensmeanp.fd                                      getsfcensmeanp.fd
     $SLINK gsi.fd/util/EnKF/gfs/src/getsigensmeanp_smooth.fd                               getsigensmeanp_smooth.fd
     $SLINK gsi.fd/util/EnKF/gfs/src/getsigensstatp.fd                                      getsigensstatp.fd
@@ -220,7 +219,6 @@ cd ${pwd}/../sorc   ||   exit 8
 
     $SLINK gfs_post.fd/sorc/ncep_post.fd                                                   gfs_ncep_post.fd
 
-    #$SLINK ufs_utils.fd/sorc/fre-nctools.fd/tools/shave.fd                                 shave.fd
     for prog in fregrid make_hgrid make_solo_mosaic ; do
         $SLINK ufs_utils.fd/sorc/fre-nctools.fd/tools/$prog                                ${prog}.fd                                
     done
