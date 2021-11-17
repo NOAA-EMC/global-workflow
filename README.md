@@ -12,6 +12,9 @@ The global-workflow current supports the following machines:
 * WCOSS-Dell
 * WCOSS-Cray
 * Hera
+* Orion
+
+Quick-start instructions are below. Full instructions are available in the [wiki](https://github.com/NOAA-EMC/global-workflow/wiki/Run-Global-Workflow)
 
 ## Build global-workflow:
 
@@ -25,15 +28,24 @@ $ sh checkout.sh
 ### 2. Build components
 
 While in /sorc folder:
+Atm-only
 ```
 $ sh build_all.sh
+```
+Coupled
+```
+$ sh build_all.sh -c
 ```
 
 ### 3. Link components
 
 While in /sorc folder:
+Atm-only
 ```
-$ sh link_fv3gfs.sh emc $MACHINE
+$ sh link_workflow.sh emc $MACHINE
 ```
-
-...where $MACHINE is "dell", "cray", or "hera".
+Coupled
+```
+$ sh link_workflow.sh emc $MACHINE coupled
+```
+...where $MACHINE is "dell", "cray", "hera", or "orion".
