@@ -19,6 +19,8 @@ elif [ $target = wcoss_dell_p3 ]; then
   gpctarget=wcoss-dell-p3
 elif [ $target = wcoss ]; then
   gpctarget=wcoss12
+elif [ $target = wcoss2 ]; then
+  gpctarget=wcoss2
 else
   gpctarget=$target
 fi

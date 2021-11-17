@@ -189,6 +189,15 @@ export NCEPLIBS=/mnt/lfs3/projects/hfv3gfs/gwv/NCEPLIBS.15X
 export WRFPATH=$NCEPLIBS/wrf.shared.new/v1.1.1/src
 export myFC=mpiifort
 
+##---------------------------------------------------------------------------
+elif [[ -d /apps/prod ]]; then
+
+	# We are on WCOSS2
+    target=wcoss2
+
+    module purge
+    module load envvar/${envvar_ver:-1.0}
+
 else
     echo WARNING: UNKNOWN PLATFORM 1>&2
 fi

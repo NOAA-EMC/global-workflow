@@ -8,16 +8,16 @@ machine=${2}
 
 if [ $# -lt 2 ]; then
     echo '***ERROR*** must specify two arguements: (1) RUN_ENVIR, (2) machine'
-    echo ' Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | theia | hera )'
+    echo ' Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | theia | hera | wcoss2 )'
     exit 1
 fi
 
 if [ $RUN_ENVIR != emc -a $RUN_ENVIR != nco ]; then
-    echo 'Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | theia | hera )'
+    echo 'Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | theia | hera | wcoss2 )'
     exit 1
 fi
-if [ $machine != cray -a $machine != theia -a $machine != dell -a $machine != hera ]; then
-    echo 'Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | theia | hera )'
+if [ $machine != cray -a $machine != theia -a $machine != dell -a $machine != hera -a $machine != wcoss2 ]; then
+    echo 'Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | theia | hera | wcoss2 )'
     exit 1
 fi
 
@@ -38,6 +38,8 @@ elif [ $machine = "theia" ]; then
     FIX_DIR="/scratch4/NCEPDEV/global/save/glopara/git/fv3gfs/fix"
 elif [ $machine = "hera" ]; then
     FIX_DIR="/scratch1/NCEPDEV/global/glopara/fix"
+elif [ $machine = "wcoss2" ]; then
+    FIX_DIR="/lfs/h2/emc/global/noscrub/Kate.Friedman/glopara/FIX/fix_nco_gfsv15"
 fi
 cd ${pwd}/../fix                ||exit 8
 for dir in fix_am fix_chem fix_fv3 fix_orog fix_fv3_gmted2010 fix_verif; do
@@ -155,7 +157,8 @@ cd ${pwd}/../jobs               ||exit 8
     $LINK ../sorc/gsd_prep_chem.fd/workflow/emc-global/jobs/JGLOBAL_PREP_CHEM          .
 cd ${pwd}/../scripts            ||exit 8
     $LINK ../sorc/gsd_prep_chem.fd/workflow/emc-global/scripts/exglobal_prep_chem.sh .
-
+cd ${pwd}/../parm
+    $LINK ../sorc/gsd_prep_chem.fd/workflow/emc-global/parm/prep_chem_sources.inp.IN .
 #------------------------------
 #--link executables 
 #------------------------------
@@ -180,12 +183,12 @@ if [ $machine = dell -o $machine = hera ]; then
     done
 fi
 
-for ufs_utilsexe in chgres_cube nemsio_get nemsio_read global_chgres ; do
+for ufs_utilsexe in chgres_cube ; do
     [[ -s $ufs_utilsexe ]] && rm -f $ufs_utilsexe
     $LINK ../sorc/ufs_utils.fd/exec/$ufs_utilsexe .
 done
 
-for gsiexe in  global_gsi.x global_enkf.x calc_increment_ens.x getsfcensmeanp.x \
+for gsiexe in  global_gsi.x global_enkf.x calc_increment_ens.x getsfcensmeanp.x calc_increment_ens_ncio.x \
     getsigensmeanp_smooth.x getsigensstatp.x recentersigp.x oznmon_horiz.x \
     oznmon_time.x radmon_angle.x radmon_bcoef.x radmon_bcor.x radmon_time.x ;do
     [[ -s $gsiexe ]] && rm -f $gsiexe
@@ -201,7 +204,6 @@ $LINK ../sorc/gsd_prep_chem.fd/workflow/emc-global/exec/prep_chem_sources_RADM_F
 
 cd ${pwd}/../sorc   ||   exit 8
     $SLINK gsi.fd/util/EnKF/gfs/src/calc_increment_ens.fd                                  calc_increment_ens.fd
-    $SLINK gsi.fd/util/EnKF/gfs/src/calc_increment_ens_gsdchem.fd                          calc_increment_ens_gsdchem.fd
     $SLINK gsi.fd/util/EnKF/gfs/src/getsfcensmeanp.fd                                      getsfcensmeanp.fd
     $SLINK gsi.fd/util/EnKF/gfs/src/getsigensmeanp_smooth.fd                               getsigensmeanp_smooth.fd
     $SLINK gsi.fd/util/EnKF/gfs/src/getsigensstatp.fd                                      getsigensstatp.fd
@@ -217,13 +219,12 @@ cd ${pwd}/../sorc   ||   exit 8
 
     $SLINK gfs_post.fd/sorc/ncep_post.fd                                                   gfs_ncep_post.fd
 
-    $SLINK ufs_utils.fd/sorc/fre-nctools.fd/tools/shave.fd                                 shave.fd
-    for prog in filter_topo fregrid make_hgrid make_solo_mosaic ; do
+    for prog in fregrid make_hgrid make_solo_mosaic ; do
         $SLINK ufs_utils.fd/sorc/fre-nctools.fd/tools/$prog                                ${prog}.fd                                
     done
     for prog in  chgres_cube.fd       global_cycle.fd   nemsio_read.fd \
                  mkgfsnemsioctl.fd  nst_tf_chg.fd \
-                 global_chgres.fd  nemsio_get.fd      orog.fd ;do
+                 global_chgres.fd  nemsio_get.fd      ;do
         $SLINK ufs_utils.fd/sorc/$prog                                                     $prog
     done
 

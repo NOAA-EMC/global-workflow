@@ -195,7 +195,7 @@
    if [ ! -f mean_out ]
    then
      msg="ABNORMAL EXIT: ERR mean_out not gerenerated for ${nnip} $FH3."
-     postmsg "$jlogfile" "$msg"
+     postmsg "$msg"
      set +x
      echo "--- mean_out not gerenerated for ${nnip} $FH3 --- "
      [[ "$LOUD" = YES ]] && set -x
@@ -207,7 +207,7 @@
    if [ ! -f spread_out ]
    then
      msg="ABNORMAL EXIT: ERR spread_out not gerenerated for ${nnip} $FH3."
-     postmsg "$jlogfile" "$msg"
+     postmsg "$msg"
      set +x
      echo "--- spread_out not gerenerated for ${nnip} $FH3 --- "
      [[ "$LOUD" = YES ]] && set -x
@@ -223,7 +223,7 @@
      if [ ! -f prob_out ]
      then
        msg="ABNORMAL EXIT: ERR prob_out not gerenerated for ${nnip} $FH3."
-       postmsg "$jlogfile" "$msg"
+       postmsg "$msg"
        set +x
        echo "--- prob_out not gerenerated for ${nnip} $FH3 --- "
        [[ "$LOUD" = YES ]] && set -x

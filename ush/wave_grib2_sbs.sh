@@ -35,7 +35,7 @@
   [[ "$LOUD" != YES ]] && set +x
 
   cd $GRIBDATA
-#  postmsg "$jlogfile" "Making GRIB2 Files."   # commented to reduce unnecessary output to jlogfile
+#  postmsg "Making GRIB2 Files."   # commented to reduce unnecessary output
 
   grdID=$1 
   gribDIR=${grdID}_grib 
@@ -51,7 +51,7 @@
     echo '******************************************************************************* '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" "FATAL ERROR : ERROR IN ww3_grib2 (Could not create temp directory)"
+    postmsg "FATAL ERROR : ERROR IN ww3_grib2 (Could not create temp directory)"
     exit 1
   fi
 
@@ -100,7 +100,7 @@
       echo '***************************************************'
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
-      postmsg "$jlogfile" "EXPORTED VARIABLES IN postprocessor NOT SET"
+      postmsg "EXPORTED VARIABLES IN postprocessor NOT SET"
       exit 1
     fi
   
@@ -153,7 +153,7 @@
       echo '************************************************ '
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
-      postmsg "$jlogfile" "FATAL ERROR : ERROR IN ww3_grib2"
+      postmsg "FATAL ERROR : ERROR IN ww3_grib2"
       exit 3
     fi
 
@@ -168,7 +168,7 @@
       echo '********************************************* '
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
-      postmsg "$jlogfile" "FATAL ERROR : ERROR IN ww3_grib2"
+      postmsg "FATAL ERROR : ERROR IN ww3_grib2"
       exit 3
     fi
   
@@ -199,7 +199,7 @@
         echo " Error in moving grib file ${outfile} to com"
         echo ' '
         [[ "$LOUD" = YES ]] && set -x
-        postmsg "$jlogfile" "FATAL ERROR : ERROR IN ww3_grib2"
+        postmsg "FATAL ERROR : ERROR IN ww3_grib2"
         exit 4
       fi
       if [ ! -s $COMOUT/gridded/${outfile} ]
@@ -213,7 +213,7 @@
         echo " Error in moving grib file ${outfile}.idx to com"
         echo ' '
         [[ "$LOUD" = YES ]] && set -x
-        postmsg "$jlogfile" "FATAL ERROR : ERROR IN creating ww3_grib2 index"
+        postmsg "FATAL ERROR : ERROR IN creating ww3_grib2 index"
         exit 4
       fi
   

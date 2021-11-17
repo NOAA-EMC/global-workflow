@@ -26,11 +26,11 @@ err=0
 echo fv3gfs checkout ...
 if [[ ! -d fv3gfs.fd ]] ; then
     rm -f ${topdir}/checkout-fv3gfs.log
-    git clone --recursive gerrit:EMC_FV3-GSDCHEM-WW3 fv3gfs.fd >> ${LOG_DIR}/checkout-fv3gfs.log 2>&1
+    git clone https://github.com/NOAA-EMC/FV3-GSDCHEM-WW3.git fv3gfs.fd >> ${LOG_DIR}/checkout-fv3gfs.log 2>&1
     rc=$?
     ((err+=$rc))
     cd fv3gfs.fd
-	git checkout gefs_v12.1.0
+	git checkout gefs_v12.2.0
 	git submodule update --init --recursive
     rc=$?
     ((err+=$rc))
@@ -42,12 +42,12 @@ fi
 echo gsi checkout ...
 if [[ ! -d gsi.fd ]] ; then
     rm -f ${LOG_DIR}/checkout-gsi.log
-    git clone --recursive https://github.com/NOAA-EMC/GSI.git gsi.fd >> ${LOG_DIR}/checkout-gsi.fd.log 2>&1
+    git clone https://github.com/NOAA-EMC/GSI.git gsi.fd >> ${LOG_DIR}/checkout-gsi.fd.log 2>&1
     rc=$?
     ((err+=$rc))
     cd gsi.fd
-    git checkout gfsda.v16.0.0
-    git submodule update
+    git checkout gefs.v12.2.0
+    git submodule update --init --recursive
     cd ${topdir}
 else
     echo 'Skip.  Directory gsi.fd already exists.'
@@ -56,11 +56,11 @@ fi
 echo ufs_utils checkout ...
 if [[ ! -d ufs_utils.fd ]] ; then
     rm -f ${topdir}/checkout-ufs_utils.log
-    git clone --recursive https://github.com/NOAA-EMC/UFS_UTILS.git ufs_utils.fd >> ${LOG_DIR}/checkout-ufs_utils.fd.log 2>&1
+    git clone https://github.com/ufs-community/UFS_UTILS.git ufs_utils.fd >> ${LOG_DIR}/checkout-ufs_utils.fd.log 2>&1
     rc=$?
     ((err+=$rc))
     cd ufs_utils.fd
-    git checkout ops-gefsv12.1
+    git checkout ops-gefsv12.2
     git submodule update --init --recursive
     cd ${topdir}
 else
@@ -70,11 +70,11 @@ fi
 echo EMC_post checkout ...
 if [[ ! -d gfs_post.fd ]] ; then
     rm -f ${topdir}/checkout-gfs_post.log
-    git clone --recursive https://github.com/NOAA-EMC/EMC_post.git gfs_post.fd >> ${LOG_DIR}/checkout-gfs_post.log 2>&1
+    git clone --recursive https://github.com/NOAA-EMC/UPP.git gfs_post.fd >> ${LOG_DIR}/checkout-gfs_post.log 2>&1
     rc=$?
     ((err+=$rc))
     cd gfs_post.fd
-    git checkout gefs_v12.0.1
+    git checkout gefs_v12.2.0
     cd ${topdir}
 else
     echo 'Skip.  Directory gfs_post.fd already exists.'
@@ -83,11 +83,11 @@ fi
 echo GSD-prep-chem checkout ...
 if [[ ! -d gsd_prep_chem.fd ]] ; then
     rm -f ${LOG_DIR}/checkout-gsd-prep-chem.log
-    git clone gerrit:GSD-prep-chem gsd_prep_chem.fd >> ${LOG_DIR}/checkout-gsd-prep-chem.log 2>&1
+    git clone https://github.com/NOAA-GSL/GSL-prep-chem.git gsd_prep_chem.fd >> ${LOG_DIR}/checkout-gsd-prep-chem.log 2>&1
     rc=$?
     ((err+=$rc))
     cd gsd_prep_chem.fd
-    git checkout gefs_v12.0.1-3
+    git checkout gefs_v12.2.0
     cd ${topdir}
 else
     echo 'Skip.  Directory gsd_prep_chem.fd already exists.'
