@@ -195,6 +195,16 @@ elif [ $step = "post" ]; then
     export nth_post=1
     export npe_node_post=12
     export npe_node_dwn=$npe_node_max
+    if [ $machine = "WCOSS_DELL_P3" ]; then
+      export npe_dwn=28
+    else
+      export npe_dwn=24
+    fi
+    if [ "$WRITE_DOPOST" = ".true." ]; then 
+      export npe_post=$npe_dwn
+      export wtime_post="00:10:00"
+      export wtime_post_gfs="00:10:00"
+    fi
     if [[ "$machine" = "WCOSS_DELL_P3" ]]; then export npe_node_post=28 ; fi
     if [[ "$machine" == "WCOSS_C" ]]; then export memory_post="3072M"; fi
 
