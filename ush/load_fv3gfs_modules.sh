@@ -6,11 +6,16 @@
 ulimit_s=$( ulimit -S -s )
 #ulimit -S -s 10000
 
+set +x
+
 # Find module command and purge:
 source "$HOMEgfs/modulefiles/module-setup.sh.inc" 
 
+# Source versions file for runtime
+source "$HOMEgfs/versions/run.ver"
+
 # Load our modules:
-module use "$HOMEgfs/modulefiles" 
+module use $HOMEgfs/modulefiles
 
 if [[ -d /lfs3 ]] ; then
     # We are on NOAA Jet
@@ -42,6 +47,8 @@ elif [[ -d /lustre && -d /ncrc ]] ; then
 else
     echo WARNING: UNKNOWN PLATFORM 
 fi
+
+set -x
 
 # Restore stack soft limit:
 ulimit -S -s "$ulimit_s"

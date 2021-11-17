@@ -39,7 +39,7 @@ export driver=/lfs/h2/emc/vpppg/noscrub/$USER/packages/gfs.$gfs_ver/driver
 #############################################################
 # Load module version on WCOSS2
 #############################################################
-  . ${driver}/product/run.version
+. ${driver}/../versions/run.ver
 
 ####################################
 ##  Load the GRIB Utilities module
