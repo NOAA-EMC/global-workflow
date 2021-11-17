@@ -917,7 +917,7 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
     deps = []
     dep_dict = {'type': 'task', 'name': f'{cdump}vrfy'}
     deps.append(rocoto.add_dependency(dep_dict))
-    if do_metp in ['Y', 'YES']:
+    if cdump in ['gfs'] and do_metp in ['Y', 'YES']:
         dep_dict = {'type':'metatask', 'name':f'{cdump}metp'}
         deps.append(rocoto.add_dependency(dep_dict))
     if do_wave in ['Y', 'YES']:
