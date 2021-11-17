@@ -27,11 +27,6 @@ export PS4='$SECONDS + '
 date
 
 #############################################################
-# Specify GFS versions
-#############################################################
-export gfs_ver=v16.0.0
-
-#############################################################
 # Specify Run Driver location
 #############################################################
 export driver=/lfs/h2/emc/vpppg/noscrub/$USER/packages/gfs.$gfs_ver/driver
@@ -67,7 +62,6 @@ module list
 # Define COM, COMOUTwmo, COMIN  directories
 ############################################
 # set envir=para or para to test with data in prod or para
- export envir=para
 export envir=para
 
 export SENDCOM=YES
