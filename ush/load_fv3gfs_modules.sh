@@ -34,7 +34,7 @@ elif [[ -L /usrx && "$( readlink /usrx 2> /dev/null )" =~ dell ]] ; then
 	module load module_base.wcoss_dell_p3 
 elif [[ -d /lfs/h2 ]]; then
     # We are on WCOSS2 (Cactus or Dogwood)
-	module load module_base.wcoss2
+	module load module_base.wcoss2.lua
 elif [[ -d /dcom && -d /hwrf ]] ; then
     # We are on NOAA Tide or Gyre
 	module load module_base.wcoss 
