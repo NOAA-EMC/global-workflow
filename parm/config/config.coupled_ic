@@ -15,9 +15,9 @@ elif [[ "$machine" == "ORION" ]]; then
   export BASE_CPLIC="/work/noaa/global/wkolczyn/noscrub/global-workflow/IC"
 fi
 
-export CPL_ATMIC=CFSRfracL127
+export CPL_ATMIC=GEFSwithNOAHMP-GLDASdatm-ERAsnow-aerosols
 export CPL_ICEIC=CPC
 export CPL_OCNIC=CPC3Dvar
-export CPL_WAVIC=CFSRwave20200925
+export CPL_WAVIC=GEFSwave20210528v2
 
 echo "END: config.coupled_ic"
