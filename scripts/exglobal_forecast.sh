@@ -227,6 +227,5 @@ if [ $err != 0 ]; then
   exit $err
 else
   echo "MAIN: $confignamevarfornems Forecast completed at normal status"
-  if [ $KEEPDATA != "YES" ]; then rm -rf $DATA; fi
   exit 0
 fi
