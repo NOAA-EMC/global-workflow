@@ -658,19 +658,25 @@ WW3_postdet() {
 
   #Copy initial condition files:
   for wavGRD in $waveGRD ; do
-    if [ $RERUN = "NO" ]; then
-      if [ ! -f ${WRDIR}/${sPDY}.${scyc}0000.restart.${wavGRD} ]; then
-        echo "WARNING: NON-FATAL ERROR wave IC is missing, will start from rest"
+    if [ $warm_start = ".true." -o $RERUN = "YES" ]; then
+      if [ $RERUN = "NO" ]; then
+        waverstfile=${WRDIR}/${sPDY}.${scyc}0000.restart.${wavGRD}
+      else 
+        waverstfile=${RSTDIR_WAVE}/${PDYT}.${cyct}0000.restart.${wavGRD}      
       fi
-      $NLN ${WRDIR}/${sPDY}.${scyc}0000.restart.${wavGRD} $DATA/restart.${wavGRD}
-    else
-      if [ ! -f ${RSTDIR_WAVE}/${PDYT}.${cyct}0000.restart.${wavGRD} ]; then
-        echo "WARNING: NON-FATAL ERROR wave IC is missing, will start from rest"
-      fi
-      $NLN ${RSTDIR_WAVE}/${PDYT}.${cyct}0000.restart.${wavGRD} $DATA/restart.${wavGRD}
+    else 
+      waverstfile=${RSTDIR_WAVE}/${sPDY}.${scyc}0000.restart.${wavGRD}
     fi
+    if [ ! -f ${waverstfile} ]; then
+      echo "WARNING: NON-FATAL ERROR wave IC is missing, will start from rest"
+    else
+      $NLN ${waverstfile} $DATA/restart.${wavGRD}
+    fi
+  done  
+
+  for wavGRD in $waveGRD ; do
     eval $NLN $datwave/${wavprfx}.log.${wavGRD}.${PDY}${cyc} log.${wavGRD}
-  done
+  done 
 
   if [ "$WW3ICEINP" = "YES" ]; then
     wavicefile=$COMINwave/rundata/${CDUMPwave}.${WAVEICE_FID}.${cycle}.ice
@@ -727,9 +733,11 @@ WW3_postdet() {
 WW3_nml() {
   echo "SUB ${FUNCNAME[0]}: Copying input files for WW3"
   WAV_MOD_TAG=${CDUMP}wave${waveMEMB}
-  for file in $(ls $COMINwave/rundata/rmp_src_to_dst_conserv_*) ; do
-    $NLN $file $DATA/
-  done
+  if [ "${USE_WAV_RMP:-YES}" = "YES" ]; then
+    for file in $(ls $COMINwave/rundata/rmp_src_to_dst_conserv_*) ; do
+      $NLN $file $DATA/
+    done
+  fi 
   $NLN $COMINwave/rundata/ww3_multi.${CDUMPwave}${WAV_MEMBER}.${cycle}.inp $DATA/ww3_multi.inp
 }
 

@@ -95,6 +95,14 @@ cd $COMOUT || exit 99
 rm -rf INPUT
 $NLN $OUTDIR .
 
+#Stage the WW3 initial conditions to ROTDIR 
+if [ $cplwav = ".true." ]; then
+  export OUTDIRw="$ICSDIR/$CDATE/wav/"
+  COMOUTw="$ROTDIR/$CDUMP.$PDY/$cyc/wave/restart"
+  [[ ! -d $COMOUTw ]] && mkdir -p $COMOUTw
+  cd $COMOUTw || exit 99
+  $NLN $OUTDIRw .
+fi
 
 if  [[ $err -ne 0 ]] ; then 
   echo "Fatal Error: ICs are not properly set-up" 
