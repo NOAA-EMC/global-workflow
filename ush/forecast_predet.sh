@@ -272,9 +272,9 @@ FV3_GFS_predet(){
 WW3_predet(){
   echo "SUB ${FUNCNAME[0]}: Defining variables for WW3"
   if [ $CDUMP = "gdas" ]; then
-    RSTDIR_WAVE=$ROTDIR/${CDUMP}.${PDY}/${cyc}/wave/restart
+    export RSTDIR_WAVE=$ROTDIR/${CDUMP}.${PDY}/${cyc}/wave/restart
   else
-    RSTDIR_WAVE=${RSTDIR_WAVE:-$ROTDIR/${CDUMP}.${PDY}/${cyc}/wave/restart}
+    export RSTDIR_WAVE=${RSTDIR_WAVE:-$ROTDIR/${CDUMP}.${PDY}/${cyc}/wave/restart}
   fi
   if [ ! -d $RSTDIR_WAVE ]; then mkdir -p $RSTDIR_WAVE ; fi
   $NLN $RSTDIR_WAVE restart_wave

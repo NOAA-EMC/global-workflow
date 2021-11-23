@@ -653,6 +653,7 @@ WW3_postdet() {
   export WRPDY=`echo $WRDATE | cut -c1-8`
   export WRcyc=`echo $WRDATE | cut -c9-10`
   export WRDIR=${ROTDIR}/${CDUMPRSTwave}.${WRPDY}/${WRcyc}/wave/restart
+  export RSTDIR_WAVE=$ROTDIR/${CDUMP}.${PDY}/${cyc}/wave/restart
   export datwave=$COMOUTwave/rundata
   export wavprfx=${CDUMPwave}${WAV_MEMBER}
 
@@ -768,9 +769,9 @@ MOM6_postdet() {
   $NCP -pf $FIX_DIR/fix_cpl/a${CASE}o${OCNRES}/grid_spec.nc $DATA/INPUT/
 
   # Copy mediator restart files to RUNDIR
-  if [ ${inistep:-"restart"} = 'restart' ]; then
-    $NCP $ROTDIR/$CDUMP.$PDY/$cyc/ufs.cpld*.nc $DATA/
-    $NCP $ROTDIR/$CDUMP.$PDY/$cyc/rpointer.cpl $DATA/
+  if [ $warm_start = ".true." -o $RERUN = "YES" ]; then
+    $NCP $ROTDIR/$CDUMP.$PDY/$cyc/med/ufs.cpld*.nc $DATA/
+    $NCP $ROTDIR/$CDUMP.$PDY/$cyc/med/rpointer.cpl $DATA/
   fi
 
   if [ $DO_OCN_SPPT = "YES" -o $DO_OCN_PERT_EPBL = "YES" ]; then
@@ -796,54 +797,49 @@ MOM6_postdet() {
   fi
   [[ ! -d $COMOUT/ocean ]] && mkdir -p $COMOUT/ocean
 
-  if [ ${inistep:-"restart"} = 'cold' ]; then
-    $NLN $COMOUT/ocean/ufs.cpld.cold.cpl.r.*.nc $DATA/ufs.cpld.cold.cpl.r.*.nc
-    $NLN $COMOUT/ocean/rpointer.cpl $DATA/rpointer.cpl
-  else
-    fhrlst=$OUTPUT_FH
+  fhrlst=$OUTPUT_FH
 
-    for fhr in $fhrlst; do
-      if [ $fhr = 'anl' ]; then
-        continue
-      fi
-      if [ -z $last_fhr ]; then
-        last_fhr=$fhr
-        continue
-      fi
-      (( interval = fhr - last_fhr ))
-      (( midpoint = last_fhr + interval/2 ))
-      VDATE=$($NDATE $fhr $IDATE)
-      YYYY=$(echo $VDATE | cut -c1-4)
-      MM=$(echo $VDATE | cut -c5-6)
-      DD=$(echo $VDATE | cut -c7-8)
-      HH=$(echo $VDATE | cut -c9-10)
-      SS=$((10#$HH*3600))
-
-      VDATE_MID=$($NDATE $midpoint $IDATE)
-      YYYY_MID=$(echo $VDATE_MID | cut -c1-4)
-      MM_MID=$(echo $VDATE_MID | cut -c5-6)
-      DD_MID=$(echo $VDATE_MID | cut -c7-8)
-      HH_MID=$(echo $VDATE_MID | cut -c9-10)
-      SS_MID=$((10#$HH_MID*3600))
-
-      source_file="ocn_${YYYY_MID}_${MM_MID}_${DD_MID}_${HH_MID}.nc"
-      dest_file="ocn${VDATE}.${ENSMEM}.${IDATE}.nc"
-      ${NLN} ${COMOUT}/ocean/${dest_file} ${DATA}/${source_file}
-
-      source_file="wavocn_${YYYY_MID}_${MM_MID}_${DD_MID}_${HH_MID}.nc"
-      dest_file=${source_file}
-      ${NLN} ${COMOUT}/ocean/${dest_file} ${DATA}/${source_file}
-
-      source_file="ocn_daily_${YYYY}_${MM}_${DD}.nc"
-      dest_file=${source_file}
-      if [ ! -a "${DATA}/${source_file}" ]; then
-        $NLN ${COMOUT}/ocean/${dest_file} ${DATA}/${source_file}
-      fi
-
+  for fhr in $fhrlst; do
+    if [ $fhr = 'anl' ]; then
+      continue
+    fi
+    if [ -z $last_fhr ]; then
       last_fhr=$fhr
-    done
-    $NLN $COMOUT/ocean/MOM_input $DATA/INPUT/MOM_input
-  fi
+      continue
+    fi
+    (( interval = fhr - last_fhr ))
+    (( midpoint = last_fhr + interval/2 ))
+    VDATE=$($NDATE $fhr $IDATE)
+    YYYY=$(echo $VDATE | cut -c1-4)
+    MM=$(echo $VDATE | cut -c5-6)
+    DD=$(echo $VDATE | cut -c7-8)
+    HH=$(echo $VDATE | cut -c9-10)
+    SS=$((10#$HH*3600))
+
+    VDATE_MID=$($NDATE $midpoint $IDATE)
+    YYYY_MID=$(echo $VDATE_MID | cut -c1-4)
+    MM_MID=$(echo $VDATE_MID | cut -c5-6)
+    DD_MID=$(echo $VDATE_MID | cut -c7-8)
+    HH_MID=$(echo $VDATE_MID | cut -c9-10)
+    SS_MID=$((10#$HH_MID*3600))
+
+    source_file="ocn_${YYYY_MID}_${MM_MID}_${DD_MID}_${HH_MID}.nc"
+    dest_file="ocn${VDATE}.${ENSMEM}.${IDATE}.nc"
+    ${NLN} ${COMOUT}/ocean/${dest_file} ${DATA}/${source_file}
+
+    source_file="wavocn_${YYYY_MID}_${MM_MID}_${DD_MID}_${HH_MID}.nc"
+    dest_file=${source_file}
+    ${NLN} ${COMOUT}/ocean/${dest_file} ${DATA}/${source_file}
+
+    source_file="ocn_daily_${YYYY}_${MM}_${DD}.nc"
+    dest_file=${source_file}
+    if [ ! -a "${DATA}/${source_file}" ]; then
+      $NLN ${COMOUT}/ocean/${dest_file} ${DATA}/${source_file}
+    fi
+
+    last_fhr=$fhr
+  done
+  $NLN $COMOUT/ocean/MOM_input $DATA/INPUT/MOM_input
 
   echo "SUB ${FUNCNAME[0]}: MOM6 input data linked/copied"
 
@@ -872,13 +868,8 @@ CICE_postdet() {
   npt=$((FHMAX*$stepsperhr))      # Need this in order for dump_last to work
 
   histfreq_n=${histfreq_n:-6}
-  if [ ${inistep:-"restart"}  = 'cold' ]; then
-    dumpfreq_n=${dumpfreq_n:-3600}  # restart write interval in seconds, default 1 hour
-    dumpfreq="s"
-  else
-    dumpfreq_n=${dumpfreq_n:-3024000}  # restart write interval in seconds, default 35 days
-    dumpfreq=${dumpfreq:-"s"} #  "s" or "d" or "m" for restarts at intervals of "seconds", "days" or "months"
-  fi
+  dumpfreq_n=${dumpfreq_n:-3024000}  # restart write interval in seconds, default 35 days
+  dumpfreq=${dumpfreq:-"s"} #  "s" or "d" or "m" for restarts at intervals of "seconds", "days" or "months"
   cice_hist_avg=${cice_hist_avg:-".true."}
 
   FRAZIL_FWSALT=${FRAZIL_FWSALT:-".true."}
@@ -933,27 +924,25 @@ CICE_postdet() {
   $NLN $COMOUT/ice/ice_in $DATA/ice_in
   fhrlst=$OUTPUT_FH
 
-  if [ ${inistep:-"restart"} != 'cold' ]; then
-    for fhr in $fhrlst; do
-      if [ $fhr = 'anl' ]; then
-        continue
-      fi
-      VDATE=$($NDATE $fhr $IDATE)
-      YYYY=$(echo $VDATE | cut -c1-4)
-      MM=$(echo $VDATE | cut -c5-6)
-      DD=$(echo $VDATE | cut -c7-8)
-      HH=$(echo $VDATE | cut -c9-10)
-      SS=$((10#$HH*3600))
+  for fhr in $fhrlst; do
+    if [ $fhr = 'anl' ]; then
+      continue
+    fi
+    VDATE=$($NDATE $fhr $IDATE)
+    YYYY=$(echo $VDATE | cut -c1-4)
+    MM=$(echo $VDATE | cut -c5-6)
+    DD=$(echo $VDATE | cut -c7-8)
+    HH=$(echo $VDATE | cut -c9-10)
+    SS=$((10#$HH*3600))
 
-      if [[ 10#$fhr -eq 0 ]]; then
-        $NLN $COMOUT/ice/iceic$VDATE.$ENSMEM.$IDATE.nc $DATA/history/iceh_ic.${YYYY}-${MM}-${DD}-$(printf "%5.5d" ${SS}).nc
-      else
-        (( interval = fhr - last_fhr ))
-        $NLN $COMOUT/ice/ice$VDATE.$ENSMEM.$IDATE.nc $DATA/history/iceh_$(printf "%0.2d" $interval)h.${YYYY}-${MM}-${DD}-$(printf "%5.5d" ${SS}).nc
-      fi
-      last_fhr=$fhr
-    done
-  fi
+    if [[ 10#$fhr -eq 0 ]]; then
+      $NLN $COMOUT/ice/iceic$VDATE.$ENSMEM.$IDATE.nc $DATA/history/iceh_ic.${YYYY}-${MM}-${DD}-$(printf "%5.5d" ${SS}).nc
+    else
+      (( interval = fhr - last_fhr ))
+      $NLN $COMOUT/ice/ice$VDATE.$ENSMEM.$IDATE.nc $DATA/history/iceh_$(printf "%0.2d" $interval)h.${YYYY}-${MM}-${DD}-$(printf "%5.5d" ${SS}).nc
+    fi
+    last_fhr=$fhr
+  done
 }
 
 CICE_nml() {
