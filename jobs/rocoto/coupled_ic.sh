@@ -74,14 +74,14 @@ if [[ $rc -ne 0 ]] ; then
 fi
 ((err+=$rc))
 
-if [ $cplwav = ".true." ]; then
+if [ $DO_WAVE = "YES" ]; then
   [[ ! -d $ICSDIR/$CDATE/wav ]] && mkdir -p $ICSDIR/$CDATE/wav
   for grdID in $waveGRD
   do
-    cp $BASE_CPLIC/$CPL_WAVEIC/$CDATE/wav/$grdID/*restart.$grdID $ICSDIR/$CDATE/wav/
+    cp $BASE_CPLIC/$CPL_WAVIC/$CDATE/wav/$grdID/*restart.$grdID $ICSDIR/$CDATE/wav/
     rc=$?
     if [[ $rc -ne 0 ]] ; then
-      echo "FATAL: Unable to copy $BASE_CPLIC/$CPL_WAVEIC/$CDATE/wav/$grdID/*restart.$grdID to $ICSDIR/$CDATE/wav/ (Error code $rc)" 
+      echo "FATAL: Unable to copy $BASE_CPLIC/$CPL_WAVIC/$CDATE/wav/$grdID/*restart.$grdID to $ICSDIR/$CDATE/wav/ (Error code $rc)" 
     fi
     ((err+=$rc))
   done
@@ -96,12 +96,12 @@ rm -rf INPUT
 $NLN $OUTDIR .
 
 #Stage the WW3 initial conditions to ROTDIR 
-if [ $cplwav = ".true." ]; then
-  export OUTDIRw="$ICSDIR/$CDATE/wav/"
+if [ $DO_WAVE = "YES" ]; then
+  export OUTDIRw="$ICSDIR/$CDATE/wav"
   COMOUTw="$ROTDIR/$CDUMP.$PDY/$cyc/wave/restart"
   [[ ! -d $COMOUTw ]] && mkdir -p $COMOUTw
   cd $COMOUTw || exit 99
-  $NLN $OUTDIRw .
+  $NLN $OUTDIRw/* .
 fi
 
 if  [[ $err -ne 0 ]] ; then 
