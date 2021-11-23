@@ -357,7 +357,7 @@ elif [ $step = "eupd" ]; then
 
 elif [ $step = "eupdfsoi" ]; then
 
-    export wtime_eupdfsoi="00:30:00"
+    export wtime_eupdfsoi="03:00:00"
     if [ $CASE = "C768" ]; then
       export npe_eupdfsoi=960
       export nth_eupdfsoi=6
@@ -369,8 +369,10 @@ elif [ $step = "eupdfsoi" ]; then
         export nth_eupdfsoi=40
       fi
     elif [ $CASE = "C384" ]; then
-      export npe_eupdfsoi=270
-      export nth_eupdfsoi=2
+      #export npe_eupdfsoi=270
+      #export nth_eupdfsoi=2
+      export npe_eupdfsoi=400
+      export nth_eupdfsoi=5
       if [[ "$machine" = "WCOSS_DELL_P3" ]]; then
         export nth_eupdfsoi=9
       fi

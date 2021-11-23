@@ -16,7 +16,7 @@ export npe_enkf=$npe_eupd
 
 # LETKF specific settings with model space localization
 export modelspace_vloc=".true."  # model space localization
-export letkf_flag=".true."       # use LETKF instead of serial filter
+export letkf_flag=".false"       # use LETKF instead of serial filter
 export getkf=".true."            # Gain form of LETKF (needed for model-space localization)
 export denkf=".true."            # EnKF approximation (beneficial since less spread removed by analysis)
 export nobsl_max=10000           # max number of obs in each LETKF volume (uses closest nobsl_max). can

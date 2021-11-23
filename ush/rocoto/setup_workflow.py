@@ -209,7 +209,7 @@ def get_definitions(base):
     strings.append('\n')
     strings.append('\t<!-- ROCOTO parameters that control workflow -->\n')
     if do_efsoi in ['Y', 'YES']:
-        strings.append('\t<!ENTITY CYCLETHROTTLE "6">\n')
+        strings.append('\t<!ENTITY CYCLETHROTTLE "7">\n')
     else:
         strings.append('\t<!ENTITY CYCLETHROTTLE "3">\n')
     strings.append('\t<!ENTITY TASKTHROTTLE  "25">\n')
