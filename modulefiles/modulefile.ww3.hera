@@ -1,7 +1,6 @@
-#%Module######################################################################
-##
-##      S2S prerequisites
-##
+#%Module################################################
+# S2S prerequisites
+########################################################
 
 module use /scratch2/NCEPDEV/nwprod/hpc-stack/libs/hpc-stack/modulefiles/stack
 
@@ -21,12 +20,12 @@ module load fms/2020.04.03
 
 module load bacio/2.4.1
 module load crtm/2.3.0
-module load g2/3.4.1
-module load g2tmpl/1.9.1
+module load g2/3.4.3
+module load g2tmpl/1.10.0
 module load ip/3.3.3
 module load nemsio/2.5.2
 module load sp/2.3.3
-module load w3emc/2.7.3
+module load w3emc/2.9.0
 module load w3nco/2.4.1
 module load wgrib2/2.0.8
 module load upp/10.0.6
