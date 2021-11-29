@@ -24,13 +24,7 @@ if [ $warm_start = ".true." ]; then
 else
   cmeps_run_type='startup'
 fi
-if [[ $inistep = "cold" ]]; then
-  restart_interval=0
-  coldstart=true     # this is the correct setting
-else
-  restart_interval=${restart_interval:-3024000}    # Interval in seconds to write restarts
-  coldstart=false
-fi
+restart_interval=${restart_interval:-3024000}    # Interval in seconds to write restarts
 
 ATM_model=${ATM_model:-'fv3'}
 OCN_model=${OCN_model:-'mom6'}
@@ -84,7 +78,6 @@ if [ $cplflx = .true. ]; then
   sed -i -e "s;@\[ocn_petlist_bounds\];$ocn_petlist_bounds;g" tmp1
   sed -i -e "s;@\[DumpFields\];$DumpFields;g" tmp1
   sed -i -e "s;@\[cap_dbug_flag\];$cap_dbug_flag;g" tmp1
-  sed -i -e "s;@\[coldstart\];$coldstart;g" tmp1
   sed -i -e "s;@\[use_coldstart\];$use_coldstart;g" tmp1
   sed -i -e "s;@\[RUNTYPE\];$cmeps_run_type;g" tmp1
   sed -i -e "s;@\[CPLMODE\];$cplmode;g" tmp1
