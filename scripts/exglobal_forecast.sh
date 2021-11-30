@@ -63,7 +63,7 @@ cyc=$(echo $CDATE | cut -c9-10)
 
 # Directories.
 pwd=$(pwd)
-NWPROD=${NWPROD:-${NWROOT:-$pwd}}
+NWPROD=${NWPROD:-${PACKAGEROOT:-$pwd}}
 HOMEgfs=${HOMEgfs:-$NWPROD}
 FIX_DIR=${FIX_DIR:-$HOMEgfs/fix}
 FIX_AM=${FIX_AM:-$FIX_DIR/fix_am}
