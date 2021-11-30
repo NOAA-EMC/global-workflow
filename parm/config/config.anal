@@ -121,12 +121,12 @@ if [[ $RUN_ENVIR == "emc" ]]; then
 
 
 #   NOTE:
-#   As of 2020052612, gfsv16_historical/global_convinfo.txt.2020052612 is
+#   As of 2021110312, gfsv16_historical/global_convinfo.txt.2021091612 is
 #   identical to ../global_convinfo.txt.  Thus, the logic below is not
 #   needed at this time.
 #   Assimilate COSMIC-2 GPS
-#   if [[ "$CDATE" -ge "2020052612" && "$CDATE" -lt "YYYYMMDDHH" ]]; then
-#     export CONVINFO=$FIXgsi/gfsv16_historical/global_convinfo.txt.2020052612
+#   if [[ "$CDATE" -ge "2021091612" && "$CDATE" -lt "YYYYMMDDHH" ]]; then
+#     export CONVINFO=$FIXgsi/gfsv16_historical/global_convinfo.txt.2021091612
 #   fi
 
 
@@ -146,14 +146,29 @@ if [[ $RUN_ENVIR == "emc" ]]; then
 	export SATINFO=$FIXgsi/gfsv16_historical/global_satinfo.txt.2019110706
     fi
 
+#   Turn off assimilation of Metop-A MHS
+    if [[ "$CDATE" -ge "2020022012" && "$CDATE" -lt "2021052118" ]]; then
+	export SATINFO=$FIXgsi/gfsv16_historical/global_satinfo.txt.2020022012
+    fi
+
+#   Turn off assimilation of S-NPP CrIS
+    if [[ "$CDATE" -ge "2021052118" && "$CDATE" -lt "2021092206" ]]; then
+	export SATINFO=$FIXgsi/gfsv16_historical/global_satinfo.txt.2021052118 
+    fi
+
+#   Turn off assimilation of MetOp-A IASI
+    if [[ "$CDATE" -ge "2021092206" && "$CDATE" -lt "2021102612" ]]; then
+	export SATINFO=$FIXgsi/gfsv16_historical/global_satinfo.txt.2021092206 
+    fi
+
 #   NOTE:  
-#   As of 2020022012, gfsv16_historical/global_satinfo.txt.2020022012 is
+#   As of 2021110312, gfsv16_historical/global_satinfo.txt.2021102612 is
 #   identical to ../global_satinfo.txt.  Thus, the logic below is not
 #   needed at this time
 #
-#   Turn off assmilation of all Metop-A MHS
-#   if [[ "$CDATE" -ge "2020022012" && "$CDATE" -lt "YYYYMMDDHH" ]]; then
-#       export SATINFO=$FIXgsi/gfsv16_historical/global_satinfo.txt.2020022012
+#   Turn on assimilation of MetOp-C IASI
+#   if [[ "$CDATE" -ge "2021102612" && "$CDATE" -lt "YYYYMMDDHH" ]]; then
+#       export SATINFO=$FIXgsi/gfsv16_historical/global_satinfo.txt.2021102612
 #   fi
 
 fi
