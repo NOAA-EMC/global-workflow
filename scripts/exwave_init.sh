@@ -168,7 +168,7 @@
   
     if [ "$NTASKS" -gt '1' ]
     then
-      ${wavempexec} ${wave_mpmd} cmdfile
+      ${wavempexec} ${wavenproc} ${wave_mpmd} cmdfile
       exit=$?
     else
       ./cmdfile
