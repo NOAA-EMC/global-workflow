@@ -209,7 +209,7 @@ if [ $type = "gfs" ]; then
     head="gfswave.t${cyc}z."
 
     #...........................
-    echo  "${dirname}/wave/rundata/ww3_multi*   " >>gfswave.txt
+    echo  "${dirname}rundata/ww3_multi*   " >>gfswave.txt
     echo "${dirname}gridded/${head}*      " >>gfswave.txt
     echo "${dirname}station/${head}*      " >>gfswave.txt
 
