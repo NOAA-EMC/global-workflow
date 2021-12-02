@@ -39,3 +39,8 @@ DOBNDPNT_WAVE='NO'
 
 # config.waveprep
 IOSRV=1
+
+# config.arch
+export ARCH_OUTPUT_HISTORY="YES"
+export ARCH_HISTORY_FHMAX=${FHMAX_GFS_00}
+export ARCH_HISTORY_FHINC=${FHOUT_GFS}

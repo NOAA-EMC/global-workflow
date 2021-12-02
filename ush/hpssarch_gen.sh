@@ -13,7 +13,9 @@ CDATE=${CDATE:-2018010100}
 PDY=$(echo $CDATE | cut -c 1-8)
 cyc=$(echo $CDATE | cut -c 9-10)
 OUTPUT_FILE=${OUTPUT_FILE:-"netcdf"}
-OUTPUT_HISTORY=${OUTPUT_HISTORY:-".true."}
+ARCH_GAUSSIAN=${ARCH_GAUSSIAN:-"YES"}
+ARCH_GAUSSIAN_FHMAX=${ARCH_GAUSSIAN_FHMAX:-36}
+ARCH_GAUSSIAN_FHINC=${ARCH_GAUSSIAN_FHINC:-6}
 SUFFIX=${SUFFIX:-".nc"}
 if [ $SUFFIX = ".nc" ]; then
   format="netcdf"
@@ -36,26 +38,25 @@ if [ $type = "gfs" ]; then
   FHMAX_HF_GFS=${FHMAX_HF_GFS:-120}
   FHOUT_HF_GFS=${FHOUT_HF_GFS:-1}
 
-
   rm -f gfsa.txt
   rm -f gfsb.txt
-  rm -f gfs_pgrb2b.txt
-  rm -f gfs_flux.txt
   rm -f gfs_restarta.txt
   touch gfsa.txt
   touch gfsb.txt
-  touch gfs_pgrb2b.txt
-  touch gfs_flux.txt
   touch gfs_restarta.txt
 
-  if [ $MODE = "cycled" ]; then
-    rm -f gfs_${format}a.txt
-    touch gfs_${format}a.txt
-  fi
-
-  if [ $OUTPUT_HISTORY = ".true." ]; then
+  if [ $ARCH_GAUSSIAN = "YES" ]; then
+    rm -f gfs_pgrb2b.txt
     rm -f gfs_${format}b.txt
+    rm -f gfs_flux.txt
+    touch gfs_pgrb2b.txt
     touch gfs_${format}b.txt
+    touch gfs_flux.txt
+
+    if [ $MODE = "cycled" ]; then
+      rm -f gfs_${format}a.txt
+      touch gfs_${format}a.txt
+    fi
   fi
 
   if [ $DO_DOWN = "YES" ]; then
@@ -68,13 +69,32 @@ if [ $type = "gfs" ]; then
 
   head="gfs.t${cyc}z."
 
-  #..................
-  echo  "${dirname}${head}pgrb2b.0p25.anl                  " >>gfs_pgrb2b.txt
-  echo  "${dirname}${head}pgrb2b.0p25.anl.idx              " >>gfs_pgrb2b.txt
-  echo  "${dirname}${head}pgrb2b.0p50.anl                  " >>gfs_pgrb2b.txt
-  echo  "${dirname}${head}pgrb2b.0p50.anl.idx              " >>gfs_pgrb2b.txt
+  if [ $ARCH_GAUSSIAN = "YES" ]; then
+    echo  "${dirname}${head}pgrb2b.0p25.anl                  " >>gfs_pgrb2b.txt
+    echo  "${dirname}${head}pgrb2b.0p25.anl.idx              " >>gfs_pgrb2b.txt
+    echo  "${dirname}${head}pgrb2b.0p50.anl                  " >>gfs_pgrb2b.txt
+    echo  "${dirname}${head}pgrb2b.0p50.anl.idx              " >>gfs_pgrb2b.txt
 
+    if [ $MODE = "cycled" ]; then
+      echo  "${dirname}${head}atmanl${SUFFIX}            " >>gfs_${format}a.txt
+      echo  "${dirname}${head}sfcanl${SUFFIX}            " >>gfs_${format}a.txt
+      echo  "${dirname}${head}atmi*.nc                   " >>gfs_${format}a.txt
+      echo  "${dirname}${head}dtfanl.nc                  " >>gfs_${format}a.txt
+      echo  "${dirname}${head}loginc.txt                 " >>gfs_${format}a.txt
+    fi
+
+    fh=0
+    while [ $fh -le $ARCH_GAUSSIAN_FHMAX ]; do
+      fhr=$(printf %03i $fh)
+      echo  "${dirname}${head}atmf${fhr}${SUFFIX}        " >>gfs_${format}b.txt
+      echo  "${dirname}${head}sfcf${fhr}${SUFFIX}        " >>gfs_${format}b.txt
+      fh=$((fh+ARCH_GAUSSIAN_FHINC))
+    done
+  fi
+
+  #..................
   echo  "./logs/${CDATE}/gfs*.log                          " >>gfsa.txt
+  echo  "${dirname}/atmos/input.nml                        " >>gfsa.txt
   if [ $MODE = "cycled" ]; then
     echo  "${dirname}${head}gsistat                          " >>gfsa.txt
     echo  "${dirname}${head}nsstbufr                         " >>gfsa.txt
@@ -120,15 +140,17 @@ if [ $type = "gfs" ]; then
   fh=0
   while [ $fh -le $FHMAX_GFS ]; do
     fhr=$(printf %03i $fh)
-    echo  "${dirname}${head}pgrb2b.0p25.f${fhr}             " >>gfs_pgrb2b.txt
-    echo  "${dirname}${head}pgrb2b.0p25.f${fhr}.idx         " >>gfs_pgrb2b.txt
-    if [ -s $ROTDIR/${dirpath}${head}pgrb2b.0p50.f${fhr} ]; then
-       echo  "${dirname}${head}pgrb2b.0p50.f${fhr}         " >>gfs_pgrb2b.txt
-       echo  "${dirname}${head}pgrb2b.0p50.f${fhr}.idx     " >>gfs_pgrb2b.txt
-    fi
+    if [ $ARCH_GAUSSIAN = "YES" ]; then
+      echo  "${dirname}${head}sfluxgrbf${fhr}.grib2           " >>gfs_flux.txt
+      echo  "${dirname}${head}sfluxgrbf${fhr}.grib2.idx       " >>gfs_flux.txt
 
-    echo  "${dirname}${head}sfluxgrbf${fhr}.grib2           " >>gfs_flux.txt
-    echo  "${dirname}${head}sfluxgrbf${fhr}.grib2.idx       " >>gfs_flux.txt
+      echo  "${dirname}${head}pgrb2b.0p25.f${fhr}             " >>gfs_pgrb2b.txt
+      echo  "${dirname}${head}pgrb2b.0p25.f${fhr}.idx         " >>gfs_pgrb2b.txt
+      if [ -s $ROTDIR/${dirpath}${head}pgrb2b.0p50.f${fhr} ]; then
+         echo  "${dirname}${head}pgrb2b.0p50.f${fhr}         " >>gfs_pgrb2b.txt
+         echo  "${dirname}${head}pgrb2b.0p50.f${fhr}.idx     " >>gfs_pgrb2b.txt
+      fi
+    fi
 
     echo  "${dirname}${head}pgrb2.0p25.f${fhr}              " >>gfsa.txt
     echo  "${dirname}${head}pgrb2.0p25.f${fhr}.idx          " >>gfsa.txt
@@ -150,27 +172,6 @@ if [ $type = "gfs" ]; then
 
     fh=$((fh+inc))
   done
-
-
-  #..................
-  if [ $MODE = "cycled" ]; then
-    echo  "${dirname}${head}atmanl${SUFFIX}            " >>gfs_${format}a.txt
-    echo  "${dirname}${head}sfcanl${SUFFIX}            " >>gfs_${format}a.txt
-    echo  "${dirname}${head}atmi*.nc                   " >>gfs_${format}a.txt
-    echo  "${dirname}${head}dtfanl.nc                  " >>gfs_${format}a.txt
-    echo  "${dirname}${head}loginc.txt                 " >>gfs_${format}a.txt
-  fi
-
-  #..................
-  if [ $OUTPUT_HISTORY = ".true." ]; then
-  fh=0
-  while [ $fh -le 36 ]; do
-    fhr=$(printf %03i $fh)
-    echo  "${dirname}${head}atmf${fhr}${SUFFIX}        " >>gfs_${format}b.txt
-    echo  "${dirname}${head}sfcf${fhr}${SUFFIX}        " >>gfs_${format}b.txt
-    fh=$((fh+6))
-  done
-  fi
 
   #..................
   if [ $MODE = "cycled" ]; then
@@ -208,10 +209,58 @@ if [ $type = "gfs" ]; then
     head="gfswave.t${cyc}z."
 
     #...........................
+    echo  "${dirname}/wave/rundata/ww3_multi*   " >>gfswave.txt
     echo "${dirname}gridded/${head}*      " >>gfswave.txt
     echo "${dirname}station/${head}*      " >>gfswave.txt
 
   fi
+
+  if [ $DO_OCEAN = "YES" ]; then
+    dirpath="gfs.${PDY}/${cyc}/ocn/"
+    dirname="./${dirpath}"
+
+    head="gfs.t${cyc}z."
+
+    rm -f gfs_flux_1p00.txt
+    rm -f ocn_ice_grib2_0p5.txt 
+    rm -f ocn_ice_grib2_0p25.txt
+    rm -f ocn_2D.txt
+    rm -f ocn_3D.txt
+    rm -f ocn_xsect.txt
+    rm -f ocn_daily.txt
+    rm -f wavocn.txt
+    touch gfs_flux_1p00.txt
+    touch ocn_ice_grib2_0p5.txt
+    touch ocn_ice_grib2_0p25.txt
+    touch ocn_2D.txt
+    touch ocn_3D.txt
+    touch ocn_xsect.txt
+    touch ocn_daily.txt
+    touch wavocn.txt
+    echo  "${dirname}MOM_input                  " >>ocn_2D.txt
+    echo  "${dirname}ocn_2D*                    " >>ocn_2D.txt
+    echo  "${dirname}ocn_3D*                    " >>ocn_3D.txt
+    echo  "${dirname}ocn*EQ*                    " >>ocn_xsect.txt
+    echo  "${dirname}ocn_daily*                 " >>ocn_daily.txt
+    echo  "${dirname}wavocn*                    " >>wavocn.txt
+    echo  "${dirname}ocn_ice*0p5x0p5.grb2       " >>ocn_ice_grib2_0p5.txt
+    echo  "${dirname}ocn_ice*0p25x0p25.grb2     " >>ocn_ice_grib2_0p25.txt
+    echo  "${dirname}${head}flux.1p00.f???      " >>gfs_flux_1p00.txt
+    echo  "${dirname}${head}flux.1p00.f???.idx  " >>gfs_flux_1p00.txt
+  fi
+
+  if [ $DO_ICE = "YES" ]; then
+    dirpath="gfs.${PDY}/${cyc}/ice/"
+    dirname="./${dirpath}"
+
+    head="gfs.t${cyc}z."
+
+    rm -f ice.txt
+    touch ice.txt
+    echo  "${dirname}ice_in                     " >>ice.txt
+    echo  "${dirname}ice*nc                     " >>ice.txt
+  fi
+
 
 #-----------------------------------------------------
 fi   ##end of gfs
