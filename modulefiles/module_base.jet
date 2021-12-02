@@ -10,41 +10,55 @@ module load hpc/1.1.0
 # Load intel compiler and mpi
 module load hpc-intel/18.0.5.274
 module load hpc-impi/2018.4.274
-module load wgrib2/2.0.8
-module load hpss
-module load nco/4.9.1
-module load gempak/7.4.2
-module load prod_util/1.2.2
-module load grib_util/1.2.2
-module load g2tmpl/1.10.0
-module load crtm/2.3.0
-setenv CRTM_FIX /lfs4/HFIP/hfv3gfs/glopara/crtm_v2.3.0
 
+# Load hpss
+module load hpss
+
+# Standard 3rd party libraries
 module load jasper/2.0.25
 module load zlib/1.2.11
 module load png/1.6.35
 
+# Gempak
+module load gempak/7.4.2
+
+# HDF5 and netCDF
 module load hdf5/1.10.6
 module load netcdf/4.7.4
+
+# NCEP Libs that have no prerequisite libraries
+module load prod_util/1.2.2
+module load grib_util/1.2.2
+module load crtm/2.3.0
+setenv CRTM_FIX /lfs4/HFIP/hfv3gfs/glopara/crtm_v2.3.0
+module load g2tmpl/1.10.0
 module load pio/2.5.2
 module load esmf/8_1_1
 module load fms/2020.04.03
-
-module load bacio/2.4.1
-module load g2/3.4.1
+module load g2/3.4.3
 module load ip/3.3.3
-module load nemsio/2.5.2
 module load sp/2.3.3
-module load w3emc/2.7.3
-module load w3nco/2.4.1
-module load upp/10.0.6
 
+# NCO and WGRIB2 need netCDF
+module load nco/4.9.1
+module load wgrib2/2.0.8
 setenv WGRIB2 wgrib2
+
+# NEMSIO needs BACIO and W3NCO
+module load bacio/2.4.1
+module load w3nco/2.4.1
+module load nemsio/2.5.2
+
+# W3EMC needs SIGIO and NEMSIO
+module load sigio/2.3.2
+module load w3emc/2.7.3
+
+# UPP needs G2, G2Tmpl, IP, SP, SIGIO, BACIO, W3NCO, NEMSIO, W3EMC, and CRTM
+module load upp/10.0.6
 
 # python
 module use /contrib/anaconda/modulefiles
 module load anaconda/5.3.1
 
-# waveprep
+# Load CDO for waveprep
 module load cdo/1.9.5
-
