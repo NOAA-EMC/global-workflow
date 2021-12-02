@@ -35,7 +35,7 @@ export RUNMOS="NO"                # whether to run entire MOS package
 if [ $VRFYFITS = "YES" ]; then
 
     export fit_ver="newm.1.3"
-    export fitdir="$BASE_GIT/verif/global/Fit2Obs/${fit_ver}/batrun"
+    export fitdir="/lfs1/NESDIS/nesdis-rdo2/David.Huber/Fit2Obs/newm.1.3/batrun"
     export PRVT=$HOMEgfs/fix/fix_gsi/prepobs_errtable.global
     export HYBLEVS=$HOMEgfs/fix/fix_am/global_hyblev.l${LEVS}.txt
     export CUE2RUN=$QUEUE
@@ -56,6 +56,8 @@ if [ $VRFYFITS = "YES" ]; then
         export PREPQFITSH="$fitdir/subfits_hera_slurm"
     elif [ $machine = "ORION" ]; then
         export PREPQFITSH="$fitdir/subfits_orion_netcdf"
+    elif [ $machine = "JET" ]; then
+        export PREPQFITSH="$fitdir/subfits_jet_netcdf"
     else
         echo "Fit2Obs NOT supported on this machine"
     fi
@@ -143,7 +145,7 @@ fi
 #-------------------------------------------------
 
 export ens_tracker_ver=v1.1.15.4
-export HOMEens_tracker=$BASE_GIT/TC_tracker/TC_tracker.${ens_tracker_ver}
+export HOMEens_tracker=/lfs1/NESDIS/nesdis-rdo2/David.Huber/TC_Tracker/TC_tracker.v1.1.15.4
 
 if [ "$VRFYTRAK" = "YES" ]; then
 
