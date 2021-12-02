@@ -215,7 +215,7 @@ if [ $type = "gfs" ]; then
 
   fi
 
-  if [ $DO_OCEAN = "YES" ]; then
+  if [ $DO_OCN = "YES" ]; then
     dirpath="gfs.${PDY}/${cyc}/ocn/"
     dirname="./${dirpath}"
 

@@ -188,7 +188,7 @@ if [ $CDUMP = "gfs" ]; then
         targrp_list="$targrp_list gfswave"
     fi
 
-    if [ $DO_OCEAN = "YES" ]; then
+    if [ $DO_OCN = "YES" ]; then
         targrp_list="$targrp_list ocn_ice_grib2_0p5 ocn_ice_grib2_0p25 ocn_2D ocn_3D ocn_xsect ocn_daily wavocn gfs_flux_1p00"
     fi
 
