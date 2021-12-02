@@ -15,7 +15,7 @@
 FV3_GFS_det(){
   #-------------------------------------------------------
   # warm start?
-  warm_start=${warm_start:-".false."}
+  warm_start=${EXP_WARM_START:-".false."}
   read_increment=${read_increment:-".false."}
   res_latlon_dynamics="''"
 
