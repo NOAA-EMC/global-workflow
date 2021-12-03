@@ -132,9 +132,9 @@ elif [ $step = "anal" ]; then
     export nth_anal=5
     export npe_anal_gfs=1000
     #For the analysis jobs, the number of tasks and cores used must be equal.
-    #On the Jet partitions (except kjet), this is accomplished by adjusting the task
+    #On the Jet partitions, this is accomplished by adjusting the task
     #and thread count based on cores/node.
-    if [[ "$machine" = "Jet" && $PARTITION_BATCH != "kjet" ]]; then
+    if [[ "$machine" = "JET" && $PARTITION_BATCH != "kjet" ]]; then
       export nth_anal=4
       if [[ "$PARTITION_BATCH" = "xjet" ]]; then
          export npe_anal=1002
@@ -144,7 +144,7 @@ elif [ $step = "anal" ]; then
     if [ $CASE = "C384" ]; then
       export npe_anal=400
       export npe_anal_gfs=400
-      if [[ "$machine" = "Jet" ]]; then
+      if [[ "$machine" = "JET" ]]; then
          if [[ "$PARTITION_BATCH" = "xjet" ]]; then
             export nth_anal=4
             export npe_anal=402
@@ -157,9 +157,12 @@ elif [ $step = "anal" ]; then
     if [ $CASE = "C192" -o $CASE = "C96" -o $CASE = "C48" ]; then
       export npe_anal=84
       export npe_anal_gfs=84
-      if [[ "$machine" = "Jet" ]]; then
+      if [[ "$machine" = "JET" ]]; then
          if [[ "$PARTITION_BATCH" != "kjet" ]]; then
             export nth_anal=4
+         else
+            export npe_anal=88
+            export npe_anal_gfs=88
          fi
       fi
     fi
