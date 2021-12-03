@@ -350,6 +350,8 @@ cat > enkf.nml << EOFnml
    sattypes_rad(69)= 'abi_g16',       dsis(69)= 'abi_g16',
    sattypes_rad(70)= 'abi_g17',       dsis(70)= 'abi_g17',
    sattypes_rad(71)= 'iasi_metop-c',  dsis(71)= 'iasi_metop-c',
+   sattypes_rad(72)= 'viirs-m_npp',   dsis(72)= 'viirs-m_npp',
+   sattypes_rad(73)= 'viirs-m_j1',    dsis(73)= 'viirs-m_j1',
    $SATOBS_ENKF
 /
 &ozobs_enkf
