@@ -94,7 +94,7 @@ if [ $type = "gfs" ]; then
 
   #..................
   echo  "./logs/${CDATE}/gfs*.log                          " >>gfsa.txt
-  echo  "${dirname}/atmos/input.nml                        " >>gfsa.txt
+  echo  "${dirname}input.nml                               " >>gfsa.txt
   if [ $MODE = "cycled" ]; then
     echo  "${dirname}${head}gsistat                          " >>gfsa.txt
     echo  "${dirname}${head}nsstbufr                         " >>gfsa.txt
