@@ -51,6 +51,7 @@ if [ $step = "prep" -o $step = "prepbufr" ]; then
     eval "export npe_$step=4"
     eval "export npe_node_$step=2"
     eval "export nth_$step=1"
+    eval "export memory_$step=40G"
 
 elif [ $step = "waveinit" ]; then
 
