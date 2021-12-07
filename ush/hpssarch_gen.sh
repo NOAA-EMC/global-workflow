@@ -216,7 +216,7 @@ if [ $type = "gfs" ]; then
   fi
 
   if [ $DO_OCN = "YES" ]; then
-    dirpath="gfs.${PDY}/${cyc}/ocn/"
+    dirpath="gfs.${PDY}/${cyc}/ocean/"
     dirname="./${dirpath}"
 
     head="gfs.t${cyc}z."
