@@ -64,12 +64,6 @@ if [ $target = jet ]; then
   Build_ww3_prepost=false
 fi
 
-if [ $target = jet ]; then
-  Build_gldas=false
-  Build_gfs_util=false
-  Build_ww3_prepost=false
-fi
-
 #------------------------------------
 # Exception Handling Init
 #------------------------------------
