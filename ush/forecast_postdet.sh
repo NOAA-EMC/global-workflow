@@ -627,10 +627,10 @@ data_out_GFS() {
           $NCP $file $memdir/RESTART/$file
         done
       fi
+    elif [ $CDUMP = "gfs" ]; then
+      $NCP $DATA/input.nml $ROTDIR/${CDUMP}.${PDY}/${cyc}/atmos/
     fi
   fi
-
-  $NCP $DATA/input.nml $ROTDIR/${CDUMP}.${PDY}/${cyc}/atmos/
 
   echo "SUB ${FUNCNAME[0]}: Output data for FV3 copied"
 }
