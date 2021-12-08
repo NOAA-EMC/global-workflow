@@ -15,6 +15,7 @@ FHOUT_HF_GFS=-1
 IALB=2
 IEMS=2
 DO_CA="YES"
+min_seaice="1e-11"
 
 # config.fv3
 DELTIM=300
