@@ -31,10 +31,7 @@ EOF
 cat $DIAG_TABLE >> diag_table
 fi
 
-# Append AOD diag table for MERRA2
-if [ $IAER = "1011" ]; then
-  cat $DIAG_TABLE_APPEND >> diag_table
-fi
+cat $DIAG_TABLE_APPEND >> diag_table
 
 $NCP $DATA_TABLE  data_table
 $NCP $FIELD_TABLE field_table
