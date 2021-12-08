@@ -16,6 +16,8 @@ else
     __ms_shell=sh
 fi
 
+HOMEgfs=${HOMEgfs:-`pwd`/../}
+echo "HOMEgfs=$HOMEgfs"
 target=""
 USERNAME=`echo $LOGNAME | awk '{ print tolower($0)'}`
 ##---------------------------------------------------------------------------
@@ -209,7 +211,7 @@ fi
 
 # Source versions file for build
 
-. ../versions/build.ver
+. ${HOMEgfs}/versions/build.ver
 
 unset __ms_shell
 unset __ms_ksh_test
