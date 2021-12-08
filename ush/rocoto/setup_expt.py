@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 ###############################################################
 # < next few lines under version control, D O  N O T  E D I T >
