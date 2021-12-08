@@ -177,7 +177,7 @@ if [ $CDUMP = "gfs" ]; then
 
     targrp_list="gfsa gfsb"
 
-    if [ ${ARCH_GAUSSIAN:-"YES"} = "YES" ]; then
+    if [ ${ARCH_GAUSSIAN:-"NO"} = "YES" ]; then
         targrp_list="$targrp_list gfs_flux gfs_${format}b gfs_pgrb2b"
         if [ $MODE = "cycled" ]; then
           targrp_list="$targrp_list gfs_${format}a"
