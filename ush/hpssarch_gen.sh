@@ -72,8 +72,8 @@ if [ $type = "gfs" ]; then
   if [ $ARCH_GAUSSIAN = "YES" ]; then
     echo  "${dirname}${head}pgrb2b.0p25.anl                  " >>gfs_pgrb2b.txt
     echo  "${dirname}${head}pgrb2b.0p25.anl.idx              " >>gfs_pgrb2b.txt
-    echo  "${dirname}${head}pgrb2b.0p50.anl                  " >>gfs_pgrb2b.txt
-    echo  "${dirname}${head}pgrb2b.0p50.anl.idx              " >>gfs_pgrb2b.txt
+    echo  "${dirname}${head}pgrb2b.1p00.anl                  " >>gfs_pgrb2b.txt
+    echo  "${dirname}${head}pgrb2b.1p00.anl.idx              " >>gfs_pgrb2b.txt
 
     if [ $MODE = "cycled" ]; then
       echo  "${dirname}${head}atmanl${SUFFIX}            " >>gfs_${format}a.txt
@@ -146,9 +146,9 @@ if [ $type = "gfs" ]; then
 
       echo  "${dirname}${head}pgrb2b.0p25.f${fhr}             " >>gfs_pgrb2b.txt
       echo  "${dirname}${head}pgrb2b.0p25.f${fhr}.idx         " >>gfs_pgrb2b.txt
-      if [ -s $ROTDIR/${dirpath}${head}pgrb2b.0p50.f${fhr} ]; then
-         echo  "${dirname}${head}pgrb2b.0p50.f${fhr}         " >>gfs_pgrb2b.txt
-         echo  "${dirname}${head}pgrb2b.0p50.f${fhr}.idx     " >>gfs_pgrb2b.txt
+      if [ -s $ROTDIR/${dirpath}${head}pgrb2b.1p00.f${fhr} ]; then
+         echo  "${dirname}${head}pgrb2b.1p00.f${fhr}         " >>gfs_pgrb2b.txt
+         echo  "${dirname}${head}pgrb2b.1p00.f${fhr}.idx     " >>gfs_pgrb2b.txt
       fi
     fi
 
@@ -245,6 +245,9 @@ if [ $type = "gfs" ]; then
     echo  "${dirname}wavocn*                    " >>wavocn.txt
     echo  "${dirname}ocn_ice*0p5x0p5.grb2       " >>ocn_ice_grib2_0p5.txt
     echo  "${dirname}ocn_ice*0p25x0p25.grb2     " >>ocn_ice_grib2_0p25.txt
+
+    dirpath="gfs.${PDY}/${cyc}/atmos/"
+    dirname="./${dirpath}"
     echo  "${dirname}${head}flux.1p00.f???      " >>gfs_flux_1p00.txt
     echo  "${dirname}${head}flux.1p00.f???.idx  " >>gfs_flux_1p00.txt
   fi
