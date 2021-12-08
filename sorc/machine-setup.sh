@@ -17,7 +17,6 @@ else
 fi
 
 HOMEgfs=${HOMEgfs:-`pwd`/../}
-echo "HOMEgfs=$HOMEgfs"
 target=""
 USERNAME=`echo $LOGNAME | awk '{ print tolower($0)'}`
 ##---------------------------------------------------------------------------
