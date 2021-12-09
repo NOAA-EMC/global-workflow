@@ -39,7 +39,7 @@ elif [ $machine = "theia" ]; then
 elif [ $machine = "hera" ]; then
     FIX_DIR="/scratch1/NCEPDEV/global/glopara/fix"
 elif [ $machine = "wcoss2" ]; then
-    FIX_DIR="/lfs/h2/emc/global/noscrub/Kate.Friedman/glopara/FIX/fix_nco_gfsv15"
+    FIX_DIR="/lfs/h2/emc/global/save/emc.global/FIX/fix_nco_gfsv15"
 fi
 cd ${pwd}/../fix                ||exit 8
 for dir in fix_am fix_chem fix_fv3 fix_orog fix_fv3_gmted2010 fix_verif; do
