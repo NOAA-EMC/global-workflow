@@ -679,7 +679,7 @@
 
     if [ "$wavenproc" -gt '1' ]
     then
-      ${wavempexec} ${wave_mpmd} ${fcmdnow}
+      ${wavempexec} ${wavenproc} ${wave_mpmd} ${fcmdnow}
       exit=$?
     else
       chmod 744 ${fcmdnow}
@@ -787,7 +787,7 @@
 
     if [ "$wavenproc" -gt '1' ]
     then
-      ${wavempexec} ${wave_mpmd} cmdtarfile
+      ${wavempexec} ${wavenproc} ${wave_mpmd} cmdtarfile
       exit=$?
     else
       chmod 744 cmdtarfile
