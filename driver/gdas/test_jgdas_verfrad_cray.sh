@@ -16,8 +16,8 @@ export PDATE=${PDATE:-2016100106}
 #############################################################
 # Specify whether the run is production or development
 #############################################################
-export PDY=`echo $PDATE | cut -c1-8`
-export cyc=`echo $PDATE | cut -c9-10`
+export PDY=$(echo $PDATE | cut -c1-8)
+export cyc=$(echo $PDATE | cut -c9-10)
 export job=gdas_verfrad.${cyc}
 export pid=${pid:-$$}
 export jobid=${job}.${pid}

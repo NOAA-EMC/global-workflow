@@ -42,9 +42,9 @@
 
 # Parse PDY
 
-  yyyy=`echo $PDY | cut -c1-4`
-    mm=`echo $PDY | cut -c5-6` 
-    dd=`echo $PDY | cut -c7-8`
+  yyyy=$(echo $PDY | cut -c1-4)
+    mm=$(echo $PDY | cut -c5-6) 
+    dd=$(echo $PDY | cut -c7-8)
 
 
 # Check for invalid day
@@ -80,11 +80,11 @@
     verfdate=$PDY
     hour=$term
   elif [ $days -gt 0 ]; then
-    verfdate=`finddate.sh $PDY d+$days`
+    verfdate=$(finddate.sh $PDY d+$days)
     let "hour=term-(days*24)"
   else
     let negdays=-1*days
-    verfdate=`finddate.sh $PDY d-$negdays`
+    verfdate=$(finddate.sh $PDY d-$negdays)
     let "hour=(negdays*24)+term"
   fi
 
@@ -92,12 +92,12 @@
 
 
 
-  fy=`echo $verfdate | cut -c1-4`
-  fm=`echo $verfdate | cut -c5-6`
-  fd=`echo $verfdate | cut -c7-8` 
+  fy=$(echo $verfdate | cut -c1-4)
+  fm=$(echo $verfdate | cut -c5-6)
+  fd=$(echo $verfdate | cut -c7-8) 
   fday=$fd
   if [ $fday -lt 10 ]; then
-    fday=`echo $fday | cut -c2`
+    fday=$(echo $fday | cut -c2)
   fi
 
 

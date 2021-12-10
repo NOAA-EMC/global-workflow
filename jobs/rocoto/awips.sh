@@ -60,7 +60,7 @@ export jlogfile="$ROTDIR/logs/$CDATE/jgfs_awips.log"
 
 SLEEP_TIME=1800
 SLEEP_INT=5
-SLEEP_LOOP_MAX=`expr $SLEEP_TIME / $SLEEP_INT`
+SLEEP_LOOP_MAX=$(expr $SLEEP_TIME / $SLEEP_INT)
 
 for fhr in $fhrlst; do
 
@@ -72,7 +72,7 @@ for fhr in $fhrlst; do
     fhmin=0
     fhmax=84
     if [ $fhr -ge $fhmin -a $fhr -le $fhmax ] ; then
-	if [[ `expr $fhr % 3` -eq 0 ]]; then
+	if [[ $(expr $fhr % 3) -eq 0 ]]; then
             fhr3=$(printf %03i $fhr)
             
 #           Check for input file existence.  If not present, sleep
@@ -82,7 +82,7 @@ for fhr in $fhrlst; do
                 if [ -s $COMOUT/$CDUMP.t${cyc}z.pgrb2b.0p25.f${fhr3}.idx ]; then
                     break
                 else
-                    ic=`expr $ic + 1`
+                    ic=$(expr $ic + 1)
                     sleep $SLEEP_INT
                 fi
                 if [ $ic -eq $SLEEP_LOOP_MAX ]; then
@@ -98,7 +98,7 @@ for fhr in $fhrlst; do
 	    $AWIPS20SH
 	fi
 	
-	if [[ `expr $fhr % 6` -eq 0 ]]; then
+	if [[ $(expr $fhr % 6) -eq 0 ]]; then
 	    export job="jgfs_awips_f${fcsthrs}_${cyc}"
 	    export DATA="${DATAROOT}/$job"
 	    $AWIPSG2SH
@@ -109,7 +109,7 @@ for fhr in $fhrlst; do
     fhmax=240
     if [ $fhr -ge $fhmin -a $fhr -le $fhmax ]; then
 	
-	if [[ `expr $fhr % 6` -eq 0 ]]; then
+	if [[ $(expr $fhr % 6) -eq 0 ]]; then
 	    fhr3=$(printf %03i $fhr)
 
 #           Check for input file existence.  If not present, sleep
@@ -119,7 +119,7 @@ for fhr in $fhrlst; do
                 if [ -s $COMOUT/$CDUMP.t${cyc}z.pgrb2b.0p25.f${fhr3}.idx ]; then
                     break
                 else
-                    ic=`expr $ic + 1`
+                    ic=$(expr $ic + 1)
                     sleep $SLEEP_INT
                 fi
                 if [ $ic -eq $SLEEP_LOOP_MAX ]; then

@@ -45,7 +45,7 @@ while [ $hr -le 120 ]; do
   status=$?
   [[ $status -ne 0 ]] && exit $status
 
-  hr=`expr $hr + 6`
+  hr=$(expr $hr + 6)
 
 done
 

@@ -36,7 +36,7 @@ MDL=GFS
 metatype="trop"
 metaname="${mdl}_${metatype}_${cyc}.meta"
 device="nc | ${metaname}"
-PDY2=`echo ${PDY} | cut -c3-`
+PDY2=$(echo ${PDY} | cut -c3-)
 #
 for a in ATL PAC WPAC
 do

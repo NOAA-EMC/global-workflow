@@ -111,7 +111,7 @@ sub make_toc  {
 #
 
    $Header = "$WMOHeader $Origin $DDHHMM";
-   $ByteCount = `wc -c $Filename | cut -c1-8`;
+   $ByteCount = $(wc -c $Filename | cut -c1-8);
    $ByteCount= $ByteCount + length($Header) + 3;
    if ($SubHeader =~ /NONE/) {
       print "No Subheader\n";

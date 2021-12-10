@@ -7,8 +7,8 @@ source ../../modulefiles/module-setup.sh.inc
 module use ../../modulefiles
 module load modulefile.fv3nc2nemsio.$machine
 
-LIBnetcdf=`$NETCDF/bin/nf-config --flibs`
-INCnetcdf=`$NETCDF/bin/nf-config --fflags`
+LIBnetcdf=$($NETCDF/bin/nf-config --flibs)
+INCnetcdf=$($NETCDF/bin/nf-config --fflags)
 export NETCDF_LDFLAGS=$LIBnetcdf
 export NETCDF_INCLUDE=$INCnetcdf
 
