@@ -175,59 +175,35 @@ cd $ROTDIR
 
 if [ $CDUMP = "gfs" ]; then
 
-    #for targrp in gfsa gfsb - NOTE - do not check htar error status
-    for targrp in gfsa gfsb; do
-        htar -P -cvf $ATARDIR/$CDATE/${targrp}.tar `cat $ARCH_LIST/${targrp}.txt`
-    done
+    targrp_list="gfsa gfsb"
 
-    #for targrp in gfs_flux gfs_netcdf/nemsio gfs_pgrb2b; do
-    if [ ${SAVEFCSTNEMSIO:-"YES"} = "YES" ]; then
+    if [ ${ARCH_GAUSSIAN:-"NO"} = "YES" ]; then
+        targrp_list="$targrp_list gfs_flux gfs_${format}b gfs_pgrb2b"
         if [ $MODE = "cycled" ]; then
-          targrp_list=`gfs_flux gfs_${format}a gfs_${format}b gfs_pgrb2b`
-        elif [ $MODE = "free" ]; then
-          targrp_list=`gfs_flux gfs_${format}b gfs_pgrb2b`
+          targrp_list="$targrp_list gfs_${format}a"
         fi
-        #for targrp in gfs_flux gfs_${format}a gfs_${format}b gfs_pgrb2b; do
-        for targrp in $targrp_list; do
-            htar -P -cvf $ATARDIR/$CDATE/${targrp}.tar `cat $ARCH_LIST/${targrp}.txt`
-            status=$?
-            if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
-                echo "HTAR $CDATE ${targrp}.tar failed"
-                exit $status
-            fi
-        done
     fi
 
-    #for targrp in gfswave
     if [ $DO_WAVE = "YES" -a "$WAVE_CDUMP" != "gdas" ]; then
-        for targrp in gfswave; do
-            htar -P -cvf $ATARDIR/$CDATE/${targrp}.tar `cat $ARCH_LIST/${targrp}.txt`
-            status=$?
-            if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
-                echo "HTAR $CDATE ${targrp}.tar failed"
-                exit $status
-            fi
-        done
+        targrp_list="$targrp_list gfswave"
+    fi
+
+    if [ $DO_OCN = "YES" ]; then
+        targrp_list="$targrp_list ocn_ice_grib2_0p5 ocn_ice_grib2_0p25 ocn_2D ocn_3D ocn_xsect ocn_daily wavocn gfs_flux_1p00"
+    fi
+
+    if [ $DO_ICE = "YES" ]; then
+        targrp_list="$targrp_list ice"
     fi
 
     #for restarts    
     if [ $SAVEFCSTIC = "YES" ]; then
-        htar -P -cvf $ATARDIR/$CDATE/gfs_restarta.tar `cat $ARCH_LIST/gfs_restarta.txt`
-        status=$?
-        if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
-            echo "HTAR $CDATE gfs_restarta.tar failed"
-            exit $status
-        fi
+        targrp_list="$targrp_list gfs_restarta"
     fi
 
     #for downstream products
     if [ $DO_BUFRSND = "YES" -o $WAFSF = "YES" ]; then
-        htar -P -cvf $ATARDIR/$CDATE/gfs_downstream.tar `cat $ARCH_LIST/gfs_downstream.txt`
-        status=$?
-        if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
-            echo "HTAR $CDATE gfs_downstream.tar failed"
-            exit $status
-        fi
+        targrp_list="$targrp_list gfs_downstream"  
     fi
 
     #--save mdl gfsmos output from all cycles in the 18Z archive directory
@@ -239,56 +215,36 @@ if [ $CDUMP = "gfs" ]; then
             exit $status
         fi
     fi
+elif [ $CDUMP = "gdas" ]; then
 
-fi
-
-
-if [ $CDUMP = "gdas" ]; then
-
-    htar -P -cvf $ATARDIR/$CDATE/gdas.tar `cat $ARCH_LIST/gdas.txt`
-    status=$?
-    if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
-        echo "HTAR $CDATE gdas.tar failed"
-        exit $status
-    fi
+    targrp_list="gdas"
 
     #gdaswave
     if [ $DO_WAVE = "YES" ]; then
-        htar -P -cvf $ATARDIR/$CDATE/gdaswave.tar `cat $ARCH_LIST/gdaswave.txt`
-        status=$?
-        if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
-            echo "HTAR $CDATE gdaswave.tar failed"
-            exit $status
-        fi
+        targrp_list="$targrp_list gdaswave"
     fi
 
     if [ $SAVEWARMICA = "YES" -o $SAVEFCSTIC = "YES" ]; then
-        htar -P -cvf $ATARDIR/$CDATE/gdas_restarta.tar `cat $ARCH_LIST/gdas_restarta.txt`
-        status=$?
-        if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
-            echo "HTAR $CDATE gdas_restarta.tar failed"
-            exit $status
-        fi
+        targrp_list="$targrp_list gdas_restarta"
+
         if [ $DO_WAVE = "YES" ]; then
-            htar -P -cvf $ATARDIR/$CDATE/gdaswave_restart.tar `cat $ARCH_LIST/gdaswave_restart.txt`
-            status=$?
-            if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
-                echo "HTAR $CDATE gdaswave_restart.tar failed"
-                exit $status
-            fi
+            targrp_list="$targrp_list gdaswave_restart"
         fi
     fi
 
     if [ $SAVEWARMICB = "YES" -o $SAVEFCSTIC = "YES" ]; then
-        htar -P -cvf $ATARDIR/$CDATE/gdas_restartb.tar `cat $ARCH_LIST/gdas_restartb.txt`
-        status=$?
-        if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
-            echo "HTAR $CDATE gdas_restartb.tar failed"
-            exit $status
-        fi
+        targrp_list="$targrp_list gdas_restartb"
     fi
-
 fi
+
+for targrp in $targrp_list; do
+    htar -P -cvf $ATARDIR/$CDATE/${targrp}.tar $(cat $ARCH_LIST/${targrp}.txt)
+    status=$?
+    if [ $status -ne 0 -a $CDATE -ge $firstday ]; then
+        echo "HTAR $CDATE ${targrp}.tar failed"
+        exit $status
+    fi
+done
 
 ###############################################################
 fi  ##end of HPSS archive

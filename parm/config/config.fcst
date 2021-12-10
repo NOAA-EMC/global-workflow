@@ -5,9 +5,25 @@
 
 echo "BEGIN: config.fcst"
 
+# set -eu
+
 # Source model specific information that is resolution dependent
 . $EXPDIR/config.fv3 $CASE
 [[ "$CDUMP" == "gfs" ]] && export nth_fv3=$nth_fv3_gfs
+
+# Turn off waves if not used for this CDUMP
+case $WAVE_CDUMP in
+  both | $CDUMP ) ;; # Don't change
+  *) DO_WAVE="NO" ;; # Turn waves off
+esac
+
+# Source component configs if necessary
+for component in WAVE OCN ICE AERO; do
+  control="DO_${component}"
+  if [[ $(eval echo \$$control) == "YES" ]]; then
+    . $EXPDIR/config.$(echo "$component" | awk '{ print tolower($1) }')
+  fi
+done
 
 # Get task specific resources
 . $EXPDIR/config.resources fcst
@@ -16,33 +32,54 @@ if [ $DONST = "YES" ]; then
     . $EXPDIR/config.nsst
 fi
 
+export print_esmf=".false."
+export esmf_profile=".false."
+
+#######################################################################
+# COUPLING COMPONENTS
+export OCN_model="mom6"
+export ICE_model="cice6"
+export WAV_model="ww3"
+export CHM_model="gsdchem"
+
+# cpl defaults
+
+export cpl=".false."
+export cplflx=".false."
+export cplice=".false."
+export cplgocart=".false."
+export cplwav=".false."
+
+# cpl changes based on APP
+
+if [ $DO_COUPLED = "YES" ]; then
+  export cpl=".true."
+fi
+if [ $DO_AERO = "YES" ]; then
+  export cplgocart=".true."
+fi
+if [ $DO_ICE = "YES" ]; then
+  export cplice=".true."
+fi
+if [ $DO_OCN = "YES" -o $DO_ICE = "YES" ]; then
+  export cplflx=".true."
+fi
+if [ $DO_WAVE = "YES" ]; then
+  export cplwav=".true."
+fi
+
+#######################################################################
+# COUPLING COMPONENTS
+export use_coldstart=".false."
+
+
+#######################################################################
+
 export FORECASTSH="$HOMEgfs/scripts/exglobal_forecast.sh"
 export FCSTEXECDIR="$HOMEgfs/exec"
-export FCSTEXEC="global_fv3gfs.x"
-export npe_fv3=$npe_fcst 
+export FCSTEXEC="ufs_model"
 
-if [[ "$CDUMP" == "gfs" ]] ; then
-   export npe_fv3=$npe_fcst_gfs
-   export layout_x=$layout_x_gfs
-   export layout_y=$layout_y_gfs
-   export WRITE_GROUP=$WRITE_GROUP_GFS
-   export WRTTASK_PER_GROUP=$WRTTASK_PER_GROUP_GFS
-fi
-
-if [ $QUILTING = ".true." ]; then
-    export npe_fv3=$(echo " $npe_fv3 + $WRITE_GROUP * $WRTTASK_PER_GROUP" | bc)
-    export npe_fcst=$npe_fv3
-    export npe_fcst_gfs=$(echo " $npe_fcst_gfs  + $WRITE_GROUP_GFS * $WRTTASK_PER_GROUP_GFS" | bc)
-fi
-
-if [ $DO_WAVE = "YES" ] ; then
-  export npe_fcst=$((npe_fcst + npe_wav))
-  if [ "$WAVE_CDUMP" = "gfs" -o "$WAVE_CDUMP" = "both" ]; then
-     export npe_fcst_gfs=$((npe_fcst_gfs + npe_wav_gfs))
-     if [ "$CDUMP" = "gfs" ]; then npe_wav=$npe_wav_gfs ; fi
-  fi
-fi
-
+#######################################################################
 # Model configuration
 export TYPE="nh"
 export MONO="non-mono"
@@ -53,22 +90,20 @@ export h2o_phys=".true."
 # Options of stratosphere O3 physics reaction coefficients
 export new_o3forc="YES"
 
-# do_ugwp=T: use unified CGWD and OGWD, and turbulent orographic form drag (TOFD)
-# do_ugwp=F: use unified CGWD but old OGWD, TOFD is not uded.
-export do_ugwp=".false."
-export do_tofd=".true."
-export launch_level=$(echo "$LEVS/2.35" |bc)
+# export launch_level=$(echo "$LEVS/2.35" |bc)
 
-export  n_sponge=42
-export  d2_bg_k1=0.20
-export  d2_bg_k2=0.04
-
-# Sponge layer settings for L127
+# Sponge layer settings
+export tau=10.0
+export rf_cutoff=7.5e2
+export d2_bg_k1=0.20
+export d2_bg_k2=0.04
+export dz_min=2
+export n_sponge=42
 if [ $LEVS = "128" -a "$CDUMP" = "gdas" ]; then
-   export  tau=5.0
-   export  rf_cutoff=1.0e3
-   export  d2_bg_k1=0.20
-   export  d2_bg_k2=0.0
+   export tau=5.0
+   export rf_cutoff=1.0e3
+   export d2_bg_k1=0.20
+   export d2_bg_k2=0.0
 fi
 
 # PBL/turbulance schemes
@@ -78,23 +113,19 @@ export isatmedmf=1
 tbf=""
 if [ $satmedmf = ".true." ]; then tbf="_satmedmf" ; fi
 
-# Land surface model. (2--NoahMP, landice=F); (1--Noah, landice=T)
-export lsm=1
-if [ $lsm -eq 2 ]; then
-    export lheatstrg=".false."
-    export landice=".false."
-else
-    export lheatstrg=".false."
-    export landice=".true."
-fi
-
 # Radiation options 
-export IAER=1011    ;#spectral band mapping method for aerosol optical properties
-export iovr_lw=3    ;#de-correlation length cloud overlap method (Barker, 2008) 
-export iovr_sw=3    ;#de-correlation length cloud overlap method (Barker, 2008) 
-export iovr=3       ;#de-correlation length cloud overlap method (Barker, 2008) 
-export icliq_sw=2   ;#cloud optical coeffs from AER's newer version v3.9-v4.0 for hu and stamnes
+export IAER=1011    ; #spectral band mapping method for aerosol optical properties
+export iovr_lw=3    ; #de-correlation length cloud overlap method (Barker, 2008) 
+export iovr_sw=3    ; #de-correlation length cloud overlap method (Barker, 2008) 
+export iovr=3       ; #de-correlation length cloud overlap method (Barker, 2008) 
+export icliq_sw=2   ; #cloud optical coeffs from AER's newer version v3.9-v4.0 for hu and stamnes
+export isubc_sw=2
+export isubc_lw=2
 
+export IALB=${IALB:-1}
+export IEMS=${IEMS:-1}
+export ISOL=2
+export ICO2=2
 
 # Microphysics configuration
 export dnats=0
@@ -133,13 +164,33 @@ elif [ $imp_physics -eq 11 ]; then # GFDL
     export hord_xx_nh_nonmono=5
     export vtdm4_nh_nonmono=0.02
     export nord=2
-    export dddmp=0.1
     export d4_bg=0.12
+    export dddmp=0.1
 
 else
     echo "Unknown microphysics option, ABORT!"
 
 fi
+
+# Stochastic physics
+export DO_SPPT=${DO_SPPT:-"NO"}
+export DO_SKEB=${DO_SKEB:-"NO"}
+export DO_SHUM=${DO_SHUM:-"NO"}
+export DO_LAND_PERT=${DO_LAND_PERT:-"NO"}
+export DO_CA=${DO_CA:-"NO"}
+export DO_OCN_SPPT=${DO_OCN_SPPT:-"NO"}
+export DO_OCN_PERT_EPBL=${DO_OCN_PERT_EPBL:-"NO"}
+
+#coupling settings
+export FRAC_GRID=".true."
+export cplmode="nems_frac"
+export psm_bc="1"
+
+export min_lakeice="0.15"
+export min_seaice=${min_seaice:-"0.15"}
+
+export FSICL="99999"
+
 #---------------------------------------------------------------------
 
 # ideflate: netcdf zlib lossless compression (0-9): 0 no compression
@@ -186,8 +237,7 @@ if [[ "$CDUMP" == "gdas" ]] ; then # GDAS cycle specific parameters
 
     # Variables used in DA cycling
     if [ $QUILTING = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]; then
-        ##export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_da"
-        export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_aod"
+        export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_da"
     else
         export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_da_orig"
     fi
@@ -204,8 +254,7 @@ if [[ "$CDUMP" == "gdas" ]] ; then # GDAS cycle specific parameters
 
     # For IAU, write restarts at beginning of window also
     if [ $DOIAU = "YES" ]; then
-       export restart_interval="6 9"
-       if [[ "$SDATE" = "$CDATE" && $EXP_WARM_START = ".false." ]]; then export restart_interval="3 6"; fi # Cold starting
+       export restart_interval="3 6"
     fi
 
     # Choose coupling with wave
@@ -218,7 +267,7 @@ elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
 
     # Write more variables to output
     if [ $QUILTING = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]; then
-        export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_aod"
+        export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table"
     else
         export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_orig"
     fi
@@ -255,30 +304,17 @@ elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
       export io_layout="1,1"
     fi
 
-
 fi
 
-    ## Debug load balancing
-    # export KEEPDATA="YES"
-    # export ESMF_RUNTIME_PROFILE=ON
-    # export ESMF_RUNTIME_PROFILE_OUTPUT=SUMMARY
-
-
-# Regrid tiles to global Gaussian grid in NEMSIO
-export REGRID_NEMSIO_SH="$HOMEgfs/ush/fv3gfs_regrid_nemsio.sh"
-if [ $DONST = YES ]; then
-    export REGRID_NEMSIO_TBL="$HOMEgfs/parm/parm_fv3diag/variable_table_da.txt"
-else
-    export REGRID_NEMSIO_TBL="$HOMEgfs/parm/parm_fv3diag/variable_table_da_nonsst.txt"
+if [ $DO_AERO = "YES" ]; then # temporary settings for aerosol coupling
+    export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_aer"
+    export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_aer"
+    export CHM_CFGDIR="not_set"
+    export CHM_INPDIR="not_set"
+    export dnats="$(( $dnats + 0 ))"
+elif [[ $DO_COUPLED = "YES" ]] ; then # coupled model
+    export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_cpl"
 fi
-
-# Remap tiles to global latlon grid in NetCDF
-export REMAPSH="$HOMEgfs/ush/fv3gfs_remap.sh"
-export master_grid="0p25deg"                   # 1deg 0p5deg 0p25deg 0p125deg etc
-export npe_remap=$((npe_fcst < 240 ? npe_fcst : 240))
-
-# Global latlon NetCDF to nemsio utility parameters
-export NC2NEMSIOSH="$HOMEgfs/ush/fv3gfs_nc2nemsio.sh"
 
 # Remember config.efcs will over-ride these values for ensemble forecasts
 # if these variables are re-defined there.

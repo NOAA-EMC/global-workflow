@@ -8,9 +8,10 @@ if [ $# -ne 1 ]; then
 
     echo "Must specify an input task argument to set resource variables!"
     echo "argument can be any one of the following:"
-    echo "getic init"
+    echo "getic init coupled_ic"
     echo "anal analcalc analdiag gldas fcst post vrfy metp arch echgres"
     echo "eobs ediag eomg eupd ecen esfc efcs epos earc"
+    echo "init_chem mom6ic ocnpost"
     echo "waveinit waveprep wavepostsbs wavepostbndpnt wavepostbndpntbll wavepostpnt"
     echo "wavegempak waveawipsbulls waveawipsgridded"
     echo "postsnd awips gempak"
@@ -50,6 +51,7 @@ if [ $step = "prep" -o $step = "prepbufr" ]; then
     eval "export npe_$step=4"
     eval "export npe_node_$step=2"
     eval "export nth_$step=1"
+    eval "export memory_$step=40G"
 
 elif [ $step = "waveinit" ]; then
 
@@ -179,16 +181,97 @@ elif [ $step = "fcst" ]; then
     if [ $CASE = "C768" ]; then
       export wtime_fcst_gfs="06:00:00"
     elif [ $CASE = "C384" ]; then
-      export wtime_fcst_gfs="04:00:00"
+      export wtime_fcst_gfs="06:00:00"
     else
       export wtime_fcst_gfs="03:00:00"
     fi
-    export npe_fcst=$(echo "$layout_x * $layout_y * 6" | bc)
-    export npe_fcst_gfs=$(echo "$layout_x_gfs * $layout_y_gfs * 6" | bc)
-    export nth_fcst=${nth_fv3:-2}
-    if [[ "$CASE" == "C384" ]]; then nth_fcst=4; fi
-    export npe_node_fcst=$(echo "$npe_node_max / $nth_fcst" | bc)
-    if [[ "$machine" == "WCOSS_C" ]]; then export memory_fcst="1024M"; fi
+
+    # During workflow creation, we need resources for all CDUMPs and CDUMP is undefined
+    CDUMP_LIST=${CDUMP:-"gfs gdas"}
+    for CDUMP in $CDUMP_LIST; do
+        if [[ "$CDUMP" == "gfs" ]]; then
+            export layout_x=$layout_x_gfs
+            export layout_y=$layout_y_gfs
+            export WRITE_GROUP=$WRITE_GROUP_GFS
+            export WRTTASK_PER_GROUP=$WRTTASK_PER_GROUP_GFS
+        fi
+
+        (( ATMPETS = layout_x * layout_y * 6 ))
+
+        # Mediator only uses the atm model PETS
+        export MEDPETS=$ATMPETS
+
+        # If using in-line post, add the write tasks to the ATMPETS
+        if [[ $QUILTING == ".true." ]]; then
+            (( ATMPETS = ATMPETS + WRITE_GROUP * WRTTASK_PER_GROUP ))
+        fi
+        export ATMPETS
+        NTASKS_TOT=$ATMPETS
+
+        export nth_fcst=${nth_fv3:-2}
+
+        export npe_node_fcst=$(echo "$npe_node_max / $nth_fcst" | bc)
+        if [[ "$machine" == "WCOSS_C" ]]; then export memory_fcst="1024M"; fi
+
+        if [[ $DO_WAVE == "YES" ]]; then
+            case $waveGRD in
+                'gnh_10m aoc_9km gsh_15m') export WAVPETS=140 ;;
+                'gwes_30m') export WAVPETS=160 ;;
+                *)
+                    echo "FATAL: Number of PEs not defined for wave grid '$waveGRD'"
+                    echo "  Please add an entry to config.resources within fcst for this grid"
+                    exit 3
+            esac
+            (( NTASKS_TOT = NTASKS_TOT + WAVPETS ))
+        fi
+
+        if [[ $DO_OCN == "YES" ]]; then
+            case $OCNRES in
+                # Except for 025, these are guesses for now
+                100) export OCNPETS=20 ;;
+                050) export OCNPETS=60 ;;
+                025) export OCNPETS=220 ;;
+                *)
+                    echo "FATAL: Number of PEs not defined for ocean resolution '$OCNRES'"
+                    echo "  Please add an entry to config.resources within fcst for this resolution"
+                    exit 3
+            esac
+            (( NTASKS_TOT = NTASKS_TOT + OCNPETS ))
+        fi
+
+        if [[ $DO_ICE == "YES" ]]; then
+            case $ICERES in
+                # Except for 025, these are guesses for now
+                100) export ICEPETS=10 ;;
+                050) export ICEPETS=30 ;;
+                025) export ICEPETS=80 ;;
+                *)
+                    echo "FATAL: Number of PEs not defined for ice resolution '$ICERES'"
+                    echo "  Please add an entry to config.resources within fcst for this resolution"
+                    exit 3
+            esac
+            (( NTASKS_TOT = NTASKS_TOT + ICEPETS ))
+        fi
+
+        if [[ $DO_AERO == "YES" ]]; then
+            # Aerosol model runs on same PETS as ATM model
+            export CHMPETS=$MEDPETS
+        fi
+
+        if [[ $CDUMP == "gfs" ]]; then
+            export npe_fcst_gfs=$NTASKS_TOT
+        else
+            export npe_fcst=$NTASKS_TOT
+        fi
+    done
+
+elif [ $step = "ocnpost" ]; then
+
+    export wtime_ocnpost="00:30:00"
+    export npe_ocnpost=1
+    export npe_node_ocnpost=1
+    export nth_ocnpost=1
+    export memory_ocnpost="96G"
 
 elif [ $step = "post" ]; then
 
@@ -287,6 +370,18 @@ elif [ $step = "init" ]; then
     export nth_init=1
     export npe_node_init=6
 
+elif [ $step = "init_chem" ]; then
+
+    export wtime_init_chem="00:30:00"
+    export npe_init_chem=1
+    export npe_node_init_chem=1
+
+elif [ $step = "mom6ic" ]; then
+
+    export wtime_mom6ic="00:30:00"
+    export npe_mom6ic=24
+    export npe_node_mom6ic=24
+
 elif [ $step = "arch" -o $step = "earc" -o $step = "getic" ]; then
 
     eval "export wtime_$step='06:00:00'"
@@ -295,8 +390,14 @@ elif [ $step = "arch" -o $step = "earc" -o $step = "getic" ]; then
     eval "export nth_$step=1"
     eval "export memory_$step=2048M"
 
-elif [ $step = "eobs" -o $step = "eomg" ]; then
+elif [ $step = "coupled_ic" ]; then
 
+    export wtime_coupled_ic="00:15:00"
+    export npe_coupled_ic=1
+    export npe_node_coupled_ic=1
+    export nth_coupled_ic=1
+
+elif [ $step = "eobs" -o $step = "eomg" ]; then
 
     export wtime_eobs="00:15:00"
     export wtime_eomg="01:00:00"

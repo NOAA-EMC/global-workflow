@@ -105,7 +105,7 @@
 # 1.  Get files that are used by most child scripts
 
   export DOGRB_WAV='YES' #Create grib2 files 
-  export DOGRI_WAV='YES' #Create interpolated grids 
+  export DOGRI_WAV='NO' #Create interpolated grids 
 
   exit_code=0
 
@@ -160,9 +160,9 @@
   then
     for intGRD in $waveinterpGRD
     do
-      if [ -f $FIXwave/${intGRD}_interp.inp.tmpl ]
+      if [ -f $PARMwave/${intGRD}_interp.inp.tmpl ]
       then
-        cp -f $FIXwave/${intGRD}_interp.inp.tmpl ${intGRD}_interp.inp.tmpl
+        cp -f $PARMwave/${intGRD}_interp.inp.tmpl ${intGRD}_interp.inp.tmpl
       fi
   
       if [ -f ${intGRD}_interp.inp.tmpl ]
@@ -190,9 +190,9 @@
   then
     for grbGRD in $waveinterpGRD $wavepostGRD
     do
-      if [ -f $FIXwave/ww3_grib2.${grbGRD}.inp.tmpl ]
+      if [ -f $PARMwave/ww3_grib2.${grbGRD}.inp.tmpl ]
       then
-        cp -f $FIXwave/ww3_grib2.${grbGRD}.inp.tmpl ww3_grib2.${grbGRD}.inp.tmpl
+        cp -f $PARMwave/ww3_grib2.${grbGRD}.inp.tmpl ww3_grib2.${grbGRD}.inp.tmpl
       fi
 
       if [ -f ww3_grib2.${grbGRD}.inp.tmpl ]
@@ -321,7 +321,6 @@
             esac
               echo "$USHwave/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDNAME $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdigrd}.${nigrd}
           fi
-          #echo "pwd" >> ${fcmdnow}
           echo "${GRIBDATA}/${fcmdigrd}.${nigrd}" >> ${fcmdnow}
           chmod 744 ${fcmdigrd}.${nigrd}
           nigrd=$((nigrd+1)) 
@@ -343,6 +342,7 @@
               ao_20m) GRDNAME='arctic' ; GRDRES=0p33 ; GRIDNR=255  ; MODNR=11   ;;
               so_20m) GRDNAME='antarc' ; GRDRES=0p33 ; GRIDNR=255  ; MODNR=11   ;;
               glo_15mxt) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=11   ;;
+              gwes_30m) GRDNAME='global' ; GRDRES=0p50 ; GRIDNR=255  ; MODNR=10 ;;
           esac
             echo "$USHwave/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDNAME $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdnow}
         done
