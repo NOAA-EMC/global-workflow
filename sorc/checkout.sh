@@ -70,7 +70,7 @@ fi
 echo EMC_post checkout ...
 if [[ ! -d gfs_post.fd ]] ; then
     rm -f ${topdir}/checkout-gfs_post.log
-    git clone ${gtg_git_args:-} -b post_gfsv16_wcoss2 https://github.com/WenMeng-NOAA/UPP.git gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
+    git clone ${gtg_git_args:-} -b upp_v8.1.0 https://github.com/NOAA-EMC/UPP.git gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
     ################################################################################
     # checkout_gtg
     ## yes: The gtg code at NCAR private repository is available for ops. GFS only.
