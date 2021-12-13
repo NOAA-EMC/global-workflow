@@ -15,8 +15,7 @@
 #
 #########################################################################
 
-   msg=" Make GEMPAK GIFS utility"
-   postmsg "$jlogfile" "$msg"
+  echo "Make GEMPAK GIFS utility"
 
   set -x
 
@@ -596,7 +595,6 @@ if [ $SENDCOM = YES ]; then
   ${UTILgfs}/ush/make_tif.sh
 fi 
 
-   msg=" GEMPAK_GIF ${fhr} hour completed normally"
-   postmsg "$jlogfile" "$msg"
+   echo "GEMPAK_GIF ${fhr} hour completed normally"
 
    exit
