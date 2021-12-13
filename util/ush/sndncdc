@@ -23,7 +23,7 @@ VERS="version: ${SMEMBER} 2000-02-02 09:40L "
 #
 # Remarks  : This script assumes that the following values have been 
 #            exported by the parent shell:
-#            job JOBID SENDDBN jlogfile model COMOUTwmo.
+#            job JOBID SENDDBN model COMOUTwmo.
 #
 #          : Arg1 ncdcbasename this is the ncdc base name to which 
 #            the extenion of CCYYMMDDHH will be added.
@@ -130,6 +130,6 @@ istat=0
    else 
        msg="sndncdc testing, ${dir}/${ncdcfil}.${YMDZ} not sent!"    
    fi
- postmsg "$jlogfile" "$msg" 
+ echo "$msg"
  set +x    
 exit 

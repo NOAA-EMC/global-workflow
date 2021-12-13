@@ -37,7 +37,6 @@ then
 #  export EXECutil=${EXECutil:-${NWROOT}/util/exec}
 #  export PARMutil=${PARMutil:-${NWROOT}/util/parm}
    export envir=${envir:-prod}
-   export jlogfile=${jlogfile:-jlogfile}
    export NET=${NET:-gfs}
    export RUN=${RUN:-gfs}
    export DBNALERT_TYPE=${DBNALERT_TYPE:-GRIB_LOW}
@@ -77,8 +76,7 @@ echo " BEGIN MAKING $NET XTRN/GRIB AWIPS PRODUCTS"
 echo " ------------------------------------------"
 set -x
 
-msg="Enter Make AWIP GRIB utility."
-postmsg "$jlogfile" "$msg"
+echo "Enter Make AWIP GRIB utility."
 
 ############################################
 # Figure out INPUT/OUTPUT/PARM/EXEC Fields
@@ -396,13 +394,11 @@ do
      if [ "$SENDDBN" = 'YES' -o "$SENDAWIP" = 'YES' ] ; then
         $DBNROOT/bin/dbn_alert $DBNALERT_TYPE $NET $job $COMOUTwmo/$output_grb.$job
      else
-        msg="File $output_grb.$job not posted to db_net."
-        postmsg "$jlogfile" "$msg"
+        echo "File $output_grb.$job not posted to db_net."
      fi
   fi
 
-   msg="Awip Processing ${hour} hour  completed normally"
-   postmsg "$jlogfile" "$msg"
+   echo "Awip Processing ${hour} hour  completed normally"
 
 done
 

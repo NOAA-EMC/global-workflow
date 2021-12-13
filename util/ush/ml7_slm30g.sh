@@ -156,8 +156,8 @@ export WRKDIR=${WRKDIR:-${PTMP:-/ptmpp2}/$LOGNAME/terr_wrkdir$$}
 
 export lin=${lin:-""}
 export BASEDIR=${UTILDIR:-/global/save/emc.glopara/svn/gfs/trunk/para/util}
-export NWPROD=${NWPROD:-/nwprod}
-export FIXDIR=${FIXDIR:-$NWPROD/fix}
+export PACKAGEROOT=${PACKAGEROOT:-/lfs/h1/ops/prod/packages}
+export FIXDIR=${FIXDIR:-$PACKAGEROOT/fix}
 export LONSPERLAT=${LONSPERLAT:-$FIXDIR/global_lonsperlat.t${jcap}$lin.txt}
 export TERRAINEXEC=${TERRAINEXEC:-$BASEDIR/exec/terrain.x}
 ################################################################################

@@ -31,7 +31,7 @@ VERS="version: ${MEMBER} 2000-03-23 10:55L "
 #
 # Remarks  : This script assumes that the following values have been 
 #            exported by the parent shell:
-#            job JOBID USHutil UTILhome jlogfile model COMOUTwmo 
+#            job JOBID USHutil UTILhome model COMOUTwmo
 #            DBNROOT is exported in the production Profile.
 #
 # FOR TESTING 
@@ -139,7 +139,6 @@ set -x
  whatdir=$LOGNAME
   mkdir -m 775 -p $DATA  >/dev/null 2>&1
   mkdir -m 775 -p $COMOUTwmo  >/dev/null 2>&1
-  jlogfile=$DATA/snd2forgn_log
   reqid=${$}
   PID=$$
   JOB=$LOGNAME
@@ -153,9 +152,9 @@ set -x
  then
   SENDDBN=NO
  else 
-  SENDDBN=NO 
+  SENDDBN=NO
  fi
-  export  model jlogfile jobid reqid  COMOUTwmo pgmout 
+  export  model jobid reqid  COMOUTwmo pgmout
   export  JOB DATA PID 
   cd $DATA
   
@@ -312,7 +311,7 @@ then
  
   if [ -z "$newstr" ] ; then
    echo " newstr > is empty < will exit!"
-   postmsg "$jlogfile" "$msg"
+   echo "$msg"
    exit
   fi
     ttype=${newstr}     
@@ -385,13 +384,12 @@ then
        else
         msg="snd2forgn testing, ${TYPE} $filename not sent!"       
        fi 
-     postmsg "$jlogfile" "$msg"
+     echo "$msg"
      snd=NO  
      exit 0
     fi          
 else
- msg "ERROR TYPE MISSING BECAUSE $numprt is ZERO!"
- postmsg "$jlogfile" "$msg"
+ echo "ERROR TYPE MISSING BECAUSE $numprt is ZERO!"
  exit 
 fi
 
@@ -466,7 +464,7 @@ then
   echo dbn_alert: Ended with return code = $istat
 #
 #______________________________________________________________
-#      make message for jlogfile.
+#      make message for echo.
 #_______________________________________________________________
 #
   if test "$istat" = 0 
@@ -495,7 +493,7 @@ then
 else
        msg="snd2forgn testing, $JAG $FORFIL $FLG $INFILE not sent!"    
 fi
- postmsg "$jlogfile" "$msg"
+echo "$msg"
 
 rm ${CONCARD}
 exit 0
