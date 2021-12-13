@@ -70,11 +70,6 @@ if [[ ! -d ${jlogdir} ]]; then
    mkdir -p ${jlogdir}
 fi
 
-export jlogfile=${jlogfile:-${jlogdir}/${MINMON_SUFFIX}.${NET}.${RUN}.jlogfile}
-if [[ -e ${jlogfile} ]]; then
-  rm -f ${jlogfile}
-fi
-
 #############################################################
 # Execute job
 #############################################################
