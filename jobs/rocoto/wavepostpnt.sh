@@ -15,7 +15,5 @@ $HOMEgfs/jobs/JGLOBAL_WAVE_POST_PNT
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
-###############################################################
-# Force Exit out cleanly
-if [ ${KEEPDATA:-"NO"} = "NO" ] ; then rm -rf $DATAROOT ; fi
+# Exit out cleanly
 exit 0
