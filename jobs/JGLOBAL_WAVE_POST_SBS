@@ -89,11 +89,10 @@ export CFP_VERBOSE=1
 $HOMEgfs/scripts/exgfs_wave_post_gridded_sbs.sh
 err=$?
 if [ $err -ne 0 ]; then
-  msg="FATAL ERROR: ex-script of GWES_POST failed!"
+  echo "FATAL ERROR: ex-script of GWES_POST failed!"
 else
-  msg="$job completed normally!"
+  echo "$job completed normally!"
 fi
-postmsg "$jlogfile" "$msg"
 
 ##########################################
 # Remove the Temporary working directory

@@ -112,8 +112,7 @@ if [ -e "$pgmout" ] ; then
   cat $pgmout
 fi
 
-msg="ENDED NORMALLY."
-postmsg "$jlogfile" "$msg"
+echo "ENDED NORMALLY."
 
 ##########################################
 # Remove the Temporary working directory
