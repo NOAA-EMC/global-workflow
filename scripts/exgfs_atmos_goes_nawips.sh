@@ -19,8 +19,7 @@ cp $FIXgempak/g2vcrdwmo2.tbl g2vcrdwmo2.tbl
 cp $FIXgempak/g2varsncep1.tbl g2varsncep1.tbl
 cp $FIXgempak/g2vcrdncep1.tbl g2vcrdncep1.tbl
 
-msg="Begin job for $job"
-postmsg "$jlogfile" "$msg"
+echo "Begin job for $job"
 
 #
 # NAGRIB_TABLE=$FIXgempak/nagrib.tbl
@@ -79,8 +78,7 @@ while [ $fhcnt -le $fend ] ; do
     fi
     if [ $icnt -ge $maxtries ]
     then
-      msg="ABORTING after 1 hour of waiting for F$fhr to end."
-      postmsg "${jlogfile}" "$msg"
+      echo "ABORTING after 1 hour of waiting for F$fhr to end."
       export err=7 ; err_chk
       exit $err
     fi
@@ -135,8 +133,6 @@ echo "**************JOB $RUN NAWIPS COMPLETED NORMALLY ON THE IBM"
 set -x
 #####################################################################
 
-msg='Job completed normally.'
-echo $msg
-postmsg "$jlogfile" "$msg"
+echo "Job completed normally."
 
 ############################### END OF SCRIPT #######################

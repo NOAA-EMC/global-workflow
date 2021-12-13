@@ -43,10 +43,9 @@
 
   cd $DATA
 
-  postmsg "$jlogfile" "HAS BEGUN on `hostname`"
+  echo "HAS BEGUN on `hostname`"
 
-  msg="Starting WAVE POSTPROCESSOR SCRIPT for $WAV_MOD_TAG"
-  postmsg "$jlogfile" "$msg"
+  echo "Starting WAVE POSTPROCESSOR SCRIPT for $WAV_MOD_TAG"
 
   set +x
   echo ' '
@@ -142,7 +141,7 @@
       echo '*************************************************** '
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
-      postmsg "$jlogfile" "FATAL ERROR : NO MOD_DEF file mod_def.$grdID"
+      echo "FATAL ERROR : NO MOD_DEF file mod_def.$grdID"
       err=2; export err;${errchk}
       exit $err
       DOGRB_WAV='NO'
@@ -179,7 +178,7 @@
         echo ' '
         [[ "$LOUD" = YES ]] && set -x
         echo "$WAV_MOD_TAG post $date $cycle : GRINT template file missing."
-        postmsg "$jlogfile" "NON-FATAL ERROR : NO TEMPLATE FOR GRINT INPUT FILE"
+        echo "NON-FATAL ERROR : NO TEMPLATE FOR GRINT INPUT FILE"
         exit_code=1
         DOGRI_WAV='NO'
       fi
@@ -208,7 +207,7 @@
         echo '*********************************************** '
         echo ' '
         [[ "$LOUD" = YES ]] && set -x
-        postmsg "$jlogfile" "NON-FATAL ERROR : NO TEMPLATE FOR GRIB2 INPUT FILE"
+        echo "NON-FATAL ERROR : NO TEMPLATE FOR GRIB2 INPUT FILE"
         exit_code=2
         DOGRB_WAV='NO'
       fi
@@ -293,7 +292,7 @@
           echo ' '
           [[ "$LOUD" = YES ]] && set -x
           echo "$WAV_MOD_TAG post $grdID $date $cycle : field output missing." 
-          postmsg "$jlogfile" "NON-FATAL ERROR : NO RAW FIELD OUTPUT FILE out_grd.$grdID"
+          echo "NON-FATAL ERROR : NO RAW FIELD OUTPUT FILE out_grd.$grdID"
           err=3; export err;${errchk}
           exit $err
         fi
@@ -465,16 +464,13 @@
 
   if [ "$exit_code" -ne '0' ]
   then
-    echo " FATAL ERROR: Problem in MWW3 POST"
-    msg="ABNORMAL EXIT: Problem in MWW3 POST"
-    postmsg "$jlogfile" "$msg"
-    echo $msg
+    echo "FATAL ERROR: Problem in MWW3 POST"
+    echo "ABNORMAL EXIT: Problem in MWW3 POST"
     err=6; export err;${errchk}
     exit $err
   else
-    echo " Side-by-Side Wave Post Completed Normally "
-    msg="$job completed normally"
-    postmsg "$jlogfile" "$msg"
+    echo "Side-by-Side Wave Post Completed Normally "
+    echo "$job completed normally"
     exit 0
   fi
 

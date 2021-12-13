@@ -178,7 +178,6 @@ export skipprep=n
 export cycle="t${cyc}z"
 export pid="gfs_qprod.$$"
 export dailylog=$PTMPROOT/dailylog/log.$PDY
-export jlogfile=$dailylog/jlogfile_gfsmos
 mkdir -p $dailylog
 
 export SENDDBN=NO

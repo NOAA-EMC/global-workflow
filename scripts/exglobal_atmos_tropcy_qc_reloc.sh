@@ -13,8 +13,7 @@ set -x
 # Make sure we are in the $DATA directory
 cd $DATA
 
-msg="HAS BEGUN on `hostname`"
-postmsg "$jlogfile" "$msg"
+echo "HAS BEGUN on `hostname`"
 
 cat break > $pgmout
 
@@ -26,27 +25,22 @@ cdate10=` ${NDATE:?} -$tmhr $PDY$cyc`
 NET_uc=$(echo $RUN | tr [a-z] [A-Z])
 tmmark_uc=$(echo $tmmark | tr [a-z] [A-Z])
 
-msg="$NET_uc ANALYSIS TIME IS $PDY$cyc"
-postmsg "$jlogfile" "$msg"
+echo "$NET_uc ANALYSIS TIME IS $PDY$cyc"
 
 iflag=0
 if [ $RUN = ndas ]; then
    if [ $DO_RELOCATE = NO ]; then
-      msg="CENTER PROCESSING TIME FOR NDAS TROPICAL CYCLONE QC IS $cdate10"
-      postmsg "$jlogfile" "$msg"
-      msg="Output tcvitals files will be copied forward in time to proper \
+      echo "CENTER PROCESSING TIME FOR NDAS TROPICAL CYCLONE QC IS $cdate10"
+      echo "Output tcvitals files will be copied forward in time to proper \
 output file directory path locations"
-      postmsg "$jlogfile" "$msg"
       iflag=1
    else
-      msg="CENTER PROCESSING TIME FOR $tmmark_uc NDAS TROPICAL CYCLONE \
+      echo "CENTER PROCESSING TIME FOR $tmmark_uc NDAS TROPICAL CYCLONE \
 RELOCATION IS $cdate10"
-      postmsg "$jlogfile" "$msg"
    fi
 else
-   msg="CENTER PROCESSING TIME FOR $tmmark_uc $NET_uc TROPICAL CYCLONE QC/\
+   echo "CENTER PROCESSING TIME FOR $tmmark_uc $NET_uc TROPICAL CYCLONE QC/\
 RELOCATION IS $cdate10"
-   postmsg "$jlogfile" "$msg"
 fi
 
 
@@ -63,8 +57,7 @@ if [ "$PROCESS_TROPCY" = 'YES' ]; then
    ${USHSYND:-$HOMEgfs/ush}/syndat_qctropcy.sh $cdate10
    errsc=$?
    if [ "$errsc" -ne '0' ]; then
-    msg="syndat_qctropcy.sh failed. exit"
-    postmsg "$jlogfile" "$msg"
+    echo "syndat_qctropcy.sh failed. exit"
     exit $errsc
    fi
    
@@ -175,8 +168,7 @@ cat allout
 sleep 10
 
 if [ $iflag -eq 0 ]; then
-   msg='ENDED NORMALLY.'
-   postmsg "$jlogfile" "$msg"
+   echo "ENDED NORMALLY."
 fi
 
 ################## END OF SCRIPT #######################

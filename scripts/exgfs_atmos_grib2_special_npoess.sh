@@ -10,8 +10,7 @@ set -x
 
 cd $DATA
 
-msg="HAS BEGUN on `hostname`"
-postmsg "$jlogfile" "$msg"
+echo "HAS BEGUN on `hostname`"
 
 ############################################################
 #  Define Variables:
@@ -88,8 +87,7 @@ do
 # Process Global NPOESS 0.50 GFS GRID PRODUCTS IN GRIB2 F000 - F024  #
 ######################################################################
     set -x
-    msg="Starting half degree grib generation for fhr=$fhr"
-    postmsg "$jlogfile" "$msg"
+    echo "Starting half degree grib generation for fhr=$fhr"
 
     paramlist=${PARMproduct}/global_npoess_paramlist_g2
     cp $COMIN/gfs.t${cyc}z.pgrb2.0p50.f${fhr}  tmpfile2
@@ -160,8 +158,7 @@ do
     done
     set -x
 
-    msg="Starting special grib file generation for fhr=$fhr"
-    postmsg "$jlogfile" "$msg"
+    echo "Starting special grib file generation for fhr=$fhr"
 
     ###############################
     # Put restart files into /nwges 
@@ -214,7 +211,6 @@ done
 
 ########################################################
 
-msg='ENDED NORMALLY.'
-postmsg "$jlogfile" "$msg"
+echo "ENDED NORMALLY."
 
 ################## END OF SCRIPT #######################

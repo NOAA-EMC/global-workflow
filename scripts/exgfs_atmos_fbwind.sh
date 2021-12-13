@@ -19,8 +19,7 @@ cd $DATA
 ######################
 
 set -x
-msg="Begin job for $job"
-postmsg "$jlogfile" "$msg"
+echo "Begin job for $job"
 
 job_name=`echo $job|sed 's/[jpt]gfs/gfs/'`
 
@@ -109,8 +108,6 @@ echo "**************JOB JGFS_FBWIND COMPLETED NORMALLY ON IBM-SP"
 set -x
 #####################################################################
 
-msg='Job completed normally.'
-echo $msg
-postmsg "$jlogfile" "$msg"
+echo "Job completed normally."
 
 ############################### END OF SCRIPT #######################

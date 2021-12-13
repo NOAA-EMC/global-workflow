@@ -22,8 +22,7 @@ set -xa
 
 cd $DATA
 ########################################
-msg="HAS BEGUN"
-#postmsg "$jlogfile" "$msg"
+echo "HAS BEGUN"
 ########################################
 
 ###################################################
@@ -179,7 +178,6 @@ echo "**************JOB GFS_meteogrm COMPLETED NORMALLY ON THE IBM"
 set -x
 #####################################################################
 
-msg='HAS COMPLETED NORMALLY.'
-#postmsg "$jlogfile" "$msg"
+echo "HAS COMPLETED NORMALLY."
 
 ############## END OF SCRIPT #######################

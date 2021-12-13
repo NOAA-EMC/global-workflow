@@ -40,10 +40,9 @@
  cd $DATA
  export wavelog=${DATA}/${RUNwave}_prdgbulls.log
  
- postmsg "$jlogfile" "HAS BEGUN on `hostname`"
+ echo "HAS BEGUN on `hostname`"
 
- msg="Starting MWW3 BULLETINS PRODUCTS SCRIPT"
- postmsg "$jlogfile" "$msg"
+ echo "Starting MWW3 BULLETINS PRODUCTS SCRIPT"
  touch $wavelog
 # 0.b Date and time stuff
  export date=$PDY
@@ -70,8 +69,7 @@
  if [ -f $BullIn ]; then
    cp $BullIn cbull.tar
  else
-   msg="ABNORMAL EXIT: NO BULLETIN TAR FILE"
-   postmsg "$jlogfile" "$msg"
+   echo "ABNORMAL EXIT: NO BULLETIN TAR FILE"
    set +x
    echo ' '
    echo '************************************ '
@@ -98,8 +96,7 @@
    [[ "$LOUD" = YES ]] && set -x
    rm -f cbull.tar
  else
-   msg="ABNORMAL EXIT: ERROR IN BULLETIN UNTAR"
-   postmsg "$jlogfile" "$msg"
+   echo "ABNORMAL EXIT: ERROR IN BULLETIN UNTAR"
    set +x
    echo ' '
    echo '****************************************** '
@@ -126,8 +123,7 @@
  if [ -f $PARMwave/bull_awips_gfswave ]; then
    cp $PARMwave/bull_awips_gfswave awipsbull.data
  else
-   msg="ABNORMAL EXIT: NO AWIPS BULLETIN HEADER DATA FILE"
-   postmsg "$jlogfile" "$msg"
+   echo "ABNORMAL EXIT: NO AWIPS BULLETIN HEADER DATA FILE"
    set +x
    echo ' '
    echo '******************************************* '
@@ -167,8 +163,7 @@
  
    if [ -z "$headr" ] || [ ! -s $fname ]; then
      [[ "$LOUD" = YES ]] && set -x
-     msg="ABNORMAL EXIT: MISSING BULLETING INFO"
-     postmsg "$jlogfile" "$msg"
+     echo "ABNORMAL EXIT: MISSING BULLETING INFO"
      set +x
      echo ' '
      echo '******************************************** '
@@ -191,8 +186,7 @@
    if [ "$OK" != '0' ] || [ ! -f $oname ]; then
      [[ "$LOUD" = YES ]] && set -x
      cat formbul.out
-     msg="ABNORMAL EXIT: ERROR IN formbul"
-     postmsg "$jlogfile" "$msg"
+     echo "ABNORMAL EXIT: ERROR IN formbul"
      set +x
      echo ' '
      echo '************************************** '
@@ -245,7 +239,6 @@
   echo ' '
   [[ "$LOUD" = YES ]] && set -x
 
-  msg="$job completed normally"
-  postmsg "$jlogfile" "$msg"
+  echo "$job completed normally"
 
 # End of MWW3 product generation script -------------------------------------- #

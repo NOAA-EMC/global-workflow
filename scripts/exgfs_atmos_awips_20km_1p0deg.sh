@@ -61,8 +61,7 @@ do
 done
 
 ########################################
-msg="HAS BEGUN!"
-postmsg "$jlogfile" "$msg"
+echo "HAS BEGUN!"
 ########################################
 
 echo " ------------------------------------------"
@@ -209,8 +208,7 @@ fi
         if [ "$SENDDBN" = 'YES' -o "$SENDAWIP" = 'YES' ] ; then
            $DBNROOT/bin/dbn_alert NTC_LOW $NET $job  ${COMOUTwmo}/grib2.awpgfs${fcsthrs}.${GRID}.gfs_awips_f${fcsthrs}_1p0deg_${cyc}
         else
-           msg="File ${COMOUTwmo}/grib2.awpgfs${fcsthrs}.${GRID}.gfs_awips_f${fcsthrs}_1p0deg_${cyc} not posted to db_net."
-           postmsg "$jlogfile" "$msg"
+           echo "File ${COMOUTwmo}/grib2.awpgfs${fcsthrs}.${GRID}.gfs_awips_f${fcsthrs}_1p0deg_${cyc} not posted to db_net."
         fi
       fi
    elif [ $GRID != "003" ] ; then
@@ -237,13 +235,11 @@ fi
       if [ "$SENDDBN" = 'YES' -o "$SENDAWIP" = 'YES' ] ; then
          $DBNROOT/bin/dbn_alert NTC_LOW $NET $job  ${COMOUTwmo}/grib2.awpgfs_20km_${GRID}_f${fcsthrs}.$job_name
       else
-         msg="File  ${COMOUTwmo}/grib2.awpgfs_20km_${GRID}_f${fcsthrs}.$job_name not posted to db_net."
-         postmsg "$jlogfile" "$msg"
+         echo "File ${COMOUTwmo}/grib2.awpgfs_20km_${GRID}_f${fcsthrs}.$job_name not posted to db_net."
       fi
      fi
    fi
-   msg="Awip Processing ${fcsthrs} hour completed normally"
-   postmsg "$jlogfile" "$msg"
+   echo "Awip Processing ${fcsthrs} hour completed normally"
 
 done
 
@@ -260,7 +256,6 @@ echo "**************JOB EXGFS_AWIPS_20KM_1P0DEG.SH.ECF COMPLETED NORMALLY ON THE
 set -x
 ############################################################################################
 
-msg="HAS COMPLETED NORMALLY!"
-postmsg "$jlogfile" "$msg"
+echo "HAS COMPLETED NORMALLY!"
 
 ############## END OF SCRIPT #######################
