@@ -21,10 +21,6 @@
 #   TANK_TROPCY  - path to home directory containing tropical cyclone record
 #                  data base
 
-# Imported variables that can be passed in:
-#   jlogfile  - path to job log file (skipped over by this script if not
-#                 passed in)
-
 
 set -xua
 
@@ -41,9 +37,6 @@ positional parameter 1"
    echo
    set -x
    echo $msg >> $pgmout
-   set +u
-   [ -n "$jlogfile" ]  &&  postmsg "$jlogfile" "$msg"
-   set -u
 
 echo "Leaving sub-shell syndat_getjtbul.sh to recover JTWC Bulletins" \
  >> $pgmout
@@ -125,7 +118,6 @@ perl -wpi.ORIG -e 's/(^.... ... )(\S{9,9})(\S{1,})/$1$2/' jtwcbul
 diff jtwcbul.ORIG jtwcbul > jtwcbul_changes.txt
 if [ -s jtwcbul_changes.txt ]; then
   msg="***WARNING:  SOME JTWC VITALS SEGMENTS REQUIRED PRELIMINARY MODIFICATION!"
-  [ -n "$jlogfile" ] && postmsg "$jlogfile" "$msg"
   echo -e "\n${msg}.  Changes follow:" >> $pgmout
   cat jtwcbul_changes.txt >> $pgmout
   echo -e "\n" >> $pgmout
@@ -184,9 +176,6 @@ RETURN CODE $errget"
    echo
    set -x
    echo $msg >> $pgmout
-   set +u
-   [ -n "$jlogfile" ] && postmsg "$jlogfile" "$msg"
-   set -u
 else
    msg="program  SYNDAT_GETJTBUL  completed normally for $CDATE10, JTWC \
 rec. passed to qctropcy"
@@ -196,9 +185,6 @@ rec. passed to qctropcy"
    echo
    set -x
    echo $msg >> $pgmout
-   set +u
-   [ -n "$jlogfile" ] && postmsg "$jlogfile" "$msg"
-   set -u
 fi
 set +x
 echo

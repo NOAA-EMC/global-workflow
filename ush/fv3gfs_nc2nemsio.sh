@@ -15,8 +15,8 @@ export fdiag=${fdiag:-"none"}               # specified forecast output hours
 
 pwd=$(pwd)
 export DATA=${DATA:-$pwd}
-export NWPROD=${NWPROD:-$pwd}
-export HOMEgfs=${HOMEgfs:-$NWPROD}
+export PACKAGEROOT=${PACKAGEROOT:-$pwd}
+export HOMEgfs=${HOMEgfs:-$PACKAGEROOT}
 export NC2NEMSIOEXE=${NC2NEMSIOEXE:-$HOMEgfs/exec/fv3nc2nemsio.x}
 
 cycn=`echo $CDATE | cut -c 9-10`

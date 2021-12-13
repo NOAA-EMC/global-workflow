@@ -36,7 +36,6 @@
   [[ "$LOUD" != YES ]] && set +x
 
   cd $GRIBDATA
-#  postmsg "$jlogfile" "Making GRIB2 Files."   # commented to reduce unnecessary output to jlogfile
 
   alertName=`echo $RUN|tr [a-z] [A-Z]`
 
@@ -54,7 +53,7 @@
     echo '******************************************************************************* '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" "FATAL ERROR : ERROR IN ww3_grib2 (Could not create temp directory)"
+    echo "FATAL ERROR : ERROR IN ww3_grib2 (Could not create temp directory)"
     exit 1
   fi
 
@@ -103,7 +102,7 @@
     echo '***************************************************'
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" "EXPORTED VARIABLES IN postprocessor NOT SET"
+    echo "EXPORTED VARIABLES IN postprocessor NOT SET"
     exit 1
   fi
 
@@ -163,7 +162,7 @@
       echo '************************************************ '
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
-      postmsg "$jlogfile" "FATAL ERROR : ERROR IN ww3_grib2"
+      echo "FATAL ERROR : ERROR IN ww3_grib2"
       exit 3
     fi
 
@@ -184,7 +183,7 @@
     echo '********************************************* '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" "FATAL ERROR : ERROR IN ww3_grib2"
+    echo "FATAL ERROR : ERROR IN ww3_grib2"
     exit 3
   fi
 
@@ -216,7 +215,7 @@
       echo " Error in moving grib file ${outfile} to com"
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
-      postmsg "$jlogfile" "FATAL ERROR : ERROR IN ww3_grib2"
+      echo "FATAL ERROR : ERROR IN ww3_grib2"
       exit 4
     fi
     if [ ! -s $COMOUT/gridded/${outfile} ]
@@ -230,7 +229,7 @@
       echo " Error in moving grib file ${outfile}.idx to com"
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
-      postmsg "$jlogfile" "FATAL ERROR : ERROR IN creating ww3_grib2 index"
+      echo "FATAL ERROR : ERROR IN creating ww3_grib2 index"
       exit 4
     fi
 

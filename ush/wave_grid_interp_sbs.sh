@@ -41,7 +41,7 @@
   ymdh=$2
   dt=$3
   nst=$4
-  postmsg "$jlogfile" "Making GRID Interpolation Files for $grdID."
+  echo "Making GRID Interpolation Files for $grdID."
   rm -rf grint_${grdID}_${ymdh}
   mkdir grint_${grdID}_${ymdh}
   err=$?
@@ -55,7 +55,7 @@
     echo '************************************************************************************* '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" "FATAL ERROR : ERROR IN ww3_grid_interp (Could not create temp directory)"
+    echo "FATAL ERROR : ERROR IN ww3_grid_interp (Could not create temp directory)"
     exit 1
   fi
 
@@ -84,7 +84,7 @@
     echo ' '
     echo "$CDATE $cycle $EXECwave $COMOUT $WAV_MOD_TAG $SENDCOM $SENDDBN $waveGRD"
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" "EXPORTED VARIABLES IN postprocessor NOT SET"
+    echo "EXPORTED VARIABLES IN postprocessor NOT SET"
     exit 1
   fi
 
@@ -169,7 +169,7 @@
     echo '*************************************************** '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" "FATAL ERROR : ERROR IN ww3_gint interpolation"
+    echo "FATAL ERROR : ERROR IN ww3_gint interpolation"
     exit 3
   fi
 

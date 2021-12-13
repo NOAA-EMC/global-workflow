@@ -31,8 +31,8 @@ fi
 # Directories and paths
 pwd=$(pwd)
 DATA=${DATA:-$pwd}
-NWPROD=${NWPROD:-$pwd}
-HOMEgfs=${HOMEgfs:-$NWPROD}
+PACKAGEROOT=${PACKAGEROOT:-$pwd}
+HOMEgfs=${HOMEgfs:-$PACKAGEROOT}
 FIX_DIR=${FIX_DIR:-$HOMEgfs/fix}
 FIX_AM=${FIX_AM:-$FIX_DIR/fix_am}
 FIXfv3=${FIXfv3:-$FIX_DIR/fix_fv3_gmted2010}
