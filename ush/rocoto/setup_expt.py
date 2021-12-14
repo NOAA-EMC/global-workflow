@@ -1,76 +1,97 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
-###############################################################
-# < next few lines under version control, D O  N O T  E D I T >
-# $Date$
-# $Revision$
-# $Author$
-# $Id$
-###############################################################
+'''
+Entry point for setting up an experiment in the global-workflow
+'''
 
 import os
-import sys
 import glob
 import shutil
-import socket
-from datetime import datetime, timedelta
+from datetime import datetime
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 import workflow_utils as wfu
 
-global expdir, configdir, comrot, pslot, resdet, resens, nens, cdump, idate, edate, gfs_cyc
+
+def makedirs_if_missing(dirname):
+    if not os.path.exists(dirname):
+        os.makedirs(dirname)
 
 
-def makedirs_if_missing(d):
-    if not os.path.exists(d):
-        os.makedirs(d)
+def create_COMROT(comrot):
+
+    makedirs_if_missing(comrot)
+
+    return
 
 
-def create_EXPDIR():
+def fill_COMROT(host, inputs):
+
+    fill_modes = {
+        'cycled': fill_COMROT_cycled,
+        'forecast-only': fill_COMROT_forecasts
+    }
+
+    try:
+        fill_modes[inputs.mode](host, inputs)
+    except KeyError:
+        raise NotImplementedError(f'{mode} is not a supported mode.\n' +
+                                  'Currently supported modes are:\n' +
+                                  f'{" | ".join(fill_modes.keys())}')
+
+    return
+
+
+def fill_COMROT_cycled(host, inputs):
+
+    idatestr = inputs.idate.strftime('%Y%m%d%H')
+
+    # Link ensemble member initial conditions
+    enkfdir = f'enkf{inputs.cdump}.{idatestr[:8]}/{idatestr[8:]}'
+    makedirs_if_missing(os.path.join(inputs.comrot, enkfdir))
+    for ii in range(1, inputs.nens + 1):
+        makedirs_if_missing(os.path.join(inputs.comrot, enkfdir, f'mem{ii:03d}'))
+        os.symlink(os.path.join(inputs.icsdir, idatestr, f'C{inputs.resens}', f'mem{ii:03d}', 'INPUT'),
+                   os.path.join(inputs.comrot, enkfdir, f'mem{ii:03d}', 'INPUT'))
+
+    # Link deterministic initial conditions
+    detdir = f'{inputs.cdump}.{idatestr[:8]}/{idatestr[8:]}'
+    makedirs_if_missing(os.path.join(inputs.comrot, detdir))
+    os.symlink(os.path.join(inputs.icsdir, idatestr, f'C{inputs.resdet}', 'control', 'INPUT'),
+               os.path.join(inputs.comrot, detdir, 'INPUT'))
+
+    # Link bias correction and radiance diagnostics files
+    for fname in ['abias', 'abias_pc', 'abias_air', 'radstat']:
+        os.symlink(os.path.join(inputs.icsdir, idatestr, f'{inputs.cdump}.t{idatestr[8:]}z.{fname}'),
+                   os.path.join(inputs.comrot, detdir, f'{inputs.cdump}.t{idatestr[8:]}z.{fname}'))
+
+    return
+
+
+def fill_COMROT_forecasts(host, inputs):
+    return
+
+
+def create_EXPDIR(expdir):
 
     makedirs_if_missing(expdir)
+
+    return
+
+
+def fill_EXPDIR(configdir, expdir):
+
     configs = glob.glob(f'{configdir}/config.*')
     if len(configs) == 0:
-        msg = f'no config files found in {configdir}'
-        raise IOError(msg)
+        raise IOError(f'no config files found in {configdir}')
     for config in configs:
         shutil.copy(config, expdir)
 
     return
 
 
-def create_COMROT():
+def edit_baseconfig(host, inputs):
 
-    idatestr = idate.strftime('%Y%m%d%H')
-    cymd = idate.strftime('%Y%m%d')
-    chh = idate.strftime('%H')
-
-    makedirs_if_missing(comrot)
-
-    # Link ensemble member initial conditions
-    enkfdir = f'enkf{cdump}.{cymd}/{chh}'
-    makedirs_if_missing(os.path.join(comrot, enkfdir))
-    for i in range(1, nens + 1):
-        makedirs_if_missing(os.path.join(comrot, enkfdir, f'mem{i:03d}'))
-        os.symlink(os.path.join(icsdir, idatestr, f'C{resens}', f'mem{i:03d}', 'INPUT'),
-                   os.path.join(comrot, enkfdir, f'mem{i:03d}', 'INPUT'))
-
-    # Link deterministic initial conditions
-    detdir = f'{cdump}.{cymd}/{chh}'
-    makedirs_if_missing(os.path.join(comrot, detdir))
-    os.symlink(os.path.join(icsdir, idatestr, f'C{resdet}', 'control', 'INPUT'),
-               os.path.join(comrot, detdir, 'INPUT'))
-
-    # Link bias correction and radiance diagnostics files
-    for fname in ['abias', 'abias_pc', 'abias_air', 'radstat']:
-        os.symlink(os.path.join(icsdir, idatestr, f'{cdump}.t{chh}z.{fname}'),
-                   os.path.join(comrot, detdir, f'{cdump}.t{chh}z.{fname}'))
-
-    return
-
-
-def edit_baseconfig():
-
-    base_config = f'{expdir}/config.base'
+    base_config = f'{inputs.expdir}/config.base'
 
     here = os.path.dirname(__file__)
     top = os.path.abspath(os.path.join(
@@ -79,218 +100,157 @@ def edit_baseconfig():
     if os.path.exists(base_config):
         os.unlink(base_config)
 
-    print(f'\nSDATE = {idate}\nEDATE = {edate}')
+    tmpl_dict = {
+        "@MACHINE@": host.machine.upper(),
+        "@PSLOT@": inputs.pslot,
+        "@SDATE@": inputs.idate.strftime('%Y%m%d%H'),
+        "@EDATE@": inputs.edate.strftime('%Y%m%d%H'),
+        "@CASECTL@": f'C{inputs.resdet}',
+        "@HOMEgfs@": top,
+        "@BASE_GIT@": host.info["base_git"],
+        "@DMPDIR@": host.info["dmpdir"],
+        "@NWPROD@": host.info["nwprod"],
+        "@COMROOT@": host.info["comroot"],
+        "@HOMEDIR@": host.info["homedir"],
+        "@EXPDIR@": inputs.expdir,
+        "@ROTDIR@": inputs.comrot,
+        "@ICSDIR@": inputs.icsdir,
+        "@STMP@": host.info["stmp"],
+        "@PTMP@": host.info["ptmp"],
+        "@NOSCRUB@": host.info["noscrub"],
+        "@ACCOUNT@": host.info["account"],
+        "@QUEUE@": host.info["queue"],
+        "@QUEUE_SERVICE@": host.info["queue_service"],
+        "@PARTITION_BATCH@": host.info["partition_batch"],
+        "@EXP_WARM_START@": inputs.start,
+        "@MODE@": inputs.mode,
+        "@CHGRP_RSTPROD@": host.info["chgrp_rstprod"],
+        "@CHGRP_CMD@": host.info["chgrp_cmd"],
+        "@HPSSARCH@": host.info["hpssarch"],
+        "@gfs_cyc@": inputs.gfs_cyc,
+        "@APP@": inputs.app,
+    }
+
+    if inputs.mode in ['cycled']:
+        extend_dict = {
+            "@CASEENS@": f'C{inputs.resens}',
+            "@NMEM_ENKF@": inputs.nens,
+        }
+        tmpl_dict = dict(tmpl_dict, **extend_dict)
+
     with open(base_config + '.emc.dyn', 'rt') as fi:
-        with open(base_config, 'wt') as fo:
-            for line in fi:
-                line = line.replace('@MACHINE@', machine.upper()) \
-                    .replace('@PSLOT@', pslot) \
-                    .replace('@SDATE@', idate.strftime('%Y%m%d%H')) \
-                    .replace('@FDATE@', fdate.strftime('%Y%m%d%H')) \
-                    .replace('@EDATE@', edate.strftime('%Y%m%d%H')) \
-                    .replace('@CASEENS@', f'C{resens}') \
-                    .replace('@CASECTL@', f'C{resdet}') \
-                    .replace('@NMEM_ENKF@', f'{nens}') \
-                    .replace('@HOMEgfs@', top) \
-                    .replace('@BASE_GIT@', base_git) \
-                    .replace('@DMPDIR@', dmpdir) \
-                    .replace('@NWPROD@', nwprod) \
-                    .replace('@COMROOT@', comroot) \
-                    .replace('@HOMEDIR@', homedir) \
-                    .replace('@STMP@', stmp) \
-                    .replace('@PTMP@', ptmp) \
-                    .replace('@NOSCRUB@', noscrub) \
-                    .replace('@ACCOUNT@', account) \
-                    .replace('@QUEUE@', queue) \
-                    .replace('@QUEUE_SERVICE@', queue_service) \
-                    .replace('@PARTITION_BATCH@', partition_batch) \
-                    .replace('@EXP_WARM_START@', exp_warm_start) \
-                    .replace('@MODE@', 'cycled') \
-                    .replace('@CHGRP_RSTPROD@', chgrp_rstprod) \
-                    .replace('@CHGRP_CMD@', chgrp_cmd) \
-                    .replace('@HPSSARCH@', hpssarch) \
-                    .replace('@gfs_cyc@', f'{gfs_cyc}') \
-                    .replace('@APP@', f'{app}')
-                if expdir is not None:
-                    line = line.replace('@EXPDIR@', os.path.dirname(expdir))
-                if comrot is not None:
-                    line = line.replace('@ROTDIR@', os.path.dirname(comrot))
-                if 'ICSDIR' in line:
-                    continue
-                fo.write(line)
+        basestr = fi.read()
+
+    for key, val in tmpl_dict.items():
+        print(key, val)
+        basestr = basestr.replace(key, str(val))
+
+    with open(base_config, 'wt') as fo:
+        fo.write(basestr)
 
     print('')
-    print(f'EDITED:  {expdir}/config.base as per user input.')
-    print(f'DEFAULT: {expdir}/config.base.emc.dyn is for reference only.')
+    print(f'EDITED:  {inputs.expdir}/config.base as per user input.')
+    print(f'DEFAULT: {inputs.expdir}/config.base.emc.dyn is for reference only.')
     print('Please verify and delete the default file before proceeding.')
     print('')
 
     return
 
 
-if __name__ == '__main__':
+def input_args():
 
-    description = '''Setup files and directories to start a GFS parallel.
-Create EXPDIR, copy config files
-Create COMROT experiment directory structure,
-link initial condition files from $ICSDIR to $COMROT'''
+    here = os.path.dirname(__file__)
+    top = os.path.abspath(os.path.join(
+        os.path.abspath(here), '../..'))
 
-    parser = ArgumentParser(description=description, formatter_class=ArgumentDefaultsHelpFormatter)
-    parser.add_argument('--app', help='UFS application', type=str, choices=['ATM', 'ATMW', 'S2S', 'S2SW'], required=False, default='ATM')
-    parser.add_argument('--pslot', help='parallel experiment name', type=str, required=False, default='test')
-    parser.add_argument('--resdet', help='resolution of the deterministic model forecast', type=int, required=False, default=384)
-    parser.add_argument('--resens', help='resolution of the ensemble model forecast', type=int, required=False, default=192)
-    parser.add_argument('--comrot', help='full path to COMROT', type=str, required=False, default=None)
-    parser.add_argument('--expdir', help='full path to EXPDIR', type=str, required=False, default=None)
-    parser.add_argument('--idate', help='starting date of experiment, initial conditions must exist!', type=str, required=True)
-    parser.add_argument('--edate', help='end date experiment', type=str, required=True)
-    parser.add_argument('--icsdir', help='full path to initial condition directory', type=str, required=False)
-    parser.add_argument('--configdir', help='full path to directory containing the config files', type=str, required=False, default=None)
-    parser.add_argument('--nens', help='number of ensemble members', type=int, required=False, default=20)
-    parser.add_argument('--cdump', help='CDUMP to start the experiment', type=str, required=False, default='gdas')
-    parser.add_argument('--gfs_cyc', help='GFS cycles to run', type=int, choices=[0, 1, 2, 4], default=1, required=False)
-    parser.add_argument('--partition', help='partition on machine', type=str, required=False, default=None)
-    parser.add_argument('--start', help='restart mode: warm or cold', type=str, choices=['warm', 'cold'], required=False, default='cold')
+    description = """
+        Setup files and directories to start a GFS parallel.\n
+        Create EXPDIR, copy config files.\n
+        Create COMROT experiment directory structure,
+        link initial condition files from $ICSDIR to $COMROT
+        """
+
+    parser = ArgumentParser(description=description,
+                            formatter_class=ArgumentDefaultsHelpFormatter)
+
+    # Set up sub-parsers for various modes of experimentation
+    subparser = parser.add_subparsers(dest='mode')
+    cycled = subparser.add_parser(
+        'cycled', help='arguments for cycled mode')
+    forecasts = subparser.add_parser(
+        'forecast-only', help='arguments for forecast-only mode')
+
+    # Common arguments across all modes
+    for subp in [cycled, forecasts]:
+        subp.add_argument('--pslot', help='parallel experiment name',
+                          type=str, required=False, default='test')
+        subp.add_argument('--resdet', help='resolution of the deterministic model forecast',
+                          type=int, required=False, default=384)
+        subp.add_argument('--comrot', help='full path to COMROT',
+                          type=str, required=False, default=os.getenv('HOME'))
+        subp.add_argument('--expdir', help='full path to EXPDIR',
+                          type=str, required=False, default=os.getenv('HOME'))
+        subp.add_argument('--idate', help='starting date of experiment, initial conditions must exist!', required=True, type=lambda dd: datetime.strptime(dd, '%Y%m%d%H'))
+        subp.add_argument('--edate', help='end date experiment', required=True, type=lambda dd: datetime.strptime(dd, '%Y%m%d%H'))
+        subp.add_argument('--icsdir', help='full path to initial condition directory', type=str, required=False, default=os.getenv('HOME'))
+        subp.add_argument('--configdir', help='full path to directory containing the config files',
+                          type=str, required=False, default=os.path.join(top,'parm/config'))
+        subp.add_argument('--cdump', help='CDUMP to start the experiment',
+                          type=str, required=False, default='gdas')
+        subp.add_argument('--gfs_cyc', help='GFS cycles to run', type=int,
+                          choices=[0, 1, 2, 4], default=1, required=False)
+        subp.add_argument('--start', help='restart mode: warm or cold', type=str,
+                          choices=['warm', 'cold'], required=False, default='cold')
+
+    # cycled mode additional arguments
+    cycled.add_argument('--resens', help='resolution of the ensemble model forecast',
+                        type=int, required=False, default=192)
+    cycled.add_argument('--nens', help='number of ensemble members',
+                        type=int, required=False, default=20)
+    cycled.add_argument('--app', help='UFS application', type=str,
+                        choices=['ATM', 'ATMW'], required=False, default='ATM')
+
+    # forecast only mode additional arguments
+    forecasts.add_argument('--app', help='UFS application', type=str, choices=[
+        'ATM', 'ATMW', 'S2S', 'S2SW'], required=False, default='ATM')
 
     args = parser.parse_args()
 
-    machine = wfu.detectMachine()
+    return args
 
-    configdir = args.configdir
-    if not configdir:
-        configdir = os.path.abspath(os.path.dirname(__file__) + '/../parm/config')
 
-    app = args.app
-    pslot = args.pslot
-    idate = datetime.strptime(args.idate, '%Y%m%d%H')
-    edate = datetime.strptime(args.edate, '%Y%m%d%H')
-    icsdir = args.icsdir
-    resdet = args.resdet
-    resens = args.resens
-    comrot = args.comrot if args.comrot is None else os.path.join(args.comrot, pslot)
-    expdir = args.expdir if args.expdir is None else os.path.join(args.expdir, pslot)
-    nens = args.nens
-    cdump = args.cdump
-    gfs_cyc = args.gfs_cyc
-    partition = args.partition
-    start = args.start
+if __name__ == '__main__':
 
-    # Set restart setting in config.base
-    if start == 'cold':
-      exp_warm_start = '.false.'
-    elif start == 'warm':
-      exp_warm_start = '.true.'
+    user_inputs = input_args()
+    host=wfu.HostInfo(wfu.detectMachine())
 
-    # Set FDATE (first full cycle)
-    fdate = idate + timedelta(hours=6)
-
-    # Set machine defaults
-    if machine == 'WCOSS_DELL_P3':
-      base_git = '/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git'
-      base_svn = '/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git'
-      dmpdir = '/gpfs/dell3/emc/global/dump'
-      nwprod = '${NWROOT:-"/gpfs/dell1/nco/ops/nwprod"}'
-      comroot = '${COMROOT:-"/gpfs/dell1/nco/ops/com"}'
-      homedir = '/gpfs/dell2/emc/modeling/noscrub/$USER'
-      stmp = '/gpfs/dell3/stmp/$USER'
-      ptmp = '/gpfs/dell3/ptmp/$USER'
-      noscrub = '/gpfs/dell2/emc/modeling/noscrub/$USER'
-      account = 'GFS-DEV'
-      queue = 'dev'
-      queue_service = 'dev_transfer'
-      partition_batch = ''
-      if partition in ['3p5']:
-        queue = 'dev2'
-        queue_service = 'dev2_transfer'
-      chgrp_rstprod = 'YES'
-      chgrp_cmd = 'chgrp rstprod'
-      hpssarch = 'YES'
-    elif machine == 'WCOSS_C':
-      base_git = '/gpfs/hps3/emc/global/noscrub/emc.glopara/git'
-      base_svn = '/gpfs/hps3/emc/global/noscrub/emc.glopara/svn'
-      dmpdir = '/gpfs/dell3/emc/global/dump'
-      nwprod = '${NWROOT:-"/gpfs/hps/nco/ops/nwprod"}'
-      comroot = '${COMROOT:-"/gpfs/hps/nco/ops/com"}'
-      homedir = '/gpfs/hps3/emc/global/noscrub/$USER'
-      stmp = '/gpfs/hps2/stmp/$USER'
-      ptmp = '/gpfs/hps2/ptmp/$USER'
-      noscrub = '/gpfs/hps3/emc/global/noscrub/$USER'
-      account = 'GFS-DEV'
-      queue = 'dev'
-      queue_service = 'dev_transfer'
-      partition_batch = ''
-      chgrp_rstprod = 'YES'
-      chgrp_cmd = 'chgrp rstprod'
-      hpssarch = 'YES'
-    elif machine == 'HERA':
-      base_git = '/scratch1/NCEPDEV/global/glopara/git'
-      base_svn = '/scratch1/NCEPDEV/global/glopara/svn'
-      dmpdir = '/scratch1/NCEPDEV/global/glopara/dump'
-      nwprod = '/scratch1/NCEPDEV/global/glopara/nwpara'
-      comroot = '/scratch1/NCEPDEV/global/glopara/com'
-      homedir = '/scratch1/NCEPDEV/global/$USER'
-      stmp = '/scratch1/NCEPDEV/stmp2/$USER'
-      ptmp = '/scratch1/NCEPDEV/stmp4/$USER'
-      noscrub = '$HOMEDIR'
-      account = 'fv3-cpu'
-      queue = 'batch'
-      queue_service = 'service'
-      partition_batch = 'hera'
-      chgrp_rstprod = 'YES'
-      chgrp_cmd = 'chgrp rstprod'
-      hpssarch = 'YES'
-    elif machine == 'ORION':
-      base_git = '/work/noaa/global/glopara/git'
-      base_svn = '/work/noaa/global/glopara/svn'
-      dmpdir = '/work/noaa/rstprod/dump'
-      nwprod = '/work/noaa/global/glopara/nwpara'
-      comroot = '/work/noaa/global/glopara/com'
-      homedir = '/work/noaa/global/$USER'
-      stmp = '/work/noaa/stmp/$USER'
-      ptmp = '/work/noaa/stmp/$USER'
-      noscrub = '$HOMEDIR'
-      account = 'fv3-cpu'
-      queue = 'batch'
-      queue_service = 'service'
-      partition_batch = 'orion'
-      chgrp_rstprod = 'YES'
-      chgrp_cmd = 'chgrp rstprod'
-      hpssarch = 'NO'
-
-    if args.icsdir is not None and not os.path.exists(icsdir):
-        msg = f'Initial conditions do not exist in {icsdir}'
-        raise IOError(msg)
-
-    # COMROT directory
-    if args.icsdir is None:
-       create_comrot = False
-    else:
-       create_comrot = True
-       if os.path.exists(comrot):
-           print()
-           print(f'COMROT already exists in {comrot}')
-           print()
-           overwrite_comrot = input('Do you wish to over-write COMROT [y/N]: ')
-           create_comrot = True if overwrite_comrot in ['y', 'yes', 'Y', 'YES'] else False
-           if create_comrot:
-              shutil.rmtree(comrot)
-
-    if create_comrot:
-        create_COMROT()
-
-    # EXP directory
-    create_expdir = True
-    if os.path.exists(expdir):
+    create_comrot = True
+    if os.path.exists(user_inputs.comrot):
         print()
-        print(f'EXPDIR already exists in {expdir}')
+        print(f'COMROT already exists in {user_inputs.comrot}')
+        print()
+        overwrite_comrot = input('Do you wish to over-write COMROT [y/N]: ')
+        create_comrot = True if overwrite_comrot in [
+            'y', 'yes', 'Y', 'YES'] else False
+        if create_comrot:
+            shutil.rmtree(user_inputs.comrot)
+
+    create_expdir = True
+    if os.path.exists(user_inputs.expdir):
+        print()
+        print(f'EXPDIR already exists in {user_inputs.expdir}')
         print()
         overwrite_expdir = input('Do you wish to over-write EXPDIR [y/N]: ')
-        create_expdir = True if overwrite_expdir in ['y', 'yes', 'Y', 'YES'] else False
+        create_expdir = True if overwrite_expdir in [
+            'y', 'yes', 'Y', 'YES'] else False
         if create_expdir:
-            shutil.rmtree(expdir)
+            shutil.rmtree(user_inputs.expdir)
+
+    if create_comrot:
+        create_COMROT(user_inputs.comrot)
+        fill_COMROT(host, user_inputs)
 
     if create_expdir:
-        create_EXPDIR()
-        edit_baseconfig()
-
-    sys.exit(0)
+        create_EXPDIR(user_inputs.expdir)
+        fill_EXPDIR(user_inputs.configdir, user_inputs.expdir)
+        edit_baseconfig(host, user_inputs)
