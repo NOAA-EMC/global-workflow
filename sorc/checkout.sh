@@ -50,6 +50,17 @@ else
     echo 'Skip.  Directory gsi.fd already exists.'
 fi
 
+echo ufs_da checkout ...
+if [[ ! -d ufs_da.fd ]] ; then
+    rm -f ${topdir}/checkout-ufs_da.log
+    git clone --recursive https://github.com/NOAA-EMC/JEDI-T2O.git ufs_da.fd >> ${logdir}/checkout-ufs_da.log 2>&1
+    cd ufs_da.fd
+    git checkout develop
+    cd ${topdir}
+else
+    echo 'Skip.  Directory ufs_da.fd already exists.'
+fi
+
 echo gldas checkout ...
 if [[ ! -d gldas.fd ]] ; then
     rm -f ${topdir}/checkout-gldas.log

@@ -114,6 +114,20 @@ fi
 }
 
 #------------------------------------
+# build ufs_da
+#------------------------------------
+$Build_ufs_da && {
+echo " .... Building ufs_da .... "
+./build_ufs_da.sh > $logs_dir/build_ufs_da.log 2>&1
+rc=$?
+if [[ $rc -ne 0 ]] ; then
+    echo "Fatal error in building ufs_da."
+    echo "The log file is in $logs_dir/build_ufs_da.log"
+fi
+((err+=$rc))
+}
+
+#------------------------------------
 # build ncep_post
 #------------------------------------
 $Build_ncep_post && {

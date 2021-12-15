@@ -283,6 +283,14 @@ for gsiexe in  calc_analysis.x calc_increment_ens_ncio.x calc_increment_ens.x \
     $LINK ../sorc/gsi.fd/exec/$gsiexe .
 done
 
+for ufsdaexe in fv3jedi_addincrement.x fv3jedi_diffstates.x fv3jedi_ensvariance.x fv3jedi_hofx.x \
+    fv3jedi_var.x fv3jedi_convertincrement.x fv3jedi_dirac.x fv3jedi_error_covariance_training.x \
+    fv3jedi_letkf.x fv3jedi_convertstate.x fv3jedi_eda.x fv3jedi_forecast.x fv3jedi_plot_field.x \
+    fv3jedi_data_checker.py fv3jedi_enshofx.x fv3jedi_hofx_nomodel.x fv3jedi_testdata_downloader.py; do
+    [[ -s $ufsdaexe ]] && rm -f $ufsdaexe
+    $LINK ../sorc/ufs_da.fd/UFS-DA/bin/$ufsdaexe .
+done
+
 for gldasexe in gdas2gldas  gldas2gdas  gldas_forcing  gldas_model  gldas_post  gldas_rst; do
     [[ -s $gldasexe ]] && rm -f $gldasexe
     $LINK ../sorc/gldas.fd/exec/$gldasexe .
