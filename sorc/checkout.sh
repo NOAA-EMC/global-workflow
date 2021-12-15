@@ -7,6 +7,7 @@ do
   o)
    echo "Received -o flag for optional checkout of GTG, will check out GTG with EMC_post"
    checkout_gtg="YES"
+   gtg_git_args="--recursive"
    ;;
   :)
    echo "option -$OPTARG needs an argument"
@@ -49,7 +50,7 @@ if [[ ! -d gldas.fd ]] ; then
     rm -f ${topdir}/checkout-gldas.log
     git clone https://github.com/NOAA-EMC/GLDAS  gldas.fd >> ${topdir}/checkout-gldas.fd.log 2>&1
     cd gldas.fd
-    git checkout gldas_gfsv16_release.v1.19.0
+    git checkout gldas_gfsv16_release.v1.20.0
     cd ${topdir}
 else
     echo 'Skip.  Directory gldas.fd already exists.'
@@ -69,9 +70,7 @@ fi
 echo EMC_post checkout ...
 if [[ ! -d gfs_post.fd ]] ; then
     rm -f ${topdir}/checkout-gfs_post.log
-    git clone https://github.com/WenMeng-NOAA/UPP.git gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
-    cd gfs_post.fd
-    git checkout post_gfsv16_wcoss2
+    git clone ${gtg_git_args:-} -b upp_v8.1.0 https://github.com/NOAA-EMC/UPP.git gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
     ################################################################################
     # checkout_gtg
     ## yes: The gtg code at NCAR private repository is available for ops. GFS only.
@@ -80,7 +79,7 @@ if [[ ! -d gfs_post.fd ]] ; then
     ################################################################################
     checkout_gtg=${checkout_gtg:-"NO"}
     if [[ ${checkout_gtg} == "YES" ]] ; then
-      ./manage_externals/checkout_externals
+      cd gfs_post.fd
       cp sorc/post_gtg.fd/*f90 sorc/ncep_post.fd/.
       cp sorc/post_gtg.fd/gtg.config.gfs parm/gtg.config.gfs
     fi
@@ -94,7 +93,7 @@ if [[ ! -d gfs_wafs.fd ]] ; then
     rm -f ${topdir}/checkout-gfs_wafs.log
     git clone --recursive https://github.com/NOAA-EMC/EMC_gfs_wafs.git gfs_wafs.fd >> ${topdir}/checkout-gfs_wafs.log 2>&1
     cd gfs_wafs.fd
-    git checkout gfs_wafs.v6.2.0
+    git checkout gfs_wafs.v6.2.1
     cd ${topdir}
 else
     echo 'Skip.  Directory gfs_wafs.fd already exists.'
