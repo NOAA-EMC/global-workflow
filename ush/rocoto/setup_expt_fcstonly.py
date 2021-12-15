@@ -83,7 +83,8 @@ def edit_baseconfig():
                     .replace('@CHGRP_RSTPROD@', chgrp_rstprod) \
                     .replace('@CHGRP_CMD@', chgrp_cmd) \
                     .replace('@HPSSARCH@', hpssarch) \
-                    .replace('@gfs_cyc@', f'{gfs_cyc}')
+                    .replace('@gfs_cyc@', f'{gfs_cyc}') \
+                    .replace('@APP@', f'{app}')
                 if expdir is not None:
                     line = line.replace('@EXPDIR@', os.path.dirname(expdir))
                 if comrot is not None:
@@ -109,6 +110,7 @@ Create EXPDIR, copy config files
 Create COMROT experiment directory structure'''
 
     parser = ArgumentParser(description=description, formatter_class=ArgumentDefaultsHelpFormatter)
+    parser.add_argument('--app', help='UFS application', type=str, choices=['ATM', 'ATMW', 'S2S', 'S2SW'], required=False, default='ATM')
     parser.add_argument('--pslot', help='parallel experiment name', type=str, required=False, default='test')
     parser.add_argument('--res', help='resolution of the model forecast', type=int, required=False, default=192)
     parser.add_argument('--comrot', help='full path to COMROT', type=str, required=False, default=None)
@@ -128,6 +130,7 @@ Create COMROT experiment directory structure'''
     if not configdir:
         configdir = os.path.abspath(os.path.dirname(__file__) + '/../parm/config')
 
+    app = args.app
     pslot = args.pslot
     idate = datetime.strptime(args.idate, '%Y%m%d%H')
     edate = datetime.strptime(args.edate, '%Y%m%d%H')
@@ -195,7 +198,7 @@ Create COMROT experiment directory structure'''
       base_svn = '/scratch1/NCEPDEV/global/glopara/svn'
       dmpdir = '/scratch1/NCEPDEV/global/glopara/dump'
       nwprod = '/scratch1/NCEPDEV/global/glopara/nwpara'
-      comroot = '/scratch1/NCEPDEV/rstprod/com'
+      comroot = '/scratch1/NCEPDEV/global/glopara/com'
       homedir = '/scratch1/NCEPDEV/global/$USER'
       stmp = '/scratch1/NCEPDEV/stmp2/$USER'
       ptmp = '/scratch1/NCEPDEV/stmp4/$USER'
@@ -203,7 +206,24 @@ Create COMROT experiment directory structure'''
       account = 'fv3-cpu'
       queue = 'batch'
       queue_service = 'service'
-      partition_batch = ''
+      partition_batch = 'hera'
+      chgrp_rstprod = 'YES'
+      chgrp_cmd = 'chgrp rstprod'
+      hpssarch = 'YES'
+    elif machine == 'JET':
+      base_git = '/lfs4/HFIP/hfv3gfs/glopara/git'
+      base_svn = '/dev/null/global/save/glopara/svn/'
+      dmpdir = '/lfs4/HFIP/hfv3gfs/glopara/dump'
+      nwprod = '/lfs4/HFIP/hfv3gfs/glopara/nwpara'
+      comroot = '/lfs4/HFIP/hfv3gfs/glopara/com'
+      homedir = '/lfs4/HFIP/hfv3gfs/$USER'
+      stmp = '/lfs4/HFIP/hfv3gfs/${USER}/stmp'
+      ptmp = '/lfs4/HFIP/hfv3gfs/${USER}/ptmp'
+      noscrub = '$HOMEDIR'
+      account = 'hfv3gfs'
+      queue = 'batch'
+      queue_service = 'service'
+      partition_batch = 'xjet'
       chgrp_rstprod = 'YES'
       chgrp_cmd = 'chgrp rstprod'
       hpssarch = 'YES'

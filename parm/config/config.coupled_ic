@@ -1,0 +1,23 @@
+#!/bin/ksh -x
+
+########## config.coupled_ic ##########
+
+echo "BEGIN: config.coupled_ic"
+
+# Get task specific resources
+source $EXPDIR/config.resources coupled_ic
+
+if [[ "$machine" == "WCOSS_DELL_P3" ]]; then
+  export BASE_CPLIC="/gpfs/dell2/emc/modeling/noscrub/Walter.Kolczynski/global-workflow/IC"
+elif [[ "$machine" == "HERA" ]]; then
+  export BASE_CPLIC="/scratch2/NCEPDEV/climate/climpara/S2S/IC"
+elif [[ "$machine" == "ORION" ]]; then
+  export BASE_CPLIC="/work/noaa/global/wkolczyn/noscrub/global-workflow/IC"
+fi
+
+export CPL_ATMIC=GEFSwithNOAHMP-GLDASdatm-ERAsnow-aerosols
+export CPL_ICEIC=CPC
+export CPL_OCNIC=CPC3Dvar
+export CPL_WAVIC=GEFSwave20210528v2
+
+echo "END: config.coupled_ic"

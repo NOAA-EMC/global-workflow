@@ -209,7 +209,6 @@
     exit 4
   fi
 
-  # if [ "$SENDDBN" = 'YES' -a  $type != "ibp" ]
   if [ "$SENDDBN" = 'YES' ]
   then
     set +x

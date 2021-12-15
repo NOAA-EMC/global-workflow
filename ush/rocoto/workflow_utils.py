@@ -37,7 +37,7 @@ def get_shell_env(scripts):
     vars=dict()
     runme=''.join([ f'source {s} ; ' for s in scripts ])
     magic=f'--- ENVIRONMENT BEGIN {random.randint(0,64**5)} ---'
-    runme+=f'/bin/echo -n "{(magic,)}" ; /usr/bin/env -0'
+    runme+=f'/bin/echo -n "{magic}" ; /usr/bin/env -0'
     with open('/dev/null','w') as null:
         env=subprocess.Popen(runme,shell=True,stdin=null.fileno(),
                        stdout=subprocess.PIPE)
@@ -113,6 +113,9 @@ def source_configs(configs, tasks):
         elif task in ['efcs']:
             files.append(find_config('config.fcst', configs))
             files.append(find_config('config.efcs', configs))
+        elif 'wave' in task:
+            files.append(find_config(f'config.wave', configs))
+            files.append(find_config(f'config.{task}', configs))
         else:
             files.append(find_config(f'config.{task}', configs))
 
@@ -201,11 +204,8 @@ def create_wf_task(task, cdump='gdas', cycledef=None, envar=None, dependency=Non
                  'dependency': dependency, \
                  'final': final}
 
-    # Add PARTITION_BATCH to all non-service jobs on Orion (SLURM)
-    if get_scheduler(detectMachine()) in ['slurm'] and detectMachine() in ['ORION','JET']:
-        task_dict['partition'] = '&PARTITION_BATCH;'
-    # Add PARTITION_SERVICE to all service jobs (SLURM)
-    if get_scheduler(detectMachine()) in ['slurm'] and task in ['getic','arch','earc']:
+    # Add partition for machines using slurm
+    if get_scheduler(detectMachine()) in ['slurm']:
         task_dict['partition'] = f'&PARTITION_{task.upper()}_{cdump.upper()};'
 
     if metatask is None:
@@ -251,10 +251,7 @@ def get_resources(machine, cfg, task, reservation, cdump='gdas'):
     if cdump in ['gfs'] and f'npe_{task}_gfs' in cfg.keys():
         tasks = cfg[f'npe_{ltask}_gfs']
     else:
-        try:
-            tasks = cfg[f'npe_{ltask}']
-        except KeyError:
-            tasks = cfg["',)npe_waveawipsgridded"]
+        tasks = cfg[f'npe_{ltask}']
 
     if cdump in ['gfs'] and f'npe_node_{task}_gfs' in cfg.keys():
         ppn = cfg[f'npe_node_{ltask}_gfs']
@@ -262,10 +259,7 @@ def get_resources(machine, cfg, task, reservation, cdump='gdas'):
         ppn = cfg[f'npe_node_{ltask}']
 
     if machine in [ 'WCOSS_DELL_P3', 'HERA', 'ORION', 'JET' ]:
-        try:
-            threads = cfg[f'nth_{ltask}']
-        except KeyError:
-            threads = cfg["',)nth_epos"]
+        threads = cfg[f'nth_{ltask}']
 
     nodes = np.int(np.ceil(np.float(tasks) / np.float(ppn)))
 
