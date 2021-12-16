@@ -195,6 +195,7 @@ def create_wf_task(task, cdump='gdas', cycledef=None, envar=None, dependency=Non
                  'walltime': f'&WALLTIME_{task.upper()}_{cdump.upper()};', \
                  'native': f'&NATIVE_{task.upper()}_{cdump.upper()};', \
                  'memory': f'&MEMORY_{task.upper()}_{cdump.upper()};', \
+                 'nodesize': '&NODESIZE;', \
                  'resources': f'&RESOURCES_{task.upper()}_{cdump.upper()};', \
                  'log': f'&ROTDIR;/logs/@Y@m@d@H/{taskstr}.log', \
                  'envar': envar, \
@@ -243,6 +244,7 @@ def create_firstcyc_task(cdump='gdas'):
                  'queue': '&QUEUE_SERVICE;', \
                  'walltime': f'&WALLTIME_ARCH_{cdump.upper()};', \
                  'native': f'&NATIVE_ARCH_{cdump.upper()};', \
+                 'nodesize': '&NODESIZE;', \
                  'resources': f'&RESOURCES_ARCH_{cdump.upper()};', \
                  'log': f'&ROTDIR;/logs/@Y@m@d@H/{taskstr}.log', \
                  'dependency': dependencies}
