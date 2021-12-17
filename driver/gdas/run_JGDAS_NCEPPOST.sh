@@ -43,7 +43,7 @@ export envir=prod
 
 # set up running dir
 
-export user=`whoami`
+export user=$(whoami)
 export DATA=/gpfs/hps/ptmp/${user}/gdas.${PDY}${cyc}_nemsio_mpiio
 mkdir -p $DATA
 cd $DATA

@@ -404,7 +404,7 @@ if [ $type = "enkfgdas" -o $type = "enkfgfs" ]; then
 
   IAUFHRS_ENKF=${IAUFHRS_ENKF:-6}
   lobsdiag_forenkf=${lobsdiag_forenkf:-".false."}
-  nfhrs=`echo $IAUFHRS_ENKF | sed 's/,/ /g'`
+  nfhrs=$(echo $IAUFHRS_ENKF | sed 's/,/ /g')
   NMEM_ENKF=${NMEM_ENKF:-80}
   NMEM_EARCGRP=${NMEM_EARCGRP:-10}               ##number of ens memebers included in each tarball
   NTARS=$((NMEM_ENKF/NMEM_EARCGRP))

@@ -191,8 +191,8 @@ outfil="$2"
 flg="$3"
 INFILE="$4"
 set -x
-export filename=`basename ${INFILE}`
-export FLG=`echo  $flg | tr '[a-z]' '[A-Z]' `
+export filename=$(basename ${INFILE})
+export FLG=$(echo  $flg | tr '[a-z]' '[A-Z]' )
 export CONCARD=card$flg{$$}
 
 # get the number of characters in TYPE !
@@ -201,7 +201,7 @@ NUM=${#TYPE}
 
 # get the number of sub types in TYPE!
 
-numprt=`echo $TYPE  | awk -F_ '{print NF}'`
+numprt=$(echo $TYPE  | awk -F_ '{print NF}')
 
 if [ $numprt -gt 1 ]
 then
@@ -211,9 +211,9 @@ then
 # remove the under score separators from $TYPE.
 
   newstr=""
-    group=`echo $TYPE \ | awk -F_ '{for(i=1;i<=NF;i++) \
+    group=$(echo $TYPE \ | awk -F_ '{for(i=1;i<=NF;i++) \
     {if(i<NF) printf("%s ", $i);\
-     else printf("%s",$i);}}'`
+     else printf("%s",$i);}}')
 
 #   loop through the group to parse out the special cases:
 #   NCDC and PWWB !
@@ -224,7 +224,7 @@ then
   do
    case $SUBTYP in
     "NCDC")
-     i=`expr $i + 1` 
+     i=$(expr $i + 1) 
      WASNCDC=YES    
            
 #  THIS file is to go to NCDC
@@ -236,33 +236,33 @@ then
 #  This file is to be printed at the WWB
 
      WASPWWB=YES
-     i=`expr $i + 1`
+     i=$(expr $i + 1)
      smember=sndfaxwwb
      export smember
      $smember ${INFILE}
  	;;
     "AFOS")
      snd=NO	
-     i=`expr $i + 1`
+     i=$(expr $i + 1)
      	;;
     "AWIP")
      snd=YES
-     i=`expr $i + 1`	
+     i=$(expr $i + 1)	
 	;;	 	
     "FAXX")
      snd=YES
-     i=`expr $i + 1`	
+     i=$(expr $i + 1)	
 	;;
     "TRAN")
      snd=YES
-     i=`expr $i + 1` 	
+     i=$(expr $i + 1) 	
 	;;
     "XTRAN")
       snd=YES
-     i=`expr $i + 1` 	
+     i=$(expr $i + 1) 	
 	;;
        *)
-       i=`expr $i + 1`
+       i=$(expr $i + 1)
        if [ $i -lt $numprt ]
        then
         newstr="${newstr}${SUBTYP}_"
@@ -415,7 +415,7 @@ strt1EOH
 #______________________________________________________________
     
 
-istat=`egrep -c "NHC_6BIT" ${CONCARD}`
+istat=$(egrep -c "NHC_6BIT" ${CONCARD})
  if test "$istat" -ne 0
  then
 
@@ -425,11 +425,11 @@ istat=`egrep -c "NHC_6BIT" ${CONCARD}`
    actn="Sending"   
    echo "$actn a nmc6bit file with $JAG."
 
-   base=`basename ${outfil}`
+   base=$(basename ${outfil})
    FORFIL=/dbnet/data/nmc6bit/$base
 
  else
-   istat=`egrep -c "AWPS_RB|OSO" ${CONCARD}`
+   istat=$(egrep -c "AWPS_RB|OSO" ${CONCARD})
     if test "$istat" -ne 0
     then      
        FORFIL=$outfil

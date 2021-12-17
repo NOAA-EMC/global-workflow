@@ -38,7 +38,7 @@
 #  $WEBTITLE < dates
  ${UTILgfs}/exec/webtitle < dates
 
-  export TITLE=`cat title.output`
+  export TITLE=$(cat title.output)
   echo "\n\n TITLE = $TITLE \n"
 
 # Define labels and file names for Northern Hemisphere analysis charts
@@ -67,7 +67,7 @@
 
 # Set grid date and input file name
 
-  gdattim=`echo ${PDY} | cut -c3-8`/${cyc}00F000
+  gdattim=$(echo ${PDY} | cut -c3-8)/${cyc}00F000
   gdfile=gem_grids${fhr}.gem
 
 

@@ -91,7 +91,7 @@
   fhrp=$fhr
   while [ $fhr -le $MAXHOUR ]; do
 
-    ymdh=`$NDATE $fhr $CDATE`
+    ymdh=$($NDATE $fhr $CDATE)
     if [ "$specdir" = "bull" ]
     then
       outfilefhr=${STA_DIR}/${specdir}fhr/$WAV_MOD_TAG.${ymdh}.$buoy.bull

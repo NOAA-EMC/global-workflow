@@ -2,7 +2,7 @@
 set -eux
 
 source ./machine-setup.sh > /dev/null 2>&1
-export dir=` pwd `
+export dir=$( pwd )
 
 cd ../util/sorc
 
