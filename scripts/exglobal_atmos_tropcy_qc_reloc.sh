@@ -13,15 +13,15 @@ set -x
 # Make sure we are in the $DATA directory
 cd $DATA
 
-msg="HAS BEGUN on `hostname`"
+msg="HAS BEGUN on $(hostname)"
 postmsg "$jlogfile" "$msg"
 
 cat break > $pgmout
 
 export COMSP=$COMOUT/${RUN}.${cycle}.
 
-tmhr=`echo $tmmark|cut -c3-4`
-cdate10=` ${NDATE:?} -$tmhr $PDY$cyc`
+tmhr=$(echo $tmmark|cut -c3-4)
+cdate10=$( ${NDATE:?} -$tmhr $PDY$cyc)
 
 NET_uc=$(echo $RUN | tr [a-z] [A-Z])
 tmmark_uc=$(echo $tmmark | tr [a-z] [A-Z])

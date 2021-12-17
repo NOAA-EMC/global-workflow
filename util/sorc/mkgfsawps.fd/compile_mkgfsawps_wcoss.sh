@@ -1,7 +1,7 @@
 #!/bin/sh
 LMOD_EXACT_MATCH=no
 source ../../../sorc/machine-setup.sh > /dev/null 2>&1
-cwd=`pwd`
+cwd=$(pwd)
 
 if [ "$target" = "wcoss_dell_p3" ] || [ "$target" = "wcoss_cray" ] || [ "$target" = "hera" ] ; then
    echo " "

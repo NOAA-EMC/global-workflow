@@ -35,173 +35,173 @@ MDL=GFS
 metatype="ver"
 metaname="gfsver_${cyc}.meta"
 device="nc | ${metaname}"
-PDY2=`echo ${PDY} | cut -c3-`
+PDY2=$(echo ${PDY} | cut -c3-)
 #
 # DEFINE 1 CYCLE AGO
-dc1=`$NDATE -06 ${PDY}${cyc} | cut -c -10`
-date1=`echo ${dc1} | cut -c -8`
-sdate1=`echo ${dc1} | cut -c 3-8`
-cycle1=`echo ${dc1} | cut -c 9,10`
+dc1=$($NDATE -06 ${PDY}${cyc} | cut -c -10)
+date1=$(echo ${dc1} | cut -c -8)
+sdate1=$(echo ${dc1} | cut -c 3-8)
+cycle1=$(echo ${dc1} | cut -c 9,10)
 # DEFINE 2 CYCLES AGO
-dc2=`$NDATE -12 ${PDY}${cyc} | cut -c -10`
-date2=`echo ${dc2} | cut -c -8`
-sdate2=`echo ${dc2} | cut -c 3-8`
-cycle2=`echo ${dc2} | cut -c 9,10`
+dc2=$($NDATE -12 ${PDY}${cyc} | cut -c -10)
+date2=$(echo ${dc2} | cut -c -8)
+sdate2=$(echo ${dc2} | cut -c 3-8)
+cycle2=$(echo ${dc2} | cut -c 9,10)
 # DEFINE 3 CYCLES AGO
-dc3=`$NDATE -18 ${PDY}${cyc} | cut -c -10`
-date3=`echo ${dc3} | cut -c -8`
-sdate3=`echo ${dc3} | cut -c 3-8`
-cycle3=`echo ${dc3} | cut -c 9,10`
+dc3=$($NDATE -18 ${PDY}${cyc} | cut -c -10)
+date3=$(echo ${dc3} | cut -c -8)
+sdate3=$(echo ${dc3} | cut -c 3-8)
+cycle3=$(echo ${dc3} | cut -c 9,10)
 # DEFINE 4 CYCLES AGO
-dc4=`$NDATE -24 ${PDY}${cyc} | cut -c -10`
-date4=`echo ${dc4} | cut -c -8`
-sdate4=`echo ${dc4} | cut -c 3-8`
-cycle4=`echo ${dc4} | cut -c 9,10`
+dc4=$($NDATE -24 ${PDY}${cyc} | cut -c -10)
+date4=$(echo ${dc4} | cut -c -8)
+sdate4=$(echo ${dc4} | cut -c 3-8)
+cycle4=$(echo ${dc4} | cut -c 9,10)
 # DEFINE 5 CYCLES AGO
-dc5=`$NDATE -30 ${PDY}${cyc} | cut -c -10`
-date5=`echo ${dc5} | cut -c -8`
-sdate5=`echo ${dc5} | cut -c 3-8`
-cycle5=`echo ${dc5} | cut -c 9,10`
+dc5=$($NDATE -30 ${PDY}${cyc} | cut -c -10)
+date5=$(echo ${dc5} | cut -c -8)
+sdate5=$(echo ${dc5} | cut -c 3-8)
+cycle5=$(echo ${dc5} | cut -c 9,10)
 # DEFINE 6 CYCLES AGO
-dc6=`$NDATE -36 ${PDY}${cyc} | cut -c -10`
-date6=`echo ${dc6} | cut -c -8`
-sdate6=`echo ${dc6} | cut -c 3-8`
-cycle6=`echo ${dc6} | cut -c 9,10`
+dc6=$($NDATE -36 ${PDY}${cyc} | cut -c -10)
+date6=$(echo ${dc6} | cut -c -8)
+sdate6=$(echo ${dc6} | cut -c 3-8)
+cycle6=$(echo ${dc6} | cut -c 9,10)
 # DEFINE 7 CYCLES AGO
-dc7=`$NDATE -42 ${PDY}${cyc} | cut -c -10`
-date7=`echo ${dc7} | cut -c -8`
-sdate7=`echo ${dc7} | cut -c 3-8`
-cycle7=`echo ${dc7} | cut -c 9,10`
+dc7=$($NDATE -42 ${PDY}${cyc} | cut -c -10)
+date7=$(echo ${dc7} | cut -c -8)
+sdate7=$(echo ${dc7} | cut -c 3-8)
+cycle7=$(echo ${dc7} | cut -c 9,10)
 # DEFINE 8 CYCLES AGO
-dc8=`$NDATE -48 ${PDY}${cyc} | cut -c -10`
-date8=`echo ${dc8} | cut -c -8`
-sdate8=`echo ${dc8} | cut -c 3-8`
-cycle8=`echo ${dc8} | cut -c 9,10`
+dc8=$($NDATE -48 ${PDY}${cyc} | cut -c -10)
+date8=$(echo ${dc8} | cut -c -8)
+sdate8=$(echo ${dc8} | cut -c 3-8)
+cycle8=$(echo ${dc8} | cut -c 9,10)
 # DEFINE 9 CYCLES AGO
-dc9=`$NDATE -54 ${PDY}${cyc} | cut -c -10`
-date9=`echo ${dc9} | cut -c -8`
-sdate9=`echo ${dc9} | cut -c 3-8`
-cycle9=`echo ${dc9} | cut -c 9,10`
+dc9=$($NDATE -54 ${PDY}${cyc} | cut -c -10)
+date9=$(echo ${dc9} | cut -c -8)
+sdate9=$(echo ${dc9} | cut -c 3-8)
+cycle9=$(echo ${dc9} | cut -c 9,10)
 # DEFINE 10 CYCLES AGO
-dc10=`$NDATE -60 ${PDY}${cyc} | cut -c -10`
-date10=`echo ${dc10} | cut -c -8`
-sdate10=`echo ${dc10} | cut -c 3-8`
-cycle10=`echo ${dc10} | cut -c 9,10`
+dc10=$($NDATE -60 ${PDY}${cyc} | cut -c -10)
+date10=$(echo ${dc10} | cut -c -8)
+sdate10=$(echo ${dc10} | cut -c 3-8)
+cycle10=$(echo ${dc10} | cut -c 9,10)
 # DEFINE 11 CYCLES AGO
-dc11=`$NDATE -66 ${PDY}${cyc} | cut -c -10`
-date11=`echo ${dc11} | cut -c -8`
-sdate11=`echo ${dc11} | cut -c 3-8`
-cycle11=`echo ${dc11} | cut -c 9,10`
+dc11=$($NDATE -66 ${PDY}${cyc} | cut -c -10)
+date11=$(echo ${dc11} | cut -c -8)
+sdate11=$(echo ${dc11} | cut -c 3-8)
+cycle11=$(echo ${dc11} | cut -c 9,10)
 # DEFINE 12 CYCLES AGO
-dc12=`$NDATE -72 ${PDY}${cyc} | cut -c -10`
-date12=`echo ${dc12} | cut -c -8`
-sdate12=`echo ${dc12} | cut -c 3-8`
-cycle12=`echo ${dc12} | cut -c 9,10`
+dc12=$($NDATE -72 ${PDY}${cyc} | cut -c -10)
+date12=$(echo ${dc12} | cut -c -8)
+sdate12=$(echo ${dc12} | cut -c 3-8)
+cycle12=$(echo ${dc12} | cut -c 9,10)
 # DEFINE 13 CYCLES AGO
-dc13=`$NDATE -78 ${PDY}${cyc} | cut -c -10`
-date13=`echo ${dc13} | cut -c -8`
-sdate13=`echo ${dc13} | cut -c 3-8`
-cycle13=`echo ${dc13} | cut -c 9,10`
+dc13=$($NDATE -78 ${PDY}${cyc} | cut -c -10)
+date13=$(echo ${dc13} | cut -c -8)
+sdate13=$(echo ${dc13} | cut -c 3-8)
+cycle13=$(echo ${dc13} | cut -c 9,10)
 # DEFINE 14 CYCLES AGO
-dc14=`$NDATE -84 ${PDY}${cyc} | cut -c -10`
-date14=`echo ${dc14} | cut -c -8`
-sdate14=`echo ${dc14} | cut -c 3-8`
-cycle14=`echo ${dc14} | cut -c 9,10`
+dc14=$($NDATE -84 ${PDY}${cyc} | cut -c -10)
+date14=$(echo ${dc14} | cut -c -8)
+sdate14=$(echo ${dc14} | cut -c 3-8)
+cycle14=$(echo ${dc14} | cut -c 9,10)
 # DEFINE 15 CYCLES AGO
-dc15=`$NDATE -90 ${PDY}${cyc} | cut -c -10`
-date15=`echo ${dc15} | cut -c -8`
-sdate15=`echo ${dc15} | cut -c 3-8`
-cycle15=`echo ${dc15} | cut -c 9,10`
+dc15=$($NDATE -90 ${PDY}${cyc} | cut -c -10)
+date15=$(echo ${dc15} | cut -c -8)
+sdate15=$(echo ${dc15} | cut -c 3-8)
+cycle15=$(echo ${dc15} | cut -c 9,10)
 # DEFINE 16 CYCLES AGO
-dc16=`$NDATE -96 ${PDY}${cyc} | cut -c -10`
-date16=`echo ${dc16} | cut -c -8`
-sdate16=`echo ${dc16} | cut -c 3-8`
-cycle16=`echo ${dc16} | cut -c 9,10`
+dc16=$($NDATE -96 ${PDY}${cyc} | cut -c -10)
+date16=$(echo ${dc16} | cut -c -8)
+sdate16=$(echo ${dc16} | cut -c 3-8)
+cycle16=$(echo ${dc16} | cut -c 9,10)
 # DEFINE 17 CYCLES AGO
-dc17=`$NDATE -102 ${PDY}${cyc} | cut -c -10`
-date17=`echo ${dc17} | cut -c -8`
-sdate17=`echo ${dc17} | cut -c 3-8`
-cycle17=`echo ${dc17} | cut -c 9,10`
+dc17=$($NDATE -102 ${PDY}${cyc} | cut -c -10)
+date17=$(echo ${dc17} | cut -c -8)
+sdate17=$(echo ${dc17} | cut -c 3-8)
+cycle17=$(echo ${dc17} | cut -c 9,10)
 # DEFINE 18 CYCLES AGO
-dc18=`$NDATE -108 ${PDY}${cyc} | cut -c -10`
-date18=`echo ${dc18} | cut -c -8`
-sdate18=`echo ${dc18} | cut -c 3-8`
-cycle18=`echo ${dc18} | cut -c 9,10`
+dc18=$($NDATE -108 ${PDY}${cyc} | cut -c -10)
+date18=$(echo ${dc18} | cut -c -8)
+sdate18=$(echo ${dc18} | cut -c 3-8)
+cycle18=$(echo ${dc18} | cut -c 9,10)
 # DEFINE 19 CYCLES AGO
-dc19=`$NDATE -114 ${PDY}${cyc} | cut -c -10`
-date19=`echo ${dc19} | cut -c -8`
-sdate19=`echo ${dc19} | cut -c 3-8`
-cycle19=`echo ${dc19} | cut -c 9,10`
+dc19=$($NDATE -114 ${PDY}${cyc} | cut -c -10)
+date19=$(echo ${dc19} | cut -c -8)
+sdate19=$(echo ${dc19} | cut -c 3-8)
+cycle19=$(echo ${dc19} | cut -c 9,10)
 # DEFINE 20 CYCLES AGO
-dc20=`$NDATE -120 ${PDY}${cyc} | cut -c -10`
-date20=`echo ${dc20} | cut -c -8`
-sdate20=`echo ${dc20} | cut -c 3-8`
-cycle20=`echo ${dc20} | cut -c 9,10`
+dc20=$($NDATE -120 ${PDY}${cyc} | cut -c -10)
+date20=$(echo ${dc20} | cut -c -8)
+sdate20=$(echo ${dc20} | cut -c 3-8)
+cycle20=$(echo ${dc20} | cut -c 9,10)
 # DEFINE 21 CYCLES AGO
-dc21=`$NDATE -126 ${PDY}${cyc} | cut -c -10`
-date21=`echo ${dc21} | cut -c -8`
-sdate21=`echo ${dc21} | cut -c 3-8`
-cycle21=`echo ${dc21} | cut -c 9,10`
+dc21=$($NDATE -126 ${PDY}${cyc} | cut -c -10)
+date21=$(echo ${dc21} | cut -c -8)
+sdate21=$(echo ${dc21} | cut -c 3-8)
+cycle21=$(echo ${dc21} | cut -c 9,10)
 # DEFINE 22 CYCLES AGO
-dc22=`$NDATE -132 ${PDY}${cyc} | cut -c -10`
-date22=`echo ${dc22} | cut -c -8`
-sdate22=`echo ${dc22} | cut -c 3-8`
-cycle22=`echo ${dc22} | cut -c 9,10`
+dc22=$($NDATE -132 ${PDY}${cyc} | cut -c -10)
+date22=$(echo ${dc22} | cut -c -8)
+sdate22=$(echo ${dc22} | cut -c 3-8)
+cycle22=$(echo ${dc22} | cut -c 9,10)
 # DEFINE 23 CYCLES AGO
-dc23=`$NDATE -138 ${PDY}${cyc} | cut -c -10`
-date23=`echo ${dc23} | cut -c -8`
-sdate23=`echo ${dc23} | cut -c 3-8`
-cycle23=`echo ${dc23} | cut -c 9,10`
+dc23=$($NDATE -138 ${PDY}${cyc} | cut -c -10)
+date23=$(echo ${dc23} | cut -c -8)
+sdate23=$(echo ${dc23} | cut -c 3-8)
+cycle23=$(echo ${dc23} | cut -c 9,10)
 # DEFINE 24 CYCLES AGO
-dc24=`$NDATE -144 ${PDY}${cyc} | cut -c -10`
-date24=`echo ${dc24} | cut -c -8`
-sdate24=`echo ${dc24} | cut -c 3-8`
-cycle24=`echo ${dc24} | cut -c 9,10`
+dc24=$($NDATE -144 ${PDY}${cyc} | cut -c -10)
+date24=$(echo ${dc24} | cut -c -8)
+sdate24=$(echo ${dc24} | cut -c 3-8)
+cycle24=$(echo ${dc24} | cut -c 9,10)
 # DEFINE 25 CYCLES AGO
-dc25=`$NDATE -150 ${PDY}${cyc} | cut -c -10`
-date25=`echo ${dc25} | cut -c -8`
-sdate25=`echo ${dc25} | cut -c 3-8`
-cycle25=`echo ${dc25} | cut -c 9,10`
+dc25=$($NDATE -150 ${PDY}${cyc} | cut -c -10)
+date25=$(echo ${dc25} | cut -c -8)
+sdate25=$(echo ${dc25} | cut -c 3-8)
+cycle25=$(echo ${dc25} | cut -c 9,10)
 # DEFINE 26 CYCLES AGO
-dc26=`$NDATE -156 ${PDY}${cyc} | cut -c -10`
-date26=`echo ${dc26} | cut -c -8`
-sdate26=`echo ${dc26} | cut -c 3-8`
-cycle26=`echo ${dc26} | cut -c 9,10`
+dc26=$($NDATE -156 ${PDY}${cyc} | cut -c -10)
+date26=$(echo ${dc26} | cut -c -8)
+sdate26=$(echo ${dc26} | cut -c 3-8)
+cycle26=$(echo ${dc26} | cut -c 9,10)
 # DEFINE 27 CYCLES AGO
-dc27=`$NDATE -162 ${PDY}${cyc} | cut -c -10`
-date27=`echo ${dc27} | cut -c -8`
-sdate27=`echo ${dc27} | cut -c 3-8`
-cycle27=`echo ${dc27} | cut -c 9,10`
+dc27=$($NDATE -162 ${PDY}${cyc} | cut -c -10)
+date27=$(echo ${dc27} | cut -c -8)
+sdate27=$(echo ${dc27} | cut -c 3-8)
+cycle27=$(echo ${dc27} | cut -c 9,10)
 # DEFINE 28 CYCLES AGO
-dc28=`$NDATE -168 ${PDY}${cyc} | cut -c -10`
-date28=`echo ${dc28} | cut -c -8`
-sdate28=`echo ${dc28} | cut -c 3-8`
-cycle28=`echo ${dc28} | cut -c 9,10`
+dc28=$($NDATE -168 ${PDY}${cyc} | cut -c -10)
+date28=$(echo ${dc28} | cut -c -8)
+sdate28=$(echo ${dc28} | cut -c 3-8)
+cycle28=$(echo ${dc28} | cut -c 9,10)
 # DEFINE 29 CYCLES AGO
-dc29=`$NDATE -174 ${PDY}${cyc} | cut -c -10`
-date29=`echo ${dc29} | cut -c -8`
-sdate29=`echo ${dc29} | cut -c 3-8`
-cycle29=`echo ${dc29} | cut -c 9,10`
+dc29=$($NDATE -174 ${PDY}${cyc} | cut -c -10)
+date29=$(echo ${dc29} | cut -c -8)
+sdate29=$(echo ${dc29} | cut -c 3-8)
+cycle29=$(echo ${dc29} | cut -c 9,10)
 # DEFINE 30 CYCLES AGO
-dc30=`$NDATE -180 ${PDY}${cyc} | cut -c -10`
-date30=`echo ${dc30} | cut -c -8`
-sdate30=`echo ${dc30} | cut -c 3-8`
-cycle30=`echo ${dc30} | cut -c 9,10`
+dc30=$($NDATE -180 ${PDY}${cyc} | cut -c -10)
+date30=$(echo ${dc30} | cut -c -8)
+sdate30=$(echo ${dc30} | cut -c 3-8)
+cycle30=$(echo ${dc30} | cut -c 9,10)
 # DEFINE 31 CYCLES AGO
-dc31=`$NDATE -192 ${PDY}${cyc} | cut -c -10`
-date31=`echo ${dc31} | cut -c -8`
-sdate31=`echo ${dc31} | cut -c 3-8`
-cycle31=`echo ${dc31} | cut -c 9,10`
+dc31=$($NDATE -192 ${PDY}${cyc} | cut -c -10)
+date31=$(echo ${dc31} | cut -c -8)
+sdate31=$(echo ${dc31} | cut -c 3-8)
+cycle31=$(echo ${dc31} | cut -c 9,10)
 # DEFINE 32 CYCLES AGO
-dc32=`$NDATE -204 ${PDY}${cyc} | cut -c -10`
-date32=`echo ${dc32} | cut -c -8`
-sdate32=`echo ${dc32} | cut -c 3-8`
-cycle32=`echo ${dc32} | cut -c 9,10`
+dc32=$($NDATE -204 ${PDY}${cyc} | cut -c -10)
+date32=$(echo ${dc32} | cut -c -8)
+sdate32=$(echo ${dc32} | cut -c 3-8)
+cycle32=$(echo ${dc32} | cut -c 9,10)
 # DEFINE 33 CYCLES AGO
-dc33=`$NDATE -216 ${PDY}${cyc} | cut -c -10`
-date33=`echo ${dc33} | cut -c -8`
-sdate33=`echo ${dc33} | cut -c 3-8`
-cycle33=`echo ${dc33} | cut -c 9,10`
+dc33=$($NDATE -216 ${PDY}${cyc} | cut -c -10)
+date33=$(echo ${dc33} | cut -c -8)
+sdate33=$(echo ${dc33} | cut -c 3-8)
+cycle33=$(echo ${dc33} | cut -c 9,10)
 
 # SET CURRENT CYCLE AS THE VERIFICATION GRIDDED FILE.
 vergrid="F-${MDL} | ${PDY2}/${cyc}00"
@@ -224,7 +224,7 @@ ${dc20} ${dc21} ${dc22} ${dc23} ${dc24} ${dc25} ${dc26} ${dc27} ${dc28} ${dc29} 
 MDL2="GFSHPC"
 for verday in ${verdays}
     do
-    cominday=`echo ${verday} | cut -c -8`
+    cominday=$(echo ${verday} | cut -c -8)
     #XXW export HPCGFS=$COMROOT/nawips/prod/${mdl}.${cominday}
     # BV export HPCGFS=$COMROOT/nawips/${envir}/${mdl}.${cominday}
     export HPCGFS=${COMINgempak}/${mdl}.${cominday}/${cyc}/${COMPONENT}/gempak

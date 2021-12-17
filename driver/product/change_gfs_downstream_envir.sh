@@ -3,9 +3,9 @@ set -x
 # export cyc=12
 # export cyc=18
 export fhr=012
-export dir=` pwd `
-export PDY=`date -u +%Y%m%d`
-export PDY1=`expr $PDY - 1`
+export dir=$( pwd )
+export PDY=$(date -u +%Y%m%d)
+export PDY1=$(expr $PDY - 1)
 
 export olddate=20200106
 export newdate=20200712

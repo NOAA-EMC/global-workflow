@@ -23,7 +23,7 @@ cp $FIXgempak/datatype.tbl datatype.tbl
 
 device="nc | mrfhi.meta"
 
-PDY2=`echo $PDY | cut -c3-`
+PDY2=$(echo $PDY | cut -c3-)
 
 if [ "$envir" = "prod" ] ; then
    export m_title="GFS"

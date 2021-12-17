@@ -35,7 +35,7 @@ do
      let "hour=hour+12"
   fi
 done
-postjobs=`cat posthours`
+postjobs=$(cat posthours)
 
 #
 # Wait for all fcst hours to finish 
@@ -45,7 +45,7 @@ while [ $icnt -lt 1000 ]
 do
   for fhr in $postjobs
   do 
-    fhr3=`printf "%03d" $fhr`   
+    fhr3=$(printf "%03d" $fhr)   
     if [ -s ${COMIN}/gfs.${cycle}.logf${fhr}.txt -o  -s ${COMIN}/gfs.${cycle}.logf${fhr3}.txt ]
     then
       if [ $fhr -eq 0 ]
@@ -54,11 +54,11 @@ do
       fi    
       ecflow_client --event release_post${fhr}
       # Remove current fhr from list
-      postjobs=`echo $postjobs | sed "s/${fhr}//"`
+      postjobs=$(echo $postjobs | sed "s/${fhr}//")
     fi
   done
   
-  result_check=`echo $postjobs | wc -w`
+  result_check=$(echo $postjobs | wc -w)
   if [ $result_check -eq 0 ]
   then
      break

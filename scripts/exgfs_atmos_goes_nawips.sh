@@ -27,17 +27,17 @@ postmsg "$jlogfile" "$msg"
 NAGRIB=$GEMEXE/nagrib2
 #
 
-entry=`grep "^$RUN " $NAGRIB_TABLE | awk 'index($1,"#") != 1 {print $0}'`
+entry=$(grep "^$RUN " $NAGRIB_TABLE | awk 'index($1,"#") != 1 {print $0}')
 
 if [ "$entry" != "" ] ; then
-  cpyfil=`echo $entry  | awk 'BEGIN {FS="|"} {print $2}'`
-  garea=`echo $entry   | awk 'BEGIN {FS="|"} {print $3}'`
-  gbtbls=`echo $entry  | awk 'BEGIN {FS="|"} {print $4}'`
-  maxgrd=`echo $entry  | awk 'BEGIN {FS="|"} {print $5}'`
-  kxky=`echo $entry    | awk 'BEGIN {FS="|"} {print $6}'`
-  grdarea=`echo $entry | awk 'BEGIN {FS="|"} {print $7}'`
-  proj=`echo $entry    | awk 'BEGIN {FS="|"} {print $8}'`
-  output=`echo $entry  | awk 'BEGIN {FS="|"} {print $9}'`
+  cpyfil=$(echo $entry  | awk 'BEGIN {FS="|"} {print $2}')
+  garea=$(echo $entry   | awk 'BEGIN {FS="|"} {print $3}')
+  gbtbls=$(echo $entry  | awk 'BEGIN {FS="|"} {print $4}')
+  maxgrd=$(echo $entry  | awk 'BEGIN {FS="|"} {print $5}')
+  kxky=$(echo $entry    | awk 'BEGIN {FS="|"} {print $6}')
+  grdarea=$(echo $entry | awk 'BEGIN {FS="|"} {print $7}')
+  proj=$(echo $entry    | awk 'BEGIN {FS="|"} {print $8}')
+  output=$(echo $entry  | awk 'BEGIN {FS="|"} {print $9}')
 else
   cpyfil=gds
   garea=dset
@@ -59,7 +59,7 @@ while [ $fhcnt -le $fend ] ; do
 #    typeset -Z2 fhr
 #  fi
   fhr=$fhcnt
-  fhcnt3=`expr $fhr % 3`
+  fhcnt3=$(expr $fhr % 3)
 
   fhr3=$fhcnt
   typeset -Z3 fhr3
