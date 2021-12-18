@@ -48,6 +48,8 @@ else
   EPS_IMESH='1.0e-1'
 fi
 
+ATMTILESIZE=$(echo $CASE | cut -c2-)
+
 rm -f $DATA/nems.configure
 
 med_petlist_bounds=${med_petlist_bounds:-"0 $(( $MEDPETS-1 ))"}
@@ -86,6 +88,7 @@ if [ $cplflx = .true. ]; then
   sed -i -e "s;@\[RESTART_N\];$restart_interval_nems;g" tmp1
   sed -i -e "s;@\[use_mommesh\];$USE_MOMMESH;g" tmp1
   sed -i -e "s;@\[eps_imesh\];$EPS_IMESH;g" tmp1
+  sed -i -e "s;@\[ATMTILESIZE\];$ATMTILESIZE;g" tmp1
 fi
 if [ $cplwav = .true. ]; then
   sed -i -e "s;@\[wav_model\];ww3;g" tmp1
