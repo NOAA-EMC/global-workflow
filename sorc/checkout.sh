@@ -77,7 +77,7 @@ if [[ ! -d gfs_post.fd ]] ; then
     rm -f ${topdir}/checkout-gfs_post.log
     git clone https://github.com/NOAA-EMC/UPP.git gfs_post.fd >> ${logdir}/checkout-gfs_post.log 2>&1
     cd gfs_post.fd
-    git checkout upp_v10.0.8
+    git checkout c939eae
     git submodule update --init CMakeModules
     ################################################################################
     # checkout_gtg
