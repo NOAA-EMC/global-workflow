@@ -17,9 +17,9 @@ else
 fi
 
 target=""
-USERNAME=`echo $LOGNAME | awk '{ print tolower($0)'}`
+USERNAME=$(echo $LOGNAME | awk '{ print tolower($0)'})
 ##---------------------------------------------------------------------------
-export hname=`hostname | cut -c 1,1`
+export hname=$(hostname | cut -c 1,1)
 if [[ -d /work ]] ; then
     # We are on MSU Orion
     if ( ! eval module help > /dev/null 2>&1 ) ; then

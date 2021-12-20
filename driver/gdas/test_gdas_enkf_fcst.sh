@@ -34,8 +34,8 @@ fi
 # Specify whether the run is production or development
 #############################################################
 export RUN_ENVIR=para
-export PDY=`echo $CDATE | cut -c1-8`
-export cyc=`echo $CDATE | cut -c9-10`
+export PDY=$(echo $CDATE | cut -c1-8)
+export cyc=$(echo $CDATE | cut -c9-10)
 export job=gdas_enkf_fcst_grp${grp}_${cyc}
 export pid=${pid:-$$}
 export jobid=${job}.${pid}

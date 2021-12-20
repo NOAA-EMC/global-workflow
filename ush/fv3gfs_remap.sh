@@ -19,7 +19,7 @@ export FIXfv3=${FIXfv3:-$FIX_DIR/fix_fv3_gmted2010}
 export REMAPEXE=${REMAPEXE:-$HOMEgfs/exec/fregrid_parallel}
 export IPD4=${IPD4:-"YES"}
 
-cycn=`echo $CDATE | cut -c 9-10`
+cycn=$(echo $CDATE | cut -c 9-10)
 export TCYC=${TCYC:-".t${cycn}z."}
 export CDUMP=${CDUMP:-gfs}
 export PREFIX=${PREFIX:-${CDUMP}${TCYC}}

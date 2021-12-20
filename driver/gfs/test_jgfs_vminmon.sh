@@ -17,14 +17,14 @@ export NET='gfs'
 export RUN='gfs'
 export PDATE=${PDATE:-2016030206}
 
-export PDY=`echo $PDATE | cut -c1-8`
-export cyc=`echo $PDATE | cut -c9-10`
+export PDY=$(echo $PDATE | cut -c1-8)
+export cyc=$(echo $PDATE | cut -c9-10)
 export job=gfs_vminmon.${cyc}
 export pid=${pid:-$$}
 export jobid=${job}.${pid}
 export envir=para
 export Z=${Z:-gz}
-me=`hostname | cut -c1`
+me=$(hostname | cut -c1)
 export DATAROOT=${DATAROOT:-/gpfs/${me}d2/emc/da/noscrub/Edward.Safford/test_data}
 export COMROOT=${COMROOT:-/ptmpp1/$LOGNAME/com}
 

@@ -40,7 +40,7 @@
 #  $WEBTITLE < dates
  ${UTILgfs}/exec/webtitle < dates
 
-  export TITLE=`cat title.output`
+  export TITLE=$(cat title.output)
   echo "\n\n TITLE = $TITLE \n"
 
 
@@ -59,7 +59,7 @@
 
 # Set grid date and input file name
 
-  gdattim=`echo ${PDY} | cut -c3-8`/${cyc}00F0${fhr}
+  gdattim=$(echo ${PDY} | cut -c3-8)/${cyc}00F0${fhr}
   gdfile=gem_grids${fhr}.gem
 
 #  Execute the GEMPAK program

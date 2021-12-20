@@ -120,7 +120,7 @@ fi
 # Run relevant script
 ##############################################
 env
-msg="HAS BEGUN on `hostname`"
+msg="HAS BEGUN on $(hostname)"
 postmsg "$jlogfile" "$msg"
 $LOGSCRIPT
 

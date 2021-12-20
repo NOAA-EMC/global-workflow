@@ -15,7 +15,7 @@ export COPYGB2=${COPYGB2:-${NWPROD:-/nwprod}/util/exec/copygb2}
 export WGRIB2=${WGRIB2:-${NWPROD:-/nwprod}/util/exec/wgrib2}
 export GRBINDEX=${GRBINDEX:-${NWPROD:-nwprod}/util/exec/grbindex}
 export RUN=${RUN:-"gfs"}
-export cycn=`echo $CDATE |cut -c 9-10`
+export cycn=$(echo $CDATE |cut -c 9-10)
 export TCYC=${TCYC:-".t${cycn}z."}
 export PREFIX=${PREFIX:-${RUN}${TCYC}}
 export PGB1F=${PGB1F:-"NO"}
@@ -39,7 +39,7 @@ export grid2p5="latlon 0:144:2.5 90:73:-2.5"
 if [ $FH -eq 0 ] ; then
   export fhr3=000
 else
-  export fhr3=`expr $FH + 0 `
+  export fhr3=$(expr $FH + 0 )
   if [ $fhr3 -lt 100 ]; then export fhr3="0$fhr3"; fi
   if [ $fhr3 -lt 10 ];  then export fhr3="0$fhr3"; fi
 fi

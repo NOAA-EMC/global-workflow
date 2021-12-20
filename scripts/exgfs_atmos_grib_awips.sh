@@ -22,7 +22,7 @@ echo "         FEB 2019 - Removed grid 225"
 set +x
 fcsthrs="$1"
 num=$#
-job_name=`echo $job|sed 's/[jpt]gfs/gfs/'`
+job_name=$(echo $job|sed 's/[jpt]gfs/gfs/')
 
 typeset -Z3 fcsthrs
 

@@ -19,7 +19,7 @@ MDL="GFS"
 metatype="mar_skewt"
 metaname="${mdl}_${metatype}_${cyc}.meta"
 device="nc | ${metaname}"
-PDY2=`echo $PDY | cut -c3-`
+PDY2=$(echo $PDY | cut -c3-)
 
 for fhr in 000 006 012 018 024 030 036 042 048 054 060 066 072
 do
