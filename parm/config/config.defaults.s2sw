@@ -25,6 +25,7 @@ layout_y_gfs=12
 WRITE_GROUP_GFS=1
 WRTTASK_PER_GROUP_GFS=80
 WRTIOBUF="32M"
+export iopt_sfc="3"
 
 # config.wave
 waveGRD='gwes_30m'
