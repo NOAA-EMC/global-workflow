@@ -15,7 +15,7 @@ FHOUT_HF_GFS=-1
 IALB=2
 IEMS=2
 DO_CA="YES"
-min_seaice="1e-11"
+min_seaice="1e-6"
 use_cice_alb=".true."
 
 # config.fv3
