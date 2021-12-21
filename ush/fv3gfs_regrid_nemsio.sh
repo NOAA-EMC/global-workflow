@@ -109,13 +109,13 @@ $ERRSCRIPT || exit $err
 rm -f regrid-nemsio.input
 
 #------------------------------------------------------------------
-PDY=`echo $CDATE | cut -c1-8`
-cyc=`echo  $CDATE | cut -c9-10`
+PDY=$(echo $CDATE | cut -c1-8)
+cyc=$(echo  $CDATE | cut -c9-10)
 PREFIX=${PREFIX:-"${CDUMP}.t${cyc}z."}
 SUFFIX=${SUFFIX:-".nemsio"}
 for ftype in atm sfc; do
-    for file in `ls -1 ${ftype}.${CDATE}.fhr*`; do
-        fhrchar=`echo $file | cut -d. -f3 | cut -c4-`
+    for file in $(ls -1 ${ftype}.${CDATE}.fhr*); do
+        fhrchar=$(echo $file | cut -d. -f3 | cut -c4-)
         $NMV $file ${PREFIX}${ftype}f${fhrchar}${SUFFIX}
     done
 done

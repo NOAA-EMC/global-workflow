@@ -35,7 +35,7 @@ device="nc | mrf.meta"
 #XXW cp $FIXgempak/model/gfs/ak_sfstns.tbl alaska.tbl
 cp $FIXgempak/ak_sfstns.tbl alaska.tbl
 
-month=`echo $PDY | cut -c5,6`
+month=$(echo $PDY | cut -c5,6)
 if [ $month -ge 5 -a $month -le 9 ] ; then
 #  fint="40;45;50;55;60;65;70;75;80;85;90;95;100"
 #  fline="26;25;24;23;22;21;20;19;18;17;16;15;14;31"
@@ -46,7 +46,7 @@ else
   fline="4;30;29;28;27;26;25;24;23;22;21;20;19;18;17;16;15;14;31"
 fi
 
-PDY2=`echo $PDY | cut -c3-`
+PDY2=$(echo $PDY | cut -c3-)
 
 if [ "$envir" = "para" ] ; then
    export m_title="GFSP"

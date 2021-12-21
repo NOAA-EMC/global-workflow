@@ -60,7 +60,7 @@ mkdir -p ${COMOUT}/bufr.${cycle}
 	fi
 if [ $fformat == "netcdf" ]
  then
-export LEVS=`$GETDIM $COMIN/${RUN}.${cycle}.atmf000.${atmfm} pfull`
+export LEVS=$($GETDIM $COMIN/${RUN}.${cycle}.atmf000.${atmfm} pfull)
 else
 # Extract number of vertical levels from $STARTHOUR atmospheric file
 export NEMSIOGET=${NEMSIOGET:-$EXECbufrsnd/nemsio_get}
@@ -76,7 +76,7 @@ while [ $FSTART -lt $ENDHOUR ]
 do
 export FINT=$NINT1
    # Define the end hour for the input
-   export FEND=`expr $FSTART + $INCREMENT` 
+   export FEND=$(expr $FSTART + $INCREMENT) 
    if test $FEND -lt 100; then FEND=0$FEND; fi 
    if [ $FSTART -eq 00 ]
    then 
@@ -96,7 +96,7 @@ export FINT=$NINT1
       if [ ! -f $COMIN/${RUN}.${cycle}.logf$FEND.${logfm} ]
       then
           sleep 10
-          ic=`expr $ic + 1`
+          ic=$(expr $ic + 1)
       else
           break
       fi

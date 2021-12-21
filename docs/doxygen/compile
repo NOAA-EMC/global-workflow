@@ -14,7 +14,7 @@ elif [ $machine = "JET" ]; then
 else
     echo "machine $machine is unrecognized, ABORT!"
     echo "try system doxygen"
-    doxygen=`which doxygen`
+    doxygen=$(which doxygen)
 fi
 
 $doxygen

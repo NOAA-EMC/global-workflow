@@ -21,7 +21,7 @@ MDL=GFS
 metatype="precip"
 metaname="${mdl}_${metatype}_${cyc}.meta"
 device="nc | ${metaname}"
-PDY2=`echo $PDY | cut -c3-`
+PDY2=$(echo $PDY | cut -c3-)
 
 #
 # Set range of forecast hours.  GFS is available every 6 hours through F192, then 

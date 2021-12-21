@@ -54,14 +54,14 @@ fi
 
 CDATE10=$1
 
-ymd=`echo $CDATE10 | cut -c3-8`
-pdy=`echo $CDATE10 | cut -c1-8`
-hour=`echo $CDATE10 | cut -c9-10`
+ymd=$(echo $CDATE10 | cut -c3-8)
+pdy=$(echo $CDATE10 | cut -c1-8)
+hour=$(echo $CDATE10 | cut -c9-10)
 
 echo $PDYm1
 pdym1=$PDYm1
 
-#pdym1=`sh $utilscript/finddate.sh $pdy d-1`
+#pdym1=$(sh $utilscript/finddate.sh $pdy d-1)
 
 echo " " >> $pgmout
 echo "Entering sub-shell syndat_getjtbul.sh to recover JTWC Bulletins" \
@@ -135,7 +135,7 @@ fi
 
 [ -s jtwcbul ] && echo "Processing JTWC bulletin halfs into tcvitals records" >> $pgmout
 
-pgm=`basename $EXECSYND/syndat_getjtbul`
+pgm=$(basename $EXECSYND/syndat_getjtbul)
 export pgm
 if [ -s prep_step ]; then
    set +u
@@ -143,7 +143,7 @@ if [ -s prep_step ]; then
    set -u
 else
    [ -f errfile ] && rm errfile
-   unset FORT00 `env | grep "^FORT[0-9]\{1,\}=" | awk -F= '{print $1}'`
+   unset FORT00 $(env | grep "^FORT[0-9]\{1,\}=" | awk -F= '{print $1}')
 fi
 
 rm -f fnoc
@@ -166,7 +166,7 @@ if [ "$errget" -gt '0' ];then
 available for qctropcy for $CDATE10"
       if [ "$RUN" = 'gfs' ]; then
         if [ "$SENDSDM" = 'YES' ]; then
-         export ecf_family=`echo $ECF_NAME |awk 'BEGIN {FS="/j"} {print $1}'`
+         export ecf_family=$(echo $ECF_NAME |awk 'BEGIN {FS="/j"} {print $1}')
          echo $msg > $COMOUT/${NET}_${RUN}.t${cyc}z.emailbody
          echo "export subject='No JTWC bulletins available for $CDATE10 $RUN run'" >$COMOUT/${NET}_${RUN}.t${cyc}z.emailvar
          # JY echo "export maillist='sdm@noaa.gov'" >> $COMOUT/${NET}_${RUN}.t${cyc}z.emailvar

@@ -75,7 +75,7 @@ set -x
 
 cd $DATA
 
-export RSHPDY=`echo $PDY | cut -c5-``echo $PDY | cut -c3-4`
+export RSHPDY=$(echo $PDY | cut -c5-)$(echo $PDY | cut -c3-4)
 
 cp $HOMEgfs/gempak/dictionaries/sonde.land.tbl .
 cp $HOMEgfs/gempak/dictionaries/metar.tbl .
@@ -91,7 +91,7 @@ ${UTILgfs}/exec/rdbfmsua >> $pgmout 2> errfile
 
 err=$?;export err ;err_chk
 
-export filesize=` ls -l rdbfmsua.out | awk '{print $5}' `
+export filesize=$( ls -l rdbfmsua.out | awk '{print $5}' )
 
 ################################################################
 #   only run script if rdbfmsua.out contained upper air data.

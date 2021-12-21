@@ -23,14 +23,14 @@ export NET=${NET:-gfs}
 export RUN=${RUN:-gdas}
 
 
-export PDY=`echo $PDATE | cut -c1-8`
-export cyc=`echo $PDATE | cut -c9-10`
+export PDY=$(echo $PDATE | cut -c1-8)
+export cyc=$(echo $PDATE | cut -c9-10)
 export job=gdas_verfozn.${cyc}
 export pid=${pid:-$$}
 export jobid=${job}.${pid}
 export envir=${envir:-test}
 
-me=`hostname | cut -c1`
+me=$(hostname | cut -c1)
 export DATAROOT=${DATAROOT:-/gpfs/${me}d2/emc/da/noscrub/${LOGNAME}/test_data}
 export COMROOT=${COMROOT:-/ptmpp1/${LOGNAME}/com}
 export OZN_WORK_DIR=${OZN_WORK_DIR:-/stmpp1/${LOGNAME}/oznmon.${pid}}
