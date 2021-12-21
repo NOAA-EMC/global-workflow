@@ -30,7 +30,7 @@ set +x
       WMOHEAD=JUSX4$m
     fi
 
-    for stn in `cat $file_list`
+    for stn in $(cat $file_list)
     do
        cp ${COMOUT}/bufr.${cycle}/bufr.$stn.$PDY$cyc $DATA/${m}/bufrin
        export pgm=tocsbufr
@@ -68,8 +68,8 @@ set -x
          cp $DATA/${m}/gfs_collective$m.fil $pcom/gfs_collective$m.postsnd_$cyc
          $DBNROOT/bin/dbn_alert NTC_LOW BUFR $job $pcom/gfs_collective$m.postsnd_$cyc
       fi
-      cp $DATA/${m}/gfs_collective$m.fil ${COMOUT}/bufr.${cycle}/.
     fi
+      cp $DATA/${m}/gfs_collective$m.fil ${COMOUT}/bufr.${cycle}/.
 
 ##    let "m=m+1"
 
