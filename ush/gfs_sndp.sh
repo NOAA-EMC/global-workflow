@@ -68,8 +68,8 @@ set -x
          cp $DATA/${m}/gfs_collective$m.fil $pcom/gfs_collective$m.postsnd_$cyc
          $DBNROOT/bin/dbn_alert NTC_LOW BUFR $job $pcom/gfs_collective$m.postsnd_$cyc
       fi
-    fi
       cp $DATA/${m}/gfs_collective$m.fil ${COMOUT}/bufr.${cycle}/.
+    fi
 
 ##    let "m=m+1"
 
