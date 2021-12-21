@@ -9,6 +9,7 @@ if [ $# -ne 1 ]; then
     echo "Must specify an input task argument to set resource variables!"
     echo "argument can be any one of the following:"
     echo "getic init coupled_ic"
+    echo "atmanalprep atmanalrun atmanalpost"
     echo "anal analcalc analdiag gldas fcst post vrfy metp arch echgres"
     echo "eobs ediag eomg eupd ecen esfc efcs epos earc"
     echo "init_chem mom6ic ocnpost"
