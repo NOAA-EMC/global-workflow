@@ -5,4 +5,12 @@
 
 echo "BEGIN: config.atmatmanal"
 
+export OBS_YAML=$HOMEgfs/sorc/ufs_da.fd/UFS-DA/parm/config/ufsda_global_atm_obs.yaml
+export GEOM_BKG=$HOMEgfs/sorc/ufs_da.fd/UFS-DA/parm/templates/geomges.yaml
+export GEOM_ANL=$HOMEgfs/sorc/ufs_da.fd/UFS-DA/parm/templates/geomanl.yaml
+export BERROR_YAML=$HOMEgfs/sorc/ufs_da.fd/UFS-DA/parm/templates/ufsda_global_3dvar_b.yaml
+
+export io_layout_x=1
+export io_layout_y=1
+
 echo "END: config.atmanal"
