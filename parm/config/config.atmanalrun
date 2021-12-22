@@ -1,0 +1,10 @@
+#!/bin/ksh -x
+
+########## config.atmanalrun ##########
+# Atm Analysis specific
+
+echo "BEGIN: config.atmanalrun"
+
+# Get task specific resources
+. $EXPDIR/config.resources atmanalrun
+echo "END: config.atmanalrun"

@@ -1,0 +1,8 @@
+#!/bin/ksh -x
+
+########## config.atmanal ##########
+# configuration common to all atm analysis tasks
+
+echo "BEGIN: config.atmatmanal"
+
+echo "END: config.atmanal"
