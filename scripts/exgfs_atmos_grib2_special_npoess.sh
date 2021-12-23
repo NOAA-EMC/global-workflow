@@ -10,7 +10,7 @@ set -x
 
 cd $DATA
 
-msg="HAS BEGUN on `hostname`"
+msg="HAS BEGUN on $(hostname)"
 postmsg "$jlogfile" "$msg"
 
 ############################################################
@@ -42,7 +42,7 @@ export opt26=' -set_grib_max_bits 25 -fi -if '
 export opt27=":(APCP|ACPCP|PRATE|CPRAT|DZDT):"
 export opt28=' -new_grid_interpolation budget -fi '
 
-SLEEP_LOOP_MAX=`expr $SLEEP_TIME / $SLEEP_INT`
+SLEEP_LOOP_MAX=$(expr $SLEEP_TIME / $SLEEP_INT)
 
 ##############################################################################
 # Specify Forecast Hour Range F000 - F024 for GFS_NPOESS_PGRB2_0P5DEG
@@ -69,7 +69,7 @@ do
        then
           break
        else
-          ic=`expr $ic + 1`
+          ic=$(expr $ic + 1)
           sleep $SLEEP_INT
        fi
        ###############################
@@ -112,7 +112,7 @@ do
        echo "$PDY$cyc$fhr" > $COMOUT/${RUN}.t${cyc}z.control.halfdeg.npoess
     fi
     rm tmpfile pgb2file
-    export fhr=`expr $fhr + $FHINC`
+    export fhr=$(expr $fhr + $FHINC)
     typeset -Z3 fhr
 
 done
@@ -144,7 +144,7 @@ do
        then
           break
        else
-          ic=`expr $ic + 1`
+          ic=$(expr $ic + 1)
           sleep $SLEEP_INT
        fi
        ###############################
@@ -205,10 +205,10 @@ do
 
     if test "$SENDECF" = 'YES'
     then
-       export fhour=`expr ${fhr} % 6 `
+       export fhour=$(expr ${fhr} % 6 )
     fi
 
-    export fhr=`expr $fhr + $FHINC`
+    export fhr=$(expr $fhr + $FHINC)
     typeset -Z3 fhr
 done
 

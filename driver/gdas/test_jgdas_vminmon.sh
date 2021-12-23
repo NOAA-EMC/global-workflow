@@ -18,9 +18,9 @@ export PDATE=${PDATE:-2016030706}
 #############################################################
 # Specify whether the run is production or development
 #############################################################
-export PDY=`echo $PDATE | cut -c1-8`
-export cyc=`echo $PDATE | cut -c9-10`
-me=`hostname | cut -c1`
+export PDY=$(echo $PDATE | cut -c1-8)
+export cyc=$(echo $PDATE | cut -c9-10)
+me=$(hostname | cut -c1)
 
 export job=gdas_vminmon.${cyc}
 export pid=${pid:-$$}

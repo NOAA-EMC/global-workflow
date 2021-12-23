@@ -116,7 +116,7 @@ fi
 # Run relevant script
 ##############################################
 env
-msg="HAS BEGUN on `hostname`"
+msg="HAS BEGUN on $(hostname)"
 postmsg "$jlogfile" "$msg"
 $LOGSCRIPT
 
@@ -132,7 +132,7 @@ ${USHens_tracker}/data_check_gfs.sh
 if [ $? -eq 6 ]; then exit; fi
 #------------------------------------------------
 
-machine=${machine:-`echo ${SITE}`}
+machine=${machine:-$(echo ${SITE})}
 if [ $machine = TIDE -o $machine = GYRE ] ; then # For WCOSS
   machine=wcoss
   ${USHens_tracker}/extrkr_gfs.sh ${loopnum} ${cmodel} ${CDATE} ${pert} ${DATA} 

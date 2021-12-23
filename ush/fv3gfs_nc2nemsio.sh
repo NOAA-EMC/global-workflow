@@ -19,7 +19,7 @@ export NWPROD=${NWPROD:-$pwd}
 export HOMEgfs=${HOMEgfs:-$NWPROD}
 export NC2NEMSIOEXE=${NC2NEMSIOEXE:-$HOMEgfs/exec/fv3nc2nemsio.x}
 
-cycn=`echo $CDATE | cut -c 9-10`
+cycn=$(echo $CDATE | cut -c 9-10)
 export TCYC=${TCYC:-".t${cycn}z."}
 export CDUMP=${CDUMP:-gfs}
 

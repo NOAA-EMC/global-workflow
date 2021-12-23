@@ -79,7 +79,7 @@
 #      to this script by the parent script --
 #
 #     MACHINE       String indicating machine on which this job is running
-#                   Default is "`hostname -s | cut -c 1-3`"
+#                   Default is "$(hostname -s | cut -c 1-3)"
 #     envir         String indicating environment under which job runs ('prod'
 #                   or 'test')
 #                   Default is "prod"
@@ -212,7 +212,7 @@
 
 set -aux
 
-MACHINE=${MACHINE:-`hostname -s | cut -c 1-3`}
+MACHINE=${MACHINE:-$(hostname -s | cut -c 1-3)}
 
 SENDCOM=${SENDCOM:-YES}
 export NWROOT=${NWROOT:-/nwprod2}
@@ -233,7 +233,7 @@ if [ $# -ne 1 ] ; then
 #      cp ${COMROOT}/date/$cycle ncepdate
 #      err0=$?
       ncepdate=${PDY}${cyc}      
-      CDATE10=`cut -c7-16 ncepdate`
+      CDATE10=$(cut -c7-16 ncepdate)
    else
       err0=1
    fi
@@ -242,7 +242,7 @@ else
    if [ "${#CDATE10}" -ne '10' ]; then
       err0=1
    else
-      cycle=t`echo $CDATE10|cut -c9-10`z
+      cycle=t$(echo $CDATE10|cut -c9-10)z
       err0=0
    fi
 fi
@@ -265,9 +265,9 @@ then
    exit 9
 fi
 
-pdy=`echo $CDATE10|cut -c1-8`
-cyc=`echo $CDATE10|cut -c9-10`
-modhr=`expr $cyc % 3`
+pdy=$(echo $CDATE10|cut -c1-8)
+cyc=$(echo $CDATE10|cut -c9-10)
+modhr=$(expr $cyc % 3)
 
 set +x
 echo
@@ -392,7 +392,7 @@ fi
 for fhr in $( seq -6 $BKGFREQ 3 ) ; do
 
    if [ $fhr -lt 0 ]; then
-      tpref=m`expr $fhr \* -1`
+      tpref=m$(expr $fhr \* -1)
    elif [ $fhr -eq 0 ]; then
       tpref=es
    elif [ $fhr -gt 0 ]; then
@@ -512,7 +512,7 @@ fi
 
 MP_PULSE=0
 MP_TIMEOUT=600
-GDATE10=` ${NDATE:?} -06 ${CDATE10}`
+GDATE10=$( ${NDATE:?} -06 ${CDATE10})
 
 #  make unique combined tcvitals file for t-12, t-6 and t+0 -- 
 #  if tcvitals does not contains record from current time, skip relocation
@@ -593,7 +593,7 @@ else
    for fhr in $( seq -3 $BKGFREQ 3 ) ; do
 
      if [ $fhr -lt 0 ]; then
-       tpref=m`expr $fhr \* -1`
+       tpref=m$(expr $fhr \* -1)
      elif [ $fhr -eq 0 ]; then
        tpref=es
      elif [ $fhr -gt 0 ]; then
@@ -666,7 +666,7 @@ else
    for fhr in $( seq -3 $BKGFREQ 3 ) ; do
 
       if [ $fhr -lt 0 ]; then
-         tpref=m`expr $fhr \* -1`
+         tpref=m$(expr $fhr \* -1)
       elif [ $fhr -eq 0 ]; then
          tpref=es
       elif [ $fhr -gt 0 ]; then

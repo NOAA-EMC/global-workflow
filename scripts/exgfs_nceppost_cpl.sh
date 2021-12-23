@@ -33,7 +33,7 @@ set -x
 cd $DATA
 
 # specify model output format type: 4 for nemsio, 3 for sigio
-msg="HAS BEGUN on `hostname`"
+msg="HAS BEGUN on $(hostname)"
 postmsg "$jlogfile" "$msg"
 
 export POSTGPSH=${POSTGPSH:-$USHgfs/gfs_nceppost.sh}
@@ -88,7 +88,7 @@ export IDRT=${IDRT:-0} # IDRT=0 is setting for outputting grib files on lat/lon 
 # Post Analysis Files before starting the Forecast Post
 ############################################################
 # Process analysis when post_times is 00
- export stime=`echo $post_times | cut -c1-3`
+ export stime=$(echo $post_times | cut -c1-3)
 if [ $OUTTYP -eq 4 ] ; then
   export loganl=$COMIN/${PREFIX}atmanl${SUFFIX}
 else
@@ -234,7 +234,7 @@ fi
 else   ## not_anl if_stime
 #----------------------------------
 
-SLEEP_LOOP_MAX=`expr $SLEEP_TIME / $SLEEP_INT`
+SLEEP_LOOP_MAX=$(expr $SLEEP_TIME / $SLEEP_INT)
 
 # Chuang: modify to submit one post job at a time
 ############################################################
@@ -257,7 +257,7 @@ do
        then
           break
        else
-          ic=`expr $ic + 1`
+          ic=$(expr $ic + 1)
           sleep $SLEEP_INT
        fi
        ###############################
@@ -296,7 +296,7 @@ do
       export IGEN=$IGEN_ANL
     fi
     
-    export VDATE=`${NDATE} +${fhr} ${PDY}${cyc}`
+    export VDATE=$(${NDATE} +${fhr} ${PDY}${cyc})
     export OUTTYP=${OUTTYP:-4}
     export GFSOUT=${PREFIX}gfsio${fhr}
 
@@ -356,7 +356,7 @@ do
 #  Process pgb files
    if test "$PGBF" = 'YES'
    then
-     export FH=`expr $fhr + 0`
+     export FH=$(expr $fhr + 0)
      export downset=${downset:-2}
      $GFSDOWNSH
      export err=$?; err_chk
@@ -400,7 +400,7 @@ do
 	    fi 
 	fi
 	
-	#      x3=`expr $fhr % 3`
+	#      x3=$(expr $fhr % 3)
 	# x3=0 ---> Standard 3-hourly or 12-hourly output
 	#           Only master grib files are needed for the hourly files
 	#      if [ $x3 -eq 0 ] ; then
@@ -430,7 +430,7 @@ do
       #Add extra flux.1p00 file for coupled
       if test "$FLXGF" = 'YES'            
       then                    
-        export FH=`expr $fhr + 0`     
+        export FH=$(expr $fhr + 0)     
         $GFSDOWNSHF                  
         export err=$?; err_chk      
       fi   

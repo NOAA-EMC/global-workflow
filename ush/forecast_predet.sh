@@ -52,7 +52,7 @@ FV3_GFS_predet(){
   if [ $FHMAX_HF -gt 0 -a $FHOUT_HF -gt 0 ]; then FDIAG=$FHOUT_HF; fi
   WRITE_DOPOST=${WRITE_DOPOST:-".false."}
   restart_interval=${restart_interval:-0}
-  rst_invt1=`echo $restart_interval |cut -d " " -f 1`
+  rst_invt1=$(echo $restart_interval |cut -d " " -f 1)
 
   # Convert output settings into an explicit list
   OUTPUT_FH=""
@@ -208,8 +208,8 @@ FV3_GFS_predet(){
 
 
   # blocking factor used for threading and general physics performance
-  #nyblocks=`expr \( $npy - 1 \) \/ $layout_y `
-  #nxblocks=`expr \( $npx - 1 \) \/ $layout_x \/ 32`
+  #nyblocks=$(expr \( $npy - 1 \) \/ $layout_y )
+  #nxblocks=$(expr \( $npx - 1 \) \/ $layout_x \/ 32)
   #if [ $nxblocks -le 0 ]; then nxblocks=1 ; fi
   blocksize=${blocksize:-32}
 

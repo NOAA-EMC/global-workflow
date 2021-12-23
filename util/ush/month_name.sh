@@ -25,9 +25,9 @@
 #   Note:  Variables may be assigned the value of the returned name
 #          by either of the following methods:
 #
-#          MM=`cat month_name.txt`  after executing month_name.sh
+#          MM=$(cat month_name.txt)  after executing month_name.sh
 #                            - OR - 
-#          MM=`month_name.sh 5 MON`  (for example)
+#          MM=$(month_name.sh 5 MON)  (for example)
 #
 #
 #
@@ -96,13 +96,13 @@
 
   elif [ ${month_spec} = MON ]; then
 
-    MON=`echo ${Mon} | tr [a-z] [A-Z]`
+    MON=$(echo ${Mon} | tr [a-z] [A-Z])
     echo ${MON}
     echo ${MON} > month_name.txt
 
   elif [ ${month_spec} = MONTH ]; then
 
-    MONTH=`echo ${Month} | tr [a-z] [A-Z]`
+    MONTH=$(echo ${Month} | tr [a-z] [A-Z])
     echo ${MONTH}
     echo ${MONTH} > month_name.txt
 

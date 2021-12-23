@@ -11,13 +11,13 @@
 #
 # usage:  examples assume todays date is 19990929.
 # To generate a sequence looking 10 days forward then execute:
-#     list=`sh /nwprod/util/scripts/finddate.sh 19990929 s+10`
+#     list=$(sh /nwprod/util/scripts/finddate.sh 19990929 s+10)
 # To generate just the date/time 10 days from now then execute:
-#     list=`sh /nwprod/util/scripts/finddate.sh 19990929 d+10`
+#     list=$(sh /nwprod/util/scripts/finddate.sh 19990929 d+10)
 # To generate a sequence looking 10 days backward then execute:
-#     list=`sh /nwprod/util/scripts/finddate.sh 19990929 s-10`
+#     list=$(sh /nwprod/util/scripts/finddate.sh 19990929 s-10)
 # To generate just the date/time 10 days ago then execute:
-#     list=`sh /nwprod/util/scripts/finddate.sh 19990929 d-10`
+#     list=$(sh /nwprod/util/scripts/finddate.sh 19990929 d-10)
 # list will contain 10 time stamps starting with 19990929.  Time stamps
 # are separated by blanks.
 #
@@ -28,15 +28,15 @@ set +x
 unset pdstr
 today=$1
 var=$2
-yy=`echo $today | cut -c1-4 `
-mm=`echo $today | cut -c5-6 `
-dd=`echo $today | cut -c7-8 `
+yy=$(echo $today | cut -c1-4 )
+mm=$(echo $today | cut -c5-6 )
+dd=$(echo $today | cut -c7-8 )
 nxtyy=$yy
 pyy=$yy
-what=`echo $var | cut -c1-1`
-up=`echo $var | cut -c2-2`
-num=`echo $var | cut -c3-4`
-mod=`expr \( $yy / 4 \) \* 4 - $yy `
+what=$(echo $var | cut -c1-1)
+up=$(echo $var | cut -c2-2)
+num=$(echo $var | cut -c3-4)
+mod=$(expr \( $yy / 4 \) \* 4 - $yy )
 leap=0
 if test "$mod" -eq 0
 then
@@ -46,18 +46,18 @@ case $mm in
 01)  mday=31
      pday=31
      pmon=12
-     pyy=`expr $yy - 1`
+     pyy=$(expr $yy - 1)
      if test $pyy -lt '0'
      then
        pyy='1999'
      fi
      nxtmon=02;;
-02)  mday=`expr "$leap" + 28 `
+02)  mday=$(expr "$leap" + 28 )
      pday=31
      pmon=01
      nxtmon=03;;
 03)  mday=31
-     pday=`expr "$leap" + 28 `
+     pday=$(expr "$leap" + 28 )
      pmon=02
      nxtmon=04;;
 04)  mday=30
@@ -96,7 +96,7 @@ case $mm in
      pday=30
      pmon=11
      nxtmon=01
-     nxtyy=`expr $yy + 1 `
+     nxtyy=$(expr $yy + 1 )
      if test $yy -eq 1999
      then
        nxtyy=2000
@@ -117,12 +117,12 @@ while test $i -le $num
 do
   if test "$up" = '+'
   then
-    ddn=`expr $dd + $i`
+    ddn=$(expr $dd + $i)
     mmn=$mm
     yyn=$yy
     if test $ddn -gt $mday
     then
-      n=`expr $n + 1`
+      n=$(expr $n + 1)
       ddn=$n
       mmn=$nxtmon
       yyn=$nxtyy
@@ -133,12 +133,12 @@ do
     fi
   elif test "$up" = '-'
   then
-    ddn=`expr $dd - $i`
+    ddn=$(expr $dd - $i)
     mmn=$mm
     yyn=$yy
     if test $ddn -le '0'
     then
-      n=`expr $pday + $ddn`
+      n=$(expr $pday + $ddn)
       ddn=$n
       mmn=$pmon
       yyn=$pyy
@@ -152,7 +152,7 @@ do
     echo "You tried $up, this is illegal."
     exit 16
   fi
-  i=`expr $i + 1 `
+  i=$(expr $i + 1 )
   if test "$what" = 's'
   then
   pdstr=$pdstr"$yyn$mmn$ddn "

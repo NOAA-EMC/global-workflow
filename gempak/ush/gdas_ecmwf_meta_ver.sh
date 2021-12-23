@@ -25,7 +25,7 @@ export pgm=gdplot2_nc;. prep_step; startmsg
 
 cyc=12
 device="nc | ecmwfver.meta"
-PDY2=`echo ${PDY} | cut -c3-`
+PDY2=$(echo ${PDY} | cut -c3-)
 
 #
 # Copy in datatype table to define gdfile type
@@ -39,26 +39,26 @@ fi
 
 #
 # DEFINE YESTERDAY
-date1=`$NDATE -24 ${PDY}${cyc} | cut -c -8`
-sdate1=`echo ${date1} | cut -c 3-`
+date1=$($NDATE -24 ${PDY}${cyc} | cut -c -8)
+sdate1=$(echo ${date1} | cut -c 3-)
 # DEFINE 2 DAYS AGO
-date2=`$NDATE -48 ${PDY}${cyc} | cut -c -8`
-sdate2=`echo ${date2} | cut -c 3-`
+date2=$($NDATE -48 ${PDY}${cyc} | cut -c -8)
+sdate2=$(echo ${date2} | cut -c 3-)
 # DEFINE 3 DAYS AGO
-date3=`$NDATE -72 ${PDY}${cyc} | cut -c -8`
-sdate3=`echo ${date3} | cut -c 3-`
+date3=$($NDATE -72 ${PDY}${cyc} | cut -c -8)
+sdate3=$(echo ${date3} | cut -c 3-)
 # DEFINE 4 DAYS AGO
-date4=`$NDATE -96 ${PDY}${cyc} | cut -c -8`
-sdate4=`echo ${date4} | cut -c 3-`
+date4=$($NDATE -96 ${PDY}${cyc} | cut -c -8)
+sdate4=$(echo ${date4} | cut -c 3-)
 # DEFINE 5 DAYS AGO
-date5=`$NDATE -120 ${PDY}${cyc} | cut -c -8`
-sdate5=`echo ${date5} | cut -c 3-`
+date5=$($NDATE -120 ${PDY}${cyc} | cut -c -8)
+sdate5=$(echo ${date5} | cut -c 3-)
 # DEFINE 6 DAYS AGO
-date6=`$NDATE -144 ${PDY}${cyc} | cut -c -8`
-sdate6=`echo ${date6} | cut -c 3-`
+date6=$($NDATE -144 ${PDY}${cyc} | cut -c -8)
+sdate6=$(echo ${date6} | cut -c 3-)
 # DEFINE 7 DAYS AGO
-date7=`$NDATE -168 ${PDY}${cyc} | cut -c -8`
-sdate7=`echo ${date7} | cut -c 3-`
+date7=$($NDATE -168 ${PDY}${cyc} | cut -c -8)
+sdate7=$(echo ${date7} | cut -c 3-)
 
 vergrid="F-GDAS | ${PDY2}/0600"
 fcsthr="0600f006"
@@ -82,7 +82,7 @@ for area in $areas
     fi
     for verday in $verdays
         do
-        verddate=`echo ${verday} | cut -c 3-`
+        verddate=$(echo ${verday} | cut -c 3-)
         if [ ${verday} -eq ${date1} ] ; then
             dgdattim=f024
             sdatenum=$sdate1
