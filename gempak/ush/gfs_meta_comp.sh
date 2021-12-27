@@ -38,7 +38,7 @@ MDL=GFS
 metatype="comp"
 metaname="${mdl}_${metatype}_${cyc}.meta"
 device="nc | ${metaname}"
-PDY2=`echo $PDY | cut -c3-`
+PDY2=$(echo $PDY | cut -c3-)
 #
 #XXW export MODEL=$COMROOT/nawips/prod
 # BV export MODEL=$COMROOT/nawips/${envir}
@@ -73,16 +73,16 @@ export HPCNAM=${COMINnam}.$PDY/gempak
 # export HPCNGM=$COMROOT/nawips/prod/ngm.$PDY
 #
 # DEFINE YESTERDAY
-PDYm1=`$NDATE -24 ${PDY}${cyc} | cut -c -8`
-PDY2m1=`echo $PDYm1 | cut -c 3-`
+PDYm1=$($NDATE -24 ${PDY}${cyc} | cut -c -8)
+PDY2m1=$(echo $PDYm1 | cut -c 3-)
 #
 # DEFINE 2 DAYS AGO
-PDYm2=`$NDATE -48 ${PDY}${cyc} | cut -c -8`
-PDY2m2=`echo $PDYm2 | cut -c 3-`
+PDYm2=$($NDATE -48 ${PDY}${cyc} | cut -c -8)
+PDY2m2=$(echo $PDYm2 | cut -c 3-)
 #
 # DEFINE 3 DAYS AGO
-PDYm3=`$NDATE -72 ${PDY}${cyc} | cut -c -8`
-PDY2m3=`echo $PDYm3 | cut -c 3-`
+PDYm3=$($NDATE -72 ${PDY}${cyc} | cut -c -8)
+PDY2m3=$(echo $PDYm3 | cut -c 3-)
 #
 # THE 1200 UTC CYCLE
 #
@@ -147,8 +147,8 @@ if [ ${cyc} -eq 12 ] ; then
             title4="5/-2/~ ? ^ ${MDL} PMSL (${cyc}Z YELLOW)|^${gareas} ${cyc}Z VS ${desc} ${cyc2}Z PMSL"
             for gfsfhr in 00 06 12 18 24 30 36 42 48 54 60 66 72 78 84 90 96 102 108 114 120 126
             do
-                gfsoldfhr=F`expr ${gfsfhr} + ${add}`
-                gfsfhr2=`echo ${gfsfhr}`
+                gfsoldfhr=F$(expr ${gfsfhr} + ${add})
+                gfsfhr2=$(echo ${gfsfhr})
                 gfsfhr=F${gfsfhr}
                 if [ ${gfsfhr2} -gt ${testgfsfhr} ] ; then
                     grid="F-${MDL} | ${PDY2}/${cyc}00"
@@ -157,10 +157,10 @@ if [ ${cyc} -eq 12 ] ; then
                     gdpfun1="sm5s(hght)"
                     gdpfun2="sm5s(pmsl)"
                     line="5/1/3/2/2"
-                    hilo1=`echo ${hilo3}`
-                    hilo2=`echo ${hilo4}`
-                    title1=`echo ${title3}`
-                    title2=`echo ${title4}`
+                    hilo1=$(echo ${hilo3})
+                    hilo2=$(echo ${hilo4})
+                    title1=$(echo ${title3})
+                    title2=$(echo ${title4})
                 fi
 
 export pgm=gdplot2_nc;. prep_step; startmsg
@@ -223,7 +223,7 @@ export err=$?;err_chk
         # for gfsfhr in 00 12 24 36 48 60 84 108
         for gfsfhr in 00 12 24 84 108
         do
-            ukmetfhr=F`expr ${gfsfhr} + 12`
+            ukmetfhr=F$(expr ${gfsfhr} + 12)
             gfsfhr=F${gfsfhr}
 
 export pgm=gdplot2_nc;. prep_step; startmsg
@@ -303,7 +303,7 @@ export err=$?;err_chk
         grid2=${COMINecmwf}.${PDYm1}/gempak/ecmwf_glob_${PDYm1}12 
         for gfsfhr in 00 24 48 72 96 120
         do
-            ecmwffhr=F`expr ${gfsfhr} + 24`
+            ecmwffhr=F$(expr ${gfsfhr} + 24)
 	    gfsfhr=F${gfsfhr}
 		
 export pgm=gdplot2_nc;. prep_step; startmsg
@@ -523,8 +523,8 @@ if [ ${cyc} -eq 00 ] ; then
             title4="5/-2/~ ? ^ ${MDL} PMSL (${cyc}Z YELLOW)|^${gareas} ${cyc}Z VS ${desc} ${cyc2}Z PMSL"
             for gfsfhr in 00 06 12 18 24 30 36 42 48 54 60 66 72 78 84 90 96 102 108 114 120 126
             do
-                gfsoldfhr=F`expr ${gfsfhr} + ${add}`
-                gfsfhr2=`echo ${gfsfhr}`
+                gfsoldfhr=F$(expr ${gfsfhr} + ${add})
+                gfsfhr2=$(echo ${gfsfhr})
                 gfsfhr=F${gfsfhr}
                 if [ ${gfsfhr2} -gt ${testgfsfhr} ] ; then
                     grid="F-${MDL} | ${PDY2}/${cyc}00"
@@ -533,10 +533,10 @@ if [ ${cyc} -eq 00 ] ; then
                     gdpfun1="sm5s(hght)"
                     gdpfun2="sm5s(pmsl)"
                     line="5/1/3/2/2"
-                    hilo1=`echo ${hilo3}`
-                    hilo2=`echo ${hilo4}`
-                    title1=`echo ${title3}`
-                    title2=`echo ${title4}`
+                    hilo1=$(echo ${hilo3})
+                    hilo2=$(echo ${hilo4})
+                    title1=$(echo ${title3})
+                    title2=$(echo ${title4})
                 fi
 
 export pgm=gdplot2_nc;. prep_step; startmsg
@@ -599,7 +599,7 @@ export err=$?;err_chk
         # for gfsfhr in 00 12 24 36 48 60 84 108
         for gfsfhr in 00 12 24 84 108
         do
-            ukmetfhr=F`expr ${gfsfhr} + 12`
+            ukmetfhr=F$(expr ${gfsfhr} + 12)
             gfsfhr=F${gfsfhr}
 	    
 export pgm=gdplot2_nc;. prep_step; startmsg
@@ -680,7 +680,7 @@ export err=$?;err_chk
         grid2="${COMINecmwf}.${PDYm1}/gempak/ecmwf_glob_${PDYm1}12"
         for gfsfhr in 12 36 60 84 108
         do
-            ecmwffhr=F`expr ${gfsfhr} + 12`
+            ecmwffhr=F$(expr ${gfsfhr} + 12)
             gfsfhr=F${gfsfhr}
 	    
 export pgm=gdplot2_nc;. prep_step; startmsg
@@ -894,8 +894,8 @@ if [ ${cyc} -eq 18 ] ; then
             title4="5/-2/~ ? ^ ${MDL} PMSL (${cyc}Z YELLOW)|^${gareas} ${cyc}Z VS ${desc} ${cyc2}Z PMSL"
             for gfsfhr in 00 06 12 18 24 30 36 42 48 54 60 66 72 78 84 90 96 102 108 114 120 126
             do
-                gfsoldfhr=F`expr ${gfsfhr} + ${add}`
-                gfsfhr2=`echo ${gfsfhr}`
+                gfsoldfhr=F$(expr ${gfsfhr} + ${add})
+                gfsfhr2=$(echo ${gfsfhr})
                 gfsfhr="F${gfsfhr}"
                 if [ ${gfsfhr2} -gt ${testgfsfhr} ] ; then
                     grid="F-${MDL} | ${PDY2}/${cyc}00"
@@ -904,10 +904,10 @@ if [ ${cyc} -eq 18 ] ; then
                     gdpfun1="sm5s(hght)"
                     gdpfun2="sm5s(pmsl)"
                     line="5/1/3/2/2"
-                    hilo1=`echo ${hilo3}`
-                    hilo2=`echo ${hilo4}`
-                    title1=`echo ${title3}`
-                    title2=`echo ${title4}`
+                    hilo1=$(echo ${hilo3})
+                    hilo2=$(echo ${hilo4})
+                    title1=$(echo ${title3})
+                    title2=$(echo ${title4})
                 fi
 export pgm=gdplot2_nc;. prep_step; startmsg
 $GEMEXE/gdplot2_nc << EOF
@@ -1024,8 +1024,8 @@ if [ ${cyc} -eq 06 ] ; then
             title4="5/-2/~ ? ^ ${MDL} PMSL (${cyc}Z YELLOW)|^${gareas} ${cyc}Z VS ${desc} ${cyc2}Z PMSL"
             for gfsfhr in 00 06 12 18 24 30 36 42 48 54 60 66 72 78 84 90 96 102 108 114 120 126
             do
-                gfsoldfhr=F`expr ${gfsfhr} + ${add}`
-                gfsfhr2=`echo ${gfsfhr}`
+                gfsoldfhr=F$(expr ${gfsfhr} + ${add})
+                gfsfhr2=$(echo ${gfsfhr})
                 gfsfhr="F${gfsfhr}"
                 if [ ${gfsfhr2} -gt ${testgfsfhr} ] ; then
                     grid="F-${MDL} | ${PDY2}/${cyc}00"
@@ -1034,10 +1034,10 @@ if [ ${cyc} -eq 06 ] ; then
                     gdpfun1="sm5s(hght)"
                     gdpfun2="sm5s(pmsl)"
                     line="5/1/3/2/2"
-                    hilo1=`echo ${hilo3}`
-                    hilo2=`echo ${hilo4}`
-                    title1=`echo ${title3}`
-                    title2=`echo ${title4}`
+                    hilo1=$(echo ${hilo3})
+                    hilo2=$(echo ${hilo4})
+                    title1=$(echo ${title3})
+                    title2=$(echo ${title4})
                 fi
 export pgm=gdplot2_nc;. prep_step; startmsg
 $GEMEXE/gdplot2_nc << EOF

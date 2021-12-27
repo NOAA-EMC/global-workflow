@@ -33,7 +33,7 @@ do
      let "hour=hour+12"
   fi
 done
-pgrb2_jobs=`cat pgrb2_hours`
+pgrb2_jobs=$(cat pgrb2_hours)
 
 #
 # Wait for all fcst hours to finish 
@@ -51,11 +51,11 @@ do
 #      fi    
       ecflow_client --event release_pgrb2_${fhr}
       # Remove current fhr from list
-      pgrb2_jobs=`echo ${pgrb2_jobs} | sed "s/${fhr}//"`
+      pgrb2_jobs=$(echo ${pgrb2_jobs} | sed "s/${fhr}//")
     fi
   done
   
-  result_check=`echo ${pgrb2_jobs} | wc -w`
+  result_check=$(echo ${pgrb2_jobs} | wc -w)
   if [ $result_check -eq 0 ]
   then
      break

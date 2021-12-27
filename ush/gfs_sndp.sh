@@ -30,7 +30,7 @@ set +x
       WMOHEAD=JUSX4$m
     fi
 
-    for stn in `cat $file_list`
+    for stn in $(cat $file_list)
     do
        cp ${COMOUT}/bufr.${cycle}/bufr.$stn.$PDY$cyc $DATA/${m}/bufrin
        export pgm=tocsbufr

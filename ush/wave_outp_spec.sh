@@ -37,7 +37,7 @@
   specdir=$3
   workdir=$4
 
-  YMDHE=`$NDATE $FHMAX_WAV_PNT $CDATE`
+  YMDHE=$($NDATE $FHMAX_WAV_PNT $CDATE)
 
   cd $workdir
 
@@ -85,10 +85,10 @@
     grep $buoy ${DATA}/buoy_log.ww3 > tmp_list.loc
     while read line
     do
-      buoy_name=`echo $line | awk '{print $2}'`
+      buoy_name=$(echo $line | awk '{print $2}')
       if [ $buoy = $buoy_name ]
       then
-        point=`echo $line | awk '{ print $1 }'`
+        point=$(echo $line | awk '{ print $1 }')
         set +x
         echo "              Location ID/#   : $buoy (${point})"
         echo "   Spectral output start time : $ymdh "
@@ -130,9 +130,9 @@
 
 # 0.d Starting time for output
 
-  tstart="`echo $ymdh | cut -c1-8` `echo $ymdh | cut -c9-10`0000"
-  YMD="`echo $ymdh | cut -c1-8`"
-  HMS="`echo $ymdh | cut -c9-10`0000"
+  tstart="$(echo $ymdh | cut -c1-8) $(echo $ymdh | cut -c9-10)0000"
+  YMD="$(echo $ymdh | cut -c1-8)"
+  HMS="$(echo $ymdh | cut -c9-10)0000"
   set +x
   echo "   Output starts at $tstart."
   echo ' '
@@ -159,8 +159,8 @@
 
   if [ "$specdir" = "bull" ]
   then
-    tstart="`echo $ymdh | cut -c1-8` `echo $ymdh | cut -c9-10`0000"
-    truntime="`echo $CDATE | cut -c1-8` `echo $CDATE | cut -c9-10`0000"
+    tstart="$(echo $ymdh | cut -c1-8) $(echo $ymdh | cut -c9-10)0000"
+    truntime="$(echo $CDATE | cut -c1-8) $(echo $CDATE | cut -c9-10)0000"
     sed -e "s/TIME/$tstart/g" \
       -e "s/DT/$dtspec/g" \
       -e "s/POINT/$point/g" \
@@ -175,7 +175,7 @@
       -e "s/ITYPE/1/g" \
       -e "s/FORMAT/F/g" \
                                ${DATA}/ww3_outp_spec.inp.tmpl > ww3_outp.inp
-    outfile=ww3.`echo $tstart | cut -c3-8``echo $tstart | cut -c10-11`.spc
+    outfile=ww3.$(echo $tstart | cut -c3-8)$(echo $tstart | cut -c10-11).spc
   fi
 
 # 2.b Run the postprocessor

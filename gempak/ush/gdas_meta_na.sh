@@ -21,7 +21,7 @@ set -xa
 
 device="nc | gdas.meta"
 
-PDY2=`echo $PDY | cut -c3-`
+PDY2=$(echo $PDY | cut -c3-)
 
 if [ "$envir" = "para" ] ; then
    export m_title="GDASP"

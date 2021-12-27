@@ -47,9 +47,9 @@ export SENDCOM=YES
 #------------------ 
 
 dateIn=$1
-export PDY=`echo $dateIn | cut -c 1-8`
-export cyc=`echo $dateIn | cut -c 9-10`
-export prevday=`$NDATE -24 ${PDY}00 | cut -c1-8`
+export PDY=$(echo $dateIn | cut -c 1-8)
+export cyc=$(echo $dateIn | cut -c 9-10)
+export prevday=$($NDATE -24 ${PDY}00 | cut -c1-8)
 
 #
 # VARIABLES TO SET
@@ -167,7 +167,7 @@ bsub -J $job \
 ######################################################################## 
 #  JGFSMOS_FORECAST
 ######################################################################## 
-if [ $prevday -lt `date -u +%Y%m%d -d "48 hours ago"` ]; then
+if [ $prevday -lt $(date -u +%Y%m%d -d "48 hours ago") ]; then
    export COMINhourly=$PTMPROOT/hourly.$PDY
    if [[ ! -d $COMINhourly ]]; then
       mkdir -p $COMINhourly

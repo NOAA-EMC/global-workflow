@@ -42,7 +42,7 @@
  cd $DATA
  export wavelog=${DATA}/${COMPONENTwave}_prdggridded.log
  
- postmsg "$jlogfile" "HAS BEGUN on `hostname`"
+ postmsg "$jlogfile" "HAS BEGUN on $(hostname)"
  msg="Starting MWW3 GRIDDED PRODUCTS SCRIPT"
  postmsg "$jlogfile" "$msg"
 # Output grids
@@ -58,7 +58,7 @@
  echo '                         ****************************'
  echo "                                       $date $cycle"
  echo ' '
- echo "Starting at : `date`"
+ echo "Starting at : $(date)"
  echo ' '
  echo "   AWIPS grib fields"
  echo "   Wave  Grids       : $grids"
@@ -79,7 +79,7 @@
                                 #  (should be same as ASWELL)
  #export arrpar=(WIND UGRD VGRD HTSGW PERPW DIRPW WVHGT WVPER WVDIR WDIR ${ASWELL[@]} ${ASWDIR[@]} ${ASWPER[@]})
  export arrpar=(WIND WDIR UGRD VGRD HTSGW PERPW DIRPW WVHGT ${ASWELL[@]} WVPER ${ASWPER[@]} WVDIR ${ASWDIR[@]} )
- export nparam=`echo ${arrpar[@]} | wc -w`
+ export nparam=$(echo ${arrpar[@]} | wc -w)
 
 
 # 1.a Grib file (AWIPS and FAX charts)
@@ -131,8 +131,8 @@
      iparam=1
      while [ ${iparam} -le ${nparam} ]; do
        nip=${arrpar[$iparam-1]}
-       prepar=`echo $nip | rev | cut -c2- | rev` #Part prefix (assumes 1 digit index)
-       paridx=`echo $nip | rev | cut -c-1`
+       prepar=$(echo $nip | rev | cut -c2- | rev) #Part prefix (assumes 1 digit index)
+       paridx=$(echo $nip | rev | cut -c-1)
        npart=0   
        case $prepar in
          SWELL)  npart=1 ;;
@@ -150,7 +150,7 @@
                  $WGRIB2 -i $GRIBIN -grib temp.grib2  > wgrib.out 2>&1 
          $WGRIB2 temp.grib2 -append -grib  $GRIBOUT
        fi
-       iparam=`expr ${iparam} + 1`
+       iparam=$(expr ${iparam} + 1)
      done #end wave param loop
 #======================================================================
      GRIBIN=$RUNwave.$cycle.$grdID.f${fhr}.clipped.grib2
@@ -277,7 +277,7 @@
 
   echo ' '
   echo ' '
-  echo "Ending at : `date`"
+  echo "Ending at : $(date)"
   echo ' '
   echo '                *** End of MWW3 product generation ***'
   echo ' '

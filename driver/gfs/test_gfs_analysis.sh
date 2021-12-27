@@ -25,8 +25,8 @@ export CDATE=2017040700
 # Specify whether the run is production or development
 #############################################################
 export RUN_ENVIR=para
-export PDY=`echo $CDATE | cut -c1-8`
-export cyc=`echo $CDATE | cut -c9-10`
+export PDY=$(echo $CDATE | cut -c1-8)
+export cyc=$(echo $CDATE | cut -c9-10)
 export job=gfs_analysis_${cyc}
 export pid=${pid:-$$}
 export jobid=${job}.${pid}

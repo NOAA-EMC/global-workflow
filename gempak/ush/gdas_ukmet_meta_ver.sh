@@ -24,7 +24,7 @@ fi
 export pgm=gdplot2_nc;. prep_step; startmsg
 
 device="nc | ukmetver_12.meta"
-PDY2=`echo ${PDY} | cut -c3-`
+PDY2=$(echo ${PDY} | cut -c3-)
 
 #
 # Copy in datatype table to define gdfile type
@@ -33,50 +33,50 @@ cp $FIXgempak/datatype.tbl datatype.tbl
 
 #
 # DEFINE 1 CYCLE AGO
-dc1=`$NDATE -06 ${PDY}${cyc} | cut -c -10`
-date1=`echo ${dc1} | cut -c -8`
-sdate1=`echo ${dc1} | cut -c 3-8`
-cycle1=`echo ${dc1} | cut -c 9,10`
+dc1=$($NDATE -06 ${PDY}${cyc} | cut -c -10)
+date1=$(echo ${dc1} | cut -c -8)
+sdate1=$(echo ${dc1} | cut -c 3-8)
+cycle1=$(echo ${dc1} | cut -c 9,10)
 # DEFINE 2 CYCLES AGO
-dc2=`$NDATE -18 ${PDY}${cyc} | cut -c -10`
-date2=`echo ${dc2} | cut -c -8`
-sdate2=`echo ${dc2} | cut -c 3-8`
-cycle2=`echo ${dc2} | cut -c 9,10`
+dc2=$($NDATE -18 ${PDY}${cyc} | cut -c -10)
+date2=$(echo ${dc2} | cut -c -8)
+sdate2=$(echo ${dc2} | cut -c 3-8)
+cycle2=$(echo ${dc2} | cut -c 9,10)
 # DEFINE 3 CYCLES AGO
-dc3=`$NDATE -30 ${PDY}${cyc} | cut -c -10`
-date3=`echo ${dc3} | cut -c -8`
-sdate3=`echo ${dc3} | cut -c 3-8`
-cycle3=`echo ${dc3} | cut -c 9,10`
+dc3=$($NDATE -30 ${PDY}${cyc} | cut -c -10)
+date3=$(echo ${dc3} | cut -c -8)
+sdate3=$(echo ${dc3} | cut -c 3-8)
+cycle3=$(echo ${dc3} | cut -c 9,10)
 # DEFINE 4 CYCLES AGO
-dc4=`$NDATE -42 ${PDY}${cyc} | cut -c -10`
-date4=`echo ${dc4} | cut -c -8`
-sdate4=`echo ${dc4} | cut -c 3-8`
-cycle4=`echo ${dc4} | cut -c 9,10`
+dc4=$($NDATE -42 ${PDY}${cyc} | cut -c -10)
+date4=$(echo ${dc4} | cut -c -8)
+sdate4=$(echo ${dc4} | cut -c 3-8)
+cycle4=$(echo ${dc4} | cut -c 9,10)
 # DEFINE 5 CYCLES AGO
-dc5=`$NDATE -54 ${PDY}${cyc} | cut -c -10`
-date5=`echo ${dc5} | cut -c -8`
-sdate5=`echo ${dc5} | cut -c 3-8`
-cycle5=`echo ${dc5} | cut -c 9,10`
+dc5=$($NDATE -54 ${PDY}${cyc} | cut -c -10)
+date5=$(echo ${dc5} | cut -c -8)
+sdate5=$(echo ${dc5} | cut -c 3-8)
+cycle5=$(echo ${dc5} | cut -c 9,10)
 # DEFINE 6 CYCLES AGO
-dc6=`$NDATE -66 ${PDY}${cyc} | cut -c -10`
-date6=`echo ${dc6} | cut -c -8`
-sdate6=`echo ${dc6} | cut -c 3-8`
-cycle6=`echo ${dc6} | cut -c 9,10`
+dc6=$($NDATE -66 ${PDY}${cyc} | cut -c -10)
+date6=$(echo ${dc6} | cut -c -8)
+sdate6=$(echo ${dc6} | cut -c 3-8)
+cycle6=$(echo ${dc6} | cut -c 9,10)
 # DEFINE 7 CYCLES AGO
-dc7=`$NDATE -90 ${PDY}${cyc} | cut -c -10`
-date7=`echo ${dc7} | cut -c -8`
-sdate7=`echo ${dc7} | cut -c 3-8`
-cycle7=`echo ${dc7} | cut -c 9,10`
+dc7=$($NDATE -90 ${PDY}${cyc} | cut -c -10)
+date7=$(echo ${dc7} | cut -c -8)
+sdate7=$(echo ${dc7} | cut -c 3-8)
+cycle7=$(echo ${dc7} | cut -c 9,10)
 # DEFINE 8 CYCLES AGO
-dc8=`$NDATE -114 ${PDY}${cyc} | cut -c -10`
-date8=`echo ${dc8} | cut -c -8`
-sdate8=`echo ${dc8} | cut -c 3-8`
-cycle8=`echo ${dc8} | cut -c 9,10`
+dc8=$($NDATE -114 ${PDY}${cyc} | cut -c -10)
+date8=$(echo ${dc8} | cut -c -8)
+sdate8=$(echo ${dc8} | cut -c 3-8)
+cycle8=$(echo ${dc8} | cut -c 9,10)
 # DEFINE 9 CYCLES AGO
-dc9=`$NDATE -138 ${PDY}${cyc} | cut -c -10`
-date9=`echo ${dc9} | cut -c -8`
-sdate9=`echo ${dc9} | cut -c 3-8`
-cycle9=`echo ${dc9} | cut -c 9,10`
+dc9=$($NDATE -138 ${PDY}${cyc} | cut -c -10)
+date9=$(echo ${dc9} | cut -c -8)
+sdate9=$(echo ${dc9} | cut -c 3-8)
+cycle9=$(echo ${dc9} | cut -c 9,10)
 
 # SET CURRENT CYCLE AS THE VERIFICATION GRIDDED FILE.
 vergrid="F-GDAS | ${PDY2}/0600"

@@ -149,7 +149,7 @@ echo "Run date is $CDATE10"
 echo
 set -x
 
-year=`echo $CDATE10 | cut -c1-4`
+year=$(echo $CDATE10 | cut -c1-4)
 
  
 #  Copy the seasonal statistics from archive directory to local
@@ -162,7 +162,7 @@ cp $ARCHSYND/syndat_sthisto sthisto
 cp $ARCHSYND/syndat_sthista sthista
  
 touch dateck
-dateck_size=`ls -l dateck  | awk '{ print $5 }'`
+dateck_size=$(ls -l dateck  | awk '{ print $5 }')
 if [ $dateck_size -lt 10 ]; then
    msg="***WARNING: Archive run date check file not available or shorter than expected.\
   Using dummy date 1900010100 to allow code to continue"
@@ -192,7 +192,7 @@ elif [ "$RUN" = 'gdas' ]; then
    files=T,
 fi
 if [ -n "$files_override" ]; then  # for testing, typically want FILES=F
-  files_override=`echo "$files_override" | tr [a-z] [A-Z] | tr -d [.] | cut -c 1`
+  files_override=$(echo "$files_override" | tr [a-z] [A-Z] | tr -d [.] | cut -c 1)
   if [ "$files_override" = 'T' -o "$files_override" = 'F' ]; then
     msg="***WARNING: Variable files setting will be overriden from $files to $files_override. Override expected if testing." 
     files=$files_override
@@ -266,7 +266,7 @@ cp $slmask slmask.126
  
 #  Execute program syndat_qctropcy
 
-pgm=`basename $EXECSYND/syndat_qctropcy`
+pgm=$(basename $EXECSYND/syndat_qctropcy)
 export pgm
 if [ -s prep_step ]; then
    set +u
@@ -274,7 +274,7 @@ if [ -s prep_step ]; then
    set -u
 else
    [ -f errfile ] && rm errfile
-   unset FORT00 `env | grep "^FORT[0-9]\{1,\}=" | awk -F= '{print $1}'`
+   unset FORT00 $(env | grep "^FORT[0-9]\{1,\}=" | awk -F= '{print $1}')
 fi
 
 echo "$CDATE10"      > cdate10.dat

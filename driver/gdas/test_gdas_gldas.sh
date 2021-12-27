@@ -32,12 +32,12 @@ export CDATE=${CDATE:-2019110700}
 #############################################################
 export KMP_AFFINITY=disabled
 
-export PDY=`date -u +%Y%m%d`
-export PDY=`echo $CDATE | cut -c1-8`
+export PDY=$(date -u +%Y%m%d)
+export PDY=$(echo $CDATE | cut -c1-8)
 
-export PDY1=`expr $PDY - 1`
+export PDY1=$(expr $PDY - 1)
 
-export cyc=`echo $CDATE | cut -c9-10`
+export cyc=$(echo $CDATE | cut -c9-10)
 export cycle=t${cyc}z
 
 set -xa

@@ -59,7 +59,7 @@ if mkdir lock.$fhcnt  ; then
   typeset -Z3 fhr
 
   fhr=$fhcnt
-  fhcnt3=`expr $fhr % 3`
+  fhcnt3=$(expr $fhr % 3)
 
   fhr3=$fhcnt
   typeset -Z3 fhr3

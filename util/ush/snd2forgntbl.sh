@@ -43,8 +43,8 @@ echo Search snd2forgn table for $sendkey
 grep $sendkey ${UTILgfs}/fix/graph_snd2forgn.names >> sendline
 if [ -s sendline ]
 then
-   ftype=`awk '{print $2}' sendline`
-   foreign=`awk '{print $3}' sendline`
+   ftype=$(awk '{print $2}' sendline)
+   foreign=$(awk '{print $3}' sendline)
    sndfrc=0
    echo $sndfrc >$DATA/sndfrc
 

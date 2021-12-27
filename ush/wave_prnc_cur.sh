@@ -28,7 +28,7 @@ ymdh_rtofs=$1
 curfile=$2
 fhr=$3
 flagfirst=$4
-fh3=`printf "%03d" "${fhr#0}"`
+fh3=$(printf "%03d" "${fhr#0}")
 
 # Timing has to be made relative to the single 00z RTOFS cycle for that PDY
 

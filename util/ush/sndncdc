@@ -52,12 +52,12 @@ fi
 outfil="$1"
 INFILE="$2"
  set -x
-export subdir=`basename ${COMOUTwmo}`
+export subdir=$(basename ${COMOUTwmo})
 if test "$subdir" = 'faxx'
 then
  export dir=${COMROOT}/foreign/ncdc
 else
-  export dirn=`dirname ${HOMEutil}`
+  export dirn=$(dirname ${HOMEutil})
   if test "$dirn" = '${NWROOT}'
   then
    export dir=${COMROOT}/foreign/ncdc  
@@ -72,12 +72,12 @@ fi
 #  get the year month day and z time to append to end of the file that is to
 #  go to NCDC $outfil
 
-    YMDZ=`date -u +"%Y%m%d%H"`
+    YMDZ=$(date -u +"%Y%m%d%H")
 
 #  this makes sure that the new file is copied into ${COMROOT}/foreign/faxx !
 
 
- ncdcfil=`echo ${outfil} | awk 'BEGIN{FS="."} {print $1}'`
+ ncdcfil=$(echo ${outfil} | awk 'BEGIN{FS="."} {print $1}')
  
    if [ -z "${dir}" ] ; then
       cp ${INFILE} ${dir}/${ncdcfil}.${YMDZ}
