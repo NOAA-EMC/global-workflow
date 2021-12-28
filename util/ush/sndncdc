@@ -122,13 +122,13 @@ istat=0
         then
           echo "SENT ${dir}/${ncdcfil}.${YMDZ} to NCDC !"
         else
-          echo "SENT ${ncdcfil}.${YMDZ} to NCDC !" 
+          echo "SENT ${ncdcfil}.${YMDZ} to NCDC !"
         fi
       else
        echo "ERROR FROM dbn_alert = $istat, trying to send to NCDC!"
       fi            
    else 
-       echo "sndncdc testing, ${dir}/${ncdcfil}.${YMDZ} not sent!"    
+       echo "sndncdc testing, ${dir}/${ncdcfil}.${YMDZ} not sent!"
    fi
  set +x    
 exit 

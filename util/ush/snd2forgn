@@ -31,7 +31,7 @@ VERS="version: ${MEMBER} 2000-03-23 10:55L "
 #
 # Remarks  : This script assumes that the following values have been 
 #            exported by the parent shell:
-#            job JOBID USHutil UTILhome model COMOUTwmo 
+#            job JOBID USHutil UTILhome model COMOUTwmo
 #            DBNROOT is exported in the production Profile.
 #
 # FOR TESTING 
@@ -152,9 +152,9 @@ set -x
  then
   SENDDBN=NO
  else 
-  SENDDBN=NO 
+  SENDDBN=NO
  fi
-  export  model jobid reqid  COMOUTwmo pgmout 
+  export  model jobid reqid COMOUTwmo pgmout
   export  JOB DATA PID 
   cd $DATA
   
@@ -285,7 +285,7 @@ then
  
        export istat=$?
        echo dbn_alert: Ended with return code = $istat
-       if test "$istat" = 0 
+       if test "$istat" = 0
        then
          echo "Posting $filename with ${SUBTYP}!"
        else
@@ -295,7 +295,7 @@ then
        fi   
       else
        set -x
-       echo "snd2forgn testing, $SUBTYP $filename not sent!" 
+       echo "snd2forgn testing, $SUBTYP $filename not sent!"
        set +x   
 
       fi
