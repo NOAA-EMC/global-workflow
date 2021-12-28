@@ -53,7 +53,6 @@ mkdir -p $DATAROOT
 echo
 echo "=============== BEGIN GEMPAK ==============="
 export job="jgfs_gempak_${cyc}"
-export jlogfile="$ROTDIR/logs/$CDATE/$job.log"    
 export DATA="${DATAROOT}/$job"
 export SENDCOM="YES"
 export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc/$COMPONENT/gempak"
