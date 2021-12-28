@@ -173,7 +173,6 @@
 #                  $NDATE (here and in child script
 #                        $USHRELO/tropcy_relocate_extrkr.sh)
 #                  /usr/bin/poe
-#                  postmsg
 #                  $DATA/prep_step (here and in child script
 #                        $USHRELO/tropcy_relocate_extrkr.sh)
 #                  $DATA/err_exit (here and in child script

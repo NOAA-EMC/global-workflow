@@ -64,7 +64,6 @@ set -x
 ##############################################################################
 
 prep_step=${prep_step:-prep_step}
-postmsg=${postmsg:-postmsg}
 
 ########################################
 echo "has begun for ${cmodel} at ${CYL}z"
