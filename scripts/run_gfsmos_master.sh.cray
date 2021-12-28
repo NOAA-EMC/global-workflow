@@ -80,7 +80,6 @@ export stnonly=Y
 export cycle="t${cyc}z"
 export pid="gfs.$$"
 export dailylog=$PTMPROOT/dailylog/log.$PDY
-export jlogfile=$dailylog/jlogfile_gfsmos
 mkdir -p $dailylog
 
 export SENDDBN=NO

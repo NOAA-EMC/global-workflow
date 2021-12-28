@@ -27,9 +27,7 @@ DATA_RUN=$DATA/$RUN
 mkdir -p $DATA_RUN
 cd $DATA_RUN
 
-msg="Begin job for $job"
-postmsg "$jlogfile" "$msg"
-
+echo "Begin job for $job"
 
 #
 NAGRIB=$GEMEXE/nagrib2_nc
@@ -97,15 +95,13 @@ if mkdir lock.$fhcnt  ; then
       sleep 5
       break
     else
-      msg="The process is waiting ... ${GRIBIN_chk} file to proceed."
-      postmsg "${jlogfile}" "$msg"
+      echo "The process is waiting ... ${GRIBIN_chk} file to proceed."
       sleep 10
       let "icnt=icnt+1"
     fi
     if [ $icnt -ge $maxtries ]
     then
-      msg="ABORTING: after 1 hour of waiting for ${GRIBIN_chk} file at F$fhr to end."
-      postmsg "${jlogfile}" "$msg"
+      echo "ABORTING: after 1 hour of waiting for ${GRIBIN_chk} file at F$fhr to end."
       export err=7 ; err_chk
       exit $err
     fi
@@ -197,8 +193,6 @@ echo "**************JOB $RUN NAWIPS COMPLETED NORMALLY ON THE IBM"
 set -x
 #####################################################################
 
-msg='Job completed normally.'
-echo $msg
-postmsg "$jlogfile" "$msg"
+echo 'Job completed normally.'
 
 ############################### END OF SCRIPT #######################

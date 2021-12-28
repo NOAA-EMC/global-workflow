@@ -40,10 +40,9 @@
  cd $DATA
  export wavelog=${DATA}/${RUNwave}_prdgbulls.log
  
- postmsg "$jlogfile" "HAS BEGUN on `hostname`"
+ echo "HAS BEGUN on `hostname`"
+ echo "Starting MWW3 BULLETINS PRODUCTS SCRIPT"
 
- msg="Starting MWW3 BULLETINS PRODUCTS SCRIPT"
- postmsg "$jlogfile" "$msg"
  touch $wavelog
 # 0.b Date and time stuff
  export date=$PDY
@@ -70,15 +69,13 @@
  if [ -f $BullIn ]; then
    cp $BullIn cbull.tar
  else
-   msg="ABNORMAL EXIT: NO BULLETIN TAR FILE"
-   postmsg "$jlogfile" "$msg"
    set +x
    echo ' '
    echo '************************************ '
    echo '*** ERROR : NO BULLETIN TAR FILE *** '
    echo '************************************ '
    echo ' '
-   echo $msg
+   echo "ABNORMAL EXIT: NO BULLETIN TAR FILE"
    [[ "$LOUD" = YES ]] && set -x
    msg="FATAL ERROR ${RUNwave} prdgen $date $cycle : bulletin tar missing."
    echo $msg >> $wavelog
@@ -98,15 +95,13 @@
    [[ "$LOUD" = YES ]] && set -x
    rm -f cbull.tar
  else
-   msg="ABNORMAL EXIT: ERROR IN BULLETIN UNTAR"
-   postmsg "$jlogfile" "$msg"
    set +x
    echo ' '
    echo '****************************************** '
    echo '*** ERROR : ERROR IN BULLETIN TAR FILE *** '
    echo '****************************************** '
    echo ' '
-   echo $msg
+   echo "ABNORMAL EXIT: ERROR IN BULLETIN UNTAR"
    [[ "$LOUD" = YES ]] && set -x
    echo "${RUNwave} prdgen $date $cycle : bulletin untar error." >> $wavelog
    err=2;export err;err_chk
@@ -126,15 +121,13 @@
  if [ -f $PARMwave/bull_awips_gfswave ]; then
    cp $PARMwave/bull_awips_gfswave awipsbull.data
  else
-   msg="ABNORMAL EXIT: NO AWIPS BULLETIN HEADER DATA FILE"
-   postmsg "$jlogfile" "$msg"
    set +x
    echo ' '
    echo '******************************************* '
    echo '*** ERROR : NO AWIPS BULLETIN DATA FILE *** '
    echo '******************************************* '
    echo ' '
-   echo $msg
+   echo "ABNORMAL EXIT: NO AWIPS BULLETIN HEADER DATA FILE"
    [[ "$LOUD" = YES ]] && set -x
    echo "${RUNwave} prdgen $date $cycle : Bulletin header data file  missing." >> $wavelog
    err=3;export err;err_chk
@@ -167,15 +160,13 @@
  
    if [ -z "$headr" ] || [ ! -s $fname ]; then
      [[ "$LOUD" = YES ]] && set -x
-     msg="ABNORMAL EXIT: MISSING BULLETING INFO"
-     postmsg "$jlogfile" "$msg"
      set +x
      echo ' '
      echo '******************************************** '
      echo '*** FATAL ERROR : MISSING BULLETING INFO *** '
      echo '******************************************** '
      echo ' '
-     echo $msg
+     echo "ABNORMAL EXIT: MISSING BULLETING INFO"
      [[ "$LOUD" = YES ]] && set -x
      echo "${RUNwave} prdgen $date $cycle : Missing bulletin data." >> $wavelog
      err=4;export err;err_chk
@@ -191,15 +182,13 @@
    if [ "$OK" != '0' ] || [ ! -f $oname ]; then
      [[ "$LOUD" = YES ]] && set -x
      cat formbul.out
-     msg="ABNORMAL EXIT: ERROR IN formbul"
-     postmsg "$jlogfile" "$msg"
      set +x
      echo ' '
      echo '************************************** '
      echo '*** FATAL ERROR : ERROR IN formbul *** '
      echo '************************************** '
      echo ' '
-     echo $msg
+     echo "ABNORMAL EXIT: ERROR IN formbul"
      [[ "$LOUD" = YES ]] && set -x
      echo "${RUNwave} prdgen $date $cycle : error in formbul." >> $wavelog
      err=5;export err;err_chk
@@ -245,7 +234,6 @@
   echo ' '
   [[ "$LOUD" = YES ]] && set -x
 
-  msg="$job completed normally"
-  postmsg "$jlogfile" "$msg"
+  echo "$job completed normally"
 
 # End of MWW3 product generation script -------------------------------------- #
