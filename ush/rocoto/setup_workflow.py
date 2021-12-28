@@ -197,8 +197,6 @@ def get_definitions(base):
     if scheduler in ['slurm']:
         strings.append(f'''\t<!ENTITY PARTITION_SERVICE "{base['QUEUE_SERVICE']}">\n''')
     strings.append(f'\t<!ENTITY SCHEDULER  "{scheduler}">\n')
-    if machine in ['WCOSS2']:
-       strings.append(f'\t<!ENTITY NODESIZE  "128">\n')
     strings.append('\n')
     strings.append('\t<!-- Toggle HPSS archiving -->\n')
     strings.append(f'''\t<!ENTITY ARCHIVE_TO_HPSS "{base['HPSSARCH']}">\n''')
@@ -449,22 +447,22 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
     # waveinit
     if do_wave in ['Y', 'YES'] and cdump in cdumps:
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{cdump}prep'}
+        dep_dict = {'type': 'task', 'name': '{cdump}prep'}
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': '-06:00:00'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
         task = wfu.create_wf_task('waveinit', cdump=cdump, envar=envars, dependency=dependencies)
-        dict_tasks[f'{cdump}waveinit'] = task
+        dict_tasks['{cdump}waveinit'] = task
 
     # waveprep
     if do_wave in ['Y', 'YES'] and cdump in cdumps:
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{cdump}waveinit'}
+        dep_dict = {'type': 'task', 'name': '{cdump}waveinit'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
         task = wfu.create_wf_task('waveprep', cdump=cdump, envar=envars, dependency=dependencies)
-        dict_tasks[f'{cdump}waveprep'] = task
+        dict_tasks['{cdump}waveprep'] = task
 
     # anal
     deps = []

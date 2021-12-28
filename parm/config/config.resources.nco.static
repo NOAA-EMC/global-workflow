@@ -199,7 +199,6 @@ elif [ $step = "wafsgcip" ]; then
     export npe_wafsgcip=2
     export npe_node_wafsgcip=1
     export nth_wafsgcip=1
-    export memory_wafsgcip="50GB"
 
 elif [ $step = "wafsgrib2" ]; then
 
