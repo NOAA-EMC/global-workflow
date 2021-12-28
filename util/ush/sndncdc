@@ -23,7 +23,7 @@ VERS="version: ${SMEMBER} 2000-02-02 09:40L "
 #
 # Remarks  : This script assumes that the following values have been 
 #            exported by the parent shell:
-#            job JOBID SENDDBN jlogfile model COMOUTwmo.
+#            job JOBID SENDDBN model COMOUTwmo.
 #
 #          : Arg1 ncdcbasename this is the ncdc base name to which 
 #            the extenion of CCYYMMDDHH will be added.
@@ -120,16 +120,15 @@ istat=0
       then
         if test "$dir" = '${COMROOT}/foreign/ncdc'
         then
-          msg="SENT ${dir}/${ncdcfil}.${YMDZ} to NCDC !"
+          echo "SENT ${dir}/${ncdcfil}.${YMDZ} to NCDC !"
         else
-          msg="SENT ${ncdcfil}.${YMDZ} to NCDC !" 
+          echo "SENT ${ncdcfil}.${YMDZ} to NCDC !" 
         fi
       else
-       msg="ERROR FROM dbn_alert = $istat, trying to send to NCDC!"
+       echo "ERROR FROM dbn_alert = $istat, trying to send to NCDC!"
       fi            
    else 
-       msg="sndncdc testing, ${dir}/${ncdcfil}.${YMDZ} not sent!"    
+       echo "sndncdc testing, ${dir}/${ncdcfil}.${YMDZ} not sent!"    
    fi
- postmsg "$jlogfile" "$msg" 
  set +x    
 exit 
