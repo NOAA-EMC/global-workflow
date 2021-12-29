@@ -153,7 +153,7 @@ elif [ $step = "atmanalprep" -o $step = "atmanalrun" ]; then
 
 elif [ $step = "atmanalpost" ]; then
 
-    export wtime_atmanalpost="10:00:00"
+    export wtime_atmanalpost="01:00:00"
     export npe_atmanalpost=$npe_node_max
     export nth_atmanalpost=1
     export npe_node_atmanalpost=$(echo "$npe_node_max / $nth_atmanalpost" | bc)
