@@ -9,7 +9,7 @@ status=$?
 ###############################################################
 # set JJOB variables
 export configs="base atmanal atmanalprep"
-export EXSCRIPT=${UFSDAPREPPY:-$SCRgfs/exufsda_global_atmos_analysis_prep.py
+export EXSCRIPT=${UFSDAPREPPY:-$SCRgfs/exufsda_global_atmos_analysis_prep.py}
 # Execute the JJOB
 $HOMEgfs/jobs/JUFSDA_GLOBAL_ATMOS_ANALYSIS
 status=$?
