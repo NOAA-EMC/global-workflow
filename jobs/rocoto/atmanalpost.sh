@@ -9,7 +9,7 @@ status=$?
 ###############################################################
 # set JJOB variables
 export configs="base atmanal atmanalpost"
-export EXSCRIPT=${UFSDAPOSTPY:-$SCRgfs/exufsda_global_atmos_analysis_post.py
+export EXSCRIPT=${UFSDAPOSTPY:-$SCRgfs/exufsda_global_atmos_analysis_post.py}
 # Execute the JJOB
 $HOMEgfs/jobs/JUFSDA_GLOBAL_ATMOS_ANALYSIS
 status=$?

@@ -9,7 +9,7 @@ status=$?
 ###############################################################
 # set JJOB variables
 export configs="base atmanal atmanalrun"
-export EXSCRIPT=${UFSDARUNSH:-$SCRgfs/exufsda_global_atmos_analysis_run.sh
+export EXSCRIPT=${UFSDARUNSH:-$SCRgfs/exufsda_global_atmos_analysis_run.sh}
 # Execute the JJOB
 $HOMEgfs/jobs/JUFSDA_GLOBAL_ATMOS_ANALYSIS
 status=$?
