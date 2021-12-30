@@ -56,7 +56,7 @@ export pgmerr=errfile
 export CDATE=${CDATE:-${PDY}${cyc}}
 export CDUMP=${CDUMP:-${RUN:-"gfs"}}
 if [ $RUN_ENVIR = "nco" ]; then
-    export ROTDIR=${COMROOT:?}/$NET/$envir
+    export ROTDIR=${COMROOT:?}/${NET}/${gfs_ver}
 fi
 
 

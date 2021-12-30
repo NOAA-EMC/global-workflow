@@ -63,15 +63,15 @@ export EXECwave=${EXECwave:-$HOMEgfs/exec}
 
 # Set COM Paths and GETGES environment
 if [ $RUN_ENVIR = "nco" ]; then
-    export ROTDIR=${COMROOT:?}/$NET/$envir
+    export ROTDIR=${COMROOT:?}/${NET}/${gfs_ver}
 fi
 export COMIN=${COMIN:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/$COMPONENT}
 export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/$COMPONENT}
 [[ ! -d $COMOUT ]] && mkdir -m 775 -p $COMOUT
 
 if [ $RUN_ENVIR = "nco" ]; then
-  export COMIN_WAV_ICE=${COMIN_WAV_ICE:-$(compath.py gfs/prod)}/${CDUMP}.${PDY}/${cyc}/atmos
-  export COMIN_WAV_RTOFS=${COMIN_WAV_RTOFS:-$(compath.py ${WAVECUR_DID}/prod)}
+  export COMIN_WAV_ICE=${COMIN_WAV_ICE:-$(compath.py -o ${NET}/${gfs_ver})}/${CDUMP}.${PDY}/${cyc}/atmos
+  export COMIN_WAV_RTOFS=${COMIN_WAV_RTOFS:-$(compath.py -o ${WAVECUR_DID}/${rtofs_ver})}
 else
   if [ ! -d $DMPDIR/${WAVECUR_DID}.${RPDY} ]; then export RPDY=`$NDATE -24 ${PDY}00 | cut -c1-8`; fi 
   if [ ! -L $ROTDIR/${WAVECUR_DID}.${RPDY} ]; then # Check if symlink already exists in ROTDIR
