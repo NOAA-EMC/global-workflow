@@ -56,7 +56,7 @@ export EXECwave=${EXECwave:-$HOMEgfs/exec}
 
 # Set COM Paths and GETGES environment
 if [ $RUN_ENVIR = "nco" ]; then
-    export ROTDIR=${COMROOT:?}/$NET/$envir
+    export ROTDIR=${COMROOT:?}/${NET}/${gfs_ver}
 fi
 export COMIN=${COMIN:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/$COMPONENT}
 export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/$COMPONENT}

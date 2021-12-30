@@ -72,8 +72,8 @@ export DBN_ALERT_TYPE=GFS_METAFILE
 ##############################################
 # Define COM directories
 ##############################################
-export COMIN=${COMIN:-$(compath.py -o ${NET}/${envir}/${RUN}.${PDY})/${cyc}/$COMPONENT/gempak}
-export COMOUT=${COMOUT:-$(compath.py -o ${NET}/${envir}/${RUN}.${PDY})/${cyc}/$COMPONENT/gempak/meta}
+export COMIN=${COMIN:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/$COMPONENT/gempak}
+export COMOUT=${COMOUT:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/$COMPONENT/gempak/meta}
 export COMINgempak=${COMINgempak:-$(compath.py -o ${NET}/${gfs_ver})}
 
 # export ukmet_ver=v2.2.0
