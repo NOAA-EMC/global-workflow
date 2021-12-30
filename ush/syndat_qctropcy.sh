@@ -90,12 +90,6 @@ files_override=${files_override:-""}
 cd $DATA
 
 echo "Tropical Cyclone tcvitals QC processing has begun"
-set +x
-echo
-echo $msg
-echo
-set -x
-echo $msg >> $pgmout
 
 if [ "$#" -ne '1' ]; then
    echo "**NON-FATAL ERROR PROGRAM  SYNDAT_QCTROPCY  run date not in \
@@ -281,7 +275,7 @@ echo
 set -x
 
 if [ -s current ]; then
-   echo"program  SYNDAT_QCTROPCY  completed normally - tcvitals records \
+   echo "program  SYNDAT_QCTROPCY  completed normally - tcvitals records \
 processed"
 else
    echo "no records available for program  SYNDAT_QCTROPCY - null tcvitals file \
