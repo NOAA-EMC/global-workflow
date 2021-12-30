@@ -76,8 +76,7 @@ $HOMEgfs/scripts/exgfs_atmos_awips_20km_1p0deg.sh $fcsthrs
 export err=$?; err_chk
 ########################################################
 
-msg="JOB $job HAS COMPLETED NORMALLY!"
-postmsg "$msg"
+echo "JOB $job HAS COMPLETED NORMALLY!"
 
 ############################################
 # print exec I/O output

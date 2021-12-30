@@ -56,7 +56,6 @@ echo "=============== BEGIN AWIPS ==============="
 export SENDCOM="YES"
 export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc/$COMPONENT"
 export PCOM="$COMOUT/wmo"
-export jlogfile="$ROTDIR/logs/$CDATE/jgfs_awips.log"
 
 SLEEP_TIME=1800
 SLEEP_INT=5

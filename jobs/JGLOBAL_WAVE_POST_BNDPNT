@@ -91,11 +91,11 @@ export DOBNDPNT_WAV='YES'  #not boundary points
 $HOMEgfs/scripts/exgfs_wave_post_pnt.sh
 err=$?
 if [ $err -ne 0 ]; then
-  msg="FATAL ERROR: ex-script of GWES_POST failed!"
+  echo "FATAL ERROR: ex-script of GWES_POST failed!"
+  exit $err
 else
-  msg="$job completed normally!"
+  echo "$job completed normally!"
 fi
-postmsg "$jlogfile" "$msg"
 
 ##########################################
 # Remove the Temporary working directory

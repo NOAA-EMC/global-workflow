@@ -19,9 +19,7 @@ export cycle=${cycle:-t${cyc}z}
 setpdy.sh
 . PDY
 env
-msg="Begin job for $job"
-postmsg "$jlogfile" "$msg"
-
+echo "Begin job for $job"
 
 # 
 export NET=${NET:-gfs}

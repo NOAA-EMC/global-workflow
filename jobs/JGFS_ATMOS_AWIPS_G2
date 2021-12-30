@@ -73,8 +73,7 @@ cd $DATA/awips_g1
 $HOMEgfs/scripts/exgfs_atmos_grib_awips.sh $fcsthrs
 export err=$?; err_chk
 
-msg="JOB $job HAS COMPLETED NORMALLY!"
-postmsg "$msg"
+echo "JOB $job HAS COMPLETED NORMALLY!"
 
 ############################################
 # print exec I/O output

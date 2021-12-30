@@ -9,8 +9,7 @@ export PS4='exgempakgif_ncdc_skewt:$SECONDS + '
 set -xa
 
 cd $DATA
-msg="The NCDC GIF processing has begun"
-postmsg "$jlogfile" "$msg"
+echo "The NCDC GIF processing has begun"
 
 export NTS=$USHgempak/restore
 
@@ -33,15 +32,13 @@ then
 	    sleep 5  
             break
           else
-            msg="The process is waiting ... ${GRIBFILE} file to proceed."
-            postmsg "${jlogfile}" "$msg"
+            echo "The process is waiting ... ${GRIBFILE} file to proceed."
             sleep 20
             let "icnt=icnt+1"
           fi
           if [ $icnt -ge $maxtries ]
           then
-            msg="ABORTING: after 1 hour of waiting for ${GRIBFILE} file at F$fhr to end."
-            postmsg "${jlogfile}" "$msg"
+            echo "ABORTING: after 1 hour of waiting for ${GRIBFILE} file at F$fhr to end."
             export err=7 ; err_chk
             exit $err
           fi

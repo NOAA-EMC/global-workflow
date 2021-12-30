@@ -26,7 +26,6 @@ export SENDCOM="YES"
 export RUN_ENVIR="nco"
 
 export DATA="/gpfs/hps/stmp/$LOGNAME/tmpnwprd/${job}"
-export jlogfile="/gpfs/hps/stmp/$LOGNAME/jlogfile"
 
 module load prod_envir/1.0.1
 

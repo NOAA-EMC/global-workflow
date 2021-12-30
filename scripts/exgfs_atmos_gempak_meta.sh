@@ -2,8 +2,7 @@
 
 set -x
 
-msg="JOB $job HAS BEGUN"
-postmsg "$jlogfile" "$msg"
+echo "JOB $job HAS BEGUN"
 
 cd $DATA
 
@@ -54,8 +53,7 @@ do
       fi
       if [ $icnt -ge $maxtries ]
       then
-         msg="ABORTING after 1 hour of waiting for gempak grid F$fhr to end."
-         postmsg "${jlogfile}" "$msg"
+         echo "ABORTING after 1 hour of waiting for gempak grid F$fhr to end."
          export err=7 ; err_chk
          exit $err
       fi
