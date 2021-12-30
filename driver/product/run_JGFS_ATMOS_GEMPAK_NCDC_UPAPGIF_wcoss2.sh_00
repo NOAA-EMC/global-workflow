@@ -124,7 +124,7 @@ else
    export COMINgfs=/lfs/h2/emc/vpppg/noscrub/Boi.Vuong/gfs.20210922/${cyc}/${COMPONENT} ## BOI canned data
 fi
 
-export COMOUT=${COMROOT2}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/${COMPONENT}
+export COMOUT=${COMROOT2}/${NET}/${gfs_ver}/${RUN}.${PDY}/${cyc}/${COMPONENT}
 export COMOUTwmo=${COMOUTwmo:-${COMOUT}/wmo}
 
 if [ $SENDCOM = YES ] ; then
