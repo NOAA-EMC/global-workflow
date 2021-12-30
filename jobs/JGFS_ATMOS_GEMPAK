@@ -151,8 +151,7 @@ export err=$?; err_chk
 
 cat $DATA/gfs*.$$.?
 
-msg="JOB $job HAS COMPLETED NORMALLY!"
-postmsg "$msg"
+echo "JOB $job HAS COMPLETED NORMALLY!"
 
 ############################################
 # print exec I/O output

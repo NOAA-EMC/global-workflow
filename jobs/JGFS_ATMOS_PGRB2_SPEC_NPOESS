@@ -108,11 +108,9 @@ then
       fi
       if test $recvy_shour -ge $FHOUR
       then
-         msg="Forecast Pgrb Generation Already Completed to $FHOUR"
-         postmsg "$jlogfile" "$msg"
+         echo "Forecast Pgrb Generation Already Completed to $FHOUR"
       else
-         msg="Starting: PDY=$PDY cycle=t${recvy_cyc}z SHOUR=$SHOUR      ."
-         postmsg "$jlogfile" "$msg"
+         echo "Starting: PDY=$PDY cycle=t${recvy_cyc}z SHOUR=$SHOUR      ."
       fi
    fi
 fi
@@ -123,8 +121,7 @@ $HOMEgfs/scripts/exgfs_atmos_grib2_special_npoess.sh
 export err=$?;err_chk
 #############################################################
 
-msg="JOB $job HAS COMPLETED NORMALLY!"
-postmsg "$msg"
+echo "JOB $job HAS COMPLETED NORMALLY!"
 
 ############################################
 # print exec I/O output

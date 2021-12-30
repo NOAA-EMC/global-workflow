@@ -37,9 +37,7 @@ set +x
        #. prep_step
        export FORT11=$DATA/${m}/bufrin
        export FORT51=./bufrout
-       # JY - Turn off the startmsg to reduce the update on jlogfile in this loop
-       # startmsg
-      $EXECbufrsnd/tocsbufr << EOF
+       $EXECbufrsnd/tocsbufr << EOF
  &INPUT
   BULHED="$WMOHEAD",KWBX="$CCCC",
   NCEP2STD=.TRUE.,

@@ -112,8 +112,7 @@ if [ -e "$pgmout" ] ; then
   cat $pgmout
 fi
 
-msg="ENDED NORMALLY."
-postmsg "$jlogfile" "$msg"
+echo "END NORMALLY: JGFS_ATMOS_POSTSND" 
 
 ##########################################
 # Remove the Temporary working directory
