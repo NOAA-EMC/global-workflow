@@ -82,14 +82,12 @@ while [ $fhcnt -le $FHMAX_WAV ]; do
         sleep 20
       fi
       if [ $icnt -ge $maxtries ]; then
-        msg="ABORTING after 5 minutes of waiting for $GRIBIN."
-        postmsg "$jlogfile" "$msg"
         echo ' '
         echo '**************************** '
         echo '*** ERROR : NO GRIB FILE *** '
         echo '**************************** '
         echo ' '
-        echo $msg
+        echo "ABORTING after 5 minutes of waiting for $GRIBIN."
         [[ "$LOUD" = YES ]] && set -x
         echo "$RUNwave $grdID ${fhr} prdgen $date $cycle : GRIB file missing." >> $wavelog
         err=1;export err;${errchk} || exit ${err}
@@ -102,15 +100,13 @@ while [ $fhcnt -le $FHMAX_WAV ]; do
                                           $GRIBIN 1> out 2>&1
       OK=$?
       if [ "$OK" != '0' ]; then 
-        msg="ABNORMAL EXIT: ERROR IN interpolation the global grid"
-        postmsg "$jlogfile" "$msg"
         #set +x
         echo ' '
         echo '************************************************************* '
         echo '*** FATAL ERROR : ERROR IN making  gribfile.$grdID.f${fhr}*** '
         echo '************************************************************* '
         echo ' '
-        echo $msg
+        echo "ABNORMAL EXIT: ERROR IN interpolation the global grid"
         #[[ "$LOUD" = YES ]] && set -x
         echo "$RUNwave $grdID prdgen $date $cycle : error in grbindex." >> $wavelog
         err=2;export err;err_chk
@@ -184,7 +180,5 @@ echo "**************JOB $RUN NAWIPS COMPLETED NORMALLY ON THE IBM"
 echo "**************JOB $RUN NAWIPS COMPLETED NORMALLY ON THE IBM"
 set -x
 #####################################################################
-msg='Job completed normally.'
-echo $msg
-postmsg "$jlogfile" "$msg"
+echo 'Job completed normally.'
 ############################### END OF SCRIPT #######################

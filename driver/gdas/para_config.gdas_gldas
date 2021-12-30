@@ -53,9 +53,7 @@ export DCOMIN=${DCOM_IN:-${DCOMROOT}/prod}
 
 
 #export DATA_IN=/gpfs/dell2/ptmp/$LOGNAME/tmpnwprd
-#export jlogfile=$DATA_IN/jlogfile
 export DATA=/gpfs/dell2/ptmp/$LOGNAME/tmpnwprd
-export jlogfile=$DATA/jlogfile
 
 export SENDCOM=${SENDCOM:-YES}
 export SENDECF=${SENDECF:-NO}

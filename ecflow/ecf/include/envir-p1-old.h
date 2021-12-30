@@ -11,7 +11,6 @@ module load prod_envir prod_util
 
 case $envir in
   prod)
-    export jlogfile=${jlogfile:-${COMROOT}/logs/jlogfiles/jlogfile.${jobid}}
     export DATAROOT=${DATAROOT:-/tmpnwprd1}
     if [ "$SENDDBN" == "YES" ]; then
        export DBNROOT=/iodprod/dbnet_siphon  # previously set in .bash_profile
@@ -21,7 +20,6 @@ case $envir in
     ;;
   eval)
     export envir=para
-    export jlogfile=${jlogfile:-${COMROOT}/logs/${envir}/jlogfile}
     export DATAROOT=${DATAROOT:-/tmpnwprd2}
     if [ "$SENDDBN" == "YES" ]; then
        export DBNROOT=${UTILROOT}/para_dbn
@@ -31,7 +29,6 @@ case $envir in
     fi
     ;;
   para|test)
-    export jlogfile=${jlogfile:-${COMROOT}/logs/${envir}/jlogfile}
     export DATAROOT=${DATAROOT:-/tmpnwprd2}
     export DBNROOT=${UTILROOT}/fakedbn
     ;;

@@ -74,8 +74,7 @@ export BLENDED_ICE_FILE_m6hrs=${BLENDED_ICE_FILE_m6hrs:-${COMINgfs_m6hrs}/${RUN}
 ###############################################################
 
 env
-msg="HAS BEGUN on `hostname`"
-postmsg "$jlogfile" "$msg"
+echo "HAS BEGUN on `hostname`"
 
 ${EMCSFCPREPSH:-$SCRgfs/exemcsfc_global_sfc_prep.sh}
 status=$?
@@ -92,8 +91,7 @@ if [ -e ${pgmout} ]; then
   cat $pgmout
 fi
 
-msg="ENDED NORMALLY."
-postmsg "$jlogfile" "$msg"
+echo "ENDED NORMALLY."
 
 ##########################################
 # Remove the Temporary working directory

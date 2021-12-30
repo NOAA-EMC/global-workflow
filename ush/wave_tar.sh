@@ -34,7 +34,6 @@
   [[ "$LOUD" != YES ]] && set -x
 
   cd $DATA
-  postmsg "$jlogfile" "Making TAR FILE"
 
   alertName=`echo $RUN|tr [a-z] [A-Z]`
 
@@ -60,7 +59,6 @@
     echo '********************************************'
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" "TYPE IN ww3_tar.sh NOT SET"
     exit 1
   else
     ID=$1
@@ -91,7 +89,6 @@
     echo '*****************************************************'
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" "EXPORTED VARIABLES IN ww3_tar.sh NOT SET"
     exit 2
   fi
 
@@ -128,7 +125,6 @@
         echo '***************************************** '
         echo ' '
         [[ "$LOUD" = YES ]] && set -x
-        postmsg "$jlogfile" "FATAL ERROR : TAR CREATION FAILED"
         exit 3
       fi
       
@@ -155,7 +151,6 @@
     echo '***************************************** '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" "FATAL ERROR : TAR CREATION FAILED"
     exit 3
   fi
 
@@ -176,7 +171,6 @@
         echo '***************************************************** '
         echo ' '
         [[ "$LOUD" = YES ]] && set -x
-        postmsg "$jlogfile" "FATAL ERROR : SPECTRAL TAR COMPRESSION FAILED"
         exit 4
       fi
     fi
@@ -205,7 +199,6 @@
     echo '************************************* '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" "FATAL ERROR : TAR COPY FAILED"
     exit 4
   fi
 

@@ -125,7 +125,6 @@ export KEEPDATA="YES"
 # File To Log Msgs
 ####################################
 job=gfs_postsnd_test
-export jlogfile=/com/logs/jlogfiles/jlogfile.${job}.${pid}
 
 ####################################
 # Determine Job Output Name on System

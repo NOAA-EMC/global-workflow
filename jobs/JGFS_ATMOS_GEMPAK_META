@@ -86,8 +86,7 @@ export COMINnam=${COMINnam:-$(compath.py -o nam/${nam_ver}/nam)}
 export SENDDBN=${SENDDBN:-NO}
 export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
-msg="Begin job for $job"
-postmsg "$msg"
+echo "Begin job for $job"
 
 if [ $SENDCOM = YES ] ; then
   mkdir -m 775 -p $COMOUT
@@ -103,8 +102,7 @@ $SRCgfs/exgfs_atmos_gempak_meta.sh
 export err=$?; err_chk
 ########################################################
 
-msg="JOB $job HAS COMPLETED NORMALLY!"
-postmsg "$msg"
+echo "JOB $job HAS COMPLETED NORMALLY!"
 
 ############################################
 # print exec I/O output

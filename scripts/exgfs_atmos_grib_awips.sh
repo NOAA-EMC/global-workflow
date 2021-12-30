@@ -71,11 +71,6 @@ do
   fi
 done
 
-########################################
-msg="HAS BEGUN!"
-postmsg "$jlogfile" "$msg"
-########################################
-
 echo " ------------------------------------------"
 echo " BEGIN MAKING GFS GRIB1 AWIPS PRODUCTS"
 echo " ------------------------------------------"
@@ -140,8 +135,7 @@ EOF
       if [ "$SENDDBN" = 'YES' -o "$SENDAWIP" = 'YES' ] ; then
          $DBNROOT/bin/dbn_alert $DBNALERT_TYPE $NET $job ${COMOUTwmo}/xtrn.awpgfs${fcsthrs}.${GRID}.$job_name
       else
-         msg="File $output_grb.$job_name not posted to db_net."
-         postmsg "$jlogfile" "$msg"
+         echo "File $output_grb.$job_name not posted to db_net."
       fi
    fi
 
@@ -158,7 +152,6 @@ echo "**************JOB EXGFS_GRIB_AWIPS.SH.ECF COMPLETED NORMALLY ON THE IBM"
 set -x
 ###############################################################################
 
-msg="HAS COMPLETED NORMALLY!"
-postmsg "$jlogfile" "$msg"
+echo "HAS COMPLETED NORMALLY!"
 
 ############## END OF SCRIPT #######################

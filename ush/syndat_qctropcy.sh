@@ -64,8 +64,6 @@ echo "                        directories.  These must now be passed in. "
 #   copy_back - switch to copy updated files back to archive directory and
 #                to tcvitals directory
 #                (Default: YES)
-#   jlogfile  - path to job log file (skipped over by this script if not
-#                 passed in)
 #   SENDCOM     switch  copy output files to $COMSP
 #                (Default: YES)
 #   files_override - switch to override default "files" setting for given run
@@ -91,39 +89,12 @@ files_override=${files_override:-""}
 
 cd $DATA
 
-msg="Tropical Cyclone tcvitals QC processing has begun"
-set +x
-echo
-echo $msg
-echo
-set -x
-echo $msg >> $pgmout
-set +u
-[ -n "$jlogfile" ]  && postmsg "$jlogfile" "$msg"
-set -u
+echo "Tropical Cyclone tcvitals QC processing has begun"
 
 if [ "$#" -ne '1' ]; then
-   msg="**NON-FATAL ERROR PROGRAM  SYNDAT_QCTROPCY  run date not in \
+   echo "**NON-FATAL ERROR PROGRAM  SYNDAT_QCTROPCY  run date not in \
 positional parameter 1"
-   set +x
-   echo
-   echo $msg
-   echo
-   set -x
-   echo $msg >> $pgmout
-   set +u
-   [ -n "$jlogfile" ]  &&  postmsg "$jlogfile" "$msg"
-   set -u
-   msg="**NO TROPICAL CYCLONE tcvitals processed --> non-fatal"
-   set +x
-   echo
-   echo $msg
-   echo
-   set -x
-   echo $msg >> $pgmout
-   set +u
-   [ -n "$jlogfile" ]  &&  postmsg "$jlogfile" "$msg"
-   set -u
+   echo "**NO TROPICAL CYCLONE tcvitals processed --> non-fatal"
 
 # Copy null files into "${COMSP}syndata.tcvitals.$tmmark" and
 #  "${COMSP}jtwc-fnoc.tcvitals.$tmmark" so later ftp attempts will find and
@@ -164,16 +135,9 @@ cp $ARCHSYND/syndat_sthista sthista
 touch dateck
 dateck_size=`ls -l dateck  | awk '{ print $5 }'`
 if [ $dateck_size -lt 10 ]; then
-   msg="***WARNING: Archive run date check file not available or shorter than expected.\
+   echo "***WARNING: Archive run date check file not available or shorter than expected.\
   Using dummy date 1900010100 to allow code to continue"
    echo 1900010100 > dateck
-   set +x
-   echo -e "\n${msg}\n"
-   set -x
-   echo $msg >> $pgmout
-   set +u
-   [ -n "$jlogfile" ]  &&  postmsg "$jlogfile" "$msg"
-   set -u
 fi
 
 
@@ -194,18 +158,11 @@ fi
 if [ -n "$files_override" ]; then  # for testing, typically want FILES=F
   files_override=`echo "$files_override" | tr [a-z] [A-Z] | tr -d [.] | cut -c 1`
   if [ "$files_override" = 'T' -o "$files_override" = 'F' ]; then
-    msg="***WARNING: Variable files setting will be overriden from $files to $files_override. Override expected if testing." 
+    echo "***WARNING: Variable files setting will be overriden from $files to $files_override. Override expected if testing." 
     files=$files_override
   else
-    msg="***WARNING: Invalid attempt to override files setting. Will stay with default for this job" 
+    echo "***WARNING: Invalid attempt to override files setting. Will stay with default for this job" 
   fi 
-  set +x
-  echo -e "\n${msg}\n"
-  set -x
-  echo $msg >> $pgmout
-  set +u
-  [ -n "$jlogfile" ]  &&  postmsg "$jlogfile" "$msg"
-  set -u
 fi
 
 echo " &INPUT  RUNID = '${net}_${tmmark}_${cyc}', FILES = $files " > vitchk.inp
@@ -291,26 +248,8 @@ echo "The foreground exit status for SYNDAT_QCTROPCY is " $errqct
 echo
 set -x
 if [ "$errqct" -gt '0' ];then
-   msg="**NON-FATAL ERROR PROGRAM  SYNDAT_QCTROPCY  RETURN CODE $errqct"
-   set +x
-   echo
-   echo $msg
-   echo
-   set -x
-   echo $msg >> $pgmout
-   set +u
-   [ -n "$jlogfile" ]  &&  postmsg "$jlogfile" "$msg"
-   set -u
-   msg="**NO TROPICAL CYCLONE tcvitals processed --> non-fatal"
-   set +x
-   echo
-   echo $msg
-   echo
-   set -x
-   echo $msg >> $pgmout
-   set +u
-   [ -n "$jlogfile" ]  &&  postmsg "$jlogfile" "$msg"
-   set -u
+   echo "**NON-FATAL ERROR PROGRAM  SYNDAT_QCTROPCY  RETURN CODE $errqct"
+   echo "**NO TROPICAL CYCLONE tcvitals processed --> non-fatal"
 
 # In the event of a ERROR in PROGRAM SYNDAT_QCTROPCY, copy null files into
 #  "${COMSP}syndata.tcvitals.$tmmark" and "${COMSP}jtwc-fnoc.tcvitals.$tmmark"
@@ -336,16 +275,12 @@ echo
 set -x
 
 if [ -s current ]; then
-   msg="program  SYNDAT_QCTROPCY  completed normally - tcvitals records \
+   echo "program  SYNDAT_QCTROPCY  completed normally - tcvitals records \
 processed"
 else
-msg="no records available for program  SYNDAT_QCTROPCY - null tcvitals file \
+   echo "no records available for program  SYNDAT_QCTROPCY - null tcvitals file \
 produced"
 fi
-set +u
-[ -n "$jlogfile" ]  &&  postmsg "$jlogfile" "$msg"
-set -u
-
 
 if [ "$copy_back" = 'YES' ]; then
    cat lthistry>>$ARCHSYND/syndat_lthistry.$year
@@ -379,37 +314,18 @@ then
       err=$?
 
       if [ "$err" -ne '0' ]; then
-         msg="###ERROR: Previous NHC Synthetic Data Record File \
+         echo "###ERROR: Previous NHC Synthetic Data Record File \
 $HOMENHC/tcvitals not updated by syndat_qctropcy"
       else
-         msg="Previous NHC Synthetic Data Record File \
+         echo "Previous NHC Synthetic Data Record File \
 $HOMENHC/tcvitals successfully updated by syndat_qctropcy"
       fi
-
-      set +x
-      echo
-      echo $msg
-      echo
-      set -x
-      echo $msg >> $pgmout
-      set +u
-      [ -n "$jlogfile" ]  &&  postmsg "$jlogfile" "$msg"
-      set -u
    fi
 
 else
 
-   msg="Previous NHC Synthetic Data Record File $HOMENHC/tcvitals \
+   echo "Previous NHC Synthetic Data Record File $HOMENHC/tcvitals \
 not changed by syndat_qctropcy"
-   set +x
-   echo
-   echo $msg
-   echo
-   set -x
-   echo $msg >> $pgmout
-   set +u
-   [ -n "$jlogfile" ]  &&  postmsg "$jlogfile" "$msg"
-   set -u
 
 fi
 
@@ -428,16 +344,6 @@ fi
 #  Write JTWC/FNOC Tcvitals to /com path since not saved anywhere else
 [ $SENDCOM = YES ]  &&  cp fnoc ${COMSP}jtwc-fnoc.tcvitals.$tmmark
 
-msg="TROPICAL CYCLONE TCVITALS QC PROCESSING HAS COMPLETED FOR $CDATE10"
-set +x
-echo
-echo $msg
-echo
-set -x
-echo $msg >> $pgmout
-echo " "  >> $pgmout
-set +u
-[ -n "$jlogfile" ]  &&  postmsg "$jlogfile" "$msg"
-set -u
+echo "TROPICAL CYCLONE TCVITALS QC PROCESSING HAS COMPLETED FOR $CDATE10"
 
 exit
