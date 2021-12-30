@@ -161,7 +161,7 @@ if [ "$VRFYTRAK" = "YES" ]; then
         export FHOUT_CYCLONE=6            
         export FHMAX_CYCLONE=$(( FHMAX_GFS<240 ? FHMAX_GFS : 240 ))
     fi
-    export COMINsyn=${COMINsyn:-${COMROOT}/gfs/prod/syndat}
+    export COMINsyn=${COMINsyn:-$(compath.py -o ${envir}/com/gfs/${gfs_ver})/syndat}
 fi
 
 
