@@ -348,7 +348,7 @@ def get_resources(machine, cfg, task, reservation, cdump='gdas'):
                   natstr = "-R 'affinity[core(1)]'"
 
         if machine in ['WCOSS2']:
-            natstr = f"-l place=vscatter"
+            natstr = "-l place=vscatter"
 
     elif machine in ['WCOSS']:
         resstr = f'<cores>{tasks}</cores>'
