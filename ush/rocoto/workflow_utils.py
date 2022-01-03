@@ -21,12 +21,6 @@ SCHEDULER_MAP={'HERA':'slurm',
                'WCOSS_DELL_P3':'lsf',
                'WCOSS_C':'lsfcray',
                'WCOSS2':'pbspro'}
-NODESIZE_MAP={'HERA':24,
-              'ORION':40,
-              'WCOSS':16,
-              'WCOSS_DELL_P3':28,
-              'WCOSS_C':24,
-              'WCOSS2':128}
 
 class UnknownMachineError(Exception): pass
 class UnknownConfigError(Exception): pass
@@ -171,12 +165,6 @@ def detectMachine():
 def get_scheduler(machine):
     try:
         return SCHEDULER_MAP[machine]
-    except KeyError:
-        raise UnknownMachineError(f'Unknown machine: {machine}, ABORT!')
-
-def get_nodesize(machine):
-    try:
-        return NODESIZE_MAP[machine]
     except KeyError:
         raise UnknownMachineError(f'Unknown machine: {machine}, ABORT!')
 

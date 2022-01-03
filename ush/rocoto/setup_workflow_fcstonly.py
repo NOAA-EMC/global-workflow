@@ -50,6 +50,9 @@ def main():
 
     dict_configs['base']['CDUMP'] = args.cdump
 
+    # npe_node_max is the same for all tasks, so just use the one from fcst
+    dict_configs['base']['npe_node_max'] = dict_configs['fcst']['npe_node_max']
+
     # First create workflow XML
     create_xml(dict_configs)
 
@@ -91,7 +94,7 @@ def get_definitions(base):
 
     machine = base.get('machine', wfu.detectMachine())
     scheduler = wfu.get_scheduler(machine)
-    nodesize = wfu.get_nodesize(machine)
+    nodesize = base.get('npe_node_max', '1')
     hpssarch = base.get('HPSSARCH', 'NO').upper()
 
     strings = []
