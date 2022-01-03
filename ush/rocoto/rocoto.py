@@ -68,7 +68,7 @@ def create_task(task_dict):
     jobname = task_dict.get('jobname', 'demojob')
     account = task_dict.get('account', 'batch')
     queue = task_dict.get('queue', 'debug')
-    nodesize = task_dict.get('nodesize', '128')
+    nodesize = task_dict.get('nodesize', '1')
     partition = task_dict.get('partition', None)
     walltime = task_dict.get('walltime', '00:01:00')
     log = task_dict.get('log', 'demo.log')
