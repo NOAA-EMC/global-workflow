@@ -188,6 +188,13 @@ cd ${pwd}/../ush                ||exit 8
 
 
 #------------------------------
+#--add UFS DA/JEDI files
+#------------------------------
+cd ${pwd}/../jobs               ||exit 8
+    $LINK ../sorc/ufs_da.fd/UFS-DA/jobs/JUFSDA_GLOBAL_ATMOS_ANALYSIS        .
+
+
+#------------------------------
 #--add DA Monitor file (NOTE: ensure to use correct version)
 #------------------------------
 cd ${pwd}/../fix                ||exit 8
