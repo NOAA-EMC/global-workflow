@@ -161,6 +161,7 @@ def get_definitions(base):
 
     machine = base.get('machine', wfu.detectMachine())
     scheduler = wfu.get_scheduler(machine)
+    nodesize = wfu.get_nodesize(machine)
     hpssarch = base.get('HPSSARCH', 'NO').upper()
 
     strings = []
@@ -197,8 +198,7 @@ def get_definitions(base):
     if scheduler in ['slurm']:
         strings.append(f'''\t<!ENTITY PARTITION_SERVICE "{base['QUEUE_SERVICE']}">\n''')
     strings.append(f'\t<!ENTITY SCHEDULER  "{scheduler}">\n')
-    if machine in ['WCOSS2']:
-       strings.append(f'\t<!ENTITY NODESIZE  "128">\n')
+    strings.append(f'\t<!ENTITY NODESIZE   "{nodesize}">\n')
     strings.append('\n')
     strings.append('\t<!-- Toggle HPSS archiving -->\n')
     strings.append(f'''\t<!ENTITY ARCHIVE_TO_HPSS "{base['HPSSARCH']}">\n''')
@@ -345,7 +345,7 @@ def get_hyb_resources(dict_configs):
             strings.append(f'\t<!ENTITY WALLTIME_{taskstr}  "{wtimestr}">\n')
             strings.append(f'\t<!ENTITY RESOURCES_{taskstr} "{resstr}">\n')
             if len(memstr) != 0:
-                strings.appendf(f'\t<!ENTITY MEMORY_{taskstr}    "{memstr}">\n')
+                strings.append(f'\t<!ENTITY MEMORY_{taskstr}    "{memstr}">\n')
             strings.append(f'\t<!ENTITY NATIVE_{taskstr}    "{natstr}">\n')
 
             dict_resources[f'{cdump}{task}'] = ''.join(strings)

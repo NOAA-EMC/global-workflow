@@ -91,6 +91,7 @@ def get_definitions(base):
 
     machine = base.get('machine', wfu.detectMachine())
     scheduler = wfu.get_scheduler(machine)
+    nodesize = wfu.get_nodesize(machine)
     hpssarch = base.get('HPSSARCH', 'NO').upper()
 
     strings = []
@@ -130,8 +131,7 @@ def get_definitions(base):
     if scheduler in ['slurm']:
        strings.append(f'''\t<!ENTITY PARTITION_SERVICE "{base['QUEUE_SERVICE']}">\n''')
     strings.append(f'\t<!ENTITY SCHEDULER  "{scheduler}">\n')
-    if machine in ['WCOSS2']:
-       strings.append(f'\t<!ENTITY NODESIZE  "128">\n')
+    strings.append(f'\t<!ENTITY NODESIZE   "{nodesize}">\n')
     strings.append('\n')
     strings.append('\t<!-- Toggle HPSS archiving -->\n')
     strings.append(f'''\t<!ENTITY ARCHIVE_TO_HPSS "{base['HPSSARCH']}">\n''')
