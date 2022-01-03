@@ -123,7 +123,6 @@
 #                   -stdoutmode ordered"
 #     USHGETGES     String indicating directory path for GETGES utility ush
 #                   file
-#                   Default is "/nwprod/util/ush"
 #     USHRELO       String indicating directory path for RELOCATE ush files
 #                   Default is "${HOMERELO}/ush"
 #     EXECRELO      String indicating directory path for RELOCATE executables
@@ -210,7 +209,7 @@ set -aux
 MACHINE=${MACHINE:-`hostname -s | cut -c 1-3`}
 
 SENDCOM=${SENDCOM:-YES}
-export NWROOT=${NWROOT:-/nwprod2}
+export OPSROOT=${OPSROOT:-/lfs/h1/ops/prod}
 GRIBVERSION=${GRIBVERSION:-"grib2"}
 
 if [ ! -d $DATA ] ; then mkdir -p $DATA ;fi
@@ -278,13 +277,12 @@ set -x
 envir=${envir:-prod}
 
 if [ $MACHINE != sgi ]; then
-   HOMEALL=${HOMEALL:-$NWROOT}
+   HOMEALL=${HOMEALL:-$OPSROOT}
 else
    HOMEALL=${HOMEALL:-/disk1/users/snake/prepobs}
 fi
 
 HOMERELO=${HOMERELO:-${shared_global_home}}
-#HOMERELO=${HOMERELO:-$NWROOT/tropcy_qc_reloc.${tropcy_qc_reloc_ver}}
 
 envir_getges=${envir_getges:-$envir}
 if [ $modhr -eq 0 ]; then

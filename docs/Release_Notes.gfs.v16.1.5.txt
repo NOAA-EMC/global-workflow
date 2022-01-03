@@ -18,9 +18,9 @@ Also bundled into this update are the new 2022 CO2 fix files (see files listed b
 
 IMPLEMENTATION INSTRUCTIONS
 
-The NOAA VLab and both the NOAA-EMC and NCAR organization spaces on GitHub.com are used to manage the GFS.v16.1.5 code. The SPA(s) handling the GFS.v16.1.5 implementation need to have permissions to clone VLab gerrit repositories and the private NCAR UPP_GTG repository (the “nwprod” account has access to the GTG repository). All NOAA-EMC organization repositories are publicly readable and do not require access permissions. Please follow the following steps to install the package on WCOSS-Dell.
+The NOAA VLab and both the NOAA-EMC and NCAR organization spaces on GitHub.com are used to manage the GFS.v16.1.5 code. The SPA(s) handling the GFS.v16.1.5 implementation need to have permissions to clone VLab gerrit repositories and the private NCAR UPP_GTG repository (the nwprod account has access to the GTG repository). All NOAA-EMC organization repositories are publicly readable and do not require access permissions. Please follow the following steps to install the package on WCOSS-Dell.
 
-While logged in under the “nwprod” account:
+While logged in under the nwprod account:
 
 1) cd $NWROOTp3
 2) mkdir gfs.v16.1.5
