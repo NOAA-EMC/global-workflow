@@ -71,6 +71,9 @@ def main():
     if dict_configs['base']['gfs_cyc'] != 0:
         dict_configs['base'] = get_gfs_cyc_dates(dict_configs['base'])
 
+    # npe_node_max is the same for all tasks, so just use the one from fcst
+    dict_configs['base']['npe_node_max'] = dict_configs['fcst']['npe_node_max']
+
     # First create workflow XML
     create_xml(dict_configs)
 
@@ -161,6 +164,7 @@ def get_definitions(base):
 
     machine = base.get('machine', wfu.detectMachine())
     scheduler = wfu.get_scheduler(machine)
+    nodesize = base.get('npe_node_max', '1')
     hpssarch = base.get('HPSSARCH', 'NO').upper()
 
     strings = []
@@ -197,6 +201,7 @@ def get_definitions(base):
     if scheduler in ['slurm']:
         strings.append(f'''\t<!ENTITY PARTITION_SERVICE "{base['QUEUE_SERVICE']}">\n''')
     strings.append(f'\t<!ENTITY SCHEDULER  "{scheduler}">\n')
+    strings.append(f'\t<!ENTITY NODESIZE   "{nodesize}">\n')
     strings.append('\n')
     strings.append('\t<!-- Toggle HPSS archiving -->\n')
     strings.append(f'''\t<!ENTITY ARCHIVE_TO_HPSS "{base['HPSSARCH']}">\n''')
@@ -343,7 +348,7 @@ def get_hyb_resources(dict_configs):
             strings.append(f'\t<!ENTITY WALLTIME_{taskstr}  "{wtimestr}">\n')
             strings.append(f'\t<!ENTITY RESOURCES_{taskstr} "{resstr}">\n')
             if len(memstr) != 0:
-                strings.appendf(f'\t<!ENTITY MEMORY_{taskstr}    "{memstr}">\n')
+                strings.append(f'\t<!ENTITY MEMORY_{taskstr}    "{memstr}">\n')
             strings.append(f'\t<!ENTITY NATIVE_{taskstr}    "{natstr}">\n')
 
             dict_resources[f'{cdump}{task}'] = ''.join(strings)
@@ -447,22 +452,22 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
     # waveinit
     if do_wave in ['Y', 'YES'] and cdump in cdumps:
         deps = []
-        dep_dict = {'type': 'task', 'name': '{cdump}prep'}
+        dep_dict = {'type': 'task', 'name': f'{cdump}prep'}
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': '-06:00:00'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
         task = wfu.create_wf_task('waveinit', cdump=cdump, envar=envars, dependency=dependencies)
-        dict_tasks['{cdump}waveinit'] = task
+        dict_tasks[f'{cdump}waveinit'] = task
 
     # waveprep
     if do_wave in ['Y', 'YES'] and cdump in cdumps:
         deps = []
-        dep_dict = {'type': 'task', 'name': '{cdump}waveinit'}
+        dep_dict = {'type': 'task', 'name': f'{cdump}waveinit'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
         task = wfu.create_wf_task('waveprep', cdump=cdump, envar=envars, dependency=dependencies)
-        dict_tasks['{cdump}waveprep'] = task
+        dict_tasks[f'{cdump}waveprep'] = task
 
     # anal
     deps = []
@@ -1230,7 +1235,7 @@ def get_awipsgroups(awips, cdump='gdas'):
         if fhmax_hf > 240:
             fhmax_hf = 240
         fhrs_hf = range(fhmin, fhmax_hf+fhout_hf, fhout_hf)
-        fhrs = fhrs_hf + range(fhrs_hf[-1]+fhout, fhmax+fhout, fhout)
+        fhrs = list(fhrs_hf) + list(range(fhrs_hf[-1]+fhout, fhmax+fhout, fhout))
 
     nawipsgrp = awips['NAWIPSGRP']
     ngrps = nawipsgrp if len(fhrs) > nawipsgrp else len(fhrs)
