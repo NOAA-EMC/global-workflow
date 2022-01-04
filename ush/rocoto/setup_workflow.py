@@ -1235,7 +1235,7 @@ def get_awipsgroups(awips, cdump='gdas'):
         if fhmax_hf > 240:
             fhmax_hf = 240
         fhrs_hf = range(fhmin, fhmax_hf+fhout_hf, fhout_hf)
-        fhrs = fhrs_hf + range(fhrs_hf[-1]+fhout, fhmax+fhout, fhout)
+        fhrs = list(fhrs_hf) + list(range(fhrs_hf[-1]+fhout, fhmax+fhout, fhout))
 
     nawipsgrp = awips['NAWIPSGRP']
     ngrps = nawipsgrp if len(fhrs) > nawipsgrp else len(fhrs)
