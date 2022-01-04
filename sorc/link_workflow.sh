@@ -192,7 +192,8 @@ cd ${pwd}/../ush                ||exit 8
 #------------------------------
 cd ${pwd}/../jobs               ||exit 8
     $LINK ../sorc/ufs_da.fd/UFS-DA/jobs/JUFSDA_GLOBAL_ATMOS_ANALYSIS        .
-
+cd ${pwd}/../ush                ||exit 8
+    $LINK ../sorc/ufs_da.fd/UFS-DA/ush/ufsda                                .
 
 #------------------------------
 #--add DA Monitor file (NOTE: ensure to use correct version)
