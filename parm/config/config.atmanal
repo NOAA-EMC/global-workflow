@@ -3,7 +3,7 @@
 ########## config.atmanal ##########
 # configuration common to all atm analysis tasks
 
-echo "BEGIN: config.atmatmanal"
+echo "BEGIN: config.atmanal"
 
 export OBS_YAML=$HOMEgfs/sorc/ufs_da.fd/UFS-DA/parm/config/ufsda_global_atm_obs.yaml
 export GEOM_BKG=$HOMEgfs/sorc/ufs_da.fd/UFS-DA/parm/templates/geomges.yaml
