@@ -17,13 +17,6 @@ def makedirs_if_missing(dirname):
         os.makedirs(dirname)
 
 
-def create_COMROT(comrot):
-
-    makedirs_if_missing(comrot)
-
-    return
-
-
 def fill_COMROT(host, inputs):
 
     fill_modes = {
@@ -68,13 +61,6 @@ def fill_COMROT_cycled(host, inputs):
 
 
 def fill_COMROT_forecasts(host, inputs):
-    return
-
-
-def create_EXPDIR(expdir):
-
-    makedirs_if_missing(expdir)
-
     return
 
 
@@ -219,38 +205,35 @@ def input_args():
     return args
 
 
+def query_and_clean(dirname):
+
+    create_dir = True
+    if os.path.exists(dirname):
+        print()
+        print(f'directory already exists in {dirname}')
+        print()
+        overwrite = input('Do you wish to over-write [y/N]: ')
+        create_dir = True if overwrite in [
+            'y', 'yes', 'Y', 'YES'] else False
+        if create_dir:
+            shutil.rmtree(dirname)
+
+    return create_dir
+
+
 if __name__ == '__main__':
 
     user_inputs = input_args()
     host=wfu.HostInfo(wfu.detectMachine())
 
-    create_comrot = True
-    if os.path.exists(user_inputs.comrot):
-        print()
-        print(f'COMROT already exists in {user_inputs.comrot}')
-        print()
-        overwrite_comrot = input('Do you wish to over-write COMROT [y/N]: ')
-        create_comrot = True if overwrite_comrot in [
-            'y', 'yes', 'Y', 'YES'] else False
-        if create_comrot:
-            shutil.rmtree(user_inputs.comrot)
-
-    create_expdir = True
-    if os.path.exists(user_inputs.expdir):
-        print()
-        print(f'EXPDIR already exists in {user_inputs.expdir}')
-        print()
-        overwrite_expdir = input('Do you wish to over-write EXPDIR [y/N]: ')
-        create_expdir = True if overwrite_expdir in [
-            'y', 'yes', 'Y', 'YES'] else False
-        if create_expdir:
-            shutil.rmtree(user_inputs.expdir)
+    create_comrot = query_and_clean(user_inputs.comrot)
+    create_expdir = query_and_clean(user_inputs.expdir)
 
     if create_comrot:
-        create_COMROT(user_inputs.comrot)
+        makedirs_if_missing(user_inputs.comrot)
         fill_COMROT(host, user_inputs)
 
     if create_expdir:
-        create_EXPDIR(user_inputs.expdir)
+        makedirs_if_missing(user_inputs.expdir)
         fill_EXPDIR(user_inputs.configdir, user_inputs.expdir)
         edit_baseconfig(host, user_inputs)
