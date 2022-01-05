@@ -309,7 +309,7 @@ def get_resources(machine, cfg, task, reservation, cdump='gdas'):
             else:
                 threads = cfg[f'nth_{ltask}']
         except KeyError:
-            threads = cfg["',)nth_epos"]
+            threads = cfg["nth_epos"]
 
     nodes = np.int(np.ceil(np.float(tasks) / np.float(ppn)))
 
