@@ -304,7 +304,10 @@ def get_resources(machine, cfg, task, reservation, cdump='gdas'):
 
     if machine in [ 'WCOSS2', 'WCOSS_DELL_P3', 'HERA', 'ORION' ]:
         try:
-            threads = cfg[f'nth_{ltask}']
+            if cdump in ['gfs'] and f'nth_{task}_gfs' in cfg.keys():
+                threads = cfg[f'nth_{ltask}_gfs']
+            else:
+                threads = cfg[f'nth_{ltask}']
         except KeyError:
             threads = cfg["',)nth_epos"]
 
@@ -335,7 +338,7 @@ def get_resources(machine, cfg, task, reservation, cdump='gdas'):
             if task in ['arch', 'earc', 'getic']:
                   natstr = "-R 'affinity[core(1)]'"
 
-        if machine in ['WCOSS2']:
+        if machine in ['WCOSS2'] and task not in ['arch', 'earc', 'getic']:
             natstr = "-l place=vscatter"
 
     elif machine in ['WCOSS']:
