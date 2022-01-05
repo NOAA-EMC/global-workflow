@@ -102,9 +102,9 @@ case $case_in in
         export nth_fv3_gfs=1
         export cdmbgwd="1.1,0.72,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=1
-        export WRTTASK_PER_GROUP=$npe_node_max
-        export WRITE_GROUP_GFS=2
-        export WRTTASK_PER_GROUP_GFS=$npe_node_max
+        export WRTTASK_PER_GROUP=64
+        export WRITE_GROUP_GFS=1
+        export WRTTASK_PER_GROUP_GFS=64
         export WRTIOBUF="16M"
         ;;
     "C768")
@@ -112,16 +112,16 @@ case $case_in in
         export layout_x=8
         export layout_y=12
         export layout_x_gfs=16
-        export layout_y_gfs=16
+        export layout_y_gfs=24
         export npe_wav=140
-        export npe_wav_gfs=440
+        export npe_wav_gfs=448
         export nth_fv3=4
-        export nth_fv3_gfs=7
+        export nth_fv3_gfs=5
         export cdmbgwd="4.0,0.15,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
-        export WRITE_GROUP=2
-        export WRTTASK_PER_GROUP=$(echo "2*$npe_node_max" |bc)
+        export WRITE_GROUP=8
+        export WRTTASK_PER_GROUP=64
         export WRITE_GROUP_GFS=8
-        export WRTTASK_PER_GROUP_GFS=$(echo "2*$npe_node_max" |bc)
+        export WRTTASK_PER_GROUP_GFS=48
         export WRTIOBUF="32M"
         ;;
     "C1152")
