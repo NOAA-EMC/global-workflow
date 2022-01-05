@@ -37,7 +37,7 @@ def get_shell_env(scripts):
     vars=dict()
     runme=''.join([ f'source {s} ; ' for s in scripts ])
     magic=f'--- ENVIRONMENT BEGIN {random.randint(0,64**5)} ---'
-    runme+=f'/bin/echo -n "{(magic,)}" ; /usr/bin/env -0'
+    runme+=f'/bin/echo -n "{magic}" ; /usr/bin/env -0'
     with open('/dev/null','w') as null:
         env=subprocess.Popen(runme,shell=True,stdin=null.fileno(),
                        stdout=subprocess.PIPE)
@@ -292,10 +292,7 @@ def get_resources(machine, cfg, task, reservation, cdump='gdas'):
     if cdump in ['gfs'] and f'npe_{task}_gfs' in cfg.keys():
         tasks = cfg[f'npe_{ltask}_gfs']
     else:
-        try:
-            tasks = cfg[f'npe_{ltask}']
-        except KeyError:
-            tasks = cfg["',)npe_waveawipsgridded"]
+        tasks = cfg[f'npe_{ltask}']
 
     if cdump in ['gfs'] and f'npe_node_{task}_gfs' in cfg.keys():
         ppn = cfg[f'npe_node_{ltask}_gfs']
@@ -303,10 +300,10 @@ def get_resources(machine, cfg, task, reservation, cdump='gdas'):
         ppn = cfg[f'npe_node_{ltask}']
 
     if machine in [ 'WCOSS2', 'WCOSS_DELL_P3', 'HERA', 'ORION' ]:
-        try:
+        if cdump in ['gfs'] and f'nth_{task}_gfs' in cfg.keys():
+            threads = cfg[f'nth_{ltask}_gfs']
+        else:
             threads = cfg[f'nth_{ltask}']
-        except KeyError:
-            threads = cfg["',)nth_epos"]
 
     nodes = np.int(np.ceil(np.float(tasks) / np.float(ppn)))
 
@@ -335,7 +332,7 @@ def get_resources(machine, cfg, task, reservation, cdump='gdas'):
             if task in ['arch', 'earc', 'getic']:
                   natstr = "-R 'affinity[core(1)]'"
 
-        if machine in ['WCOSS2']:
+        if machine in ['WCOSS2'] and task not in ['arch', 'earc', 'getic']:
             natstr = "-l place=vscatter"
 
     elif machine in ['WCOSS']:
