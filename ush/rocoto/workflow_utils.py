@@ -37,7 +37,7 @@ def get_shell_env(scripts):
     vars=dict()
     runme=''.join([ f'source {s} ; ' for s in scripts ])
     magic=f'--- ENVIRONMENT BEGIN {random.randint(0,64**5)} ---'
-    runme+=f'/bin/echo -n "{(magic,)}" ; /usr/bin/env -0'
+    runme+=f'/bin/echo -n "{magic}" ; /usr/bin/env -0'
     with open('/dev/null','w') as null:
         env=subprocess.Popen(runme,shell=True,stdin=null.fileno(),
                        stdout=subprocess.PIPE)
