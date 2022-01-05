@@ -295,7 +295,7 @@ def get_resources(machine, cfg, task, reservation, cdump='gdas'):
         try:
             tasks = cfg[f'npe_{ltask}']
         except KeyError:
-            tasks = cfg["',)npe_waveawipsgridded"]
+            tasks = cfg["npe_waveawipsgridded"]
 
     if cdump in ['gfs'] and f'npe_node_{task}_gfs' in cfg.keys():
         ppn = cfg[f'npe_node_{ltask}_gfs']
