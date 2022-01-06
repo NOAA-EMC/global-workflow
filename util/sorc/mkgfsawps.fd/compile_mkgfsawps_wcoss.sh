@@ -29,7 +29,8 @@ fi
 echo " "
 
 # Load required modules
-source ../../modulefiles/gfs_util.${target}
+module use ${HOMEgfs}/util/modulefiles
+module load gfs_util.${target}
 module list
 
 set -x
