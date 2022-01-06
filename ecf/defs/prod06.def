@@ -3,30 +3,38 @@ extern /prod00/gdas/atmos/post
 extern /prod00/gdas/enkf/post
 #### ecen
 extern /prod00/gdas/atmos/post_processing/jgdas_atmos_chgres_forenkf
+extern /prod12/gdas/atmos/analysis/jgdas_atmos_analysis
+extern /prod12/gfs/atmos/analysis/jgfs_atmos_analysis
+extern /prod12/gdas/enkf/analysis/recenter/ecen
 
 suite prod06
   repeat day 1
   edit ECF_TRIES '1'
   edit CYC '06'
   edit ENVIR 'prod'
-  edit PROJ 'OPS'
-  edit E 'j'
-  edit QUEUE 'prod'
+  edit PROJ 'GFS'
+  edit PROJENVIR 'DEV'
+  edit E ''
+  edit QUEUE 'dev'
   edit QUEUESHARED 'dev_shared'
   edit QUEUESERV 'dev_transfer'
-  edit PROJENVIR 'OPS'
-  edit MACHINE_SITE 'production'
+#### Developer overwrite
+  edit ECF_INCLUDE '/lfs/h2/emc/global/noscrub/Lin.Gan/git/feature-ops-wcoss2/ecf/include'
+  edit MACHINE_SITE 'development'
+####
 
   family gfs
     edit CYC '06'
-    edit ECF_FILES '/ecf/ecfnets/scripts/gfs_FV3'
-    edit PROJ 'GFS-OPS'
+    edit PACKAGEHOME '/lfs/h2/emc/global/noscrub/Lin.Gan/git/feature-ops-wcoss2'
+    edit ECF_FILES '%PACKAGEHOME%/ecf/scripts/gfs'
+    edit PROJ 'GFS'
+    edit PROJENVIR 'DEV'
     edit NET 'gfs'
     edit RUN 'gfs'
-    edit COM '/gpfs/dell1/nco/ops/com'
-    edit QUEUESHARED 'prod_shared'
-    edit QUEUESERV 'prod_transfer'
-    edit QUEUE 'prod'
+    edit COM '/lfs/h2/emc/ptmp/Lin.Gan/ecfops/com'
+    edit QUEUE 'dev'
+    edit QUEUESHARED 'dev_shared'
+    edit QUEUESERV 'dev_transfer'
     family atmos
       family obsproc
         family dump
@@ -2249,14 +2257,16 @@ suite prod06
   endfamily
   family gdas
     edit CYC '06'
-    edit ECF_FILES '/ecf/ecfnets/scripts/gdas_FV3'
-    edit PROJ 'GDAS-OPS'
+    edit PACKAGEHOME '/lfs/h2/emc/global/noscrub/Lin.Gan/git/feature-ops-wcoss2'
+    edit ECF_FILES '%PACKAGEHOME%/ecf/scripts/gdas'
+    edit PROJ 'GFS'
+    edit PROJENVIR 'DEV'
     edit NET 'gfs'
     edit RUN 'gdas'
-    edit COM '/gpfs/dell1/nco/ops/com'
-    edit QUEUESHARED 'prod_shared'
-    edit QUEUESERV 'prod_transfer'
-    edit QUEUE 'prod'
+    edit COM '/lfs/h2/emc/ptmp/Lin.Gan/ecfops/com'
+    edit QUEUE 'dev'
+    edit QUEUESHARED 'dev_shared'
+    edit QUEUESERV 'dev_transfer'
     family atmos
       family obsproc
         family dump
@@ -2423,7 +2433,7 @@ suite prod06
         endfamily
         family recenter
           family ecen
-            edit ECF_FILES '/ecf/ecfnets/scripts/gdas_FV3/enkf/analysis/recenter/ecen'
+            edit ECF_FILES '%PACKAGEHOME%/ecf/scripts/gdas/enkf/analysis/recenter/ecen'
             trigger ../create/jgdas_enkf_update == complete and ../../../atmos/analysis/jgdas_atmos_analysis_calc == complete and /prod00/gdas/atmos/post_processing/jgdas_atmos_chgres_forenkf == complete
             family grp1
               edit FHRGRP '003'
@@ -2443,7 +2453,7 @@ suite prod06
         endfamily
       endfamily
       family forecast
-        edit ECF_FILES '/ecf/ecfnets/scripts/gdas_FV3/enkf/forecast'
+        edit ECF_FILES '%PACKAGEHOME%/ecf/scripts/gdas/enkf/forecast'
         trigger ./analysis/recenter/ecen == complete and ./analysis/recenter/jgdas_enkf_sfc == complete
         family grp1
           edit ENSGRP '01'
