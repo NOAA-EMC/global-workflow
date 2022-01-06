@@ -1,5 +1,5 @@
 #PBS -S /bin/bash
-#PBS -N %E%gdas_atmos_analysis_calc_%CYC%
+#PBS -N gdas_atmos_analysis_calc_%CYC%
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%

@@ -1,5 +1,5 @@
 #PBS -S /bin/bash
-#PBS -N %E%gfs_atmos_tropcy_qc_reloc_%CYC%
+#PBS -N gfs_atmos_tropcy_qc_reloc_%CYC%
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%

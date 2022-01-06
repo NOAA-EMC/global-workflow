@@ -1,5 +1,5 @@
 #PBS -S /bin/bash
-#PBS -N %E%gfs_atmos_analysis_%CYC%
+#PBS -N gfs_atmos_analysis_%CYC%
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
@@ -28,14 +28,13 @@ module load python/${python_ver}
 module load crtm/${crtm_ver}
 module load libjpeg/${libjpeg_ver}
 module load grib_util/${grib_util_ver}
-module load wgrib2/${wgrib2_ver}
 
 module list
 
 #############################################################
 # WCOSS environment settings
 #############################################################
-export KMP_AFFINITY=scatter
+#export KMP_AFFINITY=scatter
 export OMP_NUM_THREADS=$threads
 export FORT_BUFFERED=true
 export OMP_NUM_THREADS_CY=28
