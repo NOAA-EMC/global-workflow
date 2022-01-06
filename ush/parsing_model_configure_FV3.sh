@@ -19,7 +19,7 @@ fi
 
 rm -f model_configure
 cat >> model_configure <<EOF
-print_esmf:              ${print_esmf:-.true.}
+print_esmf:              ${print_esmf:-.true.} 
 start_year:              ${tPDY:0:4}
 start_month:             ${tPDY:4:2}
 start_day:               ${tPDY:6:2}
