@@ -15,14 +15,16 @@ FHOUT_HF_GFS=-1
 IALB=2
 IEMS=2
 DO_CA="YES"
-min_seaice="1e-11"
+min_seaice="1e-6"
+use_cice_alb=".true."
+export iopt_sfc="3"
 
 # config.fv3
 DELTIM=300
-layout_x_gfs=12
-layout_y_gfs=16
+layout_x_gfs=8
+layout_y_gfs=12
 WRITE_GROUP_GFS=1
-WRTTASK_PER_GROUP_GFS=88
+WRTTASK_PER_GROUP_GFS=80
 WRTIOBUF="32M"
 
 # config.wave
