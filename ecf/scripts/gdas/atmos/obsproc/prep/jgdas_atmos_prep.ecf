@@ -1,15 +1,13 @@
-#BSUB -J %E%%RUN%_atmos_prep_%CYC%
-#BSUB -o %COM%/output/%ENVIR%/today/%RUN%_atmos_prep_%CYC%.o%J
-#BSUB -cwd /tmp
-#BSUB -q %QUEUE%
-#BSUB -L /bin/sh
-#BSUB -P %PROJ%
-#BSUB -W 00:20
-#BSUB -R span[ptile=2]; -R affinity[core(1)]
-#BSUB -n 4
+#PBS -S /bin/bash
+#PBS -N %E%%RUN%_atmos_prep_%CYC%
+#PBS -j oe
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=00:35:00
+#PBS -l place=vscatter,select=1:ncpus=8:mem=40gb
 
 %include <head.h>
-%include <envir-p3.h>
+%include <envir-p1.h>
 
 set -x
 
@@ -17,39 +15,46 @@ export NET=%NET:gfs%
 export RUN=%RUN%
 export CDUMP=%RUN%
 
-model=obsproc_global
+model=obsproc
 %include <model_ver.h>
 
 #############################################################
 ## Load modules
 ##############################################################
-# JY module load lsf/${lsf_ver}
-module load impi/${impi_ver}
-module load CFP/${CFP_ver}
-#module load HDF5-parallel/${hdf5_parallel_ver}
-module load NetCDF-parallel/${netcdf_parallel_ver}
+
+#### Testing
+module use /lfs/h2/emc/obsproc/noscrub/Shelley.Melchior/install/bufr-dump/modulefiles
+module load bufr_dump/1.0.0
+####
+
+module load cray-mpich/${cray_mpich_ver}
+module load cray-pals/${cray_pals_ver}
+module load netcdf/${netcdf_ver}
+module load hdf5/${hdf5_ver}
+module load cfp/${cfp_ver}
+module load libjpeg/${libjpeg_ver}
+module load grib_util/${grib_util_ver}
+module load w3nco/${w3nco_ver}
+module load w3emc/${w3emc_ver}
 
 module list
 
 #############################################################
 ## WCOSS_C environment settings
 ##############################################################
-# export BACK="NO"
-# export POE="YES"
 export COMPONENT=${COMPONENT:-atmos}
 export cyc=%CYC%
 
-# Not sure if need the following , comment them now - JY 10/20
-#export DO_MAKEPREPBUFR=YES
-#export ROTDIR_DUMP=YES
-#export OPREFIX=$CDUMP.t${cyc}z.
-#export EXPDIR="$HOMEgfs/parm/config"
-#export ROTDIR=%COM%/$NET/$envir
-#export CDATE=${PDY}${cyc}
+#### Developer overwrite
+export KEEPDATA="YES"
+export COMIN_ROOT=${COMIN_ROOT:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/$COMPONENT}
+export COMIN=${COMIN:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/$COMPONENT}
+export COMOUT_ROOT=${COMOUT:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/$COMPONENT}
+export COMOUT=${COMOUT:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/$COMPONENT}
+export COMINgdas=${COMINgdas:-$(compath.py -o ${NET}/${gfs_ver}/gdas.${PDY})/${cyc}/${COMPONENT}}
+export COMINgfs=${COMINgfs:-$(compath.py -o ${NET}/${gfs_ver}/gfs.${PDY})/${cyc}/${COMPONENT}}
 
-set -x
-
-${HOMEobsproc_global}/jobs/JGLOBAL_PREP
+$HOMEobsproc/jobs/JOBSPROC_GLOBAL_PREP
 
 %include <tail.h>
 %manual
