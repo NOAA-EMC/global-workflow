@@ -3,9 +3,6 @@ extern /prod12/gdas/atmos/post
 extern /prod12/gdas/enkf/post
 #### ecen
 extern /prod12/gdas/atmos/post_processing/jgdas_atmos_chgres_forenkf
-extern /prod00/gdas/atmos/analysis/jgdas_atmos_analysis
-extern /prod00/gfs/atmos/analysis/jgfs_atmos_analysis
-extern /prod00/gdas/enkf/analysis/recenter/ecen
 
 suite prod18
   repeat day 1

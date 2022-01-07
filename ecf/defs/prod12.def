@@ -3,10 +3,7 @@ extern /prod06/gdas/atmos/post
 extern /prod06/gdas/enkf/post
 #### ecen
 extern /prod06/gdas/atmos/post_processing/jgdas_atmos_chgres_forenkf
-extern /prod18/gdas/atmos/analysis/jgdas_atmos_analysis
-extern /prod18/gfs/atmos/analysis/jgfs_atmos_analysis
-extern /prod18/gdas/enkf/analysis/recenter/ecen
-extern /totality_limit:TOTALITY
+
 suite prod12
   repeat day 1
   edit ECF_TRIES '1'
