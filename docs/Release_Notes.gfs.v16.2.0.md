@@ -253,7 +253,6 @@ The following scripts were updated for WCOSS2 (includes postmsg/jlogfile removal
   * gempak/ush/gempak_gfs_f48_gif.sh
   * ush/gfs_bufr.sh
   * ush/gfs_sndp.sh
-  * scripts/exgfs_atmos_postsnd.sh
   * scripts/exgdas_atmos_gempak_gif_ncdc.sh
   * scripts/exgdas_atmos_nawips.sh
   * scripts/exgfs_atmos_awips_20km_1p0deg.sh
