@@ -1,24 +1,45 @@
-#BSUB -J %E%gdas_atmos_dump_alert_%CYC%
-#BSUB -o %COM%/output/%ENVIR%/today/gdas_atmos_dump_alert_%CYC%.o%J
-#BSUB -q %QUEUESERV%
-#BSUB -R rusage[mem=1000]
-#BSUB -R affinity[core] 
-#BSUB -cwd /tmp
-#BSUB -W 00:05
-#BSUB -P %PROJ%
+#PBS -S /bin/bash
+#PBS -N gdas_atmos_dump_alert_%CYC%
+#PBS -j oe
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=00:30:00
+#PBS -l place=vscatter,select=1:ncpus=7:mem=500MB
 
 %include <head.h>
-%include <envir-p3.h>
+%include <envir-p1.h>
 
 set -x
 
-export model=obsproc_dump_alert
+export NET=gfs
+export RUN=gdas
+
+export model=obsproc
 %include <model_ver.h>
 
 #############################################################
 # Load modules
 #############################################################
-#. $MODULESHOME/init/sh
+
+#### Testing
+module use /lfs/h2/emc/obsproc/noscrub/Shelley.Melchior/install/bufr-dump/modulefiles
+module load bufr_dump/1.0.0
+####
+
+module load cray-mpich/${cray_mpich_ver}
+module load cray-pals/${cray_pals_ver}
+module load netcdf/${netcdf_ver}
+module load hdf5/${hdf5_ver}
+module load cfp/${cfp_ver}
+module load libjpeg/${libjpeg_ver}
+module load grib_util/${grib_util_ver}
+module load w3nco/${w3nco_ver}
+module load w3emc/${w3emc_ver}
+module load util_shared/${util_shared_ver}
+module load bacio/${bacio_ver}
+module load bufr/${bufr_ver}
+module load bufr_dump/${bufr_dump_ver}
+
 module list
 
 #############################################################
@@ -26,14 +47,18 @@ module list
 #############################################################
 
 # EXPORT list here
-
-set -x
 export cyc=%CYC%
-export NET=gfs
-export RUN=gdas
+export COMPONENT=${COMPONENT:-atmos}
+export obsNET=obsproc
+
+#### Developer overwrite
+####export KEEPDATA="YES"
+export COMIN_ROOT=${COMIN_ROOT:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/$COMPONENT}
+export COMIN=${COMIN:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/$COMPONENT}
+
 
 # CALL executable job script here
-$HOMEobsproc_dump_alert/jobs/JDUMP_ALERT
+$HOMEobsproc/jobs/JOBSPROC_DUMP_ALERT
 
 %include <tail.h>
 %manual
