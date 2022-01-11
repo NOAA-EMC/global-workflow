@@ -23,14 +23,10 @@ if [ -d /apps/ops/prod ]; then # On WCOSS2
 fi
 
 export HOMEgfs=/lfs/h2/emc/global/noscrub/Lin.Gan/git/feature-ops-wcoss2
+. ${HOMEgfs}/versions/run.ver
 export gfs_ver=v16.2
 
 if [ -d /apps/ops/prod ]; then # On WCOSS2
-#  if [ $(whoami) == ops.para ]; then
-#    module use -a /apps/ops/para/nco/modulefiles/core
-#  fi
-#  echo "Running module load ecflow/$ecflow_ver"
-#  echo "ecflow module location: $(module display ecflow |& head -2 | tail -1 | sed 's/:$//')"
   export ECF_ROOT=/apps/ops/prod/nco/core/ecflow.v5.6.0.7
   . ${ECF_ROOT}/versions/run.ver
   module load prod_util/${prod_util_ver}

@@ -6,6 +6,7 @@
 #PBS -l walltime=00:07:00
 #PBS -l place=vscatter,select=1:ncpus=1
 
+model=gfs
 %include <head.h>
 %include <envir-p1.h>
 
@@ -14,9 +15,6 @@ set -x
 export NET=%NET:gfs%
 export RUN=%RUN%
 export CDUMP=%RUN%
-
-model=gfs
-%include <model_ver.h>
 
 ############################################################
 # Load modules

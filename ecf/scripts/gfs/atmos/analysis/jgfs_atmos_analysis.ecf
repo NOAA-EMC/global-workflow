@@ -6,6 +6,7 @@
 #PBS -l walltime=00:40:00
 #PBS -l place=vscatter,select=100:mpiprocs=10:ompthreads=12:ncpus=120:mem=500GB
 
+export model=gfs
 %include <head.h>
 %include <envir-p1.h>
 
@@ -14,9 +15,6 @@ set -x
 export NET=%NET:gfs%
 export RUN=%RUN%
 export CDUMP=%RUN%
-
-export model=gfs
-%include <model_ver.h>
 
 ############################################################
 # Load modules
@@ -36,6 +34,7 @@ module list
 #############################################################
 # WCOSS environment settings
 #############################################################
+#export KMP_AFFINITY=scatter
 export OMP_NUM_THREADS=$threads
 export FORT_BUFFERED=true
 export OMP_NUM_THREADS_CY=28

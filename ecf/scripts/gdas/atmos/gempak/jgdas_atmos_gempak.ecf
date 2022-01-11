@@ -6,6 +6,7 @@
 #PBS -l walltime=00:15:00
 #PBS -l place=vscatter,select=1:ncpus=128
 
+model=gfs
 %include <head.h>
 %include <envir-p1.h>
 
@@ -14,9 +15,6 @@ set -x
 export NET=%NET:gfs%
 export RUN=%RUN%
 export CDUMP=%RUN%
-
-model=gfs
-%include <model_ver.h>
 
 ############################################################
 # Load modules
@@ -38,8 +36,6 @@ export USE_CFP=YES
 # CALL executable job script here
 ############################################################
 export model=gdas
-
-#export COMPATH=/lfs/h1/ops/canned/com/ukmet:/lfs/h1/ops/canned/com/gfs:/lfs/h1/ops/canned/com/ecmwf:/lfs/h1/ops/canned/com/nam:/lfs/h1/ops/canned/com/hourly
 
 ${HOMEgfs}/jobs/JGDAS_ATMOS_GEMPAK
 

@@ -7,8 +7,6 @@ export envir=%ENVIR%
 export MACHINE_SITE=%MACHINE_SITE%
 export SENDDBN=${SENDDBN:-%SENDDBN:YES%}
 export SENDDBN_NTC=${SENDDBN_NTC:-%SENDDBN_NTC:YES%}
-#module load prod_envir/2.0.4 prod_util/2.0.9 envvar/1.0
-echo debug
 if [[ "$envir" == prod && "$SENDDBN" == YES ]]; then
     export eval=%EVAL:NO%
     if [ $eval == YES ]; then 
@@ -16,9 +14,7 @@ if [[ "$envir" == prod && "$SENDDBN" == YES ]]; then
     else 
       export SIPHONROOT=/lfs/h1/ops/prod/dbnet_siphon
     fi
-#### Developer overwrite
     export SIPHONROOT=${UTILROOT}/fakedbn
-####
 else
     export SIPHONROOT=${UTILROOT}/fakedbn
 fi
