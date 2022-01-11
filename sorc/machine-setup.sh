@@ -105,8 +105,7 @@ elif [[ -d /lfs/h2 ]] ; then
         source /usr/share/lmod/lmod/init/$__ms_shell
     fi
     target=wcoss2
-    module purge
-    module load envvar/1.0
+    module reset
 
 ##---------------------------------------------------------------------------
 
