@@ -14,11 +14,10 @@ set -xa
 pwd
 cd $PBS_O_WORKDIR
 module list
-module purge
+module reset
 source ../../versions/run.ver
 pwd
 
-module load envvar/$envvar_ver
 module load intel/$intel_ver
 module load prod_envir/$prod_envir_ver
 module load PrgEnv-intel/$PrgEnv_intel_ver

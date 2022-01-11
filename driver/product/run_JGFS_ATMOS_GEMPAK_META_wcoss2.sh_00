@@ -39,7 +39,6 @@ export driver=/lfs/h2/emc/vpppg/noscrub/$USER/packages/gfs.$gfs_ver/driver
 ####################################
 ##  Load the GRIB Utilities module
 #####################################
-module load envvar/$envvar_ver
 module load PrgEnv-intel/$PrgEnv_intel_ver
 module load craype/$craype_ver
 module load intel/$intel_ver
