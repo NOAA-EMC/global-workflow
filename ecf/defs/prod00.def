@@ -11,11 +11,14 @@ suite prod00
   edit ENVIR 'prod'
   edit PROJ 'GFS'
   edit PROJENVIR 'DEV'
+  edit E ''
   edit QUEUE 'dev'
   edit QUEUESHARED 'dev_shared'
   edit QUEUESERV 'dev_transfer'
+#### Developer overwrite
   edit ECF_INCLUDE '/lfs/h2/emc/global/noscrub/Lin.Gan/git/feature-ops-wcoss2/ecf/include'
   edit MACHINE_SITE 'development'
+####
 
   family gfs
     edit CYC '00'
