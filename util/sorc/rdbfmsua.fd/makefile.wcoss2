@@ -38,7 +38,7 @@ OBJS=	rdbfmsua.o
 # LIBS		List of libraries
 # CMD		Name of the executable
 #
-FC =		ifort	
+FC =		ftn
 # FFLAGS =	-O3 -q32 -I${GEMINC} -I${NAWIPS}/os/${NA_OS}/include
 # FFLAGS =	-I${GEMINC} -I${NAWIPS}/os/${NA_OS}/include
 FFLAGS =	-I${GEMINC} -I${OS_INC}

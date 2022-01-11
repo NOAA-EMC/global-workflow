@@ -16,4 +16,4 @@ load(pathJoin("nemsio", os.getenv("nemsio_ver")))
 load(pathJoin("ip", os.getenv("ip_ver")))
 load(pathJoin("sp", os.getenv("sp_ver")))
 
-setenv("FC","ifort")
+setenv("FC","ftn")

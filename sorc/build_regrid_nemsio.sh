@@ -20,7 +20,7 @@ export F77=${FCMP}
 
 export FCFFLAGS="" # "-convert native -assume byterecl -heap-arrays -mcmodel=large -shared-intel"
 export LDFLAGS="${FCFFLAGS}"
-export OPTIMIZATION="-O3 -xHOST" #-axCORE-AVX2,AVX -xSSE4.2 -O3
+export OPTIMIZATION="-O3" #-axCORE-AVX2,AVX -xSSE4.2 -O3
 export DEBUG="-traceback -g" #-O0 #-C #-fp-stack-check #-check all -fp-stack-check
 
 if [ $target != hera ]; then

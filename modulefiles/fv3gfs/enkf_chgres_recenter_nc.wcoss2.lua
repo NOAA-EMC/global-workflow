@@ -15,4 +15,4 @@ load(pathJoin("w3nco", os.getenv("w3nco_ver")))
 load(pathJoin("ip", os.getenv("ip_ver")))
 load(pathJoin("sp", os.getenv("sp_ver")))
 
-setenv("FC","mpiifort")
+setenv("FC","ftn")

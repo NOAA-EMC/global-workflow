@@ -12,7 +12,7 @@ OBJS=	mkgfsawps.o
 # CMD		Name of the executable
 # PROFLIB	Library needed for profiling
 #
-FC =       ifort     
+FC =       ftn
 
 LDFLAGS =
 IOMP5_LIB=/pe/intel/compilers_and_libraries_2020.4.304/linux/compiler/lib/intel64/libiomp5.a

@@ -4,7 +4,7 @@ set -x
 machine=${machine:-WCOSS}
 
 if [ $machine = WCOSS ] ; then
- CF=ifort
+ CF=ftn
  export MP_CORE_FILE_FORMAT=lite
  #FFOPTS="-g -O0 -i4 -r8 -check all -ftrapuv -convert big_endian -fp-stack-check -fstack-protector -heap-arrays -recursiv -traceback -openmp"
  FFOPTS="-i4 -O3 -r8  -convert big_endian -fp-model precise -openmp"

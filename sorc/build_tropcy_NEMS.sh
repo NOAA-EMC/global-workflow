@@ -29,7 +29,7 @@ if [ $target = "wcoss2" ]; then
   SIGIO_INC4=$SIGIO_INC
 fi
 
-export FC=mpiifort
+export FC=ftn
 export JASPER_LIB=${JASPER_LIB:-$JASPER_LIBRARY_DIRS/libjasper.a}
 
 export INC="${G2_INCd} -I${NEMSIO_INC}"

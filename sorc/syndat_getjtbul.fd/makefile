@@ -1,7 +1,7 @@
 SHELL=		/bin/sh
 #LIBS=		-L/nwprod/lib -lw3nco_v2.0.5_4
 #LIBS=		-L/contrib/nceplibs/nwprod/lib -lw3nco_v2.0.5_4
-FC=		ifort   
+FC=		ftn
 #DEBUG = 	-ftrapuv  -check all  -fp-stack-check  -fstack-protector
 ##DEBUG = 	-ftrapuv  -fp-stack-check  -fstack-protector
 FFLAGS=		-O3 -g -traceback -assume noold_ldout_format $(DEBUG)
