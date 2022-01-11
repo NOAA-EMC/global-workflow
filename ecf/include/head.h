@@ -22,7 +22,7 @@ if [ -d /apps/ops/prod ]; then # On WCOSS2
   module load intel/19.1.3.304
 fi
 
-export HOMEgfs=/lfs/h2/emc/global/noscrub/Lin.Gan/git/feature-ops-wcoss2
+export HOMEgfs=/lfs/h2/emc/global/noscrub/$USER/git/feature-ops-wcoss2
 . ${HOMEgfs}/versions/run.ver
 export gfs_ver=v16.2
 
@@ -38,13 +38,13 @@ if [ -d /apps/ops/prod ]; then # On WCOSS2
   export ECF_ROOT=/apps/ops/prod/nco/core/ecflow.v5.6.0.7
   export ECF_PORT=34326
   export ECF_HOST=ddecflow02
-  export ECF_INCLUDE=/lfs/h2/emc/global/noscrub/Lin.Gan/git/feature-ops-wcoss2/ecf/include
-  export ECF_HOME=/lfs/h2/emc/global/noscrub/Lin.Gan/ecflow/submit
-  export ECF_DATA_ROOT=/lfs/h2/emc/global/noscrub/Lin.Gan/ecflow
-  export ECF_OUTPUTDIR=/lfs/h2/emc/global/noscrub/Lin.Gan/ecflow/output
-  export ECF_COMDIR=/lfs/h2/emc/global/noscrub/Lin.Gan/ecflow/submit
-  export ECF_COMDIR=/lfs/h2/emc/ptmp/Lin.Gan/ecflow/submit
-  ecflow_client --alter change variable ECF_INCLUDE /lfs/h2/emc/global/noscrub/Lin.Gan/git/feature-ops-wcoss2/ecf/include /
+  export ECF_INCLUDE=/lfs/h2/emc/global/noscrub/$USER/git/feature-ops-wcoss2/ecf/include
+  export ECF_HOME=/lfs/h2/emc/global/noscrub/$USER/ecflow/submit
+  export ECF_DATA_ROOT=/lfs/h2/emc/global/noscrub/$USER/ecflow
+  export ECF_OUTPUTDIR=/lfs/h2/emc/global/noscrub/$USER/ecflow/output
+  export ECF_COMDIR=/lfs/h2/emc/global/noscrub/$USER/ecflow/submit
+  export ECF_COMDIR=/lfs/h2/emc/ptmp/$USER/ecflow/submit
+  ecflow_client --alter change variable ECF_INCLUDE /lfs/h2/emc/global/noscrub/$USER/git/feature-ops-wcoss2/ecf/include /
 
   echo "Listing modules from head.h:"
   module list
@@ -52,8 +52,8 @@ fi
 
 timeout 300 ecflow_client --init=${ECF_RID}
 
-POST_OUT=/lfs/h2/emc/stmp/Lin.Gan/RUNDIRS/ecfops/tmp/posts/ecflow_post_in.$USER.${PBS_JOBID}
-mkdir -p /lfs/h2/emc/stmp/Lin.Gan/RUNDIRS/ecfops/tmp/posts
+POST_OUT=/lfs/h2/emc/stmp/$USER/RUNDIRS/ecfops/tmp/posts/ecflow_post_in.$USER.${PBS_JOBID}
+mkdir -p /lfs/h2/emc/stmp/$USER/RUNDIRS/ecfops/tmp/posts
 echo 'export ECF_NAME=${ECF_NAME}' > $POST_OUT
 echo 'export ECF_HOST=${ECF_HOST}' >> $POST_OUT
 echo 'export ECF_PORT=${ECF_PORT}' >> $POST_OUT

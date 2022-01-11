@@ -35,7 +35,6 @@ module list
 #############################################################
 export cyc=%CYC%
 export cycle=t%CYC%z
-export CDATE=$PDY$cyc
 export USE_CFP=YES
 
 ############################################################

@@ -34,10 +34,8 @@ module list
 #############################################################
 # WCOSS environment settings
 #############################################################
-#export KMP_AFFINITY=scatter
-export OMP_NUM_THREADS=$threads
 export FORT_BUFFERED=true
-export OMP_NUM_THREADS_CY=28
+export OMP_NUM_THREADS_CY=128
 export NTHREADS=$OMP_NUM_THREADS_CY
 export NTHREADS_GSI=$threads
 
