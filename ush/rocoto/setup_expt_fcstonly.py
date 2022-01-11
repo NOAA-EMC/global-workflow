@@ -223,7 +223,11 @@ Create COMROT experiment directory structure'''
       account = 'hfv3gfs'
       queue = 'batch'
       queue_service = 'service'
-      partition_batch = 'xjet'
+      # Set partition_batch; can be xjet or kjet (xjet is the default)
+      if partition is not None:
+         partition_batch = partition
+      else:
+         partition_batch = 'xjet'
       chgrp_rstprod = 'YES'
       chgrp_cmd = 'chgrp rstprod'
       hpssarch = 'YES'
