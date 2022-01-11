@@ -62,6 +62,13 @@ cd $ROTDIR
 firstday=$($NDATE +24 $SDATE)
 if [[ $ENSGRP -gt 0 ]] && [[ $HPSSARCH = "YES" ]]; then
 
+#--set the archiving command and create local directories, if necessary
+   TARCMD="htar"
+   if [[ $LOCALARCH = "YES" ]]; then
+       TARCMD="tar --ignore-failed-read"
+       [ ! -d $ATARDIR/$CDATE ] && mkdir -p $ATARDIR/$CDATE
+   fi
+
 #--determine when to save ICs for warm start
    SAVEWARMICA="NO"
    SAVEWARMICB="NO"
@@ -84,27 +91,27 @@ if [[ $ENSGRP -gt 0 ]] && [[ $HPSSARCH = "YES" ]]; then
 
    if [ $CDATE -gt $SDATE ]; then # Don't run for first half cycle
 
-     htar -P -cvf $ATARDIR/$CDATE/enkf${CDUMP}_grp${ENSGRP}.tar $(cat $ARCH_LIST/enkf${CDUMP}_grp${n}.txt)
+     $TARCMD -P -cvf $ATARDIR/$CDATE/enkf${CDUMP}_grp${ENSGRP}.tar $(cat $ARCH_LIST/enkf${CDUMP}_grp${n}.txt)
      status=$?
      if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
-         echo "HTAR $CDATE enkf${CDUMP}_grp${ENSGRP}.tar failed"
+         echo "$(echo $TARCMD | tr 'a-z' 'A-Z') $CDATE enkf${CDUMP}_grp${ENSGRP}.tar failed"
          exit $status
      fi
 
      if [ $SAVEWARMICA = "YES" -a $cyc -eq $EARCINC_CYC ]; then
-       htar -P -cvf $ATARDIR/$CDATE/enkf${CDUMP}_restarta_grp${ENSGRP}.tar $(cat $ARCH_LIST/enkf${CDUMP}_restarta_grp${n}.txt)
+       $TARCMD -P -cvf $ATARDIR/$CDATE/enkf${CDUMP}_restarta_grp${ENSGRP}.tar $(cat $ARCH_LIST/enkf${CDUMP}_restarta_grp${n}.txt)
        status=$?
        if [ $status -ne 0 ]; then
-           echo "HTAR $CDATE enkf${CDUMP}_restarta_grp${ENSGRP}.tar failed"
+           echo "$(echo $TARCMD | tr 'a-z' 'A-Z') $CDATE enkf${CDUMP}_restarta_grp${ENSGRP}.tar failed"
            exit $status
        fi
      fi
 
      if [ $SAVEWARMICB = "YES"  -a $cyc -eq $EARCICS_CYC ]; then
-       htar -P -cvf $ATARDIR/$CDATE/enkf${CDUMP}_restartb_grp${ENSGRP}.tar $(cat $ARCH_LIST/enkf${CDUMP}_restartb_grp${n}.txt)
+       $TARCMD -P -cvf $ATARDIR/$CDATE/enkf${CDUMP}_restartb_grp${ENSGRP}.tar $(cat $ARCH_LIST/enkf${CDUMP}_restartb_grp${n}.txt)
        status=$?
        if [ $status -ne 0 ]; then
-           echo "HTAR $CDATE enkf${CDUMP}_restartb_grp${ENSGRP}.tar failed"
+           echo "$(echo $TARCMD | tr 'a-z' 'A-Z') $CDATE enkf${CDUMP}_restartb_grp${ENSGRP}.tar failed"
            exit $status
        fi
      fi
@@ -120,10 +127,17 @@ if [ $ENSGRP -eq 0 ]; then
 
     if [ $HPSSARCH = "YES" ]; then
 
-        htar -P -cvf $ATARDIR/$CDATE/enkf${CDUMP}.tar $(cat $ARCH_LIST/enkf${CDUMP}.txt)
+#--set the archiving command and create local directories, if necessary
+        TARCMD="htar"
+        if [[ $LOCALARCH = "YES" ]]; then
+            TARCMD="tar --ignore-failed-read"
+            [ ! -d $ATARDIR/$CDATE ] && mkdir -p $ATARDIR/$CDATE
+        fi
+
+        $TARCMD -P -cvf $ATARDIR/$CDATE/enkf${CDUMP}.tar $(cat $ARCH_LIST/enkf${CDUMP}.txt)
         status=$?
         if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
-            echo "HTAR $CDATE enkf${CDUMP}.tar failed"
+            echo "$(echo $TARCMD | tr 'a-z' 'A-Z') $CDATE enkf${CDUMP}.tar failed"
             exit $status
         fi
     fi

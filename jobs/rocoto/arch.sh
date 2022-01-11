@@ -129,9 +129,17 @@ fi
 
 
 ###############################################################
-# Archive data to HPSS
+# Archive data either to HPSS or locally
 if [ $HPSSARCH = "YES" ]; then
 ###############################################################
+
+# --set the archiving command and create local directories, if necessary
+TARCMD="htar"
+if [[ $LOCALARCH = "YES" ]]; then
+   TARCMD="tar --ignore-failed-read"
+   [ ! -d $ATARDIR/$CDATE ] && mkdir -p $ATARDIR/$CDATE
+   [ ! -d $ATARDIR/$CDATE_MOS ] && mkdir -p $ATARDIR/$CDATE_MOS
+fi
 
 #--determine when to save ICs for warm start and forecast-only runs 
 SAVEWARMICA="NO"
@@ -208,10 +216,10 @@ if [ $CDUMP = "gfs" ]; then
 
     #--save mdl gfsmos output from all cycles in the 18Z archive directory
     if [ -d gfsmos.$PDY_MOS -a $cyc -eq 18 ]; then
-        htar -P -cvf $ATARDIR/$CDATE_MOS/gfsmos.tar ./gfsmos.$PDY_MOS
+        $TARCMD -P -cvf $ATARDIR/$CDATE_MOS/gfsmos.tar ./gfsmos.$PDY_MOS
         status=$?
         if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
-            echo "HTAR $CDATE gfsmos.tar failed"
+            echo "$(echo $TARCMD | tr 'a-z' 'A-Z') $CDATE gfsmos.tar failed"
             exit $status
         fi
     fi
@@ -238,10 +246,10 @@ elif [ $CDUMP = "gdas" ]; then
 fi
 
 for targrp in $targrp_list; do
-    htar -P -cvf $ATARDIR/$CDATE/${targrp}.tar $(cat $ARCH_LIST/${targrp}.txt)
+    $TARCMD -P -cvf $ATARDIR/$CDATE/${targrp}.tar $(cat $ARCH_LIST/${targrp}.txt)
     status=$?
     if [ $status -ne 0 -a $CDATE -ge $firstday ]; then
-        echo "HTAR $CDATE ${targrp}.tar failed"
+        echo "$(echo $TARCMD | tr 'a-z' 'A-Z') $CDATE ${targrp}.tar failed"
         exit $status
     fi
 done

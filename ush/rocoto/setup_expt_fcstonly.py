@@ -83,6 +83,7 @@ def edit_baseconfig():
                     .replace('@CHGRP_RSTPROD@', chgrp_rstprod) \
                     .replace('@CHGRP_CMD@', chgrp_cmd) \
                     .replace('@HPSSARCH@', hpssarch) \
+                    .replace('@LOCALARCH@', localarch) \
                     .replace('@gfs_cyc@', f'{gfs_cyc}') \
                     .replace('@APP@', f'{app}')
                 if expdir is not None:
@@ -176,6 +177,7 @@ Create COMROT experiment directory structure'''
       chgrp_rstprod = 'YES'
       chgrp_cmd = 'chgrp rstprod'
       hpssarch = 'YES'
+      localarch = 'NO'
     elif machine == 'WCOSS_C':
       base_git = '/gpfs/hps3/emc/global/noscrub/emc.glopara/git'
       base_svn = '/gpfs/hps3/emc/global/noscrub/emc.glopara/svn'
@@ -193,6 +195,7 @@ Create COMROT experiment directory structure'''
       chgrp_rstprod = 'YES'
       chgrp_cmd = 'chgrp rstprod'
       hpssarch = 'YES'
+      localarch = 'NO'
     elif machine == 'HERA':
       base_git = '/scratch1/NCEPDEV/global/glopara/git'
       base_svn = '/scratch1/NCEPDEV/global/glopara/svn'
@@ -210,6 +213,7 @@ Create COMROT experiment directory structure'''
       chgrp_rstprod = 'YES'
       chgrp_cmd = 'chgrp rstprod'
       hpssarch = 'YES'
+      localarch = 'NO'
     elif machine == 'JET':
       base_git = '/lfs4/HFIP/hfv3gfs/glopara/git'
       base_svn = '/dev/null/global/save/glopara/svn/'
@@ -227,6 +231,7 @@ Create COMROT experiment directory structure'''
       chgrp_rstprod = 'YES'
       chgrp_cmd = 'chgrp rstprod'
       hpssarch = 'YES'
+      localarch = 'NO'
     elif machine == 'JET':
       base_git = '/lfs4/HFIP/hfv3gfs/glopara/git'
       base_svn = '/dev/null/global/save/glopara/svn/'
@@ -244,6 +249,7 @@ Create COMROT experiment directory structure'''
       chgrp_rstprod = 'YES'
       chgrp_cmd = 'chgrp rstprod'
       hpssarch = 'YES'
+      localarch = 'NO'
     elif machine == 'ORION':
       base_git = '/work/noaa/global/glopara/git'
       base_svn = '/work/noaa/global/glopara/svn'
@@ -261,6 +267,7 @@ Create COMROT experiment directory structure'''
       chgrp_rstprod = 'YES'
       chgrp_cmd = 'chgrp rstprod'
       hpssarch = 'NO'
+      localarch = 'NO'
     elif machine == 'S4':
       base_git = '/data/prod/glopara/git'
       base_svn = '/data/prod/glopara/svn'
@@ -272,7 +279,6 @@ Create COMROT experiment directory structure'''
       ptmp = '/scratch/users/$USER'
       noscrub = '$HOMEDIR'
       account = 'star'
-      queue = 's4'
       queue_service = 'serial'
       # Set partition_batch; can be s4 or ivy (s4 by default)
       if partition is not None:
@@ -285,7 +291,8 @@ Create COMROT experiment directory structure'''
          queue = 's4'
       chgrp_rstprod = 'NO'          # No rstprod on S4
       chgrp_cmd = 'ls'
-      hpssarch = 'NO'
+      hpssarch = 'YES'
+      localarch = 'YES'
 
     # COMROT directory
     create_comrot = True
