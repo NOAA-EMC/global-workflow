@@ -22,7 +22,6 @@ fi
 export DBNROOT=$SIPHONROOT
 
 if [[ ! " prod para test " =~ " ${envir} " && " ops.prod ops.para " =~ " $(whoami) " ]]; then err_exit "ENVIR must be prod, para, or test [envir-p1.h]"; fi
-export ECF_PORT=34326
 export DATAROOT=/lfs/h2/emc/stmp/Lin.Gan/RUNDIRS/ecfops
 export COMROOT=/lfs/h2/emc/ptmp/Lin.Gan/ecfops/com
 export COREROOT=/lfs/h2/emc/ptmp/production.core/$jobid
