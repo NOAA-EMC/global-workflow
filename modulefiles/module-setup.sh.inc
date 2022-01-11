@@ -69,8 +69,7 @@ elif [[ -d /lfs/h2 ]] ; then
         echo load the module command 1>&2
         source /usr/share/lmod/lmod/init/$__ms_shell
     fi
-    module purge
-    module load envvar/1.0
+    module reset
 elif [[ -d /glade ]] ; then
     # We are on NCAR Yellowstone
     if ( ! eval module help > /dev/null 2>&1 ) ; then
