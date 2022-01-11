@@ -225,7 +225,7 @@ elif [ $step = "fcst" ]; then
     fi
 
     # During workflow creation, we need resources for all CDUMPs and CDUMP is undefined
-    CDUMP_LIST=${CDUMP:-"gfs gdas"}
+    CDUMP_LIST=${CDUMP:-"gdas gfs"}
     for CDUMP in $CDUMP_LIST; do
         if [[ "$CDUMP" == "gfs" ]]; then
             export layout_x=$layout_x_gfs
@@ -247,12 +247,6 @@ elif [ $step = "fcst" ]; then
         NTASKS_TOT=$ATMPETS
 
         export nth_fcst=${nth_fv3:-2}
-
-        if [[ "$machine" == "S4" ]]; then
-           if [[ "$CASE" == "C192" || "$CASE" == "C384" ]]; then
-               export nth_fcst=2
-           fi
-        fi
 
         export npe_node_fcst=$(echo "$npe_node_max / $nth_fcst" | bc)
 

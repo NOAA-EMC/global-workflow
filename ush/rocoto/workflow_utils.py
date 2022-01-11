@@ -350,7 +350,7 @@ def create_crontab(base, cronint=5):
 
     if base['machine'] in ['S4']:
         limit_str = 'ulimit -S -s unlimited;'
-        rocotorunstr = '%s %s' % (limit_str, rocotorunstr)
+        rocotorunstr = f'({limit_str} {rocotorunstr})'
 
     try:
         REPLYTO = os.environ['REPLYTO']

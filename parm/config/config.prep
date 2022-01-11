@@ -65,4 +65,9 @@ else
 fi
 export DO_MAKE_NSSTBUFR="NO"   # if NO, will copy nsstbufr from globaldump
 
+#The NSST bufr files are not available on S4, so we need to make them
+if [[ "$machine" = "S4" ]]; then
+   DO_MAKE_NSSTBUFR="YES"
+fi
+
 echo "END: config.prep"
