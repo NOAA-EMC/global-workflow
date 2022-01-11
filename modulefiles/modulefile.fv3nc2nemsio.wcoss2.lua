@@ -14,5 +14,5 @@ load(pathJoin("bacio", os.getenv("bacio_ver")))
 load(pathJoin("w3nco", os.getenv("w3nco_ver")))
 load(pathJoin("nemsio", os.getenv("nemsio_ver")))
 
-setenv("FCMP","ifort")
-setenv("FFLAGS","-free -O3 -xHOST")
+setenv("FCMP","ftn")
+setenv("FFLAGS","-free -O3")

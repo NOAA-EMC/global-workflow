@@ -15,4 +15,4 @@ load(pathJoin("w3nco", os.getenv("w3nco_ver")))
 load(pathJoin("nemsio", os.getenv("nemsio_ver")))
 load(pathJoin("sp", os.getenv("sp_ver")))
 
-setenv("FCMP","mpiifort")
+setenv("FCMP","ftn")
