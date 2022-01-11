@@ -62,7 +62,7 @@ export OUTPUT_FILETYPES="$OUTPUT_FILE"
 if [[ "$OUTPUT_FILE" == "netcdf" ]]; then
     export  ichunk2d=0; export jchunk2d=0
     export  ichunk3d=0; export jchunk3d=0;  export kchunk3d=0
-    RESTILE=`echo $CASE_ENKF |cut -c 2-`
+    RESTILE=$(echo $CASE_ENKF |cut -c 2-)
     if [[ "$machine" == "WCOSS_DELL_P3" ]]; then
         if [ $RESTILE -ge 384 ]; then
             export OUTPUT_FILETYPES=" 'netcdf_parallel' 'netcdf' "

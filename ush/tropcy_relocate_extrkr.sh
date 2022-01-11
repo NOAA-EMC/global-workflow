@@ -210,12 +210,12 @@ export maxtime=22    # Max number of forecast time levels
 if [ ! -d ${vdir} ];   then mkdir -p ${vdir};   fi
 if [ ! -d ${TMPDIR} ]; then mkdir -p ${TMPDIR}; fi
 
-CENT=`echo ${symdh} | cut -c1-2`
-scc=`echo ${symdh} | cut -c1-2`
-syy=`echo ${symdh} | cut -c3-4`
-smm=`echo ${symdh} | cut -c5-6`
-sdd=`echo ${symdh} | cut -c7-8`
-shh=`echo ${symdh} | cut -c9-10`
+CENT=$(echo ${symdh} | cut -c1-2)
+scc=$(echo ${symdh} | cut -c1-2)
+syy=$(echo ${symdh} | cut -c3-4)
+smm=$(echo ${symdh} | cut -c5-6)
+sdd=$(echo ${symdh} | cut -c7-8)
+shh=$(echo ${symdh} | cut -c9-10)
 dishh=${shh}
 symd=${syy}${smm}${sdd}
 
@@ -234,7 +234,7 @@ esac
 # model ID number to it.
 #---------------------------------------------------#
 
-cmodel=`echo ${cmodel} | tr "[A-Z]" "[a-z]"`
+cmodel=$(echo ${cmodel} | tr "[A-Z]" "[a-z]")
 
 case ${cmodel} in 
 
@@ -242,7 +242,7 @@ case ${cmodel} in
        fcstlen=9                                       ;
        fcsthrs=""
        for fhr in $( seq 0 $BKGFREQ 9); do
-          fhrchar=`printf %02d $fhr`
+          fhrchar=$(printf %02d $fhr)
           fcsthrs="$fcsthrs $fhrchar"
        done
        atcfnum=72                                       ;
@@ -359,11 +359,11 @@ if [ ${cmodel} = 'other' ]; then
 # pos3= character position immediately after "00"
 # pos4= character position of last character in name
 
-  otherdir=`dirname ${inpfile}`
-  fname=`basename ${inpfile}`
+  otherdir=$(dirname ${inpfile})
+  fname=$(basename ${inpfile})
   
-  pos2=`echo ${fname} | awk '{ match($0,/XX/); print RSTART }'`
-  pos4=`echo ${fname} | awk '{ match($0,/$/); print RSTART }'`
+  pos2=$(echo ${fname} | awk '{ match($0,/XX/); print RSTART }')
+  pos4=$(echo ${fname} | awk '{ match($0,/$/); print RSTART }')
   let pos4=pos4-1
   let pos1=pos2-1
   let pos3=pos2+2
@@ -380,9 +380,9 @@ if [ ${cmodel} = 'other' ]; then
     exit 8
   fi
   
-  fnamebeg=`echo ${fname} | cut -c1-${pos1}`
+  fnamebeg=$(echo ${fname} | cut -c1-${pos1})
   if [ ${pos4} -ge ${pos3} ]; then
-    fnameend=`echo ${fname} | cut -c${pos3}-${pos4}`
+    fnameend=$(echo ${fname} | cut -c${pos3}-${pos4})
   else
     fnameend=""
   fi
@@ -427,7 +427,7 @@ if [ ${cmodel} = 'other' ]; then
   if [ ! -s ${otherdir}/${fnamebeg}00${fnameend} ]; then
     set +x
     echo " "
-    echo " !!! ERROR in `basename $0`"
+    echo " !!! ERROR in $(basename $0)"
     echo " !!! Input analysis file cannot be found."
     echo " !!! The tracker is looking for this file in:  "
     echo " !!! ---->  ${otherdir}/${fnamebeg}00${fnameend}"
@@ -490,18 +490,18 @@ mv ${vdir}/tempvit.nonameless ${vdir}/vitals.${symd}${dishh}
 # tracking program.
 #--------------------------------------------------------------#
 
-ymdh6ago=` ${NDATE:?} -6 ${CENT}${symd}${dishh}`
-syy6=`echo ${ymdh6ago} | cut -c3-4`
-smm6=`echo ${ymdh6ago} | cut -c5-6`
-sdd6=`echo ${ymdh6ago} | cut -c7-8`
-shh6=`echo ${ymdh6ago} | cut -c9-10`
+ymdh6ago=$( ${NDATE:?} -6 ${CENT}${symd}${dishh})
+syy6=$(echo ${ymdh6ago} | cut -c3-4)
+smm6=$(echo ${ymdh6ago} | cut -c5-6)
+sdd6=$(echo ${ymdh6ago} | cut -c7-8)
+shh6=$(echo ${ymdh6ago} | cut -c9-10)
 symd6=${syy6}${smm6}${sdd6}
 
-ymdh6ahead=` ${NDATE:?} 6 ${CENT}${symd}${dishh}`
-syyp6=`echo ${ymdh6ahead} | cut -c3-4`
-smmp6=`echo ${ymdh6ahead} | cut -c5-6`
-sddp6=`echo ${ymdh6ahead} | cut -c7-8`
-shhp6=`echo ${ymdh6ahead} | cut -c9-10`
+ymdh6ahead=$( ${NDATE:?} 6 ${CENT}${symd}${dishh})
+syyp6=$(echo ${ymdh6ahead} | cut -c3-4)
+smmp6=$(echo ${ymdh6ahead} | cut -c5-6)
+sddp6=$(echo ${ymdh6ahead} | cut -c7-8)
+shhp6=$(echo ${ymdh6ahead} | cut -c9-10)
 symdp6=${syyp6}${smmp6}${sddp6}
 
 vit_incr=6
@@ -516,7 +516,7 @@ cat<<EOF >$TMPDIR/suv_input
 &hourinfo  vit_hr_incr=${vit_incr}/
 EOF
 
-numvitrecs=`cat ${vdir}/vitals.${symd}${dishh} | wc -l`
+numvitrecs=$(cat ${vdir}/vitals.${symd}${dishh} | wc -l)
 if [ ${numvitrecs} -eq 0 ]; then
   set +x
   echo " "
@@ -569,7 +569,7 @@ mv ${TMPDIR}/vitals.${symd}${dishh}.y4 ${vdir}/vitals.${symd}${dishh}
 
 #cp $auxtcvit ${vdir}/vitals.${symd}${dishh}
 
-pgm=`basename  $SUPVX`
+pgm=$(basename  $SUPVX)
 if [ -s $DATA/prep_step ]; then
    set +e
    . $DATA/prep_step
@@ -577,7 +577,7 @@ if [ -s $DATA/prep_step ]; then
 else
    [ -f errfile ] && rm errfile
    export XLFUNITS=0
-   unset `env | grep XLFUNIT | awk -F= '{print $1}'`
+   unset $(env | grep XLFUNIT | awk -F= '{print $1}')
 
    set +u
    if [ -z "$XLFRTEOPTS" ]; then
@@ -652,7 +652,7 @@ fi
 # then exit.
 #------------------------------------------------------------------#
 
-numvitrecs=`cat ${vdir}/vitals.upd.${cmodel}.${symd}${dishh} | wc -l`
+numvitrecs=$(cat ${vdir}/vitals.upd.${cmodel}.${symd}${dishh} | wc -l)
 if [ ${numvitrecs} -eq 0 ]; then
   set +x
   echo " "
@@ -693,7 +693,7 @@ do
 done
 
 dtg_current="${symd} ${dishh}00"
-smax=` grep "${dtg_current}" ${vdir}/vitals.upd.${cmodel}.${symd}${dishh} | wc -l`
+smax=$( grep "${dtg_current}" ${vdir}/vitals.upd.${cmodel}.${symd}${dishh} | wc -l)
 
 sct=1
 while [ ${sct} -le ${smax} ]
@@ -1046,7 +1046,7 @@ if [ ${model} -eq 8 ]; then
 
     for fhr in $( seq -6 $BKGFREQ 3 ); do
       if [ $fhr -lt 0 ]; then
-        fpref=pgm`expr $fhr \* -1`
+        fpref=pgm$(expr $fhr \* -1)
       elif [ $fhr -eq 0 ]; then
         fpref=pges
       elif [ $fhr -gt 0 ]; then
@@ -1092,8 +1092,8 @@ if [ ${model} -eq 8 ]; then
 
     for fhr in $( seq -6 $BKGFREQ 3 ); do
       if [ $fhr -lt 0 ]; then
-        fhour=0`expr $fhr \* -1`
-        fpref=pgm`expr $fhr \* -1`
+        fhour=0$(expr $fhr \* -1)
+        fpref=pgm$(expr $fhr \* -1)
       elif [ $fhr -eq 0 ]; then
         fhour=00
         fpref=pges
@@ -1317,8 +1317,8 @@ if [ ${model} -eq 9 ]; then
     rm ${vdir}/otherlatlon.pgrb.${symdh}
   fi
 
-  gridtyp=`${WGRIB:?} -GDS10 ${otherdir}/${fnamebeg}00${fnameend} | \
-           awk -FGDS10= '{print $2}' | awk '{print $6}' | sed -n 1p`
+  gridtyp=$(${WGRIB:?} -GDS10 ${otherdir}/${fnamebeg}00${fnameend} | \
+           awk -FGDS10= '{print $2}' | awk '{print $6}' | sed -n 1p)
 
   if [ ${gridtyp} -eq 0 ]; then
 
@@ -1454,12 +1454,12 @@ done
 ifh=1
 while [ $ifh -le ${maxtime} ]
 do
-  fh[${ifh}]=` echo ${fcsthrs} | awk '{print $n}' n=$ifh`
+  fh[${ifh}]=$( echo ${fcsthrs} | awk '{print $n}' n=$ifh)
   let ifh=ifh+1
 done
 
 namelist=${vdir}/gettrk.input.${cmodel}.${symdh}
-ATCFNAME=` echo "${atcfname}" | tr '[a-z]' '[A-Z]'`
+ATCFNAME=$( echo "${atcfname}" | tr '[a-z]' '[A-Z]')
   
 export atcfymdh=${scc}${syy}${smm}${sdd}${shh}
 contour_interval=100.0
@@ -1503,13 +1503,13 @@ echo "          wait_max_wait=1800,"                             >>${namelist}
 echo "          wait_sleeptime=5,"                               >>${namelist}
 echo "          per_fcst_command=''/"                            >>${namelist}
   
-pgm=`basename  $GETTX`
+pgm=$(basename  $GETTX)
 if [ -s $DATA/prep_step ]; then
    . $DATA/prep_step
 else
    [ -f errfile ] && rm errfile
    export XLFUNITS=0
-   unset `env | grep XLFUNIT | awk -F= '{print $1}'`
+   unset $(env | grep XLFUNIT | awk -F= '{print $1}')
 
    set +u
    if [ -z "$XLFRTEOPTS" ]; then

@@ -30,7 +30,7 @@ echo ufs-weather-model checkout ...
 if [[ ! -d ufs_model.fd ]] ; then
     git clone https://github.com/ufs-community/ufs-weather-model ufs_model.fd >> ${logdir}/checkout-ufs_model.log 2>&1
     cd ufs_model.fd
-    git checkout ${ufs_model_hash:-c1d6d19}
+    git checkout ${ufs_model_hash:-release/P8a}
     git submodule update --init --recursive
     cd ${topdir}
 else
@@ -42,7 +42,7 @@ if [[ ! -d gsi.fd ]] ; then
     rm -f ${topdir}/checkout-gsi.log
     git clone --recursive https://github.com/DavidHuber-NOAA/GSI.git gsi.fd >> ${topdir}/checkout-gsi.log 2>&1
     cd gsi.fd
-    git checkout port_9c1fc15_2_jet
+    git checkout a62dec6
     git submodule update
     cd ${topdir}
 else
@@ -76,7 +76,7 @@ if [[ ! -d gfs_post.fd ]] ; then
     rm -f ${topdir}/checkout-gfs_post.log
     git clone https://github.com/DavidHuber-NOAA/UPP.git gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
     cd gfs_post.fd
-    git checkout upp_v10.0.8_port_2_jet
+    git checkout c939eae
     git submodule update --init CMakeModules
     ################################################################################
     # checkout_gtg

@@ -115,7 +115,7 @@ EOF
         $NLN $file $DATA/INPUT/$file2
       done
 
-      hour_rst=`$NHOUR $CDATE_RST $CDATE`
+      hour_rst=$($NHOUR $CDATE_RST $CDATE)
       IAU_FHROT=$((IAU_OFFSET+hour_rst))
       if [ $DOIAU = "YES" ]; then
         IAUFHRS=-1
@@ -395,8 +395,8 @@ EOF
   nst_anl=${nst_anl:-".false."}
 
   # blocking factor used for threading and general physics performance
-  #nyblocks=`expr \( $npy - 1 \) \/ $layout_y `
-  #nxblocks=`expr \( $npx - 1 \) \/ $layout_x \/ 32`
+  #nyblocks=$(expr \( $npy - 1 \) \/ $layout_y )
+  #nxblocks=$(expr \( $npx - 1 \) \/ $layout_x \/ 32)
   #if [ $nxblocks -le 0 ]; then nxblocks=1 ; fi
   blocksize=${blocksize:-32}
 
@@ -642,16 +642,16 @@ WW3_postdet() {
   #Link mod_def files for wave grids
   array=($WAVECUR_FID $WAVEICE_FID $WAVEWND_FID $waveuoutpGRD $waveGRD $waveesmfGRD $wavesbsGRD $wavepostGRD $waveinterpGRD)
   echo "Wave Grids: $WAVECUR_FID $WAVEICE_FID $WAVEWND_FID $waveuoutpGRD $waveGRD $waveesmfGRD $wavesbsGRD $wavepostGRD $waveinterpGRD"
-  grdALL=`printf "%s\n" "${array[@]}" | sort -u | tr '\n' ' '`
+  grdALL=$(printf "%s\n" "${array[@]}" | sort -u | tr '\n' ' ')
 
   for wavGRD in ${grdALL}; do
     $NCP $ROTDIR/${CDUMP}.${PDY}/${cyc}/wave/rundata/${COMPONENTwave}.mod_def.$wavGRD $DATA/mod_def.$wavGRD
   done
 
   export WAVHCYC=${WAVHCYC:-6}
-  export WRDATE=`$NDATE -${WAVHCYC} $CDATE`
-  export WRPDY=`echo $WRDATE | cut -c1-8`
-  export WRcyc=`echo $WRDATE | cut -c9-10`
+  export WRDATE=$($NDATE -${WAVHCYC} $CDATE)
+  export WRPDY=$(echo $WRDATE | cut -c1-8)
+  export WRcyc=$(echo $WRDATE | cut -c9-10)
   export WRDIR=${ROTDIR}/${CDUMPRSTwave}.${WRPDY}/${WRcyc}/wave/restart
   export RSTDIR_WAVE=$ROTDIR/${CDUMP}.${PDY}/${cyc}/wave/restart
   export datwave=$COMOUTwave/rundata
@@ -706,7 +706,7 @@ WW3_postdet() {
   # Loop for gridded output (uses FHINC)
   fhr=$FHMIN_WAV
   while [ $fhr -le $FHMAX_WAV ]; do
-    YMDH=`$NDATE $fhr $CDATE`
+    YMDH=$($NDATE $fhr $CDATE)
     YMD=$(echo $YMDH | cut -c1-8)
     HMS="$(echo $YMDH | cut -c9-10)0000"
     for wavGRD in ${waveGRD} ; do
@@ -722,7 +722,7 @@ WW3_postdet() {
   # Loop for point output (uses DTPNT)
   fhr=$FHMIN_WAV
   while [ $fhr -le $FHMAX_WAV ]; do
-    YMDH=`$NDATE $fhr $CDATE`
+    YMDH=$($NDATE $fhr $CDATE)
     YMD=$(echo $YMDH | cut -c1-8)
     HMS="$(echo $YMDH | cut -c9-10)0000"
     eval $NLN $datwave/${wavprfx}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS} $DATA/${YMD}.${HMS}.out_pnt.${waveuoutpGRD}

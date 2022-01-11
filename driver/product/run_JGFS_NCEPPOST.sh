@@ -78,8 +78,8 @@ export DATA_IN=/ptmpd2/$USER
 #### export CDATE=2016020900
 export CDATE=2016022600
 
-export PDY=`echo $CDATE | cut -c1-8`
-export cyc=`echo $CDATE | cut -c9-10`
+export PDY=$(echo $CDATE | cut -c1-8)
+export cyc=$(echo $CDATE | cut -c9-10)
 export DATA=$DATA_IN/nceppostgfs_${PDY}
 
 export NET=gfs

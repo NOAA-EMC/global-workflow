@@ -188,6 +188,7 @@ export psm_bc="1"
 
 export min_lakeice="0.15"
 export min_seaice=${min_seaice:-"0.15"}
+export use_cice_alb=${use_cice_alb:-".false."}
 
 export FSICL="99999"
 
@@ -206,7 +207,7 @@ export OUTPUT_FILETYPES="$OUTPUT_FILE"
 if [[ "$OUTPUT_FILE" == "netcdf" ]]; then
     export  ichunk2d=0; export jchunk2d=0
     export  ichunk3d=0; export jchunk3d=0;  export kchunk3d=0
-    RESTILE=`echo $CASE |cut -c 2-`
+    RESTILE=$(echo $CASE |cut -c 2-)
     if [[ "$machine" == "WCOSS_DELL_P3" ]]; then
         if [ $RESTILE -ge 768 ]; then
             export OUTPUT_FILETYPES=" 'netcdf_parallel' 'netcdf_parallel' "

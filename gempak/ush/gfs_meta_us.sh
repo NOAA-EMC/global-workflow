@@ -25,7 +25,7 @@ cd $DATA/us
 cp $FIXgempak/datatype.tbl datatype.tbl
 
 device="nc | gfs.meta"
-PDY2=`echo $PDY | cut -c3-`
+PDY2=$(echo $PDY | cut -c3-)
 
 export fend=F216
 

@@ -85,13 +85,13 @@ if [ $CDUMP = "gdas" ]; then
 fi
 
 if [ -s avno.t${cyc}z.cyclone.trackatcfunix ]; then
-    PLSOT4=`echo $PSLOT|cut -c 1-4 |tr '[a-z]' '[A-Z]'`
+    PLSOT4=$(echo $PSLOT|cut -c 1-4 |tr '[a-z]' '[A-Z]')
     cat avno.t${cyc}z.cyclone.trackatcfunix | sed s:AVNO:${PLSOT4}:g  > ${ARCDIR}/atcfunix.${CDUMP}.$CDATE
     cat avnop.t${cyc}z.cyclone.trackatcfunix | sed s:AVNO:${PLSOT4}:g  > ${ARCDIR}/atcfunixp.${CDUMP}.$CDATE
 fi
 
 if [ $CDUMP = "gdas" -a -s gdas.t${cyc}z.cyclone.trackatcfunix ]; then
-    PLSOT4=`echo $PSLOT|cut -c 1-4 |tr '[a-z]' '[A-Z]'`
+    PLSOT4=$(echo $PSLOT|cut -c 1-4 |tr '[a-z]' '[A-Z]')
     cat gdas.t${cyc}z.cyclone.trackatcfunix | sed s:AVNO:${PLSOT4}:g  > ${ARCDIR}/atcfunix.${CDUMP}.$CDATE
     cat gdasp.t${cyc}z.cyclone.trackatcfunix | sed s:AVNO:${PLSOT4}:g  > ${ARCDIR}/atcfunixp.${CDUMP}.$CDATE
 fi
@@ -138,8 +138,8 @@ SAVEWARMICA="NO"
 SAVEWARMICB="NO"
 SAVEFCSTIC="NO"
 firstday=$($NDATE +24 $SDATE)
-mm=`echo $CDATE|cut -c 5-6`
-dd=`echo $CDATE|cut -c 7-8`
+mm=$(echo $CDATE|cut -c 5-6)
+dd=$(echo $CDATE|cut -c 7-8)
 nday=$(( (mm-1)*30+dd ))
 mod=$(($nday % $ARCH_WARMICFREQ))
 if [ $CDATE -eq $firstday -a $cyc -eq $ARCHINC_CYC ]; then SAVEWARMICA="YES" ; fi
@@ -295,7 +295,7 @@ while [ $GDATE -le $GDATEEND ]; do
                 if [ -d $COMINrtofs -a $GDATE -lt $RTOFS_DATE ]; then rm -rf $COMINrtofs ; fi
                 if [ $CDUMP != "gdas" -o $DO_GLDAS = "NO" -o $GDATE -lt $GLDAS_DATE ]; then 
 		    if [ $CDUMP = "gdas" ]; then
-                        for file in `ls $COMIN |grep -v prepbufr |grep -v cnvstat |grep -v atmanl.nc`; do
+                        for file in $(ls $COMIN |grep -v prepbufr |grep -v cnvstat |grep -v atmanl.nc); do
                             rm -rf $COMIN/$file
                         done
 		    else
@@ -303,14 +303,14 @@ while [ $GDATE -le $GDATEEND ]; do
 		    fi
                 else
 		    if [ $DO_GLDAS = "YES" ]; then
-			for file in `ls $COMIN |grep -v sflux |grep -v RESTART |grep -v prepbufr |grep -v cnvstat |grep -v atmanl.nc`; do
+			for file in $(ls $COMIN |grep -v sflux |grep -v RESTART |grep -v prepbufr |grep -v cnvstat |grep -v atmanl.nc); do
                             rm -rf $COMIN/$file
 			done
-			for file in `ls $COMIN/RESTART |grep -v sfcanl `; do
+			for file in $(ls $COMIN/RESTART |grep -v sfcanl ); do
                             rm -rf $COMIN/RESTART/$file
 			done
 		    else
-                        for file in `ls $COMIN |grep -v prepbufr |grep -v cnvstat |grep -v atmanl.nc`; do
+                        for file in $(ls $COMIN |grep -v prepbufr |grep -v cnvstat |grep -v atmanl.nc); do
                             rm -rf $COMIN/$file
                         done
 		    fi

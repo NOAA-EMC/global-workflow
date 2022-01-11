@@ -22,7 +22,7 @@ set -x
 msg="Begin job for $job"
 postmsg "$jlogfile" "$msg"
 
-job_name=`echo $job|sed 's/[jpt]gfs/gfs/'`
+job_name=$(echo $job|sed 's/[jpt]gfs/gfs/')
 
 set +x
 echo " "
