@@ -307,14 +307,17 @@ elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
 
 fi
 
+if [[ $DO_COUPLED = "YES" ]] ; then # coupled model
+    export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_cpl"
+fi
+
 if [ $DO_AERO = "YES" ]; then # temporary settings for aerosol coupling
-    export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_aer"
+    export DIAG_TABLE="${DIAG_TABLE}_aer"
     export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_aer"
+    # TODO
     export CHM_CFGDIR="not_set"
     export CHM_INPDIR="not_set"
     export dnats="$(( $dnats + 0 ))"
-elif [[ $DO_COUPLED = "YES" ]] ; then # coupled model
-    export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_cpl"
 fi
 
 # Remember config.efcs will over-ride these values for ensemble forecasts
