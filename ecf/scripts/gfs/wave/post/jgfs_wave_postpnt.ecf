@@ -1,36 +1,27 @@
-#BSUB -L /bin/sh
-#BSUB -J %E%%RUN%_wave_postpnt_%CYC%
-#BSUB -o %COM%/output/%ENVIR%/today/%RUN%_wave_postpnt_%CYC%.o%J
-#BSUB -q %QUEUE%
-#BSUB -P %PROJ%
-#BSUB -cwd /tmp
-#BSUB -W 01:30
-#BSUB -R span[ptile=28]; -R affinity[core]
-#BSUB -n 280
+#PBS -S /bin/bash
+#PBS -N %RUN%_wave_postpnt_%CYC%
+#PBS -j oe
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=01:30:00
+#PBS -l place=vscatter,select=3:ncpus=128
 
+model=gfs
 %include <head.h>
-%include <envir-p3.h>
+%include <envir-p1.h>
 
 set -x
-
-export NODES=10
-export ntasks=280
-export ptile=28
-export threads=1
 
 export NET=%NET:gfs%
 export RUN=%RUN%
 export CDUMP=%RUN%
 
-model=gfs
-%include <model_ver.h>
-
 ############################################################
 ## Load modules
 ############################################################
-module load lsf/${lsf_ver}
-module load impi/${impi_ver}
-module load CFP/${CFP_ver}
+module load cray-mpich/${cray_mpich_ver}
+module load cray-pals/${cray_pals_ver}
+module load cfp/${cfp_ver}
 
 module list
 
