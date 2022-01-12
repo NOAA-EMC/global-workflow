@@ -67,8 +67,8 @@ export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/$COMPONENT}
 [[ ! -d $COMOUT ]] && mkdir -m 775 -p $COMOUT
 
 if [ $RUN_ENVIR = "nco" ]; then
-  export COMIN_WAV_ICE=${COMIN_WAV_ICE:-$(compath.py -o ${NET}/${gfs_ver})}/${CDUMP}.${PDY}/${cyc}/atmos
-  export COMIN_WAV_RTOFS=${COMIN_WAV_RTOFS:-$(compath.py -o ${WAVECUR_DID}/${rtofs_ver})}
+  export COMIN_WAV_ICE=${COMIN_WAV_ICE:-$(compath.py ${envir}/${NET}/${gfs_ver})}/${CDUMP}.${PDY}/${cyc}/atmos
+  export COMIN_WAV_RTOFS=${COMIN_WAV_RTOFS:-$(compath.py ${envir}/${WAVECUR_DID}/${rtofs_ver})}
 else
   if [ ! -d $DMPDIR/${WAVECUR_DID}.${RPDY} ]; then export RPDY=`$NDATE -24 ${PDY}00 | cut -c1-8`; fi 
   if [ ! -L $ROTDIR/${WAVECUR_DID}.${RPDY} ]; then # Check if symlink already exists in ROTDIR

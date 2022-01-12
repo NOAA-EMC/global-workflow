@@ -53,7 +53,7 @@ export EXT=""
 ##############################################
 # Define COM directories
 ##############################################
-export COMIN=${COMIN:-$(compath.py -o ${NET}/${gfs_ver}/${NET}.${PDY})/${cyc}/$COMPONENT}
+export COMIN=${COMIN:-$(compath.py ${envir}/${NET}/${gfs_ver})/${RUN}.${PDY}/${cyc}/$COMPONENT}
 export COMOUT=${COMOUT:-$(compath.py -o ${NET}/${gfs_ver}/${NET}.${PDY})/${cyc}/$COMPONENT/gempak}
 
 export SENDDBN=${SENDDBN:-NO}
