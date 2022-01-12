@@ -1,6 +1,6 @@
 ---
-name: Pull request 
-about: Use this template to open pull requests 
+name: Pull request
+about: Use this template to open pull requests
 title: '<title>'
 labels:
 assignees: 'KateFriedman-NOAA', 'WalterKolczynski-NOAA'
@@ -9,8 +9,8 @@ assignees: 'KateFriedman-NOAA', 'WalterKolczynski-NOAA'
 
 **Description**
 
+<!-- Please include relevant motivation and context. -->
 <!-- Please include a summary of the change and which issue is fixed. -->
-<!-- Please also include relevant motivation and context. -->
 <!-- List any dependencies that are required for this change. -->
 
 <!-- Please provide reference to the issue this pull request is addressing. -->
@@ -27,21 +27,15 @@ Please delete options that are not relevant.
 
 **How Has This Been Tested?**
 
-<!-- Please describe the tests that you ran to verify your changes. -->
+<!-- Please describe the tests that you ran to verify your changes and on the platforms these tests were conducted. -->
 <!-- Provide instructions so we can reproduce. -->
 <!-- Please also list any relevant details for your test configuration -->
 
-<!-- Use the following as a guide to list your tests and delete options that are not relevant -->
+<!-- Use the following as a guide to list your tests and delete options that are not relevant. Expand as necessary. -->
 <!--
-- [ ] Test A
-- [ ] Test B
+- [ ] Cycled test on Orion
+- [ ] Forecast only test on Hera
 -->
-
-**Test Configuration**:
-* Firmware version:
-* Hardware:
-* Toolchain:
-* SDK:
 
 # Checklist:
 
