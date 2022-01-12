@@ -47,3 +47,6 @@ IOSRV=1
 export ARCH_GAUSSIAN="YES"
 export ARCH_GAUSSIAN_FHMAX=${FHMAX_GFS_00}
 export ARCH_GAUSSIAN_FHINC=${FHOUT_GFS}
+
+# for forecast namelist
+export domains_stack_size="6000000"
