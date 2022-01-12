@@ -118,8 +118,8 @@ export COMPONENT=${COMPONENT:-atmos}
 ##############################################
 if [ $envir = "prod" ] ; then
 #  This setting is for testing with GFS (production)
-  export COMIN=${COMIN:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/$COMPONENT}/gempak ### NCO PROD
-  export COMINgempak=${COMINgempak:-$(compath.py -o ${NET}/${gfs_ver})}
+  export COMIN=${COMIN:-$(compath.py ${envir}/${NET}/${gfs_ver})/${RUN}.${PDY}/${cyc}/$COMPONENT}/gempak ### NCO PROD
+  export COMINgempak=${COMINgempak:-$(compath.py ${envir}/${NET}/${gfs_ver})}
 else
   export COMIN=/lfs/h1/ops/canned/com/gfs/v16.2/${RUN}.20210824/${cyc}/${COMPONENT}/gempak ## canned data
   export COMINgempak=/lfs/h1/ops/canned/com/gfs/v16.2                                      ## canned data
@@ -130,11 +130,11 @@ fi
 export COMOUT=${COMROOT2}/${NET}/${gfs_ver}/${RUN}.${PDY}/${cyc}/atmos/gempak/meta
 
 # export ukmet_ver=v2.2.0
-export COMINukmet=${COMINukmet:-$(compath.py -o ukmet/${ukmet_ver}/ukmet)}
+export COMINukmet=${COMINukmet:-$(compath.py ${envir}/ukmet/${ukmet_ver})/ukmet}
 # export ecmwf_ver=v2.1.0
-export COMINecmwf=${COMINecmwf:-$(compath.py -o ecmwf/${ecmwf_ver}/ecmwf)}
+export COMINecmwf=${COMINecmwf:-$(compath.py ${envir}/ecmwf/${ecmwf_ver})/ecmwf}
 # export nam_ver=v4.2.0
-export COMINnam=${COMINnam:-$(compath.py -o nam/${nam_ver}/nam)}
+export COMINnam=${COMINnam:-$(compath.py ${envir}/nam/${nam_ver})/nam}
 
 if [ ! -f $COMOUT ] ; then
   mkdir -p -m 775 $COMOUT
