@@ -168,7 +168,7 @@ echo
 echo "=============== START TO RUN CYCLONE TRACK VERIFICATION ==============="
 if [ $VRFYTRAK = "YES" ]; then
 
-    export COMINsyn=${COMINsyn:-$(compath.py -o ${envir}/com/gfs/${gfs_ver})/syndat}
+    export COMINsyn=${COMINsyn:-$(compath.py ${envir}/com/gfs/${gfs_ver})/syndat}
 
     $TRACKERSH  
 

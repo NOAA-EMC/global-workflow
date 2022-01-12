@@ -69,15 +69,15 @@ export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 ##############################################
 # Define COM directories
 ##############################################
-export COMIN=${COMIN:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/$COMPONENT/gempak}
-export COMINgdas=${COMINgdas:-$(compath.py -o ${NET}/${gfs_ver}/${RUN})}
+export COMIN=${COMIN:-$(compath.py ${envir}/${NET}/${gfs_ver})/${RUN}.${PDY}/${cyc}/$COMPONENT}
+export COMINgdas=${COMINgdas:-$(compath.py ${envir}/${NET}/${gfs_ver}/${RUN})}
 export COMOUT=${COMOUT:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/$COMPONENT/gempak/meta}
 export COMOUTncdc=${COMOUTncdc:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/$COMPONENT}
 
 # export ukmet_ver=v2.2.0
-export COMINukmet=${COMINukmet:-$(compath.py -o ukmet/${ukmet_ver}/ukmet)}
+export COMINukmet=${COMINukmet:-$(compath.py ${envir}/ukmet/${ukmet_ver})/ukmet}
 # export ecmwf_ver=v2.1.0
-export COMINecmwf=${COMINecmwf:-$(compath.py -o ecmwf/${ecmwf_ver}/ecmwf)}
+export COMINecmwf=${COMINecmwf:-$(compath.py ${envir}/ecmwf/${ecmwf_ver})/ecmwf}
 
 export COMOUTukmet=${COMOUT}
 export COMOUTecmwf=${COMOUT}

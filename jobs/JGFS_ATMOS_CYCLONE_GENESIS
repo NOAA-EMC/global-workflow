@@ -66,9 +66,6 @@ export pgmerr=errfile
 ##############################################
 export CDATE=${CDATE:-${PDY}${cyc}}
 export CDUMP=${CDUMP:-${RUN:-"gfs"}}
-if [ $RUN_ENVIR = "nco" ]; then
-    export ROTDIR=${COMROOT:?}/${NET}/${gfs_ver}
-fi
 export cmodel=$CDUMP
 
 ####################################
@@ -102,7 +99,7 @@ export COMOUTgenvit=${COMOUTgenvit:-${COMOUT}/genesis_vital_${JYYYY}}
 #export COMINgenvit=${COMINgenvit:-${DATA}/genesis_vital_${JYYYY}}
 #export COMOUTgenvit=${COMOUTgenvit:-${DATA}/genesis_vital_${JYYYY}}
 
-export COMINsyn=${COMINsyn:-$(compath.py -o ${envir}/com/gfs/${gfs_ver})/syndat}
+export COMINsyn=${COMINsyn:-$(compath.py ${envir}/com/gfs/${gfs_ver})/syndat}
 
 mkdir -m 775 -p $COMOUTgenvit
 
