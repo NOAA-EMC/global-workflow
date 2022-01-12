@@ -23,6 +23,9 @@ export EXPDIR=${HOMEgfs}/parm/config
 ############################################################
 # Load modules
 ############################################################
+module load PrgEnv-intel/${PrgEnv_intel_ver}
+module load craype/${craype_ver}
+module load intel/${intel_ver}
 module load cfp/${cfp_ver}
 module load libjpeg/${libjpeg_ver}
 module load grib_util/${grib_util_ver}
