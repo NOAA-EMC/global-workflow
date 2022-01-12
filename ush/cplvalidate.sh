@@ -21,6 +21,7 @@ case $confignamevarfornems in
   'leapfrog_atm_wav')combination=.true..false..false..true..false.;;
   'med_atm_ocn_ice_wav') combination=.true..true..true..true..false.;;
   'cpld_wave') combination=.true..true..true..true..false.;;
+  'cpld_wave_aer') combination=.true..true..true..true..true.;;
   'medcold_atm_ocn_ice_wav') combination=.true..true..true..true..false.;;
   'med_atm_ocn_ice_wav1way') combination=.true..true..true..true..false.;;
   'med_atm_ocn_ice_wav1waywcurr') combination=.true..true..true..true..false.;;
