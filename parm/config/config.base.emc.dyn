@@ -149,7 +149,7 @@ export DO_COUPLED="NO"
 export DO_WAVE="NO"
 export DO_OCN="NO"
 export DO_ICE="NO"
-export DO_AERO="NO"
+export DO_AERO=@DO_AERO@
 export CCPP_SUITE="FV3_GFS_v16"
 export WAVE_CDUMP="" # When to include wave suite: gdas, gfs, or both
 export confignamevarfornems="atm" # For APP=ATM
@@ -179,20 +179,18 @@ case "${APP}" in
     export DO_ICE="YES"
     export CCPP_SUITE="FV3_GFS_v16_coupled_nsstNoahmpUGWPv1"
     export WAVE_CDUMP="both"
-    export confignamevarfornems="cpld_wave"
     export cplwav2atm=".true."
     source $EXPDIR/config.defaults.s2sw
-    ;;
-  ATMAERO)
-    export DO_COUPLED="YES"
-    export DO_AERO="YES"
-    export confignamevarfornems="atm_aer"
     ;;
   *)
     echo "Unrecognized APP: ${1}"
     exit 1
     ;;
 esac
+
+if [[ DO_AERO = "YES" ]]; then
+    export confignamevarfornems="${confignamevarfornems}_aer"
+fi
 
 # Set operational resolution
 export OPS_RES="C768" # Do not change
