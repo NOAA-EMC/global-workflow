@@ -7,6 +7,16 @@ assignees: 'KateFriedman-NOAA', 'WalterKolczynski-NOAA'
 
 ---
 
+<!-- PLEASE READ -->
+<!--
+Before opening a PR, please note these guidelines:
+
+- Each PR should only address ONE topic and have an associated issue
+- No hardcoded or paths to personal directories should be present
+- No temporary or backup files should be committed
+- Any code that was disabled by being commented out should be removed
+-->
+
 **Description**
 
 <!-- Please include relevant motivation and context. -->
@@ -33,8 +43,9 @@ Please delete options that are not relevant.
 
 <!-- Use the following as a guide to list your tests and delete options that are not relevant. Expand as necessary. -->
 <!--
+- [ ] Clone and Build tests on WCOSS Dell P3
 - [ ] Cycled test on Orion
-- [ ] Forecast only test on Hera
+- [ ] Forecast-only test on Hera
 -->
 
 # Checklist:
@@ -44,6 +55,5 @@ Please delete options that are not relevant.
 - [ ] I have commented my code, particularly in hard-to-understand areas
 - [ ] My changes need updates to the documentation. I have made corresponding changes to the documentation
 - [ ] My changes generate no new warnings
-- [ ] I have added tests that prove my fix is effective or that my feature works
 - [ ] New and existing tests pass with my changes
 - [ ] Any dependent changes have been merged and published
