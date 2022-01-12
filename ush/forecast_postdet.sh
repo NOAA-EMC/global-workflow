@@ -975,3 +975,22 @@ GOCART_rc() {
   fi
 }
 
+GOCART_postdet() {
+  echo "SUB ${FUNCNAME[0]}: Linking output data for GOCART"
+
+  [[ ! -d $COMOUT/chem ]] && mkdir -p $COMOUT/chem
+
+  for fhr in $fhrlst; do
+    if [ $fhr = 'anl' ]; then
+      continue
+    fi
+    VDATE=$($NDATE $fhr $IDATE)
+    YYYY=$(echo $VDATE | cut -c1-4)
+    MM=$(echo $VDATE | cut -c5-6)
+    DD=$(echo $VDATE | cut -c7-8)
+    HH=$(echo $VDATE | cut -c9-10)
+    SS=$((10#$HH*3600))
+
+    $NLN $COMOUT/chem/gocart.inst_aod.${YYYY}${MM}${DD}_${HH}00z.nc4 $DATA/gocart.inst_aod.${YYYY}${MM}${DD}_${HH}00z.nc4
+  done
+}

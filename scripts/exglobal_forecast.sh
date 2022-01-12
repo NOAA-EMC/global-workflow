@@ -156,6 +156,7 @@ esac				#no post determination set up for data atmosphere
 [[ $cplflx = .true. ]] && MOM6_postdet
 [[ $cplwav = .true. ]] && WW3_postdet
 [[ $cplice = .true. ]] && CICE_postdet
+[[ $cplchem = .true. ]] && GOCART_postdet
 echo "MAIN: Post-determination set up of run type finished"
 
 echo "MAIN: Writing name lists and model configuration"
