@@ -1,0 +1,5 @@
+# Ignore these
+*
+# Except these
+!.gitignore
+!jenkfgdas_post_master.ecf
