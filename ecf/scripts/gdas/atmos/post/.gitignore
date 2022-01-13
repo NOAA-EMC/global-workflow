@@ -1,2 +1,2 @@
 # Ignore these
-!jgdas_atmos_post_f*.ecf
+jgdas_atmos_post_f*.ecf
