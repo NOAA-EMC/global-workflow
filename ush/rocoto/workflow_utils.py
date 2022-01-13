@@ -334,6 +334,8 @@ def get_resources(machine, cfg, task, reservation, cdump='gdas'):
 
         if machine in ['WCOSS2'] and task not in ['arch', 'earc', 'getic']:
             natstr = "-l place=vscatter"
+            if memory is None:
+               natstr += ":excl"
 
     elif machine in ['WCOSS']:
         resstr = f'<cores>{tasks}</cores>'
