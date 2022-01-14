@@ -237,6 +237,8 @@ elif [ $CDUMP = "gdas" ]; then
     fi
 fi
 
+# Turn on extended globbing options
+shopt -s extglob
 for targrp in $targrp_list; do
     htar -P -cvf $ATARDIR/$CDATE/${targrp}.tar $(cat $ARCH_LIST/${targrp}.txt)
     status=$?
@@ -245,6 +247,8 @@ for targrp in $targrp_list; do
         exit $status
     fi
 done
+# Turn extended globbing back off
+shopt -u extglob
 
 ###############################################################
 fi  ##end of HPSS archive
