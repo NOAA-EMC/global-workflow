@@ -66,7 +66,7 @@ if [[ ! -d ufs_utils.fd ]] ; then
     rm -f ${topdir}/checkout-ufs_utils.log
     git clone --recursive https://github.com/NOAA-EMC/UFS_UTILS.git ufs_utils.fd >> ${logdir}/checkout-ufs_utils.fd.log 2>&1
     cd ufs_utils.fd
-    git checkout ufs_utils_1_6_0
+    git checkout 04ad17e
     cd ${topdir}
 else
     echo 'Skip.  Directory ufs_utils.fd already exists.'
