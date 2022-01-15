@@ -27,12 +27,16 @@ link_master_to_fhr "jenkfgdas_post" "$fhrs"
 # GDAS post files
 cd $ECF_DIR/scripts/gdas/atmos/post
 echo "Linking gdas/atmos/post ..."
+rm -f jgdas_atmos_post_anl.ecf
+ln -sf jgdas_atmos_post_master.ecf jgdas_atmos_post_anl.ecf
 fhrs=($(seq 0 9))
 link_master_to_fhr "jgdas_atmos_post" "$fhrs"
 
 # GFS post files
 cd $ECF_DIR/scripts/gfs/atmos/post
 echo "Linking gfs/atmos/post ..."
+rm -f jgfs_atmos_post_anl.ecf
+ln -sf jgfs_atmos_post_master.ecf jgfs_atmos_post_anl.ecf
 fhrs=($(seq 0 1 120) $(seq 123 3 384))
 link_master_to_fhr "jgfs_atmos_post" "$fhrs"
 
