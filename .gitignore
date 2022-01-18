@@ -4,6 +4,7 @@ __pycache__
 *.pyc
 *.[aox]
 *.mod
+*.sw[a-p]
 
 # Ignore folders
 #-------------------
