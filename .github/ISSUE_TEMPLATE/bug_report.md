@@ -1,11 +1,12 @@
 ---
 name: Bug report
 about: Use this template to report bugs
-title: '[Bug] <title>'
+title: "[Bug] <title>"
 labels: bug
-assignees: 'aerorahul', 'KateFriedman-NOAA', 'WalterKolczynski-NOAA'
+assignees: aerorahul, KateFriedman-NOAA, WalterKolczynski-NOAA
 
 ---
+
 <!--
 This bug report template is to be used by developers to report issues
 encountered within the development branches and releases.
@@ -46,5 +47,3 @@ If so, please consider using that Issue to add any additional information.
 
 **Possible Implementation**
 <!--- Not obligatory, but suggest an idea for implementing addition or change. -->
-
-
