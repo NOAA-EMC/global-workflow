@@ -12,9 +12,9 @@
 
 FV3_model_configure(){
 
-export OUTPUT_FILETYPES="$OUTPUT_FILE"
+export OUTPUT_FILETYPES=${OUTPUT_FILETYPES:-${OUTPUT_FILE:-"netcdf"}}
 if [[ "$OUTPUT_FILE" == "netcdf" ]]; then
-   export OUTPUT_FILETYPES=" 'netcdf_parallel' 'netcdf' "
+   export OUTPUT_FILETYPES=${OUTPUT_FILETYPES:-" 'netcdf_parallel' 'netcdf' "}
 fi
 
 rm -f model_configure
