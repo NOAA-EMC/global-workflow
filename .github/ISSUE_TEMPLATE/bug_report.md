@@ -1,50 +1,38 @@
 ---
 name: Bug report
-about: Use this template to report bugs
-title: '[Bug] <title>'
-labels: bug
-assignees: 'aerorahul', 'KateFriedman-NOAA', 'WalterKolczynski-NOAA'
+about: Create a report to help us improve
+title: ''
+labels: ''
+assignees: ''
 
 ---
-<!--
-This bug report template is to be used by developers to report issues
-encountered within the development branches and releases.
-For reporting operational or NCO affected bugs, please use the [NCO Bug Report](./NCO_bug_report.md) template.
--->
 
-Your bug may already be reported!
-Please search on the [Issue tracker](https://github.com/NOAA-EMC/global-workflow/issues) before creating one.
-<!--
-Please look through the existing issues to see if this bug has been reported and an Issue has been created.
-If so, please consider using that Issue to add any additional information.
--->
-
-**Expected behavior**
-<!-- Tell us what should happen. -->
-
-**Current behavior**
-<!-- Tell us what happens instead of the expected behavior. -->
-
-**Machines affected**
-<!-- Tell us which HPC environments have this bug been detected. -->
+**Describe the bug**
+A clear and concise description of what the bug is.
 
 **To Reproduce**
-<!--- Provide a link to a live example, and/or an unambiguous set of steps to -->
-<!--- reproduce this bug. Include code to reproduce, if relevant -->
-<!--1. -->
-<!--2. -->
-<!--3. -->
+Steps to reproduce the behavior:
+1. Go to '...'
+2. Click on '....'
+3. Scroll down to '....'
+4. See error
 
-**Context**
-<!--- Providing context helps us come up with a solution that is most useful in the real world. -->
+**Expected behavior**
+A clear and concise description of what you expected to happen.
 
-**Detailed Description**
-<!--- Provide a detailed description of the change or addition you are proposing. -->
+**Screenshots**
+If applicable, add screenshots to help explain your problem.
 
-**Additional Information**
-<!-- Any other relevant information that we should know to correctly understand and reproduce the issue. Please describe in as much detail as possible. -->
+**Desktop (please complete the following information):**
+ - OS: [e.g. iOS]
+ - Browser [e.g. chrome, safari]
+ - Version [e.g. 22]
 
-**Possible Implementation**
-<!--- Not obligatory, but suggest an idea for implementing addition or change. -->
+**Smartphone (please complete the following information):**
+ - Device: [e.g. iPhone6]
+ - OS: [e.g. iOS8.1]
+ - Browser [e.g. stock browser, safari]
+ - Version [e.g. 22]
 
-
+**Additional context**
+Add any other context about the problem here.
