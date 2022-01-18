@@ -4,7 +4,7 @@
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
 #PBS -l walltime=00:05:00
-#PBS -l place=vscatter,select=1:ncpus=1
+#PBS -l place=vscatter,select=1:ncpus=1:mem=1gb
 #PBS -l debug=true
 
 model=gfs
@@ -40,7 +40,7 @@ export cyc=%CYC%
 export cycle=t%CYC%z
 
 #### developer overwrite
-export TANK_TROPCY=/lfs/h1/ops/prod/dcom
+#export TANK_TROPCY=/lfs/h1/ops/prod/dcom
 
 ############################################################
 # CALL executable job script here
