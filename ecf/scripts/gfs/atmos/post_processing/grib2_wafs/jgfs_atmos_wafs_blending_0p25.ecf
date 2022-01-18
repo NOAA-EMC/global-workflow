@@ -1,5 +1,5 @@
 #PBS -S /bin/bash
-#PBS -N gfs_atmos_wafs_blending_0p25_%CYC%
+#PBS -N %RUN%_atmos_wafs_blending_0p25_%CYC%
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%

@@ -1,5 +1,5 @@
 #PBS -S /bin/bash
-#PBS -N enkfgdas_ecen_%FHRGRP%_%CYC%
+#PBS -N enkf%RUN%_ecen_%FHRGRP%_%CYC%
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%

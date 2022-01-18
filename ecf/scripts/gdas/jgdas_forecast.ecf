@@ -1,5 +1,5 @@
 #PBS -S /bin/bash
-#PBS -N gdas_forecast_%CYC%
+#PBS -N %RUN%_forecast_%CYC%
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%

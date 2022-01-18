@@ -1,5 +1,5 @@
 #PBS -S /bin/bash
-#PBS -N gdas_atmos_emcsfc_sfc_prep_%CYC%
+#PBS -N %RUN%_atmos_emcsfc_sfc_prep_%CYC%
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%

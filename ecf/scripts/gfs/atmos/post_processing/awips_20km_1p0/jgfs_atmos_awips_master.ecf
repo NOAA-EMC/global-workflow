@@ -1,5 +1,5 @@
 #PBS -S /bin/bash
-#PBS -N gfs_atmos_awips_%FCSTHR%_%CYC%
+#PBS -N %RUN%_atmos_awips_%FCSTHR%_%CYC%
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%

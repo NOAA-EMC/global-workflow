@@ -1,5 +1,5 @@
 #PBS -S /bin/bash
-#PBS -N enkfgdas_diag_%CYC%
+#PBS -N enkf%RUN%_diag_%CYC%
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
