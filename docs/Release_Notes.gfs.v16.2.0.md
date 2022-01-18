@@ -26,7 +26,7 @@ The checkout script extracts the following GFS components:
 | --------- | ----------- | ----------------- |
 | MODEL     | GFS.v16.2.0   | Jun.Wang@noaa.gov |
 | GSI       | gfsda.v16.2.0 | Russ.Treadon@noaa.gov |
-| GLDAS     | gldas_gfsv16_release.v1.24.0 | Helin.Wei@noaa.gov |
+| GLDAS     | gldas_gfsv16_release.v1.25.0 | Helin.Wei@noaa.gov |
 | UFS_UTILS | ops-gfsv16.2.0 | George.Gayno@noaa.gov |
 | POST      | upp_v8.1.0 | Wen.Meng@noaa.gov |
 | WAFS      | gfs_wafs.v6.2.7 | Yali.Mao@noaa.gov |
