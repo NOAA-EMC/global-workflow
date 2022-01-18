@@ -24,7 +24,7 @@ export cycle=${cycle:-t${cyc}z}
 # Run setpdy and initialize PDY variables
 ###########################################
 setpdy.sh
-. PDY
+. ./PDY
 
 ################################
 # Set up the HOME directory
@@ -69,8 +69,8 @@ export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 ##############################################
 # Define COM directories
 ##############################################
-export COMIN=${COMIN:-$(compath.py ${envir}/${NET}/${gfs_ver})/${RUN}.${PDY}/${cyc}/$COMPONENT}
-export COMINgdas=${COMINgdas:-$(compath.py ${envir}/${NET}/${gfs_ver}/${RUN})}
+export COMIN=${COMIN:-$(compath.py ${envir}/${NET}/${gfs_ver})/${RUN}.${PDY}/${cyc}/$COMPONENT/gempak}
+export COMINgdas=${COMINgdas:-$(compath.py ${envir}/${NET}/${gfs_ver})/${RUN}}
 export COMOUT=${COMOUT:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/$COMPONENT/gempak/meta}
 export COMOUTncdc=${COMOUTncdc:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/$COMPONENT}
 

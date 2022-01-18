@@ -21,6 +21,7 @@ export CDUMP=%RUN%
 ############################################################
 ## Load modules
 ############################################################
+module load cray-pals/${cray_pals_ver}
 module load cfp/${cfp_ver}
 
 module list

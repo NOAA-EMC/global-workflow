@@ -24,7 +24,7 @@ export cycle=${cycle:-t${cyc}z}
 # Run setpdy and initialize PDY variables
 ###########################################
 setpdy.sh
-. PDY
+. ./PDY
 
 ################################
 # Set up the HOME directory
@@ -44,7 +44,7 @@ export SRCgfs=${SRCgfs:-$HOMEgfs/scripts}
 # Specify NET and RUN Name and model
 ####################################
 export NET=gfs
-export RUN=gfs_goessim
+export RUN=gfs
 export COMPONENT=${COMPONENT:-atmos}
 export finc=3
 export model=gfs

@@ -58,16 +58,16 @@ export cycle_m6hrs=t${cyc_m6hrs}z
 export COMPONENT=${COMPONENT:-atmos}
 export COMOUT=${COMOUT:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/$COMPONENT}
 
-export COMINgfs=${COMINgfs:-$(compath.py ${envir}/${NET}/${gfs_ver})/${RUN}.${PDY}/${cyc}/$COMPONENT}
-export COMINgfs_m6hrs=${COMINgfs_m6hrs:-$(compath.py ${envir}/${NET}/${gfs_ver})/${RUN}.${PDY_m6hrs}/${cyc_m6hrs}/$COMPONENT}
+export COMINobsproc=${COMINobsproc:-$(compath.py ${envir}/obsproc/${obsproc_ver})/${RUN}.${PDY}/${cyc}/$COMPONENT}
+export COMINobsproc_m6hrs=${COMINobsproc_m6hrs:-$(compath.py ${envir}/obsproc/${obsproc_ver})/${RUN}.${PDY_m6hrs}/${cyc_m6hrs}/$COMPONENT}
 
-export IMS_FILE=${COMINgfs}/${RUN}.${cycle}.imssnow96.grib2
-export FIVE_MIN_ICE_FILE=${COMINgfs}/${RUN}.${cycle}.seaice.5min.grib2
-export AFWA_NH_FILE=${COMINgfs}/${RUN}.${cycle}.NPR.SNWN.SP.S1200.MESH16.grb
-export AFWA_SH_FILE=${COMINgfs}/${RUN}.${cycle}.NPR.SNWS.SP.S1200.MESH16.grb
+export IMS_FILE=${COMINobsproc}/${RUN}.${cycle}.imssnow96.grib2
+export FIVE_MIN_ICE_FILE=${COMINobsproc}/${RUN}.${cycle}.seaice.5min.grib2
+export AFWA_NH_FILE=${COMINobsproc}/${RUN}.${cycle}.NPR.SNWN.SP.S1200.MESH16.grb
+export AFWA_SH_FILE=${COMINobsproc}/${RUN}.${cycle}.NPR.SNWS.SP.S1200.MESH16.grb
 
 export BLENDED_ICE_FILE=${BLENDED_ICE_FILE:-${RUN}.${cycle}.seaice.5min.blend.grb}
-export BLENDED_ICE_FILE_m6hrs=${BLENDED_ICE_FILE_m6hrs:-${COMINgfs_m6hrs}/${RUN}.${cycle_m6hrs}.seaice.5min.blend.grb}
+export BLENDED_ICE_FILE_m6hrs=${BLENDED_ICE_FILE_m6hrs:-${COMINobsproc_m6hrs}/${RUN}.${cycle_m6hrs}.seaice.5min.blend.grb}
 
 ###############################################################
 # Run relevant script

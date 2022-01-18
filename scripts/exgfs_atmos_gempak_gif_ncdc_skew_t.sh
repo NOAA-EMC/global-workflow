@@ -29,7 +29,7 @@ then
         while [ $icnt -lt 1000 ]
         do
           if [ -r ${COMIN}/${RUN}_${PDY}${cyc}f0${fhr} ] ; then
-	    sleep 5  
+            sleep 5
             break
           else
             echo "The process is waiting ... ${GRIBFILE} file to proceed."
@@ -45,7 +45,7 @@ then
         done
 
        cp ${COMIN}/${RUN}_${PDY}${cyc}f0${fhr} gem_grids${fhr}.gem
-     
+
 #       if [ $cyc -eq 00 -o $cyc -eq 12 ]
        #then
           $USHgempak/gempak_${RUN}_f${fhr}_gif.sh
@@ -77,7 +77,7 @@ export RSHPDY=`echo $PDY | cut -c5-``echo $PDY | cut -c3-4`
 cp $HOMEgfs/gempak/dictionaries/sonde.land.tbl .
 cp $HOMEgfs/gempak/dictionaries/metar.tbl .
 sort -k 2n,2 metar.tbl > metar_stnm.tbl
-cp $COMINgfs/${model}.$cycle.adpupa.tm00.bufr_d fort.40
+cp $COMINobsproc/${model}.$cycle.adpupa.tm00.bufr_d fort.40
 export err=$?
 if [[ $err -ne 0 ]] ; then
    echo " File ${model}.$cycle.adpupa.tm00.bufr_d does not exist."

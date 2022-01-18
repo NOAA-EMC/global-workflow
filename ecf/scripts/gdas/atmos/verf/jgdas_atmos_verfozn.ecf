@@ -36,7 +36,6 @@ module list
 #############################################################
 export cyc=%CYC%
 export cycle=t%CYC%z
-export COM_IN=%COM%/${NET}/${gfs_ver}
 export VERBOSE=YES
 
 ############################################################
