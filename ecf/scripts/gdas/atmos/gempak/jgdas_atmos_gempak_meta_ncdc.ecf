@@ -1,5 +1,5 @@
 #PBS -S /bin/bash
-#PBS -N gdas_atmos_gempak_meta_ncdc_%CYC%
+#PBS -N %RUN%_atmos_gempak_meta_ncdc_%CYC%
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%

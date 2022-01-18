@@ -1,5 +1,5 @@
 #PBS -S /bin/bash
-#PBS -N enkfgdas_update_%CYC%
+#PBS -N enkf%RUN%_update_%CYC%
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%

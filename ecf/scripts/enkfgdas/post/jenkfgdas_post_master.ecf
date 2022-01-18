@@ -1,5 +1,5 @@
 #PBS -S /bin/bash
-#PBS -N enkfgdas_post_f%FHOUT_EPOS%_%CYC%
+#PBS -N enkf%RUN%_post_f%FHOUT_EPOS%_%CYC%
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
