@@ -1,11 +1,12 @@
 ---
-name: General issue template
+name: General Issue
 about: Use this template for general issues
-title: '[New issue] <title>'
-labels: ''
-assignees: 'KateFriedman-NOAA', 'WalterKolczynski-NOAA'
+title: "[Issue]"
+labels: 
+assignees: KateFriedman-NOAA, WalterKolczynski-NOAA
 
 ---
+
 
 If this is a bug, please consider using the [Bug Report](./bug_report.md) template.
 Your issue may already have been created!
@@ -32,4 +33,3 @@ If so, please consider using that Issue to add any additional information.
 **Dependencies**
 <!-- What must be done before this can be done?  Add issue dependencies as appropriate e.g. depends on #IssueNumber -->
 <!-- Does this block progress on other issues? Add this issue as a dependency to other issues as appropriate e.g. #IssueNumber has a dependency on this issue -->
-

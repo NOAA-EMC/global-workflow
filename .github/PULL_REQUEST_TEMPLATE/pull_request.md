@@ -1,9 +1,9 @@
 ---
 name: Pull request
 about: Use this template to open pull requests
-title: '<title>'
+title:
 labels:
-assignees: 'KateFriedman-NOAA', 'WalterKolczynski-NOAA'
+assignees: KateFriedman-NOAA, WalterKolczynski-NOAA
 
 ---
 
