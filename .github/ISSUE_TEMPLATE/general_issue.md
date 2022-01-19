@@ -1,9 +1,9 @@
 ---
 name: General Issue
 about: Use this template for general issues
-title: "[Issue]"
+title:
 labels: 
-assignees: KateFriedman-NOAA, WalterKolczynski-NOAA
+assignees:
 
 ---
 
@@ -14,6 +14,12 @@ Please search on the [Issue tracker](https://github.com/NOAA-EMC/global-workflow
 <!--
 Please look through the existing issues to see if this issue has been created.
 If so, please consider using that Issue to add any additional information.
+-->
+
+<!--
+Please remove unwanted/unrelated/irrelevant information such as comments.
+Use proper formatting to separate code snippets from text description.
+Please copy any output files into a Github gist (for e.g.) and link to the gist, rather than relying on paths that might change.
 -->
 
 **Description**

@@ -1,9 +1,9 @@
 ---
 name: Bug report
 about: Create a report to help us improve
-title: "[Bug]"
+title:
 labels: bug
-assignees: aerorahul, KateFriedman-NOAA, WalterKolczynski-NOAA
+assignees:
 
 ---
 
@@ -11,6 +11,12 @@ assignees: aerorahul, KateFriedman-NOAA, WalterKolczynski-NOAA
 This bug report template is to be used by developers to report issues
 encountered within the development branches and releases.
 For reporting operational or NCO affected bugs, please use the [NCO Bug Report](./NCO_bug_report.md) template.
+-->
+
+<!--
+Please remove unwanted/unrelated/irrelevant information such as comments.
+Use proper formatting to separate code snippets from text description.
+Please copy any output files into a Github gist (for e.g.) and link to the gist, rather than relying on paths that might change.
 -->
 
 Your bug may already be reported!

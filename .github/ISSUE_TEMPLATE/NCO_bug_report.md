@@ -1,7 +1,7 @@
 ---
 name: NCO Bug report
 about: Create a report from NCO
-title: "[NCO Bug]"
+title:
 labels: nco-bug
 assignees: aerorahul, KateFriedman-NOAA
 
@@ -11,6 +11,12 @@ assignees: aerorahul, KateFriedman-NOAA
 This bug report template is to be used by NCO ONLY to report issues
 encountered within current operations and T2O activities.
 For reporting developer/development bugs, please use the [Bug Report](./bug_report.md) template.
+-->
+
+<!--
+Please remove unwanted/unrelated/irrelevant information such as comments.
+Use proper formatting to separate code snippets from text description.
+Please copy any output files into a Github gist (for e.g.) and link to the gist, rather than relying on paths that might change.
 -->
 
 Your bug may already be reported!
