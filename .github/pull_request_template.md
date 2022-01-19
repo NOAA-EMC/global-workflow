@@ -1,12 +1,3 @@
----
-name: Pull request
-about: Use this template to open pull requests
-title:
-labels:
-assignees: KateFriedman-NOAA, WalterKolczynski-NOAA
-
----
-
 <!-- PLEASE READ -->
 <!--
 Before opening a PR, please note these guidelines:
