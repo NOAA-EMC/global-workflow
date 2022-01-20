@@ -38,6 +38,10 @@ elif [[ "$machine" = "ORION" ]]; then
    export npe_node_max=40
 fi
 
+export OUTPUT_FILETYPE_ATM="netcdf_parallel"
+export OUTPUT_FILETYPE_SFC="netcdf"
+export ichunk2d=0; export jchunk2d=0
+export ichunk3d=0; export jchunk3d=0; export kchunk3d=0
 
 # (Standard) Model resolution dependent variables
 case $case_in in
@@ -101,6 +105,17 @@ case $case_in in
         export WRITE_GROUP_GFS=${WRITE_GROUP_GFS:-2}
         export WRTTASK_PER_GROUP_GFS=${WRTTASK_PER_GROUP_GFS:-$npe_node_max}
         export WRTIOBUF=${WRTIOBUF:-"16M"}
+        if [[ $machine == "ORION" ]]; then
+            export OUTPUT_FILETYPE_SFC="netcdf_parallel"
+        fi
+        if [[ $machine == "WCOSS_DELL_P3" ]]; then
+            RESTILE=$(echo $CASE |cut -c 2-)
+            export ichunk2d=$((4*RESTILE))
+            export jchunk2d=$((2*RESTILE))
+            export ichunk3d=$((4*RESTILE))
+            export jchunk3d=$((2*RESTILE))
+            export kchunk3d=1
+        fi
         ;;
     "C768")
         export DELTIM=150
@@ -116,6 +131,15 @@ case $case_in in
         export WRITE_GROUP_GFS=4
         export WRTTASK_PER_GROUP_GFS=$(echo "2*$npe_node_max" |bc)
         export WRTIOBUF="32M"
+        export OUTPUT_FILETYPE_SFC="netcdf_parallel"
+        if [[ $machine == "WCOSS_DELL_P3" ]]; then
+            RESTILE=$(echo $CASE |cut -c 2-)
+            export ichunk2d=$((4*RESTILE))
+            export jchunk2d=$((2*RESTILE))
+            export ichunk3d=$((4*RESTILE))
+            export jchunk3d=$((2*RESTILE))
+            export kchunk3d=1
+        fi
         ;;
     "C1152")
         export DELTIM=120
@@ -131,6 +155,15 @@ case $case_in in
         export WRITE_GROUP_GFS=4
         export WRTTASK_PER_GROUP_GFS=$(echo "2*$npe_node_max" |bc)
         export WRTIOBUF="48M"
+        export OUTPUT_FILETYPE_SFC="netcdf_parallel"
+        if [[ $machine == "WCOSS_DELL_P3" ]]; then
+            RESTILE=$(echo $CASE |cut -c 2-)
+            export ichunk2d=$((4*RESTILE))
+            export jchunk2d=$((2*RESTILE))
+            export ichunk3d=$((4*RESTILE))
+            export jchunk3d=$((2*RESTILE))
+            export kchunk3d=1
+        fi
         ;;
     "C3072")
         export DELTIM=90
@@ -146,6 +179,15 @@ case $case_in in
         export WRITE_GROUP_GFS=4
         export WRTTASK_PER_GROUP_GFS=$(echo "3*$npe_node_max" |bc)
         export WRTIOBUF="64M"
+        export OUTPUT_FILETYPE_SFC="netcdf_parallel"
+        if [[ $machine == "WCOSS_DELL_P3" ]]; then
+            RESTILE=$(echo $CASE |cut -c 2-)
+            export ichunk2d=$((4*RESTILE))
+            export jchunk2d=$((2*RESTILE))
+            export ichunk3d=$((4*RESTILE))
+            export jchunk3d=$((2*RESTILE))
+            export kchunk3d=1
+        fi
         ;;
     *)
         echo "grid $case_in not supported, ABORT!"
