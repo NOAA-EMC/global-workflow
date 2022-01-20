@@ -63,8 +63,6 @@ export EXECwave=${EXECwave:-$HOMEgfs/exec}
 export COMIN=${COMIN:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/$COMPONENT}
 export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/$COMPONENT}
 
-export COMINice=${COMINice:-${COMROOTp2}/omb/prod}
-export COMINwnd=${COMINwnd:-$(compath.py ${envir}/gfs/${gfs_ver})}
 export COMIN_WAV_CUR=${COMIN_WAV_CUR:-$(compath.py ${envir}/rtofs/${rtofs_ver})}
 
 mkdir -p $COMOUT/gridded
