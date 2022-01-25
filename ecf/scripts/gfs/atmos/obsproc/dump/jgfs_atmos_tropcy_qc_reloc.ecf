@@ -4,7 +4,7 @@
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
 #PBS -l walltime=00:05:00
-#PBS -l place=vscatter,select=1:ncpus=1:mem=1gb
+#PBS -l place=vscatter,select=1:ncpus=1:mem=1GB
 #PBS -l debug=true
 
 model=gfs
@@ -17,16 +17,12 @@ export NET=%NET:gfs%
 export RUN=%RUN%
 export CDUMP=%RUN%
 
-# Configuration files 
-export EXPDIR=${HOMEgfs}/parm/config
-
 ############################################################
 # Load modules
 ############################################################
 module load PrgEnv-intel/${PrgEnv_intel_ver}
 module load craype/${craype_ver}
 module load intel/${intel_ver}
-module load cfp/${cfp_ver}
 module load libjpeg/${libjpeg_ver}
 module load grib_util/${grib_util_ver}
 module load wgrib2/${wgrib2_ver}
@@ -38,9 +34,6 @@ export PROCESS_TROPCY=YES
 export DO_RELOCATE=YES
 export cyc=%CYC%
 export cycle=t%CYC%z
-
-#### developer overwrite
-#export TANK_TROPCY=/lfs/h1/ops/prod/dcom
 
 ############################################################
 # CALL executable job script here
