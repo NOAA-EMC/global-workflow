@@ -239,6 +239,10 @@ def get_workflow(dict_configs, cdump='gdas'):
     envars.append(rocoto.create_envar(name='CDUMP', value='&CDUMP;'))
     envars.append(rocoto.create_envar(name='PDY', value='<cyclestr>@Y@m@d</cyclestr>'))
     envars.append(rocoto.create_envar(name='cyc', value='<cyclestr>@H</cyclestr>'))
+    envars.append(rocoto.create_envar(name='GDATE', value='<cyclestr offset="-6:00:00">@Y@m@d@H</cyclestr>'))
+    envars.append(rocoto.create_envar(name='GDUMP', value='gdas'))
+    envars.append(rocoto.create_envar(name='gPDY', value='<cyclestr offset="-6:00:00">@Y@m@d</cyclestr>'))
+    envars.append(rocoto.create_envar(name='gcyc', value='<cyclestr offset="-6:00:00">@H</cyclestr>'))
 
     base = dict_configs['base']
     machine = base.get('machine', wfu.detectMachine())
@@ -672,6 +676,40 @@ def get_workflow(dict_configs, cdump='gdas'):
 
     return ''.join(tasks)
 
+
+def get_awipsgroups(awips, cdump='gfs'):
+
+    fhmin = awips['FHMIN']
+    fhmax = awips['FHMAX']
+    fhout = awips['FHOUT']
+
+    # Get a list of all forecast hours
+    if cdump in ['gdas']:
+        fhrs = range(fhmin, fhmax+fhout, fhout)
+    elif cdump in ['gfs']:
+        fhmax = np.max([awips['FHMAX_GFS_00'],awips['FHMAX_GFS_06'],awips['FHMAX_GFS_12'],awips['FHMAX_GFS_18']])
+        fhout = awips['FHOUT_GFS']
+        fhmax_hf = awips['FHMAX_HF_GFS']
+        fhout_hf = awips['FHOUT_HF_GFS']
+        if fhmax > 240:
+            fhmax = 240
+        if fhmax_hf > 240:
+            fhmax_hf = 240
+        fhrs_hf = range(fhmin, fhmax_hf+fhout_hf, fhout_hf)
+        fhrs = list(fhrs_hf) + list(range(fhrs_hf[-1]+fhout, fhmax+fhout, fhout))
+
+    nawipsgrp = awips['NAWIPSGRP']
+    ngrps = nawipsgrp if len(fhrs) > nawipsgrp else len(fhrs)
+
+    fhrs = [f'f{f:03d}' for f in fhrs]
+    fhrs = np.array_split(fhrs, ngrps)
+    fhrs = [f.tolist() for f in fhrs]
+
+    fhrgrp = ' '.join([f'{x:03d}' for x in range(0, ngrps)])
+    fhrdep = ' '.join([f[-1] for f in fhrs])
+    fhrlst = ' '.join(['_'.join(f) for f in fhrs])
+
+    return fhrgrp, fhrdep, fhrlst
 
 def get_workflow_body(dict_configs, cdump='gdas'):
     '''
