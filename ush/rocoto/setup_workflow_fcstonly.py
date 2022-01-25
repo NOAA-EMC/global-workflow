@@ -239,6 +239,10 @@ def get_workflow(dict_configs, cdump='gdas'):
     envars.append(rocoto.create_envar(name='CDUMP', value='&CDUMP;'))
     envars.append(rocoto.create_envar(name='PDY', value='<cyclestr>@Y@m@d</cyclestr>'))
     envars.append(rocoto.create_envar(name='cyc', value='<cyclestr>@H</cyclestr>'))
+    envars.append(rocoto.create_envar(name='GDATE', value='<cyclestr offset="-6:00:00">@Y@m@d@H</cyclestr>'))
+    envars.append(rocoto.create_envar(name='GDUMP', value='gdas'))
+    envars.append(rocoto.create_envar(name='gPDY', value='<cyclestr offset="-6:00:00">@Y@m@d</cyclestr>'))
+    envars.append(rocoto.create_envar(name='gcyc', value='<cyclestr offset="-6:00:00">@H</cyclestr>'))
 
     base = dict_configs['base']
     machine = base.get('machine', wfu.detectMachine())
