@@ -115,10 +115,10 @@ case $case_in in
         export layout_y_gfs=24
         export npe_wav=140
         export npe_wav_gfs=448
-        export nth_fv3=4
+        export nth_fv3=3
         export nth_fv3_gfs=5
         export cdmbgwd="4.0,0.15,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
-        export WRITE_GROUP=8
+        export WRITE_GROUP=2
         export WRTTASK_PER_GROUP=64
         export WRITE_GROUP_GFS=8
         export WRTTASK_PER_GROUP_GFS=48
