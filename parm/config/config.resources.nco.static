@@ -129,7 +129,7 @@ elif [ $step = "waveawipsgridded" ]; then
 
 elif [ $step = "anal" ]; then
 
-    export wtime_anal="00:45:00"
+    export wtime_anal="00:50:00"
     export npe_anal=825
     export nth_anal=8
     export npe_anal_gfs=825
