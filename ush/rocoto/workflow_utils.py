@@ -287,7 +287,10 @@ def get_resources(machine, cfg, task, reservation, cdump='gdas'):
 
     ltask = 'eobs' if task in ['eomg'] else task
 
-    memory = cfg.get(f'memory_{ltask}', None)
+    if cdump in ['gfs'] and f'memory_{task}_gfs' in cfg.keys():
+        memory = cfg.get(f'memory_{ltask}_gfs', None)
+    else:
+        memory = cfg.get(f'memory_{ltask}', None)
 
     if cdump in ['gfs'] and f'npe_{task}_gfs' in cfg.keys():
         tasks = cfg[f'npe_{ltask}_gfs']
