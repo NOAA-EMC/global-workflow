@@ -1,7 +1,6 @@
 extern /prod00/gdas/jgdas_forecast
 extern /prod00/gdas/atmos/post
 extern /prod00/enkfgdas/post
-#### ecen
 extern /prod00/gdas/atmos/post_processing/jgdas_atmos_chgres_forenkf
 
 suite prod06
@@ -35,22 +34,10 @@ suite prod06
           task jgfs_atmos_tropcy_qc_reloc
             event 1 jtwc_bull_email
             time 02:41
-          task jgfs_atmos_dump
-            event 1 release_sfcprep
-            time 02:47
-          task jgfs_atmos_dump_post
-            trigger jgfs_atmos_dump == complete
-            event 1 release_gfs06_dump_alert
-          task jgfs_atmos_dump_alert
-            trigger jgfs_atmos_dump_post:release_gfs06_dump_alert
         endfamily
         family prep
           task jgfs_atmos_emcsfc_sfc_prep
             trigger ../dump/jgfs_atmos_dump:release_sfcprep
-          task jgfs_atmos_prep
-            trigger ../dump/jgfs_atmos_dump == complete and ../dump/jgfs_atmos_tropcy_qc_reloc == complete
-          task jgfs_atmos_prep_post
-            trigger ./jgfs_atmos_prep == complete and ../../analysis/jgfs_atmos_analysis == complete
         endfamily
       endfamily
       family analysis
@@ -2269,19 +2256,10 @@ suite prod06
           task jgdas_atmos_dump
             event 1 release_sfcprep
             time 05:50
-          task jgdas_atmos_dump_post
-            trigger jgdas_atmos_dump == complete
-            event 1 release_gdas06_dump_alert
-          task jgdas_atmos_dump_alert
-            trigger jgdas_atmos_dump_post:release_gdas06_dump_alert
         endfamily
         family prep
           task jgdas_atmos_emcsfc_sfc_prep
             trigger ../dump/jgdas_atmos_dump:release_sfcprep
-          task jgdas_atmos_prep
-            trigger ../dump/jgdas_atmos_dump == complete and ../dump/jgdas_atmos_tropcy_qc_reloc == complete
-          task jgdas_atmos_prep_post
-            trigger ./jgdas_atmos_prep == complete and ../../analysis/jgdas_atmos_analysis == complete
         endfamily
       endfamily
       family init
