@@ -4,8 +4,7 @@
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
 #PBS -l walltime=00:10:00
-#PBS -l place=vscatter,select=1:mpiprocs=128:ompthreads=1:ncpus=128
-#PBS -l place=excl
+#PBS -l place=vscatter,select=1:mpiprocs=11:ompthreads=1:ncpus=11:mem=2GB
 #PBS -l debug=true
 
 model=gfs
@@ -21,6 +20,9 @@ export CDUMP=%RUN%
 ############################################################
 ## Load modules
 ############################################################
+module load PrgEnv-intel/${PrgEnv_intel_ver}
+module load craype/${craype_ver}
+module load intel/${intel_ver}
 module load cray-pals/${cray_pals_ver}
 module load cfp/${cfp_ver}
 
