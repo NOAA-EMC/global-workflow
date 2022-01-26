@@ -116,7 +116,7 @@ elif [ $step = "wavegempak" ]; then
 elif [ $step = "waveawipsbulls" ]; then
 
     export wtime_waveawipsbulls="00:20:00"
-    export npe_waveawipsbulls=$npe_node_max
+    export npe_waveawipsbulls=1
     export nth_waveawipsbulls=1
     export npe_node_waveawipsbulls=$(echo "$npe_node_max / $nth_waveawipsbulls" | bc)
     export NTASKS=$npe_waveawipsbulls
@@ -124,7 +124,7 @@ elif [ $step = "waveawipsbulls" ]; then
 elif [ $step = "waveawipsgridded" ]; then
 
     export wtime_waveawipsgridded="02:00:00"
-    export npe_waveawipsgridded=$npe_node_max
+    export npe_waveawipsgridded=1
     export nth_waveawipsgridded=1
     export npe_node_waveawipsgridded=$(echo "$npe_node_max / $nth_waveawipsgridded" | bc)
     export NTASKS=$npe_waveawipsgridded
@@ -146,7 +146,6 @@ elif [ $step = "anal" ]; then
     if [[ "$machine" = "WCOSS2" ]]; then export npe_node_anal=15; fi
     export nth_cycle=$npe_node_max
     export npe_node_cycle=$(echo "$npe_node_max / $nth_cycle" | bc)
-    if [[ "$machine" == "WCOSS_C" ]]; then export memory_anal="3072M"; fi
 
 elif [ $step = "analcalc" ]; then
 
@@ -258,9 +257,7 @@ elif [ $step = "vrfy" ]; then
     export npe_node_vrfy=1
     export npe_vrfy_gfs=1
     export npe_node_vrfy_gfs=1
-    if [[ "$machine" == "WCOSS_C" ]]; then
-	    export memory_vrfy="3072M"
-    elif [[ "$machine" == "HERA" ]]; then
+    if [[ "$machine" == "HERA" ]]; then
 	    export memory_vrfy="16384M"
     fi
 
@@ -273,11 +270,6 @@ elif [ $step = "metp" ]; then
     export wtime_metp_gfs="06:00:00"
     export npe_metp_gfs=4
     export npe_node_metp_gfs=4
-    if [[ "$machine" == "WCOSS_C" ]]; then
-            export memory_metp="3072M"
-    elif [[ "$machine" == "THEIA" ]]; then
-            export memory_metp="16384M"
-    fi
 
 elif [ $step = "echgres" ]; then
 
@@ -357,7 +349,6 @@ elif [ $step = "ecen" ]; then
     export npe_node_ecen=$(echo "$npe_node_max / $nth_ecen" | bc)
     export nth_cycle=$nth_ecen
     export npe_node_cycle=$(echo "$npe_node_max / $nth_cycle" | bc)
-    if [[ "$machine" == "WCOSS_C" ]]; then export memory_ecen="3072M"; fi
 
 elif [ $step = "esfc" ]; then
 
@@ -375,7 +366,6 @@ elif [ $step = "efcs" ]; then
     export npe_efcs=$(echo "$layout_x * $layout_y * 6" | bc)
     export nth_efcs=${nth_fv3:-2}
     export npe_node_efcs=$(echo "$npe_node_max / $nth_efcs" | bc)
-    if [[ "$machine" == "WCOSS_C" ]]; then export memory_efcs="254M"; fi
 
 elif [ $step = "epos" ]; then
 
@@ -384,7 +374,6 @@ elif [ $step = "epos" ]; then
     export nth_epos=4
     if [[ "$machine" = "WCOSS_DELL_P3" ]]; then export nth_epos=7; fi
     export npe_node_epos=$(echo "$npe_node_max / $nth_epos" | bc)
-    if [[ "$machine" == "WCOSS_C" ]]; then export memory_epos="254M"; fi
 
 elif [ $step = "postsnd" ]; then
 
@@ -399,21 +388,19 @@ elif [ $step = "postsnd" ]; then
         export npe_node_postsnd=4
     fi
     if [[ "$machine" = "HERA" ]]; then export npe_node_postsnd=2; fi
-    if [[ "$machine" == "WCOSS_C" ]]; then export memory_postsnd="254M"; fi
 
 elif [ $step = "awips" ]; then
 
     export wtime_awips="03:30:00"
-    export npe_awips=4
-    export npe_node_awips=4
-    export nth_awips=2
+    export npe_awips=1
+    export npe_node_awips=1
+    export nth_awips=1
     export memory_awips="1GB"
     if [[ "$machine" == "WCOSS_DELL_P3" ]]; then
         export npe_awips=2
         export npe_node_awips=2
         export nth_awips=1
     fi
-    if [[ "$machine" == "WCOSS_C" ]]; then export memory_awips="2048M"; fi
 
 elif [ $step = "gempak" ]; then
 
