@@ -194,6 +194,9 @@ elif [ $step = "fcst" ]; then
             export layout_y=$layout_y_gfs
             export WRITE_GROUP=$WRITE_GROUP_GFS
             export WRTTASK_PER_GROUP=$WRTTASK_PER_GROUP_GFS
+	    export nth_fcst=${nth_fv3_gfs:-2}
+	else
+	    export nth_fcst=${nth_fv3:-2}
         fi
 
         (( ATMPETS = layout_x * layout_y * 6 ))
@@ -207,8 +210,6 @@ elif [ $step = "fcst" ]; then
         fi
         export ATMPETS
         NTASKS_TOT=$ATMPETS
-
-        export nth_fcst=${nth_fv3:-2}
 
         export npe_node_fcst=$(echo "$npe_node_max / $nth_fcst" | bc)
         if [[ "$machine" == "WCOSS_C" ]]; then export memory_fcst="1024M"; fi
