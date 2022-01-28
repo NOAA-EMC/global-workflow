@@ -41,7 +41,7 @@ export cyc=%CYC%
 export cycle=t%CYC%z
 export USE_CFP=YES
 trdrun=%TRDRUN%
-#export job="jgfs_awips_f${fcsthrs}_${cyc}"
+export job="jgfs_awips_f${fcsthrs}_${cyc}"
 
 ############################################################
 # CALL executable job script here
