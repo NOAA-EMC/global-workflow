@@ -131,7 +131,8 @@ elif [ $step = "waveawipsgridded" ]; then
 
 elif [ $step = "anal" ]; then
 
-    export wtime_anal="00:50:00"
+    export wtime_anal="00:40:00"
+    export wtime_anal_gfs="00:50:00"
     export npe_anal=825
     export nth_anal=8
     export npe_anal_gfs=825
@@ -293,7 +294,7 @@ elif [ $step = "eobs" -o $step = "eomg" ]; then
     export wtime_eobs="00:10:00"
     export wtime_eomg="01:00:00"
     if [ $CASE = "C768" ]; then
-      export npe_eobs=416
+      export npe_eobs=480
     elif [ $CASE = "C384" ]; then
       export npe_eobs=42
     elif [ $CASE = "C192" ]; then
