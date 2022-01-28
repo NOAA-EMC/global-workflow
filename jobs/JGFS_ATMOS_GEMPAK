@@ -7,6 +7,23 @@ date
 ############################################
 # GFS GEMPAK PRODUCT GENERATION
 ############################################
+echo
+echo "=============== BEGIN GEMPAK ==============="
+echo
+echo "=============== BEGIN TO SOURCE RELEVANT CONFIGS ==============="
+configs="base gempak"
+for config in $configs; do
+    . $EXPDIR/config.${config}
+    status=$?
+    [[ $status -ne 0 ]] && exit $status
+done
+
+###############################################################
+echo
+echo "=============== BEGIN TO SOURCE MACHINE RUNTIME ENVIRONMENT ==============="
+. $BASE_ENV/${machine}.env gempak
+status=$?
+[[ $status -ne 0 ]] && exit $status
 
 ##########################################################
 # obtain unique process id (pid) and make temp directory
@@ -64,6 +81,7 @@ export COMPONENT=${COMPONENT:-atmos}
 export COMIN=${COMIN:-$(compath.py ${envir}/${NET}/${gfs_ver})/${RUN}.${PDY}/${cyc}/$COMPONENT}
 export COMOUT=${COMOUT:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/$COMPONENT/gempak}
 
+export SENDCOM=${SENDCOM:-NO}
 export SENDDBN=${SENDDBN:-NO}
 export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
@@ -141,8 +159,7 @@ ntasks=${NTASKS_GEMPAK:-$(cat $DATA/poescript | wc -l)}
 ptile=${PTILE_GEMPAK:-4}
 threads=${NTHREADS_GEMPAK:-1}
 export OMP_NUM_THREADS=$threads
-APRUN="mpiexec -l -n $ntasks -ppn $ntasks --cpu-bind verbose,core cfp"
-
+APRUN="mpiexec -l -np $ntasks --cpu-bind verbose,core cfp"
 APRUN_GEMPAKCFP=${APRUN_GEMPAKCFP:-$APRUN}
 APRUNCFP=$(eval echo $APRUN_GEMPAKCFP)
 
