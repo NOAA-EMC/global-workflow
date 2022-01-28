@@ -8,7 +8,7 @@ set -x -e
 #############################
 # Source relevant config files
 #############################
-configs="base wave wavepostsbs wavepostbndpnt"
+configs="base wave wavepostsbs wavepostbndpntbll"
 export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
 config_path=${EXPDIR:-$NWROOT/gfs.${gfs_ver}/parm/config}
 for config in $configs; do
