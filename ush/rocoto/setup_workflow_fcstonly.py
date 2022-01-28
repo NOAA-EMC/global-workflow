@@ -621,7 +621,9 @@ def get_workflow(dict_configs, cdump='gdas'):
         dep_dict = {'type': 'metatask', 'name': f'{cdump}post'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
-        task = wfu.create_wf_task('gempak', cdump=cdump, envar=envars, dependency=dependencies)
+        ROTDIR = rocoto.create_envar(name='ROTDIR', value='&ROTDIR;')
+        gempakenvars = envars + [ROTDIR]
+        task = wfu.create_wf_task('gempak', cdump=cdump, envar=gempakenvars, dependency=dependencies)
         tasks.append(task)
         tasks.append('\n')
 
