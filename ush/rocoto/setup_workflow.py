@@ -267,7 +267,7 @@ def get_gdasgfs_resources(dict_configs, cdump='gdas'):
         tasks += ['waveinit', 'waveprep', 'wavepostsbs', 'wavepostbndpnt', 'wavepostbndpntbll', 'wavepostpnt']
     if cdump in ['gfs'] and do_bufrsnd in ['Y', 'YES']:
         tasks += ['postsnd']
-    if cdump in ['gfs'] and do_gempak in ['Y', 'YES']:
+    if do_gempak in ['Y', 'YES']:
         tasks += ['gempak']
     if cdump in ['gfs'] and do_wave in ['Y', 'YES'] and do_gempak in ['Y', 'YES']:
         tasks += ['wavegempak']
@@ -743,12 +743,14 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
         dict_tasks[f'{cdump}awips'] = task
 
     # gempak
-    if cdump in ['gfs'] and do_gempak in ['Y', 'YES']:
+    if do_gempak in ['Y', 'YES']:
         deps = []
         dep_dict = {'type': 'metatask', 'name': f'{cdump}post'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
-        task = wfu.create_wf_task('gempak', cdump=cdump, envar=envars, dependency=dependencies)
+        ROTDIR = rocoto.create_envar(name='ROTDIR', value='&ROTDIR;')
+        gempakenvars = envars + [ROTDIR]
+        task = wfu.create_wf_task('gempak', cdump=cdump, envar=gempakenvars, dependency=dependencies)
 
         dict_tasks[f'{cdump}gempak'] = task
 

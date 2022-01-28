@@ -12,13 +12,13 @@ echo "                    data on the CCS is properly protected."
 set -xa
 
 cd $DATA
-RUN=$1
+RUN2=$1
 fend=$2
 DBN_ALERT_TYPE=$3
 
 export 'PS4=$RUN:$SECONDS + '
 
-DATA_RUN=$DATA/$RUN
+DATA_RUN=$DATA/$RUN2
 mkdir -p $DATA_RUN
 cd $DATA_RUN
 
@@ -81,9 +81,9 @@ while [ $fhcnt -le $fend ] ; do
   fhr3=$fhcnt
   typeset -Z3 fhr3
 
-  GEMGRD=${RUN}_${PDY}${cyc}f${fhr3}
+  GEMGRD=${RUN2}_${PDY}${cyc}f${fhr3}
 
-  if [ $RUN = "gdas_0p25" ]; then 
+  if [ $RUN2 = "gdas_0p25" ]; then
     export GRIBIN=$COMIN/${model}.${cycle}.pgrb2.0p25.f${fhr}
     if [ ! -f $GRIBIN ] ; then
        echo "WARNING: $GRIBIN FILE is missing"
@@ -168,9 +168,9 @@ $GEMEXE/gpend
 #####################################################################
 # GOOD RUN
 set +x
-echo "**************JOB $RUN NAWIPS COMPLETED NORMALLY ON THE IBM"
-echo "**************JOB $RUN NAWIPS COMPLETED NORMALLY ON THE IBM"
-echo "**************JOB $RUN NAWIPS COMPLETED NORMALLY ON THE IBM"
+echo "**************JOB $RUN2 NAWIPS COMPLETED NORMALLY ON THE IBM"
+echo "**************JOB $RUN2 NAWIPS COMPLETED NORMALLY ON THE IBM"
+echo "**************JOB $RUN2 NAWIPS COMPLETED NORMALLY ON THE IBM"
 set -x
 #####################################################################
 

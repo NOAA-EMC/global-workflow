@@ -44,6 +44,7 @@ export SRCgfs=${SRCgfs:-$HOMEgfs/scripts}
 # Specify NET and RUN Name and model
 ####################################
 export NET=gfs
+#export RUN=gfs_goessim
 export RUN=gfs
 export COMPONENT=${COMPONENT:-atmos}
 export finc=3
@@ -77,6 +78,7 @@ mkdir -p $DATA
 cd $DATA
 
 export DBN_ALERT_TYPE=GFS_GOESSIM_GEMPAK
+export RUN2=gfs_goessim
 export GRIB=goessimpgrb2.0p25.f
 export EXT=" "
 export fend=180
@@ -98,7 +100,7 @@ mkdir -p $DATA
 cd $DATA
 
 export DBN_ALERT_TYPE=GFS_GOESSIM221_GEMPAK
-export RUN=gfs_goessim221
+export RUN2=gfs_goessim221
 export GRIB=goessimpgrb2f
 export EXT=".grd221"
 export fend=180

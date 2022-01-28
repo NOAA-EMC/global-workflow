@@ -17,13 +17,13 @@ set -xa
 export ILPOST=${ILPOST:-1}
 
 cd $DATA
-RUN=$1
+RUN2=$1
 fend=$2
 DBN_ALERT_TYPE=$3
 
 export 'PS4=$RUN:$SECONDS + '
 
-DATA_RUN=$DATA/$RUN
+DATA_RUN=$DATA/$RUN2
 mkdir -p $DATA_RUN
 cd $DATA_RUN
 
@@ -62,7 +62,7 @@ if mkdir lock.$fhcnt  ; then
   fhr3=$fhcnt
   typeset -Z3 fhr3
 
-  GEMGRD=${RUN}_${PDY}${cyc}f${fhr3}
+  GEMGRD=${RUN2}_${PDY}${cyc}f${fhr3}
 
 # Set type of Interpolation for WGRIB2
   export opt1=' -set_grib_type same -new_grid_winds earth '
@@ -77,10 +77,10 @@ if mkdir lock.$fhcnt  ; then
   export opt28=' -new_grid_interpolation budget -fi '
   export TRIMRH=$HOMEgfs/ush/trim_rh.sh
 
-  if [ $RUN = "gfs_0p50" ]; then
+  if [ $RUN2 = "gfs_0p50" ]; then
     export GRIBIN=$COMIN/${model}.${cycle}.pgrb2.0p50.f${fhr}
     GRIBIN_chk=$COMIN/${model}.${cycle}.pgrb2.0p50.f${fhr}.idx
-  elif [ $RUN = "gfs_0p25" -o $RUN = "gdas_0p25" -o $RUN = "gfs35_atl" -o $RUN = "gfs35_pac" -o $RUN = "gfs40" ]; then 
+  elif [ $RUN2 = "gfs_0p25" -o $RUN2 = "gdas_0p25" -o $RUN2 = "gfs35_atl" -o $RUN2 = "gfs35_pac" -o $RUN2 = "gfs40" ]; then
     export GRIBIN=$COMIN/${model}.${cycle}.pgrb2.0p25.f${fhr}
     GRIBIN_chk=$COMIN/${model}.${cycle}.pgrb2.0p25.f${fhr}.idx
   else
@@ -107,7 +107,7 @@ if mkdir lock.$fhcnt  ; then
     fi
   done
 
-case $RUN in
+case $RUN2 in
  gfs35_pac)
 #   $COPYGB2 -g "0 6 0 0 0 0 0 0 416 186 0 0 75125000 130000000 48 17000000 260000000 312000 312000 0" -x $GRIBIN grib$fhr
 #   NEW define gfs35_pac="0 6 0 0 0 0 0 0 416 186 0 -1 75125000 130000000 48 17405000 259480000 312000 312000 0"
@@ -169,12 +169,12 @@ EOF
   cd $DATA_RUN
 else
     if [ $fhcnt -ge 240 ] ; then
-	if [ $fhcnt -lt 276 -a $RUN = "gfs_0p50" ] ; then
+	if [ $fhcnt -lt 276 -a $RUN2 = "gfs_0p50" ] ; then
 	    let fhcnt=fhcnt+6
 	else
 	    let fhcnt=fhcnt+12
 	fi
-    elif [ $fhcnt -lt 120 -a $RUN = "gfs_0p25" ] ; then
+    elif [ $fhcnt -lt 120 -a $RUN2 = "gfs_0p25" ] ; then
 ####    let fhcnt=fhcnt+1
 	let fhcnt=fhcnt+$ILPOST
     else
@@ -187,9 +187,9 @@ $GEMEXE/gpend
 #####################################################################
 # GOOD RUN
 set +x
-echo "**************JOB $RUN NAWIPS COMPLETED NORMALLY ON THE IBM"
-echo "**************JOB $RUN NAWIPS COMPLETED NORMALLY ON THE IBM"
-echo "**************JOB $RUN NAWIPS COMPLETED NORMALLY ON THE IBM"
+echo "**************JOB $RUN2 NAWIPS COMPLETED NORMALLY ON THE IBM"
+echo "**************JOB $RUN2 NAWIPS COMPLETED NORMALLY ON THE IBM"
+echo "**************JOB $RUN2 NAWIPS COMPLETED NORMALLY ON THE IBM"
 set -x
 #####################################################################
 
