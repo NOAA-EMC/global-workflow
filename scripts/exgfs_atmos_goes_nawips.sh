@@ -26,7 +26,7 @@ echo "Begin job for $job"
 NAGRIB=$GEMEXE/nagrib2
 #
 
-entry=`grep "^$RUN " $NAGRIB_TABLE | awk 'index($1,"#") != 1 {print $0}'`
+entry=`grep "^$RUN2 " $NAGRIB_TABLE | awk 'index($1,"#") != 1 {print $0}'`
 
 if [ "$entry" != "" ] ; then
   cpyfil=`echo $entry  | awk 'BEGIN {FS="|"} {print $2}'`
@@ -63,7 +63,7 @@ while [ $fhcnt -le $fend ] ; do
   fhr3=$fhcnt
   typeset -Z3 fhr3
   GRIBIN=$COMIN/${model}.${cycle}.${GRIB}${fhr}${EXT}
-  GEMGRD=${RUN}_${PDY}${cyc}f${fhr3}
+  GEMGRD=${RUN2}_${PDY}${cyc}f${fhr3}
 
   GRIBIN_chk=$GRIBIN
 
@@ -127,9 +127,9 @@ done
 #####################################################################
 # GOOD RUN
 set +x
-echo "**************JOB $RUN NAWIPS COMPLETED NORMALLY ON THE IBM"
-echo "**************JOB $RUN NAWIPS COMPLETED NORMALLY ON THE IBM"
-echo "**************JOB $RUN NAWIPS COMPLETED NORMALLY ON THE IBM"
+echo "**************JOB $RUN2 NAWIPS COMPLETED NORMALLY ON THE IBM"
+echo "**************JOB $RUN2 NAWIPS COMPLETED NORMALLY ON THE IBM"
+echo "**************JOB $RUN2 NAWIPS COMPLETED NORMALLY ON THE IBM"
 set -x
 #####################################################################
 
