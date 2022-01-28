@@ -55,7 +55,7 @@ if [[ ! -d gldas.fd ]] ; then
     rm -f ${topdir}/checkout-gldas.log
     git clone https://github.com/NOAA-EMC/GLDAS.git gldas.fd >> ${logdir}/checkout-gldas.fd.log 2>&1
     cd gldas.fd
-    git checkout gldas_gfsv16_release.v.1.27.0
+    git checkout gldas_gfsv16_release.v.1.28.0
     cd ${topdir}
 else
     echo 'Skip.  Directory gldas.fd already exists.'
