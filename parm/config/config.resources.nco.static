@@ -58,12 +58,12 @@ elif [ $step = "waveinit" ]; then
 elif [ $step = "waveprep" ]; then
 
     export wtime_waveprep="00:10:00"
-    export npe_waveprep=84
-    export npe_waveprep_gfs=60
+    export npe_waveprep=5
+    export npe_waveprep_gfs=65
     export nth_waveprep=1
     export npe_node_waveprep=$npe_waveprep
     export npe_node_waveprep_gfs=$npe_waveprep_gfs
-    export memory_waveprep_gfs="100GB"
+    export memory_waveprep="100GB"
     export NTASKS=$npe_waveprep
     export NTASKS_gfs=$npe_waveprep_gfs
 
@@ -193,7 +193,7 @@ elif [ $step = "fcst" ]; then
 elif [ $step = "post" ]; then
 
     export wtime_post="00:12:00"
-    export wtime_post_gfs="00:20:00"
+    export wtime_post_gfs="01:00:00"
     export npe_post=112
     export nth_post=1
     export npe_node_post=$npe_post
@@ -302,7 +302,7 @@ elif [ $step = "eobs" -o $step = "eomg" ]; then
     elif [ $CASE = "C96" -o $CASE = "C48" ]; then
       export npe_eobs=14
     fi
-    export nth_eobs=8
+    export nth_eobs=7
     if [[ "$machine" = "WCOSS_DELL_P3" ]]; then export nth_eobs=7; fi
     export npe_node_eobs=$(echo "$npe_node_max / $nth_eobs" | bc)
 
