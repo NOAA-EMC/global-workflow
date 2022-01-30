@@ -9,7 +9,6 @@
                        "Build_gldas" \
                        "Build_ncep_post" \
                        "Build_ufs_utils" \
-                       "Build_gldas" \
                        "Build_gfs_wafs" \
                        "Build_workflow_utils" \
                        "Build_gfs_util")
