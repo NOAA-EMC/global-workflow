@@ -37,25 +37,26 @@ def fill_COMROT(host, inputs):
 def fill_COMROT_cycled(host, inputs):
 
     idatestr = inputs.idate.strftime('%Y%m%d%H')
+    comrot = os.path.join(inputs.comrot, inputs.pslot)
 
     # Link ensemble member initial conditions
     enkfdir = f'enkf{inputs.cdump}.{idatestr[:8]}/{idatestr[8:]}'
-    makedirs_if_missing(os.path.join(inputs.comrot, enkfdir))
+    makedirs_if_missing(os.path.join(comrot, enkfdir))
     for ii in range(1, inputs.nens + 1):
-        makedirs_if_missing(os.path.join(inputs.comrot, enkfdir, f'mem{ii:03d}'))
+        makedirs_if_missing(os.path.join(comrot, enkfdir, f'mem{ii:03d}'))
         os.symlink(os.path.join(inputs.icsdir, idatestr, f'C{inputs.resens}', f'mem{ii:03d}', 'INPUT'),
-                   os.path.join(inputs.comrot, enkfdir, f'mem{ii:03d}', 'INPUT'))
+                   os.path.join(comrot, enkfdir, f'mem{ii:03d}', 'INPUT'))
 
     # Link deterministic initial conditions
     detdir = f'{inputs.cdump}.{idatestr[:8]}/{idatestr[8:]}'
-    makedirs_if_missing(os.path.join(inputs.comrot, detdir))
+    makedirs_if_missing(os.path.join(comrot, detdir))
     os.symlink(os.path.join(inputs.icsdir, idatestr, f'C{inputs.resdet}', 'control', 'INPUT'),
-               os.path.join(inputs.comrot, detdir, 'INPUT'))
+               os.path.join(comrot, detdir, 'INPUT'))
 
     # Link bias correction and radiance diagnostics files
     for fname in ['abias', 'abias_pc', 'abias_air', 'radstat']:
         os.symlink(os.path.join(inputs.icsdir, idatestr, f'{inputs.cdump}.t{idatestr[8:]}z.{fname}'),
-                   os.path.join(inputs.comrot, detdir, f'{inputs.cdump}.t{idatestr[8:]}z.{fname}'))
+                   os.path.join(comrot, detdir, f'{inputs.cdump}.t{idatestr[8:]}z.{fname}'))
 
     return
 
@@ -64,7 +65,9 @@ def fill_COMROT_forecasts(host, inputs):
     return
 
 
-def fill_EXPDIR(configdir, expdir):
+def fill_EXPDIR(inputs):
+    configdir = inputs.configdir
+    expdir = os.path.join(inputs.expdir, inputs.pslot)
 
     configs = glob.glob(f'{configdir}/config.*')
     if len(configs) == 0:
@@ -77,7 +80,7 @@ def fill_EXPDIR(configdir, expdir):
 
 def edit_baseconfig(host, inputs):
 
-    base_config = f'{inputs.expdir}/config.base'
+    base_config = f'{inputs.expdir}/{inputs.pslot}/config.base'
 
     here = os.path.dirname(__file__)
     top = os.path.abspath(os.path.join(
@@ -128,7 +131,6 @@ def edit_baseconfig(host, inputs):
         basestr = fi.read()
 
     for key, val in tmpl_dict.items():
-        print(key, val)
         basestr = basestr.replace(key, str(val))
 
     with open(base_config, 'wt') as fo:
@@ -226,14 +228,17 @@ if __name__ == '__main__':
     user_inputs = input_args()
     host=wfu.HostInfo(wfu.detectMachine())
 
-    create_comrot = query_and_clean(user_inputs.comrot)
-    create_expdir = query_and_clean(user_inputs.expdir)
+    comrot = os.path.join(user_inputs.comrot, user_inputs.pslot)
+    expdir = os.path.join(user_inputs.expdir, user_inputs.pslot)
+
+    create_comrot = query_and_clean(comrot)
+    create_expdir = query_and_clean(expdir)
 
     if create_comrot:
-        makedirs_if_missing(user_inputs.comrot)
+        makedirs_if_missing(comrot)
         fill_COMROT(host, user_inputs)
 
     if create_expdir:
-        makedirs_if_missing(user_inputs.expdir)
-        fill_EXPDIR(user_inputs.configdir, user_inputs.expdir)
+        makedirs_if_missing(expdir)
+        fill_EXPDIR(user_inputs)
         edit_baseconfig(host, user_inputs)
