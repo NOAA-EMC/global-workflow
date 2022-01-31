@@ -33,6 +33,7 @@ do
 
    while [ $icnt -lt 1000 ]
    do
+      typeset -Z3 fhr
       ls -l $COMIN/$GEMGRD1${fhr}
       err1=$?
       if [ $err1 -eq 0 ] ; then
@@ -96,6 +97,11 @@ do
   $APRUNCFP $DATA/poescript
   export err=$?; err_chk
 
+  if [ $fhr -eq 126 ] ; then
+    fhr=`expr $fhr + 6`
+  else
+    fhr=`expr $fhr + $fhinc`
+  fi
 done
 
 #####################################################################
