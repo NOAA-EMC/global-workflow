@@ -122,7 +122,12 @@ FV3_GFS_predet(){
   #file and the value of npe_node_fcst is not correctly defined when using more than
   #one thread and sets NTHREADS_FV3=1 even when the number of threads is appropraitely >1
   #NTHREADS_FV3=${NTHREADS_FV3:-${NTHREADS_FCST:-${nth_fv3:-1}}}
-  NTHREADS_FV3=${nth_fv3:-1}
+  #Threading can be different for GFS and GDAS forecasts
+  if [[ $CDUMP == "gdas" ]]; then
+     NTHREADS_FV3=${nth_fv3:-1}
+  else
+     NTHREADS_FV3=${nth_fv3_gfs:-1}
+  fi
   cores_per_node=${cores_per_node:-${npe_node_fcst:-24}}
   ntiles=${ntiles:-6}
   if [ $MEMBER -lt 0 ]; then
