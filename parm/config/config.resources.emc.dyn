@@ -340,7 +340,6 @@ elif [ $step = "eupd" ]; then
       export nth_eupd=2
     fi
     export npe_node_eupd=$(echo "$npe_node_max / $nth_eupd" | bc)
-    if [[ "$machine" = "WCOSS2" ]]; then export npe_node_eupd=9; fi
 
 elif [ $step = "ecen" ]; then
 
