@@ -160,8 +160,8 @@ def edit_baseconfig(host, inputs):
         fo.write(basestr)
 
     print('')
-    print(f'EDITED:  {inputs.expdir}/config.base as per user input.')
-    print(f'DEFAULT: {inputs.expdir}/config.base.emc.dyn is for reference only.')
+    print(f'EDITED:  {base_config} as per user input.')
+    print(f'DEFAULT: {base_config}.emc.dyn is for reference only.')
     print('Please verify and delete the default file before proceeding.')
     print('')
 
