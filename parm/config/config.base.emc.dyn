@@ -115,7 +115,7 @@ export RUNDIR="$STMP/RUNDIRS/$PSLOT"
 export DATAROOT="$RUNDIR/$CDATE/$CDUMP"
 export ARCDIR="$NOSCRUB/archive/$PSLOT"
 export ICSDIR="@ICSDIR@"
-export ATARDIR="/NCEPDEV/$HPSS_PROJECT/1year/$USER/$machine/scratch/$PSLOT"
+export ATARDIR="@ATARDIR@"
 
 # Commonly defined parameters in JJOBS
 export envir=${envir:-"prod"}
