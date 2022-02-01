@@ -152,24 +152,23 @@ case $case_in in
         ;;
 esac
 
-# Determine Output filetypes based on resolution
+# Calculate chunksize based on resolution
 RESTILE=$(echo $case_in |cut -c2-)
+export ichunk2d=$((4*RESTILE))
+export jchunk2d=$((2*RESTILE))
+export ichunk3d=$((4*RESTILE))
+export jchunk3d=$((2*RESTILE))
+export kchunk3d=1
 
+# Determine whether to use parallel NetCDF based on resolution
 case $case_in in
   "C48" | "C96" | "C192")
     export OUTPUT_FILETYPE_ATM="netcdf_parallel"
     export OUTPUT_FILETYPE_SFC="netcdf"
-    export ichunk2d=0; export jchunk2d=0
-    export ichunk3d=0; export jchunk3d=0; export kchunk3d=0
     ;;
   "C384" | "C768" | "C1152" | "C3072")
     export OUTPUT_FILETYPE_ATM="netcdf_parallel"
     export OUTPUT_FILETYPE_SFC="netcdf_parallel"
-    export ichunk2d=$((4*RESTILE))
-    export jchunk2d=$((2*RESTILE))
-    export ichunk3d=$((4*RESTILE))
-    export jchunk3d=$((2*RESTILE))
-    export kchunk3d=1
     ;;
 esac
 
