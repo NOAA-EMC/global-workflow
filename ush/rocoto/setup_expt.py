@@ -139,6 +139,7 @@ def edit_baseconfig(host, inputs):
         "@CHGRP_RSTPROD@": host.info["chgrp_rstprod"],
         "@CHGRP_CMD@": host.info["chgrp_cmd"],
         "@HPSSARCH@": host.info["hpssarch"],
+        "@LOCALARCH@": host.info["localarch"],
         "@gfs_cyc@": inputs.gfs_cyc,
         "@APP@": inputs.app,
     }

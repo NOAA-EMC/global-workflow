@@ -78,6 +78,7 @@ class HostInfo:
             'chgrp_rstprod': 'YES',
             'chgrp_cmd': 'chgrp rstprod',
             'hpssarch': 'YES',
+            'localarch': 'NO',
              }
 
         return info
@@ -102,6 +103,7 @@ class HostInfo:
             'chgrp_rstprod': 'YES',
             'chgrp_cmd': 'chgrp rstprod',
             'hpssarch': 'YES',
+            'localarch': 'NO',
              }
 
         return info
@@ -125,6 +127,7 @@ class HostInfo:
             'chgrp_rstprod': 'YES',
             'chgrp_cmd': 'chgrp rstprod',
             'hpssarch': 'YES',
+            'localarch': 'NO',
              }
 
         return info
@@ -149,6 +152,7 @@ class HostInfo:
             'chgrp_rstprod': 'YES',
             'chgrp_cmd': 'chgrp rstprod',
             'hpssarch': 'YES',
+            'localarch': 'NO',
              }
 
         return info
@@ -173,6 +177,7 @@ class HostInfo:
             'chgrp_rstprod': 'YES',
             'chgrp_cmd': 'chgrp rstprod',
             'hpssarch': 'NO',
+            'localarch': 'NO',
              }
 
         return info
