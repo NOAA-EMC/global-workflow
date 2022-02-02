@@ -51,24 +51,25 @@ def fill_COMROT_cycled(host, inputs):
     idatestr = inputs.idate.strftime('%Y%m%d%H')
     comrot = os.path.join(inputs.comrot, inputs.pslot)
 
-    # Link ensemble member initial conditions
-    enkfdir = f'enkf{inputs.cdump}.{idatestr[:8]}/{idatestr[8:]}'
-    makedirs_if_missing(os.path.join(comrot, enkfdir))
-    for ii in range(1, inputs.nens + 1):
-        makedirs_if_missing(os.path.join(comrot, enkfdir, f'mem{ii:03d}'))
-        os.symlink(os.path.join(inputs.icsdir, idatestr, f'C{inputs.resens}', f'mem{ii:03d}', 'INPUT'),
-                   os.path.join(comrot, enkfdir, f'mem{ii:03d}', 'INPUT'))
+    if inputs.icsdir is not None:
+        # Link ensemble member initial conditions
+        enkfdir = f'enkf{inputs.cdump}.{idatestr[:8]}/{idatestr[8:]}'
+        makedirs_if_missing(os.path.join(comrot, enkfdir))
+        for ii in range(1, inputs.nens + 1):
+            makedirs_if_missing(os.path.join(comrot, enkfdir, f'mem{ii:03d}'))
+            os.symlink(os.path.join(inputs.icsdir, idatestr, f'C{inputs.resens}', f'mem{ii:03d}', 'RESTART'),
+                       os.path.join(comrot, enkfdir, f'mem{ii:03d}', 'RESTART'))
 
-    # Link deterministic initial conditions
-    detdir = f'{inputs.cdump}.{idatestr[:8]}/{idatestr[8:]}'
-    makedirs_if_missing(os.path.join(comrot, detdir))
-    os.symlink(os.path.join(inputs.icsdir, idatestr, f'C{inputs.resdet}', 'control', 'INPUT'),
-               os.path.join(comrot, detdir, 'INPUT'))
+        # Link deterministic initial conditions
+        detdir = f'{inputs.cdump}.{idatestr[:8]}/{idatestr[8:]}'
+        makedirs_if_missing(os.path.join(comrot, detdir))
+        os.symlink(os.path.join(inputs.icsdir, idatestr, f'C{inputs.resdet}', 'control', 'RESTART'),
+                   os.path.join(comrot, detdir, 'RESTART'))
 
-    # Link bias correction and radiance diagnostics files
-    for fname in ['abias', 'abias_pc', 'abias_air', 'radstat']:
-        os.symlink(os.path.join(inputs.icsdir, idatestr, f'{inputs.cdump}.t{idatestr[8:]}z.{fname}'),
-                   os.path.join(comrot, detdir, f'{inputs.cdump}.t{idatestr[8:]}z.{fname}'))
+        # Link bias correction and radiance diagnostics files
+        for fname in ['abias', 'abias_pc', 'abias_air', 'radstat']:
+            os.symlink(os.path.join(inputs.icsdir, idatestr, f'{inputs.cdump}.t{idatestr[8:]}z.{fname}'),
+                       os.path.join(comrot, detdir, f'{inputs.cdump}.t{idatestr[8:]}z.{fname}'))
 
     return
 
@@ -206,7 +207,7 @@ def input_args():
                           type=str, required=False, default=os.getenv('HOME'))
         subp.add_argument('--idate', help='starting date of experiment, initial conditions must exist!', required=True, type=lambda dd: datetime.strptime(dd, '%Y%m%d%H'))
         subp.add_argument('--edate', help='end date experiment', required=True, type=lambda dd: datetime.strptime(dd, '%Y%m%d%H'))
-        subp.add_argument('--icsdir', help='full path to initial condition directory', type=str, required=False, default=os.getenv('HOME'))
+        subp.add_argument('--icsdir', help='full path to initial condition directory', type=str, required=False, default=None)
         subp.add_argument('--configdir', help='full path to directory containing the config files',
                           type=str, required=False, default=os.path.join(top,'parm/config'))
         subp.add_argument('--cdump', help='CDUMP to start the experiment',
