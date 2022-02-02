@@ -4,6 +4,7 @@ __pycache__
 *.pyc
 *.[aox]
 *.mod
+*.sw[a-p]
 
 # Ignore folders
 #-------------------
@@ -30,7 +31,7 @@ parm/wafs
 #--------------------------------------------
 sorc/*log
 sorc/logs
-sorc/fv3gfs.fd
+sorc/ufs_model.fd
 sorc/gfs_post.fd
 sorc/gfs_wafs.fd
 sorc/gldas.fd

@@ -13,7 +13,7 @@ status=$?
 
 export COMPONENT=${COMPONENT:-atmos}
 
-if [ $FHRGRP -eq 0 ]; then
+if [ $FHRGRP = 'anl' ]; then
     fhrlst="anl"
     restart_file=$ROTDIR/${CDUMP}.${PDY}/${cyc}/$COMPONENT/${CDUMP}.t${cyc}z.atm
 else

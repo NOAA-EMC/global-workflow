@@ -1,0 +1,49 @@
+#!/bin/ksh -x
+
+# Empty variables must include a space otherwise they will be overwritten
+
+# config.base
+# CASE=C384
+FHMAX_GFS_00=48
+FHMAX_GFS_06=48
+FHMAX_GFS_12=48
+FHMAX_GFS_18=48
+FHOUT_GFS=6
+FHOUT_HF_GFS=-1
+
+# config.fcst
+IALB=2
+IEMS=2
+DO_CA="YES"
+min_seaice="1e-6"
+use_cice_alb=".true."
+export iopt_sfc="3"
+
+# config.fv3
+DELTIM=300
+layout_x_gfs=8
+layout_y_gfs=12
+WRITE_GROUP_GFS=1
+WRTTASK_PER_GROUP_GFS=80
+WRTIOBUF="32M"
+
+# config.wave
+waveGRD='gwes_30m'
+waveesmfGRD=' '
+waveinterpGRD=' '
+wavepostGRD='gwes_30m'
+waveGRDN="1"
+waveGRDG="10"
+USE_WAV_RMP="NO"
+FHOUT_HF_WAV=3
+DTPNT_WAV=10800
+OUTPARS_WAV="WND CUR ICE HS T01 T02 DIR FP DP PHS PTP PDIR CHA"
+DOBNDPNT_WAVE='NO'
+
+# config.waveprep
+IOSRV=1
+
+# config.arch
+export ARCH_GAUSSIAN="YES"
+export ARCH_GAUSSIAN_FHMAX=${FHMAX_GFS_00}
+export ARCH_GAUSSIAN_FHINC=${FHOUT_GFS}

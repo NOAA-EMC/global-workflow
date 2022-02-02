@@ -1,4 +1,4 @@
-#!/bin/ksh -x
+#!/bin/bash -x
 
 ###############################################################
 ## Abstract:
@@ -72,7 +72,7 @@ if [ $CDUMP = "gfs" ]; then
         fhr2=$(printf %02i $fhr)
         fhr3=$(printf %03i $fhr)
         $NCP ${APREFIX}pgrb2.1p00.f$fhr3 $ARCDIR/pgbf${fhr2}.${CDUMP}.${CDATE}.grib2
-        (( fhr = $fhr + $FHOUT_GFS ))
+        (( fhr = 10#$fhr + 10#$FHOUT_GFS ))
     done
 fi
 if [ $CDUMP = "gdas" ]; then
@@ -85,13 +85,13 @@ if [ $CDUMP = "gdas" ]; then
 fi
 
 if [ -s avno.t${cyc}z.cyclone.trackatcfunix ]; then
-    PLSOT4=`echo $PSLOT|cut -c 1-4 |tr '[a-z]' '[A-Z]'`
+    PLSOT4=$(echo $PSLOT|cut -c 1-4 |tr '[a-z]' '[A-Z]')
     cat avno.t${cyc}z.cyclone.trackatcfunix | sed s:AVNO:${PLSOT4}:g  > ${ARCDIR}/atcfunix.${CDUMP}.$CDATE
     cat avnop.t${cyc}z.cyclone.trackatcfunix | sed s:AVNO:${PLSOT4}:g  > ${ARCDIR}/atcfunixp.${CDUMP}.$CDATE
 fi
 
 if [ $CDUMP = "gdas" -a -s gdas.t${cyc}z.cyclone.trackatcfunix ]; then
-    PLSOT4=`echo $PSLOT|cut -c 1-4 |tr '[a-z]' '[A-Z]'`
+    PLSOT4=$(echo $PSLOT|cut -c 1-4 |tr '[a-z]' '[A-Z]')
     cat gdas.t${cyc}z.cyclone.trackatcfunix | sed s:AVNO:${PLSOT4}:g  > ${ARCDIR}/atcfunix.${CDUMP}.$CDATE
     cat gdasp.t${cyc}z.cyclone.trackatcfunix | sed s:AVNO:${PLSOT4}:g  > ${ARCDIR}/atcfunixp.${CDUMP}.$CDATE
 fi
@@ -123,7 +123,7 @@ if [ $CDUMP = "gfs" -a $FITSARC = "YES" ]; then
 	sigfile=${prefix}.atmf${fhr3}${ASUFFIX}
 	$NCP $sfcfile $VFYARC/${CDUMP}.$PDY/$cyc/
 	$NCP $sigfile $VFYARC/${CDUMP}.$PDY/$cyc/
-	(( fhr = $fhr + 6 ))
+	(( fhr = 10#$fhr + 6 ))
     done
 fi
 
@@ -138,9 +138,9 @@ SAVEWARMICA="NO"
 SAVEWARMICB="NO"
 SAVEFCSTIC="NO"
 firstday=$($NDATE +24 $SDATE)
-mm=`echo $CDATE|cut -c 5-6`
-dd=`echo $CDATE|cut -c 7-8`
-nday=$(( (mm-1)*30+dd ))
+mm=$(echo $CDATE|cut -c 5-6)
+dd=$(echo $CDATE|cut -c 7-8)
+nday=$(( (10#$mm-1)*30+10#$dd ))
 mod=$(($nday % $ARCH_WARMICFREQ))
 if [ $CDATE -eq $firstday -a $cyc -eq $ARCHINC_CYC ]; then SAVEWARMICA="YES" ; fi
 if [ $CDATE -eq $firstday -a $cyc -eq $ARCHICS_CYC ]; then SAVEWARMICB="YES" ; fi
@@ -175,59 +175,35 @@ cd $ROTDIR
 
 if [ $CDUMP = "gfs" ]; then
 
-    #for targrp in gfsa gfsb - NOTE - do not check htar error status
-    for targrp in gfsa gfsb; do
-        htar -P -cvf $ATARDIR/$CDATE/${targrp}.tar `cat $ARCH_LIST/${targrp}.txt`
-    done
+    targrp_list="gfsa gfsb"
 
-    #for targrp in gfs_flux gfs_netcdf/nemsio gfs_pgrb2b; do
-    if [ ${SAVEFCSTNEMSIO:-"YES"} = "YES" ]; then
+    if [ ${ARCH_GAUSSIAN:-"NO"} = "YES" ]; then
+        targrp_list="$targrp_list gfs_flux gfs_${format}b gfs_pgrb2b"
         if [ $MODE = "cycled" ]; then
-          targrp_list=`gfs_flux gfs_${format}a gfs_${format}b gfs_pgrb2b`
-        elif [ $MODE = "free" ]; then
-          targrp_list=`gfs_flux gfs_${format}b gfs_pgrb2b`
+          targrp_list="$targrp_list gfs_${format}a"
         fi
-        #for targrp in gfs_flux gfs_${format}a gfs_${format}b gfs_pgrb2b; do
-        for targrp in $targrp_list; do
-            htar -P -cvf $ATARDIR/$CDATE/${targrp}.tar `cat $ARCH_LIST/${targrp}.txt`
-            status=$?
-            if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
-                echo "HTAR $CDATE ${targrp}.tar failed"
-                exit $status
-            fi
-        done
     fi
 
-    #for targrp in gfswave
     if [ $DO_WAVE = "YES" -a "$WAVE_CDUMP" != "gdas" ]; then
-        for targrp in gfswave; do
-            htar -P -cvf $ATARDIR/$CDATE/${targrp}.tar `cat $ARCH_LIST/${targrp}.txt`
-            status=$?
-            if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
-                echo "HTAR $CDATE ${targrp}.tar failed"
-                exit $status
-            fi
-        done
+        targrp_list="$targrp_list gfswave"
+    fi
+
+    if [ $DO_OCN = "YES" ]; then
+        targrp_list="$targrp_list ocn_ice_grib2_0p5 ocn_ice_grib2_0p25 ocn_2D ocn_3D ocn_xsect ocn_daily wavocn gfs_flux_1p00"
+    fi
+
+    if [ $DO_ICE = "YES" ]; then
+        targrp_list="$targrp_list ice"
     fi
 
     #for restarts    
     if [ $SAVEFCSTIC = "YES" ]; then
-        htar -P -cvf $ATARDIR/$CDATE/gfs_restarta.tar `cat $ARCH_LIST/gfs_restarta.txt`
-        status=$?
-        if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
-            echo "HTAR $CDATE gfs_restarta.tar failed"
-            exit $status
-        fi
+        targrp_list="$targrp_list gfs_restarta"
     fi
 
     #for downstream products
     if [ $DO_BUFRSND = "YES" -o $WAFSF = "YES" ]; then
-        htar -P -cvf $ATARDIR/$CDATE/gfs_downstream.tar `cat $ARCH_LIST/gfs_downstream.txt`
-        status=$?
-        if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
-            echo "HTAR $CDATE gfs_downstream.tar failed"
-            exit $status
-        fi
+        targrp_list="$targrp_list gfs_downstream"  
     fi
 
     #--save mdl gfsmos output from all cycles in the 18Z archive directory
@@ -239,56 +215,40 @@ if [ $CDUMP = "gfs" ]; then
             exit $status
         fi
     fi
+elif [ $CDUMP = "gdas" ]; then
 
-fi
-
-
-if [ $CDUMP = "gdas" ]; then
-
-    htar -P -cvf $ATARDIR/$CDATE/gdas.tar `cat $ARCH_LIST/gdas.txt`
-    status=$?
-    if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
-        echo "HTAR $CDATE gdas.tar failed"
-        exit $status
-    fi
+    targrp_list="gdas"
 
     #gdaswave
     if [ $DO_WAVE = "YES" ]; then
-        htar -P -cvf $ATARDIR/$CDATE/gdaswave.tar `cat $ARCH_LIST/gdaswave.txt`
-        status=$?
-        if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
-            echo "HTAR $CDATE gdaswave.tar failed"
-            exit $status
-        fi
+        targrp_list="$targrp_list gdaswave"
     fi
 
     if [ $SAVEWARMICA = "YES" -o $SAVEFCSTIC = "YES" ]; then
-        htar -P -cvf $ATARDIR/$CDATE/gdas_restarta.tar `cat $ARCH_LIST/gdas_restarta.txt`
-        status=$?
-        if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
-            echo "HTAR $CDATE gdas_restarta.tar failed"
-            exit $status
-        fi
+        targrp_list="$targrp_list gdas_restarta"
+
         if [ $DO_WAVE = "YES" ]; then
-            htar -P -cvf $ATARDIR/$CDATE/gdaswave_restart.tar `cat $ARCH_LIST/gdaswave_restart.txt`
-            status=$?
-            if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
-                echo "HTAR $CDATE gdaswave_restart.tar failed"
-                exit $status
-            fi
+            targrp_list="$targrp_list gdaswave_restart"
         fi
     fi
 
     if [ $SAVEWARMICB = "YES" -o $SAVEFCSTIC = "YES" ]; then
-        htar -P -cvf $ATARDIR/$CDATE/gdas_restartb.tar `cat $ARCH_LIST/gdas_restartb.txt`
-        status=$?
-        if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
-            echo "HTAR $CDATE gdas_restartb.tar failed"
-            exit $status
-        fi
+        targrp_list="$targrp_list gdas_restartb"
     fi
-
 fi
+
+# Turn on extended globbing options
+shopt -s extglob
+for targrp in $targrp_list; do
+    htar -P -cvf $ATARDIR/$CDATE/${targrp}.tar $(cat $ARCH_LIST/${targrp}.txt)
+    status=$?
+    if [ $status -ne 0 -a $CDATE -ge $firstday ]; then
+        echo "HTAR $CDATE ${targrp}.tar failed"
+        exit $status
+    fi
+done
+# Turn extended globbing back off
+shopt -u extglob
 
 ###############################################################
 fi  ##end of HPSS archive
@@ -339,7 +299,7 @@ while [ $GDATE -le $GDATEEND ]; do
                 if [ -d $COMINrtofs -a $GDATE -lt $RTOFS_DATE ]; then rm -rf $COMINrtofs ; fi
                 if [ $CDUMP != "gdas" -o $DO_GLDAS = "NO" -o $GDATE -lt $GLDAS_DATE ]; then 
 		    if [ $CDUMP = "gdas" ]; then
-                        for file in `ls $COMIN |grep -v prepbufr |grep -v cnvstat |grep -v atmanl.nc`; do
+                        for file in $(ls $COMIN |grep -v prepbufr |grep -v cnvstat |grep -v atmanl.nc); do
                             rm -rf $COMIN/$file
                         done
 		    else
@@ -347,14 +307,14 @@ while [ $GDATE -le $GDATEEND ]; do
 		    fi
                 else
 		    if [ $DO_GLDAS = "YES" ]; then
-			for file in `ls $COMIN |grep -v sflux |grep -v RESTART |grep -v prepbufr |grep -v cnvstat |grep -v atmanl.nc`; do
+			for file in $(ls $COMIN |grep -v sflux |grep -v RESTART |grep -v prepbufr |grep -v cnvstat |grep -v atmanl.nc); do
                             rm -rf $COMIN/$file
 			done
-			for file in `ls $COMIN/RESTART |grep -v sfcanl `; do
+			for file in $(ls $COMIN/RESTART |grep -v sfcanl ); do
                             rm -rf $COMIN/RESTART/$file
 			done
 		    else
-                        for file in `ls $COMIN |grep -v prepbufr |grep -v cnvstat |grep -v atmanl.nc`; do
+                        for file in $(ls $COMIN |grep -v prepbufr |grep -v cnvstat |grep -v atmanl.nc); do
                             rm -rf $COMIN/$file
                         done
 		    fi

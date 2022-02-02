@@ -1,9 +1,11 @@
 #
 # define the array of the name of build program
 #
- declare -a Build_prg=("Build_fv3gfs" \
+ declare -a Build_prg=("Build_ufs_model" \
                        "Build_ww3_prepost" \
                        "Build_gsi" \
+                       "Build_ww3_prepost" \
+                       "Build_reg2grb2" \
                        "Build_gldas" \
                        "Build_ncep_post" \
                        "Build_ufs_utils" \
@@ -127,47 +129,49 @@
    fi
  }
 
+
+ usage() {
+   echo "Usage: $0 [ALL|config=config_file|[select=][prog1[,prog2[,...]]]" 2>&1
+ }
+
 #
 # read command line arguments; processing config file
 #
+ declare -a parse_argv=()
+ coupled=false
  verbose=false
- num_arg=$#
- (( num_arg > 1 )) && {
-   [[ ${1,,} == "--verbose" ]] && {
-     verbose=true
-   } || {
-     echo "Usage: $0 [ALL|config=config_file|[select=][prog1[,prog2[,...]]]" 2>&1
-     exit 1
-   }
- }
- (( num_arg == 1 )) && {
-     ( [[ $1 == "-h" ]] || [[ $1 == "--help" ]] ) && {
-       echo "Usage: $0 [ALL|config=config_file|[select=][prog1[,prog2[,...]]]" 2>&1
+ while [ ${#} -ne 0 ]; do
+   case "${1}" in
+     -v|--verbose)
+       verbose=true
+       parse_argv+=( "${1}" )
+       shift
+       ;;
+     -h|--help)
+       usage
        exit 2
-     }
-     ( [[ $1 == "-v" ]] || [[ ${1,,} == "--verbose" ]] || [[ $1 == "-c" ]] ) && {
-       if [[ $1 == "-v" ]]; then
-         verbose=true
-       fi
-       num_arg=0
-     } || {
-       echo "Usage: $0 [ALL|config=config_file|[select=][prog1[,prog2[,...]]]" 2>&1
+       ;;
+     -a|-c)
+       coupled=true
+       shift
+       ;;
+     *)
+       usage
        exit 3
-     }
- }
+       ;;
+   esac
+ done
 
- if (( num_arg == 0 )); then
-#
-# set default values for partial build
-#
-   parse_cfg 1 "config=fv3gfs_build.cfg" ${Build_prg[@]}
+ if [ "${coupled}" = true ]; then
+   parse_argv+=( "config=cpl_build.cfg" )
  else
+   parse_argv+=( "config=fv3gfs_build.cfg" )
+ fi
 
 #
 # call arguments retriever/config parser
 #
-   parse_cfg $num_arg "$@" ${Build_prg[@]}
- fi
+  parse_cfg ${#parse_argv[@]} "${parse_argv[@]}" ${Build_prg[@]}
 
 #
 # print values of build array

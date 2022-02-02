@@ -35,7 +35,7 @@
 
   cd $DATA
 
-  msg="HAS BEGUN on `hostname`"
+  msg="HAS BEGUN on $(hostname)"
   postmsg "$jlogfile" "$msg"
   msg="Starting MWW3 INIT CONFIG SCRIPT for ${CDUMP}wave"
   postmsg "$jlogfile" "$msg"
@@ -48,7 +48,7 @@
   echo '                          Initial configuration script'
   echo "                       Model identifier : ${CDUMP}wave"
   echo ' '
-  echo "Starting at : `date`"
+  echo "Starting at : $(date)"
   echo ' '
   [[ "$LOUD" = YES ]] && set -x
 
@@ -86,7 +86,7 @@
 
 # Eliminate duplicate grids
   array=($WAVECUR_FID $WAVEICE_FID $WAVEWND_FID $waveuoutpGRD $waveGRD $waveesmfGRD $wavesbsGRD $wavepostGRD $waveinterpGRD)
-  grdALL=`printf "%s\n" "${array[@]}" | sort -u | tr '\n' ' '`
+  grdALL=$(printf "%s\n" "${array[@]}" | sort -u | tr '\n' ' ')
 
   for grdID in ${grdALL}
   do
@@ -102,16 +102,16 @@
       echo " Mod def file for $grdID not found in ${COMIN}/rundata. Setting up to generate ..."
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
-      if [ -f $FIXwave/ww3_grid.inp.$grdID ]
+      if [ -f $PARMwave/ww3_grid.inp.$grdID ]
       then
-        cp $FIXwave/ww3_grid.inp.$grdID ww3_grid.inp.$grdID
+        cp $PARMwave/ww3_grid.inp.$grdID ww3_grid.inp.$grdID
       fi
 
       if [ -f ww3_grid.inp.$grdID ]
       then
         set +x
         echo ' '
-        echo "   ww3_grid.inp.$grdID copied ($FIXwave/ww3_grid.inp.$grdID)."
+        echo "   ww3_grid.inp.$grdID copied ($PARMwave/ww3_grid.inp.$grdID)."
         echo ' '
         [[ "$LOUD" = YES ]] && set -x
       else
@@ -136,7 +136,7 @@
         echo "$USHwave/wave_grid_moddef.sh $grdID > $grdID.out 2>&1" >> cmdfile
       fi
 
-      nmoddef=`expr $nmoddef + 1`
+      nmoddef=$(expr $nmoddef + 1)
 
     fi
   done
@@ -153,14 +153,14 @@
     [[ "$LOUD" = YES ]] && set -x
 
 # Set number of processes for mpmd
-    wavenproc=`wc -l cmdfile | awk '{print $1}'`
-    wavenproc=`echo $((${wavenproc}<${NTASKS}?${wavenproc}:${NTASKS}))`
+    wavenproc=$(wc -l cmdfile | awk '{print $1}')
+    wavenproc=$(echo $((${wavenproc}<${NTASKS}?${wavenproc}:${NTASKS})))
 
 # 1.a.3 Execute the serial or parallel cmdfile
 
     set +x
     echo ' '
-    echo "   Executing the mod_def command file at : `date`"
+    echo "   Executing the mod_def command file at : $(date)"
     echo '   ------------------------------------'
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
@@ -225,7 +225,7 @@
 
   set +x
   echo ' '
-  echo "Ending at : `date`"
+  echo "Ending at : $(date)"
   echo ' '
   echo '                     *** End of MWW3 Init Config ***'
   echo ' '

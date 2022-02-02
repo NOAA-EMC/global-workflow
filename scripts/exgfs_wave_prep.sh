@@ -54,7 +54,7 @@
   cd $DATA
   mkdir outtmp
 
-  msg="HAS BEGUN on `hostname`"
+  msg="HAS BEGUN on $(hostname)"
   postmsg "$jlogfile" "$msg"
   msg="Starting MWW3 PREPROCESSOR SCRIPT for $WAV_MOD_TAG"
   postmsg "$jlogfile" "$msg"
@@ -67,7 +67,7 @@
   echo '                          PREP for wave component of NCEP coupled system'
   echo "                          Wave component identifier : $WAV_MOD_TAG "
   echo ' '
-  echo "Starting at : `date`"
+  echo "Starting at : $(date)"
   echo ' '
   [[ "$LOUD" = YES ]] && set -x
 
@@ -97,38 +97,38 @@
   if [ $IAU_OFFSET = 0 ]; then
     ymdh_beg=$YMDH
   else
-    ymdh_beg=`$NDATE -$WAVHINDH $YMDH`
+    ymdh_beg=$($NDATE -$WAVHINDH $YMDH)
   fi
-  time_beg="`echo $ymdh_beg | cut -c1-8` `echo $ymdh_beg | cut -c9-10`0000"
-  ymdh_end=`$NDATE $FHMAX_WAV $YMDH`
-  time_end="`echo $ymdh_end | cut -c1-8` `echo $ymdh_end | cut -c9-10`0000"
+  time_beg="$(echo $ymdh_beg | cut -c1-8) $(echo $ymdh_beg | cut -c9-10)0000"
+  ymdh_end=$($NDATE $FHMAX_WAV $YMDH)
+  time_end="$(echo $ymdh_end | cut -c1-8) $(echo $ymdh_end | cut -c9-10)0000"
   ymdh_beg_out=$YMDH
-  time_beg_out="`echo $ymdh_beg_out | cut -c1-8` `echo $ymdh_beg_out | cut -c9-10`0000"
+  time_beg_out="$(echo $ymdh_beg_out | cut -c1-8) $(echo $ymdh_beg_out | cut -c9-10)0000"
 
   # Restart file times (already has IAU_FHROT in WAVHINDH) 
   RSTOFFSET=$(( ${WAVHCYC} - ${WAVHINDH} ))
   # Update restart time is added offset relative to model start
   RSTOFFSET=$(( ${RSTOFFSET} + ${RSTIOFF_WAV} ))
-  ymdh_rst_ini=`$NDATE ${RSTOFFSET} $YMDH`
+  ymdh_rst_ini=$($NDATE ${RSTOFFSET} $YMDH)
   RST2OFFSET=$(( DT_2_RST_WAV / 3600 ))
-  ymdh_rst2_ini=`$NDATE ${RST2OFFSET} $YMDH` # DT2 relative to first-first-cycle restart file
+  ymdh_rst2_ini=$($NDATE ${RST2OFFSET} $YMDH) # DT2 relative to first-first-cycle restart file
   # First restart file for cycling
-  time_rst_ini="`echo $ymdh_rst_ini | cut -c1-8` `echo $ymdh_rst_ini | cut -c9-10`0000"
+  time_rst_ini="$(echo $ymdh_rst_ini | cut -c1-8) $(echo $ymdh_rst_ini | cut -c9-10)0000"
   if [ ${DT_1_RST_WAV} = 1 ]; then
     time_rst1_end=${time_rst_ini}
   else
     RST1OFFSET=$(( DT_1_RST_WAV / 3600 ))
-    ymdh_rst1_end=`$NDATE $RST1OFFSET $ymdh_rst_ini`
-    time_rst1_end="`echo $ymdh_rst1_end | cut -c1-8` `echo $ymdh_rst1_end | cut -c9-10`0000"
+    ymdh_rst1_end=$($NDATE $RST1OFFSET $ymdh_rst_ini)
+    time_rst1_end="$(echo $ymdh_rst1_end | cut -c1-8) $(echo $ymdh_rst1_end | cut -c9-10)0000"
   fi
   # Second restart file for checkpointing
   if [ "${RSTTYPE_WAV}" = "T" ]; then
-    time_rst2_ini="`echo $ymdh_rst2_ini | cut -c1-8` `echo $ymdh_rst2_ini | cut -c9-10`0000"
+    time_rst2_ini="$(echo $ymdh_rst2_ini | cut -c1-8) $(echo $ymdh_rst2_ini | cut -c9-10)0000"
     time_rst2_end=$time_end
   # Condition for gdas run or any other run when checkpoint stamp is > ymdh_end
     if [ $ymdh_rst2_ini -ge $ymdh_end ]; then
-      ymdh_rst2_ini=`$NDATE 3 $ymdh_end`
-      time_rst2_ini="`echo $ymdh_rst2_ini | cut -c1-8` `echo $ymdh_rst2_ini | cut -c9-10`0000"
+      ymdh_rst2_ini=$($NDATE 3 $ymdh_end)
+      time_rst2_ini="$(echo $ymdh_rst2_ini | cut -c1-8) $(echo $ymdh_rst2_ini | cut -c9-10)0000"
       time_rst2_end=$time_rst2_ini
     fi
   else
@@ -224,16 +224,16 @@
               ;;
      esac 
 
-     if [ -f $FIXwave/ww3_prnc.${type}.$grdID.inp.tmpl ]
+     if [ -f $PARMwave/ww3_prnc.${type}.$grdID.inp.tmpl ]
      then
-       cp $FIXwave/ww3_prnc.${type}.$grdID.inp.tmpl .
+       cp $PARMwave/ww3_prnc.${type}.$grdID.inp.tmpl .
      fi
 
      if [ -f ww3_prnc.${type}.$grdID.inp.tmpl ]
      then
        set +x
        echo ' '
-       echo "   ww3_prnc.${type}.$grdID.inp.tmpl copied ($FIXwave)."
+       echo "   ww3_prnc.${type}.$grdID.inp.tmpl copied ($PARMwave)."
        echo ' '
        [[ "$LOUD" = YES ]] && set -x
      else
@@ -322,11 +322,11 @@
       do
         if [ ${CFP_MP:-"NO"} = "YES" ]; then
           echo "$nm $USHwave/wave_g2ges.sh $ymdh > grb_$ymdh.out 2>&1" >> cmdfile
-          nm=`expr $nm + 1`
+          nm=$(expr $nm + 1)
         else
           echo "$USHwave/wave_g2ges.sh $ymdh > grb_$ymdh.out 2>&1" >> cmdfile
         fi
-        ymdh=`$NDATE $WAV_WND_HOUR_INC $ymdh`
+        ymdh=$($NDATE $WAV_WND_HOUR_INC $ymdh)
       done
   
 # 3.b Execute the serial or parallel cmdfile
@@ -334,12 +334,12 @@
 # Set number of processes for mpmd
       cat cmdfile
 
-      wavenproc=`wc -l cmdfile | awk '{print $1}'`
-      wavenproc=`echo $((${wavenproc}<${NTASKS}?${wavenproc}:${NTASKS}))`
+      wavenproc=$(wc -l cmdfile | awk '{print $1}')
+      wavenproc=$(echo $((${wavenproc}<${NTASKS}?${wavenproc}:${NTASKS})))
   
       set +x
       echo ' '
-      echo "   Executing the wnd grib cmd file at : `date`"
+      echo "   Executing the wnd grib cmd file at : $(date)"
       echo '   ------------------------------------'
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
@@ -400,10 +400,10 @@
           echo ' '
           [[ "$LOUD" = YES ]] && set -x
           postmsg "$jlogfile" "    File for $ymdh : error in wave_g2ges.sh"
-          nr_err=`expr $nr_err + 1`
+          nr_err=$(expr $nr_err + 1)
           rm -f gwnd.$ymdh
         else
-          grbfile=`grep 'File for' grb_${ymdh}.out`
+          grbfile=$(grep 'File for' grb_${ymdh}.out)
           if [ -z "$grbfile" ]
           then
             set +x
@@ -411,7 +411,7 @@
             echo "         File for $ymdh : cannot identify source"
             echo ' '
             [[ "$LOUD" = YES ]] && set -x
-            nr_err=`expr $nr_err + 1`
+            nr_err=$(expr $nr_err + 1)
             rm -f gwnd.$ymdh
           else
             if [ ! -f gwnd.$ymdh ]
@@ -421,7 +421,7 @@
               echo "         File for $ymdh : file not found"
               echo ' '
               [[ "$LOUD" = YES ]] && set -x
-              nr_err=`expr $nr_err + 1`
+              nr_err=$(expr $nr_err + 1)
             else
               set +x
               echo ' '
@@ -432,7 +432,7 @@
             fi
           fi
         fi
-        ymdh=`$NDATE $WAV_WND_HOUR_INC $ymdh`
+        ymdh=$($NDATE $WAV_WND_HOUR_INC $ymdh)
       done
 
       if [ -f grb_*.out ]
@@ -481,7 +481,7 @@
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
 
-      files=`ls gwnd.* 2> /dev/null`
+      files=$(ls gwnd.* 2> /dev/null)
 
       if [ -z "$files" ]
       then
@@ -571,12 +571,12 @@
         windOK='yes'
         while read line
         do
-          date1=`echo $line | cut -d ' ' -f 1`
-          date2=`echo $line | cut -d ' ' -f 2`
-          ymdh="$date1`echo $date2 | cut -c1-2`"
+          date1=$(echo $line | cut -d ' ' -f 1)
+          date2=$(echo $line | cut -d ' ' -f 2)
+          ymdh="$date1$(echo $date2 | cut -c1-2)"
           if [ "$first_pass" = 'no' ]
           then
-            hr_inc=`$NHOUR $ymdh $ymdh_prev`
+            hr_inc=$($NHOUR $ymdh $ymdh_prev)
             if [ "${hr_inc}" -gt "${WAV_WND_HOUR_INC}" ]
             then
               set +x
@@ -647,7 +647,7 @@
       ymdh_rtofs=${RPDY}00 # RTOFS runs once daily use ${PDY}00
       if [ "$ymdh_beg" -lt "$ymdh_rtofs" ];then 
          #If the start time is before the first hour of RTOFS, use the previous cycle
-         export RPDY=`$NDATE -24 ${RPDY}00 | cut -c1-8`
+         export RPDY=$($NDATE -24 ${RPDY}00 | cut -c1-8)
       fi 
       #Set the first time for RTOFS files to be the beginning time of simulation
       ymdh_rtofs=$ymdh_beg      
@@ -658,7 +658,7 @@
         rtofsfile3=$COMIN_WAV_RTOFS/${WAVECUR_DID}.${RPDY}/rtofs_glo_2ds_f072_prog.nc
         if [ ! -f $rtofsfile1 ] || [ ! -f $rtofsfile2 ] || [ ! -f $rtofsfile3 ]; then 
            #Needed current files are not available, so use RTOFS from previous day 
-           export RPDY=`$NDATE -24 ${RPDY}00 | cut -c1-8`
+           export RPDY=$($NDATE -24 ${RPDY}00 | cut -c1-8)
         fi 
       else
         rtofsfile1=$COMIN_WAV_RTOFS/${WAVECUR_DID}.${RPDY}/rtofs_glo_2ds_f096_prog.nc   
@@ -669,13 +669,13 @@
         if [ ! -f $rtofsfile1 ] || [ ! -f $rtofsfile2 ] || [ ! -f $rtofsfile3 ] ||
             [ ! -f $rtofsfile4 ] || [ ! -f $rtofsfile5 ]; then
             #Needed current files are not available, so use RTOFS from previous day 
-            export RPDY=`$NDATE -24 ${RPDY}00 | cut -c1-8`
+            export RPDY=$($NDATE -24 ${RPDY}00 | cut -c1-8)
         fi
       fi
 
       export COMIN_WAV_CUR=$COMIN_WAV_RTOFS/${WAVECUR_DID}.${RPDY}
 
-      ymdh_end_rtofs=`$NDATE ${FHMAX_WAV_CUR} ${RPDY}00`
+      ymdh_end_rtofs=$($NDATE ${FHMAX_WAV_CUR} ${RPDY}00)
       if [ "$ymdh_end" -lt "$ymdh_end_rtofs" ]; then 
          ymdh_end_rtofs=$ymdh_end
       fi
@@ -690,8 +690,8 @@
       do
         # Timing has to be made relative to the single 00z RTOFS cycle for RTOFS PDY (RPDY)
         # Start at first fhr for 
-        fhr_rtofs=`${NHOUR} ${ymdh_rtofs} ${RPDY}00`
-        fh3_rtofs=`printf "%03d" "${fhr_rtofs#0}"`
+        fhr_rtofs=$(${NHOUR} ${ymdh_rtofs} ${RPDY}00)
+        fh3_rtofs=$(printf "%03d" "${fhr_rtofs#0}")
 
         curfile1h=${COMIN_WAV_CUR}/rtofs_glo_2ds_${fext}${fh3_rtofs}_prog.nc
         curfile3h=${COMIN_WAV_CUR}/rtofs_glo_2ds_${fext}${fh3_rtofs}_prog.nc
@@ -723,7 +723,7 @@
 
         if [ ${CFP_MP:-"NO"} = "YES" ]; then
           echo "$nm $USHwave/wave_prnc_cur.sh $ymdh_rtofs $curfile $fhr_rtofs $FLGFIRST > cur_$ymdh_rtofs.out 2>&1" >> cmdfile
-          nm=`expr $nm + 1`
+          nm=$(expr $nm + 1)
         else
           echo "$USHwave/wave_prnc_cur.sh $ymdh_rtofs $curfile $fhr_rtofs $FLGFIRST > cur_$ymdh_rtofs.out 2>&1" >> cmdfile
         fi
@@ -735,16 +735,16 @@
         if [ $fhr_rtofs -ge ${WAV_CUR_HF_FH} ] ; then
           NDATE_DT=${WAV_CUR_DT}
         fi
-        ymdh_rtofs=`$NDATE $NDATE_DT $ymdh_rtofs`
+        ymdh_rtofs=$($NDATE $NDATE_DT $ymdh_rtofs)
       done
 
 # Set number of processes for mpmd
-      wavenproc=`wc -l cmdfile | awk '{print $1}'`
-      wavenproc=`echo $((${wavenproc}<${NTASKS}?${wavenproc}:${NTASKS}))`
+      wavenproc=$(wc -l cmdfile | awk '{print $1}')
+      wavenproc=$(echo $((${wavenproc}<${NTASKS}?${wavenproc}:${NTASKS})))
 
       set +x
       echo ' '
-      echo "   Executing the curr prnc cmdfile at : `date`"
+      echo "   Executing the curr prnc cmdfile at : $(date)"
       echo '   ------------------------------------'
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
@@ -775,7 +775,7 @@
         [[ "$LOUD" = YES ]] && set -x
       fi
 
-      files=`ls ${WAVECUR_DID}.* 2> /dev/null`
+      files=$(ls ${WAVECUR_DID}.* 2> /dev/null)
 
       if [ -z "$files" ]
       then
@@ -820,9 +820,9 @@
 
 # 5.a ww3_multi template
 
-  if [ -f $FIXwave/ww3_multi.${NET}.inp.tmpl ]
+  if [ -f $PARMwave/ww3_multi.${NET}.inp.tmpl ]
   then
-    cp $FIXwave/ww3_multi.${NET}.inp.tmpl ww3_multi.inp.tmpl
+    cp $PARMwave/ww3_multi.${NET}.inp.tmpl ww3_multi.inp.tmpl
   fi
 
   if [ ! -f ww3_multi.inp.tmpl ]
@@ -842,21 +842,21 @@
 
 # 5.b Buoy location file
 
-  if [ -f $FIXwave/wave_${NET}.buoys ]
+  if [ -f $PARMwave/wave_${NET}.buoys ]
   then
-    cp $FIXwave/wave_${NET}.buoys buoy.loc
+    cp $PARMwave/wave_${NET}.buoys buoy.loc
   fi
 
   if [ -f buoy.loc ]
   then
     set +x
-    echo "   buoy.loc copied ($FIXwave/wave_${NET}.buoys)."
+    echo "   buoy.loc copied ($PARMwave/wave_${NET}.buoys)."
     [[ "$LOUD" = YES ]] && set -x
   else
     set +x
     echo "   buoy.loc not found.                           **** WARNING **** "
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" " FATAL ERROR : buoy.loc ($FIXwave/wave_${NET}.buoys) NOT FOUND"
+    postmsg "$jlogfile" " FATAL ERROR : buoy.loc ($PARMwave/wave_${NET}.buoys) NOT FOUND"
     touch buoy.loc
     err=13;export err;${errchk}
   fi
@@ -882,51 +882,66 @@
 # Check if waveesmfGRD is set
   if [ ${waveesmfGRD} ]
   then
-    NFGRIDS=`expr $NFGRIDS + 1`
+    NFGRIDS=$(expr $NFGRIDS + 1)
   fi 
 
   case ${WW3ATMINP} in
     'YES' )
-      NFGRIDS=`expr $NFGRIDS + 1`
-      WINDLINE="  '$WAVEWND_FID'  F F T F F F F"
+      NFGRIDS=$(expr $NFGRIDS + 1)
+      WINDLINE="  '$WAVEWND_FID'  F F T F F F F F F"
       WINDFLAG="$WAVEWND_FID"
     ;;
     'CPL' )
-      WINDFLAG="CPL:${waveesmfGRD}"
       WNDIFLAG='T'
-      CPLILINE="  '${waveesmfGRD}' F F T F F F F"
+      if [ ${waveesmfGRD} ]
+      then
+        WINDFLAG="CPL:${waveesmfGRD}"
+        CPLILINE="  '${waveesmfGRD}' F F T F F F F F F"
+      else 
+        WINDFLAG="CPL:native"
+      fi
     ;;
   esac
   
   case ${WW3ICEINP} in
     'YES' ) 
-      NFGRIDS=`expr $NFGRIDS + 1`
+      NFGRIDS=$(expr $NFGRIDS + 1)
       ICEIFLAG='T'
-      ICELINE="  '$WAVEICE_FID'  F F F T F F F"
+      ICELINE="  '$WAVEICE_FID'  F F F T F F F F F"
       ICEFLAG="$WAVEICE_FID"
     ;;
     'CPL' )
-      ICEFLAG="CPL:${waveesmfGRD}"
       ICEIFLAG='T'
-      CPLILINE="  '${waveesmfGRD}' F F ${WNDIFLAG} T F F F"
+      if [ ${waveesmfGRD} ]
+      then
+        ICEFLAG="CPL:${waveesmfGRD}"
+        CPLILINE="  '${waveesmfGRD}' F F ${WNDIFLAG} T F F F F F"
+      else 
+        ICEFLAG="CPL:native"
+      fi
     ;;
   esac
 
   case ${WW3CURINP} in
     'YES' ) 
       if [ "$WAVECUR_FID" != "$WAVEICE_FID" ]; then
-        NFGRIDS=`expr $NFGRIDS + 1`
-        CURRLINE="  '$WAVECUR_FID'  F T F F F F F"
+        NFGRIDS=$(expr $NFGRIDS + 1)
+        CURRLINE="  '$WAVECUR_FID'  F T F F F F F F F"
         CURRFLAG="$WAVECUR_FID"
       else # cur fields share the same grid as ice grid
-        ICELINE="  '$WAVEICE_FID'  F T F ${ICEIFLAG} F F F"
+        ICELINE="  '$WAVEICE_FID'  F T F ${ICEIFLAG} F F F F F"
         CURRFLAG="$WAVEICE_FID"
       fi
     ;;
     'CPL' )
-      CURRFLAG="CPL:${waveesmfGRD}"
       CURIFLAG='T'
-      CPLILINE="  '${waveesmfGRD}' F T ${WNDIFLAG} ${ICEFLAG} F F F"
+      if [ ${waveesmfGRD} ]
+      then
+        CURRFLAG="CPL:${waveesmfGRD}"
+        CPLILINE="  '${waveesmfGRD}' F T ${WNDIFLAG} ${ICEFLAG} F F F F F"
+      else 
+        CURRFLAG="CPL:native"
+      fi
     ;;
   esac
 
@@ -937,12 +952,12 @@
 #  grdGRP=1 # Single group for now
   for grid in ${waveGRD} 
   do
-    GRDN=`expr ${GRDN} + 1`
+    GRDN=$(expr ${GRDN} + 1)
     agrid=( ${agrid[*]} ${grid} )
-    NMGRIDS=`expr $NMGRIDS + 1`
-    gridN=`echo $waveGRDN | awk -v i=$GRDN '{print $i}'`
-    gridG=`echo $waveGRDG | awk -v i=$GRDN '{print $i}'`
-    gline="${gline}'${grid}'  'no' 'CURRFLAG' 'WINDFLAG' 'ICEFLAG'  'no' 'no' 'no'  ${gridN} ${gridG}  0.00 1.00  F\n"
+    NMGRIDS=$(expr $NMGRIDS + 1)
+    gridN=$(echo $waveGRDN | awk -v i=$GRDN '{print $i}')
+    gridG=$(echo $waveGRDG | awk -v i=$GRDN '{print $i}')
+    gline="${gline}'${grid}'  'no' 'CURRFLAG' 'WINDFLAG' 'ICEFLAG'  'no' 'no' 'no' 'no' 'no'  ${gridN} ${gridG}  0.00 1.00  F\n"
   done
   gline="${gline}\$"
   echo $gline
@@ -968,6 +983,8 @@
       -e "s/OUT_BEG/$time_beg_out/g" \
       -e "s/OUT_END/$time_end/g" \
       -e "s/DTFLD/ $DTFLD_WAV/g" \
+      -e "s/FLAGMASKCOMP/ $FLAGMASKCOMP/g" \
+      -e "s/FLAGMASKOUT/ $FLAGMASKOUT/g" \
       -e "s/GOFILETYPE/ $GOFILETYPE/g" \
       -e "s/POFILETYPE/ $POFILETYPE/g" \
       -e "s/FIELDS/$FIELDS/g" \
@@ -989,9 +1006,9 @@
   if [ -f ww3_multi.inp ]
   then
     echo " Copying file ww3_multi.${WAV_MOD_TAG}.inp to $COMOUT "
-    cp ww3_multi.inp ${COMOUT}/rundata/ww3_multi.${WAV_MOD_TAG}.$cycle.inp
+    cp ww3_multi.inp ${COMOUT}/rundata/ww3_multi.${WAV_MOD_TAG}.${cycle}.inp
   else
-    echo "FATAL ERROR: file ww3_multi.${WAV_MOD_TAG}.$cycle.inp NOT CREATED, ABORTING"
+    echo "FATAL ERROR: file ww3_multi.${WAV_MOD_TAG}.${cycle}.inp NOT CREATED, ABORTING"
     err=13;export err;${errchk}
   fi 
 
@@ -1063,7 +1080,7 @@
 
   set +x
   echo ' '
-  echo "Ending at : `date`"
+  echo "Ending at : $(date)"
   echo ' '
   echo '                     *** End of MWW3 preprocessor ***'
   echo ' '

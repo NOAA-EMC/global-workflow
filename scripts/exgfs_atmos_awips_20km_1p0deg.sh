@@ -19,7 +19,7 @@ echo " "
 ###############################################################################
 fcsthrs="$1"
 num=$#
-job_name=`echo $job|sed 's/[jpt]gfs/gfs/'`
+job_name=$(echo $job|sed 's/[jpt]gfs/gfs/')
 
 if test "$num" -ge 1
 then
@@ -172,7 +172,7 @@ do
 # NOTE: numparm is the total of fields in grib2_awpgfs_20km_conusf000 file
 ###########################################################################
 numparm=247
-numrec=` $WGRIB2 awps_file_f${fcsthrs}_${GRID} | wc -l `
+numrec=$( $WGRIB2 awps_file_f${fcsthrs}_${GRID} | wc -l )
 
 if [ $numrec -lt $numparm ]
 then
@@ -186,7 +186,7 @@ fi
    export pgm; prep_step
    startmsg
 
-   if [ $GRID = "003" -a `expr ${fcsthrs} % 6` -eq 0 ] ; then
+   if [ $GRID = "003" -a $(expr ${fcsthrs} % 6) -eq 0 ] ; then
       export FORT11=awps_file_f${fcsthrs}_${GRID}
       export FORT31=awps_file_fi${fcsthrs}_${GRID}
       export FORT51=grib2.awpgfs${fcsthrs}.${GRID}

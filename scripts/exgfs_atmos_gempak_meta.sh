@@ -20,7 +20,7 @@ while [ $fhr -ge $fhbeg ] ; do
    if [ $err1 -eq 0 -o $fhr -eq $fhbeg ] ; then
       break
    fi
-   fhr=`expr $fhr - $fhinc`
+   fhr=$(expr $fhr - $fhinc)
 done
 
 maxtries=180
@@ -90,16 +90,16 @@ do
      fi
    fi
 
-   for script in `cat $DATA/tmpscript`
+   for script in $(cat $DATA/tmpscript)
    do
      eval "echo $script" >> $DATA/poescript
    done
 
-   num=`cat $DATA/poescript |wc -l`
+   num=$(cat $DATA/poescript |wc -l)
 
    while [ $num -lt $numproc ] ; do
       echo "hostname" >>poescript
-      num=`expr $num + 1`
+      num=$(expr $num + 1)
    done
 
    chmod 775 $DATA/poescript

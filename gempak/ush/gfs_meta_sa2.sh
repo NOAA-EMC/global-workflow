@@ -37,22 +37,22 @@ device="nc | ${metaname}"
 if [ ${cyc} -eq "12" ] || [ ${cyc} -eq "18" ] 
 then
     exit
-# elif [ ${cyc} -eq "00" ] && [ `echo $COMIN | awk -F/ '{print $5}' | awk -F. '{print $1}'` = "gfs" ]
+# elif [ ${cyc} -eq "00" ] && [ $(echo $COMIN | awk -F/ '{print $5}' | awk -F. '{print $1}') = "gfs" ]
 elif [ ${cyc} -eq "00" ] && [ ${mdl} = "gfs" ]
 then 
     # don't want to run from 00z gfs
     exit
 fi
 
-PDY2=`echo ${PDY} | cut -c3-`
+PDY2=$(echo ${PDY} | cut -c3-)
 # export HPCGFS=$COMROOT/nawips/${envir}/gfs.${PDY}
 export HPCGFS=${COMINgempak}/${mdl}.${PDY}/${cyc}/${COMPONENT}/gempak
 
 grid1="F-GFSHPC | ${PDY2}/${cyc}00"
 
 # DEFINE YESTERDAY
-PDYm1=`$NDATE -24 ${PDY}${cyc} | cut -c -8`
-PDY2m1=`echo ${PDYm1} | cut -c 3-`
+PDYm1=$($NDATE -24 ${PDY}${cyc} | cut -c -8)
+PDY2m1=$(echo ${PDYm1} | cut -c 3-)
 
 $GEMEXE/gdplot2_nc << EOF
 \$MAPFIL= mepowo.gsf
@@ -207,16 +207,16 @@ else
     times="006 030 054 078 102 126"
 fi
 
-for gfsfhr in `echo ${times}`
+for gfsfhr in $(echo ${times})
 do
     if [ ${cyc} == "06" ]; then
-        ecmwffhr="F`expr ${gfsfhr} + 18`"
+        ecmwffhr="F$(expr ${gfsfhr} + 18)"
     else
-        ecmwffhr="F`expr ${gfsfhr} + 12`"
+        ecmwffhr="F$(expr ${gfsfhr} + 12)"
     fi
-    while [ `expr length $ecmwffhr` -lt 3 ]
+    while [ $(expr length $ecmwffhr) -lt 3 ]
         do
-            ecmwffhr="F0`expr ${gfsfhr} + 6`"
+            ecmwffhr="F0$(expr ${gfsfhr} + 6)"
         done
     gfsfhr="F${gfsfhr}"
     grid2="${COMINecmwf}.${PDYm1}/gempak/ecmwf_glob_${PDYm1}12"
@@ -291,13 +291,13 @@ elif [ ${cyc} -eq "06" ]; then
     times="006 018 030 042 054 066 090 114 138"
 fi
 
-for gfsfhr in  `echo ${times}`
+for gfsfhr in  $(echo ${times})
 do
     if [ ${cyc} -eq "06" ]; then
-        ukmetfhr="`expr ${gfsfhr} + 6`"
-        while [ `expr length $ukmetfhr` -lt 3 ]
+        ukmetfhr="$(expr ${gfsfhr} + 6)"
+        while [ $(expr length $ukmetfhr) -lt 3 ]
            do
-              ukmetfhr="0`expr ${gfsfhr} + 6`"
+              ukmetfhr="0$(expr ${gfsfhr} + 6)"
            done 
     else
         ukmetfhr=${gfsfhr}

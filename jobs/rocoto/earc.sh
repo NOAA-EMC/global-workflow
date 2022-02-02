@@ -74,8 +74,8 @@ if [[ $ENSGRP -gt 0 ]] && [[ $HPSSARCH = "YES" ]]; then
 #--determine when to save ICs for warm start
    SAVEWARMICA="NO"
    SAVEWARMICB="NO"
-   mm=`echo $CDATE|cut -c 5-6`
-   dd=`echo $CDATE|cut -c 7-8`
+   mm=$(echo $CDATE|cut -c 5-6)
+   dd=$(echo $CDATE|cut -c 7-8)
    nday=$(( (mm-1)*30+dd ))
    mod=$(($nday % $ARCH_WARMICFREQ))
    if [ $CDATE -eq $firstday -a $cyc -eq $EARCINC_CYC ]; then SAVEWARMICA="YES" ; fi
@@ -93,7 +93,7 @@ if [[ $ENSGRP -gt 0 ]] && [[ $HPSSARCH = "YES" ]]; then
 
    if [ $CDATE -gt $SDATE ]; then # Don't run for first half cycle
 
-     htar -P -cvf $ATARDIR/$CDATE/enkf${CDUMP}_grp${ENSGRP}.tar `cat $ARCH_LIST/enkf${CDUMP}_grp${n}.txt`
+     htar -P -cvf $ATARDIR/$CDATE/enkf${CDUMP}_grp${ENSGRP}.tar $(cat $ARCH_LIST/enkf${CDUMP}_grp${n}.txt)
      status=$?
      if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
          echo "HTAR $CDATE enkf${CDUMP}_grp${ENSGRP}.tar failed"
@@ -101,7 +101,7 @@ if [[ $ENSGRP -gt 0 ]] && [[ $HPSSARCH = "YES" ]]; then
      fi
 
      if [ $SAVEWARMICA = "YES" -a $cyc -eq $EARCINC_CYC ]; then
-       htar -P -cvf $ATARDIR/$CDATE/enkf${CDUMP}_restarta_grp${ENSGRP}.tar `cat $ARCH_LIST/enkf${CDUMP}_restarta_grp${n}.txt`
+       htar -P -cvf $ATARDIR/$CDATE/enkf${CDUMP}_restarta_grp${ENSGRP}.tar $(cat $ARCH_LIST/enkf${CDUMP}_restarta_grp${n}.txt)
        status=$?
        if [ $status -ne 0 ]; then
            echo "HTAR $CDATE enkf${CDUMP}_restarta_grp${ENSGRP}.tar failed"
@@ -110,7 +110,7 @@ if [[ $ENSGRP -gt 0 ]] && [[ $HPSSARCH = "YES" ]]; then
      fi
 
      if [ $SAVEWARMICB = "YES"  -a $cyc -eq $EARCICS_CYC ]; then
-       htar -P -cvf $ATARDIR/$CDATE/enkf${CDUMP}_restartb_grp${ENSGRP}.tar `cat $ARCH_LIST/enkf${CDUMP}_restartb_grp${n}.txt`
+       htar -P -cvf $ATARDIR/$CDATE/enkf${CDUMP}_restartb_grp${ENSGRP}.tar $(cat $ARCH_LIST/enkf${CDUMP}_restartb_grp${n}.txt)
        status=$?
        if [ $status -ne 0 ]; then
            echo "HTAR $CDATE enkf${CDUMP}_restartb_grp${ENSGRP}.tar failed"
@@ -156,7 +156,7 @@ if [ $ENSGRP -eq 0 ]; then
 
     if [ $HPSSARCH = "YES" ]; then
 
-        htar -P -cvf $ATARDIR/$CDATE/enkf${CDUMP}.tar `cat $ARCH_LIST/enkf${CDUMP}.txt`
+        htar -P -cvf $ATARDIR/$CDATE/enkf${CDUMP}.tar $(cat $ARCH_LIST/enkf${CDUMP}.txt)
         status=$?
         if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
             echo "HTAR $CDATE enkf${CDUMP}.tar failed"
@@ -221,7 +221,7 @@ if [ $ENSGRP -eq 0 ]; then
 		    rc=$?
 		    if [ $rc -eq 0 ]; then
                         # Retain f006.ens files.  Remove everything else
-			for file in `ls $COMIN_ENS | grep -v f006.ens`; do
+			for file in $(ls $COMIN_ENS | grep -v f006.ens); do
 			    rm -rf $COMIN_ENS/$file
 			done
 		    fi

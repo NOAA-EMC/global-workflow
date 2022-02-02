@@ -43,7 +43,7 @@
 
   cd $DATA
 
-  postmsg "$jlogfile" "HAS BEGUN on `hostname`"
+  postmsg "$jlogfile" "HAS BEGUN on $(hostname)"
 
   msg="Starting WAVE POSTPROCESSOR SCRIPT for $WAV_MOD_TAG"
   postmsg "$jlogfile" "$msg"
@@ -54,7 +54,7 @@
   echo '                     *** WAVE POSTPROCESSOR SCRIPT ***'
   echo '                     *********************************'
   echo ' '
-  echo "Starting at : `date`"
+  echo "Starting at : $(date)"
   echo '-------------'
   echo ' '
   [[ "$LOUD" = YES ]] && set -x
@@ -95,7 +95,7 @@
 # 0.c.3 Define CDATE_POST as a function of RERUN variable setting
   if [ "${RERUN}" = "YES" ]; then
     export CDATE_POST=${CDATE_RST}
-    export FHRUN=`$NHOUR ${CDATE_RST} ${CDATE}`
+    export FHRUN=$($NHOUR ${CDATE_RST} ${CDATE})
   else # regular run
     export CDATE_POST=${CDATE}
     export FHRUN=0
@@ -105,7 +105,7 @@
 # 1.  Get files that are used by most child scripts
 
   export DOGRB_WAV='YES' #Create grib2 files 
-  export DOGRI_WAV='YES' #Create interpolated grids 
+  export DOGRI_WAV='NO' #Create interpolated grids 
 
   exit_code=0
 
@@ -160,9 +160,9 @@
   then
     for intGRD in $waveinterpGRD
     do
-      if [ -f $FIXwave/${intGRD}_interp.inp.tmpl ]
+      if [ -f $PARMwave/${intGRD}_interp.inp.tmpl ]
       then
-        cp -f $FIXwave/${intGRD}_interp.inp.tmpl ${intGRD}_interp.inp.tmpl
+        cp -f $PARMwave/${intGRD}_interp.inp.tmpl ${intGRD}_interp.inp.tmpl
       fi
   
       if [ -f ${intGRD}_interp.inp.tmpl ]
@@ -190,9 +190,9 @@
   then
     for grbGRD in $waveinterpGRD $wavepostGRD
     do
-      if [ -f $FIXwave/ww3_grib2.${grbGRD}.inp.tmpl ]
+      if [ -f $PARMwave/ww3_grib2.${grbGRD}.inp.tmpl ]
       then
-        cp -f $FIXwave/ww3_grib2.${grbGRD}.inp.tmpl ww3_grib2.${grbGRD}.inp.tmpl
+        cp -f $PARMwave/ww3_grib2.${grbGRD}.inp.tmpl ww3_grib2.${grbGRD}.inp.tmpl
       fi
 
       if [ -f ww3_grib2.${grbGRD}.inp.tmpl ]
@@ -220,7 +220,7 @@
 
   set +x
   echo ' '
-  echo "   Input files read and processed at : `date`"
+  echo "   Input files read and processed at : $(date)"
   echo ' ' 
   echo '   Data summary : '
   echo '   ---------------------------------------------'
@@ -261,7 +261,7 @@
   iwaitmax=120 # Maximum loop cycles for waiting until wave component output file is ready (fails after max)
   while [ $fhr -le $FHMAX_WAV ]; do
     
-    ymdh=`$NDATE $fhr $CDATE`
+    ymdh=$($NDATE $fhr $CDATE)
     YMD=$(echo $ymdh | cut -c1-8)
     HMS="$(echo $ymdh | cut -c9-10)0000"
     YMDHMS=${YMD}${HMS}
@@ -305,11 +305,11 @@
         nigrd=1
         for grdID in $waveinterpGRD
         do
-            ymdh_int=`$NDATE -${WAVHINDH} $ymdh`; dt_int=3600.; n_int=9999 ;
+            ymdh_int=$($NDATE -${WAVHINDH} $ymdh); dt_int=3600.; n_int=9999 ;
             echo "$USHwave/wave_grid_interp_sbs.sh $grdID $ymdh_int $dt_int $n_int > grint_$grdID.out 2>&1" >> ${fcmdigrd}.${nigrd}
           if [ "$DOGRB_WAV" = 'YES' ]
           then
-          gribFL=\'`echo ${OUTPARS_WAV}`\'
+          gribFL=\'$(echo ${OUTPARS_WAV})\'
             case $grdID in
               glo_15mxt) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=11 ;;
               glo_30mxt) GRDNAME='global' ; GRDRES=0p50 ; GRIDNR=255  ; MODNR=11 ;;
@@ -321,7 +321,6 @@
             esac
               echo "$USHwave/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDNAME $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdigrd}.${nigrd}
           fi
-          #echo "pwd" >> ${fcmdnow}
           echo "${GRIBDATA}/${fcmdigrd}.${nigrd}" >> ${fcmdnow}
           chmod 744 ${fcmdigrd}.${nigrd}
           nigrd=$((nigrd+1)) 
@@ -332,7 +331,7 @@
       then
         for grdID in ${wavepostGRD} # First concatenate grib files for sbs grids
         do
-          gribFL=\'`echo ${OUTPARS_WAV}`\'
+          gribFL=\'$(echo ${OUTPARS_WAV})\'
           case $grdID in
               aoc_9km) GRDNAME='arctic' ; GRDRES=9km ; GRIDNR=255  ; MODNR=11   ;;
               ant_9km) GRDNAME='antarc' ; GRDRES=9km ; GRIDNR=255  ; MODNR=11   ;;
@@ -343,6 +342,7 @@
               ao_20m) GRDNAME='arctic' ; GRDRES=0p33 ; GRIDNR=255  ; MODNR=11   ;;
               so_20m) GRDNAME='antarc' ; GRDRES=0p33 ; GRIDNR=255  ; MODNR=11   ;;
               glo_15mxt) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=11   ;;
+              gwes_30m) GRDNAME='global' ; GRDRES=0p50 ; GRIDNR=255  ; MODNR=10 ;;
           esac
             echo "$USHwave/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDNAME $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdnow}
         done
@@ -377,12 +377,12 @@
       done
     fi
 
-    wavenproc=`wc -l ${fcmdnow} | awk '{print $1}'`
-    wavenproc=`echo $((${wavenproc}<${NTASKS}?${wavenproc}:${NTASKS}))`
+    wavenproc=$(wc -l ${fcmdnow} | awk '{print $1}')
+    wavenproc=$(echo $((${wavenproc}<${NTASKS}?${wavenproc}:${NTASKS})))
 
     set +x
     echo ' '
-    echo "   Executing the grib2_sbs scripts at : `date`"
+    echo "   Executing the grib2_sbs scripts at : $(date)"
     echo '   ------------------------------------'
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
@@ -456,7 +456,7 @@
 
   set +x
   echo ' '
-  echo "Ending at : `date`"
+  echo "Ending at : $(date)"
   echo '-----------'
   echo ' '
   echo '                     *** End of MWW3 postprocessor ***'

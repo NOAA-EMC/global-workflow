@@ -73,7 +73,7 @@ install:
 	  mkdir -p $(INSTALL_DIR) ;\
 	fi
 	cp $(EXE_FILE) $(INSTALL_DIR)
-	@cd $(INSTALL_DIR) ; ls -l `pwd`/$(EXE_FILE)
+	@cd $(INSTALL_DIR) ; ls -l $(pwd)/$(EXE_FILE)
 
 #-----------
 # Make clean

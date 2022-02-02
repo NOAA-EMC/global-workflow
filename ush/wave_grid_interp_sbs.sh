@@ -93,7 +93,7 @@
   rm -f ${DATA}/output_${ymdh}0000/out_grd.$grdID
   
   if [ ! -f ${DATA}/${grdID}_interp.inp.tmpl ]; then
-    cp $FIXwave/${grdID}_interp.inp.tmpl ${DATA}
+    cp $PARMwave/${grdID}_interp.inp.tmpl ${DATA}
   fi
   ln -sf ${DATA}/${grdID}_interp.inp.tmpl . 
 
@@ -111,7 +111,7 @@
 # 1.  Generate GRID file with all data
 # 1.a Generate Input file
 
-  time="`echo $ymdh | cut -c1-8` `echo $ymdh | cut -c9-10`0000"
+  time="$(echo $ymdh | cut -c1-8) $(echo $ymdh | cut -c9-10)0000"
 
   sed -e "s/TIME/$time/g" \
       -e "s/DT/$dt/g" \

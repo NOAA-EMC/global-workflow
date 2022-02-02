@@ -95,14 +95,14 @@ export SLEEP_INT=5
 ####################################
 if test -f $COMIN/$RUN.t${cyc}z.control.goessimpgrb2
 then
-   modelrecvy=`cat < $COMIN/$RUN.t${cyc}z.control.goessimpgrb`
-   recvy_pdy=`echo $modelrecvy | cut -c1-8`
-   recvy_cyc=`echo $modelrecvy | cut -c9-10`
-   recvy_shour=`echo $modelrecvy | cut -c11-13`
+   modelrecvy=$(cat < $COMIN/$RUN.t${cyc}z.control.goessimpgrb)
+   recvy_pdy=$(echo $modelrecvy | cut -c1-8)
+   recvy_cyc=$(echo $modelrecvy | cut -c9-10)
+   recvy_shour=$(echo $modelrecvy | cut -c11-13)
 
    if test $RERUN = "NO"
    then
-      NEW_SHOUR=`expr $recvy_shour + $FHINC`
+      NEW_SHOUR=$(expr $recvy_shour + $FHINC)
       if test $NEW_SHOUR -ge $SHOUR
       then
          export SHOUR=$NEW_SHOUR
