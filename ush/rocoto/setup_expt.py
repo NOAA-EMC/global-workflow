@@ -209,7 +209,7 @@ def input_args():
         subp.add_argument('--edate', help='end date experiment', required=True, type=lambda dd: datetime.strptime(dd, '%Y%m%d%H'))
         subp.add_argument('--icsdir', help='full path to initial condition directory', type=str, required=False, default=None)
         subp.add_argument('--configdir', help='full path to directory containing the config files',
-                          type=str, required=False, default=os.path.join(top,'parm/config'))
+                          type=str, required=False, default=os.path.join(top, 'parm/config'))
         subp.add_argument('--cdump', help='CDUMP to start the experiment',
                           type=str, required=False, default='gdas')
         subp.add_argument('--gfs_cyc', help='GFS cycles to run', type=int,
@@ -230,6 +230,9 @@ def input_args():
         'ATM', 'ATMW', 'S2S', 'S2SW'], required=False, default='ATM')
 
     args = parser.parse_args()
+
+    if args.app in ['S2S', 'S2SW'] and args.icsdir is None:
+        raise SyntaxError("An IC directory must be specified with --icsdir when running the S2S or S2SW app")
 
     return args
 
