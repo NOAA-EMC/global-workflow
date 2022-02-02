@@ -57,14 +57,14 @@ def fill_COMROT_cycled(host, inputs):
         makedirs_if_missing(os.path.join(comrot, enkfdir))
         for ii in range(1, inputs.nens + 1):
             makedirs_if_missing(os.path.join(comrot, enkfdir, f'mem{ii:03d}'))
-            os.symlink(os.path.join(inputs.icsdir, idatestr, f'C{inputs.resens}', f'mem{ii:03d}', 'INPUT'),
-                       os.path.join(comrot, enkfdir, f'mem{ii:03d}', 'INPUT'))
+            os.symlink(os.path.join(inputs.icsdir, idatestr, f'C{inputs.resens}', f'mem{ii:03d}', 'RESTART'),
+                       os.path.join(comrot, enkfdir, f'mem{ii:03d}', 'RESTART'))
 
         # Link deterministic initial conditions
         detdir = f'{inputs.cdump}.{idatestr[:8]}/{idatestr[8:]}'
         makedirs_if_missing(os.path.join(comrot, detdir))
-        os.symlink(os.path.join(inputs.icsdir, idatestr, f'C{inputs.resdet}', 'control', 'INPUT'),
-                   os.path.join(comrot, detdir, 'INPUT'))
+        os.symlink(os.path.join(inputs.icsdir, idatestr, f'C{inputs.resdet}', 'control', 'RESTART'),
+                   os.path.join(comrot, detdir, 'RESTART'))
 
         # Link bias correction and radiance diagnostics files
         for fname in ['abias', 'abias_pc', 'abias_air', 'radstat']:
