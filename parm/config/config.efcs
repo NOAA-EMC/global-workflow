@@ -18,6 +18,12 @@ if [ $QUILTING = ".true." ]; then
     export npe_efcs=$npe_fv3
 fi
 
+# Only use serial I/O for ensemble on Hera
+if [[ "$machine" == "HERA" ]]; then
+    export OUTPUT_FILETYPE_ATM="netcdf"
+    export OUTPUT_FILETYPE_SFC="netcdf"
+fi
+
 # Number of enkf members per fcst job
 export NMEM_EFCSGRP=2
 export RERUN_EFCSGRP="NO"
