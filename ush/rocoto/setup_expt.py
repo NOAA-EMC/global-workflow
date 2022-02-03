@@ -48,6 +48,9 @@ def fill_COMROT_cycled(host, inputs):
     Implementation of 'fill_COMROT' for cycled mode
     '''
 
+    idatestr = inputs.idate.strftime('%Y%m%d%H')
+    comrot = os.path.join(inputs.comrot, inputs.pslot)
+
     if inputs.icsdir is not None:
         # Link ensemble member initial conditions
         enkfdir = f'enkf{inputs.cdump}.{idatestr[:8]}/{idatestr[8:]}'
