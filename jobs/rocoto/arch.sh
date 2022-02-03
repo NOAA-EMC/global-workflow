@@ -136,7 +136,7 @@ if [[ $HPSSARCH = "YES" || $LOCALARCH = "YES" ]]; then
 # --set the archiving command and create local directories, if necessary
 TARCMD="htar"
 if [[ $LOCALARCH = "YES" ]]; then
-   TARCMD="tar --ignore-failed-read"
+   TARCMD="tar"
    [ ! -d $ATARDIR/$CDATE ] && mkdir -p $ATARDIR/$CDATE
    [ ! -d $ATARDIR/$CDATE_MOS -a -d $ROTDIR/gfsmos.$PDY_MOS -a $cyc -eq 18 ] && mkdir -p $ATARDIR/$CDATE_MOS
 fi

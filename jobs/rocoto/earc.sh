@@ -65,7 +65,7 @@ if [[ $ENSGRP -gt 0 ]] && [[ $HPSSARCH = "YES" || $LOCALARCH = "YES" ]]; then
 #--set the archiving command and create local directories, if necessary
    TARCMD="htar"
    if [[ $LOCALARCH = "YES" ]]; then
-       TARCMD="tar --ignore-failed-read"
+       TARCMD="tar"
        [ ! -d $ATARDIR/$CDATE ] && mkdir -p $ATARDIR/$CDATE
    fi
 
@@ -130,7 +130,7 @@ if [ $ENSGRP -eq 0 ]; then
 #--set the archiving command and create local directories, if necessary
         TARCMD="htar"
         if [[ $LOCALARCH = "YES" ]]; then
-            TARCMD="tar --ignore-failed-read"
+            TARCMD="tar"
             [ ! -d $ATARDIR/$CDATE ] && mkdir -p $ATARDIR/$CDATE
         fi
 
