@@ -122,10 +122,12 @@ export icliq_sw=2   ; #cloud optical coeffs from AER's newer version v3.9-v4.0 f
 export isubc_sw=2
 export isubc_lw=2
 
-export IALB=${IALB:-1}
-export IEMS=${IEMS:-1}
+export IALB=${IALB:-2}
+export IEMS=${IEMS:-2}
 export ISOL=2
 export ICO2=2
+
+export iopt_sfc="3"
 
 # Microphysics configuration
 export dnats=0
@@ -177,7 +179,7 @@ export DO_SPPT=${DO_SPPT:-"NO"}
 export DO_SKEB=${DO_SKEB:-"NO"}
 export DO_SHUM=${DO_SHUM:-"NO"}
 export DO_LAND_PERT=${DO_LAND_PERT:-"NO"}
-export DO_CA=${DO_CA:-"NO"}
+export DO_CA=${DO_CA:-"YES"}
 export DO_OCN_SPPT=${DO_OCN_SPPT:-"NO"}
 export DO_OCN_PERT_EPBL=${DO_OCN_PERT_EPBL:-"NO"}
 
