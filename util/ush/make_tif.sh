@@ -2,18 +2,9 @@
 
 cd $DATA
 #
-#     Use Image Magick to convert the GIF to TIF    
+#     Use Image Magick system module to convert the GIF to TIF    
 #        format
 #
-# module show  imagemagick-intel-sandybridge/6.8.3    on   CRAY
-# export PATH=$PATH:/usrx/local/prod/imagemagick/6.8.3/intel/sandybridge/bin:.
-# export LIBPATH="$LIBPATH":/usrx/local/prod/imagemagick/6.8.3/intel/sandybridge/lib
-# export DELEGATE_PATH=/usrx/local/prod/imagemagick/6.8.3/intel/sandybridge/share/ImageMagick-6
-
-# module show  imagemagick/6.9.9-25      on  DELL
-  export PATH=$PATH:/usrx/local/dev/packages/ImageMagick/6.9.9-25/bin:.
-  export LIBPATH="$LIBPATH":/usrx/local/dev/packages/ImageMagick/6.9.9-25/lib
-  export DELEGATE_PATH=/usrx/local/dev/packages/ImageMagick/6.9.9-25/share/ImageMagick-6
 
   outname=out.tif                            
 
