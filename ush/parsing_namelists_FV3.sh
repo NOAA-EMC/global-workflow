@@ -86,16 +86,8 @@ cat > input.nml <<EOF
   npy = $npy
   ntiles = $ntiles
   npz = $npz
-EOF
-
-if [ $cpl = .true. ]; then
-  cat >> input.nml << EOF
-  dz_min =  ${dz_min:-"6"}    ! no longer in develop branch
-  psm_bc = ${psm_bc:-"0"}    ! no longer in develop branch
-EOF
-fi
-
-cat >> input.nml << EOF
+  dz_min =  ${dz_min:-"6"} 
+  psm_bc = ${psm_bc:-"0"} 
   grid_type = -1
   make_nh = $make_nh
   fv_debug = ${fv_debug:-".false."}
@@ -323,17 +315,12 @@ cat >> input.nml <<EOF
   do_sppt      = ${do_sppt:-".false."}
   do_shum      = ${do_shum:-".false."}
   do_skeb      = ${do_skeb:-".false."}
-EOF
-
-if [ $cpl = .true. ]; then
-  cat >> input.nml << EOF
   frac_grid    = ${FRAC_GRID:-".true."}
   cplchm       = ${cplchem:-".false."}
   cplflx       = $cplflx
   cplice       = ${cplice} 
   cplwav2atm   = ${cplwav2atm}
 EOF
-fi
 
 # Add namelist for IAU
 if [ $DOIAU = "YES" ]; then
