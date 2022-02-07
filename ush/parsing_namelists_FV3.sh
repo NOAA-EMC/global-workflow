@@ -207,6 +207,7 @@ EOF
   bl_mynn_edmf_mom=${bl_mynn_edmf_mom:-"1"}
   min_lakeice  = ${min_lakeice:-"0.15"}
   min_seaice   = ${min_seaice:-"0.15"}
+  use_cice_alb = ${use_cice_alb:-".false."}
 EOF
   ;;
   FV3_GFS_v16_coupled*)
@@ -327,8 +328,9 @@ EOF
 if [ $cpl = .true. ]; then
   cat >> input.nml << EOF
   frac_grid    = ${FRAC_GRID:-".true."}
-  cplchm = ${cplchem:-".false."}
+  cplchm       = ${cplchem:-".false."}
   cplflx       = $cplflx
+  cplice       = ${cplice} 
   cplwav2atm   = ${cplwav2atm}
 EOF
 fi
@@ -345,16 +347,16 @@ fi
 
 if [ ${DO_CA:-"NO"} = "YES" ]; then
   cat >> input.nml << EOF
-  do_ca      = .True.
-  ca_global  = ${ca_global:-".False."}
-  ca_sgs     = ${ca_sgs:-".True."}
+  do_ca      = .true.
+  ca_global  = ${ca_global:-".false."}
+  ca_sgs     = ${ca_sgs:-".true."}
   nca        = ${nca:-"1"}
-  scells     = ${scells:-"2600"}
-  tlives     = ${tlives:-"1800"}
+  ncells     = ${ncells:-"5"}
+  nlives     = ${nlives:-"12"}
   nseed      = ${nseed:-"1"}
   nfracseed  = ${nfracseed:-"0.5"}
-  rcell      = ${rcell:-"0.72"}
-  ca_trigger = ${ca_trigger:-".True."}
+  nthresh    = ${nthresh:-"18"}
+  ca_trigger = ${ca_trigger:-".true."}
   nspinup    = ${nspinup:-"1"}
   iseed_ca   = ${ISEED_CA:-"12345"}
 EOF
