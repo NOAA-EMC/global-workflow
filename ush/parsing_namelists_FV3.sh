@@ -185,8 +185,8 @@ EOF
   "FV3_GSD_v0")
   cat >> input.nml << EOF
   iovr         = ${iovr:-"3"}
-  ltaerosol    = ${ltaerosol:-".F."}
-  lradar       = ${lradar:-".F."}
+  ltaerosol    = ${ltaerosol:-".false."}
+  lradar       = ${lradar:-".false."}
   ttendlim     = ${ttendlim:-0.005}
   oz_phys      = ${oz_phys:-".false."}
   oz_phys_2015 = ${oz_phys_2015:-".true."}

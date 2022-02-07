@@ -147,7 +147,7 @@ elif [ $imp_physics -eq 8 ]; then # Thompson
     export ncld=2
     export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_thompson${tbf}"
     export nwat=6
-
+    export ttendlim=-999
 elif [ $imp_physics -eq 11 ]; then # GFDL
     export ncld=5
     export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_gfdl${tbf}"
