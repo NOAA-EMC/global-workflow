@@ -190,7 +190,8 @@ export min_lakeice="0.15"
 export min_seaice=${min_seaice:-"0.15"}
 export use_cice_alb=${use_cice_alb:-".false."}
 
-export FSICL="99999"
+export FSICL="0"
+export FSICS="0"
 
 #---------------------------------------------------------------------
 
