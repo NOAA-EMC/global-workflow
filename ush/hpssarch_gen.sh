@@ -107,14 +107,16 @@ if [ $type = "gfs" ]; then
   echo  "${dirname}${head}pgrb2.0p25.anl                   " >>gfsa.txt
   echo  "${dirname}${head}pgrb2.0p25.anl.idx               " >>gfsa.txt
   #Only generated if there are cyclones to track
-  if [ -s ${dirname}avno.t${cyc}z.cyclone.trackatcfunix ]; then
-    echo  "${dirname}avno.t${cyc}z.cyclone.trackatcfunix     " >>gfsa.txt
-    echo  "${dirname}avnop.t${cyc}z.cyclone.trackatcfunix    " >>gfsa.txt
-    echo  "${dirname}trak.gfso.atcfunix.${PDY}${cyc}         " >>gfsa.txt
-    echo  "${dirname}trak.gfso.atcfunix.altg.${PDY}${cyc}    " >>gfsa.txt
-    echo  "${dirname}storms.gfso.atcf_gen.${PDY}${cyc}       " >>gfsa.txt
-    echo  "${dirname}storms.gfso.atcf_gen.altg.${PDY}${cyc}  " >>gfsa.txt
-  fi
+  cyclone_files=(avno.t${cyc}z.cyclone.trackatcfunix
+                 avnop.t${cyc}z.cyclone.trackatcfunix
+                 trak.gfso.atcfunix.${PDY}${cyc}
+                 trak.gfso.atcfunix.altg.${PDY}${cyc}
+                 storms.gfso.atcf_gen.${PDY}${cyc}
+                 storms.gfso.atcf_gen.altg.${PDY}${cyc})
+
+  for file in ${cyclone_files[@]}; do
+    [[ -s $ROTDIR/${dirname}${file} ]] && echo "${dirname}${file}" >>gfsa.txt
+  done
 
   if [ $DO_DOWN = "YES" ]; then
    if [ $DO_BUFRSND = "YES" ]; then
