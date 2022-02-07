@@ -14,7 +14,7 @@ while getopts "ac" option; do
       ;;
     c)
       APP="S2SW"
-      CCPP_SUITES="FV3_GFS_v16_coupled,FV3_GFS_v16_couplednsst,FV3_GFS_v16_coupled_nsstNoahmpUGWPv1"
+      CCPP_SUITES="FV3_GFS_v16_coupled_nsstNoahmpUGWPv1,FV3_GFS_v16_coupled_p7_rrtmgp"
       shift
       ;;
     *)

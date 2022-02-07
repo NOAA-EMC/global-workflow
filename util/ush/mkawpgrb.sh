@@ -54,7 +54,7 @@ then
    export SENDDBN=${SENDDBN:-NO}
    if [ -z "$DATA" ]
    then
-      export DATA=`pwd`
+      export DATA=$(pwd)
       cd $DATA
       ${NWROOT}/util/ush/setup.sh
       ${NWROOT}/util/ush/setpdy.sh
@@ -339,7 +339,7 @@ do
          ;;
    esac
 
-   executable_name=`basename $executable`
+   executable_name=$(basename $executable)
 
    ##############################
    # Copy Input Field to $DATA

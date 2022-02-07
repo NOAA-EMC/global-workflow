@@ -37,7 +37,7 @@ export PATH=./:$PATH
 #######################################################################
 #  Check the host to determine whether tide or gyre is prod
 #######################################################################
-#chkhost=`hostname | cut -c1`
+#chkhost=$(hostname | cut -c1)
 #if [[ $SITE == "GYRE" ]] || [[ $SITE == "SURGE" ]] || [[ $SITE == "VENUS" ]]; then
 #   gort="g"
 #elif [[ $SITE == "TIDE" ]] || [[ $SITE == "LUNA" ]] || [[ $SITE == "MARS" ]]; then
@@ -115,22 +115,22 @@ export CODEDIR=$MODELROOT/mos_shared.v2.6.5
 
 #--------------------------------
 ##export PDY=20180419
-##export PDY=`date -u +%Y%m%d`
-##export prevday=`date -u --date="${PDY} 0000 UTC 24 hours ago" +%Y%m%d`
+##export PDY=$(date -u +%Y%m%d)
+##export prevday=$(date -u --date="${PDY} 0000 UTC 24 hours ago" +%Y%m%d)
 
 dateIn=$1
 #if [ $REALTIME = "YES" ]; then
-#    GDATE=`$NDATE -24 $dateIn`
+#    GDATE=$($NDATE -24 $dateIn)
 #    dateIn=$GDATE
 #fi
-export PDY=`echo $dateIn | cut -c 1-8`
-export cyc=`echo $dateIn | cut -c 9-10`
-export prevday=`$NDATE -24 ${PDY}00 | cut -c1-8`
+export PDY=$(echo $dateIn | cut -c 1-8)
+export cyc=$(echo $dateIn | cut -c 9-10)
+export prevday=$($NDATE -24 ${PDY}00 | cut -c1-8)
 #--------------------------------
 
 
 #--------------------------------
-##let hour=`date -u +"%-H"`
+##let hour=$(date -u +"%-H")
 ##if [[ $hour -ge 4 && $hour -lt 10 ]]; then
 ##   export cyc=00
 ##   export range=both
@@ -536,7 +536,7 @@ if [ "$range" == "ext" -o "$range" == "both" ]; then
 ######################################################################## 
 #if [ "$skipmodel" != "y" ]; then
 #let attempts=1
-#proj_list=`seq -f %03g 252 12 384`
+#proj_list=$(seq -f %03g 252 12 384)
 #for tau in $proj_list
 #do
 #   while [[ $attempts -le 120 ]]
@@ -568,7 +568,7 @@ if [ "$range" == "ext" -o "$range" == "both" ]; then
 ######################################################################## 
 #if [ "$skipmodel" != "y" ]; then
 #let attempts1deg=1
-#proj_list=`seq -f %03g 204 12 384`
+#proj_list=$(seq -f %03g 204 12 384)
 #for tau in $proj_list
 #do
 #   while [[ $attempts1deg -le 120 ]]

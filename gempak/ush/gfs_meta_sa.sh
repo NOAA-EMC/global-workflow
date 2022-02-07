@@ -31,7 +31,7 @@ MDL=GFS
 metatype="sa"
 metaname="${mdl}_${metatype}_${cyc}.meta"
 device="nc | ${metaname}"
-PDY2=`echo ${PDY} | cut -c3-`
+PDY2=$(echo ${PDY} | cut -c3-)
 #
 #if [ ${cyc} -eq 00 ] ; then
 #    fend=F126

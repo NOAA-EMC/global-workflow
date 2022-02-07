@@ -38,7 +38,7 @@
   cd $GRIBDATA
 #  postmsg "$jlogfile" "Making GRIB2 Files."   # commented to reduce unnecessary output to jlogfile
 
-  alertName=`echo $RUN|tr [a-z] [A-Z]`
+  alertName=$(echo $RUN|tr [a-z] [A-Z])
 
   grdID=$1 
   gribDIR=${grdID}_grib 
@@ -109,7 +109,7 @@
 
 # 0.c Starting time for output
 
-  tstart="`echo $ymdh | cut -c1-8` `echo $ymdh | cut -c9-10`0000"
+  tstart="$(echo $ymdh | cut -c1-8) $(echo $ymdh | cut -c9-10)0000"
 
   set +x
   echo "   Starting time    : $tstart"
@@ -194,9 +194,9 @@
 # Create grib2 subgrid is this is the source grid
   if [ "${grdID}" = "${WAV_SUBGRBSRC}" ]; then
     for subgrb in ${WAV_SUBGRB}; do
-      subgrbref=`echo ${!subgrb} | cut -d " " -f 1-20`
-      subgrbnam=`echo ${!subgrb} | cut -d " " -f 21`
-      subgrbres=`echo ${!subgrb} | cut -d " " -f 22`
+      subgrbref=$(echo ${!subgrb} | cut -d " " -f 1-20)
+      subgrbnam=$(echo ${!subgrb} | cut -d " " -f 21)
+      subgrbres=$(echo ${!subgrb} | cut -d " " -f 22)
       subfnam="${WAV_MOD_TAG}.${cycle}${ENSTAG}.${subgrbnam}.${subgrbres}.f${FH3}.grib2"
       $COPYGB2 -g "${subgrbref}" -i0 -x  ${COMOUT}/gridded/${outfile} ${COMOUT}/gridded/${subfnam}
       $WGRIB2 -s $COMOUT/gridded/${subfnam} > $COMOUT/gridded/${subfnam}.idx

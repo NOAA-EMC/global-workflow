@@ -36,7 +36,7 @@ export CNVGRIB=${CNVGRIB:-${NWPROD:-/nwprod}/util/exec/cnvgrib21}
 export COPYGB2=${COPYGB2:-${NWPROD:-/nwprod}/util/exec/copygb2}
 export WGRIB2=${WGRIB2:-${NWPROD:-/nwprod}/util/exec/wgrib2}
 export RUN=${RUN:-"gfs"}
-export cycn=`echo $CDATE |cut -c 9-10`
+export cycn=$(echo $CDATE |cut -c 9-10)
 export TCYC=${TCYC:-".t${cycn}z."}
 export PREFIX=${PREFIX:-${RUN}${TCYC}}
 export PGB1F=${PGB1F:-"NO"}
@@ -74,7 +74,7 @@ elif [ $FH -eq 0 ] ; then
 else
   export paramlist=${paramlist:-$PARMpost/global_1x1_paramlist_g2}
   export paramlistb=${paramlistb:-$PARMpost/global_master-catchup_parmlist_g2}
-  export fhr3=`expr $FH + 0 `
+  export fhr3=$(expr $FH + 0 )
   if [ $fhr3 -lt 100 ]; then export fhr3="0$fhr3"; fi
   if [ $fhr3 -lt 10 ];  then export fhr3="0$fhr3"; fi
   if [ $fhr3%${FHOUT_PGB} -eq 0 ]; then
@@ -107,7 +107,7 @@ while [ $nset -le $totalset ]; do
   export tmpfile=$(eval echo tmpfile${nset}_${fhr3})
 
 # split of Grib files to run downstream jobs using MPMD
-  export ncount=`$WGRIB2 $tmpfile |wc -l`
+  export ncount=$($WGRIB2 $tmpfile |wc -l)
 # export tasks_post=$(eval echo \$tasksp_$nknd)
   export nproc=${nproc:-${npe_dwn:-24}}
   if [ $nproc -gt $ncount ]; then
@@ -115,14 +115,14 @@ while [ $nset -le $totalset ]; do
     export err=8
     err_chk
   fi
-  export inv=`expr $ncount / $nproc`
+  export inv=$(expr $ncount / $nproc)
   rm -f $DATA/poescript
   export iproc=1
   export end=0
 
   while [ $iproc -le $nproc ] ; do
-    export start=`expr ${end} + 1`
-    export end=`expr ${start} + ${inv} - 1`
+    export start=$(expr ${end} + 1)
+    export end=$(expr ${start} + ${inv} - 1)
     if [[ $end -ge $ncount ]] ;then
       export end=$ncount
     fi
@@ -133,7 +133,7 @@ while [ $nset -le $totalset ]; do
     $WGRIB2 -d $end $tmpfile |egrep -i "ugrd|ustm|uflx"
     export rc=$?
     if [[ $rc -eq 0 ]] ; then
-      export end=`expr ${end} + 1`
+      export end=$(expr ${end} + 1)
     fi
     if [ $iproc -eq $nproc ]; then
       export end=$ncount
@@ -147,12 +147,12 @@ while [ $nset -le $totalset ]; do
     # poescript for remaining processors
     if [[ $end -eq $ncount ]] ;then
       while [[ $iproc -lt $nproc ]];do
-        export iproc=`expr $iproc + 1`
+        export iproc=$(expr $iproc + 1)
 	echo "/bin/echo $iproc" >> $DATA/poescript
       done
       break
     fi
-    export iproc=`expr $iproc + 1`
+    export iproc=$(expr $iproc + 1)
   done
 
 date
@@ -192,7 +192,7 @@ date
        cat pgb2bfile_${fhr3}_${iproc}_1p0 >> pgb2bfile_${fhr3}_1p0
      fi
     fi
-    export iproc=`expr $iproc + 1`
+    export iproc=$(expr $iproc + 1)
   done
 date
 
@@ -285,7 +285,7 @@ date
   fi
 
 #..............................................
- export nset=`expr $nset + 1 `
+ export nset=$(expr $nset + 1 )
  done
 #..............................................
 

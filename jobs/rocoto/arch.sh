@@ -1,4 +1,4 @@
-#!/bin/ksh -x
+#!/bin/bash -x
 
 ###############################################################
 ## Abstract:
@@ -72,7 +72,7 @@ if [ $CDUMP = "gfs" ]; then
         fhr2=$(printf %02i $fhr)
         fhr3=$(printf %03i $fhr)
         $NCP ${APREFIX}pgrb2.1p00.f$fhr3 $ARCDIR/pgbf${fhr2}.${CDUMP}.${CDATE}.grib2
-        (( fhr = $fhr + $FHOUT_GFS ))
+        (( fhr = 10#$fhr + 10#$FHOUT_GFS ))
     done
 fi
 if [ $CDUMP = "gdas" ]; then
@@ -85,13 +85,13 @@ if [ $CDUMP = "gdas" ]; then
 fi
 
 if [ -s avno.t${cyc}z.cyclone.trackatcfunix ]; then
-    PLSOT4=`echo $PSLOT|cut -c 1-4 |tr '[a-z]' '[A-Z]'`
+    PLSOT4=$(echo $PSLOT|cut -c 1-4 |tr '[a-z]' '[A-Z]')
     cat avno.t${cyc}z.cyclone.trackatcfunix | sed s:AVNO:${PLSOT4}:g  > ${ARCDIR}/atcfunix.${CDUMP}.$CDATE
     cat avnop.t${cyc}z.cyclone.trackatcfunix | sed s:AVNO:${PLSOT4}:g  > ${ARCDIR}/atcfunixp.${CDUMP}.$CDATE
 fi
 
 if [ $CDUMP = "gdas" -a -s gdas.t${cyc}z.cyclone.trackatcfunix ]; then
-    PLSOT4=`echo $PSLOT|cut -c 1-4 |tr '[a-z]' '[A-Z]'`
+    PLSOT4=$(echo $PSLOT|cut -c 1-4 |tr '[a-z]' '[A-Z]')
     cat gdas.t${cyc}z.cyclone.trackatcfunix | sed s:AVNO:${PLSOT4}:g  > ${ARCDIR}/atcfunix.${CDUMP}.$CDATE
     cat gdasp.t${cyc}z.cyclone.trackatcfunix | sed s:AVNO:${PLSOT4}:g  > ${ARCDIR}/atcfunixp.${CDUMP}.$CDATE
 fi
@@ -123,7 +123,7 @@ if [ $CDUMP = "gfs" -a $FITSARC = "YES" ]; then
 	sigfile=${prefix}.atmf${fhr3}${ASUFFIX}
 	$NCP $sfcfile $VFYARC/${CDUMP}.$PDY/$cyc/
 	$NCP $sigfile $VFYARC/${CDUMP}.$PDY/$cyc/
-	(( fhr = $fhr + 6 ))
+	(( fhr = 10#$fhr + 6 ))
     done
 fi
 
@@ -138,9 +138,9 @@ SAVEWARMICA="NO"
 SAVEWARMICB="NO"
 SAVEFCSTIC="NO"
 firstday=$($NDATE +24 $SDATE)
-mm=`echo $CDATE|cut -c 5-6`
-dd=`echo $CDATE|cut -c 7-8`
-nday=$(( (mm-1)*30+dd ))
+mm=$(echo $CDATE|cut -c 5-6)
+dd=$(echo $CDATE|cut -c 7-8)
+nday=$(( (10#$mm-1)*30+10#$dd ))
 mod=$(($nday % $ARCH_WARMICFREQ))
 if [ $CDATE -eq $firstday -a $cyc -eq $ARCHINC_CYC ]; then SAVEWARMICA="YES" ; fi
 if [ $CDATE -eq $firstday -a $cyc -eq $ARCHICS_CYC ]; then SAVEWARMICB="YES" ; fi
@@ -237,6 +237,8 @@ elif [ $CDUMP = "gdas" ]; then
     fi
 fi
 
+# Turn on extended globbing options
+shopt -s extglob
 for targrp in $targrp_list; do
     htar -P -cvf $ATARDIR/$CDATE/${targrp}.tar $(cat $ARCH_LIST/${targrp}.txt)
     status=$?
@@ -245,6 +247,8 @@ for targrp in $targrp_list; do
         exit $status
     fi
 done
+# Turn extended globbing back off
+shopt -u extglob
 
 ###############################################################
 fi  ##end of HPSS archive
@@ -295,7 +299,7 @@ while [ $GDATE -le $GDATEEND ]; do
                 if [ -d $COMINrtofs -a $GDATE -lt $RTOFS_DATE ]; then rm -rf $COMINrtofs ; fi
                 if [ $CDUMP != "gdas" -o $DO_GLDAS = "NO" -o $GDATE -lt $GLDAS_DATE ]; then 
 		    if [ $CDUMP = "gdas" ]; then
-                        for file in `ls $COMIN |grep -v prepbufr |grep -v cnvstat |grep -v atmanl.nc`; do
+                        for file in $(ls $COMIN |grep -v prepbufr |grep -v cnvstat |grep -v atmanl.nc); do
                             rm -rf $COMIN/$file
                         done
 		    else
@@ -303,14 +307,14 @@ while [ $GDATE -le $GDATEEND ]; do
 		    fi
                 else
 		    if [ $DO_GLDAS = "YES" ]; then
-			for file in `ls $COMIN |grep -v sflux |grep -v RESTART |grep -v prepbufr |grep -v cnvstat |grep -v atmanl.nc`; do
+			for file in $(ls $COMIN |grep -v sflux |grep -v RESTART |grep -v prepbufr |grep -v cnvstat |grep -v atmanl.nc); do
                             rm -rf $COMIN/$file
 			done
-			for file in `ls $COMIN/RESTART |grep -v sfcanl `; do
+			for file in $(ls $COMIN/RESTART |grep -v sfcanl ); do
                             rm -rf $COMIN/RESTART/$file
 			done
 		    else
-                        for file in `ls $COMIN |grep -v prepbufr |grep -v cnvstat |grep -v atmanl.nc`; do
+                        for file in $(ls $COMIN |grep -v prepbufr |grep -v cnvstat |grep -v atmanl.nc); do
                             rm -rf $COMIN/$file
                         done
 		    fi

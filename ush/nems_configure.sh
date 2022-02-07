@@ -86,6 +86,7 @@ if [ $cplflx = .true. ]; then
   sed -i -e "s;@\[RESTART_N\];$restart_interval_nems;g" tmp1
   sed -i -e "s;@\[use_mommesh\];$USE_MOMMESH;g" tmp1
   sed -i -e "s;@\[eps_imesh\];$EPS_IMESH;g" tmp1
+  sed -i -e "s;@\[ATMTILESIZE\];$RESTILE;g" tmp1
 fi
 if [ $cplwav = .true. ]; then
   sed -i -e "s;@\[wav_model\];ww3;g" tmp1
