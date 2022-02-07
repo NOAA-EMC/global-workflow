@@ -1,0 +1,10 @@
+#!/bin/ksh -x
+
+########## config.atmanalprep ##########
+# Pre Atm Analysis specific
+
+echo "BEGIN: config.atmanalprep"
+
+# Get task specific resources
+. $EXPDIR/config.resources atmanalprep
+echo "END: config.atmanalprep"
