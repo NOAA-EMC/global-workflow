@@ -106,8 +106,8 @@ qid=$$
 #   Get input date information                 #
 #----------------------------------------------#
 
-#export PDY=` echo $ymdh | cut -c1-8`
-#export CYL=` echo $ymdh | cut -c9-10`
+#export PDY=$( echo $ymdh | cut -c1-8)
+#export CYL=$( echo $ymdh | cut -c9-10)
 
 # ----------------------------------------------------------------------
 # Allow overriding of later decisions on track input times based on
@@ -269,13 +269,13 @@ else
   set -x
 fi
 
-scc=`echo ${PDY} | cut -c1-2`
-syy=`echo ${PDY} | cut -c3-4`
-smm=`echo ${PDY} | cut -c5-6`
-sdd=`echo ${PDY} | cut -c7-8`
+scc=$(echo ${PDY} | cut -c1-2)
+syy=$(echo ${PDY} | cut -c3-4)
+smm=$(echo ${PDY} | cut -c5-6)
+sdd=$(echo ${PDY} | cut -c7-8)
 shh=${CYL}
-symd=`echo ${PDY} | cut -c3-8`
-syyyy=`echo ${PDY} | cut -c1-4`
+symd=$(echo ${PDY} | cut -c3-8)
+syyyy=$(echo ${PDY} | cut -c1-4)
 symdh=${PDY}${CYL}
 
 export gfsvitdir=${gfsvitdir:-${COMDIR}${COMROOThps}/gfs/prod/gfs.$PDY}
@@ -290,9 +290,9 @@ export ushtrkdir=${ushtrkdir:-${homesyndir}/ush}
 export archsyndir=${archsyndir:-${COMINsyn:-$(compath.py gfs/prod/syndat)}}
 
 ##cp /com/date/t${CYL}z ncepdate
-##export CENT=` cut -c7-8 ncepdate `
+##export CENT=$( cut -c7-8 ncepdate )
 
-export CENT=`echo ${PDY} | cut -c1-2`
+export CENT=$(echo ${PDY} | cut -c1-2)
 
 export maxtime=65    # Max number of forecast time levels
 
@@ -314,7 +314,7 @@ export maxtime=65    # Max number of forecast time levels
 #
 #----------------------------------------------------------------#
 
-cmodel=`echo ${cmodel} | tr "[A-Z]" "[a-z]"`
+cmodel=$(echo ${cmodel} | tr "[A-Z]" "[a-z]")
 
 set -x                                           
 # "gribver" is an environmental variable that should be defined
@@ -510,13 +510,13 @@ fi
 # deal; this script will exit just a little further down once it
 # realizes there are not any storms to process.
 
-old_ymdh=` ${NDATE:?} -${vit_incr} ${PDY}${CYL}`
+old_ymdh=$( ${NDATE:?} -${vit_incr} ${PDY}${CYL})
 old_4ymd=${old_ymdh:0:8}
 old_ymd=${old_ymdh:2:6}
 old_hh=${old_ymdh:8:2}
 old_str="${old_ymd} ${old_hh}00"
 
-future_ymdh=` ${NDATE:?} ${vit_incr} ${PDY}${CYL}`
+future_ymdh=$( ${NDATE:?} ${vit_incr} ${PDY}${CYL})
 future_4ymd=${future_ymdh:0:8}
 future_ymd=${future_ymdh:2:6}
 future_hh=${future_ymdh:8:2}
@@ -611,14 +611,14 @@ cat ${DATA}/tmprawvit.${atcfout}.${PDY}${CYL} ${DATA}/tmpsynvit.${atcfout}.${PDY
 # tracking program.
 #--------------------------------------------------------------#
 
-oldymdh=` ${NDATE:?} -${vit_incr} ${PDY}${CYL}`
+oldymdh=$( ${NDATE:?} -${vit_incr} ${PDY}${CYL})
 oldyy=${oldymdh:2:2}
 oldmm=${oldymdh:4:2}
 olddd=${oldymdh:6:2}
 oldhh=${oldymdh:8:2}
 oldymd=${oldyy}${oldmm}${olddd}
 
-futureymdh=` ${NDATE:?} 6 ${PDY}${CYL}`
+futureymdh=$( ${NDATE:?} 6 ${PDY}${CYL})
 futureyy=${futureymdh:2:2}
 futuremm=${futureymdh:4:2}
 futuredd=${futureymdh:6:2}
@@ -636,7 +636,7 @@ cat<<EOF >${DATA}/suv_input.${atcfout}.${PDY}${CYL}
 EOF
 
 
-numvitrecs=`cat ${DATA}/vitals.${atcfout}.${PDY}${CYL} | wc -l`
+numvitrecs=$(cat ${DATA}/vitals.${atcfout}.${PDY}${CYL} | wc -l)
 if [ ${numvitrecs} -eq 0 ]
 then
 
@@ -666,7 +666,7 @@ if [ ${trkrtype} = 'tcgen' ]
     
     fullvitfile=${DATA}/vitals.${atcfout}.${PDY}${CYL}
     cp $fullvitfile ${DATA}/vitals.all_basins.${atcfout}.${PDY}${CYL}
-    basin=` echo $regtype | cut -c1-2`
+    basin=$( echo $regtype | cut -c1-2)
 
     if [ ${basin} = 'al' ]; then
       cat $fullvitfile | awk '{if (substr($0,8,1) == "L") print $0}' \
@@ -781,7 +781,7 @@ fi
 # then exit.
 #------------------------------------------------------------------#
 
-numvitrecs=`cat ${DATA}/vitals.upd.${atcfout}.${PDY}${CYL} | wc -l`
+numvitrecs=$(cat ${DATA}/vitals.upd.${atcfout}.${PDY}${CYL} | wc -l)
 if [ ${numvitrecs} -eq 0 ]
 then
   if [ ${trkrtype} = 'tracker' ]
@@ -814,7 +814,7 @@ do
 done
 
 dtg_current="${symd} ${CYL}00"
-stormmax=` grep "${dtg_current}" ${DATA}/vitals.upd.${atcfout}.${PDY}${CYL} | wc -l`
+stormmax=$( grep "${dtg_current}" ${DATA}/vitals.upd.${atcfout}.${PDY}${CYL} | wc -l)
 
 if [ ${stormmax} -gt 15 ]
 then
@@ -869,27 +869,27 @@ done
 #                   On the Fly (FOF)", we simply put those three
 #                   "FOF" characters in there.
 
-d6ago_ymdh=` ${NDATE:?} -6 ${PDY}${CYL}`
-d6ago_4ymd=` echo ${d6ago_ymdh} | cut -c1-8`
-d6ago_ymd=` echo ${d6ago_ymdh} | cut -c3-8`
-d6ago_hh=`  echo ${d6ago_ymdh} | cut -c9-10`
+d6ago_ymdh=$( ${NDATE:?} -6 ${PDY}${CYL})
+d6ago_4ymd=$( echo ${d6ago_ymdh} | cut -c1-8)
+d6ago_ymd=$( echo ${d6ago_ymdh} | cut -c3-8)
+d6ago_hh=$(  echo ${d6ago_ymdh} | cut -c9-10)
 d6ago_str="${d6ago_ymd} ${d6ago_hh}00"
 
-d6ahead_ymdh=` ${NDATE:?} 6 ${PDY}${CYL}`
-d6ahead_4ymd=` echo ${d6ahead_ymdh} | cut -c1-8`
-d6ahead_ymd=` echo ${d6ahead_ymdh} | cut -c3-8`
-d6ahead_hh=`  echo ${d6ahead_ymdh} | cut -c9-10`
+d6ahead_ymdh=$( ${NDATE:?} 6 ${PDY}${CYL})
+d6ahead_4ymd=$( echo ${d6ahead_ymdh} | cut -c1-8)
+d6ahead_ymd=$( echo ${d6ahead_ymdh} | cut -c3-8)
+d6ahead_hh=$(  echo ${d6ahead_ymdh} | cut -c9-10)
 d6ahead_str="${d6ahead_ymd} ${d6ahead_hh}00"
 
-syyyym6=` echo ${d6ago_ymdh} | cut -c1-4`
-smmm6=`   echo ${d6ago_ymdh} | cut -c5-6`
-sddm6=`   echo ${d6ago_ymdh} | cut -c7-8`
-shhm6=`   echo ${d6ago_ymdh} | cut -c9-10`
+syyyym6=$( echo ${d6ago_ymdh} | cut -c1-4)
+smmm6=$(   echo ${d6ago_ymdh} | cut -c5-6)
+sddm6=$(   echo ${d6ago_ymdh} | cut -c7-8)
+shhm6=$(   echo ${d6ago_ymdh} | cut -c9-10)
 
-syyyyp6=` echo ${d6ahead_ymdh} | cut -c1-4`
-smmp6=`   echo ${d6ahead_ymdh} | cut -c5-6`
-sddp6=`   echo ${d6ahead_ymdh} | cut -c7-8`
-shhp6=`   echo ${d6ahead_ymdh} | cut -c9-10`
+syyyyp6=$( echo ${d6ahead_ymdh} | cut -c1-4)
+smmp6=$(   echo ${d6ahead_ymdh} | cut -c5-6)
+sddp6=$(   echo ${d6ahead_ymdh} | cut -c7-8)
+shhp6=$(   echo ${d6ahead_ymdh} | cut -c9-10)
 
 set +x
 echo " "
@@ -930,7 +930,7 @@ set -x
 #cgb=$NWPROD/util/exec/copygb
 #cgb2=$NWPROD/util/exec/copygb2
 
-regflag=`grep NHC ${DATA}/vitals.upd.${atcfout}.${PDY}${CYL} | wc -l`
+regflag=$(grep NHC ${DATA}/vitals.upd.${atcfout}.${PDY}${CYL} | wc -l)
 
 # ----------------------------------------------------------------------
 find_gfile() {
@@ -1031,7 +1031,7 @@ if [[ ${model} -eq 1 || $model == 8 ]] ; then
 
   set +x
   echo " "
-  echo "Time before gfs wgrib loop is `date`"
+  echo "Time before gfs wgrib loop is $(date)"
   echo " "
   set -x
 
@@ -1151,7 +1151,7 @@ if [[ ${model} -eq 1 || $model == 8 ]] ; then
 
       set +x
       echo " "
-      echo "Date in interpolation for model= $cmodel and fhour= $fhour000 before = `date`"
+      echo "Date in interpolation for model= $cmodel and fhour= $fhour000 before = $(date)"
       echo " "
       set -x
 
@@ -1234,7 +1234,7 @@ if [[ ${model} -eq 1 || $model == 8 ]] ; then
     
       set +x
       echo " "
-      echo "Date in interpolation for cmodel= $cmodel and fhour= $fhour000 after = `date`"
+      echo "Date in interpolation for cmodel= $cmodel and fhour= $fhour000 after = $(date)"
       echo " "
       set -x
     
@@ -1278,10 +1278,10 @@ do
 done
 
 namelist=${DATA}/input.${atcfout}.${PDY}${CYL}
-ATCFNAME=` echo "${atcfname}" | tr '[a-z]' '[A-Z]'`
+ATCFNAME=$( echo "${atcfname}" | tr '[a-z]' '[A-Z]')
 
 if [ ${cmodel} = 'sref' ]; then
-  export atcfymdh=` ${NDATE:?} -3 ${scc}${syy}${smm}${sdd}${shh}`
+  export atcfymdh=$( ${NDATE:?} -3 ${scc}${syy}${smm}${sdd}${shh})
 else
   export atcfymdh=${scc}${syy}${smm}${sdd}${shh}
 fi
@@ -1444,12 +1444,12 @@ msg="$pgm start for $atcfout at ${CYL}z"
 $postmsg "$jlogfile" "$msg"
 
 set +x
-echo "+++ TIMING: BEFORE gettrk  ---> `date`"
+echo "+++ TIMING: BEFORE gettrk  ---> $(date)"
 set -x
 
 set +x
 echo " "
-echo "TIMING: Before call to gettrk at `date`"
+echo "TIMING: Before call to gettrk at $(date)"
 echo " "
 set -x
 
@@ -1460,12 +1460,12 @@ gettrk_rcc=$?
 
 set +x
 echo " "
-echo "TIMING: After call to gettrk at `date`"
+echo "TIMING: After call to gettrk at $(date)"
 echo " "
 set -x
 
 set +x
-echo "+++ TIMING: AFTER  gettrk  ---> `date`"
+echo "+++ TIMING: AFTER  gettrk  ---> $(date)"
 set -x
 
 #--------------------------------------------------------------#
@@ -1629,7 +1629,7 @@ if [ ${gettrk_rcc} -eq 0 ]; then
       ict=0
       while read unixrec
       do
-        storm_string=` echo "${unixrec}" | cut -c1-6`
+        storm_string=$( echo "${unixrec}" | cut -c1-6)
         if [ "${storm_string}" = "${old_string}" ]
         then
           echo "${unixrec}" >>atcfunix_file.${ict}
@@ -1646,8 +1646,8 @@ if [ ${gettrk_rcc} -eq 0 ]; then
         while [ $mct -lt $ict ]
         do
           let mct=mct+1
-          at=` head -1 atcfunix_file.$mct | cut -c1-2 | tr '[A-Z]' '[a-z]'`
-          NO=` head -1 atcfunix_file.$mct | cut -c5-6`
+          at=$( head -1 atcfunix_file.$mct | cut -c1-2 | tr '[A-Z]' '[a-z]')
+          NO=$( head -1 atcfunix_file.$mct | cut -c5-6)
           if [ ! -d ${ATCFdir}/${at}${NO}${syyyy} ]
           then
               mkdir -p ${ATCFdir}/${at}${NO}${syyyy}

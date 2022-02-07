@@ -3,9 +3,9 @@ set -x
 # export cyc=12
 # export cyc=18
 export fhr=012
-export dir=` pwd `
-export PDY=`date -u +%Y%m%d`
-export PDY1=`expr $PDY - 1`
+export dir=$( pwd )
+export PDY=$(date -u +%Y%m%d)
+export PDY1=$(expr $PDY - 1)
 
 export gdas=/gpfs/dell1/nco/ops/com/gfs/prod/gdas.${PDY}/${cyc}
 export gdasgp=/gpfs/dell1/nco/ops/com/gfs/prod/gdas.${PDY}/${cyc}/gempak

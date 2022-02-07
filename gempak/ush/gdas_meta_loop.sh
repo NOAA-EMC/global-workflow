@@ -19,7 +19,7 @@ set -xa
 
 device="nc | gdasloop.meta"
 
-PDY2=`echo $PDY | cut -c3-`
+PDY2=$(echo $PDY | cut -c3-)
 
 if [ "$envir" = "para" ] ; then
    export m_title="GDASP"
@@ -43,19 +43,19 @@ fi
 #
 # Define previous days
 #
-PDYm1=`$NDATE -24 ${PDY}${cyc} | cut -c -8`
-PDYm2=`$NDATE -48 ${PDY}${cyc} | cut -c -8`
-PDYm3=`$NDATE -72 ${PDY}${cyc} | cut -c -8`
-PDYm4=`$NDATE -96 ${PDY}${cyc} | cut -c -8`
-PDYm5=`$NDATE -120 ${PDY}${cyc} | cut -c -8`
-PDYm6=`$NDATE -144 ${PDY}${cyc} | cut -c -8`
+PDYm1=$($NDATE -24 ${PDY}${cyc} | cut -c -8)
+PDYm2=$($NDATE -48 ${PDY}${cyc} | cut -c -8)
+PDYm3=$($NDATE -72 ${PDY}${cyc} | cut -c -8)
+PDYm4=$($NDATE -96 ${PDY}${cyc} | cut -c -8)
+PDYm5=$($NDATE -120 ${PDY}${cyc} | cut -c -8)
+PDYm6=$($NDATE -144 ${PDY}${cyc} | cut -c -8)
 #
 
 verdays="$PDYm6 $PDYm5 $PDYm4 $PDYm3 $PDYm2 $PDYm1 $PDY"
 
 for day in $verdays
     do
-    PDY2=`echo $day | cut -c 3-`
+    PDY2=$(echo $day | cut -c 3-)
     if [ $day -eq $PDY ] ; then
         if [ $cyc -eq "00" ] ; then
             cycles="00"   
@@ -159,7 +159,7 @@ done
 
 for day in $verdays
     do
-    PDY2=`echo $day | cut -c 3-`
+    PDY2=$(echo $day | cut -c 3-)
     if [ $day -eq $PDY ] ; then
         if [ $cyc -eq "00" ] ; then
             cycles="00"

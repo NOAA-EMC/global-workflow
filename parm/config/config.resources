@@ -212,7 +212,7 @@ elif [ $step = "fcst" ]; then
     fi
 
     # During workflow creation, we need resources for all CDUMPs and CDUMP is undefined
-    CDUMP_LIST=${CDUMP:-"gfs gdas"}
+    CDUMP_LIST=${CDUMP:-"gdas gfs"}
     for CDUMP in $CDUMP_LIST; do
         if [[ "$CDUMP" == "gfs" ]]; then
             export layout_x=$layout_x_gfs

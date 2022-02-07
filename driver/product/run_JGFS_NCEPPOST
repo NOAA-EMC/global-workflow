@@ -41,8 +41,8 @@ export hwrf_ver=v10.0.6
 
 # specify PDY (the cycle start yyyymmdd) and cycle
 export CDATE=2017052500
-export PDY=`echo $CDATE | cut -c1-8`
-export cyc=`echo $CDATE | cut -c9-10`
+export PDY=$(echo $CDATE | cut -c1-8)
+export cyc=$(echo $CDATE | cut -c9-10)
 export cycle=t${cyc}z
 
 

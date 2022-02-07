@@ -22,16 +22,16 @@ export mfcstcpl=${mfcstcpl:-1}
 export IGEN_OCNP=${IGEN_OCNP:-197}
 
 # PT This is the forecast date
-export year=`echo $CDATE | cut -c1-4`
-export month=`echo $CDATE | cut -c5-6`
-export day=`echo $CDATE | cut -c7-8`
-export hour=`echo $CDATE | cut -c9-10`
+export year=$(echo $CDATE | cut -c1-4)
+export month=$(echo $CDATE | cut -c5-6)
+export day=$(echo $CDATE | cut -c7-8)
+export hour=$(echo $CDATE | cut -c9-10)
 
 # PT This is the initialization date
-export syear=`echo $IDATE | cut -c1-4`
-export smonth=`echo $IDATE | cut -c5-6`
-export sday=`echo $IDATE | cut -c7-8`
-export shour=`echo $IDATE | cut -c9-10`
+export syear=$(echo $IDATE | cut -c1-4)
+export smonth=$(echo $IDATE | cut -c5-6)
+export sday=$(echo $IDATE | cut -c7-8)
+export shour=$(echo $IDATE | cut -c9-10)
 
 # PT Need to get this from above - could be 6 or 1 hour
 export hh_inc_ocn=6

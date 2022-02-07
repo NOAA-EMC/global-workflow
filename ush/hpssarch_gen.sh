@@ -93,7 +93,9 @@ if [ $type = "gfs" ]; then
   fi
 
   #..................
-  echo  "./logs/${CDATE}/gfs*.log                          " >>gfsa.txt
+  # Exclude the gfsarch.log file, which will change during the tar operation
+  #  This uses the bash extended globbing option
+  echo  "./logs/${CDATE}/gfs!(arch).log                    " >>gfsa.txt
   echo  "${dirname}input.nml                               " >>gfsa.txt
   if [ $MODE = "cycled" ]; then
     echo  "${dirname}${head}gsistat                          " >>gfsa.txt
@@ -404,7 +406,7 @@ if [ $type = "enkfgdas" -o $type = "enkfgfs" ]; then
 
   IAUFHRS_ENKF=${IAUFHRS_ENKF:-6}
   lobsdiag_forenkf=${lobsdiag_forenkf:-".false."}
-  nfhrs=`echo $IAUFHRS_ENKF | sed 's/,/ /g'`
+  nfhrs=$(echo $IAUFHRS_ENKF | sed 's/,/ /g')
   NMEM_ENKF=${NMEM_ENKF:-80}
   NMEM_EARCGRP=${NMEM_EARCGRP:-10}               ##number of ens memebers included in each tarball
   NTARS=$((NMEM_ENKF/NMEM_EARCGRP))

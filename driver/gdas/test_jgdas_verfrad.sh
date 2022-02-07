@@ -18,13 +18,13 @@ export PDATE=${PDATE:-2018022112}
 #############################################################
 # Specify whether the run is production or development
 #############################################################
-export PDY=`echo $PDATE | cut -c1-8`
-export cyc=`echo $PDATE | cut -c9-10`
+export PDY=$(echo $PDATE | cut -c1-8)
+export cyc=$(echo $PDATE | cut -c9-10)
 export job=gdas_verfrad.${cyc}
 export pid=${pid:-$$}
 export jobid=${job}.${pid}
 export envir=para
-me=`hostname | cut -c1`
+me=$(hostname | cut -c1)
 export DATAROOT=${DATAROOT:-/gpfs/${me}d2/emc/da/noscrub/${LOGNAME}/test_data}
 export COMROOT=${COMROOT:-/ptmpp1/$LOGNAME/com}
 

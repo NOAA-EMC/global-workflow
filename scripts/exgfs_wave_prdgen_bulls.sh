@@ -40,7 +40,7 @@
  cd $DATA
  export wavelog=${DATA}/${RUNwave}_prdgbulls.log
  
- postmsg "$jlogfile" "HAS BEGUN on `hostname`"
+ postmsg "$jlogfile" "HAS BEGUN on $(hostname)"
 
  msg="Starting MWW3 BULLETINS PRODUCTS SCRIPT"
  postmsg "$jlogfile" "$msg"
@@ -55,7 +55,7 @@
  echo '                  **************************************'
  echo "                                         $date $cycle"
  echo ' '
- echo "Starting at : `date`"
+ echo "Starting at : $(date)"
  echo ' '
  echo ' '
  [[ "$LOUD" = YES ]] && set -x
@@ -115,8 +115,8 @@
 
 # 1.b Output locations from bulletin files
  set +x
- echo ' Nb=`ls -1 *.cbull | wc -l`'
- Nb=`ls -1 *.cbull | wc -l`
+ echo ' Nb=$(ls -1 *.cbull | wc -l)'
+ Nb=$(ls -1 *.cbull | wc -l)
  [[ "$LOUD" = YES ]] && set -x
   echo ' '
   echo "   Number of bulletin files :   $Nb"
@@ -153,8 +153,8 @@
 
 # 2.c Generate list of bulletins to process
  echo '   Generating buoy list ...'
- echo 'bulls=`sed -e 's/export b//g' -e 's/=/ /' awipsbull.data | grep -v "#" |awk '{ print $1}'`'
- bulls=`sed -e 's/export b//g' -e 's/=/ /' awipsbull.data | grep -v "#" |awk '{ print $1}'`
+ echo 'bulls=$(sed -e 's/export b//g' -e 's/=/ /' awipsbull.data | grep -v "#" |awk '{ print $1}')'
+ bulls=$(sed -e 's/export b//g' -e 's/=/ /' awipsbull.data | grep -v "#" |awk '{ print $1}')
   
 # 2.d Looping over buoys running formbul
  echo '   Looping over buoys ... \n'
@@ -162,7 +162,7 @@
  for bull in $bulls; do
    fname="${RUNwave}.$bull.cbull"
    oname="awipsbull.$bull.$cycle.${RUNwave}"
-   headr=`grep "b${bull}=" awipsbull.data | sed 's/=/ /g' |  awk '{ print $3}'`  
+   headr=$(grep "b${bull}=" awipsbull.data | sed 's/=/ /g' |  awk '{ print $3}')  
    echo "      Processing $bull ($headr $oname) ..." 
  
    if [ -z "$headr" ] || [ ! -s $fname ]; then
@@ -239,7 +239,7 @@
   set +x
   echo ' '
   echo ' '
-  echo "Ending at : `date`"
+  echo "Ending at : $(date)"
   echo ' '
   echo '                *** End of MWW3 BULLETINS product generation ***'
   echo ' '
