@@ -130,15 +130,15 @@ fi
 
 ###############################################################
 # Archive data either to HPSS or locally
-if [ $HPSSARCH = "YES" ]; then
+if [[ $HPSSARCH = "YES" || $LOCALARCH = "YES" ]]; then
 ###############################################################
 
 # --set the archiving command and create local directories, if necessary
 TARCMD="htar"
 if [[ $LOCALARCH = "YES" ]]; then
-   TARCMD="tar --ignore-failed-read"
+   TARCMD="tar"
    [ ! -d $ATARDIR/$CDATE ] && mkdir -p $ATARDIR/$CDATE
-   [ ! -d $ATARDIR/$CDATE_MOS ] && mkdir -p $ATARDIR/$CDATE_MOS
+   [ ! -d $ATARDIR/$CDATE_MOS -a -d $ROTDIR/gfsmos.$PDY_MOS -a $cyc -eq 18 ] && mkdir -p $ATARDIR/$CDATE_MOS
 fi
 
 #--determine when to save ICs for warm start and forecast-only runs 

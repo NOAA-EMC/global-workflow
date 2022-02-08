@@ -451,8 +451,16 @@ if [ $type = "enkfgdas" -o $type = "enkfgfs" ]; then
         fi
      fi 
   done # loop over FHR
-  for fstep in eobs eomg ecen esfc eupd efcs epos ; do
+  for fstep in eobs ecen esfc eupd efcs epos ; do
    echo  "logs/${CDATE}/${CDUMP}${fstep}*.log        " >>enkf${CDUMP}.txt
+  done
+
+# eomg* are optional jobs
+  for log in $ROTDIR/logs/${CDATE}/${CDUMP}eomg*.log; do
+     if [ -s "$log" ]; then
+        echo  "logs/${CDATE}/${CDUMP}eomg*.log        " >>enkf${CDUMP}.txt
+     fi
+     break
   done
 
 

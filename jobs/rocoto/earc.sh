@@ -60,12 +60,12 @@ cd $ROTDIR
 ###################################################################
 # ENSGRP > 0 archives a group of ensemble members
 firstday=$($NDATE +24 $SDATE)
-if [[ $ENSGRP -gt 0 ]] && [[ $HPSSARCH = "YES" ]]; then
+if [[ $ENSGRP -gt 0 ]] && [[ $HPSSARCH = "YES" || $LOCALARCH = "YES" ]]; then
 
 #--set the archiving command and create local directories, if necessary
    TARCMD="htar"
    if [[ $LOCALARCH = "YES" ]]; then
-       TARCMD="tar --ignore-failed-read"
+       TARCMD="tar"
        [ ! -d $ATARDIR/$CDATE ] && mkdir -p $ATARDIR/$CDATE
    fi
 
@@ -125,12 +125,12 @@ fi
 # ENSGRP 0 archives ensemble means and copy data to online archive
 if [ $ENSGRP -eq 0 ]; then
 
-    if [ $HPSSARCH = "YES" ]; then
+    if [[ $HPSSARCH = "YES" || $LOCALARCH = "YES" ]]; then
 
 #--set the archiving command and create local directories, if necessary
         TARCMD="htar"
         if [[ $LOCALARCH = "YES" ]]; then
-            TARCMD="tar --ignore-failed-read"
+            TARCMD="tar"
             [ ! -d $ATARDIR/$CDATE ] && mkdir -p $ATARDIR/$CDATE
         fi
 
