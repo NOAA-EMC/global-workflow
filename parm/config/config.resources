@@ -247,8 +247,10 @@ elif [ $step = "fcst" ]; then
         NTASKS_TOT=$ATMPETS
 
         export nth_fcst=${nth_fv3:-2}
+        export nth_fcst_gfs=${nth_fv3_gfs:-2}
 
         export npe_node_fcst=$(echo "$npe_node_max / $nth_fcst" | bc)
+        export npe_node_fcst_gfs=$(echo "$npe_node_max / $nth_fcst_gfs" | bc)
 
         if [[ "$machine" == "WCOSS_C" ]]; then export memory_fcst="1024M"; fi
 
@@ -323,6 +325,8 @@ elif [ $step = "post" ]; then
     if [[ "$machine" = "WCOSS_DELL_P3" ]]; then export npe_node_post=28 ; fi
     if [[ "$machine" == "WCOSS_C" ]]; then export memory_post="3072M"; fi
     if [[ "$machine" == "S4" ]]; then
+       #Limit post jobs to 1 node on S4/s4 and 2 nodes on S4/ivy
+       #Note that wgrib2 is called with -ncpu=1
        if [[ "$PARTITION_BATCH" = "s4" ]]; then
           export npe_post=32
           export npe_node_post=32
@@ -379,7 +383,7 @@ elif [ $step = "vrfy" ]; then
     export wtime_vrfy="03:00:00"
     export wtime_vrfy_gfs="06:00:00"
     export npe_vrfy=3
-    if [[ "$machine" == "S4" ]]; then export npe_vrfy=1; fi
+    [[ "$machine" == "S4" ]] && export npe_vrfy=1
     export nth_vrfy=1
     export npe_node_vrfy=1
     export npe_vrfy_gfs=1
@@ -557,6 +561,7 @@ elif [ $step = "epos" ]; then
     export npe_epos=80
     export nth_epos=6
     if [[ "$machine" = "S4" ]]; then
+       #Limit epos jobs to 3 nodes on S4
        export nth_epos=1
        export wtime_epos="00:30:00"
     fi
