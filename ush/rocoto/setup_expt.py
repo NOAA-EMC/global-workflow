@@ -231,10 +231,6 @@ def input_args():
 
     args = parser.parse_args()
 
-    if args.icsdir is not None and not os.path.exists(icsdir):
-        msg = f'Initial conditions do not exist in {icsdir}'
-        raise IOError(msg)
-
     if args.app in ['S2S', 'S2SW'] and args.icsdir is None:
         raise SyntaxError("An IC directory must be specified with --icsdir when running the S2S or S2SW app")
 
