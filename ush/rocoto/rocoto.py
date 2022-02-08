@@ -6,12 +6,6 @@
 
     ABOUT:
         Helper module to create tasks, metatasks, and dependencies
-
-    AUTHOR:
-        Rahul.Mahajan
-        rahul.mahajan@noaa.gov
-        Brian Curtis (2021): Port to python 3.6.3+
-        brian.curtis@noaa.gov
 '''
 
 def create_metatask(task_dict, metatask_dict):
@@ -341,3 +335,45 @@ def create_envar(name=None,value=None):
     string += '</envar>'
 
     return string
+
+
+def create_cycledef(group=None, start=None, stop=None, step=None):
+    '''
+    create an Rocoto cycle definition
+    returns the environment variable as a string
+    :param group: cycle definition group name
+    :type group: str
+    :param start: cycle start datetime
+    :type start: str
+    :param end: cycle end datetime
+    :type stop: str
+    :param step: cycle interval (timedelta)
+    :type interval: str
+    :param value: value of the environment variable
+    :type value: str or float or int or unicode
+    :return: Rocoto cycledef variable string
+    :rtype: str
+    '''
+
+    string = ''
+    string += f'<cycledef group="{group}">'
+    string += f'{start} {stop} {step}'
+    string += '</cycledef>'
+
+    return string
+
+
+def create_entity(name=None, value=None):
+    '''
+    create an XML ENTITY variable given name and value
+    returns the variable as a string
+    :param name: name of the variable
+    :type name: str
+    :param value: value of the variable
+    :type value: str or float or int or unicode
+    :return: XML entity variable key-value pair
+    :rtype: str
+    '''
+
+    return f'<!ENTITY {name} "{value}">'
+

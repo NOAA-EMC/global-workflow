@@ -93,7 +93,9 @@ if [ $type = "gfs" ]; then
   fi
 
   #..................
-  echo  "./logs/${CDATE}/gfs*.log                          " >>gfsa.txt
+  # Exclude the gfsarch.log file, which will change during the tar operation
+  #  This uses the bash extended globbing option
+  echo  "./logs/${CDATE}/gfs!(arch).log                    " >>gfsa.txt
   echo  "${dirname}input.nml                               " >>gfsa.txt
   if [ $MODE = "cycled" ]; then
     echo  "${dirname}${head}gsistat                          " >>gfsa.txt
