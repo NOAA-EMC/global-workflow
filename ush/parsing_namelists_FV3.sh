@@ -317,9 +317,9 @@ cat >> input.nml <<EOF
   do_skeb      = ${do_skeb:-".false."}
   frac_grid    = ${FRAC_GRID:-".true."}
   cplchm       = ${cplchem:-".false."}
-  cplflx       = $cplflx
-  cplice       = ${cplice} 
-  cplwav2atm   = ${cplwav2atm}
+  cplflx       = ${cplflx:-".false."}
+  cplice       = ${cplice-".false."} 
+  cplwav2atm   = ${cplwav2atm-".false."}
 EOF
 
 # Add namelist for IAU
