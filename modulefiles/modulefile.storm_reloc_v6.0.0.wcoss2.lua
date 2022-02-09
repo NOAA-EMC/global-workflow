@@ -20,4 +20,4 @@ load(pathJoin("w3emc", os.getenv("w3emc_ver")))
 load(pathJoin("sp", os.getenv("sp_ver")))
 load(pathJoin("g2", os.getenv("g2_ver")))
 
-setenv("FC","ftn")
+setenv("myFC","ftn")
