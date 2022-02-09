@@ -22,9 +22,11 @@ if [[ -d /lfs3 ]] ; then
 	module load module_base.jet 
 elif [[ -d /scratch1 ]] ; then
     # We are on NOAA Hera
+        source "$HOMEgfs/versions/hera.ver"
 	module load module_base.hera
 elif [[ -d /work ]] ; then
     # We are on MSU Orion
+        source "$HOMEgfs/versions/orion.ver"
 	module load module_base.orion
 elif [[ -d /gpfs/hps && -e /etc/SuSE-release ]] ; then
     # We are on NOAA Luna or Surge
