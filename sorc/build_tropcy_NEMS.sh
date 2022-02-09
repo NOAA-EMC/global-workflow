@@ -24,13 +24,11 @@ fi
 module use ${cwd}/../modulefiles
 module load modulefile.storm_reloc_v6.0.0.$target
 
-if [ $target = "wcoss2" ]; then
-  SIGIO_LIB4=$SIGIO_LIB
-  SIGIO_INC4=$SIGIO_INC
-fi
+SIGIO_LIB4=$SIGIO_LIB
+SIGIO_INC4=$SIGIO_INC
 
-export FC=ftn
-export JASPER_LIB=${JASPER_LIB:-$JASPER_LIBRARY_DIRS/libjasper.a}
+export FC=$myFC
+export JASPER_LIB=${JASPER_LIB:-$JASPER_LIBRARIES/libjasper.a}
 
 export INC="${G2_INCd} -I${NEMSIO_INC}"
 export LIBS="${W3EMC_LIBd} ${W3NCO_LIBd} ${BACIO_LIB4} ${G2_LIBd} ${PNG_LIB} ${JASPER_LIB} ${Z_LIB}"
