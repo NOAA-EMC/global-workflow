@@ -135,7 +135,7 @@ def edit_baseconfig(host, inputs):
         "@QUEUE@": host.info["queue"],
         "@QUEUE_SERVICE@": host.info["queue_service"],
         "@PARTITION_BATCH@": host.info["partition_batch"],
-        "@EXP_WARM_START@": inputs.start,
+        "@EXP_WARM_START@": inputs.warm_start,
         "@MODE@": inputs.mode,
         "@CHGRP_RSTPROD@": host.info["chgrp_rstprod"],
         "@CHGRP_CMD@": host.info["chgrp_cmd"],
@@ -236,6 +236,12 @@ def input_args():
     if args.app in ['S2S', 'S2SW'] and args.icsdir is None:
         raise SyntaxError("An IC directory must be specified with --icsdir when running the S2S or S2SW app")
 
+    # Add an entry for warm_start = .true. or .false.
+    if args.start == "warm":
+        args.warm_start = ".true."
+    else:
+        args.warm_start = ".false."
+        
     return args
 
 
