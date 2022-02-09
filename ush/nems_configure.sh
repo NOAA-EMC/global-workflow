@@ -98,7 +98,7 @@ if [ $cplice = .true. ]; then
   sed -i -e "s;@\[MESH_OCN_ICE\];$MESH_OCN_ICE;g" tmp1
   sed -i -e "s;@\[FHMAX\];$FHMAX_GFS;g" tmp1
 fi
-if [ $cplchem = .true. ]; then
+if [ $cplchm = .true. ]; then
   sed -i -e "s;@\[chm_model\];$CHM_model;g" tmp1
   sed -i -e "s;@\[chm_petlist_bounds\];$chm_petlist_bounds;g" tmp1
   sed -i -e "s;@\[coupling_interval_fast_sec\];$CPL_FAST;g" tmp1

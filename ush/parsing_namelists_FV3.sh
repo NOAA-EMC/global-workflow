@@ -328,7 +328,7 @@ EOF
 if [ $cpl = .true. ]; then
   cat >> input.nml << EOF
   frac_grid    = ${FRAC_GRID:-".true."}
-  cplchm       = ${cplchem:-".false."}
+  cplchm       = ${cplchm:-".false."}
   cplflx       = $cplflx
   cplice       = ${cplice} 
   cplwav2atm   = ${cplwav2atm}
