@@ -46,6 +46,7 @@ class HostInfo:
             'WCOSS_C': self.wcoss_c,
             'WCOSS_DELL_P3': self.wcoss_dell_p3,
             'WCOSS_DELL_P3p5': self.wcoss_dell_p3p5,
+            'S4': self.s4,
             'HERA': self.hera,
             'ORION': self.orion}
 
@@ -185,6 +186,8 @@ class HostInfo:
             'localarch': 'NO',
             'atardir': '$NOSCRUB/archive_rotdir/$PSLOT',
              }
+
+        return info
 
     @property
     def orion(self):
