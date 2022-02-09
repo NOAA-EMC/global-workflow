@@ -1,16 +1,19 @@
-#%Module#####################################################
-## enkf_chgres_recenter component
-#############################################################
+help([[
+Load environment for building enkf_chgres_recenter_nc
+]])
 
-module load intel/2018.4
-module load impi/2018.4
+prepend_path("MODULEPATH", "/apps/contrib/NCEP/libs/hpc-stack/modulefiles/stack")
 
-module use -a /apps/contrib/NCEPLIBS/orion/modulefiles
-module load bacio/2.0.3
-module load w3nco/2.0.7
-module load ip/3.0.2
-module load sp/2.0.3
-module load hdf5_parallel/1.10.6
-module load netcdf_parallel/4.7.4
+load(pathJoin("hpc", os.getenv("hpc_ver")))
+load(pathJoin("hpc-intel", os.getenv("hpc_intel_ver")))
+load(pathJoin("hpc-impi", os.getenv("hpc_impi_ver")))
 
-export FC=ifort
+load(pathJoin("hdf5", os.getenv("hdf5_ver")))
+load(pathJoin("netcdf", os.getenv("netcdf_ver")))
+
+load(pathJoin("bacio", os.getenv("bacio_ver")))
+load(pathJoin("w3nco", os.getenv("w3nco_ver")))
+load(pathJoin("ip", os.getenv("ip_ver")))
+load(pathJoin("sp", os.getenv("sp_ver")))
+
+setenv("FC","mpiifort")

@@ -1,39 +1,35 @@
-#%Module######################################################################
-##
-##      FV3GFS prerequisites
-##
+help([[
+Load environment to run GFS on Orion
+]])
 
-module load intel/2018.4
-module load impi/2018.4
-module load wgrib/2.0.8
-#module load hpss/hpss
-module load nco/4.8.1
-module load cdo/1.9.5
+prepend_path("MODULEPATH", "/apps/contrib/NCEP/libs/hpc-stack/modulefiles/stack")
 
-module load gempak/7.5.1
+load(pathJoin("hpc", os.getenv("hpc_ver")))
+load(pathJoin("hpc-intel", os.getenv("hpc_intel_ver")))
+load(pathJoin("hpc-impi", os.getenv("hpc_impi_ver")))
 
-#Load from official NCEPLIBS
-module use /apps/contrib/NCEPLIBS/orion/modulefiles
-module load grib_util/1.2.0
-module load prod_util/1.2.0
-module load g2tmpl/1.6.0
-module load crtm/2.3.0
-#module load netcdf_parallel/4.7.4
-module load hdf5_parallel/1.10.6
+load(pathJoin("esmf", os.getenv("esmf_ver")))
 
-## load ESMF library for above compiler / MPI combination
-### use pre-compiled EMSF library for above compiler / MPI combination
-###
-module use /apps/contrib/NCEPLIBS/lib/modulefiles
-module load netcdfp/4.7.4 
-#module load hdf5_parallel/1.10.6
-module load esmflocal/8.0.1.08bs
-module load post-intel-sandybridge/8.0.5
+load(pathJoin("python", os.getenv("python_ver")))
+load(pathJoin("gempak", os.getenv("gempak_ver")))
+load(pathJoin("perl", os.getenv("perl_ver")))
+load(pathJoin("libjpeg", os.getenv("libjpeg_ver")))
 
-module load contrib
-module load rocoto/1.3.2
-module load slurm/19.05.3-2
+load(pathJoin("cdo", os.getenv("cdo_ver")))
 
-# Python
-module load python/3.7.5
+load(pathJoin("hdf5", os.getenv("hdf5_ver")))
+load(pathJoin("netcdf", os.getenv("netcdf_ver")))
 
+load(pathJoin("udunits", os.getenv("udunits_ver")))
+load(pathJoin("nco", os.getenv("nco_ver")))
+load(pathJoin("prod_util", os.getenv("prod_util_ver")))
+load(pathJoin("grib_util", os.getenv("grib_util_ver")))
+load(pathJoin("bufr_dump", os.getenv("bufr_dump_ver")))
+load(pathJoin("util_shared", os.getenv("util_shared_ver")))
+load(pathJoin("crtm", os.getenv("crtm_ver")))
+load(pathJoin("g2tmpl", os.getenv("g2tmpl_ver")))
+load(pathJoin("wgrib2", os.getenv("wgrib2_ver")))
+
+setenv("USE_CFP","YES")
+
+whatis("Description: GFS run environment")
