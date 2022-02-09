@@ -188,7 +188,9 @@ fi
 # Source versions file for build
 
 . ${HOMEgfs}/versions/build.ver
-. ${HOMEgfs}/versions/${target}.ver
+if [[ $target != wcoss2 ]] ; then
+  . ${HOMEgfs}/versions/${target}.ver
+fi
 
 unset __ms_shell
 unset __ms_ksh_test
