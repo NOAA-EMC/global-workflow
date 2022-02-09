@@ -5,7 +5,7 @@ export FFLAGS="-O3 -fp-model precise -g -r8 -i4"
 #export FFLAGS="-g -r8 -i4 -warn unused -check bounds"
 
 export NETCDF_INCLUDE="-I${NETCDF}/include"
-export NETCDF_LDFLAGS_F="-L${NETCDF}/lib -lnetcdf -lnetcdff -L${HDF5_LIBRARIES} -lhdf5 "
+export NETCDF_LDFLAGS_F="-L${NETCDF}/lib -lnetcdff -lnetcdf -L${HDF5_LIBRARIES} -lhdf5_hl -lhdf5 -lz"
 
 make clean
 make build
