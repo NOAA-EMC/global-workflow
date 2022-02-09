@@ -439,8 +439,7 @@ def get_resources(machine, cfg, task, reservation, cdump='gdas'):
     else:
         ppn = cfg[f'npe_node_{ltask}']
 
-    if machine in [ 'WCOSS_DELL_P3', 'HERA', 'ORION', 'JET' , 'S4' ]:
-        threads = cfg[f'nth_{ltask}']
+    if machine in [ 'WCOSS_DELL_P3', 'HERA', 'ORION', 'JET', 'S4' ]:
         if cdump in ['gfs'] and f'nth_{task}_gfs' in cfg.keys():
             threads = cfg[f'nth_{ltask}_gfs']
         else:
