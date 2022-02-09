@@ -180,6 +180,7 @@ case "${APP}" in
     export CCPP_SUITE="FV3_GFS_v16_coupled_nsstNoahmpUGWPv1"
     export WAVE_CDUMP="both"
     export cplwav2atm=".true."
+    export confignamevarfornems="cpld"
     source $EXPDIR/config.defaults.s2sw
     ;;
   *)
