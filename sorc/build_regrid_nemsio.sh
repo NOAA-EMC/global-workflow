@@ -18,12 +18,13 @@ export F90=${FCMP}
 export LD=${FCMP}
 export F77=${FCMP}
 
+export NETCDF_LDFLAGS="-L${NETCDF}/lib -lnetcdff -lnetcdf -L${HDF5_LIBRARIES} -lhdf5_hl -lhdf5 -lz"
 export FCFFLAGS="" # "-convert native -assume byterecl -heap-arrays -mcmodel=large -shared-intel"
 export LDFLAGS="${FCFFLAGS}"
 export OPTIMIZATION="-O3" #-axCORE-AVX2,AVX -xSSE4.2 -O3
 export DEBUG="-traceback -g" #-O0 #-C #-fp-stack-check #-check all -fp-stack-check
 
-if [ $target != hera ]; then
+if [ $target = wcoss2 ]; then
   LIBnetcdf=`$NETCDF/bin/nf-config --flibs`
   INCnetcdf=`$NETCDF/bin/nf-config --fflags`
   export NETCDF_LDFLAGS=$LIBnetcdf
