@@ -10,7 +10,6 @@ while getopts "c" option; do
     c)
       APP="S2SW"
       CCPP_SUITES="FV3_GFS_v16_coupled_nsstNoahmpUGWPv1,FV3_GFS_v16_coupled_p7_rrtmgp"
-      shift
       ;;
     *)
       echo "Unrecognized option: ${1}"
