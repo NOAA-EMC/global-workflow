@@ -47,8 +47,8 @@ elif [[ "$machine" = "S4" ]]; then
    elif [[ "$PARTITION_BATCH" = "ivy" ]]; then
       export npe_node_max=20
    fi
-   if [[ "$CASE" == "C768" || "$CASE" == "C1152" || "$CASE" == "C3072" ]]; then
-      echo "S4 does not support resolutions of C768 or finer!"
+   if [[ $(echo $CASE | tr -d C) -gt 384 ]]; then
+      echo "S4 does not support resolutions finer than C384!"
       exit 3
    fi
 elif [[ "$machine" = "ORION" ]]; then
@@ -561,7 +561,7 @@ elif [ $step = "epos" ]; then
     export npe_epos=80
     export nth_epos=6
     if [[ "$machine" = "S4" ]]; then
-       #Limit epos jobs to 3 nodes on S4
+       #Limit epos jobs to 1 thread on S4
        export nth_epos=1
        export wtime_epos="00:30:00"
     fi

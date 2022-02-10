@@ -53,8 +53,8 @@ case $case_in in
         export layout_y=2
         export layout_x_gfs=3
         export layout_y_gfs=2
-        export nth_fv3=1
-        export nth_fv3_gfs=1
+        export nth_fv3=2
+        export nth_fv3_gfs=2
         export cdmbgwd="0.071,2.1,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=1
         export WRTTASK_PER_GROUP=$npe_node_max
@@ -69,7 +69,9 @@ case $case_in in
         export layout_x_gfs=6
         export layout_y_gfs=4
         if [[ "$machine" == "S4" ]]; then
-           export layout_x=4
+           if [[ "$CASE_ENKF" == "C192" ]]; then
+              export layout_x=4
+           fi
         fi
         export nth_fv3=1
         export nth_fv3_gfs=1
