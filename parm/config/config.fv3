@@ -69,7 +69,7 @@ case $case_in in
         export layout_x_gfs=6
         export layout_y_gfs=4
         if [[ "$machine" == "S4" ]]; then
-           if [[ "$CASE_ENKF" == "C192" ]]; then
+           if [[ "$CASE_ENKF" == "C96" ]]; then
               export layout_x=4
            fi
         fi
