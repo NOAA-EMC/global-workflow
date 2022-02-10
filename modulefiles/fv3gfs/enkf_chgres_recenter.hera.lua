@@ -1,12 +1,20 @@
-#%Module#####################################################
-## enkf_chgres_recenter component - hera
-#############################################################
+help([[
+Load environment for building enkf_chgres_recenter on Hera
+]])
 
-module use -a /scratch2/NCEPDEV/nwprod/NCEPLIBS/modulefiles
-module load nemsio/2.2.3
-module load bacio/2.0.2
-module load w3nco/2.0.6
-module load ip/3.0.1
-module load sp/2.0.2
+prepend_path("MODULEPATH", "/scratch2/NCEPDEV/nwprod/hpc-stack/libs/hpc-stack/modulefiles/stack")
 
-export FC=ifort
+load(pathJoin("hpc", os.getenv("hpc_ver")))
+load(pathJoin("hpc-intel", os.getenv("hpc_intel_ver")))
+load(pathJoin("hpc-impi", os.getenv("hpc_impi_ver")))
+
+load(pathJoin("hdf5", os.getenv("hdf5_ver")))
+load(pathJoin("netcdf", os.getenv("netcdf_ver")))
+
+load(pathJoin("bacio", os.getenv("bacio_ver")))
+load(pathJoin("w3nco", os.getenv("w3nco_ver")))
+load(pathJoin("nemsio", os.getenv("nemsio_ver")))
+load(pathJoin("ip", os.getenv("ip_ver")))
+load(pathJoin("sp", os.getenv("sp_ver")))
+
+setenv("FC","mpiifort")

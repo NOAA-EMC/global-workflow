@@ -1,27 +1,26 @@
-#%Module#####################################################
-## bufrsnd
-#############################################################
+help([[
+Load environment to build gfs_bufr on Hera
+]])
 
-# Loading Intel Compiler Suite
-module load intel
-module load impi
-module use -a /scratch2/NCEPDEV/nwprod/NCEPLIBS/modulefiles
-# Loading nceplibs modules
-module load sigio/2.1.1
-module load bacio/2.0.3
-module load w3nco/2.0.6
-module load bufr/11.3.0
-module load nemsio/2.2.3
-module load intelpython/3.6.8
-module load w3emc/2.3.1
+prepend_path("MODULEPATH", "/scratch2/NCEPDEV/nwprod/hpc-stack/libs/hpc-stack/modulefiles/stack")
 
-module use /scratch2/NCEPDEV/nwprod/NCEPLIBS/modulefiles
-module load hdf5_parallel/1.10.6
-module load netcdf_parallel/4.7.4
-#module load w3emc_para/2.4.0          
+load(pathJoin("hpc", os.getenv("hpc_ver")))
+load(pathJoin("hpc-intel", os.getenv("hpc_intel_ver")))
+load(pathJoin("hpc-impi", os.getenv("hpc_impi_ver")))
 
+load(pathJoin("gempak", os.getenv("gempak_ver")))
 
-export myFC=$FCOMP
-export myFCFLAGS="-O3 -convert big_endian -traceback -g -fp-model source -qopenmp"
-export myCPP=/lib/cpp
-export myCPPFLAGS="-P"
+load(pathJoin("hdf5", os.getenv("hdf5_ver")))
+load(pathJoin("netcdf", os.getenv("netcdf_ver")))
+
+load(pathJoin("bacio", os.getenv("bacio_ver")))
+load(pathJoin("w3nco", os.getenv("w3nco_ver")))
+load(pathJoin("nemsio", os.getenv("nemsio_ver")))
+load(pathJoin("sigio", os.getenv("sigio_ver")))
+load(pathJoin("w3emc", os.getenv("w3emc_ver")))
+load(pathJoin("bufr", os.getenv("bufr_ver")))
+
+setenv("myFC","mpiifort")
+setenv("myFCFLAGS","-O3 -convert big_endian -traceback -g -fp-model source -qopenmp")
+setenv("myCPP","/lib/cpp")
+setenv("myCPPFLAGS","-P")

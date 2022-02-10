@@ -1,17 +1,20 @@
-#%Module#####################################################
-## gaussian_sfcanl build module for Hera
-#############################################################
+help([[
+Load environment for building gaussian_sfcanl on Hera
+]])
 
-module use -a /scratch2/NCEPDEV/nwprod/NCEPLIBS/modulefiles
-module load w3nco/2.0.6
-module load bacio/2.0.2
-module load nemsio/2.2.3
-module load sp/2.0.2
-module load hdf5_parallel/1.10.6
-module load netcdf_parallel/4.7.4
+prepend_path("MODULEPATH", "/scratch2/NCEPDEV/nwprod/hpc-stack/libs/hpc-stack/modulefiles/stack")
 
+load(pathJoin("hpc", os.getenv("hpc_ver")))
+load(pathJoin("hpc-intel", os.getenv("hpc_intel_ver")))
+load(pathJoin("hpc-impi", os.getenv("hpc_impi_ver")))
 
-export NETCDF_INCLUDE="-I${NETCDF}/include"
-export NETCDF_LDFLAGS_F="-L${NETCDF}/lib -lnetcdf -lnetcdff -L${HDF5}/lib -lhdf5 -lhdf5_fortran"
+load(pathJoin("zlib", os.getenv("zlib_ver")))
+load(pathJoin("hdf5", os.getenv("hdf5_ver")))
+load(pathJoin("netcdf", os.getenv("netcdf_ver")))
 
-#export FCOMP=$FCOMP
+load(pathJoin("bacio", os.getenv("bacio_ver")))
+load(pathJoin("w3nco", os.getenv("w3nco_ver")))
+load(pathJoin("nemsio", os.getenv("nemsio_ver")))
+load(pathJoin("sp", os.getenv("sp_ver")))
+
+setenv("FCOMP","mpiifort")

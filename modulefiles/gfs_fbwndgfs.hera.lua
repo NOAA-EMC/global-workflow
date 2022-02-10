@@ -1,10 +1,19 @@
-#%Module#####################################################
-## Module file for fbwndgfs 
-#############################################################
+help([[
+Load environment to build fbwndgfs on Hera
+]])
 
-module use -a /scratch2/NCEPDEV/nwprod/NCEPLIBS/modulefiles
-module load bacio/2.0.3
-module load w3emc/2.3.1
-module load w3nco/2.0.6
-module load ip/3.0.1
-module load sp/2.0.2
+prepend_path("MODULEPATH", "/scratch2/NCEPDEV/nwprod/hpc-stack/libs/hpc-stack/modulefiles/stack")
+
+load(pathJoin("hpc", os.getenv("hpc_ver")))
+load(pathJoin("hpc-intel", os.getenv("hpc_intel_ver")))
+load(pathJoin("hpc-impi", os.getenv("hpc_impi_ver")))
+
+load(pathJoin("bacio", os.getenv("bacio_ver")))
+load(pathJoin("w3nco", os.getenv("w3nco_ver")))
+load(pathJoin("nemsio", os.getenv("nemsio_ver")))
+load(pathJoin("sigio", os.getenv("sigio_ver")))
+load(pathJoin("w3emc", os.getenv("w3emc_ver")))
+load(pathJoin("ip", os.getenv("ip_ver")))
+load(pathJoin("sp", os.getenv("sp_ver")))
+
+setenv("myFC","mpiifort")

@@ -1,18 +1,25 @@
-#%Module#####################################################
-## Module file for storm_reloc_v6.0.0 - Hera
-#############################################################
+help([[
+Load environment to build storm_reloc on Hera
+]])
 
-module use -a /scratch2/NCEPDEV/nwprod/NCEPLIBS/modulefiles
-module load w3emc/2.3.0
-module load w3nco/2.0.6
-module load bacio/2.0.2
-module load sp/2.0.2
-module load nemsio/2.2.3
-module load nemsiogfs/2.2.1
-module load sigio/2.1.1
-module load jasper/1.900.1
-module load png/1.2.44
-module load z/1.2.11
-module load g2/3.1.0
+prepend_path("MODULEPATH", "/scratch2/NCEPDEV/nwprod/hpc-stack/libs/hpc-stack/modulefiles/stack")
 
-set FC mpiifort
+load(pathJoin("hpc", os.getenv("hpc_ver")))
+load(pathJoin("hpc-intel", os.getenv("hpc_intel_ver")))
+load(pathJoin("hpc-impi", os.getenv("hpc_impi_ver")))
+
+load(pathJoin("jasper", os.getenv("jasper_ver")))
+load(pathJoin("libpng", os.getenv("libpng_ver")))
+load(pathJoin("png", os.getenv("1.6.35")))
+load(pathJoin("zlib", os.getenv("zlib_ver")))
+
+load(pathJoin("bacio", os.getenv("bacio_ver")))
+load(pathJoin("w3nco", os.getenv("w3nco_ver")))
+load(pathJoin("nemsio", os.getenv("nemsio_ver")))
+load(pathJoin("nemsiogfs", os.getenv("nemsiogfs_ver")))
+load(pathJoin("sigio", os.getenv("sigio_ver")))
+load(pathJoin("w3emc", os.getenv("w3emc_ver")))
+load(pathJoin("sp", os.getenv("sp_ver")))
+load(pathJoin("g2", os.getenv("g2_ver")))
+
+setenv("myFC","mpiifort")

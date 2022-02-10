@@ -1,13 +1,19 @@
-#%Module#####################################################
-## Module file for fv3nc2nemsio
-#############################################################
+help([[
+Load environment to build fv3nc2nemsio on Hera
+]])
 
-module use -a /scratch2/NCEPDEV/nwprod/NCEPLIBS/modulefiles
-module load netcdf/4.7.0
-module load hdf5/1.10.5
-module load bacio/2.0.2
-module load nemsio/2.2.3
-module load w3nco/2.0.6
+prepend_path("MODULEPATH", "/scratch2/NCEPDEV/nwprod/hpc-stack/libs/hpc-stack/modulefiles/stack")
 
-export FCMP="ifort"
-export FFLAGS="-g -O2 -traceback"
+load(pathJoin("hpc", os.getenv("hpc_ver")))
+load(pathJoin("hpc-intel", os.getenv("hpc_intel_ver")))
+load(pathJoin("hpc-impi", os.getenv("hpc_impi_ver")))
+
+load(pathJoin("hdf5", os.getenv("hdf5_ver")))
+load(pathJoin("netcdf", os.getenv("netcdf_ver")))
+
+load(pathJoin("bacio", os.getenv("bacio_ver")))
+load(pathJoin("w3nco", os.getenv("w3nco_ver")))
+load(pathJoin("nemsio", os.getenv("nemsio_ver")))
+
+setenv("FCMP","mpiifort")
+setenv("FFLAGS","-g -O2 -traceback")
