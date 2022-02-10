@@ -126,10 +126,6 @@ cd ${pwd}/../ush                ||exit 8
     for file in gldas_archive.sh  gldas_forcing.sh gldas_get_data.sh  gldas_process_data.sh gldas_liscrd.sh  gldas_post.sh ; do
         $LINK ../sorc/gldas.fd/ush/$file                  .
     done
-cd ${pwd}/../util               ||exit 8
-    for file in sub_slurm sub_wcoss_c sub_wcoss_d ; do
-        $LINK ../sorc/ufs_utils.fd/util/$file .
-    done
 
 
 #-----------------------------------
