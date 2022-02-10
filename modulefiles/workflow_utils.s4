@@ -28,4 +28,4 @@ module load sigio/2.3.2
 module load g2/3.4.1
 module load bufr/11.4.0
 
-export EXTRA_WORKFLOW_BUILD_FLAGS="-march=ivybridge"
+export FFLAGS="-march=ivybridge"

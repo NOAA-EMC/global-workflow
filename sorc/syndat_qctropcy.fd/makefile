@@ -5,7 +5,7 @@ FC=		ifort
 #DEBUG =		-ftrapuv -check all -check noarg_temp_created -fp-stack-check -fstack-protector
 ## if '-check all' enabled, include '-check noarg_temp_created' to avoid warning msgs indicating 
 ##   slight performance hit due to chosen method of passing array arguments to w3difdat  
-FFLAGS=		-O3 -g -traceback -r8 -i8 -assume byterecl -assume noold_ldout_format $(DEBUG) $(EXTRA_WORKFLOW_BUILD_FLAGS)
+FFLAGS=		-O3 -g -traceback -r8 -i8 -assume byterecl -assume noold_ldout_format $(DEBUG)
 LDFLAGS=	
 SRCS=		qctropcy.f
 OBJS=		qctropcy.o
