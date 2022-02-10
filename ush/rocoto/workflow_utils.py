@@ -532,10 +532,6 @@ def create_crontab(base, cronint=5):
         rocotoloadstr = '. /usrx/local/Modules/default/init/sh; module use -a /usrx/local/emc_rocoto/modulefiles; module load rocoto/1.3.0rc2)'
         rocotorunstr = f'({rocotoloadstr} {rocotorunstr})'
 
-    if base['machine'] in ['S4']:
-        limit_str = 'ulimit -S -s unlimited;'
-        rocotorunstr = f'({limit_str} {rocotorunstr})'
-
     try:
         REPLYTO = os.environ['REPLYTO']
     except:
