@@ -189,7 +189,7 @@ case "${APP}" in
     ;;
 esac
 
-if [[ DO_AERO = "YES" ]]; then
+if [[ $DO_AERO = "YES" ]]; then
     export confignamevarfornems="${confignamevarfornems}_aer"
 fi
 
