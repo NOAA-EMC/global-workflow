@@ -40,7 +40,7 @@ export esmf_profile=".false."
 export OCN_model="mom6"
 export ICE_model="cice6"
 export WAV_model="ww3"
-export CHM_model="gsdchem"
+export CHM_model="gocart"
 
 # cpl defaults
 
@@ -57,12 +57,13 @@ if [ $DO_COUPLED = "YES" ]; then
 fi
 if [ $DO_AERO = "YES" ]; then
   export cplchm=".true."
-  export cplflx=".true."  ### check this
+  export cplflx=".true."
 fi
 if [ $DO_ICE = "YES" ]; then
   export cplice=".true."
+  export cplflx=".true."
 fi
-if [ $DO_OCN = "YES" -o $DO_ICE = "YES" ]; then
+if [ $DO_OCN = "YES" ]; then
   export cplflx=".true."
 fi
 if [ $DO_WAVE = "YES" ]; then
@@ -313,12 +314,13 @@ if [[ $DO_COUPLED = "YES" ]] ; then # coupled model
 fi
 
 if [ $DO_AERO = "YES" ]; then # temporary settings for aerosol coupling
-    export DIAG_TABLE="${DIAG_TABLE}_aer"
-    export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_aer"
-    # TODO
-    export CHM_CFGDIR="not_set"
-    export CHM_INPDIR="not_set"
-    export dnats="$(( $dnats + 0 ))"
+    export AERO_DIAG_TABLE="${AERO_DIAG_TABLE:-$HOMEgfs/parm/chem/diag_table.aero}"
+    export AERO_FIELD_TABLE="${AERO_FIELD_TABLE:-$HOMEgfs/parm/chem/field_table.aero}"
+    export CHM_EMFIRE=$( echo "${AERO_EMIS_FIRE:-none}" | awk '{ print tolower($1) }' )
+    export CHM_CFGDIR="${AERO_CONFIG_DIR:-$HOMEgfs/parm/chem}"
+    export CHM_INPDIR="${AERO_INPUTS_DIR:-}"
+    export fscav_aero="${aero_conv_scav_factors:-${fscav_aero}}"
+    export dnats_aero="${aero_diag_tracers:-0}"
 fi
 
 # Remember config.efcs will over-ride these values for ensemble forecasts

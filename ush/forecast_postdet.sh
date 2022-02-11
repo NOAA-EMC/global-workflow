@@ -972,6 +972,16 @@ GOCART_rc() {
     $NCP     ${CHM_CFGDIR}/*.rc $DATA
     status=$?
     [[ $status -ne 0 ]] && exit $status
+    # attempt to generate ExtData configuration file if not provided
+    if [ ! -f $DATA/AERO_ExtData.rc ]; then
+      { \
+        echo "PrimaryExports%%" ; \
+        cat ${CHM_CFGDIR}/ExtData.other ; \
+        cat ${CHM_CFGDIR}/ExtData.${CHM_EMFIRE:-none} ; \
+        echo "%%" ; \
+      } > $DATA/AERO_ExtData.rc
+      [[ $status -ne 0 ]] && exit $status
+    fi
   fi
 }
 
