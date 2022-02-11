@@ -78,6 +78,8 @@ class HostInfo:
             'chgrp_rstprod': 'YES',
             'chgrp_cmd': 'chgrp rstprod',
             'hpssarch': 'YES',
+            'localarch': 'NO',
+            'atardir': '/NCEPDEV/$HPSS_PROJECT/1year/$USER/$machine/scratch/$PSLOT',
              }
 
         return info
@@ -102,6 +104,8 @@ class HostInfo:
             'chgrp_rstprod': 'YES',
             'chgrp_cmd': 'chgrp rstprod',
             'hpssarch': 'YES',
+            'localarch': 'NO',
+            'atardir': '/NCEPDEV/$HPSS_PROJECT/1year/$USER/$machine/scratch/$PSLOT',
              }
 
         return info
@@ -125,6 +129,8 @@ class HostInfo:
             'chgrp_rstprod': 'YES',
             'chgrp_cmd': 'chgrp rstprod',
             'hpssarch': 'YES',
+            'localarch': 'NO',
+            'atardir': '/NCEPDEV/$HPSS_PROJECT/1year/$USER/$machine/scratch/$PSLOT',
              }
 
         return info
@@ -149,6 +155,8 @@ class HostInfo:
             'chgrp_rstprod': 'YES',
             'chgrp_cmd': 'chgrp rstprod',
             'hpssarch': 'YES',
+            'localarch': 'NO',
+            'atardir': '/NCEPDEV/$HPSS_PROJECT/1year/$USER/$machine/scratch/$PSLOT',
              }
 
         return info
@@ -173,6 +181,8 @@ class HostInfo:
             'chgrp_rstprod': 'YES',
             'chgrp_cmd': 'chgrp rstprod',
             'hpssarch': 'NO',
+            'localarch': 'NO',
+            'atardir': '$NOSCRUB/archive_rotdir/$PSLOT',
              }
 
         return info
