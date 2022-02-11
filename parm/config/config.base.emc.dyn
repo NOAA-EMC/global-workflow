@@ -190,7 +190,7 @@ case "${APP}" in
 esac
 
 if [[ $DO_AERO = "YES" ]]; then
-    export confignamevarfornems="${confignamevarfornems}_aer"
+    export confignamevarfornems="${confignamevarfornems}_aero"
 fi
 
 # Set operational resolution
