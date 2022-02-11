@@ -181,7 +181,6 @@ echo "MAIN: Name lists and model configuration written"
 echo "MAIN: Writing NEMS Configure file"
 writing_nems_configure
 echo "MAIN: NEMS configured"
->>>>>>> develop
 
 #------------------------------------------------------------------
 # run the executable
