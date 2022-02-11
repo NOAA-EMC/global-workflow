@@ -14,6 +14,7 @@ load(pathJoin("python", os.getenv("python_ver")))
 load(pathJoin("gempak", os.getenv("gempak_ver")))
 load(pathJoin("perl", os.getenv("perl_ver")))
 load(pathJoin("libjpeg", os.getenv("libjpeg_ver")))
+load(pathJoin("hpss", os.getenv("hpss_ver")))
 
 load(pathJoin("cdo", os.getenv("cdo_ver")))
 
