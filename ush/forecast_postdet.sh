@@ -249,6 +249,11 @@ EOF
     gwd_opt="1"
     knob_ugwp_version="0"
     launch_level=${launch_level:-$(echo "$LEVS/2.35" |bc)}
+    $NLN ${OROFIX_ugwd}/ugwp_limb_tau.nc $DATA/ugwp_limb_tau.nc
+    for n in $(seq 1 $ntiles); do
+      $NLN ${OROFIX_ugwd}/$CASE/${CASE}_oro_data_ls.tile${n}.nc $DATA/INPUT/oro_data_ls.tile${n}.nc
+      $NLN ${OROFIX_ugwd}/$CASE/${CASE}_oro_data_ss.tile${n}.nc $DATA/INPUT/oro_data_ss.tile${n}.nc
+    done
   fi
 
   # GFS standard input data

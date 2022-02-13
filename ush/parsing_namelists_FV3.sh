@@ -239,6 +239,26 @@ EOF
   min_seaice   = ${min_seaice:-"0.15"}
 EOF
   ;;
+  FV3_GFS_v17*)
+  cat >> input.nml << EOF
+  iovr         = ${iovr:-"3"}
+  ltaerosol    = ${ltaerosol:-".false."}
+  lradar       = ${lradar:-".false."}
+  ttendlim     = ${ttendlim:-"-999"}
+  dt_inner     = ${dt_inner:-"$(echo "$DELTIM/2" |bc)}
+  oz_phys      = ${oz_phys:-".false."}
+  oz_phys_2015 = ${oz_phys_2015:-".true."}
+  lsoil_lsm    = ${lsoil_lsm:-"4"}
+  do_mynnedmf  = ${do_mynnedmf:-".false."}
+  do_mynnsfclay = ${do_mynnsfclay:-".false."}
+  icloud_bl    = ${icloud_bl:-"1"}
+  bl_mynn_edmf = ${bl_mynn_edmf:-"1"}
+  bl_mynn_tkeadvect = ${bl_mynn_tkeadvect:-".true."}
+  bl_mynn_edmf_mom = ${bl_mynn_edmf_mom:-"1"}
+  min_lakeice  = ${min_lakeice:-"0.15"}
+  min_seaice   = ${min_seaice:-"0.15"}
+EOF
+  ;;
   *)
   cat >> input.nml << EOF
   iovr         = ${iovr:-"3"}
