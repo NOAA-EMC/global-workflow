@@ -457,10 +457,10 @@ cat >> input.nml <<EOF
   rad_snow = .true.
   rad_graupel = .true.
   rad_rain = .true.
-  const_vi = .F.
-  const_vs = .F.
-  const_vg = .F.
-  const_vr = .F.
+  const_vi = .false.
+  const_vs = .false.
+  const_vg = .false.
+  const_vr = .false.
   vi_max = 1.
   vs_max = 2.
   vg_max = 12.
