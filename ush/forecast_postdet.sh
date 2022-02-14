@@ -865,7 +865,7 @@ CICE_postdet() {
 
   FRAZIL_FWSALT=${FRAZIL_FWSALT:-".true."}
   ktherm=${ktherm:-2}
-  tfrz_option=${tfrz_option:-"mushy"}
+  tfrz_option=${tfrz_option:-"'mushy'"}
   tr_pond_lvl=${tr_pond_lvl:-".true."} # Use level melt ponds tr_pond_lvl=true
 
   # restart_pond_lvl (if tr_pond_lvl=true):
