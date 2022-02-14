@@ -31,6 +31,7 @@ output_1st_tstep_rst:    .false.
 quilting:                $QUILTING
 write_groups:            ${WRITE_GROUP:-1}
 write_tasks_per_group:   ${WRTTASK_PER_GROUP:-24}
+itasks:                  1
 output_history:          ${OUTPUT_HISTORY:-".true."}
 write_dopost:            ${WRITE_DOPOST:-".false."}
 write_nsflip:            ${WRITE_NSFLIP:-".false."}
