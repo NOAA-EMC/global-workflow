@@ -106,12 +106,17 @@ if [ $type = "gfs" ]; then
   fi
   echo  "${dirname}${head}pgrb2.0p25.anl                   " >>gfsa.txt
   echo  "${dirname}${head}pgrb2.0p25.anl.idx               " >>gfsa.txt
-  echo  "${dirname}avno.t${cyc}z.cyclone.trackatcfunix     " >>gfsa.txt
-  echo  "${dirname}avnop.t${cyc}z.cyclone.trackatcfunix    " >>gfsa.txt
-  echo  "${dirname}trak.gfso.atcfunix.${PDY}${cyc}         " >>gfsa.txt
-  echo  "${dirname}trak.gfso.atcfunix.altg.${PDY}${cyc}    " >>gfsa.txt
-  echo  "${dirname}storms.gfso.atcf_gen.${PDY}${cyc}       " >>gfsa.txt
-  echo  "${dirname}storms.gfso.atcf_gen.altg.${PDY}${cyc}  " >>gfsa.txt
+  #Only generated if there are cyclones to track
+  cyclone_files=(avno.t${cyc}z.cyclone.trackatcfunix
+                 avnop.t${cyc}z.cyclone.trackatcfunix
+                 trak.gfso.atcfunix.${PDY}${cyc}
+                 trak.gfso.atcfunix.altg.${PDY}${cyc}
+                 storms.gfso.atcf_gen.${PDY}${cyc}
+                 storms.gfso.atcf_gen.altg.${PDY}${cyc})
+
+  for file in ${cyclone_files[@]}; do
+    [[ -s $ROTDIR/${dirname}${file} ]] && echo "${dirname}${file}" >>gfsa.txt
+  done
 
   if [ $DO_DOWN = "YES" ]; then
    if [ $DO_BUFRSND = "YES" ]; then
@@ -451,8 +456,16 @@ if [ $type = "enkfgdas" -o $type = "enkfgfs" ]; then
         fi
      fi 
   done # loop over FHR
-  for fstep in eobs eomg ecen esfc eupd efcs epos ; do
+  for fstep in eobs ecen esfc eupd efcs epos ; do
    echo  "logs/${CDATE}/${CDUMP}${fstep}*.log        " >>enkf${CDUMP}.txt
+  done
+
+# eomg* are optional jobs
+  for log in $ROTDIR/logs/${CDATE}/${CDUMP}eomg*.log; do
+     if [ -s "$log" ]; then
+        echo  "logs/${CDATE}/${CDUMP}eomg*.log        " >>enkf${CDUMP}.txt
+     fi
+     break
   done
 
 
