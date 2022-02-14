@@ -260,13 +260,12 @@ EOF
   ####
   # copy CCN_ACTIVATE.BIN for Thompson microphysics
   if [ $imp_physics -eq 8 ]; then
-    $NCP $FV3INP/CCN_ACTIVATE.BIN  CCN_ACTIVATE.BIN
-    ####
-    $NCP $FIX_AM/freezeH2O.dat .
-    $NCP $FIX_AM/qr_acr_qg.dat .
-    $NCP $FIX_AM/qr_acr_qs.dat .
-    sleep 60
+    $NLN $FIX_AM/CCN_ACTIVATE.BIN  $DATA/CCN_ACTIVATE.BIN
+    $NLN $FIX_AM/freezeH2O.dat     $DATA/freezeH2O.dat
+    $NLN $FIX_AM/qr_acr_qg.dat     $DATA/qr_acr_qg.dat 
+    $NLN $FIX_AM/qr_acr_qs.dat     $DATA/qr_acr_qs.dat
   fi
+
   $NLN $FIX_AM/${O3FORC}                         $DATA/global_o3prdlos.f77
   $NLN $FIX_AM/${H2OFORC}                        $DATA/global_h2oprdlos.f77
   $NLN $FIX_AM/global_solarconstant_noaa_an.txt  $DATA/solarconstant_noaa_an.txt
