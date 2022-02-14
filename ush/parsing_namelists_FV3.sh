@@ -376,18 +376,9 @@ if [ ${DO_LAND_PERT:-"NO"} = "YES" ]; then
 EOF
 fi
 
-case ${gwd_opt:-"2"} in
-  1)
-  cat >> input.nml <<EOF
-  gwd_opt      = 1
-  do_ugwp      = .false.
-  do_ugwp_v0   = .false.
-  do_ugwp_v1   = .false.
-  do_tofd      = .true.
-  $gfs_physics_nml
-/
+if [ $knob_ugwp_version -eq 0 ]; then
+  cat >> input.nml << EOF
 &cires_ugwp_nml
-  knob_ugwp_version = ${knob_ugwp_version:-0}
   knob_ugwp_solver  = ${knob_ugwp_solver:-2}
   knob_ugwp_source  = ${knob_ugwp_source:-1,1,0,0}
   knob_ugwp_wvspec  = ${knob_ugwp_wvspec:-1,25,25,25}
@@ -398,27 +389,15 @@ case ${gwd_opt:-"2"} in
   knob_ugwp_doheat  = ${knob_ugwp_doheat:-1}
   knob_ugwp_dokdis  = ${knob_ugwp_dokdis:-1}
   knob_ugwp_ndx4lh  = ${knob_ugwp_ndx4lh:-1}
+  knob_ugwp_version = ${knob_ugwp_version:-0}
   launch_level      = ${launch_level:-54}
-  $cires_ugwp_nml
 /
-
 EOF
-  ;;
-  2)
+fi
+
+if [ $knob_ugwp_version -eq 1 ]; then
   cat >> input.nml << EOF
-  gwd_opt      = 2
-  do_ugwp      = .false.
-  do_ugwp_v0   = .true.
-  do_ugwp_v1   = .false.
-  do_tofd      = .false.
-  do_ugwp_v1_orog_only = .false.
-  do_gsl_drag_ls_bl    = ${do_gsl_drag_ls_bl:-".false."}
-  do_gsl_drag_ss       = ${do_gsl_drag_ss:-".true."}
-  do_gsl_drag_tofd     = ${do_gsl_drag_tofd:-".true."}
-  $gfs_physics_nml
-/
 &cires_ugwp_nml
-  knob_ugwp_version = ${knob_ugwp_version:-1}
   knob_ugwp_solver  = ${knob_ugwp_solver:-2}
   knob_ugwp_source  = ${knob_ugwp_source:-1,1,0,0}
   knob_ugwp_wvspec  = ${knob_ugwp_wvspec:-1,25,25,25}
@@ -429,24 +408,20 @@ EOF
   knob_ugwp_doheat  = ${knob_ugwp_doheat:-1}
   knob_ugwp_dokdis  = ${knob_ugwp_dokdis:-2}
   knob_ugwp_ndx4lh  = ${knob_ugwp_ndx4lh:-4}
-  knob_ugwp_palaunch = ${knob_ugwp_palaunch:-275.0e2}
-  knob_ugwp_nslope   = ${knob_ugwp_nslope:-1}
-  knob_ugwp_lzmax    = ${knob_ugwp_lzmax:-15.750e3}
-  knob_ugwp_lzmin    = ${knob_ugwp_lzmin:-0.75e3}
-  knob_ugwp_lzstar   = ${knob_ugwp_lzstar:-2.0e3}
-  knob_ugwp_taumin   = ${knob_ugwp_taumin:-0.25e-3}
-  knob_ugwp_tauamp   = ${knob_ugwp_tauamp:-3.0e-3}
-  knob_ugwp_lhmet    = ${knob_ugwp_lhmet:-200.0e3}
-  knob_ugwp_orosolv  = ${knob_ugwp_orosolv:-'pss-1986'}
-  $cires_ugwp_nml
+  knob_ugwp_palaunch = 275.0e2
+  knob_ugwp_nslope   = 1
+  knob_ugwp_lzmax    = 15.750e3
+  knob_ugwp_lzmin    = 0.75e3
+  knob_ugwp_lzstar   = 2.0e3
+  knob_ugwp_taumin   = 0.25e-3
+  knob_ugwp_tauamp   = 3.0e-3
+  knob_ugwp_lhmet    = 200.0e3
+  knob_ugwp_orosolv  = 'pss-1986'
 /
 EOF
-  ;;
-  *)
-    echo "FATAL: Invalid gwd_opt specified: $gwd_opt"
-    exit 1
-  ;;
-esac
+fi
+
+
 
 echo "" >> input.nml
 

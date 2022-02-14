@@ -89,7 +89,52 @@ export h2o_phys=".true."
 # Options of stratosphere O3 physics reaction coefficients
 export new_o3forc="YES"
 
-# export launch_level=$(echo "$LEVS/2.35" |bc)
+export gwd_opt=2  
+
+# --GFS.v16 uGWD.v0, used for suite FV3_GFS_v16 and UFS p6 etc
+# do_ugwp=T: use unified CGWD and OGWD, and turbulent orographic form drag (TOFD)
+# do_ugwp=F: use unified CGWD but old OGWD, TOFD is not uded.
+if [ $gwd_opt -eq 1 ]; then
+    export knob_ugwp_version=0
+    export do_ugwp=".false."
+    export do_tofd=".false."
+    export launch_level=$(echo "$LEVS/2.35" |bc)
+fi
+
+
+# -- uGWD.v1, for suite FV3_GFS_v17 and FV3_GFS_v17p8b etc
+if [ $gwd_opt -eq 2 ]; then
+
+    #--used for UFS p7 and p8a
+    #export  knob_ugwp_version=1
+    #export  do_ugwp=".false."
+    #export  do_tofd=".false."
+    #export  do_ugwp_v0=".false."
+    #export  do_ugwp_v1=".true."
+    #export  do_ugwp_v0_orog_only=".false."
+    #export  do_ugwp_v0_nst_only=".false."
+    #export  do_gsl_drag_ls_bl=".true."
+    #export  do_gsl_drag_ss=".true."
+    #export  do_gsl_drag_tofd=".true."
+    #export  do_ugwp_v1_orog_only=".false."
+  
+    #--used for UFS p8b 
+    export knob_ugwp_version=0
+    export do_ugwp=".false."
+    export do_tofd=".false."
+    export do_ugwp_v0=".true."
+    export do_ugwp_v1=".false."
+    export do_ugwp_v0_orog_only=".false."
+    export do_ugwp_v0_nst_only=".false."
+    export do_gsl_drag_ls_bl=".false."
+    export do_gsl_drag_ss=".true."
+    export do_gsl_drag_tofd=".true."
+    export do_ugwp_v1_orog_only=".false."
+    export launch_level=$(echo "$LEVS/2.35" |bc)
+fi
+
+
+
 
 # Sponge layer settings
 export tau=10.0
