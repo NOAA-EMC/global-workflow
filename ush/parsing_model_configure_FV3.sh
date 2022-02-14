@@ -52,11 +52,5 @@ output_fh:               $OUTPUT_FH
 iau_offset:              ${IAU_OFFSET:-0}
 EOF
 
-if [ $cpl = .true. ]; then
-cat >> model_configure <<EOF
-output_history:          ${OUTPUT_HISTORY:-".true."}
-EOF
-fi
-
 echo "$(cat model_configure)"
 }
