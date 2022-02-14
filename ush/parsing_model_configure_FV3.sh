@@ -49,7 +49,6 @@ nbits:                   ${nbits:-14}
 imo:                     $LONB_IMO
 jmo:                     $LATB_JMO
 output_fh:               $OUTPUT_FH
-nsout:                   $NSOUT
 iau_offset:              ${IAU_OFFSET:-0}
 EOF
 
