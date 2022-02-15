@@ -37,16 +37,6 @@ $NCP $DATA_TABLE  data_table
 $NCP $FIELD_TABLE field_table
 
 cat > input.nml <<EOF
-&amip_interp_nml
-  interp_oi_sst = .true.
-  use_ncep_sst = .true.
-  use_ncep_ice = .false.
-  no_anom_sst = .false.
-  data_set = 'reynolds_oi'
-  date_out_of_range = 'climo'
-  $amip_interp_nml
-/
-
 &atmos_model_nml
   blocksize = $blocksize
   chksum_debug = $chksum_debug
@@ -245,7 +235,7 @@ EOF
   ltaerosol    = ${ltaerosol:-".false."}
   lradar       = ${lradar:-".false."}
   ttendlim     = ${ttendlim:-"-999"}
-  dt_inner     = ${dt_inner:-"$(echo "$DELTIM/2" |bc)}
+  dt_inner     = ${dt_inner:-"$(echo "$DELTIM/2" |bc)"}
   oz_phys      = ${oz_phys:-".false."}
   oz_phys_2015 = ${oz_phys_2015:-".true."}
   lsoil_lsm    = ${lsoil_lsm:-"4"}
@@ -255,8 +245,20 @@ EOF
   bl_mynn_edmf = ${bl_mynn_edmf:-"1"}
   bl_mynn_tkeadvect = ${bl_mynn_tkeadvect:-".true."}
   bl_mynn_edmf_mom = ${bl_mynn_edmf_mom:-"1"}
+  do_ugwp      = ${do_ugwp:-".false."}
+  do_tofd      = ${do_tofd:-".false."}
+  gwd_opt      = ${gwd_opt:-"2"}
+  do_ugwp_v0   = ${do_ugwp_v0:-".true."}
+  do_ugwp_v1   = ${do_ugwp_v1:-".false."}
+  do_ugwp_v0_orog_only = ${do_ugwp_v0_orog_only:-".false."}
+  do_ugwp_v0_nst_only  = ${do_ugwp_v0_nst_only:-".false."}
+  do_gsl_drag_ls_bl    = ${do_gsl_drag_ls_bl:-".false."}
+  do_gsl_drag_ss       = ${do_gsl_drag_ss:-".true."}
+  do_gsl_drag_tofd     = ${do_gsl_drag_tofd:-".true."}
+  do_ugwp_v1_orog_only = ${do_ugwp_v1_orog_only:-".false."}
   min_lakeice  = ${min_lakeice:-"0.15"}
   min_seaice   = ${min_seaice:-"0.15"}
+  use_cice_alb = ${use_cice_alb:-".false."}
 EOF
   ;;
   *)
@@ -321,7 +323,6 @@ cat >> input.nml <<EOF
   prautco      = ${prautco:-"0.00015,0.00015"}
   lgfdlmprad   = ${lgfdlmprad:-".false."}
   effr_in      = ${effr_in:-".false."}
-  cplwav       = ${cplwav:-".false."}
   ldiag_ugwp   = ${ldiag_ugwp:-".false."}
 EOF
 
@@ -339,6 +340,7 @@ cat >> input.nml <<EOF
   cplchm       = ${cplchem:-".false."}
   cplflx       = ${cplflx:-".false."}
   cplice       = ${cplice-".false."} 
+  cplwav       = ${cplwav:-".false."}
   cplwav2atm   = ${cplwav2atm-".false."}
 EOF
 

@@ -141,7 +141,7 @@ export tau=10.0
 export rf_cutoff=7.5e2
 export d2_bg_k1=0.20
 export d2_bg_k2=0.04
-export dz_min=2
+export dz_min=6
 export n_sponge=42
 if [ $LEVS = "128" -a "$CDUMP" = "gdas" ]; then
    export tau=5.0
@@ -191,9 +191,23 @@ elif [ $imp_physics -eq 6 ]; then # WSM6
 
 elif [ $imp_physics -eq 8 ]; then # Thompson
     export ncld=2
-    export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_thompson_noaero_tke${tbf}"
+    export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_thompson_noaero_tke"
     export nwat=6
-    export ttendlim=-999
+
+    export cal_pre=".false."
+    export random_clds=".false."
+    export effr_in=".true."
+    export ltaerosol=".false."
+    export lradar=".false."
+    export ttendlim="-999"
+    export dt_inner=$((DELTIM/2))
+
+    export hord_mt_nh_nonmono=5
+    export hord_xx_nh_nonmono=5
+    export vtdm4_nh_nonmono=0.02
+    export nord=2
+    export dddmp=0.1
+    export d4_bg=0.12
 elif [ $imp_physics -eq 11 ]; then # GFDL
     export ncld=5
     export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_gfdl${tbf}"

@@ -12,7 +12,7 @@ FHOUT_GFS=6
 FHOUT_HF_GFS=-1
 
 # config.fcst
-min_seaice="1e-6"
+min_seaice="1.0e-6"
 use_cice_alb=".true."
 
 # config.fv3
