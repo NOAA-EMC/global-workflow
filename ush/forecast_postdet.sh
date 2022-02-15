@@ -961,23 +961,23 @@ GOCART_rc() {
   # this variable is platform-dependent and should be set via a YAML file
 
   # link directory containing GOCART input dataset, if provided
-  if [ ! -z "${CHM_INPDIR}" ]; then
-    $NLN -sf ${CHM_INPDIR} $DATA
+  if [ ! -z "${AERO_INPUTS_DIR}" ]; then
+    $NLN -sf ${AERO_INPUTS_DIR} $DATA
     status=$?
     [[ $status -ne 0 ]] && exit $status
   fi
 
   # copying GOCART configuration files
-  if [ ! -z "${CHM_CFGDIR}" ]; then
-    $NCP     ${CHM_CFGDIR}/*.rc $DATA
+  if [ ! -z "${AERO_CONFIG_DIR}" ]; then
+    $NCP     ${AERO_CONFIG_DIR}/*.rc $DATA
     status=$?
     [[ $status -ne 0 ]] && exit $status
     # attempt to generate ExtData configuration file if not provided
     if [ ! -f $DATA/AERO_ExtData.rc ]; then
       { \
         echo "PrimaryExports%%" ; \
-        cat ${CHM_CFGDIR}/ExtData.other ; \
-        cat ${CHM_CFGDIR}/ExtData.${CHM_EMFIRE:-none} ; \
+        cat ${AERO_CONFIG_DIR}/ExtData.other ; \
+        cat ${AERO_CONFIG_DIR}/ExtData.${AERO_EMIS_FIRE:-none} ; \
         echo "%%" ; \
       } > $DATA/AERO_ExtData.rc
       [[ $status -ne 0 ]] && exit $status
