@@ -314,8 +314,8 @@ if [[ $DO_COUPLED = "YES" ]] ; then # coupled model
 fi
 
 if [ $DO_AERO = "YES" ]; then # temporary settings for aerosol coupling
-    export AERO_DIAG_TABLE="${AERO_DIAG_TABLE:-$HOMEgfs/parm/chem/diag_table.aero}"
-    export AERO_FIELD_TABLE="${AERO_FIELD_TABLE:-$HOMEgfs/parm/chem/field_table.aero}"
+    export AERO_DIAG_TABLE="${AERO_DIAG_TABLE:-$HOMEgfs/parm/parm_fv3diag/diag_table.aero}"
+    export AERO_FIELD_TABLE="${AERO_FIELD_TABLE:-$HOMEgfs/parm/parm_fv3diag/field_table.aero}"
     export CHM_EMFIRE=$( echo "${AERO_EMIS_FIRE:-none}" | awk '{ print tolower($1) }' )
     export CHM_CFGDIR="${AERO_CONFIG_DIR:-$HOMEgfs/parm/chem}"
     export CHM_INPDIR="${AERO_INPUTS_DIR:-}"
