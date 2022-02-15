@@ -39,7 +39,6 @@ export FHMAX_EPOS=%FHOUT_EPOS%
 export FHOUT_EPOS=%FHOUT_EPOS%
 export cyc=%CYC%
 export cycle=t%CYC%z
-export USE_CFP=YES
 
 ############################################################
 # CALL executable job script here

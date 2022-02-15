@@ -37,7 +37,6 @@ module list
 #############################################################
 export cyc=%CYC%
 export cycle=t%CYC%z
-export USE_CFP=YES
 
 ############################################################
 # CALL executable job script here

@@ -26,13 +26,11 @@ module load intel/${intel_ver}
 module load cray-mpich/${cray_mpich_ver}
 module load cray-pals/${cray_pals_ver}
 module load cfp/${cfp_ver}
-module load libjpeg/${libjpeg_ver}
 module load cdo/${cdo_ver}
 module load hdf5/${hdf5_ver}
 module load netcdf/${netcdf_ver}
 module load udunits/${udunits_ver}
 module load nco/${nco_ver}
-module load grib_util/${grib_util_ver}
 module load wgrib2/${wgrib2_ver}
 
 module list

@@ -29,7 +29,6 @@ module load wgrib2/${wgrib2_ver}
 
 module list
 
-export USE_CFP=YES
 export PROCESS_TROPCY=YES
 export DO_RELOCATE=YES
 export cyc=%CYC%
