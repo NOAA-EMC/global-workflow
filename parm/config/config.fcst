@@ -191,7 +191,7 @@ elif [ $imp_physics -eq 6 ]; then # WSM6
 
 elif [ $imp_physics -eq 8 ]; then # Thompson
     export ncld=2
-    export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_thompson${tbf}"
+    export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_thompson_noaero_tke${tbf}"
     export nwat=6
     export ttendlim=-999
 elif [ $imp_physics -eq 11 ]; then # GFDL
