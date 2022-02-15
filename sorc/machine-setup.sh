@@ -29,13 +29,6 @@ if [[ -d /work ]] ; then
     fi
     target=orion
     module purge
-    module load intel/2018.4
-    module load impi/2018.4
-    export NCEPLIBS=/apps/contrib/NCEPLIBS/orion
-    export WRFPATH=$NCEPLIBS/wrf.shared.new/v1.1.1/src
-    module use $NCEPLIBS/modulefiles
-    export myFC=mpiifort
-    export FCOMP=mpiifort
 
 ##---------------------------------------------------------------------------
 elif [[ -d /scratch1 ]] ; then
@@ -46,13 +39,6 @@ elif [[ -d /scratch1 ]] ; then
     fi
     target=hera
     module purge
-    module load intel
-    module load impi
-    export NCEPLIBS=/scratch2/NCEPDEV/nwprod/NCEPLIBS
-    module use $NCEPLIBS/modulefiles
-    #export WRFPATH=$NCEPLIBS/wrf.shared.new/v1.1.1/src
-    export myFC=mpiifort
-    export FCOMP=mpiifort
 
 ##---------------------------------------------------------------------------
 elif [[ -d /gpfs/hps && -e /etc/SuSE-release ]] ; then
@@ -194,14 +180,6 @@ elif [[ -d /lfs3 ]] ; then
     fi
     target=jet
     module purge
-module load intel/15.0.3.187
-module load  impi
-#export  NCEPLIBS=/mnt/lfs3/projects/hfv3gfs/gwv/ljtjet/lib
-     export NCEPLIBS=/mnt/lfs3/projects/hfv3gfs/gwv/ljtjet/lib
-export NCEPLIBS=/mnt/lfs3/projects/hfv3gfs/gwv/NCEPLIBS.15X
-     module use $NCEPLIBS/modulefiles
-export WRFPATH=$NCEPLIBS/wrf.shared.new/v1.1.1/src
-export myFC=mpiifort
 
 else
     echo WARNING: UNKNOWN PLATFORM 1>&2
@@ -210,6 +188,7 @@ fi
 # Source versions file for build
 
 . ${HOMEgfs}/versions/build.ver
+. ${HOMEgfs}/versions/${target}.ver
 
 unset __ms_shell
 unset __ms_ksh_test
