@@ -6,7 +6,7 @@
 AERO_CONFIG_DIR=$HOMEgfs/parm/chem
 #
 # Path to the input data tree
-AERO_INPUTS_DIR=/scratch1/NCEPDEV/nems/Raffaele.Montuoro/data/NASA/ExtData
+AERO_INPUTS_DIR=$HOMEgfs/fix/fix_gocart
 #
 # Biomass burning emission dataset. Choose from: GBBEPx, QFED, NONE (default)
 AERO_EMIS_FIRE=QFED
