@@ -34,7 +34,9 @@ EOF
 cat $DIAG_TABLE >> diag_table
 fi
 
-[ ! -z "${AERO_DIAG_TABLE}" ] && cat ${AERO_DIAG_TABLE} >> diag_table
+if [ ! -z "${AERO_DIAG_TABLE}" ]; then
+  cat ${AERO_DIAG_TABLE} >> diag_table
+fi
 
 cat $DIAG_TABLE_APPEND >> diag_table
 
