@@ -300,6 +300,9 @@ export gldas_cyc=00
 export imp_physics=11
 
 # Shared parameters
+# DA engine
+export DO_UFSDA="NO"
+
 # Hybrid related
 export DOHYBVAR="YES"
 export NMEM_ENKF=@NMEM_ENKF@

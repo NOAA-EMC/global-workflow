@@ -325,7 +325,7 @@ def get_scheduler(machine):
     except KeyError:
         raise UnknownMachineError(f'Unknown machine: {machine}, ABORT!')
 
-def create_wf_task(task, cdump='gdas', cycledef=None, envar=None, dependency=None, \
+def create_wf_task(task=None, cdump='gdas', cycledef=None, envar=None, dependency=None, \
                    metatask=None, varname=None, varval=None, vardict=None, \
                    final=False):
 

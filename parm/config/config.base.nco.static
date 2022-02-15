@@ -215,6 +215,9 @@ export WAVE_CDUMP="both"
 export imp_physics=11
 
 # Shared parameters
+# DA engine
+export DO_UFSDA="NO"
+
 # Hybrid related
 export DOHYBVAR="YES"
 export NMEM_ENKF="80"
