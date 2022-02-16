@@ -962,7 +962,7 @@ GOCART_rc() {
 
   # link directory containing GOCART input dataset, if provided
   if [ ! -z "${AERO_INPUTS_DIR}" ]; then
-    $NLN -sf ${AERO_INPUTS_DIR} $DATA
+    $NLN -sf ${AERO_INPUTS_DIR} $DATA/ExtData
     status=$?
     [[ $status -ne 0 ]] && exit $status
   fi
