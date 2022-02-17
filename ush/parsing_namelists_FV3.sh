@@ -47,6 +47,7 @@ cat > input.nml <<EOF
 
 &diag_manager_nml
   prepend_date = .false.
+  max_output_fields = 300
   $diag_manager_nml
 /
 
