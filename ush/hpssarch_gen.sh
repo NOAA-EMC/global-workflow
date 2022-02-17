@@ -188,7 +188,7 @@ if [ $type = "gfs" ]; then
     echo  "${dirname}RESTART/*0000.sfcanl_data.tile4.nc  " >>gfs_restarta.txt
     echo  "${dirname}RESTART/*0000.sfcanl_data.tile5.nc  " >>gfs_restarta.txt
     echo  "${dirname}RESTART/*0000.sfcanl_data.tile6.nc  " >>gfs_restarta.txt
-  elif [ $MODE = "free" ]; then
+  elif [ $MODE = "forecast-only" ]; then
     echo  "${dirname}INPUT/gfs_ctrl.nc        " >>gfs_restarta.txt
     echo  "${dirname}INPUT/gfs_data.tile1.nc  " >>gfs_restarta.txt
     echo  "${dirname}INPUT/gfs_data.tile2.nc  " >>gfs_restarta.txt
