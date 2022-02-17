@@ -33,6 +33,160 @@ class ShellScriptException(Exception):
             ': error processing'+
             (' '.join(scripts)))
 
+class HostInfo:
+    '''
+    Gather Host specific information.
+    Someday the content will be pushed out of the code and into a yaml or something.
+    '''
+
+    def __init__(self, machine, **inputs):
+
+        supported_hosts = {
+            'WCOSS_C': self.wcoss_c,
+            'WCOSS_DELL_P3': self.wcoss_dell_p3,
+            'WCOSS_DELL_P3p5': self.wcoss_dell_p3p5,
+            'HERA': self.hera,
+            'ORION': self.orion}
+
+        try:
+            self.info = supported_hosts[machine.upper()]
+        except KeyError:
+            raise NotImplementedError(f'{machine} is not a supported host.\n' +
+                    'Currently supported hosts are:\n' +
+                    f'{" | ".join(supported_hosts.keys())}')
+
+        self.machine = machine
+
+        return
+
+    @property
+    def wcoss_c(self):
+
+        info = {
+            'base_git': '/gpfs/hps3/emc/global/noscrub/emc.glopara/git',
+            'base_svn': '/gpfs/hps3/emc/global/noscrub/emc.glopara/svn',
+            'dmpdir': '/gpfs/dell3/emc/global/dump',
+            'nwprod': '${NWROOT:-"/gpfs/hps/nco/ops/nwprod"}',
+            'comroot': '${COMROOT:-"/gpfs/hps/nco/ops/com"}',
+            'homedir': '/gpfs/hps3/emc/global/noscrub/$USER',
+            'stmp': '/gpfs/hps2/stmp/$USER',
+            'ptmp': '/gpfs/hps2/ptmp/$USER',
+            'noscrub': '/gpfs/hps3/emc/global/noscrub/$USER',
+            'account': 'GFS-DEV',
+            'queue': 'dev',
+            'queue_service': 'dev_transfer',
+            'chgrp_rstprod': 'YES',
+            'chgrp_cmd': 'chgrp rstprod',
+            'hpssarch': 'YES',
+            'localarch': 'NO',
+            'atardir': '/NCEPDEV/$HPSS_PROJECT/1year/$USER/$machine/scratch/$PSLOT',
+             }
+
+        return info
+
+
+    @property
+    def wcoss_dell_p3(self):
+
+        info = {
+            'base_git': '/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git',
+            'base_svn': '/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git',
+            'dmpdir': '/gpfs/dell3/emc/global/dump',
+            'nwprod': '${NWROOT:-"/gpfs/dell1/nco/ops/nwprod"}',
+            'comroot': '${COMROOT:-"/gpfs/dell1/nco/ops/com"}',
+            'homedir': '/gpfs/dell2/emc/modeling/noscrub/$USER',
+            'stmp': '/gpfs/dell3/stmp/$USER',
+            'ptmp': '/gpfs/dell3/ptmp/$USER',
+            'noscrub': '$HOMEDIR',
+            'account': 'GFS-DEV',
+            'queue': 'dev',
+            'queue_service': 'dev_transfer',
+            'chgrp_rstprod': 'YES',
+            'chgrp_cmd': 'chgrp rstprod',
+            'hpssarch': 'YES',
+            'localarch': 'NO',
+            'atardir': '/NCEPDEV/$HPSS_PROJECT/1year/$USER/$machine/scratch/$PSLOT',
+             }
+
+        return info
+
+    @property
+    def wcoss_dell_p3p5(self):
+
+        info = {
+            'base_git': '/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git',
+            'base_svn': '/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git',
+            'dmpdir': '/gpfs/dell3/emc/global/dump',
+            'nwprod': '${NWROOT:-"/gpfs/dell1/nco/ops/nwprod"}',
+            'comroot': '${COMROOT:-"/gpfs/dell1/nco/ops/com"}',
+            'homedir': '/gpfs/dell2/emc/modeling/noscrub/$USER',
+            'stmp': '/gpfs/dell3/stmp/$USER',
+            'ptmp': '/gpfs/dell3/ptmp/$USER',
+            'noscrub': '$HOMEDIR',
+            'account': 'GFS-DEV',
+            'queue': 'dev2',
+            'queue_service': 'dev2_transfer',
+            'chgrp_rstprod': 'YES',
+            'chgrp_cmd': 'chgrp rstprod',
+            'hpssarch': 'YES',
+            'localarch': 'NO',
+            'atardir': '/NCEPDEV/$HPSS_PROJECT/1year/$USER/$machine/scratch/$PSLOT',
+             }
+
+        return info
+
+    @property
+    def hera(self):
+
+        info = {
+            'base_git': '/scratch1/NCEPDEV/global/glopara/git',
+            'base_svn': '/scratch1/NCEPDEV/global/glopara/svn',
+            'dmpdir': '/scratch1/NCEPDEV/global/glopara/dump',
+            'nwprod': '/scratch1/NCEPDEV/global/glopara/nwpara',
+            'comroot': '/scratch1/NCEPDEV/global/glopara/com',
+            'homedir': '/scratch1/NCEPDEV/global/$USER',
+            'stmp': '/scratch1/NCEPDEV/stmp2/$USER',
+            'ptmp': '/scratch1/NCEPDEV/stmp4/$USER',
+            'noscrub': '$HOMEDIR',
+            'account': 'fv3-cpu',
+            'queue': 'batch',
+            'queue_service': 'service',
+            'partition_batch': 'hera',
+            'chgrp_rstprod': 'YES',
+            'chgrp_cmd': 'chgrp rstprod',
+            'hpssarch': 'YES',
+            'localarch': 'NO',
+            'atardir': '/NCEPDEV/$HPSS_PROJECT/1year/$USER/$machine/scratch/$PSLOT',
+             }
+
+        return info
+
+    @property
+    def orion(self):
+
+        info = {
+            'base_git': '/work/noaa/global/glopara/git',
+            'base_svn': '/work/noaa/global/glopara/svn',
+            'dmpdir': '/work/noaa/rstprod/dump',
+            'nwprod': '/work/noaa/global/glopara/nwpara',
+            'comroot': '/work/noaa/global/glopara/com',
+            'homedir': '/work/noaa/global/$USER',
+            'stmp': '/work/noaa/stmp/$USER',
+            'ptmp': '/work/noaa/stmp/$USER',
+            'noscrub': '$HOMEDIR',
+            'account': 'fv3-cpu',
+            'queue': 'batch',
+            'queue_service': 'service',
+            'partition_batch': 'orion',
+            'chgrp_rstprod': 'YES',
+            'chgrp_cmd': 'chgrp rstprod',
+            'hpssarch': 'NO',
+            'localarch': 'NO',
+            'atardir': '$NOSCRUB/archive_rotdir/$PSLOT',
+             }
+
+        return info
+
 def get_shell_env(scripts):
     vars=dict()
     runme=''.join([ f'source {s} ; ' for s in scripts ])
@@ -255,11 +409,14 @@ def get_resources(machine, cfg, task, reservation, cdump='gdas'):
 
     if cdump in ['gfs'] and f'npe_node_{task}_gfs' in cfg.keys():
         ppn = cfg[f'npe_node_{ltask}_gfs']
-    else:        
+    else:
         ppn = cfg[f'npe_node_{ltask}']
 
     if machine in [ 'WCOSS_DELL_P3', 'HERA', 'ORION', 'JET' ]:
-        threads = cfg[f'nth_{ltask}']
+        if cdump in ['gfs'] and f'nth_{task}_gfs' in cfg.keys():
+            threads = cfg[f'nth_{ltask}_gfs']
+        else:
+            threads = cfg[f'nth_{ltask}']
 
     nodes = np.int(np.ceil(np.float(tasks) / np.float(ppn)))
 

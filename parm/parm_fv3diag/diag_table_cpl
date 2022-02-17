@@ -214,7 +214,7 @@
 "gfs_phys",    "etran_acc",     "etran_acc",     "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_phys",    "edir_acc",      "edir_acc",      "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_phys",    "wa_acc",        "wa_acc",        "fv3_history2d",  "all",  .false.,  "none",  2
-"gfs_phys",    "lfrac",         "lfrac",         "fv3_history2d",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lfrac",         "lfrac",         "fv3_history2d",  "all",  .false.,  "none",  2
 
 "gfs_sfc",     "crain",         "crain",        "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_sfc",     "tprcp",         "tprcp",        "fv3_history2d",  "all",  .false.,  "none",  2

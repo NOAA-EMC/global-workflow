@@ -215,8 +215,11 @@ elif [ $step = "fcst" ]; then
         NTASKS_TOT=$ATMPETS
 
         export nth_fcst=${nth_fv3:-2}
+        export nth_fcst_gfs=${nth_fv3_gfs:-2}
 
         export npe_node_fcst=$(echo "$npe_node_max / $nth_fcst" | bc)
+        export npe_node_fcst_gfs=$(echo "$npe_node_max / $nth_fcst_gfs" | bc)
+
         if [[ "$machine" == "WCOSS_C" ]]; then export memory_fcst="1024M"; fi
 
         if [[ $DO_WAVE == "YES" ]]; then
