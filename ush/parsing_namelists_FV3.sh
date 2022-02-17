@@ -10,11 +10,14 @@
 
 FV3_namelists(){
 
-# copy over the tables
+# setup the tables
 DIAG_TABLE=${DIAG_TABLE:-$PARM_FV3DIAG/diag_table}
 DIAG_TABLE_APPEND=${DIAG_TABLE_APPEND:-$PARM_FV3DIAG/diag_table_aod}
 DATA_TABLE=${DATA_TABLE:-$PARM_FV3DIAG/data_table}
 FIELD_TABLE=${FIELD_TABLE:-$PARM_FV3DIAG/field_table}
+
+# ensure non-prognostic tracers are set
+dnats=${dnats:-0}
 
 # build the diag_table with the experiment name and date stamp
 if [ $DOIAU = "YES" ]; then
@@ -31,10 +34,34 @@ EOF
 cat $DIAG_TABLE >> diag_table
 fi
 
+if [ ! -z "${AERO_DIAG_TABLE}" ]; then
+  cat ${AERO_DIAG_TABLE} >> diag_table
+fi
+
 cat $DIAG_TABLE_APPEND >> diag_table
 
+# copy data table
 $NCP $DATA_TABLE  data_table
-$NCP $FIELD_TABLE field_table
+
+# build field_table
+if [ ! -z "${AERO_FIELD_TABLE}" ]; then
+  nrec=$( cat ${FIELD_TABLE} | wc -l )
+  prec=${nrec}
+  if (( dnats > 0 )); then
+    prec=$( grep -F -n TRACER ${FIELD_TABLE} 2> /dev/null | tail -n ${dnats} | head -1 | cut -d: -f1 )
+    prec=${prec:-0}
+    prec=$(( prec > 0 ? prec - 1 : prec ))
+  fi
+  { \
+    head -n ${prec} ${FIELD_TABLE} ; \
+    cat ${AERO_FIELD_TABLE} ; \
+    tail -n $(( nrec - prec )) ${FIELD_TABLE} ; \
+  } > field_table
+  # add non-prognostic tracers from additional table
+  dnats=$(( dnats + dnats_aero ))
+else
+  $NCP $FIELD_TABLE field_table
+fi
 
 cat > input.nml <<EOF
 &amip_interp_nml
@@ -123,7 +150,7 @@ cat >> input.nml << EOF
   nwat = ${nwat:-2}
   na_init = $na_init
   d_ext = 0.
-  dnats = ${dnats:-0}
+  dnats = ${dnats}
   fv_sg_adj = ${fv_sg_adj:-"450"}
   d2_bg = 0.
   nord = ${nord:-3}
@@ -328,7 +355,7 @@ EOF
 if [ $cpl = .true. ]; then
   cat >> input.nml << EOF
   frac_grid    = ${FRAC_GRID:-".true."}
-  cplchm       = ${cplchem:-".false."}
+  cplchm       = ${cplchm:-".false."}
   cplflx       = $cplflx
   cplice       = ${cplice} 
   cplwav2atm   = ${cplwav2atm}

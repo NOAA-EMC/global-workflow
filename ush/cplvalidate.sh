@@ -30,7 +30,7 @@ case $confignamevarfornems in
   *) echo "SUB cplvalidate: Combination not supported"
   exit 1 ;;
 esac
-control=$cpl$cplflx$cplice$cplwav$cplchem
+control=$cpl$cplflx$cplice$cplwav$cplchm
 if [ $control != $combination ]; then
   echo "SUB cplvalidate: inconsistent cpl setting!"
   exit 2

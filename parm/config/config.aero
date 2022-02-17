@@ -1,0 +1,20 @@
+#!/bin/ksh -x
+#
+# UFS-Aerosols settings
+#
+# Directory containing GOCART configuration files. Defaults to parm/chem if unset.
+AERO_CONFIG_DIR=$HOMEgfs/parm/chem
+#
+# Path to the input data tree
+AERO_INPUTS_DIR=$HOMEgfs/fix/fix_gocart
+#
+# Biomass burning emission dataset. Choose from: GBBEPx, QFED, NONE (default)
+AERO_EMIS_FIRE=QFED
+#
+# Aerosol convective scavenging factors (list of string array elements)
+# Element syntax: '<tracer_name>:<factor>'. Use <tracer_name> = * to set default factor for all aerosol tracers
+# Scavenging factors are set to 0 (no scavenging) if unset
+aero_conv_scav_factors="'*:0.4', 'so2:0.0', 'msa:0.0', 'dms:0.0', 'nh3:0.0', 'so4:0.5', 'bc1:0.6', 'bc2:0.6', 'dust1:0.7', 'dust2:0.7', 'dust3:0.7', 'dust4:0.7', 'dust5:0.7'"
+#
+# Number of diagnostic aerosol tracers (default: 0)
+aero_diag_tracers=2
