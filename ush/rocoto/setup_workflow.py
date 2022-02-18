@@ -965,6 +965,7 @@ def get_hyb_tasks(dict_configs, cycledef='enkf'):
     nens = base['NMEM_ENKF']
     lobsdiag_forenkf = base.get('lobsdiag_forenkf', '.false.').upper()
     eupd_cyc = base.get('EUPD_CYC', 'gdas').upper()
+    do_ufsda = base.get('DO_UFSDA', 'NO').upper()
 
     eobs = dict_configs['eobs']
     nens_eomg = eobs['NMEM_EOMGGRP']
@@ -1002,6 +1003,11 @@ def get_hyb_tasks(dict_configs, cycledef='enkf'):
         cdumps = ['gfs']
     elif eupd_cyc in ['GDAS']:
         cdumps = ['gdas']
+
+    if do_ufsda in ['Y', 'YES']:
+        task_prep = ['atmanalprep']
+    else:
+        task_prep = ['prep']
 
     for cdump in cdumps:
 
@@ -1339,6 +1345,12 @@ def create_xml(dict_configs):
     dohybvar = base.get('DOHYBVAR', 'NO').upper()
     gfs_cyc = base.get('gfs_cyc', 0)
     eupd_cyc = base.get('EUPD_CYC', 'gdas').upper()
+    do_ufsda = base.get('DO_UFSDA', 'NO').upper()
+
+    if do_ufsda in ['Y', 'YES']:
+        task_prep = ['atmanalprep']
+    else:
+        task_prep = ['prep']
 
     # Start collecting workflow pieces
     preamble = get_preamble()
