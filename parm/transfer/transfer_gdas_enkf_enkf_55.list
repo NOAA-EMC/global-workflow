@@ -24,8 +24,8 @@
 # directory are included, so if no exclude patterns match that file, it will be
 # tranatmferred.
 
-#com/gfs/_ENVIR_/enkfgdas._PDY_/
-/gpfs/dell1/nco/ops/com/gfs/_ENVIR_/enkfgdas._PDY_/
+#_COMROOT_/gfs/_SHORTVER_/enkfgdas._PDY_/
+_COMROOT_/gfs/_SHORTVER_/enkfgdas._PDY_/
 + /??/
 + /??/atmos/
 + /??/atmos/mem051/
@@ -42,8 +42,8 @@
 
 B 100
 
-#com/gfs/_ENVIR_/enkfgdas._PDYm1_/
-/gpfs/dell1/nco/ops/com/gfs/_ENVIR_/enkfgdas._PDYm1_/
+#_COMROOT_/gfs/_SHORTVER_/enkfgdas._PDYm1_/
+_COMROOT_/gfs/_SHORTVER_/enkfgdas._PDYm1_/
 + /??/
 + /??/atmos/
 + /??/atmos/mem051/
