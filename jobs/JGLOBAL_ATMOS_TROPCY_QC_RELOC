@@ -77,7 +77,7 @@ export HOMENHCp1=${HOMENHCp1:-/gpfs/?p1/nhc/save/guidance/storm-data/ncep}
 export HOMENHC=${HOMENHC:-/gpfs/dell2/nhc/save/guidance/storm-data/ncep}
 
 # JY export TANK_TROPCY=${TANK_TROPCY:-${DCOMROOT}/${envir}}   # path to tropical cyclone record database
-export TANK_TROPCY=${TANK_TROPCY:-${DCOMROOT}/prod}   # path to tropical cyclone record database
+export TANK_TROPCY=${TANK_TROPCY:-${DCOMROOT}}   # path to tropical cyclone record database
 
 
 ##############################################

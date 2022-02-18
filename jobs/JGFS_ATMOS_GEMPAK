@@ -12,6 +12,7 @@ echo "=============== BEGIN GEMPAK ==============="
 echo
 echo "=============== BEGIN TO SOURCE RELEVANT CONFIGS ==============="
 configs="base gempak"
+export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
 for config in $configs; do
     . $EXPDIR/config.${config}
     status=$?

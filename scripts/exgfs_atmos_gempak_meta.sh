@@ -29,11 +29,20 @@ do_all=0
 #loop through and process needed forecast hours
 while [ $fhr -le $fhend ]
 do
+   #
+   # First check to see if this is a rerun.  If so make all Meta files
+   if [ $fhr -gt 126 -a $first_time -eq 0 ] ; then
+     do_all=1
+   fi
+   first_time=1
+
+   if [ $fhr -eq 120 ] ; then
+      fhr=126
+   fi
    icnt=1
 
    while [ $icnt -lt 1000 ]
    do
-      typeset -Z3 fhr
       ls -l $COMIN/$GEMGRD1${fhr}
       err1=$?
       if [ $err1 -eq 0 ] ; then
@@ -50,7 +59,7 @@ do
       fi
    done
 
-   export fhr=$fhr
+   export fhr
 
    ########################################################
    # Create a script to be poe'd
@@ -62,7 +71,22 @@ do
       rm $DATA/poescript
 #   fi
 
-   awk '{print $1}' $FIXgempak/gfs_meta > $DATA/tmpscript
+   if [ $fhr -lt 100 ] ; then
+      typeset -Z2 fhr
+   fi
+
+   if [ $do_all -eq 1 ] ; then
+     do_all=0
+     awk '{print $1}' $FIXgempak/gfs_meta > $DATA/tmpscript
+   else
+     #
+     #     Do not try to grep out 12, it will grab the 12 from 126.
+     #     This will work as long as we don't need 12 fhr metafiles
+     #
+     if [ $fhr -ne 12 ] ; then
+       grep $fhr $FIXgempak/gfs_meta |awk -F" [0-9]" '{print $1}' > $DATA/tmpscript
+     fi
+   fi
 
    for script in `cat $DATA/tmpscript`
    do
@@ -81,7 +105,12 @@ do
    export MP_PGMMODEL=mpmd
    export MP_CMDFILE=$DATA/poescript
 
-   export DBN_ALERT_TYPE=GFS_METAFILE_LAST
+#  If this is the final fcst hour, alert the
+#  file to all centers.
+#
+   if [ $fhr -ge $fhend ] ; then
+      export DBN_ALERT_TYPE=GFS_METAFILE_LAST
+   fi
 
    export fend=$fhr
 
@@ -97,11 +126,12 @@ do
   $APRUNCFP $DATA/poescript
   export err=$?; err_chk
 
-  if [ $fhr -eq 126 ] ; then
-    fhr=`expr $fhr + 6`
-  else
-    fhr=`expr $fhr + $fhinc`
-  fi
+      typeset -Z3 fhr
+      if [ $fhr -eq 126 ] ; then
+        let fhr=fhr+6
+      else
+	let fhr=fhr+fhinc
+      fi
 done
 
 #####################################################################
