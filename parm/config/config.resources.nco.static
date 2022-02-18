@@ -161,7 +161,7 @@ elif [ $step = "fcst" ]; then
     export nth_fcst=${nth_fv3:-2}
     export nth_fcst_gfs=${nth_fv3_gfs:-2}
     export npe_node_fcst=32
-    export npe_node_fcst_gfs=24
+    export npe_node_fcst_gfs=42
 
 elif [ $step = "post" ]; then
 
