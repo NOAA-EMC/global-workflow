@@ -126,12 +126,12 @@ if [[ $RUN_ENVIR == "emc" ]]; then
 
 
 #   NOTE:
-#   As of 2021110312, gfsv16_historical/global_convinfo.txt.2021091612 is
+#   As of 2022021812, gfsv16_historical/global_convinfo.txt.2022031612 is
 #   identical to ../global_convinfo.txt.  Thus, the logic below is not
 #   needed at this time.
-#   Assimilate COSMIC-2 GPS
-#   if [[ "$CDATE" -ge "2021091612" && "$CDATE" -lt "YYYYMMDDHH" ]]; then
-#     export CONVINFO=$FIXgsi/gfsv16_historical/global_convinfo.txt.2021091612
+#   Assimilate DO-4 (Spire and GeoOptics)
+#   if [[ "$CDATE" -ge "2022031612" && "$CDATE" -lt "YYYYMMDDHH" ]]; then
+#     export CONVINFO=$FIXgsi/gfsv16_historical/global_convinfo.txt.2022031612
 #   fi
 
 

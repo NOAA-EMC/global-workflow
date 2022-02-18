@@ -13,7 +13,7 @@ PRELUDE
   previous delivery orders.  DO-1 was awarded to both vendors, but was used 
   for evaluation purposes only and not assimilated operationally.  DO-2 was 
   awarded to GeoOptics and subsequently assimilated in the operational GFS/GDAS 
-  as v16.1.  DO-3 was then awarded to Spire only.  The v16.1.6 implementation 
+  as v16.1.  DO-3 was then awarded to Spire only.  The v16.1.4 implementation 
   turned on the assimilation of Spire data as well as turned off the assimilation 
   of GeoOptics.  
 
