@@ -183,9 +183,9 @@ link initial condition files from $ICSDIR to $COMROT'''
 
     # Set machine defaults
     if machine == 'WCOSS2':
-      base_git = '/lfs/h2/emc/global/noscrub/Kate.Friedman/glopara/git'
-      base_svn = '/lfs/h2/emc/global/noscrub/Kate.Friedman/glopara/git'
-      dmpdir = '/lfs/h2/emc/global/noscrub/Kate.Friedman/dump'
+      base_git = '/lfs/h2/emc/global/save/emc.global/git'
+      base_svn = '/lfs/h2/emc/global/save/emc.global/git'
+      dmpdir = '/lfs/h2/emc/global/noscrub/emc.global/dump'
       packageroot = '${PACKAGEROOT:-"/lfs/h1/ops/prod/packages"}'
       comroot = '${COMROOT:-"/lfs/h1/ops/prod/com"}'
       homedir = '/lfs/h2/emc/global/noscrub/$USER'
