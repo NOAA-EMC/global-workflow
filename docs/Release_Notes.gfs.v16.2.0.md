@@ -118,7 +118,7 @@ All components updated their codes to build on WCOSS2:
 FIX CHANGES
 -----------
 
-* No changes from GFS v16.1.5
+* No changes from GFS v16.1.6
 
 PARM/CONFIG CHANGES
 -------------------
@@ -354,7 +354,7 @@ CHANGES TO RESOURCES AND FILE SIZES
 -----------------------------------
 
 * File sizes
-  * No change to GFSv16.1.5.
+  * No change to GFSv16.1.6.
 * Resource changes to meet operational time windows:
   * See updated Ecflow scripts for adjusted compute resources for WCOSS2.
   * Pre-hand-off development testing results:
@@ -379,21 +379,21 @@ DISSEMINATION INFORMATION
 -------------------------
 
 * Where should this output be sent?
-  * No change from GFS v16.1.5
+  * No change from GFS v16.1.6
 * Who are the users?
-  * No change from GFS v16.1.5
+  * No change from GFS v16.1.6
 * Which output files should be transferred from PROD WCOSS to DEV WCOSS?
-  * No change from GFS v16.1.5
+  * No change from GFS v16.1.6
 * Directory changes
-  * No change from GFS v16.1.5
+  * No change from GFS v16.1.6
 * File changes
-  * No change from GFS v16.1.5
+  * No change from GFS v16.1.6
 
 HPSS ARCHIVE
 ------------
 
-* No change from GFS v16.1.5
+* No change from GFS v16.1.6
 
 JOB DEPENDENCIES AND FLOW DIAGRAM
 ---------------------------------
-* No change from GFS v16.1.5
+* No change from GFS v16.1.6
