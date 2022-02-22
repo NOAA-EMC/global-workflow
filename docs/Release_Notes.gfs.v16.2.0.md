@@ -15,7 +15,7 @@ The NOAA VLab and both the NOAA-EMC and NCAR organization spaces on GitHub.com a
 cd $PACKAGEROOT
 mkdir gfs.v16.2.0
 cd gfs.v16.2.0
-git clone -b EMC-v16.2.0.3 https://github.com/NOAA-EMC/global-workflow.git .
+git clone -b EMC-v16.2.0.4 https://github.com/NOAA-EMC/global-workflow.git .
 cd sorc
 ./checkout.sh -o
 ```
@@ -29,7 +29,7 @@ The checkout script extracts the following GFS components:
 | GLDAS     | gldas_gfsv16_release.v.1.28.0 | Helin.Wei@noaa.gov |
 | UFS_UTILS | ops-gfsv16.2.0 | George.Gayno@noaa.gov |
 | POST      | upp_v8.1.0 | Wen.Meng@noaa.gov |
-| WAFS      | gfs_wafs.v6.2.7 | Yali.Mao@noaa.gov |
+| WAFS      | gfs_wafs.v6.2.8 | Yali.Mao@noaa.gov |
 
 To build all the GFS components, execute:
 ```bash

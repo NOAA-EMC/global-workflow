@@ -48,7 +48,7 @@ elif [ $step = "waveprep" ]; then
     export nth_waveprep=1
     export npe_node_waveprep=$npe_waveprep
     export npe_node_waveprep_gfs=$npe_waveprep_gfs
-    export memory_waveprep="100GB"
+    export memory_waveprep="150GB"
     export NTASKS=$npe_waveprep
     export NTASKS_gfs=$npe_waveprep_gfs
 
@@ -66,11 +66,10 @@ elif [ $step = "wavepostsbs" ]; then
 elif [ $step = "wavepostbndpnt" ]; then
 
     export wtime_wavepostbndpnt="01:00:00"
-    export npe_wavepostbndpnt=280
+    export npe_wavepostbndpnt=240
     export nth_wavepostbndpnt=1
-    export npe_node_wavepostbndpnt=70
+    export npe_node_wavepostbndpnt=80
     export NTASKS=$npe_wavepostbndpnt
-    export memory_wavepostbndpnt="10GB"
 
 elif [ $step = "wavepostbndpntbll" ]; then
 
@@ -83,11 +82,10 @@ elif [ $step = "wavepostbndpntbll" ]; then
 elif [ $step = "wavepostpnt" ]; then
 
     export wtime_wavepostpnt="01:30:00"
-    export npe_wavepostpnt=280
+    export npe_wavepostpnt=200
     export nth_wavepostpnt=1
-    export npe_node_wavepostpnt=70
+    export npe_node_wavepostpnt=50
     export NTASKS=$npe_wavepostpnt
-    export memory_wavepostpnt="10GB"
 
 elif [ $step = "wavegempak" ]; then
 
@@ -161,7 +159,7 @@ elif [ $step = "fcst" ]; then
     export nth_fcst=${nth_fv3:-2}
     export nth_fcst_gfs=${nth_fv3_gfs:-2}
     export npe_node_fcst=32
-    export npe_node_fcst_gfs=24
+    export npe_node_fcst_gfs=42
 
 elif [ $step = "post" ]; then
 
