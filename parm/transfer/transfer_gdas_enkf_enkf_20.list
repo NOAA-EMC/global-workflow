@@ -24,7 +24,6 @@
 # directory are included, so if no exclude patterns match that file, it will be
 # tranatmferred.
 
-#_COMROOT_/gfs/_SHORTVER_/enkfgdas._PDY_/
 _COMROOT_/gfs/_SHORTVER_/enkfgdas._PDY_/
 + /??/
 + /??/atmos/
@@ -42,7 +41,6 @@ _COMROOT_/gfs/_SHORTVER_/enkfgdas._PDY_/
 
 B 100
 
-#_COMROOT_/gfs/_SHORTVER_/enkfgdas._PDYm1_/
 _COMROOT_/gfs/_SHORTVER_/enkfgdas._PDYm1_/
 + /??/
 + /??/atmos/
