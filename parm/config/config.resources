@@ -220,6 +220,7 @@ elif [ $step = "fcst" ]; then
       export wtime_fcst_gfs="06:00:00"
     elif [ $CASE = "C384" ]; then
       export wtime_fcst_gfs="06:00:00"
+      if [[ "$machine" == "S4" && "$APP" == "S2SW" ]]; then export wtime_fcst_gfs="04:00:00"; fi
     else
       export wtime_fcst_gfs="03:00:00"
     fi
