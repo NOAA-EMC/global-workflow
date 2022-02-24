@@ -62,6 +62,8 @@ if [ $RUN_ENVIR = "nco" ]; then
     export ROTDIR=${COMROOT:?}/$NET/$envir
 fi
 
+# tells the forecast script to use efsoi ensemble
+export EFSOI_TASK="YES" 
 
 ##############################################
 # Begin JOB SPECIFIC work
@@ -81,7 +83,8 @@ export FHMIN=$FHMIN_ENKF
 export FHOUT=$FHOUT_ENKF
 export FHMAX=$FHMAX_ENKF
 
-export FORECASTSH=$HOMEgfs/scripts/exglobal_efsoi_forecast.sh
+export FORECASTSH=$HOMEgfs/scripts/exglobal_forecast.sh
+
 
 # Get ENSBEG/ENSEND from ENSGRP and NMEM_EFCSGRP
 export ENSEND=$((NMEM_EFCSGRP * ENSGRP))
