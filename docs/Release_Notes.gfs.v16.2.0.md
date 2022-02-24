@@ -15,7 +15,7 @@ The NOAA VLab and both the NOAA-EMC and NCAR organization spaces on GitHub.com a
 cd $PACKAGEROOT
 mkdir gfs.v16.2.0
 cd gfs.v16.2.0
-git clone -b EMC-v16.2.0.3 https://github.com/NOAA-EMC/global-workflow.git .
+git clone -b EMC-v16.2.0.4 https://github.com/NOAA-EMC/global-workflow.git .
 cd sorc
 ./checkout.sh -o
 ```
@@ -26,10 +26,10 @@ The checkout script extracts the following GFS components:
 | --------- | ----------- | ----------------- |
 | MODEL     | GFS.v16.2.0   | Jun.Wang@noaa.gov |
 | GSI       | gfsda.v16.2.0 | Russ.Treadon@noaa.gov |
-| GLDAS     | gldas_gfsv16_release.v.1.28.0 | Helin.Wei@noaa.gov |
+| GLDAS     | gldas_gfsv16_release.v.2.0.0 | Helin.Wei@noaa.gov |
 | UFS_UTILS | ops-gfsv16.2.0 | George.Gayno@noaa.gov |
 | POST      | upp_v8.1.0 | Wen.Meng@noaa.gov |
-| WAFS      | gfs_wafs.v6.2.7 | Yali.Mao@noaa.gov |
+| WAFS      | gfs_wafs.v6.2.8 | Yali.Mao@noaa.gov |
 
 To build all the GFS components, execute:
 ```bash
@@ -118,7 +118,7 @@ All components updated their codes to build on WCOSS2:
 FIX CHANGES
 -----------
 
-* No changes from GFS v16.1.5
+* No changes from GFS v16.1.6
 
 PARM/CONFIG CHANGES
 -------------------
@@ -354,7 +354,7 @@ CHANGES TO RESOURCES AND FILE SIZES
 -----------------------------------
 
 * File sizes
-  * No change to GFSv16.1.5.
+  * No change to GFSv16.1.6.
 * Resource changes to meet operational time windows:
   * See updated Ecflow scripts for adjusted compute resources for WCOSS2.
   * Pre-hand-off development testing results:
@@ -379,21 +379,21 @@ DISSEMINATION INFORMATION
 -------------------------
 
 * Where should this output be sent?
-  * No change from GFS v16.1.5
+  * No change from GFS v16.1.6
 * Who are the users?
-  * No change from GFS v16.1.5
+  * No change from GFS v16.1.6
 * Which output files should be transferred from PROD WCOSS to DEV WCOSS?
-  * No change from GFS v16.1.5
+  * No change from GFS v16.1.6
 * Directory changes
-  * No change from GFS v16.1.5
+  * No change from GFS v16.1.6
 * File changes
-  * No change from GFS v16.1.5
+  * No change from GFS v16.1.6
 
 HPSS ARCHIVE
 ------------
 
-* No change from GFS v16.1.5
+* No change from GFS v16.1.6
 
 JOB DEPENDENCIES AND FLOW DIAGRAM
 ---------------------------------
-* No change from GFS v16.1.5
+* No change from GFS v16.1.6

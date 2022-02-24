@@ -45,7 +45,7 @@ fi
 echo gldas checkout ...
 if [[ ! -d gldas.fd ]] ; then
     rm -f ${topdir}/checkout-gldas.log
-    git clone --branch gldas_gfsv16_release.v.1.28.0 https://github.com/NOAA-EMC/GLDAS  gldas.fd >> ${topdir}/checkout-gldas.fd.log 2>&1
+    git clone --branch gldas_gfsv16_release.v.2.0.0 https://github.com/NOAA-EMC/GLDAS  gldas.fd >> ${topdir}/checkout-gldas.fd.log 2>&1
     cd ${topdir}
 else
     echo 'Skip.  Directory gldas.fd already exists.'
@@ -84,7 +84,7 @@ fi
 echo EMC_gfs_wafs checkout ...
 if [[ ! -d gfs_wafs.fd ]] ; then
     rm -f ${topdir}/checkout-gfs_wafs.log
-    git clone --recursive --branch gfs_wafs.v6.2.7 https://github.com/NOAA-EMC/EMC_gfs_wafs.git gfs_wafs.fd >> ${topdir}/checkout-gfs_wafs.log 2>&1
+    git clone --recursive --branch gfs_wafs.v6.2.8 https://github.com/NOAA-EMC/EMC_gfs_wafs.git gfs_wafs.fd >> ${topdir}/checkout-gfs_wafs.log 2>&1
     cd ${topdir}
 else
     echo 'Skip.  Directory gfs_wafs.fd already exists.'

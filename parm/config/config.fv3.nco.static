@@ -95,16 +95,16 @@ case $case_in in
         export DELTIM=150
         export layout_x=8
         export layout_y=12
-        export layout_x_gfs=16
+        export layout_x_gfs=24
         export layout_y_gfs=24
         export npe_wav=140
         export npe_wav_gfs=448
         export nth_fv3=3
-        export nth_fv3_gfs=5
+        export nth_fv3_gfs=3
         export cdmbgwd="4.0,0.15,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=2
         export WRTTASK_PER_GROUP=64
-        export WRITE_GROUP_GFS=8
+        export WRITE_GROUP_GFS=7
         export WRTTASK_PER_GROUP_GFS=48
         export WRTIOBUF="32M"
         ;;
