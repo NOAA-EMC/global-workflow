@@ -59,6 +59,7 @@ ASUFFIX=${ASUFFIX:-$SUFFIX}
 SMOOTH_ENKF=${SMOOTH_ENKF:-"YES"}
 
 GBIASe=${GBIASe:-${APREFIX}abias_int.ensmean}
+ATMANL_GSI_ENSRES=$COMINatmos/${APREFIX}atmanl.ensres$ASUFFIX
 CNVSTAT=${CNVSTAT:-${APREFIX}cnvstat}
 OZNSTAT=${OZNSTAT:-${APREFIX}oznstat}
 RADSTAT=${RADSTAT:-${APREFIX}radstat}
@@ -397,8 +398,10 @@ export ERR=$rc
 export err=$ERR
 $ERRSCRIPT || exit 2
 
-# save for EFSOI task (still needed?)
+# save for EFSOI task 
 $NCP $COMOUT_ANL_ENS/$GBIASe $COMOUT_ANL_ENSFSOI
+# save for EFSOI localization advection
+$NCP $ATMANL_GSI_ENSRES $COMOUT_ANL_ENSFSOI
 
 # Cat runtime output files.
 cat stdout stderr > $COMOUT_ANL_ENSFSOI/$ENKFSTAT
