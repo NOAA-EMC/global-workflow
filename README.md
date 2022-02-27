@@ -7,12 +7,13 @@ The global-workflow depends on the following prerequisities to be available on t
 * workflow manager - ROCOTO (https://github.com/christopherwharrop/rocoto)
 * modules - NCEPLIBS (various), esmf v8.0.0bs48, hdf5, intel/ips v18, impi v18, wgrib2, netcdf v4.7.0, hpss, gempak (see module files under /modulefiles for additional details)
 
-The global-workflow current supports the following machines:
+The global-workflow current supports the following tier-1 machines:
 
 * WCOSS-Dell
-* WCOSS-Cray
 * Hera
 * Orion
+
+Additionally, the following tier-2 machine is supported:
 * S4
 
 Quick-start instructions are below. Full instructions are available in the [wiki](https://github.com/NOAA-EMC/global-workflow/wiki/Run-Global-Workflow)
