@@ -372,7 +372,11 @@ elif [ $step = "init" ]; then
     export npe_init=24
     export nth_init=1
     export npe_node_init=6
-    export memory_init="70G"
+    if [ $machine = "WCOSS_DELL_P3" ]; then
+        export memory_init="10G"
+    else
+        export memory_init="70G"
+    fi
 
 elif [ $step = "init_chem" ]; then
 
