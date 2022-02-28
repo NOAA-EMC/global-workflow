@@ -58,7 +58,6 @@ if [ $DO_COUPLED = "YES" ]; then
 fi
 if [ $DO_AERO = "YES" ]; then
   export cplchm=".true."
-  export cplflx=".true."
 fi
 if [ $DO_ICE = "YES" ]; then
   export cplice=".true."
