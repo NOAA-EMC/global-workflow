@@ -766,7 +766,13 @@ MOM6_postdet() {
   $NCP -pf $FIXmom/$OCNRES/* $DATA/INPUT/
 
   # Copy coupled grid_spec
-  $NCP -pf $FIX_DIR/fix_cpl/a${CASE}o${OCNRES}/grid_spec.nc $DATA/INPUT/
+  spec_file="$FIX_DIR/fix_cpl/a${CASE}o${OCNRES}/grid_spec.nc"
+  if [ -s $spec_file ]; then
+    $NCP -pf $spec_file $DATA/INPUT/
+  else
+    echo "FATAL ERROR: grid_spec file '$spec_file' does not exist"
+    exit 3
+  fi
 
   # Copy mediator restart files to RUNDIR
   if [ $warm_start = ".true." -o $RERUN = "YES" ]; then

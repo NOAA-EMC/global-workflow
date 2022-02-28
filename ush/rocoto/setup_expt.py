@@ -144,7 +144,6 @@ def edit_baseconfig(host, inputs):
         "@ATARDIR@": host.info["atardir"],
         "@gfs_cyc@": inputs.gfs_cyc,
         "@APP@": inputs.app,
-        "@DO_AERO@": inputs.aerosols,
     }
 
     if inputs.mode in ['cycled']:
@@ -152,7 +151,11 @@ def edit_baseconfig(host, inputs):
             "@CASEENS@": f'C{inputs.resens}',
             "@NMEM_ENKF@": inputs.nens,
         }
-        tmpl_dict = dict(tmpl_dict, **extend_dict)
+    elif inputs.mode in ['forecast-only']:
+        extend_dict = {
+            "@DO_AERO@": inputs.aerosols,
+        }
+    tmpl_dict = dict(tmpl_dict, **extend_dict)
 
     with open(base_config + '.emc.dyn', 'rt') as fi:
         basestr = fi.read()
