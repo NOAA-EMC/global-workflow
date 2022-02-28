@@ -372,6 +372,7 @@ elif [ $step = "init" ]; then
     export npe_init=24
     export nth_init=1
     export npe_node_init=6
+    export memory_init="70G"
 
 elif [ $step = "init_chem" ]; then
 
