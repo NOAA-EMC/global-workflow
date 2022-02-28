@@ -73,7 +73,6 @@ for dir in fix_aer \
             fix_mom6 \
             fix_cpl \
             fix_wave \
-            fix_gocart \
             fix_reg2grb2 \
             fix_ugwd
             do
