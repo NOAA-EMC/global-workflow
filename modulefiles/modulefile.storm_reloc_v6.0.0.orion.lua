@@ -10,7 +10,6 @@ load(pathJoin("hpc-impi", os.getenv("hpc_impi_ver")))
 
 load(pathJoin("jasper", os.getenv("jasper_ver")))
 load(pathJoin("libpng", os.getenv("libpng_ver")))
-load(pathJoin("png", os.getenv("1.6.35")))
 load(pathJoin("zlib", os.getenv("zlib_ver")))
 
 load(pathJoin("bacio", os.getenv("bacio_ver")))
