@@ -28,7 +28,7 @@ export FC=$myFC
 export JASPER_LIB=${JASPER_LIB:-$JASPER_LIBRARIES/libjasper.a}
 
 export INC="${G2_INCd} -I${NEMSIO_INC}"
-export LIBS="${W3EMC_LIBd} ${W3NCO_LIBd} ${BACIO_LIB4} ${G2_LIBd} ${PNG_LIB} ${JASPER_LIB} ${Z_LIB}"
+export LIBS="${W3EMC_LIBd} ${W3NCO_LIBd} ${BACIO_LIB4} ${G2_LIBd} ${LIBPNG_LIB} ${JASPER_LIB} ${ZLIB_LIB}"
 export LIBS_SUP="${W3EMC_LIBd} ${W3NCO_LIBd}"
 echo lset
 echo lset
