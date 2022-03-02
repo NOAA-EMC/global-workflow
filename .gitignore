@@ -187,7 +187,3 @@ ush/trim_rh.sh
 ush/wafs_blending.sh
 ush/wafs_grib2.regrid.sh
 ush/wafs_intdsk.sh
-# util symlinks
-util/sub_slurm
-util/sub_wcoss_c
-util/sub_wcoss_d
