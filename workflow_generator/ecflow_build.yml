@@ -1,0 +1,44 @@
+---
+suites:
+  fcstonly:
+    edits:
+      CYC: env.ARCH_CYC
+      EDATE: env.EDATE
+  #  externs:
+externs:
+- "Test Extern"
+families:
+  GFSApp:
+    edits:
+      NET: 'gfs'
+    gfs:
+      edits:
+        RUN: 'gfs'
+jobs:
+  jgfs_forecast:
+    triggers:
+    - task: jgfs_getic
+    - task: jgfs_atmos_post_manager
+  jgfs_getic:
+    events:
+    - test_event
+    edits:
+      RUN: 'gfs'
+  jgfs_atmos_post_manager:
+    triggers:
+    - task: jgfs_forecast
+      state: active
+    events:
+    - "release_post{ 4 }"
+  jgfs_atmos_post_f{ env.FHMAX_GFS }:
+    triggers:
+    - task: jgfs_atmos_post_manager
+      event: "release_post{ }"
+    events:
+    - "test_event"
+    edits:
+      FHRGRP: "{ initial_count:1 }"
+      FHRLST: "f{ }"
+      FHR: "f{ increment:6 }"
+      HR: "{ }"
+      TEST: 'Test Edit'
