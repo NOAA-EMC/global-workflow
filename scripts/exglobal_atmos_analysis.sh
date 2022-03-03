@@ -898,6 +898,7 @@ OBS_INPUT::
    avhambufr      avhrr       metop-a     avhrr3_metop-a      0.0     4     0
    avhpmbufr      avhrr       n18         avhrr3_n18          0.0     4     0
    avhambufr      avhrr       metop-b     avhrr3_metop-b      0.0     4     0
+   avhambufr      avhrr       metop-c     avhrr3_metop-c      0.0     4     0
    avhpmbufr      avhrr       n19         avhrr3_n19          0.0     4     0
    amsr2bufr      amsr2       gcom-w1     amsr2_gcom-w1       0.0     3     0
    gmibufr        gmi         gpm         gmi_gpm             0.0     3     0

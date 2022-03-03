@@ -365,6 +365,7 @@ cat > enkf.nml << EOFnml
    sattypes_rad(71)= 'iasi_metop-c',  dsis(71)= 'iasi_metop-c',
    sattypes_rad(72)= 'viirs-m_npp',   dsis(72)= 'viirs-m_npp',
    sattypes_rad(73)= 'viirs-m_j1',    dsis(73)= 'viirs-m_j1',
+   sattypes_rad(74)= 'avhrr_metop-c', dsis(74)= 'avhrr3_metop-c',
 
    $SATOBS_ENKF
 /
