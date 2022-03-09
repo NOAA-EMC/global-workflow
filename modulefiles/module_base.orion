@@ -7,7 +7,6 @@ module use /apps/contrib/NCEP/libs/hpc-stack/modulefiles/stack
 module load hpc/1.1.0
 module load hpc-intel/2018.4
 module load hpc-impi/2018.4
-setenv I_MPI_DAPL_UD enable
 
 #module load hpss/hpss
 module load nco/4.8.1
