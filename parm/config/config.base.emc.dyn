@@ -184,7 +184,7 @@ case "${APP}" in
     export DO_WAVE="YES"
     export DO_OCN="YES"
     export DO_ICE="YES"
-    export CCPP_SUITE="FV3_GFS_v17_coupled_p8b"
+    export CCPP_SUITE="FV3_GFS_v17_coupled_p8"
     export WAVE_CDUMP="both"
     export cplwav2atm=".true."
     export confignamevarfornems="cpld${aero_nems_string}_wave"
