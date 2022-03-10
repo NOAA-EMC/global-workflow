@@ -7,6 +7,19 @@ echo "BEGIN: config.fcst"
 
 # set -eu
 
+# Set machine-specific layouts
+unset -v layout_x layout_y layout_x_gfs layout_y_gfs nth_fv3 nth_fv3_gfs
+if [[ "$machine" == "S4" ]]; then
+   if [[ "$CASE" == "C384" ]]; then
+      export layout_x=8
+      export layout_y=8
+      export layout_x_gfs=8
+      export layout_y_gfs=8
+      export nth_fv3=1
+      export nth_fv3_gfs=1
+   fi
+fi
+
 # Source model specific information that is resolution dependent
 . $EXPDIR/config.fv3 $CASE
 
