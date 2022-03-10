@@ -101,7 +101,7 @@ confignamevarfornems=${confignamevarfornems:-'atm'}
 cpl=${cpl:-.false.}
 cplflx=${cplflx:-.false.} # default off,import from outside source
 cplwav=${cplwav:-.false.} # ? how to control 1-way/2-way?
-cplchem=${cplchem:-.false.} # Chemistry model
+cplchm=${cplchm:-.false.} # Chemistry model
 cplice=${cplice:-.false.} # ICE model
 
 OCNTIM=${OCNTIM:-1800}
@@ -156,6 +156,7 @@ esac				#no post determination set up for data atmosphere
 [[ $cplflx = .true. ]] && MOM6_postdet
 [[ $cplwav = .true. ]] && WW3_postdet
 [[ $cplice = .true. ]] && CICE_postdet
+[[ $cplchm = .true. ]] && GOCART_postdet
 echo "MAIN: Post-determination set up of run type finished"
 
 echo "MAIN: Writing name lists and model configuration"
@@ -168,7 +169,7 @@ esac				#no namelist for data atmosphere
 [[ $cplflx = .true. ]] && MOM6_nml
 [[ $cplwav = .true. ]] && WW3_nml
 [[ $cplice = .true. ]] && CICE_nml
-[[ $cplchem = .true. ]] && GOCART_rc
+[[ $cplchm = .true. ]] && GOCART_rc
 
 case $RUN in
   'data') DATM_model_configure;;

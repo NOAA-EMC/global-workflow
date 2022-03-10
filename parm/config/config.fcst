@@ -26,6 +26,8 @@ done
 
 # Get task specific resources
 . $EXPDIR/config.resources fcst
+export domains_stack_size="16000000"
+
 
 if [ $DONST = "YES" ]; then
     . $EXPDIR/config.nsst
@@ -39,14 +41,14 @@ export esmf_profile=".false."
 export OCN_model="mom6"
 export ICE_model="cice6"
 export WAV_model="ww3"
-export CHM_model="gsdchem"
+export CHM_model="gocart"
 
 # cpl defaults
 
 export cpl=".false."
 export cplflx=".false."
 export cplice=".false."
-export cplgocart=".false."
+export cplchm=".false."
 export cplwav=".false."
 
 # cpl changes based on APP
@@ -55,12 +57,13 @@ if [ $DO_COUPLED = "YES" ]; then
   export cpl=".true."
 fi
 if [ $DO_AERO = "YES" ]; then
-  export cplgocart=".true."
+  export cplchm=".true."
 fi
 if [ $DO_ICE = "YES" ]; then
   export cplice=".true."
+  export cplflx=".true."
 fi
-if [ $DO_OCN = "YES" -o $DO_ICE = "YES" ]; then
+if [ $DO_OCN = "YES" ]; then
   export cplflx=".true."
 fi
 if [ $DO_WAVE = "YES" ]; then
@@ -279,14 +282,18 @@ elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
 
 fi
 
-if [ $DO_AERO = "YES" ]; then # temporary settings for aerosol coupling
-    export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_aer"
-    export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_aer"
-    export CHM_CFGDIR="not_set"
-    export CHM_INPDIR="not_set"
-    export dnats="$(( $dnats + 0 ))"
-elif [[ $DO_COUPLED = "YES" ]] ; then # coupled model
+if [[ $DO_COUPLED = "YES" ]] ; then # coupled model
     export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_cpl"
+fi
+
+if [ $DO_AERO = "YES" ]; then # temporary settings for aerosol coupling
+    export AERO_DIAG_TABLE="${AERO_DIAG_TABLE:-$HOMEgfs/parm/parm_fv3diag/diag_table.aero}"
+    export AERO_FIELD_TABLE="${AERO_FIELD_TABLE:-$HOMEgfs/parm/parm_fv3diag/field_table.aero}"
+    export AERO_EMIS_FIRE=$( echo "${AERO_EMIS_FIRE:-none}" | awk '{ print tolower($1) }' )
+    export AERO_CONFIG_DIR="${AERO_CONFIG_DIR:-$HOMEgfs/parm/chem}"
+    export AERO_INPUTS_DIR="${AERO_INPUTS_DIR:-}"
+    export fscav_aero="${aero_conv_scav_factors:-${fscav_aero}}"
+    export dnats_aero="${aero_diag_tracers:-0}"
 fi
 
 # Remember config.efcs will over-ride these values for ensemble forecasts
