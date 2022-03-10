@@ -193,6 +193,7 @@ elif [ $imp_physics -eq 8 ]; then # Thompson
     export ncld=2
     export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_thompson_noaero_tke"
     export nwat=6
+    export dnats=2     
 
     export cal_pre=".false."
     export random_clds=".false."
