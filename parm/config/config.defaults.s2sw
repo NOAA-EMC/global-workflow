@@ -17,11 +17,12 @@ use_cice_alb=".true."
 
 # config.fv3
 DELTIM=300
-layout_x_gfs=8
-layout_y_gfs=12
+layout_x_gfs=24
+layout_y_gfs=16
 WRITE_GROUP_GFS=1
 WRTTASK_PER_GROUP_GFS=80
 WRTIOBUF="32M"
+MEDPETS=300
 
 # config.wave
 waveGRD='gwes_30m'
