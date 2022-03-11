@@ -766,13 +766,7 @@ MOM6_postdet() {
   $NCP -pf $FIXmom/$OCNRES/* $DATA/INPUT/
 
   # Copy coupled grid_spec
-  spec_file="$FIX_DIR/fix_cpl/a${CASE}o${OCNRES}/grid_spec.nc"
-  if [ -s $spec_file ]; then
-    $NCP -pf $spec_file $DATA/INPUT/
-  else
-    echo "FATAL ERROR: grid_spec file '$spec_file' does not exist"
-    exit 3
-  fi
+  $NCP -pf $FIX_DIR/fix_cpl/a${CASE}o${OCNRES}/grid_spec.nc $DATA/INPUT/
 
   # Copy mediator restart files to RUNDIR
   if [ $warm_start = ".true." -o $RERUN = "YES" ]; then
@@ -967,46 +961,17 @@ GOCART_rc() {
   # this variable is platform-dependent and should be set via a YAML file
 
   # link directory containing GOCART input dataset, if provided
-  if [ ! -z "${AERO_INPUTS_DIR}" ]; then
-    $NLN -sf ${AERO_INPUTS_DIR} $DATA/ExtData
+  if [ ! -z "${CHM_INPDIR}" ]; then
+    $NLN -sf ${CHM_INPDIR} $DATA
     status=$?
     [[ $status -ne 0 ]] && exit $status
   fi
 
   # copying GOCART configuration files
-  if [ ! -z "${AERO_CONFIG_DIR}" ]; then
-    $NCP     ${AERO_CONFIG_DIR}/*.rc $DATA
+  if [ ! -z "${CHM_CFGDIR}" ]; then
+    $NCP     ${CHM_CFGDIR}/*.rc $DATA
     status=$?
     [[ $status -ne 0 ]] && exit $status
-    # attempt to generate ExtData configuration file if not provided
-    if [ ! -f $DATA/AERO_ExtData.rc ]; then
-      { \
-        echo "PrimaryExports%%" ; \
-        cat ${AERO_CONFIG_DIR}/ExtData.other ; \
-        cat ${AERO_CONFIG_DIR}/ExtData.${AERO_EMIS_FIRE:-none} ; \
-        echo "%%" ; \
-      } > $DATA/AERO_ExtData.rc
-      [[ $status -ne 0 ]] && exit $status
-    fi
   fi
 }
 
-GOCART_postdet() {
-  echo "SUB ${FUNCNAME[0]}: Linking output data for GOCART"
-
-  [[ ! -d $COMOUT/chem ]] && mkdir -p $COMOUT/chem
-
-  for fhr in $fhrlst; do
-    if [ $fhr = 'anl' ]; then
-      continue
-    fi
-    VDATE=$($NDATE $fhr $IDATE)
-    YYYY=$(echo $VDATE | cut -c1-4)
-    MM=$(echo $VDATE | cut -c5-6)
-    DD=$(echo $VDATE | cut -c7-8)
-    HH=$(echo $VDATE | cut -c9-10)
-    SS=$((10#$HH*3600))
-
-    $NLN $COMOUT/chem/gocart.inst_aod.${YYYY}${MM}${DD}_${HH}00z.nc4 $DATA/gocart.inst_aod.${YYYY}${MM}${DD}_${HH}00z.nc4
-  done
-}
