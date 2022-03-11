@@ -19,7 +19,7 @@ suites:
               jgfs_forecast:
                 triggers:
                 - task: jgfs_getic
-                - task: jgfs_atmos_post_manager
+                - task: jgfs_atmos_post_f{ initial_count:2, 3 }
               jgfs_getic:
                 events:
                 - test_event
@@ -36,14 +36,14 @@ suites:
                 jgfs_atmos_post_f{ initial_count:2,env.FHMAX_GFS }:
                   triggers:
                   - task: jgfs_atmos_post_manager
-                    event: "release_post{ }"
+                    event: "release_post{ initial_count:0 }"
                   events:
                   - "test_event"
                   edits:
                     FHRGRP: "{ initial_count:1, increment:6 }"
                     FHRLST: "f{ }"
                     FHR: "f{ increment:6 }"
-                    HR: "{ }"
+                    HR: "{  }"
                     TEST: 'Test Edit'
           wave:
             tasks:

@@ -165,8 +165,19 @@ class Ecflowsetup:
                 self.add_tasks_and_edits(suite,nodes[item],family_path)
 
     def add_triggers_and_events(self,suite,nodes):
-        print("adding triggers and events")
-
+        for item in nodes.keys():
+            if ( isinstance(nodes[item],dict) and
+                item == 'tasks' ):
+                for task in nodes['tasks'].keys():
+                    updated_task = find_env_param(task,'env.',self.env_configs)
+                    if (isinstance(nodes['tasks'][task],dict) and
+                        'events' in nodes['tasks'][task].keys()):
+                        suite.add_task_events(updated_task,nodes['tasks'][task]['events'])
+                    if (isinstance(nodes['tasks'][task],dict) and
+                        'triggers' in nodes['tasks'][task].keys()):
+                        suite.add_task_triggers(updated_task,nodes['tasks'][task]['triggers'])
+            elif isinstance(nodes[item],dict):
+                self.add_triggers_and_events(suite,nodes[item])
 
 def load_ecflow_config(configfile):
     with open(configfile, 'r') as file:

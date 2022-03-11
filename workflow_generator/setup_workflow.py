@@ -10,6 +10,8 @@
         1. The configuration file that defines what jobs to run.
         2. config files for the parallel; e.g. config.base, config.fcst[.gfs], etc.
         Without this dependency, the script will fail
+        3. The workflow utils package from the existing Rocoto generator. That
+        is used to read in the configuration files in the expdir. 
     OUTPUT:
         1. Either an ecFlow definition file or a Rocoto XML file
 '''
