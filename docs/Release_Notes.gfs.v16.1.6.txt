@@ -24,6 +24,14 @@ PRELUDE
   Once data flow begins on March 16th, a one-week evaluation of the new GeoOptics 
   observations is needed before implementation.
 
+  In addition to DO-4, a small change is needed to accompany a change in the
+  observation processing.  Winds "NeXRaD VAD WINDS FROM LEVEL 2 DECODER"
+  (tank b002/xx017) will soon be included in the global observation processing.
+  Since these observations have not yet been evaluated in the GFS, this observation
+  type (uv 224) will be set to monitor mode.  This requires a single line change
+  in the global_convinfo.txt file.
+
+
 IMPLEMENTATION INSTRUCTIONS
 
   The NOAA VLab and both the NOAA-EMC and NCAR organization spaces on GitHub.com 
@@ -71,7 +79,8 @@ SORC CHANGES
 FIX CHANGES
 
 * fix/fix_gsi:
-  * global_convinfo.txt: Turn on active assimilation of GeoOptics
+  * global_convinfo.txt: Turn on active assimilation of GeoOptics and
+    turn off active assimilation of uv 224 VADWND.
   * gfsv16_historical/global_convinfo.txt.2022031612: Add dated 
     convinfo file for retrospective parallels.  Does not impact operations.
   * gfsv16_historical/0readme: Update documentation. Does not 

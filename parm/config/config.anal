@@ -129,7 +129,7 @@ if [[ $RUN_ENVIR == "emc" ]]; then
 #   As of 2022021812, gfsv16_historical/global_convinfo.txt.2022031612 is
 #   identical to ../global_convinfo.txt.  Thus, the logic below is not
 #   needed at this time.
-#   Assimilate DO-4 (Spire and GeoOptics)
+#   Assimilate DO-4 (Spire and GeoOptics) and turn off uv 224 VADWND
 #   if [[ "$CDATE" -ge "2022031612" && "$CDATE" -lt "YYYYMMDDHH" ]]; then
 #     export CONVINFO=$FIXgsi/gfsv16_historical/global_convinfo.txt.2022031612
 #   fi
