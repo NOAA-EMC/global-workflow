@@ -47,7 +47,7 @@ IMPLEMENTATION INSTRUCTIONS
 
   3) cd gfs.v16.1.6
 
-  4) git clone -b EMC-v16.1.6  https://github.com/NOAA-EMC/global-workflow.git .
+  4) git clone -b EMC-v16.1.6.2  https://github.com/NOAA-EMC/global-workflow.git .
 
   5) cd sorc
 
