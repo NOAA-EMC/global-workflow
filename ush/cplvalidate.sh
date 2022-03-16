@@ -14,13 +14,14 @@ return
 case $confignamevarfornems in
   'atm') combination=.false..false..false..false..false.;;
   'datm') combination=.true..true..false..false..false.;;
-  'atm_aer') combination=.true..false..false..false..true.;;
+  'atm_aero') combination=.true..false..false..false..true.;;
   'med_atm_ocn_ice') combination=.true..true..true..false..false.;;
   'cpld') combination=.true..true..true..false..false.;;
   'blocked_atm_wav') combination=.true..false..false..true..false.;;
   'leapfrog_atm_wav')combination=.true..false..false..true..false.;;
   'med_atm_ocn_ice_wav') combination=.true..true..true..true..false.;;
   'cpld_wave') combination=.true..true..true..true..false.;;
+  'cpld_aero_wave') combination=.true..true..true..true..true.;;
   'medcold_atm_ocn_ice_wav') combination=.true..true..true..true..false.;;
   'med_atm_ocn_ice_wav1way') combination=.true..true..true..true..false.;;
   'med_atm_ocn_ice_wav1waywcurr') combination=.true..true..true..true..false.;;
@@ -29,7 +30,7 @@ case $confignamevarfornems in
   *) echo "SUB cplvalidate: Combination not supported"
   exit 1 ;;
 esac
-control=$cpl$cplflx$cplice$cplwav$cplchem
+control=$cpl$cplflx$cplice$cplwav$cplchm
 if [ $control != $combination ]; then
   echo "SUB cplvalidate: inconsistent cpl setting!"
   exit 2
