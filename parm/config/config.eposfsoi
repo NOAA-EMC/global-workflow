@@ -5,16 +5,19 @@
 
 echo "BEGIN: config.eposfsoi"
 
+# Get regular epos configs
+. $EXPDIR/config.epos
+
 # Get task specific resources
 . $EXPDIR/config.resources eposfsoi
 
-# No. of concurrent epos jobs [1 implies sequential]
-export NEPOSGRP=7
-if [ $l4densvar = ".false." ]; then
-    export NEPOSGRP=3
-fi
-
-# Generate ensemble spread files
-export ENKF_SPREAD="YES"
-
+## No. of concurrent epos jobs [1 implies sequential]
+#export NEPOSGRP=7
+#if [ $l4densvar = ".false." ]; then
+#    export NEPOSGRP=3
+#fi
+#
+## Generate ensemble spread files
+#export ENKF_SPREAD="YES"
+#
 echo "END: config.eposfsoi"
