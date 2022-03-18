@@ -19,8 +19,8 @@ if [ ! -d "../exec" ]; then
   mkdir ../exec
 fi
 
-cd ufs_da.fd/UFS-DA/ush
-./build_UFSDA.sh
+cd gdas.fd/ush
+./build_GDASApp.sh
 
 exit
 
