@@ -5,17 +5,11 @@ set -eux
 APP="ATMW"
 CCPP_SUITES="FV3_GFS_v16,FV3_GFS_v16_RRTMGP,FV3_GFS_v16_ugwpv1"
 
-while getopts "ac" option; do
+while getopts "c" option; do
   case "${option}" in
-    a)
-      APP="ATMAERO"
-      CCPP_SUITES="FV3_GFS_v16,FV3_GFS_v16_ugwpv1"
-      shift
-      ;;
     c)
       APP="S2SW"
       CCPP_SUITES="FV3_GFS_v16_coupled_nsstNoahmpUGWPv1,FV3_GFS_v16_coupled_p7_rrtmgp"
-      shift
       ;;
     *)
       echo "Unrecognized option: ${1}"
@@ -50,5 +44,5 @@ if [ -d build ]; then
   rm -R build
 fi
 mkdir -p build && cd build
-cmake -DAPP=${APP} -DCCPP_SUITES=${CCPP_SUITES} ..
+cmake -DAPP=${APP} -DCCPP_SUITES=${CCPP_SUITES} -DUFS_GOCART="ON" ..
 OMP_NUM_THREADS=1 make -j ${BUILD_JOBS:-8} VERBOSE=${BUILD_VERBOSE:-}
