@@ -127,7 +127,7 @@ class Ecflowsuite:
     def add_task_edits(self,task,edit_dict):
         edits_to_add = {}
         taskNode = ecfTaskNode(task)
-        if taskNode.is_loop():
+        if taskNode.is_loop() or taskNode.is_list:
             loop_index = 0
             for task_number in taskNode.get_range():
                 task_name = f"{taskNode.get_full_name(task_number)}"
@@ -160,8 +160,9 @@ class Ecflowsuite:
 
     def add_task_events(self,task,events):
         taskNode = ecfTaskNode(task)
-        if taskNode.is_loop():
+        if taskNode.is_loop() or taskNode.is_list:
             for task_number in taskNode.get_range():
+                loop_index = 0
                 task_name = f"{taskNode.get_full_name(task_number)}"
                 for event in events:
                     eventNode = ecfEventNode(event)
@@ -170,12 +171,23 @@ class Ecflowsuite:
                             event_name = f"{eventNode.get_full_name(task_number)}"
                             self.add_event(event_name,task_name)
                         else:
-                            event_counter = self.get_range(event)
+                            event_counter = eventNode.get_range()
                             for event_number in event_counter:
                                 event_name = f"{eventNode.get_full_name(event_number)}"
                                 self.add_event(event_name,task_name)
+                    elif eventNode.is_list:
+                        try:
+                            if len(eventNode.items) == len(taskNode.get_range()):
+                                neweditvalue = f"{editNodeValue.get_full_name(loop_index)}"
+                            else:
+                                raise ConfigurationError
+                        except:
+                            print(f"The listed array of {eventNode.get_name()} excceds the parent counter. Please check the configuration file")
+                            sys.exit(1)
+
                     else:
                         self.add_event(event,task_name)
+                loop_index+=1
         else:
             for event in events:
                 eventNode = ecfEventNode(event)
@@ -216,15 +228,15 @@ class Ecflowsuite:
                 self.add_trigger(trigger_name,task,suite=suite,suite_array=suite_array)
 
         taskNode = ecfTaskNode(task)
-        if taskNode.is_loop():
+        if taskNode.is_loop() or taskNode.is_list:
             task_loop_index=0
             for task_number in taskNode.get_range():
                 task_name = f"{taskNode.get_full_name(task_number)}"
                 total_tasks=len(taskNode.get_range())
                 for trigger in triggers:
                     triggerTaskNode = ecfTriggerNode(trigger)
-                    if triggerTaskNode.is_loop():
-                        if triggerTaskNode.has_max_value():
+                    if triggerTaskNode.is_loop() or triggerTaskNode.is_list:
+                        if triggerTaskNode.is_list or triggerTaskNode.has_max_value():
                             for trigger_flag in triggerTaskNode.get_range():
                                 trigger_name = f"{triggerTaskNode.get_full_name(trigger_flag)}"
                                 process_trigger(trigger_name,triggerTaskNode,task_name,task_loop_index,total_tasks,task_number)
@@ -356,7 +368,6 @@ class ecfNode():
                 name_token = re.search("(.*)\[.*\](.*)",self.name)
                 base = name_token.group(1).strip()
                 suffix = name_token.group(2).strip()
-                print(self.items)
                 array_item = self.items[counter]
                 if isinstance(array_item,int):
                     return f"{base}{array_item:03}{suffix}"
@@ -398,7 +409,25 @@ class ecfTriggerNode(ecfNode):
 
     def __init__(self,ecfItem):
         self.task_setup = ecfItem
-        self.name = ecfItem['task']
+        if isinstance(ecfItem['task'],str):
+            if re.search(r".*\(.*\).*",ecfItem['task']):
+                self.name = ecfItem['task']
+                self.is_list = False
+            elif re.search(r".*\[.*\].*",ecfItem['task']):
+                self.name = ecfItem['task']
+                self.is_list = True
+                self.use_parent_counter = False
+                self.items = re.search(".*\[(.*)\].*",ecfItem['task']).group(1).strip().split(',')
+            else:
+                self.name = ecfItem['task']
+                self.is_list = False
+        elif isinstance(ecfItem,list):
+            self.name = ''
+            self.is_list = True
+            self.items = ecfItem['task']
+        else:
+            self.name = ecfItem['task']
+            self.is_list = False
 
     def get_type(self):
         return 'trigger'
@@ -428,7 +457,23 @@ class ecfTriggerNode(ecfNode):
 
     def has_event(self):
         if 'event' in self.task_setup.keys():
-            self.event_string = self.task_setup['event']
+            if isinstance(self.task_setup['event'],str):
+                if re.search(r".*\(.*\).*",self.task_setup['event']):
+                    self.event_string = self.task_setup['event']
+                    self.is_list = False
+                elif re.search(r".*\[.*\].*",self.task_setup['event']):
+                    self.event_string = self.task_setup['event']
+                    self.is_event_list = True
+                    self.items = re.search(".*\[(.*)\].*",self.task_setup['event']).group(1).strip().split(',')
+                else:
+                    self.event_string = self.task_setup['event']
+                    self.is_event_list = False
+            elif isinstance(self.task_setup['event'],list):
+                self.is_event_list = True
+                self.event_items = self.task_setup['event']
+            else:
+                self.event_string = self.task_setup['event']
+                self.is_event_list = False
             return True
         else:
             return False
@@ -497,16 +542,34 @@ class ecfTriggerNode(ecfNode):
                 sys.exit(1)
 
     def get_event_full_name(self,counter=None):
-        if re.search(r"\(.*\)",self.event_string):
-            try:
+        try:
+            if re.search(r"\(.*\)",self.event_string):
                 name_token = re.search("(.*)\(.*\)(.*)",self.event_string)
                 base = name_token.group(1).strip()
                 suffix = name_token.group(2).strip()
-                return f"{base}{counter:03}{suffix}"
-            except ValueError as err:
-                print(f"Problem getting event name of {self.name}. Error: {err}")
-        else:
-            return self.event_string
+                if isinstance(counter,int):
+                    return f"{base}{counter:03}{suffix}"
+                elif isinstance(counter,str):
+                    return f"{base}{counter}{suffix}"
+            elif re.search(r"\[.*\]",self.event_string):
+                name_token = re.search("(.*)\[.*\](.*)",self.event_string)
+                base = name_token.group(1).strip()
+                suffix = name_token.group(2).strip()
+                array_item = self.event_items[counter]
+                if isinstance(array_item,int):
+                    return f"{base}{array_item:03}{suffix}"
+                elif isinstance(array_item,str):
+                    return f"{base}{array_item}{suffix}"
+            elif self.is_list:
+                array_item = self.event_items[counter]
+                if isinstance(array_item,int):
+                    return f"{array_item:03}"
+                elif isinstance(array_item,str):
+                    return f"{array_item}"
+            else:
+                return self.event_string
+        except ValueError as err:
+            print(f"Problem getting full name of {self.event_string}. Error: {err}")
 
     def has_event_max_value(self):
         return True if self.event_max_value is not None else False
