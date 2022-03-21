@@ -1,7 +1,7 @@
 ---
 # scriptrepo: /path/to/scripts
 externs:
-- "Test Extern"
+- "/prod18/enkfgdas/post"
 suites:
   fcstonly:
     edits:
@@ -19,7 +19,9 @@ suites:
               jgfs_forecast:
                 triggers:
                 - task: jgfs_getic
-                - task: jgfs_atmos_post_f{ initial_count:2, 3 }
+                - task: jgfs_atmos_post_f( 2,1 )
+                - task: jgfs_forecast
+                  extern: /prod18/enkfgdas/post
               jgfs_getic:
                 events:
                 - test_event
@@ -27,27 +29,32 @@ suites:
                   RUN: 'gfs'
             post:
               tasks:
-                jgfs_atmos_post_manager:
+                jgfs_atmos_post_manager[ 1,2 ]:
+                  template: jgfs_atmos_post_manager
                   triggers:
                   - task: jgfs_forecast
                     state: active
                   events:
-                  - "release_post{ 4 }"
-                jgfs_atmos_post_f{ initial_count:2,env.FHMAX_GFS }:
-                  triggers:
-                  - task: jgfs_atmos_post_manager
-                    event: "release_post{ initial_count:0 }"
+                  - "release_post(4)f"
+                jgfs_atmos_post_f(2,env.FHMAX_GFS):
+                  template: jgfs_atmos_post_master
+                  #triggers:
+                  #- task: jgfs_atmos_post_manager
+                  #  event: "release_post( 0, )f"
                   events:
                   - "test_event"
                   edits:
-                    FHRGRP: "{ initial_count:1, increment:6 }"
-                    FHRLST: "f{ }"
-                    FHR: "f{ increment:6 }"
-                    HR: "{  }"
+                    FHRGRP: "( 1,,6 )"
+                    FHRGRP2: [ a,b,c,d ]
+                    FHRLST: "f[ a,b,3,4 ] -testing"
+                    FHR: "f(1,6,)"
+                    HR: "( )"
                     TEST: 'Test Edit'
           wave:
-            tasks:
-              jgfs_forecast:
+            init:
+              tasks:
+                jgfs_wave_init:
+                jgfs_forecast:
   fcstplus:
     edits:
       CYC: '06'
@@ -55,3 +62,6 @@ suites:
       nonGFSApp:
         tasks:
           jgfs_forecast:
+            triggers:
+            - task: jgfs_getic
+              suite: fcstonly
