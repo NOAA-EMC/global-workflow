@@ -11,7 +11,7 @@
         2. config files for the parallel; e.g. config.base, config.fcst[.gfs], etc.
         Without this dependency, the script will fail
         3. The workflow utils package from the existing Rocoto generator. That
-        is used to read in the configuration files in the expdir. 
+        is used to read in the configuration files in the expdir.
     OUTPUT:
         1. Either an ecFlow definition file or a Rocoto XML file
 '''
@@ -26,16 +26,11 @@ import workflow_utils as wfu
 
 def parse_command_line():
     parser = ArgumentParser(description='Create the workflow files for either ecFlow or Rocoto', formatter_class=ArgumentDefaultsHelpFormatter)
-    parser.add_argument('--file',help='Path to the additional setup file to use.', type=str, required=False)
-    parser.add_argument('--cycle',help='Model cycle to run: 00/06/12/18', type=str, default='all', required=False)
-    parser.add_argument('--model',help='Model suite to run: gfs, gdas, enkf', type=str, default='all', choices=['gfs', 'gdas', 'enkf'], required=False)
     parser.add_argument('--nodeskip', help='Nodes that will be set to defstatus complete', type=str, nargs='*', required=False)
     parser.add_argument('--taskskip', help='Tasks that will be set to defstatus complete', type=str, nargs='*', required=False)
-    parser.add_argument('--forecast-only',help='Run the forecast only job', action='store_true', required=False)
-    parser.add_argument('--postprocess', help='Include post processing suite', action='store_true', required=False)
     parser.add_argument('--ecflow-config', help='ecFlow Generator configuration file', type=str, default='ecflow_build.yml', required=False)
     parser.add_argument('--expdir',help='full path to experiment directory containing config files', type=str, required=False, default=os.environ['PWD'])
-    parser.add_argument('--defsavedir', help='Location to save the definition files', type=str, required=False, default=os.environ['PWD'])
+    parser.add_argument('--savedir', help='Location to save the definition files', type=str, required=False, default=os.environ['PWD'])
 
     arguments = parser.parse_args()
 
