@@ -11,7 +11,6 @@ export machine="@MACHINE@"
 # EMC parallel or NCO production
 export RUN_ENVIR="emc"
 
-
 # Account, queue, etc.
 export ACCOUNT="@ACCOUNT@"
 export QUEUE="@QUEUE@"
@@ -64,7 +63,6 @@ export DO_VRFY="YES"       # VRFY step
 #  use RUNMOS flag (currently in config.vrfy)
 export REALTIME="YES"
 
-#only on HERA
 #export DO_EFSOI="YES"
 
 # Experiment mode (cycled or free-forecast)
