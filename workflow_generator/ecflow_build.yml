@@ -38,9 +38,9 @@ suites:
                   - "release_post(4)f"
                 jgfs_atmos_post_f(2,env.FHMAX_GFS):
                   template: jgfs_atmos_post_master
-                  #triggers:
-                  #- task: jgfs_atmos_post_manager
-                  #  event: "release_post( 0, )f"
+                  triggers:
+                  - task: jgfs_atmos_post_manager[1,2]
+                    event: "release_post(1,2)f"
                   events:
                   - "test_event"
                   edits:
