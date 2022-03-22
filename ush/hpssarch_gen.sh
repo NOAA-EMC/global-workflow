@@ -271,6 +271,17 @@ if [ $type = "gfs" ]; then
     echo  "${dirname}ice*nc                     " >>ice.txt
   fi
 
+  if [ $DO_AERO = "YES" ]; then
+    dirpath="gfs.${PDY}/${cyc}/chem"
+    dirname="./${dirpath}"
+
+    head="gocart"
+
+    rm -f chem.txt
+    touch chem.txt
+
+    echo "${dirname}/${head}*" >> chem.txt
+  fi
 
 #-----------------------------------------------------
 fi   ##end of gfs

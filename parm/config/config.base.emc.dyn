@@ -149,28 +149,35 @@ export DO_COUPLED="NO"
 export DO_WAVE="NO"
 export DO_OCN="NO"
 export DO_ICE="NO"
-export DO_AERO="NO"
+export DO_AERO=@DO_AERO@
 export CCPP_SUITE="FV3_GFS_v16"
 export WAVE_CDUMP="" # When to include wave suite: gdas, gfs, or both
-export confignamevarfornems="atm" # For APP=ATM
 export cplwav2atm=".false."
+
+aero_nems_string=""
+if [[ $DO_AERO = "YES" ]]; then
+    aero_nems_string="_aero"
+else
+    aero_nems_string=""
+fi
 
 case "${APP}" in
   ATM)
     echo "APP=ATM; will use defaults"
+    export confignamevarfornems="atm${aero_nems_string}"
     ;;
   ATMW)
     export DO_COUPLED="YES"
     export DO_WAVE="YES"
     export WAVE_CDUMP="both"
-    export confignamevarfornems="leapfrog_atm_wav"
+    export confignamevarfornems="leapfrog_atm${aero_nems_string}_wav"
     ;;
   S2S)
     export DO_COUPLED="YES"
     export DO_OCN="YES"
     export DO_ICE="YES"
     export CCPP_SUITE="FV3_GFS_v16_coupled_nsstNoahmpUGWPv1"
-    export confignamevarfornems="cpld"
+    export confignamevarfornems="cpld${aero_nems_string}"
     ;;
   S2SW)
     export DO_COUPLED="YES"
@@ -179,14 +186,9 @@ case "${APP}" in
     export DO_ICE="YES"
     export CCPP_SUITE="FV3_GFS_v16_coupled_nsstNoahmpUGWPv1"
     export WAVE_CDUMP="both"
-    export confignamevarfornems="cpld_wave"
     export cplwav2atm=".true."
+    export confignamevarfornems="cpld${aero_nems_string}_wave"
     source $EXPDIR/config.defaults.s2sw
-    ;;
-  ATMAERO)
-    export DO_COUPLED="YES"
-    export DO_AERO="YES"
-    export confignamevarfornems="atm_aer"
     ;;
   *)
     echo "Unrecognized APP: ${1}"
