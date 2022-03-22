@@ -71,12 +71,13 @@ export cplwav=.false.
 
 # ocean model resolution
 case "$CASE_ENKF" in
-    "C48") export OCNRES=100;;
+    "C48") export OCNRES=400;;
     "C96") export OCNRES=100;;
     "C192") export OCNRES=050;;
     "C384") export OCNRES=025;;
     "C768") export OCNRES=025;;
     *) export OCNRES=025;;
 esac
+export ICERES=$OCNRES
 
 echo "END: config.efcs"
