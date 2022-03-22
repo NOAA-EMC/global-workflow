@@ -460,7 +460,7 @@ class ecfTriggerNode(ecfNode):
             if isinstance(self.task_setup['event'],str):
                 if re.search(r".*\(.*\).*",self.task_setup['event']):
                     self.event_string = self.task_setup['event']
-                    self.is_list = False
+                    self.is_event_list = False
                 elif re.search(r".*\[.*\].*",self.task_setup['event']):
                     self.event_string = self.task_setup['event']
                     self.is_event_list = True
@@ -498,7 +498,7 @@ class ecfTriggerNode(ecfNode):
 
     def set_event_max_value(self,range_token):
         self.event_initial_count = None
-        self.event_increment_value = None
+        self.event_increment = None
         if not range_token[0]:
             self.event_max_value = None
             self.event_parent_counter = True
@@ -515,20 +515,20 @@ class ecfTriggerNode(ecfNode):
         except TypeError:
             print(f"Initial value for {self.event_string} is not an integer")
             sys.exit(1)
-        self.event_increment_value = None
+        self.event_increment = None
         if not range_token[1]:
             self.event_max_value = None
         else:
             try:
-                self.event_max_value = range_token[1]
+                self.event_max_value = int(range_token[1])
             except TypeError:
                 print(f"Maximum value for {self.event_string} is not an integer")
                 sys.exit(1)
 
     def set_event_initial_increment_max_value(self,range_token):
         try:
-            self.event_initial_count = None if not range_token[0] else range_token[0]
-            self.event_increment_value = None if not range_token[2] else range_token[2]
+            self.event_initial_count = None if not range_token[0] else int(range_token[0])
+            self.event_increment = None if not range_token[2] else int(range_token[2])
         except TypeError:
             print(f"Initial cound and increment values for {self.event_string} are not integers")
             sys.exit(1)
@@ -536,7 +536,7 @@ class ecfTriggerNode(ecfNode):
             self.event_max_value = None
         else:
             try:
-                self.event_max_value = range_token[1]
+                self.event_max_value = int(range_token[1])
             except TypeError:
                 print(f"Maximum value for {self.event_string} is not an integer")
                 sys.exit(1)
@@ -578,11 +578,14 @@ class ecfTriggerNode(ecfNode):
         return self.event_max_value
 
     def get_event_range(self,initial_count=0,increment=1,max_value=1):
-        if self.event_initial_count is not None: initial_count = self.event_initial_count
-        if self.event_increment_value is not None: increment = self.event_increment_value
-        if self.event_max_value is not None: max_value = self.event_max_value
-        max_value = ( max_value * increment ) + initial_count
-        return range(initial_count,max_value,increment)
+        if self.is_event_list:
+            return range(initial_count,len(self.event_items),increment)
+        else:
+            if self.event_initial_count is not None: initial_count = self.event_initial_count
+            if self.event_increment is not None: increment = self.event_increment
+            if self.event_max_value is not None: max_value = self.event_max_value
+            max_value = ( max_value * increment ) + initial_count
+            return range(initial_count,max_value,increment)
 
 class ecfEventNode(ecfNode):
 
