@@ -51,6 +51,15 @@ elif [ $OCNRES = '100' ]; then
   CHLCLIM="seawifs_1998-2006_smoothed_2X.nc"
   MOM6_RESTART_SETTING='n'
   MOM6_RIVER_RUNOFF='False'
+elif [ $OCNRES = '400' ]; then
+  NX_GLB=90
+  NY_GLB=80
+  DT_DYNAM_MOM6='1800'
+  DT_THERM_MOM6='3600'
+  FRUNOFF=""
+  CHLCLIM="seawifs_1998-2006_smoothed_2X.nc"
+  MOM6_RESTART_SETTING='n'
+  MOM6_RIVER_RUNOFF='False'
 else
   echo "FATAL ERROR: do not have MOM6 settings defined for desired OCNRES=$OCNRES"
   exit 1
