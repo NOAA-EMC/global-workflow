@@ -10,7 +10,11 @@ echo "BEGIN: config.gldas"
 
 export GLDASSH=$HOMEgfs/scripts/exgdas_atmos_gldas.sh
 export gldas_spinup_hours=72
-export CPCGAUGE=$DMPDIR
+if [ $RUN_ENVIR = "emc" ]; then
+  export CPCGAUGE=${DMPDIR:-/lfs/h2/emc/global/noscrub/emc.global/dump}
+else
+  export CPCGAUGE=""
+fi
 export FINDDATE=$HOMEgfs/util/ush/finddate.sh
 
 echo "END: config.gldas"

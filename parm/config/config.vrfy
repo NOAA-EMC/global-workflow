@@ -16,26 +16,24 @@ export CDFNL="gdas"               # Scores verification against GDAS/GFS analysi
 
 export MKPGB4PRCP="YES"           # Make 0.25-deg pgb files in ARCDIR for precip verification
 export VRFYFITS="YES"             # Fit to observations
-export VSDB_STEP1="YES"           # Populate VSDB database
-export VSDB_STEP2="NO"
-export VRFYG2OBS="YES"            # Grid to observations, see note below if turning ON
-export VRFYPRCP="YES"             # Precip threat scores
-export VRFYRAD="YES"              # Radiance data assimilation monitoring
-export VRFYOZN="YES"              # Ozone data assimilation monitoring
-export VRFYMINMON="YES"           # GSI minimization monitoring
+export VSDB_STEP1="NO"            # Disable VSDB
+export VSDB_STEP2="NO"            # Disable VSDB
+export VRFYG2OBS="NO"             # Grid to observations, see note below if turning ON
+export VRFYPRCP="NO"              # Precip threat scores
+export VRFYRAD=${VRFYRAD:-"YES"}  # Radiance data assimilation monitoring
+export VRFYOZN=${VRFYOZN:-"YES"}  # Ozone data assimilation monitoring
+export VRFYMINMON=${VRFYMINMON:-"YES"} # GSI minimization monitoring
 export VRFYTRAK="YES"             # Hurricane track verification
 export VRFYGENESIS="YES"          # Cyclone genesis verification
-export VRFYFSU="NO"               # Cyclone genesis verification (FSU)
-export RUNMOS="NO"                # whether to run entire MOS package
+export VRFYFSU="YES"               # Cyclone genesis verification (FSU)
+export RUNMOS="YES"                # whether to run entire MOS package
 
 #-------------------------------------------------
 # Fit to Observations
 #-------------------------------------------------
 
 if [ $VRFYFITS = "YES" ]; then
-
-    export fit_ver="newm.1.3"
-    export fitdir="$BASE_GIT/verif/global/Fit2Obs/${fit_ver}/batrun"
+    export fitdir="/lfs/h2/emc/global/noscrub/emc.global/git/Fit2Obs"
     export PRVT=$HOMEgfs/fix/fix_gsi/prepobs_errtable.global
     export HYBLEVS=$HOMEgfs/fix/fix_am/global_hyblev.l${LEVS}.txt
     export CUE2RUN=$QUEUE
@@ -52,6 +50,9 @@ if [ $VRFYFITS = "YES" ]; then
         export PREPQFITSH="$fitdir/subfits_cray_nems"
     elif [ $machine = "WCOSS_DELL_P3" ]; then
         export PREPQFITSH="$fitdir/subfits_dell_nems"
+    elif [ $machine = "WCOSS2" ]; then
+        export FITDIR=$fitdir
+        export PREPQFITSH="$fitdir/batrun/subfits_wcoss2"
     elif [ $machine = "HERA" ]; then
         export PREPQFITSH="$fitdir/subfits_hera_slurm"
     elif [ $machine = "ORION" ]; then
@@ -101,8 +102,6 @@ fi
 
 if [ $VRFYRAD = "YES" -o $VRFYMINMON = "YES" -o $VRFYOZN = "YES" ]; then
 
-    export envir="para"
-
     # Radiance Monitoring
     if [[ "$VRFYRAD" == "YES" && "$CDUMP" == "$CDFNL" ]] ; then
 
@@ -142,7 +141,7 @@ fi
 # Cyclone genesis and cyclone track verification
 #-------------------------------------------------
 
-export ens_tracker_ver=v1.1.15.1
+export ens_tracker_ver=v1.1.15.5
 if [ $machine = "WCOSS_DELL_P3" ] ; then
     export ens_tracker_ver=v1.1.15.3
 fi
@@ -150,14 +149,17 @@ export HOMEens_tracker=$BASE_GIT/tracker/ens_tracker.${ens_tracker_ver}
 if [ $machine = "ORION" ] ; then
     export HOMEens_tracker=$BASE_GIT/tracker/TC_tracker.v1.1.15.2
 fi
-
+if [ $machine = "WCOSS2" ] ; then
+    export HOMEens_tracker=/lfs/h2/emc/global/noscrub/emc.global/git/ens_tracker.${ens_tracker_ver}
+fi
 if [ "$VRFYTRAK" = "YES" ]; then
 
-    export TRACKERSH="$HOMEgfs/jobs/JGFS_ATMOS_CYCLONE_TRACKER"
     if [ "$CDUMP" = "gdas" ]; then
+        export TRACKERSH="$HOMEgfs/jobs/JGDAS_ATMOS_CYCLONE_TRACKER"
         export FHOUT_CYCLONE=3            
         export FHMAX_CYCLONE=$FHMAX
     else
+        export TRACKERSH="$HOMEgfs/jobs/JGFS_ATMOS_CYCLONE_TRACKER"
         export FHOUT_CYCLONE=6            
         export FHMAX_CYCLONE=$(( FHMAX_GFS<240 ? FHMAX_GFS : 240 ))
     fi
