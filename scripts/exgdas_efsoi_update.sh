@@ -366,7 +366,11 @@ cat > enkf.nml << EOFnml
    sattypes_rad(72)= 'viirs-m_npp',   dsis(72)= 'viirs-m_npp',
    sattypes_rad(73)= 'viirs-m_j1',    dsis(73)= 'viirs-m_j1',
    sattypes_rad(74)= 'avhrr_metop-c', dsis(74)= 'avhrr3_metop-c',
-
+   sattypes_rad(75)= 'abi_g18',       dsis(75)= 'abi_g18',
+   sattypes_rad(76)= 'ahi_himawari9', dsis(76)= 'ahi_himawari9',
+   sattypes_rad(77)= 'viirs-m_j2',    dsis(77)= 'viirs-m_j2',
+   sattypes_rad(78)= 'atms_n21',      dsis(78)= 'atms_n21',
+   sattypes_rad(79)= 'cris-fsr_n21',  dsis(79)= 'cris-fsr_n21',
    $SATOBS_ENKF
 /
 &ozobs_enkf
@@ -380,6 +384,12 @@ cat > enkf.nml << EOFnml
    sattypes_oz(8) = 'mls30_aura',
    sattypes_oz(9) = 'ompsnp_npp',
    sattypes_oz(10) = 'ompstc8_npp',
+   sattypes_oz(11) = 'ompsnp_n20',
+   sattypes_oz(12) = 'ompstc8_n20',
+   sattypes_oz(13) = 'ompsnp_n21',
+   sattypes_oz(14) = 'ompstc8_n21',
+   sattypes_oz(15) = 'ompslp_npp',
+   sattypes_oz(16) = 'gome_metop-c',
    $OZOBS_ENKF
 /
 EOFnml
