@@ -234,12 +234,13 @@ if [ $type = "gdas" ]; then
   if [ -s $ROTDIR/${dirpath}${head}radstat ]; then
      echo  "${dirname}${head}radstat                 " >>gdas.txt
   fi
-  for fstep in prep anal gldas fcst vrfy radmon minmon oznmon; do
-   if [ -s $ROTDIR/logs/${CDATE}/gdas${fstep}.log ]; then
-     echo  "./logs/${CDATE}/gdas${fstep}.log         " >>gdas.txt
-   fi
-  done
-  echo  "./logs/${CDATE}/gdaspost*.log               " >>gdas.txt
+#  for fstep in prep anal gldas fcst vrfy radmon minmon oznmon; do
+#   if [ -s $ROTDIR/logs/${CDATE}/gdas${fstep}.log ]; then
+#     echo  "./logs/${CDATE}/gdas${fstep}.log         " >>gdas.txt
+#   fi
+#  done
+#  echo  "./logs/${CDATE}/gdaspost*.log               " >>gdas.txt
+  echo  "./logs/${CDATE}/gdas*.log                    " >>gdas.txt
 
   fh=0
   while [ $fh -le 9 ]; do
@@ -371,10 +372,10 @@ if [ $type = "enkfgdas" -o $type = "enkfgfs" ]; then
         fi
      fi 
   done # loop over FHR
-  for fstep in eobs eomg ecen esfc eupd efcs epos ; do
-   echo  "logs/${CDATE}/${CDUMP}${fstep}*.log        " >>enkf${CDUMP}.txt
-  done
-
+#  for fstep in eobs eomg ecen esfc eupd efcs epos ; do
+#   echo  "logs/${CDATE}/${CDUMP}${fstep}*.log        " >>enkf${CDUMP}.txt
+#  done
+  echo  "logs/${CDATE}/enkfgdas*.log        " >>enkf${CDUMP}.txt
 
 # Ensemble spread file only available with netcdf output
   fh=3

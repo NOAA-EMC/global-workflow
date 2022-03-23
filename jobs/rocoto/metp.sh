@@ -15,14 +15,6 @@
 
 ###############################################################
 echo
-echo "=============== START TO SOURCE FV3GFS WORKFLOW MODULES ==============="
-. $HOMEgfs/ush/load_fv3gfs_modules.sh
-status=$?
-[[ $status -ne 0 ]] && exit $status
-
-
-###############################################################
-echo
 echo "=============== START TO SOURCE RELEVANT CONFIGS ==============="
 configs="base vrfy metp"
 for config in $configs; do

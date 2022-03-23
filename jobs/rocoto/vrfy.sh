@@ -14,14 +14,6 @@
 
 ###############################################################
 echo
-echo "=============== START TO SOURCE FV3GFS WORKFLOW MODULES ==============="
-. $HOMEgfs/ush/load_fv3gfs_modules.sh
-status=$?
-[[ $status -ne 0 ]] && exit $status
-
-
-###############################################################
-echo
 echo "=============== START TO SOURCE RELEVANT CONFIGS ==============="
 configs="base vrfy"
 for config in $configs; do
@@ -88,10 +80,16 @@ if [ $VRFYFITS = "YES" -a $CDUMP = $CDFNL -a $CDATE != $SDATE ]; then
     [[ ! -d $TMPDIR ]] && mkdir -p $TMPDIR
 
     xdate=$($NDATE -${VBACKUP_FITS} $CDATE)
-
-
     export RUN_ENVIR_SAVE=$RUN_ENVIR
     export RUN_ENVIR=$OUTPUT_FILE
+    export COMDAY=$PBS_O_WORKDIR
+    export OBSDIR=$(compath.py ${envir}/obsproc/${obsproc_ver})
+    export COM_PRP='$OBSDIR/gdas.$pdy/$cyc/atmos'
+    export COM_INA='$ROTDIR/gdas.$pdy/$cyc/atmos'
+    export COM_INF='$ROTDIR/vrfyarch/gfs.$fdy/$fzz'
+    export RUN_ENVIR=netcdf
+    export ACPROFit=YES
+    export CONVNETC=YES
 
     $PREPQFITSH $PSLOT $xdate $ROTDIR $ARCDIR $TMPDIR
 

@@ -85,15 +85,12 @@ export HOMEens_tracker=${HOMEens_tracker:-${NWROOT:?}/ens_tracker.${ens_tracker_
 export EXECens_tracker=${EXECens_tracker:-$HOMEens_tracker/exec}
 export FIXens_tracker=${FIXens_tracker:-$HOMEens_tracker/fix}
 export USHens_tracker=${USHens_tracker:-$HOMEens_tracker/ush}
-
-
 ##############################################
 # Define COM and Data directories
 ##############################################
-export COMIN=${ROTDIR}/${RUN}.${PDY}/${cyc}/$COMPONENT
-export COMINgfs=${COMIN}
+export COMINgfs=${ROTDIR}/gfs.${PDY}/${cyc}/$COMPONENT
 export gfsdir=${COMINgfs}
-export COMINgdas=${COMIN}
+export COMINgdas=${ROTDIR}/gdas.${PDY}/${cyc}/$COMPONENT
 export gdasdir=${COMINgdas}
 export COMOUT=${ROTDIR}/${RUN}.${PDY}/${cyc}/$COMPONENT
 export COMINsyn=${COMINsyn:-$(compath.py ${envir}/com/gfs/${gfs_ver})/syndat}
@@ -123,7 +120,7 @@ export cmodel=$CDUMP
 export loopnum=1
 
 #-----------input data checking -----------------
-${USHens_tracker}/data_check_gfs.sh
+${USHens_tracker}/data_check_gfs.sh                               #only need for gfs
 # exit code 6 = missing data of opportunity
 if [ $? -eq 6 ]; then exit; fi
 #------------------------------------------------
@@ -137,6 +134,9 @@ elif [ $machine = LUNA -o $machine = SURGE -o $machine = WCOSS_C ] ; then # For 
   ${APRUNTRACK} ${USHens_tracker}/extrkr_gfs.sh ${loopnum} ${cmodel} ${CDATE} ${pert} ${DATA} 
 elif [ $machine = VENUS -o $machine = MARS -o $machine = WCOSS_DELL_P3 ] ; then # For DELL
   machine=dell
+  mpirun -n 1 ${USHens_tracker}/extrkr_gfs.sh ${loopnum} ${cmodel} ${CDATE} ${pert} ${DATA}
+elif [ $machine = WCOSS2 ] ; then # For WCOSS2
+  machine=wcoss2
   mpirun -n 1 ${USHens_tracker}/extrkr_gfs.sh ${loopnum} ${cmodel} ${CDATE} ${pert} ${DATA}
 elif [ $machine = HERA ]; then # For HERA
   machine=hera

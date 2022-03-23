@@ -13,12 +13,6 @@
 ###############################################################
 
 ###############################################################
-# Source FV3GFS workflow modules
-. $HOMEgfs/ush/load_fv3gfs_modules.sh
-status=$?
-[[ $status -ne 0 ]] && exit $status
-
-###############################################################
 # Source relevant configs
 configs="base arch"
 for config in $configs; do
