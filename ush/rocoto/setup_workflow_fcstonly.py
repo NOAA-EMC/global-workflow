@@ -383,17 +383,23 @@ def get_workflow(dict_configs, cdump='gdas'):
             deps.append(rocoto.add_dependency(dep_dict))
 
         # Files from previous cycle
-        ep_dict = {'type': 'cycleexist', 'offset': f'-{base["INTERVAL"]}'}
+        dep_dict = {'type': 'cycleexist', 'offset': f'-{base["INTERVAL"]}'}
         deps.append(rocoto.add_dependency(dep_dict))
 
         files = [f'@Y@m@d.@H0000.fv_core.res.nc'] + \
                 [f'@Y@m@d.@H0000.fv_core.res.tile{tile_index}.nc' for tile_index in range(1, n_tiles + 1)] + \
                 [f'@Y@m@d.@H0000.fv_tracer.res.tile{tile_index}.nc' for tile_index in range(1, n_tiles + 1)]
 
+        data = f'&ROTDIR;/&CDUMP;.@Y@m@d/@H/atmos/RERUN_RESTART/'
+        dep_dict = {'type': 'data', 'data': data, 'offset': f'-{base["INTERVAL"]}'}
+        # Hack off the trailing </datadep> tag because we are going to concatenate with the rest
+        dependency1 = rocoto.add_dependency(dep_dict)[:-10]
         for file in files:
-            data = f'&ROTDIR;/&CDUMP;.@Y@m@d/@H/atmos/RERUN_RESTART/{file}'
-            dep_dict = {'type': 'data', 'data': data, 'offset': f'-{base["INTERVAL"]}'}
-            deps.append(rocoto.add_dependency(dep_dict))
+            dep_dict = {'type': 'data', 'data': file}
+            # Hack off the leading <datadep> tag to join with the earlier one
+            dependency2 = rocoto.add_dependency(dep_dict)[9:]
+            # Combine the two into a dependency with two different cyclestr tags
+            deps.append(dependency1 + dependency2)
 
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
         task = wfu.create_wf_task('aerosol_init', cdump=cdump, envar=envars, dependency=dependencies)
@@ -418,9 +424,13 @@ def get_workflow(dict_configs, cdump='gdas'):
 
     if do_aero in ['Y', 'YES']:
         deps = []
-        dep_dict = {'type': 'task', 'name': f'aerosol_init'}
+        dep_dict = {'type': 'task', 'name': f'{cdump}aerosol_init'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dependencies3 = rocoto.create_dependency(dep_condition='and', dep=deps)
+        deps2 = []
+        dep_dict = {'type': 'cycleexist', 'offset': f'-{base["INTERVAL"]}'}
+        deps2.append(rocoto.add_dependency(dep_dict))
+        deps.append(rocoto.create_dependency(dep_condition='not', dep=deps2))
+        dependencies3 = rocoto.create_dependency(dep_condition='or', dep=deps)
 
     deps = []
     deps.append(dependencies)
