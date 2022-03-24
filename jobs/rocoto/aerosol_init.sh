@@ -4,7 +4,7 @@ set -x
 
 ###############################################################
 # Source FV3GFS workflow modules
-. $USHgfs/load_fv3gfs_modules.sh
+source $HOMEgfs/ush/load_fv3gfs_modules.sh
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
@@ -12,14 +12,14 @@ status=$?
 # Source relevant configs
 configs="base aerosol_init"
 for config in $configs; do
-    . $EXPDIR/config.${config}
+    source $EXPDIR/config.${config}
     status=$?
     [[ $status -ne 0 ]] && exit $status
 done
 
 ###############################################################
 # Source machine runtime environment
-. $BASE_ENV/${machine}.env aerosol_init
+source $BASE_ENV/${machine}.env aerosol_init
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
