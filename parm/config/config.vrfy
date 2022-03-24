@@ -18,15 +18,15 @@ export MKPGB4PRCP="YES"           # Make 0.25-deg pgb files in ARCDIR for precip
 export VRFYFITS="YES"             # Fit to observations
 export VSDB_STEP1="NO"            # Disable VSDB
 export VSDB_STEP2="NO"            # Disable VSDB
-export VRFYG2OBS="NO"             # Grid to observations, see note below if turning ON
-export VRFYPRCP="NO"              # Precip threat scores
-export VRFYRAD=${VRFYRAD:-"YES"}  # Radiance data assimilation monitoring
-export VRFYOZN=${VRFYOZN:-"YES"}  # Ozone data assimilation monitoring
-export VRFYMINMON=${VRFYMINMON:-"YES"} # GSI minimization monitoring
+export VRFYG2OBS="YES"            # Grid to observations, see note below if turning ON
+export VRFYPRCP="YES"             # Precip threat scores
+export VRFYRAD="YES"              # Radiance data assimilation monitoring
+export VRFYOZN="YES"              # Ozone data assimilation monitoring
+export VRFYMINMON="YES"           # GSI minimization monitoring
 export VRFYTRAK="YES"             # Hurricane track verification
 export VRFYGENESIS="YES"          # Cyclone genesis verification
-export VRFYFSU="YES"               # Cyclone genesis verification (FSU)
-export RUNMOS="YES"                # whether to run entire MOS package
+export VRFYFSU="NO"               # Cyclone genesis verification (FSU)
+export RUNMOS="NO"                # whether to run entire MOS package
 
 #-------------------------------------------------
 # Fit to Observations

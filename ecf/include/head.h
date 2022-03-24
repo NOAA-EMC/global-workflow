@@ -2,7 +2,7 @@ date
 hostname
 set -xe  # print commands as they are executed and enable signal trapping
 
-export PS4='+ $SECONDS + '
+export PS4='+ $SECONDS + ' 
 
 # Variables needed for communication with ecFlow
 export ECF_NAME=%ECF_NAME%
@@ -39,7 +39,7 @@ if [ -n "%PARATEST:%" ]; then export PARATEST=${PARATEST:-%PARATEST:%}; fi
 if [ -n "%COMPATH:%" ]; then export COMPATH=${COMPATH:-%COMPATH:%}; fi
 if [ -n "%MAILTO:%" ]; then export MAILTO=${MAILTO:-%MAILTO:%}; fi
 if [ -n "%DBNLOG:%" ]; then export DBNLOG=${DBNLOG:-%DBNLOG:%}; fi
-export KEEPDATA=${KEEPDATA:-%KEEPDATA:NO%}
+export KEEPDATA=NO
 export SENDDBN=${SENDDBN:-%SENDDBN:YES%}
 export SENDDBN_NTC=${SENDDBN_NTC:-%SENDDBN_NTC:YES%}
 
@@ -90,4 +90,3 @@ ERROR() {
 }
 # Trap all error and exit signals
 trap 'ERROR $?' ERR EXIT
-

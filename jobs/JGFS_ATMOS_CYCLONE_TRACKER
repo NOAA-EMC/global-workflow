@@ -137,7 +137,7 @@ elif [ $machine = VENUS -o $machine = MARS -o $machine = WCOSS_DELL_P3 ] ; then 
   mpirun -n 1 ${USHens_tracker}/extrkr_gfs.sh ${loopnum} ${cmodel} ${CDATE} ${pert} ${DATA}
 elif [ $machine = WCOSS2 ] ; then # For WCOSS2
   machine=wcoss2
-  mpirun -n 1 ${USHens_tracker}/extrkr_gfs.sh ${loopnum} ${cmodel} ${CDATE} ${pert} ${DATA}
+  ${USHens_tracker}/extrkr_gfs.sh ${loopnum} ${cmodel} ${CDATE} ${pert} ${DATA}
 elif [ $machine = HERA ]; then # For HERA
   machine=hera
   ${USHens_tracker}/extrkr_gfs.sh ${loopnum} ${cmodel} ${CDATE} ${pert} ${DATA}

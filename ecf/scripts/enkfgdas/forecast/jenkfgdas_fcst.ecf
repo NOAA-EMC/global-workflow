@@ -3,9 +3,8 @@
 #PBS -j oe
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
-#PBS -l walltime=00:40:00
-#PBS -l select=4:mpiprocs=128:ompthreads=1:ncpus=128
-#PBS -l place=vscatter:excl
+#PBS -l walltime=01:20:00
+#PBS -l place=vscatter:excl,select=4:mpiprocs=128:ompthreads=1:ncpus=128
 #PBS -l debug=true
 
 model=gfs
@@ -26,8 +25,12 @@ module load craype/${craype_ver}
 module load intel/${intel_ver}
 module load cray-mpich/${cray_mpich_ver}
 module load cray-pals/${cray_pals_ver}
+#module load esmf/${esmf_ver}
+#module load cfp/${cfp_ver}
+#module load libjpeg/${libjpeg_ver}
 module load hdf5/${hdf5_ver}
 module load netcdf/${netcdf_ver}
+#module load grib_util/${grib_util_ver}
 
 module list
 
@@ -37,6 +40,7 @@ module list
 export ENSGRP=%ENSGRP%
 export cyc=%CYC%
 export cycle=t%CYC%z
+#export USE_CFP=YES
 
 ############################################################
 # CALL executable job script here

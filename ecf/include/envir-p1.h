@@ -2,6 +2,13 @@
 export job=${job:-$PBS_JOBNAME}
 export jobid=${jobid:-$job.$PBS_JOBID}
 
+export RUN_ENVIR=emc
+export envir=%ENVIR%
+export MACHINE_SITE=%MACHINE_SITE%
+
+if [ -n "%SENDCANNEDDBN:%" ]; then export SENDCANNEDDBN=${SENDCANNEDDBN:-%SENDCANNEDDBN:%}; fi
+export SENDCANNEDDBN=${SENDCANNEDDBN:-"NO"}
+
 if [[ "$envir" == prod && "$SENDDBN" == YES ]]; then
     export eval=%EVAL:NO%
     if [ $eval == YES ]; then export SIPHONROOT=${UTILROOT}/para_dbn
@@ -15,3 +22,14 @@ fi
 export DBNROOT=$SIPHONROOT
 
 if [[ ! " prod para test " =~ " ${envir} " && " ops.prod ops.para " =~ " $(whoami) " ]]; then err_exit "ENVIR must be prod, para, or test [envir-p1.h]"; fi
+
+export COMROOT=/lfs/h2/emc/ptmp/%EMC_USER%/%PSLOT%/com
+export ROTDIR="$(compath.py -o prod/${NET}/${gfs_ver})"
+if [ -n "%PDY:%" ]; then
+  export PDY=${PDY:-%PDY:%}
+  export CDATE=${PDY}%CYC:%
+fi
+#### Required for archive job to do auto cleanup
+export DATAROOT=/lfs/h2/emc/stmp/%EMC_USER%/RUNDIRS/%PSLOT%/${CDATE}
+mkdir -p $DATAROOT
+if [ -n "%COMPATH:%" ]; then export COMPATH=${COMPATH:-%COMPATH:%}; fi

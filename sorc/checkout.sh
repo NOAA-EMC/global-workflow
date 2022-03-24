@@ -99,13 +99,4 @@ else
     echo 'Skip. Directory verif-global.fd already exist.'
 fi
 
-echo wcoss2_ecf_cycled checkout ...
-if [[ ! -d wcoss2_ecf_cycled ]] ; then
-    rm -f ${topdir}/checkout-wcoss2_ecf_cycled.log
-    git clone --branch feature/wcoss2_ecf_cycled https://github.com/lgannoaa/ecflow.git wcoss2_ecf_cycled >> ${topdir}/checkout-wcoss2_ecf_cycled.log 2>&1
-    cd ${topdir}
-else
-    echo 'Skip. Directory wcoss2_ecf_cycled already exist.'
-fi
-
 exit 0

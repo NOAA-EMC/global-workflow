@@ -339,15 +339,6 @@ else
 fi
 #------------------------------
 
-#------------------------------
-#--link ecflow directories
-#------------------------------
-
-if [ $machine == "wcoss2" ]; then
-  cd $pwd/..
-  [[ -s ecf ]] && mv ecf ecf-old
-  $SLINK $pwd/wcoss2_ecf_cycled/ecf
-fi
 
 exit 0
 

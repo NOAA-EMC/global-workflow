@@ -82,7 +82,6 @@ if [ $VRFYFITS = "YES" -a $CDUMP = $CDFNL -a $CDATE != $SDATE ]; then
     xdate=$($NDATE -${VBACKUP_FITS} $CDATE)
     export RUN_ENVIR_SAVE=$RUN_ENVIR
     export RUN_ENVIR=$OUTPUT_FILE
-    export COMDAY=$PBS_O_WORKDIR
     export OBSDIR=$(compath.py ${envir}/obsproc/${obsproc_ver})
     export COM_PRP='$OBSDIR/gdas.$pdy/$cyc/atmos'
     export COM_INA='$ROTDIR/gdas.$pdy/$cyc/atmos'

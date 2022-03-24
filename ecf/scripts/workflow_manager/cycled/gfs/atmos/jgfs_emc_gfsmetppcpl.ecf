@@ -1,0 +1,52 @@
+#PBS -S /bin/bash
+#PBS -N %RUN%_emc_metppcp1_%CYC%
+#PBS -j oe
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=06:00:00
+#PBS -l place=vscatter,select=1:ompthreads=1
+#PBS -l debug=true
+
+model=gfs
+%include <head.h>
+%include <envir-p1.h>
+
+set -x
+
+export NET=%NET:gfs%
+export RUN=%RUN%
+export CDUMP=%RUN%
+
+############################################################
+# Load modules
+############################################################
+
+module list
+
+#############################################################
+# WCOSS environment settings
+#############################################################
+export cyc=%CYC%
+export cycle=t%CYC%z
+export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
+%include <emc_cdate.h>
+export RUNDIR=${DATAROOT}/gfs_emc_metppcp1
+export DATAROOT=$RUNDIR
+export METPCASE="pcp1"
+
+############################################################
+# CALL executable job script here
+############################################################
+unset model
+${HOMEgfs}/jobs/rocoto/metp.sh
+
+if [ $? -ne 0 ]; then
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+   ecflow_client --abort
+   exit
+fi
+
+%include <tail.h>
+%manual
+
+%end

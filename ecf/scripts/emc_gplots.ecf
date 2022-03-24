@@ -1,0 +1,161 @@
+#PBS -S /bin/bash
+#PBS -N %RUN%_emc_gplots_%CYC%
+#PBS -j oe
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=06:00:00
+#PBS -l place=vscatter,select=1:ncpus=1:mem=1GB
+#PBS -l debug=true
+
+model=gfs
+%include <head.h>
+%include <envir-p1.h>
+
+set -x
+
+export NET=%NET:gfs%
+export RUN=%RUN%
+export CDUMP=%RUN%
+
+############################################################
+# Load modules
+############################################################
+module load PrgEnv-intel/${PrgEnv_intel_ver}
+module load craype/${craype_ver}
+module load intel/${intel_ver}
+module load cray-mpich/${cray_mpich_ver}
+module load cray-pals/${cray_pals_ver}
+export GRADSBIN=/apps/prod/grads-2.2.1-classic/bin
+export grads=$GRADSBIN/grads
+module load imagemagick/${imagemagick_ver}
+export IMGCONVERT=/apps/spack/imagemagick/7.0.8-7/cce/11.0.1/fyjvsbwngyzlsiluc4udbnxkhlbwkzc3/bin/convert
+
+module list
+
+#############################################################
+# WCOSS environment settings
+#############################################################
+export cyc=%CYC%
+export cycle=t%CYC%z
+export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
+%include <emc_cdate.h>
+source $EXPDIR/config.base
+export PSLOT=${PSLOT:-"ecfr"}
+export EDATE_BACKUP=48
+export TIME_WINDOW_HOURS=96
+export VSDBPLOT=NO
+export G2OPLOT=NO
+export METPLOT=YES
+export SDATE=${SDATE:-""}
+export NDAYS=${NDAYS:-""}
+
+###############################################################
+# Configure plot time scale
+###############################################################
+export EDATE=`$NDATE -${EDATE_BACKUP} $CDATE`
+
+#### NOT set unless want to wire in run time scale
+NDAYS=${NDAYS:-"0"}
+if [[ "$NDAYS" -gt "0" ]]; then
+    NHOURS=$(expr $NDAYS \* 24)
+    export SDATE=`$NDATE -${NHOURS} $EDATE`
+fi
+
+export PDYBEG=`echo $SDATE | cut -c1-8`
+export PDYEND=`echo $EDATE | cut -c1-8`
+echo "PDYBEG $PDYBEG"
+echo "PDYEND $PDYEND"
+
+if [[ "$SDATE" -gt "0" ]]; then
+    DAYDIF=`$HOMEgfs/ecf/scripts/workflow_manager/ush/ndays.sh $PDYEND $PDYBEG`
+    export NDAYS=$(expr $DAYDIF + 1)
+fi
+
+#### Ensure gplot input exist
+release_fg_gplot="NO"
+release_fg_stat="NO"
+release_fg_fit2obs="NO"
+release_fg_mf="NO"
+
+COMIN_arch="/lfs/h2/emc/global/noscrub/${USER}/archive/${PSLOT}"
+COMIN_fits=$COMIN_arch/fits
+COMIN_stat="/lfs/h2/emc/global/noscrub/$USER/archive/metplus_data/by_VSDB"
+COMIN_model=$COMIN_arch
+COMIN_vppg="/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/global"
+COMIN_vppg_stat=${COMIN_vppg}/archive/metplus_data/by_VSDB
+COMIN_vppg_fit2obs=${COMIN_vppg}/archive/fit2obs_data/fnl
+COMIN_vppg_model=${COMIN_vppg}/archive/model_data/gfs
+
+#### Checking stat file
+echo "Checking stat file"
+cd $COMIN_vppg_stat
+test_ct_PDYBEG=`find . -name "gfs_${PDYBEG}.stat"|wc -l`
+test_ct_PDYEND=`find . -name "gfs_${PDYEND}.stat"|wc -l`
+if [ $test_ct_PDYBEG -ge "20" -a $test_ct_PDYEND -ge "20" ]; then
+  cd $COMIN_stat
+  test_ct_PDYBEG=`find . -name "*${PDYBEG}.stat"|wc -l`
+  test_ct_PDYEND=`find . -name "*${PDYEND}.stat"|wc -l`
+  if [ $test_ct_PDYBEG -ge "20" -a $test_ct_PDYEND -ge "20" ]; then
+    release_fg_gplot="YES"
+  fi
+fi
+
+#### Checking fit2obs file
+echo "Checking fit2obs file"
+cd $COMIN_vppg_fit2obs
+test_ct_PDYBEG=`find . -name "*${PDYBEG}*"|wc -l`
+test_ct_PDYEND=`find . -name "*${PDYEND}*"|wc -l`
+if [ $test_ct_PDYBEG -eq "270" -a $test_ct_PDYEND -eq "270" ]; then
+  cd $COMIN_fits
+  release_fg_fit2obs="YES"
+  for type in raob acft acar surf sfc; do
+    for hour in f00 f06 f12 f24 f36 f48 f60 f72 f84 f96 f108 f120; do
+      file=${hour}.${type}.${PDYEND}
+      if [[ ! -s $dest/fits/$file ]]; then
+        release_fg_fit2obs="NO"
+      fi
+    done
+  done
+fi
+
+#### Checking module reference input
+echo "Checking module reference input"
+cd $COMIN_vppg_model
+test_ct_PDYBEG=`find . -name "pgb*${PDYBEG}*"|wc -l`
+test_ct_PDYEND=`find . -name "pgb*${PDYEND}*"|wc -l`
+if [ $test_ct_PDYBEG -eq "388" -a $test_ct_PDYEND -eq "388" ]; then
+  cd $COMIN_model
+  test_ct_PDYBEG=`find . -name "pgb*${PDYBEG}*"|wc -l`
+  test_ct_PDYEND=`find . -name "pgb*${PDYEND}*"|wc -l`
+  if [ $test_ct_PDYBEG -gt "2" -a $test_ct_PDYEND -gt "388" ]; then
+    release_fg_mf="YES"
+  fi
+fi
+
+if [ release_fg_gplot = "YES" -a release_fg_fit2obs = "YES" -a release_fg_mf = "YES" ]; then
+  METPLOT="YES"
+else
+  echo "METPLOT can not be started due to input not exist"
+####  exit 9
+  METPLOT="YES"
+fi
+
+
+cd $HOMEgfs/ecf/scripts/workflow_manager/scripts
+
+###############################################################
+# Submit METPLUS plotting jobs
+###############################################################
+if [ ${METPLOT:-"NO"} = "YES" ]; then
+    METPLOTSH=$HOMEgfs/ecf/scripts/workflow_manager/scripts/metplus_submit_auto.sh
+    $METPLOTSH
+    status=$?
+    [[ $status -ne 0 ]] && exit $status
+fi
+
+trap 0
+
+%include <tail.h>
+%manual
+
+%end
