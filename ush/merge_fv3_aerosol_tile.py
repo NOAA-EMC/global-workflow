@@ -33,13 +33,7 @@ from functools import partial
 from shutil import copyfile
 import argparse
 import numpy as np
-
-try:
-    import netCDF4
-except ImportError:
-    print("FATAL ERROR: Failed to import netCDF4 in " + __file__ + "!")
-    print("Make sure you are using a version of python 3 with netCDF4 installed")
-    sys.exit(100)
+import netCDF4
 
 # Make sure print statements are flushed immediately, otherwise
 #   print statments may be out-of-order with subprocess output
