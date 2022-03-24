@@ -10,7 +10,7 @@ from datetime import datetime, timedelta
 from functools import partial
 
 # Constants
-atm_base_pattern = "{ics_dir}/%Y%m%d%H/atmos/{case}/INPUT"                    # Location of atmosphere ICs
+atm_base_pattern = "{rot_dir}/{cdump}.%Y%m%d/%H/atmos/INPUT"           		  # Location of atmosphere ICs
 atm_file_pattern = "{path}/gfs_data.{tile}.nc"                                # Atm IC file names
 atm_ctrl_pattern = "{path}/gfs_ctrl.nc"                                       # Atm IC control file name
 restrt_base_pattern = "{rot_dir}/{cdump}.%Y%m%d/%H/atmos/RERUN_RESTART"       # Location of restart files (time of previous run)
@@ -147,9 +147,11 @@ def merge_tracers(merge_script: str, atm_files: typing.List[str], tracer_files: 
 		exit(102)
 
 	for atm_file, tracer_file, rest_file in zip(atm_files, tracer_files, rest_files):
-		if(debug):
+		if debug:
 			print(f"\tMerging tracers from {tracer_file} into {atm_file}")
-		subprocess.run([merge_script, atm_file, tracer_file, core_file, ctrl_file, rest_file, tracer_list_file], check=True)
+		temp_file = f'{atm_file}.tmp'
+		subprocess.run([merge_script, atm_file, tracer_file, core_file, ctrl_file, rest_file, tracer_list_file, temp_file], check=True)
+		os.replace(temp_file, atm_file)
 
 
 if __name__ == "__main__":
