@@ -128,6 +128,8 @@ def merge_tile(base_file_name: str, ctrl_file_name: str, core_file_name: str, re
 
     print("-" * 79 + "\n")
 
+    base_file.close()
+
     print("Updating ntracer")
 
     # Use ncks to rewrite file without ntracer so we can define it anew
