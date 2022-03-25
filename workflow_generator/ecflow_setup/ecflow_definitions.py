@@ -18,6 +18,7 @@ import sys
 import os
 import re
 import shutil
+from datetime import datetime, date
 
 try:
     import ecflow
@@ -60,6 +61,33 @@ class Ecflowsuite:
     def add_event(self,event,parent=None):
         if parent:
             self.ecfnodes[parent] += ecflow.Event(event)
+
+    def add_repeat(self,repeat,parent=None):
+        repeat_token = re.search("(\d{8,10})( | to )(\d{10})( | by )(\d{1,2}:)?(\d{1,2}:\d{1,2})",repeat)
+        start = repeat_token.group(1).strip()
+        end = repeat_token.group(3).strip()
+        byday = repeat_token.group(5).strip() if repeat_token.group(5) is not None else repeat_token.group(5)
+        bytime = repeat_token.group(6).strip()
+
+        startdate = datetime.strptime(start,"%Y%m%d%H") if len(start) == 10 else datetime.strptime(start,"%Y%m%d")
+        enddate = datetime.strptime(end,"%Y%m%d%H")
+
+        increment_hours = int(bytime.split(':')[0])
+        increment_min = int(bytime.split(':')[1])
+        if byday is not None:
+            byday_hours = int(byday.split(':')[0])
+            increment_hours = increment_hours + byday_hours
+
+        total_runtime = enddate - startdate
+        total_runtime_hours = int(total_runtime.total_seconds() / 60 / 60)
+        #total = f"{total_runtime_hours:02}:00"
+        total = '23:00'
+        increment = f"{increment_hours:02}:{increment_min:02}"
+        if parent:
+            date_string = f"{startdate.strftime('%d')}.{startdate.strftime('%m')}.{startdate.strftime('%Y')}"
+            self.ecfnodes[parent] += ecflow.Date(date_string)
+            print(total,increment)
+            self.ecfnodes[parent] += ecflow.Time('00:00',total,increment,True)
 
     def add_trigger(self,trigger,parent,state=None,event=None,suite=None,suite_array=None):
         if suite is not None:
@@ -157,6 +185,15 @@ class Ecflowsuite:
         else:
             for edit in edit_dict:
                 self.add_edit({edit:edit_dict[edit]},task)
+
+    def add_task_repeat(self,task,repeat):
+        taskNode = ecfTaskNode(task)
+        if taskNode.is_loop() or taskNode.is_list:
+            for task_number in taskNode.get_range():
+                task_name = f"{taskNode.get_full_name(task_number)}"
+                self.add_repeat(repeat,task_name)
+        else:
+            self.add_repeat(repeat,task)
 
     def add_task_events(self,task,events):
         taskNode = ecfTaskNode(task)

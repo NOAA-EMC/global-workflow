@@ -166,6 +166,8 @@ class Ecflowsetup:
                     suite.add_task(updated_task,parents,self.scriptrepo,task_template)
                     if self.check_dict(nodes['tasks'][task],'edits'):
                         suite.add_task_edits(updated_task,nodes['tasks'][task]['edits'])
+                    if self.check_dict(nodes['tasks'][task],'repeat',False):
+                        suite.add_task_repeat(updated_task,nodes['tasks'][task]['repeat'])
             elif ( isinstance(nodes[item],dict) and
                 item != 'edits' ):
                 if parents:
