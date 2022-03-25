@@ -17,7 +17,7 @@ suites:
           atmos:
             tasks:
               jgfs_forecast:
-                repeat: "20220324 to 2022032518 by 10:01:00"
+                repeat: "2022032012 to 2022032618 by 1:6:00"
                 triggers:
                 - task: jgfs_getic
                 - task: jgfs_atmos_post_f( 2,1 )

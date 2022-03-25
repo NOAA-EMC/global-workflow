@@ -18,7 +18,7 @@ import sys
 import os
 import re
 import shutil
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 
 try:
     import ecflow
@@ -71,23 +71,63 @@ class Ecflowsuite:
 
         startdate = datetime.strptime(start,"%Y%m%d%H") if len(start) == 10 else datetime.strptime(start,"%Y%m%d")
         enddate = datetime.strptime(end,"%Y%m%d%H")
-
-        increment_hours = int(bytime.split(':')[0])
-        increment_min = int(bytime.split(':')[1])
         if byday is not None:
-            byday_hours = int(byday.split(':')[0])
-            increment_hours = increment_hours + byday_hours
+            delta = timedelta(days=int(byday.split(':')[0]),hours=int(bytime.split(':')[0]),minutes=int(bytime.split(':')[1]))
+        else:
+            delta = timedelta(hours=int(bytime.split(':')[0]),minutes=int(bytime.split(':')[1]))
 
         total_runtime = enddate - startdate
-        total_runtime_hours = int(total_runtime.total_seconds() / 60 / 60)
-        #total = f"{total_runtime_hours:02}:00"
-        total = '23:00'
-        increment = f"{increment_hours:02}:{increment_min:02}"
+
         if parent:
-            date_string = f"{startdate.strftime('%d')}.{startdate.strftime('%m')}.{startdate.strftime('%Y')}"
-            self.ecfnodes[parent] += ecflow.Date(date_string)
-            print(total,increment)
-            self.ecfnodes[parent] += ecflow.Time('00:00',total,increment,True)
+            targetnode = self.ecfnodes[parent]
+        else:
+            targetnode = self.ecfsuite
+
+        try:
+            if total_runtime.total_seconds() < delta.total_seconds():
+                raise ConfigurationError
+        except ConfigurationError:
+            if parent:
+                print(f"Node: {parent} - Repeat has a greater increment than total time." )
+            else:
+                print(f"Suite: {self.get_suite_name()} - Repeat has a greater increment than total time." )
+            sys.exit(1)
+
+        # Setup the start date.
+        targetnode += ecflow.Date(f"{startdate.strftime('%d.%m.%Y')}")
+
+        # If the dates are the same day, we only need a time string:
+        if startdate.date() == enddate.date():
+            deltahours, deltaminutes = delta.seconds // 3600, delta.seconds // 60 % 60
+            time_string = f"{startdate.strftime('%H:%M')} {enddate.strftime('%H:M')} {deltahours:02}:{deltaminutes:02}"
+            targetnode += ecflow.Time(time_string)
+        # If the days don't match up, we'll need to do some repeats.
+        else:
+            deltahours, deltaminutes = delta.seconds // 3600, delta.seconds // 60 % 60
+            if delta.total_seconds() < 86400:
+                position_time = startdate
+                total_instances = 0
+                while position_time <= enddate:
+                    total_instances += 1
+                    position_time = position_time + delta
+                targetnode += ecflow.Time(f"{startdate.strftime('%H:%M')}")
+                targetnode += ecflow.Time(deltahours,deltaminutes,True)
+                targetnode += ecflow.RepeatInteger("RUN",1,total_instances)
+            else:
+                if deltahours == 0 and deltaminutes == 0:
+                    position_time = startdate + delta
+                    start_time = f"{startdate.strftime('%H')}:{startdate.strftime('%M')}"
+                    targetnode += ecflow.Time(start_time)
+                    while position_time <= enddate:
+                        position_string = f"{position_time.strftime('%d.%m.%Y')}"
+                        targetnode += ecflow.Date(position_string)
+                        position_time = position_time + delta
+                else:
+                    position_time = startdate
+                    while position_time <= enddate:
+                        targetnode += ecflow.Cron(position_time.strftime('%H:%M'),days_of_month=[int(position_time.strftime('%d'))],months=[int(position_time.strftime('%m'))])
+                        position_time = position_time + delta
+
 
     def add_trigger(self,trigger,parent,state=None,event=None,suite=None,suite_array=None):
         if suite is not None:
