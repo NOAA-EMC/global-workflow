@@ -1,0 +1,59 @@
+#PBS -S /bin/bash
+#PBS -N %RUN%_next_run_%CYC%
+#PBS -j oe
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=00:30:00
+#PBS -l place=vscatter,select=1:ncpus=1:mem=1GB
+#PBS -l debug=true
+
+model=gfs
+%include <head.h>
+%include <envir-p1.h>
+
+set -x
+
+export NET=%NET:gfs%
+export RUN=%RUN%
+export CDUMP=%RUN%
+
+############################################################
+# Load modules
+############################################################
+
+module list
+
+export edate=%EDATE%
+export cyc=%CYC%
+export cycle=t${cyc}z
+%include <emc_cdate.h>
+export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
+
+if [ $cyc == 00 ]; then cyc_to_wait="06"; fi
+if [ $cyc == 06 ]; then cyc_to_wait="12"; fi
+if [ $cyc == 12 ]; then cyc_to_wait="18"; fi
+if [ $cyc == 18 ]; then cyc_to_wait="00"; fi
+if [ $cyc == 00 ]; then prev_cyc="18"; fi
+if [ $cyc == 06 ]; then prev_cyc="00"; fi
+if [ $cyc == 12 ]; then prev_cyc="06"; fi
+if [ $cyc == 18 ]; then prev_cyc="12"; fi
+
+mkdir -p $EXPDIR/logs
+ecflowlog="$EXPDIR/logs/${CDATE}.log"
+echo "This cycle is complete: Success" >> $ecflowlog
+
+if [ $PDY == $edate ]; then
+  ecflow_client --msg="***Cycled parallel run is completed***"
+else
+  ecflow_client --alter change variable PDY $PDYp1 /cycled_gfs/primary/${cyc}
+  ecflow_client --msg="***Cycled parallel $PDY$cyc is done $PDYp1$cyc is in quote next***"
+  ecflow_client --requeue=force /cycled_gfs/primary/${prev_cyc}
+fi
+
+
+
+%include <tail.h>
+%manual
+
+%end
+

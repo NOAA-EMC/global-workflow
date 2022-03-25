@@ -1,0 +1,510 @@
+#!/bin/sh -e
+##---------------------------------------------------------------------------
+##---------------------------------------------------------------------------
+## NCEP EMC GLOBAL MODEL VERIFICATION
+##
+## CONTRIBUTORS: Mallory Row, mallory.row@noaa.gov, NOAA/NWS/NCEP/EMC-VPPGB
+## PURPOSE: Set up configurations to run user requested verification
+##---------------------------------------------------------------------------
+##--------------------------------------------------------------------------
+
+echo "BEGIN: $(basename ${BASH_SOURCE[0]})"
+
+####################################################
+# WHAT METPLUS USE CASES TO RUN
+####################################################
+## STEP 1 PRODUCES .STAT FILES FOR PARTIAL SUMS OR CONTINGENCY TABLE COUNTS
+## STEP 2 PRODUCES PLOTS FOR STATISTICS FROM .STAT FILES FROM STEP 1
+## SET TO "YES" or "NO"
+## EDIT SECTIONS BELOW FOR VERIFICATION TYPES REQUESTED
+#RUN_GRID2GRID_STEP1: runs METplus grid_stat, stat_analysis
+#RUN_GRID2GRID_STEP2: runs METplus stat_analysis, make_plots
+#RUN_GRID2OBS_STEP1:  runs METplus pb2nc, point_stat, stat_analysis
+#RUN_GRID2OBS_STEP2:  runs METplus stat_analysis, make_plots
+#RUN_PRECIP_STEP1:    runs METplus pcp_combine, grid_stat, stat_analysis
+#RUN_PRECIP_STEP2:    runs METplus stat_analysis, make_plots
+#RUN_SATELLITE_STEP1: runs METplus grid_stat, stat_analysis
+#RUN_SATELLITE_STEP2: runs METplus stat_analysis, make_plots
+#RUN_FIT2OBS_PLOTS:   runs fit2obs code to make plots
+#RUN_TROPCYC:         runs METplus verification for tropical cyclone track and intensity error
+#RUN_MAPS2D:          run to make forecast maps including lat-lon and zonal-mean distributions
+#RUN_MAPSDA:          run to make analysis maps of time-mean increments, ENKF ensemble mean and ensemble spread
+export RUN_GRID2GRID_STEP1="NO"
+export RUN_GRID2GRID_STEP2=${RUN_GRID2GRID_STEP2:-"NO"}
+export RUN_GRID2OBS_STEP1="NO"
+export RUN_GRID2OBS_STEP2=${RUN_GRID2OBS_STEP2:-"NO"}
+export RUN_PRECIP_STEP1="NO"
+export RUN_PRECIP_STEP2=${RUN_PRECIP_STEP2:-"NO"}
+export RUN_SATELLITE_STEP1="NO"
+export RUN_SATELLITE_STEP2="NO"
+export RUN_FIT2OBS_PLOTS=${RUN_FIT2OBS_PLOTS:-"NO"}
+export RUN_TROPCYC="NO"
+export RUN_MAPS2D=${RUN_MAPS2D:-"NO"}
+export RUN_MAPSDA=${RUN_MAPSDA:-"NO"}
+
+####################################################
+# GENERAL SETTINGS APPLIED TO ALL USE CASES
+####################################################
+## INPUT DATA SETTINGS
+#model_list:             model names
+#model_dir_list:         directory path to model forecast and analysis files
+#model_stat_dir_list:    directory path to model .stat files
+#model_file_format_list: file format of model files
+#model_hpss_dir_list:    HPSS directory of data
+#model_data_run_hpss:    get files from HPSS ("YES") if not online
+#hpss_walltime:          how long to run HPSS job to get data in minutes
+export model_list="gfs ${PSLOT}"
+export model_dir_list="/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/global/archive/model_data /lfs/h2/emc/global/noscrub/$USER/archive"
+export model_stat_dir_list="/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/global/archive /lfs/h2/emc/global/noscrub/$USER/archive"
+export model_file_format_list="pgbf{lead?fmt=%2H}.gfs.{init?fmt=%Y%m%d%H} pgbf{lead?fmt=%2H}.gfs.{init?fmt=%Y%m%d%H}.grib2"
+export model_data_run_hpss="NO"
+export model_hpss_dir_list="/NCEPPROD/hpssprod/runhistory /NCEPDEV/emc-global/1year/$USER/WCOSS2/scratch"
+export hpss_walltime="10"
+## OUTPUT DATA SETTINGS
+#OUTPUTROOT: base output directory
+export OUTPUTROOT=${OUTPUTROOT:-/lfs/h2/emc/stmp/$USER/RUNDIRS/${PSLOT}/verif_global_standalone}
+## DATE SETTINGS
+#start_date:       verification start date, format YYYYMMDD
+#end_date:         verification end date, format YYYYMMDD
+#make_met_data_by: how to treat dates, "VALID" or "INIT"
+#plot_by:          how to plot data, "VALID" or "INIT"
+export start_date="${gfsv16_start_date}"
+export end_date="${gfsv16_end_date}"
+export make_met_data_by="VALID"
+export plot_by="VALID"
+## WEB SETTINGS
+#SEND2WEB:  whether or not to send maps to webhost
+#webhost:   webhost(rzdm) computer
+#webhostid: webhost(rzdm) user name
+#webdir:    directory where to send maps on webhost
+#img_quality: image quality/resolution: "low", "medium", "high"
+#             "low", use if you are just viewing the images (internal use)
+#             "medium", use for internal use with collegues (internal use)
+#             "high", use for journals or professional presentations (external use)
+export SEND2WEB="YES"
+export webhost="emcrzdm.ncep.noaa.gov"
+export webhostid="$USER"
+export webdir="/home/people/emc/www/htdocs/gmb/${webhostid}/metplus/${PSLOT}"
+export img_quality="medium"
+## METPLUS SETTINGS
+#MET_version:               MET version to use: 9.1
+#METplus_version:           METplus version to use: 3.1
+#MET_verbosity:             MET verbosity for logging, 1-5 (most verbose is 5)
+#METplus_verbosity:         DEBUG, INFO, WARN, ERROR (most verbose is DEBUG)
+#log_MET_output_to_METplus: log MET output to METplus log, yes or no
+export MET_version="9.1"
+export METplus_version="3.1"
+export METplus_verbosity="INFO"
+export MET_verbosity="2"
+export log_MET_output_to_METplus="yes"
+## DATA DIRECTIVE SETTINGS
+export SENDARCH="YES"
+export SENDMETVIEWER="NO"
+#### export KEEPDATA=${KEEPDATA:-"YES"}
+export KEEPDATA="YES"
+export SENDECF="NO"
+export SENDCOM="NO"
+export SENDDBN="NO"
+export SENDDBN_NTC="NO"
+####################################################
+# SETTINGS FOR SPECIFIC USE CASES
+####################################################
+if [ $RUN_GRID2GRID_STEP1 = YES ]; then
+    #g2g1_type_list: list type of verifications to run for grid-to-grid: anom, pres, sfc
+    #### For each type the followings can be set, where [type] is anom, pres, or sfc
+    #####    g2g1_[type]_truth_name:             analysis type to compare models to: self_anl, self_f00, gfs_anl, gfs_f00
+    #####    g2g1_[type]_truth_file_format_list: list of analysis file format(s), more than 1 if g2g1_anl_name is self
+    #####    g2g1_[type]_fyc_list:                all forecst cycles to be included in verification: HH
+    #####    g2g1_[type]_vhr_list:               all valid hours to be included in verification: HH
+    #####    g2g1_[type]_fhr_min:                forecast hour to start verification HH[H]
+    #####    g2g1_[type]_fhr_max:                forecast hour to end verification HH[H]
+    #####    g2g1_[type]_grid:                   NCEP grid to do verification on
+    #####    g2g1_[type]_gather_by:              how to group the verification data, VSDB, VALID, INIT
+    #g2g1_mv_database_name: name of the METviewer database to send data to, MUST START WITH "mv"
+    #g2g1_mv_database_group: name of the group the METviewer database belongs to
+    #g2g1_mv_database_desc: description of database, can be blank
+    export g2g1_type_list="anom pres sfc"
+    export g2g1_anom_truth_name="self_anl"
+    export g2g1_anom_truth_file_format_list="pgbanl.gfs.{valid?fmt=%Y%m%d%H}"
+    export g2g1_anom_fcyc_list="00 06 12 18"
+    export g2g1_anom_vhr_list="00 06 12 18"
+    export g2g1_anom_fhr_min="00"
+    export g2g1_anom_fhr_max="384"
+    export g2g1_anom_grid="G002"
+    export g2g1_anom_gather_by="VSDB"
+    export g2g1_pres_truth_name="self_anl"
+    export g2g1_pres_truth_file_format_list="pgbanl.gfs.{valid?fmt=%Y%m%d%H}"
+    export g2g1_pres_fcyc_list="00 06 12 18"
+    export g2g1_pres_vhr_list="00 06 12 18"
+    export g2g1_pres_fhr_min="00"
+    export g2g1_pres_fhr_max="384"
+    export g2g1_pres_grid="G002"
+    export g2g1_pres_gather_by="VSDB"
+    export g2g1_sfc_truth_name="self_f00"
+    export g2g1_sfc_truth_file_format_list="pgbf00.gfs.{valid?fmt=%Y%m%d%H}"
+    export g2g1_sfc_fcyc_list="00 06 12 18"
+    export g2g1_sfc_vhr_list="00 06 12 18"
+    export g2g1_sfc_fhr_min="00"
+    export g2g1_sfc_fhr_max="384"
+    export g2g1_sfc_grid="G002"
+    export g2g1_sfc_gather_by="VSDB"
+    export g2g1_mv_database_name="mv_gfs_grid2grid_metplus_TEST"
+    export g2g1_mv_database_group="NOAA NCEP"
+    export g2g1_mv_database_desc="Grid-to-grid METplus data for ops. GFS"
+fi
+
+if [ $RUN_GRID2GRID_STEP2 = YES ]; then
+    #g2g2_model_plot_name_list: list of models reference name on plots
+    #g2g2_type_list: list type of verifications to run for grid-to-grid: anom, pres, sfc
+    #### For each type the followings can be set, where [type] is anom, pres, or sfc
+    #####    g2g2_[type]_truth_name_list: list of analysis type used for model in step 1: self_anl, self_f00, gfs_anl, gfs_f00
+    #####    g2g2_[type]_gather_by_list:  list of how model data was gathered in step 1
+    #####    g2g2_[type]_fyc_list:        all forecst cycles to be included in verification: HH
+    #####    g2g2_[type]_vhr_list:        all valid hours to be included in verification: HH
+    #####    g2g2_[type]_fhr_min:         forecast hour to start verification HH[H]
+    #####    g2g2_[type]_fhr_max:         forecast hour to end verification HH[H]
+    #####    g2g2_[type]_event_eq:        do event equalization (True) or not (False)
+    #####    g2g2_[type]_grid:            NCEP grid verification was done on
+    #g2g2_make_scorecard: create scorecard on METviewer AWS (YES) or not(NO)
+    export g2g2_model_plot_name_list="gfs ${PSLOT}"
+    export g2g2_type_list="anom pres sfc"
+    export g2g2_anom_truth_name_list="self_anl self_anl"
+    export g2g2_anom_gather_by_list="VSDB VSDB"
+    export g2g2_anom_fcyc_list="00"
+    export g2g2_anom_vhr_list="00"
+    export g2g2_anom_fhr_min="00"
+    export g2g2_anom_fhr_max="240"
+    export g2g2_anom_event_eq="False"
+    export g2g2_anom_grid="G002"
+    export g2g2_pres_truth_name_list="self_anl self_anl"
+    export g2g2_pres_gather_by_list="VSDB VSDB"
+    export g2g2_pres_fcyc_list="00"
+    export g2g2_pres_vhr_list="00"
+    export g2g2_pres_fhr_min="00"
+    export g2g2_pres_fhr_max="240"
+    export g2g2_pres_event_eq="False"
+    export g2g2_pres_grid="G002"
+    export g2g2_sfc_truth_name_list="self_f00 self_f00"
+    export g2g2_sfc_gather_by_list="VSDB VSDB"
+    export g2g2_sfc_fcyc_list="00"
+    export g2g2_sfc_vhr_list="00"
+    export g2g2_sfc_fhr_min="00"
+    export g2g2_sfc_fhr_max="240"
+    export g2g2_sfc_event_eq="False"
+    export g2g2_sfc_grid="G002"
+    export g2g2_make_scorecard="YES"
+fi
+
+if [ $RUN_GRID2OBS_STEP1 = YES ]; then
+    #g2o1_type_list: list type of verifications to run for grid-to-obs: upper_air, conus_sfc, polar_sfc
+    #### For each type the followings can be set, where [type] is upper_air, conus_sfc, or polar_sfc
+    #####    g2o1_[type]_msg_type_list: observation message type(s) to be used
+    #####                                  upper_air, conus_sfc: any prepbufr
+    #####                                  polar_sfc: IABP
+    #####    g2o1_[type]_fyc_list:      all forecst cycles to be included in verification: HH
+    #####    g2o1_[type]_vhr_list:      all valid hours to be included in verification: HH
+    #####    g2o1_[type]_fhr_min:       forecast hour to start verification HH[H]
+    #####    g2o1_[type]_fhr_max:       forecast hour to end verification HH[H]
+    #####    g2o1_[type]_grid:          NCEP grid to do verification on
+    #####    g2o1_[type]_gather_by:     how to group the verification data, VSDB, VALID, INIT
+    #g2o1_prepbufr_data_run_hpss: get files from HPSS ("YES") if not online
+    #g2o1_mv_database_name: name of the METviewer database to send data to, MUST START WITH "mv"
+    #g2o1_mv_database_group: name of the group the METviewer database belongs to
+    #g2o1_mv_database_desc: description of database, can be blank
+    export g2o1_type_list="upper_air conus_sfc"
+    export g2o1_upper_air_msg_type_list="ADPUPA"
+    export g2o1_upper_air_fcyc_list="00 06 12 18"
+    export g2o1_upper_air_vhr_list="00 06 12 18"
+    export g2o1_upper_air_fhr_min="00"
+    export g2o1_upper_air_fhr_max="168"
+    export g2o1_upper_air_grid="G003"
+    export g2o1_upper_air_gather_by="VSDB"
+    export g2o1_conus_sfc_msg_type_list="ONLYSF ADPUPA"
+    export g2o1_conus_sfc_fcyc_list="00 06 12 18"
+    export g2o1_conus_sfc_vhr_list="00 03 06 09 12 15 18 21"
+    export g2o1_conus_sfc_fhr_min="00"
+    export g2o1_conus_sfc_fhr_max="168"
+    export g2o1_conus_sfc_grid="G104"
+    export g2o1_conus_sfc_gather_by="VSDB"
+    export g2o1_polar_sfc_msg_type_list="IABP"
+    export g2o1_polar_sfc_fcyc_list="00 06 12 18"
+    export g2o1_polar_sfc_vhr_list="00 03 06 09 12 15 18 21"
+    export g2o1_polar_sfc_fhr_min="00"
+    export g2o1_polar_sfc_fhr_max="168"
+    export g2o1_polar_sfc_grid="G219"
+    export g2o1_polar_sfc_gather_by="VSDB"
+    export g2o1_prepbufr_data_run_hpss="YES"
+    export g2o1_mv_database_name="mv_gfs_grid2obs_metplus_TEST"
+    export g2o1_mv_database_group="NOAA NCEP"
+    export g2o1_mv_database_desc="Grid-to-obs METplus data for ops. GFS"
+fi
+
+if [ $RUN_GRID2OBS_STEP2 = YES ]; then
+    #g2o2_model_plot_name_list: list of models reference name on plots
+    #g2o2_type_list: list type of verifications to run for grid-to-obs: upper_air, conus_sfc, polar_sfc
+    #### For each type the followings can be set, where [type] is upper_air, conus_sfc, or polar_sfc
+    #####    g2o2_[type]_msg_type_list:    observation message type(s) to be used
+    #####                                  upper_air, conus_sfc: any prepbufr
+    #####                                  polar_sfc: IABP
+    #####    g2o2_[type]_gather_by_list:   list of how model data was gathered in step 1
+    #####    g2o2_[type]_fyc_list:         all forecst cycles to be included in verification: HH
+    #####    g2o2_[type]_vhr_list:         all valid hours to be included in verification: HH
+    #####    g2o2_[type]_fhr_min:          forecast hour to start verification HH[H]
+    #####    g2o2_[type]_fhr_max:          forecast hour to end verification HH[H]
+    #####    g2o2_[type]_event_eq:         do event equalization (True) or not (False)
+    #####    g2o2_[type]_grid:             NCEP grid verification was done on
+    export g2o2_model_plot_name_list="gfs ${PSLOT}"
+    export g2o2_type_list="upper_air conus_sfc"
+    export g2o2_upper_air_msg_type_list="ADPUPA"
+    export g2o2_upper_air_gather_by_list="VSDB VSDB"
+    export g2o2_upper_air_fcyc_list="00"
+    export g2o2_upper_air_vhr_list="00 06 12 18"
+    export g2o2_upper_air_fhr_min="00"
+    export g2o2_upper_air_fhr_max="168"
+    export g2o2_upper_air_event_eq="True"
+    export g2o2_upper_air_grid="G003"
+    export g2o2_conus_sfc_msg_type_list="ONLYSF ADPUPA"
+    export g2o2_conus_sfc_gather_by_list="VSDB VSDB"
+    export g2o2_conus_sfc_fcyc_list="00"
+    export g2o2_conus_sfc_vhr_list="00 03 06 09 12 15 18 21"
+    export g2o2_conus_sfc_fhr_min="00"
+    export g2o2_conus_sfc_fhr_max="168"
+    export g2o2_conus_sfc_event_eq="False"
+    export g2o2_conus_sfc_grid="G104"
+    export g2o2_polar_sfc_msg_type_list="IABP"
+    export g2o2_polar_sfc_gather_by_list="VSDB VSDB"
+    export g2o2_polar_sfc_fcyc_list="00"
+    export g2o2_polar_sfc_vhr_list="00 03 06 09 12 15 18 21"
+    export g2o2_polar_sfc_fhr_min="00"
+    export g2o2_polar_sfc_fhr_max="168"
+    export g2o2_polar_sfc_event_eq="False"
+    export g2o2_polar_sfc_grid="G223"
+fi
+
+if [ $RUN_PRECIP_STEP1 = YES ]; then
+    #precip1_type_list: precip observation type/name and accumulation length: ccpa_accum24hr
+    #precip1_model_bucket_list: model file accumulation bucket in HH, use "continuous" for accumulating bucket
+    #precip1_model_varname_list: model file precip variable to use: APCP or PRATE
+    #precip1_model_file_format_list: file format of model files [overrides model_file_format_list]
+    #### For each type the followings can be set, where [type] is ccpa_accum24hr
+    #####    precip1_[type]_fyc_list:  all forecst cycles to be included in verification: HH
+    #####    precip1_[type]_fhr_min:   forecast hour to start verification HH[H]
+    #####    precip1_[type]_fhr_max:   forecast hour to end verification HH[H]
+    #####    precip1_[type]_type_list: precip observation type/name, ccpa_accum_24hr
+    #####    precip1_[type]_grid:      NCEP grid to do verification on
+    #####    precip1_[type]_gather_by: how to group the verification data, VSDB, VALID, INIT
+    #precip1_obs_data_run_hpss: get files from HPSS ("YES") if not online
+    #precip1_mv_database_name: name of the METviewer database to send data to, MUST START WITH "mv"
+    #precip1_mv_database_group: name of the group the METviewer database belongs to
+    #precip1_mv_database_desc: description of database, can be blank
+    export precip1_type_list="ccpa_accum24hr"
+    export precip1_ccpa_accum24hr_model_bucket_list="06"
+    export precip1_ccpa_accum24hr_model_var_list="APCP"
+    export precip1_ccpa_accum24hr_model_file_format_list="pgbf{lead?fmt=%2H}.gfs.{init?fmt=%Y%m%d%H}"
+    export precip1_ccpa_accum24hr_fcyc_list="00 06 12 18"
+    export precip1_ccpa_accum24hr_fhr_min="00"
+    export precip1_ccpa_accum24hr_fhr_max="180"
+    export precip1_ccpa_accum24hr_grid="G211"
+    export precip1_ccpa_accum24hr_gather_by="VSDB"
+    export precip1_obs_data_run_hpss="YES"
+    export precip1_mv_database_name="mv_gfs_precip_metplus_TEST"
+    export precip1_mv_database_group="NOAA NCEP"
+    export precip1_mv_database_desc="Precip METplus data for ops. GFS"
+fi
+
+if [ $RUN_PRECIP_STEP2 = YES ]; then
+    #precip2_model_plot_name_list: list of models reference name on plots
+    #precip2_type_list: precip observation type/name and accumulation length: ccpa_accum24hr
+    #### For each type the followings can be set, where [type] is ccpa_accum24hr
+    #####    precip2_[type]_gather_by_list: list of how model data was gathered in step 1
+    #####    precip2_[type]_fcyc_list:      all forecst cycles to be included in verification: HH
+    #####    precip2_[type]_fhr_min:        forecast hour to start verification HH[H]
+    #####    precip2_[type]_fhr_max:        forecast hour to end verification HH[H]
+    #####    precip2_[type]_event_eq:       do event equalization (True) or not (False)
+    #####    precip2_[type]_grid:           NCEP grid verification was done on
+    export precip2_model_plot_name_list="gfs ${PSLOT}"
+    export precip2_type_list="ccpa_accum24hr"
+    export precip2_ccpa_accum24hr_gather_by_list="VSDB VSDB"
+    export precip2_ccpa_accum24hr_fcyc_list="00 06 12 18"
+    export precip2_ccpa_accum24hr_fhr_min="00"
+    export precip2_ccpa_accum24hr_fhr_max="180"
+    export precip2_ccpa_accum24hr_event_eq="False"
+    export precip2_ccpa_accum24hr_grid="G211"
+fi
+
+if [ $RUN_SATELLITE_STEP1 = YES ]; then
+    #sat1_type_list: list of satellite/satellite analysis to run verification for: ghrsst_ncei_avhrr_anl, ghrsst_ospo_geopolar_anl
+    #### For each type the followings can be set, where [type] is ghrsst_ncei_avhrr_anl or ghrsst_ospo_geopolar_anl
+    #####    sat1_[type]_fyc_list:       all forecst cycles to be included in verification: HH
+    #####    sat1_[type]_fhr_min:        forecast hour to start verification HH[H]
+    #####    sat1_[type]_fhr_max:        forecast hour to end verification HH[H]
+    #####    sat1_[type]_grid:           NCEP grid to do verification on
+    #####    sat1_[type]_gather_by:      how to group the verification data, VSDB, VALID, INIT
+    #####    sat1_[type]_sea_ice_thresh: threshold for sea ice, anything >= considered ice, anything below no ice
+    #sat1_mv_database_name: name of the METviewer database to send data to, MUST START WITH "mv"
+    #sat1_mv_database_group: name of the group the METviewer database belongs to
+    #sat1_mv_database_desc: description of database, can be blank
+    export sat1_type_list="ghrsst_ncei_avhrr_anl"
+    export sat1_ghrsst_ncei_avhrr_anl_fcyc_list="00 06 12 18"
+    export sat1_ghrsst_ncei_avhrr_anl_fhr_min="00"
+    export sat1_ghrsst_ncei_avhrr_anl_fhr_max="168"
+    export sat1_ghrsst_ncei_avhrr_anl_grid="G219"
+    export sat1_ghrsst_ncei_avhrr_anl_gather_by="VSDB"
+    export sat1_ghrsst_ncei_avhrr_anl_sea_ice_thresh="0.15"
+    export sat1_ghrsst_ospo_geopolar_anl_fcyc_list="00 06 12 18"
+    export sat1_ghrsst_ospo_geopolar_anl_fhr_min="00"
+    export sat1_ghrsst_ospo_geopolar_anl_fhr_max="168"
+    export sat1_ghrsst_ospo_geopolar_anl_grid="G219"
+    export sat1_ghrsst_ospo_geopolar_anl_gather_by="VSDB"
+    export sat1_ghrsst_ospo_geopolar_anl_sea_ice_thresh="0.15"
+    export sat1_mv_database_name="mv_gfs_satellite_metplus_TEST"
+    export sat1_mv_database_group="NOAA NCEP"
+    export sat1_mv_database_desc="Satellite METplus data for ops. GFS"
+fi
+
+if [ $RUN_SATELLITE_STEP2 = YES ]; then
+    #sat2_model_plot_name_list: list of models reference name on plots
+    #sat2_type_list: list of satellite/satellite analysis to run for: ghrsst_ncei_avhrr_anl, ghrsst_ospo_geopolar_anl
+    #### For each type the followings can be set, where [type] is ghrsst_ncei_avhrr_anl or ghrsst_ospo_geopolar_anl
+    #####    sat2_[type]_gather_by_list:       list of how model data was gathered in step 1
+    #####    sat2_[type]_fyc_list:             all forecst cycles to be included in verification: HH
+    #####    sat2_[type]_fhr_min:              forecast hour to start verification HH[H]
+    #####    sat2_[type]_fhr_max:              forecast hour to end verification HH[H]
+    #####    sat2_[type]_sea_ice_thresh:       threshold for sea ice, anything >= considered ice, anything below no ice
+    #####    sat2_[type]_event_eq:             do event equalization (True) or not (False)
+    #####    sat2_[type]_grid:                 NCEP grid verification was done on
+    export sat2_model_plot_name_list="ops_gfs"
+    export sat2_type_list="ghrsst_ncei_avhrr_anl"
+    export sat2_ghrsst_ncei_avhrr_anl_gather_by_list="VSDB"
+    export sat2_ghrsst_ncei_avhrr_anl_fcyc_list="00"
+    export sat2_ghrsst_ncei_avhrr_anl_fhr_min="00"
+    export sat2_ghrsst_ncei_avhrr_anl_fhr_max="168"
+    export sat2_ghrsst_ncei_avhrr_anl_sea_ice_thresh="0.15"
+    export sat2_ghrsst_ncei_avhrr_anl_event_eq="True"
+    export sat2_ghrsst_ncei_avhrr_anl_grid="G003"
+    export sat2_ghrsst_ospo_geopolar_anl_gather_by_list="VSDB"
+    export sat2_ghrsst_ospo_geopolar_anl_fcyc_list="00"
+    export sat2_ghrsst_ospo_geopolar_anl_fhr_min="00"
+    export sat2_ghrsst_ospo_geopolar_anl_fhr_max="168"
+    export sat2_ghrsst_ospo_geopolar_anl_sea_ice_thresh="0.15"
+    export sat2_ghrsst_ospo_geopolar_anl_event_eq="True"
+    export sat2_ghrsst_ospo_geopolar_anl_grid="G003"
+fi
+
+if [ $RUN_FIT2OBS_PLOTS = YES ]; then
+   #fit2obs_plots_expnlist:   experiment names, only 7 allowed, fnl is operational GFS
+   #fit2obs_plots_expdlist:   fcst data directories, can be different
+   #fit2obs_plots_endianlist: endian of fits data: big or little
+   #fit2obs_plots_cycle:      forecast cycle to verify, only one cycle allowed
+   #fit2obs_plots_oinc:       increment (hours) between observation verify times for timeout plots
+   #fit2obs_plots_finc:       increment (hours) between forecast lengths for timeout plots
+   #fit2obs_plots_fmax:       max forecast length to show for timeout plots
+   #fit2obs_plots_scrdir:     source directory of fit-to-obs scripts
+   export fit2obs_plots_expnlist="fnl ${PSLOT}"
+   export fit2obs_plots_expdlist="/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/global/archive/fit2obs_data /lfs/h2/emc/global/noscrub/$USER/archive"
+   export fit2obs_plots_endianlist="little little"
+   export fit2obs_plots_cycle="00"
+   export fit2obs_plots_oinc=24
+   export fit2obs_plots_finc=12
+   export fit2obs_plots_fmax=120
+   #### export fit2obs_plots_scrdir="/lfs/h2/emc/global/noscrub/Jack.Woollen/plotfits"
+   export fit2obs_plots_scrdir="/lfs/h2/emc/global/noscrub/Jack.Woollen/plotfits"
+fi
+
+if [ $RUN_TROPCYC = YES ]; then
+    #tropcyc_model_atcf_name_list:   list of models ATCF 4 letter identifier in cooresponding tropcyc_model_file_format
+    #tropcyc_model_plot_name_list:   list of models reference name on plots
+    #tropcyc_storm_list:             list of verifying storms, format BASIN_YEAR_NAME, ex. AL_2019_DORIAN, to verify all name use BASIN_YEAR_ALLNAMED
+    #tropcyc_fcyc_list:              all forecst cycles to be included in verification: HH
+    #tropcyc_vhr_list:               all valid hours to be included in verification: HH
+    #tropcyc_fhr_min:                forecast hour to start verification HH[H]
+    #tropcyc_fhr_max:                forecast hour to end verification HH[H]
+    #tropcyc_model_file_format_list: either file format of model archive track files, or set to ADECK to use data from adeck files
+    #tropcyc_stat_list:              stats from MET's tc_stat to plot: see MET's README_TC for examples
+    #tropcyc_storm_level_list:       list of TC development levels to verify (column TY, see https://www.nrlmry.navy.mil/atcf_web/docs/database/new/abrdeck.html)
+    export tropcyc_model_atcf_name_list="AVNO"
+    export tropcyc_model_plot_name_list="ops_gfs"
+    export tropcyc_storm_list="AL_2020_ALLNAMED EP_2020_ALLNAMED WP_2020_ALLNAMED"
+    export tropcyc_fcyc_list="00 06 12 18"
+    export tropcyc_vhr_list="00 06 12 18"
+    export tropcyc_fhr_min="00"
+    export tropcyc_fhr_max="168"
+    export tropcyc_model_file_format_list="ADECK"
+    export tropcyc_stat_list="TI"
+    export tropcyc_storm_level_list="TD TS HU SD SS TY ST"
+fi
+
+if [ $RUN_MAPS2D = YES ]; then
+    #maps2d_model_plot_name_list: list of models reference name on plots
+    #maps2d_latlon_area: list of lower latitude, upper latitude, start longitude, end longitude
+    #maps2d_plot_diff: plot difference from first model (YES) or just plot all model values (NO)
+    #maps2d_anl_file_format_list: model's own analysis file format used for if
+    #                             anl in maps2d_[type]_forecast_to_plot
+    #                             or maps2d_model2model_forecast_anl_diff YES
+    #maps2d_type_list: list type of verifications to run for maps2d: model2model, model2obs
+    #### For each type the followings can be set, where [type] is model2model or model2obs
+    #####    maps2d_[type]_make_met_data_by: how to treat dates, "VALID" or "INIT"
+    #####    maps2d_[type]_hour_list:        all forecast cycles to be included in verification: HH
+    #####    maps2d_[type]_forecast_to_plot: list of model forecast times to plot:
+    #####                                        for analysis use anl,
+    #####                                        for a single forecast hour use f (ex. f120),
+    #####                                        for a day use d (ex. d5) which will include the 4 forecast hours for that day
+    #####                                                 (d5 = f120 f114 f108 and f102)
+    #####    maps2d_regrid_to_grid:          NCEP grid to regrid data to
+    #maps2d_model2model_forecast_anl_diff: plot the difference of model forecast from an analysis (YES) or don't (NO)
+    #maps2d_model2obs_use_ceres: use CERES data for cloud and radiation obs. (YES) or use ISCCP, SRB, NVAP, UWisc for cloud and radiation obs. (NO)
+    #maps2d_model2obs_use_monthly_mean: use monthly mean from datasets, if available (YES) or use climatology generated from datasets (NO)
+    export maps2d_model_plot_name_list="gfs ${PSLOT}"
+    export maps2d_latlon_area="-90 90 0 360"
+    export maps2d_plot_diff="YES"
+    export maps2d_anl_file_format_list="pgbanl.gfs.{valid?fmt=%Y%m%d%H} pgbanl.gfs.{valid?fmt=%Y%m%d%H}.grib2"
+    export maps2d_type_list="model2model model2obs"
+    export maps2d_model2model_make_met_data_by="INIT"
+    export maps2d_model2model_hour_list="00"
+    export maps2d_model2model_forecast_to_plot_list="anl d1 d5 d10"
+    export maps2d_model2model_regrid_to_grid="G002"
+    export maps2d_model2model_forecast_anl_diff="NO"
+    export maps2d_model2obs_make_met_data_by="INIT"
+    export maps2d_model2obs_hour_list="00"
+    export maps2d_model2obs_forecast_to_plot_list="anl d1 d5 d10"
+    export maps2d_model2obs_regrid_to_grid="G002"
+    export maps2d_model2obs_use_ceres="NO"
+    export maps2d_model2obs_use_monthly_mean="NO"
+fi
+
+if [ $RUN_MAPSDA = YES ]; then
+    #mapsda_model_plot_name_list: list of models reference name on plots
+    #mapsda_latlon_area: list of lower latitude, upper latitude, start longitude, end longitude
+    #mapsda_plot_diff: plot difference from first model (YES) or just plot all model values (NO)
+    #mapsda_type_list: list type of verifications to run for mapsda: gdas, ens
+    #### For each type the followings can be set, where [type] is gdas or ens
+    #####    mapsda_[type]_make_met_data_by:       how to treat dates, "VALID" or "INIT"
+    #####    mapsda_[type]_hour_list:              all hours to be included in verification: HH
+    #####    mapsda_[type]_regrid_to_grid:         NCEP grid to regrid data to
+    #####    mapsda_[type]_guess_hour:             forecast hour from last cycle used as first guess
+    #mapsda_gdas_model_file_format_list: file format of model GDAS files
+    #mapsda_gdas_anl_file_format_list: file format of analysis files for GDAS maps
+    #mapsda_ens_model_dir_list: directory where model ens files are located
+    #mapsda_ens_model_file_format_list: file format for ens files
+    #mapsda_ens_model_data_run_hpss: get files from HPSS ("YES") if not online
+    export mapsda_model_plot_name_list="gfs ${PSLOT}" 
+    export mapsda_latlon_area="-90 90 0 360"
+    export mapsda_plot_diff="NO"
+    export mapsda_type_list="gdas ens"
+    export mapsda_gdas_make_met_data_by="VALID"
+    export mapsda_gdas_hour_list="00 06 12 18"
+    export mapsda_gdas_regrid_to_grid="G002"
+    export mapsda_gdas_guess_hour="06"
+    export mapsda_gdas_model_file_format_list="pgbf{lead?fmt=%2H}.gdas.{init?fmt=%Y%m%d%H} pgbf{lead?fmt=%2H}.gdas.{init?fmt=%Y%m%d%H}.grib2"
+    export mapsda_gdas_anl_file_format_list="pgbanl.gdas.{valid?fmt=%Y%m%d%H} pgbanl.gdas.{valid?fmt=%Y%m%d%H}.grib2"
+    export mapsda_ens_make_met_data_by="INIT"
+    export mapsda_ens_hour_list="00 06 12 18"
+    export mapsda_ens_regrid_to_grid="G002"
+    export mapsda_ens_guess_hour="06"
+    export mapsda_ens_model_dir_list="/lfs/h1/ops/prod/com /lfs/h2/emc/ptmp/$USER"
+####    export mapsda_ens_model_file_format_list="prod/enkfgdas.{init?fmt=%Y%m%d}/{init?fmt=%H}/atmos/gdas.t{init?fmt=%H}z.atmf{lead?fmt=%3H}.ens[mean,spread].nc com/gfs/prod/enkfgdas.{init?fmt=%Y%m%d}/{init?fmt=%H}/atmos/gdas.t{init?fmt=%H}z.atmf{lead?fmt=%3H}.ens[mean,spread].nc"
+    export mapsda_ens_model_file_format_list="v16.2/enkfgdas.{init?fmt=%Y%m%d}/{init?fmt=%H}/atmos/gdas.t{init?fmt=%H}z.atmf{lead?fmt=%3H}.ens[mean,spread].nc com/prod/gfs/v16.2/enkfgdas.{init?fmt=%Y%m%d}/{init?fmt=%H}/atmos/gdas.t{init?fmt=%H}z.atmf{lead?fmt=%3H}.ens[mean,spread].nc"
+    export mapsda_ens_model_data_run_hpss="NO"
+fi
+
+echo "END: $(basename ${BASH_SOURCE[0]})"

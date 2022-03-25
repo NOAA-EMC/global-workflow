@@ -33,6 +33,11 @@ module list
 export cyc=%CYC%
 export cycle=t%CYC%z
 
+#### EMC developer only
+COMPONENT=atmos
+export COMOUT=${COMOUT:-$(compath.py -o ${envir}/${NET}/${gfs_ver})/${RUN}.${PDY}/${cyc}/$COMPONENT}
+####
+
 ############################################################
 # CALL executable job script here
 ############################################################

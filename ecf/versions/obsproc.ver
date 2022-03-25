@@ -9,7 +9,6 @@ export cray_pals_ver=1.0.12
 export cfp_ver=2.0.4
 export netcdf_ver="4.7.4"
 export hdf5_ver="1.10.6"
-
 export prod_envir_ver="2.0.4"
 export prod_util_ver="2.0.9"
 export w3nco_ver="2.4.1"
@@ -19,35 +18,8 @@ export util_shared_ver="1.4.0"
 export bacio_ver="2.4.1"
 export bufr_ver="11.4.0"
 export bufr_dump_ver="2.0.0"
-
 export dictionaries_ver="v3.4.0"
 export omb_ver="v4.4"
-
-## main "model" software
-#### export obsproc_global_ver=v3.2.6
-
-## main shared software versions 
-#### export obsproc_dump_ver=v5.0.3                   # shared DUMP software
-#### export obsproc_prep_ver=v5.2.0                   # shared PREP software
-#### export obsproc_dump_post_ver=v3.3.1              # shared DUMP_POST software
-#### export obsproc_prep_post_ver=v3.1.0              # shared PREP_POST software
-
-## software shared between shared packages
-#### export obsproc_shared_bufr_avgdata_ver=v2.1.0    # used in DUMP_POST
-#### export obsproc_shared_bufr_remorest_ver=v2.1.0   # used in DUMP_POST and PREP_POST
-#### export obsproc_shared_bufr_dumplist_ver=v2.2.0   # used in DUMP and DUMP_POST
-
-## deocder dictionaries
-#### export dictionaries_ver=v3.3.0                   # used in PREP software
-
-## module versions
-#export lsf_ver=10.1
-#### export ips_ver=18.0.1.163
-#### export impi_ver=18.0.1
-#### export cfp_ver=2.0.2
-
-#### export grib_util_ver=1.1.1                       # used in DUMP jobs
-#export cfp_intel_sandybridge_ver=1.1.0          # used in DUMP jobs
 
 export PROCESS_MASTER_SHIP_STNLST=NO             # turn off the ship/names/stn_lst process in 18z gdas_prep_post job
                                                  # since the process has moved to sfcship model on Dell
@@ -55,15 +27,3 @@ export PROCESS_MASTER_SHIP_STNLST=NO             # turn off the ship/names/stn_l
 # SPA settings
 export PATH=$PATH:.
 export BACK=off
-
-#### gfs_ver=v16.2
-export HOMEobsproc=/lfs/h2/emc/global/noscrub/Lin.Gan/git/obsproc/install
-
-#### export HOMEobsproc_global=/gpfs/dell1/nco/ops/nwpara/obsproc_global.v3.4.0
-#### export HOMEobsproc_dump=/gpfs/dell1/nco/ops/nwpara/obsproc_dump.v5.1.0
-#### export HOMEobsproc_shared_bufr_dumplist=/gpfs/dell1/nco/ops/nwpara/obsproc_shared/bufr_dumplist.v2.3.0
-#### export HOMEobsproc_dump_post=/gpfs/dell1/nco/ops/nwpara/obsproc_dump_post.v3.4.0
-#### export HOMEobsproc_shared_bufr_remorest=/gpfs/dell1/nco/ops/nwpara/obsproc_shared/bufr_remorest.v2.1.1
-#### export HOMEobsproc_prep=/gpfs/dell1/nco/ops/nwpara/obsproc_prep.v5.4.0
-#### export HOMEobsproc_prep_post=/gpfs/dell1/nco/ops/nwpara/obsproc_prep_post.v3.2.0
-#### export HOMEobsproc_network=$HOMEobsproc_global

@@ -18,11 +18,30 @@ function link_master_to_fhr(){
   done
 }
 
+# Function that loops over group number and
+# creates link between the master and target
+function link_master_to_grp(){
+  tmpl=$1  # Name of the master template
+  grps=$2  # Array of forecast hours
+  for grp in ${grps[@]}; do
+    master=${tmpl}_master.ecf
+    target=${tmpl}_grp${grp}.ecf
+    rm -f $target
+    ln -sf $master $target
+  done
+}
+
 # EnKF GDAS post files
 cd $ECF_DIR/scripts/enkfgdas/post
 echo "Linking enkfgdas/post ..."
 fhrs=($(seq 3 9))
 link_master_to_fhr "jenkfgdas_post" "$fhrs"
+
+# EnKF GDAS earc files
+cd $ECF_DIR/scripts/workflow_manager/cycled/enkfgdas
+echo "Linking enkfgdas/earc ..."
+grps=($(seq 0 8))
+link_master_to_grp "jenkfgdas_emc_earc" "$grps"
 
 # GDAS post files
 cd $ECF_DIR/scripts/gdas/atmos/post
