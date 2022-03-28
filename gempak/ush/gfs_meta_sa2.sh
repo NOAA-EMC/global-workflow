@@ -303,7 +303,7 @@ do
         ukmetfhr=${gfsfhr}
     fi
     gfsfhr="F${gfsfhr}"
-    grid3="${COMINukmet}.${PDY}/ukmet_${PDY}00f${ukmetfhr}"
+    grid3="${COMINukmet}.${PDY}/gempak/ukmet_${PDY}00f${ukmetfhr}"
 
 $GEMEXE/gdplot2_nc << EOF25
 \$MAPFIL = mepowo.gsf
