@@ -16,6 +16,11 @@ for config in $configs; do
 done
 
 ###############################################################
+# Load prepobs modulefile
+module use $HOMEprepobs/modulefiles
+module load prepobs/$prepobs_run_ver
+
+###############################################################
 # Source machine runtime environment
 . $BASE_ENV/${machine}.env prep
 status=$?
@@ -102,7 +107,7 @@ if [ $DO_MAKEPREPBUFR = "YES" ]; then
       export COMSP=${COMSP:-$ROTDIR/${CDUMP}.${PDY}/${cyc}/$COMPONENT/$CDUMP.t${cyc}z.}
     fi
 
-    $HOMEobsproc_network/jobs/JGLOBAL_PREP
+    $HOMEobsproc/jobs/JOBSPROC_GLOBAL_PREP
     status=$?
     [[ $status -ne 0 ]] && exit $status
 
