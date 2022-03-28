@@ -186,7 +186,7 @@ EOF
     done
   else
     OROFIX=${OROFIX:-"${FIXfv3}/${CASE}"}
-    FIX_SFC=${FIX_SFC:-"${FIXgrd}/fix_sfc"}
+    FIX_SFC=${FIX_SFC:-"${OROFIX}/fix_sfc"}
     for n in $(seq 1 $ntiles); do
       $NLN ${OROFIX}/${CASE}_oro_data.tile${n}.nc $DATA/INPUT/oro_data.tile${n}.nc
     done
@@ -217,6 +217,8 @@ EOF
     iopt_snf=${iopt_snf:-"4"}
     iopt_tbot=${iopt_tbot:-"2"}
     iopt_stc=${iopt_stc:-"3"}
+    IALB=${IALB:-2}
+    IEMS=${IEMS:-2}
   else
     lsm="1"
     lheatstrg=".false."
@@ -233,6 +235,8 @@ EOF
     iopt_snf=${iopt_snf:-"4"}
     iopt_tbot=${iopt_tbot:-"2"}
     iopt_stc=${iopt_stc:-"1"}
+    IALB=${IALB:-1}
+    IEMS=${IEMS:-1}
   fi
 
   # Files for GWD
@@ -245,8 +249,6 @@ EOF
 
   # GFS standard input data
 
-  IALB=${IALB:-1}
-  IEMS=${IEMS:-1}
   ISOL=${ISOL:-2}
   IAER=${IAER:-1011}
   ICO2=${ICO2:-2}
