@@ -7,6 +7,7 @@ do
   o)
    echo "Received -o flag for optional checkout of GTG, will check out GTG with EMC_post"
    checkout_gtg="YES"
+   checkout_wafs="YES"
    gtg_git_args="--recursive"
    ;;
   :)
@@ -81,13 +82,16 @@ else
     echo 'Skip.  Directory gfs_post.fd already exists.'
 fi
 
-echo EMC_gfs_wafs checkout ...
-if [[ ! -d gfs_wafs.fd ]] ; then
+checkout_wafs=${checkout_wafs:-"NO"}
+if [[ ${checkout_wafs} == "YES" ]] ; then
+  echo EMC_gfs_wafs checkout ...
+  if [[ ! -d gfs_wafs.fd ]] ; then
     rm -f ${topdir}/checkout-gfs_wafs.log
     git clone --recursive --branch gfs_wafs.v6.2.8 https://github.com/NOAA-EMC/EMC_gfs_wafs.git gfs_wafs.fd >> ${topdir}/checkout-gfs_wafs.log 2>&1
     cd ${topdir}
-else
+  else
     echo 'Skip.  Directory gfs_wafs.fd already exists.'
+  fi
 fi
 
 echo EMC_verif-global checkout ...
