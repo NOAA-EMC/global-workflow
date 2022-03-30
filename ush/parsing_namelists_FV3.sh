@@ -438,15 +438,15 @@ if [ $knob_ugwp_version -eq 1 ]; then
   knob_ugwp_doheat  = ${knob_ugwp_doheat:-1}
   knob_ugwp_dokdis  = ${knob_ugwp_dokdis:-2}
   knob_ugwp_ndx4lh  = ${knob_ugwp_ndx4lh:-4}
-  knob_ugwp_palaunch = 275.0e2
-  knob_ugwp_nslope   = 1
-  knob_ugwp_lzmax    = 15.750e3
-  knob_ugwp_lzmin    = 0.75e3
-  knob_ugwp_lzstar   = 2.0e3
-  knob_ugwp_taumin   = 0.25e-3
-  knob_ugwp_tauamp   = 3.0e-3
-  knob_ugwp_lhmet    = 200.0e3
-  knob_ugwp_orosolv  = 'pss-1986'
+  knob_ugwp_palaunch = ${knob_ugwp_palaunch:-275.0e2} 
+  knob_ugwp_nslope   = ${knob_ugwp_nslope:-1}
+  knob_ugwp_lzmax    = ${knob_ugwp_lzmax:-15.750e3}
+  knob_ugwp_lzmin    = ${knob_ugwp_lzmin:-0.75e3}
+  knob_ugwp_lzstar   = ${knob_ugwp_lzstar:-2.0e3}
+  knob_ugwp_taumin   = ${knob_ugwp_taumin:-0.25e-3}
+  knob_ugwp_tauamp   = ${knob_ugwp_tauamp:-3.0e-3}
+  knob_ugwp_lhmet    = ${knob_ugwp_lhmet:-200.0e3}
+  knob_ugwp_orosolv  = ${knob_ugwp_orosolv:-'pss-1986'}
 /
 EOF
 fi
