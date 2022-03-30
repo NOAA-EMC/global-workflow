@@ -12,17 +12,17 @@ suites:
         edits:
           NET: 'gfs'
         gfs:
+          repeat: "2022032400 to 2022042400 by 18:0"
           edits:
             RUN: 'gfs'
           atmos:
             tasks:
               jgfs_forecast:
-                repeat: "2022032012 to 2022032618 by 1:6:00"
                 triggers:
                 - task: jgfs_getic
                 - task: jgfs_atmos_post_f( 2,1 )
                 - task: jgfs_forecast
-                  extern: /prod18/enkfgdas/post
+                  suite: fcstplus
               jgfs_getic:
                 events:
                 - test_event

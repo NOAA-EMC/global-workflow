@@ -99,7 +99,7 @@ class Ecflowsuite:
         # If the dates are the same day, we only need a time string:
         if startdate.date() == enddate.date():
             deltahours, deltaminutes = delta.seconds // 3600, delta.seconds // 60 % 60
-            time_string = f"{startdate.strftime('%H:%M')} {enddate.strftime('%H:M')} {deltahours:02}:{deltaminutes:02}"
+            time_string = f"{startdate.strftime('%H:%M')} {enddate.strftime('%H:%M')} {deltahours:02}:{deltaminutes:02}"
             targetnode += ecflow.Time(time_string)
         # If the days don't match up, we'll need to do some repeats.
         else:
@@ -110,14 +110,19 @@ class Ecflowsuite:
                 while position_time <= enddate:
                     total_instances += 1
                     position_time = position_time + delta
-                targetnode += ecflow.Time(f"{startdate.strftime('%H:%M')}")
+                if len(start) == 10:
+                    targetnode += ecflow.Time(f"{startdate.strftime('%H:%M')}")
+                else:
+                    targetnode += ecflow.Today( ecflow.TimeSlot(0,0), True)
                 targetnode += ecflow.Time(deltahours,deltaminutes,True)
                 targetnode += ecflow.RepeatInteger("RUN",1,total_instances)
             else:
                 if deltahours == 0 and deltaminutes == 0:
                     position_time = startdate + delta
-                    start_time = f"{startdate.strftime('%H')}:{startdate.strftime('%M')}"
-                    targetnode += ecflow.Time(start_time)
+                    if len(start) == 10:
+                        targetnode += ecflow.Time(f"{startdate.strftime('%H:%M')}")
+                    else:
+                        targetnode += ecflow.Time(00,00,True)
                     while position_time <= enddate:
                         position_string = f"{position_time.strftime('%d.%m.%Y')}"
                         targetnode += ecflow.Date(position_string)

@@ -151,6 +151,8 @@ class Ecflowsetup:
                     family_path = item
                 if self.check_dict(nodes[item],'edits'):
                     suite.add_edit(nodes[item]['edits'],family_path)
+                if self.check_dict(nodes[item],'repeat',False):
+                    suite.add_repeat(nodes[item]['repeat'],family_path)
                 self.add_families(suite,nodes[item],family_path)
 
     def add_tasks_and_edits(self,suite,nodes,parents=None):
