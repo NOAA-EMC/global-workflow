@@ -138,6 +138,7 @@ def merge_tile(base_file_name: str, ctrl_file_name: str, core_file_name: str, re
     base_file = netCDF4.Dataset(base_file_name, "r+")
     base_file.createDimension("ntracer", new_ntracer)
     # print(base_file.dimensions["ntracer"])
+    base_file.close()
 
     # Remove checksum
     subprocess.run(["ncatted", "-a", "checksum,,d,,", base_file_name], check=True)
