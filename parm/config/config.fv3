@@ -87,14 +87,14 @@ case $case_in in
         export WRTIOBUF="8M"
         ;;
     "C384")
-        export DELTIM=${DELTIM:-240}
+        export DELTIM=${DELTIM:-300}
         export layout_x=6
         export layout_y=8
-        export layout_x_gfs=${layout_x_gfs:-6}
-        export layout_y_gfs=${layout_y_gfs:-8}
+        export layout_x_gfs=${layout_x_gfs:-8}
+        export layout_y_gfs=${layout_y_gfs:-12}
         export nth_fv3=2
         export nth_fv3_gfs=${nth_fv3_gfs:-2}
-        export cdmbgwd="1.0,2.2,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
+        export cdmbgwd="1.1,0.72,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=1
         export WRTTASK_PER_GROUP=$npe_node_max
         export WRITE_GROUP_GFS=${WRITE_GROUP_GFS:-2}
