@@ -125,6 +125,12 @@ export COMINatmos=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos
 export COMOUTatmos=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos
 export COMINwave=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/wave
 export COMOUTwave=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/wave
+export COMINocean=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/ocean
+export COMOUTocean=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/ocean
+export COMINice=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/ice
+export COMOUTice=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/ice
+export COMINaero=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/chem
+export COMOUTaero=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/chem
 
 export jlogfile="${EXPDIR}/logs/jlogfile"
 export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
