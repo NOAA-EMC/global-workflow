@@ -1,7 +1,7 @@
 SHELL=  /bin/sh
 ISIZE = 4
 RSIZE = 8
-COMP=   ftn
+COMP=   $(FC)
 ##LIBS_SUP=   -L/contrib/nceplibs/nwprod/lib -lw3emc_d -lw3nco_d -lg2_d -lbacio_4 -ljasper -lpng -lz
 LDFLAGS= 
 ##ccs FFLAGS= -O -qflttrap=ov:zero:inv:enable -qcheck -qextchk -qwarn64 -qintsize=$(ISIZE) -qrealsize=$(RSIZE)

@@ -2,7 +2,7 @@ help([[
 Load environment to build regrid_nemsio on Hera
 ]])
 
-prepend_path("MODULEPATH", "/scratch2/NCEPDEV/nwprod/hpc-stack/libs/hpc-stack/modulefiles/stack")
+prepend_path("MODULEPATH", "/scratch2/NCEPDEV/nwprod/hpc-stack/libs/hpc-stack-gfsv16/modulefiles/stack")
 
 load(pathJoin("hpc", os.getenv("hpc_ver")))
 load(pathJoin("hpc-intel", os.getenv("hpc_intel_ver")))

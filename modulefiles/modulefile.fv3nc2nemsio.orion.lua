@@ -2,7 +2,7 @@ help([[
 Load environment to build fv3nc2nemsio on Orion
 ]])
 
-prepend_path("MODULEPATH", "/apps/contrib/NCEP/libs/hpc-stack/modulefiles/stack")
+prepend_path("MODULEPATH", "/apps/contrib/NCEP/libs/hpc-stack-gfsv16/modulefiles/stack")
 
 load(pathJoin("hpc", os.getenv("hpc_ver")))
 load(pathJoin("hpc-intel", os.getenv("hpc_intel_ver")))

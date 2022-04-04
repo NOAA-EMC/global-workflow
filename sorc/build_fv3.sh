@@ -20,5 +20,9 @@ if [ $target = hera ]; then target=hera.intel ; fi
 if [ $target = orion ]; then target=orion.intel ; fi
 
 cd fv3gfs.fd/tests
-./compile.sh $(pwd)/../FV3 $target "WW3=Y 32BIT=Y" 1
+if [ $target = wcoss2 ]; then
+  ./compile.sh $(pwd)/../FV3 $target "WW3=Y 32BIT=Y" 1
+else # Only supporting waves on WCOSS2 for v16.2
+  ./compile.sh $(pwd)/../FV3 $target "WW3=N 32BIT=Y" 1
+fi
 mv -f fv3_1.exe ../NEMS/exe/global_fv3gfs.x
