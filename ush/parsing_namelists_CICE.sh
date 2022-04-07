@@ -364,13 +364,13 @@ cat > ice_in <<eof
    f_apeff_ai     = 'x'
 /
 
-&icefields_bgc_nml
-/
-
 &icefields_drag_nml
    f_drag         = 'x'
    f_Cdn_atm      = 'x'
    f_Cdn_ocn      = 'x'
+/
+
+&icefields_bgc_nml
 /
 eof
 

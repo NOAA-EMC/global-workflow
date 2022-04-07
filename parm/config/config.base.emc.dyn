@@ -150,7 +150,7 @@ export DO_WAVE="NO"
 export DO_OCN="NO"
 export DO_ICE="NO"
 export DO_AERO=@DO_AERO@
-export CCPP_SUITE="FV3_GFS_v16"
+export CCPP_SUITE="FV3_GFS_v17_p8"
 export WAVE_CDUMP="" # When to include wave suite: gdas, gfs, or both
 export cplwav2atm=".false."
 
@@ -176,7 +176,7 @@ case "${APP}" in
     export DO_COUPLED="YES"
     export DO_OCN="YES"
     export DO_ICE="YES"
-    export CCPP_SUITE="FV3_GFS_v16_coupled_nsstNoahmpUGWPv1"
+    export CCPP_SUITE="FV3_GFS_v17_coupled_p8"
     export confignamevarfornems="cpld${aero_nems_string}"
     ;;
   S2SW)
@@ -184,7 +184,7 @@ case "${APP}" in
     export DO_WAVE="YES"
     export DO_OCN="YES"
     export DO_ICE="YES"
-    export CCPP_SUITE="FV3_GFS_v16_coupled_nsstNoahmpUGWPv1"
+    export CCPP_SUITE="FV3_GFS_v17_coupled_p8"
     export WAVE_CDUMP="both"
     export cplwav2atm=".true."
     export confignamevarfornems="cpld${aero_nems_string}_wave"
@@ -299,7 +299,7 @@ export gldas_cyc=00
 # fi
 
 # Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL
-export imp_physics=11
+export imp_physics=8
 
 # Shared parameters
 # Hybrid related
