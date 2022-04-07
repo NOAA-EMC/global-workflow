@@ -29,6 +29,8 @@
 # 0.a Basic modes of operation
 
   set -x
+
+  err=0
   # Use LOUD variable to turn on/off trace.  Defaults to YES (on).
   export LOUD=${LOUD:-YES}; [[ $LOUD = yes ]] && export LOUD=YES
   [[ "$LOUD" != YES ]] && set +x
