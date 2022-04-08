@@ -36,6 +36,10 @@ export cyc=%CYC%
 export cycle=t%CYC%z
 export VERBOSE=YES
 
+#### EMC developer only
+export COM_IN=${COM_IN:-$(compath.py -o ${envir}/${NET}/${gfs_ver})}
+####
+
 ############################################################
 # CALL executable job script here
 ############################################################
