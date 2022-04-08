@@ -32,7 +32,6 @@ module list
 export edate=%EDATE%
 export cyc=%CYC%
 export cycle=t${cyc}z
-%include <emc_cdate.h>
 
 GDATE=$($NDATE -06 $CDATE)
 gPDY=$(echo $GDATE | cut -c1-8)
