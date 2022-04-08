@@ -30,7 +30,6 @@ module load wgrib2/${wgrib2_ver}
 
 module list
 
-#export USE_CFP=YES
 export cyc=%CYC%
 export cycle=t%CYC%z
 

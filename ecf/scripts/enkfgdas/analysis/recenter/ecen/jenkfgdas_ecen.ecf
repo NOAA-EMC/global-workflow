@@ -4,7 +4,8 @@
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
 #PBS -l walltime=00:10:00
-#PBS -l place=vscatter:excl,select=3:mpiprocs=32:ompthreads=4:ncpus=128
+#PBS -l select=3:mpiprocs=32:ompthreads=4:ncpus=128
+#PBS -l place=vscatter:excl
 #PBS -l debug=true
 
 model=gfs
@@ -37,7 +38,6 @@ module list
 export FHRGRP=%FHRGRP%
 export cyc=%CYC%
 export cycle=t%CYC%z
-#export USE_CFP=YES
 export FHMIN_ECEN=$FHRGRP
 export FHMAX_ECEN=$FHRGRP
 export FHOUT_ECEN=$FHRGRP
