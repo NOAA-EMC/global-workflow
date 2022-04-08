@@ -1,0 +1,146 @@
+#!/bin/ksh -x
+
+export RUN_ENVIR=${RUN_ENVIR:-"nco"}
+export PS4='$SECONDS + '
+date
+
+
+#############################
+# Source relevant config files
+#############################
+export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
+configs="base"
+config_path=${EXPDIR:-$NWROOT/gfs.${gfs_ver}/parm/config}
+for config in $configs; do
+    . $config_path/config.$config
+    status=$?
+    [[ $status -ne 0 ]] && exit $status
+done
+
+
+##############################################
+# Obtain unique process id (pid) and make temp directory
+##############################################
+export pid=${pid:-$$}
+export outid=${outid:-"LL$job"}
+
+export DATA=${DATA:-${DATAROOT}/${jobid:?}}
+mkdir -p $DATA
+cd $DATA
+
+
+##############################################
+# Run setpdy and initialize PDY variables
+##############################################
+export cycle="t${cyc}z"
+setpdy.sh
+. ./PDY
+
+
+##############################################
+# Determine Job Output Name on System
+##############################################
+export pgmout="OUTPUT.${pid}"
+export pgmerr=errfile
+
+
+##############################################
+# Set variables used in the script
+##############################################
+export CDATE=${CDATE:-${PDY}${cyc}}
+export CDUMP=${CDUMP:-${RUN:-"gfs"}}
+export COMPONENT=${COMPONENT:-atmos}
+GDATE=$($NDATE -06 $CDATE)
+gPDY=$(echo $GDATE | cut -c1-8)
+gcyc=$(echo $GDATE | cut -c9-10)
+
+##############################################
+# Ensure obsproc input exist
+##############################################
+OBSPROC_GDAS_Trigger=$(compath.py ${envir}/obsproc/${obsproc_ver})/gdas.${PDY}/${cyc}/atmos/gdas.t${cyc}z.updated.status.tm00.bufr_d
+IMSSNOW_GDAS_Trigger=$(compath.py ${envir}/obsproc/${obsproc_ver})/gdas.${PDY}/${cyc}/atmos/gdas.t${cyc}z.imssnow96.grib2
+OBSPROC_GFS_Trigger=$(compath.py ${envir}/obsproc/${obsproc_ver})/gfs.${PDY}/${cyc}/atmos/gfs.t${cyc}z.updated.status.tm00.bufr_d
+IMSSNOW_gfs_Trigger=$(compath.py ${envir}/obsproc/${obsproc_ver})/gfs.${PDY}/${cyc}/atmos/gfs.t${cyc}z.imssnow96.grib2
+COMIN_OBS_gfs=$(compath.py prod/obsproc/${obsproc_ver})/gfs.$PDY/$cyc/atmos/gfs.$cycle.prepbufr
+COMIN_OBS_gdas=$(compath.py prod/obsproc/${obsproc_ver})/gdas.$PDY/$cyc/atmos/gdas.$cycle.prepbufr
+ic=1
+release_gdas="NO"
+release_gfs="NO"
+release_enkfgdas="NO"
+while [ $ic -le 20 ];
+do
+  if [ -s "$OBSPROC_GDAS_Trigger" -a -s "$IMSSNOW_GDAS_Trigger" -a -s "$COMIN_OBS_gdas" -a $release_gdas = "NO" ]; then
+    release_gdas="YES"
+    ecflow_client --event release_gdas
+  fi
+  if [ -s "$OBSPROC_GDAS_Trigger" -a -s "$IMSSNOW_gfs_Trigger" -a -s "$COMIN_OBS_gfs" -a $release_gfs = "NO" ]; then
+    release_gfs="YES"
+    ecflow_client --event release_gfs
+  fi
+  if [ -s $COMIN_OBS_gdas ]; then
+    release_enkfgdas="YES"
+    ecflow_client --event release_enkfgdas
+  fi
+  if [ $release_gdas = "YES" -a $release_gfs = "YES" -a $release_enkfgdas = "YES" ]; then
+    break
+  fi
+  ic=`expr $ic + 1`
+  if [ $ic -gt 20 ]; then
+    exit 99
+  fi
+  sleep 38
+done
+
+##############################################
+# Ensure MetPlus input exist
+##############################################
+release_fg_metpg2o1="NO"
+release_fg_metppcp1="NO"
+COMIN_vppg="/lfs/h2/emc/vpppg/noscrub/emc.vpppg/verification/global"
+COMIN_vppg_gdas=${COMIN_vppg}/archive/obs_data/prepbufr/gdas/prepbufr.gdas.${PDYm1}00
+COMIN_vppg_nam_PDY=${COMIN_vppg}/archive/obs_data/prepbufr/nam/nam.${PDY}        # /nam.t*z.prepbufr.tm*
+COMIN_vppg_nam_PDYm1=${COMIN_vppg}/archive/obs_data/prepbufr/nam/nam.${PDYm1}    # /nam.t*z.prepbufr.tm*
+COMIN_vppg_nam_PDYm2=${COMIN_vppg}/archive/obs_data/prepbufr/nam/nam.${PDYm2}    # /nam.t*z.prepbufr.tm*
+COMIN_vppg_ccpa=${COMIN_vppg}/archive/obs_data/ccpa_accum24hr/ccpa.${PDYm1}12.24h
+echo "Checking metpg2o1 input for prepbufr file on ${PDYm1}"
+ic=21
+while [ $ic -le 20 ];
+do
+  echo $COMIN_vppg_gdas
+  if [ -s $COMIN_vppg_gdas ]; then
+    cd $COMIN_vppg_nam_PDYm1
+    test_ct_1=`find . -name "nam.t*z.prepbufr.tm*"|wc -l`
+    cd $COMIN_vppg_nam_PDYm2
+    test_ct_2=`find . -name "nam.t*z.prepbufr.tm*"|wc -l`
+    if [ $test_ct_1 -eq 8 ]; then
+      if [ $test_ct_2 -eq 8 ]; then
+        release_fg_metpg2o1="YES"
+      fi
+    fi
+  fi
+  echo "Checking metppcp1 input for prepbufr file on ${PDYm1}"
+  if [ -s $COMIN_vppg_ccpa ]; then
+    release_fg_metppcp1="YES"
+  fi
+  if [ $release_fg_metpg2o1 = "YES" -a $release_fg_metppcp1 = "YES" ]; then
+    ecflow_client --event release_metplus
+    break
+  fi
+  ic=`expr $ic + 1`
+  if [ $ic -gt 20 ]; then
+    exit 99
+  fi
+  sleep 38
+done
+
+echo "ENDED NORMALLY."
+
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd $DATAROOT
+[[ $KEEPDATA = "NO" ]] && rm -rf $DATA
+
+date
+exit 0
+
