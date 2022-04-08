@@ -38,13 +38,6 @@ export cyc=%CYC%
 export cycle=t%CYC%z
 export USE_CFP=YES
 
-#### EMC developer only
-COMPONENT=atmos
-export COMIN=${COMIN:-$(compath.py -o ${envir}/${NET}/${gfs_ver})/${RUN}.${PDY}/${cyc}/$COMPONENT/gempak}
-export COMOUT=${COMOUT:-$(compath.py -o ${envir}/${NET}/${gfs_ver})/${RUN}.${PDY}/${cyc}/$COMPONENT/gempak/meta}
-export COMINgempak=${COMINgempak:-$(compath.py -o ${envir}/${NET}/${gfs_ver})}
-####
-
 ############################################################
 # CALL executable job script here
 ############################################################

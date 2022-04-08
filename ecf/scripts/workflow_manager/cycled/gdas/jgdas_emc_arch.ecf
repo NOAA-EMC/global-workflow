@@ -53,7 +53,7 @@ ln -s ${COMIN_OBS}/${RUN}.${cycle}.prepbufr.acft_profiles
 ############################################################
 # CALL executable job script here
 ############################################################
-${HOMEgfs}/jobs/rocoto/arch.sh
+${HOMEgfs}/jobs/JGLOBAL_ARCHIVE
 
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"

@@ -22,6 +22,8 @@ export impi_ver=18.0.1
 export cfp_ver=2.0.2
 
 export grib_util_ver=1.1.1                       # used in DUMP jobs
+#export cfp_intel_sandybridge_ver=1.1.0          # used in DUMP jobs
+
 export PROCESS_MASTER_SHIP_STNLST=NO             # turn off the ship/names/stn_lst process in 18z gdas_prep_post job
                                                  # since the process has moved to sfcship model on Dell
 

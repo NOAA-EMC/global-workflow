@@ -49,7 +49,7 @@ fi
 #############################################################
 # CALL executable job script here
 #############################################################
-${HOMEgfs}/jobs/rocoto/earc.sh
+${HOMEgfs}/jobs/JENKFGDAS_ARCHIVE
 
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
