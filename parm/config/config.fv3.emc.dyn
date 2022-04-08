@@ -51,7 +51,7 @@ case $case_in in
         export WRTIOBUF="1M"
         ;;
     "C96")
-        export DELTIM=720
+        export DELTIM=450
         export layout_x=6
         export layout_y=4
         export layout_x_gfs=6
