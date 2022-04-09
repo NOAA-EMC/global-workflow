@@ -1,0 +1,66 @@
+#PBS -S /bin/bash
+#PBS -N enkfgdas_emc_earc_%ENSGRP%_%CYC%
+#PBS -j oe
+#PBS -q %QUEUE_ARCH%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=06:00:00
+#PBS -l place=vscatter,select=1:ncpus=1:mem=1GB
+#PBS -l debug=true
+
+model=gfs
+%include <head.h>
+%include <envir-p1.h>
+
+set -x
+
+export NET=%NET:gfs%
+export RUN=gdas
+export CDUMP=gdas
+export ENSGRP=%ENSGRP%
+
+############################################################
+# Load modules
+############################################################
+
+module list
+
+#############################################################
+# WCOSS environment settings
+#############################################################
+export cyc=%CYC%
+export cycle=t%CYC%z
+export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
+%include <emc_cdate.h>
+
+#############################################################
+# Tag up log files for transfer
+#############################################################
+if [ $ENSGRP -eq 0 ]
+then
+  archive_log_dir=${ROTDIR}/logs/${CDATE}
+  mkdir -p $archive_log_dir
+  ecf_log_dir=$PBS_O_WORKDIR
+  cd $ecf_log_dir
+  [[ -s enkfgdas_${CDATE}_archive_list.sh ]] && rm -f enkfgdas_${CDATE}_archive_list.sh
+  grep "export CDATE=$CDATE" enkfgdas_*|grep -v "Binary file" | awk -F  ":" -v target_n=$archive_log_dir '{print "cp -p",$1,target_n"/"$1".log"}' &> enkfgdas_${CDATE}_archive_list.sh
+  sh enkfgdas_${CDATE}_archive_list.sh
+fi
+
+#############################################################
+# CALL executable job script here
+#############################################################
+${HOMEgfs}/jobs/JENKFGDAS_ARCHIVE
+
+if [ $? -ne 0 ]; then
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+   ecflow_client --abort
+   exit
+fi
+
+%include <tail.h>
+%manual
+
+%end
+~
+~
+
