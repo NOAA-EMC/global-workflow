@@ -1,10 +1,10 @@
 #PBS -S /bin/bash
-#PBS -N %RUN%_emc_arch_%CYC%
+#PBS -N %RUN%_emc_vrfy_%CYC%
 #PBS -j oe
-#PBS -q %QUEUE_ARCH%
+#PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
 #PBS -l walltime=06:00:00
-#PBS -l place=vscatter,select=1:ncpus=1:mem=1GB
+#PBS -l place=vscatter,select=1:ompthreads=1
 #PBS -l debug=true
 
 model=gfs
@@ -20,6 +20,17 @@ export CDUMP=%RUN%
 ############################################################
 # Load modules
 ############################################################
+module load PrgEnv-intel/${PrgEnv_intel_ver}
+module load craype/${craype_ver}
+module load intel/${intel_ver}
+module load cray-mpich/${cray_mpich_ver}
+module load cray-pals/${cray_pals_ver}
+module load hdf5/${hdf5_ver}
+module load netcdf/${netcdf_ver}
+module load libjpeg/${libjpeg_ver}
+module load grib_util/${grib_util_ver}
+module load wgrib2/${wgrib2_ver}
+module load python/${python_ver}
 
 module list
 
@@ -29,22 +40,19 @@ module list
 export cyc=%CYC%
 export cycle=t%CYC%z
 export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
+export RUNDIR=${DATAROOT}/gdas_emc_vrfy
+export DATAROOT=$RUNDIR
 
-#############################################################
-# Tag up log files for transfer
-#############################################################
-archive_log_dir=${ROTDIR}/logs/${CDATE}
-mkdir -p $archive_log_dir
-ecf_log_dir=$PBS_O_WORKDIR
-cd $ecf_log_dir
-[[ -s gdas_${CDATE}_archive_list.sh ]] && rm -f gdas_${CDATE}_archive_list.sh
-grep "export CDATE=$CDATE" gdas_*|grep -v "Binary file" | awk -F  ":" -v target_n=$archive_log_dir '{print "cp -p",$1,target_n"/"$1".log"}' &> gdas_${CDATE}_archive_list.sh
-sh gdas_${CDATE}_archive_list.sh
+#### Disable MINMON RADMON OZMON for ecflow 
+####   because it is running separately 
+export VRFYRAD="NO"              # Radiance data assimilation monitoring
+export VRFYOZN="NO"              # Ozone data assimilation monitoring
+export VRFYMINMON="NO"           # GSI minimization monitoring
 
 ############################################################
 # CALL executable job script here
 ############################################################
-${HOMEgfs}/jobs/JGLOBAL_ARCHIVE
+${HOMEgfs}/jobs/JGLOBAL_VRFY
 
 if [ $? -ne 0 ]; then
    ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"

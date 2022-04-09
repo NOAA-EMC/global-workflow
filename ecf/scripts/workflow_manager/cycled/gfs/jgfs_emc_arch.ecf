@@ -29,7 +29,6 @@ module list
 export cyc=%CYC%
 export cycle=t%CYC%z
 export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
-%include <emc_cdate.h>
 
 #############################################################
 # Tag up log files for transfer
@@ -41,14 +40,6 @@ cd $ecf_log_dir
 [[ -s gfs_${CDATE}_archive_list.sh ]] && rm -f gfs_${CDATE}_archive_list.sh
 grep "export CDATE=$CDATE" gfs_*|grep -v "Binary file" | awk -F  ":" -v target_n=$archive_log_dir '{print "cp -p",$1,target_n"/"$1".log"}' &> gfs_${CDATE}_archive_list.sh
 sh gfs_${CDATE}_archive_list.sh
-
-COMIN_OBS=${COMIN_OBS:-$(compath.py prod/obsproc/${obsproc_ver})/$RUN.$PDY/$cyc/atmos}
-COMIN=${COMIN:-$ROTDIR/$RUN.$PDY/$cyc/atmos}
-cd $COMIN
-ln -s ${COMIN_OBS}/${RUN}.${cycle}.nsstbufr
-ln -s ${COMIN_OBS}/${RUN}.${cycle}.prepbufr
-ln -s ${COMIN_OBS}/${RUN}.${cycle}.prepbufr_pre-qc
-ln -s ${COMIN_OBS}/${RUN}.${cycle}.prepbufr.acft_profiles
 
 ############################################################
 # CALL executable job script here

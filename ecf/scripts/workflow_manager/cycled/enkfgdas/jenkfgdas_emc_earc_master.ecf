@@ -30,7 +30,6 @@ module list
 export cyc=%CYC%
 export cycle=t%CYC%z
 export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
-%include <emc_cdate.h>
 
 #############################################################
 # Tag up log files for transfer
