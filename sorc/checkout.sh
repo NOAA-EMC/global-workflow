@@ -97,7 +97,7 @@ fi
 echo EMC_verif-global checkout ...
 if [[ ! -d verif-global.fd ]] ; then
     rm -f ${topdir}/checkout-verif-global.log
-    git clone --recursive --branch verif_global_v1.11.0 https://github.com/NOAA-EMC/EMC_verif-global.git verif-global.fd >> ${topdir}/checkout-verif-global.log 2>&1
+    git clone --recursive --branch verif_global_v2.9.0 https://github.com/NOAA-EMC/EMC_verif-global.git verif-global.fd >> ${topdir}/checkout-verif-global.log 2>&1
     cd ${topdir}
 else
     echo 'Skip. Directory verif-global.fd already exist.'
