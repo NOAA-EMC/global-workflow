@@ -52,7 +52,7 @@ def main():
 
     workflow.generate_workflow()
     workflow.save()
-    workflow.print()
+    #workflow.print()
 
 if __name__ == "__main__":
     main()

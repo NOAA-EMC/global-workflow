@@ -62,6 +62,10 @@ class Ecflowsuite:
         if parent:
             self.ecfnodes[parent] += ecflow.Event(event)
 
+    def add_defstatus(self,defstatus,parent=None):
+        if parent:
+            self.ecfnodes[parent] += ecflow.Defstatus(defstatus)
+
     def add_repeat(self,repeat,parent=None):
         repeat_token = re.search("(\d{8,10})( | to )(\d{10})( | by )(\d{1,2}:)?(\d{1,2}:\d{1,2})",repeat)
         start = repeat_token.group(1).strip()
@@ -165,7 +169,7 @@ class Ecflowsuite:
 
 
     def add_family(self,family,parents=None):
-        family_name = f"{parents}_{family}" if parents else family
+        family_name = f"{parents}>{family}" if parents else family
 
         # If the name already exists, the family already exists
         if family_name not in self.ecfnodes.keys():
@@ -239,6 +243,15 @@ class Ecflowsuite:
                 self.add_repeat(repeat,task_name)
         else:
             self.add_repeat(repeat,task)
+
+    def add_task_defstatus(self,task,defstatus):
+        taskNode = ecfTaskNode(task)
+        if taskNode.is_loop() or taskNode.is_list:
+            for task_number in taskNode.get_range():
+                task_name = f"{taskNode.get_full_name(task_number)}"
+                self.add_defstatus(defstatus,task_name)
+        else:
+            self.add_defstatus(defstatus,task)
 
     def add_task_events(self,task,events):
         taskNode = ecfTaskNode(task)
@@ -695,7 +708,7 @@ class ecfFamily(ecflow.Family,ecfRoot):
 
     def generate_folders(self,ecfhome,suite,parents):
         if parents:
-            folder_path = f"{ecfhome}/{suite}/{parents.replace('_','/')}/{self.name()}"
+            folder_path = f"{ecfhome}/{suite}/{parents.replace('>','/')}/{self.name()}"
         else:
             folder_path = f"{ecfhome}/{suite}/{self.name()}"
         if not os.path.exists(folder_path):
@@ -708,11 +721,13 @@ class ecfTask(ecflow.Task,ecfRoot):
         self.template = template
 
     def generate_ecflow_task(self,ecfhome,suite,parents):
+        if self.template == "skip":
+            return
         script_name = f"{self.name()}.ecf"
         ecfscript = None
         search_script = f"{self.template}.ecf" if self.template is not None else script_name
         if parents:
-            script_path = f"{ecfhome}/{suite}/{parents.replace('_','/')}/{script_name}"
+            script_path = f"{ecfhome}/{suite}/{parents.replace('>','/')}/{script_name}"
         else:
             script_path = f"{ecfhome}/{suite}/{script_name}"
         for root,dirs,files in os.walk(self.scriptrepo):
@@ -726,7 +741,7 @@ class ecfTask(ecflow.Task,ecfRoot):
             else:
                 raise ConfigurationError
         except ConfigurationError:
-            print(f"Could not find the script {search_script}. Exiting build.")
+            print(f"Could not find the script {search_script}. Exiting build")
             sys.exit(1)
 
 # define Python user-defined exceptions

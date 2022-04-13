@@ -59,21 +59,45 @@ class Ecflowsetup:
         ]
 
     def generate_workflow(self):
+
+        def get_suite_names(suitename):
+            if not re.search(r".*\[.*\].*",suitename):
+                return [f"{suitename}"]
+
+            name_token = re.search("(.*)\[(.*)\](.*)",suitename)
+            base = name_token.group(1).strip()
+            list_items = name_token.group(2).strip().split(',')
+            suffix = name_token.group(3).strip()
+            name_array = []
+            for item in list_items:
+                name_array.append(f"{base}{item}{suffix}")
+            return name_array
+
+
         # Add in extern headers
         self.process_definition_header()
 
         # Process each of the suites
         for suite in self.ecfconf['suites'].keys():
             if suite not in {'externs','edits'}:
-                new_suite = Ecflowsuite(suite,self.env_configs['base']['ECFgfs'])
-                self.add_environment_edits(new_suite)
-                self.add_suite_edits(new_suite)
-                self.add_families(new_suite,self.ecfconf['suites'][suite]['nodes'])
-                self.add_tasks_and_edits(new_suite,self.ecfconf['suites'][suite]['nodes'])
-                self.suite_array[new_suite.get_suite_name()] = new_suite
+                for suite_name in get_suite_names(suite):
+                    if suite_name not in self.suite_array.keys():
+                        new_suite = Ecflowsuite(suite_name,self.env_configs['base']['ECFgfs'])
+                    else:
+                        new_suite = self.suite_array[suite_name]
+                    if new_suite.get_suite_name() not in self.suite_array.keys():
+                        self.add_environment_edits(new_suite)
+                    self.add_suite_edits(new_suite,self.ecfconf['suites'][suite])
+                    if self.check_dict(self.ecfconf['suites'][suite],'nodes'):
+                        self.add_families(new_suite,self.ecfconf['suites'][suite]['nodes'])
+                        self.add_tasks_and_edits(new_suite,self.ecfconf['suites'][suite]['nodes'])
+                    self.suite_array[new_suite.get_suite_name()] = new_suite
 
-        for suite in self.suite_array:
-            self.add_triggers_and_events(self.suite_array[suite],self.ecfconf['suites'][suite]['nodes'])
+        for suite in self.ecfconf['suites'].keys():
+            if suite not in {'externs','edits'}:
+                for suite_name in get_suite_names(suite):
+                    if self.check_dict(self.ecfconf['suites'][suite],'nodes'):
+                        self.add_triggers_and_events(self.suite_array[suite_name],self.ecfconf['suites'][suite]['nodes'])
 
         for suite_name,suite in self.suite_array.items():
             self.DEFS += suite.get_suite()
@@ -122,7 +146,7 @@ class Ecflowsetup:
             return False
 
 
-    def add_suite_edits(self,suite):
+    def add_suite_edits(self,suite,suite_dict):
         # Baseline edits
         if 'edits' in self.ecfconf['suites'].keys():
             suite.add_edit(self.ecfconf['suites']['edits'])
@@ -130,10 +154,10 @@ class Ecflowsetup:
         # Setup sutite specific edits
         suite_name = suite.get_suite_name()
         if (
-            type(self.ecfconf['suites'][suite_name]) is dict and
-            'edits' in self.ecfconf['suites'][suite_name].keys()
+            type(suite_dict) is dict and
+            'edits' in suite_dict.keys()
         ):
-            suite.add_edit(self.ecfconf['suites'][suite_name]['edits'])
+            suite.add_edit(suite_dict['edits'])
 
     def process_definition_header(self):
         if 'externs' in self.ecfconf.keys():
@@ -146,13 +170,15 @@ class Ecflowsetup:
                 item not in {'edits','tasks'} ):
                 suite.add_family(item,parents)
                 if parents:
-                    family_path = f"{parents}_{item}"
+                    family_path = f"{parents}>{item}"
                 else:
                     family_path = item
                 if self.check_dict(nodes[item],'edits'):
                     suite.add_edit(nodes[item]['edits'],family_path)
                 if self.check_dict(nodes[item],'repeat',False):
                     suite.add_repeat(nodes[item]['repeat'],family_path)
+                if self.check_dict(nodes[item],'defstatus',False):
+                    suite.add_defstatus(nodes[item]['defstatus'],family_path)
                 self.add_families(suite,nodes[item],family_path)
 
     def add_tasks_and_edits(self,suite,nodes,parents=None):
@@ -170,10 +196,12 @@ class Ecflowsetup:
                         suite.add_task_edits(updated_task,nodes['tasks'][task]['edits'])
                     if self.check_dict(nodes['tasks'][task],'repeat',False):
                         suite.add_task_repeat(updated_task,nodes['tasks'][task]['repeat'])
+                    if self.check_dict(nodes['tasks'][task],'defstatus',False):
+                        suite.add_task_defstatus(updated_task,nodes['tasks'][task]['defstatus'])
             elif ( isinstance(nodes[item],dict) and
                 item != 'edits' ):
                 if parents:
-                    family_path = f"{parents}_{item}"
+                    family_path = f"{parents}>{item}"
                 else:
                     family_path = item
                 self.add_tasks_and_edits(suite,nodes[item],family_path)
