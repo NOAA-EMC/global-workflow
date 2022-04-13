@@ -28,6 +28,7 @@ export netcdf_ver=4.7.4
 export esmf_ver=8.0.1
 
 export udunits_ver=2.2.28
+export gsl_ver=2.7
 export nco_ver=4.7.9
 export bufr_dump_ver=1.0.0
 export util_shared_ver=1.4.0

@@ -165,7 +165,7 @@ elif [ $step = "post" ]; then
 
     export wtime_post="00:12:00"
     export wtime_post_gfs="01:00:00"
-    export npe_post=112
+    export npe_post=126
     export nth_post=1
     export npe_node_post=$npe_post
     export npe_node_post_gfs=$npe_post
