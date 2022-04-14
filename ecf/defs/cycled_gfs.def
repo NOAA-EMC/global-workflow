@@ -2668,17 +2668,10 @@ suite cycled_gfs
              event 1 release_gfs
              event 2 release_gdas
              event 3 release_enkfgdas
-             event 4 release_metplus
             family gfs
               family atmos
                 task jgfs_emc_vrfy
                   trigger /cycled_gfs/primary/00/gfs/v16.2/gfs/atmos/post == complete
-                task jgfs_emc_gfsmetpg2gl
-                  trigger ../../workflow_monitor:release_metplus and /cycled_gfs/primary/00/gfs/v16.2/gfs/atmos/post == complete
-                task jgfs_emc_gfsmetpg2ol
-                  trigger ../../workflow_monitor:release_metplus and /cycled_gfs/primary/00/gfs/v16.2/gfs/atmos/post == complete
-                task jgfs_emc_gfsmetppcpl
-                  trigger ../../workflow_monitor:release_metplus and /cycled_gfs/primary/00/gfs/v16.2/gfs/atmos/post == complete
               endfamily
               task jgfs_emc_arch
                 trigger ./atmos/jgfs_emc_vrfy == complete
@@ -5363,17 +5356,10 @@ suite cycled_gfs
              event 1 release_gfs
              event 2 release_gdas
              event 3 release_enkfgdas
-             event 4 release_metplus
             family gfs
               family atmos
                 task jgfs_emc_vrfy
                   trigger /cycled_gfs/primary/06/gfs/v16.2/gfs/atmos/post == complete
-                task jgfs_emc_gfsmetpg2gl
-                  trigger ../../workflow_monitor:release_metplus and /cycled_gfs/primary/06/gfs/v16.2/gfs/atmos/post == complete
-                task jgfs_emc_gfsmetpg2ol
-                  trigger ../../workflow_monitor:release_metplus and /cycled_gfs/primary/06/gfs/v16.2/gfs/atmos/post == complete
-                task jgfs_emc_gfsmetppcpl
-                  trigger ../../workflow_monitor:release_metplus and /cycled_gfs/primary/06/gfs/v16.2/gfs/atmos/post == complete
               endfamily
               task jgfs_emc_arch
                 trigger ./atmos/jgfs_emc_vrfy == complete
@@ -8059,17 +8045,10 @@ suite cycled_gfs
              event 1 release_gfs
              event 2 release_gdas
              event 3 release_enkfgdas
-             event 4 release_metplus
             family gfs
               family atmos
                 task jgfs_emc_vrfy
                   trigger /cycled_gfs/primary/12/gfs/v16.2/gfs/atmos/post == complete
-                task jgfs_emc_gfsmetpg2gl
-                  trigger ../../workflow_monitor:release_metplus and /cycled_gfs/primary/12/gfs/v16.2/gfs/atmos/post == complete
-                task jgfs_emc_gfsmetpg2ol
-                  trigger ../../workflow_monitor:release_metplus and /cycled_gfs/primary/12/gfs/v16.2/gfs/atmos/post == complete
-                task jgfs_emc_gfsmetppcpl
-                  trigger ../../workflow_monitor:release_metplus and /cycled_gfs/primary/12/gfs/v16.2/gfs/atmos/post == complete
               endfamily
               task jgfs_emc_arch
                 trigger ./atmos/jgfs_emc_vrfy == complete
@@ -10754,17 +10733,10 @@ suite cycled_gfs
              event 1 release_gfs
              event 2 release_gdas
              event 3 release_enkfgdas
-             event 4 release_metplus
             family gfs
               family atmos
                 task jgfs_emc_vrfy
                   trigger /cycled_gfs/primary/18/gfs/v16.2/gfs/atmos/post == complete
-                task jgfs_emc_gfsmetpg2gl
-                  trigger ../../workflow_monitor:release_metplus and /cycled_gfs/primary/18/gfs/v16.2/gfs/atmos/post == complete
-                task jgfs_emc_gfsmetpg2ol
-                  trigger ../../workflow_monitor:release_metplus and /cycled_gfs/primary/18/gfs/v16.2/gfs/atmos/post == complete
-                task jgfs_emc_gfsmetppcpl
-                  trigger ../../workflow_monitor:release_metplus and /cycled_gfs/primary/18/gfs/v16.2/gfs/atmos/post == complete
               endfamily
               task jgfs_emc_arch
                 trigger ./atmos/jgfs_emc_vrfy == complete
