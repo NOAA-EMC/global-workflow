@@ -186,7 +186,7 @@ EOF
     done
   else
     OROFIX=${OROFIX:-"${FIXfv3}/${CASE}"}
-    FIX_SFC=${FIX_SFC:-"${FIXgrd}/fix_sfc"}
+    FIX_SFC=${FIX_SFC:-"${OROFIX}/fix_sfc"}
     for n in $(seq 1 $ntiles); do
       $NLN ${OROFIX}/${CASE}_oro_data.tile${n}.nc $DATA/INPUT/oro_data.tile${n}.nc
     done
@@ -217,6 +217,8 @@ EOF
     iopt_snf=${iopt_snf:-"4"}
     iopt_tbot=${iopt_tbot:-"2"}
     iopt_stc=${iopt_stc:-"3"}
+    IALB=${IALB:-2}
+    IEMS=${IEMS:-2}
   else
     lsm="1"
     lheatstrg=".false."
@@ -233,28 +235,20 @@ EOF
     iopt_snf=${iopt_snf:-"4"}
     iopt_tbot=${iopt_tbot:-"2"}
     iopt_stc=${iopt_stc:-"1"}
+    IALB=${IALB:-1}
+    IEMS=${IEMS:-1}
   fi
 
-  # Scan suite file to determine whether it uses UGWP v1
-  if [ $(grep -i ugwpv1_gsldrag ${_suite_file} | wc -l ) -gt 0 ]; then
-    gwd_opt="2"
-    knob_ugwp_version="1"
-    OROFIX_ugwd=${OROFIX_ugwd:-"${FIX_DIR}/fix_ugwd"}
-    $NLN ${OROFIX_ugwd}/ugwp_limb_tau.nc $DATA/ugwp_limb_tau.nc
-    for n in $(seq 1 $ntiles); do
-      $NLN ${OROFIX_ugwd}/$CASE/${CASE}_oro_data_ls.tile${n}.nc $DATA/INPUT/oro_data_ls.tile${n}.nc
-      $NLN ${OROFIX_ugwd}/$CASE/${CASE}_oro_data_ss.tile${n}.nc $DATA/INPUT/oro_data_ss.tile${n}.nc
-    done
-  else
-    gwd_opt="1"
-    knob_ugwp_version="0"
-    launch_level=${launch_level:-$(echo "$LEVS/2.35" |bc)}
-  fi
+  # Files for GWD
+  OROFIX_ugwd=${OROFIX_ugwd:-"${FIX_DIR}/fix_ugwd"}
+  $NLN ${OROFIX_ugwd}/ugwp_limb_tau.nc $DATA/ugwp_limb_tau.nc
+  for n in $(seq 1 $ntiles); do
+    $NLN ${OROFIX_ugwd}/$CASE/${CASE}_oro_data_ls.tile${n}.nc $DATA/INPUT/oro_data_ls.tile${n}.nc
+    $NLN ${OROFIX_ugwd}/$CASE/${CASE}_oro_data_ss.tile${n}.nc $DATA/INPUT/oro_data_ss.tile${n}.nc
+  done
 
   # GFS standard input data
 
-  IALB=${IALB:-1}
-  IEMS=${IEMS:-1}
   ISOL=${ISOL:-2}
   IAER=${IAER:-1011}
   ICO2=${ICO2:-2}
@@ -268,13 +262,12 @@ EOF
   ####
   # copy CCN_ACTIVATE.BIN for Thompson microphysics
   if [ $imp_physics -eq 8 ]; then
-    $NCP $FV3INP/CCN_ACTIVATE.BIN  CCN_ACTIVATE.BIN
-    ####
-    $NCP $FIX_AM/freezeH2O.dat .
-    $NCP $FIX_AM/qr_acr_qg.dat .
-    $NCP $FIX_AM/qr_acr_qs.dat .
-    sleep 60
+    $NLN $FIX_AM/CCN_ACTIVATE.BIN  $DATA/CCN_ACTIVATE.BIN
+    $NLN $FIX_AM/freezeH2O.dat     $DATA/freezeH2O.dat
+    $NLN $FIX_AM/qr_acr_qg.dat     $DATA/qr_acr_qg.dat 
+    $NLN $FIX_AM/qr_acr_qs.dat     $DATA/qr_acr_qs.dat
   fi
+
   $NLN $FIX_AM/${O3FORC}                         $DATA/global_o3prdlos.f77
   $NLN $FIX_AM/${H2OFORC}                        $DATA/global_h2oprdlos.f77
   $NLN $FIX_AM/global_solarconstant_noaa_an.txt  $DATA/solarconstant_noaa_an.txt
@@ -348,31 +341,17 @@ EOF
   FNSNOC=${FNSNOC:-"$FIX_AM/global_snoclim.1.875.grb"}
   FNZORC=${FNZORC:-"igbp"}
   FNAISC=${FNAISC:-"$FIX_AM/CFSR.SEAICE.1982.2012.monthly.clim.grb"}
-  if [ $cplflx = ".false." ] ; then
-    FNALBC2=${FNALBC2:-"$FIX_AM/global_albedo4.1x1.grb"}
-    FNTG3C=${FNTG3C:-"$FIX_AM/global_tg3clim.2.6x1.5.grb"}
-    FNVEGC=${FNVEGC:-"$FIX_AM/global_vegfrac.0.144.decpercent.grb"}
-    FNMSKH=${FNMSKH:-"$FIX_AM/global_slmask.t1534.3072.1536.grb"}
-    FNVMNC=${FNVMNC:-"$FIX_AM/global_shdmin.0.144x0.144.grb"}
-    FNVMXC=${FNVMXC:-"$FIX_AM/global_shdmax.0.144x0.144.grb"}
-    FNSLPC=${FNSLPC:-"$FIX_AM/global_slope.1x1.grb"}
-    FNALBC=${FNALBC:-"$FIX_AM/global_snowfree_albedo.bosu.t${JCAP}.${LONB}.${LATB}.rg.grb"}
-    FNVETC=${FNVETC:-"$FIX_AM/global_vegtype.igbp.t${JCAP}.${LONB}.${LATB}.rg.grb"}
-    FNSOTC=${FNSOTC:-"$FIX_AM/global_soiltype.statsgo.t${JCAP}.${LONB}.${LATB}.rg.grb"}
-    FNABSC=${FNABSC:-"$FIX_AM/global_mxsnoalb.uariz.t${JCAP}.${LONB}.${LATB}.rg.grb"}
-  else
-    FNALBC2=${FNALBC2:-"${FIX_SFC}/${CASE}.facsf.tileX.nc"}
-    FNTG3C=${FNTG3C:-"${FIX_SFC}/${CASE}.substrate_temperature.tileX.nc"}
-    FNVEGC=${FNVEGC:-"${FIX_SFC}/${CASE}.vegetation_greenness.tileX.nc"}
-    FNMSKH=${FNMSKH:-"$FIX_AM/global_slmask.t1534.3072.1536.grb"}
-    FNVMNC=${FNVMNC:-"${FIX_SFC}/${CASE}.vegetation_greenness.tileX.nc"}
-    FNVMXC=${FNVMXC:-"${FIX_SFC}/${CASE}.vegetation_greenness.tileX.nc"}
-    FNSLPC=${FNSLPC:-"${FIX_SFC}/${CASE}.slope_type.tileX.nc"}
-    FNALBC=${FNALBC:-"${FIX_SFC}/${CASE}.snowfree_albedo.tileX.nc"}
-    FNVETC=${FNVETC:-"${FIX_SFC}/${CASE}.vegetation_type.tileX.nc"}
-    FNSOTC=${FNSOTC:-"${FIX_SFC}/${CASE}.soil_type.tileX.nc"}
-    FNABSC=${FNABSC:-"${FIX_SFC}/${CASE}.maximum_snow_albedo.tileX.nc"}
-  fi
+  FNALBC2=${FNALBC2:-"${FIX_SFC}/${CASE}.facsf.tileX.nc"}
+  FNTG3C=${FNTG3C:-"${FIX_SFC}/${CASE}.substrate_temperature.tileX.nc"}
+  FNVEGC=${FNVEGC:-"${FIX_SFC}/${CASE}.vegetation_greenness.tileX.nc"}
+  FNMSKH=${FNMSKH:-"$FIX_AM/global_slmask.t1534.3072.1536.grb"}
+  FNVMNC=${FNVMNC:-"${FIX_SFC}/${CASE}.vegetation_greenness.tileX.nc"}
+  FNVMXC=${FNVMXC:-"${FIX_SFC}/${CASE}.vegetation_greenness.tileX.nc"}
+  FNSLPC=${FNSLPC:-"${FIX_SFC}/${CASE}.slope_type.tileX.nc"}
+  FNALBC=${FNALBC:-"${FIX_SFC}/${CASE}.snowfree_albedo.tileX.nc"}
+  FNVETC=${FNVETC:-"${FIX_SFC}/${CASE}.vegetation_type.tileX.nc"}
+  FNSOTC=${FNSOTC:-"${FIX_SFC}/${CASE}.soil_type.tileX.nc"}
+  FNABSC=${FNABSC:-"${FIX_SFC}/${CASE}.maximum_snow_albedo.tileX.nc"}
   FNSMCC=${FNSMCC:-"$FIX_AM/global_soilmgldas.statsgo.t${JCAP}.${LONB}.${LATB}.grb"}
 
   # If the appropriate resolution fix file is not present, use the highest resolution available (T1534)
@@ -873,7 +852,7 @@ CICE_postdet() {
 
   FRAZIL_FWSALT=${FRAZIL_FWSALT:-".true."}
   ktherm=${ktherm:-2}
-  tfrz_option=${tfrz_option:-"mushy"}
+  tfrz_option=${tfrz_option:-"'mushy'"}
   tr_pond_lvl=${tr_pond_lvl:-".true."} # Use level melt ponds tr_pond_lvl=true
 
   # restart_pond_lvl (if tr_pond_lvl=true):

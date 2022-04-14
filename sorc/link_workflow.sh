@@ -1,4 +1,4 @@
-#!/bin/ksh
+#!/bin/bash
 set -ex
 
 #--make symbolic links for EMC installation and hardcopies for NCO delivery
@@ -368,15 +368,11 @@ cd ${pwd}/../sorc   ||   exit 8
     done
 
 #------------------------------
-#--choose dynamic config.base for EMC installation 
-#--choose static config.base for NCO installation 
+#  copy $HOMEgfs/parm/config/config.base.nco.static as config.base for operations
+#  config.base in the $HOMEgfs/parm/config has no use in development
 cd $pwd/../parm/config
-[[ -s config.base ]] && rm -f config.base 
-if [ $RUN_ENVIR = nco ] ; then
- cp -p config.base.nco.static config.base
-else
- cp -p config.base.emc.dyn config.base
-fi
+[[ -s config.base ]] && rm -f config.base
+[[ $RUN_ENVIR = nco ]] && cp -p config.base.nco.static config.base
 #------------------------------
 
 
