@@ -184,12 +184,12 @@ cd ${pwd}/../ush                ||exit 8
 
 
 #------------------------------
-#--add UFS DA/JEDI files
+#--add GDASApp files
 #------------------------------
 cd ${pwd}/../jobs               ||exit 8
-    $LINK ../sorc/ufs_da.fd/UFS-DA/jobs/JUFSDA_GLOBAL_ATMOS_ANALYSIS        .
+    $LINK ../sorc/gdas.cd/jobs/JGDAS_GLOBAL_ATMOS_ANALYSIS        .
 cd ${pwd}/../ush                ||exit 8
-    $LINK ../sorc/ufs_da.fd/UFS-DA/ush/ufsda                                .
+    $LINK ../sorc/gdas.cd/ush/ufsda                                .
 
 #------------------------------
 #--add DA Monitor file (NOTE: ensure to use correct version)

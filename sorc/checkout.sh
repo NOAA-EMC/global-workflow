@@ -50,15 +50,15 @@ else
     echo 'Skip.  Directory gsi.fd already exists.'
 fi
 
-echo gdas checkout ...
-if [[ ! -d gdas.fd ]] ; then
+echo GDASApp checkout ...
+if [[ ! -d gdas.cd ]] ; then
     rm -f ${topdir}/checkout-gdas.log
-    git clone --recursive https://github.com/NOAA-EMC/GDASApp.git gdas.fd >> ${logdir}/checkout-gdas.log 2>&1
-    cd gdas.fd
-    git checkout feature/build
+    git clone --recursive https://github.com/NOAA-EMC/GDASApp.git gdas.cd >> ${logdir}/checkout-gdas.log 2>&1
+    cd gdas.cd
+    git checkout develop
     cd ${topdir}
 else
-    echo 'Skip.  Directory gdas.fd already exists.'
+    echo 'Skip.  Directory gdas.cd already exists.'
 fi
 
 echo gldas checkout ...

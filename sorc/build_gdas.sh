@@ -12,15 +12,22 @@ else
 fi
 
 export BUILD_TARGET=$target
-[[ "$target" == wcoss_cray ]] && BUILD_TARGET=cray
+
+# use more build jobs if on NOAA HPC
+build_jobs=4
+case "${target}" in
+  hera|orion)
+    build_jobs=10
+    ;;
+esac
 
 # Check final exec folder exists
 if [ ! -d "../exec" ]; then
   mkdir ../exec
 fi
 
-cd gdas.fd/ush
-./build_GDASApp.sh
+cd gdas.cd
+BUILD_JOBS=$build_jobs ./build.sh -t $BUILD_TARGET
 
 exit
 

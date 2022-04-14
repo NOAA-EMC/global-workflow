@@ -114,15 +114,15 @@ fi
 }
 
 #------------------------------------
-# build ufs_da
+# build gdas
 #------------------------------------
-$Build_ufs_da && {
-echo " .... Building ufs_da .... "
-./build_ufs_da.sh > $logs_dir/build_ufs_da.log 2>&1
+$Build_gdas && {
+echo " .... Building GDASApp .... "
+./build_gdas.sh > $logs_dir/build_gdas.log 2>&1
 rc=$?
 if [[ $rc -ne 0 ]] ; then
-    echo "Fatal error in building ufs_da."
-    echo "The log file is in $logs_dir/build_ufs_da.log"
+    echo "Fatal error in building GDAS."
+    echo "The log file is in $logs_dir/build_gdas.log"
 fi
 ((err+=$rc))
 }
