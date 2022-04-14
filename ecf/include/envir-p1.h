@@ -29,7 +29,3 @@ if [ -n "%PDY:%" ]; then
   export PDY=${PDY:-%PDY:%}
   export CDATE=${PDY}%CYC:%
 fi
-#### Required for archive job to do auto cleanup
-export DATAROOT=/lfs/h2/emc/stmp/%EMC_USER%/RUNDIRS/%PSLOT%/${CDATE}
-mkdir -p $DATAROOT
-if [ -n "%COMPATH:%" ]; then export COMPATH=${COMPATH:-%COMPATH:%}; fi
