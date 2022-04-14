@@ -138,16 +138,16 @@ class Ecflowsuite:
                         position_time = position_time + delta
 
 
-    def add_trigger(self,trigger,parent,state=None,event=None,suite=None,suite_array=None):
+    def add_trigger(self,trigger,parent,state=None,event=None,suite=None,suite_array=None,operand=None):
         if suite is not None:
             try:
                 trigger_path = suite_array[suite].get_task(trigger).get_abs_node_path()
                 if state is None and event is None:
-                    self.ecfnodes[parent].add(ecflow.Trigger(f"{trigger_path} == complete" ))
+                    addTrigger = ecflow.Trigger(f"{trigger_path} == complete" )
                 elif state is not None and event is None:
-                    self.ecfnodes[parent].add(ecflow.Trigger(f"{trigger_path} == {state}" ))
+                    addTrigger = ecflow.Trigger(f"{trigger_path} == {state}" )
                 elif state is None and event is not None:
-                    self.ecfnodes[parent].add(ecflow.Trigger(f"{trigger_path}:{event}" ))
+                    addTrigger = ecflow.Trigger(f"{trigger_path}:{event}" )
             except KeyError as e:
                 print(f"Suite {suite} for task/trigger {parent}/{trigger} is not available. Please check the configuration file.")
                 print("Error {e}")
@@ -155,18 +155,21 @@ class Ecflowsuite:
         else:
             try:
                 if state is None and event is None:
-                    self.ecfnodes[parent].add(ecflow.Trigger([self.ecfnodes[trigger]]))
+                    addTrigger = ecflow.Trigger([self.ecfnodes[trigger]] )
                 elif state is not None and event is None:
                     trigger_path = self.ecfnodes[trigger].get_abs_node_path()
-                    self.ecfnodes[parent].add(ecflow.Trigger(f"{trigger_path} == {state}" ))
+                    addTrigger = ecflow.Trigger(f"{trigger_path} == {state}" )
                 elif state is None and event is not None:
                     trigger_path = self.ecfnodes[trigger].get_abs_node_path()
-                    self.ecfnodes[parent].add(ecflow.Trigger(f"{trigger_path}:{event}" ))
+                    addTrigger = ecflow.Trigger(f"{trigger_path}:{event}" )
             except KeyError as e:
                 print(f"The task/trigger {parent}/{trigger} is not available in suite {self.get_suite_name()}. Please check the configuration file.")
                 print(f"Error {e}")
                 sys.exit(1)
-
+        print(addTrigger,operand)
+        if operand is not None:
+            addTrigger = ecflow.Trigger(addTrigger.get_expression(),operand)
+        self.ecfnodes[parent].add(addTrigger)
 
     def add_family(self,family,parents=None):
         family_name = f"{parents}>{family}" if parents else family
@@ -300,27 +303,29 @@ class Ecflowsuite:
                 suite = triggerTaskNode.get_suite()
             else:
                 suite = None
+            operand = None
+            if triggerTaskNode.has_operand():
+                operand = bool(triggerTaskNode.get_operand())
             if triggerTaskNode.has_state():
-                self.add_trigger(trigger_name,task,state=triggerTaskNode.get_state(),suite=suite,suite_array=suite_array)
+                self.add_trigger(trigger_name,task,state=triggerTaskNode.get_state(),suite=suite,suite_array=suite_array,operand=operand)
             elif triggerTaskNode.has_event():
                 if triggerTaskNode.is_event_loop():
                     if triggerTaskNode.has_event_max_value():
                         for event_count in triggerTaskNode.get_event_range():
                             event_name = f"{triggerTaskNode.get_event_full_name(event_count)}"
-                            self.add_trigger(trigger_name,task,event=event_name,suite=suite,suite_array=suite_array)
+                            self.add_trigger(trigger_name,task,event=event_name,suite=suite,suite_array=suite_array,operand=operand)
                     elif triggerTaskNode.event_parent_counter:
                         event_name = f"{triggerTaskNode.get_event_full_name(task_number)}"
-                        self.add_trigger(trigger_name,task,event=event_name,suite=suite,suite_array=suite_array)
+                        self.add_trigger(trigger_name,task,event=event_name,suite=suite,suite_array=suite_array,operand=operand)
                     else:
                         event_range = triggerTaskNode.get_event_range(max_value=total_tasks)
                         event_count = [*event_range]
                         event_name = f"{triggerTaskNode.get_event_full_name(event_count[task_loop_index])}"
-                        self.add_trigger(trigger_name,task,event=event_name,suite=suite,suite_array=suite_array)
+                        self.add_trigger(trigger_name,task,event=event_name,suite=suite,suite_array=suite_array,operand=operand)
                 else:
-                    self.add_trigger(trigger_name,task,event=triggerTaskNode.get_event(),suite=suite,suite_array=suite_array)
-
+                    self.add_trigger(trigger_name,task,event=triggerTaskNode.get_event(),suite=suite,suite_array=suite_array,operand=operand)
             else:
-                self.add_trigger(trigger_name,task,suite=suite,suite_array=suite_array)
+                self.add_trigger(trigger_name,task,suite=suite,suite_array=suite_array,operand=operand)
 
         taskNode = ecfTaskNode(task)
         if taskNode.is_loop() or taskNode.is_list:
@@ -526,6 +531,16 @@ class ecfTriggerNode(ecfNode):
 
     def get_type(self):
         return 'trigger'
+
+    def has_operand(self):
+        if 'operand' in self.task_setup.keys():
+            self.operand = self.task_setup['operand']
+            return True
+        else:
+            return False
+
+    def get_operand(self):
+        return self.operand
 
     def get_state(self):
         return self.state
