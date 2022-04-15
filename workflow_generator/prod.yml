@@ -233,6 +233,13 @@ suites:
       gdas:
         edits:
           RUN: 'gdas'
+        tasks:
+          jgdas_forecast:
+            triggers:
+            - task: jgdas_atmos_analysis
+              event: release_fcst
+            - task: jgdas_wave_prep
+            - task: jgdas_atmos_gldas
         atmos:
           obsproc:
             dump:
@@ -273,6 +280,7 @@ suites:
                 - "release_postanl"
                 - "release_post( 10 )"
               jgdas_atmos_post_anl:
+                template: jgdas_atmos_post_master
                 triggers:
                 - task: jgdas_atmos_post_manager
                   event: release_postanl
@@ -283,6 +291,7 @@ suites:
                   HR: 'anl'
                   FHR: 'anl'
               jgdas_atmos_post_f( 10 ):
+                template: jgdas_atmos_post_master
                 triggers:
                 - task: jgdas_atmos_post_manager
                   event: release_post( )
@@ -296,7 +305,7 @@ suites:
               jgdas_atmos_chgres_forenkf:
                 triggers:
                 - task: jgdas_forecast
-                - task: forecast
+                #- task: forecast
           gempak:
             tasks:
               jgdas_atmos_gempak:
@@ -316,6 +325,77 @@ suites:
               jgdas_atmos_verfozn:
                 triggers:
                 - task: jgdas_atmos_analysis_diag
+        wave:
+          init:
+            tasks:
+              jgdas_wave_init:
+                triggers:
+                - task: jobsproc_gdas_atmos_prep
+          prep:
+            tasks:
+              jgdas_wave_prep:
+                triggers:
+                - task: jgdas_wave_init
+          post:
+            tasks:
+              jgdas_wave_postsbs:
+                triggers:
+                - task: jgdas_atmos_post_manager
+                  event: release_post000
+              jgdas_wave_postpnt:
+                triggers:
+                - task: jgdas_forecast
+      enkfgdas:
+        edits:
+          RUN: 'gdas'
+        analysis:
+          create:
+            tasks:
+              jenkfgdas_select_obs:
+                triggers:
+                - task: jobsproc_gdas_atmos_prep
+              jenkfgdas_diag:
+                triggers:
+                - task: jenkfgdas_select_obs
+              jenkfgdas_update:
+                triggers:
+                - task: jenkfgdas_diag
+          recenter:
+            ecen:
+              grp1:
+                tasks:
+                  jenkfgdas_ecen:
+                edits:
+                  FHRGRP: '003'
+              grp2:
+                tasks:
+                  jenkfgdas_ecen:
+                edits:
+                  FHRGRP: '006'
+              grp3:
+                tasks:
+                  jenkfgdas_ecen:
+                edits:
+                  FHRGRP: '009'
+              tasks:
+                jenkfgdas_sfc:
+                  triggers:
+                  - task: jgdas_atmos_analysis_calc
+                  - task: jenkfgdas_update
+          #forecast:
+            #grp( 1,40 ):
+            #  edits:
+            #    ENSGRP: '( )'
+            #  tasks:
+            #    jenkfgdas_fcst:
+          post:
+            tasks:
+              jenkfgdas_post_f( 3,6 ):
+                template: jenkfgdas_post_master
+                edits:
+                  FHMIN_EPOS: ( )
+                  FHMAX_EPOS: ( )
+                  FHOUT_EPOS: ( )
       obsproc:
         defstatus: complete
         v1.0:

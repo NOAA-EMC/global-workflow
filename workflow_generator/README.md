@@ -1,19 +1,56 @@
 # Workflow Setup Utility:
 
-## Setup for using the utility
-1. Follow the guidance to have the experiment directory setup with configuration directories.
-As 3/30/2022 the only config file that is imported is the config.base.
-1. Ensure the following item is configured in the config.base file:
-`export ECFgfs=$HOMEgfs/ecf`
-1. If running locally, activate your conda ecflow environment
-`conda activate ecflow`
-1. If this is the first time running the following Python modules need to be
-```
-pip3 install numpy
-pip3 install PyYAML
-```
+## Introduction
+This utility is designed to be an automated ecFlow and Rocoto generation application,
+used to create the folder structures and scripts needed to execute the workflows
+for either application. As of April 2022, this application only works for ecFlow.
 
-## Setup the yaml
+### How ecFlow Setup Works
+For ecFlow creation, the application takes a YAML file as input, pulls in any
+environment variables that are specified in the YAML, then using the ecFlow
+API, a definition file is created. Additionally, since ecFlow definition files
+are dependent on folder structures, the application also identifies the scripts
+associated with tasks and creates the folders for them, checks the script repository
+folder and puts the scripts in their appropriate location.
+
+Please refer to the [setup the YAML](#configuring-the-yaml-file) section for instructions
+on how to setup the YAML file for what you want.
+
+## Setup for using the utility with ecFlow
+This utility uses Python3.6 and later. It will not work with Python anything before
+Python3.6.
+
+### Pre-Requisites
+In order to run the application the following Python3 modules need to be available:
+* ecflow
+* numpy
+* PyYAML
+These modules should be available on Hera and Orion.
+
+### Experiment Setup
+This application requires the use of a config.base file. The location of the file
+can be specified with the `--expdir` parameter. The file will be read in and
+the ush/rocoto/workflow_utils.py script will be used to populate any environment
+variables that are needed.
+
+### Required Environment Variables
+If not setup within the script, the following environmnt variables are required:
+* Account
+* Queue
+* machine
+* RUN_ENVIR
+These parameters are populated as 'edits' within the ecFlow definition file for
+any of the suites that are created.
+
+An additional environment variable that is needed is:
+* ECFgfs
+This will be used as the base location for storing the suite scripts and also
+used as the base location to look for the script repository. The application
+assumes the default that the script repo is ECFgfs/scripts. Suggested edit is to
+add the following to the config.base file:
+* export ECFgfs=$HOMEgfs/ecf
+
+## Configuring the YAML file
 The utility works primarily off of the yaml file used to define the suites,
 families, and tasks.
 

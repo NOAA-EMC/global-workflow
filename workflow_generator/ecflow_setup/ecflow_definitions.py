@@ -166,7 +166,6 @@ class Ecflowsuite:
                 print(f"The task/trigger {parent}/{trigger} is not available in suite {self.get_suite_name()}. Please check the configuration file.")
                 print(f"Error {e}")
                 sys.exit(1)
-        print(addTrigger,operand)
         if operand is not None:
             addTrigger = ecflow.Trigger(addTrigger.get_expression(),operand)
         self.ecfnodes[parent].add(addTrigger)
