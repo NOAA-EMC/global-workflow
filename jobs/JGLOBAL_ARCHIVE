@@ -57,7 +57,7 @@ export COMPONENT=${COMPONENT:-atmos}
 COMIN_OBS=${COMIN_OBS:-$(compath.py prod/obsproc/${obsproc_ver})/$RUN.$PDY/$cyc/atmos}
 COMIN=${COMIN:-$ROTDIR/$RUN.$PDY/$cyc/atmos}
 cd $COMIN
-if [ ! -s ${COMIN_OBS}/${RUN}.${cycle}.nsstbufr ]; then
+if [ ! -L ${COMIN_OBS}/${RUN}.${cycle}.nsstbufr ]; then
   ln -s ${COMIN_OBS}/${RUN}.${cycle}.nsstbufr
   ln -s ${COMIN_OBS}/${RUN}.${cycle}.prepbufr
   ln -s ${COMIN_OBS}/${RUN}.${cycle}.prepbufr_pre-qc
