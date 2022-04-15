@@ -9,7 +9,8 @@ date
 # Source relevant config files
 #############################
 export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
-configs="base ecfvrfy"
+export vefy_cfg=${vefy_cfg:-vrfy}
+configs="base ${vefy_cfg}"
 config_path=${EXPDIR:-$NWROOT/gfs.${gfs_ver}/parm/config}
 for config in $configs; do
     . $config_path/config.$config
@@ -87,8 +88,8 @@ if [ $VRFYFITS = "YES" -a $CDUMP = $CDFNL -a $CDATE != $SDATE ]; then
     xdate=$($NDATE -${VBACKUP_FITS} $CDATE)
     export RUN_ENVIR_SAVE=$RUN_ENVIR
     export RUN_ENVIR=$OUTPUT_FILE
-    export COMDAY=$PBS_O_WORKDIR
-    export OBSDIR=$(compath.py ${envir}/obsproc/${obsproc_ver})
+    export COMDAY=${COMDAY:-${ROTDIR}/logs/${CDATE}}
+    export OBSDIR=$(compath.py prod/obsproc/${obsproc_ver})
     export COM_PRP='$OBSDIR/gdas.$pdy/$cyc/atmos'
     export COM_INA='$ROTDIR/gdas.$pdy/$cyc/atmos'
     export COM_INF='$ROTDIR/vrfyarch/gfs.$fdy/$fzz'
@@ -114,7 +115,7 @@ if [ $CDUMP = "gfs" ]; then
         export rundir="$RUNDIR/$CDUMP/$CDATE/vrfy/vsdb_exp"
         export COMROT="$ARCDIR1/dummy"
 
-        $VSDBJOBSH $VSDBSH $xdate $vlength $cyc $PSLOT $CDATE $CDUMP $gfs_cyc $rain_bucket $machine
+        #### $VSDBJOBSH $VSDBSH $xdate $vlength $cyc $PSLOT $CDATE $CDUMP $gfs_cyc $rain_bucket $machine
     fi
 fi
 

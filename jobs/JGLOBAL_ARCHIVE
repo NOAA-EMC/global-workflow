@@ -23,8 +23,7 @@ done
 ##############################################
 export pid=${pid:-$$}
 export outid=${outid:-"LL$job"}
-
-export DATA=${DATA:-${DATAROOT}/${jobid:?}}
+export DATA=${DATA:-${DATAROOT}/${pid:?}}
 mkdir -p $DATA
 cd $DATA
 
@@ -55,6 +54,15 @@ export COMPONENT=${COMPONENT:-atmos}
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
+COMIN_OBS=${COMIN_OBS:-$(compath.py prod/obsproc/${obsproc_ver})/$RUN.$PDY/$cyc/atmos}
+COMIN=${COMIN:-$ROTDIR/$RUN.$PDY/$cyc/atmos}
+cd $COMIN
+if [ ! -s ${COMIN_OBS}/${RUN}.${cycle}.nsstbufr ]; then
+  ln -s ${COMIN_OBS}/${RUN}.${cycle}.nsstbufr
+  ln -s ${COMIN_OBS}/${RUN}.${cycle}.prepbufr
+  ln -s ${COMIN_OBS}/${RUN}.${cycle}.prepbufr_pre-qc
+  ln -s ${COMIN_OBS}/${RUN}.${cycle}.prepbufr.acft_profiles
+fi
 # ICS are restarts and always lag INC by $assim_freq hours
 ARCHINC_CYC=$ARCH_CYC
 ARCHICS_CYC=$((ARCH_CYC-assim_freq))

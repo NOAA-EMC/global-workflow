@@ -23,8 +23,7 @@ done
 ##############################################
 export pid=${pid:-$$}
 export outid=${outid:-"LL$job"}
-
-export DATA=${DATA:-${DATAROOT}/${jobid:?}}
+export DATA=${DATA:-${DATAROOT}/${pid:?}}
 mkdir -p $DATA
 cd $DATA
 
