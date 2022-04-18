@@ -10,5 +10,6 @@ echo "BEGIN: config.atmanalrun"
 
 # Task specific variables
 export JEDIVAREXE=$HOMEgfs/exec/fv3jedi_var.x
+export BERROR_YAML=$HOMEgfs/sorc/gdas.cd/parm/atm/berror/staticb_bump.yaml
 
 echo "END: config.atmanalrun"

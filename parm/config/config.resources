@@ -129,8 +129,8 @@ elif [ $step = "waveawipsgridded" ]; then
 elif [ $step = "atmanalprep" -o $step = "atmanalrun" -o $step = "atmanalpost" ]; then
 
     # make below case dependent later
-    export layout_x=5
-    export layout_y=4
+    export layout_x=1
+    export layout_y=1
 
     export wtime_atmanalprep="00:10:00"
     export npe_atmanalprep=1
