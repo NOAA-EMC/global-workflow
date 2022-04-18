@@ -55,7 +55,7 @@ if [[ ! -d gdas.cd ]] ; then
     rm -f ${topdir}/checkout-gdas.log
     git clone --recursive https://github.com/NOAA-EMC/GDASApp.git gdas.cd >> ${logdir}/checkout-gdas.log 2>&1
     cd gdas.cd
-    git checkout develop
+    git checkout feature/cycling
     cd ${topdir}
 else
     echo 'Skip.  Directory gdas.cd already exists.'
