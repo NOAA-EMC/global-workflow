@@ -18,9 +18,10 @@
 import yaml
 import collections.abc
 import os
-import json
 import re
+import sys
 import datetime
+from ecflow_setup.ecflow_definitions import Ecflowsuite
 
 try:
     from ecflow import Defs
@@ -28,12 +29,16 @@ except ImportError as err:
     print(f"Error: Could not import ecflow module: {err}")
     sys.exit(1)
 
-from ecflow_setup.ecflow_definitions import Ecflowsuite
 
 class Ecflowsetup:
     """
-    This class pulls in the configurations from the ecflow config file. It calls
-    the
+    This class pulls in the configurations from the ecflow config file. Then
+    it calls the ecflow_definitions.py module to create a suite definition
+    from each of the suites in the YAML file. Then each of the edits, tasks,
+    triggers, etc. are processed and added to the suite.
+
+    All suites are then put together as part of a definition file and finally
+    that file is saved.
 
     Attributes
     ----------
@@ -51,7 +56,7 @@ class Ecflowsetup:
         then call each of the supporting methods, like edits, tasks, etc. to
         populate the suites with each of the items.
 
-    raiseException(e)
+    raiseexception(e)
         This is just a simple method that is called if an exception is raised to
         print out the error message and then call a sys.exit(1) so the app stops
 
@@ -180,7 +185,6 @@ class Ecflowsetup:
                 name_array.append(f"{base}{item}{suffix}")
             return name_array
 
-
         # Add in extern headers
         self.process_definition_header()
 
@@ -194,24 +198,25 @@ class Ecflowsetup:
                         new_suite = self.suite_array[suite_name]
                     if new_suite.get_suite_name() not in self.suite_array.keys():
                         self.add_environment_edits(new_suite)
-                    self.add_suite_edits(new_suite,self.ecfconf['suites'][suite])
-                    if self.check_dict(self.ecfconf['suites'][suite],'nodes'):
-                        self.add_families(new_suite,self.ecfconf['suites'][suite]['nodes'])
+                    self.add_suite_edits(new_suite, self.ecfconf['suites'][suite])
+                    if self.check_dict(self.ecfconf['suites'][suite], 'nodes'):
+                        self.add_families(new_suite, self.ecfconf['suites'][suite]['nodes'])
                         self.add_tasks_and_edits(new_suite, self.ecfconf['suites'][suite]['nodes'])
                     self.suite_array[new_suite.get_suite_name()] = new_suite
 
         for suite in self.ecfconf['suites'].keys():
-            if suite not in {'externs','edits'}:
+            if suite not in {'externs', 'edits'}:
                 for suite_name in get_suite_names(suite):
                     if self.check_dict(self.ecfconf['suites'][suite], 'nodes'):
-                        self.add_triggers_and_events(self.suite_array[suite_name], self.ecfconf['suites'][suite]['nodes'])
+                        self.add_triggers_and_events(self.suite_array[suite_name],
+                                                     self.ecfconf['suites'][suite]['nodes'])
 
         # Add each suite to the definition object that will be used for the save
         # or print.
-        for suite_name,suite in self.suite_array.items():
+        for suite_name, suite in self.suite_array.items():
             self.DEFS += suite.get_suite()
 
-    def raiseException(self,e):
+    def raiseexception(self, e):
         """
         This is just a simple method that is called if an exception is raised to
         print out the error message and then call a sys.exit(1) so the app stops
@@ -241,7 +246,7 @@ class Ecflowsetup:
         print(self.DEFS.check())
         print(self.DEFS)
 
-    def add_environment_edits(self,suite):
+    def add_environment_edits(self, suite):
         """
         The suite is passed in and the edits from the environment are added. The
         environment edits are defined in the init method.
@@ -256,24 +261,20 @@ class Ecflowsetup:
         """
 
         # Add in the ECF Home and ECF Include edits.
-        suite.add_edit({'ECF_HOME':self.ecfhome, 'ECF_INCLUDE':self.ecfhome})
+        suite.add_edit({'ECF_HOME': self.ecfhome, 'ECF_INCLUDE': self.ecfhome})
 
         # Add in the edits for the environment.
         for edit in self.environment_edits:
             edit = edit.upper()
-            if (
-                edit in self.env_configs['base'].keys() and
-                self.env_configs['base'][edit] is not None
-                ):
-                edit_dict = {edit : self.env_configs['base'][edit]}
-            elif (
-                edit.lower() in self.env_configs['base'].keys() and
-                self.env_configs['base'][edit.lower()] is not None
-            ):
-                edit_dict = {edit : self.env_configs['base'][edit.lower()]}
+            if (edit in self.env_configs['base'].keys() and
+                    self.env_configs['base'][edit] is not None):
+                edit_dict = {edit: self.env_configs['base'][edit]}
+            elif (edit.lower() in self.env_configs['base'].keys() and
+                  self.env_configs['base'][edit.lower()] is not None):
+                edit_dict = {edit: self.env_configs['base'][edit.lower()]}
             suite.add_edit(edit_dict)
 
-    def check_dict(self,node,key,key_is_dict=True):
+    def check_dict(self, node, key, key_is_dict=True):
         """
         This function checks for the presence of they key inside of the node.
         Used to identify it various addons need to be added into the suite.
@@ -298,16 +299,15 @@ class Ecflowsetup:
             True if the key is present, false otherwise.
         """
 
-        if isinstance(node,dict) and f'{key}' in node.keys():
-            if key_is_dict and isinstance(node[f'{key}'],dict):
-                    return True
+        if isinstance(node, dict) and f'{key}' in node.keys():
+            if key_is_dict and isinstance(node[f'{key}'], dict):
+                return True
             elif not key_is_dict:
                 return True
         else:
             return False
 
-
-    def add_suite_edits(self,suite,suite_dict):
+    def add_suite_edits(self, suite, suite_dict):
         """
         Method used to parse through the YAML file and identify any edits that
         apply to the suite itself and parse them so they can be added.
@@ -325,11 +325,7 @@ class Ecflowsetup:
             suite.add_edit(self.ecfconf['suites']['edits'])
 
         # Setup sutite specific edits
-        suite_name = suite.get_suite_name()
-        if (
-            type(suite_dict) is dict and
-            'edits' in suite_dict.keys()
-        ):
+        if type(suite_dict) is dict and 'edits' in suite_dict.keys():
             suite.add_edit(suite_dict['edits'])
 
     def process_definition_header(self):
@@ -342,7 +338,7 @@ class Ecflowsetup:
             for extern in self.ecfconf['externs']:
                 self.DEFS.add_extern(extern)
 
-    def add_families(self,suite,nodes,parents=None):
+    def add_families(self, suite, nodes, parents=None):
         """
         Parses through the YAML file contents and adds the nodes that are
         identified as families to either the parent suite or the parent family.
@@ -366,22 +362,21 @@ class Ecflowsetup:
         """
 
         for item in nodes.keys():
-            if ( isinstance(nodes[item],dict) and
-                item not in {'edits','tasks'} ):
-                suite.add_family(item,parents)
+            if isinstance(nodes[item], dict) and item not in {'edits', 'tasks'}:
+                suite.add_family(item, parents)
                 if parents:
                     family_path = f"{parents}>{item}"
                 else:
                     family_path = item
-                if self.check_dict(nodes[item],'edits'):
-                    suite.add_edit(nodes[item]['edits'],family_path)
-                if self.check_dict(nodes[item],'repeat',False):
-                    suite.add_repeat(nodes[item]['repeat'],family_path)
-                if self.check_dict(nodes[item],'defstatus',False):
-                    suite.add_defstatus(nodes[item]['defstatus'],family_path)
-                self.add_families(suite,nodes[item],family_path)
+                if self.check_dict(nodes[item], 'edits'):
+                    suite.add_edit(nodes[item]['edits'], family_path)
+                if self.check_dict(nodes[item], 'repeat', False):
+                    suite.add_repeat(nodes[item]['repeat'], family_path)
+                if self.check_dict(nodes[item], 'defstatus', False):
+                    suite.add_defstatus(nodes[item]['defstatus'], family_path)
+                self.add_families(suite, nodes[item], family_path)
 
-    def add_tasks_and_edits(self,suite,nodes,parents=None):
+    def add_tasks_and_edits(self, suite, nodes, parents=None):
         """
         After the families are added to the suite, the individual tasks, edits,
         repeats, defstatus, and room for other task addons are appended.
@@ -403,27 +398,29 @@ class Ecflowsetup:
         """
 
         for item in nodes.keys():
-            if (isinstance(nodes[item],dict) and item == 'tasks'):
+            if isinstance(nodes[item], dict) and item == 'tasks':
                 for task in nodes['tasks'].keys():
-                    if self.check_dict(nodes['tasks'][task],'template',False):
+                    if self.check_dict(nodes['tasks'][task], 'template', False):
                         task_template = nodes['tasks'][task]['template']
                     else:
                         task_template = None
-                    updated_task = find_env_param(task,'env.', self.env_configs)
+                    updated_task = find_env_param(task, 'env.',
+                                                  self.env_configs)
                     suite.add_task(updated_task, parents,
                                    self.scriptrepo, task_template)
                     if self.check_dict(nodes['tasks'][task],
                                        'edits'):
                         suite.add_task_edits(updated_task,
-                                            nodes['tasks'][task]['edits'])
+                                             nodes['tasks'][task]['edits'])
                     if self.check_dict(nodes['tasks'][task],
                                        'repeat', False):
                         suite.add_task_repeat(updated_task,
-                                            nodes['tasks'][task]['repeat'])
+                                              nodes['tasks'][task]['repeat'])
                     if self.check_dict(nodes['tasks'][task],
                                        'defstatus', False):
                         suite.add_task_defstatus(updated_task,
-                                            nodes['tasks'][task]['defstatus'])
+                                                 nodes['tasks']
+                                                 [task]['defstatus'])
             elif (isinstance(nodes[item], dict) and
                   item != 'edits'):
                 if parents:
@@ -441,7 +438,7 @@ class Ecflowsetup:
         and error will be thrown.
 
         This is a recursive function and will parse through each family/task
-        to identify the work. 
+        to identify the work.
 
         Parameters
         ----------
@@ -452,24 +449,72 @@ class Ecflowsetup:
         """
 
         for item in nodes.keys():
-            if (isinstance(nodes[item], dict) and item == 'tasks'):
+            if isinstance(nodes[item], dict) and item == 'tasks':
                 for task in nodes['tasks'].keys():
-                    updated_task = find_env_param(task, 'env.', self.env_configs)
+                    updated_task = find_env_param(task, 'env.',
+                                                  self.env_configs)
                     if self.check_dict(nodes['tasks'][task], 'events', False):
-                        suite.add_task_events(updated_task, nodes['tasks'][task]['events'])
+                        suite.add_task_events(updated_task,
+                                              nodes['tasks'][task]['events'])
                     if self.check_dict(nodes['tasks'][task], 'triggers', False):
-                        suite.add_task_triggers(updated_task, nodes['tasks'][task]['triggers'], self.suite_array)
+                        suite.add_task_triggers(updated_task,
+                                                nodes['tasks'][task]['triggers'],
+                                                self.suite_array)
             elif isinstance(nodes[item], dict):
                 self.add_triggers_and_events(suite, nodes[item])
 
 
 def load_ecflow_config(configfile):
+    """
+    This is the function to safely load the configuration file for the ecflow
+    environment. This is the base YAML that is built specifically for this
+    application and then returns it.
+
+    Parameters
+    ----------
+    configfile : str
+        The path to the configuration file that is to be loaded as part of the
+        ecflow config.
+
+    Returns
+    -------
+    dict
+        The dictionary results of the YAML safe load from the configuration
+        file.
+    """
+
     with open(configfile, 'r') as file:
         base_config = yaml.safe_load(file)
     return base_config
 
 
 def find_env_param(node, value, envconfig):
+    """
+    Since there are components of the configuration that might get passed in
+    that are supposed to be replaced by environment variables AFTER the
+    configuration file has been loaded, this function is called in some of the
+    Ecflowsetup functions to allow the replacement of those parameters as
+    needed.
+
+    Parameters
+    ----------
+    node : dict
+        A dictionary object of the items that need to be scanned for replacing
+    value : str
+        A string object that is the prefix to be scanned and then the value
+        identified after identifier string is replaced with an environment
+        variable.
+    envconfig : dict
+        The dictionary of existing environment variables that are read in from
+        the experiment setup.
+
+    Returns
+    -------
+    new_node : dict
+        The updated dictionary object that will replace the node object that
+        was passed in when the function was called.
+    """
+
     new_node = node
     if value in node:
         variable_lookup = re.search(f".*{value}([\dA-Za-z_]*)", node).group(1).strip()
@@ -479,7 +524,8 @@ def find_env_param(node, value, envconfig):
             else:
                 new_variable = os.environ[variable_lookup]
         else:
-            if isinstance(envconfig['base'][variable_lookup], datetime.datetime):
+            if isinstance(envconfig['base'][variable_lookup],
+                          datetime.datetime):
                 new_variable = envconfig['base'][variable_lookup].strftime("%Y%m%d%H")
             else:
                 new_variable = envconfig['base'][variable_lookup]
@@ -489,8 +535,43 @@ def find_env_param(node, value, envconfig):
 
 
 def update_ecflow_config(configfile, envconfig):
+    """
+    After the YAML file that drives the application is loaded in, the configs
+    need to be updated with anything that has the env. prefix to it and replace
+    that value with the environment variable.
+
+    Parameters
+    ----------
+    configfile : dict
+        The dictionary of the YAML configuration file read in.
+    envconfig : dict
+        The dictionary of objects that were read in from the experiment setup
+        on the supercomputer.
+
+    Returns
+    -------
+    config : dict
+        The updated configuration with the environment variables replaced.
+    """
 
     def runupdate(nested_dict, value):
+        """
+        To scan through the entire nested dictionary the run update was an easy
+        local function to use to provide recursion given that the parent
+        function did not work properly when trying to use a recursive call.
+
+        Parameters
+        ----------
+        nested_dict : dict
+            The nested dictionary to scan and replace the values.
+        value : str
+            The string to search for the replacement, currently set to env.
+
+        Returns
+        -------
+        nested_dict : dict
+            The updated dictionary with all of the values replaced as necessary.
+        """
         for k, v in nested_dict.items():
             if isinstance(v, str) and value in v:
                 lookup = v.split('.')
