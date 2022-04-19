@@ -1,64 +1,62 @@
-#%Module######################################################################
-##
-##      FV3GFS prerequisites
+help([[
+Load environment to run GFS on WCOSS-Dell
+]])
 
-# From default environment
+prepend_path("MODULEPATH", "/usrx/local/nceplibs/dev/hpc-stack/libs/hpc-stack/modulefiles/stack")
 
-module use /usrx/local/nceplibs/dev/hpc-stack/libs/hpc-stack/modulefiles/stack
-module load hpc/1.1.0
-module load hpc-ips/18.0.1.163
-module load hpc-impi/18.0.1
+load(pathJoin("hpc", "1.1.0"))
+load(pathJoin("hpc-ips", "18.0.1.163"))
+load(pathJoin("hpc-impi", "18.0.1"))
 
-module load lsf/10.1       
-module load EnvVars/1.0.3
-module load HPSS/5.0.2.5
-module load NCL/6.4.0
+load(pathJoin("lsf", "10.1"))
+load(pathJoin("EnvVars", "1.0.3"))
+load(pathJoin("HPSS", "5.0.2.5"))
+load(pathJoin("NCL", "6.4.0"))
 
-module load prod_util/1.2.2
-module load prod_envir/1.1.0
-module load grib_util/1.2.2
-module load util_shared/1.3.0
+load(pathJoin("prod_util", "1.2.2"))
+load(pathJoin("prod_envir", "1.1.0"))
+load(pathJoin("grib_util", "1.2.2"))
+load(pathJoin("util_shared", "1.3.0"))
 
-module load crtm/2.3.0
-setenv CRTM_FIX /gpfs/dell1/nco/ops/nwprod/lib/crtm/v2.3.0/fix
+load(pathJoin("crtm", "2.3.0"))
+setenv("CRTM_FIX","/gpfs/dell1/nco/ops/nwprod/lib/crtm/v2.3.0/fix")
 
-module load NCO/4.7.0   
-module load CFP/2.0.2
-setenv USE_CFP YES
-module load pm5
+load(pathJoin("NCO", "4.7.0"))
+load(pathJoin("CFP", "2.0.2"))
+setenv("USE_CFP","YES")
+load("pm5")
 
-module load jasper/2.0.25
-module load zlib/1.2.11
-module load png/1.6.35
+load(pathJoin("jasper", "2.0.25"))
+load(pathJoin("zlib", "1.2.11"))
+load(pathJoin("png", "1.6.35"))
 
-module load hdf5/1.10.6
-module load netcdf/4.7.4
-module load pio/2.5.2
-module load esmf/8_2_0_beta_snapshot_14
-module load fms/2021.03
+load(pathJoin("hdf5", "1.10.6"))
+load(pathJoin("netcdf", "4.7.4"))
+load(pathJoin("pio", "2.5.2"))
+load(pathJoin("esmf", "8_2_0_beta_snapshot_14"))
+load(pathJoin("fms", "2021.03"))
 
-module load bacio/2.4.1
-module load g2/3.4.1
-module load g2tmpl/1.9.1
-module load ip/3.3.3
-module load nemsio/2.5.2
-module load sp/2.3.3
-module load w3emc/2.7.3
-module load w3nco/2.4.1
-module load upp/10.0.8
+load(pathJoin("bacio", "2.4.1"))
+load(pathJoin("g2", "3.4.1"))
+load(pathJoin("g2tmpl", "1.9.1"))
+load(pathJoin("ip", "3.3.3"))
+load(pathJoin("nemsio", "2.5.2"))
+load(pathJoin("sp", "2.3.3"))
+load(pathJoin("w3emc", "2.7.3"))
+load(pathJoin("w3nco", "2.4.1"))
+load(pathJoin("upp", "10.0.8"))
 
-module load wgrib2/2.0.8
-setenv WGRIB2 wgrib2
+load(pathJoin("wgrib2", "2.0.8"))
+setenv("WGRIB2","wgrib2")
 
-module use -a /gpfs/dell1/nco/ops/nwprod/modulefiles/
-module load gempak/7.3.3
+append_path("MODULEPATH", "/gpfs/dell1/nco/ops/nwprod/modulefiles/")
+load(pathJoin("gempak", "7.3.3"))
 
-# Load for WAFS
-module load bufr_dumplist/2.0.0
-module load dumpjb/5.1.0
+load(pathJoin("bufr_dumplist", "2.0.0"))
+load(pathJoin("dumpjb", "5.1.0"))
 
-# python
-module load python/3.6.3
+load(pathJoin("python", "3.6.3"))
 
-# waveprep
-module load cdo/1.9.8
+load(pathJoin("cdo", "1.9.8"))
+
+whatis("Description: GFS run environment")
