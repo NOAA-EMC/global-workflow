@@ -293,6 +293,11 @@ export lobsdiag_forenkf=".true."
 export DO_GLDAS="YES"
 export gldas_cyc=00
 
+# Exception handling that when DO_GLDAS is set, the FHOUT must be 1
+if [ $DO_GLDAS = "YES" ]; then
+  export FHOUT=1
+fi
+
 # if [[ "$SDATE" -lt "2019020100" ]]; then # no rtofs in GDA
 #   export DO_WAVE="NO"
 #   echo "WARNING: Wave suite turned off due to lack of RTOFS in GDA for SDATE"
