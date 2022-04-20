@@ -106,7 +106,7 @@ def merge_tile(base_file_name: str, ctrl_file_name: str, core_file_name: str, re
     # print(base_file.dimensions["ntracer"])
 
     old_ntracer = base_file.dimensions["ntracer"].size
-    new_ntracer = old_ntracer + len(tracers_to_append)
+    new_ntracer = old_ntracer
 
     print("Adding the following variables to " + base_file_name + ":\n")
 
@@ -114,7 +114,9 @@ def merge_tile(base_file_name: str, ctrl_file_name: str, core_file_name: str, re
     print("-" * 8 + "+" + "-" * 22 + "+" + "-" * 22 + "+" + "-" * 24)
     for variable_name in tracers_to_append:
         variable = append_file[variable_name]
-        base_file.createVariable(variable_name, variable.datatype, base_file["sphum"].dimensions)
+        if variable_name not in base_file.variables.keys():
+            new_ntracer = new_ntracer + 1
+            base_file.createVariable(variable_name, variable.datatype, base_file["sphum"].dimensions)
         base_file[variable_name][0, :, :] = 0.
         base_file[variable_name][1:, :, :] = scale_factor * variable[0, :, :, :]
         base_file[variable_name].setncatts(variable.__dict__)
@@ -130,15 +132,16 @@ def merge_tile(base_file_name: str, ctrl_file_name: str, core_file_name: str, re
 
     base_file.close()
 
-    print("Updating ntracer")
+    if new_ntracer != old_ntracer:
+        print("Updating ntracer")
 
-    # Use ncks to rewrite file without ntracer so we can define it anew
-    subprocess.run(["ncks", "-x", "-v", "ntracer", "-O", base_file_name, base_file_name], check=True)
+        # Use ncks to rewrite file without ntracer so we can define it anew
+        subprocess.run(["ncks", "-x", "-v", "ntracer", "-O", base_file_name, base_file_name], check=True)
 
-    base_file = netCDF4.Dataset(base_file_name, "r+")
-    base_file.createDimension("ntracer", new_ntracer)
-    # print(base_file.dimensions["ntracer"])
-    base_file.close()
+        base_file = netCDF4.Dataset(base_file_name, "r+")
+        base_file.createDimension("ntracer", new_ntracer)
+        # print(base_file.dimensions["ntracer"])
+        base_file.close()
 
     # Remove checksum
     subprocess.run(["ncatted", "-a", "checksum,,d,,", base_file_name], check=True)
