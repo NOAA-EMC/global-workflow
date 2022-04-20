@@ -9,8 +9,6 @@ set +x
 #                   Anything other than "true"  will use libraries locally.
 #------------------------------------
 
-_build_ufs_options=""
-
 export USE_PREINST_LIBS="true"
 
 #------------------------------------
@@ -39,7 +37,7 @@ source ./machine-setup.sh > /dev/null 2>&1
 #------------------------------------
 # INCLUDE PARTIAL BUILD 
 #------------------------------------
-. ./partial_build.sh $@
+. ./partial_build.sh
 
 if [ $target = jet ]; then
   Build_gldas=false

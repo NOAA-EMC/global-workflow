@@ -138,7 +138,6 @@
 # read command line arguments; processing config file
 #
  declare -a parse_argv=()
- coupled=false
  verbose=false
  while [ ${#} -ne 0 ]; do
    case "${1}" in
@@ -151,10 +150,6 @@
        usage
        exit 2
        ;;
-     -a|-c)
-       coupled=true
-       shift
-       ;;
      *)
        usage
        exit 3
@@ -162,11 +157,7 @@
    esac
  done
 
- if [ "${coupled}" = true ]; then
-   parse_argv+=( "config=cpl_build.cfg" )
- else
-   parse_argv+=( "config=fv3gfs_build.cfg" )
- fi
+ parse_argv+=( "config=fv3gfs_build.cfg" )
 
 #
 # call arguments retriever/config parser
