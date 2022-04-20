@@ -1,22 +1,8 @@
 #! /usr/bin/env bash
 set -eux
 
-# Build ATMW by default
-APP="ATMW"
-CCPP_SUITES="FV3_GFS_v16,FV3_GFS_v16_RRTMGP,FV3_GFS_v16_ugwpv1,FV3_GFS_v17_p8"
-
-while getopts "c" option; do
-  case "${option}" in
-    c)
-      APP="S2SW"
-      CCPP_SUITES="FV3_GFS_v16_coupled_nsstNoahmpUGWPv1,FV3_GFS_v16_coupled_p7_rrtmgp,FV3_GFS_v17_coupled_p8"
-      ;;
-    *)
-      echo "Unrecognized option: ${1}"
-      exit 1
-      ;;
-  esac
-done
+APP="S2SW"
+CCPP_SUITES="FV3_GFS_v16,FV3_GFS_v16_RRTMGP,FV3_GFS_v16_ugwpv1,FV3_GFS_v17_p8,FV3_GFS_v16_coupled_nsstNoahmpUGWPv1,FV3_GFS_v16_coupled_p7_rrtmgp,FV3_GFS_v17_coupled_p8"
 
 source ./machine-setup.sh > /dev/null 2>&1
 cwd=$(pwd)
@@ -29,7 +15,6 @@ case "${target}" in
 esac
 
 MOD_PATH=$cwd/ufs_model.fd/modulefiles
-
 
 cd ufs_model.fd/
 set +x

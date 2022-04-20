@@ -11,23 +11,6 @@ set +x
 
 _build_ufs_options=""
 
-while getopts "ac" option;do
- case $option in
-  a)
-   echo "Received -a flag, building ufs-weather-model for ATMAERO app"
-   echo "skipping builds not needed for prototype runs"
-   _build_ufs_options=-a
-   break
-   ;;
-  c)
-   echo "Received -c flag, building ufs-weather-model for S2SW app"
-   echo "skipping builds not needed for prototype runs"
-   _build_ufs_options=-c
-   break
-   ;;
- esac
-done
-
 export USE_PREINST_LIBS="true"
 
 #------------------------------------
@@ -90,7 +73,7 @@ fi
 #------------------------------------
 $Build_ufs_model && {
     echo " .... Building forecast model .... "
-    ./build_ufs.sh ${_build_ufs_options} > $logs_dir/build_ufs.log 2>&1
+    ./build_ufs.sh > $logs_dir/build_ufs.log 2>&1
     rc=$?
     if [[ $rc -ne 0 ]] ; then
         echo "Fatal error in building UFS model."
