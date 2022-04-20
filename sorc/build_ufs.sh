@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 set -eux
 
-APP="S2SW"
+APP="S2SWA"
 CCPP_SUITES="FV3_GFS_v16,FV3_GFS_v16_RRTMGP,FV3_GFS_v16_ugwpv1,FV3_GFS_v17_p8,FV3_GFS_v16_coupled_nsstNoahmpUGWPv1,FV3_GFS_v16_coupled_p7_rrtmgp,FV3_GFS_v17_coupled_p8"
 
 source ./machine-setup.sh > /dev/null 2>&1
@@ -28,5 +28,5 @@ if [ -d build ]; then
   rm -R build
 fi
 mkdir -p build && cd build
-cmake -DAPP=${APP} -DCCPP_SUITES=${CCPP_SUITES} -DUFS_GOCART="ON" ..
+cmake -DAPP=${APP} -DCCPP_SUITES=${CCPP_SUITES} ..
 OMP_NUM_THREADS=1 make -j ${BUILD_JOBS:-8} VERBOSE=${BUILD_VERBOSE:-}
