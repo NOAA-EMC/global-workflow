@@ -8,105 +8,75 @@ fi
 
 finalexecdir=$( pwd -P )/../exec
 
+#Determine machine and load modules
 set +x
 source ./machine-setup.sh > /dev/null 2>&1
-
 source ../modulefiles/modulefile.ww3.$target
 set -x
 
-if [ $target = hera ]; then target=hera.intel ; fi
-if [ $target = orion ]; then target=orion.intel ; fi
-if [ $target = stampede ]; then target=stampede.intel ; fi
-
+#Set WW3 directory, switch, prep and post exes 
 cd ufs_model.fd/WW3
-export WW3_DIR=$( pwd -P )/model
-export WW3_BINDIR="${WW3_DIR}/bin"
-export WW3_TMPDIR=${WW3_DIR}/tmp
-export WW3_EXEDIR=${WW3_DIR}/exe
-export WW3_COMP=$target 
-export WW3_CC=gcc
-export WW3_F90=gfortran
-export SWITCHFILE="${WW3_DIR}/esmf/switch"
+export WW3_DIR=$( pwd -P )
+export SWITCHFILE="${WW3_DIR}/model/esmf/switch"
 
-export WWATCH3_ENV=${WW3_BINDIR}/wwatch3.env
-export PNG_LIB=${PNG_LIB:-$PNG_ROOT/lib64/libpng.a}
-export Z_LIB=${Z_LIB:-$ZLIB_ROOT/lib/libz.a}
-export JASPER_LIB=${JASPER_LIB:-$JASPER_ROOT/lib64/libjasper.a}
-export WWATCH3_NETCDF=NC4
-export NETCDF_CONFIG=$NETCDF_ROOT/bin/nc-config
-export PRINTER=${PRINTER:-""}
-
-rm  $WWATCH3_ENV
-echo '#'                                              > $WWATCH3_ENV
-echo '# ---------------------------------------'      >> $WWATCH3_ENV
-echo '# Environment variables for wavewatch III'      >> $WWATCH3_ENV
-echo '# ---------------------------------------'      >> $WWATCH3_ENV
-echo '#'                                              >> $WWATCH3_ENV
-echo "WWATCH3_LPR      $PRINTER"                      >> $WWATCH3_ENV
-echo "WWATCH3_F90      $WW3_F90"                      >> $WWATCH3_ENV
-echo "WWATCH3_CC       $WW3_CC"                       >> $WWATCH3_ENV
-echo "WWATCH3_DIR      $WW3_DIR"                      >> $WWATCH3_ENV
-echo "WWATCH3_TMP      $WW3_TMPDIR"                   >> $WWATCH3_ENV
-echo "WWATCH3_NETCDF   $WWATCH3_NETCDF"               >> $WWATCH3_ENV
-echo 'WWATCH3_SOURCE   yes'                           >> $WWATCH3_ENV
-echo 'WWATCH3_LIST     yes'                           >> $WWATCH3_ENV
-echo ''                                               >> $WWATCH3_ENV
-
-${WW3_BINDIR}/w3_clean -m 
-${WW3_BINDIR}/w3_setup -q -c $WW3_COMP $WW3_DIR
-
-echo $(cat ${SWITCHFILE}) > ${WW3_BINDIR}/tempswitch
-
-sed -e "s/DIST/SHRD/g"\
-    -e "s/OMPG/ /g"\
-    -e "s/OMPH/ /g"\
-    -e "s/MPIT/ /g"\
-    -e "s/MPI/ /g"\
-    -e "s/PDLIB/ /g"\
-       ${WW3_BINDIR}/tempswitch > ${WW3_BINDIR}/switch
-
-# Build exes for prep jobs and post jobs (except grib):
+# Build exes for prep jobs and post jobs:
 prep_exes="ww3_grid ww3_prep ww3_prnc ww3_grid"
-post_exes="ww3_outp ww3_outf ww3_outp ww3_gint ww3_ounf ww3_ounp"
-for prog in $prep_exes $post_exes; do
-    ${WW3_BINDIR}/w3_make ${prog}
-    rc=$?
-    if [[ $rc -ne 0 ]] ; then
-        echo "FATAL: Error building ${prog} (Error code ${rc})"
-        exit $rc
-    fi
-done
+post_exes="ww3_outp ww3_outf ww3_outp ww3_gint ww3_ounf ww3_ounp ww3_grib"
 
-# Update switch for grib: 
-echo $(cat ${SWITCHFILE}) > ${WW3_BINDIR}/tempswitch
+#create build directory: 
+path_build=$WW3_DIR/build_SHRD
+mkdir -p $path_build
+cd $path_build
+echo "Forcing a SHRD build" 
+
+echo $(cat ${SWITCHFILE}) > ${path_build}/tempswitch
 
 sed -e "s/DIST/SHRD/g"\
-    -e "s/OMPG/ /g"\
-    -e "s/OMPH/ /g"\
-    -e "s/MPIT/ /g"\
-    -e "s/MPI/ /g"\
-    -e "s/PDLIB/ /g"\
-    -e "s/NOGRB/NCEP2 NCO/g"\
-       ${WW3_BINDIR}/tempswitch > ${WW3_BINDIR}/switch
-# Build exe for grib
-${WW3_BINDIR}/w3_make ww3_grib
+    -e "s/OMPG / /g"\
+    -e "s/OMPH / /g"\
+    -e "s/MPIT / /g"\
+    -e "s/MPI / /g"\
+    -e "s/B4B / /g"\
+    -e "s/PDLIB / /g"\
+    -e "s/NOGRB/NCEP2/g"\
+       ${path_build}/tempswitch > ${path_build}/switch
+rm ${path_build}/tempswitch
+
+echo "Switch file is $path_build/switch with switches:" 
+cat $path_build/switch 
+
+#Build executables: 
+cmake $WW3_DIR -DSWITCH=$path_build/switch -DCMAKE_INSTALL_PREFIX=install 
 rc=$?
 if [[ $rc -ne 0 ]] ; then
-    echo "FATAL: Unable to build ww3_grib (Error code $rc)"
-    exit $rc
+  echo "Fatal error in cmake."
+  exit $rc
+fi
+make -j 8 
+rc=$?
+if [[ $rc -ne 0 ]] ; then
+  echo "Fatal error in make."
+  exit $rc
+fi
+make install 
+if [[ $rc -ne 0 ]] ; then
+  echo "Fatal error in make install."
+  exit $rc  
 fi
 
 # Copy to top-level exe directory
-for prog in $prep_exes $post_exes ww3_grib; do
-    cp $WW3_EXEDIR/$prog $finalexecdir/
-    rc=$?
-    if [[ $rc -ne 0 ]] ; then
-        echo "FATAL: Unable to copy $WW3_EXEDIR/$prog to $finalexecdir (Error code $rc)"
-        exit $rc
-    fi
+for prog in $prep_exes $post_exes; do
+  cp $path_build/install/bin/$prog $finalexecdir/
+  rc=$?
+  if [[ $rc -ne 0 ]] ; then
+    echo "FATAL: Unable to copy $path_build/$prog to $finalexecdir (Error code $rc)"
+    exit $rc
+  fi
 done
 
-${WW3_BINDIR}/w3_clean -c
-rm ${WW3_BINDIR}/tempswitch
+#clean-up build directory:
+echo "executables are in $finalexecdir" 
+echo "cleaning up $path_build" 
+rm -rf $path_build
 
 exit 0
