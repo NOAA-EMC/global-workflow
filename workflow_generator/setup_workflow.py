@@ -45,12 +45,6 @@ def parse_command_line():
                                 ecFlow by deploying scripts and definition
                                 files or Rocoto""",
                             formatter_class=ArgumentDefaultsHelpFormatter)
-    parser.add_argument('--nodeskip', type=str,
-                        nargs='*', required=False,
-                        help='Nodes that will be set to defstatus complete')
-    parser.add_argument('--taskskip', type=str,
-                        nargs='*', required=False,
-                        help='Tasks that will be set to defstatus complete')
     parser.add_argument('--ecflow-config', type=str,
                         default='ecflow_build.yml', required=False,
                         help='ecFlow Generator configuration file')
