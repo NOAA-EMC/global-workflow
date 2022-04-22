@@ -18,11 +18,13 @@ if [ $QUILTING = ".true." ]; then
     export npe_efcs=$npe_fv3
 fi
 
-# Only use serial I/O for ensemble on Hera
-if [[ "$machine" == "HERA" ]]; then
-    export OUTPUT_FILETYPE_ATM="netcdf"
-    export OUTPUT_FILETYPE_SFC="netcdf"
-fi
+# Only use serial I/O for ensemble on Hera and Orion (lustre?)
+case $machine in
+    "HERA" | "ORION")
+        export OUTPUT_FILETYPE_ATM="netcdf"
+        export OUTPUT_FILETYPE_SFC="netcdf"
+        ;;
+esac
 
 # Number of enkf members per fcst job
 export NMEM_EFCSGRP=2
@@ -69,12 +71,13 @@ export cplwav=.false.
 
 # ocean model resolution
 case "$CASE_ENKF" in
-    "C48") export OCNRES=100;;
+    "C48") export OCNRES=400;;
     "C96") export OCNRES=100;;
     "C192") export OCNRES=050;;
     "C384") export OCNRES=025;;
     "C768") export OCNRES=025;;
     *) export OCNRES=025;;
 esac
+export ICERES=$OCNRES
 
 echo "END: config.efcs"

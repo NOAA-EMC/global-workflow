@@ -58,7 +58,13 @@ wav_petlist_bounds=${wav_petlist_bounds:-"$(( $ATMPETS+$OCNPETS+$ICEPETS )) $(( 
 chm_petlist_bounds=${chm_petlist_bounds:-"0 $(( $CHMPETS-1 ))"}
 
 # Copy the selected template into run directory
-cp $SCRIPTDIR/nems.configure.$confignamevarfornems.IN tmp1
+infile="$SCRIPTDIR/nems.configure.$confignamevarfornems.IN"
+if [ -s $infile ]; then
+  cp $infile tmp1
+else
+  echo "FATAL ERROR: nem.configure template '$infile' does not exist!"
+  exit 1
+fi
 sed -i -e "s;@\[med_model\];cmeps;g" tmp1
 sed -i -e "s;@\[atm_model\];$ATM_model;g" tmp1
 sed -i -e "s;@\[med_petlist_bounds\];$med_petlist_bounds;g" tmp1
@@ -98,7 +104,7 @@ if [ $cplice = .true. ]; then
   sed -i -e "s;@\[MESH_OCN_ICE\];$MESH_OCN_ICE;g" tmp1
   sed -i -e "s;@\[FHMAX\];$FHMAX_GFS;g" tmp1
 fi
-if [ $cplchem = .true. ]; then
+if [ $cplchm = .true. ]; then
   sed -i -e "s;@\[chm_model\];$CHM_model;g" tmp1
   sed -i -e "s;@\[chm_petlist_bounds\];$chm_petlist_bounds;g" tmp1
   sed -i -e "s;@\[coupling_interval_fast_sec\];$CPL_FAST;g" tmp1

@@ -198,8 +198,14 @@ elif [ $step = "fcst" ]; then
 
         (( ATMPETS = layout_x * layout_y * 6 ))
 
-        # Mediator only uses the atm model PETS
-        export MEDPETS=$ATMPETS
+        # Mediator only uses the atm model PETS or less
+        export MEDPETS=${MEDPETS:-ATMPETS}
+
+        if [[ $DO_AERO == "YES" ]]; then
+            # Aerosol model only uses the atm model PETS
+            export CHMPETS=$ATMPETS
+            # Aerosol model runs on same PETs as ATM, so don't add to $NTASKS_TOT
+        fi
 
         # If using in-line post, add the write tasks to the ATMPETS
         if [[ $QUILTING == ".true." ]]; then
@@ -254,11 +260,6 @@ elif [ $step = "fcst" ]; then
                     exit 3
             esac
             (( NTASKS_TOT = NTASKS_TOT + ICEPETS ))
-        fi
-
-        if [[ $DO_AERO == "YES" ]]; then
-            # Aerosol model runs on same PETS as ATM model
-            export CHMPETS=$MEDPETS
         fi
 
         if [[ $CDUMP == "gfs" ]]; then
