@@ -15,7 +15,7 @@ The NOAA VLab and both the NOAA-EMC and NCAR organization spaces on GitHub.com a
 cd $PACKAGEROOT
 mkdir gfs.v16.2.0
 cd gfs.v16.2.0
-git clone -b EMC-v16.2.0.5 https://github.com/NOAA-EMC/global-workflow.git .
+git clone -b EMC-v16.2.0.6 https://github.com/NOAA-EMC/global-workflow.git .
 cd sorc
 ./checkout.sh -o
 ```
