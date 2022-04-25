@@ -1,7 +1,9 @@
 #%Module######################################################################
 ##
-##      S2S prerequisites
+##      WW3 hera
 ##
+
+module load cmake/3.20.1
 
 module use /scratch2/NCEPDEV/nwprod/hpc-stack/libs/hpc-stack/modulefiles/stack
 
@@ -18,3 +20,5 @@ module load g2/3.4.1
 
 module load hdf5/1.10.6
 module load netcdf/4.7.4
+
+module load w3nco/2.4.1
