@@ -804,7 +804,7 @@ cat > gsiparm.anl << EOF
   $OBSQC
 /
 &OBS_INPUT
-  dmesh(1)=145.0,dmesh(2)=150.0,dmesh(3)=100.0,dmesh(4)=70.0,time_window_max=3.0,
+  dmesh(1)=145.0,dmesh(2)=150.0,dmesh(3)=100.0,dmesh(4)=25.0,time_window_max=3.0,
   $OBSINPUT
 /
 OBS_INPUT::
