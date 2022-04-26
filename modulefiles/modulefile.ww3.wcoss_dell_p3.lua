@@ -8,7 +8,7 @@ load(pathJoin("hpc", "1.1.0"))
 load(pathJoin("hpc-ips", "18.0.1.163"))
 load(pathJoin("hpc-impi", "18.0.1"))
 
-load(pathJoin("cmake", "3.20.1"))
+load(pathJoin("cmake", "3.20.2"))
 
 load(pathJoin("jasper", "2.0.25"))
 load(pathJoin("zlib", "1.2.11"))
