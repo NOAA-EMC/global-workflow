@@ -303,7 +303,7 @@ export imp_physics=11
 
 # Shared parameters
 # DA engine
-export DO_UFSDA="NO"
+export DO_JEDIVAR="NO"
 
 # Hybrid related
 export DOHYBVAR="YES"

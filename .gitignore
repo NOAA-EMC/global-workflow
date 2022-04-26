@@ -36,6 +36,7 @@ sorc/gfs_post.fd
 sorc/gfs_wafs.fd
 sorc/gldas.fd
 sorc/gsi.fd
+sorc/gdas.cd
 sorc/ufs_utils.fd
 sorc/verif-global.fd
 
@@ -98,6 +99,7 @@ jobs/JGDAS_ENKF_POST
 jobs/JGDAS_ENKF_SELECT_OBS
 jobs/JGDAS_ENKF_SFC
 jobs/JGDAS_ENKF_UPDATE
+jobs/JGDAS_GLOBAL_ATMOS_ANALYSIS
 jobs/JGFS_ATMOS_VMINMON
 jobs/JGFS_ATMOS_WAFS
 jobs/JGFS_ATMOS_WAFS_BLENDING
@@ -176,6 +178,7 @@ ush/radmon_verf_bcoef.sh
 ush/radmon_verf_bcor.sh
 ush/radmon_verf_time.sh
 ush/trim_rh.sh
+ush/ufsda
 ush/wafs_blending.sh
 ush/wafs_grib2.regrid.sh
 ush/wafs_intdsk.sh

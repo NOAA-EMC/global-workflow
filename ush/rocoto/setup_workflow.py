@@ -42,7 +42,7 @@ def main():
         print(f'input arg:     --expdir = {repr(args.expdir)}')
         sys.exit(1)
 
-    gfs_steps = ['analcalc', 'gldas', 'fcst', 'postsnd', 'post', 'vrfy', 'arch']
+    gfs_steps = ['prep', 'analcalc', 'gldas', 'fcst', 'postsnd', 'postanl', 'post', 'vrfy', 'arch']
     gfs_steps_gempak = ['gempak']
     gfs_steps_awips = ['awips']
     gfs_steps_wafs = ['wafs', 'wafsgrib2', 'wafsblending', 'wafsgcip', 'wafsgrib20p25', 'wafsblending0p25']
@@ -55,10 +55,10 @@ def main():
 # From gfsv16b latest
 #    gfs_steps = ['prep', 'anal', 'gldas', 'fcst', 'postsnd', 'post', 'awips', 'gempak', 'vrfy', 'metp', 'arch']
     hyb_steps = ['eobs', 'ediag', 'eomg', 'eupd', 'ecen', 'esfc', 'efcs', 'echgres', 'epos', 'earc']
-    gsida_steps = ['prep', 'anal', 'analdiag']
-    ufsda_steps = ['atmanalprep', 'atmanalrun', 'atmanalpost']
+    gsida_steps = ['anal', 'analdiag']
+    jedivar_steps = ['atmanalprep', 'atmanalrun', 'sfcanl', 'atmanalpost']
 
-    steps = gfs_steps + ufsda_steps if _base.get('DO_UFSDA', 'NO') == 'YES' else gfs_steps + gsida_steps
+    steps = gfs_steps + jedivar_steps if _base.get('DO_JEDIVAR', 'NO') == 'YES' else gfs_steps + gsida_steps
     steps = steps + hyb_steps if _base.get('DOHYBVAR', 'NO') == 'YES' else steps
     steps = steps + metp_steps if _base.get('DO_METP', 'NO') == 'YES' else steps
     steps = steps + gfs_steps_gempak if _base.get('DO_GEMPAK', 'NO') == 'YES' else steps
@@ -197,7 +197,7 @@ def get_definitions(base):
     strings.append(f'''\t<!ENTITY QUEUE_SERVICE "{base['QUEUE_SERVICE']}">\n''')
     if scheduler in ['slurm']:
         strings.append(f'''\t<!ENTITY PARTITION_BATCH "{base['PARTITION_BATCH']}">\n''')
-        strings.append(f'''\t<!ENTITY PARTITION_SERVICE "{base['QUEUE_SERVICE']}">\n''')
+        strings.append(f'''\t<!ENTITY PARTITION_SERVICE "{base['PARTITION_SERVICE']}">\n''')
     strings.append(f'\t<!ENTITY SCHEDULER  "{scheduler}">\n')
     strings.append('\n')
     strings.append('\t<!-- Toggle HPSS archiving -->\n')
@@ -244,12 +244,11 @@ def get_gdasgfs_resources(dict_configs, cdump='gdas'):
     do_gldas = base.get('DO_GLDAS', 'NO').upper()
     do_wave = base.get('DO_WAVE', 'NO').upper()
     do_wave_cdump = base.get('WAVE_CDUMP', 'BOTH').upper()
-    do_ufsda = base.get('DO_UFSDA', 'NO').upper()
+    do_jedivar = base.get('DO_JEDIVAR', 'NO').upper()
     reservation = base.get('RESERVATION', 'NONE').upper()
 
-    #tasks = ['prep', 'anal', 'fcst', 'post', 'vrfy', 'arch']
-    if do_ufsda in ['Y', 'YES']:
-        task_prep = ['atmanalprep']
+    if do_jedivar in ['Y', 'YES']:
+        task_prep = ['prep', 'atmanalprep']
         task_anal = ['atmanalrun']
         task_diag = ['atmanalpost']
     else:
@@ -261,13 +260,15 @@ def get_gdasgfs_resources(dict_configs, cdump='gdas'):
     tasks += ['analcalc']
     if cdump in ['gdas']:
         tasks += task_diag
+    if do_jedivar in ['Y', 'YES']:
+        tasks += ['sfcanl']
     if cdump in ['gdas'] and do_gldas in ['Y', 'YES']:
         tasks += ['gldas']
     if cdump in ['gdas'] and do_wave in ['Y', 'YES'] and do_wave_cdump in ['GDAS', 'BOTH']:
         #tasks += ['waveinit', 'waveprep', 'wavepostsbs', 'wavepostbndpnt', 'wavepostpnt', 'wavestat']
         tasks += ['waveinit', 'waveprep', 'wavepostsbs', 'wavepostbndpnt', 'wavepostbndpntbll', 'wavepostpnt']
 
-    tasks += ['fcst', 'post', 'vrfy', 'arch']
+    tasks += ['fcst', 'postanl', 'post', 'vrfy', 'arch']
 
     if cdump in ['gfs'] and do_wave in ['Y', 'YES'] and do_wave_cdump in ['GFS', 'BOTH']:
         #tasks += ['waveinit', 'waveprep', 'wavepostsbs', 'wavepostbndpnt', 'wavepostpnt', 'wavestat']
@@ -297,11 +298,12 @@ def get_gdasgfs_resources(dict_configs, cdump='gdas'):
         taskstr = f'{task.upper()}_{cdump.upper()}'
 
         strings = []
-        strings.append(f'\t<!ENTITY QUEUE_{taskstr}     "{queuestr}">\n')
         if scheduler in ['slurm']:
             if task in ['arch']:
+                strings.append(f'\t<!ENTITY QUEUE_{taskstr}     "&QUEUE_SERVICE;">\n')
                 strings.append(f'\t<!ENTITY PARTITION_{taskstr} "&PARTITION_SERVICE;">\n')
             else:
+                strings.append(f'\t<!ENTITY QUEUE_{taskstr}     "{queuestr}">\n')
                 strings.append(f'\t<!ENTITY PARTITION_{taskstr} "&PARTITION_BATCH;">\n')
 
         strings.append(f'\t<!ENTITY WALLTIME_{taskstr}  "{wtimestr}">\n')
@@ -377,11 +379,12 @@ def get_hyb_resources(dict_configs):
         taskstr = f'{task.upper()}_{cdump.upper()}'
 
         strings = []
-        strings.append(f'\t<!ENTITY QUEUE_{taskstr}     "{queuestr}">\n')
         if scheduler in ['slurm']:
             if task in ['earc']:
+                strings.append(f'\t<!ENTITY QUEUE_{taskstr}     "&QUEUE_SERVICE;">\n')
                 strings.append(f'\t<!ENTITY PARTITION_{taskstr} "&PARTITION_SERVICE;">\n')
             else:
+                strings.append(f'\t<!ENTITY QUEUE_{taskstr}     "{queuestr}">\n')
                 strings.append(f'\t<!ENTITY PARTITION_{taskstr} "&PARTITION_BATCH;">\n')
 
         strings.append(f'\t<!ENTITY WALLTIME_{taskstr}  "{wtimestr}">\n')
@@ -423,7 +426,7 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
     do_metp = base.get('DO_METP', 'NO').upper()
     do_gldas = base.get('DO_GLDAS', 'NO').upper()
     do_wave = base.get('DO_WAVE', 'NO').upper()
-    do_ufsda = base.get('DO_UFSDA', 'NO').upper()
+    do_jedivar = base.get('DO_JEDIVAR', 'NO').upper()
     if do_wave in ['YES']:
         do_wave_bnd = dict_configs['wavepostsbs'].get('DOBNDPNT_WAVE', "YES").upper()
     do_wave_cdump = base.get('WAVE_CDUMP', 'BOTH').upper()
@@ -432,7 +435,7 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
 
     dict_tasks = OrderedDict()
 
-    if do_ufsda in ['Y', 'YES']:
+    if do_jedivar in ['Y', 'YES']:
         task_prep = 'atmanalprep'
         task_anal = 'atmanalrun'
         task_diag = 'atmanalpost'
@@ -457,14 +460,40 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
 
     if gfs_enkf and cdump in ['gfs']:
         if gfs_cyc == 4:
-            task = wfu.create_wf_task(task=task_prep, cdump=cdump, envar=envars, dependency=dependencies)
+            task = wfu.create_wf_task(task='prep', cdump=cdump, envar=envars, dependency=dependencies)
         else:
-            task = wfu.create_wf_task(task=task_prep, cdump=cdump, envar=envars, dependency=dependencies, cycledef='gdas')
+            task = wfu.create_wf_task(task='prep', cdump=cdump, envar=envars, dependency=dependencies, cycledef='gdas')
 
     else:
-        task = wfu.create_wf_task(task=task_prep, cdump=cdump, envar=envars, dependency=dependencies)
+        task = wfu.create_wf_task(task='prep', cdump=cdump, envar=envars, dependency=dependencies)
 
-    dict_tasks[f'{cdump}{task_prep}'] = task
+    dict_tasks[f'{cdump}prep'] = task
+
+    # atmanalprep
+    if do_jedivar in ['Y', 'YES']:
+        deps = []
+        dep_dict = {'type': 'metatask', 'name': f'{"gdas"}post', 'offset': '-06:00:00'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        data = f'&ROTDIR;/gdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmf009{gridsuffix}'
+        dep_dict = {'type': 'data', 'data': data, 'offset': '-06:00:00'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        data = f'&DMPDIR;/{cdump}{dumpsuffix}.@Y@m@d/@H/{cdump}.t@Hz.updated.status.tm00.bufr_d'
+        dep_dict = {'type': 'data', 'data': data}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+        gfs_enkf = True if eupd_cyc in ['BOTH', 'GFS'] and dohybvar in ['Y', 'YES'] else False
+
+        if gfs_enkf and cdump in ['gfs']:
+            if gfs_cyc == 4:
+                task = wfu.create_wf_task(task='atmanalprep', cdump=cdump, envar=envars, dependency=dependencies)
+            else:
+                task = wfu.create_wf_task(task='atmanalprep', cdump=cdump, envar=envars, dependency=dependencies, cycledef='gdas')
+                
+        else:
+            task = wfu.create_wf_task(task='atmanalprep', cdump=cdump, envar=envars, dependency=dependencies)
+
+        dict_tasks[f'{cdump}atmanalprep'] = task
 
     # wave tasks in gdas or gfs or both
     if do_wave_cdump in ['BOTH']:
@@ -477,7 +506,7 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
     # waveinit
     if do_wave in ['Y', 'YES'] and cdump in cdumps:
         deps = []
-        dep_dict = {'type': 'task', 'name': '{cdump}{task_prep}'}
+        dep_dict = {'type': 'task', 'name': '{cdump}prep'}
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': '-06:00:00'}
         deps.append(rocoto.add_dependency(dep_dict))
@@ -508,6 +537,19 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
 
     dict_tasks[f'{cdump}{task_anal}'] = task
 
+    # sfcanl
+    if do_jedivar in ['Y', 'YES']:
+        deps = []
+        data = f'&ROTDIR;/{cdump}.@Y@m@d/@H/atmos/{cdump}.t@Hz.loginc.txt'
+        dep_dict = {'type': 'data', 'data': data}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'task', 'name': f'{cdump}{task_anal}'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+        task = wfu.create_wf_task('sfcanl', cdump=cdump, envar=envars, dependency=dependencies)
+
+        dict_tasks[f'{cdump}sfcanl'] = task
+
     # analcalc
     deps1 = []
     data = f'&ROTDIR;/{cdump}.@Y@m@d/@H/atmos/{cdump}.t@Hz.loginc.txt'
@@ -515,6 +557,9 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
     deps1.append(rocoto.add_dependency(dep_dict))
     dep_dict = {'type': 'task', 'name': f'{cdump}{task_anal}'}
     deps.append(rocoto.add_dependency(dep_dict))
+    if do_jedivar in ['Y', 'YES']:
+        dep_dict = {'type': 'task', 'name': f'{cdump}sfcanl'}
+        deps.append(rocoto.add_dependency(dep_dict))
     if dohybvar in ['y', 'Y', 'yes', 'YES'] and cdump == 'gdas':
         dep_dict = {'type': 'task', 'name': f'{"gdas"}echgres', 'offset': '-06:00:00'}
         deps.append(rocoto.add_dependency(dep_dict))
@@ -533,7 +578,7 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
         deps1.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'task', 'name': f'{cdump}{task_anal}'}
         deps1.append(rocoto.add_dependency(dep_dict))
-        dependencies1 = rocoto.create_dependency(dep_condition='or', dep=deps1)
+        dependencies1 = rocoto.create_dependency(dep_condition='and', dep=deps1)
 
         deps2 = []
         deps2 = dependencies1
@@ -553,7 +598,10 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
         deps1.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'task', 'name': f'{cdump}{task_anal}'}
         deps1.append(rocoto.add_dependency(dep_dict))
-        dependencies1 = rocoto.create_dependency(dep_condition='or', dep=deps1)
+        if do_jedivar in ['Y', 'YES']:
+            dep_dict = {'type': 'task', 'name': f'{cdump}sfcanl'}
+            deps1.append(rocoto.add_dependency(dep_dict))
+        dependencies1 = rocoto.create_dependency(dep_condition='and', dep=deps1)
 
         deps2 = []
         deps2 = dependencies1
@@ -578,9 +626,15 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
         else:
             dep_dict = {'type': 'task', 'name': f'{cdump}analcalc'}
             deps1.append(rocoto.add_dependency(dep_dict))
+            if do_jedivar in ['Y', 'YES']:
+                dep_dict = {'type': 'task', 'name': f'{cdump}sfcanl'}
+                deps1.append(rocoto.add_dependency(dep_dict))
     elif cdump in ['gfs']:
         dep_dict = {'type': 'task', 'name': f'{cdump}{task_anal}'}
         deps1.append(rocoto.add_dependency(dep_dict))
+        if do_jedivar in ['Y', 'YES']:
+            dep_dict = {'type': 'task', 'name': f'{cdump}sfcanl'}
+            deps1.append(rocoto.add_dependency(dep_dict))
     dependencies1 = rocoto.create_dependency(dep_condition='or', dep=deps1)
 
     if do_wave in ['Y', 'YES'] and cdump in cdumps:
@@ -594,6 +648,25 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
         task = wfu.create_wf_task('fcst', cdump=cdump, envar=envars, dependency=dependencies1)
 
     dict_tasks[f'{cdump}fcst'] = task
+
+    # postanl
+    deps = []
+    data = f'&ROTDIR;/{cdump}.@Y@m@d/@H/atmos/{cdump}.t@Hz.loganl.txt'
+    dep_dict = {'type': 'data', 'data': data}
+    deps.append(rocoto.add_dependency(dep_dict))
+    dep_dict = {'type': 'task', 'name': f'{cdump}analcalc'}
+    deps.append(rocoto.add_dependency(dep_dict))
+    dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
+    fhrgrp = rocoto.create_envar(name='FHRGRP', value='anl')
+    fhrlst = rocoto.create_envar(name='FHRLST', value='anl')
+    ROTDIR = rocoto.create_envar(name='ROTDIR', value='&ROTDIR;')
+    postenvars = envars + [fhrgrp] + [fhrlst] + [ROTDIR]
+    varname1, varname2, varname3 = 'grp', 'dep', 'lst'
+    varval1, varval2, varval3 = get_postgroups_anl(dict_configs['postanl'], cdump=cdump)
+    vardict = {varname2: varval2, varname3: varval3}
+    task = wfu.create_wf_task('postanl', cdump=cdump, envar=postenvars, dependency=dependencies)
+
+    dict_tasks[f'{cdump}postanl'] = task
 
     # post
     deps = []
@@ -965,7 +1038,7 @@ def get_hyb_tasks(dict_configs, cycledef='enkf'):
     nens = base['NMEM_ENKF']
     lobsdiag_forenkf = base.get('lobsdiag_forenkf', '.false.').upper()
     eupd_cyc = base.get('EUPD_CYC', 'gdas').upper()
-    do_ufsda = base.get('DO_UFSDA', 'NO').upper()
+    do_jedivar = base.get('DO_JEDIVAR', 'NO').upper()
 
     eobs = dict_configs['eobs']
     nens_eomg = eobs['NMEM_EOMGGRP']
@@ -1004,8 +1077,8 @@ def get_hyb_tasks(dict_configs, cycledef='enkf'):
     elif eupd_cyc in ['GDAS']:
         cdumps = ['gdas']
 
-    if do_ufsda in ['Y', 'YES']:
-        task_prep = ['atmanalprep']
+    if do_jedivar in ['Y', 'YES']:
+        task_prep = ['prep', 'atmanalprep']
     else:
         task_prep = ['prep']
 
@@ -1016,7 +1089,7 @@ def get_hyb_tasks(dict_configs, cycledef='enkf'):
 
         # eobs
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{cdump}{task_prep}'}
+        dep_dict = {'type': 'task', 'name': f'{cdump}prep'}
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'metatask', 'name': f'{"gdas"}epmn', 'offset': '-06:00:00'}
         deps.append(rocoto.add_dependency(dep_dict))
@@ -1207,6 +1280,14 @@ def get_workflow_footer():
     return ''.join(strings)
 
 
+def get_postgroups_anl(post, cdump='gdas'):
+
+    fhrgrp = 'anl'
+    fhrdep = 'anl'
+    fhrlst = 'anl'
+
+    return fhrgrp, fhrdep, fhrlst
+
 def get_postgroups(post, cdump='gdas'):
 
     fhmin = post['FHMIN']
@@ -1231,11 +1312,12 @@ def get_postgroups(post, cdump='gdas'):
     fhrs = np.array_split(fhrs, ngrps)
     fhrs = [f.tolist() for f in fhrs]
 
-    fhrgrp = ' '.join(['anl'] + [f'_{f[0]}-{f[-1]}' for f in fhrs])
-    fhrdep = ' '.join(['anl'] + [f[-1] for f in fhrs])
-    fhrlst = ' '.join(['anl'] + ['_'.join(f) for f in fhrs])
+    fhrgrp = ' '.join([f'_{f[0]}-{f[-1]}' for f in fhrs])
+    fhrdep = ' '.join([f[-1] for f in fhrs])
+    fhrlst = ' '.join(['_'.join(f) for f in fhrs])
 
     return fhrgrp, fhrdep, fhrlst
+
 
 def get_awipsgroups(awips, cdump='gdas'):
 
@@ -1345,12 +1427,7 @@ def create_xml(dict_configs):
     dohybvar = base.get('DOHYBVAR', 'NO').upper()
     gfs_cyc = base.get('gfs_cyc', 0)
     eupd_cyc = base.get('EUPD_CYC', 'gdas').upper()
-    do_ufsda = base.get('DO_UFSDA', 'NO').upper()
-
-    if do_ufsda in ['Y', 'YES']:
-        task_prep = ['atmanalprep']
-    else:
-        task_prep = ['prep']
+    do_jedivar = base.get('DO_JEDIVAR', 'NO').upper()
 
     # Start collecting workflow pieces
     preamble = get_preamble()
@@ -1437,7 +1514,7 @@ def create_xml(dict_configs):
     if gfs_cyc != 0:
         xmlfile.append(dict_to_strings(dict_gfs_resources))
     elif gfs_cyc == 0 and dohybvar in ['Y', 'YES'] and eupd_cyc in ['BOTH', 'GFS']:
-        xmlfile.append(dict_gfs_resources['gfs{task_prep}'])
+        xmlfile.append(dict_gfs_resources['gfsprep'])
 
     xmlfile.append(workflow_header)
 
@@ -1449,7 +1526,7 @@ def create_xml(dict_configs):
     if gfs_cyc != 0:
         xmlfile.append(dict_to_strings(dict_gfs_tasks))
     elif gfs_cyc == 0 and dohybvar in ['Y', 'YES'] and eupd_cyc in ['BOTH', 'GFS']:
-        xmlfile.append(dict_gfs_tasks['gfs{task_prep}'])
+        xmlfile.append(dict_gfs_tasks['gfsprep'])
         xmlfile.append('\n')
 
     xmlfile.append(workflow_footer)
