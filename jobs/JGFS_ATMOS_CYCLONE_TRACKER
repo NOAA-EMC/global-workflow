@@ -128,8 +128,7 @@ export loopnum=1
 
 #-----------input data checking -----------------
 ${USHens_tracker}/data_check_gfs.sh
-# exit code 6 = missing data of opportunity
-if [ $? -eq 6 ]; then exit; fi
+export err=$?; err_chk
 #------------------------------------------------
 
 machine=${machine:-$(echo ${SITE})}
