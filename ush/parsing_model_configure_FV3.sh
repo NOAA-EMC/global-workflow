@@ -14,7 +14,6 @@ FV3_model_configure(){
 
 rm -f model_configure
 cat >> model_configure <<EOF
-print_esmf:              ${print_esmf:-.true.} 
 start_year:              ${tPDY:0:4}
 start_month:             ${tPDY:4:2}
 start_day:               ${tPDY:6:2}
@@ -32,6 +31,7 @@ output_1st_tstep_rst:    .false.
 quilting:                $QUILTING
 write_groups:            ${WRITE_GROUP:-1}
 write_tasks_per_group:   ${WRTTASK_PER_GROUP:-24}
+itasks:                  1
 output_history:          ${OUTPUT_HISTORY:-".true."}
 write_dopost:            ${WRITE_DOPOST:-".false."}
 write_nsflip:            ${WRITE_NSFLIP:-".false."}
@@ -49,16 +49,8 @@ nbits:                   ${nbits:-14}
 imo:                     $LONB_IMO
 jmo:                     $LATB_JMO
 output_fh:               $OUTPUT_FH
-nsout:                   $NSOUT
 iau_offset:              ${IAU_OFFSET:-0}
 EOF
-
-if [ $cpl = .true. ]; then
-cat >> model_configure <<EOF
-atm_coupling_interval_sec:      $DELTIM
-output_history:          ${OUTPUT_HISTORY:-".true."}
-EOF
-fi
 
 echo "$(cat model_configure)"
 }

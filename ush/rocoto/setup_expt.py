@@ -91,6 +91,12 @@ def fill_EXPDIR(inputs):
     expdir = os.path.join(inputs.expdir, inputs.pslot)
 
     configs = glob.glob(f'{configdir}/config.*')
+    exclude_configs = ['base', 'base.emc.dyn', 'base.nco.static', 'fv3.nco.static']
+    for exclude in exclude_configs:
+        try:
+            configs.remove(f'{configdir}/config.{exclude}')
+        except ValueError:
+            pass
     if len(configs) == 0:
         raise IOError(f'no config files found in {configdir}')
     for config in configs:
@@ -104,14 +110,9 @@ def edit_baseconfig(host, inputs):
     Parses and populates the templated `config.base.emc.dyn` to `config.base`
     '''
 
-    base_config = f'{inputs.expdir}/{inputs.pslot}/config.base'
-
     here = os.path.dirname(__file__)
     top = os.path.abspath(os.path.join(
         os.path.abspath(here), '../..'))
-
-    if os.path.exists(base_config):
-        os.unlink(base_config)
 
     tmpl_dict = {
         "@MACHINE@": host.machine.upper(),
@@ -151,21 +152,31 @@ def edit_baseconfig(host, inputs):
             "@CASEENS@": f'C{inputs.resens}',
             "@NMEM_ENKF@": inputs.nens,
         }
-        tmpl_dict = dict(tmpl_dict, **extend_dict)
+    elif inputs.mode in ['forecast-only']:
+        extend_dict = {
+            "@DO_AERO@": inputs.aerosols,
+        }
+    tmpl_dict = dict(tmpl_dict, **extend_dict)
 
-    with open(base_config + '.emc.dyn', 'rt') as fi:
+    # Open and read the templated config.base.emc.dyn
+    base_tmpl = f'{inputs.configdir}/config.base.emc.dyn'
+    with open(base_tmpl, 'rt') as fi:
         basestr = fi.read()
 
     for key, val in tmpl_dict.items():
         basestr = basestr.replace(key, str(val))
+
+    # Write and clobber the experiment config.base
+    base_config = f'{inputs.expdir}/{inputs.pslot}/config.base'
+    if os.path.exists(base_config):
+        os.unlink(base_config)
 
     with open(base_config, 'wt') as fo:
         fo.write(basestr)
 
     print('')
     print(f'EDITED:  {base_config} as per user input.')
-    print(f'DEFAULT: {base_config}.emc.dyn is for reference only.')
-    print('Please verify and delete the default file before proceeding.')
+    print(f'DEFAULT: {base_tmpl} is for reference only.')
     print('')
 
     return
@@ -230,6 +241,8 @@ def input_args():
     # forecast only mode additional arguments
     forecasts.add_argument('--app', help='UFS application', type=str, choices=[
         'ATM', 'ATMW', 'S2S', 'S2SW'], required=False, default='ATM')
+    forecasts.add_argument('--aerosols', help="Run with coupled aerosols", required=False,
+                           action='store_const', const="YES", default="NO")
 
     args = parser.parse_args()
 
@@ -241,7 +254,6 @@ def input_args():
         args.warm_start = ".true."
     else:
         args.warm_start = ".false."
-        
     return args
 
 
