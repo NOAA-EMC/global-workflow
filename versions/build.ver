@@ -13,8 +13,6 @@ export libpng_ver=1.6.37
 export hdf5_ver=1.10.6
 export netcdf_ver=4.7.4
 export esmf_ver=8.0.1
-export gsl_ver=2.7
-export nco_ver=4.7.9
 export wgrib2_ver=2.0.7
 
 export crtm_ver=2.3.0
