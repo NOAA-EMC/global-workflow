@@ -15,3 +15,17 @@ fi
 export DBNROOT=$SIPHONROOT
 
 if [[ ! " prod para test " =~ " ${envir} " && " ops.prod ops.para " =~ " $(whoami) " ]]; then err_exit "ENVIR must be prod, para, or test [envir-p1.h]"; fi
+
+#### Developer Overwrite
+####  For script level COM path assignment - compath.py gfs/v16.2
+####  Result in path: ${PTMP}/${USER}/${PSLOT}/para/com/gfs/v16.2
+PTMP=/lfs/h2/emc/ptmp
+PSLOT=ecfops
+export COMROOT=${PTMP}/${USER}/${PSLOT}/para/com
+export COMPATH=${PTMP}/${USER}/${PSLOT}/para/com/gfs
+export ROTDIR="$(compath.py gfs/${gfs_ver})"
+
+if [ -n "%PDY:%" ]; then
+  export PDY=${PDY:-%PDY:%}
+  export CDATE=${PDY}%CYC:%
+fi
