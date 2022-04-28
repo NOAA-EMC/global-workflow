@@ -6,14 +6,15 @@ readonly UTILS_DIR=$(cd "$(dirname "$($cmd -f -n "${BASH_SOURCE[0]}" )" )" && pw
 
 # Adapt for global-workflow structure.
 source ${UTILS_DIR}/machine-setup.sh > /dev/null 2>&1
-modulefile=${UTILS_DIR}/../modulefiles/workflow_utils.$target
-if [[ -f $modulefile ]]; then
+module use ${UTILS_DIR}/../modulefiles
+modulefile=${UTILS_DIR}/../modulefiles/workflow_utils.${target}
+if [[ -f ${modulefile}.lua ]]; then
   set +x
-  source $modulefile
+  module load workflow_utils.$target
   module list
   set -x
 else
-  echo "FATAL: modulefile $modulefile not found!"
+  echo "FATAL: modulefile ${modulefile}.lua not found!"
   exit 1
 fi
 # End adaptation
