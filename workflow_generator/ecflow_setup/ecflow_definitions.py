@@ -249,6 +249,10 @@ class Ecflowsuite:
             {"edit" : "value"}
         parent : str
             String for the parent node that will get the edits added.
+
+        Returns
+        -------
+        None
         """
 
         if parent:
@@ -268,6 +272,10 @@ class Ecflowsuite:
             A string that is passed to the ecflow.Event object
         parent : str
             String for the parent node that will get the events added.
+
+        Returns
+        -------
+        None
         """
 
         if parent:
@@ -285,6 +293,10 @@ class Ecflowsuite:
             A string that is passed to the ecflow.Defstatus object
         parent : str
             String for the parent node that will get the defstatus added.
+
+        Returns
+        -------
+        None
         """
 
         if parent:
@@ -313,6 +325,10 @@ class Ecflowsuite:
             DD:HH:MM. The hours on the second date string are optional as are
             the day parameters in the time string.
         parent : str
+
+        Returns
+        -------
+        None
         """
 
         repeat_token = re.search(
@@ -427,17 +443,21 @@ class Ecflowsuite:
             This is a true/false value that is looking to define if the trigger
             is an AND or an OR. If it is TRUE it is an AND, if it is FALSE, it
             is an OR.
+
+        Returns
+        -------
+        None
         """
 
         if suite is not None:
             try:
                 trigger_path = suite_array[suite].get_task(trigger).get_abs_node_path()
                 if state is None and event is None:
-                    addtrigger = ecflow.Trigger(f"{trigger_path} == complete")
+                    add_trigger = ecflow.Trigger(f"{trigger_path} == complete")
                 elif state is not None and event is None:
-                    addtrigger = ecflow.Trigger(f"{trigger_path} == {state}")
+                    add_trigger = ecflow.Trigger(f"{trigger_path} == {state}")
                 elif state is None and event is not None:
-                    addtrigger = ecflow.Trigger(f"{trigger_path}:{event}")
+                    add_trigger = ecflow.Trigger(f"{trigger_path}:{event}")
             except KeyError as e:
                 print(f"Suite {suite} for task/trigger {parent}/{trigger}" 
                       " is not available. Please check the configuration file.")
@@ -446,13 +466,13 @@ class Ecflowsuite:
         else:
             try:
                 if state is None and event is None:
-                    addtrigger = ecflow.Trigger([self.ecfnodes[trigger]])
+                    add_trigger = ecflow.Trigger([self.ecfnodes[trigger]])
                 elif state is not None and event is None:
                     trigger_path = self.ecfnodes[trigger].get_abs_node_path()
-                    addtrigger = ecflow.Trigger(f"{trigger_path} == {state}")
+                    add_trigger = ecflow.Trigger(f"{trigger_path} == {state}")
                 elif state is None and event is not None:
                     trigger_path = self.ecfnodes[trigger].get_abs_node_path()
-                    addtrigger = ecflow.Trigger(f"{trigger_path}:{event}")
+                    add_trigger = ecflow.Trigger(f"{trigger_path}:{event}")
             except KeyError as e:
                 print(f"The node/trigger {parent}/{trigger} is not available "
                       f"in suite {self.get_suite_name()}." 
@@ -460,8 +480,8 @@ class Ecflowsuite:
                 print(f"Error {e}")
                 sys.exit(1)
         if operand is not None:
-            addTrigger = ecflow.Trigger(addtrigger.get_expression(), operand)
-        self.ecfnodes[parent].add(addtrigger)
+            add_trigger = ecflow.Trigger(add_trigger.get_expression(), operand)
+        self.ecfnodes[parent].add(add_trigger)
 
     def add_family(self, family, parents=None):
         """
@@ -476,6 +496,10 @@ class Ecflowsuite:
         parents : str
             The string representation of the parent nodes that the family needs
             to be added to.
+
+        Returns
+        -------
+        None
         """
 
         family_name = f"{parents}>{family}" if parents else family
@@ -511,12 +535,16 @@ class Ecflowsuite:
         template : str
             Name of the template file to use instead of searching for the name
             of the task in the script repo.
+
+        Returns
+        -------
+        None
         """
 
-        taskNode = ecfTaskNode(task)
-        if taskNode.is_loop() or taskNode.is_list:
-            for task_number in taskNode.get_range():
-                task_name = f"{taskNode.get_full_name(task_number)}"
+        task_node = ecfTaskNode(task)
+        if task_node.is_loop() or task_node.is_list:
+            for task_number in task_node.get_range():
+                task_name = f"{task_node.get_full_name(task_number)}"
                 if task_name not in self.ecfnodes.keys():
                     self.ecfnodes[task_name] = ecfTask(task_name)
                     self.ecfnodes[task_name].setup_script(scriptrepo, template)
@@ -547,26 +575,30 @@ class Ecflowsuite:
             the string.
         edit_dict : dict
             A dictionary of the edits that are to be applied to the tasks.
+
+        Returns
+        -------
+        None
         """
 
-        taskNode = ecfTaskNode(task)
-        if taskNode.is_loop() or taskNode.is_list:
+        task_node = ecfTaskNode(task)
+        if task_node.is_loop() or task_node.is_list:
             loop_index = 0
-            for task_number in taskNode.get_range():
-                task_name = f"{taskNode.get_full_name(task_number)}"
+            for task_number in task_node.get_range():
+                task_name = f"{task_node.get_full_name(task_number)}"
                 for edit, editvalue in edit_dict.items():
                     editNodeValue = ecfEditNode(editvalue)
                     if editNodeValue.is_loop():
                         if editNodeValue.use_parent_counter:
                             neweditvalue = f"{editNodeValue.get_full_name(task_number)}"
                         else:
-                            total_tasks=len(taskNode.get_range())
+                            total_tasks=len(task_node.get_range())
                             edit_range = editNodeValue.get_range(max_value=total_tasks)
                             edit_count = [*edit_range]
                             neweditvalue = f"{editNodeValue.get_full_name(edit_count[loop_index])}"
                     elif editNodeValue.is_list:
                         try:
-                            if len(editNodeValue.items) == len(taskNode.get_range()):
+                            if len(editNodeValue.items) == len(task_node.get_range()):
                                 neweditvalue = f"{editNodeValue.get_full_name(loop_index)}"
                             else:
                                 raise ConfigurationError
@@ -595,12 +627,16 @@ class Ecflowsuite:
             The name of the task or list/range of tasks to add the repeat.
         repeat : str
             The repeat string to be passed to the add_repeat method.
+
+        Returns
+        -------
+        None
         """
 
-        taskNode = ecfTaskNode(task)
-        if taskNode.is_loop() or taskNode.is_list:
-            for task_number in taskNode.get_range():
-                task_name = f"{taskNode.get_full_name(task_number)}"
+        task_node = ecfTaskNode(task)
+        if task_node.is_loop() or task_node.is_list:
+            for task_number in task_node.get_range():
+                task_name = f"{task_node.get_full_name(task_number)}"
                 self.add_repeat(repeat, task_name)
         else:
             self.add_repeat(repeat, task)
@@ -618,12 +654,16 @@ class Ecflowsuite:
             list as well.
         defstatus : str
             String that represents the defstatus, like complete.
+
+        Returns
+        -------
+        None
         """
 
-        taskNode = ecfTaskNode(task)
-        if taskNode.is_loop() or taskNode.is_list:
-            for task_number in taskNode.get_range():
-                task_name = f"{taskNode.get_full_name(task_number)}"
+        task_node = ecfTaskNode(task)
+        if task_node.is_loop() or task_node.is_list:
+            for task_number in task_node.get_range():
+                task_name = f"{task_node.get_full_name(task_number)}"
                 self.add_defstatus(defstatus, task_name)
         else:
             self.add_defstatus(defstatus, task)
@@ -641,13 +681,17 @@ class Ecflowsuite:
             The task string to add the event to.
         events : str
             The events string that will be added to the task.
+
+        Returns
+        -------
+        None
         """
 
-        taskNode = ecfTaskNode(task)
-        if taskNode.is_loop() or taskNode.is_list:
-            for task_number in taskNode.get_range():
+        task_node = ecfTaskNode(task)
+        if task_node.is_loop() or task_node.is_list:
+            for task_number in task_node.get_range():
                 loop_index = 0
-                task_name = f"{taskNode.get_full_name(task_number)}"
+                task_name = f"{task_node.get_full_name(task_number)}"
                 for event in events:
                     eventNode = ecfEventNode(event)
                     if eventNode.is_loop():
@@ -661,8 +705,9 @@ class Ecflowsuite:
                                 self.add_event(event_name, task_name)
                     elif eventNode.is_list:
                         try:
-                            if len(eventNode.items) == len(taskNode.get_range()):
-                                neweditvalue = f"{editNodeValue.get_full_name(loop_index)}"
+                            if len(eventNode.items) == len(task_node.get_range()):
+                                event_name = f"{eventNode.get_full_name(loop_index)}"
+                                self.add_event(event_name, task_name)
                             else:
                                 raise ConfigurationError
                         except ConfigurationError:
@@ -713,6 +758,10 @@ class Ecflowsuite:
             Since processing the triggers for each of the tasks has a lot of
             repetative break downs, it is useful to create a method within
             the add_task_trigger method to reduce the repetative code.
+
+        Returns
+        -------
+        None
         """
 
         def process_trigger(trigger_name, triggerTaskNode, task,
@@ -745,6 +794,10 @@ class Ecflowsuite:
             task_number : int
                 The task ID number to get the full name of the task in the
                 event that the task is a list.
+
+            Returns
+            -------
+            None
             """
 
             if triggerTaskNode.has_suite():
@@ -781,12 +834,12 @@ class Ecflowsuite:
                 self.add_trigger(trigger_name, task, suite=suite,
                                  suite_array=suite_array, operand=operand)
 
-        taskNode = ecfTaskNode(task)
-        if taskNode.is_loop() or taskNode.is_list:
+        task_node = ecfTaskNode(task)
+        if task_node.is_loop() or task_node.is_list:
             task_loop_index = 0
-            for task_number in taskNode.get_range():
-                task_name = f"{taskNode.get_full_name(task_number)}"
-                total_tasks = len(taskNode.get_range())
+            for task_number in task_node.get_range():
+                task_name = f"{task_node.get_full_name(task_number)}"
+                total_tasks = len(task_node.get_range())
                 for trigger in triggers:
                     triggerTaskNode = ecfTriggerNode(trigger)
                     if triggerTaskNode.is_loop() or triggerTaskNode.is_list:
@@ -934,6 +987,15 @@ class ecfNode():
     def get_name(self):
         """
         Returns the name of the node.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        str
+            The name in string format.
         """
 
         return self.name
@@ -945,6 +1007,15 @@ class ecfNode():
         a max, min, interval, or list.
 
         The range is split into a tokenized array.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        bool
+            True if the node is a loop format defined by ( ).
         """
 
         range_functions = {
@@ -963,6 +1034,14 @@ class ecfNode():
     def invalid_range(self):
         """
         Helper function to ensure that the range is valid. Exits if it is not.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
         """
 
         print(f"The range specified in {self.name} is out of bounds. "
@@ -979,6 +1058,10 @@ class ecfNode():
         ----------
         range_token : array
             The range token from the is_loop method.
+
+        Returns
+        -------
+        None
         """
 
         self.initial_count = None
@@ -993,7 +1076,7 @@ class ecfNode():
                 print(f"Maximum value for {self.name} is not an integer")
                 sys.exit(1)
 
-    def set_initial_max_value(self,range_token):
+    def set_initial_max_value(self, range_token):
         """
         If the range token is passed two parameters, they are assumed to be
         the initial and max values. This sets those values for the node. The
@@ -1003,6 +1086,10 @@ class ecfNode():
         ----------
         range_token : array
             The range token from the is_loop method.
+
+        Returns
+        -------
+        None
         """
 
         try:
@@ -1029,6 +1116,10 @@ class ecfNode():
         ----------
         range_token : array
             The range token from the is_loop method.
+
+        Returns
+        -------
+        None
         """
 
         try:
@@ -1058,6 +1149,10 @@ class ecfNode():
         counter : str or int
             If it is a str, returns the list item in that position. If it is
             an int, then return the counter position for it.
+
+        Returns
+        -------
+        None
         """
 
         try:
@@ -1092,6 +1187,15 @@ class ecfNode():
     def has_max_value(self):
         """
         Returns true if the node object range has a maximum value.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        bool
+            True if there is a max value, false otherwise.
         """
 
         return True if self.max_value is not None else False
@@ -1099,6 +1203,15 @@ class ecfNode():
     def get_max_value(self):
         """
         Returns the maximum value for the node.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        int
+            The max value if one is set.
         """
 
         return self.max_value
@@ -1116,6 +1229,10 @@ class ecfNode():
             The increment value to use for the range in case it wasn't defined
         max_value : int
             The maximum value for the range.
+
+        Returns
+        -------
+        None
         """
 
         if self.is_list:
@@ -1144,6 +1261,15 @@ class ecfTaskNode(ecfNode):
     def get_type(self):
         """
         Returns that this node is a task type.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        str
+            The value of task to identify the node is a task.
         """
 
         return 'task'
@@ -1242,6 +1368,12 @@ class ecfTriggerNode(ecfNode):
     """
 
     def __init__(self, ecfItem):
+        """
+        Parameters
+        ----------
+        ecfItem : dict or str
+            A dictionary or string item that represents the current node.
+        """
         self.task_setup = ecfItem
         if isinstance(ecfItem['task'], str):
             if re.search(r".*\(.*\).*", ecfItem['task']):
@@ -1267,6 +1399,15 @@ class ecfTriggerNode(ecfNode):
     def get_type(self):
         """
         Returns that this node is a trigger type.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        str
+            The value trigger to identify that this is a trigger node.
         """
 
         return 'trigger'
@@ -1276,6 +1417,15 @@ class ecfTriggerNode(ecfNode):
         If the trigger has an operand to indciate if it needs to be added as an
         OR or AND in the trigger statement, set the value and return True,
         otherwise false.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        bool
+            True if there is an operand associated with the trigger.
         """
 
         if 'operand' in self.task_setup.keys():
@@ -1287,6 +1437,15 @@ class ecfTriggerNode(ecfNode):
     def get_operand(self):
         """
         Returns the operand associated with the trigger.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        str or bool
+            Return the operand.
         """
 
         return self.operand
@@ -1294,6 +1453,15 @@ class ecfTriggerNode(ecfNode):
     def get_state(self):
         """
         Returns the state associated with the trigger if one was defined.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        str
+            The state in string format.
         """
 
         return self.state
@@ -1301,6 +1469,15 @@ class ecfTriggerNode(ecfNode):
     def get_event(self):
         """
         Returns the event_string associated with the trigger if one was defined
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        str
+            The event in string format.
         """
 
         return self.event_string
@@ -1309,6 +1486,16 @@ class ecfTriggerNode(ecfNode):
         """
         If a suite was passed in as part of the parameters in the keys, this
         returns True and sets the suite attribute to the suite name.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        bool
+            If there is a suite associated with the trigger, return true
+            otherwise false.
         """
         if 'suite' in self.task_setup.keys():
             self.suite = self.task_setup['suite']
@@ -1319,6 +1506,15 @@ class ecfTriggerNode(ecfNode):
     def get_suite(self):
         """
         Returns the suite name.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        str
+            The name of the suite in string format.
         """
         return self.suite
 
@@ -1326,6 +1522,16 @@ class ecfTriggerNode(ecfNode):
         """
         If a state was passed in with the YAML parameters, return true and set
         the state attribute to the state of the trigger.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        bool
+            Returns true if there is a state value in the keys, otherwise
+            false.
         """
         if 'state' in self.task_setup.keys():
             self.state = self.task_setup['state']
@@ -1340,6 +1546,16 @@ class ecfTriggerNode(ecfNode):
         and if it does identifies the event string and items associated with it
         so that it can be used in other functions later. If it does have the
         loop or list identifiers then it returns true, otherwise false.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        bool
+            Returns true if the trigger has an event in either list or
+            string format.
         """
         if 'event' in self.task_setup.keys():
             if isinstance(self.task_setup['event'], str):
@@ -1369,6 +1585,15 @@ class ecfTriggerNode(ecfNode):
         If the event that exists as part of the trigger is a loop,
         this breaks down the event loop into the appropriate
         values and returns true. Otherwise returns false.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        bool
+            If there is an event loop, returns true, otherwise false.
         """
         range_functions = {
             1: self.set_event_max_value,
@@ -1386,7 +1611,16 @@ class ecfTriggerNode(ecfNode):
     def invalid_event_range(self):
         """
         Helper method to exit the application if the event range is invalid.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
         """
+
         print(f"The range specified in {self.name} is out of bounds. "
               "Please review the configuration.")
         sys.exit(1)
@@ -1401,6 +1635,10 @@ class ecfTriggerNode(ecfNode):
         ----------
         range_token : array
             The range token from the is_loop method.
+
+        Returns
+        -------
+        None
         """
 
         self.event_initial_count = None
@@ -1425,6 +1663,10 @@ class ecfTriggerNode(ecfNode):
         ----------
         range_token : array
             The range token from the is_loop method.
+
+        Returns
+        -------
+        None
         """
 
         try:
@@ -1451,6 +1693,10 @@ class ecfTriggerNode(ecfNode):
         ----------
         range_token : array
             The range token from the is_loop method.
+
+        Returns
+        -------
+        None
         """
 
         try:
@@ -1481,6 +1727,10 @@ class ecfTriggerNode(ecfNode):
         counter : str or int
             If it is a str, returns the list item in that position. If it is
             an int, then return the counter position for it.
+
+        Returns
+        -------
+        None
         """
 
         try:
@@ -1516,12 +1766,30 @@ class ecfTriggerNode(ecfNode):
     def has_event_max_value(self):
         """
         Returns true if the node object range has a maximum value.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        bool
+            True if there is an event max value associated with the trigger.
         """
         return True if self.event_max_value is not None else False
 
     def get_event_max_value(self):
         """
         Returns the maximum value for the node.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        int
+            The max value associated with the event.
         """
         return self.event_max_value
 
@@ -1538,6 +1806,13 @@ class ecfTriggerNode(ecfNode):
             The increment value to use for the range in case it wasn't defined
         max_value : int
             The maximum value for the range.
+
+        Returns
+        -------
+        range
+            The range of items within the event. If it is a list it uses the
+            total number of items in the list, otherwise it pulls the values
+            defined in the YAML.
         """
 
         if self.is_event_list:
@@ -1565,6 +1840,15 @@ class ecfEventNode(ecfNode):
     def get_type(self):
         """
         Returns that this node is an event type.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        str
+            The string event to identify this as an event node.
         """
         return 'event'
 
@@ -1581,6 +1865,15 @@ class ecfEditNode(ecfNode):
     def get_type(self):
         """
         Returns that this node is an edit type.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        str
+            The string edit to identify this as an edit node.
         """
 
         return 'edit'
@@ -1599,6 +1892,17 @@ class ecfRoot( ):
     def get_base_name():
         """
         Returns the prefix to a node.
+        * Not currently in use, may be removed at a later date.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        str
+            The name of the node if it has a prefix, this strips out the
+            surrounding range and just returns the beginning.
         """
         return re.search("(.*)\{.*\}",self.name()).group(1).strip()
 
@@ -1624,6 +1928,10 @@ class ecfSuite(ecflow.Suite, ecfRoot):
         ----------
         ecfhome : str
             Path to the root level directory for the ecfhome.
+
+        Returns
+        -------
+        None
         """
 
         folder_path = f"{ecfhome}/{self.name()}"
@@ -1658,6 +1966,10 @@ class ecfFamily(ecflow.Family, ecfRoot):
         parents : str
             Any of the parent families to ensure that the folder structure is
             setup correctly.
+
+        Returns
+        -------
+        None
         """
         if parents:
             folder_path = f"{ecfhome}/{suite}/{parents.replace('>','/')}/{self.name()}"
@@ -1700,6 +2012,10 @@ class ecfTask(ecflow.Task, ecfRoot):
         template : str
             The template script if needed so the application will use that
             instead of searching for the task name in the script repo.
+
+        Returns
+        -------
+        None
         """
         self.scriptrepo = repopath
         self.template = template
@@ -1721,6 +2037,10 @@ class ecfTask(ecflow.Task, ecfRoot):
         parents: str
             Any parent folders that are appended to the ecfhome and suite
             folders.
+
+        Returns
+        -------
+        None
         """
         if self.template == "skip":
             return
@@ -1759,4 +2079,3 @@ class RangeError(Error):
 class ConfigurationError(Error):
     """Raised when there is an error in the configuration file."""
     pass
-7

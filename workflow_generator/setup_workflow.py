@@ -35,6 +35,10 @@ def parse_command_line():
     This function pulls in the command line arguments and parses them using the
     argparse module.
 
+    Parameters
+    ----------
+    None
+
     Returns
     -------
     arguments : array
@@ -74,6 +78,14 @@ def main():
     ** Important note: This function does also pull from the ush/rocoto
     application to use the get_configs and config_parser functions to populate
     the environment variable array.
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    None
     """
     args = parse_command_line()
 

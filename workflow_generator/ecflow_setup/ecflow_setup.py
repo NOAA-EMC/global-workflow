@@ -107,6 +107,10 @@ class Ecflowsetup:
             The arguments passed in by the command line.
         env_configs : dict
             The environment variables pulled in from the experiement directory.
+
+        Returns
+        -------
+        None
         """
 
         # Setup the base variables
@@ -223,6 +227,15 @@ class Ecflowsetup:
 
         Calling this method will cause the application to exit with a status
         code of 1.
+
+        Parameters
+        ----------
+        e : str
+            The error in string format to print out.
+
+        Returns
+        -------
+        None
         """
 
         print(e)
@@ -232,6 +245,14 @@ class Ecflowsetup:
         """
         This saves the suite definition file to the save dir with the file name
         ecflow_suite.def.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
         """
 
         print("Saving definition File")
@@ -242,6 +263,14 @@ class Ecflowsetup:
     def print(self):
         """
         Prints out what would be populated to the suite definition file.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
         """
         print(self.DEFS.check())
         print(self.DEFS)
@@ -258,6 +287,10 @@ class Ecflowsetup:
         ----------
         suite : str
             The name of the suite that will be used to add the environment edits
+
+        Returns
+        -------
+        None
         """
 
         # Add in the ECF Home and ECF Include edits.
@@ -318,6 +351,10 @@ class Ecflowsetup:
             Name of the suite that needs the edits added.
         suite_dict :
             The dictionary for the suite that was passed in.
+
+        Returns
+        -------
+        None
         """
 
         # Baseline edits
@@ -332,6 +369,14 @@ class Ecflowsetup:
         """
         If there is an externs section in the YAML file for a suite, this adds
         the externs to the header.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
         """
 
         if 'externs' in self.ecfconf.keys():
@@ -359,6 +404,10 @@ class Ecflowsetup:
             If this family is not a top level one for the suite, this string is
             the list of families that came before it, used to populate the
             dictionary object in the ecflow_definitions module.
+
+        Returns
+        -------
+        None
         """
 
         for item in nodes.keys():
@@ -395,6 +444,10 @@ class Ecflowsetup:
             Contains all the tasks and families for the parent node.
         parents : str
             The parent family for any of the tasks
+
+        Returns
+        -------
+        None
         """
 
         for item in nodes.keys():
@@ -446,6 +499,10 @@ class Ecflowsetup:
             The suite to key off for adding the triggers
         nodes : dict
             The families/tasks that need to be parsed.
+
+        Returns
+        -------
+        None
         """
 
         for item in nodes.keys():
