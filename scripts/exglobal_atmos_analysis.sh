@@ -1,4 +1,4 @@
-#!/bin/ksh
+#!/bin/bash
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
@@ -462,8 +462,8 @@ fi
 # CRTM Spectral and Transmittance coefficients
 mkdir -p crtm_coeffs
 for file in $(awk '{if($1!~"!"){print $1}}' satinfo | sort | uniq); do
-   $NLN $RTMFIX/${file}.SpcCoeff.bin ./crtm_coeffs/
-   $NLN $RTMFIX/${file}.TauCoeff.bin ./crtm_coeffs/
+   $NLN $RTMFIX/${file}.SpcCoeff.bin ./crtm_coeffs/${file}.SpcCoeff.bin
+   $NLN $RTMFIX/${file}.TauCoeff.bin ./crtm_coeffs/${file}.TauCoeff.bin
 done
 $NLN $RTMFIX/amsua_metop-a_v2.SpcCoeff.bin ./crtm_coeffs/amsua_metop-a_v2.SpcCoeff.bin
 
@@ -627,7 +627,7 @@ if [ $GENDIAG = "YES" ] ; then
 	  rm -rf $DIAG_DIR
       fi
       npe_m1="$(($npe_gsi-1))"
-      for pe in {0..$npe_m1}; do
+      for pe in $(seq 0 $npe_m1); do
         pedir="dir."$(printf %04i $pe)
         mkdir -p $DIAG_DIR/$pedir
         $NLN $DIAG_DIR/$pedir $pedir
@@ -998,11 +998,11 @@ if [ $DOGCYCLE = "YES" ]; then
 
     # Global cycle requires these files
     export FNTSFA=${FNTSFA:-$COMIN_OBS/${OPREFIX}rtgssthr.grb}
-    export FNACNA=${FNACNA:-$COMIN_OBS/${OPREFIX}seaice.5min.blend.grb}
-    export FNSNOA=${FNSNOA:-$COMIN_OBS/${OPREFIX}snogrb_t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}}
-    [[ ! -f $FNSNOA ]] && export FNSNOA="$COMIN_OBS/${OPREFIX}snogrb_t1534.3072.1536"
-    FNSNOG=${FNSNOG:-$COMIN_GES_OBS/${GPREFIX}snogrb_t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}}
-    [[ ! -f $FNSNOG ]] && FNSNOG="$COMIN_GES_OBS/${GPREFIX}snogrb_t1534.3072.1536"
+    export FNACNA=${FNACNA:-$COMIN/${OPREFIX}seaice.5min.blend.grb}
+    export FNSNOA=${FNSNOA:-$COMIN/${OPREFIX}snogrb_t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}}
+    [[ ! -f $FNSNOA ]] && export FNSNOA="$COMIN/${OPREFIX}snogrb_t1534.3072.1536"
+    FNSNOG=${FNSNOG:-$COMIN_GES/${GPREFIX}snogrb_t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}}
+    [[ ! -f $FNSNOG ]] && FNSNOG="$COMIN_GES/${GPREFIX}snogrb_t1534.3072.1536"
 
     # Set CYCLVARS by checking grib date of current snogrb vs that of prev cycle
     if [ $RUN_GETGES = "YES" ]; then
