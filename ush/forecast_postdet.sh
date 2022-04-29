@@ -260,7 +260,10 @@ EOF
   fi
   H2OFORC=${H2OFORC:-"global_h2o_pltc.f77"}
   ####
-  # copy CCN_ACTIVATE.BIN for Thompson microphysics
+  #  Copy CCN_ACTIVATE.BIN for Thompson microphysics
+  #  Thompson microphysics used when CCPP_SUITE set to FV3_GSD_v0 or FV3_GSD_noah
+  #  imp_physics should be 8
+  ####
   if [ $imp_physics -eq 8 ]; then
     $NLN $FIX_AM/CCN_ACTIVATE.BIN  $DATA/CCN_ACTIVATE.BIN
     $NLN $FIX_AM/freezeH2O.dat     $DATA/freezeH2O.dat
@@ -501,15 +504,7 @@ EOF
   LONB_STP=${LONB_STP:-$LONB_CASE}
   LATB_STP=${LATB_STP:-$LATB_CASE}
 
-  #------------------------------------------------------------------
-  # make symbolic links to write forecast files directly in memdir
   cd $DATA
-  if [ "$CCPP_SUITE" = 'FV3_GSD_v0' -o "$CCPP_SUITE" = 'FV3_GSD_noah' ]; then
-    $NLN $FIX_AM/CCN_ACTIVATE.BIN  CCN_ACTIVATE.BIN
-    $NLN $FIX_AM/freezeH2O.dat  freezeH2O.dat
-    $NLN $FIX_AM/qr_acr_qg.dat  qr_acr_qg.dat
-    $NLN $FIX_AM/qr_acr_qs.dat  qr_acr_qs.dat
-  fi
 
   affix="nc"
   if [ "$OUTPUT_FILE" = "nemsio" ]; then
