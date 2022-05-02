@@ -123,7 +123,6 @@ scripts/exgdas_enkf_post.sh
 scripts/exgdas_enkf_select_obs.sh
 scripts/exgdas_enkf_sfc.sh
 scripts/exgdas_enkf_update.sh
-scripts/exgfs_atmos_nceppost.sh
 scripts/exgfs_atmos_vminmon.sh
 scripts/exgfs_atmos_wafs_blending.sh
 scripts/exgfs_atmos_wafs_blending_0p25.sh
@@ -142,7 +141,6 @@ ush/chgres_cube.sh
 ush/emcsfc_ice_blend.sh
 ush/emcsfc_snow.sh
 ush/fix_precip.sh
-ush/fv3gfs_downstream_nems.sh
 ush/fv3gfs_driver_grid.sh
 ush/fv3gfs_dwn_nems.sh
 ush/fv3gfs_filter_topo.sh
