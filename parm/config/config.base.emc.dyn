@@ -100,9 +100,9 @@ export EXPDIR="@EXPDIR@/$PSLOT"
 export ROTDIR="@ROTDIR@/$PSLOT"
 export ROTDIR_DUMP="YES"                #Note: A value of "NO" does not currently work
 export DUMP_SUFFIX=""
-if [[ "$CDATE" -ge "2019092100" && "$CDATE" -le "2019110700" ]]; then
-    export DUMP_SUFFIX="p"              # Use dumps from NCO GFS v15.3 parallel
-fi
+#if [[ "$CDATE" -ge "2019092100" && "$CDATE" -le "2019110700" ]]; then
+#    export DUMP_SUFFIX="p"              # Use dumps from NCO GFS v15.3 parallel
+#fi
 export RUNDIR="$STMP/RUNDIRS/$PSLOT"
 export DATAROOT="$RUNDIR/$CDATE/$CDUMP"
 export ARCDIR="$NOSCRUB/archive/$PSLOT"
