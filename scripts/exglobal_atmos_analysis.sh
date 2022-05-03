@@ -81,6 +81,10 @@ export imp_physics=${imp_physics:-99}
 lupp=${lupp:-".true."}
 cnvw_option=${cnvw_option:-".false."}
 
+# Observation usage options
+cao_check=${cao_check:-".false."}
+ta2tb=${ta2tb:-".false."}
+
 # Diagnostic files options
 lobsdiag_forenkf=${lobsdiag_forenkf:-".false."}
 netcdf_diag=${netcdf_diag:-".true."}
@@ -461,6 +465,7 @@ for file in $(awk '{if($1!~"!"){print $1}}' satinfo | sort | uniq); do
    $NLN $RTMFIX/${file}.SpcCoeff.bin ./crtm_coeffs/
    $NLN $RTMFIX/${file}.TauCoeff.bin ./crtm_coeffs/
 done
+$NLN $RTMFIX/amsua_metop-a_v2.SpcCoeff.bin ./crtm_coeffs/amsua_metop-a_v2.SpcCoeff.bin
 
 $NLN $RTMFIX/Nalli.IRwater.EmisCoeff.bin   ./crtm_coeffs/Nalli.IRwater.EmisCoeff.bin
 $NLN $RTMFIX/NPOESS.IRice.EmisCoeff.bin    ./crtm_coeffs/NPOESS.IRice.EmisCoeff.bin
@@ -473,6 +478,8 @@ $NLN $RTMFIX/NPOESS.VISwater.EmisCoeff.bin ./crtm_coeffs/NPOESS.VISwater.EmisCoe
 $NLN $RTMFIX/FASTEM6.MWwater.EmisCoeff.bin ./crtm_coeffs/FASTEM6.MWwater.EmisCoeff.bin
 $NLN $RTMFIX/AerosolCoeff.bin              ./crtm_coeffs/AerosolCoeff.bin
 $NLN $RTMFIX/CloudCoeff.bin                ./crtm_coeffs/CloudCoeff.bin
+#$NLN $RTMFIX/CloudCoeff.GFDLFV3.-109z-1.bin ./crtm_coeffs/CloudCoeff.bin
+
 
 ##############################################################
 # Observational data
@@ -759,11 +766,12 @@ cat > gsiparm.anl << EOF
   crtm_coeffs_path='./crtm_coeffs/',
   newpc4pred=.true.,adp_anglebc=.true.,angord=4,passive_bc=.true.,use_edges=.false.,
   diag_precon=.true.,step_start=1.e-3,emiss_bc=.true.,nhr_obsbin=${nhr_obsbin:-3},
-  cwoption=3,imp_physics=$imp_physics,lupp=$lupp,cnvw_option=$cnvw_option,
+  cwoption=3,imp_physics=$imp_physics,lupp=$lupp,cnvw_option=$cnvw_option,cao_check=${cao_check},
   netcdf_diag=$netcdf_diag,binary_diag=$binary_diag,
   lobsdiag_forenkf=$lobsdiag_forenkf,
   write_fv3_incr=$write_fv3_increment,
   nhr_anal=${IAUFHRS},
+  ta2tb=${ta2tb},
   $WRITE_INCR_ZERO
   $WRITE_ZERO_STRAT
   $WRITE_STRAT_EFOLD
@@ -901,7 +909,7 @@ OBS_INPUT::
    avhambufr      avhrr       metop-c     avhrr3_metop-c      0.0     4     0
    avhpmbufr      avhrr       n19         avhrr3_n19          0.0     4     0
    amsr2bufr      amsr2       gcom-w1     amsr2_gcom-w1       0.0     3     0
-   gmibufr        gmi         gpm         gmi_gpm             0.0     3     0
+   gmibufr        gmi         gpm         gmi_gpm             0.0     1     0
    saphirbufr     saphir      meghat      saphir_meghat       0.0     3     0
    ahibufr        ahi         himawari8   ahi_himawari8       0.0     1     0
    abibufr        abi         g16         abi_g16             0.0     1     0
