@@ -25,6 +25,10 @@ set -x
 #-Wen Meng, January 2018, add flag PGB1F for turning on/ogg grib1 pgb data at 1.00 deg. generation.
 #-Wen Meng, Feburary 2018
 #  1. Add flag PGBS for turning on/off pgb data at 1.0 and 0.5 deg. generation frequency of FHOUT_PGB defined.
+#-Wen Meng, October 2019
+#  1. Use bilinear interpolation for LAND. It can trancate land-sea mask as 1 or 0.
+#-Wen Meng, November 2019
+#  1. Modify sea icea cover via land-sea mask.
 #-----------------------------------------------------------------------
 
 
@@ -165,7 +169,21 @@ while [ $nset -le $totalset ]; do
   chmod 775 $DATA/poescript
   export MP_PGMMODEL=mpmd
   export MP_CMDFILE=$DATA/poescript
-  $launcher $MP_CMDFILE
+  launcher=${APRUN_DWN:-"aprun -j 1 -n 24 -N 24 -d 1 cfp"}
+  if [ $machine = WCOSS_C -o $machine = WCOSS_DELL_P3 -o $machine = WCOSS2 ] ; then
+    $launcher $MP_CMDFILE
+  elif [ $machine = HERA -o $machine = ORION -o $machine = JET -o $machine = S4 ] ; then
+    if [ -s $DATA/poescript_srun ]; then rm -f $DATA/poescript_srun; fi
+    touch $DATA/poescript_srun
+    nm=0
+    cat $DATA/poescript | while read line; do
+      echo "$nm $line" >> $DATA/poescript_srun 
+      nm=$((nm+1))
+    done
+    ${launcher:-"srun --export=ALL"} -n $nm --multi-prog $DATA/poescript_srun
+  else
+    $launcher
+  fi
   export err=$?
   if [ $err -ne 0 ]; then sh +x $DATA/poescript ; fi
 
