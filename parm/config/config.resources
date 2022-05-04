@@ -482,8 +482,6 @@ elif [ $step = "eupdfsoi" ]; then
         export nth_eupdfsoi=40
       fi
     elif [ $CASE = "C384" ]; then
-      #export npe_eupdfsoi=270
-      #export nth_eupdfsoi=2
       export npe_eupdfsoi=400
       export nth_eupdfsoi=5
       if [[ "$machine" = "WCOSS_DELL_P3" ]]; then

@@ -10,10 +10,6 @@ echo "BEGIN: config.efsoi"
 
 export npe_enkf=$npe_eupd
 
-
-# Use NAM_ENKF below for serial EnKF
-##export NAM_ENKF="analpertwtnh=0.9,analpertwtsh=0.9,analpertwttr=0.9"
-
 # LETKF specific settings with model space localization
 export modelspace_vloc=".true."  # model space localization
 export letkf_flag=".true."       # use LETKF instead of serial filter

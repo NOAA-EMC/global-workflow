@@ -66,7 +66,7 @@ def main():
     steps = steps + wav_steps_awips if _base.get('DO_AWIPS', 'NO') == 'YES' else steps
 
 # for EFSOI
-    efsoi_steps = ['eupdfsoi', 'esfcfsoi', 'ecenfsoi', 'efcsfsoi', 'eposfsoi','efsoi']
+    efsoi_steps = ['eupdfsoi', 'esfcfsoi', 'ecenfsoi', 'efcsfsoi', 'eposfsoi', 'efsoi']
     steps = steps + efsoi_steps if _base.get('DO_EFSOI','NO') == 'YES' else steps
 
     dict_configs = wfu.source_configs(configs, steps)
@@ -168,7 +168,6 @@ def get_definitions(base):
     do_efsoi = base.get('DO_EFSOI', 'NO').upper()
     hpssarch = base.get('HPSSARCH', 'NO').upper()
 
- 
     strings = []
 
     strings.append('\n')
@@ -334,7 +333,6 @@ def get_hyb_resources(dict_configs):
             tasks1 = ['eobs', 'ediag', 'eupd', 'echgres', 'eupdfsoi']
         else:
             tasks1 = ['eobs', 'ediag', 'eupd', 'echgres']
-
     else:
         if do_efsoi in ['Y', 'YES']:
             tasks1 = ['eobs', 'eomg',  'eupd', 'echgres', 'eupdfsoi']
@@ -377,8 +375,7 @@ def get_hyb_resources(dict_configs):
     do_efsoi = base.get('DO_EFSOI', 'NO').upper()
 
     if do_efsoi in ['Y', 'YES']:
-        #tasks2 = ['ecen', 'ecenfsoi', 'esfc', 'esfcfsoi', 'efcs', 'efcsfsoi', 'epos', 'eposfsoi', 'earc', 'efsoi']
-        tasks2 = ['ecenfsoi', 'esfcfsoi', 'efcsfsoi', 'eposfsoi', 'efsoi', 'ecen', 'esfc', 'efcs', 'epos', 'earc' ]
+        tasks2 = ['ecenfsoi', 'esfcfsoi', 'efcsfsoi', 'eposfsoi', 'efsoi', 'ecen', 'esfc', 'efcs', 'epos', 'earc']
     else:
         tasks2 = ['ecen', 'esfc', 'efcs', 'epos', 'earc']
     for task in tasks2:
@@ -1058,24 +1055,23 @@ def get_hyb_tasks(dict_configs, cycledef='enkf'):
 
         dict_tasks[f'{cdump}eupd'] = task
 
-        # # eupdfsoi
+        # eupdfsoi
         do_efsoi = base.get('DO_EFSOI', 'NO').upper()
 
         if do_efsoi in ['Y', 'YES']:
-
             deps = []
             if lobsdiag_forenkf in ['.F.', '.FALSE.']:
-                dep_dict = {'type': 'metatask', 'name': '%seomn' % cdump}
+                dep_dict = {'type': 'metatask', 'name': f'{cdump}eomn'}
             else:
-                dep_dict = {'type': 'task', 'name': '%sediag' % cdump}
+                dep_dict = {'type': 'task', 'name': f'{cdump}ediag'}
             deps.append(rocoto.add_dependency(dep_dict))
             data = '&ROTDIR;/gdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmanl.ensres.nc'
             dep_dict = {'type': 'data', 'data': data }
             deps.append(rocoto.add_dependency(dep_dict))
-            dependencies = rocoto.create_dependency(dep_condition='and',dep=deps)
+            dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
             task = wfu.create_wf_task('eupdfsoi', cdump=cdump, envar=envars1, dependency=dependencies, cycledef=cycledef)
 
-            dict_tasks['%seupdfsoi' % cdump] = task
+            dict_tasks[f'{cdump}eupdfsoi'] = task
 
     # All hybrid tasks beyond this point are always executed in the GDAS cycle
     cdump = 'gdas'
@@ -1112,17 +1108,16 @@ def get_hyb_tasks(dict_configs, cycledef='enkf'):
     if do_efsoi in ['Y', 'YES']:
     # ecmnfsoi, ecenfsoi
         deps1 = []
-	#data = '&ROTDIR;/%s.@Y@m@d/@H/%s.t@Hz.loganl.txt' % (cdump, cdump)
         data = f'&ROTDIR;/{cdump}.@Y@m@d/@H/{cdump}.t@Hz.loganl.txt'
         dep_dict = {'type': 'data', 'data': data}
         deps1.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'task', 'name': '%sanalcalc' % cdump}
+        dep_dict = {'type': 'task', 'name': f'{cdump}analcalc'}
         deps1.append(rocoto.add_dependency(dep_dict))
         dependencies1 = rocoto.create_dependency(dep_condition='or', dep=deps1)
 
         deps2 = []
         deps2 = dependencies1
-        dep_dict = {'type': 'task', 'name': '%seupdfsoi' % cdump_eupd}
+        dep_dict = {'type': 'task', 'name': f'{cdump_eupd}eupdfsoi'}
         deps2.append(rocoto.add_dependency(dep_dict))
         dependencies2 = rocoto.create_dependency(dep_condition='and', dep=deps2)
 
@@ -1135,7 +1130,7 @@ def get_hyb_tasks(dict_configs, cycledef='enkf'):
         task = wfu.create_wf_task('ecenfsoi', cdump=cdump, envar=ecenenvars, dependency=dependencies2,
                               metatask='ecmnfsoi', varname=varname1, varval=varval1, vardict=vardict)
 
-        dict_tasks['%secmnfsoi' % cdump] = task
+        dict_tasks[f'{cdump}ecmnfsoi'] = task
 
     # esfc
     deps1 = []
@@ -1159,21 +1154,21 @@ def get_hyb_tasks(dict_configs, cycledef='enkf'):
     if do_efsoi in ['Y', 'YES']:
     # esfcfsoi
          deps1 = []
-         data = '&ROTDIR;/%s.@Y@m@d/@H/%s.t@Hz.loganl.txt' % (cdump, cdump)
+         data = '&ROTDIR;/{cdump}.@Y@m@d/@H/{cdump}.t@Hz.loganl.txt' 
          dep_dict = {'type': 'data', 'data': data}
          deps1.append(rocoto.add_dependency(dep_dict))
-         dep_dict = {'type': 'task', 'name': '%sanalcalc' % cdump}
+         dep_dict = {'type': 'task', 'name': f'{cdump}analcalc'}
          deps1.append(rocoto.add_dependency(dep_dict))
          dependencies1 = rocoto.create_dependency(dep_condition='or', dep=deps1)
 
          deps2 = []
          deps2 = dependencies1
-         dep_dict = {'type': 'task', 'name': '%seupdfsoi' % cdump_eupd}
+         dep_dict = {'type': 'task', 'name': f'{cdump_eupd}eupdfsoi'}
          deps2.append(rocoto.add_dependency(dep_dict))
          dependencies2 = rocoto.create_dependency(dep_condition='and', dep=deps2)
          task = wfu.create_wf_task('esfcfsoi', cdump=cdump, envar=envars1, dependency=dependencies2, cycledef=cycledef)
 
-         dict_tasks['%sesfcfsoi' % cdump] = task
+         dict_tasks[f'{cdump}esfcfsoi'] = task
 
     # efmn, efcs
     deps1 = []
@@ -1209,25 +1204,22 @@ def get_hyb_tasks(dict_configs, cycledef='enkf'):
     if do_efsoi in ['Y', 'YES']:
          # efmnfsoi, efcsfsoi
          deps1 = []
-         dep_dict = {'type': 'metatask', 'name': '%secmnfsoi' % cdump}
+         dep_dict = {'type': 'metatask', 'name': f'{cdump}ecmnfsoi'}
          deps1.append(rocoto.add_dependency(dep_dict))
-         dep_dict = {'type': 'task', 'name': '%sesfcfsoi' % cdump}
+         dep_dict = {'type': 'task', 'name': f'{cdump}esfcfsoi'}
          deps1.append(rocoto.add_dependency(dep_dict))
          dependencies1 = rocoto.create_dependency(dep_condition='and', dep=deps1)
 
          deps2 = []
          deps2 = dependencies1
 
-         # liaofan: remove the option to run efcsfsoi in the cold start (2020.05.26)
-         #dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': '-06:00:00'}
-         #deps2.append(rocoto.add_dependency(dep_dict))
          dependencies2 = rocoto.create_dependency(dep_condition='and', dep=deps2)
 
          efcsenvars = envars1 + [ensgrp]
          task = wfu.create_wf_task('efcsfsoi', cdump=cdump, envar=efcsenvars, dependency=dependencies2,
                                    metatask='efmnfsoi', varname='grp', varval=EFCSGROUPS, cycledef=cycledef)
 
-         dict_tasks['%sefmnfsoi' % cdump] = task
+         dict_tasks[f'{cdump}efmnfsoi' ] = task
 
     # epmn, epos
     deps = []
@@ -1248,7 +1240,7 @@ def get_hyb_tasks(dict_configs, cycledef='enkf'):
     if do_efsoi in ['Y', 'YES']:
          # epmnfsoi, eposfsoi
          deps = []
-         dep_dict = {'type': 'metatask', 'name': '%sefmnfsoi' % cdump}
+         dep_dict = {'type': 'metatask', 'name': f'{cdump}efmnfsoi'}
          deps.append(rocoto.add_dependency(dep_dict))
          dependencies = rocoto.create_dependency(dep=deps)
          fhrgrp = rocoto.create_envar(name='FHRGRP', value='#grp#')
@@ -1260,14 +1252,10 @@ def get_hyb_tasks(dict_configs, cycledef='enkf'):
          task = wfu.create_wf_task('eposfsoi', cdump=cdump, envar=eposenvars, dependency=dependencies,
                                    metatask='epmnfsoi', varname=varname1, varval=varval1, vardict=vardict)
 
-         dict_tasks['%sepmnfsoi' % cdump] = task
+         dict_tasks[f'{cdump}epmnfsoi'] = task
 
          # efsoi 
          deps = []
-     #    dep_dict = {'type': 'metatask', 'name': '%sepmnfsoi' % cdump}
-     #    deps.append(rocoto.add_dependency(dep_dict))
-     #    dep_dict = {'type': 'metatask', 'name': '%sepmnsfsoi' % cdump, 'offset': '-6:00:00'}
-     #    deps.append(rocoto.add_dependency(dep_dict))
          data = '&ROTDIR;/efsoigdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmf030.ensmean.nc'
          dep_dict = {'type': 'data', 'data': data, 'offset': '-6:00:00'}
          deps.append(rocoto.add_dependency(dep_dict))
@@ -1281,14 +1269,14 @@ def get_hyb_tasks(dict_configs, cycledef='enkf'):
          dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
          task = wfu.create_wf_task('efsoi', cdump=cdump, envar=envars1, dependency=dependencies, cycledef=cycledef)
 
-         dict_tasks['%sefsoi' % cdump] = task
+         dict_tasks[f'{cdump}efsoi'] = task
 
      # eamn, earc
     deps = []
     dep_dict = {'type': 'metatask', 'name': f'{cdump}epmn'}
     deps.append(rocoto.add_dependency(dep_dict))
     if do_efsoi in ['Y', 'YES']:
-         dep_dict = {'type': 'metatask', 'name': '%sepmnfsoi' % cdump}
+         dep_dict = {'type': 'metatask', 'name': f'{cdump}epmnfsoi'}
          deps.append(rocoto.add_dependency(dep_dict))
          dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
     else:
@@ -1465,7 +1453,6 @@ def dict_to_strings(dict_in):
 
 def get_eposfsoigroups(epos, cdump='gdas'):
 
-   # fhmin = 0
     fhmin = 6
     fhmax = 30
     fhout = 6
@@ -1547,10 +1534,7 @@ def create_xml(dict_configs):
                          'gdasepos':'gdasepmn',
                          'gdasearc':'gdaseamn',
                          'gdasechgres':'gdasechgres'}
-        #for each_task, each_resource_string in dict_hyb_resources.iteritems():
         for each_task, each_resource_string in dict_hyb_resources.items():
-            #print each_task,hyp_tasks[each_task]
-            #print dict_hyb_tasks[hyp_tasks[each_task]]
             if 'MEMORY' not in each_resource_string:
                 if each_task in dict_hyb_tasks:
                     temp_task_string = []

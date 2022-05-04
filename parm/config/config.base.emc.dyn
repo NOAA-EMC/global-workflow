@@ -63,7 +63,7 @@ export DO_VRFY="YES"       # VRFY step
 #  use RUNMOS flag (currently in config.vrfy)
 export REALTIME="YES"
 
-#export DO_EFSOI="YES"
+export DO_EFSOI="NO"
 
 # Experiment mode (cycled or free-forecast)
 export MODE="@MODE@" # cycled/free
