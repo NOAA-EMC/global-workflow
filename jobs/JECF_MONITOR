@@ -75,7 +75,7 @@ do
   if [ $release_gdas = "YES" -a $release_gfs = "YES" -a $release_enkfgdas = "YES" ]; then
     break
   fi
-  ic=`expr $ic + 1`
+  ic=$(expr $ic + 1)
   if [ $ic -gt 20 ]; then
     exit 99
   fi

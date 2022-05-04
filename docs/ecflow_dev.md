@@ -1,5 +1,15 @@
+PRELUDE
+-------
+
+A realtime ecflow workflow is created for developer in WCOSS2 system (Cactus/Dogwood).
+
+INSTALLATION INSTRUCTIONS
+---------------------------
+
 Following steps are to help developer install and config ecflow workflow for realtime cycled parallel run
-  ecflow installation step:
+
+To do ecflow suite installation, step:
+```bash
     cd ${HOMEgfs}/ecf/defs
     ecflow_client --load cycled_gfs.def
       (Install GFS v16 realtime ecflow into ecflow server)
@@ -16,7 +26,9 @@ Following steps are to help developer install and config ecflow workflow for rea
       (This initialize the ecflow workflow configuration for developer)
     ecflow_client --alter add variable OUTPUTDIR ${YOUR_OUTPUT_LOCATION} /cycled_gfs
       (This initialize the jobs log output location)
-  COM prep
-    - Ensure the HOMEgfs is built and linked.
-    - Ensure ecflow job scripts are linked.
-      ${HOMEgfs/ecf/setup_ecf_links.sh)
+```
+
+To prepare the COM:
+
+* Ensure the HOMEgfs is built and linked.
+* Ensure ecflow job scripts are linked: ${HOMEgfs/ecf/setup_ecf_links.sh)
