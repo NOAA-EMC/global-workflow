@@ -307,10 +307,10 @@ then
 fi
 
 # making the time stamp format for ncep post
-export YY=`echo $VDATE | cut -c1-4`
-export MM=`echo $VDATE | cut -c5-6`
-export DD=`echo $VDATE | cut -c7-8`
-export HH=`echo $VDATE | cut -c9-10`
+export YY=$(echo $VDATE | cut -c1-4)
+export MM=$(echo $VDATE | cut -c5-6)
+export DD=$(echo $VDATE | cut -c7-8)
+export HH=$(echo $VDATE | cut -c9-10)
 
 cat > itag <<EOF
 &model_inputs
@@ -343,7 +343,7 @@ if [ ${GRIBVERSION} = grib2 ]; then
 #  cp ${CTLFILE} postcntrl.xml
 
 fi
-export CTL=`basename $CTLFILE`
+export CTL=$(basename $CTLFILE)
 
 ln -sf griddef.out fort.110
 cp ${PARMpost}/nam_micro_lookup.dat ./eta_micro_lookup.dat

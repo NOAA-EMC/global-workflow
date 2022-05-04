@@ -119,7 +119,7 @@ export SLEEP_INT=5
 ###############################################################
 # Run relevant exglobal script
 env
-msg="HAS BEGUN on `hostname`"
+msg="HAS BEGUN on $(hostname)"
 postmsg "$msg"
 $LOGSCRIPT
 

@@ -260,8 +260,8 @@ export SIGHDR=${SIGHDR:-$NWPROD/exec/global_sighdr}
 export IDRT=${IDRT:-4}
 
 if [ ${OUTTYP} -le 1 ] ; then
- export JCAP=${JCAP:-`echo jcap|$SIGHDR ${SIGINP}`}
- export LEVS=${LEVS:-`echo levs|$SIGHDR ${SIGINP}`}
+ export JCAP=${JCAP:-$(echo jcap|$SIGHDR ${SIGINP})}
+ export LEVS=${LEVS:-$(echo levs|$SIGHDR ${SIGINP})}
  export IDVC=${IDVC:-$(echo idvc|$SIGHDR ${SIGINP})}
  export IDVM=${IDVM:-$(echo idvm|$SIGHDR ${SIGINP})}
  export NVCOORD=${NVCOORD:-$(echo nvcoord|$SIGHDR ${SIGINP})}
@@ -291,8 +291,8 @@ if [ ${OUTTYP} -le 1 ] ; then
  
 # run post to read sigma file directly if OUTTYP=3
 elif [ ${OUTTYP} -eq 3 ] ; then
- export LONB=${LONB:-`echo lonb|$SIGHDR ${SIGINP}`}
- export LATB=${LATB:-`echo latb|$SIGHDR ${SIGINP}`}
+ export LONB=${LONB:-$(echo lonb|$SIGHDR ${SIGINP})}
+ export LATB=${LATB:-$(echo latb|$SIGHDR ${SIGINP})}
  export MODEL_OUT_FORM=sigio
  export GFSOUT=${SIGINP}
 
@@ -301,7 +301,7 @@ elif [ ${OUTTYP} -eq 4 ] ; then
  export nemsioget=${nemsioget:-$EXECglobal/nemsio_get}
  export LONB=${LONB:-$($nemsioget $NEMSINP dimx | awk '{print $2}')}
  export LATB=${LATB:-$($nemsioget $NEMSINP dimy | awk '{print $2}')}
- export JCAP=${JCAP:-`expr $LATB - 2`}
+ export JCAP=${JCAP:-$(expr $LATB - 2)}
 # export LONB=${LONB:-$($nemsioget $NEMSINP lonf |grep -i "lonf" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
 # export LATB=${LATB:-$($nemsioget $NEMSINP latg |grep -i "latg" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
 # export JCAP=${JCAP:-$($nemsioget $NEMSINP jcap |grep -i "jcap" |awk -F"= " '{print $2}' |awk -F" " '{print $1}')}
@@ -344,10 +344,10 @@ then
 fi
 
 # making the time stamp format for ncep post
-export YY=`echo $VDATE | cut -c1-4`
-export MM=`echo $VDATE | cut -c5-6`
-export DD=`echo $VDATE | cut -c7-8`
-export HH=`echo $VDATE | cut -c9-10`
+export YY=$(echo $VDATE | cut -c1-4)
+export MM=$(echo $VDATE | cut -c5-6)
+export DD=$(echo $VDATE | cut -c7-8)
+export HH=$(echo $VDATE | cut -c9-10)
 
 cat > itag <<EOF
 $GFSOUT
@@ -392,7 +392,7 @@ elif [ ${GRIBVERSION} = grib2 ]; then
 #  cp ${CTLFILE} postcntrl.xml
 
 fi
-export CTL=`basename $CTLFILE`
+export CTL=$(basename $CTLFILE)
 
 ln -sf griddef.out fort.110
 cp ${PARMglobal}/nam_micro_lookup.dat ./eta_micro_lookup.dat

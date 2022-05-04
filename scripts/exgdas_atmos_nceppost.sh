@@ -26,7 +26,7 @@ set -x
 
 cd $DATA
 
-msg="HAS BEGUN on `hostname`"
+msg="HAS BEGUN on $(hostname)"
 postmsg "$msg"
 
 export POSTGPSH=${POSTGPSH:-$USHgfs/gfs_nceppost.sh}
@@ -78,7 +78,7 @@ export IDRT=${IDRT:-0} # IDRT=0 is setting for outputting grib files on lat/lon 
 # Post Analysis Files before starting the Forecast Post
 ############################################################
 # Chuang: modify to process analysis when post_times is 00
-export stime=`echo $post_times | cut -c1-3`
+export stime=$(echo $post_times | cut -c1-3)
 if [ $OUTTYP -eq 4 ] ; then
    export loganl=$COMIN/${PREFIX}atmanl${SUFFIX}
 else
@@ -167,7 +167,7 @@ then
 
       if test $SENDDBN = 'YES'
       then
-        run=`echo $RUN | tr '[a-z]' '[A-Z]'`
+        run=$(echo $RUN | tr '[a-z]' '[A-Z]')
 	if [ $GRIBVERSION = 'grib2' ] 
         then
 	  $DBNROOT/bin/dbn_alert MODEL ${run}_MSC_sfcanl $job $COMOUT/${PREFIX}sfc${fhr3}${SUFFIX}
@@ -190,7 +190,7 @@ fi
 else   ## not_anl if_stimes 
 #----------------------------------
 
-SLEEP_LOOP_MAX=`expr $SLEEP_TIME / $SLEEP_INT`
+SLEEP_LOOP_MAX=$(expr $SLEEP_TIME / $SLEEP_INT)
 
 ############################################################
 # Loop Through the Post Forecast Files 
@@ -211,7 +211,7 @@ do
        then
           break
        else
-          ic=`expr $ic + 1`
+          ic=$(expr $ic + 1)
           sleep $SLEEP_INT
        fi
        ###############################
@@ -253,7 +253,7 @@ do
 # add new environmental variables for running new ncep post
 # Validation date
 
-    export VDATE=`${NDATE} +${fhr} ${PDY}${cyc}`
+    export VDATE=$(${NDATE} +${fhr} ${PDY}${cyc})
    
 # set to 3 to output lat/lon grid
      
@@ -316,14 +316,14 @@ do
     fi
 
     #wm Process pgb files
-    export FH=`expr $fhr + 0`
+    export FH=$(expr $fhr + 0)
     export downset=${downset:-1}
     $GFSDOWNSH
     export err=$?; err_chk
 
     
     if [ $SENDDBN = YES ]; then
-      run=`echo $RUN | tr '[a-z]' '[A-Z]'`
+      run=$(echo $RUN | tr '[a-z]' '[A-Z]')
       $DBNROOT/bin/dbn_alert MODEL ${run}_PGB2_0P25 $job $COMOUT/${PREFIX}pgrb2.0p25.f${fhr}
       $DBNROOT/bin/dbn_alert MODEL ${run}_PGB2_0P25_WIDX $job $COMOUT/${PREFIX}pgrb2.0p25.f${fhr}.idx
       $DBNROOT/bin/dbn_alert MODEL ${run}_PGB_GB2 $job $COMOUT/${PREFIX}pgrb2.1p00.f${fhr}
@@ -367,7 +367,7 @@ do
         $WGRIB2 -s $COMOUT/${FLUXFL} > $COMOUT/${FLUXFLIDX}
       fi
 
-      if test "$SENDDBN" = 'YES' -a  \( "$RUN" = 'gdas' \) -a `expr $fhr % 3` -eq 0
+      if test "$SENDDBN" = 'YES' -a  \( "$RUN" = 'gdas' \) -a $(expr $fhr % 3) -eq 0
       then
         $DBNROOT/bin/dbn_alert MODEL ${run}_SF $job $COMOUT/${PREFIX}atmf${fhr}${SUFFIX}
         $DBNROOT/bin/dbn_alert MODEL ${run}_BF $job $COMOUT/${PREFIX}sfcf${fhr}${SUFFIX}

@@ -54,7 +54,7 @@ if [ $nset = 1 ]; then
    $TRIMRH pgb2file_${fhr3}_${iproc}_0p5
    $TRIMRH pgb2file_${fhr3}_${iproc}_1p0
    #tweak sea ice cover 
-   count=`$WGRIB2 $optncpu pgb2file_${fhr3}_${iproc}_0p25 -match "LAND|ICEC" |wc -l`
+   count=$($WGRIB2 $optncpu pgb2file_${fhr3}_${iproc}_0p25 -match "LAND|ICEC" |wc -l)
    if [ $count -eq 2 ]; then
      $MODICEC pgb2file_${fhr3}_${iproc}_0p25
      $MODICEC pgb2file_${fhr3}_${iproc}_0p5
@@ -71,7 +71,7 @@ if [ $nset = 1 ]; then
    export err=$?; err_chk
    $TRIMRH pgb2file_${fhr3}_${iproc}_0p25
    #tweak sea ice cover
-   count=`$WGRIB2 $optncpu pgb2file_${fhr3}_${iproc}_0p25 -match "LAND|ICEC" |wc -l`
+   count=$($WGRIB2 $optncpu pgb2file_${fhr3}_${iproc}_0p25 -match "LAND|ICEC" |wc -l)
    if [ $count -eq 2 ]; then
      $MODICEC pgb2file_${fhr3}_${iproc}_0p25 
    fi
