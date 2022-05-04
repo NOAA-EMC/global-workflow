@@ -31,7 +31,7 @@ load(pathJoin("fms", "2021.03"))
 
 load(pathJoin("bacio", "2.4.1"))
 load(pathJoin("g2", "3.4.2"))
-load(pathJoin("g2tmpl", "1.10.1"))
+load(pathJoin("g2tmpl", "1.10.0"))
 load(pathJoin("ip", "3.3.3"))
 load(pathJoin("nemsio", "2.5.2"))
 load(pathJoin("sp", "2.3.3"))
