@@ -85,24 +85,16 @@ fi
 #--add files from external repositories
 #---------------------------------------
 cd ${pwd}/../jobs               ||exit 8
-    $LINK ../sorc/upp.fd/jobs/JGLOBAL_ATMOS_POST_MANAGER      .
-    $LINK ../sorc/upp.fd/jobs/JGLOBAL_ATMOS_NCEPPOST          .
-    $LINK ../sorc/gldas.fd/jobs/JGDAS_ATMOS_GLDAS             .
+    $LINK ../sorc/gldas.fd/jobs/JGDAS_ATMOS_GLDAS            .
 cd ${pwd}/../parm               ||exit 8
     [[ -d post ]] && rm -rf post
     $LINK ../sorc/upp.fd/parm                           post
     [[ -d gldas ]] && rm -rf gldas
     $LINK ../sorc/gldas.fd/parm                              gldas
 cd ${pwd}/../scripts            ||exit 8
-    $LINK ../sorc/upp.fd/scripts/exgdas_atmos_nceppost.sh .
-    $LINK ../sorc/upp.fd/scripts/exglobal_atmos_pmgr.sh   .
     $LINK ../sorc/ufs_utils.fd/scripts/exemcsfc_global_sfc_prep.sh .
     $LINK ../sorc/gldas.fd/scripts/exgdas_atmos_gldas.sh .
 cd ${pwd}/../ush                ||exit 8
-    for file in fv3gfs_dwn_nems.sh gfs_nceppost.sh  \
-        gfs_transfer.sh mod_icec.sh link_crtm_fix.sh trim_rh.sh fix_precip.sh; do
-        $LINK ../sorc/upp.fd/ush/$file                  .
-    done
     for file in emcsfc_ice_blend.sh  fv3gfs_driver_grid.sh  fv3gfs_make_orog.sh  global_cycle_driver.sh \
         emcsfc_snow.sh  fv3gfs_filter_topo.sh  global_cycle.sh  fv3gfs_make_grid.sh ; do
         $LINK ../sorc/ufs_utils.fd/ush/$file                  .
