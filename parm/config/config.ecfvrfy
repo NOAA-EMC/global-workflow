@@ -71,8 +71,6 @@ fi
 # All these call $VSDBSH
 
 if [ "$CDUMP" = "gfs" ] ; then
-    ddd=`echo $CDATE |cut -c 1-8`
-    #if [ $ddd -eq 5 -o $ddd -eq 10 ]; then export VSDB_STEP2 = "YES" ;fi
 
     if [ $VSDB_STEP1 = "YES" -o $VSDB_STEP2 = "YES" -o $VRFYPRCP = "YES" -o $VRFYG2OBS = "YES" ]; then
         export BACKDATEVSDB=24                          # execute vsdbjob for the previous day
@@ -177,22 +175,5 @@ if [[ "$VRFYFSU" == "YES" && "$CDUMP" == "gfs" ]]; then
 
     export GENESISFSU="$HOMEgfs/jobs/JGFS_ATMOS_FSU_GENESIS"
 fi
-
-if [[ "$RUNMOS" == "YES" && "$CDUMP" == "gfs" ]]; then
-
-    if [ $machine = "WCOSS_C" ] ; then
-        export RUNGFSMOSSH="$HOMEgfs/scripts/run_gfsmos_master.sh.cray"
-    elif [ $machine = "WCOSS_DELL_P3" ] ; then
-        export RUNGFSMOSSH="$HOMEgfs/scripts/run_gfsmos_master.sh.dell"
-    elif [ $machine = "HERA" ] ; then
-        export RUNGFSMOSSH="$HOMEgfs/scripts/run_gfsmos_master.sh.hera"
-    else
-        echo "WARNING: MOS package is not enabled on $machine!"
-        export RUNMOS="NO"
-        export RUNGFSMOSSH=""
-    fi
-fi
-
-
 
 echo "END: config.vrfy"
