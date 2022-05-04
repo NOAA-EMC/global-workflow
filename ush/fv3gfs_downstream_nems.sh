@@ -193,7 +193,7 @@ while [ $nset -le $totalset ]; do
     if [ $nset = 1 ]; then
       cat pgb2file_${fhr3}_${iproc}_0p25 >> pgb2file_${fhr3}_0p25
       if [ "$PGBS" = "YES" ]; then
-        # cat pgb2file_${fhr3}_${iproc}_0p5  >> pgb2file_${fhr3}_0p5
+        cat pgb2file_${fhr3}_${iproc}_0p5  >> pgb2file_${fhr3}_0p5
         cat pgb2file_${fhr3}_${iproc}_1p0  >> pgb2file_${fhr3}_1p0
         if [ "$PGB1F" = 'YES' ]; then
           cat pgbfile_${fhr3}_${iproc}_1p0   >> pgbfile_${fhr3}_1p0
@@ -202,7 +202,7 @@ while [ $nset -le $totalset ]; do
     elif [ $nset = 2 ]; then
       cat pgb2bfile_${fhr3}_${iproc}_0p25 >> pgb2bfile_${fhr3}_0p25
       if [ "$PGBS" = "YES" ]; then
-        # cat pgb2bfile_${fhr3}_${iproc}_0p5 >> pgb2bfile_${fhr3}_0p5
+        cat pgb2bfile_${fhr3}_${iproc}_0p5 >> pgb2bfile_${fhr3}_0p5
         cat pgb2bfile_${fhr3}_${iproc}_1p0 >> pgb2bfile_${fhr3}_1p0
       fi
     fi
