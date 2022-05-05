@@ -1,6 +1,18 @@
 #!/bin/bash
-
 set -eu
+
+RUN_ENVIR=${1}
+
+if [ $# -lt 1 ]; then
+    echo '***ERROR*** must specify one arguements: (1) RUN_ENVIR'
+    echo ' Syntax: setup_ecf_links.sh ( nco | emc ) '
+    exit 1
+fi
+
+if [ $RUN_ENVIR != emc -a $RUN_ENVIR != nco ]; then
+    echo 'Syntax: setup_ecf_links.sh ( nco | emc ) '
+    exit 1
+fi
 
 ECF_DIR=$(pwd)
 
@@ -38,10 +50,12 @@ fhrs=($(seq 3 9))
 link_master_to_fhr "jenkfgdas_post" "$fhrs"
 
 # EnKF GDAS earc files
-cd $ECF_DIR/scripts/workflow_manager/cycled/enkfgdas
-echo "Linking enkfgdas/earc ..."
-grps=($(seq 0 8))
-link_master_to_grp "jenkfgdas_emc_earc" "$grps"
+if [ $RUN_ENVIR == "emc" ]; then
+  cd $ECF_DIR/scripts/workflow_manager/cycled/enkfgdas
+  echo "Linking enkfgdas/earc ..."
+  grps=($(seq 0 8))
+  link_master_to_grp "jenkfgdas_emc_earc" "$grps"
+fi
 
 # GDAS post files
 cd $ECF_DIR/scripts/gdas/atmos/post
