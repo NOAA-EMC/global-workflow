@@ -1154,7 +1154,7 @@ def get_hyb_tasks(dict_configs, cycledef='enkf'):
     if do_efsoi in ['Y', 'YES']:
     # esfcfsoi
          deps1 = []
-         data = '&ROTDIR;/{cdump}.@Y@m@d/@H/{cdump}.t@Hz.loganl.txt' 
+         data = f'&ROTDIR;/{cdump}.@Y@m@d/@H/{cdump}.t@Hz.loganl.txt' 
          dep_dict = {'type': 'data', 'data': data}
          deps1.append(rocoto.add_dependency(dep_dict))
          dep_dict = {'type': 'task', 'name': f'{cdump}analcalc'}
