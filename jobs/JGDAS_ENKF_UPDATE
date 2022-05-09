@@ -1,4 +1,4 @@
-#!/bin/ksh
+#!/bin/bash
 set -x
 
 export RUN_ENVIR=${RUN_ENVIR:-"nco"}
@@ -58,9 +58,6 @@ export pgmerr=errfile
 export CDATE=${CDATE:-${PDY}${cyc}}
 export CDUMP=${CDUMP:-${RUN:-"gdas"}}
 export COMPONENT=${COMPONENT:-atmos}
-if [ $RUN_ENVIR = "nco" ]; then
-    export ROTDIR=${COMROOT:?}/$NET/$envir
-fi
 
 
 ##############################################
@@ -85,8 +82,7 @@ export COMOUT_ANL_ENS="$ROTDIR/enkf$CDUMP.$PDY/$cyc/$COMPONENT"
 ###############################################################
 # Run relevant script
 env
-msg="HAS BEGUN on `hostname`"
-postmsg "$jlogfile" "$msg"
+echo "HAS BEGUN on $(hostname)"
 $LOGSCRIPT
 
 ${ENKFUPDSH:-$SCRgfs/exgdas_enkf_update.sh}
@@ -114,8 +110,7 @@ if [ -e "$pgmout" ] ; then
 fi
 
 
-msg="ENDED NORMALLY."
-postmsg "$jlogfile" "$msg"
+echo "ENDED NORMALLY."
 
 
 ##########################################

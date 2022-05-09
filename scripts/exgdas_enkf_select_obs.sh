@@ -1,4 +1,4 @@
-#!/bin/ksh
+#!/bin/bash
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
@@ -71,8 +71,7 @@ cd $DATA || exit 8
 
 ################################################################################
 # ObsInput file from ensemble mean
-rm -f obs_input*
-rm -f obsinput.tar
+rm -f obs*input*
 $NLN $SELECT_OBS obsinput.tar
 
 # Whether to save or skip obs

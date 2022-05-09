@@ -1,4 +1,4 @@
-#!/bin/ksh
+#!/bin/bash
 set -x
 
 export RUN_ENVIR=${RUN_ENVIR:-"nco"}
@@ -59,9 +59,6 @@ export pgmerr=errfile
 export CDATE=${CDATE:-${PDY}${cyc}}
 export CDUMP=${CDUMP:-${RUN:-"gfs"}}
 export COMPONENT=${COMPONENT:-atmos}
-if [ $RUN_ENVIR = "nco" ]; then
-    export ROTDIR=${COMROOT:?}/$NET/$envir
-fi
 export DO_CALC_ANALYSIS=${DO_CALC_ANALYSIS:-"YES"} 
 
 
@@ -84,12 +81,12 @@ export ASUFFIX=${ASUFFIX:-$SUFFIX}
 if [ $RUN_ENVIR = "nco" -o ${ROTDIR_DUMP:-NO} = "YES" ]; then
     export COMIN=${COMIN:-$ROTDIR/$RUN.$PDY/$cyc/$COMPONENT}
     export COMOUT=${COMOUT:-$ROTDIR/$RUN.$PDY/$cyc/$COMPONENT}
-    export COMIN_OBS=${COMIN_OBS:-$ROTDIR/$RUN.$PDY/$cyc/$COMPONENT}
-    export COMIN_GES_OBS=${COMIN_GES_OBS:-$ROTDIR/$GDUMP.$gPDY/$gcyc/$COMPONENT}
+    export COMIN_OBS=${COMIN_OBS:-$(compath.py ${envir}/obsproc/${obsproc_ver})/$RUN.$PDY/$cyc/$COMPONENT}
+    export COMIN_GES_OBS=${COMIN_GES_OBS:-$(compath.py ${envir}/obsproc/${obsproc_ver})/$GDUMP.$gPDY/$gcyc/$COMPONENT}
 else
     export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc/$COMPONENT"
-    export COMIN_OBS="$DMPDIR/$CDATE/$CDUMP"
-    export COMIN_GES_OBS="$DMPDIR/$GDATE/$GDUMP"
+    export COMIN_OBS="$DMPDIR/$CDUMP.$PDY/$cyc"
+    export COMIN_GES_OBS="$DMPDIR/$GDUMP.$gPDY/$gcyc"
 fi
 mkdir -m 775 -p $COMOUT
 # COMIN_GES and COMIN_GES_ENS are used in script
@@ -125,15 +122,13 @@ fi
 
 
 # Link observational data
-export PREPQC="${COMOUT}/${OPREFIX}prepbufr"
+export PREPQC="${COMIN_OBS}/${OPREFIX}prepbufr"
 if [ ! -f $PREPQC ]; then
-    echo "WARNING: PREPBUFR FILE $PREPQC MISSING"
-    msg="WARNING : Global PREPBUFR file is missing"
-    postmsg "$jlogfile" "$msg"
+    echo "WARNING: Global PREPBUFR FILE $PREPQC MISSING"
 fi
-export PREPQCPF="${COMOUT}/${OPREFIX}prepbufr.acft_profiles"
+export PREPQCPF="${COMIN_OBS}/${OPREFIX}prepbufr.acft_profiles"
 export TCVITL="${COMOUT}/${OPREFIX}syndata.tcvitals.tm00"
-[[ $DONST = "YES" ]] && export NSSTBF="${COMOUT}/${OPREFIX}nsstbufr"
+[[ $DONST = "YES" ]] && export NSSTBF="${COMIN_OBS}/${OPREFIX}nsstbufr"
 
 
 # Update surface fields with global_cycle
@@ -144,11 +139,17 @@ export DOGCYCLE=${DOGCYCLE:-"YES"}
 export DOGAUSFCANL=${DOGAUSFCANL:-"YES"}
 
 
+# Copy fix file for obsproc
+if [ $RUN = "gfs" ]; then
+    mkdir -p $ROTDIR/fix
+    cp $FIXgsi/prepobs_errtable.global $ROTDIR/fix/
+fi
+
+
 ###############################################################
 # Run relevant script
 env
-msg="HAS BEGUN on `hostname`"
-postmsg "$jlogfile" "$msg"
+echo "HAS BEGUN on $(hostname)"
 $LOGSCRIPT
 
 
@@ -179,8 +180,7 @@ if [ -e "$pgmout" ] ; then
 fi
 
 
-msg="ENDED NORMALLY."
-postmsg "$jlogfile" "$msg"
+echo "ENDED NORMALLY."
 
 
 ##########################################
