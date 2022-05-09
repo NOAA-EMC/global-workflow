@@ -4,13 +4,6 @@ set -eux
 source ./machine-setup.sh > /dev/null 2>&1
 cwd=$(pwd)
 
-USE_PREINST_LIBS=${USE_PREINST_LIBS:-"true"}
-if [ $USE_PREINST_LIBS = true ]; then
-  echo "Using default MODULEPATH"
-else
-  export MOD_PATH=${cwd}/lib/modulefiles
-fi
-
 gsitarget=$target
 [[ "$target" == wcoss_cray ]] && gsitarget=cray
 
