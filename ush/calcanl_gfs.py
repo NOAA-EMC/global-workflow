@@ -163,6 +163,25 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix, ASuffix,
             ExecCMDMPILevs_nohost = 'mpirun -np '+str(levs)
         ExecCMDMPI1_host = 'mpirun -np 1 --hostfile hosts'
         ExecCMDMPI10_host = 'mpirun -np 10 --hostfile hosts'
+    elif launcher == 'mpiexec':
+        hostfile = os.getenv('PBS_NODEFILE','')
+        with open(hostfile) as f:
+            hosts_tmp = f.readlines()
+        hosts_tmp = [x.strip() for x in hosts_tmp]
+        hosts = []
+        [hosts.append(x) for x in hosts_tmp if x not in hosts]
+        nhosts = len(hosts)
+        ExecCMDMPI_host = 'mpiexec -l -n '+str(nFH)
+        tasks = int(os.getenv('ntasks',1))
+        print('nhosts,tasks=', nhosts, tasks)
+        if levs > tasks:
+            ExecCMDMPILevs_host = 'mpiexec -l -n '+str(tasks)
+            ExecCMDMPILevs_nohost = 'mpiexec -l -n '+str(tasks)
+        else:
+            ExecCMDMPILevs_host = 'mpiexec -l -n '+str(levs)
+            ExecCMDMPILevs_nohost = 'mpiexec -l -n '+str(levs)
+        ExecCMDMPI1_host = 'mpiexec -l -n 1 --cpu-bind depth --depth '+str(NThreads)
+        ExecCMDMPI10_host = 'mpiexec -l -n 10 --cpu-bind depth --depth '+str(NThreads)
     elif launcher == 'srun':
         nodes = os.getenv('SLURM_JOB_NODELIST','')
         hosts_tmp = subprocess.check_output('scontrol show hostnames '+nodes, shell=True)

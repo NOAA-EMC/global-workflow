@@ -1,4 +1,4 @@
-#!/bin/ksh
+#!/bin/bash
 set -x
 
 export RUN_ENVIR=${RUN_ENVIR:-"nco"}
@@ -58,9 +58,6 @@ export pgmerr=errfile
 export CDATE=${CDATE:-${PDY}${cyc}}
 export CDUMP=${CDUMP:-${RUN:-"gdas"}}
 export COMPONENT=${COMPONENT:-atmos}
-if [ $RUN_ENVIR = "nco" ]; then
-    export ROTDIR=${COMROOT:?}/$NET/$envir
-fi
 
 
 ##############################################
@@ -90,15 +87,16 @@ export GSUFFIX=${GSUFFIX:-$SUFFIX}
 export ASUFFIX=${ASUFFIX:-$SUFFIX}
 
 if [ $RUN_ENVIR = "nco" -o ${ROTDIR_DUMP:-NO} = "YES" ]; then
-    export COMIN_OBS=${COMIN_OBS:-$ROTDIR/$RUN.$PDY/$cyc/$COMPONENT}
-    export COMIN_GES_OBS=${COMIN_GES_OBS:-$ROTDIR/$GDUMP.$gPDY/$gcyc/$COMPONENT}
+    export COMIN_OBS=${COMIN_OBS:-$(compath.py ${envir}/obsproc/${obsproc_ver})/$RUN.$PDY/$cyc/$COMPONENT}
+    export COMIN_GES_OBS=${COMIN_GES_OBS:-$(compath.py ${envir}/obsproc/${obsproc_ver})/$GDUMP.$gPDY/$gcyc/$COMPONENT}
 else
-    export COMIN_OBS="$DMPDIR/$CDATE/$CDUMP"
-    export COMIN_GES_OBS="$DMPDIR/$GDATE/$GDUMP"
+    export COMIN_OBS="$DMPDIR/$CDUMP.$PDY/$cyc"
+    export COMIN_GES_OBS="$DMPDIR/$GDUMP.$gPDY/$gcyc"
 fi
 
 # COMIN, COMIN_ENS and COMIN_GES_ENS are used in script
 export COMIN="$ROTDIR/$CDUMP.$PDY/$cyc/$COMPONENT"
+export COMIN_GES="$ROTDIR/$CDUMP.$gPDY/$gcyc/$COMPONENT"
 export COMIN_ENS="$ROTDIR/enkf$CDUMP_ENKF.$PDY/$cyc/$COMPONENT"
 export COMOUT_ENS="$ROTDIR/enkf$CDUMP.$PDY/$cyc/$COMPONENT"
 export COMIN_GES_ENS="$ROTDIR/enkf$CDUMP.$gPDY/$gcyc/$COMPONENT"
@@ -107,8 +105,7 @@ export COMIN_GES_ENS="$ROTDIR/enkf$CDUMP.$gPDY/$gcyc/$COMPONENT"
 ###############################################################
 # Run relevant script
 env
-msg="HAS BEGUN on `hostname`"
-postmsg "$jlogfile" "$msg"
+echo "HAS BEGUN on $(hostname)"
 $LOGSCRIPT
 
 
@@ -129,8 +126,7 @@ if [ -e "$pgmout" ] ; then
 fi
 
 
-msg="ENDED NORMALLY."
-postmsg "$jlogfile" "$msg"
+echo "ENDED NORMALLY."
 
 
 ##########################################
