@@ -150,7 +150,7 @@ export DO_WAVE="NO"
 export DO_OCN="NO"
 export DO_ICE="NO"
 export DO_AERO=@DO_AERO@
-export CCPP_SUITE="FV3_GFS_v16"
+export CCPP_SUITE="FV3_GFS_v17_p8"
 export WAVE_CDUMP="" # When to include wave suite: gdas, gfs, or both
 export cplwav2atm=".false."
 
@@ -176,7 +176,7 @@ case "${APP}" in
     export DO_COUPLED="YES"
     export DO_OCN="YES"
     export DO_ICE="YES"
-    export CCPP_SUITE="FV3_GFS_v16_coupled_nsstNoahmpUGWPv1"
+    export CCPP_SUITE="FV3_GFS_v17_coupled_p8"
     export confignamevarfornems="cpld${aero_nems_string}"
     ;;
   S2SW)
@@ -184,7 +184,7 @@ case "${APP}" in
     export DO_WAVE="YES"
     export DO_OCN="YES"
     export DO_ICE="YES"
-    export CCPP_SUITE="FV3_GFS_v16_coupled_nsstNoahmpUGWPv1"
+    export CCPP_SUITE="FV3_GFS_v17_coupled_p8"
     export WAVE_CDUMP="both"
     export cplwav2atm=".true."
     export confignamevarfornems="cpld${aero_nems_string}_wave"
@@ -204,7 +204,7 @@ export LEVS=128
 export CASE="@CASECTL@"
 export CASE_ENKF="@CASEENS@"
 case "$CASE" in
-    "C48") export OCNRES=100;;
+    "C48") export OCNRES=400;;
     "C96") export OCNRES=100;;
     "C192") export OCNRES=050;;
     "C384") export OCNRES=025;;
@@ -224,7 +224,7 @@ fi
 # Output frequency of the forecast model (for cycling)
 export FHMIN=0
 export FHMAX=9
-export FHOUT=3
+export FHOUT=3           # Will be changed to 1 in config.base if DO_GLDAS is set or (DOHYBVAR set to NO and l4densvar set to false)
 
 # Cycle to run EnKF  (set to BOTH for both gfs and gdas)
 export EUPD_CYC="gdas"
@@ -293,13 +293,18 @@ export lobsdiag_forenkf=".true."
 export DO_GLDAS="YES"
 export gldas_cyc=00
 
+# Exception handling that when DO_GLDAS is set, the FHOUT must be 1
+if [ $DO_GLDAS = "YES" ]; then
+  export FHOUT=1
+fi
+
 # if [[ "$SDATE" -lt "2019020100" ]]; then # no rtofs in GDA
 #   export DO_WAVE="NO"
 #   echo "WARNING: Wave suite turned off due to lack of RTOFS in GDA for SDATE"
 # fi
 
 # Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL
-export imp_physics=11
+export imp_physics=8
 
 # Shared parameters
 # Hybrid related

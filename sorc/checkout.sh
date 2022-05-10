@@ -31,7 +31,7 @@ echo ufs-weather-model checkout ...
 if [[ ! -d ufs_model.fd ]] ; then
     git clone https://github.com/ufs-community/ufs-weather-model ufs_model.fd >> ${logdir}/checkout-ufs_model.log 2>&1
     cd ufs_model.fd
-    git checkout ${ufs_model_hash:-release/P8a}
+    git checkout ${ufs_model_hash:-Prototype-P8b}
     git submodule update --init --recursive
     cd ${topdir}
 else
@@ -77,8 +77,7 @@ if [[ ! -d gfs_post.fd ]] ; then
     rm -f ${topdir}/checkout-gfs_post.log
     git clone https://github.com/NOAA-EMC/UPP.git gfs_post.fd >> ${logdir}/checkout-gfs_post.log 2>&1
     cd gfs_post.fd
-    git checkout c939eae
-    git submodule update --init CMakeModules
+    git checkout upp_v10.0.11
     ################################################################################
     # checkout_gtg
     ## yes: The gtg code at NCAR private repository is available for ops. GFS only.
