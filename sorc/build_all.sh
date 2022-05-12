@@ -5,8 +5,6 @@ set +x
 #
 # USER DEFINED STUFF:
 #
-# USE_PREINST_LIBS: set to "true" to use preinstalled libraries.
-#                   Anything other than "true"  will use libraries locally.
 #------------------------------------
 
 _build_ufs_options=""
@@ -27,8 +25,6 @@ while getopts "ac" option;do
    ;;
  esac
 done
-
-export USE_PREINST_LIBS="true"
 
 #------------------------------------
 # END USER DEFINED STUFF
