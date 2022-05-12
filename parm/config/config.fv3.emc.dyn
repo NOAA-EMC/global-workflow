@@ -22,6 +22,8 @@ echo "BEGIN: config.fv3"
 
 if [[ "$machine" = "WCOSS2" ]]; then
    export npe_node_max=128
+elif [[ "$machine" = "WCOSS_DELL_P3" ]]; then
+   export npe_node_max=28
 elif [[ "$machine" = "JET" ]]; then
    export npe_node_max=24
 elif [[ "$machine" = "HERA" ]]; then
