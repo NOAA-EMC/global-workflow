@@ -24,8 +24,6 @@ if [[ "$machine" = "WCOSS2" ]]; then
    export npe_node_max=128
 elif [[ "$machine" = "WCOSS_DELL_P3" ]]; then
    export npe_node_max=28
-elif [[ "$machine" = "WCOSS_C" ]]; then
-   export npe_node_max=24
 elif [[ "$machine" = "JET" ]]; then
    export npe_node_max=24
 elif [[ "$machine" = "HERA" ]]; then
@@ -49,13 +47,15 @@ case $case_in in
         export nth_fv3_gfs=1
         export cdmbgwd="0.071,2.1,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=1
-        export WRTTASK_PER_GROUP=$npe_node_max
+        export WRTTASK_PER_GROUP=64
+        if [[ "$WRTTASK_PER_GROUP" -gt "$npe_node_max" ]]; then export WRTTASK_PER_GROUP=$npe_node_max ; fi
         export WRITE_GROUP_GFS=1
-        export WRTTASK_PER_GROUP_GFS=$npe_node_max
+        export WRTTASK_PER_GROUP_GFS=64
+        if [[ "$WRTTASK_PER_GROUP_GFS" -gt "$npe_node_max" ]]; then export WRTTASK_PER_GROUP_GFS=$npe_node_max ; fi
         export WRTIOBUF="1M"
         ;;
     "C96")
-        export DELTIM=720
+        export DELTIM=450
         export layout_x=6
         export layout_y=4
         export layout_x_gfs=6
@@ -66,9 +66,11 @@ case $case_in in
         export nth_fv3_gfs=1
         export cdmbgwd="0.14,1.8,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=1
-        export WRTTASK_PER_GROUP=$npe_node_max
+        export WRTTASK_PER_GROUP=64
+        if [[ "$WRTTASK_PER_GROUP" -gt "$npe_node_max" ]]; then export WRTTASK_PER_GROUP=$npe_node_max ; fi
         export WRITE_GROUP_GFS=1
-        export WRTTASK_PER_GROUP_GFS=$npe_node_max
+        export WRTTASK_PER_GROUP_GFS=64
+        if [[ "$WRTTASK_PER_GROUP_GFS" -gt "$npe_node_max" ]]; then export WRTTASK_PER_GROUP_GFS=$npe_node_max ; fi
         export WRTIOBUF="4M"
         export n_split=6
         ;;
@@ -84,9 +86,11 @@ case $case_in in
         export nth_fv3_gfs=2
         export cdmbgwd="0.23,1.5,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=1
-        export WRTTASK_PER_GROUP=$npe_node_max
+        export WRTTASK_PER_GROUP=64
+        if [[ "$WRTTASK_PER_GROUP" -gt "$npe_node_max" ]]; then export WRTTASK_PER_GROUP=$npe_node_max ; fi
         export WRITE_GROUP_GFS=2
-        export WRTTASK_PER_GROUP_GFS=$npe_node_max
+        export WRTTASK_PER_GROUP_GFS=64
+        if [[ "$WRTTASK_PER_GROUP_GFS" -gt "$npe_node_max" ]]; then export WRTTASK_PER_GROUP_GFS=$npe_node_max ; fi
         export WRTIOBUF="8M"
         ;;
     "C384")
@@ -98,12 +102,14 @@ case $case_in in
         export npe_wav=35
         export npe_wav_gfs=35
         export nth_fv3=1
-        export nth_fv3_gfs=1
+        export nth_fv3_gfs=2
         export cdmbgwd="1.1,0.72,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=1
         export WRTTASK_PER_GROUP=64
-        export WRITE_GROUP_GFS=1
+        if [[ "$WRTTASK_PER_GROUP" -gt "$npe_node_max" ]]; then export WRTTASK_PER_GROUP=$npe_node_max ; fi
+        export WRITE_GROUP_GFS=2
         export WRTTASK_PER_GROUP_GFS=64
+        if [[ "$WRTTASK_PER_GROUP_GFS" -gt "$npe_node_max" ]]; then export WRTTASK_PER_GROUP_GFS=$npe_node_max ; fi
         export WRTIOBUF="16M"
         ;;
     "C768")
@@ -119,8 +125,10 @@ case $case_in in
         export cdmbgwd="4.0,0.15,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=2
         export WRTTASK_PER_GROUP=64
+        if [[ "$WRTTASK_PER_GROUP" -gt "$npe_node_max" ]]; then export WRTTASK_PER_GROUP=$npe_node_max ; fi
         export WRITE_GROUP_GFS=8
         export WRTTASK_PER_GROUP_GFS=48
+        if [[ "$WRTTASK_PER_GROUP_GFS" -gt "$npe_node_max" ]]; then export WRTTASK_PER_GROUP_GFS=$npe_node_max ; fi
         export WRTIOBUF="32M"
         ;;
     "C1152")
