@@ -59,46 +59,23 @@ VSUFFIX=${VSUFFIX:-$SUFFIX}
 
 SMOOTH_ENKF=${SMOOTH_ENKF:-"YES"}
 
-GBIASe=${GBIASe:-${APREFIX}abias_int.ensmean}
-CNVSTAT=${CNVSTAT:-${APREFIX}cnvstat} # AFE not needed?
-OZNSTAT=${OZNSTAT:-${APREFIX}oznstat} # AFE not needed?
-RADSTAT=${RADSTAT:-${APREFIX}radstat} # AFE not needed?
-#ENKFSTAT=${ENKFSTAT:-${APREFIX}enkfstat}
 EFSOISTAT=${EFSOISTAT:-${APREFIX}efsoistat}
 
-#AFE for EFSOI
 VERFANL=${VERFANL:-${VPREFIX}atmanl.ensres.nc}
 INITANL=${INITANL:-${APREFIX}atmanl.ensres.nc}
 FCSTLONG=${GPREFIX}atmf030.ensmean.nc
 FCSTSHORT=${APREFIX}atmf024.ensmean.nc
-#FCST6HRS=${PPREFIX}atmf006.ensmean.nc
 OSENSEIN=osense_${CDATE}_init.dat
 OSENSEOUT=osense_${CDATE}_final.dat
 
 # this needs to be set manually because params in enkf will default to fhr03
 fgfileprefixes=sfg_${CDATE}_fhr06_
 
-
-
-
 #analysise Namelst parameters
-USE_CORRELATED_OBERRS=${USE_CORRELATED_OBERRS:-"NO"}
 NMEM_ENKF=${NMEM_ENKF:-80}
 NAM_ENKF=${NAM_ENKF:-""}
-SATOBS_ENKF=${SATOBS_ENKF:-""}
-OZOBS_ENKF=${OZOBS_ENKF:-""}
-use_correlated_oberrs=${use_correlated_oberrs:-".false."}
-if [ $USE_CORRELATED_OBERRS == "YES" ]; then
-   use_correlated_oberrs=".true."
-fi
-imp_physics=${imp_physics:-"99"}
-#lupp=${lupp:-".true."}
-lupp=${lupp:-".false."} # AFE to match old EFSOI
 corrlength=${corrlength:-1250}
 lnsigcutoff=${lnsigcutoff:-2.5}
-analpertwt=${analpertwt:-0.85}
-#readin_localization_enkf=${readin_localization_enkf:-".true."}
-readin_localization_enkf=${readin_localization_enkf:-".false."} # AFE
 reducedgrid=${reducedgrid:-".true."}
 letkf_flag=${letkf_flag:-".false."}
 getkf=${getkf:-".false."}
@@ -107,14 +84,9 @@ nobsl_max=${nobsl_max:-10000}
 lobsdiag_forenkf=${lobsdiag_forenkf:-".false."}
 write_spread_diag=${write_spread_diag:-".false."}
 cnvw_option=${cnvw_option:-".false."}
-netcdf_diag=${netcdf_diag:-".true."}
 modelspace_vloc=${modelspace_vloc:-".false."} # if true, 'vlocal_eig.dat' is needed
-IAUFHRS_ENKF=${IAUFHRS_ENKF:-6}
-DO_CALC_INCREMENT=${DO_CALC_INCREMENT:-"NO"}
-INCREMENTS_TO_ZERO=${INCREMENTS_TO_ZERO:-"'NONE'"}
 
 ################################################################################
-#ATMGES_ENSMEAN=$COMIN_GES_ENS/${GPREFIX}atmf006.ensmean${GSUFFIX}
 ATMGES_ENSMEAN=$COMIN_ANL/$VERFANL
 if [ $SUFFIX = ".nc" ]; then
    LONB_ENKF=${LONB_ENKF:-$($NCLEN $ATMGES_ENSMEAN grid_xt)} # get LONB_ENKF
@@ -123,12 +95,6 @@ if [ $SUFFIX = ".nc" ]; then
    use_gfs_ncio=".true."
    use_gfs_nemsio=".false."
    paranc=${paranc:-".true."}
-   if [ $DO_CALC_INCREMENT = "YES" ]; then
-      write_fv3_incr=".false."
-   else
-      write_fv3_incr=".true."
-      WRITE_INCR_ZERO="incvars_to_zero= $INCREMENTS_TO_ZERO,"
-   fi
 else
    LEVS_ENKF=${LEVS_ENKF:-$($NEMSIOGET $ATMGES_ENSMEAN dimz | awk '{print $2}')}
    LATB_ENKF=${LATB_ENKF:-$($NEMSIOGET $ATMGES_ENSMEAN dimy | awk '{print $2}')}
@@ -172,9 +138,6 @@ $NLN $HYBENSINFO hybens_info
 $NLN $ANAVINFO   anavinfo
 $NLN $VLOCALEIG  vlocal_eig.dat
 
-# Bias correction coefficients based on the ensemble mean
-$NLN $COMOUT_ANL_ENSFSOI/$GBIASe satbias_in
-
 ################################################################################
 # Ensemble guess, observational data and analyses/increments
 
@@ -196,13 +159,9 @@ $NLN $COMIN_GES_ENS/${GPREFIX}atmf006.ensmean${GSUFFIX} sfg_${CDATE}_fhr03_ensme
 # for verification.
 
 # saved analysis to be used for localization advection
-#$NLN ${COMIN_ANL}/${VERFANL} ${APREFIX}atmanl.ensmean.nc
 $NLN $COMOUT_ANL_ENSFSOI/${INITANL} ${APREFIX}atmanl.ensmean.nc
 
-# verifying analysis
-#$NLN ${COMIN_ANL}/${VERFANL} .
 $NLN $ATMGES_ENSMEAN .
-
 
 # forecasts
 $NLN $COMIN_GES_ENS/$FCSTLONG .
@@ -230,6 +189,7 @@ fi
 
 ################################################################################
 # Create global_enkf namelist
+# This is trimmed down to the entries relevant to the EFSOI code
 # AFE changed from original:
 # gdatehr, datehr, andataname added
 # analpertwt and lnsigcutoff changed upstream
@@ -247,134 +207,28 @@ cat > enkf.nml << EOFnml
    datehr=$cyc,
    fgfileprefixes=$fgfileprefixes
    andataname="$VERFANL",
-   analpertwtnh=${analpertwt},analpertwtsh=${analpertwt},analpertwttr=${analpertwt},
-   covinflatemax=1.e2,covinflatemin=1,pseudo_rh=.true.,iassim_order=0,
    corrlengthnh=${corrlength},corrlengthsh=${corrlength},corrlengthtr=${corrlength},
    lnsigcutoffnh=${lnsigcutoff},lnsigcutoffsh=${lnsigcutoff},lnsigcutofftr=${lnsigcutoff},
    lnsigcutoffpsnh=${lnsigcutoff},lnsigcutoffpssh=${lnsigcutoff},lnsigcutoffpstr=${lnsigcutoff},
    lnsigcutoffsatnh=${lnsigcutoff},lnsigcutoffsatsh=${lnsigcutoff},lnsigcutoffsattr=${lnsigcutoff},
    obtimelnh=1.e30,obtimelsh=1.e30,obtimeltr=1.e30,
-   saterrfact=1.0,numiter=1,
-   sprd_tol=1.e30,paoverpb_thresh=0.98,
    nlons=$LONA_ENKF,nlats=$LATA_ENKF,nlevs=$LEVS_ENKF,nanals=$NMEM_ENKF,
-   deterministic=.true.,sortinc=.true.,lupd_satbiasc=.false.,
-   reducedgrid=${reducedgrid},readin_localization=${readin_localization_enkf}.,
-   use_gfs_nemsio=${use_gfs_nemsio},use_gfs_ncio=${use_gfs_ncio},imp_physics=$imp_physics,lupp=$lupp,
-   univaroz=.false.,adp_anglebc=.true.,angord=4,use_edges=.false.,emiss_bc=.true.,
+   reducedgrid=${reducedgrid},
+   use_gfs_nemsio=${use_gfs_nemsio},use_gfs_ncio=${use_gfs_ncio},
+   univaroz=.false.,
+   adp_anglebc=.true.,angord=4,use_edges=.false.,emiss_bc=.true.,
    letkf_flag=${letkf_flag},nobsl_max=${nobsl_max},denkf=${denkf},getkf=${getkf}.,
-   nhr_anal=${IAUFHRS_ENKF},nhr_state=${IAUFHRS_ENKF},use_qsatensmean=.true.,
    lobsdiag_forenkf=$lobsdiag_forenkf,
    write_spread_diag=$write_spread_diag,
    modelspace_vloc=$modelspace_vloc,
-   use_correlated_oberrs=${use_correlated_oberrs},
-   netcdf_diag=$netcdf_diag,cnvw_option=$cnvw_option,
-   paranc=$paranc,write_fv3_incr=$write_fv3_incr,
    efsoi_cycling=.true.,
    efsoi_flag=.true.,
-   wmoist=1.0,adrate=0.75
-   $WRITE_INCR_ZERO
-   $NAM_ENKF  
+   wmoist=1.0,
+   adrate=0.75
 /
 &satobs_enkf
-   sattypes_rad(1) = 'amsua_n15',     dsis(1) = 'amsua_n15',
-   sattypes_rad(2) = 'amsua_n18',     dsis(2) = 'amsua_n18',
-   sattypes_rad(3) = 'amsua_n19',     dsis(3) = 'amsua_n19',
-   sattypes_rad(4) = 'amsub_n16',     dsis(4) = 'amsub_n16',
-   sattypes_rad(5) = 'amsub_n17',     dsis(5) = 'amsub_n17',
-   sattypes_rad(6) = 'amsua_aqua',    dsis(6) = 'amsua_aqua',
-   sattypes_rad(7) = 'amsua_metop-a', dsis(7) = 'amsua_metop-a',
-   sattypes_rad(8) = 'airs_aqua',     dsis(8) = 'airs_aqua',
-   sattypes_rad(9) = 'hirs3_n17',     dsis(9) = 'hirs3_n17',
-   sattypes_rad(10)= 'hirs4_n19',     dsis(10)= 'hirs4_n19',
-   sattypes_rad(11)= 'hirs4_metop-a', dsis(11)= 'hirs4_metop-a',
-   sattypes_rad(12)= 'mhs_n18',       dsis(12)= 'mhs_n18',
-   sattypes_rad(13)= 'mhs_n19',       dsis(13)= 'mhs_n19',
-   sattypes_rad(14)= 'mhs_metop-a',   dsis(14)= 'mhs_metop-a',
-   sattypes_rad(15)= 'goes_img_g11',  dsis(15)= 'imgr_g11',
-   sattypes_rad(16)= 'goes_img_g12',  dsis(16)= 'imgr_g12',
-   sattypes_rad(17)= 'goes_img_g13',  dsis(17)= 'imgr_g13',
-   sattypes_rad(18)= 'goes_img_g14',  dsis(18)= 'imgr_g14',
-   sattypes_rad(19)= 'goes_img_g15',  dsis(19)= 'imgr_g15',
-   sattypes_rad(20)= 'avhrr_n18',     dsis(20)= 'avhrr3_n18',
-   sattypes_rad(21)= 'avhrr_metop-a', dsis(21)= 'avhrr3_metop-a',
-   sattypes_rad(22)= 'avhrr_n19',     dsis(22)= 'avhrr3_n19',
-   sattypes_rad(23)= 'amsre_aqua',    dsis(23)= 'amsre_aqua',
-   sattypes_rad(24)= 'ssmis_f16',     dsis(24)= 'ssmis_f16',
-   sattypes_rad(25)= 'ssmis_f17',     dsis(25)= 'ssmis_f17',
-   sattypes_rad(26)= 'ssmis_f18',     dsis(26)= 'ssmis_f18',
-   sattypes_rad(27)= 'ssmis_f19',     dsis(27)= 'ssmis_f19',
-   sattypes_rad(28)= 'ssmis_f20',     dsis(28)= 'ssmis_f20',
-   sattypes_rad(29)= 'sndrd1_g11',    dsis(29)= 'sndrD1_g11',
-   sattypes_rad(30)= 'sndrd2_g11',    dsis(30)= 'sndrD2_g11',
-   sattypes_rad(31)= 'sndrd3_g11',    dsis(31)= 'sndrD3_g11',
-   sattypes_rad(32)= 'sndrd4_g11',    dsis(32)= 'sndrD4_g11',
-   sattypes_rad(33)= 'sndrd1_g12',    dsis(33)= 'sndrD1_g12',
-   sattypes_rad(34)= 'sndrd2_g12',    dsis(34)= 'sndrD2_g12',
-   sattypes_rad(35)= 'sndrd3_g12',    dsis(35)= 'sndrD3_g12',
-   sattypes_rad(36)= 'sndrd4_g12',    dsis(36)= 'sndrD4_g12',
-   sattypes_rad(37)= 'sndrd1_g13',    dsis(37)= 'sndrD1_g13',
-   sattypes_rad(38)= 'sndrd2_g13',    dsis(38)= 'sndrD2_g13',
-   sattypes_rad(39)= 'sndrd3_g13',    dsis(39)= 'sndrD3_g13',
-   sattypes_rad(40)= 'sndrd4_g13',    dsis(40)= 'sndrD4_g13',
-   sattypes_rad(41)= 'sndrd1_g14',    dsis(41)= 'sndrD1_g14',
-   sattypes_rad(42)= 'sndrd2_g14',    dsis(42)= 'sndrD2_g14',
-   sattypes_rad(43)= 'sndrd3_g14',    dsis(43)= 'sndrD3_g14',
-   sattypes_rad(44)= 'sndrd4_g14',    dsis(44)= 'sndrD4_g14',
-   sattypes_rad(45)= 'sndrd1_g15',    dsis(45)= 'sndrD1_g15',
-   sattypes_rad(46)= 'sndrd2_g15',    dsis(46)= 'sndrD2_g15',
-   sattypes_rad(47)= 'sndrd3_g15',    dsis(47)= 'sndrD3_g15',
-   sattypes_rad(48)= 'sndrd4_g15',    dsis(48)= 'sndrD4_g15',
-   sattypes_rad(49)= 'iasi_metop-a',  dsis(49)= 'iasi_metop-a',
-   sattypes_rad(50)= 'seviri_m08',    dsis(50)= 'seviri_m08',
-   sattypes_rad(51)= 'seviri_m09',    dsis(51)= 'seviri_m09',
-   sattypes_rad(52)= 'seviri_m10',    dsis(52)= 'seviri_m10',
-   sattypes_rad(53)= 'seviri_m11',    dsis(53)= 'seviri_m11',
-   sattypes_rad(54)= 'amsua_metop-b', dsis(54)= 'amsua_metop-b',
-   sattypes_rad(55)= 'hirs4_metop-b', dsis(55)= 'hirs4_metop-b',
-   sattypes_rad(56)= 'mhs_metop-b',   dsis(56)= 'mhs_metop-b',
-   sattypes_rad(57)= 'iasi_metop-b',  dsis(57)= 'iasi_metop-b',
-   sattypes_rad(58)= 'avhrr_metop-b', dsis(58)= 'avhrr3_metop-b',
-   sattypes_rad(59)= 'atms_npp',      dsis(59)= 'atms_npp',
-   sattypes_rad(60)= 'atms_n20',      dsis(60)= 'atms_n20',
-   sattypes_rad(61)= 'cris_npp',      dsis(61)= 'cris_npp',
-   sattypes_rad(62)= 'cris-fsr_npp',  dsis(62)= 'cris-fsr_npp',
-   sattypes_rad(63)= 'cris-fsr_n20',  dsis(63)= 'cris-fsr_n20',
-   sattypes_rad(64)= 'gmi_gpm',       dsis(64)= 'gmi_gpm',
-   sattypes_rad(65)= 'saphir_meghat', dsis(65)= 'saphir_meghat',
-   sattypes_rad(66)= 'amsua_metop-c', dsis(66)= 'amsua_metop-c',
-   sattypes_rad(67)= 'mhs_metop-c',   dsis(67)= 'mhs_metop-c',
-   sattypes_rad(68)= 'ahi_himawari8', dsis(68)= 'ahi_himawari8',
-   sattypes_rad(69)= 'abi_g16',       dsis(69)= 'abi_g16',
-   sattypes_rad(70)= 'abi_g17',       dsis(70)= 'abi_g17',
-   sattypes_rad(71)= 'iasi_metop-c',  dsis(71)= 'iasi_metop-c',
-   sattypes_rad(72)= 'viirs-m_npp',   dsis(72)= 'viirs-m_npp',
-   sattypes_rad(73)= 'viirs-m_j1',    dsis(73)= 'viirs-m_j1',
-   sattypes_rad(74)= 'avhrr_metop-c', dsis(74)= 'avhrr3_metop-c',
-   sattypes_rad(75)= 'abi_g18',       dsis(75)= 'abi_g18',
-   sattypes_rad(76)= 'ahi_himawari9', dsis(76)= 'ahi_himawari9',
-   sattypes_rad(77)= 'viirs-m_j2',    dsis(77)= 'viirs-m_j2',
-   sattypes_rad(78)= 'atms_n21',      dsis(78)= 'atms_n21',
-   sattypes_rad(79)= 'cris-fsr_n21',  dsis(79)= 'cris-fsr_n21',
-   $SATOBS_ENKF
 /
 &ozobs_enkf
-   sattypes_oz(1) = 'sbuv2_n16',
-   sattypes_oz(2) = 'sbuv2_n17',
-   sattypes_oz(3) = 'sbuv2_n18',
-   sattypes_oz(4) = 'sbuv2_n19',
-   sattypes_oz(5) = 'omi_aura',
-   sattypes_oz(6) = 'gome_metop-a',
-   sattypes_oz(7) = 'gome_metop-b',
-   sattypes_oz(8) = 'mls30_aura',
-   sattypes_oz(9) = 'ompsnp_npp',
-   sattypes_oz(10) = 'ompstc8_npp',
-   sattypes_oz(11) = 'ompsnp_n20',
-   sattypes_oz(12) = 'ompstc8_n20',
-   sattypes_oz(13) = 'ompsnp_n21',
-   sattypes_oz(14) = 'ompstc8_n21',
-   sattypes_oz(15) = 'ompslp_npp',
-   sattypes_oz(16) = 'gome_metop-c',
-   $OZOBS_ENKF
 /
 EOFnml
 
@@ -382,12 +236,9 @@ EOFnml
 # Run enkf update
 
 export OMP_NUM_THREADS=$NTHREADS_ENKF
-#export pgm=$ENKFEXEC AFE
 export pgm=$EFSOIEXEC
 . prep_step
 
-#$NCP $ENKFEXEC $DATA AFE
-#$APRUN_ENKF ${DATA}/$(basename $ENKFEXEC) 1>stdout 2>stderr AFE
 $NCP $EFSOIEXEC $DATA
 $APRUN_ENKF ${DATA}/$(basename $EFSOIEXEC) 1>stdout 2>stderr
 rc=$?
