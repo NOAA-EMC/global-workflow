@@ -190,7 +190,7 @@ def get_restart_files(time: datetime, incr: int, max_lookback: int, fcst_length:
 	----------
 	list of str
 		Full pathnames of all restart files needed from previous cycle (fv_core and fv_tracer files)
-		If all needed files aren't found within lookback period, None is returned instead
+		If all needed files aren't found within lookback period, An array of three None is returned instead.
 
 	'''
 	print(f"Looking for restart tracer files in {rot_dir}")
@@ -210,22 +210,25 @@ def get_restart_files(time: datetime, incr: int, max_lookback: int, fcst_length:
 			print(f"\tChecking {last_time}")
 		file_list = []
 		file_base = last_time.strftime(restart_base_pattern.format(**locals()))
+
 		for file_pattern in tracer_file_pattern, restart_file_pattern, dycore_file_pattern:
 			files = list(map(lambda tile: file_pattern.format(timestamp=timestamp, file_base=file_base, tile=tile), tiles))
 			if(debug):
 				print(f"\t\tLooking for files {files} in directory {file_base}")
-			found = [file for file in files if os.path.isfile(file)]
-			if(found):
-				file_list = file_list + [files]
-			else:
-				print(last_time.strftime("Restart files not found for %Y%m%d_%H"))
-				break
+			file_list = file_list + [files]
+
+		found = all([os.path.isfile(file) for file in files for files in file_list])
 
 		if(found):
-			return file_list
+			break
 		else:
-			print("WARNING: Unable to find restart files, will use zero fields")
-			return None
+			print(last_time.strftime("Restart files not found for %Y%m%d_%H"))
+
+	if(found):
+		return file_list
+	else:
+		print("WARNING: Unable to find restart files, will use zero fields")
+		return [ None, None, None ]
 
 
 # Merge tracer data into atmospheric data
