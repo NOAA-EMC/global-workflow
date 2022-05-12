@@ -78,7 +78,6 @@ if [[ ! -d gfs_post.fd ]] ; then
     git clone https://github.com/NOAA-EMC/UPP.git gfs_post.fd >> ${logdir}/checkout-gfs_post.log 2>&1
     cd gfs_post.fd
     git checkout upp_v10.0.11
-    git submodule update --init CMakeModules
     ################################################################################
     # checkout_gtg
     ## yes: The gtg code at NCAR private repository is available for ops. GFS only.
