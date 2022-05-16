@@ -50,7 +50,7 @@ PROFLIB =	-lprof
 # To compile with flowtracing turned on, use the second line
 # To compile giving profile additonal information, use the third line
 # WARNING:  SIMULTANEOUSLY PROFILING AND FLOWTRACING IS NOT RECOMMENDED 
-FFLAGS =        -O3  -g -I ${IP_INC8} -assume byterecl -convert big_endian -r8 -i8 
+FFLAGS =        -O3 -g -traceback -I ${IP_INC8} -assume byterecl -convert big_endian -r8 -i8 
 #FFLAGS =	 -F
 #FFLAGS =	 -Wf"-ez"
 

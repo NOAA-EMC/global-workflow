@@ -152,6 +152,8 @@ elif [ $step = "analcalc" ]; then
     export npe_analcalc=127
     export ntasks=$npe_analcalc
     export nth_analcalc=1
+    export nth_echgres=4
+    export nth_echgres_gfs=12
     export npe_node_analcalc=$npe_node_max
     if [[ "$machine" = "WCOSS_DELL_P3" ]]; then export npe_analcalc=127 ; fi
 
