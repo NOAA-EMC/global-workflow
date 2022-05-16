@@ -7,7 +7,7 @@ LDFLAGS=
 ##ccs FFLAGS= -O -qflttrap=ov:zero:inv:enable -qcheck -qextchk -qwarn64 -qintsize=$(ISIZE) -qrealsize=$(RSIZE)
 # FFLAGS= -O2 -check bounds -check format -xHost -fpe0
 # DEBUG= -check bounds -check format
-FFLAGS= -O2 -g -i$(ISIZE) -r$(RSIZE)
+FFLAGS= -O2 -g -traceback -i$(ISIZE) -r$(RSIZE)
 
 supvit:     supvit_main.f supvit_modules.o
 	@echo " "

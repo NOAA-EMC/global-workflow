@@ -15,4 +15,4 @@ load(pathJoin("w3nco", os.getenv("w3nco_ver")))
 load(pathJoin("nemsio", os.getenv("nemsio_ver")))
 
 setenv("FCMP","ftn")
-setenv("FFLAGS","-free -O3")
+setenv("FFLAGS","-free -O3 -g -traceback")

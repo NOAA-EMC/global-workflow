@@ -1,6 +1,6 @@
 #!/bin/sh
 
-export FFLAGS="-O3 -fp-model precise -g -r8 -i4"
+export FFLAGS="-O3 -fp-model precise -g -traceback -r8 -i4"
 # for debugging
 #export FFLAGS="-g -r8 -i4 -warn unused -check bounds"
 

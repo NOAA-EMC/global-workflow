@@ -15,7 +15,7 @@ fi
 
 cd ${cwd}/enkf_chgres_recenter_nc.fd
 
-export FFLAGS="-O3 -qopenmp -traceback -fp-model precise"
+export FFLAGS="-O3 -qopenmp -g -traceback -fp-model precise"
 export FV3GFS_NCIO_LIB="${cwd}/gsi.fd/build/lib/libfv3gfs_ncio.a"
 export FV3GFS_NCIO_INC="${cwd}/gsi.fd/build/include"
 
