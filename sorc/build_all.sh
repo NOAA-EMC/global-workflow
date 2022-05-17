@@ -21,16 +21,16 @@ function _usage() {
 		  scripts in sequence.
 
 		Usage: $BASH_SOURCE [-a UFS_app][-c build_config][-h][-s CCPP_SUITES][-v]
-			-a UFS_app:
-				Build a specific UFS app instead of the default
-			-c build_config:
-				Selectively build based on the provided config instead of the default config
-			-h:
-				print this help message and exit
+		  -a UFS_app:
+		    Build a specific UFS app instead of the default
+		  -c build_config:
+		    Selectively build based on the provided config instead of the default config
+		  -h:
+		    print this help message and exit
 			-s CCPP_SUITES:
-				Build UFS with given comma-separated list of CCPP suites instead of default list
-			-v:
-				Execute all build scripts with -v option to turn on verbose where supported
+		    Build UFS with given comma-separated list of CCPP suites instead of default list
+		  -v:
+		    Execute all build scripts with -v option to turn on verbose where supported
 
 	EOF
 	exit 1

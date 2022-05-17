@@ -134,12 +134,12 @@ parse_cfg() {
 usage() {
 	cat <<- EOF 2>&1
 		Usage: $BASH_SOURCE [-c config_file][-h][-v]
-			-h:
-				Print this help message and exit
-			-v:
-				Turn on verbose mode
-			-c config_file:
-				Override default config file to determine whether to build each program [default: gfs_build.cfg]
+		  -h:
+		    Print this help message and exit
+		  -v:
+		    Turn on verbose mode
+		  -c config_file:
+		    Override default config file to determine whether to build each program [default: gfs_build.cfg]
 
 		EOF
 }
