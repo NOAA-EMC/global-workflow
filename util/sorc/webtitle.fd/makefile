@@ -16,7 +16,7 @@ FC =	ftn
 LIBS=   ${W3NCO_LIB4}
 
 CMD =	webtitle       
-FFLAGS = 
+FFLAGS = -g -traceback
 #FFLAGS = -debug 
 
 # Lines from here on down should not need to be changed.  They are the
