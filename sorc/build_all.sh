@@ -16,15 +16,13 @@ function _usage() {
 		Builds all of the global-workflow components by calling the individual build 
 		  scripts in sequence.
 
-		Usage: $BASH_SOURCE [-a UFS_app][-c build_config][-h][-s CCPP_SUITES][-v]
+		Usage: $BASH_SOURCE [-a UFS_app][-c build_config][-h][-v]
 		  -a UFS_app:
 		    Build a specific UFS app instead of the default
 		  -c build_config:
 		    Selectively build based on the provided config instead of the default config
 		  -h:
 		    print this help message and exit
-			-s CCPP_SUITES:
-		    Build UFS with given comma-separated list of CCPP suites instead of default list
 		  -v:
 		    Execute all build scripts with -v option to turn on verbose where supported
 
@@ -36,12 +34,12 @@ _build_ufs_opt=""
 _verbose_opt=""
 # Reset option counter in case this script is sourced
 OPTIND=1
-while getopts ":a:c:s:hv" option; do
+while getopts ":a:c:hv" option; do
 	case "${option}" in
 		a) _build_ufs_opt+="-a ${OPTARG} ";;
 		c) _partial_opt+="-c ${OPTARG} ";;
 		h) _usage;;
-		s) _build_ufs_opt+="-s ${OPTARG} ";;
+		# s) _build_ufs_opt+="-s ${OPTARG} ";;
 		v) _verbose_opt="-v";;
 		\?)
 			echo "Unrecognized option: ${option}"
