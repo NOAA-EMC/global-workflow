@@ -44,7 +44,7 @@ if [[ ! -d gsi.fd ]] ; then
     git clone --recursive https://github.com/NOAA-EMC/GSI.git gsi.fd >> ${logdir}/checkout-gsi.log 2>&1
     cd gsi.fd
     git checkout a62dec6
-    git submodule update
+    git submodule update --init
     cd ${topdir}
 else
     echo 'Skip.  Directory gsi.fd already exists.'

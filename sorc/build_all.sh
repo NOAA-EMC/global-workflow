@@ -6,11 +6,7 @@ set +x
 #
 # USER DEFINED STUFF:
 #
-# USE_PREINST_LIBS: set to "true" to use preinstalled libraries.
-#                   Anything other than "true"  will use libraries locally.
 #------------------------------------
-
-export USE_PREINST_LIBS="true"
 
 #------------------------------------
 # END USER DEFINED STUFF
