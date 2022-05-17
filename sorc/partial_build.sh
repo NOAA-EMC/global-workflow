@@ -3,16 +3,16 @@
 # define the array of the name of build program
 #
 declare -a Build_prg=("Build_ufs_model" \
-"Build_ww3_prepost" \
-"Build_gsi" \
-"Build_ww3_prepost" \
-"Build_reg2grb2" \
-"Build_gldas" \
-"Build_ncep_post" \
-"Build_ufs_utils" \
-"Build_gfs_wafs" \
-"Build_workflow_utils" \
-"Build_gfs_util")
+                      "Build_ww3_prepost" \
+                      "Build_gsi" \
+                      "Build_ww3_prepost" \
+                      "Build_reg2grb2" \
+                      "Build_gldas" \
+                      "Build_ncep_post" \
+                      "Build_ufs_utils" \
+                      "Build_gfs_wafs" \
+                      "Build_workflow_utils" \
+                      "Build_gfs_util")
 
 #
 # function parse_cfg: read config file and retrieve the values
