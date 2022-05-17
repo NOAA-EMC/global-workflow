@@ -46,7 +46,6 @@ elif [[ "$machine" = "ORION" ]]; then
 fi
 
 if [ $step = "prep" -o $step = "prepbufr" ]; then
-
     eval "export wtime_$step='00:45:00'"
     eval "export npe_$step=4"
     eval "export npe_node_$step=2"
@@ -59,7 +58,11 @@ elif [ $step = "aerosol_init" ]; then
     export nth_aerosol_init=1
     export npe_node_aerosol_init=$(echo "$npe_node_max / $nth_aerosol_init" | bc)
     export NTASKS=${npe_aerosol_init}
-    export memory_aerosol_init="40G" # Temporary value until accurate value is determined
+    export memory_aerosol_init="4G"
+    if [ $machine = "HERA" ]; then
+        # Hera needs a bit more memory since it has fewer CPU/core
+        export memory_aerosol_init="6G"
+    fi
 
 elif [ $step = "waveinit" ]; then
 
