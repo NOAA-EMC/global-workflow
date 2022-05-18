@@ -125,6 +125,12 @@ export COMINatmos=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos
 export COMOUTatmos=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos
 export COMINwave=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/wave
 export COMOUTwave=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/wave
+export COMINocean=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/ocean
+export COMOUTocean=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/ocean
+export COMINice=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/ice
+export COMOUTice=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/ice
+export COMINaero=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/chem
+export COMOUTaero=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/chem
 
 export jlogfile="${EXPDIR}/logs/jlogfile"
 export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
@@ -244,7 +250,11 @@ export FHMAX_GFS=$(eval echo \${FHMAX_GFS_$cyc})
 export FHOUT_GFS=${FHOUT_GFS:-3}
 export FHMAX_HF_GFS=${FHMAX_HF_GFS:-0}
 export FHOUT_HF_GFS=${FHOUT_HF_GFS:-1}
-export STEP_GFS="24"
+if (( gfs_cyc != 0 )); then
+    export STEP_GFS=$(( 24 / gfs_cyc ))
+else
+    export STEP_GFS="0"
+fi
 export ILPOST=1           # gempak output frequency up to F120
 
 # GFS restart interval in hours

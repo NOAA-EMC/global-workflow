@@ -5,7 +5,8 @@ echo "Entered $0"
 MOM6REGRID=${MOM6REGRID:-$HOMEgfs}
 export EXEC_DIR=$MOM6REGRID/exec
 export USH_DIR=$MOM6REGRID/ush
-export COMOUT=$COMOUT
+export COMOUTocean=$COMOUTocean
+export COMOUTice=$COMOUTice
 export IDATE=$IDATE
 export ENSMEM=$ENSMEM
 export FHR=$fhr
