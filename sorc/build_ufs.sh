@@ -1,16 +1,15 @@
 #! /usr/bin/env bash
 set -eux
 
-# Build ATMW by default
-APP="ATMW"
-CCPP_SUITES="FV3_GFS_v16,FV3_GFS_v16_ugwpv1,FV3_GFS_v17_p8"
+# Default settings
+APP="S2SWA"
+CCPP_SUITES="FV3_GFS_v16,FV3_GFS_v16_ugwpv1,FV3_GFS_v17_p8,FV3_GFS_v16_coupled_nsstNoahmpUGWPv1,FV3_GFS_v17_coupled_p8"
 
-while getopts "c" option; do
+while getopts "a:s:v" option; do
   case "${option}" in
-    c)
-      APP="S2SW"
-      CCPP_SUITES="FV3_GFS_v16_coupled_nsstNoahmpUGWPv1,FV3_GFS_v17_coupled_p8"
-      ;;
+    a) APP="${OPTARG}" ;;
+    # s) CCPP_SUITES="${OPTARG}";;
+    v) BUILD_VERBOSE="YES";;
     *)
       echo "Unrecognized option: ${1}"
       exit 1
@@ -30,7 +29,6 @@ esac
 
 MOD_PATH=$cwd/ufs_model.fd/modulefiles
 
-
 cd ufs_model.fd/
 set +x
 module purge
@@ -43,5 +41,5 @@ if [ -d build ]; then
   rm -R build
 fi
 mkdir -p build && cd build
-cmake -DAPP=${APP} -DCCPP_SUITES=${CCPP_SUITES} -DUFS_GOCART="ON" ..
+cmake -DAPP=${APP} -DCCPP_SUITES=${CCPP_SUITES} ..
 OMP_NUM_THREADS=1 make -j ${BUILD_JOBS:-8} VERBOSE=${BUILD_VERBOSE:-}
