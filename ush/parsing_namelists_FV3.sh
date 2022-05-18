@@ -264,6 +264,8 @@ EOF
   lradar       = ${lradar:-".false."}
   ttendlim     = ${ttendlim:-"-999"}
   dt_inner     = ${dt_inner:-"$(echo "$DELTIM/2" |bc)"}
+  sedi_semi    = ${sedi_semi:-".true."}
+  decfl        = ${decfl:-"10"}
   oz_phys      = ${oz_phys:-".false."}
   oz_phys_2015 = ${oz_phys_2015:-".true."}
   lsoil_lsm    = ${lsoil_lsm:-"4"}
@@ -344,6 +346,7 @@ cat >> input.nml <<EOF
   iopt_snf     = ${iopt_snf:-"4"}
   iopt_tbot    = ${iopt_tbot:-"2"}
   iopt_stc     = ${iopt_stc:-"1"}
+  iopt_trs     = ${iopt_trs:-"2"}
   debug        = ${gfs_phys_debug:-".false."}
   nstf_name    = $nstf_name
   nst_anl      = $nst_anl

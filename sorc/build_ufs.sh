@@ -3,13 +3,13 @@ set -eux
 
 # Build ATMW by default
 APP="ATMW"
-CCPP_SUITES="FV3_GFS_v16,FV3_GFS_v16_RRTMGP,FV3_GFS_v16_ugwpv1,FV3_GFS_v17_p8"
+CCPP_SUITES="FV3_GFS_v16,FV3_GFS_v16_ugwpv1,FV3_GFS_v17_p8"
 
 while getopts "c" option; do
   case "${option}" in
     c)
       APP="S2SW"
-      CCPP_SUITES="FV3_GFS_v16_coupled_nsstNoahmpUGWPv1,FV3_GFS_v16_coupled_p7_rrtmgp,FV3_GFS_v17_coupled_p8"
+      CCPP_SUITES="FV3_GFS_v16_coupled_nsstNoahmpUGWPv1,FV3_GFS_v17_coupled_p8"
       ;;
     *)
       echo "Unrecognized option: ${1}"
