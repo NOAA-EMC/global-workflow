@@ -22,7 +22,7 @@ begin
 ;************************************************
 ; <BL.
 ; pull from environment
-  COMDIR          = getenv("COMOUT")+"/ice"
+  COMDIR          = getenv("COMOUTice")
   IDATE           = getenv("IDATE")
   FHR             = getenv("FHR")
   ENSMEM          = getenv("ENSMEM")

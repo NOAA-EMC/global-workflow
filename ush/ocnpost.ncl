@@ -91,7 +91,7 @@
 begin
 ; <BL.
 ; pull from environment
-  COMDIR          = getenv("COMOUT")+"/ocean"
+  COMDIR          = getenv("COMOUTocean")
   IDATE           = getenv("IDATE")
   FHR2             = getenv("FHR")
   FHR=FHR2
