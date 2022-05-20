@@ -155,18 +155,11 @@ config_file="gfs_build.cfg"
 OPTIND=1
 while getopts ":c:hs:v" option; do
 	case "${option}" in
-		c)
-			config_file="${OPTARG}"
-			shift 2
-			;;
-		h)
-			usage
-			shift 1
-			;;
+		c) config_file="${OPTARG}";;
+		h) usage;;
 		v)
 			verbose=true
 			parse_argv+=( "--verbose" )
-			shift 1
 			;;
 		\?)
 			echo "[$BASH_SOURCE]: Unrecognized option: ${option}"
@@ -178,6 +171,8 @@ while getopts ":c:hs:v" option; do
 			;;
 	esac
 done
+
+shift $((OPTIND-1))
 
 parse_argv+=( "config=$config_file" )
 
