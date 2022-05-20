@@ -153,9 +153,7 @@ verbose=false
 config_file="gfs_build.cfg"
 # Reset option counter for when this script is sourced
 OPTIND=1
-echo $*
 while getopts ":c:hs:v" option; do
-	echo $option
 	case "${option}" in
 		c)
 			config_file="${OPTARG}"
