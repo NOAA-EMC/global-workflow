@@ -32,14 +32,16 @@ function _usage() {
 
 _build_ufs_opt=""
 _verbose_opt=""
+_build_ops_opt=""
 # Reset option counter in case this script is sourced
 OPTIND=1
-while getopts ":a:c:hv" option; do
+while getopts ":a:c:hov" option; do
 	case "${option}" in
 		a) _build_ufs_opt+="-a ${OPTARG} ";;
 		c) _partial_opt+="-c ${OPTARG} ";;
 		h) _usage;;
 		# s) _build_ufs_opt+="-s ${OPTARG} ";;
+		o) _build_ops_opt="-o";;
 		v) _verbose_opt="-v";;
 		\?)
 			echo "[$BASH_SOURCE]: Unrecognized option: ${option}"
@@ -133,15 +135,15 @@ $Build_gsi && {
 }
 
 #------------------------------------
-# build ncep_post
+# build UPP
 #------------------------------------
-$Build_ncep_post && {
-	echo " .... Building ncep_post .... "
-	./build_ncep_post.sh $_verbose_opt > $logs_dir/build_ncep_post.log 2>&1
+$Build_upp && {
+	echo " .... Building UPP .... "
+	./build_upp.sh $_verbose_opt $_build_ops_opt > $logs_dir/build_upp.log 2>&1
 	rc=$?
 	if [[ $rc -ne 0 ]] ; then
-		echo "Fatal error in building ncep_post."
-		echo "The log file is in $logs_dir/build_ncep_post.log"
+		echo "Fatal error in building UPP."
+		echo "The log file is in $logs_dir/build_upp.log"
 	fi
 	((err+=$rc))
 }
