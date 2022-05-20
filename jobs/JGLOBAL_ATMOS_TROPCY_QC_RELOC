@@ -74,7 +74,7 @@ export ARCHSYND=${ROTDIR}/syndat  # this location is unique, do not change
 if [ ! -d ${ARCHSYND} ]; then mkdir -p $ARCHSYND; fi
 
 export HOMENHCp1=${HOMENHCp1:-/gpfs/?p1/nhc/save/guidance/storm-data/ncep}
-export HOMENHC=${HOMENHC:-/gpfs/dell2/nhc/save/guidance/storm-data/ncep}
+export HOMENHC=${HOMENHC:-/lfs/h1/ops/prod/dcom/nhc/atcf/ncep}
 
 # JY export TANK_TROPCY=${TANK_TROPCY:-${DCOMROOT}/${envir}}   # path to tropical cyclone record database
 export TANK_TROPCY=${TANK_TROPCY:-${DCOMROOT}}   # path to tropical cyclone record database
