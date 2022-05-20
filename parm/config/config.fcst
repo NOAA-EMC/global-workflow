@@ -169,6 +169,11 @@ export icliq_sw=2   ; #cloud optical coeffs from AER's newer version v3.9-v4.0 f
 export isubc_sw=2
 export isubc_lw=2
 
+# RRTMGP radiation scheme
+export  do_RRTMGP=.false.
+export  doGP_cldoptics_LUT=.false.
+export  doGP_lwscat=.false.
+
 # LSM configuration
 # NoahMP only
 export iopt_sfc="3"

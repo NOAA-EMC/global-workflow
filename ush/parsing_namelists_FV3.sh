@@ -355,6 +355,19 @@ cat >> input.nml <<EOF
   lgfdlmprad   = ${lgfdlmprad:-".false."}
   effr_in      = ${effr_in:-".false."}
   ldiag_ugwp   = ${ldiag_ugwp:-".false."}
+  do_RRTMGP          = ${do_RRTMGP:-".false."}
+  active_gases       = ${active_gases:-'h2o_co2_o3_n2o_ch4_o2'}
+  ngases             = ${ngases:-"6"}
+  lw_file_gas        = ${lw_file_gas:-'rrtmgp-data-lw-g128-210809.nc'}
+  lw_file_clouds     = ${lw_file_clouds:-'rrtmgp-cloud-optics-coeffs-lw.nc'}
+  sw_file_gas        = ${sw_file_gas:-'rrtmgp-data-sw-g112-210809.nc'}
+  sw_file_clouds     = ${sw_file_clouds:-'rrtmgp-cloud-optics-coeffs-sw.nc'}
+  rrtmgp_nGptsSW     = ${rrtmgp_nGptsSW:-"112"}
+  rrtmgp_nGptsLW     = ${rrtmgp_nGptsLW:-"128"}
+  rrtmgp_nBandsLW    = ${rrtmgp_nBandsLW:-"16"}
+  rrtmgp_nBandsSW    = ${rrtmgp_nBandsSW:-"14"}
+  doGP_cldoptics_LUT = ${doGP_cldoptics_LUT:-".false."}
+  doGP_lwscat        = ${doGP_lwscat:-".false."}
 EOF
 
 if [ $cpl = .true. ]; then
