@@ -36,17 +36,29 @@ _verbose_opt=""
 OPTIND=1
 while getopts ":a:c:hv" option; do
 	case "${option}" in
-		a) _build_ufs_opt+="-a ${OPTARG} ";;
-		c) _partial_opt+="-c ${OPTARG} ";;
-		h) _usage;;
+		a)
+			_build_ufs_opt+="-a ${OPTARG} "
+			shift 2
+			;;
+		c)
+			_partial_opt+="-c ${OPTARG} "
+			shift 2
+			;;
+		h)
+			_usage
+			shift 1
+			;;
 		# s) _build_ufs_opt+="-s ${OPTARG} ";;
-		v) _verbose_opt="-v";;
+		v)
+			_verbose_opt="-v"
+			shift 1
+			;;
 		\?)
-			echo "Unrecognized option: ${option}"
+			echo "[$BASH_SOURCE]: Unrecognized option: ${option}"
 			usage
 			;;
 		:)
-			echo "${option} requires an argument"
+			echo "[$BASH_SOURCE]: ${option} requires an argument"
 			usage
 			;;
 	esac

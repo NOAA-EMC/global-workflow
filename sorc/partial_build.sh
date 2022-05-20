@@ -153,20 +153,29 @@ verbose=false
 config_file="gfs_build.cfg"
 # Reset option counter for when this script is sourced
 OPTIND=1
-while getopts "c:hs:v" option; do
+echo $*
+while getopts ":c:hs:v" option; do
+	echo $option
 	case "${option}" in
-		c) config_file="${OPTARG}";;
-		h) usage;;
+		c)
+			config_file="${OPTARG}"
+			shift 2
+			;;
+		h)
+			usage
+			shift 1
+			;;
 		v)
 			verbose=true
 			parse_argv+=( "--verbose" )
+			shift 1
 			;;
 		\?)
-			echo "Unrecognized option: ${option}"
+			echo "[$BASH_SOURCE]: Unrecognized option: ${option}"
 			usage
 			;;
 		:)
-			echo "${option} requires an argument"
+			echo "[$BASH_SOURCE]: ${option} requires an argument"
 			usage
 			;;
 	esac
