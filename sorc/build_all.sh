@@ -42,15 +42,17 @@ while getopts ":a:c:hv" option; do
 		# s) _build_ufs_opt+="-s ${OPTARG} ";;
 		v) _verbose_opt="-v";;
 		\?)
-			echo "Unrecognized option: ${option}"
+			echo "[$BASH_SOURCE]: Unrecognized option: ${option}"
 			usage
 			;;
 		:)
-			echo "${option} requires an argument"
+			echo "[$BASH_SOURCE]: ${option} requires an argument"
 			usage
 			;;
 	esac
 done
+
+shift $((OPTIND-1))
 
 build_dir=$(pwd)
 logs_dir=$build_dir/logs
