@@ -27,6 +27,9 @@ SLINK="ln -fs"
 
 pwd=$(pwd -P)
 
+# Link post
+$LINK ufs_model.fd/FV3/upp upp.fd
+
 #------------------------------
 #--model fix fields
 #------------------------------
@@ -77,27 +80,28 @@ if [ -d ${pwd}/ufs_utils.fd ]; then
   ./link_fixdirs.sh $RUN_ENVIR $machine
 fi
 
+
 #---------------------------------------
 #--add files from external repositories
 #---------------------------------------
 cd ${pwd}/../jobs               ||exit 8
-    $LINK ../sorc/gfs_post.fd/jobs/JGLOBAL_ATMOS_POST_MANAGER      .
-    $LINK ../sorc/gfs_post.fd/jobs/JGLOBAL_ATMOS_NCEPPOST          .
-    $LINK ../sorc/gldas.fd/jobs/JGDAS_ATMOS_GLDAS            .
+    $LINK ../sorc/upp.fd/jobs/JGLOBAL_ATMOS_POST_MANAGER      .
+    $LINK ../sorc/upp.fd/jobs/JGLOBAL_ATMOS_NCEPPOST          .
+    $LINK ../sorc/gldas.fd/jobs/JGDAS_ATMOS_GLDAS             .
 cd ${pwd}/../parm               ||exit 8
     [[ -d post ]] && rm -rf post
-    $LINK ../sorc/gfs_post.fd/parm                           post
+    $LINK ../sorc/upp.fd/parm                           post
     [[ -d gldas ]] && rm -rf gldas
     $LINK ../sorc/gldas.fd/parm                              gldas
 cd ${pwd}/../scripts            ||exit 8
-    $LINK ../sorc/gfs_post.fd/scripts/exgdas_atmos_nceppost.sh .
-    $LINK ../sorc/gfs_post.fd/scripts/exglobal_atmos_pmgr.sh   .
+    $LINK ../sorc/upp.fd/scripts/exgdas_atmos_nceppost.sh .
+    $LINK ../sorc/upp.fd/scripts/exglobal_atmos_pmgr.sh   .
     $LINK ../sorc/ufs_utils.fd/scripts/exemcsfc_global_sfc_prep.sh .
     $LINK ../sorc/gldas.fd/scripts/exgdas_atmos_gldas.sh .
 cd ${pwd}/../ush                ||exit 8
     for file in fv3gfs_dwn_nems.sh gfs_nceppost.sh  \
         gfs_transfer.sh mod_icec.sh link_crtm_fix.sh trim_rh.sh fix_precip.sh; do
-        $LINK ../sorc/gfs_post.fd/ush/$file                  .
+        $LINK ../sorc/upp.fd/ush/$file                  .
     done
     for file in emcsfc_ice_blend.sh  fv3gfs_driver_grid.sh  fv3gfs_make_orog.sh  global_cycle_driver.sh \
         emcsfc_snow.sh  fv3gfs_filter_topo.sh  global_cycle.sh  fv3gfs_make_grid.sh ; do
@@ -233,7 +237,7 @@ done
 $LINK ../sorc/ufs_model.fd/build/ufs_model .
 
 [[ -s gfs_ncep_post ]] && rm -f gfs_ncep_post
-$LINK ../sorc/gfs_post.fd/exec/upp.x gfs_ncep_post
+$LINK ../sorc/upp.fd/exec/upp.x gfs_ncep_post
 
 if [ -d ${pwd}/gfs_wafs.fd ]; then 
     for wafsexe in \
@@ -320,7 +324,7 @@ cd ${pwd}/../sorc   ||   exit 8
     [[ -d recentersigp.fd ]] && rm -rf recentersigp.fd
     $SLINK gsi.fd/util/EnKF/gfs/src/recentersigp.fd                                        recentersigp.fd
 
-    $SLINK gfs_post.fd/sorc/ncep_post.fd                                                   gfs_ncep_post.fd
+    $SLINK upp.fd/sorc/ncep_post.fd                                                   gfs_ncep_post.fd
 
     for prog in fregrid make_hgrid make_solo_mosaic ; do
         $SLINK ufs_utils.fd/sorc/fre-nctools.fd/tools/$prog                                ${prog}.fd                                

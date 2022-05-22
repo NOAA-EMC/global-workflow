@@ -9,8 +9,5 @@ if [ ! -d "../exec" ]; then
   mkdir ../exec
 fi
 
-cd gldas.fd/sorc
-./build_all_gldas.sh
-
-exit
-
+cd ufs_model.fd/FV3/upp/tests
+./compile_upp.sh

@@ -33,6 +33,20 @@ if [[ ! -d ufs_model.fd ]] ; then
     cd ufs_model.fd
     git checkout ${ufs_model_hash:-Prototype-P8b}
     git submodule update --init --recursive
+
+    ################################################################################
+    # checkout_gtg
+    ## yes: The gtg code at NCAR private repository is available for ops. GFS only.
+    #       Only approved persons/groups have access permission.
+    ## no:  No need to check out gtg code for general GFS users.
+    ################################################################################
+    checkout_gtg=${checkout_gtg:-"NO"}
+    if [[ ${checkout_gtg} == "YES" ]] ; then
+      cd FV3/upp
+      ./manage_externals/checkout_externals
+      cp sorc/post_gtg.fd/*F90 sorc/ncep_post.fd/.
+      cp sorc/post_gtg.fd/gtg.config.gfs parm/gtg.config.gfs
+    fi
     cd ${topdir}
 else
     echo 'Skip.  Directory ufs_model.fd already exists.'
@@ -44,7 +58,7 @@ if [[ ! -d gsi.fd ]] ; then
     git clone --recursive https://github.com/NOAA-EMC/GSI.git gsi.fd >> ${logdir}/checkout-gsi.log 2>&1
     cd gsi.fd
     git checkout a62dec6
-    git submodule update
+    git submodule update --init
     cd ${topdir}
 else
     echo 'Skip.  Directory gsi.fd already exists.'
@@ -72,30 +86,6 @@ else
     echo 'Skip.  Directory ufs_utils.fd already exists.'
 fi
 
-echo UPP checkout ...
-if [[ ! -d gfs_post.fd ]] ; then
-    rm -f ${topdir}/checkout-gfs_post.log
-    git clone https://github.com/NOAA-EMC/UPP.git gfs_post.fd >> ${logdir}/checkout-gfs_post.log 2>&1
-    cd gfs_post.fd
-    git checkout upp_v10.0.11
-    git submodule update --init CMakeModules
-    ################################################################################
-    # checkout_gtg
-    ## yes: The gtg code at NCAR private repository is available for ops. GFS only.
-    #       Only approved persons/groups have access permission.
-    ## no:  No need to check out gtg code for general GFS users.
-    ################################################################################
-    checkout_gtg=${checkout_gtg:-"NO"}
-    if [[ ${checkout_gtg} == "YES" ]] ; then
-      ./manage_externals/checkout_externals
-      cp sorc/post_gtg.fd/*F90 sorc/ncep_post.fd/.
-      cp sorc/post_gtg.fd/gtg.config.gfs parm/gtg.config.gfs
-    fi
-    cd ${topdir}
-else
-    echo 'Skip.  Directory gfs_post.fd already exists.'
-fi
-
 checkout_wafs=${checkout_wafs:-"NO"}
 if [[ ${checkout_wafs} == "YES" ]] ; then
   echo EMC_gfs_wafs checkout ...
@@ -115,7 +105,8 @@ if [[ ! -d verif-global.fd ]] ; then
     rm -f ${topdir}/checkout-verif-global.log
     git clone --recursive https://github.com/NOAA-EMC/EMC_verif-global.git verif-global.fd >> ${logdir}/checkout-verif-global.log 2>&1
     cd verif-global.fd
-    git checkout verif_global_v2.8.0
+    # git checkout verif_global_v2.8.0
+    git checkout c267780
     cd ${topdir}
 else
     echo 'Skip. Directory verif-global.fd already exist.'

@@ -31,7 +31,7 @@ load(pathJoin("fms", "2021.03"))
 
 load(pathJoin("bacio", "2.4.1"))
 load(pathJoin("g2", "3.4.2"))
-load(pathJoin("g2tmpl", "1.10.1"))
+load(pathJoin("g2tmpl", "1.10.0"))
 load(pathJoin("ip", "3.3.3"))
 load(pathJoin("nemsio", "2.5.2"))
 load(pathJoin("sp", "2.3.3"))
@@ -41,9 +41,17 @@ load(pathJoin("w3nco", "2.4.1"))
 load(pathJoin("wgrib2", "2.0.8"))
 setenv("WGRIB2","wgrib2")
 
-append_path("MODULEPATH", "/contrib/anaconda/modulefiles")
-load(pathJoin("anaconda", "2.3.0"))
-
 load(pathJoin("cdo", "1.9.5"))
+
+load(pathJoin("R", "3.5.0"))
+
+-- Temporary until official hpc-stack is updated
+prepend_path("MODULEPATH", "/scratch2/NCEPDEV/ensemble/save/Walter.Kolczynski/hpc-stack/modulefiles/stack")
+load(pathJoin("hpc", "1.2.0"))
+load(pathJoin("hpc-intel", "18.0.5.274"))
+load(pathJoin("hpc-miniconda3", "4.6.14"))
+load(pathJoin("ufswm", "1.0.0"))
+load(pathJoin("met", "9.1"))
+load(pathJoin("metplus", "3.1"))
 
 whatis("Description: GFS run environment")
