@@ -133,15 +133,15 @@ $Build_gsi && {
 }
 
 #------------------------------------
-# build ncep_post
+# build UPP
 #------------------------------------
-$Build_ncep_post && {
-	echo " .... Building ncep_post .... "
-	./build_ncep_post.sh $_verbose_opt > $logs_dir/build_ncep_post.log 2>&1
+$Build_upp && {
+	echo " .... Building UPP .... "
+	./build_upp.sh $_verbose_opt > $logs_dir/build_upp.log 2>&1
 	rc=$?
 	if [[ $rc -ne 0 ]] ; then
-		echo "Fatal error in building ncep_post."
-		echo "The log file is in $logs_dir/build_ncep_post.log"
+		echo "Fatal error in building UPP."
+		echo "The log file is in $logs_dir/build_upp.log"
 	fi
 	((err+=$rc))
 }
