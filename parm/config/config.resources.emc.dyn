@@ -406,7 +406,7 @@ elif [ $step = "postsnd" ]; then
 
     export wtime_postsnd="02:00:00"
     export npe_postsnd=40
-    export nth_postsnd=1
+    export nth_postsnd=6
     export npe_node_postsnd=20
     export npe_postsndcfp=9
     export npe_node_postsndcfp=1
@@ -422,7 +422,7 @@ elif [ $step = "awips" ]; then
     export npe_awips=1
     export npe_node_awips=1
     export nth_awips=1
-    export memory_awips="1GB"
+    export memory_awips="3GB"
     if [[ "$machine" == "WCOSS_DELL_P3" ]]; then
         export npe_awips=2
         export npe_node_awips=2
@@ -437,7 +437,7 @@ elif [ $step = "gempak" ]; then
     export npe_node_gempak=2
     export npe_node_gempak_gfs=28
     export nth_gempak=1
-    export memory_gempak="1GB"
+    export memory_gempak="4GB"
     export memory_gempak_gfs="2GB"
 
 else
