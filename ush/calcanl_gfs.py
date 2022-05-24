@@ -225,7 +225,6 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix, ASuffix,
         sys.exit(1)
 
     ####### generate the full resolution analysis
-    interp_jobs = []
     ihost = 0
     ### interpolate increment to full background resolution
     for fh in IAUHH:
@@ -261,18 +260,17 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix, ASuffix,
                 os.environ['SLURM_HOSTFILE'] = CalcAnlDir+'/hosts'
             print('interp_inc', fh, namelist)
             job = subprocess.Popen(ExecCMDMPI10_host+' '+CalcAnlDir+'/chgres_inc.x', shell=True, cwd=CalcAnlDir)
-            interp_jobs.append(job)
             print(ExecCMDMPI10_host+' '+CalcAnlDir+'/chgres_inc.x submitted on '+hosts[ihost])
+            sys.stdout.flush()
+            ec = job.wait()
+            if ec != 0:
+                print('Error with chgres_inc.x at forecast hour: f'+format(fh, '03'))
+                print('Error with chgres_inc.x, exit code='+str(ec))
+                print(locals())
+                sys.exit(ec)
             ihost+=1
         else:
             print('f'+format(fh, '03')+' is in $IAUFHRS but increment file is missing. Skipping.')
-    sys.stdout.flush()
-    exit_codes = [p.wait() for p in interp_jobs]
-    for ec in exit_codes:
-        if ec != 0:
-            print('Error with chgres_inc.x, exit code='+str(ec))
-            print(locals())
-            sys.exit(ec)
 
     #### generate analysis from interpolated increment
     CalcAnlDir6 = RunDir+'/calcanl_'+format(6, '02')
