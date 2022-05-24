@@ -82,8 +82,8 @@ if [ $RUN_ENVIR = "nco" -o ${ROTDIR_DUMP:-NO} = "YES" ]; then
     export COMIN_OBS=${COMIN_OBS:-$(compath.py ${envir}/obsproc/${obsproc_ver})/$RUN.$PDY/$cyc/$COMPONENT}
     export COMIN_GES_OBS=${COMIN_GES_OBS:-$(compath.py ${envir}/obsproc/${obsproc_ver})/$GDUMP.$gPDY/$gcyc/$COMPONENT}
 else
-    export COMIN_OBS="$DMPDIR/$CDUMP.$PDY/$cyc"
-    export COMIN_GES_OBS="$DMPDIR/$GDUMP.$gPDY/$gcyc"
+    export COMIN_OBS="$DMPDIR/$CDUMP.$PDY/$cyc/$COMPONENT"
+    export COMIN_GES_OBS="$DMPDIR/$GDUMP.$gPDY/$gcyc/$COMPONENT"
 fi
 
 # COMIN_GES, COMIN_ANL COMIN_GES_ENS, and COMOUT  are used in script
