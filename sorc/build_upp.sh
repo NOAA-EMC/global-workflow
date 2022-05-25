@@ -9,5 +9,5 @@ if [ ! -d "../exec" ]; then
   mkdir ../exec
 fi
 
-cd gfs_post.fd/tests
+cd ufs_model.fd/FV3/upp/tests
 ./compile_upp.sh

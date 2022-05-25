@@ -8,7 +8,7 @@ declare -a Build_prg=("Build_ufs_model" \
                       "Build_ww3_prepost" \
                       "Build_reg2grb2" \
                       "Build_gldas" \
-                      "Build_ncep_post" \
+                      "Build_upp" \
                       "Build_ufs_utils" \
                       "Build_gfs_wafs" \
                       "Build_workflow_utils" \
@@ -153,7 +153,7 @@ verbose=false
 config_file="gfs_build.cfg"
 # Reset option counter for when this script is sourced
 OPTIND=1
-while getopts "c:hs:v" option; do
+while getopts ":c:hs:v" option; do
 	case "${option}" in
 		c) config_file="${OPTARG}";;
 		h) usage;;
@@ -162,15 +162,17 @@ while getopts "c:hs:v" option; do
 			parse_argv+=( "--verbose" )
 			;;
 		\?)
-			echo "Unrecognized option: ${option}"
+			echo "[$BASH_SOURCE]: Unrecognized option: ${option}"
 			usage
 			;;
 		:)
-			echo "${option} requires an argument"
+			echo "[$BASH_SOURCE]: ${option} requires an argument"
 			usage
 			;;
 	esac
 done
+
+shift $((OPTIND-1))
 
 parse_argv+=( "config=$config_file" )
 
