@@ -15,7 +15,7 @@ The NOAA VLab and both the NOAA-EMC and NCAR organization spaces on GitHub.com a
 cd $PACKAGEROOT
 mkdir gfs.v16.2.0
 cd gfs.v16.2.0
-git clone -b EMC-v16.2.0.6 https://github.com/NOAA-EMC/global-workflow.git .
+git clone -b EMC-v16.2.0.7 https://github.com/NOAA-EMC/global-workflow.git .
 cd sorc
 ./checkout.sh -o
 ```
@@ -118,7 +118,7 @@ All components updated their codes to build on WCOSS2:
 FIX CHANGES
 -----------
 
-* No changes from GFS v16.1.7
+* No changes from GFS v16.1.8
 
 PARM/CONFIG CHANGES
 -------------------
@@ -354,7 +354,7 @@ CHANGES TO RESOURCES AND FILE SIZES
 -----------------------------------
 
 * File sizes
-  * No change to GFSv16.1.7.
+  * No change to GFSv16.1.8.
 * Resource changes to meet operational time windows:
   * See updated Ecflow scripts for adjusted compute resources for WCOSS2.
   * Pre-hand-off development testing results:
@@ -379,21 +379,21 @@ DISSEMINATION INFORMATION
 -------------------------
 
 * Where should this output be sent?
-  * No change from GFS v16.1.7
+  * No change from GFS v16.1.8
 * Who are the users?
-  * No change from GFS v16.1.7
+  * No change from GFS v16.1.8
 * Which output files should be transferred from PROD WCOSS to DEV WCOSS?
-  * No change from GFS v16.1.7
+  * No change from GFS v16.1.8
 * Directory changes
-  * No change from GFS v16.1.7
+  * No change from GFS v16.1.8
 * File changes
-  * No change from GFS v16.1.7
+  * No change from GFS v16.1.8
 
 HPSS ARCHIVE
 ------------
 
-* No change from GFS v16.1.7
+* No change from GFS v16.1.8
 
 JOB DEPENDENCIES AND FLOW DIAGRAM
 ---------------------------------
-* No change from GFS v16.1.7
+* No change from GFS v16.1.8

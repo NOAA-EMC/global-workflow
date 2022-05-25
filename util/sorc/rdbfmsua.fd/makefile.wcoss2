@@ -41,7 +41,7 @@ OBJS=	rdbfmsua.o
 FC =		ftn
 # FFLAGS =	-O3 -q32 -I${GEMINC} -I${NAWIPS}/os/${NA_OS}/include
 # FFLAGS =	-I${GEMINC} -I${NAWIPS}/os/${NA_OS}/include
-FFLAGS =	-I${GEMINC} -I${OS_INC}
+FFLAGS =	-g -traceback -I${GEMINC} -I${OS_INC}
 # LDFLAGS =       -O3 -q32 -s
 # LDFLAGS =       -Wl,-Map,MAPFILE
 
