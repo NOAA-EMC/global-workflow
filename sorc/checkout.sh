@@ -28,6 +28,7 @@ function checkout() {
 	# Clone or fetch repo, then checkout specific hash and update submodules
 	#
 	# Environment variables:
+	#   topdir [default: $(pwd)]: parent directory to your checkout
 	#   logdir [default: $(pwd)]: where you want logfiles written
 	#   CLEAN [default: NO]:      whether to delete existing directories and create a fresh clone
 	# 
@@ -55,6 +56,7 @@ function checkout() {
 		rm "${logfile}"
 	fi
 
+	cd "${topdir}"
 	if [[ "${c:-NO}" == "YES" ]]; then
 		rm -Rf "$dir"
 	fi
@@ -120,7 +122,7 @@ while getopts ":chm:o" option; do
 done
 shift $((OPTIND-1))
 
-topdir=$(pwd)
+export topdir=$(pwd)
 export logdir="${topdir}/logs"
 mkdir -p ${logdir}
 
