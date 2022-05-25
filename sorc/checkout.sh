@@ -48,7 +48,7 @@ function checkout() {
 	version="$3"
 
 	name=$(echo ${dir} | cut -d '.' -f 1)
-	echo "Starting checkout for ${name}"
+	echo "Performing checkout of ${name}"
 
 	logfile="${logdir:-$(pwd)}/checkout_${name}.log"
 
@@ -57,11 +57,12 @@ function checkout() {
 	fi
 
 	cd "${topdir}"
-	if [[ "${c:-NO}" == "YES" ]]; then
+	if [[  -d "${dir}" && "${c:-NO}" == "YES" ]]; then
+		echo "|-- Removing existing clone in ${dir}"		
 		rm -Rf "$dir"
 	fi
 	if [[ ! -d "${dir}" ]]; then
-		echo "|-- Cloning ${remote} into ${dir}"
+		echo "|-- Cloning from ${remote} into ${dir}"
 		git clone "${remote}" "${dir}" >> "${logfile}" 2>&1
 		status=$?
 		if ((status > 0)); then
@@ -71,10 +72,11 @@ function checkout() {
 		fi
 	else
 		# Fetch any updates from server
+		echo "|-- Fetching updates from ${remote}"
 		git fetch
 	fi
 	cd "${dir}"
-	echo "|-- Checking out ${version} of ${name}"
+	echo "|-- Checking out ${version}"
 	git checkout "${version}" >> "${logfile}" 2>&1
 	status=$?
 	if ((status > 0)); then
@@ -83,7 +85,7 @@ function checkout() {
 		return "${status}"
 	fi
 	git submodule update --init --recursive >> "${logfile}" 2>&1
-	echo "|-- Updating submodules of ${name} (if any)"
+	echo "|-- Updating submodules (if any)"
 	status=$?
 	if ((status > 0)); then
 		echo "    WARNING: Error while updating submodules of ${name}"
