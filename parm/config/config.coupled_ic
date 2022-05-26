@@ -15,7 +15,7 @@ elif [[ "$machine" == "ORION" ]]; then
   export BASE_CPLIC="/work/noaa/global/wkolczyn/noscrub/global-workflow/IC"
 fi
 
-export CPL_ATMIC=GEFS-NoahMP-aerosols-p8a
+export CPL_ATMIC=GEFS-NoahMP-aerosols-p8c
 export CPL_ICEIC=CPC
 export CPL_OCNIC=CPC3Dvar
 export CPL_WAVIC=GEFSwave20210528v2
