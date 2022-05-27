@@ -1,7 +1,7 @@
 #!/bin/ksh
 set -x
 
-export COMPONENT=${COMPONENT:-atmos}
+COMPONENT=${COMPONENT:-atmos}
 
 CDATE=${1:-""}
 CDUMP=${2:-""}
