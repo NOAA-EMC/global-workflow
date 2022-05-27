@@ -39,7 +39,7 @@ DONST=${DONST:-"NO"}
 
 ###############################################################
 # Set script and dependency variables
-export COMPONENT=${COMPONENT:-atmos}
+COMPONENT=${COMPONENT:-atmos}
 
 GDATE=$($NDATE -$assim_freq $CDATE)
 
