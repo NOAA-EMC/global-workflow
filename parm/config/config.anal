@@ -57,7 +57,7 @@ export OBERROR=$FIXgsi/prepobs_errtable.global
 
 
 # Use experimental dumps in EMC GFS v16 parallels
-export COMPONENT=${COMPONENT:-atmos}
+export COMPONENT=atmos
 if [[ $RUN_ENVIR == "emc" ]]; then
     export ABIBF="/dev/null"
     if [[ "$CDATE" -ge "2019022800" ]] ; then
