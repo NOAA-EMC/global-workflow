@@ -21,7 +21,7 @@ import os
 import re
 import sys
 import datetime
-from ecflow_setup.ecflow_definitions import Ecflowsuite
+from ecflow_setup.ecflow_definitions import Ecflowsuite, ecfFamilyNode
 
 try:
     from ecflow import Defs
@@ -150,6 +150,14 @@ class Ecflowsetup:
         get_suite_names(suitename)
             In the event that the suite uses a list definition [X,Y,Z...], this
             method will generate an array of the properly formatted names.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
         """
 
         def get_suite_names(suitename):
@@ -196,6 +204,9 @@ class Ecflowsetup:
         for suite in self.ecfconf['suites'].keys():
             if suite not in {'externs', 'edits'}:
                 for suite_name in get_suite_names(suite):
+                    # The first thing to do is add in all of the families and
+                    # tasks. Triggers and edits cannot be added until the tasks
+                    # and families are parsed.
                     if suite_name not in self.suite_array.keys():
                         new_suite = Ecflowsuite(suite_name, self.env_configs['base']['ECFgfs'])
                     else:
@@ -208,6 +219,8 @@ class Ecflowsetup:
                         self.add_tasks_and_edits(new_suite, self.ecfconf['suites'][suite]['nodes'])
                     self.suite_array[new_suite.get_suite_name()] = new_suite
 
+        # Now that the families and tasks are setup, run through the triggers
+        # and events and add them to the respective tasks/family objects.
         for suite in self.ecfconf['suites'].keys():
             if suite not in {'externs', 'edits'}:
                 for suite_name in get_suite_names(suite):
@@ -383,7 +396,7 @@ class Ecflowsetup:
             for extern in self.ecfconf['externs']:
                 self.DEFS.add_extern(extern)
 
-    def add_families(self, suite, nodes, parents=None):
+    def add_families(self, suite, nodes, parents=None, parent_node=None):
         """
         Parses through the YAML file contents and adds the nodes that are
         identified as families to either the parent suite or the parent family.
@@ -404,6 +417,11 @@ class Ecflowsetup:
             If this family is not a top level one for the suite, this string is
             the list of families that came before it, used to populate the
             dictionary object in the ecflow_definitions module.
+        parent_node : dict
+            This is the node for the parent object. Separate from the parents
+            object, this contains the full name of the parent. The parents
+            object is a string and doesn't contain the information for any
+            loop object.
 
         Returns
         -------
@@ -411,21 +429,32 @@ class Ecflowsetup:
         """
 
         for item in nodes.keys():
-            if isinstance(nodes[item], dict) and item not in {'edits', 'tasks'}:
-                suite.add_family(item, parents)
-                if parents:
-                    family_path = f"{parents}>{item}"
-                else:
-                    family_path = item
-                if self.check_dict(nodes[item], 'edits'):
-                    suite.add_edit(nodes[item]['edits'], family_path)
-                if self.check_dict(nodes[item], 'repeat', False):
-                    suite.add_repeat(nodes[item]['repeat'], family_path)
-                if self.check_dict(nodes[item], 'defstatus', False):
-                    suite.add_defstatus(nodes[item]['defstatus'], family_path)
-                self.add_families(suite, nodes[item], family_path)
+            if isinstance(nodes[item], dict) and item not in {'edits',
+                                                              'tasks',
+                                                              'triggers'}:
+                family_node = ecfFamilyNode(item, parent_node)
+                suite.add_ecfsuite_node(item, family_node)
+                for family in family_node.get_full_name_items():
+                    suite.add_family(family, parents)
+                    index = family_node.get_full_name_items().index(family)
+                    if parents:
+                        family_path = f"{parents}>{family}"
+                    else:
+                        family_path = family
+                    if self.check_dict(nodes[item], 'edits'):
+                        suite.add_family_edits(nodes[item]['edits'],
+                                               family_path, family_node, index)
+                    if self.check_dict(nodes[item], 'repeat', False):
+                        suite.add_repeat(nodes[item]['repeat'], family_path)
+                    if self.check_dict(nodes[item], 'defstatus', False):
+                        suite.add_defstatus(nodes[item]['defstatus'],
+                                            family_path)
+                    self.add_families(suite, nodes[item],
+                                      family_path, family_node)
 
-    def add_tasks_and_edits(self, suite, nodes, parents=None):
+    def add_tasks_and_edits(self, suite, nodes,
+                            parents=None, parent_node=None,
+                            index=None):
         """
         After the families are added to the suite, the individual tasks, edits,
         repeats, defstatus, and room for other task addons are appended.
@@ -444,6 +473,14 @@ class Ecflowsetup:
             Contains all the tasks and families for the parent node.
         parents : str
             The parent family for any of the tasks
+        parent_node : dict
+            This is the actual parent node that would contain any looping
+            information or range information unlike the parent string which
+            contains the full name of the parents.
+        index : int
+            This is the index position of the current node being worked. This
+            is tracked so if the current node relies on the parent index, this
+            tells the current node what position object to use.
 
         Returns
         -------
@@ -460,29 +497,38 @@ class Ecflowsetup:
                     updated_task = find_env_param(task, 'env.',
                                                   self.env_configs)
                     suite.add_task(updated_task, parents,
-                                   self.scriptrepo, task_template)
+                                   self.scriptrepo, task_template,
+                                   parent_node, index)
                     if self.check_dict(nodes['tasks'][task],
                                        'edits'):
                         suite.add_task_edits(updated_task,
-                                             nodes['tasks'][task]['edits'])
+                                             nodes['tasks'][task]['edits'],
+                                             parent_node, index)
                     if self.check_dict(nodes['tasks'][task],
                                        'repeat', False):
                         suite.add_task_repeat(updated_task,
-                                              nodes['tasks'][task]['repeat'])
+                                              nodes['tasks'][task]['repeat'],
+                                              parent_node, index)
                     if self.check_dict(nodes['tasks'][task],
                                        'defstatus', False):
                         suite.add_task_defstatus(updated_task,
                                                  nodes['tasks']
                                                  [task]['defstatus'])
-            elif (isinstance(nodes[item], dict) and
-                  item != 'edits'):
-                if parents:
-                    family_path = f"{parents}>{item}"
-                else:
-                    family_path = item
-                self.add_tasks_and_edits(suite, nodes[item], family_path)
 
-    def add_triggers_and_events(self, suite, nodes):
+            elif isinstance(nodes[item], dict) and item not in {'edits',
+                                                                'triggers'}:
+                family_node = ecfFamilyNode(item, parent_node)
+                for family in family_node.get_full_name_items():
+                    index = family_node.get_full_name_items().index(family)
+                    if parents:
+                        family_path = f"{parents}>{family}"
+                    else:
+                        family_path = family
+                    self.add_tasks_and_edits(suite, nodes[item],
+                                             family_path, family_node, index)
+
+    def add_triggers_and_events(self, suite, nodes, parents=None,
+                                parent_node=None, index=None):
         """
         After the families and tasks are added, then the triggers and events
         are processed. This needs to come after the families and tasks and
@@ -499,6 +545,16 @@ class Ecflowsetup:
             The suite to key off for adding the triggers
         nodes : dict
             The families/tasks that need to be parsed.
+        parents : str
+            The parent family for any of the tasks
+        parent_node : dict
+            This is the actual parent node that would contain any looping
+            information or range information unlike the parent string which
+            contains the full name of the parents.
+        index : int
+            This is the index position of the current node being worked. This
+            is tracked so if the current node relies on the parent index, this
+            tells the current node what position object to use.
 
         Returns
         -------
@@ -506,19 +562,37 @@ class Ecflowsetup:
         """
 
         for item in nodes.keys():
-            if isinstance(nodes[item], dict) and item == 'tasks':
+            if self.check_dict(nodes[item], 'triggers', False):
+                updated_family = find_env_param(item, 'env.',
+                                                self.env_configs)
+                suite.add_suite_triggers(updated_family,
+                                         nodes[item]['triggers'],
+                                         self.suite_array, parents,
+                                         parent_node, index)
+            elif isinstance(nodes[item], dict) and item == 'tasks':
                 for task in nodes['tasks'].keys():
                     updated_task = find_env_param(task, 'env.',
                                                   self.env_configs)
                     if self.check_dict(nodes['tasks'][task], 'events', False):
                         suite.add_task_events(updated_task,
-                                              nodes['tasks'][task]['events'])
+                                              nodes['tasks'][task]['events'],
+                                              parent_node, index)
                     if self.check_dict(nodes['tasks'][task], 'triggers', False):
-                        suite.add_task_triggers(updated_task,
-                                                nodes['tasks'][task]['triggers'],
-                                                self.suite_array)
+                        suite.add_suite_triggers(updated_task,
+                                                 nodes['tasks'][task]['triggers'],
+                                                 self.suite_array, parents,
+                                                 parent_node, index)
             elif isinstance(nodes[item], dict):
-                self.add_triggers_and_events(suite, nodes[item])
+                family_node = ecfFamilyNode(item, parent_node)
+                for family in family_node.get_full_name_items():
+                    index = family_node.get_full_name_items().index(family)
+                    if parents:
+                        family_path = f"{parents}>{item}"
+                    else:
+                        family_path = item
+                    self.add_triggers_and_events(suite, nodes[item],
+                                                 family_path, family_node,
+                                                 index)
 
 
 def load_ecflow_config(configfile):

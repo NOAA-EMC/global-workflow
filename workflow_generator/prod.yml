@@ -150,7 +150,7 @@ suites:
                     TRDRUN: 'NO'
             awips_g2:
               tasks:
-                jgfs_atmos_awips_g2_f( 0,80,6 ):
+                jgfs_atmos_awips_g2_f( 0,64,6 ):
                   template: jgfs_atmos_awips_g2_master
                   triggers:
                   - task: jgfs_atmos_post_f( )
@@ -174,7 +174,7 @@ suites:
                 jgfs_atmos_npoess_pgrb2_0p5deg:
                   triggers:
                   - task: jgfs_atmos_post_anl
-                    state: activate
+                    state: active
                   - task: jgfs_atmos_post_anl
                 jgfs_atmos_pgrb2_spec_gempak:
                   triggers:
@@ -217,7 +217,7 @@ suites:
                   - task: jgfs_wave_postsbs
                     state: active
                   - task: jgfs_wave_postsbs
-                    operand: False
+                    operand: OR
                 jgfs_wave_prdgen_bulls:
                   triggers:
                   - task: jgfs_wave_postpnt
@@ -227,9 +227,8 @@ suites:
                 jgfs_wave_gempak:
                   triggers:
                   - task: jgfs_wave_postsbs
-                    state: active
-                  - task: jgfs_wave_postsbs
-                    operand: False
+                    state: [active, complete]
+                    operand: or
       gdas:
         edits:
           RUN: 'gdas'
@@ -362,21 +361,14 @@ suites:
                 - task: jenkfgdas_diag
           recenter:
             ecen:
-              grp1:
+              grp(1, 3):
                 tasks:
-                  jenkfgdas_ecen:
+                  jenkfgdas_ecen( ):
+                    template: jenkfgdas_ecen
+                    triggers:
+                    - task: jgdas_atmos_post_f( )
                 edits:
-                  FHRGRP: '003'
-              grp2:
-                tasks:
-                  jenkfgdas_ecen:
-                edits:
-                  FHRGRP: '006'
-              grp3:
-                tasks:
-                  jenkfgdas_ecen:
-                edits:
-                  FHRGRP: '009'
+                  FHRGRP( 3 ): '( )'
               tasks:
                 jenkfgdas_sfc:
                   triggers:
