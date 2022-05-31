@@ -1,0 +1,10 @@
+#!/bin/ksh -x
+
+########## config.aerosol_init ##########
+
+echo "BEGIN: config.aerosol_init"
+
+# Get task specific resources
+source $EXPDIR/config.resources aerosol_init
+
+echo "END: config.aerosol_init"

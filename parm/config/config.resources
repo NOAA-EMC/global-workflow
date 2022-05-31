@@ -8,7 +8,7 @@ if [ $# -ne 1 ]; then
 
     echo "Must specify an input task argument to set resource variables!"
     echo "argument can be any one of the following:"
-    echo "getic init coupled_ic"
+    echo "getic init coupled_ic aerosol_init"
     echo "anal analcalc analdiag gldas fcst post vrfy metp arch echgres"
     echo "eobs ediag eomg eupd ecen esfc efcs epos earc"
     echo "init_chem mom6ic ocnpost"
@@ -56,12 +56,23 @@ elif [[ "$machine" = "ORION" ]]; then
 fi
 
 if [ $step = "prep" -o $step = "prepbufr" ]; then
-
     eval "export wtime_$step='00:45:00'"
     eval "export npe_$step=4"
     eval "export npe_node_$step=2"
     eval "export nth_$step=1"
     eval "export memory_$step=40G"
+
+elif [ $step = "aerosol_init" ]; then
+    export wtime_aerosol_init="00:05:00"
+    export npe_aerosol_init=1
+    export nth_aerosol_init=1
+    export npe_node_aerosol_init=$(echo "$npe_node_max / $nth_aerosol_init" | bc)
+    export NTASKS=${npe_aerosol_init}
+    export memory_aerosol_init="4G"
+    if [ $machine = "HERA" ]; then
+        # Hera needs a bit more memory since it has fewer CPU/core
+        export memory_aerosol_init="6G"
+    fi
 
 elif [ $step = "waveinit" ]; then
 

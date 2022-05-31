@@ -54,8 +54,14 @@ load(pathJoin("gempak", "7.3.3"))
 load(pathJoin("bufr_dumplist", "2.0.0"))
 load(pathJoin("dumpjb", "5.1.0"))
 
-load(pathJoin("python", "3.6.3"))
-
 load(pathJoin("cdo", "1.9.8"))
+
+-- Temporary until official hpc-stack is updated
+prepend_path("MODULEPATH", "/gpfs/dell2/emc/modeling/noscrub/Walter.Kolczynski/save/hpc-stack/modulefiles/stack")
+load(pathJoin("hpc", "1.2.0"))
+load(pathJoin("hpc-python", "3.6.3"))
+load(pathJoin("ufswm", "1.0.0"))
+load(pathJoin("met", "9.1"))
+load(pathJoin("metplus", "3.1"))
 
 whatis("Description: GFS run environment")

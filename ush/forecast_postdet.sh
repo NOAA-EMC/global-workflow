@@ -96,7 +96,7 @@ EOF
         read_increment=".false."
         res_latlon_dynamics=""
       else
-        increment_file=$memdir/${CDUMP}.t${cyc}z.${PREFIX_INC}atminc.nc
+        increment_file=$memdir/${CDUMP}.t${cyc}z.${PREFIX_ATMINC}atminc.nc
         if [ -f $increment_file ]; then
           $NLN $increment_file $DATA/INPUT/fv3_increment.nc
           read_increment=".true."
@@ -768,14 +768,7 @@ MOM6_postdet() {
   export ENSMEM=${ENSMEM:-01}
   export IDATE=$CDATE
 
-  if [ $RUN_ENVIR = "nco" ]; then
-    export COMIN=${COMIN:-$ROTDIR/$RUN.$PDY/$cyc}
-    export COMOUT=${COMOUT:-$ROTDIR/$RUN.$PDY/$cyc}
-  else
-    export COMIN="$ROTDIR/$CDUMP.$PDY/$cyc"
-    export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc"
-  fi
-  [[ ! -d $COMOUT/ocean ]] && mkdir -p $COMOUT/ocean
+  [[ ! -d $COMOUTocean ]] && mkdir -p $COMOUTocean
 
   fhrlst=$OUTPUT_FH
 
@@ -805,21 +798,21 @@ MOM6_postdet() {
 
     source_file="ocn_${YYYY_MID}_${MM_MID}_${DD_MID}_${HH_MID}.nc"
     dest_file="ocn${VDATE}.${ENSMEM}.${IDATE}.nc"
-    ${NLN} ${COMOUT}/ocean/${dest_file} ${DATA}/${source_file}
+    ${NLN} ${COMOUTocean}/${dest_file} ${DATA}/${source_file}
 
     source_file="wavocn_${YYYY_MID}_${MM_MID}_${DD_MID}_${HH_MID}.nc"
     dest_file=${source_file}
-    ${NLN} ${COMOUT}/ocean/${dest_file} ${DATA}/${source_file}
+    ${NLN} ${COMOUTocean}/${dest_file} ${DATA}/${source_file}
 
     source_file="ocn_daily_${YYYY}_${MM}_${DD}.nc"
     dest_file=${source_file}
     if [ ! -a "${DATA}/${source_file}" ]; then
-      $NLN ${COMOUT}/ocean/${dest_file} ${DATA}/${source_file}
+      $NLN ${COMOUTocean}/${dest_file} ${DATA}/${source_file}
     fi
 
     last_fhr=$fhr
   done
-  $NLN $COMOUT/ocean/MOM_input $DATA/INPUT/MOM_input
+  $NLN ${COMOUTocean}/MOM_input $DATA/INPUT/MOM_input
 
   echo "SUB ${FUNCNAME[0]}: MOM6 input data linked/copied"
 
@@ -900,8 +893,8 @@ CICE_postdet() {
   # Link output files
   export ENSMEM=${ENSMEM:-01}
   export IDATE=$CDATE
-  [[ ! -d $COMOUT/ice ]] && mkdir -p $COMOUT/ice
-  $NLN $COMOUT/ice/ice_in $DATA/ice_in
+  [[ ! -d $COMOUTice ]] && mkdir -p $COMOUTice
+  $NLN $COMOUTice/ice_in $DATA/ice_in
   fhrlst=$OUTPUT_FH
 
   for fhr in $fhrlst; do
@@ -916,10 +909,10 @@ CICE_postdet() {
     SS=$((10#$HH*3600))
 
     if [[ 10#$fhr -eq 0 ]]; then
-      $NLN $COMOUT/ice/iceic$VDATE.$ENSMEM.$IDATE.nc $DATA/history/iceh_ic.${YYYY}-${MM}-${DD}-$(printf "%5.5d" ${SS}).nc
+      $NLN $COMOUTice/iceic$VDATE.$ENSMEM.$IDATE.nc $DATA/history/iceh_ic.${YYYY}-${MM}-${DD}-$(printf "%5.5d" ${SS}).nc
     else
       (( interval = fhr - last_fhr ))
-      $NLN $COMOUT/ice/ice$VDATE.$ENSMEM.$IDATE.nc $DATA/history/iceh_$(printf "%0.2d" $interval)h.${YYYY}-${MM}-${DD}-$(printf "%5.5d" ${SS}).nc
+      $NLN $COMOUTice/ice$VDATE.$ENSMEM.$IDATE.nc $DATA/history/iceh_$(printf "%0.2d" $interval)h.${YYYY}-${MM}-${DD}-$(printf "%5.5d" ${SS}).nc
     fi
     last_fhr=$fhr
   done
@@ -968,19 +961,20 @@ GOCART_rc() {
 GOCART_postdet() {
   echo "SUB ${FUNCNAME[0]}: Linking output data for GOCART"
 
-  [[ ! -d $COMOUT/chem ]] && mkdir -p $COMOUT/chem
+  [[ ! -d $COMOUTaero ]] && mkdir -p $COMOUTaero
 
+  fhrlst=$OUTPUT_FH
   for fhr in $fhrlst; do
     if [ $fhr = 'anl' ]; then
       continue
     fi
-    VDATE=$($NDATE $fhr $IDATE)
+    VDATE=$($NDATE $fhr $CDATE)
     YYYY=$(echo $VDATE | cut -c1-4)
     MM=$(echo $VDATE | cut -c5-6)
     DD=$(echo $VDATE | cut -c7-8)
     HH=$(echo $VDATE | cut -c9-10)
     SS=$((10#$HH*3600))
 
-    $NLN $COMOUT/chem/gocart.inst_aod.${YYYY}${MM}${DD}_${HH}00z.nc4 $DATA/gocart.inst_aod.${YYYY}${MM}${DD}_${HH}00z.nc4
+    $NLN $COMOUTaero/gocart.inst_aod.${YYYY}${MM}${DD}_${HH}00z.nc4 $DATA/gocart.inst_aod.${YYYY}${MM}${DD}_${HH}00z.nc4
   done
 }
