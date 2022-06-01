@@ -42,7 +42,7 @@ set -x
 #Set WW3 directory, switch, prep and post exes 
 cd ufs_model.fd/WW3
 export WW3_DIR=$( pwd -P )
-export SWITCHFILE="${WW3_DIR}/model/esmf/switch"
+export SWITCHFILE="${WW3_DIR}/${ww3switch}"
 
 # Build exes for prep jobs and post jobs:
 prep_exes="ww3_grid ww3_prep ww3_prnc ww3_grid"
