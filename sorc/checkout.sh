@@ -151,14 +151,12 @@ if [[ "${checkout_gtg:-NO}" == "YES" ]]; then
 	echo "Checking out GTG extension for UPP"
 	cd "${topdir}/ufs_model.fd/FV3/upp"
 	logfile="${logdir}/checkout_gtg.log"
-	./manage_externals/checkout_externals >> "${logfile}" 2>&1
+	git -c submodule."post_gtg.fd".update=checkout submodule update --init --recursive >> "${logfile}" 2>&1
 	status=$?
 	if (( status > 0 )); then
 		echo "WARNING: Error while checking out GTG"
 		errs=$((errs + status))
 	fi
-	cp sorc/post_gtg.fd/*F90 sorc/ncep_post.fd/.
-	cp sorc/post_gtg.fd/gtg.config.gfs parm/gtg.config.gfs
 fi
 
 if (( errs > 0 )); then
