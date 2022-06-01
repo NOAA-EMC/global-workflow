@@ -17,18 +17,24 @@ use_cice_alb=".true."
 
 # config.fv3
 DELTIM=300
-layout_x_gfs=24
-layout_y_gfs=16
+#layout_x_gfs=24
+#layout_y_gfs=16
+layout_x_gfs=8
+layout_y_gfs=8
 WRITE_GROUP_GFS=1
-WRTTASK_PER_GROUP_GFS=80
+#WRTTASK_PER_GROUP_GFS=80
+WRTTASK_PER_GROUP_GFS=24
 WRTIOBUF="32M"
 MEDPETS=300
 
 # config.wave
-waveGRD='gwes_30m'
+
+waveGRD='mx025'
+waveinterpGRD='reg025'
+waveuoutpGRD='mx025'
+
 waveesmfGRD=' '
-waveinterpGRD=' '
-wavepostGRD='gwes_30m'
+wavepostGRD=' '
 waveGRDN="1"
 waveGRDG="10"
 USE_WAV_RMP="NO"
@@ -36,6 +42,7 @@ FHOUT_HF_WAV=3
 DTPNT_WAV=10800
 OUTPARS_WAV="WND CUR ICE HS T01 T02 DIR FP DP PHS PTP PDIR CHA"
 DOBNDPNT_WAVE='NO'
+waveMULTIGRID='.false.'
 
 # config.waveprep
 IOSRV=1

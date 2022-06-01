@@ -1,6 +1,20 @@
 #!/bin/sh
 set -x
 
+# Determine which switch to use 
+ww3switch=model/esmf/switch
+while getopts "c" option; do
+  case "${option}" in
+    c)
+      ww3switch=model/bin/switch_meshcap 
+      ;;
+    *)
+      echo "Unrecognized option: ${1}"
+      exit 1
+      ;;
+  esac
+done
+
 # Check final exec folder exists
 if [ ! -d "../exec" ]; then
   mkdir ../exec

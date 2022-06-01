@@ -29,9 +29,11 @@ mkdir -p ${logdir}
 
 echo ufs-weather-model checkout ...
 if [[ ! -d ufs_model.fd ]] ; then
-    git clone https://github.com/ufs-community/ufs-weather-model ufs_model.fd >> ${logdir}/checkout-ufs_model.log 2>&1
+    #git clone https://github.com/ufs-community/ufs-weather-model ufs_model.fd >> ${logdir}/checkout-ufs_model.log 2>&1
+    git clone https://github.com/DeniseWorthen/ufs-weather-model ufs_model.fd >> ${logdir}/checkout-ufs_model.log 2>&1
     cd ufs_model.fd
-    git checkout ${ufs_model_hash:-5c2d1a9}
+    #git checkout ${ufs_model_hash:-5c2d1a9}
+    git checkout feature/cmake_meshcapbuild
     git submodule update --init --recursive
 
     ################################################################################
