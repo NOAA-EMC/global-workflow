@@ -1,19 +1,28 @@
 #!/bin/sh
 set -x
 
-# Determine which switch to use 
-ww3switch=model/esmf/switch
-while getopts "c" option; do
+# Default settings
+APP="S2SWA"
+
+while getopts "a:v" option; do
   case "${option}" in
-    c)
-      ww3switch=model/bin/switch_meshcap 
-      ;;
+    a) APP="${OPTARG}" ;;
+    v) BUILD_VERBOSE="YES";;
     *)
       echo "Unrecognized option: ${1}"
       exit 1
       ;;
   esac
 done
+
+
+# Determine which switch to use 
+if [ APP == ATMW ]; then 
+  ww3switch=model/esmf/switch 
+else 
+  ww3switch=model/bin/switch_meshcap
+fi 
+
 
 # Check final exec folder exists
 if [ ! -d "../exec" ]; then

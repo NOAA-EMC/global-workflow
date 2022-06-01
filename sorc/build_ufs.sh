@@ -5,7 +5,7 @@ set -eux
 APP="S2SWA"
 CCPP_SUITES="FV3_GFS_v16,FV3_GFS_v16_ugwpv1,FV3_GFS_v17_p8,FV3_GFS_v16_coupled_nsstNoahmpUGWPv1,FV3_GFS_v17_coupled_p8"
 
-while getopts "a:s:v" option; do
+while getopts "a:v" option; do
   case "${option}" in
     a) APP="${OPTARG}" ;;
     v) BUILD_VERBOSE="YES";;
