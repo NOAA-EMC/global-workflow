@@ -215,7 +215,7 @@ def add_data_tag(dep_dict):
 
         strings.append(f'{offset_string_b}{data}{offset_string_e}')
 
-    strings.append('<datadep>')
+    strings.append('</datadep>')
 
     return ''.join(strings)
 
