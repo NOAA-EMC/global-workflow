@@ -1,468 +1,192 @@
 #!/usr/bin/env python
 
-'''
+"""
     Module containing functions all workflow setups require
-'''
-import random
-import re
-import os, sys, stat
-import socket
-import glob
-import subprocess
+"""
+import os
 import numpy as np
 from distutils.spawn import find_executable
-from datetime import datetime, timedelta
-import rocoto
+from typing import List, Dict, Any
+from rocoto import create_task, create_metatask
+from hosts import Host
+from configuration import Configuration
 
-DATE_ENV_VARS=['CDATE','SDATE','EDATE']
-SCHEDULER_MAP={'HERA':'slurm',
-               'JET':'slurm',
-               'ORION':'slurm',
-               'WCOSS':'lsf',
-               'WCOSS_DELL_P3':'lsf',
-               'WCOSS_C':'lsfcray'}
-
-class UnknownMachineError(Exception): pass
-class UnknownConfigError(Exception): pass
-class ShellScriptException(Exception):
-    def __init__(self,scripts,errors):
-        self.scripts = scripts
-        self.errors = errors
-        super(ShellScriptException,self).__init__(
-            str(errors)+
-            ': error processing'+
-            (' '.join(scripts)))
-
-class HostInfo:
-    '''
-    Gather Host specific information.
-    Someday the content will be pushed out of the code and into a yaml or something.
-    '''
-
-    def __init__(self, machine, **inputs):
-
-        supported_hosts = {
-            'WCOSS_C': self.wcoss_c,
-            'WCOSS_DELL_P3': self.wcoss_dell_p3,
-            'WCOSS_DELL_P3p5': self.wcoss_dell_p3p5,
-            'HERA': self.hera,
-            'ORION': self.orion}
-
-        try:
-            self.info = supported_hosts[machine.upper()]
-        except KeyError:
-            raise NotImplementedError(f'{machine} is not a supported host.\n' +
-                    'Currently supported hosts are:\n' +
-                    f'{" | ".join(supported_hosts.keys())}')
-
-        self.machine = machine
-
-        return
-
-    @property
-    def wcoss_c(self):
-
-        info = {
-            'base_git': '/gpfs/hps3/emc/global/noscrub/emc.glopara/git',
-            'base_svn': '/gpfs/hps3/emc/global/noscrub/emc.glopara/svn',
-            'dmpdir': '/gpfs/dell3/emc/global/dump',
-            'nwprod': '${NWROOT:-"/gpfs/hps/nco/ops/nwprod"}',
-            'comroot': '${COMROOT:-"/gpfs/hps/nco/ops/com"}',
-            'homedir': '/gpfs/hps3/emc/global/noscrub/$USER',
-            'stmp': '/gpfs/hps2/stmp/$USER',
-            'ptmp': '/gpfs/hps2/ptmp/$USER',
-            'noscrub': '/gpfs/hps3/emc/global/noscrub/$USER',
-            'account': 'GFS-DEV',
-            'queue': 'dev',
-            'queue_service': 'dev_transfer',
-            'chgrp_rstprod': 'YES',
-            'chgrp_cmd': 'chgrp rstprod',
-            'hpssarch': 'YES',
-            'localarch': 'NO',
-            'atardir': '/NCEPDEV/$HPSS_PROJECT/1year/$USER/$machine/scratch/$PSLOT',
-             }
-
-        return info
+SERVICE_TASKS = ['arch', 'earc', 'getic']
 
 
-    @property
-    def wcoss_dell_p3(self):
-
-        info = {
-            'base_git': '/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git',
-            'base_svn': '/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git',
-            'dmpdir': '/gpfs/dell3/emc/global/dump',
-            'nwprod': '${NWROOT:-"/gpfs/dell1/nco/ops/nwprod"}',
-            'comroot': '${COMROOT:-"/gpfs/dell1/nco/ops/com"}',
-            'homedir': '/gpfs/dell2/emc/modeling/noscrub/$USER',
-            'stmp': '/gpfs/dell3/stmp/$USER',
-            'ptmp': '/gpfs/dell3/ptmp/$USER',
-            'noscrub': '$HOMEDIR',
-            'account': 'GFS-DEV',
-            'queue': 'dev',
-            'queue_service': 'dev_transfer',
-            'partition_batch': None,
-            'chgrp_rstprod': 'YES',
-            'chgrp_cmd': 'chgrp rstprod',
-            'hpssarch': 'YES',
-            'localarch': 'NO',
-            'atardir': '/NCEPDEV/$HPSS_PROJECT/1year/$USER/$machine/scratch/$PSLOT',
-             }
-
-        return info
-
-    @property
-    def wcoss_dell_p3p5(self):
-
-        info = {
-            'base_git': '/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git',
-            'base_svn': '/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git',
-            'dmpdir': '/gpfs/dell3/emc/global/dump',
-            'nwprod': '${NWROOT:-"/gpfs/dell1/nco/ops/nwprod"}',
-            'comroot': '${COMROOT:-"/gpfs/dell1/nco/ops/com"}',
-            'homedir': '/gpfs/dell2/emc/modeling/noscrub/$USER',
-            'stmp': '/gpfs/dell3/stmp/$USER',
-            'ptmp': '/gpfs/dell3/ptmp/$USER',
-            'noscrub': '$HOMEDIR',
-            'account': 'GFS-DEV',
-            'queue': 'dev2',
-            'queue_service': 'dev2_transfer',
-            'partition_batch': None,
-            'chgrp_rstprod': 'YES',
-            'chgrp_cmd': 'chgrp rstprod',
-            'hpssarch': 'YES',
-            'localarch': 'NO',
-            'atardir': '/NCEPDEV/$HPSS_PROJECT/1year/$USER/$machine/scratch/$PSLOT',
-             }
-
-        return info
-
-    @property
-    def hera(self):
-
-        info = {
-            'base_git': '/scratch1/NCEPDEV/global/glopara/git',
-            'base_svn': '/scratch1/NCEPDEV/global/glopara/svn',
-            'dmpdir': '/scratch1/NCEPDEV/global/glopara/dump',
-            'nwprod': '/scratch1/NCEPDEV/global/glopara/nwpara',
-            'comroot': '/scratch1/NCEPDEV/global/glopara/com',
-            'homedir': '/scratch1/NCEPDEV/global/$USER',
-            'stmp': '/scratch1/NCEPDEV/stmp2/$USER',
-            'ptmp': '/scratch1/NCEPDEV/stmp4/$USER',
-            'noscrub': '$HOMEDIR',
-            'account': 'fv3-cpu',
-            'queue': 'batch',
-            'queue_service': 'service',
-            'partition_batch': 'hera',
-            'chgrp_rstprod': 'YES',
-            'chgrp_cmd': 'chgrp rstprod',
-            'hpssarch': 'YES',
-            'localarch': 'NO',
-            'atardir': '/NCEPDEV/$HPSS_PROJECT/1year/$USER/$machine/scratch/$PSLOT',
-             }
-
-        return info
-
-    @property
-    def orion(self):
-
-        info = {
-            'base_git': '/work/noaa/global/glopara/git',
-            'base_svn': '/work/noaa/global/glopara/svn',
-            'dmpdir': '/work/noaa/rstprod/dump',
-            'nwprod': '/work/noaa/global/glopara/nwpara',
-            'comroot': '/work/noaa/global/glopara/com',
-            'homedir': '/work/noaa/global/$USER',
-            'stmp': '/work/noaa/stmp/$USER',
-            'ptmp': '/work/noaa/stmp/$USER',
-            'noscrub': '$HOMEDIR',
-            'account': 'fv3-cpu',
-            'queue': 'batch',
-            'queue_service': 'service',
-            'partition_batch': 'orion',
-            'chgrp_rstprod': 'YES',
-            'chgrp_cmd': 'chgrp rstprod',
-            'hpssarch': 'NO',
-            'localarch': 'NO',
-            'atardir': '$NOSCRUB/archive_rotdir/$PSLOT',
-             }
-
-        return info
-
-def get_shell_env(scripts):
-    vars=dict()
-    runme=''.join([ f'source {s} ; ' for s in scripts ])
-    magic=f'--- ENVIRONMENT BEGIN {random.randint(0,64**5)} ---'
-    runme+=f'/bin/echo -n "{magic}" ; /usr/bin/env -0'
-    with open('/dev/null','w') as null:
-        env=subprocess.Popen(runme,shell=True,stdin=null.fileno(),
-                       stdout=subprocess.PIPE)
-        (out,err)=env.communicate()
-    out = out.decode()
-    begin=out.find(magic)
-    if begin<0:
-        raise ShellScriptException(scripts,'Cannot find magic string; '
-                                   'at least one script failed: '+repr(out))
-    for entry in out[begin+len(magic):].split('\x00'):
-        iequal=entry.find('=')
-        vars[entry[0:iequal]] = entry[iequal+1:]
-    return vars
-
-def get_script_env(scripts):
-    default_env=get_shell_env([])
-    and_script_env=get_shell_env(scripts)
-    vars_just_in_script=set(and_script_env)-set(default_env)
-    union_env=dict(default_env)
-    union_env.update(and_script_env)
-    return dict([ (v,union_env[v]) for v in vars_just_in_script ])
-
-def cast_or_not(type,value):
-    try:
-        return type(value)
-    except ValueError:
-        return value
-
-def get_configs(expdir):
+def source_configs(config: Configuration, tasks) -> dict:
     """
-        Given an experiment directory containing config files,
-        return a list of configs minus the ones ending with ".default"
+        Given the configuration object and tasks,
+        return a dictionary for each task
+        Every task depends on "config.base"
     """
-    result=list()
-    for config in glob.glob(f'{expdir}/config.*'):
-        if not config.endswith('.default'):
-            result.append(config)
-    return result
 
-def find_config(config_name, configs):
-
-    for config in configs:
-        if config_name == os.path.basename(config):
-            return config
-
-    raise UnknownConfigError(f'{config_name} does not exist (known: {repr(config_name)}), ABORT!')
-
-def source_configs(configs, tasks):
-    '''
-        Given list of config files, source them
-        and return a dictionary for each task
-        Every task depends on config.base
-    '''
-
-    dict_configs = {}
+    dict_configs = dict()
 
     # Return config.base as well
-    dict_configs['base'] = config_parser([find_config('config.base', configs)])
+    dict_configs['base'] = config.parse_config('config.base')
 
     # Source the list of input tasks
     for task in tasks:
 
-        files = []
-
-        files.append(find_config('config.base', configs))
+        # All tasks must source config.base first
+        files = ['config.base']
 
         if task in ['eobs', 'eomg']:
-            files.append(find_config('config.anal', configs))
-            files.append(find_config('config.eobs', configs))
+            files.append('config.anal')
+            files.append('config.eobs')
         elif task in ['eupd']:
-            files.append(find_config('config.anal', configs))
-            files.append(find_config('config.eupd', configs))
+            files.append('config.anal')
+            files.append('config.eupd')
         elif task in ['efcs']:
-            files.append(find_config('config.fcst', configs))
-            files.append(find_config('config.efcs', configs))
+            files.append('config.fcst')
+            files.append('config.efcs')
         elif 'wave' in task:
-            files.append(find_config(f'config.wave', configs))
-            files.append(find_config(f'config.{task}', configs))
+            files.append('config.wave')
+            files.append(f'config.{task}')
         else:
-            files.append(find_config(f'config.{task}', configs))
+            files.append(f'config.{task}')
 
         print(f'sourcing config.{task}')
-        dict_configs[task] = config_parser(files)
+        dict_configs[task] = config.parse_config(files)
 
     return dict_configs
 
 
-def config_parser(files):
-    """
-    Given the name of config file, key-value pair of all variables in the config file is returned as a dictionary
-    :param files: config file or list of config files
-    :type files: list or str or unicode
-    :return: Key value pairs representing the environment variables defined
-            in the script.
-    :rtype: dict
-    """
-    if isinstance(files,(str, bytes)):
-        files=[files]
-    varbles=dict()
-    for key,value in get_script_env(files).items():
-        if key in DATE_ENV_VARS: # likely a date, convert to datetime
-            varbles[key] = datetime.strptime(value,'%Y%m%d%H')
-        elif '.' in value: # Likely a number and that too a float
-            varbles[key] = cast_or_not(float,value)
-        else: # Still could be a number, may be an integer
-            varbles[key] = cast_or_not(int,value)
-
-    return varbles
-
-def detectMachine():
-
-    machines = ['HERA', 'ORION', 'WCOSS_C', 'WCOSS_DELL_P3', 'JET']
-
-    if os.path.exists('/scratch1/NCEPDEV'):
-        return 'HERA'
-    elif os.path.exists('/work/noaa'):
-        return 'ORION'
-    elif os.path.exists('/gpfs') and os.path.exists('/etc/SuSE-release'):
-        return 'WCOSS_C'
-    elif os.path.exists('/gpfs/dell2'):
-        return 'WCOSS_DELL_P3'
-    elif os.path.exists('/lfs4/HFIP'):
-        return 'JET'
-    else:
-        print(f'workflow is currently only supported on: {machines}')
-        raise NotImplementedError('Cannot auto-detect platform, ABORT!')
-
-def get_scheduler(machine):
-    try:
-        return SCHEDULER_MAP[machine]
-    except KeyError:
-        raise UnknownMachineError(f'Unknown machine: {machine}, ABORT!')
-
-def create_wf_task(task, cdump='gdas', cycledef=None, envar=None, dependency=None, \
-                   metatask=None, varname=None, varval=None, vardict=None, \
+def create_wf_task(task, cdump='gdas', cycledef=None, envar=None, dependency=None,
+                   metatask=None, varname=None, varval=None, vardict=None,
                    final=False):
-
     if metatask is None:
         taskstr = f'{task}'
     else:
         taskstr = f'{task}#{varname}#'
         metataskstr = f'{cdump}{metatask}'
-        metatask_dict = {'metataskname': metataskstr, \
-                         'varname': f'{varname}', \
-                         'varval': f'{varval}', \
+        metatask_dict = {'metataskname': metataskstr,
+                         'varname': f'{varname}',
+                         'varval': f'{varval}',
                          'vardict': vardict}
 
     taskstr = f'{cdump}{taskstr}'
     cycledefstr = cdump if cycledef is None else cycledef
 
-    task_dict = {'taskname': f'{taskstr}', \
-                 'cycledef': f'{cycledefstr}', \
-                 'maxtries': '&MAXTRIES;', \
-                 'command': f'&JOBS_DIR;/{task}.sh', \
-                 'jobname': f'&PSLOT;_{taskstr}_@H', \
-                 'account': '&ACCOUNT;', \
-                 'queue': f'&QUEUE_{task.upper()}_{cdump.upper()};', \
-                 'walltime': f'&WALLTIME_{task.upper()}_{cdump.upper()};', \
-                 'native': f'&NATIVE_{task.upper()}_{cdump.upper()};', \
-                 'memory': f'&MEMORY_{task.upper()}_{cdump.upper()};', \
-                 'resources': f'&RESOURCES_{task.upper()}_{cdump.upper()};', \
-                 'log': f'&ROTDIR;/logs/@Y@m@d@H/{taskstr}.log', \
-                 'envar': envar, \
-                 'dependency': dependency, \
+    task_dict = {'taskname': f'{taskstr}',
+                 'cycledef': f'{cycledefstr}',
+                 'maxtries': '&MAXTRIES;',
+                 'command': f'&JOBS_DIR;/{task}.sh',
+                 'jobname': f'&PSLOT;_{taskstr}_@H',
+                 'account': '&ACCOUNT;',
+                 'queue': f'&QUEUE_{task.upper()}_{cdump.upper()};',
+                 'walltime': f'&WALLTIME_{task.upper()}_{cdump.upper()};',
+                 'native': f'&NATIVE_{task.upper()}_{cdump.upper()};',
+                 'memory': f'&MEMORY_{task.upper()}_{cdump.upper()};',
+                 'resources': f'&RESOURCES_{task.upper()}_{cdump.upper()};',
+                 'log': f'&ROTDIR;/logs/@Y@m@d@H/{taskstr}.log',
+                 'envars': envar,
+                 'dependency': dependency,
                  'final': final}
 
     # Add partition for machines using slurm
-    if get_scheduler(detectMachine()) in ['slurm']:
+    if Host.get_scheduler in ['slurm']:
         task_dict['partition'] = f'&PARTITION_{task.upper()}_{cdump.upper()};'
 
     if metatask is None:
-        task = rocoto.create_task(task_dict)
+        task = create_task(task_dict)
     else:
-        task = rocoto.create_metatask(task_dict, metatask_dict)
+        task = create_metatask(task_dict, metatask_dict)
     task = ''.join(task)
 
     return task
 
 
-def get_gfs_interval(gfs_cyc):
-    '''
-        return interval in hours based on gfs_cyc
-    '''
+def get_gfs_interval(gfs_cyc: int) -> str:
+    """
+    return interval in hours based on gfs_cyc
+    """
 
-    # Get interval from cyc_input
-    if gfs_cyc == 0:
-        interval = None
-    if gfs_cyc == 1:
-        interval = '24:00:00'
-    elif gfs_cyc == 2:
-        interval = '12:00:00'
-    elif gfs_cyc == 4:
-        interval = '06:00:00'
+    gfs_internal_map = {'0': None, '1': '24:00:00', '2': '12:00:00', '4': '06:00:00'}
 
-    return interval
+    try:
+        return gfs_internal_map[str(gfs_cyc)]
+    except KeyError:
+        raise KeyError(f'Invalid gfs_cyc = {gfs_cyc}')
 
 
-def get_resources(machine, cfg, task, reservation, cdump='gdas'):
+def get_resource(task_dict: dict, task_name: str, cdump: str = 'gdas') -> dict:
+    """
+    Given a task name (task_name) and its configuration (task_dict),
+    return a dictionary of resources (task_resource) used by the task.
+    Task resource dictionary includes:
+    account, walltime, cores, nodes, ppn, threads, memory, queue, partition, native
+    """
 
-    scheduler = get_scheduler(machine)
+    scheduler = Host.get_scheduler
 
-    if cdump in ['gfs'] and f'wtime_{task}_gfs' in cfg.keys():
-        wtimestr = cfg[f'wtime_{task}_gfs']
-    else:
-        wtimestr = cfg[f'wtime_{task}']
+    account = task_dict['ACCOUNT']
 
-    ltask = 'eobs' if task in ['eomg'] else task
+    walltime = task_dict[f'wtime_{task_name}']
+    if cdump in ['gfs'] and f'wtime_{task_name}_gfs' in task_dict.keys():
+        walltime = task_dict[f'wtime_{task_name}_gfs']
 
-    memory = cfg.get(f'memory_{ltask}', None)
+    cores = task_dict[f'npe_{task_name}']
+    if cdump in ['gfs'] and f'npe_{task_name}_gfs' in task_dict.keys():
+        cores = task_dict[f'npe_{task_name}_gfs']
 
-    if cdump in ['gfs'] and f'npe_{task}_gfs' in cfg.keys():
-        tasks = cfg[f'npe_{ltask}_gfs']
-    else:
-        tasks = cfg[f'npe_{ltask}']
+    ppn = task_dict[f'npe_node_{task_name}']
+    if cdump in ['gfs'] and f'npe_node_{task_name}_gfs' in task_dict.keys():
+        ppn = task_dict[f'npe_node_{task_name}_gfs']
 
-    if cdump in ['gfs'] and f'npe_node_{task}_gfs' in cfg.keys():
-        ppn = cfg[f'npe_node_{ltask}_gfs']
-    else:
-        ppn = cfg[f'npe_node_{ltask}']
+    nodes = np.int(np.ceil(np.float(cores) / np.float(ppn)))
 
-    if machine in [ 'WCOSS_DELL_P3', 'HERA', 'ORION', 'JET' ]:
-        if cdump in ['gfs'] and f'nth_{task}_gfs' in cfg.keys():
-            threads = cfg[f'nth_{ltask}_gfs']
-        else:
-            threads = cfg[f'nth_{ltask}']
+    threads = task_dict[f'nth_{task_name}']
+    if cdump in ['gfs'] and f'nth_{task_name}_gfs' in task_dict.keys():
+        threads = task_dict[f'nth_{task_name}_gfs']
 
-    nodes = np.int(np.ceil(np.float(tasks) / np.float(ppn)))
+    compute = f'<nodes>{nodes}:ppn={ppn}:tpp={threads}</nodes>'  # TODO - remove dependence on compute
 
-    memstr = '' if memory is None else str(memory)
-    natstr = ''
+    memory = task_dict.get(f'memory_{task_name}', None)
 
+    native = '--export=NONE' if scheduler in ['slurm'] else None
+
+    queue = task_dict['QUEUE']
+    if task_name in SERVICE_TASKS and scheduler not in ['slurm']:
+        queue = task_dict['QUEUE_SERVICE']
+
+    partition = None
     if scheduler in ['slurm']:
-        natstr = '--export=NONE'
+        partition = task_dict['PARTITION_SERVICE'] if task_name in SERVICE_TASKS else task_dict['PARTITION_BATCH']
 
-    if machine in ['HERA', 'JET', 'ORION', 'WCOSS_C', 'WCOSS_DELL_P3']:
+    task_resource = dict()
+    task_resource['account'] = account
+    task_resource['walltime'] = walltime
+    task_resource['nodes'] = nodes
+    task_resource['cores'] = cores
+    task_resource['ppn'] = ppn
+    task_resource['threads'] = threads
+    task_resource['compute'] = compute  # TODO - remove in the future
+    task_resource['memory'] = memory
+    task_resource['native'] = native
+    task_resource['queue'] = queue
+    task_resource['partition'] = partition
 
-        if machine in ['HERA', 'JET', 'ORION']:
-            resstr = f'<nodes>{nodes}:ppn={ppn}:tpp={threads}</nodes>'
-        else:
-            resstr = f'<nodes>{nodes}:ppn={ppn}</nodes>'
-
-        if machine in ['WCOSS_C'] and task in ['arch', 'earc', 'getic']:
-            resstr += '<shared></shared>'
-
-        if machine in ['WCOSS_DELL_P3']:
-            if not reservation in ['NONE']:
-               natstr = f"-U {reservation} -R 'affinity[core({threads})]'"
-            else:
-               natstr = f"-R 'affinity[core({threads})]'"
-
-            if task in ['arch', 'earc', 'getic']:
-                  natstr = "-R 'affinity[core(1)]'"
+    return task_resource
 
 
-    elif machine in ['WCOSS']:
-        resstr = f'<cores>{tasks}</cores>'
-
-    if task in ['arch', 'earc', 'getic']:
-        queuestr = '&QUEUE;' if scheduler in ['slurm'] else '&QUEUE_SERVICE;'
-    else:
-        queuestr = '&QUEUE;'
-
-    return wtimestr, resstr, queuestr, memstr, natstr
+def get_taskplan_resources(dict_configs: List[Dict[str, Any]], task_plan: List[str], cdump='gdas') -> Dict[str, Any]:
+    """
+    Given a list of dictionary containing tasks, and a task plan,
+    return the resource dictionary for the tasks in the task plan
+    """
+    resources = dict()
+    for task in task_plan:
+        task_name = cdump + task
+        resources[task_name] = get_resource(dict_configs[task], task, cdump=cdump)
+    return resources
 
 
 def create_crontab(base, cronint=5):
-    '''
-        Create crontab to execute rocotorun every cronint (5) minutes
-    '''
+    """
+    Create crontab to execute rocotorun every cronint (5) minutes
+    """
 
     # No point creating a crontab if rocotorun is not available.
     rocotoruncmd = find_executable('rocotorun')
@@ -470,56 +194,22 @@ def create_crontab(base, cronint=5):
         print('Failed to find rocotorun, crontab will not be created')
         return
 
-# Leaving the code for a wrapper around crontab file if needed again later
-#    if check_slurm():
-#
-#        cronintstr = '*/%d * * * *' % cronint
-#        rocotorunstr = '%s -d %s/%s.db -w %s/%s.xml' % (rocotoruncmd, base['EXPDIR'], base['PSLOT'], base['EXPDIR'], base['PSLOT'])
-#
-#        wrapper_strings = []
-#        wrapper_strings.append('#!/bin/env tcsh\n')
-#        wrapper_strings.append('\n')
-#        wrapper_strings.append('module load slurm\n')
-#        wrapper_strings.append('module load rocoto/1.3.0-RC4\n')
-#        wrapper_strings.append('\n')
-#        wrapper_strings.append(rocotorunstr)
-#
-#        hostname = 'tfe02'
-#        script_file = os.path.join(base['EXPDIR'], '%s.sh' % base['PSLOT'])
-#
-#        fh = open(script_file, 'w')
-#        fh.write(''.join(wrapper_strings))
-#        os.chmod(script_file,stat.S_IRWXU|stat.S_IRWXG|stat.S_IRWXO)
-#        fh.close()
-#
-#        rocotorunstr = 'ssh %s %s/%s.sh' % (socket.gethostname(), base['EXPDIR'], base['PSLOT'])
-#
-#    else:
-
     rocotorunstr = f'''{rocotoruncmd} -d {base['EXPDIR']}/{base['PSLOT']}.db -w {base['EXPDIR']}/{base['PSLOT']}.xml'''
     cronintstr = f'*/{cronint} * * * *'
 
-    # On WCOSS, rocoto module needs to be loaded everytime cron runs
-    if base['machine'] in ['WCOSS']:
-        rocotoloadstr = '. /usrx/local/Modules/default/init/sh; module use -a /usrx/local/emc_rocoto/modulefiles; module load rocoto/1.3.0rc2)'
-        rocotorunstr = f'({rocotoloadstr} {rocotorunstr})'
-
     try:
-        REPLYTO = os.environ['REPLYTO']
-    except:
-        REPLYTO = ''
+        replyto = os.environ['REPLYTO']
+    except KeyError:
+        replyto = ''
 
-    strings = []
+    strings = ['',
+               f'#################### {base["PSLOT"]} ####################',
+               f'MAILTO="{replyto}"',
+               f'{cronintstr} {rocotorunstr}',
+               '#################################################################',
+               '']
 
-    strings.append('\n')
-    strings.append(f'''#################### {base['PSLOT']} ####################\n''')
-    strings.append(f'MAILTO="{REPLYTO}"\n')
-    strings.append(f'{cronintstr} {rocotorunstr}\n')
-    strings.append('#################################################################\n')
-    strings.append('\n')
-
-    fh = open(os.path.join(base['EXPDIR'], f'''{base['PSLOT']}.crontab'''), 'w')
-    fh.write(''.join(strings))
-    fh.close()
+    with open(os.path.join(base['EXPDIR'], f'{base["PSLOT"]}.crontab'), 'w') as fh:
+        fh.write('\n'.join(strings))
 
     return

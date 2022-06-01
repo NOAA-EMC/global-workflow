@@ -21,32 +21,43 @@
 import os
 import sys
 import re
+from typing import List, Dict, Any
+
 import numpy as np
 from datetime import datetime
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 import rocoto
+from hosts import Host
 import workflow_utils as wfu
+from configuration import Configuration
 
-taskplan = ['getic', 'init', 'coupled_ic', 'aerosol_init', 'waveinit', 'waveprep', 'fcst', 'post', 'wavepostsbs', 'wavepostbndpnt', 'wavepostbndpntbll', 'wavepostpnt', 'wavegempak', 'waveawipsbulls', 'waveawipsgridded', 'wafs', 'wafsgrib2', 'wafsblending', 'wafsgcip', 'wafsgrib20p25', 'wafsblending0p25', 'postsnd', 'gempak', 'awips', 'vrfy', 'metp', 'arch', 'ocnpost']
+taskplan = ['getic', 'init', 'coupled_ic', 'aerosol_init', 'waveinit', 'waveprep', 'fcst', 'post', 'wavepostsbs',
+            'wavepostbndpnt', 'wavepostbndpntbll', 'wavepostpnt', 'wavegempak', 'waveawipsbulls', 'waveawipsgridded',
+            'wafs', 'wafsgrib2', 'wafsblending', 'wafsgcip', 'wafsgrib20p25', 'wafsblending0p25', 'postsnd', 'gempak',
+            'awips', 'vrfy', 'metp', 'arch', 'ocnpost']
+
 
 def main():
-    parser = ArgumentParser(description='Setup XML workflow and CRONTAB for a forecast only experiment.', formatter_class=ArgumentDefaultsHelpFormatter)
-    parser.add_argument('--expdir',help='full path to experiment directory containing config files', type=str, required=False, default=os.environ['PWD'])
-    parser.add_argument('--cdump',help='cycle to run forecasts', type=str, choices=['gdas', 'gfs'], default='gfs', required=False)
+    parser = ArgumentParser(description='Setup XML workflow and CRONTAB for a forecast only experiment.',
+                            formatter_class=ArgumentDefaultsHelpFormatter)
+    parser.add_argument('--expdir', help='full path to experiment directory containing config files', type=str,
+                        required=False, default=os.environ['PWD'])
+    parser.add_argument('--self', help='cycle to run forecasts', type=str, choices=['gdas', 'gfs'], default='gfs',
+                        required=False)
 
     args = parser.parse_args()
 
-    configs = wfu.get_configs(args.expdir)
+    cfg = Configuration(args.expdir)
 
-    _base = wfu.config_parser([wfu.find_config('config.base', configs)])
+    _base = cfg.parse_config('config.base')
 
-    if not os.path.samefile(args.expdir,_base['EXPDIR']):
+    if not os.path.samefile(args.expdir, _base['EXPDIR']):
         print('MISMATCH in experiment directories!')
         print(f'''config.base: EXPDIR = {repr(_base['EXPDIR'])}''')
         print(f'input arg:     --expdir = {repr(args.expdir)}')
         sys.exit(1)
 
-    dict_configs = wfu.source_configs(configs, taskplan)
+    dict_configs = wfu.source_configs(cfg, taskplan)
 
     dict_configs['base']['CDUMP'] = args.cdump
 
@@ -59,115 +70,20 @@ def main():
     return
 
 
-def get_preamble():
-    '''
-        Generate preamble for XML
-    '''
-
-    strings = []
-
-    strings.append('<?xml version="1.0"?>\n')
-    strings.append('<!DOCTYPE workflow\n')
-    strings.append('[\n')
-    strings.append('\t<!--\n')
-    strings.append('\tPROGRAM\n')
-    strings.append('\t\tMain workflow manager for Forecast only Global Forecast System\n')
-    strings.append('\n')
-    strings.append('\tAUTHOR:\n')
-    strings.append('\t\tRahul Mahajan\n')
-    strings.append('\t\trahul.mahajan@noaa.gov\n')
-    strings.append('\n')
-    strings.append('\tNOTES:\n')
-    strings.append(f'\t\tThis workflow was automatically generated at {datetime.now()}\n')
-    strings.append('\t-->\n')
-
-    return ''.join(strings)
-
-
-def get_definitions(base):
-    '''
-        Create entities related to the experiment
-    '''
-
-    machine = base.get('machine', wfu.detectMachine())
-    scheduler = wfu.get_scheduler(machine)
-    hpssarch = base.get('HPSSARCH', 'NO').upper()
-
-    strings = []
-
-    strings.append('\n')
-    strings.append('\t<!-- Experiment parameters such as name, cycle, resolution -->\n')
-    strings.append(f'''\t<!ENTITY PSLOT    "{base['PSLOT']}">\n''')
-    strings.append(f'''\t<!ENTITY CDUMP    "{base['CDUMP']}">\n''')
-    strings.append(f'''\t<!ENTITY CASE     "{base['CASE']}">\n''')
-    strings.append('\n')
-    strings.append('\t<!-- Experiment parameters such as starting, ending dates -->\n')
-    strings.append(f'''\t<!ENTITY SDATE    "{base['SDATE'].strftime('%Y%m%d%H%M')}">\n''')
-    strings.append(f'''\t<!ENTITY EDATE    "{base['EDATE'].strftime('%Y%m%d%H%M')}">\n''')
-    if base['INTERVAL'] is None:
-        print('cycle INTERVAL cannot be None')
-        sys.exit(1)
-    strings.append(f'''\t<!ENTITY INTERVAL "{base['INTERVAL']}">\n''')
-    strings.append('\n')
-    strings.append('\t<!-- Run Envrionment -->\n')
-    strings.append(f'''\t<!ENTITY RUN_ENVIR "{base['RUN_ENVIR']}">\n''')
-    strings.append('\n')
-    strings.append('\t<!-- Experiment related directories -->\n')
-    strings.append(f'''\t<!ENTITY EXPDIR "{base['EXPDIR']}">\n''')
-    strings.append(f'''\t<!ENTITY ROTDIR "{base['ROTDIR']}">\n''')
-    strings.append(f'''\t<!ENTITY ICSDIR "{base['ICSDIR']}">\n''')
-    strings.append('\n')
-    strings.append('\t<!-- Directories for driving the workflow -->\n')
-    strings.append(f'''\t<!ENTITY HOMEgfs  "{base['HOMEgfs']}">\n''')
-    strings.append(f'''\t<!ENTITY JOBS_DIR "{base['BASE_JOB']}">\n''')
-    strings.append('\n')
-    strings.append('\t<!-- Machine related entities -->\n')
-    strings.append(f'''\t<!ENTITY ACCOUNT    "{base['ACCOUNT']}">\n''')
-    strings.append(f'''\t<!ENTITY QUEUE      "{base['QUEUE']}">\n''')
-    strings.append(f'''\t<!ENTITY QUEUE_SERVICE "{base['QUEUE_SERVICE']}">\n''')
-    if scheduler in ['slurm']:
-       strings.append(f'''\t<!ENTITY PARTITION_BATCH "{base['PARTITION_BATCH']}">\n''')
-       strings.append(f'''\t<!ENTITY PARTITION_SERVICE "{base['QUEUE_SERVICE']}">\n''')
-    strings.append(f'\t<!ENTITY SCHEDULER  "{scheduler}">\n')
-    strings.append('\n')
-    strings.append('\t<!-- Toggle HPSS archiving -->\n')
-    strings.append(f'''\t<!ENTITY ARCHIVE_TO_HPSS "{base['HPSSARCH']}">\n''')
-    strings.append('\n')
-    strings.append('\t<!-- ROCOTO parameters that control workflow -->\n')
-    strings.append('\t<!ENTITY CYCLETHROTTLE "2">\n')
-    strings.append('\t<!ENTITY TASKTHROTTLE  "25">\n')
-    strings.append('\t<!ENTITY MAXTRIES      "2">\n')
-    strings.append('\n')
-
-    return ''.join(strings)
-
-
-def get_resources(dict_configs, cdump='gdas'):
+def get_resources(dict_configs, task_plan, self='gdas'):
     '''
         Create resource entities
     '''
 
-    strings = []
+    resources = wfu.get_taskplan_resources(dict_configs, task_plan, cdump=cdump)
 
+    scheduler = Host.get_scheduler
+
+    strings = []
     strings.append('\t<!-- BEGIN: Resource requirements for the workflow -->\n')
     strings.append('\n')
 
-    base = dict_configs['base']
-    machine = base.get('machine', wfu.detectMachine())
-    reservation = base.get('RESERVATION', 'NONE').upper()
-    scheduler = wfu.get_scheduler(machine)
-
-    do_wave = base.get('DO_WAVE', 'NO').upper()
-    do_bufrsnd = base.get('DO_BUFRSND', 'NO').upper()
-    do_gempak = base.get('DO_GEMPAK', 'NO').upper()
-    do_awips = base.get('DO_AWIPS', 'NO').upper()
-    do_metp = base.get('DO_METP', 'NO').upper()
-
-    for task in taskplan:
-
-        cfg = dict_configs[task]
-
-        wtimestr, resstr, queuestr, memstr, natstr = wfu.get_resources(machine, cfg, task, reservation, cdump=cdump)
+    for task in task_plan:
 
         taskstr = f'{task.upper()}_{cdump.upper()}'
 
@@ -222,7 +138,7 @@ def get_postgroups(post, cdump='gdas'):
     return fhrgrp, fhrdep, fhrlst
 
 
-def get_workflow(dict_configs, cdump='gdas'):
+def get_workflow(dict_configs, self='gdas'):
     '''
         Create tasks for forecast only workflow
     '''
@@ -263,8 +179,9 @@ def get_workflow(dict_configs, cdump='gdas'):
         base_cplic = dict_configs['coupled_ic']['BASE_CPLIC']
 
         # ATM ICs
-        for file in ['gfs_ctrl.nc'] + [f'{datatype}_data.tile{tile_index}.nc' for datatype in ['gfs', 'sfc'] for tile_index in range(1, n_tiles + 1)]:
-            data = f"{base_cplic}/{dict_configs['coupled_ic'][f'CPL_ATMIC']}/@Y@m@d@H/&CDUMP;/{base.get('CASE','C384')}/INPUT/{file}"
+        for file in ['gfs_ctrl.nc'] + [f'{datatype}_data.tile{tile_index}.nc' for datatype in ['gfs', 'sfc'] for
+                                       tile_index in range(1, n_tiles + 1)]:
+            data = f"{base_cplic}/{dict_configs['coupled_ic'][f'CPL_ATMIC']}/@Y@m@d@H/&CDUMP;/{base.get('CASE', 'C384')}/INPUT/{file}"
             dep_dict = {'type': 'data', 'data': data}
             deps.append(rocoto.add_dependency(dep_dict))
 
@@ -279,7 +196,7 @@ def get_workflow(dict_configs, cdump='gdas'):
         # Ice ICs
         if do_ice in ["YES"]:
             ice_res = base.get('ICERES', '025')
-            ice_res_dec = f'{float(ice_res)/100:.2f}'
+            ice_res_dec = f'{float(ice_res) / 100:.2f}'
             data = f"{base_cplic}/{dict_configs['coupled_ic'][f'CPL_ICEIC']}/@Y@m@d@H/ice/{ice_res:03d}/cice5_model_{ice_res_dec}.res_@Y@m@d@H.nc"
             dep_dict = {'type': 'data', 'data': data}
             deps.append(rocoto.add_dependency(dep_dict))
@@ -409,10 +326,10 @@ def get_workflow(dict_configs, cdump='gdas'):
     # fcst
     deps = []
     data = '&ROTDIR;/&CDUMP;.@Y@m@d/@H/atmos/INPUT/sfc_data.tile6.nc'
-    dep_dict = {'type':'data', 'data':data}
+    dep_dict = {'type': 'data', 'data': data}
     deps.append(rocoto.add_dependency(dep_dict))
     data = '&ROTDIR;/&CDUMP;.@Y@m@d/@H/atmos/RESTART/@Y@m@d.@H0000.sfcanl_data.tile6.nc'
-    dep_dict = {'type':'data', 'data':data}
+    dep_dict = {'type': 'data', 'data': data}
     deps.append(rocoto.add_dependency(dep_dict))
     dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
 
@@ -522,9 +439,9 @@ def get_workflow(dict_configs, cdump='gdas'):
     # waveawipsbulls
     if do_wave in ['Y', 'YES'] and do_awips in ['Y', 'YES']:
         deps = []
-        dep_dict = {'type':'task', 'name':f'{cdump}wavepostsbs'}
+        dep_dict = {'type': 'task', 'name': f'{cdump}wavepostsbs'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type':'task', 'name':f'{cdump}wavepostpnt'}
+        dep_dict = {'type': 'task', 'name': f'{cdump}wavepostpnt'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
         task = wfu.create_wf_task('waveawipsbulls', cdump=cdump, envar=envars, dependency=dependencies)
@@ -534,7 +451,7 @@ def get_workflow(dict_configs, cdump='gdas'):
     # waveawipsgridded
     if do_wave in ['Y', 'YES'] and do_awips in ['Y', 'YES']:
         deps = []
-        dep_dict = {'type':'task', 'name':f'{cdump}wavepostsbs'}
+        dep_dict = {'type': 'task', 'name': f'{cdump}wavepostsbs'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
         task = wfu.create_wf_task('waveawipsgridded', cdump=cdump, envar=envars, dependency=dependencies)
@@ -732,7 +649,7 @@ def get_workflow(dict_configs, cdump='gdas'):
         tasks.append(task)
         tasks.append('\n')
 
-    #postsnd
+    # postsnd
     if do_bufrsnd in ['Y', 'YES']:
         deps = []
         dep_dict = {'type': 'task', 'name': f'{cdump}fcst'}
@@ -773,7 +690,7 @@ def get_workflow(dict_configs, cdump='gdas'):
     # vrfy
     if do_vrfy in ['Y', 'YES']:
         deps = []
-        dep_dict = {'type':'metatask', 'name':f'{cdump}post'}
+        dep_dict = {'type': 'metatask', 'name': f'{cdump}post'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
         task = wfu.create_wf_task('vrfy', cdump=cdump, envar=envars, dependency=dependencies)
@@ -783,7 +700,7 @@ def get_workflow(dict_configs, cdump='gdas'):
     # metp
     if do_metp in ['Y', 'YES']:
         deps = []
-        dep_dict = {'type':'metatask', 'name':f'{cdump}post'}
+        dep_dict = {'type': 'metatask', 'name': f'{cdump}post'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
         sdate_gfs = rocoto.create_envar(name='SDATE_GFS', value='&SDATE;')
@@ -798,27 +715,27 @@ def get_workflow(dict_configs, cdump='gdas'):
 
     # arch
     deps = []
-    dep_dict = {'type':'metatask', 'name':f'{cdump}post'}
+    dep_dict = {'type': 'metatask', 'name': f'{cdump}post'}
     deps.append(rocoto.add_dependency(dep_dict))
     if do_vrfy in ['Y', 'YES']:
-        dep_dict = {'type':'task', 'name':f'{cdump}vrfy'}
+        dep_dict = {'type': 'task', 'name': f'{cdump}vrfy'}
         deps.append(rocoto.add_dependency(dep_dict))
     if cdump in ['gfs'] and do_metp in ['Y', 'YES']:
-        dep_dict = {'type':'metatask', 'name':f'{cdump}metp'}
+        dep_dict = {'type': 'metatask', 'name': f'{cdump}metp'}
         deps.append(rocoto.add_dependency(dep_dict))
-    dep_dict = {'type':'streq', 'left':'&ARCHIVE_TO_HPSS;', 'right':f'{hpssarch}'}
+    dep_dict = {'type': 'streq', 'left': '&ARCHIVE_TO_HPSS;', 'right': f'{hpssarch}'}
     deps.append(rocoto.add_dependency(dep_dict))
     if do_wave in ['Y', 'YES']:
-      dep_dict = {'type': 'task', 'name': f'{cdump}wavepostsbs'}
-      deps.append(rocoto.add_dependency(dep_dict))
-      dep_dict = {'type': 'task', 'name': f'{cdump}wavepostpnt'}
-      deps.append(rocoto.add_dependency(dep_dict))
-      if do_wave_bnd in ['YES']:
-          dep_dict = {'type': 'task', 'name': f'{cdump}wavepostbndpnt'}
-          deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'task', 'name': f'{cdump}wavepostsbs'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'task', 'name': f'{cdump}wavepostpnt'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        if do_wave_bnd in ['YES']:
+            dep_dict = {'type': 'task', 'name': f'{cdump}wavepostbndpnt'}
+            deps.append(rocoto.add_dependency(dep_dict))
     if do_ocean in ['Y', 'YES']:
-      dep_dict = {'type': 'metatask', 'name': f'{cdump}ocnpost'}
-      deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'metatask', 'name': f'{cdump}ocnpost'}
+        deps.append(rocoto.add_dependency(dep_dict))
     dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
     task = wfu.create_wf_task('arch', cdump=cdump, envar=envars, dependency=dependencies, final=True)
     tasks.append(task)
@@ -827,7 +744,7 @@ def get_workflow(dict_configs, cdump='gdas'):
     return ''.join(tasks)
 
 
-def get_workflow_body(dict_configs, cdump='gdas'):
+def get_workflow_body(dict_configs, self='gdas'):
     '''
         Create the workflow body
     '''
@@ -837,7 +754,8 @@ def get_workflow_body(dict_configs, cdump='gdas'):
     strings.append('\n')
     strings.append(']>\n')
     strings.append('\n')
-    strings.append('<workflow realtime="F" scheduler="&SCHEDULER;" cyclethrottle="&CYCLETHROTTLE;" taskthrottle="&TASKTHROTTLE;">\n')
+    strings.append(
+        '<workflow realtime="F" scheduler="&SCHEDULER;" cyclethrottle="&CYCLETHROTTLE;" taskthrottle="&TASKTHROTTLE;">\n')
     strings.append('\n')
     strings.append('\t<log verbosity="10"><cyclestr>&EXPDIR;/logs/@Y@m@d@H.log</cyclestr></log>\n')
     strings.append('\n')
@@ -857,7 +775,6 @@ def create_xml(dict_configs):
         XML directory containing XML templates, create the workflow XML
     '''
 
-
     dict_configs['base']['INTERVAL'] = wfu.get_gfs_interval(dict_configs['base']['gfs_cyc'])
     base = dict_configs['base']
 
@@ -876,7 +793,7 @@ def create_xml(dict_configs):
         if 'MEMORY' not in each_line:
             temp_workflow += each_line
         else:
-            if any( substring in each_line for substring in memory_dict):
+            if any(substring in each_line for substring in memory_dict):
                 temp_workflow += each_line
     workflow = temp_workflow
 
@@ -891,6 +808,7 @@ def create_xml(dict_configs):
     fh.close()
 
     return
+
 
 if __name__ == '__main__':
     main()

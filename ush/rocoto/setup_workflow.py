@@ -672,7 +672,7 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
     #    dep_dict = {'type':'task', 'name':'%swavepost' % cdump}
     #    deps.append(rocoto.add_dependency(dep_dict))
     #    dependencies = rocoto.create_dependency(dep=deps)
-    #    task = wfu.create_wf_task('wavestat', cdump=cdump, envar=envars, dependency=dependencies)
+    #    task = wfu.create_wf_task('wavestat', cdump=cdump, envars=envars, dependency=dependencies)
     #    dict_tasks['%swavestat' % cdump] = task
 
     # vrfy

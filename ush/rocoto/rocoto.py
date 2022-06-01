@@ -1,15 +1,22 @@
 #!/usr/bin/env python3
 
+from typing import Union, List, Dict, Any
+
 '''
     MODULE:
         rocoto.py
 
     ABOUT:
-        Helper module to create tasks, metatasks, and dependencies
+        Helper module to create tasks, metatasks, and dependencies for Rocoto
 '''
 
-def create_metatask(task_dict, metatask_dict):
-    '''
+__all__ = ['create_task', 'create_metatask',
+           'add_dependency', 'create_dependency',
+           'create_envar', 'create_entity', 'create_cycledef']
+
+
+def create_metatask(task_dict: Dict[str, Any], metatask_dict: Dict[str, Any]) -> List[str]:
+    """
     create a Rocoto metatask given a dictionary containing task and metatask information
     :param metatask_dict: metatask key-value parameters
     :type metatask_dict: dict
@@ -17,7 +24,7 @@ def create_metatask(task_dict, metatask_dict):
     :type task_dict: dict
     :return: Rocoto metatask
     :rtype: list
-    '''
+    """
 
     # Grab metatask info from the metatask_dict
     metataskname = metatask_dict.get('metataskname', 'demometatask')
@@ -44,14 +51,14 @@ def create_metatask(task_dict, metatask_dict):
     return strings
 
 
-def create_task(task_dict):
-    '''
+def create_task(task_dict: Dict[str, Any]) -> List[str]:
+    """
     create a Rocoto task given a dictionary containing task information
     :param task_dict: task key-value parameters
     :type task_dict: dict
     :return: Rocoto task
     :rtype: list
-    '''
+    """
 
     # Grab task info from the task_dict
     taskname = task_dict.get('taskname', 'demotask')
@@ -68,7 +75,7 @@ def create_task(task_dict):
     native = task_dict.get('native', None)
     memory = task_dict.get('memory', None)
     resources = task_dict.get('resources', None)
-    envar = task_dict.get('envar', None)
+    envar = task_dict.get('envars', None)
     dependency = task_dict.get('dependency', None)
 
     str_maxtries = str(maxtries)
@@ -114,38 +121,31 @@ def create_task(task_dict):
     return strings
 
 
-def add_dependency(dep_dict):
-    '''
+def add_dependency(dep_dict: Dict[str, Any]) -> str:
+    """
     create a simple Rocoto dependency given a dictionary with dependency information
     :param dep_dict: dependency key-value parameters
     :type dep_dict: dict
     :return: Rocoto simple dependency
     :rtype: str
-    '''
+    """
+
+    tag_map = {'task': _add_task_tag,
+               'metatask': _add_task_tag,
+               'data': _add_data_tag,
+               'cycleexist': _add_cycle_tag,
+               'streq': _add_streq_tag,
+               'strneq': _add_streq_tag}
 
     dep_condition = dep_dict.get('condition', None)
     dep_type = dep_dict.get('type', None)
 
-    if dep_type in ['task', 'metatask']:
-
-        string = add_task_tag(dep_dict)
-
-    elif dep_type in ['data']:
-
-        string = add_data_tag(dep_dict)
-
-    elif dep_type in ['cycleexist']:
-
-        string = add_cycle_tag(dep_dict)
-
-    elif dep_type in ['streq', 'strneq']:
-
-        string = add_streq_tag(dep_dict)
-
-    else:
-
-        msg = f'Unknown dependency type {dep_dict["type"]}'
-        raise KeyError(msg)
+    try:
+        string = tag_map[dep_type](dep_dict)
+    except KeyError:
+        raise KeyError(f'{dep_type} is an unknown dependency type.\n' +
+                       'Currently supported dependency types are:\n' +
+                       f'{" | ".join(tag_map.keys())}')
 
     if dep_condition is not None:
         string = f'<{dep_condition}>{string}</{dep_condition}>'
@@ -153,14 +153,14 @@ def add_dependency(dep_dict):
     return string
 
 
-def add_task_tag(dep_dict):
-    '''
+def _add_task_tag(dep_dict: Dict[str, Any]) -> str:
+    """
     create a simple task or metatask tag
     :param dep_dict: dependency key-value parameters
     :type dep_dict: dict
     :return: Rocoto simple task or metatask dependency
     :rtype: str
-    '''
+    """
 
     dep_type = dep_dict.get('type', None)
     dep_name = dep_dict.get('name', None)
@@ -178,14 +178,15 @@ def add_task_tag(dep_dict):
 
     return string
 
-def add_data_tag(dep_dict):
-    '''
+
+def _add_data_tag(dep_dict: Dict[str, Any]) -> str:
+    """
     create a simple data tag
     :param dep_dict: dependency key-value parameters
     :type dep_dict: dict
     :return: Rocoto simple task or metatask dependency
     :rtype: str
-    '''
+    """
 
     dep_type = dep_dict.get('type', None)
     dep_data = dep_dict.get('data', None)
@@ -212,14 +213,15 @@ def add_data_tag(dep_dict):
 
     return string
 
-def add_cycle_tag(dep_dict):
-    '''
+
+def _add_cycle_tag(dep_dict: Dict[str, Any]) -> str:
+    """
     create a simple cycle exist tag
     :param dep_dict: dependency key-value parameters
     :type dep_dict: dict
     :return: Rocoto simple task or metatask dependency
     :rtype: str
-    '''
+    """
 
     dep_type = dep_dict.get('type', None)
     dep_offset = dep_dict.get('offset', None)
@@ -232,14 +234,15 @@ def add_cycle_tag(dep_dict):
 
     return string
 
-def add_streq_tag(dep_dict):
-    '''
+
+def _add_streq_tag(dep_dict: Dict[str, Any]) -> str:
+    """
     create a simple string comparison tag
     :param dep_dict: dependency key-value parameters
     :type dep_dict: dict
     :return: Rocoto simple task or metatask dependency
     :rtype: str
-    '''
+    """
 
     dep_type = dep_dict.get('type', None)
     dep_left = dep_dict.get('left', None)
@@ -264,8 +267,8 @@ def add_streq_tag(dep_dict):
 
 
 def _traverse(o, tree_types=(list, tuple)):
-    '''
-    Traverse through a list of lists or tuples and yeild the value
+    """
+    Traverse through a list of lists or tuples and yield the value
     Objective is to flatten a list of lists or tuples
     :param o: list of lists or not
     :type o: list, tuple, scalar
@@ -273,7 +276,7 @@ def _traverse(o, tree_types=(list, tuple)):
     :type tree_types: tuple
     :return: value in the list or tuple
     :rtype: scalar
-    '''
+    """
 
     if isinstance(o, tree_types):
         for value in o:
@@ -283,9 +286,9 @@ def _traverse(o, tree_types=(list, tuple)):
         yield o
 
 
-def create_dependency(dep_condition=None, dep=None):
-    '''
-    create a compound dependency given a list of dependendies, and compounding condition
+def create_dependency(dep_condition=None, dep=None) -> List[str]:
+    """
+    create a compound dependency given a list of dependencies, and compounding condition
     the list of dependencies are created using add_dependency
     :param dep_condition: dependency condition
     :type dep_condition: boolean e.g. and, or, true, false
@@ -293,7 +296,7 @@ def create_dependency(dep_condition=None, dep=None):
     :type dep: str or list
     :return: Rocoto compound dependency
     :rtype: list
-    '''
+    """
 
     dep = dep if isinstance(dep, list) else [dep]
 
@@ -316,9 +319,9 @@ def create_dependency(dep_condition=None, dep=None):
     return strings
 
 
-def create_envar(name=None,value=None):
-    '''
-    create an Rocoto environment variable given name and value
+def create_envar(name: str, value: Union[str, float, int]) -> str:
+    """
+    create a Rocoto environment variable given name and value
     returns the environment variable as a string
     :param name: name of the environment variable
     :type name: str
@@ -326,20 +329,14 @@ def create_envar(name=None,value=None):
     :type value: str or float or int or unicode
     :return: Rocoto environment variable key-value pair
     :rtype: str
-    '''
+    """
 
-    string = ''
-    string += '<envar>'
-    string += f'<name>{name}</name>'
-    string += f'<value>{str(value)}</value>'
-    string += '</envar>'
-
-    return string
+    return f'<envars><name>{name}</name><value>{str(value)}</value></envars>'
 
 
 def create_cycledef(group=None, start=None, stop=None, step=None):
-    '''
-    create an Rocoto cycle definition
+    """
+    create a Rocoto cycle definition
     returns the environment variable as a string
     :param group: cycle definition group name
     :type group: str
@@ -353,18 +350,13 @@ def create_cycledef(group=None, start=None, stop=None, step=None):
     :type value: str or float or int or unicode
     :return: Rocoto cycledef variable string
     :rtype: str
-    '''
+    """
 
-    string = ''
-    string += f'<cycledef group="{group}">'
-    string += f'{start} {stop} {step}'
-    string += '</cycledef>'
-
-    return string
+    return f'<cycledef group="{group}">{start} {stop} {step}</cycledef>'
 
 
-def create_entity(name=None, value=None):
-    '''
+def create_entity(name: str, value: Union[str, float, int]) -> str:
+    """
     create an XML ENTITY variable given name and value
     returns the variable as a string
     :param name: name of the variable
@@ -373,7 +365,6 @@ def create_entity(name=None, value=None):
     :type value: str or float or int or unicode
     :return: XML entity variable key-value pair
     :rtype: str
-    '''
+    """
 
-    return f'<!ENTITY {name} "{value}">'
-
+    return f'<!ENTITY {name} "{str(value)}">'
