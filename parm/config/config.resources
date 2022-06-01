@@ -177,12 +177,12 @@ elif [ $step = "analdiag" ]; then
 elif [ $step = "gldas" ]; then
 
     export wtime_gldas="00:10:00"
-    export npe_gldas=96  
-    export nth_gldas=1 
+    export npe_gldas=96
+    export nth_gldas=1
     export npe_node_gldas=$npe_node_max
-    export npe_gaussian=96  
-    export nth_gaussian=1 
-    export npe_node_gaussian=24           
+    export npe_gaussian=96
+    export nth_gaussian=1
+    export npe_node_gaussian=24
     if [[ "$machine" = "WCOSS_DELL_P3" ]]; then export npe_gldas=112 ; fi
     if [[ "$machine" == "WCOSS_C" ]]; then export memory_gldas="3072M"; fi
 
@@ -351,13 +351,13 @@ elif [ $step = "vrfy" ]; then
     export npe_vrfy_gfs=1
     export npe_node_vrfy_gfs=1
     if [[ "$machine" == "WCOSS_C" ]]; then
-	    export memory_vrfy="3072M"
+      export memory_vrfy="3072M"
     elif [[ "$machine" == "HERA" ]]; then
-	    export memory_vrfy="16384M"
+      export memory_vrfy="16384M"
     fi
 
 elif [ $step = "metp" ]; then
-    
+
     export nth_metp=1
     export wtime_metp="03:00:00"
     export npe_metp=4
@@ -366,9 +366,9 @@ elif [ $step = "metp" ]; then
     export npe_metp_gfs=4
     export npe_node_metp_gfs=4
     if [[ "$machine" == "WCOSS_C" ]]; then
-            export memory_metp="3072M"
+      export memory_metp="3072M"
     elif [[ "$machine" == "THEIA" ]]; then
-            export memory_metp="16384M"
+      export memory_metp="16384M"
     fi
 
 elif [ $step = "echgres" ]; then
@@ -385,9 +385,9 @@ elif [ $step = "init" ]; then
     export nth_init=1
     export npe_node_init=6
     if [ $machine = "WCOSS_DELL_P3" ]; then
-        export memory_init="10G"
+      export memory_init="10G"
     else
-        export memory_init="70G"
+      export memory_init="70G"
     fi
 
 elif [ $step = "init_chem" ]; then
@@ -430,10 +430,16 @@ elif [ $step = "eobs" -o $step = "eomg" ]; then
     elif [ $CASE = "C96" -o $CASE = "C48" ]; then
       export npe_eobs=20
     fi
+    export npe_eomg=$npe_eobs
     export nth_eobs=2
     if [[ "$machine" = "WCOSS_DELL_P3" ]]; then export nth_eobs=7; fi
+    export nth_eomg=$nth_eobs
     export npe_node_eobs=$(echo "$npe_node_max / $nth_eobs" | bc)
-    if [[ "$machine" == "WCOSS_C" ]]; then export memory_eobs="3072M"; fi
+    export npe_node_eomg=$npe_node_eobs
+    if [[ "$machine" == "WCOSS_C" ]]; then
+      export memory_eobs="3072M"
+      export memory_eomg=$memory_eobs
+    fi
 
 elif [ $step = "ediag" ]; then
 
