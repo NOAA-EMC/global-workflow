@@ -195,22 +195,29 @@ def add_data_tag(dep_dict):
         msg = f'a data value is necessary for {dep_type} dependency'
         raise KeyError(msg)
 
-    if dep_offset is None:
-        if '@' in dep_data:
-            offset_string_b = '<cyclestr>'
+    if not isinstance(dep_data, list):
+        dep_data = [dep_data]
+
+    if not isinstance(dep_offset, list):
+        dep_offset = [dep_offset]
+
+    assert len(dep_data) == len(dep_offset)
+
+    strings = ['<datadep>']
+    for data, offset in zip(dep_data, dep_offset):
+        if '@' in data:
+            offset_str = '' if  offset in [None, ''] else f' offset="{offset}"'
+            offset_string_b = f'<cyclestr{offset_str}>'
             offset_string_e = '</cyclestr>'
         else:
             offset_string_b = ''
             offset_string_e = ''
-    else:
-        offset_string_b = f'<cyclestr offset="{dep_offset}">'
-        offset_string_e = '</cyclestr>'
 
-    string = '<datadep>'
-    string += f'{offset_string_b}{dep_data}{offset_string_e}'
-    string += '</datadep>'
+        strings.append(f'{offset_string_b}{data}{offset_string_e}')
 
-    return string
+    strings.append('<datadep>')
+
+    return ''.join(strings)
 
 def add_cycle_tag(dep_dict):
     '''
