@@ -57,7 +57,7 @@ function checkout() {
 	fi
 
 	cd "${topdir}"
-	if [[  -d "${dir}" && "${c:-NO}" == "YES" ]]; then
+	if [[  -d "${dir}" && "${CLEAN:-NO}" == "YES" ]]; then
 		echo "|-- Removing existing clone in ${dir}"		
 		rm -Rf "$dir"
 	fi
@@ -102,7 +102,7 @@ while getopts ":chm:o" option; do
 			echo "Recieved -c flag, will delete any existing directories and start clean"
 			export CLEAN="YES"
 			;;
-		h)usage;;
+		h)	usage;;
 		o)
 			echo "Received -o flag for optional checkout of operational-only codes"
 			checkout_gtg="YES"
