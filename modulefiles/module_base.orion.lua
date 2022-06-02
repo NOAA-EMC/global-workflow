@@ -47,6 +47,5 @@ load(pathJoin("slurm", "19.05.3-2"))
 load(pathJoin("cdo", "1.9.5"))
 
 load(pathJoin("hpc-miniconda3", "4.6.14"))
-load(pathJoin("ufswm", "1.0.0"))
 
 whatis("Description: GFS run environment")
