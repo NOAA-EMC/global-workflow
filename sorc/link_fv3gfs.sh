@@ -227,11 +227,18 @@ for ufs_utilsexe in \
 done
 
 for gsiexe in  calc_analysis.x calc_increment_ens_ncio.x calc_increment_ens.x \
-    getsfcensmeanp.x getsigensmeanp_smooth.x getsigensstatp.x global_enkf.x global_gsi.x \
-    interp_inc.x ncdiag_cat.x oznmon_horiz.x oznmon_time.x radmon_angle.x \
+    getsfcensmeanp.x getsigensmeanp_smooth.x getsigensstatp.x enkf.x gsi.x \
+    interp_inc.x ncdiag_cat_serial.x oznmon_horiz.x oznmon_time.x radmon_angle.x \
     radmon_bcoef.x radmon_bcor.x radmon_time.x recentersigp.x;do
     [[ -s $gsiexe ]] && rm -f $gsiexe
     $LINK ../sorc/gsi.fd/exec/$gsiexe .
+		# TODO - remove these lines when the scripts in the release/gfsda.v16.3.0 tag are updated
+		[[ -s global_gsi.x ]] && rm global_gsi.x
+    $LINK ../sorc/gsi.fd/exec/gsi.x global_gsi.x
+		[[ -s global_enkf.x ]] && rm global_enkf.x
+    $LINK ../sorc/gsi.fd/exec/enkf.x global_enkf.x
+		[[ -s ncdiag_cat.x ]] && rm ncdiag_cat.x
+    $LINK ../sorc/gsi.fd/exec/ncdiag_cat_serial.x ncdiag_cat.x
 done
 
 for gldasexe in gdas2gldas  gldas2gdas  gldas_forcing  gldas_model  gldas_post  gldas_rst; do
