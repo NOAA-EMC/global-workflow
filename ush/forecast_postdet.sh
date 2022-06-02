@@ -660,10 +660,10 @@ WW3_postdet() {
 
   if [ $waveMULTIGRID = ".true." ]; then
     for wavGRD in $waveGRD ; do
-      eval $NLN $datwave/${wavprfx}.log.${wavGRD}.${PDY}${cyc} log.${wavGRD}
+      $NLN $datwave/${wavprfx}.log.${wavGRD}.${PDY}${cyc} log.${wavGRD}
     done
   else 
-    eval $NLN $datwave/${wavprfx}.log.${waveGRD}.${PDY}${cyc} log.ww3 
+    $NLN $datwave/${wavprfx}.log.${waveGRD}.${PDY}${cyc} log.ww3 
   fi 
 
   if [ "$WW3ICEINP" = "YES" ]; then
@@ -689,7 +689,7 @@ WW3_postdet() {
   # Link output files
   cd $DATA
   if [ $waveMULTIGRID = ".true." ]; then
-    eval $NLN $datwave/${wavprfx}.log.mww3.${PDY}${cyc} log.mww3
+    $NLN $datwave/${wavprfx}.log.mww3.${PDY}${cyc} log.mww3
   fi 
 
   # Loop for gridded output (uses FHINC)
@@ -700,10 +700,10 @@ WW3_postdet() {
     HMS="$(echo $YMDH | cut -c9-10)0000"
     if [ $waveMULTIGRID = ".true." ]; then
       for wavGRD in ${waveGRD} ; do
-        eval $NLN $datwave/${wavprfx}.out_grd.${wavGRD}.${YMD}.${HMS} $DATA/${YMD}.${HMS}.out_grd.${wavGRD}
+        $NLN $datwave/${wavprfx}.out_grd.${wavGRD}.${YMD}.${HMS} $DATA/${YMD}.${HMS}.out_grd.${wavGRD}
       done
     else 
-      eval $NLN $datwave/${wavprfx}.out_grd.${waveGRD}.${YMD}.${HMS} $DATA/${YMD}.${HMS}.out_grd.ww3
+      $NLN $datwave/${wavprfx}.out_grd.${waveGRD}.${YMD}.${HMS} $DATA/${YMD}.${HMS}.out_grd.ww3
     fi 
     FHINC=$FHOUT_WAV
     if [ $FHMAX_HF_WAV -gt 0 -a $FHOUT_HF_WAV -gt 0 -a $fhr -lt $FHMAX_HF_WAV ]; then
@@ -719,9 +719,9 @@ WW3_postdet() {
     YMD=$(echo $YMDH | cut -c1-8)
     HMS="$(echo $YMDH | cut -c9-10)0000"
     if [ $waveMULTIGRID = ".true." ]; then
-      eval $NLN $datwave/${wavprfx}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS} $DATA/${YMD}.${HMS}.out_pnt.${waveuoutpGRD}
+      $NLN $datwave/${wavprfx}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS} $DATA/${YMD}.${HMS}.out_pnt.${waveuoutpGRD}
     else 
-      eval $NLN $datwave/${wavprfx}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS} $DATA/${YMD}.${HMS}.out_pnt.ww3
+      $NLN $datwave/${wavprfx}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS} $DATA/${YMD}.${HMS}.out_pnt.ww3
     fi 
 
     FHINC=$FHINCP_WAV
@@ -733,8 +733,7 @@ WW3_nml() {
   echo "SUB ${FUNCNAME[0]}: Copying input files for WW3"
   WAV_MOD_TAG=${CDUMP}wave${waveMEMB}
   if [ "${USE_WAV_RMP:-YES}" = "YES" ]; then
-    if ls $FIXwave/rmp_src_to_dst_conserv_* 2> /dev/null
-    then
+    if (( $( ls -1 $FIXwave/rmp_src_to_dst_conserv_* > /dev/null | wc -l) > 0 )); then
       for file in $(ls $FIXwave/rmp_src_to_dst_conserv_*) ; do
         $NLN $file $DATA/ 
       done
