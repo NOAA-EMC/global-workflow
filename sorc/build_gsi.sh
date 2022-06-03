@@ -19,9 +19,10 @@ if [ ! -d "../exec" ]; then
   mkdir ../exec
 fi
 
-cd gsi.fd/ush/
-./build_all_cmake.sh "PRODUCTION" "$cwd/gsi.fd"
-##./build_all_cmake.sh "PRODUCTION" "$cwd/gsi.fd" "NCO"  # use this line for pruned NCO install
+# If NCO wants to build, uncomment this line
+#export PRUNE_4NCO="YES"
+
+./gsi.fd/ush/build_4nco_global.sh
 
 exit
 
