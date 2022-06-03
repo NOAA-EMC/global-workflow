@@ -2,7 +2,7 @@
 
  use utils
  use setup
- use module_fv3gfs_ncio
+ use module_ncio
 
  implicit none
 

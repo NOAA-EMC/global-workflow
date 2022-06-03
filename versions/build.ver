@@ -31,5 +31,6 @@ export ip_ver=3.3.3
 export wrf_io_ver=1.1.1
 export gfsio_ver=1.4.1
 export sfcio_ver=1.4.1
+export ncio_ver=1.0.0
 
 export upp_ver=8.1.0
