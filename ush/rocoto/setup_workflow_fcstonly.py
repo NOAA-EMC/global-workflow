@@ -353,7 +353,7 @@ def get_workflow(dict_configs, cdump='gdas'):
         tasks.append('\n')
 
     # waveprep
-    if do_wave in ['Y', 'YES'] and do_wave_cdump in ['GFS', 'BOTH']:
+    if do_wave in ['Y', 'YES'] and do_wave_cdump in ['GFS', 'BOTH'] and app in ['ATMW']:
         deps = []
         dep_dict = {'type': 'task', 'name': f'{cdump}waveinit'}
         deps.append(rocoto.add_dependency(dep_dict))
@@ -414,7 +414,10 @@ def get_workflow(dict_configs, cdump='gdas'):
 
     if do_wave in ['Y', 'YES'] and do_wave_cdump in ['GFS', 'BOTH']:
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{cdump}waveprep'}
+        if app in ['ATMW']:
+            dep_dict = {'type': 'task', 'name': f'{cdump}waveprep'}
+        else: 
+            dep_dict = {'type': 'task', 'name': f'{cdump}waveinit'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies2 = rocoto.create_dependency(dep_condition='and', dep=deps)
 

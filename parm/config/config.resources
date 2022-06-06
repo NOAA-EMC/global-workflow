@@ -237,6 +237,7 @@ elif [ $step = "fcst" ]; then
             case $waveGRD in
                 'gnh_10m aoc_9km gsh_15m') export WAVPETS=140 ;;
                 'gwes_30m') export WAVPETS=160 ;;
+                'mx025') export WAVPETS=80 ;;
                 *)
                     echo "FATAL: Number of PEs not defined for wave grid '$waveGRD'"
                     echo "  Please add an entry to config.resources within fcst for this grid"
@@ -250,7 +251,7 @@ elif [ $step = "fcst" ]; then
                 # Except for 025, these are guesses for now
                 100) export OCNPETS=20 ;;
                 050) export OCNPETS=60 ;;
-                025) export OCNPETS=220 ;;
+                025) export OCNPETS=120 ;;
                 *)
                     echo "FATAL: Number of PEs not defined for ocean resolution '$OCNRES'"
                     echo "  Please add an entry to config.resources within fcst for this resolution"
@@ -264,7 +265,7 @@ elif [ $step = "fcst" ]; then
                 # Except for 025, these are guesses for now
                 100) export ICEPETS=10 ;;
                 050) export ICEPETS=30 ;;
-                025) export ICEPETS=80 ;;
+                025) export ICEPETS=48 ;;
                 *)
                     echo "FATAL: Number of PEs not defined for ice resolution '$ICERES'"
                     echo "  Please add an entry to config.resources within fcst for this resolution"
