@@ -383,6 +383,9 @@ suites:
           post:
             tasks:
               jenkfgdas_post_f( 3,6 ):
+                triggers:
+                  - family: ['enkfgdas/analysis/recenter/ecen', 'enkfgdas/analysis/create']
+                    operand: 'or'
                 template: jenkfgdas_post_master
                 edits:
                   FHMIN_EPOS: ( )
