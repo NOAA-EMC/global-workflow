@@ -43,10 +43,8 @@
 
   cd $DATA
 
-  postmsg "$jlogfile" "HAS BEGUN on $(hostname)"
-
-  msg="Starting WAVE POSTPROCESSOR SCRIPT for $WAV_MOD_TAG"
-  postmsg "$jlogfile" "$msg"
+  echo "HAS BEGUN on $(hostname)"
+  echo "Starting WAVE POSTPROCESSOR SCRIPT for $WAV_MOD_TAG"
 
   set +x
   echo ' '
@@ -73,7 +71,6 @@
 # 0.c.1 Grids
 
   export waveGRD=${waveGRD?Var waveGRD Not Set}
-  export wavesbsGRD=${wavesbsGRD?Var wavesbsGRD Not Set}
 
 # 0.c.2 extended global grid and rtma transfer grid
   export waveinterpGRD=${waveinterpGRD?Var wavepostGRD Not Set}
@@ -85,27 +82,21 @@
   echo 'Grid information  :'
   echo '-------------------'
   echo "   Native wave grids  : $waveGRD"
-  echo "   Side-by-side grids : $wavesbsGRD"
   echo "   Interpolated grids : $waveinterpGRD"
   echo "   Post-process grids : $wavepostGRD"
   echo ' '
   [[ "$LOUD" = YES ]] && set -x
 
 
-# 0.c.3 Define CDATE_POST as a function of RERUN variable setting
-  if [ "${RERUN}" = "YES" ]; then
-    export CDATE_POST=${CDATE_RST}
-    export FHRUN=$($NHOUR ${CDATE_RST} ${CDATE})
-  else # regular run
-    export CDATE_POST=${CDATE}
-    export FHRUN=0
-  fi
+# 0.c.3 Define CDATE_POST 
+  export CDATE_POST=${CDATE}
+  export FHRUN=0
 
 # --------------------------------------------------------------------------- #
 # 1.  Get files that are used by most child scripts
 
-  export DOGRB_WAV='YES' #Create grib2 files 
-  export DOGRI_WAV='NO' #Create interpolated grids 
+  export DOGRB_WAV=${DOGRB_WAV:-'YES'} #Create grib2 files 
+  export DOGRI_WAV=${DOGRI_WAV:-'NO'} #Create interpolated grids 
 
   exit_code=0
 
@@ -118,7 +109,7 @@
 # 1.a Model definition files and output files (set up using poe) 
 
 # 1.a.1 Copy model definition files
-  for grdID in $waveGRD $wavesbsGRD $wavepostGRD $waveinterpGRD 
+  for grdID in $waveGRD $wavepostGRD $waveinterpGRD 
   do
     if [ -f "$COMIN/rundata/${CDUMP}wave.mod_def.${grdID}" ]
     then
@@ -131,7 +122,7 @@
   done
 
 # 1.a.2 Check that model definition files exist 
-  for grdID in $waveGRD $wavesbsGRD $wavepostGRD $waveinterpGRD 
+  for grdID in $waveGRD $wavepostGRD $waveinterpGRD 
   do
     if [ ! -f mod_def.$grdID ]
     then
@@ -142,7 +133,6 @@
       echo '*************************************************** '
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
-      postmsg "$jlogfile" "FATAL ERROR : NO MOD_DEF file mod_def.$grdID"
       err=2; export err;${errchk}
       exit $err
       DOGRB_WAV='NO'
@@ -179,7 +169,6 @@
         echo ' '
         [[ "$LOUD" = YES ]] && set -x
         echo "$WAV_MOD_TAG post $date $cycle : GRINT template file missing."
-        postmsg "$jlogfile" "NON-FATAL ERROR : NO TEMPLATE FOR GRINT INPUT FILE"
         exit_code=1
         DOGRI_WAV='NO'
       fi
@@ -208,7 +197,6 @@
         echo '*********************************************** '
         echo ' '
         [[ "$LOUD" = YES ]] && set -x
-        postmsg "$jlogfile" "NON-FATAL ERROR : NO TEMPLATE FOR GRIB2 INPUT FILE"
         exit_code=2
         DOGRB_WAV='NO'
       fi
@@ -239,10 +227,6 @@
   echo '   Making command file for sbs grib2 and GRID Interpolation '
   [[ "$LOUD" = YES ]] && set -x
 
-  rm -f cmdfile
-  touch cmdfile
-  chmod 744 cmdfile
-
 # 1.a.2 Loop over forecast time to generate post files 
 # When executed side-by-side, serial mode (cfp when run after the fcst step)
 # Contingency for RERUN=YES
@@ -269,10 +253,11 @@
 
     fcmdnow=cmdfile.${FH3}
     fcmdigrd=icmdfile.${FH3}
-    rm -f ${fcmdnow} ${fcmdigrd} 
-    touch ${fcmdnow} ${fcmdigrd} 
     mkdir output_$YMDHMS
     cd output_$YMDHMS
+    rm -f ${fcmdnow} ${fcmdigrd}
+    touch ${fcmdnow} ${fcmdigrd}
+
 
 # Create instances of directories for gridded output
     export GRIBDATA=${DATA}/output_$YMDHMS
@@ -293,7 +278,6 @@
           echo ' '
           [[ "$LOUD" = YES ]] && set -x
           echo "$WAV_MOD_TAG post $grdID $date $cycle : field output missing." 
-          postmsg "$jlogfile" "NON-FATAL ERROR : NO RAW FIELD OUTPUT FILE out_grd.$grdID"
           err=3; export err;${errchk}
           exit $err
         fi
@@ -305,13 +289,14 @@
         nigrd=1
         for grdID in $waveinterpGRD
         do
-            ymdh_int=$($NDATE -${WAVHINDH} $ymdh); dt_int=3600.; n_int=9999 ;
-            echo "$USHwave/wave_grid_interp_sbs.sh $grdID $ymdh_int $dt_int $n_int > grint_$grdID.out 2>&1" >> ${fcmdigrd}.${nigrd}
+          ymdh_int=$($NDATE -${WAVHINDH} $ymdh); dt_int=3600.; n_int=9999 ;
+          echo "$USHwave/wave_grid_interp_sbs.sh $grdID $ymdh_int $dt_int $n_int > grint_$grdID.out 2>&1" >> ${fcmdigrd}.${nigrd}
           if [ "$DOGRB_WAV" = 'YES' ]
           then
-          gribFL=\'$(echo ${OUTPARS_WAV})\'
+            gribFL=\'$(echo ${OUTPARS_WAV})\'
             case $grdID in
               glo_15mxt) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=11 ;;
+              reg025) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=11 ;;
               glo_30mxt) GRDNAME='global' ; GRDRES=0p50 ; GRIDNR=255  ; MODNR=11 ;;
               glo_30m) GRDNAME='global' ; GRDRES=0p50 ; GRIDNR=255  ; MODNR=11 ;;
               at_10m) GRDNAME='atlocn' ; GRDRES=0p16 ; GRIDNR=255  ; MODNR=11   ;;
@@ -319,7 +304,7 @@
               wc_10m) GRDNAME='wcoast' ; GRDRES=0p16 ; GRIDNR=255  ; MODNR=11   ;;
               ak_10m) GRDNAME='alaska' ; GRDRES=0p16 ; GRIDNR=255  ; MODNR=11   ;;
             esac
-              echo "$USHwave/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDNAME $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdigrd}.${nigrd}
+            echo "$USHwave/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDNAME $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdigrd}.${nigrd}
           fi
           echo "${GRIBDATA}/${fcmdigrd}.${nigrd}" >> ${fcmdnow}
           chmod 744 ${fcmdigrd}.${nigrd}
@@ -342,9 +327,10 @@
               ao_20m) GRDNAME='arctic' ; GRDRES=0p33 ; GRIDNR=255  ; MODNR=11   ;;
               so_20m) GRDNAME='antarc' ; GRDRES=0p33 ; GRIDNR=255  ; MODNR=11   ;;
               glo_15mxt) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=11   ;;
+              reg025) GRDNAME='global' ; GRDRES=0p25 ; GRIDNR=255  ; MODNR=11   ;;
               gwes_30m) GRDNAME='global' ; GRDRES=0p50 ; GRIDNR=255  ; MODNR=10 ;;
           esac
-            echo "$USHwave/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDNAME $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdnow}
+          echo "$USHwave/wave_grib2_sbs.sh $grdID $GRIDNR $MODNR $ymdh $fhr $GRDNAME $GRDRES $gribFL > grib_$grdID.out 2>&1" >> ${fcmdnow}
         done
       fi
 
@@ -466,15 +452,10 @@
   if [ "$exit_code" -ne '0' ]
   then
     echo " FATAL ERROR: Problem in MWW3 POST"
-    msg="ABNORMAL EXIT: Problem in MWW3 POST"
-    postmsg "$jlogfile" "$msg"
-    echo $msg
     err=6; export err;${errchk}
     exit $err
   else
     echo " Side-by-Side Wave Post Completed Normally "
-    msg="$job completed normally"
-    postmsg "$jlogfile" "$msg"
     exit 0
   fi
 

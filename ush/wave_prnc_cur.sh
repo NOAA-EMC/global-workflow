@@ -88,7 +88,7 @@ then
   echo '******************************************** '
   echo ' '
   set $seton
-  postmsg "$jlogfile" "WARNING: NON-FATAL ERROR IN ww3_prnc."
+  echo "WARNING: NON-FATAL ERROR IN ww3_prnc."
   exit 4
 fi
 
