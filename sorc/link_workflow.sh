@@ -75,6 +75,7 @@ for dir in fix_aer \
             fix_cice \
             fix_mom6 \
             fix_cpl \
+            fix_datm \
             fix_wave \
             fix_reg2grb2 \
             fix_ugwd
