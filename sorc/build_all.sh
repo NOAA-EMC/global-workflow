@@ -95,7 +95,7 @@ err=0
 #------------------------------------
 $Build_ww3_prepost && {
 	echo " .... Building WW3 pre and post execs .... "
-	./build_ww3prepost.sh ${_verbose_opt} > $logs_dir/build_ww3_prepost.log 2>&1
+	./build_ww3prepost.sh ${_verbose_opt} ${_build_ufs_opt} > $logs_dir/build_ww3_prepost.log 2>&1
 	rc=$?
 	if [[ $rc -ne 0 ]] ; then
 		echo "Fatal error in building WW3 pre/post processing."

@@ -1,6 +1,29 @@
 #!/bin/sh
 set -x
 
+# Default settings
+APP="S2SWA"
+
+while getopts "a:v" option; do
+  case "${option}" in
+    a) APP="${OPTARG}" ;;
+    v) BUILD_VERBOSE="YES";;
+    *)
+      echo "Unrecognized option: ${1}"
+      exit 1
+      ;;
+  esac
+done
+
+
+# Determine which switch to use 
+if [ APP == ATMW ]; then 
+  ww3switch=model/esmf/switch 
+else 
+  ww3switch=model/bin/switch_meshcap
+fi 
+
+
 # Check final exec folder exists
 if [ ! -d "../exec" ]; then
   mkdir ../exec
@@ -19,7 +42,7 @@ set -x
 #Set WW3 directory, switch, prep and post exes 
 cd ufs_model.fd/WW3
 export WW3_DIR=$( pwd -P )
-export SWITCHFILE="${WW3_DIR}/model/esmf/switch"
+export SWITCHFILE="${WW3_DIR}/${ww3switch}"
 
 # Build exes for prep jobs and post jobs:
 prep_exes="ww3_grid ww3_prep ww3_prnc ww3_grid"
