@@ -11,8 +11,10 @@ if [[ "$machine" == "WCOSS_DELL_P3" ]]; then
   export BASE_CPLIC="/gpfs/dell2/emc/modeling/noscrub/Walter.Kolczynski/global-workflow/IC"
 elif [[ "$machine" == "HERA" ]]; then
   export BASE_CPLIC="/scratch1/NCEPDEV/climate/role.ufscpara/IC"
+  export BASE_CPLIC2="/scratch1/NCEPDEV/nems/Bin.Li/DATM_INPUT"
 elif [[ "$machine" == "ORION" ]]; then
   export BASE_CPLIC="/work/noaa/global/wkolczyn/noscrub/global-workflow/IC"
+  export BASE_CPLIC2="/work/noaa/stmp/libin/DATM_INPUT"
 fi
 
 export CPL_ATMIC=GEFS-NoahMP-aerosols-p8c

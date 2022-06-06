@@ -240,13 +240,13 @@ def input_args():
 
     # forecast only mode additional arguments
     forecasts.add_argument('--app', help='UFS application', type=str, choices=[
-        'ATM', 'ATMW', 'S2S', 'S2SW'], required=False, default='ATM')
+        'ATM', 'ATMW', 'S2S', 'S2SW','NG-GODAS'], required=False, default='ATM')
     forecasts.add_argument('--aerosols', help="Run with coupled aerosols", required=False,
                            action='store_const', const="YES", default="NO")
 
     args = parser.parse_args()
 
-    if args.app in ['S2S', 'S2SW'] and args.icsdir is None:
+    if args.app in ['S2S', 'S2SW', 'NG-GODAS'] and args.icsdir is None:
         raise SyntaxError("An IC directory must be specified with --icsdir when running the S2S or S2SW app")
 
     # Add an entry for warm_start = .true. or .false.

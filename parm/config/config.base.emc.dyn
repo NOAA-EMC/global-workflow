@@ -31,6 +31,7 @@ export SCRgfs=$HOMEgfs/scripts
 
 export FIXcice=$HOMEgfs/fix/fix_cice
 export FIXmom=$HOMEgfs/fix/fix_mom6
+export FIXdatm=$HOMEgfs/fix/fix_datm
 export FIXreg2grb2=$HOMEgfs/fix/fix_reg2grb2
 
 ########################################################################
@@ -166,6 +167,8 @@ if [[ $DO_AERO = "YES" ]]; then
 else
     aero_nems_string=""
 fi
+export DO_ATM="YES"
+export DO_POST="YES"
 
 case "${APP}" in
   ATM)
@@ -184,6 +187,40 @@ case "${APP}" in
     export DO_ICE="YES"
     export CCPP_SUITE="FV3_GFS_v17_coupled_p8"
     export confignamevarfornems="cpld${aero_nems_string}"
+    ;;
+   NG-GODAS)
+    export REALTIME="NO"
+    export DO_COUPLED="YES"
+    export DO_ATM="NO"
+    export DO_POST="NO"
+    export DO_DATM="YES"
+    export DO_WAVE="NO"
+    export DO_OCN="YES"
+    export DO_ICE="YES"
+    export DO_METP="NO"
+    export DO_VRFY="NO"
+    export DO_VSDB="NO"
+    export RUN="data"
+    export flux_convergence=0.0
+    export flux_iteration=2
+    export flux_scheme=0
+# gefs forcing:
+    export datm_src=${datm_src:-"gefs"}
+    export atm_datamode=${atm_datamode:-"GEFS"}
+    export ATM_NX_GLB=${ATM_NX_GLB:-"1536"}
+    export ATM_NY_GLB=${ATM_NY_GLB:-"768"}
+# cfsr forcing:
+    #export datm_src="cfsr"
+    #export atm_datamode="CFSR"
+    #export ATM_NX_GLB="1760"
+    #export ATM_NY_GLB="880"
+# gfsv16 forcing:
+    #export datm_src="gfs"
+    #export atm_datamode="GFS"
+    #export ATM_NX_GLB="3072"
+    #export ATM_NY_GLB="1536"
+    export confignamevarfornems="datm_cdeps"
+    source $EXPDIR/config.defaults.datm
     ;;
   S2SW)
     export DO_COUPLED="YES"
@@ -362,8 +399,8 @@ export netcdf_diag=".true."
 export binary_diag=".false."
 
 # Verification options
-export DO_METP="YES"         # Run METPLUS jobs - set METPLUS settings in config.metp
-export DO_VSDB="YES"         # Run VSDB package - set VSDB settings in config.vrfy
+export DO_METP=${DO_METP:-"YES"}        # Run METPLUS jobs - set METPLUS settings in config.metp
+export DO_VSDB=${DO_VSDB:-"YES"}         # Run VSDB package - set VSDB settings in config.vrfy
 
 # Archiving options
 export HPSSARCH="@HPSSARCH@"        # save data to HPSS archive
