@@ -1,0 +1,21 @@
+#!/bin/ksh -x
+
+# Empty variables must include a space otherwise they will be overwritten
+
+# config.base
+# CASE=C384
+FHMAX_GFS_00=24
+FHMAX_GFS_06=24
+FHMAX_GFS_12=24
+FHMAX_GFS_18=24
+FHMAX_GFS=24
+FHOUT_GFS=6
+NFHOUT=6
+NFHOUT_HF=3
+OCNTIM=3600
+DELTIM=900
+ICETIM=$DELTIM
+CPL_SLOW=$OCNTIM
+ktherm=1
+tfrz_option='linear_salt'
+MOM6_USE_LI2016='False'
