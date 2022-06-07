@@ -304,7 +304,7 @@ def get_workflow(dict_configs, cdump='gdas'):
         base_cplic = dict_configs['coupled_ic']['BASE_CPLIC']
         base_cplic2 = dict_configs['coupled_ic']['BASE_CPLIC2']
         datm_src = base.get('datm_src', 'gefs').lower()
-        data = f"{base_cplic2}/{dict_configs['coupled_ic'][f'datm_src']}/@Y@m@d@H/{datm_src}.@Y@m.nc"
+        data = f"{base_cplic2}/{dict_configs['coupled_ic'][f'CPL_DATM']}/{datm_src}/@Y@m@d@H/{datm_src}.@Y@m.nc"
         dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)

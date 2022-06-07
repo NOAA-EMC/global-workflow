@@ -11,15 +11,16 @@ if [[ "$machine" == "WCOSS_DELL_P3" ]]; then
   export BASE_CPLIC="/gpfs/dell2/emc/modeling/noscrub/Walter.Kolczynski/global-workflow/IC"
 elif [[ "$machine" == "HERA" ]]; then
   export BASE_CPLIC="/scratch1/NCEPDEV/climate/role.ufscpara/IC"
-  export BASE_CPLIC2="/scratch1/NCEPDEV/nems/emc.nemspara/RT/DATM-MOM6-CICE6/CDEPS_DATM"
+  export BASE_CPLIC2="/scratch1/NCEPDEV/nems/emc.nemspara/RT/DATM-MOM6-CICE6"
 elif [[ "$machine" == "ORION" ]]; then
   export BASE_CPLIC="/work/noaa/global/wkolczyn/noscrub/global-workflow/IC"
-  export BASE_CPLIC2="/work/noaa/stmp/libin/DATM_INPUT"
+  export BASE_CPLIC2=$BASE_CPLIC
 fi
 
 export CPL_ATMIC=GEFS-NoahMP-aerosols-p8c
 export CPL_ICEIC=CPC
 export CPL_OCNIC=CPC3Dvar
 export CPL_WAVIC=GEFSwave20220524
+export CPL_DATM=CDEPS_DATM
 
 echo "END: config.coupled_ic"
