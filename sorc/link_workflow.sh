@@ -284,7 +284,8 @@ for gsiexe in  calc_analysis.x calc_increment_ens_ncio.x calc_increment_ens.x \
     interp_inc.x ncdiag_cat.x oznmon_horiz.x oznmon_time.x radmon_angle.x global_efsoi.x \
     radmon_bcoef.x radmon_bcor.x radmon_time.x recentersigp.x;do
     [[ -s $gsiexe ]] && rm -f $gsiexe
-    $LINK ../sorc/gsi.fd/exec/$gsiexe .
+    #$LINK ../sorc/gsi.fd/exec/$gsiexe .
+    $LINK ../sorc/gsi.fd/install/bin/$gsiexe .
 done
 
 for gldasexe in gdas2gldas  gldas2gdas  gldas_forcing  gldas_model  gldas_post  gldas_rst; do
