@@ -45,10 +45,8 @@
   # if ensemble; waveMEMB var empty in deterministic
   export WAV_MOD_TAG=${CDUMP}wave${waveMEMB}
 
-  postmsg "$jlogfile" "HAS BEGUN on $(hostname)"
-
-  msg="Starting WAVE PNT POSTPROCESSOR SCRIPT for $WAV_MOD_TAG"
-  postmsg "$jlogfile" "$msg"
+  echo "HAS BEGUN on $(hostname)"
+  echo "Starting WAVE PNT POSTPROCESSOR SCRIPT for $WAV_MOD_TAG"
 
   set +x
   echo ' '
@@ -144,7 +142,6 @@
       echo '*************************************************** '
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
-      postmsg "$jlogfile" "FATAL ERROR : NO MOD_DEF file mod_def.$grdID"
       err=2; export err;${errchk}
       exit $err
     else
@@ -183,7 +180,6 @@
     echo '************************************* '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" "FATAL ERROR : NO BUOY LOCATION FILE"
     err=3; export err;${errchk}
     exit $err
     DOSPC_WAV='NO'
@@ -210,7 +206,6 @@
     echo '*********************************************** '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" "NON-FATAL ERROR : NO TEMPLATE FOR SPEC INPUT FILE"
     exit_code=3
     DOSPC_WAV='NO'
     DOBLL_WAV='NO'
@@ -234,7 +229,6 @@
     echo '*************************************************** '
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" "NON-FATAL ERROR : NO TEMPLATE FOR BULLETIN INPUT FILE"
     exit_code=4
     DOBLL_WAV='NO'
   fi
@@ -266,7 +260,6 @@
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
       echo "$WAV_MOD_TAG post $waveuoutpGRD $CDATE $cycle : field output missing." 
-      postmsg "$jlogfile" "FATAL ERROR : NO RAW POINT OUTPUT FILE out_pnt.${waveuoutpGRD}.${YMD}.${HMS}"
       err=4; export err;${errchk}
     fi
     
@@ -281,8 +274,6 @@
     if [ "$err" != '0' ] && [ ! -f buoy_log.ww3 ]
     then
       pgm=wave_post
-      msg="ABNORMAL EXIT: ERROR IN ww3_outp"
-      postmsg "$jlogfile" "$msg"
       set +x
       echo ' '
       echo '******************************************** '
@@ -291,7 +282,6 @@
       echo ' '
       cat buoy_tmp.loc
       echo "$WAV_MOD_TAG post $date $cycle : buoy log file failed to be created."
-      echo $msg
       [[ "$LOUD" = YES ]] && set -x
       err=5;export err;${errchk}
       DOSPC_WAV='NO'
@@ -324,7 +314,6 @@
       echo '**************************************** '
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
-      postmsg "$jlogfile" "FATAL ERROR : NO BUOY LOG FILE GENERATED FOR SPEC AND BULLETIN FILES"
       err=6;export err;${errchk}
       DOSPC_WAV='NO'
       DOBLL_WAV='NO'
@@ -388,7 +377,6 @@
       echo " FATAL ERROR : NO RAW POINT OUTPUT FILE out_pnt.$waveuoutpGRD.${YMD}.${HMS} "
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
-      postmsg "$jlogfile" "FATAL ERROR : NO RAW POINT OUTPUT FILE out_pnt.$waveuoutpGRD.${YMD}.${HMS}"
       err=7; export err;${errchk}
       exit $err
     fi
@@ -721,15 +709,10 @@
   if [ "$exit_code" -ne '0' ]
   then
     echo " FATAL ERROR: Problem in MWW3 PNT POST"
-    msg="ABNORMAL EXIT: Problem in MWW3 PNT POST"
-    postmsg "$jlogfile" "$msg"
-    echo $msg
     err=11; export err;${errchk}
     exit $err
   else
     echo " Point Wave Post Completed Normally "
-    msg="$job completed normally"
-    postmsg "$jlogfile" "$msg"
     exit 0
   fi
 

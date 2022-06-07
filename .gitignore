@@ -136,6 +136,7 @@ ush/calcinc_gfs.py
 ush/chgres_cube.sh
 ush/emcsfc_ice_blend.sh
 ush/emcsfc_snow.sh
+ush/fix_precip.sh
 ush/fv3gfs_driver_grid.sh
 ush/fv3gfs_filter_topo.sh
 ush/fv3gfs_make_grid.sh
