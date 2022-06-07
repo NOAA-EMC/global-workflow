@@ -50,12 +50,5 @@ build_all.sh [-a UFS_app][-c build_config][-h][-v]
 
 While in /sorc folder:
 
-Uncoupled
-```
 $ sh link_workflow.sh emc $MACHINE
-```
-Coupled
-```
-$ sh link_workflow.sh emc $MACHINE coupled
-```
 ...where $MACHINE is "dell", "cray", "hera", or "orion".
