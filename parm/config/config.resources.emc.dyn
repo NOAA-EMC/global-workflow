@@ -341,27 +341,18 @@ elif [ $step = "eupd" ]; then
 	export npe_eupd=960
         export nth_eupd=7
       fi
-      if [[ "$machine" = "HERA" ]]; then
-        export npe_eupd=150
-        export nth_eupd=40
-      fi
     elif [ $CASE = "C384" ]; then
       export npe_eupd=270
       export nth_eupd=2
       if [[ "$machine" = "WCOSS_DELL_P3" ]]; then
         export nth_eupd=9
-      fi
-      if [[ "$machine" = "HERA" ]]; then
-        export npe_eupd=100
-        export nth_eupd=40
+      elif [[ "$machine" = "HERA" ]]; then
+        export nth_eupd=4
       fi
     elif [ $CASE = "C192" -o $CASE = "C96" -o $CASE = "C48" ]; then
       export npe_eupd=42
       export nth_eupd=2
-      if [[ "$machine" = "HERA" ]]; then
-        export npe_eupd=40
-        export nth_eupd=40
-      fi
+      if [[ "$machine" = "HERA" ]]; then export nth_eupd=4 ; fi
     fi
     export npe_node_eupd=$(echo "$npe_node_max / $nth_eupd" | bc)
 
