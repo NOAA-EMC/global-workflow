@@ -281,8 +281,8 @@ if [ $warm_start = ".true." -o $RERUN = "YES" ]; then
       file2=$(echo $(basename $file))
       file2=$(echo $file2 | cut -d. -f3-) 
       testchar=$(echo $file2 | cut -c1-8) 
-      if [ $testchar = "gefs.wave" ]; then
-          file2=$(echo $file2 | cut -d. -f2-) 
+      if [ $testchar = "gefs.wav" ]; then
+          file2=$(echo $file2 | cut -d. -f3-) 
           $NLN $file $DATA/$file2
       else
           $NLN $file $DATA/INPUT/$file2

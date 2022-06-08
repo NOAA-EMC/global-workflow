@@ -105,6 +105,10 @@
     ln -s ${COMOUT}/rundata/${ifile} ${DATA}/output_${ymdh}0000/out_grd.$grdID 
   else
 
+   #The following line is a buffer to make sure that the out_grd file has finished writing
+   #This should be updated in the future with a better check 
+   sleep 30 
+
 # 0.c Links to files
 
     rm -f ${DATA}/output_${ymdh}0000/out_grd.$grdID
