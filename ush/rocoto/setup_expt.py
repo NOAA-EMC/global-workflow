@@ -90,7 +90,6 @@ def edit_baseconfig():
                     .replace('@EDATE@', edate.strftime('%Y%m%d%H')) \
                     .replace('@CASEENS@', f'C{resens}') \
                     .replace('@CASECTL@', f'C{resdet}') \
-                    .replace('@DO_WAVE@', f'{do_wave}') \
                     .replace('@NMEM_ENKF@', f'{nens}') \
                     .replace('@HOMEgfs@', top) \
                     .replace('@BASE_GIT@', base_git) \
@@ -200,7 +199,6 @@ link initial condition files from $ICSDIR to $COMROT'''
       chgrp_rstprod = 'YES'
       chgrp_cmd = 'chgrp rstprod'
       hpssarch = 'YES'
-      do_wave = 'YES'
     elif machine == 'WCOSS_DELL_P3':
       base_git = '/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git'
       base_svn = '/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git'
@@ -221,7 +219,6 @@ link initial condition files from $ICSDIR to $COMROT'''
       chgrp_rstprod = 'YES'
       chgrp_cmd = 'chgrp rstprod'
       hpssarch = 'YES'
-      do_wave = 'YES'
     elif machine == 'WCOSS_C':
       base_git = '/gpfs/hps3/emc/global/noscrub/emc.glopara/git'
       base_svn = '/gpfs/hps3/emc/global/noscrub/emc.glopara/svn'
@@ -239,7 +236,6 @@ link initial condition files from $ICSDIR to $COMROT'''
       chgrp_rstprod = 'YES'
       chgrp_cmd = 'chgrp rstprod'
       hpssarch = 'YES'
-      do_wave = 'YES'
     elif machine == 'HERA':
       base_git = '/scratch1/NCEPDEV/global/glopara/git'
       base_svn = '/scratch1/NCEPDEV/global/glopara/svn'
@@ -257,7 +253,6 @@ link initial condition files from $ICSDIR to $COMROT'''
       chgrp_rstprod = 'YES'
       chgrp_cmd = 'chgrp rstprod'
       hpssarch = 'YES'
-      do_wave = 'NO' # Disabling waves on R&Ds for v16
     elif machine == 'ORION':
       base_git = '/work/noaa/global/glopara/git'
       base_svn = '/work/noaa/global/glopara/svn'
@@ -275,7 +270,6 @@ link initial condition files from $ICSDIR to $COMROT'''
       chgrp_rstprod = 'YES'
       chgrp_cmd = 'chgrp rstprod'
       hpssarch = 'NO'
-      do_wave = 'NO' # Disabling waves on R&Ds for v16
 
     if args.icsdir is not None and not os.path.exists(icsdir):
         msg = f'Initial conditions do not exist in {icsdir}'

@@ -215,7 +215,7 @@ export DO_GLDAS=YES
 export gldas_cyc=00
 
 # run wave component
-export DO_WAVE=@DO_WAVE@
+export DO_WAVE="NO"
 export WAVE_CDUMP="both"
 
 # Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL
