@@ -10,7 +10,9 @@ load(pathJoin("hpc-impi", os.getenv("hpc_impi_ver")))
 
 load(pathJoin("esmf", os.getenv("esmf_ver")))
 
+append_path("MODULEPATH", "/contrib/anaconda/modulefiles")
 load(pathJoin("anaconda", os.getenv("anaconda_ver")))
+
 load(pathJoin("gempak", os.getenv("gempak_ver")))
 load(pathJoin("hpss", os.getenv("hpss_ver")))
 
