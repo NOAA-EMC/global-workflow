@@ -241,7 +241,6 @@ def get_workflow(dict_configs, cdump='gdas'):
     hpssarch = base.get('HPSSARCH', 'NO').upper()
     app = base.get('APP', "ATM").upper()
     do_atm = base.get('DO_ATM', 'YES').upper()
-    do_datm = base.get('DO_DATM', 'NO').upper()
     do_post = base.get('DO_POST', 'YES').upper()
     do_wave = base.get('DO_WAVE', 'NO').upper()
     do_ocean = base.get('DO_OCN', 'NO').upper()
@@ -302,9 +301,8 @@ def get_workflow(dict_configs, cdump='gdas'):
     elif app in ['NG-GODAS']:
         deps = []
         base_cplic = dict_configs['coupled_ic']['BASE_CPLIC']
-        base_cplic2 = dict_configs['coupled_ic']['BASE_CPLIC2']
         datm_src = base.get('datm_src', 'gefs').lower()
-        data = f"{base_cplic2}/{dict_configs['coupled_ic'][f'CPL_DATM']}/{datm_src}/@Y@m@d@H/{datm_src}.@Y@m.nc"
+        data = f"{base_cplic}/{dict_configs['coupled_ic'][f'CPL_DATM']}/{datm_src}/@Y@m@d@H/{datm_src}.@Y@m.nc"
         dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
@@ -585,7 +583,7 @@ def get_workflow(dict_configs, cdump='gdas'):
     # ocnpost
     if do_ocean in ['YES']:
         deps = []
-        if do_datm in ['NO']:
+        if do_atm in ['Y', 'YES']:
             data = f'&ROTDIR;/{cdump}.@Y@m@d/@H/atmos/{cdump}.t@Hz.log#dep#.txt'
             dep_dict = {'type': 'data', 'data': data}
             deps.append(rocoto.add_dependency(dep_dict))

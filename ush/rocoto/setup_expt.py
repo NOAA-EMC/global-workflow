@@ -240,7 +240,7 @@ def input_args():
 
     # forecast only mode additional arguments
     forecasts.add_argument('--app', help='UFS application', type=str, choices=[
-        'ATM', 'ATMW', 'S2S', 'S2SW','NG-GODAS'], required=False, default='ATM')
+        'ATM', 'ATMW', 'S2S', 'S2SW', 'NG-GODAS'], required=False, default='ATM')
     forecasts.add_argument('--aerosols', help="Run with coupled aerosols", required=False,
                            action='store_const', const="YES", default="NO")
 
