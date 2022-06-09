@@ -87,10 +87,27 @@ fi
 cd ${pwd}/../jobs               ||exit 8
     $LINK ../sorc/gldas.fd/jobs/JGDAS_ATMOS_GLDAS            .
 cd ${pwd}/../parm               ||exit 8
-    [[ -d post ]] && rm -rf post
-    $LINK ../sorc/upp.fd/parm                           post
+    # [[ -d post ]] && rm -rf post
+    # $LINK ../sorc/upp.fd/parm                           post
     [[ -d gldas ]] && rm -rf gldas
     $LINK ../sorc/gldas.fd/parm                              gldas
+cd ${pwd}/../parm/post          ||exit 8
+    # for file in postcntrl_gefs.xml postcntrl_gefs_aerosol.xml postcntrl_gefs_anl.xml postcntrl_gefs_chem.xml \
+    #     postcntrl_gefs_f00.xml postcntrl_gfs.xml postcntrl_gfs_anl.xml postcntrl_gfs_f00.xml postcntrl_gfs_f00_two.xml \
+    #     postcntrl_gfs_flux.xml postcntrl_gfs_flux_f00.xml postcntrl_gfs_goes.xml postcntrl_gfs_goes.xml-new \
+    #     postcntrl_gfs_two.xml postcntrl_gfs_wafs.xml postcntrl_gfs_wafs_anl.xml; do
+    #     $LINK ../sorc/upp.fd/parm/$file .
+    # done
+
+    for file in postxconfig-NT-GEFS-ANL.txt postxconfig-NT-GEFS-F00.txt postxconfig-NT-GEFS.txt postxconfig-NT-GFS-ANL.txt \
+        postxconfig-NT-GFS-F00-TWO.txt postxconfig-NT-GFS-F00.txt postxconfig-NT-GFS-FLUX-F00.txt postxconfig-NT-GFS-FLUX.txt \
+        postxconfig-NT-GFS-GOES.txt postxconfig-NT-GFS-TWO.txt postxconfig-NT-GFS-WAFS-ANL.txt postxconfig-NT-GFS-WAFS.txt \
+        postxconfig-NT-GFS.txt postxconfig-NT-gefs-aerosol.txt postxconfig-NT-gefs-chem.txt params_grib2_tbl_new \
+        post_tag_gfs128 post_tag_gfs65 gtg.config.gfs gtg_imprintings.txt \
+        AEROSOL_LUTS.datoptics_luts_DUST.dat optics_luts_SALT.dat optics_luts_SOOT.dat optics_luts_SUSO.dat optics_luts_WASO.dat \
+        ; do
+        $LINK ../../sorc/upp.fd/parm/$file .
+    done
 cd ${pwd}/../scripts            ||exit 8
     $LINK ../sorc/ufs_utils.fd/scripts/exemcsfc_global_sfc_prep.sh .
     $LINK ../sorc/gldas.fd/scripts/exgdas_atmos_gldas.sh .
