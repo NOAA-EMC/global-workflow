@@ -92,13 +92,6 @@ cd ${pwd}/../parm               ||exit 8
     [[ -d gldas ]] && rm -rf gldas
     $LINK ../sorc/gldas.fd/parm                              gldas
 cd ${pwd}/../parm/post          ||exit 8
-    # for file in postcntrl_gefs.xml postcntrl_gefs_aerosol.xml postcntrl_gefs_anl.xml postcntrl_gefs_chem.xml \
-    #     postcntrl_gefs_f00.xml postcntrl_gfs.xml postcntrl_gfs_anl.xml postcntrl_gfs_f00.xml postcntrl_gfs_f00_two.xml \
-    #     postcntrl_gfs_flux.xml postcntrl_gfs_flux_f00.xml postcntrl_gfs_goes.xml postcntrl_gfs_goes.xml-new \
-    #     postcntrl_gfs_two.xml postcntrl_gfs_wafs.xml postcntrl_gfs_wafs_anl.xml; do
-    #     $LINK ../sorc/upp.fd/parm/$file .
-    # done
-
     for file in postxconfig-NT-GEFS-ANL.txt postxconfig-NT-GEFS-F00.txt postxconfig-NT-GEFS.txt postxconfig-NT-GFS-ANL.txt \
         postxconfig-NT-GFS-F00-TWO.txt postxconfig-NT-GFS-F00.txt postxconfig-NT-GFS-FLUX-F00.txt postxconfig-NT-GFS-FLUX.txt \
         postxconfig-NT-GFS-GOES.txt postxconfig-NT-GFS-TWO.txt postxconfig-NT-GFS-WAFS-ANL.txt postxconfig-NT-GFS-WAFS.txt \
