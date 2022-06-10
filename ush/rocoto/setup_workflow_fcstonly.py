@@ -240,7 +240,7 @@ def get_workflow(dict_configs, cdump='gdas'):
     machine = base.get('machine', wfu.detectMachine())
     hpssarch = base.get('HPSSARCH', 'NO').upper()
     app = base.get('APP', "ATM").upper()
-    do_atm = base.get('DO_ATM', 'YES').upper()
+    atmtype = base.get('ATMTYPE', 'MODEL').upper()
     do_post = base.get('DO_POST', 'YES').upper()
     do_wave = base.get('DO_WAVE', 'NO').upper()
     do_ocean = base.get('DO_OCN', 'NO').upper()
@@ -255,6 +255,7 @@ def get_workflow(dict_configs, cdump='gdas'):
     do_wafs = base.get('WAFSF', 'NO').upper()
     do_vrfy = base.get('DO_VRFY', 'YES').upper()
     do_metp = base.get('DO_METP', 'NO').upper()
+    datm_src = base.get('datm_src', 'gefs').lower()
     n_tiles = 6
 
     tasks = []
@@ -301,7 +302,6 @@ def get_workflow(dict_configs, cdump='gdas'):
     elif app in ['NG-GODAS']:
         deps = []
         base_cplic = dict_configs['coupled_ic']['BASE_CPLIC']
-        datm_src = base.get('datm_src', 'gefs').lower()
         data = f"{base_cplic}/{dict_configs['coupled_ic'][f'CPL_DATM']}/{datm_src}/@Y@m@d@H/{datm_src}.@Y@m.nc"
         dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
@@ -434,7 +434,7 @@ def get_workflow(dict_configs, cdump='gdas'):
 
     # fcst
     deps = []
-    if do_atm in ['Y', 'YES']:
+    if atmtype in ['MODEL']:
         data = '&ROTDIR;/&CDUMP;.@Y@m@d/@H/atmos/INPUT/sfc_data.tile6.nc'
         dep_dict = {'type':'data', 'data':data}
         deps.append(rocoto.add_dependency(dep_dict))
@@ -583,7 +583,7 @@ def get_workflow(dict_configs, cdump='gdas'):
     # ocnpost
     if do_ocean in ['YES']:
         deps = []
-        if do_atm in ['Y', 'YES']:
+        if atmtype in ['MODEL']:
             data = f'&ROTDIR;/{cdump}.@Y@m@d/@H/atmos/{cdump}.t@Hz.log#dep#.txt'
             dep_dict = {'type': 'data', 'data': data}
             deps.append(rocoto.add_dependency(dep_dict))

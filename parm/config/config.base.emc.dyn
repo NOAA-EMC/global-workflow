@@ -167,7 +167,7 @@ if [[ $DO_AERO = "YES" ]]; then
 else
     aero_nems_string=""
 fi
-export DO_ATM="YES"
+export ATMTYPE="MODEL"
 export DO_POST="YES"
 
 # Verification options
@@ -195,9 +195,8 @@ case "${APP}" in
   NG-GODAS)
     export REALTIME="NO"
     export DO_COUPLED="YES"
-    export DO_ATM="NO"
+    export ATMTYPE="DATA"
     export DO_POST="NO"
-    export DO_DATM="YES"
     export DO_WAVE="NO"
     export DO_OCN="YES"
     export DO_ICE="YES"
