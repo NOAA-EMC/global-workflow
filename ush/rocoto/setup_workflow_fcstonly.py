@@ -32,7 +32,7 @@ taskplan = ['getic', 'init', 'coupled_ic', 'aerosol_init', 'waveinit', 'waveprep
 def main():
     parser = ArgumentParser(description='Setup XML workflow and CRONTAB for a forecast only experiment.', formatter_class=ArgumentDefaultsHelpFormatter)
     parser.add_argument('--expdir',help='full path to experiment directory containing config files', type=str, required=False, default=os.environ['PWD'])
-    parser.add_argument('--cdump',help='cycle to run forecasts', type=str, choices=['gdas', 'gfs'], default='gfs', required=False)
+    parser.add_argument('--cdump',help='cycle to run forecasts', type=str, choices=['gdas', 'gfs', 'gefs'], default='gfs', required=False)
 
     args = parser.parse_args()
 
@@ -136,7 +136,19 @@ def get_definitions(base):
     strings.append('\t<!-- ROCOTO parameters that control workflow -->\n')
     strings.append('\t<!ENTITY CYCLETHROTTLE "2">\n')
     strings.append('\t<!ENTITY TASKTHROTTLE  "25">\n')
-    strings.append('\t<!ENTITY MAXTRIES      "2">\n')
+    strings.append('\t<!ENTITY MAXTRIES      "1">\n')
+
+    if base['CDUMP'] == "gefs":
+        strings.append('\t<!-- ROCOTO parameters for GEFS workflow -->\n')
+
+        nens = base.get('NMEM_ENKF', 0)
+        MEMLIST = ""
+        for iNum in range(1, nens + 1):
+            MEMLIST += "p{0:02d} ".format(iNum)
+        MEMLIST += "c00"
+
+        strings.append(f'\t<!ENTITY MEMLIST      "{MEMLIST}">\n')
+
     strings.append('\n')
 
     return ''.join(strings)
@@ -207,6 +219,13 @@ def get_postgroups(post, cdump='gdas'):
         fhout_hf = post['FHOUT_HF_GFS']
         fhrs_hf = list(range(fhmin, fhmax_hf + fhout_hf, fhout_hf))
         fhrs = fhrs_hf + list(range(fhrs_hf[-1] + fhout, fhmax + fhout, fhout))
+    elif cdump in ['gefs']:
+        fhmax = np.max([post['FHMAX_GFS_00'], post['FHMAX_GFS_06'], post['FHMAX_GFS_12'], post['FHMAX_GFS_18']])
+        fhout = post['FHOUT_GFS']
+        fhmax_hf = post['FHMAX_HF_GFS']
+        fhout_hf = post['FHOUT_HF_GFS']
+        fhrs_hf = list(range(fhmin, fhmax_hf + fhout_hf, fhout_hf))
+        fhrs = fhrs_hf + list(range(fhrs_hf[-1] + fhout, fhmax + fhout, fhout))
 
     npostgrp = post['NPOSTGRP']
     ngrps = npostgrp if len(fhrs) > npostgrp else len(fhrs)
@@ -237,6 +256,8 @@ def get_workflow(dict_configs, cdump='gdas'):
     envars.append(rocoto.create_envar(name='cyc', value='<cyclestr>@H</cyclestr>'))
 
     base = dict_configs['base']
+    if cdump == "gefs":
+        envars.append(rocoto.create_envar(name='RUNMEM', value='#member#'))
     machine = base.get('machine', wfu.detectMachine())
     hpssarch = base.get('HPSSARCH', 'NO').upper()
     app = base.get('APP', "ATM").upper()
@@ -299,40 +320,68 @@ def get_workflow(dict_configs, cdump='gdas'):
     else:
         if hpssarch in ['YES']:
             deps = []
-            data = '&ROTDIR;/&CDUMP;.@Y@m@d/@H/atmos/INPUT/sfc_data.tile6.nc'
+            if cdump == "gefs":
+                data = '&ROTDIR;/&CDUMP;.@Y@m@d/@H/#member#/atmos/INPUT/sfc_data.tile6.nc'
+            else:
+                data = '&ROTDIR;/&CDUMP;.@Y@m@d/@H/atmos/INPUT/sfc_data.tile6.nc'
             dep_dict = {'type': 'data', 'data': data}
             deps.append(rocoto.add_dependency(dep_dict))
-            data = '&ROTDIR;/&CDUMP;.@Y@m@d/@H/atmos/RESTART/@Y@m@d.@H0000.sfcanl_data.tile6.nc'
+            if cdump == "gefs":
+                data = '&ROTDIR;/&CDUMP;.@Y@m@d/@H/atmos/#member#/RESTART/@Y@m@d.@H0000.sfcanl_data.tile6.nc'
+            else:
+                data = '&ROTDIR;/&CDUMP;.@Y@m@d/@H/atmos/RESTART/@Y@m@d.@H0000.sfcanl_data.tile6.nc'
             dep_dict = {'type': 'data', 'data': data}
             deps.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep_condition='nor', dep=deps)
 
-            task = wfu.create_wf_task('getic', cdump=cdump, envar=envars, dependency=dependencies)
+            if cdump == "gefs":
+                task = wfu.create_wf_task('getic', cdump=cdump, envar=envars, dependency=dependencies,
+                                          metatask='getic', varname="member", varval="&MEMLIST;")
+            else:
+                task = wfu.create_wf_task('getic', cdump=cdump, envar=envars, dependency=dependencies)
             tasks.append(task)
             tasks.append('\n')
 
         # init
         deps = []
-        data = '&ROTDIR;/&CDUMP;.@Y@m@d/@H/gfs.t@Hz.sanl'
+        if cdump == "gefs":
+            data = '&ROTDIR;/&CDUMP;.@Y@m@d/@H/#member#/gfs.t@Hz.sanl'
+        else:
+            data = '&ROTDIR;/&CDUMP;.@Y@m@d/@H/gfs.t@Hz.sanl'
         dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
-        data = '&ROTDIR;/&CDUMP;.@Y@m@d/@H/gfs.t@Hz.atmanl.nemsio'
+        if cdump == "gefs":
+            data = '&ROTDIR;/&CDUMP;.@Y@m@d/@H/#member#/gfs.t@Hz.atmanl.nemsio'
+        else:
+            data = '&ROTDIR;/&CDUMP;.@Y@m@d/@H/gfs.t@Hz.atmanl.nemsio'
         dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
-        data = '&ROTDIR;/&CDUMP;.@Y@m@d/@H/gfs.t@Hz.atmanl.nc'
+        if cdump == "gefs":
+            data = '&ROTDIR;/&CDUMP;.@Y@m@d/@H/#member#/gfs.t@Hz.atmanl.nc'
+        else:
+            data = '&ROTDIR;/&CDUMP;.@Y@m@d/@H/gfs.t@Hz.atmanl.nc'
         dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
-        data = '&ROTDIR;/&CDUMP;.@Y@m@d/@H/atmos/gfs.t@Hz.atmanl.nc'
+        if cdump == "gefs":
+            data = '&ROTDIR;/&CDUMP;.@Y@m@d/@H/#member#/atmos/gfs.t@Hz.atmanl.nc'
+        else:
+            data = '&ROTDIR;/&CDUMP;.@Y@m@d/@H/atmos/gfs.t@Hz.atmanl.nc'
         dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
-        data = '&ROTDIR;/&CDUMP;.@Y@m@d/@H/atmos/RESTART/@Y@m@d.@H0000.sfcanl_data.tile6.nc'
+        if cdump == "gefs":
+            data = '&ROTDIR;/&CDUMP;.@Y@m@d/@H/#member#/atmos/RESTART/@Y@m@d.@H0000.sfcanl_data.tile6.nc'
+        else:
+            data = '&ROTDIR;/&CDUMP;.@Y@m@d/@H/atmos/RESTART/@Y@m@d.@H0000.sfcanl_data.tile6.nc'
         dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
 
         if hpssarch in ['YES']:
             deps = []
-            dep_dict = {'type': 'task', 'name': f'{cdump}getic'}
+            if cdump == "gefs":
+                dep_dict = {'type': 'metatask', 'name': f'{cdump}getic'}
+            else:
+                dep_dict = {'type': 'task', 'name': f'{cdump}getic'}
             deps.append(rocoto.add_dependency(dep_dict))
             dependencies2 = rocoto.create_dependency(dep=deps)
 
@@ -342,7 +391,11 @@ def get_workflow(dict_configs, cdump='gdas'):
             deps.append(dependencies2)
             dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
-        task = wfu.create_wf_task('init', cdump=cdump, envar=envars, dependency=dependencies)
+        if cdump == "gefs":
+            task = wfu.create_wf_task('init', cdump=cdump, envar=envars, dependency=dependencies,
+                                      metatask='init', varname="member", varval="&MEMLIST;")
+        else:
+            task = wfu.create_wf_task('init', cdump=cdump, envar=envars, dependency=dependencies)
         tasks.append(task)
         tasks.append('\n')
 
@@ -404,10 +457,16 @@ def get_workflow(dict_configs, cdump='gdas'):
 
     # fcst
     deps = []
-    data = '&ROTDIR;/&CDUMP;.@Y@m@d/@H/atmos/INPUT/sfc_data.tile6.nc'
+    if cdump == "gefs":
+        data = '&ROTDIR;/&CDUMP;.@Y@m@d/@H/#member#/atmos/INPUT/sfc_data.tile6.nc'
+    else:
+        data = '&ROTDIR;/&CDUMP;.@Y@m@d/@H/atmos/INPUT/sfc_data.tile6.nc'
     dep_dict = {'type':'data', 'data':data}
     deps.append(rocoto.add_dependency(dep_dict))
-    data = '&ROTDIR;/&CDUMP;.@Y@m@d/@H/atmos/RESTART/@Y@m@d.@H0000.sfcanl_data.tile6.nc'
+    if cdump == "gefs":
+        data = '&ROTDIR;/&CDUMP;.@Y@m@d/@H/#member#/atmos/RESTART/@Y@m@d.@H0000.sfcanl_data.tile6.nc'
+    else:
+        data = '&ROTDIR;/&CDUMP;.@Y@m@d/@H/atmos/RESTART/@Y@m@d.@H0000.sfcanl_data.tile6.nc'
     dep_dict = {'type':'data', 'data':data}
     deps.append(rocoto.add_dependency(dep_dict))
     dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
@@ -439,7 +498,11 @@ def get_workflow(dict_configs, cdump='gdas'):
         deps.append(dependencies3)
     dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
-    task = wfu.create_wf_task('fcst', cdump=cdump, envar=envars, dependency=dependencies)
+    if cdump == "gefs":
+        task = wfu.create_wf_task('fcst', cdump=cdump, envar=envars, dependency=dependencies,
+                                  metatask='fcst', varname="member", varval="&MEMLIST;")
+    else:
+        task = wfu.create_wf_task('fcst', cdump=cdump, envar=envars, dependency=dependencies)
     tasks.append(task)
     tasks.append('\n')
 
@@ -458,8 +521,11 @@ def get_workflow(dict_configs, cdump='gdas'):
     vardict = {varname2: varval2, varname3: varval3}
     task = wfu.create_wf_task('post', cdump=cdump, envar=postenvars, dependency=dependencies,
                               metatask='post', varname=varname1, varval=varval1, vardict=vardict)
-    tasks.append(task)
-    tasks.append('\n')
+    if cdump == "gefs":
+        pass
+    else:
+        tasks.append(task)
+        tasks.append('\n')
 
     # wavepostsbs
     if do_wave in ['Y', 'YES'] and do_wave_cdump in ['GFS', 'BOTH']:
@@ -776,8 +842,11 @@ def get_workflow(dict_configs, cdump='gdas'):
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
         task = wfu.create_wf_task('vrfy', cdump=cdump, envar=envars, dependency=dependencies)
-        tasks.append(task)
-        tasks.append('\n')
+        if cdump == "gefs":
+            pass
+        else:
+            tasks.append(task)
+            tasks.append('\n')
 
     # metp
     if do_metp in ['Y', 'YES']:
@@ -792,8 +861,11 @@ def get_workflow(dict_configs, cdump='gdas'):
         varval1 = 'g2g1 g2o1 pcp1'
         task = wfu.create_wf_task('metp', cdump=cdump, envar=metpenvars, dependency=dependencies,
                                   metatask='metp', varname=varname1, varval=varval1)
-        tasks.append(task)
-        tasks.append('\n')
+        if cdump == "gefs":
+            pass
+        else:
+            tasks.append(task)
+            tasks.append('\n')
 
     # arch
     deps = []
@@ -820,8 +892,11 @@ def get_workflow(dict_configs, cdump='gdas'):
       deps.append(rocoto.add_dependency(dep_dict))
     dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
     task = wfu.create_wf_task('arch', cdump=cdump, envar=envars, dependency=dependencies, final=True)
-    tasks.append(task)
-    tasks.append('\n')
+    if cdump == "gefs":
+        pass
+    else:
+        tasks.append(task)
+        tasks.append('\n')
 
     return ''.join(tasks)
 
