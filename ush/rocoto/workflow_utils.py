@@ -6,62 +6,23 @@
 import os
 import numpy as np
 from distutils.spawn import find_executable
-from typing import List, Dict, Any
+from datetime import timedelta
+from typing import Dict, Any
 from rocoto import create_task, create_metatask
 from hosts import Host
-from configuration import Configuration
 
-SERVICE_TASKS = ['arch', 'earc', 'getic']
-
-
-def source_configs(config: Configuration, tasks) -> dict:
-    """
-        Given the configuration object and tasks,
-        return a dictionary for each task
-        Every task depends on "config.base"
-    """
-
-    dict_configs = dict()
-
-    # Return config.base as well
-    dict_configs['base'] = config.parse_config('config.base')
-
-    # Source the list of input tasks
-    for task in tasks:
-
-        # All tasks must source config.base first
-        files = ['config.base']
-
-        if task in ['eobs', 'eomg']:
-            files.append('config.anal')
-            files.append('config.eobs')
-        elif task in ['eupd']:
-            files.append('config.anal')
-            files.append('config.eupd')
-        elif task in ['efcs']:
-            files.append('config.fcst')
-            files.append('config.efcs')
-        elif 'wave' in task:
-            files.append('config.wave')
-            files.append(f'config.{task}')
-        else:
-            files.append(f'config.{task}')
-
-        print(f'sourcing config.{task}')
-        dict_configs[task] = config.parse_config(files)
-
-    return dict_configs
+#SERVICE_TASKS = ['arch', 'earc', 'getic']
 
 
 def create_wf_task(task, cdump='gdas', cycledef=None, envar=None, dependency=None,
                    metatask=None, varname=None, varval=None, vardict=None,
                    final=False):
-    if metatask is None:
-        taskstr = f'{task}'
-    else:
-        taskstr = f'{task}#{varname}#'
-        metataskstr = f'{cdump}{metatask}'
-        metatask_dict = {'metataskname': metataskstr,
+
+    taskstr = f'{cdump}{task}'
+    metatask_dict = None
+    if metatask is not None:
+        taskstr = f'{taskstr}#{varname}#'
+        metatask_dict = {'metataskname': f'{cdump}{metatask}',
                          'varname': f'{varname}',
                          'varval': f'{varval}',
                          'vardict': vardict}
@@ -98,6 +59,15 @@ def create_wf_task(task, cdump='gdas', cycledef=None, envar=None, dependency=Non
     return task
 
 
+def check_expdir(cmd_expdir, cfg_expdir):
+
+    if not os.path.samefile(cmd_expdir, cfg_expdir):
+        print('MISMATCH in experiment directories!')
+        print(f'config.base: EXPDIR = {cfg_expdir}')
+        print(f'input arg:     --expdir = {cmd_expdir}')
+        raise ValueError('Abort!')
+
+
 def get_gfs_interval(gfs_cyc: int) -> str:
     """
     return interval in hours based on gfs_cyc
@@ -111,14 +81,67 @@ def get_gfs_interval(gfs_cyc: int) -> str:
         raise KeyError(f'Invalid gfs_cyc = {gfs_cyc}')
 
 
+def get_gfs_cyc_dates(base: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Generate GFS dates from experiment dates and gfs_cyc choice
+    """
+
+    base_out = base.copy()
+
+    gfs_cyc = base['gfs_cyc']
+    sdate = base['SDATE']
+    edate = base['EDATE']
+
+    interval_gfs = get_gfs_interval(gfs_cyc)
+
+    # Set GFS cycling dates
+    hrinc = 0
+    hrdet = 0
+    if gfs_cyc == 0:
+        return base_out
+    elif gfs_cyc == 1:
+        hrinc = 24 - sdate.hour
+        hrdet = edate.hour
+    elif gfs_cyc == 2:
+        if sdate.hour in [0, 12]:
+            hrinc = 12
+        elif sdate.hour in [6, 18]:
+            hrinc = 6
+        if edate.hour in [6, 18]:
+            hrdet = 6
+    elif gfs_cyc == 4:
+        hrinc = 6
+    sdate_gfs = sdate + timedelta(hours=hrinc)
+    edate_gfs = edate - timedelta(hours=hrdet)
+    if sdate_gfs > edate:
+        print('W A R N I N G!')
+        print('Starting date for GFS cycles is after Ending date of experiment')
+        print(f'SDATE = {sdate.strftime("%Y%m%d%H")},     EDATE = {edate.strftime("%Y%m%d%H")}')
+        print(f'SDATE_GFS = {sdate_gfs.strftime("%Y%m%d%H")}, EDATE_GFS = {edate_gfs.strftime("%Y%m%d%H")}')
+        gfs_cyc = 0
+
+    base_out['gfs_cyc'] = gfs_cyc
+    base_out['SDATE_GFS'] = sdate_gfs
+    base_out['EDATE_GFS'] = edate_gfs
+    base_out['INTERVAL_GFS'] = interval_gfs
+
+    fhmax_gfs = {}
+    for hh in ['00', '06', '12', '18']:
+        fhmax_gfs[hh] = base.get(f'FHMAX_GFS_{hh}', base.get('FHMAX_GFS_00', 120))
+    base_out['FHMAX_GFS'] = fhmax_gfs
+
+    return base_out
+
+
 def get_resource(task_dict: dict, task_name: str, cdump: str = 'gdas') -> dict:
     """
-    Given a task name (task_name) and its configuration (task_dict),
+    Given a task name (task_name) and its configuration (task_names),
     return a dictionary of resources (task_resource) used by the task.
     Task resource dictionary includes:
     account, walltime, cores, nodes, ppn, threads, memory, queue, partition, native
     """
 
+    SERVICE_TASKS = ['arch', 'earc', 'getic']
     scheduler = Host.get_scheduler
 
     account = task_dict['ACCOUNT']
@@ -153,34 +176,21 @@ def get_resource(task_dict: dict, task_name: str, cdump: str = 'gdas') -> dict:
 
     partition = None
     if scheduler in ['slurm']:
-        partition = task_dict['PARTITION_SERVICE'] if task_name in SERVICE_TASKS else task_dict['PARTITION_BATCH']
+        partition = task_dict['QUEUE_SERVICE'] if task_name in SERVICE_TASKS else task_dict['PARTITION_BATCH']
 
-    task_resource = dict()
-    task_resource['account'] = account
-    task_resource['walltime'] = walltime
-    task_resource['nodes'] = nodes
-    task_resource['cores'] = cores
-    task_resource['ppn'] = ppn
-    task_resource['threads'] = threads
-    task_resource['compute'] = compute  # TODO - remove in the future
-    task_resource['memory'] = memory
-    task_resource['native'] = native
-    task_resource['queue'] = queue
-    task_resource['partition'] = partition
+    task_resource = {'account': account,
+                     'walltime': walltime,
+                     'nodes': nodes,
+                     'cores': cores,
+                     'ppn': ppn,
+                     'threads': threads,
+                     'compute': compute,
+                     'memory': memory,
+                     'native': native,
+                     'queue': queue,
+                     'partition': partition}
 
     return task_resource
-
-
-def get_taskplan_resources(dict_configs: List[Dict[str, Any]], task_plan: List[str], cdump='gdas') -> Dict[str, Any]:
-    """
-    Given a list of dictionary containing tasks, and a task plan,
-    return the resource dictionary for the tasks in the task plan
-    """
-    resources = dict()
-    for task in task_plan:
-        task_name = cdump + task
-        resources[task_name] = get_resource(dict_configs[task], task, cdump=cdump)
-    return resources
 
 
 def create_crontab(base, cronint=5):

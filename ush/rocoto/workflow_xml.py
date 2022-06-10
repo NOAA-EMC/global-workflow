@@ -11,18 +11,16 @@ def get_preamble():
     Generate preamble for XML
     """
 
-    strings = []
-
-    strings.append('<?xml version="1.0"?>')
-    strings.append('<!DOCTYPE workflow')
-    strings.append('[')
-    strings.append('\t<!--')
-    strings.append('\tPROGRAM')
-    strings.append('\t\tMain workflow manager for Global Forecast System')
-    strings.append('')
-    strings.append('\tNOTES:')
-    strings.append(f'\t\tThis workflow was automatically generated at {datetime.now()}')
-    strings.append('\t-->')
+    strings = ['<?xml version="1.0"?>',
+               '<!DOCTYPE workflow',
+               '[',
+               '\t<!--',
+               '\tPROGRAM',
+               '\t\tMain workflow manager for Global Forecast System',
+               '',
+               '\tNOTES:',
+               f'\t\tThis workflow was automatically generated at {datetime.now()}',
+               '\t-->']
 
     return '\n'.join(strings)
 
@@ -80,3 +78,62 @@ def get_definitions(base: dict, mode: str) -> str:
         strings.append('\t' + rocoto.create_entity(key, value))
 
     return '\n'.join(strings)
+
+
+def get_workflow_header():
+    """
+    Create the workflow header block
+    """
+
+    strings = ['',
+               ']>',
+               '',
+               '<workflow realtime="F" scheduler="&SCHEDULER;" cyclethrottle="&CYCLETHROTTLE;" taskthrottle="&TASKTHROTTLE;">',
+               '',
+               '\t<log verbosity="10"><cyclestr>&EXPDIR;/logs/@Y@m@d@H.log</cyclestr></log>',
+               '',
+               '\t<!-- Define the cycles -->']
+
+    return '\n'.join(strings)
+
+
+def get_cycledefs(exp_type, **kwargs):
+
+    cycledef_map = {'cycled': _get_cycledefs_cycled,
+                    'forecast-only': _get_cycledefs_forecast_only}
+
+    try:
+        cycledef_map[exp_type](**kwargs)
+    except KeyError:
+        raise TypeError(f'{exp_type} is not a valid application.' +
+                        'Current plot types supported are:\n' +
+                        f'{" | ".join(cycledef_map.keys())}"')
+
+
+def _get_cycledefs_cycled(**kwargs):
+    strings = ['\t<cycledef group="first">&SDATE;     &SDATE;     06:00:00</cycledef>',
+               '\t<cycledef group="enkf" >&SDATE;     &EDATE;     06:00:00</cycledef>',
+               '\t<cycledef group="gdas" >&SDATE;     &EDATE;     06:00:00</cycledef>']
+    if base['gfs_cyc'] != 0:
+        strings.append('\t<cycledef group="gfs"  >&SDATE_GFS; &EDATE_GFS; &INTERVAL_GFS;</cycledef>')
+
+    return '\n'.join(strings)
+
+
+def _get_cycledefs_forecast_only(**kwqrgs):
+
+    strings = f'\t<cycledef group="{cdump}">&SDATE; &EDATE; &INTERVAL;</cycledef>'
+
+    return strings
+
+
+def get_workflow_footer():
+    """
+    Generate workflow footer
+    """
+
+    return '\n</workflow>\n'
+
+
+def create_xml():
+    return None

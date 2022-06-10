@@ -32,11 +32,10 @@ def create_metatask(task_dict: Dict[str, Any], metatask_dict: Dict[str, Any]) ->
     varval = metatask_dict.get('varval', 1)
     vardict = metatask_dict.get('vardict', None)
 
-    strings = []
+    strings = [f'<metatask name="{metataskname}">\n',
+               '\n',
+               f'\t<var name="{varname}">{str(varval)}</var>\n']
 
-    strings.append(f'<metatask name="{metataskname}">\n')
-    strings.append('\n')
-    strings.append(f'\t<var name="{varname}">{str(varval)}</var>\n')
     if vardict is not None:
         for key in vardict.keys():
             value = str(vardict[key])
@@ -60,7 +59,7 @@ def create_task(task_dict: Dict[str, Any]) -> List[str]:
     :rtype: list
     """
 
-    # Grab task info from the task_dict
+    # Grab task info from the task_names
     taskname = task_dict.get('taskname', 'demotask')
     cycledef = task_dict.get('cycledef', 'democycle')
     maxtries = task_dict.get('maxtries', 3)
@@ -82,15 +81,14 @@ def create_task(task_dict: Dict[str, Any]) -> List[str]:
     str_final = ' final="true"' if final else ''
     envar = envar if isinstance(envar, list) else [envar]
 
-    strings = []
+    strings = [f'<task name="{taskname}" cycledefs="{cycledef}" maxtries="{str_maxtries}"{str_final}>\n',
+               '\n',
+               f'\t<command>{command}</command>\n',
+               '\n',
+               f'\t<jobname><cyclestr>{jobname}</cyclestr></jobname>\n',
+               f'\t<account>{account}</account>\n',
+               f'\t<queue>{queue}</queue>\n']
 
-    strings.append(f'<task name="{taskname}" cycledefs="{cycledef}" maxtries="{str_maxtries}"{str_final}>\n')
-    strings.append('\n')
-    strings.append(f'\t<command>{command}</command>\n')
-    strings.append('\n')
-    strings.append(f'\t<jobname><cyclestr>{jobname}</cyclestr></jobname>\n')
-    strings.append(f'\t<account>{account}</account>\n')
-    strings.append(f'\t<queue>{queue}</queue>\n')
     if partition is not None:
         strings.append(f'\t<partition>{partition}</partition>\n')
     if resources is not None:
@@ -196,22 +194,29 @@ def _add_data_tag(dep_dict: Dict[str, Any]) -> str:
         msg = f'a data value is necessary for {dep_type} dependency'
         raise KeyError(msg)
 
-    if dep_offset is None:
-        if '@' in dep_data:
-            offset_string_b = '<cyclestr>'
+    if not isinstance(dep_data, list):
+        dep_data = [dep_data]
+
+    if not isinstance(dep_offset, list):
+        dep_offset = [dep_offset]
+
+    assert len(dep_data) == len(dep_offset)
+
+    strings = ['<datadep>']
+    for data, offset in zip(dep_data, dep_offset):
+        if '@' in data:
+            offset_str = '' if offset in [None, ''] else f' offset="{offset}"'
+            offset_string_b = f'<cyclestr{offset_str}>'
             offset_string_e = '</cyclestr>'
         else:
             offset_string_b = ''
             offset_string_e = ''
-    else:
-        offset_string_b = f'<cyclestr offset="{dep_offset}">'
-        offset_string_e = '</cyclestr>'
 
-    string = '<datadep>'
-    string += f'{offset_string_b}{dep_data}{offset_string_e}'
-    string += '</datadep>'
+        strings.append(f'{offset_string_b}{data}{offset_string_e}')
 
-    return string
+    strings.append('</datadep>')
+
+    return ''.join(strings)
 
 
 def _add_cycle_tag(dep_dict: Dict[str, Any]) -> str:
@@ -342,12 +347,9 @@ def create_cycledef(group=None, start=None, stop=None, step=None):
     :type group: str
     :param start: cycle start datetime
     :type start: str
-    :param end: cycle end datetime
+    :param step: cycle interval (timedelta)
     :type stop: str
     :param step: cycle interval (timedelta)
-    :type interval: str
-    :param value: value of the environment variable
-    :type value: str or float or int or unicode
     :return: Rocoto cycledef variable string
     :rtype: str
     """
