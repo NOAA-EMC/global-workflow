@@ -1,0 +1,11 @@
+#!/bin/ksh -x
+
+########## config.gefs ##########
+# gefs step specific
+
+echo "BEGIN: config.gefs"
+
+# Get task specific resources
+. $EXPDIR/config.resources gefs
+
+echo "END: config.gefs"

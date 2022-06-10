@@ -30,7 +30,8 @@ def fill_COMROT(host, inputs):
 
     fill_modes = {
         'cycled': fill_COMROT_cycled,
-        'forecast-only': fill_COMROT_forecasts
+        'forecast-only': fill_COMROT_forecasts,
+        'gefs': fill_COMROT_gefs
     }
 
     try:
@@ -77,6 +78,13 @@ def fill_COMROT_cycled(host, inputs):
 def fill_COMROT_forecasts(host, inputs):
     '''
     Implementation of 'fill_COMROT' for forecast-only mode
+    '''
+    return
+
+
+def fill_COMROT_gefs(host, inputs):
+    '''
+    Implementation of 'fill_COMROT' for gefs mode
     '''
     return
 
@@ -147,12 +155,12 @@ def edit_baseconfig(host, inputs):
         "@APP@": inputs.app,
     }
 
-    if inputs.mode in ['cycled']:
+    if inputs.mode in ['cycled', 'gefs']:
         extend_dict = {
             "@CASEENS@": f'C{inputs.resens}',
             "@NMEM_ENKF@": inputs.nens,
         }
-    elif inputs.mode in ['forecast-only']:
+    elif inputs.mode in ['forecast-only', 'gefs']:
         extend_dict = {
             "@DO_AERO@": inputs.aerosols,
         }
@@ -207,9 +215,11 @@ def input_args():
         'cycled', help='arguments for cycled mode')
     forecasts = subparser.add_parser(
         'forecast-only', help='arguments for forecast-only mode')
+    gefs = subparser.add_parser(
+        'gefs', help='arguments for gefs mode')
 
     # Common arguments across all modes
-    for subp in [cycled, forecasts]:
+    for subp in [cycled, forecasts, gefs]:
         subp.add_argument('--pslot', help='parallel experiment name',
                           type=str, required=False, default='test')
         subp.add_argument('--resdet', help='resolution of the deterministic model forecast',
@@ -231,18 +241,21 @@ def input_args():
                           choices=['warm', 'cold'], required=False, default='cold')
 
     # cycled mode additional arguments
-    cycled.add_argument('--resens', help='resolution of the ensemble model forecast',
-                        type=int, required=False, default=192)
-    cycled.add_argument('--nens', help='number of ensemble members',
-                        type=int, required=False, default=20)
+    for subp in [cycled, gefs]:
+        subp.add_argument('--resens', help='resolution of the ensemble model forecast',
+                            type=int, required=False, default=192)
+        subp.add_argument('--nens', help='number of ensemble members',
+                            type=int, required=False, default=20)
+
     cycled.add_argument('--app', help='UFS application', type=str,
                         choices=['ATM', 'ATMW'], required=False, default='ATM')
 
     # forecast only mode additional arguments
-    forecasts.add_argument('--app', help='UFS application', type=str, choices=[
-        'ATM', 'ATMW', 'S2S', 'S2SW'], required=False, default='ATM')
-    forecasts.add_argument('--aerosols', help="Run with coupled aerosols", required=False,
-                           action='store_const', const="YES", default="NO")
+    for subp in [forecasts, gefs]:
+        subp.add_argument('--app', help='UFS application', type=str, choices=[
+            'ATM', 'ATMW', 'S2S', 'S2SW'], required=False, default='ATM')
+        subp.add_argument('--aerosols', help="Run with coupled aerosols", required=False,
+                               action='store_const', const="YES", default="NO")
 
     args = parser.parse_args()
 

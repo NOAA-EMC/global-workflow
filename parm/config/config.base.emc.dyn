@@ -225,6 +225,8 @@ if [[ "$CDUMP" == "gdas" ]] ; then
    export FTSFS=10
 elif [[ "$CDUMP" == "gfs" ]] ; then
    export FHCYC=24
+elif [[ "$CDUMP" == "gefs" ]] ; then
+   export FHCYC=24
 fi
 
 # Output frequency of the forecast model (for cycling)

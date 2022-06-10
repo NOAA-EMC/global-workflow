@@ -272,6 +272,9 @@ def source_configs(configs, tasks):
         elif 'wave' in task:
             files.append(find_config(f'config.wave', configs))
             files.append(find_config(f'config.{task}', configs))
+        elif 'gefs' in task:
+            files.append(find_config(f'config.gefs', configs))
+            files.append(find_config(f'config.{task}', configs))
         else:
             files.append(find_config(f'config.{task}', configs))
 
