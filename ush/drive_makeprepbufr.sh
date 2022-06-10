@@ -39,7 +39,7 @@ DONST=${DONST:-"NO"}
 
 ###############################################################
 # Set script and dependency variables
-export COMPONENT=${COMPONENT:-atmos}
+COMPONENT=${COMPONENT:-atmos}
 
 GDATE=$($NDATE -$assim_freq $CDATE)
 
@@ -55,7 +55,7 @@ GSUFFIX=${GSUFFIX:-$SUFFIX}
 APREFIX="${CDUMP}.t${chh}z."
 ASUFFIX=${ASUFFIX:-$SUFFIX}
 
-COMIN_OBS=${COMIN_OBS:-"$DMPDIR/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}"}
+COMIN_OBS=${COMIN_OBS:-"$DMPDIR/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}/${COMPONENT}"}
 COMIN_GES=${COMIN_GES:-"$ROTDIR/gdas.$gymd/$ghh/$COMPONENT"}
 COMOUT=${COMOUT:-"$ROTDIR/$CDUMP.$cymd/$chh/$COMPONENT"}
 [[ ! -d $COMOUT ]] && mkdir -p $COMOUT
