@@ -24,7 +24,47 @@ fix/wafs
 parm/config/config.base
 parm/gldas
 parm/mon
-parm/post
+parm/post/AEROSOL_LUTS.datoptics_luts_DUST.dat
+parm/post/gtg.config.gfs
+parm/post/gtg_imprintings.txt
+parm/post/optics_luts_SALT.dat
+parm/post/optics_luts_SOOT.dat
+parm/post/optics_luts_SUSO.dat
+parm/post/optics_luts_WASO.dat
+parm/post/params_grib2_tbl_new
+parm/post/post_tag_gfs128
+parm/post/post_tag_gfs65
+parm/post/postcntrl_gefs.xml
+parm/post/postcntrl_gefs_aerosol.xml
+parm/post/postcntrl_gefs_anl.xml
+parm/post/postcntrl_gefs_chem.xml
+parm/post/postcntrl_gefs_f00.xml
+parm/post/postcntrl_gfs.xml
+parm/post/postcntrl_gfs_anl.xml
+parm/post/postcntrl_gfs_f00.xml
+parm/post/postcntrl_gfs_f00_two.xml
+parm/post/postcntrl_gfs_flux.xml
+parm/post/postcntrl_gfs_flux_f00.xml
+parm/post/postcntrl_gfs_goes.xml
+parm/post/postcntrl_gfs_goes.xml-new
+parm/post/postcntrl_gfs_two.xml
+parm/post/postcntrl_gfs_wafs.xml
+parm/post/postcntrl_gfs_wafs_anl.xml
+parm/post/postxconfig-NT-GEFS-ANL.txt
+parm/post/postxconfig-NT-GEFS-F00.txt
+parm/post/postxconfig-NT-GEFS.txt
+parm/post/postxconfig-NT-GFS-ANL.txt
+parm/post/postxconfig-NT-GFS-F00-TWO.txt
+parm/post/postxconfig-NT-GFS-F00.txt
+parm/post/postxconfig-NT-GFS-FLUX-F00.txt
+parm/post/postxconfig-NT-GFS-FLUX.txt
+parm/post/postxconfig-NT-GFS-GOES.txt
+parm/post/postxconfig-NT-GFS-TWO.txt
+parm/post/postxconfig-NT-GFS-WAFS-ANL.txt
+parm/post/postxconfig-NT-GFS-WAFS.txt
+parm/post/postxconfig-NT-GFS.txt
+parm/post/postxconfig-NT-gefs-aerosol.txt
+parm/post/postxconfig-NT-gefs-chem.txt
 parm/wafs
 
 # Ignore sorc and logs folders from externals
@@ -73,6 +113,7 @@ sorc/radmon_bcoef.fd
 sorc/radmon_bcor.fd
 sorc/radmon_time.fd
 sorc/recentersigp.fd
+sorc/upp.fd
 sorc/wafs_awc_wafavn.fd
 sorc/wafs_blending.fd
 sorc/wafs_blending_0p25.fd
@@ -107,13 +148,10 @@ jobs/JGFS_ATMOS_WAFS_GRIB2
 jobs/JGFS_ATMOS_WAFS_GRIB2_0P25
 jobs/JGLOBAL_ATMOS_ANALYSIS
 jobs/JGLOBAL_ATMOS_ANALYSIS_CALC
-jobs/JGLOBAL_ATMOS_NCEPPOST
-jobs/JGLOBAL_ATMOS_POST_MANAGER
 # scripts symlinks
 scripts/exemcsfc_global_sfc_prep.sh
 scripts/exgdas_atmos_chgres_forenkf.sh
 scripts/exgdas_atmos_gldas.sh
-scripts/exgdas_atmos_nceppost.sh
 scripts/exgdas_atmos_verfozn.sh
 scripts/exgdas_atmos_verfrad.sh
 scripts/exgdas_atmos_vminmon.sh
@@ -132,7 +170,6 @@ scripts/exgfs_atmos_wafs_grib2.sh
 scripts/exgfs_atmos_wafs_grib2_0p25.sh
 scripts/exglobal_atmos_analysis.sh
 scripts/exglobal_atmos_analysis_calc.sh
-scripts/exglobal_atmos_pmgr.sh
 scripts/exglobal_diag.sh
 # ush symlinks
 ush/calcanl_gfs.py
@@ -142,13 +179,10 @@ ush/emcsfc_ice_blend.sh
 ush/emcsfc_snow.sh
 ush/fix_precip.sh
 ush/fv3gfs_driver_grid.sh
-ush/fv3gfs_dwn_nems.sh
 ush/fv3gfs_filter_topo.sh
 ush/fv3gfs_make_grid.sh
 ush/fv3gfs_make_orog.sh
 ush/getncdimlen
-ush/gfs_nceppost.sh
-ush/gfs_transfer.sh
 ush/gldas_archive.sh
 ush/gldas_forcing.sh
 ush/gldas_get_data.sh
@@ -160,12 +194,10 @@ ush/global_chgres_driver.sh
 ush/global_cycle.sh
 ush/global_cycle_driver.sh
 ush/gsi_utils.py
-ush/link_crtm_fix.sh
 ush/minmon_xtrct_costs.pl
 ush/minmon_xtrct_gnorms.pl
 ush/minmon_xtrct_reduct.pl
 ush/mkwfsgbl.sh
-ush/mod_icec.sh
 ush/ozn_xtrct.sh
 ush/radmon_ck_stdout.sh
 ush/radmon_err_rpt.sh
@@ -173,7 +205,6 @@ ush/radmon_verf_angle.sh
 ush/radmon_verf_bcoef.sh
 ush/radmon_verf_bcor.sh
 ush/radmon_verf_time.sh
-ush/trim_rh.sh
 ush/wafs_blending.sh
 ush/wafs_grib2.regrid.sh
 ush/wafs_intdsk.sh
