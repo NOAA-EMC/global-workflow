@@ -5,7 +5,9 @@
 . $HOMEgfs/ush/load_fv3gfs_modules.sh
 status=$?
 [[ $status -ne 0 ]] && exit $status
-
+if [[ $CDUMP == "gefs" ]]; then
+    export MEMBER=`echo ${RUNMEM:-"c00"}|cut -c2-3`
+fi
 ###############################################################
 # Execute the JJOB
 $HOMEgfs/jobs/JGLOBAL_FORECAST

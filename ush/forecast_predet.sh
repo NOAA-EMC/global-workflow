@@ -252,17 +252,35 @@ FV3_GFS_predet(){
     rprefix=$rCDUMP
     memchar=""
   else
-    prefix=enkf$CDUMP
-    rprefix=enkf$rCDUMP
-    memchar=mem$(printf %03i $MEMBER)
+    if [[ $CDUMP == "gefs" ]]; then
+        prefix=$CDUMP
+        rprefix=$rCDUMP
+        if [ $MEMBER -eq 0 ]; then
+            memchar=c$(printf %02i $MEMBER)
+        else
+            memchar=p$(printf %02i $MEMBER)
+        fi
+    else
+        prefix=enkf$CDUMP
+        rprefix=enkf$rCDUMP
+        memchar=mem$(printf %03i $MEMBER)
+    fi
   fi
-  memdir=$ROTDIR/${prefix}.$PDY/$cyc/atmos/$memchar
+  if [[ $CDUMP == "gefs" ]]; then
+    memdir=$ROTDIR/${prefix}.$PDY/$cyc/$memchar/atmos
+  else
+    memdir=$ROTDIR/${prefix}.$PDY/$cyc/atmos/$memchar
+  fi
   if [ ! -d $memdir ]; then mkdir -p $memdir; fi
 
   GDATE=$($NDATE -$assim_freq $CDATE)
   gPDY=$(echo $GDATE | cut -c1-8)
   gcyc=$(echo $GDATE | cut -c9-10)
-  gmemdir=$ROTDIR/${rprefix}.$gPDY/$gcyc/atmos/$memchar
+  if [[ $CDUMP == "gefs" ]]; then
+    gmemdir=$ROTDIR/${rprefix}.$gPDY/$gcyc/$memchar/atmos
+  else
+    gmemdir=$ROTDIR/${rprefix}.$gPDY/$gcyc/atmos/$memchar
+  fi
   sCDATE=$($NDATE -3 $CDATE)
 
   if [[ "$DOIAU" = "YES" ]]; then
@@ -278,6 +296,14 @@ FV3_GFS_predet(){
     tPDY=$sPDY
     tcyc=$cyc
   fi
+
+  echo "SUB ${FUNCNAME[0]}: pre-determination variables set"
+}
+
+FV3_GEFS_predet(){
+  echo "SUB ${FUNCNAME[0]}: Defining variables for FV3GFS"
+
+  FV3_GFS_predet
 
   echo "SUB ${FUNCNAME[0]}: pre-determination variables set"
 }

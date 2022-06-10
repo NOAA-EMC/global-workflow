@@ -14,6 +14,7 @@
 FV3_GEFS_postdet(){
   echo SUB ${FUNCNAME[0]}: Linking input data for FV3 $RUN
   # soft link commands insert here
+  FV3_GFS_postdet
 }
 
 DATM_postdet(){
@@ -558,6 +559,20 @@ FV3_GFS_nml(){
   echo SUB ${FUNCNAME[0]}: FV3 name lists and model configure file created
 }
 
+FV3_GEFS_nml(){
+  # namelist output for a certain component
+  echo SUB ${FUNCNAME[0]}: Creating name lists and model configure file for FV3
+  if [ $machine = 'sandbox' ]; then
+    cd $SCRIPTDIR
+    echo "MAIN: !!!Sandbox mode, writing to current directory!!!"
+  fi
+  # Call child scripts in current script directory
+  source $SCRIPTDIR/parsing_namelists_FV3.sh
+  FV3_namelists
+  echo SUB ${FUNCNAME[0]}: FV3 name lists and model configure file created
+}
+
+
 DATM_nml(){
   source $SCRIPTDIR/parsing_namelists_DATM.sh
   DATM_namelists
@@ -607,6 +622,10 @@ data_out_GFS() {
   fi
 
   echo "SUB ${FUNCNAME[0]}: Output data for FV3 copied"
+}
+
+data_out_GEFS() {
+  data_out_GFS
 }
 
 WW3_postdet() {
