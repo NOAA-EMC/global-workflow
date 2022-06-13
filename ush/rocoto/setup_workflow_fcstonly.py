@@ -240,7 +240,7 @@ def get_workflow(dict_configs, cdump='gdas'):
     machine = base.get('machine', wfu.detectMachine())
     hpssarch = base.get('HPSSARCH', 'NO').upper()
     app = base.get('APP', "ATM").upper()
-    atmtype = base.get('ATMTYPE', 'MODEL').upper()
+    atm_type = base.get('ATMTYPE', 'MODEL').upper()
     do_post = base.get('DO_POST', 'YES').upper()
     do_wave = base.get('DO_WAVE', 'NO').upper()
     do_ocean = base.get('DO_OCN', 'NO').upper()
@@ -434,7 +434,7 @@ def get_workflow(dict_configs, cdump='gdas'):
 
     # fcst
     deps = []
-    if atmtype in ['MODEL']:
+    if atm_type in ['MODEL']:
         data = '&ROTDIR;/&CDUMP;.@Y@m@d/@H/atmos/INPUT/sfc_data.tile6.nc'
         dep_dict = {'type':'data', 'data':data}
         deps.append(rocoto.add_dependency(dep_dict))
@@ -583,7 +583,7 @@ def get_workflow(dict_configs, cdump='gdas'):
     # ocnpost
     if do_ocean in ['YES']:
         deps = []
-        if atmtype in ['MODEL']:
+        if atm_type in ['MODEL']:
             data = f'&ROTDIR;/{cdump}.@Y@m@d/@H/atmos/{cdump}.t@Hz.log#dep#.txt'
             dep_dict = {'type': 'data', 'data': data}
             deps.append(rocoto.add_dependency(dep_dict))
