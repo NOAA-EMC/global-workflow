@@ -522,7 +522,7 @@ def get_workflow(dict_configs, cdump='gdas'):
     task = wfu.create_wf_task('post', cdump=cdump, envar=postenvars, dependency=dependencies,
                               metatask='post', varname=varname1, varval=varval1, vardict=vardict)
     if cdump == "gefs":
-        pass
+        pass # This is a temporary bypass for GEFS until we decide to add it to the GEFS task mash
     else:
         tasks.append(task)
         tasks.append('\n')
@@ -843,7 +843,7 @@ def get_workflow(dict_configs, cdump='gdas'):
         dependencies = rocoto.create_dependency(dep=deps)
         task = wfu.create_wf_task('vrfy', cdump=cdump, envar=envars, dependency=dependencies)
         if cdump == "gefs":
-            pass
+            pas # This is a temporary bypass for GEFS until we decide to add it to the GEFS task mashs
         else:
             tasks.append(task)
             tasks.append('\n')
@@ -862,7 +862,7 @@ def get_workflow(dict_configs, cdump='gdas'):
         task = wfu.create_wf_task('metp', cdump=cdump, envar=metpenvars, dependency=dependencies,
                                   metatask='metp', varname=varname1, varval=varval1)
         if cdump == "gefs":
-            pass
+            pass # This is a temporary bypass for GEFS until we decide to add it to the GEFS task mash
         else:
             tasks.append(task)
             tasks.append('\n')
@@ -893,7 +893,7 @@ def get_workflow(dict_configs, cdump='gdas'):
     dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
     task = wfu.create_wf_task('arch', cdump=cdump, envar=envars, dependency=dependencies, final=True)
     if cdump == "gefs":
-        pass
+        pass # This is a temporary bypass for GEFS until we decide to add it to the GEFS task mash
     else:
         tasks.append(task)
         tasks.append('\n')
