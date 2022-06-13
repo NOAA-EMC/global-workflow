@@ -843,7 +843,7 @@ def get_workflow(dict_configs, cdump='gdas'):
         dependencies = rocoto.create_dependency(dep=deps)
         task = wfu.create_wf_task('vrfy', cdump=cdump, envar=envars, dependency=dependencies)
         if cdump in ["gefs"]:
-            pas # This is a temporary bypass for GEFS until we decide to add it to the GEFS task mashs
+            pass # This is a temporary bypass for GEFS until we decide to add it to the GEFS task mashs
         else:
             tasks.append(task)
             tasks.append('\n')
