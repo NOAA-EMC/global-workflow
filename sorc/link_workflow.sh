@@ -207,7 +207,6 @@ cd ${pwd}/../ush                ||exit 8
     $LINK ../sorc/gsi_monitor.fd/src/Minimization_Monitor/nwprod/minmon_shared/ush/minmon_xtrct_gnorms.pl           .
     $LINK ../sorc/gsi_monitor.fd/src/Minimization_Monitor/nwprod/minmon_shared/ush/minmon_xtrct_reduct.pl           .
     $LINK ../sorc/gsi_monitor.fd/src/Ozone_Monitor/nwprod/oznmon_shared/ush/ozn_xtrct.sh                            .
-    $LINK ../sorc/gsi_monitor.fd/src/Radiance_Monitor/nwprod/radmon_shared/ush/radmon_ck_stdout.sh                  .
     $LINK ../sorc/gsi_monitor.fd/src/Radiance_Monitor/nwprod/radmon_shared/ush/radmon_err_rpt.sh                    .
     $LINK ../sorc/gsi_monitor.fd/src/Radiance_Monitor/nwprod/radmon_shared/ush/radmon_verf_angle.sh                 .
     $LINK ../sorc/gsi_monitor.fd/src/Radiance_Monitor/nwprod/radmon_shared/ush/radmon_verf_bcoef.sh                 .
