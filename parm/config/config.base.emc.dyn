@@ -80,7 +80,6 @@ export HOMEpost="$HOMEgfs"
 export HOMEobsproc_prep="$BASE_GIT/obsproc/obsproc_prep.v5.5.0_hpc-stack"
 export HOMEobsproc_network="$BASE_GIT/obsproc/obsproc_global.v3.4.2_hpc-stack"
 export HOMEobsproc_global=$HOMEobsproc_network
-export BASE_VERIF="$BASE_GIT/verif/global/tags/vsdb"
 
 # CONVENIENT utility scripts and other environment parameters
 export NCP="/bin/cp -p"
@@ -172,7 +171,6 @@ export DO_POST="YES"
 
 # Verification options
 export DO_METP="YES"        # Run METPLUS jobs - set METPLUS settings in config.metp
-export DO_VSDB="YES"        # Run VSDB package - set VSDB settings in config.vrfy
 
 case "${APP}" in
   ATM)
@@ -202,7 +200,6 @@ case "${APP}" in
     export DO_ICE="YES"
     export DO_METP="NO"
     export DO_VRFY="NO"
-    export DO_VSDB="NO"
     export RUN="data"
     export flux_convergence=0.0
     export flux_iteration=2

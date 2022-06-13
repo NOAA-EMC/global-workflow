@@ -105,22 +105,6 @@ fi
 
 ###############################################################
 echo
-echo "=============== START TO RUN VSDB STEP1, VERIFY PRCIP AND GRID2OBS ==============="
-if [ $CDUMP = "gfs" ]; then
-
-    if [ $VSDB_STEP1 = "YES" -o $VRFYPRCP = "YES" -o $VRFYG2OBS = "YES" ]; then
- 
-        xdate=$(echo $($NDATE -${BACKDATEVSDB} $CDATE) | cut -c1-8)
-        export ARCDIR1="$NOSCRUB/archive"
-        export rundir="$RUNDIR/$CDUMP/$CDATE/vrfy/vsdb_exp"
-        export COMROT="$ARCDIR1/dummy"
-
-        $VSDBJOBSH $VSDBSH $xdate $vlength $cyc $PSLOT $CDATE $CDUMP $gfs_cyc $rain_bucket $machine
-    fi
-fi
-
-###############################################################
-echo
 echo "=============== START TO RUN RADMON DATA EXTRACTION ==============="
 if [ $VRFYRAD = "YES" -a $CDUMP = $CDFNL -a $CDATE != $SDATE ]; then
 
