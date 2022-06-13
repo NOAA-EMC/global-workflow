@@ -4,10 +4,10 @@ set -eux
 source ./machine-setup.sh > /dev/null 2>&1
 cwd=$(pwd)
 
-BUILD_DIR="${cwd}/build/gsi_monitor"
 BUILD_TYPE="Release"
 DIR_ROOT="${cwd}/gsi_monitor.fd"
-INSTALL_PREFIX="${cwd}/../exec"
+BUILD_DIR="${DIR_ROOT}/build"
+INSTALL_PREFIX="${DIR_ROOT}/install"
 GSI_INSTALL_PREFIX="${cwd}/gsi.fd/install"
 
 OPTIND=1
@@ -42,11 +42,6 @@ else
   exit 1
 fi
 
-# Check final exec folder exists
-# if [ ! -d "${INSTALL_PREFIX}" ]; then
-#   mkdir "${INSTALL_PREFIX}"
-# fi
-
 if [[ -d "${BUILD_DIR}" ]]; then
 	rm -Rf "${BUILD_DIR}"
 fi
@@ -78,5 +73,8 @@ cmake $CMAKE_OPTS $DIR_ROOT
 make -j ${BUILD_JOBS:-8} VERBOSE=${BUILD_VERBOSE:-}
 make install
 set +x
+
+# Clean up build directory
+rm -Rf "${BUILD_DIR}"
 
 exit

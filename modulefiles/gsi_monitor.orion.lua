@@ -8,7 +8,7 @@ load(pathJoin("hpc", "1.1.0"))
 load(pathJoin("hpc-intel", "2018.4"))
 load(pathJoin("hpc-impi", "2018.4"))
 
-load(pathJoin("cmake", "3.20.1"))
+load(pathJoin("cmake", "3.22.1"))
 
 load(pathJoin("hdf5", "1.10.6"))
 load(pathJoin("netcdf", "4.7.4"))
