@@ -9,8 +9,8 @@ _opts=""
 while getopts ":dov" option; do
 	case "${option}" in
 		d) export BUILD_TYPE="DEBUG";;
-		o) _opts+="-g";;
-		v) _opts+="-v";;
+		o) _opts+="-g ";;
+		v) _opts+="-v ";;
 		\?)
 			echo "[$BASH_SOURCE]: Unrecognized option: ${option}"
 			usage
