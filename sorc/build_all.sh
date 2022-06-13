@@ -135,6 +135,20 @@ $Build_gsi && {
 }
 
 #------------------------------------
+# build gsi monitor
+#------------------------------------
+$Build_gsi_monitor && {
+	echo " .... Building gsi monitor .... "
+	./build_gsi_monitor.sh $_ops_opt $_verbose_opt > $logs_dir/build_gsi_monitor.log 2>&1
+	rc=$?
+	if [[ $rc -ne 0 ]] ; then
+		echo "Fatal error in building gsi monitor."
+		echo "The log file is in $logs_dir/build_gsi_monitor.log"
+	fi
+	((err+=$rc))
+}
+
+#------------------------------------
 # build UPP
 #------------------------------------
 $Build_upp && {
