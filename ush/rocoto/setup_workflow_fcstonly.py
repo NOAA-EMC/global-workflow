@@ -257,7 +257,7 @@ def get_workflow(dict_configs, cdump='gdas'):
 
     tasks = []
 
-    if app in ['S2S', 'S2SW']:
+    if app[0:3] in ['S2S']:
         # Copy prototype ICs
         deps = []
         base_cplic = dict_configs['coupled_ic']['BASE_CPLIC']
@@ -357,7 +357,7 @@ def get_workflow(dict_configs, cdump='gdas'):
         deps = []
         dep_dict = {'type': 'task', 'name': f'{cdump}waveinit'}
         deps.append(rocoto.add_dependency(dep_dict))
-        if app not in ['S2S', 'S2SW']:
+        if app[0:3] not in ['S2S']:
             dep_dict = {'type': 'task', 'name': f'{cdump}init'}
             deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)

@@ -1,4 +1,4 @@
-#!/bin/ksh -x
+#!/bin/bash -x
 
 ########## config.base ##########
 # Common to all steps
@@ -63,8 +63,8 @@ export DO_VRFY="YES"       # VRFY step
 #  use RUNMOS flag (currently in config.vrfy)
 export REALTIME="YES"
 
-# Experiment mode (cycled or free-forecast)
-export MODE="@MODE@" # cycled/free
+# Experiment mode (cycled or forecast-only)
+export MODE="@MODE@" # cycled/forecast-only
 
 ####################################################
 # DO NOT ADD MACHINE DEPENDENT STUFF BELOW THIS LINE
@@ -154,35 +154,32 @@ export DO_COUPLED="NO"
 export DO_WAVE="NO"
 export DO_OCN="NO"
 export DO_ICE="NO"
-export DO_AERO=@DO_AERO@
+export DO_AERO="NO"
 export CCPP_SUITE="FV3_GFS_v17_p8"
 export WAVE_CDUMP="" # When to include wave suite: gdas, gfs, or both
 export cplwav2atm=".false."
 
-aero_nems_string=""
-if [[ $DO_AERO = "YES" ]]; then
-    aero_nems_string="_aero"
-else
-    aero_nems_string=""
-fi
-
 case "${APP}" in
   ATM)
     echo "APP=ATM; will use defaults"
-    export confignamevarfornems="atm${aero_nems_string}"
+    export confignamevarfornems="atm"
+    ;;
+  ATMA)
+    export DO_AERO="YES"
+    export confignamevarfornems="atm_aero"
     ;;
   ATMW)
     export DO_COUPLED="YES"
     export DO_WAVE="YES"
     export WAVE_CDUMP="both"
-    export confignamevarfornems="leapfrog_atm${aero_nems_string}_wav"
+    export confignamevarfornems="leapfrog_atm_wav"
     ;;
   S2S)
     export DO_COUPLED="YES"
     export DO_OCN="YES"
     export DO_ICE="YES"
     export CCPP_SUITE="FV3_GFS_v17_coupled_p8"
-    export confignamevarfornems="cpld${aero_nems_string}"
+    export confignamevarfornems="cpld"
     ;;
   S2SW)
     export DO_COUPLED="YES"
@@ -192,7 +189,19 @@ case "${APP}" in
     export CCPP_SUITE="FV3_GFS_v17_coupled_p8"
     export WAVE_CDUMP="both"
     export cplwav2atm=".true."
-    export confignamevarfornems="cpld${aero_nems_string}_wave"
+    export confignamevarfornems="cpld_wave"
+    source $EXPDIR/config.defaults.s2sw
+    ;;
+  S2SWA)
+    export DO_COUPLED="YES"
+    export DO_WAVE="YES"
+    export DO_OCN="YES"
+    export DO_ICE="YES"
+    export DO_AERO="YES"
+    export CCPP_SUITE="FV3_GFS_v17_coupled_p8"
+    export WAVE_CDUMP="both"
+    export cplwav2atm=".true."
+    export confignamevarfornems="cpld_aero_wave"
     source $EXPDIR/config.defaults.s2sw
     ;;
   *)
