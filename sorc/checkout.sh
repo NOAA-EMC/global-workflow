@@ -70,13 +70,13 @@ function checkout() {
 			echo
 			return "${status}"
 		fi
+		cd "${dir}"
 	else
 		# Fetch any updates from server
 		cd "${dir}"
 		echo "|-- Fetching updates from ${remote}"
 		git fetch
 	fi
-	cd "${dir}"
 	echo "|-- Checking out ${version}"
 	git checkout "${version}" >> "${logfile}" 2>&1
 	status=$?
