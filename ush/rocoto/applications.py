@@ -3,16 +3,16 @@
 from typing import Dict, Any
 from configuration import Configuration
 import workflow_utils as wfu
+#from workflow_tasks import Tasks
 
 
 class Application:
     VALID_MODES = ['cycled', 'forecast-only']
-    SERVICE_TASKS = ['arch', 'earc', 'getic']
 
     def __init__(self, mode: str, configuration: Configuration) -> None:
 
-        self.task_resources = None
         self.task_names = None
+        self.task_tasks = None
         if mode not in self.VALID_MODES:
             raise NotImplementedError(f'{mode} is not a valid application mode.\n' +
                                       'Valid application modes are:\n' +
@@ -50,7 +50,7 @@ class Application:
                                       f'{", ".join(self.VALID_MODES)}')
 
         # Source the configs for all the jobs in the application
-        self.job_configs = self.source_configs
+        self.job_configs = self.source_configs()
 
         # Update the base config dictionary based on application
         upd_base_map = {'cycled': self._cycled_upd_base,
@@ -63,6 +63,7 @@ class Application:
                                       f'{", ".join(self.VALID_MODES)}')
 
         self._base = self.job_configs['base']
+        self.gfs_cyc = self._base.get('gfs_cyc')
 
         if self.do_hybvar:
             self.lobsdiag_forenkf = self._base.get('lobsdiag_forenkf', False)
@@ -169,7 +170,6 @@ class Application:
 
         return base_out
 
-    @property
     def source_configs(self) -> Dict[str, Any]:
         """
         Given the configuration object and jobs,
@@ -182,10 +182,10 @@ class Application:
         # Return config.base as well
         dict_jobs['base'] = self.cfg.parse_config('config.base')
 
-        # Source the list of input tasks
+        # Source the list of input task_tasks
         for job in self.job_names:
 
-            # All tasks must source config.base first
+            # All task_tasks must source config.base first
             files = ['config.base']
 
             if job in ['eobs', 'eomg']:
@@ -206,7 +206,7 @@ class Application:
 
     def get_task_names(self):
 
-        # Get a list of all possible tasks that would be part of the application
+        # Get a list of all possible task_tasks that would be part of the application
         tasks_map = {'cycled': self._get_cycled_task_names,
                      'forecast-only': self._get_forecast_only_task_names}
         try:
@@ -229,7 +229,7 @@ class Application:
         hybrid_tasks += ['ediag'] if self.lobsdiag_forenkf else ['eomg']
         hybrid_gdas_tasks = ['ecen', 'esfc', 'efcs', 'epos', 'earc']
 
-        # First collect all gdas tasks
+        # First collect all gdas task_tasks
         gdas_tasks = tasks + gdas_only_tasks
 
         if self.do_gldas:
@@ -243,7 +243,7 @@ class Application:
                 gdas_tasks += hybrid_tasks
                 gdas_tasks += hybrid_gdas_tasks
 
-        # Now collect gfs tasks
+        # Now collect gfs task_tasks
         gfs_tasks = tasks
 
         if self.do_hybvar:
@@ -314,10 +314,12 @@ class Application:
 
         return {'cdump': tasks}
 
-    def get_resources(self):
+    def get_tasks(self):
 
-        self.task_resources = dict()
-        for cdump, cdump_tasks in self.task_names.items():
-            self.task_resources[cdump] = dict()
-            for task in cdump_tasks:
-                self.task_resources[cdump][task] = wfu.get_resource(self.job_configs[task], task, cdump=cdump)
+        self.task_tasks = dict()
+        #for cdump in self.task_names.keys():
+        #    self.task_tasks[cdump] = Tasks(self, cdump)
+
+    def assemble_tasks(self):
+
+        return None

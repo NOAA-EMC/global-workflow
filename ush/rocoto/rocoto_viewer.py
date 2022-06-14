@@ -323,7 +323,7 @@ Mandatory arguments:
   -w workflow.xml
   -d database.db
 Optional arguments:
-  --listtasks             --- print out a list of all tasks
+  --listtasks             --- print out a list of all task_tasks
   --html=filename.html    --- creates an HTML document of status
   --help                  --- print this usage message''')
 
@@ -441,7 +441,7 @@ def get_arguments():
             send_html_to_rzdm = True
 
     if list_tasks and workflow_file is None:
-        usage('In order to list tasks you must supply the XML worflow-file')
+        usage('In order to list task_tasks you must supply the XML worflow-file')
 
     if only_check_point and (workflow_file is None or database_file is None or save_checkfile_path is None):
         usage('To use the check point output you must specify the workflow, data base, and the specific name of the checkpoint file')
@@ -582,7 +582,7 @@ def help_screen(screen):
                '(->) Next Cycle      <d>own (or) Page-dwn to scroll',
                '(<-) Previous Cycle  <u>own (or) Page-up  to scroll ',
                ' ',
-               '<Shift> + Arrow Up     to selected multiple tasks',
+               '<Shift> + Arrow Up     to selected multiple task_tasks',
                '<Shift> + Arrow Down   for using with rocoto utils',
                'Double-Click  or  <x>  to expand/collapse metatasks',
                ' ',
@@ -595,7 +595,7 @@ def help_screen(screen):
                '',
                '<l>oads and renews status data (no rocotorun)',
                '<F>inds the last cycle with a running task',
-               '<U>nloads and clears all previously seleted tasks',
+               '<U>nloads and clears all previously seleted task_tasks',
                '<f>makes a symlink of log file of highlited task']
 
     for i in range(0, len(helpstr)):
@@ -837,7 +837,7 @@ def get_rocoto_check(params, queue_check):
 
 def rocoto_boot(params):
     workflow_file, database_file, cycle, metatask_list, task_list = params
-    stat = syscall([rocotoboot, '--workflow', workflow_file, '--database', database_file, '--cycles', cycle, '--tasks', task_list])
+    stat = syscall([rocotoboot, '--workflow', workflow_file, '--database', database_file, '--cycles', cycle, '--task_tasks', task_list])
     if stat is None:
         display_results('rocotoboot failed!!', '')
     return stat
@@ -1001,7 +1001,7 @@ def get_tasklist(workflow_file):
                                     else:
                                         metatask_list[first_task_resolved_name].append(task[0])
                                     if list_tasks:
-                                        print(f'tasks: , {i}, {task[0]}, {task[1]}, LOG:, {task[2]}')
+                                        print(f'task_tasks: , {i}, {task[0]}, {task[1]}, LOG:, {task[2]}')
 
     # Default expantion of metatasks True = collapsed
     # for metatask,metatasks in metatask_list.iteritems():
@@ -2246,30 +2246,30 @@ def main(screen):
                 screen.clear()
                 process = ''
                 if highlight_CYCLE:
-                    screen.addstr(f'Are you sure you want to rewind all the tasks in the cycle {execute_cycle} by running:\n\n')
+                    screen.addstr(f'Are you sure you want to rewind all the task_tasks in the cycle {execute_cycle} by running:\n\n')
                     process = '-a'
                 # highlight_WORKFLOW = False
                 elif execute_metatask_check and len(selected_tasks[execute_cycle]) == 0:
                     for tasks in metatask_list_of_selected_metatask:
                         process += '-t ' + tasks + ' '
-                    screen.addstr(f'Are you sure you want to rewind all the tasks in the metatask ({execute_task}) by running:\n\n')
+                    screen.addstr(f'Are you sure you want to rewind all the task_tasks in the metatask ({execute_task}) by running:\n\n')
                 elif len(selected_tasks[execute_cycle]) != 0 or len(selected_meta_tasks[execute_cycle]) != 0:
                     if len(selected_tasks[execute_cycle]) != 0:
                         selected_tasks_string = ''
-                        screen.addstr('Selected tasks:\n\n')
+                        screen.addstr('Selected task_tasks:\n\n')
                         for tasks in selected_tasks[execute_cycle]:
                             selected_tasks_string += tasks + '\t'
                             process += '-t ' + tasks + ' '
                         screen.addstr(selected_tasks_string + '\n\n')
                     if len(selected_meta_tasks[execute_cycle]) != 0:
                         selected_tasks_string = ''
-                        screen.addstr(f'Selected {len(selected_meta_tasks[execute_cycle]):d} entire meta-tasks and their tasks:\n\n')
+                        screen.addstr(f'Selected {len(selected_meta_tasks[execute_cycle]):d} entire meta-task_tasks and their task_tasks:\n\n')
                         for meta_task_selected in selected_meta_tasks[execute_cycle]:
                             for tasks in metatask_list_by_name[meta_task_selected]:
                                 selected_tasks_string += tasks + '\t'
                                 process += '-t ' + tasks + ' '
                             screen.addstr(selected_tasks_string + '\n\n')
-                    screen.addstr('\nAre you sure you want to rewind all these seleted tasks by running:\n\n')
+                    screen.addstr('\nAre you sure you want to rewind all these seleted task_tasks by running:\n\n')
                 elif len(selected_tasks[execute_cycle]) == 0:
                     process = '-t ' + execute_task
                     screen.addstr(f'Are you sure you want to rewind the single task {execute_task} by running:\n\n')
@@ -2280,7 +2280,7 @@ def main(screen):
                     if event == ord('y') or event == ord('Y'):
                         params = (workflow_file, database_file, execute_cycle, process)
                         results = rocoto_rewind(params)
-                        results_params = ('', '', 'rewind', execute_cycle, 'tasks')
+                        results_params = ('', '', 'rewind', execute_cycle, 'task_tasks')
                         try:
                             display_results(results, screen, results_params)
                         except Exception:
@@ -2315,7 +2315,7 @@ def main(screen):
                     screen.addstr(f'You have selected to boot the entire cycle {execute_cycle}:\n\n', curses.A_BOLD)
                     tasks_to_boot = tasks_in_cycle[cycle]
                 elif len(selected_tasks[execute_cycle]) != 0:
-                    screen.addstr('You have a list selected tasks boot:\n\n', curses.A_BOLD)
+                    screen.addstr('You have a list selected task_tasks boot:\n\n', curses.A_BOLD)
                     tasks_to_boot = selected_tasks[execute_cycle]
                 elif len(selected_meta_tasks[execute_cycle]) != 0:
                     screen.addstr(f'Are you sure you want boot the metatask {selected_meta_tasks[execute_cycle][0]} by running rocotoboot with:')
@@ -2333,9 +2333,9 @@ def main(screen):
                     boot_task_list = boot_task_list[:-1]
                     screen.addstr(list_of_tasks)
 
-                screen.addstr(f'\n\nAre you sure you want to boot all the tasks and/or metatasks in the cycle {execute_cycle} by running:\n\n', curses.A_BOLD)
+                screen.addstr(f'\n\nAre you sure you want to boot all the task_tasks and/or metatasks in the cycle {execute_cycle} by running:\n\n', curses.A_BOLD)
                 if len(boot_task_list) != 0:
-                    list_of_tasks = ' --tasks ' + "'" + boot_task_list + "'"
+                    list_of_tasks = ' --task_tasks ' + "'" + boot_task_list + "'"
                 screen.addstr(f'rocotoboot -c {execute_cycle} -d {basename(database_file)} -w {basename(workflow_file)} {list_meta_tasks + list_of_tasks}\n\n')
                 screen.addstr('Enter: <Y>es or <N>o', curses.A_BOLD)
 

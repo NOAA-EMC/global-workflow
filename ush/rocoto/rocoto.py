@@ -7,7 +7,7 @@ from typing import Union, List, Dict, Any
         rocoto.py
 
     ABOUT:
-        Helper module to create tasks, metatasks, and dependencies for Rocoto
+        Helper module to create task_tasks, metatasks, and dependencies for Rocoto
 '''
 
 __all__ = ['create_task', 'create_metatask',
@@ -66,14 +66,18 @@ def create_task(task_dict: Dict[str, Any]) -> List[str]:
     final = task_dict.get('final', False)
     command = task_dict.get('command', 'sleep 10')
     jobname = task_dict.get('jobname', 'demojob')
-    account = task_dict.get('account', 'batch')
-    queue = task_dict.get('queue', 'debug')
-    partition = task_dict.get('partition', None)
-    walltime = task_dict.get('walltime', '00:01:00')
+    resources_dict = task_dict['resources']
+    account = resources_dict.get('account', 'batch')
+    queue = resources_dict.get('queue', 'debug')
+    partition = resources_dict.get('partition', None)
+    walltime = resources_dict.get('walltime', '00:01:00')
+    native = resources_dict.get('native', None)
+    memory = resources_dict.get('memory', None)
+    # compute = resources_dict.get('compute', None)  # TODO - eliminate
+    nodes = resources_dict.get('nodes', 1)
+    ppn = resources_dict.get('ppn', 1)
+    threads = resources_dict.get('threads', 1)
     log = task_dict.get('log', 'demo.log')
-    native = task_dict.get('native', None)
-    memory = task_dict.get('memory', None)
-    resources = task_dict.get('resources', None)
     envar = task_dict.get('envars', None)
     dependency = task_dict.get('dependency', None)
 
@@ -91,9 +95,10 @@ def create_task(task_dict: Dict[str, Any]) -> List[str]:
 
     if partition is not None:
         strings.append(f'\t<partition>{partition}</partition>\n')
-    if resources is not None:
-        strings.append(f'\t{resources}\n')
     strings.append(f'\t<walltime>{walltime}</walltime>\n')
+    # if compute is not None:  # TODO - eliminate this block
+    #    strings.append(f'\t{compute}\n')
+    strings.append(f'\t<nodes>{nodes}:ppn={ppn}:tpp={threads}</nodes>\n')
     if memory is not None:
         strings.append(f'\t<memory>{memory}</memory>\n')
     if native is not None:

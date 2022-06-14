@@ -166,7 +166,7 @@ def create_xml(dict_configs):
     resources = get_resources(dict_configs, cdump=base['CDUMP'])
     workflow = get_workflow_body(dict_configs, cdump=base['CDUMP'])
 
-    # Removes <memory>&MEMORY_JOB_DUMP</memory> post mortem from gdas tasks
+    # Removes <memory>&MEMORY_JOB_DUMP</memory> post mortem from gdas task_tasks
     temp_workflow = ''
     memory_dict = []
     for each_resource_string in re.split(r'(\s+)', resources):

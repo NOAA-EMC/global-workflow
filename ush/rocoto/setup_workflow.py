@@ -97,7 +97,7 @@ def get_gdasgfs_resources(dict_configs, cdump='gdas'):
     do_wave_cdump = base.get('WAVE_CDUMP', 'BOTH').upper()
     reservation = base.get('RESERVATION', 'NONE').upper()
 
-    #tasks = ['prep', 'anal', 'fcst', 'post', 'vrfy', 'arch']
+    #task_tasks = ['prep', 'anal', 'fcst', 'post', 'vrfy', 'arch']
     tasks = ['prep', 'anal', 'analcalc']
 
     if cdump in ['gdas']:
@@ -105,13 +105,13 @@ def get_gdasgfs_resources(dict_configs, cdump='gdas'):
     if cdump in ['gdas'] and do_gldas in ['Y', 'YES']:
         tasks += ['gldas']
     if cdump in ['gdas'] and do_wave in ['Y', 'YES'] and do_wave_cdump in ['GDAS', 'BOTH']:
-        #tasks += ['waveinit', 'waveprep', 'wavepostsbs', 'wavepostbndpnt', 'wavepostpnt', 'wavestat']
+        #task_tasks += ['waveinit', 'waveprep', 'wavepostsbs', 'wavepostbndpnt', 'wavepostpnt', 'wavestat']
         tasks += ['waveinit', 'waveprep', 'wavepostsbs', 'wavepostbndpnt', 'wavepostbndpntbll', 'wavepostpnt']
 
     tasks += ['fcst', 'post', 'vrfy', 'arch']
 
     if cdump in ['gfs'] and do_wave in ['Y', 'YES'] and do_wave_cdump in ['GFS', 'BOTH']:
-        #tasks += ['waveinit', 'waveprep', 'wavepostsbs', 'wavepostbndpnt', 'wavepostpnt', 'wavestat']
+        #task_tasks += ['waveinit', 'waveprep', 'wavepostsbs', 'wavepostbndpnt', 'wavepostpnt', 'wavestat']
         tasks += ['waveinit', 'waveprep', 'wavepostsbs', 'wavepostbndpnt', 'wavepostbndpntbll', 'wavepostpnt']
     if cdump in ['gfs'] and do_bufrsnd in ['Y', 'YES']:
         tasks += ['postsnd']
@@ -170,7 +170,7 @@ def get_hyb_resources(dict_configs):
 
     dict_resources = OrderedDict()
 
-    # These tasks can be run in either or both cycles
+    # These task_tasks can be run in either or both cycles
     if lobsdiag_forenkf in ['.T.', '.TRUE.']:
         tasks1 = ['eobs', 'ediag', 'eupd', 'echgres']
     else:
@@ -206,7 +206,7 @@ def get_hyb_resources(dict_configs):
             dict_resources[f'{cdump}{task}'] = ''.join(strings)
 
 
-    # These tasks are always run as part of the GDAS cycle
+    # These task_tasks are always run as part of the GDAS cycle
     cdump = 'gdas'
     tasks2 = ['ecen', 'esfc', 'efcs', 'epos', 'earc']
     for task in tasks2:
@@ -301,7 +301,7 @@ def create_xml(dict_configs):
         dict_hyb_resources = get_hyb_resources(dict_configs)
         dict_hyb_tasks = get_hyb_tasks(dict_configs)
 
-        # Removes <memory>&MEMORY_JOB_DUMP</memory> post mortem from hyb tasks
+        # Removes <memory>&MEMORY_JOB_DUMP</memory> post mortem from hyb task_tasks
         hyp_tasks = {'gdaseobs':'gdaseobs',
                      'gdasediag':'gdasediag',
                      'gdaseomg':'gdaseomn',
@@ -333,7 +333,7 @@ def create_xml(dict_configs):
     dict_gfs_resources = get_gdasgfs_resources(dict_configs, cdump='gfs')
     dict_gfs_tasks = get_gdasgfs_tasks(dict_configs, cdump='gfs')
 
-    # Removes <memory>&MEMORY_JOB_DUMP</memory> post mortem from gdas tasks
+    # Removes <memory>&MEMORY_JOB_DUMP</memory> post mortem from gdas task_tasks
     for each_task, each_resource_string in dict_gdas_resources.items():
         if each_task not in dict_gdas_tasks:
             continue
@@ -344,7 +344,7 @@ def create_xml(dict_configs):
                      temp_task_string.append(each_line)
             dict_gdas_tasks[each_task] = ''.join(temp_task_string)
 
-    # Removes <memory>&MEMORY_JOB_DUMP</memory> post mortem from gfs tasks
+    # Removes <memory>&MEMORY_JOB_DUMP</memory> post mortem from gfs task_tasks
     for each_task, each_resource_string in dict_gfs_resources.items():
         if each_task not in dict_gfs_tasks:
             continue

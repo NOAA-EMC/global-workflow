@@ -9,12 +9,10 @@ from distutils.spawn import find_executable
 from datetime import timedelta
 from typing import Dict, Any
 from rocoto import create_task, create_metatask
-from hosts import Host
-
-#SERVICE_TASKS = ['arch', 'earc', 'getic']
 
 
-def create_wf_task(task, cdump='gdas', cycledef=None, envar=None, dependency=None,
+def create_wf_task(task, resources,
+                   cdump='gdas', cycledef=None, envar=None, dependency=None,
                    metatask=None, varname=None, varval=None, vardict=None,
                    final=False):
 
@@ -27,7 +25,6 @@ def create_wf_task(task, cdump='gdas', cycledef=None, envar=None, dependency=Non
                          'varval': f'{varval}',
                          'vardict': vardict}
 
-    taskstr = f'{cdump}{taskstr}'
     cycledefstr = cdump if cycledef is None else cycledef
 
     task_dict = {'taskname': f'{taskstr}',
@@ -35,28 +32,15 @@ def create_wf_task(task, cdump='gdas', cycledef=None, envar=None, dependency=Non
                  'maxtries': '&MAXTRIES;',
                  'command': f'&JOBS_DIR;/{task}.sh',
                  'jobname': f'&PSLOT;_{taskstr}_@H',
-                 'account': '&ACCOUNT;',
-                 'queue': f'&QUEUE_{task.upper()}_{cdump.upper()};',
-                 'walltime': f'&WALLTIME_{task.upper()}_{cdump.upper()};',
-                 'native': f'&NATIVE_{task.upper()}_{cdump.upper()};',
-                 'memory': f'&MEMORY_{task.upper()}_{cdump.upper()};',
-                 'resources': f'&RESOURCES_{task.upper()}_{cdump.upper()};',
+                 'resources': resources,
                  'log': f'&ROTDIR;/logs/@Y@m@d@H/{taskstr}.log',
                  'envars': envar,
                  'dependency': dependency,
                  'final': final}
 
-    # Add partition for machines using slurm
-    if Host.get_scheduler in ['slurm']:
-        task_dict['partition'] = f'&PARTITION_{task.upper()}_{cdump.upper()};'
+    task = create_task(task_dict) if metatask is None else create_metatask(task_dict, metatask_dict)
 
-    if metatask is None:
-        task = create_task(task_dict)
-    else:
-        task = create_metatask(task_dict, metatask_dict)
-    task = ''.join(task)
-
-    return task
+    return ''.join(task)
 
 
 def check_expdir(cmd_expdir, cfg_expdir):
@@ -131,66 +115,6 @@ def get_gfs_cyc_dates(base: Dict[str, Any]) -> Dict[str, Any]:
     base_out['FHMAX_GFS'] = fhmax_gfs
 
     return base_out
-
-
-def get_resource(task_dict: dict, task_name: str, cdump: str = 'gdas') -> dict:
-    """
-    Given a task name (task_name) and its configuration (task_names),
-    return a dictionary of resources (task_resource) used by the task.
-    Task resource dictionary includes:
-    account, walltime, cores, nodes, ppn, threads, memory, queue, partition, native
-    """
-
-    SERVICE_TASKS = ['arch', 'earc', 'getic']
-    scheduler = Host.get_scheduler
-
-    account = task_dict['ACCOUNT']
-
-    walltime = task_dict[f'wtime_{task_name}']
-    if cdump in ['gfs'] and f'wtime_{task_name}_gfs' in task_dict.keys():
-        walltime = task_dict[f'wtime_{task_name}_gfs']
-
-    cores = task_dict[f'npe_{task_name}']
-    if cdump in ['gfs'] and f'npe_{task_name}_gfs' in task_dict.keys():
-        cores = task_dict[f'npe_{task_name}_gfs']
-
-    ppn = task_dict[f'npe_node_{task_name}']
-    if cdump in ['gfs'] and f'npe_node_{task_name}_gfs' in task_dict.keys():
-        ppn = task_dict[f'npe_node_{task_name}_gfs']
-
-    nodes = np.int(np.ceil(np.float(cores) / np.float(ppn)))
-
-    threads = task_dict[f'nth_{task_name}']
-    if cdump in ['gfs'] and f'nth_{task_name}_gfs' in task_dict.keys():
-        threads = task_dict[f'nth_{task_name}_gfs']
-
-    compute = f'<nodes>{nodes}:ppn={ppn}:tpp={threads}</nodes>'  # TODO - remove dependence on compute
-
-    memory = task_dict.get(f'memory_{task_name}', None)
-
-    native = '--export=NONE' if scheduler in ['slurm'] else None
-
-    queue = task_dict['QUEUE']
-    if task_name in SERVICE_TASKS and scheduler not in ['slurm']:
-        queue = task_dict['QUEUE_SERVICE']
-
-    partition = None
-    if scheduler in ['slurm']:
-        partition = task_dict['QUEUE_SERVICE'] if task_name in SERVICE_TASKS else task_dict['PARTITION_BATCH']
-
-    task_resource = {'account': account,
-                     'walltime': walltime,
-                     'nodes': nodes,
-                     'cores': cores,
-                     'ppn': ppn,
-                     'threads': threads,
-                     'compute': compute,
-                     'memory': memory,
-                     'native': native,
-                     'queue': queue,
-                     'partition': partition}
-
-    return task_resource
 
 
 def create_crontab(base, cronint=5):
