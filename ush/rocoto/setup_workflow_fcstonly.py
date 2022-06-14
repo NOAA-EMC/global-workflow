@@ -141,7 +141,7 @@ def get_definitions(base):
     if base['CDUMP'] in ["gefs"]:
         strings.append('\t<!-- ROCOTO parameters for GEFS workflow -->\n')
 
-        nens = base.get('NMEM_ENKF', 0)
+        nens = base.get('NMEM_GEFS', 0)
         MEMLIST = ""
         for iNum in range(1, nens + 1):
             MEMLIST += "p{0:02d} ".format(iNum)
