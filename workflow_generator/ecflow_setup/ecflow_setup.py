@@ -21,7 +21,7 @@ import os
 import re
 import sys
 import datetime
-from ecflow_setup.ecflow_definitions import Ecflowsuite, ecfFamilyNode
+from ecflow_setup.ecflow_definitions import Ecflowsuite, EcfFamilyNode
 
 try:
     from ecflow import Defs
@@ -432,7 +432,7 @@ class Ecflowsetup:
             if isinstance(nodes[item], dict) and item not in {'edits',
                                                               'tasks',
                                                               'triggers'}:
-                family_node = ecfFamilyNode(item, parent_node)
+                family_node = EcfFamilyNode(item, parent_node)
                 suite.add_ecfsuite_node(item, family_node)
                 for family in family_node.get_full_name_items():
                     suite.add_family(family, parents)
@@ -517,7 +517,7 @@ class Ecflowsetup:
 
             elif isinstance(nodes[item], dict) and item not in {'edits',
                                                                 'triggers'}:
-                family_node = ecfFamilyNode(item, parent_node)
+                family_node = EcfFamilyNode(item, parent_node)
                 for family in family_node.get_full_name_items():
                     index = family_node.get_full_name_items().index(family)
                     if parents:
@@ -583,7 +583,7 @@ class Ecflowsetup:
                                                  self.suite_array, parents,
                                                  parent_node, index)
             elif isinstance(nodes[item], dict):
-                family_node = ecfFamilyNode(item, parent_node)
+                family_node = EcfFamilyNode(item, parent_node)
                 for family in family_node.get_full_name_items():
                     index = family_node.get_full_name_items().index(family)
                     if parents:

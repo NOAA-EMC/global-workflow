@@ -80,7 +80,7 @@ class Ecflowsuite:
         Creates the suite and if necessary creates the base folders.
 
     get_suite( )
-        Get the ecfSuite object
+        Get the EcfSuite object
 
     get_suite_name( )
         Returns the name of the suite
@@ -128,7 +128,7 @@ class Ecflowsuite:
     add_task(task, parents, scriptrepo, template=None,
              parent_node=None, index=None)
         Adds a task to the parent node. If the build is set to true then the
-        method also calls the creation method in the ecfTask class to deploy
+        method also calls the creation method in the EcfTask class to deploy
         the script to the proper location. The script repo is where it will
         look for the script. If template is set, it will look for that template
         and then copy and change the name of the template at the destination to
@@ -203,18 +203,18 @@ class Ecflowsuite:
 
         Returns
         -------
-        new_suite : ecfSuite object
-            An ecfSuite object
+        new_suite : EcfSuite object
+            An EcfSuite object
         """
 
-        new_suite = ecfSuite(f"{suite}")
+        new_suite = EcfSuite(f"{suite}")
         if self.build_tree:
             new_suite.generate_folders(self.ecfhome)
         return new_suite
 
     def get_suite(self):
         """
-        Get the ecfSuite object
+        Get the EcfSuite object
 
         Parameters
         ----------
@@ -222,7 +222,7 @@ class Ecflowsuite:
 
         Returns
         -------
-        ecfSuite
+        EcfSuite
             The ecfsuite object that has all the contents
         """
 
@@ -252,7 +252,7 @@ class Ecflowsuite:
         ----------
         name : str
             The string name of the object
-        node : ecfnode
+        node : EcfNode
             The actual node object.
         """
 
@@ -265,12 +265,12 @@ class Ecflowsuite:
         Parameters
         ----------
         task : str
-            The name of the task to lookup in the ecfnodes dictionary.
+            The name of the task to lookup in the EcfNodes dictionary.
 
         Returns
         -------
-        ecfTask
-            An ecfTask that is an extension of the ecflow.task object.
+        EcfTask
+            An EcfTask that is an extension of the ecflow.task object.
         """
 
         return self.ecf_nodes[node]
@@ -404,7 +404,7 @@ class Ecflowsuite:
                 print(f"Node: {parent} - "
                       "Repeat has a greater increment than total time.")
             else:
-                print(f"Suite: {self.get_suite_name()} - " 
+                print(f"Suite: {self.get_suite_name()} - "
                       "Repeat has a greater increment than total time.")
             sys.exit(1)
 
@@ -497,7 +497,7 @@ class Ecflowsuite:
                 elif state is None and event is not None:
                     add_trigger = ecflow.Trigger(f"{trigger_path}:{event}")
             except KeyError as e:
-                print(f"Suite {suite} for task/trigger {parent}/{trigger}" 
+                print(f"Suite {suite} for task/trigger {parent}/{trigger}"
                       " is not available. Please check the configuration file.")
                 print("Error {e}")
                 sys.exit(1)
@@ -513,7 +513,7 @@ class Ecflowsuite:
                     add_trigger = ecflow.Trigger(f"{trigger_path}:{event}")
             except KeyError as e:
                 print(f"The node/trigger {parent}/{trigger} is not available "
-                      f"in suite {self.get_suite_name()}." 
+                      f"in suite {self.get_suite_name()}."
                       " Please check the configuration file.")
                 print(f"Error {e}")
                 sys.exit(1)
@@ -545,7 +545,7 @@ class Ecflowsuite:
 
         # If the name already exists, the family already exists
         if family_name not in self.ecf_nodes.keys():
-            self.ecf_nodes[family_name] = ecfFamily(family)
+            self.ecf_nodes[family_name] = EcfFamily(family)
             if self.build_tree:
                 self.ecf_nodes[family_name].generate_folders(self.ecfhome,
                                                              self.get_suite_name(),
@@ -585,8 +585,8 @@ class Ecflowsuite:
         """
 
         for node in edits:
-            edit_node = ecfEditNode(node, family_node)
-            value_node = ecfEditNode(edits[node], family_node)
+            edit_node = EcfEditNode(node, family_node)
+            value_node = EcfEditNode(edits[node], family_node)
             for edit in edit_node.get_full_name_items(index):
                 for value in value_node.get_full_name_items(index):
                     self.add_edit({edit: value}, family)
@@ -595,7 +595,7 @@ class Ecflowsuite:
                  parent_node=None, index=None):
         """
         Adds a task to the parent node. If the build is set to true then the
-        method also calls the creation method in the ecfTask class to deploy
+        method also calls the creation method in the EcfTask class to deploy
         the script to the proper location. The script repo is where it will
         look for the script. If template is set, it will look for that template
         and then copy and change the name of the template at the destination to
@@ -612,7 +612,7 @@ class Ecflowsuite:
         template : str
             Name of the template file to use instead of searching for the name
             of the task in the script repo.
-        parent_node : str
+        parent_node : EcfNode
             This is the parent node string that contains any looping details
             if it is a list or a range object so that can be passed into the
             task objects.
@@ -625,13 +625,11 @@ class Ecflowsuite:
         -------
         None
         """
-
-
-        task_node = ecfTaskNode(task, parent_node)
+        task_node = EcfTaskNode(task, parent_node)
         self.ecfsuite_nodes[task] = task_node
         for task_name in task_node.get_full_name_items(index):
             if task_name not in self.ecf_nodes.keys():
-                self.ecf_nodes[task_name] = ecfTask(task_name)
+                self.ecf_nodes[task_name] = EcfTask(task_name)
                 self.ecf_nodes[task_name].setup_script(scriptrepo, template)
                 if self.build_tree:
                     self.ecf_nodes[task_name].generate_ecflow_task(self.ecfhome,
@@ -677,8 +675,8 @@ class Ecflowsuite:
         for task_name in task_node.get_full_name_items(index):
             task_index = task_node.get_full_name_items().index(task_name)
             for node in edit_dict:
-                edit_node = ecfEditNode(node, node_for_edits)
-                value_node = ecfEditNode(edit_dict[node], node_for_edits)
+                edit_node = EcfEditNode(node, node_for_edits)
+                value_node = EcfEditNode(edit_dict[node], node_for_edits)
                 for edit in edit_node.get_full_name_items(task_index):
                     for value in value_node.get_full_name_items(task_index):
                         self.add_edit({edit: value}, task_name)
@@ -764,7 +762,7 @@ class Ecflowsuite:
                 node_for_events = parent_node
                 task_index = index
             for event_item in events:
-                event_node = ecfEventNode(event_item, node_for_events)
+                event_node = EcfEventNode(event_item, node_for_events)
                 for node in event_node.get_full_name_items(task_index):
                     self.add_event(node, task_name)
 
@@ -881,7 +879,7 @@ class Ecflowsuite:
                                              operand=operand)
 
 
-class ecfNode():
+class EcfNode():
     """
     This is the base class for the other classes that are used to identify any
     loops, lists, or what the item might be and also assign the name to the
@@ -920,7 +918,7 @@ class ecfNode():
         Returns the name of the node.
 
     __check_range(ecfitem)
-        Checks to see if the ecfNode is a loop. If it is, this function also
+        Checks to see if the EcfNode is a loop. If it is, this function also
         calls the supporting functions to set the range values, if there is
         a max, min, interval, or list.
 
@@ -990,11 +988,11 @@ class ecfNode():
         Parameters
         ----------
         ecfitem : str
-            Name of the ecfNode item. If it contains a range or list
+            Name of the EcfNode item. If it contains a range or list
             identifier, the other values are populated to identify what kind
             of node it is.
         ecfparent : str
-            Name of the parent for the ecfNode item. This will help determine
+            Name of the parent for the EcfNode item. This will help determine
             if the parent has the counter or if one is defined for this class
         """
         self.__items = []
@@ -1025,7 +1023,7 @@ class ecfNode():
 
     def __check_range(self, ecfitem):
         """
-        Checks to see if the ecfNode is a loop. If it is, this function also
+        Checks to see if the EcfNode is a loop. If it is, this function also
         calls the supporting functions to set the range values, if there is
         a max, min, interval, or list.
 
@@ -1414,9 +1412,9 @@ class ecfNode():
             return range(initial_count, max_value, increment)
 
 
-class ecfTaskNode(ecfNode):
+class EcfTaskNode(EcfNode):
     """
-    Extension class for the ecfNodes to identify tasks.
+    Extension class for the EcfNodes to identify tasks.
 
     Methods
     -------
@@ -1440,9 +1438,9 @@ class ecfTaskNode(ecfNode):
 
         return 'task'
 
-class ecfFamilyNode(ecfNode):
+class EcfFamilyNode(EcfNode):
     """
-    Extension class for the ecfNodes to identify tasks.
+    Extension class for the EcfNodes to identify tasks.
 
     Methods
     -------
@@ -1457,9 +1455,9 @@ class ecfFamilyNode(ecfNode):
 
         return 'family'
 
-class ecfEventNode(ecfNode):
+class EcfEventNode(EcfNode):
     """
-    Extension class for the ecfNodes to identify events.
+    Extension class for the EcfNodes to identify events.
 
     Methods
     -------
@@ -1474,16 +1472,16 @@ class ecfEventNode(ecfNode):
 
         return 'event'
 
-class ecfTriggerNode(ecfNode):
+class ecfTriggerNode(EcfNode):
     """
-    Extension class for the ecfNodes to identify triggers. Overloads the
+    Extension class for the EcfNodes to identify triggers. Overloads the
     constructors since triggers can have multiple levels within themselves
     for events and such.
 
     Attributes
     ----------
-    ecfNode : object
-        This pulls in the attributes from the ecfNode class as well.
+    EcfNode : object
+        This pulls in the attributes from the EcfNode class as well.
     task_setup : dict
         This stores the dictionary object that tracks the task setup for the
         trigger.
@@ -1542,15 +1540,15 @@ class ecfTriggerNode(ecfNode):
             A dictionary or string item that represents the current node.
         """
 
-        self._ecfNode__items = []
-        self._ecfNode__full_name_items = []
+        self._EcfNode__items = []
+        self._EcfNode__full_name_items = []
         if 'family' in ecfitem.keys():
             trigger_type = 'family'
         else:
             trigger_type = 'task'
-        self._ecfNode__check_range(ecfitem[trigger_type])
-        self._ecfNode__setup_items_list(ecfparent)
-        self._ecfNode__populate_full_name_items()
+        self._EcfNode__check_range(ecfitem[trigger_type])
+        self._EcfNode__setup_items_list(ecfparent)
+        self._EcfNode__populate_full_name_items()
         self.task_setup = ecfitem
         self.ecfparent = ecfparent
         self.trigger_type = trigger_type
@@ -1721,9 +1719,9 @@ class ecfTriggerNode(ecfNode):
         """
         if 'event' in self.task_setup.keys():
             if self.is_list or self.is_range:
-                self.event = ecfEventNode(self.task_setup['event'],self)
+                self.event = EcfEventNode(self.task_setup['event'],self)
             else:
-                self.event = ecfEventNode(self.task_setup['event'],
+                self.event = EcfEventNode(self.task_setup['event'],
                                           self.ecfparent)
             return True
         else:
@@ -1746,9 +1744,9 @@ class ecfTriggerNode(ecfNode):
               "Please review the configuration.")
         sys.exit(1)
 
-class ecfEventNode(ecfNode):
+class EcfEventNode(EcfNode):
     """
-    Extension class for the ecfNodes to identify events.
+    Extension class for the EcfNodes to identify events.
 
     Methods
     -------
@@ -1771,9 +1769,9 @@ class ecfEventNode(ecfNode):
         """
         return 'event'
 
-class ecfEditNode(ecfNode):
+class EcfEditNode(EcfNode):
     """
-    Extension class for the ecfNodes to identify edits.
+    Extension class for the EcfNodes to identify edits.
 
     Methods
     -------
@@ -1797,9 +1795,9 @@ class ecfEditNode(ecfNode):
 
         return 'edit'
 
-class ecfRoot( ):
+class EcfRoot( ):
     """
-    A root level class that is not an ecfNode object from above but an
+    A root level class that is not an EcfNode object from above but an
     object that will extend a class from the ecflow module.
 
     Methods
@@ -1825,9 +1823,9 @@ class ecfRoot( ):
         """
         return re.search("(.*)\{.*\}",self.name()).group(1).strip()
 
-class ecfSuite(ecflow.Suite, ecfRoot):
+class EcfSuite(ecflow.Suite, EcfRoot):
     """
-    Extends the ecfRoot and ecflow.Suite classes to provide an additional
+    Extends the EcfRoot and ecflow.Suite classes to provide an additional
     function when defining the suite that also it can generate the folders
     for the suite and populate the families/tasks.
 
@@ -1857,9 +1855,9 @@ class ecfSuite(ecflow.Suite, ecfRoot):
         if not os.path.exists(folder_path):
             os.makedirs(folder_path)
 
-class ecfFamily(ecflow.Family, ecfRoot):
+class EcfFamily(ecflow.Family, EcfRoot):
     """
-    Extends the ecflow.Family and ecfRoot classes to provide the folder
+    Extends the ecflow.Family and EcfRoot classes to provide the folder
     generation structure for families at the ecfhome location.
 
     Methods
@@ -1897,9 +1895,9 @@ class ecfFamily(ecflow.Family, ecfRoot):
         if not os.path.exists(folder_path):
             os.makedirs(folder_path)
 
-class ecfTask(ecflow.Task, ecfRoot):
+class EcfTask(ecflow.Task, EcfRoot):
     """
-    Extends the ecflow.Task and ecfRoot classes to allow the task scripts to
+    Extends the ecflow.Task and EcfRoot classes to allow the task scripts to
     be defined and then also created. If there is a template associated with
     the task, it will use that to create the script name in the appropriate
     location.
@@ -1975,7 +1973,7 @@ class ecfTask(ecflow.Task, ecfRoot):
             if search_script in files and ecfscript is None:
                 ecfscript = os.path.join(root, search_script)
             elif script_name in files:
-                print(f"More than one script named {script_name}. " 
+                print(f"More than one script named {script_name}. "
                       "Using the first one found.")
         try:
             if ecfscript is not None:
