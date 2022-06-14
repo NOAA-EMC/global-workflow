@@ -259,7 +259,7 @@ def input_args():
         subp.add_argument('--resens_gefs', help='resolution of the ensemble model forecast',
                             type=int, required=False, default=192)
         subp.add_argument('--nens_gefs', help='number of ensemble members',
-                            type=int, required=False, default=30)
+                            type=int, required=False, default=0)
 
     # forecast only mode additional arguments
     for subp in [forecasts, gefs]:
