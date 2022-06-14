@@ -31,6 +31,7 @@ export waveGRDN=${waveGRDN:-'1 2 3'} # gridnumber for ww3_multi
 export waveGRDG=${waveGRDG:-'10 20 30'} # gridgroup for ww3_multi
 export USE_WAV_RMP=${USE_WAV_RMP:-'YES'} #yes/no rmp grid remapping pre-processed coefficients
 export DOBNDPNT_WAVE=${DOBNDPNT_WAVE:-'YES'}
+export waveMULTIGRID=${waveMULTIGRID:-'.true.'}
 
 # ESMF input grid
 export waveesmfGRD=${waveesmfGRD:-'glox_10m'} # input grid
@@ -40,10 +41,9 @@ export WAVEWND_DID=
 export WAVEWND_FID=
 
 # Grids for output fields (used in all steps)
-export waveuoutpGRD=points
+export waveuoutpGRD=${waveuoutpGRD:-'points'} #unified point output grid
 export waveinterpGRD=${waveinterpGRD:-'glo_15mxt at_10m ep_10m wc_10m glo_30m'} # Grids that need to be interpolated from native
                              # in POST will generate grib unless gribOK not set
-export wavesbsGRD=''  # side-by-side grids generated as wave model runs, writes to com
 export wavepostGRD=${wavepostGRD:-'gnh_10m aoc_9km gsh_15m'} # Native grids that will be post-processed (grib2)
 
 
@@ -136,5 +136,22 @@ fi
 export WW3ATMIENS='F'
 export WW3ICEIENS='F'
 export WW3CURIENS='F'
+
+export GOFILETYPE=1     # GOFILETYPE=1 one gridded file per output step
+export POFILETYPE=1     # POFILETYPE=1 one point file per output step
+
+# Parameters for ww3_multi/shel.inp
+# Unified output T or F
+export FUNIPNT='T'
+# Output server type (see ww3_multi.inp in WW3 repo)
+export IOSRV=${IOSRV:-'3'}
+# Flag for dedicated output process for unified points
+export FPNTPROC='T'
+# Flag for grids sharing dedicated output processes
+export FGRDPROC='F'
+# Flag for masking computation in two-way nesting
+export FLAGMASKCOMP="F"
+# Flag for masking at printout time.
+export FLAGMASKOUT="F"
 
 echo "END: config.wave"
