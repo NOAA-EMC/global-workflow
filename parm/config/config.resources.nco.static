@@ -48,7 +48,7 @@ elif [ $step = "waveprep" ]; then
     export nth_waveprep=1
     export npe_node_waveprep=$npe_waveprep
     export npe_node_waveprep_gfs=$npe_waveprep_gfs
-    export memory_waveprep="150GB"
+    export memory_waveprep="200GB"
     export NTASKS=$npe_waveprep
     export NTASKS_gfs=$npe_waveprep_gfs
 
@@ -60,7 +60,7 @@ elif [ $step = "wavepostsbs" ]; then
     export nth_wavepostsbs=1
     export npe_node_wavepostsbs=$npe_wavepostsbs
     export memory_wavepostsbs="10GB"
-    export memory_wavepostsbs_gfs="10GB"
+    export memory_wavepostsbs_gfs="40GB"
     export NTASKS=$npe_wavepostsbs
 
 elif [ $step = "wavepostbndpnt" ]; then
@@ -179,7 +179,7 @@ elif [ $step = "wafs" ]; then
     export npe_wafs=1
     export npe_node_wafs=1
     export nth_wafs=1
-    export memory_wafs="1GB"
+    export memory_wafs="5GB"
 
 elif [ $step = "wafsgcip" ]; then
 
@@ -195,7 +195,7 @@ elif [ $step = "wafsgrib2" ]; then
     export npe_wafsgrib2=1
     export npe_node_wafsgrib2=1
     export nth_wafsgrib2=1
-    export memory_wafsgrib2="5GB"
+    export memory_wafsgrib2="60GB"
 
 elif [ $step = "wafsblending" ]; then
 
@@ -211,7 +211,7 @@ elif [ $step = "wafsgrib20p25" ]; then
     export npe_wafsgrib20p25=1
     export npe_node_wafsgrib20p25=1
     export nth_wafsgrib20p25=1
-    export memory_wafsgrib20p25="1GB"
+    export memory_wafsgrib20p25="10GB"
 
 elif [ $step = "wafsblending0p25" ]; then
 
@@ -219,7 +219,7 @@ elif [ $step = "wafsblending0p25" ]; then
     export npe_wafsblending0p25=1
     export npe_node_wafsblending0p25=1
     export nth_wafsblending0p25=1
-    export memory_wafsblending0p25="1GB"
+    export memory_wafsblending0p25="5GB"
 
 elif [ $step = "vrfy" ]; then
 
@@ -255,7 +255,7 @@ elif [ $step = "arch" -o $step = "earc" -o $step = "getic" ]; then
     eval "export npe_$step=1"
     eval "export npe_node_$step=1"
     eval "export nth_$step=1"
-    eval "export memory_$step=2048M"
+    eval "export memory_$step=50GB"
 
 elif [ $step = "eobs" -o $step = "eomg" ]; then
 
@@ -298,7 +298,7 @@ elif [ $step = "esfc" ]; then
     export nth_esfc=1
     export nth_cycle=$nth_esfc
     export npe_node_cycle=$(echo "$npe_node_max / $nth_cycle" | bc)
-    export memory_esfc="40GB"
+    export memory_esfc="80GB"
 
 elif [ $step = "efcs" ]; then
 
@@ -329,7 +329,7 @@ elif [ $step = "awips" ]; then
     export npe_awips=1
     export npe_node_awips=1
     export nth_awips=1
-    export memory_awips="3GB"
+    export memory_awips="10GB"
 
 elif [ $step = "gempak" ]; then
 
@@ -339,8 +339,8 @@ elif [ $step = "gempak" ]; then
     export npe_node_gempak=2
     export npe_node_gempak_gfs=28
     export nth_gempak=1
-    export memory_gempak="4GB"
-    export memory_gempak_gfs="2GB"
+    export memory_gempak="20GB"
+    export memory_gempak_gfs="200GB"
 
 else
 
