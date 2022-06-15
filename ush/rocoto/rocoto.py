@@ -341,7 +341,7 @@ def create_envar(name: str, value: Union[str, float, int]) -> str:
     :rtype: str
     """
 
-    return f'<envars><name>{name}</name><value>{str(value)}</value></envars>'
+    return f'<envar><name>{name}</name><value>{str(value)}</value></envar>'
 
 
 def create_cycledef(group=None, start=None, stop=None, step=None):

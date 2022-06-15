@@ -75,6 +75,7 @@ def get_gfs_cyc_dates(base: Dict[str, Any]) -> Dict[str, Any]:
     gfs_cyc = base['gfs_cyc']
     sdate = base['SDATE']
     edate = base['EDATE']
+    base_out['INTERVAL'] = '06:00:00'  # Cycled interval is 6 hours
 
     interval_gfs = get_gfs_interval(gfs_cyc)
 

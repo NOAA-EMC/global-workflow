@@ -2,24 +2,31 @@
 
 from datetime import datetime
 from collections import OrderedDict
-from hosts import Host
 import rocoto
-from applications import Application
+from applications import AppConfig
+from workflow_tasks import get_wf_tasks
 
 
 class RocotoXML:
 
-    def __init__(self, app: Application) -> None:
+    def __init__(self, app_config: AppConfig) -> None:
 
-        self._app = app
+        # Initialize variables
+        self.xml = None
 
-        self._base = self._app.job_configs['base']
+        self._app_config = app_config
 
-        self.preamble = self._get_preamble
+        self._base = self._app_config.configs['base']
+
+        self.preamble = self._get_preamble()
         self.definitions = self._get_definitions()
-        self.header = self._get_workflow_header
+        self.header = self._get_workflow_header()
         self.cycledefs = self._get_cycledefs()
-        self.footer = self._get_workflow_footer
+        task_list = get_wf_tasks(app_config)
+        self.tasks = ''.join(task_list)
+        self.footer = self._get_workflow_footer()
+
+        self.xml = self.assemble_xml()
 
     @staticmethod
     def _get_preamble():
@@ -36,7 +43,8 @@ class RocotoXML:
                    '',
                    '\tNOTES:',
                    f'\t\tThis workflow was automatically generated at {datetime.now()}',
-                   '\t-->']
+                   '\t-->',
+                   '']
 
         return '\n'.join(strings)
 
@@ -45,25 +53,21 @@ class RocotoXML:
         Create entities related to the experiment
         """
 
-        host = Host()
-
-        scheduler = host.scheduler
-
         entity = OrderedDict()
 
         entity['PSLOT'] = self._base['PSLOT']
         entity['SDATE'] = self._base['SDATE'].strftime('%Y%m%d%H%M')
         entity['EDATE'] = self._base['EDATE'].strftime('%Y%m%d%H%M')
 
-        if self._app.mode in ['cycled']:
-            entity['INTERVAL'] = '06:00:00'
+        if self._app_config.mode in ['cycled']:
+            entity['INTERVAL'] = self._base.get('INTERVAL', '06:00:00')
             if self._base['gfs_cyc'] in [1, 2, 4]:
                 entity['SDATE_GFS'] = self._base['SDATE_GFS'].strftime('%Y%m%d%H%M')
                 entity['EDATE_GFS'] = self._base['EDATE_GFS'].strftime('%Y%m%d%H%M')
                 entity['INTERVAL_GFS'] = self._base['INTERVAL_GFS']
             entity['DMPDIR'] = self._base['DMPDIR']
 
-        elif self._app.mode in ['forecast-only']:
+        elif self._app_config.mode in ['forecast-only']:
             entity['INTERVAL'] = self._base.get('INTERVAL_GFS', '24:00:00')
             entity['CDUMP'] = self._base['CDUMP']
             entity['CASE'] = self._base['CASE']  # TODO - is this really used in the XML?
@@ -74,18 +78,9 @@ class RocotoXML:
         entity['RUN_ENVIR'] = self._base.get('RUN_ENVIR', 'emc')
         entity['HOMEgfs'] = self._base['HOMEgfs']
         entity['JOBS_DIR'] = self._base['BASE_JOB']
-        entity['ACCOUNT'] = self._base['ACCOUNT']
-        entity['QUEUE'] = self._base['QUEUE']
-        entity['QUEUE_SERVICE'] = self._base['QUEUE_SERVICE']
-        entity['SCHEDULER'] = scheduler
-        if scheduler in ['slurm']:
-            entity['PARTITION_BATCH'] = self._base['PARTITION_BATCH']
-            entity['PARTITION_SERVICE'] = self._base['PARTITION_SERVICE']
         entity['ARCHIVE_TO_HPSS'] = self._base.get('HPSSARCH', 'NO')
-        entity['CYCLETHROTTLE'] = self._base.get('ROCOTO_CYCLETHROTTLE', 3)
-        entity['TASKTHROTTLE'] = self._base.get('ROCOTO_TASKTHROTTLE', 25)
+
         entity['MAXTRIES'] = self._base.get('ROCOTO_MAXTRIES', 2)
-        entity['VERBOSITY'] = self._base.get('ROCOTO_VERBOSITY', 10)
 
         # Put them all in an XML key-value syntax
         strings = []
@@ -94,20 +89,25 @@ class RocotoXML:
 
         return '\n'.join(strings)
 
-    @staticmethod
-    def _get_workflow_header():
+    def _get_workflow_header(self):
         """
         Create the workflow header block
         """
 
+        scheduler = self._app_config.scheduler
+        cyclethrottle = self._base.get('ROCOTO_CYCLETHROTTLE', 3)
+        taskthrottle = self._base.get('ROCOTO_TASKTHROTTLE', 25)
+        verbosity = self._base.get('ROCOTO_VERBOSITY', 10)
+
         strings = ['',
                    ']>',
                    '',
-                   '<workflow realtime="F" scheduler="&SCHEDULER;" cyclethrottle="&CYCLETHROTTLE;" taskthrottle="&TASKTHROTTLE;">',
+                   f'<workflow realtime="F" scheduler="{scheduler}" cyclethrottle="{cyclethrottle}" taskthrottle="{taskthrottle}">',
                    '',
-                   '\t<log verbosity="10"><cyclestr>&EXPDIR;/logs/@Y@m@d@H.log</cyclestr></log>',
+                   f'\t<log verbosity="{verbosity}"><cyclestr>&EXPDIR;/logs/@Y@m@d@H.log</cyclestr></log>',
                    '',
-                   '\t<!-- Define the cycles -->']
+                   '\t<!-- Define the cycles -->',
+                   '']
 
         return '\n'.join(strings)
 
@@ -117,23 +117,26 @@ class RocotoXML:
                         'forecast-only': self._get_cycledefs_forecast_only}
 
         try:
-            cycledef_map[self._app.mode]()
+            cycledefs = cycledef_map[self._app_config.mode]()
         except KeyError:
-            raise TypeError(f'{self._app.mode} is not a valid application.' +
-                            'Current plot types supported are:\n' +
-                            f'{" | ".join(cycledef_map.keys())}"')
+            raise KeyError(f'{self._app_config.mode} is not a valid application mode.\n' +
+                           'Valid application modes are:\n' +
+                           f'{", ".join(cycledef_map.keys())}')
+
+        return cycledefs
 
     def _get_cycledefs_cycled(self):
-        strings = ['\t<cycledef group="first">&SDATE;     &SDATE;     06:00:00</cycledef>',
-                   '\t<cycledef group="enkf" >&SDATE;     &EDATE;     06:00:00</cycledef>',
-                   '\t<cycledef group="gdas" >&SDATE;     &EDATE;     06:00:00</cycledef>']
-        if self._app.gfs_cyc != 0:
+        strings = ['\t<cycledef group="first">&SDATE;     &SDATE;     &INTERVAL;</cycledef>',
+                   '\t<cycledef group="enkf" >&SDATE;     &EDATE;     &INTERVAL;</cycledef>',
+                   '\t<cycledef group="gdas" >&SDATE;     &EDATE;     &INTERVAL;</cycledef>']
+        if self._app_config.gfs_cyc != 0:
             strings.append('\t<cycledef group="gfs"  >&SDATE_GFS; &EDATE_GFS; &INTERVAL_GFS;</cycledef>')
+            strings.append('')
+            strings.append('')
 
         return '\n'.join(strings)
 
-    @staticmethod
-    def _get_cycledefs_forecast_only():
+    def _get_cycledefs_forecast_only(self):
         strings = f'\t<cycledef group="cdump">&SDATE; &EDATE; &INTERVAL;</cycledef>'
 
         return strings
@@ -146,6 +149,18 @@ class RocotoXML:
 
         return '\n</workflow>\n'
 
+    def assemble_xml(self) -> str:
 
-def create_xml():
-    return None
+        strings = [self.preamble,
+                   self.definitions,
+                   self.header,
+                   self.cycledefs,
+                   self.tasks,
+                   self.footer]
+
+        return ''.join(strings)
+
+    def write(self, xml_file: str) -> None:
+
+        with open(xml_file, 'w') as fh:
+            fh.write(self.xml)

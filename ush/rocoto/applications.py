@@ -3,25 +3,24 @@
 from typing import Dict, Any
 from configuration import Configuration
 import workflow_utils as wfu
-#from workflow_tasks import Tasks
+from hosts import Host
 
+class AppConfig:
 
-class Application:
     VALID_MODES = ['cycled', 'forecast-only']
 
     def __init__(self, mode: str, configuration: Configuration) -> None:
 
-        self.task_names = None
-        self.task_tasks = None
         if mode not in self.VALID_MODES:
             raise NotImplementedError(f'{mode} is not a valid application mode.\n' +
                                       'Valid application modes are:\n' +
                                       f'{", ".join(self.VALID_MODES)}')
 
         self.mode = mode
-        self.cfg = configuration
 
-        _base = self.cfg.parse_config('config.base')
+        self.scheduler = Host.get_scheduler
+
+        _base = configuration.parse_config('config.base')
 
         self.model_app = _base.get('APP', 'ATM')
         self.do_hybvar = _base.get('DOHYBVAR', False)
@@ -39,30 +38,26 @@ class Application:
 
         self.do_hpssarch = _base.get('HPSSARCH', False)
 
-        # Get a list of all possible jobs that would be part of the application
-        jobs_map = {'cycled': self._cycled_jobs,
-                    'forecast-only': self._forecast_only_jobs}
-        try:
-            self.job_names = jobs_map[self.mode]
-        except KeyError:
-            raise NotImplementedError(f'{self.mode} is not a valid application mode.\n' +
-                                      'Valid application modes are:\n' +
-                                      f'{", ".join(self.VALID_MODES)}')
+        # Get a list of all possible configs that would be part of the application
+        self.configs_names = self._get_app_configs()
 
-        # Source the configs for all the jobs in the application
-        self.job_configs = self.source_configs()
+        # Source the configs for the jobs in the application
+        self.configs = self._source_configs(configuration)
 
         # Update the base config dictionary based on application
         upd_base_map = {'cycled': self._cycled_upd_base,
                         'forecast-only': self._forecast_only_upd_base}
         try:
-            self.job_configs['base'] = upd_base_map[self.mode](self.job_configs['base'])
+            self.configs['base'] = upd_base_map[self.mode](self.configs['base'])
         except KeyError:
             raise NotImplementedError(f'{self.mode} is not a valid application mode.\n' +
                                       'Valid application modes are:\n' +
                                       f'{", ".join(self.VALID_MODES)}')
 
-        self._base = self.job_configs['base']
+        # Save base in the internal state since it is often needed
+        self._base = self.configs['base']
+
+        # Get more configuration options into the class attributes
         self.gfs_cyc = self._base.get('gfs_cyc')
 
         if self.do_hybvar:
@@ -79,83 +74,99 @@ class Application:
                 self.wave_cdumps = ['gfs', 'gdas']
             elif wave_cdump in ['gfs', 'gdas']:
                 self.wave_cdumps = [wave_cdump]
-            self.do_wave_bnd = self.job_configs['wavepostsbs'].get('DOBNDPNT_WAVE', False)
+            self.do_wave_bnd = self.configs['wavepostsbs'].get('DOBNDPNT_WAVE', False)
+
+        # Finally get task names for the application
+        self.task_names = self.get_task_names()
+
+    def _get_app_configs(self):
+
+        configs_map = {'cycled': self._cycled_configs,
+                       'forecast-only': self._forecast_only_configs}
+        try:
+            configs_names = configs_map[self.mode]
+        except KeyError:
+            raise NotImplementedError(f'{self.mode} is not a valid application mode.\n' +
+                                      'Valid application modes are:\n' +
+                                      f'{", ".join(self.VALID_MODES)}')
+
+        return configs_names
 
     @property
-    def _cycled_jobs(self):
+    def _cycled_configs(self):
         """
-        Returns the jobs that are involved in the cycled app
+        Returns the configs that are involved in the cycled app_config
         """
 
-        jobs = ['prep',
-                'anal', 'analdiag', 'analcalc', 'gldas',
-                'fcst', 'post', 'vrfy', 'arch']
+        configs = ['prep',
+                   'anal', 'analdiag', 'analcalc', 'gldas',
+                   'fcst', 'post', 'vrfy', 'arch']
 
         if self.do_hybvar:
-            jobs += ['eobs', 'eomg', 'ediag', 'eupd', 'ecen', 'esfc', 'efcs', 'echgres', 'epos', 'earc']
+            configs += ['eobs', 'eomg', 'ediag', 'eupd', 'ecen', 'esfc', 'efcs', 'echgres', 'epos', 'earc']
 
         if self.do_metp:
-            jobs += ['metp']
+            configs += ['metp']
 
         if self.do_gempak:
-            jobs += ['gempak']
+            configs += ['gempak']
 
         if self.do_awips:
-            jobs += ['awips']
+            configs += ['awips']
 
         if self.do_wave:
-            jobs += ['waveinit', 'waveprep', 'wavepostsbs', 'wavepostbndpnt', 'wavepostbndpntbll', 'wavepostpnt']
+            configs += ['waveinit', 'waveprep', 'wavepostsbs', 'wavepostbndpnt', 'wavepostbndpntbll', 'wavepostpnt']
             if self.do_gempak:
-                jobs += ['wavegempak']
+                configs += ['wavegempak']
             if self.do_awips:
-                jobs += ['waveawipsbulls', 'waveawipsgridded']
+                configs += ['waveawipsbulls', 'waveawipsgridded']
 
         if self.do_wafs:
-            jobs += ['wafs', 'wafsgrib2', 'wafsblending', 'wafsgcip', 'wafsgrib20p25', 'wafsblending0p25']
+            configs += ['wafs', 'wafsgrib2', 'wafsblending', 'wafsgcip', 'wafsgrib20p25', 'wafsblending0p25']
 
-        return jobs
+        return configs
 
     @property
-    def _forecast_only_jobs(self):
+    def _forecast_only_configs(self):
         """
-        Returns the jobs that are involved in the forecast-only app
+        Returns the configs that are involved in the forecast-only app_config
         """
 
-        jobs = ['fcst', 'post', 'vrfy', 'arch']
+        configs = ['fcst', 'post', 'vrfy', 'arch']
 
         if self.model_app in ['S2S', 'S2SW']:
-            jobs += ['coupled_ic']
+            configs += ['coupled_ic']
         else:
-            jobs += ['init']
+            configs += ['init']
             if self.do_hpssarch:
-                jobs += ['getic']
+                configs += ['getic']
 
         if self.do_aero:
-            jobs += ['aerosol_init']
+            configs += ['aerosol_init']
 
         if self.do_ocean or self.do_ice:
-            jobs += ['ocnpost']
+            configs += ['ocnpost']
 
         if self.do_metp:
-            jobs += ['metp']
+            configs += ['metp']
 
         if self.do_gempak:
-            jobs += ['gempak']
+            configs += ['gempak']
 
         if self.do_awips:
-            jobs += ['awips']
+            configs += ['awips']
 
         if self.do_wave:
-            jobs += ['waveinit', 'waveprep', 'wavepostsbs', 'wavepostbndpnt', 'wavepostbndpntbll', 'wavepostpnt']
+            configs += ['waveinit', 'waveprep', 'wavepostsbs', 'wavepostbndpnt', 'wavepostbndpntbll', 'wavepostpnt']
             if self.do_gempak:
-                jobs += ['wavegempak']
+                configs += ['wavegempak']
             if self.do_awips:
-                jobs += ['waveawipsbulls', 'waveawipsgridded']
+                configs += ['waveawipsbulls', 'waveawipsgridded']
 
         if self.do_wafs:
-            jobs += ['wafs', 'wafsgrib2', 'wafsblending', 'wafsgcip', 'wafsgrib20p25', 'wafsblending0p25']
+            configs += ['wafs', 'wafsgrib2', 'wafsblending', 'wafsgcip', 'wafsgrib20p25', 'wafsblending0p25']
 
-        return jobs
+        return configs
 
     @staticmethod
     def _cycled_upd_base(base_in):
@@ -170,22 +181,22 @@ class Application:
 
         return base_out
 
-    def source_configs(self) -> Dict[str, Any]:
+    def _source_configs(self, configuration: Configuration) -> Dict[str, Any]:
         """
         Given the configuration object and jobs,
         source the configurations for each job and return a dictionary
         Every job depends on "config.base"
         """
 
-        dict_jobs = dict()
+        configs = dict()
 
         # Return config.base as well
-        dict_jobs['base'] = self.cfg.parse_config('config.base')
+        configs['base'] = configuration.parse_config('config.base')
 
-        # Source the list of input task_tasks
-        for job in self.job_names:
+        # Source the list of all configs involved in the application
+        for job in self.configs_names:
 
-            # All task_tasks must source config.base first
+            # All must source config.base first
             files = ['config.base']
 
             if job in ['eobs', 'eomg']:
@@ -200,9 +211,9 @@ class Application:
                 files += [f'config.{job}']
 
             print(f'sourcing config.{job}')
-            dict_jobs[job] = self.cfg.parse_config(files)
+            configs[job] = configuration.parse_config(files)
 
-        return dict_jobs
+        return configs
 
     def get_task_names(self):
 
@@ -210,11 +221,13 @@ class Application:
         tasks_map = {'cycled': self._get_cycled_task_names,
                      'forecast-only': self._get_forecast_only_task_names}
         try:
-            self.task_names = tasks_map[self.mode]()
+            task_names = tasks_map[self.mode]()
         except KeyError:
             raise NotImplementedError(f'{self.mode} is not a valid application mode.\n' +
                                       'Valid application modes are:\n' +
                                       f'{", ".join(self.VALID_MODES)}')
+
+        return task_names
 
     def _get_cycled_task_names(self):
 
@@ -314,6 +327,12 @@ class Application:
 
         return {'cdump': tasks}
 
+
+class App:
+
+    def __init__(self, app_config: AppConfig):
+        self.app_config = app_config
+
     def get_tasks(self):
 
         self.task_tasks = dict()
@@ -323,3 +342,10 @@ class Application:
     def assemble_tasks(self):
 
         return None
+
+    def get_app_configuration(self):
+
+       config =  type('AppConfig',(),{})  #  Initialize a class; type(classname, superclasses, attributedict)
+
+       config.mode = self.mode
+
