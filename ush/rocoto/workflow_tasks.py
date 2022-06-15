@@ -774,7 +774,7 @@ class Tasks:
 
         return task
 
-    # Start of ensemble task_tasks
+    # Start of ensemble tasks
     def eobs(self):
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump}prep'}

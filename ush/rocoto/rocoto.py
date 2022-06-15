@@ -7,7 +7,7 @@ from typing import Union, List, Dict, Any
         rocoto.py
 
     ABOUT:
-        Helper module to create task_tasks, metatasks, and dependencies for Rocoto
+        Helper module to create tasks, metatasks, and dependencies for Rocoto
 '''
 
 __all__ = ['create_task', 'create_metatask',

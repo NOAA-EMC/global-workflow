@@ -217,7 +217,7 @@ class AppConfig:
 
     def get_task_names(self):
 
-        # Get a list of all possible task_tasks that would be part of the application
+        # Get a list of all possible tasks that would be part of the application
         tasks_map = {'cycled': self._get_cycled_task_names,
                      'forecast-only': self._get_forecast_only_task_names}
         try:
@@ -242,7 +242,7 @@ class AppConfig:
         hybrid_tasks += ['ediag'] if self.lobsdiag_forenkf else ['eomg']
         hybrid_gdas_tasks = ['ecen', 'esfc', 'efcs', 'epos', 'earc']
 
-        # First collect all gdas task_tasks
+        # First collect all gdas tasks
         gdas_tasks = tasks + gdas_only_tasks
 
         if self.do_gldas:
@@ -256,7 +256,7 @@ class AppConfig:
                 gdas_tasks += hybrid_tasks
                 gdas_tasks += hybrid_gdas_tasks
 
-        # Now collect gfs task_tasks
+        # Now collect gfs tasks
         gfs_tasks = tasks
 
         if self.do_hybvar:
@@ -326,26 +326,4 @@ class AppConfig:
             tasks += ['metp']
 
         return {'cdump': tasks}
-
-
-class App:
-
-    def __init__(self, app_config: AppConfig):
-        self.app_config = app_config
-
-    def get_tasks(self):
-
-        self.task_tasks = dict()
-        #for cdump in self.task_names.keys():
-        #    self.task_tasks[cdump] = Tasks(self, cdump)
-
-    def assemble_tasks(self):
-
-        return None
-
-    def get_app_configuration(self):
-
-       config =  type('AppConfig',(),{})  #  Initialize a class; type(classname, superclasses, attributedict)
-
-       config.mode = self.mode
 
