@@ -292,193 +292,6 @@
 
  END SUBROUTINE NEWPR1
 
- SUBROUTINE TERP3(IM,IXZ1,IXQ1,IXZ2,IXQ2,NM,NXQ1,NXQ2,             &
-                  KM1,KXZ1,KXQ1,Z1,Q1,KM2,KXZ2,KXQ2,Z2,Q2,J2)
-!$$$  SUBPROGRAM DOCUMENTATION BLOCK
-!
-! SUBPROGRAM:    TERP3       CUBICALLY INTERPOLATE IN ONE DIMENSION
-!   PRGMMR: IREDELL          ORG: W/NMC23     DATE: 98-05-01
-!
-! ABSTRACT: INTERPOLATE FIELD(S) IN ONE DIMENSION ALONG THE COLUMN(S).
-!   THE INTERPOLATION IS CUBIC LAGRANGIAN WITH A MONOTONIC CONSTRAINT
-!   IN THE CENTER OF THE DOMAIN.  IN THE OUTER INTERVALS IT IS LINEAR.
-!   OUTSIDE THE DOMAIN, FIELDS ARE HELD CONSTANT.
-!
-! PROGRAM HISTORY LOG:
-!   98-05-01  MARK IREDELL
-! 1999-01-04  IREDELL  USE ESSL SEARCH
-!
-! USAGE:    CALL TERP3(IM,IXZ1,IXQ1,IXZ2,IXQ2,NM,NXQ1,NXQ2,
-!    &                 KM1,KXZ1,KXQ1,Z1,Q1,KM2,KXZ2,KXQ2,Z2,Q2,J2)
-!   INPUT ARGUMENT LIST:
-!     IM           INTEGER NUMBER OF COLUMNS
-!     IXZ1         INTEGER COLUMN SKIP NUMBER FOR Z1
-!     IXQ1         INTEGER COLUMN SKIP NUMBER FOR Q1
-!     IXZ2         INTEGER COLUMN SKIP NUMBER FOR Z2
-!     IXQ2         INTEGER COLUMN SKIP NUMBER FOR Q2
-!     NM           INTEGER NUMBER OF FIELDS PER COLUMN
-!     NXQ1         INTEGER FIELD SKIP NUMBER FOR Q1
-!     NXQ2         INTEGER FIELD SKIP NUMBER FOR Q2
-!     KM1          INTEGER NUMBER OF INPUT POINTS
-!     KXZ1         INTEGER POINT SKIP NUMBER FOR Z1
-!     KXQ1         INTEGER POINT SKIP NUMBER FOR Q1
-!     Z1           REAL (1+(IM-1)*IXZ1+(KM1-1)*KXZ1)
-!                  INPUT COORDINATE VALUES IN WHICH TO INTERPOLATE
-!                  (Z1 MUST BE STRICTLY MONOTONIC IN EITHER DIRECTION)
-!     Q1           REAL (1+(IM-1)*IXQ1+(KM1-1)*KXQ1+(NM-1)*NXQ1)
-!                  INPUT FIELDS TO INTERPOLATE
-!     KM2          INTEGER NUMBER OF OUTPUT POINTS
-!     KXZ2         INTEGER POINT SKIP NUMBER FOR Z2
-!     KXQ2         INTEGER POINT SKIP NUMBER FOR Q2
-!     Z2           REAL (1+(IM-1)*IXZ2+(KM2-1)*KXZ2)
-!                  OUTPUT COORDINATE VALUES TO WHICH TO INTERPOLATE
-!                  (Z2 NEED NOT BE MONOTONIC)
-!
-!   OUTPUT ARGUMENT LIST:
-!     Q2           REAL (1+(IM-1)*IXQ2+(KM2-1)*KXQ2+(NM-1)*NXQ2)
-!                  OUTPUT INTERPOLATED FIELDS
-!     J2           REAL (1+(IM-1)*IXQ2+(KM2-1)*KXQ2+(NM-1)*NXQ2)
-!                  OUTPUT INTERPOLATED FIELDS CHANGE WRT Z2
-!
-! SUBPROGRAMS CALLED:
-!   RSEARCH      SEARCH FOR A SURROUNDING REAL INTERVAL
-!
-! ATTRIBUTES:
-!   LANGUAGE: FORTRAN
-!
-!C$$$
-      IMPLICIT NONE
-      INTEGER IM,IXZ1,IXQ1,IXZ2,IXQ2,NM,NXQ1,NXQ2
-      INTEGER KM1,KXZ1,KXQ1,KM2,KXZ2,KXQ2
-      INTEGER I,K1,K2,N
-      REAL Z1(1+(IM-1)*IXZ1+(KM1-1)*KXZ1)
-      REAL Q1(1+(IM-1)*IXQ1+(KM1-1)*KXQ1+(NM-1)*NXQ1)
-      REAL Z2(1+(IM-1)*IXZ2+(KM2-1)*KXZ2)
-      REAL Q2(1+(IM-1)*IXQ2+(KM2-1)*KXQ2+(NM-1)*NXQ2)
-      REAL J2(1+(IM-1)*IXQ2+(KM2-1)*KXQ2+(NM-1)*NXQ2)
-      REAL FFA(IM),FFB(IM),FFC(IM),FFD(IM)
-      REAL GGA(IM),GGB(IM),GGC(IM),GGD(IM)
-      INTEGER K1S(IM,KM2)
-      REAL Z1A,Z1B,Z1C,Z1D,Q1A,Q1B,Q1C,Q1D,Z2S,Q2S,J2S
-! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-!  FIND THE SURROUNDING INPUT INTERVAL FOR EACH OUTPUT POINT.
-      CALL RSEARCH(IM,KM1,IXZ1,KXZ1,Z1,KM2,IXZ2,KXZ2,Z2,1,IM,K1S)
-! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-!  GENERALLY INTERPOLATE CUBICALLY WITH MONOTONIC CONSTRAINT
-!  FROM TWO NEAREST INPUT POINTS ON EITHER SIDE OF THE OUTPUT POINT,
-!  BUT WITHIN THE TWO EDGE INTERVALS INTERPOLATE LINEARLY.
-!  KEEP THE OUTPUT FIELDS CONSTANT OUTSIDE THE INPUT DOMAIN.
-
-!!$OMP PARALLEL DO DEFAULT(PRIVATE) SHARED(IM,IXZ1,IXQ1,IXZ2), &
-!!$OMP& SHARED(IXQ2,NM,NXQ1,NXQ2,KM1,KXZ1,KXQ1,Z1,Q1,KM2,KXZ2), &
-!!$OMP& SHARED(KXQ2,Z2,Q2,J2,K1S)
-
-      DO K2=1,KM2
-        DO I=1,IM
-          K1=K1S(I,K2)
-          IF(K1.EQ.1.OR.K1.EQ.KM1-1) THEN
-            Z2S=Z2(1+(I-1)*IXZ2+(K2-1)*KXZ2)
-            Z1A=Z1(1+(I-1)*IXZ1+(K1-1)*KXZ1)
-            Z1B=Z1(1+(I-1)*IXZ1+(K1+0)*KXZ1)
-            FFA(I)=(Z2S-Z1B)/(Z1A-Z1B)
-            FFB(I)=(Z2S-Z1A)/(Z1B-Z1A)
-            GGA(I)=1/(Z1A-Z1B)
-            GGB(I)=1/(Z1B-Z1A)
-          ELSEIF(K1.GT.1.AND.K1.LT.KM1-1) THEN
-            Z2S=Z2(1+(I-1)*IXZ2+(K2-1)*KXZ2)
-            Z1A=Z1(1+(I-1)*IXZ1+(K1-2)*KXZ1)
-            Z1B=Z1(1+(I-1)*IXZ1+(K1-1)*KXZ1)
-            Z1C=Z1(1+(I-1)*IXZ1+(K1+0)*KXZ1)
-            Z1D=Z1(1+(I-1)*IXZ1+(K1+1)*KXZ1)
-            FFA(I)=(Z2S-Z1B)/(Z1A-Z1B)*                                 &
-                   (Z2S-Z1C)/(Z1A-Z1C)*                                 &
-                   (Z2S-Z1D)/(Z1A-Z1D)
-            FFB(I)=(Z2S-Z1A)/(Z1B-Z1A)*                                 &
-                   (Z2S-Z1C)/(Z1B-Z1C)*                                 &
-                   (Z2S-Z1D)/(Z1B-Z1D)
-            FFC(I)=(Z2S-Z1A)/(Z1C-Z1A)*                                 &
-                   (Z2S-Z1B)/(Z1C-Z1B)*                                 &
-                   (Z2S-Z1D)/(Z1C-Z1D)
-            FFD(I)=(Z2S-Z1A)/(Z1D-Z1A)*                                 &
-                   (Z2S-Z1B)/(Z1D-Z1B)*                                 &
-                   (Z2S-Z1C)/(Z1D-Z1C)
-            GGA(I)=        1/(Z1A-Z1B)*                                 &
-                   (Z2S-Z1C)/(Z1A-Z1C)*                                 &
-                   (Z2S-Z1D)/(Z1A-Z1D)+                                 &
-                   (Z2S-Z1B)/(Z1A-Z1B)*                                 &
-                           1/(Z1A-Z1C)*                                 &
-                   (Z2S-Z1D)/(Z1A-Z1D)+                                 &
-                   (Z2S-Z1B)/(Z1A-Z1B)*                                 &
-                   (Z2S-Z1C)/(Z1A-Z1C)*                                 &
-                           1/(Z1A-Z1D)
-            GGB(I)=        1/(Z1B-Z1A)*                                 &
-                   (Z2S-Z1C)/(Z1B-Z1C)*                                 &
-                   (Z2S-Z1D)/(Z1B-Z1D)+                                 &
-                   (Z2S-Z1A)/(Z1B-Z1A)*                                 &
-                           1/(Z1B-Z1C)*                                 &
-                   (Z2S-Z1D)/(Z1B-Z1D)+                                 &
-                   (Z2S-Z1A)/(Z1B-Z1A)*                                 &
-                   (Z2S-Z1C)/(Z1B-Z1C)*                                 &
-                           1/(Z1B-Z1D)
-            GGC(I)=        1/(Z1C-Z1A)*                                 &
-                   (Z2S-Z1B)/(Z1C-Z1B)*                                 &
-                   (Z2S-Z1D)/(Z1C-Z1D)+                                 &
-                   (Z2S-Z1A)/(Z1C-Z1A)*                                 &
-                           1/(Z1C-Z1B)*                                 &
-                   (Z2S-Z1D)/(Z1C-Z1D)+                                 &
-                   (Z2S-Z1A)/(Z1C-Z1A)*                                 &
-                   (Z2S-Z1B)/(Z1C-Z1B)*                                 &
-                           1/(Z1C-Z1D)
-            GGD(I)=        1/(Z1D-Z1A)*                                 &
-                   (Z2S-Z1B)/(Z1D-Z1B)*                                 &
-                   (Z2S-Z1C)/(Z1D-Z1C)+                                 &
-                   (Z2S-Z1A)/(Z1D-Z1A)*                                 &
-                           1/(Z1D-Z1B)*                                 &
-                   (Z2S-Z1C)/(Z1D-Z1C)+                                 &
-                   (Z2S-Z1A)/(Z1D-Z1A)*                                 &
-                   (Z2S-Z1B)/(Z1D-Z1B)*                                 &
-                           1/(Z1D-Z1C)
-          ENDIF
-        ENDDO
-!  INTERPOLATE.
-        DO N=1,NM
-          DO I=1,IM
-            K1=K1S(I,K2)
-            IF(K1.EQ.0) THEN
-              Q2S=Q1(1+(I-1)*IXQ1+(N-1)*NXQ1)
-              J2S=0
-            ELSEIF(K1.EQ.KM1) THEN
-              Q2S=Q1(1+(I-1)*IXQ1+(KM1-1)*KXQ1+(N-1)*NXQ1)
-              J2S=0
-            ELSEIF(K1.EQ.1.OR.K1.EQ.KM1-1) THEN
-              Q1A=Q1(1+(I-1)*IXQ1+(K1-1)*KXQ1+(N-1)*NXQ1)
-              Q1B=Q1(1+(I-1)*IXQ1+(K1+0)*KXQ1+(N-1)*NXQ1)
-              Q2S=FFA(I)*Q1A+FFB(I)*Q1B
-              J2S=GGA(I)*Q1A+GGB(I)*Q1B
-            ELSE
-              Q1A=Q1(1+(I-1)*IXQ1+(K1-2)*KXQ1+(N-1)*NXQ1)
-              Q1B=Q1(1+(I-1)*IXQ1+(K1-1)*KXQ1+(N-1)*NXQ1)
-              Q1C=Q1(1+(I-1)*IXQ1+(K1+0)*KXQ1+(N-1)*NXQ1)
-              Q1D=Q1(1+(I-1)*IXQ1+(K1+1)*KXQ1+(N-1)*NXQ1)
-              Q2S=FFA(I)*Q1A+FFB(I)*Q1B+FFC(I)*Q1C+FFD(I)*Q1D
-              J2S=GGA(I)*Q1A+GGB(I)*Q1B+GGC(I)*Q1C+GGD(I)*Q1D
-              IF(Q2S.LT.MIN(Q1B,Q1C)) THEN
-                Q2S=MIN(Q1B,Q1C)
-                J2S=0
-              ELSEIF(Q2S.GT.MAX(Q1B,Q1C)) THEN
-                Q2S=MAX(Q1B,Q1C)
-                J2S=0
-              ENDIF
-            ENDIF
-            Q2(1+(I-1)*IXQ2+(K2-1)*KXQ2+(N-1)*NXQ2)=Q2S
-            J2(1+(I-1)*IXQ2+(K2-1)*KXQ2+(N-1)*NXQ2)=J2S
-          ENDDO
-        ENDDO
-      ENDDO
-!!$OMP END PARALLEL DO
-
- END SUBROUTINE TERP3
-
  SUBROUTINE RSEARCH(IM,KM1,IXZ1,KXZ1,Z1,KM2,IXZ2,KXZ2,Z2,IXL2,KXL2,&
                          L2)
 !$$$  SUBPROGRAM DOCUMENTATION BLOCK
@@ -604,40 +417,46 @@
 !
       IMPLICIT NONE
       INTEGER,INTENT(IN):: IM,KM1,IXZ1,KXZ1,KM2,IXZ2,KXZ2,IXL2,KXL2
-      REAL,INTENT(IN):: Z1(1+(IM-1)*IXZ1+(KM1-1)*KXZ1)
-      REAL,INTENT(IN):: Z2(1+(IM-1)*IXZ2+(KM2-1)*KXZ2)
-      INTEGER,INTENT(OUT):: L2(1+(IM-1)*IXL2+(KM2-1)*KXL2)
+!     REAL,INTENT(IN):: Z1(1+(IM-1)*IXZ1+(KM1-1)*KXZ1)
+!     REAL,INTENT(IN):: Z2(1+(IM-1)*IXZ2+(KM2-1)*KXZ2)
+      REAL,INTENT(IN):: Z1(KM1)
+      REAL,INTENT(IN):: Z2(KM2)
+!     INTEGER,INTENT(OUT):: L2(1+(IM-1)*IXL2+(KM2-1)*KXL2)
+      INTEGER,INTENT(OUT):: L2(KM2)
       INTEGER I,K2,L
       REAL Z
 !C - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 !C  FIND THE SURROUNDING INPUT INTERVAL FOR EACH OUTPUT POINT.
-      DO I=1,IM
-        IF(Z1(1+(I-1)*IXZ1).LE.Z1(1+(I-1)*IXZ1+(KM1-1)*KXZ1)) THEN
+
+!pjt4   212.5689    im 1179648   km2 127   ic1 149815296  ic2 0
+!pjt4b  ixz1  1   kxz1  1179649  km2  127  ixz2 1  kxz2   1179649  ixl2  1 kxl2  1179648
+
+        IF(Z1(1).LE.Z1(km1)) THEN
 !C  INPUT COORDINATE IS MONOTONICALLY ASCENDING.
           DO K2=1,KM2
-            Z=Z2(1+(I-1)*IXZ2+(K2-1)*KXZ2)
+            Z=Z2(K2)
             L=0
             DO
-              IF(Z.LT.Z1(1+(I-1)*IXZ1+L*KXZ1)) EXIT
+              IF(Z.LT.Z1(L+1)) EXIT
               L=L+1
               IF(L.EQ.KM1) EXIT
             ENDDO
-            L2(1+(I-1)*IXL2+(K2-1)*KXL2)=L
+            L2(K2)=L
           ENDDO
         ELSE
 !C  INPUT COORDINATE IS MONOTONICALLY DESCENDING.
           DO K2=1,KM2
-            Z=Z2(1+(I-1)*IXZ2+(K2-1)*KXZ2)
+            Z=Z2(K2)
             L=0
             DO
-              IF(Z.GT.Z1(1+(I-1)*IXZ1+L*KXZ1)) EXIT
+              IF(Z.GT.Z1(L+1)) EXIT
               L=L+1
               IF(L.EQ.KM1) EXIT
             ENDDO
+            L2(K2)=L
             L2(1+(I-1)*IXL2+(K2-1)*KXL2)=L
           ENDDO
         ENDIF
-      ENDDO
 
  END SUBROUTINE RSEARCH
 
@@ -689,6 +508,7 @@
 !
 !C$$$
       IMPLICIT NONE
+
 
       INTEGER, INTENT(IN)      :: IM, KM1, KM2, NT
 
@@ -773,4 +593,218 @@
       ENDDO
       DEALLOCATE (Z1,Z2,C1,C2,J2)
  END SUBROUTINE VINTG
+
+
+ SUBROUTINE TERP3(IM,IXZ1,IXQ1,IXZ2,IXQ2,NM,NXQ1,NXQ2,             &
+                  KM1,KXZ1,KXQ1,Z1,Q1,KM2,KXZ2,KXQ2,Z2,Q2,J2)
+!$$$  SUBPROGRAM DOCUMENTATION BLOCK
+!
+! SUBPROGRAM:    TERP3       CUBICALLY INTERPOLATE IN ONE DIMENSION
+!   PRGMMR: IREDELL          ORG: W/NMC23     DATE: 98-05-01
+!
+! ABSTRACT: INTERPOLATE FIELD(S) IN ONE DIMENSION ALONG THE COLUMN(S).
+!   THE INTERPOLATION IS CUBIC LAGRANGIAN WITH A MONOTONIC CONSTRAINT
+!   IN THE CENTER OF THE DOMAIN.  IN THE OUTER INTERVALS IT IS LINEAR.
+!   OUTSIDE THE DOMAIN, FIELDS ARE HELD CONSTANT.
+!
+! PROGRAM HISTORY LOG:
+!   98-05-01  MARK IREDELL
+! 1999-01-04  IREDELL  USE ESSL SEARCH
+!
+! USAGE:    CALL TERP3(IM,IXZ1,IXQ1,IXZ2,IXQ2,NM,NXQ1,NXQ2,
+!    &                 KM1,KXZ1,KXQ1,Z1,Q1,KM2,KXZ2,KXQ2,Z2,Q2,J2)
+!   INPUT ARGUMENT LIST:
+!     IM           INTEGER NUMBER OF COLUMNS
+!     IXZ1         INTEGER COLUMN SKIP NUMBER FOR Z1
+!     IXQ1         INTEGER COLUMN SKIP NUMBER FOR Q1
+!     IXZ2         INTEGER COLUMN SKIP NUMBER FOR Z2
+!     IXQ2         INTEGER COLUMN SKIP NUMBER FOR Q2
+!     NM           INTEGER NUMBER OF FIELDS PER COLUMN
+!     NXQ1         INTEGER FIELD SKIP NUMBER FOR Q1
+!     NXQ2         INTEGER FIELD SKIP NUMBER FOR Q2
+!     KM1          INTEGER NUMBER OF INPUT POINTS
+!     KXZ1         INTEGER POINT SKIP NUMBER FOR Z1
+!     KXQ1         INTEGER POINT SKIP NUMBER FOR Q1
+!     Z1           REAL (1+(IM-1)*IXZ1+(KM1-1)*KXZ1)
+!                  INPUT COORDINATE VALUES IN WHICH TO INTERPOLATE
+!                  (Z1 MUST BE STRICTLY MONOTONIC IN EITHER DIRECTION)
+!     Q1           REAL (1+(IM-1)*IXQ1+(KM1-1)*KXQ1+(NM-1)*NXQ1)
+!                  INPUT FIELDS TO INTERPOLATE
+!     KM2          INTEGER NUMBER OF OUTPUT POINTS
+!     KXZ2         INTEGER POINT SKIP NUMBER FOR Z2
+!     KXQ2         INTEGER POINT SKIP NUMBER FOR Q2
+!     Z2           REAL (1+(IM-1)*IXZ2+(KM2-1)*KXZ2)
+!                  OUTPUT COORDINATE VALUES TO WHICH TO INTERPOLATE
+!                  (Z2 NEED NOT BE MONOTONIC)
+!
+!   OUTPUT ARGUMENT LIST:
+!     Q2           REAL (1+(IM-1)*IXQ2+(KM2-1)*KXQ2+(NM-1)*NXQ2)
+!                  OUTPUT INTERPOLATED FIELDS
+!     J2           REAL (1+(IM-1)*IXQ2+(KM2-1)*KXQ2+(NM-1)*NXQ2)
+!                  OUTPUT INTERPOLATED FIELDS CHANGE WRT Z2
+!
+! SUBPROGRAMS CALLED:
+!   RSEARCH      SEARCH FOR A SURROUNDING REAL INTERVAL
+!
+! ATTRIBUTES:
+!   LANGUAGE: FORTRAN
+!
+!C$$$
+
+      IMPLICIT NONE
+      INTEGER, intent(in) :: IM,IXZ1,IXQ1,IXZ2,IXQ2,NM,NXQ1,NXQ2
+      INTEGER, intent(in) :: KM1,KXZ1,KXQ1,KM2,KXZ2,KXQ2
+
+      REAL, intent(in) :: Z1(1+(IM-1)*IXZ1+(KM1-1)*KXZ1)
+      REAL, intent(in) :: Q1(1+(IM-1)*IXQ1+(KM1-1)*KXQ1+(NM-1)*NXQ1)
+      REAL, intent(in) :: Z2(1+(IM-1)*IXZ2+(KM2-1)*KXZ2)
+      REAL, intent(inout) :: Q2(1+(IM-1)*IXQ2+(KM2-1)*KXQ2+(NM-1)*NXQ2)
+      REAL, intent(inout) :: J2(1+(IM-1)*IXQ2+(KM2-1)*KXQ2+(NM-1)*NXQ2)
+      INTEGER I,K1,K2,N
+      REAL FFA(IM),FFB(IM),FFC(IM),FFD(IM)
+      REAL GGA(IM),GGB(IM),GGC(IM),GGD(IM)
+      INTEGER K1S(IM,KM2)
+      INTEGER,allocatable :: kpz(:)
+      REAL, allocatable :: zpz1(:), zpz2(:)
+      REAL Z1A,Z1B,Z1C,Z1D,Q1A,Q1B,Q1C,Q1D,Z2S,Q2S,J2S
+! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      allocate(kpz(km2))
+      allocate(zpz1(km1), zpz2(km2))
+
+!  FIND THE SURROUNDING INPUT INTERVAL FOR EACH OUTPUT POINT.
+! PJJ/GDIT - RSEARCH modified to search single vertical column
+!            copy column to temp arrays before call to RSEARCH
+      do i=1,im
+        do k2=1,km1
+          zpz1(k2)=z1(1+(I-1)*IXZ1+(k2-1)*KXZ1)
+        enddo
+        do k2=1,km2
+          zpz2(k2)=z2(1+(I-1)*IXZ2+(k2-1)*KXZ2)
+        enddo
+
+        CALL RSEARCH(IM,KM1,IXZ1,KXZ1,zpz1,KM2,IXZ2,KXZ2,zpz2,1,IM,kpz)
+
+        do k2=1,km2
+          k1s(i,k2)=kpz(k2)
+        enddo
+      enddo
+
+      deallocate(kpz)
+      deallocate(zpz1,zpz2)
+
+! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+!  GENERALLY INTERPOLATE CUBICALLY WITH MONOTONIC CONSTRAINT
+!  FROM TWO NEAREST INPUT POINTS ON EITHER SIDE OF THE OUTPUT POINT,
+!  BUT WITHIN THE TWO EDGE INTERVALS INTERPOLATE LINEARLY.
+!  KEEP THE OUTPUT FIELDS CONSTANT OUTSIDE THE INPUT DOMAIN.
+
+!!$OMP PARALLEL DO DEFAULT(PRIVATE) SHARED(IM,IXZ1,IXQ1,IXZ2), &
+!!$OMP& SHARED(IXQ2,NM,NXQ1,NXQ2,KM1,KXZ1,KXQ1,Z1,Q1,KM2,KXZ2), &
+!!$OMP& SHARED(KXQ2,Z2,Q2,J2,K1S)
+
+      DO K2=1,KM2
+        DO I=1,IM
+          K1=K1S(I,K2)
+          IF(K1.EQ.1.OR.K1.EQ.KM1-1) THEN
+            Z2S=Z2(1+(I-1)*IXZ2+(K2-1)*KXZ2)
+            Z1A=Z1(1+(I-1)*IXZ1+(K1-1)*KXZ1)
+            Z1B=Z1(1+(I-1)*IXZ1+(K1+0)*KXZ1)
+            FFA(I)=(Z2S-Z1B)/(Z1A-Z1B)
+            FFB(I)=(Z2S-Z1A)/(Z1B-Z1A)
+            GGA(I)=1/(Z1A-Z1B)
+            GGB(I)=1/(Z1B-Z1A)
+          ELSEIF(K1.GT.1.AND.K1.LT.KM1-1) THEN
+            Z2S=Z2(1+(I-1)*IXZ2+(K2-1)*KXZ2)
+            Z1A=Z1(1+(I-1)*IXZ1+(K1-2)*KXZ1)
+            Z1B=Z1(1+(I-1)*IXZ1+(K1-1)*KXZ1)
+            Z1C=Z1(1+(I-1)*IXZ1+(K1+0)*KXZ1)
+            Z1D=Z1(1+(I-1)*IXZ1+(K1+1)*KXZ1)
+            FFA(I)=(Z2S-Z1B)/(Z1A-Z1B)*                                 &
+                   (Z2S-Z1C)/(Z1A-Z1C)*                                 &
+                   (Z2S-Z1D)/(Z1A-Z1D)
+            FFB(I)=(Z2S-Z1A)/(Z1B-Z1A)*                                 &
+                   (Z2S-Z1C)/(Z1B-Z1C)*                                 &
+                   (Z2S-Z1D)/(Z1B-Z1D)
+            FFC(I)=(Z2S-Z1A)/(Z1C-Z1A)*                                 &
+                   (Z2S-Z1B)/(Z1C-Z1B)*                                 &
+                   (Z2S-Z1D)/(Z1C-Z1D)
+            FFD(I)=(Z2S-Z1A)/(Z1D-Z1A)*                                 &
+                   (Z2S-Z1B)/(Z1D-Z1B)*                                 &
+                   (Z2S-Z1C)/(Z1D-Z1C)
+            GGA(I)=        1/(Z1A-Z1B)*                                 &
+                   (Z2S-Z1C)/(Z1A-Z1C)*                                 &
+                   (Z2S-Z1D)/(Z1A-Z1D)+                                 &
+                   (Z2S-Z1B)/(Z1A-Z1B)*                                 &
+                           1/(Z1A-Z1C)*                                 &
+                   (Z2S-Z1D)/(Z1A-Z1D)+                                 &
+                   (Z2S-Z1B)/(Z1A-Z1B)*                                 &
+                   (Z2S-Z1C)/(Z1A-Z1C)*                                 &
+                           1/(Z1A-Z1D)
+            GGB(I)=        1/(Z1B-Z1A)*                                 &
+                   (Z2S-Z1C)/(Z1B-Z1C)*                                 &
+                   (Z2S-Z1D)/(Z1B-Z1D)+                                 &
+                   (Z2S-Z1A)/(Z1B-Z1A)*                                 &
+                           1/(Z1B-Z1C)*                                 &
+                   (Z2S-Z1D)/(Z1B-Z1D)+                                 &
+                   (Z2S-Z1A)/(Z1B-Z1A)*                                 &
+                   (Z2S-Z1C)/(Z1B-Z1C)*                                 &
+                           1/(Z1B-Z1D)
+            GGC(I)=        1/(Z1C-Z1A)*                                 &
+                   (Z2S-Z1B)/(Z1C-Z1B)*                                 &
+                   (Z2S-Z1D)/(Z1C-Z1D)+                                 &
+                   (Z2S-Z1A)/(Z1C-Z1A)*                                 &
+                           1/(Z1C-Z1B)*                                 &
+                   (Z2S-Z1D)/(Z1C-Z1D)+                                 &
+                   (Z2S-Z1A)/(Z1C-Z1A)*                                 &
+                   (Z2S-Z1B)/(Z1C-Z1B)*                                 &
+                           1/(Z1C-Z1D)
+            GGD(I)=        1/(Z1D-Z1A)*                                 &
+                   (Z2S-Z1B)/(Z1D-Z1B)*                                 &
+                   (Z2S-Z1C)/(Z1D-Z1C)+                                 &
+                   (Z2S-Z1A)/(Z1D-Z1A)*                                 &
+                           1/(Z1D-Z1B)*                                 &
+                   (Z2S-Z1C)/(Z1D-Z1C)+                                 &
+                   (Z2S-Z1A)/(Z1D-Z1A)*                                 &
+                   (Z2S-Z1B)/(Z1D-Z1B)*                                 &
+                           1/(Z1D-Z1C)
+          ENDIF
+        ENDDO
+!  INTERPOLATE.
+        DO N=1,NM
+          DO I=1,IM
+            K1=K1S(I,K2)
+            IF(K1.EQ.0) THEN
+              Q2S=Q1(1+(I-1)*IXQ1+(N-1)*NXQ1)
+              J2S=0
+            ELSEIF(K1.EQ.KM1) THEN
+              Q2S=Q1(1+(I-1)*IXQ1+(KM1-1)*KXQ1+(N-1)*NXQ1)
+              J2S=0
+            ELSEIF(K1.EQ.1.OR.K1.EQ.KM1-1) THEN
+              Q1A=Q1(1+(I-1)*IXQ1+(K1-1)*KXQ1+(N-1)*NXQ1)
+              Q1B=Q1(1+(I-1)*IXQ1+(K1+0)*KXQ1+(N-1)*NXQ1)
+              Q2S=FFA(I)*Q1A+FFB(I)*Q1B
+              J2S=GGA(I)*Q1A+GGB(I)*Q1B
+            ELSE
+              Q1A=Q1(1+(I-1)*IXQ1+(K1-2)*KXQ1+(N-1)*NXQ1)
+              Q1B=Q1(1+(I-1)*IXQ1+(K1-1)*KXQ1+(N-1)*NXQ1)
+              Q1C=Q1(1+(I-1)*IXQ1+(K1+0)*KXQ1+(N-1)*NXQ1)
+              Q1D=Q1(1+(I-1)*IXQ1+(K1+1)*KXQ1+(N-1)*NXQ1)
+              Q2S=FFA(I)*Q1A+FFB(I)*Q1B+FFC(I)*Q1C+FFD(I)*Q1D
+              J2S=GGA(I)*Q1A+GGB(I)*Q1B+GGC(I)*Q1C+GGD(I)*Q1D
+              IF(Q2S.LT.MIN(Q1B,Q1C)) THEN
+                Q2S=MIN(Q1B,Q1C)
+                J2S=0
+              ELSEIF(Q2S.GT.MAX(Q1B,Q1C)) THEN
+                Q2S=MAX(Q1B,Q1C)
+                J2S=0
+              ENDIF
+            ENDIF
+            Q2(1+(I-1)*IXQ2+(K2-1)*KXQ2+(N-1)*NXQ2)=Q2S
+            J2(1+(I-1)*IXQ2+(K2-1)*KXQ2+(N-1)*NXQ2)=J2S
+          ENDDO
+        ENDDO
+      ENDDO
+!!$OMP END PARALLEL DO
+
+ END SUBROUTINE TERP3
  end module utils
