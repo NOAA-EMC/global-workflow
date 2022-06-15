@@ -265,7 +265,6 @@ def get_workflow(dict_configs, cdump='gdas'):
         if atm_type in ["MODEL"]:
             deps = []
             # ATM ICs
-            #base_cplic = dict_configs['coupled_ic']['BASE_CPLIC']
             for file in ['gfs_ctrl.nc'] + [f'{datatype}_data.tile{tile_index}.nc' for datatype in ['gfs', 'sfc'] for tile_index in range(1, n_tiles + 1)]:
                 data = f"{base_cplic}/{dict_configs['coupled_ic'][f'CPL_ATMIC']}/@Y@m@d@H/&CDUMP;/{base.get('CASE','C384')}/INPUT/{file}"
                 dep_dict = {'type': 'data', 'data': data}
@@ -273,7 +272,6 @@ def get_workflow(dict_configs, cdump='gdas'):
         else:
             # DATM forcing data
             deps = []
-            #base_cplic = dict_configs['coupled_ic']['BASE_CPLIC']
             data = f"{base_cplic}/{dict_configs['coupled_ic'][f'CPL_DATM']}/{datm_src}/@Y@m@d@H/{datm_src}.@Y@m.nc"
             dep_dict = {'type': 'data', 'data': data}
             deps.append(rocoto.add_dependency(dep_dict))
