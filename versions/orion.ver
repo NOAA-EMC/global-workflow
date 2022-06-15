@@ -14,4 +14,4 @@ export esmf_ver=8_0_1
 export nco_ver=4.9.3
 
 export tracker_ver=v1.1.15.5
-export fit_ver="newm.1.4"
+export fit_ver="newm.1.5"
