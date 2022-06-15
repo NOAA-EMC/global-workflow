@@ -1,4 +1,4 @@
-#!/bin/ksh -x
+#!/bin/bash
 
 # Empty variables must include a space otherwise they will be overwritten
 
@@ -19,3 +19,15 @@ CPL_SLOW=$OCNTIM
 ktherm=1
 tfrz_option='linear_salt'
 MOM6_USE_LI2016='False'
+export RUN="data"
+export DO_METP="NO"
+export DO_VRFY="NO"
+export flux_convergence=0.0
+export flux_iteration=2
+export flux_scheme=0
+# gefs forcing:
+export datm_src=${datm_src:-"gefs"}
+export atm_datamode=${atm_datamode:-"GEFS"}
+export ATM_NX_GLB=${ATM_NX_GLB:-"1536"}
+export ATM_NY_GLB=${ATM_NY_GLB:-"768"}
+export confignamevarfornems="datm_cdeps"

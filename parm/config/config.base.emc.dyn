@@ -198,18 +198,6 @@ case "${APP}" in
     export DO_WAVE="NO"
     export DO_OCN="YES"
     export DO_ICE="YES"
-    export DO_METP="NO"
-    export DO_VRFY="NO"
-    export RUN="data"
-    export flux_convergence=0.0
-    export flux_iteration=2
-    export flux_scheme=0
-    # gefs forcing:
-    export datm_src=${datm_src:-"gefs"}
-    export atm_datamode=${atm_datamode:-"GEFS"}
-    export ATM_NX_GLB=${ATM_NX_GLB:-"1536"}
-    export ATM_NY_GLB=${ATM_NY_GLB:-"768"}
-    export confignamevarfornems="datm_cdeps"
     source $EXPDIR/config.defaults.datm
     ;;
   S2SW)

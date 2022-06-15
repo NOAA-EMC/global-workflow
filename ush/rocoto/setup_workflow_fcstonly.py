@@ -260,14 +260,21 @@ def get_workflow(dict_configs, cdump='gdas'):
 
     tasks = []
 
-    if app in ['S2S', 'S2SW']:
-        # Copy prototype ICs
-        deps = []
+    if app in ['S2S', 'S2SW', 'NG-GODAS']:
         base_cplic = dict_configs['coupled_ic']['BASE_CPLIC']
-
-        # ATM ICs
-        for file in ['gfs_ctrl.nc'] + [f'{datatype}_data.tile{tile_index}.nc' for datatype in ['gfs', 'sfc'] for tile_index in range(1, n_tiles + 1)]:
-            data = f"{base_cplic}/{dict_configs['coupled_ic'][f'CPL_ATMIC']}/@Y@m@d@H/&CDUMP;/{base.get('CASE','C384')}/INPUT/{file}"
+        if atm_type in ["MODEL"]:
+            deps = []
+            # ATM ICs
+            #base_cplic = dict_configs['coupled_ic']['BASE_CPLIC']
+            for file in ['gfs_ctrl.nc'] + [f'{datatype}_data.tile{tile_index}.nc' for datatype in ['gfs', 'sfc'] for tile_index in range(1, n_tiles + 1)]:
+                data = f"{base_cplic}/{dict_configs['coupled_ic'][f'CPL_ATMIC']}/@Y@m@d@H/&CDUMP;/{base.get('CASE','C384')}/INPUT/{file}"
+                dep_dict = {'type': 'data', 'data': data}
+                deps.append(rocoto.add_dependency(dep_dict))
+        else:
+            # DATM forcing data
+            deps = []
+            #base_cplic = dict_configs['coupled_ic']['BASE_CPLIC']
+            data = f"{base_cplic}/{dict_configs['coupled_ic'][f'CPL_DATM']}/{datm_src}/@Y@m@d@H/{datm_src}.@Y@m.nc"
             dep_dict = {'type': 'data', 'data': data}
             deps.append(rocoto.add_dependency(dep_dict))
 
@@ -298,33 +305,6 @@ def get_workflow(dict_configs, cdump='gdas'):
         task = wfu.create_wf_task('coupled_ic', cdump=cdump, envar=envars, dependency=dependencies)
         tasks.append(task)
         tasks.append('\n')
-
-    elif app in ['NG-GODAS']:
-        deps = []
-        base_cplic = dict_configs['coupled_ic']['BASE_CPLIC']
-        data = f"{base_cplic}/{dict_configs['coupled_ic'][f'CPL_DATM']}/{datm_src}/@Y@m@d@H/{datm_src}.@Y@m.nc"
-        dep_dict = {'type': 'data', 'data': data}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
-        task = wfu.create_wf_task('coupled_ic', cdump=cdump, envar=envars, dependency=dependencies)
-        tasks.append(task)
-        tasks.append('\n')
-
-        # Ocean ICs
-        if do_ocean in ["YES"]:
-            ocn_res = base.get('OCNRES', '025')
-            for res in ['res'] + [f'res_{res_index}' for res_index in range(1, 5)]:
-                data = f"{base_cplic}/{dict_configs['coupled_ic'][f'CPL_OCNIC']}/@Y@m@d@H/ocn/{ocn_res:03d}/MOM.{res}.nc"
-                dep_dict = {'type': 'data', 'data': data}
-                deps.append(rocoto.add_dependency(dep_dict))
-
-        # Ice ICs
-        if do_ice in ["YES"]:
-            ice_res = base.get('ICERES', '025')
-            ice_res_dec = f'{float(ice_res)/100:.2f}'
-            data = f"{base_cplic}/{dict_configs['coupled_ic'][f'CPL_ICEIC']}/@Y@m@d@H/ice/{ice_res:03d}/cice5_model_{ice_res_dec}.res_@Y@m@d@H.nc"
-            dep_dict = {'type': 'data', 'data': data}
-            deps.append(rocoto.add_dependency(dep_dict))
 
     else:
         if hpssarch in ['YES']:
