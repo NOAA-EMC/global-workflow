@@ -870,6 +870,7 @@ cat > input.nml <<EOF
 /
 
 &diag_manager_nml
+  max_output_fields = 346
   prepend_date = .false.
   $diag_manager_nml
 /
@@ -1015,7 +1016,7 @@ cat > input.nml <<EOF
   lgfdlmprad   = ${lgfdlmprad:-".false."}
   effr_in      = ${effr_in:-".false."}
   cplwav       = ${cplwav:-".false."}
-  fscav_aero   = "sulf:0.2","bc1:0.2","bc2:0.2","oc1:0.2","oc2:0.2",
+  fscav_aero   = "sulf:0.3","so2:0.2","bc1:0.1","bc2:0.2","oc1:0.1","oc2:0.2",
   $gfs_physics_nml
 /
 
@@ -1141,8 +1142,8 @@ if [ $cplchm = ".true." ]; then
   cldchem_onoff=0
   dmsemis_opt=1
   dust_opt=5
-  dust_alpha=2.0
-  dust_gamma=1.8
+  dust_alpha=2.3
+  dust_gamma=1.0
   dust_calcdrag=1
   emiss_inpt_opt=1
   emiss_opt=5
