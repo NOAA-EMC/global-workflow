@@ -160,7 +160,10 @@ class RocotoXML:
 
         return ''.join(strings)
 
-    def write(self, xml_file: str) -> None:
+    def write(self, xml_file: str = None) -> None:
+
+        if xml_file is None:
+            xml_file = f"{self._base['EXPDIR']}/{self._base['PSLOT']}.xml"
 
         with open(xml_file, 'w') as fh:
             fh.write(self.xml)

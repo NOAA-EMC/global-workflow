@@ -4,43 +4,9 @@
     Module containing functions all workflow setups require
 """
 import os
-import numpy as np
 from distutils.spawn import find_executable
 from datetime import timedelta
 from typing import Dict, Any
-from rocoto import create_task, create_metatask
-
-
-def create_wf_task(task, resources,
-                   cdump='gdas', cycledef=None, envar=None, dependency=None,
-                   metatask=None, varname=None, varval=None, vardict=None,
-                   final=False):
-
-    taskstr = f'{cdump}{task}'
-    metatask_dict = None
-    if metatask is not None:
-        taskstr = f'{taskstr}#{varname}#'
-        metatask_dict = {'metataskname': f'{cdump}{metatask}',
-                         'varname': f'{varname}',
-                         'varval': f'{varval}',
-                         'vardict': vardict}
-
-    cycledefstr = cdump if cycledef is None else cycledef
-
-    task_dict = {'taskname': f'{taskstr}',
-                 'cycledef': f'{cycledefstr}',
-                 'maxtries': '&MAXTRIES;',
-                 'command': f'&JOBS_DIR;/{task}.sh',
-                 'jobname': f'&PSLOT;_{taskstr}_@H',
-                 'resources': resources,
-                 'log': f'&ROTDIR;/logs/@Y@m@d@H/{taskstr}.log',
-                 'envars': envar,
-                 'dependency': dependency,
-                 'final': final}
-
-    task = create_task(task_dict) if metatask is None else create_metatask(task_dict, metatask_dict)
-
-    return ''.join(task)
 
 
 def check_expdir(cmd_expdir, cfg_expdir):
