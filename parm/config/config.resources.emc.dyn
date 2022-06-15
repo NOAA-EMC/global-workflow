@@ -64,7 +64,8 @@ elif [ $step = "waveprep" ]; then
     export nth_waveprep=1
     export npe_node_waveprep=$npe_waveprep
     export npe_node_waveprep_gfs=$npe_waveprep_gfs
-    export memory_waveprep="200GB"
+    export memory_waveprep="100GB"
+    export memory_waveprep_gfs="200GB"
     export NTASKS=$npe_waveprep
     export NTASKS_gfs=$npe_waveprep_gfs
 
@@ -110,7 +111,7 @@ elif [ $step = "wavegempak" ]; then
     export nth_wavegempak=1
     export npe_node_wavegempak=$npe_wavegempak
     export NTASKS=$npe_wavegempak
-    export memory_wavegempak="1GB"
+    export memory_wavegempak="10GB"
 
 elif [ $step = "waveawipsbulls" ]; then
 
