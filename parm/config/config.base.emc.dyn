@@ -181,12 +181,12 @@ case "${APP}" in
     export CCPP_SUITE="FV3_GFS_v17_coupled_p8"
     export confignamevarfornems="cpld"
 
-    if [[ $APP =~ 'A$' ]]; then
+    if [[ "$APP" =~ A$ ]]; then
         export DO_AERO="YES"
         export confignamevarfornems="${confignamevarfornems}_aero"
     fi
 
-    if [[ $APP =~ '^S2SW' ]]; then
+    if [[ "$APP" =~ ^S2SW ]]; then
         export DO_WAVE="YES"
         export WAVE_CDUMP="both"    
         export cplwav2atm=".true."
