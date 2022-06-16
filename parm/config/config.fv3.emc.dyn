@@ -116,7 +116,7 @@ case $case_in in
         export DELTIM=150
         export layout_x=8
         export layout_y=12
-        export layout_x_gfs=16
+        export layout_x_gfs=12
         export layout_y_gfs=24
         export npe_wav=140
         export npe_wav_gfs=448
@@ -127,7 +127,7 @@ case $case_in in
         export WRTTASK_PER_GROUP=64
         if [[ "$WRTTASK_PER_GROUP" -gt "$npe_node_max" ]]; then export WRTTASK_PER_GROUP=$npe_node_max ; fi
         export WRITE_GROUP_GFS=8
-        export WRTTASK_PER_GROUP_GFS=48
+        export WRTTASK_PER_GROUP_GFS=64
         if [[ "$WRTTASK_PER_GROUP_GFS" -gt "$npe_node_max" ]]; then export WRTTASK_PER_GROUP_GFS=$npe_node_max ; fi
         export WRTIOBUF="32M"
         ;;
