@@ -292,8 +292,7 @@
 
  END SUBROUTINE NEWPR1
 
- SUBROUTINE RSEARCH(IM,KM1,IXZ1,KXZ1,Z1,KM2,IXZ2,KXZ2,Z2,IXL2,KXL2,&
-                         L2)
+ SUBROUTINE RSEARCH(KM1,Z1,KM2,Z2,L2)
 !$$$  SUBPROGRAM DOCUMENTATION BLOCK
 !
 ! SUBPROGRAM:    RSEARCH     SEARCH FOR A SURROUNDING REAL INTERVAL
@@ -368,68 +367,15 @@
 !   LANGUAGE: FORTRAN
 !
 !C$$$
-!     IMPLICIT NONE
-!     INTEGER,INTENT(IN):: IM,KM1,IXZ1,KXZ1,KM2,IXZ2,KXZ2,IXL2,KXL2
-!     REAL,INTENT(IN):: Z1(1+(IM-1)*IXZ1+(KM1-1)*KXZ1)
-!     REAL,INTENT(IN):: Z2(1+(IM-1)*IXZ2+(KM2-1)*KXZ2)
-!     INTEGER,INTENT(OUT):: L2(1+(IM-1)*IXL2+(KM2-1)*KXL2)
-!     INTEGER(4) INCX,N,INCY,M,INDX(KM2),RC(KM2),IOPT
-!     INTEGER I,K2
-! - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-!  FIND THE SURROUNDING INPUT INTERVAL FOR EACH OUTPUT POINT.
-!     DO I=1,IM
-!       IF(Z1(1+(I-1)*IXZ1).LE.Z1(1+(I-1)*IXZ1+(KM1-1)*KXZ1)) THEN
-!  INPUT COORDINATE IS MONOTONICALLY ASCENDING.
-!         INCX=KXZ2
-!         N=KM2
-!         INCY=KXZ1
-!         M=KM1
-!         IOPT=1
-!         IF(DIGITS(1.).LT.DIGITS(1._8)) THEN
-!           CALL SBSRCH(Z2(1+(I-1)*IXZ2),INCX,N,
-!    &                  Z1(1+(I-1)*IXZ1),INCY,M,INDX,RC,IOPT)
-!         ELSE
-!           CALL DBSRCH(Z2(1+(I-1)*IXZ2),INCX,N,
-!    &                  Z1(1+(I-1)*IXZ1),INCY,M,INDX,RC,IOPT)
-!         ENDIF
-!         DO K2=1,KM2
-!           L2(1+(I-1)*IXL2+(K2-1)*KXL2)=INDX(K2)-RC(K2)
-!         ENDDO
-!       ELSE
-!  INPUT COORDINATE IS MONOTONICALLY DESCENDING.
-!         INCX=KXZ2
-!         N=KM2
-!         INCY=-KXZ1
-!         M=KM1
-!         IOPT=0
-!         IF(DIGITS(1.).LT.DIGITS(1._8)) THEN
-!           CALL SBSRCH(Z2(1+(I-1)*IXZ2),INCX,N,
-!    &                  Z1(1+(I-1)*IXZ1),INCY,M,INDX,RC,IOPT)
-!         ELSE
-!           CALL DBSRCH(Z2(1+(I-1)*IXZ2),INCX,N,
-!    &                  Z1(1+(I-1)*IXZ1),INCY,M,INDX,RC,IOPT)
-!         ENDIF
-!         DO K2=1,KM2
-!           L2(1+(I-1)*IXL2+(K2-1)*KXL2)=KM1+1-INDX(K2)
-!         ENDDO
-!       ENDIF
-!     ENDDO
-!
       IMPLICIT NONE
-      INTEGER,INTENT(IN):: IM,KM1,IXZ1,KXZ1,KM2,IXZ2,KXZ2,IXL2,KXL2
-!     REAL,INTENT(IN):: Z1(1+(IM-1)*IXZ1+(KM1-1)*KXZ1)
-!     REAL,INTENT(IN):: Z2(1+(IM-1)*IXZ2+(KM2-1)*KXZ2)
+      INTEGER,INTENT(IN):: KM1,KM2
       REAL,INTENT(IN):: Z1(KM1)
       REAL,INTENT(IN):: Z2(KM2)
-!     INTEGER,INTENT(OUT):: L2(1+(IM-1)*IXL2+(KM2-1)*KXL2)
       INTEGER,INTENT(OUT):: L2(KM2)
       INTEGER I,K2,L
       REAL Z
 !C - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 !C  FIND THE SURROUNDING INPUT INTERVAL FOR EACH OUTPUT POINT.
-
-!pjt4   212.5689    im 1179648   km2 127   ic1 149815296  ic2 0
-!pjt4b  ixz1  1   kxz1  1179649  km2  127  ixz2 1  kxz2   1179649  ixl2  1 kxl2  1179648
 
         IF(Z1(1).LE.Z1(km1)) THEN
 !C  INPUT COORDINATE IS MONOTONICALLY ASCENDING.
@@ -454,7 +400,6 @@
               IF(L.EQ.KM1) EXIT
             ENDDO
             L2(K2)=L
-            L2(1+(I-1)*IXL2+(K2-1)*KXL2)=L
           ENDDO
         ENDIF
 
@@ -682,7 +627,7 @@
           zpz2(k2)=z2(1+(I-1)*IXZ2+(k2-1)*KXZ2)
         enddo
 
-        CALL RSEARCH(IM,KM1,IXZ1,KXZ1,zpz1,KM2,IXZ2,KXZ2,zpz2,1,IM,kpz)
+        CALL RSEARCH(KM1,zpz1,KM2,zpz2,kpz)
 
         do k2=1,km2
           k1s(i,k2)=kpz(k2)
