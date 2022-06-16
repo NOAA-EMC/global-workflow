@@ -1,32 +1,32 @@
 #!/usr/bin/env python3
 
-'''
+"""
 Entry point for setting up an experiment in the global-workflow
-'''
+"""
 
 import os
 import glob
 import shutil
 from datetime import datetime
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
-import workflow_utils as wfu
+from hosts import Host
 
 
 def makedirs_if_missing(dirname):
-    '''
+    """
     Creates a directory if not already present
-    '''
+    """
     if not os.path.exists(dirname):
         os.makedirs(dirname)
 
 
 def fill_COMROT(host, inputs):
-    '''
+    """
     Method to populate the COMROT for supported modes.
     INPUTS:
         host: host specific object from class HostInfo in workflow_utils.py
         inputs: user inputs to setup_expt.py
-    '''
+    """
 
     fill_modes = {
         'cycled': fill_COMROT_cycled,
@@ -36,7 +36,7 @@ def fill_COMROT(host, inputs):
     try:
         fill_modes[inputs.mode](host, inputs)
     except KeyError:
-        raise NotImplementedError(f'{mode} is not a supported mode.\n' +
+        raise NotImplementedError(f'{inputs.mode} is not a supported mode.\n' +
                                   'Currently supported modes are:\n' +
                                   f'{" | ".join(fill_modes.keys())}')
 
@@ -44,9 +44,9 @@ def fill_COMROT(host, inputs):
 
 
 def fill_COMROT_cycled(host, inputs):
-    '''
+    """
     Implementation of 'fill_COMROT' for cycled mode
-    '''
+    """
 
     idatestr = inputs.idate.strftime('%Y%m%d%H')
     comrot = os.path.join(inputs.comrot, inputs.pslot)
@@ -75,18 +75,18 @@ def fill_COMROT_cycled(host, inputs):
 
 
 def fill_COMROT_forecasts(host, inputs):
-    '''
+    """
     Implementation of 'fill_COMROT' for forecast-only mode
-    '''
+    """
     return
 
 
 def fill_EXPDIR(inputs):
-    '''
+    """
     Method to copy config files from workflow to experiment directory
     INPUTS:
         inputs: user inputs to `setup_expt.py`
-    '''
+    """
     configdir = inputs.configdir
     expdir = os.path.join(inputs.expdir, inputs.pslot)
 
@@ -106,9 +106,9 @@ def fill_EXPDIR(inputs):
 
 
 def edit_baseconfig(host, inputs):
-    '''
+    """
     Parses and populates the templated `config.base.emc.dyn` to `config.base`
-    '''
+    """
 
     here = os.path.dirname(__file__)
     top = os.path.abspath(os.path.join(
@@ -147,6 +147,7 @@ def edit_baseconfig(host, inputs):
         "@APP@": inputs.app,
     }
 
+    extend_dict = dict()
     if inputs.mode in ['cycled']:
         extend_dict = {
             "@CASEENS@": f'C{inputs.resens}',
@@ -183,9 +184,9 @@ def edit_baseconfig(host, inputs):
 
 
 def input_args():
-    '''
+    """
     Method to collect user arguments for `setup_expt.py`
-    '''
+    """
 
     here = os.path.dirname(__file__)
     top = os.path.abspath(os.path.join(
@@ -258,9 +259,9 @@ def input_args():
 
 
 def query_and_clean(dirname):
-    '''
+    """
     Method to query if a directory exists and gather user input for further action
-    '''
+    """
 
     create_dir = True
     if os.path.exists(dirname):
@@ -279,7 +280,7 @@ def query_and_clean(dirname):
 if __name__ == '__main__':
 
     user_inputs = input_args()
-    host=wfu.HostInfo(wfu.detectMachine())
+    host = Host()
 
     comrot = os.path.join(user_inputs.comrot, user_inputs.pslot)
     expdir = os.path.join(user_inputs.expdir, user_inputs.pslot)
