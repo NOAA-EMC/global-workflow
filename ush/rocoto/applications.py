@@ -1,9 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 from typing import Dict, Any
 from configuration import Configuration
 import workflow_utils as wfu
 from hosts import Host
+
 
 class AppConfig:
 
@@ -38,10 +39,10 @@ class AppConfig:
 
         self.do_hpssarch = _base.get('HPSSARCH', False)
 
-        # Get a list of all possible configs that would be part of the application
+        # Get a list of all possible config_files that would be part of the application
         self.configs_names = self._get_app_configs()
 
-        # Source the configs for the jobs in the application
+        # Source the config_files for the jobs in the application
         self.configs = self._source_configs(configuration)
 
         # Update the base config dictionary based on application
@@ -95,12 +96,15 @@ class AppConfig:
     @property
     def _cycled_configs(self):
         """
-        Returns the configs that are involved in the cycled app_config
+        Returns the config_files that are involved in the cycled app
         """
 
         configs = ['prep',
-                   'anal', 'analdiag', 'analcalc', 'gldas',
+                   'anal', 'analdiag', 'analcalc',
                    'fcst', 'post', 'vrfy', 'arch']
+
+        if self.do_gldas:
+            configs += ['gldas']
 
         if self.do_hybvar:
             configs += ['eobs', 'eomg', 'ediag', 'eupd', 'ecen', 'esfc', 'efcs', 'echgres', 'epos', 'earc']
@@ -129,7 +133,7 @@ class AppConfig:
     @property
     def _forecast_only_configs(self):
         """
-        Returns the configs that are involved in the forecast-only app_config
+        Returns the config_files that are involved in the forecast-only app
         """
 
         configs = ['fcst', 'post', 'vrfy', 'arch']
@@ -178,6 +182,7 @@ class AppConfig:
 
         base_out = base_in.copy()
         base_out['INTERVAL'] = wfu.get_gfs_interval(base_in['gfs_cyc'])
+        base_out['CDUMP'] = 'gfs'  # TODO - is there a use case for CDUMP=gdas?
 
         return base_out
 
@@ -193,7 +198,7 @@ class AppConfig:
         # Return config.base as well
         configs['base'] = configuration.parse_config('config.base')
 
-        # Source the list of all configs involved in the application
+        # Source the list of all config_files involved in the application
         for job in self.configs_names:
 
             # All must source config.base first
@@ -238,9 +243,10 @@ class AppConfig:
         gldas_tasks = ['gldas']
         wave_tasks = ['waveinit', 'waveprep', 'wavepostsbs', 'wavepostbndpnt', 'wavepostbndpntbll', 'wavepostpnt']
 
-        hybrid_tasks = ['eobs', 'eupd', 'echgres']
-        hybrid_tasks += ['ediag'] if self.lobsdiag_forenkf else ['eomg']
-        hybrid_gdas_tasks = ['ecen', 'esfc', 'efcs', 'epos', 'earc']
+        if self.do_hybvar:
+            hybrid_tasks = ['eobs', 'eupd', 'echgres']
+            hybrid_tasks += ['ediag'] if self.lobsdiag_forenkf else ['eomg']
+            hybrid_gdas_tasks = ['ecen', 'esfc', 'efcs', 'epos', 'earc']
 
         # First collect all gdas tasks
         gdas_tasks = tasks + gdas_only_tasks
@@ -325,5 +331,4 @@ class AppConfig:
         if self.do_metp:
             tasks += ['metp']
 
-        return {'cdump': tasks}
-
+        return {f"{self._base['CDUMP']}": tasks}

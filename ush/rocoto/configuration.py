@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import os
 import random
@@ -6,7 +6,7 @@ import glob
 import subprocess
 from datetime import datetime
 from pathlib import Path
-from typing import Union
+from typing import Union, List
 
 
 __all__ = ['Configuration']
@@ -40,17 +40,17 @@ class Configuration:
     def __init__(self, config_dir: Union[str, Path]):
         """
         Given a directory containing config files (config.XYZ),
-        return a list of configs minus the ones ending with ".default"
+        return a list of config_files minus the ones ending with ".default"
         """
 
         self.config_dir = config_dir
-        self.configs = self._get_configs
+        self.config_files = self._get_configs
 
     @property
-    def _get_configs(self) -> list:
+    def _get_configs(self) -> List[str]:
         """
         Given a directory containing config files (config.XYZ),
-        return a list of configs minus the ones ending with ".default"
+        return a list of config_files minus the ones ending with ".default"
         """
         result = list()
         for config in glob.glob(f'{self.config_dir}/config.*'):
@@ -64,7 +64,7 @@ class Configuration:
             Given a config file name, find the full path of the config file
         """
 
-        for config in self.configs:
+        for config in self.config_files:
             if config_name == os.path.basename(config):
                 return config
 

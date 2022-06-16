@@ -1,10 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """
     Module containing functions all workflow setups require
 """
 import os
-from distutils.spawn import find_executable
 from datetime import timedelta
 from typing import Dict, Any
 
@@ -82,35 +81,3 @@ def get_gfs_cyc_dates(base: Dict[str, Any]) -> Dict[str, Any]:
     base_out['FHMAX_GFS'] = fhmax_gfs
 
     return base_out
-
-
-def create_crontab(base, cronint=5):
-    """
-    Create crontab to execute rocotorun every cronint (5) minutes
-    """
-
-    # No point creating a crontab if rocotorun is not available.
-    rocotoruncmd = find_executable('rocotorun')
-    if rocotoruncmd is None:
-        print('Failed to find rocotorun, crontab will not be created')
-        return
-
-    rocotorunstr = f'''{rocotoruncmd} -d {base['EXPDIR']}/{base['PSLOT']}.db -w {base['EXPDIR']}/{base['PSLOT']}.xml'''
-    cronintstr = f'*/{cronint} * * * *'
-
-    try:
-        replyto = os.environ['REPLYTO']
-    except KeyError:
-        replyto = ''
-
-    strings = ['',
-               f'#################### {base["PSLOT"]} ####################',
-               f'MAILTO="{replyto}"',
-               f'{cronintstr} {rocotorunstr}',
-               '#################################################################',
-               '']
-
-    with open(os.path.join(base['EXPDIR'], f'{base["PSLOT"]}.crontab'), 'w') as fh:
-        fh.write('\n'.join(strings))
-
-    return

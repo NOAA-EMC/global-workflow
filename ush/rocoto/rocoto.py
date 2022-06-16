@@ -73,7 +73,6 @@ def create_task(task_dict: Dict[str, Any]) -> List[str]:
     walltime = resources_dict.get('walltime', '00:01:00')
     native = resources_dict.get('native', None)
     memory = resources_dict.get('memory', None)
-    # compute = resources_dict.get('compute', None)  # TODO - eliminate
     nodes = resources_dict.get('nodes', 1)
     ppn = resources_dict.get('ppn', 1)
     threads = resources_dict.get('threads', 1)
@@ -96,8 +95,6 @@ def create_task(task_dict: Dict[str, Any]) -> List[str]:
     if partition is not None:
         strings.append(f'\t<partition>{partition}</partition>\n')
     strings.append(f'\t<walltime>{walltime}</walltime>\n')
-    # if compute is not None:  # TODO - eliminate this block
-    #    strings.append(f'\t{compute}\n')
     strings.append(f'\t<nodes>{nodes}:ppn={ppn}:tpp={threads}</nodes>\n')
     if memory is not None:
         strings.append(f'\t<memory>{memory}</memory>\n')

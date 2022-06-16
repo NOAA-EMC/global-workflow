@@ -9,7 +9,7 @@ print(f'experiment dir: {cfg.config_dir}')
 
 print('configuration files ...')
 line_separator = '\n'  # \escapes are not allowed inside f-strings
-print(f'{line_separator.join(cfg.configs)}')
+print(f'{line_separator.join(cfg.config_files)}')
 
 print(f'config.base: {cfg.find_config("config.base")}')
 

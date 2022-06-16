@@ -1,9 +1,8 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import numpy as np
 import rocoto
 from applications import AppConfig
-from hosts import Host
 from typing import List
 
 
@@ -95,8 +94,6 @@ class Tasks:
         if self.cdump in ['gfs'] and f'nth_{task_name}_gfs' in task_config.keys():
             threads = task_config[f'nth_{task_name}_gfs']
 
-        compute = f'<nodes>{nodes}:ppn={ppn}:tpp={threads}</nodes>'  # TODO - remove dependence on compute
-
         memory = task_config.get(f'memory_{task_name}', None)
 
         native = '--export=NONE' if scheduler in ['slurm'] else None
@@ -116,7 +113,6 @@ class Tasks:
                          'cores': cores,
                          'ppn': ppn,
                          'threads': threads,
-                         'compute': compute,  # TODO - eliminate dependence on compute
                          'memory': memory,
                          'native': native,
                          'queue': queue,
@@ -144,7 +140,7 @@ class Tasks:
 
         # Atm ICs
         atm_res = self._base.get('CASE', 'C384')
-        prefix = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_ATMIC']}/@Y@m@d@H/&CDUMP;"
+        prefix = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_ATMIC']}/@Y@m@d@H/{self.cdump}"
         for file in ['gfs_ctrl.nc'] + \
                     [f'{datatype}_data.tile{tile}.nc'
                      for datatype in ['gfs', 'sfc']
@@ -193,7 +189,7 @@ class Tasks:
 
         deps = []
         for file in files:
-            dep_dict = {'type': 'data', 'data': f'&ROTDIR;/&CDUMP;.@Y@m@d/@H/{file}'}
+            dep_dict = {'type': 'data', 'data': f'&ROTDIR;/{self.cdump}.@Y@m@d/@H/{file}'}
             deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='nor', dep=deps)
 
@@ -212,7 +208,7 @@ class Tasks:
 
         deps = []
         for file in files:
-            dep_dict = {'type': 'data', 'data': f'&ROTDIR;/&CDUMP;.@Y@m@d/@H/{file}'}
+            dep_dict = {'type': 'data', 'data': f'&ROTDIR;/{self.cdump}.@Y@m@d/@H/{file}'}
             deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
 
@@ -231,6 +227,7 @@ class Tasks:
         suffix = self._base["SUFFIX"]
         dump_suffix = self._base["DUMP_SUFFIX"]
         gfs_cyc = self._base["gfs_cyc"]
+        dmpdir = self._base["DMPDIR"]
         gfs_enkf = True if self.app_config.do_hybvar and 'gfs' in self.app_config.eupd_cdumps else False
 
         deps = []
@@ -239,7 +236,7 @@ class Tasks:
         data = f'&ROTDIR;/gdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmf009{suffix}'
         dep_dict = {'type': 'data', 'data': data, 'offset': '-06:00:00'}
         deps.append(rocoto.add_dependency(dep_dict))
-        data = f'&DMPDIR;/{self.cdump}{dump_suffix}.@Y@m@d/@H/{self.cdump}.t@Hz.updated.status.tm00.bufr_d'
+        data = f'{dmpdir}/{self.cdump}{dump_suffix}.@Y@m@d/@H/{self.cdump}.t@Hz.updated.status.tm00.bufr_d'
         dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
@@ -279,7 +276,7 @@ class Tasks:
         # Files from current cycle
         files = ['gfs_ctrl.nc'] + [f'gfs_data.tile{tile}.nc' for tile in range(1, self.n_tiles + 1)]
         for file in files:
-            data = f'&ROTDIR;/&CDUMP;.@Y@m@d/@H/atmos/INPUT/{file}'
+            data = f'&ROTDIR;/{self.cdump}.@Y@m@d/@H/atmos/INPUT/{file}'
             dep_dict = {'type': 'data', 'data': data}
             deps.append(rocoto.add_dependency(dep_dict))
 
@@ -293,7 +290,7 @@ class Tasks:
                 [f'@Y@m@d.@H0000.fv_tracer.res.tile{tile}.nc' for tile in range(1, self.n_tiles + 1)]
 
         for file in files:
-            data = ['&ROTDIR;/&CDUMP;.@Y@m@d/@H/atmos/RERUN_RESTART/', file]
+            data = [f'&ROTDIR;/{self.cdump}.@Y@m@d/@H/atmos/RERUN_RESTART/', file]
             offset = [f'-{self._base["INTERVAL"]}', None]
             dep_dict = {'type': 'data', 'data': data, 'offset': offset}
             deps.append(rocoto.add_dependency(dep_dict))
@@ -377,10 +374,10 @@ class Tasks:
     @property
     def _fcst_free(self):
         deps = []
-        data = '&ROTDIR;/&CDUMP;.@Y@m@d/@H/atmos/INPUT/sfc_data.tile6.nc'
+        data = f'&ROTDIR;/{self.cdump}.@Y@m@d/@H/atmos/INPUT/sfc_data.tile6.nc'
         dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
-        data = '&ROTDIR;/&CDUMP;.@Y@m@d/@H/atmos/RESTART/@Y@m@d.@H0000.sfcanl_data.tile6.nc'
+        data = f'&ROTDIR;/{self.cdump}.@Y@m@d/@H/atmos/RESTART/@Y@m@d.@H0000.sfcanl_data.tile6.nc'
         dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
