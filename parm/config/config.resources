@@ -10,7 +10,8 @@ if [ $# -ne 1 ]; then
     echo "argument can be any one of the following:"
     echo "getic init coupled_ic aerosol_init"
     echo "atmanalprep atmanalrun atmanalpost"
-    echo "anal analcalc analdiag gldas fcst post vrfy metp arch echgres"
+    echo "atmensanalprep atmensanalrun atmensanalpost"
+    echo "anal sfcanl analcalc analdiag gldas fcst postanl post vrfy metp arch echgres"
     echo "eobs ediag eomg eupd ecen esfc efcs epos earc"
     echo "init_chem mom6ic ocnpost"
     echo "waveinit waveprep wavepostsbs wavepostbndpnt wavepostbndpntbll wavepostpnt"
@@ -149,14 +150,15 @@ elif [ $step = "atmanalprep" -o $step = "atmanalrun" -o $step = "atmanalpost" ];
     export npe_node_atmanalprep=$(echo "$npe_node_max / $nth_atmanalprep" | bc)
     export memory_atmanalprep="3072M"
 
-    export wtime_atmanalrun="01:00:00"
+    export wtime_atmanalrun="00:30:00"
     export npe_atmanalrun=$(echo "$layout_x * $layout_y * 6" | bc)
     export npe_atmanalrun_gfs=$(echo "$layout_x * $layout_y * 6" | bc)
     export nth_atmanalrun=1
     export nth_atmanalrun_gfs=$nth_atmanalrun
+    export native_atmanalrun="--exclusive"
     export npe_node_atmanalrun=$(echo "$npe_node_max / $nth_atmanalrun" | bc)
 
-    export wtime_atmanalpost="01:00:00"
+    export wtime_atmanalpost="00:30:00"
     export npe_atmanalpost=$npe_node_max
     export nth_atmanalpost=1
     export npe_node_atmanalpost=$(echo "$npe_node_max / $nth_atmanalpost" | bc)
@@ -198,6 +200,13 @@ elif [ $step = "analdiag" ]; then
     export nth_analdiag=1
     export npe_node_analdiag=$npe_node_max
     if [[ "$machine" == "WCOSS_C" ]]; then export memory_analdiag="3072M"; fi
+
+elif [ $step = "sfcanl" ]; then
+
+    export wtime_sfcanl="00:10:00"
+    export npe_sfcanl=6
+    export nth_sfcanl=1
+    export npe_node_sfcanl=$(echo "$npe_node_max / $nth_sfcanl" | bc)
 
 elif [ $step = "gldas" ]; then
 
@@ -313,6 +322,17 @@ elif [ $step = "ocnpost" ]; then
     export npe_node_ocnpost=1
     export nth_ocnpost=1
     export memory_ocnpost="96G"
+
+elif [ $step = "postanl" ]; then
+
+    export wtime_postanl="00:30:00"
+    export wtime_postanl_gfs="06:00:00"
+    export npe_postanl=112
+    export nth_postanl=1
+    export npe_node_postanl=40
+    export npe_node_dwn=$npe_node_max
+    if [[ "$machine" = "WCOSS_DELL_P3" ]]; then export npe_node_postanl=28 ; fi
+    if [[ "$machine" == "WCOSS_C" ]]; then export memory_postanl="3072M"; fi
 
 elif [ $step = "post" ]; then
 
@@ -442,6 +462,30 @@ elif [ $step = "coupled_ic" ]; then
     export npe_coupled_ic=1
     export npe_node_coupled_ic=1
     export nth_coupled_ic=1
+
+elif [ $step = "atmensanalprep" -o $step = "atmensanalrun" -o $step = "atmensanalpost" ]; then
+
+    # make below case dependent later
+    export layout_x=2
+    export layout_y=3
+
+    export wtime_atmensanalprep="00:10:00"
+    export npe_atmensanalprep=1
+    export nth_atmensanalprep=1
+    export npe_node_atmensanalprep=$(echo "$npe_node_max / $nth_atmensanalprep" | bc)
+
+    export wtime_atmensanalrun="00:30:00"
+    export npe_atmensanalrun=$(echo "$layout_x * $layout_y * 6" | bc)
+    export npe_atmensanalrun_gfs=$(echo "$layout_x * $layout_y * 6" | bc)
+    export nth_atmensanalrun=1
+    export nth_atmensanalrun_gfs=$nth_atmensanalrun
+    export native_atmensanalrun="--exclusive"
+    export npe_node_atmensanalrun=$(echo "$npe_node_max / $nth_atmensanalrun" | bc)
+
+    export wtime_atmensanalpost="00:30:00"
+    export npe_atmensanalpost=$npe_node_max
+    export nth_atmensanalpost=1
+    export npe_node_atmensanalpost=$(echo "$npe_node_max / $nth_atmensanalpost" | bc)
 
 elif [ $step = "eobs" -o $step = "eomg" ]; then
 

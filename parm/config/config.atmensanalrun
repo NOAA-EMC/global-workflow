@@ -1,0 +1,16 @@
+#!/bin/ksh -x
+
+########## config.atmensanalrun ##########
+# Atm LETKFs specific
+
+echo "BEGIN: config.atmensanalrun"
+
+# Get task specific resources
+. $EXPDIR/config.resources atmensanalrun
+
+# Task specific variables
+export JEDIENSEXE=$HOMEgfs/exec/fv3jedi_letkf.x
+##export JEDIENSEXE="/work/noaa/da/Russ.Treadon/git/global_workflow/ufsda_gdasapp/sorc/gdas.cd_pr1730/build/bin/fv3jedi_letkf.x"
+##export JEDIENSEXE="/work/noaa/da/Russ.Treadon/git/global_workflow/ufsda_gdasapp/sorc/gdas.cd_pr1730_test/build/bin/fv3jedi_letkf.x"
+
+echo "END: config.atmensanalrun"

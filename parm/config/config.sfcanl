@@ -1,0 +1,11 @@
+#!/bin/ksh -x
+
+########## config.sfcanl ##########
+# GFS surface analysis specific
+
+echo "BEGIN: config.sfcanl"
+
+# Get task specific resources
+. $EXPDIR/config.resources sfcanl
+
+echo "END: config.sfcanl"
