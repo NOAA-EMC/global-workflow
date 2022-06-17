@@ -11,12 +11,12 @@ TROPP            'Pa'    Y       N                  -            0.0      1.0   
 DU_SRC            NA  N Y - none none du_src     ExtData/Dust/gocart.dust_source.v5a.x1152_y721.nc
 
 # FENGSHA input files. Note: regridding should be N or E
-DU_CLAY          '1'  Y E           -          none none clayfrac   ExtData/Dust/FENGSHA_SOILGRIDS2017_GEFSv12_v1.0.nc
-DU_SAND          '1'  Y E           -          none none sandfrac   ExtData/Dust/FENGSHA_SOILGRIDS2017_GEFSv12_v1.0.nc
-DU_SILT          '1'  Y E           -          none none siltfrac   /dev/null
-DU_SSM           '1'  Y E %y4-%m2-%d2T12:00:00 none none ssm        ExtData/Dust/FENGSHA_SOILGRIDS2017_GEFSv12_v1.0.nc
-DU_RDRAG         '1'  Y E           -          none none drag_part  ExtData/Dust/FENGSHA_SOILGRIDS2017_GEFSv12_v1.0.nc
-DU_UTHRES        '1'  Y E           -          none none uthres     ExtData/Dust/FENGSHA_SOILGRIDS2017_GEFSv12_v1.0.nc
+DU_CLAY           '1'  Y E           -           none none clayfrac    ExtData/Dust/FENGSHA_SOILGRIDS2019_GEFSv12_v1.2.nc
+DU_SAND           '1'  Y E           -           none none sandfrac    ExtData/Dust/FENGSHA_SOILGRIDS2019_GEFSv12_v1.2.nc
+DU_SILT           '1'  Y E           -           none none siltfrac    /dev/null
+DU_SSM            '1'  Y E           -           none none ssm         /dev/null:1.0
+DU_RDRAG          '1'  Y E %y4-%m2-%d2t12:00:00  none none albedo_drag ExtData/Dust/FENGSHA_Albedo_drag_v1.nc
+DU_UTHRES         '1'  Y E           -           none none uthres      ExtData/Dust/randomforestensemble_uthres.nc
 
 #====== Sulfate Sources =================================================
 # Anthropogenic (BF & FF) emissions -- allowed to input as two layers
@@ -72,6 +72,9 @@ OC_ANTEOC2 NA  N Y %y4-%m2-%d2t12:00:00 none none OC_elev  ExtData/nexus/CEDS/v2
 # EDGAR based ship emissions
 OC_SHIP    NA  N Y %y4-%m2-%d2t12:00:00 none none OC_ship  ExtData/nexus/CEDS/v2019/%y4/CEDS.2019.emis.%y4%m2%d2.nc
 
+# Aircraft fuel consumption
+OC_AIRCRAFT NA  N Y %y4-%m2-%d2t12:00:00 none none oc_aviation /dev/null
+
 # Aviation emissions during the three phases of flight
 OC_AVIATION_LTO NA  Y Y %y4-%m2-%d2t12:00:00 none none oc_aviation ExtData/PIESA/sfc/HTAP/v2.2/htap-v2.2.emis_oc.aviation_lto.x3600_y1800_t12.2010.nc4
 OC_AVIATION_CDS NA  Y Y %y4-%m2-%d2t12:00:00 none none oc_aviation ExtData/PIESA/sfc/HTAP/v2.2/htap-v2.2.emis_oc.aviation_cds.x3600_y1800_t12.2010.nc4
@@ -93,6 +96,9 @@ BC_ANTEBC2 NA  N Y %y4-%m2-%d2t12:00:00 none none BC_elev  ExtData/nexus/CEDS/v2
 
 # EDGAR based ship emissions
 BC_SHIP NA  N Y %y4-%m2-%d2t12:00:00 none none BC_ship     ExtData/nexus/CEDS/v2019/%y4/CEDS.2019.emis.%y4%m2%d2.nc
+
+# Aircraft fuel consumption
+BC_AIRCRAFT NA  N Y %y4-%m2-%d2t12:00:00 none none bc_aviation /dev/null
 
 # Aviation emissions during the LTO, SDC and CRS phases of flight
 BC_AVIATION_LTO NA  Y Y %y4-%m2-%d2t12:00:00 none none bc_aviation ExtData/PIESA/sfc/HTAP/v2.2/htap-v2.2.emis_bc.aviation_lto.x3600_y1800_t12.2010.nc4
@@ -117,6 +123,9 @@ BRC_ANTEBRC2 NA  Y Y %y4-%m2-%d2t12:00:00 none none anteoc2 /dev/null
 
 # EDGAR based ship emissions
 BRC_SHIP    NA  Y Y %y4-%m2-%d2t12:00:00 none none oc_ship /dev/null
+
+# Aircraft fuel consumption
+BRC_AIRCRAFT NA  N Y %y4-%m2-%d2t12:00:00 none none none /dev/null
 
 # Aviation emissions during the three phases of flight
 BRC_AVIATION_LTO NA  Y Y %y4-%m2-%d2t12:00:00 none none oc_aviation /dev/null

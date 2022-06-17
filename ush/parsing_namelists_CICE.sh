@@ -21,7 +21,7 @@ cat > ice_in <<eof
    npt            = $npt
    ndtd           = 1
    runtype        = '$cmeps_run_type'
-   runid          = 'cpcice'
+   runid          = 'unknown'
    ice_ic         = '$iceic'
    restart        = .true.
    restart_ext    = .false.
@@ -364,13 +364,13 @@ cat > ice_in <<eof
    f_apeff_ai     = 'x'
 /
 
-&icefields_bgc_nml
-/
-
 &icefields_drag_nml
    f_drag         = 'x'
    f_Cdn_atm      = 'x'
    f_Cdn_ocn      = 'x'
+/
+
+&icefields_bgc_nml
 /
 eof
 

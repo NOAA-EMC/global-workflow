@@ -51,7 +51,7 @@
   echo "   Ice file        : $WAVICEFILE"
   echo ' '
   set $seton
-  postmsg "$jlogfile" "Making ice fields."
+  echo "Making ice fields."
 
   if [ -z "$YMDH" ] || [ -z "$cycle" ] || \
      [ -z "$COMOUT" ] || [ -z "$FIXwave" ] || [ -z "$EXECwave" ] || \
@@ -66,7 +66,7 @@
     echo ' '
     exit 1
     set $seton
-    postmsg "$jlogfile" "NON-FATAL ERROR - EXPORTED VARIABLES IN preprocessor NOT SET"
+    echo "NON-FATAL ERROR - EXPORTED VARIABLES IN preprocessor NOT SET"
   fi
 
 # 0.c Links to working directory
@@ -97,7 +97,7 @@
     echo '************************************** '
     echo ' '
     set $seton
-    postmsg "$jlogfile" "FATAL ERROR - NO ICE FILE (GFS GRIB)"
+    echo "FATAL ERROR - NO ICE FILE (GFS GRIB)"
     exit 2
   fi
 
@@ -124,7 +124,7 @@
     echo '**************************************** '
     echo ' '
     set $seton
-    postmsg "$jlogfile" "ERROR IN UNPACKING GRIB ICE FILE."
+    echo "ERROR IN UNPACKING GRIB ICE FILE."
     exit 3
   fi
 
@@ -157,7 +157,7 @@
     echo '******************************************** '
     echo ' '
     set $seton
-    postmsg "$jlogfile" "WARNING: NON-FATAL ERROR IN ww3_prnc."
+    echo "WARNING: NON-FATAL ERROR IN ww3_prnc."
     exit 4
   fi
 

@@ -27,7 +27,7 @@ from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 import rocoto
 import workflow_utils as wfu
 
-taskplan = ['getic', 'init', 'coupled_ic', 'waveinit', 'waveprep', 'fcst', 'post', 'wavepostsbs', 'wavepostbndpnt', 'wavepostbndpntbll', 'wavepostpnt', 'wavegempak', 'waveawipsbulls', 'waveawipsgridded', 'wafs', 'wafsgrib2', 'wafsblending', 'wafsgcip', 'wafsgrib20p25', 'wafsblending0p25', 'postsnd', 'gempak', 'awips', 'vrfy', 'metp', 'arch', 'ocnpost']
+taskplan = ['getic', 'init', 'coupled_ic', 'aerosol_init', 'waveinit', 'waveprep', 'fcst', 'post', 'wavepostsbs', 'wavepostbndpnt', 'wavepostbndpntbll', 'wavepostpnt', 'wavegempak', 'waveawipsbulls', 'waveawipsgridded', 'wafs', 'wafsgrib2', 'wafsblending', 'wafsgcip', 'wafsgrib20p25', 'wafsblending0p25', 'postsnd', 'gempak', 'awips', 'vrfy', 'metp', 'arch', 'ocnpost']
 
 def main():
     parser = ArgumentParser(description='Setup XML workflow and CRONTAB for a forecast only experiment.', formatter_class=ArgumentDefaultsHelpFormatter)
@@ -243,6 +243,7 @@ def get_workflow(dict_configs, cdump='gdas'):
     do_wave = base.get('DO_WAVE', 'NO').upper()
     do_ocean = base.get('DO_OCN', 'NO').upper()
     do_ice = base.get('DO_ICE', 'NO').upper()
+    do_aero = base.get('DO_AERO', 'NO').upper()
     do_wave_cdump = base.get('WAVE_CDUMP', 'BOTH').upper()
     if do_wave in ['YES']:
         do_wave_bnd = dict_configs['wavepostsbs'].get('DOBNDPNT_WAVE', "YES").upper()
@@ -252,6 +253,7 @@ def get_workflow(dict_configs, cdump='gdas'):
     do_wafs = base.get('WAFSF', 'NO').upper()
     do_vrfy = base.get('DO_VRFY', 'YES').upper()
     do_metp = base.get('DO_METP', 'NO').upper()
+    n_tiles = 6
 
     tasks = []
 
@@ -261,7 +263,7 @@ def get_workflow(dict_configs, cdump='gdas'):
         base_cplic = dict_configs['coupled_ic']['BASE_CPLIC']
 
         # ATM ICs
-        for file in ['gfs_ctrl.nc'] + [f'{datatype}_data.tile{tile_index}.nc' for datatype in ['gfs', 'sfc'] for tile_index in range(1, 7)]:
+        for file in ['gfs_ctrl.nc'] + [f'{datatype}_data.tile{tile_index}.nc' for datatype in ['gfs', 'sfc'] for tile_index in range(1, n_tiles + 1)]:
             data = f"{base_cplic}/{dict_configs['coupled_ic'][f'CPL_ATMIC']}/@Y@m@d@H/&CDUMP;/{base.get('CASE','C384')}/INPUT/{file}"
             dep_dict = {'type': 'data', 'data': data}
             deps.append(rocoto.add_dependency(dep_dict))
@@ -288,9 +290,6 @@ def get_workflow(dict_configs, cdump='gdas'):
                 data = f"{base_cplic}/{dict_configs['coupled_ic'][f'CPL_WAVIC']}/@Y@m@d@H/wav/{wave_grid}/@Y@m@d.@H0000.restart.{wave_grid}"
                 dep_dict = {'type': 'data', 'data': data}
                 deps.append(rocoto.add_dependency(dep_dict))
-
-        # Aerosol ICs
-        # TODO
 
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
         task = wfu.create_wf_task('coupled_ic', cdump=cdump, envar=envars, dependency=dependencies)
@@ -354,7 +353,7 @@ def get_workflow(dict_configs, cdump='gdas'):
         tasks.append('\n')
 
     # waveprep
-    if do_wave in ['Y', 'YES'] and do_wave_cdump in ['GFS', 'BOTH']:
+    if do_wave in ['Y', 'YES'] and do_wave_cdump in ['GFS', 'BOTH'] and app in ['ATMW']:
         deps = []
         dep_dict = {'type': 'task', 'name': f'{cdump}waveinit'}
         deps.append(rocoto.add_dependency(dep_dict))
@@ -363,6 +362,43 @@ def get_workflow(dict_configs, cdump='gdas'):
             deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
         task = wfu.create_wf_task('waveprep', cdump=cdump, envar=envars, dependency=dependencies)
+        tasks.append(task)
+        tasks.append('\n')
+
+    # aerosol_init
+    if do_aero in ['Y', 'YES']:
+        deps = []
+        if app in ['S2S', 'S2SW']:
+            dep_dict = {'type': 'task', 'name': 'coupled_ic'}
+        else:
+            dep_dict = {'type': 'task', 'name': f'{cdump}init'}
+
+        deps.append(rocoto.add_dependency(dep_dict))
+
+        # Files from current cycle
+        files = ['gfs_ctrl.nc'] + [f'gfs_data.tile{tile_index}.nc' for tile_index in range(1, n_tiles + 1)]
+        for file in files:
+            data = f'&ROTDIR;/&CDUMP;.@Y@m@d/@H/atmos/INPUT/{file}'
+            dep_dict = {'type': 'data', 'data': data}
+            deps.append(rocoto.add_dependency(dep_dict))
+
+        # previous cycle
+        dep_dict = {'type': 'cycleexist', 'offset': f'-{base["INTERVAL"]}'}
+        deps.append(rocoto.add_dependency(dep_dict))
+
+        # Files from previous cycle
+        files = [f'@Y@m@d.@H0000.fv_core.res.nc'] + \
+                [f'@Y@m@d.@H0000.fv_core.res.tile{tile_index}.nc' for tile_index in range(1, n_tiles + 1)] + \
+                [f'@Y@m@d.@H0000.fv_tracer.res.tile{tile_index}.nc' for tile_index in range(1, n_tiles + 1)]
+
+        for file in files:
+            data = ['&ROTDIR;/&CDUMP;.@Y@m@d/@H/atmos/RERUN_RESTART/', file]
+            offset = [f'-{base["INTERVAL"]}', None]
+            dep_dict = {'type': 'data', 'data': data, 'offset': offset}
+            deps.append(rocoto.add_dependency(dep_dict))
+
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+        task = wfu.create_wf_task('aerosol_init', cdump=cdump, envar=envars, dependency=dependencies)
         tasks.append(task)
         tasks.append('\n')
 
@@ -378,14 +414,29 @@ def get_workflow(dict_configs, cdump='gdas'):
 
     if do_wave in ['Y', 'YES'] and do_wave_cdump in ['GFS', 'BOTH']:
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{cdump}waveprep'}
+        if app in ['ATMW']:
+            dep_dict = {'type': 'task', 'name': f'{cdump}waveprep'}
+        else: 
+            dep_dict = {'type': 'task', 'name': f'{cdump}waveinit'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies2 = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+    if do_aero in ['Y', 'YES']:
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{cdump}aerosol_init'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        deps2 = []
+        dep_dict = {'type': 'cycleexist', 'offset': f'-{base["INTERVAL"]}'}
+        deps2.append(rocoto.add_dependency(dep_dict))
+        deps.append(rocoto.create_dependency(dep_condition='not', dep=deps2))
+        dependencies3 = rocoto.create_dependency(dep_condition='or', dep=deps)
 
     deps = []
     deps.append(dependencies)
     if do_wave in ['Y', 'YES'] and do_wave_cdump in ['GFS', 'BOTH']:
         deps.append(dependencies2)
+    if do_aero in ['Y', 'YES']:
+        deps.append(dependencies3)
     dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
     task = wfu.create_wf_task('fcst', cdump=cdump, envar=envars, dependency=dependencies)

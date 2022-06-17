@@ -57,6 +57,8 @@ ice_petlist_bounds=${ice_petlist_bounds:-"$(( $ATMPETS+$OCNPETS )) $(( $ATMPETS+
 wav_petlist_bounds=${wav_petlist_bounds:-"$(( $ATMPETS+$OCNPETS+$ICEPETS )) $(( $ATMPETS+$OCNPETS+$ICEPETS+$WAVPETS-1 ))"}
 chm_petlist_bounds=${chm_petlist_bounds:-"0 $(( $CHMPETS-1 ))"}
 
+esmf_logkind=${esmf_logkind:-"ESMF_LOGKIND_MULTI"} #options: ESMF_LOGKIND_MULTI_ON_ERROR, ESMF_LOGKIND_MULTI, ESMF_LOGKIND_NONE
+
 # Copy the selected template into run directory
 infile="$SCRIPTDIR/nems.configure.$confignamevarfornems.IN"
 if [ -s $infile ]; then
@@ -69,6 +71,7 @@ sed -i -e "s;@\[med_model\];cmeps;g" tmp1
 sed -i -e "s;@\[atm_model\];$ATM_model;g" tmp1
 sed -i -e "s;@\[med_petlist_bounds\];$med_petlist_bounds;g" tmp1
 sed -i -e "s;@\[atm_petlist_bounds\];$atm_petlist_bounds;g" tmp1
+sed -i -e "s;@\[esmf_logkind\];$esmf_logkind;g" tmp1
 
 if [ $cpl = ".true." ]; then
   sed -i -e "s;@\[coupling_interval_slow_sec\];$CPL_SLOW;g" tmp1
@@ -97,6 +100,8 @@ fi
 if [ $cplwav = .true. ]; then
   sed -i -e "s;@\[wav_model\];ww3;g" tmp1
   sed -i -e "s;@\[wav_petlist_bounds\];$wav_petlist_bounds;g" tmp1
+  sed -i -e "s;@\[MESH_OCN_ICE\];$MESH_OCN_ICE;g" tmp1
+  sed -i -e "s;@\[MULTIGRID\];$waveMULTIGRID;g" tmp1
 fi
 if [ $cplice = .true. ]; then
   sed -i -e "s;@\[ice_model\];$ICE_model;g" tmp1

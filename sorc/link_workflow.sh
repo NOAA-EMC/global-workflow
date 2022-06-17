@@ -1,34 +1,23 @@
-#!/bin/ksh
+#!/bin/bash
 set -ex
 
 #--make symbolic links for EMC installation and hardcopies for NCO delivery
 
 RUN_ENVIR=${1}
 machine=${2}
-if [ $# -eq 3 ]; then
-  model=${3}
-else
-  model="uncoupled"
-fi
 
 if [ $# -lt 2 ]; then
     echo '***ERROR*** must specify two arguements: (1) RUN_ENVIR, (2) machine'
     echo ' Syntax: link_workflow.sh ( nco | emc ) ( cray | dell | hera | orion | jet | stampede )'
-    echo ' A third argument is needed when coupled: '
-    echo ' Syntax: link_workflow.sh ( nco | emc ) ( cray | dell | hera | orion | jet | stampede ) coupled'
     exit 1
 fi
 
 if [ $RUN_ENVIR != emc -a $RUN_ENVIR != nco ]; then
     echo ' Syntax: link_workflow.sh ( nco | emc ) ( cray | dell | hera | orion | jet | stampede )'
-    echo ' A third argument is needed when coupled: '
-    echo ' Syntax: link_workflow.sh ( nco | emc ) ( cray | dell | hera | orion | jet | stampede ) coupled'
     exit 1
 fi
 if [ $machine != cray -a $machine != dell -a $machine != hera -a $machine != orion -a $machine != jet -a $machine != stampede ]; then
     echo ' Syntax: link_workflow.sh ( nco | emc ) ( cray | dell | hera | orion | jet | stampede )'
-    echo ' A third argument is needed when coupled: '
-    echo ' Syntax: link_workflow.sh ( nco | emc ) ( cray | dell | hera | orion | jet | stampede ) coupled'
     exit 1
 fi
 
@@ -37,6 +26,9 @@ SLINK="ln -fs"
 [[ $RUN_ENVIR = nco ]] && LINK="cp -rp"
 
 pwd=$(pwd -P)
+
+# Link post
+$LINK ufs_model.fd/FV3/upp upp.fd
 
 #------------------------------
 #--model fix fields
@@ -88,37 +80,31 @@ if [ -d ${pwd}/ufs_utils.fd ]; then
   ./link_fixdirs.sh $RUN_ENVIR $machine
 fi
 
+
 #---------------------------------------
 #--add files from external repositories
 #---------------------------------------
 cd ${pwd}/../jobs               ||exit 8
-    $LINK ../sorc/gfs_post.fd/jobs/JGLOBAL_ATMOS_POST_MANAGER      .
-    $LINK ../sorc/gfs_post.fd/jobs/JGLOBAL_ATMOS_NCEPPOST          .
     $LINK ../sorc/gldas.fd/jobs/JGDAS_ATMOS_GLDAS            .
 cd ${pwd}/../parm               ||exit 8
-    [[ -d post ]] && rm -rf post
-    $LINK ../sorc/gfs_post.fd/parm                           post
+    # [[ -d post ]] && rm -rf post
+    # $LINK ../sorc/upp.fd/parm                           post
     [[ -d gldas ]] && rm -rf gldas
     $LINK ../sorc/gldas.fd/parm                              gldas
+cd ${pwd}/../parm/post          ||exit 8
+    for file in postxconfig-NT-GEFS-ANL.txt postxconfig-NT-GEFS-F00.txt postxconfig-NT-GEFS.txt postxconfig-NT-GFS-ANL.txt \
+        postxconfig-NT-GFS-F00-TWO.txt postxconfig-NT-GFS-F00.txt postxconfig-NT-GFS-FLUX-F00.txt postxconfig-NT-GFS-FLUX.txt \
+        postxconfig-NT-GFS-GOES.txt postxconfig-NT-GFS-TWO.txt postxconfig-NT-GFS-WAFS-ANL.txt postxconfig-NT-GFS-WAFS.txt \
+        postxconfig-NT-GFS.txt postxconfig-NT-gefs-aerosol.txt postxconfig-NT-gefs-chem.txt params_grib2_tbl_new \
+        post_tag_gfs128 post_tag_gfs65 gtg.config.gfs gtg_imprintings.txt \
+        AEROSOL_LUTS.datoptics_luts_DUST.dat optics_luts_SALT.dat optics_luts_SOOT.dat optics_luts_SUSO.dat optics_luts_WASO.dat \
+        ; do
+        $LINK ../../sorc/upp.fd/parm/$file .
+    done
 cd ${pwd}/../scripts            ||exit 8
-    $LINK ../sorc/gfs_post.fd/scripts/exgdas_atmos_nceppost.sh .
-    if [ $model = "coupled" ]; then
-      $LINK exgfs_nceppost_cpl.sh exgfs_atmos_nceppost.sh
-    else 
-      $LINK ../sorc/gfs_post.fd/scripts/exgfs_atmos_nceppost.sh  .
-    fi 
-    $LINK ../sorc/gfs_post.fd/scripts/exglobal_atmos_pmgr.sh   .
     $LINK ../sorc/ufs_utils.fd/scripts/exemcsfc_global_sfc_prep.sh .
     $LINK ../sorc/gldas.fd/scripts/exgdas_atmos_gldas.sh .
 cd ${pwd}/../ush                ||exit 8
-    for file in fv3gfs_downstream_nems.sh fv3gfs_dwn_nems.sh gfs_nceppost.sh  \
-        gfs_transfer.sh mod_icec.sh link_crtm_fix.sh trim_rh.sh fix_precip.sh; do
-        $LINK ../sorc/gfs_post.fd/ush/$file                  .
-    done
-    if [ $model = "coupled" ]; then
-       rm fv3gfs_downstream_nems.sh
-       $LINK fv3gfs_downstream_nems_cpl.sh fv3gfs_downstream_nems.sh
-    fi
     for file in emcsfc_ice_blend.sh  fv3gfs_driver_grid.sh  fv3gfs_make_orog.sh  global_cycle_driver.sh \
         emcsfc_snow.sh  fv3gfs_filter_topo.sh  global_cycle.sh  fv3gfs_make_grid.sh ; do
         $LINK ../sorc/ufs_utils.fd/ush/$file                  .
@@ -262,7 +248,7 @@ done
 $LINK ../sorc/ufs_model.fd/build/ufs_model .
 
 [[ -s gfs_ncep_post ]] && rm -f gfs_ncep_post
-$LINK ../sorc/gfs_post.fd/exec/upp.x gfs_ncep_post
+$LINK ../sorc/upp.fd/exec/upp.x gfs_ncep_post
 
 if [ -d ${pwd}/gfs_wafs.fd ]; then 
     for wafsexe in \
@@ -357,7 +343,7 @@ cd ${pwd}/../sorc   ||   exit 8
     [[ -d recentersigp.fd ]] && rm -rf recentersigp.fd
     $SLINK gsi.fd/util/EnKF/gfs/src/recentersigp.fd                                        recentersigp.fd
 
-    $SLINK gfs_post.fd/sorc/ncep_post.fd                                                   gfs_ncep_post.fd
+    $SLINK upp.fd/sorc/ncep_post.fd                                                   gfs_ncep_post.fd
 
     for prog in fregrid make_hgrid make_solo_mosaic ; do
         $SLINK ufs_utils.fd/sorc/fre-nctools.fd/tools/$prog                                ${prog}.fd                                
@@ -385,15 +371,11 @@ cd ${pwd}/../sorc   ||   exit 8
     done
 
 #------------------------------
-#--choose dynamic config.base for EMC installation 
-#--choose static config.base for NCO installation 
+#  copy $HOMEgfs/parm/config/config.base.nco.static as config.base for operations
+#  config.base in the $HOMEgfs/parm/config has no use in development
 cd $pwd/../parm/config
-[[ -s config.base ]] && rm -f config.base 
-if [ $RUN_ENVIR = nco ] ; then
- cp -p config.base.nco.static config.base
-else
- cp -p config.base.emc.dyn config.base
-fi
+[[ -s config.base ]] && rm -f config.base
+[[ $RUN_ENVIR = nco ]] && cp -p config.base.nco.static config.base
 #------------------------------
 
 

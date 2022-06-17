@@ -29,25 +29,26 @@ $ sh checkout.sh
 
 While in /sorc folder:
 
-Uncoupled
 ```
 $ sh build_all.sh
 ```
-Coupled
+
+Or use an available option:  
 ```
-$ sh build_all.sh -c
+build_all.sh [-a UFS_app][-c build_config][-h][-v]
+  -a UFS_app:
+    Build a specific UFS app instead of the default
+  -c build_config:
+    Selectively build based on the provided config instead of the default config
+  -h:
+    Print usage message and exit
+  -v:
+    Run all scripts in verbose mode
 ```
 
 ### 3. Link components
 
 While in /sorc folder:
 
-Uncoupled
-```
 $ sh link_workflow.sh emc $MACHINE
-```
-Coupled
-```
-$ sh link_workflow.sh emc $MACHINE coupled
-```
 ...where $MACHINE is "dell", "cray", "hera", or "orion".
