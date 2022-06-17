@@ -19,7 +19,7 @@ class AppConfig:
 
         self.mode = mode
 
-        self.scheduler = Host.get_scheduler
+        self.scheduler = Host().scheduler
 
         _base = configuration.parse_config('config.base')
 

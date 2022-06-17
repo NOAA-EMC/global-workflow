@@ -3,7 +3,7 @@ from hosts import Host
 print(f'supported hosts are: {", ".join(Host.SUPPORTED_HOSTS)}')
 
 print(f'host detected as: {Host.detect}')
-print(f'scheduler on host: {Host.get_scheduler}')
+print(f'scheduler on host: {Host().scheduler}')
 
 print('initializing host ...')
 host = Host()

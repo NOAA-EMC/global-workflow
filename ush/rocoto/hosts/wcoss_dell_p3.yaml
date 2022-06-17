@@ -1,0 +1,19 @@
+base_git: '/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git'
+base_svn: '/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git'
+dmpdir: '/gpfs/dell3/emc/global/dump'
+nwprod: '${NWROOT:-"/gpfs/dell1/nco/ops/nwprod"}'
+comroot: '${COMROOT:-"/gpfs/dell1/nco/ops/com"}'
+homedir: '/gpfs/dell2/emc/modeling/noscrub/$USER'
+stmp: '/gpfs/dell3/stmp/$USER'
+ptmp: '/gpfs/dell3/ptmp/$USER'
+noscrub: $HOMEDIR
+account: GFS-DEV
+scheduler: lsf
+queue: dev
+queue_service: dev_transfer
+partition_batch: None
+chgrp_rstprod: YES
+chgrp_cmd: 'chgrp rstprod'
+hpssarch: YES
+localarch: NO
+atardir: '/NCEPDEV/$HPSS_PROJECT/1year/$USER/$machine/scratch/$PSLOT'
