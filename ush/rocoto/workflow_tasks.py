@@ -5,6 +5,8 @@ import rocoto
 from applications import AppConfig
 from typing import List
 
+__all__ = ['Tasks', 'create_wf_task', 'get_wf_tasks']
+
 
 class Tasks:
     SERVICE_TASKS = ['arch', 'earc', 'getic']

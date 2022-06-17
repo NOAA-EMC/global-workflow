@@ -24,7 +24,7 @@ def fill_COMROT(host, inputs):
     """
     Method to populate the COMROT for supported modes.
     INPUTS:
-        host: host specific object from class HostInfo in workflow_utils.py
+        host: host object from class Host
         inputs: user inputs to setup_expt.py
     """
 

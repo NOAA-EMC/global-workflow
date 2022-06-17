@@ -5,7 +5,6 @@ Entry point for setting up Rocoto XML for all applications in global-workflow
 
 import os
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
-import workflow_utils as wfu
 
 from configuration import Configuration
 from applications import AppConfig
@@ -45,14 +44,22 @@ def input_args():
     return args
 
 
+def check_expdir(cmd_expdir, cfg_expdir):
+
+    if not os.path.samefile(cmd_expdir, cfg_expdir):
+        print('MISMATCH in experiment directories!')
+        print(f'config.base:   EXPDIR = {cfg_expdir}')
+        print(f'  input arg: --expdir = {cmd_expdir}')
+        raise ValueError('Abort!')
+
+
 if __name__ == '__main__':
 
     user_inputs = input_args()
 
     cfg = Configuration(user_inputs.expdir)
 
-    _base = cfg.parse_config('config.base')
-    wfu.check_expdir(user_inputs.expdir, _base['EXPDIR'])
+    check_expdir(user_inputs.expdir, cfg.parse_config('config.base')['EXPDIR'])
 
     # Configure the application
     app_config = AppConfig(user_inputs.mode, cfg)

@@ -1,9 +1,77 @@
 #!/usr/bin/env python3
 
 from typing import Dict, Any
+from datetime import timedelta
 from configuration import Configuration
-import workflow_utils as wfu
 from hosts import Host
+
+__all__ = ['AppConfig']
+
+
+def get_gfs_interval(gfs_cyc: int) -> str:
+    """
+    return interval in hours based on gfs_cyc
+    """
+
+    gfs_internal_map = {'0': None, '1': '24:00:00', '2': '12:00:00', '4': '06:00:00'}
+
+    try:
+        return gfs_internal_map[str(gfs_cyc)]
+    except KeyError:
+        raise KeyError(f'Invalid gfs_cyc = {gfs_cyc}')
+
+
+def get_gfs_cyc_dates(base: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Generate GFS dates from experiment dates and gfs_cyc choice
+    """
+
+    base_out = base.copy()
+
+    gfs_cyc = base['gfs_cyc']
+    sdate = base['SDATE']
+    edate = base['EDATE']
+    base_out['INTERVAL'] = '06:00:00'  # Cycled interval is 6 hours
+
+    interval_gfs = get_gfs_interval(gfs_cyc)
+
+    # Set GFS cycling dates
+    hrinc = 0
+    hrdet = 0
+    if gfs_cyc == 0:
+        return base_out
+    elif gfs_cyc == 1:
+        hrinc = 24 - sdate.hour
+        hrdet = edate.hour
+    elif gfs_cyc == 2:
+        if sdate.hour in [0, 12]:
+            hrinc = 12
+        elif sdate.hour in [6, 18]:
+            hrinc = 6
+        if edate.hour in [6, 18]:
+            hrdet = 6
+    elif gfs_cyc == 4:
+        hrinc = 6
+    sdate_gfs = sdate + timedelta(hours=hrinc)
+    edate_gfs = edate - timedelta(hours=hrdet)
+    if sdate_gfs > edate:
+        print('W A R N I N G!')
+        print('Starting date for GFS cycles is after Ending date of experiment')
+        print(f'SDATE = {sdate.strftime("%Y%m%d%H")},     EDATE = {edate.strftime("%Y%m%d%H")}')
+        print(f'SDATE_GFS = {sdate_gfs.strftime("%Y%m%d%H")}, EDATE_GFS = {edate_gfs.strftime("%Y%m%d%H")}')
+        gfs_cyc = 0
+
+    base_out['gfs_cyc'] = gfs_cyc
+    base_out['SDATE_GFS'] = sdate_gfs
+    base_out['EDATE_GFS'] = edate_gfs
+    base_out['INTERVAL_GFS'] = interval_gfs
+
+    fhmax_gfs = {}
+    for hh in ['00', '06', '12', '18']:
+        fhmax_gfs[hh] = base.get(f'FHMAX_GFS_{hh}', base.get('FHMAX_GFS_00', 120))
+    base_out['FHMAX_GFS'] = fhmax_gfs
+
+    return base_out
 
 
 class AppConfig:
@@ -175,13 +243,13 @@ class AppConfig:
     @staticmethod
     def _cycled_upd_base(base_in):
 
-        return wfu.get_gfs_cyc_dates(base_in)
+        return get_gfs_cyc_dates(base_in)
 
     @staticmethod
     def _forecast_only_upd_base(base_in):
 
         base_out = base_in.copy()
-        base_out['INTERVAL'] = wfu.get_gfs_interval(base_in['gfs_cyc'])
+        base_out['INTERVAL'] = get_gfs_interval(base_in['gfs_cyc'])
         base_out['CDUMP'] = 'gfs'  # TODO - is there a use case for CDUMP=gdas?
 
         return base_out
@@ -189,8 +257,8 @@ class AppConfig:
     def _source_configs(self, configuration: Configuration) -> Dict[str, Any]:
         """
         Given the configuration object and jobs,
-        source the configurations for each job and return a dictionary
-        Every job depends on "config.base"
+        source the configurations for each config and return a dictionary
+        Every config depends on "config.base"
         """
 
         configs = dict()
@@ -199,24 +267,24 @@ class AppConfig:
         configs['base'] = configuration.parse_config('config.base')
 
         # Source the list of all config_files involved in the application
-        for job in self.configs_names:
+        for config in self.configs_names:
 
             # All must source config.base first
             files = ['config.base']
 
-            if job in ['eobs', 'eomg']:
+            if config in ['eobs', 'eomg']:
                 files += ['config.anal', 'config.eobs']
-            elif job in ['eupd']:
+            elif config in ['eupd']:
                 files += ['config.anal', 'config.eupd']
-            elif job in ['efcs']:
+            elif config in ['efcs']:
                 files += ['config.fcst', 'config.efcs']
-            elif 'wave' in job:
-                files += ['config.wave', f'config.{job}']
+            elif 'wave' in config:
+                files += ['config.wave', f'config.{config}']
             else:
-                files += [f'config.{job}']
+                files += [f'config.{config}']
 
-            print(f'sourcing config.{job}')
-            configs[job] = configuration.parse_config(files)
+            print(f'sourcing config.{config}')
+            configs[config] = configuration.parse_config(files)
 
         return configs
 

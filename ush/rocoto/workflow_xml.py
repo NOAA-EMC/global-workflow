@@ -22,7 +22,7 @@ class RocotoXML:
         self.header = self._get_workflow_header()
         self.cycledefs = self._get_cycledefs()
         task_list = get_wf_tasks(app_config)
-        self.tasks = ''.join(task_list)
+        self.tasks = '\n'.join(task_list)
         self.footer = self._get_workflow_footer()
 
         self.xml = self._assemble_xml()
