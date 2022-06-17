@@ -188,6 +188,7 @@ cd ${pwd}/../ush                ||exit 8
 #------------------------------
 cd ${pwd}/../jobs               ||exit 8
     $LINK ../sorc/gdas.cd/jobs/JGDAS_GLOBAL_ATMOS_ANALYSIS        .
+    $LINK ../sorc/gdas.cd/jobs/JGDAS_GLOBAL_ATMOS_ENSANAL         .
 cd ${pwd}/../ush                ||exit 8
     $LINK ../sorc/gdas.cd/ush/ufsda                                .
 
@@ -280,17 +281,12 @@ for ufs_utilsexe in \
 done
 
 for gsiexe in  calc_analysis.x calc_increment_ens_ncio.x calc_increment_ens.x \
-    getsfcensmeanp.x getsigensmeanp_smooth.x getsigensstatp.x \
-    interp_inc.x oznmon_horiz.x oznmon_time.x radmon_angle.x \
+    getsfcensmeanp.x getsigensmeanp_smooth.x getsigensstatp.x enkf.x gsi.x \
+    interp_inc.x ncdiag_cat_serial.x oznmon_horiz.x oznmon_time.x radmon_angle.x \
     radmon_bcoef.x radmon_bcor.x radmon_time.x recentersigp.x;do
     [[ -s $gsiexe ]] && rm -f $gsiexe
     $LINK ../sorc/gsi.fd/install/bin/$gsiexe .
 done
-# Patch until DA scripts are updated new executable names.  At that time
-# add gsi.x, enkf.x, and ncdiag_cat_serial.x to gsiexe list above.
-$LINK ../sorc/gsi.fd/install/bin/gsi.x               ./global_gsi.x
-$LINK ../sorc/gsi.fd/install/bin/enkf.x              ./global_enkf.x
-$LINK ../sorc/gsi.fd/install/bin/ncdiag_cat_serial.x ./ncdiag_cat.x
 
 for gdasexe in fv3jedi_addincrement.x fv3jedi_diffstates.x fv3jedi_ensvariance.x fv3jedi_hofx.x \
     fv3jedi_var.x fv3jedi_convertincrement.x fv3jedi_dirac.x fv3jedi_error_covariance_training.x \

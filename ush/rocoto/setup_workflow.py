@@ -54,12 +54,17 @@ def main():
     wav_steps_awips = ['waveawipsbulls', 'waveawipsgridded']
 # From gfsv16b latest
 #    gfs_steps = ['prep', 'anal', 'gldas', 'fcst', 'postsnd', 'post', 'awips', 'gempak', 'vrfy', 'metp', 'arch']
-    hyb_steps = ['eobs', 'ediag', 'eomg', 'eupd', 'ecen', 'esfc', 'efcs', 'echgres', 'epos', 'earc']
+#   hyb_steps = ['eobs', 'ediag', 'eomg', 'eupd', 'ecen', 'esfc', 'efcs', 'echgres', 'epos', 'earc']
+    hyb_steps_anal = ['eobs', 'ediag', 'eomg', 'eupd']
+    hyb_steps_util = ['ecen', 'esfc', 'efcs', 'echgres', 'epos', 'earc']
     gsida_steps = ['anal', 'analdiag']
     jedivar_steps = ['atmanalprep', 'atmanalrun', 'sfcanl', 'atmanalpost']
+    jediens_steps = ['atmensanalprep', 'atmensanalrun', 'atmensanalpost']
+
 
     steps = gfs_steps + jedivar_steps if _base.get('DO_JEDIVAR', 'NO') == 'YES' else gfs_steps + gsida_steps
-    steps = steps + hyb_steps if _base.get('DOHYBVAR', 'NO') == 'YES' else steps
+    steps = steps + jediens_steps if _base.get('DO_JEDIENS', 'NO') == 'YES' else steps + hyb_steps_anal
+    steps = steps + hyb_steps_util if _base.get('DOHYBVAR', 'NO') == 'YES' else steps
     steps = steps + metp_steps if _base.get('DO_METP', 'NO') == 'YES' else steps
     steps = steps + gfs_steps_gempak if _base.get('DO_GEMPAK', 'NO') == 'YES' else steps
     steps = steps + gfs_steps_awips if _base.get('DO_AWIPS', 'NO') == 'YES' else steps
@@ -326,16 +331,24 @@ def get_hyb_resources(dict_configs):
     machine = base.get('machine', wfu.detectMachine())
     scheduler = wfu.get_scheduler(machine)
     lobsdiag_forenkf = base.get('lobsdiag_forenkf', '.false.').upper()
+    dohybvar = base.get('DOHYBVAR', 'NO').upper()
     eupd_cyc= base.get('EUPD_CYC', 'gdas').upper()
+    do_jediens = base.get('DO_JEDIENS', 'NO').upper()
     reservation = base.get('RESERVATION', 'NONE').upper()
 
     dict_resources = OrderedDict()
 
     # These tasks can be run in either or both cycles
     if lobsdiag_forenkf in ['.T.', '.TRUE.']:
-        tasks1 = ['eobs', 'ediag', 'eupd', 'echgres']
+        if do_jediens in ['Y', 'YES']:
+            tasks1 = ['atmensanalprep', 'atmensanalrun', 'atmensanalpost', 'echgres']
+        else:
+            tasks1 = ['eobs', 'ediag', 'eupd', 'echgres']
     else:
-        tasks1 = ['eobs', 'eomg', 'eupd', 'echgres']
+        if do_jediens in ['Y', 'YES']:
+            tasks1 = ['atmensanalprep', 'atmensanalrun', 'atmensanalpost', 'echgres']
+        else:
+            tasks1 = ['eobs', 'eomg', 'eupd', 'echgres']
 
     if eupd_cyc in ['BOTH']:
         cdumps = ['gfs', 'gdas']
@@ -361,7 +374,7 @@ def get_hyb_resources(dict_configs):
             strings.append(f'\t<!ENTITY WALLTIME_{taskstr}  "{wtimestr}">\n')
             strings.append(f'\t<!ENTITY RESOURCES_{taskstr} "{resstr}">\n')
             if len(memstr) != 0:
-                strings.appendf(f'\t<!ENTITY MEMORY_{taskstr}    "{memstr}">\n')
+                strings.appendf(f'\t<!ENTITY MEMORY_{taskstr} "{memstr}">\n')
             strings.append(f'\t<!ENTITY NATIVE_{taskstr}    "{natstr}">\n')
 
             dict_resources[f'{cdump}{task}'] = ''.join(strings)
@@ -443,7 +456,7 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
         task_prep = 'prep'
         task_anal = 'anal'
         task_diag = 'analdiag'
-
+        
     # prep
     deps = []
     dep_dict = {'type': 'metatask', 'name': f'{"gdas"}post', 'offset': '-06:00:00'}
@@ -551,10 +564,10 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
         dict_tasks[f'{cdump}sfcanl'] = task
 
     # analcalc
-    deps1 = []
+    deps = []
     data = f'&ROTDIR;/{cdump}.@Y@m@d/@H/atmos/{cdump}.t@Hz.loginc.txt'
     dep_dict = {'type': 'data', 'data': data}
-    deps1.append(rocoto.add_dependency(dep_dict))
+    deps.append(rocoto.add_dependency(dep_dict))
     dep_dict = {'type': 'task', 'name': f'{cdump}{task_anal}'}
     deps.append(rocoto.add_dependency(dep_dict))
     if do_jedivar in ['Y', 'YES']:
@@ -1037,13 +1050,19 @@ def get_hyb_tasks(dict_configs, cycledef='enkf'):
     base = dict_configs['base']
     nens = base['NMEM_ENKF']
     lobsdiag_forenkf = base.get('lobsdiag_forenkf', '.false.').upper()
+    dohybvar = base.get('DOHYBVAR', 'NO').upper()
     eupd_cyc = base.get('EUPD_CYC', 'gdas').upper()
     do_jedivar = base.get('DO_JEDIVAR', 'NO').upper()
+    do_jediens = base.get('DO_JEDIENS', 'NO').upper()
+    dumpsuffix = base.get('DUMP_SUFFIX', '')
+    gridsuffix = base.get('SUFFIX', '')
 
-    eobs = dict_configs['eobs']
-    nens_eomg = eobs['NMEM_EOMGGRP']
-    neomg_grps = nens / nens_eomg
-    EOMGGROUPS = ' '.join([f'{x:02d}' for x in range(1, int(neomg_grps) + 1)])
+
+    if do_jediens in ['N', 'NO']:
+        eobs = dict_configs['eobs']
+        nens_eomg = eobs['NMEM_EOMGGRP']
+        neomg_grps = nens / nens_eomg
+        EOMGGROUPS = ' '.join([f'{x:02d}' for x in range(1, int(neomg_grps) + 1)])
 
     efcs = dict_configs['efcs']
     nens_efcs = efcs['NMEM_EFCSGRP']
@@ -1062,7 +1081,7 @@ def get_hyb_tasks(dict_configs, cycledef='enkf'):
     envars.append(rocoto.create_envar(name='HOMEgfs', value='&HOMEgfs;'))
     envars.append(rocoto.create_envar(name='EXPDIR', value='&EXPDIR;'))
     envars.append(rocoto.create_envar(name='CDATE', value='<cyclestr>@Y@m@d@H</cyclestr>'))
-    #envars.append(rocoto.create_envar(name='CDUMP', value=f'{cdump}'))
+#   envars.append(rocoto.create_envar(name='CDUMP', value=f'{cdump}'))
     envars.append(rocoto.create_envar(name='PDY', value='<cyclestr>@Y@m@d</cyclestr>'))
     envars.append(rocoto.create_envar(name='cyc', value='<cyclestr>@H</cyclestr>'))
 
@@ -1077,60 +1096,105 @@ def get_hyb_tasks(dict_configs, cycledef='enkf'):
     elif eupd_cyc in ['GDAS']:
         cdumps = ['gdas']
 
-    if do_jedivar in ['Y', 'YES']:
-        task_prep = ['prep', 'atmanalprep']
-    else:
-        task_prep = ['prep']
-
     for cdump in cdumps:
 
         envar_cdump = rocoto.create_envar(name='CDUMP', value=f'{cdump}')
         envars1 = envars + [envar_cdump]
 
-        # eobs
-        deps = []
-        dep_dict = {'type': 'task', 'name': f'{cdump}prep'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'metatask', 'name': f'{"gdas"}epmn', 'offset': '-06:00:00'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
-        task = wfu.create_wf_task('eobs', cdump=cdump, envar=envars1, dependency=dependencies, cycledef=cycledef)
+        if do_jediens in ['N', 'NO']:
 
-        dict_tasks[f'{cdump}eobs'] = task
-
-        # eomn, eomg
-        if lobsdiag_forenkf in ['.F.', '.FALSE.']:
+            # eobs
             deps = []
-            dep_dict = {'type': 'task', 'name': f'{cdump}eobs'}
+            dep_dict = {'type': 'task', 'name': f'{cdump}prep'}
+            deps.append(rocoto.add_dependency(dep_dict))
+            dep_dict = {'type': 'metatask', 'name': f'{"gdas"}epmn', 'offset': '-06:00:00'}
+            deps.append(rocoto.add_dependency(dep_dict))
+            dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+            task = wfu.create_wf_task('eobs', cdump=cdump, envar=envars1, dependency=dependencies, cycledef=cycledef)
+
+            dict_tasks[f'{cdump}eobs'] = task
+
+            # eomn, eomg
+            if lobsdiag_forenkf in ['.F.', '.FALSE.']:
+                deps = []
+                dep_dict = {'type': 'task', 'name': f'{cdump}eobs'}
+                deps.append(rocoto.add_dependency(dep_dict))
+                dependencies = rocoto.create_dependency(dep=deps)
+                eomgenvars= envars1 + [ensgrp]
+                task = wfu.create_wf_task('eomg', cdump=cdump, envar=eomgenvars, dependency=dependencies,
+                                          metatask='eomn', varname='grp', varval=EOMGGROUPS, cycledef=cycledef)
+                
+                dict_tasks[f'{cdump}eomn'] = task
+                
+            # ediag
+            else:
+                deps = []
+                dep_dict = {'type': 'task', 'name': f'{cdump}eobs'}
+                deps.append(rocoto.add_dependency(dep_dict))
+                dependencies = rocoto.create_dependency(dep=deps)
+                task = wfu.create_wf_task('ediag', cdump=cdump, envar=envars1, dependency=dependencies, cycledef=cycledef)
+                
+                dict_tasks[f'{cdump}ediag'] = task
+
+            # eupd
+            deps = []
+            if lobsdiag_forenkf in ['.F.', '.FALSE.']:
+                dep_dict = {'type': 'metatask', 'name': f'{cdump}eomn'}
+            else:
+                dep_dict = {'type': 'task', 'name': f'{cdump}ediag'}
+                deps.append(rocoto.add_dependency(dep_dict))
+                dependencies = rocoto.create_dependency(dep=deps)
+                task = wfu.create_wf_task('eupd', cdump=cdump, envar=envars1, dependency=dependencies, cycledef=cycledef)
+
+                dict_tasks[f'{cdump}eupd'] = task
+
+        else:
+
+            # atmensanalprep
+            deps = []
+            dep_dict = {'type': 'metatask', 'name': f'{"gdas"}post', 'offset': '-06:00:00'}
+            deps.append(rocoto.add_dependency(dep_dict))
+            data = f'&ROTDIR;/gdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmf009{gridsuffix}'
+            dep_dict = {'type': 'data', 'data': data, 'offset': '-06:00:00'}
+            deps.append(rocoto.add_dependency(dep_dict))
+            data = f'&DMPDIR;/{cdump}{dumpsuffix}.@Y@m@d/@H/{cdump}.t@Hz.updated.status.tm00.bufr_d'
+            dep_dict = {'type': 'data', 'data': data}
+            deps.append(rocoto.add_dependency(dep_dict))
+            dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+            gfs_enkf = True if eupd_cyc in ['BOTH', 'GFS'] and dohybvar in ['Y', 'YES'] else False
+
+            if gfs_enkf and cdump in ['gfs']:
+                if gfs_cyc == 4:
+                    task = wfu.create_wf_task(task='atmensanalprep', cdump=cdump, envar=envars1, dependency=dependencies)
+                else:
+                    task = wfu.create_wf_task(task='atmensanalprep', cdump=cdump, envar=envarsl, dependency=dependencies, cycledef='gdas')
+                    
+            else:
+                task = wfu.create_wf_task(task='atmensanalprep', cdump=cdump, envar=envars1, dependency=dependencies,cycledef='gdas')
+
+            dict_tasks[f'{cdump}atmensanalprep'] = task
+
+            # atmensanalrun
+            deps = []
+            dep_dict = {'type': 'task', 'name': f'{cdump}atmensanalprep'}
+            deps.append(rocoto.add_dependency(dep_dict))
+            dep_dict = {'type': 'metatask', 'name': f'{"gdas"}epmn', 'offset': '-06:00:00'}
+            deps.append(rocoto.add_dependency(dep_dict))
+            dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+            task = wfu.create_wf_task('atmensanalrun', cdump=cdump, envar=envars1, dependency=dependencies, cycledef=cycledef)
+
+            dict_tasks[f'{cdump}atmensanalrun'] = task
+
+            # atmensanalpost
+            deps = []
+            dep_dict = {'type': 'task', 'name': f'{cdump}atmensanalrun'}
             deps.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep=deps)
-            eomgenvars= envars1 + [ensgrp]
-            task = wfu.create_wf_task('eomg', cdump=cdump, envar=eomgenvars, dependency=dependencies,
-                                      metatask='eomn', varname='grp', varval=EOMGGROUPS, cycledef=cycledef)
+            task = wfu.create_wf_task('atmensanalpost', cdump=cdump, envar=envars1, dependency=dependencies, cycledef=cycledef)
 
-            dict_tasks[f'{cdump}eomn'] = task
-
-        # ediag
-        else:
-            deps = []
-            dep_dict = {'type': 'task', 'name': f'{cdump}eobs'}
-            deps.append(rocoto.add_dependency(dep_dict))
-            dependencies = rocoto.create_dependency(dep=deps)
-            task = wfu.create_wf_task('ediag', cdump=cdump, envar=envars1, dependency=dependencies, cycledef=cycledef)
-
-            dict_tasks[f'{cdump}ediag'] = task
-
-        # eupd
-        deps = []
-        if lobsdiag_forenkf in ['.F.', '.FALSE.']:
-            dep_dict = {'type': 'metatask', 'name': f'{cdump}eomn'}
-        else:
-            dep_dict = {'type': 'task', 'name': f'{cdump}ediag'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
-        task = wfu.create_wf_task('eupd', cdump=cdump, envar=envars1, dependency=dependencies, cycledef=cycledef)
-
-        dict_tasks[f'{cdump}eupd'] = task
+            dict_tasks[f'{cdump}atmensanalpost'] = task
+            
 
     # All hybrid tasks beyond this point are always executed in the GDAS cycle
     cdump = 'gdas'
@@ -1149,7 +1213,10 @@ def get_hyb_tasks(dict_configs, cycledef='enkf'):
 
     deps2 = []
     deps2 = dependencies1
-    dep_dict = {'type': 'task', 'name': f'{cdump_eupd}eupd'}
+    if do_jediens in ['N', 'NO']:
+        dep_dict = {'type': 'task', 'name': f'{cdump_eupd}eupd'}
+    else:
+        dep_dict = {'type': 'task', 'name': f'{cdump_eupd}atmensanalrun'}
     deps2.append(rocoto.add_dependency(dep_dict))
     dependencies2 = rocoto.create_dependency(dep_condition='and', dep=deps2)
 
@@ -1175,7 +1242,10 @@ def get_hyb_tasks(dict_configs, cycledef='enkf'):
 
     deps2 = []
     deps2 = dependencies1
-    dep_dict = {'type': 'task', 'name': f'{cdump_eupd}eupd'}
+    if do_jediens in ['N', 'NO']:
+        dep_dict = {'type': 'task', 'name': f'{cdump_eupd}eupd'}
+    else:
+        dep_dict = {'type': 'task', 'name': f'{cdump_eupd}atmensanalrun'}
     deps2.append(rocoto.add_dependency(dep_dict))
     dependencies2 = rocoto.create_dependency(dep_condition='and', dep=deps2)
     task = wfu.create_wf_task('esfc', cdump=cdump, envar=envars1, dependency=dependencies2, cycledef=cycledef)
@@ -1450,6 +1520,9 @@ def create_xml(dict_configs):
                      'gdasediag':'gdasediag',
                      'gdaseomg':'gdaseomn',
                      'gdaseupd':'gdaseupd',
+                     'gdasatmensanalprep':'gdasatmensanalprep',
+                     'gdasatmensanalrun':'gdasatmensanalrun',
+                     'gdasatmensanalpost':'gdasatmensanalpost',
                      'gdasecen':'gdasecmn',
                      'gdasesfc':'gdasesfc',
                      'gdasefcs':'gdasefmn',
