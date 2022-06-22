@@ -304,7 +304,7 @@ class AppConfig:
 
     def _get_cycled_task_names(self):
 
-        tasks = ['prep', 'anal', 'analcalc', 'fcst', 'post', 'vrfy', 'arch']
+        gdas_gfs_common_tasks = ['prep', 'anal', 'analcalc', 'fcst', 'post', 'vrfy', 'arch']
 
         gdas_only_tasks = ['analdiag']
 
@@ -316,8 +316,8 @@ class AppConfig:
             hybrid_tasks += ['ediag'] if self.lobsdiag_forenkf else ['eomg']
             hybrid_gdas_tasks = ['ecen', 'esfc', 'efcs', 'epos', 'earc']
 
-        # First collect all gdas tasks
-        gdas_tasks = tasks + gdas_only_tasks
+        # Collect all "gdas" cycle tasks
+        gdas_tasks = gdas_gfs_common_tasks + gdas_only_tasks
 
         if self.do_gldas:
             gdas_tasks += gldas_tasks
@@ -330,8 +330,8 @@ class AppConfig:
                 gdas_tasks += hybrid_tasks
                 gdas_tasks += hybrid_gdas_tasks
 
-        # Now collect gfs tasks
-        gfs_tasks = tasks
+        # Collect "gfs" cycle tasks
+        gfs_tasks = gdas_gfs_common_tasks
 
         if self.do_hybvar:
             if 'gfs' in self.eupd_cdumps:

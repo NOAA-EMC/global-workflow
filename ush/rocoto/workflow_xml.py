@@ -113,12 +113,7 @@ class RocotoXML:
         sdate = self._base['SDATE'].strftime('%Y%m%d%H%M')
         edate = self._base['EDATE'].strftime('%Y%m%d%H%M')
         interval = self._base.get('INTERVAL', '06:00:00')
-
-        strings = [f'\t<cycledef group="first">{sdate} {sdate} {interval}</cycledef>',
-                   f'\t<cycledef group="gdas" >{sdate} {edate} {interval}</cycledef>']
-
-        if self._app_config.do_hybvar:
-            strings.append(f'\t<cycledef group="enkf" >{sdate} {edate} {interval}</cycledef>')
+        strings = [f'\t<cycledef group="gdas" >{sdate} {edate} {interval}</cycledef>']
 
         if self._app_config.gfs_cyc != 0:
             sdate_gfs = self._base['SDATE_GFS'].strftime('%Y%m%d%H%M')
@@ -133,8 +128,8 @@ class RocotoXML:
     def _get_cycledefs_forecast_only(self):
         sdate = self._base['SDATE'].strftime('%Y%m%d%H%M')
         edate = self._base['EDATE'].strftime('%Y%m%d%H%M')
-        cdump = self._base['CDUMP']
         interval = self._base.get('INTERVAL_GFS', '24:00:00')
+        cdump = self._base['CDUMP']
         strings = f'\t<cycledef group="{cdump}">{sdate} {edate} {interval}</cycledef>\n\n'
 
         return strings
