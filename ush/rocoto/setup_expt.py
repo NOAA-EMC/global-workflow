@@ -157,13 +157,13 @@ def edit_baseconfig(host, inputs):
 
     if inputs.mode in ['cycled']:
         extend_dict = {
-            "@CASEENSF@": f'C{inputs.resens}',
-            "@NMEM@": inputs.nens,
+            "@CASEENS@": f'C{inputs.resens}',
+            "@NMEM_ENKF@": inputs.nens,
         }
     elif inputs.mode in ['gefs']:
         extend_dict = {
             "@CASEENS@": f'C{inputs.resens}',
-            "@NMEM@": inputs.nens,
+            "@NMEM_ENKF@": inputs.nens,
         }
     elif inputs.mode in ['forecast-only', 'gefs']:
         extend_dict = {

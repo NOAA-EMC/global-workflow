@@ -324,7 +324,7 @@ export imp_physics=8
 # Shared parameters
 # Hybrid related
 export DOHYBVAR="YES"
-export NMEM_ENKF=@NMEM@
+export NMEM_ENKF=@NMEM_ENKF@
 export SMOOTH_ENKF="NO"
 export l4densvar=".true."
 export lwrite4danl=".true."
