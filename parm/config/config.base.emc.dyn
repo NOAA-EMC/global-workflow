@@ -207,8 +207,7 @@ export OPS_RES="C768" # Do not change
 # Resolution specific parameters
 export LEVS=128
 export CASE="@CASECTL@"
-export CASE_ENKF="@CASEENS_ENKF@"
-export CASE_GEFS="@CASEENS_GEFS@"
+export CASE_ENKF="@CASEENS@"
 case "$CASE" in
     "C48") export OCNRES=400;;
     "C96") export OCNRES=100;;
@@ -325,8 +324,7 @@ export imp_physics=8
 # Shared parameters
 # Hybrid related
 export DOHYBVAR="YES"
-export NMEM_ENKF=@NMEM_ENKF@
-export NMEM_GEFS=@NMEM_GEFS@
+export NMEM_ENKF=@NMEM@
 export SMOOTH_ENKF="NO"
 export l4densvar=".true."
 export lwrite4danl=".true."

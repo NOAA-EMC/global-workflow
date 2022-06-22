@@ -56,9 +56,9 @@ def fill_COMROT_cycled(host, inputs):
         # Link ensemble member initial conditions
         enkfdir = f'enkf{inputs.cdump}.{idatestr[:8]}/{idatestr[8:]}'
         makedirs_if_missing(os.path.join(comrot, enkfdir))
-        for ii in range(1, inputs.nens_enkf + 1):
+        for ii in range(1, inputs.nens + 1):
             makedirs_if_missing(os.path.join(comrot, enkfdir, f'mem{ii:03d}'))
-            os.symlink(os.path.join(inputs.icsdir, idatestr, f'C{inputs.resens_enkf}', f'mem{ii:03d}', 'RESTART'),
+            os.symlink(os.path.join(inputs.icsdir, idatestr, f'C{inputs.resens}', f'mem{ii:03d}', 'RESTART'),
                        os.path.join(comrot, enkfdir, f'mem{ii:03d}', 'RESTART'))
 
         # Link deterministic initial conditions
@@ -157,13 +157,13 @@ def edit_baseconfig(host, inputs):
 
     if inputs.mode in ['cycled']:
         extend_dict = {
-            "@CASEENS_ENKF@": f'C{inputs.resens_enkf}',
-            "@NMEM_ENKF@": inputs.nens_enkf,
+            "@CASEENSF@": f'C{inputs.resens}',
+            "@NMEM@": inputs.nens,
         }
     elif inputs.mode in ['gefs']:
         extend_dict = {
-            "@CASEENS_GEFS@": f'C{inputs.resens_gefs}',
-            "@NMEM_GEFS@": inputs.nens_gefs,
+            "@CASEENS@": f'C{inputs.resens}',
+            "@NMEM@": inputs.nens,
         }
     elif inputs.mode in ['forecast-only', 'gefs']:
         extend_dict = {
@@ -246,20 +246,19 @@ def input_args():
                           choices=['warm', 'cold'], required=False, default='cold')
 
     # cycled mode additional arguments
-    cycled.add_argument('--resens_enkf', help='resolution of the ensemble model forecast',
+    cycled.add_argument('--resens', help='resolution of the ensemble model forecast',
                         type=int, required=False, default=192)
-    cycled.add_argument('--nens_enkf', help='number of ensemble members',
+    cycled.add_argument('--nens', help='number of ensemble members',
                         type=int, required=False, default=20)
 
     cycled.add_argument('--app', help='UFS application', type=str,
                         choices=['ATM', 'ATMW'], required=False, default='ATM')
 
     # gefs mode additional arguments
-    for subp in [gefs]:
-        subp.add_argument('--resens_gefs', help='resolution of the ensemble model forecast',
-                            type=int, required=False, default=192)
-        subp.add_argument('--nens_gefs', help='number of ensemble members',
-                            type=int, required=False, default=0)
+    gefs.add_argument('--resens', help='resolution of the ensemble model forecast',
+                      type=int, required=False, default=192)
+    gefs.add_argument('--nens', help='number of ensemble members',
+                      type=int, required=False, default=30)
 
     # forecast only mode additional arguments
     for subp in [forecasts, gefs]:
