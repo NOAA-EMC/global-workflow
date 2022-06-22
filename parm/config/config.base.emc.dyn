@@ -220,14 +220,18 @@ esac
 export ICERES=$OCNRES
 
 # Surface cycle update frequency
-if [[ "$CDUMP" == "gdas" ]] ; then
-   export FHCYC=1
-   export FTSFS=10
-elif [[ "$CDUMP" == "gfs" ]] ; then
-   export FHCYC=24
-elif [[ "$CDUMP" == "gefs" ]] ; then
-   export FHCYC=24
-fi
+case "$CDUMP" in
+    "gdas")
+        export FHCYC=1
+        export FTSFS=10
+        ;;
+    "gfs")
+        export FHCYC=24
+        ;;
+    "gefs")
+        export FHCYC=24
+        ;;
+esac
 
 # Output frequency of the forecast model (for cycling)
 export FHMIN=0
