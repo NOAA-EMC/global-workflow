@@ -121,11 +121,6 @@ if [ $DOHYBVAR = "YES" ]; then
 fi
 
 
-
-# Update surface fields with global_cycle
-export DOGCYCLE=${DOGCYCLE:-"YES"}
-
-
 # Generate Gaussian surface analysis
 export DOGAUSFCANL=${DOGAUSFCANL:-"YES"}
 
