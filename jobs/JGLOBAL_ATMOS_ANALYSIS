@@ -131,14 +131,6 @@ export TCVITL="${COMOUT}/${OPREFIX}syndata.tcvitals.tm00"
 [[ $DONST = "YES" ]] && export NSSTBF="${COMIN_OBS}/${OPREFIX}nsstbufr"
 
 
-# Update surface fields with global_cycle
-export DOGCYCLE=${DOGCYCLE:-"YES"}
-
-
-# Generate Gaussian surface analysis
-export DOGAUSFCANL=${DOGAUSFCANL:-"YES"}
-
-
 # Copy fix file for obsproc
 if [ $RUN = "gfs" ]; then
     mkdir -p $ROTDIR/fix
