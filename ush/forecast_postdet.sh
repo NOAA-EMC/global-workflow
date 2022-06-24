@@ -648,7 +648,12 @@ WW3_postdet() {
       waverstfile=${RSTDIR_WAVE}/${sPDY}.${scyc}0000.restart.${wavGRD}
     fi
     if [ ! -f ${waverstfile} ]; then
-      echo "WARNING: NON-FATAL ERROR wave IC is missing, will start from rest"
+      if [ $RERUN = "NO" ]; then
+        echo "WARNING: NON-FATAL ERROR wave IC is missing, will start from rest"
+      else 
+        echo "ERROR: Wave IC is missing in RERUN, exiting." 
+        exit 1 
+      fi 
     else
       if [ $waveMULTIGRID = ".true." ]; then
         $NLN ${waverstfile} $DATA/restart.${wavGRD}
