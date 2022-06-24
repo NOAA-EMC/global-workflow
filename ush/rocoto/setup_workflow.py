@@ -42,7 +42,7 @@ def main():
         print(f'input arg:     --expdir = {repr(args.expdir)}')
         sys.exit(1)
 
-    gfs_steps = ['prep', 'analcalc', 'gldas', 'fcst', 'postsnd', 'postanl', 'post', 'vrfy', 'arch']
+    gfs_steps = ['prep', 'sfcanl', 'analcalc', 'gldas', 'fcst', 'postsnd', 'postanl', 'post', 'vrfy', 'arch']
     gfs_steps_gempak = ['gempak']
     gfs_steps_awips = ['awips']
     gfs_steps_wafs = ['wafs', 'wafsgrib2', 'wafsblending', 'wafsgcip', 'wafsgrib20p25', 'wafsblending0p25']
@@ -58,7 +58,7 @@ def main():
     hyb_steps_anal = ['eobs', 'ediag', 'eomg', 'eupd']
     hyb_steps_util = ['ecen', 'esfc', 'efcs', 'echgres', 'epos', 'earc']
     gsida_steps = ['anal', 'analdiag']
-    jedivar_steps = ['atmanalprep', 'atmanalrun', 'sfcanl', 'atmanalpost']
+    jedivar_steps = ['atmanalprep', 'atmanalrun', 'atmanalpost']
     jediens_steps = ['atmensanalprep', 'atmensanalrun', 'atmensanalpost']
 
 
@@ -262,11 +262,10 @@ def get_gdasgfs_resources(dict_configs, cdump='gdas'):
         task_diag = ['analdiag']
 
     tasks = task_prep + task_anal
+    tasks += ['sfcanl']   
     tasks += ['analcalc']
     if cdump in ['gdas']:
         tasks += task_diag
-    if do_jedivar in ['Y', 'YES']:
-        tasks += ['sfcanl']
     if cdump in ['gdas'] and do_gldas in ['Y', 'YES']:
         tasks += ['gldas']
     if cdump in ['gdas'] and do_wave in ['Y', 'YES'] and do_wave_cdump in ['GDAS', 'BOTH']:
@@ -551,17 +550,16 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
     dict_tasks[f'{cdump}{task_anal}'] = task
 
     # sfcanl
-    if do_jedivar in ['Y', 'YES']:
-        deps = []
-        data = f'&ROTDIR;/{cdump}.@Y@m@d/@H/atmos/{cdump}.t@Hz.loginc.txt'
-        dep_dict = {'type': 'data', 'data': data}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'task', 'name': f'{cdump}{task_anal}'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
-        task = wfu.create_wf_task('sfcanl', cdump=cdump, envar=envars, dependency=dependencies)
+    deps = []
+    data = f'&ROTDIR;/{cdump}.@Y@m@d/@H/atmos/{cdump}.t@Hz.loginc.txt'
+    dep_dict = {'type': 'data', 'data': data}
+    deps.append(rocoto.add_dependency(dep_dict))
+    dep_dict = {'type': 'task', 'name': f'{cdump}{task_anal}'}
+    deps.append(rocoto.add_dependency(dep_dict))
+    dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+    task = wfu.create_wf_task('sfcanl', cdump=cdump, envar=envars, dependency=dependencies)
 
-        dict_tasks[f'{cdump}sfcanl'] = task
+    dict_tasks[f'{cdump}sfcanl'] = task
 
     # analcalc
     deps = []
@@ -570,9 +568,8 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
     deps.append(rocoto.add_dependency(dep_dict))
     dep_dict = {'type': 'task', 'name': f'{cdump}{task_anal}'}
     deps.append(rocoto.add_dependency(dep_dict))
-    if do_jedivar in ['Y', 'YES']:
-        dep_dict = {'type': 'task', 'name': f'{cdump}sfcanl'}
-        deps.append(rocoto.add_dependency(dep_dict))
+    dep_dict = {'type': 'task', 'name': f'{cdump}sfcanl'}
+    deps.append(rocoto.add_dependency(dep_dict))
     if dohybvar in ['y', 'Y', 'yes', 'YES'] and cdump == 'gdas':
         dep_dict = {'type': 'task', 'name': f'{"gdas"}echgres', 'offset': '-06:00:00'}
         deps.append(rocoto.add_dependency(dep_dict))
@@ -611,9 +608,8 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
         deps1.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'task', 'name': f'{cdump}{task_anal}'}
         deps1.append(rocoto.add_dependency(dep_dict))
-        if do_jedivar in ['Y', 'YES']:
-            dep_dict = {'type': 'task', 'name': f'{cdump}sfcanl'}
-            deps1.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'task', 'name': f'{cdump}sfcanl'}
+        deps1.append(rocoto.add_dependency(dep_dict))
         dependencies1 = rocoto.create_dependency(dep_condition='and', dep=deps1)
 
         deps2 = []
@@ -639,9 +635,8 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
         else:
             dep_dict = {'type': 'task', 'name': f'{cdump}analcalc'}
             deps1.append(rocoto.add_dependency(dep_dict))
-            if do_jedivar in ['Y', 'YES']:
-                dep_dict = {'type': 'task', 'name': f'{cdump}sfcanl'}
-                deps1.append(rocoto.add_dependency(dep_dict))
+            dep_dict = {'type': 'task', 'name': f'{cdump}sfcanl'}
+            deps1.append(rocoto.add_dependency(dep_dict))
     elif cdump in ['gfs']:
         dep_dict = {'type': 'task', 'name': f'{cdump}{task_anal}'}
         deps1.append(rocoto.add_dependency(dep_dict))
