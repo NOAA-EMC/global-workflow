@@ -443,10 +443,10 @@ if [ $cplwav = ".true." ]; then
 
   for wavGRD in $waveGRD ; do
     if [ $RERUN = "NO" ]; then
-      if [ ! -f ${WRDIR}/${sPDY}.${scyc}0000.restart.${wavGRD} ]; then 
-        echo "WARNING: NON-FATAL ERROR wave IC is missing, will start from rest"
-      else
+      if [ -f ${WRDIR}/${sPDY}.${scyc}0000.restart.${wavGRD} ]; then
         $NLN ${WRDIR}/${sPDY}.${scyc}0000.restart.${wavGRD} $DATA/restart.${wavGRD}
+      else
+        echo "WARNING: Wave ICs are absent, will start from rest"
       fi
     else
       if [ ! -f ${RSTDIR_WAVE}/${PDYT}.${cyct}0000.restart.${wavGRD} ]; then
