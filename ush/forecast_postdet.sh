@@ -28,8 +28,8 @@ DATM_postdet(){
 
   # DATM forcing file name convention is ${DATM_FILENAME_BASE}.$YYYYMMDDHH.nc
   echo "Link DATM forcing files"
-  DATMINPUTDIR="/scratch2/NCEPDEV/marineda/DATM_INPUT/CFSR/${SYEAR}${SMONTH}"
-  $NLN -sf ${DATMINPUTDIR}/${DATM_FILENAME_BASE}*.nc $DATA/DATM_INPUT/
+  $NCP -sf $ICSDIR/$CDATE/datm/*nc $DATA/DATM_INPUT/
+  $NCP -sf $FIXdatm/$datm_src/*mesh.nc $DATA/DATM_INPUT/
 }
 
 FV3_GFS_postdet(){
@@ -564,6 +564,15 @@ DATM_nml(){
   echo SUB ${FUNCNAME[0]}: DATM name lists and model configure file created
 }
 
+DATM_out() {
+  echo "SUB ${FUNCNAME[0]}: Copying output data for DATM"
+  mkdir -p $ROTDIR/${CDUMP}.${PDY}/${cyc}/datm
+  $NCP $DATA/atm.log $ROTDIR/${CDUMP}.${PDY}/${cyc}/datm
+  tail -15 $ROTDIR/${CDUMP}.${PDY}/${cyc}/datm/atm.log | grep "dshr_restart_write"
+  status=$?
+  [[ $status -eq 0 ]] && touch $ROTDIR/${CDUMP}.${PDY}/${cyc}/datm/datm.status
+}
+
 data_out_GFS() {
   # data in take for FV3GFS
   # Arguments: None
@@ -770,7 +779,12 @@ MOM6_postdet() {
   $NCP -pf $FIXmom/$OCNRES/* $DATA/INPUT/
 
   # Copy coupled grid_spec
-  spec_file="$FIX_DIR/fix_cpl/a${CASE}o${OCNRES}/grid_spec.nc"
+  if [ $APP = "OCN-ICE" ];then
+    spec_file="$FIXdatm/mom6/${OCNRES}/grid_spec.nc"
+  else
+    spec_file="$FIX_DIR/fix_cpl/a${CASE}o${OCNRES}/grid_spec.nc"
+  fi
+
   if [ -s $spec_file ]; then
     $NCP -pf $spec_file $DATA/INPUT/
   else

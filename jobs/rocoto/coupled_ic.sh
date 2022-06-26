@@ -38,7 +38,12 @@ status=$?
 
 # Create ICSDIR if needed
 [[ ! -d $ICSDIR/$CDATE ]] && mkdir -p $ICSDIR/$CDATE
-[[ ! -d $ICSDIR/$CDATE/atmos ]] && mkdir -p $ICSDIR/$CDATE/atmos
+if [ $ATMTYPE = "MODEL" ]; then
+  [[ ! -d $ICSDIR/$CDATE/atmos ]] && mkdir -p $ICSDIR/$CDATE/atmos
+fi
+if [ $ATMTYPE = "DATA" ]; then
+  [[ ! -d $ICSDIR/$CDATE/datm ]] && mkdir -p $ICSDIR/$CDATE/datm
+fi
 [[ ! -d $ICSDIR/$CDATE/ocn ]] && mkdir -p $ICSDIR/$CDATE/ocn
 [[ ! -d $ICSDIR/$CDATE/ice ]] && mkdir -p $ICSDIR/$CDATE/ice
 
@@ -46,17 +51,23 @@ if [ $ICERES = '025' ]; then
   ICERESdec="0.25"
 fi 
 if [ $ICERES = '050' ]; then         
- ICERESdec="0.50"        
+  ICERESdec="0.50"        
 fi 
 
-# Setup ATM initial condition files
-cp -r $BASE_CPLIC/$CPL_ATMIC/$CDATE/$CDUMP/*  $ICSDIR/$CDATE/atmos/
-rc=$?
-if [[ $rc -ne 0 ]] ; then
-  echo "FATAL: Unable to copy $BASE_CPLIC/$CPL_ATMIC/$CDATE/$CDUMP/* to $ICSDIR/$CDATE/atmos/ (Error code $rc)" 
+if [ $ATMTYPE = "MODEL" ]; then
+  # Setup ATM initial condition files
+  cp -r $BASE_CPLIC/$CPL_ATMIC/$CDATE/$CDUMP/*  $ICSDIR/$CDATE/atmos/
+  rc=$?
+  if [[ $rc -ne 0 ]] ; then
+    echo "FATAL: Unable to copy $BASE_CPLIC/$CPL_ATMIC/$CDATE/$CDUMP/* to $ICSDIR/$CDATE/atmos/ (Error code $rc)" 
+  fi
+  ((err+=$rc))
 fi
-((err+=$rc))
 
+if [ $ATMTYPE = "DATA" ]; then
+  # Setup DATM forcing files
+  cp -r $BASE_CPLIC/${CPL_DATM}/${datm_src}/$CDATE/${datm_src}.*.nc $ICSDIR/$CDATE/datm/
+fi
 
 # Setup Ocean IC files 
 cp -r $BASE_CPLIC/$CPL_OCNIC/$CDATE/ocn/$OCNRES/MOM*.nc  $ICSDIR/$CDATE/ocn/
@@ -87,13 +98,15 @@ if [ $DO_WAVE = "YES" ]; then
   done
 fi
 
-# Stage the FV3 initial conditions to ROTDIR
-export OUTDIR="$ICSDIR/$CDATE/atmos/$CASE/INPUT"
-COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc/atmos"
-[[ ! -d $COMOUT ]] && mkdir -p $COMOUT
-cd $COMOUT || exit 99
-rm -rf INPUT
-$NLN $OUTDIR .
+if [ $ATMTYPE = "MODEL" ]; then
+  # Stage the FV3 initial conditions to ROTDIR
+  export OUTDIR="$ICSDIR/$CDATE/atmos/$CASE/INPUT"
+  COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc/atmos"
+  [[ ! -d $COMOUT ]] && mkdir -p $COMOUT
+  cd $COMOUT || exit 99
+  rm -rf INPUT
+  $NLN $OUTDIR .
+fi
 
 #Stage the WW3 initial conditions to ROTDIR 
 if [ $DO_WAVE = "YES" ]; then

@@ -193,64 +193,105 @@ elif [ $step = "fcst" ]; then
       export wtime_fcst_gfs="06:00:00"
     elif [ $CASE = "C384" ]; then
       export wtime_fcst_gfs="06:00:00"
+    elif [ $ATMTYPE = "DATA" ]; then
+      export wtime_fcst_gfs="00:30:00"
     else
       export wtime_fcst_gfs="03:00:00"
     fi
 
     # During workflow creation, we need resources for all CDUMPs and CDUMP is undefined
     CDUMP_LIST=${CDUMP:-"gdas gfs"}
-    for CDUMP in $CDUMP_LIST; do
-        if [[ "$CDUMP" == "gfs" ]]; then
-            export layout_x=$layout_x_gfs
-            export layout_y=$layout_y_gfs
-            export WRITE_GROUP=$WRITE_GROUP_GFS
-            export WRTTASK_PER_GROUP=$WRTTASK_PER_GROUP_GFS
-        fi
+    if [[ $ATMTYPE == "MODEL" ]]; then
+        for CDUMP in $CDUMP_LIST; do
+            if [[ "$CDUMP" == "gfs" ]]; then
+                export layout_x=$layout_x_gfs
+                export layout_y=$layout_y_gfs
+                export WRITE_GROUP=$WRITE_GROUP_GFS
+                export WRTTASK_PER_GROUP=$WRTTASK_PER_GROUP_GFS
+            fi
 
-        (( ATMPETS = layout_x * layout_y * 6 ))
+            (( ATMPETS = layout_x * layout_y * 6 ))
 
-        # Mediator only uses the atm model PETS or less
-        export MEDPETS=${MEDPETS:-ATMPETS}
+            # Mediator only uses the atm model PETS or less
+            export MEDPETS=${MEDPETS:-ATMPETS}
 
-        if [[ $DO_AERO == "YES" ]]; then
-            # Aerosol model only uses the atm model PETS
-            export CHMPETS=$ATMPETS
-            # Aerosol model runs on same PETs as ATM, so don't add to $NTASKS_TOT
-        fi
+            if [[ $DO_AERO == "YES" ]]; then
+                # Aerosol model only uses the atm model PETS
+                export CHMPETS=$ATMPETS
+                # Aerosol model runs on same PETs as ATM, so don't add to $NTASKS_TOT
+            fi
 
-        # If using in-line post, add the write tasks to the ATMPETS
-        if [[ $QUILTING == ".true." ]]; then
-            (( ATMPETS = ATMPETS + WRITE_GROUP * WRTTASK_PER_GROUP ))
-        fi
-        export ATMPETS
+            # If using in-line post, add the write tasks to the ATMPETS
+            if [[ $QUILTING == ".true." ]]; then
+                (( ATMPETS = ATMPETS + WRITE_GROUP * WRTTASK_PER_GROUP ))
+            fi
+            export ATMPETS
+            NTASKS_TOT=$ATMPETS
+
+            export nth_fcst=${nth_fv3:-2}
+            export nth_fcst_gfs=${nth_fv3_gfs:-2}
+
+            export npe_node_fcst=$(echo "$npe_node_max / $nth_fcst" | bc)
+            export npe_node_fcst_gfs=$(echo "$npe_node_max / $nth_fcst_gfs" | bc)
+
+            if [[ "$machine" == "WCOSS_C" ]]; then export memory_fcst="1024M"; fi
+
+            if [[ $DO_WAVE == "YES" ]]; then
+                case $waveGRD in
+                    'gnh_10m aoc_9km gsh_15m') export WAVPETS=140 ;;
+                    'gwes_30m') export WAVPETS=160 ;;
+                    'mx025') export WAVPETS=80 ;;
+                    *)
+                        echo "FATAL: Number of PEs not defined for wave grid '$waveGRD'"
+                        echo "  Please add an entry to config.resources within fcst for this grid"
+                        exit 3
+                esac
+                (( NTASKS_TOT = NTASKS_TOT + WAVPETS ))
+            fi
+
+            if [[ $DO_OCN == "YES" ]]; then
+                case $OCNRES in
+                    # Except for 025, these are guesses for now
+                    100) export OCNPETS=20 ;;
+                    050) export OCNPETS=60 ;;
+                    025) export OCNPETS=120 ;;
+                    *)
+                        echo "FATAL: Number of PEs not defined for ocean resolution '$OCNRES'"
+                        echo "  Please add an entry to config.resources within fcst for this resolution"
+                        exit 3
+                esac
+                (( NTASKS_TOT = NTASKS_TOT + OCNPETS ))
+            fi
+
+            if [[ $DO_ICE == "YES" ]]; then
+                case $ICERES in
+                    # Except for 025, these are guesses for now
+                    100) export ICEPETS=10 ;;
+                    050) export ICEPETS=30 ;;
+                    025) export ICEPETS=48 ;;
+                    *)
+                        echo "FATAL: Number of PEs not defined for ice resolution '$ICERES'"
+                        echo "  Please add an entry to config.resources within fcst for this resolution"
+                        exit 3
+                esac
+                (( NTASKS_TOT = NTASKS_TOT + ICEPETS ))
+            fi
+
+            if [[ $CDUMP == "gfs" ]]; then
+                export npe_fcst_gfs=$NTASKS_TOT
+            else
+                export npe_fcst=$NTASKS_TOT
+            fi
+        done
+    fi
+
+    if [[ $ATMTYPE == "DATA" ]]; then
+        export ATMPETS=40
+        export MEDPETS=40
         NTASKS_TOT=$ATMPETS
-
-        export nth_fcst=${nth_fv3:-2}
-        export nth_fcst_gfs=${nth_fv3_gfs:-2}
-
-        export npe_node_fcst=$(echo "$npe_node_max / $nth_fcst" | bc)
-        export npe_node_fcst_gfs=$(echo "$npe_node_max / $nth_fcst_gfs" | bc)
-
-        if [[ "$machine" == "WCOSS_C" ]]; then export memory_fcst="1024M"; fi
-
-        if [[ $DO_WAVE == "YES" ]]; then
-            case $waveGRD in
-                'gnh_10m aoc_9km gsh_15m') export WAVPETS=140 ;;
-                'gwes_30m') export WAVPETS=160 ;;
-                'mx025') export WAVPETS=80 ;;
-                *)
-                    echo "FATAL: Number of PEs not defined for wave grid '$waveGRD'"
-                    echo "  Please add an entry to config.resources within fcst for this grid"
-                    exit 3
-            esac
-            (( NTASKS_TOT = NTASKS_TOT + WAVPETS ))
-        fi
-
         if [[ $DO_OCN == "YES" ]]; then
             case $OCNRES in
-                # Except for 025, these are guesses for now
-                100) export OCNPETS=20 ;;
-                050) export OCNPETS=60 ;;
+                100) export OCNPETS=16 ;;
                 025) export OCNPETS=120 ;;
                 *)
                     echo "FATAL: Number of PEs not defined for ocean resolution '$OCNRES'"
@@ -263,8 +304,7 @@ elif [ $step = "fcst" ]; then
         if [[ $DO_ICE == "YES" ]]; then
             case $ICERES in
                 # Except for 025, these are guesses for now
-                100) export ICEPETS=10 ;;
-                050) export ICEPETS=30 ;;
+                100) export ICEPETS=12 ;;
                 025) export ICEPETS=48 ;;
                 *)
                     echo "FATAL: Number of PEs not defined for ice resolution '$ICERES'"
@@ -273,13 +313,16 @@ elif [ $step = "fcst" ]; then
             esac
             (( NTASKS_TOT = NTASKS_TOT + ICEPETS ))
         fi
-
         if [[ $CDUMP == "gfs" ]]; then
             export npe_fcst_gfs=$NTASKS_TOT
         else
             export npe_fcst=$NTASKS_TOT
         fi
-    done
+        export nth_fcst=1
+        export nth_fcst_gfs=1
+        export npe_node_fcst=$(echo "$npe_node_max / $nth_fcst" | bc)
+        export npe_node_fcst_gfs=$(echo "$npe_node_max / $nth_fcst_gfs" | bc)
+    fi
 
 elif [ $step = "ocnpost" ]; then
 

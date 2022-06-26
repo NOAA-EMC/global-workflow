@@ -13,7 +13,13 @@ export ARCH_GAUSSIAN_FHMAX=${ARCH_GAUSSIAN_FHMAX:-36}
 export ARCH_GAUSSIAN_FHINC=${ARCH_GAUSSIAN_FHINC:-6}
 
 #--online archive of nemsio files for fit2obs verification
-export FITSARC="YES"
+
+if [[ $ATMTYPE = "MODEL" ]]; then
+     export FITSARC="YES"
+else
+     export FITSARC="NO"
+fi
+
 export FHMAX_FITS=132
 [[ "$FHMAX_FITS" -gt "$FHMAX_GFS" ]] && export FHMAX_FITS=$FHMAX_GFS
 

@@ -79,3 +79,8 @@ CICE_det(){
 MOM6_det(){
   echo "SUB ${FUNCNAME[0]}: Run type determination for MOM6"
 }
+
+DATM_det(){
+  warm_start=".false."
+  RERUN="NO"
+}

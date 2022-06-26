@@ -30,7 +30,7 @@ if [ $DO_BUFRSND = "YES" -o $WAFSF = "YES" ]; then
 fi
 
 #-----------------------------------------------------
-if [ $type = "gfs" ]; then
+if [ $type = "gfs" -a $ATMTYPE = "MODEL" ]; then
 #-----------------------------------------------------
   FHMIN_GFS=${FHMIN_GFS:-0}
   FHMAX_GFS=${FHMAX_GFS:-384}
@@ -286,7 +286,49 @@ if [ $type = "gfs" ]; then
 fi   ##end of gfs
 #-----------------------------------------------------
 
+if [ $ATMTYPE = "DATA" ]; then
+  if [ $DO_OCN = "YES" ]; then
+    dirpath="gfs.${PDY}/${cyc}/ocean/"
+    dirname="./${dirpath}"
 
+    head="gfs.t${cyc}z."
+
+    rm -f ocn_ice_grib2_0p5.txt 
+    rm -f ocn_ice_grib2_0p25.txt
+    rm -f ocn_2D.txt
+    rm -f ocn_3D.txt
+    rm -f ocn_xsect.txt
+    rm -f ocn_daily.txt
+    rm -f wavocn.txt
+    touch ocn_ice_grib2_0p5.txt
+    touch ocn_ice_grib2_0p25.txt
+    touch ocn_2D.txt
+    touch ocn_3D.txt
+    touch ocn_xsect.txt
+    touch ocn_daily.txt
+    touch wavocn.txt
+    echo  "${dirname}MOM_input                  " >>ocn_2D.txt
+    echo  "${dirname}ocn_2D*                    " >>ocn_2D.txt
+    echo  "${dirname}ocn_3D*                    " >>ocn_3D.txt
+    echo  "${dirname}ocn*EQ*                    " >>ocn_xsect.txt
+    echo  "${dirname}ocn_daily*                 " >>ocn_daily.txt
+    echo  "${dirname}wavocn*                    " >>wavocn.txt
+    echo  "${dirname}ocn_ice*0p5x0p5.grb2       " >>ocn_ice_grib2_0p5.txt
+    echo  "${dirname}ocn_ice*0p25x0p25.grb2     " >>ocn_ice_grib2_0p25.txt
+  fi
+
+  if [ $DO_ICE = "YES" ]; then
+    dirpath="gfs.${PDY}/${cyc}/ice/"
+    dirname="./${dirpath}"
+
+    head="gfs.t${cyc}z."
+
+    rm -f ice.txt
+    touch ice.txt
+    echo  "${dirname}ice_in                     " >>ice.txt
+    echo  "${dirname}ice*nc                     " >>ice.txt
+  fi
+fi
 
 #-----------------------------------------------------
 if [ $type = "gdas" ]; then

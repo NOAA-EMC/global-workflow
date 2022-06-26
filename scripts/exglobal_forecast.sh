@@ -103,6 +103,7 @@ cplflx=${cplflx:-.false.} # default off,import from outside source
 cplwav=${cplwav:-.false.} # ? how to control 1-way/2-way?
 cplchm=${cplchm:-.false.} # Chemistry model
 cplice=${cplice:-.false.} # ICE model
+cpldatm=${cpldatm:-.false.} # DATM model
 
 OCNTIM=${OCNTIM:-1800}
 DELTIM=${DELTIM:-450}
@@ -135,6 +136,7 @@ esac
 [[ $cplice = .true. ]] && CICE_predet
 
 case $RUN in
+  'data') DATM_det;;
   'gfs') FV3_GFS_det;;
   'gdas') FV3_GFS_det;;
   'gefs') FV3_GEFS_det;;
@@ -212,6 +214,7 @@ if [ $machine != 'sandbox' ]; then
   [[ $cplflx = .true. ]] && MOM6_out
   [[ $cplwav = .true. ]] && WW3_out
   [[ $cplice = .true. ]] && CICE_out
+  [[ $cpldatm = .true. ]] && DATM_out
   [[ $esmf_profile = .true. ]] && CPL_out
 else
   echo "MAIN: Running on sandbox mode, no output linking"

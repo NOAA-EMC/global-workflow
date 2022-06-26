@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/bash
 
 #####
 ## "parsing_model_configure_DATM.sh"
@@ -9,12 +9,12 @@
 ## writing model configure file for DATM
 ## This script is a direct execution.
 #####
-
+. $EXPDIR/config.defaults.datm
 DATM_model_configure(){
+echo "in datm_model_configure",$NFHOUT,$NFHOUT_HF
 
 rm -f model_configure
 cat > model_configure <<EOF
-print_esmf:                ${print_esmf:-.true.}
 start_year:                $SYEAR
 start_month:               $SMONTH
 start_day:                 $SDAY
@@ -22,17 +22,13 @@ start_hour:                $SHOUR
 start_minute:              0
 start_second:              0
 nhours_fcst:               $FHMAX
-RUN_CONTINUE:              ${RUN_CONTINUE:-".false."}
-ENS_SPS:                   ${ENS_SPS:-".false."}
-
-dt_atmos:                  ${DT_ATMOS}
-atm_coupling_interval_sec: ${coupling_interval_fast_sec}
-
-iatm:                      ${IATM}
-jatm:                      ${JATM}
-cdate0:                    ${CDATE}
+dt_atmos:                  ${ICETIM}
+calendar:                  'julian'
+nfrot:                     0
 nfhout:                    ${NFHOUT}
-filename_base:             ${DATM_FILENAME_BASE}
+nfhmax_hf:                 -1
+nfhout_hf:                 ${NFHOUT_HF}
+nsout:                     -1
 EOF
 echo "$(cat model_configure)"
 }

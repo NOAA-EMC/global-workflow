@@ -57,15 +57,21 @@ PDY_MOS=$(echo $CDATE_MOS | cut -c1-8)
 # Archive online for verification and diagnostics
 ###############################################################
 
-COMIN=${COMINatmos:-"$ROTDIR/$CDUMP.$PDY/$cyc/atmos"}
+if [ $ATMTYPE = "MODEL" ]; then
+    COMIN=${COMINatmos:-"$ROTDIR/$CDUMP.$PDY/$cyc/atmos"}
+else
+    COMIN=${COMINdatm:-"$ROTDIR/$CDUMP.$PDY/$cyc/datm"}
+fi
 cd $COMIN
 
-[[ ! -d $ARCDIR ]] && mkdir -p $ARCDIR
-$NCP ${APREFIX}gsistat $ARCDIR/gsistat.${CDUMP}.${CDATE}
-$NCP ${APREFIX}pgrb2.1p00.anl $ARCDIR/pgbanl.${CDUMP}.${CDATE}.grib2
+if [ $ATMTYPE = "MODEL" ]; then
+    [[ ! -d $ARCDIR ]] && mkdir -p $ARCDIR
+    $NCP ${APREFIX}gsistat $ARCDIR/gsistat.${CDUMP}.${CDATE}
+    $NCP ${APREFIX}pgrb2.1p00.anl $ARCDIR/pgbanl.${CDUMP}.${CDATE}.grib2
+fi
 
 # Archive 1 degree forecast GRIB2 files for verification
-if [ $CDUMP = "gfs" ]; then
+if [ $CDUMP = "gfs" -a $ATMTYPE = "MODEL" ]; then
     fhmax=$FHMAX_GFS
     fhr=0
     while [ $fhr -le $fhmax ]; do
@@ -75,7 +81,7 @@ if [ $CDUMP = "gfs" ]; then
         (( fhr = 10#$fhr + 10#$FHOUT_GFS ))
     done
 fi
-if [ $CDUMP = "gdas" ]; then
+if [ $CDUMP = "gdas" -a $ATMTYPE = "MODEL" ]; then
     flist="000 003 006 009"
     for fhr in $flist; do
         fname=${APREFIX}pgrb2.1p00.f${fhr}
@@ -96,7 +102,7 @@ if [ $CDUMP = "gdas" -a -s gdas.t${cyc}z.cyclone.trackatcfunix ]; then
     cat gdasp.t${cyc}z.cyclone.trackatcfunix | sed s:AVNO:${PLSOT4}:g  > ${ARCDIR}/atcfunixp.${CDUMP}.$CDATE
 fi
 
-if [ $CDUMP = "gfs" ]; then
+if [ $CDUMP = "gfs" -a $ATMTYPE = "MODEL" ]; then
     $NCP storms.gfso.atcf_gen.$CDATE      ${ARCDIR}/.
     $NCP storms.gfso.atcf_gen.altg.$CDATE ${ARCDIR}/.
     $NCP trak.gfso.atcfunix.$CDATE        ${ARCDIR}/.
@@ -183,12 +189,14 @@ cd $ROTDIR
 
 if [ $CDUMP = "gfs" ]; then
 
-    targrp_list="gfsa gfsb"
+    if [ $ATMTYPE = "MODEL" ]; then
+        targrp_list="gfsa gfsb"
 
-    if [ ${ARCH_GAUSSIAN:-"NO"} = "YES" ]; then
-        targrp_list="$targrp_list gfs_flux gfs_${format}b gfs_pgrb2b"
-        if [ $MODE = "cycled" ]; then
-          targrp_list="$targrp_list gfs_${format}a"
+        if [ ${ARCH_GAUSSIAN:-"NO"} = "YES" ]; then
+            targrp_list="$targrp_list gfs_flux gfs_${format}b gfs_pgrb2b"
+            if [ $MODE = "cycled" ]; then
+              targrp_list="$targrp_list gfs_${format}a"
+            fi
         fi
     fi
 

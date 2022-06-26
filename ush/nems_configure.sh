@@ -39,6 +39,8 @@ ICEPETS=${ICEPETS:-0}
 WAVPETS=${WAVPETS:-0}
 CHMPETS=${CHMPETS:-${ATMPETS}}
 
+MESH_ATM=${datm_src}_mesh.nc
+
 USE_MOMMESH=${USE_MOMMESH:-"true"}
 MESH_OCN_ICE=${MESH_OCN_ICE:-"mesh.mx${ICERES}.nc"}
 
@@ -113,6 +115,13 @@ if [ $cplchm = .true. ]; then
   sed -i -e "s;@\[chm_model\];$CHM_model;g" tmp1
   sed -i -e "s;@\[chm_petlist_bounds\];$chm_petlist_bounds;g" tmp1
   sed -i -e "s;@\[coupling_interval_fast_sec\];$CPL_FAST;g" tmp1
+fi
+if [ $cpldatm = .true. ]; then
+  sed -i -e "s;@\[MESH_ATM\];$MESH_ATM;g" tmp1
+  sed -i -e "s;@\[datm_src\];$datm_src;g" tmp1
+  sed -i -e "s;@\[flux_scheme\];${flux_scheme};g" tmp1
+  sed -i -e "s;@\[flux_convergence\];${flux_convergence};g" tmp1
+  sed -i -e "s;@\[flux_iteration\];${flux_iteration};g" tmp1
 fi
 
 mv tmp1 nems.configure

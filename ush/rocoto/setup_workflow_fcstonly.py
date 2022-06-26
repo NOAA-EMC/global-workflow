@@ -260,7 +260,7 @@ def get_workflow(dict_configs, cdump='gdas'):
 
     tasks = []
 
-    if app in ['S2S', 'S2SW', 'NG-GODAS']:
+    if app in ['S2S', 'S2SW', 'OCN-ICE']:
         base_cplic = dict_configs['coupled_ic']['BASE_CPLIC']
         if atm_type in ["MODEL"]:
             deps = []
