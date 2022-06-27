@@ -449,10 +449,7 @@ if [ $cplwav = ".true." ]; then
         echo "WARNING: Wave ICs are absent, will start from rest"
       fi
     else
-      if [ ! -f ${RSTDIR_WAVE}/${PDYT}.${cyct}0000.restart.${wavGRD} ]; then
-        echo "ERROR: wave IC is missing for RERUN, exiting"
-        exit 1
-      else
+      if [ -f ${RSTDIR_WAVE}/${PDYT}.${cyct}0000.restart.${wavGRD} ]; then
         $NLN ${RSTDIR_WAVE}/${PDYT}.${cyct}0000.restart.${wavGRD} $DATA/restart.${wavGRD}
       fi
     fi
