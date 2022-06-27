@@ -193,8 +193,6 @@ elif [ $step = "fcst" ]; then
       export wtime_fcst_gfs="06:00:00"
     elif [ $CASE = "C384" ]; then
       export wtime_fcst_gfs="06:00:00"
-    elif [ $ATMTYPE = "DATA" ]; then
-      export wtime_fcst_gfs="00:30:00"
     else
       export wtime_fcst_gfs="03:00:00"
     fi
@@ -322,6 +320,7 @@ elif [ $step = "fcst" ]; then
         export nth_fcst_gfs=1
         export npe_node_fcst=$(echo "$npe_node_max / $nth_fcst" | bc)
         export npe_node_fcst_gfs=$(echo "$npe_node_max / $nth_fcst_gfs" | bc)
+        export wtime_fcst_gfs="00:30:00"
     fi
 
 elif [ $step = "ocnpost" ]; then
