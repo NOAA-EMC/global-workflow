@@ -32,6 +32,7 @@ export waveGRDG=${waveGRDG:-'10 20 30'} # gridgroup for ww3_multi
 export USE_WAV_RMP=${USE_WAV_RMP:-'YES'} #yes/no rmp grid remapping pre-processed coefficients
 export DOBNDPNT_WAVE=${DOBNDPNT_WAVE:-'YES'}
 export waveMULTIGRID=${waveMULTIGRID:-'.true.'}
+export MESH_WAV=${MESH_WAV:-'mesh.gwes_30m.nc'}
 
 # ESMF input grid
 export waveesmfGRD=${waveesmfGRD:-'glox_10m'} # input grid

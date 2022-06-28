@@ -627,6 +627,12 @@ WW3_postdet() {
     $NCP $ROTDIR/${CDUMP}.${PDY}/${cyc}/wave/rundata/${COMPONENTwave}.mod_def.$waveGRD $DATA/mod_def.ww3
   fi
 
+
+  #if wave mesh is not the same as the ocn/ice mesh, linkk it in the file
+  if [ $MESH_WAV !=  $MESH_OCN_ICE ]; then 
+    $NLN -sf $FIXwave/$MESH_WAV $DATA/
+  fi 
+
   export WAVHCYC=${WAVHCYC:-6}
   export WRDATE=$($NDATE -${WAVHCYC} $CDATE)
   export WRPDY=$(echo $WRDATE | cut -c1-8)
@@ -924,9 +930,6 @@ CICE_postdet() {
   $NLN -sf $FIXcice/$ICERES/${ice_grid_file} $DATA/
   $NLN -sf $FIXcice/$ICERES/${ice_kmt_file} $DATA/
   $NLN -sf $FIXcice/$ICERES/$MESH_OCN_ICE $DATA/
-
-  ln -sf /scratch1/NCEPDEV/climate/Jessica.Meixner/try050/global-workflow/fix/fix_cice/050/mesh.mx050.nc $DATA/
-  ln -sf  /scratch1/NCEPDEV/nems/Denise.Worthen/WORK/ufs_waveRH/mesh.glo_30m.nc $DATA/
 
   # Link output files
   export ENSMEM=${ENSMEM:-01}

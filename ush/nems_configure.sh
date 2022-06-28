@@ -100,7 +100,7 @@ fi
 if [ $cplwav = .true. ]; then
   sed -i -e "s;@\[wav_model\];ww3;g" tmp1
   sed -i -e "s;@\[wav_petlist_bounds\];$wav_petlist_bounds;g" tmp1
-  sed -i -e "s;@\[MESH_OCN_ICE\];$MESH_OCN_ICE;g" tmp1
+  sed -i -e "s;@\[MESH_WAV\];$MESH_WAV;g" tmp1
   sed -i -e "s;@\[MULTIGRID\];$waveMULTIGRID;g" tmp1
 fi
 if [ $cplice = .true. ]; then
