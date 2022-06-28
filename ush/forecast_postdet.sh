@@ -203,7 +203,7 @@ EOF
   # Scan suite file to determine whether it uses Noah-MP
   if [ $(grep noahmpdrv ${_suite_file} | wc -l ) -gt 0 ]; then
     lsm="2"
-    lheatstrg=".true."
+    lheatstrg=".false."
     landice=".false."
     iopt_dveg=${iopt_dveg:-"4"}
     iopt_crs=${iopt_crs:-"2"}
@@ -919,6 +919,9 @@ CICE_postdet() {
   $NLN -sf $FIXcice/$ICERES/${ice_grid_file} $DATA/
   $NLN -sf $FIXcice/$ICERES/${ice_kmt_file} $DATA/
   $NLN -sf $FIXcice/$ICERES/$MESH_OCN_ICE $DATA/
+
+  ln -sf /scratch1/NCEPDEV/climate/Jessica.Meixner/try050/global-workflow/fix/fix_cice/050/mesh.mx050.nc $DATA/
+  ln -sf  /scratch1/NCEPDEV/nems/Denise.Worthen/WORK/ufs_waveRH/mesh.glo_30m.nc $DATA/
 
   # Link output files
   export ENSMEM=${ENSMEM:-01}

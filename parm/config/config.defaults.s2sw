@@ -17,18 +17,18 @@ use_cice_alb=".true."
 
 # config.fv3
 DELTIM=300
-layout_x_gfs=8
-layout_y_gfs=8
+layout_x_gfs=24
+layout_y_gfs=16
 WRITE_GROUP_GFS=1
-WRTTASK_PER_GROUP_GFS=24
+WRTTASK_PER_GROUP_GFS=86
 WRTIOBUF="32M"
 MEDPETS=300
 
 # config.wave
 
-waveGRD='mx025'
-waveinterpGRD='reg025'
-waveuoutpGRD='mx025'
+waveGRD='gwes_30m'
+waveinterpGRD=' '
+waveuoutpGRD='gwes_30m'
 
 waveesmfGRD=' '
 wavepostGRD=' '

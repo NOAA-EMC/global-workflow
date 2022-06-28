@@ -59,7 +59,7 @@ WAV_attributes::
   OverwriteSlice = false
   diro = "."
   logfile = wav.log
-  mesh_wav = @[MESH_OCN_ICE]
+  mesh_wav = mesh.glo_30m.nc 
   multigrid = @[MULTIGRID]
 ::
 
