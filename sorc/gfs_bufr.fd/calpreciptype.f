@@ -77,7 +77,7 @@ SUBROUTINE CALPRECIPTYPE(kdt,nrcm,im,ix,lm,lp1,randomno,      &
       ALLOCATE ( RH(LM),TD8(LM),TWET8(LM) )
 
 ! Create look up table
-      call gfuncphys
+!     call gfuncphys
 
       time_vert    = 0.
       time_ncep    = 0.
