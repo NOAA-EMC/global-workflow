@@ -303,42 +303,68 @@ class AppConfig:
         return task_names
 
     def _get_cycled_task_names(self):
+        """
+        Get the task names for all the tasks in the cycled application.
+        Note that the order of the task names matters in the XML.
+        This is the place where that order is set.
+        """
 
-        gdas_gfs_common_tasks = ['prep', 'anal', 'analcalc', 'fcst', 'post', 'vrfy', 'arch']
-
-        gdas_only_tasks = ['analdiag']
+        gdas_gfs_common_tasks_before_fcst = ['prep', 'anal', 'analcalc']
+        gdas_gfs_common_tasks_after_fcst = ['post', 'vrfy']
+        gdas_gfs_common_cleanup_tasks = ['arch']
 
         gldas_tasks = ['gldas']
-        wave_tasks = ['waveinit', 'waveprep', 'wavepostsbs', 'wavepostbndpnt', 'wavepostbndpntbll', 'wavepostpnt']
+        wave_prep_tasks = ['waveinit', 'waveprep']
+        wave_post_tasks = ['wavepostsbs', 'wavepostbndpnt', 'wavepostbndpntbll', 'wavepostpnt']
 
+        hybrid_gdas_or_gfs_tasks = []
+        hybrid_gdas_tasks = []
         if self.do_hybvar:
-            hybrid_tasks = ['eobs', 'eupd', 'echgres']
-            hybrid_tasks += ['ediag'] if self.lobsdiag_forenkf else ['eomg']
-            hybrid_gdas_tasks = ['ecen', 'esfc', 'efcs', 'epos', 'earc']
+            hybrid_gdas_or_gfs_tasks += ['eobs', 'eupd', 'echgres']
+            hybrid_gdas_or_gfs_tasks += ['ediag'] if self.lobsdiag_forenkf else ['eomg']
+            hybrid_gdas_tasks += ['ecen', 'esfc', 'efcs', 'epos', 'earc']
 
         # Collect all "gdas" cycle tasks
-        gdas_tasks = gdas_gfs_common_tasks + gdas_only_tasks
+        gdas_tasks = gdas_gfs_common_tasks_before_fcst + ['analdiag']
 
         if self.do_gldas:
             gdas_tasks += gldas_tasks
 
         if self.do_wave:
-            gdas_tasks += wave_tasks
+            gdas_tasks += wave_prep_tasks
+
+        gdas_tasks += ['fcst']
+
+        gdas_tasks += gdas_gfs_common_tasks_after_fcst
 
         if self.do_hybvar:
             if 'gdas' in self.eupd_cdumps:
-                gdas_tasks += hybrid_tasks
+                gdas_tasks += hybrid_gdas_or_gfs_tasks
                 gdas_tasks += hybrid_gdas_tasks
 
-        # Collect "gfs" cycle tasks
-        gfs_tasks = gdas_gfs_common_tasks
+        if self.do_wave:
+            gdas_tasks += wave_post_tasks
 
-        if self.do_hybvar:
-            if 'gfs' in self.eupd_cdumps:
-                gfs_tasks += hybrid_tasks
+        gdas_tasks += gdas_gfs_common_cleanup_tasks
+
+        # Collect "gfs" cycle tasks
+        gfs_tasks = gdas_gfs_common_tasks_before_fcst
 
         if self.do_wave and 'gfs' in self.wave_cdumps:
-            gfs_tasks += wave_tasks
+            gfs_tasks += wave_prep_tasks
+
+        gfs_tasks += ['fcst']
+
+        gfs_tasks += gdas_gfs_common_tasks_after_fcst
+
+        if self.do_metp:
+            gfs_tasks += ['metp']
+
+        if self.do_hybvar and 'gfs' in self.eupd_cdumps:
+            gfs_tasks += hybrid_gdas_or_gfs_tasks
+
+        if self.do_wave and 'gfs' in self.wave_cdumps:
+            gfs_tasks += wave_post_tasks
             if self.do_gempak:
                 gfs_tasks += ['wavegempak']
             if self.do_awips:
@@ -356,19 +382,23 @@ class AppConfig:
         if self.do_wafs:
             gfs_tasks += ['wafs', 'wafsgcip', 'wafsgrib2', 'wafsgrib20p25', 'wafsblending', 'wafsblending0p25']
 
-        if self.do_metp:
-            gfs_tasks += ['metp']
+        gfs_tasks += gdas_gfs_common_cleanup_tasks
 
         tasks = {'gdas': gdas_tasks, 'gfs': gfs_tasks}
 
         return tasks
 
     def _get_forecast_only_task_names(self):
+        """
+        Get the task names for all the tasks in the forecast-only application.
+        Note that the order of the task names matters in the XML.
+        This is the place where that order is set.
+        """
 
-        tasks = ['fcst', 'post', 'vrfy', 'arch']
+        tasks = []
 
         if 'S2S' in self.model_app:
-            tasks += ['coupled_ic', 'ocnpost']
+            tasks += ['coupled_ic']
         else:
             if self.do_hpssarch:
                 tasks += ['getic']
@@ -378,7 +408,20 @@ class AppConfig:
             tasks += ['aerosol_init']
 
         if self.do_wave:
-            tasks += ['waveinit', 'waveprep', 'wavepostsbs', 'wavepostbndpnt', 'wavepostbndpntbll', 'wavepostpnt']
+            tasks += ['waveinit', 'waveprep']
+
+        tasks += ['fcst']
+
+        tasks += ['post']
+        if 'S2S' in self.model_app:
+            tasks += ['ocnpost']
+
+        tasks += ['vrfy']
+        if self.do_metp:
+            tasks += ['metp']
+
+        if self.do_wave:
+            tasks += ['wavepostsbs', 'wavepostbndpnt', 'wavepostbndpntbll', 'wavepostpnt']
             if self.do_gempak:
                 tasks += ['wavegempak']
             if self.do_awips:
@@ -396,7 +439,6 @@ class AppConfig:
         if self.do_wafs:
             tasks += ['wafs', 'wafsgcip', 'wafsgrib2', 'wafsgrib20p25', 'wafsblending', 'wafsblending0p25']
 
-        if self.do_metp:
-            tasks += ['metp']
+        tasks += ['arch']  # arch **must** be the last task
 
         return {f"{self._base['CDUMP']}": tasks}
