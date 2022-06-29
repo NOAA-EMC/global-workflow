@@ -56,7 +56,6 @@ DOIAU=${DOIAU:-"NO"}
 export IAUFHRS=${IAUFHRS:-"6"}
 
 # Surface cycle related parameters
-DOGCYCLE=${DOGCYCLE:-"NO"}
 CYCLESH=${CYCLESH:-$HOMEgfs/ush/global_cycle.sh}
 export CYCLEXEC=${CYCLEXEC:-$HOMEgfs/exec/global_cycle}
 NTHREADS_CYCLE=${NTHREADS_CYCLE:-24}
@@ -146,63 +145,46 @@ fi
 
 ##############################################################
 # Update surface fields in the FV3 restart's using global_cycle
-if [ $DOGCYCLE = "YES" ]; then
+mkdir -p $COMOUT/RESTART
 
-    mkdir -p $COMOUT/RESTART
+# Global cycle requires these files
+export FNTSFA=${FNTSFA:-$COMIN_OBS/${OPREFIX}rtgssthr.grb}
+export FNACNA=${FNACNA:-$COMIN_OBS/${OPREFIX}seaice.5min.blend.grb}
+export FNSNOA=${FNSNOA:-$COMIN_OBS/${OPREFIX}snogrb_t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}}
+[[ ! -f $FNSNOA ]] && export FNSNOA="$COMIN_OBS/${OPREFIX}snogrb_t1534.3072.1536"
+FNSNOG=${FNSNOG:-$COMIN_GES_OBS/${GPREFIX}snogrb_t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}}
+[[ ! -f $FNSNOG ]] && FNSNOG="$COMIN_GES_OBS/${GPREFIX}snogrb_t1534.3072.1536"
 
-    # Global cycle requires these files
-    export FNTSFA=${FNTSFA:-$COMIN_OBS/${OPREFIX}rtgssthr.grb}
-    export FNACNA=${FNACNA:-$COMIN_OBS/${OPREFIX}seaice.5min.blend.grb}
-    export FNSNOA=${FNSNOA:-$COMIN_OBS/${OPREFIX}snogrb_t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}}
-    [[ ! -f $FNSNOA ]] && export FNSNOA="$COMIN_OBS/${OPREFIX}snogrb_t1534.3072.1536"
-    FNSNOG=${FNSNOG:-$COMIN_GES_OBS/${GPREFIX}snogrb_t${JCAP_CASE}.${LONB_CASE}.${LATB_CASE}}
-    [[ ! -f $FNSNOG ]] && FNSNOG="$COMIN_GES_OBS/${GPREFIX}snogrb_t1534.3072.1536"
+# Set CYCLVARS by checking grib date of current snogrb vs that of prev cycle
+if [ $RUN_GETGES = "YES" ]; then
+    snoprv=$($GETGESSH -q -t snogrb_$JCAP_CASE -e $gesenvir -n $GDUMP -v $GDATE)
+else
+    snoprv=${snoprv:-$FNSNOG}
+fi
 
-    # Set CYCLVARS by checking grib date of current snogrb vs that of prev cycle
-    if [ $RUN_GETGES = "YES" ]; then
-        snoprv=$($GETGESSH -q -t snogrb_$JCAP_CASE -e $gesenvir -n $GDUMP -v $GDATE)
-    else
-        snoprv=${snoprv:-$FNSNOG}
-    fi
+if [ $($WGRIB -4yr $FNSNOA 2>/dev/null | grep -i snowc | awk -F: '{print $3}' | awk -F= '{print $2}') -le \
+    $($WGRIB -4yr $snoprv 2>/dev/null | grep -i snowc | awk -F: '{print $3}' | awk -F= '{print $2}') ] ; then
+    export FNSNOA=" "
+    export CYCLVARS="FSNOL=99999.,FSNOS=99999.,"
+else
+    export SNOW_NUDGE_COEFF=${SNOW_NUDGE_COEFF:-0.}
+    export CYCLVARS="FSNOL=${SNOW_NUDGE_COEFF},$CYCLVARS"
+fi
 
-    if [ $($WGRIB -4yr $FNSNOA 2>/dev/null | grep -i snowc | awk -F: '{print $3}' | awk -F= '{print $2}') -le \
-         $($WGRIB -4yr $snoprv 2>/dev/null | grep -i snowc | awk -F: '{print $3}' | awk -F= '{print $2}') ] ; then
-        export FNSNOA=" "
-        export CYCLVARS="FSNOL=99999.,FSNOS=99999.,"
-    else
-        export SNOW_NUDGE_COEFF=${SNOW_NUDGE_COEFF:-0.}
-        export CYCLVARS="FSNOL=${SNOW_NUDGE_COEFF},$CYCLVARS"
-    fi
+if [ $DONST = "YES" ]; then
+    export NST_FILE=${GSI_FILE:-$COMOUT/${APREFIX}dtfanl.nc}
+else
+    export NST_FILE="NULL"
+fi
 
-    if [ $DONST = "YES" ]; then
-        export NST_FILE=${GSI_FILE:-$COMOUT/${APREFIX}dtfanl.nc}
-    else
-        export NST_FILE="NULL"
-    fi
-
-    if [ $DOIAU = "YES" ]; then
-        # update surface restarts at the beginning of the window, if IAU
-        # For now assume/hold dtfanl.nc valid at beginning of window
-        for n in $(seq 1 $ntiles); do
-            $NLN $COMIN_GES/RESTART/$bPDY.${bcyc}0000.sfc_data.tile${n}.nc $DATA/fnbgsi.00$n
-            $NLN $COMOUT/RESTART/$bPDY.${bcyc}0000.sfcanl_data.tile${n}.nc $DATA/fnbgso.00$n
-            $NLN $FIXfv3/$CASE/${CASE}_grid.tile${n}.nc                    $DATA/fngrid.00$n
-            $NLN $FIXfv3/$CASE/${CASE}_oro_data.tile${n}.nc                $DATA/fnorog.00$n
-        done
-
-        export APRUNCY=$APRUN_CYCLE
-        export OMP_NUM_THREADS_CY=$NTHREADS_CYCLE
-        export MAX_TASKS_CY=$ntiles
-
-        $CYCLESH
-        export err=$?; err_chk
-    fi
-    # update surface restarts at middle of window
+if [ $DOIAU = "YES" ]; then
+    # update surface restarts at the beginning of the window, if IAU
+    # For now assume/hold dtfanl.nc valid at beginning of window
     for n in $(seq 1 $ntiles); do
-        $NLN $COMIN_GES/RESTART/$PDY.${cyc}0000.sfc_data.tile${n}.nc $DATA/fnbgsi.00$n
-        $NLN $COMOUT/RESTART/$PDY.${cyc}0000.sfcanl_data.tile${n}.nc $DATA/fnbgso.00$n
-        $NLN $FIXfv3/$CASE/${CASE}_grid.tile${n}.nc                  $DATA/fngrid.00$n
-        $NLN $FIXfv3/$CASE/${CASE}_oro_data.tile${n}.nc              $DATA/fnorog.00$n
+        $NLN $COMIN_GES/RESTART/$bPDY.${bcyc}0000.sfc_data.tile${n}.nc $DATA/fnbgsi.00$n
+        $NLN $COMOUT/RESTART/$bPDY.${bcyc}0000.sfcanl_data.tile${n}.nc $DATA/fnbgso.00$n
+        $NLN $FIXfv3/$CASE/${CASE}_grid.tile${n}.nc                    $DATA/fngrid.00$n
+        $NLN $FIXfv3/$CASE/${CASE}_oro_data.tile${n}.nc                $DATA/fnorog.00$n
     done
 
     export APRUNCY=$APRUN_CYCLE
@@ -212,6 +194,21 @@ if [ $DOGCYCLE = "YES" ]; then
     $CYCLESH
     export err=$?; err_chk
 fi
+
+# Update surface restarts at middle of window
+for n in $(seq 1 $ntiles); do
+    $NLN $COMIN_GES/RESTART/$PDY.${cyc}0000.sfc_data.tile${n}.nc $DATA/fnbgsi.00$n
+    $NLN $COMOUT/RESTART/$PDY.${cyc}0000.sfcanl_data.tile${n}.nc $DATA/fnbgso.00$n
+    $NLN $FIXfv3/$CASE/${CASE}_grid.tile${n}.nc                  $DATA/fngrid.00$n
+    $NLN $FIXfv3/$CASE/${CASE}_oro_data.tile${n}.nc              $DATA/fnorog.00$n
+done
+
+export APRUNCY=$APRUN_CYCLE
+export OMP_NUM_THREADS_CY=$NTHREADS_CYCLE
+export MAX_TASKS_CY=$ntiles
+
+$CYCLESH
+export err=$?; err_chk
 
 
 ################################################################################
