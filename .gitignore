@@ -24,7 +24,8 @@ fix/wafs
 parm/config/config.base
 parm/gldas
 parm/mon
-parm/post/AEROSOL_LUTS.datoptics_luts_DUST.dat
+parm/post/AEROSOL_LUTS.dat
+parm/post/optics_luts_DUST.dat
 parm/post/gtg.config.gfs
 parm/post/gtg_imprintings.txt
 parm/post/optics_luts_SALT.dat
@@ -77,6 +78,7 @@ sorc/gfs_wafs.fd
 sorc/gldas.fd
 sorc/gsi.fd
 sorc/gdas.cd
+sorc/gsi_monitor.fd
 sorc/ufs_utils.fd
 sorc/verif-global.fd
 

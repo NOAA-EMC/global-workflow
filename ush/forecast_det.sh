@@ -51,7 +51,18 @@ FV3_GFS_det(){
       cycs=$(echo $SDATE | cut -c9-10)
       flag1=$RSTDIR_ATM/${PDYS}.${cycs}0000.coupler.res
       flag2=$RSTDIR_ATM/coupler.res
-      if [ -s $flag1 ]; then
+
+      #make sure that the wave restart files also exist if cplwav=true
+      waverstok=".true."
+      if [ $cplwav = ".true." ]; then
+        for wavGRD in $waveGRD ; do
+          if [ ! -f ${RSTDIR_WAVE}/${PDYS}.${cycs}0000.restart.${wavGRD} ]; then
+            waverstok=".false."
+          fi
+        done
+      fi
+
+      if [ -s $flag1 -a $waverstok = ".true." ]; then
         CDATE_RST=$SDATE
         [[ $RERUN = "YES" ]] && break
         mv $flag1 ${flag1}.old

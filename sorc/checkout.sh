@@ -70,12 +70,13 @@ function checkout() {
 			echo
 			return "${status}"
 		fi
+		cd "${dir}"
 	else
 		# Fetch any updates from server
+		cd "${dir}"
 		echo "|-- Fetching updates from ${remote}"
 		git fetch
 	fi
-	cd "${dir}"
 	echo "|-- Checking out ${version}"
 	git checkout "${version}" >> "${logfile}" 2>&1
 	status=$?
@@ -132,13 +133,14 @@ mkdir -p ${logdir}
 errs=0
 checkout "ufs_model.fd"    "https://github.com/ufs-community/ufs-weather-model" "${ufs_model_hash:-Prototype-P8c}"; errs=$((errs + $?))
 checkout "gsi.fd"          "https://github.com/NOAA-EMC/GSI.git"                "c10644e"                         ; errs=$((errs + $?))
+checkout "gsi_monitor.fd"  "https://github.com/NOAA-EMC/GSI-Monitor.git"        "affeae9"                         ; errs=$((errs + $?))
 checkout "gdas.cd"         "https://github.com/NOAA-EMC/GDASApp.git"            "feature/cycling"                 ; errs=$((errs + $?))
-checkout "gldas.fd"        "https://github.com/NOAA-EMC/GLDAS.git"              "gldas_gfsv16_release.v.1.28.0"   ; errs=$((errs + $?))
-checkout "ufs_utils.fd"    "https://github.com/ufs-community/UFS_UTILS.git"     "04ad17e"                         ; errs=$((errs + $?))
+checkout "gldas.fd"        "https://github.com/NOAA-EMC/GLDAS.git"              "fd8ba62"                         ; errs=$((errs + $?))
+checkout "ufs_utils.fd"    "https://github.com/ufs-community/UFS_UTILS.git"     "a2b0817"                         ; errs=$((errs + $?))
 checkout "verif-global.fd" "https://github.com/NOAA-EMC/EMC_verif-global.git"   "c267780"                         ; errs=$((errs + $?))
 
 if [[ "${checkout_wafs:-NO}" == "YES" ]]; then
-	checkout "gfs_wafs.fd" "https://github.com/NOAA-EMC/EMC_gfs_wafs.git" "c2a29a6"; errs=$((errs + $?))
+	checkout "gfs_wafs.fd" "https://github.com/NOAA-EMC/EMC_gfs_wafs.git" "014a0b8"; errs=$((errs + $?))
 fi
 
 if [[ "${checkout_gtg:-NO}" == "YES" ]]; then

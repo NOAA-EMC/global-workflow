@@ -31,14 +31,16 @@ function _usage() {
 }
 
 _build_ufs_opt=""
+_ops_opt=""
 _verbose_opt=""
 # Reset option counter in case this script is sourced
 OPTIND=1
-while getopts ":a:c:hv" option; do
+while getopts ":a:c:hov" option; do
 	case "${option}" in
 		a) _build_ufs_opt+="-a ${OPTARG} ";;
 		c) _partial_opt+="-c ${OPTARG} ";;
 		h) _usage;;
+		o) _ops_opt+="-o";;
 		# s) _build_ufs_opt+="-s ${OPTARG} ";;
 		v) _verbose_opt="-v";;
 		\?)
@@ -123,7 +125,7 @@ $Build_ufs_model && {
 #------------------------------------
 $Build_gsi && {
 	echo " .... Building gsi .... "
-	./build_gsi.sh $_verbose_opt > $logs_dir/build_gsi.log 2>&1
+	./build_gsi.sh $_ops_opt $_verbose_opt > $logs_dir/build_gsi.log 2>&1
 	rc=$?
 	if [[ $rc -ne 0 ]] ; then
 		echo "Fatal error in building gsi."
@@ -137,11 +139,25 @@ $Build_gsi && {
 #------------------------------------
 $Build_gdas && {
         echo " .... Building GDASApp .... "
-	./build_gdas.sh > $logs_dir/build_gdas.log 2>&1
+        ./build_gdas.sh > $logs_dir/build_gdas.log 2>&1
+        rc=$?
+        if [[ $rc -ne 0 ]] ; then
+                echo "Fatal error in building GDAS."
+                echo "The log file is in $logs_dir/build_gdas.log"
+	fi
+        ((err+=$rc))
+}
+
+#------------------------------------
+# build gsi monitor
+#------------------------------------
+$Build_gsi_monitor && {
+	echo " .... Building gsi monitor .... "
+	./build_gsi_monitor.sh $_ops_opt $_verbose_opt > $logs_dir/build_gsi_monitor.log 2>&1
 	rc=$?
 	if [[ $rc -ne 0 ]] ; then
-	        echo "Fatal error in building GDAS."
-		echo "The log file is in $logs_dir/build_gdas.log"
+		echo "Fatal error in building gsi monitor."
+		echo "The log file is in $logs_dir/build_gsi_monitor.log"
 	fi
 	((err+=$rc))
 }
@@ -151,7 +167,7 @@ $Build_gdas && {
 #------------------------------------
 $Build_upp && {
 	echo " .... Building UPP .... "
-	./build_upp.sh $_verbose_opt > $logs_dir/build_upp.log 2>&1
+	./build_upp.sh $_ops_opt $_verbose_opt > $logs_dir/build_upp.log 2>&1
 	rc=$?
 	if [[ $rc -ne 0 ]] ; then
 		echo "Fatal error in building UPP."
