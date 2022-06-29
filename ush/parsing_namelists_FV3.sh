@@ -370,7 +370,7 @@ cat >> input.nml <<EOF
   doGP_lwscat        = ${doGP_lwscat:-".false."}
 EOF
 
-if [ $cpl = .true. ]; then
+if [ $cplchm = .true. ]; then
   cat >> input.nml << EOF
   fscav_aero = ${fscav_aero:-'*:0.0'}
 EOF
