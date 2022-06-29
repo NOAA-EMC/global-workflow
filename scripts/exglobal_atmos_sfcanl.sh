@@ -106,81 +106,16 @@ OSUFFIX=${OSUFFIX:-""}
 
 # Guess files
 GPREFIX=${GPREFIX:-""}
-GSUFFIX=${GSUFFIX:-$SUFFIX}
-ATMG03=${ATMG03:-${COMIN_GES}/${GPREFIX}atmf003${GSUFFIX}}
-ATMG04=${ATMG04:-${COMIN_GES}/${GPREFIX}atmf004${GSUFFIX}}
-ATMG05=${ATMG05:-${COMIN_GES}/${GPREFIX}atmf005${GSUFFIX}}
-ATMGES=${ATMGES:-${COMIN_GES}/${GPREFIX}atmf006${GSUFFIX}}
-ATMG07=${ATMG07:-${COMIN_GES}/${GPREFIX}atmf007${GSUFFIX}}
-ATMG08=${ATMG08:-${COMIN_GES}/${GPREFIX}atmf008${GSUFFIX}}
-ATMG09=${ATMG09:-${COMIN_GES}/${GPREFIX}atmf009${GSUFFIX}}
-
-SFCG03=${SFCG03:-${COMIN_GES}/${GPREFIX}sfcf003${GSUFFIX}}
-SFCG04=${SFCG04:-${COMIN_GES}/${GPREFIX}sfcf004${GSUFFIX}}
-SFCG05=${SFCG05:-${COMIN_GES}/${GPREFIX}sfcf005${GSUFFIX}}
-SFCGES=${SFCGES:-${COMIN_GES}/${GPREFIX}sfcf006${GSUFFIX}}
-SFCG07=${SFCG07:-${COMIN_GES}/${GPREFIX}sfcf007${GSUFFIX}}
-SFCG08=${SFCG08:-${COMIN_GES}/${GPREFIX}sfcf008${GSUFFIX}}
-SFCG09=${SFCG09:-${COMIN_GES}/${GPREFIX}sfcf009${GSUFFIX}}
 
 # Analysis files
 export APREFIX=${APREFIX:-""}
-export ASUFFIX=${ASUFFIX:-$SUFFIX}
-SFCANL=${SFCANL:-${COMOUT}/${APREFIX}sfcanl${ASUFFIX}}
 DTFANL=${DTFANL:-${COMOUT}/${APREFIX}dtfanl.nc}
-ATMANL=${ATMANL:-${COMOUT}/${APREFIX}atmanl${ASUFFIX}}
-
-# Increment files
-ATMINC=${ATMINC:-${COMOUT}/${APREFIX}atminc.nc}
-
-# Set script parameters
-export DOIAU=${DOIAU:-"NO"}
-DO_CALC_INCREMENT=${DO_CALC_INCREMENT:-"NO"}
-DO_CALC_ANALYSIS=${DO_CALC_ANALYSIS:-"NO"}
-
-# Get header information from Guess files
-if [ ${SUFFIX} = ".nc" ]; then
-   LONB=${LONB:-$($NCLEN $ATMGES grid_xt)} # get LONB
-   LATB=${LATB:-$($NCLEN $ATMGES grid_yt)} # get LATB
-   LEVS=${LEVS:-$($NCLEN $ATMGES pfull)} # get LEVS
-   JCAP=${JCAP:--9999} # there is no jcap in these files
-else
-   LONB=${LONB:-$($NEMSIOGET $ATMGES dimx | grep -i "dimx" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}  # 'get LONB
-   LATB=${LATB:-$($NEMSIOGET $ATMGES dimy | grep -i "dimy" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}  # 'get LATB
-   LEVS=${LEVS:-$($NEMSIOGET $ATMGES dimz | grep -i "dimz" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}  # 'get LEVS
-   JCAP=${JCAP:-$($NEMSIOGET $ATMGES jcap | grep -i "jcap" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}  # 'get JCAP
-fi
-[ $JCAP -eq -9999 -a $LATB -ne -9999 ] && JCAP=$((LATB-2))
-[ $LONB -eq -9999 -o $LATB -eq -9999 -o $LEVS -eq -9999 -o $JCAP -eq -9999 ] && exit -9999
-
 
 # Get dimension information based on CASE
 res=$(echo $CASE | cut -c2-)
 JCAP_CASE=$((res*2-2))
 LATB_CASE=$((res*2))
 LONB_CASE=$((res*4))
-
-# logic for netCDF I/O
-if [ ${SUFFIX} = ".nc" ]; then
-  # GSI namelist options to use netCDF background
-  use_gfs_nemsio=".false."
-  use_gfs_ncio=".true."
-else
-  # GSI namelist options to use NEMSIO background
-  use_gfs_nemsio=".true."
-  use_gfs_ncio=".false."
-fi
-
-# determine if writing or calculating increment
-if [ $DO_CALC_INCREMENT = "YES" ]; then
-  write_fv3_increment=".false."
-else
-  write_fv3_increment=".true."
-  WRITE_INCR_ZERO="incvars_to_zero= $INCREMENTS_TO_ZERO,"
-  WRITE_ZERO_STRAT="incvars_zero_strat= $INCVARS_ZERO_STRAT,"
-  WRITE_STRAT_EFOLD="incvars_efold= $INCVARS_EFOLD,"
-fi
-
 
 ################################################################################
 #  Preprocessing
@@ -192,19 +127,14 @@ fi
 
 cd $DATA || exit 99
 
-[[ $DONST = "YES" ]] && $NLN $NSSTBF nsstbufr
+if [ $DONST = "YES" ]; then
+    export NSSTBF="${COMOUT}/${OPREFIX}nsstbufr"
+    $NLN $NSSTBF nsstbufr
+fi
 
 
 ##############################################################
 # Required model guess files
-$NLN $SFCG03 sfcf03
-$NLN $SFCGES sfcf06
-$NLN $SFCG09 sfcf09
-
-[[ -f $SFCG04 ]] && $NLN $SFCG04 sfcf04
-[[ -f $SFCG05 ]] && $NLN $SFCG05 sfcf05
-[[ -f $SFCG07 ]] && $NLN $SFCG07 sfcf07
-[[ -f $SFCG08 ]] && $NLN $SFCG08 sfcf08
 
 
 ##############################################################

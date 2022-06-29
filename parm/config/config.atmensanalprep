@@ -1,4 +1,4 @@
-#!/bin/ksh -x
+#!/bin/bash -x
 
 ########## config.atmensanalprep ##########
 # Pre Atm Analysis specific

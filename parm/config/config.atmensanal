@@ -1,4 +1,4 @@
-#!/bin/ksh -x
+#!/bin/bash -x
 
 ########## config.atmensanal ##########
 # configuration common to all atm atmensanal analysis tasks
@@ -9,9 +9,7 @@ export OBS_YAML_DIR=$HOMEgfs/sorc/gdas.cd/parm/atm/obs/config/
 export OBS_LIST=$HOMEgfs/sorc/gdas.cd/parm/atm/obs/lists/lgetkf_prototype.yaml
 export BERROR_YAML=$HOMEgfs/sorc/gdas.cd/parm/atm/berror/hybvar_bump.yaml
 export ATMENSYAML=$HOMEgfs/sorc/gdas.cd/parm/atm/lgetkf/lgetkf.yaml
-##export FV3JEDI_FIX=/work2/noaa/da/cmartin/GDASApp/fix
-##export FV3JEDI_FIX=/work2/noaa/da/fhan/GDASApp/fix
-export FV3JEDI_FIX=/work2/noaa/da/rtreadon/GDASApp/fix
+export FV3JEDI_FIX=$HOMEgfs/fix/fix_jedi
 export R2D2_OBS_DB='ufsda_test'
 export R2D2_OBS_DUMP='oper_gdas'
 export R2D2_OBS_SRC='ncdiag'

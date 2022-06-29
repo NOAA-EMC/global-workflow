@@ -66,7 +66,8 @@ for dir in fix_aer \
             fix_cpl \
             fix_wave \
             fix_reg2grb2 \
-            fix_ugwd
+            fix_ugwd \
+            fix_jedi
             do
     if [ -d $dir ]; then
       [[ $RUN_ENVIR = nco ]] && chmod -R 755 $dir
@@ -176,7 +177,8 @@ cd ${pwd}/../jobs               ||exit 8
     $LINK ../sorc/gdas.cd/jobs/JGDAS_GLOBAL_ATMOS_ANALYSIS        .
     $LINK ../sorc/gdas.cd/jobs/JGDAS_GLOBAL_ATMOS_ENSANAL         .
 cd ${pwd}/../ush                ||exit 8
-    $LINK ../sorc/gdas.cd/ush/ufsda                                .
+    $LINK ../sorc/gdas.cd/ush/ufsda                               .
+
 
 #------------------------------
 #--add DA Monitor file (NOTE: ensure to use correct version)

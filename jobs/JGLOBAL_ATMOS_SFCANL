@@ -62,7 +62,7 @@ export COMPONENT=${COMPONENT:-atmos}
 if [ $RUN_ENVIR = "nco" ]; then
     export ROTDIR=${COMROOT:?}/$NET/$envir
 fi
-export DO_CALC_ANALYSIS=${DO_CALC_ANALYSIS:-"YES"} 
+##export DO_CALC_ANALYSIS=${DO_CALC_ANALYSIS:-"YES"} 
 
 
 ##############################################
@@ -104,38 +104,6 @@ if [ ! -f $ATMGES ]; then
 fi
 
 
-# Get LEVS
-if [ ${GSUFFIX} = ".nc" ]; then
-    export LEVS=$($NCLEN $ATMGES pfull) 
-    status=$?
-else
-    export LEVS=$($NEMSIOGET $ATMGES dimz | awk '{print $2}')
-    status=$?
-fi
-[[ $status -ne 0 ]] && exit $status
-
-
-##if [ $DOHYBVAR = "YES" ]; then
-##    export ATMGES_ENSMEAN="$COMIN_GES_ENS/${GPREFIX}atmf006.ensmean$GSUFFIX"
-##    if [ ! -f $ATMGES_ENSMEAN ]; then
-##        echo "FATAL ERROR: FILE MISSING: ATMGES_ENSMEAN = $ATMGES_ENSMEAN"
-##        exit 2
-##    fi
-##fi
-
-
-# Link observational data
-export PREPQC="${COMOUT}/${OPREFIX}prepbufr"
-if [ ! -f $PREPQC ]; then
-    echo "WARNING: PREPBUFR FILE $PREPQC MISSING"
-    msg="WARNING : Global PREPBUFR file is missing"
-    postmsg "$jlogfile" "$msg"
-fi
-export PREPQCPF="${COMOUT}/${OPREFIX}prepbufr.acft_profiles"
-export TCVITL="${COMOUT}/${OPREFIX}syndata.tcvitals.tm00"
-[[ $DONST = "YES" ]] && export NSSTBF="${COMOUT}/${OPREFIX}nsstbufr"
-
-
 # Update surface fields with global_cycle
 export DOGCYCLE=${DOGCYCLE:-"YES"}
 
@@ -143,7 +111,7 @@ export DOGCYCLE=${DOGCYCLE:-"YES"}
 ###############################################################
 # Run relevant script
 env
-msg="HAS BEGUN on `hostname`"
+msg="HAS BEGUN on $(hostname)"
 postmsg "$jlogfile" "$msg"
 $LOGSCRIPT
 

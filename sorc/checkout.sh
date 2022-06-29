@@ -131,7 +131,7 @@ mkdir -p ${logdir}
 # The checkout version should always be a speciifc commit (hash or tag), not a branch
 errs=0
 checkout "ufs_model.fd"    "https://github.com/ufs-community/ufs-weather-model" "${ufs_model_hash:-Prototype-P8c}"; errs=$((errs + $?))
-checkout "gsi.fd"          "https://github.com/NOAA-EMC/GSI.git"                "develop"                         ; errs=$((errs + $?))
+checkout "gsi.fd"          "https://github.com/NOAA-EMC/GSI.git"                "c10644e"                         ; errs=$((errs + $?))
 checkout "gdas.cd"         "https://github.com/NOAA-EMC/GDASApp.git"            "feature/cycling"                 ; errs=$((errs + $?))
 checkout "gldas.fd"        "https://github.com/NOAA-EMC/GLDAS.git"              "gldas_gfsv16_release.v.1.28.0"   ; errs=$((errs + $?))
 checkout "ufs_utils.fd"    "https://github.com/ufs-community/UFS_UTILS.git"     "04ad17e"                         ; errs=$((errs + $?))
