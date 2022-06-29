@@ -257,7 +257,7 @@ def get_workflow(dict_configs, cdump='gdas'):
 
     tasks = []
 
-    if app in ['S2S', 'S2SW']:
+    if 'S2S' in app:
         # Copy prototype ICs
         deps = []
         base_cplic = dict_configs['coupled_ic']['BASE_CPLIC']
@@ -353,11 +353,11 @@ def get_workflow(dict_configs, cdump='gdas'):
         tasks.append('\n')
 
     # waveprep
-    if do_wave in ['Y', 'YES'] and do_wave_cdump in ['GFS', 'BOTH']:
+    if do_wave in ['Y', 'YES'] and do_wave_cdump in ['GFS', 'BOTH'] and app in ['ATMW']:
         deps = []
         dep_dict = {'type': 'task', 'name': f'{cdump}waveinit'}
         deps.append(rocoto.add_dependency(dep_dict))
-        if app not in ['S2S', 'S2SW']:
+        if 'S2S' not in app:
             dep_dict = {'type': 'task', 'name': f'{cdump}init'}
             deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
@@ -382,24 +382,20 @@ def get_workflow(dict_configs, cdump='gdas'):
             dep_dict = {'type': 'data', 'data': data}
             deps.append(rocoto.add_dependency(dep_dict))
 
-        # Files from previous cycle
+        # previous cycle
         dep_dict = {'type': 'cycleexist', 'offset': f'-{base["INTERVAL"]}'}
         deps.append(rocoto.add_dependency(dep_dict))
 
+        # Files from previous cycle
         files = [f'@Y@m@d.@H0000.fv_core.res.nc'] + \
                 [f'@Y@m@d.@H0000.fv_core.res.tile{tile_index}.nc' for tile_index in range(1, n_tiles + 1)] + \
                 [f'@Y@m@d.@H0000.fv_tracer.res.tile{tile_index}.nc' for tile_index in range(1, n_tiles + 1)]
 
-        data = f'&ROTDIR;/&CDUMP;.@Y@m@d/@H/atmos/RERUN_RESTART/'
-        dep_dict = {'type': 'data', 'data': data, 'offset': f'-{base["INTERVAL"]}'}
-        # Hack off the trailing </datadep> tag because we are going to concatenate with the rest
-        dependency1 = rocoto.add_dependency(dep_dict)[:-10]
         for file in files:
-            dep_dict = {'type': 'data', 'data': file}
-            # Hack off the leading <datadep> tag to join with the earlier one
-            dependency2 = rocoto.add_dependency(dep_dict)[9:]
-            # Combine the two into a dependency with two different cyclestr tags
-            deps.append(dependency1 + dependency2)
+            data = ['&ROTDIR;/&CDUMP;.@Y@m@d/@H/atmos/RERUN_RESTART/', file]
+            offset = [f'-{base["INTERVAL"]}', None]
+            dep_dict = {'type': 'data', 'data': data, 'offset': offset}
+            deps.append(rocoto.add_dependency(dep_dict))
 
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
         task = wfu.create_wf_task('aerosol_init', cdump=cdump, envar=envars, dependency=dependencies)
@@ -418,7 +414,10 @@ def get_workflow(dict_configs, cdump='gdas'):
 
     if do_wave in ['Y', 'YES'] and do_wave_cdump in ['GFS', 'BOTH']:
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{cdump}waveprep'}
+        if app in ['ATMW']:
+            dep_dict = {'type': 'task', 'name': f'{cdump}waveprep'}
+        else: 
+            dep_dict = {'type': 'task', 'name': f'{cdump}waveinit'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies2 = rocoto.create_dependency(dep_condition='and', dep=deps)
 

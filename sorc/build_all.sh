@@ -31,14 +31,16 @@ function _usage() {
 }
 
 _build_ufs_opt=""
+_ops_opt=""
 _verbose_opt=""
 # Reset option counter in case this script is sourced
 OPTIND=1
-while getopts ":a:c:hv" option; do
+while getopts ":a:c:hov" option; do
 	case "${option}" in
 		a) _build_ufs_opt+="-a ${OPTARG} ";;
 		c) _partial_opt+="-c ${OPTARG} ";;
 		h) _usage;;
+		o) _ops_opt+="-o";;
 		# s) _build_ufs_opt+="-s ${OPTARG} ";;
 		v) _verbose_opt="-v";;
 		\?)
@@ -95,7 +97,7 @@ err=0
 #------------------------------------
 $Build_ww3_prepost && {
 	echo " .... Building WW3 pre and post execs .... "
-	./build_ww3prepost.sh ${_verbose_opt} > $logs_dir/build_ww3_prepost.log 2>&1
+	./build_ww3prepost.sh ${_verbose_opt} ${_build_ufs_opt} > $logs_dir/build_ww3_prepost.log 2>&1
 	rc=$?
 	if [[ $rc -ne 0 ]] ; then
 		echo "Fatal error in building WW3 pre/post processing."
@@ -123,7 +125,7 @@ $Build_ufs_model && {
 #------------------------------------
 $Build_gsi && {
 	echo " .... Building gsi .... "
-	./build_gsi.sh $_verbose_opt > $logs_dir/build_gsi.log 2>&1
+	./build_gsi.sh $_ops_opt $_verbose_opt > $logs_dir/build_gsi.log 2>&1
 	rc=$?
 	if [[ $rc -ne 0 ]] ; then
 		echo "Fatal error in building gsi."
@@ -133,11 +135,25 @@ $Build_gsi && {
 }
 
 #------------------------------------
+# build gsi monitor
+#------------------------------------
+$Build_gsi_monitor && {
+	echo " .... Building gsi monitor .... "
+	./build_gsi_monitor.sh $_ops_opt $_verbose_opt > $logs_dir/build_gsi_monitor.log 2>&1
+	rc=$?
+	if [[ $rc -ne 0 ]] ; then
+		echo "Fatal error in building gsi monitor."
+		echo "The log file is in $logs_dir/build_gsi_monitor.log"
+	fi
+	((err+=$rc))
+}
+
+#------------------------------------
 # build UPP
 #------------------------------------
 $Build_upp && {
 	echo " .... Building UPP .... "
-	./build_upp.sh $_verbose_opt > $logs_dir/build_upp.log 2>&1
+	./build_upp.sh $_ops_opt $_verbose_opt > $logs_dir/build_upp.log 2>&1
 	rc=$?
 	if [[ $rc -ne 0 ]] ; then
 		echo "Fatal error in building UPP."

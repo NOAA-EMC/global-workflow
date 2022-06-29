@@ -8,18 +8,12 @@ echo "BEGIN: config.vrfy"
 # Get task specific resources
 . $EXPDIR/config.resources vrfy
 
-export DO_VSDB=${DO_VSDB:-"NO"}   # Switch to run VSDB package; set in config.base
-
 export VDUMP="gfs"                # Verifying dump
 export CDUMPFCST="gdas"           # Fit-to-obs with GDAS/GFS prepbufr
 export CDFNL="gdas"               # Scores verification against GDAS/GFS analysis
 
 export MKPGB4PRCP="YES"           # Make 0.25-deg pgb files in ARCDIR for precip verification
 export VRFYFITS="YES"             # Fit to observations
-export VSDB_STEP1="YES"           # Populate VSDB database
-export VSDB_STEP2="NO"
-export VRFYG2OBS="YES"            # Grid to observations, see note below if turning ON
-export VRFYPRCP="YES"             # Precip threat scores
 export VRFYRAD="YES"              # Radiance data assimilation monitoring
 export VRFYOZN="YES"              # Ozone data assimilation monitoring
 export VRFYMINMON="YES"           # GSI minimization monitoring
@@ -62,38 +56,6 @@ if [ $VRFYFITS = "YES" ]; then
         echo "Fit2Obs NOT supported on this machine"
     fi
 
-fi
-
-#----------------------------------------------------------
-# VSDB STEP1, Verify Precipipation and Grid To Obs options
-#----------------------------------------------------------
-# All these call $VSDBSH
-
-if [ "$CDUMP" = "gfs" ] ; then
-    ddd=$(echo $CDATE |cut -c 1-8)
-    #if [ $ddd -eq 5 -o $ddd -eq 10 ]; then export VSDB_STEP2 = "YES" ;fi
-
-    if [ $VSDB_STEP1 = "YES" -o $VSDB_STEP2 = "YES" -o $VRFYPRCP = "YES" -o $VRFYG2OBS = "YES" ]; then
-        export BACKDATEVSDB=24                          # execute vsdbjob for the previous day
-        export VBACKUP_PRCP=24                          # back up for QPF verification data
-        export vsdbsave="$NOSCRUB/archive/vsdb_data"    # place to save vsdb database
-        export vsdbhome=$BASE_VERIF                     # location of global verification scripts
-        export VSDBSH="$vsdbhome/vsdbjob.sh"            # VSDB job script
-        export VSDBJOBSH=$SCRgfs/vsdbjob_submit.sh      # VSDB submission job
-        export vlength=$FHMAX_GFS                       # verification length
-        export vhr_rain=$FHMAX_GFS                      # verification length for precip
-        export ftyplist="pgbq"                          # verif. files used for computing QPF ETS scores
-        export ptyplist="PRATE"                         # precip types in GRIB: PRATE or APCP
-        export anltype="gfs"                            # default=gfs, analysis type (gfs or gdas) for verification
-        export rain_bucket=6                            # prate in pgb files is 6-hr accumulated
-
-        export VSDB_START_DATE="$SDATE"                 # starting date for vsdb maps
-        export webhost="emcrzdm.ncep.noaa.gov"          # webhost(rzdm) computer
-        export webhostid="$USER"                        # webhost(rzdm) user name
-        export SEND2WEB="NO"                            # whether or not to send maps to webhost
-        export WEBDIR="/home/people/emc/www/htdocs/gmb/${webhostid}/vsdb/$PSLOT"
-        export mdlist="gfs $PSLOT "                     # exps (up to 10) to compare in maps
-    fi
 fi
 
 

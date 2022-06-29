@@ -159,7 +159,7 @@ case $case_in in
 esac
 
 # Calculate chunksize based on resolution
-RESTILE=$(echo $case_in |cut -c2-)
+export RESTILE=$(echo $case_in |cut -c2-)
 export ichunk2d=$((4*RESTILE))
 export jchunk2d=$((2*RESTILE))
 export ichunk3d=$((4*RESTILE))
