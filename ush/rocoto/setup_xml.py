@@ -17,8 +17,8 @@ def input_args():
     """
 
     description = """
-        Sources configuration files based on application and\n
-        creates "PSLOT.xml" for use with Rocoto.\n
+        Sources configuration files based on application and
+        creates "$PSLOT.xml" for use with Rocoto.
         """
 
     parser = ArgumentParser(description=description,

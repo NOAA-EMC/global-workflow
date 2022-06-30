@@ -6,7 +6,7 @@ import glob
 import subprocess
 from datetime import datetime
 from pathlib import Path
-from typing import Union, List
+from typing import Union, List, Dict, Any
 
 
 __all__ = ['Configuration']
@@ -71,7 +71,7 @@ class Configuration:
         raise UnknownConfigError(
             f'{config_name} does not exist (known: {repr(config_name)}), ABORT!')
 
-    def parse_config(self, files: Union[str, bytes, list]) -> dict:
+    def parse_config(self, files: Union[str, bytes, list]) -> Dict[str, Any]:
         """
         Given the name of config file(s), key-value pair of all variables in the config file(s)
         are returned as a dictionary
@@ -89,7 +89,7 @@ class Configuration:
             if key in self.DATE_ENV_VARS:  # likely a date, convert to datetime
                 varbles[key] = datetime.strptime(value, '%Y%m%d%H')
             elif value in self.BOOLS:  # Likely a boolean, convert to True/False
-                varbles[key] = self._bool_or_not(value)
+                varbles[key] = self._true_or_not(value)
             elif '.' in value:  # Likely a number and that too a float
                 varbles[key] = self._cast_or_not(float, value)
             else:  # Still could be a number, may be an integer
@@ -97,7 +97,7 @@ class Configuration:
 
         return varbles
 
-    def print_config(self, files: Union[str, bytes, list]):
+    def print_config(self, files: Union[str, bytes, list]) -> None:
         """
         Given the name of config file(s), key-value pair of all variables in the config file(s) are printed
         Same signature as parse_config
@@ -110,7 +110,7 @@ class Configuration:
         print(f'{line_separator.join(f"{key}: {config[key]}" for key in config.keys())}')
 
     @classmethod
-    def _get_script_env(cls, scripts):
+    def _get_script_env(cls, scripts: List) -> Dict[str, Any]:
         default_env = cls._get_shell_env([])
         and_script_env = cls._get_shell_env(scripts)
         vars_just_in_script = set(and_script_env) - set(default_env)
@@ -119,7 +119,7 @@ class Configuration:
         return dict([(v, union_env[v]) for v in vars_just_in_script])
 
     @staticmethod
-    def _get_shell_env(scripts):
+    def _get_shell_env(scripts: List) -> Dict[str, Any]:
         varbls = dict()
         runme = ''.join([f'source {s} ; ' for s in scripts])
         magic = f'--- ENVIRONMENT BEGIN {random.randint(0,64**5)} ---'
@@ -146,7 +146,7 @@ class Configuration:
             return value
 
     @staticmethod
-    def _bool_or_not(value):
+    def _true_or_not(value):
         try:
             return value.lower() in Configuration.TRUTHS
         except AttributeError:
