@@ -87,6 +87,29 @@ The utility works primarily off of the yaml file used to define the suites,
 families, and tasks. You will need to define the pieces within the file using a
 YAML syntax and then the reserved words identified below.
 
+### Using Environment Variables in the YAML
+
+This application was built to use environment variables provided either through an export in the
+shell environment or by specifying a value in the config.base file. To use an environment value,
+the YAML file has a reserved word prefix `env.`. The code functions by parsing the YAML file into
+a dictionary then doing a recursive search over that dictionary to determine if the `env.` prefix
+is used anywhere, either a value or key. When a node uses that syntax, the application will search first
+the current shell environment variables for a match, if none exists, then it will search 
+the `config.base` file for any configurations that may have been exported from there. Finally, it will
+then replace the string `env.PARAMETER` with the value from the shell or `config.base` file in the 
+dictionary that was imported. The original YAML file will remain unchanged.
+
+**NOTE:** The environment variable cannot be used in conjunction with a string so trying to use
+`env.ECFgfs/include` will return only the value for `ECFgfs`, it will not append any strings or
+values to the beginning or end of the value. 
+
+Example:
+Entering `env.FHMAX_GFS` as a value for a node will use the value that was 
+specified in the `config.base` file for the `FHMAX_GFS` export. This will be reflected in the final
+definition file. It will not be updated in the original YAML file, that will remain as 
+`env.FHMAX_GFS`. 
+
+
 ### Script Repository
 
 The workflow generator will create the folders and scripts necessary to run the suite
