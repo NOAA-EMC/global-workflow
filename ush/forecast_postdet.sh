@@ -629,7 +629,10 @@ WW3_postdet() {
 
 
   #if wave mesh is not the same as the ocn/ice mesh, linkk it in the file
-  if [ $MESH_WAV !=  $MESH_OCN_ICE ]; then 
+  comparemesh=${MESH_OCN_ICE:-"mesh.mx${ICERES}.nc"}
+  if [ "$MESH_WAV" = "$comparemesh" ]; then 
+    echo "Wave is on same mesh as ocean/ice"
+  else 
     $NLN -sf $FIXwave/$MESH_WAV $DATA/
   fi 
 
