@@ -152,11 +152,7 @@ def edit_baseconfig(host, inputs):
             "@CASEENS@": f'C{inputs.resens}',
             "@NMEM_ENKF@": inputs.nens,
         }
-    elif inputs.mode in ['forecast-only']:
-        extend_dict = {
-            "@DO_AERO@": inputs.aerosols,
-        }
-    tmpl_dict = dict(tmpl_dict, **extend_dict)
+        tmpl_dict = dict(tmpl_dict, **extend_dict)
 
     # Open and read the templated config.base.emc.dyn
     base_tmpl = f'{inputs.configdir}/config.base.emc.dyn'
@@ -240,9 +236,7 @@ def input_args():
 
     # forecast only mode additional arguments
     forecasts.add_argument('--app', help='UFS application', type=str, choices=[
-        'ATM', 'ATMW', 'S2S', 'S2SW', 'OCN-ICE'], required=False, default='ATM')
-    forecasts.add_argument('--aerosols', help="Run with coupled aerosols", required=False,
-                           action='store_const', const="YES", default="NO")
+        'ATM', 'ATMA', 'ATMW', 'S2S', 'S2SW', 'S2SWA' 'OCN-ICE'], required=False, default='ATM')
 
     args = parser.parse_args()
 

@@ -10,7 +10,7 @@ TROPP            'Pa'    Y       N                  -            0.0      1.0   
 # Ginoux input files
 DU_SRC            NA  N Y - none none du_src     ExtData/Dust/gocart.dust_source.v5a.x1152_y721.nc
 
-# FENGSHA input files. Note: regridding should be N or E
+# FENGSHA input files. Note: regridding should be N or E - Use files with _FillValue != NaN 
 DU_CLAY           '1'  Y E           -           none none clayfrac    ExtData/Dust/FENGSHA_SOILGRIDS2019_GEFSv12_v1.2.nc
 DU_SAND           '1'  Y E           -           none none sandfrac    ExtData/Dust/FENGSHA_SOILGRIDS2019_GEFSv12_v1.2.nc
 DU_SILT           '1'  Y E           -           none none siltfrac    /dev/null

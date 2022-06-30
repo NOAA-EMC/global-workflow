@@ -365,7 +365,7 @@ def get_workflow(dict_configs, cdump='gdas'):
         deps = []
         dep_dict = {'type': 'task', 'name': f'{cdump}waveinit'}
         deps.append(rocoto.add_dependency(dep_dict))
-        if app not in ['S2S', 'S2SW']:
+        if 'S2S' not in app:
             dep_dict = {'type': 'task', 'name': f'{cdump}init'}
             deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
