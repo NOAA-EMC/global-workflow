@@ -249,8 +249,8 @@ class AppConfig:
     def _forecast_only_upd_base(base_in):
 
         base_out = base_in.copy()
-        base_out['INTERVAL'] = get_gfs_interval(base_in['gfs_cyc'])
-        base_out['CDUMP'] = 'gfs'  # TODO - is there a use case for CDUMP=gdas?
+        base_out['INTERVAL_GFS'] = get_gfs_interval(base_in['gfs_cyc'])
+        base_out['CDUMP'] = 'gfs'
 
         return base_out
 
@@ -404,7 +404,7 @@ class AppConfig:
                 tasks += ['getic']
             tasks += ['init']
 
-        if 'AERO' in self.model_app:
+        if self.do_aero:
             tasks += ['aerosol_init']
 
         if self.do_wave:

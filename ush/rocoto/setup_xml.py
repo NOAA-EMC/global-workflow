@@ -25,11 +25,8 @@ def input_args():
                             formatter_class=ArgumentDefaultsHelpFormatter)
 
     # Common arguments across all modes
-    parser.add_argument('--expdir', help='full path to experiment directory containing config files', type=str,
-                      required=False, default=os.environ['PWD'])
-
-    parser.add_argument('--cdump', help='cycle to run forecasts', type=str, choices=['gdas', 'gfs'], default='gfs',
-                           required=False)
+    parser.add_argument('expdir', help='full path to experiment directory containing config files',
+                        type=str, default=os.environ['PWD'])
 
     args = parser.parse_args()
 

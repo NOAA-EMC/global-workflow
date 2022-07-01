@@ -288,8 +288,16 @@ class Tasks:
             dep_dict = {'type': 'data', 'data': data}
             deps.append(rocoto.add_dependency(dep_dict))
 
+        # Calculate offset based on CDUMP = gfs | gdas
+        interval = None
+        if self.cdump in ['gfs']:
+            interval = self._base['INTERVAL_GFS']
+        elif self.cdump in ['gdas']:
+            interval = self._base['INTERVAL']
+        offset = f'-{interval}'
+
         # Previous cycle
-        dep_dict = {'type': 'cycleexist', 'offset': f'-{self._base["INTERVAL"]}'}
+        dep_dict = {'type': 'cycleexist', 'offset': offset}
         deps.append(rocoto.add_dependency(dep_dict))
 
         # Files from previous cycle
@@ -299,8 +307,8 @@ class Tasks:
 
         for file in files:
             data = [f'&ROTDIR;/{self.cdump}.@Y@m@d/@H/atmos/RERUN_RESTART/', file]
-            offset = [f'-{self._base["INTERVAL"]}', None]
-            dep_dict = {'type': 'data', 'data': data, 'offset': offset}
+            offset_list = [f'{offset}', None]
+            dep_dict = {'type': 'data', 'data': data, 'offset': [offset, None]}
             deps.append(rocoto.add_dependency(dep_dict))
 
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
