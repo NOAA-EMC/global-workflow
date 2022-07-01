@@ -208,6 +208,7 @@ elif [ $imp_physics -eq 8 ]; then # Thompson
     export ttendlim="-999"
     export dt_inner=$((DELTIM/2))
     export sedi_semi=.true.
+    if [ $sedi_semi = .true. ]; then export dt_inner=$DELTIM ; fi
     export decfl=10
 
     export hord_mt_nh_nonmono=5
