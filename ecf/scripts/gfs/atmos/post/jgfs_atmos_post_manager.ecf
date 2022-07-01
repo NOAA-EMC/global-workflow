@@ -1,42 +1,31 @@
-#BSUB -L /bin/sh
-#BSUB -J %E%gfs_atmos_post_manager_%CYC%
-#BSUB -o %COM%/output/%ENVIR%/today/gfs_atmos_post_manager_%CYC%.o%J
-#BSUB -q %QUEUE%
-#BSUB -P %PROJ%
-#BSUB -W 4:00
-#BSUB -n 1
-#BSUB -R affinity[core(1)]
-#BSUB -R span[ptile=1]
-#BSUB -cwd /tmp
+#PBS -S /bin/bash
+#PBS -N %RUN%_atmos_post_manager_%CYC%
+#PBS -j oe
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=04:00:00
+#PBS -l select=1:ncpus=1:mem=1GB
+#PBS -l place=vscatter
+#PBS -l debug=true
 
+model=gfs
 %include <head.h>
-%include <envir-p3.h>
+%include <envir-p1.h>
 
 set -x
-
-export NODES=1
-export ntasks=1
-export ptile=1
-export threads=1
 
 export NET=%NET:gfs%
 export RUN=%RUN%
 export CDUMP=%RUN%
 
-model=gfs
-%include <model_ver.h>
-
 ############################################################
 # Load modules
 ############################################################
-module load lsf/${lsf_ver}
-module load impi/${impi_ver}
 
 module list
 
 export cyc=%CYC%
 export cycle=t%CYC%z
-export USE_CFP=YES
 
 ############################################################
 # CALL executable job script here
