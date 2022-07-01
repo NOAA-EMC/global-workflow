@@ -1,7 +1,8 @@
+import sys
 from configuration import Configuration
 
 
-expdir = '/Users/rmahajan/scratch/gwWork/EXPDIR/test-workflow'
+expdir = sys.argv[1]
 
 cfg = Configuration(expdir)
 

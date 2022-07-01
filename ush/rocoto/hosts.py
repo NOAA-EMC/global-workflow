@@ -36,8 +36,7 @@ class Host:
     @property
     def detect(cls):
 
-        machine = 'NOTFOUND'  # TODO - remove this comment
-        machine = 'ORION'  # TODO - remove this line
+        machine = 'NOTFOUND'
 
         if os.path.exists('/scratch1/NCEPDEV'):
             machine = 'HERA'
