@@ -4,6 +4,7 @@ import os
 import random
 import glob
 import subprocess
+from pprint import pprint
 from datetime import datetime
 from pathlib import Path
 from typing import Union, List, Dict, Any
@@ -106,8 +107,7 @@ class Configuration:
         :return: None
         """
         config = self.parse_config(files)
-        line_separator = '\n'
-        print(f'{line_separator.join(f"{key}: {config[key]}" for key in config.keys())}')
+        pprint(config, width=4)
 
     @classmethod
     def _get_script_env(cls, scripts: List) -> Dict[str, Any]:

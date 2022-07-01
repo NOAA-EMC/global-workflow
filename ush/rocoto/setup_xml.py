@@ -24,19 +24,11 @@ def input_args():
     parser = ArgumentParser(description=description,
                             formatter_class=ArgumentDefaultsHelpFormatter)
 
-    # Set up sub-parsers for various modes of experimentation
-    subparser = parser.add_subparsers(dest='mode')
-    cycled = subparser.add_parser(
-        'cycled', help='arguments for cycled mode')
-    forecasts = subparser.add_parser(
-        'forecast-only', help='arguments for forecast-only mode')
-
     # Common arguments across all modes
-    for subp in [cycled, forecasts]:
-        subp.add_argument('--expdir', help='full path to experiment directory containing config files', type=str,
-                          required=False, default=os.environ['PWD'])
+    parser.add_argument('--expdir', help='full path to experiment directory containing config files', type=str,
+                      required=False, default=os.environ['PWD'])
 
-    forecasts.add_argument('--cdump', help='cycle to run forecasts', type=str, choices=['gdas', 'gfs'], default='gfs',
+    parser.add_argument('--cdump', help='cycle to run forecasts', type=str, choices=['gdas', 'gfs'], default='gfs',
                            required=False)
 
     args = parser.parse_args()
@@ -62,7 +54,7 @@ if __name__ == '__main__':
     check_expdir(user_inputs.expdir, cfg.parse_config('config.base')['EXPDIR'])
 
     # Configure the application
-    app_config = AppConfig(user_inputs.mode, cfg)
+    app_config = AppConfig(cfg)
 
     # Create Rocoto Tasks and Assemble them into an XML
     xml = RocotoXML(app_config)

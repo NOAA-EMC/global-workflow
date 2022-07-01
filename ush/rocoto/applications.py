@@ -78,18 +78,18 @@ class AppConfig:
 
     VALID_MODES = ['cycled', 'forecast-only']
 
-    def __init__(self, mode: str, configuration: Configuration) -> None:
-
-        if mode not in self.VALID_MODES:
-            raise NotImplementedError(f'{mode} is not a valid application mode.\n' +
-                                      'Valid application modes are:\n' +
-                                      f'{", ".join(self.VALID_MODES)}')
-
-        self.mode = mode
+    def __init__(self, configuration: Configuration) -> None:
 
         self.scheduler = Host().scheduler
 
         _base = configuration.parse_config('config.base')
+
+        self.mode = _base['MODE']
+
+        if self.mode not in self.VALID_MODES:
+            raise NotImplementedError(f'{self.mode} is not a valid application mode.\n' +
+                                      'Valid application modes are:\n' +
+                                      f'{", ".join(self.VALID_MODES)}')
 
         self.model_app = _base.get('APP', 'ATM')
         self.do_hybvar = _base.get('DOHYBVAR', False)
