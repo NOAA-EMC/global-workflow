@@ -7,10 +7,7 @@ status=$?
 [[ $status -ne 0 ]] && exit $status
 
 ###############################################################
-# set JJOB variables
-export configs="base atmanal atmanalpost"
-export EXSCRIPT=${GDASPOSTPY:-$HOMEgfs/sorc/gdas.cd/scripts/exgdas_global_atmos_analysis_post.py}
 # Execute the JJOB
-$HOMEgfs/jobs/JGDAS_GLOBAL_ATMOS_ANALYSIS
+$HOMEgfs/jobs/JGDAS_GLOBAL_ATMOS_ANALYSIS_POST
 status=$?
 exit $status

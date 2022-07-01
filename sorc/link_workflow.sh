@@ -174,8 +174,12 @@ cd ${pwd}/../ush                ||exit 8
 #--add GDASApp files
 #------------------------------
 cd ${pwd}/../jobs               ||exit 8
-    $LINK ../sorc/gdas.cd/jobs/JGDAS_GLOBAL_ATMOS_ANALYSIS        .
-    $LINK ../sorc/gdas.cd/jobs/JGDAS_GLOBAL_ATMOS_ENSANAL         .
+    $LINK ../sorc/gdas.cd/jobs/JGDAS_GLOBAL_ATMOS_ANALYSIS_PREP   .
+    $LINK ../sorc/gdas.cd/jobs/JGDAS_GLOBAL_ATMOS_ANALYSIS_RUN    .
+    $LINK ../sorc/gdas.cd/jobs/JGDAS_GLOBAL_ATMOS_ANALYSIS_POST   .
+    $LINK ../sorc/gdas.cd/jobs/JGDAS_GLOBAL_ATMOS_ENSANAL_PREP    .
+    $LINK ../sorc/gdas.cd/jobs/JGDAS_GLOBAL_ATMOS_ENSANAL_RUN     .
+    $LINK ../sorc/gdas.cd/jobs/JGDAS_GLOBAL_ATMOS_ENSANAL_POST    .
 cd ${pwd}/../ush                ||exit 8
     $LINK ../sorc/gdas.cd/ush/ufsda                               .
 

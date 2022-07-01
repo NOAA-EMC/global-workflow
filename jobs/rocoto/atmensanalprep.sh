@@ -7,10 +7,7 @@ status=$?
 [[ $status -ne 0 ]] && exit $status
 
 ###############################################################
-# set JJOB variables
-export configs="base atmensanal atmensanalprep"
-export EXSCRIPT=${GDASPREPPY:-$HOMEgfs/sorc/gdas.cd/scripts/exgdas_global_atmos_analysis_prep.py}
 # Execute the JJOB
-$HOMEgfs/jobs/JGDAS_GLOBAL_ATMOS_ENSANAL
+$HOMEgfs/jobs/JGDAS_GLOBAL_ATMOS_ENSANAL_PREP
 status=$?
 exit $status

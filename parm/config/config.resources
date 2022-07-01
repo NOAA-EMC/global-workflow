@@ -11,7 +11,7 @@ if [ $# -ne 1 ]; then
     echo "getic init coupled_ic aerosol_init"
     echo "atmanalprep atmanalrun atmanalpost"
     echo "atmensanalprep atmensanalrun atmensanalpost"
-    echo "anal sfcanl analcalc analdiag gldas fcst postanl post vrfy metp arch echgres"
+    echo "anal sfcanl analcalc analdiag gldas fcst post vrfy metp arch echgres"
     echo "eobs ediag eomg eupd ecen esfc efcs epos earc"
     echo "init_chem mom6ic ocnpost"
     echo "waveinit waveprep wavepostsbs wavepostbndpnt wavepostbndpntbll wavepostpnt"
@@ -327,21 +327,6 @@ elif [ $step = "ocnpost" ]; then
     export nth_ocnpost=1
     export memory_ocnpost="96G"
 
-elif [ $step = "postanl" ]; then
-
-    export wtime_postanl="00:30:00"
-    export wtime_postanl_gfs="06:00:00"
-    export npe_postanl=112
-    export nth_postanl=1
-    export npe_node_postanl=40
-    export npe_dwn=24
-    export npe_node_dwn=$npe_node_max
-    if [[ "$machine" = "WCOSS_DELL_P3" ]]; then
-	export npe_dwn=28
-	export npe_node_postanl=28
-    fi
-    if [[ "$machine" == "WCOSS_C" ]]; then export memory_postanl="3072M"; fi
-
 elif [ $step = "post" ]; then
 
     export wtime_post="02:00:00"
@@ -472,10 +457,6 @@ elif [ $step = "coupled_ic" ]; then
     export nth_coupled_ic=1
 
 elif [ $step = "atmensanalprep" ]; then
-
-    # make below case dependent later
-    export layout_x=2
-    export layout_y=3
 
     export wtime_atmensanalprep="00:10:00"
     export npe_atmensanalprep=1

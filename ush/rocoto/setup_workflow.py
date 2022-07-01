@@ -42,7 +42,7 @@ def main():
         print(f'input arg:     --expdir = {repr(args.expdir)}')
         sys.exit(1)
 
-    gfs_steps = ['prep', 'sfcanl', 'analcalc', 'gldas', 'fcst', 'postsnd', 'postanl', 'post', 'vrfy', 'arch']
+    gfs_steps = ['prep', 'sfcanl', 'analcalc', 'gldas', 'fcst', 'postsnd', 'post', 'vrfy', 'arch']
     gfs_steps_gempak = ['gempak']
     gfs_steps_awips = ['awips']
     gfs_steps_wafs = ['wafs', 'wafsgrib2', 'wafsblending', 'wafsgcip', 'wafsgrib20p25', 'wafsblending0p25']
@@ -272,7 +272,7 @@ def get_gdasgfs_resources(dict_configs, cdump='gdas'):
         #tasks += ['waveinit', 'waveprep', 'wavepostsbs', 'wavepostbndpnt', 'wavepostpnt', 'wavestat']
         tasks += ['waveinit', 'waveprep', 'wavepostsbs', 'wavepostbndpnt', 'wavepostbndpntbll', 'wavepostpnt']
 
-    tasks += ['fcst', 'postanl', 'post', 'vrfy', 'arch']
+    tasks += ['fcst', 'post', 'vrfy', 'arch']
 
     if cdump in ['gfs'] and do_wave in ['Y', 'YES'] and do_wave_cdump in ['GFS', 'BOTH']:
         #tasks += ['waveinit', 'waveprep', 'wavepostsbs', 'wavepostbndpnt', 'wavepostpnt', 'wavestat']
@@ -656,25 +656,6 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
         task = wfu.create_wf_task('fcst', cdump=cdump, envar=envars, dependency=dependencies1)
 
     dict_tasks[f'{cdump}fcst'] = task
-
-    # postanl
-    deps = []
-    data = f'&ROTDIR;/{cdump}.@Y@m@d/@H/atmos/{cdump}.t@Hz.loganl.txt'
-    dep_dict = {'type': 'data', 'data': data}
-    deps.append(rocoto.add_dependency(dep_dict))
-    dep_dict = {'type': 'task', 'name': f'{cdump}analcalc'}
-    deps.append(rocoto.add_dependency(dep_dict))
-    dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
-    fhrgrp = rocoto.create_envar(name='FHRGRP', value='anl')
-    fhrlst = rocoto.create_envar(name='FHRLST', value='anl')
-    ROTDIR = rocoto.create_envar(name='ROTDIR', value='&ROTDIR;')
-    postenvars = envars + [fhrgrp] + [fhrlst] + [ROTDIR]
-    varname1, varname2, varname3 = 'grp', 'dep', 'lst'
-    varval1, varval2, varval3 = get_postgroups_anl(dict_configs['postanl'], cdump=cdump)
-    vardict = {varname2: varval2, varname3: varval3}
-    task = wfu.create_wf_task('postanl', cdump=cdump, envar=postenvars, dependency=dependencies)
-
-    dict_tasks[f'{cdump}postanl'] = task
 
     # post
     deps = []
@@ -1345,14 +1326,6 @@ def get_workflow_footer():
     return ''.join(strings)
 
 
-def get_postgroups_anl(post, cdump='gdas'):
-
-    fhrgrp = 'anl'
-    fhrdep = 'anl'
-    fhrlst = 'anl'
-
-    return fhrgrp, fhrdep, fhrlst
-
 def get_postgroups(post, cdump='gdas'):
 
     fhmin = post['FHMIN']
@@ -1377,9 +1350,9 @@ def get_postgroups(post, cdump='gdas'):
     fhrs = np.array_split(fhrs, ngrps)
     fhrs = [f.tolist() for f in fhrs]
 
-    fhrgrp = ' '.join([f'_{f[0]}-{f[-1]}' for f in fhrs])
-    fhrdep = ' '.join([f[-1] for f in fhrs])
-    fhrlst = ' '.join(['_'.join(f) for f in fhrs])
+    fhrgrp = ' '.join(['anl'] + [f'_{f[0]}-{f[-1]}' for f in fhrs])
+    fhrdep = ' '.join(['anl'] + [f[-1] for f in fhrs])
+    fhrlst = ' '.join(['anl'] + ['_'.join(f) for f in fhrs])
 
     return fhrgrp, fhrdep, fhrlst
 
