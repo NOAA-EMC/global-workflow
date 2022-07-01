@@ -169,7 +169,15 @@ export icliq_sw=2   ; #cloud optical coeffs from AER's newer version v3.9-v4.0 f
 export isubc_sw=2
 export isubc_lw=2
 
+# RRTMGP radiation scheme
+export  do_RRTMGP=.false.
+export  doGP_cldoptics_LUT=.false.
+export  doGP_lwscat=.false.
+
+# LSM configuration
+# NoahMP only
 export iopt_sfc="3"
+export iopt_trs="2"
 
 # Microphysics configuration
 export dnats=0
@@ -199,6 +207,9 @@ elif [ $imp_physics -eq 8 ]; then # Thompson
     export lradar=".false."
     export ttendlim="-999"
     export dt_inner=$((DELTIM/2))
+    export sedi_semi=.true.
+    if [ $sedi_semi = .true. ]; then export dt_inner=$DELTIM ; fi
+    export decfl=10
 
     export hord_mt_nh_nonmono=5
     export hord_xx_nh_nonmono=5
