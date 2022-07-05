@@ -285,17 +285,18 @@ done
 #------------------------------
 #--link source code directories
 #------------------------------
-
-    [[ -d ncdiag.fd ]] && rm -rf ncdiag.fd
-    $SLINK gsi.fd/src/ncdiag                                                               ncdiag_cat.fd
-
-    [[ -d global_gsi.fd ]] && rm -rf global_gsi.fd
-    $SLINK gsi.fd/src/gsi                                                                  global_gsi.fd
-
-    [[ -d global_enkf.fd ]] && rm -rf global_enkf.fd
-    $SLINK gsi.fd/src/enkf                                                                 global_enkf.fd
-
 cd ${pwd}/../sorc   ||   exit 8
+
+    # TODO - remove ncdiag once ncdiag is available as a module on the system
+    [[ -d ncdiag.fd ]] && rm -rf ncdiag.fd
+    $SLINK gsi.fd/src/ncdiag                                                                    ncdiag.fd
+
+    [[ -d gsi.fd ]] && rm -rf gsi.fd
+    $SLINK gsi.fd/src/gsi                                                                       gsi.fd
+
+    [[ -d enkf.fd ]] && rm -rf enkf.fd
+    $SLINK gsi.fd/src/enkf                                                                      enkf.fd
+
     [[ -d calc_analysis.fd ]] && rm -rf calc_analysis.fd
     $SLINK gsi_utils.fd/src/netcdf_io/calc_analysis.fd                                          calc_analysis.fd
 
