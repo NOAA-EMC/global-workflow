@@ -62,9 +62,6 @@ export DATAROOT=/gpfs/dell2/ptmp/Boi.Vuong/output
 export NWROOT=/gpfs/dell2/emc/modeling/noscrub/Boi.Vuong/git
 export COMROOT2=/gpfs/dell2/ptmp/Boi.Vuong/com
 
-mkdir -m 775 -p ${COMROOT2} ${COMROOT2}/logs ${COMROOT2}/logs/jlogfiles
-export jlogfile=${COMROOT2}/logs/jlogfiles/jlogfile.${jobid}
-
 #############################################################
 # Specify versions
 #############################################################

@@ -257,7 +257,7 @@ fi
 # build gfs_util       
 #------------------------------------
 # Only build on WCOSS
-if [ $target = wcoss -o $target = wcoss_cray -o $target = wcoss_dell_p3 ]; then
+if [ $target = wcoss -o $target = wcoss_cray -o $target = wcoss_dell_p3 -o $target = wcoss2 ]; then
  $Build_gfs_util && {
  echo " .... Building gfs_util .... "
  ./build_gfs_util.sh > $logs_dir/build_gfs_util.log 2>&1

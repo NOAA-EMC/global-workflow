@@ -21,7 +21,7 @@ export MP_DEBUG_NOTIMEOUT=yes
 ##########################################################
 # obtain unique process id (pid) and make temp directory
 ##########################################################
-export DATA=${DATA:-${DATAROOT}/${jobid:?}}
+export DATA=${DATA:-${DATAROOT}/${PBS_JOBNAME}.${PBS_JOBID}}
 mkdir -p $DATA
 cd $DATA
 
@@ -34,12 +34,12 @@ export cycle=${cycle:-t${cyc}z}
 # Run setpdy and initialize PDY variables
 ###########################################
 setpdy.sh
-. PDY
+. ./PDY
 
 ################################
 # Set up the HOME directory
 ################################
-export HOMEgfs=${HOMEgfs:-${NWROOT}/gfs.${gfs_ver}}
+export HOMEgfs=${HOMEgfs:-${PACKAGEROOT}/gfs.${gfs_ver}}
 export EXECgfs=${EXECgfs:-$HOMEgfs/exec}
 export PARMgfs=${PARMgfs:-$HOMEgfs/parm}
 export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
@@ -72,19 +72,21 @@ export DBN_ALERT_TYPE=GFS_METAFILE
 ##############################################
 # Define COM directories
 ##############################################
-export COMIN=${COMIN:-$(compath.py ${NET}/${envir}/${RUN}.${PDY})/${cyc}/$COMPONENT/gempak}
-export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/$COMPONENT/gempak/meta}
-export COMINgempak=${COMINgempak:-${COMROOT}/${NET}/${envir}}
+export COMIN=${COMIN:-$(compath.py ${envir}/${NET}/${gfs_ver})/${RUN}.${PDY}/${cyc}/$COMPONENT/gempak}
+export COMOUT=${COMOUT:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/$COMPONENT/gempak/meta}
+export COMINgempak=${COMINgempak:-$(compath.py ${envir}/${NET}/${gfs_ver})}
 
-export COMINukmet=${COMINukmet:-$(compath.py nawips/prod/ukmet)}
-export COMINecmwf=${COMINecmwf:-$(compath.py ecmwf/prod/ecmwf)}
-export COMINnam=${COMINnam:-$(compath.py nam/prod/nam)}
+# export ukmet_ver=v2.2.0
+export COMINukmet=${COMINukmet:-$(compath.py ${envir}/ukmet/${ukmet_ver})/ukmet}
+# export ecmwf_ver=v2.1.0
+export COMINecmwf=${COMINecmwf:-$(compath.py ${envir}/ecmwf/${ecmwf_ver})/ecmwf}
+# export nam_ver=v4.2.0
+export COMINnam=${COMINnam:-$(compath.py ${envir}/nam/${nam_ver})/nam}
 
 export SENDDBN=${SENDDBN:-NO}
 export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
-msg="Begin job for $job"
-postmsg "$jlogfile" "$msg"
+echo "Begin job for $job"
 
 if [ $SENDCOM = YES ] ; then
   mkdir -m 775 -p $COMOUT
@@ -100,8 +102,7 @@ $SRCgfs/exgfs_atmos_gempak_meta.sh
 export err=$?; err_chk
 ########################################################
 
-msg="JOB $job HAS COMPLETED NORMALLY!"
-postmsg $jlogfile "$msg"
+echo "JOB $job HAS COMPLETED NORMALLY!"
 
 ############################################
 # print exec I/O output

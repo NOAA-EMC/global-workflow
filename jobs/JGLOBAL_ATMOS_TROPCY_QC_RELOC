@@ -58,9 +58,6 @@ export pgmerr=errfile
 export CDATE=${CDATE:-${PDY}${cyc}}
 export CDUMP=${CDUMP:-${RUN:-"gfs"}}
 export COMPONENT=${COMPONENT:-atmos}
-if [ $RUN_ENVIR = "nco" ]; then
-    export ROTDIR=${COMROOT:?}/$NET/$envir
-fi
 
 
 ##############################################
@@ -72,18 +69,15 @@ export DO_RELOCATE=${DO_RELOCATE:-NO}           # Turn on tropical cyclone reloc
 
 
 export tmmark=tm00
-if [ $RUN_ENVIR = "nco" ]; then
-    export ARCHSYND=$COMROOTp3/gfs/${envir}/syndat     # this location is unique, do not change
-else
-    export ARCHSYND=${ROTDIR}/syndat   
-fi
+
+export ARCHSYND=${ROTDIR}/syndat  # this location is unique, do not change
 if [ ! -d ${ARCHSYND} ]; then mkdir -p $ARCHSYND; fi
 
 export HOMENHCp1=${HOMENHCp1:-/gpfs/?p1/nhc/save/guidance/storm-data/ncep}
-export HOMENHC=${HOMENHC:-/gpfs/dell2/nhc/save/guidance/storm-data/ncep}
+export HOMENHC=${HOMENHC:-/lfs/h1/ops/prod/dcom/nhc/atcf/ncep}
 
 # JY export TANK_TROPCY=${TANK_TROPCY:-${DCOMROOT}/${envir}}   # path to tropical cyclone record database
-export TANK_TROPCY=${TANK_TROPCY:-${DCOMROOT}/prod}   # path to tropical cyclone record database
+export TANK_TROPCY=${TANK_TROPCY:-${DCOMROOT}}   # path to tropical cyclone record database
 
 
 ##############################################
@@ -105,8 +99,7 @@ export BKGFREQ=1                                # for hourly relocation
 # Run relevant script
 ##############################################
 env
-msg="HAS BEGUN on `hostname`"
-postmsg "$jlogfile" "$msg"
+echo "HAS BEGUN on `hostname`"
 $LOGSCRIPT
 
 
@@ -122,9 +115,7 @@ if [ -e "$pgmout" ] ; then
   cat $pgmout
 fi
 
-msg="ENDED NORMALLY."
-postmsg "$jlogfile" "$msg"
-
+echo "ENDED NORMALLY."
 
 ##########################################
 # Remove the Temporary working directory

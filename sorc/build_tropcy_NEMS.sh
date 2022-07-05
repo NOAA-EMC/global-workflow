@@ -21,15 +21,16 @@ if [ ! -d "../exec" ]; then
   mkdir ../exec
 fi
 
-USE_PREINST_LIBS=${USE_PREINST_LIBS:-"true"}
-if [ $USE_PREINST_LIBS = true ]; then
-  export MOD_PATH=/scratch3/NCEPDEV/nwprod/lib/modulefiles
-else
-  export MOD_PATH=${cwd}/lib/modulefiles
+module use ${cwd}/../modulefiles
+module load modulefile.storm_reloc_v6.0.0.$target
+
+if [ $target = "wcoss2" ]; then
+  SIGIO_LIB4=$SIGIO_LIB
+  SIGIO_INC4=$SIGIO_INC
 fi
 
-source ../modulefiles/modulefile.storm_reloc_v6.0.0.$target
-export FC=mpiifort
+export FC=ftn
+export JASPER_LIB=${JASPER_LIB:-$JASPER_LIBRARY_DIRS/libjasper.a}
 
 export INC="${G2_INCd} -I${NEMSIO_INC}"
 export LIBS="${W3EMC_LIBd} ${W3NCO_LIBd} ${BACIO_LIB4} ${G2_LIBd} ${PNG_LIB} ${JASPER_LIB} ${Z_LIB}"

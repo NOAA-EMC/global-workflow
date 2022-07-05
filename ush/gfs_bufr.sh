@@ -31,7 +31,7 @@ fi
 hh=$FSTART
 while  test $hh -le $FEND
 do  
-   hh=` expr $hh + $FINT `
+   hh=$(expr $hh + $FINT)
    if test $hh -lt 10
    then
       hh=0$hh
@@ -65,7 +65,7 @@ EOF
 hh=$FSTART
    if test $hh -lt 100
    then
-      hh1=`echo "${hh#"${hh%??}"}"`
+      hh1=$(echo "${hh#"${hh%??}"}")
       hh=$hh1
    fi
 while  test $hh -le $FEND
@@ -85,7 +85,7 @@ do
       if [ ! -f $COMIN/${RUN}.${cycle}.logf${hh2}.${logfm} ]
       then
           sleep 10
-          ic=`expr $ic + 1`
+          ic=$(expr $ic + 1)
       else
           break
       fi
@@ -99,7 +99,7 @@ do
    ln -sf $COMIN/${RUN}.${cycle}.atmf${hh2}.${atmfm} sigf${hh} 
    ln -sf $COMIN/${RUN}.${cycle}.sfcf${hh2}.${atmfm} flxf${hh}
 
-   hh=` expr $hh + $FINT `
+   hh=$(expr $hh + $FINT)
    if test $hh -lt 10
    then
       hh=0$hh
@@ -112,4 +112,13 @@ ln -sf ${STNLIST:-$PARMbufrsnd/bufr_stalist.meteo.gfs} fort.8
 ln -sf $PARMbufrsnd/bufr_ij13km.txt fort.7
 
 ${APRUN_POSTSND} $EXECbufrsnd/gfs_bufr < gfsparm > out_gfs_bufr_$FEND
-export err=$?;err_chk
+
+export err=$?
+
+if [ $err -ne 0 ]; then
+   msg="GFS postsnd job error, Please check files "
+   echo $msg
+   echo $COMIN/${RUN}.${cycle}.atmf${hh2}.${atmfm}
+   echo $COMIN/${RUN}.${cycle}.sfcf${hh2}.${atmfm}
+   err_chk
+fi

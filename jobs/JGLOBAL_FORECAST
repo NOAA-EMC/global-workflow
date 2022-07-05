@@ -71,12 +71,6 @@ export pgmerr=errfile
 export CDATE=${CDATE:-${PDY}${cyc}}
 export CDUMP=${CDUMP:-${RUN:-"gfs"}}
 
-if [ $RUN_ENVIR = "nco" ]; then
-    export ROTDIR=${COMROOT:?}/$NET/$envir
-    export RSTDIR=${GESROOT:?}/$envir
-fi
-
-
 #--------------------------------
 if [ $RUN_ENVIR = "nco" ]; then
 #--------------------------------
@@ -113,13 +107,12 @@ status=$?
 fi
 #--------------------------------
 
-
 # Set wave variables
 if [ ${DO_WAVE:-"NO"} = "YES" ]; then
   # WAVE component directory
   export CDUMPwave=${CDUMPwave:-${CDUMP}wave}
-  export COMINwave=${COMINwave:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/wave}
-  export COMOUTwave=${COMOUTwave:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/wave}
+  export COMINwave=${COMINwave:-$(compath.py ${envir}/${NET}/${gfs_ver})/${CDUMP}.${PDY}/${cyc}/wave}
+  export COMOUTwave=${COMOUTwave:-$(compath.py -o ${NET}/${gfs_ver})/${CDUMP}.${PDY}/${cyc}/wave}
 fi
 
 ##############################################
@@ -145,8 +138,7 @@ fi
 ###############################################################
 # Run relevant exglobal script
 env
-msg="HAS BEGUN on `hostname`"
-postmsg "$jlogfile" "$msg"
+echo "HAS BEGUN on `hostname`"
 $LOGSCRIPT
 
 
@@ -166,8 +158,7 @@ if [ -e "$pgmout" ] ; then
   cat $pgmout
 fi
 
-msg="ENDED NORMALLY."
-postmsg "$jlogfile" "$msg"
+echo "ENDED NORMALLY."
 
 ##########################################
 # Remove the Temporary working directory

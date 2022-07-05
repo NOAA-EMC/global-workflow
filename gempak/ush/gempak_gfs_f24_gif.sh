@@ -18,8 +18,7 @@
 
 
 
-   msg=" Make GEMPAK GIFS utility"
-   postmsg "$jlogfile" "$msg"
+  echo " Make GEMPAK GIFS utility"
 
 
 
@@ -225,7 +224,6 @@ if [ $SENDCOM = YES ]; then
 fi
 
 
-   msg=" GEMPAK_GIF ${fhr} hour completed normally"
-   postmsg "$jlogfile" "$msg"
+   echo " GEMPAK_GIF ${fhr} hour completed normally"
 
    exit

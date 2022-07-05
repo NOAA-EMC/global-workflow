@@ -8,7 +8,7 @@ set -x -e
 #############################
 # Source relevant config files
 #############################
-configs="base wave wavepostsbs wavepostbndpnt"
+configs="base wave wavepostsbs wavepostbndpntbll"
 export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
 config_path=${EXPDIR:-$NWROOT/gfs.${gfs_ver}/parm/config}
 for config in $configs; do
@@ -60,9 +60,6 @@ export USHwave=${USHwave:-$HOMEgfs/ush}
 export EXECwave=${EXECwave:-$HOMEgfs/exec}
 
 # Set COM Paths and GETGES environment
-if [ $RUN_ENVIR = "nco" ]; then
-    export ROTDIR=${COMROOT:?}/$NET/$envir
-fi
 export COMIN=${COMIN:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/$COMPONENT}
 export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/$COMPONENT}
 
@@ -92,11 +89,11 @@ export DOBNDPNT_WAV='YES'  #boundary points
 $HOMEgfs/scripts/exgfs_wave_post_pnt.sh
 err=$?
 if [ $err -ne 0 ]; then
-  msg="FATAL ERROR: ex-script of GFS_WAVE_POST_PNT failed!"
+  echo "FATAL ERROR: ex-script of GFS_WAVE_POST_PNT failed!"
+  exit $err
 else
-  msg="$job completed normally!"
+  echo "$job completed normally!"
 fi
-postmsg "$jlogfile" "$msg"
 
 ##########################################
 # Remove the Temporary working directory

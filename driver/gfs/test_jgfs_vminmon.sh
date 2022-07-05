@@ -65,16 +65,6 @@ export JOBGLOBAL=${JOBGLOBAL:-${HOMEgfs}/jobs}
 export COM_IN=${COM_IN:-${DATAROOT}}
 export M_TANKverf=${M_TANKverf:-${COMROOT}/${MINMON_SUFFIX}}
 
-jlogdir=${jlogdir:-/ptmpp1/${LOGNAME}/jlogs}
-if [[ ! -d ${jlogdir} ]]; then
-   mkdir -p ${jlogdir}
-fi
-
-export jlogfile=${jlogfile:-${jlogdir}/${MINMON_SUFFIX}.${NET}.${RUN}.jlogfile}
-if [[ -e ${jlogfile} ]]; then
-  rm -f ${jlogfile}
-fi
-
 #############################################################
 # Execute job
 #############################################################

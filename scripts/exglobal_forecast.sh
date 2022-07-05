@@ -63,8 +63,8 @@ cyc=$(echo $CDATE | cut -c9-10)
 
 # Directories.
 pwd=$(pwd)
-NWPROD=${NWPROD:-${NWROOT:-$pwd}}
-HOMEgfs=${HOMEgfs:-$NWPROD}
+PACKAGEROOT=${PACKAGEROOT:-$pwd}
+HOMEgfs=${HOMEgfs:-$PACKAGEROOT}
 FIX_DIR=${FIX_DIR:-$HOMEgfs/fix}
 FIX_AM=${FIX_AM:-$FIX_DIR/fix_am}
 FIXfv3=${FIXfv3:-$FIX_DIR/fix_fv3_gmted2010}
@@ -161,7 +161,7 @@ if [ $cplwav = ".true." ]; then
 fi
 
 if [ $CDUMP = "gfs" -a $rst_invt1 -gt 0 ]; then
-    RSTDIR_ATM=${RSTDIR:-$ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos/RERUN_RESTART
+    RSTDIR_ATM=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos/RERUN_RESTART
     if [ ! -d $RSTDIR_ATM ]; then mkdir -p $RSTDIR_ATM ; fi
     $NLN $RSTDIR_ATM RESTART
 else
@@ -358,8 +358,6 @@ fi
 nfiles=$(ls -1 $DATA/INPUT/* | wc -l)
 if [ $nfiles -le 0 ]; then
   echo "Initial conditions must exist in $DATA/INPUT, ABORT!"
-  msg="Initial conditions must exist in $DATA/INPUT, ABORT!"
-  postmsg "$jlogfile" "$msg"
   exit 1
 fi
 

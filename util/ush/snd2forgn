@@ -31,7 +31,7 @@ VERS="version: ${MEMBER} 2000-03-23 10:55L "
 #
 # Remarks  : This script assumes that the following values have been 
 #            exported by the parent shell:
-#            job JOBID USHutil UTILhome jlogfile model COMOUTwmo 
+#            job JOBID USHutil UTILhome model COMOUTwmo
 #            DBNROOT is exported in the production Profile.
 #
 # FOR TESTING 
@@ -139,7 +139,6 @@ set -x
  whatdir=$LOGNAME
   mkdir -m 775 -p $DATA  >/dev/null 2>&1
   mkdir -m 775 -p $COMOUTwmo  >/dev/null 2>&1
-  jlogfile=$DATA/snd2forgn_log
   reqid=${$}
   PID=$$
   JOB=$LOGNAME
@@ -153,9 +152,9 @@ set -x
  then
   SENDDBN=NO
  else 
-  SENDDBN=NO 
+  SENDDBN=NO
  fi
-  export  model jlogfile jobid reqid  COMOUTwmo pgmout 
+  export  model jobid reqid COMOUTwmo pgmout
   export  JOB DATA PID 
   cd $DATA
   
@@ -286,17 +285,17 @@ then
  
        export istat=$?
        echo dbn_alert: Ended with return code = $istat
-       if test "$istat" = 0 
+       if test "$istat" = 0
        then
-         msg="Posting $filename with ${SUBTYP}!"
+         echo "Posting $filename with ${SUBTYP}!"
        else
-         msg="ERROR FROM dbn_alert = $istat, Posting $filename with ${SUBTYP}!"
+         echo "ERROR FROM dbn_alert = $istat, Posting $filename with ${SUBTYP}!"
         sndfrc=1
         echo $sndfrc >$DATA/sndfrc
        fi   
       else
        set -x
-       msg="snd2forgn testing, $SUBTYP $filename not sent!" 
+       echo "snd2forgn testing, $SUBTYP $filename not sent!"
        set +x   
 
       fi
@@ -312,7 +311,6 @@ then
  
   if [ -z "$newstr" ] ; then
    echo " newstr > is empty < will exit!"
-   postmsg "$jlogfile" "$msg"
    exit
   fi
     ttype=${newstr}     
@@ -376,22 +374,20 @@ then
         echo dbn_alert: Ended with return code = $istat
          if test "$istat" = 0 
          then
-          msg="Posting $filename with $TYPE!"
+          echo "Posting $filename with $TYPE!"
          else
-          msg="ERROR FROM dbn_alert = $istat, Posting $filename with ${TYPE}!"
+          echo "ERROR FROM dbn_alert = $istat, Posting $filename with ${TYPE}!"
           sndfrc=1
           echo $sndfrc >$DATA/sndfrc
          fi     
        else
-        msg="snd2forgn testing, ${TYPE} $filename not sent!"       
+        echo "snd2forgn testing, ${TYPE} $filename not sent!"       
        fi 
-     postmsg "$jlogfile" "$msg"
      snd=NO  
      exit 0
     fi          
 else
- msg "ERROR TYPE MISSING BECAUSE $numprt is ZERO!"
- postmsg "$jlogfile" "$msg"
+ echo "ERROR TYPE MISSING BECAUSE $numprt is ZERO!"
  exit 
 fi
 
@@ -466,36 +462,33 @@ then
   echo dbn_alert: Ended with return code = $istat
 #
 #______________________________________________________________
-#      make message for jlogfile.
-#_______________________________________________________________
 #
   if test "$istat" = 0 
   then
   if [ "$actn"  = "Posting" ]
    then 
-    msg="$actn $filename with $JAG !"
+    echo "$actn $filename with $JAG !"
 
    elif [ "$actn"  = "Posting-copying" ]
     then
-     msg="POSTING file to OSO and COPYING into $FORFIL!"
+     echo "POSTING file to OSO and COPYING into $FORFIL!"
    elif [ "$actn"  = "Copying" ]
     then
-     msg="COPYING into file: $FORFIL!"
+     echo "COPYING into file: $FORFIL!"
    elif [ "$actn"  = "Sending" ]
     then 
-      msg="$actn a nmc6bit file with $JAG."            
+      echo "$actn a nmc6bit file with $JAG."            
     else  
-      msg="COPYING into file: $FORFIL!"  
+      echo "COPYING into file: $FORFIL!"  
     fi
   else
-    msg="ERROR FROM dbn_alert = $istat, trying to $actn with $JAG ! "
-     sndfrc=1
-     echo $sndfrc >$DATA/sndfrc 
+    echo "ERROR FROM dbn_alert = $istat, trying to $actn with $JAG ! "
+    sndfrc=1
+    echo $sndfrc >$DATA/sndfrc 
   fi
 else
-       msg="snd2forgn testing, $JAG $FORFIL $FLG $INFILE not sent!"    
+    echo "snd2forgn testing, $JAG $FORFIL $FLG $INFILE not sent!"    
 fi
- postmsg "$jlogfile" "$msg"
 
 rm ${CONCARD}
 exit 0

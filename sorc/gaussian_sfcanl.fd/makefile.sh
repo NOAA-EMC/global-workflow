@@ -1,11 +1,11 @@
 #!/bin/sh
 
-export FFLAGS="-O3 -fp-model precise -g -r8 -i4"
+export FFLAGS="-O3 -fp-model precise -g -traceback -r8 -i4"
 # for debugging
 #export FFLAGS="-g -r8 -i4 -warn unused -check bounds"
 
 export NETCDF_INCLUDE="-I${NETCDF}/include"
-export NETCDF_LDFLAGS_F="-L${NETCDF}/lib -lnetcdf -lnetcdff -L${HDF5}/lib -lhdf5 "
+export NETCDF_LDFLAGS_F="-L${NETCDF}/lib -lnetcdff -lnetcdf -L${HDF5_LIBRARIES} -lhdf5_hl -lhdf5 -lz"
 
 make clean
 make build
