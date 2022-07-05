@@ -39,6 +39,8 @@ elif [[ -d /scratch1 ]] ; then
     fi
     target=hera
     module purge
+    export LMOD_SYSTEM_DEFAULT_MODULES=contrib
+    module reset
 
 ##---------------------------------------------------------------------------
 elif [[ -d /gpfs/hps && -e /etc/SuSE-release ]] ; then
