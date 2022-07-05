@@ -13,19 +13,18 @@ set +x
 #------------------------------------
 function _usage() {
   cat << EOF
-    Builds all of the global-workflow components by calling the individual build
-      scripts in sequence.
+Builds all of the global-workflow components by calling the individual build
+  scripts in sequence.
 
-    Usage: $BASH_SOURCE [-a UFS_app][-c build_config][-h][-v]
-      -a UFS_app:
-        Build a specific UFS app instead of the default
-      -c build_config:
-        Selectively build based on the provided config instead of the default config
-      -h:
-        print this help message and exit
-      -v:
-        Execute all build scripts with -v option to turn on verbose where supported
-
+Usage: $BASH_SOURCE [-a UFS_app][-c build_config][-h][-v]
+  -a UFS_app:
+    Build a specific UFS app instead of the default
+  -c build_config:
+    Selectively build based on the provided config instead of the default config
+  -h:
+    print this help message and exit
+  -v:
+    Execute all build scripts with -v option to turn on verbose where supported
 EOF
   exit 1
 }

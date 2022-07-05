@@ -26,8 +26,8 @@ if [[ -d "${GSI_INSTALL_PREFIX}" ]]; then
   CMAKE_OPTS="-Dncdiag_ROOT=${GSI_INSTALL_PREFIX}"
 else
   echo << EOF
-    FATAL: ${GSI_INSTALL_PREFIX} does not exist
-      Have you built GSI yet?
+FATAL: ${GSI_INSTALL_PREFIX} does not exist
+       Have you built GSI yet?
 EOF
   exit 2
 fi

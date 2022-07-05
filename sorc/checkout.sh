@@ -4,21 +4,20 @@ set -u
 
 function usage() {
   cat << EOF
-    Clones and checks out external components necessary for
-      global workflow. If the directory already exists, skip
-      cloning and just check out the requested version (unless
-      -c option is used).
+Clones and checks out external components necessary for
+  global workflow. If the directory already exists, skip
+  cloning and just check out the requested version (unless
+  -c option is used).
 
-    Usage: $BASH_SOURCE [-c][-h][-m ufs_hash][-o]
-      -c:
-        Create a fresh clone (delete existing directories)
-      -h:
-        Print this help message and exit
-      -m ufs_hash:
-        Check out this UFS hash instead of the default
-      -o:
-        Check out operational-only code (GTG and WAFS)
-
+Usage: $BASH_SOURCE [-c][-h][-m ufs_hash][-o]
+  -c:
+    Create a fresh clone (delete existing directories)
+  -h:
+    Print this help message and exit
+  -m ufs_hash:
+    Check out this UFS hash instead of the default
+  -o:
+    Check out operational-only code (GTG and WAFS)
 EOF
   exit 1
 }
