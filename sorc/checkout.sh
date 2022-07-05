@@ -3,7 +3,7 @@ set +x
 set -u
 
 function usage() {
-  cat <<-EOF
+  cat << EOF
     Clones and checks out external components necessary for
       global workflow. If the directory already exists, skip
       cloning and just check out the requested version (unless
@@ -19,7 +19,7 @@ function usage() {
       -o:
         Check out operational-only code (GTG and WAFS)
 
-  EOF
+EOF
   exit 1
 }
 
@@ -134,7 +134,6 @@ errs=0
 checkout "ufs_model.fd"    "https://github.com/ufs-community/ufs-weather-model" "${ufs_model_hash:-Prototype-P8c}"; errs=$((errs + $?))
 checkout "gsi.fd"          "https://github.com/NOAA-EMC/GSI.git"                "ad84f17"                         ; errs=$((errs + $?))
 checkout "gsi_utils.fd"    "https://github.com/NOAA-EMC/GSI-Utils.git"        "2a14d3b"                         ; errs=$((errs + $?))
-checkout "gldas.fd"        "https://github.com/NOAA-EMC/GLDAS.git"              "fd8ba62"                         ; errs=$((errs + $?))
 checkout "gsi_monitor.fd"  "https://github.com/NOAA-EMC/GSI-Monitor.git"        "affeae9"                         ; errs=$((errs + $?))
 checkout "gldas.fd"        "https://github.com/NOAA-EMC/GLDAS.git"              "fd8ba62"                         ; errs=$((errs + $?))
 checkout "ufs_utils.fd"    "https://github.com/ufs-community/UFS_UTILS.git"     "a2b0817"                         ; errs=$((errs + $?))
