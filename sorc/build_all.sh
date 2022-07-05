@@ -12,7 +12,7 @@ set +x
 # END USER DEFINED STUFF
 #------------------------------------
 function _usage() {
-  cat <<-EOF
+  cat << EOF
     Builds all of the global-workflow components by calling the individual build
       scripts in sequence.
 
@@ -26,7 +26,7 @@ function _usage() {
       -v:
         Execute all build scripts with -v option to turn on verbose where supported
 
-  EOF
+EOF
   exit 1
 }
 
