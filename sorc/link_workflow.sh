@@ -137,36 +137,36 @@ fi
 #--add GSI/EnKF file
 #------------------------------
 cd ${pwd}/../jobs               ||exit 8
-    $LINK ../sorc/gsi.fd/jobs/JGLOBAL_ATMOS_ANALYSIS        .
-    $LINK ../sorc/gsi.fd/jobs/JGLOBAL_ATMOS_ANALYSIS_CALC   .
-    $LINK ../sorc/gsi.fd/jobs/JGDAS_ATMOS_ANALYSIS_DIAG     .
-    $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_SELECT_OBS         .
-    $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_DIAG               .
-    $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_UPDATE             .
-    $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_ECEN               .
-    $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_SFC                .
-    $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_FCST               .
-    $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_POST               .
-    $LINK ../sorc/gsi.fd/jobs/JGDAS_ATMOS_CHGRES_FORENKF    .
+    $LINK ../sorc/gsi_enkf.fd/jobs/JGLOBAL_ATMOS_ANALYSIS        .
+    $LINK ../sorc/gsi_enkf.fd/jobs/JGLOBAL_ATMOS_ANALYSIS_CALC   .
+    $LINK ../sorc/gsi_enkf.fd/jobs/JGDAS_ATMOS_ANALYSIS_DIAG     .
+    $LINK ../sorc/gsi_enkf.fd/jobs/JGDAS_ENKF_SELECT_OBS         .
+    $LINK ../sorc/gsi_enkf.fd/jobs/JGDAS_ENKF_DIAG               .
+    $LINK ../sorc/gsi_enkf.fd/jobs/JGDAS_ENKF_UPDATE             .
+    $LINK ../sorc/gsi_enkf.fd/jobs/JGDAS_ENKF_ECEN               .
+    $LINK ../sorc/gsi_enkf.fd/jobs/JGDAS_ENKF_SFC                .
+    $LINK ../sorc/gsi_enkf.fd/jobs/JGDAS_ENKF_FCST               .
+    $LINK ../sorc/gsi_enkf.fd/jobs/JGDAS_ENKF_POST               .
+    $LINK ../sorc/gsi_enkf.fd/jobs/JGDAS_ATMOS_CHGRES_FORENKF    .
 cd ${pwd}/../scripts            ||exit 8
-    $LINK ../sorc/gsi.fd/scripts/exglobal_atmos_analysis.sh       .
-    $LINK ../sorc/gsi.fd/scripts/exglobal_atmos_analysis_calc.sh  .
-    $LINK ../sorc/gsi.fd/scripts/exglobal_diag.sh                 .
-    $LINK ../sorc/gsi.fd/scripts/exgdas_enkf_select_obs.sh        .
-    $LINK ../sorc/gsi.fd/scripts/exgdas_enkf_update.sh            .
-    $LINK ../sorc/gsi.fd/scripts/exgdas_enkf_ecen.sh              .
-    $LINK ../sorc/gsi.fd/scripts/exgdas_enkf_sfc.sh               .
-    $LINK ../sorc/gsi.fd/scripts/exgdas_enkf_fcst.sh              .
-    $LINK ../sorc/gsi.fd/scripts/exgdas_enkf_post.sh              .
-    $LINK ../sorc/gsi.fd/scripts/exgdas_atmos_chgres_forenkf.sh   .
+    $LINK ../sorc/gsi_enkf.fd/scripts/exglobal_atmos_analysis.sh       .
+    $LINK ../sorc/gsi_enkf.fd/scripts/exglobal_atmos_analysis_calc.sh  .
+    $LINK ../sorc/gsi_enkf.fd/scripts/exglobal_diag.sh                 .
+    $LINK ../sorc/gsi_enkf.fd/scripts/exgdas_enkf_select_obs.sh        .
+    $LINK ../sorc/gsi_enkf.fd/scripts/exgdas_enkf_update.sh            .
+    $LINK ../sorc/gsi_enkf.fd/scripts/exgdas_enkf_ecen.sh              .
+    $LINK ../sorc/gsi_enkf.fd/scripts/exgdas_enkf_sfc.sh               .
+    $LINK ../sorc/gsi_enkf.fd/scripts/exgdas_enkf_fcst.sh              .
+    $LINK ../sorc/gsi_enkf.fd/scripts/exgdas_enkf_post.sh              .
+    $LINK ../sorc/gsi_enkf.fd/scripts/exgdas_atmos_chgres_forenkf.sh   .
 cd ${pwd}/../fix                ||exit 8
     [[ -d fix_gsi ]] && rm -rf fix_gsi
-    $LINK ../sorc/gsi.fd/fix  fix_gsi
+    $LINK ../sorc/gsi_enkf.fd/fix  fix_gsi
 cd ${pwd}/../ush                ||exit 8
-    $LINK ../sorc/gsi.fd/ush/gsi_utils.py        .
-    $LINK ../sorc/gsi.fd/ush/calcanl_gfs.py      .
-    $LINK ../sorc/gsi.fd/ush/calcinc_gfs.py      .
-    $LINK ../sorc/gsi.fd/ush/getncdimlen         .
+    $LINK ../sorc/gsi_enkf.fd/ush/gsi_utils.py        .
+    $LINK ../sorc/gsi_enkf.fd/ush/calcanl_gfs.py      .
+    $LINK ../sorc/gsi_enkf.fd/ush/calcinc_gfs.py      .
+    $LINK ../sorc/gsi_enkf.fd/ush/getncdimlen         .
 
 
 #------------------------------
@@ -257,9 +257,10 @@ for ufs_utilsexe in \
 done
 
 # GSI
+# TODO - remove ncdiag_cat_serial.x when ncdiag becomes a module
 for exe in ncdiag_cat_serial.x enkf.x gsi.x; do
     [[ -s $exe ]] && rm -f $exe
-    $LINK ../sorc/gsi.fd/install/bin/$exe .
+    $LINK ../sorc/gsi_enkf.fd/install/bin/$exe .
 done
 
 # GSI Utils
@@ -287,15 +288,15 @@ done
 #------------------------------
 cd ${pwd}/../sorc   ||   exit 8
 
-    # TODO - remove ncdiag once ncdiag is available as a module on the system
+    # TODO - remove once ncdiag is available as a module on the system
     [[ -d ncdiag.fd ]] && rm -rf ncdiag.fd
-    $SLINK gsi.fd/src/ncdiag                                                                    ncdiag.fd
+    $SLINK gsi_enkf.fd/src/ncdiag                                                               ncdiag.fd
 
     [[ -d gsi.fd ]] && rm -rf gsi.fd
-    $SLINK gsi.fd/src/gsi                                                                       gsi.fd
+    $SLINK gsi_enkf.fd/src/gsi                                                                  gsi.fd
 
     [[ -d enkf.fd ]] && rm -rf enkf.fd
-    $SLINK gsi.fd/src/enkf                                                                      enkf.fd
+    $SLINK gsi_enkf.fd/src/enkf                                                                 enkf.fd
 
     [[ -d calc_analysis.fd ]] && rm -rf calc_analysis.fd
     $SLINK gsi_utils.fd/src/netcdf_io/calc_analysis.fd                                          calc_analysis.fd
