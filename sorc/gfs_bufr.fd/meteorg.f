@@ -63,6 +63,7 @@
       use sigio_module 
       use physcons
       use mersenne_twister
+!      use funcphys, only : gfuncphys
       use funcphys
       implicit none 
       include 'mpif.h'
@@ -1109,6 +1110,7 @@ CC due to rounding and interpolation errors, correct it here -G.P. Lou:
 !  prepare buffer data
 !
         if(iope == 0) then
+        call gfuncphys
         do np = 1, npoint
           pi3(np,1)=psn(np)*1000
           do k=1,levs
