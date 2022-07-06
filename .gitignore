@@ -77,7 +77,8 @@ sorc/gfs_post.fd
 sorc/gfs_wafs.fd
 sorc/gldas.fd
 sorc/gsi_enkf.fd
-sorc/ncdiag.fd  # TODO - remove once ncdiag becomes a module
+# TODO - remove ncdiag.fd once it is a module on the systems
+sorc/ncdiag.fd
 sorc/gsi.fd
 sorc/enkf.fd
 sorc/gsi_utils.fd
