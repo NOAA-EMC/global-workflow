@@ -22,7 +22,7 @@ done
 shift $((OPTIND-1))
 
 BUILD_TYPE=${BUILD_TYPE:-"Release"} \
-BUILD_VERBOSE=${BUILD_VERBOSE:-"YES"} \
+BUILD_VERBOSE=${BUILD_VERBOSE:-"NO"} \
 UTIL_OPTS="-DBUILD_UTIL_ENKF_GFS=ON -DBUILD_UTIL_NCIO=ON" \
 ${cwd}/gsi_utils.fd/ush/build.sh
 

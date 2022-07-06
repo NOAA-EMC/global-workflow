@@ -33,7 +33,7 @@ EOF
 fi
 
 BUILD_TYPE=${BUILD_TYPE:-"Release"} \
-BUILD_VERBOSE=${BUILD_VERBOSE:-"YES"} \
+BUILD_VERBOSE=${BUILD_VERBOSE:-"NO"} \
 CMAKE_OPTS=${CMAKE_OPTS} \
 ${cwd}/gsi_monitor.fd/ush/build.sh
 
