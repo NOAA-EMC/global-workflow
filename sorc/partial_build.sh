@@ -4,7 +4,7 @@
 #
 declare -a Build_prg=("Build_ufs_model" \
                       "Build_ww3_prepost" \
-                      "Build_gsi" \
+                      "Build_gsi_enkf" \
                       "Build_gsi_utils" \
                       "Build_gsi_monitor" \
                       "Build_ww3_prepost" \

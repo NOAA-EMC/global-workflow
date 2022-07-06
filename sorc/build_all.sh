@@ -120,15 +120,15 @@ $Build_ufs_model && {
 }
 
 #------------------------------------
-# build gsi
+# build GSI and EnKF
 #------------------------------------
-$Build_gsi && {
-  echo " .... Building gsi .... "
-  ./build_gsi.sh $_ops_opt $_verbose_opt > $logs_dir/build_gsi.log 2>&1
+$Build_gsi_enkf && {
+  echo " .... Building gsi and enkf .... "
+  ./build_gsi_enkf.sh $_ops_opt $_verbose_opt > $logs_dir/build_gsi_enkf.log 2>&1
   rc=$?
   if [[ $rc -ne 0 ]] ; then
-    echo "Fatal error in building gsi."
-    echo "The log file is in $logs_dir/build_gsi.log"
+    echo "Fatal error in building gsi_enkf."
+    echo "The log file is in $logs_dir/build_gsi_enkf.log"
   fi
   ((err+=$rc))
 }

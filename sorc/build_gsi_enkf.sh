@@ -28,7 +28,7 @@ GSI_MODE=GFS \
 ENKF_MODE=GFS \
 REGRESSION_TESTS=NO \
 UTIL_OPTS="-DBUILD_UTIL=OFF" \
-./gsi.fd/ush/build.sh
+./gsi_enkf.fd/ush/build.sh
 
 exit
 
