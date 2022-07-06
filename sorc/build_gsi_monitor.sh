@@ -21,7 +21,7 @@ while getopts ":dov" option; do
 done
 shift $((OPTIND-1))
 
-GSI_INSTALL_PREFIX="${cwd}/gsi.fd/install"
+GSI_INSTALL_PREFIX="${cwd}/gsi_enkf.fd/install"
 if [[ -d "${GSI_INSTALL_PREFIX}" ]]; then
   CMAKE_OPTS="-Dncdiag_ROOT=${GSI_INSTALL_PREFIX}"
 else
