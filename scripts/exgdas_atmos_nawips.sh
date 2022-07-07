@@ -12,18 +12,17 @@ echo "                    data on the CCS is properly protected."
 set -xa
 
 cd $DATA
-RUN=$1
+RUN2=$1
 fend=$2
 DBN_ALERT_TYPE=$3
 
 export 'PS4=$RUN:$SECONDS + '
 
-DATA_RUN=$DATA/$RUN
+DATA_RUN=$DATA/$RUN2
 mkdir -p $DATA_RUN
 cd $DATA_RUN
 
-msg="Begin job for $job"
-postmsg "$jlogfile" "$msg"
+echo "Begin job for $job"
 
 cp $FIXgempak/g2varswmo2.tbl g2varswmo2.tbl
 export err=$?
@@ -82,22 +81,18 @@ while [ $fhcnt -le $fend ] ; do
   fhr3=$fhcnt
   typeset -Z3 fhr3
 
-  GEMGRD=${RUN}_${PDY}${cyc}f${fhr3}
+  GEMGRD=${RUN2}_${PDY}${cyc}f${fhr3}
 
-  if [ $RUN = "gdas_0p25" ]; then 
+  if [ $RUN2 = "gdas_0p25" ]; then
     export GRIBIN=$COMIN/${model}.${cycle}.pgrb2.0p25.f${fhr}
     if [ ! -f $GRIBIN ] ; then
        echo "WARNING: $GRIBIN FILE is missing"
-       msg=" $GRIBIN file is missing "
-       postmsg "$jlogfile" "$msg"
     fi
     GRIBIN_chk=$COMIN/${model}.${cycle}.pgrb2.0p25.f${fhr}.idx
   else
     export GRIBIN=$COMIN/${model}.${cycle}.pgrb2.1p00.f${fhr}
     if [ ! -f $GRIBIN ] ; then
        echo "WARNING: $GRIBIN FILE is missing"
-       msg=" $GRIBIN file is missing "
-       postmsg "$jlogfile" "$msg"
     fi
     GRIBIN_chk=$COMIN/${model}.${cycle}.pgrb2.1p00.f${fhr}.idx
   fi
@@ -109,15 +104,13 @@ while [ $fhcnt -le $fend ] ; do
       sleep 5
       break
     else
-      msg="The process is waiting ... ${GRIBIN_chk} file to proceed."
-      postmsg "${jlogfile}" "$msg"
+      echo "The process is waiting ... ${GRIBIN_chk} file to proceed."
       sleep 20
       let "icnt=icnt+1"
     fi
     if [ $icnt -ge $maxtries ]
     then
-      msg="ABORTING: after 1 hour of waiting for ${GRIBIN_chk} file at F$fhr to end."
-      postmsg "${jlogfile}" "$msg"
+      echo "ABORTING: after 1 hour of waiting for ${GRIBIN_chk} file at F$fhr to end."
       export err=7 ; err_chk
       exit $err
     fi
@@ -175,14 +168,12 @@ $GEMEXE/gpend
 #####################################################################
 # GOOD RUN
 set +x
-echo "**************JOB $RUN NAWIPS COMPLETED NORMALLY ON THE IBM"
-echo "**************JOB $RUN NAWIPS COMPLETED NORMALLY ON THE IBM"
-echo "**************JOB $RUN NAWIPS COMPLETED NORMALLY ON THE IBM"
+echo "**************JOB $RUN2 NAWIPS COMPLETED NORMALLY ON THE IBM"
+echo "**************JOB $RUN2 NAWIPS COMPLETED NORMALLY ON THE IBM"
+echo "**************JOB $RUN2 NAWIPS COMPLETED NORMALLY ON THE IBM"
 set -x
 #####################################################################
 
-msg='Job completed normally.'
-echo $msg
-postmsg "$jlogfile" "$msg"
+echo 'Job completed normally.'
 
 ############################### END OF SCRIPT #######################

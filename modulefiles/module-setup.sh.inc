@@ -28,8 +28,8 @@ elif [[ -d /scratch1 ]] ; then
         source /apps/lmod/lmod/init/$__ms_shell
     fi
     module purge
-elif [[ -d /scratch3 ]] ; then
-    # We are on NOAA Theia
+elif [[ -d /work ]] ; then
+    # We are on MSU Orion
     if ( ! eval module help > /dev/null 2>&1 ) ; then
         source /apps/lmod/lmod/init/$__ms_shell
     fi
@@ -63,6 +63,13 @@ elif [[ -L /usrx && "$( readlink /usrx 2> /dev/null )" =~ dell ]] ; then
 	source /usrx/local/prod/lmod/lmod/init/$__ms_shell
     fi
     module purge
+elif [[ -d /lfs/h2 ]] ; then
+    # We are on NOAA Cactus or Dogwood
+    if ( ! eval module help > /dev/null 2>&1 ) ; then
+        echo load the module command 1>&2
+        source /usr/share/lmod/lmod/init/$__ms_shell
+    fi
+    module reset
 elif [[ -d /glade ]] ; then
     # We are on NCAR Yellowstone
     if ( ! eval module help > /dev/null 2>&1 ) ; then
@@ -83,7 +90,7 @@ elif [[ -d /lustre && -d /ncrc ]] ; then
         __ms_source_etc_profile=no
     fi
     module purge
-# clean up after purge 
+    # clean up after purge 
     unset _LMFILES_
     unset _LMFILES_000
     unset _LMFILES_001

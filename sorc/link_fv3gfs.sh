@@ -8,16 +8,16 @@ machine=${2}
 
 if [ $# -lt 2 ]; then
     echo '***ERROR*** must specify two arguements: (1) RUN_ENVIR, (2) machine'
-    echo ' Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | hera )'
+    echo ' Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | wcoss2 | hera | orion )'
     exit 1
 fi
 
 if [ $RUN_ENVIR != emc -a $RUN_ENVIR != nco ]; then
-    echo 'Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | hera )'
+    echo 'Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | wcoss2 | hera | orion )'
     exit 1
 fi
-if [ $machine != cray -a $machine != dell -a $machine != hera ]; then
-    echo 'Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | hera )'
+if [ $machine != cray -a $machine != dell -a $machine != wcoss2 -a $machine != hera -a $machine != orion ]; then
+    echo 'Syntax: link_fv3gfs.sh ( nco | emc ) ( cray | dell | wcoss2 | hera | orion)'
     exit 1
 fi
 
@@ -34,8 +34,12 @@ if [ $machine == "cray" ]; then
     FIX_DIR="/gpfs/hps3/emc/global/noscrub/emc.glopara/git/fv3gfs/fix_nco_gfsv16"
 elif [ $machine = "dell" ]; then
     FIX_DIR="/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git/fv3gfs/fix_nco_gfsv16"
+elif [ $machine = "wcoss2" ]; then
+    FIX_DIR="/lfs/h2/emc/global/save/emc.global/FIX/fix_nco_gfsv16"
 elif [ $machine = "hera" ]; then
     FIX_DIR="/scratch1/NCEPDEV/global/glopara/fix_nco_gfsv16"
+elif [ $machine = "orion" ]; then
+    FIX_DIR="/work/noaa/global/glopara/fix_nco_gfsv16"
 fi
 cd ${pwd}/../fix                ||exit 8
 for dir in fix_am fix_fv3_gmted2010 fix_gldas fix_orog fix_verif fix_wave_gfs ; do
@@ -217,7 +221,7 @@ if [ -d ${pwd}/gfs_wafs.fd ]; then
 fi
 
 for ufs_utilsexe in \
-     emcsfc_ice_blend  emcsfc_snow2mdl  global_chgres  global_cycle ; do
+     emcsfc_ice_blend  emcsfc_snow2mdl  global_cycle ; do
     [[ -s $ufs_utilsexe ]] && rm -f $ufs_utilsexe
     $LINK ../sorc/ufs_utils.fd/exec/$ufs_utilsexe .
 done
@@ -326,8 +330,12 @@ cd $pwd/../parm/config
 [[ -s config.base ]] && rm -f config.base 
 if [ $RUN_ENVIR = nco ] ; then
  cp -p config.base.nco.static config.base
+ cp -p config.fv3.nco.static config.fv3
+ cp -p config.resources.nco.static config.resources
 else
  cp -p config.base.emc.dyn config.base
+ cp -p config.fv3.emc.dyn config.fv3
+ cp -p config.resources.emc.dyn config.resources
 fi
 #------------------------------
 

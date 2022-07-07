@@ -11,7 +11,7 @@ date
 #########################################################
 # obtain unique process id (pid) and make temp directory
 #########################################################
-export DATA=${DATA:-${DATAROOT}/${jobid:?}}
+export DATA=${DATA:-${DATAROOT}/${PBS_JOBNAME}.${PBS_JOBID}}
 mkdir -p $DATA
 cd $DATA
 
@@ -24,12 +24,12 @@ export cycle=${cycle:-t${cyc}z}
 # Run setpdy and initialize PDY variables
 ###########################################
 setpdy.sh
-. PDY
+. ./PDY
 
 ################################
 # Set up the HOME directory
 ################################
-export HOMEgfs=${HOMEgfs:-${NWROOT}/gfs.${gfs_ver}}
+export HOMEgfs=${HOMEgfs:-${PACKAGEROOT}/gfs.${gfs_ver}}
 export EXECgfs=${EXECgfs:-$HOMEgfs/exec}
 export PARMgfs=${PARMgfs:-$HOMEgfs/parm}
 export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
@@ -44,7 +44,8 @@ export SRCgfs=${SRCgfs:-$HOMEgfs/scripts}
 # Specify NET and RUN Name and model
 ####################################
 export NET=gfs
-export RUN=gfs_goessim
+#export RUN=gfs_goessim
+export RUN=gfs
 export COMPONENT=${COMPONENT:-atmos}
 export finc=3
 export model=gfs
@@ -53,8 +54,8 @@ export EXT=""
 ##############################################
 # Define COM directories
 ##############################################
-export COMIN=${COMIN:-$(compath.py ${NET}/${envir}/${NET}.${PDY})/${cyc}/$COMPONENT}
-export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${NET}.${PDY}/${cyc}/$COMPONENT/gempak}
+export COMIN=${COMIN:-$(compath.py ${envir}/${NET}/${gfs_ver})/${RUN}.${PDY}/${cyc}/$COMPONENT}
+export COMOUT=${COMOUT:-$(compath.py -o ${NET}/${gfs_ver}/${NET}.${PDY})/${cyc}/$COMPONENT/gempak}
 
 export SENDDBN=${SENDDBN:-NO}
 export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
@@ -67,8 +68,7 @@ env
 
 export DATA_HOLD=$DATA
 
-msg="Begin job for $job"
-postmsg "$jlogfile" "$msg"
+echo "Begin job for $job"
 
 #################################################################
 # Execute the script for the regular grib
@@ -78,6 +78,7 @@ mkdir -p $DATA
 cd $DATA
 
 export DBN_ALERT_TYPE=GFS_GOESSIM_GEMPAK
+export RUN2=gfs_goessim
 export GRIB=goessimpgrb2.0p25.f
 export EXT=" "
 export fend=180
@@ -99,7 +100,7 @@ mkdir -p $DATA
 cd $DATA
 
 export DBN_ALERT_TYPE=GFS_GOESSIM221_GEMPAK
-export RUN=gfs_goessim221
+export RUN2=gfs_goessim221
 export GRIB=goessimpgrb2f
 export EXT=".grd221"
 export fend=180
@@ -115,8 +116,7 @@ $SRCgfs/exgfs_atmos_goes_nawips.sh
 export err=$?; err_chk
 ########################################################
 
-msg="JOB $job HAS COMPLETED NORMALLY!"
-postmsg $jlogfile "$msg"
+echo "JOB $job HAS COMPLETED NORMALLY!"
 
 echo "end of program"
 cd $DATA_HOLD

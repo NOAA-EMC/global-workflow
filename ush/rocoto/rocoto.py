@@ -10,6 +10,8 @@
     AUTHOR:
         Rahul.Mahajan
         rahul.mahajan@noaa.gov
+        Brian Curtis (2021): Port to python 3.6.3+
+        brian.curtis@noaa.gov
 '''
 
 def create_metatask(task_dict, metatask_dict):
@@ -31,17 +33,17 @@ def create_metatask(task_dict, metatask_dict):
 
     strings = []
 
-    strings.append('<metatask name="%s">\n' % metataskname)
+    strings.append(f'<metatask name="{metataskname}">\n')
     strings.append('\n')
-    strings.append('\t<var name="%s">%s</var>\n' % (varname, str(varval)))
+    strings.append(f'\t<var name="{varname}">{str(varval)}</var>\n')
     if vardict is not None:
         for key in vardict.keys():
             value = str(vardict[key])
-            strings.append('\t<var name="%s">%s</var>\n' % (key, value))
+            strings.append(f'\t<var name="{key}">{value}</var>\n')
     strings.append('\n')
     tasklines = create_task(task_dict)
     for tl in tasklines:
-        strings.append('%s' % tl) if tl == '\n' else strings.append('\t%s' % tl)
+        strings.append(f'{tl}') if tl == '\n' else strings.append(f'\t{tl}')
     strings.append('\n')
     strings.append('</metatask>\n')
 
@@ -66,6 +68,7 @@ def create_task(task_dict):
     jobname = task_dict.get('jobname', 'demojob')
     account = task_dict.get('account', 'batch')
     queue = task_dict.get('queue', 'debug')
+    nodesize = task_dict.get('nodesize', '1')
     partition = task_dict.get('partition', None)
     walltime = task_dict.get('walltime', '00:01:00')
     log = task_dict.get('log', 'demo.log')
@@ -81,36 +84,36 @@ def create_task(task_dict):
 
     strings = []
 
-    strings.append('<task name="%s" cycledefs="%s" maxtries="%s"%s>\n' % \
-            (taskname, cycledef, str_maxtries, str_final))
+    strings.append(f'<task name="{taskname}" cycledefs="{cycledef}" maxtries="{str_maxtries}"{str_final}>\n')
     strings.append('\n')
-    strings.append('\t<command>%s</command>\n' % command)
+    strings.append(f'\t<command>{command}</command>\n')
     strings.append('\n')
-    strings.append('\t<jobname><cyclestr>%s</cyclestr></jobname>\n' % jobname)
-    strings.append('\t<account>%s</account>\n' % account)
-    strings.append('\t<queue>%s</queue>\n' % queue)
+    strings.append(f'\t<jobname><cyclestr>{jobname}</cyclestr></jobname>\n')
+    strings.append(f'\t<account>{account}</account>\n')
+    strings.append(f'\t<queue>{queue}</queue>\n')
+    strings.append(f'\t<nodesize>{nodesize}</nodesize>\n')
     if partition is not None:
-        strings.append('\t<partition>%s</partition>\n' % partition)
+        strings.append(f'\t<partition>{partition}</partition>\n')
     if resources is not None:
-        strings.append('\t%s\n' % resources)
-    strings.append('\t<walltime>%s</walltime>\n' % walltime)
+        strings.append(f'\t{resources}\n')
+    strings.append(f'\t<walltime>{walltime}</walltime>\n')
     if memory is not None:
-        strings.append('\t<memory>%s</memory>\n' % memory)
+        strings.append(f'\t<memory>{memory}</memory>\n')
     if native is not None:
-        strings.append('\t<native>%s</native>\n' % native)
+        strings.append(f'\t<native>{native}</native>\n')
     strings.append('\n')
-    strings.append('\t<join><cyclestr>%s</cyclestr></join>\n' % log)
+    strings.append(f'\t<join><cyclestr>{log}</cyclestr></join>\n')
     strings.append('\n')
 
     if envar[0] is not None:
         for e in envar:
-            strings.append('\t%s\n' % e)
+            strings.append(f'\t{e}\n')
         strings.append('\n')
 
     if dependency is not None:
         strings.append('\t<dependency>\n')
         for d in dependency:
-            strings.append('\t\t%s\n' % d)
+            strings.append(f'\t\t{d}\n')
         strings.append('\t</dependency>\n')
         strings.append('\n')
 
@@ -149,11 +152,11 @@ def add_dependency(dep_dict):
 
     else:
 
-        msg = 'Unknown dependency type %s' % dep_dict['type']
+        msg = f'Unknown dependency type {dep_dict["type"]}'
         raise KeyError(msg)
 
     if dep_condition is not None:
-        string = '<%s>%s</%s>' % (dep_condition, string, dep_condition)
+        string = f'<{dep_condition}>{string}</{dep_condition}>'
 
     return string
 
@@ -172,13 +175,13 @@ def add_task_tag(dep_dict):
     dep_offset = dep_dict.get('offset', None)
 
     if dep_name is None:
-        msg = 'a %s name is necessary for %s dependency' % (dep_type, dep_type)
+        msg = f'a {dep_type} name is necessary for {dep_type} dependency'
         raise KeyError(msg)
 
     string = '<'
-    string += '%sdep %s="%s"' % (dep_type, dep_type, dep_name)
+    string += f'{dep_type}dep {dep_type}="{dep_name}"'
     if dep_offset is not None:
-        string += ' cycle_offset="%s"' % dep_offset
+        string += f' cycle_offset="{dep_offset}"'
     string += '/>'
 
     return string
@@ -197,7 +200,7 @@ def add_data_tag(dep_dict):
     dep_offset = dep_dict.get('offset', None)
 
     if dep_data is None:
-        msg = 'a data value is necessary for %s dependency' % dep_type
+        msg = f'a data value is necessary for {dep_type} dependency'
         raise KeyError(msg)
 
     if dep_offset is None:
@@ -208,11 +211,11 @@ def add_data_tag(dep_dict):
             offset_string_b = ''
             offset_string_e = ''
     else:
-        offset_string_b = '<cyclestr offset="%s">' % dep_offset
+        offset_string_b = f'<cyclestr offset="{dep_offset}">'
         offset_string_e = '</cyclestr>'
 
     string = '<datadep>'
-    string += '%s%s%s' % (offset_string_b, dep_data, offset_string_e)
+    string += f'{offset_string_b}{dep_data}{offset_string_e}'
     string += '</datadep>'
 
     return string
@@ -230,10 +233,10 @@ def add_cycle_tag(dep_dict):
     dep_offset = dep_dict.get('offset', None)
 
     if dep_offset is None:
-        msg = 'an offset value is necessary for %s dependency' % dep_type
+        msg = f'an offset value is necessary for {dep_type} dependency'
         raise KeyError(msg)
 
-    string = '<cycleexistdep cycle_offset="%s"/>' % dep_offset
+    string = f'<cycleexistdep cycle_offset="{dep_offset}"/>'
 
     return string
 
@@ -253,17 +256,17 @@ def add_streq_tag(dep_dict):
     fail = False
     msg = ''
     if dep_left is None:
-        msg += 'a left value is necessary for %s dependency' % dep_type
+        msg += f'a left value is necessary for {dep_type} dependency'
         fail = True
     if dep_right is None:
         if fail:
             msg += '\n'
-        msg += 'a right value is necessary for %s dependency' % dep_type
+        msg += f'a right value is necessary for {dep_type} dependency'
         fail = True
     if fail:
         raise KeyError(msg)
 
-    string = '<%s><left>%s</left><right>%s</right></%s>' % (dep_type, dep_left, dep_right, dep_type)
+    string = f'<{dep_type}><left>{dep_left}</left><right>{dep_right}</right></{dep_type}>'
 
     return string
 
@@ -305,18 +308,18 @@ def create_dependency(dep_condition=None, dep=None):
     strings = []
 
     if dep_condition is not None:
-        strings.append('<%s>' % dep_condition)
+        strings.append(f'<{dep_condition}>')
 
     if dep[0] is not None:
         for d in dep:
             if dep_condition is None:
-                strings.append('%s' % d)
+                strings.append(f'{d}')
             else:
                 for e in _traverse(d):
-                    strings.append('\t%s' % e)
+                    strings.append(f'\t{e}')
 
     if dep_condition is not None:
-        strings.append('</%s>' % dep_condition)
+        strings.append(f'</{dep_condition}>')
 
     return strings
 
@@ -335,8 +338,8 @@ def create_envar(name=None,value=None):
 
     string = ''
     string += '<envar>'
-    string += '<name>%s</name>' % name
-    string += '<value>%s</value>' % str(value)
+    string += f'<name>{name}</name>'
+    string += f'<value>{str(value)}</value>'
     string += '</envar>'
 
     return string

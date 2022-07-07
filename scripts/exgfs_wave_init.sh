@@ -35,10 +35,8 @@
 
   cd $DATA
 
-  msg="HAS BEGUN on `hostname`"
-  postmsg "$jlogfile" "$msg"
-  msg="Starting MWW3 INIT CONFIG SCRIPT for ${CDUMP}wave"
-  postmsg "$jlogfile" "$msg"
+  echo "HAS BEGUN on `hostname`"
+  echo "Starting MWW3 INIT CONFIG SCRIPT for ${CDUMP}wave"
 
   set +x
   echo ' '
@@ -115,8 +113,6 @@
         echo ' '
         [[ "$LOUD" = YES ]] && set -x
       else
-        msg="ABNORMAL EXIT: NO INP FILE FOR MODEL DEFINITION FILE"
-        postmsg "$jlogfile" "$msg"
         set +x
         echo ' '
         echo '*********************************************************** '
@@ -124,7 +120,6 @@
         echo '*********************************************************** '
         echo "                                grdID = $grdID"
         echo ' '
-        echo $msg
         [[ "$LOUD" = YES ]] && set -x
         err=2;export err;${errchk}
       fi
@@ -204,8 +199,6 @@
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
     else 
-      msg="ABNORMAL EXIT: NO MODEL DEFINITION FILE"
-      postmsg "$jlogfile" "$msg"
       set +x
       echo ' '
       echo '********************************************** '
@@ -213,7 +206,6 @@
       echo '********************************************** '
       echo "                                grdID = $grdID"
       echo ' '
-      echo $msg
       sed "s/^/$grdID.out : /g"  $grdID.out
       [[ "$LOUD" = YES ]] && set -x
       err=3;export err;${errchk}

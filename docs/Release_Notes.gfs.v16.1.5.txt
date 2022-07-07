@@ -1,7 +1,7 @@
 GFS V16.1.5 RELEASE NOTES
-  
+
 PRELUDE
- 
+
 Metop-A, B and C all have similar orbits. Metop-C was launched on 7 November 2018 in a low-Earth polar orbit while Metop-A was launched in 2006. The Metop-A will be decommissioned in November 2021 and IASI_Metop-A data quality has degraded since September 17, so the assimilation of IASI_Metop-A was stopped on 9/22/2021 gfs.v16.1.3 implementation. The IASI_Metop-C data have similar quality as IASI_Metop-B. This implementation will start to assimilate IASI data on Metop-C. In addition, the correlated observation errors for hyperspectral Infrared instruments both IASI and CrIS were recomputed from recent operations, which should be a more accurate representation of the observation error statistics. Both low- and high-resolution parallel experiments show reasonable results as expected.
 
 In addition, a minimum value was set in gsi source code genqsat.f90 to limit the saturation specific humidity not smaller than 1.e-7, which is a risk mitigation feature and could avoid the potential risk of generating unphysical temperature in the analysis.
@@ -17,10 +17,10 @@ These changes affect one source code and several fix files within the GSI tag of
 Also bundled into this update are the new 2022 CO2 fix files (see files listed below) and a new FV3 model tag that adds traceback flags to compilation by default. The CO2 fix files will be included during the link setup step. Neither the CO2 fix file nor the FV3 tag updates impact model results.
 
 IMPLEMENTATION INSTRUCTIONS
- 
-The NOAA VLab and both the NOAA-EMC and NCAR organization spaces on GitHub.com are used to manage the GFS.v16.1.5 code. The SPA(s) handling the GFS.v16.1.5 implementation need to have permissions to clone VLab gerrit repositories and the private NCAR UPP_GTG repository (the “nwprod” account has access to the GTG repository). All NOAA-EMC organization repositories are publicly readable and do not require access permissions. Please follow the following steps to install the package on WCOSS-Dell.
- 
-While logged in under the “nwprod” account:
+
+The NOAA VLab and both the NOAA-EMC and NCAR organization spaces on GitHub.com are used to manage the GFS.v16.1.5 code. The SPA(s) handling the GFS.v16.1.5 implementation need to have permissions to clone VLab gerrit repositories and the private NCAR UPP_GTG repository (the nwprod account has access to the GTG repository). All NOAA-EMC organization repositories are publicly readable and do not require access permissions. Please follow the following steps to install the package on WCOSS-Dell.
+
+While logged in under the nwprod account:
 
 1) cd $NWROOTp3
 2) mkdir gfs.v16.1.5
@@ -38,7 +38,7 @@ While logged in under the “nwprod” account:
 
 7) ./build_all.sh
    * This script compiles all GFS components. Runtime output from the build for each package is written to log files in directory logs. To build an individual program, for instance, gsi, use build_gsi.sh.
-8) ./link_fv3gfs.sh nco dell  
+8) ./link_fv3gfs.sh nco dell
 
 SORC CHANGES
 
@@ -70,33 +70,33 @@ FIX CHANGES
   * global_co2historicaldata_2022.txt
 * fix_am/fix_co2_update:
   * global_co2historicaldata_2021.txt
- 
+
 PARM/CONFIG CHANGES
 
 * config.anal
   * update global_convinfo.txt notes and global_satinfo.txt if-blocks for retrospective dates; no operational impact
- 
+
 JOBS CHANGES
 
 * No change from GFS v16.1.4
- 
+
 SCRIPT CHANGES
 
 * No change from GFS v16.1.4
- 
+
 CHANGES TO RESOURCES AND FILE SIZES
 
 * There should be no change in analysis runtime nor radstat file size greater than the normal cycle to cycle variation.
-  
+
 PRE-IMPLEMENTATION TESTING REQUIREMENTS
 
 * Which production jobs should be tested as part of this implementation?
   * The entire GFS v16.1.5 package needs to be installed and tested.
 * Does this change require a 30-day evaluation?
   * No.
- 
+
 DISSEMINATION INFORMATION
- 
+
 * Where should this output be sent?
   * No change from GFS v16.1.4
 * Who are the users?
@@ -107,12 +107,12 @@ DISSEMINATION INFORMATION
   * No change from GFS v16.1.4
 * File changes
   * No change from GFS v16.1.4
- 
+
 HPSS ARCHIVE
- 
+
 * No change from GFS v16.1.4
- 
+
 JOB DEPENDENCIES AND FLOW DIAGRAM
- 
+
 * No change from GFS v16.1.4
 

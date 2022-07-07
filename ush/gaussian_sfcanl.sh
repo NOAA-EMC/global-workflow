@@ -133,9 +133,9 @@ else
 fi
 
 #  Directories.
-gfs_ver=${gfs_ver:-v15.0.0}
-BASEDIR=${BASEDIR:-${NWROOT:-/nwprod2}}
-HOMEgfs=${HOMEgfs:-$BASEDIR/gfs_ver.${gfs_ver}}
+gfs_ver=${gfs_ver:-v16.2.0}
+BASEDIR=${BASEDIR:-${PACKAGEROOT:-/lfs/h1/ops/prod/packages}}
+HOMEgfs=${HOMEgfs:-$BASEDIR/gfs.${gfs_ver}}
 EXECgfs=${EXECgfs:-$HOMEgfs/exec}
 FIXfv3=${FIXfv3:-$HOMEgfs/fix/fix_fv3_gmted2010}
 FIXam=${FIXam:-$HOMEgfs/fix/fix_am}

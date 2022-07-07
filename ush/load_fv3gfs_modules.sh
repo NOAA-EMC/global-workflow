@@ -4,13 +4,18 @@
 ###############################################################
 # Setup runtime environment by loading modules
 ulimit_s=$( ulimit -S -s )
-ulimit -S -s 10000
+#ulimit -S -s 10000
+
+set +x
 
 # Find module command and purge:
 source "$HOMEgfs/modulefiles/module-setup.sh.inc" 
 
+# Source versions file for runtime
+source "$HOMEgfs/versions/run.ver"
+
 # Load our modules:
-module use "$HOMEgfs/modulefiles" 
+module use $HOMEgfs/modulefiles
 
 if [[ -d /lfs3 ]] ; then
     # We are on NOAA Jet
@@ -18,12 +23,19 @@ if [[ -d /lfs3 ]] ; then
 elif [[ -d /scratch1 ]] ; then
     # We are on NOAA Hera
 	module load module_base.hera
+elif [[ -d /work ]] ; then
+    # We are on MSU Orion
+	module load module_base.orion
 elif [[ -d /gpfs/hps && -e /etc/SuSE-release ]] ; then
     # We are on NOAA Luna or Surge
 	module load module_base.wcoss_c 
 elif [[ -L /usrx && "$( readlink /usrx 2> /dev/null )" =~ dell ]] ; then
     # We are on NOAA Mars or Venus
 	module load module_base.wcoss_dell_p3 
+elif [[ -d /lfs/h2 ]]; then
+    # We are on WCOSS2 (Cactus or Dogwood)
+        source "$HOMEgfs/versions/wcoss2.ver"
+        module load module_base.wcoss2
 elif [[ -d /dcom && -d /hwrf ]] ; then
     # We are on NOAA Tide or Gyre
 	module load module_base.wcoss 
@@ -36,6 +48,8 @@ elif [[ -d /lustre && -d /ncrc ]] ; then
 else
     echo WARNING: UNKNOWN PLATFORM 
 fi
+
+set -x
 
 # Restore stack soft limit:
 ulimit -S -s "$ulimit_s"

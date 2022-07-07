@@ -7,12 +7,17 @@
 ######################################################################
 
 LMOD_EXACT_MATCH=no
-source ../../sorc/machine-setup.sh > /dev/null 2>&1
 cwd=`pwd`
+export HOMEgfs="${cwd}/../../"
+source ../../sorc/machine-setup.sh > /dev/null 2>&1
 
-if [ "$target" = "wcoss_dell_p3" ] || [ "$target" = "wcoss_cray" ] || [ "$target" = "hera" ] ; then
+if [ "$target" = "wcoss_dell_p3" ] || [ "$target" = "wcoss_cray" ] || [ "$target" = "wcoss2" ] ; then
    echo " "
    echo " You are on WCOSS:  $target "
+   echo " "
+elif [ "$target" = "hera" ]; then
+   echo " "
+   echo " You are on $target "
    echo " "
 elif [ "$target" = "wcoss" ] ; then
    echo " "
@@ -32,7 +37,8 @@ fi
 echo " "
 
 # Load required modules
-source ../modulefiles/gfs_util.${target}
+module use ${HOMEgfs}/util/modulefiles
+module load gfs_util.${target}
 module list 
 
 dirlist="overgridid rdbfmsua webtitle mkgfsawps"

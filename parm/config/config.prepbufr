@@ -12,6 +12,8 @@ echo "BEGIN: config.prepbufr"
 
 if [ $machine = "HERA" ]; then
     export GESROOT=/scratch1/NCEPDEV/rstprod   # set by module prod_envir on WCOSS_C
+elif [ $machine = "ORION" ]; then
+   export GESROOT=/dev/null
 fi
 
 echo "END: config.prepbufr"

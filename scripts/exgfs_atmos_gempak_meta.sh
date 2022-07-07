@@ -2,8 +2,7 @@
 
 set -x
 
-msg="JOB $job HAS BEGUN"
-postmsg "$jlogfile" "$msg"
+echo "JOB $job HAS BEGUN"
 
 cd $DATA
 
@@ -30,7 +29,7 @@ do_all=0
 #loop through and process needed forecast hours
 while [ $fhr -le $fhend ]
 do
-   # 
+   #
    # First check to see if this is a rerun.  If so make all Meta files
    if [ $fhr -gt 126 -a $first_time -eq 0 ] ; then
      do_all=1
@@ -54,8 +53,7 @@ do
       fi
       if [ $icnt -ge $maxtries ]
       then
-         msg="ABORTING after 1 hour of waiting for gempak grid F$fhr to end."
-         postmsg "${jlogfile}" "$msg"
+         echo "ABORTING after 1 hour of waiting for gempak grid F$fhr to end."
          export err=7 ; err_chk
          exit $err
       fi
@@ -109,7 +107,7 @@ do
 
 #  If this is the final fcst hour, alert the
 #  file to all centers.
-# 
+#
    if [ $fhr -ge $fhend ] ; then
       export DBN_ALERT_TYPE=GFS_METAFILE_LAST
    fi
@@ -117,13 +115,11 @@ do
    export fend=$fhr
 
   sleep 20
-#   mpirun.lsf
   ntasks=${NTASKS_META:-$(cat $DATA/poescript | wc -l)}
   ptile=${PTILE_META:-4}
   threads=${NTHREADS_META:-1}
   export OMP_NUM_THREADS=$threads
-  APRUN="mpirun -n $ntasks cfp "
-
+  APRUN="mpiexec -l -n $ntasks -ppn $ntasks --cpu-bind verbose,core cfp"
   APRUN_METACFP=${APRUN_METACFP:-$APRUN}
   APRUNCFP=$(eval echo $APRUN_METACFP)
 

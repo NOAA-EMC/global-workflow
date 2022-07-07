@@ -9,8 +9,7 @@ export PS4='exgempakgif_ncdc_skewt:$SECONDS + '
 set -xa
 
 cd $DATA
-msg="The NCDC GIF processing has begun"
-postmsg "$jlogfile" "$msg"
+echo "The NCDC GIF processing has begun"
 
 export NTS=$USHgempak/restore
 
@@ -30,25 +29,23 @@ then
         while [ $icnt -lt 1000 ]
         do
           if [ -r ${COMIN}/${RUN}_${PDY}${cyc}f0${fhr} ] ; then
-	    sleep 5  
+            sleep 5
             break
           else
-            msg="The process is waiting ... ${GRIBFILE} file to proceed."
-            postmsg "${jlogfile}" "$msg"
+            echo "The process is waiting ... ${GRIBFILE} file to proceed."
             sleep 20
             let "icnt=icnt+1"
           fi
           if [ $icnt -ge $maxtries ]
           then
-            msg="ABORTING: after 1 hour of waiting for ${GRIBFILE} file at F$fhr to end."
-            postmsg "${jlogfile}" "$msg"
+            echo "ABORTING: after 1 hour of waiting for ${GRIBFILE} file at F$fhr to end."
             export err=7 ; err_chk
             exit $err
           fi
         done
 
        cp ${COMIN}/${RUN}_${PDY}${cyc}f0${fhr} gem_grids${fhr}.gem
-     
+
 #       if [ $cyc -eq 00 -o $cyc -eq 12 ]
        #then
           $USHgempak/gempak_${RUN}_f${fhr}_gif.sh
@@ -80,7 +77,7 @@ export RSHPDY=`echo $PDY | cut -c5-``echo $PDY | cut -c3-4`
 cp $HOMEgfs/gempak/dictionaries/sonde.land.tbl .
 cp $HOMEgfs/gempak/dictionaries/metar.tbl .
 sort -k 2n,2 metar.tbl > metar_stnm.tbl
-cp $COMINgfs/${model}.$cycle.adpupa.tm00.bufr_d fort.40
+cp $COMINobsproc/${model}.$cycle.adpupa.tm00.bufr_d fort.40
 export err=$?
 if [[ $err -ne 0 ]] ; then
    echo " File ${model}.$cycle.adpupa.tm00.bufr_d does not exist."

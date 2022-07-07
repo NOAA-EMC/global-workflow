@@ -64,11 +64,9 @@ set -x
 ##############################################################################
 
 prep_step=${prep_step:-prep_step}
-postmsg=${postmsg:-postmsg}
 
 ########################################
-msg="has begun for ${cmodel} at ${CYL}z"
-$postmsg "$jlogfile" "$msg"
+echo "has begun for ${cmodel} at ${CYL}z"
 ########################################
 
 # This script runs the hurricane tracker using operational GRIB model output.  
@@ -171,7 +169,7 @@ while [[ "$#" -gt 0 ]] ; do
                 fi
             done
             if [[ -z "$override_fcsthrs" || -z "$override_fcstlen" ]] ; then
-                $postmsg "$jlogfile" "ERROR: requested forecast hour from $whichm is $lasthour (from parsing \"$gfharg\") but could not find any valid $nicename forecast hours at or before that time.  This is probably an error in the tracker script."
+                echo "ERROR: requested forecast hour from $whichm is $lasthour (from parsing \"$gfharg\") but could not find any valid $nicename forecast hours at or before that time.  This is probably an error in the tracker script."
             fi
             ;;
         --wait-for-data)
@@ -737,16 +735,14 @@ then
   ln -s -f ${DATA}/vitals.${atcfout}.${PDY}${CYL}         fort.31
   ln -s -f ${DATA}/vitals.upd.${atcfout}.${PDY}${CYL}     fort.51
 
-  msg="$pgm start for $atcfout at ${CYL}z"
-  $postmsg "$jlogfile" "$msg"
+  echo "$pgm start for $atcfout at ${CYL}z"
 
   ${exectrkdir}/supvit <${DATA}/suv_input.${atcfout}.${PDY}${CYL}
   suvrcc=$?
 
   if [ ${suvrcc} -eq 0 ]
   then
-    msg="$pgm end for $atcfout at ${CYL}z completed normally"
-    $postmsg "$jlogfile" "$msg"
+    echo "$pgm end for $atcfout at ${CYL}z completed normally"
   else
     set +x
     echo " "
@@ -1259,7 +1255,7 @@ if [[ ${model} -eq 1 || $model == 8 ]] ; then
   ixfile=${DATA}/gfsixfile.${PDY}${CYL}
 fi
 
-$postmsg "$jlogfile" "SUCCESS: have all inputs needed to run tracker.  Will now run the tracker."
+echo "SUCCESS: have all inputs needed to run tracker.  Will now run the tracker."
 
 #------------------------------------------------------------------------#
 #                         Now run the tracker                            #
@@ -1440,8 +1436,7 @@ echo " -----------------------------------------------"
 echo " "
 set -x
 
-msg="$pgm start for $atcfout at ${CYL}z"
-$postmsg "$jlogfile" "$msg"
+echo "$pgm start for $atcfout at ${CYL}z"
 
 set +x
 echo "+++ TIMING: BEFORE gettrk  ---> `date`"
@@ -1469,7 +1464,7 @@ echo "+++ TIMING: AFTER  gettrk  ---> `date`"
 set -x
 
 #--------------------------------------------------------------#
-# Send a message to the jlogfile for each storm that used 
+# Echo a message to stdout for each storm that used
 # tcvitals for hour 0 track/intensity info.
 #--------------------------------------------------------------#
 
@@ -1479,10 +1474,10 @@ while read line
 do
     echo "line is [$line]"
     if [[ ! ( "$pcount" -lt 30 ) ]] ; then
-      $postmsg "$jlogfile" "Hit maximum number of postmsg commands for tcvitals usage at hour 0.  Will stop warning about that, to avoid spamming jlogfile."
+      echo "Hit maximum number of echo commands for tcvitals usage at hour 0.  Will stop warning about that, to avoid spamming stdout."
       break
     fi
-    $postmsg "$jlogfile" "$line"
+    echo "$line"
     pcount=$(( pcount + 1 ))
 done
 
@@ -1499,22 +1494,22 @@ echo " "
 set -x
 
 if [[ ! -e "$track_file_path" ]] ; then
-    $postmsg "$jlogfile" "WARNING: tracker output file does not exist.  This is probably an error.  File: $track_file_path"
-    $postmsg "$jlogfile" "WARNING: exgfs_trkr will create an empty track file and deliver that."
+    echo "WARNING: tracker output file does not exist.  This is probably an error.  File: $track_file_path"
+    echo "WARNING: exgfs_trkr will create an empty track file and deliver that."
     cat /dev/null > $track_file_path
 elif [[ ! -s "$track_file_path" ]] ; then
-    $postmsg "$jlogfile" "WARNING: tracker output file is empty.  That is only an error if there are storms or genesis cases somewhere in the world.  File: $track_file_path"
+    echo "WARNING: tracker output file is empty.  That is only an error if there are storms or genesis cases somewhere in the world.  File: $track_file_path"
 else
-    $postmsg "$jlogfile" "SUCCESS: Track file exists and is non-empty: $track_file"
+    echo "SUCCESS: Track file exists and is non-empty: $track_file"
     if [[ "$PHASEFLAG" == n ]] ; then
         echo "Phase information was disabled.  I will remove the empty phase information from the track file before delivery."
         cp -p $track_file_path $track_file_path.orig
         cut -c1-112 < $track_file_path.orig > $track_file_path
         if [[ ! -s "$track_file_path" ]] ; then
-            $postmsg "$jlogfile" "WARNING: Something went wrong with \"cut\" command to remove phase information.  Will deliver original file."
+            echo "WARNING: Something went wrong with \"cut\" command to remove phase information.  Will deliver original file."
             /bin/mv -f $track_file_path.orig $track_file_path
         else
-            $postmsg "$jlogfile" "SUCCESS: Removed empty phase information because phase information is disabled."
+            echo "SUCCESS: Removed empty phase information because phase information is disabled."
         fi
     fi
 fi
@@ -1533,7 +1528,7 @@ if [ ${gettrk_rcc} -eq 0 ]; then
   then
 
     if [[ ! -s "$track_file_path" ]] ; then
-        $postmsg "$jlogfile" "WARNING: delivering empty track file to rundir."
+        echo "WARNING: delivering empty track file to rundir."
     fi
 
     cp $track_file_path ../.
@@ -1546,8 +1541,7 @@ if [ ${gettrk_rcc} -eq 0 ]; then
 #    cp ${DATA}/trak.${atcfout}.atcf_gen.${regtype}.${PDY}${CYL} ../.
   fi
 
-  msg="$pgm end for $atcfout at ${CYL}z completed normally"
-  $postmsg "$jlogfile" "$msg"
+  echo "$pgm end for $atcfout at ${CYL}z completed normally"
 
 # Now copy track files into various archives....
 
@@ -1555,7 +1549,7 @@ if [ ${gettrk_rcc} -eq 0 ]; then
   then
 
     if [[ ! -s "$track_file_path" ]] ; then
-        $postmsg "$jlogfile" "WARNING: delivering an empty track file to COM."
+        echo "WARNING: delivering an empty track file to COM."
         return
     fi
 

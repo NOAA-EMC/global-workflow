@@ -1,0 +1,18 @@
+#! /bin/sh
+#PBS -j eo
+#PBS -q dev
+#PBS -l place=vscatter:excl,select=2:ncpus=128:mpiprocs=20:mem=500GB
+#PBS -l debug=true
+#PBS -l walltime=01:30:00
+#PBS -A GFS-DEV
+#PBS -N postsnd
+
+export RUN_ENVIR='emc'
+export HOMEgfs='/lfs/h2/emc/vpppg/noscrub/Guang.Ping.Lou/global-workflow5'
+export EXPDIR='/lfs/h2/emc/vpppg/noscrub/Guang.Ping.Lou/rocoto_wcoss5'
+export CDATE='2021082400'
+export CDUMP='gfs'
+export PDY='20210824'
+export cyc='00'
+set -x
+/lfs/h2/emc/vpppg/noscrub/Guang.Ping.Lou/global-workflow5/jobs/rocoto/postsnd.sh

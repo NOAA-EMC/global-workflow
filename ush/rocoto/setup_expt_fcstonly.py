@@ -13,7 +13,7 @@ import sys
 import glob
 import shutil
 import socket
-from datetime import datetime
+from datetime import datetime, timedelta
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 import workflow_utils as wfu
 
@@ -28,9 +28,9 @@ def makedirs_if_missing(d):
 def create_EXPDIR():
 
     makedirs_if_missing(expdir)
-    configs = glob.glob('%s/config.*' % configdir)
+    configs = glob.glob(f'{configdir}/config.*')
     if len(configs) == 0:
-        msg = 'no config files found in %s' % configdir
+        msg = f'no config files found in {configdir}'
         raise IOError(msg)
     for config in configs:
         shutil.copy(config, expdir)
@@ -47,7 +47,7 @@ def create_COMROT():
 
 def edit_baseconfig():
 
-    base_config = '%s/config.base' % expdir
+    base_config = f'{expdir}/config.base'
 
     here = os.path.dirname(__file__)
     top = os.path.abspath(os.path.join(os.path.abspath(here), '../..'))
@@ -55,27 +55,35 @@ def edit_baseconfig():
     # make a copy of the default before editing
     shutil.copy(base_config, base_config + '.default')
 
-    print '\nSDATE = %s\nEDATE = %s' % (idate, edate)
+    print(f'\nSDATE = {idate}\nEDATE = {edate}')
     with open(base_config + '.default', 'rt') as fi:
         with open(base_config + '.new', 'wt') as fo:
             for line in fi:
                 line = line.replace('@MACHINE@', machine.upper()) \
                     .replace('@PSLOT@', pslot) \
                     .replace('@SDATE@', idate.strftime('%Y%m%d%H')) \
+                    .replace('@FDATE@', fdate.strftime('%Y%m%d%H')) \
                     .replace('@EDATE@', edate.strftime('%Y%m%d%H')) \
-                    .replace('@CASECTL@', 'C%d' % res) \
+                    .replace('@CASECTL@', f'C{res}') \
                     .replace('@HOMEgfs@', top) \
                     .replace('@BASE_GIT@', base_git) \
                     .replace('@DMPDIR@', dmpdir) \
-                    .replace('@NWPROD@', nwprod) \
+                    .replace('@PACKAGEROOT@', packageroot) \
+                    .replace('@COMROOT@', comroot) \
                     .replace('@HOMEDIR@', homedir) \
                     .replace('@STMP@', stmp) \
                     .replace('@PTMP@', ptmp) \
                     .replace('@NOSCRUB@', noscrub) \
                     .replace('@ACCOUNT@', account) \
                     .replace('@QUEUE@', queue) \
-                    .replace('@QUEUE_ARCH@', queue_arch) \
-                    .replace('@gfs_cyc@', '%d' % gfs_cyc)
+                    .replace('@QUEUE_SERVICE@', queue_service) \
+                    .replace('@PARTITION_BATCH@', partition_batch) \
+                    .replace('@EXP_WARM_START@', exp_warm_start) \
+                    .replace('@MODE@', 'free') \
+                    .replace('@CHGRP_RSTPROD@', chgrp_rstprod) \
+                    .replace('@CHGRP_CMD@', chgrp_cmd) \
+                    .replace('@HPSSARCH@', hpssarch) \
+                    .replace('@gfs_cyc@', f'{gfs_cyc}')
                 if expdir is not None:
                     line = line.replace('@EXPDIR@', os.path.dirname(expdir))
                 if comrot is not None:
@@ -85,11 +93,11 @@ def edit_baseconfig():
     os.unlink(base_config)
     os.rename(base_config + '.new', base_config)
 
-    print ''
-    print 'EDITED:  %s/config.base as per user input.' % expdir
-    print 'DEFAULT: %s/config.base.default is for reference only.' % expdir
-    print 'Please verify and delete the default file before proceeding.'
-    print ''
+    print('')
+    print(f'EDITED:  {expdir}/config.base as per user input.')
+    print(f'DEFAULT: {expdir}/config.base.default is for reference only.')
+    print('Please verify and delete the default file before proceeding.')
+    print('')
 
     return
 
@@ -110,6 +118,7 @@ Create COMROT experiment directory structure'''
     parser.add_argument('--configdir', help='full path to directory containing the config files', type=str, required=False, default=None)
     parser.add_argument('--gfs_cyc', help='GFS cycles to run', type=int, choices=[0, 1, 2, 4], default=1, required=False)
     parser.add_argument('--partition', help='partition on machine', type=str, required=False, default=None)
+    parser.add_argument('--start', help='restart mode: warm or cold', type=str, choices=['warm', 'cold'], required=False)
 
     args = parser.parse_args()
 
@@ -127,55 +136,119 @@ Create COMROT experiment directory structure'''
     expdir = args.expdir if args.expdir is None else os.path.join(args.expdir, pslot)
     gfs_cyc = args.gfs_cyc
     partition = args.partition
+    start = args.start
+
+    # Set restart setting in config.base
+    if start is None:
+      if res == 768:
+        exp_warm_start = '.true.'
+      else:
+        exp_warm_start = '.false.'
+    elif start == 'cold':
+      exp_warm_start = '.false.'
+    elif start == 'warm':
+      exp_warm_start = '.true.'
+
+    # Set FDATE (first full cycle)
+    fdate = idate + timedelta(hours=6)
 
     # Set machine defaults
-    if machine == 'WCOSS_DELL_P3':
+    if machine == 'WCOSS2':
+      base_git = '/lfs/h2/emc/global/save/emc.global/git'
+      base_svn = '/lfs/h2/emc/global/save/emc.global/git'
+      dmpdir = '/lfs/h2/emc/global/noscrub/emc.global/dump'
+      packageroot = '${PACKAGEROOT:-"/lfs/h1/ops/prod/packages"}'
+      comroot = '${COMROOT:-"/lfs/h1/ops/prod/com"}'
+      homedir = '/lfs/h2/emc/global/noscrub/$USER'
+      stmp = '/lfs/h2/emc/stmp/$USER'
+      ptmp = '/lfs/h2/emc/ptmp/$USER'
+      noscrub = '/lfs/h2/emc/global/noscrub/$USER'
+      account = 'GFS-DEV'
+      queue = 'dev'
+      queue_service = 'dev_transfer'
+      partition_batch = ''
+      chgrp_rstprod = 'YES'
+      chgrp_cmd = 'chgrp rstprod'
+      hpssarch = 'YES'
+    elif machine == 'WCOSS_DELL_P3':
       base_git = '/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git'
       base_svn = '/gpfs/dell2/emc/modeling/noscrub/emc.glopara/git'
       dmpdir = '/gpfs/dell3/emc/global/dump'
-      nwprod = '/gpfs/dell1/nco/ops/nwprod'
+      packageroot = '${NWROOT:-"/gpfs/dell1/nco/ops/nwprod"}'
+      comroot = '${COMROOT:-"/gpfs/dell1/nco/ops/com"}'
       homedir = '/gpfs/dell2/emc/modeling/noscrub/$USER'
       stmp = '/gpfs/dell3/stmp/$USER'
       ptmp = '/gpfs/dell3/ptmp/$USER'
       noscrub = '/gpfs/dell2/emc/modeling/noscrub/$USER'
       account = 'GFS-DEV'
       queue = 'dev'
-      queue_arch = 'dev_transfer'
+      queue_service = 'dev_transfer'
+      partition_batch = ''
       if partition in ['3p5']:
         queue = 'dev2'
-        queue_arch = 'dev2_transfer'
+        queue_service = 'dev2_transfer'
+      chgrp_rstprod = 'YES'
+      chgrp_cmd = 'chgrp rstprod'
+      hpssarch = 'YES'
     elif machine == 'WCOSS_C':
       base_git = '/gpfs/hps3/emc/global/noscrub/emc.glopara/git'
       base_svn = '/gpfs/hps3/emc/global/noscrub/emc.glopara/svn'
       dmpdir = '/gpfs/dell3/emc/global/dump'
-      nwprod = '/gpfs/hps/nco/ops/nwprod'
+      packageroot = '${NWROOT:-"/gpfs/hps/nco/ops/nwprod"}'
+      comroot = '${COMROOT:-"/gpfs/hps/nco/ops/com"}'
       homedir = '/gpfs/hps3/emc/global/noscrub/$USER'
       stmp = '/gpfs/hps2/stmp/$USER'
       ptmp = '/gpfs/hps2/ptmp/$USER'
       noscrub = '/gpfs/hps3/emc/global/noscrub/$USER'
       account = 'GFS-DEV'
       queue = 'dev'
-      queue_arch = 'dev_transfer'
+      queue_service = 'dev_transfer'
+      partition_batch = ''
+      chgrp_rstprod = 'YES'
+      chgrp_cmd = 'chgrp rstprod'
+      hpssarch = 'YES'
     elif machine == 'HERA':
       base_git = '/scratch1/NCEPDEV/global/glopara/git'
       base_svn = '/scratch1/NCEPDEV/global/glopara/svn'
       dmpdir = '/scratch1/NCEPDEV/global/glopara/dump'
-      nwprod = '/scratch1/NCEPDEV/global/glopara/nwpara'
+      packageroot = '/scratch1/NCEPDEV/global/glopara/nwpara'
+      comroot = '/scratch1/NCEPDEV/rstprod/com'
       homedir = '/scratch1/NCEPDEV/global/$USER'
       stmp = '/scratch1/NCEPDEV/stmp2/$USER'
       ptmp = '/scratch1/NCEPDEV/stmp4/$USER'
       noscrub = '$HOMEDIR'
       account = 'fv3-cpu'
       queue = 'batch'
-      queue_arch = 'service'
+      queue_service = 'service'
+      partition_batch = ''
+      chgrp_rstprod = 'YES'
+      chgrp_cmd = 'chgrp rstprod'
+      hpssarch = 'YES'
+    elif machine == 'ORION':
+      base_git = '/work/noaa/global/glopara/git'
+      base_svn = '/work/noaa/global/glopara/svn'
+      dmpdir = '/work/noaa/rstprod/dump'
+      packageroot = '/work/noaa/global/glopara/nwpara'
+      comroot = '/work/noaa/global/glopara/com'
+      homedir = '/work/noaa/global/$USER'
+      stmp = '/work/noaa/stmp/$USER'
+      ptmp = '/work/noaa/stmp/$USER'
+      noscrub = '$HOMEDIR'
+      account = 'fv3-cpu'
+      queue = 'batch'
+      queue_service = 'service'
+      partition_batch = 'orion'
+      chgrp_rstprod = 'YES'
+      chgrp_cmd = 'chgrp rstprod'
+      hpssarch = 'NO'
 
     # COMROT directory
     create_comrot = True
     if os.path.exists(comrot):
-        print
-        print 'COMROT already exists in %s' % comrot
-        print
-        overwrite_comrot = raw_input('Do you wish to over-write COMROT [y/N]: ')
+        print()
+        print(f'COMROT already exists in {comrot}')
+        print()
+        overwrite_comrot = input('Do you wish to over-write COMROT [y/N]: ')
         create_comrot = True if overwrite_comrot in ['y', 'yes', 'Y', 'YES'] else False
         if create_comrot:
             shutil.rmtree(comrot)
@@ -186,10 +259,10 @@ Create COMROT experiment directory structure'''
     # EXP directory
     create_expdir = True
     if os.path.exists(expdir):
-        print
-        print 'EXPDIR already exists in %s' % expdir
-        print
-        overwrite_expdir = raw_input('Do you wish to over-write EXPDIR [y/N]: ')
+        print()
+        print(f'EXPDIR already exists in {expdir}')
+        print()
+        overwrite_expdir = input('Do you wish to over-write EXPDIR [y/N]: ')
         create_expdir = True if overwrite_expdir in ['y', 'yes', 'Y', 'YES'] else False
         if create_expdir:
             shutil.rmtree(expdir)

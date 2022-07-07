@@ -154,10 +154,11 @@ l1=$elvmaxgb;[[ $l1  = / || $l1 = ~ ]] || elvmaxgb=$pwd/$elvmaxgb
 #
 export WRKDIR=${WRKDIR:-${PTMP:-/ptmpp2}/$LOGNAME/terr_wrkdir$$}
 
+export gfs_ver=${gfs_ver:-v16.2.0}
 export lin=${lin:-""}
 export BASEDIR=${UTILDIR:-/global/save/emc.glopara/svn/gfs/trunk/para/util}
-export NWPROD=${NWPROD:-/nwprod}
-export FIXDIR=${FIXDIR:-$NWPROD/fix}
+export PACKAGEROOT=${PACKAGEROOT:-/lfs/h1/ops/prod/packages}
+export FIXDIR=${FIXDIR:-${PACKAGEROOT}/gfs.${gfs_ver}/fix}
 export LONSPERLAT=${LONSPERLAT:-$FIXDIR/global_lonsperlat.t${jcap}$lin.txt}
 export TERRAINEXEC=${TERRAINEXEC:-$BASEDIR/exec/terrain.x}
 ################################################################################

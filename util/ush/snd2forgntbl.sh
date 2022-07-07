@@ -54,13 +54,11 @@ then
 
       if test $sndfrc -eq '0'
       then
-        msg="snd2forgntbl.sh successfully ended!"
-        postmsg "$jlogfile" "$msg"
+        echo "snd2forgntbl.sh successfully ended!"
       else
-        msg="ERROR $filename NOT POSTED!"
-        postmsg "$jlogfile" "$msg"
-        msg="snd2forgn: ABNORMAL STOP = $sndfrc!:"
-        postmsg "$jlogfile" "$msg"
+        echo "ERROR $filename NOT POSTED!"
+        echo "snd2forgn: ABNORMAL STOP = $sndfrc!:"
+        exit 1
       fi
 else
    echo Sendkey $sendkey is not in the snd2forgn.names table

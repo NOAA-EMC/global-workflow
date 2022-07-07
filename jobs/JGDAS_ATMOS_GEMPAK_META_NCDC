@@ -11,7 +11,7 @@ date
 ##########################################################
 # obtain unique process id (pid) and make temp directory
 ##########################################################
-export DATA=${DATA:-${DATAROOT}/${jobid:?}}
+export DATA=${DATA:-${DATAROOT}/${PBS_JOBNAME}.${PBS_JOBID}}
 mkdir -p $DATA
 cd $DATA
 
@@ -24,12 +24,12 @@ export cycle=${cycle:-t${cyc}z}
 # Run setpdy and initialize PDY variables
 ###########################################
 setpdy.sh
-. PDY
+. ./PDY
 
 ################################
 # Set up the HOME directory
 ################################
-export HOMEgfs=${HOMEgfs:-${NWROOT}/gfs.${gfs_ver}}
+export HOMEgfs=${HOMEgfs:-${PACKAGEROOT}/gfs.${gfs_ver}}
 export EXECgfs=${EXECgfs:-$HOMEgfs/exec}
 export PARMgfs=${PARMgfs:-$HOMEgfs/parm}
 export PARMwmo=${PARMwmo:-$HOMEgfs/parm/wmo}
@@ -69,13 +69,15 @@ export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 ##############################################
 # Define COM directories
 ##############################################
-export COMIN=${COMIN:-$(compath.py ${NET}/${envir}/${RUN}.${PDY})/${cyc}/$COMPONENT/gempak}
-export COMINgdas=${COMINgdas:-$(compath.py ${NET}/${envir}/${RUN})}
-export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/$COMPONENT/gempak/meta}
-export COMOUTncdc=${COMOUTncdc:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/$COMPONENT}
+export COMIN=${COMIN:-$(compath.py ${envir}/${NET}/${gfs_ver})/${RUN}.${PDY}/${cyc}/$COMPONENT/gempak}
+export COMINgdas=${COMINgdas:-$(compath.py ${envir}/${NET}/${gfs_ver})/${RUN}}
+export COMOUT=${COMOUT:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/$COMPONENT/gempak/meta}
+export COMOUTncdc=${COMOUTncdc:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/$COMPONENT}
 
-export COMINukmet=${COMINukmet:-$(compath.py nawips/prod/ukmet)}
-export COMINecmwf=${COMINecmwf:-$(compath.py ecmwf/prod/ecmwf)}
+# export ukmet_ver=v2.2.0
+export COMINukmet=${COMINukmet:-$(compath.py ${envir}/ukmet/${ukmet_ver})/ukmet}
+# export ecmwf_ver=v2.1.0
+export COMINecmwf=${COMINecmwf:-$(compath.py ${envir}/ecmwf/${ecmwf_ver})/ecmwf}
 
 export COMOUTukmet=${COMOUT}
 export COMOUTecmwf=${COMOUT}
@@ -107,8 +109,7 @@ $SRCgfs/exgdas_atmos_gempak_gif_ncdc.sh
 export err=$?; err_chk
 ########################################################
 
-msg="JOB $job HAS COMPLETED NORMALLY!"
-postmsg $jlogfile "$msg"
+echo "JOB $job HAS COMPLETED NORMALLY!"
 
 ############################################
 # print exec I/O output

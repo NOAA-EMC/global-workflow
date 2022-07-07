@@ -46,7 +46,6 @@
     echo '***********************************************'
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" "LOCATION ID IN ww3_outp_cat.sh NOT SET"
     exit 1
   else
     buoy=$bloc
@@ -65,7 +64,6 @@
     echo '******************************************************'
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" "EXPORTED VARIABLES IN ww3_outp_cat.sh NOT SET"
     exit 3
   fi
 
