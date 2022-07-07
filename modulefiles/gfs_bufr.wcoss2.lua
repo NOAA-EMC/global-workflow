@@ -20,6 +20,6 @@ load(pathJoin("w3emc", os.getenv("w3emc_ver")))
 load(pathJoin("bufr", os.getenv("bufr_ver")))
 
 setenv("myFC","ftn")
-setenv("myFCFLAGS","-O3 -convert big_endian -traceback -g -fp-model source -qopenmp")
+setenv("myFCFLAGS","-O3 -convert big_endian -traceback -g -fp-model source")
 setenv("myCPP","/lib/cpp")
 setenv("myCPPFLAGS","-P")

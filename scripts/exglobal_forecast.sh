@@ -181,7 +181,18 @@ if [ $CDUMP = "gfs" -a $rst_invt1 -gt 0 -a $FHMAX -gt $rst_invt1 -a $filecount -
         cycs=$(echo $SDATE | cut -c9-10)
         flag1=$RSTDIR_ATM/${PDYS}.${cycs}0000.coupler.res
         flag2=$RSTDIR_ATM/coupler.res
-        if [ -s $flag1 ]; then
+        #make sure that the wave restart files also exist if cplwav=true
+        waverstok=".true."
+        if [ $cplwav = ".true." ]; then
+          for wavGRD in $waveGRD ; do
+            if [ ! -f ${RSTDIR_WAVE}/${PDYS}.${cycs}0000.restart.${wavGRD} ]; then
+              waverstok=".false."
+            fi
+          done
+        fi
+
+        if [ -s $flag1 -a $waverstok = ".true." ]; then
+	#if [ -s $flag1 ]; then
             CDATE_RST=$SDATE          
             [[ $RERUN = "YES" ]] && break
             mv $flag1 ${flag1}.old
@@ -432,15 +443,15 @@ if [ $cplwav = ".true." ]; then
 
   for wavGRD in $waveGRD ; do
     if [ $RERUN = "NO" ]; then
-      if [ ! -f ${WRDIR}/${sPDY}.${scyc}0000.restart.${wavGRD} ]; then 
-        echo "WARNING: NON-FATAL ERROR wave IC is missing, will start from rest"
+      if [ -f ${WRDIR}/${sPDY}.${scyc}0000.restart.${wavGRD} ]; then
+        $NLN ${WRDIR}/${sPDY}.${scyc}0000.restart.${wavGRD} $DATA/restart.${wavGRD}
+      else
+        echo "WARNING: Wave ICs are absent, will start from rest"
       fi
-      $NLN ${WRDIR}/${sPDY}.${scyc}0000.restart.${wavGRD} $DATA/restart.${wavGRD}
     else
-      if [ ! -f ${RSTDIR_WAVE}/${PDYT}.${cyct}0000.restart.${wavGRD} ]; then
-        echo "WARNING: NON-FATAL ERROR wave IC is missing, will start from rest"
+      if [ -f ${RSTDIR_WAVE}/${PDYT}.${cyct}0000.restart.${wavGRD} ]; then
+        $NLN ${RSTDIR_WAVE}/${PDYT}.${cyct}0000.restart.${wavGRD} $DATA/restart.${wavGRD}
       fi
-      $NLN ${RSTDIR_WAVE}/${PDYT}.${cyct}0000.restart.${wavGRD} $DATA/restart.${wavGRD}
     fi
     eval $NLN $datwave/${wavprfx}.log.${wavGRD}.${PDY}${cyc} log.${wavGRD}
   done
