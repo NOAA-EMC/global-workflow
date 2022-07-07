@@ -28,7 +28,7 @@ class Host:
 
     def __init__(self, host=None):
 
-        detected_host = self.detect
+        detected_host = self.detect()
 
         if host is not None and host != detected_host:
                 raise ValueError(f'detected host: "{detected_host}" does not match host: "{host}"')
@@ -38,7 +38,6 @@ class Host:
         self.scheduler = self.info['scheduler']
 
     @classmethod
-    @property
     def detect(cls):
 
         machine = 'NOTFOUND'

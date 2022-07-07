@@ -7,7 +7,7 @@ homedir: '/scratch1/NCEPDEV/global/$USER'
 stmp: '/scratch1/NCEPDEV/stmp2/$USER'
 ptmp: '/scratch1/NCEPDEV/stmp4/$USER'
 noscrub: $HOMEDIR
-account': fv3-cpu
+account: fv3-cpu
 scheduler: slurm
 queue: batch
 queue_service: service
