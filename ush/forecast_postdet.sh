@@ -203,7 +203,7 @@ EOF
   # Scan suite file to determine whether it uses Noah-MP
   if [ $(grep noahmpdrv ${_suite_file} | wc -l ) -gt 0 ]; then
     lsm="2"
-    lheatstrg=".true."
+    lheatstrg=".false."
     landice=".false."
     iopt_dveg=${iopt_dveg:-"4"}
     iopt_crs=${iopt_crs:-"2"}
@@ -221,7 +221,7 @@ EOF
     IEMS=${IEMS:-2}
   else
     lsm="1"
-    lheatstrg=".false."
+    lheatstrg=".true."
     landice=".true."
     iopt_dveg=${iopt_dveg:-"1"}
     iopt_crs=${iopt_crs:-"1"}
