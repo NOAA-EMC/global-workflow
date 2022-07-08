@@ -30,6 +30,9 @@ fi
 cd gsi.fd/ush/
 export GSI_MODE="GFS"
 export REGRESSION_TESTS="NO"
+# Temporary setting until GSI default is updated or workflow adds versions file
+export ncio_ver="1.1.2"
+export BUILD_CLEAN="YES"
 ./build.sh "$cwd/gsi.fd"
 
 exit
