@@ -206,7 +206,7 @@ class AppConfig:
 
         configs = ['fcst', 'post', 'vrfy', 'arch']
 
-        if self.model_app in ['S2S', 'S2SW']:
+        if self.model_app in ['S2S', 'S2SW', 'S2SWA']:
             configs += ['coupled_ic']
         else:
             configs += ['init']

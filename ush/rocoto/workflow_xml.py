@@ -153,21 +153,22 @@ class RocotoXML:
 
         return ''.join(strings)
 
-    def write(self):
-        self._write_xml()
-        self._write_crontab()
+    def write(self, xml_file: str = None, crontab_file: str = None):
+        self._write_xml(xml_file = xml_file)
+        self._write_crontab(crontab_file = crontab_file)
 
     def _write_xml(self, xml_file: str = None) -> None:
 
+        expdir = self._base['EXPDIR']
+        pslot = self._base['PSLOT']
+
         if xml_file is None:
-            expdir = self._base['EXPDIR']
-            pslot = self._base['PSLOT']
             xml_file = f"{expdir}/{pslot}.xml"
 
         with open(xml_file, 'w') as fh:
             fh.write(self.xml)
 
-    def _write_crontab(self, cronint: int = 5) -> None:
+    def _write_crontab(self, crontab_file: str = None, cronint: int = 5) -> None:
         """
         Create crontab to execute rocotorun every cronint (5) minutes
         """
@@ -196,7 +197,10 @@ class RocotoXML:
                    '#################################################################',
                    '']
 
-        with open(os.path.join(expdir, f'{pslot}.crontab'), 'w') as fh:
+        if crontab_file is None:
+            crontab_file = f"{expdir}/{pslot}.crontab"
+
+        with open(crontab_file, 'w') as fh:
             fh.write('\n'.join(strings))
 
         return
