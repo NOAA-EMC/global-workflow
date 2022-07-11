@@ -501,10 +501,9 @@ class Tasks:
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
-        postenvars = self.envars
+        postenvars = self.envars.copy()
         postenvar_dict = {'FHRGRP': '#grp#',
-                          'FHRLST': '#lst#',
-                          'ROTDIR': self._base.get('ROTDIR')}
+                          'FHRLST': '#lst#'}
         for key, value in postenvar_dict.items():
             postenvars.append(rocoto.create_envar(name=key, value=str(value)))
 
@@ -711,7 +710,7 @@ class Tasks:
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
-        awipsenvars = self.envars
+        awipsenvars = self.envars.copy()
         awipsenvar_dict = {'FHRGRP': '#grp#',
                            'FHRLST': '#lst#',
                            'ROTDIR': self._base.get('ROTDIR')}
@@ -757,7 +756,7 @@ class Tasks:
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
-        metpenvars = self.envars
+        metpenvars = self.envars.copy()
         metpenvar_dict = {'SDATE_GFS': self._base.get('SDATE_GFS'),
                           # TODO - in Forecast-only, this is `SDATE` on the RHS
                           'METPCASE': '#metpcase#'}
@@ -816,7 +815,7 @@ class Tasks:
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
-        eomgenvars = self.envars
+        eomgenvars = self.envars.copy()
         eomgenvars.append(rocoto.create_envar(name='ENSGRP', value='#grp#'))
 
         groups = self._get_hybgroups(self._base['NMEM_ENKF'], self._configs['eobs']['NMEM_EOMGGRP'])
@@ -888,7 +887,7 @@ class Tasks:
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
-        ecenenvars = self.envars
+        ecenenvars = self.envars.copy()
         ecenenvar_dict = {'FHRGRP': '#grp#',
                           'FHRLST': '#lst#'}
         for key, value in ecenenvar_dict.items():
@@ -935,7 +934,7 @@ class Tasks:
         dependencies.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='or', dep=dependencies)
 
-        efcsenvars = self.envars
+        efcsenvars = self.envars.copy()
         efcsenvars.append(rocoto.create_envar(name='ENSGRP', value='#grp#'))
 
         groups = self._get_hybgroups(self._base['NMEM_ENKF'], self._configs['efcs']['NMEM_EFCSGRP'])
@@ -990,7 +989,7 @@ class Tasks:
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
-        eposenvars = self.envars
+        eposenvars = self.envars.copy()
         eposenvar_dict = {'FHRGRP': '#grp#',
                           'FHRLST': '#lst#'}
         for key, value in eposenvar_dict.items():
@@ -1015,7 +1014,7 @@ class Tasks:
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
-        earcenvars = self.envars
+        earcenvars = self.envars.copy()
         earcenvars.append(rocoto.create_envar(name='ENSGRP', value='#grp#'))
 
         groups = self._get_hybgroups(self._base['NMEM_ENKF'], self._configs['earc']['NMEM_EARCGRP'])
