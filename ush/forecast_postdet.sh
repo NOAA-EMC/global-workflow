@@ -343,7 +343,6 @@ EOF
   FNTSFC=${FNTSFC:-"$FIX_AM/RTGSST.1982.2012.monthly.clim.grb"}
   FNSNOC=${FNSNOC:-"$FIX_AM/global_snoclim.1.875.grb"}
   FNZORC=${FNZORC:-"igbp"}
-  #FNAISC=${FNAISC:-"$FIX_AM/CFSR.SEAICE.1982.2012.monthly.clim.grb"}
   FNAISC=${FNAISC:-"$FIX_AM/IMS-NIC.blended.ice.monthly.clim.grb"}
   FNALBC2=${FNALBC2:-"${FIX_SFC}/${CASE}.facsf.tileX.nc"}
   FNTG3C=${FNTG3C:-"${FIX_SFC}/${CASE}.substrate_temperature.tileX.nc"}
