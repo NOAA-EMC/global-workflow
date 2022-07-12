@@ -24,6 +24,7 @@ suites:
                 - task: jgfs_forecast
                   suite: fcstplus
               jgfs_getic:
+                template: skip
                 events:
                 - test_event
                 edits:
@@ -34,7 +35,8 @@ suites:
                   template: jgfs_atmos_post_manager
                   triggers:
                   - task: jgfs_forecast
-                    state: active
+                    state: [active, complete]
+                    operand: OR
                   events:
                   - "release_post(4)f"
                 jgfs_atmos_post_f(2,env.FHMAX_GFS):
