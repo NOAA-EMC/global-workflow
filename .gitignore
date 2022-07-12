@@ -25,6 +25,7 @@ parm/config/config.base
 parm/gldas
 parm/mon
 parm/post/AEROSOL_LUTS.dat
+parm/post/nam_micro_lookup.dat
 parm/post/optics_luts_DUST.dat
 parm/post/gtg.config.gfs
 parm/post/gtg_imprintings.txt
