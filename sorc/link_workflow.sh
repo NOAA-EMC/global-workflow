@@ -134,39 +134,11 @@ fi
 
 
 #------------------------------
-#--add GSI/EnKF file
+#--add GSI fix directory
 #------------------------------
-cd ${pwd}/../jobs               ||exit 8
-    $LINK ../sorc/gsi.fd/jobs/JGLOBAL_ATMOS_ANALYSIS        .
-    $LINK ../sorc/gsi.fd/jobs/JGLOBAL_ATMOS_ANALYSIS_CALC   .
-    $LINK ../sorc/gsi.fd/jobs/JGDAS_ATMOS_ANALYSIS_DIAG     .
-    $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_SELECT_OBS         .
-    $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_DIAG               .
-    $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_UPDATE             .
-    $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_ECEN               .
-    $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_SFC                .
-    $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_FCST               .
-    $LINK ../sorc/gsi.fd/jobs/JGDAS_ENKF_POST               .
-    $LINK ../sorc/gsi.fd/jobs/JGDAS_ATMOS_CHGRES_FORENKF    .
-cd ${pwd}/../scripts            ||exit 8
-    $LINK ../sorc/gsi.fd/scripts/exglobal_atmos_analysis.sh       .
-    $LINK ../sorc/gsi.fd/scripts/exglobal_atmos_analysis_calc.sh  .
-    $LINK ../sorc/gsi.fd/scripts/exglobal_diag.sh                 .
-    $LINK ../sorc/gsi.fd/scripts/exgdas_enkf_select_obs.sh        .
-    $LINK ../sorc/gsi.fd/scripts/exgdas_enkf_update.sh            .
-    $LINK ../sorc/gsi.fd/scripts/exgdas_enkf_ecen.sh              .
-    $LINK ../sorc/gsi.fd/scripts/exgdas_enkf_sfc.sh               .
-    $LINK ../sorc/gsi.fd/scripts/exgdas_enkf_fcst.sh              .
-    $LINK ../sorc/gsi.fd/scripts/exgdas_enkf_post.sh              .
-    $LINK ../sorc/gsi.fd/scripts/exgdas_atmos_chgres_forenkf.sh   .
 cd ${pwd}/../fix                ||exit 8
     [[ -d fix_gsi ]] && rm -rf fix_gsi
     $LINK ../sorc/gsi.fd/fix  fix_gsi
-cd ${pwd}/../ush                ||exit 8
-    $LINK ../sorc/gsi.fd/ush/gsi_utils.py        .
-    $LINK ../sorc/gsi.fd/ush/calcanl_gfs.py      .
-    $LINK ../sorc/gsi.fd/ush/calcinc_gfs.py      .
-    $LINK ../sorc/gsi.fd/ush/getncdimlen         .
 
 
 #------------------------------
