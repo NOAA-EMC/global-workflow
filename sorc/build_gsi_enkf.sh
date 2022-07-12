@@ -21,13 +21,11 @@ while getopts ":dov" option; do
 done
 shift $((OPTIND-1))
 
-#TODO - remove UTIL_OPTS line after GSI removes all utilities from its repo.
 BUILD_TYPE=${BUILD_TYPE:-"Release"} \
 BUILD_VERBOSE=${BUILD_VERBOSE:-"NO"} \
 GSI_MODE=GFS \
 ENKF_MODE=GFS \
 REGRESSION_TESTS=NO \
-UTIL_OPTS="-DBUILD_UTIL=OFF" \
 ./gsi_enkf.fd/ush/build.sh
 
 exit
