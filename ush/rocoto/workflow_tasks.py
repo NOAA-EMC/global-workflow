@@ -51,9 +51,9 @@ class Tasks:
         return envars
 
     @staticmethod
-    def _get_hybgroups(nens: int, nmem_per_group: int):
+    def _get_hybgroups(nens: int, nmem_per_group: int, start_index: int = 1):
         ngrps = nens / nmem_per_group
-        groups = ' '.join([f'{x:02d}' for x in range(1, int(ngrps) + 1)])
+        groups = ' '.join([f'{x:02d}' for x in range(start_index, int(ngrps) + 1)])
         return groups
 
     @staticmethod
@@ -458,7 +458,7 @@ class Tasks:
         if task_name not in ['post', 'ocnpost']:
             raise KeyError(f'Invalid post-processing task: {task_name}')
 
-        if task_name in 'ocnpost':
+        if task_name in ['ocnpost']:
             add_anl_to_post = False
 
         def _get_postgroups(cdump, config, add_anl=False):
@@ -1017,7 +1017,7 @@ class Tasks:
         earcenvars = self.envars.copy()
         earcenvars.append(rocoto.create_envar(name='ENSGRP', value='#grp#'))
 
-        groups = self._get_hybgroups(self._base['NMEM_ENKF'], self._configs['earc']['NMEM_EARCGRP'])
+        groups = self._get_hybgroups(self._base['NMEM_ENKF'], self._configs['earc']['NMEM_EARCGRP'], start_index=0)
 
         resources = self.get_resource('earc')
         task = create_wf_task('earc', resources, cdump=self.cdump, envar=earcenvars, dependency=dependencies,
