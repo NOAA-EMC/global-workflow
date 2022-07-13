@@ -229,8 +229,7 @@ for ufs_utilsexe in \
 done
 
 # GSI
-# TODO - remove ncdiag_cat_serial.x when ncdiag becomes a module
-for exe in ncdiag_cat_serial.x enkf.x gsi.x; do
+for exe in enkf.x gsi.x; do
     [[ -s $exe ]] && rm -f $exe
     $LINK ../sorc/gsi_enkf.fd/install/bin/$exe .
 done

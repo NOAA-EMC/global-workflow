@@ -7,5 +7,6 @@ echo "BEGIN: config.analdiag"
 
 # Get task specific resources
 . $EXPDIR/config.resources analdiag
+export CATEXEC=$(which ncdiag_cat_serial.x)
 
 echo "END: config.analdiag"
