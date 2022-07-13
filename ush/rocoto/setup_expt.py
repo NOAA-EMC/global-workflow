@@ -236,7 +236,7 @@ def input_args():
 
     # forecast only mode additional arguments
     forecasts.add_argument('--app', help='UFS application', type=str, choices=[
-        'ATM', 'ATMA', 'ATMW', 'S2S', 'S2SW', 'S2SWA' 'OCN-ICE'], required=False, default='ATM')
+        'ATM', 'ATMA', 'ATMW', 'S2S', 'S2SW', 'S2SWA', 'OCN-ICE'], required=False, default='ATM')
 
     args = parser.parse_args()
 
