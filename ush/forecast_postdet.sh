@@ -96,7 +96,7 @@ EOF
         read_increment=".false."
         res_latlon_dynamics=""
       else
-        increment_file=$memdir/${CDUMP}.t${cyc}z.${PREFIX_INC}atminc.nc
+        increment_file=$memdir/${CDUMP}.t${cyc}z.${PREFIX_ATMINC}atminc.nc
         if [ -f $increment_file ]; then
           $NLN $increment_file $DATA/INPUT/fv3_increment.nc
           read_increment=".true."
@@ -186,7 +186,7 @@ EOF
     done
   else
     OROFIX=${OROFIX:-"${FIXfv3}/${CASE}"}
-    FIX_SFC=${FIX_SFC:-"${FIXgrd}/fix_sfc"}
+    FIX_SFC=${FIX_SFC:-"${OROFIX}/fix_sfc"}
     for n in $(seq 1 $ntiles); do
       $NLN ${OROFIX}/${CASE}_oro_data.tile${n}.nc $DATA/INPUT/oro_data.tile${n}.nc
     done
@@ -203,7 +203,7 @@ EOF
   # Scan suite file to determine whether it uses Noah-MP
   if [ $(grep noahmpdrv ${_suite_file} | wc -l ) -gt 0 ]; then
     lsm="2"
-    lheatstrg=".true."
+    lheatstrg=".false."
     landice=".false."
     iopt_dveg=${iopt_dveg:-"4"}
     iopt_crs=${iopt_crs:-"2"}
@@ -217,9 +217,11 @@ EOF
     iopt_snf=${iopt_snf:-"4"}
     iopt_tbot=${iopt_tbot:-"2"}
     iopt_stc=${iopt_stc:-"3"}
+    IALB=${IALB:-2}
+    IEMS=${IEMS:-2}
   else
     lsm="1"
-    lheatstrg=".false."
+    lheatstrg=".true."
     landice=".true."
     iopt_dveg=${iopt_dveg:-"1"}
     iopt_crs=${iopt_crs:-"1"}
@@ -233,28 +235,20 @@ EOF
     iopt_snf=${iopt_snf:-"4"}
     iopt_tbot=${iopt_tbot:-"2"}
     iopt_stc=${iopt_stc:-"1"}
+    IALB=${IALB:-1}
+    IEMS=${IEMS:-1}
   fi
 
-  # Scan suite file to determine whether it uses UGWP v1
-  if [ $(grep -i ugwpv1_gsldrag ${_suite_file} | wc -l ) -gt 0 ]; then
-    gwd_opt="2"
-    knob_ugwp_version="1"
-    OROFIX_ugwd=${OROFIX_ugwd:-"${FIX_DIR}/fix_ugwd"}
-    $NLN ${OROFIX_ugwd}/ugwp_limb_tau.nc $DATA/ugwp_limb_tau.nc
-    for n in $(seq 1 $ntiles); do
-      $NLN ${OROFIX_ugwd}/$CASE/${CASE}_oro_data_ls.tile${n}.nc $DATA/INPUT/oro_data_ls.tile${n}.nc
-      $NLN ${OROFIX_ugwd}/$CASE/${CASE}_oro_data_ss.tile${n}.nc $DATA/INPUT/oro_data_ss.tile${n}.nc
-    done
-  else
-    gwd_opt="1"
-    knob_ugwp_version="0"
-    launch_level=${launch_level:-$(echo "$LEVS/2.35" |bc)}
-  fi
+  # Files for GWD
+  OROFIX_ugwd=${OROFIX_ugwd:-"${FIX_DIR}/fix_ugwd"}
+  $NLN ${OROFIX_ugwd}/ugwp_limb_tau.nc $DATA/ugwp_limb_tau.nc
+  for n in $(seq 1 $ntiles); do
+    $NLN ${OROFIX_ugwd}/$CASE/${CASE}_oro_data_ls.tile${n}.nc $DATA/INPUT/oro_data_ls.tile${n}.nc
+    $NLN ${OROFIX_ugwd}/$CASE/${CASE}_oro_data_ss.tile${n}.nc $DATA/INPUT/oro_data_ss.tile${n}.nc
+  done
 
   # GFS standard input data
 
-  IALB=${IALB:-1}
-  IEMS=${IEMS:-1}
   ISOL=${ISOL:-2}
   IAER=${IAER:-1011}
   ICO2=${ICO2:-2}
@@ -266,15 +260,17 @@ EOF
   fi
   H2OFORC=${H2OFORC:-"global_h2o_pltc.f77"}
   ####
-  # copy CCN_ACTIVATE.BIN for Thompson microphysics
+  #  Copy CCN_ACTIVATE.BIN for Thompson microphysics
+  #  Thompson microphysics used when CCPP_SUITE set to FV3_GSD_v0 or FV3_GSD_noah
+  #  imp_physics should be 8
+  ####
   if [ $imp_physics -eq 8 ]; then
-    $NCP $FV3INP/CCN_ACTIVATE.BIN  CCN_ACTIVATE.BIN
-    ####
-    $NCP $FIX_AM/freezeH2O.dat .
-    $NCP $FIX_AM/qr_acr_qg.dat .
-    $NCP $FIX_AM/qr_acr_qs.dat .
-    sleep 60
+    $NLN $FIX_AM/CCN_ACTIVATE.BIN  $DATA/CCN_ACTIVATE.BIN
+    $NLN $FIX_AM/freezeH2O.dat     $DATA/freezeH2O.dat
+    $NLN $FIX_AM/qr_acr_qg.dat     $DATA/qr_acr_qg.dat 
+    $NLN $FIX_AM/qr_acr_qs.dat     $DATA/qr_acr_qs.dat
   fi
+
   $NLN $FIX_AM/${O3FORC}                         $DATA/global_o3prdlos.f77
   $NLN $FIX_AM/${H2OFORC}                        $DATA/global_h2oprdlos.f77
   $NLN $FIX_AM/global_solarconstant_noaa_an.txt  $DATA/solarconstant_noaa_an.txt
@@ -348,31 +344,17 @@ EOF
   FNSNOC=${FNSNOC:-"$FIX_AM/global_snoclim.1.875.grb"}
   FNZORC=${FNZORC:-"igbp"}
   FNAISC=${FNAISC:-"$FIX_AM/CFSR.SEAICE.1982.2012.monthly.clim.grb"}
-  if [ $cplflx = ".false." ] ; then
-    FNALBC2=${FNALBC2:-"$FIX_AM/global_albedo4.1x1.grb"}
-    FNTG3C=${FNTG3C:-"$FIX_AM/global_tg3clim.2.6x1.5.grb"}
-    FNVEGC=${FNVEGC:-"$FIX_AM/global_vegfrac.0.144.decpercent.grb"}
-    FNMSKH=${FNMSKH:-"$FIX_AM/global_slmask.t1534.3072.1536.grb"}
-    FNVMNC=${FNVMNC:-"$FIX_AM/global_shdmin.0.144x0.144.grb"}
-    FNVMXC=${FNVMXC:-"$FIX_AM/global_shdmax.0.144x0.144.grb"}
-    FNSLPC=${FNSLPC:-"$FIX_AM/global_slope.1x1.grb"}
-    FNALBC=${FNALBC:-"$FIX_AM/global_snowfree_albedo.bosu.t${JCAP}.${LONB}.${LATB}.rg.grb"}
-    FNVETC=${FNVETC:-"$FIX_AM/global_vegtype.igbp.t${JCAP}.${LONB}.${LATB}.rg.grb"}
-    FNSOTC=${FNSOTC:-"$FIX_AM/global_soiltype.statsgo.t${JCAP}.${LONB}.${LATB}.rg.grb"}
-    FNABSC=${FNABSC:-"$FIX_AM/global_mxsnoalb.uariz.t${JCAP}.${LONB}.${LATB}.rg.grb"}
-  else
-    FNALBC2=${FNALBC2:-"${FIX_SFC}/${CASE}.facsf.tileX.nc"}
-    FNTG3C=${FNTG3C:-"${FIX_SFC}/${CASE}.substrate_temperature.tileX.nc"}
-    FNVEGC=${FNVEGC:-"${FIX_SFC}/${CASE}.vegetation_greenness.tileX.nc"}
-    FNMSKH=${FNMSKH:-"$FIX_AM/global_slmask.t1534.3072.1536.grb"}
-    FNVMNC=${FNVMNC:-"${FIX_SFC}/${CASE}.vegetation_greenness.tileX.nc"}
-    FNVMXC=${FNVMXC:-"${FIX_SFC}/${CASE}.vegetation_greenness.tileX.nc"}
-    FNSLPC=${FNSLPC:-"${FIX_SFC}/${CASE}.slope_type.tileX.nc"}
-    FNALBC=${FNALBC:-"${FIX_SFC}/${CASE}.snowfree_albedo.tileX.nc"}
-    FNVETC=${FNVETC:-"${FIX_SFC}/${CASE}.vegetation_type.tileX.nc"}
-    FNSOTC=${FNSOTC:-"${FIX_SFC}/${CASE}.soil_type.tileX.nc"}
-    FNABSC=${FNABSC:-"${FIX_SFC}/${CASE}.maximum_snow_albedo.tileX.nc"}
-  fi
+  FNALBC2=${FNALBC2:-"${FIX_SFC}/${CASE}.facsf.tileX.nc"}
+  FNTG3C=${FNTG3C:-"${FIX_SFC}/${CASE}.substrate_temperature.tileX.nc"}
+  FNVEGC=${FNVEGC:-"${FIX_SFC}/${CASE}.vegetation_greenness.tileX.nc"}
+  FNMSKH=${FNMSKH:-"$FIX_AM/global_slmask.t1534.3072.1536.grb"}
+  FNVMNC=${FNVMNC:-"${FIX_SFC}/${CASE}.vegetation_greenness.tileX.nc"}
+  FNVMXC=${FNVMXC:-"${FIX_SFC}/${CASE}.vegetation_greenness.tileX.nc"}
+  FNSLPC=${FNSLPC:-"${FIX_SFC}/${CASE}.slope_type.tileX.nc"}
+  FNALBC=${FNALBC:-"${FIX_SFC}/${CASE}.snowfree_albedo.tileX.nc"}
+  FNVETC=${FNVETC:-"${FIX_SFC}/${CASE}.vegetation_type.tileX.nc"}
+  FNSOTC=${FNSOTC:-"${FIX_SFC}/${CASE}.soil_type.tileX.nc"}
+  FNABSC=${FNABSC:-"${FIX_SFC}/${CASE}.maximum_snow_albedo.tileX.nc"}
   FNSMCC=${FNSMCC:-"$FIX_AM/global_soilmgldas.statsgo.t${JCAP}.${LONB}.${LATB}.grb"}
 
   # If the appropriate resolution fix file is not present, use the highest resolution available (T1534)
@@ -522,15 +504,7 @@ EOF
   LONB_STP=${LONB_STP:-$LONB_CASE}
   LATB_STP=${LATB_STP:-$LATB_CASE}
 
-  #------------------------------------------------------------------
-  # make symbolic links to write forecast files directly in memdir
   cd $DATA
-  if [ "$CCPP_SUITE" = 'FV3_GSD_v0' -o "$CCPP_SUITE" = 'FV3_GSD_noah' ]; then
-    $NLN $FIX_AM/CCN_ACTIVATE.BIN  CCN_ACTIVATE.BIN
-    $NLN $FIX_AM/freezeH2O.dat  freezeH2O.dat
-    $NLN $FIX_AM/qr_acr_qg.dat  qr_acr_qg.dat
-    $NLN $FIX_AM/qr_acr_qs.dat  qr_acr_qs.dat
-  fi
 
   affix="nc"
   if [ "$OUTPUT_FILE" = "nemsio" ]; then
@@ -640,13 +614,18 @@ WW3_postdet() {
   COMPONENTwave=${COMPONENTwave:-${RUN}wave}
 
   #Link mod_def files for wave grids
-  array=($WAVECUR_FID $WAVEICE_FID $WAVEWND_FID $waveuoutpGRD $waveGRD $waveesmfGRD $wavesbsGRD $wavepostGRD $waveinterpGRD)
-  echo "Wave Grids: $WAVECUR_FID $WAVEICE_FID $WAVEWND_FID $waveuoutpGRD $waveGRD $waveesmfGRD $wavesbsGRD $wavepostGRD $waveinterpGRD"
-  grdALL=$(printf "%s\n" "${array[@]}" | sort -u | tr '\n' ' ')
+  if [ $waveMULTIGRID = ".true." ]; then
+    array=($WAVECUR_FID $WAVEICE_FID $WAVEWND_FID $waveuoutpGRD $waveGRD $waveesmfGRD)
+    echo "Wave Grids: $WAVECUR_FID $WAVEICE_FID $WAVEWND_FID $waveuoutpGRD $waveGRD $waveesmfGRD"
+    grdALL=$(printf "%s\n" "${array[@]}" | sort -u | tr '\n' ' ')
 
-  for wavGRD in ${grdALL}; do
-    $NCP $ROTDIR/${CDUMP}.${PDY}/${cyc}/wave/rundata/${COMPONENTwave}.mod_def.$wavGRD $DATA/mod_def.$wavGRD
-  done
+    for wavGRD in ${grdALL}; do
+      $NCP $ROTDIR/${CDUMP}.${PDY}/${cyc}/wave/rundata/${COMPONENTwave}.mod_def.$wavGRD $DATA/mod_def.$wavGRD
+    done
+  else 
+    #if shel, only 1 waveGRD which is linked to mod_def.ww3 
+    $NCP $ROTDIR/${CDUMP}.${PDY}/${cyc}/wave/rundata/${COMPONENTwave}.mod_def.$waveGRD $DATA/mod_def.ww3
+  fi
 
   export WAVHCYC=${WAVHCYC:-6}
   export WRDATE=$($NDATE -${WAVHCYC} $CDATE)
@@ -669,15 +648,28 @@ WW3_postdet() {
       waverstfile=${RSTDIR_WAVE}/${sPDY}.${scyc}0000.restart.${wavGRD}
     fi
     if [ ! -f ${waverstfile} ]; then
-      echo "WARNING: NON-FATAL ERROR wave IC is missing, will start from rest"
+      if [ $RERUN = "NO" ]; then
+        echo "WARNING: NON-FATAL ERROR wave IC is missing, will start from rest"
+      else 
+        echo "ERROR: Wave IC is missing in RERUN, exiting." 
+        exit 1 
+      fi 
     else
-      $NLN ${waverstfile} $DATA/restart.${wavGRD}
+      if [ $waveMULTIGRID = ".true." ]; then
+        $NLN ${waverstfile} $DATA/restart.${wavGRD}
+      else 
+        $NLN ${waverstfile} $DATA/restart.ww3
+      fi
     fi
   done  
 
-  for wavGRD in $waveGRD ; do
-    eval $NLN $datwave/${wavprfx}.log.${wavGRD}.${PDY}${cyc} log.${wavGRD}
-  done 
+  if [ $waveMULTIGRID = ".true." ]; then
+    for wavGRD in $waveGRD ; do
+      $NLN $datwave/${wavprfx}.log.${wavGRD}.${PDY}${cyc} log.${wavGRD}
+    done
+  else 
+    $NLN $datwave/${wavprfx}.log.${waveGRD}.${PDY}${cyc} log.ww3 
+  fi 
 
   if [ "$WW3ICEINP" = "YES" ]; then
     wavicefile=$COMINwave/rundata/${CDUMPwave}.${WAVEICE_FID}.${cycle}.ice
@@ -701,7 +693,9 @@ WW3_postdet() {
 
   # Link output files
   cd $DATA
-  eval $NLN $datwave/${wavprfx}.log.mww3.${PDY}${cyc} log.mww3
+  if [ $waveMULTIGRID = ".true." ]; then
+    $NLN $datwave/${wavprfx}.log.mww3.${PDY}${cyc} log.mww3
+  fi 
 
   # Loop for gridded output (uses FHINC)
   fhr=$FHMIN_WAV
@@ -709,9 +703,13 @@ WW3_postdet() {
     YMDH=$($NDATE $fhr $CDATE)
     YMD=$(echo $YMDH | cut -c1-8)
     HMS="$(echo $YMDH | cut -c9-10)0000"
-    for wavGRD in ${waveGRD} ; do
-      eval $NLN $datwave/${wavprfx}.out_grd.${wavGRD}.${YMD}.${HMS} $DATA/${YMD}.${HMS}.out_grd.${wavGRD}
-    done
+    if [ $waveMULTIGRID = ".true." ]; then
+      for wavGRD in ${waveGRD} ; do
+        $NLN $datwave/${wavprfx}.out_grd.${wavGRD}.${YMD}.${HMS} $DATA/${YMD}.${HMS}.out_grd.${wavGRD}
+      done
+    else 
+      $NLN $datwave/${wavprfx}.out_grd.${waveGRD}.${YMD}.${HMS} $DATA/${YMD}.${HMS}.out_grd.ww3
+    fi 
     FHINC=$FHOUT_WAV
     if [ $FHMAX_HF_WAV -gt 0 -a $FHOUT_HF_WAV -gt 0 -a $fhr -lt $FHMAX_HF_WAV ]; then
       FHINC=$FHOUT_HF_WAV
@@ -725,7 +723,12 @@ WW3_postdet() {
     YMDH=$($NDATE $fhr $CDATE)
     YMD=$(echo $YMDH | cut -c1-8)
     HMS="$(echo $YMDH | cut -c9-10)0000"
-    eval $NLN $datwave/${wavprfx}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS} $DATA/${YMD}.${HMS}.out_pnt.${waveuoutpGRD}
+    if [ $waveMULTIGRID = ".true." ]; then
+      $NLN $datwave/${wavprfx}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS} $DATA/${YMD}.${HMS}.out_pnt.${waveuoutpGRD}
+    else 
+      $NLN $datwave/${wavprfx}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS} $DATA/${YMD}.${HMS}.out_pnt.ww3
+    fi 
+
     FHINC=$FHINCP_WAV
     fhr=$((fhr+FHINC))
   done
@@ -735,11 +738,17 @@ WW3_nml() {
   echo "SUB ${FUNCNAME[0]}: Copying input files for WW3"
   WAV_MOD_TAG=${CDUMP}wave${waveMEMB}
   if [ "${USE_WAV_RMP:-YES}" = "YES" ]; then
-    for file in $(ls $COMINwave/rundata/rmp_src_to_dst_conserv_*) ; do
-      $NLN $file $DATA/
-    done
-  fi 
-  $NLN $COMINwave/rundata/ww3_multi.${CDUMPwave}${WAV_MEMBER}.${cycle}.inp $DATA/ww3_multi.inp
+    if (( $( ls -1 $FIXwave/rmp_src_to_dst_conserv_* > /dev/null | wc -l) > 0 )); then
+      for file in $(ls $FIXwave/rmp_src_to_dst_conserv_*) ; do
+        $NLN $file $DATA/ 
+      done
+    else
+      echo 'FATAL ERROR : No rmp precomputed nc files found for wave model' 
+      exit 4 
+    fi
+  fi
+  source $SCRIPTDIR/parsing_namelists_WW3.sh
+  WW3_namelists
 }
 
 WW3_out() {
@@ -794,14 +803,7 @@ MOM6_postdet() {
   export ENSMEM=${ENSMEM:-01}
   export IDATE=$CDATE
 
-  if [ $RUN_ENVIR = "nco" ]; then
-    export COMIN=${COMIN:-$ROTDIR/$RUN.$PDY/$cyc}
-    export COMOUT=${COMOUT:-$ROTDIR/$RUN.$PDY/$cyc}
-  else
-    export COMIN="$ROTDIR/$CDUMP.$PDY/$cyc"
-    export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc"
-  fi
-  [[ ! -d $COMOUT/ocean ]] && mkdir -p $COMOUT/ocean
+  [[ ! -d $COMOUTocean ]] && mkdir -p $COMOUTocean
 
   fhrlst=$OUTPUT_FH
 
@@ -831,21 +833,21 @@ MOM6_postdet() {
 
     source_file="ocn_${YYYY_MID}_${MM_MID}_${DD_MID}_${HH_MID}.nc"
     dest_file="ocn${VDATE}.${ENSMEM}.${IDATE}.nc"
-    ${NLN} ${COMOUT}/ocean/${dest_file} ${DATA}/${source_file}
+    ${NLN} ${COMOUTocean}/${dest_file} ${DATA}/${source_file}
 
     source_file="wavocn_${YYYY_MID}_${MM_MID}_${DD_MID}_${HH_MID}.nc"
     dest_file=${source_file}
-    ${NLN} ${COMOUT}/ocean/${dest_file} ${DATA}/${source_file}
+    ${NLN} ${COMOUTocean}/${dest_file} ${DATA}/${source_file}
 
     source_file="ocn_daily_${YYYY}_${MM}_${DD}.nc"
     dest_file=${source_file}
     if [ ! -a "${DATA}/${source_file}" ]; then
-      $NLN ${COMOUT}/ocean/${dest_file} ${DATA}/${source_file}
+      $NLN ${COMOUTocean}/${dest_file} ${DATA}/${source_file}
     fi
 
     last_fhr=$fhr
   done
-  $NLN $COMOUT/ocean/MOM_input $DATA/INPUT/MOM_input
+  $NLN ${COMOUTocean}/MOM_input $DATA/INPUT/MOM_input
 
   echo "SUB ${FUNCNAME[0]}: MOM6 input data linked/copied"
 
@@ -874,13 +876,13 @@ CICE_postdet() {
   npt=$((FHMAX*$stepsperhr))      # Need this in order for dump_last to work
 
   histfreq_n=${histfreq_n:-6}
-  dumpfreq_n=${dumpfreq_n:-3024000}  # restart write interval in seconds, default 35 days
-  dumpfreq=${dumpfreq:-"s"} #  "s" or "d" or "m" for restarts at intervals of "seconds", "days" or "months"
+  dumpfreq_n=${dumpfreq_n:-840}  # restart write interval in seconds, default 35 days
+  dumpfreq=${dumpfreq:-"h"} #  "h","d","m" or "y" for restarts at intervals of "hours", "days", "months" or "years"
   cice_hist_avg=${cice_hist_avg:-".true."}
 
   FRAZIL_FWSALT=${FRAZIL_FWSALT:-".true."}
   ktherm=${ktherm:-2}
-  tfrz_option=${tfrz_option:-"mushy"}
+  tfrz_option=${tfrz_option:-"'mushy'"}
   tr_pond_lvl=${tr_pond_lvl:-".true."} # Use level melt ponds tr_pond_lvl=true
 
   # restart_pond_lvl (if tr_pond_lvl=true):
@@ -926,8 +928,8 @@ CICE_postdet() {
   # Link output files
   export ENSMEM=${ENSMEM:-01}
   export IDATE=$CDATE
-  [[ ! -d $COMOUT/ice ]] && mkdir -p $COMOUT/ice
-  $NLN $COMOUT/ice/ice_in $DATA/ice_in
+  [[ ! -d $COMOUTice ]] && mkdir -p $COMOUTice
+  $NLN $COMOUTice/ice_in $DATA/ice_in
   fhrlst=$OUTPUT_FH
 
   for fhr in $fhrlst; do
@@ -942,10 +944,10 @@ CICE_postdet() {
     SS=$((10#$HH*3600))
 
     if [[ 10#$fhr -eq 0 ]]; then
-      $NLN $COMOUT/ice/iceic$VDATE.$ENSMEM.$IDATE.nc $DATA/history/iceh_ic.${YYYY}-${MM}-${DD}-$(printf "%5.5d" ${SS}).nc
+      $NLN $COMOUTice/iceic$VDATE.$ENSMEM.$IDATE.nc $DATA/history/iceh_ic.${YYYY}-${MM}-${DD}-$(printf "%5.5d" ${SS}).nc
     else
       (( interval = fhr - last_fhr ))
-      $NLN $COMOUT/ice/ice$VDATE.$ENSMEM.$IDATE.nc $DATA/history/iceh_$(printf "%0.2d" $interval)h.${YYYY}-${MM}-${DD}-$(printf "%5.5d" ${SS}).nc
+      $NLN $COMOUTice/ice$VDATE.$ENSMEM.$IDATE.nc $DATA/history/iceh_$(printf "%0.2d" $interval)h.${YYYY}-${MM}-${DD}-$(printf "%5.5d" ${SS}).nc
     fi
     last_fhr=$fhr
   done
@@ -994,19 +996,20 @@ GOCART_rc() {
 GOCART_postdet() {
   echo "SUB ${FUNCNAME[0]}: Linking output data for GOCART"
 
-  [[ ! -d $COMOUT/chem ]] && mkdir -p $COMOUT/chem
+  [[ ! -d $COMOUTaero ]] && mkdir -p $COMOUTaero
 
+  fhrlst=$OUTPUT_FH
   for fhr in $fhrlst; do
     if [ $fhr = 'anl' ]; then
       continue
     fi
-    VDATE=$($NDATE $fhr $IDATE)
+    VDATE=$($NDATE $fhr $CDATE)
     YYYY=$(echo $VDATE | cut -c1-4)
     MM=$(echo $VDATE | cut -c5-6)
     DD=$(echo $VDATE | cut -c7-8)
     HH=$(echo $VDATE | cut -c9-10)
     SS=$((10#$HH*3600))
 
-    $NLN $COMOUT/chem/gocart.inst_aod.${YYYY}${MM}${DD}_${HH}00z.nc4 $DATA/gocart.inst_aod.${YYYY}${MM}${DD}_${HH}00z.nc4
+    $NLN $COMOUTaero/gocart.inst_aod.${YYYY}${MM}${DD}_${HH}00z.nc4 $DATA/gocart.inst_aod.${YYYY}${MM}${DD}_${HH}00z.nc4
   done
 }

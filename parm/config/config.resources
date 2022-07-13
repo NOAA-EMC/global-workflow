@@ -8,7 +8,7 @@ if [ $# -ne 1 ]; then
 
     echo "Must specify an input task argument to set resource variables!"
     echo "argument can be any one of the following:"
-    echo "getic init coupled_ic"
+    echo "getic init coupled_ic aerosol_init"
     echo "anal analcalc analdiag gldas fcst post vrfy metp arch echgres"
     echo "eobs ediag eomg eupd ecen esfc efcs epos earc"
     echo "init_chem mom6ic ocnpost"
@@ -46,12 +46,23 @@ elif [[ "$machine" = "ORION" ]]; then
 fi
 
 if [ $step = "prep" -o $step = "prepbufr" ]; then
-
     eval "export wtime_$step='00:45:00'"
     eval "export npe_$step=4"
     eval "export npe_node_$step=2"
     eval "export nth_$step=1"
     eval "export memory_$step=40G"
+
+elif [ $step = "aerosol_init" ]; then
+    export wtime_aerosol_init="00:05:00"
+    export npe_aerosol_init=1
+    export nth_aerosol_init=1
+    export npe_node_aerosol_init=$(echo "$npe_node_max / $nth_aerosol_init" | bc)
+    export NTASKS=${npe_aerosol_init}
+    export memory_aerosol_init="4G"
+    if [ $machine = "HERA" ]; then
+        # Hera needs a bit more memory since it has fewer CPU/core
+        export memory_aerosol_init="6G"
+    fi
 
 elif [ $step = "waveinit" ]; then
 
@@ -198,8 +209,8 @@ elif [ $step = "fcst" ]; then
 
         (( ATMPETS = layout_x * layout_y * 6 ))
 
-        # Mediator only uses the atm model PETS
-        export MEDPETS=$ATMPETS
+        # Mediator only uses the atm model PETS or less
+        export MEDPETS=${MEDPETS:-ATMPETS}
 
         if [[ $DO_AERO == "YES" ]]; then
             # Aerosol model only uses the atm model PETS
@@ -226,6 +237,7 @@ elif [ $step = "fcst" ]; then
             case $waveGRD in
                 'gnh_10m aoc_9km gsh_15m') export WAVPETS=140 ;;
                 'gwes_30m') export WAVPETS=160 ;;
+                'mx025') export WAVPETS=80 ;;
                 *)
                     echo "FATAL: Number of PEs not defined for wave grid '$waveGRD'"
                     echo "  Please add an entry to config.resources within fcst for this grid"
@@ -239,7 +251,7 @@ elif [ $step = "fcst" ]; then
                 # Except for 025, these are guesses for now
                 100) export OCNPETS=20 ;;
                 050) export OCNPETS=60 ;;
-                025) export OCNPETS=220 ;;
+                025) export OCNPETS=120 ;;
                 *)
                     echo "FATAL: Number of PEs not defined for ocean resolution '$OCNRES'"
                     echo "  Please add an entry to config.resources within fcst for this resolution"
@@ -253,7 +265,7 @@ elif [ $step = "fcst" ]; then
                 # Except for 025, these are guesses for now
                 100) export ICEPETS=10 ;;
                 050) export ICEPETS=30 ;;
-                025) export ICEPETS=80 ;;
+                025) export ICEPETS=48 ;;
                 *)
                     echo "FATAL: Number of PEs not defined for ice resolution '$ICERES'"
                     echo "  Please add an entry to config.resources within fcst for this resolution"

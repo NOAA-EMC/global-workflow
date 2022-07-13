@@ -68,7 +68,6 @@ export HOMEpost="$HOMEgfs"
 export HOMEobsproc_prep="$NWPROD/obsproc_prep.v5.5.0"
 export HOMEobsproc_network="$NWPROD/obsproc_global.v3.4.2"
 export HOMEobsproc_global=$HOMEobsproc_network
-export BASE_VERIF="$BASE_GIT/verif/global/tags/vsdb"
 
 # CONVENIENT utility scripts and other environment parameters
 export NCP="/bin/cp -p"
@@ -212,7 +211,7 @@ export DO_WAVE=YES
 export WAVE_CDUMP="both"
 
 # Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL
-export imp_physics=11
+export imp_physics=8
 
 # Shared parameters
 # Hybrid related

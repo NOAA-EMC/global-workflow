@@ -450,7 +450,7 @@ def get_gdasgfs_tasks(dict_configs, cdump='gdas'):
     data = f'&ROTDIR;/gdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmf009{gridsuffix}'
     dep_dict = {'type': 'data', 'data': data, 'offset': '-06:00:00'}
     deps.append(rocoto.add_dependency(dep_dict))
-    data = f'&DMPDIR;/{cdump}{dumpsuffix}.@Y@m@d/@H/{cdump}.t@Hz.updated.status.tm00.bufr_d'
+    data = f'&DMPDIR;/{cdump}{dumpsuffix}.@Y@m@d/@H/atmos/{cdump}.t@Hz.updated.status.tm00.bufr_d'
     dep_dict = {'type': 'data', 'data': data}
     deps.append(rocoto.add_dependency(dep_dict))
     dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
