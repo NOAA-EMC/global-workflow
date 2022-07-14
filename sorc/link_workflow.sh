@@ -265,7 +265,7 @@ for ufs_utilsexe in \
 done
 
 for gsiexe in  calc_analysis.x calc_increment_ens_ncio.x calc_increment_ens.x \
-    getsfcensmeanp.x getsigensmeanp_smooth.x getsigensstatp.x enkf.x gsi.x \
+    getsfcensmeanp.x getsigensmeanp_smooth.x getsigensstatp.x efsoi.x enkf.x gsi.x \
     interp_inc.x ncdiag_cat_serial.x recentersigp.x;do
     [[ -s $gsiexe ]] && rm -f $gsiexe
     $LINK ../sorc/gsi.fd/install/bin/$gsiexe .
