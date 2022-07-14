@@ -7,7 +7,7 @@ OPTIND=1
 while getopts ":dov" option; do
   case "${option}" in
     d) export BUILD_TYPE="DEBUG";;
-    o) _ops="YES";;
+    o) _ops="YES";;  # TODO - unused; remove?
     v) export BUILD_VERBOSE="YES";;
     \?)
       echo "[$BASH_SOURCE]: Unrecognized option: ${option}"
@@ -21,20 +21,9 @@ while getopts ":dov" option; do
 done
 shift $((OPTIND-1))
 
-GSI_INSTALL_PREFIX="${cwd}/gsi_enkf.fd/install"
-if [[ -d "${GSI_INSTALL_PREFIX}" ]]; then
-  CMAKE_OPTS="-Dncdiag_ROOT=${GSI_INSTALL_PREFIX}"
-else
-  echo << EOF
-FATAL: ${GSI_INSTALL_PREFIX} does not exist
-       Have you built GSI yet?
-EOF
-  exit 2
-fi
-
 BUILD_TYPE=${BUILD_TYPE:-"Release"} \
 BUILD_VERBOSE=${BUILD_VERBOSE:-"NO"} \
-CMAKE_OPTS=${CMAKE_OPTS} \
-${cwd}/gsi_monitor.fd/ush/build.sh
+UTIL_OPTS="-DBUILD_UTIL_ENKF_GFS=ON -DBUILD_UTIL_NCIO=ON" \
+${cwd}/gsi_utils.fd/ush/build.sh
 
 exit

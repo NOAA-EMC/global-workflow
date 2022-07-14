@@ -25,6 +25,7 @@ parm/config/config.base
 parm/gldas
 parm/mon
 parm/post/AEROSOL_LUTS.dat
+parm/post/nam_micro_lookup.dat
 parm/post/optics_luts_DUST.dat
 parm/post/gtg.config.gfs
 parm/post/gtg_imprintings.txt
@@ -76,7 +77,12 @@ sorc/ufs_model.fd
 sorc/gfs_post.fd
 sorc/gfs_wafs.fd
 sorc/gldas.fd
+sorc/gsi_enkf.fd
+# TODO - remove ncdiag.fd once it is a module on the systems
+sorc/ncdiag.fd
 sorc/gsi.fd
+sorc/enkf.fd
+sorc/gsi_utils.fd
 sorc/gsi_monitor.fd
 sorc/ufs_utils.fd
 sorc/verif-global.fd
