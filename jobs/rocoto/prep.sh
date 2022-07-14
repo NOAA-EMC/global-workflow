@@ -16,11 +16,6 @@ for config in $configs; do
 done
 
 ###############################################################
-# Load prepobs modulefile
-module use $HOMEprepobs/modulefiles
-module load prepobs/$prepobs_run_ver
-
-###############################################################
 # Source machine runtime environment
 . $BASE_ENV/${machine}.env prep
 status=$?
