@@ -132,7 +132,7 @@ mkdir -p ${logdir}
 errs=0
 checkout "ufs_model.fd"    "https://github.com/ufs-community/ufs-weather-model" "${ufs_model_hash:-Prototype-P8c}"; errs=$((errs + $?))
 checkout "gsi_enkf.fd"     "https://github.com/NOAA-EMC/GSI.git"                "67f5ab4"                         ; errs=$((errs + $?))
-checkout "gsi_utils.fd"    "https://github.com/NOAA-EMC/GSI-Utils.git"          "00c95c4"                         ; errs=$((errs + $?))
+checkout "gsi_utils.fd"    "https://github.com/NOAA-EMC/GSI-Utils.git"          "e0dc960"                         ; errs=$((errs + $?))
 checkout "gsi_monitor.fd"  "https://github.com/NOAA-EMC/GSI-Monitor.git"        "acf8870"                         ; errs=$((errs + $?))
 checkout "gldas.fd"        "https://github.com/NOAA-EMC/GLDAS.git"              "fd8ba62"                         ; errs=$((errs + $?))
 checkout "ufs_utils.fd"    "https://github.com/ufs-community/UFS_UTILS.git"     "a2b0817"                         ; errs=$((errs + $?))

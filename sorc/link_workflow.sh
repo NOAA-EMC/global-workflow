@@ -138,7 +138,7 @@ fi
 #------------------------------
 cd ${pwd}/../fix                ||exit 8
     [[ -d fix_gsi ]] && rm -rf fix_gsi
-    $LINK ../sorc/gsi.fd/fix  fix_gsi
+    $LINK ../sorc/gsi_enkf.fd/fix  fix_gsi
 
 
 #------------------------------
@@ -258,10 +258,6 @@ done
 #--link source code directories
 #------------------------------
 cd ${pwd}/../sorc   ||   exit 8
-
-    # TODO - remove once ncdiag is available as a module on the system
-    [[ -d ncdiag.fd ]] && rm -rf ncdiag.fd
-    $SLINK gsi_enkf.fd/src/ncdiag                                                               ncdiag.fd
 
     [[ -d gsi.fd ]] && rm -rf gsi.fd
     $SLINK gsi_enkf.fd/src/gsi                                                                  gsi.fd
