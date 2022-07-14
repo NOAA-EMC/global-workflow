@@ -627,6 +627,15 @@ WW3_postdet() {
     $NCP $ROTDIR/${CDUMP}.${PDY}/${cyc}/wave/rundata/${COMPONENTwave}.mod_def.$waveGRD $DATA/mod_def.ww3
   fi
 
+
+  #if wave mesh is not the same as the ocn/ice mesh, linkk it in the file
+  comparemesh=${MESH_OCN_ICE:-"mesh.mx${ICERES}.nc"}
+  if [ "$MESH_WAV" = "$comparemesh" ]; then 
+    echo "Wave is on same mesh as ocean/ice"
+  else 
+    $NLN -sf $FIXwave/$MESH_WAV $DATA/
+  fi 
+
   export WAVHCYC=${WAVHCYC:-6}
   export WRDATE=$($NDATE -${WAVHCYC} $CDATE)
   export WRPDY=$(echo $WRDATE | cut -c1-8)
