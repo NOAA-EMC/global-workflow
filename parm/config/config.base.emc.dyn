@@ -70,7 +70,6 @@ export FIXgsi="$HOMEgfs/fix/fix_gsi"
 export HOMEfv3gfs="$HOMEgfs/sorc/fv3gfs.fd"
 export HOMEpost="$HOMEgfs"
 export HOMEobsproc="$BASE_GIT/obsproc/v${obsproc_run_ver}"
-export HOMEprepobs="$BASE_GIT/prepobs/v${prepobs_run_ver}"
 export BASE_VERIF="$BASE_GIT/verif/global/tags/vsdb"
 
 # CONVENIENT utility scripts and other environment parameters
