@@ -7,7 +7,7 @@ cwd=$(pwd)
 APP="S2SWA"
 CCPP_SUITES="FV3_GFS_v16,FV3_GFS_v16_ugwpv1,FV3_GFS_v17_p8,FV3_GFS_v16_coupled_nsstNoahmpUGWPv1,FV3_GFS_v17_coupled_p8"
 
-while getopts ":dav" option; do
+while getopts ":da:v" option; do
   case "${option}" in
     d) BUILD_TYPE="Debug";;
     a) APP="${OPTARG}" ;;
