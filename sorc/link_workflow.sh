@@ -206,8 +206,8 @@ for workflowexec in enkf_chgres_recenter.x enkf_chgres_recenter_nc.x fv3nc2nemsi
   $LINK ../sorc/install/bin/$workflowexec .
 done
 
-[[ -s ufs_model ]] && rm -f ufs_model
-$LINK ../sorc/ufs_model.fd/build/ufs_model .
+[[ -s ufs_model.x ]] && rm -f ufs_model.x
+$LINK ../sorc/ufs_model.fd/tests/ufs_model.x .
 
 [[ -s gfs_ncep_post ]] && rm -f gfs_ncep_post
 $LINK ../sorc/upp.fd/exec/upp.x gfs_ncep_post

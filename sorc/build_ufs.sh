@@ -1,44 +1,38 @@
 #! /usr/bin/env bash
 set -eux
 
+cwd=$(pwd)
+
 # Default settings
 APP="S2SWA"
 CCPP_SUITES="FV3_GFS_v16,FV3_GFS_v16_ugwpv1,FV3_GFS_v17_p8,FV3_GFS_v16_coupled_nsstNoahmpUGWPv1,FV3_GFS_v17_coupled_p8"
 
-while getopts "a:v" option; do
+while getopts ":dav" option; do
   case "${option}" in
+    d) BUILD_TYPE="Debug";;
     a) APP="${OPTARG}" ;;
     v) BUILD_VERBOSE="YES";;
-    *)
-      echo "Unrecognized option: ${1}"
-      exit 1
+    \?)
+      echo "[$BASH_SOURCE]: Unrecognized option: ${option}"
+      ;;
+    :)
+      echo "[$BASH_SOURCE]: ${option} requires an argument"
       ;;
   esac
 done
 
-source ./machine-setup.sh > /dev/null 2>&1
-cwd=$(pwd)
+cd $cwd/ufs_model.fd
 
-# Set target platform
-case "${target}" in
-  hera|orion|stampede|jet|cheyenne)
-    target=${target}.intel
-    ;;
-esac
+export RT_COMPILER="intel"
+source $cwd/ufs_model.fd/tests/detect_machine.sh
+MAKE_OPT="-DAPP=${APP} -DCCPP_SUITES=${CCPP_SUITES}"
+[[ ${BUILD_TYPE:-"Release"} = "DEBUG" ]] && MAKE_OPT+=" -DDEBUG=ON"
+COMPILE_NR=0
+CLEAN_BEFORE=YES
+CLEAN_AFTER=NO
 
-MOD_PATH=$cwd/ufs_model.fd/modulefiles
+./tests/compile.sh $MACHINE_ID "$MAKE_OPT" $COMPILE_NR $CLEAN_BEFORE $CLEAN_AFTER
+mv ./tests/fv3_${COMPILE_NR}.exe ./tests/ufs_model.x
+mv ./tests/modules.fv3_${COMPILE_NR} ./tests/modules.ufs_model
 
-cd ufs_model.fd/
-set +x
-module purge
-module use ${MOD_PATH}
-module load ufs_${target}
-set -x
-
-# Remove previous build directory if it exists
-if [ -d build ]; then
-  rm -R build
-fi
-mkdir -p build && cd build
-cmake -DAPP=${APP} -DCCPP_SUITES=${CCPP_SUITES} ..
-OMP_NUM_THREADS=1 make -j ${BUILD_JOBS:-8} VERBOSE=${BUILD_VERBOSE:-}
+exit 0
