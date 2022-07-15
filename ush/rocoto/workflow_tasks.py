@@ -802,7 +802,7 @@ class Tasks:
             deps.append(rocoto.add_dependency(dep_dict))
             dep_dict = {'type': 'task', 'name': f'{self.cdump}wavepostpnt'}
             deps.append(rocoto.add_dependency(dep_dict))
-            if self.app_config.do_wave_bnd and self.cdump in ['gfs']:
+            if self.app_config.do_wave_bnd:
                 dep_dict = {'type': 'task', 'name': f'{self.cdump}wavepostbndpnt'}
                 deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)

@@ -129,6 +129,8 @@ class AppConfig:
         # Get more configuration options into the class attributes
         self.gfs_cyc = self._base.get('gfs_cyc')
 
+        self.lobsdiag_forenkf = False
+        self.eupd_cdumps = None
         if self.do_hybvar:
             self.lobsdiag_forenkf = self._base.get('lobsdiag_forenkf', False)
             eupd_cdump = self._base.get('EUPD_CYC', 'gdas').lower()
@@ -137,13 +139,15 @@ class AppConfig:
             elif eupd_cdump in ['gfs', 'gdas']:
                 self.eupd_cdumps = [eupd_cdump]
 
+        self.do_wave_bnd = False
+        self.wave_cdumps = None
         if self.do_wave:
             wave_cdump = self._base.get('WAVE_CDUMP', 'BOTH').lower()
             if wave_cdump in ['both']:
                 self.wave_cdumps = ['gfs', 'gdas']
             elif wave_cdump in ['gfs', 'gdas']:
                 self.wave_cdumps = [wave_cdump]
-            self.do_wave_bnd = self.configs['wavepostsbs'].get('DOBNDPNT_WAVE', False)
+            self.do_wave_bnd = _base.get('DOBNDPNT_WAVE', False)
 
         # Finally get task names for the application
         self.task_names = self.get_task_names()
@@ -187,7 +191,9 @@ class AppConfig:
             configs += ['awips']
 
         if self.do_wave:
-            configs += ['waveinit', 'waveprep', 'wavepostsbs', 'wavepostbndpnt', 'wavepostbndpntbll', 'wavepostpnt']
+            configs += ['waveinit', 'waveprep', 'wavepostsbs', 'wavepostpnt']
+            if self.do_wave_bnd:
+                configs += ['wavepostbndpnt', 'wavepostbndpntbll']
             if self.do_gempak:
                 configs += ['wavegempak']
             if self.do_awips:
@@ -229,7 +235,9 @@ class AppConfig:
             configs += ['awips']
 
         if self.do_wave:
-            configs += ['waveinit', 'waveprep', 'wavepostsbs', 'wavepostbndpnt', 'wavepostbndpntbll', 'wavepostpnt']
+            configs += ['waveinit', 'waveprep', 'wavepostsbs', 'wavepostpnt']
+            if self.do_wave_bnd:
+                configs += ['wavepostbndpnt', 'wavepostbndpntbll']
             if self.do_gempak:
                 configs += ['wavegempak']
             if self.do_awips:
@@ -315,7 +323,8 @@ class AppConfig:
 
         gldas_tasks = ['gldas']
         wave_prep_tasks = ['waveinit', 'waveprep']
-        wave_post_tasks = ['wavepostsbs', 'wavepostbndpnt', 'wavepostbndpntbll', 'wavepostpnt']
+        wave_bndpnt_tasks = ['wavepostbndpnt', 'wavepostbndpntbll']
+        wave_post_tasks = ['wavepostsbs', 'wavepostpnt']
 
         hybrid_gdas_or_gfs_tasks = []
         hybrid_gdas_tasks = []
@@ -330,7 +339,7 @@ class AppConfig:
         if self.do_gldas:
             gdas_tasks += gldas_tasks
 
-        if self.do_wave:
+        if self.do_wave and 'gdas' in self.wave_cdumps:
             gdas_tasks += wave_prep_tasks
 
         gdas_tasks += ['fcst']
@@ -342,7 +351,9 @@ class AppConfig:
                 gdas_tasks += hybrid_gdas_or_gfs_tasks
                 gdas_tasks += hybrid_gdas_tasks
 
-        if self.do_wave:
+        if self.do_wave and 'gdas' in self.wave_cdumps:
+            if self.do_wave_bnd:
+                gdas_tasks += wave_bndpnt_tasks
             gdas_tasks += wave_post_tasks
 
         gdas_tasks += gdas_gfs_common_cleanup_tasks
@@ -364,6 +375,8 @@ class AppConfig:
             gfs_tasks += hybrid_gdas_or_gfs_tasks
 
         if self.do_wave and 'gfs' in self.wave_cdumps:
+            if self.do_wave_bnd:
+                gfs_tasks += wave_bndpnt_tasks
             gfs_tasks += wave_post_tasks
             if self.do_gempak:
                 gfs_tasks += ['wavegempak']
