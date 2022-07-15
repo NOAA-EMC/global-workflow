@@ -38,12 +38,3 @@ def test_configFile_writesCorrectContent():
         c.eupd.write_to(output_file)
         with open(output_file) as _file:
             assert expected in _file.readlines()
-
-
-
-
-# print(c)
-#     print(c.eupd.path)
-#     print(c.eupd.name)
-#     print(c.eupd.content)
-#     c.eupd.write_to(pathlib.Path("./test_test_test.sh"))
