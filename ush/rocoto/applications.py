@@ -94,6 +94,7 @@ class AppConfig:
         self.model_app = _base.get('APP', 'ATM')
         self.do_hybvar = _base.get('DOHYBVAR', False)
         self.do_wave = _base.get('DO_WAVE', False)
+        self.do_wave_bnd = _base.get('DOBNDPNT_WAVE', False)
         self.do_ocean = _base.get('DO_OCN', False)
         self.do_ice = _base.get('DO_ICE', False)
         self.do_aero = _base.get('DO_AERO', False)
@@ -106,6 +107,24 @@ class AppConfig:
         self.do_metp = _base.get('DO_METP', False)
 
         self.do_hpssarch = _base.get('HPSSARCH', False)
+
+        self.wave_cdumps = None
+        if self.do_wave:
+            wave_cdump = _base.get('WAVE_CDUMP', 'BOTH').lower()
+            if wave_cdump in ['both']:
+                self.wave_cdumps = ['gfs', 'gdas']
+            elif wave_cdump in ['gfs', 'gdas']:
+                self.wave_cdumps = [wave_cdump]
+
+        self.lobsdiag_forenkf = False
+        self.eupd_cdumps = None
+        if self.do_hybvar:
+            self.lobsdiag_forenkf = _base.get('lobsdiag_forenkf', False)
+            eupd_cdump = _base.get('EUPD_CYC', 'gdas').lower()
+            if eupd_cdump in ['both']:
+                self.eupd_cdumps = ['gfs', 'gdas']
+            elif eupd_cdump in ['gfs', 'gdas']:
+                self.eupd_cdumps = [eupd_cdump]
 
         # Get a list of all possible config_files that would be part of the application
         self.configs_names = self._get_app_configs()
@@ -128,26 +147,6 @@ class AppConfig:
 
         # Get more configuration options into the class attributes
         self.gfs_cyc = self._base.get('gfs_cyc')
-
-        self.lobsdiag_forenkf = False
-        self.eupd_cdumps = None
-        if self.do_hybvar:
-            self.lobsdiag_forenkf = self._base.get('lobsdiag_forenkf', False)
-            eupd_cdump = self._base.get('EUPD_CYC', 'gdas').lower()
-            if eupd_cdump in ['both']:
-                self.eupd_cdumps = ['gfs', 'gdas']
-            elif eupd_cdump in ['gfs', 'gdas']:
-                self.eupd_cdumps = [eupd_cdump]
-
-        self.do_wave_bnd = False
-        self.wave_cdumps = None
-        if self.do_wave:
-            wave_cdump = self._base.get('WAVE_CDUMP', 'BOTH').lower()
-            if wave_cdump in ['both']:
-                self.wave_cdumps = ['gfs', 'gdas']
-            elif wave_cdump in ['gfs', 'gdas']:
-                self.wave_cdumps = [wave_cdump]
-            self.do_wave_bnd = _base.get('DOBNDPNT_WAVE', False)
 
         # Finally get task names for the application
         self.task_names = self.get_task_names()
