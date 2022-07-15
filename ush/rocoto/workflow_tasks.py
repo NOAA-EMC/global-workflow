@@ -706,8 +706,8 @@ class Tasks:
                     fhmax = 240
                 if fhmax_hf > 240:
                     fhmax_hf = 240
-                fhrs_hf = range(fhmin, fhmax_hf + fhout_hf, fhout_hf)
-                fhrs = fhrs_hf + range(fhrs_hf[-1] + fhout, fhmax + fhout, fhout)
+                fhrs_hf = list(range(fhmin, fhmax_hf + fhout_hf, fhout_hf))
+                fhrs = fhrs_hf + list(range(fhrs_hf[-1] + fhout, fhmax + fhout, fhout))
 
             nawipsgrp = config['NAWIPSGRP']
             ngrps = nawipsgrp if len(fhrs) > nawipsgrp else len(fhrs)

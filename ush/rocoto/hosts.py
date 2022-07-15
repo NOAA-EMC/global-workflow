@@ -31,7 +31,7 @@ class Host:
         detected_host = self.detect()
 
         if host is not None and host != detected_host:
-                raise ValueError(f'detected host: "{detected_host}" does not match host: "{host}"')
+            raise ValueError(f'detected host: "{detected_host}" does not match host: "{host}"')
 
         self.machine = detected_host
         self.info = self._get_info
