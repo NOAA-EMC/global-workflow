@@ -25,7 +25,7 @@ c.eupd.write_to(pathlib.Path("./eupd.sh"))
 import glob
 import pathlib
 import itertools
-from typing import List
+from typing import Any, Iterable, List
 
 
 class ConfigFile:
@@ -35,10 +35,10 @@ class ConfigFile:
         self.name = name
         self.path = path
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<{self.__class__.__name__} {self.name}:{self.path} />"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.name}: {self.path}"
 
     @property
@@ -59,26 +59,30 @@ class ConfigManager:
     def __init__(self, config_files_root: pathlib.Path):
         self.config_files_root = config_files_root.resolve()
 
-    def __iter__(self):
-        return iter(self.keys)
+    def __iter__(self) -> Iterable:
+        """returns an iterable of tuples (name, path)"""
+        return iter([(x.name, x.path) for x in self.map])
 
-    def __len__(self):
+    def __len__(self) -> int:
+        """number of configs in ConfigManager"""
         return len(self.keys)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<{self.__class__.__name__} {len(self.map)}/>"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{', '.join(self.keys)}"
 
-    def __getitem__(self, __name: str):
+    def __getitem__(self, __name: str) -> ConfigFile:
+        """allows ConfigManager["config_name"] access"""
         return list(filter(lambda x: x.name == __name, self.map))[0]
 
-    def __getattr__(self, __name: str):
+    def __getattr__(self, __name: str) -> ConfigFile:
+        """allows ConfigManager.config_name access"""
         return self.__getitem__(__name)
 
     @property
-    def map(self):
+    def map(self) -> List[ConfigFile]:
         """returns list of ConfigFile"""
         return [
             ConfigFile(config_file.name.split(".", 1)[1], config_file)
@@ -88,18 +92,19 @@ class ConfigManager:
         ]
 
     @property
-    def keys(self):
+    def keys(self) -> List[str]:
         """returns unique list of config names"""
         return sorted({x.name for x in self.map})
 
     @property
-    def paths(self):
+    def paths(self) -> List[pathlib.Path]:
         """returns unique list of config paths"""
         return sorted({x.path for x in self.map})
 
 
 def files_by_path(target: pathlib.Path, extensions: List[str]) -> List[pathlib.Path]:
-    """returns a list of files"""
+    """returns a list of files using `target` as root and 
+    filtering by `extensions`"""
     return [
         pathlib.Path(_file).resolve()
         for _file in itertools.chain(
