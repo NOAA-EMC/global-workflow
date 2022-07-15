@@ -406,6 +406,7 @@ class Tasks:
 
     @property
     def _fcst_forecast_only(self):
+        dependencies = []
         deps = []
         data = f'&ROTDIR;/{self.cdump}.@Y@m@d/@H/atmos/INPUT/sfc_data.tile6.nc'
         dep_dict = {'type': 'data', 'data': data}
@@ -413,7 +414,7 @@ class Tasks:
         data = f'&ROTDIR;/{self.cdump}.@Y@m@d/@H/atmos/RESTART/@Y@m@d.@H0000.sfcanl_data.tile6.nc'
         dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
+        dependencies.append(rocoto.create_dependency(dep_condition='or', dep=deps))
 
         if self.app_config.do_wave and self.cdump in self.app_config.wave_cdumps:
             wave_job = 'waveprep' if self.app_config.model_app in ['ATMW'] else 'waveinit'
@@ -421,11 +422,19 @@ class Tasks:
             dependencies.append(rocoto.add_dependency(dep_dict))
 
         if self.app_config.do_aero:
+            # Calculate offset based on CDUMP = gfs | gdas
+            interval = None
+            if self.cdump in ['gfs']:
+                interval = self._base['INTERVAL_GFS']
+            elif self.cdump in ['gdas']:
+                interval = self._base['INTERVAL']
+            offset = f'-{interval}'
+            deps = []
             dep_dict = {'type': 'task', 'name': f'{self.cdump}aerosol_init'}
-            dependencies.append(rocoto.add_dependency(dep_dict))
-            dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': '-06:00:00'}
-            dependencies.append(rocoto.add_dependency(dep_dict))
-            dependencies = rocoto.create_dependency(dep_condition='or', dep=dependencies)
+            deps.append(rocoto.add_dependency(dep_dict))
+            dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': offset}
+            deps.append(rocoto.add_dependency(dep_dict))
+            dependencies.append(rocoto.create_dependency(dep_condition='or', dep=deps))
 
         dependencies = rocoto.create_dependency(dep_condition='and', dep=dependencies)
 
