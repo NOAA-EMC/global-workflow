@@ -403,12 +403,16 @@ class Tasks:
         dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
 
         if self.app_config.do_wave and self.cdump in self.app_config.wave_cdumps:
-            dep_dict = {'type': 'task', 'name': f'{self.cdump}waveprep'}
+            wave_job = 'waveprep' if self.app_config.model_app in ['ATMW'] else 'waveinit'
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}{wave_job}'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 
-        if self.app_config.do_aero:  # TODO - check dependency on cycleexist of previous cycle?
+        if self.app_config.do_aero:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}aerosol_init'}
             dependencies.append(rocoto.add_dependency(dep_dict))
+            dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': '-06:00:00'}
+            dependencies.append(rocoto.add_dependency(dep_dict))
+            dependencies = rocoto.create_dependency(dep_condition='or', dep=dependencies)
 
         dependencies = rocoto.create_dependency(dep_condition='and', dep=dependencies)
 
