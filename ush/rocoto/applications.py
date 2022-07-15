@@ -94,7 +94,7 @@ class AppConfig:
         self.model_app = _base.get('APP', 'ATM')
         self.do_hybvar = _base.get('DOHYBVAR', False)
         self.do_wave = _base.get('DO_WAVE', False)
-        self.do_ocean = _base.get('DO_OCEAN', False)
+        self.do_ocean = _base.get('DO_OCN', False)
         self.do_ice = _base.get('DO_ICE', False)
         self.do_aero = _base.get('DO_AERO', False)
         self.do_gldas = _base.get('DO_GLDAS', False)
