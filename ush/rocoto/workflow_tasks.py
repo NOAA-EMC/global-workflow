@@ -11,7 +11,7 @@ __all__ = ['Tasks', 'create_wf_task', 'get_wf_tasks']
 class Tasks:
     SERVICE_TASKS = ['arch', 'earc', 'getic']
     VALID_TASKS = ['aerosol_init', 'coupled_ic', 'getic', 'init',
-                   'prep', 'anal', 'analcalc', 'analdiag', 'gldas', 'arch',
+                   'prep', 'anal', 'sfcanl', 'analcalc', 'analdiag', 'gldas', 'arch',
                    'earc', 'ecen', 'echgres', 'ediag', 'efcs',
                    'eobs', 'eomg', 'epos', 'esfc', 'eupd',
                    'fcst', 'post', 'ocnpost', 'vrfy', 'metp',
@@ -307,7 +307,6 @@ class Tasks:
 
         for file in files:
             data = [f'&ROTDIR;/{self.cdump}.@Y@m@d/@H/atmos/RERUN_RESTART/', file]
-            offset_list = [f'{offset}', None]
             dep_dict = {'type': 'data', 'data': data, 'offset': [offset, None]}
             deps.append(rocoto.add_dependency(dep_dict))
 
@@ -334,10 +333,24 @@ class Tasks:
 
         return task
 
+    def sfcanl(self):
+
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}anal'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('sfcanl')
+        task = create_wf_task('sfcanl', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
     def analcalc(self):
 
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump}anal'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}sfcanl'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_hybvar and self.cdump in ['gdas']:
             dep_dict = {'type': 'task', 'name': f'{"gdas"}echgres', 'offset': '-06:00:00'}
@@ -366,7 +379,7 @@ class Tasks:
     def gldas(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.cdump}anal'}
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}sfcanl'}
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'cycleexist', 'offset': '-06:00:00'}
         deps.append(rocoto.add_dependency(dep_dict))
@@ -424,7 +437,7 @@ class Tasks:
     @property
     def _fcst_cycled(self):
 
-        dep_dict = {'type': 'task', 'name': f'{self.cdump}anal'}
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}sfcanl'}
         dep = rocoto.add_dependency(dep_dict)
         dependencies = rocoto.create_dependency(dep=dep)
 

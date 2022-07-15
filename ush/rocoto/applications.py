@@ -168,7 +168,7 @@ class AppConfig:
         """
 
         configs = ['prep',
-                   'anal', 'analdiag', 'analcalc',
+                   'anal', 'sfcanl', 'analdiag', 'analcalc',
                    'fcst', 'post', 'vrfy', 'arch']
 
         if self.do_gldas:
@@ -309,7 +309,7 @@ class AppConfig:
         This is the place where that order is set.
         """
 
-        gdas_gfs_common_tasks_before_fcst = ['prep', 'anal', 'analcalc']
+        gdas_gfs_common_tasks_before_fcst = ['prep', 'anal', 'sfcanl', 'analcalc']
         gdas_gfs_common_tasks_after_fcst = ['post', 'vrfy']
         gdas_gfs_common_cleanup_tasks = ['arch']
 
