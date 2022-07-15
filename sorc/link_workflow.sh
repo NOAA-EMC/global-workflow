@@ -138,7 +138,7 @@ fi
 #------------------------------
 cd ${pwd}/../fix                ||exit 8
     [[ -d fix_gsi ]] && rm -rf fix_gsi
-    $LINK ../sorc/gsi.fd/fix  fix_gsi
+    $LINK ../sorc/gsi_enkf.fd/fix  fix_gsi
 
 
 #------------------------------
@@ -206,8 +206,8 @@ for workflowexec in enkf_chgres_recenter.x enkf_chgres_recenter_nc.x fv3nc2nemsi
   $LINK ../sorc/install/bin/$workflowexec .
 done
 
-[[ -s ufs_model ]] && rm -f ufs_model
-$LINK ../sorc/ufs_model.fd/build/ufs_model .
+[[ -s ufs_model.x ]] && rm -f ufs_model.x
+$LINK ../sorc/ufs_model.fd/tests/ufs_model.x .
 
 [[ -s gfs_ncep_post ]] && rm -f gfs_ncep_post
 $LINK ../sorc/upp.fd/exec/upp.x gfs_ncep_post
@@ -229,8 +229,7 @@ for ufs_utilsexe in \
 done
 
 # GSI
-# TODO - remove ncdiag_cat_serial.x when ncdiag becomes a module
-for exe in ncdiag_cat_serial.x enkf.x gsi.x; do
+for exe in enkf.x gsi.x; do
     [[ -s $exe ]] && rm -f $exe
     $LINK ../sorc/gsi_enkf.fd/install/bin/$exe .
 done
@@ -259,10 +258,6 @@ done
 #--link source code directories
 #------------------------------
 cd ${pwd}/../sorc   ||   exit 8
-
-    # TODO - remove once ncdiag is available as a module on the system
-    [[ -d ncdiag.fd ]] && rm -rf ncdiag.fd
-    $SLINK gsi_enkf.fd/src/ncdiag                                                               ncdiag.fd
 
     [[ -d gsi.fd ]] && rm -rf gsi.fd
     $SLINK gsi_enkf.fd/src/gsi                                                                  gsi.fd

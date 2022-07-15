@@ -9,7 +9,7 @@ if [ $# -ne 1 ]; then
     echo "Must specify an input task argument to set resource variables!"
     echo "argument can be any one of the following:"
     echo "getic init coupled_ic aerosol_init"
-    echo "anal analcalc analdiag gldas fcst post vrfy metp arch echgres"
+    echo "anal sfcanl analcalc analdiag gldas fcst post vrfy metp arch echgres"
     echo "eobs ediag eomg eupd ecen esfc efcs epos earc"
     echo "init_chem mom6ic ocnpost"
     echo "waveinit waveprep wavepostsbs wavepostbndpnt wavepostbndpntbll wavepostpnt"
@@ -173,6 +173,13 @@ elif [ $step = "analdiag" ]; then
     export nth_analdiag=1
     export npe_node_analdiag=$npe_node_max
     if [[ "$machine" == "WCOSS_C" ]]; then export memory_analdiag="3072M"; fi
+
+elif [ $step = "sfcanl" ]; then
+
+    export wtime_sfcanl="00:10:00"
+    export npe_sfcanl=6
+    export nth_sfcanl=1
+    export npe_node_sfcanl=$(echo "$npe_node_max / $nth_sfcanl" | bc)
 
 elif [ $step = "gldas" ]; then
 
