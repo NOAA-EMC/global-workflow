@@ -21,17 +21,22 @@ layout_x_gfs=8
 layout_y_gfs=8
 WRITE_GROUP_GFS=1
 WRTTASK_PER_GROUP_GFS=24
+#The settings below will result in S2SWA running 35 days under 8 hours wallclock on hera
+#layout_x_gfs=24
+#layout_y_gfs=16
+#WRTTASK_PER_GROUP_GFS=86
 WRTIOBUF="32M"
 MEDPETS=300
 
 # config.wave
 
-waveGRD='mx025'
-waveinterpGRD='reg025'
-waveuoutpGRD='mx025'
+waveGRD='gwes_30m'
+waveinterpGRD=' '
+waveuoutpGRD='gwes_30m'
+MESH_WAV='mesh.gwes_30m.nc'
 
 waveesmfGRD=' '
-wavepostGRD=' '
+wavepostGRD='gwes_30m'
 waveGRDN="1"
 waveGRDG="10"
 USE_WAV_RMP="NO"
