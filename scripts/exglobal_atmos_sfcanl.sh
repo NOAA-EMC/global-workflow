@@ -1,4 +1,4 @@
-#!/bin/ksh
+#!/bin/bash
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
@@ -7,7 +7,7 @@
 #
 # Author: Russ Treadon      Org: NCEP/EMC     Date: 2021-12-13
 #
-# Abstract: This script makes global model surface analysis filesk
+# Abstract: This script makes global model surface analysis files
 #
 # $Id$
 #

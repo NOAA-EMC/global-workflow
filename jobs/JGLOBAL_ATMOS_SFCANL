@@ -1,4 +1,4 @@
-#!/bin/ksh
+#!/bin/bash
 set -x
 
 export RUN_ENVIR=${RUN_ENVIR:-"nco"}
@@ -62,7 +62,6 @@ export COMPONENT=${COMPONENT:-atmos}
 if [ $RUN_ENVIR = "nco" ]; then
     export ROTDIR=${COMROOT:?}/$NET/$envir
 fi
-##export DO_CALC_ANALYSIS=${DO_CALC_ANALYSIS:-"YES"} 
 
 
 ##############################################
@@ -104,13 +103,8 @@ if [ ! -f $ATMGES ]; then
 fi
 
 
-# Update surface fields with global_cycle
-export DOGCYCLE=${DOGCYCLE:-"YES"}
-
-
 ###############################################################
 # Run relevant script
-env
 msg="HAS BEGUN on $(hostname)"
 postmsg "$jlogfile" "$msg"
 $LOGSCRIPT
