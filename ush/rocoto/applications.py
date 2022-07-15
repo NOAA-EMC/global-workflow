@@ -420,7 +420,8 @@ class AppConfig:
             tasks += ['aerosol_init']
 
         if self.do_wave:
-            tasks += ['waveinit', 'waveprep']
+            tasks += ['waveinit']
+            # tasks += ['waveprep']  # TODO - verify if waveprep is executed in forecast-only mode when APP=ATMW|S2SW
 
         tasks += ['fcst']
 
