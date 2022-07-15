@@ -433,7 +433,9 @@ class AppConfig:
             tasks += ['metp']
 
         if self.do_wave:
-            tasks += ['wavepostsbs', 'wavepostbndpnt', 'wavepostbndpntbll', 'wavepostpnt']
+            if self.do_wave_bnd:
+                tasks += ['wavepostbndpnt', 'wavepostbndpntbll']
+            tasks += ['wavepostsbs', 'wavepostpnt']
             if self.do_gempak:
                 tasks += ['wavegempak']
             if self.do_awips:
