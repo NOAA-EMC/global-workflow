@@ -525,7 +525,9 @@ class Tasks:
         data = f'&ROTDIR;/{self.cdump}.@Y@m@d/@H/atmos/{self.cdump}.t@Hz.log#dep#.txt'
         dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}fcst'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='or', dep=deps)
 
         postenvars = self.envars.copy()
         postenvar_dict = {'FHRGRP': '#grp#',
