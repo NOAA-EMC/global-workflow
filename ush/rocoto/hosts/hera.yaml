@@ -12,8 +12,8 @@ scheduler: slurm
 queue: batch
 queue_service: service
 partition_batch: hera
-chgrp_rstprod: YES
+chgrp_rstprod: 'YES'
 chgrp_cmd: 'chgrp rstprod'
-hpssarch: YES
-localarch: NO
+hpssarch: 'YES'
+localarch: 'NO'
 atardir: '/NCEPDEV/$HPSS_PROJECT/1year/$USER/$machine/scratch/$PSLOT'

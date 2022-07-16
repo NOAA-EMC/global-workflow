@@ -12,8 +12,8 @@ account: fv3-cpu
 queue: batch
 queue_service: service
 partition_batch: orion
-chgrp_rstprod: YES
+chgrp_rstprod: 'YES'
 chgrp_cmd: 'chgrp rstprod'
-hpssarch: NO
-localarch: NO
+hpssarch: 'NO'
+localarch: 'NO'
 atardir: '$NOSCRUB/archive_rotdir/$PSLOT'

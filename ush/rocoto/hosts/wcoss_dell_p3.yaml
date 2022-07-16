@@ -12,8 +12,8 @@ scheduler: lsf
 queue: dev
 queue_service: dev_transfer
 partition_batch: None
-chgrp_rstprod: YES
+chgrp_rstprod: 'YES'
 chgrp_cmd: 'chgrp rstprod'
-hpssarch: YES
-localarch: NO
+hpssarch: 'YES'
+localarch: 'NO'
 atardir: '/NCEPDEV/$HPSS_PROJECT/1year/$USER/$machine/scratch/$PSLOT'
