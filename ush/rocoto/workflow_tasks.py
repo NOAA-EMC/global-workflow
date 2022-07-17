@@ -531,7 +531,8 @@ class Tasks:
 
         postenvars = self.envars.copy()
         postenvar_dict = {'FHRGRP': '#grp#',
-                          'FHRLST': '#lst#'}
+                          'FHRLST': '#lst#',
+                          'ROTDIR': self._base.get('ROTDIR')}
         for key, value in postenvar_dict.items():
             postenvars.append(rocoto.create_envar(name=key, value=str(value)))
 
