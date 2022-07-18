@@ -157,7 +157,7 @@ if [[ "$OUTPUT_FILE" == "netcdf" ]]; then
     RESTILE=`echo $CASE |cut -c 2-`
     if [[ "$RESTILE" -ge "768" ]]; then
         export OUTPUT_FILETYPES=" 'netcdf_parallel' 'netcdf_parallel' "
-    elif [[ "$RESTILE" -eq "384" && "$MACHINE" -eq "WCOSS2" ]]; then
+    elif [[ "$RESTILE" = "384" && "$machine" = "WCOSS2" ]]; then
         export OUTPUT_FILETYPES=" 'netcdf' 'netcdf' "
     else
         export OUTPUT_FILETYPES=" 'netcdf_parallel' 'netcdf' "
