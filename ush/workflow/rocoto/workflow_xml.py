@@ -4,9 +4,9 @@ import os
 from distutils.spawn import find_executable
 from datetime import datetime
 from collections import OrderedDict
-import rocoto
 from applications import AppConfig
-from workflow_tasks import get_wf_tasks
+from rocoto.workflow_tasks import get_wf_tasks
+import rocoto.rocoto as rocoto
 
 
 class RocotoXML:
