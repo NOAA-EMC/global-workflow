@@ -18,6 +18,6 @@ fi
 export CPL_ATMIC=GEFS-NoahMP-aerosols-p8c
 export CPL_ICEIC=CPC
 export CPL_OCNIC=CPC3Dvar
-export CPL_WAVIC=GEFSwave20220524
+export CPL_WAVIC=GEFSwave20210528v2
 
 echo "END: config.coupled_ic"
