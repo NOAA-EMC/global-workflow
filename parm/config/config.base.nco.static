@@ -161,7 +161,7 @@ export FHMAX_HF_GFS=120
 export FHOUT_HF_GFS=1
 export ILPOST=1           # gempak output frequency up to F120
 
-# frequency for saving restart files. set to 6,12,24,48 etc 
+# frequency for saving restart files. set to 6,12,24,48 etc
 export restart_interval_gfs=12
 
 # I/O QUILTING, true--use Write Component; false--use GFDL FMS
@@ -209,6 +209,7 @@ export gldas_cyc=00
 # run wave component
 export DO_WAVE=YES
 export WAVE_CDUMP="both"
+export DOBNDPNT_WAVE="YES"
 
 # Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL
 export imp_physics=8
