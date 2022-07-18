@@ -344,7 +344,7 @@ EOF
   FNTSFC=${FNTSFC:-"$FIX_AM/RTGSST.1982.2012.monthly.clim.grb"}
   FNSNOC=${FNSNOC:-"$FIX_AM/global_snoclim.1.875.grb"}
   FNZORC=${FNZORC:-"igbp"}
-  FNAISC=${FNAISC:-"$FIX_AM/CFSR.SEAICE.1982.2012.monthly.clim.grb"}
+  FNAISC=${FNAISC:-"$FIX_AM/IMS-NIC.blended.ice.monthly.clim.grb"}
   FNALBC2=${FNALBC2:-"${FIX_SFC}/${CASE}.facsf.tileX.nc"}
   FNTG3C=${FNTG3C:-"${FIX_SFC}/${CASE}.substrate_temperature.tileX.nc"}
   FNVEGC=${FNVEGC:-"${FIX_SFC}/${CASE}.vegetation_greenness.tileX.nc"}
@@ -645,6 +645,15 @@ WW3_postdet() {
     #if shel, only 1 waveGRD which is linked to mod_def.ww3 
     $NCP $ROTDIR/${CDUMP}.${PDY}/${cyc}/wave/rundata/${COMPONENTwave}.mod_def.$waveGRD $DATA/mod_def.ww3
   fi
+
+
+  #if wave mesh is not the same as the ocn/ice mesh, linkk it in the file
+  comparemesh=${MESH_OCN_ICE:-"mesh.mx${ICERES}.nc"}
+  if [ "$MESH_WAV" = "$comparemesh" ]; then 
+    echo "Wave is on same mesh as ocean/ice"
+  else 
+    $NLN -sf $FIXwave/$MESH_WAV $DATA/
+  fi 
 
   export WAVHCYC=${WAVHCYC:-6}
   export WRDATE=$($NDATE -${WAVHCYC} $CDATE)
