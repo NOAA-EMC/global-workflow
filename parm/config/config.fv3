@@ -41,7 +41,7 @@ fi
 # (Standard) Model resolution dependent variables
 case $case_in in
     "C48")
-        export DELTIM=1200
+        export DELTIM=450
         export layout_x=3
         export layout_y=2
         export layout_x_gfs=3
