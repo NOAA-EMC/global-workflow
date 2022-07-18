@@ -99,7 +99,7 @@ def main():
     # Rocoto is implemented, the default for --ecflow-config should be removed
     # and additional parameters added.
     if args.ecflow_config is not None:
-        from ecflow_setup.ecflow_setup import Ecflowsetup
+        from ecflow.ecflow_setup import Ecflowsetup
         workflow = Ecflowsetup(args, envconfigs)
     else:
         import rocoto_setup
