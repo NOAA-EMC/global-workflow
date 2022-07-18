@@ -5,6 +5,7 @@ __pycache__
 *.[aox]
 *.mod
 *.sw[a-p]
+.DS_Store
 .idea/
 
 # Ignore folders
