@@ -1,0 +1,112 @@
+#!/bin/bash
+set -x
+
+export RUN_ENVIR=${RUN_ENVIR:-"nco"}
+export PS4='$SECONDS + '
+date
+
+
+#############################
+# Source relevant config files
+#############################
+export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
+configs="base epos"
+config_path=${EXPDIR:-$NWROOT/gfs.${gfs_ver}/parm/config}
+for config in $configs; do
+    . $config_path/config.$config
+    status=$?
+    [[ $status -ne 0 ]] && exit $status
+done
+
+
+##########################################
+# Source machine runtime environment
+##########################################
+. $HOMEgfs/env/${machine}.env epos
+status=$?
+[[ $status -ne 0 ]] && exit $status
+
+
+##############################################
+# Obtain unique process id (pid) and make temp directory
+##############################################
+export pid=${pid:-$$}
+export outid=${outid:-"LL$job"}
+export DATA=${DATA:-${DATAROOT}/${jobid:?}}
+mkdir -p $DATA
+cd $DATA
+
+
+##############################################
+# Run setpdy and initialize PDY variables
+##############################################
+export cycle="t${cyc}z"
+setpdy.sh
+. ./PDY
+
+
+##############################################
+# Determine Job Output Name on System
+##############################################
+export pgmout="OUTPUT.${pid}"
+export pgmerr=errfile
+
+
+##############################################
+# Set variables used in the script
+##############################################
+export CDATE=${CDATE:-${PDY}${cyc}}
+export CDUMP=${CDUMP:-${RUN:-"gdas"}}
+export COMPONENT=${COMPONENT:-atmos}
+
+
+##############################################
+# Begin JOB SPECIFIC work
+##############################################
+export GFS_NCIO=${GFS_NCIO:-"YES"}
+
+export PREFIX="${CDUMP}.t${cyc}z."
+
+# COMIN, COMOUT are used in script
+export COMIN="$ROTDIR/enkf$CDUMP.$PDY/$cyc/$COMPONENT"
+export COMOUT="$ROTDIR/enkf$CDUMP.$PDY/$cyc/$COMPONENT"
+
+
+export LEVS=$((LEVS-1))
+
+
+###############################################################
+# Run relevant script
+env
+echo "HAS BEGUN on $(hostname)"
+$LOGSCRIPT
+
+
+${ENKFPOSTSH:-$SCRgfs/exgdas_enkf_post.sh}
+status=$?
+[[ $status -ne 0 ]] && exit $status
+
+
+##############################################
+# End JOB SPECIFIC work
+##############################################
+
+##############################################
+# Final processing
+##############################################
+if [ -e "$pgmout" ] ; then
+  cat $pgmout
+fi
+
+
+echo "ENDED NORMALLY."
+
+
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd $DATAROOT
+[[ $KEEPDATA = "NO" ]] && rm -rf $DATA
+
+date
+exit 0

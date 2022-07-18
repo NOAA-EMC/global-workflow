@@ -37,6 +37,7 @@ load(pathJoin("nemsio", "2.5.2"))
 load(pathJoin("sp", "2.3.3"))
 load(pathJoin("w3emc", "2.7.3"))
 load(pathJoin("w3nco", "2.4.1"))
+load(pathJoin("ncdiag", "1.0.0"))
 
 load(pathJoin("wgrib2", "2.0.8"))
 setenv("WGRIB2","wgrib2")
