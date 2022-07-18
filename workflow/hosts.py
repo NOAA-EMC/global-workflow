@@ -41,7 +41,6 @@ class Host:
     def detect(cls):
 
         machine = 'NOTFOUND'
-        machine = 'HERA'
 
         if os.path.exists('/scratch1/NCEPDEV'):
             machine = 'HERA'
