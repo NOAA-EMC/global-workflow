@@ -21,7 +21,7 @@ import os
 import re
 import sys
 import datetime
-from ecflow.ecflow_definitions import Ecflowsuite, EcfFamilyNode
+from ecFlow.ecflow_definitions import Ecflowsuite, EcfFamilyNode
 
 try:
     from ecflow import Defs
