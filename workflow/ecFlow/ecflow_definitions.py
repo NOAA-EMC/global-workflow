@@ -34,7 +34,7 @@ from datetime import datetime, timedelta
 try:
     import ecflow
 except ImportError as err:
-    raise Exception(f"Error: Could not import ecflow module: {err}")
+    raise ImportError(f"Error: Could not import ecflow module: {err}")
 
 
 class Ecflowsuite:

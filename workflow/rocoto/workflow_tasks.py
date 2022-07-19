@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
 import numpy as np
-import rocoto
-from applications import AppConfig
 from typing import List
+from applications import AppConfig
+import rocoto.rocoto as rocoto
 
 __all__ = ['Tasks', 'create_wf_task', 'get_wf_tasks']
 
