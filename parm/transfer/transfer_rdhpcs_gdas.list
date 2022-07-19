@@ -24,7 +24,7 @@
 # directory are included, so if no exclude patterns match that file, it will be
 # transferred.
 
-com/gfs/_ENVIR_/gdas._PDYm1_/ _REMOTEPATH_/com/gfs/_ENVIR_/gdas._PDYm1_/
+_COMROOT_/gfs/_SHORTVER_/gdas._PDYm1_/ _REMOTEPATH_/com/gfs/_ENVIR_/gdas._PDYm1_/
 + /??/
 + /??/atmos/
 + /??/atmos/gdas.t??z*tcvitals*
@@ -45,7 +45,7 @@ com/gfs/_ENVIR_/gdas._PDYm1_/ _REMOTEPATH_/com/gfs/_ENVIR_/gdas._PDYm1_/
 E
 # This directory is a good candidate for compression
 #Z
-com/gfs/_ENVIR_/gdas._PDY_/ _REMOTEPATH_/com/gfs/_ENVIR_/gdas._PDY_/
+_COMROOT_/gfs/_SHORTVER_/gdas._PDY_/ _REMOTEPATH_/com/gfs/_ENVIR_/gdas._PDY_/
 + /??/
 + /??/atmos/
 + /??/atmos/gdas.t??z*tcvitals*

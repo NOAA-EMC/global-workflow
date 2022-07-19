@@ -24,7 +24,7 @@
 # directory are included, so if no exclude patterns match that file, it will be
 # transferred.
 
-com/gfs/_ENVIR_/gfs._PDY_/  _REMOTEPATH_/com/nawips/_ENVIR_/gfs._PDY_/
+_COMROOT_/gfs/_SHORTVER_/gfs._PDY_/  _REMOTEPATH_/_ENVIR_/com/gfs/_SHORTVER_/gfs._PDY_/
 + /??/
 + /??/atmos/
 + /??/atmos/gempak/
