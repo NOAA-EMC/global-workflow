@@ -12,6 +12,9 @@ from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from hosts import Host
 
 
+_here = os.path.dirname(__file__)
+_top = os.path.abspath(os.path.join(os.path.abspath(_here), '..'))
+
 def makedirs_if_missing(dirname):
     """
     Creates a directory if not already present
@@ -118,17 +121,13 @@ def edit_baseconfig(host, inputs):
     Parses and populates the templated `config.base.emc.dyn` to `config.base`
     """
 
-    here = os.path.dirname(__file__)
-    top = os.path.abspath(os.path.join(
-        os.path.abspath(here), '../..'))
-
     tmpl_dict = {
         "@MACHINE@": host.machine.upper(),
         "@PSLOT@": inputs.pslot,
         "@SDATE@": inputs.idate.strftime('%Y%m%d%H'),
         "@EDATE@": inputs.edate.strftime('%Y%m%d%H'),
         "@CASECTL@": f'C{inputs.resdet}',
-        "@HOMEgfs@": top,
+        "@HOMEgfs@": _top,
         "@BASE_GIT@": host.info["base_git"],
         "@DMPDIR@": host.info["dmpdir"],
         "@NWPROD@": host.info["nwprod"],
@@ -192,10 +191,6 @@ def input_args():
     Method to collect user arguments for `setup_expt.py`
     """
 
-    here = os.path.dirname(__file__)
-    top = os.path.abspath(os.path.join(
-        os.path.abspath(here), '../..'))
-
     description = """
         Setup files and directories to start a GFS parallel.\n
         Create EXPDIR, copy config files.\n
@@ -229,7 +224,7 @@ def input_args():
         subp.add_argument('--edate', help='end date experiment', required=True, type=lambda dd: datetime.strptime(dd, '%Y%m%d%H'))
         subp.add_argument('--icsdir', help='full path to initial condition directory', type=str, required=False, default=None)
         subp.add_argument('--configdir', help='full path to directory containing the config files',
-                          type=str, required=False, default=os.path.join(top, 'parm/config'))
+                          type=str, required=False, default=os.path.join(_top, 'parm/config'))
         subp.add_argument('--cdump', help='CDUMP to start the experiment',
                           type=str, required=False, default='gdas')
         subp.add_argument('--gfs_cyc', help='GFS cycles to run', type=int,
