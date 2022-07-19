@@ -23,27 +23,14 @@
 """
 
 import os
-import sys
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
-sys.path.append(os.path.join(os.path.dirname(__file__), "../ush/rocoto"))
-import workflow_utils as wfu
+from configuration import Configuration
+from ecFlow.ecflow_setup import Ecflowsetup
 
 
-def parse_command_line():
-    """Parse the arguments from the command line
-
-    This function pulls in the command line arguments and parses them using the
-    argparse module.
-
-    Parameters
-    ----------
-    None
-
-    Returns
-    -------
-    arguments : array
-        An array of the arguments that were passed in as well as any
-        that were defaulted.
+def input_args():
+    """
+    Method to collect user arguments for `setup_workflow.py`
     """
     parser = ArgumentParser(description=""" Create the workflow files for
                                 ecFlow by deploying scripts and definition
@@ -64,9 +51,8 @@ def parse_command_line():
     return arguments
 
 
-def main():
-    """Main function to start the workflow generator
-
+if __name__ == "__main__":
+    """
     This is the main function that will read in the command line arguments
     using the parse_command_line function and create an array for the
     environment configurations to be used throughout the application.
@@ -74,41 +60,14 @@ def main():
     For the ecFlow setup, it sets up a new workflow and then uses the generic
     functions which are available for the Rocoto setup as well of
     generate_workflow and save.
-
-    ** Important note: This function does also pull from the ush/rocoto
-    application to use the get_configs and config_parser functions to populate
-    the environment variable array.
-
-    Parameters
-    ----------
-    None
-
-    Returns
-    -------
-    None
     """
-    args = parse_command_line()
 
-    environment_configs = wfu.get_configs(args.expdir)
-    envconfigs = {}
-    envconfigs['base'] = wfu.config_parser([wfu.find_config('config.base',
-                                            environment_configs)])
+    args = input_args()
 
-    # The default setup in the parse_command_line() function assumes that if
-    # the --ecflow-config file is set that it should be an ecflow setup. When
-    # Rocoto is implemented, the default for --ecflow-config should be removed
-    # and additional parameters added.
-    if args.ecflow_config is not None:
-        from ecflow_setup.ecflow_setup import Ecflowsetup
-        workflow = Ecflowsetup(args, envconfigs)
-    else:
-        import rocoto_setup
+    cfg = Configuration(args.expdir)
+    envconfigs = dict()
+    envconfigs['base'] = cfg.parse_config('config.base')
 
+    workflow = Ecflowsetup(args, envconfigs)
     workflow.generate_workflow()
     workflow.save()
-
-
-# Main Initializer
-if __name__ == "__main__":
-    main()
-    sys.exit(0)

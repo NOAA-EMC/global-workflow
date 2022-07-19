@@ -8,7 +8,7 @@ from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
 from configuration import Configuration
 from applications import AppConfig
-from workflow_xml import RocotoXML
+from rocoto.workflow_xml import RocotoXML
 
 
 def input_args():

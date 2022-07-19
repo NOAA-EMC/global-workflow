@@ -21,13 +21,12 @@ import os
 import re
 import sys
 import datetime
-from ecflow_setup.ecflow_definitions import Ecflowsuite, EcfFamilyNode
+from ecFlow.ecflow_definitions import Ecflowsuite, EcfFamilyNode
 
 try:
     from ecflow import Defs
 except ImportError as err:
-    print(f"Error: Could not import ecflow module: {err}")
-    sys.exit(1)
+    raise ImportError(f"Error: Could not import ecflow module: {err}")
 
 
 class Ecflowsetup:
