@@ -6,7 +6,7 @@
 echo "BEGIN: config.base"
 
 # Machine environment
-export machine="WCOSS_DELL_P3"
+export machine="WCOSS2"
 
 # EMC parallel or NCO production
 export RUN_ENVIR="nco"
