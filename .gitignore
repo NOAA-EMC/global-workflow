@@ -130,6 +130,7 @@ sorc/wafs_gcip.fd
 sorc/wafs_grib2_0p25.fd
 sorc/wafs_makewafs.fd
 sorc/wafs_setmissing.fd
+
 # Ignore scripts from externals
 #------------------------------
 # jobs symlinks
