@@ -8,23 +8,22 @@
 #
 # Author:   Jose-Henrique Alves Org: NCEP/EMC      Date: 2019-12-06
 # Abstract: This script is the postprocessor for the wave component in GFS.
-#           This version runs side-by-side with the GFS fcst step. 
+#           This version runs side-by-side with the GFS fcst step.
 #           It executes several scripts forpreparing and creating output data
 #           as follows:
 #
-#  wave_grib2_sbs.sh         : generates GRIB2 files.                         
-#  wave_grid_interp_ush.sh   : interpolates data from new grids to old grids  
+#  wave_grib2_sbs.sh         : generates GRIB2 files.
+#  wave_grid_interp_ush.sh   : interpolates data from new grids to old grids
 #
 # Script history log:
-# 2019-12-06  J-Henrique Alves: First Version adapted from HTolman post.sh 2007 
+# 2019-12-06  J-Henrique Alves: First Version adapted from HTolman post.sh 2007
 # 2020-06-10  J-Henrique Alves: Porting to R&D machine Hera
-# 2020-07-31  Jessica Meixner: Removing points, now gridded data only  
+# 2020-07-31  Jessica Meixner: Removing points, now gridded data only
 #
 # $Id$
 #
 # Attributes:
 #   Language: Bourne-again (Bash) Shell
-#   Machine: WCOSS-DELL-P3
 #
 ###############################################################################
 #
@@ -59,7 +58,7 @@
 
 # Script will run only if pre-defined NTASKS
 #     The actual work is distributed over these tasks.
-  if [ -z ${NTASKS} ]        
+  if [ -z ${NTASKS} ]
   then
     echo "FATAL ERROR: requires NTASKS to be set "
     err=1; export err;${errchk}
@@ -88,15 +87,15 @@
   [[ "$LOUD" = YES ]] && set -x
 
 
-# 0.c.3 Define CDATE_POST 
+# 0.c.3 Define CDATE_POST
   export CDATE_POST=${CDATE}
   export FHRUN=0
 
 # --------------------------------------------------------------------------- #
 # 1.  Get files that are used by most child scripts
 
-  export DOGRB_WAV=${DOGRB_WAV:-'YES'} #Create grib2 files 
-  export DOGRI_WAV=${DOGRI_WAV:-'NO'} #Create interpolated grids 
+  export DOGRB_WAV=${DOGRB_WAV:-'YES'} #Create grib2 files
+  export DOGRI_WAV=${DOGRI_WAV:-'NO'} #Create interpolated grids
 
   exit_code=0
 
@@ -106,10 +105,10 @@
   echo '-----------------------'
   [[ "$LOUD" = YES ]] && set -x
 
-# 1.a Model definition files and output files (set up using poe) 
+# 1.a Model definition files and output files (set up using poe)
 
 # 1.a.1 Copy model definition files
-  for grdID in $waveGRD $wavepostGRD $waveinterpGRD 
+  for grdID in $waveGRD $wavepostGRD $waveinterpGRD
   do
     if [ -f "$COMIN/rundata/${CDUMP}wave.mod_def.${grdID}" ]
     then
@@ -121,8 +120,8 @@
     fi
   done
 
-# 1.a.2 Check that model definition files exist 
-  for grdID in $waveGRD $wavepostGRD $waveinterpGRD 
+# 1.a.2 Check that model definition files exist
+  for grdID in $waveGRD $wavepostGRD $waveinterpGRD
   do
     if [ ! -f mod_def.$grdID ]
     then
@@ -142,7 +141,7 @@
       [[ "$LOUD" = YES ]] && set -x
     fi
   done
- 
+
 
 # 1.b Input template files
 
@@ -154,7 +153,7 @@
       then
         cp -f $PARMwave/${intGRD}_interp.inp.tmpl ${intGRD}_interp.inp.tmpl
       fi
-  
+
       if [ -f ${intGRD}_interp.inp.tmpl ]
       then
         set +x
@@ -209,7 +208,7 @@
   set +x
   echo ' '
   echo "   Input files read and processed at : $(date)"
-  echo ' ' 
+  echo ' '
   echo '   Data summary : '
   echo '   ---------------------------------------------'
   echo "      Sufficient data for GRID interpolation    : $DOGRI_WAV"
@@ -227,7 +226,7 @@
   echo '   Making command file for sbs grib2 and GRID Interpolation '
   [[ "$LOUD" = YES ]] && set -x
 
-# 1.a.2 Loop over forecast time to generate post files 
+# 1.a.2 Loop over forecast time to generate post files
 # When executed side-by-side, serial mode (cfp when run after the fcst step)
 # Contingency for RERUN=YES
   if [ "${RERUN}" = "YES" ]; then
@@ -244,7 +243,7 @@
   fhrg=$fhr
   iwaitmax=120 # Maximum loop cycles for waiting until wave component output file is ready (fails after max)
   while [ $fhr -le $FHMAX_WAV ]; do
-    
+
     ymdh=$($NDATE $fhr $CDATE)
     YMD=$(echo $ymdh | cut -c1-8)
     HMS="$(echo $ymdh | cut -c9-10)0000"
@@ -271,17 +270,17 @@
       for wavGRD in ${waveGRD} ; do
         gfile=$COMIN/rundata/${WAV_MOD_TAG}.out_grd.${wavGRD}.${YMD}.${HMS}
         while [ ! -s ${gfile} ]; do sleep 10; let iwait=iwait+1; done
-        if [ $iwait -eq $iwaitmax ]; then 
+        if [ $iwait -eq $iwaitmax ]; then
           echo '*************************************************** '
           echo " FATAL ERROR : NO RAW FIELD OUTPUT FILE out_grd.$grdID "
           echo '*************************************************** '
           echo ' '
           [[ "$LOUD" = YES ]] && set -x
-          echo "$WAV_MOD_TAG post $grdID $date $cycle : field output missing." 
+          echo "$WAV_MOD_TAG post $grdID $date $cycle : field output missing."
           err=3; export err;${errchk}
           exit $err
         fi
-        ln -s ${gfile} ./out_grd.${wavGRD} 
+        ln -s ${gfile} ./out_grd.${wavGRD}
       done
 
       if [ "$DOGRI_WAV" = 'YES' ]
@@ -308,7 +307,7 @@
           fi
           echo "${GRIBDATA}/${fcmdigrd}.${nigrd}" >> ${fcmdnow}
           chmod 744 ${fcmdigrd}.${nigrd}
-          nigrd=$((nigrd+1)) 
+          nigrd=$((nigrd+1))
         done
       fi
 
@@ -344,18 +343,18 @@
       nlines=$( wc -l ${fcmdnow} | awk '{print $1}' )
       while [ $iline -le $nlines ]; do
         line=$( sed -n ''$iline'p' ${fcmdnow} )
-        if [ -z "$line" ]; then  
+        if [ -z "$line" ]; then
           break
         else
-          if [ "$ifirst" = 'yes' ]; then 
-            echo "#!/bin/sh" > cmdmfile.$nfile 
+          if [ "$ifirst" = 'yes' ]; then
+            echo "#!/bin/sh" > cmdmfile.$nfile
             echo "$nfile cmdmfile.$nfile" >> cmdmprog
             chmod 744 cmdmfile.$nfile
           fi
           echo $line >> cmdmfile.$nfile
           nfile=$(( nfile + 1 ))
           if [ $nfile -eq $NTASKS ]; then
-            nfile=0 
+            nfile=0
             ifirst='no'
           fi
           iline=$(( iline + 1 ))
