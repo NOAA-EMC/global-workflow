@@ -29,6 +29,8 @@ if [[ -d /work ]] ; then
     fi
     target=orion
     module purge
+    export LMOD_SYSTEM_DEFAULT_MODULES=contrib
+    module reset
 
 ##---------------------------------------------------------------------------
 elif [[ -d /scratch1 ]] ; then
