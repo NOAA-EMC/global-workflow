@@ -1,5 +1,5 @@
 #!/bin/bash
-#                                                                       
+#
 ################################################################################
 #
 # UNIX Script Documentation Block
@@ -17,7 +17,6 @@
 #
 # Attributes:
 #   Language: Bourne-again (BASH) shell
-#   Machine: WCOSS-DELL-P3
 #
 ################################################################################
 # --------------------------------------------------------------------------- #
@@ -31,7 +30,7 @@
   # Use LOUD variable to turn on/off trace.  Defaults to YES (on).
   export LOUD=${LOUD:-YES}; [[ $LOUD = yes ]] && export LOUD=YES
   [[ "$LOUD" != YES ]] && set +x
-   
+
   bloc=$1
   ymdh=$2
   specdir=$3
