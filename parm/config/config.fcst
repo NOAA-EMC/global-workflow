@@ -80,7 +80,7 @@ export use_coldstart=".false."
 
 export FORECASTSH="$HOMEgfs/scripts/exglobal_forecast.sh"
 export FCSTEXECDIR="$HOMEgfs/exec"
-export FCSTEXEC="ufs_model"
+export FCSTEXEC="ufs_model.x"
 
 #######################################################################
 # Model configuration
