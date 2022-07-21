@@ -16,7 +16,7 @@ if [ $RUN_ENVIR != emc -a $RUN_ENVIR != nco ]; then
     echo ' Syntax: link_workflow.sh ( nco | emc ) ( cray | dell | hera | orion | jet | stampede | s4 )'
     exit 1
 fi
-if [ $machine != cray -a $machine != dell -a $machine != hera -a $machine != orion -a $machine != jet -a $machine != stampede ]; then
+if [ $machine != cray -a $machine != dell -a $machine != hera -a $machine != orion -a $machine != jet -a $machine != stampede -a $machine != s4 ]; then
     echo ' Syntax: link_workflow.sh ( nco | emc ) ( cray | dell | hera | orion | jet | stampede | s4 )'
     exit 1
 fi
