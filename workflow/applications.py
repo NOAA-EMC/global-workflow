@@ -76,7 +76,7 @@ def get_gfs_cyc_dates(base: Dict[str, Any]) -> Dict[str, Any]:
 
 class AppConfig:
 
-    VALID_MODES = ['cycled', 'forecast-only']
+    VALID_MODES = ['cycled', 'forecast-only', 'gefs']
 
     def __init__(self, configuration: Configuration) -> None:
 
@@ -134,7 +134,8 @@ class AppConfig:
 
         # Update the base config dictionary based on application
         upd_base_map = {'cycled': self._cycled_upd_base,
-                        'forecast-only': self._forecast_only_upd_base}
+                        'forecast-only': self._forecast_only_upd_base,
+                        'gefs': self._gefs_upd_base}
         try:
             self.configs['base'] = upd_base_map[self.mode](self.configs['base'])
         except KeyError:
@@ -154,7 +155,8 @@ class AppConfig:
     def _get_app_configs(self):
 
         configs_map = {'cycled': self._cycled_configs,
-                       'forecast-only': self._forecast_only_configs}
+                       'forecast-only': self._forecast_only_configs,
+                       'gefs': self._gefs_configs}
         try:
             configs_names = configs_map[self.mode]
         except KeyError:
@@ -247,6 +249,51 @@ class AppConfig:
 
         return configs
 
+    @property
+    def _gefs_configs(self):
+        """
+        Returns the config_files that are involved in the forecast-only app
+        """
+
+        configs = ['fcst'] #, 'post', 'vrfy', 'arch']
+
+        if self.model_app in ['S2S', 'S2SW', 'S2SWA']:
+            configs += ['coupled_ic']
+        else:
+            configs += ['init']
+            if self.do_hpssarch:
+                configs += ['getic']
+
+        if self.do_aero:
+            configs += ['aerosol_init']
+
+        if self.do_ocean or self.do_ice:
+            configs += ['ocnpost']
+
+        if self.do_metp:
+            configs += ['metp']
+
+        if self.do_gempak:
+            configs += ['gempak']
+
+        if self.do_awips:
+            configs += ['awips']
+
+        if self.do_wave:
+            configs += ['waveinit', 'waveprep', 'wavepostsbs', 'wavepostpnt']
+            if self.do_wave_bnd:
+                configs += ['wavepostbndpnt', 'wavepostbndpntbll']
+            if self.do_gempak:
+                configs += ['wavegempak']
+            if self.do_awips:
+                configs += ['waveawipsbulls', 'waveawipsgridded']
+
+        if self.do_wafs:
+            configs += ['wafs', 'wafsgrib2', 'wafsblending', 'wafsgcip', 'wafsgrib20p25', 'wafsblending0p25']
+
+        return configs
+
+
     @staticmethod
     def _cycled_upd_base(base_in):
 
@@ -258,6 +305,15 @@ class AppConfig:
         base_out = base_in.copy()
         base_out['INTERVAL_GFS'] = get_gfs_interval(base_in['gfs_cyc'])
         base_out['CDUMP'] = 'gfs'
+
+        return base_out
+
+    @staticmethod
+    def _gefs_upd_base(base_in):
+
+        base_out = base_in.copy()
+        base_out['INTERVAL_GFS'] = get_gfs_interval(base_in['gfs_cyc'])
+        base_out['CDUMP'] = 'gefs'
 
         return base_out
 
@@ -299,7 +355,8 @@ class AppConfig:
 
         # Get a list of all possible tasks that would be part of the application
         tasks_map = {'cycled': self._get_cycled_task_names,
-                     'forecast-only': self._get_forecast_only_task_names}
+                     'forecast-only': self._get_forecast_only_task_names,
+                     'gefs': self._get_gefs_task_names}
         try:
             task_names = tasks_map[self.mode]()
         except KeyError:
@@ -453,6 +510,61 @@ class AppConfig:
 
         if self.do_wafs:
             tasks += ['wafs', 'wafsgcip', 'wafsgrib2', 'wafsgrib20p25', 'wafsblending', 'wafsblending0p25']
+
+        tasks += ['arch']  # arch **must** be the last task
+
+        return {f"{self._base['CDUMP']}": tasks}
+
+    def _get_gefs_task_names(self):
+        """
+        Get the task names for all the tasks in the gefs application.
+        Note that the order of the task names matters in the XML.
+        This is the place where that order is set.
+        """
+
+        tasks = []
+
+        if 'S2S' in self.model_app:
+            tasks += ['coupled_ic']
+        else:
+            if self.do_hpssarch:
+                tasks += ['getic']
+            tasks += ['init']
+
+        if self.do_aero:
+            tasks += ['aerosol_init']
+
+        if self.do_wave:
+            tasks += ['waveinit']
+            # tasks += ['waveprep']  # TODO - verify if waveprep is executed in forecast-only mode when APP=ATMW|S2SW
+
+        tasks += ['fcst']
+
+        return {f"{self._base['CDUMP']}": tasks}
+
+        # Skip below statements for GEFS workflow until we decide to add them in the future
+        tasks += ['post']
+        if 'S2S' in self.model_app:
+            tasks += ['ocnpost']
+
+        tasks += ['vrfy']
+        if self.do_metp:
+            tasks += ['metp']
+
+        if self.do_wave:
+            if self.do_wave_bnd:
+                tasks += ['wavepostbndpnt', 'wavepostbndpntbll']
+            tasks += ['wavepostsbs', 'wavepostpnt']
+            if self.do_gempak:
+                tasks += ['wavegempak']
+            if self.do_awips:
+                tasks += ['waveawipsbulls', 'waveawipsgridded']
+
+        if self.do_bufrsnd:
+            tasks += ['postsnd']
+
+        if self.do_gempak:
+            tasks += ['gempak']
 
         tasks += ['arch']  # arch **must** be the last task
 

@@ -205,9 +205,9 @@ elif [ $step = "fcst" ]; then
     fi
 
     # During workflow creation, we need resources for all CDUMPs and CDUMP is undefined
-    CDUMP_LIST=${CDUMP:-"gdas gfs"}
+    CDUMP_LIST=${CDUMP:-"gdas gfs gefs"}
     for CDUMP in $CDUMP_LIST; do
-        if [[ "$CDUMP" == "gfs" ]]; then
+        if [[ "$CDUMP" == "gfs" ]] || [[ "$CDUMP" == "gefs" ]]; then
             export layout_x=$layout_x_gfs
             export layout_y=$layout_y_gfs
             export WRITE_GROUP=$WRITE_GROUP_GFS
@@ -282,7 +282,7 @@ elif [ $step = "fcst" ]; then
             (( NTASKS_TOT = NTASKS_TOT + ICEPETS ))
         fi
 
-        if [[ $CDUMP == "gfs" ]]; then
+        if [[ $CDUMP == "gfs" ]] || [[ $CDUMP == "gefs" ]]; then
             export npe_fcst_gfs=$NTASKS_TOT
         else
             export npe_fcst=$NTASKS_TOT

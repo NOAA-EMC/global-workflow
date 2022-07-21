@@ -64,6 +64,14 @@ class RocotoXML:
 
         entity['MAXTRIES'] = self._base.get('ROCOTO_MAXTRIES', 2)
 
+        if self._app_config.mode in ['gefs']:
+            nens = self._base['NMEM_ENKF']
+            MEMLIST = ""
+            for iNum in range(1, nens + 1):
+                MEMLIST += "p{0:02d} ".format(iNum)
+            MEMLIST += "c00"
+            entity['MEMLIST'] = MEMLIST
+
         # Put them all in an XML key-value syntax
         strings = []
         for key, value in entity.items():
@@ -98,7 +106,8 @@ class RocotoXML:
     def _get_cycledefs(self):
 
         cycledef_map = {'cycled': self._get_cycledefs_cycled,
-                        'forecast-only': self._get_cycledefs_forecast_only}
+                        'forecast-only': self._get_cycledefs_forecast_only,
+                        'gefs': self._get_cycledefs_gefs}
 
         try:
             cycledefs = cycledef_map[self._app_config.mode]()
@@ -126,6 +135,15 @@ class RocotoXML:
         return '\n'.join(strings)
 
     def _get_cycledefs_forecast_only(self):
+        sdate = self._base['SDATE'].strftime('%Y%m%d%H%M')
+        edate = self._base['EDATE'].strftime('%Y%m%d%H%M')
+        interval = self._base.get('INTERVAL_GFS', '24:00:00')
+        cdump = self._base['CDUMP']
+        strings = f'\t<cycledef group="{cdump}">{sdate} {edate} {interval}</cycledef>\n\n'
+
+        return strings
+
+    def _get_cycledefs_gefs(self):
         sdate = self._base['SDATE'].strftime('%Y%m%d%H%M')
         edate = self._base['EDATE'].strftime('%Y%m%d%H%M')
         interval = self._base.get('INTERVAL_GFS', '24:00:00')
