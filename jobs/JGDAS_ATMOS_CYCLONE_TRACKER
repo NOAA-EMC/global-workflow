@@ -85,6 +85,7 @@ export HOMEens_tracker=${HOMEens_tracker:-${NWROOT:?}/ens_tracker.${ens_tracker_
 export EXECens_tracker=${EXECens_tracker:-$HOMEens_tracker/exec}
 export FIXens_tracker=${FIXens_tracker:-$HOMEens_tracker/fix}
 export USHens_tracker=${USHens_tracker:-$HOMEens_tracker/ush}
+
 ##############################################
 # Define COM and Data directories
 ##############################################
@@ -120,13 +121,24 @@ export cmodel=$CDUMP
 export loopnum=1
 
 #-----------input data checking -----------------
-${USHens_tracker}/data_check_gfs.sh                               #only need for gfs
+#${USHens_tracker}/data_check_gfs.sh
 # exit code 6 = missing data of opportunity
-if [ $? -eq 6 ]; then exit; fi
+#if [ $? -eq 6 ]; then exit; fi
 #------------------------------------------------
 
 ${USHens_tracker}/extrkr_gfs.sh ${loopnum} ${cmodel} ${CDATE} ${pert} ${DATA}
 export err=$?; err_chk
+
+
+#if [ "$SENDCOM" = 'YES' ]; then
+#  cat ${DATA}/trak.avnx.atcfunix.${PDY}${cyc} | \
+#      sed s:AVNX:GFSO:g \
+#    > ${COMOUT}/gfso.t${cyc}z.cyclone.trackatcfunix
+#
+#  cat ${DATA}/trak.avnx.atcfunix.${PDY}${cyc} | \
+#      sed s:AVNX:AVNO:g \
+#    > ${COMOUT}/avn.t${cyc}z.cyclone.trackatcfunix
+#fi
 
 ##############################################
 # Final processing
