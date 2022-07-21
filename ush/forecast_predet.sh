@@ -127,7 +127,11 @@ FV3_GFS_predet(){
   if [ $MEMBER -lt 0 ]; then
     NTASKS_TOT=${NTASKS_TOT:-$npe_fcst_gfs}
   else
-    NTASKS_TOT=${NTASKS_TOT:-$npe_efcs}
+    if [[ $CDUMP == gefs ]]; then
+      NTASKS_TOT=${NTASKS_TOT:-$npe_fcst_gfs}
+    else
+      NTASKS_TOT=${NTASKS_TOT:-$npe_efcs}
+    fi
   fi
 
   TYPE=${TYPE:-"nh"}                  # choices:  nh, hydro
@@ -225,6 +229,29 @@ FV3_GFS_predet(){
   #-------------------------------------------------------
   if [ $CDUMP = "gfs" -a $rst_invt1 -gt 0 ]; then
     RSTDIR_ATM=${RSTDIR:-$ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos/RERUN_RESTART
+    if [ ! -d $RSTDIR_ATM ]; then mkdir -p $RSTDIR_ATM ; fi
+    $NLN $RSTDIR_ATM RESTART
+    # The final restart written at the end doesn't include the valid date
+    # Create links that keep the same name pattern for these files
+    VDATE=$($NDATE +$FHMAX_GFS $CDATE)
+    vPDY=$(echo $VDATE | cut -c1-8)
+    vcyc=$(echo $VDATE | cut -c9-10)
+    files="coupler.res fv_core.res.nc"
+    for tile in {1..6}; do
+      for base in ca_data fv_core.res fv_srf_wnd.res fv_tracer.res phy_data sfc_data; do
+        files="${files} ${base}.tile${tile}.nc"
+      done
+    done
+    for file in $files; do
+      $NLN $RSTDIR_ATM/$file $RSTDIR_ATM/${vPDY}.${vcyc}0000.$file
+    done
+  elif [ $CDUMP = "gefs" -a $rst_invt1 -gt 0 ]; then
+    if [ $MEMBER -eq 0 ]; then
+      memchar=c$(printf %02i $MEMBER)
+    else
+      memchar=p$(printf %02i $MEMBER)
+    fi
+    RSTDIR_ATM=${RSTDIR:-$ROTDIR}/${CDUMP}.${PDY}/${cyc}/${memchar}/atmos/RERUN_RESTART
     if [ ! -d $RSTDIR_ATM ]; then mkdir -p $RSTDIR_ATM ; fi
     $NLN $RSTDIR_ATM RESTART
     # The final restart written at the end doesn't include the valid date

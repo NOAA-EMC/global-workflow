@@ -7,6 +7,9 @@ status=$?
 [[ $status -ne 0 ]] && exit $status
 if [[ $CDUMP == "gefs" ]]; then
     export MEMBER=`echo ${RUNMEM:-"c00"}|cut -c2-3`
+    if [[ $RUNMEM != "c00" ]]; then
+        export PREFIX_ATMINC="r"
+    fi
 fi
 ###############################################################
 # Execute the JJOB

@@ -122,7 +122,7 @@ rCDUMP=$CDUMP
 [[ $CDUMP = "gfs" ]] && export rCDUMP="gdas"
 
 # Forecast length for GFS forecast
-if [ $CDUMP = "gfs" ]; then
+if [ $CDUMP = "gfs" ] || [ $CDUMP = "gefs" ]; then
     export FHMAX=$FHMAX_GFS
     export FHOUT=$FHOUT_GFS
     export FHMAX_HF=$FHMAX_HF_GFS
