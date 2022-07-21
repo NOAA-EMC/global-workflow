@@ -1076,14 +1076,14 @@ class Tasks:
         self._is_this_a_gdas_task(self.cdump, 'efcsfsoi')
 
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}ecmn'}
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}ecmnfsoi'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'task', 'name': f'{self.cdump}esfc'}
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}esfcfsoi'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
-        dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': '-06:00:00'}
-        dependencies.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep_condition='or', dep=dependencies)
+#        dep_dict = {'type': 'cycleexist', 'condition': 'not', 'offset': '-06:00:00'}
+#        dependencies.append(rocoto.add_dependency(dep_dict))
+#        dependencies = rocoto.create_dependency(dep_condition='or', dep=dependencies)
 
         efcsfsoienvars = self.envars.copy()
         efcsfsoienvars.append(rocoto.create_envar(name='ENSGRP', value='#grp#'))
