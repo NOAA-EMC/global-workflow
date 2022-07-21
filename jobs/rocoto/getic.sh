@@ -83,132 +83,67 @@ if [[ $gfs_ver = "v16" && $EXP_WARM_START = ".true." && $CASE = $OPS_RES ]]; the
   else # Opertional input - warm starts
 
     if [[ $CDUMP == "gefs" ]]; then
-        cd $EXTRACT_DIR
-        if [[ $RUNMEM == "c00" ]]; then
-             # Pull CDATE gfs restart tarball
-            htar -xvf ${PRODHPSSDIR}/rh${yy}/${yy}${mm}/${yy}${mm}${dd}/com_gfs_prod_gfs.${yy}${mm}${dd}_${hh}.gfs_restart.tar
-            sPath_out=${ROTDIR}/${CDUMP}.${yy}${mm}${dd}/${hh}/${RUNMEM}/${COMPONENT}
-            if [ ! -d $sPath_out ]; then
-              mkdir -p $sPath_out
-            fi
-            mv ${EXTRACT_DIR}/gfs.${yy}${mm}${dd}/${hh}/${COMPONENT}/* ${sPath_out}/
-            rm -rf gfs.${yy}${mm}${dd}
-            cd $sPath_out
-            for f in `ls gfs.*`
-            do
-                echo $f
-                fnew=${f/gfs/gefs}
-                mv $f $fnew
-            done
-            cd RESTART
-            module load nco/4.9.3
-            for f in `ls *tile*.nc`; do echo $f; ncatted -a checksum,,d,, $f; done
-            cd $EXTRACT_DIR
-
-            # Pull GDATE gdas restart tarball
-            htar -xvf ${PRODHPSSDIR}/rh${gyy}/${gyy}${gmm}/${gyy}${gmm}${gdd}/com_gfs_prod_gdas.${gyy}${gmm}${gdd}_${ghh}.gdas_restart.tar
-            sPath_out=${ROTDIR}/${CDUMP}.${gyy}${gmm}${gdd}/${ghh}/${RUNMEM}/${COMPONENT}
-            if [ ! -d $sPath_out ]; then
-              mkdir -p $sPath_out
-            fi
-            mv gdas.${gyy}${gmm}${gdd}/${ghh}/${COMPONENT}/* ${sPath_out}/
-            rm -rf gdas.${gyy}${gmm}${gdd}
-            cd $sPath_out
-            for f in `ls gdas.*`
-            do
-                echo $f
-                fnew=${f/gdas/gefs}
-                mv $f $fnew
-            done
-            cd RESTART
-            module load nco/4.9.3
-            for f in `ls *tile*.nc`; do echo $f; ncatted -a checksum,,d,, $f; done
-            cd $EXTRACT_DIR
-        else
-            echo $RUNMEM
-            case $cyc in
-                00) memshift=0;;
-                06) memshift=20;;
-                12) memshift=40;;
-                18) memshift=60;;
-            esac
-            nmem=`echo ${RUNMEM:-"c00"}|cut -c2-3`
-            (( cmem = nmem + memshift ))
-            if (( cmem > 80 )); then
-                (( cmem = cmem - 80 ))
-            fi
-            memchar="mem"$(printf %03i $cmem)
-            if [ $cmem -gt 90 ]; then
-                sgrp=10
-            elif [ $cmem -gt 80 ]; then
-                sgrp=9
-            elif [ $cmem -gt 70 ]; then
-                sgrp=8
-            elif [ $cmem -gt 60 ]; then
-                sgrp=7
-            elif [ $cmem -gt 50 ]; then
-                sgrp=6
-            elif [ $cmem -gt 40 ]; then
-                sgrp=5
-            elif [ $cmem -gt 30 ]; then
-                sgrp=4
-            elif [ $cmem -gt 20 ]; then
-                sgrp=3
-            elif [ $cmem -gt 10 ]; then
-                sgrp=2
-            elif [ $cmem -gt 0 ]; then
-                sgrp=1
-            else
-                sgrp=5
-            fi
-            shtar_path=${PRODHPSSDIR}/rh${yy}/${yy}${mm}/${yy}${mm}${dd}
-            htar -xvf ${shtar_path}/com_gfs_prod_enkfgdas.${yy}${mm}${dd}_${hh}.enkfgdas_restart_grp${sgrp}.tar ./enkfgdas.${yy}${mm}${dd}/${hh}/atmos/$memchar
-            sPath_out=${ROTDIR}/${CDUMP}.${yy}${mm}${dd}/${hh}/${RUNMEM}/${COMPONENT}
-            if [ ! -d $sPath_out ]; then
-              mkdir -p $sPath_out
-            fi
-            mv ${EXTRACT_DIR}/enkfgdas.${yy}${mm}${dd}/${hh}/atmos/${memchar}/* ${sPath_out}/
-            rm -rf enkfgdas.${yy}${mm}${dd}
-            cd $sPath_out
-            for f in `ls gdas.*`
-            do
-                echo $f
-                fnew=${f/gdas/gefs}
-                mv $f $fnew
-            done
-            cd RESTART
-            module load nco/4.9.3
-            for f in `ls *tile*.nc`; do echo $f; ncatted -a checksum,,d,, $f; done
-            cd $EXTRACT_DIR
-
-            # GDATE
-            shtar_path_g=${PRODHPSSDIR}/rh${gyy}/${gyy}${gmm}/${gyy}${gmm}${gdd}
-            htar -xvf ${shtar_path_g}/com_gfs_prod_enkfgdas.${gyy}${gmm}${gdd}_${ghh}.enkfgdas_restart_grp${sgrp}.tar ./enkfgdas.${gyy}${gmm}${gdd}/${ghh}/atmos/${memchar}
-            sPath_out=${ROTDIR}/${CDUMP}.${gyy}${gmm}${gdd}/${ghh}/${RUNMEM}/${COMPONENT}
-            if [ ! -d $sPath_out ]; then
-              mkdir -p $sPath_out
-            fi
-            mv ${EXTRACT_DIR}/enkfgdas.${gyy}${gmm}${gdd}/${ghh}/atmos/${memchar}/* ${sPath_out}/
-            rm -rf enkfgdas.${gyy}${gmm}${gdd}
-            cd $sPath_out
-            for f in `ls gdas.*`
-            do
-                echo $f
-                fnew=${f/gda/gefs}
-                mv $f $fnew
-            done
-            cd RESTART
-            module load nco/4.9.3
-            for f in `ls *tile*.nc`; do echo $f; ncatted -a checksum,,d,, $f; done
-            cd $EXTRACT_DIR
+      cd $EXTRACT_DIR
+      if [[ $RUNMEM == "c00" ]]; then
+        for stype in gfs gdas
+        do
+          if [[ $stype == "gfs" ]]; then
+            yy_c=$yy; mm_c=$mm; dd_c=$dd; hh_c=$hh;
+          else 
+            yy_c=$gyy; mm_c=$gmm; dd_c=$gdd; hh_c=$ghh;
+          fi
+          htar -xvf ${PRODHPSSDIR}/rh${yy}/${yy}${mm}/${yy}${mm}${dd}/com_gfs_prod_${stype}.${yy}${mm}${dd}_${hh}.${stype}_restart.tar
+          sPath_out=${ROTDIR}/${CDUMP}.${yy}${mm}${dd}/${hh}/${RUNMEM}/${COMPONENT}
+          if [ ! -d $sPath_out ]; then mkdir -p $sPath_out; fi
+          mv ${EXTRACT_DIR}/gfs.${yy}${mm}${dd}/${hh}/${COMPONENT}/* ${sPath_out}/
+          rm -rf ${stype}.${yy}${mm}${dd}
+          cd $sPath_out
+          for f in `ls ${stype}.*`; do fnew=${f/${stype}/gefs}; mv $f $fnew; done
+          cd RESTART
+          for f in `ls *tile*.nc`; do ncatted -a checksum,,d,, $f; done
+          cd $EXTRACT_DIR
+        done
+      else
+        case $cyc in
+          00) memshift=0;;
+          06) memshift=20;;
+          12) memshift=40;;
+          18) memshift=60;;
+        esac
+        nmem=`echo ${RUNMEM:-"c00"}|cut -c2-3`
+        (( cmem = nmem + memshift ))
+        if (( cmem > 80 )); then
+          (( cmem = cmem - 80 ))
         fi
+        memchar="mem"$(printf %03i $cmem)
+        sgrp=$(($cmem/10 + 1))
 
+        for CDATE_C in $CDATE $GDATE
+        do
+          export yy_c=$(echo $CDATE_C | cut -c1-4)
+          export mm_c=$(echo $CDATE_C | cut -c5-6)
+          export dd_c=$(echo $CDATE_C | cut -c7-8)
+          export hh_c=$(echo $CDATE_C | cut -c9-10)
+
+          shtar_path=${PRODHPSSDIR}/rh${yy_c}/${yy_c}${mm_c}/${yy_c}${mm_c}${dd_c}
+          htar -xvf ${shtar_path}/com_gfs_prod_enkfgdas.${yy_c}${mm_c}${dd_c}_${hh_c}.enkfgdas_restart_grp${sgrp}.tar ./enkfgdas.${yy_c}${mm_c}${dd_c}/${hh_c}/atmos/$memchar
+          sPath_out=${ROTDIR}/${CDUMP}.${yy_c}${mm_c}${dd_c}/${hh_c}/${RUNMEM}/${COMPONENT}
+          if [ ! -d $sPath_out ]; then mkdir -p $sPath_out; fi
+          mv ${EXTRACT_DIR}/enkfgdas.${yy_c}${mm_c}${dd_c}/${hh_c}/atmos/${memchar}/* ${sPath_out}/
+          rm -rf enkfgdas.${yy_c}${mm_c}${dd_c}
+          cd $sPath_out
+          for f in `ls gdas.*`; do fnew=${f/gdas/gefs}; mv $f $fnew; done
+          cd RESTART
+          for f in `ls *tile*.nc`; do ncatted -a checksum,,d,, $f; done
+          cd $EXTRACT_DIR
+        done
+      fi
     else
-        cd $ROTDIR
-        # Pull CDATE gfs restart tarball
-        htar -xvf ${PRODHPSSDIR}/rh${yy}/${yy}${mm}/${yy}${mm}${dd}/com_gfs_prod_gfs.${yy}${mm}${dd}_${hh}.gfs_restart.tar
-        # Pull GDATE gdas restart tarball
-        htar -xvf ${PRODHPSSDIR}/rh${gyy}/${gyy}${gmm}/${gyy}${gmm}${gdd}/com_gfs_prod_gdas.${gyy}${gmm}${gdd}_${ghh}.gdas_restart.tar
+      cd $ROTDIR
+      # Pull CDATE gfs restart tarball
+      htar -xvf ${PRODHPSSDIR}/rh${yy}/${yy}${mm}/${yy}${mm}${dd}/com_gfs_prod_gfs.${yy}${mm}${dd}_${hh}.gfs_restart.tar
+      # Pull GDATE gdas restart tarball
+      htar -xvf ${PRODHPSSDIR}/rh${gyy}/${gyy}${gmm}/${gyy}${gmm}${gdd}/com_gfs_prod_gdas.${gyy}${gmm}${gdd}_${ghh}.gdas_restart.tar
     fi
   fi
 
