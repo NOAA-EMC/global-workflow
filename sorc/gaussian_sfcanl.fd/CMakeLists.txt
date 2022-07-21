@@ -1,3 +1,5 @@
+add_subdirectory(weight_gen)
+
 list(APPEND fortran_src
   gaussian_sfcanl.f90
 )
@@ -19,5 +21,3 @@ target_link_libraries(
   NetCDF::NetCDF_Fortran)
 
 install(TARGETS ${exe_name} RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
-
-add_subdirectory(weight_gen)
