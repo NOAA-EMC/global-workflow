@@ -105,6 +105,7 @@ class AppConfig:
         self.do_wafs = _base.get('DO_WAFS', False)
         self.do_vrfy = _base.get('DO_VRFY', True)
         self.do_metp = _base.get('DO_METP', False)
+        self.do_efsoi = _base.get('DO_EFSOI', False)
 
         self.do_hpssarch = _base.get('HPSSARCH', False)
 
@@ -179,6 +180,9 @@ class AppConfig:
 
         if self.do_hybvar:
             configs += ['eobs', 'eomg', 'ediag', 'eupd', 'ecen', 'esfc', 'efcs', 'echgres', 'epos', 'earc']
+
+        if self.do_efsoi:
+            configs += ['eupdfsoi','ecenfsoi','esfcfsoi','efcsfsoi','eposfsoi','efsoi']
 
         if self.do_metp:
             configs += ['metp']
@@ -285,6 +289,8 @@ class AppConfig:
                 files += ['config.anal', 'config.eupd']
             elif config in ['efcs']:
                 files += ['config.fcst', 'config.efcs']
+            elif config in ['efcsfsoi']:
+                files += ['config.fcst', 'config.efcsfsoi']
             elif 'wave' in config:
                 files += ['config.wave', f'config.{config}']
             else:
@@ -321,6 +327,7 @@ class AppConfig:
         gdas_gfs_common_cleanup_tasks = ['arch']
 
         gldas_tasks = ['gldas']
+        efsoi_tasks = ['eupdfsoi','ecenfsoi','esfcfsoi','efcsfsoi','eposfsoi','efsoi']
         wave_prep_tasks = ['waveinit', 'waveprep']
         wave_bndpnt_tasks = ['wavepostbndpnt', 'wavepostbndpntbll']
         wave_post_tasks = ['wavepostsbs', 'wavepostpnt']
@@ -337,6 +344,9 @@ class AppConfig:
 
         if self.do_gldas:
             gdas_tasks += gldas_tasks
+
+        if self.do_efsoi:
+            gdas_tasks += efsoi_tasks
 
         if self.do_wave and 'gdas' in self.wave_cdumps:
             gdas_tasks += wave_prep_tasks
