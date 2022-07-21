@@ -47,13 +47,13 @@ fi
 # (Standard) Model resolution dependent variables
 case $case_in in
     "C48")
-        export DELTIM=1200
-        export layout_x=${layout_x:-3}
-        export layout_y=${layout_y:-2}
-        export layout_x_gfs=${layout_x_gfs:-3}
-        export layout_y_gfs=${layout_y_gfs:-2}
-        export nth_fv3=${nth_fv3:-2}
-        export nth_fv3_gfs=${nth_fv3_gfs:-2}
+        export DELTIM=450
+        export layout_x=3
+        export layout_y=2
+        export layout_x_gfs=3
+        export layout_y_gfs=2
+        export nth_fv3=2
+        export nth_fv3_gfs=2
         export cdmbgwd="0.071,2.1,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=1
         export WRTTASK_PER_GROUP=$npe_node_max

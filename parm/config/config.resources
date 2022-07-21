@@ -9,7 +9,7 @@ if [ $# -ne 1 ]; then
     echo "Must specify an input task argument to set resource variables!"
     echo "argument can be any one of the following:"
     echo "getic init coupled_ic aerosol_init"
-    echo "anal analcalc analdiag gldas fcst post vrfy metp arch echgres"
+    echo "anal sfcanl analcalc analdiag gldas fcst post vrfy metp arch echgres"
     echo "eobs ediag eomg eupd ecen esfc efcs epos earc"
     echo "init_chem mom6ic ocnpost"
     echo "waveinit waveprep wavepostsbs wavepostbndpnt wavepostbndpntbll wavepostpnt"
@@ -209,15 +209,22 @@ elif [ $step = "analdiag" ]; then
     export npe_node_analdiag=$npe_node_max
     if [[ "$machine" == "WCOSS_C" ]]; then export memory_analdiag="3072M"; fi
 
+elif [ $step = "sfcanl" ]; then
+
+    export wtime_sfcanl="00:10:00"
+    export npe_sfcanl=6
+    export nth_sfcanl=1
+    export npe_node_sfcanl=$(echo "$npe_node_max / $nth_sfcanl" | bc)
+
 elif [ $step = "gldas" ]; then
 
     export wtime_gldas="00:10:00"
-    export npe_gldas=96  
-    export nth_gldas=1 
+    export npe_gldas=96
+    export nth_gldas=1
     export npe_node_gldas=$npe_node_max
-    export npe_gaussian=96  
-    export nth_gaussian=1 
-    export npe_node_gaussian=24           
+    export npe_gaussian=96
+    export nth_gaussian=1
+    export npe_node_gaussian=24
     if [[ "$machine" = "WCOSS_DELL_P3" ]]; then export npe_gldas=112 ; fi
     if [[ "$machine" == "WCOSS_C" ]]; then export memory_gldas="3072M"; fi
 
@@ -275,7 +282,8 @@ elif [ $step = "fcst" ]; then
         if [[ $DO_WAVE == "YES" ]]; then
             case $waveGRD in
                 'gnh_10m aoc_9km gsh_15m') export WAVPETS=140 ;;
-                'gwes_30m') export WAVPETS=160 ;;
+                'gwes_30m') export WAVPETS=100 ;;
+                'mx050') export WAVPETS=240 ;;
                 'mx025') export WAVPETS=80 ;;
                 *)
                     echo "FATAL: Number of PEs not defined for wave grid '$waveGRD'"
@@ -290,7 +298,7 @@ elif [ $step = "fcst" ]; then
                 # Except for 025, these are guesses for now
                 100) export OCNPETS=20 ;;
                 050) export OCNPETS=60 ;;
-                025) export OCNPETS=120 ;;
+                025) export OCNPETS=220 ;;
                 *)
                     echo "FATAL: Number of PEs not defined for ocean resolution '$OCNRES'"
                     echo "  Please add an entry to config.resources within fcst for this resolution"
@@ -304,7 +312,7 @@ elif [ $step = "fcst" ]; then
                 # Except for 025, these are guesses for now
                 100) export ICEPETS=10 ;;
                 050) export ICEPETS=30 ;;
-                025) export ICEPETS=48 ;;
+                025) export ICEPETS=120 ;;
                 *)
                     echo "FATAL: Number of PEs not defined for ice resolution '$ICERES'"
                     echo "  Please add an entry to config.resources within fcst for this resolution"
@@ -403,13 +411,13 @@ elif [ $step = "vrfy" ]; then
     export npe_vrfy_gfs=1
     export npe_node_vrfy_gfs=1
     if [[ "$machine" == "WCOSS_C" ]]; then
-	    export memory_vrfy="3072M"
+      export memory_vrfy="3072M"
     elif [[ "$machine" == "HERA" ]]; then
-	    export memory_vrfy="16384M"
+      export memory_vrfy="16384M"
     fi
 
 elif [ $step = "metp" ]; then
-    
+
     export nth_metp=1
     export wtime_metp="03:00:00"
     export npe_metp=4
@@ -418,9 +426,9 @@ elif [ $step = "metp" ]; then
     export npe_metp_gfs=4
     export npe_node_metp_gfs=4
     if [[ "$machine" == "WCOSS_C" ]]; then
-            export memory_metp="3072M"
+      export memory_metp="3072M"
     elif [[ "$machine" == "THEIA" ]]; then
-            export memory_metp="16384M"
+      export memory_metp="16384M"
     fi
 
 elif [ $step = "echgres" ]; then
@@ -437,9 +445,9 @@ elif [ $step = "init" ]; then
     export nth_init=1
     export npe_node_init=6
     if [ $machine = "WCOSS_DELL_P3" ]; then
-        export memory_init="10G"
+      export memory_init="10G"
     else
-        export memory_init="70G"
+      export memory_init="70G"
     fi
 
 elif [ $step = "init_chem" ]; then
@@ -471,7 +479,7 @@ elif [ $step = "coupled_ic" ]; then
 
 elif [ $step = "eobs" -o $step = "eomg" ]; then
 
-    export wtime_eobs="00:15:00"
+    export wtime_eobs="00:45:00"
     export wtime_eomg="01:00:00"
     if [ $CASE = "C768" ]; then
       export npe_eobs=200
@@ -482,16 +490,22 @@ elif [ $step = "eobs" -o $step = "eomg" ]; then
     elif [ $CASE = "C96" -o $CASE = "C48" ]; then
       export npe_eobs=20
     fi
+    export npe_eomg=$npe_eobs
     export nth_eobs=2
     if [[ "$machine" = "WCOSS_DELL_P3" ]]; then export nth_eobs=7; fi
+    export nth_eomg=$nth_eobs
     export npe_node_eobs=$(echo "$npe_node_max / $nth_eobs" | bc)
+    export npe_node_eomg=$npe_node_eobs
     #The number of tasks and number of CPUs used must be the same for eobs
     #For S4, this is accomplished by running 10 tasks/node
     if [[ "$machine" = "S4" ]]; then
        export npe_node_eobs=10
        export wtime_eobs="00:30:00"
     fi
-    if [[ "$machine" == "WCOSS_C" ]]; then export memory_eobs="3072M"; fi
+    if [[ "$machine" == "WCOSS_C" ]]; then
+      export memory_eobs="3072M"
+      export memory_eomg=$memory_eobs
+    fi
 
 elif [ $step = "ediag" ]; then
 

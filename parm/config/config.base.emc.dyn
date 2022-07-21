@@ -120,6 +120,8 @@ export ATARDIR="@ATARDIR@"
 export envir=${envir:-"prod"}
 export NET="gfs"
 export RUN=${RUN:-${CDUMP:-"gfs"}}
+export COMIN_OBS=${DMPDIR}/${CDUMP}.${PDY}/$cyc/atmos
+export COMIN_GES_OBS=${DMPDIR}/${CDUMP}.${PDY}/$cyc/atmos
 export COMINatmos=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos
 export COMOUTatmos=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos
 export COMINwave=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/wave
@@ -157,6 +159,7 @@ export DO_ICE="NO"
 export DO_AERO="NO"
 export CCPP_SUITE="FV3_GFS_v17_p8"
 export WAVE_CDUMP="" # When to include wave suite: gdas, gfs, or both
+export DOBNDPNT_WAVE="NO"
 export cplwav2atm=".false."
 
 case "${APP}" in
@@ -188,7 +191,7 @@ case "${APP}" in
 
     if [[ "$APP" =~ ^S2SW ]]; then
         export DO_WAVE="YES"
-        export WAVE_CDUMP="both"    
+        export WAVE_CDUMP="both"
         export cplwav2atm=".true."
         export confignamevarfornems="${confignamevarfornems}_wave"
     fi
