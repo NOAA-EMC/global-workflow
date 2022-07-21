@@ -44,7 +44,7 @@ APRUN_ENKF=${APRUN_ENKF:-${APRUN:-""}}
 NTHREADS_ENKF=${NTHREADS_ENKF:-${NTHREADS:-1}}
 
 # Executables
-EFSOIEXEC=${EFSOIEXEC:-$HOMEgfs/exec/global_efsoi.x}
+EFSOIEXEC=${EFSOIEXEC:-$HOMEgfs/exec/efsoi.x}
 
 # Cycling and forecast hour specific parameters
 CDATE=${CDATE:-"2001010100"}
