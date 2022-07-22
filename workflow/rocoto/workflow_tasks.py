@@ -1162,9 +1162,9 @@ class Tasks:
         self._is_this_a_gdas_task(self.cdump, 'eposfsoi')
 
         def _get_eposfsoigroups(eposfsoi):
-            fhmin = eposfsoi['FHMIN_ENKF']
-            fhmax = eposfsoi['FHMAX_ENKF']
-            fhout = eposfsoi['FHOUT_ENKF']
+            fhmin = eposfsoi['FHMIN_EFSOI']
+            fhmax = eposfsoi['FHMAX_EFSOI']
+            fhout = eposfsoi['FHOUT_EFSOI']
             fhrs = range(fhmin, fhmax + fhout, fhout)
 
             neposfsoigrp = eposfsoi['NEPOSGRP']
