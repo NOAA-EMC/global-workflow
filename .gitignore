@@ -82,6 +82,7 @@ sorc/gldas.fd
 sorc/gsi_enkf.fd
 sorc/gsi.fd
 sorc/enkf.fd
+sorc/gdas.cd
 sorc/gsi_utils.fd
 sorc/gsi_monitor.fd
 sorc/ufs_utils.fd
@@ -145,6 +146,12 @@ jobs/JGFS_ATMOS_WAFS_BLENDING_0P25
 jobs/JGFS_ATMOS_WAFS_GCIP
 jobs/JGFS_ATMOS_WAFS_GRIB2
 jobs/JGFS_ATMOS_WAFS_GRIB2_0P25
+jobs/JGDAS_GLOBAL_ATMOS_ANALYSIS_POST
+jobs/JGDAS_GLOBAL_ATMOS_ANALYSIS_PREP
+jobs/JGDAS_GLOBAL_ATMOS_ANALYSIS_RUN
+jobs/JGDAS_GLOBAL_ATMOS_ENSANAL_POST
+jobs/JGDAS_GLOBAL_ATMOS_ENSANAL_PREP
+jobs/JGDAS_GLOBAL_ATMOS_ENSANAL_RUN
 # scripts symlinks
 scripts/exemcsfc_global_sfc_prep.sh
 scripts/exgdas_atmos_gldas.sh
@@ -188,6 +195,7 @@ ush/radmon_verf_angle.sh
 ush/radmon_verf_bcoef.sh
 ush/radmon_verf_bcor.sh
 ush/radmon_verf_time.sh
+ush/ufsda
 ush/wafs_blending.sh
 ush/wafs_grib2.regrid.sh
 ush/wafs_intdsk.sh

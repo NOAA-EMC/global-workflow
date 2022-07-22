@@ -148,6 +148,20 @@ $Build_gsi_utils && {
 }
 
 #------------------------------------
+# build gdas
+#------------------------------------
+$Build_gdas && {
+        echo " .... Building GDASApp .... "
+        ./build_gdas.sh > $logs_dir/build_gdas.log 2>&1
+        rc=$?
+        if [[ $rc -ne 0 ]] ; then
+                echo "Fatal error in building GDAS."
+                echo "The log file is in $logs_dir/build_gdas.log"
+	fi
+        ((err+=$rc))
+}
+
+#------------------------------------
 # build gsi monitor
 #------------------------------------
 $Build_gsi_monitor && {
