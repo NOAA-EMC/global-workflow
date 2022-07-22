@@ -118,7 +118,7 @@ export ATARDIR="@ATARDIR@"
 
 # Commonly defined parameters in JJOBS
 export envir=${envir:-"prod"}
-export NET=${NET=-"gfs"}
+export NET=${NET:-"gfs"}
 export RUN=${RUN:-${CDUMP:-"gfs"}}
 export COMIN_OBS=${DMPDIR}/${CDUMP}.${PDY}/$cyc/atmos
 export COMIN_GES_OBS=${DMPDIR}/${CDUMP}.${PDY}/$cyc/atmos
