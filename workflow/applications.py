@@ -358,11 +358,9 @@ class AppConfig:
             hybrid_gdas_tasks += ['ecen', 'esfc', 'efcs', 'epos', 'earc']
 
         # Collect all "gdas" cycle tasks
-        gdas_tasks = []
-        if self.do_jedivar:
-            gdas_tasks += gdas_gfs_common_tasks_before_fcst
-        else:
-            gdas_tasks += gdas_gfs_common_tasks_before_fcst + ['analdiag']
+        gdas_tasks = gdas_gfs_common_tasks_before_fcst.copy()
+        if not self.do_jedivar:
+            gdas_tasks += ['analdiag']
 
         if self.do_gldas:
             gdas_tasks += gldas_tasks
