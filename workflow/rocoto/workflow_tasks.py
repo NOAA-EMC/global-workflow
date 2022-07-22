@@ -897,9 +897,18 @@ class Tasks:
 
     def efsoi(self):
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}epmnfsoi'}
+        #dep_dict = {'type': 'metatask', 'name': f'{self.cdump}epmnfsoi'}
+        #deps.append(rocoto.add_dependency(dep_dict))
+        data = '&ROTDIR;/efsoigdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmf030.ensmean.nc'
+        dep_dict = {'type': 'data', 'data': data, 'offset': '-6:00:00'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
+        data = '&ROTDIR;/efsoigdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmf024.ensmean.nc'
+        dep_dict = {'type': 'data', 'data': data}
+        deps.append(rocoto.add_dependency(dep_dict))
+        data = '&ROTDIR;/gdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmanl.ensres.nc'
+        dep_dict = {'type': 'data', 'data': data, 'offset': '24:00:00'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('efsoi')
         task = create_wf_task('efsoi', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
