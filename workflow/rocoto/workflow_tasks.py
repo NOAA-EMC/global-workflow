@@ -1034,7 +1034,10 @@ class Tasks:
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump}analcalc'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'task', 'name': f'{eupd_cdump}eupd'}
+        if self.app_config.do_jediens:
+            dep_dict = {'type': 'task', 'name': f'{eupd_cdump}atmensanalrun'}
+        else:
+            dep_dict = {'type': 'task', 'name': f'{eupd_cdump}eupd'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
@@ -1062,7 +1065,10 @@ class Tasks:
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump}analcalc'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'task', 'name': f'{eupd_cdump}eupd'}
+        if self.app_config.do_jediens:
+            dep_dict = {'type': 'task', 'name': f'{eupd_cdump}atmensanalrun'}
+        else:
+            dep_dict = {'type': 'task', 'name': f'{eupd_cdump}eupd'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
