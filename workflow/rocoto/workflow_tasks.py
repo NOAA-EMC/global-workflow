@@ -338,7 +338,10 @@ class Tasks:
     def sfcanl(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.cdump}anal'}
+        if self.app_config.do_jedivar:
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}atmanalrun'}
+        else:
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}anal'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -350,7 +353,10 @@ class Tasks:
     def analcalc(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.cdump}anal'}
+        if self.app_config.do_jedivar:
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}atmanalrun'}
+        else:
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}anal'}
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'task', 'name': f'{self.cdump}sfcanl'}
         deps.append(rocoto.add_dependency(dep_dict))
