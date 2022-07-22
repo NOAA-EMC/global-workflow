@@ -390,10 +390,10 @@ class Tasks:
         dump_suffix = self._base["DUMP_SUFFIX"]
         gfs_cyc = self._base["gfs_cyc"]
         dmpdir = self._base["DMPDIR"]
-        gfs_enkf = True if self.app_config.do_hybvar and 'gfs' in self.app_config.eupd_cdumps else False
+        do_gfs_enkf = True if self.app_config.do_hybvar and 'gfs' in self.app_config.eupd_cdumps else False
 
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{"gdas"}post', 'offset': '-06:00:00'}
+        dep_dict = {'type': 'metatask', 'name': 'gdaspost', 'offset': '-06:00:00'}
         deps.append(rocoto.add_dependency(dep_dict))
         data = f'&ROTDIR;/gdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmf009{suffix}'
         dep_dict = {'type': 'data', 'data': data, 'offset': '-06:00:00'}
@@ -404,7 +404,7 @@ class Tasks:
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         cycledef = self.cdump
-        if self.cdump in ['gfs'] and gfs_enkf and gfs_cyc != 4:
+        if self.cdump in ['gfs'] and do_gfs_enkf and gfs_cyc != 4:
             cycledef = 'gdas'
 
         resources = self.get_resource('atmanalprep')
@@ -953,10 +953,10 @@ class Tasks:
         dump_suffix = self._base["DUMP_SUFFIX"]
         gfs_cyc = self._base["gfs_cyc"]
         dmpdir = self._base["DMPDIR"]
-        gfs_enkf = True if self.app_config.do_hybvar and 'gfs' in self.app_config.eupd_cdumps else False
+        do_gfs_enkf = True if self.app_config.do_hybvar and 'gfs' in self.app_config.eupd_cdumps else False
 
         deps = []
-        dep_dict = {'type': 'metatask', 'name': f'{"gdas"}post', 'offset': '-06:00:00'}
+        dep_dict = {'type': 'metatask', 'name': 'gdaspost', 'offset': '-06:00:00'}
         deps.append(rocoto.add_dependency(dep_dict))
         data = f'&ROTDIR;/gdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmf009{suffix}'
         dep_dict = {'type': 'data', 'data': data, 'offset': '-06:00:00'}
@@ -967,7 +967,7 @@ class Tasks:
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         cycledef = self.cdump
-        if self.cdump in ['gfs'] and gfs_enkf and gfs_cyc != 4:
+        if self.cdump in ['gfs'] and do_gfs_enkf and gfs_cyc != 4:
             cycledef = 'gdas'
 
         resources = self.get_resource('atmensanalprep')
@@ -981,7 +981,7 @@ class Tasks:
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump}atmensanalprep'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'metatask', 'name': f'{"gdas"}epmn', 'offset': '-06:00:00'}
+        dep_dict = {'type': 'metatask', 'name': 'gdasepmn', 'offset': '-06:00:00'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 

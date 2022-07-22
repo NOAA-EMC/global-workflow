@@ -173,8 +173,6 @@ class AppConfig:
         """
 
         configs = ['prep']
-##                   'sfcanl', 'analcalc',
-##                   'fcst', 'post', 'vrfy', 'arch']
 
         if self.do_jedivar:
             configs += ['atmanalprep', 'atmanalrun', 'atmanalpost']
