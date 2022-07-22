@@ -200,6 +200,9 @@ class AppConfig:
         if self.do_gempak:
             configs += ['gempak']
 
+        if self.do_bufrsnd:
+            configs += ['postsnd']
+
         if self.do_awips:
             configs += ['awips']
 
