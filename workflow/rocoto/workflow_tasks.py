@@ -418,7 +418,7 @@ class Tasks:
         dep_dict = {'type': 'task', 'name': f'{self.cdump}atmanalprep'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_hybvar:
-            dep_dict = {'type': 'metatask', 'name': f'{"gdas"}epmn', 'offset': '-06:00:00'}
+            dep_dict = {'type': 'metatask', 'name': 'gdasepmn', 'offset': '-06:00:00'}
             deps.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
         else:
