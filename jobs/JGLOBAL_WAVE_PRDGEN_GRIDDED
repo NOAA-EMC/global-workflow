@@ -14,8 +14,9 @@ cd $DATA
 export cycle=${cycle:-t${cyc}z}
 
 # Set PDY
-setpdy.sh
-. PDY
+ setpdy.sh
+ . PDY
+ env
 
 # PATH for working directory
 export NET=${NET:-gfs}
@@ -44,9 +45,23 @@ if [ $SENDCOM = YES ]; then
   mkdir -p $COMOUT $PCOM
 fi
 
+# JY - move up
+#export DATA=${DATA:-${DATAROOT}/${jobid:?}}
+#mkdir -p $DATA
+#cd $DATA
+#
+#######################################
+### Set up the cycle variable
+#######################################
+#export cycle=${cycle:-t${cyc}z}
+
+## Set PDY
+# setpdy.sh
+# . PDY
+# env
 
 ###################################
-# Execute the Script
+# Execute the Script  
 ###################################
 $HOMEgfs/scripts/exgfs_wave_prdgen_gridded.sh
 status=$?

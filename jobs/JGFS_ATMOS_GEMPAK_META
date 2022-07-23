@@ -92,6 +92,8 @@ fi
 
 export pgmout=OUTPUT.$$
 
+env
+
 ########################################################
 # Execute the script.
 $SRCgfs/exgfs_atmos_gempak_meta.sh

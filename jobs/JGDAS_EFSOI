@@ -97,6 +97,7 @@ mkdir -p $OSENSE_SAVE_DIR
 
 ###############################################################
 # Run relevant exglobal script
+env
 msg="HAS BEGUN on `hostname`"
 postmsg "$jlogfile" "$msg"
 $LOGSCRIPT

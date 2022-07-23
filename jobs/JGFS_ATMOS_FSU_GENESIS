@@ -110,7 +110,7 @@ if [ $RUN_ENVIR = "nco" ]; then
     export COMOUTatcf=${COMROOTp1:?}/nhc/${envir}/atcf
     mkdir -m 775 -p $COMOUThur $COMOUTatcf
 else
-#    export COMOUThur=$COMOUT
+#    export COMOUThur=$COMOUT         
 #    export COMOUTatcf=$COMOUT
     export COMOUThur=$DATA
     export COMOUTatcf=$DATA
@@ -119,6 +119,7 @@ fi
 ##############################################
 # Run relevant script
 ##############################################
+env
 msg="HAS BEGUN on $(hostname)"
 postmsg "$jlogfile" "$msg"
 $LOGSCRIPT

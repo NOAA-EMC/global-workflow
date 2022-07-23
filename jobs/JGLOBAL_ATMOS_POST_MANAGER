@@ -33,7 +33,7 @@ set -xue
 # #### 07/30/1999 ###################
 # SET SHELL PROCESSING VARIABLES
 # ###################################
-export PS4='$SECONDS + '
+export PS4='$SECONDS + ' 
 date
 
 ####################################
@@ -43,13 +43,13 @@ export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
 export COMPONENT=${COMPONENT:-atmos}
 
-####################################
+#################################### 
 # obtain unique process id (pid) and make temp directories
 ####################################
 export pid=${pid:-$$}
 export DATA=${DATA:-${DATAROOT}/${jobid:?}}
 mkdir $DATA
-cd $DATA
+cd $DATA 
 
 ####################################
 # Determine Job Output Name on System

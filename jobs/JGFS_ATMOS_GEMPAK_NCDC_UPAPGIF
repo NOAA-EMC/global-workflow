@@ -84,6 +84,8 @@ fi
 
 export pgmout=OUTPUT.$$
 
+env
+
 msg="Begin job for $job"
 postmsg "$jlogfile" "$msg"
 

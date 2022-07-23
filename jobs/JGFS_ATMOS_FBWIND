@@ -62,6 +62,8 @@ fi
 
 export pgmout=OUTPUT.$$
 
+env
+
 ########################################################
 # Execute the script.
 $HOMEgfs/scripts/exgfs_atmos_fbwind.sh
