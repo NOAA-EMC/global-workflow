@@ -1,4 +1,5 @@
-#!/bin/ksh
+#! /usr/bin/env bash
+
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
@@ -17,11 +18,9 @@
 #
 ################################################################################
 
-# Set environment.
-VERBOSE=${VERBOSE:-"YES"}
-if [ $VERBOSE = "YES" ] ; then
-   echo $(date) EXECUTING $0 $* >&2
-   set -x
+PREAMBLE_SCRIPT="${PREAMBLE_SCRIPT:-$HOMEgfs/ush/preamble.sh}"
+if [ -f "${PREAMBLE_SCRIPT}" ]; then
+  source $PREAMBLE_SCRIPT
 fi
 
 # Directories.
@@ -141,7 +140,7 @@ $NLN $VLOCALEIG  vlocal_eig.dat
 ################################################################################
 # Ensemble guess, observational data and analyses/increments
 
-nfhrs=`echo $IAUFHRS_ENKF | sed 's/,/ /g'`
+nfhrs=$(echo $IAUFHRS_ENKF | sed 's/,/ /g')
 for imem in $(seq 1 $NMEM_ENKF); do
    memchar="mem"$(printf %03i $imem)
    mkdir ${memchar}
@@ -258,8 +257,6 @@ $NCP osense_${CDATE}.dat $OSENSE_SAVE_DIR/$OSENSEOUT
 
 cd $pwd
 [[ $mkdata = "YES" ]] && rm -rf $DATA
-set +x
-if [ $VERBOSE = "YES" ]; then
-   echo $(date) EXITING $0 with return code $err >&2
-fi
+
+
 exit $err

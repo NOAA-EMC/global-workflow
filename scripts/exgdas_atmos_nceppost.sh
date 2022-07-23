@@ -1,33 +1,35 @@
+#! /usr/bin/env bash
+
 #####################################################################
-echo "-----------------------------------------------------"
-echo " exgdas_nceppost.sh" 
-echo " Sep 07 - Chuang - Modified script to run unified post"
-echo " July 14 - Carlis - Changed to 0.25 deg grib2 master file"
-echo " Feb 16 - Lin - Modify to use Vertical Structure"
-echo " Aug 17 - Meng - Modify to use 3-digit forecast hour naming"
-echo "                 master and flux files"
-echo " Dec 17 - Meng - Link sfc data file to flxfile "
-echo "                 since fv3gfs does not output sfc files any more."
-echo " Dec 17 - Meng - Add fv3gfs_downstream_nems.sh for pgb processing "
-echo "                 and remove writing data file to /nwges"
-echo " Jan 18 - Meng - For EE2 standard, move IDRT POSTGPVARS setting"
-echo "                 from j-job script."
-echo " Feb 18 - Meng - Removed legacy setting for generating grib1 data"
-echo "                 and reading sigio model outputs."
-echo " Aug 20 - Meng - Remove .ecf extentsion per EE2 review."
-echo " Sep 20 - Meng - Update clean up files per EE2 review."
-echo " Mar 21 - Meng - Update POSTGRB2TBL default setting."
-echo " Oct 21 - Meng - Remove jlogfile for wcoss2 transition."
-echo " Feb 22 - Lin - Exception handling if anl input not found."
-echo "-----------------------------------------------------"
+# echo "-----------------------------------------------------"
+# echo " exgdas_nceppost.sh" 
+# echo " Sep 07 - Chuang - Modified script to run unified post"
+# echo " July 14 - Carlis - Changed to 0.25 deg grib2 master file"
+# echo " Feb 16 - Lin - Modify to use Vertical Structure"
+# echo " Aug 17 - Meng - Modify to use 3-digit forecast hour naming"
+# echo "                 master and flux files"
+# echo " Dec 17 - Meng - Link sfc data file to flxfile "
+# echo "                 since fv3gfs does not output sfc files any more."
+# echo " Dec 17 - Meng - Add fv3gfs_downstream_nems.sh for pgb processing "
+# echo "                 and remove writing data file to /nwges"
+# echo " Jan 18 - Meng - For EE2 standard, move IDRT POSTGPVARS setting"
+# echo "                 from j-job script."
+# echo " Feb 18 - Meng - Removed legacy setting for generating grib1 data"
+# echo "                 and reading sigio model outputs."
+# echo " Aug 20 - Meng - Remove .ecf extentsion per EE2 review."
+# echo " Sep 20 - Meng - Update clean up files per EE2 review."
+# echo " Mar 21 - Meng - Update POSTGRB2TBL default setting."
+# echo " Oct 21 - Meng - Remove jlogfile for wcoss2 transition."
+# echo " Feb 22 - Lin - Exception handling if anl input not found."
+# echo "-----------------------------------------------------"
 #####################################################################
 
-set -x
+PREAMBLE_SCRIPT="${PREAMBLE_SCRIPT:-$HOMEgfs/ush/preamble.sh}"
+if [ -f "${PREAMBLE_SCRIPT}" ]; then
+  source $PREAMBLE_SCRIPT
+fi
 
 cd $DATA
-
-msg="HAS BEGUN on $(hostname)"
-postmsg "$msg"
 
 export POSTGPSH=${POSTGPSH:-$USHgfs/gfs_nceppost.sh}
 export GFSDOWNSH=${GFSDOWNSH:-$USHgfs/fv3gfs_downstream_nems.sh}
@@ -185,7 +187,6 @@ else   ## not_anl if_stimes
     # Start Looping for the 
     # existence of the restart files
     ###############################
-    set -x
     export pgm="postcheck"
     ic=1
     while [ $ic -le $SLEEP_LOOP_MAX ]; do
@@ -206,10 +207,6 @@ else   ## not_anl if_stimes
         err_chk
       fi
     done
-    set -x
-
-    msg="Starting post for fhr=$fhr"
-    postmsg "$msg"
 
     ###############################
     # Put restart files into /nwges 
@@ -350,10 +347,6 @@ else   ## not_anl if_stimes
     [[ -f flxfile ]] && rm flxfile
   done
 fi   ## end_if_times
-
-#cat $pgmout
-#msg='ENDED NORMALLY.'
-#postmsg "$jlogfile" "$msg"
 
 exit 0
 

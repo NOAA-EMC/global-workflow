@@ -1,4 +1,5 @@
-#!/bin/ksh
+#! /usr/bin/env bash
+
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
@@ -109,11 +110,9 @@
 #
 ################################################################################
 
-#  Set environment.
-VERBOSE=${VERBOSE:-"NO"}
-if [[ "$VERBOSE" = "YES" ]] ; then
-   echo $(date) EXECUTING $0 $* >&2
-   set -x
+PREAMBLE_SCRIPT="${PREAMBLE_SCRIPT:-$HOMEgfs/ush/preamble.sh}"
+if [ -f "${PREAMBLE_SCRIPT}" ]; then
+  source $PREAMBLE_SCRIPT
 fi
 
 CASE=${CASE:-C768}
@@ -144,7 +143,7 @@ DATA=${DATA:-$(pwd)}
 COMOUT=${COMOUT:-$(pwd)}
 
 #  Filenames.
-XC=${XC}
+XC=${XC:-}
 GAUSFCANLEXE=${GAUSFCANLEXE:-$EXECgfs/gaussian_sfcanl.exe}
 SIGLEVEL=${SIGLEVEL:-$FIXam/global_hyblev.l${LEVSP1}.txt}
 
@@ -160,7 +159,7 @@ export REDERR=${REDERR:-'2>'}
 # Set defaults
 ################################################################################
 #  Preprocessing
-$INISCRIPT
+${INISCRIPT:-}
 pwd=$(pwd)
 if [[ -d $DATA ]]
 then
@@ -236,10 +235,5 @@ $ERRSCRIPT||exit 2
 #  Postprocessing
 cd $pwd
 [[ $mkdata = YES ]]&&rmdir $DATA
-$ENDSCRIPT
-set +x
-if [[ "$VERBOSE" = "YES" ]]
-then
-   echo $(date) EXITING $0 with return code $err >&2
-fi
-exit $err
+
+exit ${err}

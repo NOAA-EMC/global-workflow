@@ -221,8 +221,8 @@ if [ -d ../sorc/gsi_monitor.fd ]; then
     $LINK ../sorc/gsi_monitor.fd/src/Radiance_Monitor/nwprod/radmon_shared/ush/radmon_verf_bcoef.sh                 .
     $LINK ../sorc/gsi_monitor.fd/src/Radiance_Monitor/nwprod/radmon_shared/ush/radmon_verf_bcor.sh                  .
     $LINK ../sorc/gsi_monitor.fd/src/Radiance_Monitor/nwprod/radmon_shared/ush/radmon_verf_time.sh                  .
+    $LINK ../sorc/gsi_monitor.fd/src/Radiance_Monitor/nwprod/radmon_shared/ush/rstprod.sh                           .
 fi
-
 
 #------------------------------
 #--link executables

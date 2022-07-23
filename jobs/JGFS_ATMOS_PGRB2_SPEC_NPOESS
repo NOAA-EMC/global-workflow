@@ -1,8 +1,9 @@
-#!/bin/sh
+#! /usr/bin/env bash
 
-set -xa
-export PS4='$SECONDS + '
-date
+PREAMBLE_SCRIPT="${PREAMBLE_SCRIPT:-$HOMEgfs/ush/preamble.sh}"
+if [ -f "${PREAMBLE_SCRIPT}" ]; then
+  source $PREAMBLE_SCRIPT
+fi
 
 export OMP_NUM_THREADS=${OMP_NUM_THREADS:-1}
 
@@ -65,7 +66,6 @@ fi
 
 export pgmout=OUTPUT.$$
 
-env
 
 ####################################
 # Specify Forecast Hour Range
@@ -124,9 +124,6 @@ $HOMEgfs/scripts/exgfs_atmos_grib2_special_npoess.sh
 export err=$?;err_chk
 #############################################################
 
-msg="JOB $job HAS COMPLETED NORMALLY!"
-postmsg $jlogfile "$msg"
-
 ############################################
 # print exec I/O output
 ############################################
@@ -141,4 +138,3 @@ if [ "$KEEPDATA" != "YES" ] ; then
   rm -rf $DATA
 fi
 
-date

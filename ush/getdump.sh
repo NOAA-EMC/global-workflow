@@ -1,5 +1,9 @@
-#!/bin/ksh
-set -x
+#! /usr/bin/env bash
+
+PREAMBLE_SCRIPT="${PREAMBLE_SCRIPT:-$HOMEgfs/ush/preamble.sh}"
+if [ -f "${PREAMBLE_SCRIPT}" ]; then
+  source $PREAMBLE_SCRIPT
+fi
 
 COMPONENT=${COMPONENT:-atmos}
 
@@ -38,6 +42,3 @@ else
 fi
 
 exit 0
-
-
-

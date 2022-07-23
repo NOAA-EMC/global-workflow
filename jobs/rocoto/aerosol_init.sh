@@ -1,6 +1,9 @@
-#!/bin/bash
+#! /usr/bin/env bash
 
-set -x
+PREAMBLE_SCRIPT="${PREAMBLE_SCRIPT:-$HOMEgfs/ush/preamble.sh}"
+if [ -f "${PREAMBLE_SCRIPT}" ]; then
+  source $PREAMBLE_SCRIPT
+fi
 
 ###############################################################
 # Source FV3GFS workflow modules
@@ -34,5 +37,5 @@ fi
 ##############################################################
 # Exit cleanly
 
-set +x
+
 exit 0

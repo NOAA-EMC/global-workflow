@@ -1,4 +1,9 @@
-#!/bin/bash -x
+#! /usr/bin/env bash
+
+PREAMBLE_SCRIPT="${PREAMBLE_SCRIPT:-$HOMEgfs/ush/preamble.sh}"
+if [ -f "${PREAMBLE_SCRIPT}" ]; then
+  source $PREAMBLE_SCRIPT
+fi
 
 ###############################################################
 ## Abstract:
@@ -66,4 +71,6 @@ $GEMPAKSH
 ###############################################################
 # Force Exit out cleanly
 if [ ${KEEPDATA:-"NO"} = "NO" ] ; then rm -rf $DATAROOT ; fi
+
+
 exit 0

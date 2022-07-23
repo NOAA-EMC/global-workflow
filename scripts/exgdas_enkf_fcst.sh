@@ -1,4 +1,5 @@
-#!/bin/bash
+#! /usr/bin/env bash
+
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
@@ -18,11 +19,9 @@
 ####
 ################################################################################
 
-# Set environment.
-export VERBOSE=${VERBOSE:-"YES"}
-if [ $VERBOSE = "YES" ] ; then
-   echo $(date) EXECUTING $0 $* >&2
-   set -x
+PREAMBLE_SCRIPT="${PREAMBLE_SCRIPT:-$HOMEgfs/ush/preamble.sh}"
+if [ -f "${PREAMBLE_SCRIPT}" ]; then
+  source $PREAMBLE_SCRIPT
 fi
 
 # Directories.
@@ -177,7 +176,7 @@ for imem in $(seq $ENSBEG $ENSEND); do
          err_exit "FATAL ERROR:  forecast of member $cmem FAILED.  Aborting job"
       fi
 
-      ((rc+=ra))
+      rc=$((rc+ra))
 
    fi
 
@@ -228,8 +227,6 @@ export err=$rc; err_chk
 #  Postprocessing
 cd $pwd
 [[ $mkdata = "YES" ]] && rm -rf $DATATOP
-set +x
-if [ $VERBOSE = "YES" ] ; then
-   echo $(date) EXITING $0 with return code $err >&2
-fi
+
+
 exit $err

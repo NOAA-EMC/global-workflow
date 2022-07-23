@@ -1,10 +1,11 @@
-#!/bin/bash
-set -x
+#! /usr/bin/env bash
+
+PREAMBLE_SCRIPT="${PREAMBLE_SCRIPT:-$HOMEgfs/ush/preamble.sh}"
+if [ -f "${PREAMBLE_SCRIPT}" ]; then
+  source $PREAMBLE_SCRIPT
+fi
 
 export RUN_ENVIR=${RUN_ENVIR:-"nco"}
-export PS4='$SECONDS + '
-date
-
 
 #############################
 # Source relevant config files
@@ -97,11 +98,6 @@ export COMIN_GES_ENS="$ROTDIR/enkfgdas.$gPDY/$gcyc/$COMPONENT"
 
 ###############################################################
 # Run relevant script
-env
-echo "HAS BEGUN on $(hostname)"
-$LOGSCRIPT
-
-
 ${CHGRESFCSTSH:-$SCRgfs/exgdas_atmos_chgres_forenkf.sh}
 status=$?
 [[ $status -ne 0 ]] && exit $status
@@ -118,15 +114,11 @@ if [ -e "$pgmout" ] ; then
   cat $pgmout
 fi
 
-
-echo "ENDED NORMALLY."
-
-
 ##########################################
 # Remove the Temporary working directory
 ##########################################
 cd $DATAROOT
 [[ $KEEPDATA = "NO" ]] && rm -rf $DATA
 
-date
+
 exit 0

@@ -1,8 +1,9 @@
-#!/bin/bash
+#! /usr/bin/env bash
 
-date
-export PS4=' $SECONDS + '
-set -xa
+PREAMBLE_SCRIPT="${PREAMBLE_SCRIPT:-$HOMEgfs/ush/preamble.sh}"
+if [ -f "${PREAMBLE_SCRIPT}" ]; then
+  source $PREAMBLE_SCRIPT
+fi
 
 export DATA=${DATA:-${DATAROOT}/${jobid:?}}
 mkdir -p $DATA
@@ -16,7 +17,6 @@ export cycle=${cycle:-t${cyc}z}
 # Set PDY
  setpdy.sh
  . PDY
- env
 
 # PATH for working directory
 export NET=${NET:-gfs}
@@ -45,21 +45,6 @@ if [ $SENDCOM = YES ]; then
   mkdir -p $COMOUT $PCOM
 fi
 
-# JY - move up
-#export DATA=${DATA:-${DATAROOT}/${jobid:?}}
-#mkdir -p $DATA
-#cd $DATA
-#
-#######################################
-### Set up the cycle variable
-#######################################
-#export cycle=${cycle:-t${cyc}z}
-
-## Set PDY
-# setpdy.sh
-# . PDY
-# env
-
 ###################################
 # Execute the Script  
 ###################################
@@ -73,6 +58,7 @@ if [ "$KEEPDATA" != "YES" ]; then
   cd $DATAROOT
   rm -rf $DATA
 fi
-date
+
+
 exit 0
 

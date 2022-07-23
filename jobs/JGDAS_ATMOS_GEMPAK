@@ -1,8 +1,9 @@
-#!/bin/sh
+#! /usr/bin/env bash
 
-set -xa
-export PS4='$SECONDS + '
-date
+PREAMBLE_SCRIPT="${PREAMBLE_SCRIPT:-$HOMEgfs/ush/preamble.sh}"
+if [ -f "${PREAMBLE_SCRIPT}" ]; then
+  source $PREAMBLE_SCRIPT
+fi
 
 ############################################
 # GDAS GEMPAK PRODUCT GENERATION
@@ -73,7 +74,6 @@ fi
 
 export pgmout=OUTPUT.$$
 
-env
 
 if [ -f $DATA/poescrip ]; then
    rm $DATA/poescript
@@ -107,11 +107,6 @@ APRUNCFP=$(eval echo $APRUN_GEMPAKCFP)
 $APRUNCFP $DATA/poescript
 export err=$?; err_chk
 
-########################################################
-
-msg="JOB $job HAS COMPLETED NORMALLY!"
-postmsg $jlogfile "$msg"
-
 ############################################
 # print exec I/O output
 ############################################
@@ -126,4 +121,3 @@ if [ "$KEEPDATA" != "YES" ] ; then
   rm -rf $DATA
 fi
 
-date

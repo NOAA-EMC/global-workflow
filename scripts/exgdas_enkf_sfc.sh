@@ -1,4 +1,5 @@
-#!/bin/bash
+#! /usr/bin/env bash
+
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
@@ -17,11 +18,9 @@
 #
 ################################################################################
 
-# Set environment.
-VERBOSE=${VERBOSE:-"YES"}
-if [ $VERBOSE = "YES" ]; then
-   echo $(date) EXECUTING $0 $* >&2
-   set -x
+PREAMBLE_SCRIPT="${PREAMBLE_SCRIPT:-$HOMEgfs/ush/preamble.sh}"
+if [ -f "${PREAMBLE_SCRIPT}" ]; then
+  source $PREAMBLE_SCRIPT
 fi
 
 # Directories.
@@ -197,8 +196,6 @@ fi
 # Postprocessing
 cd $pwd
 [[ $mkdata = "YES" ]] && rm -rf $DATA
-set +x
-if [ $VERBOSE = "YES" ]; then
-   echo $(date) EXITING $0 with return code $err >&2
-fi
+
+
 exit $err

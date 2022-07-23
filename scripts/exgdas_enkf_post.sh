@@ -1,4 +1,5 @@
-#!/bin/bash
+#! /usr/bin/env bash
+
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
@@ -17,11 +18,9 @@
 #
 ################################################################################
 
-# Set environment.
-VERBOSE=${VERBOSE:-"YES"}
-if [ $VERBOSE = "YES" ]; then
-   echo $(date) EXECUTING $0 $* >&2
-   set -x
+PREAMBLE_SCRIPT="${PREAMBLE_SCRIPT:-$HOMEgfs/ush/preamble.sh}"
+if [ -f "${PREAMBLE_SCRIPT}" ]; then
+  source $PREAMBLE_SCRIPT
 fi
 
 # Directories.
@@ -113,7 +112,7 @@ for fhr in $(seq $FHMIN $FHOUT $FHMAX); do
 
    $APRUN_EPOS ${DATA}/$(basename $GETSFCENSMEANEXEC) ./ sfcf${fhrchar}.ensmean sfcf${fhrchar} $NMEM_ENKF
    ra=$?
-   ((rc+=ra))
+   rc=$((rc+ra))
 
    export_pgm=$GETATMENSMEANEXEC
    . prep_step
@@ -124,7 +123,7 @@ for fhr in $(seq $FHMIN $FHOUT $FHMAX); do
       $APRUN_EPOS ${DATA}/$(basename $GETATMENSMEANEXEC) ./ atmf${fhrchar}.ensmean atmf${fhrchar} $NMEM_ENKF
    fi
    ra=$?
-   ((rc+=ra))
+   rc=$((rc+ra))
 done
 export err=$rc; err_chk
 
@@ -162,8 +161,6 @@ fi
 #  Postprocessing
 cd $pwd
 [[ $mkdata = "YES" ]] && rm -rf $DATA
-set +x
-if [ $VERBOSE = "YES" ]; then
-   echo $(date) EXITING $0 with return code $err >&2
-fi
+
+
 exit $err

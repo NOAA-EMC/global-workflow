@@ -1,13 +1,17 @@
-#! /bin/ksh
+#! /usr/bin/env bash
+
 #
 # Script name:         exgfs_pmgr.sh.sms
 #
 #  This script monitors the progress of the gfs_fcst job
 #
-set -x
+
+PREAMBLE_SCRIPT="${PREAMBLE_SCRIPT:-$HOMEgfs/ush/preamble.sh}"
+if [ -f "${PREAMBLE_SCRIPT}" ]; then
+  source $PREAMBLE_SCRIPT
+fi
 
 hour=00
-typeset -Z2 hour
 
 case $RUN in
   gfs)
@@ -25,11 +29,9 @@ if [ -e posthours ]; then
 fi
 
 while [ $hour -lt $TCP ]; do
+  hour=$(printf "%02d" $hour)
   echo $hour >>posthours
-  if [ $hour -lt 120 ]; then
-    if [ $hour -eq 99 ]; then
-      typeset -Z3 hour
-    fi
+  if [ 10#$hour -lt 120 ]; then
     let "hour=hour+1"
   else
     let "hour=hour+3"
@@ -69,6 +71,5 @@ while [ $icnt -lt 1000 ]; do
   fi
 done
 
-echo Exiting $0
 
 exit

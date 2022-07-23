@@ -1,4 +1,4 @@
-#!/bin/ksh -x
+#! /usr/bin/env bash
 
 # Empty variables must include a space otherwise they will be overwritten
 

@@ -1,4 +1,9 @@
-#!/bin/bash -x
+#! /usr/bin/env bash
+
+PREAMBLE_SCRIPT="${PREAMBLE_SCRIPT:-$HOMEgfs/ush/preamble.sh}"
+if [ -f "${PREAMBLE_SCRIPT}" ]; then
+  source $PREAMBLE_SCRIPT
+fi
 
 ###############################################################
 ## Abstract:
@@ -158,4 +163,6 @@ cd $DATAROOT
 
 ###############################################################
 # Exit out cleanly
+
+
 exit 0

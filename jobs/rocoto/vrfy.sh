@@ -1,4 +1,9 @@
-#!/bin/bash -x
+#! /usr/bin/env bash
+
+PREAMBLE_SCRIPT="${PREAMBLE_SCRIPT:-$HOMEgfs/ush/preamble.sh}"
+if [ -f "${PREAMBLE_SCRIPT}" ]; then
+  source $PREAMBLE_SCRIPT
+fi
 
 ###############################################################
 ## Abstract:
@@ -56,7 +61,7 @@ echo
 echo "=============== START TO GENERATE QUARTER DEGREE GRIB1 FILES ==============="
 if [ $MKPGB4PRCP = "YES" -a $CDUMP = "gfs" ]; then
     if [ ! -d $ARCDIR ]; then mkdir $ARCDIR ; fi
-    nthreads_env=${OMP_NUM_THREADS:-1} # get threads set in env
+    nthreads_env=${OMP_NUM_THREADS:-1} # get threads set in env 
     export OMP_NUM_THREADS=1
     cd $COMIN
     fhmax=${vhr_rain:-$FHMAX_GFS}
@@ -180,4 +185,6 @@ fi
 ###############################################################
 # Force Exit out cleanly
 if [ ${KEEPDATA:-"NO"} = "NO" ] ; then rm -rf $DATAROOT ; fi
+
+
 exit 0

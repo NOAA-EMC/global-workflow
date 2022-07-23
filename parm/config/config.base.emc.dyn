@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#! /usr/bin/env bash
 
 ########## config.base ##########
 # Common to all steps

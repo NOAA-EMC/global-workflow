@@ -1,14 +1,15 @@
-#!/bin/ksh
-set -x
+#! /usr/bin/env bash
+
+PREAMBLE_SCRIPT="${PREAMBLE_SCRIPT:-$HOMEgfs/ush/preamble.sh}"
+if [ -f "${PREAMBLE_SCRIPT}" ]; then
+  source $PREAMBLE_SCRIPT $FH
+fi
 
 #-----------------------------------------------------------------------
 #-Wen Meng, 03/2019:  First version.
 #  This scripts is for interpolating flux file from model native grid
 #  into lat-lon grids.
 #-----------------------------------------------------------------------
-
-
-echo "!!!!!CREATING $RUN FLUX PRODUCTS FOR FH = $FH !!!!!!"
 
 export CNVGRIB=${CNVGRIB:-${NWPROD:-/nwprod}/util/exec/cnvgrib21}
 export COPYGB2=${COPYGB2:-${NWPROD:-/nwprod}/util/exec/copygb2}
@@ -62,7 +63,10 @@ fi
   cp fluxfile_${fhr3}_1p00  $COMOUT/${PREFIX}flux.1p00.f${fhr3}
 
 #---------------------------------------------------------------
-echo "!!!!!CREATION OF SELECT $RUN FLUX PRODUCTS COMPLETED FOR FHR = $FH !!!!!"
+POSTAMBLE_SCRIPT="${POSTAMBLE_SCRIPT:-$HOMEgfs/ush/postamble.sh}"
+if [ -f "${POSTAMBLE_SCRIPT}" ]; then
+  source $POSTAMBLE_SCRIPT
+fi
 #---------------------------------------------------------------
 
 

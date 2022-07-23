@@ -1,4 +1,9 @@
-#!/bin/bash -x
+#! /usr/bin/env bash
+
+PREAMBLE_SCRIPT="${PREAMBLE_SCRIPT:-$HOMEgfs/ush/preamble.sh}"
+if [ -f "${PREAMBLE_SCRIPT}" ]; then
+  source $PREAMBLE_SCRIPT
+fi
 
 ###############################################################
 # Source FV3GFS workflow modules
@@ -10,4 +15,6 @@ status=$?
 # Execute the JJOB
 $HOMEgfs/jobs/JGDAS_ATMOS_CHGRES_FORENKF
 status=$?
-exit $status
+
+
+exit ${status}

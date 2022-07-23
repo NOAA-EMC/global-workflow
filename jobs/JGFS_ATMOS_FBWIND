@@ -1,8 +1,9 @@
-#!/bin/sh
+#! /usr/bin/env bash
 
-set -xa
-export PS4='$SECONDS + '
-date
+PREAMBLE_SCRIPT="${PREAMBLE_SCRIPT:-$HOMEgfs/ush/preamble.sh}"
+if [ -f "${PREAMBLE_SCRIPT}" ]; then
+  source $PREAMBLE_SCRIPT
+fi
 
 ############################################
 # GFS FBWIND PRODUCT GENERATION
@@ -62,16 +63,12 @@ fi
 
 export pgmout=OUTPUT.$$
 
-env
 
 ########################################################
 # Execute the script.
 $HOMEgfs/scripts/exgfs_atmos_fbwind.sh
 export err=$?;err_chk
 ########################################################
-
-msg="JOB $job HAS COMPLETED NORMALLY!"
-postmsg $jlogfile "$msg"
 
 ############################################
 # print exec I/O output
@@ -87,4 +84,3 @@ if [ "$KEEPDATA" != "YES" ] ; then
   rm -rf $DATA
 fi
 
-date

@@ -1,5 +1,5 @@
-#!/bin/sh
-#                                                                       
+#! /usr/bin/env bash
+                                                                      
 ################################################################################
 #
 # UNIX Script Documentation Block
@@ -22,7 +22,11 @@
 #
 ################################################################################
 #
-set -x
+
+PREAMBLE_SCRIPT="${PREAMBLE_SCRIPT:-$HOMEgfs/ush/preamble.sh}"
+if [ -f "${PREAMBLE_SCRIPT}" ]; then
+  source $PREAMBLE_SCRIPT
+fi
 
 ymdh_rtofs=$1
 curfile=$2
@@ -95,4 +99,3 @@ fi
 mv -f current.ww3 ${DATA}/${WAVECUR_DID}.${ymdh_rtofs}
 
 cd ${DATA}
-

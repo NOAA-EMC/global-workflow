@@ -1,4 +1,4 @@
-#!/bin/sh
+#! /usr/bin/env bash
 
 #####
 ## This script defines functions for data I/O and namelist.
@@ -91,7 +91,7 @@ EOF
             exit 1
           fi
           $NLN $increment_file $DATA/INPUT/fv_increment$i.nc
-          IAU_INC_FILES="'fv_increment$i.nc',$IAU_INC_FILES"
+          IAU_INC_FILES="'fv_increment$i.nc',${IAU_INC_FILES:-}"
         done
         read_increment=".false."
         res_latlon_dynamics=""
@@ -643,7 +643,7 @@ WW3_postdet() {
   export WRDIR=${ROTDIR}/${CDUMPRSTwave}.${WRPDY}/${WRcyc}/wave/restart
   export RSTDIR_WAVE=$ROTDIR/${CDUMP}.${PDY}/${cyc}/wave/restart
   export datwave=$COMOUTwave/rundata
-  export wavprfx=${CDUMPwave}${WAV_MEMBER}
+  export wavprfx=${CDUMPwave}${WAV_MEMBER:-}
 
   #Copy initial condition files:
   for wavGRD in $waveGRD ; do
@@ -820,7 +820,7 @@ MOM6_postdet() {
     if [ $fhr = 'anl' ]; then
       continue
     fi
-    if [ -z $last_fhr ]; then
+    if [ -z ${last_fhr:-} ]; then
       last_fhr=$fhr
       continue
     fi

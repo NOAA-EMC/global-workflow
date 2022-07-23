@@ -1,4 +1,9 @@
-#!/bin/bash -x
+#! /usr/bin/env bash
+
+PREAMBLE_SCRIPT="${PREAMBLE_SCRIPT:-$HOMEgfs/ush/preamble.sh}"
+if [ -f "${PREAMBLE_SCRIPT}" ]; then
+  source $PREAMBLE_SCRIPT
+fi
 
 ###############################################################
 echo
@@ -32,9 +37,10 @@ echo "=============== START TO RUN WAFSGRIB2 ==============="
 # Execute the JJOB
 $HOMEgfs/jobs/JGFS_ATMOS_WAFS_GRIB2
 status=$?
-exit $status
 
 ###############################################################
 # Force Exit out cleanly
 if [ ${KEEPDATA:-"NO"} = "NO" ] ; then rm -rf $DATAROOT ; fi
-exit 0
+
+
+exit $status

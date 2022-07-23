@@ -1,4 +1,5 @@
-#!/bin/ksh
+#! /usr/bin/env bash
+
 ####  UNIX Script Documentation Block
 #
 # Script name:         tropcy_relocate.sh
@@ -210,7 +211,10 @@
 #
 ####
 
-set -aux
+PREAMBLE_SCRIPT="${PREAMBLE_SCRIPT:-$HOMEgfs/ush/preamble.sh}"
+if [ -f "${PREAMBLE_SCRIPT}" ]; then
+  source $PREAMBLE_SCRIPT
+fi
 
 MACHINE=${MACHINE:-$(hostname -s | cut -c 1-3)}
 
@@ -255,7 +259,7 @@ then
    echo "problem with obtaining date record;"
    echo "ABNORMAL EXIT!!!!!!!!!!!"
    echo
-   set -x
+   ${TRACE_ON:-set -x}
    if [ -s $DATA/err_exit ]; then
       $DATA/err_exit
    else
@@ -273,7 +277,7 @@ set +x
 echo
 echo "CENTER DATE/TIME FOR RELOCATION PROCESSING IS $CDATE10"
 echo
-set -x
+${TRACE_ON:-set -x}
 
 #----------------------------------------------------------------------------
 
@@ -343,7 +347,7 @@ if [ $modhr -ne 0 ]; then
 not a multiple of 3-hrs;"
    echo "ABNORMAL EXIT!!!!!!!!!!!"
    echo
-   set -x
+   ${TRACE_ON:-set -x}
    if [ -s $DATA/err_exit ]; then
       $DATA/err_exit
    else
@@ -366,14 +370,14 @@ echo "       Get TCVITALS file valid for -$fhr hrs relative to center"
 echo "                    relocation processing date/time"
 echo "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
       echo
-      set -x
+      ${TRACE_ON:-set -x}
       $USHGETGES/getges.sh -e $envir_getges -n $network_getges \
        -v $CDATE10 -f $fhr -t tcvges tcvitals.m${fhr}
       set +x
       echo
 echo "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
       echo
-      set -x
+      ${TRACE_ON:-set -x}
    fi
 done
 
@@ -416,7 +420,7 @@ echo "     Get global sigma GUESS valid for $fhr hrs relative to center"
 echo "                    relocation processing date/time"
 echo "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
       echo
-      set -x
+      ${TRACE_ON:-set -x}
       $USHGETGES/getges.sh -e $envir_getges -n $network_getges \
        -v $CDATE10 -t $stype $sges
       errges=$?
@@ -428,7 +432,7 @@ echo "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
 to center relocation date/time;"
          echo "ABNORMAL EXIT!!!!!!!!!!!"
          echo
-         set -x
+         ${TRACE_ON:-set -x}
          if [ -s $DATA/err_exit ]; then
             $DATA/err_exit
          else
@@ -460,7 +464,7 @@ to center relocation date/time;"
       echo
 echo "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
       echo
-      set -x
+      ${TRACE_ON:-set -x}
    fi
    if [ ! -s $pges ]; then
       set +x
@@ -470,7 +474,7 @@ echo "  Get global pressure grib GUESS valid for $fhr hrs relative to center"
 echo "                    relocation processing date/time"
 echo "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
       echo
-      set -x
+      ${TRACE_ON:-set -x}
       $USHGETGES/getges.sh -e $envir_getges -n $network_getges \
        -v $CDATE10 -t $ptype $pges
       errges=$?
@@ -482,7 +486,7 @@ echo "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
 relative to center relocation date/time;"
          echo "ABNORMAL EXIT!!!!!!!!!!!"
          echo
-         set -x
+         ${TRACE_ON:-set -x}
          if [ -s $DATA/err_exit ]; then
             $DATA/err_exit
          else
@@ -495,7 +499,7 @@ relative to center relocation date/time;"
       echo
 echo "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
       echo
-      set -x
+      ${TRACE_ON:-set -x}
    fi
 done
 
@@ -567,7 +571,7 @@ else
       echo "$USHRELO/tropcy_relocate_extrkr.sh failed"
       echo "ABNORMAL EXIT!!!!!!!!!!!"
       echo
-      set -x
+      ${TRACE_ON:-set -x}
       if [ -s $DATA/err_exit ]; then
          $DATA/err_exit "Script $USHRELO/tropcy_relocate_extrkr.sh failed"
       else
@@ -650,7 +654,7 @@ else
 #  check for success
 #  -----------------
 
-   echo; set -x
+   echo; ${TRACE_ON:-set -x}
    if [ "$errSTATUS" -gt '0' ]; then
       if [ -s $DATA/err_exit ]; then
          $DATA/err_exit "Script RELOCATE_GES failed"
@@ -736,6 +740,7 @@ $CDATE10"
 # -------------------------
 
 fi
+
 
 exit 0
 

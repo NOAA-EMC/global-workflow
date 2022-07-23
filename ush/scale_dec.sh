@@ -1,4 +1,5 @@
-#!/bin/ksh
+#! /usr/bin/env bash
+
 #
 #  This script uses WGRIB2 to change binary scale factor
 #  and Decimal scale factor in GRIB2 file
@@ -7,7 +8,11 @@
 #  D = decimal scaling or the text 'same' with no quotes
 #  B = binary scaling or the text 'same' with no quotes
 #
-set -x
+
+PREAMBLE_SCRIPT="${PREAMBLE_SCRIPT:-$HOMEgfs/ush/preamble.sh}"
+if [ -f "${PREAMBLE_SCRIPT}" ]; then
+  source $PREAMBLE_SCRIPT
+fi
 
 f=$1
 
@@ -22,4 +27,5 @@ $WGRIB2 $f -not_if ':(TMP|PWAT|WEASD):' -grib $f.new \
         -set_scaling 0 0 -grib_out $f.new
 export err=$?; err_chk
 mv $f.new $f
+
 exit 0

@@ -1,5 +1,5 @@
-#!/bin/bash
-#                                                                       
+#! /usr/bin/env bash
+                                                               
 ################################################################################
 #
 # UNIX Script Documentation Block
@@ -25,15 +25,13 @@
 ################################################################################
 # --------------------------------------------------------------------------- #
 # 0.  Preparations
+
+PREAMBLE_SCRIPT="${PREAMBLE_SCRIPT:-$HOMEgfs/ush/preamble.sh}"
+if [ -f "${PREAMBLE_SCRIPT}" ]; then
+  source $PREAMBLE_SCRIPT
+fi
+
 # 0.a Basic modes of operation
-
-  # set execution trace prompt.  ${0##*/} adds the script's basename
-  PS4=" \${SECONDS} ${0##*/} L\${LINENO} + "
-  set -x
-
-  # Use LOUD variable to turn on/off trace.  Defaults to YES (on).
-  export LOUD=${LOUD:-YES}; [[ $LOUD = yes ]] && export LOUD=YES
-  [[ "$LOUD" != YES ]] && set +x
 
   cd $GRIBDATA
 
@@ -52,7 +50,7 @@
     echo '*** FATAL ERROR : ERROR IN ww3_grib2 (COULD NOT CREATE TEMP DIRECTORY) *** '
     echo '******************************************************************************* '
     echo ' '
-    [[ "$LOUD" = YES ]] && set -x
+    ${TRACE_ON:-set -x}
     exit 1
   fi
 
@@ -87,7 +85,7 @@
   echo '!         Make GRIB files        |'
   echo '+--------------------------------+'
   echo "   Model ID         : $WAV_MOD_TAG"
-  [[ "$LOUD" = YES ]] && set -x
+  ${TRACE_ON:-set -x}
 
   if [ -z "$CDATE" ] || [ -z "$cycle" ] || [ -z "$EXECwave" ] || \
      [ -z "$COMOUT" ] || [ -z "$WAV_MOD_TAG" ] || [ -z "$SENDCOM" ] || \
@@ -100,7 +98,7 @@
     echo '*** EXPORTED VARIABLES IN postprocessor NOT SET ***'
     echo '***************************************************'
     echo ' '
-    [[ "$LOUD" = YES ]] && set -x
+    ${TRACE_ON:-set -x}
     exit 1
   fi
 
@@ -114,7 +112,7 @@
   echo "   Number of times  : Single SBS
   echo "   GRIB field flags : $gribflags"
   echo ' '
-  [[ "$LOUD" = YES ]] && set -x
+  ${TRACE_ON:-set -x}
 
 # 0.e Links to working directory
 
@@ -128,7 +126,7 @@
 
   set +x
   echo "   Generate input file for ww3_grib2"
-  [[ "$LOUD" = YES ]] && set -x
+  ${TRACE_ON:-set -x}
 
   sed -e "s/TIME/$tstart/g" \
       -e "s/DT/$dtgrib/g" \
@@ -146,7 +144,7 @@
   set +x
   echo "   Run ww3_grib2"
   echo "   Executing $EXECwave/ww3_grib"
-  [[ "$LOUD" = YES ]] && set -x
+  ${TRACE_ON:-set -x}
 
   export pgm=ww3_grib;. prep_step
   $EXECwave/ww3_grib > grib2_${grdnam}_${FH3}.out 2>&1
@@ -159,11 +157,11 @@
       echo '*** FATAL ERROR : ERROR IN ww3_grib encoding *** '
       echo '************************************************ '
       echo ' '
-      [[ "$LOUD" = YES ]] && set -x
+      ${TRACE_ON:-set -x}
       exit 3
     fi
 
-  if [ $fht -gt 0 ]; then 
+  if [ $fhr -gt 0 ]; then 
     $WGRIB2 gribfile -set_date $CDATE -set_ftime "$fhr hour fcst" -grib ${COMOUT}/gridded/${outfile}
     err=$?
   else 
@@ -179,7 +177,7 @@
     echo '*** FATAL ERROR : ERROR IN ww3_grib2 *** '
     echo '********************************************* '
     echo ' '
-    [[ "$LOUD" = YES ]] && set -x
+    ${TRACE_ON:-set -x}
     exit 3
   fi
 
@@ -210,7 +208,7 @@
       echo ' '
       echo " Error in moving grib file ${outfile} to com"
       echo ' '
-      [[ "$LOUD" = YES ]] && set -x
+      ${TRACE_ON:-set -x}
       exit 4
     fi
     if [ ! -s $COMOUT/gridded/${outfile} ]
@@ -223,7 +221,7 @@
       echo ' '
       echo " Error in moving grib file ${outfile}.idx to com"
       echo ' '
-      [[ "$LOUD" = YES ]] && set -x
+      ${TRACE_ON:-set -x}
       exit 4
     fi
 
@@ -232,7 +230,7 @@
       set +x
       echo "   Alerting GRIB file as $COMOUT/gridded/${outfile}"
       echo "   Alerting GRIB index file as $COMOUT/gridded/${outfile}.idx"
-      [[ "$LOUD" = YES ]] && set -x
+      ${TRACE_ON:-set -x}
       $DBNROOT/bin/dbn_alert MODEL ${alertName}_WAVE_GB2 $job $COMOUT/gridded/${outfile}
       $DBNROOT/bin/dbn_alert MODEL ${alertName}_WAVE_GB2_WIDX $job $COMOUT/gridded/${outfile}.idx
     else
@@ -247,7 +245,7 @@
 
   set +x
   echo "   Removing work directory after success."
-  [[ "$LOUD" = YES ]] && set -x
+  ${TRACE_ON:-set -x}
 
   cd ../
   mv -f ${gribDIR} done.${gribDIR}
@@ -257,13 +255,8 @@
     echo ' '
     echo " File ${COMOUT}/gridded/${outfile} found, skipping generation process"
     echo ' '
-    [[ "$LOUD" = YES ]] && set -x
+    ${TRACE_ON:-set -x}
   fi
 
-  set +x
-  echo ' '
-  echo "End of ww3_grib2.sh at"
-  date
-  [[ "$LOUD" = YES ]] && set -x
 
 # End of ww3_grib2.sh -------------------------------------------------- #

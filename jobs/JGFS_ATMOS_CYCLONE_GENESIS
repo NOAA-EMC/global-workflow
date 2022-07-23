@@ -1,10 +1,11 @@
-#!/bin/ksh
-set -x
+#! /usr/bin/env bash
+
+PREAMBLE_SCRIPT="${PREAMBLE_SCRIPT:-$HOMEgfs/ush/preamble.sh}"
+if [ -f "${PREAMBLE_SCRIPT}" ]; then
+  source $PREAMBLE_SCRIPT
+fi
 
 export RUN_ENVIR=${RUN_ENVIR:-"nco"}
-export PS4='$SECONDS + '
-date
-
 
 #############################
 # Source relevant config files
@@ -99,8 +100,6 @@ export COMOUT=${ROTDIR}/${RUN}.${PDY}/${cyc}/$COMPONENT
 export JYYYY=$(echo ${PDY} | cut -c1-4)
 export COMINgenvit=${COMINgenvit:-${COMOUT}/genesis_vital_${JYYYY}}
 export COMOUTgenvit=${COMOUTgenvit:-${COMOUT}/genesis_vital_${JYYYY}}
-#export COMINgenvit=${COMINgenvit:-${DATA}/genesis_vital_${JYYYY}}
-#export COMOUTgenvit=${COMOUTgenvit:-${DATA}/genesis_vital_${JYYYY}}
 
 export COMINsyn=${COMINsyn:-$(compath.py gfs/prod/syndat)}
 
@@ -109,11 +108,6 @@ mkdir -m 775 -p $COMOUTgenvit
 ##############################################
 # Run relevant script
 ##############################################
-env
-msg="HAS BEGUN on $(hostname)"
-postmsg "$jlogfile" "$msg"
-$LOGSCRIPT
-
 
 ${SCRIPTens_tracker}/exgfs_tc_genesis.sh
 export err=$?; err_chk
@@ -125,15 +119,11 @@ if [ -e "$pgmout" ] ; then
   cat $pgmout
 fi
 
-
-msg="ENDED NORMALLY."
-postmsg "$jlogfile" "$msg"
-
 ##########################################
 # Remove the Temporary working directory
 ##########################################
 cd $DATAROOT
 [[ $KEEPDATA = "NO" ]] && rm -rf $DATA
 
-date
+
 exit 0

@@ -1,5 +1,5 @@
-#!/bin/bash
-#                                                                       
+#! /usr/bin/env bash
+                                                                  
 ################################################################################
 #
 # UNIX Script Documentation Block
@@ -22,15 +22,13 @@
 ################################################################################
 # --------------------------------------------------------------------------- #
 # 0.  Preparations
+
+PREAMBLE_SCRIPT="${PREAMBLE_SCRIPT:-$HOMEgfs/ush/preamble.sh}"
+if [ -f "${PREAMBLE_SCRIPT}" ]; then
+  source $PREAMBLE_SCRIPT
+fi
+
 # 0.a Basic modes of operation
-
-  # set execution trace prompt.  ${0##*/} adds the script's basename
-  PS4=" \${SECONDS} ${0##*/} L\${LINENO} + "
-  set -x
-
-  # Use LOUD variable to turn on/off trace.  Defaults to YES (on).
-  export LOUD=${LOUD:-YES}; [[ $LOUD = yes ]] && export LOUD=YES
-  [[ "$LOUD" != YES ]] && set +x
    
   bloc=$1
   ymdh=$2
@@ -52,7 +50,7 @@
     echo '*** FATAL ERROR : ERROR IN ww3_outp_spec (COULD NOT CREATE TEMP DIRECTORY) *** '
     echo '****************************************************************************** '
     echo ' '
-    [[ "$LOUD" = YES ]] && set -x
+    ${TRACE_ON:-set -x}
     exit 1
   fi
 
@@ -64,7 +62,7 @@
   echo '!       Make spectral file       |'
   echo '+--------------------------------+'
   echo "   Model ID        : $WAV_MOD_TAG"
-  [[ "$LOUD" = YES ]] && set -x
+  ${TRACE_ON:-set -x}
 
 # 0.b Check if buoy location set
 
@@ -76,7 +74,7 @@
     echo '*** LOCATION ID IN ww3_outp_spec.sh NOT SET ***'
     echo '***********************************************'
     echo ' '
-    [[ "$LOUD" = YES ]] && set -x
+    ${TRACE_ON:-set -x}
     exit 1
   else
     buoy=$bloc
@@ -91,7 +89,7 @@
         echo "              Location ID/#   : $buoy (${point})"
         echo "   Spectral output start time : $ymdh "
         echo ' '
-        [[ "$LOUD" = YES ]] && set -x
+        ${TRACE_ON:-set -x}
         break
       fi
     done < tmp_list.loc
@@ -102,7 +100,7 @@
       echo '*** LOCATION ID IN ww3_outp_spec.sh NOT RECOGNIZED ***'
       echo '******************************************************'
       echo ' '
-      [[ "$LOUD" = YES ]] && set -x
+      ${TRACE_ON:-set -x}
       exit 2
     fi
   fi
@@ -120,7 +118,7 @@
     echo '*** EXPORTED VARIABLES IN ww3_outp_spec.sh NOT SET ***'
     echo '******************************************************'
     echo ' '
-    [[ "$LOUD" = YES ]] && set -x
+    ${TRACE_ON:-set -x}
     exit 3
   fi
 
@@ -132,7 +130,7 @@
   set +x
   echo "   Output starts at $tstart."
   echo ' '
-  [[ "$LOUD" = YES ]] && set -x
+  ${TRACE_ON:-set -x}
 
 # 0.e sync important files
 
@@ -151,7 +149,7 @@
 
   set +x
   echo "   Generate input file for ww3_outp."
-  [[ "$LOUD" = YES ]] && set -x
+  ${TRACE_ON:-set -x}
 
   if [ "$specdir" = "bull" ]
   then
@@ -178,7 +176,7 @@
 
   set +x
   echo "   Executing $EXECwave/ww3_outp"
-  [[ "$LOUD" = YES ]] && set -x
+  ${TRACE_ON:-set -x}
 
   export pgm=ww3_outp;. prep_step
   $EXECwave/ww3_outp 1> outp_${specdir}_${buoy}.out 2>&1
@@ -193,7 +191,7 @@
     echo '*** FATAL ERROR : ERROR IN ww3_outp *** '
     echo '******************************************** '
     echo ' '
-    [[ "$LOUD" = YES ]] && set -x
+    ${TRACE_ON:-set -x}
     exit 4
   fi
 
@@ -237,18 +235,13 @@
     echo '*** FATAL ERROR : OUTPUT DATA FILE FOR BOUY $bouy NOT FOUND *** '
     echo '***************************************************************** '
     echo ' '
-    [[ "$LOUD" = YES ]] && set -x
+    ${TRACE_ON:-set -x}
     exit 5
   fi
 
 # 3.b Clean up the rest
 
-  cd ..
-  rm -rf ${specdir}_${bloc}
-
-  set +x
-  echo ' '
-  echo 'End of ww3_outp_spec.sh at'
-  date
+cd ..
+rm -rf ${specdir}_${bloc}
 
 # End of ww3_outp_spec.sh ---------------------------------------------------- #

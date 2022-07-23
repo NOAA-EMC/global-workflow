@@ -1,8 +1,9 @@
-#!/bin/sh
+#! /usr/bin/env bash
 
-set -xa
-export PS4='$SECONDS + '
-date
+PREAMBLE_SCRIPT="${PREAMBLE_SCRIPT:-$HOMEgfs/ush/preamble.sh}"
+if [ -f "${PREAMBLE_SCRIPT}" ]; then
+  source $PREAMBLE_SCRIPT
+fi
 
 ############################################
 # GFS GEMPAK NCDC PRODUCT GENERATION
@@ -84,19 +85,12 @@ fi
 
 export pgmout=OUTPUT.$$
 
-env
-
-msg="Begin job for $job"
-postmsg "$jlogfile" "$msg"
 
 ########################################################
 # Execute the script.
 $SRCgfs/exgfs_atmos_gempak_gif_ncdc_skew_t.sh
 export err=$?; err_chk
 ########################################################
-
-msg="JOB $job HAS COMPLETED NORMALLY!"
-postmsg $jlogfile "$msg"
 
 ############################################
 # print exec I/O output
@@ -112,4 +106,3 @@ if [ "$KEEPDATA" != "YES" ] ; then
   rm -rf $DATA
 fi
 
-date

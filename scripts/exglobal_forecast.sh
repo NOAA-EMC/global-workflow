@@ -1,4 +1,5 @@
-#!/bin/bash
+#! /usr/bin/env bash
+
 ################################################################################
 ## UNIX Script Documentation Block
 ## Script name:         exglobal_fcst_nemsfv3gfs.sh
@@ -76,10 +77,9 @@
 # Main body starts here
 #######################
 
-VERBOSE=${VERBOSE:-"YES"}
-if [ $VERBOSE = "YES" ] ; then
-  echo $(date) EXECUTING $0 $* >&2
-  set -x
+PREAMBLE_SCRIPT="${PREAMBLE_SCRIPT:-$HOMEgfs/ush/preamble.sh}"
+if [ -f "${PREAMBLE_SCRIPT}" ]; then
+  source $PREAMBLE_SCRIPT
 fi
 
 SCRIPTDIR=$(dirname $(readlink -f "$0") )/../ush
@@ -219,14 +219,5 @@ fi
 echo "MAIN: Output copied to COMROT"
 
 #------------------------------------------------------------------
-if [ $VERBOSE = "YES" ] ; then
-  echo $(date) EXITING $0 with return code $err >&2
-fi
 
-if [ $err != 0 ]; then
-  echo "MAIN: $confignamevarfornems Forecast failed"
-  exit $err
-else
-  echo "MAIN: $confignamevarfornems Forecast completed at normal status"
-  exit 0
-fi
+exit $err

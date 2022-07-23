@@ -1,4 +1,5 @@
-#!/bin/sh
+#! /usr/bin/env bash
+
 #########################################################################
 #									#
 # Script:  gfs_bfr2gpk							#
@@ -9,7 +10,10 @@
 # Log:									#
 # K. Brill/HPC		04/12/05					#
 #########################################################################  
-set -x
+PREAMBLE_SCRIPT="${PREAMBLE_SCRIPT:-$HOMEgfs/ush/preamble.sh}"
+if [ -f "${PREAMBLE_SCRIPT}" ]; then
+  source $PREAMBLE_SCRIPT
+fi
 
 # Set GEMPAK paths.
 

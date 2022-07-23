@@ -1,4 +1,9 @@
-#!/bin/bash -x
+#! /usr/bin/env bash
+
+PREAMBLE_SCRIPT="${PREAMBLE_SCRIPT:-$HOMEgfs/ush/preamble.sh}"
+if [ -f "${PREAMBLE_SCRIPT}" ]; then
+  source $PREAMBLE_SCRIPT
+fi
 
 ###############################################################
 ## Abstract:
@@ -57,12 +62,36 @@ PDY_MOS=$(echo $CDATE_MOS | cut -c1-8)
 # Archive online for verification and diagnostics
 ###############################################################
 
+safe_copy() {
+    #
+    # Copy a file if it exists, print a warning otherwise but don't
+    #   error. Syntax is the same as cp.
+    #
+    # Syntax
+    #   safe_copy file_in file_out
+    #
+    #   Arguments
+    #     file_in: the file to copy
+    #     file_out: the destination of the copy
+    #
+    #   Environment variables
+    #     NCP: Command to use to copy
+    #
+    _file_in=$1
+    _file_out=$2
+    if [[ -f ${_file_in} ]]; then
+        $NCP ${_file_in} ${_file_out}
+    else
+        echo "WARNING: No file ${_file_in} found in $(pwd)"
+    fi
+}
+
 COMIN=${COMINatmos:-"$ROTDIR/$CDUMP.$PDY/$cyc/atmos"}
 cd $COMIN
 
 [[ ! -d $ARCDIR ]] && mkdir -p $ARCDIR
-$NCP ${APREFIX}gsistat $ARCDIR/gsistat.${CDUMP}.${CDATE}
-$NCP ${APREFIX}pgrb2.1p00.anl $ARCDIR/pgbanl.${CDUMP}.${CDATE}.grib2
+safe_copy ${APREFIX}gsistat $ARCDIR/gsistat.${CDUMP}.${CDATE}
+safe_copy ${APREFIX}pgrb2.1p00.anl $ARCDIR/pgbanl.${CDUMP}.${CDATE}.grib2
 
 # Archive 1 degree forecast GRIB2 files for verification
 if [ $CDUMP = "gfs" ]; then
@@ -71,16 +100,16 @@ if [ $CDUMP = "gfs" ]; then
     while [ $fhr -le $fhmax ]; do
         fhr2=$(printf %02i $fhr)
         fhr3=$(printf %03i $fhr)
-        $NCP ${APREFIX}pgrb2.1p00.f$fhr3 $ARCDIR/pgbf${fhr2}.${CDUMP}.${CDATE}.grib2
-        (( fhr = 10#$fhr + 10#$FHOUT_GFS ))
+        safe_copy ${APREFIX}pgrb2.1p00.f$fhr3 $ARCDIR/pgbf${fhr2}.${CDUMP}.${CDATE}.grib2
+        fhr=$((10#$fhr + 10#$FHOUT_GFS ))
     done
 fi
 if [ $CDUMP = "gdas" ]; then
     flist="000 003 006 009"
     for fhr in $flist; do
         fname=${APREFIX}pgrb2.1p00.f${fhr}
-        fhr2=$(printf %02i $fhr)
-        $NCP $fname $ARCDIR/pgbf${fhr2}.${CDUMP}.${CDATE}.grib2
+        fhr2=$(printf %02i $((10#$fhr)))
+        safe_copy $fname $ARCDIR/pgbf${fhr2}.${CDUMP}.${CDATE}.grib2
     done
 fi
 
@@ -97,15 +126,17 @@ if [ $CDUMP = "gdas" -a -s gdas.t${cyc}z.cyclone.trackatcfunix ]; then
 fi
 
 if [ $CDUMP = "gfs" ]; then
-    $NCP storms.gfso.atcf_gen.$CDATE      ${ARCDIR}/.
-    $NCP storms.gfso.atcf_gen.altg.$CDATE ${ARCDIR}/.
-    $NCP trak.gfso.atcfunix.$CDATE        ${ARCDIR}/.
-    $NCP trak.gfso.atcfunix.altg.$CDATE   ${ARCDIR}/.
+    safe_copy storms.gfso.atcf_gen.$CDATE      ${ARCDIR}/.
+    safe_copy storms.gfso.atcf_gen.altg.$CDATE ${ARCDIR}/.
+    safe_copy trak.gfso.atcfunix.$CDATE        ${ARCDIR}/.
+    safe_copy trak.gfso.atcfunix.altg.$CDATE   ${ARCDIR}/.
 
     mkdir -p ${ARCDIR}/tracker.$CDATE/$CDUMP
     blist="epac natl"
     for basin in $blist; do
-	cp -rp $basin                     ${ARCDIR}/tracker.$CDATE/$CDUMP
+        if [[ -f $basin ]]; then
+	       cp -rp $basin ${ARCDIR}/tracker.$CDATE/$CDUMP
+        fi
     done
 fi
 
@@ -121,8 +152,8 @@ if [ $CDUMP = "gfs" -a $FITSARC = "YES" ]; then
 	fhr3=$(printf %03i $fhr)
 	sfcfile=${prefix}.sfcf${fhr3}${ASUFFIX}
 	sigfile=${prefix}.atmf${fhr3}${ASUFFIX}
-	$NCP $sfcfile $VFYARC/${CDUMP}.$PDY/$cyc/
-	$NCP $sigfile $VFYARC/${CDUMP}.$PDY/$cyc/
+	safe_copy $sfcfile $VFYARC/${CDUMP}.$PDY/$cyc/
+	safe_copy $sigfile $VFYARC/${CDUMP}.$PDY/$cyc/
 	(( fhr = 10#$fhr + 6 ))
     done
 fi
@@ -228,12 +259,14 @@ if [ $CDUMP = "gfs" ]; then
 
     #--save mdl gfsmos output from all cycles in the 18Z archive directory
     if [ -d gfsmos.$PDY_MOS -a $cyc -eq 18 ]; then
+        set +e
         $TARCMD -P -cvf $ATARDIR/$CDATE_MOS/gfsmos.tar ./gfsmos.$PDY_MOS
         status=$?
         if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
             echo "$(echo $TARCMD | tr 'a-z' 'A-Z') $CDATE gfsmos.tar failed"
             exit $status
         fi
+        ${ERR_EXIT_ON:-set -e}
     fi
 elif [ $CDUMP = "gdas" ]; then
 
@@ -260,12 +293,14 @@ fi
 # Turn on extended globbing options
 shopt -s extglob
 for targrp in $targrp_list; do
+    set +e
     $TARCMD -P -cvf $ATARDIR/$CDATE/${targrp}.tar $(cat $ARCH_LIST/${targrp}.txt)
     status=$?
     if [ $status -ne 0 -a $CDATE -ge $firstday ]; then
         echo "$(echo $TARCMD | tr 'a-z' 'A-Z') $CDATE ${targrp}.tar failed"
         exit $status
     fi
+    ${ERR_EXIT_ON:-set -e}
 done
 # Turn extended globbing back off
 shopt -u extglob
@@ -396,4 +431,6 @@ COMIN="$ROTDIR/$CDUMP.$rPDY"
 
 
 ###############################################################
+
+
 exit 0
