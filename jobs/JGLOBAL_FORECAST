@@ -135,7 +135,6 @@ fi
 
 ###############################################################
 # Run relevant exglobal script
-env
 msg="HAS BEGUN on $(hostname)"
 postmsg "$jlogfile" "$msg"
 $LOGSCRIPT

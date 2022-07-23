@@ -83,7 +83,6 @@ export ENSBEG=$((ENSEND - NMEM_EFCSGRP + 1))
 
 ###############################################################
 # Run relevant script
-env
 echo "HAS BEGUN on $(hostname)"
 $LOGSCRIPT
 

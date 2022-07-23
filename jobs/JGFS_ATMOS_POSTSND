@@ -92,8 +92,6 @@ export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 [[ ! -d $pcom ]] && mkdir -p $pcom
 [[ ! -d $COMAWP ]] && mkdir -p $COMAWP
 
-env
-
 ########################################################
 # Execute the script.
 $SCRbufrsnd/exgfs_atmos_postsnd.sh

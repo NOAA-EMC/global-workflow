@@ -41,7 +41,7 @@ cd $DATA
 
 cyc=${cyc:-00}
 export cycle=${cycle:-t${cyc}z}
- 
+
 # Set PDY
 setpdy.sh
 . ./PDY
@@ -74,7 +74,7 @@ if [ $RUN_ENVIR = "nco" ]; then
   export COMIN_WAV_RTOFS=${COMIN_WAV_RTOFS:-$(compath.py ${WAVECUR_DID}/prod)}
 else
   if [ $WW3CURINP = "YES" ]; then
-    if [ ! -d $DMPDIR/${WAVECUR_DID}.${RPDY} ]; then export RPDY=$($NDATE -24 ${PDY}00 | cut -c1-8); fi 
+    if [ ! -d $DMPDIR/${WAVECUR_DID}.${RPDY} ]; then export RPDY=$($NDATE -24 ${PDY}00 | cut -c1-8); fi
     if [ ! -L $ROTDIR/${WAVECUR_DID}.${RPDY} ]; then # Check if symlink already exists in ROTDIR
       $NLN $DMPDIR/${WAVECUR_DID}.${RPDY} $ROTDIR/${WAVECUR_DID}.${RPDY}
     fi
@@ -83,16 +83,16 @@ else
       $NLN $DMPDIR/${WAVECUR_DID}.${BRPDY} $ROTDIR/${WAVECUR_DID}.${BRPDY}
     fi
     export COMIN_WAV_RTOFS=${COMIN_WAV_RTOFS:-$ROTDIR}
-  fi 
-  if [ $WW3ICEINP = "YES" ]; then 
+  fi
+  if [ $WW3ICEINP = "YES" ]; then
     if [ ! -L $ROTDIR/${CDUMP}.${PDY}/${cyc}/atmos/${WAVICEFILE} ]; then # Check if symlink already exists in ROTDIR
       $NLN $DMPDIR/$CDUMP.${PDY}/$cyc/atmos/${WAVICEFILE} $ROTDIR/$CDUMP.${PDY}/$cyc/atmos/${WAVICEFILE}
     fi
     export COMIN_WAV_ICE=${COMIN_WAV_ICE:-$ROTDIR/$RUN.$PDY/$cyc/atmos}
-  fi 
+  fi
 fi
 
-# Execute the Script  
+# Execute the Script
 $HOMEgfs/scripts/exgfs_wave_prep.sh
 
 ##########################################

@@ -149,7 +149,6 @@ done
 
 ###############################################################
 # Run relevant script
-env
 echo "HAS BEGUN on $(hostname)"
 $LOGSCRIPT
 

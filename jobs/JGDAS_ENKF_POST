@@ -77,7 +77,6 @@ export LEVS=$((LEVS-1))
 
 ###############################################################
 # Run relevant script
-env
 echo "HAS BEGUN on $(hostname)"
 $LOGSCRIPT
 

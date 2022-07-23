@@ -73,9 +73,7 @@ fi
 
 export pgmout=OUTPUT.$$
 
-env
-
-if [ -f $DATA/poescrip ]; then
+if [ -f $DATA/poescript ]; then
    rm $DATA/poescript
 fi
 

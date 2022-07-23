@@ -86,8 +86,6 @@ fi
 
 export pgmout=OUTPUT.$$
 
-env
-
 ########################################################
 # Execute the script.
 $USHgempak/gdas_meta_na.sh

@@ -63,8 +63,6 @@ if [ $SENDCOM = YES ] ; then
   mkdir -m 775 -p $COMOUT
 fi
 
-env
-
 export DATA_HOLD=$DATA
 
 msg="Begin job for $job"

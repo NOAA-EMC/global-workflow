@@ -62,8 +62,6 @@ fi
 
 export pgmout=OUTPUT.$$
 
-env
-
 ########################################################
 # Execute the script.
 #   Forecast hours from F00 - F84  at 3-hour interval

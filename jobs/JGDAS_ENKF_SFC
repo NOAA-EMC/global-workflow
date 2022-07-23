@@ -104,7 +104,6 @@ export COMIN_GES_ENS="$ROTDIR/enkf$CDUMP.$gPDY/$gcyc/$COMPONENT"
 
 ###############################################################
 # Run relevant script
-env
 echo "HAS BEGUN on $(hostname)"
 $LOGSCRIPT
 

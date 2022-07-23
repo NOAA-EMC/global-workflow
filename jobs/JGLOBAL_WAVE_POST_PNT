@@ -68,8 +68,6 @@ export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/$COMPONENT}
 
 mkdir -p $COMOUT/station
 
-env | sort
-
 # Set wave model ID tag to include member number 
 # if ensemble; waveMEMB var empty in deterministic
 # Set wave model ID tag to include member number

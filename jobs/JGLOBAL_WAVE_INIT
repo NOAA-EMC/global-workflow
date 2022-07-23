@@ -39,7 +39,7 @@ cd $DATA
 
 cyc=${cyc:-00}
 export cycle=${cycle:-t${cyc}z}
- 
+
 # Set PDY
 setpdy.sh
 . PDY
@@ -70,7 +70,7 @@ fi
 export wavempexec=${launcher:-"mpirun -n"}
 export wave_mpmd=${mpmd:-"cfp"}
 
-# Execute the Script  
+# Execute the Script
 $HOMEgfs/scripts/exgfs_wave_init.sh
 
 ##########################################

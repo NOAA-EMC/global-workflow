@@ -65,8 +65,6 @@ fi
 
 export pgmout=OUTPUT.$$
 
-env
-
 ####################################
 # Specify Forecast Hour Range
 ####################################

@@ -75,7 +75,7 @@ export tmmark=tm00
 if [ $RUN_ENVIR = "nco" ]; then
     export ARCHSYND=$COMROOTp3/gfs/${envir}/syndat     # this location is unique, do not change
 else
-    export ARCHSYND=${ROTDIR}/syndat   
+    export ARCHSYND=${ROTDIR}/syndat
 fi
 if [ ! -d ${ARCHSYND} ]; then mkdir -p $ARCHSYND; fi
 
@@ -104,7 +104,6 @@ export BKGFREQ=1                                # for hourly relocation
 ##############################################
 # Run relevant script
 ##############################################
-env
 msg="HAS BEGUN on $(hostname)"
 postmsg "$jlogfile" "$msg"
 $LOGSCRIPT

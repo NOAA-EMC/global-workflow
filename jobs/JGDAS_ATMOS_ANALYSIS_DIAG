@@ -59,7 +59,7 @@ export pgmerr=errfile
 export CDATE=${CDATE:-${PDY}${cyc}}
 export CDUMP=${CDUMP:-${RUN:-"gfs"}}
 export COMPONENT=${COMPONENT:-atmos}
-export DO_CALC_ANALYSIS=${DO_CALC_ANALYSIS:-"YES"} 
+export DO_CALC_ANALYSIS=${DO_CALC_ANALYSIS:-"YES"}
 
 
 ##############################################
@@ -112,7 +112,6 @@ fi
 
 ###############################################################
 # Run relevant script
-env
 echo "HAS BEGUN on $(hostname)"
 $LOGSCRIPT
 
