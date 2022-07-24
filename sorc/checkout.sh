@@ -116,6 +116,7 @@ while getopts ":chm:o" option; do
       echo "Received -j flag for optional checkout of JEDI-based DA"
       checkout_gsi="NO"
       checkout_jedi="YES"
+      ;;
     o)
       echo "Received -o flag for optional checkout of operational-only codes"
       checkout_gtg="YES"

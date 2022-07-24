@@ -161,6 +161,7 @@ if [ -d gdas.cd ]; then
   fi
   (err+=$rc))
 }
+fi
 
 #------------------------------------
 # build gsi monitor
