@@ -122,7 +122,8 @@ $Build_ufs_model && {
 #------------------------------------
 # build GSI and EnKF
 #------------------------------------
-$Build_gsi_enkf && {
+if [ -d gsi_enkf.fd ]; then
+  $Build_gsi_enkf && {
   echo " .... Building gsi and enkf .... "
   ./build_gsi_enkf.sh $_ops_opt $_verbose_opt > $logs_dir/build_gsi_enkf.log 2>&1
   rc=$?
@@ -132,6 +133,7 @@ $Build_gsi_enkf && {
   fi
   ((err+=$rc))
 }
+fi
 
 #------------------------------------
 # build gsi utilities

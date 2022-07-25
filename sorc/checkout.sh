@@ -100,7 +100,7 @@ function checkout() {
   return 0
 }
 
-while getopts ":chm:o" option; do
+while getopts ":chgjm:o" option; do
   case $option in
     c)
       echo "Recieved -c flag, will delete any existing directories and start clean"
@@ -155,7 +155,7 @@ if [[ "${checkout_gsi:-YES}" == "YES" ]]; then
   checkout "gsi_enkf.fd"     "https://github.com/NOAA-EMC/GSI.git"              "67f5ab4"                         ; errs=$((errs + $?))
 fi
 
-if [[ "${checkout_jedi:-NO}" == "NO" ]]; then
+if [[ "${checkout_jedi:-NO}" == "YES" ]]; then
   checkout "gdas.cd"         "https://github.com/NOAA-EMC/GDASApp.git"            "5952c9d"                         ; errs=$((errs + $?))
 fi
 
