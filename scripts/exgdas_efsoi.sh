@@ -60,7 +60,7 @@ VSUFFIX=${VSUFFIX:-$SUFFIX}
 SMOOTH_ENKF=${SMOOTH_ENKF:-"YES"}
 
 EFSOISTAT=${EFSOISTAT:-${APREFIX}efsoistat}
-
+GBIASe=${GBIASe:-${APREFIX}abias_int.ensmean}
 VERFANL=${VERFANL:-${VPREFIX}atmanl.ensres.nc}
 INITANL=${INITANL:-${APREFIX}atmanl.ensres.nc}
 FCSTLONG=${GPREFIX}atmf030.ensmean.nc
@@ -137,6 +137,9 @@ $NLN $OZINFO     ozinfo
 $NLN $HYBENSINFO hybens_info
 $NLN $ANAVINFO   anavinfo
 $NLN $VLOCALEIG  vlocal_eig.dat
+
+# Bias correction coefficients based on the ensemble mean
+$NLN $COMOUT_ANL_ENSFSOI/$GBIASe satbias_in
 
 ################################################################################
 # Ensemble guess, observational data and analyses/increments

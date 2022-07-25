@@ -26,7 +26,7 @@ export lnsigcutoff=2.75          # ignored if modelspace_vloc=.true.
 export lobsdiag_forenkf=".true." # use jacobian.  must be .true. if modelspace_vloc=".true."
                                  # need to specify .true. setting since config.anal sets to .false.
 
-export ANAVINFO=${HOMEgfs}"/sorc/gsi.fd/util/EFSOI_Utilities/fix/global_anavinfo_efsoi.l127.txt"
+export ANAVINFO=${HOMEgfs}"/sorc/gsi_utils.fd/src/EFSOI_Utilities/fix/global_anavinfo.l127.txt"
 
 export NAM_ENKF="smoothparm=35,"
 
