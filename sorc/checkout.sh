@@ -102,7 +102,7 @@ function checkout() {
   return 0
 }
 
-while getopts ":chgjm:o" option; do
+while getopts ":chgum:o" option; do
   case $option in
     c)
       echo "Recieved -c flag, will delete any existing directories and start clean"
