@@ -120,7 +120,7 @@ $Build_ufs_model && {
 }
 
 #------------------------------------
-# build GSI and EnKF
+# build GSI and EnKF - optional checkout
 #------------------------------------
 if [ -d gsi_enkf.fd ]; then
   $Build_gsi_enkf && {
@@ -150,18 +150,18 @@ $Build_gsi_utils && {
 }
 
 #------------------------------------
-# build gdas
+# build gdas - optional checkout
 #------------------------------------
 if [ -d gdas.cd ]; then
-  $Build_gdas && {
-  echo " .... Building GDASApp .... "
-  ./build_gdas.sh > $logs_dir/build_gdas.log 2>&1
+  $Build_gdas  && {
+  echo " .... Building GDASApp  .... "
+  ./build_gdas.sh $_verbose_opt > $logs_dir/build_gdas.log 2>&1
   rc=$?
   if [[ $rc -ne 0 ]] ; then
-    echo "Fatal error in building GDAS."
+    echo "Fatal error in building GDASApp."
     echo "The log file is in $logs_dir/build_gdas.log"
   fi
-  (err+=$rc))
+  ((err+=$rc))
 }
 fi
 
