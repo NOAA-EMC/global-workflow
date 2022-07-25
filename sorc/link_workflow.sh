@@ -66,7 +66,8 @@ for dir in fix_aer \
             fix_cpl \
             fix_wave \
             fix_reg2grb2 \
-            fix_ugwd
+            fix_ugwd \
+            fix_jedi
             do
     if [ -d $dir ]; then
       [[ $RUN_ENVIR = nco ]] && chmod -R 755 $dir
@@ -139,6 +140,20 @@ fi
 cd ${pwd}/../fix                ||exit 8
     [[ -d fix_gsi ]] && rm -rf fix_gsi
     $LINK ../sorc/gsi_enkf.fd/fix  fix_gsi
+
+
+#------------------------------
+#--add GDASApp files
+#------------------------------
+cd ${pwd}/../jobs               ||exit 8
+    $LINK ../sorc/gdas.cd/jobs/JGDAS_GLOBAL_ATMOS_ANALYSIS_PREP   .
+    $LINK ../sorc/gdas.cd/jobs/JGDAS_GLOBAL_ATMOS_ANALYSIS_RUN    .
+    $LINK ../sorc/gdas.cd/jobs/JGDAS_GLOBAL_ATMOS_ANALYSIS_POST   .
+    $LINK ../sorc/gdas.cd/jobs/JGDAS_GLOBAL_ATMOS_ENSANAL_PREP    .
+    $LINK ../sorc/gdas.cd/jobs/JGDAS_GLOBAL_ATMOS_ENSANAL_RUN     .
+    $LINK ../sorc/gdas.cd/jobs/JGDAS_GLOBAL_ATMOS_ENSANAL_POST    .
+cd ${pwd}/../ush                ||exit 8
+    $LINK ../sorc/gdas.cd/ush/ufsda                               .
 
 
 #------------------------------
@@ -252,6 +267,15 @@ done
 for gldasexe in gdas2gldas  gldas2gdas  gldas_forcing  gldas_model  gldas_post  gldas_rst; do
     [[ -s $gldasexe ]] && rm -f $gldasexe
     $LINK ../sorc/gldas.fd/exec/$gldasexe .
+done
+
+# GDASApp
+for gdasexe in fv3jedi_addincrement.x fv3jedi_diffstates.x fv3jedi_ensvariance.x fv3jedi_hofx.x \
+    fv3jedi_var.x fv3jedi_convertincrement.x fv3jedi_dirac.x fv3jedi_error_covariance_training.x \
+    fv3jedi_letkf.x fv3jedi_convertstate.x fv3jedi_eda.x fv3jedi_forecast.x fv3jedi_plot_field.x \
+    fv3jedi_data_checker.py fv3jedi_enshofx.x fv3jedi_hofx_nomodel.x fv3jedi_testdata_downloader.py; do
+    [[ -s $gdasexe ]] && rm -f $gdasexe
+    $LINK ../sorc/gdas.cd/build/bin/$gdasexe .
 done
 
 #------------------------------

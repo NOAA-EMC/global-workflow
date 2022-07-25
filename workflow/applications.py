@@ -106,6 +106,8 @@ class AppConfig:
         self.do_vrfy = _base.get('DO_VRFY', True)
         self.do_metp = _base.get('DO_METP', False)
         self.do_efsoi = _base.get('DO_EFSOI', False)
+        self.do_jedivar = _base.get('DO_JEDIVAR', False)
+        self.do_jediens = _base.get('DO_JEDIENS', False)
 
         self.do_hpssarch = _base.get('HPSSARCH', False)
 
@@ -171,15 +173,25 @@ class AppConfig:
         Returns the config_files that are involved in the cycled app
         """
 
-        configs = ['prep',
-                   'anal', 'sfcanl', 'analdiag', 'analcalc',
-                   'fcst', 'post', 'vrfy', 'arch']
+        configs = ['prep']
 
+        if self.do_jedivar:
+            configs += ['atmanalprep', 'atmanalrun', 'atmanalpost']
+        else:
+            configs += ['anal', 'analdiag']
+
+        configs += ['sfcanl', 'analcalc', 'fcst', 'post', 'vrfy', 'arch']
+
+         
         if self.do_gldas:
             configs += ['gldas']
 
         if self.do_hybvar:
-            configs += ['eobs', 'eomg', 'ediag', 'eupd', 'ecen', 'esfc', 'efcs', 'echgres', 'epos', 'earc']
+            if self.do_jediens:            
+                configs += ['atmensanalprep', 'atmensanalrun', 'atmensanalpost']
+            else:
+                configs += ['eobs', 'eomg', 'ediag', 'eupd']
+            configs += ['ecen', 'esfc', 'efcs', 'echgres', 'epos', 'earc']
 
         if self.do_efsoi:
             configs += ['eupdfsoi','ecenfsoi','esfcfsoi','efcsfsoi','eposfsoi','efsoi']
@@ -189,6 +201,9 @@ class AppConfig:
 
         if self.do_gempak:
             configs += ['gempak']
+
+        if self.do_bufrsnd:
+            configs += ['postsnd']
 
         if self.do_awips:
             configs += ['awips']
@@ -322,9 +337,16 @@ class AppConfig:
         This is the place where that order is set.
         """
 
-        gdas_gfs_common_tasks_before_fcst = ['prep', 'anal', 'sfcanl', 'analcalc']
+        gdas_gfs_common_tasks_before_fcst = ['prep']
         gdas_gfs_common_tasks_after_fcst = ['post', 'vrfy']
         gdas_gfs_common_cleanup_tasks = ['arch']
+
+        if self.do_jedivar:
+            gdas_gfs_common_tasks_before_fcst += ['atmanalprep', 'atmanalrun', 'atmanalpost']
+        else:
+            gdas_gfs_common_tasks_before_fcst += ['anal']
+
+        gdas_gfs_common_tasks_before_fcst += ['sfcanl', 'analcalc']
 
         gldas_tasks = ['gldas']
         efsoi_tasks = ['eupdfsoi','ecenfsoi','esfcfsoi','efcsfsoi','eposfsoi','efsoi']
@@ -335,12 +357,17 @@ class AppConfig:
         hybrid_gdas_or_gfs_tasks = []
         hybrid_gdas_tasks = []
         if self.do_hybvar:
-            hybrid_gdas_or_gfs_tasks += ['eobs', 'eupd', 'echgres']
-            hybrid_gdas_or_gfs_tasks += ['ediag'] if self.lobsdiag_forenkf else ['eomg']
+            if self.do_jediens:
+                hybrid_gdas_or_gfs_tasks += ['atmensanalprep', 'atmensanalrun', 'atmensanalpost', 'echgres']
+            else:
+                hybrid_gdas_or_gfs_tasks += ['eobs', 'eupd', 'echgres']
+                hybrid_gdas_or_gfs_tasks += ['ediag'] if self.lobsdiag_forenkf else ['eomg']
             hybrid_gdas_tasks += ['ecen', 'esfc', 'efcs', 'epos', 'earc']
 
         # Collect all "gdas" cycle tasks
-        gdas_tasks = gdas_gfs_common_tasks_before_fcst + ['analdiag']
+        gdas_tasks = gdas_gfs_common_tasks_before_fcst.copy()
+        if not self.do_jedivar:
+            gdas_tasks += ['analdiag']
 
         if self.do_gldas:
             gdas_tasks += gldas_tasks
