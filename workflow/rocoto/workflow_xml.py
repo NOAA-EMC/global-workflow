@@ -77,7 +77,10 @@ class RocotoXML:
         """
 
         scheduler = self._app_config.scheduler
-        cyclethrottle = self._base.get('ROCOTO_CYCLETHROTTLE', 3)
+        if self._app_config.do_efsoi:
+            cyclethrottle = self._base.get('ROCOTO_CYCLETHROTTLE', 7)
+        else:
+            cyclethrottle = self._base.get('ROCOTO_CYCLETHROTTLE', 3)
         taskthrottle = self._base.get('ROCOTO_TASKTHROTTLE', 25)
         verbosity = self._base.get('ROCOTO_VERBOSITY', 10)
 
