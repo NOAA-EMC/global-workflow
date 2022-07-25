@@ -67,8 +67,7 @@ for dir in fix_aer \
             fix_cpl \
             fix_wave \
             fix_reg2grb2 \
-            fix_ugwd \
-            fix_jedi
+            fix_ugwd
             do
     if [ -d $dir ]; then
       [[ $RUN_ENVIR = nco ]] && chmod -R 755 $dir
@@ -150,6 +149,15 @@ if [ -d ../sorc/gsi_enkf.fd ]; then
   cd ${pwd}/../fix                ||exit 8
     [[ -d fix_gsi ]] && rm -rf fix_gsi
     $LINK ../sorc/gsi_enkf.fd/fix  fix_gsi
+fi
+
+#------------------------------
+#--add GDASApp fix directory
+#------------------------------
+if [ -d ../sorc/gdas.cd ]; then
+  cd ${pwd}/../fix                ||exit 8
+    [[ -d fix_gdas ]] && rm -rf fix_gdas
+    $LINK $FIX_DIR/fix_gdas .
 fi
 
 #------------------------------
@@ -390,6 +398,7 @@ cd ${pwd}/../sorc   ||   exit 8
 
     if [ -d gldas.fd ]; then
       for prog in gdas2gldas.fd  gldas2gdas.fd  gldas_forcing.fd  gldas_model.fd  gldas_post.fd  gldas_rst.fd ;do
+        [[ -d $prog ]] && rm -rf $prog
         $SLINK gldas.fd/sorc/$prog                                                     $prog
       done
     fi
