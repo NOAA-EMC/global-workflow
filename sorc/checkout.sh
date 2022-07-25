@@ -19,9 +19,9 @@ Usage: $BASH_SOURCE [-c][-h][-m ufs_hash][-o]
   -o:
     Check out operational-only code (GTG and WAFS)
   -g: 
-    Check out GSI based DA
-  -j:
-    Check out GDASApp (JEDI-based DA)
+    Check out GSI for GSI-based DA
+  -u:
+    Check out GDASApp for UFS-based DA
 EOF
   exit 1
 }
@@ -35,7 +35,7 @@ function checkout() {
   #   logdir [default: $(pwd)]: where you want logfiles written
   #   CLEAN [default: NO]:      whether to delete existing directories and create a fresh clone
   #   CHECKOUT_GSI [default: NO]:  whether to clone GSI repository (GSI-based DA)
-  #   CHECKOUT_JEDI [default: NO]: whether to clone GDASApp repository (JEDI-based DA)  
+  #   CHECKOUT_GDAS [default: NO]: whether to clone GDASApp repository (UFS-based DA)  
   #
   # Usage: checkout <dir> <remote> <version>
   #
@@ -111,13 +111,13 @@ while getopts ":chgjm:o" option; do
     g)
       echo "Receieved -g flag for optional checkout of GSI-based DA"
       CHECKOUT_GSI="YES"
-      CHECKOUT_JEDI="NO"
+      CHECKOUT_GDAS="NO"
       ;;
     h)  usage;;
-    j)
-      echo "Received -j flag for optional checkout of JEDI-based DA"
+    u)
+      echo "Received -u flag for optional checkout of UFS-based DA"
       CHECKOUT_GSI="NO"
-      CHECKOUT_JEDI="YES"
+      CHECKOUT_GDAS="YES"
       ;;
     o)
       echo "Received -o flag for optional checkout of operational-only codes"
@@ -147,9 +147,6 @@ mkdir -p ${logdir}
 # The checkout version should always be a speciifc commit (hash or tag), not a branch
 errs=0
 checkout "ufs_model.fd"    "https://github.com/ufs-community/ufs-weather-model" "${ufs_model_hash:-b97375c}"      ; errs=$((errs + $?))
-checkout "gsi_utils.fd"    "https://github.com/NOAA-EMC/GSI-Utils.git"          "322cc7b"                         ; errs=$((errs + $?))
-checkout "gsi_monitor.fd"  "https://github.com/NOAA-EMC/GSI-Monitor.git"        "acf8870"                         ; errs=$((errs + $?))
-checkout "gldas.fd"        "https://github.com/NOAA-EMC/GLDAS.git"              "fd8ba62"                         ; errs=$((errs + $?))
 checkout "ufs_utils.fd"    "https://github.com/ufs-community/UFS_UTILS.git"     "a2b0817"                         ; errs=$((errs + $?))
 checkout "verif-global.fd" "https://github.com/NOAA-EMC/EMC_verif-global.git"   "c267780"                         ; errs=$((errs + $?))
 
@@ -157,8 +154,14 @@ if [[ "${CHECKOUT_GSI:-NO}" == "YES" ]]; then
   checkout "gsi_enkf.fd" "https://github.com/NOAA-EMC/GSI.git" "67f5ab4"; errs=$((errs + $?))
 fi
 
-if [[ "${CHECKOUT_JEDI:-NO}" == "YES" ]]; then
+if [[ "${CHECKOUT_GDAS:-NO}" == "YES" ]]; then
   checkout "gdas.cd" "https://github.com/NOAA-EMC/GDASApp.git" "5952c9d"; errs=$((errs + $?))
+fi
+
+if [[ "${CHECKOUT_GSI:-NO}" == "YES" || "${CHECKOUT_GDAS:-NO}" == "YES" ]]; then
+  checkout "gsi_utils.fd"    "https://github.com/NOAA-EMC/GSI-Utils.git"   "322cc7b"; errs=$((errs + $?))
+  checkout "gsi_monitor.fd"  "https://github.com/NOAA-EMC/GSI-Monitor.git" "acf8870"; errs=$((errs + $?))
+  checkout "gldas.fd"        "https://github.com/NOAA-EMC/GLDAS.git"       "fd8ba62"; errs=$((errs + $?))
 fi
 
 if [[ "${checkout_wafs:-NO}" == "YES" ]]; then
