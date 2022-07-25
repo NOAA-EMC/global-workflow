@@ -12,8 +12,11 @@ class Tasks:
     SERVICE_TASKS = ['arch', 'earc', 'getic']
     VALID_TASKS = ['aerosol_init', 'coupled_ic', 'getic', 'init',
                    'prep', 'anal', 'sfcanl', 'analcalc', 'analdiag', 'gldas', 'arch',
+                   'atmanalprep', 'atmanalrun', 'atmanalpost',
                    'earc', 'ecen', 'echgres', 'ediag', 'efcs',
                    'eobs', 'eomg', 'epos', 'esfc', 'eupd',
+                   'eupdfsoi','ecenfsoi','esfcfsoi','efcsfsoi','eposfsoi','efsoi'
+                   'atmensanalprep', 'atmensanalrun', 'atmensanalpost',
                    'fcst', 'post', 'ocnpost', 'vrfy', 'metp',
                    'postsnd', 'awips', 'gempak',
                    'wafs', 'wafsblending', 'wafsblending0p25',
@@ -336,7 +339,10 @@ class Tasks:
     def sfcanl(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.cdump}anal'}
+        if self.app_config.do_jedivar:
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}atmanalrun'}
+        else:
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}anal'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -348,7 +354,10 @@ class Tasks:
     def analcalc(self):
 
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.cdump}anal'}
+        if self.app_config.do_jedivar:
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}atmanalrun'}
+        else:
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}anal'}
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'task', 'name': f'{self.cdump}sfcanl'}
         deps.append(rocoto.add_dependency(dep_dict))
@@ -373,6 +382,65 @@ class Tasks:
 
         resources = self.get_resource('analdiag')
         task = create_wf_task('analdiag', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
+    def atmanalprep(self):
+
+        suffix = self._base["SUFFIX"]
+        dump_suffix = self._base["DUMP_SUFFIX"]
+        gfs_cyc = self._base["gfs_cyc"]
+        dmpdir = self._base["DMPDIR"]
+        do_gfs_enkf = True if self.app_config.do_hybvar and 'gfs' in self.app_config.eupd_cdumps else False
+
+        deps = []
+        dep_dict = {'type': 'metatask', 'name': 'gdaspost', 'offset': '-06:00:00'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        data = f'&ROTDIR;/gdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmf009{suffix}'
+        dep_dict = {'type': 'data', 'data': data, 'offset': '-06:00:00'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        data = f'{dmpdir}/{self.cdump}{dump_suffix}.@Y@m@d/@H/{self.cdump}.t@Hz.updated.status.tm00.bufr_d'
+        dep_dict = {'type': 'data', 'data': data}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+        cycledef = self.cdump
+        if self.cdump in ['gfs'] and do_gfs_enkf and gfs_cyc != 4:
+            cycledef = 'gdas'
+
+        resources = self.get_resource('atmanalprep')
+        task = create_wf_task('atmanalprep', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies,
+                              cycledef=cycledef)
+        return task
+
+    def atmanalrun(self):
+
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}atmanalprep'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        if self.app_config.do_hybvar:
+            dep_dict = {'type': 'metatask', 'name': 'gdasepmn', 'offset': '-06:00:00'}
+            deps.append(rocoto.add_dependency(dep_dict))
+            dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+        else:
+            dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('atmanalrun')
+        task = create_wf_task('atmanalrun', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
+    def atmanalpost(self):
+
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}atmanalrun'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'cycleexist', 'offset': '-06:00:00'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+   
+        resources = self.get_resource('atmanalpost')
+        task = create_wf_task('atmanalpost', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
 
         return task
 
@@ -880,6 +948,93 @@ class Tasks:
 
         return task
 
+    def eupdfsoi(self):
+        deps = []
+        if self.app_config.lobsdiag_forenkf:
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}ediag'}
+        else:
+            dep_dict = {'type': 'metatask', 'name': f'{self.cdump}eomn'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('eupdfsoi')
+        task = create_wf_task('eupdfsoi', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
+    def efsoi(self):
+        deps = []
+        data = '&ROTDIR;/efsoigdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmf030.ensmean.nc'
+        dep_dict = {'type': 'data', 'data': data, 'offset': '-6:00:00'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        data = '&ROTDIR;/efsoigdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmf024.ensmean.nc'
+        dep_dict = {'type': 'data', 'data': data}
+        deps.append(rocoto.add_dependency(dep_dict))
+        data = '&ROTDIR;/gdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmanl.ensres.nc'
+        dep_dict = {'type': 'data', 'data': data, 'offset': '24:00:00'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+        resources = self.get_resource('efsoi')
+        task = create_wf_task('efsoi', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
+    def atmensanalprep(self):
+
+        suffix = self._base["SUFFIX"]
+        dump_suffix = self._base["DUMP_SUFFIX"]
+        gfs_cyc = self._base["gfs_cyc"]
+        dmpdir = self._base["DMPDIR"]
+        do_gfs_enkf = True if self.app_config.do_hybvar and 'gfs' in self.app_config.eupd_cdumps else False
+
+        deps = []
+        dep_dict = {'type': 'metatask', 'name': 'gdaspost', 'offset': '-06:00:00'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        data = f'&ROTDIR;/gdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmf009{suffix}'
+        dep_dict = {'type': 'data', 'data': data, 'offset': '-06:00:00'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        data = f'{dmpdir}/{self.cdump}{dump_suffix}.@Y@m@d/@H/{self.cdump}.t@Hz.updated.status.tm00.bufr_d'
+        dep_dict = {'type': 'data', 'data': data}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+        cycledef = self.cdump
+        if self.cdump in ['gfs'] and do_gfs_enkf and gfs_cyc != 4:
+            cycledef = 'gdas'
+
+        resources = self.get_resource('atmensanalprep')
+        task = create_wf_task('atmensanalprep', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies,
+                              cycledef=cycledef)
+
+        return task
+
+    def atmensanalrun(self):
+
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}atmensanalprep'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'metatask', 'name': 'gdasepmn', 'offset': '-06:00:00'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+        resources = self.get_resource('atmensanalrun')
+        task = create_wf_task('atmensanalrun', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
+    def atmensanalpost(self):
+
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}atmensanalrun'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('atmensanalpost')
+        task = create_wf_task('atmensanalpost', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+   
+        return task
+
     def ecen(self):
 
         self._is_this_a_gdas_task(self.cdump, 'ecen')
@@ -912,7 +1067,10 @@ class Tasks:
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump}analcalc'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'task', 'name': f'{eupd_cdump}eupd'}
+        if self.app_config.do_jediens:
+            dep_dict = {'type': 'task', 'name': f'{eupd_cdump}atmensanalrun'}
+        else:
+            dep_dict = {'type': 'task', 'name': f'{eupd_cdump}eupd'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
@@ -931,6 +1089,57 @@ class Tasks:
                               metatask='ecmn', varname=varname1, varval=varval1, vardict=vardict)
         return task
 
+    def ecenfsoi(self):
+
+        self._is_this_a_gdas_task(self.cdump, 'ecenfsoi')
+
+        def _get_ecenfsoigroups():
+
+            if self._base.get('DOIAU_ENKF', False):
+                fhrs = list(self._base.get('IAUFHRS', '6').split(','))
+
+                necenfsoigrp = self._configs['ecen']['NECENGRP']
+                ngrps = necenfsoigrp if len(fhrs) > necenfsoigrp else len(fhrs)
+
+                fhrs = [f'{int(fhr):03d}' for fhr in fhrs]
+                fhrs = np.array_split(fhrs, ngrps)
+                fhrs = [fhr.tolist() for fhr in fhrs]
+
+                grp = ' '.join([f'{x:03d}' for x in range(0, ngrps)])
+                dep = ' '.join([f[-1] for f in fhrs])
+                lst = ' '.join(['_'.join(f) for f in fhrs])
+
+            else:
+                grp = '000'
+                dep = 'f006'
+                lst = 'f006'
+
+            return grp, dep, lst
+
+        eupdfsoi_cdump = 'gdas' if 'gdas' in self.app_config.eupd_cdumps else 'gfs'
+
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}analcalc'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'task', 'name': f'{eupdfsoi_cdump}eupdfsoi'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+        ecenfsoienvars = self.envars.copy()
+        ecenfsoienvar_dict = {'FHRGRP': '#grp#',
+                          'FHRLST': '#lst#'}
+        for key, value in ecenfsoienvar_dict.items():
+            ecenfsoienvars.append(rocoto.create_envar(name=key, value=str(value)))
+
+        varname1, varname2, varname3 = 'grp', 'dep', 'lst'
+        varval1, varval2, varval3 = _get_ecenfsoigroups()
+        vardict = {varname2: varval2, varname3: varval3}
+
+        resources = self.get_resource('ecenfsoi')
+        task = create_wf_task('ecenfsoi', resources, cdump=self.cdump, envar=ecenfsoienvars, dependency=dependencies,
+                              metatask='ecmnfsoi', varname=varname1, varval=varval1, vardict=vardict)
+        return task
+
     def esfc(self):
 
         self._is_this_a_gdas_task(self.cdump, 'esfc')
@@ -940,7 +1149,10 @@ class Tasks:
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump}analcalc'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'task', 'name': f'{eupd_cdump}eupd'}
+        if self.app_config.do_jediens:
+            dep_dict = {'type': 'task', 'name': f'{eupd_cdump}atmensanalrun'}
+        else:
+            dep_dict = {'type': 'task', 'name': f'{eupd_cdump}eupd'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
@@ -948,6 +1160,25 @@ class Tasks:
         task = create_wf_task('esfc', resources, cdump='gdas', envar=self.envars, dependency=dependencies)
 
         return task
+
+    def esfcfsoi(self):
+
+        self._is_this_a_gdas_task(self.cdump, 'esfcfsoi')
+
+        eupd_cdump = 'gdas' if 'gdas' in self.app_config.eupd_cdumps else 'gfs'
+
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}analcalc'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'task', 'name': f'{eupd_cdump}eupdfsoi'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+        resources = self.get_resource('esfcfsoi')
+        task = create_wf_task('esfcfsoi', resources, cdump='gdas', envar=self.envars, dependency=dependencies)
+
+        return task
+
 
     def efcs(self):
 
@@ -973,6 +1204,29 @@ class Tasks:
                               metatask='efmn', varname='grp', varval=groups)
 
         return task
+
+    def efcsfsoi(self):
+
+        self._is_this_a_gdas_task(self.cdump, 'efcsfsoi')
+
+        deps = []
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}ecmnfsoi'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}esfcfsoi'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+        efcsfsoienvars = self.envars.copy()
+        efcsfsoienvars.append(rocoto.create_envar(name='ENSGRP', value='#grp#'))
+
+        groups = self._get_hybgroups(self._base['NMEM_ENKF'], self._configs['efcs']['NMEM_EFCSGRP'])
+
+        resources = self.get_resource('efcsfsoi')
+        task = create_wf_task('efcsfsoi', resources, cdump=self.cdump, envar=efcsfsoienvars, dependency=dependencies,
+                              metatask='efmnfsoi', varname='grp', varval=groups)
+
+        return task
+
 
     def echgres(self):
 
@@ -1031,6 +1285,50 @@ class Tasks:
         resources = self.get_resource('epos')
         task = create_wf_task('epos', resources, cdump=self.cdump, envar=eposenvars, dependency=dependencies,
                               metatask='epmn', varname=varname1, varval=varval1, vardict=vardict)
+
+        return task
+
+    def eposfsoi(self):
+
+        self._is_this_a_gdas_task(self.cdump, 'eposfsoi')
+
+        def _get_eposfsoigroups(eposfsoi):
+            fhmin = eposfsoi['FHMIN_EFSOI']
+            fhmax = eposfsoi['FHMAX_EFSOI']
+            fhout = eposfsoi['FHOUT_EFSOI']
+            fhrs = range(fhmin, fhmax + fhout, fhout)
+
+            neposfsoigrp = eposfsoi['NEPOSGRP']
+            ngrps = neposfsoigrp if len(fhrs) > neposfsoigrp else len(fhrs)
+
+            fhrs = [f'f{fhr:03d}' for fhr in fhrs]
+            fhrs = np.array_split(fhrs, ngrps)
+            fhrs = [f.tolist() for f in fhrs]
+
+            grp = ' '.join([f'{x:03d}' for x in range(0, ngrps)])
+            dep = ' '.join([f[-1] for f in fhrs])
+            lst = ' '.join(['_'.join(f) for f in fhrs])
+
+            return grp, dep, lst
+
+        deps = []
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}efmnfsoi'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        eposfsoienvars = self.envars.copy()
+        eposfsoienvar_dict = {'FHRGRP': '#grp#',
+                          'FHRLST': '#lst#'}
+        for key, value in eposfsoienvar_dict.items():
+            eposfsoienvars.append(rocoto.create_envar(name=key, value=str(value)))
+
+        varname1, varname2, varname3 = 'grp', 'dep', 'lst'
+        varval1, varval2, varval3 = _get_eposfsoigroups(self._configs['eposfsoi'])
+        vardict = {varname2: varval2, varname3: varval3}
+
+        resources = self.get_resource('eposfsoi')
+        task = create_wf_task('eposfsoi', resources, cdump=self.cdump, envar=eposfsoienvars, dependency=dependencies,
+                              metatask='epmnfsoi', varname=varname1, varval=varval1, vardict=vardict)
 
         return task
 

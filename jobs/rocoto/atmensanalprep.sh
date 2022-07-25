@@ -8,7 +8,6 @@ status=$?
 
 ###############################################################
 # Execute the JJOB
-$HOMEgfs/jobs/JGDAS_EFSOI_FCST
-
+$HOMEgfs/jobs/JGDAS_GLOBAL_ATMOS_ENSANAL_PREP
 status=$?
 exit $status

@@ -44,7 +44,7 @@ APRUN_ENKF=${APRUN_ENKF:-${APRUN:-""}}
 NTHREADS_ENKF=${NTHREADS_ENKF:-${NTHREADS:-1}}
 
 # Executables
-EFSOIEXEC=${EFSOIEXEC:-$HOMEgfs/exec/global_efsoi.x}
+EFSOIEXEC=${EFSOIEXEC:-$HOMEgfs/exec/efsoi.x}
 
 # Cycling and forecast hour specific parameters
 CDATE=${CDATE:-"2001010100"}
@@ -60,7 +60,7 @@ VSUFFIX=${VSUFFIX:-$SUFFIX}
 SMOOTH_ENKF=${SMOOTH_ENKF:-"YES"}
 
 EFSOISTAT=${EFSOISTAT:-${APREFIX}efsoistat}
-
+GBIASe=${GBIASe:-${APREFIX}abias_int.ensmean}
 VERFANL=${VERFANL:-${VPREFIX}atmanl.ensres.nc}
 INITANL=${INITANL:-${APREFIX}atmanl.ensres.nc}
 FCSTLONG=${GPREFIX}atmf030.ensmean.nc
@@ -137,6 +137,9 @@ $NLN $OZINFO     ozinfo
 $NLN $HYBENSINFO hybens_info
 $NLN $ANAVINFO   anavinfo
 $NLN $VLOCALEIG  vlocal_eig.dat
+
+# Bias correction coefficients based on the ensemble mean
+$NLN $COMOUT_ANL_ENSFSOI/$GBIASe satbias_in
 
 ################################################################################
 # Ensemble guess, observational data and analyses/increments

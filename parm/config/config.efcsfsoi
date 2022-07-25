@@ -18,4 +18,8 @@ if [ $QUILTING = ".true." ]; then
     export npe_efcsfsoi=$npe_fv3
 fi
 
+export FHMIN_EFSOI=6
+export FHOUT_EFSOI=6
+export FHMAX_EFSOI=30
+
 echo "END: config.efcsfsoi"
