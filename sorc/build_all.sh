@@ -133,6 +133,8 @@ if [ -d gsi_enkf.fd ]; then
   fi
   ((err+=$rc))
 }
+else
+  echo " .... SKIP building gsi and enkf .... "
 fi
 
 #------------------------------------
@@ -163,6 +165,8 @@ if [ -d gdas.cd ]; then
   fi
   ((err+=$rc))
 }
+else
+  echo " .... SKIP building GDASApp  .... "
 fi
 
 #------------------------------------

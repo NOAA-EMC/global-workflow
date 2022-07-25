@@ -137,23 +137,26 @@ fi
 #------------------------------
 #--add GSI fix directory
 #------------------------------
-cd ${pwd}/../fix                ||exit 8
+if [ -d ../sorc/gsi_enkf.fd ]; then
+  cd ${pwd}/../fix                ||exit 8
     [[ -d fix_gsi ]] && rm -rf fix_gsi
     $LINK ../sorc/gsi_enkf.fd/fix  fix_gsi
-
+fi
 
 #------------------------------
-#--add GDASApp files
+#--add GDASApp files 
 #------------------------------
-cd ${pwd}/../jobs               ||exit 8
+if [ -d ../sorc/gdas.cd ]; then
+  cd ${pwd}/../jobs               ||exit 8
     $LINK ../sorc/gdas.cd/jobs/JGDAS_GLOBAL_ATMOS_ANALYSIS_PREP   .
     $LINK ../sorc/gdas.cd/jobs/JGDAS_GLOBAL_ATMOS_ANALYSIS_RUN    .
     $LINK ../sorc/gdas.cd/jobs/JGDAS_GLOBAL_ATMOS_ANALYSIS_POST   .
     $LINK ../sorc/gdas.cd/jobs/JGDAS_GLOBAL_ATMOS_ENSANAL_PREP    .
     $LINK ../sorc/gdas.cd/jobs/JGDAS_GLOBAL_ATMOS_ENSANAL_RUN     .
     $LINK ../sorc/gdas.cd/jobs/JGDAS_GLOBAL_ATMOS_ENSANAL_POST    .
-cd ${pwd}/../ush                ||exit 8
+  cd ${pwd}/../ush                ||exit 8
     $LINK ../sorc/gdas.cd/ush/ufsda                               .
+fi
 
 
 #------------------------------
@@ -244,10 +247,12 @@ for ufs_utilsexe in \
 done
 
 # GSI
-for exe in enkf.x gsi.x; do
+if [ -d ../sorc/gsi_enkf.fd ]; then
+  for exe in enkf.x gsi.x; do
     [[ -s $exe ]] && rm -f $exe
     $LINK ../sorc/gsi_enkf.fd/install/bin/$exe .
-done
+  done
+fi
 
 # GSI Utils
 for exe in calc_analysis.x calc_increment_ens_ncio.x calc_increment_ens.x \
@@ -270,24 +275,28 @@ for gldasexe in gdas2gldas  gldas2gdas  gldas_forcing  gldas_model  gldas_post  
 done
 
 # GDASApp
-for gdasexe in fv3jedi_addincrement.x fv3jedi_diffstates.x fv3jedi_ensvariance.x fv3jedi_hofx.x \
+if [ -d ../sorc/gdas.cd ]; then
+  for gdasexe in fv3jedi_addincrement.x fv3jedi_diffstates.x fv3jedi_ensvariance.x fv3jedi_hofx.x \
     fv3jedi_var.x fv3jedi_convertincrement.x fv3jedi_dirac.x fv3jedi_error_covariance_training.x \
     fv3jedi_letkf.x fv3jedi_convertstate.x fv3jedi_eda.x fv3jedi_forecast.x fv3jedi_plot_field.x \
     fv3jedi_data_checker.py fv3jedi_enshofx.x fv3jedi_hofx_nomodel.x fv3jedi_testdata_downloader.py; do
     [[ -s $gdasexe ]] && rm -f $gdasexe
     $LINK ../sorc/gdas.cd/build/bin/$gdasexe .
-done
+  done
+fi
 
 #------------------------------
 #--link source code directories
 #------------------------------
 cd ${pwd}/../sorc   ||   exit 8
 
-    [[ -d gsi.fd ]] && rm -rf gsi.fd
-    $SLINK gsi_enkf.fd/src/gsi                                                                  gsi.fd
+    if [ -d gsi_enkf.fd ]; then
+      [[ -d gsi.fd ]] && rm -rf gsi.fd
+      $SLINK gsi_enkf.fd/src/gsi                                                                gsi.fd
 
-    [[ -d enkf.fd ]] && rm -rf enkf.fd
-    $SLINK gsi_enkf.fd/src/enkf                                                                 enkf.fd
+      [[ -d enkf.fd ]] && rm -rf enkf.fd
+      $SLINK gsi_enkf.fd/src/enkf                                                               enkf.fd
+    fi
 
     [[ -d calc_analysis.fd ]] && rm -rf calc_analysis.fd
     $SLINK gsi_utils.fd/src/netcdf_io/calc_analysis.fd                                          calc_analysis.fd

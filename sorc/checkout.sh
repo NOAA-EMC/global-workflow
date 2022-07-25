@@ -34,6 +34,8 @@ function checkout() {
   #   topdir [default: $(pwd)]: parent directory to your checkout
   #   logdir [default: $(pwd)]: where you want logfiles written
   #   CLEAN [default: NO]:      whether to delete existing directories and create a fresh clone
+  #   CHECKOUT_GSI [default: NO]:  whether to clone GSI repository (GSI-based DA)
+  #   CHECKOUT_JEDI [default: NO]: whether to clone GDASApp repository (JEDI-based DA)  
   #
   # Usage: checkout <dir> <remote> <version>
   #
@@ -108,14 +110,14 @@ while getopts ":chgjm:o" option; do
       ;;
     g)
       echo "Receieved -g flag for optional checkout of GSI-based DA"
-      checkout_gsi="YES"
-      checkout_jedi="NO"
+      CHECKOUT_GSI="YES"
+      CHECKOUT_JEDI="NO"
       ;;
     h)  usage;;
     j)
       echo "Received -j flag for optional checkout of JEDI-based DA"
-      checkout_gsi="NO"
-      checkout_jedi="YES"
+      CHECKOUT_GSI="NO"
+      CHECKOUT_JEDI="YES"
       ;;
     o)
       echo "Received -o flag for optional checkout of operational-only codes"
@@ -151,11 +153,11 @@ checkout "gldas.fd"        "https://github.com/NOAA-EMC/GLDAS.git"              
 checkout "ufs_utils.fd"    "https://github.com/ufs-community/UFS_UTILS.git"     "a2b0817"                         ; errs=$((errs + $?))
 checkout "verif-global.fd" "https://github.com/NOAA-EMC/EMC_verif-global.git"   "c267780"                         ; errs=$((errs + $?))
 
-if [[ "${checkout_gsi:-YES}" == "YES" ]]; then
+if [[ "${CHECKOUT_GSI:-NO}" == "YES" ]]; then
   checkout "gsi_enkf.fd" "https://github.com/NOAA-EMC/GSI.git" "67f5ab4"; errs=$((errs + $?))
 fi
 
-if [[ "${checkout_jedi:-NO}" == "YES" ]]; then
+if [[ "${CHECKOUT_JEDI:-NO}" == "YES" ]]; then
   checkout "gdas.cd" "https://github.com/NOAA-EMC/GDASApp.git" "5952c9d"; errs=$((errs + $?))
 fi
 
