@@ -152,11 +152,11 @@ checkout "ufs_utils.fd"    "https://github.com/ufs-community/UFS_UTILS.git"     
 checkout "verif-global.fd" "https://github.com/NOAA-EMC/EMC_verif-global.git"   "c267780"                         ; errs=$((errs + $?))
 
 if [[ "${checkout_gsi:-YES}" == "YES" ]]; then
-  checkout "gsi_enkf.fd"     "https://github.com/NOAA-EMC/GSI.git"              "67f5ab4"                         ; errs=$((errs + $?))
+  checkout "gsi_enkf.fd" "https://github.com/NOAA-EMC/GSI.git" "67f5ab4"; errs=$((errs + $?))
 fi
 
 if [[ "${checkout_jedi:-NO}" == "YES" ]]; then
-  checkout "gdas.cd"         "https://github.com/NOAA-EMC/GDASApp.git"            "5952c9d"                         ; errs=$((errs + $?))
+  checkout "gdas.cd" "https://github.com/NOAA-EMC/GDASApp.git" "5952c9d"; errs=$((errs + $?))
 fi
 
 if [[ "${checkout_wafs:-NO}" == "YES" ]]; then
