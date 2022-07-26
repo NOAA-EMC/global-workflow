@@ -103,7 +103,7 @@ function checkout() {
 }
 
 # Set defaults for variables toggled by options
-CLEAN="NO"
+export CLEAN="NO"
 CHECKOUT_GSI="NO"
 CHECKOUT_GDAS="NO"
 checkout_gtg="NO"
