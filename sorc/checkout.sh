@@ -111,12 +111,10 @@ while getopts ":chgum:o" option; do
     g)
       echo "Receieved -g flag for optional checkout of GSI-based DA"
       CHECKOUT_GSI="YES"
-      CHECKOUT_GDAS="NO"
       ;;
     h)  usage;;
     u)
       echo "Received -u flag for optional checkout of UFS-based DA"
-      CHECKOUT_GSI="NO"
       CHECKOUT_GDAS="YES"
       ;;
     o)
