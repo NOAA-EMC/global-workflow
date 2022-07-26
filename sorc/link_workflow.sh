@@ -161,7 +161,7 @@ if [ -d ../sorc/gdas.cd ]; then
 fi
 
 #------------------------------
-#--add GDASApp files 
+#--add GDASApp files
 #------------------------------
 if [ -d ../sorc/gdas.cd ]; then
   cd ${pwd}/../jobs               ||exit 8

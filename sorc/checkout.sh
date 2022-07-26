@@ -34,8 +34,6 @@ function checkout() {
   #   topdir [default: $(pwd)]: parent directory to your checkout
   #   logdir [default: $(pwd)]: where you want logfiles written
   #   CLEAN [default: NO]:      whether to delete existing directories and create a fresh clone
-  #   CHECKOUT_GSI [default: NO]:  whether to clone GSI repository (GSI-based DA)
-  #   CHECKOUT_GDAS [default: NO]: whether to clone GDASApp repository (UFS-based DA)  
   #
   # Usage: checkout <dir> <remote> <version>
   #
