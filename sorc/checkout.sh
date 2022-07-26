@@ -62,7 +62,7 @@ function checkout() {
   fi
 
   cd "${topdir}"
-  if [[  -d "${dir}" && "${CLEAN:-NO}" == "YES" ]]; then
+  if [[  -d "${dir}" && $CLEAN == "YES" ]]; then
     echo "|-- Removing existing clone in ${dir}"
     rm -Rf "$dir"
   fi
@@ -102,6 +102,15 @@ function checkout() {
   return 0
 }
 
+# Set defaults for variables toggled by options
+CLEAN="NO"
+CHECKOUT_GSI="NO"
+CHECKOUT_GDAS="NO"
+checkout_gtg="NO"
+checkout_wafs="NO"
+ufs_model_hash="b97375c"
+
+# Parse command line arguments
 while getopts ":chgum:o" option; do
   case $option in
     c)
@@ -144,29 +153,29 @@ mkdir -p ${logdir}
 
 # The checkout version should always be a speciifc commit (hash or tag), not a branch
 errs=0
-checkout "ufs_model.fd"    "https://github.com/ufs-community/ufs-weather-model" "${ufs_model_hash:-b97375c}"      ; errs=$((errs + $?))
-checkout "ufs_utils.fd"    "https://github.com/ufs-community/UFS_UTILS.git"     "a2b0817"                         ; errs=$((errs + $?))
-checkout "verif-global.fd" "https://github.com/NOAA-EMC/EMC_verif-global.git"   "c267780"                         ; errs=$((errs + $?))
+checkout "ufs_model.fd"    "https://github.com/ufs-community/ufs-weather-model" "${ufs_model_hash}"; errs=$((errs + $?))
+checkout "ufs_utils.fd"    "https://github.com/ufs-community/UFS_UTILS.git"     "a2b0817"          ; errs=$((errs + $?))
+checkout "verif-global.fd" "https://github.com/NOAA-EMC/EMC_verif-global.git"   "c267780"          ; errs=$((errs + $?))
 
-if [[ "${CHECKOUT_GSI:-NO}" == "YES" ]]; then
+if [[ $CHECKOUT_GSI == "YES" ]]; then
   checkout "gsi_enkf.fd" "https://github.com/NOAA-EMC/GSI.git" "67f5ab4"; errs=$((errs + $?))
 fi
 
-if [[ "${CHECKOUT_GDAS:-NO}" == "YES" ]]; then
+if [[ $CHECKOUT_GDAS == "YES" ]]; then
   checkout "gdas.cd" "https://github.com/NOAA-EMC/GDASApp.git" "5952c9d"; errs=$((errs + $?))
 fi
 
-if [[ "${CHECKOUT_GSI:-NO}" == "YES" || "${CHECKOUT_GDAS:-NO}" == "YES" ]]; then
+if [[ $CHECKOUT_GSI == "YES" || $CHECKOUT_GDAS == "YES" ]]; then
   checkout "gsi_utils.fd"    "https://github.com/NOAA-EMC/GSI-Utils.git"   "322cc7b"; errs=$((errs + $?))
   checkout "gsi_monitor.fd"  "https://github.com/NOAA-EMC/GSI-Monitor.git" "acf8870"; errs=$((errs + $?))
   checkout "gldas.fd"        "https://github.com/NOAA-EMC/GLDAS.git"       "fd8ba62"; errs=$((errs + $?))
 fi
 
-if [[ "${checkout_wafs:-NO}" == "YES" ]]; then
+if [[ $checkout_wafs == "YES" ]]; then
   checkout "gfs_wafs.fd" "https://github.com/NOAA-EMC/EMC_gfs_wafs.git" "014a0b8"; errs=$((errs + $?))
 fi
 
-if [[ "${checkout_gtg:-NO}" == "YES" ]]; then
+if [[ $checkout_gtg == "YES" ]]; then
   ################################################################################
   # checkout_gtg
   ## yes: The gtg code at NCAR private repository is available for ops. GFS only.
