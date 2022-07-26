@@ -134,6 +134,7 @@ checkout "ufs_model.fd"    "https://github.com/ufs-community/ufs-weather-model" 
 checkout "gsi_enkf.fd"     "https://github.com/NOAA-EMC/GSI.git"                "67f5ab4"                         ; errs=$((errs + $?))
 checkout "gsi_utils.fd"    "https://github.com/NOAA-EMC/GSI-Utils.git"          "322cc7b"                         ; errs=$((errs + $?))
 checkout "gsi_monitor.fd"  "https://github.com/NOAA-EMC/GSI-Monitor.git"        "acf8870"                         ; errs=$((errs + $?))
+checkout "gdas.cd"         "https://github.com/NOAA-EMC/GDASApp.git"            "5952c9d"                         ; errs=$((errs + $?))
 checkout "gldas.fd"        "https://github.com/NOAA-EMC/GLDAS.git"              "fd8ba62"                         ; errs=$((errs + $?))
 checkout "ufs_utils.fd"    "https://github.com/ufs-community/UFS_UTILS.git"     "a2b0817"                         ; errs=$((errs + $?))
 checkout "verif-global.fd" "https://github.com/NOAA-EMC/EMC_verif-global.git"   "c267780"                         ; errs=$((errs + $?))
