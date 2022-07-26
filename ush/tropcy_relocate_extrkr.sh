@@ -3,10 +3,7 @@
 # This script is executed by the script tropcy_relocate.sh
 # --------------------------------------------------------
 
-PREAMBLE_SCRIPT="${PREAMBLE_SCRIPT:-$HOMEgfs/ush/preamble.sh}"
-if [ -f "${PREAMBLE_SCRIPT}" ]; then
-  source $PREAMBLE_SCRIPT
-fi
+source "$HOMEgfs/ush/preamble.sh"
 
 export machine=${machine:-ZEUS}
 export machine=$(echo $machine|tr '[a-z]' '[A-Z]')

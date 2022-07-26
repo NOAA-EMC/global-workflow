@@ -1,9 +1,6 @@
 #! /usr/bin/env bash
 
-PREAMBLE_SCRIPT="${PREAMBLE_SCRIPT:-$HOMEgfs/ush/preamble.sh}"
-if [ -f "${PREAMBLE_SCRIPT}" ]; then
-  source $PREAMBLE_SCRIPT
-fi
+source "$HOMEgfs/ush/preamble.sh"
 
 MOM6REGRID=${MOM6REGRID:-$HOMEgfs}
 export EXEC_DIR=$MOM6REGRID/exec

@@ -21,10 +21,7 @@
 # echo "         FEB 2019 - Removed grid 225"
 #####################################################################
 
-PREAMBLE_SCRIPT="${PREAMBLE_SCRIPT:-$HOMEgfs/ush/preamble.sh}"
-if [ -f "${PREAMBLE_SCRIPT}" ]; then
-  source $PREAMBLE_SCRIPT
-fi
+source "$HOMEgfs/ush/preamble.sh"
 
 fcsthrs="$1"
 num=$#

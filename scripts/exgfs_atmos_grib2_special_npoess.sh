@@ -7,10 +7,7 @@
 # echo "-----------------------------------------------------"
 #####################################################################
 
-PREAMBLE_SCRIPT="${PREAMBLE_SCRIPT:-$HOMEgfs/ush/preamble.sh}"
-if [ -f "${PREAMBLE_SCRIPT}" ]; then
-  source $PREAMBLE_SCRIPT
-fi
+source "$HOMEgfs/ush/preamble.sh"
 
 cd $DATA
 

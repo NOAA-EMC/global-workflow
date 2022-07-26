@@ -8,10 +8,7 @@
 #    X(1,1)=[0.25E,89.75S], X(nlon,nlat)=[359.75E,89.75N]
 #---------------------------------------------------------------------------
 
-PREAMBLE_SCRIPT="${PREAMBLE_SCRIPT:-$HOMEgfs/ush/preamble.sh}"
-if [ -f "${PREAMBLE_SCRIPT}" ]; then
-  source $PREAMBLE_SCRIPT
-fi
+source "$HOMEgfs/ush/preamble.sh"
 
 export CDATE=${CDATE:-"2016100300"}
 export GG=${master_grid:-"0p25deg"}         # 1deg 0p5deg 0p25deg 0p125deg

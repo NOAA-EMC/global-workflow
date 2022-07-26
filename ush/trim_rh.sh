@@ -3,10 +3,7 @@
 #This is scripts is used to trim RH vaule larger than 100.
 # Wen Meng 12/2017: First Version
 
-PREAMBLE_SCRIPT="${PREAMBLE_SCRIPT:-$HOMEgfs/ush/preamble.sh}"
-if [ -f "${PREAMBLE_SCRIPT}" ]; then
-  source $PREAMBLE_SCRIPT
-fi
+source "$HOMEgfs/ush/preamble.sh"
 
 f=$1
 

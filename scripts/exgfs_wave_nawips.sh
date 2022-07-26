@@ -11,10 +11,7 @@
 #  March-2020 Roberto.Padilla@noaa.gov                                   
 #####################################################################
 
-PREAMBLE_SCRIPT="${PREAMBLE_SCRIPT:-$HOMEgfs/ush/preamble.sh}"
-if [ -f "${PREAMBLE_SCRIPT}" ]; then
-  source $PREAMBLE_SCRIPT
-fi
+source "$HOMEgfs/ush/preamble.sh"
 
 #export grids=${grids:-'glo_30m at_10m ep_10m wc_10m ao_9km'} #Interpolated grids
 export grids=${grids:-'glo_10m gso_15m ao_9km'}  #Native grids

@@ -11,10 +11,7 @@
 # Wen Meng 10/2019: Use bilinear interpolation for LAND, It can trancate land-sea mask as 0 or 1.
 # Wen Meng 11/2019: Teak sea ice cover via land-sea mask.
 
-PREAMBLE_SCRIPT="${PREAMBLE_SCRIPT:-$HOMEgfs/ush/preamble.sh}"
-if [ -f "${PREAMBLE_SCRIPT}" ]; then
-  source $PREAMBLE_SCRIPT
-fi
+source "$HOMEgfs/ush/preamble.sh"
 
 export tmpfile=$1
 export fhr3=$2

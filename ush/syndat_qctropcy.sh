@@ -71,10 +71,7 @@
 #                (Default: not set)
 #   TIMEIT   - optional time and resource reporting (Default: not set)
 
-PREAMBLE_SCRIPT="${PREAMBLE_SCRIPT:-$HOMEgfs/ush/preamble.sh}"
-if [ -f "${PREAMBLE_SCRIPT}" ]; then
-  source $PREAMBLE_SCRIPT
-fi
+source "$HOMEgfs/ush/preamble.sh"
 
 ARCHSYND=${ARCHSYND:-$COMROOTp3/gfs/prod/syndat}
 HOMENHCp1=${HOMENHCp1:-/gpfs/?p1/nhc/save/guidance/storm-data/ncep}

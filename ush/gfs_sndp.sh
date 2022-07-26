@@ -7,10 +7,7 @@
 #   1) 2004-09-10       Steve Gilbert       First Implementation
 ################################################################
 
-PREAMBLE_SCRIPT="${PREAMBLE_SCRIPT:-$HOMEgfs/ush/preamble.sh}"
-if [ -f "${PREAMBLE_SCRIPT}" ]; then
-  source $PREAMBLE_SCRIPT
-fi
+source "$HOMEgfs/ush/preamble.sh"
 
   #  Create "collectives" consisting of groupings of the soundings
   #  into files designated by geographical region.   Each input

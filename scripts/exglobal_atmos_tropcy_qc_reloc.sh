@@ -10,10 +10,7 @@
 # echo "            Oct 2013 - Use main USH vars as part of minor pkg cleanup"
 ############################################################################
 
-PREAMBLE_SCRIPT="${PREAMBLE_SCRIPT:-$HOMEgfs/ush/preamble.sh}"
-if [ -f "${PREAMBLE_SCRIPT}" ]; then
-  source $PREAMBLE_SCRIPT
-fi
+source "$HOMEgfs/ush/preamble.sh"
 
 # Make sure we are in the $DATA directory
 cd $DATA

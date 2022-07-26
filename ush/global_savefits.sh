@@ -3,10 +3,7 @@
 ########################################################
 #  save fit and horiz files for all analysis cycles
 ########################################################
-PREAMBLE_SCRIPT="${PREAMBLE_SCRIPT:-$HOMEgfs/ush/preamble.sh}"
-if [ -f "${PREAMBLE_SCRIPT}" ]; then
-  source $PREAMBLE_SCRIPT
-fi
+source "$HOMEgfs/ush/preamble.sh"
 
 export FIT_DIR=${FIT_DIR:-$COMOUT/fits}
 export HORZ_DIR=${HORZ_DIR:-$COMOUT/horiz}
