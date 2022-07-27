@@ -58,7 +58,7 @@ echo
 echo "=============== START TO GENERATE QUARTER DEGREE GRIB1 FILES ==============="
 if [ $MKPGB4PRCP = "YES" -a $CDUMP = "gfs" ]; then
     if [ ! -d $ARCDIR ]; then mkdir $ARCDIR ; fi
-    nthreads_env=${OMP_NUM_THREADS:-1} # get threads set in env 
+    nthreads_env=${OMP_NUM_THREADS:-1} # get threads set in env
     export OMP_NUM_THREADS=1
     cd $COMIN
     fhmax=${vhr_rain:-$FHMAX_GFS}

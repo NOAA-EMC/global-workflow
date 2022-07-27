@@ -78,7 +78,7 @@ postamble() {
 	exit ${rc}
 }
 
-# Place the postable in a trap so it is always called no matter how the script exits
+# Place the postamble in a trap so it is always called no matter how the script exits
 trap "postamble ${_calling_script} ${start_time} \$?" EXIT
 
 # Turn on our settings
