@@ -10,10 +10,7 @@
 # echo "                    data on the CCS is properly protected."
 #####################################################################
 
-PREAMBLE_SCRIPT="${PREAMBLE_SCRIPT:-$HOMEgfs/ush/preamble.sh}"
-if [ -f "${PREAMBLE_SCRIPT}" ]; then
-  source $PREAMBLE_SCRIPT ${2}
-fi
+source "$HOMEgfs/ush/preamble.sh" "${2}"
 
 #### If EMC GFS PARA runs hourly file are not available, The ILPOST
 #### will set to 3 hour in EMC GFS PARA.

@@ -30,10 +30,7 @@
 #  1. Modify sea icea cover via land-sea mask.
 #-----------------------------------------------------------------------
 
-PREAMBLE_SCRIPT="${PREAMBLE_SCRIPT:-$HOMEgfs/ush/preamble.sh}"
-if [ -f "${PREAMBLE_SCRIPT}" ]; then
-  source $PREAMBLE_SCRIPT $FH
-fi
+source "$HOMEgfs/ush/preamble.sh" "$FH"
 
 export downset=${downset:-1}
 export DATA=${DATA:-/ptmpd2/$LOGNAME/test}
