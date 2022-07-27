@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-safe_copy() {
+nb_copy() {
     #
     # TODO - Extend this to take multiple arguments for file_in (like cp)
     #
@@ -8,7 +8,7 @@ safe_copy() {
     #   error.
     #
     # Syntax
-    #   safe_copy file_in file_out
+    #   nb_copy file_in file_out
     #
     #   Arguments
     #     file_in: the file to copy

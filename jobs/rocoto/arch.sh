@@ -65,8 +65,8 @@ cd $COMIN
 source "${HOMEgfs}/ush/file_utils.sh"
 
 [[ ! -d $ARCDIR ]] && mkdir -p $ARCDIR
-safe_copy ${APREFIX}gsistat $ARCDIR/gsistat.${CDUMP}.${CDATE}
-safe_copy ${APREFIX}pgrb2.1p00.anl $ARCDIR/pgbanl.${CDUMP}.${CDATE}.grib2
+nb_copy ${APREFIX}gsistat $ARCDIR/gsistat.${CDUMP}.${CDATE}
+nb_copy ${APREFIX}pgrb2.1p00.anl $ARCDIR/pgbanl.${CDUMP}.${CDATE}.grib2
 
 # Archive 1 degree forecast GRIB2 files for verification
 if [ $CDUMP = "gfs" ]; then
@@ -75,7 +75,7 @@ if [ $CDUMP = "gfs" ]; then
     while [ $fhr -le $fhmax ]; do
         fhr2=$(printf %02i $fhr)
         fhr3=$(printf %03i $fhr)
-        safe_copy ${APREFIX}pgrb2.1p00.f$fhr3 $ARCDIR/pgbf${fhr2}.${CDUMP}.${CDATE}.grib2
+        nb_copy ${APREFIX}pgrb2.1p00.f$fhr3 $ARCDIR/pgbf${fhr2}.${CDUMP}.${CDATE}.grib2
         fhr=$((10#$fhr + 10#$FHOUT_GFS ))
     done
 fi
@@ -84,7 +84,7 @@ if [ $CDUMP = "gdas" ]; then
     for fhr in $flist; do
         fname=${APREFIX}pgrb2.1p00.f${fhr}
         fhr2=$(printf %02i $((10#$fhr)))
-        safe_copy $fname $ARCDIR/pgbf${fhr2}.${CDUMP}.${CDATE}.grib2
+        nb_copy $fname $ARCDIR/pgbf${fhr2}.${CDUMP}.${CDATE}.grib2
     done
 fi
 
@@ -101,10 +101,10 @@ if [ $CDUMP = "gdas" -a -s gdas.t${cyc}z.cyclone.trackatcfunix ]; then
 fi
 
 if [ $CDUMP = "gfs" ]; then
-    safe_copy storms.gfso.atcf_gen.$CDATE      ${ARCDIR}/.
-    safe_copy storms.gfso.atcf_gen.altg.$CDATE ${ARCDIR}/.
-    safe_copy trak.gfso.atcfunix.$CDATE        ${ARCDIR}/.
-    safe_copy trak.gfso.atcfunix.altg.$CDATE   ${ARCDIR}/.
+    nb_copy storms.gfso.atcf_gen.$CDATE      ${ARCDIR}/.
+    nb_copy storms.gfso.atcf_gen.altg.$CDATE ${ARCDIR}/.
+    nb_copy trak.gfso.atcfunix.$CDATE        ${ARCDIR}/.
+    nb_copy trak.gfso.atcfunix.altg.$CDATE   ${ARCDIR}/.
 
     mkdir -p ${ARCDIR}/tracker.$CDATE/$CDUMP
     blist="epac natl"
@@ -127,8 +127,8 @@ if [ $CDUMP = "gfs" -a $FITSARC = "YES" ]; then
 	fhr3=$(printf %03i $fhr)
 	sfcfile=${prefix}.sfcf${fhr3}${ASUFFIX}
 	sigfile=${prefix}.atmf${fhr3}${ASUFFIX}
-	safe_copy $sfcfile $VFYARC/${CDUMP}.$PDY/$cyc/
-	safe_copy $sigfile $VFYARC/${CDUMP}.$PDY/$cyc/
+	nb_copy $sfcfile $VFYARC/${CDUMP}.$PDY/$cyc/
+	nb_copy $sigfile $VFYARC/${CDUMP}.$PDY/$cyc/
 	(( fhr = 10#$fhr + 6 ))
     done
 fi
