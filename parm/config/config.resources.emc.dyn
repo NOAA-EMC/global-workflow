@@ -155,6 +155,8 @@ elif [ $step = "anal" ]; then
 
 elif [ $step = "analcalc" ]; then
 
+    if [[ "$machine" = "WCOSS2" ]]; then export MPICH_MPIIO_HINTS="*:romio_cb_write=disable" ; fi
+
     export wtime_analcalc="00:10:00"
     export npe_analcalc=127
     export ntasks=$npe_analcalc
