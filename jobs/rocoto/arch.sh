@@ -59,32 +59,10 @@ PDY_MOS=$(echo $CDATE_MOS | cut -c1-8)
 # Archive online for verification and diagnostics
 ###############################################################
 
-safe_copy() {
-    #
-    # Copy a file if it exists, print a warning otherwise but don't
-    #   error. Syntax is the same as cp.
-    #
-    # Syntax
-    #   safe_copy file_in file_out
-    #
-    #   Arguments
-    #     file_in: the file to copy
-    #     file_out: the destination of the copy
-    #
-    #   Environment variables
-    #     NCP: Command to use to copy
-    #
-    _file_in=$1
-    _file_out=$2
-    if [[ -f ${_file_in} ]]; then
-        $NCP ${_file_in} ${_file_out}
-    else
-        echo "WARNING: No file ${_file_in} found in $(pwd)"
-    fi
-}
-
 COMIN=${COMINatmos:-"$ROTDIR/$CDUMP.$PDY/$cyc/atmos"}
 cd $COMIN
+
+source "${HOMEgfs}/ush/file_utils.sh"
 
 [[ ! -d $ARCDIR ]] && mkdir -p $ARCDIR
 safe_copy ${APREFIX}gsistat $ARCDIR/gsistat.${CDUMP}.${CDATE}
