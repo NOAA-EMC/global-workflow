@@ -54,7 +54,7 @@ fi
 ###############################################################
 
 ###############################################################
-# For running real-time parallels on WCOSS_C, execute tropcy_qc and
+# For running real-time parallels, execute tropcy_qc and
 # copy files from operational syndata directory to a local directory.
 # Otherwise, copy existing tcvital data from globaldump.
 

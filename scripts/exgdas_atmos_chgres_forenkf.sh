@@ -14,7 +14,6 @@
 #
 # Attributes:
 #   Language: POSIX shell
-#   Machine: WCOSS-Dell / Hera
 #
 ################################################################################
 
@@ -169,7 +168,7 @@ EOF
          export pgm=$CHGRESNCEXEC
          . prep_step
 
-	 $APRUN_CHGRES $CHGRESNCEXEC chgres_nc_gauss0$FHR.nml
+         $APRUN_CHGRES $CHGRESNCEXEC chgres_nc_gauss0$FHR.nml
          export err=$?; err_chk
      fi
    done

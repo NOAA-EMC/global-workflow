@@ -1,5 +1,5 @@
 #! /usr/bin/env bash
-                                                          
+
 ################################################################################
 #
 # UNIX Script Documentation Block
@@ -17,11 +17,10 @@
 #
 # Attributes:
 #   Language: Bourne-again (BASH) shell
-#   Machine: WCOSS-DELL-P3
 #
-# Requirements:                                                             
-# - wgrib2 with IPOLATES library                                            
-#                                                                           
+# Requirements:
+# - wgrib2 with IPOLATES library
+#
 ################################################################################
 # --------------------------------------------------------------------------- #
 # 0.  Preparations
@@ -32,7 +31,7 @@ source "$HOMEgfs/ush/preamble.sh"
 
   cd $GRDIDATA
 
-  grdID=$1  
+  grdID=$1
   ymdh=$2
   dt=$3
   nst=$4
@@ -84,18 +83,18 @@ source "$HOMEgfs/ush/preamble.sh"
 # 0.c Links to files
 
   rm -f ${DATA}/output_${ymdh}0000/out_grd.$grdID
-  
+
   if [ ! -f ${DATA}/${grdID}_interp.inp.tmpl ]; then
     cp $PARMwave/${grdID}_interp.inp.tmpl ${DATA}
   fi
-  ln -sf ${DATA}/${grdID}_interp.inp.tmpl . 
+  ln -sf ${DATA}/${grdID}_interp.inp.tmpl .
 
   for ID in $waveGRD
   do
     ln -sf ${DATA}/output_${ymdh}0000/out_grd.$ID .
   done
 
-  for ID in $waveGRD $grdID 
+  for ID in $waveGRD $grdID
   do
     ln -sf ${DATA}/mod_def.$ID .
   done
@@ -151,7 +150,7 @@ source "$HOMEgfs/ush/preamble.sh"
     cp -f ./WHTGRIDINT.bin ${DATA}/WHTGRIDINT.bin.${grdID}
     cp -f ./WHTGRIDINT.bin ${FIXwave}/WHTGRIDINT.bin.${grdID}
   fi
- 
+
 
   if [ "$err" != '0' ]
   then
@@ -191,7 +190,7 @@ source "$HOMEgfs/ush/preamble.sh"
 #
 
 #    fi
-  fi 
+  fi
 
 # --------------------------------------------------------------------------- #
 # 2.  Clean up the directory

@@ -91,15 +91,11 @@ fi
 
 $WGRIB2 $PGBOUT2 | grep -F -f $paramlist | $WGRIB2 -i -grib  tmpfile1_$fhr3 $PGBOUT2
 export err=$?; err_chk
-#if [ $machine = WCOSS -o $machine = WCOSS_C -a $downset = 2 ]; then
 if [ $downset = 2 ]; then
   $WGRIB2 $PGBOUT2 | grep -F -f $paramlistb | $WGRIB2 -i -grib  tmpfile2_$fhr3 $PGBOUT2
   export err=$?; err_chk
 fi
 
-#-----------------------------------------------------
-#-----------------------------------------------------
-#if [ $machine = WCOSS -o $machine = WCOSS_C -o $machine = WCOSS_DELL_P3 ]; then
 #-----------------------------------------------------
 #-----------------------------------------------------
 export nset=1
@@ -182,14 +178,14 @@ while [ $nset -le $totalset ]; do
   export MP_PGMMODEL=mpmd
   export MP_CMDFILE=$DATA/poescript
   launcher=${APRUN_DWN:-"aprun -j 1 -n 24 -N 24 -d 1 cfp"}
-  if [ $machine = WCOSS_C -o $machine = WCOSS_DELL_P3 -o $machine = WCOSS2 ] ; then
+  if [ $machine = WCOSS2 ] ; then
     $launcher $MP_CMDFILE
   elif [ $machine = HERA -o $machine = ORION -o $machine = JET -o $machine = S4 ] ; then
     if [ -s $DATA/poescript_srun ]; then rm -f $DATA/poescript_srun; fi
     touch $DATA/poescript_srun
     nm=0
     cat $DATA/poescript | while read line; do
-      echo "$nm $line" >> $DATA/poescript_srun 
+      echo "$nm $line" >> $DATA/poescript_srun
       nm=$((nm+1))
     done
     nm=$(wc -l < $DATA/poescript_srun)
@@ -231,8 +227,8 @@ while [ $nset -le $totalset ]; do
   # $WGRIB2 land.grb -set_grib_type same -new_grid_interpolation bilinear -new_grid_winds earth -new_grid $grid0p25 newland.grb
   # $WGRIB2 newland.grb -set_byte 4 11 218 -grib newnewland.grb
   # cat ./newnewland.grb >> pgb2file_${fhr3}_0p25
-  # $CNVGRIB -g21 newnewland.grb newnewland.grb1 
-  # cat ./newnewland.grb1 >> pgbfile_${fhr3}_0p25 
+  # $CNVGRIB -g21 newnewland.grb newnewland.grb1
+  # cat ./newnewland.grb1 >> pgbfile_${fhr3}_0p25
   ##0p5 degree
   # rm -f newland.grb newnewland.grb newnewland.grb1
   # $WGRIB2 land.grb -set_grib_type same -new_grid_interpolation bilinear -new_grid_winds earth -new_grid $grid0p5 newland.grb
@@ -256,7 +252,7 @@ while [ $nset -le $totalset ]; do
         cp pgb2file_${fhr3}_1p0   $COMOUT/${PREFIX}pgrb2.1p00.anl
         $WGRIB2 -s pgb2file_${fhr3}_0p5  > $COMOUT/${PREFIX}pgrb2.0p50.anl.idx
         $WGRIB2 -s pgb2file_${fhr3}_1p0  > $COMOUT/${PREFIX}pgrb2.1p00.anl.idx
-        if [ "$PGB1F" = 'YES' ]; then 
+        if [ "$PGB1F" = 'YES' ]; then
           cp pgbfile_${fhr3}_1p0    $COMOUT/${PREFIX}pgrb.1p00.anl
           $GRBINDEX $COMOUT/${PREFIX}pgrb.1p00.anl $COMOUT/${PREFIX}pgrb.1p00.anl.idx
         fi

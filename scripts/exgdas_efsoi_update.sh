@@ -15,7 +15,6 @@
 #
 # Attributes:
 #   Language: POSIX shell
-#   Machine: WCOSS-Cray/Theia
 #
 ################################################################################
 
@@ -284,7 +283,7 @@ cat > enkf.nml << EOFnml
    paranc=$paranc,write_fv3_incr=$write_fv3_incr,
    efsoi_cycling=.true.,
    $WRITE_INCR_ZERO
-   $NAM_ENKF  
+   $NAM_ENKF
 /
 &satobs_enkf
    sattypes_rad(1) = 'amsua_n15',     dsis(1) = 'amsua_n15',
@@ -404,7 +403,7 @@ export ERR=$rc
 export err=$ERR
 $ERRSCRIPT || exit 2
 
-# save for EFSOI task 
+# save for EFSOI task
 $NCP $COMOUT_ANL_ENS/$GBIASe $COMOUT_ANL_ENSFSOI
 # save for EFSOI localization advection
 $NCP $ATMANL_GSI_ENSRES $COMOUT_ANL_ENSFSOI

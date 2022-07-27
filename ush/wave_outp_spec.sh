@@ -1,5 +1,5 @@
 #! /usr/bin/env bash
-                                                                  
+
 ################################################################################
 #
 # UNIX Script Documentation Block
@@ -17,7 +17,6 @@
 #
 # Attributes:
 #   Language: Bourne-again (BASH) shell
-#   Machine: WCOSS-DELL-P3
 #
 ################################################################################
 # --------------------------------------------------------------------------- #
@@ -26,7 +25,6 @@
 source "$HOMEgfs/ush/preamble.sh"
 
 # 0.a Basic modes of operation
-   
   bloc=$1
   ymdh=$2
   specdir=$3
