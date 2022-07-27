@@ -20,7 +20,6 @@
 #
 # Attributes:
 #   Language: Bourne-again (BASH) shell
-#   Machine: WCOSS-DELL-P3
 #
 ###############################################################################
 #
@@ -54,7 +53,7 @@
 
 # Script will run only if pre-defined NTASKS
 #     The actual work is distributed over these tasks.
-  if [ -z ${NTASKS} ] 
+  if [ -z ${NTASKS} ]
   then
     echo "FATAL ERROR: requires NTASKS to be set "
     err=1; export err;${errchk}
@@ -138,7 +137,7 @@
     fi
   done
 
-# 1.a.1 Execute parallel or serialpoe 
+# 1.a.1 Execute parallel or serialpoe
 
   if [ "$nmoddef" -gt '0' ]
   then
@@ -161,7 +160,7 @@
     echo '   ------------------------------------'
     echo ' '
     [[ "$LOUD" = YES ]] && set -x
-  
+
     if [ "$NTASKS" -gt '1' ]
     then
       if [ ${CFP_MP:-"NO"} = "YES" ]; then
@@ -174,7 +173,7 @@
       ./cmdfile
       exit=$?
     fi
-  
+
     if [ "$exit" != '0' ]
     then
       set +x
@@ -186,8 +185,8 @@
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
     fi
-  
-  fi 
+
+  fi
 
 # 1.a.3 File check
 
@@ -200,7 +199,7 @@
       echo " mod_def.$grdID succesfully created/copied "
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
-    else 
+    else
       set +x
       echo ' '
       echo '********************************************** '
@@ -215,7 +214,7 @@
   done
 
 # --------------------------------------------------------------------------- #
-# 2.  Ending 
+# 2.  Ending
 
   set +x
   echo ' '

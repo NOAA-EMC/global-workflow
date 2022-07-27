@@ -53,7 +53,7 @@ module load hdf5/1.8.14
 RWG=/scratch4/NCEPDEV/nems/noscrub/emc.nemspara/soft/esmf/7.1.0r/bin/ESMF_RegridWeightGen
 
 #------------------------------------------------------------------------
-# Path to the 'mosaic' and 'grid' files for each cubed-sphere 
+# Path to the 'mosaic' and 'grid' files for each cubed-sphere
 # resolution.
 #------------------------------------------------------------------------
 
@@ -79,46 +79,46 @@ case $CRES in
   "C48" )
     LONB="192"
     LATB="94"
-    LATB2="96" 
+    LATB2="96"
     ;;
   "C96" )
     LONB="384"
     LATB="192"
-    LATB2="194" 
+    LATB2="194"
     ;;
   "C128" )
     LONB="512"
     LATB="256"
-    LATB2="258" 
+    LATB2="258"
     ;;
   "C192" )
     LONB="768"
     LATB="384"
-    LATB2="386" 
+    LATB2="386"
     ;;
   "C384" )
     LONB="1536"
     LATB="768"
-    LATB2="770" 
+    LATB2="770"
     ;;
   "C768" )
     LONB="3072"
     LATB="1536"
-    LATB2="1538" 
+    LATB2="1538"
     ;;
   "C1152" )
     LONB="4608"
     LATB="2304"
-    LATB2="2306" 
+    LATB2="2306"
     ;;
   "C3072" )
     LONB="12288"
     LATB="6144"
-    LATB2="6146" 
+    LATB2="6146"
     ;;
   * )
     echo "GRID NOT SUPPORTED"
-    exit 3 
+    exit 3
     ;;
 esac
 

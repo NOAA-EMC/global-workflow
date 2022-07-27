@@ -1,22 +1,21 @@
 #!/bin/bash
-#                                                                       
+#
 ################################################################################
 #
 # UNIX Script Documentation Block
-# Script name:         wave_outp_cat.sh 
-# Script description:  Gathers ASCII data files for all fhr for each buoy 
+# Script name:         wave_outp_cat.sh
+# Script description:  Gathers ASCII data files for all fhr for each buoy
 #
 # Author:   Jessica Meixner      Org: NCEP/EMC      Date: 2020-08-27
-# Abstract: Cats spec files from each fhr into one for each buoy 
+# Abstract: Cats spec files from each fhr into one for each buoy
 #
 # Script history log:
-# 2020-08-27 Jessica Meixner creation of script 
+# 2020-08-27 Jessica Meixner creation of script
 #
 # $Id$
 #
 # Attributes:
 #   Language: Bourne-again (BASH) shell
-#   Machine: WCOSS-DELL-P3
 #
 ################################################################################
 # --------------------------------------------------------------------------- #
@@ -30,7 +29,7 @@
   # Use LOUD variable to turn on/off trace.  Defaults to YES (on).
   export LOUD=${LOUD:-YES}; [[ $LOUD = yes ]] && export LOUD=YES
   [[ "$LOUD" != YES ]] && set +x
-   
+
   bloc=$1
   MAXHOUR=$2
   specdir=$3
@@ -69,7 +68,7 @@
 
 
 # --------------------------------------------------------------------------- #
-# 1. Cat for a buoy all fhr into one file  
+# 1. Cat for a buoy all fhr into one file
 
   set +x
   echo "   Generate input file for ww3_outp."
@@ -79,7 +78,7 @@
   then
     outfile=${STA_DIR}/${specdir}/$WAV_MOD_TAG.$buoy.bull
     coutfile=${STA_DIR}/c${specdir}/$WAV_MOD_TAG.$buoy.cbull
-    rm outfile coutfile 
+    rm outfile coutfile
   else
     outfile=${STA_DIR}/${specdir}/$WAV_MOD_TAG.$buoy.spec
     rm outfile
@@ -94,9 +93,9 @@
     then
       outfilefhr=${STA_DIR}/${specdir}fhr/$WAV_MOD_TAG.${ymdh}.$buoy.bull
       coutfilefhr=${STA_DIR}/c${specdir}fhr/$WAV_MOD_TAG.${ymdh}.$buoy.cbull
-    else 
+    else
       outfilefhr=${STA_DIR}/${specdir}fhr/$WAV_MOD_TAG.${ymdh}.$buoy.spec
-    fi 
+    fi
 
     if [ -f $outfilefhr ]
     then
@@ -105,7 +104,7 @@
         cat $outfilefhr >> ${STA_DIR}/${specdir}/$WAV_MOD_TAG.$buoy.bull
         cat $coutfilefhr >> ${STA_DIR}/c${specdir}/$WAV_MOD_TAG.$buoy.cbull
         rm $outfilefhr $coutfilefhr
-      else 
+      else
         cat $outfilefhr >> ${STA_DIR}/${specdir}/$WAV_MOD_TAG.$buoy.spec
         #rm $outfilefhr
       fi

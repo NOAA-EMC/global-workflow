@@ -11,13 +11,13 @@
 #           It executes several scripts forpreparing and creating output data
 #           as follows:
 #
-#  wave_outp_spec.sh         : generates spectral data for output locations                                      
-#  wave_outp_bull.sh         : generates bulletins for output locations      
+#  wave_outp_spec.sh         : generates spectral data for output locations
+#  wave_outp_bull.sh         : generates bulletins for output locations
 #  wave_outp_cat.sh          : cats the by hour into the single output file
-#  wave_tar.sh               : tars the spectral and bulletin multiple files  
+#  wave_tar.sh               : tars the spectral and bulletin multiple files
 #
 # Script history log:
-# 2019-12-06  J-Henrique Alves: First Version adapted from HTolman post.sh 2007 
+# 2019-12-06  J-Henrique Alves: First Version adapted from HTolman post.sh 2007
 # 2020-06-10  J-Henrique Alves: Porting to R&D machine Hera
 # 2020-07-30  Jessica Meixner: Points only - no gridded data
 # 2020-09-29  Jessica Meixner: optimized by changing loop structures
@@ -26,7 +26,6 @@
 #
 # Attributes:
 #   Language: Bourne-again (Bash) Shell
-#   Machine: WCOSS-DELL-P3
 #
 ###############################################################################
 #
@@ -61,7 +60,7 @@
 
 # Script will run only if pre-defined NTASKS
 #     The actual work is distributed over these tasks.
-  if [ -z ${NTASKS} ]        
+  if [ -z ${NTASKS} ]
   then
     echo "FATAL ERROR: requires NTASKS to be set "
     err=1; export err;${errchk}
@@ -77,7 +76,7 @@
 
   export STA_DIR=$DATA/station_ascii_files
   if [ -d $STA_DIR ]
-  then 
+  then
     rm -rf ${STA_DIR}
   fi
   mkdir -p ${STA_DIR}
@@ -107,7 +106,7 @@
   echo '-----------------------'
   [[ "$LOUD" = YES ]] && set -x
 
-# 1.a Model definition files and output files (set up using poe) 
+# 1.a Model definition files and output files (set up using poe)
 
 # 1.a.1 Set up the parallel command tasks
 
@@ -150,7 +149,7 @@
       [[ "$LOUD" = YES ]] && set -x
     fi
   done
- 
+
 # 1.c Output locations file
 
   rm -f buoy.loc
@@ -246,28 +245,28 @@
         -e "s/ITYPE/0/g" \
         -e "s/FORMAT/F/g" \
                                ww3_outp_spec.inp.tmpl > ww3_outp.inp
-   
+
     ln -s mod_def.$waveuoutpGRD mod_def.ww3
     YMD=$(echo $CDATE | cut -c1-8)
     HMS="$(echo $CDATE | cut -c9-10)0000"
     if [ -f $COMIN/rundata/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS} ]
     then
-      ln -s $COMIN/rundata/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS} ./out_pnt.${waveuoutpGRD}   
+      ln -s $COMIN/rundata/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS} ./out_pnt.${waveuoutpGRD}
     else
       echo '*************************************************** '
       echo " FATAL ERROR : NO RAW POINT OUTPUT FILE out_pnt.${waveuoutpGRD}.${YMD}.${HMS} "
       echo '*************************************************** '
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
-      echo "$WAV_MOD_TAG post $waveuoutpGRD $CDATE $cycle : field output missing." 
+      echo "$WAV_MOD_TAG post $waveuoutpGRD $CDATE $cycle : field output missing."
       err=4; export err;${errchk}
     fi
-    
+
     rm -f buoy_tmp.loc buoy_log.ww3 ww3_oup.inp
     ln -fs ./out_pnt.${waveuoutpGRD} ./out_pnt.ww3
     ln -fs ./mod_def.${waveuoutpGRD} ./mod_def.ww3
     export pgm=ww3_outp;. prep_step
-    $EXECwave/ww3_outp > buoy_lst.loc 2>&1 
+    $EXECwave/ww3_outp > buoy_lst.loc 2>&1
     export err=$?;err_chk
 
 
@@ -326,7 +325,7 @@
   set +x
   echo ' '
   echo "   Input files read and processed at : $(date)"
-  echo ' ' 
+  echo ' '
   echo '   Data summary : '
   echo '   ---------------------------------------------'
   echo "      Sufficient data for spectral files        : $DOSPC_WAV ($Nb points)"
@@ -336,7 +335,7 @@
   [[ "$LOUD" = YES ]] && set -x
 
 # --------------------------------------------------------------------------- #
-# 2. Make files for processing boundary points 
+# 2. Make files for processing boundary points
 #
 # 2.a Command file set-up
 
@@ -348,10 +347,10 @@
   touch cmdfile
   chmod 744 cmdfile
 
-# 1.a.2 Loop over forecast time to generate post files 
+# 1.a.2 Loop over forecast time to generate post files
   fhr=$FHMIN_WAV
   while [ $fhr -le $FHMAX_WAV_PNT ]; do
-    
+
     echo "   Creating the wave point scripts at : $(date)"
     ymdh=$($NDATE $fhr $CDATE)
     YMD=$(echo $ymdh | cut -c1-8)
@@ -360,7 +359,7 @@
     FH3=$(printf %03i $fhr)
 
     rm -f tmpcmdfile.${FH3}
-    touch tmpcmdfile.${FH3} 
+    touch tmpcmdfile.${FH3}
     mkdir output_$YMDHMS
     cd output_$YMDHMS
 
@@ -371,9 +370,9 @@
 
     pfile=$COMIN/rundata/${WAV_MOD_TAG}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS}
     if [ -f  ${pfile} ]
-    then 
+    then
       ln -fs ${pfile} ./out_pnt.${waveuoutpGRD}
-    else 
+    else
       echo " FATAL ERROR : NO RAW POINT OUTPUT FILE out_pnt.$waveuoutpGRD.${YMD}.${HMS} "
       echo ' '
       [[ "$LOUD" = YES ]] && set -x
@@ -382,7 +381,7 @@
     fi
 
     cd $DATA
-    
+
     if [ "$DOSPC_WAV" = 'YES' ]
     then
       export dtspec=3600.
@@ -443,18 +442,18 @@
     nlines=$( wc -l cmdfile | awk '{print $1}' )
     while [ $iline -le $nlines ]; do
       line=$( sed -n ''$iline'p' cmdfile )
-      if [ -z "$line" ]; then  
+      if [ -z "$line" ]; then
         break
       else
-        if [ "$ifirst" = 'yes' ]; then 
-          echo "#!/bin/sh" > cmdmfile.$nfile 
+        if [ "$ifirst" = 'yes' ]; then
+          echo "#!/bin/sh" > cmdmfile.$nfile
           echo "$nfile cmdmfile.$nfile" >> cmdmprog
           chmod 744 cmdmfile.$nfile
         fi
         echo $line >> cmdmfile.$nfile
         nfile=$(( nfile + 1 ))
         if [ $nfile -eq $NTASKS ]; then
-          nfile=0 
+          nfile=0
           ifirst='no'
         fi
         iline=$(( iline + 1 ))
@@ -482,7 +481,7 @@
     exit=$?
   else
     chmod 744 cmdfile
-    ./cmdfile 
+    ./cmdfile
     exit=$?
   fi
 
@@ -500,7 +499,7 @@
     exit $err
   fi
 
-# 2.b Loop over each buoy to cat the final buoy file for all fhr 
+# 2.b Loop over each buoy to cat the final buoy file for all fhr
 
   cd $DATA
 
