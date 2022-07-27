@@ -335,14 +335,13 @@ def get_resources(machine, cfg, task, reservation, cdump='gdas'):
             if task in ['arch', 'earc', 'getic']:
                   natstr = "-R 'affinity[core(1)]'"
 
-        if machine in ['WCOSS2'] and task not in ['arch', 'earc', 'getic']:
-            natstr = "-l place=vscatter"
-            if memory is None:
-               natstr += ":exclhost"
-            natstr += ",debug=true"
-
-        if machine in ['WCOSS2'] and task in ['arch', 'earc', 'getic']:
+        if machine in ['WCOSS2']:
             natstr = "-l debug=true"
+
+            if task not in ['arch', 'earc', 'getic']:
+               natstr += ",place=vscatter"
+               if memory is None:
+                  natstr += ":exclhost"
 
     elif machine in ['WCOSS']:
         resstr = f'<cores>{tasks}</cores>'
