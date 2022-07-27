@@ -60,11 +60,6 @@ fi
   cp fluxfile_${fhr3}_1p00  $COMOUT/${PREFIX}flux.1p00.f${fhr3}
 
 #---------------------------------------------------------------
-POSTAMBLE_SCRIPT="${POSTAMBLE_SCRIPT:-$HOMEgfs/ush/postamble.sh}"
-if [ -f "${POSTAMBLE_SCRIPT}" ]; then
-  source $POSTAMBLE_SCRIPT
-fi
-#---------------------------------------------------------------
 
 
 exit 0
