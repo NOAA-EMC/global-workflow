@@ -1,0 +1,17 @@
+name: linters
+on:
+  pull_request:
+    types: [opened, reopened, edited]
+defaults:
+  run:
+    shell: bash -o pipefail {0}
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v1
+      - name: Run Shellcheck
+        uses: azohra/shell-linter@latest
+        with:
+          exclude-paths: "sorc/*.fd"
