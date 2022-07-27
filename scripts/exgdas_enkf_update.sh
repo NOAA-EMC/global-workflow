@@ -13,7 +13,6 @@
 #
 # Attributes:
 #   Language: POSIX shell
-#   Machine: WCOSS-Cray/Theia
 #
 ################################################################################
 

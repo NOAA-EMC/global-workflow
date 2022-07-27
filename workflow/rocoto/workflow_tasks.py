@@ -438,7 +438,7 @@ class Tasks:
         dep_dict = {'type': 'cycleexist', 'offset': '-06:00:00'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
-   
+
         resources = self.get_resource('atmanalpost')
         task = create_wf_task('atmanalpost', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
 
@@ -1032,7 +1032,7 @@ class Tasks:
 
         resources = self.get_resource('atmensanalpost')
         task = create_wf_task('atmensanalpost', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
-   
+
         return task
 
     def ecen(self):
@@ -1235,7 +1235,7 @@ class Tasks:
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump}fcst'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}efmn'}
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}efcs01'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 

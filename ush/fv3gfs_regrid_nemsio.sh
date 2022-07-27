@@ -17,7 +17,6 @@
 #
 # Attributes:
 #   Language: Portable Operating System Interface (POSIX) Shell
-#   Machine: WCOSS-CRAY, Theia
 ################################################################################
 
 #  Set environment.
