@@ -11,12 +11,12 @@ TROPP            'Pa'    Y       N                  -            0.0      1.0   
 DU_SRC            NA  N Y - none none du_src     ExtData/Dust/gocart.dust_source.v5a.x1152_y721.nc
 
 # FENGSHA input files. Note: regridding should be N or E - Use files with _FillValue != NaN 
-DU_CLAY           '1'  Y E           -           none none clayfrac    ExtData/Dust/FENGSHA_SOILGRIDS2019_GEFSv12_v1.2.nc
-DU_SAND           '1'  Y E           -           none none sandfrac    ExtData/Dust/FENGSHA_SOILGRIDS2019_GEFSv12_v1.2.nc
+DU_CLAY           '1'  Y E           -           none none clayfrac    ExtData/Dust/FENGSHA_p81_10km_inputs.nc
+DU_SAND           '1'  Y E           -           none none sandfrac    ExtData/Dust/FENGSHA_p81_10km_inputs.nc
 DU_SILT           '1'  Y E           -           none none siltfrac    /dev/null
 DU_SSM            '1'  Y E           -           none none ssm         /dev/null:1.0
-DU_RDRAG          '1'  Y E %y4-%m2-%d2t12:00:00  none none albedo_drag ExtData/Dust/FENGSHA_Albedo_drag_v1.nc
-DU_UTHRES         '1'  Y E           -           none none uthres      ExtData/Dust/randomforestensemble_uthres.nc
+DU_RDRAG          '1'  Y E %y4-%m2-%d2t12:00:00  none none albedo_drag ExtData/Dust/FENGSHA_p81_10km_inputs.nc
+DU_UTHRES         '1'  Y E           -           none none uthres      ExtData/Dust/FENGSHA_p81_10km_inputs.nc
 
 #====== Sulfate Sources =================================================
 # Anthropogenic (BF & FF) emissions -- allowed to input as two layers
