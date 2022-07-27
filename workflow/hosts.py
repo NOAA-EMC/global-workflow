@@ -24,7 +24,7 @@ class Host:
     """
 
     SUPPORTED_HOSTS = ['HERA', 'ORION', 'JET',
-                       'WCOSS_DELL_P3', 'WCOSS2']
+                       'WCOSS2']
 
     def __init__(self, host=None):
 
@@ -48,10 +48,6 @@ class Host:
             machine = 'ORION'
         elif os.path.exists('/lfs4/HFIP'):
             machine = 'JET'
-        elif os.path.exists('/gpfs') and os.path.exists('/etc/SuSE-release'):
-            machine = 'WCOSS_C'
-        elif os.path.exists('/gpfs/dell2'):
-            machine = 'WCOSS_DELL_P3'
         elif os.path.exists('/lfs/f1'):
             machine = 'WCOSS2'
 

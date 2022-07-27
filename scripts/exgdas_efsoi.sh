@@ -13,7 +13,6 @@
 #
 # Attributes:
 #   Language: POSIX shell
-#   Machine: Hera
 #
 ################################################################################
 
@@ -154,7 +153,7 @@ $NLN $COMIN_GES_ENS/${GPREFIX}atmf006.ensmean${GSUFFIX} sfg_${CDATE}_fhr03_ensme
 # The following deals with different files with the same local name (assuming
 # a 24hr EFSOI forecast):
 # both are hybrid analyses from gdas - one from CDATE saved during the
-# corresponding GDAS cycle in the efsoigdas tree to be used in 
+# corresponding GDAS cycle in the efsoigdas tree to be used in
 # the localization advection in EFSOI, the other from VDATE to be used
 # for verification.
 
