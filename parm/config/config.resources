@@ -570,7 +570,6 @@ elif [ $step = "efsoi" ]; then
     fi
     export npe_node_efsoi=$(echo "$npe_node_max / $nth_efsoi" | bc)
 
-
 elif [ $step = "ecen" ]; then
 
     export wtime_ecen="00:10:00"
