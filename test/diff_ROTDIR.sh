@@ -30,9 +30,9 @@
 
 set -eu
 
-function usage() {
+usage() {
 	#
-	# Print usage statement and exit
+	# Print usage statement
 	#
 	echo <<- 'EOF'
 		Differences relevant output files in two different experiment ROTDIRs.
@@ -62,32 +62,6 @@ function usage() {
 		    -h:             print usage message and exit
 	EOF
 }
-
-
-function basename_list() {
-	#
-	# Expand a list of relative paths by prepending a path
-	#
-	# Syntax:
-	#     basename_list base list_in
-	#
-	# Arguments:
-	#     base:    Common root directory of all paths in list
-	#     list_in: List of paths relative to $base/
-	#
-	# Returns:
-	#     List of paths constructed by prepending $base to each 
-	#       item in $list_in
-	#
-	base="${1}"
-	list_in="${2}"
-	list=""
-	for file_in in ${list_in}; do
-		list="$list ${base}$(basename $file_in)"
-	done
-	echo $list
-}
-
 
 while getopts ":c:h" option; do
 	case "${option}" in
@@ -125,17 +99,14 @@ temp_file=".diff.nc"
 
 # Contains a bunch of NetCDF Operator shortcuts (will load nco module)
 source ./netcdf_op_functions.sh
+source ./test_utils.sh
 
 coord_file="${coord_file:-./coordinates.lst}"
-
-module load wgrib2/2.0.8
-
-
 
 ## Text files
 files=""
 files="${files} atmos/input.nml" # This file will be different because of the fix paths
-files="${files} $(basename_list 'atmos/' "$dirA/atmos/storms.* $dirA/atmos/trak.*")"
+files="${files} $(basename_list 'atmos/' "$dirA/atmos/storms.*" "$dirA/atmos/trak.*")"
 if [[ -d $dirA/ice ]]; then
 	files="${files} ice/ice_in"
 fi
@@ -154,13 +125,16 @@ for file in $files; do
 done
 
 ## GRiB files
+
+module load wgrib2/2.0.8
+
 files=""
-files="${files} $(basename_list 'atmos/' "$dirA/atmos/*grb2* $dirA/atmos/*.flux.*")"
+files="${files} $(basename_list 'atmos/' $dirA/atmos/*grb2* $dirA/atmos/*.flux.*)"
 if [[ -d $dirA/wave ]]; then
-	files="${files} $(basename_list 'wave/gridded/' "$dirA/wave/gridded/*.grib2")"
+	files="${files} $(basename_list 'wave/gridded/' $dirA/wave/gridded/*.grib2)"
 fi
 if [[ -d $dirA/ocean ]]; then
-	files="${files} $(basename_list 'ocean/' "$dirA/ocean/*grb2")"
+	files="${files} $(basename_list 'ocean/' $dirA/ocean/*grb2)"
 fi
 
 for file in $files; do
@@ -172,12 +146,12 @@ done
 
 ## NetCDF Files
 files=""
-files="${files} $(basename_list 'atmos/' "$dirA/atmos/*.nc")"
+files="${files} $(basename_list 'atmos/' $dirA/atmos/*.nc)"
 if [[ -d $dirA/ice ]]; then
-	files="${files} $(basename_list 'ice/' "$dirA/ice/*.nc")"
+	files="${files} $(basename_list 'ice/' $dirA/ice/*.nc)"
 fi
 if [[ -d $dirA/ocean ]]; then
-	files="${files} $(basename_list 'ocean/' "$dirA/ocean/*.nc")"
+	files="${files} $(basename_list 'ocean/' $dirA/ocean/*.nc)"
 fi
 
 for file in $files; do

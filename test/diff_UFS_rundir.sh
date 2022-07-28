@@ -1,23 +1,76 @@
 #! /bin/env bash
 
+#
+# Differences relevant output files in two UFS model directories. GRiB files 
+#   are compared via correlation reported by wgrib2. NetCDF files are compared
+#   by using NetCDF operators to calculate a diff then make sure all non-
+#   coordinate variable differences are zero.
+#
+# Syntax:
+#     diff_UFS_rundir.sh [-c coord_file][-h] dirA dirB
+#
+# Arguments:
+# 	  dirA, dirB:     full paths to the UFS run directories to be compared
+#
+# Options:
+#     -c coord_file:  file containing a list of coordinate variables
+#     -h:             print usage message and exit
+#
+
 set -eu
 
-dirA=$1
-dirB=$2
-temp_file=".diff.nc"
+usage() {
+	#
+	# Print usage statement
+	#
+	echo <<- 'EOF'
+		Differences relevant output files in two UFS model directories. GRiB files 
+		  are compared via correlation reported by wgrib2. NetCDF files are compared
+		  by using NetCDF operators to calculate a diff then make sure all non-
+		  coordinate variable differences are zero.
 
-source ./netcdf_op_functions.sh
+		Syntax:
+		    diff_UFS_rundir.sh [-c coord_file][-h] dirA dirB
 
-function basename_list() {
-	list=""
-	for f in ${1}; do
-		list="$list ${2}$(basename $f)"
-	done
-	echo $list
+		Arguments:
+			  dirA, dirB:     full paths to the UFS run directories to be compared
+
+		Options:
+		    -c coord_file:  file containing a list of coordinate variables
+		    -h:             print usage message and exit
+	EOF
 }
 
+while getopts ":c:h" option; do
+	case "${option}" in
+		c) coord_file=${OPTARG} ;;
+		h) usage; exit 0 ;;
+		*) echo "Unknown option ${option}"; exit 1 ;;
+	esac
+done
+
+num_args=$#
+case $num_args in
+	2) # Direct directory paths
+		dirA=$1
+		dirB=$2
+		;;
+	*) # Unknown option
+		echo "${num_args} is not a valid number of arguments, use 2"
+		usage
+		exit 1
+		;;
+esac
+
+source ./netcdf_op_functions.sh
+source ./test_utils.sh
+
+temp_file=".diff.nc"
+coord_file="${coord_file:-./coordinates.lst}"
+
 # Input files
-files="data_table diag_table fd_nems.yaml field_table ice_in input.nml med_modelio.nml model_configure nems.configure pio_in ww3_multi.inp"
+files="data_table diag_table fd_nems.yaml field_table ice_in input.nml med_modelio.nml \
+		model_configure nems.configure pio_in ww3_multi.inp"
 for file in $files; do
 	echo "=== ${file} ==="
 	fileA="$dirA/$file"
@@ -27,9 +80,9 @@ for file in $files; do
 done
 
 # GRiB files
-files="$(basename_list "$dirA/GFSFLX.Grb*")"
+files="$(basename_list '' $dirA/GFSFLX.Grb*)"
 
-module load wgrib2/3.0.2
+module load wgrib2/2.0.8
 
 for file in $files; do
 	echo "=== ${file} ==="
@@ -39,12 +92,16 @@ for file in $files; do
 done
 
 # NetCDF Files
-files="$(basename_list "$dirA/history/*.nc" 'history/')"
+files=""
+files="${files} $(basename_list '' $dirA/atmf*.nc $dirA/sfcf*.nc)"
+if [[ -d "$dirA/history" ]]; then
+	files="$(basename_list 'history/' $dirA/history/*.nc)"
+fi
 
 for file in $files; do
 	echo "=== ${file} ==="
 	fileA="$dirA/$file"
 	fileB="$dirB/$file"
-	nccmp $fileA $fileB -q
+	nccmp -q $fileA $fileB $coord_file
 done
 
