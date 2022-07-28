@@ -1,6 +1,6 @@
 #####################################################################
 echo "-----------------------------------------------------"
-echo " exgdas_nceppost.sh" 
+echo " exgdas_nceppost.sh"
 echo " Sep 07 - Chuang - Modified script to run unified post"
 echo " July 14 - Carlis - Changed to 0.25 deg grib2 master file"
 echo " Feb 16 - Lin - Modify to use Vertical Structure"
@@ -62,7 +62,7 @@ if [ $OUTTYP -eq 4 ] ; then
 else
   export SUFFIX=
 fi
-export machine=${machine:-WCOSS_C}
+export machine=${machine:-WCOSS2}
 
 ###########################
 # Specify Output layers
@@ -97,7 +97,7 @@ if [ ${stime} = "anl" ]; then
 
     export OUTTYP=${OUTTYP:-4}
 
-    # specify output file name from chgres which is input file name to nceppost 
+    # specify output file name from chgres which is input file name to nceppost
     # if model already runs gfs io, make sure GFSOUT is linked to the gfsio file
     # new imported variable for global_nceppost.sh
 
@@ -108,7 +108,7 @@ if [ ${stime} = "anl" ]; then
 
     if [ $GRIBVERSION = 'grib2' ]; then
       export POSTGRB2TBL=${POSTGRB2TBL:-${g2tmpl_ROOT}/share/params_grib2_tbl_new}
-      export PostFlatFile=${PostFlatFile:-$PARMpost/postxconfig-NT-GFS-ANL.txt} 
+      export PostFlatFile=${PostFlatFile:-$PARMpost/postxconfig-NT-GFS-ANL.txt}
       export CTLFILE=$PARMpost/postcntrl_gfs_anl.xml
     fi
 
@@ -124,9 +124,9 @@ if [ ${stime} = "anl" ]; then
     export PGBOUT2=pgbfile.grib2
     export PGIOUT2=pgifile.grib2.idx
     export IGEN=$IGEN_ANL
-    export FILTER=0  
+    export FILTER=0
 
-    # specify fhr even for analysis because postgp uses it    
+    # specify fhr even for analysis because postgp uses it
     #  export fhr=00
 
     $POSTGPSH
@@ -166,7 +166,7 @@ if [ ${stime} = "anl" ]; then
         fi
       fi
     fi
-    rm pgbfile.grib2 
+    rm pgbfile.grib2
   else
     #### atmanl file not found need failing job
     echo " *** FATAL ERROR: No model anl file output "
@@ -177,12 +177,12 @@ else   ## not_anl if_stimes
   SLEEP_LOOP_MAX=$(expr $SLEEP_TIME / $SLEEP_INT)
 
   ############################################################
-  # Loop Through the Post Forecast Files 
+  # Loop Through the Post Forecast Files
   ############################################################
 
   for fhr in $post_times; do
     ###############################
-    # Start Looping for the 
+    # Start Looping for the
     # existence of the restart files
     ###############################
     set -x
@@ -197,7 +197,7 @@ else   ## not_anl if_stimes
       fi
       ###############################
       # If we reach this point assume
-      # fcst job never reached restart 
+      # fcst job never reached restart
       # period and error exit
       ###############################
       if [ $ic -eq $SLEEP_LOOP_MAX ]; then
@@ -212,7 +212,7 @@ else   ## not_anl if_stimes
     postmsg "$msg"
 
     ###############################
-    # Put restart files into /nwges 
+    # Put restart files into /nwges
     # for backup to start Model Fcst
     ###############################
     [[ -f flxfile ]] && rm flxfile
@@ -258,7 +258,7 @@ else   ## not_anl if_stimes
         fi
       else
         if [ $fhr -eq 0 ]; then
-          export PostFlatFile=$PARMpost/postxconfig-NT-GFS-F00.txt 
+          export PostFlatFile=$PARMpost/postxconfig-NT-GFS-F00.txt
           export CTLFILE=${CTLFILEGFS:-$PARMpost/postcntrl_gfs_f00.xml}
         else
           export CTLFILE=${CTLFILEGFS:-$PARMpost/postcntrl_gfs.xml}
@@ -306,11 +306,11 @@ else   ## not_anl if_stimes
 
     if [ $SENDCOM = 'YES' ]; then
       if [ $GRIBVERSION = 'grib2' ] ; then
-        if [ $INLINE_POST = ".false." ]; then 
+        if [ $INLINE_POST = ".false." ]; then
           cp $PGBOUT2 $COMOUT/${MASTERFHR}
         fi
         $GRB2INDEX $PGBOUT2 $COMOUT/${MASTERFHRIDX}
-      fi 
+      fi
 
       # Model generated flux files will be in nemsio after FY17 upgrade
       # use post to generate Grib2 flux files
@@ -344,7 +344,7 @@ else   ## not_anl if_stimes
         $DBNROOT/bin/dbn_alert MODEL ${run}_SGB_GB2 $job $COMOUT/${PREFIX}sfluxgrbf${fhr}.grib2
         $DBNROOT/bin/dbn_alert MODEL ${run}_SGB_GB2_WIDX $job $COMOUT/${PREFIX}sfluxgrbf${fhr}.grib2.idx
       fi
-    fi 
+    fi
 
     [[ -f pgbfile.grib2 ]] && rm pgbfile.grib2
     [[ -f flxfile ]] && rm flxfile

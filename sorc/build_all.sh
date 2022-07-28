@@ -120,9 +120,10 @@ $Build_ufs_model && {
 }
 
 #------------------------------------
-# build GSI and EnKF
+# build GSI and EnKF - optional checkout
 #------------------------------------
-$Build_gsi_enkf && {
+if [ -d gsi_enkf.fd ]; then
+  $Build_gsi_enkf && {
   echo " .... Building gsi and enkf .... "
   ./build_gsi_enkf.sh $_ops_opt $_verbose_opt > $logs_dir/build_gsi_enkf.log 2>&1
   rc=$?
@@ -132,11 +133,15 @@ $Build_gsi_enkf && {
   fi
   ((err+=$rc))
 }
+else
+  echo " .... Skip building gsi and enkf .... "
+fi
 
 #------------------------------------
 # build gsi utilities
 #------------------------------------
-$Build_gsi_utils && {
+if [ -d gsi_utils.fd ]; then
+  $Build_gsi_utils && {
   echo " .... Building gsi utilities .... "
   ./build_gsi_utils.sh $_ops_opt $_verbose_opt > $logs_dir/build_gsi_utils.log 2>&1
   rc=$?
@@ -146,25 +151,33 @@ $Build_gsi_utils && {
   fi
   ((err+=$rc))
 }
+else
+  echo " .... Skip building gsi utilities .... "
+fi
 
 #------------------------------------
-# build gdas
+# build gdas - optional checkout
 #------------------------------------
-$Build_gdas && {
-        echo " .... Building GDASApp .... "
-        ./build_gdas.sh > $logs_dir/build_gdas.log 2>&1
-        rc=$?
-        if [[ $rc -ne 0 ]] ; then
-                echo "Fatal error in building GDAS."
-                echo "The log file is in $logs_dir/build_gdas.log"
-	fi
-        ((err+=$rc))
+if [ -d gdas.cd ]; then
+  $Build_gdas  && {
+  echo " .... Building GDASApp  .... "
+  ./build_gdas.sh $_verbose_opt > $logs_dir/build_gdas.log 2>&1
+  rc=$?
+  if [[ $rc -ne 0 ]] ; then
+    echo "Fatal error in building GDASApp."
+    echo "The log file is in $logs_dir/build_gdas.log"
+  fi
+  ((err+=$rc))
 }
+else
+  echo " .... Skip building GDASApp  .... "
+fi
 
 #------------------------------------
 # build gsi monitor
 #------------------------------------
-$Build_gsi_monitor && {
+if [ -d gsi_monitor.fd ]; then
+  $Build_gsi_monitor && {
   echo " .... Building gsi monitor .... "
   ./build_gsi_monitor.sh $_ops_opt $_verbose_opt > $logs_dir/build_gsi_monitor.log 2>&1
   rc=$?
@@ -174,6 +187,9 @@ $Build_gsi_monitor && {
   fi
   ((err+=$rc))
 }
+else
+  echo " .... Skip building gsi monitor .... "
+fi
 
 #------------------------------------
 # build UPP
@@ -206,7 +222,8 @@ $Build_ufs_utils && {
 #------------------------------------
 # build gldas
 #------------------------------------
-$Build_gldas && {
+if [ -d gldas.fd ]; then
+  $Build_gldas && {
   echo " .... Building gldas .... "
   ./build_gldas.sh $_verbose_opt > $logs_dir/build_gldas.log 2>&1
   rc=$?
@@ -216,6 +233,9 @@ $Build_gldas && {
   fi
   ((err+=$rc))
 }
+else
+  echo " .... Skip building gldas .... "
+fi
 
 #------------------------------------
 # build gfs_wafs - optional checkout
