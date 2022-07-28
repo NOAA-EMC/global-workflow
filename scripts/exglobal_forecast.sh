@@ -128,7 +128,7 @@ case $RUN in
   'gefs') FV3_GEFS_predet;;
 esac
 [[ $cplflx = .true. ]] && MOM6_predet
-#[[ $cplwav = .true. ]] && WW3_predet #no WW3_predet at this time
+[[ $cplwav = .true. ]] && WW3_predet
 [[ $cplice = .true. ]] && CICE_predet
 
 case $RUN in
