@@ -80,4 +80,22 @@ case "$CASE_ENKF" in
 esac
 export ICERES=$OCNRES
 
+if [ $EFSOI_TASK = "YES" ]; then
+
+   # Get task specific resources
+   . $EXPDIR/config.resources efcsfsoi
+
+   export npe_fv3=$npe_efcsfsoi
+
+   if [ $QUILTING = ".true." ]; then
+       export npe_fv3=$(echo " $npe_fv3 + $WRITE_GROUP * $WRTTASK_PER_GROUP" | bc)
+       export npe_efcsfsoi=$npe_fv3
+   fi
+
+   export FHMIN_EFSOI=6
+   export FHOUT_EFSOI=6
+   export FHMAX_EFSOI=30
+
+fi
+
 echo "END: config.efcs"

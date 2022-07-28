@@ -17,4 +17,14 @@ fi
 # Generate ensemble spread files
 export ENKF_SPREAD="YES"
 
+if [ $EFSOI_TASK = "YES" ]; then
+
+   # Get efcsfsoi configs for FH settings
+   . $EXPDIR/config.efcs
+
+   # Get task specific resources
+   . $EXPDIR/config.resources eposfsoi
+fi
+
+
 echo "END: config.epos"
