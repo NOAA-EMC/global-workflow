@@ -16,18 +16,29 @@ else
     __ms_shell=sh
 fi
 
+HOMEgfs=${HOMEgfs:-`pwd`/../}
 target=""
 USERNAME=$(echo $LOGNAME | awk '{ print tolower($0)'})
 ##---------------------------------------------------------------------------
 export hname=$(hostname | cut -c 1,1)
-if [[ -d /work ]] ; then
+if [[ -d /lfs/h1 ]] ; then
+    # We are on NOAA Cactus or Dogwood
+    if ( ! eval module help > /dev/null 2>&1 ) ; then
+        echo load the module command 1>&2
+        source /usr/share/lmod/lmod/init/$__ms_shell
+    fi
+    target=wcoss2
+    module reset
+
+elif [[ -d /work ]] ; then
     # We are on MSU Orion
     if ( ! eval module help > /dev/null 2>&1 ) ; then
         echo load the module command 1>&2
         source /apps/lmod/lmod/init/$__ms_shell
     fi
     target=orion
-    module purge
+    export LMOD_SYSTEM_DEFAULT_MODULES=contrib
+    module reset
     export myFC=mpiifort
     export FCOMP=mpiifort
 
@@ -39,7 +50,8 @@ elif [[ -d /scratch1 ]] ; then
         source /apps/lmod/lmod/init/$__ms_shell
     fi
     target=hera
-    module purge
+    export LMOD_SYSTEM_DEFAULT_MODULES=contrib
+    module reset
     export myFC=mpiifort
     export FCOMP=mpiifort
 
@@ -125,6 +137,11 @@ elif [[ -d /lfs3 ]] ; then
 else
     echo WARNING: UNKNOWN PLATFORM 1>&2
 fi
+
+# Source versions file for build
+
+. ${HOMEgfs}/versions/build.ver
+. ${HOMEgfs}/versions/${target}.ver
 
 unset __ms_shell
 unset __ms_ksh_test
