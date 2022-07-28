@@ -71,11 +71,14 @@ coord_file="${coord_file:-./coordinates.lst}"
 # Input files
 files="data_table diag_table fd_nems.yaml field_table ice_in input.nml med_modelio.nml \
 		model_configure nems.configure pio_in ww3_multi.inp"
+
 for file in $files; do
 	echo "=== ${file} ==="
 	fileA="$dirA/$file"
 	fileB="$dirB/$file"
-	diff $fileA $fileB || :
+	if [[ -f "$fileA" ]]; then
+		diff $fileA $fileB || :
+	else
 	echo ; echo;
 done
 
