@@ -193,6 +193,7 @@ source "$HOMEgfs/ush/preamble.sh"
       echo " mod_def.$grdID succesfully created/copied "
       echo ' '
       ${TRACE_ON:-set -x}
+    else
       set +x
       echo ' '
       echo '********************************************** '
