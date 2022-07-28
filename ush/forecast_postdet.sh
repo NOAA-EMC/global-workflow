@@ -651,7 +651,7 @@ WW3_postdet() {
       if [ $RERUN = "NO" ]; then
         waverstfile=${WRDIR}/${sPDY}.${scyc}0000.restart.${wavGRD}
       else 
-        waverstfile=${RSTDIR_WAVE}/${PDYT}.${cyct}0000.restart.${wavGRD}      
+        waverstfile=${RSTDIR_WAVE}/${PDYT}.${cyct}0000.restart.${wavGRD}
       fi
     else 
       waverstfile=${RSTDIR_WAVE}/${sPDY}.${scyc}0000.restart.${wavGRD}
@@ -997,7 +997,8 @@ GOCART_rc() {
         cat ${AERO_CONFIG_DIR}/ExtData.${AERO_EMIS_FIRE:-none} ; \
         echo "%%" ; \
       } > $DATA/AERO_ExtData.rc
-      [[ $status -ne 0 ]] && exit $status
+      status=$?
+      if (( status != 0 )); then exit $status; fi
     fi
   fi
 }
