@@ -21,7 +21,7 @@ This is a very much a work in progress and any issues should be reported back an
 To setup an experiment, a python script <b>\c setup_expt.py</b> (located in <b>\c fv3gfs/ush</b>) can be used:
 
     $> setup_expt.py -h
-    usage: setup_expt.py [-h] [--machine {HERA,WCOSS_C}] --pslot PSLOT
+    usage: setup_expt.py [-h] --pslot PSLOT
                      [--configdir CONFIGDIR] [--idate IDATE] [--icsdir ICSDIR]
                      [--resdet RESDET] [--resens RESENS] [--comrot COMROT]
                      [--expdir EXPDIR] [--nens NENS] [--cdump CDUMP]
@@ -32,8 +32,6 @@ To setup an experiment, a python script <b>\c setup_expt.py</b> (located in <b>\
 
     optional arguments:
         -h, --help   show this help message and exit
-        --machine    machine name
-                        (default: WCOSS_C)
         --pslot      parallel experiment name [REQUIRED]
                         (default: None)
         --configdir  full path to directory containing the config files
@@ -58,8 +56,8 @@ To setup an experiment, a python script <b>\c setup_expt.py</b> (located in <b>\
 The above script creates directories <b>\c EXPDIR</b> and <b>\c COMROT</b>. It will make links for initial conditions from a location provided via the <b>\c --icsdir</b> argument for a chosen resolution for the control <b>\c --resdet</b> and the ensemble <b>\c --resens</b>. Experiment name is controlled by the input argument <b>\c --pslot</b>. The script will ask user input in case any of the directories already exist. It will copy experiment configuration files into the <b>\c EXPDIR</b> from <b>\c CONFIGDIR</b>.
 
 Sample initial conditions for a few resolutions are available at:<br>
-<b>Theia:</b> /scratch4/NCEPDEV/da/noscrub/Rahul.Mahajan/ICS<br>
-<b>WCOSS Cray:</b> /gpfs/hps/emc/da/noscrub/Rahul.Mahajan/ICS
+<b>Hera:</b> TODO: /path/here/for/initial/conditions<br>
+<b>Orion:</b> TODO: /path/here/for/initial/conditions<br>
 
 Next step is for the user to go through the individual config files (atleast <b>\c config.base</b>) and customize the experiment configuration based on user needs. A stock configuration will be provided at a later stage, but it is imperative that the user understand the steps involved in the system.
 

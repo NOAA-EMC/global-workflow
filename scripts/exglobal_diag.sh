@@ -13,7 +13,6 @@
 #
 # Attributes:
 #   Language: POSIX shell
-#   Machine: WCOSS-Dell / Hera
 #
 ################################################################################
 
@@ -197,9 +196,9 @@ EOFdiag
             if [ $count -gt 1 ]; then
                if [ $USE_CFP = "YES" ]; then
                   echo "$nm $DATA/diag.sh $lrun_subdirs $binary_diag $type $loop $string $CDATE $DIAG_COMPRESS $DIAG_SUFFIX" | tee -a $DATA/mp_diag.sh
-		  if [ ${CFP_MP:-"NO"} = "YES" ]; then
-		      nm=$((nm+1))
-		  fi
+      if [ ${CFP_MP:-"NO"} = "YES" ]; then
+          nm=$((nm+1))
+      fi
                else
                   if [ $binary_diag = ".true." ]; then
                      cat ${prefix}${type}_${loop}* > diag_${type}_${string}.${CDATE}${DIAG_SUFFIX}
@@ -212,7 +211,7 @@ EOFdiag
             elif [ $count -eq 1 ]; then
                 cat ${prefix}${type}_${loop}* > diag_${type}_${string}.${CDATE}${DIAG_SUFFIX}
                 if [ $DIAG_COMPRESS = "YES" ]; then
-		    $COMPRESS diag_${type}_${string}.${CDATE}${DIAG_SUFFIX}
+        $COMPRESS diag_${type}_${string}.${CDATE}${DIAG_SUFFIX}
                 fi
                 echo "diag_${type}_${string}.${CDATE}*" >> ${diaglist[n]}
                 numfile[n]=$(expr ${numfile[n]} + 1)
@@ -250,7 +249,7 @@ EOFdiag
    for rtype in $rlist; do
        ${CHGRP_CMD} *${rtype}*
    done
-   
+
    # If requested, create diagnostic file tarballs
    if [ $DIAG_TARBALL = "YES" ]; then
       echo $(date) START tar diagnostic files >&2

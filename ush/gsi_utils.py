@@ -72,12 +72,8 @@ def get_ncdims(ncfile):
     """
     try:
         import netCDF4 as nc
-    except ImportError:
-        print("Python Error!")
-        print("netCDF4 Python module not available. Do you have the proper Python available in your environment?")
-        print("Hera: module use -a /contrib/modulefiles && module load anaconda/2.3.0")
-        print("Dell: module load python/3.6.3")
-        print(" ")
+    except ImportError as err:
+        raise ImportError(f"Unable to import netCDF4 module\n{err}")
     ncf = nc.Dataset(ncfile)
     ncdims = {}
     for d in ncf.dimensions.keys():
@@ -117,12 +113,8 @@ def get_timeinfo(ncfile):
     """
     try:
         import netCDF4 as nc
-    except ImportError:
-        print("Python Error!")
-        print("netCDF4 Python module not available. Do you have the proper Python available in your environment?")
-        print("Hera: module use -a /contrib/modulefiles && module load anaconda/2.3.0")
-        print("Dell: module load python/3.6.3")
-        print(" ")
+    except ImportError as err:
+        raise ImportError(f"Unable to import netCDF4 module\n{err}")
     import datetime as dt
     import re
     ncf = nc.Dataset(ncfile)

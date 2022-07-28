@@ -1,5 +1,5 @@
 #!/bin/bash
-#                                                                       
+#
 ################################################################################
 #
 # UNIX Script Documentation Block
@@ -17,11 +17,10 @@
 #
 # Attributes:
 #   Language: Bourne-again (BASH) shell
-#   Machine: WCOSS-DELL-P3
 #
-# Requirements:                                                             
-# - wgrib2 with IPOLATES library                                            
-#                                                                           
+# Requirements:
+# - wgrib2 with IPOLATES library
+#
 ################################################################################
 # --------------------------------------------------------------------------- #
 # 0.  Preparations
@@ -39,8 +38,8 @@
 
   alertName=$(echo $RUN|tr [a-z] [A-Z])
 
-  grdID=$1 
-  gribDIR=${grdID}_grib 
+  grdID=$1
+  gribDIR=${grdID}_grib
   rm -rfd ${gribDIR}
   mkdir ${gribDIR}
   err=$?
@@ -119,7 +118,7 @@
 # 0.e Links to working directory
 
   ln -s ${DATA}/mod_def.$grdID mod_def.ww3
-  ln -s ${DATA}/output_${ymdh}0000/out_grd.$grdID out_grd.ww3 
+  ln -s ${DATA}/output_${ymdh}0000/out_grd.$grdID out_grd.ww3
 
 # --------------------------------------------------------------------------- #
 # 1.  Generate GRIB file with all data
@@ -139,7 +138,7 @@
                                ${DATA}/ww3_grib2.${grdID}.inp.tmpl > ww3_grib.inp
 
 
-  echo "ww3_grib.inp" 
+  echo "ww3_grib.inp"
   cat ww3_grib.inp
 # 1.b Run GRIB packing program
 
@@ -163,13 +162,13 @@
       exit 3
     fi
 
-  if [ $fht -gt 0 ]; then 
+  if [ $fht -gt 0 ]; then
     $WGRIB2 gribfile -set_date $CDATE -set_ftime "$fhr hour fcst" -grib ${COMOUT}/gridded/${outfile}
     err=$?
-  else 
-    $WGRIB2 gribfile -set_date $CDATE -set_ftime "$fhr hour fcst" -set table_1.4 1 -set table_1.2 1 -grib ${COMOUT}/gridded/${outfile}   
+  else
+    $WGRIB2 gribfile -set_date $CDATE -set_ftime "$fhr hour fcst" -set table_1.4 1 -set table_1.2 1 -grib ${COMOUT}/gridded/${outfile}
     err=$?
-  fi 
+  fi
 
   if [ $err != 0 ]
   then
@@ -239,7 +238,7 @@
       echo "${outfile} is global.0p50, not alert out"
     fi
 
- 
+
 # --------------------------------------------------------------------------- #
 # 3.  Clean up the directory
 

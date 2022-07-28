@@ -36,7 +36,7 @@ module load wgrib2/${wgrib2_ver}
 module list
 
 #############################################################
-# WCOSS environment settings
+# environment settings
 #############################################################
 export cyc=%CYC%
 export cycle=t%CYC%z
