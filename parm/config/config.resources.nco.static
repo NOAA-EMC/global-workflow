@@ -127,6 +127,8 @@ elif [ $step = "anal" ]; then
 
 elif [ $step = "analcalc" ]; then
 
+    export MPICH_MPIIO_HINTS="*:romio_cb_write=disable"
+
     export wtime_analcalc="00:10:00"
     export npe_analcalc=127
     export ntasks=$npe_analcalc

@@ -51,6 +51,13 @@ export DATAROOT="$RUNDIR/$CDATE/$CDUMP/metp.${jobid}"
 [[ -d $DATAROOT ]] && rm -rf $DATAROOT
 mkdir -p $DATAROOT
 
+if [ $machine = "HERA" -o $machine = "ORION" ]; then
+  unset prod_util_ver
+  unset grib_util_ver
+  unset nco_ver
+  unset intel_ver
+  unset anaconda_ver
+fi
 
 ###############################################################
 echo

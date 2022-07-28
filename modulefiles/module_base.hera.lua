@@ -29,6 +29,9 @@ load(pathJoin("crtm", os.getenv("crtm_ver")))
 load(pathJoin("g2tmpl", os.getenv("g2tmpl_ver")))
 load(pathJoin("wgrib2", os.getenv("wgrib2_ver")))
 
+prepend_path("MODULEPATH", pathJoin("/scratch1/NCEPDEV/global/glopara/git/prepobs/v" .. os.getenv("prepobs_run_ver"), "modulefiles"))
+load(pathJoin("prepobs", os.getenv("prepobs_run_ver")))
+
 setenv("USE_CFP","YES")
 
 whatis("Description: GFS run environment")
