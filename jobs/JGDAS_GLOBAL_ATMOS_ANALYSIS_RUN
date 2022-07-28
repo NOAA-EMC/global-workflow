@@ -1,11 +1,6 @@
 #!/bin/bash
-##set -ex
-set -x
-set -u
 
-export PS4='$SECONDS + '
-date
-
+source "$HOMEgfs/ush/preamble.sh"
 
 #############################
 # Source relevant config files
@@ -119,5 +114,4 @@ fi
 cd $DATAROOT
 [[ $KEEPDATA = "NO" ]] && rm -rf $DATA
 
-date
 exit 0
