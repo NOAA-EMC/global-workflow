@@ -4,30 +4,28 @@ Load environment to run GFS on Jet
 
 prepend_path("MODULEPATH", "/lfs4/HFIP/hfv3gfs/nwprod/hpc-stack/libs/modulefiles/stack")
 
-load(pathJoin("hpc", "1.1.0"))
-load(pathJoin("hpc-intel", "18.0.5.274"))
-load(pathJoin("hpc-impi", "2018.4.274"))
+load(pathJoin("hpc", os.getenv("hpc_ver")))
+load(pathJoin("hpc-intel", os.getenv("hpc_intel_ver")))
+load(pathJoin("hpc-impi", os.getenv("hpc_impi_ver")))
 
 load(hpss)
-load(pathJoin("nco", "4.9.1"))
-load(pathJoin("gempak", "7.4.2"))
+load(pathJoin("nco", os.getenv("nco_ver")))
+load(pathJoin("gempak", os.getenv("gempak_ver")))
 
-load(pathJoin("prod_util", "1.2.2"))
-load(pathJoin("grib_util", "1.2.2"))
+load(pathJoin("prod_util", os.getenv("prod_util_ver")))
+load(pathJoin("grib_util", os.getenv("grib_util_ver")))
 
-load(pathJoin("crtm", "2.3.0"))
+load(pathJoin("crtm", os.getenv("crtm_ver")))
 
-load(pathJoin("hdf5", "1.10.6"))
-load(pathJoin("netcdf", "4.7.4"))
-load(pathJoin("esmf", "8_2_0_beta_snapshot_14"))
-load(pathJoin("fms", "2021.03"))
+load(pathJoin("hdf5", os.getenv("hdf5_ver")))
+load(pathJoin("netcdf", os.getenv("netcdf_ver")))
+load(pathJoin("esmf", os.getenv("esmf_ver")))
+load(pathJoin("fms", os.getenv("fms_ver")))
 
-load(pathJoin("g2tmpl", "1.10.0"))
+load(pathJoin("g2tmpl", os.getenv("g2tmpl_ver")))
 
-load(pathJoin("wgrib2", "2.0.8"))
+load(pathJoin("wgrib2", os.getenv("wgrib2_ver")))
 
-load(pathJoin("cdo", "1.9.5"))
-
-load(rocoto)
+load(pathJoin("cdo", os.getenv("cdo_ver")))
 
 whatis("Description: GFS run environment")

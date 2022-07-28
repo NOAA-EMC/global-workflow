@@ -4,20 +4,18 @@ Build environment for WW3 on Hera
 
 prepend_path("MODULEPATH", "/scratch2/NCEPDEV/nwprod/hpc-stack/libs/hpc-stack/modulefiles/stack")
 
-load(pathJoin("hpc", "1.1.0"))
-load(pathJoin("hpc-intel", "2022.1.2"))
-load(pathJoin("hpc-impi", "2022.1.2"))
+load(pathJoin("hpc", os.getenv("hpc_ver")))
+load(pathJoin("hpc-intel", os.getenv("hpc_intel_ver")))
+load(pathJoin("hpc-impi", os.getenv("hpc_impi_ver")))
 
-load(pathJoin("cmake", "3.20.1"))
+load(pathJoin("cmake", os.getenv("cmake_ver")))
 
-load(pathJoin("jasper", "2.0.25"))
-load(pathJoin("zlib", "1.2.11"))
-load(pathJoin("libpng", "1.6.37"))
+load(pathJoin("jasper", os.getenv("jasper_ver")))
+load(pathJoin("zlib", os.getenv("zlib_ver")))
+load(pathJoin("png", os.getenv("png_ver")))
 
-load(pathJoin("bacio", "2.4.1"))
-load(pathJoin("g2", "3.4.5"))
+load(pathJoin("bacio", os.getenv("bacio_ver")))
+load(pathJoin("g2", os.getenv("g2_ver")))
 
-load(pathJoin("hdf5", "1.10.6"))
-load(pathJoin("netcdf", "4.7.4"))
-
-load(pathJoin("w3nco", "2.4.1"))
+load(pathJoin("hdf5", os.getenv("hdf5_ver")))
+load(pathJoin("netcdf", os.getenv("netcdf_ver")))
