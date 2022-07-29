@@ -24,7 +24,7 @@ Where `dirA` and `dirB` are the two cycle directories (`.../gfs.YYYYMMDD/HH/`)
 OR
 
 ```
-diff_ROTDIR.sh rotdir cdate expA expB
+./diff_ROTDIR.sh rotdir cdate expA expB
 ```
 
 Where:
@@ -112,4 +112,4 @@ And NetCDFs will look like this:
 ...
 ```
 
-If any variables do not match, they will be listed instead.
+If any variables in a grib or NetCDF do not match, they will be listed instead.
