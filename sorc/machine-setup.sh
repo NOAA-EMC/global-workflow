@@ -28,7 +28,8 @@ if [[ -d /work ]] ; then
         source /apps/lmod/lmod/init/$__ms_shell
     fi
     target=orion
-    module purge
+    export LMOD_SYSTEM_DEFAULT_MODULES=contrib
+    module reset
 
 ##---------------------------------------------------------------------------
 elif [[ -d /scratch1 ]] ; then
@@ -38,7 +39,6 @@ elif [[ -d /scratch1 ]] ; then
         source /apps/lmod/lmod/init/$__ms_shell
     fi
     target=hera
-    module purge
     export LMOD_SYSTEM_DEFAULT_MODULES=contrib
     module reset
 
