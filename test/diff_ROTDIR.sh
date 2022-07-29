@@ -9,19 +9,19 @@
 #   directories under the first experiment given.
 #
 # Syntax:
-#     diff_ROTDIR.sh [-c coord_file][-h] noscrub cdate expA expB
+#     diff_ROTDIR.sh [-c coord_file][-h] rotdir cdate expA expB
 #
 #       OR
 #
 #     diff_ROTDIR.sh [-c coord_file][-h] dirA dirB
 #
 # Arguments:
-#     noscrub:        root noscrub where ROTDIRS are held
+#     rotdir:         root rotdir where ROTDIRS are held
 #     cdate:          experiment date/cycle in YYYYMMDDHH format
 #     expA, expB:     experiment ids (PSLOT) to compare
 #    
 #     dirA, dirB:     full paths to the cycle directories to be compared 
-#                       (${noscrub}/${exp}/gfs.${YYYYMMDD}/${cyc})
+#                       (${rotdir}/${exp}/gfs.${YYYYMMDD}/${cyc})
 #
 # Options:
 #     -c coord_file:  file containing a list of coordinate variables
@@ -43,19 +43,19 @@ usage() {
 		  directories under the first experiment given.
 
 		Syntax:
-		    diff_ROTDIR.sh [-c coord_file][-h] noscrub cdate expA expB
+		    diff_ROTDIR.sh [-c coord_file][-h] rotdir cdate expA expB
 		
 		      OR
 		
 		    diff_ROTDIR.sh [-c coord_file][-h] dirA dirB
 		
 		Arguments:
-		    noscrub:        root noscrub where ROTDIRS are held
+		    rotdir:         root rotdir where ROTDIRS are held
 		    cdate:          experiment date/cycle in YYYYMMDDHH format
 		    expA, expB:     experiment ids (PSLOT) to compare
 		   
 		    dirA, dirB:     full paths to the cycle directories to be compared 
-		                      (${noscrub}/${exp}/gfs.${YYYYMMDD}/${cyc})
+		                      (${rotdir}/${exp}/gfs.${YYYYMMDD}/${cyc})
 		
 		Options:
 		    -c coord_file:  file containing a list of coordinate variables
@@ -78,15 +78,15 @@ case $num_args in
 		dirB=$2
 		;;
 	4) # Derive directory paths
-		noscrub=$1
+		rotdir=$1
 		date=$2
 		expA=$3
 		expB=$4
 
 		YYYYMMDD=$(echo $date | cut -c1-8)
 		cyc=$(echo $date | cut -c9-10)
-		dirA="$noscrub/$expA/gfs.${YYYYMMDD}/${cyc}"
-		dirB="$noscrub/$expB/gfs.${YYYYMMDD}/${cyc}"
+		dirA="$rotdir/$expA/gfs.${YYYYMMDD}/${cyc}"
+		dirB="$rotdir/$expB/gfs.${YYYYMMDD}/${cyc}"
 		;;
 	*) # Unknown option
 		echo "${num_args} is not a valid number of arguments, use 2 or 4"
