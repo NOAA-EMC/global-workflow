@@ -140,13 +140,20 @@ class Tasks:
         deps = []
 
         # Atm ICs
-        atm_res = self._base.get('CASE', 'C384')
-        prefix = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_ATMIC']}/@Y@m@d@H/{self.cdump}"
-        for file in ['gfs_ctrl.nc'] + \
-                    [f'{datatype}_data.tile{tile}.nc'
-                     for datatype in ['gfs', 'sfc']
-                     for tile in range(1, self.n_tiles + 1)]:
-            data = f"{prefix}/{atm_res}/INPUT/{file}"
+        if self.app_config.do_atm:
+            atm_res = self._base.get('CASE', 'C384')
+            prefix = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_ATMIC']}/@Y@m@d@H/{self.cdump}"
+            for file in ['gfs_ctrl.nc'] + \
+                        [f'{datatype}_data.tile{tile}.nc'
+                        for datatype in ['gfs', 'sfc']
+                        for tile in range(1, self.n_tiles + 1)]:
+                data = f"{prefix}/{atm_res}/INPUT/{file}"
+                dep_dict = {'type': 'data', 'data': data}
+                deps.append(rocoto.add_dependency(dep_dict))
+        else:  # data-atmosphere
+            # TODO - need more information about how these forcings are stored
+            prefix = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_DATM']}/@Y@m@d@H"
+            data = f"{prefix}/gefs.@Y@m.nc"
             dep_dict = {'type': 'data', 'data': data}
             deps.append(rocoto.add_dependency(dep_dict))
 
@@ -474,14 +481,28 @@ class Tasks:
     @property
     def _fcst_forecast_only(self):
         dependencies = []
+
         deps = []
-        data = f'&ROTDIR;/{self.cdump}.@Y@m@d/@H/atmos/INPUT/sfc_data.tile6.nc'
-        dep_dict = {'type': 'data', 'data': data}
-        deps.append(rocoto.add_dependency(dep_dict))
-        data = f'&ROTDIR;/{self.cdump}.@Y@m@d/@H/atmos/RESTART/@Y@m@d.@H0000.sfcanl_data.tile6.nc'
-        dep_dict = {'type': 'data', 'data': data}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies.append(rocoto.create_dependency(dep_condition='or', dep=deps))
+        if self.app_config.do_atm:
+            data = f'&ROTDIR;/{self.cdump}.@Y@m@d/@H/atmos/INPUT/sfc_data.tile6.nc'
+            dep_dict = {'type': 'data', 'data': data}
+            deps.append(rocoto.add_dependency(dep_dict))
+            data = f'&ROTDIR;/{self.cdump}.@Y@m@d/@H/atmos/RESTART/@Y@m@d.@H0000.sfcanl_data.tile6.nc'
+            dep_dict = {'type': 'data', 'data': data}
+            deps.append(rocoto.add_dependency(dep_dict))
+            dependencies.append(rocoto.create_dependency(dep_condition='or', dep=deps))
+
+        else:  # data-atmosphere
+            data = f'&ICSDIR;/@Y@m@d@H/datm/gefs.@Y@m.nc'  # GEFS forcing
+            dep_dict = {'type': 'data', 'data': data}
+            deps.append(rocoto.add_dependency(dep_dict))
+            data = '&ICSDIR;/@Y@m@d@H/ocn/MOM.res.nc'  # TODO - replace with actual ocean IC
+            dep_dict = {'type': 'data', 'data': data}
+            deps.append(rocoto.add_dependency(dep_dict))
+            data = '&ICSDIR;/@Y@m@d@H/ice/cice5_model.res.nc'  # TODO - replace with actual ice IC
+            dep_dict = {'type': 'data', 'data': data}
+            deps.append(rocoto.add_dependency(dep_dict))
+            dependencies.append(rocoto.create_dependency(dep_condition='and', dep=deps))
 
         if self.app_config.do_wave and self.cdump in self.app_config.wave_cdumps:
             wave_job = 'waveprep' if self.app_config.model_app in ['ATMW'] else 'waveinit'
