@@ -32,8 +32,4 @@ for fhr in $fhrlst; do
     [[ $status -ne 0 ]] && exit $status
 done
 
-###############################################################
-# Exit out cleanly
-
-
 exit 0
