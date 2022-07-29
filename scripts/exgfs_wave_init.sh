@@ -1,5 +1,5 @@
-#!/bin/bash
-#
+#! /usr/bin/env bash
+
 ################################################################################
 #
 # UNIX Script Documentation Block
@@ -25,19 +25,14 @@
 #
 # --------------------------------------------------------------------------- #
 # 0.  Preparations
+
+source "$HOMEgfs/ush/preamble.sh"
+
 # 0.a Basic modes of operation
 
-  set -x
-
   err=0
-  # Use LOUD variable to turn on/off trace.  Defaults to YES (on).
-  export LOUD=${LOUD:-YES}; [[ $LOUD = yes ]] && export LOUD=YES
-  [[ "$LOUD" != YES ]] && set +x
 
   cd $DATA
-
-  echo "HAS BEGUN on $(hostname)"
-  echo "Starting MWW3 INIT CONFIG SCRIPT for ${CDUMP}wave"
 
   set +x
   echo ' '
@@ -49,7 +44,7 @@
   echo ' '
   echo "Starting at : $(date)"
   echo ' '
-  [[ "$LOUD" = YES ]] && set -x
+  ${TRACE_ON:-set -x}
 
 # Script will run only if pre-defined NTASKS
 #     The actual work is distributed over these tasks.
@@ -63,7 +58,7 @@
   echo ' '
   echo " Script set to run with $NTASKS tasks "
   echo ' '
-  [[ "$LOUD" = YES ]] && set -x
+  ${TRACE_ON:-set -x}
 
 
 # --------------------------------------------------------------------------- #
@@ -73,7 +68,7 @@
   echo 'Preparing input files :'
   echo '-----------------------'
   echo ' '
-  [[ "$LOUD" = YES ]] && set -x
+  ${TRACE_ON:-set -x}
 
 # 1.a Model definition files
 
@@ -93,14 +88,14 @@
     then
       set +x
       echo " Mod def file for $grdID found in ${COMIN}/rundata. copying ...."
-      [[ "$LOUD" = YES ]] && set -x
+      ${TRACE_ON:-set -x}
       cp $COMIN/rundata/${CDUMP}wave.mod_def.${grdID} mod_def.$grdID
 
     else
       set +x
       echo " Mod def file for $grdID not found in ${COMIN}/rundata. Setting up to generate ..."
       echo ' '
-      [[ "$LOUD" = YES ]] && set -x
+      ${TRACE_ON:-set -x}
       if [ -f $PARMwave/ww3_grid.inp.$grdID ]
       then
         cp $PARMwave/ww3_grid.inp.$grdID ww3_grid.inp.$grdID
@@ -112,7 +107,7 @@
         echo ' '
         echo "   ww3_grid.inp.$grdID copied ($PARMwave/ww3_grid.inp.$grdID)."
         echo ' '
-        [[ "$LOUD" = YES ]] && set -x
+        ${TRACE_ON:-set -x}
       else
         set +x
         echo ' '
@@ -121,7 +116,7 @@
         echo '*********************************************************** '
         echo "                                grdID = $grdID"
         echo ' '
-        [[ "$LOUD" = YES ]] && set -x
+        ${TRACE_ON:-set -x}
         err=2;export err;${errchk}
       fi
 
@@ -146,7 +141,7 @@
     echo ' '
     echo " Generating $nmoddef mod def files"
     echo ' '
-    [[ "$LOUD" = YES ]] && set -x
+    ${TRACE_ON:-set -x}
 
 # Set number of processes for mpmd
     wavenproc=$(wc -l cmdfile | awk '{print $1}')
@@ -159,8 +154,7 @@
     echo "   Executing the mod_def command file at : $(date)"
     echo '   ------------------------------------'
     echo ' '
-    [[ "$LOUD" = YES ]] && set -x
-
+    ${TRACE_ON:-set -x}
     if [ "$NTASKS" -gt '1' ]
     then
       if [ ${CFP_MP:-"NO"} = "YES" ]; then
@@ -183,7 +177,7 @@
       echo '********************************************************'
       echo '     See Details Below '
       echo ' '
-      [[ "$LOUD" = YES ]] && set -x
+      ${TRACE_ON:-set -x}
     fi
 
   fi
@@ -198,7 +192,7 @@
       echo ' '
       echo " mod_def.$grdID succesfully created/copied "
       echo ' '
-      [[ "$LOUD" = YES ]] && set -x
+      ${TRACE_ON:-set -x}
     else
       set +x
       echo ' '
@@ -208,7 +202,7 @@
       echo "                                grdID = $grdID"
       echo ' '
       sed "s/^/$grdID.out : /g"  $grdID.out
-      [[ "$LOUD" = YES ]] && set -x
+      ${TRACE_ON:-set -x}
       err=3;export err;${errchk}
     fi
   done
@@ -216,14 +210,5 @@
 # --------------------------------------------------------------------------- #
 # 2.  Ending
 
-  set +x
-  echo ' '
-  echo "Ending at : $(date)"
-  echo ' '
-  echo '                     *** End of MWW3 Init Config ***'
-  echo ' '
-  [[ "$LOUD" = YES ]] && set -x
-
-  exit $err
 
 # End of MWW3 init config script ------------------------------------------- #

@@ -1,4 +1,4 @@
-#!/bin/sh
+#! /usr/bin/env bash
 
 #####
 ## This script defines functions for data I/O and namelist.
@@ -91,7 +91,7 @@ EOF
             exit 1
           fi
           $NLN $increment_file $DATA/INPUT/fv_increment$i.nc
-          IAU_INC_FILES="'fv_increment$i.nc',$IAU_INC_FILES"
+          IAU_INC_FILES="'fv_increment$i.nc',${IAU_INC_FILES:-}"
         done
         read_increment=".false."
         res_latlon_dynamics=""
@@ -643,7 +643,7 @@ WW3_postdet() {
   export WRDIR=${ROTDIR}/${CDUMPRSTwave}.${WRPDY}/${WRcyc}/wave/restart
   export RSTDIR_WAVE=$ROTDIR/${CDUMP}.${PDY}/${cyc}/wave/restart
   export datwave=$COMOUTwave/rundata
-  export wavprfx=${CDUMPwave}${WAV_MEMBER}
+  export wavprfx=${CDUMPwave}${WAV_MEMBER:-}
 
   #Copy initial condition files:
   for wavGRD in $waveGRD ; do
@@ -651,7 +651,7 @@ WW3_postdet() {
       if [ $RERUN = "NO" ]; then
         waverstfile=${WRDIR}/${sPDY}.${scyc}0000.restart.${wavGRD}
       else 
-        waverstfile=${RSTDIR_WAVE}/${PDYT}.${cyct}0000.restart.${wavGRD}      
+        waverstfile=${RSTDIR_WAVE}/${PDYT}.${cyct}0000.restart.${wavGRD}
       fi
     else 
       waverstfile=${RSTDIR_WAVE}/${sPDY}.${scyc}0000.restart.${wavGRD}
@@ -820,7 +820,7 @@ MOM6_postdet() {
     if [ $fhr = 'anl' ]; then
       continue
     fi
-    if [ -z $last_fhr ]; then
+    if [ -z ${last_fhr:-} ]; then
       last_fhr=$fhr
       continue
     fi
@@ -997,7 +997,8 @@ GOCART_rc() {
         cat ${AERO_CONFIG_DIR}/ExtData.${AERO_EMIS_FIRE:-none} ; \
         echo "%%" ; \
       } > $DATA/AERO_ExtData.rc
-      [[ $status -ne 0 ]] && exit $status
+      status=$?
+      if (( status != 0 )); then exit $status; fi
     fi
   fi
 }

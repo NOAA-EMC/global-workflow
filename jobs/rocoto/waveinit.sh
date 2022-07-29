@@ -1,4 +1,6 @@
-#!/bin/bash -x
+#! /usr/bin/env bash
+
+source "$HOMEgfs/ush/preamble.sh"
 
 ###############################################################
 echo
@@ -15,7 +17,4 @@ $HOMEgfs/jobs/JGLOBAL_WAVE_INIT
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
-###############################################################
-# Force Exit out cleanly
-if [ ${KEEPDATA:-"NO"} = "NO" ] ; then rm -rf $DATAROOT ; fi
 exit 0

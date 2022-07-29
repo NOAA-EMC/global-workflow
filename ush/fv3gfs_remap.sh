@@ -1,10 +1,11 @@
-#!/bin/ksh
-set -ax
+#! /usr/bin/env bash
 
 #--------------------------------------
 #-- remap FV3 6 tiles to global array
 #-- Fanglin Yang, October 2016
 #--------------------------------------
+
+source "$HOMEgfs/ush/preamble.sh"
 
 export CDATE=${CDATE:-"2016100300"}
 export CASE=${CASE:-"C192"}           # C48 C96 C192 C384 C768 C1152 C3072
@@ -114,6 +115,5 @@ for type in atmos_4xdaily nggps2d nggps3d ; do
 
 done
 
-echo $(date) EXITING $0 with return code $err >&2
 exit $err
 

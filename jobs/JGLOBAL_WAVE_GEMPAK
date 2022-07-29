@@ -1,9 +1,6 @@
-#!/bin/bash
+#! /usr/bin/env bash
 
-
-date
-set -xa
-export PS4='$SECONDS + '
+source "$HOMEgfs/ush/preamble.sh"
 
 # JY - 10/29, move the block in the front, otherwise PDY is not defined for COMIN
 export DATA=${DATA:-${DATAROOT}/${jobid:?}}
@@ -18,10 +15,6 @@ export cycle=${cycle:-t${cyc}z}
 
 setpdy.sh
 . PDY
-env
-msg="Begin job for $job"
-postmsg "$jlogfile" "$msg"
-
 
 #
 export NET=${NET:-gfs}
@@ -63,5 +56,5 @@ if [ "$KEEPDATA" != "YES" ]; then
   rm -rf $DATA
 fi
 
-date
+
 exit 0

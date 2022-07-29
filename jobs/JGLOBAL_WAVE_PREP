@@ -1,9 +1,8 @@
-#!/bin/bash
+#! /usr/bin/env bash
 
-date
+source "$HOMEgfs/ush/preamble.sh"
+
 export RUN_ENVIR=${RUN_ENVIR:-"nco"}
-export PS4=' $SECONDS + '
-set -x -e
 
 #############################
 # Source relevant config files
@@ -101,5 +100,5 @@ $HOMEgfs/scripts/exgfs_wave_prep.sh
 cd $DATAROOT
 [[ $KEEPDATA = "NO" ]] && rm -rf $DATA
 
-date
+
 exit 0

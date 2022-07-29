@@ -1,4 +1,5 @@
-#!/bin/ksh
+#! /usr/bin/env bash
+
 ##############################################################################
 #  UTILITY SCRIPT NAME :  exgfs_awips_20km_1p0deg.sh
 #         DATE WRITTEN :  11/01/2017
@@ -10,13 +11,16 @@
 #             1st argument - Forecast Hour - format of 3I (3 digits)
 #
 ###############################################################################
-echo "------------------------------------------------"
-echo "JGFS_AWIPS_00/06/12/18 GFS postprocessing"
-echo "------------------------------------------------"
-echo "History: NOV  2017 - First implementation of this new script to  "
-echo "                     process GFS AWIPS 20km and 1.0 deg grids products "
-echo " "
+# echo "------------------------------------------------"
+# echo "JGFS_AWIPS_00/06/12/18 GFS postprocessing"
+# echo "------------------------------------------------"
+# echo "History: NOV  2017 - First implementation of this new script to  "
+# echo "                     process GFS AWIPS 20km and 1.0 deg grids products "
+# echo " "
 ###############################################################################
+
+source "$HOMEgfs/ush/preamble.sh"
+
 fcsthrs="$1"
 num=$#
 job_name=$(echo $job|sed 's/[jpt]gfs/gfs/')
@@ -37,8 +41,6 @@ else
 fi
 
 cd $DATA
-
-set -x
 
 ###############################################
 # Wait for the availability of the pgrb file
@@ -61,9 +63,6 @@ do
 done
 
 ########################################
-msg="HAS BEGUN!"
-postmsg "$jlogfile" "$msg"
-########################################
 
 echo " ------------------------------------------"
 echo " BEGIN MAKING GFS AWIPS PRODUCTS"
@@ -75,7 +74,7 @@ echo "#######################################"
 echo " Process GRIB AWIP GRIB2 PRODUCTS      "
 echo "#######################################"
 echo " "
-set -x
+${TRACE_ON:-set -x}
 
 # Set type of Interpolation for WGRIB2
 export opt1=' -set_grib_type same -new_grid_winds earth '
@@ -251,16 +250,5 @@ if [ -e "$pgmout" ] ; then
    cat $pgmout
 fi
 
-############################################################################################
-# GOOD RUN
-set +x
-echo "**************JOB EXGFS_AWIPS_20KM_1P0DEG.SH.ECF COMPLETED NORMALLY ON THE WCOSS"
-echo "**************JOB EXGFS_AWIPS_20KM_1P0DEG.SH.ECF COMPLETED NORMALLY ON THE WCOSS"
-echo "**************JOB EXGFS_AWIPS_20KM_1P0DEG.SH.ECF COMPLETED NORMALLY ON THE WCOSS"
-set -x
-############################################################################################
-
-msg="HAS COMPLETED NORMALLY!"
-postmsg "$jlogfile" "$msg"
 
 ############## END OF SCRIPT #######################
