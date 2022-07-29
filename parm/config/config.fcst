@@ -80,7 +80,7 @@ export use_coldstart=".false."
 
 export FORECASTSH="$HOMEgfs/scripts/exglobal_forecast.sh"
 export FCSTEXECDIR="$HOMEgfs/exec"
-export FCSTEXEC="ufs_model"
+export FCSTEXEC="ufs_model.x"
 
 #######################################################################
 # Model configuration
@@ -254,6 +254,9 @@ export DO_OCN_PERT_EPBL=${DO_OCN_PERT_EPBL:-"NO"}
 #coupling settings
 export FRAC_GRID=".true."
 export cplmode="nems_frac"
+if [ $FRAC_GRID = ".false." ]; then
+  export cplmode="nems_orig"
+fi
 export psm_bc="1"
 
 export min_lakeice="0.15"

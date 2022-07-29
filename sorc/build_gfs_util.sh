@@ -7,12 +7,12 @@ export dir=$( pwd )
 cd ../util/sorc
 
 # Check for gfs_util folders exist
-if [ ! -d "./mkgfsawps.fd" ]; then 
+if [ ! -d "./mkgfsawps.fd" ]; then
    echo " "
    echo "  GFS_UTIL folders DO NOT exist "
    echo "  "
    exit
-fi 
+fi
 
 echo ""
 echo " Building ... Executables for GFS_UTILITIES "

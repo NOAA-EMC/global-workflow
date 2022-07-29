@@ -1,5 +1,5 @@
 Creates the ESMF integration weight files to transform from cubed-sphere grids
-to comparable (in resolution) global gaussian grids.  
+to comparable (in resolution) global gaussian grids.
 
 First, compile the program that creates the 'scrip' files for the
 global gaussian grids.  For each resolution, two grids are created:
@@ -8,7 +8,7 @@ To compile, cd to ./scrip.fd and type 'make.sh'.  Currently, only
 compiles/runs on Theia.
 
 Then, run the 'run.theia.ksh' script for the resolution desired.
-Script first calls the 'scrip' program, then calls ESMF utility 
+Script first calls the 'scrip' program, then calls ESMF utility
 'RegridWeightGen' to create the interpolation weight files.
 
 Weight files for the following transforms are created:

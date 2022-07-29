@@ -152,6 +152,7 @@ export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 export APP=@APP@
 
 # Defaults:
+export DO_ATM="YES"
 export DO_COUPLED="NO"
 export DO_WAVE="NO"
 export DO_OCN="NO"
@@ -159,11 +160,11 @@ export DO_ICE="NO"
 export DO_AERO="NO"
 export CCPP_SUITE="FV3_GFS_v17_p8"
 export WAVE_CDUMP="" # When to include wave suite: gdas, gfs, or both
+export DOBNDPNT_WAVE="NO"
 export cplwav2atm=".false."
 
 case "${APP}" in
   ATM)
-    echo "APP=ATM; will use defaults"
     export confignamevarfornems="atm"
     ;;
   ATMA)
@@ -175,6 +176,11 @@ case "${APP}" in
     export DO_WAVE="YES"
     export WAVE_CDUMP="both"
     export confignamevarfornems="leapfrog_atm_wav"
+    ;;
+  NG-GODAS)
+    export DO_ATM="NO"
+    export DO_OCN="YES"
+    export DO_ICE="YES"
     ;;
   S2S*)
     export DO_COUPLED="YES"
@@ -190,7 +196,7 @@ case "${APP}" in
 
     if [[ "$APP" =~ ^S2SW ]]; then
         export DO_WAVE="YES"
-        export WAVE_CDUMP="both"    
+        export WAVE_CDUMP="both"
         export cplwav2atm=".true."
         export confignamevarfornems="${confignamevarfornems}_wave"
     fi
@@ -319,6 +325,10 @@ fi
 export imp_physics=8
 
 # Shared parameters
+# DA engine
+export DO_JEDIVAR="NO"
+export DO_JEDIENS="NO"
+
 # Hybrid related
 export DOHYBVAR="YES"
 export NMEM_ENKF=@NMEM_ENKF@
