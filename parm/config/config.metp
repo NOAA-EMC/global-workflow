@@ -1,4 +1,4 @@
-#!/bin/ksh -x
+#! /usr/bin/env bash
 
 ########## config.metp ##########
 # METplus verification step specific

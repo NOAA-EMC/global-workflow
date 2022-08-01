@@ -1,4 +1,5 @@
-#! /bin/sh
+#! /usr/bin/env bash
+
 #####
 ## "parsing_namelist_FV3.sh"
 ## This script writes namelist for FV3 model
@@ -34,7 +35,7 @@ EOF
 cat $DIAG_TABLE >> diag_table
 fi
 
-if [ ! -z "${AERO_DIAG_TABLE}" ]; then
+if [ ! -z "${AERO_DIAG_TABLE:-}" ]; then
   cat ${AERO_DIAG_TABLE} >> diag_table
 fi
 
@@ -44,7 +45,7 @@ cat $DIAG_TABLE_APPEND >> diag_table
 $NCP $DATA_TABLE  data_table
 
 # build field_table
-if [ ! -z "${AERO_FIELD_TABLE}" ]; then
+if [ ! -z "${AERO_FIELD_TABLE:-}" ]; then
   nrec=$( cat ${FIELD_TABLE} | wc -l )
   prec=${nrec}
   if (( dnats > 0 )); then
@@ -69,20 +70,20 @@ cat > input.nml <<EOF
   chksum_debug = $chksum_debug
   dycore_only = $dycore_only
   ccpp_suite = $CCPP_SUITE
-  $atmos_model_nml
+  ${atmos_model_nml:-}
 /
 
 &diag_manager_nml
   prepend_date = .false.
   max_output_fields = 300
-  $diag_manager_nml
+  ${diag_manager_nml:-}
 /
 
 &fms_io_nml
   checksum_required = .false.
   max_files_r = 100
   max_files_w = 100
-  $fms_io_nml
+  ${fms_io_nml:-}
 /
 
 &mpp_io_nml
@@ -94,7 +95,7 @@ cat > input.nml <<EOF
   clock_grain = 'ROUTINE'
   domains_stack_size = ${domains_stack_size:-3000000}
   print_memory_usage = ${print_memory_usage:-".false."}
-  $fms_nml
+  ${fms_nml:-}
 /
 
 &fv_core_nml
@@ -169,7 +170,7 @@ cat > input.nml <<EOF
   agrid_vel_rst = ${agrid_vel_rst:-".true."}
   read_increment = $read_increment
   res_latlon_dynamics = $res_latlon_dynamics
-  $fv_core_nml
+  ${fv_core_nml-}
 /
 
 &external_ic_nml
@@ -178,7 +179,7 @@ cat > input.nml <<EOF
   gfs_dwinds = $gfs_dwinds
   checker_tr = .false.
   nt_checker = 0
-  $external_ic_nml
+  ${external_ic_nml-}
 /
 
 &gfs_physics_nml
@@ -521,12 +522,12 @@ cat >> input.nml <<EOF
   mp_time = 150.
   reiflag = ${reiflag:-"2"}
 
-  $gfdl_cloud_microphysics_nml
+  ${gfdl_cloud_microphysics_nml:-}
 /
 
 &interpolator_nml
   interp_method = 'conserve_great_circle'
-  $interpolator_nml
+  ${interpolator_nml:-}
 /
 
 &namsfc
@@ -545,12 +546,12 @@ cat >> input.nml <<EOF
   FNSMCC   = '${FNSMCC}'
   FNMSKH   = '${FNMSKH}'
   FNTSFA   = '${FNTSFA}'
-  FNACNA   = '${FNACNA}'
-  FNSNOA   = '${FNSNOA}'
-  FNVMNC   = '${FNVMNC}'
-  FNVMXC   = '${FNVMXC}'
-  FNSLPC   = '${FNSLPC}'
-  FNABSC   = '${FNABSC}'
+  FNACNA   = '${FNACNA:-}'
+  FNSNOA   = '${FNSNOA:-}'
+  FNVMNC   = '${FNVMNC:-}'
+  FNVMXC   = '${FNVMXC:-}'
+  FNSLPC   = '${FNSLPC:-}'
+  FNABSC   = '${FNABSC:-}'
   LDEBUG = ${LDEBUG:-".false."}
   FSMCL(2) = ${FSMCL2:-99999}
   FSMCL(3) = ${FSMCL3:-99999}
@@ -570,12 +571,12 @@ cat >> input.nml <<EOF
   FvmxL = ${FvmxL:-99999}
   FSLPL = ${FSLPL:-99999}
   FABSL = ${FABSL:-99999}
-  $namsfc_nml
+  ${namsfc_nml:-}
 /
 
 &fv_grid_nml
   grid_file = 'INPUT/grid_spec.nc'
-  $fv_grid_nml
+  ${fv_grid_nml:-}
 /
 EOF
 
@@ -622,7 +623,7 @@ EOF
   fi
 
   cat >> input.nml << EOF
-  $nam_stochy_nml
+  ${nam_stochy_nml:-}
 /
 EOF
 
@@ -635,13 +636,13 @@ EOF
   ISEED_LNDP = ${ISEED_LNDP:-$ISEED}
   lndp_var_list = ${lndp_var_list}
   lndp_prt_list = ${lndp_prt_list}
-  $nam_sfcperts_nml
+  ${nam_sfcperts_nml:-}
 /
 EOF
   else
     cat >> input.nml << EOF
 &nam_sfcperts
-  $nam_sfcperts_nml
+  ${nam_sfcperts_nml:-}
 /
 EOF
   fi

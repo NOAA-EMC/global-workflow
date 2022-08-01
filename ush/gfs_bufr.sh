@@ -1,4 +1,5 @@
-#!/bin/ksh
+#! /usr/bin/env bash
+
 #
 #  UTILITY SCRIPT NAME :  gfsbufr.sh
 #               AUTHOR :  Hua-Lu Pan
@@ -16,10 +17,9 @@
 # 2018-05-22 Guang Ping Lou: Making it work for both GFS and FV3GFS 
 # 2018-05-30  Guang Ping Lou: Make sure all files are available.
 # 2019-10-10  Guang Ping Lou: Read in NetCDF files
-echo "History: February 2003 - First implementation of this utility script"
+# echo "History: February 2003 - First implementation of this utility script"
 #
-
-set -ax
+source "$HOMEgfs/ush/preamble.sh"
 
 if test "$F00FLAG" = "YES"
 then
@@ -112,4 +112,6 @@ ln -sf ${STNLIST:-$PARMbufrsnd/bufr_stalist.meteo.gfs} fort.8
 ln -sf $PARMbufrsnd/bufr_ij13km.txt fort.7
 
 ${APRUN_POSTSND} $EXECbufrsnd/gfs_bufr < gfsparm > out_gfs_bufr_$FEND
-export err=$?;err_chk
+export err=$?
+
+exit ${err}

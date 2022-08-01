@@ -1,3 +1,5 @@
+#! /usr/bin/env bash
+
 # parsing namelist of CICE
 
 CICE_namelists(){

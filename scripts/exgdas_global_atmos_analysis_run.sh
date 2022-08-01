@@ -19,11 +19,7 @@
 ################################################################################
 
 #  Set environment.
-export VERBOSE=${VERBOSE:-"YES"}
-if [ $VERBOSE = "YES" ]; then
-   echo $(date) EXECUTING $0 $* >&2
-   set -x
-fi
+source "$HOMEgfs/ush/preamble.sh"
 
 #  Directories
 pwd=$(pwd)
@@ -155,7 +151,7 @@ err_chk
 
 ################################################################################
 # Create log file noting creating of analysis increment file
-echo "$CDUMP $CDATE atminc and tiled sfcanl done at `date`" > $COMOUT/${CDUMP}.${cycle}.loginc.txt
+echo "$CDUMP $CDATE atminc and tiled sfcanl done at $(date)" > $COMOUT/${CDUMP}.${cycle}.loginc.txt
 
 ################################################################################
 # Copy diags and YAML to $COMOUT
@@ -172,10 +168,7 @@ for abias in $alist; do
 done
 
 ################################################################################
-set +x
-if [ $VERBOSE = "YES" ]; then
-   echo $(date) EXITING $0 with return code $err >&2
-fi
+
 exit $err
 
 ################################################################################

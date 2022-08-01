@@ -1,9 +1,8 @@
-#!/bin/ksh
-set -x
+#! /usr/bin/env bash
+
+source "$HOMEgfs/ush/preamble.sh"
 
 export RUN_ENVIR=${RUN_ENVIR:-"nco"}
-export PS4='$SECONDS + '
-date
 
 #############################
 # Source relevant config files
@@ -92,7 +91,6 @@ export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 [[ ! -d $pcom ]] && mkdir -p $pcom
 [[ ! -d $COMAWP ]] && mkdir -p $COMAWP
 
-env
 
 ########################################################
 # Execute the script.
@@ -112,15 +110,12 @@ if [ -e "$pgmout" ] ; then
   cat $pgmout
 fi
 
-msg="ENDED NORMALLY."
-postmsg "$jlogfile" "$msg"
-
 ##########################################
 # Remove the Temporary working directory
 ##########################################
 cd $DATAROOT
 [[ $KEEPDATA = "NO" ]] && rm -rf $DATA
 
-date
+
 exit 0
 

@@ -1,17 +1,16 @@
-#!/bin/sh
+#! /usr/bin/env bash
+
+source "$HOMEgfs/ush/preamble.sh"
 
 ########################################
 # GFS post manager
 ########################################
 
 export RUN_ENVIR=${RUN_ENVIR:-"nco"}
-export PS4='$SECONDS + '
-date
 
 #############################
 # Source relevant config files
 #############################
-set -x
 configs="base post"
 export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
 config_path=${EXPDIR:-$NWROOT/gfs.${gfs_ver}/parm/config}
@@ -101,4 +100,3 @@ export COMOUT=${COMOUT:-$ROTDIR/$RUN.$PDY/$cyc/$COMPONENT}
 $HOMEgfs/scripts/exglobal_atmos_pmgr.sh
 ########################################################
 
-date

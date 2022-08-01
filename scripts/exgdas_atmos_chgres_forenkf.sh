@@ -1,4 +1,4 @@
-#!/bin/bash
+#! /usr/bin/env bash
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
@@ -17,12 +17,7 @@
 #
 ################################################################################
 
-#  Set environment.
-export VERBOSE=${VERBOSE:-"YES"}
-if [ $VERBOSE = "YES" ]; then
-   echo $(date) EXECUTING $0 $* >&2
-   set -x
-fi
+source "$HOMEgfs/ush/preamble.sh"
 
 #  Directories.
 pwd=$(pwd)
@@ -149,7 +144,7 @@ if [ $DO_CALC_ANALYSIS == "YES" ]; then
       [[ -f $DATA/mp_chgres.sh ]] && rm $DATA/mp_chgres.sh
    fi
 
-   nfhrs=`echo $IAUFHRS_ENKF | sed 's/,/ /g'`
+   nfhrs=$(echo $IAUFHRS_ENKF | sed 's/,/ /g')
    for FHR in $nfhrs; do
      echo "Regridding deterministic forecast for forecast hour $FHR"
      rm -f chgres_nc_gauss0$FHR.nml
@@ -203,8 +198,5 @@ fi
 cd $pwd
 [[ $mkdata = "YES" ]] && rm -rf $DATA
 
-set +x
-if [ $VERBOSE = "YES" ]; then
-   echo $(date) EXITING $0 with return code $err >&2
-fi
+
 exit $err

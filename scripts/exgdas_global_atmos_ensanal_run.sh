@@ -19,11 +19,7 @@
 ################################################################################
 
 #  Set environment.
-export VERBOSE=${VERBOSE:-"YES"}
-if [ $VERBOSE = "YES" ]; then
-   echo $(date) EXECUTING $0 $* >&2
-   set -x
-fi
+source "$HOMEgfs/ush/preamble.sh"
 
 #  Directories
 pwd=$(pwd)
@@ -154,7 +150,7 @@ done
 
 ################################################################################
 # Create log file noting creating of analysis increment file
-echo "$CDUMP $CDATE atminc done at `date`" > $COMOUT_ENS/${CDUMP}.${cycle}.loginc.txt
+echo "$CDUMP $CDATE atminc done at $(date)" > $COMOUT_ENS/${CDUMP}.${cycle}.loginc.txt
 
 ################################################################################
 # Copy diags and YAML to $COMOUT
@@ -163,10 +159,7 @@ cp -rf $DATA/diags $COMOUT_ENS/
 
 
 ################################################################################
-set +x
-if [ $VERBOSE = "YES" ]; then
-   echo $(date) EXITING $0 with return code $err >&2
-fi
+
 exit $err
 
 ################################################################################

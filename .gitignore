@@ -190,6 +190,7 @@ ush/radmon_verf_bcoef.sh
 ush/radmon_verf_bcor.sh
 ush/radmon_verf_time.sh
 ush/ufsda
+ush/rstprod.sh
 ush/wafs_blending.sh
 ush/wafs_grib2.regrid.sh
 ush/wafs_intdsk.sh

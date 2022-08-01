@@ -1,9 +1,6 @@
-#!/bin/ksh
+#! /usr/bin/env bash
 
-set -x
-
-msg="JOB $job HAS BEGUN"
-postmsg "$jlogfile" "$msg"
+source "$HOMEgfs/ush/preamble.sh"
 
 cd $DATA
 
@@ -14,13 +11,13 @@ fhr=$fhend
 export numproc=23
 
 while [ $fhr -ge $fhbeg ] ; do
-   typeset -Z3 fhr
-   ls -l $COMIN/$GEMGRD1${fhr}
-   err1=$?
-   if [ $err1 -eq 0 -o $fhr -eq $fhbeg ] ; then
-      break
-   fi
-   fhr=$(expr $fhr - $fhinc)
+  fhr=$(printf "%03d" $fhr)
+  ls -l $COMIN/$GEMGRD1${fhr}
+  err1=$?
+  if [ $err1 -eq 0 -o $fhr -eq $fhbeg ] ; then
+    break
+  fi
+  fhr=$(expr $fhr - $fhinc)
 done
 
 maxtries=180
@@ -73,9 +70,7 @@ do
       rm $DATA/poescript
 #   fi
 
-   if [ $fhr -lt 100 ] ; then
-      typeset -Z2 fhr
-   fi
+   fhr=$(printf "%02d" $fhr)
 
    if [ $do_all -eq 1 ] ; then
      do_all=0
@@ -110,7 +105,7 @@ do
 #  If this is the final fcst hour, alert the
 #  file to all centers.
 # 
-   if [ $fhr -ge $fhend ] ; then
+   if [ 10#$fhr -ge $fhend ] ; then
       export DBN_ALERT_TYPE=GFS_METAFILE_LAST
    fi
 
@@ -130,7 +125,7 @@ do
   $APRUNCFP $DATA/poescript
   export err=$?; err_chk
 
-      typeset -Z3 fhr
+      fhr=$(printf "%03d" $fhr)
       if [ $fhr -eq 126 ] ; then
         let fhr=fhr+6
       else
@@ -139,14 +134,7 @@ do
 done
 
 #####################################################################
-# GOOD RUN
-set +x
-echo "**************JOB GFS_META COMPLETED NORMALLY on the IBM-SP"
-echo "**************JOB GFS_META COMPLETED NORMALLY on the IBM-SP"
-echo "**************JOB GFS_META COMPLETED NORMALLY on the IBM-SP"
-set -x
-#####################################################################
 
-echo EXITING $0
+
 exit
 #

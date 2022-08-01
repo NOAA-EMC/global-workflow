@@ -1,4 +1,6 @@
-#!/bin/bash -x
+#! /usr/bin/env bash
+
+source "$HOMEgfs/ush/preamble.sh"
 
 ###############################################################
 # Source FV3GFS workflow modules
@@ -25,4 +27,6 @@ done
 
 ###############################################################
 # Exit out cleanly
+
+
 exit 0

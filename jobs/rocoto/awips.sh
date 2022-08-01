@@ -1,4 +1,6 @@
-#!/bin/bash -x
+#! /usr/bin/env bash
+
+source "$HOMEgfs/ush/preamble.sh"
 
 ###############################################################
 ## Abstract:
@@ -73,7 +75,7 @@ for fhr in $fhrlst; do
     fhmax=84
     if [ $fhr -ge $fhmin -a $fhr -le $fhmax ] ; then
 	if [[ $(expr $fhr % 3) -eq 0 ]]; then
-            fhr3=$(printf %03i $fhr)
+            fhr3=$(printf %03d $((10#$fhr)))
             
 #           Check for input file existence.  If not present, sleep
 #           Loop SLEEP_LOOP_MAX times.  Abort if not found.            
@@ -145,4 +147,6 @@ done
 ###############################################################
 # Force Exit out cleanly
 if [ ${KEEPDATA:-"NO"} = "NO" ] ; then rm -rf $DATAROOT ; fi
+
+
 exit 0
