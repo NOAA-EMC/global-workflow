@@ -906,7 +906,7 @@ class Tasks:
                 dep_dict = {'type': 'task', 'name': f'{self.cdump}wavepostbndpnt'}
                 deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_ocean:
-            dep_dict = {'type': 'metatask', 'name': f'{self.cdump}oceanpost'}
+            dep_dict = {'type': 'metatask', 'name': f'{self.cdump}ocnpost'}
             deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
