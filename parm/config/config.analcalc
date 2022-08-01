@@ -1,4 +1,4 @@
-#!/bin/ksh -x
+#! /usr/bin/env bash
 
 ########## config.analcalc ##########
 # GFS post-anal specific (non-diag)

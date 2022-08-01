@@ -1,5 +1,4 @@
-#!/bin/ksh
-set -x
+#! /usr/bin/env bash
 
 #-----------------------------------------------------------------------
 #-Hui-Ya Chuang, January 2014:  First version.
@@ -31,8 +30,7 @@ set -x
 #  1. Modify sea icea cover via land-sea mask.
 #-----------------------------------------------------------------------
 
-
-echo "!!!!!CREATING $RUN DOWNSTREAM PRODUCTS FOR FH = $FH !!!!!!"
+source "$HOMEgfs/ush/preamble.sh" "$FH"
 
 export downset=${downset:-1}
 export DATA=${DATA:-/ptmpd2/$LOGNAME/test}
@@ -130,16 +128,27 @@ while [ $nset -le $totalset ]; do
     # if final record of each piece is ugrd, add vgrd
     # copygb will only interpolate u and v together
     #$WGRIB2 -d $end $tmpfile |grep -i ugrd
-    $WGRIB2 -d $end $tmpfile |egrep -i "ugrd|ustm|uflx|u-gwd"
+    # grep returns 1 if no match is found, so temporarily turn off exit on non-zero rc
+    set +e
+    $WGRIB2 -d $end $tmpfile | egrep -i "ugrd|ustm|uflx|u-gwd"
     export rc=$?
+    ${ERR_EXIT_ON:-set -eu}
     if [[ $rc -eq 0 ]] ; then
       export end=$(expr ${end} + 1)
+    elif [[ $rc -gt 1 ]]; then
+      echo "FATAL: WGRIB2 failed with error code ${rc}"
+      exit $rc
     fi
-    # if final record is land, add next record icec
-    $WGRIB2 -d $end $tmpfile |egrep -i "land"
+    # if final record is land, add next record icec 
+    set +e
+    $WGRIB2 -d $end $tmpfile | egrep -i "land"
     export rc=$?
+    ${ERR_EXIT_ON:-set -eu}
     if [[ $rc -eq 0 ]] ; then
       export end=$(expr ${end} + 1)
+    elif [[ $rc -gt 1 ]]; then
+      echo "FATAL: WGRIB2 failed with error code ${rc}"
+      exit $rc
     fi
     if [ $iproc -eq $nproc ]; then
       export end=$ncount
@@ -176,6 +185,7 @@ while [ $nset -le $totalset ]; do
       echo "$nm $line" >> $DATA/poescript_srun
       nm=$((nm+1))
     done
+    nm=$(wc -l < $DATA/poescript_srun)
     ${launcher:-"srun --export=ALL"} -n $nm --multi-prog $DATA/poescript_srun
   else
     $launcher
@@ -282,9 +292,5 @@ while [ $nset -le $totalset ]; do
 
   export nset=$(expr $nset + 1 )
 done
-
-echo "!!!!!!CREATION OF SELECT $RUN DOWNSTREAM PRODUCTS COMPLETED FOR FHR = $FH !!!!!!!"
-#---------------------------------------------------------------
-
 
 exit 0

@@ -1,10 +1,8 @@
-#!/bin/ksh
-set -x
+#! /usr/bin/env bash
+
+source "$HOMEgfs/ush/preamble.sh"
 
 export RUN_ENVIR=${RUN_ENVIR:-"nco"}
-export PS4='$SECONDS + '
-date
-
 
 #############################
 # Source relevant config files
@@ -106,11 +104,6 @@ export COMIN_GES_ENS="$ROTDIR/enkf$CDUMP.$gPDY/$gcyc/$COMPONENT"
 
 ###############################################################
 # Run relevant script
-env
-msg="HAS BEGUN on `hostname`"
-postmsg "$jlogfile" "$msg"
-$LOGSCRIPT
-
 
 ${ENKFRECENSH:-$SCRgfs/exgdas_enkf_ecen.sh}
 status=$?
@@ -129,15 +122,11 @@ if [ -e "$pgmout" ] ; then
 fi
 
 
-msg="ENDED NORMALLY."
-postmsg "$jlogfile" "$msg"
-
-
 ##########################################
 # Remove the Temporary working directory
 ##########################################
 cd $DATAROOT
 [[ $KEEPDATA = "NO" ]] && rm -rf $DATA
 
-date
+
 exit 0

@@ -1,4 +1,6 @@
-#!/bin/bash -x
+#! /usr/bin/env bash
+
+source "$HOMEgfs/ush/preamble.sh"
 
 ###############################################################
 echo
@@ -32,5 +34,6 @@ echo "=============== START TO RUN WAVE PRDGEN BULLS ==============="
 # Execute the JJOB
 $HOMEgfs/jobs/JGLOBAL_WAVE_PRDGEN_BULLS
 status=$?
-exit $status
 
+
+exit $status

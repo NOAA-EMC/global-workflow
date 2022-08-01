@@ -1,8 +1,6 @@
-#!/bin/sh
+#! /usr/bin/env bash
 
-set -xa
-export PS4='$SECONDS + '
-date
+source "$HOMEgfs/ush/preamble.sh"
 
 ############################################
 # GFS_PGRB2_SPEC_GEMPAK PRODUCT GENERATION
@@ -63,12 +61,8 @@ if [ $SENDCOM = YES ] ; then
   mkdir -m 775 -p $COMOUT
 fi
 
-env
 
 export DATA_HOLD=$DATA
-
-msg="Begin job for $job"
-postmsg "$jlogfile" "$msg"
 
 #################################################################
 # Execute the script for the regular grib
@@ -85,7 +79,6 @@ export finc=3
 export fstart=000
 
 echo "RUNS the Program"
-set -xa
 
 ########################################################
 # Execute the script.
@@ -107,16 +100,12 @@ export finc=3
 export fstart=000
 
 echo "RUNS the Program"
-set -xa
 
 ########################################################
 # Execute the script.
 $SRCgfs/exgfs_atmos_goes_nawips.sh
 export err=$?; err_chk
 ########################################################
-
-msg="JOB $job HAS COMPLETED NORMALLY!"
-postmsg $jlogfile "$msg"
 
 echo "end of program"
 cd $DATA_HOLD
@@ -138,4 +127,3 @@ if [ "$KEEPDATA" != "YES" ] ; then
   rm -rf $DATA
 fi
 
-date

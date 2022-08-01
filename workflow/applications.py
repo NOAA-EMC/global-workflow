@@ -93,6 +93,7 @@ class AppConfig:
 
         self.model_app = _base.get('APP', 'ATM')
         self.do_hybvar = _base.get('DOHYBVAR', False)
+        self.do_atm = _base.get('DO_ATM', True)
         self.do_wave = _base.get('DO_WAVE', False)
         self.do_wave_bnd = _base.get('DOBNDPNT_WAVE', False)
         self.do_ocean = _base.get('DO_OCN', False)
@@ -182,12 +183,12 @@ class AppConfig:
 
         configs += ['sfcanl', 'analcalc', 'fcst', 'post', 'vrfy', 'arch']
 
-         
+
         if self.do_gldas:
             configs += ['gldas']
 
         if self.do_hybvar:
-            if self.do_jediens:            
+            if self.do_jediens:
                 configs += ['atmensanalprep', 'atmensanalrun', 'atmensanalpost']
             else:
                 configs += ['eobs', 'eomg', 'ediag', 'eupd']
@@ -228,9 +229,14 @@ class AppConfig:
         Returns the config_files that are involved in the forecast-only app
         """
 
-        configs = ['fcst', 'post', 'vrfy', 'arch']
+        configs = ['fcst']
 
-        if self.model_app in ['S2S', 'S2SW', 'S2SWA']:
+        if self.do_atm:
+            configs += ['post', 'vrfy']
+
+        configs += ['arch']
+
+        if self.model_app in ['S2S', 'S2SW', 'S2SWA', 'NG-GODAS']:
             configs += ['coupled_ic']
         else:
             configs += ['init']
@@ -243,7 +249,7 @@ class AppConfig:
         if self.do_ocean or self.do_ice:
             configs += ['ocnpost']
 
-        if self.do_metp:
+        if self.do_atm and self.do_metp:
             configs += ['metp']
 
         if self.do_gempak:
@@ -446,7 +452,7 @@ class AppConfig:
 
         tasks = []
 
-        if 'S2S' in self.model_app:
+        if self.model_app in ['S2S', 'S2SW', 'S2SWA', 'NG-GODAS']:
             tasks += ['coupled_ic']
         else:
             if self.do_hpssarch:
@@ -462,12 +468,16 @@ class AppConfig:
 
         tasks += ['fcst']
 
-        tasks += ['post']
-        if 'S2S' in self.model_app:
+        if self.do_atm:
+            tasks += ['post']
+
+        if self.model_app in ['S2S', 'S2SW', 'S2SWA', 'NG-GODAS']:
             tasks += ['ocnpost']
 
-        tasks += ['vrfy']
-        if self.do_metp:
+        if self.do_atm:
+            tasks += ['vrfy']
+
+        if self.do_atm and self.do_metp:
             tasks += ['metp']
 
         if self.do_wave:

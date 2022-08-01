@@ -1,4 +1,4 @@
-#!/bin/sh
+#! /usr/bin/env bash
 
 #####
 ## "forecast_def.sh"
@@ -7,7 +7,6 @@
 ## This is the child script of ex-global forecast,
 ## This script is a definition of functions.
 #####
-
 
 # For all non-evironment variables
 # Cycling and forecast hour specific parameters
@@ -125,9 +124,9 @@ FV3_GFS_predet(){
   cores_per_node=${cores_per_node:-${npe_node_fcst:-24}}
   ntiles=${ntiles:-6}
   if [ $MEMBER -lt 0 ]; then
-    NTASKS_TOT=${NTASKS_TOT:-$npe_fcst_gfs}
+    NTASKS_TOT=${NTASKS_TOT:-${npe_fcst_gfs:-0}}
   else
-    NTASKS_TOT=${NTASKS_TOT:-$npe_efcs}
+    NTASKS_TOT=${NTASKS_TOT:-${npe_efcs:-0}}
   fi
 
   TYPE=${TYPE:-"nh"}                  # choices:  nh, hydro

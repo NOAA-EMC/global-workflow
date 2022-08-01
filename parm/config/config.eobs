@@ -1,4 +1,4 @@
-#!/bin/ksh -x
+#! /usr/bin/env bash
 
 ########## config.eobs config.eomg ##########
 # Ensemble innovation specific, dependency config.anal

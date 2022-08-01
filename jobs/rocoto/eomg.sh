@@ -1,4 +1,6 @@
-#!/bin/bash -x
+#! /usr/bin/env bash
+
+source "$HOMEgfs/ush/preamble.sh"
 
 ###############################################################
 # Source FV3GFS workflow modules
@@ -10,4 +12,6 @@ status=$?
 # Execute the JJOB
 $HOMEgfs/jobs/JGDAS_ENKF_INNOVATE_OBS
 status=$?
+
+
 exit $status

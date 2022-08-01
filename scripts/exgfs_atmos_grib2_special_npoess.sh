@@ -1,17 +1,15 @@
-#!/bin/ksh
+#! /usr/bin/env bash
+
 #####################################################################
-echo "-----------------------------------------------------"
-echo " exglobal_grib2_special_npoess.sh"
-echo " Jan 2008 - Chuang - Produces 1x1 degree special Grib from master."
-echo "-----------------------------------------------------"
+# echo "-----------------------------------------------------"
+# echo " exglobal_grib2_special_npoess.sh"
+# echo " Jan 2008 - Chuang - Produces 1x1 degree special Grib from master."
+# echo "-----------------------------------------------------"
 #####################################################################
 
-set -x
+source "$HOMEgfs/ush/preamble.sh"
 
 cd $DATA
-
-msg="HAS BEGUN on $(hostname)"
-postmsg "$jlogfile" "$msg"
 
 ############################################################
 #  Define Variables:
@@ -49,12 +47,12 @@ SLEEP_LOOP_MAX=$(expr $SLEEP_TIME / $SLEEP_INT)
 ##############################################################################
 export SHOUR=000
 export FHOUR=024
-export fhr=$SHOUR
-typeset -Z3 fhr
+export fhr=$(printf "%03d" $SHOUR)
+
 ############################################################
 # Loop Through the Post Forecast Files 
 ############################################################
-while test $fhr -le $FHOUR
+while test 10#$fhr -le $FHOUR
 do
 
     ###############################
@@ -87,10 +85,6 @@ do
 ######################################################################
 # Process Global NPOESS 0.50 GFS GRID PRODUCTS IN GRIB2 F000 - F024  #
 ######################################################################
-    set -x
-    msg="Starting half degree grib generation for fhr=$fhr"
-    postmsg "$jlogfile" "$msg"
-
     paramlist=${PARMproduct}/global_npoess_paramlist_g2
     cp $COMIN/gfs.t${cyc}z.pgrb2.0p50.f${fhr}  tmpfile2
     cp $COMIN/gfs.t${cyc}z.pgrb2b.0p50.f${fhr}  tmpfile2b
@@ -112,8 +106,7 @@ do
        echo "$PDY$cyc$fhr" > $COMOUT/${RUN}.t${cyc}z.control.halfdeg.npoess
     fi
     rm tmpfile pgb2file
-    export fhr=$(expr $fhr + $FHINC)
-    typeset -Z3 fhr
+    export fhr=$(printf "%03d" $(expr $fhr + $FHINC))
 
 done
 
@@ -122,14 +115,13 @@ done
 ################################################################
 export SHOUR=000
 export FHOUR=180
-export fhr=$SHOUR
-typeset -Z3 fhr
+export fhr=$(printf "%03d" $SHOUR)
 
 #################################
 # Process GFS PGRB2_SPECIAL_POST
 #################################
 
-while test $fhr -le $FHOUR
+while test 10#$fhr -le $FHOUR
 do
     ###############################
     # Start Looping for the 
@@ -158,10 +150,7 @@ do
           err_chk
        fi
     done
-    set -x
-
-    msg="Starting special grib file generation for fhr=$fhr"
-    postmsg "$jlogfile" "$msg"
+    ${TRACE_ON:-set -x}
 
     ###############################
     # Put restart files into /nwges 
@@ -208,13 +197,8 @@ do
        export fhour=$(expr ${fhr} % 6 )
     fi
 
-    export fhr=$(expr $fhr + $FHINC)
-    typeset -Z3 fhr
+    export fhr=$(printf "%03d" $(expr $fhr + $FHINC))
 done
 
-########################################################
-
-msg='ENDED NORMALLY.'
-postmsg "$jlogfile" "$msg"
 
 ################## END OF SCRIPT #######################

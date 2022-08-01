@@ -1,4 +1,5 @@
-#!/bin/bash
+#! /usr/bin/env bash
+
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
@@ -16,12 +17,7 @@
 #
 ################################################################################
 
-# Set environment.
-export VERBOSE=${VERBOSE:-"YES"}
-if [ $VERBOSE = "YES" ]; then
-   echo $(date) EXECUTING $0 $* >&2
-   set -x
-fi
+source "$HOMEgfs/ush/preamble.sh"
 
 # Directories.
 pwd=$(pwd)
@@ -119,8 +115,6 @@ export err=$?; err_chk
 # Postprocessing
 cd $pwd
 [[ $mkdata = "YES" ]] && rm -rf $DATA
-set +x
-if [ $VERBOSE = "YES" ]; then
-   echo $(date) EXITING $0 with return code $err >&2
-fi
+
+
 exit $err
