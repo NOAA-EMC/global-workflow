@@ -1,4 +1,4 @@
-#!/bin/ksh -x
+#! /usr/bin/env bash
 
 ########## config.getic ##########
 # Fetching GFS initial conditions specific

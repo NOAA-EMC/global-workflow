@@ -1,21 +1,22 @@
-#!/bin/ksh
+#! /usr/bin/env bash
 
 #####################################################################
-echo "-----------------------------------------------------"
-echo " Script: gfs_transfer.sh" 
-echo " "
-echo " Purpose - Copy GFS Posts to /nwges and /com"
-echo "           Alert posted files to DBNet"
-echo " "
-echo " History - "
-echo "    Cooke   - 04/21/05 - Inital version, based off of"
-echo "                         global_transfer.sh"
-echo "    Meng    - 01/04/18 - Remove writing data file to /nwges."
-echo "    Meng    - 09/14/20 - Update model output format to netcdf for GFS V16"
-echo "-----------------------------------------------------"
+# echo "-----------------------------------------------------"
+# echo " Script: gfs_transfer.sh" 
+# echo " "
+# echo " Purpose - Copy GFS Posts to /nwges and /com"
+# echo "           Alert posted files to DBNet"
+# echo " "
+# echo " History - "
+# echo "    Cooke   - 04/21/05 - Inital version, based off of"
+# echo "                         global_transfer.sh"
+# echo "    Meng    - 01/04/18 - Remove writing data file to /nwges."
+# echo "    Meng    - 09/14/20 - Update model output format to netcdf for GFS V16"
+# echo "-----------------------------------------------------"
 #####################################################################
-set -xa
- 
+
+source "$HOMEgfs/ush/preamble.sh"
+
 # export CNVGRIB=/nwprod/util/exec/cnvgrib
 # export GRB2INDX=/nwprod/util/exec/grb2index
 # export WGRIB2=/nwprod/util/exec/wgrib2

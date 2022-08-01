@@ -1,8 +1,6 @@
-#!/bin/sh
+#! /usr/bin/env bash
 
-set -xa
-export PS4='$SECONDS + '
-date
+source "$HOMEgfs/ush/preamble.sh"
 
 ############################################
 # GFS GEMPAK META PRODUCT GENERATION
@@ -83,25 +81,18 @@ export COMINnam=${COMINnam:-$(compath.py nam/prod/nam)}
 export SENDDBN=${SENDDBN:-NO}
 export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
-msg="Begin job for $job"
-postmsg "$jlogfile" "$msg"
-
 if [ $SENDCOM = YES ] ; then
   mkdir -m 775 -p $COMOUT
 fi
 
 export pgmout=OUTPUT.$$
 
-env
 
 ########################################################
 # Execute the script.
 $SRCgfs/exgfs_atmos_gempak_meta.sh
 export err=$?; err_chk
 ########################################################
-
-msg="JOB $job HAS COMPLETED NORMALLY!"
-postmsg $jlogfile "$msg"
 
 ############################################
 # print exec I/O output
@@ -117,4 +108,3 @@ if [ "$KEEPDATA" != "YES" ] ; then
   rm -rf $DATA
 fi
 
-date

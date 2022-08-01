@@ -1,8 +1,6 @@
-#!/bin/sh
+#! /usr/bin/env bash
 
-set -xa
-export PS4='$SECONDS + '
-date
+source "$HOMEgfs/ush/preamble.sh"
 
 ############################################
 # GDAS GEMPAK META NCDC PRODUCT GENERATION
@@ -86,7 +84,6 @@ fi
 
 export pgmout=OUTPUT.$$
 
-env
 
 ########################################################
 # Execute the script.
@@ -107,9 +104,6 @@ $SRCgfs/exgdas_atmos_gempak_gif_ncdc.sh
 export err=$?; err_chk
 ########################################################
 
-msg="JOB $job HAS COMPLETED NORMALLY!"
-postmsg $jlogfile "$msg"
-
 ############################################
 # print exec I/O output
 ############################################
@@ -124,4 +118,3 @@ if [ "$KEEPDATA" != "YES" ] ; then
   rm -rf $DATA
 fi
 
-date

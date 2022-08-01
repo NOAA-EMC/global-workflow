@@ -1,4 +1,5 @@
-#!/bin/bash
+#! /usr/bin/env bash
+
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
@@ -17,11 +18,8 @@
 ################################################################################
 
 #  Set environment.
-export VERBOSE=${VERBOSE:-"YES"}
-if [[ "$VERBOSE" = "YES" ]]; then
-   echo $(date) EXECUTING $0 $* >&2
-   set -x
-fi
+
+source "$HOMEgfs/ush/preamble.sh"
 
 #  Directories.
 pwd=$(pwd)
@@ -247,7 +245,9 @@ EOFdiag
    # Restrict diagnostic files containing rstprod data
    rlist="conv_gps conv_ps conv_pw conv_q conv_sst conv_t conv_uv saphir"
    for rtype in $rlist; do
-       ${CHGRP_CMD} *${rtype}*
+      set +e
+      ${CHGRP_CMD} *${rtype}*
+      ${STRICT_ON:-set -e}
    done
 
    # If requested, create diagnostic file tarballs
@@ -285,11 +285,8 @@ if [[ "$REMOVE_DIAG_DIR" = "YES" && "$err" = "0" ]]; then
 fi
 
 cd $pwd
-[[ $mkdata = "YES" ]] && rm -rf $DATA
+[[ "${mkdata:-YES}" = "YES" ]] && rm -rf $DATA
 
-set +x
-if [[ "$VERBOSE" = "YES" ]]; then
-   echo $(date) EXITING $0 with return code $err >&2
-fi
+
 exit $err
 

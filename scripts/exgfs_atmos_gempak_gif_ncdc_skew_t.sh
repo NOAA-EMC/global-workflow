@@ -1,16 +1,15 @@
-#!/bin/sh
+#! /usr/bin/env bash
+
 ##############################################################
 # Add the NCDC GIF processing to the end of the gempak_gif job
 # There is no timing issue with the NCDC GIF, so it is
 # okay to just add it here. If timing becomes a problem
 # in the future, we should move it above somewhere else.
 ##############################################################
-export PS4='exgempakgif_ncdc_skewt:$SECONDS + '
-set -xa
+
+source "$HOMEgfs/ush/preamble.sh"
 
 cd $DATA
-msg="The NCDC GIF processing has begun"
-postmsg "$jlogfile" "$msg"
 
 export NTS=$USHgempak/restore
 
@@ -58,20 +57,18 @@ then
 fi
 
 ####################################################################################
-echo "-----------------------------------------------------------------------------"
-echo "GFS MAG postprocessing script exmag_sigman_skew_k_gfs_gif_ncdc_skew_t.sh "
-echo "-----------------------------------------------------------------------------"
-echo "History: Mar 2012 added to processing for enhanced MAG skew_t"
-echo "2012-03-11 Mabe -- reworked script to add significant level "
-echo "  data to existing mandatory level data in a new file"
-echo "2013-04-24 Mabe -- Reworked to remove unneeded output with "
-echo "  conversion to WCOSS"
+# echo "-----------------------------------------------------------------------------"
+# echo "GFS MAG postprocessing script exmag_sigman_skew_k_gfs_gif_ncdc_skew_t.sh "
+# echo "-----------------------------------------------------------------------------"
+# echo "History: Mar 2012 added to processing for enhanced MAG skew_t"
+# echo "2012-03-11 Mabe -- reworked script to add significant level "
+# echo "  data to existing mandatory level data in a new file"
+# echo "2013-04-24 Mabe -- Reworked to remove unneeded output with "
+# echo "  conversion to WCOSS"
 # Add ms to filename to make it different since it has both mandatory
 # and significant level data      $COMOUT/${RUN}.${cycle}.msupperair
 #                             $COMOUT/${RUN}.${cycle}.msupperairtble
 #####################################################################################
-
-set -x
 
 cd $DATA
 
@@ -112,14 +109,10 @@ fi
 fi
 
 ############################################################
-# GOOD RUN
-set +x
-echo "********** JGFS_ATMOS_GEMPAK_NCDC_UPAPGIF COMPLETED"
-set -x
-############################################################
+
 if [ -e "$pgmout" ] ; then
    cat $pgmout
 fi
-msg="HAS COMPLETED NORMALLY!"
+
 
 exit
