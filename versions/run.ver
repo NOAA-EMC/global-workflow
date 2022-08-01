@@ -16,6 +16,7 @@ export cfp_ver=2.0.4
 
 export python_ver=3.8.6
 export gempak_ver=7.14.1
+export ncl_ver=6.6.2
 export imagemagick_ver=7.0.8-7
 export perl_ver=5.32.0
 export libjpeg_ver=9c
@@ -25,7 +26,9 @@ export cdo_ver=1.9.8
 
 export hdf5_ver=1.10.6
 export netcdf_ver=4.7.4
-export esmf_ver=8.0.1
+export pio_ver=2.5.2
+export esmf_ver=8.3.0b09
+export fms_ver=2021.03
 
 export udunits_ver=2.2.28
 export gsl_ver=2.7
@@ -37,16 +40,18 @@ export wgrib2_ver=2.0.7
 
 export crtm_ver=2.3.0
 
-export g2tmpl_ver=1.9.1
+export g2tmpl_ver=1.10.0
 export bacio_ver=2.4.1
-export w3nco_ver=2.4.1
 export nemsio_ver=2.5.2
 export sigio_ver=2.3.2
 export w3emc_ver=2.9.2
-export bufr_ver=11.4.0
+export bufr_ver=11.5.0
 export g2_ver=3.4.5
 export zlib_ver=1.2.11
 export sp_ver=2.3.3
 export ip_ver=3.3.3
+export ncdiag_ver=1.0.0
+
+export R_ver=3.5.0
 
 export NET=gfs
