@@ -1,5 +1,5 @@
-#!/bin/bash
-#                                                                       
+#! /usr/bin/env bash
+                                                                   
 ################################################################################
 #
 # UNIX Script Documentation Block
@@ -19,15 +19,10 @@
 #
 # --------------------------------------------------------------------------- #
 # 0.  Preparations
+
+source "$HOMEgfs/ush/preamble.sh"
+
 # 0.a Basic modes of operation
-
-  # set execution trace prompt.  ${0##*/} adds the script's basename
-  PS4=" \${SECONDS} ${0##*/} L\${LINENO} + "
-  set -x
-
-  # Use LOUD variable to turn on/off trace.  Defaults to YES (on).
-  export LOUD=${LOUD:-YES}; [[ $LOUD = yes ]] && export LOUD=YES
-  [[ "$LOUD" != YES ]] && set +x
 
   echo "Generating mod_def file"
 
@@ -43,7 +38,7 @@
   echo '+--------------------------------+'
   echo "   Grid            : $1"
   echo ' '
-  [[ "$LOUD" = YES ]] && set -x
+  ${TRACE_ON:-set -x}
 
 # 0.b Check if grid set
 
@@ -55,7 +50,7 @@
     echo '*** Grid not identifife in ww3_mod_def.sh ***'
     echo '**************************************************'
     echo ' '
-    [[ "$LOUD" = YES ]] && set -x
+    ${TRACE_ON:-set -x}
     exit 1
   else
     grdID=$1
@@ -72,7 +67,7 @@
     echo '*** EXPORTED VARIABLES IN ww3_mod_def.sh NOT SET ***'
     echo '*********************************************************'
     echo ' '
-    [[ "$LOUD" = YES ]] && set -x
+    ${TRACE_ON:-set -x}
     exit 2
   fi
 
@@ -84,7 +79,7 @@
   echo '   Creating mod_def file ...'
   echo "   Executing $EXECwave/ww3_grid"
   echo ' '
-  [[ "$LOUD" = YES ]] && set -x
+  ${TRACE_ON:-set -x}
  
   rm -f ww3_grid.inp 
   ln -sf ../ww3_grid.inp.$grdID ww3_grid.inp
@@ -100,7 +95,7 @@
     echo '*** FATAL ERROR : ERROR IN ww3_grid *** '
     echo '******************************************** '
     echo ' '
-    [[ "$LOUD" = YES ]] && set -x
+    ${TRACE_ON:-set -x}
     exit 3
   fi
  
@@ -115,19 +110,14 @@
     echo '*** FATAL ERROR : MOD DEF FILE NOT FOUND *** '
     echo '******************************************** '
     echo ' '
-    [[ "$LOUD" = YES ]] && set -x
+    ${TRACE_ON:-set -x}
     exit 4
   fi
 
 # --------------------------------------------------------------------------- #
 # 3.  Clean up
 
-  cd ..
-  rm -rf moddef_$grdID
-
-  set +x
-  echo ' '
-  echo 'End of ww3_mod_def.sh at'
-  date
+cd ..
+rm -rf moddef_$grdID
 
 # End of ww3_mod_def.sh ------------------------------------------------- #

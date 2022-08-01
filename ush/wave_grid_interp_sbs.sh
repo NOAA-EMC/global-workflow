@@ -1,5 +1,5 @@
-#!/bin/bash
-#
+#! /usr/bin/env bash
+
 ################################################################################
 #
 # UNIX Script Documentation Block
@@ -24,15 +24,10 @@
 ################################################################################
 # --------------------------------------------------------------------------- #
 # 0.  Preparations
+
+source "$HOMEgfs/ush/preamble.sh"
+
 # 0.a Basic modes of operation
-
-  # set execution trace prompt.  ${0##*/} adds the script's basename
-  PS4=" \${SECONDS} ${0##*/} L\${LINENO} + "
-  set -x
-
-  # Use LOUD variable to turn on/off trace.  Defaults to YES (on).
-  export LOUD=${LOUD:-YES}; [[ $LOUD = yes ]] && export LOUD=YES
-  [[ "$LOUD" != YES ]] && set +x
 
   cd $GRDIDATA
 
@@ -53,7 +48,7 @@
     echo '*** FATAL ERROR : ERROR IN ww3_grid_interp (COULD NOT CREATE TEMP DIRECTORY) *** '
     echo '************************************************************************************* '
     echo ' '
-    [[ "$LOUD" = YES ]] && set -x
+    ${TRACE_ON:-set -x}
     exit 1
   fi
 
@@ -68,7 +63,7 @@
   echo '!         Make GRID files        |'
   echo '+--------------------------------+'
   echo "   Model ID         : $WAV_MOD_TAG"
-  [[ "$LOUD" = YES ]] && set -x
+  ${TRACE_ON:-set -x}
 
   if [ -z "$CDATE" ] || [ -z "$cycle" ] || [ -z "$EXECwave" ] || \
      [ -z "$COMOUT" ] || [ -z "$WAV_MOD_TAG" ] || [ -z "$SENDCOM" ] || \
@@ -81,7 +76,7 @@
     echo '***************************************************'
     echo ' '
     echo "$CDATE $cycle $EXECwave $COMOUT $WAV_MOD_TAG $SENDCOM $SENDDBN $waveGRD"
-    [[ "$LOUD" = YES ]] && set -x
+    ${TRACE_ON:-set -x}
     exit 1
   fi
 
@@ -123,7 +118,7 @@
       set +x
       echo ' '
       echo " Copying $FIXwave/WHTGRIDINT.bin.${grdID} "
-      [[ "$LOUD" = YES ]] && set -x
+      ${TRACE_ON:-set -x}
       cp $FIXwave/WHTGRIDINT.bin.${grdID} ${DATA}
       wht_OK='yes'
     else
@@ -143,7 +138,7 @@
   set +x
   echo "   Run ww3_gint
   echo "   Executing $EXECwave/ww3_gint
-  [[ "$LOUD" = YES ]] && set -x
+  ${TRACE_ON:-set -x}
 
   export pgm=ww3_gint;. prep_step
   $EXECwave/ww3_gint 1> gint.${grdID}.out 2>&1
@@ -165,7 +160,7 @@
     echo '*** FATAL ERROR : ERROR IN ww3_gint interpolation * '
     echo '*************************************************** '
     echo ' '
-    [[ "$LOUD" = YES ]] && set -x
+    ${TRACE_ON:-set -x}
     exit 3
   fi
 
@@ -181,14 +176,14 @@
   then
     set +x
     echo "   Saving GRID file as $COMOUT/rundata/$WAV_MOD_TAG.out_grd.$grdID.${CDATE}"
-    [[ "$LOUD" = YES ]] && set -x
+    ${TRACE_ON:-set -x}
     cp ${DATA}/output_${ymdh}0000/out_grd.$grdID $COMOUT/rundata/$WAV_MOD_TAG.out_grd.$grdID.${CDATE}
 
 #    if [ "$SENDDBN" = 'YES' ]
 #    then
 #      set +x
 #      echo "   Alerting GRID file as $COMOUT/rundata/$WAV_MOD_TAG.out_grd.$grdID.${CDATE}
-#      [[ "$LOUD" = YES ]] && set -x
+#      ${TRACE_ON:-set -x}
 
 #
 # PUT DBNET ALERT HERE ....
@@ -200,16 +195,7 @@
 # --------------------------------------------------------------------------- #
 # 2.  Clean up the directory
 
-  set +x
-  echo "   Removing work directory after success."
-  [[ "$LOUD" = YES ]] && set -x
-
   cd ../
   mv -f grint_${grdID}_${ymdh} done.grint_${grdID}_${ymdh}
-
-  set +x
-  echo ' '
-  echo "End of ww3_interp.sh at"
-  date
 
 # End of ww3_grid_interp.sh -------------------------------------------- #

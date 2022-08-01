@@ -1,4 +1,4 @@
-#!/bin/ksh -x
+#! /usr/bin/env bash
 
 # OCNRES is currently being set in config.base
 # case "$CASE" in

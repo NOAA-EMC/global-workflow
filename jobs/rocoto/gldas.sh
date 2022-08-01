@@ -1,4 +1,6 @@
-#!/bin/bash -x
+#! /usr/bin/env bash
+
+source "$HOMEgfs/ush/preamble.sh"
 
 ###############################################################
 # Source FV3GFS workflow modules
@@ -11,5 +13,6 @@ status=$?
 
 $HOMEgfs/jobs/JGDAS_ATMOS_GLDAS
 status=$?
+
 
 exit $status
