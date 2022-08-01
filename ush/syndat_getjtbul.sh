@@ -1,3 +1,4 @@
+#! /usr/bin/env bash
 
 # Script to recover JTWC Bulletins from Tank
 #  $TANK_TROPCY/$ymddir/wtxtbul/tropcyc
@@ -25,8 +26,7 @@
 #   jlogfile  - path to job log file (skipped over by this script if not
 #                 passed in)
 
-
-set -xua
+source "$HOMEgfs/ush/preamble.sh"
 
 EXECSYND=${EXECSYND:-${HOMESYND}/exec}
 
@@ -39,7 +39,7 @@ positional parameter 1"
    echo
    echo $msg
    echo
-   set -x
+   ${TRACE_ON:-set -x}
    echo $msg >> $pgmout
    set +u
    [ -n "$jlogfile" ]  &&  postmsg "$jlogfile" "$msg"
@@ -94,7 +94,7 @@ echo "  pdym1 is    $pdym1"
 echo
 echo "  ymddir is   $ymddir"
 echo
-set -x
+${TRACE_ON:-set -x}
 
 find=$ymd" "$hour
 echo "looking for string  $find  in $jtwcdir/tropcyc" >> $pgmout
@@ -159,7 +159,7 @@ set +x
 echo
 echo 'The foreground exit status for SYNDAT_GETJTBUL is ' $errget
 echo
-set -x
+${TRACE_ON:-set -x}
 if [ "$errget" -gt '0' ];then
    if [ "$errget" -eq '1' ];then
       msg="No JTWC bulletins in $jtwcdir/tropcyc, no JTWC tcvitals \
@@ -182,7 +182,7 @@ RETURN CODE $errget"
    echo
    echo $msg
    echo
-   set -x
+   ${TRACE_ON:-set -x}
    echo $msg >> $pgmout
    set +u
    [ -n "$jlogfile" ] && postmsg "$jlogfile" "$msg"
@@ -194,7 +194,7 @@ rec. passed to qctropcy"
    echo
    echo $msg
    echo
-   set -x
+   ${TRACE_ON:-set -x}
    echo $msg >> $pgmout
    set +u
    [ -n "$jlogfile" ] && postmsg "$jlogfile" "$msg"
@@ -206,7 +206,7 @@ echo "----------------------------------------------------------"
 echo "***********  COMPLETED PROGRAM syndat_getjtbul  **********"
 echo "----------------------------------------------------------"
 echo
-set -x
+${TRACE_ON:-set -x}
 
 if [ "$errget" -eq '0' ];then
    echo "Completed JTWC tcvitals records are:" >> $pgmout

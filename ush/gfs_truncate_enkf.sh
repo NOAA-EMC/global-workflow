@@ -1,6 +1,6 @@
-#!/bin/ksh
+#! /usr/bin/env bash
 
-set -x
+source "$HOMEgfs/ush/preamble.sh"
 
 member=$1
 export SIGINP=$2
@@ -45,12 +45,11 @@ export APRUNC=${APRUNC:-""}
 export VERBOSE=YES
 
 echo "execute $CHGRESSH for $member"
-eval "$CHGRESSH"
+$CHGRESSH
 rc=$?
 
 export ERR=$rc
 export err=$ERR
 
-echo EXITING $0 with return code $err
 exit $err
 

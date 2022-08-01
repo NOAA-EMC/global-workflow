@@ -1,4 +1,4 @@
-#!/bin/ksh -x
+#! /usr/bin/env bash
 
 ########## config.echgres ##########
 # regrid full-res forecast for use in ensemble-res analysis generation

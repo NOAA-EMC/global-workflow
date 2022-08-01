@@ -1,3 +1,4 @@
+#! /usr/bin/env bash
 
 ################################################################################
 ####  UNIX Script Documentation Block
@@ -187,16 +188,13 @@
 ####
 ################################################################################
 #  Set environment.
-export VERBOSE=${VERBOSE:-"NO"}
-if [[ "$VERBOSE" = "YES" ]]; then
-	echo $(date) EXECUTING $0 $* >&2
-	set -x
-fi
+source "$HOMEgfs/ush/preamble.sh"
+
 #  Command line arguments.
-export SIGINP=${1:-${SIGINP}}
-export FLXINP=${2:-${FLXINP}}
-export FLXIOUT=${3:-${FLXIOUT}}
-export PGBOUT=${4:-${PGBOUT}}
+export SIGINP=${1:-${SIGINP:-}}
+export FLXINP=${2:-${FLXINP:-}}
+export FLXIOUT=${3:-${FLXIOUT:-}}
+export PGBOUT=${4:-${PGBOUT:-}}
 #export PGIOUT=${5:-${PGIOUT}}
 export PGIOUT=${PGIOUT:-pgb.idx}
 export IO=${6:-${IO:-0}}
@@ -210,15 +208,15 @@ export EXECgfs=${EXECgfs:-$NWPROD/exec}
 export USHgfs=${USHgfs:-$NWPROD/ush}
 export DATA=${DATA:-$(pwd)}
 #  Filenames.
-export MP=${MP:-$([[ $LOADL_STEP_TYPE = PARALLEL ]]&&echo "p"||echo "s")}
-export XC=${XC}
+export MP=${MP:-$([[ ${LOADL_STEP_TYPE:-SERIAL} = PARALLEL ]]&&echo "p"||echo "s")}
+export XC=${XC:-}
 export POSTGPEXEC=${POSTGPEXEC:-${EXECgfs}/gfs_ncep_post}
 export OVERPARMEXEC=${OVERPARMEXEC:-${EXECgfs}/overparm_grib}
 export POSTGPLIST=${POSTGPLIST:-/dev/null}
-export INISCRIPT=${INISCRIPT}
+export INISCRIPT=${INISCRIPT:-}
 export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
-export LOGSCRIPT=${LOGSCRIPT}
-export ENDSCRIPT=${ENDSCRIPT}
+export LOGSCRIPT=${LOGSCRIPT:-}
+export ENDSCRIPT=${ENDSCRIPT:-}
 export GFSOUT=${GFSOUT:-gfsout}
 export CTLFILE=${CTLFILE:-$NWPROD/parm/gfs_cntrl.parm}
 #export MODEL_OUT_FORM=${MODEL_OUT_FORM:-binarynemsiompiio}
@@ -236,15 +234,13 @@ export GENPSICHI=${GENPSICHI:-NO}
 export GENPSICHIEXE=${GENPSICHIEXE:-${EXECgfs}/genpsiandchi}
 export ens=${ens:-NO}
 #export D3DINP=${D3DINP:-/dev/null}
-typeset -L1 l=$PGMOUT
+l=$(echo $PGMOUT | xargs | cut -c1)
 [[ $l = '&' ]]&&a=''||a='>'
 export REDOUT=${REDOUT:-'1>'$a}
-typeset -L1 l=$PGMERR
+l=$(echo $PGMERR | xargs | cut -c1)
 [[ $l = '&' ]]&&a=''||a='>'
 export REDERR=${REDERR:-'2>'$a}
 ################################################################################
-#  Preprocessing
-$INISCRIPT
 
 # Chuang: Run chgres if OUTTYP=1 or 0
 
@@ -420,9 +416,5 @@ fi
 #  Postprocessing
 cd $pwd
 [[ $mkdata = YES ]]&&rmdir $DATA
-$ENDSCRIPT
-set +x
-if [[ "$VERBOSE" = "YES" ]]; then
-	echo $(date) EXITING $0 with return code $err >&2
-fi
+
 exit $err

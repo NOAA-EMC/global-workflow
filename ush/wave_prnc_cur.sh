@@ -1,5 +1,5 @@
-#!/bin/sh
-#
+#! /usr/bin/env bash
+
 ################################################################################
 #
 # UNIX Script Documentation Block
@@ -21,7 +21,8 @@
 #
 ################################################################################
 #
-set -x
+
+source "$HOMEgfs/ush/preamble.sh"
 
 ymdh_rtofs=$1
 curfile=$2
@@ -94,4 +95,3 @@ fi
 mv -f current.ww3 ${DATA}/${WAVECUR_DID}.${ymdh_rtofs}
 
 cd ${DATA}
-
