@@ -1,5 +1,5 @@
-#!/bin/bash
-#
+#! /usr/bin/env bash
+
 ################################################################################
 #
 # UNIX Script Documentation Block
@@ -29,12 +29,10 @@
 #
 # --------------------------------------------------------------------------- #
 # 0.  Preparations
-# 0.a Basic modes of operation
 
-  set -x
-  # Use LOUD variable to turn on/off trace.  Defaults to YES (on).
-  export LOUD=${LOUD:-YES}; [[ $LOUD = yes ]] && export LOUD=YES
-  [[ "$LOUD" != YES ]] && set +x
+source "$HOMEgfs/ush/preamble.sh"
+
+# 0.a Basic modes of operation
 
   # Set wave model ID tag to include member number
   # if ensemble; waveMEMB var empty in deterministic
@@ -42,7 +40,6 @@
 
   cd $DATA
 
-  echo "HAS BEGUN on $(hostname)"
   echo "Starting WAVE POSTPROCESSOR SCRIPT for $WAV_MOD_TAG"
 
   set +x
@@ -54,7 +51,7 @@
   echo "Starting at : $(date)"
   echo '-------------'
   echo ' '
-  [[ "$LOUD" = YES ]] && set -x
+  ${TRACE_ON:-set -x}
 
 # Script will run only if pre-defined NTASKS
 #     The actual work is distributed over these tasks.
@@ -84,7 +81,7 @@
   echo "   Interpolated grids : $waveinterpGRD"
   echo "   Post-process grids : $wavepostGRD"
   echo ' '
-  [[ "$LOUD" = YES ]] && set -x
+  ${TRACE_ON:-set -x}
 
 
 # 0.c.3 Define CDATE_POST
@@ -103,7 +100,7 @@
   echo ' '
   echo 'Preparing input files :'
   echo '-----------------------'
-  [[ "$LOUD" = YES ]] && set -x
+  ${TRACE_ON:-set -x}
 
 # 1.a Model definition files and output files (set up using poe)
 
@@ -114,7 +111,7 @@
     then
       set +x
       echo " Mod def file for $grdID found in ${COMIN}/rundata. copying ...."
-      [[ "$LOUD" = YES ]] && set -x
+      ${TRACE_ON:-set -x}
 
       cp -f $COMIN/rundata/${CDUMP}wave.mod_def.${grdID} mod_def.$grdID
     fi
@@ -131,14 +128,14 @@
       echo " FATAL ERROR : NO MOD_DEF FILE mod_def.$grdID "
       echo '*************************************************** '
       echo ' '
-      [[ "$LOUD" = YES ]] && set -x
+      ${TRACE_ON:-set -x}
       err=2; export err;${errchk}
       exit $err
       DOGRB_WAV='NO'
     else
       set +x
       echo "File mod_def.$grdID found. Syncing to all nodes ..."
-      [[ "$LOUD" = YES ]] && set -x
+      ${TRACE_ON:-set -x}
     fi
   done
 
@@ -158,7 +155,7 @@
       then
         set +x
         echo "   ${intGRD}_interp.inp.tmpl copied. Syncing to all nodes ..."
-        [[ "$LOUD" = YES ]] && set -x
+        ${TRACE_ON:-set -x}
       else
         set +x
         echo ' '
@@ -166,7 +163,7 @@
         echo '*** ERROR : NO TEMPLATE FOR GRINT INPUT FILE *** '
         echo '*********************************************** '
         echo ' '
-        [[ "$LOUD" = YES ]] && set -x
+        ${TRACE_ON:-set -x}
         echo "$WAV_MOD_TAG post $date $cycle : GRINT template file missing."
         exit_code=1
         DOGRI_WAV='NO'
@@ -187,7 +184,7 @@
       then
         set +x
         echo "   ww3_grib2.${grbGRD}.inp.tmpl copied. Syncing to all nodes ..."
-        [[ "$LOUD" = YES ]] && set -x
+        ${TRACE_ON:-set -x}
       else
         set +x
         echo ' '
@@ -195,7 +192,7 @@
         echo "*** ERROR : NO TEMPLATE FOR ${grbGRD} GRIB INPUT FILE *** "
         echo '*********************************************** '
         echo ' '
-        [[ "$LOUD" = YES ]] && set -x
+        ${TRACE_ON:-set -x}
         exit_code=2
         DOGRB_WAV='NO'
       fi
@@ -214,7 +211,7 @@
   echo "      Sufficient data for GRID interpolation    : $DOGRI_WAV"
   echo "      Sufficient data for GRIB files            : $DOGRB_WAV"
   echo ' '
-  [[ "$LOUD" = YES ]] && set -x
+  ${TRACE_ON:-set -x}
 
 # --------------------------------------------------------------------------- #
 # 2.  Make consolidated grib2 file for side-by-side grids and interpolate
@@ -224,12 +221,12 @@
 
   set +x
   echo '   Making command file for sbs grib2 and GRID Interpolation '
-  [[ "$LOUD" = YES ]] && set -x
+  ${TRACE_ON:-set -x}
 
 # 1.a.2 Loop over forecast time to generate post files
 # When executed side-by-side, serial mode (cfp when run after the fcst step)
 # Contingency for RERUN=YES
-  if [ "${RERUN}" = "YES" ]; then
+  if [ "${RERUN-NO}" = "YES" ]; then
     fhr=$((FHRUN + FHMIN_WAV))
     if [ $FHMAX_HF_WAV -gt 0 ] && [ $FHOUT_HF_WAV -gt 0 ] && [ $fhr -lt $FHMAX_HF_WAV ]; then
       FHINCG=$FHOUT_HF_WAV
@@ -275,7 +272,7 @@
           echo " FATAL ERROR : NO RAW FIELD OUTPUT FILE out_grd.$grdID "
           echo '*************************************************** '
           echo ' '
-          [[ "$LOUD" = YES ]] && set -x
+          ${TRACE_ON:-set -x}
           echo "$WAV_MOD_TAG post $grdID $date $cycle : field output missing."
           err=3; export err;${errchk}
           exit $err
@@ -370,7 +367,7 @@
     echo "   Executing the grib2_sbs scripts at : $(date)"
     echo '   ------------------------------------'
     echo ' '
-    [[ "$LOUD" = YES ]] && set -x
+    ${TRACE_ON:-set -x}
 
     if [ "$wavenproc" -gt '1' ]
     then
@@ -395,7 +392,7 @@
       echo '*************************************'
       echo '     See Details Below '
       echo ' '
-      [[ "$LOUD" = YES ]] && set -x
+      ${TRACE_ON:-set -x}
       err=4; export err;${errchk}
       exit $err
     fi
@@ -419,7 +416,7 @@
         echo '********************************************'
         echo '     See Details Below '
         echo ' '
-        [[ "$LOUD" = YES ]] && set -x
+        ${TRACE_ON:-set -x}
         err=5; export err;${errchk}
         exit $err
       fi
@@ -439,23 +436,6 @@
 # --------------------------------------------------------------------------- #
 # 7.  Ending output
 
-  set +x
-  echo ' '
-  echo "Ending at : $(date)"
-  echo '-----------'
-  echo ' '
-  echo '                     *** End of MWW3 postprocessor ***'
-  echo ' '
-  [[ "$LOUD" = YES ]] && set -x
-
-  if [ "$exit_code" -ne '0' ]
-  then
-    echo " FATAL ERROR: Problem in MWW3 POST"
-    err=6; export err;${errchk}
-    exit $err
-  else
-    echo " Side-by-Side Wave Post Completed Normally "
-    exit 0
-  fi
+echo "$exit_code"
 
 # End of MWW3 prostprocessor script ---------------------------------------- #

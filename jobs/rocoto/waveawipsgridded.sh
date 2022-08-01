@@ -1,4 +1,6 @@
-#!/bin/bash -x
+#! /usr/bin/env bash
+
+source "$HOMEgfs/ush/preamble.sh"
 
 ###############################################################
 echo
@@ -32,4 +34,6 @@ echo "=============== START TO RUN WAVE PRDGEN GRIDDED ==============="
 # Execute the JJOB
 $HOMEgfs/jobs/JGLOBAL_WAVE_PRDGEN_GRIDDED
 status=$?
+
+
 exit $status

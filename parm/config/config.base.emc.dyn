@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#! /usr/bin/env bash
 
 ########## config.base ##########
 # Common to all steps
@@ -152,6 +152,7 @@ export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 export APP=@APP@
 
 # Defaults:
+export DO_ATM="YES"
 export DO_COUPLED="NO"
 export DO_WAVE="NO"
 export DO_OCN="NO"
@@ -164,7 +165,6 @@ export cplwav2atm=".false."
 
 case "${APP}" in
   ATM)
-    echo "APP=ATM; will use defaults"
     export confignamevarfornems="atm"
     ;;
   ATMA)
@@ -176,6 +176,11 @@ case "${APP}" in
     export DO_WAVE="YES"
     export WAVE_CDUMP="both"
     export confignamevarfornems="leapfrog_atm_wav"
+    ;;
+  NG-GODAS)
+    export DO_ATM="NO"
+    export DO_OCN="YES"
+    export DO_ICE="YES"
     ;;
   S2S*)
     export DO_COUPLED="YES"

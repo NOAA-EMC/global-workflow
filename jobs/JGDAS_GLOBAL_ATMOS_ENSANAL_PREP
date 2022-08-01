@@ -1,0 +1,120 @@
+#!/bin/bash
+
+source "$HOMEgfs/ush/preamble.sh"
+
+#############################
+# Source relevant config files
+#############################
+export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
+configs="base atmensanal atmensanalprep"
+config_path=${EXPDIR:-$NWROOT/gfs.${gfs_ver}/parm/config}
+for config in $configs; do
+    . $config_path/config.$config
+    status=$?
+    [[ $status -ne 0 ]] && exit $status
+done
+
+
+##########################################
+# Source machine runtime environment
+##########################################
+. $HOMEgfs/env/${machine}.env atmensanalprep
+status=$?
+[[ $status -ne 0 ]] && exit $status
+
+
+##############################################
+# Obtain unique process id (pid) and make temp directory
+##############################################
+export pid=${pid:-$$}
+export outid=${outid:-"LL$job"}
+
+export DATA=${DATA:-${DATAROOT}/${jobid:?}}
+mkdir -p $DATA
+cd $DATA || (echo "$DATA does not exist. ABORT!"; exit 1)
+
+
+##############################################
+# Run setpdy and initialize PDY variables
+##############################################
+export cycle="t${cyc}z"
+setpdy.sh
+. ./PDY
+
+
+##############################################
+# Determine Job Output Name on System
+##############################################
+export pgmout="OUTPUT.${pid}"
+export pgmerr=errfile
+
+
+##############################################
+# Set variables used in the script
+##############################################
+export CDATE=${CDATE:-${PDY}${cyc}}
+export CDUMP=${CDUMP:-${RUN:-"gfs"}}
+export COMPONENT=${COMPONENT:-atmos}
+
+##############################################
+# Begin JOB SPECIFIC work
+##############################################
+
+export GDATE=$(date +%Y%m%d%H -d "${CDATE:0:8} ${CDATE:8:2} - ${assim_freq} hours")
+gPDY=${GDATE:0:8}
+export gcyc=${GDATE:8:2}
+export GDUMP=${GDUMP:-"gdas"}
+
+export OPREFIX="${CDUMP}.t${cyc}z."
+export GPREFIX="${GDUMP}.t${gcyc}z."
+export APREFIX="${CDUMP}.t${cyc}z."
+export GSUFFIX=${GSUFFIX:-$SUFFIX}
+export ASUFFIX=${ASUFFIX:-$SUFFIX}
+
+export COMOUT=${COMOUT:-$ROTDIR/$CDUMP.$PDY/$cyc/$COMPONENT}
+export COMOUT_ENS=${COMOUT_ENS:-$ROTDIR/enkf$CDUMP.$PDY/$cyc/$COMPONENT}
+
+mkdir -p $COMOUT
+mkdir -p $COMOUT_ENS
+
+# COMIN_GES and COMIN_GES_ENS are used in script
+export COMIN="$ROTDIR/$CDUMP.$PDY/$cyc/$COMPONENT"
+export COMIN_GES="$ROTDIR/$GDUMP.$gPDY/$gcyc/$COMPONENT"
+export COMIN_GES_ENS="$ROTDIR/enkf$GDUMP.$gPDY/$gcyc/$COMPONENT"
+
+# NOTE BELOW IS A HACK FOR TESTING
+# PLEASE FIX THIS LATER
+# ASK @aerorahul
+# HOW TO HANDLE DIFFERENT COMPILERS/ETC. FOR MODEL VS DA
+# PROD_UTIL, ETC. DO NOT EXIST FOR JEDI MODULE VERSIONS
+module purge
+module use $HOMEgfs/sorc/gdas.cd/modulefiles
+module load GDAS/orion
+export PYTHONPATH=$HOMEgfs/sorc/gdas.cd/ush/:$PYTHONPATH
+
+###############################################################
+# Run relevant script
+
+EXSCRIPT=${GDASPREPPY:-$HOMEgfs/sorc/gdas.cd/scripts/exgdas_global_atmos_analysis_prep.py}
+$EXSCRIPT
+status=$?
+[[ $status -ne 0 ]] && exit $status
+
+##############################################
+# End JOB SPECIFIC work
+##############################################
+
+##############################################
+# Final processing
+##############################################
+if [ -e "$pgmout" ] ; then
+  cat $pgmout
+fi
+
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd $DATAROOT
+[[ $KEEPDATA = "NO" ]] && rm -rf $DATA
+
+exit 0

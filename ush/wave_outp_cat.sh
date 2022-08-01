@@ -1,5 +1,5 @@
-#!/bin/bash
-#
+#! /usr/bin/env bash
+
 ################################################################################
 #
 # UNIX Script Documentation Block
@@ -20,16 +20,10 @@
 ################################################################################
 # --------------------------------------------------------------------------- #
 # 0.  Preparations
+
+source "$HOMEgfs/ush/preamble.sh"
+
 # 0.a Basic modes of operation
-
-  # set execution trace prompt.  ${0##*/} adds the script's basename
-  PS4=" \${SECONDS} ${0##*/} L\${LINENO} + "
-  set -x
-
-  # Use LOUD variable to turn on/off trace.  Defaults to YES (on).
-  export LOUD=${LOUD:-YES}; [[ $LOUD = yes ]] && export LOUD=YES
-  [[ "$LOUD" != YES ]] && set +x
-
   bloc=$1
   MAXHOUR=$2
   specdir=$3
@@ -44,7 +38,7 @@
     echo '*** LOCATION ID IN ww3_outp_spec.sh NOT SET ***'
     echo '***********************************************'
     echo ' '
-    [[ "$LOUD" = YES ]] && set -x
+    ${TRACE_ON:-set -x}
     exit 1
   else
     buoy=$bloc
@@ -62,7 +56,7 @@
     echo '*** EXPORTED VARIABLES IN ww3_outp_cat.sh NOT SET ***'
     echo '******************************************************'
     echo ' '
-    [[ "$LOUD" = YES ]] && set -x
+    ${TRACE_ON:-set -x}
     exit 3
   fi
 
@@ -72,16 +66,20 @@
 
   set +x
   echo "   Generate input file for ww3_outp."
-  [[ "$LOUD" = YES ]] && set -x
+  ${TRACE_ON:-set -x}
 
   if [ "$specdir" = "bull" ]
   then
     outfile=${STA_DIR}/${specdir}/$WAV_MOD_TAG.$buoy.bull
     coutfile=${STA_DIR}/c${specdir}/$WAV_MOD_TAG.$buoy.cbull
-    rm outfile coutfile
+    for f in outfile coutfile; do
+      if [[ -f ${f} ]]; then rm ${f}; fi
+    done
   else
     outfile=${STA_DIR}/${specdir}/$WAV_MOD_TAG.$buoy.spec
-    rm outfile
+    if [[ -f ${outfile} ]]; then
+      rm ${outfile}
+    fi    
   fi
 
   fhr=$FHMIN_WAV
@@ -115,7 +113,7 @@
       echo "*** FATAL ERROR : OUTPUT DATA FILE FOR BOUY $bouy at ${ymdh} NOT FOUND *** "
       echo '************************************************************************** '
       echo ' '
-      [[ "$LOUD" = YES ]] && set -x
+      ${TRACE_ON:-set -x}
       err=2; export err;${errchk}
       exit $err
     fi
@@ -139,14 +137,9 @@
     echo " FATAL ERROR : OUTPUTFILE ${outfile} not created    "
     echo '*************************************************** '
     echo ' '
-    [[ "$LOUD" = YES ]] && set -x
+    ${TRACE_ON:-set -x}
     err=2; export err;${errchk}
     exit $err
   fi
-
-  set +x
-  echo ' '
-  echo 'End of ww3_outp_cat.sh at'
-  date
 
 # End of ww3_outp_cat.sh ---------------------------------------------------- #

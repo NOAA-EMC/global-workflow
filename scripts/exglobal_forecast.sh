@@ -1,4 +1,5 @@
-#!/bin/bash
+#! /usr/bin/env bash
+
 ################################################################################
 ## UNIX Script Documentation Block
 ## Script name:         exglobal_fcst_nemsfv3gfs.sh
@@ -76,11 +77,7 @@
 # Main body starts here
 #######################
 
-VERBOSE=${VERBOSE:-"YES"}
-if [ $VERBOSE = "YES" ] ; then
-  echo $(date) EXECUTING $0 $* >&2
-  set -x
-fi
+source "$HOMEgfs/ush/preamble.sh"
 
 SCRIPTDIR=$(dirname $(readlink -f "$0") )/../ush
 echo "MAIN: environment loaded for $machine platform,Current Script locates in $SCRIPTDIR."
@@ -131,7 +128,7 @@ case $RUN in
   'gefs') FV3_GEFS_predet;;
 esac
 [[ $cplflx = .true. ]] && MOM6_predet
-#[[ $cplwav = .true. ]] && WW3_predet #no WW3_predet at this time
+[[ $cplwav = .true. ]] && WW3_predet
 [[ $cplice = .true. ]] && CICE_predet
 
 case $RUN in
@@ -219,14 +216,5 @@ fi
 echo "MAIN: Output copied to COMROT"
 
 #------------------------------------------------------------------
-if [ $VERBOSE = "YES" ] ; then
-  echo $(date) EXITING $0 with return code $err >&2
-fi
 
-if [ $err != 0 ]; then
-  echo "MAIN: $confignamevarfornems Forecast failed"
-  exit $err
-else
-  echo "MAIN: $confignamevarfornems Forecast completed at normal status"
-  exit 0
-fi
+exit $err

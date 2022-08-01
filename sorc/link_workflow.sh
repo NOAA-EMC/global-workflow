@@ -162,13 +162,6 @@ fi
 #--add GDASApp files
 #------------------------------
 if [ -d ../sorc/gdas.cd ]; then
-  cd ${pwd}/../jobs               ||exit 8
-    $LINK ../sorc/gdas.cd/jobs/JGDAS_GLOBAL_ATMOS_ANALYSIS_PREP   .
-    $LINK ../sorc/gdas.cd/jobs/JGDAS_GLOBAL_ATMOS_ANALYSIS_RUN    .
-    $LINK ../sorc/gdas.cd/jobs/JGDAS_GLOBAL_ATMOS_ANALYSIS_POST   .
-    $LINK ../sorc/gdas.cd/jobs/JGDAS_GLOBAL_ATMOS_ENSANAL_PREP    .
-    $LINK ../sorc/gdas.cd/jobs/JGDAS_GLOBAL_ATMOS_ENSANAL_RUN     .
-    $LINK ../sorc/gdas.cd/jobs/JGDAS_GLOBAL_ATMOS_ENSANAL_POST    .
   cd ${pwd}/../ush                ||exit 8
     $LINK ../sorc/gdas.cd/ush/ufsda                               .
 fi
@@ -219,8 +212,8 @@ if [ -d ../sorc/gsi_monitor.fd ]; then
     $LINK ../sorc/gsi_monitor.fd/src/Radiance_Monitor/nwprod/radmon_shared/ush/radmon_verf_bcoef.sh                 .
     $LINK ../sorc/gsi_monitor.fd/src/Radiance_Monitor/nwprod/radmon_shared/ush/radmon_verf_bcor.sh                  .
     $LINK ../sorc/gsi_monitor.fd/src/Radiance_Monitor/nwprod/radmon_shared/ush/radmon_verf_time.sh                  .
+    $LINK ../sorc/gsi_monitor.fd/src/Radiance_Monitor/nwprod/radmon_shared/ush/rstprod.sh                           .
 fi
-
 
 #------------------------------
 #--link executables
