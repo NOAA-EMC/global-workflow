@@ -5,7 +5,7 @@ export COMPATH=/lfs/h1/ops/canned/com/ukmet:/lfs/h1/ops/canned/com/gfs:/lfs/h1/o
 export ukmet_ver=v2.2.0
 export ecmwf_ver=v2.1.0
 export nam_ver=v4.2.0
-export rtofs_ver=v2.2.0
+export rtofs_ver=v2.3.0
 export radarl2_ver=v1.2
 
 #### NCO requested testing location is v16.2
