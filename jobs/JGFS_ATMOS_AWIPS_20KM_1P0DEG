@@ -1,9 +1,8 @@
-#!/bin/sh
+#! /usr/bin/env bash
 
-set -xa
-export PS4='$SECONDS + '
+source "$HOMEgfs/ush/preamble.sh"
+
 export OMP_NUM_THREADS=${OMP_NUM_THREADS:-1}
-date
 
 ###########################################
 # GFS_AWIPS_20KM AWIPS PRODUCT GENERATION
@@ -62,7 +61,6 @@ fi
 
 export pgmout=OUTPUT.$$
 
-env
 
 ########################################################
 # Execute the script.
@@ -75,9 +73,6 @@ env
 $HOMEgfs/scripts/exgfs_atmos_awips_20km_1p0deg.sh $fcsthrs
 export err=$?; err_chk
 ########################################################
-
-msg="JOB $job HAS COMPLETED NORMALLY!"
-postmsg $jlogfile "$msg"
 
 ############################################
 # print exec I/O output
@@ -93,4 +88,3 @@ if [ "$KEEPDATA" != "YES" ] ; then
   rm -rf $DATA
 fi
 
-date

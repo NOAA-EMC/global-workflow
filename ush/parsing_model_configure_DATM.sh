@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /usr/bin/env bash
 
 #####
 ## "parsing_model_configure_DATM.sh"

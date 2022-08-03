@@ -1,54 +1,51 @@
-#!/bin/ksh
+#! /usr/bin/env bash
 
-#module load ics
-export PS4='+t+$SECONDS extrkr.sh:$LINENO -- '
+source "$HOMEgfs/ush/preamble.sh"
 
 userid=$LOGNAME
 
-set +x
 ##############################################################################
-cat<<EOF
+# cat<<EOF
  
-------------------------------------------------
-xxxx - Track vortices in model GRIB output
-------------------------------------------------
-History: Mar 1998 - Marchok - First implementation of this new script.
-         Apr 1999 - Marchok - Modified to allow radii output file and
-                              to allow reading of 4-digit years from
-                              TC vitals file.
-         Oct 2000 - Marchok - Fixed bugs: (1) copygb target grid scanning mode
-                              flag had an incorrect value of 64 (this prevented
-                              NAM, NGM and ECMWF from being processed correctly); 
-                              Set it to 0.  (2) ECMWF option was using the 
-                              incorrect input date (today's date instead of 
-                              yesterday's).
-         Jan 2001 - Marchok - Hours now listed in script for each model and 
-                              passed into program.  Script included to process
-                              GFDL & Ensemble data.  Call to DBN included to 
-                              pass data to OSO and the Navy.  Forecast length
-                              extended to 5 days for GFS & MRF.
-         Aug 2005 - Marchok - Added ability to process ECMWF global, ECMWF
-                              hires out to 240 (every 12h), CMC hires, CMC
-                              global, GFS extended from 126h to 180h.
-         May 2006 - Wobus -   For 2006 NCEP global implementation, changed
-                              directory names.
-         Jun 2006 - Marchok - Changed handling of NCEP global files beyond
-                              180h.  These are now 1-deg instead of 2.5-deg,
-                              so there is no longer a need to interpolate 
-                              down to 1-deg for these files.  Also, changed
-                              the COM directory for CMC.
-         Jun 2013 - Magee   - Replaced NOGAPS with NAVGEM. 
-         May 2014 - Marchok/QFLiu - Added GRIB2 support.  Added \$gribver
-                              variable to switch between GRIB versions.
-         May 2014 - Trahan  - Sped up script, added 252 hour forecast GFS
+# ------------------------------------------------
+# xxxx - Track vortices in model GRIB output
+# ------------------------------------------------
+# History: Mar 1998 - Marchok - First implementation of this new script.
+#          Apr 1999 - Marchok - Modified to allow radii output file and
+#                               to allow reading of 4-digit years from
+#                               TC vitals file.
+#          Oct 2000 - Marchok - Fixed bugs: (1) copygb target grid scanning mode
+#                               flag had an incorrect value of 64 (this prevented
+#                               NAM, NGM and ECMWF from being processed correctly); 
+#                               Set it to 0.  (2) ECMWF option was using the 
+#                               incorrect input date (today's date instead of 
+#                               yesterday's).
+#          Jan 2001 - Marchok - Hours now listed in script for each model and 
+#                               passed into program.  Script included to process
+#                               GFDL & Ensemble data.  Call to DBN included to 
+#                               pass data to OSO and the Navy.  Forecast length
+#                               extended to 5 days for GFS & MRF.
+#          Aug 2005 - Marchok - Added ability to process ECMWF global, ECMWF
+#                               hires out to 240 (every 12h), CMC hires, CMC
+#                               global, GFS extended from 126h to 180h.
+#          May 2006 - Wobus -   For 2006 NCEP global implementation, changed
+#                               directory names.
+#          Jun 2006 - Marchok - Changed handling of NCEP global files beyond
+#                               180h.  These are now 1-deg instead of 2.5-deg,
+#                               so there is no longer a need to interpolate 
+#                               down to 1-deg for these files.  Also, changed
+#                               the COM directory for CMC.
+#          Jun 2013 - Magee   - Replaced NOGAPS with NAVGEM. 
+#          May 2014 - Marchok/QFLiu - Added GRIB2 support.  Added \$gribver
+#                               variable to switch between GRIB versions.
+#          May 2014 - Trahan  - Sped up script, added 252 hour forecast GFS
 
-                    In the event of a crash, you can contact Tim 
-                    Marchok at GFDL at (609) 452-6534 or tpm@gfdl.gov
+#                     In the event of a crash, you can contact Tim 
+#                     Marchok at GFDL at (609) 452-6534 or tpm@gfdl.gov
 
-Current time is: $( date )
-EOF
+# Current time is: $( date )
+# EOF
 ##############################################################################
-set -x
 
 ##############################################################################
 #
@@ -66,9 +63,6 @@ set -x
 prep_step=${prep_step:-prep_step}
 postmsg=${postmsg:-postmsg}
 
-########################################
-msg="has begun for ${cmodel} at ${CYL}z"
-$postmsg "$jlogfile" "$msg"
 ########################################
 
 # This script runs the hurricane tracker using operational GRIB model output.  
@@ -155,7 +149,7 @@ while [[ "$#" -gt 0 ]] ; do
             echo $allhours | fold -s -w 72
             echo "and I will keep all forecast hours up to $lasthour."
             echo "Calculating forecast hours now."
-            set -x
+            ${TRACE_ON:-set -x}
             prev=0
             for now in $allhours ; do
                 if [[ ! ( "$now" -le "$lasthour" ) ]] ; then
@@ -248,7 +242,7 @@ then
   echo "Something wrong with input data.  One or more input variables has length 0"
   echo "PDY= ${PDY}, CYL= ${CYL}, cmodel= ${cmodel}"
   echo "EXITING...."
-  set -x
+  ${TRACE_ON:-set -x}
   err_exit " FAILED ${jobid} -- BAD INPUTS AT LINE $LINENO IN TRACKER SCRIPT - ABNORMAL EX
 IT"
 else
@@ -266,7 +260,7 @@ else
   echo "   SENDCOM ............................... $SENDCOM"
   echo "   SENDNHC ............................... $SENDNHC"
   echo " "
-  set -x
+  ${TRACE_ON:-set -x}
 fi
 
 scc=$(echo ${PDY} | cut -c1-2)
@@ -316,7 +310,7 @@ export maxtime=65    # Max number of forecast time levels
 
 cmodel=$(echo ${cmodel} | tr "[A-Z]" "[a-z]")
 
-set -x                                           
+${TRACE_ON:-set -x}                                           
 # "gribver" is an environmental variable that should be defined
 # and exported in the parent script that calls this script.
 export gribver=${gribver:-2}
@@ -460,7 +454,7 @@ if [[ ! -z "$override_fcsthrs" && ! -z "$override_fcstlen" ]] ; then
     echo "Forecast hours to process: $override_fcsthrs"
     echo "ATCF frequency: $override_atcffreq (in centihours)"
     echo "        ----------------------------------------        "
-    set -x
+    ${TRACE_ON:-set -x}
     fcsthrs="$override_fcsthrs"
     fcstlen="$override_fcstlen"
     atcffreq="$override_atcffreq"
@@ -537,7 +531,7 @@ echo "              -----------------------------"
 echo " "
 echo " Now sorting and updating the TC Vitals file.  Please wait...."
 echo " "
-set -x
+${TRACE_ON:-set -x}
 
 current_str="${symd} ${CYL}00"
 
@@ -559,7 +553,7 @@ else
   echo " nor is there a TC vitals file for ${future_hh}z in ${synvitfuture_dir},"
   echo " Checking the raw TC Vitals file ....."
   echo " "
-  set -x
+  ${TRACE_ON:-set -x}
 fi
 
 # Take the vitals from Steve Lord's /com/gfs/prod tcvitals file,
@@ -649,7 +643,7 @@ then
     echo "!!! It could just be that there are no storms for the current"
     echo "!!! time.  Please check the dates and submit this job again...."
     echo " "
-    set -x
+    ${TRACE_ON:-set -x}
     exit 1
   fi
 
@@ -756,7 +750,7 @@ then
     echo "!!! model= ${atcfout}, forecast initial time = ${PDY}${CYL}"
     echo "!!! Exiting...."
     echo " "
-    set -x
+    ${TRACE_ON:-set -x}
     err_exit " FAILED ${jobid} - ERROR RUNNING SUPVIT IN TRACKER SCRIPT- ABNORMAL EXIT"
   fi
 
@@ -793,7 +787,7 @@ then
     echo "!!! It could just be that there are no storms for the current"
     echo "!!! time.  Please check the dates and submit this job again...."
     echo " "
-    set -x
+    ${TRACE_ON:-set -x}
     exit 1
   fi
 fi
@@ -804,7 +798,7 @@ echo " *--------------------------------*"
 echo " |        STORM SELECTION         |"
 echo " *--------------------------------*"
 echo " "
-set -x
+${TRACE_ON:-set -x}
 
 ict=1
 while [ $ict -le 15 ]
@@ -900,7 +894,7 @@ echo " "
 echo " for the times 6h ago, current and 6h ahead:"
 echo " "
 echo " "
-set -x
+${TRACE_ON:-set -x}
 
   touch ${DATA}/genvitals.upd.${cmodel}.${atcfout}.${PDY}${CYL}
 
@@ -923,7 +917,7 @@ echo "   NOW CUTTING APART INPUT GRIB FILES TO "
 echo "   CREATE 1 BIG GRIB INPUT FILE "
 echo " -----------------------------------------"
 echo " "
-set -x
+${TRACE_ON:-set -x}
 
 #gix=$NWPROD/util/exec/grbindex
 #g2ix=$NWPROD/util/exec/grb2index
@@ -945,7 +939,7 @@ find_gfile() {
     shift 2
     gfile=none
     echo "Searching for input $nicename data for forecast hour $nicehour"
-    set -x
+    ${TRACE_ON:-set -x}
     now=$( date +%s )
     later=$(( now + wait_max_time ))
     # Note: the loop has only one iteration if --wait-max-time is
@@ -955,17 +949,17 @@ find_gfile() {
             if [[ ! -e "$gfile" ]] ; then
                 set +x
                 echo "$gfile: does not exist"
-                set -x
+                ${TRACE_ON:-set -x}
                 gfile=none
             elif [[ ! -s "$gfile" ]] ; then
                 set +x
                 echo "$gfile: exists, but is empty"
-                set -x
+                ${TRACE_ON:-set -x}
                 gfile=none
             else
                 set +x
                 echo "$gfile: exists, is non-empty, so I will use this file"
-                set -x
+                ${TRACE_ON:-set -x}
                 return 0
             fi
         done
@@ -983,7 +977,7 @@ find_gfile() {
                 done
                 echo " !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
                 echo " "
-                set -x
+                ${TRACE_ON:-set -x}
                 err_exit "ERROR: mandatory input GFS file for hour $nicehour is missing or empty.  Aborting.  Checked for these files: $*"
                 continue
             else
@@ -996,7 +990,7 @@ find_gfile() {
                     echo " !!!    $nicename File: $gfile"
                 done
                 echo " "
-                set -x
+                ${TRACE_ON:-set -x}
                 sleep $sleep_time
             fi
         fi
@@ -1033,7 +1027,7 @@ if [[ ${model} -eq 1 || $model == 8 ]] ; then
   echo " "
   echo "Time before gfs wgrib loop is $(date)"
   echo " "
-  set -x
+  ${TRACE_ON:-set -x}
 
   if [[ "$model" -eq 8 ]] ; then
       name=gdas
@@ -1153,7 +1147,7 @@ if [[ ${model} -eq 1 || $model == 8 ]] ; then
       echo " "
       echo "Date in interpolation for model= $cmodel and fhour= $fhour000 before = $(date)"
       echo " "
-      set -x
+      ${TRACE_ON:-set -x}
 
       gfile=${DATA}/gfsgribfile.${PDY}${CYL}
       ifile=${DATA}/gfsixfile.${PDY}${CYL}
@@ -1236,7 +1230,7 @@ if [[ ${model} -eq 1 || $model == 8 ]] ; then
       echo " "
       echo "Date in interpolation for cmodel= $cmodel and fhour= $fhour000 after = $(date)"
       echo " "
-      set -x
+      ${TRACE_ON:-set -x}
     
     done
     fi # end of "If PhaseFlag is on"
@@ -1270,9 +1264,9 @@ while [ $ist -le 15 ]
 do
   if [ ${stormflag[${ist}]} -ne 1 ]
   then
-    set +x; echo "Storm number $ist NOT selected for processing"; set -x
+    set +x; echo "Storm number $ist NOT selected for processing"; ${TRACE_ON:-set -x}
   else
-    set +x; echo "Storm number $ist IS selected for processing...."; set -x
+    set +x; echo "Storm number $ist IS selected for processing...."; ${TRACE_ON:-set -x}
   fi
   let ist=ist+1
 done
@@ -1438,20 +1432,20 @@ echo " -----------------------------------------------"
 echo "           NOW EXECUTING TRACKER......"
 echo " -----------------------------------------------"
 echo " "
-set -x
+${TRACE_ON:-set -x}
 
 msg="$pgm start for $atcfout at ${CYL}z"
 $postmsg "$jlogfile" "$msg"
 
 set +x
 echo "+++ TIMING: BEFORE gettrk  ---> $(date)"
-set -x
+${TRACE_ON:-set -x}
 
 set +x
 echo " "
 echo "TIMING: Before call to gettrk at $(date)"
 echo " "
-set -x
+${TRACE_ON:-set -x}
 
 ##/usrx/local/bin/getrusage -a /hwrf/save/Qingfu.Liu/trak/para/exec/gettrk <${namelist}
 
@@ -1462,11 +1456,11 @@ set +x
 echo " "
 echo "TIMING: After call to gettrk at $(date)"
 echo " "
-set -x
+${TRACE_ON:-set -x}
 
 set +x
 echo "+++ TIMING: AFTER  gettrk  ---> $(date)"
-set -x
+${TRACE_ON:-set -x}
 
 #--------------------------------------------------------------#
 # Send a message to the jlogfile for each storm that used 
@@ -1496,7 +1490,7 @@ echo " -----------------------------------------------"
 echo "    NOW COPYING OUTPUT TRACK FILES TO COM  "
 echo " -----------------------------------------------"
 echo " "
-set -x
+${TRACE_ON:-set -x}
 
 if [[ ! -e "$track_file_path" ]] ; then
     $postmsg "$jlogfile" "WARNING: tracker output file does not exist.  This is probably an error.  File: $track_file_path"
@@ -1665,12 +1659,12 @@ if [ ${gettrk_rcc} -eq 0 ]; then
             echo " "
             echo "+++ Adding records to  TPC ATCFUNIX directory: /tpcprd/atcf_unix/${at}${NO}${syyyy}"
             echo " "
-            set -x
+            ${TRACE_ON:-set -x}
           else
             set +x
             echo " "
             echo "There is no TPC ATCFUNIX directory for: /tpcprd/atcf_unix/${at}${NO}${syyyy}"
-            set -x
+            ${TRACE_ON:-set -x}
           fi
         done
       fi
@@ -1697,7 +1691,7 @@ else
   echo "!!! model= ${atcfout}, forecast initial time = ${PDY}${CYL}"
   echo "!!! Exiting...."
   echo " "
-  set -x
+  ${TRACE_ON:-set -x}
   err_exit " FAILED ${jobid} - ERROR RUNNING GETTRK IN TRACKER SCRIPT- ABNORMAL EXIT"
 
 fi

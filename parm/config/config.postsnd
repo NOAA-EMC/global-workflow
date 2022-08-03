@@ -1,4 +1,4 @@
-#!/bin/ksh -x
+#! /usr/bin/env bash
 
 ########## config.postsnd ##########
 # GFS bufr sounding step specific

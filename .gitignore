@@ -82,6 +82,7 @@ sorc/gldas.fd
 sorc/gsi_enkf.fd
 sorc/gsi.fd
 sorc/enkf.fd
+sorc/gdas.cd
 sorc/gsi_utils.fd
 sorc/gsi_monitor.fd
 sorc/ufs_utils.fd
@@ -188,6 +189,8 @@ ush/radmon_verf_angle.sh
 ush/radmon_verf_bcoef.sh
 ush/radmon_verf_bcor.sh
 ush/radmon_verf_time.sh
+ush/ufsda
+ush/rstprod.sh
 ush/wafs_blending.sh
 ush/wafs_grib2.regrid.sh
 ush/wafs_intdsk.sh

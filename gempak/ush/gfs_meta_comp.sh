@@ -217,8 +217,7 @@ export err=$?;err_chk
         done
         # COMPARE THE 1200 UTC GFS MODEL TO THE 0000 UTC UKMET MODEL
         grid="F-${MDL} | ${PDY2}/${cyc}00"
-        # JY export HPCUKMET=$COMROOT/nawips/prod/ukmet.${PDY}
-        export HPCUKMET=${COMINukmet}.${PDY}
+        export HPCUKMET=${COMINukmet}.${PDY}/gempak
         grid2="F-UKMETHPC | ${PDY2}/0000"
         # for gfsfhr in 00 12 24 36 48 60 84 108
         for gfsfhr in 00 12 24 84 108
@@ -593,8 +592,7 @@ export err=$?;err_chk
         done
         # COMPARE THE 0000 UTC GFS MODEL TO THE 1200 UTC UKMET FROM YESTERDAY
         grid="F-${MDL} | ${PDY2}/${cyc}00"
-        #XXW export HPCUKMET=${MODEL}/ukmet.${PDYm1}
-        export HPCUKMET=${COMINukmet}.${PDYm1}
+        export HPCUKMET=${COMINukmet}.${PDYm1}/gempak
         grid2="F-UKMETHPC | ${PDY2m1}/1200"
         # for gfsfhr in 00 12 24 36 48 60 84 108
         for gfsfhr in 00 12 24 84 108

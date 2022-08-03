@@ -1,4 +1,5 @@
-#!/bin/bash
+#! /usr/bin/env bash
+
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
@@ -13,16 +14,12 @@
 #
 # Attributes:
 #   Language: POSIX shell
-#   Machine: WCOSS-Dell / Hera
 #
 ################################################################################
 
 #  Set environment.
-export VERBOSE=${VERBOSE:-"YES"}
-if [ $VERBOSE = "YES" ]; then
-   echo $(date) EXECUTING $0 $* >&2
-   set -x
-fi
+
+source "$HOMEgfs/ush/preamble.sh"
 
 #  Directories.
 pwd=$(pwd)
@@ -151,7 +148,7 @@ rm -rf dir.*
 
 ##############################################################
 # If analysis increment is written by GSI, produce an analysis file here
-if [ $DO_CALC_ANALYSIS == "YES" ]; then 
+if [ $DO_CALC_ANALYSIS == "YES" ]; then
    # link analysis and increment files
    $NLN $ATMANL siganl
    $NLN $ATMINC siginc.nc
@@ -173,12 +170,12 @@ if [ $DO_CALC_ANALYSIS == "YES" ]; then
    $NLN $ATMG03 sigf03
    $NLN $ATMGES sigf06
    $NLN $ATMG09 sigf09
-   
+
    [[ -f $ATMG04 ]] && $NLN $ATMG04 sigf04
    [[ -f $ATMG05 ]] && $NLN $ATMG05 sigf05
    [[ -f $ATMG07 ]] && $NLN $ATMG07 sigf07
    [[ -f $ATMG08 ]] && $NLN $ATMG08 sigf08
-   
+
    # Link hourly backgrounds (if present)
    if [ -f $ATMG04 -a -f $ATMG05 -a -f $ATMG07 -a -f $ATMG08 ]; then
       nhr_obsbin=1
@@ -195,21 +192,18 @@ fi
 if [ $DOGAUSFCANL = "YES" ]; then
     export APRUNSFC=$APRUN_GAUSFCANL
     export OMP_NUM_THREADS_SFC=$NTHREADS_GAUSFCANL
-    
+
     $GAUSFCANLSH
     export err=$?; err_chk
 fi
 
-echo "$CDUMP $CDATE atmanl and sfcanl done at `date`" > $COMOUT/${APREFIX}loganl.txt
+echo "$CDUMP $CDATE atmanl and sfcanl done at $(date)" > $COMOUT/${APREFIX}loganl.txt
 
 ################################################################################
 # Postprocessing
 cd $pwd
 [[ $mkdata = "YES" ]] && rm -rf $DATA
 
-set +x
-if [ $VERBOSE = "YES" ]; then
-   echo $(date) EXITING $0 with return code $err >&2
-fi
+
 exit $err
 

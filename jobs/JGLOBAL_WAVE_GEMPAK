@@ -1,9 +1,6 @@
-#!/bin/bash
+#! /usr/bin/env bash
 
-
-date
-set -xa
-export PS4='$SECONDS + ' 
+source "$HOMEgfs/ush/preamble.sh"
 
 # JY - 10/29, move the block in the front, otherwise PDY is not defined for COMIN
 export DATA=${DATA:-${DATAROOT}/${jobid:?}}
@@ -18,17 +15,13 @@ export cycle=${cycle:-t${cyc}z}
 
 setpdy.sh
 . PDY
-env
-msg="Begin job for $job"
-postmsg "$jlogfile" "$msg"
 
-
-# 
+#
 export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
 export COMPONENT=${COMPONENT:-wave}
-export machine=${machine:-WCOSS_DELL_P3}
-export HOMEgfs=${HOMEgfs:-$(dirname $(dirname $0))} 
+export machine=${machine:-WCOSS2}
+export HOMEgfs=${HOMEgfs:-$(dirname $(dirname $0))}
 
 # Add default errchk = err_chk
 export errchk=${errchk:-err_chk}
@@ -63,5 +56,5 @@ if [ "$KEEPDATA" != "YES" ]; then
   rm -rf $DATA
 fi
 
-date
+
 exit 0

@@ -1,4 +1,4 @@
-#!/bin/ksh -x
+#! /usr/bin/env bash
 
 ########## config.base ##########
 # Common to all steps
@@ -6,7 +6,7 @@
 echo "BEGIN: config.base"
 
 # Machine environment
-export machine="WCOSS_DELL_P3"
+export machine="WCOSS2"
 
 # EMC parallel or NCO production
 export RUN_ENVIR="nco"
@@ -215,6 +215,10 @@ export DOBNDPNT_WAVE="YES"
 export imp_physics=8
 
 # Shared parameters
+# DA engine
+export DO_JEDIVAR="NO"
+export DO_JEDIENS="NO"
+
 # Hybrid related
 export DOHYBVAR="YES"
 export NMEM_ENKF="80"
