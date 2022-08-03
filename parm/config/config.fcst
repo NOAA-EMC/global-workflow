@@ -122,7 +122,7 @@ if [ $gwd_opt -eq 2 ]; then
     #export  do_gsl_drag_tofd=".true."
     #export  do_ugwp_v1_orog_only=".false."
   
-    #--used for UFS p8b 
+    #--used for UFS p8 
     export knob_ugwp_version=0
     export do_ugwp=".false."
     export do_tofd=".false."
@@ -132,7 +132,7 @@ if [ $gwd_opt -eq 2 ]; then
     export do_ugwp_v0_nst_only=".false."
     export do_gsl_drag_ls_bl=".false."
     export do_gsl_drag_ss=".true."
-    export do_gsl_drag_tofd=".true."
+    export do_gsl_drag_tofd=".false."
     export do_ugwp_v1_orog_only=".false."
     export launch_level=$(echo "$LEVS/2.35" |bc)
 fi
