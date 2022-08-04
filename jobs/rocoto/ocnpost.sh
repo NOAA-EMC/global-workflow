@@ -1,5 +1,6 @@
-#!/bin/bash
-set -x
+#! /usr/bin/env bash
+
+source "$HOMEgfs/ush/preamble.sh"
 
 ###############################################################
 ## CICE5/MOM6 post driver script 
@@ -155,4 +156,6 @@ status=$?
 if [ ${KEEPDATA:-"NO"} = "NO" ] ; then rm -rf $DATA ; fi
 ###############################################################
 # Exit out cleanly
+
+
 exit 0

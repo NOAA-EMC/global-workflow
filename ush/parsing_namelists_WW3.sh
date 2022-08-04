@@ -1,3 +1,4 @@
+#! /usr/bin/env bash
 
 WW3_namelists(){
 
@@ -69,7 +70,7 @@ WW3_namelists(){
   echo "   starting time : $time_beg"
   echo "   ending time   : $time_end"
   echo ' '
-  [[ "$LOUD" = YES ]] && set -x
+  ${TRACE_ON:-set -x}
 
 
 
@@ -107,7 +108,7 @@ WW3_namelists(){
   then
     set +x
     echo "   buoy.loc copied ($PARMwave/wave_${NET}.buoys)."
-    [[ "$LOUD" = YES ]] && set -x
+    ${TRACE_ON:-set -x}
   else
     echo " FATAL ERROR : buoy.loc ($PARMwave/wave_${NET}.buoys) NOT FOUND"
     exit 12 

@@ -1,16 +1,15 @@
-#!/bin/bash
+#! /usr/bin/env bash
 
-date
+source "$HOMEgfs/ush/preamble.sh"
+
 export RUN_ENVIR=${RUN_ENVIR:-"nco"}
-export PS4=' $SECONDS + '
-set -x -e
 
 #############################
 # Source relevant config files
 #############################
 configs="base wave wavepostsbs wavepostpnt"
 export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
-config_path=${EXPDIR:-$NWROOT/gfs.${gfs_ver}/parm/config}
+config_path=${EXPDIR:-${NWROOT:-}/gfs.${gfs_ver}/parm/config}
 for config in $configs; do
     . $config_path/config.$config
     status=$?
@@ -29,8 +28,8 @@ export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
 export COMPONENT=${COMPONENT:-wave}
 
-export HOMEgefs=${HOMEgefs:-$NWROOT/$NET.${gefs_ver}}
-export HOMEgfs=${HOMEgfs:-$NWROOT/$NET.${gfs_ver}}
+export HOMEgefs=${HOMEgefs:-${NWROOT:-}/$NET.${gefs_ver:-}}
+export HOMEgfs=${HOMEgfs:-${NWROOT:-}/$NET.${gfs_ver}}
 
 # Add default errchk = err_chk
 export errchk=${errchk:-err_chk}
@@ -68,7 +67,6 @@ export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/$COMPONENT}
 
 mkdir -p $COMOUT/station
 
-env | sort
 
 # Set wave model ID tag to include member number 
 # if ensemble; waveMEMB var empty in deterministic
@@ -91,11 +89,9 @@ export DOBNDPNT_WAV='NO'  #not boundary points
 $HOMEgfs/scripts/exgfs_wave_post_pnt.sh
 err=$?
 if [ $err -ne 0 ]; then
-  msg="FATAL ERROR: ex-script of GWES_POST failed!"
-else
-  msg="$job completed normally!"
+  echo "FATAL ERROR: ex-script of GWES_POST failed!"
+  exir ${err}
 fi
-postmsg "$jlogfile" "$msg"
 
 ##########################################
 # Remove the Temporary working directory
@@ -103,5 +99,5 @@ postmsg "$jlogfile" "$msg"
 cd $DATAROOT
 [[ $KEEPDATA = "NO" ]] && rm -rf $DATA
 
-date
+
 exit 0

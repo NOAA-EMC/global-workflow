@@ -1,8 +1,7 @@
-#!/bin/sh
+#! /usr/bin/env bash
 
-set -xa
-export PS4='$SECONDS + '
-date
+source "$HOMEgfs/ush/preamble.sh"
+
 export OMP_NUM_THREADS=${OMP_NUM_THREADS:-1}
 
 ########################################
@@ -63,7 +62,6 @@ fi
 
 export pgmout=OUTPUT.$$
 
-env
 
 ########################################################
 # Execute the script.
@@ -72,9 +70,6 @@ mkdir -m 775 awips_g1
 cd $DATA/awips_g1
 $HOMEgfs/scripts/exgfs_atmos_grib_awips.sh $fcsthrs
 export err=$?; err_chk
-
-msg="JOB $job HAS COMPLETED NORMALLY!"
-postmsg $jlogfile "$msg"
 
 ############################################
 # print exec I/O output
@@ -90,4 +85,3 @@ if [ "$KEEPDATA" != "YES" ] ; then
   rm -rf $DATA
 fi
 
-date

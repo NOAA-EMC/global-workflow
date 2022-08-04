@@ -1,47 +1,46 @@
+#! /usr/bin/env bash
+
 #####################################################################
-echo "-----------------------------------------------------"
-echo " exgfs_nceppost.sh" 
-echo " Apr 99 - Michaud - Generated to post global forecast"
-echo " Mar 03 - Zhu - Add post for 0.5x0.5 degree"
-echo " Nov 03 - Gilbert - Modified from exglobal_post.sh.sms"
-echo "                    to run only one master post job."
-echo " Jan 07 - Cooke - Add DBNet Alert for Master files"
-echo " May 07 - Chuang - Modified scripts to run unified post"
-echo " Feb 10 - Carlis - Add 12-hr accum precip bucket at f192"
-echo " Jun 12 - Wang   - Add option for grb2"
-echo " Jul 14 - Carlis - Add 0.25 deg master "
-echo " Mar 17 - F Yang -  Modified for running fv3gfs"
-echo " Aug 17 - Meng   - Add flags for turning on/off flx, gtg " 
-echo "                   and satellite look like file creation"   
-echo "                   and use 3-digit forecast hour naming"
-echo "                   post output files"
-echo " Dec 17 - Meng - Link sfc data file to flxfile "
-echo "                 since fv3gfs does not output sfc files any more." 
-echo " Dec 17 - Meng - Add fv3gfs_downstream_nems.sh for pgb processing "
-echo " Jan 18 - Meng - Add flag PGBF for truning on/off pgb processing. "
-echo " Jan 18 - Meng - For EE2 standard, move IDRT POSTGPVARS setting" 
-echo "                 from j-job script."
-echo " Feb 18 - Meng - Removed legacy setting for generating grib1 data"
-echo "                 and reading sigio model outputs."
-echo " Aug 20 - Meng - Remove .ecf extentsion per EE2 review."
-echo " Sep 20 - Meng - Update clean up files per EE2 review."
-echo " Dec 20 - Meng - Add alert for special data file."
-echo " Mar 21 - Meng - Update POSTGRB2TBL default setting."
-echo " Jun 21 - Mao  - Instead of err_chk, catch err and print out"
-echo "                 WAFS failure warnings to avoid job crashing"
-echo " Oct 21 - Meng - Remove jlogfile for wcoss2 transition."
-echo " Feb 22 - Lin - Exception handling if anl input not found."
-echo "-----------------------------------------------------"
+# echo "-----------------------------------------------------"
+# echo " exgfs_nceppost.sh" 
+# echo " Apr 99 - Michaud - Generated to post global forecast"
+# echo " Mar 03 - Zhu - Add post for 0.5x0.5 degree"
+# echo " Nov 03 - Gilbert - Modified from exglobal_post.sh.sms"
+# echo "                    to run only one master post job."
+# echo " Jan 07 - Cooke - Add DBNet Alert for Master files"
+# echo " May 07 - Chuang - Modified scripts to run unified post"
+# echo " Feb 10 - Carlis - Add 12-hr accum precip bucket at f192"
+# echo " Jun 12 - Wang   - Add option for grb2"
+# echo " Jul 14 - Carlis - Add 0.25 deg master "
+# echo " Mar 17 - F Yang -  Modified for running fv3gfs"
+# echo " Aug 17 - Meng   - Add flags for turning on/off flx, gtg " 
+# echo "                   and satellite look like file creation"   
+# echo "                   and use 3-digit forecast hour naming"
+# echo "                   post output files"
+# echo " Dec 17 - Meng - Link sfc data file to flxfile "
+# echo "                 since fv3gfs does not output sfc files any more." 
+# echo " Dec 17 - Meng - Add fv3gfs_downstream_nems.sh for pgb processing "
+# echo " Jan 18 - Meng - Add flag PGBF for truning on/off pgb processing. "
+# echo " Jan 18 - Meng - For EE2 standard, move IDRT POSTGPVARS setting" 
+# echo "                 from j-job script."
+# echo " Feb 18 - Meng - Removed legacy setting for generating grib1 data"
+# echo "                 and reading sigio model outputs."
+# echo " Aug 20 - Meng - Remove .ecf extentsion per EE2 review."
+# echo " Sep 20 - Meng - Update clean up files per EE2 review."
+# echo " Dec 20 - Meng - Add alert for special data file."
+# echo " Mar 21 - Meng - Update POSTGRB2TBL default setting."
+# echo " Jun 21 - Mao  - Instead of err_chk, catch err and print out"
+# echo "                 WAFS failure warnings to avoid job crashing"
+# echo " Oct 21 - Meng - Remove jlogfile for wcoss2 transition."
+# echo " Feb 22 - Lin - Exception handling if anl input not found."
+# echo "-----------------------------------------------------"
 #####################################################################
 
-set -x
+source "$HOMEgfs/ush/preamble.sh"
 
 cd $DATA
 
 # specify model output format type: 4 for nemsio, 3 for sigio
-msg="HAS BEGUN on $(hostname)"
-postmsg "$msg"
-
 export POSTGPSH=${POSTGPSH:-$USHgfs/gfs_nceppost.sh}
 export GFSDOWNSH=${GFSDOWNSH:-$USHgfs/fv3gfs_downstream_nems.sh}
 export GFSDOWNSHF=${GFSDOWNSHF:-$USHgfs/inter_flux.sh}
@@ -242,7 +241,6 @@ else   ## not_anl if_stime
     # Start Looping for the 
     # existence of the restart files
     ###############################
-    set -x
     export pgm="postcheck"
     ic=1
     while [ $ic -le $SLEEP_LOOP_MAX ]; do
@@ -263,10 +261,6 @@ else   ## not_anl if_stime
         err_chk
       fi
     done
-    set -x
-
-    msg="Starting post for fhr=$fhr"
-    postmsg "$msg"
 
     ###############################
     # Put restart files into /nwges 
@@ -478,7 +472,7 @@ else   ## not_anl if_stime
     ##########################  WAFS start ##########################
     # Generate WAFS products on ICAO standard level.
     # Do not need to be sent out to public, WAFS package will process the data.
-    if [[ $WAFSF = "YES"  && $fhr -le 120 ]]; then
+    if [[ $WAFSF = "YES"  && 10#$fhr -le 120 ]]; then
       if [[ $RUN = gfs && $GRIBVERSION = 'grib2' ]]; then
         export OUTTYP=${OUTTYP:-4}
 
@@ -527,9 +521,7 @@ else   ## not_anl if_stime
   #----------------------------------
 fi   ## end_if_stime
 
-#cat $pgmout
-#msg='ENDED NORMALLY.'
-#postmsg "$jlogfile" "$msg"
+
 
 exit 0
 

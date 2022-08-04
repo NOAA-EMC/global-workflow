@@ -1,5 +1,5 @@
-#!/bin/sh
-#                                                                       
+#! /usr/bin/env bash
+
 ################################################################################
 #
 # UNIX Script Documentation Block
@@ -12,17 +12,17 @@
 # Script history log:
 # 2019-10-02  J-Henrique Alves: origination, first version
 # 2019-11-02  J-Henrique Alves Ported to global-workflow.
-# 2020-06-10  J-Henrique Alves Ported R&D machine Hera   
+# 2020-06-10  J-Henrique Alves Ported R&D machine Hera
 #
 # $Id$
 #
 # Attributes:
 #   Language: Bourne-again (BASH) shell
-#   Machine: WCOSS-DELL-P3
 #
 ################################################################################
 #
-set -x
+
+source "$HOMEgfs/ush/preamble.sh"
 
 ymdh_rtofs=$1
 curfile=$2
@@ -46,12 +46,12 @@ mv -f cur_temp3.nc cur_uv_${PDY}_${fext}${fh3}_flat.nc
 # If weights need to be regenerated due to CDO ver change, use:
 # $CDO genbil,r4320x2160 rtofs_glo_2ds_f000_3hrly_prog.nc weights.nc
 cp ${FIXwave}/weights_rtofs_to_r4320x2160.nc ./weights.nc
-  
+
 # Interpolate to regular 5 min grid
 $CDO remap,r4320x2160,weights.nc cur_uv_${PDY}_${fext}${fh3}_flat.nc cur_5min_01.nc
 
 # Perform 9-point smoothing twice to make RTOFS data less noisy when
-# interpolating from 1/12 deg RTOFS grid to 1/6 deg wave grid 
+# interpolating from 1/12 deg RTOFS grid to 1/6 deg wave grid
 if [ "WAV_CUR_CDO_SMOOTH" = "YES" ]; then
   $CDO -f nc -smooth9 cur_5min_01.nc cur_5min_02.nc
   $CDO -f nc -smooth9 cur_5min_02.nc cur_glo_uv_${PDY}_${fext}${fh3}_5min.nc
@@ -62,7 +62,7 @@ fi
 # Cleanup
 rm -f cur_temp[123].nc cur_5min_??.nc cur_glo_uv_${PDY}_${fext}${fh3}.nc weights.nc
 
-if [ ${flagfirst}  = "T" ] 
+if [ ${flagfirst}  = "T" ]
 then
   sed -e "s/HDRFL/T/g" ${PARMwave}/ww3_prnc.cur.${WAVECUR_FID}.inp.tmpl > ww3_prnc.inp
 else
@@ -95,4 +95,3 @@ fi
 mv -f current.ww3 ${DATA}/${WAVECUR_DID}.${ymdh_rtofs}
 
 cd ${DATA}
-

@@ -1,5 +1,5 @@
-#!/bin/bash
-#
+#! /usr/bin/env bash
+
 ################################################################################
 #
 # UNIX Script Documentation Block
@@ -39,12 +39,10 @@
 ###############################################################################
 # --------------------------------------------------------------------------- #
 # 0.  Preparations
-# 0.a Basic modes of operation
 
-  set -x
-  # Use LOUD variable to turn on/off trace.  Defaults to YES (on).
-  export LOUD=${LOUD:-YES}; [[ $LOUD = yes ]] && export LOUD=YES
-  [[ "$LOUD" != YES ]] && set +x
+source "$HOMEgfs/ush/preamble.sh"
+
+# 0.a Basic modes of operation
 
   # Set wave model ID tag to include member number
   # if ensemble; waveMEMB var empty in deterministic
@@ -66,7 +64,7 @@
   echo ' '
   echo "Starting at : $(date)"
   echo ' '
-  [[ "$LOUD" = YES ]] && set -x
+  ${TRACE_ON:-set -x}
 
   if [ "$INDRUN" = 'no' ]
   then
@@ -138,7 +136,7 @@
   echo "   starting time : $time_beg"
   echo "   ending time   : $time_end"
   echo ' '
-  [[ "$LOUD" = YES ]] && set -x
+  ${TRACE_ON:-set -x}
 
   # Script will run only if pre-defined NTASKS
   #     The actual work is distributed over these tasks.
@@ -155,7 +153,7 @@
   echo 'Preparing input files :'
   echo '-----------------------'
   echo ' '
-  [[ "$LOUD" = YES ]] && set -x
+  ${TRACE_ON:-set -x}
 
   # 1.a Model definition files
 
@@ -175,7 +173,7 @@
     then
       set +x
       echo " Mod def file for $grdID found in ${COMIN}/rundata. copying ...."
-      [[ "$LOUD" = YES ]] && set -x
+      ${TRACE_ON:-set -x}
       cp $COMIN/rundata/${CDUMP}wave.mod_def.${grdID} mod_def.$grdID
 
     else
@@ -187,7 +185,7 @@
       echo "                                grdID = $grdID"
       echo ' '
       echo "FATAL ERROR: NO MODEL DEFINITION FILE"
-      [[ "$LOUD" = YES ]] && set -x
+      ${TRACE_ON:-set -x}
       err=2;export err;${errchk}
     fi
   done
@@ -227,7 +225,7 @@
        echo ' '
        echo "   ww3_prnc.${type}.$grdID.inp.tmpl copied ($PARMwave)."
        echo ' '
-       [[ "$LOUD" = YES ]] && set -x
+       ${TRACE_ON:-set -x}
      else
        set +x
        echo ' '
@@ -238,7 +236,7 @@
        echo ' '
        echo "ABNORMAL EXIT: NO FILE $file"
        echo ' '
-       [[ "$LOUD" = YES ]] && set -x
+       ${TRACE_ON:-set -x}
        err=4;export err;${errchk}
      fi
    done
@@ -267,7 +265,7 @@
         echo ' '
         sed "s/^/wave_prnc_ice.out : /g" wave_prnc_ice.out
         echo ' '
-        [[ "$LOUD" = YES ]] && set -x
+        ${TRACE_ON:-set -x}
         err=5;export err;${errchk}
       else
         mv -f wave_prnc_ice.out $DATA/outtmp
@@ -275,7 +273,7 @@
         echo ' '
         echo '      Ice field unpacking successful.'
         echo ' '
-        [[ "$LOUD" = YES ]] && set -x
+        ${TRACE_ON:-set -x}
       fi
     else
       echo ' '
@@ -297,7 +295,7 @@
     echo '*** FATAL ERROR : Not set-up to preprocess wind *** '
     echo '*************************************************** '
     echo ' '
-    [[ "$LOUD" = YES ]] && set -x
+    ${TRACE_ON:-set -x}
     err=6;export err;${errchk} 
 
   fi
@@ -315,7 +313,7 @@
       echo ' '
       echo '   Concatenate binary current fields ...'
       echo ' '
-      [[ "$LOUD" = YES ]] && set -x
+      ${TRACE_ON:-set -x}
 
 # Prepare files for cfp process
       rm -f cmdfile
@@ -386,13 +384,13 @@
           else 
              curfile=${curfile3h}
           fi
-          set $setoff
+          set -x
           echo ' '
           echo '************************************** '
           echo "*** FATAL ERROR: NO CUR FILE $curfile ***  "
           echo '************************************** '
           echo ' '
-          set $seton
+          ${TRACE_ON:-set -x}
           echo "FATAL ERROR - NO CURRENT FILE (RTOFS)"
           err=11;export err;${errchk}
           exit $err
@@ -425,7 +423,7 @@
       echo "   Executing the curr prnc cmdfile at : $(date)"
       echo '   ------------------------------------'
       echo ' '
-      [[ "$LOUD" = YES ]] && set -x
+      ${TRACE_ON:-set -x}
 
       if [ $wavenproc -gt '1' ]
       then
@@ -450,7 +448,7 @@
         echo '********************************************'
         echo '     See Details Below '
         echo ' '
-        [[ "$LOUD" = YES ]] && set -x
+        ${TRACE_ON:-set -x}
       fi
 
       files=$(ls ${WAVECUR_DID}.* 2> /dev/null)
@@ -464,7 +462,7 @@
         echo '******************************************** '
         echo ' '
         echo "ABNORMAL EXIT: NO ${WAVECUR_FID}.* FILES FOUND"
-        [[ "$LOUD" = YES ]] && set -x
+        ${TRACE_ON:-set -x}
         err=11;export err;${errchk}
       fi
 
@@ -495,14 +493,7 @@
 # --------------------------------------------------------------------------- #
 # 4.  Ending output
 
-  set +x
-  echo ' '
-  echo "Ending at : $(date)"
-  echo ' '
-  echo '                     *** End of MWW3 preprocessor ***'
-  echo ' '
-  [[ "$LOUD" = YES ]] && set -x
 
-  exit $err
+exit $err
 
 # End of MWW3 preprocessor script ------------------------------------------- #

@@ -1,4 +1,4 @@
-#!/bin/sh 
+#! /usr/bin/env bash
 #BSUB -L /bin/sh
 #BSUB -P FV3GFS-T2O
 #BSUB -oo log.weights

@@ -260,11 +260,8 @@ export err=$?;err_chk
 
 
 if [ ${cyc} -eq 00 ] ; then
-    # BV export MODEL=/com/nawips/prod
-    # JY export HPCECMWF=${MODEL}/ecmwf.${PDY}
-    # JY export HPCUKMET=${MODEL}/ukmet.${PDYm1}
     export HPCECMWF=${COMINecmwf}.${PDY}/gempak
-    export HPCUKMET=${COMINukmet}.${PDYm1}
+    export HPCUKMET=${COMINukmet}.${PDYm1}/gempak
     grid1="F-${MDL} | ${PDY2}/${cyc}00"
     grid2="${COMINecmwf}.${PDYm1}/gempak/ecmwf_glob_${PDYm1}12"
     grid3="F-UKMETHPC | ${PDY2m1}/1200"

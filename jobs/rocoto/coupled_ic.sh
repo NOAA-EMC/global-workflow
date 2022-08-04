@@ -1,6 +1,6 @@
-#!/bin/bash
+#! /usr/bin/env bash
 
-set -x
+source "$HOMEgfs/ush/preamble.sh"
 
 ###############################################################
 ## Abstract:
@@ -55,7 +55,7 @@ rc=$?
 if [[ $rc -ne 0 ]] ; then
   echo "FATAL: Unable to copy $BASE_CPLIC/$CPL_ATMIC/$CDATE/$CDUMP/* to $ICSDIR/$CDATE/atmos/ (Error code $rc)" 
 fi
-((err+=$rc))
+err=$((err + rc))
 
 
 # Setup Ocean IC files 
@@ -64,7 +64,7 @@ rc=$?
 if [[ $rc -ne 0 ]] ; then
   echo "FATAL: Unable to copy $BASE_CPLIC/$CPL_OCNIC/$CDATE/ocn/$OCNRES/MOM*.nc to $ICSDIR/$CDATE/ocn/ (Error code $rc)"
 fi
-((err+=$rc))
+err=$((err + rc))
 
 #Setup Ice IC files 
 cp $BASE_CPLIC/$CPL_ICEIC/$CDATE/ice/$ICERES/cice5_model_${ICERESdec}.res_$CDATE.nc $ICSDIR/$CDATE/ice/cice_model_${ICERESdec}.res_$CDATE.nc
@@ -72,7 +72,7 @@ rc=$?
 if [[ $rc -ne 0 ]] ; then
   echo "FATAL: Unable to copy $BASE_CPLIC/$CPL_ICEIC/$CDATE/ice/$ICERES/cice5_model_${ICERESdec}.res_$CDATE.nc to $ICSDIR/$CDATE/ice/cice_model_${ICERESdec}.res_$CDATE.nc (Error code $rc)"
 fi
-((err+=$rc))
+err=$((err + rc))
 
 if [ $DO_WAVE = "YES" ]; then
   [[ ! -d $ICSDIR/$CDATE/wav ]] && mkdir -p $ICSDIR/$CDATE/wav
@@ -83,7 +83,7 @@ if [ $DO_WAVE = "YES" ]; then
     if [[ $rc -ne 0 ]] ; then
       echo "FATAL: Unable to copy $BASE_CPLIC/$CPL_WAVIC/$CDATE/wav/$grdID/*restart.$grdID to $ICSDIR/$CDATE/wav/ (Error code $rc)" 
     fi
-    ((err+=$rc))
+    err=$((err + rc))
   done
 fi
 
@@ -112,5 +112,5 @@ fi
 ##############################################################
 # Exit cleanly
 
-set +x
+
 exit 0
