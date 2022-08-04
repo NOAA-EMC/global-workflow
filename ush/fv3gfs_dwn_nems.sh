@@ -1,5 +1,4 @@
-#!/bin/ksh
-set -x
+#! /usr/bin/env bash
 
 # this script generates 0.25/0.5/1/2.5 deg pgb files for each small Grib file
 # Hui-Ya Chuang 01/2014: First Version
@@ -11,6 +10,8 @@ set -x
 # Wen Meng 02/2018: add flag PGBS for turning on/off pgb data at 1.0 and 0.5 deg. generation.
 # Wen Meng 10/2019: Use bilinear interpolation for LAND, It can trancate land-sea mask as 0 or 1.
 # Wen Meng 11/2019: Teak sea ice cover via land-sea mask.
+
+source "$HOMEgfs/ush/preamble.sh"
 
 export tmpfile=$1
 export fhr3=$2
@@ -42,6 +43,7 @@ export grid2p5="latlon 0:144:2.5 90:73:-2.5"
 
 export PGB1F=${PGB1F:-"NO"}
 export PGBS=${PGBS:-"NO"}
+optncpu=${optncpu:-}
 
 if [ $nset = 1 ]; then
   if [ "$PGBS" = "YES" ]; then
@@ -105,5 +107,3 @@ fi
 # $CNVGRIB -g21 pgb2file_${fhr3}_${iproc}_1p0 pgbfile_${fhr3}_${iproc}_1p0          
 # $CNVGRIB -g21 pgb2file_${fhr3}_${iproc}_2p5 pgbfile_${fhr3}_${iproc}_2p5 
 #----------------------------------------------------------------------------------------------
-
-exit 0

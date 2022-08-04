@@ -1,4 +1,4 @@
-#!/bin/ksh -x
+#! /usr/bin/env bash
 
 ########## config.post ##########
 # Post specific
@@ -15,7 +15,7 @@ echo "BEGIN: config.post"
 export NPOSTGRP=42
 export OUTTYP=4
 export MODEL_OUT_FORM=binarynemsiompiio
-if [ $OUTPUT_FILE = "netcdf" ]; then 
+if [ $OUTPUT_FILE = "netcdf" ]; then
     export MODEL_OUT_FORM=netcdfpara
 fi
 
@@ -34,11 +34,7 @@ export nth_postgp=1
 
 export GFS_DOWNSTREAM="YES"
 export downset=2
-if [ $machine = "WCOSS_DELL_P3" ]; then
-    export npe_dwn=28
-else
-    export npe_dwn=24
-fi
+export npe_dwn=24
 
 export GRIBVERSION='grib2'
 export SENDCOM="YES"

@@ -1,10 +1,8 @@
-#!/bin/ksh
-set -x
+#! /usr/bin/env bash
+
+source "$HOMEgfs/ush/preamble.sh"
 
 export RUN_ENVIR=${RUN_ENVIR:-"nco"}
-export PS4='$SECONDS + '
-date
-
 
 #############################
 # Source relevant config files
@@ -72,7 +70,7 @@ export COMPONENT=${COMPONENT:-atmos}
 ##############################################
 export APRUNP=${APRUN:-$APRUN_NP}
 export RERUN=${RERUN:-NO}
-export HOMECRTM=${HOMECRTM:-${NWROOT}/lib/crtm/${crtm_ver}}
+export HOMECRTM=${HOMECRTM:-${NWROOT:-}/lib/crtm/${crtm_ver:-}}
 export FIXCRTM=${CRTM_FIX:-${HOMECRTM}/fix}
 export PARMpost=${PARMpost:-$HOMEgfs/parm/post}
 export INLINE_POST=${WRITE_DOPOST:-".false."}
@@ -118,11 +116,6 @@ export SLEEP_INT=5
 
 ###############################################################
 # Run relevant exglobal script
-env
-msg="HAS BEGUN on $(hostname)"
-postmsg "$msg"
-$LOGSCRIPT
-
 
 $SCRgfs/ex${RUN}_atmos_nceppost.sh
 status=$?
@@ -139,15 +132,11 @@ if [ -e "$pgmout" ]; then
   cat $pgmout
 fi
 
-msg="ENDED NORMALLY."
-postmsg "$msg"
-
-
 ##########################################
 # Remove the Temporary working directory
 ##########################################
 cd $DATAROOT
 [[ $KEEPDATA = "NO" ]] && rm -rf $DATA
 
-date
+
 exit 0

@@ -1,4 +1,6 @@
-#!/bin/bash -x
+#! /usr/bin/env bash
+
+source "$HOMEgfs/ush/preamble.sh"
 
 ###############################################################
 ## Abstract:
@@ -53,7 +55,7 @@ export RUNICSH=${RUNICSH:-${GDASINIT_DIR}/run_v16.chgres.sh}
 # Check if init is needed and run if so
 if [[ $gfs_ver = "v16" && $EXP_WARM_START = ".true." && $CASE = $OPS_RES ]]; then
   echo "Detected v16 $OPS_RES warm starts, will not run init. Exiting..."
-  exit 0
+  
 else
   # Run chgres_cube
   if [ ! -d $OUTDIR ]; then mkdir -p $OUTDIR ; fi
@@ -70,4 +72,6 @@ cd $DATAROOT
 
 ###############################################################
 # Exit out cleanly
+
+
 exit 0

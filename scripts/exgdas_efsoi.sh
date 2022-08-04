@@ -1,4 +1,5 @@
-#!/bin/ksh
+#! /usr/bin/env bash
+
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
@@ -13,16 +14,10 @@
 #
 # Attributes:
 #   Language: POSIX shell
-#   Machine: Hera
 #
 ################################################################################
 
-# Set environment.
-VERBOSE=${VERBOSE:-"YES"}
-if [ $VERBOSE = "YES" ] ; then
-   echo $(date) EXECUTING $0 $* >&2
-   set -x
-fi
+source "$HOMEgfs/ush/preamble.sh"
 
 # Directories.
 pwd=$(pwd)
@@ -141,7 +136,7 @@ $NLN $VLOCALEIG  vlocal_eig.dat
 ################################################################################
 # Ensemble guess, observational data and analyses/increments
 
-nfhrs=`echo $IAUFHRS_ENKF | sed 's/,/ /g'`
+nfhrs=$(echo $IAUFHRS_ENKF | sed 's/,/ /g')
 for imem in $(seq 1 $NMEM_ENKF); do
    memchar="mem"$(printf %03i $imem)
    mkdir ${memchar}
@@ -154,7 +149,7 @@ $NLN $COMIN_GES_ENS/${GPREFIX}atmf006.ensmean${GSUFFIX} sfg_${CDATE}_fhr03_ensme
 # The following deals with different files with the same local name (assuming
 # a 24hr EFSOI forecast):
 # both are hybrid analyses from gdas - one from CDATE saved during the
-# corresponding GDAS cycle in the efsoigdas tree to be used in 
+# corresponding GDAS cycle in the efsoigdas tree to be used in
 # the localization advection in EFSOI, the other from VDATE to be used
 # for verification.
 
@@ -258,8 +253,6 @@ $NCP osense_${CDATE}.dat $OSENSE_SAVE_DIR/$OSENSEOUT
 
 cd $pwd
 [[ $mkdata = "YES" ]] && rm -rf $DATA
-set +x
-if [ $VERBOSE = "YES" ]; then
-   echo $(date) EXITING $0 with return code $err >&2
-fi
+
+
 exit $err

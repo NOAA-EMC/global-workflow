@@ -1,4 +1,5 @@
-#!/bin/bash
+#! /usr/bin/env bash
+
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
@@ -13,16 +14,12 @@
 #
 # Attributes:
 #   Language: POSIX shell
-#   Machine: WCOSS-Dell / Hera
 #
 ################################################################################
 
 #  Set environment.
-export VERBOSE=${VERBOSE:-"YES"}
-if [[ "$VERBOSE" = "YES" ]]; then
-   echo $(date) EXECUTING $0 $* >&2
-   set -x
-fi
+
+source "$HOMEgfs/ush/preamble.sh"
 
 #  Directories.
 pwd=$(pwd)
@@ -197,9 +194,9 @@ EOFdiag
             if [ $count -gt 1 ]; then
                if [ $USE_CFP = "YES" ]; then
                   echo "$nm $DATA/diag.sh $lrun_subdirs $binary_diag $type $loop $string $CDATE $DIAG_COMPRESS $DIAG_SUFFIX" | tee -a $DATA/mp_diag.sh
-		  if [ ${CFP_MP:-"NO"} = "YES" ]; then
-		      nm=$((nm+1))
-		  fi
+      if [ ${CFP_MP:-"NO"} = "YES" ]; then
+          nm=$((nm+1))
+      fi
                else
                   if [ $binary_diag = ".true." ]; then
                      cat ${prefix}${type}_${loop}* > diag_${type}_${string}.${CDATE}${DIAG_SUFFIX}
@@ -212,7 +209,7 @@ EOFdiag
             elif [ $count -eq 1 ]; then
                 cat ${prefix}${type}_${loop}* > diag_${type}_${string}.${CDATE}${DIAG_SUFFIX}
                 if [ $DIAG_COMPRESS = "YES" ]; then
-		    $COMPRESS diag_${type}_${string}.${CDATE}${DIAG_SUFFIX}
+        $COMPRESS diag_${type}_${string}.${CDATE}${DIAG_SUFFIX}
                 fi
                 echo "diag_${type}_${string}.${CDATE}*" >> ${diaglist[n]}
                 numfile[n]=$(expr ${numfile[n]} + 1)
@@ -248,9 +245,11 @@ EOFdiag
    # Restrict diagnostic files containing rstprod data
    rlist="conv_gps conv_ps conv_pw conv_q conv_sst conv_t conv_uv saphir"
    for rtype in $rlist; do
-       ${CHGRP_CMD} *${rtype}*
+      set +e
+      ${CHGRP_CMD} *${rtype}*
+      ${STRICT_ON:-set -e}
    done
-   
+
    # If requested, create diagnostic file tarballs
    if [ $DIAG_TARBALL = "YES" ]; then
       echo $(date) START tar diagnostic files >&2
@@ -286,11 +285,8 @@ if [[ "$REMOVE_DIAG_DIR" = "YES" && "$err" = "0" ]]; then
 fi
 
 cd $pwd
-[[ $mkdata = "YES" ]] && rm -rf $DATA
+[[ "${mkdata:-YES}" = "YES" ]] && rm -rf $DATA
 
-set +x
-if [[ "$VERBOSE" = "YES" ]]; then
-   echo $(date) EXITING $0 with return code $err >&2
-fi
+
 exit $err
 

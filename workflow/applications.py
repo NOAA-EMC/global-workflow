@@ -93,6 +93,7 @@ class AppConfig:
 
         self.model_app = _base.get('APP', 'ATM')
         self.do_hybvar = _base.get('DOHYBVAR', False)
+        self.do_atm = _base.get('DO_ATM', True)
         self.do_wave = _base.get('DO_WAVE', False)
         self.do_wave_bnd = _base.get('DOBNDPNT_WAVE', False)
         self.do_ocean = _base.get('DO_OCN', False)
@@ -105,6 +106,8 @@ class AppConfig:
         self.do_wafs = _base.get('DO_WAFS', False)
         self.do_vrfy = _base.get('DO_VRFY', True)
         self.do_metp = _base.get('DO_METP', False)
+        self.do_jedivar = _base.get('DO_JEDIVAR', False)
+        self.do_jediens = _base.get('DO_JEDIENS', False)
 
         self.do_hpssarch = _base.get('HPSSARCH', False)
 
@@ -172,21 +175,34 @@ class AppConfig:
         Returns the config_files that are involved in the cycled app
         """
 
-        configs = ['prep',
-                   'anal', 'sfcanl', 'analdiag', 'analcalc',
-                   'fcst', 'post', 'vrfy', 'arch']
+        configs = ['prep']
+
+        if self.do_jedivar:
+            configs += ['atmanalprep', 'atmanalrun', 'atmanalpost']
+        else:
+            configs += ['anal', 'analdiag']
+
+        configs += ['sfcanl', 'analcalc', 'fcst', 'post', 'vrfy', 'arch']
+
 
         if self.do_gldas:
             configs += ['gldas']
 
         if self.do_hybvar:
-            configs += ['eobs', 'eomg', 'ediag', 'eupd', 'ecen', 'esfc', 'efcs', 'echgres', 'epos', 'earc']
+            if self.do_jediens:
+                configs += ['atmensanalprep', 'atmensanalrun', 'atmensanalpost']
+            else:
+                configs += ['eobs', 'eomg', 'ediag', 'eupd']
+            configs += ['ecen', 'esfc', 'efcs', 'echgres', 'epos', 'earc']
 
         if self.do_metp:
             configs += ['metp']
 
         if self.do_gempak:
             configs += ['gempak']
+
+        if self.do_bufrsnd:
+            configs += ['postsnd']
 
         if self.do_awips:
             configs += ['awips']
@@ -211,9 +227,14 @@ class AppConfig:
         Returns the config_files that are involved in the forecast-only app
         """
 
-        configs = ['fcst', 'post', 'vrfy', 'arch']
+        configs = ['fcst']
 
-        if self.model_app in ['S2S', 'S2SW', 'S2SWA']:
+        if self.do_atm:
+            configs += ['post', 'vrfy']
+
+        configs += ['arch']
+
+        if self.model_app in ['S2S', 'S2SW', 'S2SWA', 'NG-GODAS']:
             configs += ['coupled_ic']
         else:
             configs += ['init']
@@ -226,7 +247,7 @@ class AppConfig:
         if self.do_ocean or self.do_ice:
             configs += ['ocnpost']
 
-        if self.do_metp:
+        if self.do_atm and self.do_metp:
             configs += ['metp']
 
         if self.do_gempak:
@@ -373,9 +394,16 @@ class AppConfig:
         This is the place where that order is set.
         """
 
-        gdas_gfs_common_tasks_before_fcst = ['prep', 'anal', 'sfcanl', 'analcalc']
+        gdas_gfs_common_tasks_before_fcst = ['prep']
         gdas_gfs_common_tasks_after_fcst = ['post', 'vrfy']
         gdas_gfs_common_cleanup_tasks = ['arch']
+
+        if self.do_jedivar:
+            gdas_gfs_common_tasks_before_fcst += ['atmanalprep', 'atmanalrun', 'atmanalpost']
+        else:
+            gdas_gfs_common_tasks_before_fcst += ['anal']
+
+        gdas_gfs_common_tasks_before_fcst += ['sfcanl', 'analcalc']
 
         gldas_tasks = ['gldas']
         wave_prep_tasks = ['waveinit', 'waveprep']
@@ -385,12 +413,17 @@ class AppConfig:
         hybrid_gdas_or_gfs_tasks = []
         hybrid_gdas_tasks = []
         if self.do_hybvar:
-            hybrid_gdas_or_gfs_tasks += ['eobs', 'eupd', 'echgres']
-            hybrid_gdas_or_gfs_tasks += ['ediag'] if self.lobsdiag_forenkf else ['eomg']
+            if self.do_jediens:
+                hybrid_gdas_or_gfs_tasks += ['atmensanalprep', 'atmensanalrun', 'atmensanalpost', 'echgres']
+            else:
+                hybrid_gdas_or_gfs_tasks += ['eobs', 'eupd', 'echgres']
+                hybrid_gdas_or_gfs_tasks += ['ediag'] if self.lobsdiag_forenkf else ['eomg']
             hybrid_gdas_tasks += ['ecen', 'esfc', 'efcs', 'epos', 'earc']
 
         # Collect all "gdas" cycle tasks
-        gdas_tasks = gdas_gfs_common_tasks_before_fcst + ['analdiag']
+        gdas_tasks = gdas_gfs_common_tasks_before_fcst.copy()
+        if not self.do_jedivar:
+            gdas_tasks += ['analdiag']
 
         if self.do_gldas:
             gdas_tasks += gldas_tasks
@@ -466,7 +499,7 @@ class AppConfig:
 
         tasks = []
 
-        if 'S2S' in self.model_app:
+        if self.model_app in ['S2S', 'S2SW', 'S2SWA', 'NG-GODAS']:
             tasks += ['coupled_ic']
         else:
             if self.do_hpssarch:
@@ -482,12 +515,16 @@ class AppConfig:
 
         tasks += ['fcst']
 
-        tasks += ['post']
-        if 'S2S' in self.model_app:
+        if self.do_atm:
+            tasks += ['post']
+
+        if self.model_app in ['S2S', 'S2SW', 'S2SWA', 'NG-GODAS']:
             tasks += ['ocnpost']
 
-        tasks += ['vrfy']
-        if self.do_metp:
+        if self.do_atm:
+            tasks += ['vrfy']
+
+        if self.do_atm and self.do_metp:
             tasks += ['metp']
 
         if self.do_wave:

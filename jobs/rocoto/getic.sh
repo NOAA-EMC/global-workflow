@@ -1,4 +1,6 @@
-#!/bin/bash -x
+#! /usr/bin/env bash
+
+source "$HOMEgfs/ush/preamble.sh"
 
 ###############################################################
 ## Abstract:
@@ -158,4 +160,6 @@ cd $DATAROOT
 
 ###############################################################
 # Exit out cleanly
+
+
 exit 0
