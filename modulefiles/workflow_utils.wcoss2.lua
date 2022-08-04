@@ -11,7 +11,7 @@ load(pathJoin("cmake", os.getenv("cmake_ver")))
 
 load(pathJoin("jasper", os.getenv("jasper_ver")))
 load(pathJoin("zlib", os.getenv("zlib_ver")))
-load(pathJoin("png", os.getenv("png_ver")))
+load(pathJoin("libpng", os.getenv("libpng_ver")))
 
 load(pathJoin("hdf5", os.getenv("hdf5_ver")))
 load(pathJoin("netcdf", os.getenv("netcdf_ver")))

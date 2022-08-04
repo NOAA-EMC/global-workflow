@@ -11,7 +11,7 @@ load(pathJoin("cmake", os.getenv("cmake_ver")))
 
 load(pathJoin("jasper", os.getenv("jasper_ver")))
 load(pathJoin("zlib", os.getenv("zlib_ver")))
-load(pathJoin("png", os.getenv("png_ver")))
+load(pathJoin("libpng", os.getenv("libpng_ver")))
 
 load(pathJoin("bacio", os.getenv("bacio_ver")))
 load(pathJoin("g2", os.getenv("g2_ver")))
