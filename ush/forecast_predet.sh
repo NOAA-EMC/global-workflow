@@ -1,4 +1,4 @@
-#!/bin/sh
+#! /usr/bin/env bash
 
 #####
 ## "forecast_def.sh"
@@ -8,13 +8,12 @@
 ## This script is a definition of functions.
 #####
 
-
 # For all non-evironment variables
 # Cycling and forecast hour specific parameters
 common_predet(){
   echo "SUB ${FUNCNAME[0]}: Defining variables for shared through models"
   pwd=$(pwd)
-  machine=${machine:-"WCOSS_C"}
+  machine=${machine:-"WCOSS2"}
   machine=$(echo $machine | tr '[a-z]' '[A-Z]')
   CASE=${CASE:-C768}
   CDATE=${CDATE:-2017032500}
@@ -125,9 +124,9 @@ FV3_GFS_predet(){
   cores_per_node=${cores_per_node:-${npe_node_fcst:-24}}
   ntiles=${ntiles:-6}
   if [ $MEMBER -lt 0 ]; then
-    NTASKS_TOT=${NTASKS_TOT:-$npe_fcst_gfs}
+    NTASKS_TOT=${NTASKS_TOT:-${npe_fcst_gfs:-0}}
   else
-    NTASKS_TOT=${NTASKS_TOT:-$npe_efcs}
+    NTASKS_TOT=${NTASKS_TOT:-${npe_efcs:-0}}
   fi
 
   TYPE=${TYPE:-"nh"}                  # choices:  nh, hydro
@@ -142,19 +141,6 @@ FV3_GFS_predet(){
   [[ "$OUTPUT_FILE" = "netcdf" ]] && affix="nc"
 
   rCDUMP=${rCDUMP:-$CDUMP}
-
-  #------------------------------------------------------------------
-  # setup the runtime environment
-  if [ $machine = "WCOSS_C" ] ; then
-    HUGEPAGES=${HUGEPAGES:-hugepages4M}
-    . $MODULESHOME/init/sh 2>/dev/null
-    module load iobuf craype-$HUGEPAGES 2>/dev/null
-    export MPICH_GNI_COLL_OPT_OFF=${MPICH_GNI_COLL_OPT_OFF:-MPI_Alltoallv}
-    export MKL_CBWR=AVX2
-    export WRTIOBUF=${WRTIOBUF:-"4M"}
-    export NC_BLKSZ=${NC_BLKSZ:-"4M"}
-    export IOBUF_PARAMS="*nemsio:verbose:size=${WRTIOBUF},*:verbose:size=${NC_BLKSZ}"
-  fi
 
   #-------------------------------------------------------
   if [ ! -d $ROTDIR ]; then mkdir -p $ROTDIR; fi

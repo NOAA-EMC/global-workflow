@@ -1,5 +1,6 @@
-#!/bin/ksh
-set -x
+#! /usr/bin/env bash
+
+source "$HOMEgfs/ush/preamble.sh"
 
 COMPONENT=${COMPONENT:-atmos}
 
@@ -38,6 +39,3 @@ else
 fi
 
 exit 0
-
-
-

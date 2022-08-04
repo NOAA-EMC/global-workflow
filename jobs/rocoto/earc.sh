@@ -1,4 +1,6 @@
-#!/bin/bash -x
+#! /usr/bin/env bash
+
+source "$HOMEgfs/ush/preamble.sh"
 
 ###############################################################
 ## Abstract:
@@ -56,6 +58,7 @@ fi
 
 cd $ROTDIR
 
+source "${HOMEgfs}/ush/file_utils.sh"
 
 ###################################################################
 # ENSGRP > 0 archives a group of ensemble members
@@ -134,24 +137,26 @@ if [ $ENSGRP -eq 0 ]; then
             [ ! -d $ATARDIR/$CDATE ] && mkdir -p $ATARDIR/$CDATE
         fi
 
+        set +e
         $TARCMD -P -cvf $ATARDIR/$CDATE/enkf${CDUMP}.tar $(cat $ARCH_LIST/enkf${CDUMP}.txt)
         status=$?
         if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
             echo "$(echo $TARCMD | tr 'a-z' 'A-Z') $CDATE enkf${CDUMP}.tar failed"
             exit $status
         fi
+        ${ERR_EXIT_ON:-set -eu}
     fi
 
     #-- Archive online for verification and diagnostics
     [[ ! -d $ARCDIR ]] && mkdir -p $ARCDIR
     cd $ARCDIR
 
-    $NCP $ROTDIR/enkf${CDUMP}.$PDY/$cyc/$COMPONENT/${CDUMP}.t${cyc}z.enkfstat         enkfstat.${CDUMP}.$CDATE
-    $NCP $ROTDIR/enkf${CDUMP}.$PDY/$cyc/$COMPONENT/${CDUMP}.t${cyc}z.gsistat.ensmean  gsistat.${CDUMP}.${CDATE}.ensmean
+    nb_copy $ROTDIR/enkf${CDUMP}.$PDY/$cyc/$COMPONENT/${CDUMP}.t${cyc}z.enkfstat         enkfstat.${CDUMP}.$CDATE
+    nb_copy $ROTDIR/enkf${CDUMP}.$PDY/$cyc/$COMPONENT/${CDUMP}.t${cyc}z.gsistat.ensmean  gsistat.${CDUMP}.${CDATE}.ensmean
 
     if [ $CDUMP_ENKF != "GDAS" ]; then
-		$NCP $ROTDIR/enkfgfs.$PDY/$cyc/$COMPONENT/${CDUMP}.t${cyc}z.enkfstat         enkfstat.gfs.$CDATE
-		$NCP $ROTDIR/enkfgfs.$PDY/$cyc/$COMPONENT/${CDUMP}.t${cyc}z.gsistat.ensmean  gsistat.gfs.${CDATE}.ensmean
+		nb_copy $ROTDIR/enkfgfs.$PDY/$cyc/$COMPONENT/${CDUMP}.t${cyc}z.enkfstat         enkfstat.gfs.$CDATE
+		nb_copy $ROTDIR/enkfgfs.$PDY/$cyc/$COMPONENT/${CDUMP}.t${cyc}z.gsistat.ensmean  gsistat.gfs.${CDATE}.ensmean
 	fi
 
 fi
@@ -219,4 +224,6 @@ for ctype in $clist; do
 done
 
 ###############################################################
+
+
 exit 0

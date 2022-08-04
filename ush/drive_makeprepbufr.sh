@@ -1,4 +1,5 @@
-#!/bin/sh -x
+#! /usr/bin/env bash
+
 ###############################################################
 # < next few lines under version control, D O  N O T  E D I T >
 # $Date$
@@ -16,6 +17,8 @@
 ## CDATE  : current analysis date (YYYYMMDDHH)
 ## CDUMP  : cycle name (gdas / gfs)
 ###############################################################
+
+source "$HOMEgfs/ush/preamble.sh"
 
 ###############################################################
 # Source relevant configs
@@ -135,4 +138,5 @@ $NCP $DATA/prepbufr.acft_profiles $COMOUT/${APREFIX}prepbufr.acft_profiles
 ###############################################################
 # Exit out cleanly
 if [ $KEEPDATA = "NO" ] ; then rm -rf $DATA ; fi
+
 exit 0

@@ -1,3 +1,4 @@
+#! /usr/bin/env bash
 
 ################################################################################
 ####  UNIX Script Documentation Block
@@ -183,11 +184,8 @@
 ####
 ################################################################################
 #  Set environment.
-export VERBOSE=${VERBOSE:-"NO"}
-if [[ "$VERBOSE" = "YES" ]]; then
-	echo $(date) EXECUTING $0 $* >&2
-	set -x
-fi
+source "$HOMEgfs/ush/preamble.sh"
+
 #  Command line arguments.
 export SIGINP=${1:-${SIGINP}}
 export FLXINP=${2:-${FLXINP}}
@@ -233,15 +231,13 @@ export GENPSICHI=${GENPSICHI:-NO}
 export GENPSICHIEXE=${GENPSICHIEXE:-${EXECglobal}/genpsiandchi}
 export ens=${ens:-NO}
 #export D3DINP=${D3DINP:-/dev/null}
-typeset -L1 l=$PGMOUT
+l=$(echo $PGMOUT | xargs | cut -c1)
 [[ $l = '&' ]]&&a=''||a='>'
 export REDOUT=${REDOUT:-'1>'$a}
-typeset -L1 l=$PGMERR
+l=$(echo $PGMERR | xargs | cut -c1)
 [[ $l = '&' ]]&&a=''||a='>'
 export REDERR=${REDERR:-'2>'$a}
 ################################################################################
-#  Preprocessing
-$INISCRIPT
 
 # Chuang: Run chgres if OUTTYP=1 or 0
 
@@ -484,9 +480,5 @@ fi
 #  Postprocessing
 cd $pwd
 [[ $mkdata = YES ]]&&rmdir $DATA
-$ENDSCRIPT
-set +x
-if [[ "$VERBOSE" = "YES" ]]; then
-	echo $(date) EXITING $0 with return code $err >&2
-fi
+
 exit $err

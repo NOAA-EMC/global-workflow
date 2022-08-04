@@ -14,7 +14,7 @@ variables that are set in the shell, then using the ecFlow
 API, a definition file is created. While the application creates the definition file
 it also uses the path defined as `ECFgfs`, which will be elaborated on later in this
 guide, and creates the folders and scripts that match the definition file, setting the
-`ECFHome` variable in the definition file to match the `ECFgfs` parameter.  
+`ECFHome` variable in the definition file to match the `ECFgfs` parameter.
 
 Please refer to the [setup the YAML](#configuring-the-yaml-file) section for instructions
 on how to setup the YAML file for what you want.
@@ -94,20 +94,20 @@ shell environment or by specifying a value in the config.base file. To use an en
 the YAML file has a reserved word prefix `env.`. The code functions by parsing the YAML file into
 a dictionary then doing a recursive search over that dictionary to determine if the `env.` prefix
 is used anywhere, either a value or key. When a node uses that syntax, the application will search first
-the current shell environment variables for a match, if none exists, then it will search 
+the current shell environment variables for a match, if none exists, then it will search
 the `config.base` file for any configurations that may have been exported from there. Finally, it will
-then replace the string `env.PARAMETER` with the value from the shell or `config.base` file in the 
+then replace the string `env.PARAMETER` with the value from the shell or `config.base` file in the
 dictionary that was imported. The original YAML file will remain unchanged.
 
 **NOTE:** The environment variable cannot be used in conjunction with a string so trying to use
 `env.ECFgfs/include` will return only the value for `ECFgfs`, it will not append any strings or
-values to the beginning or end of the value. 
+values to the beginning or end of the value.
 
 Example:
-Entering `env.FHMAX_GFS` as a value for a node will use the value that was 
+Entering `env.FHMAX_GFS` as a value for a node will use the value that was
 specified in the `config.base` file for the `FHMAX_GFS` export. This will be reflected in the final
-definition file. It will not be updated in the original YAML file, that will remain as 
-`env.FHMAX_GFS`. 
+definition file. It will not be updated in the original YAML file, that will remain as
+`env.FHMAX_GFS`.
 
 
 ### Script Repository
@@ -245,7 +245,7 @@ Once a suite line has been added, families need to be added under a `nodes:` hea
 First add the `nodes:` dictionary line under the suite name, then create the hierarchical
 structure for the families.
 Families can be dictionary objects under other families. In the example below, the suites
-`prod00` and `prod06` will have the family `gfs`.  
+`prod00` and `prod06` will have the family `gfs`.
 Then only the `prod00` suite will have the family `gdas` added to it.
 
 Once the family structure has been setup, add in a `tasks` dictionary under the
@@ -306,14 +306,14 @@ endsuite
 ### Adding edits
 
 Edits can be added to either families, tasks or suites by putting an `edits:`
-dictionary tag and then listing the edits below. The format for edits will be 
-the edit variable on the left and then the value on the right. 
+dictionary tag and then listing the edits below. The format for edits will be
+the edit variable on the left and then the value on the right.
 
-So in this example below, lets consider that we want the `RUN` value to be 
+So in this example below, lets consider that we want the `RUN` value to be
 `GFS` for both the `prod00` and `prod06` suite but we wnat the `CYC` value
-to be `00` for the `prod00` suite and `06` for the `prod06` suite. So in 
-that case we would use the individual declaration for the suites for the 
-`CYC` value only and then the listed suites declaration for the rest. 
+to be `00` for the `prod00` suite and `06` for the `prod06` suite. So in
+that case we would use the individual declaration for the suites for the
+`CYC` value only and then the listed suites declaration for the rest.
 * Example
 
 ```YAML
@@ -367,7 +367,7 @@ endsuite
 #### Task Setup Extras
 
 Tasks are added in as a dictionary under the `tasks:` header. So if you want to add
-multiple tasks to a family, do not add them in list syntax, add them as hashes to the dictionary. 
+multiple tasks to a family, do not add them in list syntax, add them as hashes to the dictionary.
 
 * Example
 ```YAML
@@ -422,26 +422,26 @@ endsuite
 #### Task Script Repository and Templates
 
 When adding tasks, it is possible that you may want to run a task for every forecast hour in a large range
-but not want to copy and paste the same script for every forecast hour. With the generator application, you 
-can specify a `template:` parameter. After defining the [script repo](#script-repository) parameter, the 
-application will search the defined directory for the template script. It will then copy the template script to 
+but not want to copy and paste the same script for every forecast hour. With the generator application, you
+can specify a `template:` parameter. After defining the [script repo](#script-repository) parameter, the
+application will search the defined directory for the template script. It will then copy the template script to
 the destination folder for the suite with an adjusted name.
 
 In the example below, you can see the range used for the `jgfs_atmos_post_f` forecast hour task with a template.
 Please refer to the [ranges and lists](#ranges-and-lists) section of this document for information on how to set
 up a range but for the purposes of the example below, we are focusing on the template. What is relevant here is
 that we want 4 instances of the `jgfs_atmos_post_f` forecast hour script to be in place and use the same
-`jgfs_atmos_post_master` script for the template. 
+`jgfs_atmos_post_master` script for the template.
 
 In addition to the resultant defintion file, noted below is the folder that was created for the `prod00` suite. The
-`prod00` folder is located at the `$HOMEecf`, in the case below you cans see it is defined as 
-`/usr1/knevins/global-workflow/ecf` location and contains four instances of the `jgfs_atmos_post_master` 
-script, each renamed to match the `task` name in the definition file. 
+`prod00` folder is located at the `$HOMEecf`, in the case below you cans see it is defined as
+`/usr1/knevins/global-workflow/ecf` location and contains four instances of the `jgfs_atmos_post_master`
+script, each renamed to match the `task` name in the definition file.
 
-**NOTE:** A special template value is `skip`. If you use `template: skip` in a task, the generator will know that 
-the script is in fact not in the script repository and it will not attempt to copy or create it but it will 
-add it to the definition file. This is useful in conjunction with the [defstatus](#defstatus) parameter so the 
-suite will skip already done tasks and there won't be a representation of it in the final directory. 
+**NOTE:** A special template value is `skip`. If you use `template: skip` in a task, the generator will know that
+the script is in fact not in the script repository and it will not attempt to copy or create it but it will
+add it to the definition file. This is useful in conjunction with the [defstatus](#defstatus) parameter so the
+suite will skip already done tasks and there won't be a representation of it in the final directory.
 
 * Example
 ```YAML
@@ -499,13 +499,13 @@ prod00
 
 #### Events
 To add an event, you first need to add the `events:` dictionary heading underneath the node to which it needs to be
-added. Then underneath that `events:` heading, as a list object, add the list of events that you want have attached. 
+added. Then underneath that `events:` heading, as a list object, add the list of events that you want have attached.
 
-**NOTE:** Events can be ranges or list objects, please see the section below on creating lists or ranges. 
+**NOTE:** Events can be ranges or list objects, please see the section below on creating lists or ranges.
 
 **NOTE:** Events must be added in a list. This is not the same structure as adding tasks, which are dictionary objects,
-the events list is an actual list so please make sure to add a hyphen, `-`, in front of every event that you wish to 
-add. 
+the events list is an actual list so please make sure to add a hyphen, `-`, in front of every event that you wish to
+add.
 
 * Example
 ```YAML
@@ -549,9 +549,9 @@ To add a trigger, add a `triggers:` dictionary heading underneath the task or fa
 item with the identifier for what you want the trigger to look for. So for a task, it would be `- task: task_name` or
 for a family it would be `- family: family_name`
 
-**NOTE:** It was mentioned above but an important distinction from tasks is that triggers need to be in list format. 
-The reason for this is due to triggers being either families or tasks, and that is determined by the dictionary 
-label for the list item. 
+**NOTE:** It was mentioned above but an important distinction from tasks is that triggers need to be in list format.
+The reason for this is due to triggers being either families or tasks, and that is determined by the dictionary
+label for the list item.
 
 **NOTE:** By default, multiple triggers are added to a node with __AND__
 
@@ -559,7 +559,7 @@ Triggers can also have the following items associated with it:
 * `event:`
   * This is listed as part of the list item but in it's own `event:` header. The `event:` must exist within the suite
   or it will be rejected.
-  * Events can be lists or ranges. 
+  * Events can be lists or ranges.
 * `state:`
   * This will identify the state of the task or family in the trigger. States are generally `active`, `complete`, or
   `queued`.
@@ -637,16 +637,16 @@ endsuite
 At the time of this README, the use case for the def status was to be able to add nodes to a definition file, and have
 them marked as complete so that the ecflow run knows that the script is there but acknowleges as done without having to
 do anything. This is useful when running development tasks, that rely on an operational task, but the operational task
-is already done and nothing else needs to be executed. 
+is already done and nothing else needs to be executed.
 
 To add defstatus to a task or family, add a `defstatus:` parameter underneath the node, not a dictionary, this will be
 a key/value pair. It will have a value associated with it so the item will look like `defstatus: value`
 
-**NOTE:** A defstatus can be added to a family or a task object. Both are acceptable formats. 
+**NOTE:** A defstatus can be added to a family or a task object. Both are acceptable formats.
 
-**NOTE:** When a defstatus is defined for a parent object, all child nodes under the object inherit that so in the 
+**NOTE:** When a defstatus is defined for a parent object, all child nodes under the object inherit that so in the
 example below, all families and tasks are considered complete and since the `template: skip` value is there for the
-task, the script generator will not attempt to look for it in the script repo. 
+task, the script generator will not attempt to look for it in the script repo.
 
 * Example
 ```YAML
@@ -695,35 +695,35 @@ endsuite
 
 ### Repeats
 
-Repeats are in a standalone section because of the nature of how ecflow handles repeating tasks. Ecflow has multiple 
+Repeats are in a standalone section because of the nature of how ecflow handles repeating tasks. Ecflow has multiple
 methods for handling repeating tasks but they lack a lot of the specificity that one would hope. Trying to identify
 something as simple as run every 6 hours for the next three days is a rather complex setup. With that, after adding
 a repat, please double check the setup to make sure that the code has done the repeat type that you are looking to
-accomplish. 
+accomplish.
 
 Repeats are declared with the `repeat:` key value and the value has a specific syntax as follows:
-  `YYYYMMDD(HH)? to YYYYMMDD(HH)? (by DD:HH:MM)?` 
-where the items in the `()?` are optional. 
+  `YYYYMMDD(HH)? to YYYYMMDD(HH)? (by DD:HH:MM)?`
+where the items in the `()?` are optional.
 
-The first value is the start time specified in year, month, day with a hour value as optional. The second value 
+The first value is the start time specified in year, month, day with a hour value as optional. The second value
 is the end date in year, month, day format with an hour as an optional value. The third is the increment time in
 day, hour and minute format. The day is optional as well in third value. It can be read as starting at the first
 value, repeat until the second value is reached and increment by the third value. If no third value is specified
-increment by 1 hour. 
+increment by 1 hour.
 
-The value `2022032400 to 2022042400` is valid as is the value `2022032400 to 2022042400 by 18:00`. 
+The value `2022032400 to 2022042400` is valid as is the value `2022032400 to 2022042400 by 18:00`.
 
 * If the repeat string has the start and end dates on the same day, just a `time` string with a `date` option will
-be used. 
+be used.
 * If the repeat string has the start and end on different days but within a 24 hour window, there will be a start
 date with a repeats and a time string added to the definition file.
-* If the repeat spans multiple days, it requires a combination of time, date and crons in the definition file. 
+* If the repeat spans multiple days, it requires a combination of time, date and crons in the definition file.
 
 To elaborate on the example below of `2022032400 to 2022042400 by 18:00`. That will be read as starting at 00Z on
-March 24th 2022, run every 18 hours until April 24th 2022. This will be reflected in the definition file with a 
-`date` value of March 24th, `24.3.2022` to start, a `time` value of `00:00` indicating start, a relative `time` 
+March 24th 2022, run every 18 hours until April 24th 2022. This will be reflected in the definition file with a
+`date` value of March 24th, `24.3.2022` to start, a `time` value of `00:00` indicating start, a relative `time`
 value of `+18:00` to indicate that after running and waiting 18 hours, run again, and a `repeat` value
-to indicate that this needs to happen 42 times to get to April 24th. 
+to indicate that this needs to happen 42 times to get to April 24th.
 
 * Example
 ```YAML
@@ -756,19 +756,19 @@ endsuite
 
 ## Ranges and Lists
 
-If you need to have multiple forecast hours or have a similar node object with just a few characters difference, the 
-concept of ranges and lists will be very useful in this situation. Families, tasks, or even triggers and events can 
+If you need to have multiple forecast hours or have a similar node object with just a few characters difference, the
+concept of ranges and lists will be very useful in this situation. Families, tasks, or even triggers and events can
 have ranges or lists associated with them to shorten the creation of the definition YAML. The goal is to have one
-line that can create multiple suites, familes, or tasks or even events. 
+line that can create multiple suites, familes, or tasks or even events.
 
 A range is a basic counting structure that follows the [Python range](https://docs.python.org/3.3/library/stdtypes.html?highlight=range#range) class object format. It is specified in one of the following three formats:
 * `( $MAX_VALUE )`
 * `( $START_VALUE, $MAX_VALUE )`
 * `( $START_VALUE, $MAX_VALUE, $STEP )`
 
-As you can see from the examples, if only one value is specified then it uses that as the max value, if two, then a 
-start and end, and three includes an increment. It uses default values of 0 for the start value and 1 for the increment 
-if nothing else is specified. 
+As you can see from the examples, if only one value is specified then it uses that as the max value, if two, then a
+start and end, and three includes an increment. It uses default values of 0 for the start value and 1 for the increment
+if nothing else is specified.
 
 ### Range Hierarchy
 
@@ -776,18 +776,18 @@ The code also uses a heirarchy structure so that range values can be passed down
 to modify them slightly. To use a parent counter, use the same notation as the list or range but do not put any values in
 the notation. So if there is a range of `(4)` for a parent node and the child node has the notation `( )` in it then when
 the parent node uses the value `1`, so will the child node. An example of this would be that if a parent node has a
-string value like `jgfs_atmos_post_f( 4 )` there will be 4 objects  created in the definition file, 
-`jgfs_atmos_post_f000`, `jgfs_atmos_post_f001`, `jgfs_atmos_post_f002`, `jgfs_atmos_post_f003`. 
-Then if that task has an edit that reads `FHR: 'f( )'` then the node `jgfs_atmos_post_f001` will have an edit that 
-reads `FHR: f001` and so on. 
+string value like `jgfs_atmos_post_f( 4 )` there will be 4 objects  created in the definition file,
+`jgfs_atmos_post_f000`, `jgfs_atmos_post_f001`, `jgfs_atmos_post_f002`, `jgfs_atmos_post_f003`.
+Then if that task has an edit that reads `FHR: 'f( )'` then the node `jgfs_atmos_post_f001` will have an edit that
+reads `FHR: f001` and so on.
 
-If there is no maximum value as well, you can also modify the increment or start values. In the same example from 
-above if `jgfs_atmos_post_f( 4 )` is the node definition but you wanted the edit value to start at 1 instead of 
+If there is no maximum value as well, you can also modify the increment or start values. In the same example from
+above if `jgfs_atmos_post_f( 4 )` is the node definition but you wanted the edit value to start at 1 instead of
 0, then using `FHRGRP: '( 1, )'` which uses 1 as the start value but as you can see has no max value, will set the
-value of the edit in node `jgfs_atmos_post_f001` to `FHRGRP: 002`. Similar can also be done for something like 
-the incremenet value so if the edit was specified as `FHRGRP: '( ,,6 )'` the value for the edit in node 
-`jgfs_atmos_post_f001` would be set to `FHRGRP: 006` because it would incrememnt by 6 but still use the same 
-parent counter for the base since no start or max value was specified. 
+value of the edit in node `jgfs_atmos_post_f001` to `FHRGRP: 002`. Similar can also be done for something like
+the incremenet value so if the edit was specified as `FHRGRP: '( ,,6 )'` the value for the edit in node
+`jgfs_atmos_post_f001` would be set to `FHRGRP: 006` because it would incrememnt by 6 but still use the same
+parent counter for the base since no start or max value was specified.
 
 * Example
 ```YAML
@@ -866,14 +866,14 @@ endsuite
 
 Lists are similar to the ranges but use the `[ ]` bracket syntax. Items in the list can be of any type and will run
 the same way as ranges. The list cane be either within a string or just a list format for YAML and both should be
-interpreted by the generator properly. 
+interpreted by the generator properly.
 
-**NOTE:** Lists will also match ranges if they are equal in length. So if you have a range of four and a list of 
-four, when the first element of the range is used, the first element of the list is also used. 
+**NOTE:** Lists will also match ranges if they are equal in length. So if you have a range of four and a list of
+four, when the first element of the range is used, the first element of the list is also used.
 
 **NOTE:** Lists do not inheret the parent values directly. They read the position but given the flexibility needed
-it does not pass down the actual values. The code could be updated to do that easily if it turns out to be a 
-future need but due to potential conflicts, it was not set that way in this version. 
+it does not pass down the actual values. The code could be updated to do that easily if it turns out to be a
+future need but due to potential conflicts, it was not set that way in this version.
 
 * Example
 ```YAML

@@ -1,4 +1,6 @@
-#!/bin/bash -x
+#! /usr/bin/env bash
+
+source "$HOMEgfs/ush/preamble.sh"
 
 ###############################################################
 ## Abstract:
@@ -180,4 +182,6 @@ fi
 ###############################################################
 # Force Exit out cleanly
 if [ ${KEEPDATA:-"NO"} = "NO" ] ; then rm -rf $DATAROOT ; fi
+
+
 exit 0

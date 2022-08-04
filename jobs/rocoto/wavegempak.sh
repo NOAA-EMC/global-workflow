@@ -1,4 +1,6 @@
-#!/bin/bash -x
+#! /usr/bin/env bash
+
+source "$HOMEgfs/ush/preamble.sh"
 
 ###############################################################
 echo
@@ -30,4 +32,6 @@ echo "=============== START TO RUN WAVE GEMPAK ==============="
 # Execute the JJOB
 $HOMEgfs/jobs/JGLOBAL_WAVE_GEMPAK
 status=$?
+
+
 exit $status
