@@ -18,3 +18,5 @@ load(pathJoin("g2", os.getenv("g2_ver")))
 
 load(pathJoin("hdf5", os.getenv("hdf5_ver")))
 load(pathJoin("netcdf", os.getenv("netcdf_ver")))
+
+load(pathJoin("w3nco", os.getenv("w3nco_ver")))

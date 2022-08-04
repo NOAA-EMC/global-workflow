@@ -42,6 +42,7 @@ export crtm_ver=2.3.0
 
 export g2tmpl_ver=1.10.0
 export bacio_ver=2.4.1
+export w3nco_ver=2.4.1
 export nemsio_ver=2.5.2
 export sigio_ver=2.3.2
 export w3emc_ver=2.9.2
