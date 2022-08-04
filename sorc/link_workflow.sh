@@ -83,8 +83,8 @@ fi
 #---------------------------------------
 #--add files from external repositories
 #---------------------------------------
+cd ${pwd}/../jobs               ||exit 8
 if [ -d ../sorc/gldas.fd ]; then
-  cd ${pwd}/../jobs               ||exit 8
     $LINK ../sorc/gldas.fd/jobs/JGDAS_ATMOS_GLDAS            .
 fi
 cd ${pwd}/../parm               ||exit 8
