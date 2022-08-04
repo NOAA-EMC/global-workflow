@@ -1,8 +1,6 @@
-#!/bin/bash
+#! /usr/bin/env bash
 
-date
-export PS4=' $SECONDS + '
-set -xa
+source "$HOMEgfs/ush/preamble.sh"
 
 export DATA=${DATA:-${DATAROOT}/${jobid:?}}
 mkdir -p $DATA
@@ -16,7 +14,6 @@ export cycle=${cycle:-t${cyc}z}
 # Set PDY
  setpdy.sh
  . PDY
-env
 
 export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
@@ -56,6 +53,7 @@ if [ "$KEEPDATA" != "YES" ]; then
   cd $DATAROOT
   rm -rf $DATA
 fi
-date
+
+
 exit 0
 

@@ -1,4 +1,5 @@
-#!/bin/ksh
+#! /usr/bin/env bash
+
 ################################################################################
 #
 # Name:  getges.sh            Author:  Mark Iredell
@@ -74,6 +75,9 @@
 #
 ################################################################################
 #-------------------------------------------------------------------------------
+
+source "$HOMEgfs/ush/preamble.sh"
+
 # Set some default parameters.
 fhbeg=03                         # hour to begin searching backward for guess
 fhinc=03                         # hour to increment backward in search
@@ -151,7 +155,7 @@ if [[ $gfile = '?' || $# -gt 1 || $err -ne 0 || -z $valid ||\
  fi
  exit 1
 fi
-[[ $quiet = NO ]]&&set -x
+
 if [[ $envir != prod && $envir != test && $envir != para && $envir != dump && $envir != pr? && $envir != dev ]];then
  netwk=$envir
  envir=prod
@@ -1345,8 +1349,9 @@ while [[ $fh -le $fhend ]];do
  ghp2=$fhp2;[[ $ghp2 -lt 100 ]]&&ghp2=0$ghp2
  ghp3=$fhp3;[[ $ghp3 -lt 100 ]]&&ghp3=0$ghp3
  id=$($NDATE -$fh $valid)
- typeset -L8 day=$id
- typeset -R2 cyc=$id
+
+ day=$(echo $id | xargs | cut -c8)
+ cyc=$(echo $id | xargs | rev | cut -c1-2 | rev)
  eval list=\$getlist$fh
  [[ -z "$list" ]]&&list=${geslist}
  for ges_var in $list;do
@@ -1369,8 +1374,10 @@ fi
 # Either copy guess to a file or write guess name to standard output.
 if [[ -z "$gfile" ]];then
  echo $ges
- exit $?
+ err=$?
 else
  cp $ges $gfile
- exit $?
+ err=$?
 fi
+
+exit ${err}

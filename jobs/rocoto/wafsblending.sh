@@ -1,4 +1,6 @@
-#!/bin/bash -x
+#! /usr/bin/env bash
+
+source "$HOMEgfs/ush/preamble.sh"
 
 ###############################################################
 echo
@@ -32,9 +34,10 @@ echo "=============== START TO RUN WAFSBLENDING ==============="
 # Execute the JJOB
 $HOMEgfs/jobs/JGFS_ATMOS_WAFS_BLENDING
 status=$?
-exit $status
 
 ###############################################################
 # Force Exit out cleanly
 if [ ${KEEPDATA:-"NO"} = "NO" ] ; then rm -rf $DATAROOT ; fi
-exit 0
+
+
+exit $status

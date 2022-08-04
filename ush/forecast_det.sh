@@ -1,4 +1,4 @@
-#!/bin/sh
+#! /usr/bin/env bash
 
 #####
 ## "forecast_det.sh"
@@ -7,7 +7,6 @@
 ## This is the child script of ex-global forecast,
 ## This script is a definition of functions.
 #####
-
 
 # For all non-evironment variables
 # Cycling and forecast hour specific parameters

@@ -1,15 +1,16 @@
-#!/bin/ksh
+#! /usr/bin/env bash
+
 ###################################################################
-echo "----------------------------------------------------"
-echo "exnawips - convert NCEP GRIB files into GEMPAK Grids"
-echo "----------------------------------------------------"
-echo "History: Mar 2000 - First implementation of this new script."
-echo "S Lilly: May 2008 - add logic to make sure that all of the "
-echo "                    data produced from the restricted ECMWF"
-echo "                    data on the CCS is properly protected."
+# echo "----------------------------------------------------"
+# echo "exnawips - convert NCEP GRIB files into GEMPAK Grids"
+# echo "----------------------------------------------------"
+# echo "History: Mar 2000 - First implementation of this new script."
+# echo "S Lilly: May 2008 - add logic to make sure that all of the "
+# echo "                    data produced from the restricted ECMWF"
+# echo "                    data on the CCS is properly protected."
 #####################################################################
 
-set -xa
+source "$HOMEgfs/ush/preamble.sh" "${2}"
 
 #### If EMC GFS PARA runs hourly file are not available, The ILPOST
 #### will set to 3 hour in EMC GFS PARA.
@@ -21,15 +22,9 @@ RUN=$1
 fend=$2
 DBN_ALERT_TYPE=$3
 
-export 'PS4=$RUN:$SECONDS + '
-
 DATA_RUN=$DATA/$RUN
 mkdir -p $DATA_RUN
 cd $DATA_RUN
-
-msg="Begin job for $job"
-postmsg "$jlogfile" "$msg"
-
 
 #
 NAGRIB=$GEMEXE/nagrib2_nc
@@ -49,20 +44,17 @@ maxtries=360
 fhcnt=$fstart
 while [ $fhcnt -le $fend ] ; do
 
-if mkdir lock.$fhcnt  ; then
+if [[ $(mkdir lock.${fhcnt}) == 0 ]] ; then
   cd lock.$fhcnt
   cp $FIXgempak/g2varswmo2.tbl g2varswmo2.tbl
   cp $FIXgempak/g2vcrdwmo2.tbl g2vcrdwmo2.tbl
   cp $FIXgempak/g2varsncep1.tbl g2varsncep1.tbl
   cp $FIXgempak/g2vcrdncep1.tbl g2vcrdncep1.tbl
 
-  typeset -Z3 fhr
-
-  fhr=$fhcnt
+  fhr=$(printf "%03d" $fhcnt)
   fhcnt3=$(expr $fhr % 3)
 
-  fhr3=$fhcnt
-  typeset -Z3 fhr3
+  fhr3=$(printf "%03d" $fhcnt)
 
   GEMGRD=${RUN}_${PDY}${cyc}f${fhr3}
 
@@ -189,16 +181,6 @@ done
 
 $GEMEXE/gpend
 #####################################################################
-# GOOD RUN
-set +x
-echo "**************JOB $RUN NAWIPS COMPLETED NORMALLY ON THE IBM"
-echo "**************JOB $RUN NAWIPS COMPLETED NORMALLY ON THE IBM"
-echo "**************JOB $RUN NAWIPS COMPLETED NORMALLY ON THE IBM"
-set -x
-#####################################################################
 
-msg='Job completed normally.'
-echo $msg
-postmsg "$jlogfile" "$msg"
 
 ############################### END OF SCRIPT #######################

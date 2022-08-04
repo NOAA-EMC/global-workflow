@@ -250,9 +250,7 @@ def input_args():
     # forecast only mode additional arguments
     for subp in [forecasts, gefs]:
         subp.add_argument('--app', help='UFS application', type=str, choices=[
-            'ATM', 'ATMW', 'ATMW', 'S2S', 'S2SW', 'S2SWA'], required=False, default='ATM')
-        subp.add_argument('--aerosols', help="Run with coupled aerosols", required=False,
-                               action='store_const', const="YES", default="NO")
+            'ATM', 'ATMW', 'ATMW', 'S2S', 'S2SW', 'S2SWA', 'NG-GODAS'], required=False, default='ATM')
 
     args = parser.parse_args()
 

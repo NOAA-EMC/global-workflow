@@ -1,16 +1,15 @@
-#!/bin/bash
+#! /usr/bin/env bash
 
-date
+source "$HOMEgfs/ush/preamble.sh"
+
 export RUN_ENVIR=${RUN_ENVIR:-"nco"}
-export PS4=' $SECONDS + '
-set -x -e
 
 #############################
 # Source relevant config files
 #############################
 configs="base wave wavepostsbs"
 export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
-config_path=${EXPDIR:-$NWROOT/gfs.${gfs_ver}/parm/config}
+config_path=${EXPDIR:-${NWROOT:-}/gfs.${gfs_ver}/parm/config}
 for config in $configs; do
     . $config_path/config.$config
     status=$?
@@ -29,8 +28,8 @@ export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
 export COMPONENT=${COMPONENT:-wave}
 
-export HOMEgefs=${HOMEgefs:-$NWROOT/$NET.${gefs_ver}}
-export HOMEgfs=${HOMEgfs:-$NWROOT/$NET.${gfs_ver}}
+export HOMEgefs=${HOMEgefs:-${NWROOT:-}/$NET.${gefs_ver:-}}
+export HOMEgfs=${HOMEgfs:-${NWROOT:-}/$NET.${gfs_ver}}
 
 # Add default errchk = err_chk
 export errchk=${errchk:-err_chk}
@@ -66,13 +65,12 @@ fi
 export COMIN=${COMIN:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/$COMPONENT}
 export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/$COMPONENT}
 
-export COMINice=${COMINice:-${COMROOTp2}/omb/prod}
+export COMINice=${COMINice:-${COMROOTp2:-${COMROOT}}/omb/prod}
 export COMINwnd=${COMINwnd:-${COMROOT}/gfs/prod}
-export COMIN_WAV_CUR=${COMIN_WAV_CUR:-${COMROOTp2}/rtofs/prod}
+export COMIN_WAV_CUR=${COMIN_WAV_CUR:-${COMROOTp2:-${COMROOT}}/rtofs/prod}
 
 mkdir -p $COMOUT/gridded
 
-env | sort
 
 # Set wave model ID tag to include member number 
 # if ensemble; waveMEMB var empty in deterministic
@@ -89,11 +87,9 @@ export CFP_VERBOSE=1
 $HOMEgfs/scripts/exgfs_wave_post_gridded_sbs.sh
 err=$?
 if [ $err -ne 0 ]; then
-  msg="FATAL ERROR: ex-script of GWES_POST failed!"
-else
-  msg="$job completed normally!"
+  echo "FATAL ERROR: ex-script of GWES_POST failed!"
+  exit $err
 fi
-postmsg "$jlogfile" "$msg"
 
 ##########################################
 # Remove the Temporary working directory
@@ -101,5 +97,5 @@ postmsg "$jlogfile" "$msg"
 cd $DATAROOT
 [[ $KEEPDATA = "NO" ]] && rm -rf $DATA
 
-date
+
 exit 0

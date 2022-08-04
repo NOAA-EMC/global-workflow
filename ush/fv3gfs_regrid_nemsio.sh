@@ -1,4 +1,4 @@
-#!/bin/sh
+#! /usr/bin/env bash
 
 ################################################################################
 # UNIX Script Documentation Block
@@ -17,15 +17,9 @@
 #
 # Attributes:
 #   Language: Portable Operating System Interface (POSIX) Shell
-#   Machine: WCOSS-CRAY, Theia
 ################################################################################
 
-#  Set environment.
-VERBOSE=${VERBOSE:-"YES"}
-if [ $VERBOSE = YES ] ; then
-    echo $(date) EXECUTING $0 $* >&2
-    set -x
-fi
+source "$HOMEgfs/ush/preamble.sh"
 
 #-------------------------------------------------------
 # Directories and paths
@@ -121,8 +115,5 @@ for ftype in atm sfc; do
 done
 
 #------------------------------------------------------------------
-set +x
-if [ $VERBOSE = "YES" ] ; then
-    echo $(date) EXITING $0 with return code $err >&2
-fi
+
 exit $err

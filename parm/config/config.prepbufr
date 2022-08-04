@@ -1,4 +1,4 @@
-#!/bin/ksh -x
+#! /usr/bin/env bash
 
 ########## config.prepbufr ##########
 # PREPBUFR specific configuration
@@ -11,9 +11,9 @@ echo "BEGIN: config.prepbufr"
 # Set variables
 
 if [ $machine = "HERA" ]; then
-    export GESROOT=/scratch1/NCEPDEV/rstprod   # set by module prod_envir on WCOSS_C
+    export GESROOT=/scratch1/NCEPDEV/rstprod
 elif [ $machine = "ORION" ]; then
-   export GESROOT=/dev/null
+    export GESROOT=/dev/null
 fi
 
 echo "END: config.prepbufr"

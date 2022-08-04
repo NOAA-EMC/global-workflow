@@ -1,4 +1,5 @@
-#!/bin/bash
+#! /usr/bin/env bash
+
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
@@ -13,16 +14,12 @@
 #
 # Attributes:
 #   Language: POSIX shell
-#   Machine: WCOSS-Cray / Theia
 #
-################################################################################
+#################################################################################
 
 #  Set environment.
-export VERBOSE=${VERBOSE:-"YES"}
-if [ $VERBOSE = "YES" ]; then
-   echo $(date) EXECUTING $0 $* >&2
-   set -x
-fi
+
+source "$HOMEgfs/ush/preamble.sh"
 
 #  Directories.
 pwd=$(pwd)
@@ -426,7 +423,7 @@ if [ $USE_CORRELATED_OBERRS == "YES" ];  then
      exit 1
   fi
 
-# Correlated error utlizes mkl lapack.  Found it necesary to fix the 
+# Correlated error utlizes mkl lapack.  Found it necesary to fix the
 # number of mkl threads to ensure reproducible results independent
 # of the job configuration.
   export MKL_NUM_THREADS=1
@@ -601,7 +598,7 @@ fi
 if [ $GENDIAG = "YES" ] ; then
    if [ $lrun_subdirs = ".true." ] ; then
       if [ -d $DIAG_DIR ]; then
-	  rm -rf $DIAG_DIR
+         rm -rf $DIAG_DIR
       fi
       npe_m1="$(($npe_gsi-1))"
       for pe in $(seq 0 $npe_m1); do
@@ -681,9 +678,9 @@ EOFunzip
       diag_file=$(echo $type | cut -d',' -f1)
       if [ $USE_CFP = "YES" ] ; then
          echo "$nm $DATA/unzip.sh $diag_file $DIAG_SUFFIX" | tee -a $DATA/mp_unzip.sh
-	 if [ ${CFP_MP:-"NO"} = "YES" ]; then
-             nm=$((nm+1))
-	 fi
+         if [ ${CFP_MP:-"NO"} = "YES" ]; then
+           nm=$((nm+1))
+         fi
       else
          fname=$(echo $diag_file | cut -d'.' -f1)
          date=$(echo $diag_file | cut -d'.' -f2)
@@ -959,7 +956,7 @@ export err=$?; err_chk
 
 
 ##############################################################
-# If full analysis field written, calculate analysis increment 
+# If full analysis field written, calculate analysis increment
 # here before releasing FV3 forecast
 if [ $DO_CALC_INCREMENT = "YES" ]; then
   $CALCINCPY
@@ -1005,20 +1002,17 @@ cd $pwd
 [[ $mkdata = "YES" ]] && rm -rf $DATA
 
 ##############################################################
-# Add this statement to release the forecast job once the 
-# atmopsheric analysis and updated surface RESTARTS are 
+# Add this statement to release the forecast job once the
+# atmopsheric analysis and updated surface RESTARTS are
 # available.  Do not release forecast when RUN=enkf
 ##############################################################
 if [ $SENDECF = "YES" -a "$RUN" != "enkf" ]; then
    ecflow_client --event release_fcst
 fi
-echo "$CDUMP $CDATE atminc done at `date`" > $COMOUT/${APREFIX}loginc.txt
+echo "$CDUMP $CDATE atminc done at $(date)" > $COMOUT/${APREFIX}loginc.txt
 
 ################################################################################
-set +x
-if [ $VERBOSE = "YES" ]; then
-   echo $(date) EXITING $0 with return code $err >&2
-fi
+
 exit $err
 
 ################################################################################

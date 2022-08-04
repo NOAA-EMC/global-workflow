@@ -1,26 +1,26 @@
-#!/bin/ksh
-echo "------------------------------------------------"
-echo "JGFS_BULLS - 24hr GFS processing"
-echo "------------------------------------------------"
-echo "History: Jul 2004 - First implementation of this new script."
-echo "         FBWNDGFS (FB Winds) program for 15 sites outside" 
-echo "          the Hawaiian Islands."
-echo "         Feb 2006 - L Sager  Send bulletins to TOC via NTC.  "
-echo "         Jul 2014 - B Vuong  Modified to use GFS master GRIB2"
-echo "                             and Add bulletins WINTEMV process."
-echo "         Sep 2016 - B Vuong  Modified to use GFS 0p25 deg GRIB2"
-echo "         Nov 2019 - B Vuong  Removed WINTEMV bulletin (retired)"
+#! /usr/bin/env bash
+
 #####################################################################
+# echo "------------------------------------------------"
+# echo "JGFS_BULLS - 24hr GFS processing"
+# echo "------------------------------------------------"
+# echo "History: Jul 2004 - First implementation of this new script."
+# echo "         FBWNDGFS (FB Winds) program for 15 sites outside" 
+# echo "          the Hawaiian Islands."
+# echo "         Feb 2006 - L Sager  Send bulletins to TOC via NTC.  "
+# echo "         Jul 2014 - B Vuong  Modified to use GFS master GRIB2"
+# echo "                             and Add bulletins WINTEMV process."
+# echo "         Sep 2016 - B Vuong  Modified to use GFS 0p25 deg GRIB2"
+# echo "         Nov 2019 - B Vuong  Removed WINTEMV bulletin (retired)"
+#####################################################################
+
+source "$HOMEgfs/ush/preamble.sh"
 
 cd $DATA
 
 ######################
 # Set up Here Files.
 ######################
-
-set -x
-msg="Begin job for $job"
-postmsg "$jlogfile" "$msg"
 
 job_name=$(echo $job|sed 's/[jpt]gfs/gfs/')
 
@@ -31,7 +31,7 @@ echo " Process Bulletins of forecast winds and temps for Hawaii    "
 echo " and 15 sites outside of the Hawaiian Islands.               "
 echo "#############################################################"
 echo " "
-set -x
+${TRACE_ON:-set -x}
 
 export pgm=bulls_fbwndgfs
 . prep_step
@@ -82,35 +82,7 @@ then
    ${UTILgfs}/ush/make_ntc_bull.pl WMOBH NONE KWNO NONE tran.fbwnd_pacific ${COMOUTwmo}/tran.fbwnd_pacific.$job_name
 fi
 
-#
-#  EMC is proposing to retire WINTEMV bulletin in GFS v16.0
-#
-   
-# if test ${cycle} = 't00z' -o ${cycle} = 't12z'
-# then
-#
-#      set +x
-#      echo " "
-#      echo "#################################################"
-#      echo " Process 06, 12, 18 and 24 fcsthrs WINTEM Bulletins. "
-#      echo "#################################################"
-#      echo " "
-#      set -x
-#      sh $USHgfs/mkwintem.sh
-#
-#fi
-
-#####################################################################
-# GOOD RUN
-set +x
-echo "**************JOB JGFS_FBWIND COMPLETED NORMALLY ON IBM-SP"
-echo "**************JOB JGFS_FBWIND COMPLETED NORMALLY ON IBM-SP"
-echo "**************JOB JGFS_FBWIND COMPLETED NORMALLY ON IBM-SP"
-set -x
 #####################################################################
 
-msg='Job completed normally.'
-echo $msg
-postmsg "$jlogfile" "$msg"
 
 ############################### END OF SCRIPT #######################
