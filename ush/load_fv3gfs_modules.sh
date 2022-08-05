@@ -15,7 +15,10 @@ source "$HOMEgfs/modulefiles/module-setup.sh.inc"
 # Load our modules:
 module use "$HOMEgfs/modulefiles"
 
-if [[ -d /lfs3 ]] ; then
+if [[ -d /lfs/h2 ]]; then
+  # We are on WCOSS2 (Cactus or Dogwood)
+  module load module_base.wcoss2
+elif [[ -d /lfs3 ]] ; then
   # We are on NOAA Jet
   module load module_base.jet
 elif [[ -d /scratch1 ]] ; then
