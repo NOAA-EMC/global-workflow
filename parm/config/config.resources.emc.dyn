@@ -218,7 +218,7 @@ elif [ $step = "wafs" ]; then
 
     export wtime_wafs="00:30:00"
     export npe_wafs=1
-    export npe_node_wafs=1
+    export npe_node_wafs=$npe_wafs
     export nth_wafs=1
     export memory_wafs="5GB"
 
@@ -233,34 +233,34 @@ elif [ $step = "wafsgcip" ]; then
 elif [ $step = "wafsgrib2" ]; then
 
     export wtime_wafsgrib2="00:30:00"
-    export npe_wafsgrib2=1
-    export npe_node_wafsgrib2=1
+    export npe_wafsgrib2=18
+    export npe_node_wafsgrib2=$npe_wafsgrib2
     export nth_wafsgrib2=1
-    export memory_wafsgrib2="60GB"
+    export memory_wafsgrib2="80GB"
 
 elif [ $step = "wafsblending" ]; then
 
     export wtime_wafsblending="00:30:00"
     export npe_wafsblending=1
-    export npe_node_wafsblending=1
+    export npe_node_wafsblending=$npe_wafsblending
     export nth_wafsblending=1
     export memory_wafsblending="1GB"
 
 elif [ $step = "wafsgrib20p25" ]; then
 
     export wtime_wafsgrib20p25="00:30:00"
-    export npe_wafsgrib20p25=1
-    export npe_node_wafsgrib20p25=1
+    export npe_wafsgrib20p25=11
+    export npe_node_wafsgrib20p25=$npe_wafsgrib20p25
     export nth_wafsgrib20p25=1
-    export memory_wafsgrib20p25="10GB"
+    export memory_wafsgrib20p25="80GB"
 
 elif [ $step = "wafsblending0p25" ]; then
 
     export wtime_wafsblending0p25="00:30:00"
     export npe_wafsblending0p25=1
-    export npe_node_wafsblending0p25=1
+    export npe_node_wafsblending0p25=$npe_wafsblending0p25
     export nth_wafsblending0p25=1
-    export memory_wafsblending0p25="5GB"
+    export memory_wafsblending0p25="15GB"
 
 elif [ $step = "vrfy" ]; then
 
