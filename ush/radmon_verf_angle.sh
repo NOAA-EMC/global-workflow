@@ -1,4 +1,6 @@
-#!/bin/ksh
+#! /usr/bin/env bash
+
+source "$HOMEgfs/ush/preamble.sh"
 
 ################################################################################
 ####  UNIX Script Documentation Block
@@ -82,10 +84,6 @@ echo " RADMON_NETCDF, netcdf_boolean = ${RADMON_NETCDF}, $netcdf_boolean"
 which prep_step
 which startmsg
 
-if [[ "$VERBOSE" = "YES" ]]; then
-   set -ax
-fi
-
 # Directories
 FIXgdas=${FIXgdas:-$(pwd)}
 EXECradmon=${EXECradmon:-$(pwd)}
@@ -127,10 +125,10 @@ else
 
    export pgm=${angle_exec}
 
-   iyy=`echo $PDATE | cut -c1-4`
-   imm=`echo $PDATE | cut -c5-6`
-   idd=`echo $PDATE | cut -c7-8`
-   ihh=`echo $PDATE | cut -c9-10`
+   iyy=$(echo $PDATE | cut -c1-4)
+   imm=$(echo $PDATE | cut -c5-6)
+   idd=$(echo $PDATE | cut -c7-8)
+   ihh=$(echo $PDATE | cut -c9-10)
 
    ctr=0
    fail=0
@@ -149,7 +147,7 @@ else
          echo "pgmout = $pgmout"
          prep_step
 
-         ctr=`expr $ctr + 1`
+         ctr=$(expr $ctr + 1)
 
          if [[ $dtype == "anl" ]]; then
             data_file=${type}_anl.${PDATE}.ieee_d
@@ -191,7 +189,7 @@ EOF
          ./${angle_exec} < input >>   ${pgmout} 2>>errfile
          export err=$?; err_chk
          if [[ $err -ne 0 ]]; then
-             fail=`expr $fail + 1`
+             fail=$(expr $fail + 1)
          fi
 
 #-------------------------------------------------------------------
@@ -233,7 +231,7 @@ EOF
    mv $tar_file.${Z} ${TANKverf_rad}/.
 
    if [[ $RAD_AREA = "rgn" ]]; then
-      cwd=`pwd`
+      cwd=$(pwd)
       cd ${TANKverf_rad}
       tar -xf ${tar_file}.${Z}
       rm ${tar_file}.${Z}
@@ -248,10 +246,4 @@ fi
 ################################################################################
 #  Post processing
 
-if [[ "$VERBOSE" = "YES" ]]; then
-   echo $(date) EXITING $0 error code ${err} >&2
-fi
-
-
-echo "<-- radmon_verf_angle.sh"
 exit ${err}

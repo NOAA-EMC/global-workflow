@@ -1,4 +1,7 @@
-#!/bin/bash
+#! /usr/bin/env bash
+
+source "$HOMEgfs/ush/preamble.sh"
+
 #------------------------------------------------------------------
 #  ozn_xtrct.sh
 #
@@ -17,9 +20,6 @@
 #	2 = unable to generate satype list; may indicate no diag
 #		files found in oznstat file
 #------------------------------------------------------------------
-
-set -ax
-
 
 #--------------------------------------------------
 #  check_diag_files
@@ -40,8 +40,8 @@ check_diag_files() {
    echo ""; echo ""; echo "--> check_diag_files"
 
    for type in ${found_satype}; do
-      check=`echo ${avail_satype} | grep ${type}`    
-      len_check=`echo -n "${check}" | wc -c`
+      check=$(echo ${avail_satype} | grep ${type})    
+      len_check=$(echo -n "${check}" | wc -c)
 
       if [[ ${len_check} -le 1 ]]; then
          echo "missing diag file -- diag_${type}_ges.${pdate}.gz not found " >> ./${out_file}   
@@ -51,9 +51,6 @@ check_diag_files() {
    echo "<-- check_diag_files"; echo ""; echo ""
 }
 
-
-
-echo "start ozn_xtrct.sh"
 
 iret=0
 export NCP=${NCP:-/bin/cp}
@@ -83,7 +80,7 @@ if [[ $VALIDATE_DATA -eq 1 ]]; then
       VALIDATE_DATA=0
    else
       validate=".TRUE."
-      val_file=`basename ${ozn_val_file}`
+      val_file=$(basename ${ozn_val_file})
       ${NCP} $ozn_val_file $val_file 
       tar -xvf $val_file
    fi
@@ -106,18 +103,18 @@ ozn_ptype=${ozn_ptype:-"ges anl"}
 #  a problem, reported by an iret value of 2
 #
 
-avail_satype=`ls -l d*ges* | sed -e 's/_/ /g;s/\./ /' | gawk '{ print $11 "_" $12 }'`
+avail_satype=$(ls -l d*ges* | sed -e 's/_/ /g;s/\./ /' | gawk '{ print $11 "_" $12 }')
 
 if [[ ${DO_DATA_RPT} -eq 1 ]]; then
    if [[ -e ${SATYPE_FILE} ]]; then
-      satype=`cat ${SATYPE_FILE}`
+      satype=$(cat ${SATYPE_FILE})
       check_diag_files ${PDATE} "${satype}" "${avail_satype}"
    else
       echo "WARNING:  missing ${SATYPE_FILE}"
    fi
 fi
 
-len_satype=`echo -n "${satype}" | wc -c`
+len_satype=$(echo -n "${satype}" | wc -c)
 
 if [[ ${len_satype} -le 1 ]]; then
    satype=${avail_satype}
@@ -126,7 +123,7 @@ fi
 echo ${satype}
 
 
-len_satype=`echo -n "${satype}" | wc -c`
+len_satype=$(echo -n "${satype}" | wc -c)
 
 if [[ ${DO_DATA_RPT} -eq 1 && ${len_satype} -lt 1 ]]; then
    iret=2 
@@ -165,10 +162,10 @@ else
       #--------------------------------------------------------------------
       #   Run programs for given time
    
-      iyy=`echo ${PDATE} | cut -c1-4`
-      imm=`echo ${PDATE} | cut -c5-6`
-      idd=`echo ${PDATE} | cut -c7-8`
-      ihh=`echo ${PDATE} | cut -c9-10`
+      iyy=$(echo ${PDATE} | cut -c1-4)
+      imm=$(echo ${PDATE} | cut -c5-6)
+      idd=$(echo ${PDATE} | cut -c7-8)
+      ihh=$(echo ${PDATE} | cut -c9-10)
 
       for type in ${satype}; do
          echo "processing ptype, type:  ${ptype}, ${type}"
@@ -264,8 +261,5 @@ fi
 if [[ ${CLEAN_TANKDIR} -eq 1 ]]; then
    ${HOMEoznmon}/ush/clean_tankdir.sh glb 40
 fi 
-
-
-echo "ozn_xtrct.sh HAS ENDED, iret = ${iret}"
 
 exit ${iret}

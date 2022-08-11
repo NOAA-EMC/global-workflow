@@ -1,6 +1,6 @@
-#/bin/sh
+#! /usr/bin/env bash
 
-set -ax
+source "$HOMEgfs/ush/preamble.sh"
 
 ################################################################################
 # exgdas_vrfyozn.sh
@@ -9,8 +9,6 @@ set -ax
 # (OznMon) DA package.  
 #
 ################################################################################
-export scr=exgdas_vrfyozn.sh
-
 err=0
 
 #-------------------------------------------------------------------------------
@@ -70,11 +68,11 @@ if [[ -s ${oznstat} ]]; then
    rm oznstat.$PDATE
 
    netcdf=0
-   count=`ls diag* | grep ".nc4" | wc -l`
+   count=$(ls diag* | grep ".nc4" | wc -l)
    if [ $count -gt 0 ] ; then
       netcdf=1
-      for filenc4 in `ls diag*nc4.gz`; do
-         file=`echo $filenc4 | cut -d'.' -f1-2`.gz
+      for filenc4 in $(ls diag*nc4.gz); do
+         file=$(echo $filenc4 | cut -d'.' -f1-2).gz
          mv $filenc4 $file
       done
    fi
@@ -89,12 +87,5 @@ else
    err=1
 fi
 
-
-if [[ "$VERBOSE" = "YES" ]]; then
-   echo "end exgdas_vrfyozn.sh, exit value = ${err}"
-fi
-
-
-set +x
 exit ${err}
 

@@ -1,4 +1,6 @@
-#!/bin/ksh
+#! /usr/bin/env bash
+
+source "$HOMEgfs/ush/preamble.sh"
 
 ################################################################################
 ####  UNIX Script Documentation Block
@@ -82,11 +84,6 @@
 #  Command line arguments.
 export PDATE=${1:-${PDATE:?}}
 
-
-if [[ "$VERBOSE" = "YES" ]]; then
-   set -ax
-fi
-
 # Directories
 FIXgdas=${FIXgdas:-$(pwd)}
 EXECradmon=${EXECradmon:-$(pwd)}
@@ -152,10 +149,10 @@ if [[ ! -s ./${time_exec} ]]; then
    err=8
 fi
 
-iyy=`echo $PDATE | cut -c1-4`
-imm=`echo $PDATE | cut -c5-6`
-idd=`echo $PDATE | cut -c7-8`
-ihh=`echo $PDATE | cut -c9-10`
+iyy=$(echo $PDATE | cut -c1-4)
+imm=$(echo $PDATE | cut -c5-6)
+idd=$(echo $PDATE | cut -c7-8)
+ihh=$(echo $PDATE | cut -c9-10)
 cyc=$ihh
 CYCLE=$cyc
 
@@ -193,7 +190,7 @@ if [[ $err -eq 0 ]]; then
          continue
       fi
 
-      ctr=`expr $ctr + 1`
+      ctr=$(expr $ctr + 1)
 
       for dtype in ${gesanl}; do
 
@@ -240,7 +237,7 @@ EOF
          ./${time_exec} < input >>   stdout.${type} 2>>errfile
          
          if [[ $err -ne 0 ]]; then
-            fail=`expr $fail + 1`
+            fail=$(expr $fail + 1)
          fi
 
 #-------------------------------------------------------------------
@@ -268,7 +265,7 @@ EOF
    mv $tar_file.${Z} ${TANKverf_rad}/.
 
    if [[ $RAD_AREA = "rgn" ]]; then
-      cwd=`pwd`
+      cwd=$(pwd)
       cd ${TANKverf_rad}
       tar -xf ${tar_file}.${Z}
       rm ${tar_file}.${Z}
@@ -335,7 +332,7 @@ EOF
 #  move warning notification to TANKverf
 #
    if [[ -s ${diag} ]]; then
-      lines=`wc -l <${diag}`
+      lines=$(wc -l <${diag})
       echo "lines in diag = $lines"   
    
       if [[ $lines -gt 0 ]]; then
@@ -356,8 +353,8 @@ EOF
    bad_chan=bad_chan.${PDATE}
    low_count=low_count.${PDATE}
 
-   qdate=`$NDATE -${CYCLE_INTERVAL} $PDATE`
-   pday=`echo $qdate | cut -c1-8`
+   qdate=$($NDATE -${CYCLE_INTERVAL} $PDATE)
+   pday=$(echo $qdate | cut -c1-8)
    
    prev_bad_pen=bad_pen.${qdate}
    prev_bad_chan=bad_chan.${qdate}
@@ -527,7 +524,7 @@ EOF
       #  dump report to log file
       #
       if [[ -s ${report} ]]; then
-         lines=`wc -l <${report}`
+         lines=$(wc -l <${report})
          if [[ $lines -gt 2 ]]; then
             cat ${report}
 
@@ -560,16 +557,13 @@ fi
       rm -f stdout.${type}
    done
 
-   ################################################################################
-   #-------------------------------------------------------------------
-   #  end error reporting section
-   #-------------------------------------------------------------------
-   ################################################################################
+################################################################################
+#-------------------------------------------------------------------
+#  end error reporting section
+#-------------------------------------------------------------------
+################################################################################
 
-   ################################################################################
-   #  Post processing
-   if [[ "$VERBOSE" = "YES" ]]; then
-      echo $(date) EXITING $0 error code ${err} >&2
-   fi
+################################################################################
+#  Post processing
 
 exit ${err}

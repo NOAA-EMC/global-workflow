@@ -1,10 +1,9 @@
-#!/bin/sh
+#! /usr/bin/env bash
+
 #############################################################
 # Set up environment for GDAS Radiance Monitor job
 #############################################################
-set -xa
-echo `date` $0 `date -u` begin
-export PS4='$SECONDS + '
+source "$HOMEgfs/ush/preamble.sh"
 
 ###############################
 # Specify NET, RUN, and COMPONENT name
@@ -67,11 +66,11 @@ fi
 #  determine PDY and cyc for previous cycle
 #############################################
 
-cdate=`${NDATE} -6 ${PDY}${cyc}`
+cdate=$(${NDATE} -6 ${PDY}${cyc})
 echo 'pdate = ${pdate}'
 
-export P_PDY=`echo ${cdate} | cut -c1-8`
-export p_cyc=`echo ${cdate} | cut -c9-10`
+export P_PDY=$(echo ${cdate} | cut -c1-8)
+export p_cyc=$(echo ${cdate} | cut -c9-10)
 
 #############################################
 # COMOUT - WHERE GSI OUTPUT RESIDES
@@ -94,8 +93,6 @@ fi
 
 
 mkdir -p -m 775 $TANKverf_rad
- 
-env
 
 ########################################
 # Set necessary environment variables
@@ -131,6 +128,4 @@ cd $DATAROOT
 if [ ${KEEPDATA} = NO ] ; then 
   rm -rf $RAD_DATA_IN
 fi
-
-date
 

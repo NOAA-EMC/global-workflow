@@ -1,10 +1,9 @@
-#!/bin/sh
+#! /usr/bin/env bash
+
 ###########################################################
 # GFS Minimization Monitor (MinMon) job
 ###########################################################
-set -xa
-echo `date` $0 `date -u` begin
-export PS4='$SECONDS + '
+source "$HOMEgfs/ush/preamble.sh"
 
 ###############################
 # Specify NET and RUN name
@@ -47,11 +46,11 @@ export USHminmon=${USHminmon:-$HOMEminmon/ush}
 #  determine PDY and cyc for previous cycle
 #############################################
 
-cdate=`${NDATE} -6 ${PDY}${cyc}`
+cdate=$(${NDATE} -6 ${PDY}${cyc})
 echo 'pdate = ${pdate}'
 
-export P_PDY=`echo ${cdate} | cut -c1-8`
-export p_cyc=`echo ${cdate} | cut -c9-10`
+export P_PDY=$(echo ${cdate} | cut -c1-8)
+export p_cyc=$(echo ${cdate} | cut -c9-10)
 
 
 #############################################

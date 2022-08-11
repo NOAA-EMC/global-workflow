@@ -1,4 +1,7 @@
-#/bin/sh
+#! /usr/bin/env bash
+
+source "$HOMEgfs/ush/preamble.sh"
+
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
@@ -15,15 +18,8 @@
 #      >0 - some problem encountered
 #
 ################################################################################
-scr=exgdas_vrfyrad.sh
-echo "${scr} HAS STARTED"
 
-export VERBOSE=${VERBOSE:-"NO"} 
-if [[ "$VERBOSE" = "YES" ]]
-then
-   set -x
-fi
-
+export VERBOSE=${VERBOSE:-YES}
 
 export RUN_ENVIR=${RUN_ENVIR:-nco}
 export NET=${NET:-gfs}
@@ -98,7 +94,7 @@ if [[ -s ${radstat} && -s ${biascr} ]]; then
    #  new sources to the list before writing back out.
    #------------------------------------------------------------------
 
-   radstat_satype=`ls d*ges* | awk -F_ '{ print $2 "_" $3 }'`
+   radstat_satype=$(ls d*ges* | awk -F_ '{ print $2 "_" $3 }')
    if [[ "$VERBOSE" = "YES" ]]; then
       echo $radstat_satype
    fi
@@ -117,7 +113,7 @@ if [[ -s ${radstat} && -s ${biascr} ]]; then
    fi
 
    echo satype_file = $satype_file
-   export SATYPE=`cat ${satype_file}`
+   export SATYPE=$(cat ${satype_file})
    
 
    #-------------------------------------------------------------
@@ -128,7 +124,7 @@ if [[ -s ${radstat} && -s ${biascr} ]]; then
    satype_changes=0
    new_satype=$SATYPE
    for type in ${radstat_satype}; do
-      test=`echo $SATYPE | grep $type | wc -l`
+      test=$(echo $SATYPE | grep $type | wc -l)
 
       if [[ $test -eq 0 ]]; then
          if [[ "$VERBOSE" = "YES" ]]; then
@@ -215,14 +211,5 @@ for rtype in $rlist; do
     ${CHGRP_CMD} $TANKverf_rad/*${rtype}*
 done
 
-
-if [[ "$VERBOSE" = "YES" ]]; then
-   echo "end exgdas_vrfyrad.sh, exit value = ${err}"
-fi
-
-echo "${scr} HAS ENDED"
-
-
-set +x
 exit ${err}
 

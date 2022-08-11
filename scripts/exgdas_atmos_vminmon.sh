@@ -1,4 +1,7 @@
-#/bin/sh
+#! /usr/bin/env bash
+
+source "$HOMEgfs/ush/preamble.sh"
+
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
@@ -20,15 +23,6 @@
 ########################################
 #  Set environment
 ########################################
-export VERBOSE=${VERBOSE:-"NO"} 
-if [[ "$VERBOSE" = "YES" ]]
-then
-   set -x
-fi
-
-export scr=exgdas_vrfyminmon.sh
-
-
 export RUN_ENVIR=${RUN_ENVIR:-nco}
 export NET=${NET:-gfs}
 export RUN=${RUN:-gdas}
@@ -121,11 +115,5 @@ elif [[ $rc_reduct -ne 0 ]]; then
    err=$rc_reduct
 fi
 
-if [[ "$VERBOSE" = "YES" ]]; then
-   echo "end exgdas_vrfminmon.sh, exit value = ${err}"
-fi
-
-
-set +x
 exit ${err}
 
