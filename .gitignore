@@ -171,7 +171,6 @@ ush/global_chgres_driver.sh
 ush/global_cycle.sh
 ush/global_cycle_driver.sh
 ush/mkwfsgbl.sh
-ush/radmon_ck_stdout.sh
 ush/ufsda
 ush/wafs_blending.sh
 ush/wafs_grib2.regrid.sh
