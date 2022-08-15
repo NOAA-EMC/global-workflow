@@ -77,10 +77,8 @@ elif [ $FH -eq 0 ] ; then
 else
   export paramlist=${paramlist:-$PARMpost/global_1x1_paramlist_g2}
   export paramlistb=${paramlistb:-$PARMpost/global_master-catchup_parmlist_g2}
-  export fhr3=$(expr $FH + 0 )
-  if [ $fhr3 -lt 100 ]; then export fhr3="0$fhr3"; fi
-  if [ $fhr3 -lt 10 ];  then export fhr3="0$fhr3"; fi
-  if [ $fhr3%${FHOUT_PGB} -eq 0 ]; then
+  export fhr3=$(printf "%03d" ${FH})
+  if (( fhr3%FHOUT_PGB == 0 )); then
     export PGBS=YES
   fi
 fi
