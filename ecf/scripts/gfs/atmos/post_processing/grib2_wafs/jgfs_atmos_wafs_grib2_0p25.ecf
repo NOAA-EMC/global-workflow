@@ -4,7 +4,7 @@
 #PBS -q %QUEUE%
 #PBS -A %PROJ%-%PROJENVIR%
 #PBS -l walltime=00:30:00
-#PBS -l select=1:mpiprocs=11:ompthreads=1:ncpus=11:mem=80GB
+#PBS -l select=1:ncpus=11:mem=80GB
 #PBS -l place=vscatter
 #PBS -l debug=true
 
@@ -25,10 +25,10 @@ module load PrgEnv-intel/${PrgEnv_intel_ver}
 module load craype/${craype_ver}
 module load intel/${intel_ver}
 module load cray-pals/${cray_pals_ver}
+module load cfp/${cfp_ver}
 module load libjpeg/${libjpeg_ver}
 module load grib_util/${grib_util_ver}
 module load wgrib2/${wgrib2_ver}
-module load cfp/${cfp_ver}
 
 module list
 
@@ -37,8 +37,8 @@ module list
 #############################################################
 export cyc=%CYC%
 export cycle=t%CYC%z
+export USE_CFP=YES
 export ICAO2023=no
-
 ############################################################
 # CALL executable job script here
 ############################################################
