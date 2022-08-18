@@ -16,6 +16,13 @@ for config in $configs; do
     [[ $status -ne 0 ]] && exit $status
 done
 
+##########################################
+# Source machine runtime environment
+##########################################
+. $HOMEgfs/env/${machine}.env wafsgrib2
+status=$?
+[[ $status -ne 0 ]] && exit $status
+
 ###############################################################
 
 export DATAROOT="$RUNDIR/$CDATE/$CDUMP/wafsgrib2"
