@@ -9,7 +9,6 @@
 ######################
 "ocn%4yr%2mo%2dy%2hr",      6,  "hours", 1, "hours", "time", 6, "hours", "1901 1 1 0 0 0"
 "ocn_daily%4yr%2mo%2dy",      1,  "days",  1, "days",  "time", 1, "days",  "1901 1 1 0 0 0"
-"wavocn%4yr%2mo%2dy%2hr",      6,  "hours", 1, "hours", "time", 6, "hours", "1901 1 1 0 0 0"
 ##############################################
 # static fields
  "ocean_model", "geolon",      "geolon",      "ocn%4yr%2mo%2dy%2hr", "all", .false., "none", 2
@@ -80,23 +79,6 @@
  "ocean_model", "fprec",     "fprec",         "ocn%4yr%2mo%2dy%2hr","all",.true.,"none",2
  "ocean_model", "LwLatSens", "LwLatSens",     "ocn%4yr%2mo%2dy%2hr","all",.true.,"none",2
  "ocean_model", "Heat_PmE",  "Heat_PmE",      "ocn%4yr%2mo%2dy%2hr","all",.true.,"none",2
-
-#wave_variables
- "ocean_model", "geolon",             "geolon",             "wavocn%4yr%2mo%2dy%2hr","all", .false., "none", 2
- "ocean_model", "geolat",             "geolat",             "wavocn%4yr%2mo%2dy%2hr","all", .false., "none", 2
- "ocean_model", "MSTAR",              "MSTAR",              "wavocn%4yr%2mo%2dy%2hr","all", .true.,  "none", 2
- "ocean_model", "LA",                 "LA",                 "wavocn%4yr%2mo%2dy%2hr","all", .true.,  "none", 2
- "ocean_model", "LA_MOD",             "LA_MOD",             "wavocn%4yr%2mo%2dy%2hr","all", .true.,  "none", 2
- "ocean_model", "MSTAR_LT",           "MSTAR_LT",           "wavocn%4yr%2mo%2dy%2hr","all", .true.,  "none", 2
- "ocean_model", "ePBL_h_ML",          "ePBL",               "wavocn%4yr%2mo%2dy%2hr","all", .true.,  "none", 2
- "ocean_model", "ustar",              "ustar",              "wavocn%4yr%2mo%2dy%2hr","all", .true.,  "none", 2
- "ocean_model", "ePBL_TKE_wind",      "ePBL_TKE_wind",      "wavocn%4yr%2mo%2dy%2hr","all", .true.,  "none", 2
- "ocean_model", "ePBL_TKE_MKE",       "ePBL_TKE_MKE",       "wavocn%4yr%2mo%2dy%2hr","all", .true.,  "none", 2
- "ocean_model", "ePBL_TKE_conv",      "ePBL_TKE_conv",      "wavocn%4yr%2mo%2dy%2hr","all", .true.,  "none", 2
- "ocean_model", "ePBL_TKE_forcing",   "ePBL_TKE_forcing",   "wavocn%4yr%2mo%2dy%2hr","all", .true.,  "none", 2
- "ocean_model", "ePBL_TKE_mixing",    "ePBL_TKE_mixing",    "wavocn%4yr%2mo%2dy%2hr","all", .true.,  "none", 2
- "ocean_model", "ePBL_TKE_mech_decay","ePBL_TKE_mech_decay","wavocn%4yr%2mo%2dy%2hr","all", .true.,  "none", 2
- "ocean_model", "ePBL_TKE_conv_decay","ePBL_TKE_conv_decay","wavocn%4yr%2mo%2dy%2hr","all", .true.,  "none", 2
 
 #=============================================================================================
 "gfs_dyn",     "ucomp",       "ugrd",         "fv3_history",    "all",  .false.,  "none",  2
