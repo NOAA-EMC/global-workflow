@@ -65,7 +65,7 @@ elif [ $step = "waveprep" ]; then
     export npe_node_waveprep=$npe_waveprep
     export npe_node_waveprep_gfs=$npe_waveprep_gfs
     export memory_waveprep="100GB"
-    export memory_waveprep_gfs="200GB"
+    export memory_waveprep_gfs="220GB"
     export NTASKS=$npe_waveprep
     export NTASKS_gfs=$npe_waveprep_gfs
 
@@ -128,6 +128,7 @@ elif [ $step = "waveawipsgridded" ]; then
     export nth_waveawipsgridded=1
     export npe_node_waveawipsgridded=$(echo "$npe_node_max / $nth_waveawipsgridded" | bc)
     export NTASKS=$npe_waveawipsgridded
+    export memory_waveawipsgridded_gfs="2GB"
 
 elif [ $step = "anal" ]; then
 
@@ -334,7 +335,7 @@ elif [ $step = "ediag" ]; then
     export npe_ediag=48
     export nth_ediag=1
     export npe_node_ediag=$npe_node_max
-    export memory_ediag="24GB"
+    export memory_ediag="28GB"
 
 elif [ $step = "eupd" ]; then
 
