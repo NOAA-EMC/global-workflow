@@ -424,8 +424,8 @@ FIX CHANGES
     * `wave_gfs.buoys.dat`
     * `wave_gfs.buoys.full`
 
-MODULE CHANGES
---------------
+MODULE CHANGES - related to WCOSS2
+----------------------------------
 
 * GSI:
   * `modulefiles/gsi_common.lua`
