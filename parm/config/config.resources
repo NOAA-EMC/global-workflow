@@ -182,7 +182,9 @@ elif [ $step = "aeroanlrun" ]; then
 
     export wtime_aeroanlrun="00:30:00"
     export npe_aeroanlrun=$(echo "$layout_x * $layout_y * 6" | bc)
+    export npe_aeroanlrun_gfs=$(echo "$layout_x * $layout_y * 6" | bc)
     export nth_aeroanlrun=1
+    export nth_aeroanlrun_gfs=1
     export native_aeroanlrun="--exclusive"
     export npe_node_aeroanlrun=$(echo "$npe_node_max / $nth_aeroanlrun" | bc)
 
