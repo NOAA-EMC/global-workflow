@@ -167,18 +167,20 @@ elif [ $step = "aeroanlinit" ]; then
 
 elif [ $step = "aeroanlrun" ]; then
 
-    if [ $CASE = "C768" ]; then
-      layout_x=6
-      layout_y=6
-    fi
-    if [ $CASE = "C384" ]; then
-      layout_x=5
-      layout_y=5
-    fi
-    if [ $CASE = "C192" -o $CASE = "C96" -o $CASE = "C48" ]; then
-      layout_x=3
-      layout_y=3
-    fi
+   case $CASE in
+     C768)    
+        layout_x=6
+        layout_y=6
+        ;;
+      C384)    
+        layout_x=5
+        layout_y=5
+        ;;
+     C192 | C96 | C48)    
+        layout_x=3
+        layout_y=3
+        ;;
+    esac
 
     export wtime_aeroanlrun="00:30:00"
     export npe_aeroanlrun=$(echo "$layout_x * $layout_y * 6" | bc)
