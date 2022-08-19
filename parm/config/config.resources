@@ -11,6 +11,7 @@ if [ $# -ne 1 ]; then
     echo "getic init coupled_ic aerosol_init"
     echo "atmanalprep atmanalrun atmanalpost"
     echo "atmensanalprep atmensanalrun atmensanalpost"
+    echo "aeroanlinit aeroanlrun aeroanlfinal"
     echo "anal sfcanl analcalc analdiag gldas fcst post vrfy metp arch echgres"
     echo "eobs ediag eomg eupd ecen esfc efcs epos earc"
     echo "init_chem mom6ic ocnpost"
@@ -155,6 +156,43 @@ elif [ $step = "atmanalpost" ]; then
     export npe_atmanalpost=$npe_node_max
     export nth_atmanalpost=1
     export npe_node_atmanalpost=$(echo "$npe_node_max / $nth_atmanalpost" | bc)
+
+elif [ $step = "aeroanlinit" ]; then
+
+    export wtime_aeroanlinit="00:10:00"
+    export npe_aeroanlinit=1
+    export nth_aeroanlinit=1
+    export npe_node_aeroanlinit=$(echo "$npe_node_max / $nth_aeroanlinit" | bc)
+    export memory_aeroanlinit="3072M"
+
+elif [ $step = "aeroanlrun" ]; then
+
+    if [ $CASE = "C768" ]; then
+      layout_x=6
+      layout_y=6
+    fi
+    if [ $CASE = "C384" ]; then
+      layout_x=5
+      layout_y=5
+    fi
+    if [ $CASE = "C192" -o $CASE = "C96" -o $CASE = "C48" ]; then
+      layout_x=3
+      layout_y=3
+    fi
+
+    export wtime_aeroanlrun="00:30:00"
+    export npe_aeroanlrun=$(echo "$layout_x * $layout_y * 6" | bc)
+    export nth_aeroanlrun=1
+    export native_aeroanlrun="--exclusive"
+    export npe_node_aeroanlrun=$(echo "$npe_node_max / $nth_aeroanlrun" | bc)
+
+elif [ $step = "aeroanlfinal" ]; then
+
+    export wtime_aeroanlfinal="00:10:00"
+    export npe_aeroanlfinal=1
+    export nth_aeroanlfinal=1
+    export npe_node_aeroanlfinal=$(echo "$npe_node_max / $nth_aeroanlfinal" | bc)
+    export memory_aeroanlfinal="3072M"
 
 elif [ $step = "anal" ]; then
 
