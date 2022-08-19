@@ -16,6 +16,7 @@ export ACCOUNT="@ACCOUNT@"
 export QUEUE="@QUEUE@"
 export QUEUE_SERVICE="@QUEUE_SERVICE@"
 export PARTITION_BATCH="@PARTITION_BATCH@"
+export PARTITION_SERVICE="@PARTITION_SERVICE@"
 
 # Project to use in mass store:
 HPSS_PROJECT=emc-global

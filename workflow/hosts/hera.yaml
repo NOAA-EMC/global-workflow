@@ -10,8 +10,9 @@ noscrub: $HOMEDIR
 account: fv3-cpu
 scheduler: slurm
 queue: batch
-queue_service: service
+queue_service: batch
 partition_batch: hera
+partition_service: service
 chgrp_rstprod: 'YES'
 chgrp_cmd: 'chgrp rstprod'
 hpssarch: 'YES'

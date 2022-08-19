@@ -135,6 +135,7 @@ def edit_baseconfig(host, inputs):
         "@QUEUE@": host.info["queue"],
         "@QUEUE_SERVICE@": host.info["queue_service"],
         "@PARTITION_BATCH@": host.info["partition_batch"],
+        "@PARTITION_SERVICE@": host.info["partition_service"],
         "@EXP_WARM_START@": inputs.warm_start,
         "@MODE@": inputs.mode,
         "@CHGRP_RSTPROD@": host.info["chgrp_rstprod"],
