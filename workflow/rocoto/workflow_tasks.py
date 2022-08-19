@@ -522,7 +522,7 @@ class Tasks:
                     'cycled': self._fcst_cycled}
 
         try:
-            task = fcst_map[self.app_config.mode]
+            task = fcst_map[self.app_config.mode]()
         except KeyError:
             raise NotImplementedError(f'{self.app_config.mode} is not a valid type.\n' +
                                       'Currently supported forecast types are:\n' +
@@ -530,7 +530,6 @@ class Tasks:
 
         return task
 
-    @property
     def _fcst_forecast_only(self):
         dependencies = []
 
@@ -583,7 +582,6 @@ class Tasks:
 
         return task
 
-    @property
     def _fcst_cycled(self):
 
         dep_dict = {'type': 'task', 'name': f'{self.cdump}sfcanl'}
