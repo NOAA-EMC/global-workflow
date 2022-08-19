@@ -13,6 +13,7 @@ GFS Post Processing system and World Area Forecast System (WAFS):
 * Per CAO milestones, WAFS products are upgraded to increase vertical/temporal resolution and forecast range on 0.25-degree products.
 * Add new 1.25-degree aviation-related products with new WMO headers for FAA to retire WAFS octant files when FAA is ready.
 * Minor changes in the GFS post-processing script to make a continuous bucket precipitation product for WGNE (Working Group for Numerical Experiment).
+* Update synthetic satellite product generation with crtm/2.4.0.
 
 FV3 model physics upgrade in Noah land surface model:
 
@@ -82,6 +83,8 @@ The checkout script extracts the following GFS components:
 | UFS_UTILS | ops-gfsv16.2.1 | George.Gayno@noaa.gov |
 | POST      | upp_v8.2.0 | Wen.Meng@noaa.gov |
 | WAFS      | gfs_wafs.v6.3.1 | Yali.Mao@noaa.gov |
+
+Note: The library upp/8.2.0 needs to be pre-installed before proceeding with the build step.
 
 To build all the GFS components, execute:
 ```bash
@@ -194,6 +197,7 @@ SORC CHANGES
     * `MDL2P.f`
     * `get_postfilename.f`
     * `gtg_algo.f90`
+    * `CALRAD_WCLOUD_newcrtm.f`
 
 * UFS_UTILS:
   * Removed the following obsolete nemsio utility programs:
@@ -441,7 +445,7 @@ MODULE CHANGES
 CHANGES TO FILE SIZES
 -----------------------------------
 
-* UPP (post): increased by 25G
+* UPP (post): increased by 15G
 * WAFS: increased by 2.5G
 
 ENVIRONMENT AND RESOURCE CHANGES
