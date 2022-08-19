@@ -86,9 +86,9 @@ fi
 # Generate prepbufr files from dumps or copy from OPS
 if [ $DO_MAKEPREPBUFR = "YES" ]; then
     if [ $ROTDIR_DUMP = "YES" ]; then
-        rm $COMOUT/${OPREFIX}prepbufr
-        rm $COMOUT/${OPREFIX}prepbufr.acft_profiles
-        rm $COMOUT/${OPREFIX}nsstbufr
+        rm -f $COMOUT/${OPREFIX}prepbufr
+        rm -f $COMOUT/${OPREFIX}prepbufr.acft_profiles
+        rm -f $COMOUT/${OPREFIX}nsstbufr
     fi
 
     export job="j${CDUMP}_prep_${cyc}"
