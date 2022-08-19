@@ -441,7 +441,7 @@ MODULE CHANGES
 CHANGES TO FILE SIZES
 -----------------------------------
 
-* UPP (post): increased by 33G
+* UPP (post): increased by 25G
 * WAFS: increased by 2.5G
 
 ENVIRONMENT AND RESOURCE CHANGES
