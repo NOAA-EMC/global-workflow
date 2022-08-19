@@ -147,12 +147,20 @@ if [[ -s ${radstat} && -s ${biascr} ]]; then
          netcdf=1
       fi
      
-      mv diag_${type}_ges.${PDATE}*.${Z} ${type}.${Z}
-      ${UNCOMPRESS} ./${type}.${Z}
+      if [[ -f "diag_${type}_ges.${PDATE}*.${Z}" ]]; then
+        mv diag_${type}_ges.${PDATE}*.${Z} ${type}.${Z}
+        ${UNCOMPRESS} ./${type}.${Z}
+      else
+        echo "WARNING: diag_${type}_ges.${PDATE}*.${Z} not available, skipping"
+      fi
      
       if [[ $USE_ANL -eq 1 ]]; then
-         mv diag_${type}_anl.${PDATE}*.${Z} ${type}_anl.${Z}
-         ${UNCOMPRESS} ./${type}_anl.${Z}
+        if [[ -f "diag_${type}_anl.${PDATE}*.${Z}" ]]; then
+          mv diag_${type}_anl.${PDATE}*.${Z} ${type}_anl.${Z}
+          ${UNCOMPRESS} ./${type}_anl.${Z}
+        else
+          echo "WARNING: diag_${type}_anl.${PDATE}*.${Z} not available, skipping"
+        fi
       fi
    done
 
@@ -177,7 +185,7 @@ if [[ -s ${radstat} && -s ${biascr} ]]; then
     #--------------------------------------
     #  optionally run clean_tankdir script
     #
-    if [[ ${CLEAN_TANKVERF} -eq 1 ]]; then
+    if [[ ${CLEAN_TANKVERF:-0} -eq 1 ]]; then
        ${USHradmon}/clean_tankdir.sh glb 60
        rc_clean_tankdir=$?
        echo "rc_clean_tankdir = $rc_clean_tankdir"
@@ -208,7 +216,9 @@ fi
 export CHGRP_CMD=${CHGRP_CMD:-"chgrp ${group_name:-rstprod}"}
 rlist="saphir"
 for rtype in $rlist; do
+  if compgen -G "$TANKverf_rad/*${rtype}*" > /dev/null; then
     ${CHGRP_CMD} $TANKverf_rad/*${rtype}*
+  fi
 done
 
 exit ${err}

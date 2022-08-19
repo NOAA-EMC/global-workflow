@@ -40,8 +40,7 @@ check_diag_files() {
    echo ""; echo ""; echo "--> check_diag_files"
 
    for type in ${found_satype}; do
-      check=$(echo ${avail_satype} | grep ${type})    
-      len_check=$(echo -n "${check}" | wc -c)
+      len_check=$(echo ${avail_satype} | grep ${type} | wc -c)
 
       if [[ ${len_check} -le 1 ]]; then
          echo "missing diag file -- diag_${type}_ges.${pdate}.gz not found " >> ./${out_file}   
@@ -153,9 +152,11 @@ else
       echo "ptype = ${ptype}"
 
  
-      for type in ${satype}; do
-         mv diag_${type}_${ptype}.${PDATE}.gz ${type}.${ptype}.gz
-         gunzip ./${type}.${ptype}.gz
+      for type in ${avail_satype}; do
+         if [[ -f "diag_${type}_${ptype}.${PDATE}.gz" ]]; then
+            mv diag_${type}_${ptype}.${PDATE}.gz ${type}.${ptype}.gz
+            gunzip ./${type}.${ptype}.gz
+         fi
       done
 
 
@@ -167,7 +168,7 @@ else
       idd=$(echo ${PDATE} | cut -c7-8)
       ihh=$(echo ${PDATE} | cut -c9-10)
 
-      for type in ${satype}; do
+      for type in ${avail_satype}; do
          echo "processing ptype, type:  ${ptype}, ${type}"
          rm -f input
 
@@ -258,7 +259,7 @@ fi
 #-------------------------------------------------------
 # Conditionally remove data files older than 40 days
 #
-if [[ ${CLEAN_TANKDIR} -eq 1 ]]; then
+if [[ ${CLEAN_TANKDIR:-0} -eq 1 ]]; then
    ${HOMEoznmon}/ush/clean_tankdir.sh glb 40
 fi 
 

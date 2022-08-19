@@ -225,20 +225,22 @@ EOF
 
    ${USHradmon}/rstprod.sh
 
-   tar_file=radmon_angle.tar 
-   tar -cf $tar_file angle*.ieee_d* angle*.ctl*
-   ${COMPRESS} ${tar_file}
-   mv $tar_file.${Z} ${TANKverf_rad}/.
+   tar_file=radmon_angle.tar
+   if compgen -G "angle*.ieee_d* angle*.ctl*" > /dev/null; then
+      tar -cf $tar_file angle*.ieee_d* angle*.ctl*
+      ${COMPRESS} ${tar_file}
+      mv $tar_file.${Z} ${TANKverf_rad}/.
 
-   if [[ $RAD_AREA = "rgn" ]]; then
-      cwd=$(pwd)
-      cd ${TANKverf_rad}
-      tar -xf ${tar_file}.${Z}
-      rm ${tar_file}.${Z}
-      cd ${cwd}
-   fi   
+     if [[ $RAD_AREA = "rgn" ]]; then
+        cwd=$(pwd)
+        cd ${TANKverf_rad}
+        tar -xf ${tar_file}.${Z}
+        rm ${tar_file}.${Z}
+        cd ${cwd}
+     fi
+   fi
 
-   if [[ $fail -eq $ctr || $fail -gt $ctr ]]; then
+   if [[ $ctr -gt 0 && $fail -eq $ctr || $fail -gt $ctr ]]; then
       err=3
    fi
 fi

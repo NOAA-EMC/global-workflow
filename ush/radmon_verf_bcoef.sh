@@ -206,20 +206,22 @@ EOF
 
    ${USHradmon}/rstprod.sh
 
-   tar_file=radmon_bcoef.tar
-   tar -cf $tar_file bcoef*.ieee_d* bcoef*.ctl*
-   ${COMPRESS} ${tar_file}
-   mv $tar_file.${Z} ${TANKverf_rad}
+   if compgen -G "bcoef*.ieee_d* bcoef*.ctl*" > /dev/null; then
+     tar_file=radmon_bcoef.tar
+     tar -cf $tar_file bcoef*.ieee_d* bcoef*.ctl*
+     ${COMPRESS} ${tar_file}
+     mv $tar_file.${Z} ${TANKverf_rad}
 
-   if [[ $RAD_AREA = "rgn" ]]; then
-      cwd=$(pwd)
-      cd ${TANKverf_rad}
-      tar -xf ${tar_file}.${Z}
-      rm ${tar_file}.${Z}
-      cd ${cwd}
+     if [[ $RAD_AREA = "rgn" ]]; then
+        cwd=$(pwd)
+        cd ${TANKverf_rad}
+        tar -xf ${tar_file}.${Z}
+        rm ${tar_file}.${Z}
+        cd ${cwd}
+     fi
    fi
 
-   if [[ $fail -eq $ctr || $fail -gt $ctr ]]; then
+   if [[ $ctr -gt 0 && $fail -eq $ctr || $fail -gt $ctr ]]; then
       err=5
    fi
 fi

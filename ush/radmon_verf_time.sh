@@ -259,20 +259,22 @@ EOF
 
    ${USHradmon}/rstprod.sh
 
-   tar_file=radmon_time.tar
-   tar -cf $tar_file time*.ieee_d* time*.ctl*
-   ${COMPRESS} ${tar_file}
-   mv $tar_file.${Z} ${TANKverf_rad}/.
+   if compgen -G "time*.ieee_d* time*.ctl*" > /dev/null; then
+     tar_file=radmon_time.tar
+     tar -cf $tar_file time*.ieee_d* time*.ctl*
+     ${COMPRESS} ${tar_file}
+     mv $tar_file.${Z} ${TANKverf_rad}/.
 
-   if [[ $RAD_AREA = "rgn" ]]; then
-      cwd=$(pwd)
-      cd ${TANKverf_rad}
-      tar -xf ${tar_file}.${Z}
-      rm ${tar_file}.${Z}
-      cd ${cwd}
+     if [[ $RAD_AREA = "rgn" ]]; then
+        cwd=$(pwd)
+        cd ${TANKverf_rad}
+        tar -xf ${tar_file}.${Z}
+        rm ${tar_file}.${Z}
+        cd ${cwd}
+     fi
    fi
 
-   if [[ $fail -eq $ctr || $fail -gt $ctr  ]]; then
+   if [[ $ctr -gt 0 && $fail -eq $ctr || $fail -gt $ctr  ]]; then
       echo "fail, ctr = $fail, $ctr"
       err=10
    fi
@@ -407,11 +409,14 @@ EOF
    #--------------------------------------------------------------------
    #  Remove extra spaces in new bad_pen & low_count files
    #
-   gawk '{$1=$1}1' $bad_pen > tmp.bad_pen
-   mv -f tmp.bad_pen $bad_pen
-
-   gawk '{$1=$1}1' $low_count > tmp.low_count
-   mv -f tmp.low_count $low_count
+   if [[ -s ${bad_pen} ]]; then
+     gawk '{$1=$1}1' $bad_pen > tmp.bad_pen
+     mv -f tmp.bad_pen $bad_pen
+   fi
+   if [[ -s ${low_count} ]]; then
+     gawk '{$1=$1}1' $low_count > tmp.low_count
+     mv -f tmp.low_count $low_count
+   fi
 
    echo " do_pen, do_chan, do_cnt = $do_pen, $do_chan, $do_cnt"
    echo " diag_report = $diag_report "
