@@ -430,6 +430,8 @@ MODULE CHANGES
 * GSI:
   * `modulefiles/gsi_common.lua`
   * `modulefiles/modulefile.ProdGSI.wcoss2.lua`
+* MODEL
+  * `modulefiles/wcoss2/fv3`
 * POST (UPP):
   * `scripts/exgfs_atmos_nceppost.sh`
   * `ush/fv3gfs_downstream_nems.sh`
