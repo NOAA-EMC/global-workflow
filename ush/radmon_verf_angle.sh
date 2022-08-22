@@ -192,23 +192,6 @@ EOF
              fail=$(expr $fail + 1)
          fi
 
-#-------------------------------------------------------------------
-#  move data, control, and stdout files to $TANKverf_rad and compress
-
-         #-----------------------------------------------------------
-         #  For cfp use, instead of executing these file manipulation 
-	 #  comands directly, journel them instead to a flat file.
-	 #  Then execute cfp (as appropriate for each machine) to
-	 #  perform the file manipulations.  Those manipulation 
-         #  commands should probably go in a parm file so I can not
-	 #  rely on a machine dependent decision here.
-	 #
-	 #  Note that in my esafford_RadMon_45526 branch I've already
-	 #  modified the order of operation to compress before copy.
-	 #  That change should be delivered to trunk soon.
-         #-----------------------------------------------------------
-
-
          if [[ -s ${angl_file} ]]; then
             ${COMPRESS} -f ${angl_file}
          fi

@@ -49,9 +49,6 @@ export USE_ANL=${USE_ANL:-1}
 export PDATE=${PDY}${cyc}
 export DO_DIAG_RPT=${DO_DIAG_RPT:-1}
 export DO_DATA_RPT=${DO_DATA_RPT:-1}
-export USE_MAIL=${USE_MAIL:-0}
-export MAIL_TO=${MAIL_TO:-" "}
-export MAIL_CC=${MAIL_CC:-" "}
 export NCP=${NCP:-/bin/cp}
 
 ###########################################################################

@@ -43,10 +43,6 @@ source "$HOMEgfs/ush/preamble.sh"
 #                       defaults to current directory 
 #     SATYPE		list of satellite/instrument sources
 #        		defaults to none
-#     MAIL_TO		email recipients
-#			defaults to none
-#     MAIL_CC		email cc recipients
-#			defaults to none
 #     VERBOSE           Verbose flag (YES or NO)
 #                       defaults to NO
 #     LITTLE_ENDIAN     flag for little endian machine
@@ -124,11 +120,8 @@ REGIONAL_RR=${REGIONAL_RR:-0}
 rgnHH=${rgnHH:-}
 rgnTM=${rgnTM:-}
 SATYPE=${SATYPE:-}
-MAIL_TO=${MAIL_TO:-}
-MAIL_CC=${MAIL_CC:-}
 VERBOSE=${VERBOSE:-NO}
 LITTLE_ENDIAN=${LITTLE_ENDIAN:-0}
-USE_MAIL=${USE_MAIL:-1}
 
 time_exec=radmon_time.x
 USE_ANL=${USE_ANL:-0}
