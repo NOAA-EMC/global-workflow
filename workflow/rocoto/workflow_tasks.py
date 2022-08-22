@@ -469,7 +469,6 @@ class Tasks:
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
-
         resources = self.get_resource('aeroanlinit')
         task = create_wf_task('aeroanlinit', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
         return task
