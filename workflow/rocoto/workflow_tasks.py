@@ -153,7 +153,7 @@ class Tasks:
         else:  # data-atmosphere
             input_datm_src = self._base.get('datm_src','gefs')
             prefix = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_DATM']}/{input_datm_src}/@Y@m@d@H"
-            data = f"{prefix}/gefs.@Y@m.nc"
+            data = f"{prefix}/{input_datm_src}.@Y@m.nc"
             dep_dict = {'type': 'data', 'data': data}
             deps.append(rocoto.add_dependency(dep_dict))
 
@@ -493,7 +493,8 @@ class Tasks:
             dependencies.append(rocoto.create_dependency(dep_condition='or', dep=deps))
 
         else:  # data-atmosphere
-            data = f'&ICSDIR;/@Y@m@d@H/datm/gefs.@Y@m.nc'  # GEFS forcing
+            input_datm_src = self._base.get('datm_src','gefs')
+            data = f'&ICSDIR;/@Y@m@d@H/datm/{input_datm_src}.@Y@m.nc'  # GEFS forcing
             dep_dict = {'type': 'data', 'data': data}
             deps.append(rocoto.add_dependency(dep_dict))
             data = '&ICSDIR;/@Y@m@d@H/ocn/MOM.res.nc'  # TODO - replace with actual ocean IC
