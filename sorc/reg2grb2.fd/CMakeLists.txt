@@ -18,7 +18,7 @@ target_link_libraries(
   sp::sp_d
   bacio::bacio_4
   w3nco::w3nco_4
-  wgrib2::wgrib2_api
+  wgrib2::wgrib2
   NetCDF::NetCDF_Fortran)
 
 if(OpenMP_Fortran_FOUND)

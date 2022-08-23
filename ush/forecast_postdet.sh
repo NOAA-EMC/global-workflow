@@ -862,10 +862,6 @@ MOM6_postdet() {
     dest_file="ocn${VDATE}.${ENSMEM}.${IDATE}.nc"
     ${NLN} ${COMOUTocean}/${dest_file} ${DATA}/${source_file}
 
-    source_file="wavocn_${YYYY_MID}_${MM_MID}_${DD_MID}_${HH_MID}.nc"
-    dest_file=${source_file}
-    ${NLN} ${COMOUTocean}/${dest_file} ${DATA}/${source_file}
-
     source_file="ocn_daily_${YYYY}_${MM}_${DD}.nc"
     dest_file=${source_file}
     if [ ! -a "${DATA}/${source_file}" ]; then
