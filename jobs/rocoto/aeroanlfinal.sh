@@ -9,4 +9,7 @@ status=$?
 [[ $status -ne 0 ]] && exit $status
 
 ###############################################################
-echo "Do nothing for now"
+# Execute the JJOB
+$HOMEgfs/jobs/JGDAS_GLOBAL_AERO_ANALYSIS_FINALIZE
+status=$?
+exit $status
