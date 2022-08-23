@@ -35,7 +35,7 @@ $LINK ufs_model.fd/FV3/upp upp.fd
 #--model fix fields
 #------------------------------
 if [ $machine = "wcoss2" ]; then
-    FIX_DIR="/lfs/h2/emc/global/save/emc.global/FIX/fix_NEW"
+    FIX_DIR="/lfs/h2/emc/global/noscrub/emc.global/FIX/fix_NEW"
 elif [ $machine = "hera" ]; then
     FIX_DIR="/scratch1/NCEPDEV/global/glopara/fix_NEW"
 elif [ $machine = "orion" ]; then
