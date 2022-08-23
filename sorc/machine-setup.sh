@@ -20,7 +20,7 @@ target=""
 USERNAME=$(echo $LOGNAME | awk '{ print tolower($0)'})
 ##---------------------------------------------------------------------------
 export hname=$(hostname | cut -c 1,1)
-if [[ -d /lfs/h1 ]] ; then
+if [[ -d /lfs/f1 ]] ; then
     # We are on NOAA Cactus or Dogwood
     if ( ! eval module help > /dev/null 2>&1 ) ; then
         echo load the module command 1>&2

@@ -2,7 +2,7 @@ set __ms_shell=csh
 
 eval "if ( -d / ) set __ms_shell=tcsh"
 
-if ( { test -d /lfs/h2 } ) then
+if ( { test -d /lfs/f1 } ) then
     # We are on NOAA Cactus or Dogwood
     if ( ! { module help >& /dev/null } ) then
         source /usr/share/lmod/lmod/init/$__ms_shell
