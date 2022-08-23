@@ -136,10 +136,6 @@ sorc/wafs_setmissing.fd
 #------------------------------
 # jobs symlinks
 jobs/JGDAS_ATMOS_GLDAS
-jobs/JGDAS_ATMOS_VERFOZN
-jobs/JGDAS_ATMOS_VERFRAD
-jobs/JGDAS_ATMOS_VMINMON
-jobs/JGFS_ATMOS_VMINMON
 jobs/JGFS_ATMOS_WAFS
 jobs/JGFS_ATMOS_WAFS_BLENDING
 jobs/JGFS_ATMOS_WAFS_BLENDING_0P25
@@ -149,10 +145,6 @@ jobs/JGFS_ATMOS_WAFS_GRIB2_0P25
 # scripts symlinks
 scripts/exemcsfc_global_sfc_prep.sh
 scripts/exgdas_atmos_gldas.sh
-scripts/exgdas_atmos_verfozn.sh
-scripts/exgdas_atmos_verfrad.sh
-scripts/exgdas_atmos_vminmon.sh
-scripts/exgfs_atmos_vminmon.sh
 scripts/exgfs_atmos_wafs_blending.sh
 scripts/exgfs_atmos_wafs_blending_0p25.sh
 scripts/exgfs_atmos_wafs_gcip.sh
@@ -178,17 +170,7 @@ ush/global_chgres.sh
 ush/global_chgres_driver.sh
 ush/global_cycle.sh
 ush/global_cycle_driver.sh
-ush/minmon_xtrct_costs.pl
-ush/minmon_xtrct_gnorms.pl
-ush/minmon_xtrct_reduct.pl
 ush/mkwfsgbl.sh
-ush/ozn_xtrct.sh
-ush/radmon_ck_stdout.sh
-ush/radmon_err_rpt.sh
-ush/radmon_verf_angle.sh
-ush/radmon_verf_bcoef.sh
-ush/radmon_verf_bcor.sh
-ush/radmon_verf_time.sh
 ush/ufsda
 ush/rstprod.sh
 ush/wafs_blending.sh
