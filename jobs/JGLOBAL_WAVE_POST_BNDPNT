@@ -1,9 +1,8 @@
-#!/bin/bash
+#! /usr/bin/env bash
 
-date
+source "$HOMEgfs/ush/preamble.sh"
+
 export RUN_ENVIR=${RUN_ENVIR:-"nco"}
-export PS4=' $SECONDS + '
-set -x -e
 
 #############################
 # Source relevant config files
@@ -68,11 +67,8 @@ export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/$COMPONENT}
 
 mkdir -p $COMOUT/station
 
-env | sort
 
 # Set wave model ID tag to include member number 
-# if ensemble; waveMEMB var empty in deterministic
-# Set wave model ID tag to include member number
 # if ensemble; waveMEMB var empty in deterministic
 membTAG='p'
 if [ "${waveMEMB}" == "00" ]; then membTAG='c'; fi
@@ -91,11 +87,9 @@ export DOBNDPNT_WAV='YES'  #not boundary points
 $HOMEgfs/scripts/exgfs_wave_post_pnt.sh
 err=$?
 if [ $err -ne 0 ]; then
-  msg="FATAL ERROR: ex-script of GWES_POST failed!"
-else
-  msg="$job completed normally!"
+  echo "FATAL ERROR: ex-script of GWES_POST failed!"
+  exit ${err}
 fi
-postmsg "$jlogfile" "$msg"
 
 ##########################################
 # Remove the Temporary working directory
@@ -103,5 +97,5 @@ postmsg "$jlogfile" "$msg"
 cd $DATAROOT
 [[ $KEEPDATA = "NO" ]] && rm -rf $DATA
 
-date
+
 exit 0

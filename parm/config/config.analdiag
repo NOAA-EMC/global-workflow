@@ -1,4 +1,4 @@
-#!/bin/ksh -x
+#! /usr/bin/env bash
 
 ########## config.analdiag ##########
 # GFS post-anal specific (diag)

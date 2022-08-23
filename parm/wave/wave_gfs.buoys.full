@@ -67,7 +67,7 @@ $ Gulf of Alaska (AG) Spectral data (4) near S/SW Alaska Anchorage (8)
   -152.230  59.050 '46079     '   4.9   DAT  NDBC      45
   -152.233  59.049 '46105     '   2.0   DAT  NDBC      45
   -147.992  59.925 '46107     '   2.0   DAT  NDBC      45
-  -165.446  64.489 '46265     '   2.0   DAT  NDBC      45
+  -165.475  64.473 '46265     '   2.0   DAT  NDBC      45
 $AGGA48
 $
 $AGGA47
@@ -117,12 +117,12 @@ $ Eastern Pacific (PZ) spectral data (4) near Pacific states and SBC (6)
   -118.00   32.50  '46086     '   5.0   DAT  NDBC      45
   -125.77   45.88  '46089     '   5.0   DAT  NDBC      45
   -124.74   40.29  '46213     '  999.   DAT  SCRIPPS   25
-  -123.47   37.95  '46214     '  999.   DAT  SCRIPPS   45
+  -123.465  37.9403 '46214    '  999.   DAT  SCRIPPS   45
   -119.80   34.33  '46216     '  999.   DAT  SCRIPPS   15
   -119.43   34.17  '46217     '  999.   DAT  SCRIPPS   15
   -120.78   34.45  '46218     '  999.   DAT  SCRIPPS   25
   -119.88   33.22  '46219     '  999.   DAT  SCRIPPS   45
-  -118.63   33.85  '46221     '  999.   DAT  SCRIPPS   15
+  -118.641 33.8599 '46221     '  999.   DAT  SCRIPPS   15
   -118.32   33.62  '46222     '  999.   DAT  SCRIPPS   15
   -117.77   33.46  '46223     '  999.   DAT  SCRIPPS   15
   -117.47   33.18  '46224     '  999.   DAT  SCRIPPS   15
@@ -130,7 +130,7 @@ $ Eastern Pacific (PZ) spectral data (4) near Pacific states and SBC (6)
   -117.44   32.63  '46227     '  999.   DAT  SCRIPPS   15
   -124.55   43.77  '46229     '  999.   DAT  SCRIPPS   25
   -117.37   32.75  '46231     '  999.   DAT  SCRIPPS   15
-  -117.421  32.530 '46232     '  999.   DAT  SCRIPPS   15
+  -117.425  32.517 '46232     '  999.   DAT  SCRIPPS   15
   -117.75   32.64  'SGX01     '  999.   VBY  NCEP      25
   -118.00   30.00  'TPC50     '  999.   VBY  NCEP     360
   -135.00   20.00  'TPC51     '  999.   VBY  NCEP     360
@@ -161,7 +161,7 @@ $ Eastern Pacific (PZ) spectral data (4) near Pacific states and SBC (6)
   -124.13   46.22  '46243     '  999.   DAT  SCRIPPS   45
   -124.36   40.89  '46244     '  999.   DAT  SCRIPPS   45
   -145.20   50.033 '46246     '  999.   DAT  SCRIPPS   45
-  -124.67   46.13  '46248     '  999.   DAT  SCRIPPS   45
+  -124.644  46.133 '46248     '  999.   DAT  SCRIPPS   45
   -119.200  33.000 '46024     '  10.0   DAT  NDBC      45
   -121.899  36.835 '46091     '   4.0   DAT  NDBC      45
   -122.030  36.750 '46092     '   4.0   DAT  NDBC      45
@@ -169,7 +169,7 @@ $ Eastern Pacific (PZ) spectral data (4) near Pacific states and SBC (6)
   -124.300  44.642 '46094     '   3.0   DAT  NDBC      45
   -124.304  44.639 '46097     '   4.5   DAT  NDBC      45
   -124.956  44.381 '46098     '   4.5   DAT  NDBC      45
-  -122.351  36.723 '46114     ' 999.0   DAT  NDBC      45
+  -122.33   36.685 '46114     ' 999.0   DAT  NDBC      45
   -124.313  40.753 '46212     ' 999.0   DAT  NDBC      45
   -117.353  32.848 '46226     ' 999.0   DAT  NDBC      45
   -117.320  32.936 '46233     '   3.0   DAT  NDBC      45
@@ -178,7 +178,7 @@ $ Eastern Pacific (PZ) spectral data (4) near Pacific states and SBC (6)
   -122.833  37.753 '46247     ' 999.0   DAT  NDBC      45
   -119.708  33.821 '46249     ' 999.0   DAT  NDBC      45
   -119.090  34.034 '46250     ' 999.0   DAT  NDBC      45
-  -119.550  33.760 '46251     ' 999.0   DAT  NDBC      45
+  -119.564  33.769 '46251     ' 999.0   DAT  NDBC      45
   -119.257  33.953 '46252     ' 999.0   DAT  NDBC      45
   -118.181  33.576 '46253     ' 999.0   DAT  NDBC      45
   -117.267  32.868 '46254     ' 999.0   DAT  NDBC      45
@@ -247,9 +247,9 @@ $ Hawaiian waters (HW) spectra (4) in Pacific Ocean and Pacific Isles (0)
   -153.87    0.02  '51028     '   5.0   DAT  NDBC      11
   -158.303  21.096 '51200     ' 999.0   DAT  NDBC      11
   -159.574  22.285 '51208     '  999.   DAT  SCRIPPS   11
-  -170.493 -14.264 '51209     ' 999.0   DAT  NDBC     360
+  -170.5   -14.273 '51209     ' 999.0   DAT  NDBC     360
   -157.756  21.477 '51210     ' 999.0   DAT  NDBC      11
-  -134.667   7.630 '52212     ' 999.0   DAT  NDBC     360
+   134.670   7.692 '52212     ' 999.0   DAT  NDBC     360
   -157.959  21.297 '51211     ' 999.0   DAT  NDBC     360
   -158.150  21.323 '51212     ' 999.0   DAT  NDBC     360
   -157.003  20.750 '51213     ' 999.0   DAT  NDBC     360
@@ -274,7 +274,7 @@ $ Western Pacific (PW) spectra (4) in Pacific Ocean and Pacific Isles (0)
    127.50   34.00  '22103     '   999.  DAT  SKOREA    100
    128.90   34.77  '22104     '   999.  DAT  SKOREA    100
    130.00   37.53  '22105     '   999.  DAT  SKOREA    100
-   171.40    7.09  '52201     '  999.   DAT  SCRIPPS  360
+   171.391  7.038  '52201     '  999.   DAT  SCRIPPS  360
    144.80   13.68  '52202     '  999.   DAT  SCRIPPS  360
    145.66   15.27  '52211     '  999.   DAT  SCRIPPS  360
    145.00   14.70  'SAIPAN_W  '  999.   VBY  NCEP     360
@@ -353,7 +353,7 @@ $ Gulf of Mexico (GX) spectra (4) south from NC and Puerto Rico (2)
    -90.46   27.50  '42041     '   5.0   DAT  NDBC      90
    -92.55   27.42  '42038     '   5.0   DAT  NDBC      90
    -94.05   22.01  '42055     '  10.0   DAT  NDBC     360
-   -84.274  27.345 '42099     ' 999.    DAT  SCRIPPS  100 
+   -84.275  27.348 '42099     ' 999.    DAT  SCRIPPS  100 
    -86.00   23.00  'TPC26     '  999.   VBY  NCEP     360
    -87.55   30.06  '42012     '   5.0   DAT  NDBC      90
    -88.49   28.19  '42887     '  48.2   DAT  BP        90
@@ -441,7 +441,7 @@ $ Western Atlantic (NT) spectra (4) south from NC and Puerto Rico (2)
    -70.99   24.00  '41046     '   5.0   DAT  NDBC      90
    -71.49   27.47  '41047     '  10.0   DAT  NDBC      90
    -69.65   31.98  '41048     '  10.0   DAT  NDBC      90
-   -81.29   30.72  '41112     '  999.   DAT  SCRIPPS   30
+   -81.292  30.709 '41112     '  999.   DAT  SCRIPPS   30
    -80.53   28.40  '41113     '  999.   DAT  SCRIPPS   30
    -80.22   27.55  '41114     '  999.   DAT  SCRIPPS   30
    -74.84   36.61  '44014     '   5.0   DAT  NDBC      90
@@ -518,7 +518,7 @@ $  Western Atlantic (NT) spectra (4) NE states north of VA (1)
    -75.492  36.872 '44093     '  999.   DAT  SCRIPPS   80
    -75.33   35.75  '44095     '  999.   DAT  SCRIPPS   80
    -75.809  37.023 '44096     '  999.   DAT  SCRIPPS   80
-   -71.12   40.98  '44097     '  999.   DAT  SCRIPPS   80
+   -71.126  40.967 '44097     '  999.   DAT  SCRIPPS   80
    -70.17   42.80  '44098     '  999.   DAT  SCRIPPS   80
    -70.141  43.525 '44007     '   5.0   DAT  NDBC      80
    -70.651  42.346 '44013     '   5.0   DAT  NDBC      80
@@ -544,7 +544,7 @@ $  Western Atlantic (NT) spectra (4) NE states north of VA (1)
    -76.266  37.201 '44072     '   3.0   DAT  NDBC      80
    -75.334  37.757 '44089     ' 999.0   DAT  NDBC      80
    -70.329  41.840 '44090     ' 999.0   DAT  NDBC      80
-   -73.769  39.778 '44091     ' 999.0   DAT  NDBC      80
+   -73.77   39.77  '44091     ' 999.0   DAT  NDBC      80
    -70.632  42.942 '44092     ' 999.0   DAT  NDBC      80
    -73.106  40.585 '44094     ' 999.0   DAT  NDBC      80
    -63.408  44.500 '44172     ' 999.0   DAT  NDBC     360

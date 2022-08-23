@@ -1,0 +1,56 @@
+#PBS -S /bin/bash
+#PBS -N enkf%RUN%_diag_%CYC%
+#PBS -j oe
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=00:06:00
+#PBS -l select=1:mpiprocs=48:ompthreads=1:ncpus=48:mem=24GB
+#PBS -l place=vscatter
+#PBS -l debug=true
+
+model=gfs
+%include <head.h>
+%include <envir-p1.h>
+
+set -x
+
+export NET=%NET:gfs%
+export RUN=%RUN%
+export CDUMP=%RUN%
+
+############################################################
+# Load modules
+############################################################
+module load PrgEnv-intel/${PrgEnv_intel_ver}
+module load craype/${craype_ver}
+module load intel/${intel_ver}
+module load cray-mpich/${cray_mpich_ver}
+module load cray-pals/${cray_pals_ver}
+module load cfp/${cfp_ver}
+module load hdf5/${hdf5_ver}
+module load netcdf/${netcdf_ver}
+
+module list
+
+#############################################################
+# environment settings
+#############################################################
+export cyc=%CYC%
+export cycle=t%CYC%z
+export USE_CFP=YES
+
+############################################################
+# CALL executable job script here
+############################################################
+${HOMEgfs}/jobs/JGDAS_ENKF_DIAG
+
+if [ $? -ne 0 ]; then
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+   ecflow_client --abort
+   exit
+fi
+
+%include <tail.h>
+%manual
+
+%end

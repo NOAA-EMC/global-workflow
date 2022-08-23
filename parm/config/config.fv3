@@ -1,4 +1,4 @@
-#!/bin/ksh -x
+#! /usr/bin/env bash
 
 ########## config.fv3 ##########
 # FV3 model resolution specific parameters
@@ -20,11 +20,7 @@ case_in=$1
 echo "BEGIN: config.fv3"
 
 
-if [[ "$machine" = "WCOSS_DELL_P3" ]]; then
-   export npe_node_max=28
-elif [[ "$machine" = "WCOSS_C" ]]; then
-   export npe_node_max=24
-elif [[ "$machine" = "JET" ]]; then
+if [[ "$machine" = "JET" ]]; then
    if [[ "$PARTITION_BATCH" = "xjet" ]]; then
      export npe_node_max=24
    elif [[ "$PARTITION_BATCH" = "vjet" || "$PARTITION_BATCH" = "sjet" ]]; then
@@ -41,7 +37,7 @@ fi
 # (Standard) Model resolution dependent variables
 case $case_in in
     "C48")
-        export DELTIM=1200
+        export DELTIM=450
         export layout_x=3
         export layout_y=2
         export layout_x_gfs=3
@@ -163,7 +159,7 @@ export kchunk3d=1
 # Determine whether to use parallel NetCDF based on resolution
 case $case_in in
   "C48" | "C96" | "C192")
-    export OUTPUT_FILETYPE_ATM="netcdf_parallel"
+    export OUTPUT_FILETYPE_ATM="netcdf"
     export OUTPUT_FILETYPE_SFC="netcdf"
     ;;
   "C384" | "C768" | "C1152" | "C3072")

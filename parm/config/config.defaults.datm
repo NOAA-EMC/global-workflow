@@ -2,8 +2,6 @@
 
 # Empty variables must include a space otherwise they will be overwritten
 
-# config.base
-# CASE=C384
 FHMAX_GFS_00=24
 FHMAX_GFS_06=24
 FHMAX_GFS_12=24
@@ -26,7 +24,6 @@ flux_convergence=0.0
 flux_iteration=2
 flux_scheme=0
 # gefs forcing:
-datm_src=${datm_src:-"gefs"}
 atm_datamode=${atm_datamode:-"GEFS"}
 ATM_NX_GLB=${ATM_NX_GLB:-"1536"}
 ATM_NY_GLB=${ATM_NY_GLB:-"768"}

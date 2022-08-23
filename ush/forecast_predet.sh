@@ -1,4 +1,4 @@
-#!/bin/sh
+#! /usr/bin/env bash
 
 #####
 ## "forecast_def.sh"
@@ -8,13 +8,12 @@
 ## This script is a definition of functions.
 #####
 
-
 # For all non-evironment variables
 # Cycling and forecast hour specific parameters
 common_predet(){
   echo "SUB ${FUNCNAME[0]}: Defining variables for shared through models"
   pwd=$(pwd)
-  machine=${machine:-"WCOSS_C"}
+  machine=${machine:-"WCOSS2"}
   machine=$(echo $machine | tr '[a-z]' '[A-Z]')
   CASE=${CASE:-C768}
   CDATE=${CDATE:-2017032500}
@@ -25,7 +24,6 @@ common_predet(){
 
 DATM_predet(){
   echo "SUB ${FUNCNAME[0]}: Defining variables for datm"
-  #CDUMP=${CDUMP:-gdas}
   CDUMP=${CDUMP:-gfs}
   FHMIN=${FHMIN:-0}
   FHMAX=${FHMAX:-9}
@@ -86,38 +84,15 @@ DATM_predet(){
 
   # Model specific stuff
   FCSTEXECDIR=${FCSTEXECDIR:-$HOMEgfs/sorc/ufs_model.fd/build}
-  FCSTEXEC=${FCSTEXEC:-ufs_model}
+  FCSTEXEC=${FCSTEXEC:-ufs_model.x}
   PARM_FV3DIAG=${PARM_FV3DIAG:-$HOMEgfs/parm/parm_fv3diag}
 
   # Model config options
   APRUN_FV3=${APRUN_FV3:-${APRUN_FCST:-${APRUN:-""}}}
-  #the following NTHREAD_FV3 line is commented out because NTHREAD_FCST is not defined
-  #and because NTHREADS_FV3 gets overwritten by what is in the env/${macine}.env
-  #file and the value of npe_node_fcst is not correctly defined when using more than
-  #one thread and sets NTHREADS_FV3=1 even when the number of threads is appropraitely >1
-  #NTHREADS_FV3=${NTHREADS_FV3:-${NTHREADS_FCST:-${nth_fv3:-1}}}
   cores_per_node=${cores_per_node:-${npe_node_fcst:-40}}
-  #ntiles=${ntiles:-6}
-  if [ $MEMBER -lt 0 ]; then
-    NTASKS_TOT=${NTASKS_TOT:-$npe_fcst_gfs}
-  else
-    NTASKS_TOT=${NTASKS_TOT:-$npe_efcs}
-  fi
+  NTASKS_TOT=${NTASKS_TOT:-$npe_fcst_gfs}
 
   rCDUMP=${rCDUMP:-$CDUMP}
-
-  #------------------------------------------------------------------
-  # setup the runtime environment
-  if [ $machine = "WCOSS_C" ] ; then
-    HUGEPAGES=${HUGEPAGES:-hugepages4M}
-    . $MODULESHOME/init/sh 2>/dev/null
-    module load iobuf craype-$HUGEPAGES 2>/dev/null
-    export MPICH_GNI_COLL_OPT_OFF=${MPICH_GNI_COLL_OPT_OFF:-MPI_Alltoallv}
-    export MKL_CBWR=AVX2
-    export WRTIOBUF=${WRTIOBUF:-"4M"}
-    export NC_BLKSZ=${NC_BLKSZ:-"4M"}
-    export IOBUF_PARAMS="*nemsio:verbose:size=${WRTIOBUF},*:verbose:size=${NC_BLKSZ}"
-  fi
 
   #-------------------------------------------------------
   if [ ! -d $ROTDIR ]; then mkdir -p $ROTDIR; fi
@@ -216,8 +191,8 @@ FV3_GFS_predet(){
   IAU_OFFSET=${IAU_OFFSET:-0}
 
   # Model specific stuff
-  FCSTEXECDIR=${FCSTEXECDIR:-$HOMEgfs/sorc/ufs_model.fd/build}
-  FCSTEXEC=${FCSTEXEC:-ufs_model}
+  FCSTEXECDIR=${FCSTEXECDIR:-$HOMEgfs/exec}
+  FCSTEXEC=${FCSTEXEC:-ufs_model.x}
   PARM_FV3DIAG=${PARM_FV3DIAG:-$HOMEgfs/parm/parm_fv3diag}
   PARM_POST=${PARM_POST:-$HOMEgfs/parm/post}
 
@@ -231,9 +206,9 @@ FV3_GFS_predet(){
   cores_per_node=${cores_per_node:-${npe_node_fcst:-24}}
   ntiles=${ntiles:-6}
   if [ $MEMBER -lt 0 ]; then
-    NTASKS_TOT=${NTASKS_TOT:-$npe_fcst_gfs}
+    NTASKS_TOT=${NTASKS_TOT:-${npe_fcst_gfs:-0}}
   else
-    NTASKS_TOT=${NTASKS_TOT:-$npe_efcs}
+    NTASKS_TOT=${NTASKS_TOT:-${npe_efcs:-0}}
   fi
 
   TYPE=${TYPE:-"nh"}                  # choices:  nh, hydro
@@ -248,19 +223,6 @@ FV3_GFS_predet(){
   [[ "$OUTPUT_FILE" = "netcdf" ]] && affix="nc"
 
   rCDUMP=${rCDUMP:-$CDUMP}
-
-  #------------------------------------------------------------------
-  # setup the runtime environment
-  if [ $machine = "WCOSS_C" ] ; then
-    HUGEPAGES=${HUGEPAGES:-hugepages4M}
-    . $MODULESHOME/init/sh 2>/dev/null
-    module load iobuf craype-$HUGEPAGES 2>/dev/null
-    export MPICH_GNI_COLL_OPT_OFF=${MPICH_GNI_COLL_OPT_OFF:-MPI_Alltoallv}
-    export MKL_CBWR=AVX2
-    export WRTIOBUF=${WRTIOBUF:-"4M"}
-    export NC_BLKSZ=${NC_BLKSZ:-"4M"}
-    export IOBUF_PARAMS="*nemsio:verbose:size=${WRTIOBUF},*:verbose:size=${NC_BLKSZ}"
-  fi
 
   #-------------------------------------------------------
   if [ ! -d $ROTDIR ]; then mkdir -p $ROTDIR; fi

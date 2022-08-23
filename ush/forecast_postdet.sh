@@ -1,4 +1,4 @@
-#!/bin/sh
+#! /usr/bin/env bash
 
 #####
 ## This script defines functions for data I/O and namelist.
@@ -91,7 +91,7 @@ EOF
             exit 1
           fi
           $NLN $increment_file $DATA/INPUT/fv_increment$i.nc
-          IAU_INC_FILES="'fv_increment$i.nc',$IAU_INC_FILES"
+          IAU_INC_FILES="'fv_increment$i.nc',${IAU_INC_FILES:-}"
         done
         read_increment=".false."
         res_latlon_dynamics=""
@@ -203,7 +203,7 @@ EOF
   # Scan suite file to determine whether it uses Noah-MP
   if [ $(grep noahmpdrv ${_suite_file} | wc -l ) -gt 0 ]; then
     lsm="2"
-    lheatstrg=".true."
+    lheatstrg=".false."
     landice=".false."
     iopt_dveg=${iopt_dveg:-"4"}
     iopt_crs=${iopt_crs:-"2"}
@@ -221,7 +221,7 @@ EOF
     IEMS=${IEMS:-2}
   else
     lsm="1"
-    lheatstrg=".false."
+    lheatstrg=".true."
     landice=".true."
     iopt_dveg=${iopt_dveg:-"1"}
     iopt_crs=${iopt_crs:-"1"}
@@ -343,7 +343,7 @@ EOF
   FNTSFC=${FNTSFC:-"$FIX_AM/RTGSST.1982.2012.monthly.clim.grb"}
   FNSNOC=${FNSNOC:-"$FIX_AM/global_snoclim.1.875.grb"}
   FNZORC=${FNZORC:-"igbp"}
-  FNAISC=${FNAISC:-"$FIX_AM/CFSR.SEAICE.1982.2012.monthly.clim.grb"}
+  FNAISC=${FNAISC:-"$FIX_AM/IMS-NIC.blended.ice.monthly.clim.grb"}
   FNALBC2=${FNALBC2:-"${FIX_SFC}/${CASE}.facsf.tileX.nc"}
   FNTG3C=${FNTG3C:-"${FIX_SFC}/${CASE}.substrate_temperature.tileX.nc"}
   FNVEGC=${FNVEGC:-"${FIX_SFC}/${CASE}.vegetation_greenness.tileX.nc"}
@@ -573,6 +573,10 @@ DATM_out() {
   [[ $status -eq 0 ]] && touch $ROTDIR/${CDUMP}.${PDY}/${cyc}/datm/datm.status
 }
 
+data_out_DATM() {
+  echo "SUB ${FUNCNAME[0]}"
+}
+
 data_out_GFS() {
   # data in take for FV3GFS
   # Arguments: None
@@ -636,6 +640,15 @@ WW3_postdet() {
     $NCP $ROTDIR/${CDUMP}.${PDY}/${cyc}/wave/rundata/${COMPONENTwave}.mod_def.$waveGRD $DATA/mod_def.ww3
   fi
 
+
+  #if wave mesh is not the same as the ocn/ice mesh, linkk it in the file
+  comparemesh=${MESH_OCN_ICE:-"mesh.mx${ICERES}.nc"}
+  if [ "$MESH_WAV" = "$comparemesh" ]; then 
+    echo "Wave is on same mesh as ocean/ice"
+  else 
+    $NLN -sf $FIXwave/$MESH_WAV $DATA/
+  fi 
+
   export WAVHCYC=${WAVHCYC:-6}
   export WRDATE=$($NDATE -${WAVHCYC} $CDATE)
   export WRPDY=$(echo $WRDATE | cut -c1-8)
@@ -643,7 +656,7 @@ WW3_postdet() {
   export WRDIR=${ROTDIR}/${CDUMPRSTwave}.${WRPDY}/${WRcyc}/wave/restart
   export RSTDIR_WAVE=$ROTDIR/${CDUMP}.${PDY}/${cyc}/wave/restart
   export datwave=$COMOUTwave/rundata
-  export wavprfx=${CDUMPwave}${WAV_MEMBER}
+  export wavprfx=${CDUMPwave}${WAV_MEMBER:-}
 
   #Copy initial condition files:
   for wavGRD in $waveGRD ; do
@@ -651,13 +664,18 @@ WW3_postdet() {
       if [ $RERUN = "NO" ]; then
         waverstfile=${WRDIR}/${sPDY}.${scyc}0000.restart.${wavGRD}
       else 
-        waverstfile=${RSTDIR_WAVE}/${PDYT}.${cyct}0000.restart.${wavGRD}      
+        waverstfile=${RSTDIR_WAVE}/${PDYT}.${cyct}0000.restart.${wavGRD}
       fi
     else 
       waverstfile=${RSTDIR_WAVE}/${sPDY}.${scyc}0000.restart.${wavGRD}
     fi
     if [ ! -f ${waverstfile} ]; then
-      echo "WARNING: NON-FATAL ERROR wave IC is missing, will start from rest"
+      if [ $RERUN = "NO" ]; then
+        echo "WARNING: NON-FATAL ERROR wave IC is missing, will start from rest"
+      else 
+        echo "ERROR: Wave IC is missing in RERUN, exiting." 
+        exit 1 
+      fi 
     else
       if [ $waveMULTIGRID = ".true." ]; then
         $NLN ${waverstfile} $DATA/restart.${wavGRD}
@@ -779,7 +797,7 @@ MOM6_postdet() {
   $NCP -pf $FIXmom/$OCNRES/* $DATA/INPUT/
 
   # Copy coupled grid_spec
-  if [ $APP = "OCN-ICE" ];then
+  if [ $APP = "NG-GODAS" ];then
     spec_file="$FIXdatm/mom6/${OCNRES}/grid_spec.nc"
   else
     spec_file="$FIX_DIR/fix_cpl/a${CASE}o${OCNRES}/grid_spec.nc"
@@ -820,7 +838,7 @@ MOM6_postdet() {
     if [ $fhr = 'anl' ]; then
       continue
     fi
-    if [ -z $last_fhr ]; then
+    if [ -z ${last_fhr:-} ]; then
       last_fhr=$fhr
       continue
     fi
@@ -997,7 +1015,8 @@ GOCART_rc() {
         cat ${AERO_CONFIG_DIR}/ExtData.${AERO_EMIS_FIRE:-none} ; \
         echo "%%" ; \
       } > $DATA/AERO_ExtData.rc
-      [[ $status -ne 0 ]] && exit $status
+      status=$?
+      if (( status != 0 )); then exit $status; fi
     fi
   fi
 }

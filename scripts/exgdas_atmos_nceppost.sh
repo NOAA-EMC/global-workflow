@@ -1,33 +1,32 @@
+#! /usr/bin/env bash
+
 #####################################################################
-echo "-----------------------------------------------------"
-echo " exgdas_nceppost.sh" 
-echo " Sep 07 - Chuang - Modified script to run unified post"
-echo " July 14 - Carlis - Changed to 0.25 deg grib2 master file"
-echo " Feb 16 - Lin - Modify to use Vertical Structure"
-echo " Aug 17 - Meng - Modify to use 3-digit forecast hour naming"
-echo "                 master and flux files"
-echo " Dec 17 - Meng - Link sfc data file to flxfile "
-echo "                 since fv3gfs does not output sfc files any more."
-echo " Dec 17 - Meng - Add fv3gfs_downstream_nems.sh for pgb processing "
-echo "                 and remove writing data file to /nwges"
-echo " Jan 18 - Meng - For EE2 standard, move IDRT POSTGPVARS setting"
-echo "                 from j-job script."
-echo " Feb 18 - Meng - Removed legacy setting for generating grib1 data"
-echo "                 and reading sigio model outputs."
-echo " Aug 20 - Meng - Remove .ecf extentsion per EE2 review."
-echo " Sep 20 - Meng - Update clean up files per EE2 review."
-echo " Mar 21 - Meng - Update POSTGRB2TBL default setting."
-echo " Oct 21 - Meng - Remove jlogfile for wcoss2 transition."
-echo " Feb 22 - Lin - Exception handling if anl input not found."
-echo "-----------------------------------------------------"
+# echo "-----------------------------------------------------"
+# echo " exgdas_nceppost.sh" 
+# echo " Sep 07 - Chuang - Modified script to run unified post"
+# echo " July 14 - Carlis - Changed to 0.25 deg grib2 master file"
+# echo " Feb 16 - Lin - Modify to use Vertical Structure"
+# echo " Aug 17 - Meng - Modify to use 3-digit forecast hour naming"
+# echo "                 master and flux files"
+# echo " Dec 17 - Meng - Link sfc data file to flxfile "
+# echo "                 since fv3gfs does not output sfc files any more."
+# echo " Dec 17 - Meng - Add fv3gfs_downstream_nems.sh for pgb processing "
+# echo "                 and remove writing data file to /nwges"
+# echo " Jan 18 - Meng - For EE2 standard, move IDRT POSTGPVARS setting"
+# echo "                 from j-job script."
+# echo " Feb 18 - Meng - Removed legacy setting for generating grib1 data"
+# echo "                 and reading sigio model outputs."
+# echo " Aug 20 - Meng - Remove .ecf extentsion per EE2 review."
+# echo " Sep 20 - Meng - Update clean up files per EE2 review."
+# echo " Mar 21 - Meng - Update POSTGRB2TBL default setting."
+# echo " Oct 21 - Meng - Remove jlogfile for wcoss2 transition."
+# echo " Feb 22 - Lin - Exception handling if anl input not found."
+# echo "-----------------------------------------------------"
 #####################################################################
 
-set -x
+source "$HOMEgfs/ush/preamble.sh"
 
 cd $DATA
-
-msg="HAS BEGUN on $(hostname)"
-postmsg "$msg"
 
 export POSTGPSH=${POSTGPSH:-$USHgfs/gfs_nceppost.sh}
 export GFSDOWNSH=${GFSDOWNSH:-$USHgfs/fv3gfs_downstream_nems.sh}
@@ -62,7 +61,7 @@ if [ $OUTTYP -eq 4 ] ; then
 else
   export SUFFIX=
 fi
-export machine=${machine:-WCOSS_C}
+export machine=${machine:-WCOSS2}
 
 ###########################
 # Specify Output layers
@@ -97,7 +96,7 @@ if [ ${stime} = "anl" ]; then
 
     export OUTTYP=${OUTTYP:-4}
 
-    # specify output file name from chgres which is input file name to nceppost 
+    # specify output file name from chgres which is input file name to nceppost
     # if model already runs gfs io, make sure GFSOUT is linked to the gfsio file
     # new imported variable for global_nceppost.sh
 
@@ -108,7 +107,7 @@ if [ ${stime} = "anl" ]; then
 
     if [ $GRIBVERSION = 'grib2' ]; then
       export POSTGRB2TBL=${POSTGRB2TBL:-${g2tmpl_ROOT}/share/params_grib2_tbl_new}
-      export PostFlatFile=${PostFlatFile:-$PARMpost/postxconfig-NT-GFS-ANL.txt} 
+      export PostFlatFile=${PostFlatFile:-$PARMpost/postxconfig-NT-GFS-ANL.txt}
       export CTLFILE=$PARMpost/postcntrl_gfs_anl.xml
     fi
 
@@ -124,9 +123,9 @@ if [ ${stime} = "anl" ]; then
     export PGBOUT2=pgbfile.grib2
     export PGIOUT2=pgifile.grib2.idx
     export IGEN=$IGEN_ANL
-    export FILTER=0  
+    export FILTER=0
 
-    # specify fhr even for analysis because postgp uses it    
+    # specify fhr even for analysis because postgp uses it
     #  export fhr=00
 
     $POSTGPSH
@@ -166,7 +165,7 @@ if [ ${stime} = "anl" ]; then
         fi
       fi
     fi
-    rm pgbfile.grib2 
+    rm pgbfile.grib2
   else
     #### atmanl file not found need failing job
     echo " *** FATAL ERROR: No model anl file output "
@@ -177,15 +176,14 @@ else   ## not_anl if_stimes
   SLEEP_LOOP_MAX=$(expr $SLEEP_TIME / $SLEEP_INT)
 
   ############################################################
-  # Loop Through the Post Forecast Files 
+  # Loop Through the Post Forecast Files
   ############################################################
 
   for fhr in $post_times; do
     ###############################
-    # Start Looping for the 
+    # Start Looping for the
     # existence of the restart files
     ###############################
-    set -x
     export pgm="postcheck"
     ic=1
     while [ $ic -le $SLEEP_LOOP_MAX ]; do
@@ -197,7 +195,7 @@ else   ## not_anl if_stimes
       fi
       ###############################
       # If we reach this point assume
-      # fcst job never reached restart 
+      # fcst job never reached restart
       # period and error exit
       ###############################
       if [ $ic -eq $SLEEP_LOOP_MAX ]; then
@@ -206,13 +204,9 @@ else   ## not_anl if_stimes
         err_chk
       fi
     done
-    set -x
-
-    msg="Starting post for fhr=$fhr"
-    postmsg "$msg"
 
     ###############################
-    # Put restart files into /nwges 
+    # Put restart files into /nwges
     # for backup to start Model Fcst
     ###############################
     [[ -f flxfile ]] && rm flxfile
@@ -258,7 +252,7 @@ else   ## not_anl if_stimes
         fi
       else
         if [ $fhr -eq 0 ]; then
-          export PostFlatFile=$PARMpost/postxconfig-NT-GFS-F00.txt 
+          export PostFlatFile=$PARMpost/postxconfig-NT-GFS-F00.txt
           export CTLFILE=${CTLFILEGFS:-$PARMpost/postcntrl_gfs_f00.xml}
         else
           export CTLFILE=${CTLFILEGFS:-$PARMpost/postcntrl_gfs.xml}
@@ -306,11 +300,11 @@ else   ## not_anl if_stimes
 
     if [ $SENDCOM = 'YES' ]; then
       if [ $GRIBVERSION = 'grib2' ] ; then
-        if [ $INLINE_POST = ".false." ]; then 
+        if [ $INLINE_POST = ".false." ]; then
           cp $PGBOUT2 $COMOUT/${MASTERFHR}
         fi
         $GRB2INDEX $PGBOUT2 $COMOUT/${MASTERFHRIDX}
-      fi 
+      fi
 
       # Model generated flux files will be in nemsio after FY17 upgrade
       # use post to generate Grib2 flux files
@@ -344,16 +338,12 @@ else   ## not_anl if_stimes
         $DBNROOT/bin/dbn_alert MODEL ${run}_SGB_GB2 $job $COMOUT/${PREFIX}sfluxgrbf${fhr}.grib2
         $DBNROOT/bin/dbn_alert MODEL ${run}_SGB_GB2_WIDX $job $COMOUT/${PREFIX}sfluxgrbf${fhr}.grib2.idx
       fi
-    fi 
+    fi
 
     [[ -f pgbfile.grib2 ]] && rm pgbfile.grib2
     [[ -f flxfile ]] && rm flxfile
   done
 fi   ## end_if_times
-
-#cat $pgmout
-#msg='ENDED NORMALLY.'
-#postmsg "$jlogfile" "$msg"
 
 exit 0
 

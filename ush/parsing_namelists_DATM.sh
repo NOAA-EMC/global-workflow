@@ -31,7 +31,7 @@ stream_offset01:           0
 yearFirst01:               $SYEAR
 yearLast01:                $SYEAR
 yearAlign01:               $SYEAR
-stream_vectors01:          "u:v"
+stream_vectors01:          "Sa_u:Sa_v"
 stream_mesh_file01:        DATM_INPUT/${MESH_ATM}
 stream_lev_dimname01:      null
 stream_data_files01:       DATM_INPUT/${datm_src}.${SYEAR}${SMONTH}.nc

@@ -1,4 +1,4 @@
-#!/bin/ksh -x
+#! /usr/bin/env bash
 
 ########## config.fcst ##########
 # Forecast specific
@@ -33,8 +33,9 @@ if [ $DONST = "YES" ]; then
     . $EXPDIR/config.nsst
 fi
 
-export print_esmf=".false."
 export esmf_profile=".false."
+export esmf_logkind="ESMF_LOGKIND_MULTI_ON_ERROR" #Options: ESMF_LOGKIND_MULTI_ON_ERROR, ESMF_LOGKIND_MULTI, ESMF_LOGKIND_NONE
+
 
 #######################################################################
 # COUPLING COMPONENTS
@@ -82,7 +83,7 @@ export use_coldstart=".false."
 
 export FORECASTSH="$HOMEgfs/scripts/exglobal_forecast.sh"
 export FCSTEXECDIR="$HOMEgfs/exec"
-export FCSTEXEC="ufs_model"
+export FCSTEXEC="ufs_model.x"
 
 #######################################################################
 # Model configuration
@@ -124,7 +125,7 @@ if [ $gwd_opt -eq 2 ]; then
     #export  do_gsl_drag_tofd=".true."
     #export  do_ugwp_v1_orog_only=".false."
   
-    #--used for UFS p8b 
+    #--used for UFS p8 
     export knob_ugwp_version=0
     export do_ugwp=".false."
     export do_tofd=".false."
@@ -134,7 +135,7 @@ if [ $gwd_opt -eq 2 ]; then
     export do_ugwp_v0_nst_only=".false."
     export do_gsl_drag_ls_bl=".false."
     export do_gsl_drag_ss=".true."
-    export do_gsl_drag_tofd=".true."
+    export do_gsl_drag_tofd=".false."
     export do_ugwp_v1_orog_only=".false."
     export launch_level=$(echo "$LEVS/2.35" |bc)
 fi
@@ -211,6 +212,7 @@ elif [ $imp_physics -eq 8 ]; then # Thompson
     export ttendlim="-999"
     export dt_inner=$((DELTIM/2))
     export sedi_semi=.true.
+    if [ $sedi_semi = .true. ]; then export dt_inner=$DELTIM ; fi
     export decfl=10
 
     export hord_mt_nh_nonmono=5
@@ -255,6 +257,9 @@ export DO_OCN_PERT_EPBL=${DO_OCN_PERT_EPBL:-"NO"}
 #coupling settings
 export FRAC_GRID=".true."
 export cplmode="nems_frac"
+if [ $FRAC_GRID = ".false." ]; then
+  export cplmode="nems_orig"
+fi
 export psm_bc="1"
 
 export min_lakeice="0.15"

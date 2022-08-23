@@ -1,4 +1,4 @@
-#!/bin/ksh -x
+#! /usr/bin/env bash
 
 ########## config.base ##########
 # Common to all steps
@@ -6,7 +6,7 @@
 echo "BEGIN: config.base"
 
 # Machine environment
-export machine="WCOSS_DELL_P3"
+export machine="WCOSS2"
 
 # EMC parallel or NCO production
 export RUN_ENVIR="nco"
@@ -161,7 +161,7 @@ export FHMAX_HF_GFS=120
 export FHOUT_HF_GFS=1
 export ILPOST=1           # gempak output frequency up to F120
 
-# frequency for saving restart files. set to 6,12,24,48 etc 
+# frequency for saving restart files. set to 6,12,24,48 etc
 export restart_interval_gfs=12
 
 # I/O QUILTING, true--use Write Component; false--use GFDL FMS
@@ -194,10 +194,6 @@ export IAU_OFFSET=6
 export DOIAU_ENKF=${DOIAU:-"YES"}   # Enable 4DIAU for EnKF ensemble
 export IAUFHRS_ENKF="3,6,9"
 export IAU_DELTHRS_ENKF=6
-if [[ "$SDATE" = "$CDATE" ]]; then
-  export IAU_OFFSET=0
-  export IAU_FHROT=0
-fi
 
 # Use Jacobians in eupd and thereby remove need to run eomg
 export lobsdiag_forenkf=".true."
@@ -209,11 +205,16 @@ export gldas_cyc=00
 # run wave component
 export DO_WAVE=YES
 export WAVE_CDUMP="both"
+export DOBNDPNT_WAVE="YES"
 
 # Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL
 export imp_physics=8
 
 # Shared parameters
+# DA engine
+export DO_JEDIVAR="NO"
+export DO_JEDIENS="NO"
+
 # Hybrid related
 export DOHYBVAR="YES"
 export NMEM_ENKF="80"
