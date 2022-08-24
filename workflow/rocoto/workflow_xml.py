@@ -113,7 +113,7 @@ class RocotoXML:
         sdate = self._base['SDATE'].strftime('%Y%m%d%H%M')
         edate = self._base['EDATE'].strftime('%Y%m%d%H%M')
         interval = self._base.get('INTERVAL', '06:00:00')
-        strings = [f'\t<cycledef group="gdas" >{sdate} {edate} {interval}</cycledef>']
+        strings = [f'\t<cycledef group="gdas" >{sdate} {edate} {interval}</cycledef>\n']
 
         if self._app_config.gfs_cyc != 0:
             sdate_gfs = self._base['SDATE_GFS'].strftime('%Y%m%d%H%M')
