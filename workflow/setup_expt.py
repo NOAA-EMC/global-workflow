@@ -229,7 +229,7 @@ def input_args():
     cycled.add_argument('--nens', help='number of ensemble members',
                         type=int, required=False, default=20)
     cycled.add_argument('--app', help='UFS application', type=str,
-                        choices=['ATM', 'ATMW'], required=False, default='ATM')
+                        choices=['ATM', 'ATMW', 'ATMA'], required=False, default='ATM')
 
     # forecast only mode additional arguments
     forecasts.add_argument('--app', help='UFS application', type=str, choices=[
