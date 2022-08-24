@@ -17,6 +17,7 @@ class Tasks:
                    'eobs', 'eomg', 'epos', 'esfc', 'eupd',
                    'eupdfsoi','ecenfsoi','esfcfsoi','efcsfsoi','eposfsoi','efsoi'
                    'atmensanalprep', 'atmensanalrun', 'atmensanalpost',
+                   'aeroanlinit', 'aeroanlrun', 'aeroanlfinal',
                    'fcst', 'post', 'ocnpost', 'vrfy', 'metp',
                    'postsnd', 'awips', 'gempak',
                    'wafs', 'wafsblending', 'wafsblending0p25',
@@ -451,6 +452,54 @@ class Tasks:
 
         return task
 
+    def aeroanlinit(self):
+
+        suffix = self._base["SUFFIX"]
+        dump_suffix = self._base["DUMP_SUFFIX"]
+        gfs_cyc = self._base["gfs_cyc"]
+        dmpdir = self._base["DMPDIR"]
+
+        deps = []
+        dep_dict = {'type': 'metatask', 'name': 'gdaspost', 'offset': '-06:00:00'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        data = f'&ROTDIR;/gdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmf009{suffix}'
+        dep_dict = {'type': 'data', 'data': data, 'offset': '-06:00:00'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        data = f'{dmpdir}/{self.cdump}{dump_suffix}.@Y@m@d/@H/{self.cdump}.t@Hz.updated.status.tm00.bufr_d'
+        dep_dict = {'type': 'data', 'data': data}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+        resources = self.get_resource('aeroanlinit')
+        task = create_wf_task('aeroanlinit', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+        return task
+
+    def aeroanlrun(self):
+
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}aeroanlinit'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('aeroanlrun')
+        task = create_wf_task('aeroanlrun', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
+    def aeroanlfinal(self):
+
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}aeroanlrun'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'cycleexist', 'offset': '-06:00:00'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+        resources = self.get_resource('aeroanlfinal')
+        task = create_wf_task('aeroanlfinal', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
     def gldas(self):
 
         deps = []
@@ -471,7 +520,7 @@ class Tasks:
                     'cycled': self._fcst_cycled}
 
         try:
-            task = fcst_map[self.app_config.mode]
+            task = fcst_map[self.app_config.mode]()
         except KeyError:
             raise NotImplementedError(f'{self.app_config.mode} is not a valid type.\n' +
                                       'Currently supported forecast types are:\n' +
@@ -479,7 +528,6 @@ class Tasks:
 
         return task
 
-    @property
     def _fcst_forecast_only(self):
         dependencies = []
 
@@ -532,7 +580,6 @@ class Tasks:
 
         return task
 
-    @property
     def _fcst_cycled(self):
 
         dep_dict = {'type': 'task', 'name': f'{self.cdump}sfcanl'}
