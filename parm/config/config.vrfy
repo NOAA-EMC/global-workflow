@@ -116,7 +116,7 @@ if [ $VRFYRAD = "YES" -o $VRFYMINMON = "YES" -o $VRFYOZN = "YES" ]; then
     if [[ "$VRFYMINMON" = "YES" ]] ; then
 
         export MINMON_SUFFIX=$PSLOT
-        export M_TANKverf="$NOSCRUB/monitor/minmon"
+        export TANKverf_min="$NOSCRUB/monitor/minmon"
         if [[ "$CDUMP" = "gdas" ]] ; then
             export VRFYMINSH="$HOMEgfs/jobs/JGDAS_ATMOS_VMINMON"
         elif [[ "$CDUMP" = "gfs" ]] ; then
