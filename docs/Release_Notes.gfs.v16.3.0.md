@@ -59,6 +59,8 @@ Grid-point Statistics Interpolation (GSI) Analysis - Enhance the use of observat
   * MetOp-C: GOME
   * GOES-18: ABI
 
+This upgrade addresses the following bugzillas: 216, 1196, 1198, 1205, 1206, 1210, 1212, 1214, 1216, 1218, 1221, 1222
+
 IMPLEMENTATION INSTRUCTIONS
 ---------------------------
 
