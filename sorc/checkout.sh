@@ -106,7 +106,7 @@ CHECKOUT_GSI="NO"
 CHECKOUT_GDAS="NO"
 checkout_gtg="NO"
 checkout_wafs="NO"
-ufs_model_hash="b97375c"
+ufs_model_hash="Prototype-P8"
 
 # Parse command line arguments
 while getopts ":chgum:o" option; do
