@@ -225,7 +225,7 @@ if [ $CDUMP = "gfs" ]; then
     # Aerosols
     if [ $DO_AERO = "YES" ]; then
         for targrp in chem; do
-            htar -P -cvf $ATARDIR/$CDATE/${targrp}.tar $(cat $ARCH_LIST/${targrp}.txt)
+            $TARCMD -P -cvf $ATARDIR/$CDATE/${targrp}.tar $(cat $ARCH_LIST/${targrp}.txt)
             status=$?
             if [ $status -ne 0 -a $CDATE -ge $firstday ]; then
                 echo "HTAR $CDATE ${targrp}.tar failed"
