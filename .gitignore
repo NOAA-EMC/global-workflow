@@ -172,7 +172,6 @@ ush/global_cycle.sh
 ush/global_cycle_driver.sh
 ush/mkwfsgbl.sh
 ush/ufsda
-ush/rstprod.sh
 ush/wafs_blending.sh
 ush/wafs_grib2.regrid.sh
 ush/wafs_intdsk.sh

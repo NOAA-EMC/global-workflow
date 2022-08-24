@@ -129,7 +129,7 @@ if [[ $ENSGRP -gt 0 ]] && [[ $HPSSARCH = "YES" || $LOCALARCH = "YES" ]]; then
      fi
 
      if [ $DO_EFSOI = "YES" ]; then
-       htar -P -cvf $ATARDIR/$CDATE/efsoi${CDUMP}_grp${ENSGRP}.tar `cat $ARCH_LIST/efsoi${CDUMP}_grp${n}.txt`
+       $TARCMD -P -cvf $ATARDIR/$CDATE/efsoi${CDUMP}_grp${ENSGRP}.tar $(cat $ARCH_LIST/efsoi${CDUMP}_grp${n}.txt)
        status=$?
        if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
            echo "HTAR $CDATE efsoi${CDUMP}_grp${ENSGRP}.tar failed"
@@ -137,7 +137,7 @@ if [[ $ENSGRP -gt 0 ]] && [[ $HPSSARCH = "YES" || $LOCALARCH = "YES" ]]; then
        fi
   
        if [ $SAVEWARMICA = "YES" -a $cyc -eq $EARCINC_CYC ]; then
-         htar -P -cvf $ATARDIR/$CDATE/efsoi${CDUMP}_restarta_grp${ENSGRP}.tar `cat $ARCH_LIST/efsoi${CDUMP}_restarta_grp${n}.txt`
+         $TARCMD -P -cvf $ATARDIR/$CDATE/efsoi${CDUMP}_restarta_grp${ENSGRP}.tar $(cat $ARCH_LIST/efsoi${CDUMP}_restarta_grp${n}.txt)
          status=$?
          if [ $status -ne 0 ]; then
              echo "HTAR $CDATE efsoi${CDUMP}_restarta_grp${ENSGRP}.tar failed"
@@ -146,7 +146,7 @@ if [[ $ENSGRP -gt 0 ]] && [[ $HPSSARCH = "YES" || $LOCALARCH = "YES" ]]; then
        fi
   
        if [ $SAVEWARMICB = "YES"  -a $cyc -eq $EARCICS_CYC ]; then
-         htar -P -cvf $ATARDIR/$CDATE/efsoi${CDUMP}_restartb_grp${ENSGRP}.tar `cat $ARCH_LIST/efsoi${CDUMP}_restartb_grp${n}.txt`
+         $TARCMD -P -cvf $ATARDIR/$CDATE/efsoi${CDUMP}_restartb_grp${ENSGRP}.tar $(cat $ARCH_LIST/efsoi${CDUMP}_restartb_grp${n}.txt)
          status=$?
          if [ $status -ne 0 ]; then
              echo "HTAR $CDATE efsoi${CDUMP}_restartb_grp${ENSGRP}.tar failed"
@@ -182,7 +182,7 @@ if [ $ENSGRP -eq 0 ]; then
         fi
 
         if [ $DO_EFSOI = "YES" ]; then
-           htar -P -cvf $ATARDIR/$CDATE/efsoi${CDUMP}.tar `cat $ARCH_LIST/efsoi${CDUMP}.txt`
+           $TARCMD -P -cvf $ATARDIR/$CDATE/efsoi${CDUMP}.tar $(cat $ARCH_LIST/efsoi${CDUMP}.txt)
            status=$?
            if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
                echo "HTAR $CDATE efsoi${CDUMP}.tar failed"
@@ -260,7 +260,7 @@ if [ $ENSGRP -eq 0 ]; then
                 rm -rf $COMIN_ENS/*f018*nc
                 for imem in $(seq 1 $NMEM_ENKF); do
                     memchar="mem"$(printf %03i $imem)
-                    for file in `ls $COMIN_ENS/$memchar |grep -v atmf024`; do
+                    for file in $(ls $COMIN_ENS/$memchar |grep -v atmf024); do
                        rm -rf $COMIN_ENS/$memchar/$file
                     done
                 done

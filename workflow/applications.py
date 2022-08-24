@@ -195,7 +195,7 @@ class AppConfig:
             configs += ['ecen', 'esfc', 'efcs', 'echgres', 'epos', 'earc']
 
         if self.do_efsoi:
-            configs += ['eupdfsoi','ecenfsoi','esfcfsoi','efcsfsoi','eposfsoi','efsoi']
+            configs += ['eupdfsoi', 'ecenfsoi', 'esfcfsoi', 'efcsfsoi', 'eposfsoi', 'efsoi']
 
         if self.do_metp:
             configs += ['metp']
@@ -361,7 +361,7 @@ class AppConfig:
             gdas_gfs_common_tasks_before_fcst += ['aeroanlinit', 'aeroanlrun', 'aeroanlfinal']
 
         gldas_tasks = ['gldas']
-        efsoi_tasks = ['eupdfsoi','ecenfsoi','esfcfsoi','efcsfsoi','eposfsoi','efsoi']
+        efsoi_tasks = ['eupdfsoi', 'ecenfsoi', 'esfcfsoi', 'efcsfsoi', 'eposfsoi', 'efsoi']
         wave_prep_tasks = ['waveinit', 'waveprep']
         wave_bndpnt_tasks = ['wavepostbndpnt', 'wavepostbndpntbll']
         wave_post_tasks = ['wavepostsbs', 'wavepostpnt']

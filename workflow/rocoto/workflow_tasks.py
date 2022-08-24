@@ -15,7 +15,7 @@ class Tasks:
                    'atmanalprep', 'atmanalrun', 'atmanalpost',
                    'earc', 'ecen', 'echgres', 'ediag', 'efcs',
                    'eobs', 'eomg', 'epos', 'esfc', 'eupd',
-                   'eupdfsoi','ecenfsoi','esfcfsoi','efcsfsoi','eposfsoi','efsoi'
+                   'eupdfsoi', 'ecenfsoi', 'esfcfsoi', 'efcsfsoi', 'eposfsoi', 'efsoi'
                    'atmensanalprep', 'atmensanalrun', 'atmensanalpost',
                    'aeroanlinit', 'aeroanlrun', 'aeroanlfinal',
                    'fcst', 'post', 'ocnpost', 'vrfy', 'metp',

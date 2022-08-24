@@ -1,4 +1,4 @@
-#!/bin/ksh -x
+#! /usr/bin/env bash
 
 ########## config.eposfsoi ##########
 # Ensemble post processing specific
