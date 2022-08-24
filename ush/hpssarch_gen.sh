@@ -596,7 +596,6 @@ if [ $type = "efsoigdas" ]; then
   NTARS=$((NMEM_ENKF/NMEM_EARCGRP))
   [[ $NTARS -eq 0 ]] && NTARS=1
   [[ $((NTARS*NMEM_EARCGRP)) -lt $NMEM_ENKF ]] && NTARS=$((NTARS+1))
-##NTARS2=$((NTARS/2))  # number of earc groups to include analysis/increments
   NTARS2=$NTARS
 
   dirpath="efsoi${CDUMP}.${PDY}/${cyc}/atmos/"
@@ -619,8 +618,7 @@ if [ $type = "efsoigdas" ]; then
   if [ -s $ROTDIR/${dirpath}${head}radstat.ensmean ]; then
        echo  "${dirname}${head}radstat.ensmean       " >>efsoi${CDUMP}.txt
   fi
-  for FH in $nfhrs; do  # loop over analysis times in window
-     FHR=$(printf %03i $FH)
+  for FHR in $nfhrs; do  # loop over analysis times in window
      if [ $FHR -eq 6 ]; then
         if [ -s $ROTDIR/${dirpath}${head}atmanl.ensmean${SUFFIX} ]; then
             echo  "${dirname}${head}atmanl.ensmean${SUFFIX}      " >>efsoi${CDUMP}.txt
@@ -677,8 +675,7 @@ if [ $type = "efsoigdas" ]; then
         head="${CDUMP}.t${cyc}z."
     
         #---
-        for FH in $nfhrs; do  # loop over analysis times in window
-           FHR=$(printf %03i $FH)
+        for FHR in $nfhrs; do  # loop over analysis times in window
            if [ $FHR -eq 6 ]; then
               if [ $n -le $NTARS2 ]; then
                  if [ -s $ROTDIR/${dirpath}${head}atmanl${SUFFIX} ] ; then
@@ -750,7 +747,7 @@ if [ $type = "efsoigdas" ]; then
 
 
 #-----------------------------------------------------
-fi   ##end of efsoigdas 
+fi   ##end of e:fsoigdas 
 #-----------------------------------------------------
 
 
