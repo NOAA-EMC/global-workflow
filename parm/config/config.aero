@@ -14,7 +14,7 @@ case $machine in
     AERO_INPUTS_DIR="/work2/noaa/global/wkolczyn/noscrub/global-workflow/gocart_emissions"
     ;;
   "S4")
-    AERO_INPUTS_DIR="/data/prod/glopara/coupled_ICs/gocart_emissions"
+    AERO_INPUTS_DIR="/data/prod/glopara/gocart_emissions"
     ;;
   *)
     echo "FATAL ERROR: Machine $machine unsupported for aerosols"
