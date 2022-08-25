@@ -19,7 +19,7 @@
 #
 #######
 set +x
-if [[ -v '1' ]]; then
+if (( $# > 0 )); then
 	id="(${1})"
 else
 	id=""
