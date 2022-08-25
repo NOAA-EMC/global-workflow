@@ -294,8 +294,8 @@ elif [ ${OUTTYP} -eq 4 ] ; then
 
 	export MODEL_OUT_FORM=${MODEL_OUT_FORM:-binarynemsiompiio}
 	export GFSOUT=${NEMSINP}
-	ln -sf $FIXglobal/fix_am/global_lonsperlat.t${JCAP}.${LONB}.${LATB}.txt  ./lonsperlat.dat 
-	ln -sf $FIXglobal/fix_am/global_hyblev.l${LEVS}.txt                      ./global_hyblev.txt
+	ln -sf $FIXglobal/am/global_lonsperlat.t${JCAP}.${LONB}.${LATB}.txt  ./lonsperlat.dat 
+	ln -sf $FIXglobal/am/global_hyblev.l${LEVS}.txt                      ./global_hyblev.txt
 fi
 
 # allow threads to use threading in Jim's sp lib

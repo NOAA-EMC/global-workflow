@@ -76,7 +76,7 @@ HOMENHCp1=${HOMENHCp1:-/gpfs/?p1/nhc/save/guidance/storm-data/ncep}
 HOMENHC=${HOMENHC:-/gpfs/dell2/nhc/save/guidance/storm-data/ncep}
 TANK_TROPCY=${TANK_TROPCY:-${DCOMROOT}/us007003}
 
-FIXSYND=${FIXSYND:-$HOMEgfs/fix/fix_am}
+FIXSYND=${FIXSYND:-$HOMEgfs/fix/am}
 USHSYND=${USHSYND:-$HOMEgfs/ush}
 EXECSYND=${EXECSYND:-$HOMEgfs/exec}
 PARMSYND=${PARMSYND:-$HOMEgfs/parm/relo}

@@ -15,7 +15,7 @@ pwd=$(pwd)
 export DATA=${DATA:-$pwd}
 export HOMEgfs=${HOMEgfs:-$PACKAGEROOT}
 export FIX_DIR=${FIX_DIR:-$HOMEgfs/fix}
-export FIXfv3=${FIXfv3:-$FIX_DIR/fix_fv3_gmted2010}
+export FIXfv3=${FIXfv3:-$FIX_DIR/orog}
 export REMAPEXE=${REMAPEXE:-$HOMEgfs/exec/fregrid_parallel}
 export IPD4=${IPD4:-"YES"}
 
