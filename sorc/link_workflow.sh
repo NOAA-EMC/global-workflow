@@ -34,14 +34,18 @@ $LINK ufs_model.fd/FV3/upp upp.fd
 #------------------------------
 #--model fix fields
 #------------------------------
+
+# Source fix version file
+. ${pwd}/../versions/fix.ver
+
 if [ $machine = "wcoss2" ]; then
-    FIX_DIR="/lfs/h2/emc/global/noscrub/emc.global/FIX/fix_NEW"
+    FIX_DIR="/lfs/h2/emc/global/noscrub/emc.global/FIX/fix"
 elif [ $machine = "hera" ]; then
-    FIX_DIR="/scratch1/NCEPDEV/global/glopara/fix_NEW"
+    FIX_DIR="/scratch1/NCEPDEV/global/glopara/fix"
 elif [ $machine = "orion" ]; then
-    FIX_DIR="/work/noaa/global/glopara/fix_NEW"
+    FIX_DIR="/work/noaa/global/glopara/fix"
 elif [ $machine = "jet" ]; then
-    FIX_DIR="/lfs4/HFIP/hfv3gfs/glopara/git/fv3gfs/fix_NEW"
+    FIX_DIR="/lfs4/HFIP/hfv3gfs/glopara/git/fv3gfs/fix"
 elif [ $machine = "stampede" ]; then
     FIX_DIR="/work/07738/jkuang/stampede2/tempFixICdir/fix_UFSp6"
 fi
@@ -50,28 +54,28 @@ if [ ! -z $FIX_DIR ]; then
  if [ ! -d ${pwd}/../fix ]; then mkdir ${pwd}/../fix; fi
 fi
 cd ${pwd}/../fix                ||exit 8
-for dir in fix_aer \
-            fix_am \
-            fix_chem \
-            fix_fv3_gmted2010 \
-            fix_gldas \
-            fix_lut \
-            fix_fv3_fracoro \
-            fix_orog \
-            fix_sfc_climo \
-            fix_verif \
-            fix_cice \
-            fix_mom6 \
-            fix_cpl \
-            fix_wave \
-            fix_reg2grb2 \
-            fix_ugwd
+for dir in aer \
+            am \
+            chem \
+            cice \
+            cpl \
+            datm \
+            gldas \
+            lut \
+            mom6 \
+            orog \
+            reg2grb2 \
+            sfc_climo \
+            ugwd \
+            verif \
+            wave
             do
     if [ -d $dir ]; then
       [[ $RUN_ENVIR = nco ]] && chmod -R 755 $dir
       rm -rf $dir
     fi
-    $LINK $FIX_DIR/$dir .
+    fix_ver="${dir}_ver"
+    $LINK $FIX_DIR/$dir/${!fix_ver} ${dir}
 done
 
 if [ -d ${pwd}/ufs_utils.fd ]; then
@@ -133,8 +137,8 @@ fi
 #------------------------------
 if [ -d ../sorc/gsi_enkf.fd ]; then
   cd ${pwd}/../fix                ||exit 8
-    [[ -d fix_gsi ]] && rm -rf fix_gsi
-    $LINK ../sorc/gsi_enkf.fd/fix  fix_gsi
+    [[ -d gsi ]] && rm -rf gsi
+    $LINK ../sorc/gsi_enkf.fd/fix  gsi
 fi
 
 #------------------------------
@@ -142,8 +146,13 @@ fi
 #------------------------------
 if [ -d ../sorc/gdas.cd ]; then
   cd ${pwd}/../fix                ||exit 8
-    [[ -d fix_gdas ]] && rm -rf fix_gdas
-    $LINK $FIX_DIR/fix_gdas .
+    [[ ! -d gdas ]] && mkdir -p gdas
+    cd gdas
+    for gdas_sub in bump crtm fv3jedi
+    do
+      fix_ver="gdas_${gdas_sub}_ver"
+      $LINK $FIX_DIR/gdas/$gdas_sub/${!fix_ver} $gdas_sub
+    done
 fi
 
 #------------------------------
@@ -161,8 +170,7 @@ fi
 if [ -d ../sorc/gsi_monitor.fd ]; then
 
   cd ${pwd}/../fix                ||exit 8
-    [[ -d gdas ]] && rm -rf gdas
-    mkdir -p gdas
+    [[ ! -d gdas ]] && mkdir -p gdas
     cd gdas
     $LINK ../../sorc/gsi_monitor.fd/src/Minimization_Monitor/nwprod/gdas/fix/gdas_minmon_cost.txt                   .
     $LINK ../../sorc/gsi_monitor.fd/src/Minimization_Monitor/nwprod/gdas/fix/gdas_minmon_gnorm.txt                  .
