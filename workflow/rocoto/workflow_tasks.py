@@ -245,7 +245,7 @@ class Tasks:
         data = f'&ROTDIR;/gdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmf009{suffix}'
         dep_dict = {'type': 'data', 'data': data, 'offset': '-06:00:00'}
         deps.append(rocoto.add_dependency(dep_dict))
-        data = f'{dmpdir}/{self.cdump}{dump_suffix}.@Y@m@d/@H/{self.cdump}.t@Hz.updated.status.tm00.bufr_d'
+        data = f'{dmpdir}/{self.cdump}{dump_suffix}.@Y@m@d/@H/atmos/{self.cdump}.t@Hz.updated.status.tm00.bufr_d'
         dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
@@ -406,7 +406,7 @@ class Tasks:
         data = f'&ROTDIR;/gdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmf009{suffix}'
         dep_dict = {'type': 'data', 'data': data, 'offset': '-06:00:00'}
         deps.append(rocoto.add_dependency(dep_dict))
-        data = f'{dmpdir}/{self.cdump}{dump_suffix}.@Y@m@d/@H/{self.cdump}.t@Hz.updated.status.tm00.bufr_d'
+        data = f'{dmpdir}/{self.cdump}{dump_suffix}.@Y@m@d/@H/atmos/{self.cdump}.t@Hz.updated.status.tm00.bufr_d'
         dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
@@ -464,7 +464,7 @@ class Tasks:
         data = f'&ROTDIR;/gdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmf009{suffix}'
         dep_dict = {'type': 'data', 'data': data, 'offset': '-06:00:00'}
         deps.append(rocoto.add_dependency(dep_dict))
-        data = f'{dmpdir}/{self.cdump}{dump_suffix}.@Y@m@d/@H/{self.cdump}.t@Hz.updated.status.tm00.bufr_d'
+        data = f'{dmpdir}/{self.cdump}{dump_suffix}.@Y@m@d/@H/atmos/{self.cdump}.t@Hz.updated.status.tm00.bufr_d'
         dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
@@ -1032,7 +1032,7 @@ class Tasks:
         data = f'&ROTDIR;/gdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmf009{suffix}'
         dep_dict = {'type': 'data', 'data': data, 'offset': '-06:00:00'}
         deps.append(rocoto.add_dependency(dep_dict))
-        data = f'{dmpdir}/{self.cdump}{dump_suffix}.@Y@m@d/@H/{self.cdump}.t@Hz.updated.status.tm00.bufr_d'
+        data = f'{dmpdir}/{self.cdump}{dump_suffix}.@Y@m@d/@H/atmos/{self.cdump}.t@Hz.updated.status.tm00.bufr_d'
         dep_dict = {'type': 'data', 'data': data}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
