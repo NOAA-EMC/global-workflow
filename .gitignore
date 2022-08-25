@@ -17,8 +17,23 @@ install*/
 # Ignore fix directory symlinks
 #------------------------------
 fix/0readme
-fix/fix_*
-fix/gdas/
+fix/aer
+fix/am
+fix/chem
+fix/cice
+fix/cpl
+fix/datm
+fix/gdas
+fix/gldas
+fix/gsi
+fix/lut
+fix/mom6
+fix/orog
+fix/reg2grb2
+fix/sfc_climo
+fix/ugwd
+fix/verif
+fix/wave
 fix/wafs
 
 # Ignore parm file symlinks
