@@ -203,7 +203,7 @@ if [ $CDUMP = "gfs" ]; then
     fi
 
     if [ $DO_OCN = "YES" ]; then
-        targrp_list="$targrp_list ocn_ice_grib2_0p5 ocn_ice_grib2_0p25 ocn_2D ocn_3D ocn_xsect ocn_daily wavocn gfs_flux_1p00"
+        targrp_list="$targrp_list ocn_ice_grib2_0p5 ocn_ice_grib2_0p25 ocn_2D ocn_3D ocn_xsect ocn_daily gfs_flux_1p00"
     fi
 
     if [ $DO_ICE = "YES" ]; then
@@ -213,7 +213,7 @@ if [ $CDUMP = "gfs" ]; then
     # Aerosols
     if [ $DO_AERO = "YES" ]; then
         for targrp in chem; do
-            htar -P -cvf $ATARDIR/$CDATE/${targrp}.tar $(cat $ARCH_LIST/${targrp}.txt)
+            $TARCMD -P -cvf $ATARDIR/$CDATE/${targrp}.tar $(cat $ARCH_LIST/${targrp}.txt)
             status=$?
             if [ $status -ne 0 -a $CDATE -ge $firstday ]; then
                 echo "HTAR $CDATE ${targrp}.tar failed"

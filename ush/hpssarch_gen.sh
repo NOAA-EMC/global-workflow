@@ -233,7 +233,6 @@ if [ $type = "gfs" ]; then
     rm -f ocn_3D.txt
     rm -f ocn_xsect.txt
     rm -f ocn_daily.txt
-    rm -f wavocn.txt
     touch gfs_flux_1p00.txt
     touch ocn_ice_grib2_0p5.txt
     touch ocn_ice_grib2_0p25.txt
@@ -241,13 +240,11 @@ if [ $type = "gfs" ]; then
     touch ocn_3D.txt
     touch ocn_xsect.txt
     touch ocn_daily.txt
-    touch wavocn.txt
     echo  "${dirname}MOM_input                  " >>ocn_2D.txt
     echo  "${dirname}ocn_2D*                    " >>ocn_2D.txt
     echo  "${dirname}ocn_3D*                    " >>ocn_3D.txt
     echo  "${dirname}ocn*EQ*                    " >>ocn_xsect.txt
     echo  "${dirname}ocn_daily*                 " >>ocn_daily.txt
-    echo  "${dirname}wavocn*                    " >>wavocn.txt
     echo  "${dirname}ocn_ice*0p5x0p5.grb2       " >>ocn_ice_grib2_0p5.txt
     echo  "${dirname}ocn_ice*0p25x0p25.grb2     " >>ocn_ice_grib2_0p25.txt
 
