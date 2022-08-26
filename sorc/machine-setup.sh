@@ -36,8 +36,7 @@ elif [[ -d /work ]] ; then
         source /apps/lmod/lmod/init/$__ms_shell
     fi
     target=orion
-    export LMOD_SYSTEM_DEFAULT_MODULES=contrib
-    module reset
+    module purge
     export myFC=mpiifort
     export FCOMP=mpiifort
 
@@ -49,8 +48,7 @@ elif [[ -d /scratch1 ]] ; then
         source /apps/lmod/lmod/init/$__ms_shell
     fi
     target=hera
-    export LMOD_SYSTEM_DEFAULT_MODULES=contrib
-    module reset
+    module purge
     export myFC=mpiifort
     export FCOMP=mpiifort
 
