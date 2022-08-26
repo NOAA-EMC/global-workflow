@@ -122,7 +122,7 @@ def edit_baseconfig(host, inputs):
         "@HOMEgfs@": _top,
         "@BASE_GIT@": host.info["base_git"],
         "@DMPDIR@": host.info["dmpdir"],
-        "@NWPROD@": host.info["nwprod"],
+        "@PACKAGEROOT@": host.info["packageroot"],
         "@COMROOT@": host.info["comroot"],
         "@HOMEDIR@": host.info["homedir"],
         "@EXPDIR@": inputs.expdir,
