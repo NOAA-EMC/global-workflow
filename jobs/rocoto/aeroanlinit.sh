@@ -9,7 +9,4 @@ status=$?
 [[ $status -ne 0 ]] && exit $status
 
 ###############################################################
-# Execute the JJOB
-$HOMEgfs/jobs/JGDAS_GLOBAL_ATMOS_ANALYSIS_RUN
-status=$?
-exit $status
+echo "Do nothing for now"

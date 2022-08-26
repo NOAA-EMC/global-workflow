@@ -78,7 +78,7 @@ else
   export paramlist=${paramlist:-$PARMpost/global_1x1_paramlist_g2}
   export paramlistb=${paramlistb:-$PARMpost/global_master-catchup_parmlist_g2}
   export fhr3=$(printf "%03d" ${FH})
-  if (( fhr3%FHOUT_PGB == 0 )); then
+  if (( FH%FHOUT_PGB == 0 )); then
     export PGBS=YES
   fi
 fi
