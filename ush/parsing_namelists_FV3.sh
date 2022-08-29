@@ -396,6 +396,7 @@ if [ $DOIAU = "YES" ]; then
   iau_delthrs  = ${IAU_DELTHRS}
   iau_inc_files= ${IAU_INC_FILES}
   iau_drymassfixer = .false.
+  iau_filter_increments = ${IAU_FILTER_INCREMENTS:-.false.}
 EOF
 fi
 
