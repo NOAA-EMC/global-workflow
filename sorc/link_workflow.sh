@@ -8,16 +8,16 @@ machine=${2}
 
 if [ $# -lt 2 ]; then
     echo '***ERROR*** must specify two arguements: (1) RUN_ENVIR, (2) machine'
-    echo ' Syntax: link_workflow.sh ( nco | emc ) ( hera | orion | jet | stampede )'
+    echo ' Syntax: link_workflow.sh ( nco | emc ) ( wcoss2 | hera | orion | jet | stampede )'
     exit 1
 fi
 
 if [ $RUN_ENVIR != emc -a $RUN_ENVIR != nco ]; then
-    echo ' Syntax: link_workflow.sh ( nco | emc ) ( hera | orion | jet | stampede )'
+    echo ' Syntax: link_workflow.sh ( nco | emc ) ( wcoss2 | hera | orion | jet | stampede )'
     exit 1
 fi
-if [ $machine != hera -a $machine != orion -a $machine != jet -a $machine != stampede ]; then
-    echo ' Syntax: link_workflow.sh ( nco | emc ) ( hera | orion | jet | stampede )'
+if [ $machine != wcoss2 -a $machine != hera -a $machine != orion -a $machine != jet -a $machine != stampede ]; then
+    echo ' Syntax: link_workflow.sh ( nco | emc ) ( wcoss2 | hera | orion | jet | stampede )'
     exit 1
 fi
 
@@ -34,7 +34,9 @@ $LINK ufs_model.fd/FV3/upp upp.fd
 #------------------------------
 #--model fix fields
 #------------------------------
-if [ $machine = "hera" ]; then
+if [ $machine = "wcoss2" ]; then
+    FIX_DIR="/lfs/h2/emc/global/noscrub/emc.global/FIX/fix_NEW"
+elif [ $machine = "hera" ]; then
     FIX_DIR="/scratch1/NCEPDEV/global/glopara/fix_NEW"
 elif [ $machine = "orion" ]; then
     FIX_DIR="/work/noaa/global/glopara/fix_NEW"
