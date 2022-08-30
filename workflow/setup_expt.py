@@ -236,7 +236,7 @@ def input_args():
 
     args = parser.parse_args()
 
-    if args.app in ['S2S', 'S2SW', 'OCN-ICE'] and args.icsdir is None:
+    if args.app in ['S2S', 'S2SW', 'NG-GODAS'] and args.icsdir is None:
         raise SyntaxError("An IC directory must be specified with --icsdir when running the S2S or S2SW app")
 
     # Add an entry for warm_start = .true. or .false.

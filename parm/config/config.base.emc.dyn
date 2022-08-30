@@ -18,7 +18,7 @@ export QUEUE_SERVICE="@QUEUE_SERVICE@"
 export PARTITION_BATCH="@PARTITION_BATCH@"
 
 # Project to use in mass store:
-HPSS_PROJECT=emc-marine
+HPSS_PROJECT=emc-global
 
 # Directories relative to installation areas:
 export HOMEgfs=@HOMEgfs@
@@ -86,7 +86,7 @@ export NCP="/bin/cp -p"
 export NMV="/bin/mv"
 export NLN="/bin/ln -sf"
 export VERBOSE="YES"
-export KEEPDATA="YES"
+export KEEPDATA="NO"
 
 export CHGRP_RSTPROD="@CHGRP_RSTPROD@"
 export CHGRP_CMD="@CHGRP_CMD@"

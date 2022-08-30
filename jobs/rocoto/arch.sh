@@ -72,53 +72,53 @@ if [ $ATMTYPE = "MODEL" ]; then
     [[ ! -d $ARCDIR ]] && mkdir -p $ARCDIR
     nb_copy ${APREFIX}gsistat $ARCDIR/gsistat.${CDUMP}.${CDATE}
     nb_copy ${APREFIX}pgrb2.1p00.anl $ARCDIR/pgbanl.${CDUMP}.${CDATE}.grib2
-fi
 
-# Archive 1 degree forecast GRIB2 files for verification
-if [ $CDUMP = "gfs" -a $ATMTYPE = "MODEL" ]; then
-    fhmax=$FHMAX_GFS
-    fhr=0
-    while [ $fhr -le $fhmax ]; do
-        fhr2=$(printf %02i $fhr)
-        fhr3=$(printf %03i $fhr)
-        nb_copy ${APREFIX}pgrb2.1p00.f$fhr3 $ARCDIR/pgbf${fhr2}.${CDUMP}.${CDATE}.grib2
-        fhr=$((10#$fhr + 10#$FHOUT_GFS ))
-    done
-fi
-if [ $CDUMP = "gdas" -a $ATMTYPE = "MODEL" ]; then
-    flist="000 003 006 009"
-    for fhr in $flist; do
-        fname=${APREFIX}pgrb2.1p00.f${fhr}
-        fhr2=$(printf %02i $((10#$fhr)))
-        nb_copy $fname $ARCDIR/pgbf${fhr2}.${CDUMP}.${CDATE}.grib2
-    done
-fi
+    # Archive 1 degree forecast GRIB2 files for verification
+    if [ $CDUMP = "gfs" ]; then
+        fhmax=$FHMAX_GFS
+        fhr=0
+        while [ $fhr -le $fhmax ]; do
+            fhr2=$(printf %02i $fhr)
+            fhr3=$(printf %03i $fhr)
+            nb_copy ${APREFIX}pgrb2.1p00.f$fhr3 $ARCDIR/pgbf${fhr2}.${CDUMP}.${CDATE}.grib2
+            fhr=$((10#$fhr + 10#$FHOUT_GFS ))
+        done
+    fi
+    if [ $CDUMP = "gdas" ]; then
+        flist="000 003 006 009"
+        for fhr in $flist; do
+            fname=${APREFIX}pgrb2.1p00.f${fhr}
+            fhr2=$(printf %02i $((10#$fhr)))
+            nb_copy $fname $ARCDIR/pgbf${fhr2}.${CDUMP}.${CDATE}.grib2
+        done
+    fi
 
-if [ -s avno.t${cyc}z.cyclone.trackatcfunix ]; then
-    PLSOT4=$(echo $PSLOT|cut -c 1-4 |tr '[a-z]' '[A-Z]')
-    cat avno.t${cyc}z.cyclone.trackatcfunix | sed s:AVNO:${PLSOT4}:g  > ${ARCDIR}/atcfunix.${CDUMP}.$CDATE
-    cat avnop.t${cyc}z.cyclone.trackatcfunix | sed s:AVNO:${PLSOT4}:g  > ${ARCDIR}/atcfunixp.${CDUMP}.$CDATE
-fi
+    if [ -s avno.t${cyc}z.cyclone.trackatcfunix ]; then
+        PLSOT4=$(echo $PSLOT|cut -c 1-4 |tr '[a-z]' '[A-Z]')
+        cat avno.t${cyc}z.cyclone.trackatcfunix | sed s:AVNO:${PLSOT4}:g  > ${ARCDIR}/atcfunix.${CDUMP}.$CDATE
+        cat avnop.t${cyc}z.cyclone.trackatcfunix | sed s:AVNO:${PLSOT4}:g  > ${ARCDIR}/atcfunixp.${CDUMP}.$CDATE
+    fi
 
-if [ $CDUMP = "gdas" -a -s gdas.t${cyc}z.cyclone.trackatcfunix ]; then
-    PLSOT4=$(echo $PSLOT|cut -c 1-4 |tr '[a-z]' '[A-Z]')
-    cat gdas.t${cyc}z.cyclone.trackatcfunix | sed s:AVNO:${PLSOT4}:g  > ${ARCDIR}/atcfunix.${CDUMP}.$CDATE
-    cat gdasp.t${cyc}z.cyclone.trackatcfunix | sed s:AVNO:${PLSOT4}:g  > ${ARCDIR}/atcfunixp.${CDUMP}.$CDATE
-fi
+    if [ $CDUMP = "gdas" -a -s gdas.t${cyc}z.cyclone.trackatcfunix ]; then
+        PLSOT4=$(echo $PSLOT|cut -c 1-4 |tr '[a-z]' '[A-Z]')
+        cat gdas.t${cyc}z.cyclone.trackatcfunix | sed s:AVNO:${PLSOT4}:g  > ${ARCDIR}/atcfunix.${CDUMP}.$CDATE
+        cat gdasp.t${cyc}z.cyclone.trackatcfunix | sed s:AVNO:${PLSOT4}:g  > ${ARCDIR}/atcfunixp.${CDUMP}.$CDATE
+    fi
 
-if [ $CDUMP = "gfs" -a $ATMTYPE = "MODEL" ]; then
-    nb_copy storms.gfso.atcf_gen.$CDATE      ${ARCDIR}/.
-    nb_copy storms.gfso.atcf_gen.altg.$CDATE ${ARCDIR}/.
-    nb_copy trak.gfso.atcfunix.$CDATE        ${ARCDIR}/.
-    nb_copy trak.gfso.atcfunix.altg.$CDATE   ${ARCDIR}/.
+    if [ $CDUMP = "gfs" ]; then
+        nb_copy storms.gfso.atcf_gen.$CDATE      ${ARCDIR}/.
+        nb_copy storms.gfso.atcf_gen.altg.$CDATE ${ARCDIR}/.
+        nb_copy trak.gfso.atcfunix.$CDATE        ${ARCDIR}/.
+        nb_copy trak.gfso.atcfunix.altg.$CDATE   ${ARCDIR}/.
 
-    mkdir -p ${ARCDIR}/tracker.$CDATE/$CDUMP
-    blist="epac natl"
-    for basin in $blist; do
-        if [[ -f $basin ]]; then
-	       cp -rp $basin ${ARCDIR}/tracker.$CDATE/$CDUMP
-        fi
-    done
+        mkdir -p ${ARCDIR}/tracker.$CDATE/$CDUMP
+        blist="epac natl"
+        for basin in $blist; do
+            if [[ -f $basin ]]; then
+	           cp -rp $basin ${ARCDIR}/tracker.$CDATE/$CDUMP
+            fi
+        done
+    fi
 fi
 
 # Archive required gaussian gfs forecast files for Fit2Obs
@@ -192,13 +192,13 @@ if [ $status -ne 0  ]; then
 fi
 
 cd $ROTDIR
-
-if [ $CDUMP = "gfs" ]; then
     if [ $ATMTYPE = "MODEL" ]; then
         targrp_list="gfsa gfsb"
     else
         targrp_list=""
     fi
+
+if [ $CDUMP = "gfs" ]; then
 
     if [ $ATMTYPE = "MODEL" ]; then
 
