@@ -42,7 +42,7 @@
 #                   defaults to current working directory
 #     XC            Suffix to add to executables. Defaults to none.
 #     GAUSFCANLEXE  Program executable.
-#                   Defaults to $EXECgfs/gaussian_sfcanl.exe
+#                   Defaults to $EXECgfs/gaussian_sfcanl.x
 #     INISCRIPT     Preprocessing script.  Defaults to none.
 #     LOGSCRIPT     Log posting script.  Defaults to none.
 #     ERRSCRIPT     Error processing script
@@ -141,7 +141,7 @@ COMOUT=${COMOUT:-$(pwd)}
 
 #  Filenames.
 XC=${XC:-}
-GAUSFCANLEXE=${GAUSFCANLEXE:-$EXECgfs/gaussian_sfcanl.exe}
+GAUSFCANLEXE=${GAUSFCANLEXE:-$EXECgfs/gaussian_sfcanl.x}
 SIGLEVEL=${SIGLEVEL:-$FIXam/global_hyblev.l${LEVSP1}.txt}
 
 CDATE=${CDATE:?}

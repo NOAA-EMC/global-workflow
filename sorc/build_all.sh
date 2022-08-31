@@ -29,6 +29,9 @@ EOF
   exit 1
 }
 
+script_dir=$(cd $(dirname "${BASH_SOURCE[0]}") &> /dev/null && pwd)
+cd ${script_dir}
+
 _build_ufs_opt=""
 _ops_opt=""
 _verbose_opt=""
@@ -55,8 +58,7 @@ done
 
 shift $((OPTIND-1))
 
-build_dir=$(pwd)
-logs_dir=$build_dir/logs
+logs_dir=${script_dir}/logs
 if [ ! -d $logs_dir  ]; then
   echo "Creating logs folder"
   mkdir $logs_dir
@@ -72,7 +74,11 @@ fi
 # GET MACHINE
 #------------------------------------
 target=""
-source ./machine-setup.sh > /dev/null 2>&1
+source gfs_utils.fd/ush/machine-setup.sh > /dev/null 2>&1
+if [[ -z "${target}" ]]; then
+  echo "FATAL: Unable to determine target machine"
+  exit 1
+fi
 
 #------------------------------------
 # INCLUDE PARTIAL BUILD
@@ -254,29 +260,15 @@ if [ -d gfs_wafs.fd ]; then
 fi
 
 #------------------------------------
-# build workflow_utils
+# build gfs_utils
 #------------------------------------
-$Build_workflow_utils && {
-  echo " .... Building workflow_utils .... "
-  target=$target ./build_workflow_utils.sh $_verbose_opt > $logs_dir/build_workflow_utils.log 2>&1
+$Build_gfs_utils && {
+  echo " .... Building gfs_utils .... "
+  target=$target ./build_gfs_utils.sh $_verbose_opt > $logs_dir/build_gfs_utils.log 2>&1
   rc=$?
   if [[ $rc -ne 0 ]] ; then
-    echo "Fatal error in building workflow_utils."
-    echo "The log file is in $logs_dir/build_workflow_utils.log"
-  fi
-  ((err+=$rc))
-}
-
-#------------------------------------
-# build gfs_util
-#------------------------------------
-$Build_gfs_util && {
-  echo " .... Building gfs_util .... "
-  ./build_gfs_util.sh $_verbose_opt > $logs_dir/build_gfs_util.log 2>&1
-  rc=$?
-  if [[ $rc -ne 0 ]] ; then
-      echo "Fatal error in building gfs_util."
-      echo "The log file is in $logs_dir/build_gfs_util.log"
+    echo "Fatal error in building gfs_utils."
+    echo "The log file is in $logs_dir/build_gfs_utils.log"
   fi
   ((err+=$rc))
 }

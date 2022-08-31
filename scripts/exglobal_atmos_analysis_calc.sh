@@ -72,7 +72,7 @@ CALCANLPY=${CALCANLPY:-$HOMEgfs/ush/calcanl_gfs.py}
 
 DOGAUSFCANL=${DOGAUSFCANL-"NO"}
 GAUSFCANLSH=${GAUSFCANLSH:-$HOMEgfs/ush/gaussian_sfcanl.sh}
-export GAUSFCANLEXE=${GAUSFCANLEXE:-$HOMEgfs/exec/gaussian_sfcanl.exe}
+export GAUSFCANLEXE=${GAUSFCANLEXE:-$HOMEgfs/exec/gaussian_sfcanl.x}
 NTHREADS_GAUSFCANL=${NTHREADS_GAUSFCANL:-1}
 APRUN_GAUSFCANL=${APRUN_GAUSFCANL:-${APRUN:-""}}
 

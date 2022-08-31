@@ -141,7 +141,7 @@
 #                   Default is "$EXECRELO/relocate_mv_nvortex"
 #     SUPVX         String indicating executable path for SUPVIT utility
 #                   program
-#                   Default is "$EXECUTIL/supvit"
+#                   Default is "$EXECUTIL/supvit.x"
 #     GETTX         String indicating executable path for GETTRK utility
 #                   program
 #                   Default is "$EXECUTIL/gettrk"
@@ -311,7 +311,7 @@ RELOX=${RELOX:-$EXECRELO/relocate_mv_nvortex}
 
 export BKGFREQ=${BKGFREQ:-1}
 
-SUPVX=${SUPVX:-$EXECRELO/supvit}
+SUPVX=${SUPVX:-$EXECRELO/supvit.x}
 GETTX=${GETTX:-$EXECRELO/gettrk}
 
 ################################################

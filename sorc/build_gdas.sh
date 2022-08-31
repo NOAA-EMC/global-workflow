@@ -1,8 +1,10 @@
 #! /usr/bin/env bash
 set -eux
 
-source ./machine-setup.sh > /dev/null 2>&1
-cwd=$(pwd)
+script_dir=$(dirname ${BASH_SOURCE[0]})
+cd ${script_dir}
+
+source gfs_utils.fd/ush/machine-setup.sh > /dev/null 2>&1
 
 export BUILD_TARGET=$target
 

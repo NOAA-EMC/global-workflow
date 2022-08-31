@@ -1,31 +1,44 @@
 #!/bin/bash
-set -ex
 
 #--make symbolic links for EMC installation and hardcopies for NCO delivery
 
-RUN_ENVIR=${1}
-machine=${2}
+set -eux
 
-if [ $# -lt 2 ]; then
-    echo '***ERROR*** must specify two arguements: (1) RUN_ENVIR, (2) machine'
-    echo ' Syntax: link_workflow.sh ( nco | emc ) ( wcoss2 | hera | orion | jet | stampede )'
-    exit 1
-fi
+RUN_ENVIR="EMC"
 
-if [ $RUN_ENVIR != emc -a $RUN_ENVIR != nco ]; then
-    echo ' Syntax: link_workflow.sh ( nco | emc ) ( wcoss2 | hera | orion | jet | stampede )'
-    exit 1
-fi
-if [ $machine != wcoss2 -a $machine != hera -a $machine != orion -a $machine != jet -a $machine != stampede ]; then
-    echo ' Syntax: link_workflow.sh ( nco | emc ) ( wcoss2 | hera | orion | jet | stampede )'
-    exit 1
-fi
+# Reset option counter in case this script is sourced
+OPTIND=1
+while getopts ":o" option; do
+  case "${option}" in
+    o) 
+      echo "-o option received, configuring for NCO"
+      RUN_ENVIR="NCO";;
+    \?)
+      echo "[$BASH_SOURCE]: Unrecognized option: ${option}"
+      usage
+      ;;
+    :)
+      echo "[$BASH_SOURCE]: ${option} requires an argument"
+      usage
+      ;;
+  esac
+done
+shift $((OPTIND-1))
+
+script_dir=$(cd $(dirname "${BASH_SOURCE[0]}") &> /dev/null && pwd)
+top_dir=$(cd $(dirname "${script_dir}") &> /dev/null && pwd)
+cd ${script_dir}
+
+source gfs_utils.fd/ush/machine-setup.sh > /dev/null 2>&1
+machine="${target}"
+# Source fix version file
+source ${top_dir}/versions/fix.ver
 
 LINK="ln -fs"
 SLINK="ln -fs"
-[[ $RUN_ENVIR = nco ]] && LINK="cp -rp"
-
-pwd=$(pwd -P)
+if [[ $RUN_ENVIR = nco ]]; then
+  LINK="cp -rp"
+fi
 
 # Link post
 [[ -d upp.fd ]] && rm -rf upp.fd
@@ -38,22 +51,21 @@ $LINK ufs_model.fd/FV3/upp upp.fd
 # Source fix version file
 . ${pwd}/../versions/fix.ver
 
-if [ $machine = "wcoss2" ]; then
-    FIX_DIR="/lfs/h2/emc/global/noscrub/emc.global/FIX/fix"
-elif [ $machine = "hera" ]; then
-    FIX_DIR="/scratch1/NCEPDEV/global/glopara/fix"
-elif [ $machine = "orion" ]; then
-    FIX_DIR="/work/noaa/global/glopara/fix"
-elif [ $machine = "jet" ]; then
-    FIX_DIR="/lfs4/HFIP/hfv3gfs/glopara/git/fv3gfs/fix"
-elif [ $machine = "stampede" ]; then
-    FIX_DIR="/work/07738/jkuang/stampede2/tempFixICdir/fix_UFSp6"
-fi
+case ${machine} in
+  "wcoss2")   FIX_DIR="/lfs/h2/emc/global/noscrub/emc.global/FIX/fix" ;;
+  "hera")     FIX_DIR="/scratch1/NCEPDEV/global/glopara/fix" ;;
+  "orion")    FIX_DIR="/work/noaa/global/glopara/fix" ;;
+  "jet")      FIX_DIR="/lfs4/HFIP/hfv3gfs/glopara/git/fv3gfs/fix" ;;
+  *)
+    echo "FATAL: Unknown target machine ${machine}, couldn't set FIX_DIR"
+    exit 1
+    ;;
+esac
 
 if [ ! -z $FIX_DIR ]; then
- if [ ! -d ${pwd}/../fix ]; then mkdir ${pwd}/../fix; fi
+  if [ ! -d ${top_dir}/fix ]; then mkdir ${top_dir}/fix; fi
 fi
-cd ${pwd}/../fix                ||exit 8
+cd ${top_dir}/fix
 for dir in aer \
             am \
             chem \
@@ -78,23 +90,21 @@ for dir in aer \
     $LINK $FIX_DIR/$dir/${!fix_ver} ${dir}
 done
 
-if [ -d ${pwd}/ufs_utils.fd ]; then
-  cd ${pwd}/ufs_utils.fd/fix
-  ./link_fixdirs.sh $RUN_ENVIR $machine
+if [ -d ${script_dir}/ufs_utils.fd ]; then
+  cd ${script_dir}/ufs_utils.fd/fix
+  ./link_fixdirs.sh $RUN_ENVIR ${machine}
 fi
 
 
 #---------------------------------------
 #--add files from external repositories
 #---------------------------------------
-cd ${pwd}/../parm               ||exit 8
-    # [[ -d post ]] && rm -rf post
-    # $LINK ../sorc/upp.fd/parm                           post
-    if [ -d ../sorc/gldas.fd ]; then
+cd ${top_dir}/parm || exit 8
+    if [ -d ${script_dir}/gldas.fd ]; then
       [[ -d gldas ]] && rm -rf gldas
-      $LINK ../sorc/gldas.fd/parm                         gldas
+      $LINK ${script_dir}/gldas.fd/parm gldas
     fi
-cd ${pwd}/../parm/post          ||exit 8
+cd ${top_dir}/parm/post
     for file in postxconfig-NT-GEFS-ANL.txt postxconfig-NT-GEFS-F00.txt postxconfig-NT-GEFS.txt postxconfig-NT-GFS-ANL.txt \
         postxconfig-NT-GFS-F00-TWO.txt postxconfig-NT-GFS-F00.txt postxconfig-NT-GFS-FLUX-F00.txt postxconfig-NT-GFS-FLUX.txt \
         postxconfig-NT-GFS-GOES.txt postxconfig-NT-GFS-TWO.txt postxconfig-NT-GFS-WAFS-ANL.txt postxconfig-NT-GFS-WAFS.txt \
@@ -102,54 +112,53 @@ cd ${pwd}/../parm/post          ||exit 8
         post_tag_gfs128 post_tag_gfs65 gtg.config.gfs gtg_imprintings.txt nam_micro_lookup.dat \
         AEROSOL_LUTS.dat optics_luts_DUST.dat optics_luts_SALT.dat optics_luts_SOOT.dat optics_luts_SUSO.dat optics_luts_WASO.dat \
         ; do
-        $LINK ../../sorc/upp.fd/parm/$file .
-    done
-cd ${pwd}/../scripts            ||exit 8
-    $LINK ../sorc/ufs_utils.fd/scripts/exemcsfc_global_sfc_prep.sh .
-cd ${pwd}/../ush                ||exit 8
-    for file in emcsfc_ice_blend.sh  fv3gfs_driver_grid.sh  fv3gfs_make_orog.sh  global_cycle_driver.sh \
-        emcsfc_snow.sh  fv3gfs_filter_topo.sh  global_cycle.sh  fv3gfs_make_grid.sh ; do
-        $LINK ../sorc/ufs_utils.fd/ush/$file                  .
+        $LINK ${script_dir}/upp.fd/parm/$file .
     done
 
+cd ${top_dir}/scripts || exit 8
+    $LINK ${script_dir}/ufs_utils.fd/scripts/exemcsfc_global_sfc_prep.sh .
+cd ${top_dir}/ush || exit 8
+    for file in emcsfc_ice_blend.sh  fv3gfs_driver_grid.sh  fv3gfs_make_orog.sh  global_cycle_driver.sh \
+        emcsfc_snow.sh  fv3gfs_filter_topo.sh  global_cycle.sh  fv3gfs_make_grid.sh ; do
+        $LINK ${script_dir}/ufs_utils.fd/ush/$file .
+    done
 
 #-----------------------------------
 #--add gfs_wafs link if checked out
-if [ -d ${pwd}/gfs_wafs.fd ]; then
+if [ -d ${script_dir}/gfs_wafs.fd ]; then
 #-----------------------------------
- cd ${pwd}/../jobs               ||exit 8
-     $LINK ../sorc/gfs_wafs.fd/jobs/*                         .
- cd ${pwd}/../parm               ||exit 8
+ cd ${top_dir}/jobs
+     $LINK ${script_dir}/gfs_wafs.fd/jobs/*                         .
+ cd ${top_dir}/parm
      [[ -d wafs ]] && rm -rf wafs
-    $LINK ../sorc/gfs_wafs.fd/parm/wafs                      wafs
- cd ${pwd}/../scripts            ||exit 8
-    $LINK ../sorc/gfs_wafs.fd/scripts/*                      .
- cd ${pwd}/../ush                ||exit 8
-    $LINK ../sorc/gfs_wafs.fd/ush/*                          .
- cd ${pwd}/../fix                ||exit 8
+    $LINK ${script_dir}/gfs_wafs.fd/parm/wafs                      wafs
+ cd ${top_dir}/scripts
+    $LINK ${script_dir}/gfs_wafs.fd/scripts/*                      .
+ cd ${top_dir}/ush
+    $LINK ${script_dir}/gfs_wafs.fd/ush/*                          .
+ cd ${top_dir}/fix
     [[ -d wafs ]] && rm -rf wafs
-    $LINK ../sorc/gfs_wafs.fd/fix/*                          .
+    $LINK ${script_dir}/gfs_wafs.fd/fix/*                          .
 fi
 
 
 #------------------------------
 #--add GSI fix directory
 #------------------------------
-if [ -d ../sorc/gsi_enkf.fd ]; then
-  cd ${pwd}/../fix                ||exit 8
+if [ -d ${script_dir}/gsi_enkf.fd ]; then
+  cd ${top_dir}/fix
     [[ -d gsi ]] && rm -rf gsi
-    $LINK ../sorc/gsi_enkf.fd/fix  gsi
+    $LINK ${script_dir}/gsi_enkf.fd/fix  gsi
 fi
 
 #------------------------------
 #--add GDASApp fix directory
 #------------------------------
-if [ -d ../sorc/gdas.cd ]; then
-  cd ${pwd}/../fix                ||exit 8
+if [ -d ${script_dir}/gdas.cd ]; then
+  cd ${top_dir}/fix
     [[ ! -d gdas ]] && mkdir -p gdas
     cd gdas
-    for gdas_sub in bump crtm fv3jedi
-    do
+    for gdas_sub in bump crtm fv3jedi; do
       fix_ver="gdas_${gdas_sub}_ver"
       $LINK $FIX_DIR/gdas/$gdas_sub/${!fix_ver} $gdas_sub
     done
@@ -158,129 +167,123 @@ fi
 #------------------------------
 #--add GDASApp files
 #------------------------------
-if [ -d ../sorc/gdas.cd ]; then
-  cd ${pwd}/../ush                ||exit 8
-    $LINK ../sorc/gdas.cd/ush/ufsda                               .
+if [ -d ${script_dir}/gdas.cd ]; then
+  cd ${top_dir}/ush
+    $LINK ${script_dir}/gdas.cd/ush/ufsda                               .
 fi
 
 
 #------------------------------
 #--add DA Monitor file (NOTE: ensure to use correct version)
 #------------------------------
-if [ -d ../sorc/gsi_monitor.fd ]; then
+if [ -d ${script_dir}/gsi_monitor.fd ]; then
 
-  cd ${pwd}/../fix                ||exit 8
+  cd ${top_dir}/fix
     [[ ! -d gdas ]] && mkdir -p gdas
     cd gdas
-    $LINK ../../sorc/gsi_monitor.fd/src/Minimization_Monitor/nwprod/gdas/fix/gdas_minmon_cost.txt                   .
-    $LINK ../../sorc/gsi_monitor.fd/src/Minimization_Monitor/nwprod/gdas/fix/gdas_minmon_gnorm.txt                  .
-    $LINK ../../sorc/gsi_monitor.fd/src/Ozone_Monitor/nwprod/gdas_oznmon/fix/gdas_oznmon_base.tar                   .
-    $LINK ../../sorc/gsi_monitor.fd/src/Ozone_Monitor/nwprod/gdas_oznmon/fix/gdas_oznmon_satype.txt                 .
-    $LINK ../../sorc/gsi_monitor.fd/src/Radiance_Monitor/nwprod/gdas_radmon/fix/gdas_radmon_base.tar                .
-    $LINK ../../sorc/gsi_monitor.fd/src/Radiance_Monitor/nwprod/gdas_radmon/fix/gdas_radmon_satype.txt              .
-    $LINK ../../sorc/gsi_monitor.fd/src/Radiance_Monitor/nwprod/gdas_radmon/fix/gdas_radmon_scaninfo.txt            .
-  cd ${pwd}/../parm               ||exit 8
+    $LINK ${script_dir}/gsi_monitor.fd/src/Minimization_Monitor/nwprod/gdas/fix/gdas_minmon_cost.txt                   .
+    $LINK ${script_dir}/gsi_monitor.fd/src/Minimization_Monitor/nwprod/gdas/fix/gdas_minmon_gnorm.txt                  .
+    $LINK ${script_dir}/gsi_monitor.fd/src/Ozone_Monitor/nwprod/gdas_oznmon/fix/gdas_oznmon_base.tar                   .
+    $LINK ${script_dir}/gsi_monitor.fd/src/Ozone_Monitor/nwprod/gdas_oznmon/fix/gdas_oznmon_satype.txt                 .
+    $LINK ${script_dir}/gsi_monitor.fd/src/Radiance_Monitor/nwprod/gdas_radmon/fix/gdas_radmon_base.tar                .
+    $LINK ${script_dir}/gsi_monitor.fd/src/Radiance_Monitor/nwprod/gdas_radmon/fix/gdas_radmon_satype.txt              .
+    $LINK ${script_dir}/gsi_monitor.fd/src/Radiance_Monitor/nwprod/gdas_radmon/fix/gdas_radmon_scaninfo.txt            .
+  cd ${top_dir}/parm
     [[ -d mon ]] && rm -rf mon
     mkdir -p mon
     cd mon
-    $LINK ../../sorc/gsi_monitor.fd/src/Radiance_Monitor/nwprod/gdas_radmon/parm/gdas_radmon.parm                   da_mon.parm
-    # $LINK ../../sorc/gsi_monitor.fd/src/Minimization_Monitor/nwprod/gdas/parm/gdas_minmon.parm                      .
-    # $LINK ../../sorc/gsi_monitor.fd/src/Minimization_Monitor/nwprod/gfs/parm/gfs_minmon.parm                        .
-    $LINK ../../sorc/gsi_monitor.fd/src/Ozone_Monitor/nwprod/gdas_oznmon/parm/gdas_oznmon.parm                      .
-    # $LINK ../../sorc/gsi_monitor.fd/src/Radiance_Monitor/nwprod/gdas_radmon/parm/gdas_radmon.parm                   .
+    $LINK ${script_dir}/gsi_monitor.fd/src/Radiance_Monitor/nwprod/gdas_radmon/parm/gdas_radmon.parm                   da_mon.parm
+    # $LINK ${script_dir}/gsi_monitor.fd/src/Minimization_Monitor/nwprod/gdas/parm/gdas_minmon.parm                      .
+    # $LINK ${script_dir}/gsi_monitor.fd/src/Minimization_Monitor/nwprod/gfs/parm/gfs_minmon.parm                        .
+    $LINK ${script_dir}/gsi_monitor.fd/src/Ozone_Monitor/nwprod/gdas_oznmon/parm/gdas_oznmon.parm                      .
+    # $LINK ${script_dir}/gsi_monitor.fd/src/Radiance_Monitor/nwprod/gdas_radmon/parm/gdas_radmon.parm                   .
 fi
 
 #------------------------------
 #--link executables
 #------------------------------
 
-if [ ! -d $pwd/../exec ]; then mkdir $pwd/../exec ; fi
-cd $pwd/../exec
+if [ ! -d ${top_dir}/exec ]; then mkdir ${top_dir}/exec ; fi
+cd ${top_dir}/exec
 
-[[ -s gaussian_sfcanl.exe ]] && rm -f gaussian_sfcanl.exe
-$LINK ../sorc/install/bin/gaussian_sfcanl.x gaussian_sfcanl.exe
-for workflowexec in fbwndgfs gfs_bufr regrid_nemsio supvit syndat_getjtbul \
-    syndat_maksynrc syndat_qctropcy tocsbufr ; do
-  [[ -s $workflowexec ]] && rm -f $workflowexec
-  $LINK ../sorc/install/bin/${workflowexec}.x $workflowexec
-done
-for workflowexec in enkf_chgres_recenter.x enkf_chgres_recenter_nc.x fv3nc2nemsio.x \
-    tave.x vint.x reg2grb2.x ; do
-  [[ -s $workflowexec ]] && rm -f $workflowexec
-  $LINK ../sorc/install/bin/$workflowexec .
+for utilexe in fbwndgfs.x gaussian_sfcanl.x gfs_bufr.x regrid_nemsio.x supvit.x syndat_getjtbul.x \
+  syndat_maksynrc.x syndat_qctropcy.x tocsbufr.x enkf_chgres_recenter.x \
+  enkf_chgres_recenter_nc.x fv3nc2nemsio.x tave.x vint.x reg2grb2.x ; do
+    [[ -s ${utilexe} ]] && rm -f ${utilexe}
+    $LINK ${script_dir}/gfs_utils.fd/sorc/install/bin/${utilexe} .
 done
 
 [[ -s ufs_model.x ]] && rm -f ufs_model.x
-$LINK ../sorc/ufs_model.fd/tests/ufs_model.x .
+$LINK ${script_dir}/ufs_model.fd/tests/ufs_model.x .
 
 [[ -s gfs_ncep_post ]] && rm -f gfs_ncep_post
-$LINK ../sorc/upp.fd/exec/upp.x gfs_ncep_post
+$LINK ${script_dir}/upp.fd/exec/upp.x gfs_ncep_post
 
-if [ -d ${pwd}/gfs_wafs.fd ]; then
+if [ -d ${script_dir}/gfs_wafs.fd ]; then
     for wafsexe in \
           wafs_awc_wafavn.x  wafs_blending.x  wafs_blending_0p25.x \
           wafs_cnvgrib2.x  wafs_gcip.x  wafs_grib2_0p25.x \
           wafs_makewafs.x  wafs_setmissing.x; do
         [[ -s $wafsexe ]] && rm -f $wafsexe
-        $LINK ../sorc/gfs_wafs.fd/exec/$wafsexe .
+        $LINK ${script_dir}/gfs_wafs.fd/exec/$wafsexe .
     done
 fi
 
 for ufs_utilsexe in \
      emcsfc_ice_blend  emcsfc_snow2mdl  global_cycle ; do
     [[ -s $ufs_utilsexe ]] && rm -f $ufs_utilsexe
-    $LINK ../sorc/ufs_utils.fd/exec/$ufs_utilsexe .
+    $LINK ${script_dir}/ufs_utils.fd/exec/$ufs_utilsexe .
 done
 
 # GSI
-if [ -d ../sorc/gsi_enkf.fd ]; then
-  for exe in enkf.x gsi.x; do
-    [[ -s $exe ]] && rm -f $exe
-    $LINK ../sorc/gsi_enkf.fd/install/bin/$exe .
+if [ -d ${script_dir}/gsi_enkf.fd ]; then
+  for gsiexe in enkf.x gsi.x; do
+    [[ -s $gsiexe ]] && rm -f $gsiexe
+    $LINK ${script_dir}/gsi_enkf.fd/install/bin/$gsiexe .
   done
 fi
 
 # GSI Utils
-if [ -d ../sorc/gsi_utils.fd ]; then
+if [ -d ${script_dir}/gsi_utils.fd ]; then
   for exe in calc_analysis.x calc_increment_ens_ncio.x calc_increment_ens.x \
     getsfcensmeanp.x getsigensmeanp_smooth.x getsigensstatp.x \
     interp_inc.x recentersigp.x;do
     [[ -s $exe ]] && rm -f $exe
-    $LINK ../sorc/gsi_utils.fd/install/bin/$exe .
+    $LINK ${script_dir}/gsi_utils.fd/install/bin/$exe .
   done
 fi
 
 # GSI Monitor
-if [ -d ../sorc/gsi_monitor.fd ]; then
+if [ -d ${script_dir}/gsi_monitor.fd ]; then
   for exe in oznmon_horiz.x oznmon_time.x radmon_angle.x \
     radmon_bcoef.x radmon_bcor.x radmon_time.x; do
     [[ -s $exe ]] && rm -f $exe
-    $LINK ../sorc/gsi_monitor.fd/install/bin/$exe .
+    $LINK ${script_dir}/gsi_monitor.fd/install/bin/$exe .
   done
 fi
 
-if [ -d ../sorc/gldas.fd ]; then
+if [ -d ${script_dir}/gldas.fd ]; then
   for gldasexe in gdas2gldas  gldas2gdas  gldas_forcing  gldas_model  gldas_post  gldas_rst; do
     [[ -s $gldasexe ]] && rm -f $gldasexe
-    $LINK ../sorc/gldas.fd/exec/$gldasexe .
+    $LINK ${script_dir}/gldas.fd/exec/$gldasexe .
   done
 fi
 
 # GDASApp
-if [ -d ../sorc/gdas.cd ]; then
+if [ -d ${script_dir}/gdas.cd ]; then
   for gdasexe in fv3jedi_addincrement.x fv3jedi_diffstates.x fv3jedi_ensvariance.x fv3jedi_hofx.x \
     fv3jedi_var.x fv3jedi_convertincrement.x fv3jedi_dirac.x fv3jedi_error_covariance_training.x \
     fv3jedi_letkf.x fv3jedi_convertstate.x fv3jedi_eda.x fv3jedi_forecast.x fv3jedi_plot_field.x \
     fv3jedi_data_checker.py fv3jedi_enshofx.x fv3jedi_hofx_nomodel.x fv3jedi_testdata_downloader.py; do
     [[ -s $gdasexe ]] && rm -f $gdasexe
-    $LINK ../sorc/gdas.cd/build/bin/$gdasexe .
+    $LINK ${script_dir}/gdas.cd/build/bin/$gdasexe .
   done
 fi
 
 #------------------------------
 #--link source code directories
 #------------------------------
-cd ${pwd}/../sorc   ||   exit 8
+cd ${script_dir}   ||   exit 8
 
     if [ -d gsi_enkf.fd ]; then
       [[ -d gsi.fd ]] && rm -rf gsi.fd
@@ -343,15 +346,38 @@ cd ${pwd}/../sorc   ||   exit 8
         [[ -d ${prog}.fd ]] && rm -rf ${prog}.fd
         $SLINK ufs_utils.fd/sorc/fre-nctools.fd/tools/$prog                                ${prog}.fd
     done
-    for prog in  global_cycle.fd \
+    for prog in global_cycle.fd \
         emcsfc_ice_blend.fd \
         emcsfc_snow2mdl.fd ;do
         [[ -d $prog ]] && rm -rf $prog
         $SLINK ufs_utils.fd/sorc/$prog                                                     $prog
     done
 
+    for prog in enkf_chgres_recenter.fd \
+      enkf_chgres_recenter_nc.fd \
+      fbwndgfs.fd \
+      fv3nc2nemsio.fd \
+      gaussian_sfcanl.fd \
+      gfs_bufr.fd \
+      mkgfsawps.fd \
+      overgridid.fd \
+      rdbfmsua.fd \
+      reg2grb2.fd \
+      regrid_nemsio.fd \
+      supvit.fd \
+      syndat_getjtbul.fd \
+      syndat_maksynrc.fd \
+      syndat_qctropcy.fd \
+      tave.fd \
+      tocsbufr.fd \
+      vint.fd \
+      webtitle.fd
+      do
+        if [[ -d ${prog} ]]; then rm -rf ${prog}; fi
+        $LINK gfs_utils.fd/sorc/${prog} .
+    done
 
-    if [ -d ${pwd}/gfs_wafs.fd ]; then
+    if [ -d ${script_dir}/gfs_wafs.fd ]; then
         $SLINK gfs_wafs.fd/sorc/wafs_awc_wafavn.fd                                              wafs_awc_wafavn.fd
         $SLINK gfs_wafs.fd/sorc/wafs_blending.fd                                                wafs_blending.fd
         $SLINK gfs_wafs.fd/sorc/wafs_blending_0p25.fd                                           wafs_blending_0p25.fd
@@ -372,7 +398,7 @@ cd ${pwd}/../sorc   ||   exit 8
 #------------------------------
 #  copy $HOMEgfs/parm/config/config.base.nco.static as config.base for operations
 #  config.base in the $HOMEgfs/parm/config has no use in development
-cd $pwd/../parm/config
+cd ${top_dir}/parm/config
 [[ -s config.base ]] && rm -f config.base
 if [ $RUN_ENVIR = nco ] ; then
   cp -p config.base.nco.static config.base

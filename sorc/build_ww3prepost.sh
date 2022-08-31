@@ -1,6 +1,11 @@
 #!/bin/sh
 set -x
 
+script_dir=$(dirname ${BASH_SOURCE[0]})
+cd ${script_dir}
+
+source gfs_utils.fd/ush/machine-setup.sh > /dev/null 2>&1
+
 # Default settings
 APP="S2SWA"
 
@@ -33,10 +38,8 @@ finalexecdir=$( pwd -P )/../exec
 
 #Determine machine and load modules
 set +x
-source ./machine-setup.sh > /dev/null 2>&1
-
 module use ../modulefiles
-module load modulefile.ww3.$target
+module load modulefile.ww3.${target}
 set -x
 
 #Set WW3 directory, switch, prep and post exes 

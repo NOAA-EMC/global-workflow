@@ -123,7 +123,7 @@ fi
 
 [ -s jtwcbul ] && echo "Processing JTWC bulletin halfs into tcvitals records" >> $pgmout
 
-pgm=$(basename $EXECSYND/syndat_getjtbul)
+pgm=$(basename $EXECSYND/syndat_getjtbul.x)
 export pgm
 if [ -s prep_step ]; then
    set +u
@@ -138,7 +138,7 @@ rm -f fnoc
 
 export FORT11=jtwcbul
 export FORT51=fnoc
-time -p $EXECSYND/syndat_getjtbul >> $pgmout 2> errfile
+time -p ${EXECSYND}/${pgm} >> $pgmout 2> errfile
 errget=$?
 ###cat errfile
 cat errfile >> $pgmout

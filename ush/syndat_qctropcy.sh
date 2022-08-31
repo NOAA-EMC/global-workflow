@@ -248,7 +248,7 @@ cp $slmask slmask.126
  
 #  Execute program syndat_qctropcy
 
-pgm=$(basename $EXECSYND/syndat_qctropcy)
+pgm=$(basename $EXECSYND/syndat_qctropcy.x)
 export pgm
 if [ -s prep_step ]; then
    set +u
@@ -262,7 +262,7 @@ fi
 echo "$CDATE10"      > cdate10.dat
 export FORT11=slmask.126
 export FORT12=cdate10.dat
-$EXECSYND/syndat_qctropcy >> $pgmout 2> errfile
+${EXECSYND}/${pgm} >> $pgmout 2> errfile
 errqct=$?
 ###cat errfile
 cat errfile >> $pgmout
