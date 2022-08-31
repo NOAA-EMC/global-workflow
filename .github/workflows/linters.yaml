@@ -29,3 +29,17 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           shell-scripts: ush/preamble.sh
+
+      - name: Lint python scripts
+        - uses: marian-code/python-lint-annotate@latest
+          with:
+            python-version: "3.6"
+            use-black: false
+            use-isort: false
+            use-mypy: false
+            use-pycodestyle: true
+            use-pydocstyle: false
+            extra-pydocstyle-options: "--max-line-length=100"
+            use-py-lint: true
+            use-flake8: true
+            use-vulture: false
