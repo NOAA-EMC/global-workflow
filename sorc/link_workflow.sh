@@ -49,7 +49,7 @@ $LINK ufs_model.fd/FV3/upp upp.fd
 #------------------------------
 
 # Source fix version file
-. ${pwd}/../versions/fix.ver
+. ${top_dir}/versions/fix.ver
 
 case ${machine} in
   "wcoss2")   FIX_DIR="/lfs/h2/emc/global/noscrub/emc.global/FIX/fix" ;;
