@@ -63,14 +63,14 @@ source "$HOMEgfs/ush/preamble.sh"
  echo "   AWIPS grib fields"
  echo "   Wave  Grids       : $grids"
  echo ' '
- ${TRACE_ON:-set -x}
+ restore_trace
 
 # --------------------------------------------------------------------------- #
 # 1.  Get necessary files
  echo ' '
  echo 'Preparing input files :'
  echo '-----------------------'
- ${TRACE_ON:-set -x}
+ restore_trace
 #=======================================================================
  
  ASWELL=(SWELL1 SWELL2) # Indices of HS from partitions
@@ -120,7 +120,7 @@ source "$HOMEgfs/ush/preamble.sh"
          echo '**************************** '
          echo ' '
          echo $msg
-         ${TRACE_ON:-set -x}
+         restore_trace
          echo "$RUNwave $grdID ${fhr} prdgen $date $cycle : GRIB file missing." >> $wavelog
          err=1;export err;${errchk} || exit ${err}
        fi
@@ -177,12 +177,12 @@ source "$HOMEgfs/ush/preamble.sh"
 
 # 2.a.1 Set up for tocgrib2
      echo "   Do set up for tocgrib2."
-     ${TRACE_ON:-set -x}
+     restore_trace
      #AWIPSGRB=awipsgrib.$grdID.f${fhr}
      AWIPSGRB=awipsgrib
 # 2.a.2 Make GRIB index
      echo "   Make GRIB index for tocgrib2."
-     ${TRACE_ON:-set -x}
+     restore_trace
      $GRB2INDEX gribfile.$grdID.f${fhr} gribindex.$grdID.f${fhr}
      OK=$?
 
@@ -197,7 +197,7 @@ source "$HOMEgfs/ush/preamble.sh"
        echo '******************************************** '
        echo ' '
        echo $msg
-       #${TRACE_ON:-set -x}
+       #restore_trace
        echo "$RUNwave $grdID prdgen $date $cycle : error in grbindex." >> $wavelog
        err=4;export err;err_chk
      fi
@@ -205,7 +205,7 @@ source "$HOMEgfs/ush/preamble.sh"
 # 2.a.3 Run AWIPS GRIB packing program tocgrib2
 
      echo "   Run tocgrib2"
-     ${TRACE_ON:-set -x}
+     restore_trace
      export pgm=tocgrib2
      export pgmout=tocgrib2.out
      . prep_step
@@ -227,7 +227,7 @@ source "$HOMEgfs/ush/preamble.sh"
        echo '*************************************** '
        echo ' '
        echo $msg
-       #${TRACE_ON:-set -x}
+       #restore_trace
        echo "$RUNwave prdgen $date $cycle : error in tocgrib2." >> $wavelog
        err=5;export err;err_chk
      else
@@ -236,13 +236,13 @@ source "$HOMEgfs/ush/preamble.sh"
 # 2.a.7 Get the AWIPS grib bulletin out ...
      #set +x
      echo "   Get awips GRIB bulletins out ..."
-     #${TRACE_ON:-set -x}
+     #restore_trace
      if [ "$SENDCOM" = 'YES' ]
      then
        #set +x
        echo "      Saving $AWIPSGRB.$grdOut.f${fhr} as grib2.$cycle.awipsww3_${grdID}.f${fhr}"
        echo "          in $PCOM"
-       #${TRACE_ON:-set -x}
+       #restore_trace
        cp $AWIPSGRB.$grdID.f${fhr} $PCOM/grib2.$cycle.f${fhr}.awipsww3_${grdOut}
        #set +x
      fi

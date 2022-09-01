@@ -95,7 +95,7 @@ set +x
 echo
 echo $msg
 echo
-${TRACE_ON:-set -x}
+restore_trace
 echo $msg >> $pgmout
 
 if [ "$#" -ne '1' ]; then
@@ -105,14 +105,14 @@ positional parameter 1"
    echo
    echo $msg
    echo
-   ${TRACE_ON:-set -x}
+   restore_trace
    echo $msg >> $pgmout
    msg="**NO TROPICAL CYCLONE tcvitals processed --> non-fatal"
    set +x
    echo
    echo $msg
    echo
-   ${TRACE_ON:-set -x}
+   restore_trace
    echo $msg >> $pgmout
 
 # Copy null files into "${COMSP}syndata.tcvitals.$tmmark" and
@@ -137,7 +137,7 @@ set +x
 echo
 echo "Run date is $CDATE10"
 echo
-${TRACE_ON:-set -x}
+restore_trace
 
 year=$(echo $CDATE10 | cut -c1-4)
 
@@ -159,7 +159,7 @@ if [ $dateck_size -lt 10 ]; then
    echo 1900010100 > dateck
    set +x
    echo -e "\n${msg}\n"
-   ${TRACE_ON:-set -x}
+   restore_trace
    echo $msg >> $pgmout
 fi
 
@@ -188,7 +188,7 @@ if [ -n "$files_override" ]; then  # for testing, typically want FILES=F
   fi 
   set +x
   echo -e "\n${msg}\n"
-  ${TRACE_ON:-set -x}
+  restore_trace
   echo $msg >> $pgmout
 fi
 
@@ -273,21 +273,21 @@ set +x
 echo
 echo "The foreground exit status for SYNDAT_QCTROPCY is " $errqct
 echo
-${TRACE_ON:-set -x}
+restore_trace
 if [ "$errqct" -gt '0' ];then
    msg="**NON-FATAL ERROR PROGRAM  SYNDAT_QCTROPCY  RETURN CODE $errqct"
    set +x
    echo
    echo $msg
    echo
-   ${TRACE_ON:-set -x}
+   restore_trace
    echo $msg >> $pgmout
    msg="**NO TROPICAL CYCLONE tcvitals processed --> non-fatal"
    set +x
    echo
    echo $msg
    echo
-   ${TRACE_ON:-set -x}
+   restore_trace
    echo $msg >> $pgmout
 
 # In the event of a ERROR in PROGRAM SYNDAT_QCTROPCY, copy null files into
@@ -311,7 +311,7 @@ echo "----------------------------------------------------------"
 echo "**********  COMPLETED PROGRAM syndat_qctropcy   **********"
 echo "----------------------------------------------------------"
 echo
-${TRACE_ON:-set -x}
+restore_trace
 
 if [ "$copy_back" = 'YES' ]; then
    cat lthistry>>$ARCHSYND/syndat_lthistry.$year
@@ -356,7 +356,7 @@ $HOMENHC/tcvitals successfully updated by syndat_qctropcy"
       echo
       echo $msg
       echo
-      ${TRACE_ON:-set -x}
+      restore_trace
       echo $msg >> $pgmout
    fi
 
@@ -368,7 +368,7 @@ not changed by syndat_qctropcy"
    echo
    echo $msg
    echo
-   ${TRACE_ON:-set -x}
+   restore_trace
    echo $msg >> $pgmout
 
 fi

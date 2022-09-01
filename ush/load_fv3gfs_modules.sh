@@ -41,4 +41,4 @@ fi
 ulimit -S -s "$ulimit_s"
 unset ulimit_s
 
-${TRACE_ON:-set -x}
+restore_trace

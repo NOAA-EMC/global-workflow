@@ -241,7 +241,7 @@ if [ $CDUMP = "gfs" ]; then
             echo "$(echo $TARCMD | tr 'a-z' 'A-Z') $CDATE gfsmos.tar failed"
             exit $status
         fi
-        ${ERR_EXIT_ON:-set -e}
+        restore_strict
     fi
 elif [ $CDUMP = "gdas" ]; then
 
@@ -275,7 +275,7 @@ for targrp in $targrp_list; do
         echo "$(echo $TARCMD | tr 'a-z' 'A-Z') $CDATE ${targrp}.tar failed"
         exit $status
     fi
-    ${ERR_EXIT_ON:-set -e}
+    restore_strict
 done
 # Turn extended globbing back off
 shopt -u extglob

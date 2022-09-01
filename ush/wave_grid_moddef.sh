@@ -38,7 +38,7 @@ source "$HOMEgfs/ush/preamble.sh"
   echo '+--------------------------------+'
   echo "   Grid            : $1"
   echo ' '
-  ${TRACE_ON:-set -x}
+  restore_trace
 
 # 0.b Check if grid set
 
@@ -50,7 +50,7 @@ source "$HOMEgfs/ush/preamble.sh"
     echo '*** Grid not identifife in ww3_mod_def.sh ***'
     echo '**************************************************'
     echo ' '
-    ${TRACE_ON:-set -x}
+    restore_trace
     exit 1
   else
     grdID=$1
@@ -67,7 +67,7 @@ source "$HOMEgfs/ush/preamble.sh"
     echo '*** EXPORTED VARIABLES IN ww3_mod_def.sh NOT SET ***'
     echo '*********************************************************'
     echo ' '
-    ${TRACE_ON:-set -x}
+    restore_trace
     exit 2
   fi
 
@@ -79,7 +79,7 @@ source "$HOMEgfs/ush/preamble.sh"
   echo '   Creating mod_def file ...'
   echo "   Executing $EXECwave/ww3_grid"
   echo ' '
-  ${TRACE_ON:-set -x}
+  restore_trace
  
   rm -f ww3_grid.inp 
   ln -sf ../ww3_grid.inp.$grdID ww3_grid.inp
@@ -95,7 +95,7 @@ source "$HOMEgfs/ush/preamble.sh"
     echo '*** FATAL ERROR : ERROR IN ww3_grid *** '
     echo '******************************************** '
     echo ' '
-    ${TRACE_ON:-set -x}
+    restore_trace
     exit 3
   fi
  
@@ -110,7 +110,7 @@ source "$HOMEgfs/ush/preamble.sh"
     echo '*** FATAL ERROR : MOD DEF FILE NOT FOUND *** '
     echo '******************************************** '
     echo ' '
-    ${TRACE_ON:-set -x}
+    restore_trace
     exit 4
   fi
 

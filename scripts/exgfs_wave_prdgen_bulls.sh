@@ -54,12 +54,12 @@ source "$HOMEgfs/ush/preamble.sh"
  echo "Starting at : $(date)"
  echo ' '
  echo ' '
- ${TRACE_ON:-set -x}
+ restore_trace
 
 # 1.  Get necessary files
  set +x
  echo "   Copying bulletins from $COMIN"
- ${TRACE_ON:-set -x}
+ restore_trace
 
 # 1.a Link the input file and untar it
  BullIn=$COMIN/station/${RUNwave}.$cycle.cbull_tar
@@ -75,7 +75,7 @@ source "$HOMEgfs/ush/preamble.sh"
    echo '************************************ '
    echo ' '
    echo $msg
-   ${TRACE_ON:-set -x}
+   restore_trace
    msg="FATAL ERROR ${RUNwave} prdgen $date $cycle : bulletin tar missing."
    echo $msg >> $wavelog
    export err=1; ${errchk}
@@ -84,14 +84,14 @@ source "$HOMEgfs/ush/preamble.sh"
 
  set +x
  echo "   Untarring bulletins ..."
- ${TRACE_ON:-set -x}
+ restore_trace
  tar -xf cbull.tar
  OK=$?
 
  if [ "$OK" = '0' ]; then
    set +x
    echo "      Unpacking successfull ..."
-   ${TRACE_ON:-set -x}
+   restore_trace
    rm -f cbull.tar
  else
    msg="ABNORMAL EXIT: ERROR IN BULLETIN UNTAR"
@@ -103,7 +103,7 @@ source "$HOMEgfs/ush/preamble.sh"
    echo '****************************************** '
    echo ' '
    echo $msg
-   ${TRACE_ON:-set -x}
+   restore_trace
    echo "${RUNwave} prdgen $date $cycle : bulletin untar error." >> $wavelog
    err=2;export err;err_chk
    exit $err
@@ -113,7 +113,7 @@ source "$HOMEgfs/ush/preamble.sh"
  set +x
  echo ' Nb=$(ls -1 *.cbull | wc -l)'
  Nb=$(ls -1 *.cbull | wc -l)
- ${TRACE_ON:-set -x}
+ restore_trace
   echo ' '
   echo "   Number of bulletin files :   $Nb"
   echo '   --------------------------'
@@ -131,7 +131,7 @@ source "$HOMEgfs/ush/preamble.sh"
    echo '******************************************* '
    echo ' '
    echo $msg
-   ${TRACE_ON:-set -x}
+   restore_trace
    echo "${RUNwave} prdgen $date $cycle : Bulletin header data file  missing." >> $wavelog
    err=3;export err;err_chk
    exit $err
@@ -144,7 +144,7 @@ source "$HOMEgfs/ush/preamble.sh"
  echo '   Sourcing data file with header info ...'
 
 # 2.b Set up environment variables
- ${TRACE_ON:-set -x}
+ restore_trace
  . awipsbull.data
 
 # 2.c Generate list of bulletins to process
@@ -162,7 +162,7 @@ source "$HOMEgfs/ush/preamble.sh"
    echo "      Processing $bull ($headr $oname) ..." 
  
    if [ -z "$headr" ] || [ ! -s $fname ]; then
-     ${TRACE_ON:-set -x}
+     restore_trace
      msg="ABNORMAL EXIT: MISSING BULLETING INFO"
      set +x
      echo ' '
@@ -171,20 +171,20 @@ source "$HOMEgfs/ush/preamble.sh"
      echo '******************************************** '
      echo ' '
      echo $msg
-     ${TRACE_ON:-set -x}
+     restore_trace
      echo "${RUNwave} prdgen $date $cycle : Missing bulletin data." >> $wavelog
      err=4;export err;err_chk
      exit $err
    fi
   
-   ${TRACE_ON:-set -x}
+   restore_trace
    
    formbul.pl -d $headr -f $fname -j $job -m ${RUNwave} \
               -p $PCOM -s NO -o $oname > formbul.out 2>&1
    OK=$?
 
    if [ "$OK" != '0' ] || [ ! -f $oname ]; then
-     ${TRACE_ON:-set -x}
+     restore_trace
      cat formbul.out
      msg="ABNORMAL EXIT: ERROR IN formbul"
      postmsg "$jlogfile" "$msg"
@@ -195,7 +195,7 @@ source "$HOMEgfs/ush/preamble.sh"
      echo '************************************** '
      echo ' '
      echo $msg
-     ${TRACE_ON:-set -x}
+     restore_trace
      echo "${RUNwave} prdgen $date $cycle : error in formbul." >> $wavelog
      err=5;export err;err_chk
      exit $err
@@ -206,7 +206,7 @@ source "$HOMEgfs/ush/preamble.sh"
  done
 
 # 3. Send output files to the proper destination
- ${TRACE_ON:-set -x}
+ restore_trace
  if [ "$SENDCOM" = YES ]; then
    cp  awipsbull.$cycle.${RUNwave} $PCOM/awipsbull.$cycle.${RUNwave}
    if [ "$SENDDBN_NTC" = YES ]; then
@@ -214,7 +214,7 @@ source "$HOMEgfs/ush/preamble.sh"
    else
      if [ "${envir}" = "para" ] || [ "${envir}" = "test" ] || [ "${envir}" = "dev" ]; then
        echo "Making NTC bulletin for parallel environment, but do not alert."
-       ${TRACE_ON:-set -x}
+       restore_trace
        (export SENDDBN=NO; make_ntc_bull.pl  WMOBH NONE KWBC NONE \
                $DATA/awipsbull.$cycle.${RUNwave} $PCOM/awipsbull.$cycle.${RUNwave})
      fi

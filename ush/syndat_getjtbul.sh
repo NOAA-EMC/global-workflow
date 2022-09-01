@@ -39,7 +39,7 @@ positional parameter 1"
    echo
    echo $msg
    echo
-   ${TRACE_ON:-set -x}
+   restore_trace
    echo $msg >> $pgmout
    set +u
    [ -n "$jlogfile" ]  &&  postmsg "$jlogfile" "$msg"
@@ -94,7 +94,7 @@ echo "  pdym1 is    $pdym1"
 echo
 echo "  ymddir is   $ymddir"
 echo
-${TRACE_ON:-set -x}
+restore_trace
 
 find=$ymd" "$hour
 echo "looking for string  $find  in $jtwcdir/tropcyc" >> $pgmout
@@ -159,7 +159,7 @@ set +x
 echo
 echo 'The foreground exit status for SYNDAT_GETJTBUL is ' $errget
 echo
-${TRACE_ON:-set -x}
+restore_trace
 if [ "$errget" -gt '0' ];then
    if [ "$errget" -eq '1' ];then
       msg="No JTWC bulletins in $jtwcdir/tropcyc, no JTWC tcvitals \
@@ -182,7 +182,7 @@ RETURN CODE $errget"
    echo
    echo $msg
    echo
-   ${TRACE_ON:-set -x}
+   restore_trace
    echo $msg >> $pgmout
    set +u
    [ -n "$jlogfile" ] && postmsg "$jlogfile" "$msg"
@@ -194,7 +194,7 @@ rec. passed to qctropcy"
    echo
    echo $msg
    echo
-   ${TRACE_ON:-set -x}
+   restore_trace
    echo $msg >> $pgmout
    set +u
    [ -n "$jlogfile" ] && postmsg "$jlogfile" "$msg"
@@ -206,7 +206,7 @@ echo "----------------------------------------------------------"
 echo "***********  COMPLETED PROGRAM syndat_getjtbul  **********"
 echo "----------------------------------------------------------"
 echo
-${TRACE_ON:-set -x}
+restore_trace
 
 if [ "$errget" -eq '0' ];then
    echo "Completed JTWC tcvitals records are:" >> $pgmout

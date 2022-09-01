@@ -144,7 +144,7 @@ if [ $ENSGRP -eq 0 ]; then
             echo "$(echo $TARCMD | tr 'a-z' 'A-Z') $CDATE enkf${CDUMP}.tar failed"
             exit $status
         fi
-        ${ERR_EXIT_ON:-set -eu}
+        restore_strict
     fi
 
     #-- Archive online for verification and diagnostics

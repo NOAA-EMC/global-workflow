@@ -149,7 +149,7 @@ while [[ "$#" -gt 0 ]] ; do
             echo $allhours | fold -s -w 72
             echo "and I will keep all forecast hours up to $lasthour."
             echo "Calculating forecast hours now."
-            ${TRACE_ON:-set -x}
+            restore_trace
             prev=0
             for now in $allhours ; do
                 if [[ ! ( "$now" -le "$lasthour" ) ]] ; then
@@ -242,7 +242,7 @@ then
   echo "Something wrong with input data.  One or more input variables has length 0"
   echo "PDY= ${PDY}, CYL= ${CYL}, cmodel= ${cmodel}"
   echo "EXITING...."
-  ${TRACE_ON:-set -x}
+  restore_trace
   err_exit " FAILED ${jobid} -- BAD INPUTS AT LINE $LINENO IN TRACKER SCRIPT - ABNORMAL EX
 IT"
 else
@@ -260,7 +260,7 @@ else
   echo "   SENDCOM ............................... $SENDCOM"
   echo "   SENDNHC ............................... $SENDNHC"
   echo " "
-  ${TRACE_ON:-set -x}
+  restore_trace
 fi
 
 scc=$(echo ${PDY} | cut -c1-2)
@@ -310,7 +310,7 @@ export maxtime=65    # Max number of forecast time levels
 
 cmodel=$(echo ${cmodel} | tr "[A-Z]" "[a-z]")
 
-${TRACE_ON:-set -x}                                           
+restore_trace
 # "gribver" is an environmental variable that should be defined
 # and exported in the parent script that calls this script.
 export gribver=${gribver:-2}
@@ -454,7 +454,7 @@ if [[ ! -z "$override_fcsthrs" && ! -z "$override_fcstlen" ]] ; then
     echo "Forecast hours to process: $override_fcsthrs"
     echo "ATCF frequency: $override_atcffreq (in centihours)"
     echo "        ----------------------------------------        "
-    ${TRACE_ON:-set -x}
+    restore_trace
     fcsthrs="$override_fcsthrs"
     fcstlen="$override_fcstlen"
     atcffreq="$override_atcffreq"
@@ -531,7 +531,7 @@ echo "              -----------------------------"
 echo " "
 echo " Now sorting and updating the TC Vitals file.  Please wait...."
 echo " "
-${TRACE_ON:-set -x}
+restore_trace
 
 current_str="${symd} ${CYL}00"
 
@@ -553,7 +553,7 @@ else
   echo " nor is there a TC vitals file for ${future_hh}z in ${synvitfuture_dir},"
   echo " Checking the raw TC Vitals file ....."
   echo " "
-  ${TRACE_ON:-set -x}
+  restore_trace
 fi
 
 # Take the vitals from Steve Lord's /com/gfs/prod tcvitals file,
@@ -643,7 +643,7 @@ then
     echo "!!! It could just be that there are no storms for the current"
     echo "!!! time.  Please check the dates and submit this job again...."
     echo " "
-    ${TRACE_ON:-set -x}
+    restore_trace
     exit 1
   fi
 
@@ -750,7 +750,7 @@ then
     echo "!!! model= ${atcfout}, forecast initial time = ${PDY}${CYL}"
     echo "!!! Exiting...."
     echo " "
-    ${TRACE_ON:-set -x}
+    restore_trace
     err_exit " FAILED ${jobid} - ERROR RUNNING SUPVIT IN TRACKER SCRIPT- ABNORMAL EXIT"
   fi
 
@@ -787,7 +787,7 @@ then
     echo "!!! It could just be that there are no storms for the current"
     echo "!!! time.  Please check the dates and submit this job again...."
     echo " "
-    ${TRACE_ON:-set -x}
+    restore_trace
     exit 1
   fi
 fi
@@ -798,7 +798,7 @@ echo " *--------------------------------*"
 echo " |        STORM SELECTION         |"
 echo " *--------------------------------*"
 echo " "
-${TRACE_ON:-set -x}
+restore_trace
 
 ict=1
 while [ $ict -le 15 ]
@@ -894,7 +894,7 @@ echo " "
 echo " for the times 6h ago, current and 6h ahead:"
 echo " "
 echo " "
-${TRACE_ON:-set -x}
+restore_trace
 
   touch ${DATA}/genvitals.upd.${cmodel}.${atcfout}.${PDY}${CYL}
 
@@ -917,7 +917,7 @@ echo "   NOW CUTTING APART INPUT GRIB FILES TO "
 echo "   CREATE 1 BIG GRIB INPUT FILE "
 echo " -----------------------------------------"
 echo " "
-${TRACE_ON:-set -x}
+restore_trace
 
 #gix=$NWPROD/util/exec/grbindex
 #g2ix=$NWPROD/util/exec/grb2index
@@ -939,7 +939,7 @@ find_gfile() {
     shift 2
     gfile=none
     echo "Searching for input $nicename data for forecast hour $nicehour"
-    ${TRACE_ON:-set -x}
+    restore_trace
     now=$( date +%s )
     later=$(( now + wait_max_time ))
     # Note: the loop has only one iteration if --wait-max-time is
@@ -949,17 +949,17 @@ find_gfile() {
             if [[ ! -e "$gfile" ]] ; then
                 set +x
                 echo "$gfile: does not exist"
-                ${TRACE_ON:-set -x}
+                restore_trace
                 gfile=none
             elif [[ ! -s "$gfile" ]] ; then
                 set +x
                 echo "$gfile: exists, but is empty"
-                ${TRACE_ON:-set -x}
+                restore_trace
                 gfile=none
             else
                 set +x
                 echo "$gfile: exists, is non-empty, so I will use this file"
-                ${TRACE_ON:-set -x}
+                restore_trace
                 return 0
             fi
         done
@@ -977,7 +977,7 @@ find_gfile() {
                 done
                 echo " !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
                 echo " "
-                ${TRACE_ON:-set -x}
+                restore_trace
                 err_exit "ERROR: mandatory input GFS file for hour $nicehour is missing or empty.  Aborting.  Checked for these files: $*"
                 continue
             else
@@ -990,7 +990,7 @@ find_gfile() {
                     echo " !!!    $nicename File: $gfile"
                 done
                 echo " "
-                ${TRACE_ON:-set -x}
+                restore_trace
                 sleep $sleep_time
             fi
         fi
@@ -1027,7 +1027,7 @@ if [[ ${model} -eq 1 || $model == 8 ]] ; then
   echo " "
   echo "Time before gfs wgrib loop is $(date)"
   echo " "
-  ${TRACE_ON:-set -x}
+  restore_trace
 
   if [[ "$model" -eq 8 ]] ; then
       name=gdas
@@ -1147,7 +1147,7 @@ if [[ ${model} -eq 1 || $model == 8 ]] ; then
       echo " "
       echo "Date in interpolation for model= $cmodel and fhour= $fhour000 before = $(date)"
       echo " "
-      ${TRACE_ON:-set -x}
+      restore_trace
 
       gfile=${DATA}/gfsgribfile.${PDY}${CYL}
       ifile=${DATA}/gfsixfile.${PDY}${CYL}
@@ -1230,7 +1230,7 @@ if [[ ${model} -eq 1 || $model == 8 ]] ; then
       echo " "
       echo "Date in interpolation for cmodel= $cmodel and fhour= $fhour000 after = $(date)"
       echo " "
-      ${TRACE_ON:-set -x}
+      restore_trace
     
     done
     fi # end of "If PhaseFlag is on"
@@ -1264,9 +1264,9 @@ while [ $ist -le 15 ]
 do
   if [ ${stormflag[${ist}]} -ne 1 ]
   then
-    set +x; echo "Storm number $ist NOT selected for processing"; ${TRACE_ON:-set -x}
+    set +x; echo "Storm number $ist NOT selected for processing"; restore_trace
   else
-    set +x; echo "Storm number $ist IS selected for processing...."; ${TRACE_ON:-set -x}
+    set +x; echo "Storm number $ist IS selected for processing...."; restore_trace
   fi
   let ist=ist+1
 done
@@ -1432,20 +1432,20 @@ echo " -----------------------------------------------"
 echo "           NOW EXECUTING TRACKER......"
 echo " -----------------------------------------------"
 echo " "
-${TRACE_ON:-set -x}
+restore_trace
 
 msg="$pgm start for $atcfout at ${CYL}z"
 $postmsg "$jlogfile" "$msg"
 
 set +x
 echo "+++ TIMING: BEFORE gettrk  ---> $(date)"
-${TRACE_ON:-set -x}
+restore_trace
 
 set +x
 echo " "
 echo "TIMING: Before call to gettrk at $(date)"
 echo " "
-${TRACE_ON:-set -x}
+restore_trace
 
 ##/usrx/local/bin/getrusage -a /hwrf/save/Qingfu.Liu/trak/para/exec/gettrk <${namelist}
 
@@ -1456,11 +1456,11 @@ set +x
 echo " "
 echo "TIMING: After call to gettrk at $(date)"
 echo " "
-${TRACE_ON:-set -x}
+restore_trace
 
 set +x
 echo "+++ TIMING: AFTER  gettrk  ---> $(date)"
-${TRACE_ON:-set -x}
+restore_trace
 
 #--------------------------------------------------------------#
 # Send a message to the jlogfile for each storm that used 
@@ -1490,7 +1490,7 @@ echo " -----------------------------------------------"
 echo "    NOW COPYING OUTPUT TRACK FILES TO COM  "
 echo " -----------------------------------------------"
 echo " "
-${TRACE_ON:-set -x}
+restore_trace
 
 if [[ ! -e "$track_file_path" ]] ; then
     $postmsg "$jlogfile" "WARNING: tracker output file does not exist.  This is probably an error.  File: $track_file_path"
@@ -1659,12 +1659,12 @@ if [ ${gettrk_rcc} -eq 0 ]; then
             echo " "
             echo "+++ Adding records to  TPC ATCFUNIX directory: /tpcprd/atcf_unix/${at}${NO}${syyyy}"
             echo " "
-            ${TRACE_ON:-set -x}
+            restore_trace
           else
             set +x
             echo " "
             echo "There is no TPC ATCFUNIX directory for: /tpcprd/atcf_unix/${at}${NO}${syyyy}"
-            ${TRACE_ON:-set -x}
+            restore_trace
           fi
         done
       fi
@@ -1691,7 +1691,7 @@ else
   echo "!!! model= ${atcfout}, forecast initial time = ${PDY}${CYL}"
   echo "!!! Exiting...."
   echo " "
-  ${TRACE_ON:-set -x}
+  restore_trace
   err_exit " FAILED ${jobid} - ERROR RUNNING GETTRK IN TRACKER SCRIPT- ABNORMAL EXIT"
 
 fi

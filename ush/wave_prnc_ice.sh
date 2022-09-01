@@ -51,7 +51,7 @@ source "$HOMEgfs/ush/preamble.sh"
   echo "   Ice grid ID     : $WAVEICE_FID"
   echo "   Ice file        : $WAVICEFILE"
   echo ' '
-  ${TRACE_ON:-set -x}
+  restore_trace
   echo "Making ice fields."
 
   if [ -z "$YMDH" ] || [ -z "$cycle" ] || \
@@ -66,7 +66,7 @@ source "$HOMEgfs/ush/preamble.sh"
     echo '**************************************************'
     echo ' '
     exit 1
-    ${TRACE_ON:-set -x}
+    restore_trace
     echo "NON-FATAL ERROR - EXPORTED VARIABLES IN preprocessor NOT SET"
   fi
 
@@ -89,7 +89,7 @@ source "$HOMEgfs/ush/preamble.sh"
   then
     set +x
     echo "   ice.grib copied ($file)."
-    ${TRACE_ON:-set -x}
+    restore_trace
   else
     set +x
     echo ' '
@@ -97,7 +97,7 @@ source "$HOMEgfs/ush/preamble.sh"
     echo "*** FATAL ERROR: NO ICE FILE $file ***  "
     echo '************************************** '
     echo ' '
-    ${TRACE_ON:-set -x}
+    restore_trace
     echo "FATAL ERROR - NO ICE FILE (GFS GRIB)"
     exit 2
   fi
@@ -108,7 +108,7 @@ source "$HOMEgfs/ush/preamble.sh"
 
   set +x
   echo '   Extracting data from ice.grib ...'
-  ${TRACE_ON:-set -x}
+  restore_trace
 
   $WGRIB2 ice.grib -netcdf icean_5m.nc 2>&1 > wgrib.out
 
@@ -124,7 +124,7 @@ source "$HOMEgfs/ush/preamble.sh"
     echo '*** ERROR IN UNPACKING GRIB ICE FILE *** '
     echo '**************************************** '
     echo ' '
-    ${TRACE_ON:-set -x}
+    restore_trace
     echo "ERROR IN UNPACKING GRIB ICE FILE."
     exit 3
   fi
@@ -139,7 +139,7 @@ source "$HOMEgfs/ush/preamble.sh"
   set +x
   echo '   Run through preprocessor ...'
   echo ' '
-  ${TRACE_ON:-set -x}
+  restore_trace
 
   cp -f ${DATA}/ww3_prnc.ice.$WAVEICE_FID.inp.tmpl ww3_prnc.inp
 
@@ -157,7 +157,7 @@ source "$HOMEgfs/ush/preamble.sh"
     echo '*** WARNING: NON-FATAL ERROR IN ww3_prnc *** '
     echo '******************************************** '
     echo ' '
-    ${TRACE_ON:-set -x}
+    restore_trace
     echo "WARNING: NON-FATAL ERROR IN ww3_prnc."
     exit 4
   fi
@@ -180,7 +180,7 @@ source "$HOMEgfs/ush/preamble.sh"
  
   set +x
   echo "   Saving ice.ww3 as $COMOUT/rundata/${icefile}"
-  ${TRACE_ON:-set -x}
+  restore_trace
   cp ice.ww3 $COMOUT/rundata/${icefile}
   rm -f ice.ww3
 

@@ -38,7 +38,7 @@ source "$HOMEgfs/ush/preamble.sh"
     echo '*** LOCATION ID IN ww3_outp_spec.sh NOT SET ***'
     echo '***********************************************'
     echo ' '
-    ${TRACE_ON:-set -x}
+    restore_trace
     exit 1
   else
     buoy=$bloc
@@ -56,7 +56,7 @@ source "$HOMEgfs/ush/preamble.sh"
     echo '*** EXPORTED VARIABLES IN ww3_outp_cat.sh NOT SET ***'
     echo '******************************************************'
     echo ' '
-    ${TRACE_ON:-set -x}
+    restore_trace
     exit 3
   fi
 
@@ -66,7 +66,7 @@ source "$HOMEgfs/ush/preamble.sh"
 
   set +x
   echo "   Generate input file for ww3_outp."
-  ${TRACE_ON:-set -x}
+  restore_trace
 
   if [ "$specdir" = "bull" ]
   then
@@ -113,7 +113,7 @@ source "$HOMEgfs/ush/preamble.sh"
       echo "*** FATAL ERROR : OUTPUT DATA FILE FOR BOUY $bouy at ${ymdh} NOT FOUND *** "
       echo '************************************************************************** '
       echo ' '
-      ${TRACE_ON:-set -x}
+      restore_trace
       err=2; export err;${errchk}
       exit $err
     fi
@@ -137,7 +137,7 @@ source "$HOMEgfs/ush/preamble.sh"
     echo " FATAL ERROR : OUTPUTFILE ${outfile} not created    "
     echo '*************************************************** '
     echo ' '
-    ${TRACE_ON:-set -x}
+    restore_trace
     err=2; export err;${errchk}
     exit $err
   fi
