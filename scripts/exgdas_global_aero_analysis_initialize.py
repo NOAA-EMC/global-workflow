@@ -5,7 +5,7 @@
 # Script name:         exgdas_global_aero_analysis_initialize.py
 # Script description:  Initializes runtime directory for global aerosol analysis
 #
-# Author: Cory Martin      Org: NCEP/EMC     Date: 2022-8-29
+# Author: Cory Martin      Org: NCEP/EMC     Date: 2022-09-06
 #
 # Abstract: This script sets up the runtime directory and stages
 #           necessary input files for FV3-JEDI executable(s) needed
@@ -49,24 +49,25 @@ class GlobalAerosolAnalysis:
         """
         Method to stage fix files for FV3-JEDI
         """
+        # Note to @aerorahul, I hope to replace this with API calls to the 'r2d2' replacement
         fix_file_dict = {
             os.path.join(self.fv3jedi_fix,
-                         'fv3files',
+                         'fv3jedi', 'fv3files',
                          f'akbk{self.nlevs}.nc4'): os.path.join(datadir,
                                                                 'fv3jedi',
                                                                 'akbk.nc4'),
             os.path.join(self.fv3jedi_fix,
-                         'fv3files',
+                         'fv3jedi', 'fv3files',
                          'fmsmpp.nml'): os.path.join(datadir,
                                                      'fv3jedi',
                                                      'fmsmpp.nml'),
             os.path.join(self.fv3jedi_fix,
-                         'fv3files',
+                         'fv3jedi', 'fv3files',
                          'field_table_gfdl'): os.path.join(datadir,
                                                            'fv3jedi',
                                                            'field_table'),
             os.path.join(self.fv3jedi_fix,
-                         'fieldmetadata',
+                         'fv3jedi', 'fieldmetadata',
                          'gfs-aerosol.yaml'): os.path.join(datadir,
                                                            'fv3jedi',
                                                            'field_table'),
@@ -80,6 +81,67 @@ class GlobalAerosolAnalysis:
                 os.remove(dest)
             shutil.copyfile(src, dest)
         logging.info('Completed staging fix files...')
+
+
+    def stage_crtm_coeff(self, datadir):
+        """
+        Stage CRTM coefficent files needed
+        to run CRTM AOD operator
+        """
+        coeff_file_dict = {
+            os.path.join(self.fv3jedi_fix,
+                         'crtm', '2.3.0',
+                         'AerosolCoeff.bin'): os.path.join(datadir,
+                                                           'crtm',
+                                                           'AerosolCoeff.bin'),
+            os.path.join(self.fv3jedi_fix,
+                         'crtm', '2.3.0',
+                         'CloudCoeff.bin'): os.path.join(datadir,
+                                                           'crtm',
+                                                           'CloudCoeff.bin'),
+            # Note: Ideally we would only copy files for platforms used
+            # but since it is just 2 VIIRS platforms, just copy them both regardless
+            # We will fix this when there is a solution for ATM mode
+            os.path.join(self.fv3jedi_fix,
+                         'crtm', '2.3.0',
+                         'v.viirs-m_npp.SpcCoeff.bin'): os.path.join(datadir,
+                                                                     'crtm',
+                                                                     'v.viirs-m_npp.SpcCoeff.bin'),
+            os.path.join(self.fv3jedi_fix,
+                         'crtm', '2.3.0',
+                         'v.viirs-m_npp.TauCoeff.bin'): os.path.join(datadir,
+                                                                     'crtm',
+                                                                     'v.viirs-m_npp.TauCoeff.bin'),
+            os.path.join(self.fv3jedi_fix,
+                         'crtm', '2.3.0',
+                         'v.viirs-m_j01.SpcCoeff.bin'): os.path.join(datadir,
+                                                                     'crtm',
+                                                                     'v.viirs-m_j01.SpcCoeff.bin'),
+            os.path.join(self.fv3jedi_fix,
+                         'crtm', '2.3.0',
+                         'v.viirs-m_j01.TauCoeff.bin'): os.path.join(datadir,
+                                                                     'crtm',
+                                                                     'v.viirs-m_j01.TauCoeff.bin'),
+            }
+
+        logging.info('Staging CRTM coefficients...')
+        for src, dest in coeff_file_dict.items():
+            logging.info(f'Copying {src} to {dest}')
+            if not os.path.exists(os.path.dirname(dest)):
+                os.makedirs(os.path.dirname(dest))
+            if os.path.exists(dest):
+                os.remove(dest)
+            shutil.copyfile(src, dest)
+        logging.info('Completed staging CRTM coefficients...')
+
+
+    def stage_berror(self, datadir):
+        """
+        Stage background error files needed
+        """
+        # NOTE for the 'plumbing', this will not be done yet, just using identity B
+        logging.info('Staging background error files...')
+        logging.info('Completed staging background error files...')
 
 
 def global_aero_analysis_init():
@@ -100,8 +162,10 @@ def global_aero_analysis_init():
     aeroanl.stage_fix(os.environ['DATA'])
 
     # stage AOD CRTM coefficients
+    aeroanl.stage_crtm_coeff(os.environ['DATA'])
 
     # stage BUMP background error files
+    aeroanl.stage_berror(os.environ['DATA'])
 
     # stage observations
 
