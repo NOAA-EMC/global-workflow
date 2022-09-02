@@ -1,0 +1,20 @@
+import os
+
+class Task():
+    """
+    Parent class of GFS workflow tasks
+    """
+    def __init__(self, config):
+        print('Task class')
+        self.config = config
+        if not os.path.exists(self.config['DATA']):
+            os.makedirs(self.config['DATA'])
+
+    def initialize(self):
+        print('initialized')
+
+    def execute(self):
+        print('running')
+
+    def finalize(self):
+        print('done')

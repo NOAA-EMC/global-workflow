@@ -36,8 +36,9 @@ logging.info(f"sys.path={sys.path}")
 # import UFSDA utilities
 import ufsda
 
+# import GFS workflow module
+import gfs
 
-class GlobalAerosolAnalysis:
     """
     Class for global aerosol analysis object
     """
@@ -122,6 +123,7 @@ class GlobalAerosolAnalysis:
                          'v.viirs-m_j01.TauCoeff.bin'): os.path.join(datadir,
                                                                      'crtm',
                                                                      'v.viirs-m_j01.TauCoeff.bin'),
+            # do we need other files? NPOESS/FASTEM6/USGS/etc.? Test to find out?
             }
 
         logging.info('Staging CRTM coefficients...')
