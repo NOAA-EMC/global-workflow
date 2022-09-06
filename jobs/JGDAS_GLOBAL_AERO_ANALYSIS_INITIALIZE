@@ -93,7 +93,7 @@ export PYTHONPATH=$HOMEgfs/sorc/gdas.cd/ush/:$PYTHONPATH
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASAEROINITPY:-$HOMEgfs/sorc/gdas.cd/scripts/exgdas_global_aero_analysis_initialize.py}
+EXSCRIPT=${GDASAEROINITPY:-$HOMEgfs/scripts/exgdas_global_aero_analysis_initialize.py}
 $EXSCRIPT
 status=$?
 [[ $status -ne 0 ]] && exit $status
