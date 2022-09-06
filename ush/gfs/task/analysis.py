@@ -123,9 +123,9 @@ class AerosolAnalysis(Analysis):
         fix_file_dict = {
             os.path.join(self.fv3jedi_fix,
                          'fv3jedi', 'fv3files',
-                         f'akbk{self.nlevs}.nc4'): os.path.join(self.datadir,
-                                                                'fv3jedi',
-                                                                'akbk.nc4'),
+                         f'akbk{self.nlayers}.nc4'): os.path.join(self.datadir,
+                                                                  'fv3jedi',
+                                                                  'akbk.nc4'),
             os.path.join(self.fv3jedi_fix,
                          'fv3jedi', 'fv3files',
                          'fmsmpp.nml'): os.path.join(self.datadir,

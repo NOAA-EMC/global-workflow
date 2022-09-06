@@ -7,7 +7,7 @@ class Task():
     def __init__(self, config):
         self.config = config
         self.datadir = config['DATA']
-        self.nlevs = config['NLEVS']
+        self.nlevs = config['LEVS']
         self.nlayers = int(self.nlevs) - 1
         if not os.path.exists(self.datadir):
             os.makedirs(self.datadir)

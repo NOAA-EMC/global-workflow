@@ -37,7 +37,7 @@ logging.info(f"sys.path={sys.path}")
 import ufsda
 
 # import GFS workflow module
-import gfs
+import gfs.task.analysis
 
 if __name__ == '__main__':
 
