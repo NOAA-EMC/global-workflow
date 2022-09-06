@@ -27,9 +27,9 @@ class Analysis(Task):
         logging.info('Finished staging observations')
 
     def stage_bkg(self, filedict):
-        logging.info('Staging observations')
+        logging.info('Staging model backgrounds')
         self.stage(filedict)
-        logging.info('Finished staging observations')
+        logging.info('Finished staging backgrounds')
 
     def stage_fix(self, filedict):
         logging.info('Staging fix files')
