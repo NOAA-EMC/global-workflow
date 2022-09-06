@@ -26,6 +26,11 @@ class Analysis(Task):
         self.stage(filedict)
         logging.info('Finished staging observations')
 
+    def stage_bkg(self, filedict):
+        logging.info('Staging observations')
+        self.stage(filedict)
+        logging.info('Finished staging observations')
+
     def stage_fix(self, filedict):
         logging.info('Staging fix files')
         self.stage(filedict)
@@ -52,6 +57,7 @@ class AerosolAnalysis(Analysis):
 
     def initialize(self):
         super().initialize()
+        logging.info('Initializing global aerosol analysis')
         fix_dict = self.get_fix_file_dict()
         self.stage_fix(fix_dict)
         crtm_fix_dict = self.get_crtm_coeff_dict()
@@ -106,14 +112,14 @@ class AerosolAnalysis(Analysis):
                                                                      'v.viirs-m_npp.TauCoeff.bin'),
             os.path.join(self.fv3jedi_fix,
                          'crtm', '2.3.0',
-                         'v.viirs-m_j01.SpcCoeff.bin'): os.path.join(self.datadir,
-                                                                     'crtm',
-                                                                     'v.viirs-m_j01.SpcCoeff.bin'),
+                         'v.viirs-m_j1.SpcCoeff.bin'): os.path.join(self.datadir,
+                                                                    'crtm',
+                                                                    'v.viirs-m_j1.SpcCoeff.bin'),
             os.path.join(self.fv3jedi_fix,
                          'crtm', '2.3.0',
-                         'v.viirs-m_j01.TauCoeff.bin'): os.path.join(self.datadir,
-                                                                     'crtm',
-                                                                     'v.viirs-m_j01.TauCoeff.bin'),
+                         'v.viirs-m_j1.TauCoeff.bin'): os.path.join(self.datadir,
+                                                                    'crtm',
+                                                                    'v.viirs-m_j1.TauCoeff.bin'),
             # do we need other files? NPOESS/FASTEM6/USGS/etc.? Test to find out?
             }
         return coeff_file_dict
