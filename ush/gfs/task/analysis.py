@@ -11,9 +11,6 @@ class Analysis(Task):
         super().__init__(config)
         # for now config is assumed to be os.environ
         self.fv3jedi_fix = config['FV3JEDI_FIX']
-        self.datadir = config['DATA']
-        self.nlevs = config['NLEVS']
-        self.nlayers = int(self.nlevs) - 1
 
     def initialize(self):
         super().initialize()
@@ -60,7 +57,9 @@ class AerosolAnalysis(Analysis):
         crtm_fix_dict = self.get_crtm_coeff_dict()
         self.stage_crtm(crtm_fix_dict)
         self.stage_berror({})
+        obs_dict = self.get_obs_dict()
         self.stage_obs(obs_dict)
+        bkg_dict = self.get_bkg_dict()
         self.stage_bkg(bkg_dict)
 
     def execute(self):

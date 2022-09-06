@@ -7,8 +7,11 @@ class Task():
     def __init__(self, config):
         print('Task class')
         self.config = config
-        if not os.path.exists(self.config['DATA']):
-            os.makedirs(self.config['DATA'])
+        self.datadir = config['DATA']
+        self.nlevs = config['NLEVS']
+        self.nlayers = int(self.nlevs) - 1
+        if not os.path.exists(self.datadir):
+            os.makedirs(self.datadir)
 
     def initialize(self):
         print('initialized')
