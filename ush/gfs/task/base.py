@@ -13,10 +13,10 @@ class Task():
             os.makedirs(self.datadir)
 
     def initialize(self):
-        print('initialized')
+        pass
 
     def execute(self):
-        print('running')
+        pass
 
     def finalize(self):
-        print('done')
+        pass
