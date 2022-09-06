@@ -73,6 +73,12 @@ class AerosolAnalysis(Analysis):
         self.stage(filedict)
         logging.info('Finished staging CRTM coefficient files')
 
+    def get_obs_dict(self):
+        return {}
+
+    def get_bkg_dict(self):
+        return {}
+
     def get_crtm_coeff_dict(self):
         coeff_file_dict = {
             os.path.join(self.fv3jedi_fix,
