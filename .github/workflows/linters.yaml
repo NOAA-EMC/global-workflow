@@ -1,0 +1,31 @@
+#
+name: linters
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash -o pipefail {0}
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    permissions:
+      security-events: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v1
+        with:
+          fetch-depth: 0
+
+      - name: Lint shell scripts
+        uses: redhat-plumbers-in-action/differential-shellcheck@latest
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          shell-scripts: ush/preamble.sh
