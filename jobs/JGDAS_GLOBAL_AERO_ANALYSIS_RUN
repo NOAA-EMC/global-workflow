@@ -88,7 +88,6 @@ export COMIN_GES_ENS="$ROTDIR/enkf$GDUMP.$gPDY/$gcyc/$COMPONENT"
 module purge
 module use $HOMEgfs/sorc/gdas.cd/modulefiles
 module load GDAS/orion
-export PYTHONPATH=$HOMEgfs/sorc/gdas.cd/ush/:$PYTHONPATH
 
 ###############################################################
 # Run relevant script

@@ -5,7 +5,6 @@ class Task():
     Parent class of GFS workflow tasks
     """
     def __init__(self, config):
-        print('Task class')
         self.config = config
         self.datadir = config['DATA']
         self.nlevs = config['NLEVS']
