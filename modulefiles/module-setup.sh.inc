@@ -16,7 +16,13 @@ else
     __ms_shell=sh
 fi
 
-if [[ -d /lfs3 ]] ; then
+if [[ -d /lfs/f1 ]] ; then
+    # We are on NOAA Cactus or Dogwood
+    if ( ! eval module help > /dev/null 2>&1 ) ; then
+        source /usr/share/lmod/lmod/init/$__ms_shell
+    fi
+    module reset
+elif [[ -d /lfs3 ]] ; then
     # We are on NOAA Jet
     if ( ! eval module help > /dev/null 2>&1 ) ; then
         source /apps/lmod/lmod/init/$__ms_shell

@@ -19,7 +19,7 @@
 #
 #######
 set +x
-if [[ -v '1' ]]; then
+if (( $# > 0 )); then
 	id="(${1})"
 else
 	id=""
@@ -29,10 +29,11 @@ fi
 start_time=$(date +%s)
 
 # Get the base name of the calling script
-_calling_script=$(basename ${BASH_SOURCE[1]})
+_calling_script=$(basename "${BASH_SOURCE[1]}")
 
 # Announce the script has begun
-echo "Begin ${_calling_script} at $(date -u)"
+start_time_human=$(date -d"@${start_time}" -u)
+echo "Begin ${_calling_script} at ${start_time_human}"
 
 # Stage our variables
 export STRICT=${STRICT:-"YES"}
@@ -40,14 +41,14 @@ export TRACE=${TRACE:-"YES"}
 export ERR_EXIT_ON=""
 export TRACE_ON=""
 
-if [[ $STRICT == "YES" ]]; then
+if [[ ${STRICT} == "YES" ]]; then
 	# Exit on error and undefined variable
 	export ERR_EXIT_ON="set -eu"
 fi
-if [[ $TRACE == "YES" ]]; then
+if [[ ${TRACE} == "YES" ]]; then
  	export TRACE_ON="set -x"
 	# Print the script name and line number of each command as it is executed
-	export PS4='+ $(basename $BASH_SOURCE)[$LINENO]'"$id: "
+	export PS4='+ $(basename ${BASH_SOURCE})[${LINENO}]'"${id}: "
 fi
 
 postamble() {
@@ -64,23 +65,27 @@ postamble() {
 	#
 
 	set +x
-	script=${1}
-	start_time=${2}
-	rc=${3}
+	script="${1}"
+	start_time="${2}"
+	rc="${3}"
 
 	# Calculate the elapsed time
 	end_time=$(date +%s)
+	end_time_human=$(date -d@"${end_time}" -u +%H:%M:%S)
 	elapsed_sec=$((end_time - start_time))
-	elapsed=$(date -d@${elapsed_sec} -u +%H:%M:%S)
+	elapsed=$(date -d@"${elapsed_sec}" -u +%H:%M:%S)
 
 	# Announce the script has ended, then pass the error code up
-	echo "End ${script} at $(date -u) with error code ${rc:-0} (time elapsed: ${elapsed})"
-	exit ${rc}
+	echo "End ${script} at ${end_time_human} with error code ${rc:-0} (time elapsed: ${elapsed})"
+	exit "${rc}"
 }
 
 # Place the postamble in a trap so it is always called no matter how the script exits
+# Shellcheck: Turn off warning about substitions at runtime instead of signal time
+# shellcheck disable=SC2064
 trap "postamble ${_calling_script} ${start_time} \$?" EXIT
+# shellcheck disable=
 
 # Turn on our settings
-$ERR_EXIT_ON
-$TRACE_ON
+${ERR_EXIT_ON}
+${TRACE_ON}
