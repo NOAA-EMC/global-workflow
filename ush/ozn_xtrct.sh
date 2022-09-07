@@ -232,10 +232,10 @@ EOF
             $NCP ${type}.${ptype}.${PDATE}.ieee_d.${Z} ${TANKverf_ozn}/horiz/
       
 
-            echo "finished processing ptype, type:  $ptype, $type"
+            echo "finished processing ptype, type:  ${ptype}, ${type}"
 
          else
-            echo "diag file for $type.$ptype not found"
+            echo "diag file for ${type}.${ptype} not found"
          fi
 
       done  # type in satype
