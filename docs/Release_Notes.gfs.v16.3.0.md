@@ -124,11 +124,11 @@ This instruction is for GPS RO from Sentinel-6A (type 066, sub 0) and ASCAT wind
 VERSION FILE CHANGES
 --------------------
 
-* `ecf/versions/gfs.ver` - change gfs_ver=v16.3, obsproc_ver=v1.1.0, and crtm_ver=2.4.0
-* `versions/build.ver` - change crtm_ver=2.4.0 and add ncio_ver=1.0.0
+* `ecf/versions/gfs.ver` - change gfs_ver=v16.3, obsproc_ver=v1.1.0, crtm_ver=2.4.0, and bufr_ver=11.7.0
+* `versions/build.ver` - change crtm_ver=2.4.0, change bufr_ver=11.7.0, and add ncio_ver=1.0.0
 * `versions/hera.ver` - added for RDHPCS Hera support
 * `versions/orion.ver` - added for RDHPCS Orion support
-* `versions/run.ver` - change obsproc_ver=v1.1 and change crtm_ver=2.4.0
+* `versions/run.ver` - change obsproc_ver=v1.1, crtm_ver=2.4.0, and bufr_ver=11.7.0
 * `versions/wcoss2.ver` - update obsproc/prepobs versions and add tracker/fit2obs versions for dev
 
 SORC CHANGES
