@@ -36,7 +36,7 @@ export FIXreg2grb2=$HOMEgfs/fix/fix_reg2grb2
 ########################################################################
 
 # GLOBAL static environment parameters
-export NWPROD="@NWPROD@"
+export PACKAGEOORT="@PACKAGEROOT@"
 export COMROOT="@COMROOT@"
 export DMPDIR="@DMPDIR@"
 export RTMFIX=$CRTM_FIX
@@ -76,9 +76,8 @@ export MODE="@MODE@" # cycled/forecast-only
 export FIXgsi="$HOMEgfs/fix/fix_gsi"
 export HOMEfv3gfs="$HOMEgfs/sorc/fv3gfs.fd"
 export HOMEpost="$HOMEgfs"
-export HOMEobsproc_prep="$BASE_GIT/obsproc/obsproc_prep.v5.5.0_hpc-stack"
-export HOMEobsproc_network="$BASE_GIT/obsproc/obsproc_global.v3.4.2_hpc-stack"
-export HOMEobsproc_global=$HOMEobsproc_network
+#export HOMEobsproc="$BASE_GIT/obsproc/v1.1.0"
+export HOMEobsproc="$BASE_GIT/obsproc/v1.0.2"
 
 # CONVENIENT utility scripts and other environment parameters
 export NCP="/bin/cp -p"
@@ -133,7 +132,6 @@ export COMOUTice=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/ice
 export COMINaero=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/chem
 export COMOUTaero=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/chem
 
-export jlogfile="${EXPDIR}/logs/jlogfile"
 export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 export LOGSCRIPT=${LOGSCRIPT:-""}
 #export ERRSCRIPT=${ERRSCRIPT:-"err_chk"}
