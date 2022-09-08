@@ -71,8 +71,7 @@ FV3_GFS_predet(){
 
   # Directories.
   pwd=$(pwd)
-  NWPROD=${NWPROD:-${PACKAGEROOT:-$pwd}}
-  HOMEgfs=${HOMEgfs:-$NWPROD}
+  HOMEgfs=${HOMEgfs:-${PACKAGEROOT:-$pwd}}
   FIX_DIR=${FIX_DIR:-$HOMEgfs/fix}
   FIX_AM=${FIX_AM:-$FIX_DIR/fix_am}
   FIX_AER=${FIX_AER:-$FIX_DIR/fix_aer}
