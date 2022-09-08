@@ -11,12 +11,12 @@ OBJS=   webtitle.o
 # CMD		Name of the executable
 # PROFLIB	Library needed for profiling
 #
-FC =	ifort 
+FC =	ftn
 
 LIBS=   ${W3NCO_LIB4}
 
 CMD =	webtitle       
-FFLAGS = 
+FFLAGS = -g -traceback
 #FFLAGS = -debug 
 
 # Lines from here on down should not need to be changed.  They are the
