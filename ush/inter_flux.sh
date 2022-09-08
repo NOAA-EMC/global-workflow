@@ -10,7 +10,7 @@ source "$HOMEgfs/ush/preamble.sh" "$FH"
 
 export CNVGRIB=${CNVGRIB:-${NWPROD:-/nwprod}/util/exec/cnvgrib21}
 export COPYGB2=${COPYGB2:-${NWPROD:-/nwprod}/util/exec/copygb2}
-export WGRIB2=${WGRIB2:-${NWPROD:-/nwprod}/util/exec/wgrib2}
+export WGRIB2=${WGRIB2:-${wgrib2_ROOT}/bin/wgrib2}
 export GRBINDEX=${GRBINDEX:-${NWPROD:-nwprod}/util/exec/grbindex}
 export RUN=${RUN:-"gfs"}
 export cycn=$(echo $CDATE |cut -c 9-10)
