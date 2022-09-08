@@ -29,7 +29,7 @@ source "$HOMEgfs/ush/preamble.sh"
  export cycle=${cycle:-t${cyc}z}
  export pgmout=OUTPUT.$$
  export DATA=${DATA:-${DATAROOT:?}/${job}.$$}
- #export CODEwave=${CODEwave:-${NWROOT}/${NET}_code.${wave_code_ver}/${code_pkg}}
+ #export CODEwave=${CODEwave:-${PACKAGEROOT}/${NET}_code.${wave_code_ver}/${code_pkg}}
  export EXECwave=${EXECwave:-$HOMEgfs/exec}
  export FIXwave=${FIXwave:-$HOMEgfs/fix}
  export PARMwave=${PARMwave:-$HOMEgfs/parm/parm_wave}
@@ -66,8 +66,7 @@ source "$HOMEgfs/ush/preamble.sh"
  if [ -f $BullIn ]; then
    cp $BullIn cbull.tar
  else
-   msg="ABNORMAL EXIT: NO BULLETIN TAR FILE"
-   postmsg "$jlogfile" "$msg"
+   echo "ABNORMAL EXIT: NO BULLETIN TAR FILE"
    set +x
    echo ' '
    echo '************************************ '
@@ -94,8 +93,7 @@ source "$HOMEgfs/ush/preamble.sh"
    ${TRACE_ON:-set -x}
    rm -f cbull.tar
  else
-   msg="ABNORMAL EXIT: ERROR IN BULLETIN UNTAR"
-   postmsg "$jlogfile" "$msg"
+   echo "ABNORMAL EXIT: ERROR IN BULLETIN UNTAR"
    set +x
    echo ' '
    echo '****************************************** '
@@ -122,8 +120,7 @@ source "$HOMEgfs/ush/preamble.sh"
  if [ -f $PARMwave/bull_awips_gfswave ]; then
    cp $PARMwave/bull_awips_gfswave awipsbull.data
  else
-   msg="ABNORMAL EXIT: NO AWIPS BULLETIN HEADER DATA FILE"
-   postmsg "$jlogfile" "$msg"
+   echo "ABNORMAL EXIT: NO AWIPS BULLETIN HEADER DATA FILE"
    set +x
    echo ' '
    echo '******************************************* '
@@ -186,8 +183,7 @@ source "$HOMEgfs/ush/preamble.sh"
    if [ "$OK" != '0' ] || [ ! -f $oname ]; then
      ${TRACE_ON:-set -x}
      cat formbul.out
-     msg="ABNORMAL EXIT: ERROR IN formbul"
-     postmsg "$jlogfile" "$msg"
+     echo "ABNORMAL EXIT: ERROR IN formbul"
      set +x
      echo ' '
      echo '************************************** '
