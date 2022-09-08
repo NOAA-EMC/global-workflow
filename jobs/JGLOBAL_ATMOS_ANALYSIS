@@ -126,7 +126,13 @@ if [ ! -f $PREPQC ]; then
 fi
 export PREPQCPF="${COMIN_OBS}/${OPREFIX}prepbufr.acft_profiles"
 export TCVITL="${COMOUT}/${OPREFIX}syndata.tcvitals.tm00"
-[[ $DONST = "YES" ]] && export NSSTBF="${COMIN_OBS}/${OPREFIX}nsstbufr"
+if [[ $DONST = "YES" ]]; then
+   if [[ -f "${COMIN_OBS}/${OPREFIX}nsstbufr" ]]; then
+      export NSSTBF="${COMIN_OBS}/${OPREFIX}nsstbufr"
+   else
+      export NSSTBF="${COMOUT}/${OPREFIX}nsstbufr"
+   fi
+fi
 
 
 # Copy fix file for obsproc
