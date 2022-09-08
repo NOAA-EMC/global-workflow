@@ -11,15 +11,41 @@ class Analysis(Task):
         super().__init__(config)
         # for now config is assumed to be os.environ
         self.fv3jedi_fix = config['FV3JEDI_FIX']
+        self.obs_list_yaml = config['OBS_LIST']
+        self.obs_yaml_dir = config['OBS_YAML_DIR']
 
     def initialize(self):
         super().initialize()
+        obs_dict = self.get_obs_dict()
+        self.stage_obs(obs_dict)
 
     def execute(self):
         super().execute()
 
     def finalize(self):
         super().finalize()
+
+    def get_obs_dict(self):
+        """
+        Get a dictionary of observation files to copy/use
+        based on the specified configuration
+        """
+        import ufsda # temporary until this is in workflow
+        import yaml
+        with open(self.obs_list_yaml, 'r') as yamlopen:
+            obs_list_dict = yaml.safe_load(yamlopen)
+        # need to replace vars
+        obs_list_dict['OBS_YAML_DIR'] = self.obs_yaml_dir
+        obs_list_dict = ufsda.yamltools.replace_vars(obs_list_dict)
+        del obs_list_dict['OBS_YAML_DIR']
+        # need a few extra variables defined
+        obs_list_dict['OBS_DATE'] = os.environ['CDATE']
+        obs_list_dict['OBS_DIR'] = os.environ['DATA']
+        obs_list_dict['OBS_PREFIX'] = os.environ['OPREFIX']
+        obs_list_dict = ufsda.yamltools.parse_config(obs_list_dict)
+        logging.info(obs_list_dict)
+
+        return obs_dict
 
     def stage_obs(self, filedict):
         logging.info('Staging observations')
@@ -63,8 +89,6 @@ class AerosolAnalysis(Analysis):
         crtm_fix_dict = self.get_crtm_coeff_dict()
         self.stage_crtm(crtm_fix_dict)
         self.stage_berror({})
-        obs_dict = self.get_obs_dict()
-        self.stage_obs(obs_dict)
         bkg_dict = self.get_bkg_dict()
         self.stage_bkg(bkg_dict)
 
@@ -78,9 +102,6 @@ class AerosolAnalysis(Analysis):
         logging.info('Staging CRTM coefficient files')
         self.stage(filedict)
         logging.info('Finished staging CRTM coefficient files')
-
-    def get_obs_dict(self):
-        return {}
 
     def get_bkg_dict(self):
         return {}

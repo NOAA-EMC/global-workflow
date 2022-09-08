@@ -6,7 +6,7 @@
 echo "BEGIN: config.aeroanl"
 
 export OBS_YAML_DIR=$HOMEgfs/sorc/gdas.cd/parm/aero/obs/config/
-export OBS_LIST=$HOMEgfs/sorc/gdas.cd/parm/aero/obs/lists/aero_prototype.yaml
+export OBS_LIST=$HOMEgfs/sorc/gdas.cd/parm/aero/obs/lists/gdas_aero_prototype.yaml
 export AEROVARYAML=$HOMEgfs/sorc/gdas.cd/parm/aero/variational/3dvar_dripcg.yaml
 export BERROR_YAML=$HOMEgfs/sorc/gdas.cd/parm/aero/berror/static_bump.yaml
 export FV3JEDI_FIX=$HOMEgfs/fix/fix_jedi
