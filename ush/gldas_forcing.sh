@@ -1,21 +1,13 @@
-#!/bin/ksh
+#! /usr/bin/env bash
 ###########################################################################
 # this script gets cpc daily precipitation and using gdas hourly precipitation
 # to disaggregate daily value into hourly value
-# 20190509 Jesse Meng - first version
-# 20191008 Youlong Xia - modified
-# 20191123 Fanglin Yang - restructured for global-workflow
 ########################################################################### 
+
+source "$HOMEgfs/ush/preamble.sh"
 
 bdate=$1
 edate=$2
-
-# Set environment
-export VERBOSE=${VERBOSE:-"YES"}
-if [ $VERBOSE = "YES" ]; then
-   echo $(date) EXECUTING $0 $* >&2
-   set -x
-fi
 
 # HOMEgldas - gldas directory
 # EXECgldas - gldas exec directory
@@ -29,11 +21,11 @@ export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 #-------------------------------
 #--- extract variables of each timestep and create forcing files
 sdate=$bdate
-edate=`sh $FINDDATE $edate d-1`
+edate=$(sh $FINDDATE $edate d-1)
 while [ $sdate -lt $edate ]; do
 #-------------------------------
 
-sdat0=`sh $FINDDATE $sdate d-1`
+sdat0=$(sh $FINDDATE $sdate d-1)
 [[ ! -d $xpath/cpc.${sdate} ]] && mkdir -p $xpath/cpc.${sdate}
 [[ ! -d $xpath/cpc.${sdat0} ]] && mkdir -p $xpath/cpc.${sdat0}
 
@@ -43,7 +35,7 @@ rm -f fort.* grib.*
 COMPONENT=${COMPONENT:-"atmos"}
 pathp1=$CPCGAUGE/gdas.$sdate/00/$COMPONENT
 pathp2=$DCOMIN/$sdate/wgrbbul/cpc_rcdas
-yyyy=`echo $sdate |cut -c 1-4`
+yyyy=$(echo $sdate |cut -c 1-4)
 cpc_precip="PRCP_CU_GAUGE_V1.0GLB_0.125deg.lnx.$sdate.RT"
 if [ $RUN_ENVIR = "emc" ] && [ $sdate -gt $bdate ]; then 
     cpc_precip="PRCP_CU_GAUGE_V1.0GLB_0.125deg.lnx.$sdate.RT_early"
@@ -116,7 +108,7 @@ cp fort.24 $xpath/cpc.$sdate/precip.gldas.${sdate}06
 rm -f fort.* grib.*
 
 #-------------------------------
-sdate=`sh $FINDDATE $sdate d+1`
+sdate=$(sh $FINDDATE $sdate d+1)
 done
 #-------------------------------
 

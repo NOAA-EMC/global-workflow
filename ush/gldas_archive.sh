@@ -1,4 +1,4 @@
-#!/bin/ksh
+#! /usr/bin/env bash
 #
 #########################################################
 # This script collects gldas output to archive directory
@@ -13,44 +13,34 @@
 # RUNDIR - run directory
 # GDAS   - /lfs/h1/ops/prod/com/gfs/prod
 #
-# gldas runs 72 hrs, from day1.00z to day4.00z
-# first 36 hr obs precip forcing
-# second 36 hrs gdas model forcing to bring it to realtime.
-#
-# save all output to day1 directory
-# save noah.rst.day2 to day2 directory for next day restart
-# save gdas.t00z.sfcanl.nemsio.gldas.day4 to day4 directory for gfs restart
-#
-# script history:
-# 20190604 Jesse Meng - first version
-# 20191010 Youlong Xia - modified
 #########################################################
-set -ux
+
+source "$HOMEgfs/ush/preamble.sh"
 
 if [ $# -lt 1 ]; then
-echo "usage: ksh $0 sdate [edate]"
-exit $?
+  echo "usage: $0 sdate [edate]"
+  exit $?
 fi
 
 sdate=$1
-edate=`sh $FINDDATE $1 d+1`
+edate=$(sh $FINDDATE $1 d+1)
 if [ $# -gt 1 ]; then edate=$2 ; fi
 
-yyyy=`echo $sdate | cut -c1-4`
+yyyy=$(echo $sdate | cut -c1-4)
 
 ### save all output to day1 directory
 export COMDIR=${COM_OUT}
 
 mkdir -p $COMDIR/gldas.$sdate
-yyyymmdd=`sh $FINDDATE $sdate d+1`
+yyyymmdd=$(sh $FINDDATE $sdate d+1)
 while [ $yyyymmdd -le $edate ]; do
 
 mkdir -p $COMDIR/gldas.$yyyymmdd
 
-yyyy=`echo $yyyymmdd | cut -c1-4`
+yyyy=$(echo $yyyymmdd | cut -c1-4)
 cp $RUNDIR/EXP901/NOAH/$yyyy/$yyyymmdd/* $COMDIR/gldas.$sdate
 
-yyyymmdd=`sh $FINDDATE $yyyymmdd d+1`
+yyyymmdd=$(sh $FINDDATE $yyyymmdd d+1)
 done
 
 cp $RUNDIR/sfc.gaussian.nemsio.$sdate $COMDIR/gldas.$sdate
@@ -61,16 +51,16 @@ yyyymmdd=$sdate
 while [ $yyyymmdd -lt $edate ]; do
 
 day1=$yyyymmdd
-day2=`sh $FINDDATE $yyyymmdd d+1`
+day2=$(sh $FINDDATE $yyyymmdd d+1)
 mv $COMDIR/gldas.$sdate/LIS.E901.${day2}00.NOAH.grb $COMDIR/gldas.$sdate/LIS.E901.${day1}00.NOAH.grb
 
-yyyymmdd=`sh $FINDDATE $yyyymmdd d+1`
+yyyymmdd=$(sh $FINDDATE $yyyymmdd d+1)
 done
 
 ### save noah.rst.day2 to day2 directory for next day gldas restart 
 
-yyyymmdd=`sh $FINDDATE $sdate d+1`
-yyyy=`echo $yyyymmdd | cut -c1-4`
+yyyymmdd=$(sh $FINDDATE $sdate d+1)
+yyyy=$(echo $yyyymmdd | cut -c1-4)
 mkdir -p $COMDIR/gldas.$edate
 cp $RUNDIR/EXP901/NOAH/$yyyy/$edate/LIS.E901.${edate}00.Noahrst $COMDIR/gldas.$yyyymmdd/noah.rst.$edate
 

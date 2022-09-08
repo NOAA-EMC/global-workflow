@@ -1,4 +1,5 @@
-#!/bin/ksh
+#! /usr/bin/env bash
+
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
@@ -10,12 +11,7 @@
 #  20191123 Fanglin Yang, restructure for global workflow
 ################################################################################
 
-#  Set environment 
-export VERBOSE=${VERBOSE:-"YES"}
-if [ $VERBOSE = "YES" ]; then
-   echo $(date) EXECUTING $0 $* >&2
-   set -x
-fi
+source "$HOMEgfs/ush/preamble.sh"
 
 #################################
 # Set up UTILITIES
@@ -42,20 +38,20 @@ export COMPONENT=${COMPONENT:-atmos}
 export assim_freq=${assim_freq:-6}
 export gldas_spinup_hours=${gldas_spinup_hours:-72}
 export gldas_cdate=$CDATE
-export gldas_eymd=`echo $gldas_cdate |cut -c 1-8`                 
-export gldas_ecyc=`echo $gldas_cdate |cut -c 9-10`                 
-export gldas_sdate=`$NDATE -$gldas_spinup_hours $CDATE`
-export gldas_symd=`echo $gldas_sdate |cut -c 1-8`                 
-export gldas_scyc=`echo $gldas_sdate |cut -c 9-10`                 
+export gldas_eymd=$(echo $gldas_cdate |cut -c 1-8)                 
+export gldas_ecyc=$(echo $gldas_cdate |cut -c 9-10)                 
+export gldas_sdate=$($NDATE -$gldas_spinup_hours $CDATE)
+export gldas_symd=$(echo $gldas_sdate |cut -c 1-8)                 
+export gldas_scyc=$(echo $gldas_sdate |cut -c 9-10)                 
 
 export iau_cdate=$CDATE
 if [ "$DOIAU" = "YES" ]; then
  IAU_OFFSET=${IAU_OFFSET:-0}
  IAUHALH=$((IAU_OFFSET/2))
- export iau_cdate=`$NDATE -$IAUHALH $CDATE`
+ export iau_cdate=$($NDATE -$IAUHALH $CDATE)
 fi
-export iau_eymd=`echo $iau_cdate |cut -c 1-8`
-export iau_ecyc=`echo $iau_cdate |cut -c 9-10`
+export iau_eymd=$(echo $iau_cdate |cut -c 1-8)
+export iau_ecyc=$(echo $iau_cdate |cut -c 9-10)
 echo "GLDAS runs from $gldas_sdate to $iau_cdate"
 
 export CASE=${CASE:-C768}
@@ -119,15 +115,15 @@ elif [ $JCAP -eq  382 ]; then
 elif [ $JCAP -eq  190 ]; then
   gds='255 4  384  192 89284 0 128 -89284 -938 938  96 0 0 0 0 0 0 0 0 0 255 0 0 0 0 0'
 else
- echo "JCAP=$JCAP no supportted, exit"
+ echo "JCAP=$JCAP not supported, exit"
  export err=4
  $ERRSCRIPT || exit 4
 fi
 
 echo $JCAP
 echo $gds
-ymdpre=`sh $FINDDATE $gldas_symd d-1` 
-ymdend=`sh $FINDDATE $gldas_eymd d-2`
+ymdpre=$(sh $FINDDATE $gldas_symd d-1) 
+ymdend=$(sh $FINDDATE $gldas_eymd d-2)
 ymd=$ymdpre
 
 if [ $USE_CFP = "YES" ] ; then
@@ -154,7 +150,7 @@ while [ $ymd -le $ymdend ]; do
       $COPYGB -i3 -g"$gds" -x $GDAS/cpc.$ymd/precip.gldas.${ymd}18 $RUNDIR/cmap.gdas.${ymd}18
     fi
   fi
-  ymd=`sh $FINDDATE $ymd d+1`
+  ymd=$(sh $FINDDATE $ymd d+1)
 done
 
 if [ $USE_CFP = "YES" ] ; then
@@ -258,7 +254,7 @@ $ERRSCRIPT || exit 8
 
 # 5c) use gldas_post to replace soil moisture and temperature
 
-yyyy=`echo $iau_eymd | cut -c1-4`
+yyyy=$(echo $iau_eymd | cut -c1-4)
 gbin=$RUNDIR/EXP901/NOAH/$yyyy/$iau_eymd/LIS.E901.${iau_eymd}${iau_ecyc}.NOAHgbin
 sfcanl=sfc.gaussian.nemsio
 rm -rf fort.11 fort.12
@@ -320,9 +316,5 @@ fi
 # Clean up before leaving
 if [ $mkdata = "YES" ]; then rm -rf $DATA; fi
 
-set +x
-if [ $VERBOSE = "YES" ] ; then
-  echo $(date) EXITING $0 with return code $err >&2
-fi
 exit $err
 

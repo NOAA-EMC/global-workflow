@@ -1,9 +1,6 @@
-#!/bin/ksh
-set -x
+#! /usr/bin/env bash
 
-#export RUN_ENVIR=${RUN_ENVIR:-"nco"}
-export PS4='$SECONDS + '
-date
+source "$HOMEgfs/ush/preamble.sh"
 
 #############################
 # Source relevant config files
@@ -96,14 +93,11 @@ export COMINgdas=${COMINgdas:-$ROTDIR}
 export DCOMIN=${DCOMIN:-${DCOMROOT:-"/lfs/h1/ops/prod/dcom"}}
 
 export model=${model:-noah}
-export MODEL=${MODEL:-`echo $model |tr '[a-z]' '[A-Z]'`}
+export MODEL=${MODEL:-$(echo $model |tr '[a-z]' '[A-Z]')}
 
 
 ###############################################################
 # Run relevant exglobal script
-env
-msg="HAS BEGUN on `hostname`"
-$LOGSCRIPT
 
 ${GLDASSH:-$HOMEgldas/scripts/exgdas_atmos_gldas.sh}
 status=$?
@@ -120,14 +114,11 @@ if [ -e "$pgmout" ] ; then
   cat $pgmout
 fi
 
-msg="ENDED NORMALLY."
-
 ##########################################
 # Remove the Temporary working directory
 ##########################################
 cd $DATAROOT
 [[ $KEEPDATA = "NO" ]] && rm -rf $DATA
 
-date
 exit 0
 
