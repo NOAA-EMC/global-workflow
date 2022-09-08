@@ -135,7 +135,6 @@ sorc/wafs_setmissing.fd
 # Ignore scripts from externals
 #------------------------------
 # jobs symlinks
-jobs/JGDAS_ATMOS_GLDAS
 jobs/JGFS_ATMOS_WAFS
 jobs/JGFS_ATMOS_WAFS_BLENDING
 jobs/JGFS_ATMOS_WAFS_BLENDING_0P25
@@ -144,7 +143,6 @@ jobs/JGFS_ATMOS_WAFS_GRIB2
 jobs/JGFS_ATMOS_WAFS_GRIB2_0P25
 # scripts symlinks
 scripts/exemcsfc_global_sfc_prep.sh
-scripts/exgdas_atmos_gldas.sh
 scripts/exgfs_atmos_wafs_blending.sh
 scripts/exgfs_atmos_wafs_blending_0p25.sh
 scripts/exgfs_atmos_wafs_gcip.sh
@@ -160,12 +158,6 @@ ush/fv3gfs_driver_grid.sh
 ush/fv3gfs_filter_topo.sh
 ush/fv3gfs_make_grid.sh
 ush/fv3gfs_make_orog.sh
-ush/gldas_archive.sh
-ush/gldas_forcing.sh
-ush/gldas_get_data.sh
-ush/gldas_liscrd.sh
-ush/gldas_post.sh
-ush/gldas_process_data.sh
 ush/global_chgres.sh
 ush/global_chgres_driver.sh
 ush/global_cycle.sh
