@@ -14,4 +14,6 @@ export FV3JEDI_FIX=$HOMEgfs/fix/fix_gdas
 export io_layout_x=1
 export io_layout_y=1
 
+export JEDIVAREXE=$HOMEgfs/exec/fv3jedi_var.x
+
 echo "END: config.aeroanl"

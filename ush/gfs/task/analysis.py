@@ -20,7 +20,6 @@ class Analysis(Task):
         super().initialize()
         obs_dict = self.get_obs_dict()
         self.stage_obs(obs_dict)
-        self.generate_yaml()
 
     def execute(self):
         super().execute()
@@ -88,17 +87,20 @@ class Analysis(Task):
             logging.info(f'Copying {src} to {dest}')
             shutil.copyfile(src, dest)
 
-    def generate_yaml(self):
+    def generate_yaml(self, extra_config={}):
         """
         Use existing tools to generate YAML from config and template
         """
         import copy
         import ufsda # temporary until this is in workflow
-        output_yaml = f'{self.cdump}_{self.component}_{self.cdate}.yaml'
+        output_yaml = f'{self.taskname}_{self.cdate}.yaml'
         output_yaml_path = os.path.join(self.datadir, output_yaml)
         template = self.yamltemplate
+        logging.info(f'Generating analysis YAML using {template}')
         full_config = copy.deepcopy(self.config)
+        full_config.update(extra_config)
         ufsda.yamltools.genYAML(full_config, template=template, output=output_yaml_path)
+        logging.info(f'Wrote YAML file to {output_yaml_path}')
 
 
 class AerosolAnalysis(Analysis):
@@ -108,6 +110,7 @@ class AerosolAnalysis(Analysis):
     def __init__(self, config):
         super().__init__(config)
         self.yamltemplate = config['AEROVARYAML']
+        self.taskname = f'{self.cdump}aeroanl'
 
     def initialize(self):
         super().initialize()
@@ -119,6 +122,37 @@ class AerosolAnalysis(Analysis):
         self.stage_berror({})
         bkg_dict = self.get_bkg_dict()
         self.stage_bkg(bkg_dict)
+        yaml_config = {
+            'BKG_DIR': 'bkg',
+            'OBS_DIR': 'obs',
+            'DIAG_DIR': 'diags',
+            'CRTM_COEFF_DIR': 'crtm',
+            'OBS_PREFIX': os.environ['OPREFIX'],
+            'fv3jedi_staticb_dir': 'berror',
+            'fv3jedi_fix_dir': 'fv3jedi',
+            'fv3jedi_fieldmetadata_dir': 'fv3jedi',
+            'OBS_DATE': os.environ['CDATE'],
+            'ANL_DIR': 'anl',
+            'INTERP_METHOD': 'barycentric',
+            # for now making the below equal to eachother
+            'AERO_WINDOW_LENGTH': '$(ATM_WINDOW_LENGTH)',
+            'AERO_WINDOW_BEGIN': '$(ATM_WINDOW_BEGIN)',
+            'window_begin': '$(ATM_WINDOW_BEGIN)',
+            'layout_x': os.environ['layout_x'],
+            'layout_y': os.environ['layout_y'],
+            }
+        self.generate_yaml(yaml_config)
+        self.stage_exe()
+        # need output dir for diags and anl
+        newdirs = [
+            os.path.join(self.datadir, 'anl'),
+            os.path.join(self.datadir, 'diags'),
+            ]
+        for newdir in newdirs:
+            if not os.path.exists(newdir):
+                os.makedirs(newdir)
+                logging.info(f'Creating directory {newdir}')
+
 
     def execute(self):
         super().execute()
@@ -130,6 +164,16 @@ class AerosolAnalysis(Analysis):
         logging.info('Staging CRTM coefficient files')
         self.stage(filedict)
         logging.info('Finished staging CRTM coefficient files')
+
+    def stage_exe(self):
+        logging.info('Staging FV3-JEDI executable')
+        src = os.environ['JEDIVAREXE']
+        dest = os.path.join(self.datadir, os.path.basename(src))
+        if os.path.exists(dest):
+            os.remove(dest)
+        os.symlink(src, dest)
+        logging.info(f'Linking {src} to {dest}')
+        logging.info('Finished staging FV3-JEDI executable')
 
     def get_bkg_dict(self):
         """
@@ -217,6 +261,6 @@ class AerosolAnalysis(Analysis):
                          'fv3jedi', 'fieldmetadata',
                          'gfs-aerosol.yaml'): os.path.join(self.datadir,
                                                            'fv3jedi',
-                                                           'field_table'),
+                                                           'gfs-restart.yaml'),
             }
         return fix_file_dict

@@ -159,6 +159,24 @@ elif [ $step = "atmanalpost" ]; then
 
 elif [ $step = "aeroanlinit" ]; then
 
+   case $CASE in
+     C768)    
+        layout_x=6
+        layout_y=6
+        ;;
+      C384)    
+        layout_x=5
+        layout_y=5
+        ;;
+     C192 | C96 | C48)    
+        layout_x=3
+        layout_y=3
+        ;;
+    esac
+
+    export layout_x
+    export layout_y
+
     export wtime_aeroanlinit="00:10:00"
     export npe_aeroanlinit=1
     export nth_aeroanlinit=1
