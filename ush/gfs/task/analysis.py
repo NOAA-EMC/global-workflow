@@ -43,13 +43,18 @@ class Analysis(Task):
         obs_list_dict['OBS_DIR'] = os.environ['DATA']
         obs_list_dict['OBS_PREFIX'] = os.environ['OPREFIX']
         obs_list_dict = ufsda.yamltools.parse_config(obs_list_dict)
-        logging.info(obs_list_dict)
-
+        # get observers from master dictionary
+        observers = obs_list_dict['observers']
+        obs_dict = {}
+        for ob in observers:
+            obfile = ob['obs space']['obsdatain']['obsfile']
+            basename = os.path.basename(obfile)
+            obs_dict[os.path.join(os.environ['COMIN_OBS'], basename)] = obfile
         return obs_dict
 
     def stage_obs(self, filedict):
         logging.info('Staging observations')
-        self.stage(filedict)
+        self.stage(filedict, skip_missing=True)
         logging.info('Finished staging observations')
 
     def stage_bkg(self, filedict):
@@ -65,13 +70,17 @@ class Analysis(Task):
     def stage_berror(self, filedict):
         logging.info('Only using identity B for now... no staging performed')
 
-    def stage(self, filedict):
+    def stage(self, filedict, skip_missing=False):
         for src, dest in filedict.items():
-            logging.info(f'Copying {src} to {dest}')
             if not os.path.exists(os.path.dirname(dest)):
                 os.makedirs(os.path.dirname(dest))
             if os.path.exists(dest):
                 os.remove(dest)
+            if skip_missing:
+                if not os.path.exists(src):
+                    logging.warning(f'{src} does not exist. Will not copy.')
+                    continue
+            logging.info(f'Copying {src} to {dest}')
             shutil.copyfile(src, dest)
 
 class AerosolAnalysis(Analysis):
