@@ -6,6 +6,7 @@ class Task():
     """
     def __init__(self, config):
         self.config = config
+        self.cdate = config['CDATE']
         self.datadir = config['DATA']
         self.nlevs = config['LEVS']
         self.nlayers = int(self.nlevs) - 1

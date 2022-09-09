@@ -13,11 +13,14 @@ class Analysis(Task):
         self.fv3jedi_fix = config['FV3JEDI_FIX']
         self.obs_list_yaml = config['OBS_LIST']
         self.obs_yaml_dir = config['OBS_YAML_DIR']
+        self.component = config['COMPONENT']
+        self.cdump = config['CDUMP']
 
     def initialize(self):
         super().initialize()
         obs_dict = self.get_obs_dict()
         self.stage_obs(obs_dict)
+        self.generate_yaml()
 
     def execute(self):
         super().execute()
@@ -39,8 +42,8 @@ class Analysis(Task):
         obs_list_dict = ufsda.yamltools.replace_vars(obs_list_dict)
         del obs_list_dict['OBS_YAML_DIR']
         # need a few extra variables defined
-        obs_list_dict['OBS_DATE'] = os.environ['CDATE']
-        obs_list_dict['OBS_DIR'] = os.environ['DATA']
+        obs_list_dict['OBS_DATE'] = self.cdate
+        obs_list_dict['OBS_DIR'] = os.path.join(self.datadir, 'obs')
         obs_list_dict['OBS_PREFIX'] = os.environ['OPREFIX']
         obs_list_dict = ufsda.yamltools.parse_config(obs_list_dict)
         # get observers from master dictionary
@@ -72,8 +75,10 @@ class Analysis(Task):
 
     def stage(self, filedict, skip_missing=False):
         for src, dest in filedict.items():
-            if not os.path.exists(os.path.dirname(dest)):
-                os.makedirs(os.path.dirname(dest))
+            destdir = os.path.dirname(dest)
+            if not os.path.exists(destdir):
+                logging.info(f'{destdir} does not exist, creating directory.')
+                os.makedirs(destdir)
             if os.path.exists(dest):
                 os.remove(dest)
             if skip_missing:
@@ -83,12 +88,26 @@ class Analysis(Task):
             logging.info(f'Copying {src} to {dest}')
             shutil.copyfile(src, dest)
 
+    def generate_yaml(self):
+        """
+        Use existing tools to generate YAML from config and template
+        """
+        import copy
+        import ufsda # temporary until this is in workflow
+        output_yaml = f'{self.cdump}_{self.component}_{self.cdate}.yaml'
+        output_yaml_path = os.path.join(self.datadir, output_yaml)
+        template = self.yamltemplate
+        full_config = copy.deepcopy(self.config)
+        ufsda.yamltools.genYAML(full_config, template=template, output=output_yaml_path)
+
+
 class AerosolAnalysis(Analysis):
     """
     Class for global aerosol analysis tasks
     """
     def __init__(self, config):
         super().__init__(config)
+        self.yamltemplate = config['AEROVARYAML']
 
     def initialize(self):
         super().initialize()
@@ -113,7 +132,29 @@ class AerosolAnalysis(Analysis):
         logging.info('Finished staging CRTM coefficient files')
 
     def get_bkg_dict(self):
-        return {}
+        """
+        Return dict of src/dest pairs for model backgrounds
+        """
+        import datetime as dt
+        # NOTE for now this is FV3 RESTART files and just assumed to be fh006
+        comin_ges = os.environ['COMIN_GES']
+        # NOTE that while 'chem' is the $componenet, the aerosol fields are with the 'atmos' tracers
+        comin_ges_atm = comin_ges.replace('chem', 'atmos')
+        rst_dir = os.path.join(comin_ges_atm, 'RESTART') # for now, option later?
+        # date variable string format
+        cdate_fv3 = dt.datetime.strptime(self.cdate, '%Y%m%d%H').strftime('%Y%m%d.%H%M%S')
+        # get FV3 RESTART files, this will be a lot simpler when using history files
+        ntiles = 6 # global
+        # aerosol DA only needs core/tracer
+        bkg_dict = {}
+        basename = f'{cdate_fv3}.coupler.res'
+        bkg_dict[os.path.join(rst_dir, basename)] = os.path.join(self.datadir, 'bkg', basename)
+        for t in range(1,ntiles+1):
+            basename = f'{cdate_fv3}.fv_core.res.tile{t}.nc'
+            bkg_dict[os.path.join(rst_dir, basename)] = os.path.join(self.datadir, 'bkg', basename)
+            basename = f'{cdate_fv3}.fv_tracer.res.tile{t}.nc'
+            bkg_dict[os.path.join(rst_dir, basename)] = os.path.join(self.datadir, 'bkg', basename)
+        return bkg_dict
 
     def get_crtm_coeff_dict(self):
         coeff_file_dict = {
