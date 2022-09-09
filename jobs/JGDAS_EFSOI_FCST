@@ -85,7 +85,7 @@ export FORECASTSH=$HOMEgfs/scripts/exglobal_forecast.sh
 
 
 # Get ENSBEG/ENSEND from ENSGRP and NMEM_EFCSGRP
-export ENSEND=$((NMEM_EFCSGRP * ENSGRP))
+export ENSEND=$((NMEM_EFCSGRP * 10#${ENSGRP}))
 export ENSBEG=$((ENSEND - NMEM_EFCSGRP + 1))
 
 

@@ -153,6 +153,9 @@ if [[ $ENSGRP -gt 0 ]] && [[ $HPSSARCH = "YES" || $LOCALARCH = "YES" ]]; then
              exit $status
          fi
        fi
+
+       $NCP $ROTDIR/efsoi${CDUMP}.$PDY/$cyc/$COMPONENT/${CDUMP}.t${cyc}z.enkfstat         efsoistat.${CDUMP}.$CDATE
+
      fi # $DO_EFSOI = "YES" 
 
    fi # CDATE>SDATE
@@ -204,11 +207,6 @@ if [ $ENSGRP -eq 0 ]; then
 		nb_copy $ROTDIR/enkfgfs.$PDY/$cyc/$COMPONENT/${CDUMP}.t${cyc}z.enkfstat         enkfstat.gfs.$CDATE
 		nb_copy $ROTDIR/enkfgfs.$PDY/$cyc/$COMPONENT/${CDUMP}.t${cyc}z.gsistat.ensmean  gsistat.gfs.${CDATE}.ensmean
 	fi
-
-    if [ $DO_EFSOI = "YES" ]; then
-        $NCP $ROTDIR/efsoi${CDUMP}.$PDY/$cyc/$COMPONENT/${CDUMP}.t${cyc}z.enkfstat         efsoistat.${CDUMP}.$CDATE
-    fi
-
 fi
 
 

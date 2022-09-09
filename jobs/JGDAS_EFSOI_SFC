@@ -108,11 +108,7 @@ export COMOUT_ENS="$ROTDIR/efsoi$CDUMP.$PDY/$cyc/$COMPONENT"
 # Previous ENKF comrot folder
 export COMIN_GES_ENS="$ROTDIR/enkf$CDUMP.$gPDY/$gcyc/$COMPONENT"
 
-#export COMIN="$ROTDIR/$CDUMP.$PDY/$cyc/$COMPONENT"
-#export COMIN_ENS="$ROTDIR/enkf$CDUMP_ENKF.$PDY/$cyc/$COMPONENT"
-#export COMOUT_ENS="$ROTDIR/enkf$CDUMP.$PDY/$cyc/$COMPONENT"
-#export COMIN_GES_ENS="$ROTDIR/enkf$CDUMP.$gPDY/$gcyc/$COMPONENT"
-
+export COMIN_GES="$ROTDIR/$CDUMP.$gPDY/$gcyc/$COMPONENT"
 
 ###############################################################
 # Run relevant script
