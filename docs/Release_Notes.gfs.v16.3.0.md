@@ -200,6 +200,7 @@ SORC CHANGES
     * `get_postfilename.f`
     * `gtg_algo.f90`
     * `CALRAD_WCLOUD_newcrtm.f`
+    * `MDLFLD.f`
 
 * UFS_UTILS:
   * Removed the following obsolete nemsio utility programs:
