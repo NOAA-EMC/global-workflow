@@ -8,8 +8,6 @@ echo "BEGIN: config.efsoi"
 # Get task specific resources
 . $EXPDIR/config.resources efsoi
 
-export npe_enkf=$npe_eupd
-
 # LETKF specific settings with model space localization
 export modelspace_vloc=".true."  # model space localization
 export letkf_flag=".true."       # use LETKF instead of serial filter
