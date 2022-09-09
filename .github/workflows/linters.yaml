@@ -28,4 +28,3 @@ jobs:
         uses: redhat-plumbers-in-action/differential-shellcheck@latest
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          shell-scripts: ush/preamble.sh
