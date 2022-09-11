@@ -235,7 +235,26 @@ class AerosolAnalysis(Analysis):
                          'v.viirs-m_j1.TauCoeff.bin'): os.path.join(self.datadir,
                                                                     'crtm',
                                                                     'v.viirs-m_j1.TauCoeff.bin'),
-            # do we need other files? NPOESS/FASTEM6/USGS/etc.? Test to find out?
+            os.path.join(self.fv3jedi_fix,
+                         'crtm', '2.3.0',
+                         'NPOESS.VISice.EmisCoeff.bin'): os.path.join(self.datadir,
+                                                                      'crtm',
+                                                                      'NPOESS.VISice.EmisCoeff.bin'),
+            os.path.join(self.fv3jedi_fix,
+                         'crtm', '2.3.0',
+                         'NPOESS.VISland.EmisCoeff.bin'): os.path.join(self.datadir,
+                                                                      'crtm',
+                                                                      'NPOESS.VISland.EmisCoeff.bin'),
+            os.path.join(self.fv3jedi_fix,
+                         'crtm', '2.3.0',
+                         'NPOESS.VISsnow.EmisCoeff.bin'): os.path.join(self.datadir,
+                                                                      'crtm',
+                                                                      'NPOESS.VISsnow.EmisCoeff.bin'),
+            os.path.join(self.fv3jedi_fix,
+                         'crtm', '2.3.0',
+                         'NPOESS.VISwater.EmisCoeff.bin'): os.path.join(self.datadir,
+                                                                      'crtm',
+                                                                      'NPOESS.VISwater.EmisCoeff.bin'),
             }
         return coeff_file_dict
 
