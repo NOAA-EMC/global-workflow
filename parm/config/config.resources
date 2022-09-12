@@ -597,7 +597,6 @@ elif [ $step = "eupd" ]; then
       if [[ "$machine" = "S4" ]]; then
          export npe_eupd=160
          export nth_eupd=2
-         export wtime_eupd="01:00:00"
       fi
     elif [ $CASE = "C192" -o $CASE = "C96" -o $CASE = "C48" ]; then
       export npe_eupd=42
