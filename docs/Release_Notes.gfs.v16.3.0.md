@@ -108,17 +108,16 @@ cd ../ecf
 IMPLEMENTATION INSTRUCTIONS - SPECIFIC TO GSI
 ---------------------------------------------
 
-This instruction is for GPS RO from Sentinel-6A (type 066, sub 0) and ASCAT winds from MetOp-C (type 290, sub 5)
+This instruction is for ASCAT winds from MetOp-C (type 290, sub 5)
 
-* The use flags for these two data types are currently set up to -1 in `fix_gsi/global_convinfo.txt`
+* The use flag for ASCAT winds from MetOp-C wind is currently set to -1 in `fix_gsi/global_convinfo.txt`
 
 ```
- gps   066  0  -1  3.0   0   0   0  10.0  10.0   1.0  10.0   0.000000   0    0.     0.   0   0.   0.   0   0
  uv    290  5  -1  3.0   0   0   0   5.0   6.1   1.4   5.0   0.000500   1   75.  1200.   0   0.   0.   0   0
 ```
 
-* DA team is waiting for these two data types to be delivered to PDA.
-* DA team will assess the quality of these two data types as soon as they are available in the data dump.
+* The Observation Processing team is preparing the data in prepbufr format.
+* DA team will assess the data quality and impact as soon as they are available in the data dump.
 * DA team POC (Emily.Liu@noaa.gov) will notify NCO to change the use flags from -1 to 1 (the 4th column in the rows) once the DA team completes the assessment and is satisfied with the results.
 
 VERSION FILE CHANGES
@@ -134,11 +133,15 @@ VERSION FILE CHANGES
 SORC CHANGES
 ------------
 
-* GSI
-  * `sorc/gsi.fd/Radiance_Monitor`
-    * Store data files for global sources in tar files
-    * Make necessary changes to data extraction and image generation to handle compressed RadMon data files
-  * `sorc/gsi.fd/src`
+* GSI - highlight code changes related to the objectives of gfs.v16.3.0 upgrade; for more details, please refer to the amendment of gfs.v16.3.0 GSI code/script changes in the documentation section.
+  * `sorc/gsi.fd/src/gsi`
+    * Common updates:
+      * `gsimod.F90`
+      * `qcmod.f90`
+      * `pcgsoi.f90`
+      * `radinfo.f90`
+      * `read_obs.F90`
+      * `setuprad.f90`
     * RO updates
       * New observations: PAZ (ID 44)  and Sentinel-6 (ID 66)
       * Quality control procedures:
@@ -149,22 +152,46 @@ SORC CHANGES
         * Sign of the gradient of refractivity
         * Adjoint routine in the interpolation code - impact in very special cases, two ends of the interpolation grid
       * Code optimization
+      * Code changes:
+        * `lagmod.f90`
+        * `setupbend.f90`
     * IR bug fixes
       * Numerical errors in surface emissivity check
       * Bias correction when air-mass bias terms are turned off
       * Data thinning
+      * Code changes:
+        * `read_airs.f90`
+        * `read_cris.f90`
+        * `read_iasi.f90`
     * MW updates
       * Switch from assimilating antenna temperature (TDR)  to antenna-corrected temperature (SDR) for AMSU-A, ATMS, and MHS
-      * Include the assimilation of precipaition-affected AMSU-A and ATMS
+      * Include the assimilation of precipitation-affected AMSU-A and ATMS
         * Update GSI-model netcdf interface to read in precipitation hydrometeors
         * Use CRTM-2.4.0 and the cloud optical table based on GFDL cloud microphysics
         * Add the calculation of cloud effective radius
         * Add the calculation of GFDL cloud fraction for each field of view
         * Update data thinning and quality control procedures
+      * Code changes:
+        * `antcorr_application.f90`
+        * `cloud_efr_mod.f90`
+        * `clpr_gfs_ensmod.f90`
+        * `crtm_interface.f90`
+        * `general_read_gfatm.f90`
+        * `netcdfgfs_io.f90`
+        * `obsmod.F90`
+        * `prt_guess.f90`
+        * `read_atms.f90`
+        * `read_bufrtovs.f90`
+        * `read_gmi.f90`
+        * `write_incr.f90`
     * Satellite wind (AMV)  updates
       * Add Leo-Geo winds
       * Add AVHRR winds from MetOp-C
       * Revised observation error for VIIRS
+      * Code changes
+        * `read_satwnd.f90`
+        * `read_prepbufr.f90`
+        * `setupw.f90`
     * Satellite scatterometry wind
       * Add ASCAT from MetOp-C
       * Data thinning with 75 km box
@@ -174,16 +201,30 @@ SORC CHANGES
       * Reduce the thinning fox from 140 km to 70 km for AVHRR and VIIRS
       * New correlation length
         * First baroclinic Rossby radius of deformation
-        * Thresholds for correlength: minimum 25 km and maximum 75 km
+        * Thresholds: minimum 25 km and maximum 75 km
       * Quality control
         * Exclusion of the partly clear AVHRR radiances
         * Inclusion of in-situ data over mixed surface type
         * Relaxation of gross QC check for in-situ data
-    * Bug fixes in variational quality control for winds.
-    * Preparation for coming observations.
-    * Changes not turned on in gfs.v16.3.0
-      * Use of high-resolution radiosonde data (PR#149)
-      * Minimization improvement through the detection of nonlinearities (PR#219)
+      * Code changes:
+        * `gsi_obOperTypeManager.F90`
+        * `ncepnems_io.f90`
+        * `radiance_mod.f90`
+        * `read_avhrr.f90`
+        * `read_nsstbufr.f90`
+        * `read_viirs.f90`
+        * `setthin.F90`
+        * `setupsst.f90`
+    * Bug fixes in variational quality control for winds
+      * Code changes:
+        * `setupw.f90`
+        * `stepw.f90`
+    * Preparation for coming observations
+      * Add handling to monitor new observations from NOAA-21, GOES-18, and Himawari-9
+      * Code changes:
+        * `read_abi.f90`
+        * `read_ahi.f90`
+        * `read_virrs.f90`
 
 * MODEL:
   * `sorc/ufs_model.fd/FV3/gfsphysics/`
@@ -290,6 +331,10 @@ PARM/CONFIG CHANGES
 
 * WAFS:
   * `parm/wafs/wafs_gcip_gfs.cfg`
+  * `parm/wafs/legend`: new folder prepared for switching. When ICAO2023=yes, use parm/wafs; when ICAO2023=no, use parm/wafs/legend
+  * Moved to parm/wafs/legend, from parm/wafs
+    * `parm/wafs/legend/wafs_awc_wafavn.grb1.cfg`
+    * `parm/wafs/legend/wafs_awc_wafavn.grb2.cfg`
 
 * Workflow:
   * `parm/config.anal`
@@ -342,8 +387,9 @@ FIX CHANGES
     * `fix_gsi/global_satinfo.txt`
     * `fix_gsi/global_convinfo.txt`
     * `fix_gsi/global_scaninfo.txt`
+    * `fix_gsi/global_ozinfo.txt`
     * `fix_gsi/cloudy_radiance_info.txt`
-    * `fix_gsi/Prepobs_errtable.global`
+    * `fix_gsi/prepobs_errtable.global`
     * `gdas/gdas_radmon_satype.txt`
     * `gdas/oznmon_satype.txt`
     * `gdas/radmon_scaninfo.txt`
@@ -542,7 +588,7 @@ DOCUMENTATION
 -------------
 
 * GFS.V16.3.0 Implementation Kick-off Meeting Slides: https://docs.google.com/presentation/d/1HIY8bB3YEj-DThUHnJPak8l0gA7lfOtT7nMpgY4yvB4/edit?usp=sharing
-* GSI Documentation and Verification: https://docs.google.com/spreadsheets/d/1qbgROzEFAR0D9q47ajKv6KOYCIbp7M1qFRCM53HykJQ/edit?usp=sharing
+* Amendment of gfs.v16.3.0 GSI Code/Script Changes: https://docs.google.com/document/d/1Krg09tSGXpf4QHGFPwuEUpdMCxBVY6i_otRfSEzrrhs/edit?usp=sharing
 * MODEL Documentation: https://docs.google.com/presentation/d/1FOeP3VZK7wbzOXdEqPJa8WbAbVJgHX-Icc235OOsXsc/edit?usp=sharing
 * MODEL Verification: https://www.emc.ncep.noaa.gov/mmb/gcp/gfs/gfsv16c/
 * GitHub Global Workflow Issue for GFS.V16.3.0 Implementation: https://github.com/NOAA-EMC/global-workflow/issues/744
