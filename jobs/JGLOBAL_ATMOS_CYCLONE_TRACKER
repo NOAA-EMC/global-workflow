@@ -91,9 +91,9 @@ export USHens_tracker=${USHens_tracker:-$HOMEens_tracker/ush}
 # Define COM and Data directories
 ##############################################
 export COMIN=${ROTDIR}/${RUN}.${PDY}/${cyc}/$COMPONENT
-export COMINgfs=${COMIN}
+export COMINgfs=${ROTDIR}/gfs.${PDY}/${cyc}/$COMPONENT
 export gfsdir=${COMINgfs}
-export COMINgdas=${COMIN}
+export COMINgdas=${ROTDIR}/gdas.${PDY}/${cyc}/$COMPONENT
 export gdasdir=${COMINgdas}
 export COMOUT=${ROTDIR}/${RUN}.${PDY}/${cyc}/$COMPONENT
 export COMINsyn=${COMINsyn:-$(compath.py ${envir}/com/gfs/${gfs_ver})/syndat}
