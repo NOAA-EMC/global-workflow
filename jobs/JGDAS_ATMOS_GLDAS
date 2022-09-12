@@ -32,7 +32,7 @@ fi
 ##########################################
 # Source machine runtime environment
 ##########################################
-# shellcheck source=env/${machine}.env
+# shellcheck source=env/wcoss2.env
 . "${HOMEgfs}/env/${machine:?}.env gldas"
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
