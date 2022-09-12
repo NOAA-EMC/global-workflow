@@ -13,9 +13,9 @@ echo "BEGIN: config.prepbufr"
 if [ $machine = "HERA" ]; then
     export GESROOT=/scratch1/NCEPDEV/rstprod
 elif [ $machine = "ORION" ]; then
-   export GESROOT=/dev/null
+    export GESROOT=/dev/null
 elif [ $machine = "S4" ]; then
-   export GESROOT=/dev/null
+    export GESROOT=/dev/null
 fi
 
 echo "END: config.prepbufr"
