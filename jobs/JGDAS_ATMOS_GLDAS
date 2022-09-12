@@ -32,6 +32,7 @@ fi
 ##########################################
 # Source machine runtime environment
 ##########################################
+# shellcheck source=env/${machine}.env
 . "${HOMEgfs}/env/${machine:?}.env gldas"
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
@@ -53,7 +54,9 @@ cd "${DATA}" || exit
 ##############################################
 export cycle="t${cyc}z"
 setpdy.sh
+# shellcheck disable=SC1091
 . ./PDY
+# shellcheck disable=
 
 
 ##############################################
