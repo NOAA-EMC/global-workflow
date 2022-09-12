@@ -3,13 +3,12 @@
 # This script generate gldas forcing from gdas prod sflux
 #########################################################
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${HOMEgfs:?}/ush/preamble.sh"
 
 bdate=$1
 edate=$2
 
-if [ $machine = "WCOSS_DELL_P3" ] || [ $machine = "WCOSS_C" ] || \
-   [ $machine = "HERA" ] || [ $machine = "WCOSS2" ]; then
+if [ $machine = "HERA" ] || [ $machine = "WCOSS2" ]; then
   touch ./cfile
 fi
 
@@ -51,8 +50,7 @@ while [ $f -le $cycint ]; do
   fcsty=anl
   if [ $f -ge 1 ]; then fcsty=fcst; fi
 
-  if [ $machine = "WCOSS_DELL_P3" ] || [ $machine = "WCOSS_C" ] || \
-   [ $machine = "WCOSS2" ]; then
+  if [ $machine = "WCOSS2" ]; then
     echo "${USHgldas}/gldas_process_data.sh $rflux $fcsty $fflux $gflux $f" >> ./cfile
   elif [ $machine = "HERA" ]; then
     echo "$iter ${USHgldas}/gldas_process_data.sh $rflux $fcsty $fflux $gflux $f" >> ./cfile
@@ -69,8 +67,7 @@ done
 done
 #-------------------------------
 
-if [ $machine = "WCOSS_DELL_P3" ] || [ $machine = "WCOSS_C" ] || \
-   [ $machine = "HERA" ] || [ $machine = "WCOSS2" ]; then
+if [ $machine = "HERA" ] || [ $machine = "WCOSS2" ]; then
   $APRUN_GLDAS_DATA_PROC ./cfile
 fi
 

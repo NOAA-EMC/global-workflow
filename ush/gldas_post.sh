@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${HOMEgfs:?}/ush/preamble.sh"
 
 if [ $# -lt 2 ]; then
   echo "usage: $0 gldas.gbin gdas.sfcanl"

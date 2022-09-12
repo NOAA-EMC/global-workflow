@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${HOMEgfs:?}/ush/preamble.sh"
 
 rflux=$1
 fcsty=$2

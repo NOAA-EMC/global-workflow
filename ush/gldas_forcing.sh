@@ -4,7 +4,7 @@
 # to disaggregate daily value into hourly value
 ########################################################################### 
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${HOMEgfs:?}/ush/preamble.sh"
 
 bdate=$1
 edate=$2

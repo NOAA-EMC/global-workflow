@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${HOMEgfs:?}/ush/preamble.sh"
 
 if [ $# -lt 3 ]; then
   echo usage $0 yyyymmddhh1 yyyymmddhh2 126/382/574/1534

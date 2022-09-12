@@ -15,7 +15,7 @@
 #
 #########################################################
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${HOMEgfs:?}/ush/preamble.sh"
 
 if [ $# -lt 1 ]; then
   echo "usage: $0 sdate [edate]"
