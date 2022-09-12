@@ -55,7 +55,7 @@ fi
 echo ufs_utils checkout ...
 if [[ ! -d ufs_utils.fd ]] ; then
     rm -f ${topdir}/checkout-ufs_utils.log
-    git clone --branch ops-gfsv16.2.1 https://github.com/ufs-community/UFS_UTILS ufs_utils.fd >> ${topdir}/checkout-ufs_utils.fd.log 2>&1
+    git clone --branch ops-gfsv16.3.0 https://github.com/ufs-community/UFS_UTILS ufs_utils.fd >> ${topdir}/checkout-ufs_utils.fd.log 2>&1
     cd ${topdir}
 else
     echo 'Skip.  Directory ufs_utils.fd already exists.'

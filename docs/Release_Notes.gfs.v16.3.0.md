@@ -82,7 +82,7 @@ The checkout script extracts the following GFS components:
 | MODEL     | GFS.v16.3.0   | Jun.Wang@noaa.gov |
 | GLDAS     | gldas_gfsv16_release.v.2.1.0 | Helin.Wei@noaa.gov |
 | GSI       | gfsda.v16.3.0 | Emily.Liu@noaa.gov |
-| UFS_UTILS | ops-gfsv16.2.1 | George.Gayno@noaa.gov |
+| UFS_UTILS | ops-gfsv16.3.0 | George.Gayno@noaa.gov |
 | POST      | upp_v8.2.0 | Wen.Meng@noaa.gov |
 | WAFS      | gfs_wafs.v6.3.1 | Yali.Mao@noaa.gov |
 
@@ -399,6 +399,8 @@ FIX CHANGES
     * `fix_gsi/gfsv16_historical/gfsv16.3/global_convinfo.txt.2022031612`
     * `fix_gsi/gfsv16_historical/gfsv16.3/global_satinfo.txt.2021092206`
     * `fix_gsi/gfsv16_historical/gfsv16.3/global_satinfo.txt.2021102612`
+
+* UFS_UTILS: update NCO mode fix file install to copy instead of symlink
 
 * WAFS:
   * `fix/wafs/legend`: new folder prepared for switching. When ICAO2023=yes, use fix/wafs; when ICAO2023=no, use fix/wafs/legend
