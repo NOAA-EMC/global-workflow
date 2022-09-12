@@ -1,7 +1,6 @@
 #! /usr/bin/env bash
 #########################################################
 # This script generate gldas forcing from gdas prod sflux
-# script history:
 #########################################################
 
 source "$HOMEgfs/ush/preamble.sh"

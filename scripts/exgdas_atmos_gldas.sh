@@ -3,12 +3,9 @@
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
-# Script name:         exgdas_gldas.sh.ecf                  
+# Script name:         exgdas_atmos_gldas.sh
 # Script description:  Runs the global land analysis                    
 #
-# History:  
-#  20191015 Jesse Meng and Youlong Xia, first version
-#  20191123 Fanglin Yang, restructure for global workflow
 ################################################################################
 
 source "$HOMEgfs/ush/preamble.sh"
