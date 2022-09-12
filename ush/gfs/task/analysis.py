@@ -22,6 +22,9 @@ class Analysis(Task):
         self.stage_obs(obs_dict)
 
     def execute(self):
+        """
+        Note this is generally unused and a shell script
+        """
         super().execute()
 
     def finalize(self):
@@ -159,6 +162,10 @@ class AerosolAnalysis(Analysis):
 
     def finalize(self):
         super().finalize()
+        # tar up diags
+        # move diag tar file to ROTDIR
+        # add increments to RESTART files
+        # move increments to ROTDIR
 
     def stage_crtm(self, filedict):
         logging.info('Staging CRTM coefficient files')
