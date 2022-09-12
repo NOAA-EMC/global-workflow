@@ -21,6 +21,7 @@ if [ "${cyc:?}" -ne "${gldas_cyc:?}" ]; then
     exit 0   
 fi
 
+gldas_spinup_hours=${gldas_spinup_hours-:72}
 xtime=$((gldas_spinup_hours+12))
 if [ "${CDATE}" -le "$(${NDATE:?} +"${xtime}" "${SDATE:?}")" ]; then
     echo "GLDAS needs fluxes as forcing from cycles in previous ${xtime} hours"
@@ -119,7 +120,7 @@ fi
 # Remove the Temporary working directory
 ##########################################
 cd "${DATAROOT}" || exit
-[[ ${KEEPDATA} = "NO" ]] && rm -rf "${DATA}"
+[[ ${KEEPDATA:?} = "NO" ]] && rm -rf "${DATA}"
 
 exit 0
 
