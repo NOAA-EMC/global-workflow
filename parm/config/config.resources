@@ -292,7 +292,9 @@ elif [ $step = "fcst" ]; then
       export wtime_fcst_gfs="06:00:00"
     elif [ $CASE = "C384" ]; then
       export wtime_fcst_gfs="06:00:00"
-      if [[ "$machine" == "S4" && "$APP" == "S2SW" ]]; then export wtime_fcst_gfs="04:00:00"; fi
+      #S4 has a limitation of 5000 core-hours per job
+      #For S2S* experiments, the walltime must thus be limited
+      if [[ "$machine" == "S4" && "$APP" =~ "^S2S" ]]; then export wtime_fcst_gfs="04:00:00"; fi
     else
       export wtime_fcst_gfs="03:00:00"
     fi
@@ -455,7 +457,6 @@ elif [ $step = "vrfy" ]; then
     export wtime_vrfy="03:00:00"
     export wtime_vrfy_gfs="06:00:00"
     export npe_vrfy=3
-    [[ "$machine" == "S4" ]] && export npe_vrfy=1
     export nth_vrfy=1
     export npe_node_vrfy=1
     export npe_vrfy_gfs=1
