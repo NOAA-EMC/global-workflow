@@ -347,6 +347,10 @@ PARM/CONFIG CHANGES
   * `parm/config/config.resources.emc.dyn`
   * `parm/config/config.resources.nco.static`
   * `parm/config/config.vrfy`
+  * `parm/config/config.wafsblending0p25` - add export ICAO2023=no (change to yes later)
+  * `parm/config/config.wafsgcip` - add export ICAO2023=no (change to yes later)
+  * `parm/config/config.wafsgrib2` - add export ICAO2023=no (change to yes later)
+  * `parm/config/config.wafsgrib20p25` - add export ICAO2023=no (change to yes later)
 
 SCRIPT CHANGES
 --------------
