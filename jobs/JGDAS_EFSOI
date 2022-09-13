@@ -20,7 +20,7 @@ done
 
 export EFSOI_FORECAST_LENGTH=24
 
-xtime=$(($EFSOI_FORECAST_LENGTH+12))
+xtime=$((EFSOI_FORECAST_LENGTH+12))
 if [ $CDATE -lt $($NDATE +$xtime $SDATE) ]; then
     echo "EFSOI needs a 30-hour EFSOI forecast to run with an analysis from ${CDATE}," 
     echo " so needs to run $xtime hours starting from $SDATE. This efsoi cycle is skipped" 
