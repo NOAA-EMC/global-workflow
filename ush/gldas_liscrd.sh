@@ -20,7 +20,7 @@ export   mm2=$(echo "${date2}" | cut -c 5-6)
 export   dd2=$(echo "${date2}" | cut -c 7-8)
 export   hh2=$(echo "${date2}" | cut -c 9-10)
 export  grid=${grid}
-export PARM_LM=${PARMgldas}
+export PARM_LM=${PARMgldas:?}
 export LISCARD=lis.crd
 
 rm -f "${LISCARD}"

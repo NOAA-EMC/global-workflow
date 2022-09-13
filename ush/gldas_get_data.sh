@@ -16,14 +16,14 @@ fi
 ### RUNDIR = gldas forcing in grib2 format
 ### RUNDIR/force = gldas forcing in grib1 format
 export COMPONENT=${COMPONENT:-atmos}
-fpath=${RUNDIR}
+fpath=${RUNDIR:?}
 gpath=${RUNDIR}/force
 cycint=${assim_freq:-6}
 
 # get gdas flux files to force gldas.
 # CPC precipitation is from 12z to 12z. One more day of gdas data is
 # needed to disaggregate daily CPC precipitation values to hourly values
-cdate=$(${NDATE} -12 "${bdate}")
+cdate=$(${NDATE:?} -12 "${bdate}")
 
 iter=0
 
@@ -37,7 +37,7 @@ while [[ "${cdate}" -lt "${edate}" ]]; do
 
 f=1
 while [[ "${f}" -le "${cycint}" ]]; do
-  rflux=${COMINgdas}/gdas.${ymd}/${cyc}/${COMPONENT}/gdas.t${cyc}z.sfluxgrbf00${f}.grib2
+  rflux=${COMINgdas:?}/gdas.${ymd}/${cyc}/${COMPONENT}/gdas.t${cyc}z.sfluxgrbf00${f}.grib2
   fflux=${fpath}/gdas.${ymd}/gdas.t${cyc}z.sfluxgrbf0${f}.grib2
   gflux=${gpath}/gdas.${ymd}/gdas1.t${cyc}z.sfluxgrbf0${f}
   if [[ ! -s "${rflux}" ]];then
@@ -51,7 +51,7 @@ while [[ "${f}" -le "${cycint}" ]]; do
   if [[ "${f}" -ge 1 ]]; then fcsty=fcst; fi
 
   if [[ "${machine}" = "WCOSS2" ]]; then
-    echo "${USHgldas}/gldas_process_data.sh ${rflux} ${fcsty} ${fflux} ${gflux} ${f}" >> ./cfile
+    echo "${USHgldas:?}/gldas_process_data.sh ${rflux} ${fcsty} ${fflux} ${gflux} ${f}" >> ./cfile
   elif [[ "${machine}" = "HERA" ]]; then
     echo "${iter} ${USHgldas}/gldas_process_data.sh ${rflux} ${fcsty} ${fflux} ${gflux} ${f}" >> ./cfile
   else
@@ -68,7 +68,7 @@ done
 #-------------------------------
 
 if [[ "${machine}" = "HERA" ]] || [[ "${machine}" = "WCOSS2" ]]; then
-  ${APRUN_GLDAS_DATA_PROC} ./cfile
+  ${APRUN_GLDAS_DATA_PROC:?} ./cfile
 fi
 
 exit $?

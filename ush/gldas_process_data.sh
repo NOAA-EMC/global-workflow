@@ -8,6 +8,9 @@ fflux=$3
 gflux=$4
 f=$5
 
+WGRIB2=${WGRIB2:?}
+CNVGRIB=${CNVGRIB:?}
+
 ${WGRIB2} "${rflux}" | grep "TMP:1 hybrid"     | grep "${fcsty}" | ${WGRIB2} -i "${rflux}" -append -grib "${fflux}"
 ${WGRIB2} "${rflux}" | grep "SPFH:1 hybrid"    | grep "${fcsty}" | ${WGRIB2} -i "${rflux}" -append -grib "${fflux}"
 ${WGRIB2} "${rflux}" | grep "UGRD:1 hybrid"    | grep "${fcsty}" | ${WGRIB2} -i "${rflux}" -append -grib "${fflux}"

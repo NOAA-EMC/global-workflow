@@ -176,7 +176,7 @@ cat >> fort.141 << EOF
    orog_files_input_grid="${CASE}_oro_data.tile1.nc","${CASE}_oro_data.tile2.nc","${CASE}_oro_data.tile3.nc","${CASE}_oro_data.tile4.nc","${CASE}_oro_data.tile5.nc","${CASE}_oro_data.tile6.nc"
    i_target=${nlon}
    j_target=${nlat}
-   model="${model}"
+   model="${model:?}"
  /
 EOF
 cp fort.141 fort.41

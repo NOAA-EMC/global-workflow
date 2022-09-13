@@ -13,10 +13,12 @@ edate=$2
 # EXECgldas - gldas exec directory
 # PARMgldas - gldas param directory
 # FIXgldas  - gldas fix field directory
-export LISDIR=${HOMEgldas}
-export fpath=${RUNDIR}/force
-export xpath=${RUNDIR}/force
-export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
+export LISDIR=${HOMEgldas:?}
+export fpath=${RUNDIR:?}/force
+export xpath=${RUNDIR:?}/force
+export WGRIB=${WGRIB:?}
+export COPYGB=${COPYGB:?}
+export ERRSCRIPT=${ERRSCRIPT:-"eval [[ $err = 0 ]]"}
 
 #-------------------------------
 #--- extract variables of each timestep and create forcing files
@@ -33,9 +35,8 @@ cd "${xpath}" || exit
 rm -f fort.* grib.*
 
 COMPONENT=${COMPONENT:-"atmos"}
-pathp1=${CPCGAUGE}/gdas.${sdate}/00/${COMPONENT}
-pathp2=${DCOMIN}/${sdate}/wgrbbul/cpc_rcdas
-yyyy=$(echo "${sdate}" |cut -c 1-4)
+pathp1=${CPCGAUGE:?}/gdas.${sdate}/00/${COMPONENT}
+pathp2=${DCOMIN:?}/${sdate}/wgrbbul/cpc_rcdas
 cpc_precip="PRCP_CU_GAUGE_V1.0GLB_0.125deg.lnx.${sdate}.RT"
 if [[ "${RUN_ENVIR}" = "emc" ]] && [[ "${sdate}" -gt "${bdate}" ]]; then
     cpc_precip="PRCP_CU_GAUGE_V1.0GLB_0.125deg.lnx.${sdate}.RT_early"
@@ -72,7 +73,7 @@ if [[ "${USE_CFP}" = "YES" ]] ; then
   echo "${COPYGB} -i3 '-g255 0 2881 1441 90000 0 128 -90000 360000 125 125' -x gdas.${sdat0}18 grib.18" >> ./cfile
   echo "${COPYGB} -i3 '-g255 0 2881 1441 90000 0 128 -90000 360000 125 125' -x gdas.${sdate}00 grib.00" >> ./cfile
   echo "${COPYGB} -i3 '-g255 0 2881 1441 90000 0 128 -90000 360000 125 125' -x gdas.${sdate}06 grib.06" >> ./cfile
-  ${APRUN_GLDAS_DATA_PROC} ./cfile
+  ${APRUN_GLDAS_DATA_PROC:?} ./cfile
 else
   ${COPYGB} -i3 '-g255 0 2881 1441 90000 0 128 -90000 360000 125 125' -x gdas."${sdat0}"12 grib.12
   ${COPYGB} -i3 '-g255 0 2881 1441 90000 0 128 -90000 360000 125 125' -x gdas."${sdat0}"18 grib.18
@@ -86,7 +87,9 @@ echo "${sdat0}" >> fort.10
 echo "${sdate}" >> fort.10
 
 export pgm=gldas_forcing
+# shellcheck disable=SC1091
 . prep_step
+# shellcheck disable
 
 ${WGRIB} -d -bin grib.12 -o fort.11
 ${WGRIB} -d -bin grib.18 -o fort.12
