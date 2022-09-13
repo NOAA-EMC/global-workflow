@@ -21,7 +21,7 @@ done
 export EFSOI_FORECAST_LENGTH=24
 
 xtime=$((EFSOI_FORECAST_LENGTH+12))
-if [ $CDATE -lt $($NDATE +$xtime $SDATE) ]; then
+if [ $CDATE -lt "$($NDATE +$xtime $SDATE)" ]; then
     echo "EFSOI needs a 30-hour EFSOI forecast to run with an analysis from ${CDATE}," 
     echo " so needs to run $xtime hours starting from $SDATE. This efsoi cycle is skipped" 
     exit 0
@@ -78,13 +78,15 @@ fi
 # Begin JOB SPECIFIC work
 ##############################################
 
-export EFSOIDATE=$($NDATE -24 $CDATE)
+EFSOIDATE=$($NDATE -24 $CDATE)
+export EFSOIDATE
 efsoiPDY=$(echo $EFSOIDATE | cut -c1-8)
 efsoicyc=$(echo $EFSOIDATE | cut -c9-10)
 
 GDATE=$($NDATE -$assim_freq $EFSOIDATE)
 gPDY=$(echo $GDATE | cut -c1-8)
-export gcyc=$(echo $GDATE | cut -c9-10) # needed in namelist
+gcyc=$(echo $GDATE | cut -c9-10) # needed in namelist
+export gcyc
 
 VDATE=${CDATE}
 vPDY=$(echo $VDATE | cut -c1-8)
