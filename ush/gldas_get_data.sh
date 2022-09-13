@@ -55,7 +55,7 @@ while [ ${f} -le "${cycint}" ]; do
   elif [ "${machine}" = "HERA" ]; then
     echo "${iter} ${USHgldas}/gldas_process_data.sh ${rflux} ${fcsty} ${fflux} ${gflux} ${f}" >> ./cfile
   else
-    "${USHgldas}/gldas_process_data.sh ${rflux} ${fcsty} ${fflux} ${gflux} ${f}"
+    "${USHgldas}/gldas_process_data.sh" ${rflux} ${fcsty} ${fflux} ${gflux} ${f}
   fi
 
   iter=$((iter+1))
