@@ -20,7 +20,16 @@ target=""
 USERNAME=$(echo $LOGNAME | awk '{ print tolower($0)'})
 ##---------------------------------------------------------------------------
 export hname=$(hostname | cut -c 1,1)
-if [[ -d /work ]] ; then
+if [[ -d /lfs/f1 ]] ; then
+    # We are on NOAA Cactus or Dogwood
+    if ( ! eval module help > /dev/null 2>&1 ) ; then
+        echo load the module command 1>&2
+        source /usr/share/lmod/lmod/init/$__ms_shell
+    fi
+    target=wcoss2
+    module reset
+
+elif [[ -d /work ]] ; then
     # We are on MSU Orion
     if ( ! eval module help > /dev/null 2>&1 ) ; then
         echo load the module command 1>&2
