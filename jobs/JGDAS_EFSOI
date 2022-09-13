@@ -18,6 +18,16 @@ for config in $configs; do
 done
 
 
+export EFSOI_FORECAST_LENGTH=24
+
+xtime=$(($EFSOI_FORECAST_LENGTH+12))
+if [ $CDATE -lt $($NDATE +$xtime $SDATE) ]; then
+    echo "EFSOI needs a 30-hour EFSOI forecast to run with an analysis from ${CDATE}," 
+    echo " so needs to run $xtime hours starting from $SDATE. This efsoi cycle is skipped" 
+    exit 0
+fi
+
+
 ##########################################
 # Source machine runtime environment
 ##########################################
@@ -68,15 +78,19 @@ fi
 # Begin JOB SPECIFIC work
 ##############################################
 
-GDATE=$($NDATE -$assim_freq $CDATE)
+export EFSOIDATE=$($NDATE -24 $CDATE)
+efsoiPDY=$(echo $EFSOIDATE | cut -c1-8)
+efsoicyc=$(echo $EFSOIDATE | cut -c9-10)
+
+GDATE=$($NDATE -$assim_freq $EFSOIDATE)
 gPDY=$(echo $GDATE | cut -c1-8)
 export gcyc=$(echo $GDATE | cut -c9-10) # needed in namelist
 
-VDATE=$($NDATE 24 $CDATE)
+VDATE=${CDATE}
 vPDY=$(echo $VDATE | cut -c1-8)
 vcyc=$(echo $VDATE | cut -c9-10)
 
-export APREFIX="${CDUMP}.t${cyc}z."
+export APREFIX="${CDUMP}.t${efsoicyc}z."
 export VPREFIX="${CDUMP}.t${vcyc}z."
 export GPREFIX="gdas.t${gcyc}z."
 export ASUFFIX=${ASUFFIX:-$SUFFIX}
@@ -86,9 +100,8 @@ export GSUFFIX=${GSUFFIX:-$SUFFIX}
 
 # COMIN_GES_ENS and COMOUT_ANL_ENS are used in script
 export COMIN_GES_ENS="$ROTDIR/efsoigdas.$gPDY/$gcyc/$COMPONENT"
-export COMOUT_ANL_ENS="$ROTDIR/enkf$CDUMP.$PDY/$cyc/$COMPONENT"
 export COMIN_ANL="$ROTDIR/$CDUMP.$vPDY/$vcyc/$COMPONENT"
-export COMOUT_ANL_ENSFSOI="$ROTDIR/efsoi$CDUMP.$PDY/$cyc/$COMPONENT"
+export COMOUT_ANL_ENSFSOI="$ROTDIR/efsoi$CDUMP.$efsoiPDY/$efsoicyc/$COMPONENT"
 export OSENSE_SAVE_DIR="$ROTDIR/osense"
 mkdir -p $OSENSE_SAVE_DIR
 # ========================================================

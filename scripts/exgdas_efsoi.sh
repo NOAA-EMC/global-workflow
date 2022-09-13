@@ -60,11 +60,11 @@ VERFANL=${VERFANL:-${VPREFIX}atmanl.ensres.nc}
 INITANL=${INITANL:-${APREFIX}atmanl.ensres.nc}
 FCSTLONG=${GPREFIX}atmf030.ensmean.nc
 FCSTSHORT=${APREFIX}atmf024.ensmean.nc
-OSENSEIN=osense_${CDATE}_init.dat
-OSENSEOUT=osense_${CDATE}_final.dat
+OSENSEIN=osense_${EFSOIDATE}_init.dat
+OSENSEOUT=osense_${EFSOIDATE}_final.dat
 
 # this needs to be set manually because params in enkf will default to fhr03
-fgfileprefixes=sfg_${CDATE}_fhr06_
+fgfileprefixes=sfg_${EFSOIDATE}_fhr06_
 
 #analysise Namelst parameters
 NMEM_ENKF=${NMEM_ENKF:-80}
@@ -146,12 +146,12 @@ for imem in $(seq 1 $NMEM_ENKF); do
    $NLN $COMOUT_ANL_ENSFSOI/$memchar/${APREFIX}atmf024.nc ${memchar}
 done
 
-$NLN $COMIN_GES_ENS/${GPREFIX}atmf006.ensmean${GSUFFIX} sfg_${CDATE}_fhr06_ensmean
-$NLN $COMIN_GES_ENS/${GPREFIX}atmf006.ensmean${GSUFFIX} sfg_${CDATE}_fhr03_ensmean
+$NLN $COMIN_GES_ENS/${GPREFIX}atmf006.ensmean${GSUFFIX} sfg_${EFSOIDATE}_fhr06_ensmean
+$NLN $COMIN_GES_ENS/${GPREFIX}atmf006.ensmean${GSUFFIX} sfg_${EFSOIDATE}_fhr03_ensmean
 
 # The following deals with different files with the same local name (assuming
 # a 24hr EFSOI forecast):
-# both are hybrid analyses from gdas - one from CDATE saved during the
+# both are hybrid analyses from gdas - one from EFSOIDATE saved during the
 # corresponding GDAS cycle in the efsoigdas tree to be used in
 # the localization advection in EFSOI, the other from VDATE to be used
 # for verification.
@@ -167,23 +167,7 @@ $NLN $COMOUT_ANL_ENSFSOI/$FCSTSHORT .
 
 # inital osense file
 # efsoi.x will read then clobber this
-$NCP $COMOUT_ANL_ENSFSOI/$OSENSEIN osense_${CDATE}.dat
-
-
-
-
-if [ $USE_CFP = "YES" ]; then
-   chmod 755 $DATA/mp_untar.sh
-   ncmd=$(cat $DATA/mp_untar.sh | wc -l)
-   if [ $ncmd -gt 0 ]; then
-      ncmd_max=$((ncmd < npe_node_max ? ncmd : npe_node_max))
-      APRUNCFP=$(eval echo $APRUNCFP)
-      $APRUNCFP $DATA/mp_untar.sh
-      export ERR=$?
-      export err=$ERR
-      $ERRSCRIPT || exit 3
-   fi
-fi
+$NCP $COMOUT_ANL_ENSFSOI/$OSENSEIN osense_${EFSOIDATE}.dat
 
 ################################################################################
 # Create global_enkf namelist
@@ -200,7 +184,7 @@ fi
 
 cat > enkf.nml << EOFnml
 &nam_enkf
-   datestring="$CDATE",datapath="$DATA/",
+   datestring="$EFSOIDATE",datapath="$DATA/",
    gdatehr=$gcyc,
    datehr=$cyc,
    fgfileprefixes=$fgfileprefixes
@@ -248,8 +232,8 @@ $ERRSCRIPT || exit 2
 # Cat runtime output files.
 cat stdout stderr > $COMOUT_ANL_ENSFSOI/$EFSOISTAT
 
-$NCP osense_${CDATE}.dat $COMOUT_ANL_ENSFSOI/$OSENSEOUT
-$NCP osense_${CDATE}.dat $OSENSE_SAVE_DIR/$OSENSEOUT
+$NCP osense_${EFSOIDATE}.dat $COMOUT_ANL_ENSFSOI/$OSENSEOUT
+$NCP osense_${EFSOIDATE}.dat $OSENSE_SAVE_DIR/$OSENSEOUT
 
 ################################################################################
 #  Postprocessing
