@@ -6,7 +6,6 @@
 echo "BEGIN: config.efcs"
 
 #Set machine-specific layouts
-unset -v layout_x layout_y nth_fv3
 if [[ $machine = "S4" ]]; then
    if [[ "$CASE_ENKF" == "C96" ]]; then
       export layout_x=4

@@ -8,7 +8,6 @@ echo "BEGIN: config.fcst"
 # set -eu
 
 # Set machine-specific layouts
-unset -v layout_x layout_y layout_x_gfs layout_y_gfs nth_fv3 nth_fv3_gfs
 if [[ "$machine" == "S4" ]]; then
    if [[ "$CASE" == "C384" ]]; then
       export layout_x=8
