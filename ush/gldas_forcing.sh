@@ -22,14 +22,14 @@ export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 #--- extract variables of each timestep and create forcing files
 sdate=${bdate}
 edate=$(sh "${FINDDATE}" "${edate}" d-1)
-while [ "${sdate}" -lt "${edate}" ]; do
+while [[ "${sdate}" -lt "${edate}" ]]; do
 #-------------------------------
 
 sdat0=$(sh "${FINDDATE}" "${sdate}" d-1)
 [[ ! -d ${xpath}/cpc.${sdate} ]] && mkdir -p "${xpath}/cpc.${sdate}"
 [[ ! -d ${xpath}/cpc.${sdat0} ]] && mkdir -p "${xpath}/cpc.${sdat0}"
 
-cd "${xpath}"
+cd "${xpath}" || exit
 rm -f fort.* grib.*
 
 COMPONENT=${COMPONENT:-"atmos"}
@@ -37,13 +37,13 @@ pathp1=${CPCGAUGE}/gdas.${sdate}/00/${COMPONENT}
 pathp2=${DCOMIN}/${sdate}/wgrbbul/cpc_rcdas
 yyyy=$(echo "${sdate}" |cut -c 1-4)
 cpc_precip="PRCP_CU_GAUGE_V1.0GLB_0.125deg.lnx.${sdate}.RT"
-if [ "${RUN_ENVIR}" = "emc" ] && [ "${sdate}" -gt "${bdate}" ]; then
+if [[ "${RUN_ENVIR}" = "emc" ]] && [[ "${sdate}" -gt "${bdate}" ]]; then
     cpc_precip="PRCP_CU_GAUGE_V1.0GLB_0.125deg.lnx.${sdate}.RT_early"
 fi
 cpc=${pathp1}/${cpc_precip}
-if [ ! -s "${cpc}" ]; then cpc=${pathp2}/${cpc_precip} ; fi
-if [ "${RUN_ENVIR}" = "nco" ]; then cpc=${pathp2}/${cpc_precip} ; fi
-if [ ! -s "${cpc}" ]; then
+if [[ ! -s "${cpc}" ]]; then cpc=${pathp2}/${cpc_precip} ; fi
+if [[ "${RUN_ENVIR}" = "nco" ]]; then cpc=${pathp2}/${cpc_precip} ; fi
+if [[ ! -s "${cpc}" ]]; then
  echo "WARNING: GLDAS MISSING ${cpc}, WILL NOT RUN."
  exit 3
 fi
@@ -65,7 +65,7 @@ sflux=${fpath}/gdas.${sdate}/gdas1.t06z.sfluxgrbf06
 prate=gdas.${sdate}06
 ${WGRIB} -s "${sflux}" | grep "PRATE:sfc" | ${WGRIB} -i "${sflux}" -grib -o "${prate}"
 
-if [ "${USE_CFP}" = "YES" ] ; then
+if [[ "${USE_CFP}" = "YES" ]] ; then
   rm -f ./cfile
   touch ./cfile
   echo "${COPYGB} -i3 '-g255 0 2881 1441 90000 0 128 -90000 360000 125 125' -x gdas.${sdat0}12 grib.12" >> ./cfile
@@ -112,4 +112,4 @@ sdate=$(sh "${FINDDATE}" "${sdate}" d+1)
 done
 #-------------------------------
 
-exit ${err}
+exit "${err}"

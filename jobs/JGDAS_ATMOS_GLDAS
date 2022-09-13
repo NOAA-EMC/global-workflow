@@ -16,17 +16,17 @@ for config in ${configs}; do
 done
 
 
-if [ "${cyc:?}" -ne "${gldas_cyc:?}" ]; then
+if [[ "${cyc:?}" -ne "${gldas_cyc:?}" ]]; then
     echo "GLDAS only runs for ${gldas_cyc} cycle; Skip GLDAS step for cycle ${cyc}"
-    exit 0   
+    exit 0
 fi
 
 gldas_spinup_hours=${gldas_spinup_hours-:72}
 xtime=$((gldas_spinup_hours+12))
-if [ "${CDATE}" -le "$(${NDATE:?} +"${xtime}" "${SDATE:?}")" ]; then
+if [[ "${CDATE}" -le "$(${NDATE:?} +"${xtime}" "${SDATE:?}")" ]]; then
     echo "GLDAS needs fluxes as forcing from cycles in previous ${xtime} hours"
-    echo "starting from ${SDATE}. This gldas cycle is skipped" 
-    exit 0   
+    echo "starting from ${SDATE}. This gldas cycle is skipped"
+    exit 0
 fi
 
 ##########################################
@@ -85,7 +85,7 @@ export EXECgldas=${EXECgldas:-${HOMEgldas}/exec}
 export USHgldas=${USHgldas:-${HOMEgldas}/ush}
 export PARA_CONFIG=${HOMEgfs}/parm/config/config.gldas
 
-if [ "${RUN_ENVIR:?}" = "nco" ]; then
+if [[ "${RUN_ENVIR:?}" = "nco" ]]; then
     export COMIN=${COMIN:-${ROTDIR}/${RUN}.${PDY}/${cyc}/${COMPONENT}}
     export COMOUT=${COMOUT:-${ROTDIR}/${RUN}.${PDY}/${cyc}/${COMPONENT}}
 else
@@ -115,7 +115,7 @@ status=$?
 ##############################################
 # Final processing
 ##############################################
-if [ -e "${pgmout}" ] ; then
+if [[ -e "${pgmout}" ]] ; then
   cat "${pgmout}"
 fi
 

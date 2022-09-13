@@ -24,7 +24,7 @@ export DCOMIN=${DCOMIN:-${DCOMROOT:-"/lfs/h1/ops/prod/dcom"}}
 export CPCGAUGE=${CPCGAUGE:-/lfs/h2/emc/global/noscrub/emc.global/dump}
 export COMINgdas=${COMINgdas:-${ROTDIR}}
 export OFFLINE_GLDAS=${OFFLINE_GLDAS:-"NO"}
-export ERRSCRIPT=${ERRSCRIPT:-"eval [[ $err = 0 ]]"}
+export ERRSCRIPT=${ERRSCRIPT:-"eval [[ ${err} = 0 ]]"}
 
 
 #################################
@@ -42,10 +42,10 @@ export gldas_symd=$(echo "${gldas_sdate}" |cut -c 1-8)
 export gldas_scyc=$(echo "${gldas_sdate}" |cut -c 9-10)
 
 export iau_cdate=${CDATE}
-if [ "${DOIAU}" = "YES" ]; then
+if [[ "${DOIAU:?}" = "YES" ]]; then
  IAU_OFFSET=${IAU_OFFSET:-0}
  IAUHALH=$((IAU_OFFSET/2))
- export iau_cdate=$(${NDATE} -${IAUHALH} "${CDATE}")
+ export iau_cdate=$(${NDATE} -"${IAUHALH}" "${CDATE}")
 fi
 export iau_eymd=$(echo "${iau_cdate}" |cut -c 1-8)
 export iau_ecyc=$(echo "${iau_cdate}" |cut -c 9-10)
@@ -62,7 +62,7 @@ export topodir=${topodir:-${HOMEgfs}/fix/fix_fv3_gmted2010/${CASE}/}
 
 DATA=${DATA:-${pwd}/gldastmp$$}
 mkdata=NO
-if [ ! -d "${DATA}" ]; then
+if [[ ! -d "${DATA}" ]]; then
    mkdata=YES
    mkdir -p "${DATA}"
 fi
@@ -82,7 +82,7 @@ input2=${COMINgdas}/gdas.${gldas_eymd}/${gldas_ecyc}/${COMPONENT}/RESTART
 mkdir -p "${RUNDIR}/input"
 ln -fs "${GDAS}" "${RUNDIR}/input/GDAS"
 ln -fs "${FIXgldas}/FIX_T${JCAP}" "${RUNDIR}/FIX"
-ln -fs "${EXECgldas}/gldas_model" "${RUNDIR}/LIS"
+ln -fs "${EXECgldas:?}/gldas_model" "${RUNDIR}/LIS"
 
 
 #---------------------------------------------------------------
@@ -103,13 +103,13 @@ ${ERRSCRIPT} || exit 3
 
 # spatially disaggregated
 
-if   [ ${JCAP} -eq 1534 ]; then
+if   [[ "${JCAP}" -eq 1534 ]]; then
   gds='255 4 3072 1536 89909 0 128 -89909 -117 117 768 0 0 0 0 0 0 0 0 0 255 0 0 0 0 0'
-elif [ ${JCAP} -eq  766 ]; then
+elif [[ "${JCAP}" -eq  766 ]]; then
   gds='255 4 1536  768 89821 0 128 -89821 -234 234 384 0 0 0 0 0 0 0 0 0 255 0 0 0 0 0'
-elif [ ${JCAP} -eq  382 ]; then
+elif [[ "${JCAP}" -eq  382 ]]; then
   gds='255 4  768  384 89641 0 128 -89641 -469 469 192 0 0 0 0 0 0 0 0 0 255 0 0 0 0 0'
-elif [ ${JCAP} -eq  190 ]; then
+elif [[ "${JCAP}" -eq  190 ]]; then
   gds='255 4  384  192 89284 0 128 -89284 -938 938  96 0 0 0 0 0 0 0 0 0 255 0 0 0 0 0'
 else
  echo "JCAP=${JCAP} not supported, exit"
@@ -117,31 +117,31 @@ else
  ${ERRSCRIPT} || exit 4
 fi
 
-echo ${JCAP}
+echo "${JCAP}"
 echo "${gds}"
 ymdpre=$(sh "${FINDDATE}" "${gldas_symd}" d-1)
 ymdend=$(sh "${FINDDATE}" "${gldas_eymd}" d-2)
 ymd=${ymdpre}
 
-if [ "${USE_CFP}" = "YES" ] ; then
+if [[ "${USE_CFP}" = "YES" ]] ; then
   rm -f ./cfile
   touch ./cfile
 fi
 
-while [ "${ymd}" -le "${ymdend}" ]; do
-  if [ "${ymd}" -ne "${ymdpre}" ]; then
-    if [ "${USE_CFP}" = "YES" ] ; then
-      echo "${COPYGB} -i3 '-g"${gds}"' -x ${GDAS}/cpc.${ymd}/precip.gldas.${ymd}00 ${RUNDIR}/cmap.gdas.${ymd}00" >> ./cfile
-      echo "${COPYGB} -i3 '-g"${gds}"' -x ${GDAS}/cpc.${ymd}/precip.gldas.${ymd}06 ${RUNDIR}/cmap.gdas.${ymd}06" >> ./cfile
+while [[ "${ymd}" -le "${ymdend}" ]]; do
+  if [[ "${ymd}" -ne "${ymdpre}" ]]; then
+    if [[ "${USE_CFP}" = "YES" ]] ; then
+      echo "${COPYGB} -i3 '-g${gds}' -x ${GDAS}/cpc.${ymd}/precip.gldas.${ymd}00 ${RUNDIR}/cmap.gdas.${ymd}00" >> ./cfile
+      echo "${COPYGB} -i3 '-g${gds}' -x ${GDAS}/cpc.${ymd}/precip.gldas.${ymd}06 ${RUNDIR}/cmap.gdas.${ymd}06" >> ./cfile
     else
       ${COPYGB} -i3 -g"${gds}" -x "${GDAS}/cpc.${ymd}/precip.gldas.${ymd}00" "${RUNDIR}/cmap.gdas.${ymd}00"
       ${COPYGB} -i3 -g"${gds}" -x "${GDAS}/cpc.${ymd}/precip.gldas.${ymd}06" "${RUNDIR}/cmap.gdas.${ymd}06"
     fi
   fi
-  if [ "${ymd}" -ne "${ymdend}" ]; then
-    if [ "${USE_CFP}" = "YES" ] ; then
-      echo "${COPYGB} -i3 '-g"${gds}"' -x ${GDAS}/cpc.${ymd}/precip.gldas.${ymd}12 ${RUNDIR}/cmap.gdas.${ymd}12" >> ./cfile
-      echo "${COPYGB} -i3 '-g"${gds}"' -x ${GDAS}/cpc.${ymd}/precip.gldas.${ymd}18 ${RUNDIR}/cmap.gdas.${ymd}18" >> ./cfile
+  if [[ "${ymd}" -ne "${ymdend}" ]]; then
+    if [[ "${USE_CFP}" = "YES" ]] ; then
+      echo "${COPYGB} -i3 '-g${gds}' -x ${GDAS}/cpc.${ymd}/precip.gldas.${ymd}12 ${RUNDIR}/cmap.gdas.${ymd}12" >> ./cfile
+      echo "${COPYGB} -i3 '-g${gds}' -x ${GDAS}/cpc.${ymd}/precip.gldas.${ymd}18 ${RUNDIR}/cmap.gdas.${ymd}18" >> ./cfile
     else
       ${COPYGB} -i3 -g"${gds}" -x "${GDAS}/cpc.${ymd}/precip.gldas.${ymd}12" "${RUNDIR}/cmap.gdas.${ymd}12"
       ${COPYGB} -i3 -g"${gds}" -x "${GDAS}/cpc.${ymd}/precip.gldas.${ymd}18" "${RUNDIR}/cmap.gdas.${ymd}18"
@@ -150,12 +150,12 @@ while [ "${ymd}" -le "${ymdend}" ]; do
   ymd=$(sh "${FINDDATE}" "${ymd}" d+1)
 done
 
-if [ "${USE_CFP}" = "YES" ] ; then
-  ${APRUN_GLDAS_DATA_PROC} ./cfile
+if [[ "${USE_CFP}" = "YES" ]] ; then
+  ${APRUN_GLDAS_DATA_PROC:?} ./cfile
 fi
 
 # create configure file
-"${USHgldas}/gldas_liscrd.sh" "${gldas_sdate}" "${iau_cdate}" ${JCAP}
+"${USHgldas}/gldas_liscrd.sh" "${gldas_sdate}" "${iau_cdate}" "${JCAP}"
 export err=$?
 ${ERRSCRIPT} || exit 4
 
@@ -186,32 +186,38 @@ cp fort.141 fort.41
 
 export OMP_NUM_THREADS=1
 export pgm=gdas2gldas
+# shellcheck disable=SC1091
 . prep_step
-${APRUN_GAUSSIAN} "${EXECgldas}/gdas2gldas"      1>&1 2>&2
+# shellcheck disable=
+${APRUN_GAUSSIAN:?} "${EXECgldas}/gdas2gldas"      1>&1 2>&2
 export err=$?
 ${ERRSCRIPT} || exit 5
 
 
-# 3c)gldas_rst to generate noah.rst 
+# 3c)gldas_rst to generate noah.rst
 
 sfcanl=sfc.gaussian.nemsio
-ln -fs FIX/lmask_gfs_T${JCAP}.bfsa fort.11
-ln -fs ${sfcanl} fort.12
+ln -fs "FIX/lmask_gfs_T${JCAP}.bfsa" fort.11
+ln -fs "${sfcanl}" fort.12
 export pgm=gldas_rst
+# shellcheck disable=SC1091
 . prep_step
+# shellcheck disable=
 "${EXECgldas}/gldas_rst"    1>&1 2>&2
 export err=$?
 ${ERRSCRIPT} || exit 6
 
-mv ${sfcanl} "${sfcanl}.${gldas_symd}"
+mv "${sfcanl}" "${sfcanl}.${gldas_symd}"
 
 
 #---------------------------------------------------------------
 ### 4) run noah/noahmp model
 #---------------------------------------------------------------
 export pgm=LIS
+# shellcheck disable=SC1091
 . prep_step
-${APRUN_GLDAS} ./LIS      1>&1 2>&2
+# shellcheck disable=
+${APRUN_GLDAS:?} ./LIS      1>&1 2>&2
 export err=$?
 ${ERRSCRIPT} || exit 7
 
@@ -234,7 +240,7 @@ cat >> fort.241 << EOF
    orog_files_input_grid="${CASE}_oro_data.tile1.nc","${CASE}_oro_data.tile2.nc","${CASE}_oro_data.tile3.nc","${CASE}_oro_data.tile4.nc","${CASE}_oro_data.tile5.nc","${CASE}_oro_data.tile6.nc"
    i_target=${nlon}
    j_target=${nlat}
-   model="${model}"
+   model="${model:?}"
  /
 EOF
 cp fort.241 fort.41
@@ -243,7 +249,9 @@ cp fort.241 fort.41
 
 export OMP_NUM_THREADS=1
 export pgm=gdas2gldas
+# shellcheck disable=SC1091
 . prep_step
+# shellcheck disable=
 ${APRUN_GAUSSIAN} "${EXECgldas}/gdas2gldas"    1>&1 2>&2
 export err=$?
 ${ERRSCRIPT} || exit 8
@@ -256,16 +264,18 @@ gbin=${RUNDIR}/EXP901/NOAH/${yyyy}/${iau_eymd}/LIS.E901.${iau_eymd}${iau_ecyc}.N
 sfcanl=sfc.gaussian.nemsio
 rm -rf fort.11 fort.12
 ln -fs "${gbin}"   fort.11
-ln -fs ${sfcanl} fort.12
+ln -fs "${sfcanl}" fort.12
 
 export pgm=gldas_post
+# shellcheck disable=SC1091
 . prep_step
+# shellcheck disable=
 "${EXECgldas}/gldas_post"     1>&1 2>&2
 export err=$?
 ${ERRSCRIPT} || exit 9
 
 cp  fort.22 ./gldas.nemsio
-mv  fort.22 ${sfcanl}.gldas
+mv  fort.22 "${sfcanl}.gldas"
 
 
 # 5d) use gldas2gdas to create 6-tile restart tiles
@@ -278,17 +288,19 @@ cat >> fort.42 << EOF
 EOF
 
 # copy/link gdas netcdf tiles
-k=1; while [ ${k} -le 6 ]; do
- cp "${input2}/${iau_eymd}.${iau_ecyc}0000.sfcanl_data.tile${k}.nc" ./sfc_data.tile${k}.nc
+k=1; while [[ "${k}" -le 6 ]]; do
+ cp "${input2}/${iau_eymd}.${iau_ecyc}0000.sfcanl_data.tile${k}.nc" "./sfc_data.tile${k}.nc"
  k=$((k+1))
 done
 
 # copy soil type
-ln -fs FIX/stype_gfs_T${JCAP}.bfsa  stype_gfs_T${JCAP}.bfsa
+ln -fs "FIX/stype_gfs_T${JCAP}.bfsa" "stype_gfs_T${JCAP}.bfsa"
 
 export OMP_NUM_THREADS=1
 export pgm=gldas2gdas
+# shellcheck disable=SC1091
 . prep_step
+# shellcheck disable=
 ${APRUN_GAUSSIAN} "${EXECgldas}/gldas2gdas"     1>&1 2>&2
 export err=$?
 ${ERRSCRIPT} || exit 10
@@ -296,12 +308,12 @@ ${ERRSCRIPT} || exit 10
 
 # 5e) archive gldas results
 
-if [ "${OFFLINE_GLDAS}" = "YES" ]; then
+if [[ "${OFFLINE_GLDAS}" = "YES" ]]; then
  "${USHgldas}/gldas_archive.sh" "${gldas_symd}" "${gldas_eymd}"
  export err=$?
  ${ERRSCRIPT} || exit 11
 else
- k=1; while [ ${k} -le 6 ]; do
+ k=1; while [[ "${k}" -le 6 ]]; do
   mv "${input2}/${iau_eymd}.${iau_ecyc}0000.sfcanl_data.tile${k}.nc" "${input2}/${iau_eymd}.${iau_ecyc}0000.sfcanl_data.tile${k}.nc_bfgldas"
   cp "sfc_data.tile${k}.nc" "${input2}/${iau_eymd}.${iau_ecyc}0000.sfcanl_data.tile${k}.nc"
   k=$((k+1))
@@ -311,7 +323,7 @@ fi
 
 #------------------------------------------------------------------
 # Clean up before leaving
-if [ ${mkdata} = "YES" ]; then rm -rf "${DATA}"; fi
+if [[ "${mkdata}" = "YES" ]]; then rm -rf "${DATA}"; fi
 
-exit ${err}
+exit "${err}"
 
