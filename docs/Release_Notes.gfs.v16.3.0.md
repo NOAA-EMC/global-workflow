@@ -120,7 +120,7 @@ IMPLEMENTATION INSTRUCTIONS - SPECIFIC TO GSI
 * DA team will assess the data quality and impact as soon as they are available in the data dump.
 * DA team POC (Emily.Liu@noaa.gov) will notify NCO to change the use flags from -1 to 1 (the 4th column in the rows) once the DA team completes the assessment and is satisfied with the results.
 
-2. For the NCO 30-day stability test, the gfs.v16.3.0 should be warm started with the initial conditions from EIB's official real-time parallel. This is because we switched from assimilating the antenna temperature (TDR) to antenna-corrected temperatures (SDR) for ATMS, MHS, and AMSU-A.  The bias correction characteristics for these sensors will differ from those in operation. The bias correction files (abias and aibas_pc) are part of the initial conditions.
+2. For the NCO 30-day stability test, the gfs.v16.3.0 should be warm started with the initial conditions from EIB's official real-time parallel. This is because we switched from assimilating the antenna temperature (TDR) to antenna-corrected temperatures (SDR) for ATMS, MHS, and AMSU-A.  The bias correction characteristics for these sensors will differ from those in operation. The bias correction files (abias and abias_pc) are part of the initial conditions.
 
 VERSION FILE CHANGES
 --------------------
