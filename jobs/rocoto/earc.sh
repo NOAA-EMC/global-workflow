@@ -19,7 +19,7 @@ source "$HOMEgfs/ush/preamble.sh"
 # Source FV3GFS workflow modules
 . $HOMEgfs/ush/load_fv3gfs_modules.sh
 status=$?
-[[ $status -ne 0 ]] && exit $status
+[[ "${status}" -ne 0 ]] && exit "${status}"
 
 ###############################################################
 # Source relevant configs
@@ -27,7 +27,7 @@ configs="base earc"
 for config in $configs; do
     . $EXPDIR/config.${config}
     status=$?
-    [[ $status -ne 0 ]] && exit $status
+    [[ "${status}" -ne 0 ]] && exit "${status}"
 done
 
 export COMPONENT=${COMPONENT:-atmos}
@@ -51,17 +51,17 @@ cd $ARCH_LIST
 
 $HOMEgfs/ush/hpssarch_gen.sh enkf${CDUMP}
 status=$?
-if [ $status -ne 0 ]; then
+if [ "${status}" -ne 0 ]; then
    echo "$HOMEgfs/ush/hpssarch_gen.sh enkf${CDUMP} failed, ABORT!"
-   exit $status
+   exit "${status}"
 fi
 
 if [ $DO_EFSOI = "YES" ]; then
    $HOMEgfs/ush/hpssarch_gen.sh efsoigdas 
    status=$?
-   if [ $status -ne 0 ]; then
+   if [ "${status}" -ne 0 ]; then
       echo "$HOMEgfs/ush/hpssarch_gen_EFSOI.sh enkf${CDUMP} failed, ABORT!"
-      exit $status
+      exit "${status}"
    fi
 fi
 
@@ -105,41 +105,41 @@ if [[ $ENSGRP -gt 0 ]] && [[ $HPSSARCH = "YES" || $LOCALARCH = "YES" ]]; then
 
      $TARCMD -P -cvf $ATARDIR/$CDATE/enkf${CDUMP}_grp${ENSGRP}.tar $(cat $ARCH_LIST/enkf${CDUMP}_grp${n}.txt)
      status=$?
-     if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
+     if [ "${status}" -ne 0  -a $CDATE -ge $firstday ]; then
          echo "$(echo $TARCMD | tr 'a-z' 'A-Z') $CDATE enkf${CDUMP}_grp${ENSGRP}.tar failed"
-         exit $status
+         exit "${status}"
      fi
 
      if [ $SAVEWARMICA = "YES" -a $cyc -eq $EARCINC_CYC ]; then
        $TARCMD -P -cvf $ATARDIR/$CDATE/enkf${CDUMP}_restarta_grp${ENSGRP}.tar $(cat $ARCH_LIST/enkf${CDUMP}_restarta_grp${n}.txt)
        status=$?
-       if [ $status -ne 0 ]; then
+       if [ "${status}" -ne 0 ]; then
            echo "$(echo $TARCMD | tr 'a-z' 'A-Z') $CDATE enkf${CDUMP}_restarta_grp${ENSGRP}.tar failed"
-           exit $status
+           exit "${status}"
        fi
      fi
 
      if [ $SAVEWARMICB = "YES"  -a $cyc -eq $EARCICS_CYC ]; then
        $TARCMD -P -cvf $ATARDIR/$CDATE/enkf${CDUMP}_restartb_grp${ENSGRP}.tar $(cat $ARCH_LIST/enkf${CDUMP}_restartb_grp${n}.txt)
        status=$?
-       if [ $status -ne 0 ]; then
+       if [ "${status}" -ne 0 ]; then
            echo "$(echo $TARCMD | tr 'a-z' 'A-Z') $CDATE enkf${CDUMP}_restartb_grp${ENSGRP}.tar failed"
-           exit $status
+           exit "${status}"
        fi
      fi
 
      if [ $DO_EFSOI = "YES" ]; then
        $TARCMD -P -cvf $ATARDIR/$CDATE/efsoi${CDUMP}_grp${ENSGRP}.tar $(cat $ARCH_LIST/efsoi${CDUMP}_grp${n}.txt)
        status=$?
-       if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
+       if [ "${status}" -ne 0  -a $CDATE -ge $firstday ]; then
            echo "HTAR $CDATE efsoi${CDUMP}_grp${ENSGRP}.tar failed"
            exit "${status}"
        fi
   
-       if [  $SAVEWARMICA = "YES" -a  $cyc -eq $EARCINC_CYC ]; then
+       if [  $SAVEWARMICA = "YES" ] &&  [ $cyc -eq $EARCINC_CYC ]; then
          $TARCMD -P -cvf $ATARDIR/$CDATE/efsoi${CDUMP}_restarta_grp${ENSGRP}.tar $(cat $ARCH_LIST/efsoi${CDUMP}_restarta_grp${n}.txt)
          status=$?
-         if [ $status -ne 0 ]; then
+         if [ "${status}" -ne 0 ]; then
              echo "HTAR $CDATE efsoi${CDUMP}_restarta_grp${ENSGRP}.tar failed"
              exit "${status}"
          fi
@@ -179,17 +179,17 @@ if [ $ENSGRP -eq 0 ]; then
         set +e
         $TARCMD -P -cvf $ATARDIR/$CDATE/enkf${CDUMP}.tar $(cat $ARCH_LIST/enkf${CDUMP}.txt)
         status=$?
-        if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
+        if [ "${status}" -ne 0  -a $CDATE -ge $firstday ]; then
             echo "$(echo $TARCMD | tr 'a-z' 'A-Z') $CDATE enkf${CDUMP}.tar failed"
-            exit $status
+            exit "${status}"
         fi
 
         if [ $DO_EFSOI = "YES" ]; then
            $TARCMD -P -cvf $ATARDIR/$CDATE/efsoi${CDUMP}.tar $(cat $ARCH_LIST/efsoi${CDUMP}.txt)
            status=$?
-           if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
+           if [ "${status}" -ne 0  -a $CDATE -ge $firstday ]; then
                echo "HTAR $CDATE efsoi${CDUMP}.tar failed"
-               exit $status
+               exit "${status}"
            fi
         fi # $DO_EFSOI = "YES"
 
