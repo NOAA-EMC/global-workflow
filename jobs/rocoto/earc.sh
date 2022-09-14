@@ -133,7 +133,7 @@ if [[ $ENSGRP -gt 0 ]] && [[ $HPSSARCH = "YES" || $LOCALARCH = "YES" ]]; then
        status=$?
        if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
            echo "HTAR $CDATE efsoi${CDUMP}_grp${ENSGRP}.tar failed"
-           exit $status
+           exit "${status}"
        fi
   
        if [ $SAVEWARMICA = "YES" -a $cyc -eq $EARCINC_CYC ]; then

@@ -105,7 +105,7 @@ export COMIN_GES_ENS="$ROTDIR/efsoigdas.$gPDY/$gcyc/$COMPONENT"
 export COMIN_ANL="$ROTDIR/$CDUMP.$vPDY/$vcyc/$COMPONENT"
 export COMOUT_ANL_ENSFSOI="$ROTDIR/efsoi$CDUMP.$efsoiPDY/$efsoicyc/$COMPONENT"
 export OSENSE_SAVE_DIR="$ROTDIR/osense"
-mkdir -p $OSENSE_SAVE_DIR
+mkdir -p "$OSENSE_SAVE_DIR"
 # ========================================================
 
 ###############################################################
@@ -113,7 +113,7 @@ mkdir -p $OSENSE_SAVE_DIR
 
 ${EFSOIUPDSH:-$SCRgfs/exgdas_efsoi.sh}
 status=$?
-[[ $status -ne 0 ]] && exit $status
+[[ "$status" -ne 0 ]] && exit "$status"
 
 ##############################################
 # End JOB SPECIFIC work
@@ -123,15 +123,15 @@ status=$?
 # Final processing
 ##############################################
 if [ -e "$pgmout" ] ; then
-  cat $pgmout
+  cat "$pgmout"
 fi
 
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd $DATAROOT
+cd "${DATAROOT}"
 
-[[ $KEEPDATA = "NO" ]] && rm -rf $DATA
+[[ "${KEEPDATA}" = "NO" ]] && rm -rf ${DATA}
 
 
 exit 0
