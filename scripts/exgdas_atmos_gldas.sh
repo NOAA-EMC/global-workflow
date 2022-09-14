@@ -34,28 +34,30 @@ export USE_CFP=${USE_CFP:-"NO"}
 export COMPONENT=${COMPONENT:-atmos}
 export assim_freq=${assim_freq:-6}
 export gldas_spinup_hours=${gldas_spinup_hours:-72}
-export gldas_cdate=${CDATE:?}
-export gldas_eymd=$(echo "${gldas_cdate}" |cut -c 1-8)
-export gldas_ecyc=$(echo "${gldas_cdate}" |cut -c 9-10)
-export gldas_sdate=$(${NDATE} -"${gldas_spinup_hours}" "${CDATE}")
-export gldas_symd=$(echo "${gldas_sdate}" |cut -c 1-8)
-export gldas_scyc=$(echo "${gldas_sdate}" |cut -c 9-10)
 
-export iau_cdate=${CDATE}
+# Local date variables
+gldas_cdate=${CDATE:?}
+gldas_eymd=$(echo "${gldas_cdate}" |cut -c 1-8)
+gldas_ecyc=$(echo "${gldas_cdate}" |cut -c 9-10)
+gldas_sdate=$(${NDATE} -"${gldas_spinup_hours}" "${CDATE}")
+gldas_symd=$(echo "${gldas_sdate}" |cut -c 1-8)
+gldas_scyc=$(echo "${gldas_sdate}" |cut -c 9-10)
+
+iau_cdate=${CDATE}
 if [[ "${DOIAU:?}" = "YES" ]]; then
  IAU_OFFSET=${IAU_OFFSET:-0}
  IAUHALH=$((IAU_OFFSET/2))
- export iau_cdate=$(${NDATE} -"${IAUHALH}" "${CDATE}")
+ iau_cdate=$(${NDATE} -"${IAUHALH}" "${CDATE}")
 fi
-export iau_eymd=$(echo "${iau_cdate}" |cut -c 1-8)
-export iau_ecyc=$(echo "${iau_cdate}" |cut -c 9-10)
+iau_eymd=$(echo "${iau_cdate}" |cut -c 1-8)
+iau_ecyc=$(echo "${iau_cdate}" |cut -c 9-10)
 echo "GLDAS runs from ${gldas_sdate} to ${iau_cdate}"
 
-export CASE=${CASE:-C768}
-export res=$(echo "${CASE}" |cut -c2-5)
-export JCAP=$((2*res-2))
-export nlat=$((2*res))
-export nlon=$((4*res))
+CASE=${CASE:-C768}
+res=$(echo "${CASE}" |cut -c2-5)
+JCAP=$((2*res-2))
+nlat=$((2*res))
+nlon=$((4*res))
 
 export USHgldas=${USHgldas:?}
 export FIXgldas=${FIXgldas:-${HOMEgfs}/fix}
