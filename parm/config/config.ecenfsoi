@@ -6,9 +6,9 @@
 echo "BEGIN: config.ecenfsoi"
 
 # get regular ecen configs
-. $EXPDIR/config.ecen
+. "${EXPDIR}/config.ecen"
 
 # Get task specific resources
-. $EXPDIR/config.resources ecenfsoi
+. "${EXPDIR}/config.resources ecenfsoi"
 
 echo "END: config.ecenfsoi"
