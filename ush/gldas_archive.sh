@@ -70,7 +70,7 @@ cp "${RUNDIR}/EXP901/NOAH/${yyyy}/${edate}/LIS.E901.${edate}00.Noahrst" "${COMDI
 
 mkdir -p "${COMDIR}/gldas.${edate}"
 gdate=${edate}
-gdas_date=${gdate}.${cyc}0000
+gdas_date=${gdate}.${cyc:?}0000
 cp sfc_data.tile1.nc "${COMDIR}/gldas.${edate}/${gdas_date}.sfcanl_data.tile1.nc"
 cp sfc_data.tile2.nc "${COMDIR}/gldas.${edate}/${gdas_date}.sfcanl_data.tile2.nc"
 cp sfc_data.tile3.nc "${COMDIR}/gldas.${edate}/${gdas_date}.sfcanl_data.tile3.nc"

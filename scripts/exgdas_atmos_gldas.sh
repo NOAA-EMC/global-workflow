@@ -57,6 +57,7 @@ export JCAP=$((2*res-2))
 export nlat=$((2*res))
 export nlon=$((4*res))
 
+export USHgldas=${USHgldas:?}
 export FIXgldas=${FIXgldas:-${HOMEgfs}/fix}
 export topodir=${topodir:-${HOMEgfs}/fix/fix_fv3_gmted2010/${CASE}/}
 
