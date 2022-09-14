@@ -51,7 +51,7 @@ while [[ "${f}" -le "${cycint}" ]]; do
   if [[ "${f}" -ge 1 ]]; then fcsty=fcst; fi
 
   if [[ "${USE_CFP:-"NO"}" = "YES" ]] ; then
-    if [ ${CFP_MP:-"NO"} = "YES" ]; then
+    if [[ "${CFP_MP:-"NO"}" = "YES" ]]; then
       echo "${iter} ${USHgldas:?}/gldas_process_data.sh ${rflux} ${fcsty} ${fflux} ${gflux} ${f}" >> ./cfile
     else
       echo "${USHgldas:?}/gldas_process_data.sh ${rflux} ${fcsty} ${fflux} ${gflux} ${f}" >> ./cfile
