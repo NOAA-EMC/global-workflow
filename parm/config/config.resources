@@ -293,7 +293,7 @@ elif [ $step = "fcst" ]; then
     elif [ $CASE = "C384" ]; then
       export wtime_fcst_gfs="06:00:00"
       #S4 has a limitation of 5000 core-hours per job
-      #For S2S* experiments, the walltime must thus be limited
+      #For S2S* experiments, the walltime must be limited
       if [[ "$machine" == "S4" && "$APP" =~ "^S2S" ]]; then export wtime_fcst_gfs="04:00:00"; fi
     else
       export wtime_fcst_gfs="03:00:00"

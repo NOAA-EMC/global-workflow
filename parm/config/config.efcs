@@ -5,18 +5,6 @@
 
 echo "BEGIN: config.efcs"
 
-#Set machine-specific layouts
-if [[ $machine = "S4" ]]; then
-   if [[ "$CASE_ENKF" == "C96" ]]; then
-      export layout_x=4
-      export layout_y=4
-   elif [[ "$CASE_ENKF" == "C192" ]]; then
-      export layout_x=4
-      export layout_y=4
-      export nth_fv3=1
-   fi
-fi
-
 # Source model specific information that is resolution dependent
 . $EXPDIR/config.fv3 $CASE_ENKF
 
