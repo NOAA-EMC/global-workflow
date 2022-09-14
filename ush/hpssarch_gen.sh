@@ -596,7 +596,7 @@ if [ "${type}" = "efsoigdas" ]; then
   NTARS=$((NMEM_ENKF/NMEM_EARCGRP))
   [[ "${NTARS}" -eq 0 ]] && NTARS=1
   [[ $((NTARS*NMEM_EARCGRP)) -lt ${NMEM_ENKF} ]] && NTARS=$((NTARS+1))
-  NTARS2=$NTARS
+  NTARS2=${NTARS}
 
   dirpath="efsoi${CDUMP}.${PDY}/${cyc}/atmos/"
   dirname="./${dirpath}"
@@ -618,19 +618,19 @@ if [ "${type}" = "efsoigdas" ]; then
   if [ -s "${ROTDIR}/${dirpath}${head}radstat.ensmean" ]; then
        echo  "${dirname}${head}radstat.ensmean       " >>"efsoi${CDUMP}.txt"
   fi
-  for FHR in $nfhrs; do  # loop over analysis times in window
-     if [ $FHR -eq 6 ]; then
-        if [ -s ${ROTDIR}/${dirpath}${head}atmanl.ensmean${SUFFIX} ]; then
+  for FHR in ${nfhrs}; do  # loop over analysis times in window
+     if [ "${FHR}" -eq 6 ]; then
+        if [ -s "${ROTDIR}/${dirpath}${head}atmanl.ensmean${SUFFIX}" ]; then
             echo  "${dirname}${head}atmanl.ensmean${SUFFIX}      " >>"efsoi${CDUMP}.txt"
 	fi
-        if [ -s ${ROTDIR}/${dirpath}${head}atminc.ensmean${SUFFIX} ]; then
+        if [ -s "${ROTDIR}/${dirpath}${head}atminc.ensmean${SUFFIX}" ]; then
             echo  "${dirname}${head}atminc.ensmean${SUFFIX}      " >>"efsoi${CDUMP}.txt"
         fi
      else
-        if [ -s ${ROTDIR}/${dirpath}${head}atma${FHR}.ensmean${SUFFIX} ]; then
+        if [ -s "${ROTDIR}/${dirpath}${head}atma${FHR}.ensmean${SUFFIX}" ]; then
 	    echo  "${dirname}${head}atma00${FHR}.ensmean${SUFFIX}      " >>"efsoi${CDUMP}.txt"
         fi
-        if [ -s ${ROTDIR}/${dirpath}${head}atmi${FHR}.ensmean${SUFFIX} ]; then
+        if [ -s "${ROTDIR}/${dirpath}${head}atmi${FHR}.ensmean${SUFFIX}" ]; then
             echo  "${dirname}${head}atmi00${FHR}.ensmean${SUFFIX}      " >>"efsoi${CDUMP}.txt"
         fi
      fi 
@@ -642,12 +642,12 @@ if [ "${type}" = "efsoigdas" ]; then
 
 # Ensemble spread file only available with netcdf output
   fh=6
-  while [ $fh -le 30 ]; do
-      fhr=$(printf %03i $fh)
+  while [ "${fh}" -le 30 ]; do
+      fhr=$(printf %03i "${fh}")
       echo  "${dirname}${head}atmf${fhr}.ensmean${SUFFIX}       " >>"efsoi${CDUMP}.txt"
       echo  "${dirname}${head}sfcf${fhr}.ensmean${SUFFIX}       " >>"efsoi${CDUMP}.txt"
-      if [ $OUTPUT_FILE = "netcdf" ]; then
-          if [ -s ${ROTDIR}/${dirpath}${head}atmf${fhr}.ensspread${SUFFIX} ]; then
+      if [ "${OUTPUT_FILE} = "netcdf" ]; then
+          if [ -s "${ROTDIR}/${dirpath}${head}atmf${fhr}.ensspread${SUFFIX}" ]; then
 	     echo  "${dirname}${head}atmf${fhr}.ensspread${SUFFIX}     " >>"efsoi${CDUMP}.txt"
           fi
       fi
@@ -656,85 +656,85 @@ if [ "${type}" = "efsoigdas" ]; then
 
   #...........................
   n=1
-  while [ $n -le $NTARS ]; do
+  while [ "${n}" -le "${NTARS}" ]; do
      #...........................
    
      rm -f "efsoi${CDUMP}_grp${n}.txt"
-     rm -f efsoi${CDUMP}_restarta_grp${n}.txt
-     rm -f efsoi${CDUMP}_restartb_grp${n}.txt
+     rm -f "efsoi${CDUMP}_restarta_grp${n}.txt"
+     rm -f "efsoi${CDUMP}_restartb_grp${n}.txt"
      touch "efsoi${CDUMP}_grp${n}.txt"
-     touch efsoi${CDUMP}_restarta_grp${n}.txt
-     touch efsoi${CDUMP}_restartb_grp${n}.txt
+     touch "efsoi${CDUMP}_restarta_grp${n}.txt"
+     touch "efsoi${CDUMP}_restartb_grp${n}.txt"
    
      m=1
-     while [ $m -le $NMEM_EARCGRP ]; do
+     while [ "${m}" -le "${NMEM_EARCGRP}" ]; do
         nm=$(((n-1)*NMEM_EARCGRP+m))
-        mem=$(printf %03i $nm)
+        mem=$(printf %03i "${nm}")
         dirpath="efsoi${CDUMP}.${PDY}/${cyc}/atmos/mem${mem}/"
         dirname="./${dirpath}"
         head="${CDUMP}.t${cyc}z."
     
         #---
-        for FHR in $nfhrs; do  # loop over analysis times in window
-           if [ $FHR -eq 6 ]; then
-              if [ $n -le $NTARS2 ]; then
-                 if [ -s ${ROTDIR}/${dirpath}${head}atmanl${SUFFIX} ] ; then
+        for FHR in "${nfhrs}; do  # loop over analysis times in window
+           if [ "${FHR}" -eq 6 ]; then
+              if [ "${n}" -le "${NTARS2} ]; then
+                 if [ -s "${ROTDIR}/${dirpath}${head}atmanl${SUFFIX}" ] ; then
                      echo "${dirname}${head}atmanl${SUFFIX}      " >>"efsoi${CDUMP}_grp${n}.txt"
                  fi
-     	    if [ -s ${ROTDIR}/${dirpath}${head}ratminc${SUFFIX} ] ; then
+     	    if [ -s "${ROTDIR}/${dirpath}${head}ratminc${SUFFIX}" ] ; then
      		echo "${dirname}${head}ratminc${SUFFIX}      " >>"efsoi${CDUMP}_grp${n}.txt"
      	    fi
               fi
-              if [ -s ${ROTDIR}/${dirpath}${head}ratminc${SUFFIX} ] ; then
-                  echo "${dirname}${head}ratminc${SUFFIX}      " >>efsoi${CDUMP}_restarta_grp${n}.txt
+              if [ -s "${ROTDIR}/${dirpath}${head}ratminc${SUFFIX}" ] ; then
+                  echo "${dirname}${head}ratminc${SUFFIX}      " >>"efsoi${CDUMP}_restarta_grp${n}.txt"
               fi
      
            else
-              if [ $n -le $NTARS2 ]; then
-                  if [ -s ${ROTDIR}/${dirpath}${head}atma${FHR}${SUFFIX} ] ; then
+              if [ "${n} -le "${NTARS2} ]; then
+                  if [ -s "${ROTDIR}/${dirpath}${head}atma${FHR}${SUFFIX}" ] ; then
                       echo "${dirname}${head}atma${FHR}${SUFFIX}      " >>"efsoi${CDUMP}_grp${n}.txt"
                   fi
-                  if [ -s ${ROTDIR}/${dirpath}${head}ratmi${FHR}${SUFFIX} ] ; then
+                  if [ -s "${ROTDIR}/${dirpath}${head}ratmi${FHR}${SUFFIX}" ] ; then
                       echo "${dirname}${head}ratmi${FHR}${SUFFIX}      " >>"efsoi${CDUMP}_grp${n}.txt"
                   fi
               fi
-              if [ -s ${ROTDIR}/${dirpath}${head}ratmi${FHR}${SUFFIX} ] ; then
-                  echo "${dirname}${head}ratmi${FHR}${SUFFIX}      " >>efsoi${CDUMP}_restarta_grp${n}.txt
+              if [ -s "${ROTDIR}/${dirpath}${head}ratmi${FHR}${SUFFIX}" ] ; then
+                  echo "${dirname}${head}ratmi${FHR}${SUFFIX}      " >>"efsoi${CDUMP}_restarta_grp${n}.txt"
               fi
      
            fi 
            echo "${dirname}${head}atmf${FHR}${SUFFIX}       " >>"efsoi${CDUMP}_grp${n}.txt"
-           if [ $FHR -eq 6 ]; then
+           if [ "${FHR}" -eq 6 ]; then
      	  echo "${dirname}${head}sfcf${FHR}${SUFFIX}       " >>"efsoi${CDUMP}_grp${n}.txt"
            fi
         done # loop over FHR
     
         if [[ lobsdiag_forenkf = ".false." ]] ; then
            echo "${dirname}${head}gsistat              " >>"efsoi${CDUMP}_grp${n}.txt"
-           if [ -s ${ROTDIR}/${dirpath}${head}cnvstat ] ; then
+           if [ -s "${ROTDIR}/${dirpath}${head}cnvstat" ] ; then
               echo "${dirname}${head}cnvstat           " >>"efsoi${CDUMP}_grp${n}.txt"
            fi
-           if [ -s ${ROTDIR}/${dirpath}${head}radstat ]; then
-              echo "${dirname}${head}radstat           " >>efsoi${CDUMP}_restarta_grp${n}.txt
+           if [ -s "${ROTDIR}/${dirpath}${head}radstat" ]; then
+              echo "${dirname}${head}radstat           " >>"efsoi${CDUMP}_restarta_grp${n}.txt"
            fi
-           if [ -s ${ROTDIR}/${dirpath}${head}cnvstat ]; then
-              echo "${dirname}${head}cnvstat           " >>efsoi${CDUMP}_restarta_grp${n}.txt
+           if [ -s "${ROTDIR}/${dirpath}${head}cnvstat" ]; then
+              echo "${dirname}${head}cnvstat           " >>"efsoi${CDUMP}_restarta_grp${n}.txt"
            fi
-           echo "${dirname}${head}abias                " >>efsoi${CDUMP}_restarta_grp${n}.txt
-           echo "${dirname}${head}abias_air            " >>efsoi${CDUMP}_restarta_grp${n}.txt
-           echo "${dirname}${head}abias_int            " >>efsoi${CDUMP}_restarta_grp${n}.txt
-           echo "${dirname}${head}abias_pc             " >>efsoi${CDUMP}_restarta_grp${n}.txt
+           echo "${dirname}${head}abias                " >>"efsoi${CDUMP}_restarta_grp${n}.txt"
+           echo "${dirname}${head}abias_air            " >>"efsoi${CDUMP}_restarta_grp${n}.txt"
+           echo "${dirname}${head}abias_int            " >>"efsoi${CDUMP}_restarta_grp${n}.txt"
+           echo "${dirname}${head}abias_pc             " >>"efsoi${CDUMP}_restarta_grp${n}.txt"
         fi
         #---
-        echo "${dirname}RESTART/*0000.sfcanl_data.tile1.nc  " >>efsoi${CDUMP}_restarta_grp${n}.txt
-        echo "${dirname}RESTART/*0000.sfcanl_data.tile2.nc  " >>efsoi${CDUMP}_restarta_grp${n}.txt
-        echo "${dirname}RESTART/*0000.sfcanl_data.tile3.nc  " >>efsoi${CDUMP}_restarta_grp${n}.txt
-        echo "${dirname}RESTART/*0000.sfcanl_data.tile4.nc  " >>efsoi${CDUMP}_restarta_grp${n}.txt
-        echo "${dirname}RESTART/*0000.sfcanl_data.tile5.nc  " >>efsoi${CDUMP}_restarta_grp${n}.txt
-        echo "${dirname}RESTART/*0000.sfcanl_data.tile6.nc  " >>efsoi${CDUMP}_restarta_grp${n}.txt
+        echo "${dirname}RESTART/*0000.sfcanl_data.tile1.nc  " >>"efsoi${CDUMP}_restarta_grp${n}.txt"
+        echo "${dirname}RESTART/*0000.sfcanl_data.tile2.nc  " >>"efsoi${CDUMP}_restarta_grp${n}.txt"
+        echo "${dirname}RESTART/*0000.sfcanl_data.tile3.nc  " >>"efsoi${CDUMP}_restarta_grp${n}.txt"
+        echo "${dirname}RESTART/*0000.sfcanl_data.tile4.nc  " >>"efsoi${CDUMP}_restarta_grp${n}.txt"
+        echo "${dirname}RESTART/*0000.sfcanl_data.tile5.nc  " >>"efsoi${CDUMP}_restarta_grp${n}.txt"
+        echo "${dirname}RESTART/*0000.sfcanl_data.tile6.nc  " >>"efsoi${CDUMP}_restarta_grp${n}.txt"
     
         #---
-        echo "${dirname}RESTART                     " >>efsoi${CDUMP}_restartb_grp${n}.txt
+        echo "${dirname}RESTART                     " >>"efsoi${CDUMP}_restartb_grp${n}.txt"
     
         m=$((m+1))
      done
