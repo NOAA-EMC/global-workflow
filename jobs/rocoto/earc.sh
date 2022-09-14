@@ -136,21 +136,21 @@ if [[ $ENSGRP -gt 0 ]] && [[ $HPSSARCH = "YES" || $LOCALARCH = "YES" ]]; then
            exit "${status}"
        fi
   
-       if [ $SAVEWARMICA = "YES" -a $cyc -eq $EARCINC_CYC ]; then
+       if [ [ $SAVEWARMICA = "YES" ] && [ $cyc -eq $EARCINC_CYC ] ]; then
          $TARCMD -P -cvf $ATARDIR/$CDATE/efsoi${CDUMP}_restarta_grp${ENSGRP}.tar $(cat $ARCH_LIST/efsoi${CDUMP}_restarta_grp${n}.txt)
          status=$?
          if [ $status -ne 0 ]; then
              echo "HTAR $CDATE efsoi${CDUMP}_restarta_grp${ENSGRP}.tar failed"
-             exit $status
+             exit "${status}"
          fi
        fi
   
-       if [ $SAVEWARMICB = "YES"  -a $cyc -eq $EARCICS_CYC ]; then
+       if [ [ $SAVEWARMICB = "YES" ] && [ $cyc -eq $EARCICS_CYC ] ]; then
          $TARCMD -P -cvf $ATARDIR/$CDATE/efsoi${CDUMP}_restartb_grp${ENSGRP}.tar $(cat $ARCH_LIST/efsoi${CDUMP}_restartb_grp${n}.txt)
          status=$?
-         if [ $status -ne 0 ]; then
+         if [ "${status}" -ne 0 ]; then
              echo "HTAR $CDATE efsoi${CDUMP}_restartb_grp${ENSGRP}.tar failed"
-             exit $status
+             exit "${status}"
          fi
        fi
 
