@@ -2,6 +2,8 @@
 
 source "${HOMEgfs:?}/ush/preamble.sh"
 
+export RUN_ENVIR=${RUN_ENVIR:-"nco"}
+
 #############################
 # Source relevant config files
 #############################
@@ -85,7 +87,7 @@ export EXECgldas=${EXECgldas:-${HOMEgldas}/exec}
 export USHgldas=${USHgldas:-${HOMEgldas}/ush}
 export PARA_CONFIG=${HOMEgfs}/parm/config/config.gldas
 
-if [[ "${RUN_ENVIR:?}" = "nco" ]]; then
+if [[ "${RUN_ENVIR}" = "nco" ]]; then
     export COMIN=${COMIN:-${ROTDIR}/${RUN}.${PDY}/${cyc}/${COMPONENT}}
     export COMOUT=${COMOUT:-${ROTDIR}/${RUN}.${PDY}/${cyc}/${COMPONENT}}
 else
