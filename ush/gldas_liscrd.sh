@@ -20,7 +20,6 @@ mm2=$(echo "${date2}" | cut -c 5-6)
 dd2=$(echo "${date2}" | cut -c 7-8)
 hh2=$(echo "${date2}" | cut -c 9-10)
 
-grid=${grid}
 PARM_LM=${PARMgldas:?}
 LISCARD=lis.crd
 
