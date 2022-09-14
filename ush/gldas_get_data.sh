@@ -8,7 +8,7 @@ source "${HOMEgfs:?}/ush/preamble.sh"
 bdate=$1
 edate=$2
 
-if [[ "${machine}" = "HERA" ]] || [[ "${machine}" = "WCOSS2" ]]; then
+if [[ "${USE_CFP:-"NO"}" = "YES" ]] ; then
   touch ./cfile
 fi
 
@@ -50,12 +50,14 @@ while [[ "${f}" -le "${cycint}" ]]; do
   fcsty=anl
   if [[ "${f}" -ge 1 ]]; then fcsty=fcst; fi
 
-  if [[ "${machine}" = "WCOSS2" ]]; then
-    echo "${USHgldas:?}/gldas_process_data.sh ${rflux} ${fcsty} ${fflux} ${gflux} ${f}" >> ./cfile
-  elif [[ "${machine}" = "HERA" ]]; then
-    echo "${iter} ${USHgldas}/gldas_process_data.sh ${rflux} ${fcsty} ${fflux} ${gflux} ${f}" >> ./cfile
+  if [[ "${USE_CFP:-"NO"}" = "YES" ]] ; then
+    if [ ${CFP_MP:-"NO"} = "YES" ]; then
+      echo "${iter} ${USHgldas:?}/gldas_process_data.sh ${rflux} ${fcsty} ${fflux} ${gflux} ${f}" >> ./cfile
+    else
+      echo "${USHgldas:?}/gldas_process_data.sh ${rflux} ${fcsty} ${fflux} ${gflux} ${f}" >> ./cfile
+    fi
   else
-    "${USHgldas}/gldas_process_data.sh" "${rflux}" "${fcsty}" "${fflux}" "${gflux}" "${f}"
+    "${USHgldas:?}/gldas_process_data.sh" "${rflux}" "${fcsty}" "${fflux}" "${gflux}" "${f}"
   fi
 
   iter=$((iter+1))
@@ -67,7 +69,7 @@ done
 done
 #-------------------------------
 
-if [[ "${machine}" = "HERA" ]] || [[ "${machine}" = "WCOSS2" ]]; then
+if [[ "${USE_CFP:-"NO"}" = "YES" ]] ; then
   ${APRUN_GLDAS_DATA_PROC:?} ./cfile
 fi
 
