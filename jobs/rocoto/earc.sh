@@ -136,7 +136,7 @@ if [[ $ENSGRP -gt 0 ]] && [[ $HPSSARCH = "YES" || $LOCALARCH = "YES" ]]; then
            exit "${status}"
        fi
   
-       if [ [ $SAVEWARMICA = "YES" ] && [ $cyc -eq $EARCINC_CYC ] ]; then
+       if [  $SAVEWARMICA = "YES" -a  $cyc -eq $EARCINC_CYC ]; then
          $TARCMD -P -cvf $ATARDIR/$CDATE/efsoi${CDUMP}_restarta_grp${ENSGRP}.tar $(cat $ARCH_LIST/efsoi${CDUMP}_restarta_grp${n}.txt)
          status=$?
          if [ $status -ne 0 ]; then

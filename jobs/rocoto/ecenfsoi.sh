@@ -20,7 +20,7 @@ for fhr in ${fhrlst}; do
 
     "${HOMEgfs}/jobs/JGDAS_EFSOI_ECEN"
     status=$?
-    [[ ${status} -ne 0 ]] && exit ${status}
+    [[ "${status}" -ne 0 ]] && exit "${status}"
 
 done
 
