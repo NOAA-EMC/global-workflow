@@ -108,7 +108,7 @@ cd ../ecf
 IMPLEMENTATION INSTRUCTIONS - SPECIFIC TO GSI
 ---------------------------------------------
 
-This instruction is for ASCAT winds from MetOp-C (type 290, sub 5)
+1. ASCAT winds from MetOp-C (type 290, sub 5)
 
 * The use flag for ASCAT winds from MetOp-C wind is currently set to -1 in `fix_gsi/global_convinfo.txt`
 
@@ -119,6 +119,8 @@ This instruction is for ASCAT winds from MetOp-C (type 290, sub 5)
 * The Observation Processing team is preparing the data in prepbufr format.
 * DA team will assess the data quality and impact as soon as they are available in the data dump.
 * DA team POC (Emily.Liu@noaa.gov) will notify NCO to change the use flags from -1 to 1 (the 4th column in the rows) once the DA team completes the assessment and is satisfied with the results.
+
+2. For the NCO 30-day stability test, the gfs.v16.3.0 should be warm started with the initial conditions from EIB's official real-time parallel. This is because we switched from assimilating the antenna temperature (TDR) to antenna-corrected temperatures (SDR) for ATMS, MHS, and AMSU-A.  The bias correction characteristics for these sensors will differ from those in operation. The bias correction files (abias and aibas_pc) are part of the initial conditions.
 
 VERSION FILE CHANGES
 --------------------
