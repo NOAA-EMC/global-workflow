@@ -24,7 +24,7 @@ export ERRSCRIPT=${ERRSCRIPT:-"eval [[ $err = 0 ]]"}
 #--- extract variables of each timestep and create forcing files
 sdate=${bdate}
 edate=$(sh "${FINDDATE}" "${edate}" d-1)
-while [[ "${sdate}" -lt "${edate}" ]]; do
+while [[ "${sdate}" -lt "${edate}" ]] ; do
 #-------------------------------
 
 sdat0=$(sh "${FINDDATE}" "${sdate}" d-1)
@@ -89,7 +89,7 @@ echo "${sdate}" >> fort.10
 export pgm=gldas_forcing
 # shellcheck disable=SC1091
 . prep_step
-# shellcheck disable
+# shellcheck disable=
 
 ${WGRIB} -d -bin grib.12 -o fort.11
 ${WGRIB} -d -bin grib.18 -o fort.12
