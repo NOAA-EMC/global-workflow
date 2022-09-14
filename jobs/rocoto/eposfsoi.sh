@@ -10,7 +10,7 @@ status=$?
 
 ###############################################################
 # Loop over groups to Execute the JJOB
-fhrlst=$(echo ${FHRLST} | sed -e 's/_/ /g; s/f/ /g; s/,/ /g')
+fhrlst=$(echo "${FHRLST}" | sed -e 's/_/ /g; s/f/ /g; s/,/ /g')
 
 for fhr in ${fhrlst}; do
     

@@ -6,16 +6,17 @@
 echo "BEGIN: config.efcsfsoi"
 
 # Get regular efcs configs
-. $EXPDIR/config.efcs
+. "${EXPDIR}/config.efcs"
 
 # Get task specific resources
-. $EXPDIR/config.resources efcsfsoi
+. "${EXPDIR}/config.resources efcsfsoi"
 
-export npe_fv3=$npe_efcsfsoi
+export npe_fv3=${npe_efcsfsoi}
 
-if [ $QUILTING = ".true." ]; then
-    export npe_fv3=$(echo " $npe_fv3 + $WRITE_GROUP * $WRTTASK_PER_GROUP" | bc)
-    export npe_efcsfsoi=$npe_fv3
+if [ "${QUILTING}" = ".true." ]; then
+    npe_fv3=$(echo " ${npe_fv3} + ${WRITE_GROUP} * ${WRTTASK_PER_GROUP}" | bc)
+    export npe_fv3
+    export npe_efcsfsoi=${npe_fv3}
 fi
 
 export FHMIN_EFSOI=6
