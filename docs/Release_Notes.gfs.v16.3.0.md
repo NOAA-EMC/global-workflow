@@ -474,6 +474,8 @@ FIX CHANGES
 
 * Workflow:
   * Updated fix set: `fix_nco_gfsv16.3.0`
+  * Corrected storm names:
+    * `fix_am/syndat_stmnames`
   * Modified to correct some buoy coordinates:
     * `wave_gfs.buoys`
     * `wave_gfs.buoys.dat`
