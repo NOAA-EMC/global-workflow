@@ -646,7 +646,7 @@ if [ "${type}" = "efsoigdas" ]; then
       fhr=$(printf %03i "${fh}")
       echo  "${dirname}${head}atmf${fhr}.ensmean${SUFFIX}       " >>"efsoi${CDUMP}.txt"
       echo  "${dirname}${head}sfcf${fhr}.ensmean${SUFFIX}       " >>"efsoi${CDUMP}.txt"
-      if [ "${OUTPUT_FILE} = "netcdf" ]; then
+      if [ "${OUTPUT_FILE}" = "netcdf" ]; then
           if [ -s "${ROTDIR}/${dirpath}${head}atmf${fhr}.ensspread${SUFFIX}" ]; then
 	     echo  "${dirname}${head}atmf${fhr}.ensspread${SUFFIX}     " >>"efsoi${CDUMP}.txt"
           fi
