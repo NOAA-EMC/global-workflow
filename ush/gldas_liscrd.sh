@@ -11,17 +11,18 @@ date1=$1
 date2=$2
 grid=$3
 
-export yyyy1=$(echo "${date1}" | cut -c 1-4)
-export   mm1=$(echo "${date1}" | cut -c 5-6)
-export   dd1=$(echo "${date1}" | cut -c 7-8)
-export   hh1=$(echo "${date1}" | cut -c 9-10)
-export yyyy2=$(echo "${date2}" | cut -c 1-4)
-export   mm2=$(echo "${date2}" | cut -c 5-6)
-export   dd2=$(echo "${date2}" | cut -c 7-8)
-export   hh2=$(echo "${date2}" | cut -c 9-10)
-export  grid=${grid}
-export PARM_LM=${PARMgldas:?}
-export LISCARD=lis.crd
+yyyy1=$(echo "${date1}" | cut -c 1-4)
+mm1=$(echo "${date1}" | cut -c 5-6)
+dd1=$(echo "${date1}" | cut -c 7-8)
+hh1=$(echo "${date1}" | cut -c 9-10)
+yyyy2=$(echo "${date2}" | cut -c 1-4)
+mm2=$(echo "${date2}" | cut -c 5-6)
+dd2=$(echo "${date2}" | cut -c 7-8)
+hh2=$(echo "${date2}" | cut -c 9-10)
+
+grid=${grid}
+PARM_LM=${PARMgldas:?}
+LISCARD=lis.crd
 
 rm -f "${LISCARD}"
 touch "${LISCARD}"
