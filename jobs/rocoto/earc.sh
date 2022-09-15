@@ -256,7 +256,7 @@ if [ $ENSGRP -eq 0 ]; then
             if [ -d "${COMIN_ENS}" ] ; then
                 rm -rf "${COMIN_ENS}/*f012*nc"
                 rm -rf "${COMIN_ENS}/*f018*nc"
-                for imem in $(seq 1 "${NMEM_ENKF}); do
+                for imem in $(seq 1 "${NMEM_ENKF}"); do
                     memchar="mem"$(printf %03i "${imem}")
                     for file in $(ls "${COMIN_ENS}/${memchar}" |grep -v atmf024); do
                        rm -rf "${COMIN_ENS}/${memchar}/${file}"
