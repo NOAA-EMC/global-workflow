@@ -222,6 +222,7 @@ class AerosolAnalysis(Analysis):
         import netCDF4 as nc
         logging.info('Adding increments to RESTART files')
         # only need the fv_tracer files
+        cdate_fv3 = dt.datetime.strptime(self.cdate, '%Y%m%d%H').strftime('%Y%m%d.%H%M%S')
         fms_inc_file_template = os.path.join(self.datadir, 'anl', f'aeroinc.{cdate_fv3}.fv_tracer.res.tile1.nc')
         comin_ges = os.environ['COMIN_GES']
         # NOTE that while 'chem' is the $componenet, the aerosol fields are with the 'atmos' tracers
