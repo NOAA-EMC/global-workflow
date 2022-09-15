@@ -590,7 +590,8 @@ if [ "${type}" = "efsoigdas" ]; then
 
   IAUFHRS_ENKF="6,12,18,24,30"
   lobsdiag_forenkf=${lobsdiag_forenkf:-".false."}
-  nfhrs=$(echo "${IAUFHRS_ENKF}" | sed 's/,/ /g')
+  #nfhrs=$(echo "${IAUFHRS_ENKF}" | sed 's/,/ /g')
+  nfhrs=$(echo "${IAUFHRS_ENKF//,/ }" 
   NMEM_ENKF=${NMEM_ENKF:-80}
   NMEM_EARCGRP=${NMEM_EARCGRP:-10}               ##number of ens memebers included in each tarball
   NTARS=$((NMEM_ENKF/NMEM_EARCGRP))
@@ -709,7 +710,7 @@ if [ "${type}" = "efsoigdas" ]; then
            fi
         done # loop over FHR
     
-        if [[ lobsdiag_forenkf = ".false." ]] ; then
+        if [[ "${lobsdiag_forenkf}" = ".false." ]] ; then
            echo "${dirname}${head}gsistat              " >>"efsoi${CDUMP}_grp${n}.txt"
            if [ -s "${ROTDIR}/${dirpath}${head}cnvstat" ] ; then
               echo "${dirname}${head}cnvstat           " >>"efsoi${CDUMP}_grp${n}.txt"
