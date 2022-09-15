@@ -137,7 +137,7 @@ if [[ $ENSGRP -gt 0 ]] && [[ $HPSSARCH = "YES" || $LOCALARCH = "YES" ]]; then
        fi
   
        if [  $SAVEWARMICA = "YES" ] &&  [ $cyc -eq $EARCINC_CYC ]; then
-         $TARCMD -P -cvf $ATARDIR/$CDATE/efsoi${CDUMP}_restarta_grp${ENSGRP}.tar $(cat $ARCH_LIST/efsoi${CDUMP}_restarta_grp${n}.txt)
+         $TARCMD -P -cvf "$ATARDIR/$CDATE/efsoi${CDUMP}_restarta_grp${ENSGRP}.tar" $(cat $ARCH_LIST/efsoi${CDUMP}_restarta_grp${n}.txt)
          status=$?
          if [ "${status}" -ne 0 ]; then
              echo "HTAR $CDATE efsoi${CDUMP}_restarta_grp${ENSGRP}.tar failed"
@@ -145,8 +145,8 @@ if [[ $ENSGRP -gt 0 ]] && [[ $HPSSARCH = "YES" || $LOCALARCH = "YES" ]]; then
          fi
        fi
   
-       if [  $SAVEWARMICB = "YES" -a  $cyc -eq $EARCICS_CYC  ]; then
-         $TARCMD -P -cvf $ATARDIR/$CDATE/efsoi${CDUMP}_restartb_grp${ENSGRP}.tar $(cat $ARCH_LIST/efsoi${CDUMP}_restartb_grp${n}.txt)
+       if [  $SAVEWARMICB = "YES" ] && [  $cyc -eq $EARCICS_CYC  ]; then
+         $TARCMD -P -cvf "$ATARDIR/$CDATE/efsoi${CDUMP}_restartb_grp${ENSGRP}.tar" $(cat $ARCH_LIST/efsoi${CDUMP}_restartb_grp${n}.txt)
          status=$?
          if [ "${status}" -ne 0 ]; then
              echo "HTAR $CDATE efsoi${CDUMP}_restartb_grp${ENSGRP}.tar failed"
@@ -185,7 +185,7 @@ if [ $ENSGRP -eq 0 ]; then
         fi
 
         if [ $DO_EFSOI = "YES" ]; then
-           $TARCMD -P -cvf $ATARDIR/$CDATE/efsoi${CDUMP}.tar $(cat $ARCH_LIST/efsoi${CDUMP}.txt)
+           $TARCMD -P -cvf "$ATARDIR/$CDATE/efsoi${CDUMP}.tar" $(cat $ARCH_LIST/efsoi${CDUMP}.txt)
            status=$?
            if [ "${status}" -ne 0  -a $CDATE -ge $firstday ]; then
                echo "HTAR $CDATE efsoi${CDUMP}.tar failed"
@@ -251,26 +251,26 @@ if [ $ENSGRP -eq 0 ]; then
 	    fi
 	done
 
-       if [ $DO_EFSOI = "YES" ]; then
-            COMIN_ENS="$ROTDIR/efsoigdas.$gPDY/$gcyc/$COMPONENT"
-            if [ -d $COMIN_ENS ] ; then
-                rm -rf $COMIN_ENS/*f012*nc
-                rm -rf $COMIN_ENS/*f018*nc
-                for imem in $(seq 1 $NMEM_ENKF); do
-                    memchar="mem"$(printf %03i $imem)
-                    for file in $(ls $COMIN_ENS/$memchar |grep -v atmf024); do
-                       rm -rf $COMIN_ENS/$memchar/$file
+       if [ "${DO_EFSOI}" = "YES" ]; then
+            COMIN_ENS="$i{ROTDIR}/efsoigdas.${gPDY}/${gcyc}/${COMPONENT}"
+            if [ -d "${COMIN_ENS}" ] ; then
+                rm -rf "${COMIN_ENS}/*f012*nc"
+                rm -rf "${COMIN_ENS}/*f018*nc"
+                for imem in $(seq 1 "${NMEM_ENKF}); do
+                    memchar="mem"$(printf %03i "${imem}")
+                    for file in $(ls "${COMIN_ENS}/${memchar}" |grep -v atmf024); do
+                       rm -rf "${COMIN_ENS}/${memchar}/${file}"
                     done
                 done
    	    fi
        fi #  $DO_EFSOI = "YES"
    
        # Advance to next cycle
-       GDATE=$($NDATE +$assim_freq $GDATE)
+       GDATE=$("${NDATE}" +"${assim_freq}" "${GDATE}")
 
     done 
 
-    if [ $DO_EFSOI = "YES" ]; then
+    if [ "${DO_EFSOI}" = "YES" ]; then
         # Now do EFSOI - needs to be kept around longer
         # Start start and end dates to remove
         GDATEEND=$($NDATE -${RMOLDEND_EFSOI:-36}  $CDATE)
