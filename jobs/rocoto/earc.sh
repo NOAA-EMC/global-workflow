@@ -187,7 +187,7 @@ if [ $ENSGRP -eq 0 ]; then
         if [ $DO_EFSOI = "YES" ]; then
            $TARCMD -P -cvf "$ATARDIR/$CDATE/efsoi${CDUMP}.tar" $(cat $ARCH_LIST/efsoi${CDUMP}.txt)
            status=$?
-           if [ "${status}" -ne 0  -a $CDATE -ge $firstday ]; then
+           if [ "${status}" -ne 0 ] && [ $CDATE -ge $firstday ]; then
                echo "HTAR $CDATE efsoi${CDUMP}.tar failed"
                exit "${status}"
            fi
