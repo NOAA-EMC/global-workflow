@@ -161,11 +161,15 @@ class AerosolAnalysis(Analysis):
         super().execute()
 
     def finalize(self):
+        import tarfile
         super().finalize()
-        # tar up diags
-        # move diag tar file to ROTDIR
-        # add increments to RESTART files
-        # move increments to ROTDIR
+        #---- tar up diags
+        # path of output tar statfile
+        aerostat = os.path.join(os.environ['COMOUTaero'], f"{os.environ['APREFIX']}aerostat")
+
+
+        #---- add increments to RESTART files
+        #---- move increments to ROTDIR
 
     def stage_crtm(self, filedict):
         logging.info('Staging CRTM coefficient files')
@@ -188,10 +192,9 @@ class AerosolAnalysis(Analysis):
         """
         import datetime as dt
         # NOTE for now this is FV3 RESTART files and just assumed to be fh006
-        comin_ges = os.environ['COMIN_GES']
         # NOTE that while 'chem' is the $componenet, the aerosol fields are with the 'atmos' tracers
-        comin_ges_atm = comin_ges.replace('chem', 'atmos')
-        rst_dir = os.path.join(comin_ges_atm, 'RESTART') # for now, option later?
+        comin_ges = os.environ['COMINatmos']
+        rst_dir = os.path.join(comin_ges, 'RESTART') # for now, option later?
         # date variable string format
         cdate_fv3 = dt.datetime.strptime(self.cdate, '%Y%m%d%H').strftime('%Y%m%d.%H%M%S')
         # get FV3 RESTART files, this will be a lot simpler when using history files
