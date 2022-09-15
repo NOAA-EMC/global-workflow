@@ -162,11 +162,13 @@ class AerosolAnalysis(Analysis):
 
     def finalize(self):
         import tarfile
+        import glob
         super().finalize()
         #---- tar up diags
         # path of output tar statfile
         aerostat = os.path.join(os.environ['COMOUTaero'], f"{os.environ['APREFIX']}aerostat")
-
+        # get list of diag files to put in tarball
+        diags = glob.glob(os.path.join(self.datadir, 'diags', 'diag*nc4'))
 
         #---- add increments to RESTART files
         #---- move increments to ROTDIR
