@@ -677,7 +677,7 @@ if [ "${type}" = "efsoigdas" ]; then
         #---
         for FHR in "${nfhrs}"; do  # loop over analysis times in window
            if [ "${FHR}" -eq 6 ]; then
-              if [ "${n}" -le "${NTARS2} ]; then
+              if [ "${n}" -le "${NTARS2}" ]; then
                  if [ -s "${ROTDIR}/${dirpath}${head}atmanl${SUFFIX}" ] ; then
                      echo "${dirname}${head}atmanl${SUFFIX}      " >>"efsoi${CDUMP}_grp${n}.txt"
                  fi
