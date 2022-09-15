@@ -273,7 +273,7 @@ if [ $ENSGRP -eq 0 ]; then
     if [ "${DO_EFSOI}" = "YES" ]; then
         # Now do EFSOI - needs to be kept around longer
         # Start start and end dates to remove
-        GDATEEND=$("${NDATE}" -${RMOLDEND_EFSOI:-36}  "${CDATE}")
+        GDATEEND=$("${NDATE}" "-${RMOLDEND_EFSOI:-36}"  "${CDATE}")
         GDATE=$("${NDATE}" -${RMOLDSTD_ENKF:-120} "${CDATE}")
         while [ "${GDATE}" -le "${GDATEEND}" ]; do
     
@@ -286,11 +286,11 @@ if [ $ENSGRP -eq 0 ]; then
            # Remove any empty directories
            COMIN_ENS="${ROTDIR}/efsoigdas.${gPDY}/${COMPONENT}"
            if [ -d "${COMIN_ENS}" ] ; then
-               [[ ! "$(ls -A ${COMIN_ENS})" ]] && rm -rf "${COMIN_ENS}"
+               [[ ! "$(ls -A "${COMIN_ENS}")" ]] && rm -rf "${COMIN_ENS}"
            fi
            
            # Advance to next cycle
-           GDATE=$("${NDATE}" +$assim_freq "${GDATE}")
+           GDATE=$("${NDATE}" "+${assim_freq}" "${GDATE}")
            
        done
     fi # $DO_EFSOI = "YES" 
