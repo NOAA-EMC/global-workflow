@@ -179,7 +179,7 @@ if [ $ENSGRP -eq 0 ]; then
         set +e
         $TARCMD -P -cvf $ATARDIR/$CDATE/enkf${CDUMP}.tar $(cat $ARCH_LIST/enkf${CDUMP}.txt)
         status=$?
-        if [ "${status}" -ne 0  -a $CDATE -ge $firstday ]; then
+        if [ "${status}" -ne 0 ] && [ $CDATE -ge $firstday ]; then
             echo "$(echo $TARCMD | tr 'a-z' 'A-Z') $CDATE enkf${CDUMP}.tar failed"
             exit "${status}"
         fi
