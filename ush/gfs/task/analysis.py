@@ -182,6 +182,13 @@ class AerosolAnalysis(Analysis):
             archive.add(f"{diagfile}.gz")
         archive.close()
         logging.info(f'Wrote diags to {aerostat}')
+        # copy full YAML from executable to ROTDIR
+        src = os.path.join(self.datadir, f'{self.taskname}_{self.cdate}.yaml')
+        dest = os.path.join(os.environ['COMOUTaero'], f"{os.environ['APREFIX']}aeroanl.yaml")
+        if os.path.exists(dest):
+            os.remove(dest)
+        shutil.copy(src, dest)
+        logging.info(f'Copied YAML file from {src} to {dest}')
         #---- add increments to RESTART files
         #---- move increments to ROTDIR
 
