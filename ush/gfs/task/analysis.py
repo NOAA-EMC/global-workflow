@@ -1,4 +1,5 @@
 from gfs.task.base import Task
+import datetime as dt
 import logging
 import os
 import shutil
@@ -189,8 +190,57 @@ class AerosolAnalysis(Analysis):
             os.remove(dest)
         shutil.copy(src, dest)
         logging.info(f'Copied YAML file from {src} to {dest}')
+        #---- NOTE below is 'temporary', eventually we will not be using FMS RESTART formatted files
+        #---- all of the rest of this method will need to be changed but requires model and JEDI changes
+        #---- copy RESTART fv_tracer files for future reference
+        cdate_fv3 = dt.datetime.strptime(self.cdate, '%Y%m%d%H').strftime('%Y%m%d.%H%M%S')
+        comin_ges = os.environ['COMIN_GES']
+        # NOTE that while 'chem' is the $componenet, the aerosol fields are with the 'atmos' tracers
+        comin_ges_atm = comin_ges.replace('chem', 'atmos')
+        fms_bkg_file_template = os.path.join(comin_ges_atm, 'RESTART', f'{cdate_fv3}.fv_tracer.res.tile1.nc')
+        for itile in range(1,7):
+            bkg_path = fms_bkg_file_template.replace('tile1', f'tile{itile}')
+            dest = os.path.join(os.environ['COMOUTaero'], f'aeroges.{os.path.basename(bkg_path)}')
+            if os.path.exists(dest):
+                os.remove(dest)
+            logging.info(f'Copying RESTART {bkg_path} to archive aerosol background')
+            shutil.copy(bkg_path, dest)
+
         #---- add increments to RESTART files
+        self.add_fms_cube_sphere_increments()
         #---- move increments to ROTDIR
+        fms_inc_file_template = os.path.join(self.datadir, 'anl', f'aeroinc.{cdate_fv3}.fv_tracer.res.tile1.nc')
+        for itile in range(1,7):
+            inc_path = fms_inc_file_template.replace('tile1', f'tile{itile}')
+            dest = os.path.join(os.environ['COMOUTaero'], f'aeroinc.{os.path.basename(inc_path)}')
+            if os.path.exists(dest):
+                os.remove(dest)
+            logging.info(f'Copying aerosol FMS cube sphere increment to {dest}')
+            shutil.copy(bkg_path, dest)
+
+    def add_fms_cube_sphere_increments(self):
+        import netCDF4 as nc
+        logging.info('Adding increments to RESTART files')
+        # only need the fv_tracer files
+        fms_inc_file_template = os.path.join(self.datadir, 'anl', f'aeroinc.{cdate_fv3}.fv_tracer.res.tile1.nc')
+        comin_ges = os.environ['COMIN_GES']
+        # NOTE that while 'chem' is the $componenet, the aerosol fields are with the 'atmos' tracers
+        comin_ges_atm = comin_ges.replace('chem', 'atmos')
+        fms_bkg_file_template = os.path.join(comin_ges_atm, 'RESTART', f'{cdate_fv3}.fv_tracer.res.tile1.nc')
+        incvars = ['dust1', 'dust2', 'dust3', 'dust4', 'dust5', 'seas1', 'seas2', 'seas3', 'seas4']
+        for itile in range(1,7):
+            inc_path = fms_inc_file_template.replace('tile1', f'tile{itile}')
+            bkg_path = fms_bkg_file_template.replace('tile1', f'tile{itile}')
+            with nc.Dataset(inc_path, mode='r') as incfile:
+                logging.info(f'Opening increment file {inc_path}')
+                with nc.Dataset(bkg_path, mode='a') as rstfile:
+                    logging.info(f'Opening RESTART file {bkg_path}')
+                    for vname in incvars:
+                        logging.info(f'Adding increment for {vname}')
+                        increment = incfile.variables[vname][:]
+                        bkg = rstfile.variables[vname][:]
+                        anl = bkg + increment
+                        rstfile.variables[vname] = anl[:]
 
     def stage_crtm(self, filedict):
         logging.info('Staging CRTM coefficient files')
@@ -211,11 +261,11 @@ class AerosolAnalysis(Analysis):
         """
         Return dict of src/dest pairs for model backgrounds
         """
-        import datetime as dt
         # NOTE for now this is FV3 RESTART files and just assumed to be fh006
+        comin_ges = os.environ['COMIN_GES']
         # NOTE that while 'chem' is the $componenet, the aerosol fields are with the 'atmos' tracers
-        comin_ges = os.environ['COMINatmos']
-        rst_dir = os.path.join(comin_ges, 'RESTART') # for now, option later?
+        comin_ges_atm = comin_ges.replace('chem', 'atmos')
+        rst_dir = os.path.join(comin_ges_atm, 'RESTART') # for now, option later?
         # date variable string format
         cdate_fv3 = dt.datetime.strptime(self.cdate, '%Y%m%d%H').strftime('%Y%m%d.%H%M%S')
         # get FV3 RESTART files, this will be a lot simpler when using history files
