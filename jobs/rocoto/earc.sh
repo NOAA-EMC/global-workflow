@@ -286,7 +286,7 @@ if [ $ENSGRP -eq 0 ]; then
            # Remove any empty directories
            COMIN_ENS="${ROTDIR}/efsoigdas.${gPDY}/${COMPONENT}"
            if [ -d "${COMIN_ENS}" ] ; then
-               [[ ! "$(ls -A "${COMIN_ENS}")" ]] && rm -rf "${COMIN_ENS}"
+               [[ ! -n "$(ls -A "${COMIN_ENS}")" ]] && rm -rf "${COMIN_ENS}"
            fi
            
            # Advance to next cycle
