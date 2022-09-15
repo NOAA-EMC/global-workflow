@@ -675,7 +675,7 @@ if [ "${type}" = "efsoigdas" ]; then
         head="${CDUMP}.t${cyc}z."
     
         #---
-        for FHR in "${nfhrs}; do  # loop over analysis times in window
+        for FHR in "${nfhrs}"; do  # loop over analysis times in window
            if [ "${FHR}" -eq 6 ]; then
               if [ "${n}" -le "${NTARS2} ]; then
                  if [ -s "${ROTDIR}/${dirpath}${head}atmanl${SUFFIX}" ] ; then
