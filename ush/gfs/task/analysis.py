@@ -161,15 +161,27 @@ class AerosolAnalysis(Analysis):
         super().execute()
 
     def finalize(self):
-        import tarfile
         import glob
+        import gzip
+        import tarfile
         super().finalize()
+        logging.info('Finalizing global aerosol analysis')
         #---- tar up diags
         # path of output tar statfile
         aerostat = os.path.join(os.environ['COMOUTaero'], f"{os.environ['APREFIX']}aerostat")
         # get list of diag files to put in tarball
         diags = glob.glob(os.path.join(self.datadir, 'diags', 'diag*nc4'))
-
+        # gzip the files first
+        for diagfile in diags:
+            logging.info(f'Compressing {diagfile} using gzip')
+            with open(diagfile, 'rb') as f_in, gzip.open(f"{diagfile}.gz", 'wb') as f_out:
+                f_out.writelines(f_in)
+        # open tar file for writing
+        archive = tarfile.open(aerostat, "w")
+        for diagfile in diags:
+            archive.add(f"{diagfile}.gz")
+        archive.close()
+        logging.info(f'Wrote diags to {aerostat}')
         #---- add increments to RESTART files
         #---- move increments to ROTDIR
 
