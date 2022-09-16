@@ -6,10 +6,10 @@
 echo "BEGIN: config.eupdfsoi"
 
 # Get task specific resources
-. "${EXPDIR}/config.eupd"
+. "${EXPDIR}"/config.eupd
 
 # Get task specific resources
-. "${EXPDIR}/config.resources eupdfsoi"
+. "${EXPDIR}"/config.resources eupdfsoi
 
 export npe_enkf="${npe_eupd}"
 

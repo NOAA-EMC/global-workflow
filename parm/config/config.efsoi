@@ -6,7 +6,7 @@
 echo "BEGIN: config.efsoi"
 
 # Get task specific resources
-. "${EXPDIR}/config.resources efsoi"
+. "${EXPDIR}"/config.resources efsoi
 
 # LETKF specific settings with model space localization
 export modelspace_vloc=".true."  # model space localization

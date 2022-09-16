@@ -6,10 +6,10 @@
 echo "BEGIN: config.efcsfsoi"
 
 # Get regular efcs configs
-. "${EXPDIR}/config.efcs"
+. "${EXPDIR}"/config.efcs
 
 # Get task specific resources
-. "${EXPDIR}/config.resources efcsfsoi"
+. "${EXPDIR}"/config.resources efcsfsoi
 
 export npe_fv3=${npe_efcsfsoi}
 

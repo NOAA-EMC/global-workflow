@@ -569,7 +569,7 @@ elif [ ${step} = "eupdfsoi" ]; then
         export npe_eupdfsoi=100
         export nth_eupdfsoi=40
       fi
-    elif [ [ "${CASE}" = "C192" ] || [ "${CASE}" = "C96" ] || [ "${CASE}" = "C48" ] ]; then
+    elif  [ "${CASE}" = "C192" ] || [ "${CASE}" = "C96" ] || [ "${CASE}" = "C48" ] ; then
       export npe_eupdfsoi=42
       export nth_eupdfsoi=2
       if [[ "$machine" = "HERA" ]]; then
@@ -602,7 +602,7 @@ elif [ ${step} = "efsoi" ]; then
         export npe_efsoi=100
         export nth_efsoi=40
       fi
-    elif [ ["${CASE}" = "C192"] || ["${CASE}" = "C96"] || ["${CASE}" = "C48"] ]; then
+    elif  ["${CASE}" = "C192"] || ["${CASE}" = "C96"] || ["${CASE}" = "C48"] ; then
       export npe_efsoi=42
       export nth_efsoi=2
       if [[ "$machine" = "HERA" ]]; then
