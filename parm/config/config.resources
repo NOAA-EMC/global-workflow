@@ -683,7 +683,8 @@ elif [ ${step} = "eposfsoi" ]; then
     export npe_eposfsoi=80
     export nth_eposfsoi=6
     if [[ "$machine" = "WCOSS_DELL_P3" ]]; then export nth_eposfsoi=7; fi
-    export npe_node_eposfsoi=$(echo "${npe_node_max} / $nth_eposfsoi" | bc)
+    npe_node_eposfsoi=$(echo "${npe_node_max} / $nth_eposfsoi" | bc)
+    export npe_node_eposfsoi
 
 elif [ ${step} = "postsnd" ]; then
 
