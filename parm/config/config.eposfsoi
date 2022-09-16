@@ -12,6 +12,6 @@ echo "BEGIN: config.eposfsoi"
 . "${EXPDIR}"/config.efcsfsoi
 
 # Get task specific resources
-. ${EXPDIR}/config.resources eposfsoi
+. $"{EXPDIR}"/config.resources eposfsoi
 
 echo "END: config.eposfsoi"
