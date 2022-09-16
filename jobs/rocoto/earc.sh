@@ -57,7 +57,7 @@ if [ "${status}" -ne 0 ]; then
 fi
 
 if [ "${DO_EFSOI}" = "YES" ]; then
-   "${HOMEgfs}/ush/hpssarch_gen.sh efsoigdas" 
+   ${HOMEgfs}/ush/hpssarch_gen.sh efsoigdas 
    status=$?
    if [ "${status}" -ne 0 ]; then
       echo "${HOMEgfs}/ush/hpssarch_gen_EFSOI.sh enkf${CDUMP} failed, ABORT!"
