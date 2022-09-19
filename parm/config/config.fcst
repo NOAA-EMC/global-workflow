@@ -147,7 +147,7 @@ export d2_bg_k1=0.20
 export d2_bg_k2=0.04
 export dz_min=6
 export n_sponge=42
-if [[ "$LEVS" = "128" -a "$CDUMP" = "gdas" ]]; then
+if [[ "$LEVS" = "128" && "$CDUMP" = "gdas" ]]; then
    export tau=5.0
    export rf_cutoff=1.0e3
    export d2_bg_k1=0.20
@@ -283,7 +283,7 @@ export USE_COUPLER_RES="NO"
 if [[ "$CDUMP" == "gdas" ]] ; then # GDAS cycle specific parameters
 
     # Variables used in DA cycling
-    if [[ "$QUILTING" = ".true." -a "$OUTPUT_GRID" = "gaussian_grid" ]]; then
+    if [[ "$QUILTING" = ".true." && "$OUTPUT_GRID" = "gaussian_grid" ]]; then
         export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_da"
     else
         export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_da_orig"
@@ -313,7 +313,7 @@ if [[ "$CDUMP" == "gdas" ]] ; then # GDAS cycle specific parameters
 elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
 
     # Write more variables to output
-    if [[ "$QUILTING" = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]]; then
+    if [[ "$QUILTING" = ".true." && $OUTPUT_GRID = "gaussian_grid" ]]; then
         export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table"
     else
         export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_orig"
@@ -341,9 +341,9 @@ elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
             export restart_interval="$STEP_GFS $restart_interval"
         fi
     fi
-    
+
     # Choose coupling with wave
-    if [[ "$DO_WAVE" = "YES" -a "$WAVE_CDUMP" != "gdas" ]]; then
+    if [[ "$DO_WAVE" = "YES" && "$WAVE_CDUMP" != "gdas" ]]; then
         export cplwav=".true."
     fi
 
