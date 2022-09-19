@@ -138,7 +138,7 @@ elif [[ -d /lfs3 ]] ; then
         # shellcheck disable=SC1090
         source /apps/lmod/lmod/init/$__ms_shell
     fi
-    # shellcheck enable=SC1090
+    # shellcheck disable=
     target=jet
     module purge
     export NCEPLIBS=/mnt/lfs3/projects/hfv3gfs/gwv/ljtjet/lib
@@ -154,5 +154,5 @@ fi
 unset __ms_shell
 unset __ms_ksh_test
 unset __ms_bash_test
-unset ${__ms_function_name}
+unset "${__ms_function_name}"
 unset __ms_function_name
