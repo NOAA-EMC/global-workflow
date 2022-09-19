@@ -10,11 +10,11 @@ echo "BEGIN: config.prepbufr"
 
 # Set variables
 
-if [ ${machine} = "HERA" ]; then
+if [ "${machine}" = "HERA" ]; then
     export GESROOT=/scratch1/NCEPDEV/rstprod
-elif [ ${machine} = "ORION" ]; then
+elif [ "${machine}" = "ORION" ]; then
     export GESROOT=/dev/null
-elif [ ${machine} = "S4" ]; then
+elif [ "${machine}" = "S4" ]; then
     export GESROOT=/dev/null
 fi
 

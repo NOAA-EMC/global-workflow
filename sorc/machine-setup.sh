@@ -137,8 +137,8 @@ elif [[ -d /lfs3 ]] ; then
         echo load the module command 1>&2
         # shellcheck disable=SC1090
         source /apps/lmod/lmod/init/$__ms_shell
-        # shellcheck enable=SC1090
     fi
+    # shellcheck enable=SC1090
     target=jet
     module purge
     export NCEPLIBS=/mnt/lfs3/projects/hfv3gfs/gwv/ljtjet/lib

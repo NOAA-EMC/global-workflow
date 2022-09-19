@@ -130,10 +130,10 @@ fi
 
 if [[ "$RUNMOS" == "YES" && "$CDUMP" == "gfs" ]]; then
 
-    if [ $machine = "HERA" ] ; then
-        export RUNGFSMOSSH="$HOMEgfs/scripts/run_gfsmos_master.sh.hera"
+    if [ "$machine" = "HERA" ] ; then
+        export RUNGFSMOSSH="${HOMEgfs}/scripts/run_gfsmos_master.sh.hera"
     else
-        echo "WARNING: MOS package is not enabled on $machine!"
+        echo "WARNING: MOS package is not enabled on ${machine}!"
         export RUNMOS="NO"
         export RUNGFSMOSSH=""
     fi
