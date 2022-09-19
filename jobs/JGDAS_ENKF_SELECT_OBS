@@ -107,9 +107,20 @@ export PREPQC="$COMIN_OBS/${OPREFIX}prepbufr"
 if [ ! -f $PREPQC ]; then
     echo "WARNING: Global PREPBUFR FILE $PREPQC MISSING"
 fi
-export PREPQCPF="$COMIN_OBS/${OPREFIX}prepbufr.acft_profiles"
 export TCVITL="$COMIN_ANL/${OPREFIX}syndata.tcvitals.tm00"
-[[ $DONST = "YES" ]] && export NSSTBF="$COMIN_OBS/${OPREFIX}nsstbufr"
+if [[ $DONST = "YES" ]]; then
+   if [[ $DO_MAKE_NSSTBUFR == "YES" ]]; then
+      export NSSTBF="${COMOUT}/${OPREFIX}nsstbufr"
+   else
+      export NSSTBF="${COMIN_OBS}/${OPREFIX}nsstbufr"
+   fi
+fi
+
+if [[ $DO_MAKE_ACFTBUFR == "YES" ]]; then
+   export PREPQCPF="${COMOUT}/${OPREFIX}prepbufr.acft_profiles"
+else
+   export PREPQCPF="${COMIN_OBS}/${OPREFIX}prepbufr.acft_profiles"
+fi
 
 # Guess Bias correction coefficients related to control
 export GBIAS=${COMIN_GES_CTL}/${GPREFIX}abias
