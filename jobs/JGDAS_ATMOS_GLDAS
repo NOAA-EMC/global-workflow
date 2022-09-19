@@ -94,13 +94,16 @@ else
     export COMIN="${ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENT}"
     export COMOUT="${ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENT}"
 fi
-[[ ! -d ${COMOUT} ]] && mkdir -m 775 -p "${COMOUT}"
+if [[ ! -d ${COMOUT} ]]; then
+    mkdir -p "${COMOUT}"
+    chmod 775 "${COMOUT}"
+fi
 
 export COMINgdas=${COMINgdas:-${ROTDIR}}
 export DCOMIN=${DCOMIN:-${DCOMROOT:-"/lfs/h1/ops/prod/dcom"}}
 
 export model=${model:-noah}
-export MODEL=${MODEL:-$(echo "${model} |tr 'a-z' 'A-Z'")}
+export MODEL=${MODEL:-"${model} |tr 'a-z' 'A-Z'"}
 
 
 ###############################################################

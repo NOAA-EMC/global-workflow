@@ -29,7 +29,7 @@ done
 export domains_stack_size="16000000"
 
 
-if [ $DONST = "YES" ]; then
+if [[ "$DONST" = "YES" ]]; then
     . $EXPDIR/config.nsst
 fi
 
@@ -54,20 +54,20 @@ export cplwav=".false."
 
 # cpl changes based on APP
 
-if [ $DO_COUPLED = "YES" ]; then
+if [[ "$DO_COUPLED" = "YES" ]]; then
   export cpl=".true."
 fi
-if [ $DO_AERO = "YES" ]; then
+if [[ "$DO_AERO" = "YES" ]]; then
   export cplchm=".true."
 fi
-if [ $DO_ICE = "YES" ]; then
+if [[ "$DO_ICE" = "YES" ]]; then
   export cplice=".true."
   export cplflx=".true."
 fi
-if [ $DO_OCN = "YES" ]; then
+if [[ "$DO_OCN" = "YES" ]]; then
   export cplflx=".true."
 fi
-if [ $DO_WAVE = "YES" ]; then
+if [[ "$DO_WAVE" = "YES" ]]; then
   export cplwav=".true."
 fi
 
@@ -98,7 +98,7 @@ export gwd_opt=2
 # --GFS.v16 uGWD.v0, used for suite FV3_GFS_v16 and UFS p6 etc
 # do_ugwp=T: use unified CGWD and OGWD, and turbulent orographic form drag (TOFD)
 # do_ugwp=F: use unified CGWD but old OGWD, TOFD is not uded.
-if [ $gwd_opt -eq 1 ]; then
+if [[ "$gwd_opt" -eq 1 ]]; then
     export knob_ugwp_version=0
     export do_ugwp=".false."
     export do_tofd=".false."
@@ -107,7 +107,7 @@ fi
 
 
 # -- uGWD.v1, for suite FV3_GFS_v17 and FV3_GFS_v17p8b etc
-if [ $gwd_opt -eq 2 ]; then
+if [[ "$gwd_opt" -eq 2 ]]; then
 
     #--used for UFS p7 and p8a
     #export  knob_ugwp_version=1
@@ -147,7 +147,7 @@ export d2_bg_k1=0.20
 export d2_bg_k2=0.04
 export dz_min=6
 export n_sponge=42
-if [ $LEVS = "128" -a "$CDUMP" = "gdas" ]; then
+if [[ "$LEVS" = "128" -a "$CDUMP" = "gdas" ]]; then
    export tau=5.0
    export rf_cutoff=1.0e3
    export d2_bg_k1=0.20
@@ -159,13 +159,13 @@ export hybedmf=".false."
 export satmedmf=".true."
 export isatmedmf=1
 tbf=""
-if [ $satmedmf = ".true." ]; then tbf="_satmedmf" ; fi
+if [[ "$satmedmf" = ".true." ]]; then tbf="_satmedmf" ; fi
 
-# Radiation options 
+# Radiation options
 export IAER=1011    ; #spectral band mapping method for aerosol optical properties
-export iovr_lw=3    ; #de-correlation length cloud overlap method (Barker, 2008) 
-export iovr_sw=3    ; #de-correlation length cloud overlap method (Barker, 2008) 
-export iovr=3       ; #de-correlation length cloud overlap method (Barker, 2008) 
+export iovr_lw=3    ; #de-correlation length cloud overlap method (Barker, 2008)
+export iovr_sw=3    ; #de-correlation length cloud overlap method (Barker, 2008)
+export iovr=3       ; #de-correlation length cloud overlap method (Barker, 2008)
 export icliq_sw=2   ; #cloud optical coeffs from AER's newer version v3.9-v4.0 for hu and stamnes
 export isubc_sw=2
 export isubc_lw=2
@@ -186,17 +186,17 @@ export cal_pre=".true."
 export do_sat_adj=".false."
 export random_clds=".true."
 
-if [ $imp_physics -eq 99 ]; then # ZhaoCarr
+if [[ "$imp_physics" -eq 99 ]]; then # ZhaoCarr
     export ncld=1
     export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_zhaocarr${tbf}"
     export nwat=2
 
-elif [ $imp_physics -eq 6 ]; then # WSM6
+elif [[ "$imp_physics" -eq 6 ]]; then # WSM6
     export ncld=2
     export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_wsm6${tbf}"
     export nwat=6
 
-elif [ $imp_physics -eq 8 ]; then # Thompson
+elif [[ "$imp_physics" -eq 8 ]]; then # Thompson
     export ncld=2
     export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_thompson_noaero_tke"
     export nwat=6
@@ -209,7 +209,7 @@ elif [ $imp_physics -eq 8 ]; then # Thompson
     export ttendlim="-999"
     export dt_inner=$((DELTIM/2))
     export sedi_semi=.true.
-    if [ $sedi_semi = .true. ]; then export dt_inner=$DELTIM ; fi
+    if [[ "$sedi_semi" = .true. ]]; then export dt_inner=$DELTIM ; fi
     export decfl=10
 
     export hord_mt_nh_nonmono=5
@@ -218,7 +218,7 @@ elif [ $imp_physics -eq 8 ]; then # Thompson
     export nord=2
     export dddmp=0.1
     export d4_bg=0.12
-elif [ $imp_physics -eq 11 ]; then # GFDL
+elif [[ "$imp_physics" -eq 11 ]]; then # GFDL
     export ncld=5
     export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_gfdl${tbf}"
     export nwat=6
@@ -253,7 +253,7 @@ export DO_OCN_PERT_EPBL=${DO_OCN_PERT_EPBL:-"NO"}
 
 #coupling settings
 export cplmode="nems_frac"
-if [ $FRAC_GRID = ".false." ]; then
+if [[ "${FRAC_GRID:-".true."}" = ".false." ]]; then
   export cplmode="nems_orig"
 fi
 export psm_bc="1"
@@ -283,7 +283,7 @@ export USE_COUPLER_RES="NO"
 if [[ "$CDUMP" == "gdas" ]] ; then # GDAS cycle specific parameters
 
     # Variables used in DA cycling
-    if [ $QUILTING = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]; then
+    if [[ "$QUILTING" = ".true." -a "$OUTPUT_GRID" = "gaussian_grid" ]]; then
         export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_da"
     else
         export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_da_orig"
@@ -300,12 +300,12 @@ if [[ "$CDUMP" == "gdas" ]] ; then # GDAS cycle specific parameters
     export restart_interval=${restart_interval:-6}
 
     # For IAU, write restarts at beginning of window also
-    if [ $DOIAU = "YES" ]; then
+    if [[ "$DOIAU" = "YES" ]]; then
        export restart_interval="3 6"
     fi
 
     # Choose coupling with wave
-    if [ $DO_WAVE = "YES" ]; then export cplwav=".true." ; fi
+    if [[ "$DO_WAVE" = "YES" ]]; then export cplwav=".true." ; fi
 
     # Turn on dry mass adjustment in GDAS
     export adjust_dry_mass=".true."
@@ -313,15 +313,15 @@ if [[ "$CDUMP" == "gdas" ]] ; then # GDAS cycle specific parameters
 elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
 
     # Write more variables to output
-    if [ $QUILTING = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]; then
+    if [[ "$QUILTING" = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]]; then
         export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table"
     else
         export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_orig"
     fi
 
-    # Write gfs restart files to rerun fcst from any break point         
+    # Write gfs restart files to rerun fcst from any break point
     export restart_interval_gfs=${restart_interval_gfs:-0}
-    if [ $restart_interval_gfs -le 0 ]; then
+    if [[ "$restart_interval_gfs" -le 0 ]]; then
         export restart_interval="$FHMAX_GFS"
     else
         rst_list=""
@@ -335,7 +335,7 @@ elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
         export restart_interval="$rst_list"
     fi
 
-    if [ $DO_AERO = "YES" ]; then
+    if [[ "$DO_AERO" = "YES" ]]; then
         # Make sure a restart file is written at the cadence time
         if [[ ! "${restart_interval[*]}" =~ "$STEP_GFS"  ]]; then
             export restart_interval="$STEP_GFS $restart_interval"
@@ -343,7 +343,7 @@ elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
     fi
     
     # Choose coupling with wave
-    if [ $DO_WAVE = "YES" -a "$WAVE_CDUMP" != "gdas" ]; then 
+    if [[ "$DO_WAVE" = "YES" -a "$WAVE_CDUMP" != "gdas" ]]; then
         export cplwav=".true."
     fi
 
@@ -351,7 +351,7 @@ elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
     export adjust_dry_mass=".false."
 
     # Write each restart file in 16 small files to save time
-    if [ $CASE = C768 ]; then
+    if [[ "$CASE" = C768 ]]; then
       export io_layout="4,4"
     else
       export io_layout="1,1"
@@ -359,11 +359,11 @@ elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
 
 fi
 
-if [[ $DO_COUPLED = "YES" ]] ; then # coupled model
+if [[ "$DO_COUPLED" = "YES" ]] ; then # coupled model
     export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_cpl"
 fi
 
-if [ $DO_AERO = "YES" ]; then # temporary settings for aerosol coupling
+if [[ "$DO_AERO" = "YES" ]]; then # temporary settings for aerosol coupling
     export AERO_DIAG_TABLE="${AERO_DIAG_TABLE:-$HOMEgfs/parm/parm_fv3diag/diag_table.aero}"
     export AERO_FIELD_TABLE="${AERO_FIELD_TABLE:-$HOMEgfs/parm/parm_fv3diag/field_table.aero}"
     export AERO_EMIS_FIRE=$( echo "${AERO_EMIS_FIRE:-none}" | awk '{ print tolower($1) }' )

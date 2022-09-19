@@ -1,12 +1,12 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs:?}/ush/preamble.sh"
+source "${HOMEgfs:?}/ush/preamble.sh" "$1"
 
-rflux=$1
-fcsty=$2
-fflux=$3
-gflux=$4
-f=$5
+rflux=$2
+fcsty=$3
+fflux=$4
+gflux=$5
+f=$6
 
 WGRIB2=${WGRIB2:?}
 CNVGRIB=${CNVGRIB:?}

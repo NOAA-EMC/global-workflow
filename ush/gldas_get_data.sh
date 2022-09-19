@@ -52,12 +52,12 @@ while [[ "${f}" -le "${cycint}" ]]; do
 
   if [[ "${USE_CFP:-"NO"}" = "YES" ]] ; then
     if [[ "${CFP_MP:-"NO"}" = "YES" ]]; then
-      echo "${iter} ${USHgldas:?}/gldas_process_data.sh ${rflux} ${fcsty} ${fflux} ${gflux} ${f}" >> ./cfile
+      echo "${iter} ${USHgldas:?}/gldas_process_data.sh ${iter} ${rflux} ${fcsty} ${fflux} ${gflux} ${f}" >> ./cfile
     else
-      echo "${USHgldas:?}/gldas_process_data.sh ${rflux} ${fcsty} ${fflux} ${gflux} ${f}" >> ./cfile
+      echo "${USHgldas:?}/gldas_process_data.sh ${iter} ${rflux} ${fcsty} ${fflux} ${gflux} ${f}" >> ./cfile
     fi
   else
-    "${USHgldas:?}/gldas_process_data.sh" "${rflux}" "${fcsty}" "${fflux}" "${gflux}" "${f}"
+    "${USHgldas:?}/gldas_process_data.sh" "${iter}" "${rflux}" "${fcsty}" "${fflux}" "${gflux}" "${f}"
   fi
 
   iter=$((iter+1))
