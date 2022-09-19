@@ -56,6 +56,8 @@ export pgmerr=errfile
 export CDATE=${CDATE:-${PDY}${cyc}}
 export CDUMP=${CDUMP:-${RUN:-"gdas"}}
 export COMPONENT=${COMPONENT:-atmos}
+export DO_MAKE_NSSTBUFR=${DO_MAKE_NSSTBUFR:-"NO"}
+export DO_MAKE_ACFTBUFR=${DO_MAKE_ACFTBUFR:-"NO"}
 
 
 ##############################################

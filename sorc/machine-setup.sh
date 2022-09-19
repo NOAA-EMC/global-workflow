@@ -135,7 +135,9 @@ elif [[ -d /lfs3 ]] ; then
     # We are on NOAA Jet
     if ( ! eval module help > /dev/null 2>&1 ) ; then
         echo load the module command 1>&2
+        # shellcheck disable=SC1090
         source /apps/lmod/lmod/init/$__ms_shell
+        # shellcheck disable=
     fi
     target=jet
     module purge
@@ -152,5 +154,5 @@ fi
 unset __ms_shell
 unset __ms_ksh_test
 unset __ms_bash_test
-unset $__ms_function_name
+unset ${__ms_function_name}
 unset __ms_function_name

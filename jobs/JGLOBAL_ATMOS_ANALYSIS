@@ -58,6 +58,8 @@ export CDATE=${CDATE:-${PDY}${cyc}}
 export CDUMP=${CDUMP:-${RUN:-"gfs"}}
 export COMPONENT=${COMPONENT:-atmos}
 export DO_CALC_ANALYSIS=${DO_CALC_ANALYSIS:-"YES"} 
+export DO_MAKE_NSSTBUFR=${DO_MAKE_NSSTBUFR:-"NO"}
+export DO_MAKE_ACFTBUFR=${DO_MAKE_ACFTBUFR:-"NO"}
 
 
 ##############################################
@@ -179,7 +181,7 @@ fi
 # Remove the Temporary working directory
 ##########################################
 cd $DATAROOT
-[[ $KEEPDATA = "NO" ]] && rm -rf $DATA
+[[ ${KEEPDATA} = "NO" ]] && rm -rf ${DATA}
 
 
 exit 0
