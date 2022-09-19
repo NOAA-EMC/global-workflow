@@ -9,7 +9,6 @@ The global-workflow depends on the following prerequisities to be available on t
 
 The global-workflow current supports the following tier-1 machines:
 
-* WCOSS-Dell
 * Hera
 * Orion
 
