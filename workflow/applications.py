@@ -409,9 +409,6 @@ class AppConfig:
         if self.do_metp:
             gfs_tasks += ['metp']
 
-        if self.do_hybvar and 'gfs' in self.eupd_cdumps:
-            gfs_tasks += hybrid_gdas_or_gfs_tasks
-
         if self.do_wave and 'gfs' in self.wave_cdumps:
             if self.do_wave_bnd:
                 gfs_tasks += wave_bndpnt_tasks
