@@ -207,15 +207,10 @@ export IKEFLAG=n
 
 export trkrtype=tracker
 export loopnum=1
-# Define tracker working directory for this global member
-##export TRKDATA=/ptmpp1/${userid}/trakout2/${PDY}${cyc}/${cmodel}
-
-##export TMPDIR=$DATA/trak/${RANDOM}
 
 export flag_pgb=${flag_pgb:-q}
 
-export NWPROD=${NWPROD:-${PACKAGEROOT}}
-export NWPROD=${NWPROD:-/nwprod}
+export PACKAGEROOT=${PACKAGEROOT:-${PACKAGEROOT}}
 export rundir=${rundir:-$COMOUT}
 
 if [ ! -d $DATA ]
@@ -224,14 +219,9 @@ then
 fi
 cd $DATA
 
-#$NWPROD/util/ush/setup.sh
-
 if [ ${PARAFLAG} = 'YES' ]
 then 
-  $NWPROD/util/ush/setup.sh
-#else
-#TM take out this else part for operations.....
-#  $NWPROD/util/ush/setup.sh
+  $PACKAGEROOT/util/ush/setup.sh
 fi
 
 if [ ${#PDY} -eq 0 -o ${#CYL} -eq 0 -o ${#cmodel} -eq 0 ]
@@ -277,7 +267,6 @@ export gltrkdir=${gltrkdir:-${COMDIR}${COMROOTp1}/hur/${envir}/global}
 export TPCATdir=/tpcprd/atcf
 
 export homesyndir=${homesyndir:-${HOMERELO}}
-export homesyndir=${homesyndir:-$NWPROD/util}
 export exectrkdir=${exectrkdir:-${homesyndir}/exec}
 export ushtrkdir=${ushtrkdir:-${homesyndir}/ush}
 export archsyndir=${archsyndir:-${COMINsyn:-$(compath.py gfs/prod/syndat)}}
@@ -915,11 +904,6 @@ echo "   CREATE 1 BIG GRIB INPUT FILE "
 echo " -----------------------------------------"
 echo " "
 ${TRACE_ON:-set -x}
-
-#gix=$NWPROD/util/exec/grbindex
-#g2ix=$NWPROD/util/exec/grb2index
-#cgb=$NWPROD/util/exec/copygb
-#cgb2=$NWPROD/util/exec/copygb2
 
 regflag=$(grep NHC ${DATA}/vitals.upd.${atcfout}.${PDY}${CYL} | wc -l)
 
