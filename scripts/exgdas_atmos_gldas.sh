@@ -60,7 +60,7 @@ nlat=$((2*res))
 nlon=$((4*res))
 
 export USHgldas=${USHgldas:?}
-export FIXgldas=${FIXgldas:-${HOMEgfs}/fix}
+export FIXgldas=${FIXgldas:-${HOMEgfs}/fix/fix_gldas}
 export topodir=${topodir:-${HOMEgfs}/fix/fix_fv3_gmted2010/${CASE}/}
 
 DATA=${DATA:-${pwd}/gldastmp$$}
@@ -84,9 +84,14 @@ input2=${COMINgdas}/gdas.${gldas_eymd}/${gldas_ecyc}/${COMPONENT}/RESTART
 [[ -d ${RUNDIR}/input ]] && rm -fr "${RUNDIR}/input"
 mkdir -p "${RUNDIR}/input"
 ln -fs "${GDAS}" "${RUNDIR}/input/GDAS"
-ln -fs "${FIXgldas}/FIX_T${JCAP}" "${RUNDIR}/FIX"
 ln -fs "${EXECgldas:?}/gldas_model" "${RUNDIR}/LIS"
 
+# Set FIXgldas subfolder based on FRAC_GRID value
+if [[ "${FRAC_GRID:-".true."}" = ".true." ]] ; then
+  ln -fs "${FIXgldas}/frac_grid/FIX_T${JCAP}" "${RUNDIR}/FIX"
+else
+  ln -fs "${FIXgldas}/nonfrac_grid/FIX_T${JCAP}" "${RUNDIR}/FIX"
+fi
 
 #---------------------------------------------------------------
 ### 1) Get gdas 6-tile netcdf restart file and gdas forcing data

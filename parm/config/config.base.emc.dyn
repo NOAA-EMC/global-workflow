@@ -162,6 +162,7 @@ export CCPP_SUITE="FV3_GFS_v17_p8"
 export WAVE_CDUMP="" # When to include wave suite: gdas, gfs, or both
 export DOBNDPNT_WAVE="NO"
 export cplwav2atm=".false."
+export FRAC_GRID=".true."
 
 case "${APP}" in
   ATM)

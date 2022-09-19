@@ -252,7 +252,6 @@ export DO_OCN_SPPT=${DO_OCN_SPPT:-"NO"}
 export DO_OCN_PERT_EPBL=${DO_OCN_PERT_EPBL:-"NO"}
 
 #coupling settings
-export FRAC_GRID=".true."
 export cplmode="nems_frac"
 if [ $FRAC_GRID = ".false." ]; then
   export cplmode="nems_orig"
