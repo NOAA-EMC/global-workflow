@@ -11,7 +11,7 @@ export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
 configs="base gldas"
 config_path=${EXPDIR:-${NWROOT}/gfs.${gfs_ver}/parm/config}
 for config in ${configs}; do
-    # shellcheck disable=SC1091
+    # shellcheck disable=SC1090-SC1091
     . "${config_path}/config.${config}"
     # shellcheck disable=
     status=$?
@@ -35,7 +35,7 @@ fi
 ##########################################
 # Source machine runtime environment
 ##########################################
-# shellcheck disable=SC1091
+# shellcheck disable=SC1090-SC1091
 . "${HOMEgfs}/env/${machine:?}.env" gldas
 # shellcheck disable=
 status=$?
