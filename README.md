@@ -13,7 +13,7 @@ The global-workflow current supports the following tier-1 machines:
 * Orion
 
 Additionally, the following tier-2 machine is supported:
-* S4
+* S4 (Note that S2S+ experiments are not fully supported)
 
 Quick-start instructions are below. Full instructions are available in the [wiki](https://github.com/NOAA-EMC/global-workflow/wiki/Run-Global-Workflow)
 
