@@ -5,13 +5,10 @@
 
 echo "BEGIN: config.eposfsoi"
 
-# Get regular epos configs
-. "${EXPDIR}"/config.epos
-
 # Get efcsfsoi configs for FH settings
 . "${EXPDIR}"/config.efcsfsoi
 
 # Get task specific resources
-. $"{EXPDIR}"/config.resources eposfsoi
+. ${EXPDIR}/config.resources eposfsoi
 
 echo "END: config.eposfsoi"

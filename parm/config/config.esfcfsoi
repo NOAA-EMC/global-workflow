@@ -5,9 +5,6 @@
 
 echo "BEGIN: config.esfcfsoi"
 
-# Get regular esfc configs
-. "${EXPDIR}"/config.esfc
-
 # Get task specific resources
 . "${EXPDIR}"/config.resources esfcfsoi
 
