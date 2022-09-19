@@ -137,7 +137,7 @@ elif [[ -d /lfs3 ]] ; then
         echo load the module command 1>&2
         # shellcheck disable=SC1090
         source /apps/lmod/lmod/init/$__ms_shell
-        # shellcheck disable=
+        # shellcheck enable=SC1090
     fi
     target=jet
     module purge

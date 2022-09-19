@@ -12,11 +12,11 @@ if [ $# -lt 2 ]; then
     exit 1
 fi
 
-if [ $RUN_ENVIR != emc && $RUN_ENVIR != nco ]; then
+if [[ $RUN_ENVIR != emc && $RUN_ENVIR != nco ]]; then
     echo ' Syntax: link_workflow.sh ( nco | emc ) ( wcoss2 | hera | orion | jet | stampede | s4 )'
     exit 1
 fi
-if [ $machine != wcoss2 && $machine != hera && $machine != orion && $machine != jet && $machine != stampede && $machine != s4 ]; then
+if [[ $machine != wcoss2 && $machine != hera && $machine != orion && $machine != jet && $machine != stampede && $machine != s4 ]]; then
     echo ' Syntax: link_workflow.sh ( nco | emc ) ( wcoss2 | hera | orion | jet | stampede | s4 )'
     exit 1
 fi
@@ -357,7 +357,7 @@ cd ${pwd}/../sorc   ||   exit 8
     done
 
 
-    if [ -d ${pwd}/gfs_wafs.fd ]; then
+    if [ -d "${pwd}/gfs_wafs.fd" ]; then
         $SLINK gfs_wafs.fd/sorc/wafs_awc_wafavn.fd                                              wafs_awc_wafavn.fd
         $SLINK gfs_wafs.fd/sorc/wafs_blending.fd                                                wafs_blending.fd
         $SLINK gfs_wafs.fd/sorc/wafs_blending_0p25.fd                                           wafs_blending_0p25.fd
@@ -378,7 +378,7 @@ cd ${pwd}/../sorc   ||   exit 8
 #------------------------------
 #  copy $HOMEgfs/parm/config/config.base.nco.static as config.base for operations
 #  config.base in the $HOMEgfs/parm/config has no use in development
-cd ${pwd}/../parm/config
+cd "${pwd}/../parm/config"
 [[ -s config.base ]] && rm -f config.base
 [[ ${RUN_ENVIR} = nco ]] && cp -p config.base.nco.static config.base
 #------------------------------
