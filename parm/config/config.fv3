@@ -107,7 +107,7 @@ case $case_in in
         export layout_y_gfs=${layout_y_gfs:-12}
         export nth_fv3=2
         export nth_fv3_gfs=${nth_fv3_gfs:-2}
-        #S4 is throttled to allow multiple users to improve cycle times
+        #S4 is throttled to allow multiple user to run at once and improve cycle times
         if [[ "$machine" == "S4" ]]; then
            export layout_x=8
            export layout_y=8

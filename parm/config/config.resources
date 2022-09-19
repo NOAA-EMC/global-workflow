@@ -285,6 +285,7 @@ elif [ $step = "gldas" ]; then
 elif [ $step = "fcst" ]; then
 
     export wtime_fcst="00:30:00"
+    #Increase walltimes on S4 to accomodate smaller core counts
     if [[ "$machine" == "S4" ]]; then
        export wtime_fcst="01:00:00"
     fi
@@ -563,7 +564,7 @@ elif [ $step = "eobs" -o $step = "eomg" ]; then
     export nth_eomg=$nth_eobs
     export npe_node_eobs=$(echo "$npe_node_max / $nth_eobs" | bc)
     export npe_node_eomg=$npe_node_eobs
-    #The number of tasks and number of CPUs used must be the same for eobs
+    #The number of tasks and cores used must be the same for eobs
     #For S4, this is accomplished by running 10 tasks/node
     if [[ "$machine" = "S4" ]]; then
        export npe_node_eobs=10
@@ -642,7 +643,7 @@ elif [ $step = "epos" ]; then
     export npe_epos=80
     export nth_epos=6
     if [[ "$machine" = "S4" ]]; then
-       #Limit epos jobs to 1 thread on S4
+       #Limit epos jobs to 1 thread on S4 to improve cycle times
        export nth_epos=1
        export wtime_epos="00:30:00"
     fi
