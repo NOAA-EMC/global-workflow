@@ -158,13 +158,16 @@ checkout "verif-global.fd" "https://github.com/NOAA-EMC/EMC_verif-global.git"   
 
 if [[ $checkout_gsi == "YES" ]]; then
   checkout "gsi_enkf.fd"     "https://github.com/NOAA-EMC/GSI.git"         "67f5ab4"; errs=$((errs + $?))
-  checkout "gsi_utils.fd"    "https://github.com/NOAA-EMC/GSI-Utils.git"   "322cc7b"; errs=$((errs + $?))
-  checkout "gsi_monitor.fd"  "https://github.com/NOAA-EMC/GSI-Monitor.git" "c64cc47"; errs=$((errs + $?))
-  checkout "gldas.fd"        "https://github.com/NOAA-EMC/GLDAS.git"       "fd8ba62"; errs=$((errs + $?))
 fi
 
 if [[ $checkout_gdas == "YES" ]]; then
   checkout "gdas.cd" "https://github.com/NOAA-EMC/GDASApp.git" "5952c9d"; errs=$((errs + $?))
+fi
+
+if [[ $checkout_gsi == "YES" || $checkout_gdas == "YES" ]]; then
+  checkout "gsi_utils.fd"    "https://github.com/NOAA-EMC/GSI-Utils.git"   "322cc7b"; errs=$((errs + $?))
+  checkout "gsi_monitor.fd"  "https://github.com/NOAA-EMC/GSI-Monitor.git" "c64cc47"; errs=$((errs + $?))
+  checkout "gldas.fd"        "https://github.com/NOAA-EMC/GLDAS.git"       "fd8ba62"; errs=$((errs + $?))
 fi
 
 if [[ $checkout_wafs == "YES" ]]; then
