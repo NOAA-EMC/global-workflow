@@ -1,19 +1,35 @@
 #! /usr/bin/env bash
 set -eux
 
+function _usage() {
+  cat << EOF
+Builds all of the global-workflow components by calling the individual build
+  scripts in sequence.
+
+Usage: ${BASH_SOURCE[0]} [-d][-h][-v]
+  -d:
+    Build with debug options
+  -h:
+    Print this help message and exit
+  -v:
+    Turn on verbose output
+EOF
+  exit 1
+}
+
 cwd=$(pwd)
 
 OPTIND=1
-while getopts ":dov" option; do
+while getopts ":dv" option; do
   case "${option}" in
     d) export BUILD_TYPE="DEBUG";;
     v) export BUILD_VERBOSE="YES";;
     \?)
-      echo "[$BASH_SOURCE]: Unrecognized option: ${option}"
+      echo "[${BASH_SOURCE[0]}]: Unrecognized option: ${option}"
       usage
       ;;
     :)
-      echo "[$BASH_SOURCE]: ${option} requires an argument"
+      echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
       usage
       ;;
   esac
