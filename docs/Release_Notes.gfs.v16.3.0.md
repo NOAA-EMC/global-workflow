@@ -493,8 +493,8 @@ MODULE CHANGES - related to WCOSS2
 * MODEL
   * `modulefiles/wcoss2/fv3`
 * POST (UPP):
-  * `scripts/exgfs_atmos_nceppost.sh`
-  * `ush/fv3gfs_downstream_nems.sh`
+  * `modulefiles/post/post_wcoss2.lua`
+  * `modulefiles/upp/upp_wcoss2.lua`
 * UFS_UTILS:
   * `modulefiles/fv3gfs/global_cycle.wcoss2.lua` - add a load of the hdf5 and zlib libraries
 * Workflow:
@@ -516,8 +516,6 @@ ENVIRONMENT AND RESOURCE CHANGES
 * New use of MPMD (load CFP at runtime):
   * `jgfs_atmos_wafs_grib2`
   * `jgfs_atmos_wafs_grib2_0p25`
-* Runtime change:
-  * `jgfs_atmos_wafs_grib2` - decrease from 15 minutes to 2.5 minutes
 * Core number adjustments:
   * `jgfs_atmos_wafs_grib2` - from 1 to 18
   * `jgfs_atmos_wafs_grib2_0p25` - from 1 to 11
