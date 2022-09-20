@@ -153,8 +153,7 @@ mkdir -p ${logdir}
 errs=0
 checkout "gfs_utils.fd"    "https://github.com/NOAA-EMC/gfs-utils"              "93898e1"          ; errs=$((errs + $?))
 checkout "ufs_model.fd"    "https://github.com/ufs-community/ufs-weather-model" "${ufs_model_hash}"; errs=$((errs + $?))
-# checkout "ufs_utils.fd"    "https://github.com/ufs-community/UFS_UTILS.git"     "ufs_utils_1_8_0"  ; errs=$((errs + $?))
-checkout "ufs_utils.fd"    "https://github.com/WalterKolczynski-NOAA/UFS_UTILS.git"     "b1c7a1c"  ; errs=$((errs + $?))
+checkout "ufs_utils.fd"    "https://github.com/ufs-community/UFS_UTILS.git"     "8b990c0"          ; errs=$((errs + $?))
 checkout "verif-global.fd" "https://github.com/NOAA-EMC/EMC_verif-global.git"   "c267780"          ; errs=$((errs + $?))
 
 if [[ $checkout_gsi == "YES" ]]; then
