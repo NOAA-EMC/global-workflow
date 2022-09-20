@@ -379,6 +379,7 @@ SCRIPT CHANGES
   * `ush/wafs_blending.sh`
 
 * Workflow:
+  * `jobs/rocoto/vrfy.sh` - small updates to support developer runs and add $cyc subfolder to radmon TANKverf_rad* paths.
   * `ush/drive_makeprepbufr.sh` - add missing $COMPONENT subfolder
   * `ush/ecflow/*` - add ecflow generator
   * `ush/load_fv3gfs_modules.sh` - add R&D support
