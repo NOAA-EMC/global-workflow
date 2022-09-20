@@ -17,3 +17,4 @@ chgrp_cmd: 'chgrp rstprod'
 hpssarch: 'YES'
 localarch: 'NO'
 atardir: '/NCEPDEV/$HPSS_PROJECT/1year/$USER/$machine/scratch/$PSLOT'
+supported_resolutions: ['C384', 'C192', 'C96', 'C48']
