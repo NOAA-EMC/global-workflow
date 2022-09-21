@@ -38,6 +38,7 @@ export FIXreg2grb2=$HOMEgfs/fix/fix_reg2grb2
 # GLOBAL static environment parameters
 export PACKAGEROOT="@PACKAGEROOT@"
 export COMROOT="@COMROOT@"
+export COMINsyn="${COMROOT}/gfs/${gfs_ver:-"v16.2"})/syndat"
 export DMPDIR="@DMPDIR@"
 export RTMFIX=$CRTM_FIX
 

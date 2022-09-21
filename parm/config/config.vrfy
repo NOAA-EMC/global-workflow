@@ -110,7 +110,7 @@ export HOMEens_tracker=$BASE_GIT/TC_tracker/${ens_tracker_ver}
 if [ "$VRFYTRAK" = "YES" ]; then
 
     export TRACKERSH="$HOMEgfs/jobs/JGFS_ATMOS_CYCLONE_TRACKER"
-    export COMINsyn=${COMINsyn:-${COMROOT}/gfs/prod/syndat}
+    export COMINsyn=${COMINsyn:-$(compath.py ${envir}/com/gfs/${gfs_ver})/syndat}
     if [ "$CDUMP" = "gdas" ]; then
         export FHOUT_CYCLONE=3
         export FHMAX_CYCLONE=$FHMAX
