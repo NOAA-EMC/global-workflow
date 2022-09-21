@@ -43,10 +43,6 @@ elif [[ ${machine} = "S4" ]]; then
    elif [[ ${PARTITION_BATCH} = "ivy" ]]; then
       export npe_node_max=20
    fi
-   if [[ $(echo ${CASE} | tr -d C) -gt 384 ]]; then
-      echo "S4 does not support resolutions finer than C384!"
-      exit 3
-   fi
 elif [[ ${machine} = "ORION" ]]; then
    export npe_node_max=40
 fi

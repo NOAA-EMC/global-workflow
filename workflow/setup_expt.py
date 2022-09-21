@@ -274,9 +274,6 @@ if __name__ == '__main__':
     user_inputs = input_args()
     host = Host()
 
-    if host.machine.upper() == "S4" and int(user_inputs.resdet) > 384:
-        raise ValueError("S4 does not support experiments at resolutions finer than C384.")
-
     comrot = os.path.join(user_inputs.comrot, user_inputs.pslot)
     expdir = os.path.join(user_inputs.expdir, user_inputs.pslot)
 
