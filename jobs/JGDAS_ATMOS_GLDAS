@@ -50,7 +50,7 @@ export outid=${outid:-"LL${job}"}
 
 export DATA=${DATA:-${DATAROOT}/${jobid:?}}
 mkdir -p "${DATA}"
-cd "${DATA}" || exit
+cd "${DATA}" || exit 1
 
 
 ##############################################
@@ -129,7 +129,7 @@ fi
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd "${DATAROOT}" || exit
+cd "${DATAROOT}" || exit 1
 [[ ${KEEPDATA:?} = "NO" ]] && rm -rf "${DATA}"
 
 exit 0
