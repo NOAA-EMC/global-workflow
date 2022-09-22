@@ -92,14 +92,7 @@ if [ $VRFYFITS = "YES" -a $CDUMP = $CDFNL -a $CDATE != $SDATE ]; then
     export TMPDIR="$RUNDIR/$CDATE/$CDUMP"
     [[ ! -d $TMPDIR ]] && mkdir -p $TMPDIR
 
-    export xdate=$($NDATE -${VBACKUP_FITS} $CDATE)
-
-    export vday=$(echo $xdate | cut -c1-8)
-    export vcyc=$(echo $xdate | cut -c9-10)
-    export COMDAY=$ROTDIR/logs/$xdate
-    export COM_INA=$ROTDIR/gdas.$vday/$vcyc/atmos
-    export COM_INF='$ROTDIR/vrfyarch/gfs.$fdy/$fzz'
-    export COM_PRP='$ROTDIR/gdas.$pdy/$cyc/atmos'
+    xdate=$($NDATE -${VBACKUP_FITS} $CDATE)
 
     export RUN_ENVIR_SAVE=$RUN_ENVIR
     export RUN_ENVIR=$OUTPUT_FILE
