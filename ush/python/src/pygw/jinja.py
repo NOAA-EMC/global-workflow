@@ -1,4 +1,5 @@
 import io
+import os
 import sys
 import jinja2
 from pathlib import Path
@@ -18,36 +19,34 @@ class Jinja:
 
         if Path(template_path).is_file():
             self.template_path = Path(template_path)
-            print(self.template_path)
             self.output = self._render_file()
         else:
-            raise NotImplementedError("Unable to handle templates other than files")
+            self.output = self._render_stream()
+
+    def _render_stream(self):
+        raise NotImplementedError("Unable to handle templates other than files")
 
     def _render_file(self):
         template_dir = self.template_path.parent
         template_file = self.template_path.relative_to(template_dir)
-        print(template_file)
 
-        import os
         dirname = os.path.dirname(str(self.template_path))
         relpath = os.path.relpath(str(self.template_path), dirname)
 
         loader = jinja2.FileSystemLoader(template_dir)
-
         output = self._render(str(template_file), loader)
 
         return output
 
     def _render(self, template_name, loader):
         env = jinja2.Environment(loader=loader, undefined=self.undefined)
-        print(template_name)
         template = env.get_template(template_name)
         try:
-            output = template.render(**self.data)
+            rendered = template.render(**self.data)
         except jinja2.UndefinedError as ee:
-            raise Exception(f"Undefined variable in jinja template\n{ee}")
+            raise Exception(f"Undefined variable in Jinja2 template\n{ee}")
 
-        return output
+        return rendered
 
     def save(self, output_file):
         with open(output_file, 'wb') as fh:
