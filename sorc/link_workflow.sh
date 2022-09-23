@@ -85,10 +85,6 @@ fi
 #---------------------------------------
 #--add files from external repositories
 #---------------------------------------
-cd ${pwd}/../jobs               ||exit 8
-if [ -d ../sorc/gldas.fd ]; then
-    $LINK ../sorc/gldas.fd/jobs/JGDAS_ATMOS_GLDAS            .
-fi
 cd ${pwd}/../parm               ||exit 8
     # [[ -d post ]] && rm -rf post
     # $LINK ../sorc/upp.fd/parm                           post
@@ -108,19 +104,11 @@ cd ${pwd}/../parm/post          ||exit 8
     done
 cd ${pwd}/../scripts            ||exit 8
     $LINK ../sorc/ufs_utils.fd/scripts/exemcsfc_global_sfc_prep.sh .
-    if [ -d ../sorc/gldas.fd ]; then
-      $LINK ../sorc/gldas.fd/scripts/exgdas_atmos_gldas.sh .
-    fi
 cd ${pwd}/../ush                ||exit 8
     for file in emcsfc_ice_blend.sh  fv3gfs_driver_grid.sh  fv3gfs_make_orog.sh  global_cycle_driver.sh \
         emcsfc_snow.sh  fv3gfs_filter_topo.sh  global_cycle.sh  fv3gfs_make_grid.sh ; do
         $LINK ../sorc/ufs_utils.fd/ush/$file                  .
     done
-    if [ -d ../sorc/gldas.fd ]; then
-      for file in gldas_archive.sh  gldas_forcing.sh gldas_get_data.sh  gldas_process_data.sh gldas_liscrd.sh  gldas_post.sh ; do
-        $LINK ../sorc/gldas.fd/ush/$file                  .
-      done
-    fi
 
 
 #-----------------------------------
