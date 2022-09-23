@@ -102,7 +102,7 @@ err=0
 #------------------------------------
 # build WW3 pre & post execs
 #------------------------------------
-${Build_ww3_prepost} && {
+${Build_ww3_prepost:?} && {
   echo " .... Building WW3 pre and post execs .... "
   ./build_ww3prepost.sh ${_verbose_opt} ${_build_ufs_opt} > ${logs_dir}/build_ww3_prepost.log 2>&1
   rc=$?
@@ -116,7 +116,7 @@ ${Build_ww3_prepost} && {
 #------------------------------------
 # build forecast model
 #------------------------------------
-${Build_ufs_model} && {
+${Build_ufs_model:?} && {
   echo " .... Building forecast model .... "
   ./build_ufs.sh ${_verbose_opt} ${_build_ufs_opt} > ${logs_dir}/build_ufs.log 2>&1
   rc=$?
@@ -131,7 +131,7 @@ ${Build_ufs_model} && {
 # build GSI and EnKF - optional checkout
 #------------------------------------
 if [ -d gsi_enkf.fd ]; then
-  ${Build_gsi_enkf} && {
+  ${Build_gsi_enkf:?} && {
   echo " .... Building gsi and enkf .... "
   ./build_gsi_enkf.sh ${_ops_opt} ${_verbose_opt} > ${logs_dir}/build_gsi_enkf.log 2>&1
   rc=$?
@@ -149,7 +149,7 @@ fi
 # build gsi utilities
 #------------------------------------
 if [ -d gsi_utils.fd ]; then
-  ${Build_gsi_utils} && {
+  ${Build_gsi_utils:?} && {
   echo " .... Building gsi utilities .... "
   ./build_gsi_utils.sh ${_ops_opt} ${_verbose_opt} > ${logs_dir}/build_gsi_utils.log 2>&1
   rc=$?
@@ -167,7 +167,7 @@ fi
 # build gdas - optional checkout
 #------------------------------------
 if [ -d gdas.cd ]; then
-  ${Build_gdas}  && {
+  ${Build_gdas:?}  && {
   echo " .... Building GDASApp  .... "
   ./build_gdas.sh ${_verbose_opt} > ${logs_dir}/build_gdas.log 2>&1
   rc=$?
@@ -185,7 +185,7 @@ fi
 # build gsi monitor
 #------------------------------------
 if [ -d gsi_monitor.fd ]; then
-  ${Build_gsi_monitor} && {
+  ${Build_gsi_monitor:?} && {
     echo " .... Building gsi monitor .... "
     ./build_gsi_monitor.sh ${_ops_opt} ${_verbose_opt} > ${logs_dir}/build_gsi_monitor.log 2>&1
     rc=$?
@@ -202,7 +202,7 @@ fi
 #------------------------------------
 # build UPP
 #------------------------------------
-${Build_upp} && {
+${Build_upp:?} && {
   echo " .... Building UPP .... "
   ./build_upp.sh ${_ops_opt} ${_verbose_opt} > ${logs_dir}/build_upp.log 2>&1
   rc=$?
@@ -216,7 +216,7 @@ ${Build_upp} && {
 #------------------------------------
 # build ufs_utils
 #------------------------------------
-${Build_ufs_utils} && {
+${Build_ufs_utils:?} && {
   echo " .... Building ufs_utils .... "
   ./build_ufs_utils.sh ${_verbose_opt} > ${logs_dir}/build_ufs_utils.log 2>&1
   rc=$?
@@ -231,7 +231,7 @@ ${Build_ufs_utils} && {
 # build gldas
 #------------------------------------
 if [ -d gldas.fd ]; then
-  ${Build_gldas} && {
+  ${Build_gldas:?} && {
     echo " .... Building gldas .... "
     ./build_gldas.sh ${_verbose_opt} > ${logs_dir}/build_gldas.log 2>&1
     rc=$?
@@ -249,7 +249,7 @@ fi
 # build gfs_wafs - optional checkout
 #------------------------------------
 if [ -d gfs_wafs.fd ]; then
-  ${Build_gfs_wafs}  && {
+  ${Build_gfs_wafs:?}  && {
     echo " .... Building gfs_wafs  .... "
     ./build_gfs_wafs.sh ${_verbose_opt} > ${logs_dir}/build_gfs_wafs.log 2>&1
     rc=$?
@@ -264,7 +264,7 @@ fi
 #------------------------------------
 # build gfs_utils
 #------------------------------------
-${Build_gfs_utils} && {
+${Build_gfs_utils:?} && {
   echo " .... Building gfs_utils .... "
   target=$target ./build_gfs_utils.sh ${_verbose_opt} > ${logs_dir}/build_gfs_utils.log 2>&1
   rc=$?

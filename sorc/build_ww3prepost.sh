@@ -6,7 +6,7 @@ cd "${script_dir}" || exit 1
 
 # shellcheck disable=SC1091
 source gfs_utils.fd/ush/machine-setup.sh > /dev/null 2>&1
-# shellcheck enable=SC1091
+# shellcheck disable=
 
 # Default settings
 APP="S2SWA"
