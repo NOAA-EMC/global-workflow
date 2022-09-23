@@ -384,6 +384,6 @@ then
 fi
     
 #  Write JTWC/FNOC Tcvitals to /com path since not saved anywhere else
-[ $SENDCOM = YES ]  &&  cp fnoc ${COMSP}jtwc-fnoc.tcvitals.$tmmark
+[ $SENDCOM = YES ]  &&  cp fnoc "${COMSP}jtwc-fnoc.tcvitals.${tmmark}"
 
 exit

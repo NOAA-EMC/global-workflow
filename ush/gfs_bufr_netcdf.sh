@@ -111,7 +111,7 @@ ln -sf $PARMbufrsnd/bufr_gfs_${CLASS}.tbl fort.1
 ln -sf ${STNLIST:-$PARMbufrsnd/bufr_stalist.meteo.gfs} fort.8
 ln -sf $PARMbufrsnd/bufr_ij13km.txt fort.7
 
-${APRUN_POSTSND} ${EXECbufrsnd}/${pgm} < gfsparm > out_gfs_bufr_$FEND
+${APRUN_POSTSND} "${EXECbufrsnd}/${pgm}" < gfsparm > "out_gfs_bufr_${FEND}"
 export err=$?
 
 exit ${err}

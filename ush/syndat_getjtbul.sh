@@ -185,6 +185,6 @@ fi
 
 echo "Leaving sub-shell syndat_getjtbul.sh to recover JTWC Bulletins" \
  >> $pgmout
-echo " " >> $pgmout
+echo " " >> "${pgmout}"
 
 exit

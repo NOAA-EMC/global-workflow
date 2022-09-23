@@ -47,8 +47,7 @@ cd $DATA/$m
 EOF
        # JY export err=$?; err_chk
        export err=$?; #err_chk
-       if [ $err -ne 0 ]
-       then
+       if (( err != 0 )); then
           echo "ERROR in $pgm"
           err_chk
        fi

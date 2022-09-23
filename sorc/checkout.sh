@@ -146,7 +146,7 @@ while getopts ":chgum:o" option; do
 done
 shift $((OPTIND-1))
 
-export topdir=$(cd $(dirname "${BASH_SOURCE[0]}") &> /dev/null && pwd)
+export topdir=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 export logdir="${topdir}/logs"
 mkdir -p "${logdir}
 "

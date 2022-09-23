@@ -66,7 +66,7 @@ while (( hh <= FEND )); do
           break
       fi
 
-      if (( $ic >= 360 )); then
+      if (( ic >= 360 )); then
          echo "FATAL: COULD NOT LOCATE logf${hh3} file AFTER 1 HOUR"
          exit 2
       fi

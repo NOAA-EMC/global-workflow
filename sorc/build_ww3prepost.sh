@@ -4,7 +4,9 @@ set -x
 script_dir=$(dirname "${BASH_SOURCE[0]}")
 cd "${script_dir}" || exit 1
 
+# shellcheck disable=SC1091
 source gfs_utils.fd/ush/machine-setup.sh > /dev/null 2>&1
+# shellcheck enable=SC1091
 
 # Default settings
 APP="S2SWA"
@@ -13,12 +15,12 @@ while getopts "a:v" option; do
   case "${option}" in
     a) APP="${OPTARG}" ;;
     v) BUILD_VERBOSE="YES";;
-    \?)
-      echo "[${BASH_SOURCE[0]}]: Unrecognized option: ${option}"
-      usage
-      ;;
     :)
       echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
+      usage
+      ;;
+    *)
+      echo "[${BASH_SOURCE[0]}]: Unrecognized option: ${option}"
       usage
       ;;
   esac
@@ -43,9 +45,7 @@ finalexecdir=$( pwd -P )/../exec
 #Determine machine and load modules
 set +x
 module use ../modulefiles
-# shellcheck disable=SC1091
 module load modulefile.ww3.${target}
-# shellcheck disable=
 set -x
 
 #Set WW3 directory, switch, prep and post exes 

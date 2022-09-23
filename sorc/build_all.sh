@@ -29,7 +29,7 @@ EOF
   exit 1
 }
 
-script_dir=$(cd $(dirname "${BASH_SOURCE[0]}") &> /dev/null && pwd)
+script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 cd "${script_dir}" || exit 1
 
 _build_ufs_opt=""
@@ -45,12 +45,12 @@ while getopts ":a:c:hov" option; do
     o) _ops_opt+="-o";;
     # s) _build_ufs_opt+="-s ${OPTARG} ";;
     v) _verbose_opt="-v";;
-    \?)
-      echo "[${BASH_SOURCE[0]}]: Unrecognized option: ${option}"
-      usage
-      ;;
     :)
       echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
+      usage
+      ;;
+    *)
+      echo "[${BASH_SOURCE[0]}]: Unrecognized option: ${option}"
       usage
       ;;
   esac
@@ -76,7 +76,7 @@ fi
 target=""
 # shellcheck disable=SC1091
 source gfs_utils.fd/ush/machine-setup.sh > /dev/null 2>&1
-# shellcheck disable=
+# shellcheck enable=SC1091
 if [[ -z "${target}" ]]; then
   echo "FATAL: Unable to determine target machine"
   exit 1
@@ -85,6 +85,7 @@ fi
 #------------------------------------
 # INCLUDE PARTIAL BUILD
 #------------------------------------
+# shellcheck source-path=sorc/
 source ./partial_build.sh $_verbose_opt $_partial_opt
 
 if [[ ${target} == "jet" ]]; then
