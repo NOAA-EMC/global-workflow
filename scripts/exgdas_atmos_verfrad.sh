@@ -144,7 +144,7 @@ if [[ -s ${radstat} && -s ${biascr} ]]; then
          netcdf=1
       fi
      
-      if [[ -f "diag_${type}_ges.${PDATE}*.${Z}" ]]; then
+      if (( `ls diag_${type}_ges.${PDATE}*.${Z} 2> /dev/null | wc -l` > 0 )); then
         mv diag_${type}_ges.${PDATE}*.${Z} ${type}.${Z}
         ${UNCOMPRESS} ./${type}.${Z}
       else
@@ -152,7 +152,7 @@ if [[ -s ${radstat} && -s ${biascr} ]]; then
       fi
      
       if [[ $USE_ANL -eq 1 ]]; then
-        if [[ -f "diag_${type}_anl.${PDATE}*.${Z}" ]]; then
+        if (( `ls diag_${type}_anl.${PDATE}*.${Z} 2> /dev/null | wc -l` > 0 )); then
           mv diag_${type}_anl.${PDATE}*.${Z} ${type}_anl.${Z}
           ${UNCOMPRESS} ./${type}_anl.${Z}
         else
