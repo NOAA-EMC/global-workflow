@@ -27,24 +27,26 @@ while getopts ":ho" option; do
     o) 
       echo "-o option received, configuring for NCO"
       RUN_ENVIR="NCO";;
-    \?)
-      echo "[${BASH_SOURCE[0]}]: Unrecognized option: ${option}"
-      usage
-      ;;
     :)
       echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
+      usage
+      ;;
+    *)
+      echo "[${BASH_SOURCE[0]}]: Unrecognized option: ${option}"
       usage
       ;;
   esac
 done
 shift $((OPTIND-1))
 
-script_dir=$(cd $(dirname "${BASH_SOURCE[0]}") &> /dev/null && pwd)
-top_dir=$(cd $(dirname "${script_dir}") &> /dev/null && pwd)
+script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
+top_dir=$(cd "$(dirname "${script_dir}")" &> /dev/null && pwd)
 cd ${script_dir}
 
+# shellcheck disable=SC1091
 source gfs_utils.fd/ush/machine-setup.sh > /dev/null 2>&1
-machine="${target}"
+# shellcheck disable=
+machine="${target:?}"
 # Source fix version file
 source "${top_dir}/versions/fix.ver"
 

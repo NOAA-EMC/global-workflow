@@ -76,7 +76,7 @@ fi
 target=""
 # shellcheck disable=SC1091
 source gfs_utils.fd/ush/machine-setup.sh > /dev/null 2>&1
-# shellcheck enable=SC1091
+# shellcheck disable=
 if [[ -z "${target}" ]]; then
   echo "FATAL: Unable to determine target machine"
   exit 1
@@ -85,7 +85,7 @@ fi
 #------------------------------------
 # INCLUDE PARTIAL BUILD
 #------------------------------------
-# shellcheck source-path=sorc/
+# shellcheck source-path=sorc
 source ./partial_build.sh $_verbose_opt $_partial_opt
 
 if [[ ${target} == "jet" ]]; then
