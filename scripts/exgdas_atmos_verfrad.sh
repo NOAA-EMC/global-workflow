@@ -144,7 +144,7 @@ if [[ -s ${radstat} && -s ${biascr} ]]; then
          netcdf=1
       fi
      
-      if (( `ls diag_${type}_ges.${PDATE}*.${Z} 2> /dev/null | wc -l` > 0 )); then
+      if [[ $(find . -maxdepth 1 -type f -name diag_${type}_ges.${PDATE}*.${Z} | wc -l) > 0 ]]; then
         mv diag_${type}_ges.${PDATE}*.${Z} ${type}.${Z}
         ${UNCOMPRESS} ./${type}.${Z}
       else
@@ -152,7 +152,7 @@ if [[ -s ${radstat} && -s ${biascr} ]]; then
       fi
      
       if [[ $USE_ANL -eq 1 ]]; then
-        if (( `ls diag_${type}_anl.${PDATE}*.${Z} 2> /dev/null | wc -l` > 0 )); then
+        if [[ $(find . -maxdepth 1 -type f -name diag_${type}_anl.${PDATE}*.${Z} | wc -l) > 0 ]]; then
           mv diag_${type}_anl.${PDATE}*.${Z} ${type}_anl.${Z}
           ${UNCOMPRESS} ./${type}_anl.${Z}
         else
@@ -183,7 +183,7 @@ if [[ -s ${radstat} && -s ${biascr} ]]; then
     #  optionally run clean_tankdir script
     #
     if [[ ${CLEAN_TANKVERF:-0} -eq 1 ]]; then
-       ${USHradmon}/clean_tankdir.sh glb 60
+       "${USHradmon}/clean_tankdir.sh glb 60"
        rc_clean_tankdir=$?
        echo "rc_clean_tankdir = $rc_clean_tankdir"
     fi
@@ -214,7 +214,7 @@ export CHGRP_CMD=${CHGRP_CMD:-"chgrp ${group_name:-rstprod}"}
 rlist="saphir"
 for rtype in $rlist; do
   if compgen -G "$TANKverf_rad/*${rtype}*" > /dev/null; then
-    ${CHGRP_CMD} $TANKverf_rad/*${rtype}*
+    ${CHGRP_CMD} "$TANKverf_rad/*${rtype}*"
   fi
 done
 
