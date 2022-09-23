@@ -84,7 +84,7 @@ fi
 
 ###############################################################
 # Generate prepbufr files from dumps or copy from OPS
-if [ $DO_MAKEPREPBUFR = "YES" ]; then
+if [ $MAKEPREPBUFR = "YES" ]; then
     if [ $ROTDIR_DUMP = "YES" ]; then
         rm -f $COMOUT/${OPREFIX}prepbufr
         rm -f $COMOUT/${OPREFIX}prepbufr.acft_profiles
@@ -105,7 +105,7 @@ if [ $DO_MAKEPREPBUFR = "YES" ]; then
     fi
 
     # Disable creating NSSTBUFR if desired, copy from DMPDIR instead
-    if [[ ${DO_MAKE_NSSTBUFR:-"NO"} = "NO" ]]; then
+    if [[ ${MAKE_NSSTBUFR:-"NO"} = "NO" ]]; then
         export MAKE_NSSTBUFR="NO"
     fi
 
@@ -114,7 +114,7 @@ if [ $DO_MAKEPREPBUFR = "YES" ]; then
     [[ $status -ne 0 ]] && exit $status
 
     # If creating NSSTBUFR was disabled, copy from DMPDIR if appropriate.
-    if [[ ${DO_MAKE_NSSTBUFR:-"NO"} = "NO" ]]; then
+    if [[ ${MAKE_NSSTBUFR:-"NO"} = "NO" ]]; then
         [[ $DONST = "YES" ]] && $NCP $DMPDIR/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}/${COMPONENT}/${OPREFIX}nsstbufr $COMOUT/${OPREFIX}nsstbufr
     fi
 

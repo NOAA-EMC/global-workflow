@@ -56,8 +56,8 @@ export pgmerr=errfile
 export CDATE=${CDATE:-${PDY}${cyc}}
 export CDUMP=${CDUMP:-${RUN:-"gdas"}}
 export COMPONENT=${COMPONENT:-atmos}
-export DO_MAKE_NSSTBUFR=${DO_MAKE_NSSTBUFR:-"NO"}
-export DO_MAKE_ACFTBUFR=${DO_MAKE_ACFTBUFR:-"NO"}
+export MAKE_NSSTBUFR=${MAKE_NSSTBUFR:-"NO"}
+export MAKE_ACFTBUFR=${MAKE_ACFTBUFR:-"NO"}
 
 
 ##############################################
@@ -111,14 +111,14 @@ if [ ! -f $PREPQC ]; then
 fi
 export TCVITL="$COMIN_ANL/${OPREFIX}syndata.tcvitals.tm00"
 if [[ $DONST = "YES" ]]; then
-   if [[ $DO_MAKE_NSSTBUFR == "YES" ]]; then
+   if [[ $MAKE_NSSTBUFR == "YES" ]]; then
       export NSSTBF="${COMOUT}/${OPREFIX}nsstbufr"
    else
       export NSSTBF="${COMIN_OBS}/${OPREFIX}nsstbufr"
    fi
 fi
 
-if [[ $DO_MAKE_ACFTBUFR == "YES" ]]; then
+if [[ $MAKE_ACFTBUFR == "YES" ]]; then
    export PREPQCPF="${COMOUT}/${OPREFIX}prepbufr.acft_profiles"
 else
    export PREPQCPF="${COMIN_OBS}/${OPREFIX}prepbufr.acft_profiles"
