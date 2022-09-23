@@ -28,6 +28,7 @@ status=$?
 export COMPONENT=${COMPONENT:-atmos}
 export OPREFIX="${CDUMP}.t${cyc}z."
 export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc/$COMPONENT"
+export MAKE_PREPBUFR=${MAKE_PREPBUFR:-"YES"}
 [[ ! -d $COMOUT ]] && mkdir -p $COMOUT
 
 ###############################################################
