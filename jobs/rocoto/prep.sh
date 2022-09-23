@@ -84,7 +84,7 @@ fi
 
 ###############################################################
 # Generate prepbufr files from dumps or copy from OPS
-if [ $MAKEPREPBUFR = "YES" ]; then
+if [ $MAKE_PREPBUFR = "YES" ]; then
     if [ $ROTDIR_DUMP = "YES" ]; then
         rm -f $COMOUT/${OPREFIX}prepbufr
         rm -f $COMOUT/${OPREFIX}prepbufr.acft_profiles

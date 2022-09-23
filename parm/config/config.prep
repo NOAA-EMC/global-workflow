@@ -8,7 +8,7 @@ echo "BEGIN: config.prep"
 # Get task specific resources
 . $EXPDIR/config.resources prep
 
-export DO_MAKEPREPBUFR="YES"   # if NO, will copy prepbufr from globaldump
+export MAKE_PREPBUFR="YES"   # if NO, will copy prepbufr from globaldump
 
 # Relocation and syndata QC
 export PROCESS_TROPCY=${PROCESS_TROPCY:-NO}
