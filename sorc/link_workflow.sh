@@ -195,7 +195,7 @@ fi
 if [ -d "${script_dir}/gsi_monitor.fd" ]; then
 
   cd "${top_dir}/fix" || exit 1
-    [[ ! -d gdas ]] && mkdir -p gdas || exit 1
+    [[ ! -d gdas ]] && ( mkdir -p gdas || exit 1 )
     cd gdas || exit 1
     ${LINK} "${script_dir}/gsi_monitor.fd/src/Minimization_Monitor/nwprod/gdas/fix/gdas_minmon_cost.txt"                   .
     ${LINK} "${script_dir}/gsi_monitor.fd/src/Minimization_Monitor/nwprod/gdas/fix/gdas_minmon_gnorm.txt  "                .
