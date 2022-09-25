@@ -64,7 +64,7 @@ source "$HOMEgfs/ush/preamble.sh"
   echo ' '
   echo "Starting at : $(date)"
   echo ' '
-  restore_trace
+  set_trace
 
   if [ "$INDRUN" = 'no' ]
   then
@@ -136,7 +136,7 @@ source "$HOMEgfs/ush/preamble.sh"
   echo "   starting time : $time_beg"
   echo "   ending time   : $time_end"
   echo ' '
-  restore_trace
+  set_trace
 
   # Script will run only if pre-defined NTASKS
   #     The actual work is distributed over these tasks.
@@ -153,7 +153,7 @@ source "$HOMEgfs/ush/preamble.sh"
   echo 'Preparing input files :'
   echo '-----------------------'
   echo ' '
-  restore_trace
+  set_trace
 
   # 1.a Model definition files
 
@@ -173,7 +173,7 @@ source "$HOMEgfs/ush/preamble.sh"
     then
       set +x
       echo " Mod def file for $grdID found in ${COMIN}/rundata. copying ...."
-      restore_trace
+      set_trace
       cp $COMIN/rundata/${CDUMP}wave.mod_def.${grdID} mod_def.$grdID
 
     else
@@ -185,7 +185,7 @@ source "$HOMEgfs/ush/preamble.sh"
       echo "                                grdID = $grdID"
       echo ' '
       echo "FATAL ERROR: NO MODEL DEFINITION FILE"
-      restore_trace
+      set_trace
       err=2;export err;${errchk}
     fi
   done
@@ -225,7 +225,7 @@ source "$HOMEgfs/ush/preamble.sh"
        echo ' '
        echo "   ww3_prnc.${type}.$grdID.inp.tmpl copied ($PARMwave)."
        echo ' '
-       restore_trace
+       set_trace
      else
        set +x
        echo ' '
@@ -236,7 +236,7 @@ source "$HOMEgfs/ush/preamble.sh"
        echo ' '
        echo "ABNORMAL EXIT: NO FILE $file"
        echo ' '
-       restore_trace
+       set_trace
        err=4;export err;${errchk}
      fi
    done
@@ -265,7 +265,7 @@ source "$HOMEgfs/ush/preamble.sh"
         echo ' '
         sed "s/^/wave_prnc_ice.out : /g" wave_prnc_ice.out
         echo ' '
-        restore_trace
+        set_trace
         err=5;export err;${errchk}
       else
         mv -f wave_prnc_ice.out $DATA/outtmp
@@ -273,7 +273,7 @@ source "$HOMEgfs/ush/preamble.sh"
         echo ' '
         echo '      Ice field unpacking successful.'
         echo ' '
-        restore_trace
+        set_trace
       fi
     else
       echo ' '
@@ -295,7 +295,7 @@ source "$HOMEgfs/ush/preamble.sh"
     echo '*** FATAL ERROR : Not set-up to preprocess wind *** '
     echo '*************************************************** '
     echo ' '
-    restore_trace
+    set_trace
     err=6;export err;${errchk} 
 
   fi
@@ -313,7 +313,7 @@ source "$HOMEgfs/ush/preamble.sh"
       echo ' '
       echo '   Concatenate binary current fields ...'
       echo ' '
-      restore_trace
+      set_trace
 
 # Prepare files for cfp process
       rm -f cmdfile
@@ -390,7 +390,7 @@ source "$HOMEgfs/ush/preamble.sh"
           echo "*** FATAL ERROR: NO CUR FILE $curfile ***  "
           echo '************************************** '
           echo ' '
-          restore_trace
+          set_trace
           echo "FATAL ERROR - NO CURRENT FILE (RTOFS)"
           err=11;export err;${errchk}
           exit $err
@@ -423,7 +423,7 @@ source "$HOMEgfs/ush/preamble.sh"
       echo "   Executing the curr prnc cmdfile at : $(date)"
       echo '   ------------------------------------'
       echo ' '
-      restore_trace
+      set_trace
 
       if [ $wavenproc -gt '1' ]
       then
@@ -448,7 +448,7 @@ source "$HOMEgfs/ush/preamble.sh"
         echo '********************************************'
         echo '     See Details Below '
         echo ' '
-        restore_trace
+        set_trace
       fi
 
       files=$(ls ${WAVECUR_DID}.* 2> /dev/null)
@@ -462,7 +462,7 @@ source "$HOMEgfs/ush/preamble.sh"
         echo '******************************************** '
         echo ' '
         echo "ABNORMAL EXIT: NO ${WAVECUR_FID}.* FILES FOUND"
-        restore_trace
+        set_trace
         err=11;export err;${errchk}
       fi
 

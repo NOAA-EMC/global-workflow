@@ -130,7 +130,7 @@ while [ $nset -le $totalset ]; do
     set +e
     $WGRIB2 -d $end $tmpfile | egrep -i "ugrd|ustm|uflx|u-gwd"
     export rc=$?
-    restore_strict
+    set_strict
     if [[ $rc -eq 0 ]] ; then
       export end=$(expr ${end} + 1)
     elif [[ $rc -gt 1 ]]; then
@@ -141,7 +141,7 @@ while [ $nset -le $totalset ]; do
     set +e
     $WGRIB2 -d $end $tmpfile | egrep -i "land"
     export rc=$?
-    restore_strict
+    set_strict
     if [[ $rc -eq 0 ]] ; then
       export end=$(expr ${end} + 1)
     elif [[ $rc -gt 1 ]]; then

@@ -46,7 +46,7 @@ source "$HOMEgfs/ush/preamble.sh"
     echo '*** FATAL ERROR : ERROR IN ww3_grib2 (COULD NOT CREATE TEMP DIRECTORY) *** '
     echo '******************************************************************************* '
     echo ' '
-    restore_trace
+    set_trace
     exit 1
   fi
 
@@ -81,7 +81,7 @@ source "$HOMEgfs/ush/preamble.sh"
   echo '!         Make GRIB files        |'
   echo '+--------------------------------+'
   echo "   Model ID         : $WAV_MOD_TAG"
-  restore_trace
+  set_trace
 
   if [ -z "$CDATE" ] || [ -z "$cycle" ] || [ -z "$EXECwave" ] || \
      [ -z "$COMOUT" ] || [ -z "$WAV_MOD_TAG" ] || [ -z "$SENDCOM" ] || \
@@ -94,7 +94,7 @@ source "$HOMEgfs/ush/preamble.sh"
     echo '*** EXPORTED VARIABLES IN postprocessor NOT SET ***'
     echo '***************************************************'
     echo ' '
-    restore_trace
+    set_trace
     exit 1
   fi
 
@@ -108,7 +108,7 @@ source "$HOMEgfs/ush/preamble.sh"
   echo "   Number of times  : Single SBS
   echo "   GRIB field flags : $gribflags"
   echo ' '
-  restore_trace
+  set_trace
 
 # 0.e Links to working directory
 
@@ -122,7 +122,7 @@ source "$HOMEgfs/ush/preamble.sh"
 
   set +x
   echo "   Generate input file for ww3_grib2"
-  restore_trace
+  set_trace
 
   sed -e "s/TIME/$tstart/g" \
       -e "s/DT/$dtgrib/g" \
@@ -140,7 +140,7 @@ source "$HOMEgfs/ush/preamble.sh"
   set +x
   echo "   Run ww3_grib2"
   echo "   Executing $EXECwave/ww3_grib"
-  restore_trace
+  set_trace
 
   export pgm=ww3_grib;. prep_step
   $EXECwave/ww3_grib > grib2_${grdnam}_${FH3}.out 2>&1
@@ -153,7 +153,7 @@ source "$HOMEgfs/ush/preamble.sh"
       echo '*** FATAL ERROR : ERROR IN ww3_grib encoding *** '
       echo '************************************************ '
       echo ' '
-      restore_trace
+      set_trace
       exit 3
     fi
 
@@ -173,7 +173,7 @@ source "$HOMEgfs/ush/preamble.sh"
     echo '*** FATAL ERROR : ERROR IN ww3_grib2 *** '
     echo '********************************************* '
     echo ' '
-    restore_trace
+    set_trace
     exit 3
   fi
 
@@ -204,7 +204,7 @@ source "$HOMEgfs/ush/preamble.sh"
       echo ' '
       echo " Error in moving grib file ${outfile} to com"
       echo ' '
-      restore_trace
+      set_trace
       exit 4
     fi
     if [ ! -s $COMOUT/gridded/${outfile} ]
@@ -217,7 +217,7 @@ source "$HOMEgfs/ush/preamble.sh"
       echo ' '
       echo " Error in moving grib file ${outfile}.idx to com"
       echo ' '
-      restore_trace
+      set_trace
       exit 4
     fi
 
@@ -226,7 +226,7 @@ source "$HOMEgfs/ush/preamble.sh"
       set +x
       echo "   Alerting GRIB file as $COMOUT/gridded/${outfile}"
       echo "   Alerting GRIB index file as $COMOUT/gridded/${outfile}.idx"
-      restore_trace
+      set_trace
       $DBNROOT/bin/dbn_alert MODEL ${alertName}_WAVE_GB2 $job $COMOUT/gridded/${outfile}
       $DBNROOT/bin/dbn_alert MODEL ${alertName}_WAVE_GB2_WIDX $job $COMOUT/gridded/${outfile}.idx
     else
@@ -241,7 +241,7 @@ source "$HOMEgfs/ush/preamble.sh"
 
   set +x
   echo "   Removing work directory after success."
-  restore_trace
+  set_trace
 
   cd ../
   mv -f ${gribDIR} done.${gribDIR}
@@ -251,7 +251,7 @@ source "$HOMEgfs/ush/preamble.sh"
     echo ' '
     echo " File ${COMOUT}/gridded/${outfile} found, skipping generation process"
     echo ' '
-    restore_trace
+    set_trace
   fi
 
 

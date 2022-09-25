@@ -150,7 +150,7 @@ do
           err_chk
        fi
     done
-    restore_trace
+    set_trace
 
     ###############################
     # Put restart files into /nwges 

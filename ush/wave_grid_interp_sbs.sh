@@ -48,7 +48,7 @@ source "$HOMEgfs/ush/preamble.sh"
     echo '*** FATAL ERROR : ERROR IN ww3_grid_interp (COULD NOT CREATE TEMP DIRECTORY) *** '
     echo '************************************************************************************* '
     echo ' '
-    restore_trace
+    set_trace
     exit 1
   fi
 
@@ -63,7 +63,7 @@ source "$HOMEgfs/ush/preamble.sh"
   echo '!         Make GRID files        |'
   echo '+--------------------------------+'
   echo "   Model ID         : $WAV_MOD_TAG"
-  restore_trace
+  set_trace
 
   if [ -z "$CDATE" ] || [ -z "$cycle" ] || [ -z "$EXECwave" ] || \
      [ -z "$COMOUT" ] || [ -z "$WAV_MOD_TAG" ] || [ -z "$SENDCOM" ] || \
@@ -76,7 +76,7 @@ source "$HOMEgfs/ush/preamble.sh"
     echo '***************************************************'
     echo ' '
     echo "$CDATE $cycle $EXECwave $COMOUT $WAV_MOD_TAG $SENDCOM $SENDDBN $waveGRD"
-    restore_trace
+    set_trace
     exit 1
   fi
 
@@ -118,7 +118,7 @@ source "$HOMEgfs/ush/preamble.sh"
       set +x
       echo ' '
       echo " Copying $FIXwave/WHTGRIDINT.bin.${grdID} "
-      restore_trace
+      set_trace
       cp $FIXwave/WHTGRIDINT.bin.${grdID} ${DATA}
       wht_OK='yes'
     else
@@ -138,7 +138,7 @@ source "$HOMEgfs/ush/preamble.sh"
   set +x
   echo "   Run ww3_gint
   echo "   Executing $EXECwave/ww3_gint
-  restore_trace
+  set_trace
 
   export pgm=ww3_gint;. prep_step
   $EXECwave/ww3_gint 1> gint.${grdID}.out 2>&1
@@ -160,7 +160,7 @@ source "$HOMEgfs/ush/preamble.sh"
     echo '*** FATAL ERROR : ERROR IN ww3_gint interpolation * '
     echo '*************************************************** '
     echo ' '
-    restore_trace
+    set_trace
     exit 3
   fi
 
@@ -176,14 +176,14 @@ source "$HOMEgfs/ush/preamble.sh"
   then
     set +x
     echo "   Saving GRID file as $COMOUT/rundata/$WAV_MOD_TAG.out_grd.$grdID.${CDATE}"
-    restore_trace
+    set_trace
     cp ${DATA}/output_${ymdh}0000/out_grd.$grdID $COMOUT/rundata/$WAV_MOD_TAG.out_grd.$grdID.${CDATE}
 
 #    if [ "$SENDDBN" = 'YES' ]
 #    then
 #      set +x
 #      echo "   Alerting GRID file as $COMOUT/rundata/$WAV_MOD_TAG.out_grd.$grdID.${CDATE}
-#      restore_trace
+#      set_trace
 
 #
 # PUT DBNET ALERT HERE ....

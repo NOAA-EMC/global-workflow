@@ -37,14 +37,14 @@ echo "Begin ${_calling_script} at ${start_time_human}"
 
 export PS4='+ $(basename ${BASH_SOURCE})[${LINENO}]'"${id}: "
 
-restore_strict() {
+set_strict() {
     if [[ ${STRICT:-"YES"} == "YES" ]]; then
         # Exit on error and undefined variable
         set -eu
     fi
 }
 
-restore_trace() {
+set_trace() {
     # Print the script name and line number of each command as it is 
     #   executed when using trace. 
     if [[ ${TRACE:-"YES"} == "YES" ]]; then
@@ -88,5 +88,5 @@ trap "postamble ${_calling_script} ${start_time} \$?" EXIT
 # shellcheck disable=
 
 # Turn on our settings
-restore_strict
-restore_trace
+set_strict
+set_trace

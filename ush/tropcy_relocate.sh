@@ -256,7 +256,7 @@ then
    echo "problem with obtaining date record;"
    echo "ABNORMAL EXIT!!!!!!!!!!!"
    echo
-   restore_trace
+   set_trace
    if [ -s $DATA/err_exit ]; then
       $DATA/err_exit
    else
@@ -274,7 +274,7 @@ set +x
 echo
 echo "CENTER DATE/TIME FOR RELOCATION PROCESSING IS $CDATE10"
 echo
-restore_trace
+set_trace
 
 #----------------------------------------------------------------------------
 
@@ -344,7 +344,7 @@ if [ $modhr -ne 0 ]; then
 not a multiple of 3-hrs;"
    echo "ABNORMAL EXIT!!!!!!!!!!!"
    echo
-   restore_trace
+   set_trace
    if [ -s $DATA/err_exit ]; then
       $DATA/err_exit
    else
@@ -367,14 +367,14 @@ echo "       Get TCVITALS file valid for -$fhr hrs relative to center"
 echo "                    relocation processing date/time"
 echo "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
       echo
-      restore_trace
+      set_trace
       $USHGETGES/getges.sh -e $envir_getges -n $network_getges \
        -v $CDATE10 -f $fhr -t tcvges tcvitals.m${fhr}
       set +x
       echo
 echo "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
       echo
-      restore_trace
+      set_trace
    fi
 done
 
@@ -417,7 +417,7 @@ echo "     Get global sigma GUESS valid for $fhr hrs relative to center"
 echo "                    relocation processing date/time"
 echo "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
       echo
-      restore_trace
+      set_trace
       $USHGETGES/getges.sh -e $envir_getges -n $network_getges \
        -v $CDATE10 -t $stype $sges
       errges=$?
@@ -429,7 +429,7 @@ echo "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
 to center relocation date/time;"
          echo "ABNORMAL EXIT!!!!!!!!!!!"
          echo
-         restore_trace
+         set_trace
          if [ -s $DATA/err_exit ]; then
             $DATA/err_exit
          else
@@ -461,7 +461,7 @@ to center relocation date/time;"
       echo
 echo "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
       echo
-      restore_trace
+      set_trace
    fi
    if [ ! -s $pges ]; then
       set +x
@@ -471,7 +471,7 @@ echo "  Get global pressure grib GUESS valid for $fhr hrs relative to center"
 echo "                    relocation processing date/time"
 echo "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
       echo
-      restore_trace
+      set_trace
       $USHGETGES/getges.sh -e $envir_getges -n $network_getges \
        -v $CDATE10 -t $ptype $pges
       errges=$?
@@ -483,7 +483,7 @@ echo "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
 relative to center relocation date/time;"
          echo "ABNORMAL EXIT!!!!!!!!!!!"
          echo
-         restore_trace
+         set_trace
          if [ -s $DATA/err_exit ]; then
             $DATA/err_exit
          else
@@ -496,7 +496,7 @@ relative to center relocation date/time;"
       echo
 echo "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
       echo
-      restore_trace
+      set_trace
    fi
 done
 
@@ -568,7 +568,7 @@ else
       echo "$USHRELO/tropcy_relocate_extrkr.sh failed"
       echo "ABNORMAL EXIT!!!!!!!!!!!"
       echo
-      restore_trace
+      set_trace
       if [ -s $DATA/err_exit ]; then
          $DATA/err_exit "Script $USHRELO/tropcy_relocate_extrkr.sh failed"
       else
@@ -651,7 +651,7 @@ else
 #  check for success
 #  -----------------
 
-   echo; restore_trace
+   echo; set_trace
    if [ "$errSTATUS" -gt '0' ]; then
       if [ -s $DATA/err_exit ]; then
          $DATA/err_exit "Script RELOCATE_GES failed"
