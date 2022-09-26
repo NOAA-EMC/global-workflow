@@ -3,7 +3,8 @@ import datetime
 
 
 __all__ = ["to_datetime", "to_timedelta",
-           "to_YMDH", "to_YMD",
+           "datetime_to_YMDH", "datetime_to_YMD",
+           "timedelta_to_HMS",
            "strftime", "strptime"]
 
 
@@ -71,7 +72,7 @@ def to_timedelta(tdstr):
         raise Exception(f"Bad timedelta string: '{tdstr}'")
 
 
-def to_YMDH(dt):
+def datetime_to_YMDH(dt):
     """
     Translate a datetime object to 'YYYYmmddHH' format.
     """
@@ -81,7 +82,7 @@ def to_YMDH(dt):
         raise Exception(f"Bad datetime: '{dt}'")
 
 
-def to_YMD(dt):
+def datetime_to_YMD(dt):
     """
     Translate a datetime object to 'YYYYmmdd' format.
     """
@@ -89,6 +90,18 @@ def to_YMD(dt):
         return dt.strftime('%Y%m%d')
     except Exception as ee:
         raise Exception(f"Bad datetime: '{dt}'")
+
+
+def timedelta_to_HMS(td):
+    """
+    Translate a timedelta object to 'HHMMSS' format.
+    """
+    try:
+        hours, remainder = divmod(int(td.total_seconds()), 3600)
+        minutes, seconds = divmod(remainder, 60)
+        return f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+    except Exception as ee:
+        raise Exception(f"Bad timedelta: '{td}'")
 
 
 def strftime(dt, fmt):
