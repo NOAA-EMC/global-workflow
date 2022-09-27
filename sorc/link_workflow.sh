@@ -205,8 +205,8 @@ done
 [[ -s ufs_model.x ]] && rm -f ufs_model.x
 $LINK ../sorc/ufs_model.fd/tests/ufs_model.x .
 
-[[ -s gfs_ncep_post ]] && rm -f gfs_ncep_post
-$LINK ../sorc/upp.fd/exec/upp.x gfs_ncep_post
+[[ -s upp.x ]] && rm -f upp.x
+$LINK ../sorc/upp.fd/exec/upp.x .
 
 if [ -d ${pwd}/gfs_wafs.fd ]; then
     for wafsexe in \
