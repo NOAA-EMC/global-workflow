@@ -47,6 +47,21 @@ cd ${script_dir}
 source gfs_utils.fd/ush/machine-setup.sh > /dev/null 2>&1
 # shellcheck disable=
 machine="${target:?}"
+
+#------------------------------
+#--model fix fields
+#------------------------------
+case "${machine}" in
+  "wcoss2")   FIX_DIR="/lfs/h2/emc/global/noscrub/emc.global/FIX/fix" ;;
+  "hera")     FIX_DIR="/scratch1/NCEPDEV/global/glopara/fix" ;;
+  "orion")    FIX_DIR="/work/noaa/global/glopara/fix" ;;
+  "jet")      FIX_DIR="/lfs4/HFIP/hfv3gfs/glopara/git/fv3gfs/fix" ;;
+  *)
+    echo "FATAL: Unknown target machine ${machine}, couldn't set FIX_DIR"
+    exit 1
+    ;;
+esac
+
 # Source fix version file
 source "${top_dir}/versions/fix.ver"
 
@@ -59,24 +74,6 @@ fi
 # Link post
 [[ -d upp.fd ]] && rm -rf upp.fd
 ${LINK} ufs_model.fd/FV3/upp upp.fd
-
-#------------------------------
-#--model fix fields
-#------------------------------
-
-# Source fix version file
-source "${top_dir}/versions/fix.ver"
-
-case "${machine}" in
-  "wcoss2")   FIX_DIR="/lfs/h2/emc/global/noscrub/emc.global/FIX/fix" ;;
-  "hera")     FIX_DIR="/scratch1/NCEPDEV/global/glopara/fix" ;;
-  "orion")    FIX_DIR="/work/noaa/global/glopara/fix" ;;
-  "jet")      FIX_DIR="/lfs4/HFIP/hfv3gfs/glopara/git/fv3gfs/fix" ;;
-  *)
-    echo "FATAL: Unknown target machine ${machine}, couldn't set FIX_DIR"
-    exit 1
-    ;;
-esac
 
 if [ ! -z "${FIX_DIR}" ]; then
   if [ ! -d "${top_dir}/fix" ]; then mkdir "${top_dir}/fix" || exit 1; fi
