@@ -564,8 +564,10 @@ DISSEMINATION INFORMATION
     * New:
       * `gfs.t{CYC}z.wgne.f{HHH}`, HHH=003, 006,009,...,180 (40 MB/cycle)
       * `gfs.t{CYC}z.wafs_icao.grb2f{HHH}`, HHH=000, 001, 048 (15GB/cycle)
-    * Renamed:
-      * `gfs.t00z.wafs.grb2ifHHH` -> `gfs.t00z.wafs.grb2fHHH.idx`
+    * Removed:
+      * `gfs.t00z.wafs.grb2ifHHH`
+    * New:
+      * `gfs.t00z.wafs.grb2fHHH.idx`
 
 * WAFS
   * Where should this output be sent?
@@ -585,7 +587,7 @@ DISSEMINATION INFORMATION
     * No changes
   * File changes
     * The WAFS file changes can be referred to in this document: https://docs.google.com/spreadsheets/d/1dRnoTJZLtRPczFGFwSeIsQC8Tqr7bd47dYOuZdaEdi0/edit?usp=sharing
-    * Renamed:
+    * Renamed and added 3 CB fields (extent, bottom height and top height):
       * `gfs.tCCz.wafs_0p25.fFFF.grib2` -> `gfs.tCCz.awf_0p25.fFFFgrib26`, FFF=006, 009... 036
     * Removed grib1 file:
       * `gfs.tCCz.wafs_grb45fFF`, FF=06, 09... 36
