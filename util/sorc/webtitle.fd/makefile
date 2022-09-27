@@ -11,7 +11,7 @@ OBJS=   webtitle.o
 # CMD		Name of the executable
 # PROFLIB	Library needed for profiling
 #
-FC =	ftn
+FC =	ifort
 
 LIBS=   ${W3NCO_LIB4}
 
