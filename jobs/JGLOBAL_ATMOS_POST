@@ -117,7 +117,7 @@ export SLEEP_INT=5
 ###############################################################
 # Run relevant exglobal script
 
-$SCRgfs/ex${RUN}_atmos_nceppost.sh
+$SCRgfs/ex${RUN}_atmos_post.sh
 status=$?
 [[ $status -ne 0 ]] && exit $status
 

@@ -28,7 +28,7 @@ source "$HOMEgfs/ush/preamble.sh"
 
 cd $DATA
 
-export POSTGPSH=${POSTGPSH:-$USHgfs/gfs_nceppost.sh}
+export POSTGPSH=${POSTGPSH:-$USHgfs/gfs_post.sh}
 export GFSDOWNSH=${GFSDOWNSH:-$USHgfs/fv3gfs_downstream_nems.sh}
 export GFSDWNSH=${GFSDWNSH:-$USHgfs/fv3gfs_dwn_nems.sh}
 export TRIMRH=${TRIMRH:-$USHgfs/trim_rh.sh}

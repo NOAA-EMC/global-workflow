@@ -41,7 +41,7 @@ source "$HOMEgfs/ush/preamble.sh"
 cd $DATA
 
 # specify model output format type: 4 for nemsio, 3 for sigio
-export POSTGPSH=${POSTGPSH:-$USHgfs/gfs_nceppost.sh}
+export POSTGPSH=${POSTGPSH:-$USHgfs/gfs_post.sh}
 export GFSDOWNSH=${GFSDOWNSH:-$USHgfs/fv3gfs_downstream_nems.sh}
 export GFSDOWNSHF=${GFSDOWNSHF:-$USHgfs/inter_flux.sh}
 export GFSDWNSH=${GFSDWNSH:-$USHgfs/fv3gfs_dwn_nems.sh}
