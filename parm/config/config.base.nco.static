@@ -65,7 +65,9 @@ export REALTIME="YES"
 export FIXgsi="$HOMEgfs/fix/fix_gsi"
 export HOMEfv3gfs="$HOMEgfs/sorc/fv3gfs.fd"
 export HOMEpost="$HOMEgfs"
-export HOMEobsproc="/lfs/h1/ops/prod/packages/obsproc.v1.1.0"
+export HOMEobsproc_prep="$NWPROD/obsproc_prep.v5.5.0"
+export HOMEobsproc_network="$NWPROD/obsproc_global.v3.4.2"
+export HOMEobsproc_global=$HOMEobsproc_network
 
 # CONVENIENT utility scripts and other environment parameters
 export NCP="/bin/cp -p"

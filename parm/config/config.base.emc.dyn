@@ -77,8 +77,9 @@ export MODE="@MODE@" # cycled/forecast-only
 export FIXgsi="$HOMEgfs/fix/fix_gsi"
 export HOMEfv3gfs="$HOMEgfs/sorc/fv3gfs.fd"
 export HOMEpost="$HOMEgfs"
-#export HOMEobsproc="$BASE_GIT/obsproc/v1.1.0"
-export HOMEobsproc="$BASE_GIT/obsproc/v1.0.2"
+export HOMEobsproc_prep="$BASE_GIT/obsproc/obsproc_prep.v5.5.0_hpc-stack"
+export HOMEobsproc_network="$BASE_GIT/obsproc/obsproc_global.v3.4.2_hpc-stack"
+export HOMEobsproc_global=$HOMEobsproc_network
 
 # CONVENIENT utility scripts and other environment parameters
 export NCP="/bin/cp -p"

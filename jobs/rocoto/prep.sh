@@ -109,7 +109,7 @@ if [ $DO_MAKEPREPBUFR = "YES" ]; then
         export MAKE_NSSTBUFR="NO"
     fi
 
-    $HOMEobsproc/jobs/JOBSPROC_GLOBAL_PREP
+    $HOMEobsproc_network/jobs/JGLOBAL_PREP
     status=$?
     [[ $status -ne 0 ]] && exit $status
 
