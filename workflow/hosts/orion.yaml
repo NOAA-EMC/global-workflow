@@ -17,3 +17,4 @@ chgrp_cmd: 'chgrp rstprod'
 hpssarch: 'NO'
 localarch: 'NO'
 atardir: '$NOSCRUB/archive_rotdir/$PSLOT'
+supported_resolutions: ['C768', 'C384', 'C192', 'C96', 'C48']
