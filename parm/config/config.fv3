@@ -65,11 +65,6 @@ case $case_in in
         export layout_y_gfs=4
         export nth_fv3=1
         export nth_fv3_gfs=1
-        #S4 is throttled to improve cycle runtime
-        if [[ $machine = "S4" && "${CASE_ENKF:-N/A}" == "C96" ]]; then
-           export layout_x=4
-           export layout_y=4
-        fi
         export cdmbgwd="0.14,1.8,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=1
         export WRTTASK_PER_GROUP=$npe_node_max
@@ -86,12 +81,6 @@ case $case_in in
         export layout_y_gfs=6
         export nth_fv3=2
         export nth_fv3_gfs=2
-        #S4 is throttled to improve cycle runtime
-        if [[ $machine = "S4" && "${CASE_ENKF:-N/A}" = "C192" ]]; then
-            export layout_x=4
-            export layout_y=4
-            export nth_fv3=1
-        fi
         export cdmbgwd="0.23,1.5,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=1
         export WRTTASK_PER_GROUP=$npe_node_max
@@ -107,15 +96,6 @@ case $case_in in
         export layout_y_gfs=${layout_y_gfs:-12}
         export nth_fv3=2
         export nth_fv3_gfs=${nth_fv3_gfs:-2}
-        #S4 is throttled to allow multiple user to run at once and improve cycle times
-        if [[ "$machine" == "S4" ]]; then
-           export layout_x=8
-           export layout_y=8
-           export layout_x_gfs=8
-           export layout_y_gfs=8
-           export nth_fv3=1
-           export nth_fv3_gfs=1
-        fi
         export cdmbgwd="1.1,0.72,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=1
         export WRTTASK_PER_GROUP=$npe_node_max

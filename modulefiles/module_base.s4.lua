@@ -1,5 +1,5 @@
 help([[
-Load environment to run GFS on Hera
+Load environment to run GFS on S4
 ]])
 
 load("license_intel")

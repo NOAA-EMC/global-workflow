@@ -281,10 +281,6 @@ elif [ ${step} = "gldas" ]; then
 elif [ ${step} = "fcst" ]; then
 
     export wtime_fcst="00:30:00"
-    #Increase walltimes on S4 to accomodate smaller core counts
-    if [[ ${machine} == "S4" ]]; then
-       export wtime_fcst="01:00:00"
-    fi
     if [ ${CASE} = "C768" ]; then
       export wtime_fcst_gfs="06:00:00"
     elif [ ${CASE} = "C384" ]; then
@@ -392,17 +388,6 @@ elif [ ${step} = "post" ]; then
     export nth_post=1
     export npe_node_post=12
     export npe_node_dwn=${npe_node_max}
-    if [[ ${machine} == "S4" ]]; then
-       #Limit post jobs to 1 node on S4/s4 and 2 nodes on S4/ivy
-       #Note that wgrib2 is called with -ncpu=1
-       if [[ ${PARTITION_BATCH} = "s4" ]]; then
-          export npe_post=32
-          export npe_node_post=32
-       elif [[ ${PARTITION_BATCH} = "ivy" ]]; then
-          export npe_post=40
-          export npe_node_post=20
-       fi
-    fi
 
 elif [ ${step} = "wafs" ]; then
 
@@ -635,11 +620,6 @@ elif [ ${step} = "epos" ]; then
     export wtime_epos="00:15:00"
     export npe_epos=80
     export nth_epos=6
-    if [[ ${machine} = "S4" ]]; then
-       #Limit epos jobs to 1 thread on S4 to improve cycle times
-       export nth_epos=1
-       export wtime_epos="00:30:00"
-    fi
     export npe_node_epos=$(echo "${npe_node_max} / ${nth_epos}" | bc)
 
 elif [ ${step} = "postsnd" ]; then
