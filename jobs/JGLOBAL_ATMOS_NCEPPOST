@@ -70,7 +70,7 @@ export COMPONENT=${COMPONENT:-atmos}
 ##############################################
 export APRUNP=${APRUN:-$APRUN_NP}
 export RERUN=${RERUN:-NO}
-export HOMECRTM=${HOMECRTM:-${PACKAGEROOT:-}/lib/crtm/${crtm_ver:-}}
+export HOMECRTM=${HOMECRTM:-${PACKAGEROOT:?}/lib/crtm/${crtm_ver:?}}
 export FIXCRTM=${CRTM_FIX:-${HOMECRTM}/fix}
 export PARMpost=${PARMpost:-$HOMEgfs/parm/post}
 export INLINE_POST=${WRITE_DOPOST:-".false."}
