@@ -546,7 +546,6 @@ elif [[ ${step} = "eobs" || ${step} = "eomg" ]]; then
     #For S4, this is accomplished by running 10 tasks/node
     if [[ ${machine} = "S4" ]]; then
        export npe_node_eobs=10
-       export wtime_eobs="00:30:00"
     fi
 
 elif [ ${step} = "ediag" ]; then
