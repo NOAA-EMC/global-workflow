@@ -6,8 +6,6 @@ source "$HOMEgfs/ush/preamble.sh"
 # GFS GEMPAK PRODUCT GENERATION
 ############################################
 echo
-echo "=============== BEGIN GEMPAK ==============="
-echo
 echo "=============== BEGIN TO SOURCE RELEVANT CONFIGS ==============="
 configs="base gempak"
 export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
