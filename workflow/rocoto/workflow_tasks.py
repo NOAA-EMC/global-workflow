@@ -1075,7 +1075,7 @@ class Tasks:
 
     def ecen(self):
 
-        self._is_this_a_gdas_task(self.cdump, 'ecen')
+        #self._is_this_a_gdas_task(self.cdump, 'ecen')
 
         def _get_ecengroups():
 
@@ -1129,7 +1129,7 @@ class Tasks:
 
     def esfc(self):
 
-        self._is_this_a_gdas_task(self.cdump, 'esfc')
+        #self._is_this_a_gdas_task(self.cdump, 'esfc')
 
         eupd_cdump = 'gdas' if 'gdas' in self.app_config.eupd_cdumps else 'gfs'
 
@@ -1150,7 +1150,7 @@ class Tasks:
 
     def efcs(self):
 
-        self._is_this_a_gdas_task(self.cdump, 'efcs')
+        #self._is_this_a_gdas_task(self.cdump, 'efcs')
 
         deps = []
         dep_dict = {'type': 'metatask', 'name': f'{self.cdump}ecmn'}
@@ -1175,7 +1175,7 @@ class Tasks:
 
     def echgres(self):
 
-        self._is_this_a_gdas_task(self.cdump, 'echgres')
+        #self._is_this_a_gdas_task(self.cdump, 'echgres')
 
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump}fcst'}
@@ -1191,7 +1191,7 @@ class Tasks:
 
     def epos(self):
 
-        self._is_this_a_gdas_task(self.cdump, 'epos')
+        #self._is_this_a_gdas_task(self.cdump, 'epos')
 
         def _get_eposgroups(epos):
             fhmin = epos['FHMIN_ENKF']
@@ -1235,7 +1235,7 @@ class Tasks:
 
     def earc(self):
 
-        self._is_this_a_gdas_task(self.cdump, 'earc')
+        #self._is_this_a_gdas_task(self.cdump, 'earc')
 
         deps = []
         dep_dict = {'type': 'metatask', 'name': f'{self.cdump}epmn'}
