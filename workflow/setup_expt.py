@@ -124,6 +124,7 @@ def edit_baseconfig(host, inputs):
         "@DMPDIR@": host.info["dmpdir"],
         "@PACKAGEROOT@": host.info["packageroot"],
         "@COMROOT@": host.info["comroot"],
+        "@COMINsyn@": host.info["cominsyn"],
         "@HOMEDIR@": host.info["homedir"],
         "@EXPDIR@": inputs.expdir,
         "@ROTDIR@": inputs.comrot,
