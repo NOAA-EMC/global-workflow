@@ -5,8 +5,6 @@ source "$HOMEgfs/ush/preamble.sh"
 ############################################
 # GDAS GEMPAK PRODUCT GENERATION
 ############################################
-echo
-echo "=============== BEGIN TO SOURCE RELEVANT CONFIGS ==============="
 configs="base gempak"
 export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
 for config in $configs; do
@@ -16,8 +14,6 @@ for config in $configs; do
 done
 
 ###############################################################
-echo
-echo "=============== BEGIN TO SOURCE MACHINE RUNTIME ENVIRONMENT ==============="
 . $BASE_ENV/${machine}.env gempak
 status=$?
 [[ $status -ne 0 ]] && exit $status
