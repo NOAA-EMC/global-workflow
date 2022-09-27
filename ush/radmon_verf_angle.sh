@@ -159,12 +159,13 @@ else
             angl_ctl=angle.${ctl_file}
          fi
 
+         angl_file=""
          if [[ $REGIONAL_RR -eq 1 ]]; then
             angl_file=${rgnHH}.${data_file}.${rgnTM}
          fi
 
 
-         rm input
+         if [[ -f input ]]; then rm input; fi
 
          nchanl=-999
 cat << EOF > input
@@ -209,18 +210,18 @@ EOF
    ${USHradmon}/rstprod.sh
 
    tar_file=radmon_angle.tar
-   if compgen -G "angle*.ieee_d* angle*.ctl*" > /dev/null; then
+   if compgen -G "angle*.ieee_d*" > /dev/null || compgen -G "angle*.ctl*" > /dev/null; then
       tar -cf $tar_file angle*.ieee_d* angle*.ctl*
       ${COMPRESS} ${tar_file}
       mv $tar_file.${Z} ${TANKverf_rad}/.
 
-     if [[ $RAD_AREA = "rgn" ]]; then
-        cwd=$(pwd)
-        cd ${TANKverf_rad}
-        tar -xf ${tar_file}.${Z}
-        rm ${tar_file}.${Z}
-        cd ${cwd}
-     fi
+      if [[ $RAD_AREA = "rgn" ]]; then
+         cwd=$(pwd)
+         cd ${TANKverf_rad}
+         tar -xf ${tar_file}.${Z}
+         rm ${tar_file}.${Z}
+         cd ${cwd}
+      fi
    fi
 
    if [[ $ctr -gt 0 && $fail -eq $ctr || $fail -gt $ctr ]]; then
