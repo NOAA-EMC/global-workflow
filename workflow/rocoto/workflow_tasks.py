@@ -1175,7 +1175,7 @@ class Tasks:
 
     def echgres(self):
 
-        #self._is_this_a_gdas_task(self.cdump, 'echgres')
+        self._is_this_a_gdas_task(self.cdump, 'echgres')
 
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump}fcst'}
