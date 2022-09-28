@@ -1,5 +1,4 @@
 base_git: '/scratch1/NCEPDEV/global/glopara/git'
-base_svn: '/scratch1/NCEPDEV/global/glopara/svn'
 dmpdir: '/scratch1/NCEPDEV/global/glopara/dump'
 packageroot: '/scratch1/NCEPDEV/global/glopara/nwpara'
 comroot: '/scratch1/NCEPDEV/global/glopara/com'
