@@ -1,5 +1,4 @@
 base_git: '/work/noaa/global/glopara/git'
-base_svn: '/work/noaa/global/glopara/svn'
 dmpdir: '/work/noaa/rstprod/dump'
 packageroot: '/work/noaa/global/glopara/nwpara'
 comroot: '/work/noaa/global/glopara/com'
