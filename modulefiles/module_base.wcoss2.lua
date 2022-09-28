@@ -39,7 +39,4 @@ append_path("MODULEPATH", "/apps/ops/para/libs/modulefiles/mpi/intel/19.1.3.304/
 
 load("ncdiag/1.0.0")
 
-prepend_path("MODULEPATH", pathJoin("/lfs/h2/emc/global/save/emc.global/git/prepobs/v1.0.1/modulefiles"))
-load(pathJoin("prepobs", "1.0.1"))
-
 whatis("Description: GFS run environment")
