@@ -10,7 +10,7 @@ status=$?
 
 ###############################################################
 # Source relevant configs
-configs="base prep prepbufr"
+configs="base prep"
 for config in $configs; do
     . $EXPDIR/config.${config}
     status=$?
