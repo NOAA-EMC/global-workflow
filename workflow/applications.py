@@ -411,6 +411,7 @@ class AppConfig:
         if self.do_hybvar and 'gfs' in self.eupd_cdumps:
             gfs_tasks += hybrid_tasks
             gfs_tasks += hybrid_after_eupd_tasks
+            gfs_tasks.remove("echgres")
 
         if self.do_wave and 'gfs' in self.wave_cdumps:
             if self.do_wave_bnd:
