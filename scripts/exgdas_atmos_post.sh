@@ -25,9 +25,9 @@
 #####################################################################
 
 # shellcheck source=ush/preamble.sh
-source "${HOMEgfs:?}/ush/preamble.sh"
+source "${HOMEgfs}/ush/preamble.sh"
 
-cd "${DATA:?}" || exit 1
+cd "${DATA}" || exit 1
 
 export POSTGPSH=${POSTGPSH:-${USHgfs}/gfs_post.sh}
 export GFSDOWNSH=${GFSDOWNSH:-${USHgfs}/fv3gfs_downstream_nems.sh}
@@ -78,11 +78,12 @@ export IDRT=${IDRT:-0} # IDRT=0 is setting for outputting grib files on lat/lon 
 # Post Analysis Files before starting the Forecast Post
 ############################################################
 # Chuang: modify to process analysis when post_times is 00
-export stime="$(echo "${post_times:?}" | cut -c1-3)"
+stime="$(echo "${post_times}" | cut -c1-3)"
+export stime
 if (( OUTTYP == 4 )) ; then
-  export loganl="${COMIN:?}/${PREFIX}atmanl${SUFFIX}"
+  export loganl="${COMIN}/${PREFIX}atmanl${SUFFIX}"
 else
-  export loganl="${COMIN:?}/${PREFIX}sanl"
+  export loganl="${COMIN}/${PREFIX}sanl"
 fi
 
 if [ "${stime}" = "anl" ]; then
@@ -90,7 +91,7 @@ if [ "${stime}" = "anl" ]; then
     # add new environmental variables for running new ncep post
     # Validation date
 
-    export VDATE=${PDY:?}${cyc}
+    export VDATE=${PDY}${cyc}
 
     # set outtyp to 1 because we need to run chgres in the post before model start running chgres
     # otherwise set to 0, then chgres will not be executed in global_nceppost.sh
@@ -101,12 +102,12 @@ if [ "${stime}" = "anl" ]; then
     # if model already runs gfs io, make sure GFSOUT is linked to the gfsio file
     # new imported variable for global_nceppost.sh
 
-    export GFSOUT=${RUN}.${cycle:?}.gfsioanl
+    export GFSOUT=${RUN}.${cycle}.gfsioanl
 
     # specify smaller control file for GDAS because GDAS does not
     # produce flux file, the default will be /nwprod/parm/gfs_cntrl.parm
 
-    if [ "${GRIBVERSION:?}" = 'grib2' ]; then
+    if [ "${GRIBVERSION}" = 'grib2' ]; then
       export POSTGRB2TBL=${POSTGRB2TBL:-${g2tmpl_ROOT}/share/params_grib2_tbl_new}
       export PostFlatFile=${PostFlatFile:-${PARMpost}/postxconfig-NT-GFS-ANL.txt}
       export CTLFILE=${PARMpost}/postcntrl_gfs_anl.xml
@@ -123,7 +124,7 @@ if [ "${stime}" = "anl" ]; then
     export PGIOUT=pgifile
     export PGBOUT2=pgbfile.grib2
     export PGIOUT2=pgifile.grib2.idx
-    export IGEN="${IGEN_ANL:?}"
+    export IGEN="${IGEN_ANL}"
     export FILTER=0
 
     # specify fhr even for analysis because postgp uses it
@@ -145,24 +146,24 @@ if [ "${stime}" = "anl" ]; then
       export fhr3=anl
     fi
 
-    if [ "${SENDCOM:-YES}" = 'YES' ]; then
+    if [ "${SENDCOM}" = 'YES' ]; then
       export fhr3=anl
       if [ "${GRIBVERSION}" = 'grib2' ]; then
         MASTERANL=${PREFIX}master.grb2${fhr3}
         ##########XXW Accord to Boi, fortran index should use *if${fhr}, wgrib index use .idx
         #MASTERANLIDX=${RUN}.${cycle}.master.grb2${fhr3}.idx
         MASTERANLIDX=${PREFIX}master.grb2i${fhr3}
-        cp "${PGBOUT2}" "${COMOUT:?}/${MASTERANL}"
-        ${GRB2INDEX:?} "${PGBOUT2}" "${COMOUT}/${MASTERANLIDX}"
+        cp "${PGBOUT2}" "${COMOUT}/${MASTERANL}"
+        ${GRB2INDEX} "${PGBOUT2}" "${COMOUT}/${MASTERANLIDX}"
       fi
 
-      if [ "${SENDDBN:-YES}" = 'YES' ]; then
-        run=$(echo ${RUN} | tr 'a-z' 'A-Z')
+      if [ "${SENDDBN}" = 'YES' ]; then
+        run="$(echo ${RUN} | tr '[:lower:]' '[:upper:]')"
         if [ "${GRIBVERSION}" = 'grib2' ]; then
-          "${DBNROOT:?}/bin/dbn_alert" MODEL "${run}_MSC_sfcanl" "${job:?}" "${COMOUT}/${PREFIX}sfc${fhr3}${SUFFIX}"
-          "${DBNROOT:?}/bin/dbn_alert" MODEL "${run}_SA" "${job:?}" "${COMIN}/${PREFIX}atm${fhr3}${SUFFIX}"
-          "${DBNROOT:?}/bin/dbn_alert" MODEL "GDAS_PGA_GB2" "${job:?}" "${COMOUT}/${PREFIX}pgrb2.1p00.${fhr3}"
-          "${DBNROOT:?}/bin/dbn_alert" MODEL "GDAS_PGA_GB2_WIDX" "${job:?}" "${COMOUT}/${PREFIX}pgrb2.1p00.${fhr3}.idx"
+          "${DBNROOT}/bin/dbn_alert" MODEL "${run}_MSC_sfcanl" "${job}" "${COMOUT}/${PREFIX}sfc${fhr3}${SUFFIX}"
+          "${DBNROOT}/bin/dbn_alert" MODEL "${run}_SA" "${job}" "${COMIN}/${PREFIX}atm${fhr3}${SUFFIX}"
+          "${DBNROOT}/bin/dbn_alert" MODEL "GDAS_PGA_GB2" "${job}" "${COMOUT}/${PREFIX}pgrb2.1p00.${fhr3}"
+          "${DBNROOT}/bin/dbn_alert" MODEL "GDAS_PGA_GB2_WIDX" "${job}" "${COMOUT}/${PREFIX}pgrb2.1p00.${fhr3}.idx"
         fi
       fi
     fi
@@ -174,7 +175,7 @@ if [ "${stime}" = "anl" ]; then
     err_chk
   fi
 else   ## not_anl if_stimes
-  SLEEP_LOOP_MAX=$(( ${SLEEP_TIME:?} / ${SLEEP_INT:?} ))
+  SLEEP_LOOP_MAX=$(( SLEEP_TIME / SLEEP_INT ))
 
   ############################################################
   # Loop Through the Post Forecast Files
@@ -188,7 +189,7 @@ else   ## not_anl if_stimes
     export pgm="postcheck"
     ic=1
     while (( ic <= SLEEP_LOOP_MAX )); do
-      if [ -f "${restart_file:?}${fhr}.txt" ]; then
+      if [ -f "${restart_file}${fhr}.txt" ]; then
         break
       else
         ic=$(( ic + 1 ))
@@ -213,22 +214,23 @@ else   ## not_anl if_stimes
     [[ -f flxfile ]] && rm flxfile
     [[ -f nemsfile ]] && rm nemsfile
     if (( OUTTYP == 4 )) ; then
-      ln -sf "${COMIN}/${PREFIX}atmf$fhr${SUFFIX}" nemsfile
+      ln -sf "${COMIN}/${PREFIX}atmf${fhr}${SUFFIX}" nemsfile
       export NEMSINP=nemsfile
-      ln -sf "${COMIN}/${PREFIX}sfcf$fhr${SUFFIX}" flxfile
+      ln -sf "${COMIN}/${PREFIX}sfcf${fhr}${SUFFIX}" flxfile
       export FLXINP=flxfile
     fi
 
     if (( fhr > 0 )); then
-      export IGEN=${IGEN_FCST:?}
+      export IGEN=${IGEN_FCST}
     else
-      export IGEN=${IGEN_ANL:?}
+      export IGEN=${IGEN_ANL}
     fi
 
     # add new environmental variables for running new ncep post
     # Validation date
 
-    export VDATE="$(${NDATE:?} "+${fhr}" "${PDY}${cyc}")"
+    VDATE="$(${NDATE} "+${fhr}" "${PDY}${cyc}")"
+    export VDATE
 
     # set to 3 to output lat/lon grid
 
@@ -238,10 +240,10 @@ else   ## not_anl if_stimes
       export POSTGRB2TBL="${POSTGRB2TBL:-${g2tmpl_ROOT}/share/params_grib2_tbl_new}"
       export PostFlatFile="${PARMpost}/postxconfig-NT-GFS.txt"
       if [ "${RUN}" = gfs ]; then
-        export IGEN="${IGEN_GFS:?}"
+        export IGEN="${IGEN_GFS}"
         if (( fhr > 0 )); then export IGEN="${IGEN_FCST}" ; fi
       else
-        export IGEN="${IGEN_GDAS_ANL:?}"
+        export IGEN="${IGEN_GDAS_ANL}"
         if (( fhr > 0 )); then export IGEN="${IGEN_FCST}" ; fi
       fi
       if [[ "${RUN}" = gfs ]]; then
@@ -290,8 +292,8 @@ else   ## not_anl if_stimes
     ${GFSDOWNSH}
     export err=$?; err_chk
 
-    if [ "${SENDDBN}" = YES ]; then
-      run=$(echo ${RUN} | tr 'a-z' 'A-Z')
+    if [ "${SENDDBN}" = "YES" ]; then
+      run="$(echo ${RUN} | tr '[:lower:]' '[:upper:]')"
       "${DBNROOT}/bin/dbn_alert" MODEL "${run}_PGB2_0P25" "${job}" "${COMOUT}/${PREFIX}pgrb2.0p25.f${fhr}"
       "${DBNROOT}/bin/dbn_alert" MODEL "${run}_PGB2_0P25_WIDX ""${job}" "${COMOUT}/${PREFIX}pgrb2.0p25.f${fhr}.idx"
       "${DBNROOT}/bin/dbn_alert" MODEL "${run}_PGB_GB2" "${job}" "${COMOUT}/${PREFIX}pgrb2.1p00.f${fhr}"
@@ -330,7 +332,7 @@ else   ## not_anl if_stimes
           export err=$?; err_chk
           mv fluxfile "${COMOUT}/${FLUXFL}"
         fi
-        ${WGRIB2:?} -s "${COMOUT}/${FLUXFL}" > "${COMOUT}/${FLUXFLIDX}"
+        ${WGRIB2} -s "${COMOUT}/${FLUXFL}" > "${COMOUT}/${FLUXFLIDX}"
       fi
 
       if [ "${SENDDBN}" = 'YES' ] && [ "${RUN}" = 'gdas' ] && (( fhr % 3 == 0 )); then

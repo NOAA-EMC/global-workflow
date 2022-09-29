@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 # shellcheck source=ush/preamble.sh
-source "${HOMEgfs:?}/ush/preamble.sh"
+source "${HOMEgfs}/ush/preamble.sh"
 
 export RUN_ENVIR=${RUN_ENVIR:-"nco"}
 
@@ -23,7 +23,7 @@ done
 # Source machine runtime environment
 ##########################################
 # shellcheck source-path=env
-. "${HOMEgfs}/env/${machine:?}.env" post
+. "${HOMEgfs}/env/${machine}.env" post
 status=$?
 (( status != 0 )) && exit "${status}"
 
@@ -33,7 +33,7 @@ status=$?
 ##############################################
 export pid=${pid:-$$}
 export outid=${outid:-"LL${job}"}
-export DATA=${DATA:-${DATAROOT}/${jobid:?}}
+export DATA=${DATA:-${DATAROOT}/${jobid}}
 mkdir -p "${DATA}"
 cd "${DATA}" || exit 1
 
@@ -41,7 +41,7 @@ cd "${DATA}" || exit 1
 ##############################################
 # Run setpdy and initialize PDY variables
 ##############################################
-export cycle="t${cyc:?}z"
+export cycle="t${cyc}z"
 setpdy.sh
 # shellcheck disable=SC1091
 . ./PDY
@@ -75,7 +75,7 @@ export COMPONENT=${COMPONENT:-atmos}
 ##############################################
 export APRUNP=${APRUN:-${APRUN_NP}}
 export RERUN=${RERUN:-NO}
-export HOMECRTM=${HOMECRTM:-${PACKAGEROOT:?}/lib/crtm/${crtm_ver:?}}
+export HOMECRTM=${HOMECRTM:-${PACKAGEROOT}/lib/crtm/${crtm_ver}}
 export FIXCRTM=${CRTM_FIX:-${HOMECRTM}/fix}
 export PARMpost=${PARMpost:-${HOMEgfs}/parm/post}
 export INLINE_POST=${WRITE_DOPOST:-".false."}
@@ -98,7 +98,7 @@ if [ "${RUN}" = gdas ]; then
   export FHOUT_PGB=${FHOUT:-1} #Output frequency of gfs pgb file at 1.0 and 0.5 deg.
 fi
 
-if [ "${GRIBVERSION:?}" = grib2 ]; then
+if [ "${GRIBVERSION}" = grib2 ]; then
   export IGEN_ANL="anal_gfs"
   export IGEN_FCST="gfs_avn"
   export IGEN_GFS="gfs_avn"
@@ -124,7 +124,7 @@ export SLEEP_INT=5
 ###############################################################
 # Run relevant exglobal script
 
-"${SCRgfs:?}/ex${RUN}_atmos_post.sh"
+"${SCRgfs}/ex${RUN}_atmos_post.sh"
 status=$?
 (( status != 0 )) && exit "${status}"
 
