@@ -11,6 +11,7 @@ configs="base post"
 export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
 config_path=${EXPDIR:-$PACKAGEROOT/gfs.${gfs_ver}/parm/config}
 for config in $configs; do
+    # shellcheck source-path=parm/config
     . $config_path/config.$config
     status=$?
     [[ $status -ne 0 ]] && exit $status
@@ -117,7 +118,7 @@ export SLEEP_INT=5
 ###############################################################
 # Run relevant exglobal script
 
-$SCRgfs/ex${RUN}_atmos_post.sh
+"${SCRgfs}/ex${RUN}_atmos_post.sh"
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
