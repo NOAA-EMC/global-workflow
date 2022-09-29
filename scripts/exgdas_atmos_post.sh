@@ -78,7 +78,7 @@ export IDRT=${IDRT:-0} # IDRT=0 is setting for outputting grib files on lat/lon 
 # Post Analysis Files before starting the Forecast Post
 ############################################################
 # Chuang: modify to process analysis when post_times is 00
-export stime="$(echo ${post_times:?} | cut -c1-3)"
+export stime="$(echo "${post_times:?}" | cut -c1-3)"
 if (( OUTTYP == 4 )) ; then
   export loganl="${COMIN:?}/${PREFIX}atmanl${SUFFIX}"
 else
@@ -300,7 +300,7 @@ else   ## not_anl if_stimes
 
 
     if [ "${SENDCOM}" = 'YES' ]; then
-      if [ "${GRIBVERSION}" = 'grib2' ] ; then
+      if [ "${GRIBVERSION}" = 'grib2' ]; then
         if [ "${INLINE_POST}" = ".false." ]; then
           cp "${PGBOUT2}" "${COMOUT}/${MASTERFHR}"
         fi
@@ -333,7 +333,7 @@ else   ## not_anl if_stimes
         ${WGRIB2:?} -s "${COMOUT}/${FLUXFL}" > "${COMOUT}/${FLUXFLIDX}"
       fi
 
-      if [ "${SENDDBN}" = 'YES' ] -a [ "${RUN}" = 'gdas' ] -a (( fhr % 3 == 0 )); then
+      if [ "${SENDDBN}" = 'YES' ] && [ "${RUN}" = 'gdas' ] && (( fhr % 3 == 0 )); then
         "${DBNROOT}/bin/dbn_alert" MODEL "${run}_SF" "${job}" "${COMOUT}/${PREFIX}atmf${fhr}${SUFFIX}"
         "${DBNROOT}/bin/dbn_alert" MODEL "${run}_BF" "${job}" "${COMOUT}/${PREFIX}sfcf${fhr}${SUFFIX}"
         "${DBNROOT}/bin/dbn_alert" MODEL "${run}_SGB_GB2" "${job}" "${COMOUT}/${PREFIX}sfluxgrbf${fhr}.grib2"
