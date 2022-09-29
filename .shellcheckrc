@@ -1,7 +1,7 @@
 # Global settings for Spellcheck (https://github.com/koalaman/shellcheck)
 enable=all
 
+external-sources=false
+
 # Disable variable referenced but not assigned
 disable=SC2154
-
-

@@ -214,6 +214,7 @@ export POSTGPEXEC=${POSTGPEXEC:-${EXECgfs}/upp.x}
 export OVERPARMEXEC=${OVERPARMEXEC:-${EXECgfs}/overparm_grib}
 export POSTGPLIST=${POSTGPLIST:-/dev/null}
 export INISCRIPT=${INISCRIPT:-}
+# Ignore warning about single quote not subtituting now
 # shellcheck disable=SC2016
 export ERRSCRIPT=${ERRSCRIPT:-'eval (( err == 0 ))'}
 # shellcheck disable=

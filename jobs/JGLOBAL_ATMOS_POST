@@ -1,6 +1,5 @@
 #! /usr/bin/env bash
 
-# shellcheck source=ush/preamble.sh
 source "${HOMEgfs}/ush/preamble.sh"
 
 export RUN_ENVIR=${RUN_ENVIR:-"nco"}
@@ -12,7 +11,6 @@ configs="base post"
 export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
 config_path=${EXPDIR:-${PACKAGEROOT}/gfs.${gfs_ver}/parm/config}
 for config in ${configs}; do
-    # shellcheck source-path=parm/config
     . "${config_path}/config.${config}"
     status=$?
     (( status != 0 )) && exit "${status}"
@@ -22,7 +20,6 @@ done
 ##########################################
 # Source machine runtime environment
 ##########################################
-# shellcheck source-path=env
 . "${HOMEgfs}/env/${machine}.env" post
 status=$?
 (( status != 0 )) && exit "${status}"
@@ -43,9 +40,7 @@ cd "${DATA}" || exit 1
 ##############################################
 export cycle="t${cyc}z"
 setpdy.sh
-# shellcheck disable=SC1091
 . ./PDY
-# shellcheck disable=
 
 
 ##############################################
