@@ -93,7 +93,7 @@ export IDRT=${IDRT:-0} # IDRT=0 is setting for outputting grib files on lat/lon 
 # Post Analysis Files before starting the Forecast Post
 ############################################################
 # Process analysis when post_times is 00
-stime="$(echo ${post_times} | cut -c1-3)"
+stime="$(echo "${post_times}" | cut -c1-3)"
 export stime
 if (( OUTTYP == 4 )); then
   export loganl="${COMIN}/${PREFIX}atmanl${SUFFIX}"
@@ -229,7 +229,7 @@ if [ "${stime}" = "anl" ]; then
     err_chk
   fi
 else   ## not_anl if_stime
-  SLEEP_LOOP_MAX=$(( ${SLEEP_TIME} / ${SLEEP_INT} ))
+  SLEEP_LOOP_MAX=$(( SLEEP_TIME / SLEEP_INT ))
 
   ############################################################
   # Loop Through the Post Forecast Files 
@@ -248,7 +248,7 @@ else   ## not_anl if_stime
         break
       else
         ic=$(( ic + 1 ))
-        sleep ${SLEEP_INT}
+        sleep "${SLEEP_INT}"
       fi
       ###############################
       # If we reach this point assume
@@ -431,7 +431,7 @@ else   ## not_anl if_stime
       # link satellite coefficients files, use hwrf version as ops crtm 2.0.5
       # does not new coefficient files used by post
       export FIXCRTM="${FIXCRTM:-${CRTM_FIX}}"
-      "${USHgfs}/link_crtm_fix.sh" ${FIXCRTM}
+      "${USHgfs}/link_crtm_fix.sh" "${FIXCRTM}"
 
       if [ "${GRIBVERSION}" = 'grib2' ]; then 
         export PostFlatFile="${PARMpost}/postxconfig-NT-GFS-GOES.txt   "   

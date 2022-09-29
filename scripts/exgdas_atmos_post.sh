@@ -158,7 +158,7 @@ if [ "${stime}" = "anl" ]; then
       fi
 
       if [ "${SENDDBN}" = 'YES' ]; then
-        run="$(echo ${RUN} | tr '[:lower:]' '[:upper:]')"
+        run="$(echo "${RUN}" | tr '[:lower:]' '[:upper:]')"
         if [ "${GRIBVERSION}" = 'grib2' ]; then
           "${DBNROOT}/bin/dbn_alert" MODEL "${run}_MSC_sfcanl" "${job}" "${COMOUT}/${PREFIX}sfc${fhr3}${SUFFIX}"
           "${DBNROOT}/bin/dbn_alert" MODEL "${run}_SA" "${job}" "${COMIN}/${PREFIX}atm${fhr3}${SUFFIX}"
@@ -293,7 +293,7 @@ else   ## not_anl if_stimes
     export err=$?; err_chk
 
     if [ "${SENDDBN}" = "YES" ]; then
-      run="$(echo ${RUN} | tr '[:lower:]' '[:upper:]')"
+      run="$(echo "${RUN}" | tr '[:lower:]' '[:upper:]')"
       "${DBNROOT}/bin/dbn_alert" MODEL "${run}_PGB2_0P25" "${job}" "${COMOUT}/${PREFIX}pgrb2.0p25.f${fhr}"
       "${DBNROOT}/bin/dbn_alert" MODEL "${run}_PGB2_0P25_WIDX ""${job}" "${COMOUT}/${PREFIX}pgrb2.0p25.f${fhr}.idx"
       "${DBNROOT}/bin/dbn_alert" MODEL "${run}_PGB_GB2" "${job}" "${COMOUT}/${PREFIX}pgrb2.1p00.f${fhr}"

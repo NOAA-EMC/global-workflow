@@ -188,7 +188,7 @@
 ####
 ################################################################################
 #  Set environment.
-source "$HOMEgfs/ush/preamble.sh"
+source "${HOMEgfs}/ush/preamble.sh"
 
 #  Command line arguments.
 export SIGINP=${1:-${SIGINP:-}}
@@ -202,10 +202,10 @@ export JO=${7:-${JO:-0}}
 export IGEN=${8:-${IGEN:-0}}
 #  Directories.
 export NWPROD=${NWPROD:-/nwprod}
-#export EXECUTIL=${EXECUTIL:-$NWPROD/util/exec}
-export USHUTIL=${USHUTIL:-$NWPROD/util/ush}
-export EXECgfs=${EXECgfs:-$NWPROD/exec}
-export USHgfs=${USHgfs:-$NWPROD/ush}
+#export EXECUTIL=${EXECUTIL:-${NWPROD}/util/exec}
+export USHUTIL=${USHUTIL:-${NWPROD}/util/ush}
+export EXECgfs=${EXECgfs:-${NWPROD}/exec}
+export USHgfs=${USHgfs:-${NWPROD}/ush}
 export DATA=${DATA:-$(pwd)}
 #  Filenames.
 export MP=${MP:-$([[ ${LOADL_STEP_TYPE:-SERIAL} = PARALLEL ]]&&echo "p"||echo "s")}
@@ -214,11 +214,13 @@ export POSTGPEXEC=${POSTGPEXEC:-${EXECgfs}/upp.x}
 export OVERPARMEXEC=${OVERPARMEXEC:-${EXECgfs}/overparm_grib}
 export POSTGPLIST=${POSTGPLIST:-/dev/null}
 export INISCRIPT=${INISCRIPT:-}
-export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
+# shellcheck disable=SC2016
+export ERRSCRIPT=${ERRSCRIPT:-'eval (( err == 0 ))'}
+# shellcheck disable=
 export LOGSCRIPT=${LOGSCRIPT:-}
 export ENDSCRIPT=${ENDSCRIPT:-}
 export GFSOUT=${GFSOUT:-gfsout}
-export CTLFILE=${CTLFILE:-$NWPROD/parm/gfs_cntrl.parm}
+export CTLFILE=${CTLFILE:-${NWPROD}/parm/gfs_cntrl.parm}
 #export MODEL_OUT_FORM=${MODEL_OUT_FORM:-binarynemsiompiio}
 export OUTPUT_FILE=${OUTPUT_FILE:-"nemsio"}
 export GRIBVERSION=${GRIBVERSION:-'grib1'}
@@ -234,12 +236,12 @@ export GENPSICHI=${GENPSICHI:-NO}
 export GENPSICHIEXE=${GENPSICHIEXE:-${EXECgfs}/genpsiandchi}
 export ens=${ens:-NO}
 #export D3DINP=${D3DINP:-/dev/null}
-l=$(echo $PGMOUT | xargs | cut -c1)
-[[ $l = '&' ]]&&a=''||a='>'
-export REDOUT=${REDOUT:-'1>'$a}
-l=$(echo $PGMERR | xargs | cut -c1)
-[[ $l = '&' ]]&&a=''||a='>'
-export REDERR=${REDERR:-'2>'$a}
+l="$(echo "${PGMOUT}" | xargs | cut -c1)"
+[[ ${l} = '&' ]]&&a=''||a='>'
+export REDOUT=${REDOUT:-'1>'${a}}
+l="$(echo "${PGMERR}" | xargs | cut -c1)"
+[[ ${l} = '&' ]]&&a=''||a='>'
+export REDERR=${REDERR:-'2>'${a}}
 ################################################################################
 
 # Chuang: Run chgres if OUTTYP=1 or 0
@@ -247,21 +249,21 @@ export REDERR=${REDERR:-'2>'$a}
 export APRUN=${APRUNP:-${APRUN:-""}}
 
 # exit if NEMSINP does not exist
-if [ ${OUTTYP} -eq 4 ] ; then
-	if [ ! -s $NEMSINP -o ! -s $FLXINP  ] ; then
+if (( OUTTYP == 4 )) ; then
+	if [ ! -s "${NEMSINP}" ] || [ ! -s "${FLXINP}"  ] ; then
 		echo "model files not found, exitting"
 		exit 111
 	fi
 fi
 
-export SIGHDR=${SIGHDR:-$NWPROD/exec/global_sighdr} 
+export SIGHDR=${SIGHDR:-${NWPROD}/exec/global_sighdr} 
 export IDRT=${IDRT:-4}
 
 # run post to read nemsio file if OUTTYP=4
-if [ ${OUTTYP} -eq 4 ] ; then
-	if [ ${OUTPUT_FILE} = "netcdf" ]; then
+if (( OUTTYP == 4 )) ; then
+	if [ "${OUTPUT_FILE}" = "netcdf" ]; then
 		export MODEL_OUT_FORM=${MODEL_OUT_FORM:-netcdfpara}
-	elif [ ${OUTPUT_FILE} = "nemsio" ]; then
+	elif [ "${OUTPUT_FILE}" = "nemsio" ]; then
 		export MODEL_OUT_FORM=${MODEL_OUT_FORM:-binarynemsiompiio}
 	else
 		export MODEL_OUT_FORM=${MODEL_OUT_FORM:-binarynemsiompiio}
@@ -274,36 +276,37 @@ fi
 export OMP_NUM_THREADS=${OMP_NUM_THREADS:-1}
 
 pwd=$(pwd)
-if [[ -d $DATA ]]; then
+if [[ -d "${DATA}" ]]; then
 	mkdata=NO
 else
-	mkdir -p $DATA
+	mkdir -p "${DATA}"
 	mkdata=YES
 fi
-cd $DATA||exit 99
+cd "${DATA}" || exit 99
 ################################################################################
 #  Post GRIB
-export PGM=$POSTGPEXEC
-export pgm=$PGM
-$LOGSCRIPT
+export PGM=${POSTGPEXEC}
+export pgm=${PGM}
+${LOGSCRIPT}
 cat <<-EOF >postgp.inp.nml$$
 	&NAMPGB
-	$POSTGPVARS
+	${POSTGPVARS}
 EOF
 
 cat <<-EOF >>postgp.inp.nml$$
 	/
 EOF
 
-if [[ "$VERBOSE" = "YES" ]]; then
+if [[ "${VERBOSE}" = "YES" ]]; then
 	cat postgp.inp.nml$$
 fi
 
 # making the time stamp format for ncep post
-export YY=$(echo $VDATE | cut -c1-4)
-export MM=$(echo $VDATE | cut -c5-6)
-export DD=$(echo $VDATE | cut -c7-8)
-export HH=$(echo $VDATE | cut -c9-10)
+YY=$(echo "${VDATE}" | cut -c1-4)
+MM=$(echo "${VDATE}" | cut -c5-6)
+DD=$(echo "${VDATE}" | cut -c7-8)
+HH=$(echo "${VDATE}" | cut -c9-10)
+export YY MM DD HH
 
 cat > itag <<-EOF
 	&model_inputs
@@ -327,54 +330,55 @@ rm -f fort.*
 #ln -sf $PGBOUT     postgp.out.pgb$$
 
 # change model generating Grib number 
-if [ ${GRIBVERSION} = grib2 ]; then
-	cp ${POSTGRB2TBL} .
-	cp ${PostFlatFile} ./postxconfig-NT.txt
-	if [ ${ens} = "YES" ] ; then
-		sed < ${PostFlatFile} -e "s#negatively_pert_fcst#${ens_pert_type}#" > ./postxconfig-NT.txt
+if [ "${GRIBVERSION}" = "grib2" ]; then
+	cp "${POSTGRB2TBL}" .
+	cp "${PostFlatFile}" ./postxconfig-NT.txt
+	if [ "${ens}" = "YES" ] ; then
+		sed < "${PostFlatFile}" -e "s#negatively_pert_fcst#${ens_pert_type}#" > ./postxconfig-NT.txt
 	fi
 	#  cp ${CTLFILE} postcntrl.xml
 fi
-export CTL=$(basename $CTLFILE)
+CTL=$(basename "${CTLFILE}")
+export CTL
 
 ln -sf griddef.out fort.110
-cp ${PARMpost}/nam_micro_lookup.dat ./eta_micro_lookup.dat
+cp "${PARMpost}/nam_micro_lookup.dat" ./eta_micro_lookup.dat
 
-echo "gfs_post.sh OMP_NUM_THREADS= $OMP_NUM_THREADS"
-${APRUN:-mpirun.lsf} $POSTGPEXEC < itag > outpost_gfs_${VDATE}_${CTL}
+echo "gfs_post.sh OMP_NUM_THREADS= ${OMP_NUM_THREADS}"
+${APRUN:-mpirun.lsf} "${POSTGPEXEC}" < itag > "outpost_gfs_${VDATE}_${CTL}"
 
 export ERR=$?
-export err=$ERR
+export err=${ERR}
 
-if [ $err -ne 0 ] ; then
-	if [ $PGBOUT = "wafsfile" ] ; then
-		exit $err
+if (( err != 0 )) ; then
+	if [ "${PGBOUT}" = "wafsfile" ] ; then
+		exit "${err}"
 	fi
 fi
-$ERRSCRIPT||exit 2
+${ERRSCRIPT} || exit 2
 
-if [ $FILTER = "1" ] ; then
+if [ "${FILTER}" = "1" ] ; then
 	# Filter SLP and 500 mb height using copygb, change GRIB ID, and then
 	# cat the filtered fields to the pressure GRIB file, from Iredell
 
-	if [ $GRIBVERSION = grib2 ]; then
-		if [ ${ens} = YES ] ; then
-			$COPYGB2 -x -i'4,0,80' -k'1 3 0 7*-9999 101 0 0' $PGBOUT tfile
+	if [ "${GRIBVERSION}" = "grib2" ]; then
+		if [ "${ens}" = "YES" ] ; then
+			"${COPYGB2}" -x -i'4,0,80' -k'1 3 0 7*-9999 101 0 0' "${PGBOUT}" tfile
 			export err=$?; err_chk
 		else
-			$COPYGB2 -x -i'4,0,80' -k'0 3 0 7*-9999 101 0 0' $PGBOUT tfile
+			"${COPYGB2}" -x -i'4,0,80' -k'0 3 0 7*-9999 101 0 0' "${PGBOUT}" tfile
 			export err=$?; err_chk
 		fi
-		$WGRIB2 tfile -set_byte 4 11 1 -grib prmsl
+		${WGRIB2} tfile -set_byte 4 11 1 -grib prmsl
 		export err=$?; err_chk
-		if [ ${ens} = YES ] ; then
-			$COPYGB2 -x -i'4,1,5' -k'1 3 5 7*-9999 100 0 50000' $PGBOUT tfile
+		if [ "${ens}" = "YES" ] ; then
+			"${COPYGB2}" -x -i'4,1,5' -k'1 3 5 7*-9999 100 0 50000' "${PGBOUT}" tfile
 			export err=$?; err_chk
 		else
-			$COPYGB2 -x -i'4,1,5' -k'0 3 5 7*-9999 100 0 50000' $PGBOUT tfile
+			"${COPYGB2}" -x -i'4,1,5' -k'0 3 5 7*-9999 100 0 50000' "${PGBOUT}" tfile
 			export err=$?; err_chk
 		fi
-		$WGRIB2 tfile -set_byte 4 11 193 -grib h5wav
+		${WGRIB2} tfile -set_byte 4 11 193 -grib h5wav
 		export err=$?; err_chk
 
 		#cat $PGBOUT prmsl h5wav >> $PGBOUT
@@ -388,33 +392,32 @@ fi
 
 ################################################################################
 #  Make GRIB index file
-if [[ -n $PGIOUT ]]; then
-	if [ $GRIBVERSION = grib2 ]; then
-		# JY $GRBINDEX2 $PGBOUT $PGIOUT
-		$GRB2INDEX $PGBOUT $PGIOUT
+if [[ -n "${PGIOUT}" ]]; then
+	if [ "${GRIBVERSION}" = "grib2" ]; then
+		${GRB2INDEX} "${PGBOUT}" "${PGIOUT}"
 	fi
 fi
-if [[ -r $FLXINP && -n $FLXIOUT && $OUTTYP -le 3 ]]; then
-	$GRBINDEX $FLXINP $FLXIOUT
+if [[ -r ${FLXINP} && -n ${FLXIOUT} && ${OUTTYP} -le 3 ]]; then
+	${GRBINDEX} "${FLXINP}" "${FLXIOUT}"
 fi
 ################################################################################
 # generate psi and chi
-echo "GENPSICHI= " $GENPSICHI
-if [ $GENPSICHI = YES ] ; then
+echo "GENPSICHI = ${GENPSICHI}"
+if [ "${GENPSICHI}" = "YES" ] ; then
 	#echo "PGBOUT PGIOUT=" $PGBOUT $PGIOUT
 	#echo "YY MM=" $YY $MM
 	export psichifile=./psichi.grb
-	$GENPSICHIEXE < postgp.inp.nml$$
+	${GENPSICHIEXE} < postgp.inp.nml$$
 	rc=$?
-	if [[ $rc -ne 0 ]] ; then
-		echo 'Nonzero return code rc= '$rc
+	if (( rc != 0 )); then
+		echo "Nonzero return code rc=${rc}"
 		exit 3
 	fi
-	cat ./psichi.grb >> $PGBOUT
+	cat ./psichi.grb >> "${PGBOUT}"
 fi
 ################################################################################
 #  Postprocessing
-cd $pwd
-[[ $mkdata = YES ]]&&rmdir $DATA
+cd "${pwd}" || exit 2
+[[ "${mkdata}" = "YES" ]] && rmdir "${DATA}"
 
-exit $err
+exit "${err}"
