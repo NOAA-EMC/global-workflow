@@ -23,7 +23,7 @@ done
 # Source machine runtime environment
 ##########################################
 # shellcheck source-path=env
-. ${HOMEgfs}/env/${machine}.env post
+. "${HOMEgfs}/env/${machine:?}.env" post
 status=$?
 (( status != 0 )) && exit "${status}"
 
@@ -124,7 +124,7 @@ export SLEEP_INT=5
 ###############################################################
 # Run relevant exglobal script
 
-"${SCRgfs}/ex${RUN}_atmos_post.sh"
+"${SCRgfs:?}/ex${RUN}_atmos_post.sh"
 status=$?
 (( status != 0 )) && exit "${status}"
 

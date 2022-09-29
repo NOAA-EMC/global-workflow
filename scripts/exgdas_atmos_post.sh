@@ -24,15 +24,16 @@
 # echo "-----------------------------------------------------"
 #####################################################################
 
-source "$HOMEgfs/ush/preamble.sh"
+# shellcheck source=ush/preamble.sh
+source "${HOMEgfs:?}/ush/preamble.sh"
 
-cd $DATA
+cd "${DATA:?}" || exit 1
 
 export POSTGPSH=${POSTGPSH:-${USHgfs}/gfs_post.sh}
-export GFSDOWNSH=${GFSDOWNSH:-$USHgfs/fv3gfs_downstream_nems.sh}
-export GFSDWNSH=${GFSDWNSH:-$USHgfs/fv3gfs_dwn_nems.sh}
-export TRIMRH=${TRIMRH:-$USHgfs/trim_rh.sh}
-export MODICEC=${MODICEC:-$USHgfs/mod_icec.sh}
+export GFSDOWNSH=${GFSDOWNSH:-${USHgfs}/fv3gfs_downstream_nems.sh}
+export GFSDWNSH=${GFSDWNSH:-${USHgfs}/fv3gfs_dwn_nems.sh}
+export TRIMRH=${TRIMRH:-${USHgfs}/trim_rh.sh}
+export MODICEC=${MODICEC:-${USHgfs}/mod_icec.sh}
 export INLINE_POST=${INLINE_POST:-".false."}
 
 ############################################################
@@ -52,8 +53,8 @@ export OUTTYP=${OUTTYP:-4}
 export OUTPUT_FILE=${OUTPUT_FILE:-"nemsio"}
 export TCYC=${TCYC:-".t${cyc}z."}
 export PREFIX=${PREFIX:-${RUN}${TCYC}}
-if [ $OUTTYP -eq 4 ] ; then
-  if [ $OUTPUT_FILE = "netcdf" ]; then
+if (( OUTTYP == 4 )) ; then
+  if [ "${OUTPUT_FILE}" = "netcdf" ]; then
     export SUFFIX=".nc"
   else
     export SUFFIX=".nemsio"
@@ -77,19 +78,19 @@ export IDRT=${IDRT:-0} # IDRT=0 is setting for outputting grib files on lat/lon 
 # Post Analysis Files before starting the Forecast Post
 ############################################################
 # Chuang: modify to process analysis when post_times is 00
-export stime=$(echo $post_times | cut -c1-3)
-if [ $OUTTYP -eq 4 ] ; then
-  export loganl=$COMIN/${PREFIX}atmanl${SUFFIX}
+export stime="$(echo ${post_times:?} | cut -c1-3)"
+if (( OUTTYP == 4 )) ; then
+  export loganl="${COMIN:?}/${PREFIX}atmanl${SUFFIX}"
 else
-  export loganl=$COMIN/${PREFIX}sanl
+  export loganl="${COMIN:?}/${PREFIX}sanl"
 fi
 
-if [ ${stime} = "anl" ]; then
-  if [ -f $loganl ]; then
+if [ "${stime}" = "anl" ]; then
+  if [ -f "${loganl}" ]; then
     # add new environmental variables for running new ncep post
     # Validation date
 
-    export VDATE=${PDY}${cyc}
+    export VDATE=${PDY:?}${cyc}
 
     # set outtyp to 1 because we need to run chgres in the post before model start running chgres
     # otherwise set to 0, then chgres will not be executed in global_nceppost.sh
@@ -100,68 +101,68 @@ if [ ${stime} = "anl" ]; then
     # if model already runs gfs io, make sure GFSOUT is linked to the gfsio file
     # new imported variable for global_nceppost.sh
 
-    export GFSOUT=${RUN}.${cycle}.gfsioanl
+    export GFSOUT=${RUN}.${cycle:?}.gfsioanl
 
     # specify smaller control file for GDAS because GDAS does not
     # produce flux file, the default will be /nwprod/parm/gfs_cntrl.parm
 
-    if [ $GRIBVERSION = 'grib2' ]; then
+    if [ "${GRIBVERSION:?}" = 'grib2' ]; then
       export POSTGRB2TBL=${POSTGRB2TBL:-${g2tmpl_ROOT}/share/params_grib2_tbl_new}
-      export PostFlatFile=${PostFlatFile:-$PARMpost/postxconfig-NT-GFS-ANL.txt}
-      export CTLFILE=$PARMpost/postcntrl_gfs_anl.xml
+      export PostFlatFile=${PostFlatFile:-${PARMpost}/postxconfig-NT-GFS-ANL.txt}
+      export CTLFILE=${PARMpost}/postcntrl_gfs_anl.xml
     fi
 
     [[ -f flxfile ]] && rm flxfile ; [[ -f nemsfile ]] && rm nemsfile
-    if [ $OUTTYP -eq 4 ] ; then
-      ln -fs $COMIN/${PREFIX}atmanl${SUFFIX} nemsfile
+    if (( OUTTYP == 4 )) ; then
+      ln -fs "${COMIN}/${PREFIX}atmanl${SUFFIX}" nemsfile
       export NEMSINP=nemsfile
-      ln -fs $COMIN/${PREFIX}sfcanl${SUFFIX} flxfile
+      ln -fs "${COMIN}/${PREFIX}sfcanl${SUFFIX}" flxfile
       export FLXINP=flxfile
     fi
     export PGBOUT=pgbfile
     export PGIOUT=pgifile
     export PGBOUT2=pgbfile.grib2
     export PGIOUT2=pgifile.grib2.idx
-    export IGEN=$IGEN_ANL
+    export IGEN="${IGEN_ANL:?}"
     export FILTER=0
 
     # specify fhr even for analysis because postgp uses it
     #  export fhr=00
 
-    $POSTGPSH
+    ${POSTGPSH}
     export err=$?; err_chk
 
 
-    if [ $GRIBVERSION = 'grib2' ]; then
-      mv $PGBOUT $PGBOUT2
+    if [ "${GRIBVERSION}" = 'grib2' ]; then
+      mv "${PGBOUT}" "${PGBOUT2}"
 
       #Proces pgb files
       export FH=-1
       export downset=${downset:-1}
-      $GFSDOWNSH
+      ${GFSDOWNSH}
       export err=$?; err_chk
 
       export fhr3=anl
     fi
 
-    if [ $SENDCOM = 'YES' ]; then
+    if [ "${SENDCOM:-YES}" = 'YES' ]; then
       export fhr3=anl
-      if [ $GRIBVERSION = 'grib2' ]; then
+      if [ "${GRIBVERSION}" = 'grib2' ]; then
         MASTERANL=${PREFIX}master.grb2${fhr3}
         ##########XXW Accord to Boi, fortran index should use *if${fhr}, wgrib index use .idx
         #MASTERANLIDX=${RUN}.${cycle}.master.grb2${fhr3}.idx
         MASTERANLIDX=${PREFIX}master.grb2i${fhr3}
-        cp $PGBOUT2  $COMOUT/${MASTERANL}
-        $GRB2INDEX $PGBOUT2 $COMOUT/${MASTERANLIDX}
+        cp "${PGBOUT2}" "${COMOUT:?}/${MASTERANL}"
+        ${GRB2INDEX:?} "${PGBOUT2}" "${COMOUT}/${MASTERANLIDX}"
       fi
 
-      if [ $SENDDBN = 'YES' ]; then
-        run=$(echo $RUN | tr '[a-z]' '[A-Z]')
-        if [ $GRIBVERSION = 'grib2' ]; then
-          $DBNROOT/bin/dbn_alert MODEL ${run}_MSC_sfcanl $job $COMOUT/${PREFIX}sfc${fhr3}${SUFFIX}
-          $DBNROOT/bin/dbn_alert MODEL ${run}_SA $job $COMIN/${PREFIX}atm${fhr3}${SUFFIX}
-          $DBNROOT/bin/dbn_alert MODEL GDAS_PGA_GB2 $job $COMOUT/${PREFIX}pgrb2.1p00.${fhr3}
-          $DBNROOT/bin/dbn_alert MODEL GDAS_PGA_GB2_WIDX $job $COMOUT/${PREFIX}pgrb2.1p00.${fhr3}.idx
+      if [ "${SENDDBN:-YES}" = 'YES' ]; then
+        run=$(echo ${RUN} | tr 'a-z' 'A-Z')
+        if [ "${GRIBVERSION}" = 'grib2' ]; then
+          "${DBNROOT:?}/bin/dbn_alert" MODEL "${run}_MSC_sfcanl" "${job:?}" "${COMOUT}/${PREFIX}sfc${fhr3}${SUFFIX}"
+          "${DBNROOT:?}/bin/dbn_alert" MODEL "${run}_SA" "${job:?}" "${COMIN}/${PREFIX}atm${fhr3}${SUFFIX}"
+          "${DBNROOT:?}/bin/dbn_alert" MODEL "GDAS_PGA_GB2" "${job:?}" "${COMOUT}/${PREFIX}pgrb2.1p00.${fhr3}"
+          "${DBNROOT:?}/bin/dbn_alert" MODEL "GDAS_PGA_GB2_WIDX" "${job:?}" "${COMOUT}/${PREFIX}pgrb2.1p00.${fhr3}.idx"
         fi
       fi
     fi
@@ -173,32 +174,32 @@ if [ ${stime} = "anl" ]; then
     err_chk
   fi
 else   ## not_anl if_stimes
-  SLEEP_LOOP_MAX=$(expr $SLEEP_TIME / $SLEEP_INT)
+  SLEEP_LOOP_MAX=$(( ${SLEEP_TIME:?} / ${SLEEP_INT:?} ))
 
   ############################################################
   # Loop Through the Post Forecast Files
   ############################################################
 
-  for fhr in $post_times; do
+  for fhr in ${post_times}; do
     ###############################
     # Start Looping for the
     # existence of the restart files
     ###############################
     export pgm="postcheck"
     ic=1
-    while [ $ic -le $SLEEP_LOOP_MAX ]; do
-      if [ -f ${restart_file}${fhr}.txt ]; then
+    while (( ic <= SLEEP_LOOP_MAX )); do
+      if [ -f "${restart_file:?}${fhr}.txt" ]; then
         break
       else
-        ic=$(expr $ic + 1)
-        sleep $SLEEP_INT
+        ic=$(( ic + 1 ))
+        sleep "${SLEEP_INT}"
       fi
       ###############################
       # If we reach this point assume
       # fcst job never reached restart
       # period and error exit
       ###############################
-      if [ $ic -eq $SLEEP_LOOP_MAX ]; then
+      if (( ic == SLEEP_LOOP_MAX )); then
         echo " *** FATAL ERROR: No model output in nemsio for f${fhr} "
         export err=9
         err_chk
@@ -211,51 +212,51 @@ else   ## not_anl if_stimes
     ###############################
     [[ -f flxfile ]] && rm flxfile
     [[ -f nemsfile ]] && rm nemsfile
-    if [ $OUTTYP -eq 4 ] ; then
-      ln -sf $COMIN/${PREFIX}atmf$fhr${SUFFIX} nemsfile
+    if (( OUTTYP == 4 )) ; then
+      ln -sf "${COMIN}/${PREFIX}atmf$fhr${SUFFIX}" nemsfile
       export NEMSINP=nemsfile
-      ln -sf $COMIN/${PREFIX}sfcf$fhr${SUFFIX} flxfile
+      ln -sf "${COMIN}/${PREFIX}sfcf$fhr${SUFFIX}" flxfile
       export FLXINP=flxfile
     fi
 
-    if [ $fhr -gt 0 ]; then
-      export IGEN=$IGEN_FCST
+    if (( fhr > 0 )); then
+      export IGEN=${IGEN_FCST:?}
     else
-      export IGEN=$IGEN_ANL
+      export IGEN=${IGEN_ANL:?}
     fi
 
     # add new environmental variables for running new ncep post
     # Validation date
 
-    export VDATE=$(${NDATE} +${fhr} ${PDY}${cyc})
+    export VDATE="$(${NDATE:?} "+${fhr}" "${PDY}${cyc}")"
 
     # set to 3 to output lat/lon grid
 
     export OUTTYP=${OUTTYP:-4}
 
-    if [ $GRIBVERSION = 'grib2' ]; then
-      export POSTGRB2TBL=${POSTGRB2TBL:-${g2tmpl_ROOT}/share/params_grib2_tbl_new}
-      export PostFlatFile=$PARMpost/postxconfig-NT-GFS.txt
-      if [ $RUN = gfs ]; then
-        export IGEN=$IGEN_GFS
-        if [ $fhr -gt 0 ]; then export IGEN=$IGEN_FCST ; fi
+    if [ "${GRIBVERSION}" = 'grib2' ]; then
+      export POSTGRB2TBL="${POSTGRB2TBL:-${g2tmpl_ROOT}/share/params_grib2_tbl_new}"
+      export PostFlatFile="${PARMpost}/postxconfig-NT-GFS.txt"
+      if [ "${RUN}" = gfs ]; then
+        export IGEN="${IGEN_GFS:?}"
+        if (( fhr > 0 )); then export IGEN="${IGEN_FCST}" ; fi
       else
-        export IGEN=$IGEN_GDAS_ANL
-        if [ $fhr -gt 0 ]; then export IGEN=$IGEN_FCST ; fi
+        export IGEN="${IGEN_GDAS_ANL:?}"
+        if (( fhr > 0 )); then export IGEN="${IGEN_FCST}" ; fi
       fi
-      if [[ $RUN = gfs ]]; then
-        if [ $fhr -eq 0 ]; then
-          export PostFlatFile=$PARMpost/postxconfig-NT-GFS-F00.txt
-          export CTLFILE=$PARMpost/postcntrl_gfs_f00.xml
+      if [[ "${RUN}" = gfs ]]; then
+        if (( fhr == 0 )); then
+          export PostFlatFile="${PARMpost}/postxconfig-NT-GFS-F00.txt"
+          export CTLFILE="${PARMpost}/postcntrl_gfs_f00.xml"
         else
-          export CTLFILE=${CTLFILEGFS:-$PARMpost/postcntrl_gfs.xml}
+          export CTLFILE="${CTLFILEGFS:-${PARMpost}/postcntrl_gfs.xml}"
         fi
       else
-        if [ $fhr -eq 0 ]; then
-          export PostFlatFile=$PARMpost/postxconfig-NT-GFS-F00.txt
-          export CTLFILE=${CTLFILEGFS:-$PARMpost/postcntrl_gfs_f00.xml}
+        if (( fhr == 0 )); then
+          export PostFlatFile="${PARMpost}/postxconfig-NT-GFS-F00.txt"
+          export CTLFILE="${CTLFILEGFS:-${PARMpost}/postcntrl_gfs_f00.xml}"
         else
-          export CTLFILE=${CTLFILEGFS:-$PARMpost/postcntrl_gfs.xml}
+          export CTLFILE="${CTLFILEGFS:-${PARMpost}/postcntrl_gfs.xml}"
         fi
       fi
     fi
@@ -266,77 +267,77 @@ else   ## not_anl if_stimes
     export PGBOUT2=pgbfile.grib2
     export PGIOUT2=pgifile.grib2.idx
     export FILTER=0
-    export fhr3=$fhr
-    if [ $GRIBVERSION = 'grib2' ]; then
+    export fhr3=${fhr}
+    if [ "${GRIBVERSION}" = 'grib2' ]; then
       MASTERFHR=${PREFIX}master.grb2f${fhr}
       MASTERFHRIDX=${PREFIX}master.grb2if${fhr}
     fi
 
-    if [ $INLINE_POST = ".false." ]; then
-      $POSTGPSH
+    if [ "${INLINE_POST}" = ".false." ]; then
+      ${POSTGPSH}
     else
-      cp $COMOUT/${MASTERFHR} $PGBOUT
+      cp "${COMOUT}/${MASTERFHR}" "${PGBOUT}"
     fi
     export err=$?; err_chk
 
-    if [ $GRIBVERSION = 'grib2' ]; then
-      mv $PGBOUT $PGBOUT2
+    if [ "${GRIBVERSION}" = 'grib2' ]; then
+      mv "${PGBOUT}" "${PGBOUT2}"
     fi
 
     #wm Process pgb files
-    export FH=$(expr $fhr + 0)
+    export FH=$(( fhr + 0 ))
     export downset=${downset:-1}
-    $GFSDOWNSH
+    ${GFSDOWNSH}
     export err=$?; err_chk
 
-    if [ $SENDDBN = YES ]; then
-      run=$(echo $RUN | tr '[a-z]' '[A-Z]')
-      $DBNROOT/bin/dbn_alert MODEL ${run}_PGB2_0P25 $job $COMOUT/${PREFIX}pgrb2.0p25.f${fhr}
-      $DBNROOT/bin/dbn_alert MODEL ${run}_PGB2_0P25_WIDX $job $COMOUT/${PREFIX}pgrb2.0p25.f${fhr}.idx
-      $DBNROOT/bin/dbn_alert MODEL ${run}_PGB_GB2 $job $COMOUT/${PREFIX}pgrb2.1p00.f${fhr}
-      $DBNROOT/bin/dbn_alert MODEL ${run}_PGB_GB2_WIDX $job $COMOUT/${PREFIX}pgrb2.1p00.f${fhr}.idx
+    if [ "${SENDDBN}" = YES ]; then
+      run=$(echo ${RUN} | tr 'a-z' 'A-Z')
+      "${DBNROOT}/bin/dbn_alert" MODEL "${run}_PGB2_0P25" "${job}" "${COMOUT}/${PREFIX}pgrb2.0p25.f${fhr}"
+      "${DBNROOT}/bin/dbn_alert" MODEL "${run}_PGB2_0P25_WIDX ""${job}" "${COMOUT}/${PREFIX}pgrb2.0p25.f${fhr}.idx"
+      "${DBNROOT}/bin/dbn_alert" MODEL "${run}_PGB_GB2" "${job}" "${COMOUT}/${PREFIX}pgrb2.1p00.f${fhr}"
+      "${DBNROOT}/bin/dbn_alert" MODEL "${run}_PGB_GB2_WIDX" "${job}" "${COMOUT}/${PREFIX}pgrb2.1p00.f${fhr}.idx"
     fi
 
 
-    if [ $SENDCOM = 'YES' ]; then
-      if [ $GRIBVERSION = 'grib2' ] ; then
-        if [ $INLINE_POST = ".false." ]; then
-          cp $PGBOUT2 $COMOUT/${MASTERFHR}
+    if [ "${SENDCOM}" = 'YES' ]; then
+      if [ "${GRIBVERSION}" = 'grib2' ] ; then
+        if [ "${INLINE_POST}" = ".false." ]; then
+          cp "${PGBOUT2}" "${COMOUT}/${MASTERFHR}"
         fi
-        $GRB2INDEX $PGBOUT2 $COMOUT/${MASTERFHRIDX}
+        ${GRB2INDEX} "${PGBOUT2}" "${COMOUT}/${MASTERFHRIDX}"
       fi
 
       # Model generated flux files will be in nemsio after FY17 upgrade
       # use post to generate Grib2 flux files
 
-      if [ $OUTTYP -eq 4 ] ; then
-        export NEMSINP=$COMIN/${PREFIX}atmf${fhr}${SUFFIX}
-        export FLXINP=$COMIN/${PREFIX}sfcf${fhr}${SUFFIX}
-        if [ $fhr -eq 0 ]; then
-          export PostFlatFile=$PARMpost/postxconfig-NT-GFS-FLUX-F00.txt
-          export CTLFILE=$PARMpost/postcntrl_gfs_flux_f00.xml
+      if (( OUTTYP == 4 )) ; then
+        export NEMSINP=${COMIN}/${PREFIX}atmf${fhr}${SUFFIX}
+        export FLXINP=${COMIN}/${PREFIX}sfcf${fhr}${SUFFIX}
+        if (( fhr == 0 )); then
+          export PostFlatFile=${PARMpost}/postxconfig-NT-GFS-FLUX-F00.txt
+          export CTLFILE=${PARMpost}/postcntrl_gfs_flux_f00.xml
         else
-          export PostFlatFile=$PARMpost/postxconfig-NT-GFS-FLUX.txt
-          export CTLFILE=$PARMpost/postcntrl_gfs_flux.xml
+          export PostFlatFile=${PARMpost}/postxconfig-NT-GFS-FLUX.txt
+          export CTLFILE=${PARMpost}/postcntrl_gfs_flux.xml
         fi
         export PGBOUT=fluxfile
         export FILTER=0
         FLUXFL=${PREFIX}sfluxgrbf${fhr}.grib2
         FLUXFLIDX=${PREFIX}sfluxgrbf${fhr}.grib2.idx
 
-        if [ $INLINE_POST = ".false." ]; then
-          $POSTGPSH
+        if [ "${INLINE_POST}" = ".false." ]; then
+          ${POSTGPSH}
           export err=$?; err_chk
-          mv fluxfile $COMOUT/${FLUXFL}
+          mv fluxfile "${COMOUT}/${FLUXFL}"
         fi
-        $WGRIB2 -s $COMOUT/${FLUXFL} > $COMOUT/${FLUXFLIDX}
+        ${WGRIB2:?} -s "${COMOUT}/${FLUXFL}" > "${COMOUT}/${FLUXFLIDX}"
       fi
 
-      if [ "$SENDDBN" = 'YES' -a  \( "$RUN" = 'gdas' \) -a $(expr $fhr % 3) -eq 0 ]; then
-        $DBNROOT/bin/dbn_alert MODEL ${run}_SF $job $COMOUT/${PREFIX}atmf${fhr}${SUFFIX}
-        $DBNROOT/bin/dbn_alert MODEL ${run}_BF $job $COMOUT/${PREFIX}sfcf${fhr}${SUFFIX}
-        $DBNROOT/bin/dbn_alert MODEL ${run}_SGB_GB2 $job $COMOUT/${PREFIX}sfluxgrbf${fhr}.grib2
-        $DBNROOT/bin/dbn_alert MODEL ${run}_SGB_GB2_WIDX $job $COMOUT/${PREFIX}sfluxgrbf${fhr}.grib2.idx
+      if [ "${SENDDBN}" = 'YES' ] -a [ "${RUN}" = 'gdas' ] -a (( fhr % 3 == 0 )); then
+        "${DBNROOT}/bin/dbn_alert" MODEL "${run}_SF" "${job}" "${COMOUT}/${PREFIX}atmf${fhr}${SUFFIX}"
+        "${DBNROOT}/bin/dbn_alert" MODEL "${run}_BF" "${job}" "${COMOUT}/${PREFIX}sfcf${fhr}${SUFFIX}"
+        "${DBNROOT}/bin/dbn_alert" MODEL "${run}_SGB_GB2" "${job}" "${COMOUT}/${PREFIX}sfluxgrbf${fhr}.grib2"
+        "${DBNROOT}/bin/dbn_alert" MODEL "${run}_SGB_GB2_WIDX ""${job}" "${COMOUT}/${PREFIX}sfluxgrbf${fhr}.grib2.idx"
       fi
     fi
 
