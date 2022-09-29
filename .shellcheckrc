@@ -5,3 +5,9 @@ external-sources=false
 
 # Disable variable referenced but not assigned
 disable=SC2154
+
+# Disable following non-constant source
+disable=SC1090
+
+# Disable non-existent binary
+disable=SC1091
