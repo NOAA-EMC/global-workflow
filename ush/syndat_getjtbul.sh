@@ -33,17 +33,8 @@ EXECSYND=${EXECSYND:-${HOMESYND}/exec}
 cd $DATA
 
 if [ "$#" -ne '1' ]; then
-   msg="**NON-FATAL ERROR PROGRAM  SYNDAT_GETJTBUL  run date not in \
+   echo "**NON-FATAL ERROR PROGRAM  SYNDAT_GETJTBUL  run date not in \
 positional parameter 1"
-   set +x
-   echo
-   echo $msg
-   echo
-   ${TRACE_ON:-set -x}
-   echo $msg >> $pgmout
-   set +u
-   [ -n "$jlogfile" ]  &&  postmsg "$jlogfile" "$msg"
-   set -u
 
 echo "Leaving sub-shell syndat_getjtbul.sh to recover JTWC Bulletins" \
  >> $pgmout
@@ -124,11 +115,8 @@ fi
 perl -wpi.ORIG -e 's/(^.... ... )(\S{9,9})(\S{1,})/$1$2/' jtwcbul
 diff jtwcbul.ORIG jtwcbul > jtwcbul_changes.txt
 if [ -s jtwcbul_changes.txt ]; then
-  msg="***WARNING:  SOME JTWC VITALS SEGMENTS REQUIRED PRELIMINARY MODIFICATION!"
-  [ -n "$jlogfile" ] && postmsg "$jlogfile" "$msg"
-  echo -e "\n${msg}.  Changes follow:" >> $pgmout
-  cat jtwcbul_changes.txt >> $pgmout
-  echo -e "\n" >> $pgmout
+  echo "***WARNING:  SOME JTWC VITALS SEGMENTS REQUIRED PRELIMINARY MODIFICATION!"
+  cat jtwcbul_changes.txt
 fi
 
 # Execute bulletin processing
@@ -175,30 +163,12 @@ available for qctropcy for $CDATE10"
         fi
       fi
    else
-      msg="**NON-FATAL ERROR PROGRAM  SYNDAT_GETJTBUL  FOR $CDATE10 \
+      echo "**NON-FATAL ERROR PROGRAM  SYNDAT_GETJTBUL  FOR $CDATE10 \
 RETURN CODE $errget"
    fi
-   set +x
-   echo
-   echo $msg
-   echo
-   ${TRACE_ON:-set -x}
-   echo $msg >> $pgmout
-   set +u
-   [ -n "$jlogfile" ] && postmsg "$jlogfile" "$msg"
-   set -u
 else
-   msg="program  SYNDAT_GETJTBUL  completed normally for $CDATE10, JTWC \
+   echo "program  SYNDAT_GETJTBUL  completed normally for $CDATE10, JTWC \
 rec. passed to qctropcy"
-   set +x
-   echo
-   echo $msg
-   echo
-   ${TRACE_ON:-set -x}
-   echo $msg >> $pgmout
-   set +u
-   [ -n "$jlogfile" ] && postmsg "$jlogfile" "$msg"
-   set -u
 fi
 set +x
 echo

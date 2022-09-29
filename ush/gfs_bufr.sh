@@ -114,4 +114,11 @@ ln -sf $PARMbufrsnd/bufr_ij13km.txt fort.7
 ${APRUN_POSTSND} $EXECbufrsnd/gfs_bufr < gfsparm > out_gfs_bufr_$FEND
 export err=$?
 
+if [ $err -ne 0 ]; then
+   echo "GFS postsnd job error, Please check files "
+   echo $COMIN/${RUN}.${cycle}.atmf${hh2}.${atmfm}
+   echo $COMIN/${RUN}.${cycle}.sfcf${hh2}.${atmfm}
+   err_chk
+fi
+
 exit ${err}

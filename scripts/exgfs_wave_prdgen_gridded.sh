@@ -42,9 +42,7 @@ source "$HOMEgfs/ush/preamble.sh"
  cd $DATA
  export wavelog=${DATA}/${COMPONENTwave}_prdggridded.log
  
- postmsg "$jlogfile" "HAS BEGUN on $(hostname)"
- msg="Starting MWW3 GRIDDED PRODUCTS SCRIPT"
- postmsg "$jlogfile" "$msg"
+ echo "Starting MWW3 GRIDDED PRODUCTS SCRIPT"
 # Output grids
  grids=${grids:-ao_9km at_10m ep_10m wc_10m glo_30m}
 # grids=${grids:-ak_10m at_10m ep_10m wc_10m glo_30m}
@@ -112,8 +110,7 @@ source "$HOMEgfs/ush/preamble.sh"
          sleep 5
        fi
        if [ $icnt -ge $maxtries ]; then
-         msg="ABNORMAL EXIT: NO GRIB FILE FOR GRID $GRIBIN"
-         postmsg "$jlogfile" "$msg"
+         echo "ABNORMAL EXIT: NO GRIB FILE FOR GRID $GRIBIN"
          echo ' '
          echo '**************************** '
          echo '*** ERROR : NO GRIB FILE *** '
@@ -188,8 +185,7 @@ source "$HOMEgfs/ush/preamble.sh"
 
      if [ "$OK" != '0' ]
      then
-       msg="ABNORMAL EXIT: ERROR IN grb2index MWW3 for grid $grdID"
-       postmsg "$jlogfile" "$msg"
+       echo "ABNORMAL EXIT: ERROR IN grb2index MWW3 for grid $grdID"
        #set +x
        echo ' '
        echo '******************************************** '
@@ -218,8 +214,7 @@ source "$HOMEgfs/ush/preamble.sh"
      OK=$?
      if [ "$OK" != '0' ]; then
        cat tocgrib2.out
-       msg="ABNORMAL EXIT: ERROR IN tocgrib2"
-       postmsg "$jlogfile" "$msg"
+       echo "ABNORMAL EXIT: ERROR IN tocgrib2"
        #set +x
        echo ' '
        echo '*************************************** '

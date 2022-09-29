@@ -83,8 +83,7 @@ while [ $fhcnt -le $FHMAX_WAV ]; do
         sleep 20
       fi
       if [ $icnt -ge $maxtries ]; then
-        msg="ABORTING after 5 minutes of waiting for $GRIBIN."
-        postmsg "$jlogfile" "$msg"
+        echo "ABORTING after 5 minutes of waiting for $GRIBIN."
         echo ' '
         echo '**************************** '
         echo '*** ERROR : NO GRIB FILE *** '
@@ -103,8 +102,7 @@ while [ $fhcnt -le $FHMAX_WAV ]; do
                                           $GRIBIN 1> out 2>&1
       OK=$?
       if [ "$OK" != '0' ]; then 
-        msg="ABNORMAL EXIT: ERROR IN interpolation the global grid"
-        postmsg "$jlogfile" "$msg"
+        echo "ABNORMAL EXIT: ERROR IN interpolation the global grid"
         #set +x
         echo ' '
         echo '************************************************************* '

@@ -13,11 +13,11 @@
 source "$HOMEgfs/ush/preamble.sh" "${2}"
 
 cd $DATA
-RUN=$1
+RUN2=$1
 fend=$2
 DBN_ALERT_TYPE=$3
 
-DATA_RUN=$DATA/$RUN
+DATA_RUN=$DATA/$RUN2
 mkdir -p $DATA_RUN
 cd $DATA_RUN
 
@@ -75,22 +75,18 @@ while [ $fhcnt -le $fend ] ; do
 
   fhr3=$(printf "%03d" $fhcnt)
 
-  GEMGRD=${RUN}_${PDY}${cyc}f${fhr3}
+  GEMGRD=${RUN2}_${PDY}${cyc}f${fhr3}
 
-  if [ $RUN = "gdas_0p25" ]; then 
+  if [ $RUN2 = "gdas_0p25" ]; then
     export GRIBIN=$COMIN/${model}.${cycle}.pgrb2.0p25.f${fhr}
     if [ ! -f $GRIBIN ] ; then
        echo "WARNING: $GRIBIN FILE is missing"
-       msg=" $GRIBIN file is missing "
-       postmsg "$jlogfile" "$msg"
     fi
     GRIBIN_chk=$COMIN/${model}.${cycle}.pgrb2.0p25.f${fhr}.idx
   else
     export GRIBIN=$COMIN/${model}.${cycle}.pgrb2.1p00.f${fhr}
     if [ ! -f $GRIBIN ] ; then
        echo "WARNING: $GRIBIN FILE is missing"
-       msg=" $GRIBIN file is missing "
-       postmsg "$jlogfile" "$msg"
     fi
     GRIBIN_chk=$COMIN/${model}.${cycle}.pgrb2.1p00.f${fhr}.idx
   fi
@@ -102,15 +98,13 @@ while [ $fhcnt -le $fend ] ; do
       sleep 5
       break
     else
-      msg="The process is waiting ... ${GRIBIN_chk} file to proceed."
-      postmsg "${jlogfile}" "$msg"
+      echo "The process is waiting ... ${GRIBIN_chk} file to proceed."
       sleep 20
       let "icnt=icnt+1"
     fi
     if [ $icnt -ge $maxtries ]
     then
-      msg="ABORTING: after 1 hour of waiting for ${GRIBIN_chk} file at F$fhr to end."
-      postmsg "${jlogfile}" "$msg"
+      echo "ABORTING: after 1 hour of waiting for ${GRIBIN_chk} file at F$fhr to end."
       export err=7 ; err_chk
       exit $err
     fi

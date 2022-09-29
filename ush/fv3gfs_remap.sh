@@ -13,8 +13,7 @@ export GG=${master_grid:-"0p25deg"}   # 1deg 0p5deg 0p25deg 0p125deg
 
 pwd=$(pwd)
 export DATA=${DATA:-$pwd}
-export NWPROD=${NWPROD:-$pwd}
-export HOMEgfs=${HOMEgfs:-$NWPROD}
+export HOMEgfs=${HOMEgfs:-$PACKAGEROOT}
 export FIX_DIR=${FIX_DIR:-$HOMEgfs/fix}
 export FIXfv3=${FIXfv3:-$FIX_DIR/fix_fv3_gmted2010}
 export REMAPEXE=${REMAPEXE:-$HOMEgfs/exec/fregrid_parallel}
