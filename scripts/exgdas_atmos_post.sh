@@ -228,7 +228,10 @@ else   ## not_anl if_stimes
     # add new environmental variables for running new ncep post
     # Validation date
 
+    # No shellcheck, NDATE is not a typo
+    # shellcheck disable=SC2153
     VDATE="$(${NDATE} "+${fhr}" "${PDY}${cyc}")"
+    # shellcheck disable=
     export VDATE
 
     # set to 3 to output lat/lon grid

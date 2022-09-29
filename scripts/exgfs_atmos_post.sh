@@ -280,7 +280,10 @@ else   ## not_anl if_stime
       export IGEN=${IGEN_ANL}
     fi
 
+    # No shellcheck, NDATE is not a typo
+    # shellcheck disable=SC2153
     VDATE="$(${NDATE} "+${fhr}" "${PDY}${cyc}")"
+    # shellcheck disable=
     export VDATE
     export OUTTYP=${OUTTYP:-4}
     export GFSOUT="${PREFIX}gfsio${fhr}"
