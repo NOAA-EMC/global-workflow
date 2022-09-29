@@ -280,7 +280,7 @@ else   ## not_anl if_stime
       export IGEN=${IGEN_ANL}
     fi
 
-    VDATE="$(${NDATE} +${fhr} "${PDY}${cyc}")"
+    VDATE="$(${NDATE} "+${fhr}" "${PDY}${cyc}")"
     export VDATE
     export OUTTYP=${OUTTYP:-4}
     export GFSOUT="${PREFIX}gfsio${fhr}"
