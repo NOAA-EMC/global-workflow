@@ -38,7 +38,7 @@ export FIXreg2grb2=$HOMEgfs/fix/fix_reg2grb2
 # GLOBAL static environment parameters
 export PACKAGEROOT="@PACKAGEROOT@"
 export COMROOT="@COMROOT@"
-export COMINsyn="@COMINsyn"
+export COMINsyn="@COMINsyn@"
 export DMPDIR="@DMPDIR@"
 export RTMFIX=$CRTM_FIX
 
