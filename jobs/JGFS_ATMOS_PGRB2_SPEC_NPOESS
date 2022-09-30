@@ -24,13 +24,12 @@ export cycle=${cycle:-t${cyc}z}
 # Run setpdy and initialize PDY variables
 ###########################################
 setpdy.sh
-. PDY
-
+. ./PDY
 
 ################################
 # Set up the HOME directory
 ################################
-export HOMEgfs=${HOMEgfs:-${NWROOT}/gfs.${gfs_ver}}
+export HOMEgfs=${HOMEgfs:-${PACKAGEROOT}/gfs.${gfs_ver}}
 export USHgfs=${USHgfs:-$HOMEgfs/ush}
 export EXECgfs=${EXECgfs:-$HOMEgfs/exec}
 export PARMgfs=${PARMgfs:-$HOMEgfs/parm}
@@ -50,8 +49,8 @@ export COMPONENT=${COMPONENT:-atmos}
 ##############################################
 # Define COM directories
 ##############################################
-export COMIN=${COMIN:-$(compath.py ${NET}/${envir}/${RUN}.${PDY})/${cyc}/$COMPONENT}
-export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/$COMPONENT}
+export COMIN=${COMIN:-$(compath.py ${envir}/${NET}/${gfs_ver})/${RUN}.${PDY}/${cyc}/$COMPONENT}
+export COMOUT=${COMOUT:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/$COMPONENT}
 export COMOUTwmo=${COMOUTwmo:-${COMOUT}/wmo}
 
 export SENDDBN=${SENDDBN:-NO}
@@ -106,11 +105,9 @@ then
       fi
       if test $recvy_shour -ge $FHOUR
       then
-         msg="Forecast Pgrb Generation Already Completed to $FHOUR"
-         postmsg "$jlogfile" "$msg"
+         echo="Forecast Pgrb Generation Already Completed to $FHOUR"
       else
-         msg="Starting: PDY=$PDY cycle=t${recvy_cyc}z SHOUR=$SHOUR      ."
-         postmsg "$jlogfile" "$msg"
+         echo="Starting: PDY=$PDY cycle=t${recvy_cyc}z SHOUR=$SHOUR      ."
       fi
    fi
 fi
