@@ -9,6 +9,7 @@ echo "BEGIN: config.prep"
 . $EXPDIR/config.resources prep
 
 export DO_MAKEPREPBUFR="YES"   # if NO, will copy prepbufr from globaldump
+export cdate10=${PDY}${cyc}
 
 # Relocation and syndata QC
 export PROCESS_TROPCY=${PROCESS_TROPCY:-NO}
