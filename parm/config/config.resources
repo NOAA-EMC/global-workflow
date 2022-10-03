@@ -273,6 +273,7 @@ elif [ $step = "gldas" ]; then
     export npe_gldas=112
     export nth_gldas=1
     export npe_node_gldas=$npe_gldas
+    if [[ "$npe_node_gldas" -gt "$npe_node_max" ]]; then export npe_node_gldas=$npe_node_max ; fi
     export npe_gaussian=96
     export nth_gaussian=1
     export npe_node_gaussian=$(echo "$npe_node_max / $nth_gaussian" | bc)
