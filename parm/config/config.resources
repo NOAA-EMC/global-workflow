@@ -601,9 +601,12 @@ elif [ $step = "esfc" ]; then
 
     export wtime_esfc="00:06:00"
     export npe_esfc=80
-    export npe_node_esfc=$npe_node_max
+    export npe_node_esfc=$npe_esfc
+    if [[ "$npe_node_esfc" -gt "$npe_node_max" ]]; then export npe_node_esfc=$npe_node_max ; fi
     export nth_esfc=1
     export nth_cycle=$nth_esfc
+    export npe_node_cycle=$(echo "$npe_node_max / $nth_cycle" | bc)
+    export memory_esfc="80GB"
 
 elif [ $step = "efcs" ]; then
 
