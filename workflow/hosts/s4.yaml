@@ -1,5 +1,4 @@
 base_git: '/data/prod/glopara/git'
-base_svn: '/data/prod/glopara/svn'
 dmpdir: '/data/prod/glopara/dump'
 nwprod: '/data/prod/glopara/nwpara'
 comroot: '/data/prod/glopara/com'
