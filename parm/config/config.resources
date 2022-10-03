@@ -268,12 +268,12 @@ elif [ $step = "sfcanl" ]; then
 elif [ $step = "gldas" ]; then
 
     export wtime_gldas="00:10:00"
-    export npe_gldas=96
+    export npe_gldas=112
     export nth_gldas=1
-    export npe_node_gldas=$npe_node_max
+    export npe_node_gldas=$npe_gldas
     export npe_gaussian=96
     export nth_gaussian=1
-    export npe_node_gaussian=24
+    export npe_node_gaussian=$(echo "$npe_node_max / $nth_gaussian" | bc)
     export is_exclusive=True
 
 elif [ $step = "fcst" ]; then
