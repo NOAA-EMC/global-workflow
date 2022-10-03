@@ -124,7 +124,6 @@
 #                   -stdoutmode ordered"
 #     USHGETGES     String indicating directory path for GETGES utility ush
 #                   file
-#                   Default is "/nwprod/util/ush"
 #     USHRELO       String indicating directory path for RELOCATE ush files
 #                   Default is "${HOMERELO}/ush"
 #     EXECRELO      String indicating directory path for RELOCATE executables
@@ -158,8 +157,6 @@
 #      be used by the script.  If they are not, they will be skipped
 #      over by the script.
 #
-#     jlogfile      String indicating path to joblog file
-#
 #   Exported Shell Variables:
 #     CDATE10       String indicating the center date/time for the relocation
 #                   processing <yyyymmddhh>
@@ -183,9 +180,7 @@
 #                        $USHRELO/tropcy_relocate_extrkr.sh)
 #                  $DATA/err_chk (here and in child script
 #                        $USHRELO/tropcy_relocate_extrkr.sh)
-#        NOTE 1: postmsg above is required ONLY if "$jlogfile" is
-#                present.
-#        NOTE 2: The last three scripts above are NOT REQUIRED utilities.
+#          NOTE: The last three scripts above are NOT REQUIRED utilities.
 #                If $DATA/prep_step not found, a scaled down version of it is
 #                executed in-line.  If $DATA/err_exit or $DATA/err_chk are not
 #                found and a fatal error has occurred, then the script calling
@@ -216,7 +211,7 @@ source "$HOMEgfs/ush/preamble.sh"
 MACHINE=${MACHINE:-$(hostname -s | cut -c 1-3)}
 
 SENDCOM=${SENDCOM:-YES}
-export NWROOT=${NWROOT:-/nwprod2}
+export OPSROOT=${OPSROOT:-/lfs/h1/ops/prod}
 GRIBVERSION=${GRIBVERSION:-"grib2"}
 
 if [ ! -d $DATA ] ; then mkdir -p $DATA ;fi
@@ -284,13 +279,12 @@ ${TRACE_ON:-set -x}
 envir=${envir:-prod}
 
 if [ $MACHINE != sgi ]; then
-   HOMEALL=${HOMEALL:-$NWROOT}
+   HOMEALL=${HOMEALL:-$OPSROOT}
 else
    HOMEALL=${HOMEALL:-/disk1/users/snake/prepobs}
 fi
 
 HOMERELO=${HOMERELO:-${shared_global_home}}
-#HOMERELO=${HOMERELO:-$NWROOT/tropcy_qc_reloc.${tropcy_qc_reloc_ver}}
 
 envir_getges=${envir_getges:-$envir}
 if [ $modhr -eq 0 ]; then
@@ -327,11 +321,7 @@ GETTX=${GETTX:-$EXECRELO/gettrk}
 #  attempt to perform tropical cyclone relocation
 #  ----------------------------------------------
 
-msg="Attempt to perform tropical cyclone relocation for $CDATE10"
-set +u
-##[ -n "$jlogfile" ] && $DATA/postmsg "$jlogfile" "$msg"
-[ -n "$jlogfile" ] && postmsg "$jlogfile" "$msg"
-set -u
+echo "Attempt to perform tropical cyclone relocation for $CDATE10"
 
 if [ $modhr -ne 0 ]; then
 
@@ -524,11 +514,8 @@ grep "$pdy $cyc" VITL
 errgrep=$?
 > tcvitals
 if [ $errgrep -ne 0 ] ; then
-   msg="NO TCVITAL RECORDS FOUND FOR $CDATE10 - EXIT TROPICAL CYCLONE \
+   echo "NO TCVITAL RECORDS FOUND FOR $CDATE10 - EXIT TROPICAL CYCLONE \
 RELOCATION PROCESSING"
-   set +u
-   [ -n "$jlogfile" ] && postmsg "$jlogfile" "$msg"
-   set -u
 
 # The existence of ${COMSP}tropcy_relocation_status.$tmmark file will tell the
 #  subsequent PREP processing that RELOCATION processing occurred, echo
@@ -727,11 +714,8 @@ else
 
    rm ${COMSP}sgesprep_pathname.$tmmark
 
-   msg="TROPICAL CYCLONE RELOCATION PROCESSING SUCCESSFULLY COMPLETED FOR \
+   echo "TROPICAL CYCLONE RELOCATION PROCESSING SUCCESSFULLY COMPLETED FOR \
 $CDATE10"
-   set +u
-   [ -n "$jlogfile" ] && postmsg "$jlogfile" "$msg"
-   set -u
 
 # end GFDL ges manipulation
 # -------------------------

@@ -94,7 +94,6 @@ if [ $VRFYFITS = "YES" -a $CDUMP = $CDFNL -a $CDATE != $SDATE ]; then
 
     xdate=$($NDATE -${VBACKUP_FITS} $CDATE)
 
-
     export RUN_ENVIR_SAVE=$RUN_ENVIR
     export RUN_ENVIR=$OUTPUT_FILE
 
@@ -112,7 +111,6 @@ if [ $VRFYRAD = "YES" -a $CDUMP = $CDFNL -a $CDATE != $SDATE ]; then
 
     export EXP=$PSLOT
     export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc/$COMPONENT"
-    export jlogfile="$ROTDIR/logs/$CDATE/${CDUMP}radmon.log"
     export TANKverf_rad="$TANKverf/stats/$PSLOT/$CDUMP.$PDY"
     export TANKverf_radM1="$TANKverf/stats/$PSLOT/$CDUMP.$PDYm1"
     export MY_MACHINE=$machine
@@ -129,7 +127,6 @@ if [ $VRFYOZN = "YES" -a $CDUMP = $CDFNL -a $CDATE != $SDATE ]; then
 
     export EXP=$PSLOT
     export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc/$COMPONENT"
-    export jlogfile="$ROTDIR/logs/$CDATE/${CDUMP}oznmon.log"
     export TANKverf_ozn="$TANKverf_ozn/stats/$PSLOT/$CDUMP.$PDY"
     export TANKverf_oznM1="$TANKverf_ozn/stats/$PSLOT/$CDUMP.$PDYm1"
     export MY_MACHINE=$machine
@@ -145,7 +142,6 @@ echo "=============== START TO RUN MINMON ==============="
 if [ $VRFYMINMON = "YES" -a $CDATE != $SDATE ]; then
 
     export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc/$COMPONENT"
-    export jlogfile="$ROTDIR/logs/$CDATE/${CDUMP}minmon.log"
     export M_TANKverfM0="$M_TANKverf/stats/$PSLOT/$CDUMP.$PDY"
     export M_TANKverfM1="$M_TANKverf/stats/$PSLOT/$CDUMP.$PDYm1"
     export MY_MACHINE=$machine
@@ -159,6 +155,9 @@ fi
 echo
 echo "=============== START TO RUN CYCLONE TRACK VERIFICATION ==============="
 if [ $VRFYTRAK = "YES" ]; then
+
+    export COMINsyn=${COMINsyn:-$(compath.py ${envir}/com/gfs/${gfs_ver})/syndat}
+
     $TRACKERSH  
 fi
 

@@ -37,8 +37,9 @@ export FIXreg2grb2=$HOMEgfs/fix/fix_reg2grb2
 ########################################################################
 
 # GLOBAL static environment parameters
-export NWPROD="@NWPROD@"
+export PACKAGEROOT="@PACKAGEROOT@"
 export COMROOT="@COMROOT@"
+export COMINsyn="@COMINsyn@"
 export DMPDIR="@DMPDIR@"
 export RTMFIX=$CRTM_FIX
 
@@ -134,7 +135,6 @@ export COMOUTice=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/ice
 export COMINaero=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/chem
 export COMOUTaero=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/chem
 
-export jlogfile="${EXPDIR}/logs/jlogfile"
 export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 export LOGSCRIPT=${LOGSCRIPT:-""}
 #export ERRSCRIPT=${ERRSCRIPT:-"err_chk"}

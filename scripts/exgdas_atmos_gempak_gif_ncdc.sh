@@ -50,8 +50,6 @@ then
           $USHgempak/gempak_${RUN}_f${fhr}_gif.sh
           if [ ! -f $USHgempak/gempak_${RUN}_f${fhr}_gif.sh ] ; then
              echo "WARNING: $USHgempak/gempak_${RUN}_f${fhr}_gif.sh FILE is missing"
-             msg=" $USHgempak/gempak_${RUN}_f${fhr}_gif.sh file is missing "
-             postmsg "jlogfile" "$msg"
           fi
        fi
 

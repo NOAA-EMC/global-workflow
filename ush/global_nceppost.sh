@@ -55,7 +55,7 @@
 #     CHGRESSH      optional: the script to run chgres
 #		    default to to ${USHglobal}/global_chgres.sh
 #     SIGLEVEL      optional: the coordinate text file
-#		    default to to /nwprod/fix/global_hyblev.l${LEVS}.txt
+#		    default to to $HOMEgfs/fix/global_hyblev.l${LEVS}.txt
 ##### Chuang: Add new imported Shell Variable for ncep post
 #     OUTTYP        Output file type read in by post 
 #                   1: if user has a sigma file and needs post to run chgres to convert to gfs io file
@@ -83,14 +83,10 @@
 #    GENPSICHIEXE   Optional, specify where executable is for generating
 #                   psi and chi.
 ########################################################################       
-#     EXECUTIL      Directory for utility executables
-#                   defaults to /nwprod/util/exec
-#     USHUTIL       Directory for utility scripts
-#                   defaults to /nwprod/util/ush
 #     EXECglobal    Directory for global executables
-#                   defaults to /nwprod/exec
+#                   defaults to $HOMEgfs/exec
 #     USHglobal     Directory for global scripts
-#                   defaults to /nwprod/ush
+#                   defaults to $HOMEgfs/ush
 #     DATA          working directory
 #                   (if nonexistent will be made, used and deleted)
 #                   defaults to current working directory
@@ -101,7 +97,6 @@
 #     POSTGPEXEC    Global post executable
 #                   defaults to ${EXECglobal}/ncep_post
 #     GRBINDEX      GRIB index maker
-#                   defaults to ${EXECUTIL}/grbindex$XC
 #     ANOMCATSH     Global anomaly GRIB script
 #                   defaults to ${USHglobal/global_anomcat.sh
 #     POSTGPLIST    File containing further namelist inputs
@@ -197,11 +192,8 @@ export IO=${6:-${IO:-0}}
 export JO=${7:-${JO:-0}}
 export IGEN=${8:-${IGEN:-0}}
 #  Directories.
-export NWPROD=${NWPROD:-/nwprod}
-#export EXECUTIL=${EXECUTIL:-$NWPROD/util/exec}
-export USHUTIL=${USHUTIL:-$NWPROD/util/ush}
-export EXECglobal=${EXECglobal:-$NWPROD/exec}
-export USHglobal=${USHglobal:-$NWPROD/ush}
+export EXECglobal=${EXECglobal:-$HOMEgfs/exec}
+export USHglobal=${USHglobal:-$HOMEgfs/ush}
 export DATA=${DATA:-$(pwd)}
 #  Filenames.
 export MP=${MP:-$([[ $LOADL_STEP_TYPE = PARALLEL ]]&&echo "p"||echo "s")}
@@ -216,7 +208,7 @@ export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 export LOGSCRIPT=${LOGSCRIPT}
 export ENDSCRIPT=${ENDSCRIPT}
 export GFSOUT=${GFSOUT:-gfsout}
-export CTLFILE=${CTLFILE:-$NWPROD/parm/gfs_cntrl.parm}
+export CTLFILE=${CTLFILE:-$HOMEgfs/parm/post/postcntrl_gfs.xml}
 export MODEL_OUT_FORM=${MODEL_OUT_FORM:-binarynemsiompiio}
 export GRIBVERSION=${GRIBVERSION:-'grib1'}
 #  Other variables.
@@ -251,7 +243,7 @@ if [ ${OUTTYP} -le 3 ] ; then
 	fi
 fi
 
-export SIGHDR=${SIGHDR:-$NWPROD/exec/global_sighdr} 
+export SIGHDR=${SIGHDR:-$HOMEgfs/exec/global_sighdr}
 export IDRT=${IDRT:-4}
 
 if [ ${OUTTYP} -le 1 ] ; then
@@ -268,7 +260,7 @@ if [ ${OUTTYP} -le 1 ] ; then
 		export CHGRESVARS="LATCH=$LATCH,$CHGRESVARS"
 	fi 
 	#export SIGLEVEL=${SIGLEVEL:-""}
-	export SIGLEVEL=${SIGLEVEL:-"$NWPROD/fix/global_hyblev.l${LEVS}.txt"}
+	export SIGLEVEL=${SIGLEVEL:-"$HOMEgfs/fix/global_hyblev.l${LEVS}.txt"}
 	# specify threads for running chgres
 	export OMP_NUM_THREADS=$CHGRESTHREAD 
 	export NTHREADS=$OMP_NUM_THREADS

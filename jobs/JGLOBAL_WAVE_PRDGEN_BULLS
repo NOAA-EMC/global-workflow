@@ -12,8 +12,8 @@ cd $DATA
 export cycle=${cycle:-t${cyc}z}
 
 # Set PDY
- setpdy.sh
- . PDY
+setpdy.sh
+. ./PDY
 
 export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
@@ -25,8 +25,8 @@ export errchk=${errchk:-err_chk}
 
 ###################################
 # Set COM Paths
-export COMIN=${COMIN:-$(compath.py ${NET}/${envir}/${RUN}.${PDY})/${cyc}/$COMPONENT}
-export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/$COMPONENT}
+export COMIN=${COMIN:-$(compath.py ${envir}/${NET}/${gfs_ver})/${RUN}.${PDY}/${cyc}/$COMPONENT}
+export COMOUT=${COMOUT:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/$COMPONENT}
 export PCOM=${PCOM:-${COMOUT}/wmo}
 
 export SENDCOM=${SENDCOM:-YES}
