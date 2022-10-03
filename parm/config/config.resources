@@ -222,21 +222,25 @@ elif [ $step = "aeroanlfinal" ]; then
 
 elif [ $step = "anal" ]; then
 
-    export wtime_anal="01:00:00"
-    export npe_anal=1000
-    export nth_anal=5
-    export npe_anal_gfs=1000
+    export wtime_anal="00:50:00"
+    export wtime_anal_gfs="00:40:00"
+    export npe_anal=780
+    export nth_anal=8
+    export npe_anal_gfs=825
+    export nth_anal_gfs=8
     if [ $CASE = "C384" ]; then
-      export npe_anal=400
-      export npe_anal_gfs=400
+      export npe_anal=160
+      export npe_anal_gfs=160
+      export nth_anal=10
+      export nth_anal_gfs=10
     fi
     if [ $CASE = "C192" -o $CASE = "C96" -o $CASE = "C48" ]; then
       export npe_anal=84
       export npe_anal_gfs=84
     fi
-    export nth_anal_gfs=$nth_anal
     export npe_node_anal=$(echo "$npe_node_max / $nth_anal" | bc)
     export nth_cycle=$nth_anal
+    export npe_node_cycle=$(echo "$npe_node_max / $nth_cycle" | bc)
     export is_exclusive=True
 
 elif [ $step = "analcalc" ]; then
