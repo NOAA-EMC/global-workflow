@@ -591,10 +591,11 @@ elif [ $step = "ecen" ]; then
 
     export wtime_ecen="00:10:00"
     export npe_ecen=80
-    export nth_ecen=6
+    export nth_ecen=4
     if [ $CASE = "C384" -o $CASE = "C192" -o $CASE = "C96" -o $CASE = "C48" ]; then export nth_ecen=2; fi
     export npe_node_ecen=$(echo "$npe_node_max / $nth_ecen" | bc)
     export nth_cycle=$nth_ecen
+    export npe_node_cycle=$(echo "$npe_node_max / $nth_cycle" | bc)
     export is_exclusive=True
 
 elif [ $step = "esfc" ]; then
