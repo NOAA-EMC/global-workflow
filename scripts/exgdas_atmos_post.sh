@@ -289,7 +289,7 @@ else   ## not_anl if_stimes
     fi
 
     #wm Process pgb files
-    export FH=$(( fhr + 0 ))
+    export FH=$(( 10#${fhr} + 0 ))
     export downset=${downset:-1}
     ${GFSDOWNSH}
     export err=$?; err_chk

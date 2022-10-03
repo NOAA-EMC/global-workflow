@@ -340,7 +340,7 @@ else   ## not_anl if_stime
 
     #  Process pgb files
     if [ "${PGBF}" = 'YES' ]; then
-      export FH=$(( fhr + 0 ))
+      export FH=$(( 10#${fhr} + 0 ))
       export downset=${downset:-2}
       ${GFSDOWNSH}
       export err=$?; err_chk
@@ -402,7 +402,7 @@ else   ## not_anl if_stime
 
       #Add extra flux.1p00 file for coupled
       if [ "${FLXGF}" = 'YES' ]; then                    
-        export FH=$(( fhr + 0 ))
+        export FH=$(( 10#${fhr} + 0 ))
         ${GFSDOWNSHF}
         export err=$?; err_chk
       fi   
