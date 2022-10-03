@@ -368,7 +368,7 @@ cd ${pwd}/../sorc   ||   exit 8
 #  config.base in the $HOMEgfs/parm/config has no use in development
 cd "${pwd}/../parm/config"
 [[ -s config.base ]] && rm -f config.base
-if [[ $RUN_ENVIR = nco ]] ; then
+if [[ ${RUN_ENVIR} = nco ]] ; then
   cp -p config.base.nco.static config.base
   cp -p config.fv3.nco.static config.fv3
   cp -p config.resources.nco.static config.resources
