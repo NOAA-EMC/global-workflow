@@ -628,15 +628,17 @@ elif [ $step = "postsnd" ]; then
 
     export wtime_postsnd="02:00:00"
     export npe_postsnd=40
-    export nth_postsnd=1
-    export npe_node_postsnd=5
+    export nth_postsnd=8
+    export npe_node_postsnd=10
     export npe_postsndcfp=9
-    export npe_node_postsndcfp=3
+    export npe_node_postsndcfp=1
     if [ $OUTPUT_FILE == "nemsio" ]; then
         export npe_postsnd=13
         export npe_node_postsnd=4
     fi
-    if [[ "$machine" = "HERA" ]]; then export npe_node_postsnd=2; fi
+    if [[ "$(echo "$npe_node_postsnd * $nth_postsnd" | bc)" -gt "$npe_node_max" ]]; then
+        export npe_node_postsnd=$(echo "$npe_node_max / $nth_postsnd" | bc)
+    fi
     export is_exclusive=True
 
 elif [ $step = "awips" ]; then
