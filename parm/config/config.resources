@@ -624,7 +624,7 @@ elif [ $step = "esfc" ]; then
 elif [ $step = "efcs" ]; then
 
     if [ $CASE = "C768" ]; then
-      export wtime_efcs="01:00:00"
+      export wtime_efcs="01:20:00"
     else
       export wtime_efcs="00:40:00"
     fi
