@@ -46,7 +46,11 @@ if [ $step = "prep" -o $step = "prepbufr" ]; then
     eval "export npe_$step=4"
     eval "export npe_node_$step=2"
     eval "export nth_$step=1"
-    eval "export memory_$step=40G"
+    if [[ "$machine" = "WCOSS2" ]]; then
+      export is_exclusive=True
+    else
+      eval "export memory_$step=40G"
+    fi
 
 elif [ $step = "aerosol_init" ]; then
     export wtime_aerosol_init="00:05:00"
@@ -87,6 +91,7 @@ elif [ $step = "wavepostbndpnt" ]; then
     export nth_wavepostbndpnt=1
     export npe_node_wavepostbndpnt=$(echo "$npe_node_max / $nth_wavepostbndpnt" | bc)
     export NTASKS=${npe_wavepostbndpnt}
+    export is_exclusive=True
 
 elif [ $step = "wavepostbndpntbll" ]; then
 
@@ -95,6 +100,7 @@ elif [ $step = "wavepostbndpntbll" ]; then
     export nth_wavepostbndpntbll=1
     export npe_node_wavepostbndpntbll=$(echo "$npe_node_max / $nth_wavepostbndpntbll" | bc)
     export NTASKS=${npe_wavepostbndpntbll}
+    export is_exclusive=True
 
 elif [ $step = "wavepostpnt" ]; then
 
@@ -103,6 +109,7 @@ elif [ $step = "wavepostpnt" ]; then
     export nth_wavepostpnt=1
     export npe_node_wavepostpnt=$(echo "$npe_node_max / $nth_wavepostpnt" | bc)
     export NTASKS=${npe_wavepostpnt}
+    export is_exclusive=True
 
 elif [ $step = "wavegempak" ]; then
 
@@ -119,6 +126,7 @@ elif [ $step = "waveawipsbulls" ]; then
     export nth_waveawipsbulls=1
     export npe_node_waveawipsbulls=$(echo "$npe_node_max / $nth_waveawipsbulls" | bc)
     export NTASKS=${npe_waveawipsbulls}
+    export is_exclusive=True
 
 elif [ $step = "waveawipsgridded" ]; then
 
@@ -147,8 +155,8 @@ elif [ $step = "atmanalrun" ]; then
     export npe_atmanalrun_gfs=$(echo "$layout_x * $layout_y * 6" | bc)
     export nth_atmanalrun=1
     export nth_atmanalrun_gfs=$nth_atmanalrun
-    export native_atmanalrun="--exclusive"
     export npe_node_atmanalrun=$(echo "$npe_node_max / $nth_atmanalrun" | bc)
+    export is_exclusive=True
 
 elif [ $step = "atmanalpost" ]; then
 
@@ -156,6 +164,7 @@ elif [ $step = "atmanalpost" ]; then
     export npe_atmanalpost=$npe_node_max
     export nth_atmanalpost=1
     export npe_node_atmanalpost=$(echo "$npe_node_max / $nth_atmanalpost" | bc)
+    export is_exclusive=True
 
 elif [ $step = "aeroanlinit" ]; then
 
@@ -187,8 +196,8 @@ elif [ $step = "aeroanlrun" ]; then
     export npe_aeroanlrun_gfs=$(echo "$layout_x * $layout_y * 6" | bc)
     export nth_aeroanlrun=1
     export nth_aeroanlrun_gfs=1
-    export native_aeroanlrun="--exclusive"
     export npe_node_aeroanlrun=$(echo "$npe_node_max / $nth_aeroanlrun" | bc)
+    export is_exclusive=True
 
 elif [ $step = "aeroanlfinal" ]; then
 
@@ -215,6 +224,7 @@ elif [ $step = "anal" ]; then
     export nth_anal_gfs=$nth_anal
     export npe_node_anal=$(echo "$npe_node_max / $nth_anal" | bc)
     export nth_cycle=$nth_anal
+    export is_exclusive=True
 
 elif [ $step = "analcalc" ]; then
 
@@ -225,6 +235,7 @@ elif [ $step = "analcalc" ]; then
     export nth_echgres=4
     export nth_echgres_gfs=12
     export npe_node_analcalc=$npe_node_max
+    export is_exclusive=True
 
 elif [ $step = "analdiag" ]; then
 
@@ -239,6 +250,7 @@ elif [ $step = "sfcanl" ]; then
     export npe_sfcanl=6
     export nth_sfcanl=1
     export npe_node_sfcanl=$(echo "$npe_node_max / $nth_sfcanl" | bc)
+    export is_exclusive=True
 
 elif [ $step = "gldas" ]; then
 
@@ -249,6 +261,7 @@ elif [ $step = "gldas" ]; then
     export npe_gaussian=96
     export nth_gaussian=1
     export npe_node_gaussian=24
+    export is_exclusive=True
 
 elif [ $step = "fcst" ]; then
 
@@ -260,6 +273,8 @@ elif [ $step = "fcst" ]; then
     else
       export wtime_fcst_gfs="03:00:00"
     fi
+
+    export is_exclusive=True
 
     # During workflow creation, we need resources for all CDUMPs and CDUMP is undefined
     CDUMP_LIST=${CDUMP:-"gdas gfs"}
@@ -360,6 +375,7 @@ elif [ $step = "post" ]; then
     export nth_post=1
     export npe_node_post=12
     export npe_node_dwn=$npe_node_max
+    export is_exclusive=True
 
 elif [ $step = "wafs" ]; then
 
@@ -415,6 +431,7 @@ elif [ $step = "vrfy" ]; then
     if [[ "$machine" == "HERA" ]]; then
       export memory_vrfy="16384M"
     fi
+    export is_exclusive=True
 
 elif [ $step = "metp" ]; then
 
@@ -425,6 +442,7 @@ elif [ $step = "metp" ]; then
     export wtime_metp_gfs="06:00:00"
     export npe_metp_gfs=4
     export npe_node_metp_gfs=4
+    export is_exclusive=True
 
 elif [ $step = "echgres" ]; then
 
@@ -446,12 +464,14 @@ elif [ $step = "init_chem" ]; then
     export wtime_init_chem="00:30:00"
     export npe_init_chem=1
     export npe_node_init_chem=1
+    export is_exclusive=True
 
 elif [ $step = "mom6ic" ]; then
 
     export wtime_mom6ic="00:30:00"
     export npe_mom6ic=24
     export npe_node_mom6ic=24
+    export is_exclusive=True
 
 elif [ $step = "arch" -o $step = "earc" -o $step = "getic" ]; then
 
@@ -467,6 +487,7 @@ elif [ $step = "coupled_ic" ]; then
     export npe_coupled_ic=1
     export npe_node_coupled_ic=1
     export nth_coupled_ic=1
+    export is_exclusive=True
 
 elif [ $step = "atmensanalprep" ]; then
 
@@ -474,6 +495,7 @@ elif [ $step = "atmensanalprep" ]; then
     export npe_atmensanalprep=1
     export nth_atmensanalprep=1
     export npe_node_atmensanalprep=$(echo "$npe_node_max / $nth_atmensanalprep" | bc)
+    export is_exclusive=True
 
 elif [ $step = "atmensanalrun" ]; then
 
@@ -486,8 +508,8 @@ elif [ $step = "atmensanalrun" ]; then
     export npe_atmensanalrun_gfs=$(echo "$layout_x * $layout_y * 6" | bc)
     export nth_atmensanalrun=1
     export nth_atmensanalrun_gfs=$nth_atmensanalrun
-    export native_atmensanalrun="--exclusive"
     export npe_node_atmensanalrun=$(echo "$npe_node_max / $nth_atmensanalrun" | bc)
+    export is_exclusive=True
 
 elif [ $step = "atmensanalpost" ]; then
 
@@ -495,6 +517,7 @@ elif [ $step = "atmensanalpost" ]; then
     export npe_atmensanalpost=$npe_node_max
     export nth_atmensanalpost=1
     export npe_node_atmensanalpost=$(echo "$npe_node_max / $nth_atmensanalpost" | bc)
+    export is_exclusive=True
 
 elif [ $step = "eobs" -o $step = "eomg" ]; then
 
@@ -514,6 +537,7 @@ elif [ $step = "eobs" -o $step = "eomg" ]; then
     export nth_eomg=$nth_eobs
     export npe_node_eobs=$(echo "$npe_node_max / $nth_eobs" | bc)
     export npe_node_eomg=$npe_node_eobs
+    export is_exclusive=True
 
 elif [ $step = "ediag" ]; then
 
@@ -548,6 +572,7 @@ elif [ $step = "eupd" ]; then
       fi
     fi
     export npe_node_eupd=$(echo "$npe_node_max / $nth_eupd" | bc)
+    export is_exclusive=True
 
 elif [ $step = "ecen" ]; then
 
@@ -557,6 +582,7 @@ elif [ $step = "ecen" ]; then
     if [ $CASE = "C384" -o $CASE = "C192" -o $CASE = "C96" -o $CASE = "C48" ]; then export nth_ecen=2; fi
     export npe_node_ecen=$(echo "$npe_node_max / $nth_ecen" | bc)
     export nth_cycle=$nth_ecen
+    export is_exclusive=True
 
 elif [ $step = "esfc" ]; then
 
@@ -583,6 +609,7 @@ elif [ $step = "epos" ]; then
     export npe_epos=80
     export nth_epos=6
     export npe_node_epos=$(echo "$npe_node_max / $nth_epos" | bc)
+    export is_exclusive=True
 
 elif [ $step = "postsnd" ]; then
 
@@ -597,6 +624,7 @@ elif [ $step = "postsnd" ]; then
         export npe_node_postsnd=4
     fi
     if [[ "$machine" = "HERA" ]]; then export npe_node_postsnd=2; fi
+    export is_exclusive=True
 
 elif [ $step = "awips" ]; then
 
