@@ -463,6 +463,7 @@ elif [ $step = "echgres" ]; then
     export npe_echgres=3
     export nth_echgres=$npe_node_max
     export npe_node_echgres=1
+    export memory_echgres="200GB"
 
 elif [ $step = "init" ]; then
 
