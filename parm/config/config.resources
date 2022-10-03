@@ -555,9 +555,10 @@ elif [ $step = "eobs" -o $step = "eomg" ]; then
 elif [ $step = "ediag" ]; then
 
     export wtime_ediag="00:06:00"
-    export npe_ediag=56
+    export npe_ediag=48
     export nth_ediag=1
     export npe_node_ediag=$npe_node_max
+    export memory_ediag="28GB"
 
 elif [ $step = "eupd" ]; then
 
