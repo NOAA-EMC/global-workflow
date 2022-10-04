@@ -83,7 +83,7 @@ export COMPONENT=${COMPONENT:-atmos}
 ##############################################
 export gldas_ver=${gldas_ver:-v2.3.0}
 export HOMEgldas=${HOMEgldas:-${HOMEgfs}}
-export FIXgldas=${FIXgldas:-${HOMEgldas}/fix/fix_gldas}
+export FIXgldas=${FIXgldas:-${HOMEgldas}/fix/gldas}
 export PARMgldas=${PARMgldas:-${HOMEgldas}/parm/gldas}
 export EXECgldas=${EXECgldas:-${HOMEgldas}/exec}
 export USHgldas=${USHgldas:-${HOMEgldas}/ush}

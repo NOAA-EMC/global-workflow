@@ -5,7 +5,7 @@ source "$HOMEgfs/ush/preamble.sh"
 #requires grib_util module 
 
 MOM6REGRID=${MOM6REGRID:-$HOMEgfs}
-export mask_file=$MOM6REGRID/fix/fix_reg2grb2/mask.0p25x0p25.grb2
+export mask_file=$MOM6REGRID/fix/reg2grb2/mask.0p25x0p25.grb2
 
 # offline testing:
 #export DATA=
