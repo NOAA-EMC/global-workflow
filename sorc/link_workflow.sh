@@ -229,8 +229,8 @@ done
 [[ -s "ufs_model.x" ]] && rm -f ufs_model.x
 ${LINK} "${script_dir}/ufs_model.fd/tests/ufs_model.x" .
 
-[[ -s "gfs_ncep_post" ]] && rm -f gfs_ncep_post
-${LINK} "${script_dir}/upp.fd/exec/upp.x" gfs_ncep_post
+[[ -s "upp.x" ]] && rm -f upp.x
+${LINK} "${script_dir}/upp.fd/exec/upp.x" .
 
 if [ -d "${script_dir}/gfs_wafs.fd" ]; then
     for wafsexe in \

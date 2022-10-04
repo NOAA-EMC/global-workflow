@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${HOMEgfs}/ush/preamble.sh"
 
 export RUN_ENVIR=${RUN_ENVIR:-"nco"}
 
@@ -8,31 +8,31 @@ export RUN_ENVIR=${RUN_ENVIR:-"nco"}
 # Source relevant config files
 #############################
 configs="base post"
-export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
-config_path=${EXPDIR:-$PACKAGEROOT/gfs.${gfs_ver}/parm/config}
-for config in $configs; do
-    . $config_path/config.$config
+export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
+config_path=${EXPDIR:-${PACKAGEROOT}/gfs.${gfs_ver}/parm/config}
+for config in ${configs}; do
+    . "${config_path}/config.${config}"
     status=$?
-    [[ $status -ne 0 ]] && exit $status
+    (( status != 0 )) && exit "${status}"
 done
 
 
 ##########################################
 # Source machine runtime environment
 ##########################################
-. $HOMEgfs/env/${machine}.env post
+. "${HOMEgfs}/env/${machine}.env" post
 status=$?
-[[ $status -ne 0 ]] && exit $status
+(( status != 0 )) && exit "${status}"
 
 
 ##############################################
 # Obtain unique process id (pid) and make temp directory
 ##############################################
 export pid=${pid:-$$}
-export outid=${outid:-"LL$job"}
-export DATA=${DATA:-${DATAROOT}/${jobid:?}}
-mkdir -p $DATA
-cd $DATA
+export outid=${outid:-"LL${job}"}
+export DATA=${DATA:-${DATAROOT}/${jobid}}
+mkdir -p "${DATA}"
+cd "${DATA}" || exit 1
 
 
 ##############################################
@@ -68,22 +68,24 @@ export COMPONENT=${COMPONENT:-atmos}
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
-export APRUNP=${APRUN:-$APRUN_NP}
+export APRUNP=${APRUN:-${APRUN_NP}}
 export RERUN=${RERUN:-NO}
-export HOMECRTM=${HOMECRTM:-${PACKAGEROOT:?}/lib/crtm/${crtm_ver:?}}
+export HOMECRTM=${HOMECRTM:-${PACKAGEROOT}/lib/crtm/${crtm_ver}}
 export FIXCRTM=${CRTM_FIX:-${HOMECRTM}/fix}
-export PARMpost=${PARMpost:-$HOMEgfs/parm/post}
+export PARMpost=${PARMpost:-${HOMEgfs}/parm/post}
 export INLINE_POST=${WRITE_DOPOST:-".false."}
 
-export COMIN=${COMIN:-$ROTDIR/$RUN.$PDY/$cyc/$COMPONENT}
-export COMOUT=${COMOUT:-$ROTDIR/$RUN.$PDY/$cyc/$COMPONENT}
+export COMIN=${COMIN:-${ROTDIR}/${RUN}.${PDY}/${cyc}/${COMPONENT}}
+export COMOUT=${COMOUT:-${ROTDIR}/${RUN}.${PDY}/${cyc}/${COMPONENT}}
 
-[[ ! -d $COMOUT ]] && mkdir -m 775 -p $COMOUT
+# shellcheck disable=SC2174
+[[ ! -d "${COMOUT}" ]] && mkdir -m 775 -p "${COMOUT}"
+# shellcheck disable=
 
-if [ $RUN = gfs ];then
+if [ "${RUN}" = gfs ];then
   export FHOUT_PGB=${FHOUT_GFS:-3} #Output frequency of gfs pgb file at 1.0 and 0.5 deg.
 fi
-if [ $RUN = gdas ]; then
+if [ "${RUN}" = gdas ]; then
   export IGEN_GFS="gfs_avn"
   export IGEN_ANL="anal_gfs"
   export IGEN_FCST="gfs_avn"
@@ -91,7 +93,7 @@ if [ $RUN = gdas ]; then
   export FHOUT_PGB=${FHOUT:-1} #Output frequency of gfs pgb file at 1.0 and 0.5 deg.
 fi
 
-if [ $GRIBVERSION = grib2 ]; then
+if [ "${GRIBVERSION}" = grib2 ]; then
   export IGEN_ANL="anal_gfs"
   export IGEN_FCST="gfs_avn"
   export IGEN_GFS="gfs_avn"
@@ -100,7 +102,7 @@ fi
 #######################################
 # Specify Restart File Name to Key Off
 #######################################
-export restart_file=$COMIN/${RUN}.t${cyc}z.logf
+export restart_file=${COMIN}/${RUN}.t${cyc}z.logf
 
 ####################################
 # Specify Timeout Behavior of Post
@@ -117,9 +119,9 @@ export SLEEP_INT=5
 ###############################################################
 # Run relevant exglobal script
 
-$SCRgfs/ex${RUN}_atmos_nceppost.sh
+"${SCRgfs}/ex${RUN}_atmos_post.sh"
 status=$?
-[[ $status -ne 0 ]] && exit $status
+(( status != 0 )) && exit "${status}"
 
 ##############################################
 # End JOB SPECIFIC work
@@ -128,15 +130,15 @@ status=$?
 ##############################################
 # Final processing
 ##############################################
-if [ -e "$pgmout" ]; then
-  cat $pgmout
+if [ -e "${pgmout}" ]; then
+  cat "${pgmout}"
 fi
 
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd $DATAROOT
-[[ $KEEPDATA = "NO" ]] && rm -rf $DATA
+cd "${DATAROOT}" || exit 1
+[[ "${KEEPDATA:-NO}" = "NO" ]] && rm -rf "${DATA}"
 
 
 exit 0

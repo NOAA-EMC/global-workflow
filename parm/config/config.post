@@ -19,13 +19,13 @@ if [ $OUTPUT_FILE = "netcdf" ]; then
     export MODEL_OUT_FORM=netcdfpara
 fi
 
-# Post driver job that calls gfs_nceppost.sh and downstream jobs
-export POSTJJOBSH="$HOMEpost/jobs/JGLOBAL_NCEPPOST"
+# Post driver job that calls gfs_post.sh and downstream jobs
+export POSTJJOBSH="$HOMEpost/jobs/JGLOBAL_POST"
 export GFSDOWNSH="$HOMEpost/ush/fv3gfs_downstream_nems.sh"
 export GFSDWNSH="$HOMEpost/ush/fv3gfs_dwn_nems.sh"
 
-export POSTGPSH="$HOMEpost/ush/gfs_nceppost.sh"
-export POSTGPEXEC="$HOMEpost/exec/gfs_ncep_post"
+export POSTGPSH="$HOMEpost/ush/gfs_post.sh"
+export POSTGPEXEC="$HOMEpost/exec/upp.x"
 export GOESF=NO                              # goes image
 export FLXF=YES                               # grib2 flux file written by post
 
