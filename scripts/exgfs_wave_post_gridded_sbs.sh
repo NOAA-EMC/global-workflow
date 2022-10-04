@@ -51,7 +51,7 @@ source "$HOMEgfs/ush/preamble.sh"
   echo "Starting at : $(date)"
   echo '-------------'
   echo ' '
-  ${TRACE_ON:-set -x}
+  set_trace
 
 # Script will run only if pre-defined NTASKS
 #     The actual work is distributed over these tasks.
@@ -81,7 +81,7 @@ source "$HOMEgfs/ush/preamble.sh"
   echo "   Interpolated grids : $waveinterpGRD"
   echo "   Post-process grids : $wavepostGRD"
   echo ' '
-  ${TRACE_ON:-set -x}
+  set_trace
 
 
 # 0.c.3 Define CDATE_POST
@@ -100,7 +100,7 @@ source "$HOMEgfs/ush/preamble.sh"
   echo ' '
   echo 'Preparing input files :'
   echo '-----------------------'
-  ${TRACE_ON:-set -x}
+  set_trace
 
 # 1.a Model definition files and output files (set up using poe)
 
@@ -111,7 +111,7 @@ source "$HOMEgfs/ush/preamble.sh"
     then
       set +x
       echo " Mod def file for $grdID found in ${COMIN}/rundata. copying ...."
-      ${TRACE_ON:-set -x}
+      set_trace
 
       cp -f $COMIN/rundata/${CDUMP}wave.mod_def.${grdID} mod_def.$grdID
     fi
@@ -128,14 +128,14 @@ source "$HOMEgfs/ush/preamble.sh"
       echo " FATAL ERROR : NO MOD_DEF FILE mod_def.$grdID "
       echo '*************************************************** '
       echo ' '
-      ${TRACE_ON:-set -x}
+      set_trace
       err=2; export err;${errchk}
       exit $err
       DOGRB_WAV='NO'
     else
       set +x
       echo "File mod_def.$grdID found. Syncing to all nodes ..."
-      ${TRACE_ON:-set -x}
+      set_trace
     fi
   done
 
@@ -155,7 +155,7 @@ source "$HOMEgfs/ush/preamble.sh"
       then
         set +x
         echo "   ${intGRD}_interp.inp.tmpl copied. Syncing to all nodes ..."
-        ${TRACE_ON:-set -x}
+        set_trace
       else
         set +x
         echo ' '
@@ -163,7 +163,7 @@ source "$HOMEgfs/ush/preamble.sh"
         echo '*** ERROR : NO TEMPLATE FOR GRINT INPUT FILE *** '
         echo '*********************************************** '
         echo ' '
-        ${TRACE_ON:-set -x}
+        set_trace
         echo "$WAV_MOD_TAG post $date $cycle : GRINT template file missing."
         exit_code=1
         DOGRI_WAV='NO'
@@ -184,7 +184,7 @@ source "$HOMEgfs/ush/preamble.sh"
       then
         set +x
         echo "   ww3_grib2.${grbGRD}.inp.tmpl copied. Syncing to all nodes ..."
-        ${TRACE_ON:-set -x}
+        set_trace
       else
         set +x
         echo ' '
@@ -192,7 +192,7 @@ source "$HOMEgfs/ush/preamble.sh"
         echo "*** ERROR : NO TEMPLATE FOR ${grbGRD} GRIB INPUT FILE *** "
         echo '*********************************************** '
         echo ' '
-        ${TRACE_ON:-set -x}
+        set_trace
         exit_code=2
         DOGRB_WAV='NO'
       fi
@@ -211,7 +211,7 @@ source "$HOMEgfs/ush/preamble.sh"
   echo "      Sufficient data for GRID interpolation    : $DOGRI_WAV"
   echo "      Sufficient data for GRIB files            : $DOGRB_WAV"
   echo ' '
-  ${TRACE_ON:-set -x}
+  set_trace
 
 # --------------------------------------------------------------------------- #
 # 2.  Make consolidated grib2 file for side-by-side grids and interpolate
@@ -221,7 +221,7 @@ source "$HOMEgfs/ush/preamble.sh"
 
   set +x
   echo '   Making command file for sbs grib2 and GRID Interpolation '
-  ${TRACE_ON:-set -x}
+  set_trace
 
 # 1.a.2 Loop over forecast time to generate post files
 # When executed side-by-side, serial mode (cfp when run after the fcst step)
@@ -272,7 +272,7 @@ source "$HOMEgfs/ush/preamble.sh"
           echo " FATAL ERROR : NO RAW FIELD OUTPUT FILE out_grd.$grdID "
           echo '*************************************************** '
           echo ' '
-          ${TRACE_ON:-set -x}
+          set_trace
           echo "$WAV_MOD_TAG post $grdID $date $cycle : field output missing."
           err=3; export err;${errchk}
           exit $err
@@ -367,7 +367,7 @@ source "$HOMEgfs/ush/preamble.sh"
     echo "   Executing the grib2_sbs scripts at : $(date)"
     echo '   ------------------------------------'
     echo ' '
-    ${TRACE_ON:-set -x}
+    set_trace
 
     if [ "$wavenproc" -gt '1' ]
     then
@@ -392,7 +392,7 @@ source "$HOMEgfs/ush/preamble.sh"
       echo '*************************************'
       echo '     See Details Below '
       echo ' '
-      ${TRACE_ON:-set -x}
+      set_trace
       err=4; export err;${errchk}
       exit $err
     fi
@@ -416,7 +416,7 @@ source "$HOMEgfs/ush/preamble.sh"
         echo '********************************************'
         echo '     See Details Below '
         echo ' '
-        ${TRACE_ON:-set -x}
+        set_trace
         err=5; export err;${errchk}
         exit $err
       fi

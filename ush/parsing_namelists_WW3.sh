@@ -70,7 +70,7 @@ WW3_namelists(){
   echo "   starting time : $time_beg"
   echo "   ending time   : $time_end"
   echo ' '
-  ${TRACE_ON:-set -x}
+  set_trace
 
 
 
@@ -108,7 +108,7 @@ WW3_namelists(){
   then
     set +x
     echo "   buoy.loc copied ($PARMwave/wave_${NET}.buoys)."
-    ${TRACE_ON:-set -x}
+    set_trace
   else
     echo " FATAL ERROR : buoy.loc ($PARMwave/wave_${NET}.buoys) NOT FOUND"
     exit 12 

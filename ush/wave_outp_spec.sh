@@ -45,7 +45,7 @@ source "$HOMEgfs/ush/preamble.sh"
     echo '*** FATAL ERROR : ERROR IN ww3_outp_spec (COULD NOT CREATE TEMP DIRECTORY) *** '
     echo '****************************************************************************** '
     echo ' '
-    ${TRACE_ON:-set -x}
+    set_trace
     exit 1
   fi
 
@@ -57,7 +57,7 @@ source "$HOMEgfs/ush/preamble.sh"
   echo '!       Make spectral file       |'
   echo '+--------------------------------+'
   echo "   Model ID        : $WAV_MOD_TAG"
-  ${TRACE_ON:-set -x}
+  set_trace
 
 # 0.b Check if buoy location set
 
@@ -69,7 +69,7 @@ source "$HOMEgfs/ush/preamble.sh"
     echo '*** LOCATION ID IN ww3_outp_spec.sh NOT SET ***'
     echo '***********************************************'
     echo ' '
-    ${TRACE_ON:-set -x}
+    set_trace
     exit 1
   else
     buoy=$bloc
@@ -84,7 +84,7 @@ source "$HOMEgfs/ush/preamble.sh"
         echo "              Location ID/#   : $buoy (${point})"
         echo "   Spectral output start time : $ymdh "
         echo ' '
-        ${TRACE_ON:-set -x}
+        set_trace
         break
       fi
     done < tmp_list.loc
@@ -95,7 +95,7 @@ source "$HOMEgfs/ush/preamble.sh"
       echo '*** LOCATION ID IN ww3_outp_spec.sh NOT RECOGNIZED ***'
       echo '******************************************************'
       echo ' '
-      ${TRACE_ON:-set -x}
+      set_trace
       exit 2
     fi
   fi
@@ -113,7 +113,7 @@ source "$HOMEgfs/ush/preamble.sh"
     echo '*** EXPORTED VARIABLES IN ww3_outp_spec.sh NOT SET ***'
     echo '******************************************************'
     echo ' '
-    ${TRACE_ON:-set -x}
+    set_trace
     exit 3
   fi
 
@@ -125,7 +125,7 @@ source "$HOMEgfs/ush/preamble.sh"
   set +x
   echo "   Output starts at $tstart."
   echo ' '
-  ${TRACE_ON:-set -x}
+  set_trace
 
 # 0.e sync important files
 
@@ -144,7 +144,7 @@ source "$HOMEgfs/ush/preamble.sh"
 
   set +x
   echo "   Generate input file for ww3_outp."
-  ${TRACE_ON:-set -x}
+  set_trace
 
   if [ "$specdir" = "bull" ]
   then
@@ -171,7 +171,7 @@ source "$HOMEgfs/ush/preamble.sh"
 
   set +x
   echo "   Executing $EXECwave/ww3_outp"
-  ${TRACE_ON:-set -x}
+  set_trace
 
   export pgm=ww3_outp;. prep_step
   $EXECwave/ww3_outp 1> outp_${specdir}_${buoy}.out 2>&1
@@ -186,7 +186,7 @@ source "$HOMEgfs/ush/preamble.sh"
     echo '*** FATAL ERROR : ERROR IN ww3_outp *** '
     echo '******************************************** '
     echo ' '
-    ${TRACE_ON:-set -x}
+    set_trace
     exit 4
   fi
 
@@ -230,7 +230,7 @@ source "$HOMEgfs/ush/preamble.sh"
     echo '*** FATAL ERROR : OUTPUT DATA FILE FOR BOUY $bouy NOT FOUND *** '
     echo '***************************************************************** '
     echo ' '
-    ${TRACE_ON:-set -x}
+    set_trace
     exit 5
   fi
 

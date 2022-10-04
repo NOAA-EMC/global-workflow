@@ -85,7 +85,7 @@ echo "  pdym1 is    $pdym1"
 echo
 echo "  ymddir is   $ymddir"
 echo
-${TRACE_ON:-set -x}
+set_trace
 
 find=$ymd" "$hour
 echo "looking for string  $find  in $jtwcdir/tropcyc" >> $pgmout
@@ -123,7 +123,7 @@ fi
 
 [ -s jtwcbul ] && echo "Processing JTWC bulletin halfs into tcvitals records" >> $pgmout
 
-pgm=$(basename $EXECSYND/syndat_getjtbul)
+pgm=$(basename $EXECSYND/syndat_getjtbul.x)
 export pgm
 if [ -s prep_step ]; then
    set +u
@@ -138,7 +138,7 @@ rm -f fnoc
 
 export FORT11=jtwcbul
 export FORT51=fnoc
-time -p $EXECSYND/syndat_getjtbul >> $pgmout 2> errfile
+time -p ${EXECSYND}/${pgm} >> $pgmout 2> errfile
 errget=$?
 ###cat errfile
 cat errfile >> $pgmout
@@ -147,7 +147,7 @@ set +x
 echo
 echo 'The foreground exit status for SYNDAT_GETJTBUL is ' $errget
 echo
-${TRACE_ON:-set -x}
+set_trace
 if [ "$errget" -gt '0' ];then
    if [ "$errget" -eq '1' ];then
       msg="No JTWC bulletins in $jtwcdir/tropcyc, no JTWC tcvitals \
@@ -176,7 +176,7 @@ echo "----------------------------------------------------------"
 echo "***********  COMPLETED PROGRAM syndat_getjtbul  **********"
 echo "----------------------------------------------------------"
 echo
-${TRACE_ON:-set -x}
+set_trace
 
 if [ "$errget" -eq '0' ];then
    echo "Completed JTWC tcvitals records are:" >> $pgmout
@@ -185,6 +185,6 @@ fi
 
 echo "Leaving sub-shell syndat_getjtbul.sh to recover JTWC Bulletins" \
  >> $pgmout
-echo " " >> $pgmout
+echo " " >> "${pgmout}"
 
 exit

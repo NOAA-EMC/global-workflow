@@ -78,7 +78,7 @@ echo "###############################################"
 echo " Process GFS GRIB1 AWIP PRODUCTS (211) "
 echo "###############################################"
 echo " "
-${TRACE_ON:-set -x}
+set_trace
 
    cp $COMIN/gfs.t${cyc}z.pgrb2.0p25.f${fcsthrs}   tmpfile2
    cp $COMIN/gfs.t${cyc}z.pgrb2b.0p25.f${fcsthrs}  tmpfile2b
