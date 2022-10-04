@@ -63,8 +63,6 @@
 #   copy_back - switch to copy updated files back to archive directory and
 #                to tcvitals directory
 #                (Default: YES)
-#   jlogfile  - path to job log file (skipped over by this script if not
-#                 passed in)
 #   SENDCOM     switch  copy output files to $COMSP
 #                (Default: YES)
 #   files_override - switch to override default "files" setting for given run

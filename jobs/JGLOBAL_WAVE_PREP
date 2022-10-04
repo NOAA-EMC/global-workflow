@@ -9,7 +9,7 @@ export RUN_ENVIR=${RUN_ENVIR:-"nco"}
 #############################
 configs="base wave waveprep"
 export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
-config_path=${EXPDIR:-$NWROOT/gfs.${gfs_ver}/parm/config}
+config_path=${EXPDIR:-$PACKAGEROOT/gfs.${gfs_ver}/parm/config}
 for config in $configs; do
     . $config_path/config.$config
     status=$?
@@ -28,7 +28,7 @@ export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
 export COMPONENT=${COMPONENT:-wave}
 
-export HOMEgfs=${HOMEgfs:-$NWROOT/gfs.${gfs_ver}}
+export HOMEgfs=${HOMEgfs:-$PACKAGEROOT/gfs.${gfs_ver}}
 
 # Add default errchk = err_chk
 export errchk=${errchk:-err_chk}
@@ -61,19 +61,16 @@ export USHwave=${USHwave:-$HOMEgfs/ush}
 export EXECwave=${EXECwave:-$HOMEgfs/exec}
 
 # Set COM Paths and GETGES environment
-if [ $RUN_ENVIR = "nco" ]; then
-    export ROTDIR=${COMROOT:?}/$NET/$envir
-fi
 export COMIN=${COMIN:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/$COMPONENT}
 export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/$COMPONENT}
 [[ ! -d $COMOUT ]] && mkdir -m 775 -p $COMOUT
 
 if [ $RUN_ENVIR = "nco" ]; then
-  export COMIN_WAV_ICE=${COMIN_WAV_ICE:-$(compath.py gfs/prod)}/${CDUMP}.${PDY}/${cyc}/atmos
-  export COMIN_WAV_RTOFS=${COMIN_WAV_RTOFS:-$(compath.py ${WAVECUR_DID}/prod)}
+  export COMIN_WAV_ICE=${COMIN_WAV_ICE:-$(compath.py ${envir}/obsproc/${obsproc_ver})}/${CDUMP}.${PDY}/${cyc}/atmos
+  export COMIN_WAV_RTOFS=${COMIN_WAV_RTOFS:-$(compath.py ${envir}/${WAVECUR_DID}/${rtofs_ver})}
 else
   if [ $WW3CURINP = "YES" ]; then
-    if [ ! -d $DMPDIR/${WAVECUR_DID}.${RPDY} ]; then export RPDY=$($NDATE -24 ${PDY}00 | cut -c1-8); fi 
+    if [ ! -d $DMPDIR/${WAVECUR_DID}.${RPDY} ]; then export RPDY=$($NDATE -24 ${PDY}00 | cut -c1-8); fi
     if [ ! -L $ROTDIR/${WAVECUR_DID}.${RPDY} ]; then # Check if symlink already exists in ROTDIR
       $NLN $DMPDIR/${WAVECUR_DID}.${RPDY} $ROTDIR/${WAVECUR_DID}.${RPDY}
     fi
@@ -91,7 +88,7 @@ else
   fi 
 fi
 
-# Execute the Script  
+# Execute the Script
 $HOMEgfs/scripts/exgfs_wave_prep.sh
 
 ##########################################
