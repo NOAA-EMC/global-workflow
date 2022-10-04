@@ -18,6 +18,8 @@ export DO_RELOCATE="NO"
 export TROPCYQCRELOSH="$HOMEgfs/scripts/exglobal_atmos_tropcy_qc_reloc.sh"
 export SENDCOM=YES
 
+export COMPONENT=${COMPONENT:-atmos}
+export COMINtcvital=${COMINtcvital:-${DMPDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENT}}
 export COMINsyn=${COMINsyn:-$(compath.py ${envir}/com/gfs/${gfs_ver})/syndat}
 
 export HOMERELO=$HOMEgfs
