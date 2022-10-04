@@ -2,7 +2,7 @@
 
 #--make symbolic links for EMC installation and hardcopies for NCO delivery
 
-function _usage() {
+function usage() {
   cat << EOF
 Builds all of the global-workflow components by calling the individual build
   scripts in sequence.
