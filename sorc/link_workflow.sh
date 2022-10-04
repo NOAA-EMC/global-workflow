@@ -15,7 +15,7 @@ Usage: ${BASH_SOURCE[0]} [-h][-o]
 EOF
   exit 1
 }
-set -eux
+set -eu
 
 RUN_ENVIR="EMC"
 
