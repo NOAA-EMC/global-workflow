@@ -33,11 +33,11 @@ cd $DATA/$m
     for stn in $(cat $file_list)
     do
        cp ${COMOUT}/bufr.${cycle}/bufr.$stn.$PDY$cyc $DATA/${m}/bufrin
-       export pgm=tocsbufr
+       export pgm=tocsbufr.x
        #. prep_step
        export FORT11=$DATA/${m}/bufrin
        export FORT51=./bufrout
-       $EXECbufrsnd/tocsbufr << EOF
+       ${EXECbufrsnd}/${pgm} << EOF
  &INPUT
   BULHED="$WMOHEAD",KWBX="$CCCC",
   NCEP2STD=.TRUE.,
@@ -47,8 +47,7 @@ cd $DATA/$m
 EOF
        # JY export err=$?; err_chk
        export err=$?; #err_chk
-       if [ $err -ne 0 ]
-       then
+       if (( err != 0 )); then
           echo "ERROR in $pgm"
           err_chk
        fi

@@ -76,7 +76,7 @@ HOMENHCp1=${HOMENHCp1:-/gpfs/?p1/nhc/save/guidance/storm-data/ncep}
 HOMENHC=${HOMENHC:-/gpfs/dell2/nhc/save/guidance/storm-data/ncep}
 TANK_TROPCY=${TANK_TROPCY:-${DCOMROOT}/us007003}
 
-FIXSYND=${FIXSYND:-$HOMEgfs/fix/fix_am}
+FIXSYND=${FIXSYND:-$HOMEgfs/fix/am}
 USHSYND=${USHSYND:-$HOMEgfs/ush}
 EXECSYND=${EXECSYND:-$HOMEgfs/exec}
 PARMSYND=${PARMSYND:-$HOMEgfs/parm/relo}
@@ -248,7 +248,7 @@ cp $slmask slmask.126
  
 #  Execute program syndat_qctropcy
 
-pgm=$(basename $EXECSYND/syndat_qctropcy)
+pgm=$(basename $EXECSYND/syndat_qctropcy.x)
 export pgm
 if [ -s prep_step ]; then
    set +u
@@ -262,7 +262,7 @@ fi
 echo "$CDATE10"      > cdate10.dat
 export FORT11=slmask.126
 export FORT12=cdate10.dat
-$EXECSYND/syndat_qctropcy >> $pgmout 2> errfile
+${EXECSYND}/${pgm} >> $pgmout 2> errfile
 errqct=$?
 ###cat errfile
 cat errfile >> $pgmout
@@ -384,6 +384,6 @@ then
 fi
     
 #  Write JTWC/FNOC Tcvitals to /com path since not saved anywhere else
-[ $SENDCOM = YES ]  &&  cp fnoc ${COMSP}jtwc-fnoc.tcvitals.$tmmark
+[ $SENDCOM = YES ]  &&  cp fnoc "${COMSP}jtwc-fnoc.tcvitals.${tmmark}"
 
 exit
