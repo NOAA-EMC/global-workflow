@@ -29,9 +29,9 @@ export UTILgfs=$HOMEgfs/util
 export EXECgfs=$HOMEgfs/exec
 export SCRgfs=$HOMEgfs/scripts
 
-export FIXcice=$HOMEgfs/fix/fix_cice
-export FIXmom=$HOMEgfs/fix/fix_mom6
-export FIXreg2grb2=$HOMEgfs/fix/fix_reg2grb2
+export FIXcice=$HOMEgfs/fix/cice
+export FIXmom=$HOMEgfs/fix/mom6
+export FIXreg2grb2=$HOMEgfs/fix/reg2grb2
 
 ########################################################################
 
@@ -74,7 +74,7 @@ export MODE="@MODE@" # cycled/forecast-only
 # CLEAR
 ####################################################
 # Build paths relative to $HOMEgfs
-export FIXgsi="$HOMEgfs/fix/fix_gsi"
+export FIXgsi="$HOMEgfs/fix/gsi"
 export HOMEfv3gfs="$HOMEgfs/sorc/fv3gfs.fd"
 export HOMEpost="$HOMEgfs"
 export HOMEobsproc="$BASE_GIT/obsproc/v1.0.2"

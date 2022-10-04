@@ -60,8 +60,8 @@ nlat=$((2*res))
 nlon=$((4*res))
 
 export USHgldas=${USHgldas:?}
-export FIXgldas=${FIXgldas:-${HOMEgfs}/fix/fix_gldas}
-export topodir=${topodir:-${HOMEgfs}/fix/fix_fv3_gmted2010/${CASE}/}
+export FIXgldas=${FIXgldas:-${HOMEgfs}/fix/gldas}
+export topodir=${topodir:-${HOMEgfs}/fix/orog/${CASE}}
 
 DATA=${DATA:-${pwd}/gldastmp$$}
 mkdata=NO

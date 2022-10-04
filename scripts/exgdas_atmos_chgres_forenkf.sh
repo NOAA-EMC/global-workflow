@@ -21,7 +21,7 @@ source "$HOMEgfs/ush/preamble.sh"
 
 #  Directories.
 pwd=$(pwd)
-export FIXgsm=${FIXgsm:-$HOMEgfs/fix/fix_am}
+export FIXgsm=${FIXgsm:-$HOMEgfs/fix/am}
 
 # Base variables
 CDATE=${CDATE:-"2001010100"}

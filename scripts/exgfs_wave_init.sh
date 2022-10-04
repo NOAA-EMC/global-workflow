@@ -44,7 +44,7 @@ source "$HOMEgfs/ush/preamble.sh"
   echo ' '
   echo "Starting at : $(date)"
   echo ' '
-  ${TRACE_ON:-set -x}
+  set_trace
 
 # Script will run only if pre-defined NTASKS
 #     The actual work is distributed over these tasks.
@@ -58,7 +58,7 @@ source "$HOMEgfs/ush/preamble.sh"
   echo ' '
   echo " Script set to run with $NTASKS tasks "
   echo ' '
-  ${TRACE_ON:-set -x}
+  set_trace
 
 
 # --------------------------------------------------------------------------- #
@@ -68,7 +68,7 @@ source "$HOMEgfs/ush/preamble.sh"
   echo 'Preparing input files :'
   echo '-----------------------'
   echo ' '
-  ${TRACE_ON:-set -x}
+  set_trace
 
 # 1.a Model definition files
 
@@ -88,14 +88,14 @@ source "$HOMEgfs/ush/preamble.sh"
     then
       set +x
       echo " Mod def file for $grdID found in ${COMIN}/rundata. copying ...."
-      ${TRACE_ON:-set -x}
+      set_trace
       cp $COMIN/rundata/${CDUMP}wave.mod_def.${grdID} mod_def.$grdID
 
     else
       set +x
       echo " Mod def file for $grdID not found in ${COMIN}/rundata. Setting up to generate ..."
       echo ' '
-      ${TRACE_ON:-set -x}
+      set_trace
       if [ -f $PARMwave/ww3_grid.inp.$grdID ]
       then
         cp $PARMwave/ww3_grid.inp.$grdID ww3_grid.inp.$grdID
@@ -107,7 +107,7 @@ source "$HOMEgfs/ush/preamble.sh"
         echo ' '
         echo "   ww3_grid.inp.$grdID copied ($PARMwave/ww3_grid.inp.$grdID)."
         echo ' '
-        ${TRACE_ON:-set -x}
+        set_trace
       else
         set +x
         echo ' '
@@ -116,7 +116,7 @@ source "$HOMEgfs/ush/preamble.sh"
         echo '*********************************************************** '
         echo "                                grdID = $grdID"
         echo ' '
-        ${TRACE_ON:-set -x}
+        set_trace
         err=2;export err;${errchk}
       fi
 
@@ -141,7 +141,7 @@ source "$HOMEgfs/ush/preamble.sh"
     echo ' '
     echo " Generating $nmoddef mod def files"
     echo ' '
-    ${TRACE_ON:-set -x}
+    set_trace
 
 # Set number of processes for mpmd
     wavenproc=$(wc -l cmdfile | awk '{print $1}')
@@ -154,7 +154,7 @@ source "$HOMEgfs/ush/preamble.sh"
     echo "   Executing the mod_def command file at : $(date)"
     echo '   ------------------------------------'
     echo ' '
-    ${TRACE_ON:-set -x}
+    set_trace
     if [ "$NTASKS" -gt '1' ]
     then
       if [ ${CFP_MP:-"NO"} = "YES" ]; then
@@ -177,7 +177,7 @@ source "$HOMEgfs/ush/preamble.sh"
       echo '********************************************************'
       echo '     See Details Below '
       echo ' '
-      ${TRACE_ON:-set -x}
+      set_trace
     fi
 
   fi
@@ -192,7 +192,7 @@ source "$HOMEgfs/ush/preamble.sh"
       echo ' '
       echo " mod_def.$grdID succesfully created/copied "
       echo ' '
-      ${TRACE_ON:-set -x}
+      set_trace
     else
       set +x
       echo ' '
@@ -202,7 +202,7 @@ source "$HOMEgfs/ush/preamble.sh"
       echo "                                grdID = $grdID"
       echo ' '
       sed "s/^/$grdID.out : /g"  $grdID.out
-      ${TRACE_ON:-set -x}
+      set_trace
       err=3;export err;${errchk}
     fi
   done

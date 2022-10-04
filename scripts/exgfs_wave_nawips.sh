@@ -90,7 +90,7 @@ while [ $fhcnt -le $FHMAX_WAV ]; do
         echo '**************************** '
         echo ' '
         echo $msg
-        ${TRACE_ON:-set -x}
+        set_trace
         echo "$RUNwave $grdID ${fhr} prdgen $date $cycle : GRIB file missing." >> $wavelog
         err=1;export err;${errchk} || exit ${err}
       fi
@@ -110,7 +110,7 @@ while [ $fhcnt -le $FHMAX_WAV ]; do
         echo '************************************************************* '
         echo ' '
         echo $msg
-        #${TRACE_ON:-set -x}
+        #set_trace
         echo "$RUNwave $grdID prdgen $date $cycle : error in grbindex." >> $wavelog
         err=2;export err;err_chk
       else
