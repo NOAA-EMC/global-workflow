@@ -9,6 +9,7 @@ declare -a Build_prg=("Build_ufs_model" \
                       "Build_gsi_monitor" \
                       "Build_ww3_prepost" \
                       "Build_reg2grb2" \
+                      "Build_gdas" \
                       "Build_gldas" \
                       "Build_upp" \
                       "Build_ufs_utils" \
