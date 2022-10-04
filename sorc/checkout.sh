@@ -148,8 +148,8 @@ shift $((OPTIND-1))
 
 export topdir=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 export logdir="${topdir}/logs"
-mkdir -p "${logdir}
-"
+mkdir -p "${logdir}"
+
 # The checkout version should always be a speciifc commit (hash or tag), not a branch
 errs=0
 checkout "gfs_utils.fd"    "https://github.com/NOAA-EMC/gfs-utils"              "93898e1"          ; errs=$((errs + $?))
