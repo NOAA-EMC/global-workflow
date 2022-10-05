@@ -2,6 +2,8 @@
 
 #--make symbolic links for EMC installation and hardcopies for NCO delivery
 
+trap 'echo "${BASH_SOURCE[0]} encounted an error at line ${LINENO} (rc=$?)"' ERR
+
 function usage() {
   cat << EOF
 Builds all of the global-workflow components by calling the individual build
@@ -15,9 +17,10 @@ Usage: ${BASH_SOURCE[0]} [-h][-o]
 EOF
   exit 1
 }
+
 set -eu
 
-RUN_ENVIR="EMC"
+RUN_ENVIR="emc"
 
 # Reset option counter in case this script is sourced
 OPTIND=1
@@ -26,7 +29,7 @@ while getopts ":ho" option; do
     h) usage ;;
     o) 
       echo "-o option received, configuring for NCO"
-      RUN_ENVIR="NCO";;
+      RUN_ENVIR="nco";;
     :)
       echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
       usage
@@ -105,7 +108,7 @@ done
 
 if [ -d "${script_dir}/ufs_utils.fd" ]; then
   cd "${script_dir}/ufs_utils.fd/fix" || exit 1
-  ./link_fixdirs.sh "${RUN_ENVIR}" "${machine}"
+  ./link_fixdirs.sh "${RUN_ENVIR}" "${machine}" 2> /dev/null
 fi
 
 
@@ -420,6 +423,7 @@ if [[ "${RUN_ENVIR}" == "nco" ]] ; then
 fi
 #------------------------------
 
+echo "${BASH_SOURCE[0]} completed successfully"
 
 exit 0
 
