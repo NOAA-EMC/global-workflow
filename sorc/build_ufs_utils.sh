@@ -1,10 +1,8 @@
 #! /usr/bin/env bash
 set -eux
 
-source ./machine-setup.sh > /dev/null 2>&1
-cwd=$(pwd)
-
-cd ufs_utils.fd
+script_dir=$(dirname "${BASH_SOURCE[0]}")
+cd "${script_dir}/ufs_utils.fd" || exit 1
 
 ./build_all.sh
 

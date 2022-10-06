@@ -155,12 +155,12 @@ if [[ $RUN_ENVIR == "emc" ]]; then
 
 	#   Turn off assimilation of S-NPP CrIS
 	if [[ "$CDATE" -ge "2021052118" && "$CDATE" -lt "2021092206" ]]; then
-		export SATINFO=$FIXgsi/gfsv16_historical/global_satinfo.txt.2021052118 
+		export SATINFO=$FIXgsi/gfsv16_historical/global_satinfo.txt.2021052118
 	fi
 
 	#   Turn off assimilation of MetOp-A IASI
 	if [[ "$CDATE" -ge "2021092206" && "$CDATE" -lt "2021102612" ]]; then
-		export SATINFO=$FIXgsi/gfsv16_historical/global_satinfo.txt.2021092206 
+		export SATINFO=$FIXgsi/gfsv16_historical/global_satinfo.txt.2021092206
 	fi
 
 	#   NOTE:  

@@ -13,8 +13,7 @@ declare -a Build_prg=("Build_ufs_model" \
                       "Build_upp" \
                       "Build_ufs_utils" \
                       "Build_gfs_wafs" \
-                      "Build_workflow_utils" \
-                      "Build_gfs_util")
+                      "Build_gfs_utils")
 
 #
 # function parse_cfg: read config file and retrieve the values

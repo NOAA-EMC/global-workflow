@@ -83,15 +83,14 @@ while [ $fhcnt -le $FHMAX_WAV ]; do
         sleep 20
       fi
       if [ $icnt -ge $maxtries ]; then
-        msg="ABORTING after 5 minutes of waiting for $GRIBIN."
-        postmsg "$jlogfile" "$msg"
+        echo "ABORTING after 5 minutes of waiting for $GRIBIN."
         echo ' '
         echo '**************************** '
         echo '*** ERROR : NO GRIB FILE *** '
         echo '**************************** '
         echo ' '
         echo $msg
-        ${TRACE_ON:-set -x}
+        set_trace
         echo "$RUNwave $grdID ${fhr} prdgen $date $cycle : GRIB file missing." >> $wavelog
         err=1;export err;${errchk} || exit ${err}
       fi
@@ -103,8 +102,7 @@ while [ $fhcnt -le $FHMAX_WAV ]; do
                                           $GRIBIN 1> out 2>&1
       OK=$?
       if [ "$OK" != '0' ]; then 
-        msg="ABNORMAL EXIT: ERROR IN interpolation the global grid"
-        postmsg "$jlogfile" "$msg"
+        echo "ABNORMAL EXIT: ERROR IN interpolation the global grid"
         #set +x
         echo ' '
         echo '************************************************************* '
@@ -112,7 +110,7 @@ while [ $fhcnt -le $FHMAX_WAV ]; do
         echo '************************************************************* '
         echo ' '
         echo $msg
-        #${TRACE_ON:-set -x}
+        #set_trace
         echo "$RUNwave $grdID prdgen $date $cycle : error in grbindex." >> $wavelog
         err=2;export err;err_chk
       else

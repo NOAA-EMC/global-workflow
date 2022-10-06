@@ -1,8 +1,8 @@
 #! /usr/bin/env bash
 set -eux
 
-source ./machine-setup.sh > /dev/null 2>&1
-cwd=$(pwd)
+script_dir=$(dirname "${BASH_SOURCE[0]}")
+cd "${script_dir}" || exit 1
 
 # Check final exec folder exists
 if [ ! -d "../exec" ]; then

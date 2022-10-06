@@ -30,8 +30,8 @@ if [ $VRFYFITS = "YES" ]; then
 
     export fit_ver="newm.1.3"
     export fitdir="$BASE_GIT/verif/global/Fit2Obs/${fit_ver}/batrun"
-    export PRVT=$HOMEgfs/fix/fix_gsi/prepobs_errtable.global
-    export HYBLEVS=$HOMEgfs/fix/fix_am/global_hyblev.l${LEVS}.txt
+    export PRVT=$HOMEgfs/fix/gsi/prepobs_errtable.global
+    export HYBLEVS=$HOMEgfs/fix/am/global_hyblev.l${LEVS}.txt
     export CUE2RUN=$QUEUE
 
     export VBACKUP_FITS=24
@@ -59,6 +59,7 @@ fi
 if [ $VRFYRAD = "YES" -o $VRFYMINMON = "YES" -o $VRFYOZN = "YES" ]; then
 
     export envir="para"
+    export COM_IN=$ROTDIR
 
     # Radiance Monitoring
     if [[ "$VRFYRAD" == "YES" && "$CDUMP" == "$CDFNL" ]] ; then
@@ -99,12 +100,13 @@ fi
 # Cyclone genesis and cyclone track verification
 #-------------------------------------------------
 
-export ens_tracker_ver=v1.1.15.4
-export HOMEens_tracker=$BASE_GIT/TC_tracker/TC_tracker.${ens_tracker_ver}
+export ens_tracker_ver=v1.1.15.5
+export HOMEens_tracker=$BASE_GIT/TC_tracker/${ens_tracker_ver}
 
 if [ "$VRFYTRAK" = "YES" ]; then
 
     export TRACKERSH="$HOMEgfs/jobs/JGFS_ATMOS_CYCLONE_TRACKER"
+    export COMINsyn=${COMINsyn:-$(compath.py ${envir}/com/gfs/${gfs_ver})/syndat}
     if [ "$CDUMP" = "gdas" ]; then
         export FHOUT_CYCLONE=3
         export FHMAX_CYCLONE=$FHMAX
@@ -112,7 +114,6 @@ if [ "$VRFYTRAK" = "YES" ]; then
         export FHOUT_CYCLONE=6
         export FHMAX_CYCLONE=$(( FHMAX_GFS<240 ? FHMAX_GFS : 240 ))
     fi
-    export COMINsyn=${COMINsyn:-${COMROOT}/gfs/prod/syndat}
 fi
 
 
@@ -136,7 +137,6 @@ if [[ "$RUNMOS" == "YES" && "$CDUMP" == "gfs" ]]; then
         export RUNGFSMOSSH=""
     fi
 fi
-
 
 
 echo "END: config.vrfy"

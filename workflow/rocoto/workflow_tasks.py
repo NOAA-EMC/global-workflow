@@ -98,7 +98,13 @@ class Tasks:
 
         memory = task_config.get(f'memory_{task_name}', None)
 
-        native = '--export=NONE' if scheduler in ['slurm'] else None
+        native = None
+        if scheduler in ['pbspro']:
+            native = '-l debug=true,place=vscatter'
+            if task_config.get('is_exclusive', False):
+                native += ':exclhost'
+        elif scheduler in ['slurm']:
+            native = '--export=NONE'
 
         queue = task_config['QUEUE']
         if task_name in Tasks.SERVICE_TASKS and scheduler not in ['slurm']:
