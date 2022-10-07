@@ -41,12 +41,12 @@ elif [[ "$machine" = "ORION" ]]; then
    export npe_node_max=40
 fi
 
-if [ $step = "prep" -o $step = "prepbufr" ]; then
-    eval "export wtime_$step='00:45:00'"
-    eval "export npe_$step=4"
-    eval "export npe_node_$step=2"
-    eval "export nth_$step=1"
-    eval "export memory_$step=40G"
+if [ $step = "prep" ]; then
+    export wtime_prep='00:45:00'
+    export npe_prep=4
+    export npe_node_prep=2
+    export nth_prep=1
+    export memory_prep="40G"
 
 elif [ $step = "aerosol_init" ]; then
     export wtime_aerosol_init="00:05:00"
