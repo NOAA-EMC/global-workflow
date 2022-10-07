@@ -207,16 +207,16 @@ EOF
    ${USHradmon}/rstprod.sh
 
    if compgen -G "bcoef*.ieee_d*" > /dev/null || compgen -G "bcoef*.ctl*" > /dev/null; then
-     tar_file=radmon_bcoef.tar
+     tar_file=bcoef.${PDATE}.tar
      tar -cf $tar_file bcoef*.ieee_d* bcoef*.ctl*
      ${COMPRESS} ${tar_file}
-     mv $tar_file.${Z} ${TANKverf_rad}
+     mv $tar_file.gz ${TANKverf_rad}
 
      if [[ $RAD_AREA = "rgn" ]]; then
         cwd=$(pwd)
         cd ${TANKverf_rad}
-        tar -xf ${tar_file}.${Z}
-        rm ${tar_file}.${Z}
+        tar -xf ${tar_file}.gz
+        rm ${tar_file}.gz
         cd ${cwd}
      fi
    fi
