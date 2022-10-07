@@ -10,7 +10,7 @@ status=$?
 
 ###############################################################
 # Source relevant configs
-configs="base prep prepbufr"
+configs="base prep"
 for config in $configs; do
     . $EXPDIR/config.${config}
     status=$?
@@ -110,7 +110,7 @@ if [ $MAKE_PREPBUFR = "YES" ]; then
         export MAKE_NSSTBUFR="NO"
     fi
 
-    $HOMEobsproc_network/jobs/JGLOBAL_PREP
+    $HOMEobsproc/jobs/JOBSPROC_GLOBAL_PREP
     status=$?
     [[ $status -ne 0 ]] && exit $status
 
