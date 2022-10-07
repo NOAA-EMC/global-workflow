@@ -57,3 +57,11 @@ cd $ECF_DIR/scripts/gfs/atmos/post_processing/grib_wafs
 echo "Linking gfs/atmos/post_processing/grib_wafs ..."
 fhrs=($(seq 0 6 120))
 link_master_to_fhr "jgfs_atmos_wafs" "$fhrs"
+
+# EnKF GDAS earc files
+if [ $RUN_ENVIR == "emc" ]; then
+  cd $ECF_DIR/scripts/workflow_manager/cycled/enkfgdas
+  echo "Linking enkfgdas/earc ..."
+  grps=($(seq 0 8))
+  link_master_to_grp "jenkfgdas_emc_earc" "$grps"
+fi

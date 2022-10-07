@@ -1,0 +1,189 @@
+#!/bin/ksh -x
+
+export RUN_ENVIR=${RUN_ENVIR:-"nco"}
+export PS4='$SECONDS + '
+date
+
+
+#############################
+# Source relevant config files
+#############################
+export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
+configs="base earc"
+config_path=${EXPDIR:-$NWROOT/gfs.${gfs_ver}/parm/config}
+for config in $configs; do
+    . $config_path/config.$config
+    status=$?
+    [[ $status -ne 0 ]] && exit $status
+done
+
+
+##############################################
+# Obtain unique process id (pid) and make temp directory
+##############################################
+export pid=${pid:-$$}
+export outid=${outid:-"LL$job"}
+
+export DATA=${DATA:-${DATAROOT}/${jobid:?}}
+mkdir -p $DATA
+cd $DATA
+
+
+##############################################
+# Run setpdy and initialize PDY variables
+##############################################
+export cycle="t${cyc}z"
+setpdy.sh
+. ./PDY
+
+
+##############################################
+# Determine Job Output Name on System
+##############################################
+export pgmout="OUTPUT.${pid}"
+export pgmerr=errfile
+
+
+##############################################
+# Set variables used in the script
+##############################################
+export CDATE=${CDATE:-${PDY}${cyc}}
+export CDUMP=${CDUMP:-${RUN:-"gfs"}}
+export COMPONENT=${COMPONENT:-atmos}
+n=$((ENSGRP))
+
+##############################################
+# Begin JOB SPECIFIC work
+##############################################
+
+# ICS are restarts and always lag INC by $assim_freq hours.
+EARCINC_CYC=$ARCH_CYC
+EARCICS_CYC=$((ARCH_CYC-assim_freq))
+if [ $EARCICS_CYC -lt 0 ]; then
+    EARCICS_CYC=$((EARCICS_CYC+24))
+fi
+
+# EnKF update in GFS, GDAS or both
+CDUMP_ENKF=$(echo ${EUPD_CYC:-"gdas"} | tr a-z A-Z)
+
+export ARCH_LIST="$ROTDIR/enkf${CDUMP}.$PDY/$cyc/$COMPONENT/earc$ENSGRP"
+[[ -d $ARCH_LIST ]] && rm -rf $ARCH_LIST
+mkdir -p $ARCH_LIST
+cd $ARCH_LIST
+
+$HOMEgfs/ush/hpssarch_gen.sh enkf${CDUMP}
+status=$?
+if [ $status -ne 0 ]; then
+   echo "$HOMEgfs/ush/hpssarch_gen.sh enkf${CDUMP} failed, ABORT!"
+   exit $status
+fi
+
+cd $ROTDIR
+
+##############################################
+# ENSGRP > 0 archives a group of ensemble members
+##############################################
+firstday=$($NDATE +24 $SDATE)
+if [[ $ENSGRP -gt 0 ]] && [[ $HPSSARCH = "YES" ]]; then
+
+#--display status and location info
+echo "Archive file is running offline to increase parallel performance"
+export ATARDIR=$ATARDIR
+export JOB_LOG_DIR=$PBS_O_WORKDIR
+
+#--determine when to save ICs for warm start
+   SAVEWARMICA="NO"
+   SAVEWARMICB="NO"
+   mm=`echo $CDATE|cut -c 5-6`
+   dd=`echo $CDATE|cut -c 7-8`
+   nday=$(( (mm-1)*30+dd ))
+   mod=$(($nday % $ARCH_WARMICFREQ))
+   if [ $CDATE -eq $firstday -a $cyc -eq $EARCINC_CYC ]; then SAVEWARMICA="YES" ; fi
+   if [ $CDATE -eq $firstday -a $cyc -eq $EARCICS_CYC ]; then SAVEWARMICB="YES" ; fi
+   if [ $mod -eq 0 -a $cyc -eq $EARCINC_CYC ]; then SAVEWARMICA="YES" ; fi
+   if [ $mod -eq 0 -a $cyc -eq $EARCICS_CYC ]; then SAVEWARMICB="YES" ; fi
+
+   if [ $EARCICS_CYC -eq 18 ]; then
+       nday1=$((nday+1))
+       mod1=$(($nday1 % $ARCH_WARMICFREQ))
+       if [ $mod1 -eq 0 -a $cyc -eq $EARCICS_CYC ] ; then SAVEWARMICB="YES" ; fi
+       if [ $mod1 -ne 0 -a $cyc -eq $EARCICS_CYC ] ; then SAVEWARMICB="NO" ; fi
+       if [ $CDATE -eq $SDATE -a $cyc -eq $EARCICS_CYC ] ; then SAVEWARMICB="YES" ; fi
+   fi
+
+   if [ $CDATE -gt $SDATE ]; then # Don't run for first half cycle
+
+     export TRANSFER_TARGET_FILE=enkf${CDUMP}_grp${n}
+     export TRANSFER_TARGET_FILE_2D=enkf${CDUMP}_grp${ENSGRP}
+     ${HOME_emc_ecf_wm}/scripts/hpss_global_archive_driver.sh
+     status=$?
+     if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
+         echo "OFFLINE TAR $CDATE enkf${CDUMP}_grp${ENSGRP}.tar failed"
+         exit $status
+     fi
+
+     if [ $SAVEWARMICA = "YES" -a $cyc -eq $EARCINC_CYC ]; then
+       export TRANSFER_TARGET_FILE=enkf${CDUMP}_restarta_grp${n}
+       export TRANSFER_TARGET_FILE_2D=enkf${CDUMP}_restarta_grp${ENSGRP}
+       ${HOME_emc_ecf_wm}/scripts/hpss_global_archive_driver.sh
+       status=$?
+       if [ $status -ne 0 ]; then
+           echo "OFFLINE TAR $CDATE enkf${CDUMP}_restarta_grp${ENSGRP}.tar failed"
+           exit $status
+       fi
+     fi
+
+     if [ $SAVEWARMICB = "YES"  -a $cyc -eq $EARCICS_CYC ]; then
+       export TRANSFER_TARGET_FILE=enkf${CDUMP}_restartb_grp${n}
+       export TRANSFER_TARGET_FILE_2D=enkf${CDUMP}_restartb_grp${ENSGRP}
+       ${HOME_emc_ecf_wm}/scripts/hpss_global_archive_driver.sh
+       status=$?
+       if [ $status -ne 0 ]; then
+           echo "OFFLINE TAR $CDATE enkf${CDUMP}_restartb_grp${ENSGRP}.tar failed"
+           exit $status
+       fi
+     fi
+
+   fi # CDATE>SDATE
+
+fi
+
+
+###################################################################
+# ENSGRP 0 archives ensemble means and copy data to online archive
+if [ $ENSGRP -eq 0 ]; then
+
+    if [ $HPSSARCH = "YES" ]; then
+        export TRANSFER_TARGET_FILE=enkf${CDUMP}
+        ${HOME_emc_ecf_wm}/scripts/hpss_global_archive_driver.sh
+        status=$?
+        if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
+            echo "OFFLINE TAR $CDATE enkf${CDUMP}.tar failed"
+            exit $status
+        fi
+    fi
+
+    #-- Archive online for verification and diagnostics
+    [[ ! -d $ARCDIR ]] && mkdir -p $ARCDIR
+    cd $ARCDIR
+
+    $NCP $ROTDIR/enkf${CDUMP}.$PDY/$cyc/$COMPONENT/${CDUMP}.t${cyc}z.enkfstat         enkfstat.${CDUMP}.$CDATE
+    $NCP $ROTDIR/enkf${CDUMP}.$PDY/$cyc/$COMPONENT/${CDUMP}.t${cyc}z.gsistat.ensmean  gsistat.${CDUMP}.${CDATE}.ensmean
+
+    if [ $CDUMP_ENKF != "GDAS" ]; then
+                $NCP $ROTDIR/enkfgfs.$PDY/$cyc/$COMPONENT/${CDUMP}.t${cyc}z.enkfstat         enkfstat.gfs.$CDATE
+                $NCP $ROTDIR/enkfgfs.$PDY/$cyc/$COMPONENT/${CDUMP}.t${cyc}z.gsistat.ensmean  gsistat.gfs.${CDATE}.ensmean
+    fi
+
+fi
+
+echo "ENDED NORMALLY."
+
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd $DATAROOT
+[[ $KEEPDATA = "NO" ]] && rm -rf $DATA
+
+date
+exit 0
