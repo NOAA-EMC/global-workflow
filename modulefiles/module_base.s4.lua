@@ -45,4 +45,7 @@ load(pathJoin("miniconda", "3.8-s4"))
 
 load(pathJoin("cdo", "1.9.8"))
 
+prepend_path("MODULEPATH", pathJoin("/data/prod/glopara/git/prepobs/v1.0.1/modulefiles"))
+load(pathJoin("prepobs", "1.0.1"))
+
 whatis("Description: GFS run environment")
