@@ -25,6 +25,13 @@ else if ( { test -d /work } ) then
         source /apps/lmod/init/$__ms_shell
     endif
     module purge
+else if ( { test -d /data/prod } ) then
+    # We are on SSEC S4
+    if ( ! { module help >& /dev/null } ) then
+        source /usr/share/lmod/lmod/init/$__ms_shell
+    endif
+    source /etc/profile
+    module purge
 else if ( { test -d /glade } ) then
     # We are on NCAR Yellowstone
     if ( ! { module help >& /dev/null } ) then

@@ -136,6 +136,7 @@ def edit_baseconfig(host, inputs):
         "@QUEUE@": host.info["queue"],
         "@QUEUE_SERVICE@": host.info["queue_service"],
         "@PARTITION_BATCH@": host.info["partition_batch"],
+        "@PARTITION_SERVICE@": host.info["partition_service"],
         "@EXP_WARM_START@": inputs.warm_start,
         "@MODE@": inputs.mode,
         "@CHGRP_RSTPROD@": host.info["chgrp_rstprod"],
@@ -143,6 +144,8 @@ def edit_baseconfig(host, inputs):
         "@HPSSARCH@": host.info["hpssarch"],
         "@LOCALARCH@": host.info["localarch"],
         "@ATARDIR@": host.info["atardir"],
+        "@MAKE_NSSTBUFR@": host.info["make_nsstbufr"],
+        "@MAKE_ACFTBUFR@": host.info["make_acftbufr"],
         "@gfs_cyc@": inputs.gfs_cyc,
         "@APP@": inputs.app,
     }

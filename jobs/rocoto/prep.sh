@@ -28,6 +28,7 @@ status=$?
 export COMPONENT=${COMPONENT:-atmos}
 export OPREFIX="${CDUMP}.t${cyc}z."
 export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc/$COMPONENT"
+export MAKE_PREPBUFR=${MAKE_PREPBUFR:-"YES"}
 [[ ! -d $COMOUT ]] && mkdir -p $COMOUT
 
 ###############################################################
@@ -84,11 +85,11 @@ fi
 
 ###############################################################
 # Generate prepbufr files from dumps or copy from OPS
-if [ $DO_MAKEPREPBUFR = "YES" ]; then
+if [ $MAKE_PREPBUFR = "YES" ]; then
     if [ $ROTDIR_DUMP = "YES" ]; then
-        rm $COMOUT/${OPREFIX}prepbufr
-        rm $COMOUT/${OPREFIX}prepbufr.acft_profiles
-        rm $COMOUT/${OPREFIX}nsstbufr
+        rm -f $COMOUT/${OPREFIX}prepbufr
+        rm -f $COMOUT/${OPREFIX}prepbufr.acft_profiles
+        rm -f $COMOUT/${OPREFIX}nsstbufr
     fi
 
     export job="j${CDUMP}_prep_${cyc}"
@@ -105,7 +106,7 @@ if [ $DO_MAKEPREPBUFR = "YES" ]; then
     fi
 
     # Disable creating NSSTBUFR if desired, copy from DMPDIR instead
-    if [[ ${DO_MAKE_NSSTBUFR:-"NO"} = "NO" ]]; then
+    if [[ ${MAKE_NSSTBUFR:-"NO"} = "NO" ]]; then
         export MAKE_NSSTBUFR="NO"
     fi
 
@@ -114,7 +115,7 @@ if [ $DO_MAKEPREPBUFR = "YES" ]; then
     [[ $status -ne 0 ]] && exit $status
 
     # If creating NSSTBUFR was disabled, copy from DMPDIR if appropriate.
-    if [[ ${DO_MAKE_NSSTBUFR:-"NO"} = "NO" ]]; then
+    if [[ ${MAKE_NSSTBUFR:-"NO"} = "NO" ]]; then
         [[ $DONST = "YES" ]] && $NCP $DMPDIR/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}/${COMPONENT}/${OPREFIX}nsstbufr $COMOUT/${OPREFIX}nsstbufr
     fi
 

@@ -8,7 +8,7 @@ echo "BEGIN: config.prep"
 # Get task specific resources
 . $EXPDIR/config.resources prep
 
-export DO_MAKEPREPBUFR="YES"   # if NO, will copy prepbufr from globaldump
+export MAKE_PREPBUFR="YES"   # if NO, will copy prepbufr from globaldump
 export cdate10=${PDY}${cyc}
 
 # Relocation and syndata QC
@@ -65,6 +65,5 @@ if [[ "$CDATE" -ge "2020102200" ]]; then
 else
   export DTYPS_nsst='sfcshp dbuoyb mbuoyb tesac bathy trkob'
 fi
-export DO_MAKE_NSSTBUFR="NO"   # if NO, will copy nsstbufr from globaldump
 
 echo "END: config.prep"
