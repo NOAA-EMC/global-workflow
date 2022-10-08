@@ -150,8 +150,6 @@ EOF
     nfiles=$(ls -1 $DATA/INPUT/* | wc -l)
     if [ $nfiles -le 0 ]; then
       echo SUB ${FUNCNAME[0]}: Initial conditions must exist in $DATA/INPUT, ABORT!
-      msg="SUB ${FUNCNAME[0]}: Initial conditions must exist in $DATA/INPUT, ABORT!"
-      postmsg "$jlogfile" "$msg"
       exit 1
     fi
   fi
