@@ -43,6 +43,8 @@ if [ $VRFYFITS = "YES" ]; then
 
     if [ $machine = "HERA" ]; then
         export PREPQFITSH="$fitdir/subfits_hera_slurm"
+    elif [ $machine = "S4" ]; then
+        export PREPQFITSH="$fitdir/subfits_s4_slurm"
     elif [ $machine = "ORION" ]; then
         export PREPQFITSH="$fitdir/subfits_orion_netcdf"
     else
@@ -129,10 +131,10 @@ fi
 
 if [[ "$RUNMOS" == "YES" && "$CDUMP" == "gfs" ]]; then
 
-    if [ $machine = "HERA" ] ; then
-        export RUNGFSMOSSH="$HOMEgfs/scripts/run_gfsmos_master.sh.hera"
+    if [ "$machine" = "HERA" ] ; then
+        export RUNGFSMOSSH="${HOMEgfs}/scripts/run_gfsmos_master.sh.hera"
     else
-        echo "WARNING: MOS package is not enabled on $machine!"
+        echo "WARNING: MOS package is not enabled on ${machine}!"
         export RUNMOS="NO"
         export RUNGFSMOSSH=""
     fi

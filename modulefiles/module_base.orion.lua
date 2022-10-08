@@ -47,6 +47,9 @@ load(pathJoin("slurm", "19.05.3-2"))
 
 load(pathJoin("cdo", "1.9.5"))
 
+prepend_path("MODULEPATH", pathJoin("/work/noaa/global/glopara/git/prepobs/v1.0.1/modulefiles"))
+load(pathJoin("prepobs", "1.0.1"))
+
 -- Temporary until official hpc-stack is updated
 prepend_path("MODULEPATH", "/work2/noaa/global/wkolczyn/save/hpc-stack/modulefiles/stack")
 load(pathJoin("hpc", "1.2.0"))

@@ -16,6 +16,7 @@ export ACCOUNT="@ACCOUNT@"
 export QUEUE="@QUEUE@"
 export QUEUE_SERVICE="@QUEUE_SERVICE@"
 export PARTITION_BATCH="@PARTITION_BATCH@"
+export PARTITION_SERVICE="@PARTITION_SERVICE@"
 
 # Project to use in mass store:
 HPSS_PROJECT=emc-global
@@ -77,9 +78,7 @@ export MODE="@MODE@" # cycled/forecast-only
 export FIXgsi="$HOMEgfs/fix/gsi"
 export HOMEfv3gfs="$HOMEgfs/sorc/fv3gfs.fd"
 export HOMEpost="$HOMEgfs"
-export HOMEobsproc_prep="$BASE_GIT/obsproc/obsproc_prep.v5.5.0_hpc-stack"
-export HOMEobsproc_network="$BASE_GIT/obsproc/obsproc_global.v3.4.2_hpc-stack"
-export HOMEobsproc_global=$HOMEobsproc_network
+export HOMEobsproc="$BASE_GIT/obsproc/v1.0.2"
 
 # CONVENIENT utility scripts and other environment parameters
 export NCP="/bin/cp -p"
@@ -355,6 +354,12 @@ if [ $DONST = "YES" ]; then export FNTSFA="        "; fi
 
 # The switch to apply SST elevation correction or not
 export nst_anl=.true.
+
+# Make the nsstbufr file on the fly or use the GDA version
+export MAKE_NSSTBUFR="@MAKE_NSSTBUFR@"
+
+# Make the aircraft prepbufr file on the fly or use the GDA version
+export MAKE_ACFTBUFR="@MAKE_ACFTBUFR@"
 
 # Analysis increments to zero in CALCINCEXEC
 export INCREMENTS_TO_ZERO="'liq_wat_inc','icmr_inc'"
