@@ -42,7 +42,7 @@ status=$?
 
 ###############################################################
 export COMPONENT=${COMPONENT:-atmos}
-export CDATEm1=$($NDATE -24 $CDATE)
+export CDATEm1=$($NDATE -06 $CDATE)
 export PDYm1=$(echo $CDATEm1 | cut -c1-8)
 
 export pid=${pid:-$$}
