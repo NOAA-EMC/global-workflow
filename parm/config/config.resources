@@ -387,7 +387,11 @@ elif [ ${step} = "post" ]; then
 
     export wtime_post="02:00:00"
     export wtime_post_gfs="06:00:00"
+    res=$(echo ${CASE} | cut -c2-)
     export npe_post=112
+    if (( npe_post > res )); then
+      export npe_post=${res}
+    fi
     export nth_post=1
     export npe_node_post=12
     export npe_node_dwn=${npe_node_max}
