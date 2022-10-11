@@ -169,7 +169,7 @@ fi
 ################################################################################
 echo
 echo "=============== START TO RUN CYCLONE GENESIS VERIFICATION ==============="
-if [ ${VRFYGENESIS} = "YES" -a ${CDUMP} = "gfs" ]; then
+if [ ${VRFYGENESIS} = "YES" -a "${CDUMP}" = "gfs" ]; then
     ${GENESISSH}
 fi
 
@@ -177,14 +177,14 @@ fi
 ################################################################################
 echo
 echo "=============== START TO RUN CYCLONE GENESIS VERIFICATION (FSU) ==============="
-if [ ${VRFYFSU} = "YES" -a ${CDUMP} = "gfs" ]; then
+if [ ${VRFYFSU} = "YES" -a "${CDUMP}" = "gfs" ]; then
     ${GENESISFSU}
 fi
 
 
 ###############################################################
 # Force Exit out cleanly
-if [ ${KEEPDATA:-"NO"} = "NO" ] ; then rm -rf ${DATAROOT} ; fi
+if [ ${KEEPDATA:-"NO"} = "NO" ] ; then rm -rf "${DATAROOT}" ; fi
 
 
 exit 0
