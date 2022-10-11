@@ -130,8 +130,8 @@ echo "=============== START TO RUN OZMON DATA EXTRACTION ==============="
 if [ "${VRFYOZN}" = "YES" -a "${CDUMP}" = "${CDFNL}" -a "${CDATE}" != "${SDATE}" ]; then
 
     export EXP=${PSLOT}
-    export COMOUT="${ROTDIR/${CDUMP}.${PDY}/${cyc}/${COMPONENT}"
-    export TANKverf_ozn="{$TANKverf_ozn}/stats/${PSLOT}/${CDUMP}.${PDY}/${cyc}"
+    export COMOUT="${ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENT}"
+    export TANKverf_ozn="${TANKverf_ozn}/stats/${PSLOT}/${CDUMP}.${PDY}/${cyc}"
     export TANKverf_oznM1="${TANKverf_ozn}/stats/${PSLOT}/${CDUMP}.${PDYm1c}/${pcyc}"
     export MY_MACHINE=${machine}
 
@@ -146,7 +146,7 @@ echo "=============== START TO RUN MINMON ==============="
 if [ "${VRFYMINMON}" = "YES" -a "${CDATE}" != "${SDATE}" ]; then
 
     export COMOUT="${ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENT}"
-    export M_TANKverfM0="{$M_TANKverf}/stats/${PSLOT}/${CDUMP}.${PDY}/${cyc}"
+    export M_TANKverfM0="${M_TANKverf}/stats/${PSLOT}/${CDUMP}.${PDY}/${cyc}"
     export M_TANKverfM1="${M_TANKverf}/stats/${PSLOT}/${CDUMP}.${PDYm1c}/${pcyc}"
     export MY_MACHINE=${machine}
 
