@@ -198,18 +198,18 @@ EOF
 
 
    ${USHradmon}/rstprod.sh
-   tar_file=bcor.${PDATE}.tar
+   tar_file=radmon_bcor.tar
 
    if compgen -G "bcor*.ieee_d*" > /dev/null || compgen -G "bcor*.ctl*" > /dev/null; then
      tar -cf $tar_file bcor*.ieee_d* bcor*.ctl*
      ${COMPRESS} ${tar_file}
-     mv $tar_file.gz ${TANKverf_rad}/.
+     mv $tar_file.${Z} ${TANKverf_rad}/.
 
      if [[ $RAD_AREA = "rgn" ]]; then
         cwd=$(pwd)
         cd ${TANKverf_rad}
-        tar -xf ${tar_file}.gz
-        rm ${tar_file}.gz
+        tar -xf ${tar_file}.${Z}
+        rm ${tar_file}.${Z}
         cd ${cwd}
      fi
    fi

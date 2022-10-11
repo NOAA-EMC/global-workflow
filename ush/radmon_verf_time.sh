@@ -152,9 +152,9 @@ CYCLE=$cyc
 local_base="local_base"
 if [[ $DO_DATA_RPT -eq 1 ]]; then
 
-   if [[ -e ${base_file}.gz ]]; then
-      $NCP ${base_file}.gz  ./${local_base}.gz
-      ${UNCOMPRESS} ${local_base}.gz
+   if [[ -e ${base_file}.${Z} ]]; then
+      $NCP ${base_file}.${Z}  ./${local_base}.{Z}
+      ${UNCOMPRESS} ${local_base}.${Z}
    else
       $NCP ${base_file}  ./${local_base}
    fi
@@ -253,16 +253,16 @@ EOF
    ${USHradmon}/rstprod.sh
 
    if compgen -G "time*.ieee_d*" > /dev/null || compgen -G "time*.ctl*" > /dev/null; then
-     tar_file=time.${PDATE}.tar
+     tar_file=radmon_time.tar
      tar -cf $tar_file time*.ieee_d* time*.ctl*
      ${COMPRESS} ${tar_file}
-     mv $tar_file.gz ${TANKverf_rad}/.
+     mv $tar_file.${Z} ${TANKverf_rad}/.
 
      if [[ $RAD_AREA = "rgn" ]]; then
         cwd=$(pwd)
         cd ${TANKverf_rad}
-        tar -xf ${tar_file}.gz
-        rm ${tar_file}.gz
+        tar -xf ${tar_file}.${Z}
+        rm ${tar_file}.${Z}
         cd ${cwd}
      fi
    fi

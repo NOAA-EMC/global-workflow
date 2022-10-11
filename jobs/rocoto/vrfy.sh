@@ -44,6 +44,7 @@ status=$?
 export COMPONENT=${COMPONENT:-atmos}
 export CDATEm1=$($NDATE -06 $CDATE)
 export PDYm1=$(echo $CDATEm1 | cut -c1-8)
+export pcyc=$(echo $CDATEm1 | cut -c9-10)
 
 export pid=${pid:-$$}
 export jobid=${job}.${pid}
@@ -111,8 +112,8 @@ if [ $VRFYRAD = "YES" -a $CDUMP = $CDFNL -a $CDATE != $SDATE ]; then
 
     export EXP=$PSLOT
     export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc/$COMPONENT"
-    export TANKverf_rad="$TANKverf/stats/$PSLOT/$CDUMP.$PDY"
-    export TANKverf_radM1="$TANKverf/stats/$PSLOT/$CDUMP.$PDYm1"
+    export TANKverf_rad="$TANKverf/stats/$PSLOT/$CDUMP.$PDY/$cyc"
+    export TANKverf_radM1="$TANKverf/stats/$PSLOT/$CDUMP.$PDYm1/$pcyc"
     export MY_MACHINE=$machine
 
     $VRFYRADSH
@@ -127,8 +128,8 @@ if [ $VRFYOZN = "YES" -a $CDUMP = $CDFNL -a $CDATE != $SDATE ]; then
 
     export EXP=$PSLOT
     export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc/$COMPONENT"
-    export TANKverf_ozn="$TANKverf_ozn/stats/$PSLOT/$CDUMP.$PDY"
-    export TANKverf_oznM1="$TANKverf_ozn/stats/$PSLOT/$CDUMP.$PDYm1"
+    export TANKverf_ozn="$TANKverf_ozn/stats/$PSLOT/$CDUMP.$PDY/$cyc"
+    export TANKverf_oznM1="$TANKverf_ozn/stats/$PSLOT/$CDUMP.$PDYm1/$pcyc"
     export MY_MACHINE=$machine
 
     $VRFYOZNSH
@@ -142,8 +143,8 @@ echo "=============== START TO RUN MINMON ==============="
 if [ $VRFYMINMON = "YES" -a $CDATE != $SDATE ]; then
 
     export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc/$COMPONENT"
-    export M_TANKverfM0="$M_TANKverf/stats/$PSLOT/$CDUMP.$PDY"
-    export M_TANKverfM1="$M_TANKverf/stats/$PSLOT/$CDUMP.$PDYm1"
+    export M_TANKverfM0="$M_TANKverf/stats/$PSLOT/$CDUMP.$PDY/$cyc"
+    export M_TANKverfM1="$M_TANKverf/stats/$PSLOT/$CDUMP.$PDYm1/$pcyc"
     export MY_MACHINE=$machine
 
     $VRFYMINSH

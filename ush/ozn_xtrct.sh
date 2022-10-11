@@ -242,15 +242,13 @@ EOF
 
    done	 # ptype in $ozn_ptype
 
-   horiz_tar=stdout.horiz.${PDATE}.tar
-   tar -cvf ${horiz_tar} stdout.horiz*
-   ${COMPRESS} ${horiz_tar}
-   ${NCP} ${horiz_tar}.gz ${TANKverf_ozn}/horiz/
+   tar -cvf stdout.horiz.tar stdout.horiz*
+   ${COMPRESS} stdout.horiz.tar
+   ${NCP} stdout.horiz.tar.${Z} ${TANKverf_ozn}/horiz/
 
-   time_tar=stdout.time.${PDATE}.tar
-   tar -cvf ${time_tar} stdout.time*
-   ${COMPRESS} ${time_tar}
-   ${NCP} ${time_tar}.gz ${TANKverf_ozn}/time/
+   tar -cvf stdout.time.tar stdout.time*
+   ${COMPRESS} stdout.time.tar
+   ${NCP} stdout.time.tar.${Z} ${TANKverf_ozn}/time/
 fi
 
 #-------------------------------------------------------
