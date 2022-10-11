@@ -19,10 +19,7 @@ if [ ! -d "../exec" ]; then
   mkdir ../exec
 fi
 
-# If NCO wants to build, uncomment this line
-#export PRUNE_4NCO="YES"
-
-./gsi.fd/ush/build_4nco_global.sh
+PRUNE_4NCO=${PRUNE_4NCO:-"YES"} ./gsi.fd/ush/build_4nco_global.sh
 
 exit
 
