@@ -97,7 +97,7 @@ export COMIN="$ROTDIR/$CDUMP.$PDY/$cyc/$COMPONENT"
 export COMIN_GES="$ROTDIR/$CDUMP.$gPDY/$gcyc/$COMPONENT"
 export COMIN_ENS="$ROTDIR/enkf$CDUMP_ENKF.$PDY/$cyc/$COMPONENT"
 export COMOUT_ENS="$ROTDIR/enkf$CDUMP.$PDY/$cyc/$COMPONENT"
-export COMIN_GES_ENS="$ROTDIR/enkf$CDUMP.$gPDY/$gcyc/$COMPONENT"
+export COMIN_GES_ENS="$ROTDIR/enkf$GDUMP.$gPDY/$gcyc/$COMPONENT"
 
 
 ###############################################################

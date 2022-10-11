@@ -80,7 +80,7 @@ fi
 export OPREFIX="${CDUMP}.t${cyc}z."
 export APREFIX="${CDUMP}.t${cyc}z."
 export APREFIX_ENKF="${CDUMP_ENKF}.t${cyc}z."
-export GPREFIX="${CDUMP}.t${gcyc}z."
+export GPREFIX="${GDUMP}.t${gcyc}z."
 export GSUFFIX=${GSUFFIX:-$SUFFIX}
 export ASUFFIX=${ASUFFIX:-$SUFFIX}
 
@@ -96,7 +96,7 @@ fi
 export COMIN="$ROTDIR/$CDUMP.$PDY/$cyc/$COMPONENT"
 export COMIN_ENS="$ROTDIR/enkf$CDUMP_ENKF.$PDY/$cyc/$COMPONENT"
 export COMOUT_ENS="$ROTDIR/enkf$CDUMP.$PDY/$cyc/$COMPONENT"
-export COMIN_GES_ENS="$ROTDIR/enkf$CDUMP.$gPDY/$gcyc/$COMPONENT"
+export COMIN_GES_ENS="$ROTDIR/enkf$GDUMP.$gPDY/$gcyc/$COMPONENT"
 
 
 ###############################################################
