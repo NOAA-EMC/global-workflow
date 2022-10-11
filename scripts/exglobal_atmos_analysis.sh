@@ -317,7 +317,7 @@ else
 fi
 
 # GSI Fix files
-RTMFIX=${RTMFIX:-${CRTM_FIX}}
+RTMFIX=${CRTM_FIX}
 BERROR=${BERROR:-${FIXgsi}/Big_Endian/global_berror.l${LEVS}y${NLAT_A}.f77}
 SATANGL=${SATANGL:-${FIXgsi}/global_satangbias.txt}
 SATINFO=${SATINFO:-${FIXgsi}/global_satinfo.txt}
