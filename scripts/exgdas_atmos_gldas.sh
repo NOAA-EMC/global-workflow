@@ -180,7 +180,7 @@ cat >> fort.141 << EOF
    data_dir_input_grid="${input1}"
    sfc_files_input_grid="${gldas_symd}.${gldas_scyc}0000.sfcanl_data.tile1.nc","${gldas_symd}.${gldas_scyc}0000.sfcanl_data.tile2.nc","${gldas_symd}.${gldas_scyc}0000.sfcanl_data.tile3.nc","${gldas_symd}.${gldas_scyc}0000.sfcanl_data.tile4.nc","${gldas_symd}.${gldas_scyc}0000.sfcanl_data.tile5.nc","${gldas_symd}.${gldas_scyc}0000.sfcanl_data.tile6.nc"
    mosaic_file_input_grid="${CASE}_mosaic.nc"
-   orog_dir_input_grid="${topodir}"
+   orog_dir_input_grid="${topodir}/"
    orog_files_input_grid="${CASE}_oro_data.tile1.nc","${CASE}_oro_data.tile2.nc","${CASE}_oro_data.tile3.nc","${CASE}_oro_data.tile4.nc","${CASE}_oro_data.tile5.nc","${CASE}_oro_data.tile6.nc"
    i_target=${nlon}
    j_target=${nlat}
@@ -244,7 +244,7 @@ cat >> fort.241 << EOF
    data_dir_input_grid="${input2}"
    sfc_files_input_grid="${iau_eymd}.${iau_ecyc}0000.sfcanl_data.tile1.nc","${iau_eymd}.${iau_ecyc}0000.sfcanl_data.tile2.nc","${iau_eymd}.${iau_ecyc}0000.sfcanl_data.tile3.nc","${iau_eymd}.${iau_ecyc}0000.sfcanl_data.tile4.nc","${iau_eymd}.${iau_ecyc}0000.sfcanl_data.tile5.nc","${iau_eymd}.${iau_ecyc}0000.sfcanl_data.tile6.nc"
    mosaic_file_input_grid="${CASE}_mosaic.nc"
-   orog_dir_input_grid="${topodir}"
+   orog_dir_input_grid="${topodir}/"
    orog_files_input_grid="${CASE}_oro_data.tile1.nc","${CASE}_oro_data.tile2.nc","${CASE}_oro_data.tile3.nc","${CASE}_oro_data.tile4.nc","${CASE}_oro_data.tile5.nc","${CASE}_oro_data.tile6.nc"
    i_target=${nlon}
    j_target=${nlat}
@@ -290,7 +290,7 @@ mv  fort.22 "${sfcanl}.gldas"
 
 cat >> fort.42 << EOF
  &config
-   orog_dir_gdas_grid="${topodir}"
+   orog_dir_gdas_grid="${topodir}/"
    mosaic_file_gdas_grid="${CASE}_mosaic.nc"
  /
 EOF
