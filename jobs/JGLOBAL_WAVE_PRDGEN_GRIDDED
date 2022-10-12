@@ -2,22 +2,35 @@
 
 source "$HOMEgfs/ush/preamble.sh"
 
-export DATA=${DATA:-${DATAROOT}/${jobid:?}}
+##############################################
+# make temp directory
+##############################################
+export DATA=${DATAROOT}/${jobid}
 mkdir -p $DATA
 cd $DATA
 
-######################################
-# Set up the cycle variable
-######################################
-export cycle=${cycle:-t${cyc}z}
+
+##############################################
+# Run setpdy and initialize PDY variables
+##############################################
+export cycle="t${cyc}z"
 setpdy.sh
 . ./PDY
+
+
+##############################################
+# Determine Job Output Name on System
+##############################################
+export pid=${pid:-$$}
+export outid=${outid:-"LL$job"}
+export pgmout="OUTPUT.${pid}"
+export pgmerr=errfile
+
 
 # PATH for working directory
 export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
 export COMPONENT="wave"
-export HOMEgfs=${HOMEgfs:-$(dirname $(dirname $0))} # parent directory of current job card
 
 # Add default errchk = err_chk
 export errchk=${errchk:-err_chk}
@@ -44,11 +57,12 @@ fi
 $HOMEgfs/scripts/exgfs_wave_prdgen_gridded.sh
 status=$?
 [[ $status -ne 0 ]] && exit $status
+
 ###################################
 # Remove temp directories
 ###################################
+cd $DATAROOT
 if [ "$KEEPDATA" != "YES" ]; then
-  cd $DATAROOT
   rm -rf $DATA
 fi
 

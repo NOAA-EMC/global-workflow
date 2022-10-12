@@ -2,14 +2,37 @@
 
 source "$HOMEgfs/ush/preamble.sh"
 
-export RUN_ENVIR=${RUN_ENVIR:-"nco"}
+##############################################
+# make temp directory
+##############################################
+export DATA=${DATAROOT}/${jobid}
+mkdir -p $DATA
+cd $DATA
+
+
+##############################################
+# Run setpdy and initialize PDY variables
+##############################################
+export cycle="t${cyc}z"
+setpdy.sh
+. ./PDY
+
+
+##############################################
+# Determine Job Output Name on System
+##############################################
+export pid=${pid:-$$}
+export outid=${outid:-"LL$job"}
+export pgmout="OUTPUT.${pid}"
+export pgmerr=errfile
+
 
 #############################
 # Source relevant config files
 #############################
-configs="base wave waveinit"
 export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
 config_path=${EXPDIR:-$PACKAGEROOT/gfs.${gfs_ver}/parm/config}
+configs="base wave waveinit"
 for config in $configs; do
     . $config_path/config.$config
     status=$?
@@ -30,20 +53,6 @@ export COMPONENT="wave"
 
 # Add default errchk = err_chk
 export errchk=${errchk:-err_chk}
-
-# Create and go to DATA directory
-export DATA=${DATA:-${DATAROOT:?}/${jobid}}
-mkdir -p $DATA
-cd $DATA
-
-cyc=${cyc:-00}
-export cycle=${cycle:-t${cyc}z}
-
-# Set PDY
-setpdy.sh
-. ./PDY
-
-export pgmout=OUTPUT.$$
 
 export MP_PULSE=0
 
