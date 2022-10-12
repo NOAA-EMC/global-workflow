@@ -2,7 +2,30 @@
 
 source "$HOMEgfs/ush/preamble.sh"
 
-export RUN_ENVIR=${RUN_ENVIR:-"nco"}
+##############################################
+# make temp directory
+##############################################
+export DATA=${DATAROOT}/${jobid}
+mkdir -p $DATA
+cd $DATA
+
+
+##############################################
+# Run setpdy and initialize PDY variables
+##############################################
+export cycle="t${cyc}z"
+setpdy.sh
+. ./PDY
+
+
+##############################################
+# Determine Job Output Name on System
+##############################################
+export pid=${pid:-$$}
+export outid=${outid:-"LL$job"}
+export pgmout="OUTPUT.${pid}"
+export pgmerr=errfile
+
 
 #############################
 # Source relevant config files
@@ -23,31 +46,6 @@ done
 . $HOMEgfs/env/${machine}.env esfc
 status=$?
 [[ $status -ne 0 ]] && exit $status
-
-
-##############################################
-# Obtain unique process id (pid) and make temp directory
-##############################################
-export pid=${pid:-$$}
-export outid=${outid:-"LL$job"}
-export DATA=${DATA:-${DATAROOT}/${jobid:?}}
-mkdir -p $DATA
-cd $DATA
-
-
-##############################################
-# Run setpdy and initialize PDY variables
-##############################################
-export cycle="t${cyc}z"
-setpdy.sh
-. ./PDY
-
-
-##############################################
-# Determine Job Output Name on System
-##############################################
-export pgmout="OUTPUT.${pid}"
-export pgmerr=errfile
 
 
 ##############################################

@@ -23,6 +23,7 @@ cd $DATA
 ##############################################
 # Run setpdy and initialize PDY variables
 ##############################################
+export cycle="t${cyc}z"
 setpdy.sh
 . ./PDY
 
