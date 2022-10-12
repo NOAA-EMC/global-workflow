@@ -2,11 +2,28 @@
 
 source "$HOMEgfs/ush/preamble.sh"
 
-############################################
-# GDAS GEMPAK PRODUCT GENERATION
-############################################
-configs="base gempak"
+##########################################################
+# make temp directory
+##########################################################
+export DATA=${DATAROOT}/${jobid}
+mkdir -p $DATA
+cd $DATA
+
+###########################################
+# Run setpdy and initialize PDY variables
+###########################################
+export cycle=${cycle:-t${cyc}z}
+setpdy.sh
+. ./PDY
+
+export pgmout=OUTPUT.$$
+
+#############################
+# Source relevant config files
+#############################
 export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
+config_path=${EXPDIR:-$PACKAGEROOT/gfs.${gfs_ver}/parm/config}
+configs="base gempak"
 for config in $configs; do
     . $EXPDIR/config.${config}
     status=$?
@@ -18,28 +35,10 @@ done
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
-##########################################################
-# obtain unique process id (pid) and make temp directory
-##########################################################
-export DATA=${DATA:-${DATAROOT}/${jobid:?}}
-mkdir -p $DATA
-cd $DATA
-
-######################################
-# Set up the cycle variable
-######################################
-export cycle=${cycle:-t${cyc}z}
-
-###########################################
-# Run setpdy and initialize PDY variables
-###########################################
-setpdy.sh
-. ./PDY
-
 ################################
 # Set up the HOME directory
 ################################
-export HOMEgfs=${HOMEgfs:-${PACKAGEROOT}/gfs.${gfs_ver}}
+export HOMEgfs=${HOMEgfs:-${PACKAGEROOT}/gfs.${gfs_ver}}  # TODO: remove these as they are already defined in config.base
 export EXECgfs=${EXECgfs:-$HOMEgfs/exec}
 export PARMgfs=${PARMgfs:-$HOMEgfs/parm}
 export PARMwmo=${PARMwmo:-$HOMEgfs/parm/wmo}
@@ -82,9 +81,8 @@ if [ $SENDCOM = YES ] ; then
   mkdir -m 775 -p $COMOUT
 fi
 
-export pgmout=OUTPUT.$$
 
-
+# TODO: These actions belong in an ex-script not a j-job
 if [ -f $DATA/poescrip ]; then
    rm $DATA/poescript
 fi
