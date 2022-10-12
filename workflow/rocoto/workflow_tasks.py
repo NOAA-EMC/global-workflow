@@ -106,13 +106,11 @@ class Tasks:
         elif scheduler in ['slurm']:
             native = '--export=NONE'
 
-        queue = task_config['QUEUE']
-        if task_name in Tasks.SERVICE_TASKS and scheduler not in ['slurm']:
-            queue = task_config['QUEUE_SERVICE']
+        queue = task_config['QUEUE_SERVICE'] if task_name in Tasks.SERVICE_TASKS else task_config['QUEUE']
 
         partition = None
         if scheduler in ['slurm']:
-            partition = task_config['QUEUE_SERVICE'] if task_name in Tasks.SERVICE_TASKS else task_config[
+            partition = task_config['PARTITION_SERVICE'] if task_name in Tasks.SERVICE_TASKS else task_config[
                 'PARTITION_BATCH']
 
         task_resource = {'account': account,
