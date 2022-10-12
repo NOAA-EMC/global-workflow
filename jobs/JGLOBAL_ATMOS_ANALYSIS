@@ -2,7 +2,29 @@
 
 source "$HOMEgfs/ush/preamble.sh"
 
-export RUN_ENVIR=${RUN_ENVIR:-"nco"}
+##############################################
+# Obtain unique process id (pid) and make temp directory
+##############################################
+export DATA=${DATAROOT}/${jobid}
+mkdir -p $DATA
+cd $DATA
+
+
+##############################################
+# Run setpdy and initialize PDY variables
+##############################################
+setpdy.sh
+. ./PDY
+
+
+##############################################
+# Determine Job Output Name on System
+##############################################
+export pid=${pid:-$$}
+export outid=${outid:-"LL$job"}
+export pgmout="OUTPUT.${pid}"
+export pgmerr=errfile
+
 
 #############################
 # Source relevant config files
@@ -26,38 +48,12 @@ status=$?
 
 
 ##############################################
-# Obtain unique process id (pid) and make temp directory
-##############################################
-export pid=${pid:-$$}
-export outid=${outid:-"LL$job"}
-
-export DATA=${DATA:-${DATAROOT}/${jobid:?}}
-mkdir -p $DATA
-cd $DATA
-
-
-##############################################
-# Run setpdy and initialize PDY variables
-##############################################
-export cycle="t${cyc}z"
-setpdy.sh
-. ./PDY
-
-
-##############################################
-# Determine Job Output Name on System
-##############################################
-export pgmout="OUTPUT.${pid}"
-export pgmerr=errfile
-
-
-##############################################
 # Set variables used in the script
 ##############################################
 export CDATE=${CDATE:-${PDY}${cyc}}
 export CDUMP=${CDUMP:-${RUN:-"gfs"}}
 export COMPONENT=${COMPONENT:-atmos}
-export DO_CALC_ANALYSIS=${DO_CALC_ANALYSIS:-"YES"} 
+export DO_CALC_ANALYSIS=${DO_CALC_ANALYSIS:-"YES"}
 export MAKE_NSSTBUFR=${MAKE_NSSTBUFR:-"NO"}
 export MAKE_ACFTBUFR=${MAKE_ACFTBUFR:-"NO"}
 
@@ -103,7 +99,7 @@ fi
 
 # Get LEVS
 if [ ${GSUFFIX} = ".nc" ]; then
-    export LEVS=$($NCLEN $ATMGES pfull) 
+    export LEVS=$($NCLEN $ATMGES pfull)
     status=$?
 else
     export LEVS=$($NEMSIOGET $ATMGES dimz | awk '{print $2}')
@@ -141,7 +137,7 @@ else
    export PREPQCPF="${COMIN_OBS}/${OPREFIX}prepbufr.acft_profiles"
 fi
 
-# Copy fix file for obsproc
+# Copy fix file for obsproc  # TODO: Why is this necessary?
 if [ $RUN = "gfs" ]; then
     mkdir -p $ROTDIR/fix
     cp $FIXgsi/prepobs_errtable.global $ROTDIR/fix/
