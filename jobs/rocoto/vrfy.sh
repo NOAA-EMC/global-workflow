@@ -2,24 +2,37 @@
 
 source "$HOMEgfs/ush/preamble.sh"
 
-###############################################################
-## Abstract:
-## Inline verification and diagnostics driver script
-## RUN_ENVIR : runtime environment (emc | nco)
-## HOMEgfs   : /full/path/to/workflow
-## EXPDIR : /full/path/to/config/files
-## CDATE  : current analysis date (YYYYMMDDHH)
-## CDUMP  : cycle name (gdas / gfs)
-## PDY    : current date (YYYYMMDD)
-## cyc    : current cycle (HH)
-###############################################################
-
-###############################################################
 echo
 echo "=============== START TO SOURCE FV3GFS WORKFLOW MODULES ==============="
 . $HOMEgfs/ush/load_fv3gfs_modules.sh
 status=$?
 [[ $status -ne 0 ]] && exit $status
+
+export job="vrfy"
+export jobid="${job}.$$"
+
+
+##############################################
+# make temp directory
+##############################################
+export DATA="${DATAROOT}/${jobid}"
+mkdir -p $DATA
+cd $DATA
+
+
+##############################################
+# Run setpdy and initialize PDY variables
+##############################################
+setpdy.sh
+. ./PDY
+
+##############################################
+# Determine Job Output Name on System
+##############################################
+export pid=${pid:-$$}
+export outid=${outid:-"LL$job"}
+export pgmout="OUTPUT.${pid}"
+export pgmerr=errfile
 
 
 ###############################################################
@@ -41,16 +54,11 @@ status=$?
 [[ $status -ne 0 ]] && exit $status
 
 ###############################################################
-export COMPONENT=${COMPONENT:-atmos}
+export COMPONENT="atmos"
 export CDATEm1=$($NDATE -24 $CDATE)
 export PDYm1=$(echo $CDATEm1 | cut -c1-8)
 
-export pid=${pid:-$$}
-export jobid=${job}.${pid}
 export COMIN="$ROTDIR/$CDUMP.$PDY/$cyc/$COMPONENT"
-export DATAROOT="$RUNDIR/$CDATE/$CDUMP/vrfy.${jobid}"
-[[ -d $DATAROOT ]] && rm -rf $DATAROOT
-mkdir -p $DATAROOT
 
 
 ###############################################################
@@ -79,7 +87,7 @@ fi
 echo
 echo "=============== START TO RUN MOS ==============="
 if [ $RUNMOS = "YES" -a $CDUMP = "gfs" ]; then
-    $RUNGFSMOSSH $PDY$cyc 
+    $RUNGFSMOSSH $PDY$cyc
 fi
 
 
@@ -158,7 +166,7 @@ if [ $VRFYTRAK = "YES" ]; then
 
     export COMINsyn=${COMINsyn:-$(compath.py ${envir}/com/gfs/${gfs_ver})/syndat}
 
-    $TRACKERSH  
+    $TRACKERSH
 fi
 
 
@@ -180,7 +188,7 @@ fi
 
 ###############################################################
 # Force Exit out cleanly
-if [ ${KEEPDATA:-"NO"} = "NO" ] ; then rm -rf $DATAROOT ; fi
+if [ ${KEEPDATA:-"NO"} = "NO" ] ; then rm -rf $DATA ; fi
 
 
 exit 0
