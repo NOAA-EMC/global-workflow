@@ -13,7 +13,7 @@ source "$HOMEgfs/ush/preamble.sh"
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
-export COMPONENT=${COMPONENT:-atmos}
+export COMPONENT="atmos"
 
 if [ $FHRGRP = 'anl' ]; then
     fhrlst="anl"
@@ -27,6 +27,8 @@ fi
 #---------------------------------------------------------------
 for fhr in $fhrlst; do
     export post_times=$fhr
+    export job="post${post_times}"
+    export jobid="${job}.$$"
     $HOMEgfs/jobs/JGLOBAL_ATMOS_POST
     status=$?
     [[ $status -ne 0 ]] && exit $status
