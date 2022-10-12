@@ -42,7 +42,6 @@ class Tasks:
                       'CDATE': '<cyclestr>@Y@m@d@H</cyclestr>',
                       'PDY': '<cyclestr>@Y@m@d</cyclestr>',
                       'cyc': '<cyclestr>@H</cyclestr>',
-                      'cycle': 't<cyclestr>@H</cyclestr>z',
                       'COMROOT': self._base.get('COMROOT'),
                       'DATAROOT': self._base.get('DATAROOT')}
         self.envars = self._set_envars(envar_dict)
