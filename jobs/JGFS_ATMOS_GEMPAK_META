@@ -60,7 +60,7 @@ export fhinc=12
 export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
 export model=${model:-gfs}
-export COMPONENT=${COMPONENT:-atmos}
+export COMPONENT="atmos"
 
 ##############################################
 # Set up model and cycle specific variables

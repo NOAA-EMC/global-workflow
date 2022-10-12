@@ -48,7 +48,7 @@ cp $FIXgempak/datatype.tbl datatype.tbl
 ####################################
 export NET=${NET:-gfs}
 export RUN=${RUN:-gdas}
-export COMPONENT=${COMPONENT:-atmos}
+export COMPONENT="atmos"
 export MODEL=GDAS
 export GRID_NAME=gdas
 export fend=09

@@ -70,7 +70,7 @@ export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 export NET=${NET:-gfs}
 export RUN=${RUN:-gdas}
 export model=${model:-gdas}
-export COMPONENT=${COMPONENT:-atmos}
+export COMPONENT="atmos"
 
 ##############################################
 # Define COM directories

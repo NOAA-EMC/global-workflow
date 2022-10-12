@@ -43,7 +43,7 @@ export SRCgfs=${SRCgfs:-$HOMEgfs/scripts}
 ####################################
 export NET=gfs
 export RUN=gfs
-export COMPONENT=${COMPONENT:-atmos}
+export COMPONENT="atmos"
 export finc=3
 export model=gfs
 export EXT=""

@@ -52,7 +52,7 @@ setpdy.sh
 ####################################
 export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
-export COMPONENT=${COMPONENT:-atmos}
+export COMPONENT="atmos"
 
 
 ##############################################
@@ -105,7 +105,7 @@ if [ $RUN_ENVIR = "nco" ]; then
     export COMOUTatcf=${COMROOTp1:?}/nhc/${envir}/atcf
     mkdir -m 775 -p $COMOUThur $COMOUTatcf
 else
-#    export COMOUThur=$COMOUT         
+#    export COMOUThur=$COMOUT
 #    export COMOUTatcf=$COMOUT
     export COMOUThur=$DATA
     export COMOUTatcf=$DATA

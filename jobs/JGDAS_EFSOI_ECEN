@@ -55,7 +55,7 @@ export pgmerr=errfile
 ##############################################
 export CDATE=${CDATE:-${PDY}${cyc}}
 export CDUMP=${CDUMP:-${RUN:-"gdas"}}
-export COMPONENT=${COMPONENT:-atmos}
+export COMPONENT="atmos"
 if [ $RUN_ENVIR = "nco" ]; then
     export ROTDIR=${COMROOT:?}/$NET/$envir
 fi
@@ -97,7 +97,7 @@ fi
 
 # COMIN, COMIN_ENS and COMIN_GES_ENS are used in script
 export COMIN="$ROTDIR/$CDUMP.$PDY/$cyc/$COMPONENT"
-export COMIN_ENS="$ROTDIR/efsoi$CDUMP_ENKF.$PDY/$cyc/$COMPONENT" 
+export COMIN_ENS="$ROTDIR/efsoi$CDUMP_ENKF.$PDY/$cyc/$COMPONENT"
 export COMOUT_ENS="$ROTDIR/efsoi$CDUMP.$PDY/$cyc/$COMPONENT"
 export COMIN_GES_ENS="$ROTDIR/enkf$CDUMP.$gPDY/$gcyc/$COMPONENT"
 

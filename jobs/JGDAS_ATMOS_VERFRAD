@@ -10,9 +10,9 @@ source "$HOMEgfs/ush/preamble.sh"
 ##############################
 export NET=${NET:-gfs}
 export RUN=${RUN:-gdas}
-export COMPONENT=${COMPONENT:-atmos}
+export COMPONENT="atmos"
 
-########################################################### 
+###########################################################
 # obtain unique process id (pid) and make temp directories
 ###########################################################
 export pid=$$
@@ -60,7 +60,7 @@ parm_file=${parm_file:-${PARMmon}/da_mon.parm}
 if [[ $MY_MACHINE != "HERA" && $MY_MACHINE != "hera" ]]; then
    setpdy.sh
    . ./PDY
-fi   
+fi
 
 #############################################
 #  determine PDY and cyc for previous cycle
@@ -84,8 +84,8 @@ export COMIN=${COMIN:-${COM_IN}/${RUN}.${PDY}/${cyc}/$COMPONENT}
 
 ################################
 #  backwards compatibility for
-#  gfs v15 which doesn't have 
-#  a $COMPONENT in output path 
+#  gfs v15 which doesn't have
+#  a $COMPONENT in output path
 ################################
 if [[ ! -d ${COMIN} ]]; then
    export COMIN=${COM_IN}/${RUN}.${PDY}/${cyc}
@@ -125,7 +125,7 @@ fi
 ################################
 KEEPDATA=${KEEPDATA:-YES}
 cd $DATAROOT
-if [ ${KEEPDATA} = NO ] ; then 
+if [ ${KEEPDATA} = NO ] ; then
   rm -rf $RAD_DATA_IN
 fi
 

@@ -26,7 +26,7 @@ status=$?
 # PATH for working directory
 export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
-export COMPONENT=${COMPONENT:-wave}
+export COMPONENT="wave"
 
 export HOMEgefs=${HOMEgefs:-${PACKAGEROOT:-}/$NET.${gefs_ver:-}}
 export HOMEgfs=${HOMEgfs:-${PACKAGEROOT:-}/$NET.${gfs_ver}}
@@ -41,7 +41,7 @@ cd $DATA
 
 export cyc=${cyc:-00}
 export cycle=${cycle:-t${cyc}z}
- 
+
 # Set PDY
 setpdy.sh
 . ./PDY
@@ -65,7 +65,7 @@ export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/$COMPONENT}
 mkdir -p $COMOUT/station
 
 
-# Set wave model ID tag to include member number 
+# Set wave model ID tag to include member number
 # if ensemble; waveMEMB var empty in deterministic
 # Set wave model ID tag to include member number
 # if ensemble; waveMEMB var empty in deterministic
@@ -82,7 +82,7 @@ export DOBLL_WAV='YES' # Bulletin post
 export DOBNDPNT_WAV='NO'  #not boundary points
 
 
-# Execute the Script  
+# Execute the Script
 $HOMEgfs/scripts/exgfs_wave_post_pnt.sh
 err=$?
 if [ $err -ne 0 ]; then

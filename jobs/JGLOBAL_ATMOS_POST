@@ -61,7 +61,7 @@ export g2tmpl_ver=${g2tmpl_ver:-v1.5.0}
 ##############################################
 export CDATE=${CDATE:-${PDY}${cyc}}
 export CDUMP=${CDUMP:-${RUN:-"gfs"}}
-export COMPONENT=${COMPONENT:-atmos}
+export COMPONENT="atmos"
 
 
 ##############################################

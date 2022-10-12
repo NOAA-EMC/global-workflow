@@ -10,7 +10,7 @@ source "$HOMEgfs/ush/preamble.sh"
 ##############################
 export NET=${NET:-gfs}
 export RUN=${RUN:-gdas}
-export COMPONENT=${COMPONENT:-atmos}
+export COMPONENT="atmos"
 
 ###########################################################
 # obtain unique process id (pid) and make temp directories

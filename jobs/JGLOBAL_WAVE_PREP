@@ -26,7 +26,7 @@ status=$?
 # PATH for working directory
 export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
-export COMPONENT=${COMPONENT:-wave}
+export COMPONENT="wave"
 
 export HOMEgfs=${HOMEgfs:-$PACKAGEROOT/gfs.${gfs_ver}}
 
@@ -40,7 +40,7 @@ cd $DATA
 
 cyc=${cyc:-00}
 export cycle=${cycle:-t${cyc}z}
- 
+
 # Set PDY
 setpdy.sh
 . ./PDY
@@ -79,13 +79,13 @@ else
       $NLN $DMPDIR/${WAVECUR_DID}.${BRPDY} $ROTDIR/${WAVECUR_DID}.${BRPDY}
     fi
     export COMIN_WAV_RTOFS=${COMIN_WAV_RTOFS:-$ROTDIR}
-  fi 
-  if [ $WW3ICEINP = "YES" ]; then 
+  fi
+  if [ $WW3ICEINP = "YES" ]; then
     if [ ! -L $ROTDIR/${CDUMP}.${PDY}/${cyc}/atmos/${WAVICEFILE} ]; then # Check if symlink already exists in ROTDIR
       $NLN $DMPDIR/$CDUMP.${PDY}/$cyc/atmos/${WAVICEFILE} $ROTDIR/$CDUMP.${PDY}/$cyc/atmos/${WAVICEFILE}
     fi
     export COMIN_WAV_ICE=${COMIN_WAV_ICE:-$ROTDIR/$RUN.$PDY/$cyc/atmos}
-  fi 
+  fi
 fi
 
 # Execute the Script

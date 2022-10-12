@@ -53,7 +53,7 @@ status=$?
 ##############################################
 export CDATE=${CDATE:-${PDY}${cyc}}
 export CDUMP=${CDUMP:-${RUN:-"gfs"}}
-export COMPONENT=${COMPONENT:-atmos}
+export COMPONENT="atmos"
 export DO_CALC_ANALYSIS=${DO_CALC_ANALYSIS:-"YES"}
 export MAKE_NSSTBUFR=${MAKE_NSSTBUFR:-"NO"}
 export MAKE_ACFTBUFR=${MAKE_ACFTBUFR:-"NO"}

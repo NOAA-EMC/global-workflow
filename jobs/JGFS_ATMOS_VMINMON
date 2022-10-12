@@ -10,7 +10,7 @@ source "$HOMEgfs/ush/preamble.sh"
 ##############################
 export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
-export COMPONENT=${COMPONENT:-atmos}
+export COMPONENT="atmos"
 
 
 ###########################################################
@@ -23,7 +23,7 @@ mkdir -p $DATA
 cd $DATA
 
 
-########################################################### 
+###########################################################
 # obtain unique process id (pid) and make temp directories
 ###########################################################
 export MINMON_SUFFIX=${MINMON_SUFFIX:-GFS}
@@ -64,7 +64,7 @@ export M_TANKverfM1=${M_TANKverfM1:-${COM_IN}/${RUN}.${P_PDY}/${p_cyc}/${COMPONE
 export COMIN=${COMIN:-$COM_IN/${RUN}.${PDY}/${cyc}/$COMPONENT}
 
 mkdir -p -m 775 $M_TANKverf
- 
+
 
 ########################################
 # Set necessary environment variables

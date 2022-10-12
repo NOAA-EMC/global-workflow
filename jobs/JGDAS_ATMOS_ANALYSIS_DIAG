@@ -13,6 +13,7 @@ cd $DATA
 ##############################################
 # Run setpdy and initialize PDY variables
 ##############################################
+export cycle="t${cyc}z"
 setpdy.sh
 . ./PDY
 
@@ -52,7 +53,7 @@ status=$?
 ##############################################
 export CDATE=${CDATE:-${PDY}${cyc}}
 export CDUMP=${CDUMP:-${RUN:-"gfs"}}
-export COMPONENT=${COMPONENT:-atmos}
+export COMPONENT="atmos"
 export DO_CALC_ANALYSIS=${DO_CALC_ANALYSIS:-"YES"}
 
 

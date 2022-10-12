@@ -54,7 +54,7 @@ PDY_m6hrs=$(echo $GDATE | cut -c1-8)
 cyc_m6hrs=$(echo $GDATE | cut -c9-10)
 export cycle_m6hrs=t${cyc_m6hrs}z
 
-export COMPONENT=${COMPONENT:-atmos}
+export COMPONENT="atmos"
 export COMOUT=${COMOUT:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/$COMPONENT}
 
 export COMINobsproc=${COMINobsproc:-$(compath.py ${envir}/obsproc/${obsproc_ver})/${RUN}.${PDY}/${cyc}/$COMPONENT}

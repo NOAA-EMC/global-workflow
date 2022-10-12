@@ -85,7 +85,7 @@ export DBN_ALERT_TYPE=${DBN_ALERT_TYPE:-GFS_GEMPAK}
 export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
 export model=${model:-gfs}
-export COMPONENT=${COMPONENT:-atmos}
+export COMPONENT="atmos"
 
 ##############################################
 # Define COM directories

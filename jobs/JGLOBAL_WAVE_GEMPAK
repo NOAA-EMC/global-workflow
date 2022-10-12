@@ -18,7 +18,7 @@ setpdy.sh
 #
 export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
-export COMPONENT=${COMPONENT:-wave}
+export COMPONENT="wave"
 export machine=${machine:-WCOSS2}
 export HOMEgfs=${HOMEgfs:-$(dirname $(dirname $0))}
 

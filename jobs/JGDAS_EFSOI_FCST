@@ -55,13 +55,13 @@ export pgmerr=errfile
 ##############################################
 export CDATE=${CDATE:-${PDY}${cyc}}
 export CDUMP=${CDUMP:-${RUN:-"gdas"}}
-export COMPONENT=${COMPONENT:-atmos}
+export COMPONENT="atmos"
 if [ $RUN_ENVIR = "nco" ]; then
     export ROTDIR=${COMROOT:?}/$NET/$envir
 fi
 
 # tells the forecast script to use efsoi ensemble
-export EFSOI_TASK="YES" 
+export EFSOI_TASK="YES"
 
 ##############################################
 # Begin JOB SPECIFIC work
