@@ -5,23 +5,37 @@
 ###########################################################
 source "$HOMEgfs/ush/preamble.sh"
 
+###########################################################
+# make temp directories
+###########################################################
+export DATA=${DATAROOT}/${jobid}
+mkdir -p ${DATA}
+cd ${DATA}
+
+
+##############################################
+# Run setpdy and initialize PDY variables
+##############################################
+export cycle="t${cyc}z"
+setpdy.sh
+. ./PDY
+
+
+####################################
+# Determine Job Output Name on System
+####################################
+export pid=$$
+export outid=${outid:-"LL$job"}
+export pgmout="OUTPUT.${pid}"
+export pgmerr=errfile
+
+
 ###############################
 # Specify NET, RUN, and COMPONENT name
 ##############################
 export NET=${NET:-gfs}
 export RUN=${RUN:-gdas}
 export COMPONENT="atmos"
-
-###########################################################
-# obtain unique process id (pid) and make temp directories
-###########################################################
-export pid=$$
-export outid=${outid:-"LL$job"}
-
-export DATA=${DATA:-${DATAROOT}/${jobid:?}}
-mkdir -p $DATA
-cd $DATA
-
 
 ###########################################################
 # obtain unique process id (pid) and make temp directories
@@ -87,9 +101,8 @@ err=$?
 ################################
 KEEPDATA=${KEEPDATA:-NO}
 cd ${DATAROOT}
-
 if [ ${KEEPDATA} = NO ] ; then
   rm -rf ${DATA}
 fi
 
-
+exit 0
