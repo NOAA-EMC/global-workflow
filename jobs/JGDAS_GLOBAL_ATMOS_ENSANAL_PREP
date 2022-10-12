@@ -2,34 +2,10 @@
 
 source "$HOMEgfs/ush/preamble.sh"
 
-#############################
-# Source relevant config files
-#############################
-export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
-configs="base atmensanal atmensanalprep"
-config_path=${EXPDIR:-$PACKAGEROOT/gfs.${gfs_ver}/parm/config}
-for config in $configs; do
-    . $config_path/config.$config
-    status=$?
-    [[ $status -ne 0 ]] && exit $status
-done
-
-
-##########################################
-# Source machine runtime environment
-##########################################
-. $HOMEgfs/env/${machine}.env atmensanalprep
-status=$?
-[[ $status -ne 0 ]] && exit $status
-
-
 ##############################################
-# Obtain unique process id (pid) and make temp directory
+# make temp directory
 ##############################################
-export pid=${pid:-$$}
-export outid=${outid:-"LL$job"}
-
-export DATA=${DATA:-${DATAROOT}/${jobid:?}}
+export DATA=${DATAROOT}/${jobid}
 mkdir -p $DATA
 cd $DATA || (echo "$DATA does not exist. ABORT!"; exit 1)
 
@@ -45,8 +21,31 @@ setpdy.sh
 ##############################################
 # Determine Job Output Name on System
 ##############################################
+export pid=${pid:-$$}
+export outid=${outid:-"LL$job"}
 export pgmout="OUTPUT.${pid}"
 export pgmerr=errfile
+
+
+#############################
+# Source relevant config files
+#############################
+export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
+config_path=${EXPDIR:-$PACKAGEROOT/gfs.${gfs_ver}/parm/config}
+configs="base atmensanal atmensanalprep"
+for config in $configs; do
+    . $config_path/config.$config
+    status=$?
+    [[ $status -ne 0 ]] && exit $status
+done
+
+
+##########################################
+# Source machine runtime environment
+##########################################
+. $HOMEgfs/env/${machine}.env atmensanalprep
+status=$?
+[[ $status -ne 0 ]] && exit $status
 
 
 ##############################################

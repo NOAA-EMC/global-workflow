@@ -8,6 +8,9 @@ source "$HOMEgfs/ush/preamble.sh"
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
+export job="atmensanalpost"
+export jobid="${job}.$$"
+
 ###############################################################
 # Execute the JJOB
 $HOMEgfs/jobs/JGDAS_GLOBAL_ATMOS_ENSANAL_POST
