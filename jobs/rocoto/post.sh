@@ -27,7 +27,7 @@ fi
 #---------------------------------------------------------------
 for fhr in $fhrlst; do
     export post_times=$fhr
-    $HOMEgfs/jobs/JGLOBAL_ATMOS_NCEPPOST
+    $HOMEgfs/jobs/JGLOBAL_ATMOS_POST
     status=$?
     [[ $status -ne 0 ]] && exit $status
 done

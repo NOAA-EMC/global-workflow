@@ -7,7 +7,7 @@ source "$HOMEgfs/ush/preamble.sh"
 
 f=$1
 
-export WGRIB2=${WGRIB2:-${NWPROD:-/nwprod}/util/exec/wgrib2}
+export WGRIB2=${WGRIB2:-${wgrib2_ROOT}/bin/wgrib2}
 
 $WGRIB2 ${optncpu:-} $f \
         -if 'LAND' -rpn 'sto_1' -fi \

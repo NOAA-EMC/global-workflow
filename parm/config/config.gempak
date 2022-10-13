@@ -8,6 +8,4 @@ echo "BEGIN: config.gempak"
 # Get task specific resources
 . $EXPDIR/config.resources gempak
 
-export GEMPAKSH=$HOMEgfs/jobs/JGFS_ATMOS_GEMPAK
-
 echo "END: config.gempak"

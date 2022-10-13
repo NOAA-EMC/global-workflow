@@ -25,7 +25,7 @@ cp $FIXgempak/g2vcrdncep1.tbl g2vcrdncep1.tbl
 NAGRIB=$GEMEXE/nagrib2
 #
 
-entry=$(grep "^$RUN " $NAGRIB_TABLE | awk 'index($1,"#") != 1 {print $0}')
+entry=$(grep "^$RUN2 " $NAGRIB_TABLE | awk 'index($1,"#") != 1 {print $0}')
 
 if [ "$entry" != "" ] ; then
   cpyfil=$(echo $entry  | awk 'BEGIN {FS="|"} {print $2}')
@@ -56,7 +56,7 @@ while [ $fhcnt -le $fend ] ; do
 
   fhr3=$(printf "03d" $fhcnt)
   GRIBIN=$COMIN/${model}.${cycle}.${GRIB}${fhr}${EXT}
-  GEMGRD=${RUN}_${PDY}${cyc}f${fhr3}
+  GEMGRD=${RUN2}_${PDY}${cyc}f${fhr3}
 
   GRIBIN_chk=$GRIBIN
 
@@ -71,8 +71,7 @@ while [ $fhcnt -le $fend ] ; do
     fi
     if [ $icnt -ge $maxtries ]
     then
-      msg="ABORTING after 1 hour of waiting for F$fhr to end."
-      postmsg "${jlogfile}" "$msg"
+      echo "ABORTING after 1 hour of waiting for F$fhr to end."
       export err=7 ; err_chk
       exit $err
     fi

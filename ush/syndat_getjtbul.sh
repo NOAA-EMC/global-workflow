@@ -33,17 +33,8 @@ EXECSYND=${EXECSYND:-${HOMESYND}/exec}
 cd $DATA
 
 if [ "$#" -ne '1' ]; then
-   msg="**NON-FATAL ERROR PROGRAM  SYNDAT_GETJTBUL  run date not in \
+   echo "**NON-FATAL ERROR PROGRAM  SYNDAT_GETJTBUL  run date not in \
 positional parameter 1"
-   set +x
-   echo
-   echo $msg
-   echo
-   ${TRACE_ON:-set -x}
-   echo $msg >> $pgmout
-   set +u
-   [ -n "$jlogfile" ]  &&  postmsg "$jlogfile" "$msg"
-   set -u
 
 echo "Leaving sub-shell syndat_getjtbul.sh to recover JTWC Bulletins" \
  >> $pgmout
@@ -94,7 +85,7 @@ echo "  pdym1 is    $pdym1"
 echo
 echo "  ymddir is   $ymddir"
 echo
-${TRACE_ON:-set -x}
+set_trace
 
 find=$ymd" "$hour
 echo "looking for string  $find  in $jtwcdir/tropcyc" >> $pgmout
@@ -124,18 +115,15 @@ fi
 perl -wpi.ORIG -e 's/(^.... ... )(\S{9,9})(\S{1,})/$1$2/' jtwcbul
 diff jtwcbul.ORIG jtwcbul > jtwcbul_changes.txt
 if [ -s jtwcbul_changes.txt ]; then
-  msg="***WARNING:  SOME JTWC VITALS SEGMENTS REQUIRED PRELIMINARY MODIFICATION!"
-  [ -n "$jlogfile" ] && postmsg "$jlogfile" "$msg"
-  echo -e "\n${msg}.  Changes follow:" >> $pgmout
-  cat jtwcbul_changes.txt >> $pgmout
-  echo -e "\n" >> $pgmout
+  echo "***WARNING:  SOME JTWC VITALS SEGMENTS REQUIRED PRELIMINARY MODIFICATION!"
+  cat jtwcbul_changes.txt
 fi
 
 # Execute bulletin processing
 
 [ -s jtwcbul ] && echo "Processing JTWC bulletin halfs into tcvitals records" >> $pgmout
 
-pgm=$(basename $EXECSYND/syndat_getjtbul)
+pgm=$(basename $EXECSYND/syndat_getjtbul.x)
 export pgm
 if [ -s prep_step ]; then
    set +u
@@ -150,7 +138,7 @@ rm -f fnoc
 
 export FORT11=jtwcbul
 export FORT51=fnoc
-time -p $EXECSYND/syndat_getjtbul >> $pgmout 2> errfile
+time -p ${EXECSYND}/${pgm} >> $pgmout 2> errfile
 errget=$?
 ###cat errfile
 cat errfile >> $pgmout
@@ -159,7 +147,7 @@ set +x
 echo
 echo 'The foreground exit status for SYNDAT_GETJTBUL is ' $errget
 echo
-${TRACE_ON:-set -x}
+set_trace
 if [ "$errget" -gt '0' ];then
    if [ "$errget" -eq '1' ];then
       msg="No JTWC bulletins in $jtwcdir/tropcyc, no JTWC tcvitals \
@@ -175,30 +163,12 @@ available for qctropcy for $CDATE10"
         fi
       fi
    else
-      msg="**NON-FATAL ERROR PROGRAM  SYNDAT_GETJTBUL  FOR $CDATE10 \
+      echo "**NON-FATAL ERROR PROGRAM  SYNDAT_GETJTBUL  FOR $CDATE10 \
 RETURN CODE $errget"
    fi
-   set +x
-   echo
-   echo $msg
-   echo
-   ${TRACE_ON:-set -x}
-   echo $msg >> $pgmout
-   set +u
-   [ -n "$jlogfile" ] && postmsg "$jlogfile" "$msg"
-   set -u
 else
-   msg="program  SYNDAT_GETJTBUL  completed normally for $CDATE10, JTWC \
+   echo "program  SYNDAT_GETJTBUL  completed normally for $CDATE10, JTWC \
 rec. passed to qctropcy"
-   set +x
-   echo
-   echo $msg
-   echo
-   ${TRACE_ON:-set -x}
-   echo $msg >> $pgmout
-   set +u
-   [ -n "$jlogfile" ] && postmsg "$jlogfile" "$msg"
-   set -u
 fi
 set +x
 echo
@@ -206,7 +176,7 @@ echo "----------------------------------------------------------"
 echo "***********  COMPLETED PROGRAM syndat_getjtbul  **********"
 echo "----------------------------------------------------------"
 echo
-${TRACE_ON:-set -x}
+set_trace
 
 if [ "$errget" -eq '0' ];then
    echo "Completed JTWC tcvitals records are:" >> $pgmout
@@ -215,6 +185,6 @@ fi
 
 echo "Leaving sub-shell syndat_getjtbul.sh to recover JTWC Bulletins" \
  >> $pgmout
-echo " " >> $pgmout
+echo " " >> "${pgmout}"
 
 exit
