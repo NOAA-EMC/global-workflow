@@ -23,6 +23,23 @@ echo "=============== START TO SOURCE FV3GFS WORKFLOW MODULES ==============="
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
+export job="metp${METPCASE}"
+export jobid="${job}.$$"
+
+##############################################
+# make temp directory
+##############################################
+export DATA=${DATAROOT}/${jobid}
+mkdir -p $DATA
+cd $DATA
+
+
+##############################################
+# Run setpdy and initialize PDY variables
+##############################################
+export cycle="t${cyc}z"
+setpdy.sh
+. ./PDY
 
 ###############################################################
 echo
@@ -43,16 +60,15 @@ status=$?
 [[ $status -ne 0 ]] && exit $status
 
 ###############################################################
-export COMPONENT=${COMPONENT:-atmos}
+export COMPONENT="atmos"
 export VDATE="$(echo $($NDATE -${VRFYBACK_HRS} $CDATE) | cut -c1-8)"
-
-export pid=${pid:-$$}
-export jobid=${job}.${pid}
 export COMIN="$ROTDIR/$CDUMP.$PDY/$cyc/$COMPONENT"
-export DATAROOT="$RUNDIR/$CDATE/$CDUMP/metp.${jobid}"
-[[ -d $DATAROOT ]] && rm -rf $DATAROOT
-mkdir -p $DATAROOT
 
+# TODO: This should not be permitted as DATAROOT is set at the job-card level.
+# TODO: DATAROOT is being used as DATA in metp jobs.  This should be rectified in metp.
+# TODO: The temporary directory is DATA and is created at the top of the J-Job.
+# TODO: remove this line
+export DATAROOT=$DATA
 
 ###############################################################
 echo
@@ -61,7 +77,7 @@ if [ $CDUMP = "gfs" ]; then
 
     if [ $RUN_GRID2GRID_STEP1 = "YES" -o $RUN_GRID2OBS_STEP1 = "YES" -o $RUN_PRECIP_STEP1 = "YES" ]; then
 
-        $VERIF_GLOBALSH 
+        $VERIF_GLOBALSH
         status=$?
         [[ $status -ne 0 ]] && exit $status
         [[ $status -eq 0 ]] && echo "Succesfully ran $VERIF_GLOBALSH"
@@ -74,7 +90,7 @@ if [ $CDUMP = "gdas" ]; then
 fi
 ###############################################################
 # Force Exit out cleanly
-if [ ${KEEPDATA:-"NO"} = "NO" ] ; then rm -rf $DATAROOT ; fi
+if [ ${KEEPDATA:-"NO"} = "NO" ] ; then rm -rf $DATAROOT ; fi  # TODO: This should be $DATA
 
 
 exit 0
