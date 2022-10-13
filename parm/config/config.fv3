@@ -85,10 +85,7 @@ case $case_in in
         export layout_y=6
         export layout_x_gfs=4
         export layout_y_gfs=6
-        export nth_fv3=2
-        if [[ "$machine" = "WCOSS2" ]]; then
-          export nth_fv3_efcs=1
-        fi
+        export nth_fv3=1
         export nth_fv3_gfs=2
         export cdmbgwd="0.23,1.5,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=1
