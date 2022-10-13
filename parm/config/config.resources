@@ -125,6 +125,7 @@ elif [ ${step} = "wavepostpnt" ]; then
     export npe_wavepostpnt=200
     export nth_wavepostpnt=1
     export npe_node_wavepostpnt=50
+    if [[ "${npe_node_wavepostpnt}" -gt "${npe_node_max}" ]]; then export npe_node_wavepostpnt=${npe_node_max} ; fi
     export NTASKS=${npe_wavepostpnt}
     export is_exclusive=True
 
