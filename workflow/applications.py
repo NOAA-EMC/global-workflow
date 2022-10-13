@@ -103,7 +103,7 @@ class AppConfig:
         self.do_bufrsnd = _base.get('DO_BUFRSND', False)
         self.do_gempak = _base.get('DO_GEMPAK', False)
         self.do_awips = _base.get('DO_AWIPS', False)
-        self.do_wafs = _base.get('DO_WAFS', False)
+        self.do_wafs = _base.get('WAFSF', False)
         self.do_vrfy = _base.get('DO_VRFY', True)
         self.do_metp = _base.get('DO_METP', False)
         self.do_jedivar = _base.get('DO_JEDIVAR', False)

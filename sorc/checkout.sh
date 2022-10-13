@@ -19,7 +19,7 @@ Usage: $BASH_SOURCE [-c][-h][-m ufs_hash][-o]
     Check out this UFS hash instead of the default
   -o:
     Check out operational-only code (GTG and WAFS)
-  -g: 
+  -g:
     Check out GSI for GSI-based DA
   -u:
     Check out GDASApp for UFS-based DA

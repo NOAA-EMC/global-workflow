@@ -27,7 +27,7 @@ OPTIND=1
 while getopts ":ho" option; do
   case "${option}" in
     h) usage ;;
-    o) 
+    o)
       echo "-o option received, configuring for NCO"
       RUN_ENVIR="nco";;
     :)
