@@ -294,7 +294,7 @@ elif [ ${step} = "analdiag" ]; then
     export wtime_analdiag="00:10:00"
     export npe_analdiag=96             # Should be at least twice npe_ediag
     export nth_analdiag=1
-    export npe_node_analdiag=${npe_node_max}
+    export npe_node_analdiag=${npe_analdiag}
     if [[ "${npe_node_analdiag}" -gt "${npe_node_max}" ]]; then export npe_node_analdiag=${npe_node_max} ; fi
     export memory_analdiag="48GB"
 
@@ -518,7 +518,9 @@ elif [ ${step} = "echgres" ]; then
     export npe_echgres=3
     export nth_echgres=${npe_node_max}
     export npe_node_echgres=1
-    export memory_echgres="200GB"
+    if [[ "$machine" = "WCOSS2" ]]; then
+      export memory_echgres="200GB"
+    fi
 
 elif [ ${step} = "init" ]; then
 
@@ -634,7 +636,10 @@ elif [ ${step} = "eupd" ]; then
     elif [ ${CASE} = "C384" ]; then
       export npe_eupd=270
       export nth_eupd=2
-      if [[ "$machine" = "HERA" ]]; then
+      if [[ "$machine" = "WCOSS2" ]]; then
+        export npe_eupd=315
+        export nth_eupd=14
+      elif [[ "$machine" = "HERA" ]]; then
         export nth_eupd=8
       fi
       if [[ ${machine} = "S4" ]]; then
@@ -660,6 +665,7 @@ elif [ ${step} = "ecen" ]; then
     if [[ ${CASE} = "C384" || ${CASE} = "C192" || ${CASE} = "C96" || ${CASE} = "C48" ]]; then export nth_ecen=2; fi
     export npe_node_ecen=$(echo "${npe_node_max} / ${nth_ecen}" | bc)
     export nth_cycle=${nth_ecen}
+    export npe_node_cycle=$(echo "${npe_node_max} / ${nth_cycle}" | bc)
     export is_exclusive=True
 
 elif [ ${step} = "esfc" ]; then
@@ -689,6 +695,9 @@ elif [ ${step} = "epos" ]; then
     export wtime_epos="00:15:00"
     export npe_epos=80
     export nth_epos=4
+    if [[ "$machine" == "HERA" ]]; then
+      export nth_epos=6
+    fi
     export npe_node_epos=$(echo "${npe_node_max} / ${nth_epos}" | bc)
     export is_exclusive=True
 

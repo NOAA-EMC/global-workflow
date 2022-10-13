@@ -85,7 +85,7 @@ case $case_in in
         export layout_y=6
         export layout_x_gfs=4
         export layout_y_gfs=6
-        export nth_fv3=2
+        export nth_fv3=1
         export nth_fv3_gfs=2
         export cdmbgwd="0.23,1.5,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=1
@@ -105,7 +105,7 @@ case $case_in in
         export nth_fv3=2
         export nth_fv3_gfs=${nth_fv3_gfs_s2sw:-2}
         export cdmbgwd="1.1,0.72,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
-        export WRITE_GROUP=1
+        export WRITE_GROUP=2
         export WRTTASK_PER_GROUP=64
 	if [[ "$WRTTASK_PER_GROUP" -gt "$npe_node_max" ]]; then export WRTTASK_PER_GROUP=$npe_node_max ; fi
         export WRITE_GROUP_GFS=${WRITE_GROUP_GFS_s2sw:-2}
@@ -176,11 +176,11 @@ export kchunk3d=1
 
 # Determine whether to use parallel NetCDF based on resolution
 case ${case_in} in
-  "C48" | "C96" | "C192")
+  "C48" | "C96" | "C192" | "C384")
     export OUTPUT_FILETYPE_ATM="netcdf"
     export OUTPUT_FILETYPE_SFC="netcdf"
     ;;
-  "C384" | "C768" | "C1152" | "C3072")
+  "C768" | "C1152" | "C3072")
     export OUTPUT_FILETYPE_ATM="netcdf_parallel"
     export OUTPUT_FILETYPE_SFC="netcdf_parallel"
     ;;
