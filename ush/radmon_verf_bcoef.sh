@@ -159,7 +159,7 @@ else
          fi
  
 
-         rm input
+         if [[ -f input ]]; then rm input; fi
 
 
 cat << EOF > input
@@ -206,7 +206,7 @@ EOF
 
    ${USHradmon}/rstprod.sh
 
-   if compgen -G "bcoef*.ieee_d* bcoef*.ctl*" > /dev/null; then
+   if compgen -G "bcoef*.ieee_d*" > /dev/null || compgen -G "bcoef*.ctl*" > /dev/null; then
      tar_file=radmon_bcoef.tar
      tar -cf $tar_file bcoef*.ieee_d* bcoef*.ctl*
      ${COMPRESS} ${tar_file}

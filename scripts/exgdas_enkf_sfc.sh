@@ -57,8 +57,8 @@ CYCLESH=${CYCLESH:-$HOMEgfs/ush/global_cycle.sh}
 export CYCLEXEC=${CYCLEXEC:-$HOMEgfs/exec/global_cycle}
 APRUN_CYCLE=${APRUN_CYCLE:-${APRUN:-""}}
 NTHREADS_CYCLE=${NTHREADS_CYCLE:-${NTHREADS:-1}}
-export FIXfv3=${FIXfv3:-$HOMEgfs/fix/fix_fv3_gmted2010}
-export FIXgsm=${FIXgsm:-$HOMEgfs/fix/fix_am}
+export FIXfv3=${FIXfv3:-$HOMEgfs/fix/orog}
+export FIXgsm=${FIXgsm:-$HOMEgfs/fix/am}
 export CYCLVARS=${CYCLVARS:-"FSNOL=-2.,FSNOS=99999.,"}
 export FHOUR=${FHOUR:-0}
 export DELTSFC=${DELTSFC:-6}

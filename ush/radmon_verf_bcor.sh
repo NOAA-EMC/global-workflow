@@ -200,7 +200,7 @@ EOF
    ${USHradmon}/rstprod.sh
    tar_file=radmon_bcor.tar
 
-   if compgen -G "bcor*.ieee_d* bcor*.ctl*" > /dev/null; then
+   if compgen -G "bcor*.ieee_d*" > /dev/null || compgen -G "bcor*.ctl*" > /dev/null; then
      tar -cf $tar_file bcor*.ieee_d* bcor*.ctl*
      ${COMPRESS} ${tar_file}
      mv $tar_file.${Z} ${TANKverf_rad}/.
