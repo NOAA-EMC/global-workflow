@@ -9,6 +9,9 @@ echo "=============== START TO SOURCE FV3GFS WORKFLOW MODULES ==============="
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
+export job="wavepostbndpnt"
+export jobid="${job}.$$"
+
 ###############################################################
 echo
 echo "=============== START TO RUN WAVE_POST_BNDPNT ==============="

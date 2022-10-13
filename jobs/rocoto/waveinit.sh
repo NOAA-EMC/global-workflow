@@ -9,6 +9,9 @@ echo "=============== START TO SOURCE FV3GFS WORKFLOW MODULES ==============="
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
+export job="waveinit"
+export jobid="${job}.$$"
+
 ###############################################################
 echo
 echo "=============== START TO RUN WAVE INIT ==============="
