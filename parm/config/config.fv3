@@ -97,21 +97,21 @@ case $case_in in
         export WRTIOBUF="8M"
         ;;
     "C384")
-        export DELTIM=${DELTIM_s2sw:-200}
+        export DELTIM=${DELTIM:-200}
         export layout_x=6
         export layout_y=8
-        export layout_x_gfs=${layout_x_gfs_s2sw:-8}
-        export layout_y_gfs=${layout_y_gfs_s2sw:-12}
-        export nth_fv3=2
-        export nth_fv3_gfs=${nth_fv3_gfs_s2sw:-2}
+        export layout_x_gfs=${layout_x_gfs:-8}
+        export layout_y_gfs=${layout_y_gfs:-12}
+        export nth_fv3=1
+        export nth_fv3_gfs=${nth_fv3_gfs:-2}
         export cdmbgwd="1.1,0.72,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=2
         export WRTTASK_PER_GROUP=64
 	if [[ "$WRTTASK_PER_GROUP" -gt "$npe_node_max" ]]; then export WRTTASK_PER_GROUP=$npe_node_max ; fi
-        export WRITE_GROUP_GFS=${WRITE_GROUP_GFS_s2sw:-2}
-        export WRTTASK_PER_GROUP_GFS=${WRTTASK_PER_GROUP_GFS_s2sw:-64}
+        export WRITE_GROUP_GFS=${WRITE_GROUP_GFS:-2}
+        export WRTTASK_PER_GROUP_GFS=${WRTTASK_PER_GROUP_GFS:-64}
 	if [[ "$WRTTASK_PER_GROUP_GFS" -gt "$npe_node_max" ]]; then export WRTTASK_PER_GROUP_GFS=$npe_node_max ; fi
-        export WRTIOBUF=${WRTIOBUF_s2sw:-"16M"}
+        export WRTIOBUF=${WRTIOBUF:-"16M"}
         ;;
     "C768")
         export DELTIM=150
