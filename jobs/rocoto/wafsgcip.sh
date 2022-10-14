@@ -9,7 +9,12 @@ echo "=============== START TO SOURCE FV3GFS WORKFLOW MODULES ==============="
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
+export job="wafsgcip"
+export jobid="${job}.$$"
+
+#
 ###############################################################
+# TODO: sourcing configs should be in the j-job
 echo "=============== BEGIN TO SOURCE RELEVANT CONFIGS ==============="
 configs="base wafsgcip"
 for config in $configs; do
@@ -27,24 +32,14 @@ status=$?
 
 ###############################################################
 
-export DATAROOT="$RUNDIR/$CDATE/$CDUMP/wafsgcip"
-[[ -d $DATAROOT ]] && rm -rf $DATAROOT
-mkdir -p $DATAROOT
-
-export pid=${pid:-$$}
-export jobid=${job}.${pid}
-export DATA="${DATAROOT}/$job"
-
 ###############################################################
 echo
 echo "=============== START TO RUN WAFSGCIP ==============="
 # Execute the JJOB
 $HOMEgfs/jobs/JGFS_ATMOS_WAFS_GCIP
 status=$?
+[[ $status -ne 0 ]] && exit $status
 
 ###############################################################
-# Force Exit out cleanly
-if [ ${KEEPDATA:-"NO"} = "NO" ] ; then rm -rf $DATAROOT ; fi
 
-
-exit $status
+exit 0

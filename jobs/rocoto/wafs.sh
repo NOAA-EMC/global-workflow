@@ -9,7 +9,12 @@ echo "=============== START TO SOURCE FV3GFS WORKFLOW MODULES ==============="
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
+export job="wafs"
+export jobid="${job}.$$"
+
 ###############################################################
+###############################################################
+# TODO: sourcing configs should be in the j-job
 echo "=============== BEGIN TO SOURCE RELEVANT CONFIGS ==============="
 configs="base wafs"
 for config in $configs; do
@@ -20,15 +25,6 @@ done
 
 ###############################################################
 
-export pid=${pid:-$$}
-export jobid=${job}.${pid}
-export DATAROOT="$RUNDIR/$CDATE/$CDUMP/wafs.$jobid"
-[[ -d $DATAROOT ]] && rm -rf $DATAROOT
-mkdir -p $DATAROOT
-
-export DATA="${DATAROOT}/$job"
-
-###############################################################
 echo
 echo "=============== START TO RUN WAFS ==============="
 
@@ -36,11 +32,7 @@ echo "=============== START TO RUN WAFS ==============="
 hr=0
 while [ $hr -le 120 ]; do
 
-  if [ $hr -le 100 ]; then
-    export fcsthrs="$(printf "%02d" $(( 10#$hr )) )"
-  else
-    export fcsthrs=$hr
-  fi
+  export fcsthrs=$(printf "%03d" $hr)
 
   # Execute the JJOB
   $HOMEgfs/jobs/JGFS_ATMOS_WAFS
@@ -50,10 +42,5 @@ while [ $hr -le 120 ]; do
   hr=$(expr $hr + 6)
 
 done
-
-###############################################################
-# Force Exit out cleanly
-if [ ${KEEPDATA:-"NO"} = "NO" ] ; then rm -rf $DATAROOT ; fi
-
 
 exit 0
