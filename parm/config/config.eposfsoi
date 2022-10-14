@@ -5,10 +5,15 @@
 
 echo "BEGIN: config.eposfsoi"
 
-# Get efcsfsoi configs for FH settings
-. "${EXPDIR}"/config.efcsfsoi
-
 # Get task specific resources
 . ${EXPDIR}/config.resources eposfsoi
+
+# No. of concurrent eposfsoi jobs [1 implies sequential]
+# These could be the same as regular epos groups, but
+# not necessarily
+export NEPOSFSOIGRP=7
+if [ $l4densvar = ".false." ]; then
+    export NEPOSFSOIGRP=3
+fi
 
 echo "END: config.eposfsoi"

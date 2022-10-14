@@ -1367,7 +1367,7 @@ class Tasks:
             fhout = eposfsoi['FHOUT_EFSOI']
             fhrs = range(fhmin, fhmax + fhout, fhout)
 
-            neposfsoigrp = eposfsoi['NEPOSGRP']
+            neposfsoigrp = eposfsoi['NEPOSFSOIGRP']
             ngrps = neposfsoigrp if len(fhrs) > neposfsoigrp else len(fhrs)
 
             fhrs = [f'f{fhr:03d}' for fhr in fhrs]

@@ -65,8 +65,6 @@ export DO_VRFY="YES"       # VRFY step
 #  use RUNMOS flag (currently in config.vrfy)
 export REALTIME="YES"
 
-export DO_EFSOI="NO"
-
 # Experiment mode (cycled or forecast-only)
 export MODE="@MODE@" # cycled/forecast-only
 
@@ -348,6 +346,15 @@ if [ $DOHYBVAR = "YES" ]; then
     else
         export FHOUT_ENKF=3
     fi
+fi
+
+# Running EFSOI
+export DO_EFSOI="NO"
+
+if [ $DO_EFSOI = "YES" ]; then
+    export FHMIN_EFSOI=6
+    export FHOUT_EFSOI=6
+    export FHMAX_EFSOI=30
 fi
 
 # turned on nsst in anal and/or fcst steps, and turn off rtgsst
