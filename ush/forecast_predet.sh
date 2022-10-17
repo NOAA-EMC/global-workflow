@@ -100,6 +100,7 @@ FV3_GFS_predet(){
   MEMBER=${MEMBER:-"-1"} # -1: control, 0: ensemble mean, >0: ensemble member $MEMBER
   ENS_NUM=${ENS_NUM:-1}  # Single executable runs multiple members (e.g. GEFS)
   PREFIX_ATMINC=${PREFIX_ATMINC:-""} # allow ensemble to use recentered increment
+  EFSOI_TASK=${EFSOI_TASK:-"NO"} # is instance of EFSOI ensemble forecast
 
   # IAU options
   DOIAU=${DOIAU:-"NO"}
@@ -237,7 +238,11 @@ FV3_GFS_predet(){
     rprefix=$rCDUMP
     memchar=""
   else
-    prefix=enkf$CDUMP
+    if [[ "$EFSOI_TASK" = "YES" ]]; then
+      prefix=efsoi$CDUMP
+    else
+      prefix=enkf$CDUMP
+    fi 
     rprefix=enkf$rCDUMP
     memchar=mem$(printf %03i $MEMBER)
   fi

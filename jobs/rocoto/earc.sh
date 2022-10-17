@@ -19,7 +19,7 @@ source "$HOMEgfs/ush/preamble.sh"
 # Source FV3GFS workflow modules
 . $HOMEgfs/ush/load_fv3gfs_modules.sh
 status=$?
-[[ $status -ne 0 ]] && exit $status
+[[ "${status}" -ne 0 ]] && exit "${status}"
 
 ###############################################################
 # Source relevant configs
@@ -27,7 +27,7 @@ configs="base earc"
 for config in $configs; do
     . $EXPDIR/config.${config}
     status=$?
-    [[ $status -ne 0 ]] && exit $status
+    [[ "${status}" -ne 0 ]] && exit "${status}"
 done
 
 export COMPONENT=${COMPONENT:-atmos}
@@ -51,9 +51,18 @@ cd $ARCH_LIST
 
 $HOMEgfs/ush/hpssarch_gen.sh enkf${CDUMP}
 status=$?
-if [ $status -ne 0 ]; then
+if [ "${status}" -ne 0 ]; then
    echo "$HOMEgfs/ush/hpssarch_gen.sh enkf${CDUMP} failed, ABORT!"
-   exit $status
+   exit "${status}"
+fi
+
+if [ "${DO_EFSOI}" = "YES" ]; then
+   ${HOMEgfs}/ush/hpssarch_gen.sh efsoigdas 
+   status=$?
+   if [ "${status}" -ne 0 ]; then
+      echo "${HOMEgfs}/ush/hpssarch_gen_EFSOI.sh enkf${CDUMP} failed, ABORT!"
+      exit "${status}"
+   fi
 fi
 
 cd $ROTDIR
@@ -96,28 +105,58 @@ if (( 10#${ENSGRP} > 0 )) && [[ ${HPSSARCH} = "YES" || ${LOCALARCH} = "YES" ]]; 
 
      $TARCMD -P -cvf $ATARDIR/$CDATE/enkf${CDUMP}_grp${ENSGRP}.tar $(cat $ARCH_LIST/enkf${CDUMP}_grp${n}.txt)
      status=$?
-     if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
+     if [ "${status}" -ne 0  -a $CDATE -ge $firstday ]; then
          echo "$(echo $TARCMD | tr 'a-z' 'A-Z') $CDATE enkf${CDUMP}_grp${ENSGRP}.tar failed"
-         exit $status
+         exit "${status}"
      fi
 
      if [ $SAVEWARMICA = "YES" -a $cyc -eq $EARCINC_CYC ]; then
        $TARCMD -P -cvf $ATARDIR/$CDATE/enkf${CDUMP}_restarta_grp${ENSGRP}.tar $(cat $ARCH_LIST/enkf${CDUMP}_restarta_grp${n}.txt)
        status=$?
-       if [ $status -ne 0 ]; then
+       if [ "${status}" -ne 0 ]; then
            echo "$(echo $TARCMD | tr 'a-z' 'A-Z') $CDATE enkf${CDUMP}_restarta_grp${ENSGRP}.tar failed"
-           exit $status
+           exit "${status}"
        fi
      fi
 
      if [ $SAVEWARMICB = "YES"  -a $cyc -eq $EARCICS_CYC ]; then
        $TARCMD -P -cvf $ATARDIR/$CDATE/enkf${CDUMP}_restartb_grp${ENSGRP}.tar $(cat $ARCH_LIST/enkf${CDUMP}_restartb_grp${n}.txt)
        status=$?
-       if [ $status -ne 0 ]; then
+       if [ "${status}" -ne 0 ]; then
            echo "$(echo $TARCMD | tr 'a-z' 'A-Z') $CDATE enkf${CDUMP}_restartb_grp${ENSGRP}.tar failed"
-           exit $status
+           exit "${status}"
        fi
      fi
+
+     if [ $DO_EFSOI = "YES" ]; then
+       $TARCMD -P -cvf $ATARDIR/$CDATE/efsoi${CDUMP}_grp${ENSGRP}.tar $(cat $ARCH_LIST/efsoi${CDUMP}_grp${n}.txt)
+       status=$?
+       if [ "${status}" -ne 0  -a $CDATE -ge $firstday ]; then
+           echo "HTAR $CDATE efsoi${CDUMP}_grp${ENSGRP}.tar failed"
+           exit "${status}"
+       fi
+  
+       if [  $SAVEWARMICA = "YES" ] &&  [ $cyc -eq $EARCINC_CYC ]; then
+         $TARCMD -P -cvf "$ATARDIR/$CDATE/efsoi${CDUMP}_restarta_grp${ENSGRP}.tar" $(cat $ARCH_LIST/efsoi${CDUMP}_restarta_grp${n}.txt)
+         status=$?
+         if [ "${status}" -ne 0 ]; then
+             echo "HTAR $CDATE efsoi${CDUMP}_restarta_grp${ENSGRP}.tar failed"
+             exit "${status}"
+         fi
+       fi
+  
+       if [  $SAVEWARMICB = "YES" ] && [  $cyc -eq $EARCICS_CYC  ]; then
+         $TARCMD -P -cvf "$ATARDIR/$CDATE/efsoi${CDUMP}_restartb_grp${ENSGRP}.tar" $(cat $ARCH_LIST/efsoi${CDUMP}_restartb_grp${n}.txt)
+         status=$?
+         if [ "${status}" -ne 0 ]; then
+             echo "HTAR $CDATE efsoi${CDUMP}_restartb_grp${ENSGRP}.tar failed"
+             exit "${status}"
+         fi
+       fi
+
+       $NCP $ROTDIR/efsoi${CDUMP}.$PDY/$cyc/$COMPONENT/${CDUMP}.t${cyc}z.enkfstat         efsoistat.${CDUMP}.$CDATE
+
+     fi # $DO_EFSOI = "YES" 
 
    fi # CDATE>SDATE
 
@@ -140,10 +179,21 @@ if [ $ENSGRP -eq 0 ]; then
         set +e
         $TARCMD -P -cvf $ATARDIR/$CDATE/enkf${CDUMP}.tar $(cat $ARCH_LIST/enkf${CDUMP}.txt)
         status=$?
-        if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
+        if [ "${status}" -ne 0 ] && [ $CDATE -ge $firstday ]; then
             echo "$(echo $TARCMD | tr 'a-z' 'A-Z') $CDATE enkf${CDUMP}.tar failed"
-            exit $status
+            exit "${status}"
         fi
+
+        if [ $DO_EFSOI = "YES" ]; then
+           $TARCMD -P -cvf "$ATARDIR/$CDATE/efsoi${CDUMP}.tar" $(cat $ARCH_LIST/efsoi${CDUMP}.txt)
+           status=$?
+           if [ "${status}" -ne 0 ] && [ $CDATE -ge $firstday ]; then
+               echo "HTAR $CDATE efsoi${CDUMP}.tar failed"
+               exit "${status}"
+           fi
+        fi # $DO_EFSOI = "YES"
+
+        ${ERR_EXIT_ON:-set -eu}
         set_strict
     fi
 
@@ -158,7 +208,6 @@ if [ $ENSGRP -eq 0 ]; then
 		nb_copy $ROTDIR/enkfgfs.$PDY/$cyc/$COMPONENT/${CDUMP}.t${cyc}z.enkfstat         enkfstat.gfs.$CDATE
 		nb_copy $ROTDIR/enkfgfs.$PDY/$cyc/$COMPONENT/${CDUMP}.t${cyc}z.gsistat.ensmean  gsistat.gfs.${CDATE}.ensmean
 	fi
-
 fi
 
 
@@ -177,6 +226,7 @@ if [ $ENSGRP -eq 0 ]; then
 
 	gPDY=$(echo $GDATE | cut -c1-8)
 	gcyc=$(echo $GDATE | cut -c9-10)
+
 
 	# Loop over GDAS and GFS EnKF directories separately.
         clist="gdas gfs"
@@ -202,10 +252,49 @@ if [ $ENSGRP -eq 0 ]; then
 	    fi
 	done
 
-	# Advance to next cycle
-	GDATE=$($NDATE +$assim_freq $GDATE)
+       if [ "${DO_EFSOI}" = "YES" ]; then
+            COMIN_ENS="${ROTDIR}/efsoigdas.${gPDY}/${gcyc}/${COMPONENT}"
+            if [ -d "${COMIN_ENS}" ] ; then
+                rm -rf "${COMIN_ENS}/*f012*nc"
+                rm -rf "${COMIN_ENS}/*f018*nc"
+                for imem in $(seq 1 "${NMEM_ENKF}"); do
+                    memchar="mem"$(printf %03i "${imem}")
+                    for file in $(ls "${COMIN_ENS}/${memchar}" |grep -v atmf024); do
+                       rm -rf "${COMIN_ENS:?}/${memchar}/${file}"
+                    done
+                done
+   	    fi
+       fi #  $DO_EFSOI = "YES"
+   
+       # Advance to next cycle
+       GDATE=$("${NDATE}" +"${assim_freq}" "${GDATE}")
 
-    done
+    done 
+
+    if [ "${DO_EFSOI}" = "YES" ]; then
+        # Now do EFSOI - needs to be kept around longer
+        # Start start and end dates to remove
+        GDATEEND=$("${NDATE}" "-${RMOLDEND_EFSOI:-36}"  "${CDATE}")
+        GDATE=$("${NDATE}" -${RMOLDSTD_ENKF:-120} "${CDATE}")
+        while [ "${GDATE}" -le "${GDATEEND}" ]; do
+    
+           gPDY=$(echo "${GDATE}" | cut -c1-8)
+           gcyc=$(echo "${GDATE}" | cut -c9-10)
+    
+           COMIN_ENS="${ROTDIR}/efsoigdas.${gPDY}/${gcyc}/${COMPONENT}"
+             [[ -d "${COMIN_ENS}" ]] && rm -rf "${COMIN_ENS}"
+    
+           # Remove any empty directories
+           COMIN_ENS="${ROTDIR}/efsoigdas.${gPDY}/${COMPONENT}"
+           if [ -d "${COMIN_ENS}" ] ; then
+               [[ ! -n "$(ls -A "${COMIN_ENS}")" ]] && rm -rf "${COMIN_ENS}"
+           fi
+           
+           # Advance to next cycle
+           GDATE=$("${NDATE}" "+${assim_freq}" "${GDATE}")
+           
+       done
+    fi # $DO_EFSOI = "YES" 
 
 fi
 

@@ -1,0 +1,20 @@
+#! /usr/bin/env bash
+
+########## config.eupdfsoi ##########
+# Ensemble update specific, dependency config.anal
+
+echo "BEGIN: config.eupdfsoi"
+
+# Get task specific resources
+. "${EXPDIR}"/config.resources eupdfsoi
+
+export npe_enkf="${npe_eupd}"
+
+
+# Use NAM_ENKF below for serial EnKF
+export NAM_ENKF="analpertwtnh=0.9,analpertwtsh=0.9,analpertwttr=0.9"
+
+# EFSOI works only with the serial filter
+export letkf_flag=".false."       # use LETKF instead of serial filter
+
+echo "END: config.eupdfsoi"

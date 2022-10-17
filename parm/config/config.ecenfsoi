@@ -1,0 +1,11 @@
+#! /usr/bin/env bash
+
+########## config.ecen ##########
+# Ensemble recentering specific
+
+echo "BEGIN: config.ecenfsoi"
+
+# Get task specific resources
+. "${EXPDIR}"/config.resources ecenfsoi
+
+echo "END: config.ecenfsoi"

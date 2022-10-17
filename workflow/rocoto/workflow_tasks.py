@@ -15,6 +15,7 @@ class Tasks:
                    'atmanalprep', 'atmanalrun', 'atmanalpost',
                    'earc', 'ecen', 'echgres', 'ediag', 'efcs',
                    'eobs', 'eomg', 'epos', 'esfc', 'eupd',
+                   'eupdfsoi', 'ecenfsoi', 'esfcfsoi', 'efcsfsoi', 'eposfsoi', 'efsoi'
                    'atmensanalprep', 'atmensanalrun', 'atmensanalpost',
                    'aeroanlinit', 'aeroanlrun', 'aeroanlfinal',
                    'fcst', 'post', 'ocnpost', 'vrfy', 'metp',
@@ -1022,6 +1023,32 @@ class Tasks:
 
         return task
 
+    def eupdfsoi(self):
+        deps = []
+        if self.app_config.lobsdiag_forenkf:
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}ediag'}
+        else:
+            dep_dict = {'type': 'metatask', 'name': f'{self.cdump}eomn'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('eupdfsoi')
+        task = create_wf_task('eupdfsoi', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
+    def efsoi(self):
+        deps = []
+        data = '&ROTDIR;/gdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmanl.ensres.nc'
+        dep_dict = {'type': 'data', 'data': data}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('efsoi')
+        task = create_wf_task('efsoi', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
     def atmensanalprep(self):
 
         suffix = self._base["SUFFIX"]
@@ -1131,6 +1158,57 @@ class Tasks:
                               metatask='ecmn', varname=varname1, varval=varval1, vardict=vardict)
         return task
 
+    def ecenfsoi(self):
+
+        self._is_this_a_gdas_task(self.cdump, 'ecenfsoi')
+
+        def _get_ecenfsoigroups():
+
+            if self._base.get('DOIAU_ENKF', False):
+                fhrs = list(self._base.get('IAUFHRS', '6').split(','))
+
+                necenfsoigrp = self._configs['ecen']['NECENGRP']
+                ngrps = necenfsoigrp if len(fhrs) > necenfsoigrp else len(fhrs)
+
+                fhrs = [f'{int(fhr):03d}' for fhr in fhrs]
+                fhrs = np.array_split(fhrs, ngrps)
+                fhrs = [fhr.tolist() for fhr in fhrs]
+
+                grp = ' '.join([f'{x:03d}' for x in range(0, ngrps)])
+                dep = ' '.join([f[-1] for f in fhrs])
+                lst = ' '.join(['_'.join(f) for f in fhrs])
+
+            else:
+                grp = '000'
+                dep = 'f006'
+                lst = 'f006'
+
+            return grp, dep, lst
+
+        eupdfsoi_cdump = 'gdas' if 'gdas' in self.app_config.eupd_cdumps else 'gfs'
+
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}analcalc'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'task', 'name': f'{eupdfsoi_cdump}eupdfsoi'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+        ecenfsoienvars = self.envars.copy()
+        ecenfsoienvar_dict = {'FHRGRP': '#grp#',
+                          'FHRLST': '#lst#'}
+        for key, value in ecenfsoienvar_dict.items():
+            ecenfsoienvars.append(rocoto.create_envar(name=key, value=str(value)))
+
+        varname1, varname2, varname3 = 'grp', 'dep', 'lst'
+        varval1, varval2, varval3 = _get_ecenfsoigroups()
+        vardict = {varname2: varval2, varname3: varval3}
+
+        resources = self.get_resource('ecenfsoi')
+        task = create_wf_task('ecenfsoi', resources, cdump=self.cdump, envar=ecenfsoienvars, dependency=dependencies,
+                              metatask='ecmnfsoi', varname=varname1, varval=varval1, vardict=vardict)
+        return task
+
     def esfc(self):
 
         self._is_this_a_gdas_task(self.cdump, 'esfc')
@@ -1151,6 +1229,25 @@ class Tasks:
         task = create_wf_task('esfc', resources, cdump='gdas', envar=self.envars, dependency=dependencies)
 
         return task
+
+    def esfcfsoi(self):
+
+        self._is_this_a_gdas_task(self.cdump, 'esfcfsoi')
+
+        eupd_cdump = 'gdas' if 'gdas' in self.app_config.eupd_cdumps else 'gfs'
+
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}analcalc'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'task', 'name': f'{eupd_cdump}eupdfsoi'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+        resources = self.get_resource('esfcfsoi')
+        task = create_wf_task('esfcfsoi', resources, cdump='gdas', envar=self.envars, dependency=dependencies)
+
+        return task
+
 
     def efcs(self):
 
@@ -1176,6 +1273,29 @@ class Tasks:
                               metatask='efmn', varname='grp', varval=groups)
 
         return task
+
+    def efcsfsoi(self):
+
+        self._is_this_a_gdas_task(self.cdump, 'efcsfsoi')
+
+        deps = []
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}ecmnfsoi'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}esfcfsoi'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+        efcsfsoienvars = self.envars.copy()
+        efcsfsoienvars.append(rocoto.create_envar(name='ENSGRP', value='#grp#'))
+
+        groups = self._get_hybgroups(self._base['NMEM_ENKF'], self._configs['efcs']['NMEM_EFCSGRP'])
+
+        resources = self.get_resource('efcsfsoi')
+        task = create_wf_task('efcsfsoi', resources, cdump=self.cdump, envar=efcsfsoienvars, dependency=dependencies,
+                              metatask='efmnfsoi', varname='grp', varval=groups)
+
+        return task
+
 
     def echgres(self):
 
@@ -1237,6 +1357,50 @@ class Tasks:
 
         return task
 
+    def eposfsoi(self):
+
+        self._is_this_a_gdas_task(self.cdump, 'eposfsoi')
+
+        def _get_eposfsoigroups(eposfsoi):
+            fhmin = eposfsoi['FHMIN_EFSOI']
+            fhmax = eposfsoi['FHMAX_EFSOI']
+            fhout = eposfsoi['FHOUT_EFSOI']
+            fhrs = range(fhmin, fhmax + fhout, fhout)
+
+            neposfsoigrp = eposfsoi['NEPOSFSOIGRP']
+            ngrps = neposfsoigrp if len(fhrs) > neposfsoigrp else len(fhrs)
+
+            fhrs = [f'f{fhr:03d}' for fhr in fhrs]
+            fhrs = np.array_split(fhrs, ngrps)
+            fhrs = [f.tolist() for f in fhrs]
+
+            grp = ' '.join([f'{x:03d}' for x in range(0, ngrps)])
+            dep = ' '.join([f[-1] for f in fhrs])
+            lst = ' '.join(['_'.join(f) for f in fhrs])
+
+            return grp, dep, lst
+
+        deps = []
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}efmnfsoi'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        eposfsoienvars = self.envars.copy()
+        eposfsoienvar_dict = {'FHRGRP': '#grp#',
+                          'FHRLST': '#lst#'}
+        for key, value in eposfsoienvar_dict.items():
+            eposfsoienvars.append(rocoto.create_envar(name=key, value=str(value)))
+
+        varname1, varname2, varname3 = 'grp', 'dep', 'lst'
+        varval1, varval2, varval3 = _get_eposfsoigroups(self._configs['eposfsoi'])
+        vardict = {varname2: varval2, varname3: varval3}
+
+        resources = self.get_resource('eposfsoi')
+        task = create_wf_task('eposfsoi', resources, cdump=self.cdump, envar=eposfsoienvars, dependency=dependencies,
+                              metatask='epmnfsoi', varname=varname1, varval=varval1, vardict=vardict)
+
+        return task
+
     def earc(self):
 
         self._is_this_a_gdas_task(self.cdump, 'earc')
@@ -1244,7 +1408,12 @@ class Tasks:
         deps = []
         dep_dict = {'type': 'metatask', 'name': f'{self.cdump}epmn'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
+        if self.app_config.do_efsoi:
+           dep_dict = {'type': 'metatask', 'name': f'{self.cdump}epmnfsoi'}
+           deps.append(rocoto.add_dependency(dep_dict))
+           dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+        else:
+           dependencies = rocoto.create_dependency(dep=deps)
 
         earcenvars = self.envars.copy()
         earcenvars.append(rocoto.create_envar(name='ENSGRP', value='#grp#'))

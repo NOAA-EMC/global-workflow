@@ -263,7 +263,7 @@ fi
 # GSI Utils
 if [ -d "${script_dir}/gsi_utils.fd" ]; then
   for exe in calc_analysis.x calc_increment_ens_ncio.x calc_increment_ens.x \
-    getsfcensmeanp.x getsigensmeanp_smooth.x getsigensstatp.x \
+    efsoi.x getsfcensmeanp.x getsigensmeanp_smooth.x getsigensstatp.x \
     interp_inc.x recentersigp.x;do
     [[ -s "${exe}" ]] && rm -f ${exe}
     ${LINK} "${script_dir}/gsi_utils.fd/install/bin/${exe}" .

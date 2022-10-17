@@ -1,0 +1,11 @@
+#! /usr/bin/env bash
+
+########## config.esfcfsoi ##########
+# Ensemble surface specific
+
+echo "BEGIN: config.esfcfsoi"
+
+# Get task specific resources
+. "${EXPDIR}"/config.resources esfcfsoi
+
+echo "END: config.esfcfsoi"

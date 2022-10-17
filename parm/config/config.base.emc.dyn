@@ -348,6 +348,15 @@ if [ $DOHYBVAR = "YES" ]; then
     fi
 fi
 
+# Running EFSOI
+export DO_EFSOI="NO"
+
+if [ $DO_EFSOI = "YES" ]; then
+    export FHMIN_EFSOI=6
+    export FHOUT_EFSOI=6
+    export FHMAX_EFSOI=30
+fi
+
 # turned on nsst in anal and/or fcst steps, and turn off rtgsst
 export DONST="YES"
 if [ $DONST = "YES" ]; then export FNTSFA="        "; fi

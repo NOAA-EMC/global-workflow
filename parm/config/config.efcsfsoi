@@ -1,0 +1,19 @@
+#! /usr/bin/env bash
+
+########## config.efcsfsoi ##########
+# Ensemble forecast specific, dependency: config.fcst
+
+echo "BEGIN: config.efcsfsoi"
+
+# Get task specific resources
+. "${EXPDIR}"/config.resources efcsfsoi
+
+export npe_fv3=${npe_efcsfsoi}
+
+if [ "${QUILTING}" = ".true." ]; then
+    npe_fv3=$(echo " ${npe_fv3} + ${WRITE_GROUP} * ${WRTTASK_PER_GROUP}" | bc)
+    export npe_fv3
+    export npe_efcsfsoi=${npe_fv3}
+fi
+
+echo "END: config.efcsfsoi"

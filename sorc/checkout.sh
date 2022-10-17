@@ -166,7 +166,7 @@ if [[ ${checkout_gdas} == "YES" ]]; then
 fi
 
 if [[ ${checkout_gsi} == "YES" || ${checkout_gdas} == "YES" ]]; then
-  checkout "gsi_utils.fd"    "https://github.com/NOAA-EMC/GSI-Utils.git"   "322cc7b"; errs=$((errs + $?))
+  checkout "gsi_utils.fd"    "https://github.com/AndrewEichmann-NOAA/GSI-Utils.git"  "f9fd8a5"; errs=$((errs + $?))
   checkout "gsi_monitor.fd"  "https://github.com/NOAA-EMC/GSI-Monitor.git" "c64cc47"; errs=$((errs + $?))
   checkout "gldas.fd"        "https://github.com/NOAA-EMC/GLDAS.git"       "fd8ba62"; errs=$((errs + $?))
 fi
