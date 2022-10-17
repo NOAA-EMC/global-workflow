@@ -3,6 +3,7 @@
 import os
 from distutils.spawn import find_executable
 from datetime import datetime
+from pygw.timetools import to_timedelta
 from collections import OrderedDict
 from applications import AppConfig
 from rocoto.workflow_tasks import get_wf_tasks
@@ -110,29 +111,41 @@ class RocotoXML:
         return cycledefs
 
     def _get_cycledefs_cycled(self):
-        sdate = self._base['SDATE'].strftime('%Y%m%d%H%M')
-        edate = self._base['EDATE'].strftime('%Y%m%d%H%M')
+        sdate = self._base['SDATE']
+        edate = self._base['EDATE']
         interval = self._base.get('INTERVAL', '06:00:00')
-        strings = [f'\t<cycledef group="gdas" >{sdate} {edate} {interval}</cycledef>\n']
+        strings = []
+        strings.append(f'\t<cycledef group="gdas_half">{sdate.strftime("%Y%m%d%H%M")} {sdate.strftime("%Y%m%d%H%M")} {interval}</cycledef>')
+        sdate = sdate + to_timedelta(interval)
+        strings.append(f'\t<cycledef group="gdas">{sdate.strftime("%Y%m%d%H%M")} {edate.strftime("%Y%m%d%H%M")} {interval}</cycledef>')
 
         if self._app_config.gfs_cyc != 0:
-            sdate_gfs = self._base['SDATE_GFS'].strftime('%Y%m%d%H%M')
-            edate_gfs = self._base['EDATE_GFS'].strftime('%Y%m%d%H%M')
+            sdate_gfs = self._base['SDATE_GFS']
+            edate_gfs = self._base['EDATE_GFS']
             interval_gfs = self._base['INTERVAL_GFS']
-            strings.append(f'\t<cycledef group="gfs"  >{sdate_gfs} {edate_gfs} {interval_gfs}</cycledef>')
-            strings.append('')
-            strings.append('')
+            strings.append(f'\t<cycledef group="gfs">{sdate_gfs.strftime("%Y%m%d%H%M")} {edate_gfs.strftime("%Y%m%d%H%M")} {interval_gfs}</cycledef>')
+
+            sdate_gfs = sdate_gfs + to_timedelta(interval_gfs)
+            if sdate_gfs <= edate_gfs:
+                strings.append(f'\t<cycledef group="gfs_cont">{sdate_gfs.strftime("%Y%m%d%H%M")} {edate_gfs.strftime("%Y%m%d%H%M")} {interval_gfs}</cycledef>')
+
+        strings.append('')
+        strings.append('')
 
         return '\n'.join(strings)
 
     def _get_cycledefs_forecast_only(self):
-        sdate = self._base['SDATE'].strftime('%Y%m%d%H%M')
-        edate = self._base['EDATE'].strftime('%Y%m%d%H%M')
+        sdate = self._base['SDATE']
+        edate = self._base['EDATE']
         interval = self._base.get('INTERVAL_GFS', '24:00:00')
-        cdump = self._base['CDUMP']
-        strings = f'\t<cycledef group="{cdump}">{sdate} {edate} {interval}</cycledef>\n\n'
+        strings = []
+        strings.append(f'\t<cycledef group="gfs">{sdate.strftime("%Y%m%d%H%M")} {edate.strftime("%Y%m%d%H%M")} {interval}</cycledef>')
 
-        return strings
+        sdate = sdate + to_timedelta(interval)
+        if sdate <= edate:
+            strings.append(f'\t<cycledef group="gfs_cont">{sdate.strftime("%Y%m%d%H%M")} {edate.strftime("%Y%m%d%H%M")} {interval}</cycledef>')
+
+        return '\n'.join(strings)
 
     @staticmethod
     def _get_workflow_footer():
