@@ -1017,8 +1017,8 @@ GOCART_postdet() {
     #
     # Temporarily delete existing files due to noclobber in GOCART
     #
-    if [[ -e $COMOUTaero/gocart.inst_aod.${YYYY}${MM}${DD}_${HH}00z.nc4 ]]; then
-      rm $COMOUTaero/gocart.inst_aod.${YYYY}${MM}${DD}_${HH}00z.nc4
+    if [[ -e "${COMOUTaero}/gocart.inst_aod.${YYYY}${MM}${DD}_${HH}00z.nc4" ]]; then
+      rm "${COMOUTaero}/gocart.inst_aod.${YYYY}${MM}${DD}_${HH}00z.nc4"
     fi
 
     $NLN $COMOUTaero/gocart.inst_aod.${YYYY}${MM}${DD}_${HH}00z.nc4 $DATA/gocart.inst_aod.${YYYY}${MM}${DD}_${HH}00z.nc4
