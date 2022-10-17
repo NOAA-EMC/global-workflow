@@ -1,8 +1,8 @@
 #! /usr/bin/env bash
 set -eux
 
-source ./machine-setup.sh > /dev/null 2>&1
-cwd=$(pwd)
+script_dir=$(dirname "${BASH_SOURCE[0]}")
+cd "${script_dir}" || exit 1
 
 OPTIND=1
 _opts=""
@@ -12,11 +12,11 @@ while getopts ":dov" option; do
 		o) _opts+="-g ";;
 		v) _opts+="-v ";;
 		\?)
-			echo "[$BASH_SOURCE]: Unrecognized option: ${option}"
+			echo "[${BASH_SOURCE[0]}]: Unrecognized option: ${option}"
 			usage
 			;;
 		:)
-			echo "[$BASH_SOURCE]: ${option} requires an argument"
+			echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
 			usage
 			;;
 	esac

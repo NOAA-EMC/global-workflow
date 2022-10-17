@@ -98,15 +98,19 @@ class Tasks:
 
         memory = task_config.get(f'memory_{task_name}', None)
 
-        native = '--export=NONE' if scheduler in ['slurm'] else None
+        native = None
+        if scheduler in ['pbspro']:
+            native = '-l debug=true,place=vscatter'
+            if task_config.get('is_exclusive', False):
+                native += ':exclhost'
+        elif scheduler in ['slurm']:
+            native = '--export=NONE'
 
-        queue = task_config['QUEUE']
-        if task_name in Tasks.SERVICE_TASKS and scheduler not in ['slurm']:
-            queue = task_config['QUEUE_SERVICE']
+        queue = task_config['QUEUE_SERVICE'] if task_name in Tasks.SERVICE_TASKS else task_config['QUEUE']
 
         partition = None
         if scheduler in ['slurm']:
-            partition = task_config['QUEUE_SERVICE'] if task_name in Tasks.SERVICE_TASKS else task_config[
+            partition = task_config['PARTITION_SERVICE'] if task_name in Tasks.SERVICE_TASKS else task_config[
                 'PARTITION_BATCH']
 
         task_resource = {'account': account,

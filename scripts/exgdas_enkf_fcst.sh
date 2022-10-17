@@ -23,7 +23,7 @@ source "$HOMEgfs/ush/preamble.sh"
 # Directories.
 pwd=$(pwd)
 export FIX_DIR=${FIX_DIR:-$HOMEgfs/fix}
-export FIX_AM=${FIX_AM:-$FIX_DIR/fix_am}
+export FIX_AM=${FIX_AM:-$FIX_DIR/am}
 
 # Utilities
 export NCP=${NCP:-"/bin/cp -p"}

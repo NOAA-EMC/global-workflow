@@ -16,6 +16,7 @@ export ACCOUNT="@ACCOUNT@"
 export QUEUE="@QUEUE@"
 export QUEUE_SERVICE="@QUEUE_SERVICE@"
 export PARTITION_BATCH="@PARTITION_BATCH@"
+export PARTITION_SERVICE="@PARTITION_SERVICE@"
 
 # Project to use in mass store:
 HPSS_PROJECT=emc-global
@@ -29,15 +30,16 @@ export UTILgfs=$HOMEgfs/util
 export EXECgfs=$HOMEgfs/exec
 export SCRgfs=$HOMEgfs/scripts
 
-export FIXcice=$HOMEgfs/fix/fix_cice
-export FIXmom=$HOMEgfs/fix/fix_mom6
-export FIXreg2grb2=$HOMEgfs/fix/fix_reg2grb2
+export FIXcice=$HOMEgfs/fix/cice
+export FIXmom=$HOMEgfs/fix/mom6
+export FIXreg2grb2=$HOMEgfs/fix/reg2grb2
 
 ########################################################################
 
 # GLOBAL static environment parameters
-export NWPROD="@NWPROD@"
+export PACKAGEROOT="@PACKAGEROOT@"
 export COMROOT="@COMROOT@"
+export COMINsyn="@COMINsyn@"
 export DMPDIR="@DMPDIR@"
 export RTMFIX=$CRTM_FIX
 
@@ -73,12 +75,10 @@ export MODE="@MODE@" # cycled/forecast-only
 # CLEAR
 ####################################################
 # Build paths relative to $HOMEgfs
-export FIXgsi="$HOMEgfs/fix/fix_gsi"
+export FIXgsi="$HOMEgfs/fix/gsi"
 export HOMEfv3gfs="$HOMEgfs/sorc/fv3gfs.fd"
 export HOMEpost="$HOMEgfs"
-export HOMEobsproc_prep="$BASE_GIT/obsproc/obsproc_prep.v5.5.0_hpc-stack"
-export HOMEobsproc_network="$BASE_GIT/obsproc/obsproc_global.v3.4.2_hpc-stack"
-export HOMEobsproc_global=$HOMEobsproc_network
+export HOMEobsproc="$BASE_GIT/obsproc/v1.0.2"
 
 # CONVENIENT utility scripts and other environment parameters
 export NCP="/bin/cp -p"
@@ -133,7 +133,6 @@ export COMOUTice=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/ice
 export COMINaero=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/chem
 export COMOUTaero=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/chem
 
-export jlogfile="${EXPDIR}/logs/jlogfile"
 export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 export LOGSCRIPT=${LOGSCRIPT:-""}
 #export ERRSCRIPT=${ERRSCRIPT:-"err_chk"}
@@ -158,7 +157,7 @@ export DO_WAVE="NO"
 export DO_OCN="NO"
 export DO_ICE="NO"
 export DO_AERO="NO"
-export CCPP_SUITE="FV3_GFS_v17_p8"
+export CCPP_SUITE="@CCPP_SUITE@"
 export WAVE_CDUMP="" # When to include wave suite: gdas, gfs, or both
 export DOBNDPNT_WAVE="NO"
 export cplwav2atm=".false."
@@ -219,7 +218,7 @@ export LEVS=128
 export CASE="@CASECTL@"
 export CASE_ENKF="@CASEENS@"
 case "$CASE" in
-    "C48") export OCNRES=400;;
+    "C48") export OCNRES=500;;
     "C96") export OCNRES=100;;
     "C192") export OCNRES=050;;
     "C384") export OCNRES=025;;
@@ -323,7 +322,7 @@ fi
 # fi
 
 # Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL
-export imp_physics=8
+export imp_physics=@IMP_PHYSICS@
 
 # Shared parameters
 # DA engine
@@ -355,6 +354,12 @@ if [ $DONST = "YES" ]; then export FNTSFA="        "; fi
 
 # The switch to apply SST elevation correction or not
 export nst_anl=.true.
+
+# Make the nsstbufr file on the fly or use the GDA version
+export MAKE_NSSTBUFR="@MAKE_NSSTBUFR@"
+
+# Make the aircraft prepbufr file on the fly or use the GDA version
+export MAKE_ACFTBUFR="@MAKE_ACFTBUFR@"
 
 # Analysis increments to zero in CALCINCEXEC
 export INCREMENTS_TO_ZERO="'liq_wat_inc','icmr_inc'"

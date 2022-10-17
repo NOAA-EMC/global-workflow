@@ -1,4 +1,5 @@
-#!/bin/sh
+#! /usr/bin/env bash
+
 set +x
 set -u
 
@@ -62,7 +63,7 @@ function checkout() {
   cd "${topdir}"
   if [[  -d "${dir}" && $CLEAN == "YES" ]]; then
     echo "|-- Removing existing clone in ${dir}"
-    rm -Rf "$dir"
+    rm -Rf "${dir}"
   fi
   if [[ ! -d "${dir}" ]]; then
     echo "|-- Cloning from ${remote} into ${dir}"
@@ -102,27 +103,27 @@ function checkout() {
 
 # Set defaults for variables toggled by options
 export CLEAN="NO"
-CHECKOUT_GSI="NO"
-CHECKOUT_GDAS="NO"
+checkout_gsi="NO"
+checkout_gdas="NO"
 checkout_gtg="NO"
 checkout_wafs="NO"
 ufs_model_hash="Prototype-P8"
 
 # Parse command line arguments
 while getopts ":chgum:o" option; do
-  case $option in
+  case ${option} in
     c)
-      echo "Recieved -c flag, will delete any existing directories and start clean"
+      echo "Received -c flag, will delete any existing directories and start clean"
       export CLEAN="YES"
       ;;
     g)
-      echo "Receieved -g flag for optional checkout of GSI-based DA"
-      CHECKOUT_GSI="YES"
+      echo "Received -g flag for optional checkout of GSI-based DA"
+      checkout_gsi="YES"
       ;;
     h)  usage;;
     u)
       echo "Received -u flag for optional checkout of UFS-based DA"
-      CHECKOUT_GDAS="YES"
+      checkout_gdas="YES"
       ;;
     o)
       echo "Received -o flag for optional checkout of operational-only codes"
@@ -130,50 +131,51 @@ while getopts ":chgum:o" option; do
       checkout_wafs="YES"
       ;;
     m)
-      echo "Received -m flag with argument, will check out ufs-weather-model hash $OPTARG instead of default"
+      echo "Received -m flag with argument, will check out ufs-weather-model hash ${OPTARG} instead of default"
       ufs_model_hash=$OPTARG
       ;;
     :)
-      echo "option -$OPTARG needs an argument"
+      echo "option -${OPTARG} needs an argument"
       usage
       ;;
     *)
-      echo "invalid option -$OPTARG, exiting..."
+      echo "invalid option -${OPTARG}, exiting..."
       usage
       ;;
   esac
 done
 shift $((OPTIND-1))
 
-export topdir=$(pwd)
+export topdir=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 export logdir="${topdir}/logs"
-mkdir -p ${logdir}
+mkdir -p "${logdir}"
 
 # The checkout version should always be a speciifc commit (hash or tag), not a branch
 errs=0
+checkout "gfs_utils.fd"    "https://github.com/NOAA-EMC/gfs-utils"              "7bf599f"          ; errs=$((errs + $?))
 checkout "ufs_model.fd"    "https://github.com/ufs-community/ufs-weather-model" "${ufs_model_hash}"; errs=$((errs + $?))
-checkout "ufs_utils.fd"    "https://github.com/ufs-community/UFS_UTILS.git"     "ufs_utils_1_8_0"  ; errs=$((errs + $?))
+checkout "ufs_utils.fd"    "https://github.com/ufs-community/UFS_UTILS.git"     "8b990c0"          ; errs=$((errs + $?))
 checkout "verif-global.fd" "https://github.com/NOAA-EMC/EMC_verif-global.git"   "c267780"          ; errs=$((errs + $?))
 
-if [[ $CHECKOUT_GSI == "YES" ]]; then
-  checkout "gsi_enkf.fd" "https://github.com/NOAA-EMC/GSI.git" "67f5ab4"; errs=$((errs + $?))
+if [[ ${checkout_gsi} == "YES" ]]; then
+  checkout "gsi_enkf.fd"     "https://github.com/NOAA-EMC/GSI.git"         "67f5ab4"; errs=$((errs + $?))
 fi
 
-if [[ $CHECKOUT_GDAS == "YES" ]]; then
+if [[ ${checkout_gdas} == "YES" ]]; then
   checkout "gdas.cd" "https://github.com/NOAA-EMC/GDASApp.git" "5952c9d"; errs=$((errs + $?))
 fi
 
-if [[ $CHECKOUT_GSI == "YES" || $CHECKOUT_GDAS == "YES" ]]; then
+if [[ ${checkout_gsi} == "YES" || ${checkout_gdas} == "YES" ]]; then
   checkout "gsi_utils.fd"    "https://github.com/NOAA-EMC/GSI-Utils.git"   "322cc7b"; errs=$((errs + $?))
   checkout "gsi_monitor.fd"  "https://github.com/NOAA-EMC/GSI-Monitor.git" "c64cc47"; errs=$((errs + $?))
   checkout "gldas.fd"        "https://github.com/NOAA-EMC/GLDAS.git"       "fd8ba62"; errs=$((errs + $?))
 fi
 
-if [[ $checkout_wafs == "YES" ]]; then
+if [[ ${checkout_wafs} == "YES" ]]; then
   checkout "gfs_wafs.fd" "https://github.com/NOAA-EMC/EMC_gfs_wafs.git" "014a0b8"; errs=$((errs + $?))
 fi
 
-if [[ $checkout_gtg == "YES" ]]; then
+if [[ ${checkout_gtg} == "YES" ]]; then
   ################################################################################
   # checkout_gtg
   ## yes: The gtg code at NCAR private repository is available for ops. GFS only.

@@ -23,7 +23,7 @@ source "$HOMEgfs/ush/preamble.sh"
 
 #  Directories.
 pwd=$(pwd)
-export FIXgsm=${FIXgsm:-$HOMEgfs/fix/fix_am}
+export FIXgsm=${FIXgsm:-$HOMEgfs/fix/am}
 
 # Base variables
 CDATE=${CDATE:-"2001010100"}
@@ -72,7 +72,7 @@ CALCANLPY=${CALCANLPY:-$HOMEgfs/ush/calcanl_gfs.py}
 
 DOGAUSFCANL=${DOGAUSFCANL-"NO"}
 GAUSFCANLSH=${GAUSFCANLSH:-$HOMEgfs/ush/gaussian_sfcanl.sh}
-export GAUSFCANLEXE=${GAUSFCANLEXE:-$HOMEgfs/exec/gaussian_sfcanl.exe}
+export GAUSFCANLEXE=${GAUSFCANLEXE:-$HOMEgfs/exec/gaussian_sfcanl.x}
 NTHREADS_GAUSFCANL=${NTHREADS_GAUSFCANL:-1}
 APRUN_GAUSFCANL=${APRUN_GAUSFCANL:-${APRUN:-""}}
 

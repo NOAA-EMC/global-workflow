@@ -31,7 +31,7 @@ echo " Process Bulletins of forecast winds and temps for Hawaii    "
 echo " and 15 sites outside of the Hawaiian Islands.               "
 echo "#############################################################"
 echo " "
-${TRACE_ON:-set -x}
+set_trace
 
 export pgm=bulls_fbwndgfs
 . prep_step
