@@ -15,7 +15,7 @@ export jobid="${job}.$$"
 ##############################################
 # make temp directory
 ##############################################
-export DATA="${DATAROOT}/${jobid}"
+export DATA="${DATA:-${DATAROOT}/${jobid}}"
 mkdir -p $DATA
 cd $DATA
 
@@ -57,6 +57,10 @@ status=$?
 export COMPONENT="atmos"
 export CDATEm1=$($NDATE -24 $CDATE)
 export PDYm1=$(echo $CDATEm1 | cut -c1-8)
+
+CDATEm1c=$($NDATE -06 $CDATE)
+PDYm1c=$(echo $CDATEm1c | cut -c1-8)
+pcyc=$(echo ${CDATEm1c} | cut -c9-10)
 
 export COMIN="$ROTDIR/$CDUMP.$PDY/$cyc/$COMPONENT"
 
@@ -115,15 +119,15 @@ fi
 ###############################################################
 echo
 echo "=============== START TO RUN RADMON DATA EXTRACTION ==============="
-if [ $VRFYRAD = "YES" -a $CDUMP = $CDFNL -a $CDATE != $SDATE ]; then
+if [ $VRFYRAD = "YES" -a "${CDUMP}" = "${CDFNL}" -a "${CDATE}" != "${SDATE}" ]; then
 
-    export EXP=$PSLOT
-    export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc/$COMPONENT"
-    export TANKverf_rad="$TANKverf/stats/$PSLOT/$CDUMP.$PDY"
-    export TANKverf_radM1="$TANKverf/stats/$PSLOT/$CDUMP.$PDYm1"
-    export MY_MACHINE=$machine
+    export EXP=${PSLOT}
+    export COMOUT="${ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENT}"
+    export TANKverf_rad="${TANKverf}/stats/${PSLOT}/${CDUMP}.${PDY}/${cyc}"
+    export TANKverf_radM1="${TANKverf}/stats/${PSLOT}/${CDUMP}.${PDYm1c}/${pcyc}"
+    export MY_MACHINE=${machine}
 
-    $VRFYRADSH
+    ${VRFYRADSH}
 
 fi
 
@@ -131,15 +135,15 @@ fi
 ###############################################################
 echo
 echo "=============== START TO RUN OZMON DATA EXTRACTION ==============="
-if [ $VRFYOZN = "YES" -a $CDUMP = $CDFNL -a $CDATE != $SDATE ]; then
+if [ "${VRFYOZN}" = "YES" -a "${CDUMP}" = "${CDFNL}" -a "${CDATE}" != "${SDATE}" ]; then
 
-    export EXP=$PSLOT
-    export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc/$COMPONENT"
-    export TANKverf_ozn="$TANKverf_ozn/stats/$PSLOT/$CDUMP.$PDY"
-    export TANKverf_oznM1="$TANKverf_ozn/stats/$PSLOT/$CDUMP.$PDYm1"
-    export MY_MACHINE=$machine
+    export EXP=${PSLOT}
+    export COMOUT="${ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENT}"
+    export TANKverf_ozn="${TANKverf_ozn}/stats/${PSLOT}/${CDUMP}.${PDY}/${cyc}"
+    export TANKverf_oznM1="${TANKverf_ozn}/stats/${PSLOT}/${CDUMP}.${PDYm1c}/${pcyc}"
+    export MY_MACHINE=${machine}
 
-    $VRFYOZNSH
+    ${VRFYOZNSH}
 
 fi
 
@@ -147,14 +151,14 @@ fi
 ###############################################################
 echo
 echo "=============== START TO RUN MINMON ==============="
-if [ $VRFYMINMON = "YES" -a $CDATE != $SDATE ]; then
+if [ "${VRFYMINMON}" = "YES" -a "${CDATE}" != "${SDATE}" ]; then
 
-    export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc/$COMPONENT"
-    export M_TANKverfM0="$M_TANKverf/stats/$PSLOT/$CDUMP.$PDY"
-    export M_TANKverfM1="$M_TANKverf/stats/$PSLOT/$CDUMP.$PDYm1"
-    export MY_MACHINE=$machine
+    export COMOUT="${ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENT}"
+    export M_TANKverfM0="${M_TANKverf}/stats/${PSLOT}/${CDUMP}.${PDY}/${cyc}"
+    export M_TANKverfM1="${M_TANKverf}/stats/${PSLOT}/${CDUMP}.${PDYm1c}/${pcyc}"
+    export MY_MACHINE=${machine}
 
-    $VRFYMINSH
+    ${VRFYMINSH}
 
 fi
 
@@ -162,32 +166,33 @@ fi
 ################################################################################
 echo
 echo "=============== START TO RUN CYCLONE TRACK VERIFICATION ==============="
-if [ $VRFYTRAK = "YES" ]; then
+if [ ${VRFYTRAK} = "YES" ]; then
 
     export COMINsyn=${COMINsyn:-$(compath.py ${envir}/com/gfs/${gfs_ver})/syndat}
 
-    $TRACKERSH
+    ${TRACKERSH}
 fi
 
 
 ################################################################################
 echo
 echo "=============== START TO RUN CYCLONE GENESIS VERIFICATION ==============="
-if [ $VRFYGENESIS = "YES" -a $CDUMP = "gfs" ]; then
-    $GENESISSH
+if [ ${VRFYGENESIS} = "YES" -a "${CDUMP}" = "gfs" ]; then
+    ${GENESISSH}
 fi
 
 
 ################################################################################
 echo
 echo "=============== START TO RUN CYCLONE GENESIS VERIFICATION (FSU) ==============="
-if [ $VRFYFSU = "YES" -a $CDUMP = "gfs" ]; then
-    $GENESISFSU
+if [ ${VRFYFSU} = "YES" -a "${CDUMP}" = "gfs" ]; then
+    ${GENESISFSU}
 fi
 
 
 ###############################################################
 # Force Exit out cleanly
+cd $DATAROOT
 if [ ${KEEPDATA:-"NO"} = "NO" ] ; then rm -rf $DATA ; fi
 
 

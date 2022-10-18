@@ -80,8 +80,6 @@ cat > ice_in <<eof
    restart_FY   = .false.
    tr_lvl       = .true.
    restart_lvl  = .false.
-   tr_pond_cesm = .false.
-   restart_pond_cesm = .false.
    tr_pond_topo = .false.
    restart_pond_topo = .false.
    tr_pond_lvl  = $tr_pond_lvl
