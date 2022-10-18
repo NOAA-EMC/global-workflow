@@ -3,7 +3,7 @@
 source "$HOMEgfs/ush/preamble.sh"
 
 ###############################################################
-## CICE5/MOM6 post driver script 
+## CICE5/MOM6 post driver script
 ## FHRGRP : forecast hour group to post-process (e.g. 0, 1, 2 ...)
 ## FHRLST : forecast hourlist to be post-process (e.g. anl, f000, f000_f001_f002, ...)
 ###############################################################
@@ -13,11 +13,36 @@ source "$HOMEgfs/ush/preamble.sh"
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
+export job="ocnpost"
+export jobid=${job}.$$
+
+##############################################
+# make temp directory
+##############################################
+export DATA="$DATAROOT/${jobid}"
+[[ -d $DATA ]] && rm -rf $DATA
+mkdir -p $DATA && cd $DATA
+
+##############################################
+# Run setpdy and initialize PDY variables
+##############################################
+export cycle="t${cyc}z"
+setpdy.sh
+. ./PDY
+
+##############################################
+# Determine Job Output Name on System
+##############################################
+export pid=${pid:-$$}
+export pgmout="OUTPUT.${pid}"
+export pgmerr=errfile
+
+
 #############################
 # Source relevant config files
 #############################
-configs="base ocnpost"
 config_path=${EXPDIR:-$PACKAGEROOT/gfs.${gfs_ver}/parm/config}
+configs="base ocnpost"
 for config in $configs; do
     . $config_path/config.$config
     status=$?
@@ -31,38 +56,6 @@ done
 . $HOMEgfs/env/${machine}.env ocnpost
 status=$?
 [[ $status -ne 0 ]] && exit $status
-
-
-##############################################
-# Obtain unique process id (pid) and make temp directory
-##############################################
-export job=${job:-"ocnpost"}
-export pid=${pid:-$$}
-export outid=${outid:-"LL$job"}
-export jobid=${jobid:-"${outid}.o${pid}"}
-
-export DATAROOT="$RUNDIR/$CDATE/$CDUMP"
-[[ ! -d $DATAROOT ]] && mkdir -p $DATAROOT
-
-export DATA="$DATAROOT/${job}.${pid}"
-# DATA dir not used for now.
-
-[[ -d $DATA ]] && rm -rf $DATA
-mkdir -p $DATA
-cd $DATA
-
-##############################################
-# Run setpdy and initialize PDY variables
-##############################################
-export cycle="t${cyc}z"
-setpdy.sh
-. ./PDY
-
-##############################################
-# Determine Job Output Name on System
-##############################################
-export pgmout="OUTPUT.${pid}"
-export pgmerr=errfile
 
 
 ##############################################
@@ -106,33 +99,33 @@ for fhr in $fhrlst; do
     $MOM6REGRID/scripts/run_reg2grb2.sh
     status=$?
     [[ $status -ne 0 ]] && exit $status
-  
 
-    #break up ocn netcdf into multiple files:  
-    if [ -f $COMOUTocean/ocn_2D_$VDATE.$ENSMEM.$IDATE.nc ]; then 
+
+    #break up ocn netcdf into multiple files:
+    if [ -f $COMOUTocean/ocn_2D_$VDATE.$ENSMEM.$IDATE.nc ]; then
       echo "File $COMOUTocean/ocn_2D_$VDATE.$ENSMEM.$IDATE.nc already exists"
     else
       ncks -x -v vo,uo,so,temp $COMOUTocean/ocn$VDATE.$ENSMEM.$IDATE.nc $COMOUTocean/ocn_2D_$VDATE.$ENSMEM.$IDATE.nc
       status=$?
       [[ $status -ne 0 ]] && exit $status
-    fi 
-    if [ -f $COMOUTocean/ocn_3D_$VDATE.$ENSMEM.$IDATE.nc ]; then 
-       echo "File $COMOUTocean/ocn_3D_$VDATE.$ENSMEM.$IDATE.nc already exists" 
-    else 
+    fi
+    if [ -f $COMOUTocean/ocn_3D_$VDATE.$ENSMEM.$IDATE.nc ]; then
+       echo "File $COMOUTocean/ocn_3D_$VDATE.$ENSMEM.$IDATE.nc already exists"
+    else
       ncks -x -v Heat_PmE,LW,LwLatSens,MLD_003,MLD_0125,SSH,SSS,SST,SSU,SSV,SW,cos_rot,ePBL,evap,fprec,frazil,latent,lprec,lrunoff,sensible,sin_rot,speed,taux,tauy,wet_c,wet_u,wet_v $COMOUTocean/ocn$VDATE.$ENSMEM.$IDATE.nc $COMOUTocean/ocn_3D_$VDATE.$ENSMEM.$IDATE.nc
       status=$?
       [[ $status -ne 0 ]] && exit $status
-    fi 
-    if [ -f $COMOUTocean/ocn-temp-EQ_$VDATE.$ENSMEM.$IDATE.nc ]; then 
-       echo "File $COMOUTocean/ocn-temp-EQ_$VDATE.$ENSMEM.$IDATE.nc already exists" 
-    else 
+    fi
+    if [ -f $COMOUTocean/ocn-temp-EQ_$VDATE.$ENSMEM.$IDATE.nc ]; then
+       echo "File $COMOUTocean/ocn-temp-EQ_$VDATE.$ENSMEM.$IDATE.nc already exists"
+    else
       ncks -v temp -d yh,503 -d xh,-299.92,60.03 $COMOUTocean/ocn_3D_$VDATE.$ENSMEM.$IDATE.nc $COMOUTocean/ocn-temp-EQ_$VDATE.$ENSMEM.$IDATE.nc
       status=$?
       [[ $status -ne 0 ]] && exit $status
-    fi 
-    if [ -f $COMOUTocean/ocn-uo-EQ_$VDATE.$ENSMEM.$IDATE.nc ]; then 
-       echo "File $COMOUTocean/ocn-uo-EQ_$VDATE.$ENSMEM.$IDATE.nc already exists" 
-    else 
+    fi
+    if [ -f $COMOUTocean/ocn-uo-EQ_$VDATE.$ENSMEM.$IDATE.nc ]; then
+       echo "File $COMOUTocean/ocn-uo-EQ_$VDATE.$ENSMEM.$IDATE.nc already exists"
+    else
       ncks -v uo -d yh,503 -d xh,-299.92,60.03 $COMOUTocean/ocn_3D_$VDATE.$ENSMEM.$IDATE.nc $COMOUTocean/ocn-uo-EQ_$VDATE.$ENSMEM.$IDATE.nc
       status=$?
       [[ $status -ne 0 ]] && exit $status
