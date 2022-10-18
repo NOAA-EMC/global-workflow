@@ -21,8 +21,7 @@ done
 # Obtain unique process id (pid) and make temp directory
 ##############################################
 export pid=${pid:-$$}
-export outid=${outid:-"LL$job"}
-export DATA=${DATA:-${DATAROOT}/${jobid:?}}
+export DATA=${DATA:-${DATAROOT}/${jobid}}
 mkdir -p $DATA
 cd $DATA
 

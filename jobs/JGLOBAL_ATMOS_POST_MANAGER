@@ -5,7 +5,7 @@ source "$HOMEgfs/ush/preamble.sh"
 ####################################
 # make temp directories
 ####################################
-export DATA=${DATAROOT}/${jobid}
+export DATA=${DATA:-${DATAROOT}/${jobid}}
 mkdir -p $DATA
 cd $DATA
 
@@ -13,7 +13,7 @@ cd $DATA
 ###########################################
 # Run setpdy and initialize PDY variables
 ###########################################
-export cycle=t${cyc}z
+export cycle="t${cyc}z"
 setpdy.sh
 . ./PDY
 
@@ -22,7 +22,6 @@ setpdy.sh
 # Determine Job Output Name on System
 ####################################
 export pid=${pid:-$$}
-export outid="LL$job"
 export jobid="${outid}.o${pid}"
 export pgmout="OUTPUT.${pid}"
 

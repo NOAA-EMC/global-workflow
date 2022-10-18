@@ -5,18 +5,20 @@ source "$HOMEgfs/ush/preamble.sh"
 ##########################################################
 # make temp directory
 ##########################################################
-export DATA=${DATAROOT}/${jobid}
+export DATA=${DATA:-${DATAROOT}/${jobid}}
 mkdir -p $DATA
 cd $DATA
 
 ###########################################
 # Run setpdy and initialize PDY variables
 ###########################################
-export cycle=${cycle:-t${cyc}z}
+export cycle="t${cyc}z"
 setpdy.sh
 . ./PDY
 
-export pgmout=OUTPUT.$$
+export pid=${pid:-$$}
+export pgmout="OUTPUT.${pid}"
+export pgmerr=errfile
 
 #############################
 # Source relevant config files

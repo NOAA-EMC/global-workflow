@@ -5,7 +5,7 @@ source "${HOMEgfs}/ush/preamble.sh"
 ##############################################
 # make temp directory
 ##############################################
-export DATA=${DATAROOT}/${jobid}
+export DATA=${DATA:-${DATAROOT}/${jobid}}
 mkdir -p "${DATA}"
 cd "${DATA}" || exit 1
 
@@ -22,7 +22,6 @@ setpdy.sh
 # Determine Job Output Name on System
 ##############################################
 export pid=${pid:-$$}
-export outid=${outid:-"LL${job}"}
 export pgmout="OUTPUT.${pid}"
 export pgmerr=errfile
 

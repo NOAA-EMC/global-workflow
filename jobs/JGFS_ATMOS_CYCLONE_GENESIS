@@ -28,7 +28,7 @@ status=$?
 # Obtain unique process id (pid) and make temp directory
 ##############################################
 if [ $RUN_ENVIR = "nco" ]; then
-    export DATA=${DATA:-${DATAROOT}/${jobid:?}}
+    export DATA=${DATA:-${DATAROOT}/${jobid}}
 else
     export job="gfs_cyclone_genesis"
     export DATA="$DATAROOT/${job}$$"
@@ -77,7 +77,7 @@ export SENDECF=${SENDECF:-NO}
 ####################################
 # Specify Execution Areas
 ####################################
-export HOMEens_tracker=${HOMEens_tracker:-${PACKAGEROOT:?}/ens_tracker.${ens_tracker_ver}}
+export HOMEens_tracker=${HOMEens_tracker:-${PACKAGEROOT}/ens_tracker.${ens_tracker_ver}}
 export EXECens_tracker=${EXECens_tracker:-$HOMEens_tracker/exec}
 export FIXens_tracker=${FIXens_tracker:-$HOMEens_tracker/fix}
 export USHens_tracker=${USHens_tracker:-$HOMEens_tracker/ush}

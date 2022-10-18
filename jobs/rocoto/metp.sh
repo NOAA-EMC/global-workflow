@@ -29,7 +29,7 @@ export jobid="${job}.$$"
 ##############################################
 # make temp directory
 ##############################################
-export DATA=${DATAROOT}/${jobid}
+export DATA=${DATA:-${DATAROOT}/${jobid}}
 mkdir -p $DATA
 cd $DATA
 

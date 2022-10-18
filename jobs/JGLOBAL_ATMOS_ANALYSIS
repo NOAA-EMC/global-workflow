@@ -5,7 +5,7 @@ source "$HOMEgfs/ush/preamble.sh"
 ##############################################
 # Obtain unique process id (pid) and make temp directory
 ##############################################
-export DATA=${DATAROOT}/${jobid}
+export DATA=${DATA:-${DATAROOT}/${jobid}}
 mkdir -p $DATA
 cd $DATA
 

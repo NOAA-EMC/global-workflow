@@ -31,7 +31,6 @@ setpdy.sh
 # Determine Job Output Name on System
 ##############################################
 export pid=${pid:-$$}
-export outid=${outid:-"LL$job"}
 export pgmout="OUTPUT.${pid}"
 export pgmerr=errfile
 
