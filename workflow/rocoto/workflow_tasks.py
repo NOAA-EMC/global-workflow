@@ -322,7 +322,7 @@ class Tasks:
 
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
-        cycledef = 'gfs_cont'
+        cycledef = 'gfs_seq'
         resources = self.get_resource('aerosol_init')
         task = create_wf_task('aerosol_init', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies,
                               cycledef=cycledef)

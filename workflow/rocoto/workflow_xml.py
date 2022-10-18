@@ -127,7 +127,7 @@ class RocotoXML:
 
             sdate_gfs = sdate_gfs + to_timedelta(interval_gfs)
             if sdate_gfs <= edate_gfs:
-                strings.append(f'\t<cycledef group="gfs_cont">{sdate_gfs.strftime("%Y%m%d%H%M")} {edate_gfs.strftime("%Y%m%d%H%M")} {interval_gfs}</cycledef>')
+                strings.append(f'\t<cycledef group="gfs_seq">{sdate_gfs.strftime("%Y%m%d%H%M")} {edate_gfs.strftime("%Y%m%d%H%M")} {interval_gfs}</cycledef>')
 
         strings.append('')
         strings.append('')
@@ -143,7 +143,7 @@ class RocotoXML:
 
         sdate = sdate + to_timedelta(interval)
         if sdate <= edate:
-            strings.append(f'\t<cycledef group="gfs_cont">{sdate.strftime("%Y%m%d%H%M")} {edate.strftime("%Y%m%d%H%M")} {interval}</cycledef>')
+            strings.append(f'\t<cycledef group="gfs_seq">{sdate.strftime("%Y%m%d%H%M")} {edate.strftime("%Y%m%d%H%M")} {interval}</cycledef>')
 
         return '\n'.join(strings)
 
