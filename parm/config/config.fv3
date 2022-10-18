@@ -30,6 +30,12 @@ if [[ "$machine" = "JET" ]]; then
    fi
 elif [[ "$machine" = "HERA" ]]; then
    export npe_node_max=40
+elif [[ "$machine" = "S4" ]]; then
+   if [[ "$PARTITION_BATCH" = "s4" ]]; then
+      export npe_node_max=32
+   elif [[ "$PARTITION_BATCH" = "ivy" ]]; then
+      export npe_node_max=20
+   fi
 elif [[ "$machine" = "ORION" ]]; then
    export npe_node_max=40
 fi
@@ -42,8 +48,8 @@ case $case_in in
         export layout_y=2
         export layout_x_gfs=3
         export layout_y_gfs=2
-        export nth_fv3=1
-        export nth_fv3_gfs=1
+        export nth_fv3=2
+        export nth_fv3_gfs=2
         export cdmbgwd="0.071,2.1,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=1
         export WRTTASK_PER_GROUP=$npe_node_max
@@ -107,9 +113,9 @@ case $case_in in
         export nth_fv3_gfs=4
         export cdmbgwd="4.0,0.15,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=2
-        export WRTTASK_PER_GROUP=$(echo "2*$npe_node_max" |bc)
+        export WRTTASK_PER_GROUP=$(echo "2*${npe_node_max}" |bc)
         export WRITE_GROUP_GFS=4
-        export WRTTASK_PER_GROUP_GFS=$(echo "2*$npe_node_max" |bc)
+        export WRTTASK_PER_GROUP_GFS=$(echo "2*${npe_node_max}" |bc)
         export WRTIOBUF="32M"
         ;;
     "C1152")
@@ -122,9 +128,9 @@ case $case_in in
         export nth_fv3_gfs=4
         export cdmbgwd="4.0,0.10,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=4
-        export WRTTASK_PER_GROUP=$(echo "2*$npe_node_max" |bc)
+        export WRTTASK_PER_GROUP=$(echo "2*${npe_node_max}" |bc)
         export WRITE_GROUP_GFS=4
-        export WRTTASK_PER_GROUP_GFS=$(echo "2*$npe_node_max" |bc)
+        export WRTTASK_PER_GROUP_GFS=$(echo "2*${npe_node_max}" |bc)
         export WRTIOBUF="48M"
         ;;
     "C3072")
@@ -137,19 +143,19 @@ case $case_in in
         export nth_fv3_gfs=4
         export cdmbgwd="4.0,0.05,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=4
-        export WRTTASK_PER_GROUP=$(echo "3*$npe_node_max" |bc)
+        export WRTTASK_PER_GROUP=$(echo "3*${npe_node_max}" |bc)
         export WRITE_GROUP_GFS=4
-        export WRTTASK_PER_GROUP_GFS=$(echo "3*$npe_node_max" |bc)
+        export WRTTASK_PER_GROUP_GFS=$(echo "3*${npe_node_max}" |bc)
         export WRTIOBUF="64M"
         ;;
     *)
-        echo "grid $case_in not supported, ABORT!"
+        echo "grid ${case_in} not supported, ABORT!"
         exit 1
         ;;
 esac
 
 # Calculate chunksize based on resolution
-export RESTILE=$(echo $case_in |cut -c2-)
+export RESTILE=$(echo ${case_in} |cut -c2-)
 export ichunk2d=$((4*RESTILE))
 export jchunk2d=$((2*RESTILE))
 export ichunk3d=$((4*RESTILE))
@@ -157,7 +163,7 @@ export jchunk3d=$((2*RESTILE))
 export kchunk3d=1
 
 # Determine whether to use parallel NetCDF based on resolution
-case $case_in in
+case ${case_in} in
   "C48" | "C96" | "C192")
     export OUTPUT_FILETYPE_ATM="netcdf"
     export OUTPUT_FILETYPE_SFC="netcdf"

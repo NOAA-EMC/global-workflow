@@ -32,7 +32,7 @@ done
 
 export COMPONENT=${COMPONENT:-atmos}
 
-n=$((ENSGRP))
+n=$((10#${ENSGRP}))
 
 # ICS are restarts and always lag INC by $assim_freq hours.
 EARCINC_CYC=$ARCH_CYC
@@ -63,7 +63,7 @@ source "${HOMEgfs}/ush/file_utils.sh"
 ###################################################################
 # ENSGRP > 0 archives a group of ensemble members
 firstday=$($NDATE +24 $SDATE)
-if [[ $ENSGRP -gt 0 ]] && [[ $HPSSARCH = "YES" || $LOCALARCH = "YES" ]]; then
+if (( 10#${ENSGRP} > 0 )) && [[ ${HPSSARCH} = "YES" || ${LOCALARCH} = "YES" ]]; then
 
 #--set the archiving command and create local directories, if necessary
    TARCMD="htar"

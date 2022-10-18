@@ -150,8 +150,6 @@ EOF
     nfiles=$(ls -1 $DATA/INPUT/* | wc -l)
     if [ $nfiles -le 0 ]; then
       echo SUB ${FUNCNAME[0]}: Initial conditions must exist in $DATA/INPUT, ABORT!
-      msg="SUB ${FUNCNAME[0]}: Initial conditions must exist in $DATA/INPUT, ABORT!"
-      postmsg "$jlogfile" "$msg"
       exit 1
     fi
   fi
@@ -1015,6 +1013,13 @@ GOCART_postdet() {
     DD=$(echo $VDATE | cut -c7-8)
     HH=$(echo $VDATE | cut -c9-10)
     SS=$((10#$HH*3600))
+
+    #
+    # Temporarily delete existing files due to noclobber in GOCART
+    #
+    if [[ -e "${COMOUTaero}/gocart.inst_aod.${YYYY}${MM}${DD}_${HH}00z.nc4" ]]; then
+      rm "${COMOUTaero}/gocart.inst_aod.${YYYY}${MM}${DD}_${HH}00z.nc4"
+    fi
 
     $NLN $COMOUTaero/gocart.inst_aod.${YYYY}${MM}${DD}_${HH}00z.nc4 $DATA/gocart.inst_aod.${YYYY}${MM}${DD}_${HH}00z.nc4
   done

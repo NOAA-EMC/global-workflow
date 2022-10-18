@@ -1,0 +1,23 @@
+base_git: '/data/prod/glopara/git'
+dmpdir: '/data/prod/glopara/dump'
+packageroot: '/data/prod/glopara/nwpara'
+comroot: '/data/prod/glopara/com'
+cominsyn: '${COMROOT}/gfs/prod/syndat'
+homedir: '/data/users/$USER'
+stmp: '/scratch/users/$USER'
+ptmp: '/scratch/users/$USER'
+noscrub: $HOMEDIR
+account: star
+scheduler: slurm
+queue: s4
+queue_service: serial
+partition_batch: s4
+partition_service: serial
+chgrp_rstprod: 'NO'
+chgrp_cmd: 'ls'
+hpssarch: 'NO'
+localarch: 'NO'
+atardir: '$NOSCRUB/archive_rotdir/$PSLOT'
+make_nsstbufr: 'YES'
+make_acftbufr: 'YES'
+supported_resolutions: ['C384', 'C192', 'C96', 'C48']
