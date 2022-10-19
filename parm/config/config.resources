@@ -473,7 +473,7 @@ elif [ ${step} = "wafsblending" ]; then
     export npe_wafsblending=1
     export nth_wafsblending=1
     export npe_node_wafsblending=$(echo "${npe_node_max} / ${nth_wafsblending}" | bc)
-    export memory_wafsblending="1GB"
+    export memory_wafsblending="15GB"
 
 elif [ ${step} = "wafsgrib20p25" ]; then
 
