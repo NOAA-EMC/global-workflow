@@ -1,8 +1,8 @@
 help([[
-Build environment for WW3 on Hera
+Build environment for WW3 on Jet
 ]])
 
-prepend_path("MODULEPATH", "/lfs4/HFIP/hfv3gfs/nwprod/hpc-stack/libs/hpc-stack/modulefiles/stack")
+prepend_path("MODULEPATH", "/lfs4/HFIP/hfv3gfs/nwprod/hpc-stack/libs/modulefiles/stack")
 
 load(pathJoin("hpc", "1.1.0"))
 load(pathJoin("hpc-intel", "2022.1.2"))
