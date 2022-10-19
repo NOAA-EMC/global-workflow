@@ -1,0 +1,23 @@
+base_git: '/work/noaa/global/glopara/git'
+dmpdir: '/work/noaa/rstprod/dump'
+packageroot: '/work/noaa/global/glopara/nwpara'
+comroot: '/work/noaa/global/glopara/com'
+cominsyn: '${COMROOT}/gfs/prod/syndat'
+homedir: '/work/noaa/global/$USER'
+stmp: '/work/noaa/stmp/$USER'
+ptmp: '/work/noaa/stmp/$USER'
+noscrub: $HOMEDIR
+scheduler: slurm
+account: fv3-cpu
+queue: batch
+queue_service: batch
+partition_batch: orion
+partition_service: service
+chgrp_rstprod: 'YES'
+chgrp_cmd: 'chgrp rstprod'
+hpssarch: 'NO'
+localarch: 'NO'
+atardir: '$NOSCRUB/archive_rotdir/$PSLOT'
+make_nsstbufr: 'NO'
+make_acftbufr: 'NO'
+supported_resolutions: ['C768', 'C384', 'C192', 'C96', 'C48']

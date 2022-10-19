@@ -1,8 +1,6 @@
-#!/bin/bash
+#! /usr/bin/env bash
 
-date
-export PS4=' $SECONDS + '
-set -xa
+source "$HOMEgfs/ush/preamble.sh"
 
 export DATA=${DATA:-${DATAROOT}/${jobid:?}}
 mkdir -p $DATA
@@ -14,9 +12,8 @@ cd $DATA
 export cycle=${cycle:-t${cyc}z}
 
 # Set PDY
- setpdy.sh
- . PDY
- env
+setpdy.sh
+. ./PDY
 
 # PATH for working directory
 export NET=${NET:-gfs}
@@ -30,35 +27,18 @@ export errchk=${errchk:-err_chk}
 ###################################
 # Set COM Paths
 ###################################
-export COMIN=${COMIN:-$(compath.py ${NET}/${envir}/${RUN}.${PDY})/${cyc}/$COMPONENT}
-export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/$COMPONENT}
+export COMIN=${COMIN:-$(compath.py ${envir}/${NET}/${gfs_ver})/${RUN}.${PDY}/${cyc}/$COMPONENT}
+export COMOUT=${COMOUT:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/$COMPONENT}
 export PCOM=${PCOM:-${COMOUT}/wmo}
-
 
 export SENDCOM=${SENDCOM:-YES}
 export SENDDBN_NTC=${SENDDBN_NTC:-YES}
 export SENDDBN=${SENDDBN:-NO}
 export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
-
 if [ $SENDCOM = YES ]; then
   mkdir -p $COMOUT $PCOM
 fi
-
-# JY - move up
-#export DATA=${DATA:-${DATAROOT}/${jobid:?}}
-#mkdir -p $DATA
-#cd $DATA
-#
-#######################################
-### Set up the cycle variable
-#######################################
-#export cycle=${cycle:-t${cyc}z}
-
-## Set PDY
-# setpdy.sh
-# . PDY
-# env
 
 ###################################
 # Execute the Script  
@@ -73,6 +53,7 @@ if [ "$KEEPDATA" != "YES" ]; then
   cd $DATAROOT
   rm -rf $DATA
 fi
-date
+
+
 exit 0
 

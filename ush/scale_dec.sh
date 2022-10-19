@@ -1,4 +1,5 @@
-#!/bin/ksh
+#! /usr/bin/env bash
+
 #
 #  This script uses WGRIB2 to change binary scale factor
 #  and Decimal scale factor in GRIB2 file
@@ -7,11 +8,12 @@
 #  D = decimal scaling or the text 'same' with no quotes
 #  B = binary scaling or the text 'same' with no quotes
 #
-set -x
+
+source "$HOMEgfs/ush/preamble.sh"
 
 f=$1
 
-export WGRIB2=${WGRIB2:-${NWROOT}/grib_util.v1.1.0/exec/wgrib2}
+export WGRIB2=${WGRIB2:-${wgrib2_ROOT}/bin/wgrib2}
 
 # export WGRIB2=/gpfs/dell1/nco/ops/nwprod/grib_util.v1.1.0/exec/wgrib2
 
@@ -22,4 +24,5 @@ $WGRIB2 $f -not_if ':(TMP|PWAT|WEASD):' -grib $f.new \
         -set_scaling 0 0 -grib_out $f.new
 export err=$?; err_chk
 mv $f.new $f
+
 exit 0

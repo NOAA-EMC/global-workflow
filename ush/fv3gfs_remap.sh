@@ -1,10 +1,11 @@
-#!/bin/ksh
-set -ax
+#! /usr/bin/env bash
 
 #--------------------------------------
 #-- remap FV3 6 tiles to global array
 #-- Fanglin Yang, October 2016
 #--------------------------------------
+
+source "$HOMEgfs/ush/preamble.sh"
 
 export CDATE=${CDATE:-"2016100300"}
 export CASE=${CASE:-"C192"}           # C48 C96 C192 C384 C768 C1152 C3072
@@ -12,10 +13,9 @@ export GG=${master_grid:-"0p25deg"}   # 1deg 0p5deg 0p25deg 0p125deg
 
 pwd=$(pwd)
 export DATA=${DATA:-$pwd}
-export NWPROD=${NWPROD:-$pwd}
-export HOMEgfs=${HOMEgfs:-$NWPROD}
+export HOMEgfs=${HOMEgfs:-$PACKAGEROOT}
 export FIX_DIR=${FIX_DIR:-$HOMEgfs/fix}
-export FIXfv3=${FIXfv3:-$FIX_DIR/fix_fv3_gmted2010}
+export FIXfv3=${FIXfv3:-$FIX_DIR/orog}
 export REMAPEXE=${REMAPEXE:-$HOMEgfs/exec/fregrid_parallel}
 export IPD4=${IPD4:-"YES"}
 
@@ -114,6 +114,5 @@ for type in atmos_4xdaily nggps2d nggps3d ; do
 
 done
 
-echo $(date) EXITING $0 with return code $err >&2
 exit $err
 

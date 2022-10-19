@@ -1,6 +1,6 @@
-#!/bin/ksh
+#! /usr/bin/env bash
 
-set -x
+source "$HOMEgfs/ush/preamble.sh"
 
 member=$1
 export SIGINP=$2
@@ -14,7 +14,7 @@ mkdir -p $DATATMP
 cd $DATATMP
 
 export LEVS=${LEVS_LORES:-64}
-export FIXam=${FIXam:-$HOMEgfs/fix/fix_am}
+export FIXam=${FIXam:-$HOMEgfs/fix/am}
 
 export CHGRESSH=${CHGRESSH:-${USHgfs}/global_chgres.sh}
 export CHGRESEXEC=${CHGRESEXEC-${EXECgfs}/global_chgres}
@@ -45,12 +45,11 @@ export APRUNC=${APRUNC:-""}
 export VERBOSE=YES
 
 echo "execute $CHGRESSH for $member"
-eval "$CHGRESSH"
+$CHGRESSH
 rc=$?
 
 export ERR=$rc
 export err=$ERR
 
-echo EXITING $0 with return code $err
 exit $err
 

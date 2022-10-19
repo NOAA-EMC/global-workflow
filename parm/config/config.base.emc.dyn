@@ -1,4 +1,4 @@
-#!/bin/ksh -x
+#! /usr/bin/env bash
 
 ########## config.base ##########
 # Common to all steps
@@ -16,6 +16,7 @@ export ACCOUNT="@ACCOUNT@"
 export QUEUE="@QUEUE@"
 export QUEUE_SERVICE="@QUEUE_SERVICE@"
 export PARTITION_BATCH="@PARTITION_BATCH@"
+export PARTITION_SERVICE="@PARTITION_SERVICE@"
 
 # Project to use in mass store:
 HPSS_PROJECT=emc-global
@@ -29,15 +30,16 @@ export UTILgfs=$HOMEgfs/util
 export EXECgfs=$HOMEgfs/exec
 export SCRgfs=$HOMEgfs/scripts
 
-export FIXcice=$HOMEgfs/fix/fix_cice
-export FIXmom=$HOMEgfs/fix/fix_mom6
-export FIXreg2grb2=$HOMEgfs/fix/fix_reg2grb2
+export FIXcice=$HOMEgfs/fix/cice
+export FIXmom=$HOMEgfs/fix/mom6
+export FIXreg2grb2=$HOMEgfs/fix/reg2grb2
 
 ########################################################################
 
 # GLOBAL static environment parameters
-export NWPROD="@NWPROD@"
+export PACKAGEROOT="@PACKAGEROOT@"
 export COMROOT="@COMROOT@"
+export COMINsyn="@COMINsyn@"
 export DMPDIR="@DMPDIR@"
 export RTMFIX=$CRTM_FIX
 
@@ -63,8 +65,8 @@ export DO_VRFY="YES"       # VRFY step
 #  use RUNMOS flag (currently in config.vrfy)
 export REALTIME="YES"
 
-# Experiment mode (cycled or free-forecast)
-export MODE="@MODE@" # cycled/free
+# Experiment mode (cycled or forecast-only)
+export MODE="@MODE@" # cycled/forecast-only
 
 ####################################################
 # DO NOT ADD MACHINE DEPENDENT STUFF BELOW THIS LINE
@@ -73,13 +75,10 @@ export MODE="@MODE@" # cycled/free
 # CLEAR
 ####################################################
 # Build paths relative to $HOMEgfs
-export FIXgsi="$HOMEgfs/fix/fix_gsi"
+export FIXgsi="$HOMEgfs/fix/gsi"
 export HOMEfv3gfs="$HOMEgfs/sorc/fv3gfs.fd"
 export HOMEpost="$HOMEgfs"
-export HOMEobsproc_prep="$BASE_GIT/obsproc/obsproc_prep.v5.5.0_hpc-stack"
-export HOMEobsproc_network="$BASE_GIT/obsproc/obsproc_global.v3.4.2_hpc-stack"
-export HOMEobsproc_global=$HOMEobsproc_network
-export BASE_VERIF="$BASE_GIT/verif/global/tags/vsdb"
+export HOMEobsproc="$BASE_GIT/obsproc/v1.0.2"
 
 # CONVENIENT utility scripts and other environment parameters
 export NCP="/bin/cp -p"
@@ -115,18 +114,25 @@ export RUNDIR="$STMP/RUNDIRS/$PSLOT"
 export DATAROOT="$RUNDIR/$CDATE/$CDUMP"
 export ARCDIR="$NOSCRUB/archive/$PSLOT"
 export ICSDIR="@ICSDIR@"
-export ATARDIR="/NCEPDEV/$HPSS_PROJECT/1year/$USER/$machine/scratch/$PSLOT"
+export ATARDIR="@ATARDIR@"
 
 # Commonly defined parameters in JJOBS
 export envir=${envir:-"prod"}
 export NET="gfs"
 export RUN=${RUN:-${CDUMP:-"gfs"}}
+export COMIN_OBS=${DMPDIR}/${CDUMP}.${PDY}/$cyc/atmos
+export COMIN_GES_OBS=${DMPDIR}/${CDUMP}.${PDY}/$cyc/atmos
 export COMINatmos=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos
 export COMOUTatmos=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos
 export COMINwave=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/wave
 export COMOUTwave=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/wave
+export COMINocean=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/ocean
+export COMOUTocean=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/ocean
+export COMINice=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/ice
+export COMOUTice=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/ice
+export COMINaero=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/chem
+export COMOUTaero=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/chem
 
-export jlogfile="${EXPDIR}/logs/jlogfile"
 export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 export LOGSCRIPT=${LOGSCRIPT:-""}
 #export ERRSCRIPT=${ERRSCRIPT:-"err_chk"}
@@ -145,19 +151,25 @@ export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 export APP=@APP@
 
 # Defaults:
+export DO_ATM="YES"
 export DO_COUPLED="NO"
 export DO_WAVE="NO"
 export DO_OCN="NO"
 export DO_ICE="NO"
 export DO_AERO="NO"
-export CCPP_SUITE="FV3_GFS_v16"
+export CCPP_SUITE="@CCPP_SUITE@"
 export WAVE_CDUMP="" # When to include wave suite: gdas, gfs, or both
-export confignamevarfornems="atm" # For APP=ATM
+export DOBNDPNT_WAVE="NO"
 export cplwav2atm=".false."
+export FRAC_GRID=".true."
 
 case "${APP}" in
   ATM)
-    echo "APP=ATM; will use defaults"
+    export confignamevarfornems="atm"
+    ;;
+  ATMA)
+    export DO_AERO="YES"
+    export confignamevarfornems="atm_aero"
     ;;
   ATMW)
     export DO_COUPLED="YES"
@@ -165,28 +177,32 @@ case "${APP}" in
     export WAVE_CDUMP="both"
     export confignamevarfornems="leapfrog_atm_wav"
     ;;
-  S2S)
+  NG-GODAS)
+    export DO_ATM="NO"
+    export DO_OCN="YES"
+    export DO_ICE="YES"
+    ;;
+  S2S*)
     export DO_COUPLED="YES"
     export DO_OCN="YES"
     export DO_ICE="YES"
-    export CCPP_SUITE="FV3_GFS_v16_coupled_nsstNoahmpUGWPv1"
+    export CCPP_SUITE="FV3_GFS_v17_coupled_p8"
     export confignamevarfornems="cpld"
-    ;;
-  S2SW)
-    export DO_COUPLED="YES"
-    export DO_WAVE="YES"
-    export DO_OCN="YES"
-    export DO_ICE="YES"
-    export CCPP_SUITE="FV3_GFS_v16_coupled_nsstNoahmpUGWPv1"
-    export WAVE_CDUMP="both"
-    export confignamevarfornems="cpld_wave"
-    export cplwav2atm=".true."
+
+    if [[ "$APP" =~ A$ ]]; then
+        export DO_AERO="YES"
+        export confignamevarfornems="${confignamevarfornems}_aero"
+    fi
+
+    if [[ "$APP" =~ ^S2SW ]]; then
+        export DO_WAVE="YES"
+        export WAVE_CDUMP="both"
+        export cplwav2atm=".true."
+        export confignamevarfornems="${confignamevarfornems}_wave"
+    fi
+
     source $EXPDIR/config.defaults.s2sw
-    ;;
-  ATMAERO)
-    export DO_COUPLED="YES"
-    export DO_AERO="YES"
-    export confignamevarfornems="atm_aer"
+
     ;;
   *)
     echo "Unrecognized APP: ${1}"
@@ -202,7 +218,7 @@ export LEVS=128
 export CASE="@CASECTL@"
 export CASE_ENKF="@CASEENS@"
 case "$CASE" in
-    "C48") export OCNRES=100;;
+    "C48") export OCNRES=500;;
     "C96") export OCNRES=100;;
     "C192") export OCNRES=050;;
     "C384") export OCNRES=025;;
@@ -222,7 +238,7 @@ fi
 # Output frequency of the forecast model (for cycling)
 export FHMIN=0
 export FHMAX=9
-export FHOUT=3
+export FHOUT=3           # Will be changed to 1 in config.base if DO_GLDAS is set or (DOHYBVAR set to NO and l4densvar set to false)
 
 # Cycle to run EnKF  (set to BOTH for both gfs and gdas)
 export EUPD_CYC="gdas"
@@ -242,7 +258,11 @@ export FHMAX_GFS=$(eval echo \${FHMAX_GFS_$cyc})
 export FHOUT_GFS=${FHOUT_GFS:-3}
 export FHMAX_HF_GFS=${FHMAX_HF_GFS:-0}
 export FHOUT_HF_GFS=${FHOUT_HF_GFS:-1}
-export STEP_GFS="24"
+if (( gfs_cyc != 0 )); then
+    export STEP_GFS=$(( 24 / gfs_cyc ))
+else
+    export STEP_GFS="0"
+fi
 export ILPOST=1           # gempak output frequency up to F120
 
 # GFS restart interval in hours
@@ -279,7 +299,7 @@ export DOIAU_ENKF=${DOIAU:-"YES"}   # Enable 4DIAU for EnKF ensemble
 export IAUFHRS_ENKF="3,6,9"
 export IAU_DELTHRS_ENKF=6
 # Check if cycle is cold starting, DOIAU off, or free-forecast mode
-if [[ "$MODE" = "cycled" && "$SDATE" = "$CDATE" && $EXP_WARM_START = ".false." ]] || [[ "$DOIAU" = "NO" ]] || [[ "$MODE" = "free" && $EXP_WARM_START = ".false." ]] ; then
+if [[ "$MODE" = "cycled" && "$SDATE" = "$CDATE" && $EXP_WARM_START = ".false." ]] || [[ "$DOIAU" = "NO" ]] || [[ "$MODE" = "forecast-only" && $EXP_WARM_START = ".false." ]] ; then
   export IAU_OFFSET=0
   export IAU_FHROT=0
 fi
@@ -291,15 +311,24 @@ export lobsdiag_forenkf=".true."
 export DO_GLDAS="YES"
 export gldas_cyc=00
 
+# Exception handling that when DO_GLDAS is set, the FHOUT must be 1
+if [ $DO_GLDAS = "YES" ]; then
+  export FHOUT=1
+fi
+
 # if [[ "$SDATE" -lt "2019020100" ]]; then # no rtofs in GDA
 #   export DO_WAVE="NO"
 #   echo "WARNING: Wave suite turned off due to lack of RTOFS in GDA for SDATE"
 # fi
 
 # Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL
-export imp_physics=11
+export imp_physics=@IMP_PHYSICS@
 
 # Shared parameters
+# DA engine
+export DO_JEDIVAR="NO"
+export DO_JEDIENS="NO"
+
 # Hybrid related
 export DOHYBVAR="YES"
 export NMEM_ENKF=@NMEM_ENKF@
@@ -326,6 +355,12 @@ if [ $DONST = "YES" ]; then export FNTSFA="        "; fi
 # The switch to apply SST elevation correction or not
 export nst_anl=.true.
 
+# Make the nsstbufr file on the fly or use the GDA version
+export MAKE_NSSTBUFR="@MAKE_NSSTBUFR@"
+
+# Make the aircraft prepbufr file on the fly or use the GDA version
+export MAKE_ACFTBUFR="@MAKE_ACFTBUFR@"
+
 # Analysis increments to zero in CALCINCEXEC
 export INCREMENTS_TO_ZERO="'liq_wat_inc','icmr_inc'"
 
@@ -346,10 +381,14 @@ export binary_diag=".false."
 
 # Verification options
 export DO_METP="YES"         # Run METPLUS jobs - set METPLUS settings in config.metp
-export DO_VSDB="YES"         # Run VSDB package - set VSDB settings in config.vrfy
 
 # Archiving options
 export HPSSARCH="@HPSSARCH@"        # save data to HPSS archive
+export LOCALARCH="@LOCALARCH@"        # save data to local archive
+if [[ $HPSSARCH = "YES" ]] && [[ $LOCALARCH = "YES" ]]; then
+   echo "Both HPSS and local archiving selected.  Please choose one or the other."
+   exit 2
+fi
 export ARCH_CYC=00           # Archive data at this cycle for warm_start capability
 export ARCH_WARMICFREQ=4     # Archive frequency in days for warm_start capability
 export ARCH_FCSTICFREQ=1     # Archive frequency in days for gdas and gfs forecast-only capability

@@ -1,4 +1,4 @@
-#!/bin/ksh -x
+#! /usr/bin/env bash
 
 ########## config.efcs ##########
 # Ensemble forecast specific, dependency: config.fcst
@@ -17,6 +17,10 @@ if [ $QUILTING = ".true." ]; then
     export npe_fv3=$(echo " $npe_fv3 + $WRITE_GROUP * $WRTTASK_PER_GROUP" | bc)
     export npe_efcs=$npe_fv3
 fi
+
+# Use serial I/O for ensemble (lustre?)
+export OUTPUT_FILETYPE_ATM="netcdf"
+export OUTPUT_FILETYPE_SFC="netcdf"
 
 # Number of enkf members per fcst job
 export NMEM_EFCSGRP=2
@@ -58,39 +62,18 @@ if [ $DOIAU_ENKF = "YES" ]; then
     export restart_interval="3 -1"
 fi
 
-export OUTPUT_FILETYPES="$OUTPUT_FILE"
-if [[ "$OUTPUT_FILE" == "netcdf" ]]; then
-    export  ichunk2d=0; export jchunk2d=0
-    export  ichunk3d=0; export jchunk3d=0;  export kchunk3d=0
-    RESTILE=$(echo $CASE_ENKF |cut -c 2-)
-    if [[ "$machine" == "WCOSS_DELL_P3" ]]; then
-        if [ $RESTILE -ge 384 ]; then
-            export OUTPUT_FILETYPES=" 'netcdf_parallel' 'netcdf' "
-            export ichunk2d=$((4*RESTILE))
-            export jchunk2d=$((2*RESTILE))
-            export ichunk3d=$((4*RESTILE))
-            export jchunk3d=$((2*RESTILE))
-            export kchunk3d=1
-        else
-            export OUTPUT_FILETYPES=" 'netcdf_parallel' 'netcdf' "
-        fi
-    fi
-    if [[ "$machine" == "HERA" ]]; then
-        export OUTPUT_FILETYPES=" 'netcdf' 'netcdf' "
-    fi
-fi
-
 # wave model
 export cplwav=.false.
 
 # ocean model resolution
 case "$CASE_ENKF" in
-    "C48") export OCNRES=100;;
+    "C48") export OCNRES=500;;
     "C96") export OCNRES=100;;
     "C192") export OCNRES=050;;
     "C384") export OCNRES=025;;
     "C768") export OCNRES=025;;
     *) export OCNRES=025;;
 esac
+export ICERES=$OCNRES
 
 echo "END: config.efcs"

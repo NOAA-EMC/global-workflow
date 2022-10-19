@@ -1,10 +1,11 @@
-#!/bin/bash
-set -x
+#! /usr/bin/env bash
+
+source "$HOMEgfs/ush/preamble.sh"
 
 #requires grib_util module 
 
 MOM6REGRID=${MOM6REGRID:-$HOMEgfs}
-export mask_file=$MOM6REGRID/fix/fix_reg2grb2/mask.0p25x0p25.grb2
+export mask_file=$MOM6REGRID/fix/reg2grb2/mask.0p25x0p25.grb2
 
 # offline testing:
 #export DATA=
@@ -67,5 +68,5 @@ $executable > reg2grb2.$CDATE.$IDATE.out
 
 # interpolated from 0p25 to 0p5 grid
 grid2p05="0 6 0 0 0 0 0 0 720 361 0 0 90000000 0 48 -90000000 359500000 500000  500000  0"
-#### $NWPROD/util/exec/copygb2 -g "${grid2p05}" -i0 -x $outfile $outfile0p5
 $COPYGB2 -g "${grid2p05}" -i0 -x $outfile $outfile0p5
+

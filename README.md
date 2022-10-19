@@ -7,12 +7,13 @@ The global-workflow depends on the following prerequisities to be available on t
 * workflow manager - ROCOTO (https://github.com/christopherwharrop/rocoto)
 * modules - NCEPLIBS (various), esmf v8.0.0bs48, hdf5, intel/ips v18, impi v18, wgrib2, netcdf v4.7.0, hpss, gempak (see module files under /modulefiles for additional details)
 
-The global-workflow current supports the following machines:
+The global-workflow current supports the following tier-1 machines:
 
-* WCOSS-Dell
-* WCOSS-Cray
 * Hera
 * Orion
+
+Additionally, the following tier-2 machine is supported:
+* S4 (Note that S2S+ experiments are not fully supported)
 
 Quick-start instructions are below. Full instructions are available in the [wiki](https://github.com/NOAA-EMC/global-workflow/wiki/Run-Global-Workflow)
 
@@ -29,25 +30,26 @@ $ sh checkout.sh
 
 While in /sorc folder:
 
-Uncoupled
 ```
 $ sh build_all.sh
 ```
-Coupled
+
+Or use an available option:  
 ```
-$ sh build_all.sh -c
+build_all.sh [-a UFS_app][-c build_config][-h][-v]
+  -a UFS_app:
+    Build a specific UFS app instead of the default
+  -c build_config:
+    Selectively build based on the provided config instead of the default config
+  -h:
+    Print usage message and exit
+  -v:
+    Run all scripts in verbose mode
 ```
 
 ### 3. Link components
 
 While in /sorc folder:
 
-Uncoupled
-```
 $ sh link_workflow.sh emc $MACHINE
-```
-Coupled
-```
-$ sh link_workflow.sh emc $MACHINE coupled
-```
 ...where $MACHINE is "dell", "cray", "hera", or "orion".

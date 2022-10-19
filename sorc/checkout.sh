@@ -1,123 +1,200 @@
-#!/bin/sh
-#set -xue
+#! /usr/bin/env bash
 
-while getopts "om:" option; do
- case $option in
-  o)
-   echo "Received -o flag for optional checkout of operational-only codes"
-   checkout_gtg="YES"
-   checkout_wafs="YES"
-   ;;
-  m)
-   echo "Received -m flag with argument, will check out ufs-weather-model hash $OPTARG instead of default"
-   ufs_model_hash=$OPTARG
-   ;;
-  :)
-   echo "option -$OPTARG needs an argument"
-   ;;
-  *)
-   echo "invalid option -$OPTARG, exiting..."
-   exit
-   ;;
- esac
-done
+set +x
+set -u
 
-topdir=$(pwd)
-logdir="${topdir}/logs"
-mkdir -p ${logdir}
+function usage() {
+  cat << EOF
+Clones and checks out external components necessary for
+  global workflow. If the directory already exists, skip
+  cloning and just check out the requested version (unless
+  -c option is used).
 
-echo ufs-weather-model checkout ...
-if [[ ! -d ufs_model.fd ]] ; then
-    git clone https://github.com/ufs-community/ufs-weather-model ufs_model.fd >> ${logdir}/checkout-ufs_model.log 2>&1
-    cd ufs_model.fd
-    git checkout ${ufs_model_hash:-release/P8a}
-    git submodule update --init --recursive
-    cd ${topdir}
-else
-    echo 'Skip.  Directory ufs_model.fd already exists.'
-fi 
+Usage: $BASH_SOURCE [-c][-h][-m ufs_hash][-o]
+  -c:
+    Create a fresh clone (delete existing directories)
+  -h:
+    Print this help message and exit
+  -m ufs_hash:
+    Check out this UFS hash instead of the default
+  -o:
+    Check out operational-only code (GTG and WAFS)
+  -g: 
+    Check out GSI for GSI-based DA
+  -u:
+    Check out GDASApp for UFS-based DA
+EOF
+  exit 1
+}
 
-echo gsi checkout ...
-if [[ ! -d gsi.fd ]] ; then
-    rm -f ${topdir}/checkout-gsi.log
-    git clone --recursive https://github.com/DavidHuber-NOAA/GSI.git gsi.fd >> ${topdir}/checkout-gsi.log 2>&1
-    cd gsi.fd
-    git checkout a62dec6
-    git submodule update
-    cd ${topdir}
-else
-    echo 'Skip.  Directory gsi.fd already exists.'
-fi
+function checkout() {
+  #
+  # Clone or fetch repo, then checkout specific hash and update submodules
+  #
+  # Environment variables:
+  #   topdir [default: $(pwd)]: parent directory to your checkout
+  #   logdir [default: $(pwd)]: where you want logfiles written
+  #   CLEAN [default: NO]:      whether to delete existing directories and create a fresh clone
+  #
+  # Usage: checkout <dir> <remote> <version>
+  #
+  #   Arguments
+  #     dir:     Directory for the clone
+  #     remote:  URL of the remote repository
+  #     version: Commit to check out; should always be a speciifc commit (hash or tag), not a branch
+  #
+  #   Returns
+  #     Exit code of last failed command, or 0 if successful
+  #
 
-echo gldas checkout ...
-if [[ ! -d gldas.fd ]] ; then
-    rm -f ${topdir}/checkout-gldas.log
-    git clone https://github.com/DavidHuber-NOAA/GLDAS.git gldas.fd >> ${topdir}/checkout-gldas.fd.log 2>&1
-    cd gldas.fd
-    git checkout port_v1.15.0_2_jet
-    cd ${topdir}
-else
-    echo 'Skip.  Directory gldas.fd already exists.'
-fi
+  dir="$1"
+  remote="$2"
+  version="$3"
 
-echo ufs_utils checkout ...
-if [[ ! -d ufs_utils.fd ]] ; then
-    rm -f ${topdir}/checkout-ufs_utils.log
-    git clone --recursive https://github.com/NOAA-EMC/UFS_UTILS.git ufs_utils.fd >> ${logdir}/checkout-ufs_utils.fd.log 2>&1
-    cd ufs_utils.fd
-    git checkout ufs_utils_1_6_0
-    cd ${topdir}
-else
-    echo 'Skip.  Directory ufs_utils.fd already exists.'
-fi
+  name=$(echo ${dir} | cut -d '.' -f 1)
+  echo "Performing checkout of ${name}"
 
-echo UPP checkout ...
-if [[ ! -d gfs_post.fd ]] ; then
-    rm -f ${topdir}/checkout-gfs_post.log
-    git clone https://github.com/DavidHuber-NOAA/UPP.git gfs_post.fd >> ${topdir}/checkout-gfs_post.log 2>&1
-    cd gfs_post.fd
-    git checkout c939eae
-    git submodule update --init CMakeModules
-    ################################################################################
-    # checkout_gtg
-    ## yes: The gtg code at NCAR private repository is available for ops. GFS only.
-    #       Only approved persons/groups have access permission.
-    ## no:  No need to check out gtg code for general GFS users.
-    ################################################################################
-    checkout_gtg=${checkout_gtg:-"NO"}
-    if [[ ${checkout_gtg} == "YES" ]] ; then
-      ./manage_externals/checkout_externals
-      cp sorc/post_gtg.fd/*F90 sorc/ncep_post.fd/.
-      cp sorc/post_gtg.fd/gtg.config.gfs parm/gtg.config.gfs
+  logfile="${logdir:-$(pwd)}/checkout_${name}.log"
+
+  if [[ -f "${logfile}" ]]; then
+    rm "${logfile}"
+  fi
+
+  cd "${topdir}"
+  if [[  -d "${dir}" && $CLEAN == "YES" ]]; then
+    echo "|-- Removing existing clone in ${dir}"
+    rm -Rf "${dir}"
+  fi
+  if [[ ! -d "${dir}" ]]; then
+    echo "|-- Cloning from ${remote} into ${dir}"
+    git clone "${remote}" "${dir}" >> "${logfile}" 2>&1
+    status=$?
+    if ((status > 0)); then
+      echo "    WARNING: Error while cloning ${name}"
+      echo
+      return "${status}"
     fi
-    cd ${topdir}
-else
-    echo 'Skip.  Directory gfs_post.fd already exists.'
+    cd "${dir}"
+  else
+    # Fetch any updates from server
+    cd "${dir}"
+    echo "|-- Fetching updates from ${remote}"
+    git fetch
+  fi
+  echo "|-- Checking out ${version}"
+  git checkout "${version}" >> "${logfile}" 2>&1
+  status=$?
+  if ((status > 0)); then
+    echo "    WARNING: Error while checking out ${version} in ${name}"
+    echo
+    return "${status}"
+  fi
+  git submodule update --init --recursive >> "${logfile}" 2>&1
+  echo "|-- Updating submodules (if any)"
+  status=$?
+  if ((status > 0)); then
+    echo "    WARNING: Error while updating submodules of ${name}"
+    echo
+    return "${status}"
+  fi
+  echo
+  return 0
+}
+
+# Set defaults for variables toggled by options
+export CLEAN="NO"
+checkout_gsi="NO"
+checkout_gdas="NO"
+checkout_gtg="NO"
+checkout_wafs="NO"
+
+# Parse command line arguments
+while getopts ":chgum:o" option; do
+  case ${option} in
+    c)
+      echo "Received -c flag, will delete any existing directories and start clean"
+      export CLEAN="YES"
+      ;;
+    g)
+      echo "Received -g flag for optional checkout of GSI-based DA"
+      checkout_gsi="YES"
+      ;;
+    h)  usage;;
+    u)
+      echo "Received -u flag for optional checkout of UFS-based DA"
+      checkout_gdas="YES"
+      ;;
+    o)
+      echo "Received -o flag for optional checkout of operational-only codes"
+      checkout_gtg="YES"
+      checkout_wafs="YES"
+      ;;
+    m)
+      echo "Received -m flag with argument, will check out ufs-weather-model hash ${OPTARG} instead of default"
+      ufs_model_hash=$OPTARG
+      ;;
+    :)
+      echo "option -${OPTARG} needs an argument"
+      usage
+      ;;
+    *)
+      echo "invalid option -${OPTARG}, exiting..."
+      usage
+      ;;
+  esac
+done
+shift $((OPTIND-1))
+
+export topdir=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
+export logdir="${topdir}/logs"
+mkdir -p "${logdir}"
+
+# The checkout version should always be a speciifc commit (hash or tag), not a branch
+errs=0
+checkout "gfs_utils.fd"    "https://github.com/NOAA-EMC/gfs-utils"              "7bf599f"          ; errs=$((errs + $?))
+checkout "ufs_model.fd"    "https://github.com/ufs-community/ufs-weather-model" "${ufs_model_hash:-3c3548d}" ; errs=$((errs + $?))
+checkout "ufs_utils.fd"    "https://github.com/ufs-community/UFS_UTILS.git"     "8b990c0"                    ; errs=$((errs + $?))
+checkout "verif-global.fd" "https://github.com/NOAA-EMC/EMC_verif-global.git"   "c267780"                    ; errs=$((errs + $?))
+
+if [[ ${checkout_gsi} == "YES" ]]; then
+  checkout "gsi_enkf.fd"     "https://github.com/NOAA-EMC/GSI.git"         "67f5ab4"; errs=$((errs + $?))
 fi
 
-checkout_wafs=${checkout_wafs:-"NO"}
-if [[ ${checkout_wafs} == "YES" ]] ; then
-  echo EMC_gfs_wafs checkout ...
-  if [[ ! -d gfs_wafs.fd ]] ; then
-    rm -f ${topdir}/checkout-gfs_wafs.log
-    git clone --recursive https://github.com/NOAA-EMC/EMC_gfs_wafs.git gfs_wafs.fd >> ${logdir}/checkout-gfs_wafs.log 2>&1
-    cd gfs_wafs.fd
-    git checkout c2a29a67d9432b4d6fba99eac7797b81d05202b6
-    cd ${topdir}
-  else
-    echo 'Skip.  Directory gfs_wafs.fd already exists.'
+if [[ ${checkout_gdas} == "YES" ]]; then
+  checkout "gdas.cd" "https://github.com/NOAA-EMC/GDASApp.git" "5952c9d"; errs=$((errs + $?))
+fi
+
+if [[ ${checkout_gsi} == "YES" || ${checkout_gdas} == "YES" ]]; then
+  checkout "gsi_utils.fd"    "https://github.com/NOAA-EMC/GSI-Utils.git"   "322cc7b"; errs=$((errs + $?))
+  checkout "gsi_monitor.fd"  "https://github.com/NOAA-EMC/GSI-Monitor.git" "c64cc47"; errs=$((errs + $?))
+  checkout "gldas.fd"        "https://github.com/NOAA-EMC/GLDAS.git"       "fd8ba62"; errs=$((errs + $?))
+fi
+
+if [[ ${checkout_wafs} == "YES" ]]; then
+  checkout "gfs_wafs.fd" "https://github.com/NOAA-EMC/EMC_gfs_wafs.git" "014a0b8"; errs=$((errs + $?))
+fi
+
+if [[ ${checkout_gtg} == "YES" ]]; then
+  ################################################################################
+  # checkout_gtg
+  ## yes: The gtg code at NCAR private repository is available for ops. GFS only.
+  #       Only approved persons/groups have access permission.
+  ## no:  No need to check out gtg code for general GFS users.
+  ################################################################################
+
+  echo "Checking out GTG extension for UPP"
+  cd "${topdir}/ufs_model.fd/FV3/upp"
+  logfile="${logdir}/checkout_gtg.log"
+  git -c submodule."post_gtg.fd".update=checkout submodule update --init --recursive >> "${logfile}" 2>&1
+  status=$?
+  if (( status > 0 )); then
+    echo "WARNING: Error while checking out GTG"
+    errs=$((errs + status))
   fi
 fi
 
-echo EMC_verif-global checkout ...
-if [[ ! -d verif-global.fd ]] ; then
-    rm -f ${topdir}/checkout-verif-global.log
-    git clone --recursive https://github.com/NOAA-EMC/EMC_verif-global.git verif-global.fd >> ${logdir}/checkout-verif-global.log 2>&1
-    cd verif-global.fd
-    git checkout verif_global_v2.8.0
-    cd ${topdir}
-else
-    echo 'Skip. Directory verif-global.fd already exist.'
+if (( errs > 0 )); then
+  echo "WARNING: One or more errors encountered during checkout process, please check logs before building"
 fi
-
-exit 0
+echo
+exit $errs

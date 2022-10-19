@@ -1,4 +1,5 @@
-#!/bin/ksh
+#! /usr/bin/env bash
+
 ######################################################################
 #  UTILITY SCRIPT NAME :  exgfs_grib_awips.sh
 #         DATE WRITTEN :  10/04/2004
@@ -9,29 +10,27 @@
 #             1st argument - Forecast Hour - format of 2I
 #
 #####################################################################
-echo "------------------------------------------------"
-echo "JGFS_AWIPS_00/06/12/18 GFS postprocessing"
-echo "------------------------------------------------"
-echo "History: OCT 2004 - First implementation of this new script."
-echo "         JUN 2014 - Modified to remove process for AWIPS in GRIB2"
-echo "                    to script exgfs_grib_awips_g2.sh and this "
-echo "                    script only process AWIPS GRIB1 (211 and 225)"
-echo "         AUG 2015 - Modified for WCOSS phase2"
-echo "         FEB 2019 - Removed grid 225"
+# echo "------------------------------------------------"
+# echo "JGFS_AWIPS_00/06/12/18 GFS postprocessing"
+# echo "------------------------------------------------"
+# echo "History: OCT 2004 - First implementation of this new script."
+# echo "         JUN 2014 - Modified to remove process for AWIPS in GRIB2"
+# echo "                    to script exgfs_grib_awips_g2.sh and this "
+# echo "                    script only process AWIPS GRIB1 (211 and 225)"
+# echo "         AUG 2015 - Modified for WCOSS phase2"
+# echo "         FEB 2019 - Removed grid 225"
 #####################################################################
-set +x
+
+source "$HOMEgfs/ush/preamble.sh"
+
 fcsthrs="$1"
 num=$#
 job_name=$(echo $job|sed 's/[jpt]gfs/gfs/')
 
-typeset -Z3 fcsthrs
+fcsthrs=$(printf "%03d" $fcsthrs)
 
-export PS4='gfs_grib_awips:f$fcsthrs:$SECONDS + '
 export SCALEDEC=${SCALDEC:-$USHgfs/scale_dec.sh}
 
-#if [ $fhcsthrs -t 100 ]; then
-#  fcsthrs=0$fcsthrs
-#fi  
 if test "$num" -ge 1
 then
    echo ""
@@ -48,8 +47,6 @@ else
 fi
 
 cd $DATA/awips_g1
-
-set -x
 
 ###############################################
 # Wait for the availability of the pgrb file
@@ -71,11 +68,6 @@ do
   fi
 done
 
-########################################
-msg="HAS BEGUN!"
-postmsg "$jlogfile" "$msg"
-########################################
-
 echo " ------------------------------------------"
 echo " BEGIN MAKING GFS GRIB1 AWIPS PRODUCTS"
 echo " ------------------------------------------"
@@ -86,7 +78,7 @@ echo "###############################################"
 echo " Process GFS GRIB1 AWIP PRODUCTS (211) "
 echo "###############################################"
 echo " "
-set -x
+set_trace
 
    cp $COMIN/gfs.t${cyc}z.pgrb2.0p25.f${fcsthrs}   tmpfile2
    cp $COMIN/gfs.t${cyc}z.pgrb2b.0p25.f${fcsthrs}  tmpfile2b
@@ -140,8 +132,7 @@ EOF
       if [ "$SENDDBN" = 'YES' -o "$SENDAWIP" = 'YES' ] ; then
          $DBNROOT/bin/dbn_alert $DBNALERT_TYPE $NET $job ${COMOUTwmo}/xtrn.awpgfs${fcsthrs}.${GRID}.$job_name
       else
-         msg="File $output_grb.$job_name not posted to db_net."
-         postmsg "$jlogfile" "$msg"
+         echo "File $output_grb.$job_name not posted to db_net."
       fi
    fi
 
@@ -150,15 +141,6 @@ if [ -e "$pgmout" ] ; then
 fi
 
 ###############################################################################
-# GOOD RUN
-set +x
-echo "**************JOB EXGFS_GRIB_AWIPS.SH.ECF COMPLETED NORMALLY ON THE IBM"
-echo "**************JOB EXGFS_GRIB_AWIPS.SH.ECF COMPLETED NORMALLY ON THE IBM"
-echo "**************JOB EXGFS_GRIB_AWIPS.SH.ECF COMPLETED NORMALLY ON THE IBM"
-set -x
-###############################################################################
 
-msg="HAS COMPLETED NORMALLY!"
-postmsg "$jlogfile" "$msg"
 
 ############## END OF SCRIPT #######################

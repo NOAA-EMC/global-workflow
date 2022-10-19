@@ -1,5 +1,6 @@
-#!/bin/bash
-set -x
+#! /usr/bin/env bash
+
+source "$HOMEgfs/ush/preamble.sh"
 
 ###############################################################
 ## CICE5/MOM6 post driver script 
@@ -16,7 +17,7 @@ status=$?
 # Source relevant config files
 #############################
 configs="base ocnpost"
-config_path=${EXPDIR:-$NWROOT/gfs.${gfs_ver}/parm/config}
+config_path=${EXPDIR:-$PACKAGEROOT/gfs.${gfs_ver}/parm/config}
 for config in $configs; do
     . $config_path/config.$config
     status=$?
@@ -58,11 +59,6 @@ setpdy.sh
 . ./PDY
 
 ##############################################
-# Define the Log File directory
-##############################################
-export jlogfile=${jlogfile:-$COMROOT/logs/jlogfiles/jlogfile.${job}.${pid}}
-
-##############################################
 # Determine Job Output Name on System
 ##############################################
 export pgmout="OUTPUT.${pid}"
@@ -81,16 +77,8 @@ fi
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
-
-if [ $RUN_ENVIR = "nco" ]; then
-    export COMIN=${COMIN:-$ROTDIR/$RUN.$PDY/$cyc}
-    export COMOUT=${COMOUT:-$ROTDIR/$RUN.$PDY/$cyc}
-else
-    export COMIN="$ROTDIR/$CDUMP.$PDY/$cyc"
-    export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc"
-fi
-[[ ! -d $COMOUT/ocean ]] && mkdir -p $COMOUT/ocean
-[[ ! -d $COMOUT/ice ]] && mkdir -p $COMOUT/ice
+[[ ! -d $COMOUTocean ]] && mkdir -p $COMOUTocean
+[[ ! -d $COMOUTice ]] && mkdir -p $COMOUTice
 
 fhrlst=$(echo $FHRLST | sed -e 's/_/ /g; s/f/ /g; s/,/ /g')
 
@@ -121,31 +109,31 @@ for fhr in $fhrlst; do
   
 
     #break up ocn netcdf into multiple files:  
-    if [ -f $COMOUT/ocean/ocn_2D_$VDATE.$ENSMEM.$IDATE.nc ]; then 
-      echo "File $COMOUT/ocean/ocn_2D_$VDATE.$ENSMEM.$IDATE.nc already exists"
+    if [ -f $COMOUTocean/ocn_2D_$VDATE.$ENSMEM.$IDATE.nc ]; then 
+      echo "File $COMOUTocean/ocn_2D_$VDATE.$ENSMEM.$IDATE.nc already exists"
     else
-      ncks -x -v vo,uo,so,temp $COMOUT/ocean/ocn$VDATE.$ENSMEM.$IDATE.nc $COMOUT/ocean/ocn_2D_$VDATE.$ENSMEM.$IDATE.nc
+      ncks -x -v vo,uo,so,temp $COMOUTocean/ocn$VDATE.$ENSMEM.$IDATE.nc $COMOUTocean/ocn_2D_$VDATE.$ENSMEM.$IDATE.nc
       status=$?
       [[ $status -ne 0 ]] && exit $status
     fi 
-    if [ -f $COMOUT/ocean/ocn_3D_$VDATE.$ENSMEM.$IDATE.nc ]; then 
-       echo "File $COMOUT/ocean/ocn_3D_$VDATE.$ENSMEM.$IDATE.nc already exists" 
+    if [ -f $COMOUTocean/ocn_3D_$VDATE.$ENSMEM.$IDATE.nc ]; then 
+       echo "File $COMOUTocean/ocn_3D_$VDATE.$ENSMEM.$IDATE.nc already exists" 
     else 
-      ncks -x -v Heat_PmE,LW,LwLatSens,MLD_003,MLD_0125,SSH,SSS,SST,SSU,SSV,SW,cos_rot,ePBL,evap,fprec,frazil,latent,lprec,lrunoff,sensible,sin_rot,speed,taux,tauy,wet_c,wet_u,wet_v $COMOUT/ocean/ocn$VDATE.$ENSMEM.$IDATE.nc $COMOUT/ocean/ocn_3D_$VDATE.$ENSMEM.$IDATE.nc
+      ncks -x -v Heat_PmE,LW,LwLatSens,MLD_003,MLD_0125,SSH,SSS,SST,SSU,SSV,SW,cos_rot,ePBL,evap,fprec,frazil,latent,lprec,lrunoff,sensible,sin_rot,speed,taux,tauy,wet_c,wet_u,wet_v $COMOUTocean/ocn$VDATE.$ENSMEM.$IDATE.nc $COMOUTocean/ocn_3D_$VDATE.$ENSMEM.$IDATE.nc
       status=$?
       [[ $status -ne 0 ]] && exit $status
     fi 
-    if [ -f $COMOUT/ocean/ocn-temp-EQ_$VDATE.$ENSMEM.$IDATE.nc ]; then 
-       echo "File $COMOUT/ocean/ocn-temp-EQ_$VDATE.$ENSMEM.$IDATE.nc already exists" 
+    if [ -f $COMOUTocean/ocn-temp-EQ_$VDATE.$ENSMEM.$IDATE.nc ]; then 
+       echo "File $COMOUTocean/ocn-temp-EQ_$VDATE.$ENSMEM.$IDATE.nc already exists" 
     else 
-      ncks -v temp -d yh,503 -d xh,-299.92,60.03 $COMOUT/ocean/ocn_3D_$VDATE.$ENSMEM.$IDATE.nc $COMOUT/ocean/ocn-temp-EQ_$VDATE.$ENSMEM.$IDATE.nc
+      ncks -v temp -d yh,503 -d xh,-299.92,60.03 $COMOUTocean/ocn_3D_$VDATE.$ENSMEM.$IDATE.nc $COMOUTocean/ocn-temp-EQ_$VDATE.$ENSMEM.$IDATE.nc
       status=$?
       [[ $status -ne 0 ]] && exit $status
     fi 
-    if [ -f $COMOUT/ocean/ocn-uo-EQ_$VDATE.$ENSMEM.$IDATE.nc ]; then 
-       echo "File $COMOUT/ocean/ocn-uo-EQ_$VDATE.$ENSMEM.$IDATE.nc already exists" 
+    if [ -f $COMOUTocean/ocn-uo-EQ_$VDATE.$ENSMEM.$IDATE.nc ]; then 
+       echo "File $COMOUTocean/ocn-uo-EQ_$VDATE.$ENSMEM.$IDATE.nc already exists" 
     else 
-      ncks -v uo -d yh,503 -d xh,-299.92,60.03 $COMOUT/ocean/ocn_3D_$VDATE.$ENSMEM.$IDATE.nc $COMOUT/ocean/ocn-uo-EQ_$VDATE.$ENSMEM.$IDATE.nc
+      ncks -v uo -d yh,503 -d xh,-299.92,60.03 $COMOUTocean/ocn_3D_$VDATE.$ENSMEM.$IDATE.nc $COMOUTocean/ocn-uo-EQ_$VDATE.$ENSMEM.$IDATE.nc
       status=$?
       [[ $status -ne 0 ]] && exit $status
     fi
@@ -155,7 +143,7 @@ done
 
 # Restore CDATE to what is expected
 export CDATE=$IDATE
-$NMV ocn_ice*.grb2 $COMOUT/ocean/
+$NMV ocn_ice*.grb2 $COMOUTocean/
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
@@ -163,4 +151,6 @@ status=$?
 if [ ${KEEPDATA:-"NO"} = "NO" ] ; then rm -rf $DATA ; fi
 ###############################################################
 # Exit out cleanly
+
+
 exit 0

@@ -1,4 +1,4 @@
-#!/bin/sh
+#! /usr/bin/env bash
 
 ################################################################################
 # UNIX Script Documentation Block
@@ -17,26 +17,19 @@
 #
 # Attributes:
 #   Language: Portable Operating System Interface (POSIX) Shell
-#   Machine: WCOSS-CRAY, Theia
 ################################################################################
 
-#  Set environment.
-VERBOSE=${VERBOSE:-"YES"}
-if [ $VERBOSE = YES ] ; then
-    echo $(date) EXECUTING $0 $* >&2
-    set -x
-fi
+source "$HOMEgfs/ush/preamble.sh"
 
 #-------------------------------------------------------
 # Directories and paths
 pwd=$(pwd)
 DATA=${DATA:-$pwd}
-NWPROD=${NWPROD:-$pwd}
-HOMEgfs=${HOMEgfs:-$NWPROD}
+HOMEgfs=${HOMEgfs:-$PACKAGEROOT}
 FIX_DIR=${FIX_DIR:-$HOMEgfs/fix}
-FIX_AM=${FIX_AM:-$FIX_DIR/fix_am}
-FIXfv3=${FIXfv3:-$FIX_DIR/fix_fv3_gmted2010}
-REGRID_NEMSIO_EXEC=${REGRID_NEMSIO_EXEC:-$HOMEgfs/exec/regrid_nemsio}
+FIX_AM=${FIX_AM:-$FIX_DIR/am}
+FIXfv3=${FIXfv3:-$FIX_DIR/orog}
+REGRID_NEMSIO_EXEC=${REGRID_NEMSIO_EXEC:-$HOMEgfs/exec/regrid_nemsio.x}
 REGRID_NEMSIO_TBL=${REGRID_NEMSIO_TBL:-$HOMEgfs/parm/parm_fv3diag/variable_table.txt}
 
 CDATE=${CDATE:-2017011500}
@@ -121,8 +114,5 @@ for ftype in atm sfc; do
 done
 
 #------------------------------------------------------------------
-set +x
-if [ $VERBOSE = "YES" ] ; then
-    echo $(date) EXITING $0 with return code $err >&2
-fi
+
 exit $err

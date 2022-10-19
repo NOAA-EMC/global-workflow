@@ -1,0 +1,129 @@
+#! /usr/bin/env bash
+
+source "$HOMEgfs/ush/preamble.sh"
+
+export RUN_ENVIR=${RUN_ENVIR:-"nco"}
+
+#############################
+# Source relevant config files
+#############################
+export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
+configs="base sfcanl"
+config_path=${EXPDIR:-$PACKAGEROOT/gfs.${gfs_ver}/parm/config}
+for config in $configs; do
+    . $config_path/config.$config
+    status=$?
+    [[ $status -ne 0 ]] && exit $status
+done
+
+##########################################
+# Source machine runtime environment
+##########################################
+. $HOMEgfs/env/${machine}.env sfcanl
+status=$?
+[[ $status -ne 0 ]] && exit $status
+
+
+##############################################
+# Obtain unique process id (pid) and make temp directory
+##############################################
+export pid=${pid:-$$}
+export outid=${outid:-"LL$job"}
+
+export DATA=${DATA:-${DATAROOT}/${jobid:?}}
+mkdir -p $DATA
+cd $DATA
+
+
+##############################################
+# Run setpdy and initialize PDY variables
+##############################################
+export cycle="t${cyc}z"
+setpdy.sh
+. ./PDY
+
+
+##############################################
+# Determine Job Output Name on System
+##############################################
+export pgmout="OUTPUT.${pid}"
+export pgmerr=errfile
+
+
+##############################################
+# Set variables used in the script
+##############################################
+export CDATE=${CDATE:-${PDY}${cyc}}
+export CDUMP=${CDUMP:-${RUN:-"gfs"}}
+export COMPONENT=${COMPONENT:-atmos}
+if [ $RUN_ENVIR = "nco" ]; then
+    export ROTDIR=${COMROOT:?}/$NET/$envir
+fi
+
+
+##############################################
+# Begin JOB SPECIFIC work
+##############################################
+
+GDATE=$($NDATE -$assim_freq $CDATE)
+gPDY=$(echo $GDATE | cut -c1-8)
+gcyc=$(echo $GDATE | cut -c9-10)
+GDUMP=${GDUMP:-"gdas"}
+
+export OPREFIX="${CDUMP}.t${cyc}z."
+export GPREFIX="${GDUMP}.t${gcyc}z."
+export APREFIX="${CDUMP}.t${cyc}z."
+export GSUFFIX=${GSUFFIX:-$SUFFIX}
+export ASUFFIX=${ASUFFIX:-$SUFFIX}
+
+
+if [ $RUN_ENVIR = "nco" -o ${ROTDIR_DUMP:-NO} = "YES" ]; then
+    export COMIN=${COMIN:-$ROTDIR/$RUN.$PDY/$cyc/$COMPONENT}
+    export COMOUT=${COMOUT:-$ROTDIR/$RUN.$PDY/$cyc/$COMPONENT}
+    export COMIN_OBS=${COMIN_OBS:-$ROTDIR/$RUN.$PDY/$cyc/$COMPONENT}
+    export COMIN_GES_OBS=${COMIN_GES_OBS:-$ROTDIR/$GDUMP.$gPDY/$gcyc/$COMPONENT}
+else
+    export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc/$COMPONENT"
+    export COMIN_OBS="$DMPDIR/$CDATE/$CDUMP"
+    export COMIN_GES_OBS="$DMPDIR/$GDATE/$GDUMP"
+fi
+mkdir -m 775 -p $COMOUT
+# COMIN_GES and COMIN_GES_ENS are used in script
+export COMIN_GES="$ROTDIR/$GDUMP.$gPDY/$gcyc/$COMPONENT"
+export COMIN_GES_ENS="$ROTDIR/enkfgdas.$gPDY/$gcyc/$COMPONENT"
+
+
+export ATMGES="$COMIN_GES/${GPREFIX}atmf006${GSUFFIX}"
+if [ ! -f $ATMGES ]; then
+    echo "FATAL ERROR: FILE MISSING: ATMGES = $ATMGES"
+    exit 1
+fi
+
+
+###############################################################
+# Run relevant script
+
+${SFCANALSH:-$SCRgfs/exglobal_atmos_sfcanl.sh}
+status=$?
+[[ $status -ne 0 ]] && exit $status
+
+
+##############################################
+# End JOB SPECIFIC work
+##############################################
+
+##############################################
+# Final processing
+##############################################
+if [ -e "$pgmout" ] ; then
+  cat $pgmout
+fi
+
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd $DATAROOT
+[[ $KEEPDATA = "NO" ]] && rm -rf $DATA
+
+
+exit 0

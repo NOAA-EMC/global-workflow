@@ -1,4 +1,5 @@
-#!/bin/ksh
+#! /usr/bin/env bash
+
 ################################################################
 # Script Name:		exgfs_atmos_postsnd.sh.sms
 # Script Description:	Generate GFS BUFR sounding files
@@ -18,12 +19,11 @@
 #   8) 2019-10-18       Guang Ping Lou Transition to reading in NetCDF model data
 #   9) 2019-12-18       Guang Ping Lou generalizing to reading in NetCDF or nemsio
 ################################################################
-set -xa
+
+source "$HOMEgfs/ush/preamble.sh"
 
 cd $DATA
-########################################
-msg="HAS BEGUN"
-#postmsg "$jlogfile" "$msg"
+
 ########################################
 
 ###################################################
@@ -165,21 +165,6 @@ ${APRUN_POSTSNDCFP} cmdfile
 
 sh $USHbufrsnd/gfs_bfr2gpk.sh
 fi
-################################################
-# Convert the bufr soundings into GEMPAK files
-################################################
-##$USHbufrsnd/gfs_bfr2gpk.sh
 
-#####################################################################
-# GOOD RUN
-set +x
-echo "**************JOB GFS_meteogrm COMPLETED NORMALLY ON THE IBM"
-echo "**************JOB GFS_meteogrm COMPLETED NORMALLY ON THE IBM"
-echo "**************JOB GFS_meteogrm COMPLETED NORMALLY ON THE IBM"
-set -x
-#####################################################################
-
-msg='HAS COMPLETED NORMALLY.'
-#postmsg "$jlogfile" "$msg"
 
 ############## END OF SCRIPT #######################

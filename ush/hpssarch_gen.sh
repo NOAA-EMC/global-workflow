@@ -1,11 +1,10 @@
-#!/bin/ksh
-set -x
+#! /usr/bin/env bash
 
 ###################################################
 # Fanglin Yang, 20180318
 # --create bunches of files to be archived to HPSS
 ###################################################
-
+source "$HOMEgfs/ush/preamble.sh"
 
 type=${1:-gfs}                ##gfs, gdas, enkfgdas or enkfggfs
 
@@ -93,23 +92,29 @@ if [ $type = "gfs" ]; then
   fi
 
   #..................
-  echo  "./logs/${CDATE}/gfs*.log                          " >>gfsa.txt
+  # Exclude the gfsarch.log file, which will change during the tar operation
+  #  This uses the bash extended globbing option
+  echo  "./logs/${CDATE}/gfs!(arch).log                    " >>gfsa.txt
   echo  "${dirname}input.nml                               " >>gfsa.txt
   if [ $MODE = "cycled" ]; then
     echo  "${dirname}${head}gsistat                          " >>gfsa.txt
     echo  "${dirname}${head}nsstbufr                         " >>gfsa.txt
     echo  "${dirname}${head}prepbufr                         " >>gfsa.txt
-    echo  "${dirname}${head}prepbufr_pre-qc                  " >>gfsa.txt
     echo  "${dirname}${head}prepbufr.acft_profiles           " >>gfsa.txt
   fi
   echo  "${dirname}${head}pgrb2.0p25.anl                   " >>gfsa.txt
   echo  "${dirname}${head}pgrb2.0p25.anl.idx               " >>gfsa.txt
-  echo  "${dirname}avno.t${cyc}z.cyclone.trackatcfunix     " >>gfsa.txt
-  echo  "${dirname}avnop.t${cyc}z.cyclone.trackatcfunix    " >>gfsa.txt
-  echo  "${dirname}trak.gfso.atcfunix.${PDY}${cyc}         " >>gfsa.txt
-  echo  "${dirname}trak.gfso.atcfunix.altg.${PDY}${cyc}    " >>gfsa.txt
-  echo  "${dirname}storms.gfso.atcf_gen.${PDY}${cyc}       " >>gfsa.txt
-  echo  "${dirname}storms.gfso.atcf_gen.altg.${PDY}${cyc}  " >>gfsa.txt
+  #Only generated if there are cyclones to track
+  cyclone_files=(avno.t${cyc}z.cyclone.trackatcfunix
+                 avnop.t${cyc}z.cyclone.trackatcfunix
+                 trak.gfso.atcfunix.${PDY}${cyc}
+                 trak.gfso.atcfunix.altg.${PDY}${cyc}
+                 storms.gfso.atcf_gen.${PDY}${cyc}
+                 storms.gfso.atcf_gen.altg.${PDY}${cyc})
+
+  for file in ${cyclone_files[@]}; do
+    [[ -s $ROTDIR/${dirname}${file} ]] && echo "${dirname}${file}" >>gfsa.txt
+  done
 
   if [ $DO_DOWN = "YES" ]; then
    if [ $DO_BUFRSND = "YES" ]; then
@@ -181,7 +186,7 @@ if [ $type = "gfs" ]; then
     echo  "${dirname}RESTART/*0000.sfcanl_data.tile4.nc  " >>gfs_restarta.txt
     echo  "${dirname}RESTART/*0000.sfcanl_data.tile5.nc  " >>gfs_restarta.txt
     echo  "${dirname}RESTART/*0000.sfcanl_data.tile6.nc  " >>gfs_restarta.txt
-  elif [ $MODE = "free" ]; then
+  elif [ $MODE = "forecast-only" ]; then
     echo  "${dirname}INPUT/gfs_ctrl.nc        " >>gfs_restarta.txt
     echo  "${dirname}INPUT/gfs_data.tile1.nc  " >>gfs_restarta.txt
     echo  "${dirname}INPUT/gfs_data.tile2.nc  " >>gfs_restarta.txt
@@ -228,7 +233,6 @@ if [ $type = "gfs" ]; then
     rm -f ocn_3D.txt
     rm -f ocn_xsect.txt
     rm -f ocn_daily.txt
-    rm -f wavocn.txt
     touch gfs_flux_1p00.txt
     touch ocn_ice_grib2_0p5.txt
     touch ocn_ice_grib2_0p25.txt
@@ -236,13 +240,11 @@ if [ $type = "gfs" ]; then
     touch ocn_3D.txt
     touch ocn_xsect.txt
     touch ocn_daily.txt
-    touch wavocn.txt
     echo  "${dirname}MOM_input                  " >>ocn_2D.txt
     echo  "${dirname}ocn_2D*                    " >>ocn_2D.txt
     echo  "${dirname}ocn_3D*                    " >>ocn_3D.txt
     echo  "${dirname}ocn*EQ*                    " >>ocn_xsect.txt
     echo  "${dirname}ocn_daily*                 " >>ocn_daily.txt
-    echo  "${dirname}wavocn*                    " >>wavocn.txt
     echo  "${dirname}ocn_ice*0p5x0p5.grb2       " >>ocn_ice_grib2_0p5.txt
     echo  "${dirname}ocn_ice*0p25x0p25.grb2     " >>ocn_ice_grib2_0p25.txt
 
@@ -264,6 +266,17 @@ if [ $type = "gfs" ]; then
     echo  "${dirname}ice*nc                     " >>ice.txt
   fi
 
+  if [ $DO_AERO = "YES" ]; then
+    dirpath="gfs.${PDY}/${cyc}/chem"
+    dirname="./${dirpath}"
+
+    head="gocart"
+
+    rm -f chem.txt
+    touch chem.txt
+
+    echo "${dirname}/${head}*" >> chem.txt
+  fi
 
 #-----------------------------------------------------
 fi   ##end of gfs
@@ -350,7 +363,6 @@ if [ $type = "gdas" ]; then
   fi
   echo  "${dirname}${head}nsstbufr                 " >>gdas_restarta.txt
   echo  "${dirname}${head}prepbufr                 " >>gdas_restarta.txt
-  echo  "${dirname}${head}prepbufr_pre-qc          " >>gdas_restarta.txt
   echo  "${dirname}${head}prepbufr.acft_profiles   " >>gdas_restarta.txt
   echo  "${dirname}${head}abias                    " >>gdas_restarta.txt
   echo  "${dirname}${head}abias_air                " >>gdas_restarta.txt
@@ -449,8 +461,16 @@ if [ $type = "enkfgdas" -o $type = "enkfgfs" ]; then
         fi
      fi 
   done # loop over FHR
-  for fstep in eobs eomg ecen esfc eupd efcs epos ; do
+  for fstep in eobs ecen esfc eupd efcs epos ; do
    echo  "logs/${CDATE}/${CDUMP}${fstep}*.log        " >>enkf${CDUMP}.txt
+  done
+
+# eomg* are optional jobs
+  for log in $ROTDIR/logs/${CDATE}/${CDUMP}eomg*.log; do
+     if [ -s "$log" ]; then
+        echo  "logs/${CDATE}/${CDUMP}eomg*.log        " >>enkf${CDUMP}.txt
+     fi
+     break
   done
 
 

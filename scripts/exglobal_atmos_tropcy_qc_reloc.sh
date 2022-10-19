@@ -1,20 +1,19 @@
+#! /usr/bin/env bash
+
 ############################################################################
-echo "---------------------------------------------------------------------"
-echo "exglobal_atmos_tropcy_qc_reloc.sh - Tropical Cyclone QC/Relocation Prcocessing"
-echo "---------------------------------------------------------------------"
-echo "History: Jun 13 2006 - Original script."
-echo "          March 2013 - No changes needed for WCOSS transition"
-echo "                       MP_LABELIO default added"
-echo "            Oct 2013 - Use main USH vars as part of minor pkg cleanup"
+# echo "---------------------------------------------------------------------"
+# echo "exglobal_atmos_tropcy_qc_reloc.sh - Tropical Cyclone QC/Relocation Prcocessing"
+# echo "---------------------------------------------------------------------"
+# echo "History: Jun 13 2006 - Original script."
+# echo "          March 2013 - No changes needed for WCOSS transition"
+# echo "                       MP_LABELIO default added"
+# echo "            Oct 2013 - Use main USH vars as part of minor pkg cleanup"
 ############################################################################
 
-set -x
+source "$HOMEgfs/ush/preamble.sh"
 
 # Make sure we are in the $DATA directory
 cd $DATA
-
-msg="HAS BEGUN on $(hostname)"
-postmsg "$jlogfile" "$msg"
 
 cat break > $pgmout
 
@@ -26,27 +25,20 @@ cdate10=$( ${NDATE:?} -$tmhr $PDY$cyc)
 NET_uc=$(echo $RUN | tr [a-z] [A-Z])
 tmmark_uc=$(echo $tmmark | tr [a-z] [A-Z])
 
-msg="$NET_uc ANALYSIS TIME IS $PDY$cyc"
-postmsg "$jlogfile" "$msg"
-
 iflag=0
 if [ $RUN = ndas ]; then
    if [ $DO_RELOCATE = NO ]; then
-      msg="CENTER PROCESSING TIME FOR NDAS TROPICAL CYCLONE QC IS $cdate10"
-      postmsg "$jlogfile" "$msg"
-      msg="Output tcvitals files will be copied forward in time to proper \
+      echo "CENTER PROCESSING TIME FOR NDAS TROPICAL CYCLONE QC IS $cdate10"
+      echo "Output tcvitals files will be copied forward in time to proper \
 output file directory path locations"
-      postmsg "$jlogfile" "$msg"
       iflag=1
    else
-      msg="CENTER PROCESSING TIME FOR $tmmark_uc NDAS TROPICAL CYCLONE \
+      echo "CENTER PROCESSING TIME FOR $tmmark_uc NDAS TROPICAL CYCLONE \
 RELOCATION IS $cdate10"
-      postmsg "$jlogfile" "$msg"
    fi
 else
-   msg="CENTER PROCESSING TIME FOR $tmmark_uc $NET_uc TROPICAL CYCLONE QC/\
+   echo "CENTER PROCESSING TIME FOR $tmmark_uc $NET_uc TROPICAL CYCLONE QC/\
 RELOCATION IS $cdate10"
-   postmsg "$jlogfile" "$msg"
 fi
 
 
@@ -63,17 +55,14 @@ if [ "$PROCESS_TROPCY" = 'YES' ]; then
    ${USHSYND:-$HOMEgfs/ush}/syndat_qctropcy.sh $cdate10
    errsc=$?
    if [ "$errsc" -ne '0' ]; then
-    msg="syndat_qctropcy.sh failed. exit"
-    postmsg "$jlogfile" "$msg"
+    echo "syndat_qctropcy.sh failed. exit"
     exit $errsc
    fi
    
 
    cd $COMOUT
    pwd
-   set +x
    ls -ltr *syndata*
-   set -x
    cd $ARCHSYND
    pwd;ls -ltr
    cat syndat_dateck
@@ -156,27 +145,8 @@ fi
 
 ########################################################
 
-# GOOD RUN
-set +x
-echo " "
-echo " ****** PROCESSING COMPLETED NORMALLY"
-echo " ****** PROCESSING COMPLETED NORMALLY"
-echo " ****** PROCESSING COMPLETED NORMALLY"
-echo " ****** PROCESSING COMPLETED NORMALLY"
-echo " "
-set -x
-
-
 # save standard output
-cat break $pgmout break > allout
-cat allout
-# rm allout
+cat break $pgmout break
 
-sleep 10
-
-if [ $iflag -eq 0 ]; then
-   msg='ENDED NORMALLY.'
-   postmsg "$jlogfile" "$msg"
-fi
 
 ################## END OF SCRIPT #######################

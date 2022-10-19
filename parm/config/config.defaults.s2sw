@@ -1,4 +1,4 @@
-#!/bin/ksh -x
+#! /usr/bin/env bash
 
 # Empty variables must include a space otherwise they will be overwritten
 
@@ -12,25 +12,30 @@ FHOUT_GFS=6
 FHOUT_HF_GFS=-1
 
 # config.fcst
-IALB=2
-IEMS=2
-DO_CA="YES"
-min_seaice="1e-6"
+min_seaice="1.0e-6"
 use_cice_alb=".true."
-export iopt_sfc="3"
 
 # config.fv3
 DELTIM=300
 layout_x_gfs=8
-layout_y_gfs=12
+layout_y_gfs=8
 WRITE_GROUP_GFS=1
-WRTTASK_PER_GROUP_GFS=80
+WRTTASK_PER_GROUP_GFS=24
+#The settings below will result in S2SWA running 35 days under 8 hours wallclock on hera
+#layout_x_gfs=24
+#layout_y_gfs=16
+#WRTTASK_PER_GROUP_GFS=86
 WRTIOBUF="32M"
+MEDPETS=300
 
 # config.wave
+
 waveGRD='gwes_30m'
-waveesmfGRD=' '
 waveinterpGRD=' '
+waveuoutpGRD='gwes_30m'
+MESH_WAV='mesh.gwes_30m.nc'
+
+waveesmfGRD=' '
 wavepostGRD='gwes_30m'
 waveGRDN="1"
 waveGRDG="10"
@@ -39,6 +44,7 @@ FHOUT_HF_WAV=3
 DTPNT_WAV=10800
 OUTPARS_WAV="WND CUR ICE HS T01 T02 DIR FP DP PHS PTP PDIR CHA"
 DOBNDPNT_WAVE='NO'
+waveMULTIGRID='.false.'
 
 # config.waveprep
 IOSRV=1

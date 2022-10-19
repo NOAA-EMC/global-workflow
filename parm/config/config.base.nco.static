@@ -1,4 +1,4 @@
-#!/bin/ksh -x
+#! /usr/bin/env bash
 
 ########## config.base ##########
 # Common to all steps
@@ -6,7 +6,7 @@
 echo "BEGIN: config.base"
 
 # Machine environment
-export machine="WCOSS_DELL_P3"
+export machine="WCOSS2"
 
 # EMC parallel or NCO production
 export RUN_ENVIR="nco"
@@ -31,7 +31,7 @@ export SCRgfs=$HOMEgfs/scripts
 
 # GLOBAL static environment parameters
 
-export NWPROD="/gpfs/dell1/nco/ops/nwprod"
+export PACKAGEROOT="/lfs/h1/ops/prod/packages"
 export RTMFIX=$CRTM_FIX
 
 # Machine specific paths used everywhere
@@ -62,13 +62,10 @@ export REALTIME="YES"
 # CLEAR
 ####################################################
 # Build paths relative to $HOMEgfs
-export FIXgsi="$HOMEgfs/fix/fix_gsi"
+export FIXgsi="$HOMEgfs/fix/gsi"
 export HOMEfv3gfs="$HOMEgfs/sorc/fv3gfs.fd"
 export HOMEpost="$HOMEgfs"
-export HOMEobsproc_prep="$NWPROD/obsproc_prep.v5.5.0"
-export HOMEobsproc_network="$NWPROD/obsproc_global.v3.4.2"
-export HOMEobsproc_global=$HOMEobsproc_network
-export BASE_VERIF="$BASE_GIT/verif/global/tags/vsdb"
+export HOMEobsproc="/lfs/h1/ops/prod/packages/obsproc.v1.0.2"
 
 # CONVENIENT utility scripts and other environment parameters
 export NCP="/bin/cp -p"
@@ -90,7 +87,7 @@ export EDATE=2039123100
 export assim_freq=6
 export PSLOT="test"
 export EXPDIR="$EXPDIR"
-export ROTDIR="$ROTDIR"
+export ROTDIR="$(compath.py ${envir}/${NET}/${gfs_ver})"
 export ROTDIR_DUMP="YES"
 export DUMP_SUFFIX=""
 export RUNDIR="$DATAROOT"
@@ -162,7 +159,7 @@ export FHMAX_HF_GFS=120
 export FHOUT_HF_GFS=1
 export ILPOST=1           # gempak output frequency up to F120
 
-# frequency for saving restart files. set to 6,12,24,48 etc 
+# frequency for saving restart files. set to 6,12,24,48 etc
 export restart_interval_gfs=12
 
 # I/O QUILTING, true--use Write Component; false--use GFDL FMS
@@ -195,10 +192,6 @@ export IAU_OFFSET=6
 export DOIAU_ENKF=${DOIAU:-"YES"}   # Enable 4DIAU for EnKF ensemble
 export IAUFHRS_ENKF="3,6,9"
 export IAU_DELTHRS_ENKF=6
-if [[ "$SDATE" = "$CDATE" ]]; then
-  export IAU_OFFSET=0
-  export IAU_FHROT=0
-fi
 
 # Use Jacobians in eupd and thereby remove need to run eomg
 export lobsdiag_forenkf=".true."
@@ -210,11 +203,16 @@ export gldas_cyc=00
 # run wave component
 export DO_WAVE=YES
 export WAVE_CDUMP="both"
+export DOBNDPNT_WAVE="YES"
 
 # Microphysics Options: 99-ZhaoCarr, 8-Thompson; 6-WSM6, 10-MG, 11-GFDL
-export imp_physics=11
+export imp_physics=8
 
 # Shared parameters
+# DA engine
+export DO_JEDIVAR="NO"
+export DO_JEDIENS="NO"
+
 # Hybrid related
 export DOHYBVAR="YES"
 export NMEM_ENKF="80"

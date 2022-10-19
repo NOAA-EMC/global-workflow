@@ -1,16 +1,14 @@
-#!/bin/sh
+#! /usr/bin/env bash
 ##############################################################
 # Add the NCDC GIF processing to the end of the gempak_gif job
 # There is no timing issue with the NCDC GIF, so it is
 # okay to just add it here. If timing becomes a problem
 # in the future, we should move it above somewhere else.
 ##############################################################
-export PS4='exgempakgif_ncdc:$SECONDS + '
-set -xa
+
+source "$HOMEgfs/ush/preamble.sh"
 
 cd $DATA
-msg="The NCDC GIF processing has begun"
-postmsg "$jlogfile" "$msg"
 
 export NTS=$USHgempak/restore
 
@@ -52,12 +50,11 @@ then
           $USHgempak/gempak_${RUN}_f${fhr}_gif.sh
           if [ ! -f $USHgempak/gempak_${RUN}_f${fhr}_gif.sh ] ; then
              echo "WARNING: $USHgempak/gempak_${RUN}_f${fhr}_gif.sh FILE is missing"
-             msg=" $USHgempak/gempak_${RUN}_f${fhr}_gif.sh file is missing "
-             postmsg "jlogfile" "$msg"
           fi
        fi
 
     done
 fi
+
 
 exit

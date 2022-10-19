@@ -1,4 +1,5 @@
-#!/bin/ksh
+#! /usr/bin/env bash
+
 ################################################################################
 ####  UNIX Script Documentation Block
 #                      .                                             .
@@ -27,9 +28,9 @@
 #     HOMEgfs       Directory for gfs version.  Default is
 #                   $BASEDIR/gfs_ver.v15.0.0}
 #     FIXam         Directory for the global fixed climatology files.
-#                   Defaults to $HOMEgfs/fix/fix_am
+#                   Defaults to $HOMEgfs/fix/am
 #     FIXfv3        Directory for the model grid and orography netcdf
-#                   files.  Defaults to $HOMEgfs/fix/fix_fv3_gmted2010
+#                   files.  Defaults to $HOMEgfs/fix/orog
 #     FIXWGTS       Weight file to use for interpolation
 #     EXECgfs       Directory of the program executable.  Defaults to
 #                   $HOMEgfs/exec
@@ -41,7 +42,7 @@
 #                   defaults to current working directory
 #     XC            Suffix to add to executables. Defaults to none.
 #     GAUSFCANLEXE  Program executable.
-#                   Defaults to $EXECgfs/gaussian_sfcanl.exe
+#                   Defaults to $EXECgfs/gaussian_sfcanl.x
 #     INISCRIPT     Preprocessing script.  Defaults to none.
 #     LOGSCRIPT     Log posting script.  Defaults to none.
 #     ERRSCRIPT     Error processing script
@@ -109,12 +110,7 @@
 #
 ################################################################################
 
-#  Set environment.
-VERBOSE=${VERBOSE:-"NO"}
-if [[ "$VERBOSE" = "YES" ]] ; then
-   echo $(date) EXECUTING $0 $* >&2
-   set -x
-fi
+source "$HOMEgfs/ush/preamble.sh"
 
 CASE=${CASE:-C768}
 res=$(echo $CASE | cut -c2-)
@@ -133,19 +129,19 @@ else
 fi
 
 #  Directories.
-gfs_ver=${gfs_ver:-v15.0.0}
-BASEDIR=${BASEDIR:-${NWROOT:-/nwprod2}}
-HOMEgfs=${HOMEgfs:-$BASEDIR/gfs_ver.${gfs_ver}}
+gfs_ver=${gfs_ver:-v16.3.0}
+BASEDIR=${BASEDIR:-${PACKAGEROOT:-/lfs/h1/ops/prod/packages}}
+HOMEgfs=${HOMEgfs:-$BASEDIR/gfs.${gfs_ver}}
 EXECgfs=${EXECgfs:-$HOMEgfs/exec}
-FIXfv3=${FIXfv3:-$HOMEgfs/fix/fix_fv3_gmted2010}
-FIXam=${FIXam:-$HOMEgfs/fix/fix_am}
+FIXfv3=${FIXfv3:-$HOMEgfs/fix/orog}
+FIXam=${FIXam:-$HOMEgfs/fix/am}
 FIXWGTS=${FIXWGTS:-$FIXfv3/$CASE/fv3_SCRIP_${CASE}_GRIDSPEC_lon${LONB_SFC}_lat${LATB_SFC}.gaussian.neareststod.nc}
 DATA=${DATA:-$(pwd)}
 COMOUT=${COMOUT:-$(pwd)}
 
 #  Filenames.
-XC=${XC}
-GAUSFCANLEXE=${GAUSFCANLEXE:-$EXECgfs/gaussian_sfcanl.exe}
+XC=${XC:-}
+GAUSFCANLEXE=${GAUSFCANLEXE:-$EXECgfs/gaussian_sfcanl.x}
 SIGLEVEL=${SIGLEVEL:-$FIXam/global_hyblev.l${LEVSP1}.txt}
 
 CDATE=${CDATE:?}
@@ -160,7 +156,7 @@ export REDERR=${REDERR:-'2>'}
 # Set defaults
 ################################################################################
 #  Preprocessing
-$INISCRIPT
+${INISCRIPT:-}
 pwd=$(pwd)
 if [[ -d $DATA ]]
 then
@@ -236,10 +232,5 @@ $ERRSCRIPT||exit 2
 #  Postprocessing
 cd $pwd
 [[ $mkdata = YES ]]&&rmdir $DATA
-$ENDSCRIPT
-set +x
-if [[ "$VERBOSE" = "YES" ]]
-then
-   echo $(date) EXITING $0 with return code $err >&2
-fi
-exit $err
+
+exit ${err}

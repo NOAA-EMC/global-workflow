@@ -1,5 +1,4 @@
-
-set +x
+#! /usr/bin/env bash
 
 #          SCRIPT NAME :  syndat_qctropcy.sh
 #               AUTHOR :  Steven Lord/Hua-Lu pan/Dennis Keyser/Diane Stokes
@@ -12,19 +11,19 @@ set +x
 #             prediction centers by the executable syndat_qctropcy
 #
 #
-echo "History: JUN     1997 - First implementation of this utility script"
-echo "         JUL     1997 - Added tcvitals made manually by SDM; Added "
-echo "                        jtwc/fnoc tcvitals                         "
-echo "         MAR     2000   Converted to IBM-SP                        "
-echo "         MAR     2013   Converted to WCOSS                         "
-echo "                        Added option files_override which can set  "
-echo "                        namelist var used for logical variable     "
-echo "                        FILES in syndat_qctropcy to control final  "
-echo "                        copying of records and file manipulation.  "
-echo "                        (typically F for testing, otherwise not set)"
-echo "                        Added dateck fallback if archive file misg."
-echo "         OCT     2013   Remove defaults for parm, exec, fix and ush "
-echo "                        directories.  These must now be passed in. "
+# echo "History: JUN     1997 - First implementation of this utility script"
+# echo "         JUL     1997 - Added tcvitals made manually by SDM; Added "
+# echo "                        jtwc/fnoc tcvitals                         "
+# echo "         MAR     2000   Converted to IBM-SP                        "
+# echo "         MAR     2013   Converted to WCOSS                         "
+# echo "                        Added option files_override which can set  "
+# echo "                        namelist var used for logical variable     "
+# echo "                        FILES in syndat_qctropcy to control final  "
+# echo "                        copying of records and file manipulation.  "
+# echo "                        (typically F for testing, otherwise not set)"
+# echo "                        Added dateck fallback if archive file misg."
+# echo "         OCT     2013   Remove defaults for parm, exec, fix and ush "
+# echo "                        directories.  These must now be passed in. "
 #
 #
 # Positional parameters passed in:
@@ -64,22 +63,20 @@ echo "                        directories.  These must now be passed in. "
 #   copy_back - switch to copy updated files back to archive directory and
 #                to tcvitals directory
 #                (Default: YES)
-#   jlogfile  - path to job log file (skipped over by this script if not
-#                 passed in)
 #   SENDCOM     switch  copy output files to $COMSP
 #                (Default: YES)
 #   files_override - switch to override default "files" setting for given run
 #                (Default: not set)
 #   TIMEIT   - optional time and resource reporting (Default: not set)
 
-set -xua
+source "$HOMEgfs/ush/preamble.sh"
 
 ARCHSYND=${ARCHSYND:-$COMROOTp3/gfs/prod/syndat}
 HOMENHCp1=${HOMENHCp1:-/gpfs/?p1/nhc/save/guidance/storm-data/ncep}
 HOMENHC=${HOMENHC:-/gpfs/dell2/nhc/save/guidance/storm-data/ncep}
 TANK_TROPCY=${TANK_TROPCY:-${DCOMROOT}/us007003}
 
-FIXSYND=${FIXSYND:-$HOMEgfs/fix/fix_am}
+FIXSYND=${FIXSYND:-$HOMEgfs/fix/am}
 USHSYND=${USHSYND:-$HOMEgfs/ush}
 EXECSYND=${EXECSYND:-$HOMEgfs/exec}
 PARMSYND=${PARMSYND:-$HOMEgfs/parm/relo}
@@ -96,11 +93,8 @@ set +x
 echo
 echo $msg
 echo
-set -x
+set_trace
 echo $msg >> $pgmout
-set +u
-[ -n "$jlogfile" ]  && postmsg "$jlogfile" "$msg"
-set -u
 
 if [ "$#" -ne '1' ]; then
    msg="**NON-FATAL ERROR PROGRAM  SYNDAT_QCTROPCY  run date not in \
@@ -109,21 +103,15 @@ positional parameter 1"
    echo
    echo $msg
    echo
-   set -x
+   set_trace
    echo $msg >> $pgmout
-   set +u
-   [ -n "$jlogfile" ]  &&  postmsg "$jlogfile" "$msg"
-   set -u
    msg="**NO TROPICAL CYCLONE tcvitals processed --> non-fatal"
    set +x
    echo
    echo $msg
    echo
-   set -x
+   set_trace
    echo $msg >> $pgmout
-   set +u
-   [ -n "$jlogfile" ]  &&  postmsg "$jlogfile" "$msg"
-   set -u
 
 # Copy null files into "${COMSP}syndata.tcvitals.$tmmark" and
 #  "${COMSP}jtwc-fnoc.tcvitals.$tmmark" so later ftp attempts will find and
@@ -147,7 +135,7 @@ set +x
 echo
 echo "Run date is $CDATE10"
 echo
-set -x
+set_trace
 
 year=$(echo $CDATE10 | cut -c1-4)
 
@@ -169,11 +157,8 @@ if [ $dateck_size -lt 10 ]; then
    echo 1900010100 > dateck
    set +x
    echo -e "\n${msg}\n"
-   set -x
+   set_trace
    echo $msg >> $pgmout
-   set +u
-   [ -n "$jlogfile" ]  &&  postmsg "$jlogfile" "$msg"
-   set -u
 fi
 
 
@@ -201,11 +186,8 @@ if [ -n "$files_override" ]; then  # for testing, typically want FILES=F
   fi 
   set +x
   echo -e "\n${msg}\n"
-  set -x
+  set_trace
   echo $msg >> $pgmout
-  set +u
-  [ -n "$jlogfile" ]  &&  postmsg "$jlogfile" "$msg"
-  set -u
 fi
 
 echo " &INPUT  RUNID = '${net}_${tmmark}_${cyc}', FILES = $files " > vitchk.inp
@@ -266,7 +248,7 @@ cp $slmask slmask.126
  
 #  Execute program syndat_qctropcy
 
-pgm=$(basename $EXECSYND/syndat_qctropcy)
+pgm=$(basename $EXECSYND/syndat_qctropcy.x)
 export pgm
 if [ -s prep_step ]; then
    set +u
@@ -280,7 +262,7 @@ fi
 echo "$CDATE10"      > cdate10.dat
 export FORT11=slmask.126
 export FORT12=cdate10.dat
-$EXECSYND/syndat_qctropcy >> $pgmout 2> errfile
+${EXECSYND}/${pgm} >> $pgmout 2> errfile
 errqct=$?
 ###cat errfile
 cat errfile >> $pgmout
@@ -289,28 +271,22 @@ set +x
 echo
 echo "The foreground exit status for SYNDAT_QCTROPCY is " $errqct
 echo
-set -x
+set_trace
 if [ "$errqct" -gt '0' ];then
    msg="**NON-FATAL ERROR PROGRAM  SYNDAT_QCTROPCY  RETURN CODE $errqct"
    set +x
    echo
    echo $msg
    echo
-   set -x
+   set_trace
    echo $msg >> $pgmout
-   set +u
-   [ -n "$jlogfile" ]  &&  postmsg "$jlogfile" "$msg"
-   set -u
    msg="**NO TROPICAL CYCLONE tcvitals processed --> non-fatal"
    set +x
    echo
    echo $msg
    echo
-   set -x
+   set_trace
    echo $msg >> $pgmout
-   set +u
-   [ -n "$jlogfile" ]  &&  postmsg "$jlogfile" "$msg"
-   set -u
 
 # In the event of a ERROR in PROGRAM SYNDAT_QCTROPCY, copy null files into
 #  "${COMSP}syndata.tcvitals.$tmmark" and "${COMSP}jtwc-fnoc.tcvitals.$tmmark"
@@ -333,19 +309,7 @@ echo "----------------------------------------------------------"
 echo "**********  COMPLETED PROGRAM syndat_qctropcy   **********"
 echo "----------------------------------------------------------"
 echo
-set -x
-
-if [ -s current ]; then
-   msg="program  SYNDAT_QCTROPCY  completed normally - tcvitals records \
-processed"
-else
-msg="no records available for program  SYNDAT_QCTROPCY - null tcvitals file \
-produced"
-fi
-set +u
-[ -n "$jlogfile" ]  &&  postmsg "$jlogfile" "$msg"
-set -u
-
+set_trace
 
 if [ "$copy_back" = 'YES' ]; then
    cat lthistry>>$ARCHSYND/syndat_lthistry.$year
@@ -390,11 +354,8 @@ $HOMENHC/tcvitals successfully updated by syndat_qctropcy"
       echo
       echo $msg
       echo
-      set -x
+      set_trace
       echo $msg >> $pgmout
-      set +u
-      [ -n "$jlogfile" ]  &&  postmsg "$jlogfile" "$msg"
-      set -u
    fi
 
 else
@@ -405,11 +366,8 @@ not changed by syndat_qctropcy"
    echo
    echo $msg
    echo
-   set -x
+   set_trace
    echo $msg >> $pgmout
-   set +u
-   [ -n "$jlogfile" ]  &&  postmsg "$jlogfile" "$msg"
-   set -u
 
 fi
 
@@ -426,18 +384,6 @@ then
 fi
     
 #  Write JTWC/FNOC Tcvitals to /com path since not saved anywhere else
-[ $SENDCOM = YES ]  &&  cp fnoc ${COMSP}jtwc-fnoc.tcvitals.$tmmark
-
-msg="TROPICAL CYCLONE TCVITALS QC PROCESSING HAS COMPLETED FOR $CDATE10"
-set +x
-echo
-echo $msg
-echo
-set -x
-echo $msg >> $pgmout
-echo " "  >> $pgmout
-set +u
-[ -n "$jlogfile" ]  &&  postmsg "$jlogfile" "$msg"
-set -u
+[ $SENDCOM = YES ]  &&  cp fnoc "${COMSP}jtwc-fnoc.tcvitals.${tmmark}"
 
 exit

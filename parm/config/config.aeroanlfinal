@@ -1,0 +1,10 @@
+#!/bin/bash -x
+
+########## config.aeroanlfinal ##########
+# Post Aero Analysis specific
+
+echo "BEGIN: config.aeroanlfinal"
+
+# Get task specific resources
+. $EXPDIR/config.resources aeroanlfinal
+echo "END: config.aeroanlfinal"

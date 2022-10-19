@@ -1,5 +1,5 @@
-#!/bin/ksh
-set -x
+#! /usr/bin/env bash
+
 #----------------------------------------------------------------------------
 #--Fanglin Yang, October 2016: convert FV3 NetCDF files to NEMSIO format.
 #    Note FV3 lat-lon grid is located at the center of each grid box,
@@ -8,6 +8,8 @@ set -x
 #    X(1,1)=[0.25E,89.75S], X(nlon,nlat)=[359.75E,89.75N]
 #---------------------------------------------------------------------------
 
+source "$HOMEgfs/ush/preamble.sh"
+
 export CDATE=${CDATE:-"2016100300"}
 export GG=${master_grid:-"0p25deg"}         # 1deg 0p5deg 0p25deg 0p125deg
 export FHZER=${FHZER:-6}                    # accumulation bucket in hours
@@ -15,8 +17,7 @@ export fdiag=${fdiag:-"none"}               # specified forecast output hours
 
 pwd=$(pwd)
 export DATA=${DATA:-$pwd}
-export NWPROD=${NWPROD:-$pwd}
-export HOMEgfs=${HOMEgfs:-$NWPROD}
+export HOMEgfs=${HOMEgfs:-$PACKAGEROOT}
 export NC2NEMSIOEXE=${NC2NEMSIOEXE:-$HOMEgfs/exec/fv3nc2nemsio.x}
 
 cycn=$(echo $CDATE | cut -c 9-10)
@@ -67,5 +68,5 @@ for fhour in $(echo $fdiag | sed "s/,/ /g"); do
 done
 
 #---------------------------------------------------
-echo $(date) EXITING $0 with return code $err >&2
+
 exit $err

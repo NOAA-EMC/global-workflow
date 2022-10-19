@@ -1,4 +1,6 @@
-#!/bin/ksh -x
+#! /usr/bin/env bash
+
+source "$HOMEgfs/ush/preamble.sh"
 
 ###############################################################
 # Source FV3GFS workflow modules
@@ -8,7 +10,7 @@ status=$?
 
 ###############################################################
 # Source relevant configs
-configs="base prep prepbufr"
+configs="base prep"
 for config in $configs; do
     . $EXPDIR/config.${config}
     status=$?
@@ -26,12 +28,13 @@ status=$?
 export COMPONENT=${COMPONENT:-atmos}
 export OPREFIX="${CDUMP}.t${cyc}z."
 export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc/$COMPONENT"
+export MAKE_PREPBUFR=${MAKE_PREPBUFR:-"YES"}
 [[ ! -d $COMOUT ]] && mkdir -p $COMOUT
 
 ###############################################################
 # If ROTDIR_DUMP=YES, copy dump files to rotdir
 if [ $ROTDIR_DUMP = "YES" ]; then
-   $HOMEgfs/ush/getdump.sh $CDATE $CDUMP $DMPDIR/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc} $COMOUT
+   $HOMEgfs/ush/getdump.sh $CDATE $CDUMP $DMPDIR/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}/${COMPONENT} $COMOUT
    status=$?
    [[ $status -ne 0 ]] && exit $status
 
@@ -42,7 +45,7 @@ if [ $ROTDIR_DUMP = "YES" ]; then
    GDUMP=gdas
    gCOMOUT="$ROTDIR/$GDUMP.$gPDY/$gcyc/$COMPONENT"
    if [ ! -s $gCOMOUT/$GDUMP.t${gcyc}z.updated.status.tm00.bufr_d ]; then
-     $HOMEgfs/ush/getdump.sh $GDATE $GDUMP $DMPDIR/${GDUMP}${DUMP_SUFFIX}.${gPDY}/${gcyc} $gCOMOUT
+     $HOMEgfs/ush/getdump.sh $GDATE $GDUMP $DMPDIR/${GDUMP}${DUMP_SUFFIX}.${gPDY}/${gcyc}/${COMPONENT} $gCOMOUT
      status=$?
      [[ $status -ne 0 ]] && exit $status
    fi
@@ -52,7 +55,7 @@ fi
 ###############################################################
 
 ###############################################################
-# For running real-time parallels on WCOSS_C, execute tropcy_qc and
+# For running real-time parallels, execute tropcy_qc and
 # copy files from operational syndata directory to a local directory.
 # Otherwise, copy existing tcvital data from globaldump.
 
@@ -76,17 +79,17 @@ if [ $PROCESS_TROPCY = "YES" ]; then
     [[ $status -ne 0 ]] && exit $status
 
 else
-    [[ $ROTDIR_DUMP = "NO" ]] && cp $DMPDIR/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}/${CDUMP}.t${cyc}z.syndata.tcvitals.tm00 $COMOUT/
+    [[ $ROTDIR_DUMP = "NO" ]] && cp $DMPDIR/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}/${COMPONENT}/${CDUMP}.t${cyc}z.syndata.tcvitals.tm00 $COMOUT/
 fi
 
 
 ###############################################################
 # Generate prepbufr files from dumps or copy from OPS
-if [ $DO_MAKEPREPBUFR = "YES" ]; then
+if [ $MAKE_PREPBUFR = "YES" ]; then
     if [ $ROTDIR_DUMP = "YES" ]; then
-        rm $COMOUT/${OPREFIX}prepbufr
-        rm $COMOUT/${OPREFIX}prepbufr.acft_profiles
-        rm $COMOUT/${OPREFIX}nsstbufr
+        rm -f $COMOUT/${OPREFIX}prepbufr
+        rm -f $COMOUT/${OPREFIX}prepbufr.acft_profiles
+        rm -f $COMOUT/${OPREFIX}nsstbufr
     fi
 
     export job="j${CDUMP}_prep_${cyc}"
@@ -96,34 +99,36 @@ if [ $DO_MAKEPREPBUFR = "YES" ]; then
     export COMINgdas=${COMINgdas:-$ROTDIR/gdas.$PDY/$cyc/$COMPONENT}
     export COMINgfs=${COMINgfs:-$ROTDIR/gfs.$PDY/$cyc/$COMPONENT}
     if [ $ROTDIR_DUMP = "NO" ]; then
-        COMIN_OBS=${COMIN_OBS:-$DMPDIR/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}}
+        COMIN_OBS=${COMIN_OBS:-$DMPDIR/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}/${COMPONENT}}
         export COMSP=${COMSP:-$COMIN_OBS/$CDUMP.t${cyc}z.}
     else
         export COMSP=${COMSP:-$ROTDIR/${CDUMP}.${PDY}/${cyc}/$COMPONENT/$CDUMP.t${cyc}z.}
     fi
 
     # Disable creating NSSTBUFR if desired, copy from DMPDIR instead
-    if [[ ${DO_MAKE_NSSTBUFR:-"NO"} = "NO" ]]; then
+    if [[ ${MAKE_NSSTBUFR:-"NO"} = "NO" ]]; then
         export MAKE_NSSTBUFR="NO"
     fi
 
-    $HOMEobsproc_network/jobs/JGLOBAL_PREP
+    $HOMEobsproc/jobs/JOBSPROC_GLOBAL_PREP
     status=$?
     [[ $status -ne 0 ]] && exit $status
 
     # If creating NSSTBUFR was disabled, copy from DMPDIR if appropriate.
-    if [[ ${DO_MAKE_NSSTBUFR:-"NO"} = "NO" ]]; then
-        [[ $DONST = "YES" ]] && $NCP $DMPDIR/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}/${OPREFIX}nsstbufr $COMOUT/${OPREFIX}nsstbufr
+    if [[ ${MAKE_NSSTBUFR:-"NO"} = "NO" ]]; then
+        [[ $DONST = "YES" ]] && $NCP $DMPDIR/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}/${COMPONENT}/${OPREFIX}nsstbufr $COMOUT/${OPREFIX}nsstbufr
     fi
 
 else
     if [ $ROTDIR_DUMP = "NO" ]; then
-        $NCP $DMPDIR/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}/${OPREFIX}prepbufr               $COMOUT/${OPREFIX}prepbufr
-        $NCP $DMPDIR/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}/${OPREFIX}prepbufr.acft_profiles $COMOUT/${OPREFIX}prepbufr.acft_profiles
-        [[ $DONST = "YES" ]] && $NCP $DMPDIR/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}/${OPREFIX}nsstbufr $COMOUT/${OPREFIX}nsstbufr
+        $NCP $DMPDIR/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}/${COMPONENT}/${OPREFIX}prepbufr               $COMOUT/${OPREFIX}prepbufr
+        $NCP $DMPDIR/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}/${COMPONENT}/${OPREFIX}prepbufr.acft_profiles $COMOUT/${OPREFIX}prepbufr.acft_profiles
+        [[ $DONST = "YES" ]] && $NCP $DMPDIR/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}/${COMPONENT}/${OPREFIX}nsstbufr $COMOUT/${OPREFIX}nsstbufr
     fi
 fi
 
 ################################################################################
 # Exit out cleanly
+
+
 exit 0

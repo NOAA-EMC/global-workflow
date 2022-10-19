@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /usr/bin/env bash
 
 #####
 ## "parsing_model_configure_FV3.sh"
@@ -12,14 +12,8 @@
 
 FV3_model_configure(){
 
-export OUTPUT_FILETYPES="$OUTPUT_FILE"
-if [[ "$OUTPUT_FILE" == "netcdf" ]]; then
-   export OUTPUT_FILETYPES=" 'netcdf_parallel' 'netcdf' "
-fi
-
 rm -f model_configure
 cat >> model_configure <<EOF
-print_esmf:              ${print_esmf:-.true.} 
 start_year:              ${tPDY:0:4}
 start_month:             ${tPDY:4:2}
 start_day:               ${tPDY:6:2}
@@ -37,13 +31,14 @@ output_1st_tstep_rst:    .false.
 quilting:                $QUILTING
 write_groups:            ${WRITE_GROUP:-1}
 write_tasks_per_group:   ${WRTTASK_PER_GROUP:-24}
+itasks:                  1
 output_history:          ${OUTPUT_HISTORY:-".true."}
 write_dopost:            ${WRITE_DOPOST:-".false."}
 write_nsflip:            ${WRITE_NSFLIP:-".false."}
 num_files:               ${NUM_FILES:-2}
 filename_base:           'atm' 'sfc'
 output_grid:             $OUTPUT_GRID
-output_file:             $OUTPUT_FILETYPES
+output_file:             '$OUTPUT_FILETYPE_ATM' '$OUTPUT_FILETYPE_SFC'
 ichunk2d:                ${ichunk2d:-0}
 jchunk2d:                ${jchunk2d:-0}
 ichunk3d:                ${ichunk3d:-0}
@@ -54,16 +49,8 @@ nbits:                   ${nbits:-14}
 imo:                     $LONB_IMO
 jmo:                     $LATB_JMO
 output_fh:               $OUTPUT_FH
-nsout:                   $NSOUT
 iau_offset:              ${IAU_OFFSET:-0}
 EOF
-
-if [ $cpl = .true. ]; then
-cat >> model_configure <<EOF
-atm_coupling_interval_sec:      $DELTIM
-output_history:          ${OUTPUT_HISTORY:-".true."}
-EOF
-fi
 
 echo "$(cat model_configure)"
 }

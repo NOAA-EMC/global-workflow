@@ -1,11 +1,7 @@
-#!/bin/bash
+#! /usr/bin/env bash
 
+source "$HOMEgfs/ush/preamble.sh"
 
-date
-set -xa
-export PS4='$SECONDS + ' 
-
-# JY - 10/29, move the block in the front, otherwise PDY is not defined for COMIN
 export DATA=${DATA:-${DATAROOT}/${jobid:?}}
 mkdir -p $DATA
 cd $DATA
@@ -17,26 +13,22 @@ cd $DATA
 export cycle=${cycle:-t${cyc}z}
 
 setpdy.sh
-. PDY
-env
-msg="Begin job for $job"
-postmsg "$jlogfile" "$msg"
+. ./PDY
 
-
-# 
+#
 export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
 export COMPONENT=${COMPONENT:-wave}
-export machine=${machine:-WCOSS_DELL_P3}
-export HOMEgfs=${HOMEgfs:-$(dirname $(dirname $0))} 
+export machine=${machine:-WCOSS2}
+export HOMEgfs=${HOMEgfs:-$(dirname $(dirname $0))}
 
 # Add default errchk = err_chk
 export errchk=${errchk:-err_chk}
 
 ###################################
 # Set COM Paths
-export COMIN=${COMIN:-$(compath.py ${NET}/${envir}/${RUN}.${PDY})/${cyc}/$COMPONENT}
-export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/$COMPONENT/gempak}
+export COMIN=${COMIN:-$(compath.py ${envir}/${NET}/${gfs_ver})/${RUN}.${PDY}/${cyc}/$COMPONENT}
+export COMOUT=${COMOUT:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/$COMPONENT/gempak}
 #export pid=$$
 export pgmout="OUTPUT.$$"
 
@@ -63,5 +55,5 @@ if [ "$KEEPDATA" != "YES" ]; then
   rm -rf $DATA
 fi
 
-date
+
 exit 0

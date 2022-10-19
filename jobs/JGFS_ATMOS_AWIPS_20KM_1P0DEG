@@ -1,9 +1,8 @@
-#!/bin/sh
+#! /usr/bin/env bash
 
-set -xa
-export PS4='$SECONDS + '
+source "$HOMEgfs/ush/preamble.sh"
+
 export OMP_NUM_THREADS=${OMP_NUM_THREADS:-1}
-date
 
 ###########################################
 # GFS_AWIPS_20KM AWIPS PRODUCT GENERATION
@@ -25,12 +24,12 @@ export cycle=${cycle:-t${cyc}z}
 # Run setpdy and initialize PDY variables
 ###########################################
 setpdy.sh
-. PDY
+. ./PDY
 
 ################################
 # Set up the HOME directory
 ################################
-export HOMEgfs=${HOMEgfs:-${NWROOT}/gfs.${gfs_ver}}
+export HOMEgfs=${HOMEgfs:-${PACKAGEROOT}/gfs.${gfs_ver}}
 export USHgfs=${USHgfs:-$HOMEgfs/ush}
 export EXECgfs=${EXECgfs:-$HOMEgfs/exec}
 export PARMgfs=${PARMgfs:-$HOMEgfs/parm}
@@ -49,8 +48,8 @@ export COMPONENT=${COMPONENT:-atmos}
 ##############################################
 # Define COM directories
 ##############################################
-export COMIN=${COMIN:-$(compath.py ${NET}/${envir}/${RUN}.${PDY})/${cyc}/$COMPONENT}
-export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/$COMPONENT}
+export COMIN=${COMIN:-$(compath.py ${envir}/${NET}/${gfs_ver})/${RUN}.${PDY}/${cyc}/$COMPONENT}
+export COMOUT=${COMOUT:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/$COMPONENT}
 export COMOUTwmo=${COMOUTwmo:-${COMOUT}/wmo}
 
 export SENDDBN=${SENDDBN:-NO}
@@ -62,7 +61,6 @@ fi
 
 export pgmout=OUTPUT.$$
 
-env
 
 ########################################################
 # Execute the script.
@@ -75,9 +73,6 @@ env
 $HOMEgfs/scripts/exgfs_atmos_awips_20km_1p0deg.sh $fcsthrs
 export err=$?; err_chk
 ########################################################
-
-msg="JOB $job HAS COMPLETED NORMALLY!"
-postmsg $jlogfile "$msg"
 
 ############################################
 # print exec I/O output
@@ -93,4 +88,3 @@ if [ "$KEEPDATA" != "YES" ] ; then
   rm -rf $DATA
 fi
 
-date

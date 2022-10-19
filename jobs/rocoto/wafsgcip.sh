@@ -1,4 +1,6 @@
-#!/bin/ksh -x
+#! /usr/bin/env bash
+
+source "$HOMEgfs/ush/preamble.sh"
 
 ###############################################################
 echo
@@ -16,6 +18,13 @@ for config in $configs; do
     [[ $status -ne 0 ]] && exit $status
 done
 
+##########################################
+# Source machine runtime environment
+##########################################
+. $HOMEgfs/env/${machine}.env wafsgcip
+status=$?
+[[ $status -ne 0 ]] && exit $status
+
 ###############################################################
 
 export DATAROOT="$RUNDIR/$CDATE/$CDUMP/wafsgcip"
@@ -32,9 +41,10 @@ echo "=============== START TO RUN WAFSGCIP ==============="
 # Execute the JJOB
 $HOMEgfs/jobs/JGFS_ATMOS_WAFS_GCIP
 status=$?
-exit $status
 
 ###############################################################
 # Force Exit out cleanly
 if [ ${KEEPDATA:-"NO"} = "NO" ] ; then rm -rf $DATAROOT ; fi
-exit 0
+
+
+exit $status

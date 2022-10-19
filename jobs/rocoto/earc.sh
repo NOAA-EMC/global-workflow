@@ -1,4 +1,6 @@
-#!/bin/ksh -x
+#! /usr/bin/env bash
+
+source "$HOMEgfs/ush/preamble.sh"
 
 ###############################################################
 ## Abstract:
@@ -30,7 +32,7 @@ done
 
 export COMPONENT=${COMPONENT:-atmos}
 
-n=$((ENSGRP))
+n=$((10#${ENSGRP}))
 
 # ICS are restarts and always lag INC by $assim_freq hours.
 EARCINC_CYC=$ARCH_CYC
@@ -56,11 +58,19 @@ fi
 
 cd $ROTDIR
 
+source "${HOMEgfs}/ush/file_utils.sh"
 
 ###################################################################
 # ENSGRP > 0 archives a group of ensemble members
 firstday=$($NDATE +24 $SDATE)
-if [[ $ENSGRP -gt 0 ]] && [[ $HPSSARCH = "YES" ]]; then
+if (( 10#${ENSGRP} > 0 )) && [[ ${HPSSARCH} = "YES" || ${LOCALARCH} = "YES" ]]; then
+
+#--set the archiving command and create local directories, if necessary
+   TARCMD="htar"
+   if [[ $LOCALARCH = "YES" ]]; then
+       TARCMD="tar"
+       [ ! -d $ATARDIR/$CDATE ] && mkdir -p $ATARDIR/$CDATE
+   fi
 
 #--determine when to save ICs for warm start
    SAVEWARMICA="NO"
@@ -84,27 +94,27 @@ if [[ $ENSGRP -gt 0 ]] && [[ $HPSSARCH = "YES" ]]; then
 
    if [ $CDATE -gt $SDATE ]; then # Don't run for first half cycle
 
-     htar -P -cvf $ATARDIR/$CDATE/enkf${CDUMP}_grp${ENSGRP}.tar $(cat $ARCH_LIST/enkf${CDUMP}_grp${n}.txt)
+     $TARCMD -P -cvf $ATARDIR/$CDATE/enkf${CDUMP}_grp${ENSGRP}.tar $(cat $ARCH_LIST/enkf${CDUMP}_grp${n}.txt)
      status=$?
      if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
-         echo "HTAR $CDATE enkf${CDUMP}_grp${ENSGRP}.tar failed"
+         echo "$(echo $TARCMD | tr 'a-z' 'A-Z') $CDATE enkf${CDUMP}_grp${ENSGRP}.tar failed"
          exit $status
      fi
 
      if [ $SAVEWARMICA = "YES" -a $cyc -eq $EARCINC_CYC ]; then
-       htar -P -cvf $ATARDIR/$CDATE/enkf${CDUMP}_restarta_grp${ENSGRP}.tar $(cat $ARCH_LIST/enkf${CDUMP}_restarta_grp${n}.txt)
+       $TARCMD -P -cvf $ATARDIR/$CDATE/enkf${CDUMP}_restarta_grp${ENSGRP}.tar $(cat $ARCH_LIST/enkf${CDUMP}_restarta_grp${n}.txt)
        status=$?
        if [ $status -ne 0 ]; then
-           echo "HTAR $CDATE enkf${CDUMP}_restarta_grp${ENSGRP}.tar failed"
+           echo "$(echo $TARCMD | tr 'a-z' 'A-Z') $CDATE enkf${CDUMP}_restarta_grp${ENSGRP}.tar failed"
            exit $status
        fi
      fi
 
      if [ $SAVEWARMICB = "YES"  -a $cyc -eq $EARCICS_CYC ]; then
-       htar -P -cvf $ATARDIR/$CDATE/enkf${CDUMP}_restartb_grp${ENSGRP}.tar $(cat $ARCH_LIST/enkf${CDUMP}_restartb_grp${n}.txt)
+       $TARCMD -P -cvf $ATARDIR/$CDATE/enkf${CDUMP}_restartb_grp${ENSGRP}.tar $(cat $ARCH_LIST/enkf${CDUMP}_restartb_grp${n}.txt)
        status=$?
        if [ $status -ne 0 ]; then
-           echo "HTAR $CDATE enkf${CDUMP}_restartb_grp${ENSGRP}.tar failed"
+           echo "$(echo $TARCMD | tr 'a-z' 'A-Z') $CDATE enkf${CDUMP}_restartb_grp${ENSGRP}.tar failed"
            exit $status
        fi
      fi
@@ -118,26 +128,35 @@ fi
 # ENSGRP 0 archives ensemble means and copy data to online archive
 if [ $ENSGRP -eq 0 ]; then
 
-    if [ $HPSSARCH = "YES" ]; then
+    if [[ $HPSSARCH = "YES" || $LOCALARCH = "YES" ]]; then
 
-        htar -P -cvf $ATARDIR/$CDATE/enkf${CDUMP}.tar $(cat $ARCH_LIST/enkf${CDUMP}.txt)
+#--set the archiving command and create local directories, if necessary
+        TARCMD="htar"
+        if [[ $LOCALARCH = "YES" ]]; then
+            TARCMD="tar"
+            [ ! -d $ATARDIR/$CDATE ] && mkdir -p $ATARDIR/$CDATE
+        fi
+
+        set +e
+        $TARCMD -P -cvf $ATARDIR/$CDATE/enkf${CDUMP}.tar $(cat $ARCH_LIST/enkf${CDUMP}.txt)
         status=$?
         if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
-            echo "HTAR $CDATE enkf${CDUMP}.tar failed"
+            echo "$(echo $TARCMD | tr 'a-z' 'A-Z') $CDATE enkf${CDUMP}.tar failed"
             exit $status
         fi
+        set_strict
     fi
 
     #-- Archive online for verification and diagnostics
     [[ ! -d $ARCDIR ]] && mkdir -p $ARCDIR
     cd $ARCDIR
 
-    $NCP $ROTDIR/enkf${CDUMP}.$PDY/$cyc/$COMPONENT/${CDUMP}.t${cyc}z.enkfstat         enkfstat.${CDUMP}.$CDATE
-    $NCP $ROTDIR/enkf${CDUMP}.$PDY/$cyc/$COMPONENT/${CDUMP}.t${cyc}z.gsistat.ensmean  gsistat.${CDUMP}.${CDATE}.ensmean
+    nb_copy $ROTDIR/enkf${CDUMP}.$PDY/$cyc/$COMPONENT/${CDUMP}.t${cyc}z.enkfstat         enkfstat.${CDUMP}.$CDATE
+    nb_copy $ROTDIR/enkf${CDUMP}.$PDY/$cyc/$COMPONENT/${CDUMP}.t${cyc}z.gsistat.ensmean  gsistat.${CDUMP}.${CDATE}.ensmean
 
     if [ $CDUMP_ENKF != "GDAS" ]; then
-		$NCP $ROTDIR/enkfgfs.$PDY/$cyc/$COMPONENT/${CDUMP}.t${cyc}z.enkfstat         enkfstat.gfs.$CDATE
-		$NCP $ROTDIR/enkfgfs.$PDY/$cyc/$COMPONENT/${CDUMP}.t${cyc}z.gsistat.ensmean  gsistat.gfs.${CDATE}.ensmean
+		nb_copy $ROTDIR/enkfgfs.$PDY/$cyc/$COMPONENT/${CDUMP}.t${cyc}z.enkfstat         enkfstat.gfs.$CDATE
+		nb_copy $ROTDIR/enkfgfs.$PDY/$cyc/$COMPONENT/${CDUMP}.t${cyc}z.gsistat.ensmean  gsistat.gfs.${CDATE}.ensmean
 	fi
 
 fi
@@ -205,4 +224,6 @@ for ctype in $clist; do
 done
 
 ###############################################################
+
+
 exit 0

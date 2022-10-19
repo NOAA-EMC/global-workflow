@@ -1,5 +1,5 @@
-#!/bin/bash
-#                                                                       
+#! /usr/bin/env bash
+
 ################################################################################
 #
 # UNIX Script Documentation Block
@@ -17,31 +17,25 @@
 #
 # Attributes:
 #   Language: Bourne-again (BASH) shell
-#   Machine: WCOSS-DELL-P3
 #
-# Requirements:                                                             
-# - wgrib2 with IPOLATES library                                            
-#                                                                           
+# Requirements:
+# - wgrib2 with IPOLATES library
+#
 ################################################################################
 # --------------------------------------------------------------------------- #
 # 0.  Preparations
+
+source "$HOMEgfs/ush/preamble.sh"
+
 # 0.a Basic modes of operation
-
-  # set execution trace prompt.  ${0##*/} adds the script's basename
-  PS4=" \${SECONDS} ${0##*/} L\${LINENO} + "
-  set -x
-
-  # Use LOUD variable to turn on/off trace.  Defaults to YES (on).
-  export LOUD=${LOUD:-YES}; [[ $LOUD = yes ]] && export LOUD=YES
-  [[ "$LOUD" != YES ]] && set +x
 
   cd $GRDIDATA
 
-  grdID=$1  
+  grdID=$1
   ymdh=$2
   dt=$3
   nst=$4
-  postmsg "$jlogfile" "Making GRID Interpolation Files for $grdID."
+  echo "Making GRID Interpolation Files for $grdID."
   rm -rf grint_${grdID}_${ymdh}
   mkdir grint_${grdID}_${ymdh}
   err=$?
@@ -54,8 +48,7 @@
     echo '*** FATAL ERROR : ERROR IN ww3_grid_interp (COULD NOT CREATE TEMP DIRECTORY) *** '
     echo '************************************************************************************* '
     echo ' '
-    [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" "FATAL ERROR : ERROR IN ww3_grid_interp (Could not create temp directory)"
+    set_trace
     exit 1
   fi
 
@@ -70,7 +63,7 @@
   echo '!         Make GRID files        |'
   echo '+--------------------------------+'
   echo "   Model ID         : $WAV_MOD_TAG"
-  [[ "$LOUD" = YES ]] && set -x
+  set_trace
 
   if [ -z "$CDATE" ] || [ -z "$cycle" ] || [ -z "$EXECwave" ] || \
      [ -z "$COMOUT" ] || [ -z "$WAV_MOD_TAG" ] || [ -z "$SENDCOM" ] || \
@@ -83,26 +76,25 @@
     echo '***************************************************'
     echo ' '
     echo "$CDATE $cycle $EXECwave $COMOUT $WAV_MOD_TAG $SENDCOM $SENDDBN $waveGRD"
-    [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" "EXPORTED VARIABLES IN postprocessor NOT SET"
+    set_trace
     exit 1
   fi
 
 # 0.c Links to files
 
   rm -f ${DATA}/output_${ymdh}0000/out_grd.$grdID
-  
+
   if [ ! -f ${DATA}/${grdID}_interp.inp.tmpl ]; then
     cp $PARMwave/${grdID}_interp.inp.tmpl ${DATA}
   fi
-  ln -sf ${DATA}/${grdID}_interp.inp.tmpl . 
+  ln -sf ${DATA}/${grdID}_interp.inp.tmpl .
 
   for ID in $waveGRD
   do
     ln -sf ${DATA}/output_${ymdh}0000/out_grd.$ID .
   done
 
-  for ID in $waveGRD $grdID 
+  for ID in $waveGRD $grdID
   do
     ln -sf ${DATA}/mod_def.$ID .
   done
@@ -126,7 +118,7 @@
       set +x
       echo ' '
       echo " Copying $FIXwave/WHTGRIDINT.bin.${grdID} "
-      [[ "$LOUD" = YES ]] && set -x
+      set_trace
       cp $FIXwave/WHTGRIDINT.bin.${grdID} ${DATA}
       wht_OK='yes'
     else
@@ -146,7 +138,7 @@
   set +x
   echo "   Run ww3_gint
   echo "   Executing $EXECwave/ww3_gint
-  [[ "$LOUD" = YES ]] && set -x
+  set_trace
 
   export pgm=ww3_gint;. prep_step
   $EXECwave/ww3_gint 1> gint.${grdID}.out 2>&1
@@ -158,7 +150,7 @@
     cp -f ./WHTGRIDINT.bin ${DATA}/WHTGRIDINT.bin.${grdID}
     cp -f ./WHTGRIDINT.bin ${FIXwave}/WHTGRIDINT.bin.${grdID}
   fi
- 
+
 
   if [ "$err" != '0' ]
   then
@@ -168,8 +160,7 @@
     echo '*** FATAL ERROR : ERROR IN ww3_gint interpolation * '
     echo '*************************************************** '
     echo ' '
-    [[ "$LOUD" = YES ]] && set -x
-    postmsg "$jlogfile" "FATAL ERROR : ERROR IN ww3_gint interpolation"
+    set_trace
     exit 3
   fi
 
@@ -185,35 +176,26 @@
   then
     set +x
     echo "   Saving GRID file as $COMOUT/rundata/$WAV_MOD_TAG.out_grd.$grdID.${CDATE}"
-    [[ "$LOUD" = YES ]] && set -x
+    set_trace
     cp ${DATA}/output_${ymdh}0000/out_grd.$grdID $COMOUT/rundata/$WAV_MOD_TAG.out_grd.$grdID.${CDATE}
 
 #    if [ "$SENDDBN" = 'YES' ]
 #    then
 #      set +x
 #      echo "   Alerting GRID file as $COMOUT/rundata/$WAV_MOD_TAG.out_grd.$grdID.${CDATE}
-#      [[ "$LOUD" = YES ]] && set -x
+#      set_trace
 
 #
 # PUT DBNET ALERT HERE ....
 #
 
 #    fi
-  fi 
+  fi
 
 # --------------------------------------------------------------------------- #
 # 2.  Clean up the directory
 
-  set +x
-  echo "   Removing work directory after success."
-  [[ "$LOUD" = YES ]] && set -x
-
   cd ../
   mv -f grint_${grdID}_${ymdh} done.grint_${grdID}_${ymdh}
-
-  set +x
-  echo ' '
-  echo "End of ww3_interp.sh at"
-  date
 
 # End of ww3_grid_interp.sh -------------------------------------------- #

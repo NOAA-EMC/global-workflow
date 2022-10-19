@@ -1,12 +1,13 @@
-#!/bin/ksh
-set -x
+#! /usr/bin/env bash
 
-export COMPONENT=${COMPONENT:-atmos}
+source "$HOMEgfs/ush/preamble.sh"
+
+COMPONENT=${COMPONENT:-atmos}
 
 CDATE=${1:-""}
 CDUMP=${2:-""}
-SOURCE_DIR=${3:-$DMPDIR/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}}
-TARGET_DIR=${4:-$ROTDIR/${CDUMP}.${PDY}/$cyc/$COMPONENT}
+SOURCE_DIR=${3:-$DMPDIR/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}/${COMPONENT}}
+TARGET_DIR=${4:-$ROTDIR/${CDUMP}.${PDY}/${cyc}/${COMPONENT}}
 
 DUMP_SUFFIX=${DUMP_SUFFIX:-""}
 
@@ -38,6 +39,3 @@ else
 fi
 
 exit 0
-
-
-

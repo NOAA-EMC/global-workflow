@@ -1,4 +1,5 @@
-#!/bin/ksh
+#! /usr/bin/env bash
+
 ###############################################################################
 #                                                                             #
 # This script is the product generator ("graphics job")  for the              #
@@ -17,11 +18,10 @@
 ###############################################################################
 # --------------------------------------------------------------------------- #
 # 0.  Preparations
+
+source "$HOMEgfs/ush/preamble.sh"
+
 # 0.a Basic modes of operation
- set -xa
- # Use LOUD variable to turn on/off trace.  Defaults to YES (on).
- export LOUD=${LOUD:-YES}; [[ $LOUD = yes ]] && export LOUD=YES
- [[ "$LOUD" != YES ]] && set +x
 
  export RUNwave=${RUNwave:-${RUN}${COMPONENT}}
  export envir=${envir:-ops}
@@ -42,9 +42,7 @@
  cd $DATA
  export wavelog=${DATA}/${COMPONENTwave}_prdggridded.log
  
- postmsg "$jlogfile" "HAS BEGUN on $(hostname)"
- msg="Starting MWW3 GRIDDED PRODUCTS SCRIPT"
- postmsg "$jlogfile" "$msg"
+ echo "Starting MWW3 GRIDDED PRODUCTS SCRIPT"
 # Output grids
  grids=${grids:-ao_9km at_10m ep_10m wc_10m glo_30m}
 # grids=${grids:-ak_10m at_10m ep_10m wc_10m glo_30m}
@@ -63,14 +61,14 @@
  echo "   AWIPS grib fields"
  echo "   Wave  Grids       : $grids"
  echo ' '
- [[ "$LOUD" = YES ]] && set -x
+ set_trace
 
 # --------------------------------------------------------------------------- #
 # 1.  Get necessary files
  echo ' '
  echo 'Preparing input files :'
  echo '-----------------------'
- [[ "$LOUD" = YES ]] && set -x
+ set_trace
 #=======================================================================
  
  ASWELL=(SWELL1 SWELL2) # Indices of HS from partitions
@@ -112,15 +110,14 @@
          sleep 5
        fi
        if [ $icnt -ge $maxtries ]; then
-         msg="ABNORMAL EXIT: NO GRIB FILE FOR GRID $GRIBIN"
-         postmsg "$jlogfile" "$msg"
+         echo "ABNORMAL EXIT: NO GRIB FILE FOR GRID $GRIBIN"
          echo ' '
          echo '**************************** '
          echo '*** ERROR : NO GRIB FILE *** '
          echo '**************************** '
          echo ' '
          echo $msg
-         [[ "$LOUD" = YES ]] && set -x
+         set_trace
          echo "$RUNwave $grdID ${fhr} prdgen $date $cycle : GRIB file missing." >> $wavelog
          err=1;export err;${errchk} || exit ${err}
        fi
@@ -177,19 +174,18 @@
 
 # 2.a.1 Set up for tocgrib2
      echo "   Do set up for tocgrib2."
-     [[ "$LOUD" = YES ]] && set -x
+     set_trace
      #AWIPSGRB=awipsgrib.$grdID.f${fhr}
      AWIPSGRB=awipsgrib
 # 2.a.2 Make GRIB index
      echo "   Make GRIB index for tocgrib2."
-     [[ "$LOUD" = YES ]] && set -x
+     set_trace
      $GRB2INDEX gribfile.$grdID.f${fhr} gribindex.$grdID.f${fhr}
      OK=$?
 
      if [ "$OK" != '0' ]
      then
-       msg="ABNORMAL EXIT: ERROR IN grb2index MWW3 for grid $grdID"
-       postmsg "$jlogfile" "$msg"
+       echo "ABNORMAL EXIT: ERROR IN grb2index MWW3 for grid $grdID"
        #set +x
        echo ' '
        echo '******************************************** '
@@ -197,7 +193,7 @@
        echo '******************************************** '
        echo ' '
        echo $msg
-       #[[ "$LOUD" = YES ]] && set -x
+       #set_trace
        echo "$RUNwave $grdID prdgen $date $cycle : error in grbindex." >> $wavelog
        err=4;export err;err_chk
      fi
@@ -205,7 +201,7 @@
 # 2.a.3 Run AWIPS GRIB packing program tocgrib2
 
      echo "   Run tocgrib2"
-     [[ "$LOUD" = YES ]] && set -x
+     set_trace
      export pgm=tocgrib2
      export pgmout=tocgrib2.out
      . prep_step
@@ -218,8 +214,7 @@
      OK=$?
      if [ "$OK" != '0' ]; then
        cat tocgrib2.out
-       msg="ABNORMAL EXIT: ERROR IN tocgrib2"
-       postmsg "$jlogfile" "$msg"
+       echo "ABNORMAL EXIT: ERROR IN tocgrib2"
        #set +x
        echo ' '
        echo '*************************************** '
@@ -227,7 +222,7 @@
        echo '*************************************** '
        echo ' '
        echo $msg
-       #[[ "$LOUD" = YES ]] && set -x
+       #set_trace
        echo "$RUNwave prdgen $date $cycle : error in tocgrib2." >> $wavelog
        err=5;export err;err_chk
      else
@@ -236,13 +231,13 @@
 # 2.a.7 Get the AWIPS grib bulletin out ...
      #set +x
      echo "   Get awips GRIB bulletins out ..."
-     #[[ "$LOUD" = YES ]] && set -x
+     #set_trace
      if [ "$SENDCOM" = 'YES' ]
      then
        #set +x
        echo "      Saving $AWIPSGRB.$grdOut.f${fhr} as grib2.$cycle.awipsww3_${grdID}.f${fhr}"
        echo "          in $PCOM"
-       #[[ "$LOUD" = YES ]] && set -x
+       #set_trace
        cp $AWIPSGRB.$grdID.f${fhr} $PCOM/grib2.$cycle.f${fhr}.awipsww3_${grdOut}
        #set +x
      fi
@@ -268,22 +263,13 @@
 # --------------------------------------------------------------------------- #
 # 5.  Clean up
 
-  set +x; [[ "$LOUD" = YES ]] && set -v
+  set -v
   rm -f gribfile gribindex.* awipsgrb.* awipsbull.data
   set +v
 
 # --------------------------------------------------------------------------- #
 # 6.  Ending output
 
-  echo ' '
-  echo ' '
-  echo "Ending at : $(date)"
-  echo ' '
-  echo '                *** End of MWW3 product generation ***'
-  echo ' '
-  [[ "$LOUD" = YES ]] && set -x
 
-  msg="$job completed normally"
-  postmsg "$jlogfile" "$msg"
 
 # End of GFSWAVE product generation script -------------------------------------- #

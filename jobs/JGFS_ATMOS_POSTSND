@@ -1,16 +1,15 @@
-#!/bin/ksh
-set -x
+#! /usr/bin/env bash
+
+source "$HOMEgfs/ush/preamble.sh"
 
 export RUN_ENVIR=${RUN_ENVIR:-"nco"}
-export PS4='$SECONDS + '
-date
 
 #############################
 # Source relevant config files
 #############################
 configs="base postsnd"
 export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
-config_path=${EXPDIR:-$NWROOT/gfs.${gfs_ver}/parm/config}
+config_path=${EXPDIR:-$PACKAGEROOT/gfs.${gfs_ver}/parm/config}
 for config in $configs; do
     . $config_path/config.$config
     status=$?
@@ -55,9 +54,6 @@ export pgmerr=errfile
 ##############################################
 export CDATE=${CDATE:-${PDY}${cyc}}
 export CDUMP=${CDUMP:-${RUN:-"gfs"}}
-if [ $RUN_ENVIR = "nco" ]; then
-    export ROTDIR=${COMROOT:?}/$NET/$envir
-fi
 
 
 ########################################
@@ -92,7 +88,6 @@ export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 [[ ! -d $pcom ]] && mkdir -p $pcom
 [[ ! -d $COMAWP ]] && mkdir -p $COMAWP
 
-env
 
 ########################################################
 # Execute the script.
@@ -112,15 +107,12 @@ if [ -e "$pgmout" ] ; then
   cat $pgmout
 fi
 
-msg="ENDED NORMALLY."
-postmsg "$jlogfile" "$msg"
-
 ##########################################
 # Remove the Temporary working directory
 ##########################################
 cd $DATAROOT
 [[ $KEEPDATA = "NO" ]] && rm -rf $DATA
 
-date
+
 exit 0
 

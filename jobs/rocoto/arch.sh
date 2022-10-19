@@ -1,4 +1,6 @@
-#!/bin/ksh -x
+#! /usr/bin/env bash
+
+source "$HOMEgfs/ush/preamble.sh"
 
 ###############################################################
 ## Abstract:
@@ -60,9 +62,11 @@ PDY_MOS=$(echo $CDATE_MOS | cut -c1-8)
 COMIN=${COMINatmos:-"$ROTDIR/$CDUMP.$PDY/$cyc/atmos"}
 cd $COMIN
 
+source "${HOMEgfs}/ush/file_utils.sh"
+
 [[ ! -d $ARCDIR ]] && mkdir -p $ARCDIR
-$NCP ${APREFIX}gsistat $ARCDIR/gsistat.${CDUMP}.${CDATE}
-$NCP ${APREFIX}pgrb2.1p00.anl $ARCDIR/pgbanl.${CDUMP}.${CDATE}.grib2
+nb_copy ${APREFIX}gsistat $ARCDIR/gsistat.${CDUMP}.${CDATE}
+nb_copy ${APREFIX}pgrb2.1p00.anl $ARCDIR/pgbanl.${CDUMP}.${CDATE}.grib2
 
 # Archive 1 degree forecast GRIB2 files for verification
 if [ $CDUMP = "gfs" ]; then
@@ -71,16 +75,16 @@ if [ $CDUMP = "gfs" ]; then
     while [ $fhr -le $fhmax ]; do
         fhr2=$(printf %02i $fhr)
         fhr3=$(printf %03i $fhr)
-        $NCP ${APREFIX}pgrb2.1p00.f$fhr3 $ARCDIR/pgbf${fhr2}.${CDUMP}.${CDATE}.grib2
-        (( fhr = $fhr + $FHOUT_GFS ))
+        nb_copy ${APREFIX}pgrb2.1p00.f$fhr3 $ARCDIR/pgbf${fhr2}.${CDUMP}.${CDATE}.grib2
+        fhr=$((10#$fhr + 10#$FHOUT_GFS ))
     done
 fi
 if [ $CDUMP = "gdas" ]; then
     flist="000 003 006 009"
     for fhr in $flist; do
         fname=${APREFIX}pgrb2.1p00.f${fhr}
-        fhr2=$(printf %02i $fhr)
-        $NCP $fname $ARCDIR/pgbf${fhr2}.${CDUMP}.${CDATE}.grib2
+        fhr2=$(printf %02i $((10#$fhr)))
+        nb_copy $fname $ARCDIR/pgbf${fhr2}.${CDUMP}.${CDATE}.grib2
     done
 fi
 
@@ -97,15 +101,17 @@ if [ $CDUMP = "gdas" -a -s gdas.t${cyc}z.cyclone.trackatcfunix ]; then
 fi
 
 if [ $CDUMP = "gfs" ]; then
-    $NCP storms.gfso.atcf_gen.$CDATE      ${ARCDIR}/.
-    $NCP storms.gfso.atcf_gen.altg.$CDATE ${ARCDIR}/.
-    $NCP trak.gfso.atcfunix.$CDATE        ${ARCDIR}/.
-    $NCP trak.gfso.atcfunix.altg.$CDATE   ${ARCDIR}/.
+    nb_copy storms.gfso.atcf_gen.$CDATE      ${ARCDIR}/.
+    nb_copy storms.gfso.atcf_gen.altg.$CDATE ${ARCDIR}/.
+    nb_copy trak.gfso.atcfunix.$CDATE        ${ARCDIR}/.
+    nb_copy trak.gfso.atcfunix.altg.$CDATE   ${ARCDIR}/.
 
     mkdir -p ${ARCDIR}/tracker.$CDATE/$CDUMP
     blist="epac natl"
     for basin in $blist; do
-	cp -rp $basin                     ${ARCDIR}/tracker.$CDATE/$CDUMP
+        if [[ -f $basin ]]; then
+	       cp -rp $basin ${ARCDIR}/tracker.$CDATE/$CDUMP
+        fi
     done
 fi
 
@@ -121,17 +127,25 @@ if [ $CDUMP = "gfs" -a $FITSARC = "YES" ]; then
 	fhr3=$(printf %03i $fhr)
 	sfcfile=${prefix}.sfcf${fhr3}${ASUFFIX}
 	sigfile=${prefix}.atmf${fhr3}${ASUFFIX}
-	$NCP $sfcfile $VFYARC/${CDUMP}.$PDY/$cyc/
-	$NCP $sigfile $VFYARC/${CDUMP}.$PDY/$cyc/
-	(( fhr = $fhr + 6 ))
+	nb_copy $sfcfile $VFYARC/${CDUMP}.$PDY/$cyc/
+	nb_copy $sigfile $VFYARC/${CDUMP}.$PDY/$cyc/
+	(( fhr = 10#$fhr + 6 ))
     done
 fi
 
 
 ###############################################################
-# Archive data to HPSS
-if [ $HPSSARCH = "YES" ]; then
+# Archive data either to HPSS or locally
+if [[ $HPSSARCH = "YES" || $LOCALARCH = "YES" ]]; then
 ###############################################################
+
+# --set the archiving command and create local directories, if necessary
+TARCMD="htar"
+if [[ $LOCALARCH = "YES" ]]; then
+   TARCMD="tar"
+   [ ! -d $ATARDIR/$CDATE ] && mkdir -p $ATARDIR/$CDATE
+   [ ! -d $ATARDIR/$CDATE_MOS -a -d $ROTDIR/gfsmos.$PDY_MOS -a $cyc -eq 18 ] && mkdir -p $ATARDIR/$CDATE_MOS
+fi
 
 #--determine when to save ICs for warm start and forecast-only runs 
 SAVEWARMICA="NO"
@@ -140,7 +154,7 @@ SAVEFCSTIC="NO"
 firstday=$($NDATE +24 $SDATE)
 mm=$(echo $CDATE|cut -c 5-6)
 dd=$(echo $CDATE|cut -c 7-8)
-nday=$(( (mm-1)*30+dd ))
+nday=$(( (10#$mm-1)*30+10#$dd ))
 mod=$(($nday % $ARCH_WARMICFREQ))
 if [ $CDATE -eq $firstday -a $cyc -eq $ARCHINC_CYC ]; then SAVEWARMICA="YES" ; fi
 if [ $CDATE -eq $firstday -a $cyc -eq $ARCHICS_CYC ]; then SAVEWARMICB="YES" ; fi
@@ -189,11 +203,23 @@ if [ $CDUMP = "gfs" ]; then
     fi
 
     if [ $DO_OCN = "YES" ]; then
-        targrp_list="$targrp_list ocn_ice_grib2_0p5 ocn_ice_grib2_0p25 ocn_2D ocn_3D ocn_xsect ocn_daily wavocn gfs_flux_1p00"
+        targrp_list="$targrp_list ocn_ice_grib2_0p5 ocn_ice_grib2_0p25 ocn_2D ocn_3D ocn_xsect ocn_daily gfs_flux_1p00"
     fi
 
     if [ $DO_ICE = "YES" ]; then
         targrp_list="$targrp_list ice"
+    fi
+
+    # Aerosols
+    if [ $DO_AERO = "YES" ]; then
+        for targrp in chem; do
+            $TARCMD -P -cvf $ATARDIR/$CDATE/${targrp}.tar $(cat $ARCH_LIST/${targrp}.txt)
+            status=$?
+            if [ $status -ne 0 -a $CDATE -ge $firstday ]; then
+                echo "HTAR $CDATE ${targrp}.tar failed"
+                exit $status
+            fi
+        done
     fi
 
     #for restarts    
@@ -208,12 +234,14 @@ if [ $CDUMP = "gfs" ]; then
 
     #--save mdl gfsmos output from all cycles in the 18Z archive directory
     if [ -d gfsmos.$PDY_MOS -a $cyc -eq 18 ]; then
-        htar -P -cvf $ATARDIR/$CDATE_MOS/gfsmos.tar ./gfsmos.$PDY_MOS
+        set +e
+        $TARCMD -P -cvf $ATARDIR/$CDATE_MOS/gfsmos.tar ./gfsmos.$PDY_MOS
         status=$?
         if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
-            echo "HTAR $CDATE gfsmos.tar failed"
+            echo "$(echo $TARCMD | tr 'a-z' 'A-Z') $CDATE gfsmos.tar failed"
             exit $status
         fi
+        set_strict
     fi
 elif [ $CDUMP = "gdas" ]; then
 
@@ -237,14 +265,20 @@ elif [ $CDUMP = "gdas" ]; then
     fi
 fi
 
+# Turn on extended globbing options
+shopt -s extglob
 for targrp in $targrp_list; do
-    htar -P -cvf $ATARDIR/$CDATE/${targrp}.tar $(cat $ARCH_LIST/${targrp}.txt)
+    set +e
+    $TARCMD -P -cvf $ATARDIR/$CDATE/${targrp}.tar $(cat $ARCH_LIST/${targrp}.txt)
     status=$?
     if [ $status -ne 0 -a $CDATE -ge $firstday ]; then
-        echo "HTAR $CDATE ${targrp}.tar failed"
+        echo "$(echo $TARCMD | tr 'a-z' 'A-Z') $CDATE ${targrp}.tar failed"
         exit $status
     fi
+    set_strict
 done
+# Turn extended globbing back off
+shopt -u extglob
 
 ###############################################################
 fi  ##end of HPSS archive
@@ -372,4 +406,6 @@ COMIN="$ROTDIR/$CDUMP.$rPDY"
 
 
 ###############################################################
+
+
 exit 0

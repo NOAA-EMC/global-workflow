@@ -1,4 +1,4 @@
-#!/bin/sh
+#! /usr/bin/env bash
 
 #####
 ## "forecast_def.sh"
@@ -8,13 +8,12 @@
 ## This script is a definition of functions.
 #####
 
-
 # For all non-evironment variables
 # Cycling and forecast hour specific parameters
 common_predet(){
   echo "SUB ${FUNCNAME[0]}: Defining variables for shared through models"
   pwd=$(pwd)
-  machine=${machine:-"WCOSS_C"}
+  machine=${machine:-"WCOSS2"}
   machine=$(echo $machine | tr '[a-z]' '[A-Z]')
   CASE=${CASE:-C768}
   CDATE=${CDATE:-2017032500}
@@ -72,13 +71,12 @@ FV3_GFS_predet(){
 
   # Directories.
   pwd=$(pwd)
-  NWPROD=${NWPROD:-${NWROOT:-$pwd}}
-  HOMEgfs=${HOMEgfs:-$NWPROD}
+  HOMEgfs=${HOMEgfs:-${PACKAGEROOT:-$pwd}}
   FIX_DIR=${FIX_DIR:-$HOMEgfs/fix}
-  FIX_AM=${FIX_AM:-$FIX_DIR/fix_am}
-  FIX_AER=${FIX_AER:-$FIX_DIR/fix_aer}
-  FIX_LUT=${FIX_LUT:-$FIX_DIR/fix_lut}
-  FIXfv3=${FIXfv3:-$FIX_DIR/fix_fv3_gmted2010}
+  FIX_AM=${FIX_AM:-$FIX_DIR/am}
+  FIX_AER=${FIX_AER:-$FIX_DIR/aer}
+  FIX_LUT=${FIX_LUT:-$FIX_DIR/lut}
+  FIXfv3=${FIXfv3:-$FIX_DIR/orog}
   DATA=${DATA:-$pwd/fv3tmp$$}    # temporary running directory
   ROTDIR=${ROTDIR:-$pwd}         # rotating archive directory
   ICSDIR=${ICSDIR:-$pwd}         # cold start initial conditions
@@ -110,8 +108,8 @@ FV3_GFS_predet(){
   IAU_OFFSET=${IAU_OFFSET:-0}
 
   # Model specific stuff
-  FCSTEXECDIR=${FCSTEXECDIR:-$HOMEgfs/sorc/ufs_model.fd/build}
-  FCSTEXEC=${FCSTEXEC:-ufs_model}
+  FCSTEXECDIR=${FCSTEXECDIR:-$HOMEgfs/exec}
+  FCSTEXEC=${FCSTEXEC:-ufs_model.x}
   PARM_FV3DIAG=${PARM_FV3DIAG:-$HOMEgfs/parm/parm_fv3diag}
   PARM_POST=${PARM_POST:-$HOMEgfs/parm/post}
 
@@ -122,13 +120,12 @@ FV3_GFS_predet(){
   #file and the value of npe_node_fcst is not correctly defined when using more than
   #one thread and sets NTHREADS_FV3=1 even when the number of threads is appropraitely >1
   #NTHREADS_FV3=${NTHREADS_FV3:-${NTHREADS_FCST:-${nth_fv3:-1}}}
-  NTHREADS_FV3=${nth_fv3:-1}
   cores_per_node=${cores_per_node:-${npe_node_fcst:-24}}
   ntiles=${ntiles:-6}
   if [ $MEMBER -lt 0 ]; then
-    NTASKS_TOT=${NTASKS_TOT:-$npe_fcst_gfs}
+    NTASKS_TOT=${NTASKS_TOT:-${npe_fcst_gfs:-0}}
   else
-    NTASKS_TOT=${NTASKS_TOT:-$npe_efcs}
+    NTASKS_TOT=${NTASKS_TOT:-${npe_efcs:-0}}
   fi
 
   TYPE=${TYPE:-"nh"}                  # choices:  nh, hydro
@@ -143,19 +140,6 @@ FV3_GFS_predet(){
   [[ "$OUTPUT_FILE" = "netcdf" ]] && affix="nc"
 
   rCDUMP=${rCDUMP:-$CDUMP}
-
-  #------------------------------------------------------------------
-  # setup the runtime environment
-  if [ $machine = "WCOSS_C" ] ; then
-    HUGEPAGES=${HUGEPAGES:-hugepages4M}
-    . $MODULESHOME/init/sh 2>/dev/null
-    module load iobuf craype-$HUGEPAGES 2>/dev/null
-    export MPICH_GNI_COLL_OPT_OFF=${MPICH_GNI_COLL_OPT_OFF:-MPI_Alltoallv}
-    export MKL_CBWR=AVX2
-    export WRTIOBUF=${WRTIOBUF:-"4M"}
-    export NC_BLKSZ=${NC_BLKSZ:-"4M"}
-    export IOBUF_PARAMS="*nemsio:verbose:size=${WRTIOBUF},*:verbose:size=${NC_BLKSZ}"
-  fi
 
   #-------------------------------------------------------
   if [ ! -d $ROTDIR ]; then mkdir -p $ROTDIR; fi
@@ -228,6 +212,20 @@ FV3_GFS_predet(){
     RSTDIR_ATM=${RSTDIR:-$ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos/RERUN_RESTART
     if [ ! -d $RSTDIR_ATM ]; then mkdir -p $RSTDIR_ATM ; fi
     $NLN $RSTDIR_ATM RESTART
+    # The final restart written at the end doesn't include the valid date
+    # Create links that keep the same name pattern for these files
+    VDATE=$($NDATE +$FHMAX_GFS $CDATE)
+    vPDY=$(echo $VDATE | cut -c1-8)
+    vcyc=$(echo $VDATE | cut -c9-10)
+    files="coupler.res fv_core.res.nc"
+    for tile in {1..6}; do
+      for base in ca_data fv_core.res fv_srf_wnd.res fv_tracer.res phy_data sfc_data; do
+        files="${files} ${base}.tile${tile}.nc"
+      done
+    done
+    for file in $files; do
+      $NLN $RSTDIR_ATM/$file $RSTDIR_ATM/${vPDY}.${vcyc}0000.$file
+    done
   else
     mkdir -p $DATA/RESTART
   fi

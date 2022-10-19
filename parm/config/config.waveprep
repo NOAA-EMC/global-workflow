@@ -1,4 +1,4 @@
-#!/bin/ksh -x
+#! /usr/bin/env bash
 
 ########## config.waveprep ##########
 # Wave steps specific
@@ -11,29 +11,6 @@ echo "BEGIN: config.waveprep"
 # Step label
 export sigMODE=${sigMODE:-prep}
 
-export HOUR_INC=3      # This value should match with the one used in
-                         # the wind update script
-export GOFILETYPE=1     # GOFILETYPE=1 one gridded file per output step
-export POFILETYPE=1     # POFILETYPE=1 one point file per output step
-
-# Parameters for ww3_multi.inp
-# Unified output T or F
-export FUNIPNT='T'
-# Output server type (see ww3_multi.inp in WW3 repo)
-export IOSRV=${IOSRV:-'3'}
-# Flag for dedicated output process for unified points
-export FPNTPROC='T'
-# Flag for grids sharing dedicated output processes
-export FGRDPROC='F'
-# Flag for masking computation in two-way nesting
-export FLAGMASKCOMP="F"
-# Flag for masking at printout time.
-export FLAGMASKOUT="F"
-
-# Wind interval for standalone file-based runs
-# Output stride
-export WAV_WND_HOUR_INC=1      # This value should match with the one used in
-                         # the wind update script
 # Intake currents settings
 export WAV_CUR_DT=${WAV_CUR_DT:-3}
 export WAV_CUR_HF_DT=${WAV_CUR_HF_DT:-3}

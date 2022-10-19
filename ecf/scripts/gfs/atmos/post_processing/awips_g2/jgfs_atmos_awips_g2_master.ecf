@@ -1,0 +1,61 @@
+#PBS -S /bin/bash
+#PBS -N %RUN%_atmos_awips_g2_%FCSTHR%_%CYC%
+#PBS -j oe
+#PBS -q %QUEUE%
+#PBS -A %PROJ%-%PROJENVIR%
+#PBS -l walltime=00:05:00
+#PBS -l select=1:ncpus=1:mem=3GB
+#PBS -l place=vscatter
+#PBS -l debug=true
+
+model=gfs
+%include <head.h>
+%include <envir-p1.h>
+
+set -x
+
+export NET=%NET:gfs%
+export RUN=%RUN%
+export CDUMP=%RUN%
+
+export FHRGRP=%FHRGRP%
+export FHRLST=%FHRLST%
+export fcsthrs=%FCSTHR%
+
+############################################################
+# Load modules
+############################################################
+module load PrgEnv-intel/${PrgEnv_intel_ver}
+module load craype/${craype_ver}
+module load intel/${intel_ver}
+module load libjpeg/${libjpeg_ver}
+module load grib_util/${grib_util_ver}
+module load wgrib2/${wgrib2_ver}
+
+module list
+
+#############################################################
+# environment settings
+#############################################################
+export cyc=%CYC%
+export cycle=t%CYC%z
+trdrun=%TRDRUN%
+export job="jgfs_awips_f${fcsthrs}_${cyc}"
+
+############################################################
+# CALL executable job script here
+############################################################
+$HOMEgfs/jobs/JGFS_ATMOS_AWIPS_G2
+
+###############################################################
+
+if [ $? -ne 0 ]; then
+   ecflow_client --msg="***JOB ${ECF_NAME} ERROR RUNNING J-SCRIPT ***"
+   ecflow_client --abort
+   exit
+fi
+
+%include <tail.h>
+%manual
+
+%end

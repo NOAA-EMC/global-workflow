@@ -1,4 +1,4 @@
-#!/bin/ksh -x
+#! /usr/bin/env bash
 
 ########## config.fv3 ##########
 # FV3 model resolution specific parameters
@@ -20,11 +20,7 @@ case_in=$1
 echo "BEGIN: config.fv3"
 
 
-if [[ "$machine" = "WCOSS_DELL_P3" ]]; then
-   export npe_node_max=28
-elif [[ "$machine" = "WCOSS_C" ]]; then
-   export npe_node_max=24
-elif [[ "$machine" = "JET" ]]; then
+if [[ "$machine" = "JET" ]]; then
    if [[ "$PARTITION_BATCH" = "xjet" ]]; then
      export npe_node_max=24
    elif [[ "$PARTITION_BATCH" = "vjet" || "$PARTITION_BATCH" = "sjet" ]]; then
@@ -34,15 +30,20 @@ elif [[ "$machine" = "JET" ]]; then
    fi
 elif [[ "$machine" = "HERA" ]]; then
    export npe_node_max=40
+elif [[ "$machine" = "S4" ]]; then
+   if [[ "$PARTITION_BATCH" = "s4" ]]; then
+      export npe_node_max=32
+   elif [[ "$PARTITION_BATCH" = "ivy" ]]; then
+      export npe_node_max=20
+   fi
 elif [[ "$machine" = "ORION" ]]; then
    export npe_node_max=40
 fi
 
-
 # (Standard) Model resolution dependent variables
 case $case_in in
     "C48")
-        export DELTIM=1200
+        export DELTIM=450
         export layout_x=3
         export layout_y=2
         export layout_x_gfs=3
@@ -88,14 +89,14 @@ case $case_in in
         export WRTIOBUF="8M"
         ;;
     "C384")
-        export DELTIM=${DELTIM:-240}
+        export DELTIM=${DELTIM:-300}
         export layout_x=6
         export layout_y=8
-        export layout_x_gfs=${layout_x_gfs:-6}
-        export layout_y_gfs=${layout_y_gfs:-8}
+        export layout_x_gfs=${layout_x_gfs:-8}
+        export layout_y_gfs=${layout_y_gfs:-12}
         export nth_fv3=2
         export nth_fv3_gfs=${nth_fv3_gfs:-2}
-        export cdmbgwd="1.0,2.2,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
+        export cdmbgwd="1.1,0.72,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=1
         export WRTTASK_PER_GROUP=$npe_node_max
         export WRITE_GROUP_GFS=${WRITE_GROUP_GFS:-2}
@@ -112,9 +113,9 @@ case $case_in in
         export nth_fv3_gfs=4
         export cdmbgwd="4.0,0.15,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=2
-        export WRTTASK_PER_GROUP=$(echo "2*$npe_node_max" |bc)
+        export WRTTASK_PER_GROUP=$(echo "2*${npe_node_max}" |bc)
         export WRITE_GROUP_GFS=4
-        export WRTTASK_PER_GROUP_GFS=$(echo "2*$npe_node_max" |bc)
+        export WRTTASK_PER_GROUP_GFS=$(echo "2*${npe_node_max}" |bc)
         export WRTIOBUF="32M"
         ;;
     "C1152")
@@ -127,9 +128,9 @@ case $case_in in
         export nth_fv3_gfs=4
         export cdmbgwd="4.0,0.10,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=4
-        export WRTTASK_PER_GROUP=$(echo "2*$npe_node_max" |bc)
+        export WRTTASK_PER_GROUP=$(echo "2*${npe_node_max}" |bc)
         export WRITE_GROUP_GFS=4
-        export WRTTASK_PER_GROUP_GFS=$(echo "2*$npe_node_max" |bc)
+        export WRTTASK_PER_GROUP_GFS=$(echo "2*${npe_node_max}" |bc)
         export WRTIOBUF="48M"
         ;;
     "C3072")
@@ -142,15 +143,35 @@ case $case_in in
         export nth_fv3_gfs=4
         export cdmbgwd="4.0,0.05,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=4
-        export WRTTASK_PER_GROUP=$(echo "3*$npe_node_max" |bc)
+        export WRTTASK_PER_GROUP=$(echo "3*${npe_node_max}" |bc)
         export WRITE_GROUP_GFS=4
-        export WRTTASK_PER_GROUP_GFS=$(echo "3*$npe_node_max" |bc)
+        export WRTTASK_PER_GROUP_GFS=$(echo "3*${npe_node_max}" |bc)
         export WRTIOBUF="64M"
         ;;
     *)
-        echo "grid $case_in not supported, ABORT!"
+        echo "grid ${case_in} not supported, ABORT!"
         exit 1
         ;;
+esac
+
+# Calculate chunksize based on resolution
+export RESTILE=$(echo ${case_in} |cut -c2-)
+export ichunk2d=$((4*RESTILE))
+export jchunk2d=$((2*RESTILE))
+export ichunk3d=$((4*RESTILE))
+export jchunk3d=$((2*RESTILE))
+export kchunk3d=1
+
+# Determine whether to use parallel NetCDF based on resolution
+case ${case_in} in
+  "C48" | "C96" | "C192")
+    export OUTPUT_FILETYPE_ATM="netcdf"
+    export OUTPUT_FILETYPE_SFC="netcdf"
+    ;;
+  "C384" | "C768" | "C1152" | "C3072")
+    export OUTPUT_FILETYPE_ATM="netcdf_parallel"
+    export OUTPUT_FILETYPE_SFC="netcdf_parallel"
+    ;;
 esac
 
 echo "END: config.fv3"

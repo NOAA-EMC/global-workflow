@@ -1,16 +1,14 @@
-#!/bin/ksh
-set -x
+#! /usr/bin/env bash
+
+source "$HOMEgfs/ush/preamble.sh"
 
 export RUN_ENVIR=${RUN_ENVIR:-"nco"}
-export PS4='$SECONDS + '
-date
-
 
 #############################
 # Source relevant config files
 #############################
 configs="base vrfy"
-config_path=${EXPDIR:-$NWROOT/gfs.${gfs_ver}/parm/config}
+config_path=${EXPDIR:-$PACKAGEROOT/gfs.${gfs_ver}/parm/config}
 for config in $configs; do
     . $config_path/config.$config
     status=$?
@@ -69,9 +67,6 @@ export pgmerr=errfile
 ##############################################
 export CDATE=${CDATE:-${PDY}${cyc}}
 export CDUMP=${CDUMP:-${RUN:-"gfs"}}
-if [ $RUN_ENVIR = "nco" ]; then
-    export ROTDIR=${COMROOT:?}/$NET/$envir
-fi
 
 
 ####################################
@@ -85,7 +80,7 @@ export SENDECF=${SENDECF:-NO}
 ####################################
 # Specify Execution Areas
 ####################################
-export HOMEens_tracker=${HOMEens_tracker:-${NWROOT:?}/ens_tracker.${ens_tracker_ver}}
+export HOMEens_tracker=${HOMEens_tracker:-${PACKAGEROOT:?}/ens_tracker.${ens_tracker_ver}}
 export EXECens_tracker=${EXECens_tracker:-$HOMEens_tracker/exec}
 export FIXens_tracker=${FIXens_tracker:-$HOMEens_tracker/fix}
 export USHens_tracker=${USHens_tracker:-$HOMEens_tracker/ush}
@@ -103,7 +98,7 @@ export gfsdir=${ROTDIR}
 export COMINgdas=${COMIN}
 export gdasdir=${COMINgdas}
 export COMOUT=${ROTDIR}/${RUN}.${PDY}/${cyc}/${COMPONENT}
-export COMINsyn=${COMINsyn:-$(compath.py arch/prod/syndat)}
+export COMINsyn=${COMINsyn:-$(compath.py ${envir}/com/gfs/${gfs_ver})/syndat}
 
 if [ $RUN_ENVIR = "nco" ]; then
     export COMOUThur=${COMROOTp1:?}/hur/${envir}/global
@@ -119,10 +114,6 @@ fi
 ##############################################
 # Run relevant script
 ##############################################
-env
-msg="HAS BEGUN on $(hostname)"
-postmsg "$jlogfile" "$msg"
-$LOGSCRIPT
 
 #############################################################
 # Execute the script
@@ -136,14 +127,11 @@ if [ -e "$pgmout" ] ; then
   cat $pgmout
 fi
 
-msg="ENDED NORMALLY."
-postmsg "$jlogfile" "$msg"
-
 ##########################################
 # Remove the Temporary working directory
 ##########################################
 cd $DATAROOT
 [[ $KEEPDATA = "NO" ]] && rm -rf $DATA
 
-date
+
 exit 0

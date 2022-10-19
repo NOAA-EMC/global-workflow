@@ -1,4 +1,5 @@
-#!/bin/ksh
+#! /usr/bin/env bash
+
 #
 #  UTILITY SCRIPT NAME :  gfsbufr.sh
 #               AUTHOR :  Hua-Lu Pan
@@ -16,33 +17,20 @@
 # 2018-05-22 Guang Ping Lou: Making it work for both GFS and FV3GFS 
 # 2018-05-30  Guang Ping Lou: Make sure all files are available.
 # 2019-10-10  Guang Ping Lou: Read in NetCDF files
-echo "History: February 2003 - First implementation of this utility script"
+# echo "History: February 2003 - First implementation of this utility script"
 #
+source "${HOMEgfs:?}/ush/preamble.sh"
 
-set -ax
-
-if test "$F00FLAG" = "YES"
-then
+if [[ "${F00FLAG}" == "YES" ]]; then
    f00flag=".true."
 else
    f00flag=".false."
 fi
 
-hh=$FSTART
-while  test $hh -le $FEND
-do  
-   hh=$( expr $hh + $FINT )
-   if test $hh -lt 10
-   then
-      hh=0$hh
-   fi
-done
-
-export pgm=gfs_bufr
+export pgm="gfs_bufr.x"
 #. prep_step
 
-if test "$MAKEBUFR" = "YES"
-then
+if [[ "${MAKEBUFR}" == "YES" ]]; then
    bufrflag=".true."
 else
    bufrflag=".false."
@@ -51,65 +39,58 @@ fi
 ##fformat="nc"
 ##fformat="nemsio"
 
- CLASS="class1fv3"
+CLASS="class1fv3"
 cat << EOF > gfsparm
  &NAMMET
-  levs=$LEVS,makebufr=$bufrflag,
-  dird="$COMOUT/bufr.${cycle}/bufr",
-  nstart=$FSTART,nend=$FEND,nint=$FINT,
-  nend1=$NEND1,nint1=$NINT1,nint3=$NINT3,
-  nsfc=80,f00=$f00flag,fformat=$fformat,np1=0
+  levs=${LEVS},makebufr=${bufrflag},
+  dird="${COMOUT}/bufr.${cycle}/bufr",
+  nstart=${FSTART},nend=${FEND},nint=${FINT},
+  nend1=${NEND1},nint1=${NINT1},nint3=${NINT3},
+  nsfc=80,f00=${f00flag},fformat=${fformat},np1=0
 /
 EOF
 
-hh=$FSTART
-   if test $hh -lt 100
-   then
-      hh1=$(echo "${hh#"${hh%??}"}")
-      hh=$hh1
-   fi
-while  test $hh -le $FEND
-do  
-   if test $hh -lt 100
-   then
-      hh2=0$hh
-   else
-      hh2=$hh
-   fi
+hh=${FSTART}
+while (( hh <= FEND )); do
+  hh2=$(printf %02i ${hh})
+  hh3=$(printf %03i ${hh})
 
 #---------------------------------------------------------
 # Make sure all files are available:
    ic=0
-   while [ $ic -lt 1000 ]
-   do
-      if [ ! -f $COMIN/${RUN}.${cycle}.logf${hh2}.${logfm} ]
-      then
+   while (( ic < 1000 )); do
+      if [ ! -f "${COMIN}/${RUN}.${cycle}.logf${hh3}.${logfm}" ]; then
           sleep 10
-          ic=$(expr $ic + 1)
+          ic=$((ic + 1))
       else
           break
       fi
 
-      if [ $ic -ge 360 ]
-      then
-         err_exit "COULD NOT LOCATE logf${hh2} file AFTER 1 HOUR"
+      if (( ic >= 360 )); then
+         echo "FATAL: COULD NOT LOCATE logf${hh3} file AFTER 1 HOUR"
+         exit 2
       fi
    done
 #------------------------------------------------------------------
-   ln -sf $COMIN/${RUN}.${cycle}.atmf${hh2}.${atmfm} sigf${hh} 
-   ln -sf $COMIN/${RUN}.${cycle}.sfcf${hh2}.${atmfm} flxf${hh}
+   ln -sf "${COMIN}/${RUN}.${cycle}.atmf${hh3}.${atmfm}" "sigf${hh2}" 
+   ln -sf "${COMIN}/${RUN}.${cycle}.sfcf${hh3}.${atmfm}" "flxf${hh2}"
 
-   hh=$( expr $hh + $FINT )
-   if test $hh -lt 10
-   then
-      hh=0$hh
-   fi
-done  
+   hh=$((hh + FINT))
+done
 
 #  define input BUFR table file.
-ln -sf $PARMbufrsnd/bufr_gfs_${CLASS}.tbl fort.1
-ln -sf ${STNLIST:-$PARMbufrsnd/bufr_stalist.meteo.gfs} fort.8
-ln -sf $PARMbufrsnd/bufr_ij13km.txt fort.7
+ln -sf "${PARMbufrsnd}/bufr_gfs_${CLASS}.tbl" fort.1
+ln -sf "${STNLIST:-${PARMbufrsnd}/bufr_stalist.meteo.gfs}" fort.8
+ln -sf "${PARMbufrsnd}/bufr_ij13km.txt" fort.7
 
-${APRUN_POSTSND} $EXECbufrsnd/gfs_bufr < gfsparm > out_gfs_bufr_$FEND
-export err=$?;err_chk
+${APRUN_POSTSND} "${EXECbufrsnd}/${pgm}" < gfsparm > "out_gfs_bufr_${FEND}"
+export err=$?
+
+if [ $err -ne 0 ]; then
+   echo "GFS postsnd job error, Please check files "
+   echo $COMIN/${RUN}.${cycle}.atmf${hh2}.${atmfm}
+   echo $COMIN/${RUN}.${cycle}.sfcf${hh2}.${atmfm}
+   err_chk
+fi
+
+exit ${err}

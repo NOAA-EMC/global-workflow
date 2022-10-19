@@ -1,3 +1,4 @@
+#! /usr/bin/env bash
 
 MOM6_namelists(){
 
@@ -5,8 +6,6 @@ MOM6_namelists(){
 
 OCNRES=${OCNRES:-"025"}
 MOM_INPUT=MOM_input_template_$OCNRES
-
-#TODO: Make these variables configurable
 
 #Set to False for restart reproducibility
 MOM6_USE_LI2016=${MOM6_USE_LI2016:-'True'}
@@ -51,6 +50,15 @@ elif [ $OCNRES = '100' ]; then
   CHLCLIM="seawifs_1998-2006_smoothed_2X.nc"
   MOM6_RESTART_SETTING='n'
   MOM6_RIVER_RUNOFF='False'
+elif [ $OCNRES = '400' ]; then
+  NX_GLB=90
+  NY_GLB=80
+  DT_DYNAM_MOM6='1800'
+  DT_THERM_MOM6='3600'
+  FRUNOFF=""
+  CHLCLIM="seawifs_1998-2006_smoothed_2X.nc"
+  MOM6_RESTART_SETTING='n'
+  MOM6_RIVER_RUNOFF='False'
 else
   echo "FATAL ERROR: do not have MOM6 settings defined for desired OCNRES=$OCNRES"
   exit 1
@@ -66,10 +74,11 @@ cat >> input.nml <<EOF
   parameter_filename = 'INPUT/MOM_input',
                        'INPUT/MOM_override'
 /
-
-&nam_stochy
-  new_lscale=.true.
 EOF
+#temporarily commented out until a long term solution can be found
+#&nam_stochy
+#  new_lscale=.true.
+#EOF
 
 OCN_SPPT="False"
 if [ $DO_OCN_SPPT = "YES" ]; then
@@ -93,13 +102,13 @@ if [ $DO_OCN_PERT_EPBL = "YES" ]; then
 EOF
   fi
 
-cat >> input.nml <<EOF
-/
-
-&nam_sfcperts
-/
-
-EOF
+#cat >> input.nml <<EOF
+#/
+#
+#&nam_sfcperts
+#/
+#
+#EOF
 
 echo "$(cat input.nml)"
 

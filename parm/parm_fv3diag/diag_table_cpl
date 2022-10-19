@@ -9,7 +9,6 @@
 ######################
 "ocn%4yr%2mo%2dy%2hr",      6,  "hours", 1, "hours", "time", 6, "hours", "1901 1 1 0 0 0"
 "ocn_daily%4yr%2mo%2dy",      1,  "days",  1, "days",  "time", 1, "days",  "1901 1 1 0 0 0"
-"wavocn%4yr%2mo%2dy%2hr",      6,  "hours", 1, "hours", "time", 6, "hours", "1901 1 1 0 0 0"
 ##############################################
 # static fields
  "ocean_model", "geolon",      "geolon",      "ocn%4yr%2mo%2dy%2hr", "all", .false., "none", 2
@@ -81,23 +80,6 @@
  "ocean_model", "LwLatSens", "LwLatSens",     "ocn%4yr%2mo%2dy%2hr","all",.true.,"none",2
  "ocean_model", "Heat_PmE",  "Heat_PmE",      "ocn%4yr%2mo%2dy%2hr","all",.true.,"none",2
 
-#wave_variables
- "ocean_model", "geolon",             "geolon",             "wavocn%4yr%2mo%2dy%2hr","all", .false., "none", 2
- "ocean_model", "geolat",             "geolat",             "wavocn%4yr%2mo%2dy%2hr","all", .false., "none", 2
- "ocean_model", "MSTAR",              "MSTAR",              "wavocn%4yr%2mo%2dy%2hr","all", .true.,  "none", 2
- "ocean_model", "LA",                 "LA",                 "wavocn%4yr%2mo%2dy%2hr","all", .true.,  "none", 2
- "ocean_model", "LA_MOD",             "LA_MOD",             "wavocn%4yr%2mo%2dy%2hr","all", .true.,  "none", 2
- "ocean_model", "MSTAR_LT",           "MSTAR_LT",           "wavocn%4yr%2mo%2dy%2hr","all", .true.,  "none", 2
- "ocean_model", "ePBL_h_ML",          "ePBL",               "wavocn%4yr%2mo%2dy%2hr","all", .true.,  "none", 2
- "ocean_model", "ustar",              "ustar",              "wavocn%4yr%2mo%2dy%2hr","all", .true.,  "none", 2
- "ocean_model", "ePBL_TKE_wind",      "ePBL_TKE_wind",      "wavocn%4yr%2mo%2dy%2hr","all", .true.,  "none", 2
- "ocean_model", "ePBL_TKE_MKE",       "ePBL_TKE_MKE",       "wavocn%4yr%2mo%2dy%2hr","all", .true.,  "none", 2
- "ocean_model", "ePBL_TKE_conv",      "ePBL_TKE_conv",      "wavocn%4yr%2mo%2dy%2hr","all", .true.,  "none", 2
- "ocean_model", "ePBL_TKE_forcing",   "ePBL_TKE_forcing",   "wavocn%4yr%2mo%2dy%2hr","all", .true.,  "none", 2
- "ocean_model", "ePBL_TKE_mixing",    "ePBL_TKE_mixing",    "wavocn%4yr%2mo%2dy%2hr","all", .true.,  "none", 2
- "ocean_model", "ePBL_TKE_mech_decay","ePBL_TKE_mech_decay","wavocn%4yr%2mo%2dy%2hr","all", .true.,  "none", 2
- "ocean_model", "ePBL_TKE_conv_decay","ePBL_TKE_conv_decay","wavocn%4yr%2mo%2dy%2hr","all", .true.,  "none", 2
-
 #=============================================================================================
 "gfs_dyn",     "ucomp",       "ugrd",         "fv3_history",    "all",  .false.,  "none",  2
 "gfs_dyn",     "vcomp",       "vgrd",         "fv3_history",    "all",  .false.,  "none",  2
@@ -108,8 +90,8 @@
 "gfs_dyn",     "snowwat",     "snmr",         "fv3_history",    "all",  .false.,  "none",  2
 "gfs_dyn",     "rainwat",     "rwmr",         "fv3_history",    "all",  .false.,  "none",  2
 "gfs_dyn",     "graupel",     "grle",         "fv3_history",    "all",  .false.,  "none",  2
-#"gfs_dyn",     "ice_nc",      "nccice",       "fv3_history",    "all",  .false.,  "none",  2
-#"gfs_dyn",     "rain_nc",     "nconrd",       "fv3_history",    "all",  .false.,  "none",  2
+"gfs_dyn",     "ice_nc",      "nccice",       "fv3_history",    "all",  .false.,  "none",  2
+"gfs_dyn",     "rain_nc",     "nconrd",       "fv3_history",    "all",  .false.,  "none",  2
 "gfs_dyn",     "o3mr",        "o3mr",         "fv3_history",    "all",  .false.,  "none",  2
 "gfs_dyn",     "cld_amt",     "cld_amt",      "fv3_history",    "all",  .false.,  "none",  2
 "gfs_dyn",     "delp",        "dpres",        "fv3_history",    "all",  .false.,  "none",  2
@@ -120,6 +102,7 @@
 "gfs_dyn",     "ps",          "pressfc",      "fv3_history",    "all",  .false.,  "none",  2
 "gfs_dyn",     "hs",          "hgtsfc",       "fv3_history",    "all",  .false.,  "none",  2
 
+"gfs_phys",    "cldfra",        "cldfra",        "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_phys",    "ALBDO_ave",     "albdo_ave",     "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_phys",    "cnvprcp_ave",   "cprat_ave",     "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_phys",    "cnvprcpb_ave",  "cpratb_ave",    "fv3_history2d",  "all",  .false.,  "none",  2
@@ -140,7 +123,7 @@
 "gfs_phys",    "hpbl",          "hpbl",          "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_phys",    "lhtfl_ave",     "lhtfl_ave",     "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_phys",    "shtfl_ave",     "shtfl_ave",     "fv3_history2d",  "all",  .false.,  "none",  2
-"gfs_phys",    "pwat",          "pwatclm",       "fv3_history2d",  "all",  .false.,  "none",  2
+"gfs_phys",    "pwat",          "pwat",          "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_phys",    "soilm",         "soilm",         "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_phys",    "TCDC_aveclm",   "tcdc_aveclm",   "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_phys",    "TCDC_avebndcl", "tcdc_avebndcl", "fv3_history2d",  "all",  .false.,  "none",  2
@@ -214,7 +197,7 @@
 "gfs_phys",    "etran_acc",     "etran_acc",     "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_phys",    "edir_acc",      "edir_acc",      "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_phys",    "wa_acc",        "wa_acc",        "fv3_history2d",  "all",  .false.,  "none",  2
-"gfs_phys",    "lfrac",         "lfrac",         "fv3_history2d",  "all",  .false.,  "none",  2
+"gfs_sfc",     "lfrac",         "lfrac",         "fv3_history2d",  "all",  .false.,  "none",  2
 
 "gfs_sfc",     "crain",         "crain",        "fv3_history2d",  "all",  .false.,  "none",  2
 "gfs_sfc",     "tprcp",         "tprcp",        "fv3_history2d",  "all",  .false.,  "none",  2
