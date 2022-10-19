@@ -520,24 +520,9 @@ ENVIRONMENT AND RESOURCE CHANGES
   * `jgfs_atmos_wafs_grib2` - from 1 to 18
   * `jgfs_atmos_wafs_grib2_0p25` - from 1 to 11
 * Memory adjustments:
-  * `jenkfgdas_diag` - from 24GB to 28GB
-  * `jenkfgdas_sfc` - from 60GB to 80GB
-  * `jgdas_atmos_gempak` - from 4GB to 20GB
-  * `jgdas_atmos_gempak_meta_ncdc` - from 1GB to 20GB
-  * `jgdas_atmos_emcsfc_sfc_prep` - from 2GB to 4GB
-  * `jgdas_atmos_verfrad` - from 5GB to 10GB
-  * `jgfs_atmos_gempak` - from 2GB to 200GB
-  * `jgfs_atmos_gempak_meta` - from 2GB to 200GB
-  * `jgfs_atmos_emcsfc_sfc_prep` - from 2GB to 4GB
-  * `jgfs_atmos_awips_g2` - from 3GB to 10GB
   * `jgfs_atmos_wafs_blending_0p25` - from 1GB to 15GB
   * `jgfs_atmos_wafs_grib2` - from 5GB to 80GB
   * `jgfs_atmos_wafs_grib2_0p25` - from 1GB to 80GB
-  * `jgfs_atmos_wafs_master` - from 1GB to 5GB
-  * `jgfs_wave_gempak` - from 1GB to 10GB
-  * `jgfs_wave_postsbs` - from 10GB to 40GB
-  * `jgfs_wave_prdgen_gridded` - from 1GB to 2GB
-  * `jgfs_wave_prep` - from 150GB to 220GB
 
 PRE-IMPLEMENTATION TESTING REQUIREMENTS
 ---------------------------------------
