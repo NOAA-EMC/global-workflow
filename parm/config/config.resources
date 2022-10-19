@@ -349,6 +349,11 @@ elif [ ${step} = "fcst" ]; then
             # Aerosol model only uses the atm model PETS
             export CHMPETS=${ATMPETS}
             # Aerosol model runs on same PETs as ATM, so don't add to $NTASKS_TOT
+
+            if [[ ${machine} == "HERA" ]]; then
+                # Need more memory on Hera for aerosols, so increase threads to spread it out
+                nth_fv3_gfs=${nth_fv3_gfs:-4}
+            fi
         fi
 
         # If using in-line post, add the write tasks to the ATMPETS

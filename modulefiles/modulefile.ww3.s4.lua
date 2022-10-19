@@ -18,4 +18,4 @@ load(pathJoin("g2", "3.4.1"))
 load(pathJoin("hdf5", "1.10.6"))
 load(pathJoin("netcdf", "4.7.4"))
 
-load(pathJoin("w3nco", "2.4.1"))
+load(pathJoin("w3emc", "2.9.2"))
