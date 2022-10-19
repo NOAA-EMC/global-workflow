@@ -138,10 +138,11 @@ export err=$?; err_chk
 
 ################################################################################
 # translate FV3-JEDI increment to FV3 readable format
+atmges_fv3=$COMIN_GES/${GPREFIX}atmf006.ensres.nc
 atminc_jedi=$DATA/anl/atminc.${PDY}_${cyc}0000z.nc4
 atminc_fv3=$COMOUT/${CDUMP}.${cycle}.atminc.nc
 if [ -s $atminc_jedi ]; then
-    $INCPY $atminc_jedi $atminc_fv3
+    $INCPY $atmges_fv3 $atminc_jedi $atminc_fv3
     export err=$?
 else
     echo "***WARNING*** missing $atminc_jedi   ABORT"

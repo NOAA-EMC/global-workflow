@@ -126,7 +126,7 @@ $NLN $JEDIENSEXE $DATA/fv3jedi_ens.x
 
 ################################################################################
 # run executable
-export pgm=$JEDIVAREXE
+export pgm=$JEDIENSEXE
 . prep_step
 $APRUN_ATMENSANAL $DATA/fv3jedi_ens.x $DATA/fv3jedi_ens.yaml 1>&1 2>&2
 export err=$?; err_chk
@@ -135,11 +135,12 @@ export err=$?; err_chk
 # translate FV3-JEDI increment to FV3 readable format
 for imem in $(seq 1 $NMEM_ENKF); do
     memchar="mem"$(printf %03i $imem)
+    atmges_fv3=$COMIN_GES_ENS/$memchar/${GPREFIX}atmf006.nc
     atminc_jedi=$DATA/anl/$memchar/atminc.${PDY}_${cyc}0000z.nc4
     atminc_fv3=$COMOUT_ENS/$memchar/${CDUMP}.${cycle}.atminc.nc
     mkdir -p $COMOUT_ENS/$memchar
     if [ -s $atminc_jedi ]; then
-	$INCPY $atminc_jedi $atminc_fv3
+	$INCPY $atmges_fv3 $atminc_jedi $atminc_fv3
 	export err=$?
     else
 	echo "***WARNING*** missing $atminc_jedi   ABORT"
