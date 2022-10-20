@@ -54,7 +54,7 @@ if [ ${step} = "prep" ]; then
     export npe_prep=4
     export npe_node_prep=2
     export nth_prep=1
-    if [[ "$machine" = "WCOSS2" ]]; then
+    if [[ "${machine}" = "WCOSS2" ]]; then
       export is_exclusive=True
     else
       export memory_prep="40G"
@@ -87,7 +87,7 @@ elif [ ${step} = "waveprep" ]; then
     export npe_node_waveprep=$(echo "${npe_node_max} / ${nth_waveprep}" | bc)
     export npe_node_waveprep_gfs=$(echo "${npe_node_max} / ${nth_waveprep_gfs}" | bc)
     export NTASKS=${npe_waveprep}
-    export NTASKS_gfs=$npe_waveprep_gfs
+    export NTASKS_gfs=${npe_waveprep_gfs}
     export memory_waveprep="100GB"
     export memory_waveprep_gfs="150GB"
 
@@ -235,11 +235,11 @@ elif [ ${step} = "anal" ]; then
     export nth_anal=5
     export npe_anal_gfs=825
     export nth_anal_gfs=5
-    if [[ "$machine" = "WCOSS2" ]]; then
+    if [[ "${machine}" = "WCOSS2" ]]; then
       export nth_anal=8
       export nth_anal_gfs=8
     fi
-    if [ $CASE = "C384" ]; then
+    if [ ${CASE} = "C384" ]; then
       export npe_anal=160
       export npe_anal_gfs=160
       export nth_anal=10
@@ -447,7 +447,7 @@ elif [ ${step} = "wafs" ]; then
 
     export wtime_wafs="00:30:00"
     export npe_wafs=1
-    export npe_node_wafs=$npe_wafs
+    export npe_node_wafs=${npe_wafs}
     export nth_wafs=1
     export memory_wafs="1GB"
 
@@ -522,7 +522,7 @@ elif [ ${step} = "echgres" ]; then
     export npe_echgres=3
     export nth_echgres=${npe_node_max}
     export npe_node_echgres=1
-    if [[ "$machine" = "WCOSS2" ]]; then
+    if [[ "${machine}" = "WCOSS2" ]]; then
       export memory_echgres="200GB"
     fi
 
@@ -633,17 +633,17 @@ elif [ ${step} = "eupd" ]; then
     if [ ${CASE} = "C768" ]; then
       export npe_eupd=480
       export nth_eupd=6
-      if [[ "$machine" = "WCOSS2" ]]; then
+      if [[ "${machine}" = "WCOSS2" ]]; then
         export npe_eupd=315
         export nth_eupd=14
       fi
     elif [ ${CASE} = "C384" ]; then
       export npe_eupd=270
       export nth_eupd=2
-      if [[ "$machine" = "WCOSS2" ]]; then
+      if [[ "${machine}" = "WCOSS2" ]]; then
         export npe_eupd=315
         export nth_eupd=14
-      elif [[ "$machine" = "HERA" ]]; then
+      elif [[ "${machine}" = "HERA" ]]; then
         export nth_eupd=8
       fi
       if [[ ${machine} = "S4" ]]; then
@@ -698,7 +698,7 @@ elif [ ${step} = "epos" ]; then
     export wtime_epos="00:15:00"
     export npe_epos=80
     export nth_epos=4
-    if [[ "$machine" == "HERA" ]]; then
+    if [[ "${machine}" == "HERA" ]]; then
       export nth_epos=6
     fi
     export npe_node_epos=$(echo "${npe_node_max} / ${nth_epos}" | bc)
