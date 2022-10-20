@@ -47,9 +47,9 @@ top_dir=$(cd "$(dirname "${script_dir}")" &> /dev/null && pwd)
 cd ${script_dir}
 
 # shellcheck disable=SC1091
-source gfs_utils.fd/ush/machine-setup.sh > /dev/null 2>&1
+source gfs_utils.fd/ush/detect_machine.sh  # (sets MACHINE_ID)
 # shellcheck disable=
-machine="${target:?}"
+machine=$(echo $MACHINE_ID | cut -d. -f1)
 
 #------------------------------
 #--model fix fields
@@ -139,6 +139,9 @@ cd "${top_dir}/ush" || exit 8
         emcsfc_snow.sh  fv3gfs_filter_topo.sh  global_cycle.sh  fv3gfs_make_grid.sh ; do
         ${LINK} "${script_dir}/ufs_utils.fd/ush/${file}" .
     done
+    for file in finddate.sh  make_ntc_bull.pl  make_NTC_file.pl  make_tif.sh  month_name.sh ; do
+        ${LINK} "${script_dir}/gfs_utils.fd/ush/${file}" .
+    done
 
 #-----------------------------------
 #--add gfs_wafs link if checked out
@@ -227,7 +230,7 @@ for utilexe in fbwndgfs.x gaussian_sfcanl.x gfs_bufr.x regrid_nemsio.x supvit.x 
   syndat_maksynrc.x syndat_qctropcy.x tocsbufr.x enkf_chgres_recenter.x \
   enkf_chgres_recenter_nc.x fv3nc2nemsio.x tave.x vint.x reg2grb2.x ; do
     [[ -s "${utilexe}" ]] && rm -f "${utilexe}"
-    ${LINK} "${script_dir}/gfs_utils.fd/sorc/install/bin/${utilexe}" .
+    ${LINK} "${script_dir}/gfs_utils.fd/install/bin/${utilexe}" .
 done
 
 [[ -s "ufs_model.x" ]] && rm -f ufs_model.x
