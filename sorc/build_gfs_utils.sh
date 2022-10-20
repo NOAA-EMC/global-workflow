@@ -1,10 +1,9 @@
 #! /usr/bin/env bash
 set -eux
 
-function _usage() {
+function usage() {
   cat << EOF
-Builds all of the global-workflow components by calling the individual build
-  scripts in sequence.
+Builds the GFS utility programs.
 
 Usage: ${BASH_SOURCE[0]} [-d][-h][-v]
   -d:
@@ -24,6 +23,9 @@ while getopts ":dv" option; do
   case "${option}" in
     d) export BUILD_TYPE="DEBUG";;
     v) export BUILD_VERBOSE="YES";;
+    h)
+      usage
+      ;;
     :)
       echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
       usage
@@ -31,11 +33,13 @@ while getopts ":dv" option; do
     *)
       echo "[${BASH_SOURCE[0]}]: Unrecognized option: ${option}"
       usage
-      ;;    
+      ;;
   esac
 done
 shift $((OPTIND-1))
 
-"${cwd}/gfs_utils.fd/sorc/build_gfs_utils.sh"
+BUILD_TYPE=${BUILD_TYPE:-"Release"} \
+BUILD_VERBOSE=${BUILD_VERBOSE:-"NO"} \
+${cwd}/gfs_utils.fd/ush/build.sh
 
 exit
