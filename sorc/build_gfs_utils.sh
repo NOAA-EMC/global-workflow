@@ -19,7 +19,7 @@ EOF
 cwd=$(pwd)
 
 OPTIND=1
-while getopts ":dv" option; do
+while getopts ":dvh" option; do
   case "${option}" in
     d) export BUILD_TYPE="DEBUG";;
     v) export BUILD_VERBOSE="YES";;
