@@ -40,6 +40,6 @@ shift $((OPTIND-1))
 
 BUILD_TYPE=${BUILD_TYPE:-"Release"} \
 BUILD_VERBOSE=${BUILD_VERBOSE:-"NO"} \
-${cwd}/gfs_utils.fd/ush/build.sh
+"${cwd}"/gfs_utils.fd/ush/build.sh
 
 exit

@@ -44,12 +44,12 @@ shift $((OPTIND-1))
 
 script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 top_dir=$(cd "$(dirname "${script_dir}")" &> /dev/null && pwd)
-cd ${script_dir}
+cd "${script_dir}"
 
 # shellcheck disable=SC1091
 source gfs_utils.fd/ush/detect_machine.sh  # (sets MACHINE_ID)
 # shellcheck disable=
-machine=$(echo $MACHINE_ID | cut -d. -f1)
+machine=$(echo "${MACHINE_ID}" | cut -d. -f1)
 
 #------------------------------
 #--model fix fields
@@ -133,7 +133,7 @@ cd "${top_dir}/parm/post" || exit 1
     done
 
 cd "${top_dir}/scripts" || exit 8
-    $LINK "${script_dir}/ufs_utils.fd/scripts/exemcsfc_global_sfc_prep.sh" .
+    ${LINK} "${script_dir}/ufs_utils.fd/scripts/exemcsfc_global_sfc_prep.sh" .
 cd "${top_dir}/ush" || exit 8
     for file in emcsfc_ice_blend.sh  fv3gfs_driver_grid.sh  fv3gfs_make_orog.sh  global_cycle_driver.sh \
         emcsfc_snow.sh  fv3gfs_filter_topo.sh  global_cycle.sh  fv3gfs_make_grid.sh ; do
@@ -244,7 +244,7 @@ if [ -d "${script_dir}/gfs_wafs.fd" ]; then
           wafs_awc_wafavn.x  wafs_blending.x  wafs_blending_0p25.x \
           wafs_cnvgrib2.x  wafs_gcip.x  wafs_grib2_0p25.x \
           wafs_makewafs.x  wafs_setmissing.x; do
-        [[ -s $wafsexe ]] && rm -f $wafsexe
+        [[ -s ${wafsexe} ]] && rm -f ${wafsexe}
         ${LINK} "${script_dir}/gfs_wafs.fd/exec/${wafsexe}" .
     done
 fi
