@@ -8,8 +8,10 @@ echo "BEGIN: config.aeroanl"
 export OBS_YAML_DIR=$HOMEgfs/sorc/gdas.cd/parm/aero/obs/config/
 export OBS_LIST=$HOMEgfs/sorc/gdas.cd/parm/aero/obs/lists/gdas_aero_prototype.yaml
 export AEROVARYAML=$HOMEgfs/sorc/gdas.cd/parm/aero/variational/3dvar_gfs_aero.yaml
-export BERROR_YAML=$HOMEgfs/sorc/gdas.cd/parm/aero/berror/staticb_identity.yaml
+export BERROR_YAML_DIR=$HOMEgfs/sorc/gdas.cd/parm/aero/berror/
+export BERROR_YAML=$HOMEgfs/sorc/gdas.cd/parm/aero/berror/staticb_bump_aero.yaml
 export FV3JEDI_FIX=$HOMEgfs/fix/fix_gdas
+export BERROR_DATA_DIR=/work/noaa/da/Andrew.Tangborn/staticB/c96/base 
 
 export io_layout_x=1
 export io_layout_y=1

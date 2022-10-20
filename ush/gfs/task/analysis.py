@@ -14,6 +14,9 @@ class Analysis(Task):
         self.fv3jedi_fix = config['FV3JEDI_FIX']
         self.obs_list_yaml = config['OBS_LIST']
         self.obs_yaml_dir = config['OBS_YAML_DIR']
+        self.berror_dir = config['BERROR_DATA_DIR']
+        self.berror_yaml = config['BERROR_YAML']
+        self.berror_yaml_dir = config['BERROR_YAML_DIR']
         self.component = config['COMPONENT']
         self.cdump = config['CDUMP']
 
@@ -58,6 +61,16 @@ class Analysis(Task):
             obs_dict[os.path.join(os.environ['COMIN_OBS'], basename)] = obfile
         return obs_dict
 
+    def get_staticb_dict(self):
+        """
+        get dictionary of staticb files to copy/use
+        based on the specified configuration.  
+        """
+        import ufsda # temporary until this is in workflow
+        import yaml
+        with open(self.berror_yaml, 'r') as yamlopen:
+            berror_yaml_dict = yaml.safe_load(yamlopen)
+
     def stage_obs(self, filedict):
         logging.info('Staging observations')
         self.stage(filedict, skip_missing=True)
@@ -74,7 +87,9 @@ class Analysis(Task):
         logging.info('Finished staging fix files')
 
     def stage_berror(self, filedict):
-        logging.info('Only using identity B for now... no staging performed')
+        logging.info('Staging staticb files')
+        self.stage(filedict)
+        loggin.info('Finished staging staticb files')
 
     def stage(self, filedict, skip_missing=False):
         for src, dest in filedict.items():
@@ -123,7 +138,7 @@ class AerosolAnalysis(Analysis):
         self.stage_fix(fix_dict)
         crtm_fix_dict = self.get_crtm_coeff_dict()
         self.stage_crtm(crtm_fix_dict)
-        self.stage_berror({})
+        self.stage_berror(self.get_berror_dict())
         bkg_dict = self.get_bkg_dict()
         self.stage_bkg(bkg_dict)
         yaml_config = {
@@ -132,7 +147,7 @@ class AerosolAnalysis(Analysis):
             'DIAG_DIR': 'diags',
             'CRTM_COEFF_DIR': 'crtm',
             'OBS_PREFIX': os.environ['OPREFIX'],
-            'fv3jedi_staticb_dir': 'berror',
+            'fv3jedi_staticb_aero_dir': 'berror',
             'fv3jedi_fix_dir': 'fv3jedi',
             'fv3jedi_fieldmetadata_dir': 'fv3jedi',
             'OBS_DATE': os.environ['CDATE'],
@@ -281,6 +296,19 @@ class AerosolAnalysis(Analysis):
             basename = f'{cdate_fv3}.fv_tracer.res.tile{t}.nc'
             bkg_dict[os.path.join(rst_dir, basename)] = os.path.join(self.datadir, 'bkg', basename)
         return bkg_dict
+
+    def get_berror_dict(self):
+        """
+        Return dict of src/dest pairs for berror
+        """
+       
+        ntiles = 6 # global
+        # aerosol static-B needs nicas, cor_rh, cor_rv and stddev files.
+        b_dir = self.berror_dir 
+        berror_dict = {}
+        for t in range(1,ntiles+1):
+            berror_dict[os.path.join(b_dir, f'20160630.000000.cor_rh.fv_tracer.res.tile{t}.nc')] = os.path.join(self.datadir, 'berror', f'20160630.000000.cor_rh.fv_tracer.res.tile{t}.nc')
+        
 
     def get_crtm_coeff_dict(self):
         coeff_file_dict = {
