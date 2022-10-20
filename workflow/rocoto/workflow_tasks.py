@@ -310,10 +310,6 @@ class Tasks:
             interval = self._base['INTERVAL']
         offset = f'-{interval}'
 
-        # Previous cycle
-        dep_dict = {'type': 'cycleexist', 'offset': offset}
-        deps.append(rocoto.add_dependency(dep_dict))
-
         # Files from previous cycle
         files = [f'@Y@m@d.@H0000.fv_core.res.nc'] + \
                 [f'@Y@m@d.@H0000.fv_core.res.tile{tile}.nc' for tile in range(1, self.n_tiles + 1)] + \
@@ -326,8 +322,10 @@ class Tasks:
 
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
+        cycledef = 'gfs_seq'
         resources = self.get_resource('aerosol_init')
-        task = create_wf_task('aerosol_init', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+        task = create_wf_task('aerosol_init', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies,
+                              cycledef=cycledef)
 
         return task
 
@@ -387,8 +385,6 @@ class Tasks:
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump}anal'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'cycleexist', 'offset': '-06:00:00'}
-        deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('analdiag')
@@ -446,8 +442,6 @@ class Tasks:
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump}atmanalrun'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'cycleexist', 'offset': '-06:00:00'}
-        deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('atmanalpost')
@@ -459,7 +453,6 @@ class Tasks:
 
         suffix = self._base["SUFFIX"]
         dump_suffix = self._base["DUMP_SUFFIX"]
-        gfs_cyc = self._base["gfs_cyc"]
         dmpdir = self._base["DMPDIR"]
 
         deps = []
@@ -494,8 +487,6 @@ class Tasks:
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump}aeroanlrun'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'cycleexist', 'offset': '-06:00:00'}
-        deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('aeroanlfinal')
@@ -507,8 +498,6 @@ class Tasks:
 
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump}sfcanl'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'cycleexist', 'offset': '-06:00:00'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
@@ -604,8 +593,11 @@ class Tasks:
             dependencies.append(rocoto.add_dependency(dep_dict))
             dependencies = rocoto.create_dependency(dep_condition='or', dep=dependencies)
 
+        cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
+
         resources = self.get_resource('fcst')
-        task = create_wf_task('fcst', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+        task = create_wf_task('fcst', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies,
+                              cycledef=cycledef)
 
         return task
 
@@ -679,9 +671,11 @@ class Tasks:
         varval1, varval2, varval3 = _get_postgroups(self.cdump, self._configs[task_name], add_anl=add_anl_to_post)
         vardict = {varname2: varval2, varname3: varval3}
 
+        cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
+
         resources = self.get_resource(task_name)
         task = create_wf_task(task_name, resources, cdump=self.cdump, envar=postenvars, dependency=dependencies,
-                              metatask=task_name, varname=varname1, varval=varval1, vardict=vardict)
+                              metatask=task_name, varname=varname1, varval=varval1, vardict=vardict, cycledef=cycledef)
 
         return task
 
@@ -913,8 +907,11 @@ class Tasks:
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
+        cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
+
         resources = self.get_resource('vrfy')
-        task = create_wf_task('vrfy', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+        task = create_wf_task('vrfy', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies,
+                              cycledef=cycledef)
 
         return task
 
@@ -961,8 +958,11 @@ class Tasks:
             deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
+        cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
+
         resources = self.get_resource('arch')
-        task = create_wf_task('arch', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+        task = create_wf_task('arch', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies,
+                              cycledef=cycledef)
 
         return task
 
@@ -1165,9 +1165,10 @@ class Tasks:
 
         groups = self._get_hybgroups(self._base['NMEM_ENKF'], self._configs['efcs']['NMEM_EFCSGRP'])
 
+        cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
         resources = self.get_resource('efcs')
         task = create_wf_task('efcs', resources, cdump=self.cdump, envar=efcsenvars, dependency=dependencies,
-                              metatask='efmn', varname='grp', varval=groups)
+                              metatask='efmn', varname='grp', varval=groups, cycledef=cycledef)
 
         return task
 
@@ -1182,8 +1183,11 @@ class Tasks:
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
+        cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
+
         resources = self.get_resource('echgres')
-        task = create_wf_task('echgres', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+        task = create_wf_task('echgres', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies,
+                              cycledef=cycledef)
 
         return task
 
@@ -1223,9 +1227,11 @@ class Tasks:
         varval1, varval2, varval3 = _get_eposgroups(self._configs['epos'])
         vardict = {varname2: varval2, varname3: varval3}
 
+        cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
+
         resources = self.get_resource('epos')
         task = create_wf_task('epos', resources, cdump=self.cdump, envar=eposenvars, dependency=dependencies,
-                              metatask='epmn', varname=varname1, varval=varval1, vardict=vardict)
+                              metatask='epmn', varname=varname1, varval=varval1, vardict=vardict, cycledef=cycledef)
 
         return task
 
@@ -1241,9 +1247,11 @@ class Tasks:
 
         groups = self._get_hybgroups(self._base['NMEM_ENKF'], self._configs['earc']['NMEM_EARCGRP'], start_index=0)
 
+        cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
+
         resources = self.get_resource('earc')
         task = create_wf_task('earc', resources, cdump=self.cdump, envar=earcenvars, dependency=dependencies,
-                              metatask='eamn', varname='grp', varval=groups)
+                              metatask='eamn', varname='grp', varval=groups, cycledef=cycledef)
 
         return task
 
