@@ -126,6 +126,7 @@ $NLN $JEDIENSEXE $DATA/fv3jedi_ens.x
 
 ################################################################################
 # run executable
+export OMP_NUM_THREADS=$NTHREADS_ATMENSANAL
 export pgm=$JEDIENSEXE
 . prep_step
 $APRUN_ATMENSANAL $DATA/fv3jedi_ens.x $DATA/fv3jedi_ens.yaml 1>&1 2>&2

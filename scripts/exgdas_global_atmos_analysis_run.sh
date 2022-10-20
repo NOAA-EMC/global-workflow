@@ -131,6 +131,7 @@ $NLN $JEDIVAREXE $DATA/fv3jedi_var.x
 
 ################################################################################
 # run executable
+export OMP_NUM_THREADS=$NTHREADS_ATMANAL
 export pgm=$JEDIVAREXE
 . prep_step
 $APRUN_ATMANAL $DATA/fv3jedi_var.x $DATA/fv3jedi_var.yaml 1>&1 2>&2
