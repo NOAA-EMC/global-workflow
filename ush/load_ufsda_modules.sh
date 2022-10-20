@@ -24,7 +24,7 @@ elif [[ -d /lfs3 ]] ; then
 elif [[ -d /scratch1 ]] ; then
   # We are on NOAA Hera
   module load GDAS/hera
-  if [[ "$DEBUG_WORKFLOW" == "YES" ]]; then
+  if [[ "$DEBUG_WORKFLOW" == "YES" ]] ; then
      module list
      pip list
   fi
