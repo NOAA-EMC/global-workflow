@@ -300,5 +300,5 @@ MOM6_predet(){
   if [ ! -d $DATA/OUTPUT ]; then mkdir -p $DATA/OUTPUT; fi
   if [ ! -d $DATA/MOM6_OUTPUT ]; then mkdir -p $DATA/MOM6_OUTPUT; fi
   if [ ! -d $DATA/MOM6_RESTART ]; then mkdir -p $DATA/MOM6_RESTART; fi
-  cd $DATA || exit 8
+  cd "${DATA}" || exit 8
 }
