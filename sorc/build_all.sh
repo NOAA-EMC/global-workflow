@@ -88,7 +88,7 @@ fi
 # shellcheck source-path=sorc
 source ./partial_build.sh $_verbose_opt $_partial_opt
 
-if [[ ${MACHINE_ID} =~ "jet.*" ]]; then
+if [[ ${MACHINE_ID} =~ jet.* ]]; then
   Build_gldas="false"
   Build_ww3_prepost="false"
 fi
