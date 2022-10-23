@@ -10,7 +10,7 @@ source gfs_utils.fd/ush/detect_machine.sh
 
 # detect_machine now includes the compiler on some machines
 #   but the GDAS build script does not want it
-MACHINE_ID=$(echo ${MACHINE_ID} | cut -d "." -f 1)
+MACHINE_ID=$(echo "${MACHINE_ID}" | cut -d "." -f 1)
 
 # use more build jobs if on NOAA HPC
 build_jobs=4

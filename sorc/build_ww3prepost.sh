@@ -45,8 +45,8 @@ finalexecdir=$( pwd -P )/../exec
 
 #Determine machine and load modules
 set +x
-module use ${script_dir}/ufs_model.fd/modulefiles
-module load ufs_${MACHINE_ID}
+module use "${script_dir}/ufs_model.fd/modulefiles"
+module load "ufs_${MACHINE_ID}"
 set -x
 
 #Set WW3 directory, switch, prep and post exes 
