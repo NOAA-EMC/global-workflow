@@ -4,8 +4,9 @@ set -x
 script_dir=$(dirname "${BASH_SOURCE[0]}")
 cd "${script_dir}" || exit 1
 
+export RT_COMPILER="intel"
 # shellcheck disable=SC1091
-source gfs_utils.fd/ush/machine-setup.sh > /dev/null 2>&1
+source ${script_dir}/ufs_model.fd/tests/detect_machine.sh
 # shellcheck disable=
 
 # Default settings
@@ -44,8 +45,8 @@ finalexecdir=$( pwd -P )/../exec
 
 #Determine machine and load modules
 set +x
-module use ../modulefiles
-module load modulefile.ww3.${target}
+module use ${script_dir}/ufs_model.fd/modulefiles
+module load ufs_${MACHINE_ID}
 set -x
 
 #Set WW3 directory, switch, prep and post exes 
