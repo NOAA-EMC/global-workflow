@@ -7,6 +7,13 @@ cwd=$(pwd)
 APP="S2SWA"
 CCPP_SUITES="FV3_GFS_v16,FV3_GFS_v16_ugwpv1,FV3_GFS_v17_p8,FV3_GFS_v16_coupled_nsstNoahmpUGWPv1,FV3_GFS_v17_coupled_p8"
 
+export RT_COMPILER="intel"
+source $cwd/ufs_model.fd/tests/detect_machine.sh
+
+if [[ ${MACHINE_ID} =~ wcoss2.* ]]; then
+	APP='S2SW'
+fi
+
 while getopts ":da:v" option; do
   case "${option}" in
     d) BUILD_TYPE="Debug";;
@@ -23,8 +30,6 @@ done
 
 cd $cwd/ufs_model.fd
 
-export RT_COMPILER="intel"
-source $cwd/ufs_model.fd/tests/detect_machine.sh
 MAKE_OPT="-DAPP=${APP} -DCCPP_SUITES=${CCPP_SUITES}"
 [[ ${BUILD_TYPE:-"Release"} = "DEBUG" ]] && MAKE_OPT+=" -DDEBUG=ON"
 COMPILE_NR=0
