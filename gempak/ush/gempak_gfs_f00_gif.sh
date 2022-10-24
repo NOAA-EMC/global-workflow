@@ -593,7 +593,7 @@ if [ $SENDCOM = YES ]; then
   export input=${COMOUT}/${hgttmp500dev}
   export HEADER=YES
   export OUTPATH=$DATA/gfs_500_hgt_tmp_nh_anl_${cyc}.tif
-  ${UTILgfs}/ush/make_tif.sh
+  ${USHgfs}/make_tif.sh
 fi 
 
    msg=" GEMPAK_GIF ${fhr} hour completed normally"
