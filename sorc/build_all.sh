@@ -73,11 +73,11 @@ fi
 #------------------------------------
 # GET MACHINE
 #------------------------------------
-target=""
+export COMPILER="intel"
 # shellcheck disable=SC1091
-source gfs_utils.fd/ush/machine-setup.sh > /dev/null 2>&1
+source gfs_utils.fd/ush/detect_machine.sh
 # shellcheck disable=
-if [[ -z "${target}" ]]; then
+if [[ -z "${MACHINE_ID}" ]]; then
   echo "FATAL: Unable to determine target machine"
   exit 1
 fi
@@ -88,7 +88,7 @@ fi
 # shellcheck source-path=sorc
 source ./partial_build.sh $_verbose_opt $_partial_opt
 
-if [[ ${target} == "jet" ]]; then
+if [[ ${MACHINE_ID} =~ jet.* ]]; then
   Build_gldas="false"
   Build_ww3_prepost="false"
 fi
