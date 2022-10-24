@@ -166,7 +166,7 @@ cp -rf $DATA/bc $COMOUT/
 # Deterministic abias used in enkf cycle
 alist="abias abias_air abias_int abias_pc"
 for abias in $alist; do
-    cp ${COMIN_GES}/${GPREFIX}${abias} ${COMOUT}/${APREFIX}"${abias}"
+    cp "${COMIN_GES}/${GPREFIX}${abias}" "${COMOUT}/${APREFIX}${abias}"
 done
 
 ################################################################################

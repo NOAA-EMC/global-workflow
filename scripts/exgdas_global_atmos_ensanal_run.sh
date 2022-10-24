@@ -157,7 +157,7 @@ echo "$CDUMP $CDATE atminc done at $(date)" > $COMOUT_ENS/${CDUMP}.${cycle}.logi
 ################################################################################
 # Copy diags and YAML to $COMOUT
 cp -r ${DATA}/fv3jedi_ens.yaml ${COMOUT_ENS}/${CDUMP}.${cycle}.fv3jedi_ens.yaml
-cp -rf ${DATA}/diags "${COMOUT_ENS}/"
+cp -rf "${DATA}/diags" "${COMOUT_ENS}/"
 
 
 ################################################################################
