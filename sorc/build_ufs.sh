@@ -10,7 +10,7 @@ CCPP_SUITES="FV3_GFS_v16,FV3_GFS_v16_ugwpv1,FV3_GFS_v17_p8,FV3_GFS_v16_coupled_n
 export RT_COMPILER="intel"
 source $cwd/ufs_model.fd/tests/detect_machine.sh
 
-if [[ ${MACHINE_ID} =~ WCOSS2.* ]]; then
+if [[ ${MACHINE_ID} =~ wcoss2.* ]]; then
 	APP='S2SW'
 fi
 
