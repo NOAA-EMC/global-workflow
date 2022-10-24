@@ -46,6 +46,7 @@ script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 top_dir=$(cd "$(dirname "${script_dir}")" &> /dev/null && pwd)
 cd "${script_dir}"
 
+COMPILER="intel"
 # shellcheck disable=SC1091
 source gfs_utils.fd/ush/detect_machine.sh  # (sets MACHINE_ID)
 # shellcheck disable=
