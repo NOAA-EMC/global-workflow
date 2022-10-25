@@ -44,7 +44,6 @@ while getopts ":a:c:hov" option; do
     c) _partial_opt+="-c ${OPTARG} ";;
     h) _usage;;
     o) _ops_opt+="-o";;
-    # s) _build_ufs_opt+="-s ${OPTARG} ";;
     v) _verbose_opt="-v";;
     :)
       echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
@@ -85,6 +84,8 @@ fi
 #------------------------------------
 # INCLUDE PARTIAL BUILD
 #------------------------------------
+# Turn off some shellcheck warnings because we want to have
+#   variables with multiple arguments.
 # shellcheck disable=SC2086,SC2248
 source ./partial_build.sh ${_verbose_opt} ${_partial_opt}
 # shellcheck disable=
@@ -97,6 +98,7 @@ fi
 #------------------------------------
 # Exception Handling Init
 #------------------------------------
+# Disable shellcheck warning about single quotes not being substituted.
 # shellcheck disable=SC2016
 ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 # shellcheck disable=
