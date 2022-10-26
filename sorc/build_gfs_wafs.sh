@@ -5,7 +5,7 @@ script_dir=$(dirname "${BASH_SOURCE[0]}")
 cd "${script_dir}" || exit 1
 
 # Check final exec folder exists
-if [ ! -d "../exec" ]; then
+if [[ ! -d "../exec" ]]; then
   mkdir ../exec
 fi
 
