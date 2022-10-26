@@ -21,11 +21,6 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix, ASuffix,
     print('calcanl_gfs beginning at: ',datetime.datetime.utcnow())
 
     IAUHH = IAUHrs
-    if Cdump == "gfs":
-        #IAUHH = list(map(int,'6'))
-        IAUHH = IAUHrs
-    else:
-        IAUHH = IAUHrs
 
     ######## copy and link files
     if DoIAU and l4DEnsVar and Write4Danl:
