@@ -1102,8 +1102,6 @@ class Tasks:
 
             return grp, dep, lst
 
-        #eupd_cdump = 'gdas' if 'gdas' in self.app_config.eupd_cdumps else 'gfs'
-
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump}analcalc'}
         deps.append(rocoto.add_dependency(dep_dict))
