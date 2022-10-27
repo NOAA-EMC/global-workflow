@@ -180,6 +180,9 @@ if [ -d "${script_dir}/gdas.cd" ]; then
     [[ ! -d gdas ]] && mkdir -p gdas
     cd gdas || exit 1
     for gdas_sub in bump crtm fv3jedi; do
+      if [ -d ${gdas_sub} ]; then
+         rm -rf "${gdas_sub}"
+      fi
       fix_ver="gdas_${gdas_sub}_ver"
       ${LINK} "${FIX_DIR}/gdas/${gdas_sub}/${!fix_ver}" "${gdas_sub}"
     done
@@ -203,7 +206,7 @@ if [ -d "${script_dir}/gsi_monitor.fd" ]; then
     [[ ! -d gdas ]] && ( mkdir -p gdas || exit 1 )
     cd gdas || exit 1
     ${LINK} "${script_dir}/gsi_monitor.fd/src/Minimization_Monitor/nwprod/gdas/fix/gdas_minmon_cost.txt"                   .
-    ${LINK} "${script_dir}/gsi_monitor.fd/src/Minimization_Monitor/nwprod/gdas/fix/gdas_minmon_gnorm.txt  "                .
+    ${LINK} "${script_dir}/gsi_monitor.fd/src/Minimization_Monitor/nwprod/gdas/fix/gdas_minmon_gnorm.txt"                  .
     ${LINK} "${script_dir}/gsi_monitor.fd/src/Ozone_Monitor/nwprod/gdas_oznmon/fix/gdas_oznmon_base.tar"                   .
     ${LINK} "${script_dir}/gsi_monitor.fd/src/Ozone_Monitor/nwprod/gdas_oznmon/fix/gdas_oznmon_satype.txt"                 .
     ${LINK} "${script_dir}/gsi_monitor.fd/src/Radiance_Monitor/nwprod/gdas_radmon/fix/gdas_radmon_base.tar"                .
