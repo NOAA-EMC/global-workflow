@@ -398,7 +398,7 @@ cd "${script_dir}"   ||   exit 8
       webtitle.fd
       do
         if [[ -d "${prog}" ]]; then rm -rf "${prog}"; fi
-        ${LINK} gfs_utils.fd/src/"${prog}" .
+        ${LINK} "gfs_utils.fd/src/${prog}" .
     done
 
     if [ -d "${script_dir}/gfs_wafs.fd" ]; then
