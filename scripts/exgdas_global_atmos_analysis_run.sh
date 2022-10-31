@@ -104,7 +104,7 @@ fi
 # link fix files to $DATA
 # static B
 CASE_BERROR=${CASE_BERROR:-${CASE_ANL:-$CASE}}
-$NLN $FV3JEDI_FIX/bump/$CASE_BERROR/ $DATA/berror
+$NLN $FV3JEDI_FIX/$STATICB_TYPE/$CASE_BERROR/ $DATA/berror
 
 # vertical coordinate
 LAYERS=$(expr $LEVS - 1)
