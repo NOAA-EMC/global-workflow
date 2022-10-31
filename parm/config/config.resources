@@ -169,8 +169,8 @@ elif [ $step = "aeroanlinit" ]; then
         layout_y=5
         ;;
      C192 | C96 | C48)    
-        layout_x=3
-        layout_y=3
+        layout_x=8
+        layout_y=8
         ;;
     esac
 
@@ -195,8 +195,8 @@ elif [ $step = "aeroanlrun" ]; then
         layout_y=5
         ;;
      C192 | C96 | C48)    
-        layout_x=3
-        layout_y=3
+        layout_x=8
+        layout_y=8
         ;;
     esac
 

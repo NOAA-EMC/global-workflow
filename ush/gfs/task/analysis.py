@@ -89,7 +89,7 @@ class Analysis(Task):
     def stage_berror(self, filedict):
         logging.info('Staging staticb files')
         self.stage(filedict)
-        loggin.info('Finished staging staticb files')
+        logging.info('Finished staging staticb files')
 
     def stage(self, filedict, skip_missing=False):
         for src, dest in filedict.items():
@@ -306,10 +306,18 @@ class AerosolAnalysis(Analysis):
         # aerosol static-B needs nicas, cor_rh, cor_rv and stddev files.
         b_dir = self.berror_dir 
         berror_dict = {}
+        berror_dict[os.path.join(b_dir, '20160630.000000.cor_rh.coupler.res')] = os.path.join(self.datadir, 'berror', '20160630.000000.cor_rh.coupler.res')
+        berror_dict[os.path.join(b_dir, '20160630.000000.cor_rv.coupler.res')] = os.path.join(self.datadir, 'berror', '20160630.000000.cor_rv.coupler.res')
+        berror_dict[os.path.join(b_dir, '20160630.000000.stddev.coupler.res')] = os.path.join(self.datadir, 'berror', '20160630.000000.stddev.coupler.res') 
         for t in range(1,ntiles+1):
             berror_dict[os.path.join(b_dir, f'20160630.000000.cor_rh.fv_tracer.res.tile{t}.nc')] = os.path.join(self.datadir, 'berror', f'20160630.000000.cor_rh.fv_tracer.res.tile{t}.nc')
-        
-
+            berror_dict[os.path.join(b_dir, f'20160630.000000.cor_rv.fv_tracer.res.tile{t}.nc')] = os.path.join(self.datadir, 'berror', f'20160630.000000.cor_rv.fv_tracer.res.tile{t}.nc')
+            berror_dict[os.path.join(b_dir, f'20160630.000000.stddev.fv_tracer.res.tile{t}.nc')] = os.path.join(self.datadir, 'berror', f'20160630.000000.stddev.fv_tracer.res.tile{t}.nc')
+        nproc = 384 
+        for t in range(1,nproc+1): 
+            berror_dict[os.path.join(b_dir, f'nicas_aero_nicas_local_000384-{t:06}.nc')] = os.path.join(self.datadir, 'berror', f'nicas_aero_nicas_local_000384-{t:06}.nc') 
+        return berror_dict 
+  
     def get_crtm_coeff_dict(self):
         coeff_file_dict = {
             os.path.join(self.fv3jedi_fix,
