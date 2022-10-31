@@ -104,7 +104,9 @@ fi
 # link fix files to $DATA
 # static B
 CASE_BERROR=${CASE_BERROR:-${CASE_ANL:-$CASE}}
-$NLN $FV3JEDI_FIX/$STATICB_TYPE/$CASE_BERROR/ $DATA/berror
+if [ $STATICB_TYPE = "bump" -o $STATICB_TYPE = "gsibec"]; then
+    $NLN $FV3JEDI_FIX/$STATICB_TYPE/$CASE_BERROR/ $DATA/berror
+fi
 
 # vertical coordinate
 LAYERS=$(expr $LEVS - 1)
