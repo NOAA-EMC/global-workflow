@@ -1079,8 +1079,6 @@ class Tasks:
 
     def ecen(self):
 
-        self._is_this_a_gdas_task(self.cdump, 'ecen')
-
         def _get_ecengroups():
 
             if self._base.get('DOIAU_ENKF', False):
@@ -1104,15 +1102,13 @@ class Tasks:
 
             return grp, dep, lst
 
-        eupd_cdump = 'gdas' if 'gdas' in self.app_config.eupd_cdumps else 'gfs'
-
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump}analcalc'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_jediens:
-            dep_dict = {'type': 'task', 'name': f'{eupd_cdump}atmensanalrun'}
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}atmensanalrun'}
         else:
-            dep_dict = {'type': 'task', 'name': f'{eupd_cdump}eupd'}
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}eupd'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
@@ -1133,28 +1129,24 @@ class Tasks:
 
     def esfc(self):
 
-        self._is_this_a_gdas_task(self.cdump, 'esfc')
-
-        eupd_cdump = 'gdas' if 'gdas' in self.app_config.eupd_cdumps else 'gfs'
+        #eupd_cdump = 'gdas' if 'gdas' in self.app_config.eupd_cdumps else 'gfs'
 
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump}analcalc'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_jediens:
-            dep_dict = {'type': 'task', 'name': f'{eupd_cdump}atmensanalrun'}
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}atmensanalrun'}
         else:
-            dep_dict = {'type': 'task', 'name': f'{eupd_cdump}eupd'}
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}eupd'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('esfc')
-        task = create_wf_task('esfc', resources, cdump='gdas', envar=self.envars, dependency=dependencies)
+        task = create_wf_task('esfc', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
 
         return task
 
     def efcs(self):
-
-        self._is_this_a_gdas_task(self.cdump, 'efcs')
 
         deps = []
         dep_dict = {'type': 'metatask', 'name': f'{self.cdump}ecmn'}
@@ -1199,8 +1191,6 @@ class Tasks:
 
     def epos(self):
 
-        self._is_this_a_gdas_task(self.cdump, 'epos')
-
         def _get_eposgroups(epos):
             fhmin = epos['FHMIN_ENKF']
             fhmax = epos['FHMAX_ENKF']
@@ -1244,8 +1234,6 @@ class Tasks:
         return task
 
     def earc(self):
-
-        self._is_this_a_gdas_task(self.cdump, 'earc')
 
         deps = []
         dep_dict = {'type': 'metatask', 'name': f'{self.cdump}epmn'}
