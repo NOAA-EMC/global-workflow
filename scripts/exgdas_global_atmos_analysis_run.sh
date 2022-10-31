@@ -141,10 +141,10 @@ export err=$?; err_chk
 
 ################################################################################
 # translate FV3-JEDI increment to FV3 readable format
-if [ $CASE_ANL = $CASE_ENKF ]; then
-    atmges_fv3=$COMIN_GES/${GPREFIX}atmf006.ensres.nc
-else
+if [ $CASE_BERROR = $CASE ]; then
     atmges_fv3=$COMIN_GES/${GPREFIX}atmf006.nc
+else
+    atmges_fv3=$COMIN_GES/${GPREFIX}atmf006.ensres.nc
 fi
 atminc_jedi=$DATA/anl/atminc.${PDY}_${cyc}0000z.nc4
 atminc_fv3=$COMOUT/${CDUMP}.${cycle}.atminc.nc
