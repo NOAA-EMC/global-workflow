@@ -13,7 +13,7 @@ source "$HOMEgfs/ush/preamble.sh"
 
 f=$1
 
-export WGRIB2=${WGRIB2:-${NWROOT}/grib_util.v1.1.0/exec/wgrib2}
+export WGRIB2=${WGRIB2:-${wgrib2_ROOT}/bin/wgrib2}
 
 # export WGRIB2=/gpfs/dell1/nco/ops/nwprod/grib_util.v1.1.0/exec/wgrib2
 

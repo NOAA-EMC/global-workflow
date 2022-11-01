@@ -31,7 +31,7 @@ echo " Process Bulletins of forecast winds and temps for Hawaii    "
 echo " and 15 sites outside of the Hawaiian Islands.               "
 echo "#############################################################"
 echo " "
-${TRACE_ON:-set -x}
+set_trace
 
 export pgm=bulls_fbwndgfs
 . prep_step
@@ -79,7 +79,7 @@ fi
 if test "$SENDDBN" = 'YES'
 then
 #    make_ntc_bull.pl WMOBH NONE KWNO NONE tran.fbwnd_pacific ${COMOUTwmo}/tran.fbwnd_pacific.$job_name
-   ${UTILgfs}/ush/make_ntc_bull.pl WMOBH NONE KWNO NONE tran.fbwnd_pacific ${COMOUTwmo}/tran.fbwnd_pacific.$job_name
+   ${USHgfs}/make_ntc_bull.pl WMOBH NONE KWNO NONE tran.fbwnd_pacific ${COMOUTwmo}/tran.fbwnd_pacific.$job_name
 fi
 
 #####################################################################

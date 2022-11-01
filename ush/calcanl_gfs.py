@@ -21,10 +21,6 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix, ASuffix,
     print('calcanl_gfs beginning at: ',datetime.datetime.utcnow())
 
     IAUHH = IAUHrs
-    if Cdump == "gfs":
-        IAUHH = list(map(int,'6'))
-    else:
-        IAUHH = IAUHrs
 
     ######## copy and link files
     if DoIAU and l4DEnsVar and Write4Danl:
@@ -40,7 +36,7 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix, ASuffix,
                 gsi_utils.link_file(RunDir+'/siganl', CalcAnlDir+'/anl.06')
                 gsi_utils.copy_file(ExecChgresInc, CalcAnlDir+'/chgres_inc.x')
                 # for ensemble res analysis
-                if Cdump == "gdas":
+                if Cdump in ["gdas", "gfs"]:
                     CalcAnlDir = RunDir+'/calcanl_ensres_'+format(fh, '02')
                     if not os.path.exists(CalcAnlDir):
                         gsi_utils.make_dir(CalcAnlDir)
@@ -304,7 +300,7 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix, ASuffix,
 
 
     ######## compute determinstic analysis on ensemble resolution
-    if Cdump == "gdas":
+    if Cdump in ["gdas", "gfs"]:
         chgres_jobs = []
         for fh in IAUHH:
             # first check to see if guess file exists

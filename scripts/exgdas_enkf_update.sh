@@ -153,7 +153,6 @@ $NLN $COMOUT_ANL_ENS/$GBIASe satbias_in
 if [ $USE_CFP = "YES" ]; then
    [[ -f $DATA/untar.sh ]] && rm $DATA/untar.sh
    [[ -f $DATA/mp_untar.sh ]] && rm $DATA/mp_untar.sh
-   set +x
    cat > $DATA/untar.sh << EOFuntar
 #!/bin/sh
 memchar=\$1

@@ -34,10 +34,10 @@ source "$HOMEgfs/ush/preamble.sh" "$FH"
 
 export downset=${downset:-1}
 export DATA=${DATA:-/ptmpd2/$LOGNAME/test}
-export CNVGRIB=${CNVGRIB:-${NWPROD:-/nwprod}/util/exec/cnvgrib21}
-export COPYGB2=${COPYGB2:-${NWPROD:-/nwprod}/util/exec/copygb2}
-export WGRIB2=${WGRIB2:-${NWPROD:-/nwprod}/util/exec/wgrib2}
-export GRBINDEX=${GRBINDEX:-${NWPROD:-nwprod}/util/exec/grbindex}
+export CNVGRIB=${CNVGRIB:-${grib_util_ROOT}/bin/cnvgrib}
+export COPYGB2=${COPYGB2:-${grib_util_ROOT}/bin/copygb}
+export WGRIB2=${WGRIB2:-${wgrib2_ROOT}/bin/wgrib2}
+export GRBINDEX=${GRBINDEX:-${wgrib2_ROOT}/bin/grbindex}
 export RUN=${RUN:-"gfs"}
 export cycn=$(echo $CDATE |cut -c 9-10)
 export TCYC=${TCYC:-".t${cycn}z."}
@@ -130,7 +130,7 @@ while [ $nset -le $totalset ]; do
     set +e
     $WGRIB2 -d $end $tmpfile | egrep -i "ugrd|ustm|uflx|u-gwd"
     export rc=$?
-    ${ERR_EXIT_ON:-set -eu}
+    set_strict
     if [[ $rc -eq 0 ]] ; then
       export end=$(expr ${end} + 1)
     elif [[ $rc -gt 1 ]]; then
@@ -141,7 +141,7 @@ while [ $nset -le $totalset ]; do
     set +e
     $WGRIB2 -d $end $tmpfile | egrep -i "land"
     export rc=$?
-    ${ERR_EXIT_ON:-set -eu}
+    set_strict
     if [[ $rc -eq 0 ]] ; then
       export end=$(expr ${end} + 1)
     elif [[ $rc -gt 1 ]]; then

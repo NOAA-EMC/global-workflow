@@ -187,7 +187,7 @@ if [[ $err -eq 0 ]]; then
 
       for dtype in ${gesanl}; do
 
-         rm input
+         if [[ -f input ]]; then rm input; fi
 
          if [[ $dtype == "anl" ]]; then
             data_file=${type}_anl.${PDATE}.ieee_d
@@ -252,7 +252,7 @@ EOF
 
    ${USHradmon}/rstprod.sh
 
-   if compgen -G "time*.ieee_d* time*.ctl*" > /dev/null; then
+   if compgen -G "time*.ieee_d*" > /dev/null || compgen -G "time*.ctl*" > /dev/null; then
      tar_file=radmon_time.tar
      tar -cf $tar_file time*.ieee_d* time*.ctl*
      ${COMPRESS} ${tar_file}

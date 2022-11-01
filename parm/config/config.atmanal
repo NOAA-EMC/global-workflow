@@ -8,8 +8,8 @@ echo "BEGIN: config.atmanal"
 export OBS_YAML_DIR=$HOMEgfs/sorc/gdas.cd/parm/atm/obs/config/
 export OBS_LIST=$HOMEgfs/sorc/gdas.cd/parm/atm/obs/lists/gdas_prototype.yaml
 export ATMVARYAML=$HOMEgfs/sorc/gdas.cd/parm/atm/variational/3dvar_dripcg.yaml
-export BERROR_YAML=$HOMEgfs/sorc/gdas.cd/parm/atm/berror/hybvar_bump.yaml
-export FV3JEDI_FIX=$HOMEgfs/fix/fix_jedi
+export BERROR_YAML=$HOMEgfs/sorc/gdas.cd/parm/atm/berror/staticb_identity.yaml
+export FV3JEDI_FIX=$HOMEgfs/fix/gdas
 export R2D2_OBS_DB='ufsda_test'
 export R2D2_OBS_DUMP='oper_gdas'
 export R2D2_OBS_SRC='ncdiag'

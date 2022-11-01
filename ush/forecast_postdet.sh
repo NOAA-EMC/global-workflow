@@ -150,8 +150,6 @@ EOF
     nfiles=$(ls -1 $DATA/INPUT/* | wc -l)
     if [ $nfiles -le 0 ]; then
       echo SUB ${FUNCNAME[0]}: Initial conditions must exist in $DATA/INPUT, ABORT!
-      msg="SUB ${FUNCNAME[0]}: Initial conditions must exist in $DATA/INPUT, ABORT!"
-      postmsg "$jlogfile" "$msg"
       exit 1
     fi
   fi
@@ -179,7 +177,7 @@ EOF
 
   # Fractional grid related
   if [ $FRAC_GRID = ".true." ]; then
-    OROFIX=${OROFIX:-"${FIX_DIR}/fix_fv3_fracoro/${CASE}.mx${OCNRES}_frac"}
+    OROFIX=${OROFIX:-"${FIX_DIR}/orog/${CASE}.mx${OCNRES}_frac"}
     FIX_SFC=${FIX_SFC:-"${OROFIX}/fix_sfc"}
     for n in $(seq 1 $ntiles); do
       $NLN ${OROFIX}/oro_${CASE}.mx${OCNRES}.tile${n}.nc $DATA/INPUT/oro_data.tile${n}.nc
@@ -240,7 +238,7 @@ EOF
   fi
 
   # Files for GWD
-  OROFIX_ugwd=${OROFIX_ugwd:-"${FIX_DIR}/fix_ugwd"}
+  OROFIX_ugwd=${OROFIX_ugwd:-"${FIX_DIR}/ugwd"}
   $NLN ${OROFIX_ugwd}/ugwp_limb_tau.nc $DATA/ugwp_limb_tau.nc
   for n in $(seq 1 $ntiles); do
     $NLN ${OROFIX_ugwd}/$CASE/${CASE}_oro_data_ls.tile${n}.nc $DATA/INPUT/oro_data_ls.tile${n}.nc
@@ -278,12 +276,12 @@ EOF
 
   ## merra2 aerosol climo
   if [ $IAER -eq "1011" ]; then
-    FIX_AER="${FIX_DIR}/fix_aer"
+    FIX_AER="${FIX_DIR}/aer"
     for month in $(seq 1 12); do
       MM=$(printf %02d $month)
       $NLN "${FIX_AER}/merra2.aerclim.2003-2014.m${MM}.nc" "aeroclim.m${MM}.nc"
     done
-    FIX_LUT="${FIX_DIR}/fix_lut"
+    FIX_LUT="${FIX_DIR}/lut"
     $NLN $FIX_LUT/optics_BC.v1_3.dat $DATA/optics_BC.dat
     $NLN $FIX_LUT/optics_OC.v1_3.dat $DATA/optics_OC.dat
     $NLN $FIX_LUT/optics_DU.v15_3.dat $DATA/optics_DU.dat
@@ -784,7 +782,7 @@ MOM6_postdet() {
   $NCP -pf $FIXmom/$OCNRES/* $DATA/INPUT/
 
   # Copy coupled grid_spec
-  spec_file="$FIX_DIR/fix_cpl/a${CASE}o${OCNRES}/grid_spec.nc"
+  spec_file="$FIX_DIR/cpl/a${CASE}o${OCNRES}/grid_spec.nc"
   if [ -s $spec_file ]; then
     $NCP -pf $spec_file $DATA/INPUT/
   else
@@ -1015,6 +1013,13 @@ GOCART_postdet() {
     DD=$(echo $VDATE | cut -c7-8)
     HH=$(echo $VDATE | cut -c9-10)
     SS=$((10#$HH*3600))
+
+    #
+    # Temporarily delete existing files due to noclobber in GOCART
+    #
+    if [[ -e "${COMOUTaero}/gocart.inst_aod.${YYYY}${MM}${DD}_${HH}00z.nc4" ]]; then
+      rm "${COMOUTaero}/gocart.inst_aod.${YYYY}${MM}${DD}_${HH}00z.nc4"
+    fi
 
     $NLN $COMOUTaero/gocart.inst_aod.${YYYY}${MM}${DD}_${HH}00z.nc4 $DATA/gocart.inst_aod.${YYYY}${MM}${DD}_${HH}00z.nc4
   done

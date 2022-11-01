@@ -16,7 +16,7 @@ function _usage() {
 Builds all of the global-workflow components by calling the individual build
   scripts in sequence.
 
-Usage: $BASH_SOURCE [-a UFS_app][-c build_config][-h][-v]
+Usage: ${BASH_SOURCE[0]} [-a UFS_app][-c build_config][-h][-v]
   -a UFS_app:
     Build a specific UFS app instead of the default
   -c build_config:
@@ -29,9 +29,13 @@ EOF
   exit 1
 }
 
+script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
+cd "${script_dir}" || exit 1
+
 _build_ufs_opt=""
 _ops_opt=""
 _verbose_opt=""
+_partial_opt=""
 # Reset option counter in case this script is sourced
 OPTIND=1
 while getopts ":a:c:hov" option; do
@@ -40,14 +44,13 @@ while getopts ":a:c:hov" option; do
     c) _partial_opt+="-c ${OPTARG} ";;
     h) _usage;;
     o) _ops_opt+="-o";;
-    # s) _build_ufs_opt+="-s ${OPTARG} ";;
     v) _verbose_opt="-v";;
-    \?)
-      echo "[$BASH_SOURCE]: Unrecognized option: ${option}"
+    :)
+      echo "[${BASH_SOURCE[0]}]: ${option} requires an argument"
       usage
       ;;
-    :)
-      echo "[$BASH_SOURCE]: ${option} requires an argument"
+    *)
+      echo "[${BASH_SOURCE[0]}]: Unrecognized option: ${option}"
       usage
       ;;
   esac
@@ -55,15 +58,14 @@ done
 
 shift $((OPTIND-1))
 
-build_dir=$(pwd)
-logs_dir=$build_dir/logs
-if [ ! -d $logs_dir  ]; then
+logs_dir="${script_dir}/logs"
+if [[ ! -d "${logs_dir}" ]]; then
   echo "Creating logs folder"
-  mkdir $logs_dir
+  mkdir "${logs_dir}" || exit 1
 fi
 
 # Check final exec folder exists
-if [ ! -d "../exec" ]; then
+if [[ ! -d "../exec" ]]; then
   echo "Creating ../exec folder"
   mkdir ../exec
 fi
@@ -71,68 +73,101 @@ fi
 #------------------------------------
 # GET MACHINE
 #------------------------------------
-target=""
-source ./machine-setup.sh > /dev/null 2>&1
+export COMPILER="intel"
+source gfs_utils.fd/ush/detect_machine.sh
+source gfs_utils.fd/ush/module-setup.sh
+if [[ -z "${MACHINE_ID}" ]]; then
+  echo "FATAL: Unable to determine target machine"
+  exit 1
+fi
 
 #------------------------------------
 # INCLUDE PARTIAL BUILD
 #------------------------------------
-source ./partial_build.sh $_verbose_opt $_partial_opt
+# Turn off some shellcheck warnings because we want to have
+#   variables with multiple arguments.
+# shellcheck disable=SC2086,SC2248
+source ./partial_build.sh ${_verbose_opt} ${_partial_opt}
+# shellcheck disable=
 
-if [ $target = jet ]; then
-  Build_gldas=false
-  Build_gfs_util=false
-  Build_ww3_prepost=false
+if [[ ${MACHINE_ID} =~ jet.* ]]; then
+  Build_gldas="false"
+  Build_ww3_prepost="false"
 fi
 
 #------------------------------------
 # Exception Handling Init
 #------------------------------------
+# Disable shellcheck warning about single quotes not being substituted.
+# shellcheck disable=SC2016
 ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
+# shellcheck disable=
 err=0
+
+#------------------------------------
+# build gfs_utils
+#------------------------------------
+if [[ ${Build_gfs_utils} == 'true' ]]; then
+  echo " .... Building gfs_utils .... "
+    # shellcheck disable=SC2086,SC2248
+  ./build_gfs_utils.sh ${_verbose_opt} > "${logs_dir}/build_gfs_utils.log" 2>&1
+    # shellcheck disable=
+  rc=$?
+  if (( rc != 0 )) ; then
+    echo "Fatal error in building gfs_utils."
+    echo "The log file is in ${logs_dir}/build_gfs_utils.log"
+  fi
+  err=$((err + rc))
+fi
 
 #------------------------------------
 # build WW3 pre & post execs
 #------------------------------------
-$Build_ww3_prepost && {
+if [[ ${Build_ww3_prepost} == "true" ]]; then
   echo " .... Building WW3 pre and post execs .... "
-  ./build_ww3prepost.sh ${_verbose_opt} ${_build_ufs_opt} > $logs_dir/build_ww3_prepost.log 2>&1
+  # shellcheck disable=SC2086,SC2248
+  ./build_ww3prepost.sh ${_verbose_opt} ${_build_ufs_opt} > "${logs_dir}/build_ww3_prepost.log" 2>&1
+  # shellcheck disable=
   rc=$?
-  if [[ $rc -ne 0 ]] ; then
+  if (( rc != 0 )) ; then
     echo "Fatal error in building WW3 pre/post processing."
-    echo "The log file is in $logs_dir/build_ww3_prepost.log"
+    echo "The log file is in ${logs_dir}/build_ww3_prepost.log"
   fi
-  ((err+=$rc))
-}
+  err=$((err + rc))
+fi
 
 #------------------------------------
 # build forecast model
 #------------------------------------
-$Build_ufs_model && {
+if [[ ${Build_ufs_model} == 'true' ]]; then
   echo " .... Building forecast model .... "
-  ./build_ufs.sh $_verbose_opt ${_build_ufs_opt} > $logs_dir/build_ufs.log 2>&1
+  # shellcheck disable=SC2086,SC2248
+  ./build_ufs.sh ${_verbose_opt} ${_build_ufs_opt} > "${logs_dir}/build_ufs.log" 2>&1
+  # shellcheck disable=
   rc=$?
-  if [[ $rc -ne 0 ]] ; then
+  if (( rc != 0 )) ; then
     echo "Fatal error in building UFS model."
-    echo "The log file is in $logs_dir/build_ufs.log"
+    echo "The log file is in ${logs_dir}/build_ufs.log"
   fi
-  ((err+=$rc))
-}
+  err=$((err + rc))
+fi
 
 #------------------------------------
 # build GSI and EnKF - optional checkout
 #------------------------------------
-if [ -d gsi_enkf.fd ]; then
-  $Build_gsi_enkf && {
-  echo " .... Building gsi and enkf .... "
-  ./build_gsi_enkf.sh $_ops_opt $_verbose_opt > $logs_dir/build_gsi_enkf.log 2>&1
-  rc=$?
-  if [[ $rc -ne 0 ]] ; then
-    echo "Fatal error in building gsi_enkf."
-    echo "The log file is in $logs_dir/build_gsi_enkf.log"
+if [[ -d gsi_enkf.fd ]]; then
+  if [[ ${Build_gsi_enkf} == 'true' ]]; then
+    echo " .... Building gsi and enkf .... "
+    # shellcheck disable=SC2086,SC2248
+    ./build_gsi_enkf.sh ${_ops_opt} ${_verbose_opt} > "${logs_dir}/build_gsi_enkf.log" 2>&1
+    # shellcheck disable=
+    rc=$?
+    if (( rc != 0 )) ; then
+      echo "Fatal error in building gsi_enkf."
+      echo "The log file is in ${logs_dir}/build_gsi_enkf.log"
+    fi
+    err=$((err + rc))
   fi
-  ((err+=$rc))
-}
 else
   echo " .... Skip building gsi and enkf .... "
 fi
@@ -140,17 +175,19 @@ fi
 #------------------------------------
 # build gsi utilities
 #------------------------------------
-if [ -d gsi_utils.fd ]; then
-  $Build_gsi_utils && {
-  echo " .... Building gsi utilities .... "
-  ./build_gsi_utils.sh $_ops_opt $_verbose_opt > $logs_dir/build_gsi_utils.log 2>&1
-  rc=$?
-  if [[ $rc -ne 0 ]] ; then
-    echo "Fatal error in building gsi utilities."
-    echo "The log file is in $logs_dir/build_gsi_utils.log"
+if [[ -d gsi_utils.fd ]]; then
+  if [[ ${Build_gsi_utils} == 'true' ]]; then
+    echo " .... Building gsi utilities .... "
+    # shellcheck disable=SC2086,SC2248
+    ./build_gsi_utils.sh ${_ops_opt} ${_verbose_opt} > "${logs_dir}/build_gsi_utils.log" 2>&1
+    # shellcheck disable=
+    rc=$?
+    if (( rc != 0 )) ; then
+      echo "Fatal error in building gsi utilities."
+      echo "The log file is in ${logs_dir}/build_gsi_utils.log"
+    fi
+    err=$((err + rc))
   fi
-  ((err+=$rc))
-}
 else
   echo " .... Skip building gsi utilities .... "
 fi
@@ -158,17 +195,19 @@ fi
 #------------------------------------
 # build gdas - optional checkout
 #------------------------------------
-if [ -d gdas.cd ]; then
-  $Build_gdas  && {
-  echo " .... Building GDASApp  .... "
-  ./build_gdas.sh $_verbose_opt > $logs_dir/build_gdas.log 2>&1
-  rc=$?
-  if [[ $rc -ne 0 ]] ; then
-    echo "Fatal error in building GDASApp."
-    echo "The log file is in $logs_dir/build_gdas.log"
+if [[ -d gdas.cd ]]; then
+  if [[ ${Build_gdas} == 'true' ]]; then
+    echo " .... Building GDASApp  .... "
+    # shellcheck disable=SC2086,SC2248
+    ./build_gdas.sh ${_verbose_opt} > "${logs_dir}/build_gdas.log" 2>&1
+    # shellcheck disable=
+    rc=$?
+    if (( rc != 0 )) ; then
+      echo "Fatal error in building GDASApp."
+      echo "The log file is in ${logs_dir}/build_gdas.log"
+    fi
+    err=$((err + rc))
   fi
-  ((err+=$rc))
-}
 else
   echo " .... Skip building GDASApp  .... "
 fi
@@ -176,17 +215,19 @@ fi
 #------------------------------------
 # build gsi monitor
 #------------------------------------
-if [ -d gsi_monitor.fd ]; then
-  $Build_gsi_monitor && {
-  echo " .... Building gsi monitor .... "
-  ./build_gsi_monitor.sh $_ops_opt $_verbose_opt > $logs_dir/build_gsi_monitor.log 2>&1
-  rc=$?
-  if [[ $rc -ne 0 ]] ; then
-    echo "Fatal error in building gsi monitor."
-    echo "The log file is in $logs_dir/build_gsi_monitor.log"
+if [[ -d gsi_monitor.fd ]]; then
+  if [[ ${Build_gsi_monitor} == 'true' ]]; then
+    echo " .... Building gsi monitor .... "
+    # shellcheck disable=SC2086,SC2248
+    ./build_gsi_monitor.sh ${_ops_opt} ${_verbose_opt} > "${logs_dir}/build_gsi_monitor.log" 2>&1
+    # shellcheck disable=
+    rc=$?
+    if (( rc != 0 )) ; then
+      echo "Fatal error in building gsi monitor."
+      echo "The log file is in ${logs_dir}/build_gsi_monitor.log"
+    fi
+    err=$((err + rc))
   fi
-  ((err+=$rc))
-}
 else
   echo " .... Skip building gsi monitor .... "
 fi
@@ -194,45 +235,51 @@ fi
 #------------------------------------
 # build UPP
 #------------------------------------
-$Build_upp && {
+if [[ ${Build_upp} == 'true' ]]; then
   echo " .... Building UPP .... "
-  ./build_upp.sh $_ops_opt $_verbose_opt > $logs_dir/build_upp.log 2>&1
+  # shellcheck disable=SC2086,SC2248
+  ./build_upp.sh ${_ops_opt} ${_verbose_opt} > "${logs_dir}/build_upp.log" 2>&1
+  # shellcheck disable=
   rc=$?
-  if [[ $rc -ne 0 ]] ; then
+  if (( rc != 0 )) ; then
     echo "Fatal error in building UPP."
-    echo "The log file is in $logs_dir/build_upp.log"
+    echo "The log file is in ${logs_dir}/build_upp.log"
   fi
-  ((err+=$rc))
-}
+  err=$((err + rc))
+fi
 
 #------------------------------------
 # build ufs_utils
 #------------------------------------
-$Build_ufs_utils && {
+if [[ ${Build_ufs_utils} == 'true' ]]; then
   echo " .... Building ufs_utils .... "
-  ./build_ufs_utils.sh $_verbose_opt > $logs_dir/build_ufs_utils.log 2>&1
+  # shellcheck disable=SC2086,SC2248
+  ./build_ufs_utils.sh ${_verbose_opt} > "${logs_dir}/build_ufs_utils.log" 2>&1
+  # shellcheck disable=
   rc=$?
-  if [[ $rc -ne 0 ]] ; then
+  if (( rc != 0 )) ; then
     echo "Fatal error in building ufs_utils."
-    echo "The log file is in $logs_dir/build_ufs_utils.log"
+    echo "The log file is in ${logs_dir}/build_ufs_utils.log"
   fi
-  ((err+=$rc))
-}
+  err=$((err + rc))
+fi
 
 #------------------------------------
 # build gldas
 #------------------------------------
-if [ -d gldas.fd ]; then
-  $Build_gldas && {
-  echo " .... Building gldas .... "
-  ./build_gldas.sh $_verbose_opt > $logs_dir/build_gldas.log 2>&1
-  rc=$?
-  if [[ $rc -ne 0 ]] ; then
-    echo "Fatal error in building gldas."
-    echo "The log file is in $logs_dir/build_gldas.log"
+if [[ -d gldas.fd ]]; then
+  if [[ ${Build_gldas} == 'true' ]]; then
+    echo " .... Building gldas .... "
+    # shellcheck disable=SC2086,SC2248
+    ./build_gldas.sh ${_verbose_opt} > "${logs_dir}/build_gldas.log" 2>&1
+    # shellcheck disable=
+    rc=$?
+    if (( rc != 0 )) ; then
+      echo "Fatal error in building gldas."
+      echo "The log file is in ${logs_dir}/build_gldas.log"
+    fi
+    err=$((err + rc))
   fi
-  ((err+=$rc))
-}
 else
   echo " .... Skip building gldas .... "
 fi
@@ -240,52 +287,31 @@ fi
 #------------------------------------
 # build gfs_wafs - optional checkout
 #------------------------------------
-if [ -d gfs_wafs.fd ]; then
-  $Build_gfs_wafs  && {
-  echo " .... Building gfs_wafs  .... "
-  ./build_gfs_wafs.sh $_verbose_opt > $logs_dir/build_gfs_wafs.log 2>&1
-  rc=$?
-  if [[ $rc -ne 0 ]] ; then
-    echo "Fatal error in building gfs_wafs."
-    echo "The log file is in $logs_dir/build_gfs_wafs.log"
+if [[ -d gfs_wafs.fd ]]; then
+  if [[ ${Build_gfs_wafs} == 'true' ]]; then
+    echo " .... Building gfs_wafs  .... "
+    # shellcheck disable=SC2086,SC2248
+    ./build_gfs_wafs.sh ${_verbose_opt} > "${logs_dir}/build_gfs_wafs.log" 2>&1
+    # shellcheck disable=
+    rc=$?
+    if (( rc != 0 )) ; then
+      echo "Fatal error in building gfs_wafs."
+      echo "The log file is in ${logs_dir}/build_gfs_wafs.log"
+    fi
+    err=$((err + rc))
   fi
-  ((err+=$rc))
-}
 fi
-
-#------------------------------------
-# build workflow_utils
-#------------------------------------
-$Build_workflow_utils && {
-  echo " .... Building workflow_utils .... "
-  target=$target ./build_workflow_utils.sh $_verbose_opt > $logs_dir/build_workflow_utils.log 2>&1
-  rc=$?
-  if [[ $rc -ne 0 ]] ; then
-    echo "Fatal error in building workflow_utils."
-    echo "The log file is in $logs_dir/build_workflow_utils.log"
-  fi
-  ((err+=$rc))
-}
-
-#------------------------------------
-# build gfs_util
-#------------------------------------
-$Build_gfs_util && {
-  echo " .... Building gfs_util .... "
-  ./build_gfs_util.sh $_verbose_opt > $logs_dir/build_gfs_util.log 2>&1
-  rc=$?
-  if [[ $rc -ne 0 ]] ; then
-      echo "Fatal error in building gfs_util."
-      echo "The log file is in $logs_dir/build_gfs_util.log"
-  fi
-  ((err+=$rc))
-}
 
 #------------------------------------
 # Exception Handling
 #------------------------------------
-[[ $err -ne 0 ]] && echo "FATAL BUILD ERROR: Please check the log file for detail, ABORT!"
-$ERRSCRIPT || exit $err
+if (( err != 0 )); then
+  cat << EOF
+BUILD ERROR: One or more components failed to build
+  Check the associated build log(s) for details.
+EOF
+  ${ERRSCRIPT} || exit "${err}"
+fi
 
 echo;echo " .... Build system finished .... "
 

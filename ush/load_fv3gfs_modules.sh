@@ -33,6 +33,9 @@ elif [[ -d /glade ]] ; then
 elif [[ -d /lustre && -d /ncrc ]] ; then
   # We are on GAEA.
   module load module_base.gaea
+elif [[ -d /data/prod ]] ; then
+  # We are on SSEC S4
+  module load module_base.s4
 else
   echo WARNING: UNKNOWN PLATFORM
 fi
@@ -41,4 +44,4 @@ fi
 ulimit -S -s "$ulimit_s"
 unset ulimit_s
 
-${TRACE_ON:-set -x}
+set_trace
