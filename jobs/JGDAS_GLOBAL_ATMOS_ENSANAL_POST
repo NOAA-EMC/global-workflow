@@ -82,20 +82,13 @@ export COMIN="$ROTDIR/$CDUMP.$PDY/$cyc/$COMPONENT"
 export COMIN_GES="$ROTDIR/$GDUMP.$gPDY/$gcyc/$COMPONENT"
 export COMIN_GES_ENS="$ROTDIR/enkf$GDUMP.$gPDY/$gcyc/$COMPONENT"
 
-# NOTE BELOW IS A HACK FOR TESTING
-# PLEASE FIX THIS LATER
-# ASK @aerorahul
-# HOW TO HANDLE DIFFERENT COMPILERS/ETC. FOR MODEL VS DA
-# PROD_UTIL, ETC. DO NOT EXIST FOR JEDI MODULE VERSIONS
-module purge
-module use $HOMEgfs/sorc/gdas.cd/modulefiles
-module load GDAS/orion
+# Add UFSDA to PYTHONPATH
 export PYTHONPATH=$HOMEgfs/sorc/gdas.cd/ush/:$PYTHONPATH
 
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASPOSTPY:-$HOMEgfs/sorc/gdas.cd/scripts/exgdas_global_atmos_ensanal_post.py}
+EXSCRIPT=${GDASPOSTPY:-$HOMEgfs/scripts/exgdas_global_atmos_ensanal_post.py}
 $EXSCRIPT
 status=$?
 [[ $status -ne 0 ]] && exit $status

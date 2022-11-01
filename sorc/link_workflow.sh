@@ -44,12 +44,13 @@ shift $((OPTIND-1))
 
 script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 top_dir=$(cd "$(dirname "${script_dir}")" &> /dev/null && pwd)
-cd ${script_dir}
+cd "${script_dir}"
 
+COMPILER="intel"
 # shellcheck disable=SC1091
-source gfs_utils.fd/ush/machine-setup.sh > /dev/null 2>&1
+source gfs_utils.fd/ush/detect_machine.sh  # (sets MACHINE_ID)
 # shellcheck disable=
-machine="${target:?}"
+machine=$(echo "${MACHINE_ID}" | cut -d. -f1)
 
 #------------------------------
 #--model fix fields
@@ -133,11 +134,14 @@ cd "${top_dir}/parm/post" || exit 1
     done
 
 cd "${top_dir}/scripts" || exit 8
-    $LINK "${script_dir}/ufs_utils.fd/scripts/exemcsfc_global_sfc_prep.sh" .
+    ${LINK} "${script_dir}/ufs_utils.fd/scripts/exemcsfc_global_sfc_prep.sh" .
 cd "${top_dir}/ush" || exit 8
     for file in emcsfc_ice_blend.sh  fv3gfs_driver_grid.sh  fv3gfs_make_orog.sh  global_cycle_driver.sh \
         emcsfc_snow.sh  fv3gfs_filter_topo.sh  global_cycle.sh  fv3gfs_make_grid.sh ; do
         ${LINK} "${script_dir}/ufs_utils.fd/ush/${file}" .
+    done
+    for file in finddate.sh  make_ntc_bull.pl  make_NTC_file.pl  make_tif.sh  month_name.sh ; do
+        ${LINK} "${script_dir}/gfs_utils.fd/ush/${file}" .
     done
 
 #-----------------------------------
@@ -176,6 +180,9 @@ if [ -d "${script_dir}/gdas.cd" ]; then
     [[ ! -d gdas ]] && mkdir -p gdas
     cd gdas || exit 1
     for gdas_sub in bump crtm fv3jedi; do
+      if [ -d "${gdas_sub}" ]; then
+         rm -rf "${gdas_sub}"
+      fi
       fix_ver="gdas_${gdas_sub}_ver"
       ${LINK} "${FIX_DIR}/gdas/${gdas_sub}/${!fix_ver}" "${gdas_sub}"
     done
@@ -199,7 +206,7 @@ if [ -d "${script_dir}/gsi_monitor.fd" ]; then
     [[ ! -d gdas ]] && ( mkdir -p gdas || exit 1 )
     cd gdas || exit 1
     ${LINK} "${script_dir}/gsi_monitor.fd/src/Minimization_Monitor/nwprod/gdas/fix/gdas_minmon_cost.txt"                   .
-    ${LINK} "${script_dir}/gsi_monitor.fd/src/Minimization_Monitor/nwprod/gdas/fix/gdas_minmon_gnorm.txt  "                .
+    ${LINK} "${script_dir}/gsi_monitor.fd/src/Minimization_Monitor/nwprod/gdas/fix/gdas_minmon_gnorm.txt"                  .
     ${LINK} "${script_dir}/gsi_monitor.fd/src/Ozone_Monitor/nwprod/gdas_oznmon/fix/gdas_oznmon_base.tar"                   .
     ${LINK} "${script_dir}/gsi_monitor.fd/src/Ozone_Monitor/nwprod/gdas_oznmon/fix/gdas_oznmon_satype.txt"                 .
     ${LINK} "${script_dir}/gsi_monitor.fd/src/Radiance_Monitor/nwprod/gdas_radmon/fix/gdas_radmon_base.tar"                .
@@ -227,7 +234,7 @@ for utilexe in fbwndgfs.x gaussian_sfcanl.x gfs_bufr.x regrid_nemsio.x supvit.x 
   syndat_maksynrc.x syndat_qctropcy.x tocsbufr.x enkf_chgres_recenter.x \
   enkf_chgres_recenter_nc.x fv3nc2nemsio.x tave.x vint.x reg2grb2.x ; do
     [[ -s "${utilexe}" ]] && rm -f "${utilexe}"
-    ${LINK} "${script_dir}/gfs_utils.fd/sorc/install/bin/${utilexe}" .
+    ${LINK} "${script_dir}/gfs_utils.fd/install/bin/${utilexe}" .
 done
 
 [[ -s "ufs_model.x" ]] && rm -f ufs_model.x
@@ -241,7 +248,7 @@ if [ -d "${script_dir}/gfs_wafs.fd" ]; then
           wafs_awc_wafavn.x  wafs_blending.x  wafs_blending_0p25.x \
           wafs_cnvgrib2.x  wafs_gcip.x  wafs_grib2_0p25.x \
           wafs_makewafs.x  wafs_setmissing.x; do
-        [[ -s $wafsexe ]] && rm -f $wafsexe
+        [[ -s ${wafsexe} ]] && rm -f "${wafsexe}"
         ${LINK} "${script_dir}/gfs_wafs.fd/exec/${wafsexe}" .
     done
 fi
@@ -265,7 +272,7 @@ if [ -d "${script_dir}/gsi_utils.fd" ]; then
   for exe in calc_analysis.x calc_increment_ens_ncio.x calc_increment_ens.x \
     getsfcensmeanp.x getsigensmeanp_smooth.x getsigensstatp.x \
     interp_inc.x recentersigp.x;do
-    [[ -s "${exe}" ]] && rm -f ${exe}
+    [[ -s "${exe}" ]] && rm -f "${exe}"
     ${LINK} "${script_dir}/gsi_utils.fd/install/bin/${exe}" .
   done
 fi
@@ -367,7 +374,7 @@ cd "${script_dir}"   ||   exit 8
         emcsfc_ice_blend.fd \
         emcsfc_snow2mdl.fd ;do
         [[ -d "${prog}" ]] && rm -rf "${prog}"
-        ${SLINK} "ufs_utils.fd/sorc/${prog}"                                                     ${prog}
+        ${SLINK} "ufs_utils.fd/sorc/${prog}"                                                     "${prog}"
     done
 
     for prog in enkf_chgres_recenter.fd \
@@ -391,7 +398,7 @@ cd "${script_dir}"   ||   exit 8
       webtitle.fd
       do
         if [[ -d "${prog}" ]]; then rm -rf "${prog}"; fi
-        ${LINK} gfs_utils.fd/sorc/${prog} .
+        ${LINK} "gfs_utils.fd/src/${prog}" .
     done
 
     if [ -d "${script_dir}/gfs_wafs.fd" ]; then

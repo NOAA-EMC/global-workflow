@@ -7,7 +7,9 @@ echo "BEGIN: config.coupled_ic"
 # Get task specific resources
 source ${EXPDIR}/config.resources coupled_ic
 
-if [[ "${machine}" == "HERA" ]]; then
+if [[ "${machine}" == "WCOSS2" ]]; then
+  export BASE_CPLIC="/lfs/h2/emc/global/noscrub/emc.global/IC/COUPLED"
+elif [[ "${machine}" == "HERA" ]]; then
   export BASE_CPLIC="/scratch1/NCEPDEV/climate/role.ufscpara/IC"
 elif [[ "${machine}" == "ORION" ]]; then
   export BASE_CPLIC="/work/noaa/global/wkolczyn/noscrub/global-workflow/IC"
