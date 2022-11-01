@@ -141,7 +141,7 @@ export err=$?; err_chk
 
 ################################################################################
 # translate FV3-JEDI increment to FV3 readable format
-if [[ ${CASE_BERROR} = ${CASE} ]]; then
+if [[ "${CASE_BERROR}" = "${CASE}" ]]; then
     atmges_fv3=${COMIN_GES}/${GPREFIX}atmf006.nc
 else
     atmges_fv3=${COMIN_GES}/${GPREFIX}atmf006.ensres.nc
