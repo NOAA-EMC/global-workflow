@@ -86,11 +86,6 @@ cd $ROTDIR
 firstday=$($NDATE +24 $SDATE)
 if [[ $ENSGRP -gt 0 ]] && [[ $HPSSARCH = "YES" ]]; then
 
-#--display status and location info
-echo "Archive file is running offline to increase parallel performance"
-export ATARDIR=$ATARDIR
-export JOB_LOG_DIR=$PBS_O_WORKDIR
-
 #--determine when to save ICs for warm start
    SAVEWARMICA="NO"
    SAVEWARMICB="NO"
@@ -176,6 +171,72 @@ if [ $ENSGRP -eq 0 ]; then
     fi
 
 fi
+
+###############################################################
+# Clean up COM
+###############################################################
+if [[ "${DELETE_COM_IN_ARCHIVE_JOB:-YES}" == NO -o "${ROCOTO_WORKFLOW:-YES}" == NO ]] ; then
+    exit 0
+fi
+
+###############################################################
+# ENSGRP 0 also does clean-up
+if [ $ENSGRP -eq 0 ]; then
+
+    # Start start and end dates to remove
+    GDATEEND=$($NDATE -${RMOLDEND_ENKF:-24}  $CDATE)
+    GDATE=$($NDATE -${RMOLDSTD_ENKF:-120} $CDATE)
+    while [ $GDATE -le $GDATEEND ]; do
+
+        gPDY=$(echo $GDATE | cut -c1-8)
+        gcyc=$(echo $GDATE | cut -c9-10)
+
+        # Loop over GDAS and GFS EnKF directories separately.
+        clist="gdas gfs"
+        for ctype in $clist; do
+            COMIN_ENS="$ROTDIR/enkf$ctype.$gPDY/$gcyc/$COMPONENT"
+            if [ -d $COMIN_ENS ]; then
+                rocotolog="$EXPDIR/logs/${GDATE}.log"
+                if [ -f $rocotolog ]; then
+                    testend=$(tail -n 1 $rocotolog | grep "This cycle is complete: Success")
+                    rc=$?
+                    if [ $rc -eq 0 ]; then
+                        # Retain f006.ens files.  Remove everything else
+                        for file in $(ls $COMIN_ENS | grep -v f006.ens); do
+                            rm -rf $COMIN_ENS/$file
+                        done
+                    fi
+                fi
+            fi
+
+            # Remove empty directories
+            if [ -d $COMIN_ENS ] ; then
+                [[ ! "$(ls -A $COMIN_ENS)" ]] && rm -rf $COMIN_ENS
+            fi
+        done
+
+        # Advance to next cycle
+        GDATE=$($NDATE +$assim_freq $GDATE)
+
+    done
+
+fi
+
+# Remove enkf*.$rPDY for the older of GDATE or RDATE
+GDATE=$($NDATE -${RMOLDSTD_ENKF:-120} $CDATE)
+fhmax=$FHMAX_GFS
+RDATE=$($NDATE -$fhmax $CDATE)
+if [ $GDATE -lt $RDATE ]; then
+    RDATE=$GDATE
+fi
+rPDY=$(echo $RDATE | cut -c1-8)
+clist="gdas gfs"
+for ctype in $clist; do
+    COMIN="$ROTDIR/enkf$ctype.$rPDY"
+    [[ -d $COMIN ]] && rm -rf $COMIN
+done
+
+###############################################################
 
 echo "ENDED NORMALLY."
 
