@@ -179,7 +179,7 @@ if [ -d "${script_dir}/gdas.cd" ]; then
   cd "${top_dir}/fix" || exit 1
     [[ ! -d gdas ]] && mkdir -p gdas
     cd gdas || exit 1
-    for gdas_sub in bump crtm fv3jedi; do
+    for gdas_sub in bump crtm fv3jedi gsibec; do
       if [ -d "${gdas_sub}" ]; then
          rm -rf "${gdas_sub}"
       fi

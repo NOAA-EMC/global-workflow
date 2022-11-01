@@ -103,8 +103,10 @@ fi
 ################################################################################
 # link fix files to $DATA
 # static B
-CASE_BERROR=${CASE_BERROR:-${CASE_ANL:-$CASE}}
-$NLN $FV3JEDI_FIX/bump/$CASE_BERROR/ $DATA/berror
+CASE_BERROR=${CASE_BERROR:-${CASE_ANL:-${CASE}}}
+if [[ (${STATICB_TYPE} = "bump") || (${STATICB_TYPE} = "gsibec") ]] ; then
+    ${NLN} "${FV3JEDI_FIX}/${STATICB_TYPE}/${CASE_BERROR}/" "${DATA}/berror"
+fi
 
 # vertical coordinate
 LAYERS=$(expr $LEVS - 1)
@@ -139,9 +141,13 @@ export err=$?; err_chk
 
 ################################################################################
 # translate FV3-JEDI increment to FV3 readable format
-atmges_fv3=$COMIN_GES/${GPREFIX}atmf006.ensres.nc
-atminc_jedi=$DATA/anl/atminc.${PDY}_${cyc}0000z.nc4
-atminc_fv3=$COMOUT/${CDUMP}.${cycle}.atminc.nc
+if [[ "${CASE_BERROR}" = "${CASE}" ]]; then
+    atmges_fv3=${COMIN_GES}/${GPREFIX}atmf006.nc
+else
+    atmges_fv3=${COMIN_GES}/${GPREFIX}atmf006.ensres.nc
+fi
+atminc_jedi=${DATA}/anl/atminc.${PDY}_${cyc}0000z.nc4
+atminc_fv3=${COMOUT}/${CDUMP}.${cycle}.atminc.nc
 if [ -s $atminc_jedi ]; then
     $INCPY $atmges_fv3 $atminc_jedi $atminc_fv3
     export err=$?
