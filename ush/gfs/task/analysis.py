@@ -56,7 +56,7 @@ class Analysis(Task):
         observers = obs_list_dict['observers']
         obs_dict = {}
         for ob in observers:
-            obfile = ob['obs space']['obsdatain']['obsfile']
+            obfile = ob['obs space']['obsdatain']['engine']['obsfile']
             basename = os.path.basename(obfile)
             obs_dict[os.path.join(os.environ['COMIN_OBS'], basename)] = obfile
         return obs_dict
@@ -64,7 +64,7 @@ class Analysis(Task):
     def get_staticb_dict(self):
         """
         get dictionary of staticb files to copy/use
-        based on the specified configuration.  
+        based on the specified configuration.
         """
         import ufsda # temporary until this is in workflow
         import yaml
@@ -227,7 +227,7 @@ class AerosolAnalysis(Analysis):
         fms_inc_file_template = os.path.join(self.datadir, 'anl', f'aeroinc.{cdate_fv3}.fv_tracer.res.tile1.nc')
         for itile in range(1,7):
             inc_path = fms_inc_file_template.replace('tile1', f'tile{itile}')
-            dest = os.path.join(os.environ['COMOUTaero'], f'aeroinc.{os.path.basename(inc_path)}')
+            dest = os.path.join(os.environ['COMOUTaero'], os.path.basename(inc_path))
             if os.path.exists(dest):
                 os.remove(dest)
             logging.info(f'Copying aerosol FMS cube sphere increment to {dest}')
@@ -243,7 +243,9 @@ class AerosolAnalysis(Analysis):
         # NOTE that while 'chem' is the $componenet, the aerosol fields are with the 'atmos' tracers
         comin_ges_atm = comin_ges.replace('chem', 'atmos')
         fms_bkg_file_template = os.path.join(comin_ges_atm, 'RESTART', f'{cdate_fv3}.fv_tracer.res.tile1.nc')
-        incvars = ['dust1', 'dust2', 'dust3', 'dust4', 'dust5', 'seas1', 'seas2', 'seas3', 'seas4']
+        incvars = ['dust1', 'dust2', 'dust3', 'dust4', 'dust5',
+                   'seas1', 'seas2', 'seas3', 'seas4',
+                   'so4', 'oc1', 'oc2', 'bc1', 'bc2']
         for itile in range(1,7):
             inc_path = fms_inc_file_template.replace('tile1', f'tile{itile}')
             bkg_path = fms_bkg_file_template.replace('tile1', f'tile{itile}')
@@ -301,23 +303,23 @@ class AerosolAnalysis(Analysis):
         """
         Return dict of src/dest pairs for berror
         """
-       
+
         ntiles = 6 # global
         # aerosol static-B needs nicas, cor_rh, cor_rv and stddev files.
-        b_dir = self.berror_dir 
+        b_dir = self.berror_dir
         berror_dict = {}
         berror_dict[os.path.join(b_dir, '20160630.000000.cor_rh.coupler.res')] = os.path.join(self.datadir, 'berror', '20160630.000000.cor_rh.coupler.res')
         berror_dict[os.path.join(b_dir, '20160630.000000.cor_rv.coupler.res')] = os.path.join(self.datadir, 'berror', '20160630.000000.cor_rv.coupler.res')
-        berror_dict[os.path.join(b_dir, '20160630.000000.stddev.coupler.res')] = os.path.join(self.datadir, 'berror', '20160630.000000.stddev.coupler.res') 
+        berror_dict[os.path.join(b_dir, '20160630.000000.stddev.coupler.res')] = os.path.join(self.datadir, 'berror', '20160630.000000.stddev.coupler.res')
         for t in range(1,ntiles+1):
             berror_dict[os.path.join(b_dir, f'20160630.000000.cor_rh.fv_tracer.res.tile{t}.nc')] = os.path.join(self.datadir, 'berror', f'20160630.000000.cor_rh.fv_tracer.res.tile{t}.nc')
             berror_dict[os.path.join(b_dir, f'20160630.000000.cor_rv.fv_tracer.res.tile{t}.nc')] = os.path.join(self.datadir, 'berror', f'20160630.000000.cor_rv.fv_tracer.res.tile{t}.nc')
             berror_dict[os.path.join(b_dir, f'20160630.000000.stddev.fv_tracer.res.tile{t}.nc')] = os.path.join(self.datadir, 'berror', f'20160630.000000.stddev.fv_tracer.res.tile{t}.nc')
-        nproc = 384 
-        for t in range(1,nproc+1): 
-            berror_dict[os.path.join(b_dir, f'nicas_aero_nicas_local_000384-{t:06}.nc')] = os.path.join(self.datadir, 'berror', f'nicas_aero_nicas_local_000384-{t:06}.nc') 
-        return berror_dict 
-  
+        nproc = ntiles * int(os.environ['layout_x']) * int(os.environ['layout_y'])
+        for t in range(1,nproc+1):
+            berror_dict[os.path.join(b_dir, f'nicas_aero_nicas_local_000384-{t:06}.nc')] = os.path.join(self.datadir, 'berror', f'nicas_aero_nicas_local_{nproc:06}-{t:06}.nc')
+        return berror_dict
+
     def get_crtm_coeff_dict(self):
         coeff_file_dict = {
             os.path.join(self.fv3jedi_fix,

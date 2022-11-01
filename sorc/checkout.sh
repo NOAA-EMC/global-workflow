@@ -160,7 +160,7 @@ if [[ ${checkout_gsi} == "YES" ]]; then
   checkout "gsi_enkf.fd"     "https://github.com/NOAA-EMC/GSI.git"         "48d8676"; errs=$((errs + $?))
 fi
 
-if [[ $CHECKOUT_GDAS == "YES" ]]; then
+if [[ ${checkout_gdas} == "YES" ]]; then
   checkout "gdas.cd" "https://github.com/NOAA-EMC/GDASApp.git" "bd24c0e"; errs=$((errs + $?))
 fi
 
