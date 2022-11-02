@@ -140,7 +140,8 @@ class AerosolAnalysis(Analysis):
         self.stage_fix(fix_dict)
         crtm_fix_dict = self.get_crtm_coeff_dict()
         self.stage_crtm(crtm_fix_dict)
-        self.stage_berror(self.get_berror_dict())
+        if os.environ.get('BERROR_TYPE', 'bump') in ['bump']:
+            self.stage_berror(self.get_berror_dict())
         bkg_dict = self.get_bkg_dict()
         self.stage_bkg(bkg_dict)
         yaml_config = {

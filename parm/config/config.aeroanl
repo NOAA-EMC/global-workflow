@@ -11,6 +11,7 @@ export AEROVARYAML=$HOMEgfs/sorc/gdas.cd/parm/aero/variational/3dvar_gfs_aero.ya
 export BERROR_YAML_DIR=$HOMEgfs/sorc/gdas.cd/parm/aero/berror/
 export BERROR_YAML=$HOMEgfs/sorc/gdas.cd/parm/aero/berror/staticb_bump_aero.yaml
 export FV3JEDI_FIX=$HOMEgfs/fix/gdas
+export BERROR_TYPE='identity'
 export BERROR_DATA_DIR=/work/noaa/da/Andrew.Tangborn/staticB/c96/base 
 
 export io_layout_x=1
