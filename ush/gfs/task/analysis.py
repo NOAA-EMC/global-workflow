@@ -4,6 +4,8 @@ import logging
 import os
 import shutil
 
+crtmver = '2.3.0'
+
 class Analysis(Task):
     """
     Parent class for global analysis tasks
@@ -202,6 +204,7 @@ class AerosolAnalysis(Analysis):
         src = os.path.join(self.datadir, f'{self.taskname}_{self.cdate}.yaml')
         dest = os.path.join(os.environ['COMOUTaero'], f"{os.environ['APREFIX']}aeroanl.yaml")
         if os.path.exists(dest):
+            logging.info(f'{dest} already exists, removing it!')
             os.remove(dest)
         shutil.copy(src, dest)
         logging.info(f'Copied YAML file from {src} to {dest}')
@@ -254,7 +257,7 @@ class AerosolAnalysis(Analysis):
                 with nc.Dataset(bkg_path, mode='a') as rstfile:
                     logging.info(f'Opening RESTART file {bkg_path}')
                     for vname in incvars:
-                        logging.info(f'Adding increment for {vname}')
+                        logging.info(f'...Adding increment for {vname}')
                         increment = incfile.variables[vname][:]
                         bkg = rstfile.variables[vname][:]
                         anl = bkg + increment
@@ -317,18 +320,18 @@ class AerosolAnalysis(Analysis):
             berror_dict[os.path.join(b_dir, f'20160630.000000.stddev.fv_tracer.res.tile{t}.nc')] = os.path.join(self.datadir, 'berror', f'20160630.000000.stddev.fv_tracer.res.tile{t}.nc')
         nproc = ntiles * int(os.environ['layout_x']) * int(os.environ['layout_y'])
         for t in range(1,nproc+1):
-            berror_dict[os.path.join(b_dir, f'nicas_aero_nicas_local_000384-{t:06}.nc')] = os.path.join(self.datadir, 'berror', f'nicas_aero_nicas_local_{nproc:06}-{t:06}.nc')
+            berror_dict[os.path.join(b_dir, f'nicas_aero_nicas_local_{nproc:06}-{t:06}.nc')] = os.path.join(self.datadir, 'berror', f'nicas_aero_nicas_local_{nproc:06}-{t:06}.nc')
         return berror_dict
 
     def get_crtm_coeff_dict(self):
         coeff_file_dict = {
             os.path.join(self.fv3jedi_fix,
-                         'crtm', '2.3.0',
+                         'crtm', crtmver,
                          'AerosolCoeff.bin'): os.path.join(self.datadir,
                                                            'crtm',
                                                            'AerosolCoeff.bin'),
             os.path.join(self.fv3jedi_fix,
-                         'crtm', '2.3.0',
+                         'crtm', crtmver,
                          'CloudCoeff.bin'): os.path.join(self.datadir,
                                                            'crtm',
                                                            'CloudCoeff.bin'),
@@ -336,42 +339,42 @@ class AerosolAnalysis(Analysis):
             # but since it is just 2 VIIRS platforms, just copy them both regardless
             # We will fix this when there is a solution for ATM mode
             os.path.join(self.fv3jedi_fix,
-                         'crtm', '2.3.0',
+                         'crtm', crtmver,
                          'v.viirs-m_npp.SpcCoeff.bin'): os.path.join(self.datadir,
                                                                      'crtm',
                                                                      'v.viirs-m_npp.SpcCoeff.bin'),
             os.path.join(self.fv3jedi_fix,
-                         'crtm', '2.3.0',
+                         'crtm', crtmver,
                          'v.viirs-m_npp.TauCoeff.bin'): os.path.join(self.datadir,
                                                                      'crtm',
                                                                      'v.viirs-m_npp.TauCoeff.bin'),
             os.path.join(self.fv3jedi_fix,
-                         'crtm', '2.3.0',
+                         'crtm', crtmver,
                          'v.viirs-m_j1.SpcCoeff.bin'): os.path.join(self.datadir,
                                                                     'crtm',
                                                                     'v.viirs-m_j1.SpcCoeff.bin'),
             os.path.join(self.fv3jedi_fix,
-                         'crtm', '2.3.0',
+                         'crtm', crtmver,
                          'v.viirs-m_j1.TauCoeff.bin'): os.path.join(self.datadir,
                                                                     'crtm',
                                                                     'v.viirs-m_j1.TauCoeff.bin'),
             os.path.join(self.fv3jedi_fix,
-                         'crtm', '2.3.0',
+                         'crtm', crtmver,
                          'NPOESS.VISice.EmisCoeff.bin'): os.path.join(self.datadir,
                                                                       'crtm',
                                                                       'NPOESS.VISice.EmisCoeff.bin'),
             os.path.join(self.fv3jedi_fix,
-                         'crtm', '2.3.0',
+                         'crtm', crtmver,
                          'NPOESS.VISland.EmisCoeff.bin'): os.path.join(self.datadir,
                                                                       'crtm',
                                                                       'NPOESS.VISland.EmisCoeff.bin'),
             os.path.join(self.fv3jedi_fix,
-                         'crtm', '2.3.0',
+                         'crtm', crtmver,
                          'NPOESS.VISsnow.EmisCoeff.bin'): os.path.join(self.datadir,
                                                                       'crtm',
                                                                       'NPOESS.VISsnow.EmisCoeff.bin'),
             os.path.join(self.fv3jedi_fix,
-                         'crtm', '2.3.0',
+                         'crtm', crtmver,
                          'NPOESS.VISwater.EmisCoeff.bin'): os.path.join(self.datadir,
                                                                       'crtm',
                                                                       'NPOESS.VISwater.EmisCoeff.bin'),
