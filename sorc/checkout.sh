@@ -161,7 +161,7 @@ if [[ ${checkout_gsi} == "YES" ]]; then
 fi
 
 if [[ ${checkout_gdas} == "YES" ]]; then
-  checkout "gdas.cd" "https://github.com/NOAA-EMC/GDASApp.git" "b86ead0"; errs=$((errs + $?))
+  checkout "gdas.cd" "https://github.com/NOAA-EMC/GDASApp.git" "e27973d"; errs=$((errs + $?))
 fi
 
 if [[ ${checkout_gsi} == "YES" || ${checkout_gdas} == "YES" ]]; then
