@@ -11,7 +11,7 @@ config_path=${EXPDIR:-${NWROOT}/gfs.${gfs_ver}/parm/config}
 for config in ${configs}; do
     . "${config_path}/config.${config}"
     status=$?
-    [[ ${status} -ne 0 ]] && exit ${status}
+    [[ ${status} -ne 0 ]] && exit "${status}"
 done
 
 
@@ -20,7 +20,7 @@ done
 ##########################################
 . "${HOMEgfs}/env/${machine}.env" aeroanlinit
 status=$?
-[[ ${status} -ne 0 ]] && exit ${status}
+[[ ${status} -ne 0 ]] && exit "${status}"
 
 
 ##############################################
@@ -61,8 +61,8 @@ export pgmerr=errfile
 # Begin JOB SPECIFIC work
 ##############################################
 
-datestr="${CDATE:0:8} ${CDATE:8:2} - ${assim_freq} hours"
-export GDATE=$(date +%Y%m%d%H -d "${datestr}")
+GDATE=$(date +%Y%m%d%H -d "${CDATE:0:8} ${CDATE:8:2} - ${assim_freq} hours")
+export GDATE
 gPDY=${GDATE:0:8}
 export gcyc=${GDATE:8:2}
 export GDUMP=${GDUMP:-"gdas"}
@@ -97,7 +97,7 @@ module load "GDAS/${machinelower}"
 EXSCRIPT=${GDASAEROINITPY:-${HOMEgfs}/scripts/exgdas_global_aero_analysis_initialize.py}
 ${EXSCRIPT}
 status=$?
-[[ ${status} -ne 0 ]] && exit ${status}
+[[ ${status} -ne 0 ]] && exit "${status}"
 
 ##############################################
 # End JOB SPECIFIC work
@@ -106,7 +106,7 @@ status=$?
 ##############################################
 # Final processing
 ##############################################
-if [ -e "${pgmout}" ] ; then
+if [[ -e "${pgmout}" ]] ; then
   cat "${pgmout}"
 fi
 
