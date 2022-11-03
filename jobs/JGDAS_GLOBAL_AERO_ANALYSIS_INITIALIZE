@@ -46,8 +46,8 @@ export pid=${pid:-$$}
 export outid=${outid:-"LL${job}"}
 
 export DATA=${DATA:-${DATAROOT}/aeroanl_${CDATE}}
-mkdir -p ${DATA}
-cd ${DATA} || (echo "${DATA} does not exist. ABORT!"; exit 1)
+mkdir -p "${DATA}"
+cd "${DATA}" || (echo "${DATA} does not exist. ABORT!"; exit 1)
 
 
 ##############################################
@@ -61,8 +61,8 @@ export pgmerr=errfile
 # Begin JOB SPECIFIC work
 ##############################################
 
-datestr="${CDATE:0:8} ${CDATE:8:2}"
-export GDATE=$(date +%Y%m%d%H -d "${datestr} - ${assim_freq} hours")
+datestr="${CDATE:0:8} ${CDATE:8:2} - ${assim_freq} hours"
+export GDATE=$(date +%Y%m%d%H -d "${datestr}")
 gPDY=${GDATE:0:8}
 export gcyc=${GDATE:8:2}
 export GDUMP=${GDUMP:-"gdas"}
@@ -75,7 +75,7 @@ export ASUFFIX=${ASUFFIX:-${SUFFIX}}
 
 export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENT}}
 
-mkdir -p ${COMOUT}
+mkdir -p "${COMOUT}"
 
 # COMIN_GES and COMIN_GES_ENS are used in script
 export COMIN_GES="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/${COMPONENT}"
@@ -89,7 +89,7 @@ export COMIN_GES_ENS="${ROTDIR}/enkf${GDUMP}.${gPDY}/${gcyc}/${COMPONENT}"
 module purge
 module use "${HOMEgfs}/sorc/gdas.cd/modulefiles"
 machinelower=$(echo "${machine}" | awk '{print tolower($0)}')
-module load GDAS/${machinelower}
+module load "GDAS/${machinelower}"
 
 ###############################################################
 # Run relevant script
