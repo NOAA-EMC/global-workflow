@@ -1,26 +1,26 @@
 #!/bin/bash
 export STRICT="NO"
-source "$HOMEgfs/ush/preamble.sh"
+source "${HOMEgfs}/ush/preamble.sh"
 
 #############################
 # Source relevant config files
 #############################
-export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
+export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
 configs="base aeroanl aeroanlinit"
-config_path=${EXPDIR:-$NWROOT/gfs.${gfs_ver}/parm/config}
-for config in $configs; do
-    . $config_path/config.$config
+config_path=${EXPDIR:-${NWROOT}/gfs.${gfs_ver}/parm/config}
+for config in ${configs}; do
+    . ${config_path}/config.${config}
     status=$?
-    [[ $status -ne 0 ]] && exit $status
+    [[ ${status} -ne 0 ]] && exit ${status}
 done
 
 
 ##########################################
 # Source machine runtime environment
 ##########################################
-. $HOMEgfs/env/${machine}.env aeroanlinit
+. ${HOMEgfs}/env/${machine}.env aeroanlinit
 status=$?
-[[ $status -ne 0 ]] && exit $status
+[[ ${status} -ne 0 ]] && exit ${status}
 
 
 ##############################################
@@ -43,11 +43,11 @@ export COMPONENT=${COMPONENT:-chem}
 # Obtain unique process id (pid) and make temp directory
 ##############################################
 export pid=${pid:-$$}
-export outid=${outid:-"LL$job"}
+export outid=${outid:-"LL${job}"}
 
 export DATA=${DATA:-${DATAROOT}/aeroanl_${CDATE}}
 mkdir -p $DATA
-cd $DATA || (echo "$DATA does not exist. ABORT!"; exit 1)
+cd ${DATA} || (echo "${DATA} does not exist. ABORT!"; exit 1)
 
 
 ##############################################
@@ -72,13 +72,13 @@ export APREFIX="${CDUMP}.t${cyc}z."
 export GSUFFIX=${GSUFFIX:-$SUFFIX}
 export ASUFFIX=${ASUFFIX:-$SUFFIX}
 
-export COMOUT=${COMOUT:-$ROTDIR/$CDUMP.$PDY/$cyc/$COMPONENT}
+export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENT}}
 
-mkdir -p $COMOUT
+mkdir -p ${COMOUT}
 
 # COMIN_GES and COMIN_GES_ENS are used in script
-export COMIN_GES="$ROTDIR/$GDUMP.$gPDY/$gcyc/$COMPONENT"
-export COMIN_GES_ENS="$ROTDIR/enkf$GDUMP.$gPDY/$gcyc/$COMPONENT"
+export COMIN_GES="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/${COMPONENT}"
+export COMIN_GES_ENS="${ROTDIR}/enkf${GDUMP}.${gPDY}/${gcyc}/${COMPONENT}"
 
 # NOTE BELOW IS A HACK FOR TESTING
 # PLEASE FIX THIS LATER
@@ -86,17 +86,17 @@ export COMIN_GES_ENS="$ROTDIR/enkf$GDUMP.$gPDY/$gcyc/$COMPONENT"
 # HOW TO HANDLE DIFFERENT COMPILERS/ETC. FOR MODEL VS DA
 # PROD_UTIL, ETC. DO NOT EXIST FOR JEDI MODULE VERSIONS
 module purge
-module use $HOMEgfs/sorc/gdas.cd/modulefiles
-machinelower=$(echo "$machine" | awk '{print tolower($0)}')
-module load GDAS/$machinelower
+module use ${HOMEgfs}/sorc/gdas.cd/modulefiles
+machinelower=$(echo "${machine}" | awk '{print tolower($0)}')
+module load GDAS/${machinelower}
 
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASAEROINITPY:-$HOMEgfs/scripts/exgdas_global_aero_analysis_initialize.py}
-$EXSCRIPT
+EXSCRIPT=${GDASAEROINITPY:-${HOMEgfs}/scripts/exgdas_global_aero_analysis_initialize.py}
+${EXSCRIPT}
 status=$?
-[[ $status -ne 0 ]] && exit $status
+[[ ${status} -ne 0 ]] && exit ${status}
 
 ##############################################
 # End JOB SPECIFIC work
@@ -105,8 +105,8 @@ status=$?
 ##############################################
 # Final processing
 ##############################################
-if [ -e "$pgmout" ] ; then
-  cat $pgmout
+if [ -e "${pgmout}" ] ; then
+  cat ${pgmout}
 fi
 
 exit 0
