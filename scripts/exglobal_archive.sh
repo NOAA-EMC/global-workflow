@@ -30,17 +30,22 @@ export NLN=${NLN:-"/bin/ln -sf"}
 
 # Initial exception handling
 err=0
-err_inc=0
+# errs=0
+
 
 ###############################################################
 # Perform on-line archiving
 ###############################################################
 
 [[ ! -d $ARCDIR ]] && mkdir -p $ARCDIR
-$NCP ${APREFIX}gsistat $ARCDIR/gsistat.${CDUMP}.${CDATE}
-((errs + $?))
-$NCP ${APREFIX}pgrb2.1p00.anl $ARCDIR/pgbanl.${CDUMP}.${CDATE}.grib2
-((errs + $?))
+
+# This file is not available in first half cycle
+if [[ ! $SDATE = $CDATE ]]; then
+  $NCP ${APREFIX}gsistat $ARCDIR/gsistat.${CDUMP}.${CDATE}
+ # ((errs + $?))
+  $NCP ${APREFIX}pgrb2.1p00.anl $ARCDIR/pgbanl.${CDUMP}.${CDATE}.grib2
+ # ((errs + $?))
+fi
 
 # Archive 1 degree forecast GRIB2 files for verification
 if [ $CDUMP = "gfs" ]; then
@@ -50,7 +55,7 @@ if [ $CDUMP = "gfs" ]; then
         fhr2=$(printf %02i $fhr)
         fhr3=$(printf %03i $fhr)
         $NCP ${APREFIX}pgrb2.1p00.f$fhr3 $ARCDIR/pgbf${fhr2}.${CDUMP}.${CDATE}.grib2
-        ((errs + $?))
+#        ((errs + $?))
         (( fhr = $fhr + $FHOUT_GFS ))
     done
 fi
@@ -58,9 +63,10 @@ if [ $CDUMP = "gdas" ]; then
     flist="000 003 006 009"
     for fhr in $flist; do
         fname=${APREFIX}pgrb2.1p00.f${fhr}
-        fhr2=$(printf %02i $fhr)
+#        fhr2=$(printf %02i $fhr) $(printf %02i $((10#$a)))
+        fhr2=$(printf %02i $((10#$fhr)))
         $NCP $fname $ARCDIR/pgbf${fhr2}.${CDUMP}.${CDATE}.grib2
-        ((errs + $?))
+#        ((errs + $?))
     done
 fi
 
@@ -76,7 +82,7 @@ if [ $CDUMP = "gdas" -a -s gdas.t${cyc}z.cyclone.trackatcfunix ]; then
     cat gdasp.t${cyc}z.cyclone.trackatcfunix | sed s:AVNO:${PLSOT4}:g  > ${ARCDIR}/atcfunixp.${CDUMP}.$CDATE
 fi
 
-if [ $CDUMP = "gfs" ]; then
+if [ $CDUMP = "gfs" -a $DO_VRFY = "YES" ]; then
     $NCP storms.gfso.atcf_gen.$CDATE      ${ARCDIR}/.
     $NCP storms.gfso.atcf_gen.altg.$CDATE ${ARCDIR}/.
     $NCP trak.gfso.atcfunix.$CDATE        ${ARCDIR}/.
@@ -102,20 +108,20 @@ if [ $CDUMP = "gfs" -a $FITSARC = "YES" ]; then
         sfcfile=${prefix}.sfcf${fhr3}${ASUFFIX}
         sigfile=${prefix}.atmf${fhr3}${ASUFFIX}
         $NCP $sfcfile $VFYARC/${CDUMP}.$PDY/$cyc/
-        ((errs + $?))
+#        ((errs + $?))
         $NCP $sigfile $VFYARC/${CDUMP}.$PDY/$cyc/
-        ((errs + $?))
+#        ((errs + $?))
         (( fhr = $fhr + 6 ))
     done
 fi
 
-err_chk
+# err_chk
 
 ###############################################################
 # Archive data to HPSS
 if [ $HPSSARCH = "YES" ]; then
 ###############################################################
-
+export QUEUE_ARCH=${QUEUE_ARCH:-${QUEUE_SERVICE}}
 #--determine when to save ICs for warm start and forecast-only runs
 SAVEWARMICA="NO"
 SAVEWARMICB="NO"
@@ -342,7 +348,7 @@ COMIN="$RUNDIR/$GDATE"
 ###############################################################
 # Clean up COM
 ###############################################################
-if [[ "${DELETE_COM_IN_ARCHIVE_JOB:-YES}" == NO -o "${ROCOTO_WORKFLOW:-YES}" == NO ]] ; then
+if [ $DELETE_COM_IN_ARCHIVE_JOB = "NO" -o $ROCOTO_WORKFLOW = "NO" ]; then
     exit 0
 fi
 

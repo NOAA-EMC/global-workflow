@@ -16,6 +16,13 @@ for config in $configs; do
     [[ $status -ne 0 ]] && exit $status
 done
 
+##########################################
+# Source machine runtime environment
+##########################################
+. $HOMEgfs/env/${machine}.env arch
+status=$?
+[[ $status -ne 0 ]] && exit $status
+
 #############################################
 # Source workflow level common utilities
 #############################################
@@ -27,7 +34,6 @@ done
 # Obtain unique process id (pid) and make temp directory
 ##############################################
 export pid=${pid:-$$}
-export outid=${outid:-"LL$job"}
 export DATA=${DATA:-${DATAROOT}/${jobid:?}}
 mkdir -p $DATA
 cd $DATA
@@ -61,15 +67,15 @@ export COMPONENT=${COMPONENT:-atmos}
 ##############################################
 
 # ICS are restarts and always lag INC by $assim_freq hours
-ARCHINC_CYC=$ARCH_CYC
-ARCHICS_CYC=$((ARCH_CYC-assim_freq))
+export ARCHINC_CYC=$ARCH_CYC
+export ARCHICS_CYC=$((ARCH_CYC-assim_freq))
 if [ $ARCHICS_CYC -lt 0 ]; then
     ARCHICS_CYC=$((ARCHICS_CYC+24))
 fi
 
 # CURRENT CYCLE
-APREFIX="${CDUMP}.t${cyc}z."
-ASUFFIX=${ASUFFIX:-$SUFFIX}
+export APREFIX="${CDUMP}.t${cyc}z."
+export ASUFFIX=${ASUFFIX:-$SUFFIX}
 
 if [ $ASUFFIX = ".nc" ]; then
    format="netcdf"
