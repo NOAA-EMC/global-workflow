@@ -1,5 +1,5 @@
-export version=v16.2.0
-export gfs_ver=v16.2.0
+export version=v16.2.3
+export gfs_ver=v16.2.3
 export ukmet_ver=v2.2
 export ecmwf_ver=v2.1
 export nam_ver=v4.2
