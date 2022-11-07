@@ -3,8 +3,8 @@
 source "${HOMEgfs}/ush/preamble.sh"
 
 ###############################################################
-# Source FV3GFS workflow modules
-. "${HOMEgfs}/ush/load_fv3gfs_modules.sh"
+# Source UFSDA workflow modules
+. "${HOMEgfs}/ush/load_ufsda_modules.sh"
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
 

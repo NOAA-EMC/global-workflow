@@ -16,7 +16,9 @@ class Analysis(Task):
         self.fv3jedi_fix = config['FV3JEDI_FIX']
         self.obs_list_yaml = config['OBS_LIST']
         self.obs_yaml_dir = config['OBS_YAML_DIR']
-        self.berror_dir = config['BERROR_DATA_DIR']
+        self.berror_dir = os.path.join(config['FV3JEDI_FIX'],
+                                       config['STATICB_TYPE'],
+                                       config.get('CASE_BERROR', config.get('CASE_ANL', config['CASE'])))
         self.berror_yaml = config['BERROR_YAML']
         self.berror_yaml_dir = config['BERROR_YAML_DIR']
         self.component = config['COMPONENT']
@@ -140,7 +142,7 @@ class AerosolAnalysis(Analysis):
         self.stage_fix(fix_dict)
         crtm_fix_dict = self.get_crtm_coeff_dict()
         self.stage_crtm(crtm_fix_dict)
-        if os.environ.get('BERROR_TYPE', 'bump') in ['bump']:
+        if os.environ.get('STATICB_TYPE', 'bump_aero') in ['bump_aero']:
             self.stage_berror(self.get_berror_dict())
         bkg_dict = self.get_bkg_dict()
         self.stage_bkg(bkg_dict)

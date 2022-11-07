@@ -43,4 +43,3 @@ if __name__ == '__main__':
 
     AeroAnl = gfs.task.analysis.AerosolAnalysis(os.environ)
     AeroAnl.initialize()
-
