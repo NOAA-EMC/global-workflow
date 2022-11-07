@@ -119,7 +119,7 @@ for fieldset in $fieldsets; do
 done
 
 # CRTM coeffs
-$NLN $FV3JEDI_FIX/crtm/2.3.0_jedi $DATA/crtm
+${NLN} "${FV3JEDI_FIX}"/crtm/2.3.0 "${DATA}"/crtm
 
 #  Link executable to $DATA
 $NLN $JEDIENSEXE $DATA/fv3jedi_ens.x
