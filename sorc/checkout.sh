@@ -10,7 +10,7 @@ Clones and checks out external components necessary for
   cloning and just check out the requested version (unless
   -c option is used).
 
-Usage: $BASH_SOURCE [-c][-h][-m ufs_hash][-o]
+Usage: ${BASH_SOURCE[0]} [-c][-h][-m ufs_hash][-o]
   -c:
     Create a fresh clone (delete existing directories)
   -h:
@@ -51,7 +51,7 @@ function checkout() {
   remote="$2"
   version="$3"
 
-  name=$(echo ${dir} | cut -d '.' -f 1)
+  name=$(echo "${dir}" | cut -d '.' -f 1)
   echo "Performing checkout of ${name}"
 
   logfile="${logdir:-$(pwd)}/checkout_${name}.log"
@@ -60,8 +60,8 @@ function checkout() {
     rm "${logfile}"
   fi
 
-  cd "${topdir}"
-  if [[  -d "${dir}" && $CLEAN == "YES" ]]; then
+  cd "${topdir}" || exit 1
+  if [[  -d "${dir}" && ${CLEAN} == "YES" ]]; then
     echo "|-- Removing existing clone in ${dir}"
     rm -Rf "${dir}"
   fi
@@ -74,10 +74,10 @@ function checkout() {
       echo
       return "${status}"
     fi
-    cd "${dir}"
+    cd "${dir}" || exit 1
   else
     # Fetch any updates from server
-    cd "${dir}"
+    cd "${dir}" || exit 1
     echo "|-- Fetching updates from ${remote}"
     git fetch
   fi
@@ -131,7 +131,7 @@ while getopts ":chgum:o" option; do
       ;;
     m)
       echo "Received -m flag with argument, will check out ufs-weather-model hash ${OPTARG} instead of default"
-      ufs_model_hash=$OPTARG
+      ufs_model_hash=${OPTARG}
       ;;
     :)
       echo "option -${OPTARG} needs an argument"
@@ -145,23 +145,24 @@ while getopts ":chgum:o" option; do
 done
 shift $((OPTIND-1))
 
-export topdir=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
+topdir=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
+export topdir
 export logdir="${topdir}/logs"
 mkdir -p "${logdir}"
 
 # The checkout version should always be a speciifc commit (hash or tag), not a branch
 errs=0
-checkout "gfs_utils.fd"    "https://github.com/NOAA-EMC/gfs-utils"              "7bf599f"          ; errs=$((errs + $?))
-checkout "ufs_model.fd"    "https://github.com/ufs-community/ufs-weather-model" "${ufs_model_hash:-3c3548d}" ; errs=$((errs + $?))
+checkout "gfs_utils.fd"    "https://github.com/NOAA-EMC/gfs-utils"              "0b8ff56"                    ; errs=$((errs + $?))
+checkout "ufs_model.fd"    "https://github.com/ufs-community/ufs-weather-model" "${ufs_model_hash:-6b73f5d}" ; errs=$((errs + $?))
 checkout "ufs_utils.fd"    "https://github.com/ufs-community/UFS_UTILS.git"     "8b990c0"                    ; errs=$((errs + $?))
 checkout "verif-global.fd" "https://github.com/NOAA-EMC/EMC_verif-global.git"   "c267780"                    ; errs=$((errs + $?))
 
 if [[ ${checkout_gsi} == "YES" ]]; then
-  checkout "gsi_enkf.fd"     "https://github.com/NOAA-EMC/GSI.git"         "67f5ab4"; errs=$((errs + $?))
+  checkout "gsi_enkf.fd"     "https://github.com/NOAA-EMC/GSI.git"         "48d8676"; errs=$((errs + $?))
 fi
 
 if [[ ${checkout_gdas} == "YES" ]]; then
-  checkout "gdas.cd" "https://github.com/NOAA-EMC/GDASApp.git" "5952c9d"; errs=$((errs + $?))
+  checkout "gdas.cd" "https://github.com/NOAA-EMC/GDASApp.git" "843d3a9"; errs=$((errs + $?))
 fi
 
 if [[ ${checkout_gsi} == "YES" || ${checkout_gdas} == "YES" ]]; then
@@ -183,7 +184,7 @@ if [[ ${checkout_gtg} == "YES" ]]; then
   ################################################################################
 
   echo "Checking out GTG extension for UPP"
-  cd "${topdir}/ufs_model.fd/FV3/upp"
+  cd "${topdir}/ufs_model.fd/FV3/upp" || exit 1
   logfile="${logdir}/checkout_gtg.log"
   git -c submodule."post_gtg.fd".update=checkout submodule update --init --recursive >> "${logfile}" 2>&1
   status=$?
@@ -197,4 +198,4 @@ if (( errs > 0 )); then
   echo "WARNING: One or more errors encountered during checkout process, please check logs before building"
 fi
 echo
-exit $errs
+exit "${errs}"
