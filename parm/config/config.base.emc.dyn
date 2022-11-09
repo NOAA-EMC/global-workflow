@@ -333,7 +333,7 @@ if [ $DOHYBVAR = "YES" ]; then
         export FHOUT_ENKF=3
     fi
 else
-  export DOIAU=${DOIAU:-"NO"}   # 3DVAR defaults to no IAU
+  export DOIAU="NO"   # 3DVAR defaults to no IAU
 fi
 
 # IAU related parameters
