@@ -1,101 +1,30 @@
 #! /usr/bin/env bash
 
+################################################################################
+####  UNIX Script Documentation Block
+#                      .                                             .
+# Script name:         exgdas_enkf_earc.sh
+# Script description:  Run ENKFGDAS EMC archive
+#
+# Author:        Lin Gan      Org: NCEP/EMC     Date: 2022-11-04
+#
+# Abstract: This script configure archive and rapid submit thread of archive jobs
+#
+# Required module: prod_util, python
+#
+####
+################################################################################
+
 source "$HOMEgfs/ush/preamble.sh"
 
-#############################
-# Source relevant config files
-#############################
-export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
-configs="base earc"
-config_path=${EXPDIR:-$NWROOT/gfs.${gfs_ver}/parm/config}
-for config in $configs; do
-    . $config_path/config.$config
-    status=$?
-    [[ $status -ne 0 ]] && exit $status
-done
+# Directories.
+pwd=$(pwd)
 
-##########################################
-# Source machine runtime environment
-##########################################
-. $HOMEgfs/env/${machine}.env earc
-status=$?
-[[ $status -ne 0 ]] && exit $status
-
-##############################################
-# Obtain unique process id (pid) and make temp directory
-##############################################
-export pid=${pid:-$$}
-export DATA=${DATA:-${DATAROOT}/${jobid:?}}
-mkdir -p $DATA
-cd $DATA
-
-
-##############################################
-# Run setpdy and initialize PDY variables
-##############################################
-export cycle="t${cyc}z"
-setpdy.sh
-. ./PDY
-
-
-##############################################
-# Determine Job Output Name on System
-##############################################
-export pgmout="OUTPUT.${pid}"
-export pgmerr=errfile
-
-
-##############################################
-# Set variables used in the script
-##############################################
-export CDATE=${CDATE:-${PDY}${cyc}}
-export CDUMP=${CDUMP:-${RUN:-"gfs"}}
-export COMPONENT=${COMPONENT:-atmos}
-export n=$((ENSGRP))
-
-##############################################
-# Begin JOB SPECIFIC work
-##############################################
-
-# ICS are restarts and always lag INC by $assim_freq hours.
-export EARCINC_CYC=$ARCH_CYC
-export EARCICS_CYC=$((ARCH_CYC-assim_freq))
-if [ $EARCICS_CYC -lt 0 ]; then
-  export EARCICS_CYC=$((EARCICS_CYC+24))
-fi
-
-# EnKF update in GFS, GDAS or both
-export CDUMP_ENKF=$(echo ${EUPD_CYC:-"gdas"} | tr a-z A-Z)
-
-export ARCH_LIST="$ROTDIR/enkf${CDUMP}.$PDY/$cyc/$COMPONENT/earc$ENSGRP"
-
-###############################################################
-# Run archive script
-###############################################################
-
-$SCRgfs/exgdas_enkf_earc.sh
-status=$?
-[[ $status -ne 0 ]] && exit $status
-
-###############################################################
-
-echo "ENDED NORMALLY."
-
-##########################################
-# Remove the Temporary working directory
-##########################################
-cd $DATAROOT
-[[ $KEEPDATA = "NO" ]] && rm -rf $DATA
-
-date
-exit 0
-
-
-
+export QUEUE_ARCH=${QUEUE_ARCH:-${QUEUE_SERVICE}}
+export ARCH_LIST=${ARCH_LIST:-$ROTDIR/enkf${CDUMP}.$PDY/$cyc/$COMPONENT/earc$ENSGRP}
 [[ -d $ARCH_LIST ]] && rm -rf $ARCH_LIST
 mkdir -p $ARCH_LIST
 cd $ARCH_LIST
-
 $HOMEgfs/ush/hpssarch_gen.sh enkf${CDUMP}
 status=$?
 if [ $status -ne 0 ]; then
@@ -135,7 +64,7 @@ if [[ $ENSGRP -gt 0 ]] && [[ $HPSSARCH = "YES" ]]; then
 
      export TRANSFER_TARGET_FILE=enkf${CDUMP}_grp${n}
      export TRANSFER_TARGET_FILE_2D=enkf${CDUMP}_grp${ENSGRP}
-     ${HOME_emc_ecf_wm}/scripts/hpss_global_archive_driver.sh
+     $HOMEgfs/ush/hpss_global_archive_driver.sh
      status=$?
      if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
          echo "OFFLINE TAR $CDATE enkf${CDUMP}_grp${ENSGRP}.tar failed"
@@ -145,7 +74,7 @@ if [[ $ENSGRP -gt 0 ]] && [[ $HPSSARCH = "YES" ]]; then
      if [ $SAVEWARMICA = "YES" -a $cyc -eq $EARCINC_CYC ]; then
        export TRANSFER_TARGET_FILE=enkf${CDUMP}_restarta_grp${n}
        export TRANSFER_TARGET_FILE_2D=enkf${CDUMP}_restarta_grp${ENSGRP}
-       ${HOME_emc_ecf_wm}/scripts/hpss_global_archive_driver.sh
+       $HOMEgfs/ush/hpss_global_archive_driver.sh
        status=$?
        if [ $status -ne 0 ]; then
            echo "OFFLINE TAR $CDATE enkf${CDUMP}_restarta_grp${ENSGRP}.tar failed"
@@ -156,7 +85,7 @@ if [[ $ENSGRP -gt 0 ]] && [[ $HPSSARCH = "YES" ]]; then
      if [ $SAVEWARMICB = "YES"  -a $cyc -eq $EARCICS_CYC ]; then
        export TRANSFER_TARGET_FILE=enkf${CDUMP}_restartb_grp${n}
        export TRANSFER_TARGET_FILE_2D=enkf${CDUMP}_restartb_grp${ENSGRP}
-       ${HOME_emc_ecf_wm}/scripts/hpss_global_archive_driver.sh
+       $HOMEgfs/ush/hpss_global_archive_driver.sh
        status=$?
        if [ $status -ne 0 ]; then
            echo "OFFLINE TAR $CDATE enkf${CDUMP}_restartb_grp${ENSGRP}.tar failed"
@@ -171,11 +100,12 @@ fi
 
 ###################################################################
 # ENSGRP 0 archives ensemble means and copy data to online archive
+###################################################################
 if [ $ENSGRP -eq 0 ]; then
 
     if [ $HPSSARCH = "YES" ]; then
         export TRANSFER_TARGET_FILE=enkf${CDUMP}
-        ${HOME_emc_ecf_wm}/scripts/hpss_global_archive_driver.sh
+        $HOMEgfs/ush/hpss_global_archive_driver.sh
         status=$?
         if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
             echo "OFFLINE TAR $CDATE enkf${CDUMP}.tar failed"
@@ -187,26 +117,22 @@ if [ $ENSGRP -eq 0 ]; then
     [[ ! -d $ARCDIR ]] && mkdir -p $ARCDIR
     cd $ARCDIR
 
-    $NCP $ROTDIR/enkf${CDUMP}.$PDY/$cyc/$COMPONENT/${CDUMP}.t${cyc}z.enkfstat         enkfstat.${CDUMP}.$CDATE
-    $NCP $ROTDIR/enkf${CDUMP}.$PDY/$cyc/$COMPONENT/${CDUMP}.t${cyc}z.gsistat.ensmean  gsistat.${CDUMP}.${CDATE}.ensmean
+    if [[ ! $SDATE = $CDATE ]]; then
+      $NCP $ROTDIR/enkf${CDUMP}.$PDY/$cyc/$COMPONENT/${CDUMP}.t${cyc}z.enkfstat         enkfstat.${CDUMP}.$CDATE
+      $NCP $ROTDIR/enkf${CDUMP}.$PDY/$cyc/$COMPONENT/${CDUMP}.t${cyc}z.gsistat.ensmean  gsistat.${CDUMP}.${CDATE}.ensmean
+    fi
 
     if [ $CDUMP_ENKF != "GDAS" ]; then
-                $NCP $ROTDIR/enkfgfs.$PDY/$cyc/$COMPONENT/${CDUMP}.t${cyc}z.enkfstat         enkfstat.gfs.$CDATE
-                $NCP $ROTDIR/enkfgfs.$PDY/$cyc/$COMPONENT/${CDUMP}.t${cyc}z.gsistat.ensmean  gsistat.gfs.${CDATE}.ensmean
+      $NCP $ROTDIR/enkfgfs.$PDY/$cyc/$COMPONENT/${CDUMP}.t${cyc}z.enkfstat         enkfstat.gfs.$CDATE
+      $NCP $ROTDIR/enkfgfs.$PDY/$cyc/$COMPONENT/${CDUMP}.t${cyc}z.gsistat.ensmean  gsistat.gfs.${CDATE}.ensmean
     fi
 
 fi
 
-###############################################################
-# Clean up COM
-###############################################################
-if [[ "${DELETE_COM_IN_ARCHIVE_JOB:-YES}" == NO -o "${ROCOTO_WORKFLOW:-YES}" == NO ]] ; then
-    exit 0
-fi
-
-###############################################################
+##############################################################
 # ENSGRP 0 also does clean-up
-if [ $ENSGRP -eq 0 ]; then
+###############################################################
+if [ $ENSGRP -eq 0 -a $DELETE_COM_IN_ARCHIVE_JOB = "YES" -a $ROCOTO_WORKFLOW = "YES" ]; then
 
     # Start start and end dates to remove
     GDATEEND=$($NDATE -${RMOLDEND_ENKF:-24}  $CDATE)
@@ -224,8 +150,17 @@ if [ $ENSGRP -eq 0 ]; then
                 rocotolog="$EXPDIR/logs/${GDATE}.log"
                 if [ -f $rocotolog ]; then
                     testend=$(tail -n 1 $rocotolog | grep "This cycle is complete: Success")
-                    rc=$?
-                    if [ $rc -eq 0 ]; then
+                    cycle_completed=$?
+                    cycle_clean_up=0
+                    if [ $HPSSARCH = "YES" ]; then
+                      cd ${ROTDIR}/logs/${GDATE}
+                      hpss_archive_files=`grep "Output sent to" *arc*.log|grep ${CDUMP}earc|awk '{print $4}'`
+                      for file in $hpss_archive_files; do
+                        hst=`grep "HTAR: HTAR SUCCESSFUL" $file|wc -l`
+                        [[ $hst -eq 0 ]] && cycle_clean_up=1
+                      done
+                    fi
+                    if [ $cycle_completed -eq 0 -a $cycle_clean_up -eq 0 ]; then
                         # Retain f006.ens files.  Remove everything else
                         for file in $(ls $COMIN_ENS | grep -v f006.ens); do
                             rm -rf $COMIN_ENS/$file

@@ -54,7 +54,7 @@ with open(job_card_filename, 'w') as job_card:
         job_card.write('#PBS -N '+job_name+'\n')
         job_card.write('#PBS -o '+job_output_filename+'\n')
         job_card.write('#PBS -e '+job_output_filename+'\n')
-        job_card.write('#PBS -l walltime=00:20:00\n')
+        job_card.write('#PBS -l walltime=00:40:00\n')
         job_card.write('#PBS -l debug=true\n')
         job_card.write('#PBS -l place=vscatter,select=1:ncpus=1:mem=1GB')
         job_card.write('\n')

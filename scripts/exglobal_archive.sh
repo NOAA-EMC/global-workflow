@@ -328,12 +328,52 @@ if [ $CDUMP = "gdas" ]; then
 fi
 
 ###############################################################
+# Rerun failed HPSS Archive jobs
+###############################################################
+if [ $machine = "WCOSS2" ]; then
+  mkdir -p ${DATA}/archive_rerun
+  cd $ROTDIR
+  find . -name "*_HPSS_ARCHIVE_*.sh" &> ${DATA}/archive_rerun/found_arch_sc_list.dat
+  find . -name "*_HPSS_ARCHIVE_*.out" &> ${DATA}/archive_rerun/found_arch_jobout_list.dat
+# current_running_archive_jobs_list=`qstat -u ${USER} -T -w -f |grep Name|grep "_HPSS_ARCHIVE_"|sed 's/    Job_Name =//'`
+# current_running_archive_jobs_list=$(qstat -u lin.gan -s -xu lin.gan|grep " Q \| R "|grep "dev_tra"|awk "{print $1}")
+  current_running_archive_jobs_id_list=$(qstat -u lin.gan -s -xu lin.gan|grep " Q \| R "|grep "dev_tra"|awk '{print $1}')
+  for jid_arch in $current_running_archive_jobs_id_list; do
+    `qstat -f $jid_arch| grep "Job_Name"|awk '{print $3}' &>> ${DATA}/archive_rerun/current_running_archive_jobs_name.dat`
+  done
+  current_running_archive_jobs_name_list=$(uniq ${DATA}/archive_rerun/current_running_archive_jobs_name.dat)
+# found_arch_sc_list_ct=`cat ${DATA}/archive_rerun/found_arch_sc_list.dat|wc -l`
+# found_arch_jobout_list_ct=`cat ${DATA}/archive_rerun/found_arch_jobout_list.dat|wc -l`
+# [[ ! $found_arch_sc_list_ct -eq $found_arch_jobout_list_ct ]] && exit 6
+  found_arch_jobout_list=`cat ${DATA}/archive_rerun/found_arch_jobout_list.dat`
+  for file in $found_arch_jobout_list; do
+    stat=`grep "HTAR: HTAR SUCCESSFUL" ${ROTDIR}/${file}|wc -l`
+    if [ $stat -eq 0 ]; then
+    #  dir_name=`readlink -f $file | xargs dirname`
+      dir_name=$(echo $(dirname $file))
+      cd ${ROTDIR}/${dir_name}
+    # sc_name=`readlink -f $file |sed 's#.*/##'|sed 's/.out/.sh/'`
+      sc_name=$(echo $(echo $(basename $file))|sed 's/.out/.sh/')
+    # sc_name=$(echo $(basename $file))|sed 's/.out/.sh/'
+      jb_name=$(echo $sc_name | sed 's/.sh//')
+    # q_exist=grep $jb_name $current_running_archive_jobs_list | wc -l
+      q_exist=$(echo $current_running_archive_jobs_name_list |grep $jb_name| wc -l)
+      if [ $q_exist -eq 0 ]; then 
+        echo "HPSS_ARCHIVE job $file did not complete - rerun in progress"
+        qsub < $sc_name
+      fi
+    fi
+  done
+fi
+
+###############################################################
 fi  ##end of HPSS archive
 ###############################################################
 
 ###############################################################
 # Clean up previous cycles; various depths
 # PRIOR CYCLE: Leave the prior cycle alone
+###############################################################
 GDATE=$($NDATE -$assim_freq $CDATE)
 
 # PREVIOUS to the PRIOR CYCLE
@@ -352,10 +392,12 @@ if [ $DELETE_COM_IN_ARCHIVE_JOB = "NO" -o $ROCOTO_WORKFLOW = "NO" ]; then
     exit 0
 fi
 
+###############################################################
 # Step back every assim_freq hours and remove old rotating directories
 # for successful cycles (defaults from 24h to 120h).  If GLDAS is
 # active, retain files needed by GLDAS update.  Independent of GLDAS,
 # retain files needed by Fit2Obs
+###############################################################
 DO_GLDAS=${DO_GLDAS:-"NO"}
 GDATEEND=$($NDATE -${RMOLDEND:-24}  $CDATE)
 GDATE=$($NDATE -${RMOLDSTD:-120} $CDATE)
@@ -369,10 +411,20 @@ while [ $GDATE -le $GDATEEND ]; do
     COMINrtofs="$ROTDIR/rtofs.$gPDY"
     if [ -d $COMIN ]; then
         rocotolog="$EXPDIR/logs/${GDATE}.log"
-        if [ -f $rocotolog ]; then
+        if [ -f $rocotolog ]; then  
             testend=$(tail -n 1 $rocotolog | grep "This cycle is complete: Success")
-            rc=$?
-            if [ $rc -eq 0 ]; then
+            cycle_completed=$?
+            cycle_clean_up=0
+            if [ $HPSSARCH = "YES" ]; then
+                cd ${ROTDIR}/logs/${GDATE}
+                hpss_archive_files=`grep "Output sent to" *arc*.log|grep ${CDUMP}arch|awk '{print $4}'`
+                for file in $hpss_archive_files; do
+                  hst=`grep "HTAR: HTAR SUCCESSFUL" $file|wc -l`
+                  [[ $hst -eq 0 ]] && cycle_clean_up=1
+                done
+            fi
+            #### exit 5 
+            if [ $cycle_completed -eq 0 -a $cycle_clean_up -eq 0 ]; then
                 if [ -d $COMINwave ]; then rm -rf $COMINwave ; fi
                 if [ -d $COMINrtofs -a $GDATE -lt $RTOFS_DATE ]; then rm -rf $COMINrtofs ; fi
                 if [ $CDUMP != "gdas" -o $DO_GLDAS = "NO" -o $GDATE -lt $GLDAS_DATE ]; then
