@@ -337,7 +337,7 @@ else
 fi
 
 # IAU related parameters
-if [[ $DOHYBVAR == "NO" && $DOIAU == "YES"  ]]; then
+if [[ ${DOHYBVAR} == "NO" && ${DOIAU} == "YES"  ]]; then
   export IAUFHRS="6"
   export IAU_FHROT="3"
   export IAU_FILTER_INCREMENTS=.true.
@@ -347,11 +347,13 @@ else
 fi
 export IAU_DELTHRS=6
 export IAU_OFFSET=6
-export DOIAU_ENKF=${DOIAU:-"YES"}   # Enable 4DIAU for EnKF ensemble
-export IAUFHRS_ENKF="3,6,9"
-export IAU_DELTHRS_ENKF=6
+if [[ ${DOHYBVAR} = "YES" ]]; then
+    export DOIAU_ENKF=${DOIAU:-"YES"}   # Enable 4DIAU for EnKF ensemble
+    export IAUFHRS_ENKF="3,6,9"
+    export IAU_DELTHRS_ENKF=6
+fi
 # Check if cycle is cold starting, DOIAU off, or free-forecast mode
-if [[ "$MODE" = "cycled" && "$SDATE" = "$CDATE" && $EXP_WARM_START = ".false." ]] || [[ "$DOIAU" = "NO" ]] || [[ "$MODE" = "forecast-only" && $EXP_WARM_START = ".false." ]] ; then
+if [[ "${MODE}" = "cycled" && "${SDATE}" = "$CDATE" && ${EXP_WARM_START} = ".false." ]] || [[ "${DOIAU}" = "NO" ]] || [[ "${MODE}" = "forecast-only" && ${EXP_WARM_START} = ".false." ]] ; then
   export IAU_OFFSET=0
   export IAU_FHROT=0
 fi
