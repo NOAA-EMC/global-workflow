@@ -323,7 +323,7 @@ export lwrite4danl=".true."
 
 # EnKF output frequency
 if [ $DOHYBVAR = "YES" ]; then
-    export DOIAU="YES"        # Enable 4DIAU for control with 3 increments
+    export DOIAU="YES"
     export FHMIN_ENKF=3
     export FHMAX_ENKF=9
     if [ $l4densvar = ".true." ]; then
