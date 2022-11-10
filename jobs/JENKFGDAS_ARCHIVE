@@ -5,21 +5,21 @@ source "$HOMEgfs/ush/preamble.sh"
 #############################
 # Source relevant config files
 #############################
-export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
+export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
 configs="base earc"
-config_path=${EXPDIR:-$NWROOT/gfs.${gfs_ver}/parm/config}
-for config in $configs; do
-    . $config_path/config.$config
+config_path=${EXPDIR:-${NWROOT}/gfs.${gfs_ver}/parm/config}
+for config in ${configs}; do
+    . ${config_path}/config.${config}
     status=$?
-    [[ $status -ne 0 ]] && exit $status
+    [[ ${status} -ne 0 ]] && exit ${status}
 done
 
 ##########################################
 # Source machine runtime environment
 ##########################################
-. $HOMEgfs/env/${machine}.env earc
+. ${HOMEgfs}/env/${machine}.env earc
 status=$?
-[[ $status -ne 0 ]] && exit $status
+[[ ${status} -ne 0 ]] && exit $status
 
 ##############################################
 # Obtain unique process id (pid) and make temp directory
@@ -58,16 +58,16 @@ export n=$((ENSGRP))
 ##############################################
 
 # ICS are restarts and always lag INC by $assim_freq hours.
-export EARCINC_CYC=$ARCH_CYC
+export EARCINC_CYC=${ARCH_CYC}
 export EARCICS_CYC=$((ARCH_CYC-assim_freq))
-if [ $EARCICS_CYC -lt 0 ]; then
+if [ ${EARCICS_CYC} -lt 0 ]; then
   export EARCICS_CYC=$((EARCICS_CYC+24))
 fi
 
 # EnKF update in GFS, GDAS or both
 export CDUMP_ENKF=$(echo ${EUPD_CYC:-"gdas"} | tr a-z A-Z)
 
-export ARCH_LIST="$ROTDIR/enkf${CDUMP}.$PDY/$cyc/$COMPONENT/earc$ENSGRP"
+export ARCH_LIST="${ROTDIR}/enkf${CDUMP}.${PDY}/${cyc}/${COMPONENT}/earc${ENSGRP}"
 
 ###############################################################
 # Run archive script
@@ -85,7 +85,7 @@ echo "ENDED NORMALLY."
 # Remove the Temporary working directory
 ##########################################
 cd $DATAROOT
-[[ $KEEPDATA = "NO" ]] && rm -rf $DATA
+[[ ${KEEPDATA} = "NO" ]] && rm -rf $DATA
 
 date
 exit 0
