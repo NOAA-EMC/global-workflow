@@ -90,7 +90,6 @@ fi
 ###############################################################
 echo
 echo "=============== START TO RUN FIT2OBS VERIFICATION ==============="
-VRFYFITS=NO
 if [ $VRFYFITS = "YES" -a $CDUMP = $CDFNL -a $CDATE != $SDATE ]; then
 
     export CDUMPFCST=$VDUMP
