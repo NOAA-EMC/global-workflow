@@ -1,51 +1,38 @@
 #! /usr/bin/env bash
 
-################################################################################
-####  UNIX Script Documentation Block
-#                      .                                             .
-# Script name:         exglobal_archive.sh
-# Script description:  Run GDAS/GFS EMC archive
-#
-# Author:        Lin Gan      Org: NCEP/EMC     Date: 2022-10-24
-#
-# Abstract: This script configure archive and rapid submit thread of archive jobs
-#
-# Required module: prod_util, python
-#
-####
-################################################################################
-
 source "$HOMEgfs/ush/preamble.sh"
 
-# Directories.
-pwd=$(pwd)
-COMIN_OBS=${COMIN_OBS:-$(compath.py prod/obsproc/${obsproc_ver})/$RUN.$PDY/$cyc/atmos}
+###############################################################
+## Abstract:
+## Archive driver script
+## RUN_ENVIR : runtime environment (emc | nco)
+## HOMEgfs   : /full/path/to/workflow
+## EXPDIR : /full/path/to/config/files
+## CDATE  : current analysis date (YYYYMMDDHH)
+## CDUMP  : cycle name (gdas / gfs)
+## PDY    : current date (YYYYMMDD)
+## cyc    : current cycle (HH)
+###############################################################
+
+# Realtime parallels run GFS MOS on 1 day delay
+# If realtime parallel, back up CDATE_MOS one day
+CDATE_MOS=$CDATE
+if [ $REALTIME = "YES" ]; then
+    CDATE_MOS=$($NDATE -24 $CDATE)
+fi
+PDY_MOS=$(echo $CDATE_MOS | cut -c1-8)
+
+###############################################################
+# Archive online for verification and diagnostics
+###############################################################
 COMIN=${COMINatmos:-"$ROTDIR/$CDUMP.$PDY/$cyc/atmos"}
 cd $COMIN
 
-# Utilities
-export NCP=${NCP:-"/bin/cp -p"}
-export NMV=${NMV:-"/bin/mv"}
-export NLN=${NLN:-"/bin/ln -sf"}
-
-# Initial exception handling
-err=0
-# errs=0
-
-
-###############################################################
-# Perform on-line archiving
-###############################################################
+source "${HOMEgfs}/ush/file_utils.sh"
 
 [[ ! -d $ARCDIR ]] && mkdir -p $ARCDIR
-
-# This file is not available in first half cycle
-if [[ ! $SDATE = $CDATE ]]; then
-  $NCP ${APREFIX}gsistat $ARCDIR/gsistat.${CDUMP}.${CDATE}
- # ((errs + $?))
-  $NCP ${APREFIX}pgrb2.1p00.anl $ARCDIR/pgbanl.${CDUMP}.${CDATE}.grib2
- # ((errs + $?))
-fi
+nb_copy ${APREFIX}gsistat $ARCDIR/gsistat.${CDUMP}.${CDATE}
+nb_copy ${APREFIX}pgrb2.1p00.anl $ARCDIR/pgbanl.${CDUMP}.${CDATE}.grib2
 
 # Archive 1 degree forecast GRIB2 files for verification
 if [ $CDUMP = "gfs" ]; then
@@ -54,44 +41,43 @@ if [ $CDUMP = "gfs" ]; then
     while [ $fhr -le $fhmax ]; do
         fhr2=$(printf %02i $fhr)
         fhr3=$(printf %03i $fhr)
-        $NCP ${APREFIX}pgrb2.1p00.f$fhr3 $ARCDIR/pgbf${fhr2}.${CDUMP}.${CDATE}.grib2
-#        ((errs + $?))
-        (( fhr = $fhr + $FHOUT_GFS ))
+        nb_copy ${APREFIX}pgrb2.1p00.f$fhr3 $ARCDIR/pgbf${fhr2}.${CDUMP}.${CDATE}.grib2
+        fhr=$((10#$fhr + 10#$FHOUT_GFS ))
     done
 fi
 if [ $CDUMP = "gdas" ]; then
     flist="000 003 006 009"
     for fhr in $flist; do
         fname=${APREFIX}pgrb2.1p00.f${fhr}
-#        fhr2=$(printf %02i $fhr) $(printf %02i $((10#$a)))
         fhr2=$(printf %02i $((10#$fhr)))
-        $NCP $fname $ARCDIR/pgbf${fhr2}.${CDUMP}.${CDATE}.grib2
-#        ((errs + $?))
+        nb_copy $fname $ARCDIR/pgbf${fhr2}.${CDUMP}.${CDATE}.grib2
     done
 fi
 
 if [ -s avno.t${cyc}z.cyclone.trackatcfunix ]; then
-    PLSOT4=`echo $PSLOT|cut -c 1-4 |tr '[a-z]' '[A-Z]'`
+    PLSOT4=$(echo $PSLOT|cut -c 1-4 |tr '[a-z]' '[A-Z]')
     cat avno.t${cyc}z.cyclone.trackatcfunix | sed s:AVNO:${PLSOT4}:g  > ${ARCDIR}/atcfunix.${CDUMP}.$CDATE
     cat avnop.t${cyc}z.cyclone.trackatcfunix | sed s:AVNO:${PLSOT4}:g  > ${ARCDIR}/atcfunixp.${CDUMP}.$CDATE
 fi
 
 if [ $CDUMP = "gdas" -a -s gdas.t${cyc}z.cyclone.trackatcfunix ]; then
-    PLSOT4=`echo $PSLOT|cut -c 1-4 |tr '[a-z]' '[A-Z]'`
+    PLSOT4=$(echo $PSLOT|cut -c 1-4 |tr '[a-z]' '[A-Z]')
     cat gdas.t${cyc}z.cyclone.trackatcfunix | sed s:AVNO:${PLSOT4}:g  > ${ARCDIR}/atcfunix.${CDUMP}.$CDATE
     cat gdasp.t${cyc}z.cyclone.trackatcfunix | sed s:AVNO:${PLSOT4}:g  > ${ARCDIR}/atcfunixp.${CDUMP}.$CDATE
 fi
 
-if [ $CDUMP = "gfs" -a $DO_VRFY = "YES" ]; then
-    $NCP storms.gfso.atcf_gen.$CDATE      ${ARCDIR}/.
-    $NCP storms.gfso.atcf_gen.altg.$CDATE ${ARCDIR}/.
-    $NCP trak.gfso.atcfunix.$CDATE        ${ARCDIR}/.
-    $NCP trak.gfso.atcfunix.altg.$CDATE   ${ARCDIR}/.
+if [ $CDUMP = "gfs" ]; then
+    nb_copy storms.gfso.atcf_gen.$CDATE      ${ARCDIR}/.
+    nb_copy storms.gfso.atcf_gen.altg.$CDATE ${ARCDIR}/.
+    nb_copy trak.gfso.atcfunix.$CDATE        ${ARCDIR}/.
+    nb_copy trak.gfso.atcfunix.altg.$CDATE   ${ARCDIR}/.
 
     mkdir -p ${ARCDIR}/tracker.$CDATE/$CDUMP
     blist="epac natl"
     for basin in $blist; do
-        cp -rp $basin                     ${ARCDIR}/tracker.$CDATE/$CDUMP
+        if [[ -f $basin ]]; then
+               cp -rp $basin ${ARCDIR}/tracker.$CDATE/$CDUMP
+        fi
     done
 fi
 
@@ -107,25 +93,34 @@ if [ $CDUMP = "gfs" -a $FITSARC = "YES" ]; then
         fhr3=$(printf %03i $fhr)
         sfcfile=${prefix}.sfcf${fhr3}${ASUFFIX}
         sigfile=${prefix}.atmf${fhr3}${ASUFFIX}
-        $NCP $sfcfile $VFYARC/${CDUMP}.$PDY/$cyc/
-        $NCP $sigfile $VFYARC/${CDUMP}.$PDY/$cyc/
-        (( fhr = $fhr + 6 ))
+        nb_copy $sfcfile $VFYARC/${CDUMP}.$PDY/$cyc/
+        nb_copy $sigfile $VFYARC/${CDUMP}.$PDY/$cyc/
+        (( fhr = 10#$fhr + 6 ))
     done
 fi
 
+
 ###############################################################
-# Archive data to HPSS
-if [ $HPSSARCH = "YES" ]; then
+# Archive data either to HPSS or locally
+if [[ $HPSSARCH = "YES" || $LOCALARCH = "YES" ]]; then
 ###############################################################
-export QUEUE_ARCH=${QUEUE_ARCH:-${QUEUE_SERVICE}}
+
+# --set the archiving command and create local directories, if necessary
+TARCMD="htar"
+if [[ $LOCALARCH = "YES" ]]; then
+   TARCMD="tar"
+   [ ! -d $ATARDIR/$CDATE ] && mkdir -p $ATARDIR/$CDATE
+   [ ! -d $ATARDIR/$CDATE_MOS -a -d $ROTDIR/gfsmos.$PDY_MOS -a $cyc -eq 18 ] && mkdir -p $ATARDIR/$CDATE_MOS
+fi
+
 #--determine when to save ICs for warm start and forecast-only runs
 SAVEWARMICA="NO"
 SAVEWARMICB="NO"
 SAVEFCSTIC="NO"
 firstday=$($NDATE +24 $SDATE)
-mm=`echo $CDATE|cut -c 5-6`
-dd=`echo $CDATE|cut -c 7-8`
-nday=$(( (mm-1)*30+dd ))
+mm=$(echo $CDATE|cut -c 5-6)
+dd=$(echo $CDATE|cut -c 7-8)
+nday=$(( (10#$mm-1)*30+10#$dd ))
 mod=$(($nday % $ARCH_WARMICFREQ))
 if [ $CDATE -eq $firstday -a $cyc -eq $ARCHINC_CYC ]; then SAVEWARMICA="YES" ; fi
 if [ $CDATE -eq $firstday -a $cyc -eq $ARCHICS_CYC ]; then SAVEWARMICB="YES" ; fi
@@ -144,223 +139,122 @@ mod=$(($nday % $ARCH_FCSTICFREQ))
 if [ $mod -eq 0 -o $CDATE -eq $firstday ]; then SAVEFCSTIC="YES" ; fi
 
 
-export ARCH_LIST="$COMIN/archlist"
+ARCH_LIST="$COMIN/archlist"
 [[ -d $ARCH_LIST ]] && rm -rf $ARCH_LIST
 mkdir -p $ARCH_LIST
 cd $ARCH_LIST
 
 $HOMEgfs/ush/hpssarch_gen.sh $CDUMP
-err=$?
-if [ $err -ne 0  ]; then
+status=$?
+if [ $status -ne 0  ]; then
     echo "$HOMEgfs/ush/hpssarch_gen.sh $CDUMP failed, ABORT!"
-    err_chk
+    exit $status
 fi
 
 cd $ROTDIR
 
 if [ $CDUMP = "gfs" ]; then
 
-    #Common gfsa gfsb - NOTE - do not check htar error status
-    #  Some files not found can be acceptable
-    for targrp in gfsa gfsb; do
-        export TRANSFER_TARGET_FILE=$targrp
-        $HOMEgfs/ush/hpss_global_archive_driver.sh
-    done
+    targrp_list="gfsa gfsb"
 
     if [ ${ARCH_GAUSSIAN:-"NO"} = "YES" ]; then
-        # Both cycled and fcst only
-        for targrp in gfs_flux gfs_${format}b gfs_pgrb2b; do
-            export TRANSFER_TARGET_FILE=$targrp
-            $HOMEgfs/ush/hpss_global_archive_driver.sh
-            err=$?
-            if [ $err -ne 0  -a $CDATE -ge $firstday ]; then
-                echo "Fail to create $CDATE ${targrp}.tar"
-                err_chk
-            fi
-        done
-        # Only cycled
+        targrp_list="$targrp_list gfs_flux gfs_${format}b gfs_pgrb2b"
         if [ $MODE = "cycled" ]; then
-            targrp="$targrp_list gfs_${format}a"
-            export TRANSFER_TARGET_FILE=$targrp
-            $HOMEgfs/ush/hpss_global_archive_driver.sh
-            err=$?
-            if [ $err -ne 0  -a $CDATE -ge $firstday ]; then
-                echo "Fail to create $CDATE ${targrp}.tar"
-                err_chk
-            fi
+          targrp_list="$targrp_list gfs_${format}a"
         fi
     fi
 
-    # gfs wave
     if [ $DO_WAVE = "YES" -a "$WAVE_CDUMP" != "gdas" ]; then
-        for targrp in gfswave; do
-            export TRANSFER_TARGET_FILE=$targrp
-            $HOMEgfs/ush/hpss_global_archive_driver.sh
-            err=$?
-            if [ $err -ne 0  -a $CDATE -ge $firstday ]; then
-                echo "Fail to create $CDATE ${targrp}.tar"
-                err_chk
-            fi
-        done
+        targrp_list="$targrp_list gfswave"
     fi
 
-    # gfs ocean
     if [ $DO_OCN = "YES" ]; then
-        for targrp in ocn_ice_grib2_0p5 ocn_ice_grib2_0p25 ocn_2D ocn_3D ocn_xsect ocn_daily gfs_flux_1p00; do
-            export TRANSFER_TARGET_FILE=$targrp
-            $HOMEgfs/ush/hpss_global_archive_driver.sh
-            err=$?
-            if [ $err -ne 0  -a $CDATE -ge $firstday ]; then
-                echo "Fail to create $CDATE ${targrp}.tar"
-                err_chk
-            fi
-        done
+        targrp_list="$targrp_list ocn_ice_grib2_0p5 ocn_ice_grib2_0p25 ocn_2D ocn_3D ocn_xsect ocn_daily gfs_flux_1p00"
     fi
 
-    # gfs ice
     if [ $DO_ICE = "YES" ]; then
-        for targrp in ice; do
-            export TRANSFER_TARGET_FILE=$targrp
-            $HOMEgfs/ush/hpss_global_archive_driver.sh
-            err=$?
-            if [ $err -ne 0  -a $CDATE -ge $firstday ]; then
-                echo "Fail to create $CDATE ${targrp}.tar"
-                err_chk
-            fi
-        done
+        targrp_list="$targrp_list ice"
     fi
 
-    # gfs aerosol
+    # Aerosols
     if [ $DO_AERO = "YES" ]; then
         for targrp in chem; do
-            export TRANSFER_TARGET_FILE=$targrp
-            $HOMEgfs/ush/hpss_global_archive_driver.sh
-            err=$?
-            if [ $err -ne 0  -a $CDATE -ge $firstday ]; then
-                echo "Fail to create $CDATE ${targrp}.tar"
-                err_chk
+            $TARCMD -P -cvf $ATARDIR/$CDATE/${targrp}.tar $(cat $ARCH_LIST/${targrp}.txt)
+            status=$?
+            if [ $status -ne 0 -a $CDATE -ge $firstday ]; then
+                echo "HTAR $CDATE ${targrp}.tar failed"
+                exit $status
             fi
         done
     fi
 
-    # restarts
+    #for restarts
     if [ $SAVEFCSTIC = "YES" ]; then
-        export TRANSFER_TARGET_FILE=gfs_restarta
-        $HOMEgfs/ush/hpss_global_archive_driver.sh
-        err=$?
-        if [ $err -ne 0  -a $CDATE -ge $firstday ]; then
-            echo "Fail to create $CDATE gfs_restarta.tar"
-            err_chk
-        fi
+        targrp_list="$targrp_list gfs_restarta"
     fi
 
-    # downstream products
+    #for downstream products
     if [ $DO_BUFRSND = "YES" -o $WAFSF = "YES" ]; then
-        export TRANSFER_TARGET_FILE=gfs_downstream
-        $HOMEgfs/ush/hpss_global_archive_driver.sh
-        err=$?
-        if [ $err -ne 0  -a $CDATE -ge $firstday ]; then
-            echo "Fail to create $CDATE gfs_downstream.tar"
-            err_chk
+        targrp_list="$targrp_list gfs_downstream"
+    fi
+
+    #--save mdl gfsmos output from all cycles in the 18Z archive directory
+    if [ -d gfsmos.$PDY_MOS -a $cyc -eq 18 ]; then
+        set +e
+        $TARCMD -P -cvf $ATARDIR/$CDATE_MOS/gfsmos.tar ./gfsmos.$PDY_MOS
+        status=$?
+        if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
+            echo "$(echo $TARCMD | tr 'a-z' 'A-Z') $CDATE gfsmos.tar failed"
+            exit $status
         fi
+        set_strict
     fi
+elif [ $CDUMP = "gdas" ]; then
 
-fi
+    targrp_list="gdas"
 
-
-if [ $CDUMP = "gdas" ]; then
-
-    #Common file
-    export TRANSFER_TARGET_FILE=gdas
-    $HOMEgfs/ush/hpss_global_archive_driver.sh
-    err=$?
-    if [ $err -ne 0  -a $CDATE -ge $firstday ]; then
-        echo "Fail to create $CDATE gdas.tar"
-        err_chk
-    fi
-
-    #gdas wave
+    #gdaswave
     if [ $DO_WAVE = "YES" ]; then
-        export TRANSFER_TARGET_FILE=gdaswave
-        $HOMEgfs/ush/hpss_global_archive_driver.sh
-        err=$?
-        if [ $err -ne 0  -a $CDATE -ge $firstday ]; then
-            echo "Fail to create $CDATE gdaswave.tar"
-            err_chk
-        fi
+        targrp_list="$targrp_list gdaswave"
     fi
 
-    # restart A
     if [ $SAVEWARMICA = "YES" -o $SAVEFCSTIC = "YES" ]; then
-        export TRANSFER_TARGET_FILE=gdas_restarta
-        $HOMEgfs/ush/hpss_global_archive_driver.sh
-        err=$?
-        if [ $err -ne 0  -a $CDATE -ge $firstday ]; then
-            echo "Fail to create $CDATE gdas_restarta.tar"
-            err_chk
-        fi
+        targrp_list="$targrp_list gdas_restarta"
+
         if [ $DO_WAVE = "YES" ]; then
-            export TRANSFER_TARGET_FILE=gdaswave_restart
-            $HOMEgfs/ush/hpss_global_archive_driver.sh
-            err=$?
-            if [ $err -ne 0  -a $CDATE -ge $firstday ]; then
-                echo "Fail to create $CDATE gdaswave_restart.tar"
-                err_chk
-            fi
+            targrp_list="$targrp_list gdaswave_restart"
         fi
     fi
 
-    # restart B
     if [ $SAVEWARMICB = "YES" -o $SAVEFCSTIC = "YES" ]; then
-        export TRANSFER_TARGET_FILE=gdas_restartb
-        $HOMEgfs/ush/hpss_global_archive_driver.sh
-        err=$?
-        if [ $err -ne 0  -a $CDATE -ge $firstday ]; then
-            echo "Fail to create $CDATE gdas_restartb.tar"
-            err_chk
-        fi
+        targrp_list="$targrp_list gdas_restartb"
     fi
-
 fi
 
-###############################################################
-# Rerun failed HPSS Archive jobs
-###############################################################
-if [ $machine = "WCOSS2" ]; then
-  mkdir -p ${DATA}/archive_rerun
-  cd $ROTDIR
-  find . -name "*_HPSS_ARCHIVE_*.sh" &> ${DATA}/archive_rerun/found_arch_sc_list.dat
-  find . -name "*_HPSS_ARCHIVE_*.out" &> ${DATA}/archive_rerun/found_arch_jobout_list.dat
-  current_running_archive_jobs_id_list=$(qstat -u lin.gan -s -xu lin.gan|grep " Q \| R "|grep "dev_tra"|awk '{print $1}')
-  for jid_arch in $current_running_archive_jobs_id_list; do
-    `qstat -f $jid_arch| grep "Job_Name"|awk '{print $3}' &>> ${DATA}/archive_rerun/current_running_archive_jobs_name.dat`
-  done
-  current_running_archive_jobs_name_list=$(uniq ${DATA}/archive_rerun/current_running_archive_jobs_name.dat)
-  found_arch_jobout_list=`cat ${DATA}/archive_rerun/found_arch_jobout_list.dat`
-  for file in $found_arch_jobout_list; do
-    stat=`grep "HTAR: HTAR SUCCESSFUL" ${ROTDIR}/${file}|wc -l`
-    if [ $stat -eq 0 ]; then
-      dir_name=$(echo $(dirname $file))
-      cd ${ROTDIR}/${dir_name}
-      sc_name=$(echo $(echo $(basename $file))|sed 's/.out/.sh/')
-      jb_name=$(echo $sc_name | sed 's/.sh//')
-      q_exist=$(echo $current_running_archive_jobs_name_list |grep $jb_name| wc -l)
-      if [ $q_exist -eq 0 ]; then 
-        echo "HPSS_ARCHIVE job $file did not complete - rerun in progress"
-        qsub < $sc_name
-      fi
+# Turn on extended globbing options
+shopt -s extglob
+for targrp in $targrp_list; do
+    set +e
+    $TARCMD -P -cvf $ATARDIR/$CDATE/${targrp}.tar $(cat $ARCH_LIST/${targrp}.txt)
+    status=$?
+    if [ $status -ne 0 -a $CDATE -ge $firstday ]; then
+        echo "$(echo $TARCMD | tr 'a-z' 'A-Z') $CDATE ${targrp}.tar failed"
+        exit $status
     fi
-  done
-fi
+    set_strict
+done
+# Turn extended globbing back off
+shopt -u extglob
 
 ###############################################################
 fi  ##end of HPSS archive
 ###############################################################
 
+
+
 ###############################################################
 # Clean up previous cycles; various depths
 # PRIOR CYCLE: Leave the prior cycle alone
-###############################################################
 GDATE=$($NDATE -$assim_freq $CDATE)
 
 # PREVIOUS to the PRIOR CYCLE
@@ -372,19 +266,14 @@ gcyc=$(echo $GDATE | cut -c9-10)
 COMIN="$RUNDIR/$GDATE"
 [[ -d $COMIN ]] && rm -rf $COMIN
 
-###############################################################
-# Clean up COM
-###############################################################
-if [ $DELETE_COM_IN_ARCHIVE_JOB = "NO" -o $ROCOTO_WORKFLOW = "NO" ]; then
+if [[ "${DELETE_COM_IN_ARCHIVE_JOB:-YES}" == NO ]] ; then
     exit 0
 fi
 
-###############################################################
 # Step back every assim_freq hours and remove old rotating directories
 # for successful cycles (defaults from 24h to 120h).  If GLDAS is
 # active, retain files needed by GLDAS update.  Independent of GLDAS,
 # retain files needed by Fit2Obs
-###############################################################
 DO_GLDAS=${DO_GLDAS:-"NO"}
 GDATEEND=$($NDATE -${RMOLDEND:-24}  $CDATE)
 GDATE=$($NDATE -${RMOLDSTD:-120} $CDATE)
@@ -398,19 +287,12 @@ while [ $GDATE -le $GDATEEND ]; do
     COMINrtofs="$ROTDIR/rtofs.$gPDY"
     if [ -d $COMIN ]; then
         rocotolog="$EXPDIR/logs/${GDATE}.log"
-        if [ -f $rocotolog ]; then  
+        if [ -f $rocotolog ]; then
+            set +e
             testend=$(tail -n 1 $rocotolog | grep "This cycle is complete: Success")
-            cycle_completed=$?
-            cycle_clean_up=0
-            if [ $HPSSARCH = "YES" ]; then
-                cd ${ROTDIR}/logs/${GDATE}
-                hpss_archive_files=`grep "Output sent to" *arc*.log|grep ${CDUMP}arch|awk '{print $4}'`
-                for file in $hpss_archive_files; do
-                  hst=`grep "HTAR: HTAR SUCCESSFUL" $file|wc -l`
-                  [[ $hst -eq 0 ]] && cycle_clean_up=1
-                done
-            fi
-            if [ $cycle_completed -eq 0 -a $cycle_clean_up -eq 0 ]; then
+            rc=$?
+            set_strict
+            if [ $rc -eq 0 ]; then
                 if [ -d $COMINwave ]; then rm -rf $COMINwave ; fi
                 if [ -d $COMINrtofs -a $GDATE -lt $RTOFS_DATE ]; then rm -rf $COMINrtofs ; fi
                 if [ $CDUMP != "gdas" -o $DO_GLDAS = "NO" -o $GDATE -lt $GLDAS_DATE ]; then
@@ -446,6 +328,12 @@ while [ $GDATE -le $GDATEEND ]; do
 
     if [ -d $COMINwave ]; then
         [[ ! "$(ls -A $COMINwave)" ]] && rm -rf $COMINwave
+    fi
+
+    # Remove mdl gfsmos directory
+    if [ $CDUMP = "gfs" ]; then
+        COMIN="$ROTDIR/gfsmos.$gPDY"
+        if [ -d $COMIN -a $GDATE -lt $CDATE_MOS ]; then rm -rf $COMIN ; fi
     fi
 
     GDATE=$($NDATE +$assim_freq $GDATE)
@@ -484,9 +372,8 @@ rPDY=$(echo $RDATE | cut -c1-8)
 COMIN="$ROTDIR/$CDUMP.$rPDY"
 [[ -d $COMIN ]] && rm -rf $COMIN
 
+
 ###############################################################
 
-echo "ENDED NORMALLY."
 
-##########################################
-
+exit 0
