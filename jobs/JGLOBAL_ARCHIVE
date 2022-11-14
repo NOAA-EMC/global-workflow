@@ -72,5 +72,4 @@ echo "ENDED NORMALLY."
 cd ${DATAROOT}
 [[ ${KEEPDATA} = "NO" ]] && rm -rf $DATA
 
-date
 exit 0
