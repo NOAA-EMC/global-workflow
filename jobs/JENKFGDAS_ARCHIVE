@@ -52,10 +52,6 @@ export CDATE=${CDATE:-${PDY}${cyc}}
 export CDUMP=${CDUMP:-${RUN:-"gdas"}}
 export COMPONENT=${COMPONENT:-atmos}
 
-# EnKF update in GFS, GDAS or both
-export CDUMP_ENKF=$(echo ${EUPD_CYC:-"gdas"} | tr a-z A-Z)
-export ARCH_LIST="${ROTDIR}/enkf${CDUMP}.${PDY}/${cyc}/${COMPONENT}/earc${ENSGRP}"
-
 ###############################################################
 # Run archive script
 ###############################################################
