@@ -340,6 +340,11 @@ export lwrite4danl=".true."
 if [ $DOHYBVAR = "YES" ]; then
     export FHMIN_ENKF=3
     export FHMAX_ENKF=9
+    if [[ $EUPD_CYC == "BOTH" ]]; then
+        if [[ $CDUMP == "gfs" ]]; then
+            export FHMAX_ENKF=120
+        fi
+    fi
     if [ $l4densvar = ".true." ]; then
         export FHOUT=1
         export FHOUT_ENKF=1
