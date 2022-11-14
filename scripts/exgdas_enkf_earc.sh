@@ -17,14 +17,14 @@ if [ ${EARCICS_CYC} -lt 0 ]; then
 fi
 
 [[ -d ${ARCH_LIST} ]] && rm -rf $ARCH_LIST
-mkdir -p $ARCH_LIST
-cd $ARCH_LIST
+mkdir -p ${ARCH_LIST}
+cd ${ARCH_LIST}
 
 ${HOMEgfs}/ush/hpssarch_gen.sh enkf${CDUMP}
 status=$?
 if [ ${status} -ne 0 ]; then
    echo "${HOMEgfs}/ush/hpssarch_gen.sh enkf${CDUMP} failed, ABORT!"
-   exit $status
+   exit ${status}
 fi
 
 cd ${ROTDIR}

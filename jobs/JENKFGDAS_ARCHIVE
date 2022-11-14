@@ -58,7 +58,7 @@ export COMPONENT=${COMPONENT:-atmos}
 
 ${SCRgfs}/exgdas_enkf_earc.sh
 status=$?
-[[ $status -ne 0 ]] && exit $status
+[[ ${status} -ne 0 ]] && exit $status
 
 ###############################################################
 
