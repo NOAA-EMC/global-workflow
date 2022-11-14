@@ -13,6 +13,26 @@ source "$HOMEgfs/ush/preamble.sh"
 ## PDY    : current date (YYYYMMDD)
 ## cyc    : current cycle (HH)
 ###############################################################
+##############################################
+# Begin JOB SPECIFIC work
+##############################################
+
+# ICS are restarts and always lag INC by $assim_freq hours
+ARCHINC_CYC=${ARCH_CYC}
+ARCHICS_CYC=$((ARCH_CYC-assim_freq))
+if [ ${ARCHICS_CYC} -lt 0 ]; then
+    ARCHICS_CYC=$((ARCHICS_CYC+24))
+fi
+
+# CURRENT CYCLE
+APREFIX="${CDUMP}.t${cyc}z."
+ASUFFIX=${ASUFFIX:-${SUFFIX}}
+
+if [ ${ASUFFIX} = ".nc" ]; then
+   format="netcdf"
+else
+   format="nemsio"
+fi
 
 # Realtime parallels run GFS MOS on 1 day delay
 # If realtime parallel, back up CDATE_MOS one day

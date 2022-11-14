@@ -7,7 +7,7 @@ source "$HOMEgfs/ush/preamble.sh"
 #############################
 export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
 configs="base earc"
-config_path=${EXPDIR:-${NWROOT}/gfs.${gfs_ver}/parm/config}
+config_path=${EXPDIR:-${PACKAGEROOT}/gfs.${gfs_ver}/parm/config}
 for config in ${configs}; do
     . ${config_path}/config.${config}
     status=$?
@@ -26,8 +26,8 @@ status=$?
 ##############################################
 export pid=${pid:-$$}
 export DATA=${DATA:-${DATAROOT}/${jobid:?}}
-mkdir -p $DATA
-cd $DATA
+mkdir -p ${DATA}
+cd ${DATA}
 
 
 ##############################################
@@ -49,31 +49,18 @@ export pgmerr=errfile
 # Set variables used in the script
 ##############################################
 export CDATE=${CDATE:-${PDY}${cyc}}
-export CDUMP=${CDUMP:-${RUN:-"gfs"}}
+export CDUMP=${CDUMP:-${RUN:-"gdas"}}
 export COMPONENT=${COMPONENT:-atmos}
-export n=$((ENSGRP))
-
-##############################################
-# Begin JOB SPECIFIC work
-##############################################
-
-# ICS are restarts and always lag INC by $assim_freq hours.
-export EARCINC_CYC=${ARCH_CYC}
-export EARCICS_CYC=$((ARCH_CYC-assim_freq))
-if [ ${EARCICS_CYC} -lt 0 ]; then
-  export EARCICS_CYC=$((EARCICS_CYC+24))
-fi
 
 # EnKF update in GFS, GDAS or both
 export CDUMP_ENKF=$(echo ${EUPD_CYC:-"gdas"} | tr a-z A-Z)
-
 export ARCH_LIST="${ROTDIR}/enkf${CDUMP}.${PDY}/${cyc}/${COMPONENT}/earc${ENSGRP}"
 
 ###############################################################
 # Run archive script
 ###############################################################
 
-$SCRgfs/exgdas_enkf_earc.sh
+${SCRgfs}/exgdas_enkf_earc.sh
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
@@ -84,7 +71,7 @@ echo "ENDED NORMALLY."
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd $DATAROOT
+cd ${DATAROOT}
 [[ ${KEEPDATA} = "NO" ]] && rm -rf $DATA
 
 date
