@@ -54,7 +54,7 @@ source "$HOMEgfs/ush/preamble.sh"
   echo "Starting at : $(date)"
   echo '-------------'
   echo ' '
-  ${TRACE_ON:-set -x}
+  set_trace
 
 # Script will run only if pre-defined NTASKS
 #     The actual work is distributed over these tasks.
@@ -91,7 +91,7 @@ source "$HOMEgfs/ush/preamble.sh"
   echo '-------------------'
   echo "   Output points : $waveuoutpGRD"
   echo ' '
-  ${TRACE_ON:-set -x}
+  set_trace
 
 # --------------------------------------------------------------------------- #
 # 1.  Get files that are used by most child scripts
@@ -102,7 +102,7 @@ source "$HOMEgfs/ush/preamble.sh"
   echo ' '
   echo 'Preparing input files :'
   echo '-----------------------'
-  ${TRACE_ON:-set -x}
+  set_trace
 
 # 1.a Model definition files and output files (set up using poe)
 
@@ -112,7 +112,7 @@ source "$HOMEgfs/ush/preamble.sh"
   touch cmdfile
   chmod 744 cmdfile
 
-  ${TRACE_ON:-set -x}
+  set_trace
 
 # Copy model definition files
   iloop=0
@@ -122,7 +122,7 @@ source "$HOMEgfs/ush/preamble.sh"
     then
       set +x
       echo " Mod def file for $grdID found in ${COMIN}/rundata. copying ...."
-      ${TRACE_ON:-set -x}
+      set_trace
 
       cp -f $COMIN/rundata/${CDUMP}wave.mod_def.${grdID} mod_def.$grdID
       iloop=$(expr $iloop + 1)
@@ -139,13 +139,13 @@ source "$HOMEgfs/ush/preamble.sh"
       echo " FATAL ERROR : NO MOD_DEF FILE mod_def.$grdID "
       echo '*************************************************** '
       echo ' '
-      ${TRACE_ON:-set -x}
+      set_trace
       err=2; export err;${errchk}
       exit $err
     else
       set +x
       echo "File mod_def.$grdID found. Syncing to all nodes ..."
-      ${TRACE_ON:-set -x}
+      set_trace
     fi
   done
 
@@ -169,7 +169,7 @@ source "$HOMEgfs/ush/preamble.sh"
   then
     set +x
     echo "   buoy.loc and buoy.ibp copied and processed ($PARMwave/wave_${NET}.buoys)."
-    ${TRACE_ON:-set -x}
+    set_trace
   else
     set +x
     echo ' '
@@ -177,7 +177,7 @@ source "$HOMEgfs/ush/preamble.sh"
     echo ' FATAL ERROR : NO BUOY LOCATION FILE  '
     echo '************************************* '
     echo ' '
-    ${TRACE_ON:-set -x}
+    set_trace
     err=3; export err;${errchk}
     exit $err
     DOSPC_WAV='NO'
@@ -195,7 +195,7 @@ source "$HOMEgfs/ush/preamble.sh"
   then
     set +x
     echo "   ww3_outp_spec.inp.tmpl copied. Syncing to all grids ..."
-    ${TRACE_ON:-set -x}
+    set_trace
   else
     set +x
     echo ' '
@@ -203,7 +203,7 @@ source "$HOMEgfs/ush/preamble.sh"
     echo '*** ERROR : NO TEMPLATE FOR SPEC INPUT FILE *** '
     echo '*********************************************** '
     echo ' '
-    ${TRACE_ON:-set -x}
+    set_trace
     exit_code=3
     DOSPC_WAV='NO'
     DOBLL_WAV='NO'
@@ -218,7 +218,7 @@ source "$HOMEgfs/ush/preamble.sh"
   then
     set +x
     echo "   ww3_outp_bull.inp.tmpl copied. Syncing to all nodes ..."
-    ${TRACE_ON:-set -x}
+    set_trace
   else
     set +x
     echo ' '
@@ -226,7 +226,7 @@ source "$HOMEgfs/ush/preamble.sh"
     echo '*** ERROR : NO TEMPLATE FOR BULLETIN INPUT FILE *** '
     echo '*************************************************** '
     echo ' '
-    ${TRACE_ON:-set -x}
+    set_trace
     exit_code=4
     DOBLL_WAV='NO'
   fi
@@ -256,7 +256,7 @@ source "$HOMEgfs/ush/preamble.sh"
       echo " FATAL ERROR : NO RAW POINT OUTPUT FILE out_pnt.${waveuoutpGRD}.${YMD}.${HMS} "
       echo '*************************************************** '
       echo ' '
-      ${TRACE_ON:-set -x}
+      set_trace
       echo "$WAV_MOD_TAG post $waveuoutpGRD $CDATE $cycle : field output missing."
       err=4; export err;${errchk}
     fi
@@ -280,7 +280,7 @@ source "$HOMEgfs/ush/preamble.sh"
       echo ' '
       cat buoy_tmp.loc
       echo "$WAV_MOD_TAG post $date $cycle : buoy log file failed to be created."
-      ${TRACE_ON:-set -x}
+      set_trace
       err=5;export err;${errchk}
       DOSPC_WAV='NO'
       DOBLL_WAV='NO'
@@ -303,7 +303,7 @@ source "$HOMEgfs/ush/preamble.sh"
     then
       set +x
       echo 'Buoy log file created. Syncing to all nodes ...'
-      ${TRACE_ON:-set -x}
+      set_trace
     else
       set +x
       echo ' '
@@ -311,7 +311,7 @@ source "$HOMEgfs/ush/preamble.sh"
       echo '*** ERROR : NO BUOY LOG FILE CREATED *** '
       echo '**************************************** '
       echo ' '
-      ${TRACE_ON:-set -x}
+      set_trace
       err=6;export err;${errchk}
       DOSPC_WAV='NO'
       DOBLL_WAV='NO'
@@ -331,7 +331,7 @@ source "$HOMEgfs/ush/preamble.sh"
   echo "      Sufficient data for bulletins             : $DOBLL_WAV ($Nb points)"
   echo "      Boundary points                           : $DOBNDPNT_WAV"
   echo ' '
-  ${TRACE_ON:-set -x}
+  set_trace
 
 # --------------------------------------------------------------------------- #
 # 2. Make files for processing boundary points
@@ -340,7 +340,7 @@ source "$HOMEgfs/ush/preamble.sh"
 
   set +x
   echo '   Making command file for wave post points '
-  ${TRACE_ON:-set -x}
+  set_trace
 
   rm -f cmdfile
   touch cmdfile
@@ -374,7 +374,7 @@ source "$HOMEgfs/ush/preamble.sh"
     else
       echo " FATAL ERROR : NO RAW POINT OUTPUT FILE out_pnt.$waveuoutpGRD.${YMD}.${HMS} "
       echo ' '
-      ${TRACE_ON:-set -x}
+      set_trace
       err=7; export err;${errchk}
       exit $err
     fi
@@ -468,7 +468,7 @@ source "$HOMEgfs/ush/preamble.sh"
   echo "   Executing the wave point scripts at : $(date)"
   echo '   ------------------------------------'
   echo ' '
-  ${TRACE_ON:-set -x}
+  set_trace
 
   if [ "$wavenproc" -gt '1' ]
   then
@@ -493,7 +493,7 @@ source "$HOMEgfs/ush/preamble.sh"
     echo '*************************************'
     echo '     See Details Below '
     echo ' '
-    ${TRACE_ON:-set -x}
+    set_trace
     err=8; export err;${errchk}
     exit $err
   fi
@@ -560,7 +560,7 @@ source "$HOMEgfs/ush/preamble.sh"
   echo "   Executing the boundary point cat script at : $(date)"
   echo '   ------------------------------------'
   echo ' '
-  ${TRACE_ON:-set -x}
+  set_trace
 
   if [ "$wavenproc" -gt '1' ]
   then
@@ -585,7 +585,7 @@ source "$HOMEgfs/ush/preamble.sh"
     echo '*************************************'
     echo '     See Details Below '
     echo ' '
-    ${TRACE_ON:-set -x}
+    set_trace
     err=9; export err;${errchk}
     exit $err
   fi
@@ -604,7 +604,7 @@ source "$HOMEgfs/ush/preamble.sh"
   echo ' '
   echo '   Making command file for taring all point output files.'
 
-  ${TRACE_ON:-set -x}
+  set_trace
 
 # 6.b Spectral data files
 
@@ -662,7 +662,7 @@ source "$HOMEgfs/ush/preamble.sh"
   echo "   Executing the wave_tar scripts at : $(date)"
   echo '   ------------------------------------'
   echo ' '
-  ${TRACE_ON:-set -x}
+  set_trace
 
   if [ "$wavenproc" -gt '1' ]
   then
@@ -687,7 +687,7 @@ source "$HOMEgfs/ush/preamble.sh"
     echo '*************************************'
     echo '     See Details Below '
     echo ' '
-    ${TRACE_ON:-set -x}
+    set_trace
     err=10; export err;${errchk}
   exit $err
   fi

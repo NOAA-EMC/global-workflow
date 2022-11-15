@@ -8,6 +8,8 @@ load(pathJoin("hpc", "1.1.0"))
 load(pathJoin("hpc-intel", "18.0.5.274"))
 load(pathJoin("hpc-impi", "2018.0.4"))
 
+load(pathJoin("cmake", "3.20.1"))
+
 load(pathJoin("hpss", "hpss"))
 load(pathJoin("nco", "4.9.1"))
 load(pathJoin("gempak", "7.4.2"))
@@ -25,8 +27,8 @@ load(pathJoin("png", "1.6.35"))
 
 load(pathJoin("hdf5", "1.10.6"))
 load(pathJoin("netcdf", "4.7.4"))
-load(pathJoin("pio", "2.5.2"))
-load(pathJoin("esmf", "8.2.1b04"))
+load(pathJoin("pio", "2.5.7"))
+load(pathJoin("esmf", "8.3.0b09"))
 load(pathJoin("fms", "2021.03"))
 
 load(pathJoin("bacio", "2.4.1"))
@@ -45,6 +47,9 @@ setenv("WGRIB2","wgrib2")
 load(pathJoin("cdo", "1.9.5"))
 
 load(pathJoin("R", "3.5.0"))
+
+prepend_path("MODULEPATH", pathJoin("/scratch1/NCEPDEV/global/glopara/git/prepobs/v1.0.1/modulefiles"))
+load(pathJoin("prepobs", "1.0.1"))
 
 -- Temporary until official hpc-stack is updated
 prepend_path("MODULEPATH", "/scratch2/NCEPDEV/ensemble/save/Walter.Kolczynski/hpc-stack/modulefiles/stack")

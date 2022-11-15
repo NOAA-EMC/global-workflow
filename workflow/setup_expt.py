@@ -122,8 +122,9 @@ def edit_baseconfig(host, inputs):
         "@HOMEgfs@": _top,
         "@BASE_GIT@": host.info["base_git"],
         "@DMPDIR@": host.info["dmpdir"],
-        "@NWPROD@": host.info["nwprod"],
+        "@PACKAGEROOT@": host.info["packageroot"],
         "@COMROOT@": host.info["comroot"],
+        "@COMINsyn@": host.info["cominsyn"],
         "@HOMEDIR@": host.info["homedir"],
         "@EXPDIR@": inputs.expdir,
         "@ROTDIR@": inputs.comrot,
@@ -135,6 +136,7 @@ def edit_baseconfig(host, inputs):
         "@QUEUE@": host.info["queue"],
         "@QUEUE_SERVICE@": host.info["queue_service"],
         "@PARTITION_BATCH@": host.info["partition_batch"],
+        "@PARTITION_SERVICE@": host.info["partition_service"],
         "@EXP_WARM_START@": inputs.warm_start,
         "@MODE@": inputs.mode,
         "@CHGRP_RSTPROD@": host.info["chgrp_rstprod"],
@@ -142,6 +144,8 @@ def edit_baseconfig(host, inputs):
         "@HPSSARCH@": host.info["hpssarch"],
         "@LOCALARCH@": host.info["localarch"],
         "@ATARDIR@": host.info["atardir"],
+        "@MAKE_NSSTBUFR@": host.info["make_nsstbufr"],
+        "@MAKE_ACFTBUFR@": host.info["make_acftbufr"],
         "@gfs_cyc@": inputs.gfs_cyc,
         "@APP@": inputs.app,
     }
@@ -153,6 +157,19 @@ def edit_baseconfig(host, inputs):
             "@NMEM_ENKF@": inputs.nens,
         }
         tmpl_dict = dict(tmpl_dict, **extend_dict)
+
+    if inputs.mode in ['cycled']:
+        extend_dict = {
+            "@CCPP_SUITE@": 'FV3_GFS_v16',
+            "@IMP_PHYSICS@": 11
+        }
+    elif inputs.mode in ['forecast-only']:
+        extend_dict = {
+            "@CCPP_SUITE@": 'FV3_GFS_v17_p8',
+            "@IMP_PHYSICS@": 8
+        }
+    tmpl_dict = dict(tmpl_dict, **extend_dict)
+
 
     # Open and read the templated config.base.emc.dyn
     base_tmpl = f'{inputs.configdir}/config.base.emc.dyn'
@@ -265,11 +282,20 @@ def query_and_clean(dirname):
 
     return create_dir
 
+def validate_user_request(host, inputs):
+    expt_res = f'C{inputs.resdet}'
+    supp_res = host.info['supported_resolutions']
+    machine = host.machine
+    if expt_res not in supp_res:
+        raise NotImplementedError(f"Supported resolutions on {machine} are:\n{', '.join(supp_res)}")
+
 
 if __name__ == '__main__':
 
     user_inputs = input_args()
     host = Host()
+
+    validate_user_request(host, user_inputs)
 
     comrot = os.path.join(user_inputs.comrot, user_inputs.pslot)
     expdir = os.path.join(user_inputs.expdir, user_inputs.pslot)

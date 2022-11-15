@@ -17,6 +17,8 @@ class YAMLFile(AttrDict):
 
     def __init__(self, path=None, data=None):
         super().__init__()
+        if path and data:
+            print("Ignoring 'data' and using 'path' argument")  # TODO: use logging
         if path:
             config = parse_yaml(path=path)
         elif data:

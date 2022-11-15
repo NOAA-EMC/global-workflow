@@ -1,12 +1,12 @@
 #!/bin/bash
 
 set +x
-case $target in
+case ${target} in
   'jet'|'hera')
     module load ncl/6.5.0
-    export NCARG_LIB=$NCARG_ROOT/lib
+    export NCARG_LIB=${NCARG_ROOT}/lib
   ;;
   *)
-    echo "[${BASH_SOURCE}]: unknown $target"
+    echo "[${BASH_SOURCE[0]}]: unknown ${target}"
   ;;
 esac

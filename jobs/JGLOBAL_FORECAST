@@ -19,7 +19,7 @@ export CDUMP=${CDUMP:-${RUN:-"gfs"}}
 #############################
 configs="base fcst"
 export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
-config_path=${EXPDIR:-$NWROOT/gfs.${gfs_ver}/parm/config}
+config_path=${EXPDIR:-$PACKAGEROOT/gfs.${gfs_ver}/parm/config}
 for config in $configs; do
     . $config_path/config.$config
     status=$?
@@ -61,12 +61,6 @@ export pgmout="OUTPUT.${pid}"
 export pgmerr=errfile
 
 
-if [ $RUN_ENVIR = "nco" ]; then
-    export ROTDIR=${COMROOT:?}/$NET/$envir
-    export RSTDIR=${GESROOT:?}/$envir
-fi
-
-
 #--------------------------------
 if [ $RUN_ENVIR = "nco" ]; then
 #--------------------------------
@@ -76,7 +70,7 @@ if [ $RUN_ENVIR = "nco" ]; then
 #############################
 configs="base fcst"
 export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
-config_path=${EXPDIR:-$NWROOT/gfs.${gfs_ver}/parm/config}
+config_path=${EXPDIR:-$PACKAGEROOT/gfs.${gfs_ver}/parm/config}
 for config in $configs; do
     . $config_path/config.$config
     status=$?
@@ -108,8 +102,8 @@ fi
 if [ ${DO_WAVE:-"NO"} = "YES" ]; then
   # WAVE component directory
   export CDUMPwave=${CDUMPwave:-${CDUMP}wave}
-  export COMINwave=${COMINwave:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/wave}
-  export COMOUTwave=${COMOUTwave:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/wave}
+  export COMINwave=${COMINwave:-$(compath.py ${envir}/${NET}/${gfs_ver})/${CDUMP}.${PDY}/${cyc}/wave}
+  export COMOUTwave=${COMOUTwave:-$(compath.py -o ${NET}/${gfs_ver})/${CDUMP}.${PDY}/${cyc}/wave}
 fi
 
 ##############################################

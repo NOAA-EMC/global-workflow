@@ -14,7 +14,7 @@ mkdir -p $DATATMP
 cd $DATATMP
 
 export LEVS=${LEVS_LORES:-64}
-export FIXam=${FIXam:-$HOMEgfs/fix/fix_am}
+export FIXam=${FIXam:-$HOMEgfs/fix/am}
 
 export CHGRESSH=${CHGRESSH:-${USHgfs}/global_chgres.sh}
 export CHGRESEXEC=${CHGRESEXEC-${EXECgfs}/global_chgres}

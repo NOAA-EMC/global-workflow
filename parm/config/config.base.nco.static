@@ -31,7 +31,7 @@ export SCRgfs=$HOMEgfs/scripts
 
 # GLOBAL static environment parameters
 
-export NWPROD="/gpfs/dell1/nco/ops/nwprod"
+export PACKAGEROOT="/lfs/h1/ops/prod/packages"
 export RTMFIX=$CRTM_FIX
 
 # Machine specific paths used everywhere
@@ -62,12 +62,10 @@ export REALTIME="YES"
 # CLEAR
 ####################################################
 # Build paths relative to $HOMEgfs
-export FIXgsi="$HOMEgfs/fix/fix_gsi"
+export FIXgsi="$HOMEgfs/fix/gsi"
 export HOMEfv3gfs="$HOMEgfs/sorc/fv3gfs.fd"
 export HOMEpost="$HOMEgfs"
-export HOMEobsproc_prep="$NWPROD/obsproc_prep.v5.5.0"
-export HOMEobsproc_network="$NWPROD/obsproc_global.v3.4.2"
-export HOMEobsproc_global=$HOMEobsproc_network
+export HOMEobsproc="/lfs/h1/ops/prod/packages/obsproc.v1.0.2"
 
 # CONVENIENT utility scripts and other environment parameters
 export NCP="/bin/cp -p"
@@ -89,7 +87,7 @@ export EDATE=2039123100
 export assim_freq=6
 export PSLOT="test"
 export EXPDIR="$EXPDIR"
-export ROTDIR="$ROTDIR"
+export ROTDIR="$(compath.py ${envir}/${NET}/${gfs_ver})"
 export ROTDIR_DUMP="YES"
 export DUMP_SUFFIX=""
 export RUNDIR="$DATAROOT"
