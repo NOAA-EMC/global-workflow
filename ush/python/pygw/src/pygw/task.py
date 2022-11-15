@@ -3,7 +3,7 @@ class Task:
     Base class for all tasks
     """
 
-    def __init__(self, ctx, *args, **kwargs):
+    def __init__(self, config, *args, **kwargs):
         """
         Every task needs a config.
         Additional arguments (or key-value arguments) can be provided.
