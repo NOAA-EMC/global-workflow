@@ -49,15 +49,15 @@ if (( 10#${ENSGRP} > 0 )) && [[ ${HPSSARCH} = "YES" || ${LOCALARCH} = "YES" ]]; 
    mm=$(echo "${CDATE}"|cut -c 5-6)
    dd=$(echo "${CDATE}"|cut -c 7-8)
    nday=$(( (mm-1)*30+dd ))
-   mod=$((nday % ${ARCH_WARMICFREQ}))
+   mod=$((nday % ARCH_WARMICFREQ))
    if [ "${CDATE}" -eq "${firstday}" ] && [ "${cyc}" -eq "${EARCINC_CYC}" ]; then SAVEWARMICA="YES" ; fi
    if [ "${CDATE}" -eq "${firstday}" ] && [ "${cyc}" -eq "${EARCICS_CYC}" ]; then SAVEWARMICB="YES" ; fi
-   if [ "${mod}" -eq 0 -a "${cyc}" ] && [ "${EARCINC_CYC}" ]; then SAVEWARMICA="YES" ; fi
-   if [ "${mod}" -eq 0 -a "${cyc}" ] && [ "${EARCICS_CYC}" ]; then SAVEWARMICB="YES" ; fi
+   if [ "${mod}" -eq 0 ] && [ "${cyc}" ] && [ "${EARCINC_CYC}" ]; then SAVEWARMICA="YES" ; fi
+   if [ "${mod}" -eq 0 ] && [ "${cyc}" ] && [ "${EARCICS_CYC}" ]; then SAVEWARMICB="YES" ; fi
 
    if [ "${EARCICS_CYC}" -eq 18 ]; then
        nday1=$((nday+1))
-       mod1=$((nday1 % ${ARCH_WARMICFREQ}))
+       mod1=$((nday1 % ARCH_WARMICFREQ))
        if [ "${mod1}" -eq 0 ] && [ "${cyc}" -eq "${EARCICS_CYC}" ] ; then SAVEWARMICB="YES" ; fi
        if [ "${mod1}" -ne 0 ] && [ "${cyc}" -eq "${EARCICS_CYC}" ] ; then SAVEWARMICB="NO" ; fi
        if [ "${CDATE}" -eq "${SDATE}" ] && [ "${cyc}" -eq "${EARCICS_CYC}" ] ; then SAVEWARMICB="YES" ; fi
