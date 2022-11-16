@@ -51,7 +51,7 @@ if (( 10#${ENSGRP} > 0 )) && [[ ${HPSSARCH} = "YES" || ${LOCALARCH} = "YES" ]]; 
    nday=$(( (mm-1)*30+dd ))
    mod=$((nday % ${ARCH_WARMICFREQ}))
    if [ "${CDATE}" -eq "${firstday}" ] && [ "${cyc}" -eq "${EARCINC_CYC}" ]; then SAVEWARMICA="YES" ; fi
-   if [ "${CDATE}" -eq "${firstday}" } && { "${cyc}" -eq "${EARCICS_CYC}" ]; then SAVEWARMICB="YES" ; fi
+   if [ "${CDATE}" -eq "${firstday}" ] && { "${cyc}" -eq "${EARCICS_CYC}" ]; then SAVEWARMICB="YES" ; fi
    if [ "${mod}" -eq 0 -a "${cyc}" ] && [ "${EARCINC_CYC}" ]; then SAVEWARMICA="YES" ; fi
    if [ "${mod}" -eq 0 -a "${cyc}" ] && [ "${EARCICS_CYC}" ]; then SAVEWARMICB="YES" ; fi
 

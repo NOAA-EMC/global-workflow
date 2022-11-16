@@ -141,7 +141,7 @@ firstday=$(${NDATE} +24 "${SDATE}")
 mm=$(echo "${CDATE}"|cut -c 5-6)
 dd=$(echo "${CDATE}"|cut -c 7-8)
 nday=$(( (10#${mm}-1)*30+10#${dd} ))
-mod=$((nday % ${ARCH_WARMICFREQ}))
+mod=$((nday % ARCH_WARMICFREQ))
 if [ "${CDATE}" -eq "${firstday}" ] && [ "${cyc}" -eq "${ARCHINC_CYC}" ]; then SAVEWARMICA="YES" ; fi
 if [ "${CDATE}" -eq "${firstday}" ] && [ "${cyc}" -eq "${ARCHICS_CYC}" ]; then SAVEWARMICB="YES" ; fi
 if [ "${mod}" -eq 0 ] && [ "${cyc}" -eq "${ARCHINC_CYC}" ]; then SAVEWARMICA="YES" ; fi
@@ -149,13 +149,13 @@ if [ "${mod}" -eq 0 ] && [ "${cyc}" -eq "${ARCHICS_CYC}" ]; then SAVEWARMICB="YE
 
 if [ "${ARCHICS_CYC}" -eq 18 ]; then
     nday1=$((nday+1))
-    mod1=$((nday1 % ${ARCH_WARMICFREQ}))
+    mod1=$((nday1 % ARCH_WARMICFREQ))
     if [ "${mod1}" -eq 0 ] && [ "${cyc}" -eq "${ARCHICS_CYC}" ] ; then SAVEWARMICB="YES" ; fi
     if [ "${mod1}" -ne 0 ] && [ "${cyc}" -eq "${ARCHICS_CYC}" ] ; then SAVEWARMICB="NO" ; fi
     if [ "${CDATE}" -eq "${SDATE}" ] && [ "${cyc}" -eq "${ARCHICS_CYC}" ] ; then SAVEWARMICB="YES" ; fi
 fi
 
-mod=$((nday % ${ARCH_FCSTICFREQ}))
+mod=$((nday % ARCH_FCSTICFREQ))
 if [ "${mod}" -eq 0 ] || [ "${CDATE}" -eq "${firstday}" ]; then SAVEFCSTIC="YES" ; fi
 
 
