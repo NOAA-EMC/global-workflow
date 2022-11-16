@@ -197,15 +197,15 @@ elif [ ${step} = "aeroanlinit" ]; then
 elif [ ${step} = "aeroanlrun" ]; then
 
    case ${CASE} in
-     C768)    
+     C768)
         layout_x=6
         layout_y=6
         ;;
-      C384)    
+      C384)
         layout_x=5
         layout_y=5
         ;;
-     C192 | C96 | C48)    
+     C192 | C96 | C48)
         layout_x=3
         layout_y=3
         ;;
@@ -598,14 +598,12 @@ elif [[ ${step} = "eobs" || ${step} = "eomg" ]]; then
 
     export wtime_eobs="00:15:00"
     export wtime_eomg="01:00:00"
-    if [ ${CASE} = "C768" ]; then
+    if [[ ${CASE} = "C768" ]]; then
       export npe_eobs=200
-    elif [ ${CASE} = "C384" ]; then
+    elif [[ ${CASE} = "C384" ]]; then
       export npe_eobs=100
-    elif [ ${CASE} = "C192" ]; then
+    elif [[ ${CASE} = "C192" || ${CASE} = "C96" || ${CASE} = "C48" ]]; then
       export npe_eobs=40
-    elif [[ ${CASE} = "C96" || ${CASE} = "C48" ]]; then
-      export npe_eobs=20
     fi
     export npe_eomg=${npe_eobs}
     export nth_eobs=2
