@@ -1192,8 +1192,6 @@ class Tasks:
     def epos(self):
 
         def _get_eposgroups(epos):
-            eupd_cyc=self._base['EUPD_CYC'].lower()
-
             fhmin = epos['FHMIN_ENKF']
             fhmax = epos['FHMAX_ENKF']
             if self.cdump == "gfs":
