@@ -1196,9 +1196,8 @@ class Tasks:
 
             fhmin = epos['FHMIN_ENKF']
             fhmax = epos['FHMAX_ENKF']
-            if eupd_cyc == "both":
-                if self.cdump == "gfs":
-                    fhmax = epos['FHMAX_ENKF_GFS']
+            if self.cdump == "gfs":
+                fhmax = epos['FHMAX_ENKF_GFS']
             fhout = epos['FHOUT_ENKF']
             fhrs = range(fhmin, fhmax + fhout, fhout)
 

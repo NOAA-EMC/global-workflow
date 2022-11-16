@@ -112,10 +112,8 @@ export FHOUT=${FHOUT_ENKF:-3}
 # model_configure
 export DELTIM=${DELTIM_ENKF:-${DELTIM:-225}}
 export FHMAX=${FHMAX_ENKF:-9}
-if [[ $EUPD_CYC == "BOTH" ]]; then
-    if [[ $CDUMP == "gfs" ]]; then
-        export FHMAXF=$FHMAX_ENKF_GFS
-    fi
+if [[ $CDUMP == "gfs" ]]; then
+   export FHMAXF=$FHMAX_ENKF_GFS
 fi
 
 export restart_interval=${restart_interval_ENKF:-${restart_interval:-6}}
