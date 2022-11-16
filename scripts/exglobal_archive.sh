@@ -2,17 +2,6 @@
 
 source "${HOMEgfs}/ush/preamble.sh"
 
-###############################################################
-## Abstract:
-## Archive driver script
-## RUN_ENVIR : runtime environment (emc | nco)
-## HOMEgfs   : /full/path/to/workflow
-## EXPDIR : /full/path/to/config/files
-## CDATE  : current analysis date (YYYYMMDDHH)
-## CDUMP  : cycle name (gdas / gfs)
-## PDY    : current date (YYYYMMDD)
-## cyc    : current cycle (HH)
-###############################################################
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
