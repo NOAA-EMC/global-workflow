@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${HOMEgfs}/ush/preamble.sh"
 
 export RUN_ENVIR=${RUN_ENVIR:-"nco"}
 
@@ -8,11 +8,11 @@ export RUN_ENVIR=${RUN_ENVIR:-"nco"}
 # Source relevant config files
 #############################
 configs="base vrfy"
-config_path=${EXPDIR:-$PACKAGEROOT/gfs.${gfs_ver}/parm/config}
-for config in $configs; do
-    . $config_path/config.$config
+config_path=${EXPDIR:-${PACKAGEROOT}/gfs.${gfs_ver}/parm/config}
+for config in ${configs}; do
+    . ${config_path}/config.${config}
     status=$?
-    [[ $status -ne 0 ]] && exit $status
+    [[ ${status} -ne 0 ]] && exit ${status}
 done
 
 ##exit
@@ -20,23 +20,23 @@ done
 ##########################################
 # Source machine runtime environment
 ##########################################
-. $HOMEgfs/env/${machine}.env vrfy
+. ${HOMEgfs}/env/${machine}.env vrfy
 status=$?
-[[ $status -ne 0 ]] && exit $status
+[[ ${status} -ne 0 ]] && exit ${status}
 
 
 ##############################################
 # Obtain unique process id (pid) and make temp directory
 ##############################################
-if [ $RUN_ENVIR = "nco" ]; then
+if [ ${RUN_ENVIR} = "nco" ]; then
     export DATA=${DATA:-${DATAROOT}/${jobid}}
 else
     export job="gfs_fsu_genesis"
-    export DATA="$DATAROOT/${job}$$"
-    [[ -d $DATA ]] && rm -rf $DATA
+    export DATA="${DATAROOT}/${job}$$"
+    [[ -d ${DATA} ]] && rm -rf ${DATA}
 fi
-mkdir -p $DATA
-cd $DATA
+mkdir -p ${DATA}
+cd ${DATA}
 
 
 ##############################################
@@ -81,11 +81,11 @@ export SENDECF=${SENDECF:-NO}
 # Specify Execution Areas
 ####################################
 export HOMEens_tracker=${HOMEens_tracker:-${PACKAGEROOT}/ens_tracker.${ens_tracker_ver}}
-export EXECens_tracker=${EXECens_tracker:-$HOMEens_tracker/exec}
-export FIXens_tracker=${FIXens_tracker:-$HOMEens_tracker/fix}
-export USHens_tracker=${USHens_tracker:-$HOMEens_tracker/ush}
-export SCRIPTens_tracker=${SCRIPTens_tracker:-$HOMEens_tracker/scripts}
-export BINens_tracker=${BINens_tracker:-$HOMEens_tracker/ush/FSUgenesisPY/bin}
+export EXECens_tracker=${EXECens_tracker:-${HOMEens_tracker}/exec}
+export FIXens_tracker=${FIXens_tracker:-${HOMEens_tracker}/fix}
+export USHens_tracker=${USHens_tracker:-${HOMEens_tracker}/ush}
+export SCRIPTens_tracker=${SCRIPTens_tracker:-${HOMEens_tracker}/scripts}
+export BINens_tracker=${BINens_tracker:-${HOMEens_tracker}/ush/FSUgenesisPY/bin}
 export PYTHONPATH=${USHens_tracker}/FSUgenesisPY:${PYTHONPATH}
 
 ##############################################
@@ -100,15 +100,15 @@ export gdasdir=${COMINgdas}
 export COMOUT=${ROTDIR}/${RUN}.${PDY}/${cyc}/${COMPONENT}
 export COMINsyn=${COMINsyn:-$(compath.py ${envir}/com/gfs/${gfs_ver})/syndat}
 
-if [ $RUN_ENVIR = "nco" ]; then
+if [ ${RUN_ENVIR} = "nco" ]; then
     export COMOUThur=${COMROOTp1}/hur/${envir}/global
     export COMOUTatcf=${COMROOTp1}/nhc/${envir}/atcf
-    mkdir -m 775 -p $COMOUThur $COMOUTatcf
+    mkdir -m 775 -p ${COMOUThur} ${COMOUTatcf}
 else
 #    export COMOUThur=$COMOUT
 #    export COMOUTatcf=$COMOUT
-    export COMOUThur=$DATA
-    export COMOUTatcf=$DATA
+    export COMOUThur=${DATA}
+    export COMOUTatcf=${DATA}
 fi
 
 ##############################################
@@ -123,15 +123,15 @@ export err=$?; err_chk
 ##############################################
 # Final processing
 ##############################################
-if [ -e "$pgmout" ] ; then
-  cat $pgmout
+if [ -e "${pgmout}" ] ; then
+  cat ${pgmout}
 fi
 
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd $DATAROOT
-[[ $KEEPDATA = "NO" ]] && rm -rf $DATA
+cd ${DATAROOT}
+[[ ${KEEPDATA} = "NO" ]] && rm -rf ${DATA}
 
 
 exit 0

@@ -1,13 +1,13 @@
 #! /usr/bin/env bash
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${HOMEgfs}/ush/preamble.sh"
 
 ##############################################
 # make temp directory
 ##############################################
 export DATA=${DATA:-${DATAROOT}/${jobid}}
-mkdir -p $DATA
-cd $DATA
+mkdir -p ${DATA}
+cd ${DATA}
 
 
 ##############################################
@@ -29,23 +29,23 @@ export pgmerr=errfile
 #############################
 # Source relevant config files
 #############################
-export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
-config_path=${EXPDIR:-$PACKAGEROOT/gfs.${gfs_ver}/parm/config}
+export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
+config_path=${EXPDIR:-${PACKAGEROOT}/gfs.${gfs_ver}/parm/config}
 configs="base fcst"
 [[ ${DO_WAVE:-"NO"} = "YES" ]] && configs+=" wave"
-for config in $configs; do
-    . $config_path/config.$config
+for config in ${configs}; do
+    . ${config_path}/config.${config}
     status=$?
-    [[ $status -ne 0 ]] && exit $status
+    [[ ${status} -ne 0 ]] && exit ${status}
 done
 
 
 ##########################################
 # Source machine runtime environment
 ##########################################
-. $HOMEgfs/env/${machine}.env fcst
+. ${HOMEgfs}/env/${machine}.env fcst
 status=$?
-[[ $status -ne 0 ]] && exit $status
+[[ ${status} -ne 0 ]] && exit ${status}
 
 
 ##############################################
@@ -64,15 +64,15 @@ fi
 ##############################################
 
 # Restart conditions for GFS cycle come from GDAS
-rCDUMP=$CDUMP
-[[ $CDUMP = "gfs" ]] && export rCDUMP="gdas"
+rCDUMP=${CDUMP}
+[[ ${CDUMP} = "gfs" ]] && export rCDUMP="gdas"
 
 # Forecast length for GFS forecast
-if [ $CDUMP = "gfs" ]; then
-    export FHMAX=$FHMAX_GFS
-    export FHOUT=$FHOUT_GFS
-    export FHMAX_HF=$FHMAX_HF_GFS
-    export FHOUT_HF=$FHOUT_HF_GFS
+if [ ${CDUMP} = "gfs" ]; then
+    export FHMAX=${FHMAX_GFS}
+    export FHOUT=${FHOUT_GFS}
+    export FHMAX_HF=${FHMAX_HF_GFS}
+    export FHOUT_HF=${FHOUT_HF_GFS}
 else
     export FHMAX_HF=0
     export FHOUT_HF=0
@@ -82,9 +82,9 @@ fi
 ###############################################################
 # Run relevant exglobal script
 
-${FORECASTSH:-$SCRgfs/exglobal_forecast.sh}
+${FORECASTSH:-${SCRgfs}/exglobal_forecast.sh}
 status=$?
-[[ $status -ne 0 ]] && exit $status
+[[ ${status} -ne 0 ]] && exit ${status}
 
 
 ##############################################
@@ -94,15 +94,15 @@ status=$?
 ##############################################
 # Final processing
 ##############################################
-if [ -e "$pgmout" ] ; then
-  cat $pgmout
+if [ -e "${pgmout}" ] ; then
+  cat ${pgmout}
 fi
 
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd $DATAROOT
-[[ $KEEPDATA = "NO" ]] && rm -rf $DATA
+cd ${DATAROOT}
+[[ ${KEEPDATA} = "NO" ]] && rm -rf ${DATA}
 
 
 exit 0

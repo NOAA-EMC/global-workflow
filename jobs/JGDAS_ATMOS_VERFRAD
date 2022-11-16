@@ -3,7 +3,7 @@
 #############################################################
 # Set up environment for GDAS Radiance Monitor job
 #############################################################
-source "$HOMEgfs/ush/preamble.sh"
+source "${HOMEgfs}/ush/preamble.sh"
 
 ###########################################################
 # make temp directories
@@ -41,22 +41,22 @@ export RAD_DATA_IN=${DATA}
 export RADMON_SUFFIX=${RADMON_SUFFIX:-${RUN}}
 export CYCLE_INTERVAL=${CYCLE_INTERVAL:-6}
 
-mkdir -p $RAD_DATA_IN
-cd $RAD_DATA_IN
+mkdir -p ${RAD_DATA_IN}
+cd ${RAD_DATA_IN}
 
 ##############################################
 # Specify Execution Areas
 ##############################################
 export HOMEgfs=${HOMEgfs:-${NWROOT}/gfs.${gfs_ver}}
-export SCRgfs=${SCRgfs:-$HOMEgfs/scripts}
+export SCRgfs=${SCRgfs:-${HOMEgfs}/scripts}
 
-export FIXgdas=${FIXgdas:-$HOMEgfs/fix/gdas}
-export PARMmon=${PARMmon:-$HOMEgfs/parm/mon}
+export FIXgdas=${FIXgdas:-${HOMEgfs}/fix/gdas}
+export PARMmon=${PARMmon:-${HOMEgfs}/parm/mon}
 
 export HOMEradmon=${HOMEradmon:-${HOMEgfs}}
-export EXECradmon=${EXECradmon:-$HOMEradmon/exec}
+export EXECradmon=${EXECradmon:-${HOMEradmon}/exec}
 export FIXradmon=${FIXradmon:-${FIXgfs}}
-export USHradmon=${USHradmon:-$HOMEradmon/ush}
+export USHradmon=${USHradmon:-${HOMEradmon}/ush}
 
 
 ###################################
@@ -81,10 +81,10 @@ export p_cyc=$(echo ${cdate} | cut -c9-10)
 # TANKverf - WHERE OUTPUT DATA WILL RESIDE
 #############################################
 export TANKverf=${TANKverf:-$(compath.py ${envir}/${NET}/${gfs_ver})}
-export TANKverf_rad=${TANKverf_rad:-${TANKverf}/${RUN}.${PDY}/${cyc}/$COMPONENT/radmon}
-export TANKverf_radM1=${TANKverf_radM1:-${TANKverf}/${RUN}.${P_PDY}/${p_cyc}/$COMPONENT/radmon}
+export TANKverf_rad=${TANKverf_rad:-${TANKverf}/${RUN}.${PDY}/${cyc}/${COMPONENT}/radmon}
+export TANKverf_radM1=${TANKverf_radM1:-${TANKverf}/${RUN}.${P_PDY}/${p_cyc}/${COMPONENT}/radmon}
 export COM_IN=${COM_IN:-$(compath.py ${envir}/${NET}/${gfs_ver})}
-export COMIN=${COMIN:-${COM_IN}/${RUN}.${PDY}/${cyc}/$COMPONENT}
+export COMIN=${COMIN:-${COM_IN}/${RUN}.${PDY}/${cyc}/${COMPONENT}}
 
 ################################
 #  backwards compatibility for
@@ -96,15 +96,15 @@ if [[ ! -d ${COMIN} ]]; then
 fi
 
 
-mkdir -p -m 775 $TANKverf_rad
+mkdir -p -m 775 ${TANKverf_rad}
 
 ########################################
 # Set necessary environment variables
 ########################################
 export RAD_AREA=${RAD_AREA:-glb}
 
-export biascr=${biascr:-$COMIN/gdas.t${cyc}z.abias}
-export radstat=${radstat:-$COMIN/gdas.t${cyc}z.radstat}
+export biascr=${biascr:-${COMIN}/gdas.t${cyc}z.abias}
+export radstat=${radstat:-${COMIN}/gdas.t${cyc}z.radstat}
 
 echo " "
 echo "JOB HAS STARTED"
@@ -116,8 +116,8 @@ echo " "
 ${RADMONSH:-${SCRgfs}/exgdas_atmos_verfrad.sh} ${PDY} ${cyc}
 err=$?
 
-if [[ $err -ne 0 ]] ; then
-   exit $err
+if [[ ${err} -ne 0 ]] ; then
+   exit ${err}
 else
    echo " "
    echo "JOB HAS COMPLETED NORMALLY"
@@ -128,8 +128,8 @@ fi
 # Remove the Working Directory
 ################################
 KEEPDATA=${KEEPDATA:-YES}
-cd $DATAROOT
+cd ${DATAROOT}
 if [ ${KEEPDATA} = NO ] ; then
-  rm -rf $RAD_DATA_IN
+  rm -rf ${RAD_DATA_IN}
 fi
 

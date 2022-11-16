@@ -1,13 +1,13 @@
 #! /usr/bin/env bash
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${HOMEgfs}/ush/preamble.sh"
 
 ##############################################
 # make temp directory
 ##############################################
 export DATA=${DATA:-${DATAROOT}/${jobid}}
-mkdir -p $DATA
-cd $DATA
+mkdir -p ${DATA}
+cd ${DATA}
 
 
 ##############################################
@@ -29,22 +29,22 @@ export pgmerr=errfile
 #############################
 # Source relevant config files
 #############################
-export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
+export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
 configs="base esfc"
-config_path=${EXPDIR:-$PACKAGEROOT/gfs.${gfs_ver}/parm/config}
-for config in $configs; do
-    . $config_path/config.$config
+config_path=${EXPDIR:-${PACKAGEROOT}/gfs.${gfs_ver}/parm/config}
+for config in ${configs}; do
+    . ${config_path}/config.${config}
     status=$?
-    [[ $status -ne 0 ]] && exit $status
+    [[ ${status} -ne 0 ]] && exit ${status}
 done
 
 
 ##########################################
 # Source machine runtime environment
 ##########################################
-. $HOMEgfs/env/${machine}.env esfc
+. ${HOMEgfs}/env/${machine}.env esfc
 status=$?
-[[ $status -ne 0 ]] && exit $status
+[[ ${status} -ne 0 ]] && exit ${status}
 
 
 ##############################################
@@ -59,50 +59,50 @@ export COMPONENT="atmos"
 # Begin JOB SPECIFIC work
 ##############################################
 
-GDATE=$($NDATE -$assim_freq $CDATE)
-gPDY=$(echo $GDATE | cut -c1-8)
-gcyc=$(echo $GDATE | cut -c9-10)
+GDATE=$(${NDATE} -${assim_freq} ${CDATE})
+gPDY=$(echo ${GDATE} | cut -c1-8)
+gcyc=$(echo ${GDATE} | cut -c9-10)
 GDUMP=${GDUMP:-"gdas"}
 
-export CASE=$CASE_ENKF
+export CASE=${CASE_ENKF}
 
 
 EUPD_CYC=$(echo ${EUPD_CYC:-"gdas"} | tr a-z A-Z)
-if [ $EUPD_CYC = "GFS" ]; then
+if [ ${EUPD_CYC} = "GFS" ]; then
     CDUMP_ENKF="gfs"
 else
-    CDUMP_ENKF=$CDUMP
+    CDUMP_ENKF=${CDUMP}
 fi
 
 export OPREFIX="${CDUMP}.t${cyc}z."
 export APREFIX="${CDUMP}.t${cyc}z."
 export APREFIX_ENKF="${CDUMP_ENKF}.t${cyc}z."
 export GPREFIX="${GDUMP}.t${gcyc}z."
-export GSUFFIX=${GSUFFIX:-$SUFFIX}
-export ASUFFIX=${ASUFFIX:-$SUFFIX}
+export GSUFFIX=${GSUFFIX:-${SUFFIX}}
+export ASUFFIX=${ASUFFIX:-${SUFFIX}}
 
-if [ $RUN_ENVIR = "nco" -o ${ROTDIR_DUMP:-NO} = "YES" ]; then
-    export COMIN_OBS=${COMIN_OBS:-$(compath.py ${envir}/obsproc/${obsproc_ver})/$RUN.$PDY/$cyc/$COMPONENT}
-    export COMIN_GES_OBS=${COMIN_GES_OBS:-$(compath.py ${envir}/obsproc/${obsproc_ver})/$GDUMP.$gPDY/$gcyc/$COMPONENT}
+if [ ${RUN_ENVIR} = "nco" -o ${ROTDIR_DUMP:-NO} = "YES" ]; then
+    export COMIN_OBS=${COMIN_OBS:-$(compath.py ${envir}/obsproc/${obsproc_ver})/${RUN}.${PDY}/${cyc}/${COMPONENT}}
+    export COMIN_GES_OBS=${COMIN_GES_OBS:-$(compath.py ${envir}/obsproc/${obsproc_ver})/${GDUMP}.${gPDY}/${gcyc}/${COMPONENT}}
 else
-    export COMIN_OBS="$DMPDIR/$CDUMP.$PDY/$cyc/$COMPONENT"
-    export COMIN_GES_OBS="$DMPDIR/$GDUMP.$gPDY/$gcyc/$COMPONENT"
+    export COMIN_OBS="${DMPDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENT}"
+    export COMIN_GES_OBS="${DMPDIR}/${GDUMP}.${gPDY}/${gcyc}/${COMPONENT}"
 fi
 
 # COMIN, COMIN_ENS and COMIN_GES_ENS are used in script
-export COMIN="$ROTDIR/$CDUMP.$PDY/$cyc/$COMPONENT"
-export COMIN_GES="$ROTDIR/$GDUMP.$gPDY/$gcyc/$COMPONENT"
-export COMIN_ENS="$ROTDIR/enkf$CDUMP_ENKF.$PDY/$cyc/$COMPONENT"
-export COMOUT_ENS="$ROTDIR/enkf$CDUMP.$PDY/$cyc/$COMPONENT"
-export COMIN_GES_ENS="$ROTDIR/enkf$GDUMP.$gPDY/$gcyc/$COMPONENT"
+export COMIN="${ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENT}"
+export COMIN_GES="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/${COMPONENT}"
+export COMIN_ENS="${ROTDIR}/enkf${CDUMP_ENKF}.${PDY}/${cyc}/${COMPONENT}"
+export COMOUT_ENS="${ROTDIR}/enkf${CDUMP}.${PDY}/${cyc}/${COMPONENT}"
+export COMIN_GES_ENS="${ROTDIR}/enkf${GDUMP}.${gPDY}/${gcyc}/${COMPONENT}"
 
 
 ###############################################################
 # Run relevant script
 
-${ENKFRESFCSH:-$SCRgfs/exgdas_enkf_sfc.sh}
+${ENKFRESFCSH:-${SCRgfs}/exgdas_enkf_sfc.sh}
 status=$?
-[[ $status -ne 0 ]] && exit $status
+[[ ${status} -ne 0 ]] && exit ${status}
 
 
 ##############################################
@@ -112,15 +112,15 @@ status=$?
 ##############################################
 # Final processing
 ##############################################
-if [ -e "$pgmout" ] ; then
-  cat $pgmout
+if [ -e "${pgmout}" ] ; then
+  cat ${pgmout}
 fi
 
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd $DATAROOT
-[[ $KEEPDATA = "NO" ]] && rm -rf $DATA
+cd ${DATAROOT}
+[[ ${KEEPDATA} = "NO" ]] && rm -rf ${DATA}
 
 
 exit 0

@@ -3,7 +3,7 @@
 ###########################################################
 # GFS Minimization Monitor (MinMon) job
 ###########################################################
-source "$HOMEgfs/ush/preamble.sh"
+source "${HOMEgfs}/ush/preamble.sh"
 
 ###############################
 # Specify NET and RUN name
@@ -18,8 +18,8 @@ export COMPONENT="atmos"
 ###########################################################
 export pid=$$
 export DATA=${DATA:-${DATAROOT}/${jobid}}
-mkdir -p $DATA
-cd $DATA
+mkdir -p ${DATA}
+cd ${DATA}
 
 
 ###########################################################
@@ -33,12 +33,12 @@ export m_job=${m_job:-${MINMON_SUFFIX}_mmDE}
 # Specify Package Areas
 ##############################################
 export HOMEgfs=${HOMEgfs:-${NWROOT}/gfs.${gfs_ver}}
-export SCRgfs=${SCRgfs:-$HOMEgfs/scripts}
-export M_FIXgfs=${M_FIXgfs:-$HOMEgfs/fix/product}
+export SCRgfs=${SCRgfs:-${HOMEgfs}/scripts}
+export M_FIXgfs=${M_FIXgfs:-${HOMEgfs}/fix/product}
 
 export HOMEminmon=${HOMEminmon:-${HOMEgfs}}
-export EXECminmon=${EXECminmon:-$HOMEminmon/exec}
-export USHminmon=${USHminmon:-$HOMEminmon/ush}
+export EXECminmon=${EXECminmon:-${HOMEminmon}/exec}
+export USHminmon=${USHminmon:-${HOMEminmon}/ush}
 
 
 #############################################
@@ -60,9 +60,9 @@ export COM_IN=${COM_IN:-$(compath.py ${envir}/${NET}/${gfs_ver})}
 M_TANKverf=${M_TANKverf:-${COM_IN}/${RUN}.${PDY}/${cyc}/${COMPONENT}/minmon}
 export M_TANKverfM1=${M_TANKverfM1:-${COM_IN}/${RUN}.${P_PDY}/${p_cyc}/${COMPONENT}/minmon}
 
-export COMIN=${COMIN:-$COM_IN/${RUN}.${PDY}/${cyc}/$COMPONENT}
+export COMIN=${COMIN:-${COM_IN}/${RUN}.${PDY}/${cyc}/${COMPONENT}}
 
-mkdir -p -m 775 $M_TANKverf
+mkdir -p -m 775 ${M_TANKverf}
 
 
 ########################################
@@ -74,9 +74,9 @@ export gsistat=${gsistat:-${COMIN}/gfs.t${cyc}z.gsistat}
 
 ########################################################
 # Execute the script.
-${GMONSH:-$SCRgfs/exgfs_atmos_vminmon.sh} ${PDY} ${cyc}
+${GMONSH:-${SCRgfs}/exgfs_atmos_vminmon.sh} ${PDY} ${cyc}
 err=$?
-[[ $err -ne 0 ]] && exit $err
+[[ ${err} -ne 0 ]] && exit ${err}
 
 
 ################################

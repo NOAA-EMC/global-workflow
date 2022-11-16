@@ -1,13 +1,13 @@
 #! /usr/bin/env bash
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${HOMEgfs}/ush/preamble.sh"
 
 ##############################################
 # make temp directory
 ##############################################
 export DATA=${DATA:-${DATAROOT}/${jobid}}
-mkdir -p $DATA
-cd $DATA
+mkdir -p ${DATA}
+cd ${DATA}
 
 
 ##############################################
@@ -36,8 +36,8 @@ export errchk=${errchk:-err_chk}
 
 ###################################
 # Set COM Paths
-export COMIN=${COMIN:-$(compath.py ${envir}/${NET}/${gfs_ver})/${RUN}.${PDY}/${cyc}/$COMPONENT}
-export COMOUT=${COMOUT:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/$COMPONENT/gempak}
+export COMIN=${COMIN:-$(compath.py ${envir}/${NET}/${gfs_ver})/${RUN}.${PDY}/${cyc}/${COMPONENT}}
+export COMOUT=${COMOUT:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/${COMPONENT}/gempak}
 #export pid=$$
 export pgmout="OUTPUT.$$"
 
@@ -47,8 +47,8 @@ export SENDDBN=${SENDDBN:-YES}
 export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
 
-if [ $SENDCOM = YES ] ; then
-  mkdir -m 775 -p $COMOUT
+if [ ${SENDCOM} = YES ] ; then
+  mkdir -m 775 -p ${COMOUT}
 fi
 
 
@@ -56,13 +56,13 @@ fi
 # Execute the script.
 ${HOMEgfs}/scripts/exgfs_wave_nawips.sh
 status=$?
-[[ $status -ne 0 ]] && exit $status
+[[ ${status} -ne 0 ]] && exit ${status}
 ###################################
 
 # Remove temp directories
-cd $DATAROOT
-if [ "$KEEPDATA" != "YES" ]; then
-  rm -rf $DATA
+cd ${DATAROOT}
+if [ "${KEEPDATA}" != "YES" ]; then
+  rm -rf ${DATA}
 fi
 
 

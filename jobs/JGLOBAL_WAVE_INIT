@@ -1,13 +1,13 @@
 #! /usr/bin/env bash
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${HOMEgfs}/ush/preamble.sh"
 
 ##############################################
 # make temp directory
 ##############################################
 export DATA=${DATA:-${DATAROOT}/${jobid}}
-mkdir -p $DATA
-cd $DATA
+mkdir -p ${DATA}
+cd ${DATA}
 
 
 ##############################################
@@ -29,21 +29,21 @@ export pgmerr=errfile
 #############################
 # Source relevant config files
 #############################
-export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
-config_path=${EXPDIR:-$PACKAGEROOT/gfs.${gfs_ver}/parm/config}
+export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
+config_path=${EXPDIR:-${PACKAGEROOT}/gfs.${gfs_ver}/parm/config}
 configs="base wave waveinit"
-for config in $configs; do
-    . $config_path/config.$config
+for config in ${configs}; do
+    . ${config_path}/config.${config}
     status=$?
-    [[ $status -ne 0 ]] && exit $status
+    [[ ${status} -ne 0 ]] && exit ${status}
 done
 
 ##########################################
 # Source machine runtime environment
 ##########################################
-. $HOMEgfs/env/${machine}.env waveinit
+. ${HOMEgfs}/env/${machine}.env waveinit
 status=$?
-[[ $status -ne 0 ]] && exit $status
+[[ ${status} -ne 0 ]] && exit ${status}
 
 # PATH for working directory
 export NET=${NET:-gfs}
@@ -56,18 +56,18 @@ export errchk=${errchk:-err_chk}
 export MP_PULSE=0
 
 # Path to HOME Directory
-export FIXwave=${FIXwave:-$HOMEgfs/fix/fix_wave_${NET}}
-export PARMwave=${PARMwave:-$HOMEgfs/parm/wave}
-export USHwave=${USHwave:-$HOMEgfs/ush}
-export EXECwave=${EXECwave:-$HOMEgfs/exec}
+export FIXwave=${FIXwave:-${HOMEgfs}/fix/fix_wave_${NET}}
+export PARMwave=${PARMwave:-${HOMEgfs}/parm/wave}
+export USHwave=${USHwave:-${HOMEgfs}/ush}
+export EXECwave=${EXECwave:-${HOMEgfs}/exec}
 
 # Set COM Paths and GETGES environment
-export COMIN=${COMIN:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/$COMPONENT}
-export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/$COMPONENT}
-[[ ! -d $COMOUT ]] && mkdir -m 775 -p $COMOUT
+export COMIN=${COMIN:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENT}}
+export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENT}}
+[[ ! -d ${COMOUT} ]] && mkdir -m 775 -p ${COMOUT}
 
-if [ $SENDCOM = YES ]; then
-  mkdir -p $COMOUT/rundata
+if [ ${SENDCOM} = YES ]; then
+  mkdir -p ${COMOUT}/rundata
 fi
 
 # Set mpi serial command
@@ -75,13 +75,13 @@ export wavempexec=${wavempexec:-"mpirun -n"}
 export wave_mpmd=${mpmd:-"cfp"}
 
 # Execute the Script
-$HOMEgfs/scripts/exgfs_wave_init.sh
+${HOMEgfs}/scripts/exgfs_wave_init.sh
 
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd $DATAROOT
-[[ $KEEPDATA = "NO" ]] && rm -rf $DATA
+cd ${DATAROOT}
+[[ ${KEEPDATA} = "NO" ]] && rm -rf ${DATA}
 
 
 exit 0

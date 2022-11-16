@@ -1,13 +1,13 @@
 #! /usr/bin/env bash
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${HOMEgfs}/ush/preamble.sh"
 
 ##############################################
 # make temp directory
 ##############################################
 export DATA=${DATA:-${DATAROOT}/${jobid}}
-mkdir -p $DATA
-cd $DATA
+mkdir -p ${DATA}
+cd ${DATA}
 
 
 ##############################################
@@ -29,22 +29,22 @@ export pgmerr=errfile
 #############################
 # Source relevant config files
 #############################
-export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
+export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
 configs="base epos"
-config_path=${EXPDIR:-$PACKAGEROOT/gfs.${gfs_ver}/parm/config}
-for config in $configs; do
-    . $config_path/config.$config
+config_path=${EXPDIR:-${PACKAGEROOT}/gfs.${gfs_ver}/parm/config}
+for config in ${configs}; do
+    . ${config_path}/config.${config}
     status=$?
-    [[ $status -ne 0 ]] && exit $status
+    [[ ${status} -ne 0 ]] && exit ${status}
 done
 
 
 ##########################################
 # Source machine runtime environment
 ##########################################
-. $HOMEgfs/env/${machine}.env epos
+. ${HOMEgfs}/env/${machine}.env epos
 status=$?
-[[ $status -ne 0 ]] && exit $status
+[[ ${status} -ne 0 ]] && exit ${status}
 
 
 ##############################################
@@ -63,8 +63,8 @@ export GFS_NCIO=${GFS_NCIO:-"YES"}
 export PREFIX="${CDUMP}.t${cyc}z."
 
 # COMIN, COMOUT are used in script
-export COMIN="$ROTDIR/enkf$CDUMP.$PDY/$cyc/$COMPONENT"
-export COMOUT="$ROTDIR/enkf$CDUMP.$PDY/$cyc/$COMPONENT"
+export COMIN="${ROTDIR}/enkf${CDUMP}.${PDY}/${cyc}/${COMPONENT}"
+export COMOUT="${ROTDIR}/enkf${CDUMP}.${PDY}/${cyc}/${COMPONENT}"
 
 
 export LEVS=$((LEVS-1))
@@ -73,9 +73,9 @@ export LEVS=$((LEVS-1))
 ###############################################################
 # Run relevant script
 
-${ENKFPOSTSH:-$SCRgfs/exgdas_enkf_post.sh}
+${ENKFPOSTSH:-${SCRgfs}/exgdas_enkf_post.sh}
 status=$?
-[[ $status -ne 0 ]] && exit $status
+[[ ${status} -ne 0 ]] && exit ${status}
 
 
 ##############################################
@@ -85,15 +85,15 @@ status=$?
 ##############################################
 # Final processing
 ##############################################
-if [ -e "$pgmout" ] ; then
-  cat $pgmout
+if [ -e "${pgmout}" ] ; then
+  cat ${pgmout}
 fi
 
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd $DATAROOT
-[[ $KEEPDATA = "NO" ]] && rm -rf $DATA
+cd ${DATAROOT}
+[[ ${KEEPDATA} = "NO" ]] && rm -rf ${DATA}
 
 
 exit 0

@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${HOMEgfs}/ush/preamble.sh"
 
 ###############################################################
 ## Abstract:
@@ -19,9 +19,9 @@ source "$HOMEgfs/ush/preamble.sh"
 ###############################################################
 echo
 echo "=============== START TO SOURCE FV3GFS WORKFLOW MODULES ==============="
-. $HOMEgfs/ush/load_fv3gfs_modules.sh
+. ${HOMEgfs}/ush/load_fv3gfs_modules.sh
 status=$?
-[[ $status -ne 0 ]] && exit $status
+[[ ${status} -ne 0 ]] && exit ${status}
 
 export job="metp${METPCASE}"
 export jobid="${job}.$$"
@@ -30,8 +30,8 @@ export jobid="${job}.$$"
 # make temp directory
 ##############################################
 export DATA=${DATA:-${DATAROOT}/${jobid}}
-mkdir -p $DATA
-cd $DATA
+mkdir -p ${DATA}
+cd ${DATA}
 
 
 ##############################################
@@ -45,52 +45,52 @@ setpdy.sh
 echo
 echo "=============== START TO SOURCE RELEVANT CONFIGS ==============="
 configs="base metp"
-for config in $configs; do
-    . $EXPDIR/config.${config}
+for config in ${configs}; do
+    . ${EXPDIR}/config.${config}
     status=$?
-    [[ $status -ne 0 ]] && exit $status
+    [[ ${status} -ne 0 ]] && exit ${status}
 done
 
 
 ###############################################################
 echo
 echo "=============== START TO SOURCE MACHINE RUNTIME ENVIRONMENT ==============="
-. $BASE_ENV/${machine}.env metp
+. ${BASE_ENV}/${machine}.env metp
 status=$?
-[[ $status -ne 0 ]] && exit $status
+[[ ${status} -ne 0 ]] && exit ${status}
 
 ###############################################################
 export COMPONENT="atmos"
-export VDATE="$(echo $($NDATE -${VRFYBACK_HRS} $CDATE) | cut -c1-8)"
-export COMIN="$ROTDIR/$CDUMP.$PDY/$cyc/$COMPONENT"
+export VDATE="$(echo $(${NDATE} -${VRFYBACK_HRS} ${CDATE}) | cut -c1-8)"
+export COMIN="${ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENT}"
 
 # TODO: This should not be permitted as DATAROOT is set at the job-card level.
 # TODO: DATAROOT is being used as DATA in metp jobs.  This should be rectified in metp.
 # TODO: The temporary directory is DATA and is created at the top of the J-Job.
 # TODO: remove this line
-export DATAROOT=$DATA
+export DATAROOT=${DATA}
 
 ###############################################################
 echo
 echo "=============== START TO RUN METPLUS VERIFICATION ==============="
-if [ $CDUMP = "gfs" ]; then
+if [ ${CDUMP} = "gfs" ]; then
 
-    if [ $RUN_GRID2GRID_STEP1 = "YES" -o $RUN_GRID2OBS_STEP1 = "YES" -o $RUN_PRECIP_STEP1 = "YES" ]; then
+    if [ ${RUN_GRID2GRID_STEP1} = "YES" -o ${RUN_GRID2OBS_STEP1} = "YES" -o ${RUN_PRECIP_STEP1} = "YES" ]; then
 
-        $VERIF_GLOBALSH
+        ${VERIF_GLOBALSH}
         status=$?
-        [[ $status -ne 0 ]] && exit $status
-        [[ $status -eq 0 ]] && echo "Succesfully ran $VERIF_GLOBALSH"
+        [[ ${status} -ne 0 ]] && exit ${status}
+        [[ ${status} -eq 0 ]] && echo "Succesfully ran ${VERIF_GLOBALSH}"
     fi
 fi
 
 
-if [ $CDUMP = "gdas" ]; then
+if [ ${CDUMP} = "gdas" ]; then
     echo "METplus verification currently not supported for CDUMP=${CDUMP}"
 fi
 ###############################################################
 # Force Exit out cleanly
-if [ ${KEEPDATA:-"NO"} = "NO" ] ; then rm -rf $DATAROOT ; fi  # TODO: This should be $DATA
+if [ ${KEEPDATA:-"NO"} = "NO" ] ; then rm -rf ${DATAROOT} ; fi  # TODO: This should be $DATA
 
 
 exit 0

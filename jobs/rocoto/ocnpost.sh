@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${HOMEgfs}/ush/preamble.sh"
 
 ###############################################################
 ## CICE5/MOM6 post driver script
@@ -9,9 +9,9 @@ source "$HOMEgfs/ush/preamble.sh"
 ###############################################################
 
 # Source FV3GFS workflow modules
-. $HOMEgfs/ush/load_fv3gfs_modules.sh
+. ${HOMEgfs}/ush/load_fv3gfs_modules.sh
 status=$?
-[[ $status -ne 0 ]] && exit $status
+[[ ${status} -ne 0 ]] && exit ${status}
 
 export job="ocnpost"
 export jobid=${job}.$$
@@ -19,9 +19,9 @@ export jobid=${job}.$$
 ##############################################
 # make temp directory
 ##############################################
-export DATA="$DATAROOT/${jobid}"
-[[ -d $DATA ]] && rm -rf $DATA
-mkdir -p $DATA && cd $DATA
+export DATA="${DATAROOT}/${jobid}"
+[[ -d ${DATA} ]] && rm -rf ${DATA}
+mkdir -p ${DATA} && cd ${DATA}
 
 ##############################################
 # Run setpdy and initialize PDY variables
@@ -41,21 +41,21 @@ export pgmerr=errfile
 #############################
 # Source relevant config files
 #############################
-config_path=${EXPDIR:-$PACKAGEROOT/gfs.${gfs_ver}/parm/config}
+config_path=${EXPDIR:-${PACKAGEROOT}/gfs.${gfs_ver}/parm/config}
 configs="base ocnpost"
-for config in $configs; do
-    . $config_path/config.$config
+for config in ${configs}; do
+    . ${config_path}/config.${config}
     status=$?
-    [[ $status -ne 0 ]] && exit $status
+    [[ ${status} -ne 0 ]] && exit ${status}
 done
 
 
 ##########################################
 # Source machine runtime environment
 ##########################################
-. $HOMEgfs/env/${machine}.env ocnpost
+. ${HOMEgfs}/env/${machine}.env ocnpost
 status=$?
-[[ $status -ne 0 ]] && exit $status
+[[ ${status} -ne 0 ]] && exit ${status}
 
 
 ##############################################
@@ -63,85 +63,85 @@ status=$?
 ##############################################
 export CDATE=${CDATE:-${PDY}${cyc}}
 export CDUMP=${CDUMP:-${RUN:-"gfs"}}
-if [ $RUN_ENVIR = "nco" ]; then
-    export ROTDIR=${COMROOT:?}/$NET/$envir
+if [ ${RUN_ENVIR} = "nco" ]; then
+    export ROTDIR=${COMROOT:?}/${NET}/${envir}
 fi
 
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
-[[ ! -d $COMOUTocean ]] && mkdir -p $COMOUTocean
-[[ ! -d $COMOUTice ]] && mkdir -p $COMOUTice
+[[ ! -d ${COMOUTocean} ]] && mkdir -p ${COMOUTocean}
+[[ ! -d ${COMOUTice} ]] && mkdir -p ${COMOUTice}
 
-fhrlst=$(echo $FHRLST | sed -e 's/_/ /g; s/f/ /g; s/,/ /g')
+fhrlst=$(echo ${FHRLST} | sed -e 's/_/ /g; s/f/ /g; s/,/ /g')
 
 export OMP_NUM_THREADS=1
 export ENSMEM=${ENSMEM:-01}
 
-export IDATE=$CDATE
+export IDATE=${CDATE}
 
-for fhr in $fhrlst; do
-  export fhr=$fhr
-  VDATE=$($NDATE $fhr $IDATE)
+for fhr in ${fhrlst}; do
+  export fhr=${fhr}
+  VDATE=$(${NDATE} ${fhr} ${IDATE})
   # Regrid the MOM6 and CICE5 output from tripolar to regular grid via NCL
   # This can take .25 degree input and convert to .5 degree - other opts avail
   # The regrid scripts use CDATE for the current day, restore it to IDATE afterwards
-  export CDATE=$VDATE
-  cd $DATA
-  if [ $fhr -gt 0 ]; then
-    export MOM6REGRID=${MOM6REGRID:-$HOMEgfs}
-    $MOM6REGRID/scripts/run_regrid.sh
+  export CDATE=${VDATE}
+  cd ${DATA}
+  if [ ${fhr} -gt 0 ]; then
+    export MOM6REGRID=${MOM6REGRID:-${HOMEgfs}}
+    ${MOM6REGRID}/scripts/run_regrid.sh
     status=$?
-    [[ $status -ne 0 ]] && exit $status
+    [[ ${status} -ne 0 ]] && exit ${status}
 
     # Convert the netcdf files to grib2
-    export executable=$MOM6REGRID/exec/reg2grb2.x
-    $MOM6REGRID/scripts/run_reg2grb2.sh
+    export executable=${MOM6REGRID}/exec/reg2grb2.x
+    ${MOM6REGRID}/scripts/run_reg2grb2.sh
     status=$?
-    [[ $status -ne 0 ]] && exit $status
+    [[ ${status} -ne 0 ]] && exit ${status}
 
 
     #break up ocn netcdf into multiple files:
-    if [ -f $COMOUTocean/ocn_2D_$VDATE.$ENSMEM.$IDATE.nc ]; then
-      echo "File $COMOUTocean/ocn_2D_$VDATE.$ENSMEM.$IDATE.nc already exists"
+    if [ -f ${COMOUTocean}/ocn_2D_${VDATE}.${ENSMEM}.${IDATE}.nc ]; then
+      echo "File ${COMOUTocean}/ocn_2D_${VDATE}.${ENSMEM}.${IDATE}.nc already exists"
     else
-      ncks -x -v vo,uo,so,temp $COMOUTocean/ocn$VDATE.$ENSMEM.$IDATE.nc $COMOUTocean/ocn_2D_$VDATE.$ENSMEM.$IDATE.nc
+      ncks -x -v vo,uo,so,temp ${COMOUTocean}/ocn${VDATE}.${ENSMEM}.${IDATE}.nc ${COMOUTocean}/ocn_2D_${VDATE}.${ENSMEM}.${IDATE}.nc
       status=$?
-      [[ $status -ne 0 ]] && exit $status
+      [[ ${status} -ne 0 ]] && exit ${status}
     fi
-    if [ -f $COMOUTocean/ocn_3D_$VDATE.$ENSMEM.$IDATE.nc ]; then
-       echo "File $COMOUTocean/ocn_3D_$VDATE.$ENSMEM.$IDATE.nc already exists"
+    if [ -f ${COMOUTocean}/ocn_3D_${VDATE}.${ENSMEM}.${IDATE}.nc ]; then
+       echo "File ${COMOUTocean}/ocn_3D_${VDATE}.${ENSMEM}.${IDATE}.nc already exists"
     else
-      ncks -x -v Heat_PmE,LW,LwLatSens,MLD_003,MLD_0125,SSH,SSS,SST,SSU,SSV,SW,cos_rot,ePBL,evap,fprec,frazil,latent,lprec,lrunoff,sensible,sin_rot,speed,taux,tauy,wet_c,wet_u,wet_v $COMOUTocean/ocn$VDATE.$ENSMEM.$IDATE.nc $COMOUTocean/ocn_3D_$VDATE.$ENSMEM.$IDATE.nc
+      ncks -x -v Heat_PmE,LW,LwLatSens,MLD_003,MLD_0125,SSH,SSS,SST,SSU,SSV,SW,cos_rot,ePBL,evap,fprec,frazil,latent,lprec,lrunoff,sensible,sin_rot,speed,taux,tauy,wet_c,wet_u,wet_v ${COMOUTocean}/ocn${VDATE}.${ENSMEM}.${IDATE}.nc ${COMOUTocean}/ocn_3D_${VDATE}.${ENSMEM}.${IDATE}.nc
       status=$?
-      [[ $status -ne 0 ]] && exit $status
+      [[ ${status} -ne 0 ]] && exit ${status}
     fi
-    if [ -f $COMOUTocean/ocn-temp-EQ_$VDATE.$ENSMEM.$IDATE.nc ]; then
-       echo "File $COMOUTocean/ocn-temp-EQ_$VDATE.$ENSMEM.$IDATE.nc already exists"
+    if [ -f ${COMOUTocean}/ocn-temp-EQ_${VDATE}.${ENSMEM}.${IDATE}.nc ]; then
+       echo "File ${COMOUTocean}/ocn-temp-EQ_${VDATE}.${ENSMEM}.${IDATE}.nc already exists"
     else
-      ncks -v temp -d yh,503 -d xh,-299.92,60.03 $COMOUTocean/ocn_3D_$VDATE.$ENSMEM.$IDATE.nc $COMOUTocean/ocn-temp-EQ_$VDATE.$ENSMEM.$IDATE.nc
+      ncks -v temp -d yh,503 -d xh,-299.92,60.03 ${COMOUTocean}/ocn_3D_${VDATE}.${ENSMEM}.${IDATE}.nc ${COMOUTocean}/ocn-temp-EQ_${VDATE}.${ENSMEM}.${IDATE}.nc
       status=$?
-      [[ $status -ne 0 ]] && exit $status
+      [[ ${status} -ne 0 ]] && exit ${status}
     fi
-    if [ -f $COMOUTocean/ocn-uo-EQ_$VDATE.$ENSMEM.$IDATE.nc ]; then
-       echo "File $COMOUTocean/ocn-uo-EQ_$VDATE.$ENSMEM.$IDATE.nc already exists"
+    if [ -f ${COMOUTocean}/ocn-uo-EQ_${VDATE}.${ENSMEM}.${IDATE}.nc ]; then
+       echo "File ${COMOUTocean}/ocn-uo-EQ_${VDATE}.${ENSMEM}.${IDATE}.nc already exists"
     else
-      ncks -v uo -d yh,503 -d xh,-299.92,60.03 $COMOUTocean/ocn_3D_$VDATE.$ENSMEM.$IDATE.nc $COMOUTocean/ocn-uo-EQ_$VDATE.$ENSMEM.$IDATE.nc
+      ncks -v uo -d yh,503 -d xh,-299.92,60.03 ${COMOUTocean}/ocn_3D_${VDATE}.${ENSMEM}.${IDATE}.nc ${COMOUTocean}/ocn-uo-EQ_${VDATE}.${ENSMEM}.${IDATE}.nc
       status=$?
-      [[ $status -ne 0 ]] && exit $status
+      [[ ${status} -ne 0 ]] && exit ${status}
     fi
   fi
 
 done
 
 # Restore CDATE to what is expected
-export CDATE=$IDATE
-$NMV ocn_ice*.grb2 $COMOUTocean/
+export CDATE=${IDATE}
+${NMV} ocn_ice*.grb2 ${COMOUTocean}/
 status=$?
-[[ $status -ne 0 ]] && exit $status
+[[ ${status} -ne 0 ]] && exit ${status}
 
 # clean up working folder
-if [ ${KEEPDATA:-"NO"} = "NO" ] ; then rm -rf $DATA ; fi
+if [ ${KEEPDATA:-"NO"} = "NO" ] ; then rm -rf ${DATA} ; fi
 ###############################################################
 # Exit out cleanly
 
