@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${HOMEgfs}/ush/preamble.sh"
 
 #############################
 # Source relevant config files
@@ -9,25 +9,25 @@ export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
 configs="base earc"
 config_path=${EXPDIR:-${PACKAGEROOT}/gfs.${gfs_ver}/parm/config}
 for config in ${configs}; do
-    . ${config_path}/config.${config}
+    . "${config_path}"/config."${config}"
     status=$?
-    [[ ${status} -ne 0 ]] && exit ${status}
+    [[ ${status} -ne 0 ]] && exit "${status}"
 done
 
 ##########################################
 # Source machine runtime environment
 ##########################################
-. ${HOMEgfs}/env/${machine}.env earc
+. "${HOMEgfs}"/env/"${machine}".env earc
 status=$?
-[[ ${status} -ne 0 ]] && exit $status
+[[ ${status} -ne 0 ]] && exit "${status}"
 
 ##############################################
 # Obtain unique process id (pid) and make temp directory
 ##############################################
 export pid=${pid:-$$}
 export DATA=${DATA:-${DATAROOT}/${jobid:?}}
-mkdir -p ${DATA}
-cd ${DATA}
+mkdir -p "${DATA}"
+cd "${DATA}"
 
 
 ##############################################
@@ -56,9 +56,9 @@ export COMPONENT=${COMPONENT:-atmos}
 # Run archive script
 ###############################################################
 
-${SCRgfs}/exgdas_enkf_earc.sh
+"${SCRgfs}"/exgdas_enkf_earc.sh
 status=$?
-[[ ${status} -ne 0 ]] && exit $status
+[[ ${status} -ne 0 ]] && exit "${status}"
 
 ###############################################################
 
@@ -67,7 +67,7 @@ echo "ENDED NORMALLY."
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd ${DATAROOT}
-[[ ${KEEPDATA} = "NO" ]] && rm -rf $DATA
+cd "${DATAROOT}"
+[[ ${KEEPDATA} = "NO" ]] && rm -rf "${DATA}"
 
 exit 0
