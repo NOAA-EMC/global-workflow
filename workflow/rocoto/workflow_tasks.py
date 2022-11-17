@@ -1194,6 +1194,8 @@ class Tasks:
         def _get_eposgroups(epos):
             fhmin = epos['FHMIN_ENKF']
             fhmax = epos['FHMAX_ENKF']
+            if self.cdump == "gfs":
+                fhmax = epos['FHMAX_ENKF_GFS']
             fhout = epos['FHOUT_ENKF']
             fhrs = range(fhmin, fhmax + fhout, fhout)
 
