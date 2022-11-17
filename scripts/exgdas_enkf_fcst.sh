@@ -113,7 +113,7 @@ export FHOUT=${FHOUT_ENKF:-3}
 export DELTIM=${DELTIM_ENKF:-${DELTIM:-225}}
 export FHMAX=${FHMAX_ENKF:-9}
 if [[ $CDUMP == "gfs" ]]; then
-   export FHMAXF=$FHMAX_ENKF_GFS
+   export FHMAX=${FHMAX_ENKF_GFS:-${FHMAX_ENKF:-${FHMAX}}}
 fi
 
 export restart_interval=${restart_interval_ENKF:-${restart_interval:-6}}
