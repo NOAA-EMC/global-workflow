@@ -2,7 +2,7 @@ help([[
 Load environment to run GFS on Orion
 ]])
 
-prepend_path("MODULEPATH", "/apps/contrib/NCEP/libs/hpc-stack/modulefiles/stack")
+prepend_path("MODULEPATH", "/apps/contrib/NCEP/hpc-stack/libs/hpc-stack/modulefiles/stack")
 
 load(pathJoin("hpc", "1.1.0"))
 load(pathJoin("hpc-intel", "2018.4"))
