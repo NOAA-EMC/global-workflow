@@ -27,7 +27,7 @@ OPTIND=1
 while getopts ":ho" option; do
   case "${option}" in
     h) usage ;;
-    o) 
+    o)
       echo "-o option received, configuring for NCO"
       RUN_ENVIR="nco";;
     :)
@@ -98,7 +98,8 @@ for dir in aer \
             sfc_climo \
             ugwd \
             verif \
-            wave
+            wave \
+            gsi
             do
     if [[ -d "${dir}" ]]; then
       [[ "${RUN_ENVIR}" == "nco" ]] && chmod -R 755 "${dir}"
@@ -107,6 +108,7 @@ for dir in aer \
     fix_ver="${dir}_ver"
     ${LINK} "${FIX_DIR}/${dir}/${!fix_ver}" "${dir}"
 done
+
 
 if [[ -d "${script_dir}/ufs_utils.fd" ]]; then
   cd "${script_dir}/ufs_utils.fd/fix" || exit 1
@@ -162,15 +164,6 @@ if [[ -d "${script_dir}/gfs_wafs.fd" ]]; then
     ${LINK} "${script_dir}/gfs_wafs.fd/fix"/*                          .
 fi
 
-
-#------------------------------
-#--add GSI fix directory
-#------------------------------
-if [[ -d "${script_dir}/gsi_enkf.fd" ]]; then
-  cd "${top_dir}/fix" || exit 1
-    [[ -d gsi ]] && rm -rf gsi
-    ${LINK} "${script_dir}/gsi_enkf.fd/fix"  gsi
-fi
 
 #------------------------------
 #--add GDASApp fix directory
