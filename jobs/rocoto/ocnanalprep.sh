@@ -7,7 +7,7 @@ source "${HOMEgfs}"/ush/preamble.sh
 declare -l hpc=${machine}
 module purge
 module use "${HOMEgfs}"/sorc/gdas.cd/modulefiles
-module load GDAS/${hpc}
+module load GDAS/"${hpc}"
 
 ###############################################################
 # Execute the JJOB
