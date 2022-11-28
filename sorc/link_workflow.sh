@@ -312,24 +312,11 @@ if [[ -d "${script_dir}/gdas.cd" ]]; then
                        "fv3jedi_enshofx.x" \
                        "fv3jedi_hofx_nomodel.x" \
                        "fv3jedi_testdata_downloader.py" )
-            JEDI_EXE+=("soca_addincrement.x" \
-                        "soca_enspert.x" \
-                        "soca_hofx.x" \
-                        "soca_ensrecenter.x" \
+            JEDI_EXE+=(
                         "soca_convertincrement.x" \
-                        "soca_ensvariance.x" \
-                        "soca_letkf.x" \
-                        "soca_convertstate.x" \
                         "soca_error_covariance_training.x" \
                         "soca_setcorscales.x" \
-                        "soca_diffstates.x" \
-                        "soca_forecast.x" \
-                        "soca_sqrtvertloc.x" \
-                        "soca_dirac.x" \
                         "soca_gridgen.x" \
-                        "soca_staticbinit.x" \
-                        "soca_enshofx.x" \
-                        "soca_hofx3d.x" \
                         "soca_var.x")
   for gdasexe in "${JEDI_EXE[@]}"; do
     [[ -s "${gdasexe}" ]] && rm -f "${gdasexe}"

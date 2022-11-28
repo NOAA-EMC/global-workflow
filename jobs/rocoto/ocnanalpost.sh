@@ -4,9 +4,10 @@ source "${HOMEgfs}"/ush/preamble.sh
 
 ###############################################################
 # Source GDASApp modules
+declare -l hpc=${machine}
 module purge
 module use "${HOMEgfs}"/sorc/gdas.cd/modulefiles
-module load GDAS/hera
+module load GDAS/${hpc}
 
 ###############################################################
 # Execute the JJOB
