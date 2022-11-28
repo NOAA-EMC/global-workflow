@@ -507,7 +507,6 @@ class Tasks:
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
-        cycledef = self.cdump
         resources = self.get_resource('ocnanalprep')
         task = create_wf_task('ocnanalprep',
                               resources,
