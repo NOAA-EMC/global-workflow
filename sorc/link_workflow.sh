@@ -91,6 +91,7 @@ for dir in aer \
             cpl \
             datm \
             gldas \
+            gsi \
             lut \
             mom6 \
             orog \
@@ -98,8 +99,7 @@ for dir in aer \
             sfc_climo \
             ugwd \
             verif \
-            wave \
-            gsi
+            wave
             do
     if [[ -d "${dir}" ]]; then
       [[ "${RUN_ENVIR}" == "nco" ]] && chmod -R 755 "${dir}"
