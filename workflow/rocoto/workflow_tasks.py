@@ -513,8 +513,7 @@ class Tasks:
                               resources,
                               cdump=self.cdump,
                               envar=self.envars,
-                              dependency=dependencies,
-                              cycledef=cycledef)
+                              dependency=dependencies)
 
         return task
 
