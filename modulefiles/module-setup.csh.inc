@@ -2,7 +2,13 @@ set __ms_shell=csh
 
 eval "if ( -d / ) set __ms_shell=tcsh"
 
-if ( { test -d /lfs3 } ) then
+if ( { test -d /lfs/f1 } ) then
+    # We are on NOAA Cactus or Dogwood
+    if ( ! { module help >& /dev/null } ) then
+        source /usr/share/lmod/lmod/init/$__ms_shell
+    fi
+    module reset
+else if ( { test -d /lfs3 } ) then
     if ( ! { module help >& /dev/null } ) then
             source /apps/lmod/lmod/init/$__ms_shell
     endif
@@ -18,6 +24,13 @@ else if ( { test -d /work } ) then
     if ( ! { module help >& /dev/null } ) then
         source /apps/lmod/init/$__ms_shell
     endif
+    module purge
+else if ( { test -d /data/prod } ) then
+    # We are on SSEC S4
+    if ( ! { module help >& /dev/null } ) then
+        source /usr/share/lmod/lmod/init/$__ms_shell
+    endif
+    source /etc/profile
     module purge
 else if ( { test -d /glade } ) then
     # We are on NCAR Yellowstone

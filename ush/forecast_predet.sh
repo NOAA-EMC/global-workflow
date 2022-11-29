@@ -71,13 +71,12 @@ FV3_GFS_predet(){
 
   # Directories.
   pwd=$(pwd)
-  NWPROD=${NWPROD:-${NWROOT:-$pwd}}
-  HOMEgfs=${HOMEgfs:-$NWPROD}
+  HOMEgfs=${HOMEgfs:-${PACKAGEROOT:-$pwd}}
   FIX_DIR=${FIX_DIR:-$HOMEgfs/fix}
-  FIX_AM=${FIX_AM:-$FIX_DIR/fix_am}
-  FIX_AER=${FIX_AER:-$FIX_DIR/fix_aer}
-  FIX_LUT=${FIX_LUT:-$FIX_DIR/fix_lut}
-  FIXfv3=${FIXfv3:-$FIX_DIR/fix_fv3_gmted2010}
+  FIX_AM=${FIX_AM:-$FIX_DIR/am}
+  FIX_AER=${FIX_AER:-$FIX_DIR/aer}
+  FIX_LUT=${FIX_LUT:-$FIX_DIR/lut}
+  FIXfv3=${FIXfv3:-$FIX_DIR/orog}
   DATA=${DATA:-$pwd/fv3tmp$$}    # temporary running directory
   ROTDIR=${ROTDIR:-$pwd}         # rotating archive directory
   ICSDIR=${ICSDIR:-$pwd}         # cold start initial conditions
@@ -213,7 +212,7 @@ FV3_GFS_predet(){
   print_freq=${print_freq:-6}
 
   #-------------------------------------------------------
-  if [ $CDUMP = "gfs" -a $rst_invt1 -gt 0 ]; then
+  if [ $CDUMP = "gfs" ] && [ $rst_invt1 -gt 0 ] && [ $MEMBER -lt 0 ]; then
     RSTDIR_ATM=${RSTDIR:-$ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos/RERUN_RESTART
     if [ ! -d $RSTDIR_ATM ]; then mkdir -p $RSTDIR_ATM ; fi
     $NLN $RSTDIR_ATM RESTART
@@ -294,7 +293,6 @@ FV3_GFS_predet(){
   else
     gmemdir=$ROTDIR/${rprefix}.$gPDY/$gcyc/atmos/$memchar
   fi
-  sCDATE=$($NDATE -3 $CDATE)
 
   if [[ "$DOIAU" = "YES" ]]; then
     sCDATE=$($NDATE -3 $CDATE)
@@ -354,5 +352,5 @@ MOM6_predet(){
   if [ ! -d $DATA/OUTPUT ]; then mkdir -p $DATA/OUTPUT; fi
   if [ ! -d $DATA/MOM6_OUTPUT ]; then mkdir -p $DATA/MOM6_OUTPUT; fi
   if [ ! -d $DATA/MOM6_RESTART ]; then mkdir -p $DATA/MOM6_RESTART; fi
-  cd $DATA || exit 8
+  cd "${DATA}" || exit 8
 }

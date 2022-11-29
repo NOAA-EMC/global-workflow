@@ -18,9 +18,9 @@ export fhr3=$2
 export iproc=$3
 export nset=$4
 
-export CNVGRIB=${CNVGRIB:-$${NWPROD:-/nwprod}/util/exec/cnvgrib21}
-export COPYGB2=${COPYGB2:-$${NWPROD:-/nwprod}/util/exec/copygb2}
-export WGRIB2=${WGRIB2:-${NWPROD:-/nwprod}/util/exec/wgrib2}
+export CNVGRIB=${CNVGRIB:-${grib_util_ROOT}/bin/cnvgrib}
+export COPYGB2=${COPYGB2:-${grib_util_ROOT}/bin/copygb}
+export WGRIB2=${WGRIB2:-${wgrib2_ROOT}/bin/wgrib2}
 export TRIMRH=${TRIMRH:-$USHgfs/trim_rh.sh}
 export MODICEC=${MODICEC:-$USHgfs/mod_icec.sh}
 

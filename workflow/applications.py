@@ -217,6 +217,9 @@ class AppConfig:
         if self.do_wafs:
             configs += ['wafs', 'wafsgrib2', 'wafsblending', 'wafsgcip', 'wafsgrib20p25', 'wafsblending0p25']
 
+        if self.do_aero:
+            configs += ['aeroanlinit', 'aeroanlrun', 'aeroanlfinal']
+
         return configs
 
     @property
@@ -348,20 +351,23 @@ class AppConfig:
 
         gdas_gfs_common_tasks_before_fcst += ['sfcanl', 'analcalc']
 
+        if self.do_aero:
+            gdas_gfs_common_tasks_before_fcst += ['aeroanlinit', 'aeroanlrun', 'aeroanlfinal']
+
         gldas_tasks = ['gldas']
         wave_prep_tasks = ['waveinit', 'waveprep']
         wave_bndpnt_tasks = ['wavepostbndpnt', 'wavepostbndpntbll']
         wave_post_tasks = ['wavepostsbs', 'wavepostpnt']
 
-        hybrid_gdas_or_gfs_tasks = []
-        hybrid_gdas_tasks = []
+        hybrid_tasks = []
+        hybrid_after_eupd_tasks = []
         if self.do_hybvar:
             if self.do_jediens:
-                hybrid_gdas_or_gfs_tasks += ['atmensanalprep', 'atmensanalrun', 'atmensanalpost', 'echgres']
+                hybrid_tasks += ['atmensanalprep', 'atmensanalrun', 'atmensanalpost', 'echgres']
             else:
-                hybrid_gdas_or_gfs_tasks += ['eobs', 'eupd', 'echgres']
-                hybrid_gdas_or_gfs_tasks += ['ediag'] if self.lobsdiag_forenkf else ['eomg']
-            hybrid_gdas_tasks += ['ecen', 'esfc', 'efcs', 'epos', 'earc']
+                hybrid_tasks += ['eobs', 'eupd', 'echgres']
+                hybrid_tasks += ['ediag'] if self.lobsdiag_forenkf else ['eomg']
+            hybrid_after_eupd_tasks += ['ecen', 'esfc', 'efcs', 'epos', 'earc']
 
         # Collect all "gdas" cycle tasks
         gdas_tasks = gdas_gfs_common_tasks_before_fcst.copy()
@@ -380,8 +386,8 @@ class AppConfig:
 
         if self.do_hybvar:
             if 'gdas' in self.eupd_cdumps:
-                gdas_tasks += hybrid_gdas_or_gfs_tasks
-                gdas_tasks += hybrid_gdas_tasks
+                gdas_tasks += hybrid_tasks
+                gdas_tasks += hybrid_after_eupd_tasks
 
         if self.do_wave and 'gdas' in self.wave_cdumps:
             if self.do_wave_bnd:
@@ -402,9 +408,10 @@ class AppConfig:
 
         if self.do_metp:
             gfs_tasks += ['metp']
-
         if self.do_hybvar and 'gfs' in self.eupd_cdumps:
-            gfs_tasks += hybrid_gdas_or_gfs_tasks
+            gfs_tasks += hybrid_tasks
+            gfs_tasks += hybrid_after_eupd_tasks
+            gfs_tasks.remove("echgres")
 
         if self.do_wave and 'gfs' in self.wave_cdumps:
             if self.do_wave_bnd:

@@ -42,7 +42,7 @@ source "$HOMEgfs/ush/preamble.sh"
   echo "   ID              : $1"
   echo "   Type            : $2"
   echo "   Number of files : $3"
-  ${TRACE_ON:-set -x}
+  set_trace
 
 
 # 0.b Check if type set
@@ -55,7 +55,7 @@ source "$HOMEgfs/ush/preamble.sh"
     echo '*** VARIABLES IN ww3_tar.sh NOT SET ***'
     echo '********************************************'
     echo ' '
-    ${TRACE_ON:-set -x}
+    set_trace
     exit 1
   else
     ID=$1
@@ -85,7 +85,7 @@ source "$HOMEgfs/ush/preamble.sh"
     echo '*** EXPORTED VARIABLES IN ww3_tar.sh NOT SET ***'
     echo '*****************************************************'
     echo ' '
-    ${TRACE_ON:-set -x}
+    set_trace
     exit 2
   fi
 
@@ -97,7 +97,7 @@ source "$HOMEgfs/ush/preamble.sh"
   set +x
   echo ' '
   echo '   Making tar file ...'
-  ${TRACE_ON:-set -x}
+  set_trace
 
   count=0
   countMAX=5
@@ -121,7 +121,7 @@ source "$HOMEgfs/ush/preamble.sh"
         echo '*** FATAL ERROR : TAR CREATION FAILED *** '
         echo '***************************************** '
         echo ' '
-        ${TRACE_ON:-set -x}
+        set_trace
         exit 3
       fi
       
@@ -132,7 +132,7 @@ source "$HOMEgfs/ush/preamble.sh"
     else
       set +x
       echo ' All files not found for tar. Sleeping 10 seconds and trying again ..'
-      ${TRACE_ON:-set -x}
+      set_trace
       sleep 10
       count=$(expr $count + 1)
     fi
@@ -147,7 +147,7 @@ source "$HOMEgfs/ush/preamble.sh"
     echo '*** FATAL ERROR : TAR CREATION FAILED *** '
     echo '***************************************** '
     echo ' '
-    ${TRACE_ON:-set -x}
+    set_trace
     exit 3
   fi
 
@@ -167,7 +167,7 @@ source "$HOMEgfs/ush/preamble.sh"
         echo '*** FATAL ERROR : SPECTRAL TAR COMPRESSION FAILED *** '
         echo '***************************************************** '
         echo ' '
-        ${TRACE_ON:-set -x}
+        set_trace
         exit 4
       fi
     fi
@@ -181,7 +181,7 @@ source "$HOMEgfs/ush/preamble.sh"
   set +x
   echo ' '
   echo "   Moving tar file ${file_name} to $COMOUT ..."
-  ${TRACE_ON:-set -x}
+  set_trace
 
   cp ${file_name} $COMOUT/station/.
 
@@ -195,7 +195,7 @@ source "$HOMEgfs/ush/preamble.sh"
     echo '*** FATAL ERROR : TAR COPY FAILED *** '
     echo '************************************* '
     echo ' '
-    ${TRACE_ON:-set -x}
+    set_trace
     exit 4
   fi
 
@@ -205,7 +205,7 @@ source "$HOMEgfs/ush/preamble.sh"
     echo ' '
     echo "   Alerting TAR file as $COMOUT/station/${file_name}"
     echo ' '
-    ${TRACE_ON:-set -x}
+    set_trace
     $DBNROOT/bin/dbn_alert MODEL ${alertName}_WAVE_TAR $job $COMOUT/station/${file_name}
   fi
 

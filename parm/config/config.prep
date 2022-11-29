@@ -8,7 +8,8 @@ echo "BEGIN: config.prep"
 # Get task specific resources
 . $EXPDIR/config.resources prep
 
-export DO_MAKEPREPBUFR="YES"   # if NO, will copy prepbufr from globaldump
+export MAKE_PREPBUFR="YES"   # if NO, will copy prepbufr from globaldump
+export cdate10=${PDY}${cyc}
 
 # Relocation and syndata QC
 export PROCESS_TROPCY=${PROCESS_TROPCY:-NO}
@@ -17,11 +18,12 @@ export DO_RELOCATE="NO"
 export TROPCYQCRELOSH="$HOMEgfs/scripts/exglobal_atmos_tropcy_qc_reloc.sh"
 export SENDCOM=YES
 
-export COMINsyn=${COMINsyn:-${COMROOT}/gfs/prod/syndat}
+export COMINtcvital=${COMINtcvital:-${DMPDIR}/${CDUMP}.${PDY}/${cyc}/atmos}
+export COMINsyn=${COMINsyn:-$(compath.py ${envir}/com/gfs/${gfs_ver})/syndat}
 
 export HOMERELO=$HOMEgfs
 export EXECRELO=${HOMERELO}/exec
-export FIXRELO=${HOMERELO}/fix/fix_am
+export FIXRELO=${HOMERELO}/fix/am
 export USHRELO=${HOMERELO}/ush
 
 # Adjust observation error for GFS v16 parallels
@@ -63,6 +65,5 @@ if [[ "$CDATE" -ge "2020102200" ]]; then
 else
   export DTYPS_nsst='sfcshp dbuoyb mbuoyb tesac bathy trkob'
 fi
-export DO_MAKE_NSSTBUFR="NO"   # if NO, will copy nsstbufr from globaldump
 
 echo "END: config.prep"

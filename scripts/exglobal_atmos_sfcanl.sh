@@ -61,8 +61,8 @@ export SNOW_NUDGE_COEFF=${SNOW_NUDGE_COEFF:-'-2.'}
 export CYCLVARS=${CYCLVARS:-""}
 export FHOUR=${FHOUR:-0}
 export DELTSFC=${DELTSFC:-6}
-export FIXgsm=${FIXgsm:-$HOMEgfs/fix/fix_am}
-export FIXfv3=${FIXfv3:-$HOMEgfs/fix/fix_fv3_gmted2010}
+export FIXgsm=${FIXgsm:-$HOMEgfs/fix/am}
+export FIXfv3=${FIXfv3:-$HOMEgfs/fix/orog}
 
 # FV3 specific info (required for global_cycle)
 export CASE=${CASE:-"C384"}

@@ -23,7 +23,7 @@ source "$HOMEgfs/ush/preamble.sh"
 # Directories.
 pwd=$(pwd)
 export FIX_DIR=${FIX_DIR:-$HOMEgfs/fix}
-export FIX_AM=${FIX_AM:-$FIX_DIR/fix_am}
+export FIX_AM=${FIX_AM:-$FIX_DIR/am}
 
 # Utilities
 export NCP=${NCP:-"/bin/cp -p"}
@@ -112,6 +112,10 @@ export FHOUT=${FHOUT_ENKF:-3}
 # model_configure
 export DELTIM=${DELTIM_ENKF:-${DELTIM:-225}}
 export FHMAX=${FHMAX_ENKF:-9}
+if [[ $CDUMP == "gfs" ]]; then
+   export FHMAX=${FHMAX_ENKF_GFS:-${FHMAX_ENKF:-${FHMAX}}}
+fi
+
 export restart_interval=${restart_interval_ENKF:-${restart_interval:-6}}
 
 # gfs_physics_nml

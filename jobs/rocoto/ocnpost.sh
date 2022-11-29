@@ -17,7 +17,7 @@ status=$?
 # Source relevant config files
 #############################
 configs="base ocnpost"
-config_path=${EXPDIR:-$NWROOT/gfs.${gfs_ver}/parm/config}
+config_path=${EXPDIR:-$PACKAGEROOT/gfs.${gfs_ver}/parm/config}
 for config in $configs; do
     . $config_path/config.$config
     status=$?
@@ -57,11 +57,6 @@ cd $DATA
 export cycle="t${cyc}z"
 setpdy.sh
 . ./PDY
-
-##############################################
-# Define the Log File directory
-##############################################
-export jlogfile=${jlogfile:-$COMROOT/logs/jlogfiles/jlogfile.${job}.${pid}}
 
 ##############################################
 # Determine Job Output Name on System

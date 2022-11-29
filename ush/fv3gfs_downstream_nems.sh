@@ -34,10 +34,10 @@ source "$HOMEgfs/ush/preamble.sh" "$FH"
 
 export downset=${downset:-1}
 export DATA=${DATA:-/ptmpd2/$LOGNAME/test}
-export CNVGRIB=${CNVGRIB:-${NWPROD:-/nwprod}/util/exec/cnvgrib21}
-export COPYGB2=${COPYGB2:-${NWPROD:-/nwprod}/util/exec/copygb2}
-export WGRIB2=${WGRIB2:-${NWPROD:-/nwprod}/util/exec/wgrib2}
-export GRBINDEX=${GRBINDEX:-${NWPROD:-nwprod}/util/exec/grbindex}
+export CNVGRIB=${CNVGRIB:-${grib_util_ROOT}/bin/cnvgrib}
+export COPYGB2=${COPYGB2:-${grib_util_ROOT}/bin/copygb}
+export WGRIB2=${WGRIB2:-${wgrib2_ROOT}/bin/wgrib2}
+export GRBINDEX=${GRBINDEX:-${wgrib2_ROOT}/bin/grbindex}
 export RUN=${RUN:-"gfs"}
 export cycn=$(echo $CDATE |cut -c 9-10)
 export TCYC=${TCYC:-".t${cycn}z."}
@@ -77,10 +77,8 @@ elif [ $FH -eq 0 ] ; then
 else
   export paramlist=${paramlist:-$PARMpost/global_1x1_paramlist_g2}
   export paramlistb=${paramlistb:-$PARMpost/global_master-catchup_parmlist_g2}
-  export fhr3=$(expr $FH + 0 )
-  if [ $fhr3 -lt 100 ]; then export fhr3="0$fhr3"; fi
-  if [ $fhr3 -lt 10 ];  then export fhr3="0$fhr3"; fi
-  if [ $fhr3%${FHOUT_PGB} -eq 0 ]; then
+  export fhr3=$(printf "%03d" ${FH})
+  if (( FH%FHOUT_PGB == 0 )); then
     export PGBS=YES
   fi
 fi
@@ -132,7 +130,7 @@ while [ $nset -le $totalset ]; do
     set +e
     $WGRIB2 -d $end $tmpfile | egrep -i "ugrd|ustm|uflx|u-gwd"
     export rc=$?
-    ${ERR_EXIT_ON:-set -eu}
+    set_strict
     if [[ $rc -eq 0 ]] ; then
       export end=$(expr ${end} + 1)
     elif [[ $rc -gt 1 ]]; then
@@ -143,7 +141,7 @@ while [ $nset -le $totalset ]; do
     set +e
     $WGRIB2 -d $end $tmpfile | egrep -i "land"
     export rc=$?
-    ${ERR_EXIT_ON:-set -eu}
+    set_strict
     if [[ $rc -eq 0 ]] ; then
       export end=$(expr ${end} + 1)
     elif [[ $rc -gt 1 ]]; then
