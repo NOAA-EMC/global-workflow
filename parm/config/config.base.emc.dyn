@@ -332,6 +332,7 @@ export DO_JEDIENS="NO"
 # Hybrid related
 export DOHYBVAR="YES"
 export NMEM_ENKF=@NMEM_ENKF@
+export NMEM_EFCS=30
 export SMOOTH_ENKF="NO"
 export l4densvar=".true."
 export lwrite4danl=".true."

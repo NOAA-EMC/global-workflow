@@ -75,6 +75,9 @@ export FHMAX=$FHMAX_ENKF
 
 
 # Get ENSBEG/ENSEND from ENSGRP and NMEM_EFCSGRP
+if [[ $CDUMP == "gfs" ]]; then
+    export NMEM_EFCSGRP=${NMEM_EFCSGRP_GFS:-${NMEM_EFCSGRP:-1}}
+fi
 export ENSEND=$((NMEM_EFCSGRP * 10#${ENSGRP}))
 export ENSBEG=$((ENSEND - NMEM_EFCSGRP + 1))
 
