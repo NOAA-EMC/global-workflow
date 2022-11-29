@@ -29,7 +29,7 @@ status=$?
 export pid=${pid:-$$}
 export outid=${outid:-"LL${job}"}
 
-export DATA=${DATA:-${DATAROOT}/${jobid:?}}
+export DATA=${DATA:-${DATAROOT}/ocnanal_${CDATE}}
 mkdir -p "${DATA}"
 cd "${DATA}" || (echo "${DATA} does not exist. ABORT!"; exit 1)
 
@@ -61,10 +61,6 @@ export COMPONENT=${COMPONENT:-ocean}
 ##############################################
 
 export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENT}}
-
-# Prepare soca static dir
-
-ln -s "${COMOUT}"/analysis/* .
 
 ###############################################################
 # Run relevant script
