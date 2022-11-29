@@ -536,11 +536,6 @@ ${NLN} ${SFCG03} sfcf03
 ${NLN} ${SFCGES} sfcf06
 ${NLN} ${SFCG09} sfcf09
 
-# Link hourly backgrounds (if present)
-if [ -f ${ATMG04} -a -f ${ATMG05} -a -f ${ATMG07} -a -f ${ATMG08} ]; then
-   nhr_obsbin=1
-fi
-
 [[ -f ${ATMG04} ]] && ${NLN} ${ATMG04} sigf04
 [[ -f ${ATMG05} ]] && ${NLN} ${ATMG05} sigf05
 [[ -f ${ATMG07} ]] && ${NLN} ${ATMG07} sigf07
@@ -562,6 +557,7 @@ if [ ${DOHYBVAR} = "YES" ]; then
    fhrs="06"
    if [ ${l4densvar} = ".true." ]; then
       fhrs="03 04 05 06 07 08 09"
+      nhr_obsbin=1
    fi
 
    for imem in $(seq 1 ${NMEM_ENKF}); do
