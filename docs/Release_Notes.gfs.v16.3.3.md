@@ -1,4 +1,4 @@
-GFS V16.3.0 RELEASE NOTES
+GFS V16.3.3 RELEASE NOTES
 
 -------
 PRELUDE
@@ -599,7 +599,7 @@ DOCUMENTATION
 * Amendment of gfs.v16.3.3 GSI Code/Script Changes: https://docs.google.com/document/d/1Krg09tSGXpf4QHGFPwuEUpdMCxBVY6i_otRfSEzrrhs/edit?usp=sharing
 * MODEL Documentation: https://docs.google.com/presentation/d/1FOeP3VZK7wbzOXdEqPJa8WbAbVJgHX-Icc235OOsXsc/edit?usp=sharing
 * MODEL Verification: https://www.emc.ncep.noaa.gov/mmb/gcp/gfs/gfsv16c/
-* GitHub Global Workflow Issue for GFS.V16.3.0 Implementation: https://github.com/NOAA-EMC/global-workflow/issues/744
+* GitHub Global Workflow Issue for GFS.V16.3 Implementation: https://github.com/NOAA-EMC/global-workflow/issues/744
 * GitHub Issue for Real-time Parallel: https://github.com/NOAA-EMC/global-workflow/issues/952
 * GitHub Issue for Retrospective Parallel: https://github.com/NOAA-EMC/global-workflow/issues/951
 
