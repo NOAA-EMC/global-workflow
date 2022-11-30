@@ -1,4 +1,4 @@
-GFS V16.3.0 RELEASE NOTES
+GFS V16.3.3 RELEASE NOTES
 
 -------
 PRELUDE
@@ -64,13 +64,13 @@ This upgrade addresses the following bugzillas: 216, 1196, 1198, 1205, 1206, 121
 IMPLEMENTATION INSTRUCTIONS
 ---------------------------
 
-The NOAA VLab and the NOAA-EMC and NCAR organization spaces on GitHub .com are used to manage the GFS.v16.3.0 code.  The SPA(s) handling the GFS.v16.3.0 implementation need to have permissions to clone VLab Gerrit repositories and private NCAR UPP_GTG repository. All NOAA-EMC organization repositories are publicly readable and do not require access permissions.  Please proceed with the following steps to install the package on WCOSS2:
+The NOAA VLab and the NOAA-EMC and NCAR organization spaces on GitHub .com are used to manage the GFS.v16.3.3 code.  The SPA(s) handling the GFS.v16.3.3 implementation need to have permissions to clone VLab Gerrit repositories and private NCAR UPP_GTG repository. All NOAA-EMC organization repositories are publicly readable and do not require access permissions.  Please proceed with the following steps to install the package on WCOSS2:
 
 ```bash
 cd $PACKAGEROOT
-mkdir gfs.v16.3.0
-cd gfs.v16.3.0
-git clone -b EMC-v16.3.0 https://github.com/NOAA-EMC/global-workflow.git .
+mkdir gfs.v16.3.3
+cd gfs.v16.3.3
+git clone -b EMC-v16.3.3 https://github.com/NOAA-EMC/global-workflow.git .
 cd sorc
 ./checkout.sh -o
 ```
@@ -120,7 +120,7 @@ IMPLEMENTATION INSTRUCTIONS - SPECIFIC TO GSI
 * DA team will assess the data quality and impact as soon as they are available in the data dump.
 * DA team POC (Emily.Liu@noaa.gov) will notify NCO to change the use flags from -1 to 1 (the 4th column in the rows) once the DA team completes the assessment and is satisfied with the results.
 
-2. For the NCO 30-day stability test, the gfs.v16.3.0 should be warm started with the initial conditions from EIB's official real-time parallel. This is because we switched from assimilating the antenna temperature (TDR) to antenna-corrected temperatures (SDR) for ATMS, MHS, and AMSU-A.  The bias correction characteristics for these sensors will differ from those in operation. The bias correction files (abias and abias_pc) are part of the initial conditions.
+2. For the NCO 30-day stability test, the gfs.v16.3.3 should be warm started with the initial conditions from EIB's official real-time parallel. This is because we switched from assimilating the antenna temperature (TDR) to antenna-corrected temperatures (SDR) for ATMS, MHS, and AMSU-A.  The bias correction characteristics for these sensors will differ from those in operation. The bias correction files (abias and abias_pc) are part of the initial conditions.
 
 VERSION FILE CHANGES
 --------------------
@@ -135,7 +135,7 @@ VERSION FILE CHANGES
 SORC CHANGES
 ------------
 
-* GSI - highlight code changes related to the objectives of gfs.v16.3.0 upgrade; for more details, please refer to the amendment of gfs.v16.3.0 GSI code/script changes in the documentation section.
+* GSI - highlight code changes related to the objectives of gfs.v16.3.3 upgrade; for more details, please refer to the amendment of gfs.v16.3.3 GSI code/script changes in the documentation section.
   * `sorc/gsi.fd/src/gsi`
     * Common updates:
       * `gsimod.F90`
@@ -528,7 +528,7 @@ PRE-IMPLEMENTATION TESTING REQUIREMENTS
 ---------------------------------------
 
 * Which production jobs should be tested as part of this implementation?
-  * The entire GFS v16.3.0 package needs to be installed and tested on WCOSS-2
+  * The entire GFS v16.3.3 package needs to be installed and tested on WCOSS-2
 * Does this change require a 30-day evaluation?
   * Yes
 
@@ -595,11 +595,11 @@ JOB DEPENDENCIES AND FLOW DIAGRAM
 DOCUMENTATION
 -------------
 
-* GFS.V16.3.0 Implementation Kick-off Meeting Slides: https://docs.google.com/presentation/d/1HIY8bB3YEj-DThUHnJPak8l0gA7lfOtT7nMpgY4yvB4/edit?usp=sharing
-* Amendment of gfs.v16.3.0 GSI Code/Script Changes: https://docs.google.com/document/d/1Krg09tSGXpf4QHGFPwuEUpdMCxBVY6i_otRfSEzrrhs/edit?usp=sharing
+* GFS.V16.3 Implementation Kick-off Meeting Slides: https://docs.google.com/presentation/d/1HIY8bB3YEj-DThUHnJPak8l0gA7lfOtT7nMpgY4yvB4/edit?usp=sharing
+* Amendment of gfs.v16.3.3 GSI Code/Script Changes: https://docs.google.com/document/d/1Krg09tSGXpf4QHGFPwuEUpdMCxBVY6i_otRfSEzrrhs/edit?usp=sharing
 * MODEL Documentation: https://docs.google.com/presentation/d/1FOeP3VZK7wbzOXdEqPJa8WbAbVJgHX-Icc235OOsXsc/edit?usp=sharing
 * MODEL Verification: https://www.emc.ncep.noaa.gov/mmb/gcp/gfs/gfsv16c/
-* GitHub Global Workflow Issue for GFS.V16.3.0 Implementation: https://github.com/NOAA-EMC/global-workflow/issues/744
+* GitHub Global Workflow Issue for GFS.V16.3 Implementation: https://github.com/NOAA-EMC/global-workflow/issues/744
 * GitHub Issue for Real-time Parallel: https://github.com/NOAA-EMC/global-workflow/issues/952
 * GitHub Issue for Retrospective Parallel: https://github.com/NOAA-EMC/global-workflow/issues/951
 
