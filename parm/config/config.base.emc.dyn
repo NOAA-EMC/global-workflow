@@ -349,7 +349,7 @@ fi
 if [[ ${DOHYBVAR} == "NO" && ${DOIAU} == "YES"  ]]; then
     export IAUFHRS="6"
     export IAU_FHROT="3"
-    export IAU_FILTER_INCREMENTS=.true.
+    export IAU_FILTER_INCREMENTS=".true."
     export IAUFHRS_ENKF="6"
 fi
 
