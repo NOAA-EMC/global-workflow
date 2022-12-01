@@ -15,9 +15,7 @@ cd "${DATA}" || exit 1
 ##############################################
 export cycle="t${cyc}z"
 setpdy.sh
-# shellcheck disable=SC1091
 . ./PDY
-# shellcheck disable=
 
 
 ##############################################
@@ -32,12 +30,9 @@ export pgmerr=errfile
 # Source relevant config files
 #############################
 export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
-config_path=${EXPDIR:-${NWROOT}/gfs.${gfs_ver}/parm/config}
 configs="base gldas"
 for config in ${configs}; do
-    # shellcheck disable=SC1090-SC1091
-    . "${config_path}/config.${config}"
-    # shellcheck disable=
+    . ${EXPDIR}/config.${config}
     status=$?
     [[ ${status} -ne 0 ]] && exit "${status}"
 done

@@ -24,7 +24,6 @@ export pgmerr=errfile
 # Source relevant config files
 #############################
 export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
-config_path=${EXPDIR:-${PACKAGEROOT}/gfs.${gfs_ver}/parm/config}
 configs="base gempak"
 for config in ${configs}; do
     . ${EXPDIR}/config.${config}
