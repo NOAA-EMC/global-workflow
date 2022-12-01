@@ -289,6 +289,16 @@ else
     export NETCDF_IN=".false."
 fi
 
+# IAU related parameters
+export DOIAU="YES"        # Enable 4DIAU for control with 3 increments
+export IAUFHRS="3,6,9"
+export IAU_FHROT=$(echo $IAUFHRS | cut -c1)
+export IAU_DELTHRS=6
+export IAU_OFFSET=6
+export DOIAU_ENKF=${DOIAU:-"YES"}   # Enable 4DIAU for EnKF ensemble
+export IAUFHRS_ENKF="3,6,9"
+export IAU_DELTHRS_ENKF=6
+
 # Use Jacobians in eupd and thereby remove need to run eomg
 export lobsdiag_forenkf=".true."
 
@@ -317,43 +327,34 @@ export DO_JEDIENS="NO"
 # Hybrid related
 export DOHYBVAR="YES"
 export NMEM_ENKF=@NMEM_ENKF@
+export NMEM_EFCS=30
 export SMOOTH_ENKF="NO"
 export l4densvar=".true."
 export lwrite4danl=".true."
 
 # EnKF output frequency
 if [ $DOHYBVAR = "YES" ]; then
-    export DOIAU="YES"
     export FHMIN_ENKF=3
     export FHMAX_ENKF=9
+    export FHMAX_ENKF_GFS=120
     if [ $l4densvar = ".true." ]; then
         export FHOUT=1
         export FHOUT_ENKF=1
     else
         export FHOUT_ENKF=3
     fi
-else
-  export DOIAU="NO"   # 3DVAR defaults to no IAU
 fi
 
-# IAU related parameters
+# if 3DVAR and IAU 
 if [[ ${DOHYBVAR} == "NO" && ${DOIAU} == "YES"  ]]; then
-  export IAUFHRS="6"
-  export IAU_FHROT="3"
-  export IAU_FILTER_INCREMENTS=.true.
-else
-  export IAUFHRS="3,6,9" # Enable 4DIAU or control with 3 increments
-  export IAU_FHROT=$(echo $IAUFHRS | cut -c1)
+    export IAUFHRS="6"
+    export IAU_FHROT="3"
+    export IAU_FILTER_INCREMENTS=.true.
+    export IAUFHRS_ENKF="6"
 fi
-export IAU_DELTHRS=6
-export IAU_OFFSET=6
-if [[ ${DOHYBVAR} = "YES" ]]; then
-    export DOIAU_ENKF=${DOIAU:-"YES"}   # Enable 4DIAU for EnKF ensemble
-    export IAUFHRS_ENKF="3,6,9"
-    export IAU_DELTHRS_ENKF=6
-fi
+
 # Check if cycle is cold starting, DOIAU off, or free-forecast mode
-if [[ "${MODE}" = "cycled" && "${SDATE}" = "$CDATE" && ${EXP_WARM_START} = ".false." ]] || [[ "${DOIAU}" = "NO" ]] || [[ "${MODE}" = "forecast-only" && ${EXP_WARM_START} = ".false." ]] ; then
+if [[ "$MODE" = "cycled" && "$SDATE" = "$CDATE" && $EXP_WARM_START = ".false." ]] || [[ "$DOIAU" = "NO" ]] || [[ "$MODE" = "forecast-only" && $EXP_WARM_START = ".false." ]] ; then
   export IAU_OFFSET=0
   export IAU_FHROT=0
 fi
