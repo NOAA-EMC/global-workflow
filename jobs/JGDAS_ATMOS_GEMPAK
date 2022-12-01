@@ -84,7 +84,7 @@ fi
 
 
 # TODO: These actions belong in an ex-script not a j-job
-if [ -f ${DATA}/poescrip ]; then
+if [ -f ${DATA}/poescript ]; then
    rm ${DATA}/poescript
 fi
 
