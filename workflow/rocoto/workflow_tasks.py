@@ -586,6 +586,10 @@ class Tasks:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}waveprep'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 
+        if self.app_config.do_aero:
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}aeroanlfinal'}
+            dependencies.append(rocoto.add_dependency(dep_dict))
+
         dependencies = rocoto.create_dependency(dep_condition='and', dep=dependencies)
 
         if self.cdump in ['gdas']:
