@@ -5,7 +5,7 @@
 # Script name:         exgdas_global_aero_analysis_run.sh
 # Script description:  Runs the global aerosol analysis with FV3-JEDI
 #
-# Author: Cory Martin        Org: NCEP/EMC     Date: 2022-99-09
+# Author: Cory Martin        Org: NCEP/EMC     Date: 2022-29-09
 #
 # Abstract: This script runs a global model aerosol analysis using FV3-JEDI
 #
