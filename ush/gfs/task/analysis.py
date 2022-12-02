@@ -264,7 +264,8 @@ class AerosolAnalysis(Analysis):
                         increment = incfile.variables[vname][:]
                         bkg = rstfile.variables[vname][:]
                         anl = bkg + increment
-                        rstfile.variables[vname] = anl[:]
+                        rstfile.variables[vname][:] = anl[:]
+                        rstfile.variables[vname].delncattr('checksum') # remove the checksum so fv3 does not complain
 
     def stage_crtm(self, filedict):
         logging.info('Staging CRTM coefficient files')
