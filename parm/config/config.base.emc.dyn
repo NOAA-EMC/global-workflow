@@ -332,6 +332,7 @@ export DO_JEDIENS="NO"
 # Hybrid related
 export DOHYBVAR="YES"
 export NMEM_ENKF=@NMEM_ENKF@
+export NMEM_EFCS=30
 export SMOOTH_ENKF="NO"
 export l4densvar=".true."
 export lwrite4danl=".true."
@@ -340,6 +341,7 @@ export lwrite4danl=".true."
 if [ $DOHYBVAR = "YES" ]; then
     export FHMIN_ENKF=3
     export FHMAX_ENKF=9
+    export FHMAX_ENKF_GFS=120
     if [ $l4densvar = ".true." ]; then
         export FHOUT=1
         export FHOUT_ENKF=1

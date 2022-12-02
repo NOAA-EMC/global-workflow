@@ -27,7 +27,7 @@ OPTIND=1
 while getopts ":ho" option; do
   case "${option}" in
     h) usage ;;
-    o) 
+    o)
       echo "-o option received, configuring for NCO"
       RUN_ENVIR="nco";;
     :)
@@ -46,7 +46,7 @@ script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 top_dir=$(cd "$(dirname "${script_dir}")" &> /dev/null && pwd)
 cd "${script_dir}"
 
-COMPILER="intel"
+export COMPILER="intel"
 # shellcheck disable=SC1091
 source gfs_utils.fd/ush/detect_machine.sh  # (sets MACHINE_ID)
 # shellcheck disable=
@@ -80,8 +80,8 @@ fi
 [[ -d upp.fd ]] && rm -rf upp.fd
 ${LINK} ufs_model.fd/FV3/upp upp.fd
 
-if [ ! -z "${FIX_DIR}" ]; then
-  if [ ! -d "${top_dir}/fix" ]; then mkdir "${top_dir}/fix" || exit 1; fi
+if [[ -n "${FIX_DIR}" ]]; then
+  if [[ ! -d "${top_dir}/fix" ]]; then mkdir "${top_dir}/fix" || exit 1; fi
 fi
 cd "${top_dir}/fix" || exit 1
 for dir in aer \
@@ -91,6 +91,7 @@ for dir in aer \
             cpl \
             datm \
             gldas \
+            gsi \
             lut \
             mom6 \
             orog \
@@ -100,7 +101,7 @@ for dir in aer \
             verif \
             wave
             do
-    if [ -d "${dir}" ]; then
+    if [[ -d "${dir}" ]]; then
       [[ "${RUN_ENVIR}" == "nco" ]] && chmod -R 755 "${dir}"
       rm -rf "${dir}"
     fi
@@ -108,7 +109,8 @@ for dir in aer \
     ${LINK} "${FIX_DIR}/${dir}/${!fix_ver}" "${dir}"
 done
 
-if [ -d "${script_dir}/ufs_utils.fd" ]; then
+
+if [[ -d "${script_dir}/ufs_utils.fd" ]]; then
   cd "${script_dir}/ufs_utils.fd/fix" || exit 1
   ./link_fixdirs.sh "${RUN_ENVIR}" "${machine}" 2> /dev/null
 fi
@@ -118,7 +120,7 @@ fi
 #--add files from external repositories
 #---------------------------------------
 cd "${top_dir}/parm" || exit 1
-    if [ -d "${script_dir}/gldas.fd" ]; then
+    if [[ -d "${script_dir}/gldas.fd" ]]; then
       [[ -d gldas ]] && rm -rf gldas
       ${LINK} "${script_dir}/gldas.fd/parm" gldas
     fi
@@ -146,7 +148,7 @@ cd "${top_dir}/ush" || exit 8
 
 #-----------------------------------
 #--add gfs_wafs link if checked out
-if [ -d "${script_dir}/gfs_wafs.fd" ]; then
+if [[ -d "${script_dir}/gfs_wafs.fd" ]]; then
 #-----------------------------------
  cd "${top_dir}/jobs" || exit 1
      ${LINK} "${script_dir}/gfs_wafs.fd/jobs"/*                         .
@@ -164,23 +166,14 @@ fi
 
 
 #------------------------------
-#--add GSI fix directory
-#------------------------------
-if [ -d "${script_dir}/gsi_enkf.fd" ]; then
-  cd "${top_dir}/fix" || exit 1
-    [[ -d gsi ]] && rm -rf gsi
-    ${LINK} "${script_dir}/gsi_enkf.fd/fix"  gsi
-fi
-
-#------------------------------
 #--add GDASApp fix directory
 #------------------------------
-if [ -d "${script_dir}/gdas.cd" ]; then
+if [[ -d "${script_dir}/gdas.cd" ]]; then
   cd "${top_dir}/fix" || exit 1
     [[ ! -d gdas ]] && mkdir -p gdas
     cd gdas || exit 1
-    for gdas_sub in bump crtm fv3jedi; do
-      if [ -d "${gdas_sub}" ]; then
+    for gdas_sub in bump crtm fv3jedi gsibec; do
+      if [[ -d "${gdas_sub}" ]]; then
          rm -rf "${gdas_sub}"
       fi
       fix_ver="gdas_${gdas_sub}_ver"
@@ -191,8 +184,8 @@ fi
 #------------------------------
 #--add GDASApp files
 #------------------------------
-if [ -d "${script_dir}/gdas.cd" ]; then
-  cd "${top_dir}/ush"
+if [[ -d "${script_dir}/gdas.cd" ]]; then
+  cd "${top_dir}/ush" || exit 1
     ${LINK} "${script_dir}/gdas.cd/ush/ufsda"                              .
 fi
 
@@ -200,7 +193,7 @@ fi
 #------------------------------
 #--add DA Monitor file (NOTE: ensure to use correct version)
 #------------------------------
-if [ -d "${script_dir}/gsi_monitor.fd" ]; then
+if [[ -d "${script_dir}/gsi_monitor.fd" ]]; then
 
   cd "${top_dir}/fix" || exit 1
     [[ ! -d gdas ]] && ( mkdir -p gdas || exit 1 )
@@ -227,7 +220,7 @@ fi
 #--link executables
 #------------------------------
 
-if [ ! -d "${top_dir}/exec" ]; then mkdir "${top_dir}/exec" || exit 1 ; fi
+if [[ ! -d "${top_dir}/exec" ]]; then mkdir "${top_dir}/exec" || exit 1 ; fi
 cd "${top_dir}/exec" || exit 1
 
 for utilexe in fbwndgfs.x gaussian_sfcanl.x gfs_bufr.x regrid_nemsio.x supvit.x syndat_getjtbul.x \
@@ -243,7 +236,7 @@ ${LINK} "${script_dir}/ufs_model.fd/tests/ufs_model.x" .
 [[ -s "upp.x" ]] && rm -f upp.x
 ${LINK} "${script_dir}/upp.fd/exec/upp.x" .
 
-if [ -d "${script_dir}/gfs_wafs.fd" ]; then
+if [[ -d "${script_dir}/gfs_wafs.fd" ]]; then
     for wafsexe in \
           wafs_awc_wafavn.x  wafs_blending.x  wafs_blending_0p25.x \
           wafs_cnvgrib2.x  wafs_gcip.x  wafs_grib2_0p25.x \
@@ -260,7 +253,7 @@ for ufs_utilsexe in \
 done
 
 # GSI
-if [ -d "${script_dir}/gsi_enkf.fd" ]; then
+if [[ -d "${script_dir}/gsi_enkf.fd" ]]; then
   for gsiexe in enkf.x gsi.x; do
     [[ -s "${gsiexe}" ]] && rm -f "${gsiexe}"
     ${LINK} "${script_dir}/gsi_enkf.fd/install/bin/${gsiexe}" .
@@ -268,7 +261,7 @@ if [ -d "${script_dir}/gsi_enkf.fd" ]; then
 fi
 
 # GSI Utils
-if [ -d "${script_dir}/gsi_utils.fd" ]; then
+if [[ -d "${script_dir}/gsi_utils.fd" ]]; then
   for exe in calc_analysis.x calc_increment_ens_ncio.x calc_increment_ens.x \
     getsfcensmeanp.x getsigensmeanp_smooth.x getsigensstatp.x \
     interp_inc.x recentersigp.x;do
@@ -278,7 +271,7 @@ if [ -d "${script_dir}/gsi_utils.fd" ]; then
 fi
 
 # GSI Monitor
-if [ -d "${script_dir}/gsi_monitor.fd" ]; then
+if [[ -d "${script_dir}/gsi_monitor.fd" ]]; then
   for exe in oznmon_horiz.x oznmon_time.x radmon_angle.x \
     radmon_bcoef.x radmon_bcor.x radmon_time.x; do
     [[ -s "${exe}" ]] && rm -f "${exe}"
@@ -286,7 +279,7 @@ if [ -d "${script_dir}/gsi_monitor.fd" ]; then
   done
 fi
 
-if [ -d "${script_dir}/gldas.fd" ]; then
+if [[ -d "${script_dir}/gldas.fd" ]]; then
   for gldasexe in gdas2gldas  gldas2gdas  gldas_forcing  gldas_model  gldas_post  gldas_rst; do
     [[ -s "${gldasexe}" ]] && rm -f "${gldasexe}"
     ${LINK} "${script_dir}/gldas.fd/exec/${gldasexe}" .
@@ -294,7 +287,7 @@ if [ -d "${script_dir}/gldas.fd" ]; then
 fi
 
 # GDASApp
-if [ -d "${script_dir}/gdas.cd" ]; then
+if [[ -d "${script_dir}/gdas.cd" ]]; then
   for gdasexe in fv3jedi_addincrement.x fv3jedi_diffstates.x fv3jedi_ensvariance.x fv3jedi_hofx.x \
     fv3jedi_var.x fv3jedi_convertincrement.x fv3jedi_dirac.x fv3jedi_error_covariance_training.x \
     fv3jedi_letkf.x fv3jedi_convertstate.x fv3jedi_eda.x fv3jedi_forecast.x fv3jedi_plot_field.x \
@@ -307,9 +300,9 @@ fi
 #------------------------------
 #--link source code directories
 #------------------------------
-cd "${script_dir}"   ||   exit 8
+cd "${script_dir}" || exit 8
 
-    if [ -d gsi_enkf.fd ]; then
+    if [[ -d gsi_enkf.fd ]]; then
       [[ -d gsi.fd ]] && rm -rf gsi.fd
       ${SLINK} gsi_enkf.fd/src/gsi                                                                gsi.fd
 
@@ -317,7 +310,7 @@ cd "${script_dir}"   ||   exit 8
       ${SLINK} gsi_enkf.fd/src/enkf                                                               enkf.fd
     fi
 
-    if [ -d gsi_utils.fd ]; then
+    if [[ -d gsi_utils.fd ]]; then
       [[ -d calc_analysis.fd ]] && rm -rf calc_analysis.fd
       ${SLINK} gsi_utils.fd/src/netcdf_io/calc_analysis.fd                                        calc_analysis.fd
 
@@ -343,7 +336,7 @@ cd "${script_dir}"   ||   exit 8
       ${SLINK} gsi_utils.fd/src/netcdf_io/interp_inc.fd                                           interp_inc.fd
     fi
 
-    if [ -d gsi_monitor.fd ] ; then
+    if [[ -d gsi_monitor.fd ]] ; then
       [[ -d oznmon_horiz.fd ]] && rm -rf oznmon_horiz.fd
       ${SLINK} gsi_monitor.fd/src/Ozone_Monitor/nwprod/oznmon_shared/sorc/oznmon_horiz.fd         oznmon_horiz.fd
 
@@ -401,7 +394,7 @@ cd "${script_dir}"   ||   exit 8
         ${LINK} "gfs_utils.fd/src/${prog}" .
     done
 
-    if [ -d "${script_dir}/gfs_wafs.fd" ]; then
+    if [[ -d "${script_dir}/gfs_wafs.fd" ]]; then
         ${SLINK} gfs_wafs.fd/sorc/wafs_awc_wafavn.fd                                              wafs_awc_wafavn.fd
         ${SLINK} gfs_wafs.fd/sorc/wafs_blending.fd                                                wafs_blending.fd
         ${SLINK} gfs_wafs.fd/sorc/wafs_blending_0p25.fd                                           wafs_blending_0p25.fd
@@ -412,7 +405,7 @@ cd "${script_dir}"   ||   exit 8
         ${SLINK} gfs_wafs.fd/sorc/wafs_setmissing.fd                                              wafs_setmissing.fd
     fi
 
-    if [ -d gldas.fd ]; then
+    if [[ -d gldas.fd ]]; then
       for prog in gdas2gldas.fd  gldas2gdas.fd  gldas_forcing.fd  gldas_model.fd  gldas_post.fd  gldas_rst.fd ;do
         [[ -d "${prog}" ]] && rm -rf "${prog}"
         ${SLINK} "gldas.fd/sorc/${prog}"                                                     "${prog}"

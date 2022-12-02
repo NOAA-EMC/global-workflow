@@ -1,4 +1,4 @@
-# Global settings for Spellcheck (https://github.com/koalaman/shellcheck)
+# Global settings for Shellcheck (https://github.com/koalaman/shellcheck)
 enable=all
 
 external-sources=false
