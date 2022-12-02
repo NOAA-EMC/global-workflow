@@ -384,9 +384,9 @@ cat >> input.nml <<EOF
   frac_grid    = ${FRAC_GRID:-".true."}
   cplchm       = ${cplchm:-".false."}
   cplflx       = ${cplflx:-".false."}
-  cplice       = ${cplice-".false."} 
+  cplice       = ${cplice:-".false."} 
   cplwav       = ${cplwav:-".false."}
-  cplwav2atm   = ${cplwav2atm-".false."}
+  cplwav2atm   = ${cplwav2atm:-".false."}
 EOF
 
 # Add namelist for IAU
