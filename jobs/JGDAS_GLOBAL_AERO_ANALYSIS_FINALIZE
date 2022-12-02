@@ -81,8 +81,9 @@ mkdir -p "${COMOUT}"
 export COMIN_GES="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/${COMPONENT}"
 export COMIN_GES_ENS="${ROTDIR}/enkf${GDUMP}.${gPDY}/${gcyc}/${COMPONENT}"
 
-# Add UFSDA to PYTHONPATH
+# Add UFSDA and gfs modules to PYTHONPATH
 export PYTHONPATH="${HOMEgfs}/sorc/gdas.cd/ush/:${PYTHONPATH}"
+export PYTHONPATH="${HOMEgfs}/ush/:${PYTHONPATH}"
 
 ###############################################################
 # Run relevant script
