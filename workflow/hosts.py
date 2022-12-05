@@ -26,7 +26,7 @@ class Host:
 
         self.machine = detected_host
         self.info = self._get_info
-        self.scheduler = self.info['scheduler']
+        self.scheduler = self.info['SCHEDULER']
 
     @classmethod
     def detect(cls):
