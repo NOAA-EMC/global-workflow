@@ -304,7 +304,10 @@ elif [ $step = "arch" -o $step = "earc" -o $step = "getic" ]; then
     eval "export npe_$step=1"
     eval "export npe_node_$step=1"
     eval "export nth_$step=1"
-    eval "export memory_$step=50GB"
+    eval "export memory_$step=2048M"
+    if [[ "$machine" == "WCOSS2" ]]; then
+      eval "export memory_$step=50GB"
+    fi
 
 elif [ $step = "eobs" -o $step = "eomg" ]; then
 
