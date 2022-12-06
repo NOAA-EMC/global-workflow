@@ -7,8 +7,8 @@ source "${HOMEgfs}/ush/preamble.sh"
 # make temp directory
 ##############################################
 export DATA=${DATA:-${DATAROOT}/ocnanal_${cyc}}
-mkdir -p ${DATA}
-cd ${DATA} || (echo "${DATA} does not exist. ABORT!"; exit 1)
+mkdir -p "${DATA}"
+cd "${DATA}" || (echo "${DATA} does not exist. ABORT!"; exit 1)
 
 
 ##############################################
@@ -33,7 +33,7 @@ export pgmerr=errfile
 export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
 configs="base ocnanal ocnanalrun"
 for config in ${configs}; do
-    . ${EXPDIR}/config.${config}
+    . "${EXPDIR}/config.${config}"
     status=$?
     [[ ${status} -ne 0 ]] && exit "${status}"
 done
@@ -42,7 +42,7 @@ done
 ##########################################
 # Source machine runtime environment
 ##########################################
-. ${HOMEgfs}/env/${machine}.env ocnanalrun
+. "${HOMEgfs}/env/${machine}.env ocnanalrun"
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
 

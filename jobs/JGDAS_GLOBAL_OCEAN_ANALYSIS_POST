@@ -6,8 +6,8 @@ source "${HOMEgfs}/ush/preamble.sh"
 # make temp directory
 ##############################################
 export DATA=${DATA:-${DATAROOT}/ocnanal_${cyc}}
-mkdir -p ${DATA}
-cd ${DATA} || (echo "${DATA} does not exist. ABORT!"; exit 1)
+mkdir -p "${DATA}"
+cd "${DATA}" || (echo "${DATA} does not exist. ABORT!"; exit 1)
 
 
 ##############################################
@@ -32,7 +32,7 @@ export pgmerr=errfile
 export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
 configs="base ocnanalpost"
 for config in ${configs}; do
-    . ${EXPDIR}/config.${config}
+    . "${EXPDIR}/config.${config}"
     status=$?
     [[ "${status}" -ne 0 ]] && exit "${status}"
 done
@@ -41,6 +41,6 @@ done
 # Remove the Temporary working directory
 ##########################################
 cd "${DATAROOT}" || exit 1
-[[ ${KEEPDATA} = "NO" ]] && rm -rf "${DATA}"
+[[ "${KEEPDATA}" = "NO" ]] && rm -rf "${DATA}"
 
 exit 0
