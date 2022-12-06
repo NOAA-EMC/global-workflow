@@ -197,15 +197,15 @@ elif [ ${step} = "aeroanlinit" ]; then
 elif [ ${step} = "aeroanlrun" ]; then
 
    case ${CASE} in
-     C768)    
+     C768)
         layout_x=6
         layout_y=6
         ;;
-      C384)    
+      C384)
         layout_x=5
         layout_y=5
         ;;
-     C192 | C96 | C48)    
+     C192 | C96 | C48)
         layout_x=3
         layout_y=3
         ;;
