@@ -1,13 +1,12 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}"/ush/preamble.sh
+source "${HOMEgfs}/ush/preamble.sh"
 
 ###############################################################
 # Source GDASApp modules
-declare -l hpc=${machine}
 module purge
-module use "${HOMEgfs}"/sorc/gdas.cd/modulefiles
-module load GDAS/"${hpc}"
+module use "${HOMEgfs}/sorc/gdas.cd/modulefiles"
+module load "GDAS/${machine,,}"
 
 ###############################################################
 # Execute the JJOB
