@@ -15,7 +15,7 @@ class Host:
     """
 
     SUPPORTED_HOSTS = ['HERA', 'ORION', 'JET',
-                       'WCOSS2', 'S4']
+                       'WCOSS2', 'S4', 'CONTAINER']
 
     def __init__(self, host=None):
 
@@ -32,6 +32,7 @@ class Host:
     def detect(cls):
 
         machine = 'NOTFOUND'
+        container = os.getenv('SINGULARITY_NAME')
 
         if os.path.exists('/scratch1/NCEPDEV'):
             machine = 'HERA'
@@ -43,6 +44,8 @@ class Host:
             machine = 'WCOSS2'
         elif os.path.exists('/data/prod'):
             machine = 'S4'
+        elif container != None:
+            machine = 'CONTAINER'
 
         if machine not in Host.SUPPORTED_HOSTS:
             raise NotImplementedError(f'This machine is not a supported host.\n' +
