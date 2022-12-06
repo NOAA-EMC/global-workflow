@@ -108,6 +108,7 @@ class AppConfig:
         self.do_metp = _base.get('DO_METP', False)
         self.do_jedivar = _base.get('DO_JEDIVAR', False)
         self.do_jediens = _base.get('DO_JEDIENS', False)
+        self.do_jediocnvar = _base.get('DO_JEDIOCNVAR', False)
 
         self.do_hpssarch = _base.get('HPSSARCH', False)
 

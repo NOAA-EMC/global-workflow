@@ -156,45 +156,51 @@ elif [ ${step} = "waveawipsgridded" ]; then
     export NTASKS=${npe_waveawipsgridded}
     export memory_waveawipsgridded_gfs="1GB"
 
-elif [ ${step} = "atmanalprep" ]; then
+elif [[ "${step}" = "atmanalprep" ]]; then
 
     export wtime_atmanalprep="00:10:00"
     export npe_atmanalprep=1
     export nth_atmanalprep=1
-    export npe_node_atmanalprep=$(echo "${npe_node_max} / ${nth_atmanalprep}" | bc)
+    npe_node_atmanalprep=$(echo "${npe_node_max} / ${nth_atmanalprep}" | bc)
+    export npe_node_atmanalprep
     export memory_atmanalprep="3072M"
 
-elif [ ${step} = "atmanalrun" ]; then
+elif [[ "${step}" = "atmanalrun" ]]; then
 
     # make below case dependent later
     export layout_x=1
     export layout_y=1
 
     export wtime_atmanalrun="00:30:00"
-    export npe_atmanalrun=$(echo "${layout_x} * ${layout_y} * 6" | bc)
-    export npe_atmanalrun_gfs=$(echo "${layout_x} * ${layout_y} * 6" | bc)
+    npe_atmanalrun=$(echo "${layout_x} * ${layout_y} * 6" | bc)
+    export npe_atmanalrun
+    npe_atmanalrun_gfs=$(echo "${layout_x} * ${layout_y} * 6" | bc)
+    export npe_atmanalrun_gfs
     export nth_atmanalrun=1
     export nth_atmanalrun_gfs=${nth_atmanalrun}
-    export npe_node_atmanalrun=$(echo "${npe_node_max} / ${nth_atmanalrun}" | bc)
+    npe_node_atmanalrun=$(echo "${npe_node_max} / ${nth_atmanalrun}" | bc)
+    export npe_node_atmanalrun
     export is_exclusive=True
 
-elif [ ${step} = "atmanalpost" ]; then
+elif [[ "${step}" = "atmanalpost" ]]; then
 
     export wtime_atmanalpost="00:30:00"
     export npe_atmanalpost=${npe_node_max}
     export nth_atmanalpost=1
-    export npe_node_atmanalpost=$(echo "${npe_node_max} / ${nth_atmanalpost}" | bc)
+    npe_node_atmanalpost=$(echo "${npe_node_max} / ${nth_atmanalpost}" | bc)
+    export npe_node_atmanalpost
     export is_exclusive=True
 
-elif [ ${step} = "aeroanlinit" ]; then
+elif [[ "${step}" = "aeroanlinit" ]]; then
 
     export wtime_aeroanlinit="00:10:00"
     export npe_aeroanlinit=1
     export nth_aeroanlinit=1
-    export npe_node_aeroanlinit=$(echo "${npe_node_max} / ${nth_aeroanlinit}" | bc)
+    npe_node_aeroanlinit=$(echo "${npe_node_max} / ${nth_aeroanlinit}" | bc)
+    export npe_node_aeroanlinit
     export memory_aeroanlinit="3072M"
 
-elif [ ${step} = "aeroanlrun" ]; then
+elif [[ "${step}" = "aeroanlrun" ]]; then
 
    case ${CASE} in
      C768)
@@ -209,23 +215,68 @@ elif [ ${step} = "aeroanlrun" ]; then
         layout_x=3
         layout_y=3
         ;;
+      *)
+          echo "FATAL: Resolution not supported'"
+          exit 1
     esac
 
     export wtime_aeroanlrun="00:30:00"
-    export npe_aeroanlrun=$(echo "${layout_x} * ${layout_y} * 6" | bc)
-    export npe_aeroanlrun_gfs=$(echo "${layout_x} * ${layout_y} * 6" | bc)
+    npe_aeroanlrun=$(echo "${layout_x} * ${layout_y} * 6" | bc)
+    export npe_aeroanlrun
+    npe_aeroanlrun_gfs=$(echo "${layout_x} * ${layout_y} * 6" | bc)
+    export npe_aeroanlrun_gfs
     export nth_aeroanlrun=1
     export nth_aeroanlrun_gfs=1
-    export npe_node_aeroanlrun=$(echo "${npe_node_max} / ${nth_aeroanlrun}" | bc)
+    npe_node_aeroanlrun=$(echo "${npe_node_max} / ${nth_aeroanlrun}" | bc)
+    export npe_node_aeroanlrun
     export is_exclusive=True
 
-elif [ ${step} = "aeroanlfinal" ]; then
+elif [[ "${step}" = "aeroanlfinal" ]]; then
 
     export wtime_aeroanlfinal="00:10:00"
     export npe_aeroanlfinal=1
     export nth_aeroanlfinal=1
-    export npe_node_aeroanlfinal=$(echo "${npe_node_max} / ${nth_aeroanlfinal}" | bc)
+    npe_node_aeroanlfinal=$(echo "${npe_node_max} / ${nth_aeroanlfinal}" | bc)
+    export npe_node_aeroanlfinal
     export memory_aeroanlfinal="3072M"
+
+elif [[ "${step}" = "ocnanalprep" ]]; then
+
+    export wtime_ocnanalprep="00:10:00"
+    export npe_ocnanalprep=1
+    export nth_ocnanalprep=1
+    npe_node_ocnanalprep=$(echo "${npe_node_max} / ${nth_ocnanalprep}" | bc)
+    export npe_node_ocnanalprep
+    export memory_ocnanalprep="3072M"
+
+elif [[ "${step}" = "ocnanalrun" ]]; then
+   npes=16
+   case ${CASE} in
+      C384)
+        npes=480
+        ;;
+      C48)
+        npes=16
+        ;;
+      *)
+          echo "FATAL: Resolution not supported'"
+          exit 1
+    esac
+
+    export wtime_ocnanalrun="00:30:00"
+    export npe_ocnanalrun=${npes}
+    export nth_ocnanalrun=1
+    export native_ocnanalrun="--exclusive"
+    npe_node_ocnanalrun=$(echo "${npe_node_max} / ${nth_ocnanalrun}" | bc)
+    export npe_node_ocnanalrun
+
+elif [[ "${step}" = "ocnanalpost" ]]; then
+
+    export wtime_ocnanalpost="00:30:00"
+    export npe_ocnanalpost=${npe_node_max}
+    export nth_ocnanalpost=1
+    npe_node_ocnanalpost=$(echo "${npe_node_max} / ${nth_ocnanalpost}" | bc)
+    export npe_node_ocnanalpost
 
 elif [ ${step} = "anal" ]; then
 
