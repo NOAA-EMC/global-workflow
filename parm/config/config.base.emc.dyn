@@ -22,7 +22,7 @@ export PARTITION_SERVICE="@PARTITION_SERVICE@"
 HPSS_PROJECT=emc-global
 
 # Directories relative to installation areas:
-export HOMEgfs=/home/gvernier/sandboxes/ctest-sprint/global-workflow/ #@HOMEgfs@
+export HOMEgfs=@HOMEgfs@
 export PARMgfs=$HOMEgfs/parm
 export FIXgfs=$HOMEgfs/fix
 export USHgfs=$HOMEgfs/ush
@@ -44,7 +44,7 @@ export DMPDIR="@DMPDIR@"
 
 # USER specific paths
 export HOMEDIR="@HOMEDIR@"
-export STMP=/home/gvernier/sandboxes/ctest-sprint/global-workflow/sorc/gdas.cd/build/test/soca/gw/testrun/RUNDIR
+export STMP="@STMP@"
 export PTMP="@PTMP@"
 export NOSCRUB="@NOSCRUB@"
 
@@ -109,8 +109,8 @@ export DUMP_SUFFIX=""
 if [[ "$CDATE" -ge "2019092100" && "$CDATE" -le "2019110700" ]]; then
     export DUMP_SUFFIX="p"              # Use dumps from NCO GFS v15.3 parallel
 fi
-export RUNDIR="$STMP/RUNDIRS/$PSLOT"
-export DATAROOT="$RUNDIR/$CDATE/$CDUMP"
+export DATAROOT="${STMP}/RUNDIRS/${PSLOT}"  # TODO: set via prod_envir in Ops
+export RUNDIR="${DATAROOT}"  # TODO: Should be removed; use DATAROOT instead
 export ARCDIR="$NOSCRUB/archive/$PSLOT"
 export ICSDIR="@ICSDIR@"
 export ATARDIR="@ATARDIR@"
