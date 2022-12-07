@@ -45,7 +45,7 @@ export COMPONENT=${COMPONENT:-chem}
 export pid=${pid:-$$}
 export outid=${outid:-"LL${job}"}
 
-export DATA=${DATA:-${DATAROOT}/aeroanl_${CDATE}}
+export DATA=${DATA:-${DATAROOT}/aeroanl_${cyc}}
 mkdir -p "${DATA}"
 cd "${DATA}" || (echo "${DATA} does not exist. ABORT!"; exit 1)
 
@@ -80,10 +80,6 @@ mkdir -p "${COMOUT}"
 # COMIN_GES and COMIN_GES_ENS are used in script
 export COMIN_GES="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/${COMPONENT}"
 export COMIN_GES_ENS="${ROTDIR}/enkf${GDUMP}.${gPDY}/${gcyc}/${COMPONENT}"
-
-# Add UFSDA and GFS modules to PYTHONPATH
-export PYTHONPATH="${HOMEgfs}/sorc/gdas.cd/ush/:${PYTHONPATH}"
-export PYTHONPATH="${HOMEgfs}/ush/:${PYTHONPATH}"
 
 ###############################################################
 # Run relevant script
