@@ -216,9 +216,6 @@ elif [[ "${step}" = "aeroanlrun" ]]; then
         layout_y=8
         ;;
       *)
-        exit 1
-        ;;
-      *)
           echo "FATAL: Resolution not supported'"
           exit 1
     esac
