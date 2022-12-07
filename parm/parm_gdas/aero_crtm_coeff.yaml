@@ -1,0 +1,3 @@
+copy:
+- - !ENV ${FV3JEDI_FIX}/crtm/${CRTM_VER}/AerosolCoeff.bin
+  - !ENV ${DATA}/crtm/AerosolCoeff.bin
