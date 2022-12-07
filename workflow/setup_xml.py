@@ -6,9 +6,9 @@ Entry point for setting up Rocoto XML for all applications in global-workflow
 import os
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
-from configuration import Configuration
 from applications import AppConfig
 from rocoto.workflow_xml import RocotoXML
+from pygw.configuration import Configuration
 
 
 def input_args():
