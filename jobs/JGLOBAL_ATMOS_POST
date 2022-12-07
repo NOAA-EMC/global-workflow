@@ -2,34 +2,9 @@
 
 source "${HOMEgfs}/ush/preamble.sh"
 
-export RUN_ENVIR=${RUN_ENVIR:-"nco"}
-
-#############################
-# Source relevant config files
-#############################
-configs="base post"
-export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
-config_path=${EXPDIR:-${PACKAGEROOT}/gfs.${gfs_ver}/parm/config}
-for config in ${configs}; do
-    . "${config_path}/config.${config}"
-    status=$?
-    (( status != 0 )) && exit "${status}"
-done
-
-
-##########################################
-# Source machine runtime environment
-##########################################
-. "${HOMEgfs}/env/${machine}.env" post
-status=$?
-(( status != 0 )) && exit "${status}"
-
-
 ##############################################
-# Obtain unique process id (pid) and make temp directory
+# make temp directory
 ##############################################
-export pid=${pid:-$$}
-export outid=${outid:-"LL${job}"}
 export DATA=${DATA:-${DATAROOT}/${jobid}}
 mkdir -p "${DATA}"
 cd "${DATA}" || exit 1
@@ -46,8 +21,30 @@ setpdy.sh
 ##############################################
 # Determine Job Output Name on System
 ##############################################
+export pid=${pid:-$$}
 export pgmout="OUTPUT.${pid}"
 export pgmerr=errfile
+
+
+#############################
+# Source relevant config files
+#############################
+export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
+configs="base post"
+for config in ${configs}; do
+    . ${EXPDIR}/config.${config}
+    status=$?
+    (( status != 0 )) && exit "${status}"
+done
+
+
+##########################################
+# Source machine runtime environment
+##########################################
+. "${HOMEgfs}/env/${machine}.env" post
+status=$?
+(( status != 0 )) && exit "${status}"
+
 
 ####################################
 # Specify version numbers
@@ -62,7 +59,7 @@ export g2tmpl_ver=${g2tmpl_ver:-v1.5.0}
 ##############################################
 export CDATE=${CDATE:-${PDY}${cyc}}
 export CDUMP=${CDUMP:-${RUN:-"gfs"}}
-export COMPONENT=${COMPONENT:-atmos}
+export COMPONENT="atmos"
 
 
 ##############################################

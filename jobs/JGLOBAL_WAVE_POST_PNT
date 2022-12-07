@@ -1,71 +1,77 @@
 #! /usr/bin/env bash
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${HOMEgfs}/ush/preamble.sh"
 
-export RUN_ENVIR=${RUN_ENVIR:-"nco"}
+##############################################
+# make temp directory
+##############################################
+export DATA=${DATA:-${DATAROOT}/${jobid}}
+mkdir -p ${DATA}
+cd ${DATA}
+
+
+##############################################
+# Run setpdy and initialize PDY variables
+##############################################
+export cycle="t${cyc}z"
+setpdy.sh
+. ./PDY
+
+
+##############################################
+# Determine Job Output Name on System
+##############################################
+export pid=${pid:-$$}
+export pgmout="OUTPUT.${pid}"
+export pgmerr=errfile
+
 
 #############################
 # Source relevant config files
 #############################
+export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
 configs="base wave wavepostsbs wavepostpnt"
-export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
-config_path=${EXPDIR:-${PACKAGEROOT:-}/gfs.${gfs_ver}/parm/config}
-for config in $configs; do
-    . $config_path/config.$config
+for config in ${configs}; do
+    . ${EXPDIR}/config.${config}
     status=$?
-    [[ $status -ne 0 ]] && exit $status
+    [[ ${status} -ne 0 ]] && exit ${status}
 done
 
 ##########################################
 # Source machine runtime environment
 ##########################################
-. $HOMEgfs/env/${machine}.env wavepostpnt
+. ${HOMEgfs}/env/${machine}.env wavepostpnt
 status=$?
-[[ $status -ne 0 ]] && exit $status
+[[ ${status} -ne 0 ]] && exit ${status}
 
 # PATH for working directory
 export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
-export COMPONENT=${COMPONENT:-wave}
+export COMPONENT="wave"
 
-export HOMEgefs=${HOMEgefs:-${PACKAGEROOT:-}/$NET.${gefs_ver:-}}
-export HOMEgfs=${HOMEgfs:-${PACKAGEROOT:-}/$NET.${gfs_ver}}
+export HOMEgefs=${HOMEgefs:-${PACKAGEROOT:-}/${NET}.${gefs_ver:-}}
 
 # Add default errchk = err_chk
 export errchk=${errchk:-err_chk}
 
-# Create and go to DATA directory
-export DATA=${DATA:-${DATAROOT:?}/${jobid}}
-mkdir -p $DATA
-cd $DATA
-
-export cyc=${cyc:-00}
-export cycle=${cycle:-t${cyc}z}
- 
-# Set PDY
-setpdy.sh
-. ./PDY
-
-export CDATE=$PDY$cyc
-
-export pgmout=OUTPUT.$$
+export CDATE=${PDY}${cyc}
 
 export MP_PULSE=0
 
 # Path to HOME Directory
-export FIXwave=${FIXwave:-$HOMEgfs/fix/fix_wave_${NET}}
-export PARMwave=${PARMwave:-$HOMEgfs/parm/wave}
-export USHwave=${USHwave:-$HOMEgfs/ush}
-export EXECwave=${EXECwave:-$HOMEgfs/exec}
+export FIXwave=${FIXwave:-${HOMEgfs}/fix/fix_wave_${NET}}
+export PARMwave=${PARMwave:-${HOMEgfs}/parm/wave}
+export USHwave=${USHwave:-${HOMEgfs}/ush}
+export EXECwave=${EXECwave:-${HOMEgfs}/exec}
 
 # Set COM Paths and GETGES environment
-export COMIN=${COMIN:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/$COMPONENT}
-export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/$COMPONENT}
+export COMIN=${COMIN:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENT}}
+export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENT}}
 
-mkdir -p $COMOUT/station
+mkdir -p ${COMOUT}/station
 
 
-# Set wave model ID tag to include member number 
+# Set wave model ID tag to include member number
 # if ensemble; waveMEMB var empty in deterministic
 # Set wave model ID tag to include member number
 # if ensemble; waveMEMB var empty in deterministic
@@ -82,10 +88,10 @@ export DOBLL_WAV='YES' # Bulletin post
 export DOBNDPNT_WAV='NO'  #not boundary points
 
 
-# Execute the Script  
-$HOMEgfs/scripts/exgfs_wave_post_pnt.sh
+# Execute the Script
+${HOMEgfs}/scripts/exgfs_wave_post_pnt.sh
 err=$?
-if [ $err -ne 0 ]; then
+if [ ${err} -ne 0 ]; then
   echo "FATAL ERROR: ex-script of GWES_POST failed!"
   exir ${err}
 fi
@@ -93,8 +99,8 @@ fi
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd $DATAROOT
-[[ $KEEPDATA = "NO" ]] && rm -rf $DATA
+cd ${DATAROOT}
+[[ ${KEEPDATA} = "NO" ]] && rm -rf ${DATA}
 
 
 exit 0

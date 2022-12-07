@@ -1,19 +1,18 @@
 #! /usr/bin/env bash
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${HOMEgfs}/ush/preamble.sh"
 
 export RUN_ENVIR=${RUN_ENVIR:-"nco"}
 
 #############################
 # Source relevant config files
 #############################
+export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
 configs="base"
-export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
-config_path=${EXPDIR:-$PACKAGEROOT/gfs.${gfs_ver}/parm/config}
-for config in $configs; do
-    . $config_path/config.$config
+for config in ${configs}; do
+    . ${EXPDIR}/config.${config}
     status=$?
-    [[ $status -ne 0 ]] && exit $status
+    [[ ${status} -ne 0 ]] && exit ${status}
 done
 
 
@@ -21,10 +20,9 @@ done
 # Obtain unique process id (pid) and make temp directory
 ##############################################
 export pid=${pid:-$$}
-export outid=${outid:-"LL$job"}
-export DATA=${DATA:-${DATAROOT}/${jobid:?}}
-mkdir -p $DATA
-cd $DATA
+export DATA=${DATA:-${DATAROOT}/${jobid}}
+mkdir -p ${DATA}
+cd ${DATA}
 
 
 ##############################################
@@ -49,16 +47,16 @@ export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 ##############################################
 
 CDATE=${CDATE:-${PDY}${cyc}}
-GDATE=$($NDATE -06 $CDATE)
-PDY_m6hrs=$(echo $GDATE | cut -c1-8)
-cyc_m6hrs=$(echo $GDATE | cut -c9-10)
+GDATE=$(${NDATE} -06 ${CDATE})
+PDY_m6hrs=$(echo ${GDATE} | cut -c1-8)
+cyc_m6hrs=$(echo ${GDATE} | cut -c9-10)
 export cycle_m6hrs=t${cyc_m6hrs}z
 
-export COMPONENT=${COMPONENT:-atmos}
-export COMOUT=${COMOUT:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/$COMPONENT}
+export COMPONENT="atmos"
+export COMOUT=${COMOUT:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/${COMPONENT}}
 
-export COMINobsproc=${COMINobsproc:-$(compath.py ${envir}/obsproc/${obsproc_ver})/${RUN}.${PDY}/${cyc}/$COMPONENT}
-export COMIN_m6hrs=${COMIN_m6hrs:-$(compath.py ${envir}/${NET}/${gfs_ver})/${RUN}.${PDY_m6hrs}/${cyc_m6hrs}/$COMPONENT}
+export COMINobsproc=${COMINobsproc:-$(compath.py ${envir}/obsproc/${obsproc_ver})/${RUN}.${PDY}/${cyc}/${COMPONENT}}
+export COMIN_m6hrs=${COMIN_m6hrs:-$(compath.py ${envir}/${NET}/${gfs_ver})/${RUN}.${PDY_m6hrs}/${cyc_m6hrs}/${COMPONENT}}
 
 export IMS_FILE=${COMINobsproc}/${RUN}.${cycle}.imssnow96.grib2
 export FIVE_MIN_ICE_FILE=${COMINobsproc}/${RUN}.${cycle}.seaice.5min.grib2
@@ -72,9 +70,9 @@ export BLENDED_ICE_FILE_m6hrs=${BLENDED_ICE_FILE_m6hrs:-${COMIN_m6hrs}/${RUN}.${
 # Run relevant script
 ###############################################################
 
-${EMCSFCPREPSH:-$SCRgfs/exemcsfc_global_sfc_prep.sh}
+${EMCSFCPREPSH:-${SCRgfs}/exemcsfc_global_sfc_prep.sh}
 status=$?
-[[ $status -ne 0 ]] && exit $status
+[[ ${status} -ne 0 ]] && exit ${status}
 
 ##############################################
 # End JOB SPECIFIC work
@@ -84,14 +82,14 @@ status=$?
 # Final processing
 ##############################################
 if [ -e ${pgmout} ]; then
-  cat $pgmout
+  cat ${pgmout}
 fi
 
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd $DATAROOT
-[[ $KEEPDATA = "NO" ]] && rm -rf $DATA
+cd ${DATAROOT}
+[[ ${KEEPDATA} = "NO" ]] && rm -rf ${DATA}
 
 
 exit 0

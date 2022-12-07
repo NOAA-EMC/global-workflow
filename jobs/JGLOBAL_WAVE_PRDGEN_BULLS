@@ -1,32 +1,42 @@
 #! /usr/bin/env bash
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${HOMEgfs}/ush/preamble.sh"
 
-export DATA=${DATA:-${DATAROOT}/${jobid:?}}
-mkdir -p $DATA
-cd $DATA
+##############################################
+# make temp directory
+##############################################
+export DATA=${DATA:-${DATAROOT}/${jobid}}
+mkdir -p ${DATA}
+cd ${DATA}
 
-######################################
-# Set up the cycle variable
-######################################
-export cycle=${cycle:-t${cyc}z}
 
-# Set PDY
+##############################################
+# Run setpdy and initialize PDY variables
+##############################################
+export cycle="t${cyc}z"
 setpdy.sh
 . ./PDY
 
+
+##############################################
+# Determine Job Output Name on System
+##############################################
+export pid=${pid:-$$}
+export pgmout="OUTPUT.${pid}"
+export pgmerr=errfile
+
+
 export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
-export COMPONENT=${COMPONENT:-wave}
-export HOMEgfs=${HOMEgfs:-$(dirname $(dirname $0))} # parent directory of current job card
+export COMPONENT="wave"
 
 # Add default errchk = err_chk
 export errchk=${errchk:-err_chk}
 
 ###################################
 # Set COM Paths
-export COMIN=${COMIN:-$(compath.py ${envir}/${NET}/${gfs_ver})/${RUN}.${PDY}/${cyc}/$COMPONENT}
-export COMOUT=${COMOUT:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/$COMPONENT}
+export COMIN=${COMIN:-$(compath.py ${envir}/${NET}/${gfs_ver})/${RUN}.${PDY}/${cyc}/${COMPONENT}}
+export COMOUT=${COMOUT:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/${COMPONENT}}
 export PCOM=${PCOM:-${COMOUT}/wmo}
 
 export SENDCOM=${SENDCOM:-YES}
@@ -35,25 +45,24 @@ export SENDDBN=${SENDDBN:-NO}
 export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
 
-if [ $SENDCOM = YES ]; then
-  mkdir -p $COMOUT $PCOM
+if [ ${SENDCOM} = YES ]; then
+  mkdir -p ${COMOUT} ${PCOM}
 fi
 
 
 ###################################
-# Execute the Script  
+# Execute the Script
 
-$HOMEgfs/scripts/exgfs_wave_prdgen_bulls.sh
+${HOMEgfs}/scripts/exgfs_wave_prdgen_bulls.sh
 status=$?
-[[ $status -ne 0 ]] && exit $status
+[[ ${status} -ne 0 ]] && exit ${status}
+
 ###################################
 # Remove temp directories
-
-if [ "$KEEPDATA" != "YES" ]; then
-  cd $DATAROOT
-  rm -rf $DATA
+cd ${DATAROOT}
+if [ "${KEEPDATA}" != "YES" ]; then
+  rm -rf ${DATA}
 fi
 
 
 exit 0
-
