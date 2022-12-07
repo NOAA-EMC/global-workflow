@@ -51,5 +51,4 @@ build_all.sh [-a UFS_app][-c build_config][-h][-v]
 
 While in /sorc folder:
 
-$ sh link_workflow.sh emc $MACHINE
-...where $MACHINE is "dell", "cray", "hera", or "orion".
+$ sh link_workflow.sh 
