@@ -4,7 +4,6 @@ import glob
 import gzip
 import netCDF4 as nc
 import tarfile
-import ufsda # temporary until this is in workflow
 import yaml
 
 
@@ -14,8 +13,8 @@ class AerosolAnalysis(Analysis):
     """
     def __init__(self, config):
         super().__init__(config)
-        self.yamltemplate = config['AEROVARYAML']
-        self.taskname = f'{self.cdump}aeroanl'
+        #self.yamltemplate = config['AEROVARYAML']
+        #self.taskname = f'{self.cdump}aeroanl'
 
     def initialize(self):
         super().initialize()
