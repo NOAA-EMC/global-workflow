@@ -2,6 +2,7 @@ from pygw.task import Task
 from pygw.attrdict import AttrDict
 from pygw.template import Template, TemplateConstants
 from pygw.yaml_file import YAMLFile
+from pygw.fsutils import cp_dict
 import datetime as dt
 import logging
 import os
@@ -21,10 +22,12 @@ class Analysis(Task):
 
     def initialize(self):
         super().initialize()
+        # all analyses need to stage observations
         obs_dict = self.get_obs_dict()
-        print(obs_dict)
+        cp_dict(obs_dict)
 
     def configure(self):
+        """Compute additional variables and add them to the root configuration"""
         super().configure()
 
     def execute(self):
@@ -40,7 +43,14 @@ class Analysis(Task):
         super().clean()
 
     def get_obs_dict(self):
-        """Compile a dictionary of observation files to copy"""
+        """Compile a dictionary of observation files to copy
+        
+        This method uses the OBS_LIST configuration variable to generate a dictionary
+        from a list of YAML files that specify what observation files are to be
+        copied to the run directory from the observation input directory
+
+        returns `obs_dict` - a dictionary of {src: dest} of observation files 
+        """
         obs_list_config = YAMLFile(path=self.config['OBS_LIST'])
         # get observers from master dictionary
         observers = obs_list_config['observers']
@@ -50,16 +60,3 @@ class Analysis(Task):
             basename = os.path.basename(obfile)
             obs_dict[os.path.join(self.config['COMIN_OBS'], basename)] = obfile
         return obs_dict
-
-    def generate_yaml(self, extra_config={}):
-        """
-        Use existing tools to generate YAML from config and template
-        """
-        output_yaml = f'{self.taskname}_{self.cdate}.yaml'
-        output_yaml_path = os.path.join(self.datadir, output_yaml)
-        template = self.yamltemplate
-        logging.info(f'Generating analysis YAML using {template}')
-        full_config = copy.deepcopy(self.config)
-        full_config.update(extra_config)
-        ufsda.yamltools.genYAML(full_config, template=template, output=output_yaml_path)
-        logging.info(f'Wrote YAML file to {output_yaml_path}')
