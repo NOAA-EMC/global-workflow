@@ -1,4 +1,4 @@
-from gfs.task.analysis import Analysis
+from pygfs.task.analysis import Analysis
 import copy
 import glob
 import gzip
@@ -19,45 +19,45 @@ class AerosolAnalysis(Analysis):
 
     def initialize(self):
         super().initialize()
-        logging.info('Initializing global aerosol analysis')
-        fix_dict = self.get_fix_file_dict()
-        self.stage_fix(fix_dict)
-        crtm_fix_dict = self.get_crtm_coeff_dict()
-        self.stage_crtm(crtm_fix_dict)
-        if os.environ.get('STATICB_TYPE', 'bump_aero') in ['bump_aero']:
-            self.stage_berror(self.get_berror_dict())
-        bkg_dict = self.get_bkg_dict()
-        self.stage_bkg(bkg_dict)
-        yaml_config = {
-            'BKG_DIR': 'bkg',
-            'OBS_DIR': 'obs',
-            'DIAG_DIR': 'diags',
-            'CRTM_COEFF_DIR': 'crtm',
-            'OBS_PREFIX': os.environ['OPREFIX'],
-            'fv3jedi_staticb_aero_dir': 'berror',
-            'fv3jedi_fix_dir': 'fv3jedi',
-            'fv3jedi_fieldmetadata_dir': 'fv3jedi',
-            'OBS_DATE': os.environ['CDATE'],
-            'ANL_DIR': 'anl',
-            'INTERP_METHOD': 'barycentric',
-            # for now making the below equal to eachother
-            'AERO_WINDOW_LENGTH': '$(ATM_WINDOW_LENGTH)',
-            'AERO_WINDOW_BEGIN': '$(ATM_WINDOW_BEGIN)',
-            'window_begin': '$(ATM_WINDOW_BEGIN)',
-            'layout_x': os.environ['layout_x'],
-            'layout_y': os.environ['layout_y'],
-            }
-        self.generate_yaml(yaml_config)
-        self.stage_exe()
-        # need output dir for diags and anl
-        newdirs = [
-            os.path.join(self.datadir, 'anl'),
-            os.path.join(self.datadir, 'diags'),
-            ]
-        for newdir in newdirs:
-            if not os.path.exists(newdir):
-                os.makedirs(newdir)
-                logging.info(f'Creating directory {newdir}')
+        # logging.info('Initializing global aerosol analysis')
+        # fix_dict = self.get_fix_file_dict()
+        # self.stage_fix(fix_dict)
+        # crtm_fix_dict = self.get_crtm_coeff_dict()
+        # self.stage_crtm(crtm_fix_dict)
+        # if os.environ.get('STATICB_TYPE', 'bump_aero') in ['bump_aero']:
+        #     self.stage_berror(self.get_berror_dict())
+        # bkg_dict = self.get_bkg_dict()
+        # self.stage_bkg(bkg_dict)
+        # yaml_config = {
+        #     'BKG_DIR': 'bkg',
+        #     'OBS_DIR': 'obs',
+        #     'DIAG_DIR': 'diags',
+        #     'CRTM_COEFF_DIR': 'crtm',
+        #     'OBS_PREFIX': os.environ['OPREFIX'],
+        #     'fv3jedi_staticb_aero_dir': 'berror',
+        #     'fv3jedi_fix_dir': 'fv3jedi',
+        #     'fv3jedi_fieldmetadata_dir': 'fv3jedi',
+        #     'OBS_DATE': os.environ['CDATE'],
+        #     'ANL_DIR': 'anl',
+        #     'INTERP_METHOD': 'barycentric',
+        #     # for now making the below equal to eachother
+        #     'AERO_WINDOW_LENGTH': '$(ATM_WINDOW_LENGTH)',
+        #     'AERO_WINDOW_BEGIN': '$(ATM_WINDOW_BEGIN)',
+        #     'window_begin': '$(ATM_WINDOW_BEGIN)',
+        #     'layout_x': os.environ['layout_x'],
+        #     'layout_y': os.environ['layout_y'],
+        #     }
+        # self.generate_yaml(yaml_config)
+        # self.stage_exe()
+        # # need output dir for diags and anl
+        # newdirs = [
+        #     os.path.join(self.datadir, 'anl'),
+        #     os.path.join(self.datadir, 'diags'),
+        #     ]
+        # for newdir in newdirs:
+        #     if not os.path.exists(newdir):
+        #         os.makedirs(newdir)
+        #         logging.info(f'Creating directory {newdir}')
 
 
     def execute(self):
