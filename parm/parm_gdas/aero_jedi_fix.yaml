@@ -1,0 +1,3 @@
+copy:
+- - !ENV ${FV3JEDI_FIX}/fv3jedi/fv3files/akbk$(levs).nc4
+  - !ENV ${FV3JEDI_FIX}/fv3jedi/akbk.nc4
