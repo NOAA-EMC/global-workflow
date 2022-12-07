@@ -37,11 +37,10 @@ export FIXreg2grb2=$HOMEgfs/fix/reg2grb2
 ########################################################################
 
 # GLOBAL static environment parameters
-export PACKAGEROOT="@PACKAGEROOT@"
-export COMROOT="@COMROOT@"
+export PACKAGEROOT="@PACKAGEROOT@"    # TODO: set via prod_envir in Ops
+export COMROOT="@COMROOT@"    # TODO: set via prod_envir in Ops
 export COMINsyn="@COMINsyn@"
 export DMPDIR="@DMPDIR@"
-export RTMFIX=$CRTM_FIX
 
 # USER specific paths
 export HOMEDIR="@HOMEDIR@"
@@ -110,8 +109,8 @@ export DUMP_SUFFIX=""
 if [[ "$CDATE" -ge "2019092100" && "$CDATE" -le "2019110700" ]]; then
     export DUMP_SUFFIX="p"              # Use dumps from NCO GFS v15.3 parallel
 fi
-export RUNDIR="$STMP/RUNDIRS/$PSLOT"
-export DATAROOT="$RUNDIR/$CDATE/$CDUMP"
+export DATAROOT="${STMP}/RUNDIRS/${PSLOT}"  # TODO: set via prod_envir in Ops
+export RUNDIR="${DATAROOT}"  # TODO: Should be removed; use DATAROOT instead
 export ARCDIR="$NOSCRUB/archive/$PSLOT"
 export ICSDIR="@ICSDIR@"
 export ATARDIR="@ATARDIR@"
@@ -328,6 +327,7 @@ export imp_physics=@IMP_PHYSICS@
 # DA engine
 export DO_JEDIVAR="NO"
 export DO_JEDIENS="NO"
+export DO_JEDIOCNVAR="NO"
 
 # Hybrid related
 export DOHYBVAR="YES"

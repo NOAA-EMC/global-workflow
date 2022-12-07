@@ -13,8 +13,8 @@ export STATICB_TYPE='identity'
 export BERROR_YAML=${HOMEgfs}/sorc/gdas.cd/parm/aero/berror/staticb_${STATICB_TYPE}.yaml
 export FV3JEDI_FIX=${HOMEgfs}/fix/gdas
 
-export io_layout_x=1
-export io_layout_y=1
+export io_layout_x=@IO_LAYOUT_X@
+export io_layout_y=@IO_LAYOUT_Y@
 
 export CASE_ANL=${CASE}
 export JEDIVAREXE=${HOMEgfs}/exec/fv3jedi_var.x

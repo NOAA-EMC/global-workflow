@@ -1,39 +1,13 @@
 #! /usr/bin/env bash
 
-source "$HOMEgfs/ush/preamble.sh"
-
-export RUN_ENVIR=${RUN_ENVIR:-"nco"}
-
-#############################
-# Source relevant config files
-#############################
-export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
-configs="base anal analcalc"
-config_path=${EXPDIR:-$PACKAGEROOT/gfs.${gfs_ver}/parm/config}
-for config in $configs; do
-    . $config_path/config.$config
-    status=$?
-    [[ $status -ne 0 ]] && exit $status
-done
-
-
-##########################################
-# Source machine runtime environment
-##########################################
-. $HOMEgfs/env/${machine}.env analcalc
-status=$?
-[[ $status -ne 0 ]] && exit $status
-
+source "${HOMEgfs}/ush/preamble.sh"
 
 ##############################################
 # Obtain unique process id (pid) and make temp directory
 ##############################################
-export pid=${pid:-$$}
-export outid=${outid:-"LL$job"}
-
-export DATA=${DATA:-${DATAROOT}/${jobid:?}}
-mkdir -p $DATA
-cd $DATA
+export DATA=${DATA:-${DATAROOT}/${jobid}}
+mkdir -p ${DATA}
+cd ${DATA}
 
 
 ##############################################
@@ -47,8 +21,29 @@ setpdy.sh
 ##############################################
 # Determine Job Output Name on System
 ##############################################
+export pid=${pid:-$$}
 export pgmout="OUTPUT.${pid}"
 export pgmerr=errfile
+
+
+#############################
+# Source relevant config files
+#############################
+export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
+configs="base anal analcalc"
+for config in ${configs}; do
+    . ${EXPDIR}/config.${config}
+    status=$?
+    [[ ${status} -ne 0 ]] && exit ${status}
+done
+
+
+##########################################
+# Source machine runtime environment
+##########################################
+. ${HOMEgfs}/env/${machine}.env analcalc
+status=$?
+[[ ${status} -ne 0 ]] && exit ${status}
 
 
 ##############################################
@@ -56,79 +51,79 @@ export pgmerr=errfile
 ##############################################
 export CDATE=${CDATE:-${PDY}${cyc}}
 export CDUMP=${CDUMP:-${RUN:-"gfs"}}
-export COMPONENT=${COMPONENT:-atmos}
-export DO_CALC_ANALYSIS=${DO_CALC_ANALYSIS:-"YES"} 
+export COMPONENT="atmos"
+export DO_CALC_ANALYSIS=${DO_CALC_ANALYSIS:-"YES"}
 
 
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
 
-GDATE=$($NDATE -$assim_freq $CDATE)
-gPDY=$(echo $GDATE | cut -c1-8)
-gcyc=$(echo $GDATE | cut -c9-10)
+GDATE=$(${NDATE} -${assim_freq} ${CDATE})
+gPDY=$(echo ${GDATE} | cut -c1-8)
+gcyc=$(echo ${GDATE} | cut -c9-10)
 GDUMP=${GDUMP:-"gdas"}
 
 export OPREFIX="${CDUMP}.t${cyc}z."
 export GPREFIX="${GDUMP}.t${gcyc}z."
 export APREFIX="${CDUMP}.t${cyc}z."
-export GSUFFIX=${GSUFFIX:-$SUFFIX}
-export ASUFFIX=${ASUFFIX:-$SUFFIX}
+export GSUFFIX=${GSUFFIX:-${SUFFIX}}
+export ASUFFIX=${ASUFFIX:-${SUFFIX}}
 
 
-if [ $RUN_ENVIR = "nco" -o ${ROTDIR_DUMP:-NO} = "YES" ]; then
-    export COMIN=${COMIN:-$ROTDIR/$RUN.$PDY/$cyc/$COMPONENT}
-    export COMOUT=${COMOUT:-$ROTDIR/$RUN.$PDY/$cyc/$COMPONENT}
-    export COMIN_OBS=${COMIN_OBS:-$(compath.py ${envir}/obsproc/${obsproc_ver})/$RUN.$PDY/$cyc/$COMPONENT}
-    export COMIN_GES_OBS=${COMIN_GES_OBS:-$(compath.py ${envir}/obsproc/${obsproc_ver})/$GDUMP.$gPDY/$gcyc/$COMPONENT}
+if [ ${RUN_ENVIR} = "nco" -o ${ROTDIR_DUMP:-NO} = "YES" ]; then
+    export COMIN=${COMIN:-${ROTDIR}/${RUN}.${PDY}/${cyc}/${COMPONENT}}
+    export COMOUT=${COMOUT:-${ROTDIR}/${RUN}.${PDY}/${cyc}/${COMPONENT}}
+    export COMIN_OBS=${COMIN_OBS:-$(compath.py ${envir}/obsproc/${obsproc_ver})/${RUN}.${PDY}/${cyc}/${COMPONENT}}
+    export COMIN_GES_OBS=${COMIN_GES_OBS:-$(compath.py ${envir}/obsproc/${obsproc_ver})/${GDUMP}.${gPDY}/${gcyc}/${COMPONENT}}
 else
-    export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc/$COMPONENT"
-    export COMIN_OBS="$DMPDIR/$CDUMP.$PDY/$cyc/$COMPONENT"
-    export COMIN_GES_OBS="$DMPDIR/$GDUMP.$gPDY/$gcyc/$COMPONENT"
+    export COMOUT="${ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENT}"
+    export COMIN_OBS="${DMPDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENT}"
+    export COMIN_GES_OBS="${DMPDIR}/${GDUMP}.${gPDY}/${gcyc}/${COMPONENT}"
 fi
-mkdir -m 775 -p $COMOUT
+mkdir -m 775 -p ${COMOUT}
 # COMIN_GES and COMIN_GES_ENS are used in script
-export COMIN_GES="$ROTDIR/$GDUMP.$gPDY/$gcyc/$COMPONENT"
-export COMIN_GES_ENS="$ROTDIR/enkfgdas.$gPDY/$gcyc/$COMPONENT"
+export COMIN_GES="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/${COMPONENT}"
+export COMIN_GES_ENS="${ROTDIR}/enkfgdas.${gPDY}/${gcyc}/${COMPONENT}"
 
 
-export ATMGES="$COMIN_GES/${GPREFIX}atmf006${GSUFFIX}"
-if [ ! -f $ATMGES ]; then
-    echo "FATAL ERROR: FILE MISSING: ATMGES = $ATMGES"
+export ATMGES="${COMIN_GES}/${GPREFIX}atmf006${GSUFFIX}"
+if [ ! -f ${ATMGES} ]; then
+    echo "FATAL ERROR: FILE MISSING: ATMGES = ${ATMGES}"
     exit 1
 fi
 
 
 # Get LEVS
 if [ ${GSUFFIX} = ".nc" ]; then
-    export LEVS=$($NCLEN $ATMGES pfull) 
+    export LEVS=$(${NCLEN} ${ATMGES} pfull)
     status=$?
 else
-    export LEVS=$($NEMSIOGET $ATMGES dimz | awk '{print $2}')
+    export LEVS=$(${NEMSIOGET} ${ATMGES} dimz | awk '{print $2}')
     status=$?
 fi
-[[ $status -ne 0 ]] && exit $status
+[[ ${status} -ne 0 ]] && exit ${status}
 
 
-if [ $DOHYBVAR = "YES" ]; then
-    export ATMGES_ENSMEAN="$COMIN_GES_ENS/${GPREFIX}atmf006.ensmean$GSUFFIX"
-    if [ ! -f $ATMGES_ENSMEAN ]; then
-        echo "FATAL ERROR: FILE MISSING: ATMGES_ENSMEAN = $ATMGES_ENSMEAN"
+if [ ${DOHYBVAR} = "YES" ]; then
+    export ATMGES_ENSMEAN="${COMIN_GES_ENS}/${GPREFIX}atmf006.ensmean${GSUFFIX}"
+    if [ ! -f ${ATMGES_ENSMEAN} ]; then
+        echo "FATAL ERROR: FILE MISSING: ATMGES_ENSMEAN = ${ATMGES_ENSMEAN}"
         exit 2
     fi
 fi
 
 
-# Generate Gaussian surface analysis
+# Generate Gaussian surface analysis  # TODO: Should this be removed now that sfcanl is its own job?
 export DOGAUSFCANL=${DOGAUSFCANL:-"YES"}
 
 
 ###############################################################
 # Run relevant script
 
-${ANALCALCSH:-$SCRgfs/exglobal_atmos_analysis_calc.sh}
+${ANALCALCSH:-${SCRgfs}/exglobal_atmos_analysis_calc.sh}
 status=$?
-[[ $status -ne 0 ]] && exit $status
+[[ ${status} -ne 0 ]] && exit ${status}
 
 
 ##############################################
@@ -138,15 +133,15 @@ status=$?
 ##############################################
 # Final processing
 ##############################################
-if [ -e "$pgmout" ] ; then
-  cat $pgmout
+if [ -e "${pgmout}" ] ; then
+  cat ${pgmout}
 fi
 
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd $DATAROOT
-[[ $KEEPDATA = "NO" ]] && rm -rf $DATA
+cd ${DATAROOT}
+[[ ${KEEPDATA} = "NO" ]] && rm -rf ${DATA}
 
 
 exit 0
