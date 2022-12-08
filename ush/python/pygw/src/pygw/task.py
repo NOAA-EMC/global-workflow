@@ -7,6 +7,17 @@ class Task:
         """
         Every task needs a config.
         Additional arguments (or key-value arguments) can be provided.
+
+        Parameters
+        ----------
+        config : Dict
+                 dictionary object containing task configuration
+
+        *args : tuple
+                Additional arguments to `Task`
+
+        **kwargs : dict, optional
+                   Extra keyword arguments to `Task`
         """
 
         # Store the config and arguments as attributes of the object

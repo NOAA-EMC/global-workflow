@@ -51,7 +51,25 @@ class Logger:
                  colored_log: bool = False,
                  logfile_path: Union[str, Path] = None):
         """
-        Constructor for Logger
+        Initialize Logger
+
+        Parameters
+        ----------
+        name         : str
+                       Name of the Logger object
+                       default : None
+        level        : str
+                       Desired Logging level
+                       default : 'INFO'
+        _format      : str
+                       Desired Logging Format
+                       default : '%(asctime)s - %(levelname)-8s - %(name)-12s: %(message)s'
+        colored_log  : bool
+                       Use colored logging for stdout
+                       default: False
+        logfile_path : str or Path
+                       Path for logging to a file
+                       default : None
         """
 
         self.name = name
@@ -92,15 +110,20 @@ class Logger:
         return getattr(self._logger, attribute)
 
     def get_logger(self):
-        '''
+        """
         Return the logging object
-        '''
+
+        Returns
+        -------
+        logger : Logger object
+        """
         return self._logger
 
     @classmethod
     def add_handlers(cls, logger: logging.Logger, handlers: List[logging.Handler]):
         """
         Add a list of handlers to a logger
+
         Parameters
         ----------
         logger
