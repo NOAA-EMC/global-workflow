@@ -1,6 +1,6 @@
  module output_data
 
- use module_fv3gfs_ncio
+ use module_ncio
 
  implicit none
 

@@ -57,6 +57,7 @@ export cycle_m6hrs=t${cyc_m6hrs}z
 
 export COMPONENT=${COMPONENT:-atmos}
 export COMOUT=${COMOUT:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/$COMPONENT}
+if [ ! -d ${COMOUT} ]; then mkdir -p $COMOUT; fi
 
 export COMINobsproc=${COMINobsproc:-$(compath.py ${envir}/obsproc/${obsproc_ver})/${RUN}.${PDY}/${cyc}/$COMPONENT}
 export COMIN_m6hrs=${COMIN_m6hrs:-$(compath.py ${envir}/${NET}/${gfs_ver})/${RUN}.${PDY_m6hrs}/${cyc_m6hrs}/$COMPONENT}

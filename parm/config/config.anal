@@ -29,7 +29,7 @@ fi
 # Set parameters specific to L127
 if [ $LEVS = "128" ]; then
     export GRIDOPTS="nlayers(63)=1,nlayers(64)=1,"
-    export SETUP="gpstop=55,nsig_ext=56,$SETUP"
+    export SETUP="gpstop=55,nsig_ext=45,$SETUP"
 fi
 
 # Set namelist option for LETKF
@@ -122,7 +122,7 @@ if [[ $RUN_ENVIR == "emc" ]]; then
 
 #   Assimilate DO-3 Spire
     if [[ "$CDATE" -ge "2021091612" && "$CDATE" -lt "2022031612" ]]; then
-        export CONVINFO=$FIXgsi/gfsv16_historical/global_convinfo.txt.2021091612
+        export CONVINFO=$FIXgsi/gfsv16_historical/gfsv16.3/global_convinfo.txt.2021091612
     fi
 
 
@@ -164,7 +164,7 @@ if [[ $RUN_ENVIR == "emc" ]]; then
 
 #   Turn off assimilation of MetOp-A IASI
     if [[ "$CDATE" -ge "2021092206" && "$CDATE" -lt "2021102612" ]]; then
-	export SATINFO=$FIXgsi/gfsv16_historical/global_satinfo.txt.2021092206
+	export SATINFO=$FIXgsi/gfsv16_historical/gfsv16.3/global_satinfo.txt.2021092206
     fi
 
 #   NOTE:  

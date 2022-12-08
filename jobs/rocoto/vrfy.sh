@@ -129,8 +129,8 @@ if [ $VRFYRAD = "YES" -a $CDUMP = $CDFNL -a $CDATE != $SDATE ]; then
 
     export EXP=$PSLOT
     export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc/$COMPONENT"
-    export TANKverf_rad="$TANKverf/stats/$PSLOT/$CDUMP.$PDY"
-    export TANKverf_radM1="$TANKverf/stats/$PSLOT/$CDUMP.$PDYm1"
+    export TANKverf_rad="$TANKverf/stats/$PSLOT/$CDUMP.$PDY/$cyc"
+    export TANKverf_radM1="$TANKverf/stats/$PSLOT/$CDUMP.$PDYm1/$cyc"
     export MY_MACHINE=$machine
 
     $VRFYRADSH
@@ -160,8 +160,8 @@ echo "=============== START TO RUN MINMON ==============="
 if [ $VRFYMINMON = "YES" -a $CDATE != $SDATE ]; then
 
     export COMOUT="$ROTDIR/$CDUMP.$PDY/$cyc/$COMPONENT"
-    export M_TANKverfM0="$M_TANKverf/stats/$PSLOT/$CDUMP.$PDY"
-    export M_TANKverfM1="$M_TANKverf/stats/$PSLOT/$CDUMP.$PDYm1"
+    export M_TANKverf="$TANKverf_min/stats/$PSLOT/$CDUMP.$PDY"
+    export M_TANKverfM1="$TANKverf_min/stats/$PSLOT/$CDUMP.$PDYm1"
     export MY_MACHINE=$machine
 
     $VRFYMINSH

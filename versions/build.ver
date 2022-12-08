@@ -15,7 +15,7 @@ export netcdf_ver=4.7.4
 export esmf_ver=8.0.1
 export wgrib2_ver=2.0.7
 
-export crtm_ver=2.3.0
+export crtm_ver=2.4.0
 
 export g2tmpl_ver=1.9.1
 export bacio_ver=2.4.1
@@ -23,7 +23,7 @@ export w3nco_ver=2.4.1
 export nemsio_ver=2.5.2
 export sigio_ver=2.3.2
 export w3emc_ver=2.9.2
-export bufr_ver=11.4.0
+export bufr_ver=11.7.0
 export g2_ver=3.4.5
 export zlib_ver=1.2.11
 export sp_ver=2.3.3
@@ -31,5 +31,6 @@ export ip_ver=3.3.3
 export wrf_io_ver=1.1.1
 export gfsio_ver=1.4.1
 export sfcio_ver=1.4.1
+export ncio_ver=1.0.0
 
-export upp_ver=8.1.0
+export upp_ver=8.2.0

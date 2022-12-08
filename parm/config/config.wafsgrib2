@@ -12,4 +12,6 @@ export COMIN=$COMINatmos
 export COMOUT=$COMOUTatmos
 export SENDCOM="YES"
 
+export ICAO2023=no
+
 echo "END: config.wafsgrib2"

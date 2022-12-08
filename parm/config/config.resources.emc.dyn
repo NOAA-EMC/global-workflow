@@ -65,7 +65,7 @@ elif [ $step = "waveprep" ]; then
     export npe_node_waveprep=$npe_waveprep
     export npe_node_waveprep_gfs=$npe_waveprep_gfs
     export memory_waveprep="100GB"
-    export memory_waveprep_gfs="200GB"
+    export memory_waveprep_gfs="150GB"
     export NTASKS=$npe_waveprep
     export NTASKS_gfs=$npe_waveprep_gfs
 
@@ -77,7 +77,7 @@ elif [ $step = "wavepostsbs" ]; then
     export nth_wavepostsbs=1
     export npe_node_wavepostsbs=$npe_wavepostsbs
     export memory_wavepostsbs="10GB"
-    export memory_wavepostsbs_gfs="40GB"
+    export memory_wavepostsbs_gfs="10GB"
     export NTASKS=$npe_wavepostsbs
 
 elif [ $step = "wavepostbndpnt" ]; then
@@ -111,7 +111,7 @@ elif [ $step = "wavegempak" ]; then
     export nth_wavegempak=1
     export npe_node_wavegempak=$npe_wavegempak
     export NTASKS=$npe_wavegempak
-    export memory_wavegempak="10GB"
+    export memory_wavegempak="1GB"
 
 elif [ $step = "waveawipsbulls" ]; then
 
@@ -128,6 +128,7 @@ elif [ $step = "waveawipsgridded" ]; then
     export nth_waveawipsgridded=1
     export npe_node_waveawipsgridded=$(echo "$npe_node_max / $nth_waveawipsgridded" | bc)
     export NTASKS=$npe_waveawipsgridded
+    export memory_waveawipsgridded_gfs="1GB"
 
 elif [ $step = "anal" ]; then
 
@@ -218,9 +219,9 @@ elif [ $step = "wafs" ]; then
 
     export wtime_wafs="00:30:00"
     export npe_wafs=1
-    export npe_node_wafs=1
+    export npe_node_wafs=$npe_wafs
     export nth_wafs=1
-    export memory_wafs="5GB"
+    export memory_wafs="1GB"
 
 elif [ $step = "wafsgcip" ]; then
 
@@ -233,34 +234,34 @@ elif [ $step = "wafsgcip" ]; then
 elif [ $step = "wafsgrib2" ]; then
 
     export wtime_wafsgrib2="00:30:00"
-    export npe_wafsgrib2=1
-    export npe_node_wafsgrib2=1
+    export npe_wafsgrib2=18
+    export npe_node_wafsgrib2=$npe_wafsgrib2
     export nth_wafsgrib2=1
-    export memory_wafsgrib2="60GB"
+    export memory_wafsgrib2="80GB"
 
 elif [ $step = "wafsblending" ]; then
 
     export wtime_wafsblending="00:30:00"
     export npe_wafsblending=1
-    export npe_node_wafsblending=1
+    export npe_node_wafsblending=$npe_wafsblending
     export nth_wafsblending=1
     export memory_wafsblending="1GB"
 
 elif [ $step = "wafsgrib20p25" ]; then
 
     export wtime_wafsgrib20p25="00:30:00"
-    export npe_wafsgrib20p25=1
-    export npe_node_wafsgrib20p25=1
+    export npe_wafsgrib20p25=11
+    export npe_node_wafsgrib20p25=$npe_wafsgrib20p25
     export nth_wafsgrib20p25=1
-    export memory_wafsgrib20p25="10GB"
+    export memory_wafsgrib20p25="80GB"
 
 elif [ $step = "wafsblending0p25" ]; then
 
     export wtime_wafsblending0p25="00:30:00"
     export npe_wafsblending0p25=1
-    export npe_node_wafsblending0p25=1
+    export npe_node_wafsblending0p25=$npe_wafsblending0p25
     export nth_wafsblending0p25=1
-    export memory_wafsblending0p25="5GB"
+    export memory_wafsblending0p25="15GB"
 
 elif [ $step = "vrfy" ]; then
 
@@ -303,7 +304,10 @@ elif [ $step = "arch" -o $step = "earc" -o $step = "getic" ]; then
     eval "export npe_$step=1"
     eval "export npe_node_$step=1"
     eval "export nth_$step=1"
-    eval "export memory_$step=50GB"
+    eval "export memory_$step=2048M"
+    if [[ "$machine" == "WCOSS2" ]]; then
+      eval "export memory_$step=50GB"
+    fi
 
 elif [ $step = "eobs" -o $step = "eomg" ]; then
 
@@ -387,7 +391,7 @@ elif [ $step = "esfc" ]; then
     export nth_esfc=1
     export nth_cycle=$nth_esfc
     export npe_node_cycle=$(echo "$npe_node_max / $nth_cycle" | bc)
-    export memory_esfc="80GB"
+    export memory_esfc="60GB"
 
 elif [ $step = "efcs" ]; then
 
@@ -426,7 +430,7 @@ elif [ $step = "awips" ]; then
     export npe_awips=1
     export npe_node_awips=1
     export nth_awips=1
-    export memory_awips="10GB"
+    export memory_awips="3GB"
     if [[ "$machine" == "WCOSS_DELL_P3" ]]; then
         export npe_awips=2
         export npe_node_awips=2
@@ -441,8 +445,8 @@ elif [ $step = "gempak" ]; then
     export npe_node_gempak=2
     export npe_node_gempak_gfs=28
     export nth_gempak=1
-    export memory_gempak="20GB"
-    export memory_gempak_gfs="200GB"
+    export memory_gempak="4GB"
+    export memory_gempak_gfs="2GB"
 
 else
 

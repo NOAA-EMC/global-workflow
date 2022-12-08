@@ -13,6 +13,7 @@ load(pathJoin("netcdf", os.getenv("netcdf_ver")))
 
 load(pathJoin("bacio", os.getenv("bacio_ver")))
 load(pathJoin("w3nco", os.getenv("w3nco_ver")))
+load(pathJoin("ncio", os.getenv("ncio_ver")))
 load(pathJoin("ip", os.getenv("ip_ver")))
 load(pathJoin("sp", os.getenv("sp_ver")))
 
