@@ -77,7 +77,7 @@ JOBS CHANGES
 PARM/CONFIG CHANGES
 -------------------
 
-* No changes from GFS v16.3.4
+* Removal of unused transfer parm files from `/parm/transfer` (based on NCO feedback). 
 
 SCRIPT CHANGES
 --------------
