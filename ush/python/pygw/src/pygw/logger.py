@@ -106,6 +106,15 @@ class Logger:
     def __getattr__(self, attribute):
         """
         Allows calling logging module methods directly
+
+        Parameters
+        ----------
+        attribute : str
+                    attribute name of a logging object
+
+        Returns
+        -------
+        attribute : logging attribute
         """
         return getattr(self._logger, attribute)
 
@@ -126,12 +135,14 @@ class Logger:
 
         Parameters
         ----------
-        logger
-        handlers
+        logger : logging.Logger
+                 Logger object to add a new handler to
+        handlers: list
+                 A list of handlers to be added to the logger object
 
         Returns
         -------
-        logger
+        logger : Logger object
         """
         for handler in handlers:
             logger.addHandler(handler)
@@ -145,6 +156,23 @@ class Logger:
         """
         Create stream handler
         This classmethod will allow setting a custom stream handler on children
+
+        Parameters
+        ----------
+        level : str
+                logging level
+                default : 'INFO'
+        _format : str
+                  logging format
+                  default : '%(asctime)s - %(levelname)-8s - %(name)-12s: %(message)s'
+        colored_log : bool
+                      enable colored output for stdout
+                      default : False
+
+        Returns
+        -------
+        handler : logging.Handler
+                  stream handler of a logging object
         """
 
         handler = logging.StreamHandler(sys.stdout)
@@ -161,6 +189,25 @@ class Logger:
         """
         Create file handler.
         This classmethod will allow setting custom file handler on children
+        Create stream handler
+        This classmethod will allow setting a custom stream handler on children
+
+        Parameters
+        ----------
+        logfile_path: str or Path
+                      Path for writing out logfiles from logging
+                      default : False
+        level : str
+                logging level
+                default : 'INFO'
+        _format : str
+                  logging format
+                  default : '%(asctime)s - %(levelname)-8s - %(name)-12s: %(message)s'
+
+        Returns
+        -------
+        handler : logging.Handler
+                  file handler of a logging object
         """
 
         logfile_path = Path(logfile_path)
