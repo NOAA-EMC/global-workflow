@@ -52,7 +52,6 @@ status=$?
 export CDATE=${CDATE:-${PDY}${cyc}}
 export CDUMP=${CDUMP:-${RUN:-"gdas"}}
 export COMPONENT="atmos"
-export rCDUMP="gdas"
 
 ##############################################
 # Begin JOB SPECIFIC work
