@@ -1,5 +1,5 @@
 import sys
-from configuration import Configuration
+from pygw.configuration import Configuration
 
 
 expdir = sys.argv[1]
@@ -18,6 +18,8 @@ print('*'*80)
 print('config.base ...')
 base = cfg.parse_config('config.base')
 cfg.print_config('config.base')
+print(type(base))
+print(base.HOMEgfs)
 
 print('*'*80)
 print('config.anal...')

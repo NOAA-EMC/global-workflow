@@ -13,6 +13,7 @@ class Tasks:
     VALID_TASKS = ['aerosol_init', 'coupled_ic', 'getic', 'init',
                    'prep', 'anal', 'sfcanl', 'analcalc', 'analdiag', 'gldas', 'arch',
                    'atmanalprep', 'atmanalrun', 'atmanalpost',
+                   'ocnanalprep', 'ocnanalrun', 'ocnanalpost',
                    'earc', 'ecen', 'echgres', 'ediag', 'efcs',
                    'eobs', 'eomg', 'epos', 'esfc', 'eupd',
                    'atmensanalprep', 'atmensanalrun', 'atmensanalpost',
@@ -41,7 +42,9 @@ class Tasks:
                       'CDUMP': self.cdump,
                       'CDATE': '<cyclestr>@Y@m@d@H</cyclestr>',
                       'PDY': '<cyclestr>@Y@m@d</cyclestr>',
-                      'cyc': '<cyclestr>@H</cyclestr>'}
+                      'cyc': '<cyclestr>@H</cyclestr>',
+                      'COMROOT': self._base.get('COMROOT'),
+                      'DATAROOT': self._base.get('DATAROOT')}
         self.envars = self._set_envars(envar_dict)
 
     @staticmethod
@@ -494,6 +497,58 @@ class Tasks:
 
         return task
 
+    def ocnanalprep(self):
+
+        suffix = self._base["SUFFIX"]
+        dump_suffix = self._base["DUMP_SUFFIX"]
+        dmpdir = self._base["DMPDIR"]
+
+        deps = []
+        data = f'&ROTDIR;/gdas.@Y@m@d/@H/ocean/gdas.t@Hz.ocnf009{suffix}'
+        dep_dict = {'type': 'data', 'data': data, 'offset': '-06:00:00'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('ocnanalprep')
+        task = create_wf_task('ocnanalprep',
+                              resources,
+                              cdump=self.cdump,
+                              envar=self.envars,
+                              dependency=dependencies)
+
+        return task
+
+    def ocnanalrun(self):
+
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}ocnanalprep'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('ocnanalrun')
+        task = create_wf_task('ocnanalrun',
+                              resources,
+                              cdump=self.cdump,
+                              envar=self.envars,
+                              dependency=dependencies)
+
+        return task
+
+    def ocnanalpost(self):
+
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}ocnanalrun'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+        resources = self.get_resource('ocnanalpost')
+        task = create_wf_task('ocnanalpost',
+                              resources,
+                              cdump=self.cdump,
+                              envar=self.envars,
+                              dependency=dependencies)
+
+        return task
     def gldas(self):
 
         deps = []
@@ -577,6 +632,11 @@ class Tasks:
         dep_dict = {'type': 'task', 'name': f'{self.cdump}sfcanl'}
         dep = rocoto.add_dependency(dep_dict)
         dependencies = rocoto.create_dependency(dep=dep)
+
+        if self.app_config.do_jediocnvar:
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}ocnanalrun'}
+            dep = rocoto.add_dependency(dep_dict)
+            dependencies = rocoto.create_dependency(dep=dep)
 
         if self.app_config.do_gldas and self.cdump in ['gdas']:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}gldas'}
@@ -1163,6 +1223,8 @@ class Tasks:
 
         groups = self._get_hybgroups(self._base['NMEM_ENKF'], self._configs['efcs']['NMEM_EFCSGRP'])
 
+        if self.cdump == "gfs":
+            groups = self._get_hybgroups(self._base['NMEM_EFCS'], self._configs['efcs']['NMEM_EFCSGRP_GFS'])
         cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
         resources = self.get_resource('efcs')
         task = create_wf_task('efcs', resources, cdump=self.cdump, envar=efcsenvars, dependency=dependencies,
@@ -1194,6 +1256,8 @@ class Tasks:
         def _get_eposgroups(epos):
             fhmin = epos['FHMIN_ENKF']
             fhmax = epos['FHMAX_ENKF']
+            if self.cdump == "gfs":
+                fhmax = epos['FHMAX_ENKF_GFS']
             fhout = epos['FHOUT_ENKF']
             fhrs = range(fhmin, fhmax + fhout, fhout)
 

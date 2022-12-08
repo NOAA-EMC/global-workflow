@@ -248,7 +248,6 @@ FV3_GFS_predet(){
   gPDY=$(echo $GDATE | cut -c1-8)
   gcyc=$(echo $GDATE | cut -c9-10)
   gmemdir=$ROTDIR/${rprefix}.$gPDY/$gcyc/atmos/$memchar
-  sCDATE=$($NDATE -3 $CDATE)
 
   if [[ "$DOIAU" = "YES" ]]; then
     sCDATE=$($NDATE -3 $CDATE)

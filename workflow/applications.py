@@ -2,8 +2,8 @@
 
 from typing import Dict, Any
 from datetime import timedelta
-from configuration import Configuration
 from hosts import Host
+from pygw.configuration import Configuration
 
 __all__ = ['AppConfig']
 
@@ -78,11 +78,11 @@ class AppConfig:
 
     VALID_MODES = ['cycled', 'forecast-only']
 
-    def __init__(self, configuration: Configuration) -> None:
+    def __init__(self, conf: Configuration) -> None:
 
         self.scheduler = Host().scheduler
 
-        _base = configuration.parse_config('config.base')
+        _base = conf.parse_config('config.base')
 
         self.mode = _base['MODE']
 
@@ -103,11 +103,12 @@ class AppConfig:
         self.do_bufrsnd = _base.get('DO_BUFRSND', False)
         self.do_gempak = _base.get('DO_GEMPAK', False)
         self.do_awips = _base.get('DO_AWIPS', False)
-        self.do_wafs = _base.get('DO_WAFS', False)
+        self.do_wafs = _base.get('WAFSF', False)
         self.do_vrfy = _base.get('DO_VRFY', True)
         self.do_metp = _base.get('DO_METP', False)
         self.do_jedivar = _base.get('DO_JEDIVAR', False)
         self.do_jediens = _base.get('DO_JEDIENS', False)
+        self.do_jediocnvar = _base.get('DO_JEDIOCNVAR', False)
 
         self.do_hpssarch = _base.get('HPSSARCH', False)
 
@@ -133,7 +134,7 @@ class AppConfig:
         self.configs_names = self._get_app_configs()
 
         # Source the config_files for the jobs in the application
-        self.configs = self._source_configs(configuration)
+        self.configs = self._source_configs(conf)
 
         # Update the base config dictionary based on application
         upd_base_map = {'cycled': self._cycled_upd_base,
@@ -285,7 +286,7 @@ class AppConfig:
 
         return base_out
 
-    def _source_configs(self, configuration: Configuration) -> Dict[str, Any]:
+    def _source_configs(self, conf: Configuration) -> Dict[str, Any]:
         """
         Given the configuration object and jobs,
         source the configurations for each config and return a dictionary
@@ -295,7 +296,7 @@ class AppConfig:
         configs = dict()
 
         # Return config.base as well
-        configs['base'] = configuration.parse_config('config.base')
+        configs['base'] = conf.parse_config('config.base')
 
         # Source the list of all config_files involved in the application
         for config in self.configs_names:
@@ -315,7 +316,7 @@ class AppConfig:
                 files += [f'config.{config}']
 
             print(f'sourcing config.{config}')
-            configs[config] = configuration.parse_config(files)
+            configs[config] = conf.parse_config(files)
 
         return configs
 

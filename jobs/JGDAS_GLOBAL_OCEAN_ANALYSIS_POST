@@ -1,0 +1,23 @@
+#!/bin/bash
+export STRICT="NO"
+source "${HOMEgfs}/ush/preamble.sh"
+
+#############################
+# Source relevant config files
+#############################
+export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
+configs="base ocnanalpost"
+config_path=${EXPDIR:-${PACKAGEROOT}/gfs.${gfs_ver}/parm/config}
+for config in ${configs}; do
+    . "${config_path}"/config."${config}"
+    status=$?
+    [[ "${status}" -ne 0 ]] && exit "${status}"
+done
+
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd "${DATAROOT}" || exit 1
+[[ ${KEEPDATA} = "NO" ]] && rm -rf "${DATA}"
+
+exit 0

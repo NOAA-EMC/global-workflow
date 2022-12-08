@@ -9,7 +9,10 @@ import glob
 import shutil
 from datetime import datetime
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
+
 from hosts import Host
+
+from pygw.yaml_file import YAMLFile
 
 
 _here = os.path.dirname(__file__)
@@ -108,47 +111,51 @@ def fill_EXPDIR(inputs):
     return
 
 
+def update_configs(host, inputs):
+
+    # First update config.base
+    edit_baseconfig(host, inputs)
+
+    yaml_path = inputs.yaml
+    yaml_dict = YAMLFile(path=yaml_path)
+
+    # loop over other configs and update them
+    for cfg in yaml_dict.keys():
+        cfg_file = f'{inputs.expdir}/{inputs.pslot}/config.{cfg}'
+        cfg_dict = get_template_dict(yaml_dict[cfg])
+        edit_config(cfg_file, cfg_file, cfg_dict)
+
+    return
+
+
 def edit_baseconfig(host, inputs):
     """
     Parses and populates the templated `config.base.emc.dyn` to `config.base`
     """
 
     tmpl_dict = {
-        "@MACHINE@": host.machine.upper(),
+        "@HOMEgfs@": _top,
+        "@MACHINE@": host.machine.upper()}
+
+    # Replace host related items
+    extend_dict = get_template_dict(host.info)
+    tmpl_dict = dict(tmpl_dict, **extend_dict)
+
+    extend_dict = dict()
+    extend_dict = {
         "@PSLOT@": inputs.pslot,
         "@SDATE@": inputs.idate.strftime('%Y%m%d%H'),
         "@EDATE@": inputs.edate.strftime('%Y%m%d%H'),
         "@CASECTL@": f'C{inputs.resdet}',
-        "@HOMEgfs@": _top,
-        "@BASE_GIT@": host.info["base_git"],
-        "@DMPDIR@": host.info["dmpdir"],
-        "@PACKAGEROOT@": host.info["packageroot"],
-        "@COMROOT@": host.info["comroot"],
-        "@COMINsyn@": host.info["cominsyn"],
-        "@HOMEDIR@": host.info["homedir"],
         "@EXPDIR@": inputs.expdir,
         "@ROTDIR@": inputs.comrot,
         "@ICSDIR@": inputs.icsdir,
-        "@STMP@": host.info["stmp"],
-        "@PTMP@": host.info["ptmp"],
-        "@NOSCRUB@": host.info["noscrub"],
-        "@ACCOUNT@": host.info["account"],
-        "@QUEUE@": host.info["queue"],
-        "@QUEUE_SERVICE@": host.info["queue_service"],
-        "@PARTITION_BATCH@": host.info["partition_batch"],
-        "@PARTITION_SERVICE@": host.info["partition_service"],
         "@EXP_WARM_START@": inputs.warm_start,
         "@MODE@": inputs.mode,
-        "@CHGRP_RSTPROD@": host.info["chgrp_rstprod"],
-        "@CHGRP_CMD@": host.info["chgrp_cmd"],
-        "@HPSSARCH@": host.info["hpssarch"],
-        "@LOCALARCH@": host.info["localarch"],
-        "@ATARDIR@": host.info["atardir"],
-        "@MAKE_NSSTBUFR@": host.info["make_nsstbufr"],
-        "@MAKE_ACFTBUFR@": host.info["make_acftbufr"],
         "@gfs_cyc@": inputs.gfs_cyc,
-        "@APP@": inputs.app,
+        "@APP@": inputs.app
     }
+    tmpl_dict = dict(tmpl_dict, **extend_dict)
 
     extend_dict = dict()
     if inputs.mode in ['cycled']:
@@ -171,29 +178,41 @@ def edit_baseconfig(host, inputs):
     tmpl_dict = dict(tmpl_dict, **extend_dict)
 
 
-    # Open and read the templated config.base.emc.dyn
-    base_tmpl = f'{inputs.configdir}/config.base.emc.dyn'
-    with open(base_tmpl, 'rt') as fi:
-        basestr = fi.read()
-
-    for key, val in tmpl_dict.items():
-        basestr = basestr.replace(key, str(val))
-
-    # Write and clobber the experiment config.base
-    base_config = f'{inputs.expdir}/{inputs.pslot}/config.base'
-    if os.path.exists(base_config):
-        os.unlink(base_config)
-
-    with open(base_config, 'wt') as fo:
-        fo.write(basestr)
-
-    print('')
-    print(f'EDITED:  {base_config} as per user input.')
-    print(f'DEFAULT: {base_tmpl} is for reference only.')
-    print('')
+    base_input = f'{inputs.configdir}/config.base.emc.dyn'
+    base_output = f'{inputs.expdir}/{inputs.pslot}/config.base'
+    edit_config(base_input, base_output, tmpl_dict)
 
     return
 
+
+def edit_config(input_config, output_config, config_dict):
+
+    # Read input config
+    with open(input_config, 'rt') as fi:
+        config_str = fi.read()
+
+    # Substitute from config_dict
+    for key, val in config_dict.items():
+        config_str = config_str.replace(key, str(val))
+
+    # Ensure no output_config file exists
+    if os.path.exists(output_config):
+        os.unlink(output_config)
+
+    # Write output config
+    with open(output_config, 'wt') as fo:
+        fo.write(config_str)
+
+    print(f'EDITED:  {output_config} as per user input.')
+
+    return
+
+def get_template_dict(input_dict):
+    output_dict = dict()
+    for key, value in input_dict.items():
+        output_dict[f'@{key}@'] = value
+
+    return output_dict
 
 def input_args():
     """
@@ -238,6 +257,9 @@ def input_args():
                           choices=[0, 1, 2, 4], default=1, required=False)
         subp.add_argument('--start', help='restart mode: warm or cold', type=str,
                           choices=['warm', 'cold'], required=False, default='cold')
+
+        subp.add_argument('--yaml', help='Defaults to substitute from', type=str,
+                         required=False, default=os.path.join(_top, 'parm/config/yaml/defaults.yaml'))
 
     # cycled mode additional arguments
     cycled.add_argument('--resens', help='resolution of the ensemble model forecast',
@@ -284,7 +306,7 @@ def query_and_clean(dirname):
 
 def validate_user_request(host, inputs):
     expt_res = f'C{inputs.resdet}'
-    supp_res = host.info['supported_resolutions']
+    supp_res = host.info['SUPPORTED_RESOLUTIONS']
     machine = host.machine
     if expt_res not in supp_res:
         raise NotImplementedError(f"Supported resolutions on {machine} are:\n{', '.join(supp_res)}")
@@ -310,4 +332,4 @@ if __name__ == '__main__':
     if create_expdir:
         makedirs_if_missing(expdir)
         fill_EXPDIR(user_inputs)
-        edit_baseconfig(host, user_inputs)
+        update_configs(host, user_inputs)

@@ -2,20 +2,11 @@
 
 import os
 from pathlib import Path
-from yaml import load
-try:
-    from yaml import CLoader as Loader
-except ImportError:
-    from yaml import Loader
+
+from pygw.yaml_file import YAMLFile
 
 
 __all__ = ['Host']
-
-
-def load_yaml(_path: Path):
-    with open(_path, "r") as _file:
-        yaml_dict = load(_file, Loader=Loader)
-        return yaml_dict
 
 
 class Host:
@@ -35,7 +26,7 @@ class Host:
 
         self.machine = detected_host
         self.info = self._get_info
-        self.scheduler = self.info['scheduler']
+        self.scheduler = self.info['SCHEDULER']
 
     @classmethod
     def detect(cls):
@@ -65,7 +56,7 @@ class Host:
 
         hostfile = Path(os.path.join(os.path.dirname(__file__), f'hosts/{self.machine.lower()}.yaml'))
         try:
-            info = load_yaml(hostfile)
+            info = YAMLFile(path=hostfile)
         except FileNotFoundError:
             raise FileNotFoundError(f'{hostfile} does not exist!')
         except IOError:

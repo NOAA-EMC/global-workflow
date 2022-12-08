@@ -1,14 +1,13 @@
-#!/usr/bin/env python3
-
+import glob
 import os
 import random
-import glob
 import subprocess
-from pprint import pprint
 from datetime import datetime
 from pathlib import Path
+from pprint import pprint
 from typing import Union, List, Dict, Any
 
+from pygw.attrdict import AttrDict
 
 __all__ = ['Configuration']
 
@@ -85,7 +84,7 @@ class Configuration:
         if isinstance(files, (str, bytes)):
             files = [files]
         files = [self.find_config(file) for file in files]
-        varbles = dict()
+        varbles = AttrDict()
         for key, value in self._get_script_env(files).items():
             if key in self.DATE_ENV_VARS:  # likely a date, convert to datetime
                 varbles[key] = datetime.strptime(value, '%Y%m%d%H')

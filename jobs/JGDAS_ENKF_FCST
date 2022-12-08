@@ -1,38 +1,13 @@
 #! /usr/bin/env bash
 
-source "$HOMEgfs/ush/preamble.sh"
-
-export RUN_ENVIR=${RUN_ENVIR:-"nco"}
-
-#############################
-# Source relevant config files
-#############################
-export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
-config_path=${EXPDIR:-$PACKAGEROOT/gfs.${gfs_ver}/parm/config}
-configs="base fcst efcs"
-for config in $configs; do
-    . $config_path/config.$config
-    status=$?
-    [[ $status -ne 0 ]] && exit $status
-done
-
-
-##########################################
-# Source machine runtime environment
-##########################################
-. $HOMEgfs/env/${machine}.env efcs
-status=$?
-[[ $status -ne 0 ]] && exit $status
-
+source "${HOMEgfs}/ush/preamble.sh"
 
 ##############################################
-# Obtain unique process id (pid) and make temp directory
+# make temp directory
 ##############################################
-export pid=${pid:-$$}
-export outid=${outid:-"LL$job"}
-export DATA=${DATA:-${DATAROOT}/${jobid:?}}
-mkdir -p $DATA
-cd $DATA
+export DATA=${DATA:-${DATAROOT}/${jobid}}
+mkdir -p ${DATA}
+cd ${DATA}
 
 
 ##############################################
@@ -46,8 +21,29 @@ setpdy.sh
 ##############################################
 # Determine Job Output Name on System
 ##############################################
+export pid=${pid:-$$}
 export pgmout="OUTPUT.${pid}"
 export pgmerr=errfile
+
+
+#############################
+# Source relevant config files
+#############################
+export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
+configs="base fcst efcs"
+for config in ${configs}; do
+    . ${EXPDIR}/config.${config}
+    status=$?
+    [[ ${status} -ne 0 ]] && exit ${status}
+done
+
+
+##########################################
+# Source machine runtime environment
+##########################################
+. ${HOMEgfs}/env/${machine}.env efcs
+status=$?
+[[ ${status} -ne 0 ]] && exit ${status}
 
 
 ##############################################
@@ -55,26 +51,29 @@ export pgmerr=errfile
 ##############################################
 export CDATE=${CDATE:-${PDY}${cyc}}
 export CDUMP=${CDUMP:-${RUN:-"gdas"}}
-export COMPONENT=${COMPONENT:-atmos}
+export COMPONENT="atmos"
 export rCDUMP="gdas"
 
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
 
-export CASE=$CASE_ENKF
+export CASE=${CASE_ENKF}
 
 # COMOUT is used in script
-export COMOUT="$ROTDIR/enkf$CDUMP.$PDY/$cyc/$COMPONENT"
+export COMOUT="${ROTDIR}/enkf${CDUMP}.${PDY}/${cyc}/${COMPONENT}"
 
 
 # Forecast length for EnKF forecast
-export FHMIN=$FHMIN_ENKF
-export FHOUT=$FHOUT_ENKF
-export FHMAX=$FHMAX_ENKF
+export FHMIN=${FHMIN_ENKF}
+export FHOUT=${FHOUT_ENKF}
+export FHMAX=${FHMAX_ENKF}
 
 
 # Get ENSBEG/ENSEND from ENSGRP and NMEM_EFCSGRP
+if [[ $CDUMP == "gfs" ]]; then
+    export NMEM_EFCSGRP=${NMEM_EFCSGRP_GFS:-${NMEM_EFCSGRP:-1}}
+fi
 export ENSEND=$((NMEM_EFCSGRP * 10#${ENSGRP}))
 export ENSBEG=$((ENSEND - NMEM_EFCSGRP + 1))
 
@@ -82,21 +81,21 @@ export ENSBEG=$((ENSEND - NMEM_EFCSGRP + 1))
 ###############################################################
 # Run relevant script
 
-${ENKFFCSTSH:-$SCRgfs/exgdas_enkf_fcst.sh}
+${ENKFFCSTSH:-${SCRgfs}/exgdas_enkf_fcst.sh}
 status=$?
-[[ $status -ne 0 ]] && exit $status
+[[ ${status} -ne 0 ]] && exit ${status}
 
 
 # Double check the status of members in ENSGRP
-EFCSGRP=$COMOUT/efcs.grp${ENSGRP}
+EFCSGRP=${COMOUT}/efcs.grp${ENSGRP}
 npass=0
-if [ -f $EFCSGRP ]; then
-    npass=$(grep "PASS" $EFCSGRP | wc -l)
+if [ -f ${EFCSGRP} ]; then
+    npass=$(grep "PASS" ${EFCSGRP} | wc -l)
 fi
-echo "$npass/$NMEM_EFCSGRP members successfull in efcs.grp$ENSGRP"
-if [ $npass -ne $NMEM_EFCSGRP ]; then
-    echo "FATAL ERROR: Failed members in group $ENSGRP, ABORT!"
-    cat $EFCSGRP
+echo "${npass}/${NMEM_EFCSGRP} members successfull in efcs.grp${ENSGRP}"
+if [ ${npass} -ne ${NMEM_EFCSGRP} ]; then
+    echo "FATAL ERROR: Failed members in group ${ENSGRP}, ABORT!"
+    cat ${EFCSGRP}
     exit 99
 fi
 
@@ -104,8 +103,8 @@ fi
 ##############################################
 # Send Alerts
 ##############################################
-if [ $SENDDBN = YES ] ; then
-   $DBNROOT/bin/dbn_alert MODEL ENKF1_MSC_fcsstat $job $EFCSGRP
+if [ ${SENDDBN} = YES ] ; then
+   ${DBNROOT}/bin/dbn_alert MODEL ENKF1_MSC_fcsstat ${job} ${EFCSGRP}
 fi
 
 
@@ -116,15 +115,15 @@ fi
 ##############################################
 # Final processing
 ##############################################
-if [ -e "$pgmout" ] ; then
-  cat $pgmout
+if [ -e "${pgmout}" ] ; then
+  cat ${pgmout}
 fi
 
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd $DATAROOT
-[[ $KEEPDATA = "NO" ]] && rm -rf $DATA
+cd ${DATAROOT}
+[[ ${KEEPDATA} = "NO" ]] && rm -rf ${DATA}
 
 
 exit 0

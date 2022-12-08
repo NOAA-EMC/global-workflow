@@ -1,50 +1,14 @@
 #! /usr/bin/env bash
 
-source "$HOMEgfs/ush/preamble.sh"
-
-export RUN_ENVIR=${RUN_ENVIR:-"nco"}
-
-#--------------------------------
-if [ $RUN_ENVIR = "emc" ]; then
-#--------------------------------
+source "${HOMEgfs}/ush/preamble.sh"
 
 ##############################################
-# Set variables used in the exglobal script
+# make temp directory
 ##############################################
-export CDATE=${CDATE:-${PDY}${cyc}}
-export CDUMP=${CDUMP:-${RUN:-"gfs"}}
+export DATA=${DATA:-${DATAROOT}/${jobid}}
+mkdir -p ${DATA}
+cd ${DATA}
 
-#############################
-# Source relevant config files
-#############################
-configs="base fcst"
-export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
-config_path=${EXPDIR:-$PACKAGEROOT/gfs.${gfs_ver}/parm/config}
-for config in $configs; do
-    . $config_path/config.$config
-    status=$?
-    [[ $status -ne 0 ]] && exit $status
-done
-
-##########################################
-# Source machine runtime environment
-##########################################
-. $HOMEgfs/env/${machine}.env fcst
-status=$?
-[[ $status -ne 0 ]] && exit $status
-
-#--------------------------------
-fi
-#--------------------------------
-
-##############################################
-# Obtain unique process id (pid) and make temp directory
-##############################################
-export pid=${pid:-$$}
-export outid=${outid:-"LL$job"}
-export DATA=${DATA:-${DATAROOT}/${jobid:?}}
-mkdir -p $DATA
-cd $DATA
 
 ##############################################
 # Run setpdy and initialize PDY variables
@@ -57,47 +21,35 @@ setpdy.sh
 ##############################################
 # Determine Job Output Name on System
 ##############################################
+export pid=${pid:-$$}
 export pgmout="OUTPUT.${pid}"
 export pgmerr=errfile
 
 
-#--------------------------------
-if [ $RUN_ENVIR = "nco" ]; then
-#--------------------------------
-
 #############################
 # Source relevant config files
 #############################
+export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
 configs="base fcst"
-export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
-config_path=${EXPDIR:-$PACKAGEROOT/gfs.${gfs_ver}/parm/config}
-for config in $configs; do
-    . $config_path/config.$config
+[[ ${DO_WAVE:-"NO"} = "YES" ]] && configs+=" wave"
+for config in ${configs}; do
+    . ${EXPDIR}/config.${config}
     status=$?
-    [[ $status -ne 0 ]] && exit $status
+    [[ ${status} -ne 0 ]] && exit ${status}
 done
-# Source additional configs
-if [ ${DO_WAVE:-"NO"} = "YES" ]; then
-  configs="wave"
-  for config in $configs; do
-    . $config_path/config.$config
-    status=$?
-    [[ $status -ne 0 ]] && exit $status
-  done
-fi
+
 
 ##########################################
 # Source machine runtime environment
 ##########################################
-. $HOMEgfs/env/${machine}.env fcst
+. ${HOMEgfs}/env/${machine}.env fcst
 status=$?
-[[ $status -ne 0 ]] && exit $status
-
-#--------------------------------
-fi
-#--------------------------------
+[[ ${status} -ne 0 ]] && exit ${status}
 
 
+##############################################
+# Set variables used in the script
+##############################################
 # Set wave variables
 if [ ${DO_WAVE:-"NO"} = "YES" ]; then
   # WAVE component directory
@@ -111,15 +63,15 @@ fi
 ##############################################
 
 # Restart conditions for GFS cycle come from GDAS
-rCDUMP=$CDUMP
-[[ $CDUMP = "gfs" ]] && export rCDUMP="gdas"
+rCDUMP=${CDUMP}
+[[ ${CDUMP} = "gfs" ]] && export rCDUMP="gdas"
 
 # Forecast length for GFS forecast
-if [ $CDUMP = "gfs" ]; then
-    export FHMAX=$FHMAX_GFS
-    export FHOUT=$FHOUT_GFS
-    export FHMAX_HF=$FHMAX_HF_GFS
-    export FHOUT_HF=$FHOUT_HF_GFS
+if [ ${CDUMP} = "gfs" ]; then
+    export FHMAX=${FHMAX_GFS}
+    export FHOUT=${FHOUT_GFS}
+    export FHMAX_HF=${FHMAX_HF_GFS}
+    export FHOUT_HF=${FHOUT_HF_GFS}
 else
     export FHMAX_HF=0
     export FHOUT_HF=0
@@ -129,9 +81,9 @@ fi
 ###############################################################
 # Run relevant exglobal script
 
-${FORECASTSH:-$SCRgfs/exglobal_forecast.sh}
+${FORECASTSH:-${SCRgfs}/exglobal_forecast.sh}
 status=$?
-[[ $status -ne 0 ]] && exit $status
+[[ ${status} -ne 0 ]] && exit ${status}
 
 
 ##############################################
@@ -141,15 +93,15 @@ status=$?
 ##############################################
 # Final processing
 ##############################################
-if [ -e "$pgmout" ] ; then
-  cat $pgmout
+if [ -e "${pgmout}" ] ; then
+  cat ${pgmout}
 fi
 
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-cd $DATAROOT
-[[ $KEEPDATA = "NO" ]] && rm -rf $DATA
+cd ${DATAROOT}
+[[ ${KEEPDATA} = "NO" ]] && rm -rf ${DATA}
 
 
 exit 0
