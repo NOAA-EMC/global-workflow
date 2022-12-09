@@ -1,4 +1,4 @@
-export obsproc_ver="1.1.0"
+export obsproc_ver="1.1.2"
 export ukmet_ver=v2.2.0
 export ecmwf_ver=v2.1.0
 export nam_ver=v4.2.0
