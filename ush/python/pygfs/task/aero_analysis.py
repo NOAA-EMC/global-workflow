@@ -1,4 +1,7 @@
 from pygfs.task.analysis import Analysis
+from pygw.fileutils import FileHandler
+from pygw.template import Template, TemplateConstants
+from pygw.yaml_file import YAMLFile
 import copy
 import glob
 import gzip
@@ -18,6 +21,35 @@ class AerosolAnalysis(Analysis):
 
     def initialize(self):
         super().initialize()
+        # stage fix files
+        # question, how configurable does the following need to be? is below good enough
+        # meaning $PARMgfs/parm_gdas/blah.yaml vs needing something like $CRTM_FIX_FILE_LIST
+        crtm_fix_list_path = os.path.join(self.config['PARMgfs'], 'parm_gdas', 'aero_crtm_coeff.yaml')
+        crtm_fix_list = YAMLFile(path=crtm_fix_list_path)
+        crtm_fix_list = Template.substitute_structure(crtm_fix_list, TemplateConstants.DOLLAR_PARENTHESES, self.runtime_config.get)
+        FileHandler(crtm_fix_list).sync()
+        jedi_fix_list_path = os.path.join(self.config['PARMgfs'], 'parm_gdas', 'aero_jedi_fix.yaml')
+        jedi_fix_list = YAMLFile(path=jedi_fix_list_path)
+        jedi_fix_list = Template.substitute_structure(jedi_fix_list, TemplateConstants.DOLLAR_PARENTHESES, self.runtime_config.get)
+        FileHandler(jedi_fix_list).sync()
+
+        # stage berror files
+        if self.config.get('STATICB_TYPE', 'bump_aero') in ['bump_aero']:
+            FileHandler(self.get_berror_dict()).sync()
+        
+        # stage backgrounds
+        FileHandler(self.get_bkg_dict()).sync()
+
+        # generate variational YAML file
+        yaml_out = os.path.join(self.config['DATA'], f"{self.config['CDUMP']}.t{self.config['cyc']}z.aerovar.yaml")
+        varda_yaml = YAMLFile(path=self.config['AEROVARYAML'])
+        varda_yaml = Template.substitute_structure(varda_yaml, TemplateConstants.DOUBLE_CURLY_BRACES, self.runtime_config.get)
+        varda_yaml = Template.substitute_structure(varda_yaml, TemplateConstants.DOLLAR_PARENTHESES, self.runtime_config.get)
+        varda_yaml.save(yaml_out)
+
+        # stage executable
+
+        # create output directories
         # logging.info('Initializing global aerosol analysis')
         # fix_dict = self.get_fix_file_dict()
         # self.stage_fix(fix_dict)
@@ -50,14 +82,18 @@ class AerosolAnalysis(Analysis):
         # self.stage_exe()
         # # need output dir for diags and anl
         # newdirs = [
-        #     os.path.join(self.datadir, 'anl'),
-        #     os.path.join(self.datadir, 'diags'),
+        #     os.path.join(self.config['DATA'], 'anl'),
+        #     os.path.join(self.config['DATA'], 'diags'),
         #     ]
         # for newdir in newdirs:
         #     if not os.path.exists(newdir):
         #         os.makedirs(newdir)
         #         logging.info(f'Creating directory {newdir}')
 
+
+    def configure(self):
+        """Compute additional variables and add them to the root configuration"""
+        super().configure()
 
     def execute(self):
         super().execute()
@@ -69,7 +105,7 @@ class AerosolAnalysis(Analysis):
         # path of output tar statfile
         aerostat = os.path.join(os.environ['COMOUTaero'], f"{os.environ['APREFIX']}aerostat")
         # get list of diag files to put in tarball
-        diags = glob.glob(os.path.join(self.datadir, 'diags', 'diag*nc4'))
+        diags = glob.glob(os.path.join(self.config['DATA'], 'diags', 'diag*nc4'))
         # gzip the files first
         for diagfile in diags:
             logging.info(f'Compressing {diagfile} using gzip')
@@ -82,7 +118,7 @@ class AerosolAnalysis(Analysis):
         archive.close()
         logging.info(f'Wrote diags to {aerostat}')
         # copy full YAML from executable to ROTDIR
-        src = os.path.join(self.datadir, f'{self.taskname}_{self.cdate}.yaml')
+        src = os.path.join(self.config['DATA'], f'{self.taskname}_{self.cdate}.yaml')
         dest = os.path.join(os.environ['COMOUTaero'], f"{os.environ['APREFIX']}aeroanl.yaml")
         if os.path.exists(dest):
             logging.info(f'{dest} already exists, removing it!')
@@ -108,7 +144,7 @@ class AerosolAnalysis(Analysis):
         #---- add increments to RESTART files
         self.add_fms_cube_sphere_increments()
         #---- move increments to ROTDIR
-        fms_inc_file_template = os.path.join(self.datadir, 'anl', f'aeroinc.{cdate_fv3}.fv_tracer.res.tile1.nc')
+        fms_inc_file_template = os.path.join(self.config['DATA'], 'anl', f'aeroinc.{cdate_fv3}.fv_tracer.res.tile1.nc')
         for itile in range(1,7):
             inc_path = fms_inc_file_template.replace('tile1', f'tile{itile}')
             dest = os.path.join(os.environ['COMOUTaero'], os.path.basename(inc_path))
@@ -117,11 +153,14 @@ class AerosolAnalysis(Analysis):
             logging.info(f'Copying aerosol FMS cube sphere increment to {dest}')
             shutil.copy(bkg_path, dest)
 
+    def clean(self):
+        super().clean()
+
     def add_fms_cube_sphere_increments(self):
         logging.info('Adding increments to RESTART files')
         # only need the fv_tracer files
         cdate_fv3 = dt.datetime.strptime(self.cdate, '%Y%m%d%H').strftime('%Y%m%d.%H%M%S')
-        fms_inc_file_template = os.path.join(self.datadir, 'anl', f'aeroinc.{cdate_fv3}.fv_tracer.res.tile1.nc')
+        fms_inc_file_template = os.path.join(self.config['DATA'], 'anl', f'aeroinc.{cdate_fv3}.fv_tracer.res.tile1.nc')
         comin_ges = os.environ['COMIN_GES']
         # NOTE that while 'chem' is the $componenet, the aerosol fields are with the 'atmos' tracers
         comin_ges_atm = comin_ges.replace('chem', 'atmos')
@@ -152,7 +191,7 @@ class AerosolAnalysis(Analysis):
     def stage_exe(self):
         logging.info('Staging FV3-JEDI executable')
         src = os.environ['JEDIVAREXE']
-        dest = os.path.join(self.datadir, os.path.basename(src))
+        dest = os.path.join(self.config['DATA'], os.path.basename(src))
         if os.path.exists(dest):
             os.remove(dest)
         os.symlink(src, dest)
@@ -161,7 +200,7 @@ class AerosolAnalysis(Analysis):
 
     def get_bkg_dict(self):
         """
-        Return dict of src/dest pairs for model backgrounds
+        Return FileHandler config for model backgrounds
         """
         # NOTE for now this is FV3 RESTART files and just assumed to be fh006
         comin_ges = os.environ['COMIN_GES']
@@ -173,117 +212,42 @@ class AerosolAnalysis(Analysis):
         # get FV3 RESTART files, this will be a lot simpler when using history files
         ntiles = 6 # global
         # aerosol DA only needs core/tracer
-        bkg_dict = {}
+        bkglist = []
         basename = f'{cdate_fv3}.coupler.res'
-        bkg_dict[os.path.join(rst_dir, basename)] = os.path.join(self.datadir, 'bkg', basename)
+        bkglist.append([os.path.join(rst_dir, basename), os.path.join(self.config['DATA'], 'bkg', basename)])
         for t in range(1,ntiles+1):
             basename = f'{cdate_fv3}.fv_core.res.tile{t}.nc'
-            bkg_dict[os.path.join(rst_dir, basename)] = os.path.join(self.datadir, 'bkg', basename)
+            bkglist.append([os.path.join(rst_dir, basename), os.path.join(self.config['DATA'], 'bkg', basename)])
             basename = f'{cdate_fv3}.fv_tracer.res.tile{t}.nc'
-            bkg_dict[os.path.join(rst_dir, basename)] = os.path.join(self.datadir, 'bkg', basename)
+            bkglist.append([os.path.join(rst_dir, basename), os.path.join(self.config['DATA'], 'bkg', basename)])
+        bkg_dict = {
+            'mkdir': [os.path.join(self.config['DATA'], 'bkg')],
+            'copy': bkglist,
+        }
         return bkg_dict
 
     def get_berror_dict(self):
         """
-        Return dict of src/dest pairs for berror
+        Return FileHandler configuration for berror
         """
 
         ntiles = 6 # global
         # aerosol static-B needs nicas, cor_rh, cor_rv and stddev files.
         b_dir = self.berror_dir
-        berror_dict = {}
-        berror_dict[os.path.join(b_dir, '20160630.000000.cor_rh.coupler.res')] = os.path.join(self.datadir, 'berror', '20160630.000000.cor_rh.coupler.res')
-        berror_dict[os.path.join(b_dir, '20160630.000000.cor_rv.coupler.res')] = os.path.join(self.datadir, 'berror', '20160630.000000.cor_rv.coupler.res')
-        berror_dict[os.path.join(b_dir, '20160630.000000.stddev.coupler.res')] = os.path.join(self.datadir, 'berror', '20160630.000000.stddev.coupler.res')
+        berror_list = []
+        berror_list.append([os.path.join(b_dir, '20160630.000000.cor_rh.coupler.res'), os.path.join(self.config['DATA'], 'berror', '20160630.000000.cor_rh.coupler.res')])
+        berror_list.append([os.path.join(b_dir, '20160630.000000.cor_rv.coupler.res'), os.path.join(self.config['DATA'], 'berror', '20160630.000000.cor_rv.coupler.res')])
+        berror_list.append([os.path.join(b_dir, '20160630.000000.stddev.coupler.res'), os.path.join(self.config['DATA'], 'berror', '20160630.000000.stddev.coupler.res')])
         for t in range(1,ntiles+1):
-            berror_dict[os.path.join(b_dir, f'20160630.000000.cor_rh.fv_tracer.res.tile{t}.nc')] = os.path.join(self.datadir, 'berror', f'20160630.000000.cor_rh.fv_tracer.res.tile{t}.nc')
-            berror_dict[os.path.join(b_dir, f'20160630.000000.cor_rv.fv_tracer.res.tile{t}.nc')] = os.path.join(self.datadir, 'berror', f'20160630.000000.cor_rv.fv_tracer.res.tile{t}.nc')
-            berror_dict[os.path.join(b_dir, f'20160630.000000.stddev.fv_tracer.res.tile{t}.nc')] = os.path.join(self.datadir, 'berror', f'20160630.000000.stddev.fv_tracer.res.tile{t}.nc')
+            berror_list.append([os.path.join(b_dir, f'20160630.000000.cor_rh.fv_tracer.res.tile{t}.nc'), os.path.join(self.config['DATA'], 'berror', f'20160630.000000.cor_rh.fv_tracer.res.tile{t}.nc')])
+            berror_list.append([os.path.join(b_dir, f'20160630.000000.cor_rv.fv_tracer.res.tile{t}.nc'), os.path.join(self.config['DATA'], 'berror', f'20160630.000000.cor_rv.fv_tracer.res.tile{t}.nc')])
+            berror_list.append([os.path.join(b_dir, f'20160630.000000.stddev.fv_tracer.res.tile{t}.nc'), os.path.join(self.config['DATA'], 'berror', f'20160630.000000.stddev.fv_tracer.res.tile{t}.nc')])
         nproc = ntiles * int(os.environ['layout_x']) * int(os.environ['layout_y'])
         for t in range(1,nproc+1):
-            berror_dict[os.path.join(b_dir, f'nicas_aero_nicas_local_{nproc:06}-{t:06}.nc')] = os.path.join(self.datadir, 'berror', f'nicas_aero_nicas_local_{nproc:06}-{t:06}.nc')
+            berror_list.append([os.path.join(b_dir, f'nicas_aero_nicas_local_{nproc:06}-{t:06}.nc'), os.path.join(self.config['DATA'], 'berror', f'nicas_aero_nicas_local_{nproc:06}-{t:06}.nc')])
+        berror_dict = {
+            'mkdir': [os.path.join(self.config['DATA'], 'berror')],
+            'copy': berror_list,
+        }
         return berror_dict
 
-    def get_crtm_coeff_dict(self):
-        coeff_file_dict = {
-            os.path.join(self.fv3jedi_fix,
-                         'crtm', crtmver,
-                         'AerosolCoeff.bin'): os.path.join(self.datadir,
-                                                           'crtm',
-                                                           'AerosolCoeff.bin'),
-            os.path.join(self.fv3jedi_fix,
-                         'crtm', crtmver,
-                         'CloudCoeff.bin'): os.path.join(self.datadir,
-                                                           'crtm',
-                                                           'CloudCoeff.bin'),
-            # Note: Ideally we would only copy files for platforms used
-            # but since it is just 2 VIIRS platforms, just copy them both regardless
-            # We will fix this when there is a solution for ATM mode
-            os.path.join(self.fv3jedi_fix,
-                         'crtm', crtmver,
-                         'v.viirs-m_npp.SpcCoeff.bin'): os.path.join(self.datadir,
-                                                                     'crtm',
-                                                                     'v.viirs-m_npp.SpcCoeff.bin'),
-            os.path.join(self.fv3jedi_fix,
-                         'crtm', crtmver,
-                         'v.viirs-m_npp.TauCoeff.bin'): os.path.join(self.datadir,
-                                                                     'crtm',
-                                                                     'v.viirs-m_npp.TauCoeff.bin'),
-            os.path.join(self.fv3jedi_fix,
-                         'crtm', crtmver,
-                         'v.viirs-m_j1.SpcCoeff.bin'): os.path.join(self.datadir,
-                                                                    'crtm',
-                                                                    'v.viirs-m_j1.SpcCoeff.bin'),
-            os.path.join(self.fv3jedi_fix,
-                         'crtm', crtmver,
-                         'v.viirs-m_j1.TauCoeff.bin'): os.path.join(self.datadir,
-                                                                    'crtm',
-                                                                    'v.viirs-m_j1.TauCoeff.bin'),
-            os.path.join(self.fv3jedi_fix,
-                         'crtm', crtmver,
-                         'NPOESS.VISice.EmisCoeff.bin'): os.path.join(self.datadir,
-                                                                      'crtm',
-                                                                      'NPOESS.VISice.EmisCoeff.bin'),
-            os.path.join(self.fv3jedi_fix,
-                         'crtm', crtmver,
-                         'NPOESS.VISland.EmisCoeff.bin'): os.path.join(self.datadir,
-                                                                      'crtm',
-                                                                      'NPOESS.VISland.EmisCoeff.bin'),
-            os.path.join(self.fv3jedi_fix,
-                         'crtm', crtmver,
-                         'NPOESS.VISsnow.EmisCoeff.bin'): os.path.join(self.datadir,
-                                                                      'crtm',
-                                                                      'NPOESS.VISsnow.EmisCoeff.bin'),
-            os.path.join(self.fv3jedi_fix,
-                         'crtm', crtmver,
-                         'NPOESS.VISwater.EmisCoeff.bin'): os.path.join(self.datadir,
-                                                                      'crtm',
-                                                                      'NPOESS.VISwater.EmisCoeff.bin'),
-            }
-        return coeff_file_dict
-
-
-    def get_fix_file_dict(self):
-        fix_file_dict = {
-            os.path.join(self.fv3jedi_fix,
-                         'fv3jedi', 'fv3files',
-                         f'akbk{self.nlayers}.nc4'): os.path.join(self.datadir,
-                                                                  'fv3jedi',
-                                                                  'akbk.nc4'),
-            os.path.join(self.fv3jedi_fix,
-                         'fv3jedi', 'fv3files',
-                         'fmsmpp.nml'): os.path.join(self.datadir,
-                                                     'fv3jedi',
-                                                     'fmsmpp.nml'),
-            os.path.join(self.fv3jedi_fix,
-                         'fv3jedi', 'fv3files',
-                         'field_table_gfdl'): os.path.join(self.datadir,
-                                                           'fv3jedi',
-                                                           'field_table'),
-            os.path.join(self.fv3jedi_fix,
-                         'fv3jedi', 'fieldmetadata',
-                         'gfs-aerosol.yaml'): os.path.join(self.datadir,
-                                                           'fv3jedi',
-                                                           'gfs-restart.yaml'),
-            }
-        return fix_file_dict
