@@ -66,20 +66,16 @@ def copy_files(filelist):
         src = sublist[0]
         dest = sublist[1]
         cp(src, dest)
+        print(f'Copied {src} to {dest}') # TODO use logger
 
+def make_dirs(dirlist):
+    """Function to make all directories specified in the list
 
-def cp_dict(filedict, skip_missing=False):
-    for src, dest in filedict.items():
-        destdir = os.path.dirname(dest)
-        if not os.path.exists(destdir):
-            print(f'{destdir} does not exist, creating directory.')
-            os.makedirs(destdir)
-        if os.path.exists(dest):
-            os.remove(dest)
-        if skip_missing:
-            if not os.path.exists(src):
-                print(f'{src} does not exist. Will not copy.')
-                continue
-        print(f'Copying {src} to {dest}')
-        shutil.copyfile(src, dest)
-
+    Parameters
+    ----------
+    dirlist : list
+              List of directories to create
+    """
+    for d in dirlist:
+        mkdir(d)
+        print(f'Created {d}') # TODO use logger
