@@ -4,7 +4,7 @@ from .fsutils import cp, mkdir
 __all__ = ['FileHandler']
 
 
-class FileHandler():
+class FileHandler:
     """Class to manipulate files in bulk for a given configuration
 
     Parameters
@@ -76,6 +76,6 @@ def make_dirs(dirlist):
     dirlist : list
               List of directories to create
     """
-    for d in dirlist:
-        mkdir(d)
-        print(f'Created {d}') # TODO use logger
+    for dd in dirlist:
+        mkdir(dd)
+        print(f'Created {dd}') # TODO use logger
