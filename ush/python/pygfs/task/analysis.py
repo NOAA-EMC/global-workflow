@@ -2,7 +2,7 @@ from pygw.task import Task
 from pygw.attrdict import AttrDict
 from pygw.template import Template, TemplateConstants
 from pygw.yaml_file import YAMLFile
-from pygw.fileutils import FileHandler
+from pygw.file_utils import FileHandler
 import datetime as dt
 import logging
 import os
@@ -29,6 +29,10 @@ class Analysis(Task):
     def configure(self):
         """Compute additional variables and add them to the root configuration"""
         super().configure()
+        # probably move some of below to the parent class eventually
+        self.PDY = self.config['PDY']
+        self.cyc = self.config['cyc']
+        self.current_cycle = dt.datetime.strptime(self.PDY+self.cyc, '%Y%m%d%H')
 
     def execute(self):
         """

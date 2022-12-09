@@ -1,13 +1,14 @@
 from pygfs.task.analysis import Analysis
-from pygw.fileutils import FileHandler
+from pygw.file_utils import FileHandler
+from pygw.fsutils import rm_p
 from pygw.template import Template, TemplateConstants
 from pygw.yaml_file import YAMLFile
-import copy
+import datetime as dt
 import glob
 import gzip
 import netCDF4 as nc
+import os
 import tarfile
-import yaml
 
 
 class AerosolAnalysis(Analysis):
@@ -16,84 +17,67 @@ class AerosolAnalysis(Analysis):
     """
     def __init__(self, config):
         super().__init__(config)
-        #self.yamltemplate = config['AEROVARYAML']
-        #self.taskname = f'{self.cdump}aeroanl'
 
     def initialize(self):
         super().initialize()
         # stage fix files
-        # question, how configurable does the following need to be? is below good enough
-        # meaning $PARMgfs/parm_gdas/blah.yaml vs needing something like $CRTM_FIX_FILE_LIST
-        crtm_fix_list_path = os.path.join(self.config['PARMgfs'], 'parm_gdas', 'aero_crtm_coeff.yaml')
+        crtm_fix_list_path = os.path.join(self.config['HOMEgfs'], 'parm', 'parm_gdas', 'aero_crtm_coeff.yaml')
         crtm_fix_list = YAMLFile(path=crtm_fix_list_path)
         crtm_fix_list = Template.substitute_structure(crtm_fix_list, TemplateConstants.DOLLAR_PARENTHESES, self.runtime_config.get)
         FileHandler(crtm_fix_list).sync()
-        jedi_fix_list_path = os.path.join(self.config['PARMgfs'], 'parm_gdas', 'aero_jedi_fix.yaml')
+        jedi_fix_list_path = os.path.join(self.config['HOMEgfs'], 'parm', 'parm_gdas', 'aero_jedi_fix.yaml')
         jedi_fix_list = YAMLFile(path=jedi_fix_list_path)
         jedi_fix_list = Template.substitute_structure(jedi_fix_list, TemplateConstants.DOLLAR_PARENTHESES, self.runtime_config.get)
         FileHandler(jedi_fix_list).sync()
 
         # stage berror files
         if self.config.get('STATICB_TYPE', 'bump_aero') in ['bump_aero']:
+            # copy BUMP files, otherwise it will assume ID matrix
             FileHandler(self.get_berror_dict()).sync()
         
         # stage backgrounds
         FileHandler(self.get_bkg_dict()).sync()
 
         # generate variational YAML file
-        yaml_out = os.path.join(self.config['DATA'], f"{self.config['CDUMP']}.t{self.config['cyc']}z.aerovar.yaml")
+        yaml_out = os.path.join(self.config['DATA'], f"{self.config['CDUMP']}.t{self.cyc}z.aerovar.yaml")
         varda_yaml = YAMLFile(path=self.config['AEROVARYAML'])
         varda_yaml = Template.substitute_structure(varda_yaml, TemplateConstants.DOUBLE_CURLY_BRACES, self.runtime_config.get)
         varda_yaml = Template.substitute_structure(varda_yaml, TemplateConstants.DOLLAR_PARENTHESES, self.runtime_config.get)
         varda_yaml.save(yaml_out)
 
-        # stage executable
+        # link var executable
+        exe_src = os.environ['JEDIVAREXE']
+        exe_dest = os.path.join(self.config['DATA'], os.path.basename(exe_src))
+        if os.path.exists(exe_dest):
+            rm_p(exe_dest)
+        os.symlink(exe_src, exe_dest)
 
-        # create output directories
-        # logging.info('Initializing global aerosol analysis')
-        # fix_dict = self.get_fix_file_dict()
-        # self.stage_fix(fix_dict)
-        # crtm_fix_dict = self.get_crtm_coeff_dict()
-        # self.stage_crtm(crtm_fix_dict)
-        # if os.environ.get('STATICB_TYPE', 'bump_aero') in ['bump_aero']:
-        #     self.stage_berror(self.get_berror_dict())
-        # bkg_dict = self.get_bkg_dict()
-        # self.stage_bkg(bkg_dict)
-        # yaml_config = {
-        #     'BKG_DIR': 'bkg',
-        #     'OBS_DIR': 'obs',
-        #     'DIAG_DIR': 'diags',
-        #     'CRTM_COEFF_DIR': 'crtm',
-        #     'OBS_PREFIX': os.environ['OPREFIX'],
-        #     'fv3jedi_staticb_aero_dir': 'berror',
-        #     'fv3jedi_fix_dir': 'fv3jedi',
-        #     'fv3jedi_fieldmetadata_dir': 'fv3jedi',
-        #     'OBS_DATE': os.environ['CDATE'],
-        #     'ANL_DIR': 'anl',
-        #     'INTERP_METHOD': 'barycentric',
-        #     # for now making the below equal to eachother
-        #     'AERO_WINDOW_LENGTH': '$(ATM_WINDOW_LENGTH)',
-        #     'AERO_WINDOW_BEGIN': '$(ATM_WINDOW_BEGIN)',
-        #     'window_begin': '$(ATM_WINDOW_BEGIN)',
-        #     'layout_x': os.environ['layout_x'],
-        #     'layout_y': os.environ['layout_y'],
-        #     }
-        # self.generate_yaml(yaml_config)
-        # self.stage_exe()
-        # # need output dir for diags and anl
-        # newdirs = [
-        #     os.path.join(self.config['DATA'], 'anl'),
-        #     os.path.join(self.config['DATA'], 'diags'),
-        #     ]
-        # for newdir in newdirs:
-        #     if not os.path.exists(newdir):
-        #         os.makedirs(newdir)
-        #         logging.info(f'Creating directory {newdir}')
+        # need output dir for diags and anl
+        newdirs = [
+            os.path.join(self.config['DATA'], 'anl'),
+            os.path.join(self.config['DATA'], 'diags'),
+            ]
+        FileHandler({'mkdir': newdirs}).sync()
 
 
     def configure(self):
         """Compute additional variables and add them to the root configuration"""
         super().configure()
+        # the following are computed either from the root configuration
+        # or are cycle/time dependent
+        aero_win_begin = self.current_cycle - dt.timedelta(hours=int(self.config['assim_freq'])/2)
+        self.runtime_config = {
+            'AERO_WINDOW_BEGIN': aero_win_begin.strftime('%Y-%m-%dT%H:%M:%SZ'),
+            'BKG_ISOTIME': self.current_cycle.strftime('%Y-%m-%dT%H:%M:%SZ'),
+            'BKG_YYYYmmddHHMMSS': self.current_cycle.strftime('%Y%m%d.%H%M%S'),
+            'AERO_WINDOW_LENGTH': f"PT{self.config['assim_freq']}H",
+            'npx_ges': int(self.config['CASE'][1:]) + 1,
+            'npy_ges': int(self.config['CASE'][1:]) + 1,
+            'npz_ges': int(self.config['LEVS']) - 1,
+            'npx_anl': int(self.config['CASE_ENKF'][1:]) + 1,
+            'npy_anl': int(self.config['CASE_ENKF'][1:]) + 1,
+            'npz_anl': int(self.config['LEVS']) - 1,
+        }
 
     def execute(self):
         super().execute()
@@ -157,6 +141,10 @@ class AerosolAnalysis(Analysis):
         super().clean()
 
     def add_fms_cube_sphere_increments(self):
+        """This method adds increments to RESTART files to get an analysis
+        NOTE this is only needed for now because the model cannot read aerosol increments.
+        This method will be assumed to be deprecated before this is implemented operationally
+        """
         logging.info('Adding increments to RESTART files')
         # only need the fv_tracer files
         cdate_fv3 = dt.datetime.strptime(self.cdate, '%Y%m%d%H').strftime('%Y%m%d.%H%M%S')
@@ -181,22 +169,11 @@ class AerosolAnalysis(Analysis):
                         bkg = rstfile.variables[vname][:]
                         anl = bkg + increment
                         rstfile.variables[vname][:] = anl[:]
-                        rstfile.variables[vname].delncattr('checksum') # remove the checksum so fv3 does not complain
+                        try:
+                            rstfile.variables[vname].delncattr('checksum') # remove the checksum so fv3 does not complain
+                        except AttributeError:
+                            pass # checksum is missing, move on
 
-    def stage_crtm(self, filedict):
-        logging.info('Staging CRTM coefficient files')
-        self.stage(filedict)
-        logging.info('Finished staging CRTM coefficient files')
-
-    def stage_exe(self):
-        logging.info('Staging FV3-JEDI executable')
-        src = os.environ['JEDIVAREXE']
-        dest = os.path.join(self.config['DATA'], os.path.basename(src))
-        if os.path.exists(dest):
-            os.remove(dest)
-        os.symlink(src, dest)
-        logging.info(f'Linking {src} to {dest}')
-        logging.info('Finished staging FV3-JEDI executable')
 
     def get_bkg_dict(self):
         """
