@@ -25,19 +25,17 @@ class FileHandler:
     def __init__(self, config):
 
         self.config = config
-        self.sync(config)
 
-    @staticmethod
-    def sync(config):
+    def sync(self):
         """
         Method to execute bulk actions on files described in the configuration
         """
         sync_factory = {
-            'copy': _copy_files,
-            'mkdir': _make_dirs,
+            'copy': self._copy_files,
+            'mkdir': self._make_dirs,
         }
         # loop through the configuration keys
-        for action, files in config.items():
+        for action, files in self.config.items():
             sync_factory[action](files)
 
     @staticmethod
@@ -60,7 +58,6 @@ class FileHandler:
             dest = sublist[1]
             cp(src, dest)
             print(f'Copied {src} to {dest}')  # TODO use logger
-
 
     @staticmethod
     def _make_dirs(dirlist):
