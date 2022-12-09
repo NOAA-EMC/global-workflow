@@ -35,7 +35,7 @@ class FileHandler():
         elif config:
             self.config = config
         else:
-            raise Exception('Neither path nor config are defined. One needs to be.')
+            raise Exception("Neither 'path' nor 'config' are defined. One needs to be.")
 
     def sync(self):
         """
