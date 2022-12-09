@@ -37,7 +37,7 @@ def test_copy(tmp_path):
     input_dir_path = tmp_path / 'my_input_dir'
 
     # Create the input directory
-    config = {'mkdir': input_dir_path}
+    config = {'mkdir': [input_dir_path]}
     FileHandler(config).sync()
 
     # Put empty files in input_dir_path
@@ -45,13 +45,14 @@ def test_copy(tmp_path):
     for ff in src_files:
         ff.touch()
 
-    # Define output_dir_path and expected file names
+    # Create output_dir_path and expected file names
     output_dir_path = tmp_path / 'my_output_dir'
+    config = {'mkdir': [output_dir_path]}
+    FileHandler(config).sync()
     dest_files = [output_dir_path / 'a.txt', output_dir_path / 'bb.txt']
 
     copy_list = []
     for src, dest in zip(src_files, dest_files):
-        print(src, dest)
         copy_list.append([src, dest])
 
     # Create config object for FileHandler
