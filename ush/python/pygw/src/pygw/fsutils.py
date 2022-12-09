@@ -51,7 +51,6 @@ def cp(src, dest):
     try:
         shutil.copyfile(src, dest)
     except OSError as exc:
-        if exc.errno == errno.ENOENT:
-            pass
-        else:
-            raise OSError(f"unable to copy {src} to {dest}")
+        raise OSError(f"unable to copy {src} to {dest}")
+    except FileNotFoundError as exc:
+        raise FileNotFoundError(exc)
