@@ -14,10 +14,6 @@ jobs:
   lint:
     runs-on: ubuntu-latest
 
-    permissions:
-      security-events: write
-      pull-requests: write
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v1
@@ -25,6 +21,6 @@ jobs:
           fetch-depth: 0
 
       - name: Lint shell scripts
-        uses: redhat-plumbers-in-action/differential-shellcheck@latest
+        uses: redhat-plumbers-in-action/differential-shellcheck@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
