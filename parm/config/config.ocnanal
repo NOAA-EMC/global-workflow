@@ -9,17 +9,17 @@ export OBS_YAML_DIR=${HOMEgfs}/sorc/gdas.cd/parm/soca/obs/config
 export OBS_YAML=${HOMEgfs}/sorc/gdas.cd/parm/soca/obs/obs_list.yaml
 export OBS_LIST=${OBS_YAML_DIR}/obs_list.yaml
 export FV3JEDI_STAGE_YAML=${HOMEgfs}/sorc/gdas.cd/test/soca/testinput/dumy.yaml
-export SOCA_INPUT_FIX_DIR=@SOCA_INPUT_FIX_DIR@
+export SOCA_INPUT_FIX_DIR=/scratch2/NCEPDEV/ocean/Guillaume.Vernieres/data/static/72x35x25/soca # TODO: Should be moved somewhere else
 export SOCA_VARS=tocn,socn,ssh
-export SOCA_NINNER=@SOCA_NINNER@
-export CASE_ANL=@CASE_ANL@
+export SOCA_NINNER=50
+export CASE_ANL="C48"
 export DOMAIN_STACK_SIZE=2000000
 export JEDI_BIN=${HOMEgfs}/sorc/gdas.cd/build/bin
 
 # TODO: Move the R2D2 configuration to a common space
 export R2D2_OBS_DB=shared
-export R2D2_OBS_DUMP=@R2D2_OBS_DUMP@
-export R2D2_OBS_SRC=@R2D2_OBS_SRC@
+export R2D2_OBS_DUMP=s2s_v1
+export R2D2_OBS_SRC=gdas_marine
 export R2D2_OBS_WINDOW=24     # TODO: Check if the R2D2 sampling DB window is still needed
-export COMIN_OBS=@COMIN_OBS@
+export COMIN_OBS=/scratch2/NCEPDEV/marineda/r2d2
 echo "END: config.ocnanal"
