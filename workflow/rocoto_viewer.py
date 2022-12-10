@@ -12,9 +12,14 @@
 #      rocoto_viewer.py -w my_gfs-workflow.xml -d my_database.db
 #
 # The script is located in the directory para/exp/rocoto/rocotoviewers/rocotoviewer_curses/rocoto_viewer.py
-# The view will continuously update every four minutes and reflect the current status of your workflow.  You may use your mouse or arrow keys to select a particular task and view its status details by pressing the key \p c as indicated as \b \<c\> (which runs \b rocotocheck) or perform a \b rocotorewind by pressing \b \<r\> to restart the workflow at that point. Running \b rocotorewind causes the state information of that task to be cleared from the database and resubmits the job to the scheduler.
+# The view will continuously update every four minutes and reflect the current status of your workflow.
+# You may use your mouse or arrow keys to select a particular task and view its status details by pressing the key \p c as indicated as \b \<c\>
+# (which runs \b rocotocheck) or perform a \b rocotorewind by pressing \b \<r\> to restart the workflow at that point.
+# Running \b rocotorewind causes the state information of that task to be cleared from the database and resubmits the job to the scheduler.
 #
-# Tasks marked with the \b \< symbol are \b metatasks and can be expanded by highlight that task with the mouse, and then clicking on the \b \< symbol which then changes to \b \> . You can then click on the \b \> symbol to collapse it again. Alternatively, you can select the 'x' to expand and collapse metatasks when selected.
+# Tasks marked with the \b \< symbol are \b metatasks and can be expanded by highlight that task with the mouse,
+# and then clicking on the \b \< symbol which then changes to \b \>.
+# You can then click on the \b \> symbol to collapse it again. Alternatively, you can select the 'x' to expand and collapse metatasks when selected.
 #
 # @cond ROCOTO_VIEWER_CURSES
 
@@ -125,6 +130,7 @@ debug = None
 mlines = 0
 mcols = 0
 
+
 def eprint(message: str) -> None:
     """
     Print to stderr instead of stdout
@@ -208,7 +214,7 @@ def string_to_timedelta(td_string: str) -> timedelta:
                     and mdict['negative'] == '-':
                 return -dt
             return dt
-    except(TypeError, ValueError, AttributeError):
+    except (TypeError, ValueError, AttributeError):
         raise
 
 
@@ -1113,9 +1119,14 @@ def get_rocoto_stat(params, queue_stat):
             (theid, jobid, task_order, taskname, cycle, state, exit_status, duration, tries) = row
         if jobid != '-':
             if use_performance_metrics:
-                line = f"{datetime.fromtimestamp(cycle).strftime('%Y%m%d%H%M')} {taskname} {str(jobid)} {str(state)} {str(exit_status)} {str(tries)} {str(duration).split('.')[0]} {str(slots)} {str(qtime)} {str(cputime).split('.')[0]} {str(runtime)}"
+                line = (f"{datetime.fromtimestamp(cycle).strftime('%Y%m%d%H%M')} "
+                        f"{taskname} {str(jobid)} {str(state)} {str(exit_status)} "
+                        f"{str(tries)} {str(duration).split('.')[0]} {str(slots)} "
+                        f"{str(qtime)} {str(cputime).split('.')[0]} {str(runtime)}")
             else:
-                line = f"{datetime.fromtimestamp(cycle).strftime('%Y%m%d%H%M')} {taskname} {str(jobid)} {str(state)} {str(exit_status)} {str(tries)} {str(duration).split('.')[0]}"
+                line = (f"{datetime.fromtimestamp(cycle).strftime('%Y%m%d%H%M')} "
+                        f"{taskname} {str(jobid)} {str(state)} {str(exit_status)} "
+                        f"{str(tries)} {str(duration).split('.')[0]}")
             info[cycle].append(line)
 
     for every_cycle in cycles:
@@ -1279,7 +1290,8 @@ def main(screen):
         use_multiprocessing = False
 
     # header_string       = ' '*18+'CYCLE'+' '*17+'TASK'+' '*39+'JOBID'+' '*6+'STATE'+' '*9+'EXIT'+' '*2+'TRIES'+' '*2+'DURATION'
-    header_string = ' ' * 7 + 'CYCLE' + ' ' * (int(job_name_length_max / 2) + 3) + 'TASK' + ' ' * (int(job_name_length_max / 2) + 3) + 'JOBID' + ' ' * 6 + 'STATE' + ' ' * 9 + 'EXIT' + ' ' * 1 + 'TRIES' + ' ' * 1 + 'DURATION'
+    header_string = ' ' * 7 + 'CYCLE' + ' ' * (int(job_name_length_max / 2) + 3) + 'TASK' + ' ' * (int(job_name_length_max / 2) + 3) + \
+        'JOBID' + ' ' * 6 + 'STATE' + ' ' * 9 + 'EXIT' + ' ' * 1 + 'TRIES' + ' ' * 1 + 'DURATION'
     header_string_under = '=== (updated:tttttttttttttttt) =================== PSLOT: pslot ' + '=' * 44
 
     global use_performance_metrics
@@ -1336,8 +1348,10 @@ def main(screen):
         html_ptr = open(html_output_file, 'w')
         html_ptr.write(ccs_html)
         stat_update_time = str(datetime.now()).rsplit(':', 1)[0]
-        html_discribe_line = f'\n<table>\n<thead>\n<tr><td><a href="index_exp.html">Expand</a></td><td>Refreshed: {stat_update_time}</td><td>PSLOT: {PSLOT}</td></tr>\n'
-        html_discribe_line += f'<tr><td colspan="2">ROTDIR: {workflow_name}</td><td><a href="../{ROTDIR}_perf_{PSLOT}.pdf">Turn Around Times</a></td></tr>\n</thead>\n</table>\n<br>\n'
+        html_discribe_line = f'\n<table>\n<thead>\n<tr><td><a href="index_exp.html">'
+        html_discribe_line += f'Expand</a></td><td>Refreshed: {stat_update_time}</td><td>PSLOT: {PSLOT}</td></tr>\n'
+        html_discribe_line += f'<tr><td colspan="2">ROTDIR: {workflow_name}</td>'
+        html_discribe_line += f'<td><a href="../{ROTDIR}_perf_{PSLOT}.pdf">Turn Around Times</a></td></tr>\n</thead>\n</table>\n<br>\n'
         html_discribe_line += html_header_line
         html_ptr.write(html_discribe_line)
     else:
@@ -1701,7 +1715,9 @@ def main(screen):
                                 column = column[:7]
                             html_line += f'<td>{column}</td>'
                         elif i == 3:
-                            if meta_tasks[cycle][line_num][1] and len(metatasks_state_string_cycle[cycle][columns[1]].split()) != 1 and metatasks_state_cycle[cycle][columns[1]]:
+                            if meta_tasks[cycle][line_num][1] \
+                                    and len(metatasks_state_string_cycle[cycle][columns[1]].split()) != 1 \
+                                    and metatasks_state_cycle[cycle][columns[1]]:
                                 column = metatasks_state_string_cycle[cycle][columns[1]]
                                 if len(column) > 15:
                                     if column.split()[1] == 'SUCCEEDED':
@@ -1780,8 +1796,10 @@ def main(screen):
                     html_ptr = open(html_output_file, 'w')
                     html_ptr.write(ccs_html)
                     stat_update_time = str(datetime.now()).rsplit(':', 1)[0]
-                    html_discribe_line = f'\n<table>\n<thead>\n<tr><td><a href="index.html">Collapse</a></td><td>Refreshed: {stat_update_time}</td><td>PSLOT: {PSLOT}</td></tr>\n'
-                    html_discribe_line += f'<tr><td colspan="2">ROTDIR: {workflow_name}</td><td><a href="../{ROTDIR}_perf_{PSLOT}.pdf">Turn Around Times</a></td></tr>\n</thead>\n</table>\n<br>\n'
+                    html_discribe_line = f'\n<table>\n<thead>\n<tr><td><a href="index.html">'
+                    html_discribe_line += f'Collapse</a></td><td>Refreshed: {stat_update_time}</td><td>PSLOT: {PSLOT}</td></tr>\n'
+                    html_discribe_line += f'<tr><td colspan="2">ROTDIR: {workflow_name}</td><td><a href="../{ROTDIR}_perf_{PSLOT}.pdf">'
+                    html_discribe_line += f'Turn Around Times</a></td></tr>\n</thead>\n</table>\n<br>\n'
                     html_discribe_line += html_header_line
                     html_ptr.write(html_discribe_line)
                     html_output_firstpass = False
@@ -1947,7 +1965,9 @@ def main(screen):
                             else:
                                 pad.addstr(job_id + ' ' * (11 - len(job_id)))
                         elif i == 3:
-                            if meta_tasks[cycle][line_num][1] and len(metatasks_state_string_cycle[cycle][columns[1]].split()) != 1 and metatasks_state_cycle[cycle][columns[1]]:
+                            if meta_tasks[cycle][line_num][1] \
+                                    and len(metatasks_state_string_cycle[cycle][columns[1]].split()) != 1 \
+                                    and metatasks_state_cycle[cycle][columns[1]]:
                                 column = metatasks_state_string_cycle[cycle][columns[1]]
                                 if red_override:
                                     the_text_color = 2

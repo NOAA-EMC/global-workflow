@@ -18,6 +18,7 @@ from pygw.yaml_file import YAMLFile
 _here = os.path.dirname(__file__)
 _top = os.path.abspath(os.path.join(os.path.abspath(_here), '..'))
 
+
 def makedirs_if_missing(dirname):
     """
     Creates a directory if not already present
@@ -177,7 +178,6 @@ def edit_baseconfig(host, inputs):
         }
     tmpl_dict = dict(tmpl_dict, **extend_dict)
 
-
     base_input = f'{inputs.configdir}/config.base.emc.dyn'
     base_output = f'{inputs.expdir}/{inputs.pslot}/config.base'
     edit_config(base_input, base_output, tmpl_dict)
@@ -207,12 +207,14 @@ def edit_config(input_config, output_config, config_dict):
 
     return
 
+
 def get_template_dict(input_dict):
     output_dict = dict()
     for key, value in input_dict.items():
         output_dict[f'@{key}@'] = value
 
     return output_dict
+
 
 def input_args():
     """
@@ -246,7 +248,8 @@ def input_args():
                           type=str, required=False, default=os.getenv('HOME'))
         subp.add_argument('--expdir', help='full path to EXPDIR',
                           type=str, required=False, default=os.getenv('HOME'))
-        subp.add_argument('--idate', help='starting date of experiment, initial conditions must exist!', required=True, type=lambda dd: datetime.strptime(dd, '%Y%m%d%H'))
+        subp.add_argument('--idate', help='starting date of experiment, initial conditions must exist!',
+                          required=True, type=lambda dd: datetime.strptime(dd, '%Y%m%d%H'))
         subp.add_argument('--edate', help='end date experiment', required=True, type=lambda dd: datetime.strptime(dd, '%Y%m%d%H'))
         subp.add_argument('--icsdir', help='full path to initial condition directory', type=str, required=False, default=None)
         subp.add_argument('--configdir', help='full path to directory containing the config files',
@@ -259,7 +262,7 @@ def input_args():
                           choices=['warm', 'cold'], required=False, default='cold')
 
         subp.add_argument('--yaml', help='Defaults to substitute from', type=str,
-                         required=False, default=os.path.join(_top, 'parm/config/yaml/defaults.yaml'))
+                          required=False, default=os.path.join(_top, 'parm/config/yaml/defaults.yaml'))
 
     # cycled mode additional arguments
     cycled.add_argument('--resens', help='resolution of the ensemble model forecast',
@@ -303,6 +306,7 @@ def query_and_clean(dirname):
             shutil.rmtree(dirname)
 
     return create_dir
+
 
 def validate_user_request(host, inputs):
     expt_res = f'C{inputs.resdet}'
