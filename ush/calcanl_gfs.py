@@ -18,11 +18,11 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix, ASuffix,
                 ComIn_Ges, GPrefix, GSuffix,
                 FixDir, atmges_ens_mean, RunDir, NThreads, NEMSGet, IAUHrs,
                 ExecCMD, ExecCMDMPI, ExecAnl, ExecChgresInc, Cdump):
-    print('calcanl_gfs beginning at: ',datetime.datetime.utcnow())
+    print('calcanl_gfs beginning at: ', datetime.datetime.utcnow())
 
     IAUHH = IAUHrs
 
-    ######## copy and link files
+    # copy and link files
     if DoIAU and l4DEnsVar and Write4Danl:
         for fh in IAUHH:
             if fh == 6:
@@ -81,7 +81,6 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix, ASuffix,
                     gsi_utils.link_file(ComIn_Ges+'/'+GPrefix+'atmf'+format(fh, '03')+'.ensres'+GSuffix,
                                         CalcAnlDir6+'/ges.ensres.'+format(fh, '02'))
 
-
     else:
         # for full res analysis
         CalcAnlDir = RunDir+'/calcanl_'+format(6, '02')
@@ -101,12 +100,12 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix, ASuffix,
         gsi_utils.link_file(ComOut+'/'+APrefix+'atmanl.ensres'+ASuffix, CalcAnlDir+'/anl.ensres.06')
         gsi_utils.link_file(ComIn_Ges+'/'+GPrefix+'atmf006.ensres'+GSuffix, CalcAnlDir+'/ges.ensres.06')
 
-    ######## get dimension information from background and increment files
+    # get dimension information from background and increment files
     AnlDims = gsi_utils.get_ncdims('siginc.nc')
     if ASuffix == ".nc":
         GesDims = gsi_utils.get_ncdims('sigf06')
     else:
-        GesDims = gsi_utils.get_nemsdims('sigf06',NEMSGet)
+        GesDims = gsi_utils.get_nemsdims('sigf06', NEMSGet)
 
     levs = AnlDims['lev']
     LonA = AnlDims['lon']
@@ -118,31 +117,31 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix, ASuffix,
     levs2 = levs + 1
     siglevel = FixDir+'/global_hyblev.l'+str(levs2)+'.txt'
 
-    ####### determine how many forecast hours to process
-    nFH=0
+    # determine how many forecast hours to process
+    nFH = 0
     for fh in IAUHH:
         # first check to see if increment file exists
         CalcAnlDir = RunDir+'/calcanl_'+format(fh, '02')
         if (os.path.isfile(CalcAnlDir+'/siginc.nc.'+format(fh, '02'))):
             print('will process increment file: '+CalcAnlDir+'/siginc.nc.'+format(fh, '02'))
-            nFH+=1
+            nFH += 1
         else:
             print('Increment file: '+CalcAnlDir+'/siginc.nc.'+format(fh, '02')+' does not exist. Skipping.')
 
     sys.stdout.flush()
-    ######## need to gather information about runtime environment
-    ExecCMD = ExecCMD.replace("$ncmd","1")
+    # need to gather information about runtime environment
+    ExecCMD = ExecCMD.replace("$ncmd", "1")
     os.environ['OMP_NUM_THREADS'] = str(NThreads)
     os.environ['ncmd'] = str(nFH)
-    ExecCMDMPI1 = ExecCMDMPI.replace("$ncmd",str(1))
-    ExecCMDMPI = ExecCMDMPI.replace("$ncmd",str(nFH))
-    ExecCMDLevs = ExecCMDMPI.replace("$ncmd",str(levs))
-    ExecCMDMPI10 = ExecCMDMPI.replace("$ncmd",str(10))
+    ExecCMDMPI1 = ExecCMDMPI.replace("$ncmd", str(1))
+    ExecCMDMPI = ExecCMDMPI.replace("$ncmd", str(nFH))
+    ExecCMDLevs = ExecCMDMPI.replace("$ncmd", str(levs))
+    ExecCMDMPI10 = ExecCMDMPI.replace("$ncmd", str(10))
 
     # are we using mpirun with lsf, srun, or aprun with Cray?
     launcher = ExecCMDMPI.split(' ')[0]
     if launcher == 'mpirun':
-        hostfile = os.getenv('LSB_DJOB_HOSTFILE','')
+        hostfile = os.getenv('LSB_DJOB_HOSTFILE', '')
         with open(hostfile) as f:
             hosts_tmp = f.readlines()
         hosts_tmp = [x.strip() for x in hosts_tmp]
@@ -150,7 +149,7 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix, ASuffix,
         [hosts.append(x) for x in hosts_tmp if x not in hosts]
         nhosts = len(hosts)
         ExecCMDMPI_host = 'mpirun -np '+str(nFH)+' --hostfile hosts'
-        tasks = int(os.getenv('LSB_DJOB_NUMPROC',1))
+        tasks = int(os.getenv('LSB_DJOB_NUMPROC', 1))
         if levs > tasks:
             ExecCMDMPILevs_host = 'mpirun -np '+str(tasks)+' --hostfile hosts'
             ExecCMDMPILevs_nohost = 'mpirun -np '+str(tasks)
@@ -160,7 +159,7 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix, ASuffix,
         ExecCMDMPI1_host = 'mpirun -np 1 --hostfile hosts'
         ExecCMDMPI10_host = 'mpirun -np 10 --hostfile hosts'
     elif launcher == 'mpiexec':
-        hostfile = os.getenv('PBS_NODEFILE','')
+        hostfile = os.getenv('PBS_NODEFILE', '')
         with open(hostfile) as f:
             hosts_tmp = f.readlines()
         hosts_tmp = [x.strip() for x in hosts_tmp]
@@ -168,7 +167,7 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix, ASuffix,
         [hosts.append(x) for x in hosts_tmp if x not in hosts]
         nhosts = len(hosts)
         ExecCMDMPI_host = 'mpiexec -l -n '+str(nFH)
-        tasks = int(os.getenv('ntasks',1))
+        tasks = int(os.getenv('ntasks', 1))
         print('nhosts,tasks=', nhosts, tasks)
         if levs > tasks:
             ExecCMDMPILevs_host = 'mpiexec -l -n '+str(tasks)
@@ -179,7 +178,7 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix, ASuffix,
         ExecCMDMPI1_host = 'mpiexec -l -n 1 --cpu-bind depth --depth '+str(NThreads)
         ExecCMDMPI10_host = 'mpiexec -l -n 10 --cpu-bind depth --depth '+str(NThreads)
     elif launcher == 'srun':
-        nodes = os.getenv('SLURM_JOB_NODELIST','')
+        nodes = os.getenv('SLURM_JOB_NODELIST', '')
         hosts_tmp = subprocess.check_output('scontrol show hostnames '+nodes, shell=True)
         if (sys.version_info > (3, 0)):
             hosts_tmp = hosts_tmp.decode('utf-8')
@@ -194,7 +193,7 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix, ASuffix,
         nhosts = len(hosts)
         ExecCMDMPI_host = 'srun -n '+str(nFH)+' --verbose --export=ALL -c 1 --distribution=arbitrary --cpu-bind=cores'
         # need to account for when fewer than LEVS tasks are available
-        tasks = int(os.getenv('SLURM_NPROCS',1))
+        tasks = int(os.getenv('SLURM_NPROCS', 1))
         if levs > tasks:
             ExecCMDMPILevs_host = 'srun -n '+str(tasks)+' --verbose --export=ALL -c 1 --distribution=arbitrary --cpu-bind=cores'
             ExecCMDMPILevs_nohost = 'srun -n '+str(tasks)+' --verbose --export=ALL'
@@ -204,7 +203,7 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix, ASuffix,
         ExecCMDMPI1_host = 'srun -n 1 --verbose --export=ALL -c 1 --distribution=arbitrary --cpu-bind=cores'
         ExecCMDMPI10_host = 'srun -n 10 --verbose --export=ALL -c 1 --distribution=arbitrary --cpu-bind=cores'
     elif launcher == 'aprun':
-        hostfile = os.getenv('LSB_DJOB_HOSTFILE','')
+        hostfile = os.getenv('LSB_DJOB_HOSTFILE', '')
         with open(hostfile) as f:
             hosts_tmp = f.readlines()
         hosts_tmp = [x.strip() for x in hosts_tmp]
@@ -220,9 +219,9 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix, ASuffix,
         print('unknown MPI launcher. Failure.')
         sys.exit(1)
 
-    ####### generate the full resolution analysis
+    # generate the full resolution analysis
     ihost = 0
-    ### interpolate increment to full background resolution
+    # interpolate increment to full background resolution
     for fh in IAUHH:
         # first check to see if increment file exists
         CalcAnlDir = RunDir+'/calcanl_'+format(fh, '02')
@@ -231,26 +230,26 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix, ASuffix,
             # set up the namelist
             namelist = OrderedDict()
             namelist["setup"] = {"lon_out": LonB,
-                                "lat_out": LatB,
-                                "lev": levs,
-                                "infile": "'siginc.nc."+format(fh, '02')+"'",
-                                "outfile": "'inc.fullres."+format(fh, '02')+"'",
-                                }
+                                 "lat_out": LatB,
+                                 "lev": levs,
+                                 "infile": "'siginc.nc."+format(fh, '02')+"'",
+                                 "outfile": "'inc.fullres."+format(fh, '02')+"'",
+                                 }
             gsi_utils.write_nml(namelist, CalcAnlDir+'/fort.43')
 
             if ihost >= nhosts:
                 ihost = 0
             with open(CalcAnlDir+'/hosts', 'w') as hostfile:
                 hostfile.write(hosts[ihost]+'\n')
-                if launcher == 'srun': # need to write host per task not per node for slurm
+                if launcher == 'srun':  # need to write host per task not per node for slurm
                     # For xjet, each instance of chgres_inc must run on two nodes each
-                    if os.getenv('SLURM_JOB_PARTITION','') == 'xjet':
-                        for a in range(0,4):
+                    if os.getenv('SLURM_JOB_PARTITION', '') == 'xjet':
+                        for a in range(0, 4):
                             hostfile.write(hosts[ihost]+'\n')
-                        ihost+=1
-                        for a in range(0,5):
+                        ihost += 1
+                        for a in range(0, 5):
                             hostfile.write(hosts[ihost]+'\n')
-                    for a in range(0,9): # need 9 more of the same host for the 10 tasks for chgres_inc
+                    for a in range(0, 9):  # need 9 more of the same host for the 10 tasks for chgres_inc
                         hostfile.write(hosts[ihost]+'\n')
             if launcher == 'srun':
                 os.environ['SLURM_HOSTFILE'] = CalcAnlDir+'/hosts'
@@ -264,20 +263,20 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix, ASuffix,
                 print('Error with chgres_inc.x, exit code='+str(ec))
                 print(locals())
                 sys.exit(ec)
-            ihost+=1
+            ihost += 1
         else:
             print('f'+format(fh, '03')+' is in $IAUFHRS but increment file is missing. Skipping.')
 
-    #### generate analysis from interpolated increment
+    # generate analysis from interpolated increment
     CalcAnlDir6 = RunDir+'/calcanl_'+format(6, '02')
     # set up the namelist
     namelist = OrderedDict()
-    namelist["setup"] =  {"datapath": "'./'",
-                          "analysis_filename": "'anl'",
-                          "firstguess_filename": "'ges'",
-                          "increment_filename": "'inc.fullres'",
-                          "fhr": 6,
-                          }
+    namelist["setup"] = {"datapath": "'./'",
+                         "analysis_filename": "'anl'",
+                         "firstguess_filename": "'ges'",
+                         "increment_filename": "'inc.fullres'",
+                         "fhr": 6,
+                         }
 
     gsi_utils.write_nml(namelist, CalcAnlDir6+'/calc_analysis.nml')
 
@@ -298,8 +297,7 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix, ASuffix,
         print(locals())
         sys.exit(exit_fullres)
 
-
-    ######## compute determinstic analysis on ensemble resolution
+    # compute determinstic analysis on ensemble resolution
     if Cdump in ["gdas", "gfs"]:
         chgres_jobs = []
         for fh in IAUHH:
@@ -308,15 +306,15 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix, ASuffix,
             print(CalcAnlDir6+'/ges.ensres.'+format(fh, '02'))
             if (os.path.isfile(CalcAnlDir6+'/ges.ensres.'+format(fh, '02'))):
                 print('Calculating analysis on ensemble resolution for f'+format(fh, '03'))
-                ######## generate ensres analysis from interpolated background
+                # generate ensres analysis from interpolated background
                 # set up the namelist
                 namelist = OrderedDict()
-                namelist["setup"] =  {"datapath": "'./'",
-                                    "analysis_filename": "'anl.ensres'",
-                                    "firstguess_filename": "'ges.ensres'",
-                                    "increment_filename": "'siginc.nc'",
-                                    "fhr": fh,
-                                    }
+                namelist["setup"] = {"datapath": "'./'",
+                                     "analysis_filename": "'anl.ensres'",
+                                     "firstguess_filename": "'ges.ensres'",
+                                     "increment_filename": "'siginc.nc'",
+                                     "fhr": fh,
+                                     }
 
                 gsi_utils.write_nml(namelist, CalcAnlDir6+'/calc_analysis.nml')
 
@@ -328,7 +326,7 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix, ASuffix,
                 print(ExecCMDMPILevs_nohost+' '+CalcAnlDir6+'/calc_anl.x submitted')
 
                 sys.stdout.flush()
-                ####### check on analysis steps
+                # check on analysis steps
                 exit_ensres = ensres_anl_job.wait()
                 if exit_ensres != 0:
                     print('Error with calc_analysis.x for ensemble resolution, exit code='+str(exit_ensres))
@@ -337,8 +335,9 @@ def calcanl_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix, ASuffix,
             else:
                 print('f'+format(fh, '03')+' is in $IAUFHRS but ensemble resolution guess file is missing. Skipping.')
 
-    print('calcanl_gfs successfully completed at: ',datetime.datetime.utcnow())
+    print('calcanl_gfs successfully completed at: ', datetime.datetime.utcnow())
     print(locals())
+
 
 # run the function if this script is called from the command line
 if __name__ == '__main__':
@@ -350,7 +349,7 @@ if __name__ == '__main__':
     GSuffix = os.getenv('GSUFFIX', './')
     ComOut = os.getenv('COMOUT', './')
     APrefix = os.getenv('APREFIX', '')
-    ASuffix= os.getenv('ASUFFIX', '')
+    ASuffix = os.getenv('ASUFFIX', '')
     NThreads = os.getenv('NTHREADS_CHGRES', 1)
     FixDir = os.getenv('FIXgsm', './')
     atmges_ens_mean = os.getenv('ATMGES_ENSMEAN', './atmges_ensmean')
@@ -359,8 +358,8 @@ if __name__ == '__main__':
     ExecCMDMPI = os.getenv('APRUN_CALCINC', '')
     ExecAnl = os.getenv('CALCANLEXEC', './calc_analysis.x')
     ExecChgresInc = os.getenv('CHGRESINCEXEC', './interp_inc.x')
-    NEMSGet = os.getenv('NEMSIOGET','nemsio_get')
-    IAUHrs = list(map(int,os.getenv('IAUFHRS','6').split(',')))
+    NEMSGet = os.getenv('NEMSIOGET', 'nemsio_get')
+    IAUHrs = list(map(int, os.getenv('IAUFHRS', '6').split(',')))
     Cdump = os.getenv('CDUMP', 'gdas')
 
     print(locals())
