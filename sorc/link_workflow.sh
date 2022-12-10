@@ -27,7 +27,7 @@ OPTIND=1
 while getopts ":ho" option; do
   case "${option}" in
     h) usage ;;
-    o) 
+    o)
       echo "-o option received, configuring for NCO"
       RUN_ENVIR="nco";;
     :)
@@ -91,6 +91,7 @@ for dir in aer \
             cpl \
             datm \
             gldas \
+            gsi \
             lut \
             mom6 \
             orog \
@@ -107,6 +108,7 @@ for dir in aer \
     fix_ver="${dir}_ver"
     ${LINK} "${FIX_DIR}/${dir}/${!fix_ver}" "${dir}"
 done
+
 
 if [[ -d "${script_dir}/ufs_utils.fd" ]]; then
   cd "${script_dir}/ufs_utils.fd/fix" || exit 1
@@ -162,15 +164,6 @@ if [[ -d "${script_dir}/gfs_wafs.fd" ]]; then
     ${LINK} "${script_dir}/gfs_wafs.fd/fix"/*                          .
 fi
 
-
-#------------------------------
-#--add GSI fix directory
-#------------------------------
-if [[ -d "${script_dir}/gsi_enkf.fd" ]]; then
-  cd "${top_dir}/fix" || exit 1
-    [[ -d gsi ]] && rm -rf gsi
-    ${LINK} "${script_dir}/gsi_enkf.fd/fix"  gsi
-fi
 
 #------------------------------
 #--add GDASApp fix directory
@@ -295,10 +288,29 @@ fi
 
 # GDASApp
 if [[ -d "${script_dir}/gdas.cd" ]]; then
-  for gdasexe in fv3jedi_addincrement.x fv3jedi_diffstates.x fv3jedi_ensvariance.x fv3jedi_hofx.x \
-    fv3jedi_var.x fv3jedi_convertincrement.x fv3jedi_dirac.x fv3jedi_error_covariance_training.x \
-    fv3jedi_letkf.x fv3jedi_convertstate.x fv3jedi_eda.x fv3jedi_forecast.x fv3jedi_plot_field.x \
-    fv3jedi_data_checker.py fv3jedi_enshofx.x fv3jedi_hofx_nomodel.x fv3jedi_testdata_downloader.py; do
+  declare -a JEDI_EXE=("fv3jedi_addincrement.x" \
+                       "fv3jedi_diffstates.x" \
+                       "fv3jedi_ensvariance.x" \
+                       "fv3jedi_hofx.x" \
+                       "fv3jedi_var.x" \
+                       "fv3jedi_convertincrement.x" \
+                       "fv3jedi_dirac.x" \
+                       "fv3jedi_error_covariance_training.x" \
+                       "fv3jedi_letkf.x" \
+                       "fv3jedi_convertstate.x" \
+                       "fv3jedi_eda.x" \
+                       "fv3jedi_forecast.x" \
+                       "fv3jedi_plot_field.x" \
+                       "fv3jedi_data_checker.py" \
+                       "fv3jedi_enshofx.x" \
+                       "fv3jedi_hofx_nomodel.x" \
+                       "fv3jedi_testdata_downloader.py" \
+                       "soca_convertincrement.x" \
+                       "soca_error_covariance_training.x" \
+                       "soca_setcorscales.x" \
+                       "soca_gridgen.x" \
+                       "soca_var.x")
+  for gdasexe in "${JEDI_EXE[@]}"; do
     [[ -s "${gdasexe}" ]] && rm -f "${gdasexe}"
     ${LINK} "${script_dir}/gdas.cd/build/bin/${gdasexe}" .
   done
@@ -434,4 +446,3 @@ fi
 echo "${BASH_SOURCE[0]} completed successfully"
 
 exit 0
-

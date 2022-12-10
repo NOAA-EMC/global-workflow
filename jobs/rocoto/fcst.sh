@@ -1,22 +1,20 @@
 #! /usr/bin/env bash
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${HOMEgfs}/ush/preamble.sh"
 
 ###############################################################
 # Source FV3GFS workflow modules
-. $HOMEgfs/ush/load_fv3gfs_modules.sh
+. ${HOMEgfs}/ush/load_fv3gfs_modules.sh
 status=$?
-[[ $status -ne 0 ]] && exit $status
-if [[ $CDUMP == "gefs" ]]; then
-    export MEMBER=`echo ${RUNMEM:-"c00"}|cut -c2-3`
-    if [[ $RUNMEM != "c00" ]]; then
-        export PREFIX_ATMINC="r"
-    fi
-fi
+[[ ${status} -ne 0 ]] && exit ${status}
+
+export job="fcst"
+export jobid="${job}.$$"
+
 ###############################################################
 # Execute the JJOB
-$HOMEgfs/jobs/JGLOBAL_FORECAST
+${HOMEgfs}/jobs/JGLOBAL_FORECAST
 status=$?
 
 
-exit $status
+exit ${status}

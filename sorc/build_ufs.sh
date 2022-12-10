@@ -11,10 +11,6 @@ export RT_COMPILER="intel"
 source "${cwd}/ufs_model.fd/tests/detect_machine.sh"
 source "${cwd}/ufs_model.fd/tests/module-setup.sh"
 
-if [[ ${MACHINE_ID} =~ wcoss2.* ]]; then
-	APP='S2SW'
-fi
-
 while getopts ":da:v" option; do
   case "${option}" in
     d) BUILD_TYPE="Debug";;

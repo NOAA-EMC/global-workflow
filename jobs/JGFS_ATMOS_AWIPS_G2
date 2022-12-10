@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${HOMEgfs}/ush/preamble.sh"
 
 export OMP_NUM_THREADS=${OMP_NUM_THREADS:-1}
 
@@ -11,14 +11,14 @@ export OMP_NUM_THREADS=${OMP_NUM_THREADS:-1}
 ##########################################################
 # obtain unique process id (pid) and make temp directory
 ##########################################################
-export DATA=${DATA:-${DATAROOT}/${jobid:?}}
-mkdir -p $DATA
-cd $DATA
+export DATA=${DATA:-${DATAROOT}/${jobid}}
+mkdir -p ${DATA}
+cd ${DATA}
 
 ######################################
 # Set up the cycle variable
 ######################################
-export cycle=${cycle:-t${cyc}z}
+export cycle="t${cyc}z"
 
 ###########################################
 # Run setpdy and initialize PDY variables
@@ -30,13 +30,13 @@ setpdy.sh
 # Set up the HOME directory
 ################################
 export HOMEgfs=${HOMEgfs:-${PACKAGEROOT}/gfs.${gfs_ver}}
-export USHgfs=${USHgfs:-$HOMEgfs/ush}
-export EXECgfs=${EXECgfs:-$HOMEgfs/exec}
-export PARMgfs=${PARMgfs:-$HOMEgfs/parm}
-export PARMwmo=${PARMwmo:-$HOMEgfs/parm/wmo}
-export PARMproduct=${PARMproduct:-$HOMEgfs/parm/product}
-export FIXgfs=${FIXgfs:-$HOMEgfs/fix}
-export UTILgfs=${UTILgfs:-$HOMEgfs/util}
+export USHgfs=${USHgfs:-${HOMEgfs}/ush}
+export EXECgfs=${EXECgfs:-${HOMEgfs}/exec}
+export PARMgfs=${PARMgfs:-${HOMEgfs}/parm}
+export PARMwmo=${PARMwmo:-${HOMEgfs}/parm/wmo}
+export PARMproduct=${PARMproduct:-${HOMEgfs}/parm/product}
+export FIXgfs=${FIXgfs:-${HOMEgfs}/fix}
+export UTILgfs=${UTILgfs:-${HOMEgfs}/util}
 
 ###################################
 # Specify NET and RUN Name and model
@@ -44,20 +44,20 @@ export UTILgfs=${UTILgfs:-$HOMEgfs/util}
 export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
 export model=${model:-gfs}
-export COMPONENT=${COMPONENT:-atmos}
+export COMPONENT="atmos"
 
 ##############################################
 # Define COM directories
 ##############################################
-export COMIN=${COMIN:-$(compath.py ${envir}/${NET}/${gfs_ver})/${RUN}.${PDY}/${cyc}/$COMPONENT}
-export COMOUT=${COMOUT:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/$COMPONENT}
+export COMIN=${COMIN:-$(compath.py ${envir}/${NET}/${gfs_ver})/${RUN}.${PDY}/${cyc}/${COMPONENT}}
+export COMOUT=${COMOUT:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/${COMPONENT}}
 export COMOUTwmo=${COMOUTwmo:-${COMOUT}/wmo}
 
 export SENDDBN=${SENDDBN:-NO}
 export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
-if [ $SENDCOM = YES ] ; then
-  mkdir -m 775 -p $COMOUT $COMOUTwmo
+if [ ${SENDCOM} = YES ] ; then
+  mkdir -m 775 -p ${COMOUT} ${COMOUTwmo}
 fi
 
 export pgmout=OUTPUT.$$
@@ -67,21 +67,21 @@ export pgmout=OUTPUT.$$
 # Execute the script.
 #########################################################
 mkdir -m 775 awips_g1
-cd $DATA/awips_g1
-$HOMEgfs/scripts/exgfs_atmos_grib_awips.sh $fcsthrs
+cd ${DATA}/awips_g1
+${HOMEgfs}/scripts/exgfs_atmos_grib_awips.sh ${fcsthrs}
 export err=$?; err_chk
 
 ############################################
 # print exec I/O output
 ############################################
-if [ -e "$pgmout" ] ; then
-  cat $pgmout
+if [ -e "${pgmout}" ] ; then
+  cat ${pgmout}
 fi
 
 ###################################
 # Remove temp directories
 ###################################
-if [ "$KEEPDATA" != "YES" ] ; then
-  rm -rf $DATA
+if [ "${KEEPDATA}" != "YES" ] ; then
+  rm -rf ${DATA}
 fi
 

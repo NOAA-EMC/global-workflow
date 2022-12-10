@@ -1,27 +1,28 @@
 #! /usr/bin/env bash
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${HOMEgfs}/ush/preamble.sh"
 
 ###############################################################
 # Source FV3GFS workflow modules
-. $HOMEgfs/ush/load_fv3gfs_modules.sh
+. ${HOMEgfs}/ush/load_fv3gfs_modules.sh
 status=$?
-[[ $status -ne 0 ]] && exit $status
+[[ ${status} -ne 0 ]] && exit ${status}
 
 ###############################################################
 # Loop over groups to Execute the JJOB
-fhrlst=$(echo $FHRLST | sed -e 's/_/ /g; s/f/ /g; s/,/ /g')
+fhrlst=$(echo ${FHRLST} | sed -e 's/_/ /g; s/f/ /g; s/,/ /g')
 
-for fhr in $fhrlst; do
-    
-    export FHMIN_EPOS=$fhr
-    export FHMAX_EPOS=$fhr
-    export FHOUT_EPOS=$fhr
+for fhr in ${fhrlst}; do
+
+    export FHMIN_EPOS=${fhr}
+    export FHMAX_EPOS=${fhr}
+    export FHOUT_EPOS=${fhr}
     export job=epos${fhr}
-    
-    $HOMEgfs/jobs/JGDAS_ENKF_POST
+    export jobid="${job}.$$"
+
+    ${HOMEgfs}/jobs/JGDAS_ENKF_POST
     status=$?
-    [[ $status -ne 0 ]] && exit $status
+    [[ ${status} -ne 0 ]] && exit ${status}
 
 done
 
