@@ -308,8 +308,13 @@ EOF
   # inline post fix files
   if [ $WRITE_DOPOST = ".true." ]; then
     $NLN $PARM_POST/post_tag_gfs${LEVS}             $DATA/itag
-    $NLN $PARM_POST/postxconfig-NT-GFS-TWO.txt      $DATA/postxconfig-NT.txt
-    $NLN $PARM_POST/postxconfig-NT-GFS-F00-TWO.txt  $DATA/postxconfig-NT_FH00.txt
+    if [[ $RUN == "gefs" ]]; then
+      $NLN $PARM_POST/postxconfig-NT-GEFS.txt         $DATA/postxconfig-NT.txt
+      $NLN $PARM_POST/postxconfig-NT-GEFS-F00.txt     $DATA/postxconfig-NT_FH00.txt
+    else
+      $NLN $PARM_POST/postxconfig-NT-GFS-TWO.txt      $DATA/postxconfig-NT.txt
+      $NLN $PARM_POST/postxconfig-NT-GFS-F00-TWO.txt  $DATA/postxconfig-NT_FH00.txt
+    fi
     $NLN $PARM_POST/params_grib2_tbl_new            $DATA/params_grib2_tbl_new
   fi
 
@@ -615,9 +620,11 @@ data_out_GFS() {
         done
       fi
     elif [ $CDUMP = "gfs" ]; then
-      $NCP $DATA/input.nml $ROTDIR/${CDUMP}.${PDY}/${cyc}/atmos/
-    elif [ $CDUMP = "gefs" ]; then
-      $NCP $DATA/input.nml $ROTDIR/${CDUMP}.${PDY}/${cyc}/$RUNMEM/atmos/
+      if [ $RUN = "gefs" ]; then
+        $NCP $DATA/input.nml $ROTDIR/${CDUMP}.${PDY}/${cyc}/$RUNMEM/atmos/
+      else
+        $NCP $DATA/input.nml $ROTDIR/${CDUMP}.${PDY}/${cyc}/atmos/
+      fi
     fi
   fi
 
