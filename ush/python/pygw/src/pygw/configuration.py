@@ -131,10 +131,10 @@ class Configuration:
         begin = out.find(magic)
         if begin < 0:
             raise ShellScriptException(scripts, 'Cannot find magic string; '
-                                       'at least one script failed: '+repr(out))
-        for entry in out[begin+len(magic):].split('\x00'):
+                                       'at least one script failed: ' + repr(out))
+        for entry in out[begin + len(magic):].split('\x00'):
             iequal = entry.find('=')
-            varbls[entry[0:iequal]] = entry[iequal+1:]
+            varbls[entry[0:iequal]] = entry[iequal + 1:]
         return varbls
 
     @staticmethod

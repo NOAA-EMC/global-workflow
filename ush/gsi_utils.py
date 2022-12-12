@@ -29,22 +29,22 @@ def link_file(from_file, to_file):
         if not os.path.islink(to_file):
             os.symlink(from_file, to_file)
         else:
-            print(to_file+" exists, unlinking.")
+            print(to_file + " exists, unlinking.")
             os.unlink(to_file)
             os.symlink(from_file, to_file)
-        print("ln -s "+from_file+" "+to_file)
+        print("ln -s " + from_file + " " + to_file)
 
 
 def copy_file(from_file, to_file):
     import shutil
     shutil.copy(from_file, to_file)
-    print("cp "+from_file+" "+to_file)
+    print("cp " + from_file + " " + to_file)
 
 
 def make_dir(directory):
     import os
     os.makedirs(directory)
-    print("mkdir -p "+directory)
+    print("mkdir -p " + directory)
 
 
 def write_nml(nml_dict, nml_file):
@@ -58,9 +58,9 @@ def write_nml(nml_dict, nml_file):
     nfile = open(nml_file, 'w')
 
     for nml, nmlvars in nml_dict.items():
-        nfile.write('&'+nml+'\n')
+        nfile.write('&' + nml + '\n')
         for var, val in nmlvars.items():
-            nfile.write('  '+str(var)+' = '+str(val)+'\n')
+            nfile.write('  ' + str(var) + ' = ' + str(val) + '\n')
         nfile.write('/\n\n')
     nfile.close()
 
