@@ -42,7 +42,7 @@ done
 ##########################################
 # Source machine runtime environment
 ##########################################
-. "${HOMEgfs}/env/${machine}.env ocnanalrun"
+. "${HOMEgfs}/env/${machine}.env" ocnanalrun
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
 
