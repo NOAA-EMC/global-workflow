@@ -1,6 +1,6 @@
-### gsi_utils.py
-###          a collection of functions, classes, etc.
-###          used for the GSI global analysis
+# gsi_utils.py
+# a collection of functions, classes, etc.
+# used for the GSI global analysis
 
 def isTrue(str_in):
     """ isTrue(str_in)
@@ -11,11 +11,12 @@ def isTrue(str_in):
 
     """
     str_in = str_in.upper()
-    if str_in in ['YES','.TRUE.']:
+    if str_in in ['YES', '.TRUE.']:
         status = True
     else:
         status = False
     return status
+
 
 def link_file(from_file, to_file):
     """ link_file(from_file, to_file)
@@ -28,20 +29,23 @@ def link_file(from_file, to_file):
         if not os.path.islink(to_file):
             os.symlink(from_file, to_file)
         else:
-            print(to_file+" exists, unlinking.")
+            print(to_file + " exists, unlinking.")
             os.unlink(to_file)
             os.symlink(from_file, to_file)
-        print("ln -s "+from_file+" "+to_file)
+        print("ln -s " + from_file + " " + to_file)
+
 
 def copy_file(from_file, to_file):
     import shutil
     shutil.copy(from_file, to_file)
-    print("cp "+from_file+" "+to_file)
+    print("cp " + from_file + " " + to_file)
+
 
 def make_dir(directory):
     import os
     os.makedirs(directory)
-    print("mkdir -p "+directory)
+    print("mkdir -p " + directory)
+
 
 def write_nml(nml_dict, nml_file):
     """ write_nml(nml_dict, nml_file)
@@ -54,9 +58,9 @@ def write_nml(nml_dict, nml_file):
     nfile = open(nml_file, 'w')
 
     for nml, nmlvars in nml_dict.items():
-        nfile.write('&'+nml+'\n')
+        nfile.write('&' + nml + '\n')
         for var, val in nmlvars.items():
-            nfile.write('  '+str(var)+' = '+str(val)+'\n')
+            nfile.write('  ' + str(var) + ' = ' + str(val) + '\n')
         nfile.write('/\n\n')
     nfile.close()
 
@@ -82,7 +86,8 @@ def get_ncdims(ncfile):
 
     return ncdims
 
-def get_nemsdims(nemsfile,nemsexe):
+
+def get_nemsdims(nemsfile, nemsexe):
     """ get_nemsdims(nemsfile,nemsexe)
     - function to return dictionary of NEMSIO file dimensions for use
     input:  nemsfile - string to path nemsio file
@@ -93,16 +98,17 @@ def get_nemsdims(nemsfile,nemsexe):
     """
     import subprocess
     ncdims = {
-                'dimx': 'grid_xt',
+        'dimx': 'grid_xt',
                 'dimy': 'grid_yt',
                 'dimz': 'pfull',
-                }
+    }
     nemsdims = {}
-    for dim in ['dimx','dimy','dimz']:
-        out = subprocess.Popen([nemsexe,nemsfile,dim],stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+    for dim in ['dimx', 'dimy', 'dimz']:
+        out = subprocess.Popen([nemsexe, nemsfile, dim], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         stdout, stderr = out.communicate()
         nemsdims[ncdims[dim]] = int(stdout.split(' ')[-1].rstrip())
     return nemsdims
+
 
 def get_timeinfo(ncfile):
     """ get_timeinfo(ncfile)
@@ -122,7 +128,7 @@ def get_timeinfo(ncfile):
     date_str = time_units.split('since ')[1]
     date_str = re.sub("[^0-9]", "", date_str)
     initstr = date_str[0:10]
-    inittime = dt.datetime.strptime(initstr,"%Y%m%d%H")
+    inittime = dt.datetime.strptime(initstr, "%Y%m%d%H")
     nfhour = int(ncf['time'][0])
     validtime = inittime + dt.timedelta(hours=nfhour)
     ncf.close()

@@ -45,6 +45,7 @@ class Logger:
     LOG_LEVELS = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
     DEFAULT_LEVEL = 'INFO'
     DEFAULT_FORMAT = '%(asctime)s - %(levelname)-8s - %(name)-12s: %(message)s'
+
     def __init__(self, name: str = None,
                  level: str = DEFAULT_LEVEL,
                  _format: str = DEFAULT_FORMAT,
@@ -93,7 +94,7 @@ class Logger:
             level=self.level,
             _format=self.format,
             colored_log=self.colored_log,
-            )
+        )
         _handlers.append(_handler)
         self._logger.addHandler(_handler)
 
@@ -151,8 +152,8 @@ class Logger:
 
     @classmethod
     def add_stream_handler(cls, level: str = DEFAULT_LEVEL,
-                            _format: str = DEFAULT_FORMAT,
-                            colored_log: bool = False):
+                           _format: str = DEFAULT_FORMAT,
+                           colored_log: bool = False):
         """
         Create stream handler
         This classmethod will allow setting a custom stream handler on children
