@@ -339,7 +339,7 @@ else   ## not_anl if_stimes
         ${WGRIB2} -s "${COMOUT}/${FLUXFL}" > "${COMOUT}/${FLUXFLIDX}"
       fi
 
-      if [[ "${SENDDBN}" = 'YES' ]] && [[ "${RUN}" = 'gdas' ]] && (( fhr % 3 == 0 )); then
+      if [[ "${SENDDBN}" = 'YES' ]] && [[ "${RUN}" = 'gdas' ]] && (( d_fhr % 3 == 0 )); then
         "${DBNROOT}/bin/dbn_alert" MODEL "${run}_SF" "${job}" "${COMOUT}/${PREFIX}atmf${fhr}${SUFFIX}"
         "${DBNROOT}/bin/dbn_alert" MODEL "${run}_BF" "${job}" "${COMOUT}/${PREFIX}sfcf${fhr}${SUFFIX}"
         "${DBNROOT}/bin/dbn_alert" MODEL "${run}_SGB_GB2" "${job}" "${COMOUT}/${PREFIX}sfluxgrbf${fhr}.grib2"
