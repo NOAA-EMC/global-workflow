@@ -6,4 +6,3 @@ __docformat__ = "restructuredtext"
 import os
 
 pygw_directory = os.path.dirname(__file__)
-

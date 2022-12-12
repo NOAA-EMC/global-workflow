@@ -183,7 +183,6 @@ class AppConfig:
 
         configs += ['sfcanl', 'analcalc', 'fcst', 'post', 'vrfy', 'arch']
 
-
         if self.do_gldas:
             configs += ['gldas']
 

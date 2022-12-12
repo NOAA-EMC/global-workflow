@@ -153,8 +153,8 @@ class Tasks:
             prefix = f"{cpl_ic['BASE_CPLIC']}/{cpl_ic['CPL_ATMIC']}/@Y@m@d@H/{self.cdump}"
             for file in ['gfs_ctrl.nc'] + \
                         [f'{datatype}_data.tile{tile}.nc'
-                        for datatype in ['gfs', 'sfc']
-                        for tile in range(1, self.n_tiles + 1)]:
+                         for datatype in ['gfs', 'sfc']
+                         for tile in range(1, self.n_tiles + 1)]:
                 data = f"{prefix}/{atm_res}/INPUT/{file}"
                 dep_dict = {'type': 'data', 'data': data}
                 deps.append(rocoto.add_dependency(dep_dict))
@@ -549,6 +549,7 @@ class Tasks:
                               dependency=dependencies)
 
         return task
+
     def gldas(self):
 
         deps = []
@@ -1189,7 +1190,7 @@ class Tasks:
 
     def esfc(self):
 
-        #eupd_cdump = 'gdas' if 'gdas' in self.app_config.eupd_cdumps else 'gfs'
+        # eupd_cdump = 'gdas' if 'gdas' in self.app_config.eupd_cdumps else 'gfs'
 
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump}analcalc'}

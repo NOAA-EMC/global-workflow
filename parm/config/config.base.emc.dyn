@@ -297,11 +297,6 @@ export IAU_OFFSET=6
 export DOIAU_ENKF=${DOIAU:-"YES"}   # Enable 4DIAU for EnKF ensemble
 export IAUFHRS_ENKF="3,6,9"
 export IAU_DELTHRS_ENKF=6
-# Check if cycle is cold starting, DOIAU off, or free-forecast mode
-if [[ "$MODE" = "cycled" && "$SDATE" = "$CDATE" && $EXP_WARM_START = ".false." ]] || [[ "$DOIAU" = "NO" ]] || [[ "$MODE" = "forecast-only" && $EXP_WARM_START = ".false." ]] ; then
-  export IAU_OFFSET=0
-  export IAU_FHROT=0
-fi
 
 # Use Jacobians in eupd and thereby remove need to run eomg
 export lobsdiag_forenkf=".true."
@@ -348,6 +343,20 @@ if [ $DOHYBVAR = "YES" ]; then
     else
         export FHOUT_ENKF=3
     fi
+fi
+
+# if 3DVAR and IAU 
+if [[ ${DOHYBVAR} == "NO" && ${DOIAU} == "YES"  ]]; then
+    export IAUFHRS="6"
+    export IAU_FHROT="3"
+    export IAU_FILTER_INCREMENTS=".true."
+    export IAUFHRS_ENKF="6"
+fi
+
+# Check if cycle is cold starting, DOIAU off, or free-forecast mode
+if [[ "$MODE" = "cycled" && "$SDATE" = "$CDATE" && $EXP_WARM_START = ".false." ]] || [[ "$DOIAU" = "NO" ]] || [[ "$MODE" = "forecast-only" && $EXP_WARM_START = ".false." ]] ; then
+  export IAU_OFFSET=0
+  export IAU_FHROT=0
 fi
 
 # turned on nsst in anal and/or fcst steps, and turn off rtgsst
