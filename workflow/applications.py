@@ -2,8 +2,8 @@
 
 from typing import Dict, Any
 from datetime import timedelta
-from configuration import Configuration
 from hosts import Host
+from pygw.configuration import Configuration
 
 __all__ = ['AppConfig']
 
@@ -78,11 +78,11 @@ class AppConfig:
 
     VALID_MODES = ['cycled', 'forecast-only']
 
-    def __init__(self, configuration: Configuration) -> None:
+    def __init__(self, conf: Configuration) -> None:
 
         self.scheduler = Host().scheduler
 
-        _base = configuration.parse_config('config.base')
+        _base = conf.parse_config('config.base')
 
         self.mode = _base['MODE']
 
@@ -134,7 +134,7 @@ class AppConfig:
         self.configs_names = self._get_app_configs()
 
         # Source the config_files for the jobs in the application
-        self.configs = self._source_configs(configuration)
+        self.configs = self._source_configs(conf)
 
         # Update the base config dictionary based on application
         upd_base_map = {'cycled': self._cycled_upd_base,
@@ -286,7 +286,7 @@ class AppConfig:
 
         return base_out
 
-    def _source_configs(self, configuration: Configuration) -> Dict[str, Any]:
+    def _source_configs(self, conf: Configuration) -> Dict[str, Any]:
         """
         Given the configuration object and jobs,
         source the configurations for each config and return a dictionary
@@ -296,7 +296,7 @@ class AppConfig:
         configs = dict()
 
         # Return config.base as well
-        configs['base'] = configuration.parse_config('config.base')
+        configs['base'] = conf.parse_config('config.base')
 
         # Source the list of all config_files involved in the application
         for config in self.configs_names:
@@ -316,7 +316,7 @@ class AppConfig:
                 files += [f'config.{config}']
 
             print(f'sourcing config.{config}')
-            configs[config] = configuration.parse_config(files)
+            configs[config] = conf.parse_config(files)
 
         return configs
 
