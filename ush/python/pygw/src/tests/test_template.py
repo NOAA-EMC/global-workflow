@@ -136,11 +136,11 @@ def test_substitute_with_dependencies():
               'ff': {'1': 'b hello world', '4': 'a'},
               'greeting': 'hello world',
               'host': {'config': '/home/user/hosts',
-                          'config_file': '/home/user/config/config.yaml/xenon.config.yaml',
-                          'name': 'xenon',
-                          'proxy2': {'config': '/home/user/xenon.hello world.yaml',
-                                     'list': [['/home/user/xenon', 'toto.xenon.hello world'],
-                                              'config.yaml']}},
+                       'config_file': '/home/user/config/config.yaml/xenon.config.yaml',
+                       'name': 'xenon',
+                       'proxy2': {'config': '/home/user/xenon.hello world.yaml',
+                                  'list': [['/home/user/xenon', 'toto.xenon.hello world'],
+                                           'config.yaml']}},
               'root': '/home/user',
               'world': 'world'}
 
