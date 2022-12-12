@@ -9,7 +9,7 @@ export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
 
 configs="base ocnanal ocnanalrun"
 for config in ${configs}; do
-    . "${EXPDIR}"/config."${config}"
+    . "${EXPDIR}/config.${config}"
     status=$?
     [[ ${status} -ne 0 ]] && exit "${status}"
 done
@@ -84,7 +84,7 @@ fi
 ##########################################
 # Remove the Temporary working directory
 ##########################################
-#cd "${DATAROOT}" || exit 1
-#[[ ${KEEPDATA} = "NO" ]] && rm -rf "${DATA}"
+cd "${DATAROOT}" || exit 1
+[[ ${KEEPDATA} = "NO" ]] && rm -rf "${DATA}"
 
 exit 0
