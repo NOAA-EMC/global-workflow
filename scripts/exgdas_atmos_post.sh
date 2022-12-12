@@ -181,6 +181,8 @@ else   ## not_anl if_stimes
   ############################################################
 
   for fhr in ${post_times}; do
+    # Enforce decimal math expressions
+    d_fhr=$((10#$fhr))
     ###############################
     # Start Looping for the
     # existence of the restart files
@@ -219,7 +221,7 @@ else   ## not_anl if_stimes
       export FLXINP=flxfile
     fi
 
-    if (( fhr > 0 )); then
+    if (( d_fhr > 0 )); then
       export IGEN=${IGEN_FCST}
     else
       export IGEN=${IGEN_ANL}
@@ -243,20 +245,20 @@ else   ## not_anl if_stimes
       export PostFlatFile="${PARMpost}/postxconfig-NT-GFS.txt"
       if [ "${RUN}" = gfs ]; then
         export IGEN="${IGEN_GFS}"
-        if (( fhr > 0 )); then export IGEN="${IGEN_FCST}" ; fi
+        if (( d_fhr > 0 )); then export IGEN="${IGEN_FCST}" ; fi
       else
         export IGEN="${IGEN_GDAS_ANL}"
-        if (( fhr > 0 )); then export IGEN="${IGEN_FCST}" ; fi
+        if (( d_fhr > 0 )); then export IGEN="${IGEN_FCST}" ; fi
       fi
       if [[ "${RUN}" = gfs ]]; then
-        if (( fhr == 0 )); then
+        if (( d_fhr == 0 )); then
           export PostFlatFile="${PARMpost}/postxconfig-NT-GFS-F00.txt"
           export CTLFILE="${PARMpost}/postcntrl_gfs_f00.xml"
         else
           export CTLFILE="${CTLFILEGFS:-${PARMpost}/postcntrl_gfs.xml}"
         fi
       else
-        if (( fhr == 0 )); then
+        if (( d_fhr == 0 )); then
           export PostFlatFile="${PARMpost}/postxconfig-NT-GFS-F00.txt"
           export CTLFILE="${CTLFILEGFS:-${PARMpost}/postcntrl_gfs_f00.xml}"
         else
@@ -317,7 +319,7 @@ else   ## not_anl if_stimes
       if (( OUTTYP == 4 )) ; then
         export NEMSINP=${COMIN}/${PREFIX}atmf${fhr}${SUFFIX}
         export FLXINP=${COMIN}/${PREFIX}sfcf${fhr}${SUFFIX}
-        if (( fhr == 0 )); then
+        if (( d_fhr == 0 )); then
           export PostFlatFile=${PARMpost}/postxconfig-NT-GFS-FLUX-F00.txt
           export CTLFILE=${PARMpost}/postcntrl_gfs_flux_f00.xml
         else
