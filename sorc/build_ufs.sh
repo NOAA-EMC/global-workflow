@@ -4,7 +4,7 @@ set -eux
 cwd=$(pwd)
 
 # Default settings
-APP="S2SWA"
+APP="MS2SWA"
 CCPP_SUITES="FV3_GFS_v16,FV3_GFS_v16_no_nsst,FV3_GFS_v16_ugwpv1,FV3_GFS_v17_p8,FV3_GFS_v16_coupled_nsstNoahmpUGWPv1,FV3_GFS_v17_coupled_p8"
 
 export RT_COMPILER="intel"
@@ -27,7 +27,7 @@ done
 
 cd "${cwd}/ufs_model.fd"
 
-MAKE_OPT="-DAPP=${APP} -DCCPP_SUITES=${CCPP_SUITES}"
+MAKE_OPT="-DAPP=${APP} -D32BIT=ON -DCCPP_SUITES=${CCPP_SUITES}"
 [[ ${BUILD_TYPE:-"Release"} = "DEBUG" ]] && MAKE_OPT+=" -DDEBUG=ON"
 COMPILE_NR=0
 CLEAN_BEFORE=YES
