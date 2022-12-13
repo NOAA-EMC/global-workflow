@@ -230,9 +230,14 @@ def logit(logger, name=None, message=None):
     Add logging to a function.
     Parameters
     ----------
-    logger: Logger
-    name: str
-    message: str
+        logger  : Logger
+                  Logger object
+        name    : str
+                  Name of the module to be logged
+                  default: __module__
+        message : str
+                  Name of the function to be logged
+                  default: __name__
     """
 
     def decorate(func):
