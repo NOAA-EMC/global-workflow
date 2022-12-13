@@ -7,7 +7,7 @@ source "${HOMEgfs}/ush/preamble.sh"
 ##############################################
 export DATA=${DATA:-${DATAROOT}/${jobid}}
 mkdir -p "${DATA}"
-cd "${DATA}"
+cd "${DATA}" || (echo "${DATA} does not exist. ABORT!"; exit 1)
 
 
 ##############################################
