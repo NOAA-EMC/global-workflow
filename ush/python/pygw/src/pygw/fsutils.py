@@ -33,7 +33,7 @@ def chdir(path):
         os.chdir(path)
         yield
     finally:
-        print(f"WARNING: Unable to chdir({path})")  # TODO: use logging
+        print(f"WARNING: Unable to chdir({path})")
         os.chdir(cwd)
 
 

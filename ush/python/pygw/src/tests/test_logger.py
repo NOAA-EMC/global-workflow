@@ -45,8 +45,7 @@ def test_logger(tmp_path):
 
 def test_logit(tmp_path):
 
-    logger = Logger('test_logger', level=level, colored_log=True)
-    print('logger at', logger)
+    logger = Logger('test_logit', level=level, colored_log=True)
 
     @logit(logger)
     def add(x, y):

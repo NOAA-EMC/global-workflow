@@ -17,14 +17,17 @@ class YAMLFile(AttrDict):
 
     def __init__(self, path=None, data=None):
         super().__init__()
+
         if path and data:
-            print("Ignoring 'data' and using 'path' argument")  # TODO: use logging
-        if path:
+            print("Ignoring 'data' and using 'path' argument")
+
+        config = None
+        if path is not None:
             config = parse_yaml(path=path)
-        elif data:
+        elif data is not None:
             config = parse_yaml(data=data)
 
-        if config:
+        if config is not None:
             self.update(config)
 
     def save(self, target):
@@ -76,7 +79,7 @@ def parse_yaml(path=None, data=None,
     envtag = '!ENV'
     inctag = '!INC'
     # pattern for global vars: look for ${word}
-    pattern = re.compile('.*?\${(\w+)}.*?')
+    pattern = re.compile(r".*?\${(\w+)}.*?")
     loader = loader or yaml.SafeLoader
 
     # the envtag will be used to mark where to start searching for the pattern
@@ -91,7 +94,6 @@ def parse_yaml(path=None, data=None,
             for g in match:
                 full_value = full_value.replace(
                     f'${{{g}}}', os.environ.get(g, f'${{{g}}}')
-                    #f'${{{g}}}', os.environ.get(g, g)
                 )
             return full_value
         return line
