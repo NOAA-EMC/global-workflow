@@ -370,12 +370,12 @@ class Ecflowsuite:
         """
 
         repeat_token = re.search(
-            "(\d{8,10})( | to )(\d{10})( | by )(\d{1,2}:)?(\d{1,2}:\d{1,2})",
+            r"(\d{8,10})( | to )(\d{10})( | by )(\d{1,2}:)?(\d{1,2}:\d{1,2})",
             repeat)
         start = repeat_token.group(1).strip()
         end = repeat_token.group(3).strip()
         byday = repeat_token.group(5).strip() if repeat_token.group(5) is not \
-                                                 None else repeat_token.group(5)
+            None else repeat_token.group(5)
         bytime = repeat_token.group(6).strip()
 
         startdate = datetime.strptime(start, "%Y%m%d%H") if len(start) == 10 \
@@ -633,8 +633,8 @@ class Ecflowsuite:
                 self.ecf_nodes[task_name].setup_script(scriptrepo, template)
                 if self.build_tree:
                     self.ecf_nodes[task_name].generate_ecflow_task(self.ecfhome,
-                                                                  self.get_suite_name(),
-                                                                  parents)
+                                                                   self.get_suite_name(),
+                                                                   parents)
                 self.ecf_nodes[parents] += self.ecf_nodes[task_name]
 
     def add_task_edits(self, task, edit_dict, parent_node=None, index=None):
@@ -1002,7 +1002,7 @@ class EcfNode():
         self.__populate_full_name_items()
         if (ecfparent and self.__max_value is None and
             (ecfparent.is_list or ecfparent.is_range) and
-            len(self.__items) == len(ecfparent.get_full_name_items())):
+                len(self.__items) == len(ecfparent.get_full_name_items())):
             self.use_parent_counter = True
 
     def get_name(self):
@@ -1162,7 +1162,6 @@ class EcfNode():
         None
         """
 
-
         if not range_token[0]:
             self.__max_value = None
             self.use_parent_counter = True
@@ -1301,8 +1300,8 @@ class EcfNode():
         for item in self.__items:
             if isinstance(item, int):
                 self.__full_name_items.append(f"{self.__base}"
-                                               f"{item:03}"
-                                               f"{self.__suffix}")
+                                              f"{item:03}"
+                                              f"{self.__suffix}")
             elif isinstance(item, str):
                 self.__full_name_items.append(f"{self.__base}"
                                               f"{item}"
@@ -1438,6 +1437,7 @@ class EcfTaskNode(EcfNode):
 
         return 'task'
 
+
 class EcfFamilyNode(EcfNode):
     """
     Extension class for the EcfNodes to identify tasks.
@@ -1455,6 +1455,7 @@ class EcfFamilyNode(EcfNode):
 
         return 'family'
 
+
 class EcfEventNode(EcfNode):
     """
     Extension class for the EcfNodes to identify events.
@@ -1471,6 +1472,7 @@ class EcfEventNode(EcfNode):
         """
 
         return 'event'
+
 
 class ecfTriggerNode(EcfNode):
     """
@@ -1719,7 +1721,7 @@ class ecfTriggerNode(EcfNode):
         """
         if 'event' in self.task_setup.keys():
             if self.is_list or self.is_range:
-                self.event = EcfEventNode(self.task_setup['event'],self)
+                self.event = EcfEventNode(self.task_setup['event'], self)
             else:
                 self.event = EcfEventNode(self.task_setup['event'],
                                           self.ecfparent)
@@ -1743,6 +1745,7 @@ class ecfTriggerNode(EcfNode):
         print(f"The range specified in {self.name} is out of bounds. "
               "Please review the configuration.")
         sys.exit(1)
+
 
 class EcfEventNode(EcfNode):
     """
@@ -1768,6 +1771,7 @@ class EcfEventNode(EcfNode):
             The string event to identify this as an event node.
         """
         return 'event'
+
 
 class EcfEditNode(EcfNode):
     """
@@ -1795,7 +1799,8 @@ class EcfEditNode(EcfNode):
 
         return 'edit'
 
-class EcfRoot( ):
+
+class EcfRoot():
     """
     A root level class that is not an EcfNode object from above but an
     object that will extend a class from the ecflow module.
@@ -1821,7 +1826,8 @@ class EcfRoot( ):
             The name of the node if it has a prefix, this strips out the
             surrounding range and just returns the beginning.
         """
-        return re.search("(.*)\{.*\}",self.name()).group(1).strip()
+        return re.search(r"(.*)\{.*\}", self.name()).group(1).strip()
+
 
 class EcfSuite(ecflow.Suite, EcfRoot):
     """
@@ -1854,6 +1860,7 @@ class EcfSuite(ecflow.Suite, EcfRoot):
         folder_path = f"{ecfhome}/{self.name()}"
         if not os.path.exists(folder_path):
             os.makedirs(folder_path)
+
 
 class EcfFamily(ecflow.Family, EcfRoot):
     """
@@ -1894,6 +1901,7 @@ class EcfFamily(ecflow.Family, EcfRoot):
             folder_path = f"{ecfhome}/{suite}/{self.name()}"
         if not os.path.exists(folder_path):
             os.makedirs(folder_path)
+
 
 class EcfTask(ecflow.Task, EcfRoot):
     """
@@ -1964,12 +1972,12 @@ class EcfTask(ecflow.Task, EcfRoot):
         script_name = f"{self.name()}.ecf"
         ecfscript = None
         search_script = f"{self.template}.ecf" if self.template is not \
-                                                  None else script_name
+            None else script_name
         if parents:
             script_path = f"{ecfhome}/{suite}/{parents.replace('>','/')}/{script_name}"
         else:
             script_path = f"{ecfhome}/{suite}/{script_name}"
-        for root,dirs,files in os.walk(self.scriptrepo):
+        for root, dirs, files in os.walk(self.scriptrepo):
             if search_script in files and ecfscript is None:
                 ecfscript = os.path.join(root, search_script)
             elif script_name in files:
@@ -1985,13 +1993,17 @@ class EcfTask(ecflow.Task, EcfRoot):
             sys.exit(1)
 
 # define Python user-defined exceptions
+
+
 class Error(Exception):
     """Base class for other exceptions"""
     pass
 
+
 class RangeError(Error):
     """Raised when the range in the configuration file is incorrect"""
     pass
+
 
 class ConfigurationError(Error):
     """Raised when there is an error in the configuration file."""

@@ -155,8 +155,8 @@ def main() -> None:
     parser.add_argument('core_file', type=str, help="File containing the dycore sigma level coefficients")
     parser.add_argument('ctrl_file', type=str, help="File containing the sigma level coefficients for atmospheric IC data")
     parser.add_argument('rest_file', type=str, help="File containing the pressure level thickness for the restart state")
-    parser.add_argument('variable_file', type=str, help="File containing list of tracer variable_names in the chem_file to add to the atm_file, one tracer per line")
-    parser.add_argument('out_file', type=str, nargs="?", help="Name of file to create. If none is specified, the atm_file will be edited in place. New file will be a copy of atm_file with the specificed tracers listed in variable_file appended from chem_file and ntracers updated.")
+    parser.add_argument('variable_file', type=str, help="File with list of tracer variable_names in the chem_file to add to the atm_file, one tracer per line")
+    parser.add_argument('out_file', type=str, nargs="?", help="Name of file to create")
 
     args = parser.parse_args()
 

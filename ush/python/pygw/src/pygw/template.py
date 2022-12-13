@@ -41,12 +41,12 @@ class Template:
     """
 
     substitutions = {
-        TemplateConstants.DOLLAR_CURLY_BRACE: TemplateConstants.SubPair(re.compile('\${.*?}+'), slice(2, -1)),
-        TemplateConstants.DOLLAR_PARENTHESES: TemplateConstants.SubPair(re.compile('\$\(.*?\)+'), slice(2, -1)),
-        TemplateConstants.DOUBLE_CURLY_BRACES: TemplateConstants.SubPair(re.compile('{{.*?}}+'), slice(2, -2)),
-        TemplateConstants.AT_SQUARE_BRACES: TemplateConstants.SubPair(re.compile('@\[.*?\]+'), slice(2, -1)),
+        TemplateConstants.DOLLAR_CURLY_BRACE: TemplateConstants.SubPair(re.compile(r'\${.*?}+'), slice(2, -1)),
+        TemplateConstants.DOLLAR_PARENTHESES: TemplateConstants.SubPair(re.compile(r'\$\(.*?\)+'), slice(2, -1)),
+        TemplateConstants.DOUBLE_CURLY_BRACES: TemplateConstants.SubPair(re.compile(r'{{.*?}}+'), slice(2, -2)),
+        TemplateConstants.AT_SQUARE_BRACES: TemplateConstants.SubPair(re.compile(r'@\[.*?\]+'), slice(2, -1)),
         TemplateConstants.AT_ANGLE_BRACKETS: TemplateConstants.SubPair(
-            re.compile('@\<.*?\>+'), slice(2, -1))
+            re.compile(r'@\<.*?\>+'), slice(2, -1))
     }
 
     @classmethod

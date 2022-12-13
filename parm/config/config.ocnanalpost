@@ -6,5 +6,5 @@
 echo "BEGIN: config.ocnanalpost"
 
 # Get task specific resources
-. "${EXPDIR}/config.resources ocnanalpost"
+. "${EXPDIR}/config.resources" ocnanalpost
 echo "END: config.ocnanalpost"
