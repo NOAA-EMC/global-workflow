@@ -32,7 +32,7 @@ class Host:
     def detect(cls):
 
         machine = 'NOTFOUND'
-        container = os.getenv('SINGULARITY_NAME')
+        container = os.getenv('SINGULARITY_NAME', None)
 
         if os.path.exists('/scratch1/NCEPDEV'):
             machine = 'HERA'
@@ -44,7 +44,7 @@ class Host:
             machine = 'WCOSS2'
         elif os.path.exists('/data/prod'):
             machine = 'S4'
-        elif container != None:
+        elif container is not None:
             machine = 'CONTAINER'
 
         if machine not in Host.SUPPORTED_HOSTS:
