@@ -6,8 +6,8 @@ source "${HOMEgfs}/ush/preamble.sh"
 # Obtain unique process id (pid) and make temp directory
 ##############################################
 export DATA=${DATA:-${DATAROOT}/${jobid}}
-mkdir -p ${DATA}
-cd ${DATA}
+mkdir -p "${DATA}"
+cd "${DATA}"
 
 
 ##############################################
@@ -32,7 +32,7 @@ export pgmerr=errfile
 export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
 configs="base earc"
 for config in ${configs}; do
-    . ${EXPDIR}/config.${config}
+    . "${EXPDIR}/config.${config}"
     status=$?
     [[ ${status} -ne 0 ]] && exit "${status}"
 done
@@ -41,7 +41,7 @@ done
 ##########################################
 # Source machine runtime environment
 ##########################################
-. ${HOMEgfs}/env/${machine}.env earc
+. "${HOMEgfs}/env/${machine}.env" earc
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
 
@@ -51,13 +51,12 @@ status=$?
 ##############################################
 export CDATE=${CDATE:-${PDY}${cyc}}
 export CDUMP=${CDUMP:-${RUN:-"gdas"}}
-export COMPONENT="atmos"
 
 ###############################################################
 # Run archive script
 ###############################################################
 
-${SCRgfs}/exgdas_enkf_earc.sh
+"${SCRgfs}/exgdas_enkf_earc.sh"
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
 
@@ -70,8 +69,8 @@ status=$?
 ##############################################
 # Final processing
 ##############################################
-if [ -e "${pgmout}" ] ; then
-  cat ${pgmout}
+if [[ -e "${pgmout}" ]] ; then
+  cat "${pgmout}"
 fi
 
 
