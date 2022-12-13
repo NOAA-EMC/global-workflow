@@ -46,7 +46,7 @@ class AerosolAnalysis(Analysis):
         varda_yaml.save(yaml_out)
 
         # link var executable
-        exe_src = os.environ['JEDIVAREXE']
+        exe_src = self.config['JEDIVAREXE']
         exe_dest = os.path.join(self.config['DATA'], os.path.basename(exe_src))
         if os.path.exists(exe_dest):
             rm_p(exe_dest)
@@ -71,7 +71,7 @@ class AerosolAnalysis(Analysis):
             'BKG_ISOTIME': self.current_cycle.strftime('%Y-%m-%dT%H:%M:%SZ'),
             'BKG_YYYYmmddHHMMSS': self.current_cycle.strftime('%Y%m%d.%H%M%S'),
             'AERO_WINDOW_LENGTH': f"PT{self.config['assim_freq']}H",
-            'npx_ges': int(self.config['CASE'][1:]) + 1,
+            'npx_ges': int(['CASE'][1:]) + 1,
             'npy_ges': int(self.config['CASE'][1:]) + 1,
             'npz_ges': int(self.config['LEVS']) - 1,
             'npx_anl': int(self.config['CASE_ENKF'][1:]) + 1,
@@ -84,15 +84,13 @@ class AerosolAnalysis(Analysis):
 
     def finalize(self):
         super().finalize()
-        logging.info('Finalizing global aerosol analysis')
         #---- tar up diags
         # path of output tar statfile
-        aerostat = os.path.join(os.environ['COMOUTaero'], f"{os.environ['APREFIX']}aerostat")
+        aerostat = os.path.join(self.config['COMOUTaero'], f"{self.config['APREFIX']}aerostat")
         # get list of diag files to put in tarball
         diags = glob.glob(os.path.join(self.config['DATA'], 'diags', 'diag*nc4'))
         # gzip the files first
         for diagfile in diags:
-            logging.info(f'Compressing {diagfile} using gzip')
             with open(diagfile, 'rb') as f_in, gzip.open(f"{diagfile}.gz", 'wb') as f_out:
                 f_out.writelines(f_in)
         # open tar file for writing
@@ -100,42 +98,38 @@ class AerosolAnalysis(Analysis):
         for diagfile in diags:
             archive.add(f"{diagfile}.gz")
         archive.close()
-        logging.info(f'Wrote diags to {aerostat}')
         # copy full YAML from executable to ROTDIR
-        src = os.path.join(self.config['DATA'], f'{self.taskname}_{self.cdate}.yaml')
-        dest = os.path.join(os.environ['COMOUTaero'], f"{os.environ['APREFIX']}aeroanl.yaml")
-        if os.path.exists(dest):
-            logging.info(f'{dest} already exists, removing it!')
-            os.remove(dest)
-        shutil.copy(src, dest)
-        logging.info(f'Copied YAML file from {src} to {dest}')
+        src = os.path.join(self.config['DATA'], f"{self.config['CDUMP']}.t{self.cyc}z.aerovar.yaml")
+        dest = os.path.join(self.config['COMOUTaero'], f"{self.config['CDUMP']}.t{self.cyc}z.aerovar.yaml")
+        yaml_copy = {
+            'mkdir': self.config['COMOUTaero'],
+            'copy': [src, dest]
+        }
         #---- NOTE below is 'temporary', eventually we will not be using FMS RESTART formatted files
         #---- all of the rest of this method will need to be changed but requires model and JEDI changes
         #---- copy RESTART fv_tracer files for future reference
-        cdate_fv3 = dt.datetime.strptime(self.cdate, '%Y%m%d%H').strftime('%Y%m%d.%H%M%S')
-        comin_ges = os.environ['COMIN_GES']
+        cdate_fv3 = self.current_cycle.strftime('%Y%m%d.%H%M%S')
+        comin_ges = self.config['COMIN_GES']
         # NOTE that while 'chem' is the $componenet, the aerosol fields are with the 'atmos' tracers
         comin_ges_atm = comin_ges.replace('chem', 'atmos')
         fms_bkg_file_template = os.path.join(comin_ges_atm, 'RESTART', f'{cdate_fv3}.fv_tracer.res.tile1.nc')
+        bkglist = []
         for itile in range(1,7):
             bkg_path = fms_bkg_file_template.replace('tile1', f'tile{itile}')
-            dest = os.path.join(os.environ['COMOUTaero'], f'aeroges.{os.path.basename(bkg_path)}')
-            if os.path.exists(dest):
-                os.remove(dest)
-            logging.info(f'Copying RESTART {bkg_path} to archive aerosol background')
-            shutil.copy(bkg_path, dest)
-
+            dest = os.path.join(self.config['COMOUTaero'], f'aeroges.{os.path.basename(bkg_path)}')
+            bkglist.append([bkg_path, dest])
+        FileHandler({'copy': bkglist}).sync()
         #---- add increments to RESTART files
         self.add_fms_cube_sphere_increments()
         #---- move increments to ROTDIR
         fms_inc_file_template = os.path.join(self.config['DATA'], 'anl', f'aeroinc.{cdate_fv3}.fv_tracer.res.tile1.nc')
+        inclist = []
         for itile in range(1,7):
             inc_path = fms_inc_file_template.replace('tile1', f'tile{itile}')
-            dest = os.path.join(os.environ['COMOUTaero'], os.path.basename(inc_path))
-            if os.path.exists(dest):
-                os.remove(dest)
-            logging.info(f'Copying aerosol FMS cube sphere increment to {dest}')
-            shutil.copy(bkg_path, dest)
+            dest = os.path.join(self.config['COMOUTaero'], os.path.basename(inc_path))
+            inclist.append([inc_path, dest])
+        FileHandler({'copy': inclist}).sync()
+
 
     def clean(self):
         super().clean()
@@ -145,11 +139,10 @@ class AerosolAnalysis(Analysis):
         NOTE this is only needed for now because the model cannot read aerosol increments.
         This method will be assumed to be deprecated before this is implemented operationally
         """
-        logging.info('Adding increments to RESTART files')
         # only need the fv_tracer files
-        cdate_fv3 = dt.datetime.strptime(self.cdate, '%Y%m%d%H').strftime('%Y%m%d.%H%M%S')
+        cdate_fv3 = self.current_cycle.strftime('%Y%m%d.%H%M%S')
         fms_inc_file_template = os.path.join(self.config['DATA'], 'anl', f'aeroinc.{cdate_fv3}.fv_tracer.res.tile1.nc')
-        comin_ges = os.environ['COMIN_GES']
+        comin_ges = self.config['COMIN_GES']
         # NOTE that while 'chem' is the $componenet, the aerosol fields are with the 'atmos' tracers
         comin_ges_atm = comin_ges.replace('chem', 'atmos')
         fms_bkg_file_template = os.path.join(comin_ges_atm, 'RESTART', f'{cdate_fv3}.fv_tracer.res.tile1.nc')
@@ -160,11 +153,8 @@ class AerosolAnalysis(Analysis):
             inc_path = fms_inc_file_template.replace('tile1', f'tile{itile}')
             bkg_path = fms_bkg_file_template.replace('tile1', f'tile{itile}')
             with nc.Dataset(inc_path, mode='r') as incfile:
-                logging.info(f'Opening increment file {inc_path}')
                 with nc.Dataset(bkg_path, mode='a') as rstfile:
-                    logging.info(f'Opening RESTART file {bkg_path}')
                     for vname in incvars:
-                        logging.info(f'...Adding increment for {vname}')
                         increment = incfile.variables[vname][:]
                         bkg = rstfile.variables[vname][:]
                         anl = bkg + increment
@@ -180,12 +170,12 @@ class AerosolAnalysis(Analysis):
         Return FileHandler config for model backgrounds
         """
         # NOTE for now this is FV3 RESTART files and just assumed to be fh006
-        comin_ges = os.environ['COMIN_GES']
+        comin_ges = self.config['COMIN_GES']
         # NOTE that while 'chem' is the $componenet, the aerosol fields are with the 'atmos' tracers
         comin_ges_atm = comin_ges.replace('chem', 'atmos')
         rst_dir = os.path.join(comin_ges_atm, 'RESTART') # for now, option later?
         # date variable string format
-        cdate_fv3 = dt.datetime.strptime(self.cdate, '%Y%m%d%H').strftime('%Y%m%d.%H%M%S')
+        cdate_fv3 = self.current_cycle.strftime('%Y%m%d.%H%M%S')
         # get FV3 RESTART files, this will be a lot simpler when using history files
         ntiles = 6 # global
         # aerosol DA only needs core/tracer
@@ -219,7 +209,7 @@ class AerosolAnalysis(Analysis):
             berror_list.append([os.path.join(b_dir, f'20160630.000000.cor_rh.fv_tracer.res.tile{t}.nc'), os.path.join(self.config['DATA'], 'berror', f'20160630.000000.cor_rh.fv_tracer.res.tile{t}.nc')])
             berror_list.append([os.path.join(b_dir, f'20160630.000000.cor_rv.fv_tracer.res.tile{t}.nc'), os.path.join(self.config['DATA'], 'berror', f'20160630.000000.cor_rv.fv_tracer.res.tile{t}.nc')])
             berror_list.append([os.path.join(b_dir, f'20160630.000000.stddev.fv_tracer.res.tile{t}.nc'), os.path.join(self.config['DATA'], 'berror', f'20160630.000000.stddev.fv_tracer.res.tile{t}.nc')])
-        nproc = ntiles * int(os.environ['layout_x']) * int(os.environ['layout_y'])
+        nproc = ntiles * int(self.config['layout_x']) * int(self.config['layout_y'])
         for t in range(1,nproc+1):
             berror_list.append([os.path.join(b_dir, f'nicas_aero_nicas_local_{nproc:06}-{t:06}.nc'), os.path.join(self.config['DATA'], 'berror', f'nicas_aero_nicas_local_{nproc:06}-{t:06}.nc')])
         berror_dict = {
