@@ -58,6 +58,8 @@ export WAFSF="NO"          # WAFS products
 #  use RUNMOS flag (currently in config.vrfy)
 export REALTIME="YES"
 
+# Experiment mode (cycled or forecast-only)
+export MODE="@MODE@" # cycled/forecast-only
 
 ####################################################
 # DO NOT ADD MACHINE DEPENDENT STUFF BELOW THIS LINE
@@ -202,7 +204,7 @@ export IAU_OFFSET=6
 export DOIAU_ENKF=${DOIAU:-"YES"}   # Enable 4DIAU for EnKF ensemble
 export IAUFHRS_ENKF="3,6,9"
 export IAU_DELTHRS_ENKF=6
-if [[ "$SDATE" = "$CDATE" && $EXP_WARM_START = ".false." ]] || [[ "$DOIAU" = "NO" ]] ; then # Cold starting or IAU off
+if [[ "$SDATE" = "$CDATE" && $EXP_WARM_START = ".false." ]] || [[ "$DOIAU" = "NO" ]] || [[ "$MODE" = "forecast-only" && $EXP_WARM_START = ".false." ]] ; then # Cold starting or IAU off
   export IAU_OFFSET=0
   export IAU_FHROT=0
 fi
