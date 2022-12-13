@@ -267,4 +267,3 @@ def logit(logger, name=None, message=None):
         return wrapper
 
     return decorate
-
