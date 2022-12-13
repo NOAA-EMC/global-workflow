@@ -8,5 +8,8 @@ source "$HOMEgfs/ush/preamble.sh"
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
+export job="aeroanlrun"
+export jobid="${job}.$$"
+
 ###############################################################
 echo "Do nothing for now"
