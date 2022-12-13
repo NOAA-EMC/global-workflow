@@ -71,7 +71,7 @@ class AerosolAnalysis(Analysis):
             'BKG_ISOTIME': self.current_cycle.strftime('%Y-%m-%dT%H:%M:%SZ'),
             'BKG_YYYYmmddHHMMSS': self.current_cycle.strftime('%Y%m%d.%H%M%S'),
             'AERO_WINDOW_LENGTH': f"PT{self.config['assim_freq']}H",
-            'npx_ges': int(['CASE'][1:]) + 1,
+            'npx_ges': int(self.config['CASE'][1:]) + 1,
             'npy_ges': int(self.config['CASE'][1:]) + 1,
             'npz_ges': int(self.config['LEVS']) - 1,
             'npx_anl': int(self.config['CASE_ENKF'][1:]) + 1,
