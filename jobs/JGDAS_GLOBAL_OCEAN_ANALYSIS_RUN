@@ -2,34 +2,11 @@
 export STRICT="NO"
 source "${HOMEgfs}/ush/preamble.sh"
 
-#############################
-# Source relevant config files
-#############################
-export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
-configs="base ocnanal ocnanalrun"
-config_path=${EXPDIR:-${PACKAGEROOT}/gfs.${gfs_ver}/parm/config}
-for config in ${configs}; do
-    . "${config_path}"/config."${config}"
-    status=$?
-    [[ ${status} -ne 0 ]] && exit "${status}"
-done
-
-
-##########################################
-# Source machine runtime environment
-##########################################
-. "${HOMEgfs}"/env/"${machine}".env ocnanalrun
-status=$?
-[[ ${status} -ne 0 ]] && exit "${status}"
-
 
 ##############################################
-# Obtain unique process id (pid) and make temp directory
+# make temp directory
 ##############################################
-export pid=${pid:-$$}
-export outid=${outid:-"LL${job}"}
-
-export DATA=${DATA:-${DATAROOT}/ocnanal_${CDATE}}
+export DATA=${DATA:-${DATAROOT}/ocnanal_${CDATE}} # TODO (G): Switch to {cyc} when the downstream code is ready
 mkdir -p "${DATA}"
 cd "${DATA}" || (echo "${DATA} does not exist. ABORT!"; exit 1)
 
@@ -45,8 +22,29 @@ setpdy.sh
 ##############################################
 # Determine Job Output Name on System
 ##############################################
+export pid=${pid:-$$}
 export pgmout="OUTPUT.${pid}"
 export pgmerr=errfile
+
+
+#############################
+# Source relevant config files
+#############################
+export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
+configs="base ocnanal ocnanalrun"
+for config in ${configs}; do
+    . "${EXPDIR}/config.${config}"
+    status=$?
+    [[ ${status} -ne 0 ]] && exit "${status}"
+done
+
+
+##########################################
+# Source machine runtime environment
+##########################################
+. "${HOMEgfs}/env/${machine}.env" ocnanalrun
+status=$?
+[[ ${status} -ne 0 ]] && exit "${status}"
 
 
 ##############################################
@@ -54,7 +52,7 @@ export pgmerr=errfile
 ##############################################
 
 export CDUMP=${CDUMP:-${RUN:-"gfs"}}
-export COMPONENT=${COMPONENT:-ocean}
+export COMPONENT="ocean"
 
 ##############################################
 # Begin JOB SPECIFIC work
@@ -82,9 +80,8 @@ if [[ -e "${pgmout}" ]] ; then
 fi
 
 ##########################################
-# Remove the Temporary working directory
+# Do not remove the Temporary working directory (do this in POST)
 ##########################################
 cd "${DATAROOT}" || exit 1
-[[ ${KEEPDATA} = "NO" ]] && rm -rf "${DATA}"
 
 exit 0

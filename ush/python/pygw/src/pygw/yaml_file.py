@@ -76,7 +76,7 @@ def parse_yaml(path=None, data=None,
     envtag = '!ENV'
     inctag = '!INC'
     # pattern for global vars: look for ${word}
-    pattern = re.compile('.*?\${(\w+)}.*?')
+    pattern = re.compile(r'.*?\${(\w+)}.*?')
     loader = loader or yaml.SafeLoader
 
     # the envtag will be used to mark where to start searching for the pattern
@@ -91,7 +91,6 @@ def parse_yaml(path=None, data=None,
             for g in match:
                 full_value = full_value.replace(
                     f'${{{g}}}', os.environ.get(g, f'${{{g}}}')
-                    #f'${{{g}}}', os.environ.get(g, g)
                 )
             return full_value
         return line
