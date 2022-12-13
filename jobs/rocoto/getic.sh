@@ -101,13 +101,10 @@ else # Pull chgres cube inputs for cold start IC generation
 fi
 
 # Move extracted data to ROTDIR
-if [ ! -d ${ROTDIR}/${CDUMP}.${yy}${mm}${dd}/${hh}/${COMPONENT} ]; then
-  mkdir -p ${ROTDIR}/${CDUMP}.${yy}${mm}${dd}/${hh}/${COMPONENT}
-else
-  # Exception handling on case if ICS already exist
-  echo "The ICS target directory is not empty. Exiting job"
-  exit 0
+if [ -d ${ROTDIR}/${CDUMP}.${yy}${mm}${dd}/${hh}/${COMPONENT} ]; then
+  rm -rf ${ROTDIR}/${CDUMP}.${yy}${mm}${dd}/${hh}/${COMPONENT}
 fi
+mkdir -p ${ROTDIR}/${CDUMP}.${yy}${mm}${dd}/${hh}/${COMPONENT}
 
 if [ $gfs_ver = v16 -a $RETRO = "YES" ]; then
   mv ${EXTRACT_DIR}/${CDUMP}.${yy}${mm}${dd}/${hh}/* ${ROTDIR}/${CDUMP}.${yy}${mm}${dd}/${hh}/${COMPONENT}
