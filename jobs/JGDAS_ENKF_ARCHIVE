@@ -2,31 +2,12 @@
 
 source "${HOMEgfs}/ush/preamble.sh"
 
-#############################
-# Source relevant config files
-#############################
-export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
-configs="base earc"
-for config in ${configs}; do
-    . "${EXPDIR}"/config."${config}"
-    status=$?
-    [[ ${status} -ne 0 ]] && exit "${status}"
-done
-
-##########################################
-# Source machine runtime environment
-##########################################
-. ${HOMEgfs}/env/${machine}.env earc
-status=$?
-[[ ${status} -ne 0 ]] && exit "${status}"
-
 ##############################################
 # Obtain unique process id (pid) and make temp directory
 ##############################################
-export pid=${pid:-$$}
-export DATA=${DATA:-${DATAROOT}/${jobid:?}}
-mkdir -p "${DATA}"
-cd "${DATA}"
+export DATA=${DATA:-${DATAROOT}/${jobid}}
+mkdir -p ${DATA}
+cd ${DATA}
 
 
 ##############################################
@@ -40,8 +21,29 @@ setpdy.sh
 ##############################################
 # Determine Job Output Name on System
 ##############################################
+export pid=${pid:-$$}
 export pgmout="OUTPUT.${pid}"
 export pgmerr=errfile
+
+
+#############################
+# Source relevant config files
+#############################
+export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
+configs="base earc"
+for config in ${configs}; do
+    . ${EXPDIR}/config.${config}
+    status=$?
+    [[ ${status} -ne 0 ]] && exit "${status}"
+done
+
+
+##########################################
+# Source machine runtime environment
+##########################################
+. ${HOMEgfs}/env/${machine}.env earc
+status=$?
+[[ ${status} -ne 0 ]] && exit "${status}"
 
 
 ##############################################
@@ -61,7 +63,17 @@ status=$?
 
 ###############################################################
 
-echo "ENDED NORMALLY."
+##############################################
+# End JOB SPECIFIC work
+##############################################
+
+##############################################
+# Final processing
+##############################################
+if [ -e "${pgmout}" ] ; then
+  cat ${pgmout}
+fi
+
 
 ##########################################
 # Remove the Temporary working directory

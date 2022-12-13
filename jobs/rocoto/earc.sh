@@ -8,9 +8,12 @@ source "${HOMEgfs}/ush/preamble.sh"
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
 
+export job="earc"
+export jobid="${job}.$$"
+
 ###############################################################
 # Execute the JJOB
-"${HOMEgfs}"/jobs/JENKFGDAS_ARCHIVE
+${HOMEgfs}/jobs/JGDAS_ENKF_ARCHIVE
 status=$?
 
 

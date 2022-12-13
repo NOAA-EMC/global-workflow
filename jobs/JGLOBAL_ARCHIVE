@@ -2,31 +2,10 @@
 
 source "${HOMEgfs}/ush/preamble.sh"
 
-export RUN_ENVIR=${RUN_ENVIR:-"nco"}
-
-#############################################
-# Source relevant config files
-#############################################
-export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
-configs="base arch"
-for config in ${configs}; do
-    . ${EXPDIR}/config.${config}
-    status=$?
-    [[ ${status} -ne 0 ]] && exit "${status}"
-done
-
-##########################################
-# Source machine runtime environment
-##########################################
-. "${HOMEgfs}"/env/"${machine}".env arch
-status=$?
-[[ ${status} -ne 0 ]] && exit "${status}"
-
 ##############################################
 # Obtain unique process id (pid) and make temp directory
 ##############################################
-export pid=${pid:-$$}
-export DATA=${DATA:-${DATAROOT}/${jobid:?}}
+export DATA=${DATA:-${DATAROOT}/${jobid}}
 mkdir -p "${DATA}"
 cd "${DATA}"
 
@@ -42,8 +21,28 @@ setpdy.sh
 ##############################################
 # Determine Job Output Name on System
 ##############################################
+export pid=${pid:-$$}
 export pgmout="OUTPUT.${pid}"
 export pgmerr=errfile
+
+#############################################
+# Source relevant config files
+#############################################
+export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
+configs="base arch"
+for config in ${configs}; do
+    . ${EXPDIR}/config.${config}
+    status=$?
+    [[ ${status} -ne 0 ]] && exit "${status}"
+done
+
+
+##########################################
+# Source machine runtime environment
+##########################################
+. "${HOMEgfs}/env/${machine}.env" arch
+status=$?
+[[ ${status} -ne 0 ]] && exit "${status}"
 
 
 ##############################################
@@ -51,7 +50,7 @@ export pgmerr=errfile
 ##############################################
 export CDATE=${CDATE:-${PDY}${cyc}}
 export CDUMP=${CDUMP:-${RUN:-"gfs"}}
-export COMPONENT=${COMPONENT:-atmos}
+
 
 ###############################################################
 # Run archive script
@@ -61,9 +60,17 @@ ${GLOBALARCHIVESH:-${SCRgfs}/exglobal_archive.sh}
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
 
-###############################################################
+##############################################
+# End JOB SPECIFIC work
+##############################################
 
-echo "ENDED NORMALLY."
+##############################################
+# Final processing
+##############################################
+if [ -e "${pgmout}" ] ; then
+  cat ${pgmout}
+fi
+
 
 ##########################################
 # Remove the Temporary working directory
