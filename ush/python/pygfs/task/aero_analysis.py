@@ -196,16 +196,16 @@ class AerosolAnalysis(Analysis):
         Return FileHandler configuration for berror
         """
 
-        ntiles = 6 # global
+        ntiles = 6  # global
         # aerosol static-B needs nicas, cor_rh, cor_rv and stddev files.
         b_dir = self.config['BERROR_DATA_DIR']
         berror_list = []
         berror_list.append([
-            os.path.join(b_dir, '20160630.000000.cor_rh.coupler.res'), 
+            os.path.join(b_dir, '20160630.000000.cor_rh.coupler.res'),
             os.path.join(self.config['DATA'], 'berror', '20160630.000000.cor_rh.coupler.res')
         ])
         berror_list.append([
-            os.path.join(b_dir, '20160630.000000.cor_rv.coupler.res'), 
+            os.path.join(b_dir, '20160630.000000.cor_rv.coupler.res'),
             os.path.join(self.config['DATA'], 'berror', '20160630.000000.cor_rv.coupler.res')
         ])
         berror_list.append([
@@ -214,7 +214,7 @@ class AerosolAnalysis(Analysis):
         ])
         for t in range(1, ntiles + 1):
             berror_list.append([
-                os.path.join(b_dir, f'20160630.000000.cor_rh.fv_tracer.res.tile{t}.nc'), 
+                os.path.join(b_dir, f'20160630.000000.cor_rh.fv_tracer.res.tile{t}.nc'),
                 os.path.join(self.config['DATA'], 'berror', f'20160630.000000.cor_rh.fv_tracer.res.tile{t}.nc')
             ])
             berror_list.append([
@@ -228,7 +228,7 @@ class AerosolAnalysis(Analysis):
         nproc = ntiles * int(self.config['layout_x']) * int(self.config['layout_y'])
         for t in range(1, nproc + 1):
             berror_list.append([
-                os.path.join(b_dir, f'nicas_aero_nicas_local_{nproc:06}-{t:06}.nc'), 
+                os.path.join(b_dir, f'nicas_aero_nicas_local_{nproc:06}-{t:06}.nc'),
                 os.path.join(self.config['DATA'], 'berror', f'nicas_aero_nicas_local_{nproc:06}-{t:06}.nc')
             ])
         berror_dict = {
