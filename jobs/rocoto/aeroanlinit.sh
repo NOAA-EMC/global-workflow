@@ -1,5 +1,5 @@
 #! /usr/bin/env bash
-
+export STRICT="NO"
 source "${HOMEgfs}/ush/preamble.sh"
 
 ###############################################################
@@ -8,6 +8,7 @@ source "${HOMEgfs}/ush/preamble.sh"
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
 
+export STRICT="YES"
 ###############################################################
 # setup python path for workflow utilities and tasks
 export PYTHONPATH="$PYTHONPATH:${HOMEgfs}/ush/python:${HOMEgfs}/ush/python/pygw/src"

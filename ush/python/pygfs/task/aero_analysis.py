@@ -74,6 +74,7 @@ class AerosolAnalysis(Analysis):
             'npx_ges': int(self.config['CASE'][1:]) + 1,
             'npy_ges': int(self.config['CASE'][1:]) + 1,
             'npz_ges': int(self.config['LEVS']) - 1,
+            'npz': int(self.config['LEVS']) - 1,
             'npx_anl': int(self.config['CASE_ENKF'][1:]) + 1,
             'npy_anl': int(self.config['CASE_ENKF'][1:]) + 1,
             'npz_anl': int(self.config['LEVS']) - 1,
@@ -200,7 +201,7 @@ class AerosolAnalysis(Analysis):
 
         ntiles = 6 # global
         # aerosol static-B needs nicas, cor_rh, cor_rv and stddev files.
-        b_dir = self.berror_dir
+        b_dir = self.config['BERROR_DATA_DIR']
         berror_list = []
         berror_list.append([os.path.join(b_dir, '20160630.000000.cor_rh.coupler.res'), os.path.join(self.config['DATA'], 'berror', '20160630.000000.cor_rh.coupler.res')])
         berror_list.append([os.path.join(b_dir, '20160630.000000.cor_rv.coupler.res'), os.path.join(self.config['DATA'], 'berror', '20160630.000000.cor_rv.coupler.res')])
