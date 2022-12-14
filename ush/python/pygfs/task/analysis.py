@@ -9,6 +9,7 @@ import os
 
 crtmver = '2.3.0'
 
+
 class Analysis(Task):
     """Parent class for GDAS tasks
 
@@ -32,7 +33,7 @@ class Analysis(Task):
         # probably move some of below to the parent class eventually
         self.PDY = self.config['PDY']
         self.cyc = self.config['cyc']
-        self.current_cycle = dt.datetime.strptime(self.PDY+self.cyc, '%Y%m%d%H')
+        self.current_cycle = dt.datetime.strptime(self.PDY + self.cyc, '%Y%m%d%H')
 
     def execute(self):
         """
@@ -48,12 +49,12 @@ class Analysis(Task):
 
     def get_obs_dict(self):
         """Compile a dictionary of observation files to copy
-        
+
         This method uses the OBS_LIST configuration variable to generate a dictionary
         from a list of YAML files that specify what observation files are to be
         copied to the run directory from the observation input directory
 
-        returns `obs_dict` - a dictionary for FileHandler 
+        returns `obs_dict` - a dictionary for FileHandler
         """
         obs_list_config = YAMLFile(path=self.config['OBS_LIST'])
         # get observers from master dictionary
