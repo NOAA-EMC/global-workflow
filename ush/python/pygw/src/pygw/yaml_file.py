@@ -17,14 +17,17 @@ class YAMLFile(AttrDict):
 
     def __init__(self, path=None, data=None):
         super().__init__()
+
         if path and data:
-            print("Ignoring 'data' and using 'path' argument")  # TODO: use logging
-        if path:
+            print("Ignoring 'data' and using 'path' argument")
+
+        config = None
+        if path is not None:
             config = parse_yaml(path=path)
-        elif data:
+        elif data is not None:
             config = parse_yaml(data=data)
 
-        if config:
+        if config is not None:
             self.update(config)
 
     def save(self, target):
