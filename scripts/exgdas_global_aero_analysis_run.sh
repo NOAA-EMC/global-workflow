@@ -17,6 +17,7 @@
 #
 ################################################################################
 # run executable
+set -x
 export pgm=${JEDIVAREXE}
 . prep_step
 "${APRUN_AEROANL}" "${DATA}/fv3jedi_var.x" "${DATA}/${CDUMP}.t${cyc}z.aerovar.yaml" 1>&1 2>&2

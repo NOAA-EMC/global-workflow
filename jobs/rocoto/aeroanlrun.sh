@@ -1,5 +1,5 @@
 #! /usr/bin/env bash
-
+export STRICT="NO"
 source "${HOMEgfs}/ush/preamble.sh"
 
 ###############################################################
@@ -8,6 +8,7 @@ source "${HOMEgfs}/ush/preamble.sh"
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
 
+export STRICT="YES"
 ###############################################################
 # Execute the JJOB
 "${HOMEgfs}/jobs/JGDAS_GLOBAL_AERO_ANALYSIS_RUN"
