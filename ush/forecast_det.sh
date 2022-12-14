@@ -25,7 +25,7 @@ FV3_GFS_det(){
 
   # turn IAU off for cold start
   DOIAU_coldstart=${DOIAU_coldstart:-"NO"}
-  if [[ "${DOIAU}" = "YES" ]] && [[ ${warm_start} = ".false." ]] || [[ "${DOIAU_coldstart}" = "YES" ]] && [[ ${warm_start} = ".true." ]]; then
+  if [ ${DOIAU} = "YES" -a ${warm_start} = ".false." ] || [ ${DOIAU_coldstart} = "YES" -a ${warm_start} = ".true." ]; then
     export DOIAU="NO"
     echo "turning off IAU since warm_start = ${warm_start}"
     DOIAU_coldstart="YES"
@@ -41,7 +41,7 @@ FV3_GFS_det(){
   # determine if restart IC exists to continue from a previous forecast
   RERUN="NO"
   [[ ${CDUMP} = "gfs" ]] && filecount=$(find "${RSTDIR_ATM}" -type f | wc -l)
-  if [[ "${CDUMP}" = "gfs" ]] && [[ "${rst_invt1}" -gt 0 ]] && [[ "${FHMAX}" -gt "${rst_invt1}" ]] && [[ "${filecount}" -gt 10 ]]; then
+  if [ ${CDUMP} = "gfs" -a ${rst_invt1} -gt 0 -a ${FHMAX} -gt ${rst_invt1} -a ${filecount} -gt 10 ]; then
     reverse=$(echo "${restart_interval[@]} " | tac -s ' ')
     for xfh in ${reverse} ; do
       yfh=$((xfh-(IAU_OFFSET/2)))
