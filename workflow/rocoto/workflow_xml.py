@@ -167,8 +167,8 @@ class RocotoXML:
         return ''.join(strings)
 
     def write(self, xml_file: str = None, crontab_file: str = None):
-        self._write_xml(xml_file = xml_file)
-        self._write_crontab(crontab_file = crontab_file)
+        self._write_xml(xml_file=xml_file)
+        self._write_crontab(crontab_file=crontab_file)
 
     def _write_xml(self, xml_file: str = None) -> None:
 

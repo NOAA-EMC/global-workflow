@@ -3,6 +3,7 @@ Logger
 """
 
 import sys
+from functools import wraps
 from pathlib import Path
 from typing import Union, List
 import logging
@@ -45,6 +46,7 @@ class Logger:
     LOG_LEVELS = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
     DEFAULT_LEVEL = 'INFO'
     DEFAULT_FORMAT = '%(asctime)s - %(levelname)-8s - %(name)-12s: %(message)s'
+
     def __init__(self, name: str = None,
                  level: str = DEFAULT_LEVEL,
                  _format: str = DEFAULT_FORMAT,
@@ -93,7 +95,7 @@ class Logger:
             level=self.level,
             _format=self.format,
             colored_log=self.colored_log,
-            )
+        )
         _handlers.append(_handler)
         self._logger.addHandler(_handler)
 
@@ -151,8 +153,8 @@ class Logger:
 
     @classmethod
     def add_stream_handler(cls, level: str = DEFAULT_LEVEL,
-                            _format: str = DEFAULT_FORMAT,
-                            colored_log: bool = False):
+                           _format: str = DEFAULT_FORMAT,
+                           colored_log: bool = False):
         """
         Create stream handler
         This classmethod will allow setting a custom stream handler on children
@@ -221,3 +223,47 @@ class Logger:
         handler.setFormatter(logging.Formatter(_format))
 
         return handler
+
+
+def logit(logger, name=None, message=None):
+    """
+    Add logging to a function.
+    Parameters
+    ----------
+        logger  : Logger
+                  Logger object
+        name    : str
+                  Name of the module to be logged
+                  default: __module__
+        message : str
+                  Name of the function to be logged
+                  default: __name__
+    """
+
+    def decorate(func):
+
+        log_name = name if name else func.__module__
+        log_msg = message if message else log_name + "." + func.__name__
+
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+
+            passed_args = [repr(aa) for aa in args]
+            passed_kwargs = [f"{kk}={repr(vv)}" for kk, vv in list(kwargs.items())]
+            call_msg = 'BEGIN: ' + log_msg + f"( {', '.join(passed_args + passed_kwargs)} )"
+
+            # Begin the logging with printing input arguments
+            logger.debug(call_msg)
+
+            # Call the function
+            retval = func(*args, **kwargs)
+
+            # Close the logging with printing the return val
+            ret_msg = '  END: ' + log_msg + f" returning {retval}"
+            logger.debug(ret_msg)
+
+            return retval
+
+        return wrapper
+
+    return decorate

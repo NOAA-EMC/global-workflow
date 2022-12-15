@@ -3,7 +3,7 @@ import errno
 import shutil
 import contextlib
 
-__all__ = ['mkdir', 'mkdir_p', 'rmdir', 'chdir', 'rm_p']
+__all__ = ['mkdir', 'mkdir_p', 'rmdir', 'chdir', 'rm_p', 'cp']
 
 
 def mkdir_p(path):
@@ -45,3 +45,12 @@ def rm_p(path):
             pass
         else:
             raise OSError(f"unable to remove {path}")
+
+
+def cp(src, dest):
+    try:
+        shutil.copyfile(src, dest)
+    except OSError as exc:
+        raise OSError(f"unable to copy {src} to {dest}")
+    except FileNotFoundError as exc:
+        raise FileNotFoundError(exc)

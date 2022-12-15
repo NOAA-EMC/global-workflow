@@ -187,7 +187,7 @@ class Ecflowsetup:
             # If the name does have a list, break apart the prefix and suffix
             # from the list and then run it through a for loop to get all
             # possible values.
-            name_token = re.search("(.*)\[(.*)\](.*)", suitename)
+            name_token = re.search(r"(.*)\[(.*)\](.*)", suitename)
             base = name_token.group(1).strip()
             list_items = name_token.group(2).strip().split(',')
             suffix = name_token.group(3).strip()
@@ -647,7 +647,7 @@ def find_env_param(node, value, envconfig):
 
     new_node = node
     if value in node:
-        variable_lookup = re.search(f".*{value}([\dA-Za-z_]*)", node).group(1).strip()
+        variable_lookup = re.search(fr".*{value}([\dA-Za-z_]*)", node).group(1).strip()
         if variable_lookup in os.environ:
             if isinstance(os.environ[variable_lookup], datetime.datetime):
                 new_variable = os.environ[variable_lookup].strftime("%Y%m%d%H")
@@ -705,7 +705,7 @@ def update_ecflow_config(configfile, envconfig):
         for k, v in nested_dict.items():
             if isinstance(v, str) and value in v:
                 lookup = v.split('.')
-                variable_lookup = re.findall("[\dA-Za-z_]*", lookup[1])[0]
+                variable_lookup = re.findall(r"[\dA-Za-z_]*", lookup[1])[0]
                 if variable_lookup in os.environ:
                     if isinstance(os.environ[variable_lookup], datetime.datetime):
                         nested_dict[k] = os.environ[variable_lookup].strftime("%Y%m%d%H")
