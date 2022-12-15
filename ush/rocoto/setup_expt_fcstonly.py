@@ -70,6 +70,7 @@ def edit_baseconfig():
                     .replace('@DMPDIR@', dmpdir) \
                     .replace('@PACKAGEROOT@', packageroot) \
                     .replace('@COMROOT@', comroot) \
+                    .replace('@COMINsyn@', cominsyn) \
                     .replace('@HOMEDIR@', homedir) \
                     .replace('@STMP@', stmp) \
                     .replace('@PTMP@', ptmp) \
@@ -159,6 +160,7 @@ Create COMROT experiment directory structure'''
       dmpdir = '/lfs/h2/emc/global/noscrub/emc.global/dump'
       packageroot = '${PACKAGEROOT:-"/lfs/h1/ops/prod/packages"}'
       comroot = '${COMROOT:-"/lfs/h1/ops/prod/com"}'
+      cominsyn = '${COMROOT}/gfs/${gfs_ver:-"v16.3"}/syndat'
       homedir = '/lfs/h2/emc/global/noscrub/$USER'
       stmp = '/lfs/h2/emc/stmp/$USER'
       ptmp = '/lfs/h2/emc/ptmp/$USER'
@@ -212,7 +214,8 @@ Create COMROT experiment directory structure'''
       base_svn = '/scratch1/NCEPDEV/global/glopara/svn'
       dmpdir = '/scratch1/NCEPDEV/global/glopara/dump'
       packageroot = '/scratch1/NCEPDEV/global/glopara/nwpara'
-      comroot = '/scratch1/NCEPDEV/rstprod/com'
+      comroot = '/scratch1/NCEPDEV/global/glopara/com'
+      cominsyn = '${COMROOT}/gfs/prod/syndat'
       homedir = '/scratch1/NCEPDEV/global/$USER'
       stmp = '/scratch1/NCEPDEV/stmp2/$USER'
       ptmp = '/scratch1/NCEPDEV/stmp4/$USER'
@@ -230,6 +233,7 @@ Create COMROT experiment directory structure'''
       dmpdir = '/work/noaa/rstprod/dump'
       packageroot = '/work/noaa/global/glopara/nwpara'
       comroot = '/work/noaa/global/glopara/com'
+      cominsyn = '${COMROOT}/gfs/prod/syndat'
       homedir = '/work/noaa/global/$USER'
       stmp = '/work/noaa/stmp/$USER'
       ptmp = '/work/noaa/stmp/$USER'
