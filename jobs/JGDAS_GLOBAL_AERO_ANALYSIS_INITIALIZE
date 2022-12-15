@@ -7,6 +7,7 @@ source "${HOMEgfs}/ush/preamble.sh"
 # Make temp directory
 ##############################################
 export DATA=${DATA:-${DATAROOT}/${RUN}aeroanl_${cyc}}
+[[ -d "${DATA}" ]] && rm -rf "${DATA}"
 mkdir -p "${DATA}"
 cd "${DATA}" || (echo "${DATA} does not exist. ABORT!"; exit 1)
 
