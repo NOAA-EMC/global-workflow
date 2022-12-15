@@ -9,6 +9,9 @@ status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
 
 export STRICT="YES"
+export job="aeroanlrun"
+export jobid="${job}.$$"
+
 ###############################################################
 # Execute the JJOB
 "${HOMEgfs}/jobs/JGDAS_GLOBAL_AERO_ANALYSIS_RUN"

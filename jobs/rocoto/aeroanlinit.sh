@@ -9,6 +9,9 @@ status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
 
 export STRICT="YES"
+export job="aeroanlinit"
+export jobid="${job}.$$"
+
 ###############################################################
 # setup python path for workflow utilities and tasks
 export PYTHONPATH="$PYTHONPATH:${HOMEgfs}/ush/python:${HOMEgfs}/ush/python/pygw/src"
