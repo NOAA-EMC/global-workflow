@@ -36,25 +36,23 @@ setpdy.sh
 ##############################################
 export CDATE=${CDATE:-${PDY}${cyc}}
 export CDUMP=${CDUMP:-${RUN:-"gfs"}}
-export COMPONENT=${COMPONENT:-chem}
-
-
-##############################################
-# Obtain unique process id (pid) and make temp directory
-##############################################
-export pid=${pid:-$$}
-export outid=${outid:-"LL${job}"}
-
-export DATA=${DATA:-${DATAROOT}/aeroanl_${cyc}}
-mkdir -p "${DATA}"
-cd "${DATA}" || (echo "${DATA} does not exist. ABORT!"; exit 1)
+export COMPONENT="chem"
 
 
 ##############################################
 # Determine Job Output Name on System
 ##############################################
+export pid=${pid:-$$}
 export pgmout="OUTPUT.${pid}"
 export pgmerr=errfile
+
+
+##############################################
+# Obtain unique process id (pid) and make temp directory
+##############################################
+export DATA=${DATA:-${DATAROOT}/aeroanl_${cyc}}
+mkdir -p "${DATA}"
+cd "${DATA}" || (echo "${DATA} does not exist. ABORT!"; exit 1)
 
 
 ##############################################

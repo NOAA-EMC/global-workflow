@@ -36,7 +36,7 @@ setpdy.sh
 ##############################################
 export CDATE=${CDATE:-${PDY}${cyc}}
 export CDUMP=${CDUMP:-${RUN:-"gfs"}}
-export COMPONENT=${COMPONENT:-chem}
+export COMPONENT="chem"
 
 
 ##############################################
@@ -46,7 +46,6 @@ export pid=${pid:-$$}
 export outid=${outid:-"LL${job}"}
 
 export DATA=${DATA:-${DATAROOT}/aeroanl_${cyc}}
-mkdir -p "${DATA}"
 cd "${DATA}" || (echo "${DATA} does not exist. ABORT!"; exit 1)
 
 
