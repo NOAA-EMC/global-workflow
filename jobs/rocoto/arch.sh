@@ -185,7 +185,6 @@ if [ $CDUMP = "gfs" ]; then
 	targrp_list="gfs_flux gfs_${format}b gfs_pgrb2b"
 	if [ $MODE = "cycled" ] ; then
 	    targrp_list="${targrp_list} gfs_${format}a"
-	else
         fi
         for targrp in $targrp_list; do
             htar -P -cvf $ATARDIR/$CDATE/${targrp}.tar `cat $ARCH_LIST/${targrp}.txt`
