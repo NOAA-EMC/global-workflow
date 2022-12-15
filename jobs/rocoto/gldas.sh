@@ -8,6 +8,9 @@ source "$HOMEgfs/ush/preamble.sh"
 status=$?
 [[ $status -ne 0 ]] && exit $status
 
+export job="gldas"
+export jobid="${job}.$$"
+
 ###############################################################
 # Execute the JJOB. GLDAS only runs once per day.
 
