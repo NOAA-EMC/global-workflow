@@ -19,7 +19,7 @@ FV3_GFS_det(){
   res_latlon_dynamics="''"
 
   # Determine if this is a warm start or cold start
-  if [[ -f "${gmemdir}"/RESTART/"${sPDY}"."${scyc}"0000.coupler.res ]]; then
+  if [[ -f "${gmemdir}/RESTART/${sPDY}.${scyc}0000.coupler.res" ]]; then
     export warm_start=".true."
   fi
 
@@ -55,7 +55,7 @@ FV3_GFS_det(){
       waverstok=".true."
       if [[ "${cplwav}" = ".true." ]]; then
         for wavGRD in ${waveGRD} ; do
-          if [[ ! -f "${RSTDIR_WAVE}"/"${PDYS}"."${cycs}"0000.restart."${wavGRD}" ]]; then
+          if [[ ! -f "${RSTDIR_WAVE}/${PDYS}.${cycs}0000.restart.${wavGRD}" ]]; then
             waverstok=".false."
           fi
         done
@@ -64,8 +64,8 @@ FV3_GFS_det(){
       if [[ -s "${flag1}" ]] && [[ ${waverstok} = ".true." ]]; then
         CDATE_RST=${SDATE}
         [[ ${RERUN} = "YES" ]] && break
-        mv "${flag1}" "${flag1}".old
-        if [[ -s "${flag2}" ]]; then mv "${flag2}" "${flag2}".old ;fi
+        mv "${flag1}" "${flag1}.old"
+        if [[ -s "${flag2}" ]]; then mv "${flag2}" "${flag2}.old" ;fi
         RERUN="YES"
         [[ ${xfh} = ${rst_invt1} ]] && RERUN="NO"
       fi
