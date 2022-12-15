@@ -182,7 +182,12 @@ if [ $CDUMP = "gfs" ]; then
 
     #for targrp in gfs_flux gfs_netcdf/nemsio gfs_pgrb2b; do
     if [ ${SAVEFCSTNEMSIO:-"YES"} = "YES" ]; then
-        for targrp in gfs_flux gfs_${format}a gfs_${format}b gfs_pgrb2b; do
+	targrp_list="gfs_flux gfs_${format}b gfs_pgrb2b"
+	if [ $MODE = "cycled" ] ; then
+	    targrp_list="${targrp_list} gfs_${format}a"
+	else
+        fi
+        for targrp in $targrp_list; do
             htar -P -cvf $ATARDIR/$CDATE/${targrp}.tar `cat $ARCH_LIST/${targrp}.txt`
             status=$?
             if [ $status -ne 0  -a $CDATE -ge $firstday ]; then
