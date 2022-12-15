@@ -5,7 +5,7 @@ source "${HOMEgfs}/ush/preamble.sh"
 ##############################################
 # make temp directory
 ##############################################
-export DATA=${DATA:-${DATAROOT}/ocnanal_${CDATE}} # TODO (G): Switch to {cyc} when the downstream code is ready
+export DATA=${DATA:-${DATAROOT}/ocnanal_${PDY}${cyc}} 
 rm -rf "${DATA}"  # Ensure starting with a clean DATA
 mkdir -p "${DATA}"
 cd "${DATA}" || (echo "${DATA} does not exist. ABORT!"; exit 1)
@@ -50,7 +50,6 @@ status=$?
 ##############################################
 # Set variables used in the script
 ##############################################
-export CDATE=${CDATE:-${PDY}${cyc}}
 export CDUMP=${CDUMP:-${RUN:-"gfs"}}
 export COMPONENT="ocean"
 

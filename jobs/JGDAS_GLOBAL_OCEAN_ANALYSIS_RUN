@@ -6,7 +6,7 @@ source "${HOMEgfs}/ush/preamble.sh"
 ##############################################
 # make temp directory
 ##############################################
-export DATA=${DATA:-${DATAROOT}/ocnanal_${CDATE}} # TODO (G): Switch to {cyc} when the downstream code is ready
+export DATA=${DATA:-${DATAROOT}/ocnanal_${PDY}${cyc}} # TODO (G): Switch to {cyc} when the downstream code is ready
 mkdir -p "${DATA}"
 cd "${DATA}" || (echo "${DATA} does not exist. ABORT!"; exit 1)
 
