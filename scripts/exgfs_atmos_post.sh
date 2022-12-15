@@ -206,7 +206,7 @@ if [[ "${stime}" = "anl" ]]; then
           wafsgrid="latlon 0:1440:0.25 90:721:-0.25"
           ${WGRIB2} "${PGBOUT}" -set_grib_type same -new_grid_winds earth \
           -new_grid_interpolation bilinear -set_bitmap 1 \
-          -new_grid "${wafsgrid}" "${PGBOUT}.tmp"
+          -new_grid ${wafsgrid} "${PGBOUT}.tmp"
 
           if [[ "${SENDCOM}" = "YES" ]]; then
             cp "${PGBOUT}.tmp" "${COMOUT}/${PREFIX}wafs.0p25.anl"
