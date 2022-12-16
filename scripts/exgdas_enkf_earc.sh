@@ -7,7 +7,7 @@ source "${HOMEgfs}/ush/preamble.sh"
 ##############################################
 export n=$((10#${ENSGRP}))
 export CDUMP_ENKF=$(echo "${EUPD_CYC:-"gdas"}" | tr a-z A-Z)
-export ARCH_LIST="${ROTDIR}/enkf${CDUMP}.${PDY}/${cyc}/${COMPONENT}/earc${ENSGRP}"
+export ARCH_LIST="${ROTDIR}/enkf${CDUMP}.${PDY}/${cyc}/atmos/earc${ENSGRP}"
 
 # ICS are restarts and always lag INC by $assim_freq hours.
 EARCINC_CYC=${ARCH_CYC}
@@ -122,13 +122,13 @@ if [ "${ENSGRP}" -eq 0 ]; then
     [[ ! -d ${ARCDIR} ]] && mkdir -p "${ARCDIR}"
     cd "${ARCDIR}"
 
-    nb_copy "${ROTDIR}"/enkf"${CDUMP}"."${PDY}"/"${cyc}"/"${COMPONENT}"/"${CDUMP}".t"${cyc}"z.enkfstat         enkfstat."${CDUMP}"."${CDATE}"
-    nb_copy "${ROTDIR}"/enkf"${CDUMP}"."${PDY}"/"${cyc}"/"${COMPONENT}"/"${CDUMP}".t"${cyc}"z.gsistat.ensmean  gsistat."${CDUMP}"."${CDATE}".ensmean
+    nb_copy "${ROTDIR}/enkf${CDUMP}.${PDY}/${cyc}/atmos/${CDUMP}.t${cyc}z.enkfstat"        "enkfstat.${CDUMP}.${CDATE}"
+    nb_copy "${ROTDIR}/enkf${CDUMP}.${PDY}/${cyc}/atmos/${CDUMP}.t${cyc}z.gsistat.ensmean" "gsistat.${CDUMP}.${CDATE}.ensmean"
 
     if [ "${CDUMP_ENKF}" != "GDAS" ]; then
-      nb_copy "${ROTDIR}"/enkfgfs."${PDY}"/"${cyc}"/"${COMPONENT}"/"${CDUMP}".t"${cyc}"z.enkfstat enkfstat.gfs."${CDATE}"
-      nb_copy "${ROTDIR}"/enkfgfs."${PDY}"/"${cyc}"/"${COMPONENT}"/"${CDUMP}".t"${cyc}"z.gsistat.ensmean gsistat.gfs."${CDATE}".ensmean
-        fi
+      nb_copy "${ROTDIR}/enkfgfs.${PDY}/${cyc}/atmos/${CDUMP}.t${cyc}z.enkfstat"        "enkfstat.gfs.${CDATE}"
+      nb_copy "${ROTDIR}/enkfgfs.${PDY}/${cyc}/atmos/${CDUMP}.t${cyc}z.gsistat.ensmean" "gsistat.gfs.${CDATE}.ensmean"
+    fi
 
 fi
 
@@ -152,7 +152,7 @@ if [ "${ENSGRP}" -eq 0 ]; then
         # Loop over GDAS and GFS EnKF directories separately.
         clist="gdas gfs"
         for ctype in ${clist}; do
-            COMIN_ENS="${ROTDIR}/enkf${ctype}.${gPDY}/${gcyc}/${COMPONENT}"
+            COMIN_ENS="${ROTDIR}/enkf${ctype}.${gPDY}/${gcyc}/atmos"
             if [ -d "${COMIN_ENS}" ]; then
                 rocotolog="${EXPDIR}/logs/${GDATE}.log"
                 if [ -f "${rocotolog}" ]; then
