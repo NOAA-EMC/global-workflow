@@ -117,8 +117,11 @@ export ATARDIR="@ATARDIR@"
 
 # Commonly defined parameters in JJOBS
 export envir=${envir:-"prod"}
-export NET="gfs"
-export RUN=${RUN:-${CDUMP:-"gfs"}}
+export NET="gfs"  # NET is defined in the job-card (ecf)
+export RUN=${RUN:-${CDUMP:-"gfs"}}  # RUN is defined in the job-card (ecf); CDUMP is used at EMC as a RUN proxy
+# TODO: determine where is RUN actually used in the workflow other than here
+# TODO: is it possible to replace all instances of ${CDUMP} to ${RUN} to be
+#       consistent w/ EE2?
 export COMIN_OBS=${DMPDIR}/${CDUMP}.${PDY}/$cyc/atmos
 export COMIN_GES_OBS=${DMPDIR}/${CDUMP}.${PDY}/$cyc/atmos
 export COMINatmos=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos
@@ -345,7 +348,7 @@ if [ $DOHYBVAR = "YES" ]; then
     fi
 fi
 
-# if 3DVAR and IAU 
+# if 3DVAR and IAU
 if [[ ${DOHYBVAR} == "NO" && ${DOIAU} == "YES"  ]]; then
     export IAUFHRS="6"
     export IAU_FHROT="3"
