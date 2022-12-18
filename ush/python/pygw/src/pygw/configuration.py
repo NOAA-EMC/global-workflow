@@ -2,15 +2,14 @@ import glob
 import os
 import random
 import subprocess
-from datetime import datetime
 from pathlib import Path
 from pprint import pprint
 from typing import Union, List, Dict, Any
-from dateutil.parser import parse, ParserError
 
 from pygw.attrdict import AttrDict
+from pygw.timetools import to_datetime
 
-__all__ = ['Configuration', 'cast_as_known_dtype']
+__all__ = ['Configuration', 'cast_as_dtype', 'cast_strdict_as_dtypedict']
 
 
 class ShellScriptException(Exception):
@@ -80,11 +79,7 @@ class Configuration:
         if isinstance(files, (str, bytes)):
             files = [files]
         files = [self.find_config(file) for file in files]
-        varbles = AttrDict()
-        for key, value in self._get_script_env(files).items():
-            varbles[key] = cast_as_known_dtype(value)
-
-        return varbles
+        return cast_strdict_as_dtypedict(self._get_script_env(files))
 
     def print_config(self, files: Union[str, bytes, list]) -> None:
         """
@@ -127,7 +122,26 @@ class Configuration:
         return varbls
 
 
-def cast_as_known_dtype(string: str):
+def cast_strdict_as_dtypedict(ctx: Dict[str, str]) -> Dict[str, Any]:
+    """
+    Environment variables are typically stored as str
+    This method attempts to translate those into datatypes
+    Parameters
+    ----------
+    ctx : dict
+          dictionary with values as str
+    Returns
+    -------
+    varbles : dict
+              dictionary with values as datatypes
+    """
+    varbles = AttrDict()
+    for key, value in ctx.items():
+        varbles[key] = cast_as_dtype(value)
+    return varbles
+
+
+def cast_as_dtype(string: str) -> Union[str, int, float, bool, Any]:
     """
     Cast a value into known datatype
     Parameters
@@ -135,29 +149,12 @@ def cast_as_known_dtype(string: str):
     string: str
     Returns
     -------
-    new_value : str or int or float or datetime
-                default: str
+    value : str or int or float or datetime
+            default: str
     """
     TRUTHS = ['y', 'yes', 't', 'true', '.t.', '.true.']
     BOOLS = ['n', 'no', 'f', 'false', '.f.', '.false.'] + TRUTHS
-    BOOLS = [x.upper() for x in BOOLS] + BOOLS
-
-    def _datetime_or_string(string: str):
-        """
-        Return whether the string can be interpreted as a date.
-        Parameters
-        ----------
-            string : str
-                     string to check for date
-        Returns
-        -------
-            value  : str or datetime.datetime
-                     return a datetime if the string can be parsed as a datetime
-        """
-        try:
-            return True, parse(string)
-        except ParserError:
-            return False, string
+    BOOLS = [x.upper() for x in BOOLS] + BOOLS + ['Yes', 'No', 'True', 'False']
 
     def _cast_or_not(type: Any, string: str):
         try:
@@ -171,13 +168,12 @@ def cast_as_known_dtype(string: str):
         except AttributeError:
             return string
 
-    _is_datetime, value = _datetime_or_string(string)
-
-    if _is_datetime:  # parsing to datetime success, return datetime value
-        return value
-    elif string in BOOLS:  # Likely a boolean, convert to True/False
-        return _true_or_not(string)
-    elif '.' in string:  # Likely a number and that too a float
-        return _cast_or_not(float, string)
-    else:  # Still could be a number, may be an integer
-        return _cast_or_not(int, string)
+    try:
+        return to_datetime(string)  # Try as a datetime
+    except Exception as exc:
+        if string in BOOLS:  # Likely a boolean, convert to True/False
+            return _true_or_not(string)
+        elif '.' in string:  # Likely a number and that too a float
+            return _cast_or_not(float, string)
+        else:  # Still could be a number, may be an integer
+            return _cast_or_not(int, string)
