@@ -1,12 +1,13 @@
 name: Run pytests
 on: [push, pull_request]
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   run_pytests:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
     name: Install pygw and run tests with pytests
     strategy:
       matrix:
@@ -18,7 +19,11 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
 
-      - name: Install (upgrade) dependencies
+      - name: Install (upgrade) ubuntu dependencies
+        run: |
+          sudo apt-get install bash
+
+      - name: Install (upgrade) python dependencies
         run: |
           pip install --upgrade pip
 
