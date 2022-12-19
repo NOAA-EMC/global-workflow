@@ -1,6 +1,11 @@
 name: Run pytests
 on: [push, pull_request]
 
+# Use bash shell
+defaults:
+  run:
+    shell: bash -leo pipefail {0}
+
 jobs:
   run_pytests:
     runs-on: ubuntu-latest

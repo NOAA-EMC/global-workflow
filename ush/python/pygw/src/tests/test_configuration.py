@@ -155,14 +155,14 @@ def test_find_config(tmp_path, create_configs):
     assert str(tmp_path / 'config.file0') == file0
 
 
-#@pytest.mark.skip(reason="fails in GH runner, passes on localhost")
+#  @pytest.mark.skip(reason="fails in GH runner, passes on localhost")
 def test_parse_config1(tmp_path, create_configs):
     cfg = Configuration(tmp_path)
     f0 = cfg.parse_config('config.file0')
     assert file0_dict == f0
 
 
-#@pytest.mark.skip(reason="fails in GH runner, passes on localhost")
+#  @pytest.mark.skip(reason="fails in GH runner, passes on localhost")
 def test_parse_config2(tmp_path, create_configs):
     cfg = Configuration(tmp_path)
     ff = cfg.parse_config(['config.file0', 'config.file1'])
