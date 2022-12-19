@@ -1,10 +1,6 @@
 name: Run pytests
 on: [push, pull_request]
 
-defaults:
-  run:
-    shell: bash
-
 jobs:
   run_pytests:
     runs-on: ubuntu-latest
@@ -18,10 +14,6 @@ jobs:
         uses: actions/setup-python@v3
         with:
           python-version: ${{ matrix.python }}
-
-      - name: Install (upgrade) ubuntu dependencies
-        run: |
-          sudo apt-get install bash
 
       - name: Install (upgrade) python dependencies
         run: |
