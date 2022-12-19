@@ -197,7 +197,7 @@ case "${APP}" in
         export DO_WAVE="YES"
         export WAVE_CDUMP="both"
         export cplwav2atm=".true."
-        export confignamevarfornems="${confignamevarfornems}_wave"
+        export confignamevarfornems="${confignamevarfornems}_wave_out"
     fi
 
     source $EXPDIR/config.defaults.s2sw

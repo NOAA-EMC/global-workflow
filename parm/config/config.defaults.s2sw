@@ -30,13 +30,13 @@ MEDPETS=300
 
 # config.wave
 
-waveGRD='gwes_30m'
-waveinterpGRD=' '
-waveuoutpGRD='gwes_30m'
-MESH_WAV='mesh.gwes_30m.nc'
+waveGRD='mx025'
+waveinterpGRD='reg025'
+waveuoutpGRD='mx025'
+MESH_WAV='mesh.mx025.nc'
 
 waveesmfGRD=' '
-wavepostGRD='gwes_30m'
+wavepostGRD=' '
 waveGRDN="1"
 waveGRDG="10"
 USE_WAV_RMP="NO"
