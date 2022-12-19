@@ -6,5 +6,5 @@
 echo "BEGIN: config.ocnanalprep"
 
 # Get task specific resources
-. "${EXPDIR}/config.resources ocnanalprep"
+. "${EXPDIR}/config.resources" ocnanalprep
 echo "END: config.ocnanalprep"

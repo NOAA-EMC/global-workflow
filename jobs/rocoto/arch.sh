@@ -8,6 +8,9 @@ source "${HOMEgfs}/ush/preamble.sh"
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
 
+export job="arch"
+export jobid="${job}.$$"
+
 ###############################################################
 # Execute the JJOB
 "${HOMEgfs}"/jobs/JGLOBAL_ARCHIVE
