@@ -1,14 +1,11 @@
 name: Run pytests
 on: [push, pull_request]
 
-# Use bash shell
-defaults:
-  run:
-    shell: bash -leo pipefail {0}
-
 jobs:
   run_pytests:
     runs-on: ubuntu-latest
+    defaults:
+      shell: bash
     name: Install pygw and run tests with pytests
     strategy:
       matrix:
@@ -25,7 +22,7 @@ jobs:
           pip install --upgrade pip
 
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           path: global-workflow
 
