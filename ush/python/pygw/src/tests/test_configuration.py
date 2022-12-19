@@ -3,7 +3,6 @@ import pytest
 from datetime import datetime
 
 from pygw.configuration import Configuration, cast_as_dtype
-from pprint import pprint
 
 file0 = """
 export SOME_ENVVAR1="${USER}"
