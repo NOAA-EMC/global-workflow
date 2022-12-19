@@ -5,7 +5,8 @@ jobs:
   run_pytests:
     runs-on: ubuntu-latest
     defaults:
-      shell: bash
+      run:
+        shell: bash
     name: Install pygw and run tests with pytests
     strategy:
       matrix:
