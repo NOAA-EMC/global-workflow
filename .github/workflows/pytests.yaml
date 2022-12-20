@@ -15,12 +15,12 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
 
-      - name: Install (upgrade) dependencies
+      - name: Install (upgrade) python dependencies
         run: |
           pip install --upgrade pip
 
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           path: global-workflow
 
