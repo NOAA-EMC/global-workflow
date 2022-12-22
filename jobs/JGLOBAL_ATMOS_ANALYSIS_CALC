@@ -84,7 +84,7 @@ fi
 mkdir -m 775 -p ${COMOUT}
 # COMIN_GES and COMIN_GES_ENS are used in script
 export COMIN_GES="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/${COMPONENT}"
-export COMIN_GES_ENS="${ROTDIR}/enkfgdas.${gPDY}/${gcyc}/${COMPONENT}"
+export COMIN_GES_ENS="${ROTDIR}/enkfgdas.${gPDY}/${gcyc}"
 
 
 export ATMGES="${COMIN_GES}/${GPREFIX}atmf006${GSUFFIX}"

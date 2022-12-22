@@ -185,7 +185,7 @@ for imem in $(seq $ENSBEG $ENSEND); do
      while [ $fhr -le $FHMAX ]; do
        FH3=$(printf %03i $fhr)
        if [ $(expr $fhr % 3) -eq 0 ]; then
-         $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job $COMOUT/$memchar/${CDUMP}.t${cyc}z.sfcf${FH3}${GSUFFIX}
+         $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job $COMOUT/$memchar/atmos/${CDUMP}.t${cyc}z.sfcf${FH3}${GSUFFIX}
        fi
        fhr=$((fhr+FHOUT))
      done

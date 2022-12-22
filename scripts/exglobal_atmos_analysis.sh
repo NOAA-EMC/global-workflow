@@ -42,7 +42,6 @@ export NCP=${NCP:-"/bin/cp"}
 export NMV=${NMV:-"/bin/mv"}
 export NLN=${NLN:-"/bin/ln -sf"}
 export CHGRP_CMD=${CHGRP_CMD:-"chgrp ${group_name:-rstprod}"}
-export NEMSIOGET=${NEMSIOGET:-${NWPROD}/exec/nemsio_get}
 export NCLEN=${NCLEN:-${HOMEgfs}/ush/getncdimlen}
 COMPRESS=${COMPRESS:-gzip}
 UNCOMPRESS=${UNCOMPRESS:-gunzip}
@@ -82,7 +81,6 @@ export CHGRESINCEXEC=${CHGRESINCEXEC:-${HOMEgfs}/exec/interp_inc.x}
 CHGRESEXEC=${CHGRESEXEC:-${HOMEgfs}/exec/enkf_chgres_recenter.x}
 export NTHREADS_CHGRES=${NTHREADS_CHGRES:-24}
 CALCINCPY=${CALCINCPY:-${HOMEgfs}/ush/calcinc_gfs.py}
-CALCANLPY=${CALCANLPY:-${HOMEgfs}/ush/calcanl_gfs.py}
 
 # OPS flags
 RUN=${RUN:-""}
@@ -242,11 +240,6 @@ if [ ${SUFFIX} = ".nc" ]; then
    LATB=${LATB:-$(${NCLEN} ${ATMGES} grid_yt)} # get LATB
    LEVS=${LEVS:-$(${NCLEN} ${ATMGES} pfull)} # get LEVS
    JCAP=${JCAP:--9999} # there is no jcap in these files
-else
-   LONB=${LONB:-$(${NEMSIOGET} ${ATMGES} dimx | grep -i "dimx" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}  # 'get LONB
-   LATB=${LATB:-$(${NEMSIOGET} ${ATMGES} dimy | grep -i "dimy" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}  # 'get LATB
-   LEVS=${LEVS:-$(${NEMSIOGET} ${ATMGES} dimz | grep -i "dimz" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}  # 'get LEVS
-   JCAP=${JCAP:-$(${NEMSIOGET} ${ATMGES} jcap | grep -i "jcap" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}  # 'get JCAP
 fi
 [ ${JCAP} -eq -9999 -a ${LATB} -ne -9999 ] && JCAP=$((LATB-2))
 [ ${LONB} -eq -9999 -o ${LATB} -eq -9999 -o ${LEVS} -eq -9999 -o ${JCAP} -eq -9999 ] && exit -9999
@@ -260,11 +253,6 @@ if [ ${DOHYBVAR} = "YES" ]; then
       LATB_ENKF=${LATB_ENKF:-$(${NCLEN} ${ATMGES_ENSMEAN} grid_yt)} # get LATB_ENFK
       LEVS_ENKF=${LEVS_ENKF:-$(${NCLEN} ${ATMGES_ENSMEAN} pfull)} # get LATB_ENFK
       JCAP_ENKF=${JCAP_ENKF:--9999} # again, no jcap in the netcdf files
-   else
-      LONB_ENKF=${LONB_ENKF:-$(${NEMSIOGET} ${ATMGES_ENSMEAN} dimx | grep -i "dimx" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}  # 'get LONB_ENKF
-      LATB_ENKF=${LATB_ENKF:-$(${NEMSIOGET} ${ATMGES_ENSMEAN} dimy | grep -i "dimy" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}  # 'get LATB_ENKF
-      LEVS_ENKF=${LEVS_ENKF:-$(${NEMSIOGET} ${ATMGES_ENSMEAN} dimz | grep -i "dimz" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}  # 'get LEVS_ENKF
-      JCAP_ENKF=${JCAP_ENKF:-$(${NEMSIOGET} ${ATMGES_ENSMEAN} jcap | grep -i "jcap" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}  # 'get JCAP_ENKF
    fi
    NLON_ENKF=${NLON_ENKF:-${LONB_ENKF}}
    NLAT_ENKF=${NLAT_ENKF:-$((${LATB_ENKF}+2))}
@@ -294,17 +282,6 @@ NLON_A=${NLON_A:-${LONA}}
 NLAT_A=${NLAT_A:-$((${LATA}+2))}
 
 DELTIM=${DELTIM:-$((3600/(${JCAP_A}/20)))}
-
-# logic for netCDF I/O
-if [ ${SUFFIX} = ".nc" ]; then
-  # GSI namelist options to use netCDF background
-  use_gfs_nemsio=".false."
-  use_gfs_ncio=".true."
-else
-  # GSI namelist options to use NEMSIO background
-  use_gfs_nemsio=".true."
-  use_gfs_ncio=".false."
-fi
 
 # determine if writing or calculating increment
 if [ ${DO_CALC_INCREMENT} = "YES" ]; then
@@ -563,9 +540,9 @@ if [ ${DOHYBVAR} = "YES" ]; then
    for imem in $(seq 1 ${NMEM_ENKF}); do
       memchar="mem"$(printf %03i ${imem})
       for fhr in ${fhrs}; do
-         ${NLN} ${COMIN_GES_ENS}/${memchar}/${GPREFIX}atmf0${fhr}${ENKF_SUFFIX}${GSUFFIX} ./ensemble_data/sigf${fhr}_ens_${memchar}
+         ${NLN} ${COMIN_GES_ENS}/${memchar}/atmos/${GPREFIX}atmf0${fhr}${ENKF_SUFFIX}${GSUFFIX} ./ensemble_data/sigf${fhr}_ens_${memchar}
          if [ ${cnvw_option} = ".true." ]; then
-            ${NLN} ${COMIN_GES_ENS}/${memchar}/${GPREFIX}sfcf0${fhr}${GSUFFIX} ./ensemble_data/sfcf${fhr}_ens_${memchar}
+            ${NLN} ${COMIN_GES_ENS}/${memchar}/atmos/${GPREFIX}sfcf0${fhr}${GSUFFIX} ./ensemble_data/sfcf${fhr}_ens_${memchar}
          fi
       done
    done
@@ -729,7 +706,7 @@ cat > gsiparm.anl << EOF
   tzr_qc=${TZR_QC},
   oneobtest=.false.,retrieval=.false.,l_foto=.false.,
   use_pbl=.false.,use_compress=.true.,nsig_ext=12,gpstop=50.,commgpstop=45.,commgpserrinf=1.0,
-  use_gfs_nemsio=${use_gfs_nemsio},use_gfs_ncio=${use_gfs_ncio},sfcnst_comb=.true.,
+  use_gfs_nemsio=.false.,use_gfs_ncio=.true.,sfcnst_comb=.true.,
   use_readin_anl_sfcmask=${USE_READIN_ANL_SFCMASK},
   lrun_subdirs=${lrun_subdirs},
   crtm_coeffs_path='./crtm_coeffs/',

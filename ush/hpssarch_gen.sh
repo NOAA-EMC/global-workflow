@@ -504,7 +504,7 @@ if [ $type = "enkfgdas" -o $type = "enkfgfs" ]; then
   while [ $m -le $NMEM_EARCGRP ]; do
     nm=$(((n-1)*NMEM_EARCGRP+m))
     mem=$(printf %03i $nm)
-    dirpath="enkf${CDUMP}.${PDY}/${cyc}/atmos/mem${mem}/"
+    dirpath="enkf${CDUMP}.${PDY}/${cyc}/mem${mem}/atmos/"
     dirname="./${dirpath}"
     head="${CDUMP}.t${cyc}z."
 

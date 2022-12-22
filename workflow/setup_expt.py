@@ -66,7 +66,7 @@ def fill_COMROT_cycled(host, inputs):
 
             # Link atmospheric files (ocean, ice, coming TBD ...)
             for ii in range(1, inputs.nens + 1):
-                memdir = f'atmos/mem{ii:03d}'
+                memdir = f'mem{ii:03d}/atmos'
                 dst_dir = os.path.join(comrot, enkfdir, memdir, 'INPUT')
                 src_dir = os.path.join(inputs.icsdir, enkfdir, memdir, 'INPUT')
                 makedirs_if_missing(dst_dir)

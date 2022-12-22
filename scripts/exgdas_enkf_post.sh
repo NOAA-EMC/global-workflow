@@ -79,8 +79,8 @@ for imem in $(seq 1 $NMEM_ENKF); do
    memchar="mem"$(printf %03i $imem)
    for fhr in $(seq $FHMIN $FHOUT $FHMAX); do
       fhrchar=$(printf %03i $fhr)
-      $NLN $COMIN/$memchar/${PREFIX}sfcf$fhrchar${SUFFIX} sfcf${fhrchar}_$memchar
-      $NLN $COMIN/$memchar/${PREFIX}atmf$fhrchar${SUFFIX} atmf${fhrchar}_$memchar
+      $NLN $COMIN/$memchar/atmos/${PREFIX}sfcf$fhrchar${SUFFIX} sfcf${fhrchar}_$memchar
+      $NLN $COMIN/$memchar/atmos/${PREFIX}atmf$fhrchar${SUFFIX} atmf${fhrchar}_$memchar
    done
 done
 
@@ -92,7 +92,7 @@ for fhr in $(seq $FHMIN $FHOUT $FHMAX); do
    if [ $SMOOTH_ENKF = "YES" ]; then
       for imem in $(seq 1 $NMEM_ENKF); do
          memchar="mem"$(printf %03i $imem)
-         $NLN $COMOUT/$memchar/${PREFIX}atmf${fhrchar}${ENKF_SUFFIX}${SUFFIX} atmf${fhrchar}${ENKF_SUFFIX}_$memchar
+         $NLN $COMOUT/$memchar/atmos/${PREFIX}atmf${fhrchar}${ENKF_SUFFIX}${SUFFIX} atmf${fhrchar}${ENKF_SUFFIX}_$memchar
       done
    fi
    [[ $ENKF_SPREAD = "YES" ]] && $NLN $COMOUT/${PREFIX}atmf${fhrchar}.ensspread${SUFFIX} atmf${fhrchar}.ensspread

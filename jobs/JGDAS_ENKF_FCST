@@ -61,7 +61,7 @@ export rCDUMP="gdas"
 export CASE=${CASE_ENKF}
 
 # COMOUT is used in script
-export COMOUT="${ROTDIR}/enkf${CDUMP}.${PDY}/${cyc}/${COMPONENT}"
+export COMOUT="${ROTDIR}/enkf${CDUMP}.${PDY}/${cyc}"
 
 
 # Forecast length for EnKF forecast

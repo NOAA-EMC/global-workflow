@@ -31,7 +31,6 @@ ntiles=${ntiles:-6}
 # Utilities
 NCP=${NCP:-"/bin/cp -p"}
 NLN=${NLN:-"/bin/ln -sf"}
-NEMSIOGET=${NEMSIOGET:-${NWPROD}/exec/nemsio_get}
 NCLEN=${NCLEN:-$HOMEgfs/ush/getncdimlen}
 
 # Scripts
@@ -108,32 +107,32 @@ for FHR in $(seq $FHMIN $FHOUT $FHMAX); do
 
 for imem in $(seq 1 $NMEM_ENKF); do
    memchar="mem"$(printf %03i $imem)
-   $NLN $COMIN_GES_ENS/$memchar/${GPREFIX}atmf00${FHR}${ENKF_SUFFIX}$GSUFFIX ./atmges_$memchar
+   $NLN $COMIN_GES_ENS/$memchar/atmos/${GPREFIX}atmf00${FHR}${ENKF_SUFFIX}$GSUFFIX ./atmges_$memchar
    if [ $DO_CALC_INCREMENT = "YES" ]; then
       if [ $FHR -eq 6 ]; then
-         $NLN $COMIN_ENS/$memchar/${APREFIX_ENKF}atmanl$ASUFFIX ./atmanl_$memchar
+         $NLN $COMIN_ENS/$memchar/atmos/${APREFIX_ENKF}atmanl$ASUFFIX ./atmanl_$memchar
       else
-         $NLN $COMIN_ENS/$memchar/${APREFIX_ENKF}atma00${FHR}$ASUFFIX ./atmanl_$memchar
+         $NLN $COMIN_ENS/$memchar/atmos/${APREFIX_ENKF}atma00${FHR}$ASUFFIX ./atmanl_$memchar
       fi
    fi
    mkdir -p $COMOUT_ENS/$memchar
    if [ $FHR -eq 6 ]; then
-      $NLN $COMOUT_ENS/$memchar/${APREFIX}atminc.nc ./atminc_$memchar
+      $NLN $COMOUT_ENS/$memchar/atmos/${APREFIX}atminc.nc ./atminc_$memchar
    else
-      $NLN $COMOUT_ENS/$memchar/${APREFIX}atmi00${FHR}.nc ./atminc_$memchar
+      $NLN $COMOUT_ENS/$memchar/atmos/${APREFIX}atmi00${FHR}.nc ./atminc_$memchar
    fi
    if [[ $RECENTER_ENKF = "YES" ]]; then
       if [ $DO_CALC_INCREMENT = "YES" ]; then
          if [ $FHR -eq 6 ]; then
-            $NLN $COMOUT_ENS/$memchar/${APREFIX}ratmanl$ASUFFIX ./ratmanl_$memchar
+            $NLN $COMOUT_ENS/$memchar/atmos/${APREFIX}ratmanl$ASUFFIX ./ratmanl_$memchar
          else
-            $NLN $COMOUT_ENS/$memchar/${APREFIX}ratma00${FHR}$ASUFFIX ./ratmanl_$memchar
+            $NLN $COMOUT_ENS/$memchar/atmos/${APREFIX}ratma00${FHR}$ASUFFIX ./ratmanl_$memchar
          fi
      else
          if [ $FHR -eq 6 ]; then
-            $NLN $COMOUT_ENS/$memchar/${APREFIX}ratminc$ASUFFIX ./ratminc_$memchar
+            $NLN $COMOUT_ENS/$memchar/atmos/${APREFIX}ratminc$ASUFFIX ./ratminc_$memchar
          else
-            $NLN $COMOUT_ENS/$memchar/${APREFIX}ratmi00${FHR}$ASUFFIX ./ratminc_$memchar
+            $NLN $COMOUT_ENS/$memchar/atmos/${APREFIX}ratmi00${FHR}$ASUFFIX ./ratminc_$memchar
          fi
      fi
    fi
@@ -209,11 +208,6 @@ if [ ${SUFFIX} = ".nc" ]; then
       LEVS_ENKF=${LEVS_ENKF:-$($NCLEN atminc_ensmean lev)} # get LEVS
    fi
    JCAP_ENKF=${JCAP_ENKF:--9999} # there is no jcap in these files
-else
-   LONB_ENKF=${LONB_ENKF:-$($NEMSIOGET atmanl_ensmean dimx | awk '{print $2}')}
-   LATB_ENKF=${LATB_ENKF:-$($NEMSIOGET atmanl_ensmean dimy | awk '{print $2}')}
-   LEVS_ENKF=${LEVS_ENKF:-$($NEMSIOGET atmanl_ensmean dimz | awk '{print $2}')}
-   JCAP_ENKF=${JCAP_ENKF:-$($NEMSIOGET atmanl_ensmean jcap | awk '{print $2}')}
 fi
 [ $JCAP_ENKF -eq -9999 -a $LATB_ENKF -ne -9999 ] && JCAP_ENKF=$((LATB_ENKF-2))
 [ $LONB_ENKF -eq -9999 -o $LATB_ENKF -eq -9999 -o $LEVS_ENKF -eq -9999 -o $JCAP_ENKF -eq -9999 ] && exit -9999

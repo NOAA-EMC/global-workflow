@@ -90,9 +90,9 @@ fi
 
 # COMIN, COMIN_ENS and COMIN_GES_ENS are used in script
 export COMIN="${ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENT}"
-export COMIN_ENS="${ROTDIR}/enkf${CDUMP_ENKF}.${PDY}/${cyc}/${COMPONENT}"
-export COMOUT_ENS="${ROTDIR}/enkf${CDUMP}.${PDY}/${cyc}/${COMPONENT}"
-export COMIN_GES_ENS="${ROTDIR}/enkf${GDUMP}.${gPDY}/${gcyc}/${COMPONENT}"
+export COMIN_ENS="${ROTDIR}/enkf${CDUMP_ENKF}.${PDY}/${cyc}"
+export COMOUT_ENS="${ROTDIR}/enkf${CDUMP}.${PDY}/${cyc}"
+export COMIN_GES_ENS="${ROTDIR}/enkf${GDUMP}.${gPDY}/${gcyc}"
 
 
 ###############################################################
