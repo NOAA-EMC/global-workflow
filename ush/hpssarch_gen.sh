@@ -425,7 +425,7 @@ if [ $type = "enkfgdas" -o $type = "enkfgfs" ]; then
 ##NTARS2=$((NTARS/2))  # number of earc groups to include analysis/increments
   NTARS2=$NTARS
 
-  dirpath="enkf${CDUMP}.${PDY}/${cyc}/atmos/"
+  dirpath="enkf${CDUMP}.${PDY}/${cyc}/"
   dirname="./${dirpath}"
   head="${CDUMP}.t${cyc}z."
 
