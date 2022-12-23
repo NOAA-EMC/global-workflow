@@ -81,15 +81,15 @@ export GSUFFIX=${GSUFFIX:-${SUFFIX}}
 export ASUFFIX=${ASUFFIX:-${SUFFIX}}
 
 if [ ${RUN_ENVIR} = "nco" -o ${ROTDIR_DUMP:-NO} = "YES" ]; then
-    export COMIN_OBS=${COMIN_OBS:-$(compath.py ${envir}/obsproc/${obsproc_ver})/${RUN}.${PDY}/${cyc}/${COMPONENT}}
-    export COMIN_GES_OBS=${COMIN_GES_OBS:-$(compath.py ${envir}/obsproc/${obsproc_ver})/${GDUMP}.${gPDY}/${gcyc}/${COMPONENT}}
+    export COMIN_OBS=${COMIN_OBS:-$(compath.py ${envir}/obsproc/${obsproc_ver})/${RUN}.${PDY}/${cyc}/atmos}
+    export COMIN_GES_OBS=${COMIN_GES_OBS:-$(compath.py ${envir}/obsproc/${obsproc_ver})/${GDUMP}.${gPDY}/${gcyc}/atmos}
 else
-    export COMIN_OBS="${DMPDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENT}"
-    export COMIN_GES_OBS="${DMPDIR}/${GDUMP}.${gPDY}/${gcyc}/${COMPONENT}"
+    export COMIN_OBS="${DMPDIR}/${CDUMP}.${PDY}/${cyc}/atmos"
+    export COMIN_GES_OBS="${DMPDIR}/${GDUMP}.${gPDY}/${gcyc}/atmos"
 fi
 
 # COMIN, COMIN_ENS and COMIN_GES_ENS are used in script
-export COMIN="${ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENT}"
+export COMIN="${ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos"
 export COMIN_ENS="${ROTDIR}/enkf${CDUMP_ENKF}.${PDY}/${cyc}"
 export COMOUT_ENS="${ROTDIR}/enkf${CDUMP}.${PDY}/${cyc}"
 export COMIN_GES_ENS="${ROTDIR}/enkf${GDUMP}.${gPDY}/${gcyc}"

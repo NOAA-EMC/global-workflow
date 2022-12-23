@@ -55,7 +55,6 @@ status=$?
 ####################################
 export NET=${NET:-gfs}
 export RUN=${RUN:-gfs}
-export COMPONENT="atmos"
 
 
 ####################################
@@ -78,8 +77,8 @@ export USHgfs=${HOMEgfs:-${HOMEgfs}/ush}
 export EXT_FCST=NO
 
 export ROTDIR=${ROTDIR:-${COMROOT:?}/${NET}/${envir}}
-export COMIN=${COMIN:-${ROTDIR}/${RUN}.${PDY}/${cyc}/${COMPONENT}}
-export COMOUT=${COMOUT:-${ROTDIR}/${RUN}.${PDY}/${cyc}/${COMPONENT}}
+export COMIN=${COMIN:-${ROTDIR}/${RUN}.${PDY}/${cyc}/atmos}
+export COMOUT=${COMOUT:-${ROTDIR}/${RUN}.${PDY}/${cyc}/atmos}
 
 
 ########################################################

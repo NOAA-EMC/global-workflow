@@ -73,18 +73,18 @@ export ASUFFIX=${ASUFFIX:-${SUFFIX}}
 
 
 if [ ${RUN_ENVIR} = "nco" -o ${ROTDIR_DUMP:-NO} = "YES" ]; then
-    export COMIN=${COMIN:-${ROTDIR}/${RUN}.${PDY}/${cyc}/${COMPONENT}}
-    export COMOUT=${COMOUT:-${ROTDIR}/${RUN}.${PDY}/${cyc}/${COMPONENT}}
-    export COMIN_OBS=${COMIN_OBS:-${ROTDIR}/${RUN}.${PDY}/${cyc}/${COMPONENT}}
-    export COMIN_GES_OBS=${COMIN_GES_OBS:-${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/${COMPONENT}}
+    export COMIN=${COMIN:-${ROTDIR}/${RUN}.${PDY}/${cyc}/atmos}
+    export COMOUT=${COMOUT:-${ROTDIR}/${RUN}.${PDY}/${cyc}/atmos}
+    export COMIN_OBS=${COMIN_OBS:-${ROTDIR}/${RUN}.${PDY}/${cyc}/atmos}
+    export COMIN_GES_OBS=${COMIN_GES_OBS:-${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/atmos}
 else
-    export COMOUT="${ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENT}"
+    export COMOUT="${ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos"
     export COMIN_OBS="${DMPDIR}/${CDATE}/${CDUMP}"
     export COMIN_GES_OBS="${DMPDIR}/${GDATE}/${GDUMP}"
 fi
 mkdir -m 775 -p ${COMOUT}
 # COMIN_GES and COMIN_GES_ENS are used in script
-export COMIN_GES="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/${COMPONENT}"
+export COMIN_GES="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/atmos"
 export COMIN_GES_ENS="${ROTDIR}/enkfgdas.${gPDY}/${gcyc}"
 
 

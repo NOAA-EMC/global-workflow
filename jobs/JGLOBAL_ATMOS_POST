@@ -83,8 +83,8 @@ export FIXCRTM=${CRTM_FIX:-${HOMECRTM}/fix}
 export PARMpost=${PARMpost:-${HOMEgfs}/parm/post}
 export INLINE_POST=${WRITE_DOPOST:-".false."}
 
-export COMIN=${COMIN:-${ROTDIR}/${RUN}.${PDY}/${cyc}/${COMPONENT}}
-export COMOUT=${COMOUT:-${ROTDIR}/${RUN}.${PDY}/${cyc}/${COMPONENT}}
+export COMIN=${COMIN:-${ROTDIR}/${RUN}.${PDY}/${cyc}/atmos}
+export COMOUT=${COMOUT:-${ROTDIR}/${RUN}.${PDY}/${cyc}/atmos}
 
 # shellcheck disable=SC2174
 [[ ! -d "${COMOUT}" ]] && mkdir -m 775 -p "${COMOUT}"
