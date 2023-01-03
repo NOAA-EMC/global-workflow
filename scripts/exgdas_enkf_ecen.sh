@@ -197,18 +197,16 @@ else
    fi
 fi
 
-if [ ${SUFFIX} = ".nc" ]; then
-   if [ $DO_CALC_INCREMENT = "YES" ]; then
-      LONB_ENKF=${LONB_ENKF:-$($NCLEN atmanl_ensmean grid_xt)} # get LONB
-      LATB_ENKF=${LATB_ENKF:-$($NCLEN atmanl_ensmean grid_yt)} # get LATB
-      LEVS_ENKF=${LEVS_ENKF:-$($NCLEN atmanl_ensmean pfull)} # get LEVS
-   else
-      LONB_ENKF=${LONB_ENKF:-$($NCLEN atminc_ensmean lon)} # get LONB
-      LATB_ENKF=${LATB_ENKF:-$($NCLEN atminc_ensmean lat)} # get LATB
-      LEVS_ENKF=${LEVS_ENKF:-$($NCLEN atminc_ensmean lev)} # get LEVS
-   fi
-   JCAP_ENKF=${JCAP_ENKF:--9999} # there is no jcap in these files
+if [ $DO_CALC_INCREMENT = "YES" ]; then
+   LONB_ENKF=${LONB_ENKF:-$($NCLEN atmanl_ensmean grid_xt)} # get LONB
+   LATB_ENKF=${LATB_ENKF:-$($NCLEN atmanl_ensmean grid_yt)} # get LATB
+   LEVS_ENKF=${LEVS_ENKF:-$($NCLEN atmanl_ensmean pfull)} # get LEVS
+else
+   LONB_ENKF=${LONB_ENKF:-$($NCLEN atminc_ensmean lon)} # get LONB
+   LATB_ENKF=${LATB_ENKF:-$($NCLEN atminc_ensmean lat)} # get LATB
+   LEVS_ENKF=${LEVS_ENKF:-$($NCLEN atminc_ensmean lev)} # get LEVS
 fi
+JCAP_ENKF=${JCAP_ENKF:--9999} # there is no jcap in these files
 [ $JCAP_ENKF -eq -9999 -a $LATB_ENKF -ne -9999 ] && JCAP_ENKF=$((LATB_ENKF-2))
 [ $LONB_ENKF -eq -9999 -o $LATB_ENKF -eq -9999 -o $LEVS_ENKF -eq -9999 -o $JCAP_ENKF -eq -9999 ] && exit -9999
 

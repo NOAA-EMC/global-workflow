@@ -235,12 +235,10 @@ export INCREMENTS_TO_ZERO=${INCREMENTS_TO_ZERO:-"'NONE'"}
 USE_CORRELATED_OBERRS=${USE_CORRELATED_OBERRS:-"YES"}
 
 # Get header information from Guess files
-if [ ${SUFFIX} = ".nc" ]; then
-   LONB=${LONB:-$(${NCLEN} ${ATMGES} grid_xt)} # get LONB
-   LATB=${LATB:-$(${NCLEN} ${ATMGES} grid_yt)} # get LATB
-   LEVS=${LEVS:-$(${NCLEN} ${ATMGES} pfull)} # get LEVS
-   JCAP=${JCAP:--9999} # there is no jcap in these files
-fi
+LONB=${LONB:-$(${NCLEN} ${ATMGES} grid_xt)} # get LONB
+LATB=${LATB:-$(${NCLEN} ${ATMGES} grid_yt)} # get LATB
+LEVS=${LEVS:-$(${NCLEN} ${ATMGES} pfull)} # get LEVS
+JCAP=${JCAP:--9999} # there is no jcap in these files
 [ ${JCAP} -eq -9999 -a ${LATB} -ne -9999 ] && JCAP=$((LATB-2))
 [ ${LONB} -eq -9999 -o ${LATB} -eq -9999 -o ${LEVS} -eq -9999 -o ${JCAP} -eq -9999 ] && exit -9999
 
