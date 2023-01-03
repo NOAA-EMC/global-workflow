@@ -122,8 +122,9 @@ export RUN=${RUN:-${CDUMP:-"gfs"}}  # RUN is defined in the job-card (ecf); CDUM
 # TODO: determine where is RUN actually used in the workflow other than here
 # TODO: is it possible to replace all instances of ${CDUMP} to ${RUN} to be
 #       consistent w/ EE2?
-export COMIN_OBS=${DMPDIR}/${CDUMP}.${PDY}/$cyc/atmos
-export COMIN_GES_OBS=${DMPDIR}/${CDUMP}.${PDY}/$cyc/atmos
+export COMIN_OBS=${COMIN_OBS:-$ROTDIR/$CDUMP.$PDY/$cyc/obs}
+export COMIN_GES_OBS=${COMIN_GES_OBS:-$ROTDIR/$CDUMP.$PDY/$cyc/obs}
+
 export COMINatmos=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos
 export COMOUTatmos=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos
 export COMINwave=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/wave

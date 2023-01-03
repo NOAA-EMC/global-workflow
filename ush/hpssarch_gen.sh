@@ -65,6 +65,7 @@ if [ $type = "gfs" ]; then
 
   dirpath="gfs.${PDY}/${cyc}/atmos/"
   dirname="./${dirpath}"
+  obs_dirname="./gfs.${PDY}/${cyc}/obs/"
 
   head="gfs.t${cyc}z."
 
@@ -98,9 +99,9 @@ if [ $type = "gfs" ]; then
   echo  "${dirname}input.nml                               " >>gfsa.txt
   if [ $MODE = "cycled" ]; then
     echo  "${dirname}${head}gsistat                          " >>gfsa.txt
-    echo  "${dirname}${head}nsstbufr                         " >>gfsa.txt
-    echo  "${dirname}${head}prepbufr                         " >>gfsa.txt
-    echo  "${dirname}${head}prepbufr.acft_profiles           " >>gfsa.txt
+    echo  "${obs_dirname}${head}nsstbufr                         " >>gfsa.txt
+    echo  "${obs_dirname}${head}prepbufr                         " >>gfsa.txt
+    echo  "${obs_dirname}${head}prepbufr.acft_profiles           " >>gfsa.txt
   fi
   echo  "${dirname}${head}pgrb2.0p25.anl                   " >>gfsa.txt
   echo  "${dirname}${head}pgrb2.0p25.anl.idx               " >>gfsa.txt
@@ -297,6 +298,7 @@ if [ $type = "gdas" ]; then
 
   dirpath="gdas.${PDY}/${cyc}/atmos/"
   dirname="./${dirpath}"
+  obs_dirname="./gdas.${PDY}/${cyc}/obs/"
   head="gdas.t${cyc}z."
 
   #..................
@@ -361,9 +363,9 @@ if [ $type = "gdas" ]; then
   if [ -s $ROTDIR/${dirpath}${head}radstat ]; then
      echo  "${dirname}${head}radstat               " >>gdas_restarta.txt
   fi
-  echo  "${dirname}${head}nsstbufr                 " >>gdas_restarta.txt
-  echo  "${dirname}${head}prepbufr                 " >>gdas_restarta.txt
-  echo  "${dirname}${head}prepbufr.acft_profiles   " >>gdas_restarta.txt
+  echo  "${obs_dirname}${head}nsstbufr                 " >>gdas_restarta.txt
+  echo  "${obs_dirname}${head}prepbufr                 " >>gdas_restarta.txt
+  echo  "${obs_dirname}${head}prepbufr.acft_profiles   " >>gdas_restarta.txt
   echo  "${dirname}${head}abias                    " >>gdas_restarta.txt
   echo  "${dirname}${head}abias_air                " >>gdas_restarta.txt
   echo  "${dirname}${head}abias_int                " >>gdas_restarta.txt
