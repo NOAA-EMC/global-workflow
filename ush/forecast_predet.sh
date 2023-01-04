@@ -243,12 +243,6 @@ FV3_GFS_predet(){
   fi
   memdir=${memdir:-$ROTDIR/${prefix}.$PDY/$cyc/atmos/$memchar}
   if [ ! -d $memdir ]; then mkdir -p $memdir; fi
-  if [[ $RUN == "gefs" ]]; then
-    if [ ! -d ${memdir}/history ]; then mkdir -p ${memdir}/history; fi
-    if [ $WRITE_DOPOST = ".true." ]; then
-      if [ ! -d ${memdir}/master ]; then mkdir -p ${memdir}/master; fi
-    fi
-  fi
 
   GDATE=$($NDATE -$assim_freq $CDATE)
   gPDY=$(echo $GDATE | cut -c1-8)
