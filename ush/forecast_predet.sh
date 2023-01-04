@@ -273,7 +273,7 @@ FV3_GFS_predet(){
 }
 
 FV3_GEFS_predet(){
-  echo "SUB ${FUNCNAME[0]}: Defining variables for FV3GFS"
+  echo "SUB ${FUNCNAME[0]}: Defining variables for FV3GEFS"
 
   FV3_GFS_predet
 
