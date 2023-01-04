@@ -35,7 +35,7 @@ export MAKE_PREPBUFR=${MAKE_PREPBUFR:-"YES"}
 
 ###############################################################
 # If ROTDIR_DUMP=YES, copy dump files to rotdir
-if [ ${ROTDIR_DUMP} = "YES" ]; then
+if [[ ${ROTDIR_DUMP} = "YES" ]]; then
    ${HOMEgfs}/ush/getdump.sh "${CDATE}" "${CDUMP}" "${DMPDIR}/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}/${COMPONENT}" "${COMOBS}"
    status=$?
    [[ ${status} -ne 0 ]] && exit ${status}
@@ -46,7 +46,7 @@ if [ ${ROTDIR_DUMP} = "YES" ]; then
    gcyc=$(echo ${GDATE} | cut -c9-10)
    GDUMP=gdas
    gCOMOBS="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/obs"
-   if [ ! -s ${gCOMOBS}/${GDUMP}.t${gcyc}z.updated.status.tm00.bufr_d ]; then
+   if [[ ! -s ${gCOMOBS}/${GDUMP}.t${gcyc}z.updated.status.tm00.bufr_d ]]; then
      ${HOMEgfs}/ush/getdump.sh "${GDATE}" "${GDUMP}" "${DMPDIR}/${GDUMP}${DUMP_SUFFIX}.${gPDY}/${gcyc}/${COMPONENT}" "${gCOMOBS}"
      status=$?
      [[ ${status} -ne 0 ]] && exit ${status}
@@ -64,13 +64,13 @@ fi
 # copy files from operational syndata directory to a local directory.
 # Otherwise, copy existing tcvital data from globaldump.
 
-if [ ${PROCESS_TROPCY} = "YES" ]; then
+if [[ ${PROCESS_TROPCY} = "YES" ]]; then
 
     export COMINsyn=${COMINsyn:-$(compath.py gfs/prod/syndat)}
-    if [ ${RUN_ENVIR} != "nco" ]; then
+    if [[ ${RUN_ENVIR} != "nco" ]]; then
         export ARCHSYND=${ROTDIR}/syndat
-        if [ ! -d ${ARCHSYND} ]; then mkdir -p ${ARCHSYND}; fi
-        if [ ! -s ${ARCHSYND}/syndat_akavit ]; then
+        if [[ ! -d ${ARCHSYND} ]]; then mkdir -p ${ARCHSYND}; fi
+        if [[ ! -s ${ARCHSYND}/syndat_akavit ]]; then
             for file in syndat_akavit syndat_dateck syndat_stmcat.scr syndat_stmcat syndat_sthisto syndat_sthista ; do
                 cp ${COMINsyn}/${file} ${ARCHSYND}/.
             done
@@ -87,7 +87,7 @@ else
     [[ ${ROTDIR_DUMP} = "NO" ]] && cp ${DMPDIR}/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}/${COMPONENT}/${CDUMP}.t${cyc}z.syndata.tcvitals.tm00 ${COMOUT}/
 fi
 
-if [ ${ROTDIR_DUMP} = "YES" ]; then
+if [[ ${ROTDIR_DUMP} = "YES" ]]; then
    mv ${COMOBS}/*syndata.tcvitals.tm00 ${COMOUT}
    mv ${COMOBS}/*snogrb_t1534.3072.1536 ${COMOUT}
    mv ${COMOBS}/*seaice.5min.blend.grb ${COMOUT}
@@ -95,8 +95,8 @@ fi
 
 ###############################################################
 # Generate prepbufr files from dumps or copy from OPS
-if [ ${MAKE_PREPBUFR} = "YES" ]; then
-    if [ ${ROTDIR_DUMP} = "YES" ]; then
+if [[ ${MAKE_PREPBUFR} = "YES" ]]; then
+    if [[ ${ROTDIR_DUMP} = "YES" ]]; then
         rm -f ${COMOBS}/${OPREFIX}prepbufr
         rm -f ${COMOBS}/${OPREFIX}prepbufr.acft_profiles
         rm -f ${COMOBS}/${OPREFIX}nsstbufr
@@ -110,7 +110,7 @@ if [ ${MAKE_PREPBUFR} = "YES" ]; then
     export COMINgdas=${COMINgdas:-${ROTDIR}/gdas.${PDY}/${cyc}/${COMPONENT}}
     export COMINgfs=${COMINgfs:-${ROTDIR}/gfs.${PDY}/${cyc}/${COMPONENT}}
     export COMOUT=${COMOBS}
-    if [ ${ROTDIR_DUMP} = "NO" ]; then
+    if [[ ${ROTDIR_DUMP} = "NO" ]]; then
         COMIN_OBS=${COMIN_OBS:-${DMPDIR}/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}/${COMPONENT}}
         export COMSP=${COMSP:-${COMIN_OBS}/${CDUMP}.t${cyc}z.}
     else
@@ -132,7 +132,7 @@ if [ ${MAKE_PREPBUFR} = "YES" ]; then
     fi
 
 else
-    if [ ${ROTDIR_DUMP} = "NO" ]; then
+    if [[ ${ROTDIR_DUMP} = "NO" ]]; then
         ${NCP} ${DMPDIR}/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}/${COMPONENT}/${OPREFIX}prepbufr               ${COMOBS}/${OPREFIX}prepbufr
         ${NCP} ${DMPDIR}/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}/${COMPONENT}/${OPREFIX}prepbufr.acft_profiles ${COMOBS}/${OPREFIX}prepbufr.acft_profiles
         [[ ${DONST} = "YES" ]] && ${NCP} ${DMPDIR}/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}/${COMPONENT}/${OPREFIX}nsstbufr ${COMOBS}/${OPREFIX}nsstbufr
