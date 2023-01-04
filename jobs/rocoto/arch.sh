@@ -105,7 +105,7 @@ if [ $CDUMP = "gfs" ]; then
     mkdir -p ${ARCDIR}/tracker.$CDATE/$CDUMP
     blist="epac natl"
     for basin in $blist; do
-	cp -rp $basin                     ${ARCDIR}/tracker.$CDATE/$CDUMP
+        cp -rp $basin                     ${ARCDIR}/tracker.$CDATE/$CDUMP
     done
 fi
 
@@ -118,12 +118,12 @@ if [ $CDUMP = "gfs" -a $FITSARC = "YES" ]; then
     fhmax=${FHMAX_FITS:-$FHMAX_GFS}
     fhr=0
     while [[ $fhr -le $fhmax ]]; do
-	fhr3=$(printf %03i $fhr)
-	sfcfile=${prefix}.sfcf${fhr3}${ASUFFIX}
-	sigfile=${prefix}.atmf${fhr3}${ASUFFIX}
-	$NCP $sfcfile $VFYARC/${CDUMP}.$PDY/$cyc/
-	$NCP $sigfile $VFYARC/${CDUMP}.$PDY/$cyc/
-	(( fhr = $fhr + 6 ))
+        fhr3=$(printf %03i $fhr)
+        sfcfile=${prefix}.sfcf${fhr3}${ASUFFIX}
+        sigfile=${prefix}.atmf${fhr3}${ASUFFIX}
+        $NCP $sfcfile $VFYARC/${CDUMP}.$PDY/$cyc/
+        $NCP $sigfile $VFYARC/${CDUMP}.$PDY/$cyc/
+        (( fhr = $fhr + 6 ))
     done
 fi
 
@@ -182,9 +182,9 @@ if [ $CDUMP = "gfs" ]; then
 
     #for targrp in gfs_flux gfs_netcdf/nemsio gfs_pgrb2b; do
     if [ ${SAVEFCSTNEMSIO:-"YES"} = "YES" ]; then
-	targrp_list="gfs_flux gfs_${format}b gfs_pgrb2b"
-	if [ $MODE = "cycled" ] ; then
-	    targrp_list="${targrp_list} gfs_${format}a"
+        targrp_list="gfs_flux gfs_${format}b gfs_pgrb2b"
+        if [ $MODE = "cycled" ] ; then
+            targrp_list="${targrp_list} gfs_${format}a"
         fi
         for targrp in $targrp_list; do
             htar -P -cvf $ATARDIR/$CDATE/${targrp}.tar `cat $ARCH_LIST/${targrp}.txt`
@@ -329,36 +329,36 @@ while [ $GDATE -le $GDATEEND ]; do
     COMINrtofs="$ROTDIR/rtofs.$gPDY"
     if [ -d $COMIN ]; then
         rocotolog="$EXPDIR/logs/${GDATE}.log"
-	if [ -f $rocotolog ]; then
+        if [ -f $rocotolog ]; then
             testend=$(tail -n 1 $rocotolog | grep "This cycle is complete: Success")
             rc=$?
             if [ $rc -eq 0 ]; then
                 if [ -d $COMINwave ]; then rm -rf $COMINwave ; fi
                 if [ -d $COMINrtofs -a $GDATE -lt $RTOFS_DATE ]; then rm -rf $COMINrtofs ; fi
                 if [ $CDUMP != "gdas" -o $DO_GLDAS = "NO" -o $GDATE -lt $GLDAS_DATE ]; then 
-		    if [ $CDUMP = "gdas" ]; then
+                    if [ $CDUMP = "gdas" ]; then
                         for file in `ls $COMIN |grep -v prepbufr |grep -v cnvstat |grep -v atmanl.nc`; do
                             rm -rf $COMIN/$file
                         done
-		    else
-			rm -rf $COMIN
-		    fi
+                    else
+                        rm -rf $COMIN
+                    fi
                 else
-		    if [ $DO_GLDAS = "YES" ]; then
-			for file in `ls $COMIN |grep -v sflux |grep -v RESTART |grep -v prepbufr |grep -v cnvstat |grep -v atmanl.nc`; do
+                    if [ $DO_GLDAS = "YES" ]; then
+                        for file in `ls $COMIN |grep -v sflux |grep -v RESTART |grep -v prepbufr |grep -v cnvstat |grep -v atmanl.nc`; do
                             rm -rf $COMIN/$file
-			done
-			for file in `ls $COMIN/RESTART |grep -v sfcanl `; do
+                        done
+                        for file in `ls $COMIN/RESTART |grep -v sfcanl `; do
                             rm -rf $COMIN/RESTART/$file
-			done
-		    else
+                        done
+                    else
                         for file in `ls $COMIN |grep -v prepbufr |grep -v cnvstat |grep -v atmanl.nc`; do
                             rm -rf $COMIN/$file
                         done
-		    fi
+                    fi
                 fi
             fi
-	fi
+        fi
     fi
 
     # Remove any empty directories
@@ -372,8 +372,8 @@ while [ $GDATE -le $GDATEEND ]; do
 
     # Remove mdl gfsmos directory
     if [ $CDUMP = "gfs" ]; then
-	COMIN="$ROTDIR/gfsmos.$gPDY"
-	if [ -d $COMIN -a $GDATE -lt $CDATE_MOS ]; then rm -rf $COMIN ; fi
+        COMIN="$ROTDIR/gfsmos.$gPDY"
+        if [ -d $COMIN -a $GDATE -lt $CDATE_MOS ]; then rm -rf $COMIN ; fi
     fi
 
     GDATE=$($NDATE +$assim_freq $GDATE)
