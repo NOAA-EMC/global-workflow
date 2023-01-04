@@ -161,7 +161,7 @@ case $RUN in
   'data') DATM_nml;;
   'gfs') FV3_GFS_nml;;
   'gdas') FV3_GFS_nml;;
-  'gefs') FV3_GEFS_nml;;
+  'gefs') FV3_GFS_nml;;
 esac				#no namelist for data atmosphere
 [[ $cplflx = .true. ]] && MOM6_nml
 [[ $cplwav = .true. ]] && WW3_nml

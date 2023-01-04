@@ -573,20 +573,6 @@ FV3_GFS_nml(){
   echo SUB ${FUNCNAME[0]}: FV3 name lists and model configure file created
 }
 
-FV3_GEFS_nml(){
-  # namelist output for a certain component
-  echo SUB ${FUNCNAME[0]}: Creating name lists and model configure file for FV3
-  if [ $machine = 'sandbox' ]; then
-    cd $SCRIPTDIR
-    echo "MAIN: !!!Sandbox mode, writing to current directory!!!"
-  fi
-  # Call child scripts in current script directory
-  source $SCRIPTDIR/parsing_namelists_FV3.sh
-  FV3_namelists
-  echo SUB ${FUNCNAME[0]}: FV3 name lists and model configure file created
-}
-
-
 DATM_nml(){
   source $SCRIPTDIR/parsing_namelists_DATM.sh
   DATM_namelists
