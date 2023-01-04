@@ -171,7 +171,7 @@ if [ $DOSFCANL_ENKF = "YES" ]; then
         cmem=$(printf %03i $imem)
         memchar="mem$cmem"
 
-        [[ $TILE_NUM -eq 1 ]] && mkdir -p $COMOUT_ENS/$memchar/RESTART
+        [[ $TILE_NUM -eq 1 ]] && mkdir -p $COMOUT_ENS/$memchar/atmos/RESTART
 
         $NLN $COMIN_GES_ENS/$memchar/atmos/RESTART/$PDY.${cyc}0000.sfc_data.tile${n}.nc $DATA/fnbgsi.$cmem
         $NLN $COMOUT_ENS/$memchar/atmos/RESTART/$PDY.${cyc}0000.sfcanl_data.tile${n}.nc $DATA/fnbgso.$cmem
