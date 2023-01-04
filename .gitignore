@@ -8,6 +8,9 @@ __pycache__
 .DS_Store
 .idea/
 
+# Ignore editor generated backup files
+#-------------------------------------
+*~
 # Ignore folders
 #-------------------
 exec/
@@ -128,3 +131,8 @@ ush/ufsda
 ush/wafs_blending.sh
 ush/wafs_grib2.regrid.sh
 ush/wafs_intdsk.sh
+ush/finddate.sh
+ush/make_NTC_file.pl
+ush/make_ntc_bull.pl
+ush/make_tif.sh
+ush/month_name.sh

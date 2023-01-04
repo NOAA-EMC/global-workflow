@@ -103,8 +103,10 @@ fi
 ################################################################################
 # link fix files to $DATA
 # static B
-CASE_BERROR=${CASE_BERROR:-${CASE_ANL:-$CASE}}
-$NLN $FV3JEDI_FIX/bump/$CASE_BERROR/ $DATA/berror
+CASE_BERROR=${CASE_BERROR:-${CASE_ANL:-${CASE}}}
+if [[ (${STATICB_TYPE} = "bump") || (${STATICB_TYPE} = "gsibec") ]] ; then
+    ${NLN} "${FV3JEDI_FIX}/${STATICB_TYPE}/${CASE_BERROR}/" "${DATA}/berror"
+fi
 
 # vertical coordinate
 LAYERS=$(expr $LEVS - 1)
@@ -124,13 +126,14 @@ for fieldset in $fieldsets; do
 done
 
 # CRTM coeffs
-$NLN $FV3JEDI_FIX/crtm/2.3.0_jedi $DATA/crtm
+${NLN} "${FV3JEDI_FIX}/crtm/2.3.0" "${DATA}/crtm"
 
 #  Link executable to $DATA
 $NLN $JEDIVAREXE $DATA/fv3jedi_var.x
 
 ################################################################################
 # run executable
+export OMP_NUM_THREADS=$NTHREADS_ATMANAL
 export pgm=$JEDIVAREXE
 . prep_step
 $APRUN_ATMANAL $DATA/fv3jedi_var.x $DATA/fv3jedi_var.yaml 1>&1 2>&2
@@ -138,10 +141,15 @@ export err=$?; err_chk
 
 ################################################################################
 # translate FV3-JEDI increment to FV3 readable format
-atminc_jedi=$DATA/anl/atminc.${PDY}_${cyc}0000z.nc4
-atminc_fv3=$COMOUT/${CDUMP}.${cycle}.atminc.nc
+if [[ "${CASE_BERROR}" = "${CASE}" ]]; then
+    atmges_fv3=${COMIN_GES}/${GPREFIX}atmf006.nc
+else
+    atmges_fv3=${COMIN_GES}/${GPREFIX}atmf006.ensres.nc
+fi
+atminc_jedi=${DATA}/anl/atminc.${PDY}_${cyc}0000z.nc4
+atminc_fv3=${COMOUT}/${CDUMP}.${cycle}.atminc.nc
 if [ -s $atminc_jedi ]; then
-    $INCPY $atminc_jedi $atminc_fv3
+    $INCPY $atmges_fv3 $atminc_jedi $atminc_fv3
     export err=$?
 else
     echo "***WARNING*** missing $atminc_jedi   ABORT"
@@ -164,11 +172,11 @@ cp -rf $DATA/bc $COMOUT/
 # Deterministic abias used in enkf cycle
 alist="abias abias_air abias_int abias_pc"
 for abias in $alist; do
-    cp $COMIN_GES/${GPREFIX}${abias} $COMOUT/${APREFIX}${abias}
+    cp "${COMIN_GES}/${GPREFIX}${abias}" "${COMOUT}/${APREFIX}${abias}"
 done
 
 ################################################################################
 
-exit $err
+exit ${err}
 
 ################################################################################

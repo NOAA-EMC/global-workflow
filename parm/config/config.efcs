@@ -24,6 +24,7 @@ export OUTPUT_FILETYPE_SFC="netcdf"
 
 # Number of enkf members per fcst job
 export NMEM_EFCSGRP=2
+export NMEM_EFCSGRP_GFS=1
 export RERUN_EFCSGRP="NO"
 
 # Turn off inline UPP for EnKF forecast

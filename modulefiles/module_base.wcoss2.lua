@@ -12,7 +12,6 @@ load(pathJoin("cfp", "2.0.4"))
 setenv("USE_CFP","YES")
 
 load(pathJoin("python", "3.8.6"))
-load(pathJoin("prod_envir", "2.0.4"))
 load(pathJoin("gempak", "7.14.1"))
 load(pathJoin("perl", "5.32.0"))
 load(pathJoin("libjpeg", "9c"))

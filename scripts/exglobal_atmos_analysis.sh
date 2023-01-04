@@ -19,7 +19,7 @@
 
 #  Set environment.
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${HOMEgfs}/ush/preamble.sh"
 
 #  Directories.
 pwd=$(pwd)
@@ -30,12 +30,12 @@ CDUMP=${CDUMP:-"gdas"}
 GDUMP=${GDUMP:-"gdas"}
 
 # Derived base variables
-GDATE=$($NDATE -$assim_freq $CDATE)
-BDATE=$($NDATE -3 $CDATE)
-PDY=$(echo $CDATE | cut -c1-8)
-cyc=$(echo $CDATE | cut -c9-10)
-bPDY=$(echo $BDATE | cut -c1-8)
-bcyc=$(echo $BDATE | cut -c9-10)
+GDATE=$(${NDATE} -${assim_freq} ${CDATE})
+BDATE=$(${NDATE} -3 ${CDATE})
+PDY=$(echo ${CDATE} | cut -c1-8)
+cyc=$(echo ${CDATE} | cut -c9-10)
+bPDY=$(echo ${BDATE} | cut -c1-8)
+bcyc=$(echo ${BDATE} | cut -c9-10)
 
 # Utilities
 export NCP=${NCP:-"/bin/cp"}
@@ -43,7 +43,7 @@ export NMV=${NMV:-"/bin/mv"}
 export NLN=${NLN:-"/bin/ln -sf"}
 export CHGRP_CMD=${CHGRP_CMD:-"chgrp ${group_name:-rstprod}"}
 export NEMSIOGET=${NEMSIOGET:-${NWPROD}/exec/nemsio_get}
-export NCLEN=${NCLEN:-$HOMEgfs/ush/getncdimlen}
+export NCLEN=${NCLEN:-${HOMEgfs}/ush/getncdimlen}
 COMPRESS=${COMPRESS:-gzip}
 UNCOMPRESS=${UNCOMPRESS:-gunzip}
 APRUNCFP=${APRUNCFP:-""}
@@ -69,20 +69,20 @@ DOIAU=${DOIAU:-"NO"}
 export IAUFHRS=${IAUFHRS:-"6"}
 
 # Dependent Scripts and Executables
-GSIEXEC=${GSIEXEC:-$HOMEgfs/exec/gsi.x}
+GSIEXEC=${GSIEXEC:-${HOMEgfs}/exec/gsi.x}
 export NTHREADS_CALCINC=${NTHREADS_CALCINC:-1}
 export APRUN_CALCINC=${APRUN_CALCINC:-${APRUN:-""}}
 export APRUN_CALCANL=${APRUN_CALCANL:-${APRUN:-""}}
 export APRUN_CHGRES=${APRUN_CALCANL:-${APRUN:-""}}
-export CALCINCEXEC=${CALCINCEXEC:-$HOMEgfs/exec/calc_increment_ens.x}
-export CALCINCNCEXEC=${CALCINCNCEXEC:-$HOMEgfs/exec/calc_increment_ens_ncio.x}
-export CALCANLEXEC=${CALCANLEXEC:-$HOMEgfs/exec/calc_analysis.x}
-export CHGRESNCEXEC=${CHGRESNCEXEC:-$HOMEgfs/exec/enkf_chgres_recenter_nc.x}
-export CHGRESINCEXEC=${CHGRESINCEXEC:-$HOMEgfs/exec/interp_inc.x}
-CHGRESEXEC=${CHGRESEXEC:-$HOMEgfs/exec/enkf_chgres_recenter.x}
+export CALCINCEXEC=${CALCINCEXEC:-${HOMEgfs}/exec/calc_increment_ens.x}
+export CALCINCNCEXEC=${CALCINCNCEXEC:-${HOMEgfs}/exec/calc_increment_ens_ncio.x}
+export CALCANLEXEC=${CALCANLEXEC:-${HOMEgfs}/exec/calc_analysis.x}
+export CHGRESNCEXEC=${CHGRESNCEXEC:-${HOMEgfs}/exec/enkf_chgres_recenter_nc.x}
+export CHGRESINCEXEC=${CHGRESINCEXEC:-${HOMEgfs}/exec/interp_inc.x}
+CHGRESEXEC=${CHGRESEXEC:-${HOMEgfs}/exec/enkf_chgres_recenter.x}
 export NTHREADS_CHGRES=${NTHREADS_CHGRES:-24}
-CALCINCPY=${CALCINCPY:-$HOMEgfs/ush/calcinc_gfs.py}
-CALCANLPY=${CALCANLPY:-$HOMEgfs/ush/calcanl_gfs.py}
+CALCINCPY=${CALCINCPY:-${HOMEgfs}/ush/calcinc_gfs.py}
+CALCANLPY=${CALCANLPY:-${HOMEgfs}/ush/calcanl_gfs.py}
 
 # OPS flags
 RUN=${RUN:-""}
@@ -90,7 +90,7 @@ SENDECF=${SENDECF:-"NO"}
 SENDDBN=${SENDDBN:-"NO"}
 RUN_GETGES=${RUN_GETGES:-"NO"}
 GETGESSH=${GETGESSH:-"getges.sh"}
-export gesenvir=${gesenvir:-$envir}
+export gesenvir=${gesenvir:-${envir}}
 
 # Observations
 OPREFIX=${OPREFIX:-""}
@@ -158,7 +158,7 @@ HDOB=${HDOB:-${COMIN_OBS}/${OPREFIX}hdob.tm00.bufr_d${OSUFFIX}}
 
 # Guess files
 GPREFIX=${GPREFIX:-""}
-GSUFFIX=${GSUFFIX:-$SUFFIX}
+GSUFFIX=${GSUFFIX:-${SUFFIX}}
 SFCG03=${SFCG03:-${COMIN_GES}/${GPREFIX}sfcf003${GSUFFIX}}
 SFCG04=${SFCG04:-${COMIN_GES}/${GPREFIX}sfcf004${GSUFFIX}}
 SFCG05=${SFCG05:-${COMIN_GES}/${GPREFIX}sfcf005${GSUFFIX}}
@@ -180,7 +180,7 @@ GRADSTAT=${GRADSTAT:-${COMIN_GES}/${GPREFIX}radstat}
 
 # Analysis files
 export APREFIX=${APREFIX:-""}
-export ASUFFIX=${ASUFFIX:-$SUFFIX}
+export ASUFFIX=${ASUFFIX:-${SUFFIX}}
 SFCANL=${SFCANL:-${COMOUT}/${APREFIX}sfcanl${ASUFFIX}}
 DTFANL=${DTFANL:-${COMOUT}/${APREFIX}dtfanl.nc}
 ATMANL=${ATMANL:-${COMOUT}/${APREFIX}atmanl${ASUFFIX}}
@@ -204,7 +204,7 @@ USE_RADSTAT=${USE_RADSTAT:-"YES"}
 SELECT_OBS=${SELECT_OBS:-${COMOUT}/${APREFIX}obsinput}
 GENDIAG=${GENDIAG:-"YES"}
 DIAG_SUFFIX=${DIAG_SUFFIX:-""}
-if [ $netcdf_diag = ".true." ] ; then
+if [ ${netcdf_diag} = ".true." ] ; then
    DIAG_SUFFIX="${DIAG_SUFFIX}.nc4"
 fi
 DIAG_COMPRESS=${DIAG_COMPRESS:-"YES"}
@@ -212,7 +212,7 @@ DIAG_TARBALL=${DIAG_TARBALL:-"YES"}
 USE_CFP=${USE_CFP:-"NO"}
 CFP_MP=${CFP_MP:-"NO"}
 nm=""
-if [ $CFP_MP = "YES" ]; then
+if [ ${CFP_MP} = "YES" ]; then
     nm=0
 fi
 DIAG_DIR=${DIAG_DIR:-${COMOUT}/gsidiags}
@@ -238,62 +238,62 @@ USE_CORRELATED_OBERRS=${USE_CORRELATED_OBERRS:-"YES"}
 
 # Get header information from Guess files
 if [ ${SUFFIX} = ".nc" ]; then
-   LONB=${LONB:-$($NCLEN $ATMGES grid_xt)} # get LONB
-   LATB=${LATB:-$($NCLEN $ATMGES grid_yt)} # get LATB
-   LEVS=${LEVS:-$($NCLEN $ATMGES pfull)} # get LEVS
+   LONB=${LONB:-$(${NCLEN} ${ATMGES} grid_xt)} # get LONB
+   LATB=${LATB:-$(${NCLEN} ${ATMGES} grid_yt)} # get LATB
+   LEVS=${LEVS:-$(${NCLEN} ${ATMGES} pfull)} # get LEVS
    JCAP=${JCAP:--9999} # there is no jcap in these files
 else
-   LONB=${LONB:-$($NEMSIOGET $ATMGES dimx | grep -i "dimx" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}  # 'get LONB
-   LATB=${LATB:-$($NEMSIOGET $ATMGES dimy | grep -i "dimy" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}  # 'get LATB
-   LEVS=${LEVS:-$($NEMSIOGET $ATMGES dimz | grep -i "dimz" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}  # 'get LEVS
-   JCAP=${JCAP:-$($NEMSIOGET $ATMGES jcap | grep -i "jcap" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}  # 'get JCAP
+   LONB=${LONB:-$(${NEMSIOGET} ${ATMGES} dimx | grep -i "dimx" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}  # 'get LONB
+   LATB=${LATB:-$(${NEMSIOGET} ${ATMGES} dimy | grep -i "dimy" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}  # 'get LATB
+   LEVS=${LEVS:-$(${NEMSIOGET} ${ATMGES} dimz | grep -i "dimz" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}  # 'get LEVS
+   JCAP=${JCAP:-$(${NEMSIOGET} ${ATMGES} jcap | grep -i "jcap" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}  # 'get JCAP
 fi
-[ $JCAP -eq -9999 -a $LATB -ne -9999 ] && JCAP=$((LATB-2))
-[ $LONB -eq -9999 -o $LATB -eq -9999 -o $LEVS -eq -9999 -o $JCAP -eq -9999 ] && exit -9999
+[ ${JCAP} -eq -9999 -a ${LATB} -ne -9999 ] && JCAP=$((LATB-2))
+[ ${LONB} -eq -9999 -o ${LATB} -eq -9999 -o ${LEVS} -eq -9999 -o ${JCAP} -eq -9999 ] && exit -9999
 
 # Get header information from Ensemble Guess files
-if [ $DOHYBVAR = "YES" ]; then
+if [ ${DOHYBVAR} = "YES" ]; then
    SFCGES_ENSMEAN=${SFCGES_ENSMEAN:-${COMIN_GES_ENS}/${GPREFIX}sfcf006.ensmean${GSUFFIX}}
    export ATMGES_ENSMEAN=${ATMGES_ENSMEAN:-${COMIN_GES_ENS}/${GPREFIX}atmf006.ensmean${GSUFFIX}}
    if [ ${SUFFIX} = ".nc" ]; then
-      LONB_ENKF=${LONB_ENKF:-$($NCLEN $ATMGES_ENSMEAN grid_xt)} # get LONB_ENKF
-      LATB_ENKF=${LATB_ENKF:-$($NCLEN $ATMGES_ENSMEAN grid_yt)} # get LATB_ENFK
-      LEVS_ENKF=${LEVS_ENKF:-$($NCLEN $ATMGES_ENSMEAN pfull)} # get LATB_ENFK
+      LONB_ENKF=${LONB_ENKF:-$(${NCLEN} ${ATMGES_ENSMEAN} grid_xt)} # get LONB_ENKF
+      LATB_ENKF=${LATB_ENKF:-$(${NCLEN} ${ATMGES_ENSMEAN} grid_yt)} # get LATB_ENFK
+      LEVS_ENKF=${LEVS_ENKF:-$(${NCLEN} ${ATMGES_ENSMEAN} pfull)} # get LATB_ENFK
       JCAP_ENKF=${JCAP_ENKF:--9999} # again, no jcap in the netcdf files
    else
-      LONB_ENKF=${LONB_ENKF:-$($NEMSIOGET $ATMGES_ENSMEAN dimx | grep -i "dimx" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}  # 'get LONB_ENKF
-      LATB_ENKF=${LATB_ENKF:-$($NEMSIOGET $ATMGES_ENSMEAN dimy | grep -i "dimy" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}  # 'get LATB_ENKF
-      LEVS_ENKF=${LEVS_ENKF:-$($NEMSIOGET $ATMGES_ENSMEAN dimz | grep -i "dimz" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}  # 'get LEVS_ENKF
-      JCAP_ENKF=${JCAP_ENKF:-$($NEMSIOGET $ATMGES_ENSMEAN jcap | grep -i "jcap" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}  # 'get JCAP_ENKF
+      LONB_ENKF=${LONB_ENKF:-$(${NEMSIOGET} ${ATMGES_ENSMEAN} dimx | grep -i "dimx" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}  # 'get LONB_ENKF
+      LATB_ENKF=${LATB_ENKF:-$(${NEMSIOGET} ${ATMGES_ENSMEAN} dimy | grep -i "dimy" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}  # 'get LATB_ENKF
+      LEVS_ENKF=${LEVS_ENKF:-$(${NEMSIOGET} ${ATMGES_ENSMEAN} dimz | grep -i "dimz" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}  # 'get LEVS_ENKF
+      JCAP_ENKF=${JCAP_ENKF:-$(${NEMSIOGET} ${ATMGES_ENSMEAN} jcap | grep -i "jcap" | awk -F"= " '{print $2}' | awk -F" " '{print $1}')}  # 'get JCAP_ENKF
    fi
-   NLON_ENKF=${NLON_ENKF:-$LONB_ENKF}
-   NLAT_ENKF=${NLAT_ENKF:-$(($LATB_ENKF+2))}
-   [ $JCAP_ENKF -eq -9999 -a $LATB_ENKF -ne -9999 ] && JCAP_ENKF=$((LATB_ENKF-2))
-   [ $LONB_ENKF -eq -9999 -o $LATB_ENKF -eq -9999 -o $LEVS_ENKF -eq -9999 -o $JCAP_ENKF -eq -9999 ] && exit -9999
+   NLON_ENKF=${NLON_ENKF:-${LONB_ENKF}}
+   NLAT_ENKF=${NLAT_ENKF:-$((${LATB_ENKF}+2))}
+   [ ${JCAP_ENKF} -eq -9999 -a ${LATB_ENKF} -ne -9999 ] && JCAP_ENKF=$((LATB_ENKF-2))
+   [ ${LONB_ENKF} -eq -9999 -o ${LATB_ENKF} -eq -9999 -o ${LEVS_ENKF} -eq -9999 -o ${JCAP_ENKF} -eq -9999 ] && exit -9999
 else
    LONB_ENKF=0 # just for if statement later
 fi
 
 # Get dimension information based on CASE
-res=$(echo $CASE | cut -c2-)
+res=$(echo ${CASE} | cut -c2-)
 JCAP_CASE=$((res*2-2))
 LATB_CASE=$((res*2))
 LONB_CASE=$((res*4))
 
 # Set analysis resolution information
-if [ $DOHYBVAR = "YES" ]; then
-   JCAP_A=${JCAP_A:-${JCAP_ENKF:-$JCAP}}
-   LONA=${LONA:-${LONB_ENKF:-$LONB}}
-   LATA=${LATA:-${LATB_ENKF:-$LATB}}
+if [ ${DOHYBVAR} = "YES" ]; then
+   JCAP_A=${JCAP_A:-${JCAP_ENKF:-${JCAP}}}
+   LONA=${LONA:-${LONB_ENKF:-${LONB}}}
+   LATA=${LATA:-${LATB_ENKF:-${LATB}}}
 else
-   JCAP_A=${JCAP_A:-$JCAP}
-   LONA=${LONA:-$LONB}
-   LATA=${LATA:-$LATB}
+   JCAP_A=${JCAP_A:-${JCAP}}
+   LONA=${LONA:-${LONB}}
+   LATA=${LATA:-${LATB}}
 fi
-NLON_A=${NLON_A:-$LONA}
-NLAT_A=${NLAT_A:-$(($LATA+2))}
+NLON_A=${NLON_A:-${LONA}}
+NLAT_A=${NLAT_A:-$((${LATA}+2))}
 
-DELTIM=${DELTIM:-$((3600/($JCAP_A/20)))}
+DELTIM=${DELTIM:-$((3600/(${JCAP_A}/20)))}
 
 # logic for netCDF I/O
 if [ ${SUFFIX} = ".nc" ]; then
@@ -307,17 +307,17 @@ else
 fi
 
 # determine if writing or calculating increment
-if [ $DO_CALC_INCREMENT = "YES" ]; then
+if [ ${DO_CALC_INCREMENT} = "YES" ]; then
   write_fv3_increment=".false."
 else
   write_fv3_increment=".true."
-  WRITE_INCR_ZERO="incvars_to_zero= $INCREMENTS_TO_ZERO,"
-  WRITE_ZERO_STRAT="incvars_zero_strat= $INCVARS_ZERO_STRAT,"
-  WRITE_STRAT_EFOLD="incvars_efold= $INCVARS_EFOLD,"
+  WRITE_INCR_ZERO="incvars_to_zero= ${INCREMENTS_TO_ZERO},"
+  WRITE_ZERO_STRAT="incvars_zero_strat= ${INCVARS_ZERO_STRAT},"
+  WRITE_STRAT_EFOLD="incvars_efold= ${INCVARS_EFOLD},"
 fi
 
 # GSI Fix files
-RTMFIX=${RTMFIX:-${CRTM_FIX}}
+RTMFIX=${CRTM_FIX}
 BERROR=${BERROR:-${FIXgsi}/Big_Endian/global_berror.l${LEVS}y${NLAT_A}.f77}
 SATANGL=${SATANGL:-${FIXgsi}/global_satangbias.txt}
 SATINFO=${SATINFO:-${FIXgsi}/global_satinfo.txt}
@@ -353,7 +353,7 @@ NST=${NST:-""}
 
 #uGSI Namelist parameters
 lrun_subdirs=${lrun_subdirs:-".true."}
-if [ $DOHYBVAR = "YES" ]; then
+if [ ${DOHYBVAR} = "YES" ]; then
    l_hyb_ens=.true.
    export l4densvar=${l4densvar:-".false."}
    export lwrite4danl=${lwrite4danl:-".false."}
@@ -364,7 +364,7 @@ else
 fi
 
 # Set 4D-EnVar specific variables
-if [ $DOHYBVAR = "YES" -a $l4densvar = ".true." -a $lwrite4danl = ".true." ]; then
+if [ ${DOHYBVAR} = "YES" -a ${l4densvar} = ".true." -a ${lwrite4danl} = ".true." ]; then
    ATMA03=${ATMA03:-${COMOUT}/${APREFIX}atma003${ASUFFIX}}
    ATMI03=${ATMI03:-${COMOUT}/${APREFIX}atmi003.nc}
    ATMA04=${ATMA04:-${COMOUT}/${APREFIX}atma004${ASUFFIX}}
@@ -382,44 +382,44 @@ fi
 ################################################################################
 #  Preprocessing
 mkdata=NO
-if [ ! -d $DATA ]; then
+if [ ! -d ${DATA} ]; then
    mkdata=YES
-   mkdir -p $DATA
+   mkdir -p ${DATA}
 fi
 
-cd $DATA || exit 99
+cd ${DATA} || exit 99
 
 ##############################################################
 # Fixed files
-$NLN $BERROR       berror_stats
-$NLN $SATANGL      satbias_angle
-$NLN $SATINFO      satinfo
-$NLN $RADCLOUDINFO cloudy_radiance_info.txt
-$NLN $ATMSFILTER   atms_beamwidth.txt
-$NLN $ANAVINFO     anavinfo
-$NLN $CONVINFO     convinfo
-$NLN $vqcdat       vqctp001.dat
-$NLN $INSITUINFO   insituinfo
-$NLN $OZINFO       ozinfo
-$NLN $PCPINFO      pcpinfo
-$NLN $AEROINFO     aeroinfo
-$NLN $SCANINFO     scaninfo
-$NLN $HYBENSINFO   hybens_info
-$NLN $OBERROR      errtable
+${NLN} ${BERROR}       berror_stats
+${NLN} ${SATANGL}      satbias_angle
+${NLN} ${SATINFO}      satinfo
+${NLN} ${RADCLOUDINFO} cloudy_radiance_info.txt
+${NLN} ${ATMSFILTER}   atms_beamwidth.txt
+${NLN} ${ANAVINFO}     anavinfo
+${NLN} ${CONVINFO}     convinfo
+${NLN} ${vqcdat}       vqctp001.dat
+${NLN} ${INSITUINFO}   insituinfo
+${NLN} ${OZINFO}       ozinfo
+${NLN} ${PCPINFO}      pcpinfo
+${NLN} ${AEROINFO}     aeroinfo
+${NLN} ${SCANINFO}     scaninfo
+${NLN} ${HYBENSINFO}   hybens_info
+${NLN} ${OBERROR}      errtable
 
 #If using correlated error, link to the covariance files
-if [ $USE_CORRELATED_OBERRS == "YES" ];  then
-  if grep -q "Rcov" $ANAVINFO ;  then
+if [ ${USE_CORRELATED_OBERRS} == "YES" ];  then
+  if grep -q "Rcov" ${ANAVINFO} ;  then
      if ls ${FIXgsi}/Rcov* 1> /dev/null 2>&1; then
-       $NLN ${FIXgsi}/Rcov* $DATA
+       ${NLN} ${FIXgsi}/Rcov* ${DATA}
        echo "using correlated obs error"
      else
        echo "FATAL ERROR: Satellite error covariance files (Rcov) are missing."
-       echo "Check for the required Rcov files in " $ANAVINFO
+       echo "Check for the required Rcov files in " ${ANAVINFO}
        exit 1
      fi
   else
-     echo "FATAL ERROR: Satellite error covariance info missing in " $ANAVINFO
+     echo "FATAL ERROR: Satellite error covariance info missing in " ${ANAVINFO}
      exit 1
   fi
 
@@ -436,140 +436,136 @@ fi
 # CRTM Spectral and Transmittance coefficients
 mkdir -p crtm_coeffs
 for file in $(awk '{if($1!~"!"){print $1}}' satinfo | sort | uniq); do
-   $NLN $RTMFIX/${file}.SpcCoeff.bin ./crtm_coeffs/${file}.SpcCoeff.bin
-   $NLN $RTMFIX/${file}.TauCoeff.bin ./crtm_coeffs/${file}.TauCoeff.bin
+   ${NLN} ${RTMFIX}/${file}.SpcCoeff.bin ./crtm_coeffs/${file}.SpcCoeff.bin
+   ${NLN} ${RTMFIX}/${file}.TauCoeff.bin ./crtm_coeffs/${file}.TauCoeff.bin
 done
-$NLN $RTMFIX/amsua_metop-a_v2.SpcCoeff.bin ./crtm_coeffs/amsua_metop-a_v2.SpcCoeff.bin
+${NLN} ${RTMFIX}/amsua_metop-a_v2.SpcCoeff.bin ./crtm_coeffs/amsua_metop-a_v2.SpcCoeff.bin
 
-$NLN $RTMFIX/Nalli.IRwater.EmisCoeff.bin   ./crtm_coeffs/Nalli.IRwater.EmisCoeff.bin
-$NLN $RTMFIX/NPOESS.IRice.EmisCoeff.bin    ./crtm_coeffs/NPOESS.IRice.EmisCoeff.bin
-$NLN $RTMFIX/NPOESS.IRland.EmisCoeff.bin   ./crtm_coeffs/NPOESS.IRland.EmisCoeff.bin
-$NLN $RTMFIX/NPOESS.IRsnow.EmisCoeff.bin   ./crtm_coeffs/NPOESS.IRsnow.EmisCoeff.bin
-$NLN $RTMFIX/NPOESS.VISice.EmisCoeff.bin   ./crtm_coeffs/NPOESS.VISice.EmisCoeff.bin
-$NLN $RTMFIX/NPOESS.VISland.EmisCoeff.bin  ./crtm_coeffs/NPOESS.VISland.EmisCoeff.bin
-$NLN $RTMFIX/NPOESS.VISsnow.EmisCoeff.bin  ./crtm_coeffs/NPOESS.VISsnow.EmisCoeff.bin
-$NLN $RTMFIX/NPOESS.VISwater.EmisCoeff.bin ./crtm_coeffs/NPOESS.VISwater.EmisCoeff.bin
-$NLN $RTMFIX/FASTEM6.MWwater.EmisCoeff.bin ./crtm_coeffs/FASTEM6.MWwater.EmisCoeff.bin
-$NLN $RTMFIX/AerosolCoeff.bin              ./crtm_coeffs/AerosolCoeff.bin
-$NLN $RTMFIX/CloudCoeff.bin                ./crtm_coeffs/CloudCoeff.bin
+${NLN} ${RTMFIX}/Nalli.IRwater.EmisCoeff.bin   ./crtm_coeffs/Nalli.IRwater.EmisCoeff.bin
+${NLN} ${RTMFIX}/NPOESS.IRice.EmisCoeff.bin    ./crtm_coeffs/NPOESS.IRice.EmisCoeff.bin
+${NLN} ${RTMFIX}/NPOESS.IRland.EmisCoeff.bin   ./crtm_coeffs/NPOESS.IRland.EmisCoeff.bin
+${NLN} ${RTMFIX}/NPOESS.IRsnow.EmisCoeff.bin   ./crtm_coeffs/NPOESS.IRsnow.EmisCoeff.bin
+${NLN} ${RTMFIX}/NPOESS.VISice.EmisCoeff.bin   ./crtm_coeffs/NPOESS.VISice.EmisCoeff.bin
+${NLN} ${RTMFIX}/NPOESS.VISland.EmisCoeff.bin  ./crtm_coeffs/NPOESS.VISland.EmisCoeff.bin
+${NLN} ${RTMFIX}/NPOESS.VISsnow.EmisCoeff.bin  ./crtm_coeffs/NPOESS.VISsnow.EmisCoeff.bin
+${NLN} ${RTMFIX}/NPOESS.VISwater.EmisCoeff.bin ./crtm_coeffs/NPOESS.VISwater.EmisCoeff.bin
+${NLN} ${RTMFIX}/FASTEM6.MWwater.EmisCoeff.bin ./crtm_coeffs/FASTEM6.MWwater.EmisCoeff.bin
+${NLN} ${RTMFIX}/AerosolCoeff.bin              ./crtm_coeffs/AerosolCoeff.bin
+${NLN} ${RTMFIX}/CloudCoeff.bin                ./crtm_coeffs/CloudCoeff.bin
 #$NLN $RTMFIX/CloudCoeff.GFDLFV3.-109z-1.bin ./crtm_coeffs/CloudCoeff.bin
 
 
 ##############################################################
 # Observational data
-$NLN $PREPQC           prepbufr
-$NLN $PREPQCPF         prepbufr_profl
-$NLN $SATWND           satwndbufr
-$NLN $OSCATBF          oscatbufr
-$NLN $RAPIDSCATBF      rapidscatbufr
-$NLN $GSNDBF           gsndrbufr
-$NLN $GSNDBF1          gsnd1bufr
-$NLN $B1HRS2           hirs2bufr
-$NLN $B1MSU            msubufr
-$NLN $B1HRS3           hirs3bufr
-$NLN $B1HRS4           hirs4bufr
-$NLN $B1AMUA           amsuabufr
-$NLN $B1AMUB           amsubbufr
-$NLN $B1MHS            mhsbufr
-$NLN $ESHRS3           hirs3bufrears
-$NLN $ESAMUA           amsuabufrears
-$NLN $ESAMUB           amsubbufrears
+${NLN} ${PREPQC}           prepbufr
+${NLN} ${PREPQCPF}         prepbufr_profl
+${NLN} ${SATWND}           satwndbufr
+${NLN} ${OSCATBF}          oscatbufr
+${NLN} ${RAPIDSCATBF}      rapidscatbufr
+${NLN} ${GSNDBF}           gsndrbufr
+${NLN} ${GSNDBF1}          gsnd1bufr
+${NLN} ${B1HRS2}           hirs2bufr
+${NLN} ${B1MSU}            msubufr
+${NLN} ${B1HRS3}           hirs3bufr
+${NLN} ${B1HRS4}           hirs4bufr
+${NLN} ${B1AMUA}           amsuabufr
+${NLN} ${B1AMUB}           amsubbufr
+${NLN} ${B1MHS}            mhsbufr
+${NLN} ${ESHRS3}           hirs3bufrears
+${NLN} ${ESAMUA}           amsuabufrears
+${NLN} ${ESAMUB}           amsubbufrears
 #$NLN $ESMHS            mhsbufrears
-$NLN $HRS3DB           hirs3bufr_db
-$NLN $AMUADB           amsuabufr_db
-$NLN $AMUBDB           amsubbufr_db
+${NLN} ${HRS3DB}           hirs3bufr_db
+${NLN} ${AMUADB}           amsuabufr_db
+${NLN} ${AMUBDB}           amsubbufr_db
 #$NLN $MHSDB            mhsbufr_db
-$NLN $SBUVBF           sbuvbufr
-$NLN $OMPSNPBF         ompsnpbufr
-$NLN $OMPSLPBF         ompslpbufr
-$NLN $OMPSTCBF         ompstcbufr
-$NLN $GOMEBF           gomebufr
-$NLN $OMIBF            omibufr
-$NLN $MLSBF            mlsbufr
-$NLN $SMIPCP           ssmirrbufr
-$NLN $TMIPCP           tmirrbufr
-$NLN $AIRSBF           airsbufr
-$NLN $IASIBF           iasibufr
-$NLN $ESIASI           iasibufrears
-$NLN $IASIDB           iasibufr_db
-$NLN $AMSREBF          amsrebufr
-$NLN $AMSR2BF          amsr2bufr
-$NLN $GMI1CRBF         gmibufr
-$NLN $SAPHIRBF         saphirbufr
-$NLN $SEVIRIBF         seviribufr
-$NLN $CRISBF           crisbufr
-$NLN $ESCRIS           crisbufrears
-$NLN $CRISDB           crisbufr_db
-$NLN $CRISFSBF         crisfsbufr
-$NLN $ESCRISFS         crisfsbufrears
-$NLN $CRISFSDB         crisfsbufr_db
-$NLN $ATMSBF           atmsbufr
-$NLN $ESATMS           atmsbufrears
-$NLN $ATMSDB           atmsbufr_db
-$NLN $SSMITBF          ssmitbufr
-$NLN $SSMISBF          ssmisbufr
-$NLN $GPSROBF          gpsrobufr
-$NLN $TCVITL           tcvitl
-$NLN $B1AVHAM          avhambufr
-$NLN $B1AVHPM          avhpmbufr
-$NLN $AHIBF            ahibufr
-$NLN $ABIBF            abibufr
-$NLN $HDOB             hdobbufr
-$NLN $SSTVIIRS         sstviirs
+${NLN} ${SBUVBF}           sbuvbufr
+${NLN} ${OMPSNPBF}         ompsnpbufr
+${NLN} ${OMPSLPBF}         ompslpbufr
+${NLN} ${OMPSTCBF}         ompstcbufr
+${NLN} ${GOMEBF}           gomebufr
+${NLN} ${OMIBF}            omibufr
+${NLN} ${MLSBF}            mlsbufr
+${NLN} ${SMIPCP}           ssmirrbufr
+${NLN} ${TMIPCP}           tmirrbufr
+${NLN} ${AIRSBF}           airsbufr
+${NLN} ${IASIBF}           iasibufr
+${NLN} ${ESIASI}           iasibufrears
+${NLN} ${IASIDB}           iasibufr_db
+${NLN} ${AMSREBF}          amsrebufr
+${NLN} ${AMSR2BF}          amsr2bufr
+${NLN} ${GMI1CRBF}         gmibufr
+${NLN} ${SAPHIRBF}         saphirbufr
+${NLN} ${SEVIRIBF}         seviribufr
+${NLN} ${CRISBF}           crisbufr
+${NLN} ${ESCRIS}           crisbufrears
+${NLN} ${CRISDB}           crisbufr_db
+${NLN} ${CRISFSBF}         crisfsbufr
+${NLN} ${ESCRISFS}         crisfsbufrears
+${NLN} ${CRISFSDB}         crisfsbufr_db
+${NLN} ${ATMSBF}           atmsbufr
+${NLN} ${ESATMS}           atmsbufrears
+${NLN} ${ATMSDB}           atmsbufr_db
+${NLN} ${SSMITBF}          ssmitbufr
+${NLN} ${SSMISBF}          ssmisbufr
+${NLN} ${GPSROBF}          gpsrobufr
+${NLN} ${TCVITL}           tcvitl
+${NLN} ${B1AVHAM}          avhambufr
+${NLN} ${B1AVHPM}          avhpmbufr
+${NLN} ${AHIBF}            ahibufr
+${NLN} ${ABIBF}            abibufr
+${NLN} ${HDOB}             hdobbufr
+${NLN} ${SSTVIIRS}         sstviirs
 
-[[ $DONST = "YES" ]] && $NLN $NSSTBF nsstbufr
+[[ ${DONST} = "YES" ]] && ${NLN} ${NSSTBF} nsstbufr
 
 ##############################################################
 # Required bias guess files
-$NLN $GBIAS    satbias_in
-$NLN $GBIASPC  satbias_pc
-$NLN $GBIASAIR aircftbias_in
-$NLN $GRADSTAT radstat.gdas
+${NLN} ${GBIAS}    satbias_in
+${NLN} ${GBIASPC}  satbias_pc
+${NLN} ${GBIASAIR} aircftbias_in
+${NLN} ${GRADSTAT} radstat.gdas
 
 ##############################################################
 # Required model guess files
-$NLN $ATMG03 sigf03
-$NLN $ATMGES sigf06
-$NLN $ATMG09 sigf09
+${NLN} ${ATMG03} sigf03
+${NLN} ${ATMGES} sigf06
+${NLN} ${ATMG09} sigf09
 
-$NLN $SFCG03 sfcf03
-$NLN $SFCGES sfcf06
-$NLN $SFCG09 sfcf09
+${NLN} ${SFCG03} sfcf03
+${NLN} ${SFCGES} sfcf06
+${NLN} ${SFCG09} sfcf09
 
-# Link hourly backgrounds (if present)
-if [ -f $ATMG04 -a -f $ATMG05 -a -f $ATMG07 -a -f $ATMG08 ]; then
-   nhr_obsbin=1
-fi
+[[ -f ${ATMG04} ]] && ${NLN} ${ATMG04} sigf04
+[[ -f ${ATMG05} ]] && ${NLN} ${ATMG05} sigf05
+[[ -f ${ATMG07} ]] && ${NLN} ${ATMG07} sigf07
+[[ -f ${ATMG08} ]] && ${NLN} ${ATMG08} sigf08
 
-[[ -f $ATMG04 ]] && $NLN $ATMG04 sigf04
-[[ -f $ATMG05 ]] && $NLN $ATMG05 sigf05
-[[ -f $ATMG07 ]] && $NLN $ATMG07 sigf07
-[[ -f $ATMG08 ]] && $NLN $ATMG08 sigf08
+[[ -f ${SFCG04} ]] && ${NLN} ${SFCG04} sfcf04
+[[ -f ${SFCG05} ]] && ${NLN} ${SFCG05} sfcf05
+[[ -f ${SFCG07} ]] && ${NLN} ${SFCG07} sfcf07
+[[ -f ${SFCG08} ]] && ${NLN} ${SFCG08} sfcf08
 
-[[ -f $SFCG04 ]] && $NLN $SFCG04 sfcf04
-[[ -f $SFCG05 ]] && $NLN $SFCG05 sfcf05
-[[ -f $SFCG07 ]] && $NLN $SFCG07 sfcf07
-[[ -f $SFCG08 ]] && $NLN $SFCG08 sfcf08
-
-if [ $DOHYBVAR = "YES" ]; then
+if [ ${DOHYBVAR} = "YES" ]; then
 
    # Link ensemble members
    mkdir -p ensemble_data
 
    ENKF_SUFFIX="s"
-   [[ $SMOOTH_ENKF = "NO" ]] && ENKF_SUFFIX=""
+   [[ ${SMOOTH_ENKF} = "NO" ]] && ENKF_SUFFIX=""
 
    fhrs="06"
-   if [ $l4densvar = ".true." ]; then
+   if [ ${l4densvar} = ".true." ]; then
       fhrs="03 04 05 06 07 08 09"
+      nhr_obsbin=1
    fi
 
-   for imem in $(seq 1 $NMEM_ENKF); do
-      memchar="mem"$(printf %03i $imem)
-      for fhr in $fhrs; do
-         $NLN ${COMIN_GES_ENS}/$memchar/${GPREFIX}atmf0${fhr}${ENKF_SUFFIX}${GSUFFIX} ./ensemble_data/sigf${fhr}_ens_$memchar
-         if [ $cnvw_option = ".true." ]; then
-            $NLN ${COMIN_GES_ENS}/$memchar/${GPREFIX}sfcf0${fhr}${GSUFFIX} ./ensemble_data/sfcf${fhr}_ens_$memchar
+   for imem in $(seq 1 ${NMEM_ENKF}); do
+      memchar="mem"$(printf %03i ${imem})
+      for fhr in ${fhrs}; do
+         ${NLN} ${COMIN_GES_ENS}/${memchar}/${GPREFIX}atmf0${fhr}${ENKF_SUFFIX}${GSUFFIX} ./ensemble_data/sigf${fhr}_ens_${memchar}
+         if [ ${cnvw_option} = ".true." ]; then
+            ${NLN} ${COMIN_GES_ENS}/${memchar}/${GPREFIX}sfcf0${fhr}${GSUFFIX} ./ensemble_data/sfcf${fhr}_ens_${memchar}
          fi
       done
    done
@@ -579,11 +575,11 @@ fi
 ##############################################################
 # Handle inconsistent surface mask between background, ensemble and analysis grids
 # This needs re-visiting in the context of NSST; especially references to JCAP*
-if [ $JCAP -ne $JCAP_A ]; then
-   if [ $DOHYBVAR = "YES" -a $JCAP_A = $JCAP_ENKF ]; then
-      if [ -e $SFCGES_ENSMEAN ]; then
+if [ ${JCAP} -ne ${JCAP_A} ]; then
+   if [ ${DOHYBVAR} = "YES" -a ${JCAP_A} = ${JCAP_ENKF} ]; then
+      if [ -e ${SFCGES_ENSMEAN} ]; then
          USE_READIN_ANL_SFCMASK=.true.
-         $NLN $SFCGES_ENSMEAN sfcf06_anlgrid
+         ${NLN} ${SFCGES_ENSMEAN} sfcf06_anlgrid
       else
          echo "Warning: Inconsistent sfc mask between analysis and ensemble grids, GSI will interpolate"
       fi
@@ -595,108 +591,108 @@ fi
 ##############################################################
 # Diagnostic files
 # if requested, link GSI diagnostic file directories for use later
-if [ $GENDIAG = "YES" ] ; then
-   if [ $lrun_subdirs = ".true." ] ; then
-      if [ -d $DIAG_DIR ]; then
-         rm -rf $DIAG_DIR
+if [ ${GENDIAG} = "YES" ] ; then
+   if [ ${lrun_subdirs} = ".true." ] ; then
+      if [ -d ${DIAG_DIR} ]; then
+         rm -rf ${DIAG_DIR}
       fi
-      npe_m1="$(($npe_gsi-1))"
-      for pe in $(seq 0 $npe_m1); do
-        pedir="dir."$(printf %04i $pe)
-        mkdir -p $DIAG_DIR/$pedir
-        $NLN $DIAG_DIR/$pedir $pedir
+      npe_m1="$((${npe_gsi}-1))"
+      for pe in $(seq 0 ${npe_m1}); do
+        pedir="dir."$(printf %04i ${pe})
+        mkdir -p ${DIAG_DIR}/${pedir}
+        ${NLN} ${DIAG_DIR}/${pedir} ${pedir}
       done
    else
-      err_exit "FATAL ERROR: lrun_subdirs must be true. lrun_subdirs=$lrun_subdirs"
+      err_exit "FATAL ERROR: lrun_subdirs must be true. lrun_subdirs=${lrun_subdirs}"
    fi
 fi
 
 ##############################################################
 # Output files
-$NLN $ATMANL siganl
-$NLN $ATMINC siginc.nc
-if [ $DOHYBVAR = "YES" -a $l4densvar = ".true." -a $lwrite4danl = ".true." ]; then
-   $NLN $ATMA03   siga03
-   $NLN $ATMI03   sigi03.nc
-   $NLN $ATMA04   siga04
-   $NLN $ATMI04   sigi04.nc
-   $NLN $ATMA05   siga05
-   $NLN $ATMI05   sigi05.nc
-   $NLN $ATMA07   siga07
-   $NLN $ATMI07   sigi07.nc
-   $NLN $ATMA08   siga08
-   $NLN $ATMI08   sigi08.nc
-   $NLN $ATMA09   siga09
-   $NLN $ATMI09   sigi09.nc
+${NLN} ${ATMANL} siganl
+${NLN} ${ATMINC} siginc.nc
+if [ ${DOHYBVAR} = "YES" -a ${l4densvar} = ".true." -a ${lwrite4danl} = ".true." ]; then
+   ${NLN} ${ATMA03}   siga03
+   ${NLN} ${ATMI03}   sigi03.nc
+   ${NLN} ${ATMA04}   siga04
+   ${NLN} ${ATMI04}   sigi04.nc
+   ${NLN} ${ATMA05}   siga05
+   ${NLN} ${ATMI05}   sigi05.nc
+   ${NLN} ${ATMA07}   siga07
+   ${NLN} ${ATMI07}   sigi07.nc
+   ${NLN} ${ATMA08}   siga08
+   ${NLN} ${ATMI08}   sigi08.nc
+   ${NLN} ${ATMA09}   siga09
+   ${NLN} ${ATMI09}   sigi09.nc
 fi
-$NLN $ABIAS    satbias_out
-$NLN $ABIASPC  satbias_pc.out
-$NLN $ABIASAIR aircftbias_out
+${NLN} ${ABIAS}    satbias_out
+${NLN} ${ABIASPC}  satbias_pc.out
+${NLN} ${ABIASAIR} aircftbias_out
 
-if [ $DONST = "YES" ]; then
-   $NLN $DTFANL dtfanl
+if [ ${DONST} = "YES" ]; then
+   ${NLN} ${DTFANL} dtfanl
 fi
 
 # If requested, link (and if tarred, de-tar obsinput.tar) into obs_input.* files
-if [ $USE_SELECT = "YES" ]; then
+if [ ${USE_SELECT} = "YES" ]; then
    rm obs_input.*
-   nl=$(file $SELECT_OBS | cut -d: -f2 | grep tar | wc -l)
-   if [ $nl -eq 1 ]; then
+   nl=$(file ${SELECT_OBS} | cut -d: -f2 | grep tar | wc -l)
+   if [ ${nl} -eq 1 ]; then
       rm obsinput.tar
-      $NLN $SELECT_OBS obsinput.tar
+      ${NLN} ${SELECT_OBS} obsinput.tar
       tar -xvf obsinput.tar
       rm obsinput.tar
    else
-      for filetop in $(ls $SELECT_OBS/obs_input.*); do
-         fileloc=$(basename $filetop)
-         $NLN $filetop $fileloc
+      for filetop in $(ls ${SELECT_OBS}/obs_input.*); do
+         fileloc=$(basename ${filetop})
+         ${NLN} ${filetop} ${fileloc}
       done
    fi
 fi
 
 ##############################################################
 # If requested, copy and de-tar guess radstat file
-if [ $USE_RADSTAT = "YES" ]; then
-   if [ $USE_CFP = "YES" ]; then
-     [[ -f $DATA/unzip.sh ]] && rm $DATA/unzip.sh
-     [[ -f $DATA/mp_unzip.sh ]] && rm $DATA/mp_unzip.sh
-     cat > $DATA/unzip.sh << EOFunzip
+if [ ${USE_RADSTAT} = "YES" ]; then
+   if [ ${USE_CFP} = "YES" ]; then
+     [[ -f ${DATA}/unzip.sh ]] && rm ${DATA}/unzip.sh
+     [[ -f ${DATA}/mp_unzip.sh ]] && rm ${DATA}/mp_unzip.sh
+     cat > ${DATA}/unzip.sh << EOFunzip
 #!/bin/sh
    diag_file=\$1
    diag_suffix=\$2
    fname=\$(echo \$diag_file | cut -d'.' -f1)
    fdate=\$(echo \$diag_file | cut -d'.' -f2)
-   $UNCOMPRESS \$diag_file
+   ${UNCOMPRESS} \$diag_file
    fnameges=\$(echo \$fname | sed 's/_ges//g')
-   $NMV \$fname.\$fdate\$diag_suffix \$fnameges
+   ${NMV} \$fname.\$fdate\$diag_suffix \$fnameges
 EOFunzip
-     chmod 755 $DATA/unzip.sh
+     chmod 755 ${DATA}/unzip.sh
    fi
 
    listdiag=$(tar xvf radstat.gdas | cut -d' ' -f2 | grep _ges)
-   for type in $listdiag; do
-      diag_file=$(echo $type | cut -d',' -f1)
-      if [ $USE_CFP = "YES" ] ; then
-         echo "$nm $DATA/unzip.sh $diag_file $DIAG_SUFFIX" | tee -a $DATA/mp_unzip.sh
+   for type in ${listdiag}; do
+      diag_file=$(echo ${type} | cut -d',' -f1)
+      if [ ${USE_CFP} = "YES" ] ; then
+         echo "${nm} ${DATA}/unzip.sh ${diag_file} ${DIAG_SUFFIX}" | tee -a ${DATA}/mp_unzip.sh
          if [ ${CFP_MP:-"NO"} = "YES" ]; then
            nm=$((nm+1))
          fi
       else
-         fname=$(echo $diag_file | cut -d'.' -f1)
-         date=$(echo $diag_file | cut -d'.' -f2)
-         $UNCOMPRESS $diag_file
-         fnameges=$(echo $fname|sed 's/_ges//g')
-         $NMV $fname.$date$DIAG_SUFFIX $fnameges
+         fname=$(echo ${diag_file} | cut -d'.' -f1)
+         date=$(echo ${diag_file} | cut -d'.' -f2)
+         ${UNCOMPRESS} ${diag_file}
+         fnameges=$(echo ${fname}|sed 's/_ges//g')
+         ${NMV} ${fname}.${date}${DIAG_SUFFIX} ${fnameges}
       fi
    done
 
-   if [ $USE_CFP = "YES" ] ; then
-      chmod 755 $DATA/mp_unzip.sh
-      ncmd=$(cat $DATA/mp_unzip.sh | wc -l)
-      if [ $ncmd -gt 0 ]; then
+   if [ ${USE_CFP} = "YES" ] ; then
+      chmod 755 ${DATA}/mp_unzip.sh
+      ncmd=$(cat ${DATA}/mp_unzip.sh | wc -l)
+      if [ ${ncmd} -gt 0 ]; then
          ncmd_max=$((ncmd < npe_node_max ? ncmd : npe_node_max))
-         APRUNCFP_UNZIP=$(eval echo $APRUNCFP)
-         $APRUNCFP_UNZIP $DATA/mp_unzip.sh
+         APRUNCFP_UNZIP=$(eval echo ${APRUNCFP})
+         ${APRUNCFP_UNZIP} ${DATA}/mp_unzip.sh
          export err=$?; err_chk
       fi
    fi
@@ -704,18 +700,18 @@ fi # if [ $USE_RADSTAT = "YES" ]
 
 ##############################################################
 # GSI Namelist options
-if [ $DOHYBVAR = "YES" ]; then
-   HYBRID_ENSEMBLE="n_ens=$NMEM_ENKF,jcap_ens=$JCAP_ENKF,nlat_ens=$NLAT_ENKF,nlon_ens=$NLON_ENKF,jcap_ens_test=$JCAP_ENKF,$HYBRID_ENSEMBLE"
-   if [ $l4densvar = ".true." ]; then
-      SETUP="niter(1)=50,niter(2)=150,niter_no_qc(1)=25,niter_no_qc(2)=0,thin4d=.true.,ens_nstarthr=3,l4densvar=$l4densvar,lwrite4danl=$lwrite4danl,$SETUP"
-      JCOPTS="ljc4tlevs=.true.,$JCOPTS"
-      STRONGOPTS="tlnmc_option=3,$STRONGOPTS"
-      OBSQC="c_varqc=0.04,$OBSQC"
+if [ ${DOHYBVAR} = "YES" ]; then
+   HYBRID_ENSEMBLE="n_ens=${NMEM_ENKF},jcap_ens=${JCAP_ENKF},nlat_ens=${NLAT_ENKF},nlon_ens=${NLON_ENKF},jcap_ens_test=${JCAP_ENKF},${HYBRID_ENSEMBLE}"
+   if [ ${l4densvar} = ".true." ]; then
+      SETUP="niter(1)=50,niter(2)=150,niter_no_qc(1)=25,niter_no_qc(2)=0,thin4d=.true.,ens_nstarthr=3,l4densvar=${l4densvar},lwrite4danl=${lwrite4danl},${SETUP}"
+      JCOPTS="ljc4tlevs=.true.,${JCOPTS}"
+      STRONGOPTS="tlnmc_option=3,${STRONGOPTS}"
+      OBSQC="c_varqc=0.04,${OBSQC}"
    fi
 fi
 
-if [ $DONST = "YES" ]; then
-   NST="nstinfo=$NSTINFO,fac_dtl=$FAC_DTL,fac_tsl=$FAC_TSL,zsea1=$ZSEA1,zsea2=$ZSEA2,$NST"
+if [ ${DONST} = "YES" ]; then
+   NST="nstinfo=${NSTINFO},fac_dtl=${FAC_DTL},fac_tsl=${FAC_TSL},zsea1=${ZSEA1},zsea2=${ZSEA2},${NST}"
 fi
 
 ##############################################################
@@ -727,33 +723,33 @@ cat > gsiparm.anl << EOF
   niter_no_qc(1)=50,niter_no_qc(2)=0,
   write_diag(1)=.true.,write_diag(2)=.false.,write_diag(3)=.true.,
   qoption=2,
-  gencode=${IGEN:-0},deltim=$DELTIM,
+  gencode=${IGEN:-0},deltim=${DELTIM},
   factqmin=0.5,factqmax=0.0002,
   iguess=-1,
-  tzr_qc=$TZR_QC,
+  tzr_qc=${TZR_QC},
   oneobtest=.false.,retrieval=.false.,l_foto=.false.,
   use_pbl=.false.,use_compress=.true.,nsig_ext=12,gpstop=50.,commgpstop=45.,commgpserrinf=1.0,
   use_gfs_nemsio=${use_gfs_nemsio},use_gfs_ncio=${use_gfs_ncio},sfcnst_comb=.true.,
   use_readin_anl_sfcmask=${USE_READIN_ANL_SFCMASK},
-  lrun_subdirs=$lrun_subdirs,
+  lrun_subdirs=${lrun_subdirs},
   crtm_coeffs_path='./crtm_coeffs/',
   newpc4pred=.true.,adp_anglebc=.true.,angord=4,passive_bc=.true.,use_edges=.false.,
   diag_precon=.true.,step_start=1.e-3,emiss_bc=.true.,nhr_obsbin=${nhr_obsbin:-3},
-  cwoption=3,imp_physics=$imp_physics,lupp=$lupp,cnvw_option=$cnvw_option,cao_check=${cao_check},
-  netcdf_diag=$netcdf_diag,binary_diag=$binary_diag,
-  lobsdiag_forenkf=$lobsdiag_forenkf,
-  write_fv3_incr=$write_fv3_increment,
+  cwoption=3,imp_physics=${imp_physics},lupp=${lupp},cnvw_option=${cnvw_option},cao_check=${cao_check},
+  netcdf_diag=${netcdf_diag},binary_diag=${binary_diag},
+  lobsdiag_forenkf=${lobsdiag_forenkf},
+  write_fv3_incr=${write_fv3_increment},
   nhr_anal=${IAUFHRS},
   ta2tb=${ta2tb},
-  $WRITE_INCR_ZERO
-  $WRITE_ZERO_STRAT
-  $WRITE_STRAT_EFOLD
-  $SETUP
+  ${WRITE_INCR_ZERO}
+  ${WRITE_ZERO_STRAT}
+  ${WRITE_STRAT_EFOLD}
+  ${SETUP}
 /
 &GRIDOPTS
-  JCAP_B=$JCAP,JCAP=$JCAP_A,NLAT=$NLAT_A,NLON=$NLON_A,nsig=$LEVS,
+  JCAP_B=${JCAP},JCAP=${JCAP_A},NLAT=${NLAT_A},NLON=${NLON_A},nsig=${LEVS},
   regional=.false.,nlayers(63)=3,nlayers(64)=6,
-  $GRIDOPTS
+  ${GRIDOPTS}
 /
 &BKGERR
   vs=0.7,
@@ -763,30 +759,30 @@ cat > gsiparm.anl << EOF
   bkgv_flowdep=.true.,bkgv_rewgtfct=1.5,
   bkgv_write=.false.,
   cwcoveqqcov=.false.,
-  $BKGVERR
+  ${BKGVERR}
 /
 &ANBKGERR
   anisotropic=.false.,
-  $ANBKGERR
+  ${ANBKGERR}
 /
 &JCOPTS
   ljcdfi=.false.,alphajc=0.0,ljcpdry=.true.,bamp_jcpdry=5.0e7,
-  $JCOPTS
+  ${JCOPTS}
 /
 &STRONGOPTS
   tlnmc_option=2,nstrong=1,nvmodes_keep=8,period_max=6.,period_width=1.5,
-  $STRONGOPTS
+  ${STRONGOPTS}
 /
 &OBSQC
   dfact=0.75,dfact1=3.0,noiqc=.true.,oberrflg=.false.,c_varqc=0.02,
   use_poq7=.true.,qc_noirjaco3_pole=.true.,vqc=.false.,nvqc=.true.,
   aircraft_t_bc=.true.,biaspredt=1.0e5,upd_aircraft=.true.,cleanup_tail=.true.,
   tcp_width=70.0,tcp_ermax=7.35,
-  $OBSQC
+  ${OBSQC}
 /
 &OBS_INPUT
   dmesh(1)=145.0,dmesh(2)=150.0,dmesh(3)=100.0,dmesh(4)=25.0,time_window_max=3.0,
-  $OBSINPUT
+  ${OBSINPUT}
 /
 OBS_INPUT::
 !  dfile          dtype       dplat       dsis                dval    dthin dsfcalc
@@ -908,37 +904,37 @@ OBS_INPUT::
    gomebufr       gome        metop-c     gome_metop-c        0.0     2     0
 ::
 &SUPEROB_RADAR
-  $SUPERRAD
+  ${SUPERRAD}
 /
 &LAG_DATA
-  $LAGDATA
+  ${LAGDATA}
 /
 &HYBRID_ENSEMBLE
-  l_hyb_ens=$l_hyb_ens,
+  l_hyb_ens=${l_hyb_ens},
   generate_ens=.false.,
   beta_s0=0.125,readin_beta=.false.,
   s_ens_h=800.,s_ens_v=-0.8,readin_localization=.true.,
   aniso_a_en=.false.,oz_univ_static=.false.,uv_hyb_ens=.true.,
   ensemble_path='./ensemble_data/',
   ens_fast_read=.true.,
-  $HYBRID_ENSEMBLE
+  ${HYBRID_ENSEMBLE}
 /
 &RAPIDREFRESH_CLDSURF
   dfi_radar_latent_heat_time_period=30.0,
-  $RAPIDREFRESH_CLDSURF
+  ${RAPIDREFRESH_CLDSURF}
 /
 &CHEM
-  $CHEM
+  ${CHEM}
 /
 &SINGLEOB_TEST
   maginnov=0.1,magoberr=0.1,oneob_type='t',
-  oblat=45.,oblon=180.,obpres=1000.,obdattim=$CDATE,
+  oblat=45.,oblon=180.,obpres=1000.,obdattim=${CDATE},
   obhourset=0.,
-  $SINGLEOB
+  ${SINGLEOB}
 /
 &NST
-  nst_gsi=$NST_GSI,
-  $NST
+  nst_gsi=${NST_GSI},
+  ${NST}
 /
 EOF
 cat gsiparm.anl
@@ -946,20 +942,20 @@ cat gsiparm.anl
 ##############################################################
 #  Run gsi analysis
 
-export OMP_NUM_THREADS=$NTHREADS_GSI
-export pgm=$GSIEXEC
+export OMP_NUM_THREADS=${NTHREADS_GSI}
+export pgm=${GSIEXEC}
 . prep_step
 
-$NCP $GSIEXEC $DATA
-$APRUN_GSI ${DATA}/$(basename $GSIEXEC) 1>&1 2>&2
+${NCP} ${GSIEXEC} ${DATA}
+${APRUN_GSI} ${DATA}/$(basename ${GSIEXEC}) 1>&1 2>&2
 export err=$?; err_chk
 
 
 ##############################################################
 # If full analysis field written, calculate analysis increment
 # here before releasing FV3 forecast
-if [ $DO_CALC_INCREMENT = "YES" ]; then
-  $CALCINCPY
+if [ ${DO_CALC_INCREMENT} = "YES" ]; then
+  ${CALCINCPY}
   export err=$?; err_chk
 fi
 
@@ -967,52 +963,52 @@ fi
 ##############################################################
 # For eupd
 if [ -s satbias_out.int ]; then
-   $NCP satbias_out.int $ABIASe
+   ${NCP} satbias_out.int ${ABIASe}
 else
-   $NCP satbias_in $ABIASe
+   ${NCP} satbias_in ${ABIASe}
 fi
 
 # Cat runtime output files.
-cat fort.2* > $GSISTAT
+cat fort.2* > ${GSISTAT}
 
 # If requested, create obsinput tarball from obs_input.* files
-if [ $RUN_SELECT = "YES" ]; then
+if [ ${RUN_SELECT} = "YES" ]; then
   echo $(date) START tar obs_input >&2
   [[ -s obsinput.tar ]] && rm obsinput.tar
-  $NLN $SELECT_OBS obsinput.tar
+  ${NLN} ${SELECT_OBS} obsinput.tar
   ${CHGRP_CMD} obs_input.*
   tar -cvf obsinput.tar obs_input.*
-  chmod 750 $SELECT_OBS
-  ${CHGRP_CMD} $SELECT_OBS
+  chmod 750 ${SELECT_OBS}
+  ${CHGRP_CMD} ${SELECT_OBS}
   rm obsinput.tar
   echo $(date) END tar obs_input >&2
 fi
 
 ################################################################################
 # Send alerts
-if [ $SENDDBN = "YES" ]; then
-    if [ $RUN = "gfs" ]; then
-       $DBNROOT/bin/dbn_alert MODEL GFS_abias $job $ABIAS
+if [ ${SENDDBN} = "YES" ]; then
+    if [ ${RUN} = "gfs" ]; then
+       ${DBNROOT}/bin/dbn_alert MODEL GFS_abias ${job} ${ABIAS}
     fi
 fi
 
 ################################################################################
 # Postprocessing
-cd $pwd
-[[ $mkdata = "YES" ]] && rm -rf $DATA
+cd ${pwd}
+[[ ${mkdata} = "YES" ]] && rm -rf ${DATA}
 
 ##############################################################
 # Add this statement to release the forecast job once the
 # atmopsheric analysis and updated surface RESTARTS are
 # available.  Do not release forecast when RUN=enkf
 ##############################################################
-if [ $SENDECF = "YES" -a "$RUN" != "enkf" ]; then
+if [ ${SENDECF} = "YES" -a "${RUN}" != "enkf" ]; then
    ecflow_client --event release_fcst
 fi
-echo "$CDUMP $CDATE atminc done at $(date)" > $COMOUT/${APREFIX}loginc.txt
+echo "${CDUMP} ${CDATE} atminc done at $(date)" > ${COMOUT}/${APREFIX}loginc.txt
 
 ################################################################################
 
-exit $err
+exit ${err}
 
 ################################################################################

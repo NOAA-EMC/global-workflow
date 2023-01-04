@@ -1,0 +1,11 @@
+aeroanl:
+  IO_LAYOUT_X: 1
+  IO_LAYOUT_Y: 1
+
+ocnanal:
+  SOCA_INPUT_FIX_DIR: '/scratch2/NCEPDEV/ocean/Guillaume.Vernieres/data/static/72x35x25'
+  CASE_ANL: 'C48'
+  COMIN_OBS: '/scratch2/NCEPDEV/marineda/r2d2'
+  SOCA_NINNER: 50
+  R2D2_OBS_SRC: 'gdas_marine'
+  R2D2_OBS_DUMP: 's2s_v1'

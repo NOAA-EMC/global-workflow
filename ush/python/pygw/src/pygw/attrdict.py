@@ -44,6 +44,8 @@ class AttrDict(dict):
                     object.__getattribute__(self, '__frozen'))
         if isFrozen and name not in super(AttrDict, self).keys():
             raise KeyError(name)
+        if isinstance(value, dict):
+            value = AttrDict(value)
         super(AttrDict, self).__setitem__(name, value)
         try:
             p = object.__getattribute__(self, '__parent')

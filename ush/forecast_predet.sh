@@ -208,7 +208,7 @@ FV3_GFS_predet(){
   print_freq=${print_freq:-6}
 
   #-------------------------------------------------------
-  if [ $CDUMP = "gfs" -a $rst_invt1 -gt 0 ]; then
+  if [ $CDUMP = "gfs" ] && [ $rst_invt1 -gt 0 ] && [ $MEMBER -lt 0 ]; then
     RSTDIR_ATM=${RSTDIR:-$ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos/RERUN_RESTART
     if [ ! -d $RSTDIR_ATM ]; then mkdir -p $RSTDIR_ATM ; fi
     $NLN $RSTDIR_ATM RESTART
@@ -248,7 +248,6 @@ FV3_GFS_predet(){
   gPDY=$(echo $GDATE | cut -c1-8)
   gcyc=$(echo $GDATE | cut -c9-10)
   gmemdir=$ROTDIR/${rprefix}.$gPDY/$gcyc/atmos/$memchar
-  sCDATE=$($NDATE -3 $CDATE)
 
   if [[ "$DOIAU" = "YES" ]]; then
     sCDATE=$($NDATE -3 $CDATE)
@@ -300,5 +299,5 @@ MOM6_predet(){
   if [ ! -d $DATA/OUTPUT ]; then mkdir -p $DATA/OUTPUT; fi
   if [ ! -d $DATA/MOM6_OUTPUT ]; then mkdir -p $DATA/MOM6_OUTPUT; fi
   if [ ! -d $DATA/MOM6_RESTART ]; then mkdir -p $DATA/MOM6_RESTART; fi
-  cd $DATA || exit 8
+  cd "${DATA}" || exit 8
 }
