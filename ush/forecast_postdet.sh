@@ -520,19 +520,11 @@ EOF
       logi=logf${FH3}
       pgbi=GFSPRS.GrbF${FH2}
       flxi=GFSFLX.GrbF${FH2}
-      if [[ $RUN == "gefs" ]]; then
-        atmo=$memdir/history/${CDUMP}.t${cyc}z.atmf${FH3}.$affix
-        sfco=$memdir/history/${CDUMP}.t${cyc}z.sfcf${FH3}.$affix
-        logo=$memdir/history/${CDUMP}.t${cyc}z.logf${FH3}.txt
-        pgbo=$memdir/master/${CDUMP}.t${cyc}z.master.grb2f${FH3}
-        flxo=$memdir/master/${CDUMP}.t${cyc}z.sfluxgrbf${FH3}.grib2
-      else
-        atmo=$memdir/${CDUMP}.t${cyc}z.atmf${FH3}.$affix
-        sfco=$memdir/${CDUMP}.t${cyc}z.sfcf${FH3}.$affix
-        logo=$memdir/${CDUMP}.t${cyc}z.logf${FH3}.txt
-        pgbo=$memdir/${CDUMP}.t${cyc}z.master.grb2f${FH3}
-        flxo=$memdir/${CDUMP}.t${cyc}z.sfluxgrbf${FH3}.grib2
-      fi
+      atmo=$memdir/${CDUMP}.t${cyc}z.atmf${FH3}.$affix
+      sfco=$memdir/${CDUMP}.t${cyc}z.sfcf${FH3}.$affix
+      logo=$memdir/${CDUMP}.t${cyc}z.logf${FH3}.txt
+      pgbo=$memdir/${CDUMP}.t${cyc}z.master.grb2f${FH3}
+      flxo=$memdir/${CDUMP}.t${cyc}z.sfluxgrbf${FH3}.grib2
       eval $NLN $atmo $atmi
       eval $NLN $sfco $sfci
       eval $NLN $logo $logi
@@ -543,19 +535,11 @@ EOF
     done
   else
     for n in $(seq 1 $ntiles); do
-      if [[ $RUN == "gefs" ]]; then
-        eval $NLN nggps2d.tile${n}.nc       $memdir/history/nggps2d.tile${n}.nc
-        eval $NLN nggps3d.tile${n}.nc       $memdir/history/nggps3d.tile${n}.nc
-        eval $NLN grid_spec.tile${n}.nc     $memdir/history/grid_spec.tile${n}.nc
-        eval $NLN atmos_static.tile${n}.nc  $memdir/history/atmos_static.tile${n}.nc
-        eval $NLN atmos_4xdaily.tile${n}.nc $memdir/history/atmos_4xdaily.tile${n}.nc
-      else
-        eval $NLN nggps2d.tile${n}.nc       $memdir/nggps2d.tile${n}.nc
-        eval $NLN nggps3d.tile${n}.nc       $memdir/nggps3d.tile${n}.nc
-        eval $NLN grid_spec.tile${n}.nc     $memdir/grid_spec.tile${n}.nc
-        eval $NLN atmos_static.tile${n}.nc  $memdir/atmos_static.tile${n}.nc
-        eval $NLN atmos_4xdaily.tile${n}.nc $memdir/atmos_4xdaily.tile${n}.nc
-      fi
+      eval $NLN nggps2d.tile${n}.nc       $memdir/nggps2d.tile${n}.nc
+      eval $NLN nggps3d.tile${n}.nc       $memdir/nggps3d.tile${n}.nc
+      eval $NLN grid_spec.tile${n}.nc     $memdir/grid_spec.tile${n}.nc
+      eval $NLN atmos_static.tile${n}.nc  $memdir/atmos_static.tile${n}.nc
+      eval $NLN atmos_4xdaily.tile${n}.nc $memdir/atmos_4xdaily.tile${n}.nc
     done
   fi
 }
@@ -617,11 +601,7 @@ data_out_GFS() {
         done
       fi
     elif [ $CDUMP = "gfs" ] || [ ${RUN} = "gefs" ]; then
-      if [ ${RUN} = "gefs" ]; then
-        $NCP $DATA/input.nml ${ROTDIR}/${RUN}.${PDY}/$cyc/${mem}/atmos/history/
-      else
-        $NCP $DATA/input.nml $ROTDIR/${CDUMP}.${PDY}/${cyc}/atmos/
-      fi
+      $NCP $DATA/input.nml ${ROTDIR}/${RUN}.${PDY}/$cyc/${mem:-""}/atmos/
     fi
   fi
 
