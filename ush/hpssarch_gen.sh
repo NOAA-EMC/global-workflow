@@ -65,10 +65,12 @@ if [ $type = "gfs" ]; then
   head="gfs.t${cyc}z."
 
   #..................
-  echo  "${dirname}${head}pgrb2b.0p25.anl                  " >>gfs_pgrb2b.txt
-  echo  "${dirname}${head}pgrb2b.0p25.anl.idx              " >>gfs_pgrb2b.txt
-  echo  "${dirname}${head}pgrb2b.0p50.anl                  " >>gfs_pgrb2b.txt
-  echo  "${dirname}${head}pgrb2b.0p50.anl.idx              " >>gfs_pgrb2b.txt
+  if [ $MODE = "cycled" ]; then
+    echo  "${dirname}${head}pgrb2b.0p25.anl                  " >>gfs_pgrb2b.txt
+    echo  "${dirname}${head}pgrb2b.0p25.anl.idx              " >>gfs_pgrb2b.txt
+    echo  "${dirname}${head}pgrb2b.0p50.anl                  " >>gfs_pgrb2b.txt
+    echo  "${dirname}${head}pgrb2b.0p50.anl.idx              " >>gfs_pgrb2b.txt
+  fi
 
   echo  "./logs/${CDATE}/gfs*.log                          " >>gfsa.txt
   if [ $MODE = "cycled" ]; then
