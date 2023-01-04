@@ -64,7 +64,6 @@ export OBERROR=${FIXgsi}/prepobs_errtable.global
 if [[ ${RUN_ENVIR} == "emc" ]]; then
 	export ABIBF="/dev/null"
 	if [[ "${CDATE}" -ge "2019022800" ]] ; then
-		# export ABIBF="$DMPDIR/${CDUMP}x.${PDY}/${cyc}/atmos/${CDUMP}.t${cyc}z.gsrcsr.tm00.bufr_d"
                 export ABIBF="${DMPDIR}/${CDUMP}.${PDY}/${cyc}/atmos/${CDUMP}.t${cyc}z.gsrcsr.tm00.bufr_d"
 		if [[ "${CDATE}" -ge "2019111000" && "${CDATE}" -le "2020052612" ]]; then
 			export ABIBF="${DMPDIR}/${CDUMP}y.${PDY}/${cyc}/atmos/${CDUMP}.t${cyc}z.gsrcsr.tm00.bufr_d"
@@ -73,11 +72,9 @@ if [[ ${RUN_ENVIR} == "emc" ]]; then
 
 	export AHIBF="/dev/null"
 	if [[ "${CDATE}" -ge "2019042300" ]]; then
-		# export AHIBF="$DMPDIR/${CDUMP}x.${PDY}/${cyc}/atmos/${CDUMP}.t${cyc}z.ahicsr.tm00.bufr_d"
                 export AHIBF="${DMPDIR}/${CDUMP}.${PDY}/${cyc}/atmos/${CDUMP}.t${cyc}z.ahicsr.tm00.bufr_d"
 	fi
 
-#	export HDOB=$DMPDIR/${CDUMP}x.${PDY}/${cyc}/atmos/${CDUMP}.t${cyc}z.hdob.tm00.bufr_d
         export HDOB=${DMPDIR}/${CDUMP}.${PDY}/${cyc}/atmos/${CDUMP}.t${cyc}z.hdob.tm00.bufr_d
 
 	#   Use dumps from NCO GFS v16 parallel
