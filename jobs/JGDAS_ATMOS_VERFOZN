@@ -4,36 +4,12 @@
 # Set up environment for GDAS Ozone Monitor job
 #############################################################
 source "${HOMEgfs}/ush/preamble.sh"
-
-###########################################################
-# make temp directories
-###########################################################
-export DATA=${DATA:-${DATAROOT}/${jobid}}
-mkdir -p ${DATA}
-cd ${DATA}
-
-
-##############################################
-# Run setpdy and initialize PDY variables
-##############################################
-export cycle="t${cyc}z"
-setpdy.sh
-. ./PDY
-
-
-####################################
-# Determine Job Output Name on System
-####################################
-export pid=$$
-export pgmout="OUTPUT.${pid}"
-export pgmerr=errfile
+source "${HOMEgfs}/ush/jjob_header.sh" base vrfy
 
 
 ###############################
 # Specify NET, RUN, and COMPONENT name
 ##############################
-export NET=${NET:-gfs}
-export RUN=${RUN:-gdas}
 export COMPONENT="atmos"
 
 export OZNMON_SUFFIX=${OZNMON_SUFFIX:-${NET}}

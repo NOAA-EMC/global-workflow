@@ -1,60 +1,14 @@
 #! /usr/bin/env bash
 
+# TODO (#1227) This job is not used in the rocoto suite
+
 source "${HOMEgfs}/ush/preamble.sh"
-
-####################################
-# make temp directories
-####################################
-export DATA=${DATA:-${DATAROOT}/${jobid}}
-mkdir -p ${DATA}
-cd ${DATA}
-
-
-###########################################
-# Run setpdy and initialize PDY variables
-###########################################
-export cycle="t${cyc}z"
-setpdy.sh
-. ./PDY
-
-
-####################################
-# Determine Job Output Name on System
-####################################
-export pid=${pid:-$$}
-export jobid="${outid}.o${pid}"
-export pgmout="OUTPUT.${pid}"
-
-
-########################################
-# GFS post manager
-########################################
-
-#############################
-# Source relevant config files
-#############################
-export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
-configs="base post"
-for config in ${configs}; do
-    . ${EXPDIR}/config.${config}
-    status=$?
-    [[ ${status} -ne 0 ]] && exit ${status}
-done
-
-
-##########################################
-# Source machine runtime environment
-##########################################
-. ${HOMEgfs}/env/${machine}.env post
-status=$?
-[[ ${status} -ne 0 ]] && exit ${status}
+source "${HOMEgfs}/ush/jjob_header.sh" base post
 
 
 ####################################
 # Specify NET and RUN Name and model
 ####################################
-export NET=${NET:-gfs}
-export RUN=${RUN:-gfs}
 export COMPONENT="atmos"
 
 

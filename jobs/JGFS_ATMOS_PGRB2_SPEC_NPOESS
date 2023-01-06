@@ -1,35 +1,19 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
-
-export OMP_NUM_THREADS=${OMP_NUM_THREADS:-1}
+# TODO (#1225) This job is not part of the rocoto suite
 
 ############################################
 # GFS PGRB2_SPECIAL_POST PRODUCT GENERATION
 ############################################
+source "${HOMEgfs}/ush/preamble.sh"
+source "${HOMEgfs}/ush/jjob_header.sh" base
 
-##########################################################
-# obtain unique process id (pid) and make temp directory
-##########################################################
-export DATA=${DATA:-${DATAROOT}/${jobid}}
-mkdir -p ${DATA}
-cd ${DATA}
+export OMP_NUM_THREADS=${OMP_NUM_THREADS:-1}
 
-######################################
-# Set up the cycle variable
-######################################
-export cycle="t${cyc}z"
-
-###########################################
-# Run setpdy and initialize PDY variables
-###########################################
-setpdy.sh
-. ./PDY
 
 ################################
 # Set up the HOME directory
 ################################
-export HOMEgfs=${HOMEgfs:-${PACKAGEROOT}/gfs.${gfs_ver}}
 export USHgfs=${USHgfs:-${HOMEgfs}/ush}
 export EXECgfs=${EXECgfs:-${HOMEgfs}/exec}
 export PARMgfs=${PARMgfs:-${HOMEgfs}/parm}
@@ -41,8 +25,6 @@ export FIXgfs=${FIXgfs:-${HOMEgfs}/fix}
 ###################################
 # Specify NET and RUN Name and model
 ####################################
-export NET=${NET:-gfs}
-export RUN=${RUN:-gfs}
 export model=${model:-gfs}
 export COMPONENT="atmos"
 
@@ -60,8 +42,8 @@ if [ ${SENDCOM} = YES ] ; then
   mkdir -m 775 -p ${COMOUT} ${COMOUTwmo}
 fi
 
-export pgmout=OUTPUT.$$
 
+# TODO - This should be in the ex-script (#1226)
 
 ####################################
 # Specify Forecast Hour Range
