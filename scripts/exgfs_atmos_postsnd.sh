@@ -137,34 +137,19 @@ fi
 # Create Regional Collectives of BUFR data and 
 # add appropriate WMO Headers.
 ########################################
-collect=' 1 2 3 4 5 6 7 8 9'
-if [ $machine == "HERA" -o  $machine == "JET" ]; then
-for m in ${collect}
-do
-sh $USHbufrsnd/gfs_sndp.sh $m
-done
-
-################################################
-# Convert the bufr soundings into GEMPAK files
-################################################
-sh $USHbufrsnd/gfs_bfr2gpk.sh
-
-else
 rm -rf poe_col
-for m in ${collect}
-do
-echo "sh $USHbufrsnd/gfs_sndp.sh $m " >> poe_col
+for (( m = 1; m <10 ; m++ )); do
+    echo "sh ${USHbufrsnd}/gfs_sndp.sh ${m} " >> poe_col
 done
 
-mv poe_col cmdfile
+nl -n ln -v 0 poe_col > cmdfile
 
 cat cmdfile
 chmod +x cmdfile
 
 ${APRUN_POSTSNDCFP} cmdfile
 
-sh $USHbufrsnd/gfs_bfr2gpk.sh
-fi
+sh "${USHbufrsnd}/gfs_bfr2gpk.sh"
 
 
 ############## END OF SCRIPT #######################
