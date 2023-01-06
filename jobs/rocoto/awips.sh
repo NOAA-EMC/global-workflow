@@ -15,31 +15,20 @@ source "$HOMEgfs/ush/preamble.sh"
 ###############################################################
 
 ###############################################################
-echo
-echo "=============== BEGIN TO SOURCE FV3GFS WORKFLOW MODULES ==============="
-. $HOMEgfs/ush/load_fv3gfs_modules.sh
+# Source FV3GFS workflow modules
+source "${HOMEgfs}/ush/load_fv3gfs_modules.sh"
 status=$?
-[[ $status -ne 0 ]] && exit $status
+(( status != 0 )) && exit "${status}"
 
+export job="awips"
+export jobid="${job}.$$"
 
-###############################################################
-echo
-echo "=============== BEGIN TO SOURCE RELEVANT CONFIGS ==============="
-configs="base awips"
-for config in $configs; do
-    . $EXPDIR/config.${config}
-    status=$?
-    [[ $status -ne 0 ]] && exit $status
-done
+# TODO (#1228) - This script is doing more than just calling a j-job
+#   Also, this forces us to call the config files here instead of the j-job
+source "${HOMEgfs}/ush/jjob_header.sh" base awips
+
 
 fhrlst=$(echo $FHRLST | sed -e 's/_/ /g; s/f/ /g; s/,/ /g')
-
-###############################################################
-echo
-echo "=============== BEGIN TO SOURCE MACHINE RUNTIME ENVIRONMENT ==============="
-. $BASE_ENV/${machine}.env awips
-status=$?
-[[ $status -ne 0 ]] && exit $status
 
 ###############################################################
 export COMPONENT=${COMPONENT:-atmos}
@@ -94,14 +83,14 @@ for fhr in $fhrlst; do
             done
             
 	    export fcsthrs=$fhr3
-	    export job="jgfs_awips_f${fcsthrs}_20km_${cyc}"
-	    export DATA="${DATAROOT}/$job"
+	    # export job="jgfs_awips_f${fcsthrs}_20km_${cyc}"
+	    # export DATA="${DATAROOT}/$job"
 	    $AWIPS20SH
 	fi
 	
 	if [[ $(expr $fhr % 6) -eq 0 ]]; then
-	    export job="jgfs_awips_f${fcsthrs}_${cyc}"
-	    export DATA="${DATAROOT}/$job"
+	    # export job="jgfs_awips_f${fcsthrs}_${cyc}"
+	    # export DATA="${DATAROOT}/$job"
 	    $AWIPSG2SH
 	fi
     fi
@@ -131,12 +120,12 @@ for fhr in $fhrlst; do
             done
             
 	    export fcsthrs=$fhr3
-	    export job="jgfs_awips_f${fcsthrs}_20km_${cyc}"
-	    export DATA="${DATAROOT}/$job"
+	    # export job="jgfs_awips_f${fcsthrs}_20km_${cyc}"
+	    # export DATA="${DATAROOT}/$job"
 	    $AWIPS20SH
 	    
-	    export job="jgfs_awips_f${fcsthrs}_${cyc}"
-	    export DATA="${DATAROOT}/$job"
+	    # export job="jgfs_awips_f${fcsthrs}_${cyc}"
+	    # export DATA="${DATAROOT}/$job"
 	    $AWIPSG2SH
 	fi
     fi

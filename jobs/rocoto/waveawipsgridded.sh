@@ -3,37 +3,18 @@
 source "$HOMEgfs/ush/preamble.sh"
 
 ###############################################################
-echo
-echo "=============== START TO SOURCE FV3GFS WORKFLOW MODULES ==============="
-. $HOMEgfs/ush/load_fv3gfs_modules.sh
+# Source FV3GFS workflow modules
+source ${HOMEgfs}/ush/load_fv3gfs_modules.sh
 status=$?
-[[ $status -ne 0 ]] && exit $status
+[[ ${status} -ne 0 ]] && exit ${status}
+
+export job="waveawipsgridded"
+export jobid="${job}.$$"
 
 ###############################################################
-echo
-echo "=============== BEGIN TO SOURCE RELEVANT CONFIGS ==============="
-configs="base waveawipsgridded"
-for config in $configs; do
-    . $EXPDIR/config.${config}
-    status=$?
-    [[ $status -ne 0 ]] && exit $status
-done
-
-###############################################################
-echo
-echo "=============== BEGIN TO SOURCE MACHINE RUNTIME ENVIRONMENT ==============="
-. $BASE_ENV/${machine}.env waveawipsgridded
-status=$?
-[[ $status -ne 0 ]] && exit $status
-
-export DBNROOT=/dev/null
-
-###############################################################
-echo
-echo "=============== START TO RUN WAVE PRDGEN GRIDDED ==============="
 # Execute the JJOB
-$HOMEgfs/jobs/JGLOBAL_WAVE_PRDGEN_GRIDDED
+${HOMEgfs}/jobs/JGLOBAL_WAVE_PRDGEN_GRIDDED
 status=$?
 
 
-exit $status
+exit ${status}

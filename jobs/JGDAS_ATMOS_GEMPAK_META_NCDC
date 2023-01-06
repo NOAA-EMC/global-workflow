@@ -1,28 +1,13 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
-
 ############################################
 # GDAS GEMPAK META NCDC PRODUCT GENERATION
 ############################################
 
-##########################################################
-# make temp directory
-##########################################################
-export DATA=${DATA:-${DATAROOT}/${jobid}}
-mkdir -p ${DATA}
-cd ${DATA}
+# TODO (#1222) This j-job is not part of the rocoto
 
-###########################################
-# Run setpdy and initialize PDY variables
-###########################################
-export cycle="t${cyc}z"
-setpdy.sh
-. ./PDY
-
-export pid=${pid:-$$}
-export pgmout="OUTPUT.${pid}"
-export pgmerr=errfile
+source "${HOMEgfs}/ush/preamble.sh"
+source "${HOMEgfs}/ush/jjob_header.sh" base gempak
 
 ################################
 # Set up the HOME directory
@@ -46,8 +31,6 @@ cp ${FIXgempak}/datatype.tbl datatype.tbl
 ###################################
 # Specify NET and RUN Name and model
 ####################################
-export NET=${NET:-gfs}
-export RUN=${RUN:-gdas}
 export COMPONENT="atmos"
 export MODEL=GDAS
 export GRID_NAME=gdas

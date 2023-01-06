@@ -1,33 +1,17 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
+# TODO (#1222) This job is not part of the rocoto suite
 
 ############################################
 # GFS_PGRB2_SPEC_GEMPAK PRODUCT GENERATION
 ############################################
+source "${HOMEgfs}/ush/preamble.sh"
+source "${HOMEgfs}/ush/jjob_header.sh" base
 
-#########################################################
-# obtain unique process id (pid) and make temp directory
-#########################################################
-export DATA=${DATA:-${DATAROOT}/${jobid}}
-mkdir -p ${DATA}
-cd ${DATA}
-
-######################################
-# Set up the cycle variable
-######################################
-export cycle="t${cyc}z"
-
-###########################################
-# Run setpdy and initialize PDY variables
-###########################################
-setpdy.sh
-. ./PDY
 
 ################################
 # Set up the HOME directory
 ################################
-export HOMEgfs=${HOMEgfs:-${PACKAGEROOT}/gfs.${gfs_ver}}
 export EXECgfs=${EXECgfs:-${HOMEgfs}/exec}
 export PARMgfs=${PARMgfs:-${HOMEgfs}/parm}
 export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
@@ -41,8 +25,6 @@ export SRCgfs=${SRCgfs:-${HOMEgfs}/scripts}
 ###################################
 # Specify NET and RUN Name and model
 ####################################
-export NET=gfs
-export RUN=gfs
 export COMPONENT="atmos"
 export finc=3
 export model=gfs
@@ -61,6 +43,8 @@ if [ ${SENDCOM} = YES ] ; then
   mkdir -m 775 -p ${COMOUT}
 fi
 
+
+# TODO - Assess what is going on with overwriting $DATA here (#1224)
 
 export DATA_HOLD=${DATA}
 

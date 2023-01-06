@@ -1,45 +1,12 @@
 #! /usr/bin/env bash
 
 source "${HOMEgfs}/ush/preamble.sh"
+source "${HOMEgfs}/ush/jjob_header.sh" base gempak
 
-##########################################################
-# make temp directory
-##########################################################
-export DATA=${DATA:-${DATAROOT}/${jobid}}
-mkdir -p ${DATA}
-cd ${DATA}
-
-###########################################
-# Run setpdy and initialize PDY variables
-###########################################
-export cycle="t${cyc}z"
-setpdy.sh
-. ./PDY
-
-export pid=${pid:-$$}
-export pgmout="OUTPUT.${pid}"
-export pgmerr=errfile
-
-#############################
-# Source relevant config files
-#############################
-export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
-configs="base gempak"
-for config in ${configs}; do
-    . ${EXPDIR}/config.${config}
-    status=$?
-    [[ ${status} -ne 0 ]] && exit ${status}
-done
-
-###############################################################
-. ${BASE_ENV}/${machine}.env gempak
-status=$?
-[[ ${status} -ne 0 ]] && exit ${status}
+# TODO (#1219) This j-job is not part of the rocoto suite
 
 ################################
 # Set up the HOME directory
-################################
-export HOMEgfs=${HOMEgfs:-${PACKAGEROOT}/gfs.${gfs_ver}}  # TODO: remove these as they are already defined in config.base
 export EXECgfs=${EXECgfs:-${HOMEgfs}/exec}
 export PARMgfs=${PARMgfs:-${HOMEgfs}/parm}
 export PARMwmo=${PARMwmo:-${HOMEgfs}/parm/wmo}
@@ -67,8 +34,6 @@ export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 ###################################
 # Specify NET and RUN Name and model
 ####################################
-export NET=${NET:-gfs}
-export RUN=${RUN:-gdas}
 export model=${model:-gdas}
 export COMPONENT="atmos"
 
@@ -83,7 +48,7 @@ if [ ${SENDCOM} = YES ] ; then
 fi
 
 
-# TODO: These actions belong in an ex-script not a j-job
+# TODO: These actions belong in an ex-script not a j-job (#1219)
 if [ -f ${DATA}/poescript ]; then
    rm ${DATA}/poescript
 fi
