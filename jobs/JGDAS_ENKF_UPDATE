@@ -69,8 +69,8 @@ export GSUFFIX=${GSUFFIX:-${SUFFIX}}
 
 
 # COMIN_GES_ENS and COMOUT_ANL_ENS are used in script
-export COMIN_GES_ENS="${ROTDIR}/enkfgdas.${gPDY}/${gcyc}/${COMPONENT}"
-export COMOUT_ANL_ENS="${ROTDIR}/enkf${CDUMP}.${PDY}/${cyc}/${COMPONENT}"
+export COMIN_GES_ENS="${ROTDIR}/enkfgdas.${gPDY}/${gcyc}"
+export COMOUT_ANL_ENS="${ROTDIR}/enkf${CDUMP}.${PDY}/${cyc}"
 
 
 ###############################################################
