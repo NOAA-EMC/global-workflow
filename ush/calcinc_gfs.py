@@ -14,7 +14,7 @@ from collections import OrderedDict
 # main function
 
 
-def calcinc_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix, ASuffix, IAUHrs,
+def calcinc_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix, IAUHrs,
                 NThreads, IMP_Physics, Inc2Zero, RunDir, Exec, ExecCMD):
     # run the calc_increment_ens executable
 
@@ -72,22 +72,16 @@ if __name__ == '__main__':
     Write4Danl = gsi_utils.isTrue(os.getenv('lwrite4danl', 'NO'))
     ComOut = os.getenv('COMOUT', './')
     APrefix = os.getenv('APREFIX', '')
-    ASuffix = os.getenv('ASUFFIX', '')
     NThreads = os.getenv('NTHREADS_CALCINC', 1)
     IMP_Physics = os.getenv('imp_physics', 11)
     RunDir = os.getenv('DATA', './')
     ExecNC = os.getenv('CALCINCNCEXEC', './calc_increment_ens_ncio.x')
-    ExecNEMS = os.getenv('CALCINCEXEC', './calc_increment_ens.x')
     Inc2Zero = os.getenv('INCREMENTS_TO_ZERO', '"NONE"')
     ExecCMD = os.getenv('APRUN_CALCINC', '')
     IAUHrs = list(map(int, os.getenv('IAUFHRS', '6').split(',')))
 
-    # determine if the analysis is in netCDF or NEMSIO
-    if ASuffix == ".nc":
-        Exec = ExecNC
-    else:
-        Exec = ExecNEMS
+    Exec = ExecNC
 
     print(locals())
-    calcinc_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix, ASuffix, IAUHrs,
+    calcinc_gfs(DoIAU, l4DEnsVar, Write4Danl, ComOut, APrefix, IAUHrs,
                 NThreads, IMP_Physics, Inc2Zero, RunDir, Exec, ExecCMD)

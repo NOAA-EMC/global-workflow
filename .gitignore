@@ -5,8 +5,10 @@ __pycache__
 *.[aox]
 *.mod
 *.sw[a-p]
+._*
 .DS_Store
 .idea/
+.vscode/
 
 # Ignore editor generated backup files
 #-------------------------------------

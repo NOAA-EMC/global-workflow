@@ -241,13 +241,13 @@ FV3_GFS_predet(){
     rprefix=enkf$rCDUMP
     memchar=mem$(printf %03i $MEMBER)
   fi
-  memdir=${memdir:-$ROTDIR/${prefix}.$PDY/$cyc/atmos/$memchar}
+  memdir=${memdir:-$ROTDIR/${prefix}.$PDY/$cyc/$memchar/atmos}
   if [ ! -d $memdir ]; then mkdir -p $memdir; fi
 
   GDATE=$($NDATE -$assim_freq $CDATE)
   gPDY=$(echo $GDATE | cut -c1-8)
   gcyc=$(echo $GDATE | cut -c9-10)
-  gmemdir=${gmemdir:-$ROTDIR/${rprefix}.$gPDY/$gcyc/atmos/$memchar}
+  gmemdir=${gmemdir:-$ROTDIR/${rprefix}.$gPDY/$gcyc/$memchar/atmos}
 
   if [[ "$DOIAU" = "YES" ]]; then
     sCDATE=$($NDATE -3 $CDATE)
