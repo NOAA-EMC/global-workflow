@@ -142,7 +142,11 @@ for (( m = 1; m <10 ; m++ )); do
     echo "sh ${USHbufrsnd}/gfs_sndp.sh ${m} " >> poe_col
 done
 
-nl -n ln -v 0 poe_col > cmdfile
+if [[ ${CFP_MP:-"NO"} == "YES" ]]; then
+    nl -n ln -v 0 poe_col > cmdfile
+else
+    mv poe_col cmdfile
+fi
 
 cat cmdfile
 chmod +x cmdfile
