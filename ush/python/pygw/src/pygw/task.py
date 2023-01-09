@@ -1,9 +1,17 @@
+import logging
+from typing import Dict
+
+from pygw.attrdict import AttrDict
+
+logger = logging.getLogger(__name__.split('.')[-1])
+
+
 class Task:
     """
     Base class for all tasks
     """
 
-    def __init__(self, config, *args, **kwargs):
+    def __init__(self, config: Dict, *args, **kwargs):
         """
         Every task needs a config.
         Additional arguments (or key-value arguments) can be provided.
@@ -21,13 +29,22 @@ class Task:
         """
 
         # Store the config and arguments as attributes of the object
-        self.config = config
+        self.config = AttrDict(config)
 
         for arg in args:
             setattr(self, str(arg), arg)
 
         for key, value in kwargs.items():
             setattr(self, key, value)
+
+        # Pull out basic runtime keys values from config into its own runtime config
+        self.runtime_config = AttrDict()
+        runtime_keys = ['PDY', 'cyc', 'DATA', 'RUN', 'CDUMP']  # TODO: eliminate CDUMP and use RUN instead
+        for kk in runtime_keys:
+            try:
+                self.runtime_config[kk] = config[kk]
+            except KeyError:
+                raise KeyError(f"Encountered an unreferenced runtime_key {kk} in 'config'")
 
     def initialize(self):
         """
