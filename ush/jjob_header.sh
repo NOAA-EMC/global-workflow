@@ -3,7 +3,8 @@
 # Universal header for global j-jobs
 #
 # Sets up and completes actions common to all j-jobs:
-# - Creates and moves to $DATA
+# - Creates and moves to $DATA after removing any
+#     existing one unless $WIPE_DATA is set to "NO"
 # - Runs `setpdy.sh`
 # - Sources configs provided as arguments
 # - Sources machine environment script
@@ -33,6 +34,9 @@ configs=("$@")
 # make temp directory
 ##############################################
 export DATA=${DATA:-"${DATAROOT}/${jobid}"}
+if [[ ${WIPE_DATA:-YES} == "YES" ]]; then
+    rm -rf "${DATA}"
+fi
 mkdir -p "${DATA}"
 cd "${DATA}" || ( echo "FATAL: ${DATA} does not exist"; exit 1 )
 
