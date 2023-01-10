@@ -104,9 +104,11 @@ echo "time ${SRCgfs}/exgfs_atmos_nawips.sh gfs35_atl 180 GFS_GEMPAK_WWB &> ${DAT
 echo "time ${SRCgfs}/exgfs_atmos_nawips.sh gfs40 180 GFS_GEMPAK_WWB &> ${DATA}/gfs40.$$.1 " >>poescript
 echo "time ${SRCgfs}/exgfs_atmos_nawips.sh gfs40 180 GFS_GEMPAK_WWB &> ${DATA}/gfs40.$$.2 " >>poescript
 
-# Add task number to the MPMD script
-nl -n ln -v 0 poescript > poescript.new
-mv poescript.new poescript
+if [[ ${CFP_MP:-"NO"} == "YES" ]]; then
+  # Add task number to the MPMD script
+  nl -n ln -v 0 poescript > poescript.new
+  mv poescript.new poescript
+fi
 
 cat poescript
 
