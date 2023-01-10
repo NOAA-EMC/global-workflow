@@ -85,5 +85,5 @@ if __name__ == "__main__":
 
     msg = f"comparing: {nml1} | {nml2}"
     print(msg)
-    print("-"*len(msg))
+    print("-" * len(msg))
     compare_dicts(dict1, dict2)
