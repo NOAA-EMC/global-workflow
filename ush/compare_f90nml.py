@@ -29,25 +29,20 @@ def compare_dicts(dict1: Dict, dict2: Dict, path: str = "") -> None:
     """
 
     result = dict()
-    for kk in dict1.keys():
-        if kk in dict2.keys():
-            if type(dict1[kk]) is dict:
-                compare_dicts(dict1[kk], dict2[kk],
-                              f"{path} -> {kk}" if path else kk)
+    for kk in dict1.keys():  # Loop over all keys of first dictionary
+        if kk in dict2.keys():  # kk is present in dict2
+            if isinstance(dict1[kk], dict):  # nested dictionary, go deeper
+                compare_dicts(dict1[kk], dict2[kk], path=kk)
             else:
                 if dict1[kk] != dict2[kk]:
                     if path not in result:
                         result[path] = dict()
                     result[path][kk] = [dict1[kk], dict2[kk]]
-        else:
-            if path:
-                if path not in result:
-                    result[path] = dict()
-                result[path][kk] = [dict1[kk], 'UNDEFINED']
-            else:
-                if kk not in result:
-                    result[kk] = dict()
-                    result[kk][kk] = ['UNDEFINED']
+        else:  # kk is *not* present in dict2
+            tt = path if path else kk
+            if tt not in result:
+                result[tt] = dict()
+            result[tt][kk] = [dict1[kk], 'UNDEFINED']
 
     def _print_diffs(diffs: Dict) -> None:
         """
