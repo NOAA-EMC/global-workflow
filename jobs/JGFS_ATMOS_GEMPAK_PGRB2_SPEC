@@ -109,6 +109,6 @@ fi
 # Remove temp directories
 ###################################
 if [ "${KEEPDATA}" != "YES" ] ; then
-  rm -rf ${DATA}
+  rm -rf "${DATA}"
 fi
 
