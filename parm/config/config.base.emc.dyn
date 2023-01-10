@@ -383,6 +383,9 @@ if [ $OUTPUT_FILE = "nemsio" ]; then
     export DO_CALC_ANALYSIS="NO"
 fi
 
+# Write analysis files for early cycle EnKF 
+export DO_GFS_ENKF_CALC_INCREMENT="YES"
+
 # Stratospheric increments to zero
 export INCVARS_ZERO_STRAT="'sphum_inc','liq_wat_inc','icmr_inc'"
 export INCVARS_EFOLD="5"

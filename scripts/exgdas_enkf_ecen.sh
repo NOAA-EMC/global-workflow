@@ -24,6 +24,7 @@ pwd=$(pwd)
 
 # Base variables
 CDATE=${CDATE:-"2010010100"}
+CDUMP=${CDUMP:-"gdas"}
 DONST=${DONST:-"NO"}
 export CASE=${CASE:-384}
 ntiles=${ntiles:-6}
@@ -60,8 +61,11 @@ FHMIN=${FHMIN_ECEN:-3}
 FHMAX=${FHMAX_ECEN:-9}
 FHOUT=${FHOUT_ECEN:-3}
 FHSFC=${FHSFC_ECEN:-$FHMIN}
-DO_CALC_INCREMENT=${DO_CALC_INCREMENT:-"NO"}
-
+if [ $CDUMP = "gfs" ]; then
+   DO_CALC_INCREMENT=${DO_GFS_ENKF_CALC_INCREMENT:-"NO"}
+else
+   DO_CALC_INCREMENT=${DO_CALC_INCREMENT:-"NO"}
+fi
 
 # global_chgres stuff
 CHGRESNEMS=${CHGRESNEMS:-$HOMEgfs/exec/enkf_chgres_recenter.x}
@@ -328,8 +332,7 @@ if [ $DO_CALC_INCREMENT = "YES" ]; then
    . prep_step
 
    $NCP $CALCINCEXEC $DATA
-
-   rm calc_increment.nml
+   [[ -f calc_increment.nml ]] && rm calc_increment.nml
    cat > calc_increment.nml << EOF
 &setup
   datapath = './'
