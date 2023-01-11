@@ -125,14 +125,10 @@ export TCVITL="${COMOUT}/${OPREFIX}syndata.tcvitals.tm00"
 if [[ ${DONST} = "YES" ]]; then
    if [[ ${MAKE_NSSTBUFR} == "YES" ]]; then
       export NSSTBF="${COMIN_OBS}/${OPREFIX}nsstbufr"
-   else
-      export NSSTBF="${COMIN_OBS}/${OPREFIX}nsstbufr"
    fi
 fi
 
 if [[ ${MAKE_ACFTBUFR} == "YES" ]]; then
-   export PREPQCPF="${COMIN_OBS}/${OPREFIX}prepbufr.acft_profiles"
-else
    export PREPQCPF="${COMIN_OBS}/${OPREFIX}prepbufr.acft_profiles"
 fi
 
