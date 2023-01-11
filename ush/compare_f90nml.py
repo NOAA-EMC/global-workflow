@@ -86,16 +86,15 @@ def compare_dicts(dict1: Dict, dict2: Dict, path: str = "") -> None:
 if __name__ == "__main__":
 
     parser = ArgumentParser(
-        description=("Compare two Fortran namelists and display differences"),
+        description=("Compare two Fortran namelists and display differences (left_namelist - right_namelist)"),
         formatter_class=ArgumentDefaultsHelpFormatter)
-    parser.add_argument('-n', '--namelists', help='name of two namelists to compare (namelist1 - namelist2)',
-                        type=str, nargs=2,
-                        metavar=('namelist1', 'namelist2'), required=True)
-    parser.add_argument('-r', '--reverse', help='reverse diff (namelist2 - namelist1)',
+    parser.add_argument('left_namelist', type=str, help="Left namelist to compare")
+    parser.add_argument('right_namelist', type=str, help="Right namelist to compare")
+    parser.add_argument('-r', '--reverse', help='reverse diff (right_namelist - left_namelist)',
                         action='store_true', required=False)
     args = parser.parse_args()
 
-    nml1, nml2 = args.namelists
+    nml1, nml2 = args.left_namelist, args.right_namelist
     if args.reverse:
         nml2, nml1 = nml1, nml2
 
