@@ -7,7 +7,7 @@ echo "BEGIN: config.ocnanal"
 
 export OBS_YAML_DIR=${HOMEgfs}/sorc/gdas.cd/parm/soca/obs/config
 export OBS_LIST=@SOCA_OBS_LIST@
-[[ ! -z "${OBS_LIST}" ]] || export OBS_LIST=${OBS_YAML_DIR}/obs_list.yaml
+[[ ! -z "${OBS_LIST}" ]] || export OBS_LIST=${HOMEgfs}/sorc/gdas.cd/parm/soca/obs/obs_list.yaml
 export OBS_YAML=${OBS_LIST}
 export FV3JEDI_STAGE_YAML=${HOMEgfs}/sorc/gdas.cd/test/soca/testinput/dumy.yaml
 export SOCA_INPUT_FIX_DIR=@SOCA_INPUT_FIX_DIR@
