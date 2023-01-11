@@ -90,14 +90,14 @@ export COMIN_GES_ENS="${ROTDIR}/enkfgdas.${gPDY}/${gcyc}/${COMPONENT}"
 
 
 export ATMGES="${COMIN_GES}/${GPREFIX}atmf006${GSUFFIX}"
-if [ ! -f ${ATMGES} ]; then
+if [[ ! -f ${ATMGES} ]]; then
     echo "FATAL ERROR: FILE MISSING: ATMGES = ${ATMGES}"
     exit 1
 fi
 
 
 # Get LEVS
-if [ ${GSUFFIX} = ".nc" ]; then
+if [[ ${GSUFFIX} = ".nc" ]]; then
     export LEVS=$(${NCLEN} ${ATMGES} pfull)
     status=$?
 else
@@ -107,9 +107,9 @@ fi
 [[ ${status} -ne 0 ]] && exit ${status}
 
 
-if [ ${DOHYBVAR} = "YES" ]; then
+if [[ ${DOHYBVAR} = "YES" ]]; then
     export ATMGES_ENSMEAN="${COMIN_GES_ENS}/${GPREFIX}atmf006.ensmean${GSUFFIX}"
-    if [ ! -f ${ATMGES_ENSMEAN} ]; then
+    if [[ ! -f ${ATMGES_ENSMEAN} ]]; then
         echo "FATAL ERROR: FILE MISSING: ATMGES_ENSMEAN = ${ATMGES_ENSMEAN}"
         exit 2
     fi
@@ -118,7 +118,7 @@ fi
 
 # Link observational data
 export PREPQC="${COMIN_OBS}/${OPREFIX}prepbufr"
-if [ ! -f ${PREPQC} ]; then
+if [[ ! -f ${PREPQC} ]]; then
     echo "WARNING: Global PREPBUFR FILE ${PREPQC} MISSING"
 fi
 export TCVITL="${COMOUT}/${OPREFIX}syndata.tcvitals.tm00"
@@ -137,7 +137,7 @@ else
 fi
 
 # Copy fix file for obsproc  # TODO: Why is this necessary?
-if [ ${RUN} = "gfs" ]; then
+if [[ ${RUN} = "gfs" ]]; then
     mkdir -p ${ROTDIR}/fix
     cp ${FIXgsi}/prepobs_errtable.global ${ROTDIR}/fix/
 fi
@@ -168,7 +168,7 @@ fi
 ##############################################
 # Final processing
 ##############################################
-if [ -e "${pgmout}" ] ; then
+if [[ -e "${pgmout}" ]] ; then
   cat ${pgmout}
 fi
 

@@ -88,15 +88,15 @@ export COMIN_GES_ENS="${ROTDIR}/enkfgdas.${gPDY}/${gcyc}/${COMPONENT}"
 
 
 export ATMGES="${COMIN_GES}/${GPREFIX}atmf006${GSUFFIX}"
-if [ ! -f ${ATMGES} ]; then
+if [[ ! -f ${ATMGES} ]]; then
     echo "FATAL ERROR: FILE MISSING: ATMGES = ${ATMGES}"
     exit 1
 fi
 
 
-if [ ${DOHYBVAR} = "YES" ]; then
+if [[ ${DOHYBVAR} = "YES" ]]; then
     export ATMGES_ENSMEAN="${COMIN_GES_ENS}/${GPREFIX}atmf006.ensmean${GSUFFIX}"
-    if [ ! -f ${ATMGES_ENSMEAN} ]; then
+    if [[ ! -f ${ATMGES_ENSMEAN} ]]; then
         echo "FATAL ERROR: FILE MISSING: ATMGES_ENSMEAN = ${ATMGES_ENSMEAN}"
         exit 2
     fi
@@ -117,7 +117,7 @@ status=$?
 ##############################################
 # Final processing
 ##############################################
-if [ -e "${pgmout}" ] ; then
+if [[ -e "${pgmout}" ]] ; then
   cat ${pgmout}
 fi
 

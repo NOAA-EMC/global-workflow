@@ -91,7 +91,7 @@ export COMOUT="${ROTDIR}/enkf${CDUMP}.${PDY}/${cyc}/${COMPONENT}"
 
 
 export ATMGES_ENSMEAN="${COMIN_GES_ENS}/${GPREFIX}atmf006${GSUFFIX}"
-if [ ! -f ${ATMGES_ENSMEAN} ]; then
+if [[ ! -f ${ATMGES_ENSMEAN} ]]; then
     echo "FATAL ERROR: FILE MISSING: ATMGES_ENSMEAN = ${ATMGES_ENSMEAN}"
     exit 1
 fi
@@ -99,7 +99,7 @@ fi
 
 # Link observational data
 export PREPQC="${COMIN_OBS}/${OPREFIX}prepbufr"
-if [ ! -f ${PREPQC} ]; then
+if [[ ! -f ${PREPQC} ]]; then
     echo "WARNING: Global PREPBUFR FILE ${PREPQC} MISSING"
 fi
 export TCVITL="${COMIN_ANL}/${OPREFIX}syndata.tcvitals.tm00"
@@ -167,7 +167,7 @@ status=$?
 ##############################################
 # Final processing
 ##############################################
-if [ -e "${pgmout}" ] ; then
+if [[ -e "${pgmout}" ]] ; then
   cat ${pgmout}
 fi
 

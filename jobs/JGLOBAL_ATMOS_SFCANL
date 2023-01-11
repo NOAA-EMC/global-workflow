@@ -51,7 +51,7 @@ status=$?
 export CDATE=${CDATE:-${PDY}${cyc}}
 export CDUMP=${CDUMP:-${RUN:-"gfs"}}
 export COMPONENT="atmos"
-if [ ${RUN_ENVIR} = "nco" ]; then
+if [[ ${RUN_ENVIR} = "nco" ]]; then
     export ROTDIR=${COMROOT:?}/${NET}/${envir}
 fi
 
@@ -89,7 +89,7 @@ export COMIN_GES_ENS="${ROTDIR}/enkfgdas.${gPDY}/${gcyc}/${COMPONENT}"
 
 
 export ATMGES="${COMIN_GES}/${GPREFIX}atmf006${GSUFFIX}"
-if [ ! -f ${ATMGES} ]; then
+if [[ ! -f ${ATMGES} ]]; then
     echo "FATAL ERROR: FILE MISSING: ATMGES = ${ATMGES}"
     exit 1
 fi
@@ -110,7 +110,7 @@ status=$?
 ##############################################
 # Final processing
 ##############################################
-if [ -e "${pgmout}" ] ; then
+if [[ -e "${pgmout}" ]] ; then
   cat ${pgmout}
 fi
 

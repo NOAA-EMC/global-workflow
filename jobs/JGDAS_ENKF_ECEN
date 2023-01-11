@@ -67,7 +67,7 @@ export CASE=${CASE_ENKF}
 
 
 EUPD_CYC=$(echo ${EUPD_CYC:-"gdas"} | tr a-z A-Z)
-if [ ${EUPD_CYC} = "GFS" ]; then
+if [[ ${EUPD_CYC} = "GFS" ]]; then
     CDUMP_ENKF="gfs"
 else
     CDUMP_ENKF=${CDUMP}
@@ -110,7 +110,7 @@ status=$?
 ##############################################
 # Final processing
 ##############################################
-if [ -e "${pgmout}" ] ; then
+if [[ -e "${pgmout}" ]] ; then
   cat ${pgmout}
 fi
 
