@@ -1,18 +1,23 @@
 #!/usr/bin/env python3
 
 import json
+import f90nml
 from typing import Dict
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
-try:
-    import f90nml
-except (ImportError, ModuleNotFoundError):
-    raise ModuleNotFoundError(f"f90nml not found on this system, ABORT!")
 
 
 def get_dict_from_nml(filename: str) -> Dict:
     """
     Read a F90 namelist and convert to a dictionary.
     This method uses json to convert OrderedDictionary into regular dictionary
+    Parameters
+    ----------
+    filename: str
+              Name of the F90 namelist
+    Returns
+    -------
+    dictionary: Dict
+                F90 namelist returned as a dictionary
     """
     return json.loads(json.dumps(f90nml.read(filename).todict()))
 
@@ -26,6 +31,18 @@ def compare_dicts(dict1: Dict, dict2: Dict, path: str = "") -> None:
     If a matching key is not found, it is set to as UNDEFINED.
     Note: A reverse match is not performed in this method.  For reverse matching, use the -r option in the main driver.
     Note: This is a recursive method to handle nested dictionaries.
+    Parameters
+    ----------
+    dict1: Dict
+           First dictionary
+    dict2: Dict
+           Second dictionary
+    path:  str (optional)
+           default: ""
+           key (if nested dictionary)
+    Returns
+    -------
+    None
     """
 
     result = dict()
@@ -44,17 +61,24 @@ def compare_dicts(dict1: Dict, dict2: Dict, path: str = "") -> None:
                 result[tt] = dict()
             result[tt][kk] = [dict1[kk], 'UNDEFINED']
 
-    def _print_diffs(diffs: Dict) -> None:
+    def _print_diffs(diff_dict: Dict) -> None:
         """
         Print the differences between the two dictionaries to stdout
+        Parameters
+        ----------
+        diff_dict: Dict
+                   Dictionary containing differences
+        Returns
+        -------
+        None
         """
-        for path in diffs.keys():
+        for path in diff_dict.keys():
             print(f"{path}:")
-            max_len = len(max(diffs[path], key=len))
-            for kk in diffs[path].keys():
-                items = diffs[path][kk]
+            max_len = len(max(diff_dict[path], key=len))
+            for kk in diff_dict[path].keys():
+                items = diff_dict[path][kk]
                 print(
-                    f"{kk:>{max_len+2}} : {' | '.join(map(str, diffs[path][kk]))}")
+                    f"{kk:>{max_len+2}} : {' | '.join(map(str, diff_dict[path][kk]))}")
 
     _print_diffs(result)
 
