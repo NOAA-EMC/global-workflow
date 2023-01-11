@@ -63,6 +63,17 @@ export COMPONENT="atmos"
 
 
 ##############################################
+# TODO: Remove this egregious HACK
+##############################################
+if [[ "${SDATE:-}" = "${CDATE}" ]]; then
+  if [[ ${post_times} = "anl" ]]; then
+    echo "No offline post-processing in the first half cycle for analysis"
+    exit 0
+  fi
+fi
+
+
+##############################################
 # Begin JOB SPECIFIC work
 ##############################################
 export APRUNP=${APRUN:-${APRUN_NP}}
@@ -72,8 +83,8 @@ export FIXCRTM=${CRTM_FIX:-${HOMECRTM}/fix}
 export PARMpost=${PARMpost:-${HOMEgfs}/parm/post}
 export INLINE_POST=${WRITE_DOPOST:-".false."}
 
-export COMIN=${COMIN:-${ROTDIR}/${RUN}.${PDY}/${cyc}/${COMPONENT}}
-export COMOUT=${COMOUT:-${ROTDIR}/${RUN}.${PDY}/${cyc}/${COMPONENT}}
+export COMIN=${COMIN:-${ROTDIR}/${RUN}.${PDY}/${cyc}/atmos}
+export COMOUT=${COMOUT:-${ROTDIR}/${RUN}.${PDY}/${cyc}/atmos}
 
 # shellcheck disable=SC2174
 [[ ! -d "${COMOUT}" ]] && mkdir -m 775 -p "${COMOUT}"

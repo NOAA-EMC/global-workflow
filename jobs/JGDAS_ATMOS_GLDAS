@@ -81,11 +81,11 @@ export USHgldas=${USHgldas:-${HOMEgldas}/ush}
 export PARA_CONFIG=${HOMEgfs}/parm/config/config.gldas
 
 if [[ "${RUN_ENVIR}" = "nco" ]]; then
-    export COMIN=${COMIN:-${ROTDIR}/${RUN}.${PDY}/${cyc}/${COMPONENT}}
-    export COMOUT=${COMOUT:-${ROTDIR}/${RUN}.${PDY}/${cyc}/${COMPONENT}}
+    export COMIN=${COMIN:-${ROTDIR}/${RUN}.${PDY}/${cyc}/atmos}
+    export COMOUT=${COMOUT:-${ROTDIR}/${RUN}.${PDY}/${cyc}/atmos}
 else
-    export COMIN="${ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENT}"
-    export COMOUT="${ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENT}"
+    export COMIN="${ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos"
+    export COMOUT="${ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos"
 fi
 if [[ ! -d ${COMOUT} ]]; then
     mkdir -p "${COMOUT}"

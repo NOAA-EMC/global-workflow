@@ -85,9 +85,9 @@ fi
 # COMIN_GES, COMIN_ANL COMIN_GES_ENS, and COMOUT  are used in script
 COMIN_GES_CTL="${ROTDIR}/gdas.${gPDY}/${gcyc}/${COMPONENT}"
 export COMIN_ANL="${ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENT}"
-export COMIN_GES_ENS="${ROTDIR}/enkfgdas.${gPDY}/${gcyc}/${COMPONENT}"
+export COMIN_GES_ENS="${ROTDIR}/enkfgdas.${gPDY}/${gcyc}"
 export COMIN_GES=${COMIN_GES_ENS}
-export COMOUT="${ROTDIR}/enkf${CDUMP}.${PDY}/${cyc}/${COMPONENT}"
+export COMOUT="${ROTDIR}/enkf${CDUMP}.${PDY}/${cyc}"
 
 
 export ATMGES_ENSMEAN="${COMIN_GES_ENS}/${GPREFIX}atmf006${GSUFFIX}"
