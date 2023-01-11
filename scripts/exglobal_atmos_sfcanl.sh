@@ -124,7 +124,7 @@ fi
 cd ${DATA} || exit 99
 
 if [[ ${DONST} = "YES" ]]; then
-    export NSSTBF="${COMOUT}/${OPREFIX}nsstbufr"
+    export NSSTBF="${COMIN_OBS}/${OPREFIX}nsstbufr"
     ${NLN} ${NSSTBF} nsstbufr
 fi
 

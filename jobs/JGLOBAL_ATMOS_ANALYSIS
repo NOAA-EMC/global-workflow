@@ -80,8 +80,8 @@ if [ ${RUN_ENVIR} = "nco" -o ${ROTDIR_DUMP:-NO} = "YES" ]; then
     export COMIN_GES_OBS=${COMIN_GES_OBS:-$(compath.py ${envir}/obsproc/${obsproc_ver})/${GDUMP}.${gPDY}/${gcyc}/${COMPONENT}}
 else
     export COMOUT="${ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENT}"
-    export COMIN_OBS="${DMPDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENT}"
-    export COMIN_GES_OBS="${DMPDIR}/${GDUMP}.${gPDY}/${gcyc}/${COMPONENT}"
+    export COMIN_OBS="${COMIN_OBS:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/obs}"
+    export COMIN_GES_OBS="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/obs"
 fi
 mkdir -m 775 -p ${COMOUT}
 # COMIN_GES and COMIN_GES_ENS are used in script
@@ -124,14 +124,14 @@ fi
 export TCVITL="${COMOUT}/${OPREFIX}syndata.tcvitals.tm00"
 if [[ ${DONST} = "YES" ]]; then
    if [[ ${MAKE_NSSTBUFR} == "YES" ]]; then
-      export NSSTBF="${COMOUT}/${OPREFIX}nsstbufr"
+      export NSSTBF="${COMIN_OBS}/${OPREFIX}nsstbufr"
    else
       export NSSTBF="${COMIN_OBS}/${OPREFIX}nsstbufr"
    fi
 fi
 
 if [[ ${MAKE_ACFTBUFR} == "YES" ]]; then
-   export PREPQCPF="${COMOUT}/${OPREFIX}prepbufr.acft_profiles"
+   export PREPQCPF="${COMIN_OBS}/${OPREFIX}prepbufr.acft_profiles"
 else
    export PREPQCPF="${COMIN_OBS}/${OPREFIX}prepbufr.acft_profiles"
 fi
