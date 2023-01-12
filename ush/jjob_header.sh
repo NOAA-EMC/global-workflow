@@ -44,7 +44,7 @@
 OPTIND=1
 while getopts "c:e:" option; do
     case "${option}" in
-        c)  read -ra configs OPTARG ;;
+        c)  read -ra configs <<< "${OPTARG}" ;;
         e)  env_job=${OPTARG} ;;
         :)
             echo "FATAL [${BASH_SOURCE[0]}]: ${option} requires an argument"
