@@ -25,9 +25,8 @@ status=$?
 
 ###############################################################
 # Set script and dependency variables
-export COMPONENT=${COMPONENT:-atmos}
 export OPREFIX="${CDUMP}.t${cyc}z."
-export COMOUT="${ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENT}"
+export COMOUT="${ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos"
 export MAKE_PREPBUFR=${MAKE_PREPBUFR:-"YES"}
 [[ ! -d ${COMOUT} ]] && mkdir -p ${COMOUT}
 [[ ! -d ${COMIN_OBS} ]] && mkdir -p ${COMIN_OBS}
@@ -35,7 +34,7 @@ export MAKE_PREPBUFR=${MAKE_PREPBUFR:-"YES"}
 ###############################################################
 # If ROTDIR_DUMP=YES, copy dump files to rotdir
 if [[ ${ROTDIR_DUMP} = "YES" ]]; then
-   ${HOMEgfs}/ush/getdump.sh "${CDATE}" "${CDUMP}" "${DMPDIR}/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}/${COMPONENT}" "${COMIN_OBS}"
+   ${HOMEgfs}/ush/getdump.sh "${CDATE}" "${CDUMP}" "${DMPDIR}/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}/atmos" "${COMIN_OBS}"
    status=$?
    [[ ${status} -ne 0 ]] && exit ${status}
 
@@ -46,7 +45,7 @@ if [[ ${ROTDIR_DUMP} = "YES" ]]; then
    GDUMP=gdas
    gCOMOBS="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/obs"
    if [[ ! -s ${gCOMOBS}/${GDUMP}.t${gcyc}z.updated.status.tm00.bufr_d ]]; then
-     ${HOMEgfs}/ush/getdump.sh "${GDATE}" "${GDUMP}" "${DMPDIR}/${GDUMP}${DUMP_SUFFIX}.${gPDY}/${gcyc}/${COMPONENT}" "${gCOMOBS}"
+     ${HOMEgfs}/ush/getdump.sh "${GDATE}" "${GDUMP}" "${DMPDIR}/${GDUMP}${DUMP_SUFFIX}.${gPDY}/${gcyc}/atmos" "${gCOMOBS}"
      status=$?
      [[ ${status} -ne 0 ]] && exit ${status}
    fi
@@ -83,7 +82,7 @@ if [[ ${PROCESS_TROPCY} = "YES" ]]; then
     [[ ${status} -ne 0 ]] && exit ${status}
 
 else
-    [[ ${ROTDIR_DUMP} = "NO" ]] && cp ${DMPDIR}/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}/${COMPONENT}/${CDUMP}.t${cyc}z.syndata.tcvitals.tm00 ${COMOUT}/
+    [[ ${ROTDIR_DUMP} = "NO" ]] && cp ${DMPDIR}/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}/atmos/${CDUMP}.t${cyc}z.syndata.tcvitals.tm00 ${COMOUT}/
 fi
 
 # Will modify the new location later in the next PR to address issue 1198
@@ -104,14 +103,12 @@ if [[ ${MAKE_PREPBUFR} = "YES" ]]; then
 
     export job="j${CDUMP}_prep_${cyc}"
     export DATAROOT="${RUNDIR}/${CDATE}/${CDUMP}/prepbufr"
-    #export COMIN=${COMIN:-$ROTDIR/$CDUMP.$PDY/$cyc/$COMPONENT}
-    #export COMIN=${COMIN:-$ROTDIR}
     export COMIN=${COMIN_OBS}
-    export COMINgdas=${COMINgdas:-${ROTDIR}/gdas.${PDY}/${cyc}/${COMPONENT}}
-    export COMINgfs=${COMINgfs:-${ROTDIR}/gfs.${PDY}/${cyc}/${COMPONENT}}
+    export COMINgdas=${COMINgdas:-${ROTDIR}/gdas.${PDY}/${cyc}/atmos}
+    export COMINgfs=${COMINgfs:-${ROTDIR}/gfs.${PDY}/${cyc}/atmos}
     export COMOUT=${COMIN_OBS}
     if [[ ${ROTDIR_DUMP} = "NO" ]]; then
-        COMIN_OBS=${COMIN_OBS:-${DMPDIR}/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}/${COMPONENT}}
+        COMIN_OBS=${COMIN_OBS:-${DMPDIR}/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}/atmos}
     fi
     export COMSP=${COMSP:-${COMIN_OBS}/${CDUMP}.t${cyc}z.}
 
@@ -126,14 +123,14 @@ if [[ ${MAKE_PREPBUFR} = "YES" ]]; then
 
     # If creating NSSTBUFR was disabled, copy from DMPDIR if appropriate.
     if [[ ${MAKE_NSSTBUFR:-"NO"} = "NO" ]]; then
-        [[ ${DONST} = "YES" ]] && ${NCP} ${DMPDIR}/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}/${COMPONENT}/${OPREFIX}nsstbufr ${COMIN_OBS}/${OPREFIX}nsstbufr
+        [[ ${DONST} = "YES" ]] && ${NCP} ${DMPDIR}/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}/atmos/${OPREFIX}nsstbufr ${COMIN_OBS}/${OPREFIX}nsstbufr
     fi
 
 else
     if [[ ${ROTDIR_DUMP} = "NO" ]]; then
-        ${NCP} ${DMPDIR}/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}/${COMPONENT}/${OPREFIX}prepbufr               ${COMIN_OBS}/${OPREFIX}prepbufr
-        ${NCP} ${DMPDIR}/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}/${COMPONENT}/${OPREFIX}prepbufr.acft_profiles ${COMIN_OBS}/${OPREFIX}prepbufr.acft_profiles
-        [[ ${DONST} = "YES" ]] && ${NCP} ${DMPDIR}/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}/${COMPONENT}/${OPREFIX}nsstbufr ${COMIN_OBS}/${OPREFIX}nsstbufr
+        ${NCP} ${DMPDIR}/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}/atmos/${OPREFIX}prepbufr               ${COMIN_OBS}/${OPREFIX}prepbufr
+        ${NCP} ${DMPDIR}/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}/atmos/${OPREFIX}prepbufr.acft_profiles ${COMIN_OBS}/${OPREFIX}prepbufr.acft_profiles
+        [[ ${DONST} = "YES" ]] && ${NCP} ${DMPDIR}/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}/atmos/${OPREFIX}nsstbufr ${COMIN_OBS}/${OPREFIX}nsstbufr
     fi
 fi
 
