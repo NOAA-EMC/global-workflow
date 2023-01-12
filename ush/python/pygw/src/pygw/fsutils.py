@@ -47,10 +47,27 @@ def rm_p(path):
             raise OSError(f"unable to remove {path}")
 
 
-def cp(src, dest):
+def cp(source: str, target: str) -> None:
+    """
+    copy `source` file to `target` using `shutil.copyfile`
+    If `target` is a directory, then the filename from `source` is retained into the `target`
+    Parameters
+    ----------
+        source : str
+                 Source filename
+        target : str
+                 Destination filename or directory
+    Returns
+    -------
+        None
+    """
+
+    if os.path.isdir(target):
+        target = os.path.join(target, os.path.basename(source))
+
     try:
-        shutil.copyfile(src, dest)
-    except OSError as exc:
-        raise OSError(f"unable to copy {src} to {dest}")
-    except FileNotFoundError as exc:
-        raise FileNotFoundError(exc)
+        shutil.copyfile(source, target)
+    except OSError:
+        raise OSError(f"unable to copy {source} to {target}")
+    except Exception as exc:
+        raise Exception(exc)
