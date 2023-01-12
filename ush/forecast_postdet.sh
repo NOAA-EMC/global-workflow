@@ -11,12 +11,6 @@
 ## for execution.
 #####
 
-FV3_GEFS_postdet(){
-  echo SUB ${FUNCNAME[0]}: Linking input data for FV3 $RUN
-  # soft link commands insert here
-  FV3_GFS_postdet
-}
-
 DATM_postdet(){
   ######################################################################
   # Link DATM  inputs (ie forcing files)                           #
@@ -608,9 +602,6 @@ data_out_GFS() {
   echo "SUB ${FUNCNAME[0]}: Output data for FV3 copied"
 }
 
-data_out_GEFS() {
-  data_out_GFS
-}
 
 WW3_postdet() {
   echo "SUB ${FUNCNAME[0]}: Linking input data for WW3"

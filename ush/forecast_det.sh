@@ -74,11 +74,6 @@ FV3_GFS_det(){
   #-------------------------------------------------------
 }
 
-FV3_GEFS_det(){
-  echo "SUB ${FUNCNAME[0]}: Defining variables for FV3GEFS"
-  FV3_GFS_det
-}
-
 WW3_det(){
   echo "SUB ${FUNCNAME[0]}: Run type determination for WW3"
 }

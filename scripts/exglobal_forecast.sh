@@ -125,7 +125,7 @@ case $RUN in
   'data') DATM_predet;;
   'gfs') FV3_GFS_predet;;
   'gdas') FV3_GFS_predet;;
-  'gefs') FV3_GEFS_predet;;
+  'gefs') FV3_GFS_predet;;
 esac
 [[ $cplflx = .true. ]] && MOM6_predet
 [[ $cplwav = .true. ]] && WW3_predet
@@ -134,7 +134,7 @@ esac
 case $RUN in
   'gfs') FV3_GFS_det;;
   'gdas') FV3_GFS_det;;
-  'gefs') FV3_GEFS_det;;
+  'gefs') FV3_GFS_det;;
 esac				#no run type determination for data atmosphere
 [[ $cplflx = .true. ]] && MOM6_det
 [[ $cplwav = .true. ]] && WW3_det
@@ -148,7 +148,7 @@ case $RUN in
   'data') DATM_postdet;;
   'gfs') FV3_GFS_postdet;;
   'gdas') FV3_GFS_postdet;;
-  'gefs') FV3_GEFS_postdet;;
+  'gefs') FV3_GFS_postdet;;
 esac				#no post determination set up for data atmosphere
 [[ $cplflx = .true. ]] && MOM6_postdet
 [[ $cplwav = .true. ]] && WW3_postdet
@@ -204,7 +204,7 @@ if [ $machine != 'sandbox' ]; then
     'data') data_out_Data_ATM;;
     'gfs') data_out_GFS;;
     'gdas') data_out_GFS;;
-    'gefs') data_out_GEFS;;
+    'gefs') data_out_GFS;;
   esac
   [[ $cplflx = .true. ]] && MOM6_out
   [[ $cplwav = .true. ]] && WW3_out

@@ -266,14 +266,6 @@ FV3_GFS_predet(){
   echo "SUB ${FUNCNAME[0]}: pre-determination variables set"
 }
 
-FV3_GEFS_predet(){
-  echo "SUB ${FUNCNAME[0]}: Defining variables for FV3GEFS"
-
-  FV3_GFS_predet
-
-  echo "SUB ${FUNCNAME[0]}: pre-determination variables set"
-}
-
 WW3_predet(){
   echo "SUB ${FUNCNAME[0]}: Defining variables for WW3"
   if [ $CDUMP = "gdas" ]; then
