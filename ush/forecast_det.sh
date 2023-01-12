@@ -40,8 +40,7 @@ FV3_GFS_det(){
   #-------------------------------------------------------
   # determine if restart IC exists to continue from a previous forecast
   RERUN="NO"
-  filecount=0
-  [[ ${CDUMP} = "gfs" ]] && filecount=$(find "${RSTDIR_ATM}" -type f | wc -l)
+  filecount=$(find "${RSTDIR_ATM:-/dev/null}" -type f | wc -l)
   if [ ${CDUMP} = "gfs" -a ${rst_invt1} -gt 0 -a ${FHMAX} -gt ${rst_invt1} -a ${filecount} -gt 10 ]; then
     reverse=$(echo "${restart_interval[@]} " | tac -s ' ')
     for xfh in ${reverse} ; do

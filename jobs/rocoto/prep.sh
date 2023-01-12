@@ -112,10 +112,8 @@ if [[ ${MAKE_PREPBUFR} = "YES" ]]; then
     export COMOUT=${COMIN_OBS}
     if [[ ${ROTDIR_DUMP} = "NO" ]]; then
         COMIN_OBS=${COMIN_OBS:-${DMPDIR}/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}/${COMPONENT}}
-        export COMSP=${COMSP:-${COMIN_OBS}/${CDUMP}.t${cyc}z.}
-    else
-        export COMSP=${COMSP:-${COMIN_OBS}/${CDUMP}.t${cyc}z.}
     fi
+    export COMSP=${COMSP:-${COMIN_OBS}/${CDUMP}.t${cyc}z.}
 
     # Disable creating NSSTBUFR if desired, copy from DMPDIR instead
     if [[ ${MAKE_NSSTBUFR:-"NO"} = "NO" ]]; then
