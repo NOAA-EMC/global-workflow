@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 source "${HOMEgfs}/ush/preamble.sh"
-source "${HOMEgfs}/ush/jjob_header.sh" base anal eupd
+source "${HOMEgfs}/ush/jjob_header.sh" -e "eupd" -c "base anal eupd"
 
 
 ##############################################

@@ -13,7 +13,7 @@ export jobid="${job}.$$"
 
 # TODO (#235) - This job is calling multiple j-jobs and doing too much in general
 #   Also, this forces us to call the config files here instead of the j-job
-source "${HOMEgfs}/ush/jjob_header.sh" base vrfy
+source "${HOMEgfs}/ush/jjob_header.sh" -e "vrfy" -c "base vrfy"
 
 ###############################################################
 export COMPONENT="atmos"

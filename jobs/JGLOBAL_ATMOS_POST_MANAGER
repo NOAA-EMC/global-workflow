@@ -3,7 +3,7 @@
 # TODO (#1227) This job is not used in the rocoto suite
 
 source "${HOMEgfs}/ush/preamble.sh"
-source "${HOMEgfs}/ush/jjob_header.sh" base post
+source "${HOMEgfs}/ush/jjob_header.sh" -e "post" -c "base post"
 
 
 ####################################

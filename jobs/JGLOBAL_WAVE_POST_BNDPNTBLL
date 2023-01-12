@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 source "${HOMEgfs}/ush/preamble.sh"
-source "${HOMEgfs}/ush/jjob_header.sh" base wave wavepostsbs wavepostbndpntbll
+source "${HOMEgfs}/ush/jjob_header.sh" -e "wavepostbndpntbll" -c "base wave wavepostsbs wavepostbndpntbll"
 
 export COMPONENT="wave"
 

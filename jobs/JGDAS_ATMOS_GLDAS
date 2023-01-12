@@ -1,7 +1,6 @@
 #! /usr/bin/env bash
 
 source "${HOMEgfs:?}/ush/preamble.sh"
-source "${HOMEgfs}/ush/jjob_header.sh" base gldas
 
 if [[ "${cyc:?}" -ne "${gldas_cyc:?}" ]]; then
     echo "GLDAS only runs for ${gldas_cyc} cycle; Skip GLDAS step for cycle ${cyc}"
@@ -16,6 +15,7 @@ if [[ "${CDATE}" -le "$(${NDATE:?} +"${xtime}" "${SDATE:?}")" ]]; then
     exit 0
 fi
 
+source "${HOMEgfs}/ush/jjob_header.sh" -e "gldas" -c "base gldas"
 
 ##############################################
 # Set variables used in the exglobal script

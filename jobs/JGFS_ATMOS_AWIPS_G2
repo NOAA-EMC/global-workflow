@@ -5,7 +5,7 @@
 ########################################
 
 source "${HOMEgfs}/ush/preamble.sh"
-source "${HOMEgfs}/ush/jjob_header.sh" base awips
+source "${HOMEgfs}/ush/jjob_header.sh" -e "awips" -c "base awips"
 
 export OMP_NUM_THREADS=${OMP_NUM_THREADS:-1}
 

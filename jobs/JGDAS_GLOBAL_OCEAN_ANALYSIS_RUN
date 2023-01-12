@@ -3,7 +3,7 @@ export STRICT="NO"
 source "${HOMEgfs}/ush/preamble.sh"
 WIPE_DATA="NO"
 DATA="${DATA:-${DATAROOT}/${RUN}ocnanal_${cyc}}"
-source "${HOMEgfs}/ush/jjob_header.sh" base ocnanal ocnanalrun
+source "${HOMEgfs}/ush/jjob_header.sh" -e "ocnanalrun" -c "base ocnanal ocnanalrun"
 
 
 ##############################################

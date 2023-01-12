@@ -25,7 +25,7 @@ export jobid="${job}.$$"
 
 # TODO (#1228) - This script is doing more than just calling a j-job
 #   Also, this forces us to call the config files here instead of the j-job
-source "${HOMEgfs}/ush/jjob_header.sh" base awips
+source "${HOMEgfs}/ush/jjob_header.sh" -e "awips" -c "base awips"
 
 
 fhrlst=$(echo $FHRLST | sed -e 's/_/ /g; s/f/ /g; s/,/ /g')

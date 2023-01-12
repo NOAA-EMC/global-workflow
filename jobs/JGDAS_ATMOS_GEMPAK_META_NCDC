@@ -7,7 +7,7 @@
 # TODO (#1222) This j-job is not part of the rocoto
 
 source "${HOMEgfs}/ush/preamble.sh"
-source "${HOMEgfs}/ush/jjob_header.sh" base gempak
+source "${HOMEgfs}/ush/jjob_header.sh" -e "gempak_meta" -c "base gempak"
 
 ################################
 # Set up the HOME directory
