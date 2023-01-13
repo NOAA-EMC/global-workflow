@@ -164,6 +164,10 @@ EOF
 
   #--------------------------------------------------------------------------
   # Grid and orography data
+  for n in $(seq 1 $ntiles); do
+    $NLN $FIXfv3/$CASE/${CASE}_grid.tile${n}.nc     $DATA/INPUT/${CASE}_grid.tile${n}.nc
+    $NLN $FIXfv3/$CASE/${CASE}_oro_data.tile${n}.nc $DATA/INPUT/oro_data.tile${n}.nc
+  done
 
   if [ $cplflx = ".false." ] ; then
     $NLN $FIXfv3/$CASE/${CASE}_mosaic.nc $DATA/INPUT/grid_spec.nc
@@ -171,12 +175,20 @@ EOF
     $NLN $FIXfv3/$CASE/${CASE}_mosaic.nc $DATA/INPUT/${CASE}_mosaic.nc
   fi
 
-  OROFIX=${OROFIX:-"${FIX_DIR}/orog/${CASE}.mx${OCNRES}_frac"}
-  FIX_SFC=${FIX_SFC:-"${OROFIX}/fix_sfc"}
-  for n in $(seq 1 $ntiles); do
-    $NLN ${OROFIX}/oro_${CASE}.mx${OCNRES}.tile${n}.nc $DATA/INPUT/oro_data.tile${n}.nc
-    $NLN ${OROFIX}/${CASE}_grid.tile${n}.nc     $DATA/INPUT/${CASE}_grid.tile${n}.nc
-  done
+  # Fractional grid related
+  if [ $FRAC_GRID = ".true." ]; then
+    OROFIX=${OROFIX:-"${FIX_DIR}/orog/${CASE}.mx${OCNRES}_frac"}
+    FIX_SFC=${FIX_SFC:-"${OROFIX}/fix_sfc"}
+    for n in $(seq 1 $ntiles); do
+      $NLN ${OROFIX}/oro_${CASE}.mx${OCNRES}.tile${n}.nc $DATA/INPUT/oro_data.tile${n}.nc
+    done
+  else
+    OROFIX=${OROFIX:-"${FIXfv3}/${CASE}"}
+    FIX_SFC=${FIX_SFC:-"${OROFIX}/fix_sfc"}
+    for n in $(seq 1 $ntiles); do
+      $NLN ${OROFIX}/${CASE}_oro_data.tile${n}.nc $DATA/INPUT/oro_data.tile${n}.nc
+    done
+  fi
 
   export CCPP_SUITE=${CCPP_SUITE:-"FV3_GFS_v16"}
   _suite_file=$HOMEgfs/sorc/ufs_model.fd/FV3/ccpp/suites/suite_${CCPP_SUITE}.xml
