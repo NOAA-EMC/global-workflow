@@ -55,7 +55,7 @@ Observation data (OBSPROC/prep)
 Data
 ****
 
-Observation data, also known as dump data, is prepared in production and then archived in a global dump archive (GDA) for use by users when running cycled experiment. The GDA ($DMPDIR) is available on supported platforms and the workflow system knows where to find the data.
+Observation data, also known as dump data, is prepared in production and then archived in a global dump archive (GDA) for use by users when running cycled experiment. The GDA (identified as ``$DMPDIR`` in the workflow) is available on supported platforms and the workflow system knows where to find the data.
 
 * Hera: /scratch1/NCEPDEV/global/glopara/dump
 * Orion: /work/noaa/rstprod/dump
@@ -66,9 +66,9 @@ Observation data, also known as dump data, is prepared in production and then ar
 Global Dump Archive Structure
 -----------------------------
 
-The global dump archive (GDA) mimics the structure of its production source: `DMPDIR/CDUMP.PDY/[CC/atmos/]FILES`
+The global dump archive (GDA) mimics the structure of its production source: ``DMPDIR/CDUMP.PDY/[CC/atmos/]FILES``
 
-The CDUMP is either gdas, gfs, or rtofs. All three contain production output for each day (PDY). The gdas and gfs folders are further broken into cycle (CC) and component (atmos).
+The ``CDUMP`` is either gdas, gfs, or rtofs. All three contain production output for each day (``PDY``). The gdas and gfs folders are further broken into cycle (``CC``) and component (atmos).
 
 The GDA also contains special versions of some datasets and experimental data that is being evaluated ahead of implementation into production. The following subfolder suffixes exist:
 

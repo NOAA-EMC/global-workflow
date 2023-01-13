@@ -55,7 +55,7 @@ How to get changes into develop (HEAD) branch
 
 The following steps should be followed in order to make changes to the develop branch of global-workflow. Communication with the code managers throughout the process is encouraged.
 
- #. Issue - Open issue to document changes. Reference this issue in commits to your branches (e.g. git commit -m "Issue #23 - blah changes for what-not code") Click `here <https://github.com/NOAA-EMC/global-workflow/issues/new/choose>`__ to open a new global-workflow issue.
+ #. Issue - Open issue to document changes. Reference this issue in commits to your branches (e.g. ``git commit -m "Issue #23 - blah changes for what-not code"``) Click `here <https://github.com/NOAA-EMC/global-workflow/issues/new/choose>`__ to open a new global-workflow issue.
  #. GitFlow - Follow `GitFlow <https://nvie.com/posts/a-successful-git-branching-model/>`_ procedures for development (branch names, forking vs branching, etc.). Read more `here <https://docs.google.com/document/d/1H5McooP-ZmDIOhcy4zJwdFVk3DyjbJt_Nyqj4QGBRBU/edit?usp=sharing>`__ about GitFlow at EMC.
  #. To fork or not to fork? - If not working within authoritative repository create a fork of the authoritative repository. Read more `here <https://help.github.com/en/github/getting-started-with-github/fork-a-repo>`__ about forking in GitHub.
  #. Branch - Create branch in either authoritative repository or fork of authoritative repository. See the `Where to do development? <development_>`_ section for how to determine where. Follow Gitflow conventions when creating branch.
@@ -91,7 +91,7 @@ Commit message standards
  * Use the `imperative mood <https://en.wikipedia.org/wiki/Imperative_mood>`_ in the subject line
  * Wrap the body at 72 characters
  * Use the body to explain what and why vs. how
- * The final line of the commit message should include tags to relevant issues (e.g. `Refs: #217, #300`)
+ * The final line of the commit message should include tags to relevant issues (e.g. ``Refs: #217, #300``)
 
 Here is the example commit message from the article linked above; it includes descriptions of what would be in each part of the commit message for guidance:
  
@@ -118,10 +118,10 @@ Here is the example commit message from the article linked above; it includes de
       vary here
 
    If you use an issue tracker, put references to them at the bottom,
-   like this:
+   like this::
 
-   Resolves: #123
-   See also: #456, #789
+      Resolves: #123
+      See also: #456, #789
 
 A detailed commit message is very useful for documenting changes
 

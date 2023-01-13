@@ -34,3 +34,6 @@ GitHub updates: Users should adjust their "Watch" settings for this repo so they
    development.rst
    components.rst
    jobs.rst
+   hpc.rst
+   output.rst
+   run.rst
