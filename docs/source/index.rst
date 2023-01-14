@@ -29,7 +29,8 @@ General updates: NOAA employees and affiliates can join the gfs-announce distrib
 GitHub updates: Users should adjust their "Watch" settings for this repo so they receive notifications as they'd like to. Find the "Watch" or "Unwatch" button towards the top right of this page and click it to adjust how you watch this repo.
 
 .. toctree:: 
-   :hidden:
+   :numbered:
+   :maxdepth: 3
 
    development.rst
    components.rst
