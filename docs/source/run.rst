@@ -9,4 +9,6 @@ Here we will show how you can run an experiment using the Global Workflow. The G
 
    clone.rst
    init.rst
-
+   setup.rst
+   configure.rst
+   start.rst
