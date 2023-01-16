@@ -18,8 +18,8 @@ sys.path.insert(0, os.path.abspath('.'))
 # -- Project information -----------------------------------------------------
 
 project = 'Global-workflow'
-copyright = '2023, Kate Friedman, Walter Kolczynski, Rahul Mahajan, Lin Gan'
-author = 'Kate Friedman, Walter Kolczynski, Rahul Mahajan, Lin Gan'
+copyright = '2023, Kate Friedman, Walter Kolczynski, Rahul Mahajan, Lin Gan, Arun Chawla'
+author = 'Kate Friedman, Walter Kolczynski, Rahul Mahajan, Lin Gan, Arun Chawla'
 
 # The full version, including alpha/beta/rc tags
 release = '0.1'
