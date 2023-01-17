@@ -108,7 +108,7 @@ export LEVS=${LEVS_ENKF:-${LEVS:-64}}
 
 # nggps_diag_nml
 export FHOUT=${FHOUT_ENKF:-3}
-if [[ $CDUMP == "gfs" ]]; then
+if [[ ${CDUMP} == "gfs" ]]; then
     export FHOUT=${FHOUT_ENKF_GFS:-${FHOUT_ENKF:${FHOUT:-3}}}
 fi
 # model_configure
