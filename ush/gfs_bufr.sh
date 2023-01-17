@@ -50,13 +50,12 @@ cat << EOF > gfsparm
 /
 EOF
 
-hh=${FSTART}
-while (( hh <= FEND )); do
-  hh2=$(printf %02i ${hh})
-  hh3=$(printf %03i ${hh})
+for (( hr = 10#${FSTART}; hr <= 10#${FEND}; hr = hr + 10#${FINT} )); do
+   hh2=$(printf %02i "${hr}")
+   hh3=$(printf %03i "${hr}")
 
-#---------------------------------------------------------
-# Make sure all files are available:
+   #---------------------------------------------------------
+   # Make sure all files are available:
    ic=0
    while (( ic < 1000 )); do
       if [ ! -f "${COMIN}/${RUN}.${cycle}.logf${hh3}.${logfm}" ]; then
@@ -71,11 +70,9 @@ while (( hh <= FEND )); do
          exit 2
       fi
    done
-#------------------------------------------------------------------
+   #------------------------------------------------------------------
    ln -sf "${COMIN}/${RUN}.${cycle}.atmf${hh3}.${atmfm}" "sigf${hh2}" 
    ln -sf "${COMIN}/${RUN}.${cycle}.sfcf${hh3}.${atmfm}" "flxf${hh2}"
-
-   hh=$((hh + FINT))
 done
 
 #  define input BUFR table file.
