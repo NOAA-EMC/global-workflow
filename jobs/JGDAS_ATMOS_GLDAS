@@ -1,45 +1,11 @@
 #! /usr/bin/env bash
 
 source "${HOMEgfs:?}/ush/preamble.sh"
-
-##############################################
-# Obtain unique process id (pid) and make temp directory
-##############################################
-export DATA=${DATA:-${DATAROOT}/${jobid}}
-mkdir -p "${DATA}"
-cd "${DATA}" || exit 1
-
-
-##############################################
-# Run setpdy and initialize PDY variables
-##############################################
-export cycle="t${cyc}z"
-setpdy.sh
-. ./PDY
-
-
-##############################################
-# Determine Job Output Name on System
-##############################################
-export pid=${pid:-$$}
-export pgmout="OUTPUT.${pid}"
-export pgmerr=errfile
-
-
-#############################
-# Source relevant config files
-#############################
-export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
-configs="base gldas"
-for config in ${configs}; do
-    . ${EXPDIR}/config.${config}
-    status=$?
-    [[ ${status} -ne 0 ]] && exit "${status}"
-done
-
+source "${HOMEgfs}/ush/jjob_header.sh" -e "gldas" -c "base gldas"
 
 if [[ "${cyc:?}" -ne "${gldas_cyc:?}" ]]; then
     echo "GLDAS only runs for ${gldas_cyc} cycle; Skip GLDAS step for cycle ${cyc}"
+    rm -Rf "${DATA}"
     exit 0
 fi
 
@@ -48,17 +14,9 @@ xtime=$((gldas_spinup_hours+12))
 if [[ "${CDATE}" -le "$(${NDATE:?} +"${xtime}" "${SDATE:?}")" ]]; then
     echo "GLDAS needs fluxes as forcing from cycles in previous ${xtime} hours"
     echo "starting from ${SDATE}. This gldas cycle is skipped"
+    rm -Rf "${DATA}"
     exit 0
 fi
-
-##########################################
-# Source machine runtime environment
-##########################################
-# shellcheck disable=SC1090-SC1091
-. "${HOMEgfs}/env/${machine:?}.env" gldas
-# shellcheck disable=
-status=$?
-[[ ${status} -ne 0 ]] && exit "${status}"
 
 
 ##############################################

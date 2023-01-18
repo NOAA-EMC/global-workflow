@@ -4,22 +4,13 @@
 # GFS Minimization Monitor (MinMon) job
 ###########################################################
 source "${HOMEgfs}/ush/preamble.sh"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "vrfy" -c "base vrfy"
+
 
 ###############################
 # Specify NET and RUN name
 ##############################
-export NET=${NET:-gfs}
-export RUN=${RUN:-gfs}
 export COMPONENT="atmos"
-
-
-###########################################################
-# obtain unique process id (pid) and make temp directories
-###########################################################
-export pid=$$
-export DATA=${DATA:-${DATAROOT}/${jobid}}
-mkdir -p ${DATA}
-cd ${DATA}
 
 
 ###########################################################
@@ -32,7 +23,6 @@ export m_job=${m_job:-${MINMON_SUFFIX}_mmDE}
 ##############################################
 # Specify Package Areas
 ##############################################
-export HOMEgfs=${HOMEgfs:-${NWROOT}/gfs.${gfs_ver}}
 export SCRgfs=${SCRgfs:-${HOMEgfs}/scripts}
 export M_FIXgfs=${M_FIXgfs:-${HOMEgfs}/fix/product}
 
