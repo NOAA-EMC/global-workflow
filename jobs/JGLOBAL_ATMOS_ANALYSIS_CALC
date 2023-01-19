@@ -54,6 +54,7 @@ fi
 
 # Get LEVS
 export LEVS=$(${NCLEN} ${ATMGES} pfull)
+status=$?
 [[ ${status} -ne 0 ]] && exit ${status}
 
 
