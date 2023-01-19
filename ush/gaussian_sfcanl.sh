@@ -121,13 +121,8 @@ LATB_SFC=${LATB_SFC:-$LATB_CASE}
 DONST=${DONST:-"NO"}
 LEVS=${LEVS:-64}
 LEVSP1=$(($LEVS+1))
-OUTPUT_FILE=${OUTPUT_FILE:-"nemsio"}
-if [ $OUTPUT_FILE = "netcdf" ]; then
-    export NETCDF_OUT=".true."
-else
-    export NETCDF_OUT=".false."
-fi
-
+OUTPUT_FILE=${OUTPUT_FILE:-"netcdf"}
+export NETCDF_OUT=".true."
 #  Directories.
 gfs_ver=${gfs_ver:-v16.3.0}
 BASEDIR=${BASEDIR:-${PACKAGEROOT:-/lfs/h1/ops/prod/packages}}
