@@ -3,8 +3,7 @@
 source "${HOMEgfs}/ush/preamble.sh"
 
 ###############################################################
-echo
-echo "=============== START TO SOURCE FV3GFS WORKFLOW MODULES ==============="
+# Source FV3GFS workflow modules
 . ${HOMEgfs}/ush/load_fv3gfs_modules.sh
 status=$?
 [[ ${status} -ne 0 ]] && exit ${status}
@@ -13,8 +12,6 @@ export job="wavepostsbs"
 export jobid="${job}.$$"
 
 ###############################################################
-echo
-echo "=============== START TO RUN WAVE POST_SBS ==============="
 # Execute the JJOB
 ${HOMEgfs}/jobs/JGLOBAL_WAVE_POST_SBS
 status=$?
