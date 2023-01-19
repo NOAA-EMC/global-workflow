@@ -185,16 +185,11 @@ def edit_baseconfig(host, inputs):
         }
         tmpl_dict = dict(tmpl_dict, **extend_dict)
 
-    if inputs.mode in ['cycled']:
-        extend_dict = {
-            "@CCPP_SUITE@": 'FV3_GFS_v16',
-            "@IMP_PHYSICS@": 11
-        }
-    elif inputs.mode in ['forecast-only']:
-        extend_dict = {
-            "@CCPP_SUITE@": 'FV3_GFS_v17_p8',
-            "@IMP_PHYSICS@": 8
-        }
+    # cycled and forecast-only use the same CCPP_SUITE and MP
+    extend_dict = {
+        "@CCPP_SUITE@": 'FV3_GFS_v17_p8',
+        "@IMP_PHYSICS@": 8
+    }
     tmpl_dict = dict(tmpl_dict, **extend_dict)
 
     base_input = f'{inputs.configdir}/config.base.emc.dyn'
@@ -283,22 +278,24 @@ def input_args():
         subp.add_argument('--yaml', help='Defaults to substitute from', type=str,
                           required=False, default=os.path.join(_top, 'parm/config/yaml/defaults.yaml'))
 
+    ufs_apps = ['ATM', 'ATMA', 'ATMW', 'S2S', 'S2SW']
+
     # cycled mode additional arguments
     cycled.add_argument('--resens', help='resolution of the ensemble model forecast',
                         type=int, required=False, default=192)
     cycled.add_argument('--nens', help='number of ensemble members',
                         type=int, required=False, default=20)
     cycled.add_argument('--app', help='UFS application', type=str,
-                        choices=['ATM', 'ATMW', 'ATMA'], required=False, default='ATM')
+                        choices=ufs_apps, required=False, default='ATM')
 
     # forecast only mode additional arguments
-    forecasts.add_argument('--app', help='UFS application', type=str, choices=[
-        'ATM', 'ATMA', 'ATMW', 'S2S', 'S2SW', 'S2SWA', 'NG-GODAS'], required=False, default='ATM')
+    forecasts.add_argument('--app', help='UFS application', type=str,
+        choices=ufs_apps + ['S2SWA'], required=False, default='ATM')
 
     args = parser.parse_args()
 
-    if args.app in ['S2S', 'S2SW'] and args.icsdir is None:
-        raise SyntaxError("An IC directory must be specified with --icsdir when running the S2S or S2SW app")
+    if args.mode in ['forecast-only'] and args.app in ['S2S', 'S2SW'] and args.icsdir is None:
+        raise SyntaxError("An IC directory must be specified with --icsdir when running the S2S or S2SW app in forecast-only mode")
 
     # Add an entry for warm_start = .true. or .false.
     if args.start == "warm":
