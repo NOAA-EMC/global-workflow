@@ -88,6 +88,7 @@ html_theme_options = {"body_max_width": "none"}
 html_static_path = ['_static']
 html_context = {}
 
+
 def setup(app):
     app.add_css_file('custom.css')  # may also be an URL
     app.add_css_file('theme_overrides.css')  # may also be an URL
