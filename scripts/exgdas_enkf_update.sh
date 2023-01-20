@@ -25,7 +25,6 @@ pwd=$(pwd)
 # Utilities
 NCP=${NCP:-"/bin/cp -p"}
 NLN=${NLN:-"/bin/ln -sf"}
-NEMSIOGET=${NEMSIOGET:-$NWPROD/utils/exec/nemsio_get}
 NCLEN=${NCLEN:-$HOMEgfs/ush/getncdimlen}
 USE_CFP=${USE_CFP:-"NO"}
 CFP_MP=${CFP_MP:-"NO"}
@@ -89,30 +88,20 @@ INCREMENTS_TO_ZERO=${INCREMENTS_TO_ZERO:-"'NONE'"}
 
 ################################################################################
 ATMGES_ENSMEAN=$COMIN_GES_ENS/${GPREFIX}atmf006.ensmean${GSUFFIX}
-if [ $SUFFIX = ".nc" ]; then
-   LONB_ENKF=${LONB_ENKF:-$($NCLEN $ATMGES_ENSMEAN grid_xt)} # get LONB_ENKF
-   LATB_ENKF=${LATB_ENKF:-$($NCLEN $ATMGES_ENSMEAN grid_yt)} # get LATB_ENFK
-   LEVS_ENKF=${LEVS_ENKF:-$($NCLEN $ATMGES_ENSMEAN pfull)} # get LEVS_ENFK
-   use_gfs_ncio=".true."
-   use_gfs_nemsio=".false."
-   paranc=${paranc:-".true."}
-   if [ $DO_CALC_INCREMENT = "YES" ]; then
-      write_fv3_incr=".false."
-   else
-      write_fv3_incr=".true."
-      WRITE_INCR_ZERO="incvars_to_zero= $INCREMENTS_TO_ZERO,"
-   fi
+LONB_ENKF=${LONB_ENKF:-$($NCLEN $ATMGES_ENSMEAN grid_xt)} # get LONB_ENKF
+LATB_ENKF=${LATB_ENKF:-$($NCLEN $ATMGES_ENSMEAN grid_yt)} # get LATB_ENFK
+LEVS_ENKF=${LEVS_ENKF:-$($NCLEN $ATMGES_ENSMEAN pfull)} # get LEVS_ENFK
+use_gfs_ncio=".true."
+use_gfs_nemsio=".false."
+paranc=${paranc:-".true."}
+if [ $DO_CALC_INCREMENT = "YES" ]; then
+   write_fv3_incr=".false." 
 else
-   LEVS_ENKF=${LEVS_ENKF:-$($NEMSIOGET $ATMGES_ENSMEAN dimz | awk '{print $2}')}
-   LATB_ENKF=${LATB_ENKF:-$($NEMSIOGET $ATMGES_ENSMEAN dimy | awk '{print $2}')}
-   LONB_ENKF=${LONB_ENKF:-$($NEMSIOGET $ATMGES_ENSMEAN dimx | awk '{print $2}')}
-   use_gfs_ncio=".false."
-   use_gfs_nemsio=".true."
-   paranc=${paranc:-".false."}
+   write_fv3_incr=".true."
+   WRITE_INCR_ZERO="incvars_to_zero= $INCREMENTS_TO_ZERO,"
 fi
 LATA_ENKF=${LATA_ENKF:-$LATB_ENKF}
 LONA_ENKF=${LONA_ENKF:-$LONB_ENKF}
-
 SATANGL=${SATANGL:-${FIXgsi}/global_satangbias.txt}
 SATINFO=${SATINFO:-${FIXgsi}/global_satinfo.txt}
 CONVINFO=${CONVINFO:-${FIXgsi}/global_convinfo.txt}
@@ -121,7 +110,6 @@ SCANINFO=${SCANINFO:-${FIXgsi}/global_scaninfo.txt}
 HYBENSINFO=${HYBENSINFO:-${FIXgsi}/global_hybens_info.l${LEVS_ENKF}.txt}
 ANAVINFO=${ANAVINFO:-${FIXgsi}/global_anavinfo.l${LEVS_ENKF}.txt}
 VLOCALEIG=${VLOCALEIG:-${FIXgsi}/vlocal_eig_l${LEVS_ENKF}.dat}
-
 ENKF_SUFFIX="s"
 [[ $SMOOTH_ENKF = "NO" ]] && ENKF_SUFFIX=""
 
@@ -161,7 +149,7 @@ for ftype in \$flist; do
    if [ \$memchar = "ensmean" ]; then
       fname=$COMOUT_ANL_ENS/\${ftype}.ensmean
    else
-      fname=$COMOUT_ANL_ENS/\$memchar/\$ftype
+      fname=$COMOUT_ANL_ENS/\$memchar/atmos/\$ftype
    fi
    tar -xvf \$fname
 done
@@ -195,28 +183,28 @@ for imem in $(seq 1 $NMEM_ENKF); do
          fi
       else
          for ftype in $flist; do
-            fname=$COMOUT_ANL_ENS/$memchar/$ftype
+            fname=$COMOUT_ANL_ENS/$memchar/atmos/$ftype
             tar -xvf $fname
          done
       fi
    fi
-   mkdir -p $COMOUT_ANL_ENS/$memchar
+   mkdir -p $COMOUT_ANL_ENS/$memchar/atmos
    for FHR in $nfhrs; do
-      $NLN $COMIN_GES_ENS/$memchar/${GPREFIX}atmf00${FHR}${ENKF_SUFFIX}${GSUFFIX}  sfg_${CDATE}_fhr0${FHR}_${memchar}
+      $NLN $COMIN_GES_ENS/$memchar/atmos/${GPREFIX}atmf00${FHR}${ENKF_SUFFIX}${GSUFFIX}  sfg_${CDATE}_fhr0${FHR}_${memchar}
       if [ $cnvw_option = ".true." ]; then
-         $NLN $COMIN_GES_ENS/$memchar/${GPREFIX}sfcf00${FHR}${GSUFFIX} sfgsfc_${CDATE}_fhr0${FHR}_${memchar}
+         $NLN $COMIN_GES_ENS/$memchar/atmos/${GPREFIX}sfcf00${FHR}${GSUFFIX} sfgsfc_${CDATE}_fhr0${FHR}_${memchar}
       fi
       if [ $FHR -eq 6 ]; then
          if [ $DO_CALC_INCREMENT = "YES" ]; then
-            $NLN $COMOUT_ANL_ENS/$memchar/${APREFIX}atmanl${ASUFFIX}             sanl_${CDATE}_fhr0${FHR}_${memchar}
+            $NLN $COMOUT_ANL_ENS/$memchar/atmos/${APREFIX}atmanl${ASUFFIX}             sanl_${CDATE}_fhr0${FHR}_${memchar}
          else
-            $NLN $COMOUT_ANL_ENS/$memchar/${APREFIX}atminc${ASUFFIX}             incr_${CDATE}_fhr0${FHR}_${memchar}
+            $NLN $COMOUT_ANL_ENS/$memchar/atmos/${APREFIX}atminc${ASUFFIX}             incr_${CDATE}_fhr0${FHR}_${memchar}
          fi
       else
          if [ $DO_CALC_INCREMENT = "YES" ]; then
-            $NLN $COMOUT_ANL_ENS/$memchar/${APREFIX}atma00${FHR}${ASUFFIX}             sanl_${CDATE}_fhr0${FHR}_${memchar}
+            $NLN $COMOUT_ANL_ENS/$memchar/atmos/${APREFIX}atma00${FHR}${ASUFFIX}             sanl_${CDATE}_fhr0${FHR}_${memchar}
          else
-            $NLN $COMOUT_ANL_ENS/$memchar/${APREFIX}atmi00${FHR}${ASUFFIX}             incr_${CDATE}_fhr0${FHR}_${memchar}
+            $NLN $COMOUT_ANL_ENS/$memchar/atmos/${APREFIX}atmi00${FHR}${ASUFFIX}             incr_${CDATE}_fhr0${FHR}_${memchar}
          fi
       fi
    done

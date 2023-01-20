@@ -1,41 +1,18 @@
 #!/bin/bash
 export STRICT="NO"
 source "${HOMEgfs}/ush/preamble.sh"
-
-##############################################
-# make temp directory
-##############################################
-export DATA=${DATA:-${DATAROOT}/ocnanal_${CDATE}} # TODO (G): Switch to {cyc} when the downstream code is ready
-mkdir -p "${DATA}"
-cd "${DATA}" || (echo "${DATA} does not exist. ABORT!"; exit 1)
+WIPE_DATA="NO"
+DATA="${DATAROOT}/${RUN}ocnanal_${cyc}"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "ocnanalpost" -c "base ocnanalpost"
 
 
-##############################################
-# Run setpdy and initialize PDY variables
-##############################################
-export cycle="t${cyc}z"
-setpdy.sh
-. ./PDY
+###############################################################
+# Run relevant script
+###############################################################
 
 
-##############################################
-# Determine Job Output Name on System
-##############################################
-export pid=${pid:-$$}
-export pgmout="OUTPUT.${pid}"
-export pgmerr=errfile
+# TODO (#982)
 
-
-#############################
-# Source relevant config files
-#############################
-export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
-configs="base ocnanalpost"
-for config in ${configs}; do
-    . "${EXPDIR}/config.${config}"
-    status=$?
-    [[ "${status}" -ne 0 ]] && exit "${status}"
-done
 
 ##########################################
 # Remove the Temporary working directory

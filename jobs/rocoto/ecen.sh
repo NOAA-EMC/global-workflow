@@ -16,7 +16,7 @@ for fhr in ${fhrlst}; do
     export FHMIN_ECEN=${fhr}
     export FHMAX_ECEN=${fhr}
     export FHOUT_ECEN=${fhr}
-    export job=ecen${fhr}
+    export job=ecen
     export jobid="${job}.$$"
 
     ${HOMEgfs}/jobs/JGDAS_ENKF_ECEN

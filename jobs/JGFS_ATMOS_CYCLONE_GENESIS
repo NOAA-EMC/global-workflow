@@ -1,63 +1,13 @@
 #! /usr/bin/env bash
 
 source "${HOMEgfs}/ush/preamble.sh"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "vrfy" -c "base vrfy"
 
+
+# TODO (#1220) Determine if this is still needed
 export RUN_ENVIR=${RUN_ENVIR:-"nco"}
 
-#############################
-# Source relevant config files
-#############################
-export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
-configs="base vrfy"
-for config in ${configs}; do
-    . ${EXPDIR}/config.${config}
-    status=$?
-    [[ ${status} -ne 0 ]] && exit ${status}
-done
-
-
-##########################################
-# Source machine runtime environment
-##########################################
-. ${HOMEgfs}/env/${machine}.env vrfy
-status=$?
-[[ ${status} -ne 0 ]] && exit ${status}
-
-
-##############################################
-# Obtain unique process id (pid) and make temp directory
-##############################################
-if [ ${RUN_ENVIR} = "nco" ]; then
-    export DATA=${DATA:-${DATAROOT}/${jobid}}
-else
-    export job="gfs_cyclone_genesis"
-    export DATA="${DATAROOT}/${job}$$"
-    [[ -d ${DATA} ]] && rm -rf ${DATA}
-fi
-mkdir -p ${DATA}
-cd ${DATA}
-
-
-##############################################
-# Run setpdy and initialize PDY variables
-##############################################
-export cycle="t${cyc}z"
-setpdy.sh
-. ./PDY
-
-
-####################################
-# Specify NET and RUN Name and model
-####################################
-export NET=${NET:-gfs}
-export RUN=${RUN:-gfs}
 export COMPONENT="atmos"
-
-##############################################
-# Determine Job Output Name on System
-##############################################
-export pgmout="OUTPUT.${pid}"
-export pgmerr=errfile
 
 ##############################################
 # Set variables used in the exglobal script

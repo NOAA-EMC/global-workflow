@@ -1,49 +1,7 @@
 #! /usr/bin/env bash
 
 source "${HOMEgfs}/ush/preamble.sh"
-
-##############################################
-# make temp directory
-##############################################
-export DATA=${DATA:-${DATAROOT}/${jobid}}
-mkdir -p ${DATA}
-cd ${DATA}
-
-
-##############################################
-# Run setpdy and initialize PDY variables
-##############################################
-export cycle="t${cyc}z"
-setpdy.sh
-. ./PDY
-
-
-##############################################
-# Determine Job Output Name on System
-##############################################
-export pid=${pid:-$$}
-export pgmout="OUTPUT.${pid}"
-export pgmerr=errfile
-
-
-#############################
-# Source relevant config files
-#############################
-export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
-configs="base anal eobs"
-for config in ${configs}; do
-    . ${EXPDIR}/config.${config}
-    status=$?
-    [[ ${status} -ne 0 ]] && exit ${status}
-done
-
-
-##########################################
-# Source machine runtime environment
-##########################################
-. ${HOMEgfs}/env/${machine}.env eobs
-status=$?
-[[ ${status} -ne 0 ]] && exit ${status}
+source "${HOMEgfs}/ush/jjob_header.sh" -e "eobs" -c "base anal eobs"
 
 
 ##############################################
@@ -85,9 +43,9 @@ fi
 # COMIN_GES, COMIN_ANL COMIN_GES_ENS, and COMOUT  are used in script
 COMIN_GES_CTL="${ROTDIR}/gdas.${gPDY}/${gcyc}/${COMPONENT}"
 export COMIN_ANL="${ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENT}"
-export COMIN_GES_ENS="${ROTDIR}/enkfgdas.${gPDY}/${gcyc}/${COMPONENT}"
+export COMIN_GES_ENS="${ROTDIR}/enkfgdas.${gPDY}/${gcyc}"
 export COMIN_GES=${COMIN_GES_ENS}
-export COMOUT="${ROTDIR}/enkf${CDUMP}.${PDY}/${cyc}/${COMPONENT}"
+export COMOUT="${ROTDIR}/enkf${CDUMP}.${PDY}/${cyc}"
 
 
 export ATMGES_ENSMEAN="${COMIN_GES_ENS}/${GPREFIX}atmf006${GSUFFIX}"

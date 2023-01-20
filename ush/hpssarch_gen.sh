@@ -16,11 +16,7 @@ ARCH_GAUSSIAN=${ARCH_GAUSSIAN:-"YES"}
 ARCH_GAUSSIAN_FHMAX=${ARCH_GAUSSIAN_FHMAX:-36}
 ARCH_GAUSSIAN_FHINC=${ARCH_GAUSSIAN_FHINC:-6}
 SUFFIX=${SUFFIX:-".nc"}
-if [ $SUFFIX = ".nc" ]; then
-  format="netcdf"
-else
-  format="nemsio"
-fi
+format="netcdf"
 
 # Set whether to archive downstream products
 DO_DOWN=${DO_DOWN:-"NO"}
@@ -425,7 +421,7 @@ if [ $type = "enkfgdas" -o $type = "enkfgfs" ]; then
 ##NTARS2=$((NTARS/2))  # number of earc groups to include analysis/increments
   NTARS2=$NTARS
 
-  dirpath="enkf${CDUMP}.${PDY}/${cyc}/atmos/"
+  dirpath="enkf${CDUMP}.${PDY}/${cyc}/"
   dirname="./${dirpath}"
   head="${CDUMP}.t${cyc}z."
 
@@ -504,7 +500,7 @@ if [ $type = "enkfgdas" -o $type = "enkfgfs" ]; then
   while [ $m -le $NMEM_EARCGRP ]; do
     nm=$(((n-1)*NMEM_EARCGRP+m))
     mem=$(printf %03i $nm)
-    dirpath="enkf${CDUMP}.${PDY}/${cyc}/atmos/mem${mem}/"
+    dirpath="enkf${CDUMP}.${PDY}/${cyc}/mem${mem}/atmos/"
     dirname="./${dirpath}"
     head="${CDUMP}.t${cyc}z."
 

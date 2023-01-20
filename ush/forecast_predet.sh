@@ -133,11 +133,10 @@ FV3_GFS_predet(){
 
   QUILTING=${QUILTING:-".true."}
   OUTPUT_GRID=${OUTPUT_GRID:-"gaussian_grid"}
-  OUTPUT_FILE=${OUTPUT_FILE:-"nemsio"}
+  OUTPUT_FILE=${OUTPUT_FILE:-"netcdf"}
   WRITE_NEMSIOFLIP=${WRITE_NEMSIOFLIP:-".true."}
   WRITE_FSYNCFLAG=${WRITE_FSYNCFLAG:-".true."}
-  affix="nemsio"
-  [[ "$OUTPUT_FILE" = "netcdf" ]] && affix="nc"
+  affix="nc"
 
   rCDUMP=${rCDUMP:-$CDUMP}
 
@@ -241,13 +240,13 @@ FV3_GFS_predet(){
     rprefix=enkf$rCDUMP
     memchar=mem$(printf %03i $MEMBER)
   fi
-  memdir=$ROTDIR/${prefix}.$PDY/$cyc/atmos/$memchar
+  memdir=$ROTDIR/${prefix}.$PDY/$cyc/$memchar/atmos
   if [ ! -d $memdir ]; then mkdir -p $memdir; fi
 
   GDATE=$($NDATE -$assim_freq $CDATE)
   gPDY=$(echo $GDATE | cut -c1-8)
   gcyc=$(echo $GDATE | cut -c9-10)
-  gmemdir=$ROTDIR/${rprefix}.$gPDY/$gcyc/atmos/$memchar
+  gmemdir=$ROTDIR/${rprefix}.$gPDY/$gcyc/$memchar/atmos
 
   if [[ "$DOIAU" = "YES" ]]; then
     sCDATE=$($NDATE -3 $CDATE)

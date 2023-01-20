@@ -13,7 +13,7 @@ source "${cwd}/ufs_model.fd/tests/module-setup.sh"
 
 while getopts ":da:v" option; do
   case "${option}" in
-    d) BUILD_TYPE="Debug";;
+    d) BUILD_TYPE="DEBUG";;
     a) APP="${OPTARG}" ;;
     v) export BUILD_VERBOSE="YES";;
     :)
