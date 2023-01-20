@@ -2,6 +2,9 @@
 GFS Configuration
 #################
 
+.. figure:: _static/GFS_v16_flowchart.png
+ 
+   Schematic flow chart for GFS v16 in operations
 
 The sequence of jobs that are run for an end-to-end (DA+forecast+post processing+verification) GFS configuration using the Global Workflow is shown above. The system utilizes a collection of scripts that perform the tasks for each step.
 

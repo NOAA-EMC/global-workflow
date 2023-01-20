@@ -61,6 +61,12 @@ Note 2: The viewer requires the full path to the database and xml files if you a
 What the viewer shows
 *********************
 
+ .. figure:: _static/fv3_rocoto_view.png
+
+  Sample output from Rocoto viewer
+
+The figure above shows a sample output from a Rocoto viewer for a running experiment. Where:
+
    * First column: cycle (YYYYMMDDCCmm, YYYY=year, MM=month, DD=day, CC=cycle hour, mm=minute)
    * Second column: task name (a "<" symbol indicates a group/meta-task, click "x" when meta-task is selected to expand/collapse)
    * Third column: job ID from scheduler
