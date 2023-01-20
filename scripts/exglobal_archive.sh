@@ -16,12 +16,7 @@ fi
 # CURRENT CYCLE
 APREFIX="${CDUMP}.t${cyc}z."
 ASUFFIX=${ASUFFIX:-${SUFFIX}}
-
-if [ "${ASUFFIX}" = ".nc" ]; then
-   format="netcdf"
-else
-   format="nemsio"
-fi
+format="netcdf"
 
 # Realtime parallels run GFS MOS on 1 day delay
 # If realtime parallel, back up CDATE_MOS one day

@@ -87,7 +87,6 @@ export VERBOSE="YES"
 export KEEPDATA="NO"
 export CHGRP_RSTPROD="@CHGRP_RSTPROD@"
 export CHGRP_CMD="@CHGRP_CMD@"
-export NEMSIOGET="$HOMEgfs/exec/nemsio_get"
 export NCDUMP="$NETCDF/bin/ncdump"
 export NCLEN="$HOMEgfs/ush/getncdimlen"
 
@@ -271,8 +270,8 @@ export ILPOST=1           # gempak output frequency up to F120
 export restart_interval_gfs=0
 
 # I/O QUILTING, true--use Write Component; false--use GFDL FMS
-# if quilting=true, choose OUTPUT_GRID as cubed_sphere_grid in netcdf or gaussian_grid
-# if gaussian_grid, set OUTPUT_FILE for nemsio or netcdf
+# if quilting=true, choose OUTPUT_GRID as cubed_sphere_grid in netcdf
+# if gaussian_grid, set OUTPUT_FILE for netcdf
 # WRITE_DOPOST=true, use inline POST
 export QUILTING=".true."
 export OUTPUT_GRID="gaussian_grid"
@@ -281,15 +280,9 @@ export WRITE_DOPOST=".true."
 export WRITE_NSFLIP=".true."
 
 # suffix options depending on file format
-if [ $OUTPUT_FILE = "netcdf" ]; then
-    export SUFFIX=".nc"
-    export NEMSIO_IN=".false."
-    export NETCDF_IN=".true."
-else
-    export SUFFIX=".nemsio"
-    export NEMSIO_IN=".true."
-    export NETCDF_IN=".false."
-fi
+export SUFFIX=".nc"
+export NEMSIO_IN=".false."
+export NETCDF_IN=".true."
 
 # IAU related parameters
 export DOIAU="YES"        # Enable 4DIAU for control with 3 increments
@@ -377,11 +370,6 @@ export MAKE_ACFTBUFR="@MAKE_ACFTBUFR@"
 
 # Analysis increments to zero in CALCINCEXEC
 export INCREMENTS_TO_ZERO="'liq_wat_inc','icmr_inc'"
-
-if [ $OUTPUT_FILE = "nemsio" ]; then
-    export DO_CALC_INCREMENT="YES"
-    export DO_CALC_ANALYSIS="NO"
-fi
 
 # Stratospheric increments to zero
 export INCVARS_ZERO_STRAT="'sphum_inc','liq_wat_inc','icmr_inc'"
