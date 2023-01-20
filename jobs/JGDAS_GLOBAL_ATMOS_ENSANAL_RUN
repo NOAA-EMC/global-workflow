@@ -23,8 +23,8 @@ export GDUMP=${GDUMP:-"gdas"}
 export OPREFIX="${CDUMP}.t${cyc}z."
 export GPREFIX="${GDUMP}.t${gcyc}z."
 export APREFIX="${CDUMP}.t${cyc}z."
-export GSUFFIX=${GSUFFIX:-${SUFFIX}}
-export ASUFFIX=${ASUFFIX:-${SUFFIX}}
+export GSUFFIX=${GSUFFIX:-".nc"}
+export ASUFFIX=${ASUFFIX:-".nc"}
 
 export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENT}}
 export COMOUT_ENS=${COMOUT_ENS:-${ROTDIR}/enkf${CDUMP}.${PDY}/${cyc}/${COMPONENT}}

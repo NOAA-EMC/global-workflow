@@ -47,9 +47,9 @@ OPREFIX=${OPREFIX:-""}
 OSUFFIX=${OSUFFIX:-""}
 APREFIX=${APREFIX:-""}
 APREFIX_ENKF=${APREFIX_ENKF:-$APREFIX}
-ASUFFIX=${ASUFFIX:-$SUFFIX}
+ASUFFIX=${ASUFFIX:-".nc"}
 GPREFIX=${GPREFIX:-""}
-GSUFFIX=${GSUFFIX:-$SUFFIX}
+GSUFFIX=${GSUFFIX:-".nc"}
 
 # Variables
 NMEM_ENKF=${NMEM_ENKF:-80}
@@ -233,15 +233,9 @@ if [ $RECENTER_ENKF = "YES" ]; then
       $NLN $ATMANL_GSI        atmanl_gsi
       $NLN $ATMANL_GSI_ENSRES atmanl_gsi_ensres
       SIGLEVEL=${SIGLEVEL:-${FIXgsm}/global_hyblev.l${LEVS}.txt}
-      if [ ${SUFFIX} = ".nc" ]; then
-         $NLN $CHGRESNC chgres.x
-         chgresnml=chgres_nc_gauss.nml
-         nmltitle=chgres
-      else
-         $NLN $CHGRESNEMS chgres.x
-         chgresnml=fort.43
-         nmltitle=nam
-      fi
+      $NLN $CHGRESNC chgres.x
+      chgresnml=chgres_nc_gauss.nml
+      nmltitle=chgres
 
       export OMP_NUM_THREADS=$NTHREADS_CHGRES
 
@@ -318,11 +312,7 @@ if [ $DO_CALC_INCREMENT = "YES" ]; then
    fi
 
    export OMP_NUM_THREADS=$NTHREADS_CALCINC
-   if [ ${SUFFIX} = ".nc" ]; then
-      CALCINCEXEC=$CALCINCNCEXEC
-   else
-      CALCINCEXEC=$CALCINCNEMSEXEC
-   fi
+   CALCINCEXEC=$CALCINCNCEXEC
 
    export pgm=$CALCINCEXEC
    . prep_step

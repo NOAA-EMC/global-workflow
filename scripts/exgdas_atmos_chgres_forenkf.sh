@@ -63,7 +63,7 @@ SIGLEVEL=${SIGLEVEL:-${FIXgsm}/global_hyblev.l${LEVS}.txt}
 
 # forecast files
 APREFIX=${APREFIX:-""}
-ASUFFIX=${ASUFFIX:-$SUFFIX}
+ASUFFIX=${ASUFFIX:-".nc"}
 # at full resolution
 ATMF03=${ATMF03:-${COMOUT}/${APREFIX}atmf003${ASUFFIX}}
 ATMF04=${ATMF04:-${COMOUT}/${APREFIX}atmf004${ASUFFIX}}

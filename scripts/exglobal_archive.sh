@@ -15,8 +15,7 @@ fi
 
 # CURRENT CYCLE
 APREFIX="${CDUMP}.t${cyc}z."
-ASUFFIX=${ASUFFIX:-${SUFFIX}}
-format="netcdf"
+ASUFFIX=${ASUFFIX:-".nc"}
 
 # Realtime parallels run GFS MOS on 1 day delay
 # If realtime parallel, back up CDATE_MOS one day
@@ -162,9 +161,9 @@ if [ "${CDUMP}" = "gfs" ]; then
     targrp_list="gfsa gfsb"
 
     if [ "${ARCH_GAUSSIAN:-"NO"}" = "YES" ]; then
-        targrp_list="${targrp_list} gfs_flux gfs_${format}b gfs_pgrb2b"
+        targrp_list="${targrp_list} gfs_flux gfs_netcdfb gfs_pgrb2b"
         if [ "${MODE}" = "cycled" ]; then
-          targrp_list="${targrp_list} gfs_${format}a"
+          targrp_list="${targrp_list} gfs_netcdfa"
         fi
     fi
 

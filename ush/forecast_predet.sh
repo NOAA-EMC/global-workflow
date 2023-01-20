@@ -133,10 +133,8 @@ FV3_GFS_predet(){
 
   QUILTING=${QUILTING:-".true."}
   OUTPUT_GRID=${OUTPUT_GRID:-"gaussian_grid"}
-  OUTPUT_FILE=${OUTPUT_FILE:-"netcdf"}
   WRITE_NEMSIOFLIP=${WRITE_NEMSIOFLIP:-".true."}
   WRITE_FSYNCFLAG=${WRITE_FSYNCFLAG:-".true."}
-  affix="nc"
 
   rCDUMP=${rCDUMP:-$CDUMP}
 

@@ -22,8 +22,8 @@ gcyc=$(echo ${GDATE} | cut -c9-10)
 
 export APREFIX="${CDUMP}.t${cyc}z."
 export GPREFIX="gdas.t${gcyc}z."
-export ASUFFIX=${ASUFFIX:-${SUFFIX}}
-export GSUFFIX=${GSUFFIX:-${SUFFIX}}
+export ASUFFIX=${ASUFFIX:-".nc"}
+export GSUFFIX=${GSUFFIX:-".nc"}
 
 
 # COMIN_GES_ENS and COMOUT_ANL_ENS are used in script

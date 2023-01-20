@@ -60,7 +60,7 @@ export PREFIX_ATMINC=${PREFIX_ATMINC:-""}
 # Ops related stuff
 SENDECF=${SENDECF:-"NO"}
 SENDDBN=${SENDDBN:-"NO"}
-GSUFFIX=${GSUFFIX:-$SUFFIX}
+GSUFFIX=${GSUFFIX:-".nc"}
 
 ################################################################################
 # Preprocessing

@@ -61,7 +61,7 @@ SENDDBN=${SENDDBN:-"NO"}
 
 # Analysis files
 export APREFIX=${APREFIX:-""}
-export ASUFFIX=${ASUFFIX:-$SUFFIX}
+export ASUFFIX=${ASUFFIX:-".nc"}
 RADSTAT=${RADSTAT:-${COMOUT}/${APREFIX}radstat}
 PCPSTAT=${PCPSTAT:-${COMOUT}/${APREFIX}pcpstat}
 CNVSTAT=${CNVSTAT:-${COMOUT}/${APREFIX}cnvstat}
