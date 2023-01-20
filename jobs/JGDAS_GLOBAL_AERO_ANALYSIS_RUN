@@ -1,14 +1,9 @@
 #! /usr/bin/env bash
 
-export STRICT="NO"
 source "${HOMEgfs}/ush/preamble.sh"
-
-##############################################
-# Enter temp directory
-##############################################
+export WIPE_DATA="NO"
 export DATA=${DATA:-${DATAROOT}/${RUN}aeroanl_${cyc}}
-cd "${DATA}" || (echo "${DATA} does not exist. ABORT!"; exit 1)
-
+source "${HOMEgfs}/ush/jjob_header.sh" -e "aeroanl" -c "base aeroanl"
 
 ##############################################
 # Run setpdy and initialize PDY variables

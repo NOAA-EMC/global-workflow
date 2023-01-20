@@ -1,5 +1,5 @@
 #! /usr/bin/env bash
-export STRICT="NO"
+
 source "${HOMEgfs}/ush/preamble.sh"
 
 ###############################################################
@@ -8,7 +8,6 @@ source "${HOMEgfs}/ush/preamble.sh"
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
 
-export STRICT="YES"
 export job="aeroanlrun"
 export jobid="${job}.$$"
 

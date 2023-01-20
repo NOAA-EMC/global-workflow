@@ -64,7 +64,7 @@ class AerosolAnalysis(Analysis):
         super().configure()
         # the following are computed either from the root configuration
         # or are cycle/time dependent
-        aero_win_begin = self.current_cycle - dt.timedelta(hours=int(self.config['assim_freq']) / 2)
+        aero_win_begin = self.current_cycle - ( dt.timedelta(hours=int(self.config['assim_freq'])) / 2 )
         self.runtime_config = {
             'AERO_WINDOW_BEGIN': aero_win_begin.strftime('%Y-%m-%dT%H:%M:%SZ'),
             'BKG_ISOTIME': self.current_cycle.strftime('%Y-%m-%dT%H:%M:%SZ'),

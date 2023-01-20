@@ -7,8 +7,6 @@ import datetime as dt
 import logging
 import os
 
-crtmver = '2.3.0'
-
 
 class Analysis(Task):
     """Parent class for GDAS tasks
@@ -30,10 +28,6 @@ class Analysis(Task):
     def configure(self):
         """Compute additional variables and add them to the root configuration"""
         super().configure()
-        # probably move some of below to the parent class eventually
-        self.PDY = self.config['PDY']
-        self.cyc = self.config['cyc']
-        self.current_cycle = dt.datetime.strptime(self.PDY + self.cyc, '%Y%m%d%H')
 
     def execute(self):
         """

@@ -1,3 +1,4 @@
+import datetime as dt
 import logging
 from typing import Dict
 
@@ -56,6 +57,9 @@ class Task:
         """
         Configuration methods for a task in preparation for execution
         """
+        self.PDY = self.config['PDY']
+        self.cyc = self.config['cyc']
+        self.current_cycle = dt.datetime.strptime(self.PDY + self.cyc, '%Y%m%d%H')
         pass
 
     def execute(self):
