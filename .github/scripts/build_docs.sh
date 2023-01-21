@@ -15,14 +15,14 @@ cd "${cwd}"
 
 # copy HTML output into directory to create an artifact
 mkdir -p artifact/documentation
-cp -r "${DOCS_DIR}/_build/html/*" artifact/documentation
+cp -r "${DOCS_DIR}/build/html/*" artifact/documentation
 
 # check if the warnings.log file is empty
 # Copy it into the artifact and documeentation directories
 # so it will be available in the artifacts
-warning_file="${DOCS_DIR}/_build/warnings.log"
+warning_file="${DOCS_DIR}/build/warnings.log"
 if [[ -s ${warning_file} ]]; then
-  cp -r "${DOCS_DIR}/_build/warnings.log" artifact/doc_warnings.log
+  cp -r "${DOCS_DIR}/build/warnings.log" artifact/doc_warnings.log
   cp artifact/doc_warnings.log artifact/documentation
   exit 1
 fi

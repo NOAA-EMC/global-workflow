@@ -13,9 +13,9 @@ on:
     types: [opened, reopened, synchronize]
 
 jobs:
-  create_documentation:
+  documentation:
     runs-on: ubuntu-latest
-    name: Deploy documentation
+    name: Build and deploy documentation
 
     steps:
     - name: Setup Python
