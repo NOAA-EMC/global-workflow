@@ -14,7 +14,8 @@ make clean html
 cd "${cwd}"
 
 # copy HTML output into directory to create an artifact
-cp -r "${DOCS_DIR}/build/html/." artifact/documentation
+mkdir -p artifact/documentation
+cp -R "${DOCS_DIR}/build/html/." artifact/documentation
 
 # check if the warnings.log file is empty
 # Copy it into the artifact and documeentation directories
