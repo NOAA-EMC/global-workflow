@@ -1,5 +1,7 @@
 #! /bin/bash
 
+set -eux
+
 # path to docs directory relative to top level of repository
 # $GITHUB_WORKSPACE is set if the actions/checkout@v3 action is run first
 
@@ -7,9 +9,9 @@ cwd=$(pwd)
 DOCS_DIR="${GITHUB_WORKSPACE}/docs"
 
 # run Make to build the documentation and return to previous directory
-cd "${DOCS_DIR}" || ( echo "unable to cd into ${DOCS_DIR}, ABORT!"; exit 1 )
+cd "${DOCS_DIR}"
 make clean html
-cd "${cwd}" || ( echo "unable to cd into ${cwd}, ABORT!"; exit 1 )
+cd "${cwd}"
 
 # copy HTML output into directory to create an artifact
 mkdir -p artifact/documentation

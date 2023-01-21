@@ -29,12 +29,9 @@ jobs:
 
     - name: Checkout
       uses: actions/checkout@v3
-      with:
-        path: global-workflow
 
     - name: Build documentation
       run: |
-        cd ${GITHUB_WORKSPACE}/global-workflow
         ./.github/scripts/build_docs.sh
 
     - name: Upload documentation (on success)
