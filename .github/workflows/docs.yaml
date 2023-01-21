@@ -25,7 +25,7 @@ jobs:
 
     - name: Install (upgrade) python dependencies
       run: |
-        pip install --upgrade pip sphinx sphinx-gallery sphinx_rtd_theme
+        pip install --upgrade pip sphinx sphinx-gallery sphinx_rtd_theme sphinxcontrib-bibtex
 
     - name: Checkout
       uses: actions/checkout@v3
