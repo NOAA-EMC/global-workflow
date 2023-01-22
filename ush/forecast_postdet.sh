@@ -265,7 +265,7 @@ EOF
   if [ $imp_physics -eq 8 ]; then
     $NLN $FIX_AM/CCN_ACTIVATE.BIN  $DATA/CCN_ACTIVATE.BIN
     $NLN $FIX_AM/freezeH2O.dat     $DATA/freezeH2O.dat
-    $NLN $FIX_AM/qr_acr_qg.dat     $DATA/qr_acr_qg.dat 
+    $NLN $FIX_AM/qr_acr_qg.dat     $DATA/qr_acr_qg.dat
     $NLN $FIX_AM/qr_acr_qs.dat     $DATA/qr_acr_qs.dat
   fi
 
@@ -620,19 +620,19 @@ WW3_postdet() {
     for wavGRD in ${grdALL}; do
       $NCP $ROTDIR/${CDUMP}.${PDY}/${cyc}/wave/rundata/${COMPONENTwave}.mod_def.$wavGRD $DATA/mod_def.$wavGRD
     done
-  else 
-    #if shel, only 1 waveGRD which is linked to mod_def.ww3 
+  else
+    #if shel, only 1 waveGRD which is linked to mod_def.ww3
     $NCP $ROTDIR/${CDUMP}.${PDY}/${cyc}/wave/rundata/${COMPONENTwave}.mod_def.$waveGRD $DATA/mod_def.ww3
   fi
 
 
   #if wave mesh is not the same as the ocn/ice mesh, linkk it in the file
   comparemesh=${MESH_OCN_ICE:-"mesh.mx${ICERES}.nc"}
-  if [ "$MESH_WAV" = "$comparemesh" ]; then 
+  if [ "$MESH_WAV" = "$comparemesh" ]; then
     echo "Wave is on same mesh as ocean/ice"
-  else 
+  else
     $NLN -sf $FIXwave/$MESH_WAV $DATA/
-  fi 
+  fi
 
   export WAVHCYC=${WAVHCYC:-6}
   export WRDATE=$($NDATE -${WAVHCYC} $CDATE)
@@ -648,35 +648,35 @@ WW3_postdet() {
     if [ $warm_start = ".true." -o $RERUN = "YES" ]; then
       if [ $RERUN = "NO" ]; then
         waverstfile=${WRDIR}/${sPDY}.${scyc}0000.restart.${wavGRD}
-      else 
+      else
         waverstfile=${RSTDIR_WAVE}/${PDYT}.${cyct}0000.restart.${wavGRD}
       fi
-    else 
+    else
       waverstfile=${RSTDIR_WAVE}/${sPDY}.${scyc}0000.restart.${wavGRD}
     fi
     if [ ! -f ${waverstfile} ]; then
       if [ $RERUN = "NO" ]; then
         echo "WARNING: NON-FATAL ERROR wave IC is missing, will start from rest"
-      else 
-        echo "ERROR: Wave IC is missing in RERUN, exiting." 
-        exit 1 
-      fi 
+      else
+        echo "ERROR: Wave IC is missing in RERUN, exiting."
+        exit 1
+      fi
     else
       if [ $waveMULTIGRID = ".true." ]; then
         $NLN ${waverstfile} $DATA/restart.${wavGRD}
-      else 
+      else
         $NLN ${waverstfile} $DATA/restart.ww3
       fi
     fi
-  done  
+  done
 
   if [ $waveMULTIGRID = ".true." ]; then
     for wavGRD in $waveGRD ; do
       $NLN $datwave/${wavprfx}.log.${wavGRD}.${PDY}${cyc} log.${wavGRD}
     done
-  else 
-    $NLN $datwave/${wavprfx}.log.${waveGRD}.${PDY}${cyc} log.ww3 
-  fi 
+  else
+    $NLN $datwave/${wavprfx}.log.${waveGRD}.${PDY}${cyc} log.ww3
+  fi
 
   if [ "$WW3ICEINP" = "YES" ]; then
     wavicefile=$COMINwave/rundata/${CDUMPwave}.${WAVEICE_FID}.${cycle}.ice
@@ -702,7 +702,7 @@ WW3_postdet() {
   cd $DATA
   if [ $waveMULTIGRID = ".true." ]; then
     $NLN $datwave/${wavprfx}.log.mww3.${PDY}${cyc} log.mww3
-  fi 
+  fi
 
   # Loop for gridded output (uses FHINC)
   fhr=$FHMIN_WAV
@@ -714,9 +714,9 @@ WW3_postdet() {
       for wavGRD in ${waveGRD} ; do
         $NLN $datwave/${wavprfx}.out_grd.${wavGRD}.${YMD}.${HMS} $DATA/${YMD}.${HMS}.out_grd.${wavGRD}
       done
-    else 
+    else
       $NLN $datwave/${wavprfx}.out_grd.${waveGRD}.${YMD}.${HMS} $DATA/${YMD}.${HMS}.out_grd.ww3
-    fi 
+    fi
     FHINC=$FHOUT_WAV
     if [ $FHMAX_HF_WAV -gt 0 -a $FHOUT_HF_WAV -gt 0 -a $fhr -lt $FHMAX_HF_WAV ]; then
       FHINC=$FHOUT_HF_WAV
@@ -732,9 +732,9 @@ WW3_postdet() {
     HMS="$(echo $YMDH | cut -c9-10)0000"
     if [ $waveMULTIGRID = ".true." ]; then
       $NLN $datwave/${wavprfx}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS} $DATA/${YMD}.${HMS}.out_pnt.${waveuoutpGRD}
-    else 
+    else
       $NLN $datwave/${wavprfx}.out_pnt.${waveuoutpGRD}.${YMD}.${HMS} $DATA/${YMD}.${HMS}.out_pnt.ww3
-    fi 
+    fi
 
     FHINC=$FHINCP_WAV
     fhr=$((fhr+FHINC))
@@ -747,11 +747,11 @@ WW3_nml() {
   if [ "${USE_WAV_RMP:-YES}" = "YES" ]; then
     if (( $( ls -1 $FIXwave/rmp_src_to_dst_conserv_* > /dev/null | wc -l) > 0 )); then
       for file in $(ls $FIXwave/rmp_src_to_dst_conserv_*) ; do
-        $NLN $file $DATA/ 
+        $NLN $file $DATA/
       done
     else
-      echo 'FATAL ERROR : No rmp precomputed nc files found for wave model' 
-      exit 4 
+      echo 'FATAL ERROR : No rmp precomputed nc files found for wave model'
+      exit 4
     fi
   fi
   source $SCRIPTDIR/parsing_namelists_WW3.sh
@@ -773,10 +773,23 @@ CPL_out() {
 MOM6_postdet() {
   echo "SUB ${FUNCNAME[0]}: MOM6 after run type determination"
 
-  OCNRES=${OCNRES:-"025"}
+  OCNRES=${OCNRES:-"025"}  # TODO: remove from here and lift higher
 
   # Copy MOM6 ICs
-  $NCP -pf $ICSDIR/$CDATE/ocn/MOM*nc $DATA/INPUT/
+  if [[ "${MODE}" == 'cycled' ]]; then  # TODO: remove this block after ICSDIR is corrected for forecast-only
+    $NLN "${ROTDIR}/${CDUMP}.${gPDY}/${gcyc}/ocean/RESTART/${PDY}.${cyc}0000.MOM.res.nc" "${DATA}/INPUT/MOM.res.nc"
+    case $OCNRES in
+      "025")
+        $NLN "${ROTDIR}/${CDUMP}.${gPDY}/${gcyc}/ocean/RESTART/${PDY}.${cyc}0000.MOM.res_1.nc" "${DATA}/INPUT/MOM.res_1.nc"
+        $NLN "${ROTDIR}/${CDUMP}.${gPDY}/${gcyc}/ocean/RESTART/${PDY}.${cyc}0000.MOM.res_2.nc" "${DATA}/INPUT/MOM.res_2.nc"
+        $NLN "${ROTDIR}/${CDUMP}.${gPDY}/${gcyc}/ocean/RESTART/${PDY}.${cyc}0000.MOM.res_3.nc" "${DATA}/INPUT/MOM.res_3.nc"
+      ;;
+      *)
+      ;;
+    esac
+  else
+    $NCP -pf "${ICSDIR}/${CDATE}/ocn/MOM*nc" "${DATA}/INPUT/"  # TODO: Update files in ICSDIR to reflect COM structure naming convention
+  fi
 
   # Copy MOM6 fixed files
   $NCP -pf $FIXmom/$OCNRES/* $DATA/INPUT/
@@ -790,10 +803,16 @@ MOM6_postdet() {
     exit 3
   fi
 
-  # Copy mediator restart files to RUNDIR
-  if [ $warm_start = ".true." -o $RERUN = "YES" ]; then
-    $NCP $ROTDIR/$CDUMP.$PDY/$cyc/med/ufs.cpld*.nc $DATA/
-    $NCP $ROTDIR/$CDUMP.$PDY/$cyc/med/rpointer.cpl $DATA/
+  # Copy mediator restart file to RUNDIR  # TODO: mediator should have its own CMEPS_postdet() function
+  local mediator_file="${ROTDIR}/${CDUMP}.${gPDY}/${gcyc}/med/${PDY}.${cyc}0000.ufs.cpld.cpl.r.nc"
+  if [[ -f "${mediator_file}" ]]; then
+    $NCP "${mediator_file}" "${DATA}/ufs.cpld.cpl.r.nc"
+    rm -f "${DATA}/rpointer.cpl"
+    touch "${DATA}/rpointer.cpl"
+    echo "ufs.cpld.cpl.r.nc" >> "${DATA}/rpointer.cpl"
+  else
+    echo "FATAL ERROR: ${mediator_file} does not exist, ABORT!"
+    exit 4
   fi
 
   if [ $DO_OCN_SPPT = "YES" -o $DO_OCN_PERT_EPBL = "YES" ]; then
@@ -864,6 +883,51 @@ MOM6_nml() {
 
 MOM6_out() {
   echo "SUB ${FUNCNAME[0]}: Copying output data for MOM6"
+
+  # Link ocean restarts from DATA to COM
+  local ocean_com_dir="${ROTDIR}/${CDUMP}.${PDY}/${cyc}/ocean"
+  mkdir -p "${ocean_com_dir}/RESTART"
+  # end point restart does not have a timestamp, calculate
+  local rdate=$($NDATE $FHMAX $CDATE)
+  $NLN "${DATA}/MOM6_RESTART/MOM.res.nc" "${ocean_com_dir}/RESTART/${rdate:0:8}.${rdate:8:2}0000.res.nc"
+  # Greater than 1/2 degree have a single MOM restart
+  # Less than 1/2 degree have 3 additional restarts
+  case ${OCNRES} in
+    "025")
+      $NLN "${DATA}/MOM6_RESTART/MOM.res_1.nc" "${ocean_com_dir}/RESTART/${rdate:0:8}.${rdate:8:2}0000.MOM.res_1.nc"
+      $NLN "${DATA}/MOM6_RESTART/MOM.res_2.nc" "${ocean_com_dir}/RESTART/${rdate:0:8}.${rdate:8:2}0000.MOM.res_2.nc"
+      $NLN "${DATA}/MOM6_RESTART/MOM.res_3.nc" "${ocean_com_dir}/RESTART/${rdate:0:8}.${rdate:8:2}0000.MOM.res_3.nc"
+      ;;
+    *)
+    ;;
+  esac
+  # Loop over restart_interval_nems and link restarts from DATA to COM
+  local idate=$($NDATE $restart_interval_nems $CDATE)
+  while [[ $idate -lt $rdate ]]; do
+    local idatestr=$(date +%Y-%m-%d-%H -d "${idate:0:8} ${idate:8:2}")
+    $NLN "${DATA}/MOM6_RESTART/MOM.res.${idatestr}-00-00.nc" "${ocean_com_dir}/RESTART/${idate:0:8}.${idate:8:2}0000.res.nc"
+    case ${OCNRES} in
+      "025")
+        $NLN "${DATA}/MOM6_RESTART/MOM.res_1.${idatestr}-00-00.nc" "${ocean_com_dir}/RESTART/${idate:0:8}.${idate:8:2}0000.MOM.res_1.nc"
+        $NLN "${DATA}/MOM6_RESTART/MOM.res_2.${idatestr}-00-00.nc" "${ocean_com_dir}/RESTART/${idate:0:8}.${idate:8:2}0000.MOM.res_2.nc"
+        $NLN "${DATA}/MOM6_RESTART/MOM.res_3.${idatestr}-00-00.nc" "${ocean_com_dir}/RESTART/${idate:0:8}.${idate:8:2}0000.MOM.res_3.nc"
+      ;;
+      *)
+      ;;
+    esac
+    local idate=$($NDATE $restart_interval_nems $idate)
+  done
+
+  # TODO: mediator should have its own CMEPS_out() function
+  # Link mediator restarts from DATA to COM
+  local med_com_dir="${ROTDIR}/${CDUMP}.${PDY}/${cyc}/med"
+  mkdir -p "${med_com_dir}/RESTART"
+  local idate=$($NDATE $restart_interval_nems $CDATE)
+  while [[ $idate -le $rdate ]]; do
+    local seconds=$(to_seconds ${idatestr:8:2}0000)  # use function to_seconds from forecast_predet.sh to convert HHMMSS to seconds
+    local idatestr="${idate:0:4}-${idate:4:2}-${idate:6:2}-${seconds}"
+    $NLN "${DATA}/RESTART/ufs.cpld.cpl.r.${idatestr}" "${med_com_dir}/RESTART/${idate:0:8}.${idate:8:2}0000."ufs.cpld.cpl.r.nc
+  done
 }
 
 CICE_postdet() {
@@ -872,7 +936,7 @@ CICE_postdet() {
   year=$(echo $CDATE|cut -c 1-4)
   month=$(echo $CDATE|cut -c 5-6)
   day=$(echo $CDATE|cut -c 7-8)
-  sec=$(echo $CDATE|cut -c 9-10)  
+  sec=$(echo $CDATE|cut -c 9-10)
   stepsperhr=$((3600/$ICETIM))
   nhours=$($NHOUR $CDATE ${year}010100)
   steps=$((nhours*stepsperhr))
@@ -918,16 +982,23 @@ CICE_postdet() {
   ice_kmt_file=${ice_kmt_file:-"kmtu_cice_NEMS_mx${ICERES}.nc"}
   export MESH_OCN_ICE=${MESH_OCN_ICE:-"mesh.mx${ICERES}.nc"}
 
-  iceic="cice_model.res_$CDATE.nc"
-
-  # Copy CICE IC
-  $NCP -p $ICSDIR/$CDATE/ice/cice_model_${ICERESdec}.res_$CDATE.nc $DATA/$iceic
+  # Copy/link CICE IC to DATA
+  if [[ "${MODE}" == 'cycled' ]]; then  # TODO: remove this block after ICSDIR is corrected for forecast-only
+    $NLN "${ROTDIR}/${CDUMP}.${gPDY}/${cyc}/ice/RESTART/${PDY}.${cyc}0000.cice_model.res.nc" "${DATA}/cice_model.res.nc"
+  else
+    $NCP -p $ICSDIR/$CDATE/ice/cice_model_${ICERESdec}.res_$CDATE.nc $DATA/cice_model.res.nc
+  fi
+  # TODO: add a check for the restarts to exist, if not, exit eloquently
+  rm -f "${DATA}/ice.restart_file"
+  touch "${DATA}/ice.restart_file"
+  echo  "${DATA}/cice_model.res.nc" >> "${DATA}/ice.restart_file"
 
   echo "Link CICE fixed files"
   $NLN -sf $FIXcice/$ICERES/${ice_grid_file} $DATA/
   $NLN -sf $FIXcice/$ICERES/${ice_kmt_file} $DATA/
   $NLN -sf $FIXcice/$ICERES/$MESH_OCN_ICE $DATA/
 
+  # TODO: shouldn't this be in CICE_out()?
   # Link output files
   export ENSMEM=${ENSMEM:-01}
   export IDATE=$CDATE
@@ -964,6 +1035,20 @@ CICE_nml() {
 
 CICE_out() {
   echo "SUB ${FUNCNAME[0]}: Copying output data for CICE"
+  # TODO: Why is this empty?  Is there no cice output being copied back to COM?  There is output linked to COMOUTice in CICE_postdet()
+  # And people as why this needs refactoring.
+
+  local ice_com_dir="${ROTDIR}/${CDUMP}.${PDY}/${cyc}/ice"
+  mkdir -p "${ice_com_dir}/RESTART"
+
+  # Link ice restarts to COMOUTice
+  # Loop over restart_interval_nems and link restarts from DATA to COM
+  local idate=$($NDATE $restart_interval_nems $CDATE)
+  while [[ $idate -le $rdate ]]; do
+    local seconds=$(to_seconds ${idatestr:8:2}0000)  # use function to_seconds from forecast_predet.sh to convert HHMMSS to seconds
+    local idatestr="${idate:0:4}-${idate:4:2}-${idate:6:2}-${seconds}"
+    $NLN "${DATA}/RESTART/iced.${idatestr}" "${ice_com_dir}/RESTART/${idate:0:8}.${idate:8:2}0000.cice_model.res.nc"
+  done
 }
 
 GOCART_rc() {

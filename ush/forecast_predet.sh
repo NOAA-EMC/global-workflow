@@ -10,6 +10,16 @@
 
 # For all non-evironment variables
 # Cycling and forecast hour specific parameters
+
+to_seconds() {
+# Function to convert HHMMSS to seconds since 00Z
+  local hhmmss=${1}
+  local hh=${hhmmss:0:2}
+  local mm=${hhmmss:2:2}
+  local ss=${hhmmss:4:2}
+  echo $(((hh*3600+mm*60+ss)))
+}
+
 common_predet(){
   echo "SUB ${FUNCNAME[0]}: Defining variables for shared through models"
   pwd=$(pwd)
