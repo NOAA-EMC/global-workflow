@@ -443,7 +443,12 @@ class AppConfig:
 
         gfs_tasks += gdas_gfs_common_cleanup_tasks
 
-        tasks = {'gdas': gdas_tasks, 'gfs': gfs_tasks}
+        tasks = dict()
+        tasks['gdas'] = gdas_tasks
+
+        # Add CDUMP=gfs tasks if running early cycle
+        if self.gfs_cyc > 0:
+            tasks['gfs'] = gfs_tasks
 
         return tasks
 

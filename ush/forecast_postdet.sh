@@ -943,7 +943,15 @@ CICE_postdet() {
   npt=$((FHMAX*$stepsperhr))      # Need this in order for dump_last to work
 
   histfreq_n=${histfreq_n:-6}
-  dumpfreq_n=${dumpfreq_n:-840}  # restart write interval in seconds, default 35 days
+  if [[ "${MODE}" == "cycled" ]]; then  # TODO: this needs to be improved to include CDUMP = GDAS | GFS
+    if [[ "${CDUMP}"= "gdas" ]]; then  # TODO: improve and remove this default of dumping hourly restarts for cycled system
+      dumpfreq_n=1
+    elif [[ "${CDUMP}" = "gfs" ]]; then
+      dumpfreq_n=${dumpfreq_n:-24}
+    fi
+  else
+    dumpfreq_n=${dumpfreq_n:-840}  # default 35 days (840 hours) for forecast-only
+  fi
   dumpfreq=${dumpfreq:-"h"} #  "h","d","m" or "y" for restarts at intervals of "hours", "days", "months" or "years"
   cice_hist_avg=${cice_hist_avg:-".true."}
 
@@ -967,16 +975,8 @@ CICE_postdet() {
   USE_RESTART_TIME='.false.'
   restart_pond_lvl=${restart_pond_lvl:-".false."}
 
-  ICERES=${ICERES:-"025"}
-  if [ $ICERES = '025' ]; then
-    ICERESdec="0.25"
-  fi
-  if [ $ICERES = '050' ]; then
-    ICERESdec="0.50"
-  fi
-  if [ $ICERES = '100' ]; then
-    ICERESdec="1.00"
-  fi
+  ICERES=${ICERES:-"025"}  # TODO: similar to MOM_out, lift this higher
+  ICERESdec=echo "$ICERES" | awk '{printf "%0.2f", $1/100}'
 
   ice_grid_file=${ice_grid_file:-"grid_cice_NEMS_mx${ICERES}.nc"}
   ice_kmt_file=${ice_kmt_file:-"kmtu_cice_NEMS_mx${ICERES}.nc"}

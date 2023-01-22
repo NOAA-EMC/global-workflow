@@ -165,6 +165,26 @@ export DOBNDPNT_WAVE="NO"
 export cplwav2atm=".false."
 export FRAC_GRID=".true."
 
+# Set operational resolution
+export OPS_RES="C768" # Do not change
+
+# Resolution specific parameters
+export LEVS=128
+export CASE="@CASECTL@"
+export CASE_ENKF="@CASEENS@"
+case "$CASE" in
+    "C48")
+      export OCNRES=500
+      export OCNTIM=3600  # TODO: add OCNTIM for other resolutions?
+      ;;
+    "C96") export OCNRES=100;;
+    "C192") export OCNRES=050;;
+    "C384") export OCNRES=025;;
+    "C768") export OCNRES=025;;
+    *) export OCNRES=025;;
+esac
+export ICERES=$OCNRES
+
 case "${APP}" in
   ATM)
     export confignamevarfornems="atm"
@@ -211,23 +231,6 @@ case "${APP}" in
     exit 1
     ;;
 esac
-
-# Set operational resolution
-export OPS_RES="C768" # Do not change
-
-# Resolution specific parameters
-export LEVS=128
-export CASE="@CASECTL@"
-export CASE_ENKF="@CASEENS@"
-case "$CASE" in
-    "C48") export OCNRES=500;;
-    "C96") export OCNRES=100;;
-    "C192") export OCNRES=050;;
-    "C384") export OCNRES=025;;
-    "C768") export OCNRES=025;;
-    *) export OCNRES=025;;
-esac
-export ICERES=$OCNRES
 
 # Surface cycle update frequency
 if [[ "$CDUMP" == "gdas" ]] ; then
@@ -305,7 +308,7 @@ export IAU_DELTHRS_ENKF=6
 export lobsdiag_forenkf=".true."
 
 # run GLDAS to spin up land ICs
-export DO_GLDAS="YES"
+export DO_GLDAS="NO"
 export gldas_cyc=00
 
 # Exception handling that when DO_GLDAS is set, the FHOUT must be 1
@@ -328,12 +331,14 @@ export DO_JEDIENS="NO"
 export DO_JEDIOCNVAR="NO"
 
 # Hybrid related
-export DOHYBVAR="YES"
-export NMEM_ENKF=@NMEM_ENKF@
-export NMEM_EFCS=30
-export SMOOTH_ENKF="NO"
-export l4densvar=".true."
-export lwrite4danl=".true."
+export DOHYBVAR="@DOHYBVAR@"
+if [ $DOHYBVAR = "YES" ]; then  # Only relevant, if doing hybrid
+  export NMEM_ENKF=@NMEM_ENKF@
+  export NMEM_EFCS=30
+  export SMOOTH_ENKF="NO"
+  export l4densvar=".true."
+  export lwrite4danl=".true."
+fi
 
 # EnKF output frequency
 if [ $DOHYBVAR = "YES" ]; then

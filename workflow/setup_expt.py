@@ -225,6 +225,7 @@ def edit_baseconfig(host, inputs):
         extend_dict = {
             "@CASEENS@": f'C{inputs.resens}',
             "@NMEM_ENKF@": inputs.nens,
+            "@DOHYBVAR@": "YES" if inputs.nens > 0 else "NO",
         }
         tmpl_dict = dict(tmpl_dict, **extend_dict)
 

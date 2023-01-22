@@ -370,7 +370,7 @@ elif [ ${step} = "gldas" ]; then
 
 elif [ ${step} = "fcst" ]; then
 
-    export wtime_fcst="00:40:00"
+    export wtime_fcst="00:30:00"
     if [ ${CASE} = "C768" ]; then
       export wtime_fcst_gfs="06:00:00"
     elif [ ${CASE} = "C384" ]; then
@@ -437,6 +437,7 @@ elif [ ${step} = "fcst" ]; then
         if [[ ${DO_OCN} == "YES" ]]; then
             case ${OCNRES} in
                 # Except for 025, these are guesses for now
+                500) export OCNPETS=8 ;;
                 100) export OCNPETS=20 ;;
                 050) export OCNPETS=60 ;;
                 025) export OCNPETS=220 ;;
@@ -451,6 +452,7 @@ elif [ ${step} = "fcst" ]; then
         if [[ ${DO_ICE} == "YES" ]]; then
             case ${ICERES} in
                 # Except for 025, these are guesses for now
+                500) export ICEPETS=4 ;;
                 100) export ICEPETS=10 ;;
                 050) export ICEPETS=30 ;;
                 025) export ICEPETS=120 ;;
