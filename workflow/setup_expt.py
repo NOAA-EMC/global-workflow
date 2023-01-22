@@ -78,9 +78,8 @@ def fill_COMROT_cycled(host, inputs):
         files = os.listdir(src_dir)
         for fname in files:
             os.symlink(os.path.join(src_dir, fname),
-                        os.path.join(dst_dir, fname))
+                       os.path.join(dst_dir, fname))
         return
-
 
     # Link ensemble member initial conditions
     if inputs.nens > 0:
@@ -334,7 +333,7 @@ def input_args():
 
     # forecast only mode additional arguments
     forecasts.add_argument('--app', help='UFS application', type=str,
-        choices=ufs_apps + ['S2SWA'], required=False, default='ATM')
+                           choices=ufs_apps + ['S2SWA'], required=False, default='ATM')
 
     args = parser.parse_args()
 
