@@ -269,19 +269,12 @@ export ILPOST=1           # gempak output frequency up to F120
 # GFS restart interval in hours
 export restart_interval_gfs=0
 
-<<<<<<< HEAD
 # I/O QUILTING, true--use Write Component; false--use GFDL FMS
 # if quilting=true, choose OUTPUT_GRID as cubed_sphere_grid in netcdf
 # WRITE_DOPOST=true, use inline POST
 export QUILTING=".true."
 export OUTPUT_GRID="gaussian_grid"
 export WRITE_DOPOST=".true."
-=======
-export QUILTING=".true."
-export OUTPUT_GRID="gaussian_grid"
-export OUTPUT_FILE="netcdf"
-export WRITE_DOPOST=".true."  # WRITE_DOPOST=true, use inline POST
->>>>>>> upstream/develop
 export WRITE_NSFLIP=".true."
 
 # IAU related parameters
