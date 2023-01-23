@@ -86,9 +86,9 @@ if [[ ${gfs_ver} = "v16" && ${EXP_WARM_START} = ".true." && ${CASE} = ${OPS_RES}
 
     cd "${ROTDIR}"
     # Pull CDATE gfs restart tarball
-    htar -xvf ${PRODHPSSDIR}/rh${yy}/${yy}${mm}/${yy}${mm}${dd}/com_gfs_v16.2_gfs.${yy}${mm}${dd}_${hh}.gfs_restart.tar
+    htar -xvf ${PRODHPSSDIR}/rh${yy}/${yy}${mm}/${yy}${mm}${dd}/com_gfs_prod_gfs.${yy}${mm}${dd}_${hh}.gfs_restart.tar
     # Pull GDATE gdas restart tarball
-    htar -xvf ${PRODHPSSDIR}/rh${gyy}/${gyy}${gmm}/${gyy}${gmm}${gdd}/com_gfs_v16.2_gdas.${gyy}${gmm}${gdd}_${ghh}.gdas_restart.tar
+    htar -xvf ${PRODHPSSDIR}/rh${gyy}/${gyy}${gmm}/${gyy}${gmm}${gdd}/com_gfs_prod_gdas.${gyy}${gmm}${gdd}_${ghh}.gdas_restart.tar
   fi
 
 else # Pull chgres cube inputs for cold start IC generation
@@ -147,7 +147,7 @@ if [ ${gfs_ver} = v14 -o ${gfs_ver} = v15 -o ${gfs_ver} = v16 ]; then
       else # Production source
 
         cd "${ROTDIR}"
-        export tarball="com_gfs_v16.2_gfs.${yy}${mm}${dd}_${hh}.gfs_pgrb2.tar"
+        export tarball="com_gfs_prod_gfs.${yy}${mm}${dd}_${hh}.gfs_pgrb2.tar"
         htar -xvf ${PRODHPSSDIR}/rh${yy}/${yy}${mm}/${yy}${mm}${dd}/${tarball} ./${CDUMP}.${yy}${mm}${dd}/${hh}/atmos/${file}
 
       fi # RETRO vs production
