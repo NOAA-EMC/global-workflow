@@ -8,7 +8,7 @@ fi
 
 # Read optional module argument, default is to use GDAS
 MODS="GDAS"
-if [ $# -gt 0 ]; then
+if [[ $# -gt 0 ]]; then
   case "$1" in
     --eva)
       MODS="EVA"
@@ -40,14 +40,14 @@ elif [[ -d /lfs3 ]] ; then
   echo WARNING: UFSDA NOT SUPPORTED ON THIS PLATFORM
 elif [[ -d /scratch1 ]] ; then
   # We are on NOAA Hera
-  module load ${MODS}/hera
+  module load "${MODS}/hera"
   if [[ "${DEBUG_WORKFLOW}" == "YES" ]] ; then
      module list
      pip list
   fi
 elif [[ -d /work ]] ; then
   # We are on MSU Orion
-  module load ${MODS}/orion
+  module load "${MODS}/orion"
   if [[ "${DEBUG_WORKFLOW}" == "YES" ]] ; then
      module list
      pip list
