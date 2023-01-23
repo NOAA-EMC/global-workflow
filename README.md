@@ -1,5 +1,5 @@
 # global-workflow
-Global Superstructure/Workflow currently supporting the Finite-Volume on a Cubed-Sphere Global Forecast System (FV3GFS)
+Global Workflow currently supporting the Global Forecast System (GFS) with the UFS-weather-model and GSI-based Data Assimilation System.
 
 The global-workflow depends on the following prerequisities to be available on the system:
 
@@ -11,45 +11,10 @@ The global-workflow current supports the following tier-1 machines:
 
 * Hera
 * Orion
+* WCOSS2 - NOAA's operational HPC
 
 Additionally, the following tier-2 machine is supported:
 * S4 (Note that S2S+ experiments are not fully supported)
 
-Quick-start instructions are below. Full instructions are available in the [wiki](https://github.com/NOAA-EMC/global-workflow/wiki/Run-Global-Workflow)
+Documentation (in progress) is available [here](https://global-workflow.readthedocs.io/en/latest/)
 
-## Build global-workflow:
-
-### 1. Check out components
-
-While in /sorc folder:
-```
-$ sh checkout.sh
-```
-
-### 2. Build components
-
-While in /sorc folder:
-
-```
-$ sh build_all.sh
-```
-
-Or use an available option:  
-```
-build_all.sh [-a UFS_app][-c build_config][-h][-v]
-  -a UFS_app:
-    Build a specific UFS app instead of the default
-  -c build_config:
-    Selectively build based on the provided config instead of the default config
-  -h:
-    Print usage message and exit
-  -v:
-    Run all scripts in verbose mode
-```
-
-### 3. Link components
-
-While in /sorc folder:
-
-$ sh link_workflow.sh emc $MACHINE
-...where $MACHINE is "dell", "cray", "hera", or "orion".
