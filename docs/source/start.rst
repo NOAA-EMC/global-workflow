@@ -22,7 +22,8 @@ You'll now have a "logs" folder in both your COMROT and EXPDIR. The EXPDIR log f
 Set up your experiment cron
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Note: Orion currently only supports cron on Orion-login-1. Cron support for other login nodes is coming in the future.
+.. note::
+   Orion currently only supports cron on Orion-login-1. Cron support for other login nodes is coming in the future.
 
 ::
 
@@ -34,7 +35,11 @@ or
 
    crontab $PSLOT.crontab
 
-** WARNING: ``crontab $PSLOT.crontab`` command will overwrite existing crontab file on your login node. If running multiple crons recommend editing crontab file with ``crontab -e`` command. **
+.. warning::
+
+   Warning: ``crontab $PSLOT.crontab`` command will overwrite existing crontab file on your login node.
+
+   If running multiple crons recommend editing crontab file with ``crontab -e`` command.
 
 Check your crontab settings::
 

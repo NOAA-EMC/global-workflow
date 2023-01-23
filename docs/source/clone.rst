@@ -6,7 +6,10 @@ Clone and build Global Workflow
 Quick Instructions
 ^^^^^^^^^^^^^^^^^^
 
-Quick clone/build/link instructions (more detailed instructions below). Note, here we are making the assumption that you are using the workflow to run an experiment and so are working from the authoritative repository. If you are using a development branch then follow the instructions in :doc:`development.rst`. Once you do that you can follow the instructions here with the only difference being the repository/fork you are cloning from. 
+Quick clone/build/link instructions (more detailed instructions below).
+
+.. note::
+   Here we are making the assumption that you are using the workflow to run an experiment and so are working from the authoritative repository. If you are using a development branch then follow the instructions in :doc:`development.rst`. Once you do that you can follow the instructions here with the only difference being the repository/fork you are cloning from.
 
 For forecast-only (coupled or uncoupled):
 
@@ -48,7 +51,8 @@ ssh method (using a password protected SSH key):
 
    git clone git@github.com:NOAA-EMC/global-workflow.git
 
-Note: when using ssh methods you need to make sure that your GitHub account is configured for the computer from which you are accessing the repository (See `this link <https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account>`_)
+.. note::
+   When using ssh methods you need to make sure that your GitHub account is configured for the computer from which you are accessing the repository (See `this link <https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account>`_)
 
 Check what you just cloned (by default you will have only the develop branch):
 
@@ -64,7 +68,8 @@ You now have a cloned copy of the global-workflow git repository. To checkout a 
 
    git checkout BRANCH_NAME
 
-Note: Branch must already exist. If it does not you need to make a new branch using the ``-b`` flag:
+.. note::
+   Branch must already exist. If it does not you need to make a new branch using the ``-b`` flag:
 
 ::
 

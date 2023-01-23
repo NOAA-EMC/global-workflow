@@ -23,7 +23,8 @@ Check the status of the workflow:
 
    rocotostat -d /path/to/workflow/database/file -w /path/to/workflow/xml/file [-c YYYYMMDDCCmm,[YYYYMMDDCCmm,...]] [-t taskname,[taskname,...]] [-s] [-T]
 
-Note: YYYYMMDDCCmm = YearMonthDayCycleMinute ...where mm/Minute is ’00’ for all cycles currently.
+.. note::
+   YYYYMMDDCCmm = YearMonthDayCycleMinute ...where mm/Minute is ’00’ for all cycles currently.
 
 Check the status of a job:
 
@@ -69,9 +70,10 @@ Usage
 
    ./rocoto_viewer.py -d /path/to/workflow/database/file -w /path/to/workflow/xml/file
 
-Note 1: Terminal/window must be wide enough to display all experiment information columns, viewer will complain if not.
+.. note::
+   Note 1: Terminal/window must be wide enough to display all experiment information columns, viewer will complain if not.
 
-Note 2: The viewer requires the full path to the database and xml files if you are not in your EXPDIR when you invoke it.
+   Note 2: The viewer requires the full path to the database and xml files if you are not in your EXPDIR when you invoke it.
 
 *********************
 What the viewer shows

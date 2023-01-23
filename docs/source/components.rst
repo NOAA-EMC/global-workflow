@@ -32,7 +32,8 @@ Components checked out via sorc/checkout.sh:
 * **Verif global** (https://github.com/NOAA-EMC/EMC_verif-global): Verification package to evaluate GFS parallels. It uses MET and METplus. At this moment the verification package is limited to providing atmospheric metrics only
 * **GFS WAFS** (https://github.com/NOAA-EMC/EMC_gfs_wafs): Additional post processing products for Aircrafts
 
-Note, when running the system in forecast-only mode the Data Assimilation components are not needed and are hence not checked out. 
+.. note::
+   When running the system in forecast-only mode the Data Assimilation components are not needed and are hence not checked out.
 
 =====================
 External dependencies

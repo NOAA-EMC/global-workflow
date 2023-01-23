@@ -175,8 +175,6 @@ Later on you can update your fork remote information by doing the following comm
 
    git push origin feature/my_new_thing
 
-7. Note the sync in the GitHub issue tracking your work.
-
 Done!
 
 Moving forward you'll want to perform the "remote update" command regularly to update the metadata for the remote/upstream repository in your fork (e.g. pull in metadata for branches made in auth repo after you forked it).

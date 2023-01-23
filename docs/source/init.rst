@@ -128,7 +128,10 @@ Build UFS_UTILS:
    cd fix
    sh link_fixdirs.sh emc $MACHINE
 
-where ``$MACHINE`` is ``wcoss2``, ``hera``, ``jet``, or ``orion``. Note: UFS-UTILS builds on Orion but due to the lack of HPSS access on Orion the ``gdas_init`` utility is not supported there.
+where ``$MACHINE`` is ``wcoss2``, ``hera``, ``jet``, or ``orion``.
+
+.. note::
+   UFS-UTILS builds on Orion but due to the lack of HPSS access on Orion the ``gdas_init`` utility is not supported there.
 
 Configure your conversion:
 
@@ -145,7 +148,10 @@ Submit conversion script:
 
    ./driver.$MACHINE.sh
 
-where ``$MACHINE`` is currently ``wcoss2``,  ``hera`` or ``jet``. Additional options will be available as support for other machines expands. Note: UFS-UTILS builds on Orion but due to lack of HPSS access there is no ``gdas_init`` driver for Orion nor support to pull initial conditions from HPSS for the ``gdas_init`` utility.
+where ``$MACHINE`` is currently ``wcoss2``,  ``hera`` or ``jet``. Additional options will be available as support for other machines expands.
+
+.. note::
+   UFS-UTILS builds on Orion but due to lack of HPSS access there is no ``gdas_init`` driver for Orion nor support to pull initial conditions from HPSS for the ``gdas_init`` utility.
 
 Several small jobs will be submitted:
 

@@ -44,7 +44,7 @@ Jobs in the GFS Configuration
 | earcN/eamn        | Archival script for EnKF: 1) Write select EnKF output to HPSS; 2) Copy select files to online archive; 3) Clean up    |
 |                   | EnKF temporary run directories; 4) Remove "old" EnKF files from rotating directory.                                   |
 +-------------------+-----------------------------------------------------------------------------------------------------------------------+
-| ecenN/ecmn        | Recenter ensemble members around hi-res deterministic analysis.  Note - GFS v16 recenters ensemble member analysis    |
+| ecenN/ecmn        | Recenter ensemble members around hi-res deterministic analysis.  GFS v16 recenters ensemble member analysis.          |
 |                   | increments.                                                                                                           |
 +-------------------+-----------------------------------------------------------------------------------------------------------------------+
 | echgres           | Runs chgres on full-resolution forecast for EnKF recentering (ecen).                                                  |
