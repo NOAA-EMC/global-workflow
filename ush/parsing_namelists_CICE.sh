@@ -24,7 +24,7 @@ cat > ice_in <<eof
    ndtd           = 1
    runtype        = '$cmeps_run_type'
    runid          = 'unknown'
-   ice_ic         = '$iceic'
+   ice_ic         = 'cice_model.res.nc'
    restart        = .true.
    restart_ext    = .false.
    use_restart_time = $USE_RESTART_TIME
