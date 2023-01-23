@@ -156,21 +156,20 @@ HDOB=${HDOB:-${COMIN_OBS}/${OPREFIX}hdob.tm00.bufr_d${OSUFFIX}}
 
 # Guess files
 GPREFIX=${GPREFIX:-""}
-GSUFFIX=${GSUFFIX:-".nc"}
-SFCG03=${SFCG03:-${COMIN_GES}/${GPREFIX}sfcf003${GSUFFIX}}
-SFCG04=${SFCG04:-${COMIN_GES}/${GPREFIX}sfcf004${GSUFFIX}}
-SFCG05=${SFCG05:-${COMIN_GES}/${GPREFIX}sfcf005${GSUFFIX}}
-SFCGES=${SFCGES:-${COMIN_GES}/${GPREFIX}sfcf006${GSUFFIX}}
-SFCG07=${SFCG07:-${COMIN_GES}/${GPREFIX}sfcf007${GSUFFIX}}
-SFCG08=${SFCG08:-${COMIN_GES}/${GPREFIX}sfcf008${GSUFFIX}}
-SFCG09=${SFCG09:-${COMIN_GES}/${GPREFIX}sfcf009${GSUFFIX}}
-ATMG03=${ATMG03:-${COMIN_GES}/${GPREFIX}atmf003${GSUFFIX}}
-ATMG04=${ATMG04:-${COMIN_GES}/${GPREFIX}atmf004${GSUFFIX}}
-ATMG05=${ATMG05:-${COMIN_GES}/${GPREFIX}atmf005${GSUFFIX}}
-ATMGES=${ATMGES:-${COMIN_GES}/${GPREFIX}atmf006${GSUFFIX}}
-ATMG07=${ATMG07:-${COMIN_GES}/${GPREFIX}atmf007${GSUFFIX}}
-ATMG08=${ATMG08:-${COMIN_GES}/${GPREFIX}atmf008${GSUFFIX}}
-ATMG09=${ATMG09:-${COMIN_GES}/${GPREFIX}atmf009${GSUFFIX}}
+SFCG03=${SFCG03:-${COMIN_GES}/${GPREFIX}sfcf003.nc}
+SFCG04=${SFCG04:-${COMIN_GES}/${GPREFIX}sfcf004.nc}
+SFCG05=${SFCG05:-${COMIN_GES}/${GPREFIX}sfcf005.nc}
+SFCGES=${SFCGES:-${COMIN_GES}/${GPREFIX}sfcf006.nc}
+SFCG07=${SFCG07:-${COMIN_GES}/${GPREFIX}sfcf007.nc}
+SFCG08=${SFCG08:-${COMIN_GES}/${GPREFIX}sfcf008.nc}
+SFCG09=${SFCG09:-${COMIN_GES}/${GPREFIX}sfcf009.nc}
+ATMG03=${ATMG03:-${COMIN_GES}/${GPREFIX}atmf003.nc}
+ATMG04=${ATMG04:-${COMIN_GES}/${GPREFIX}atmf004.nc}
+ATMG05=${ATMG05:-${COMIN_GES}/${GPREFIX}atmf005.nc}
+ATMGES=${ATMGES:-${COMIN_GES}/${GPREFIX}atmf006.nc}
+ATMG07=${ATMG07:-${COMIN_GES}/${GPREFIX}atmf007.nc}
+ATMG08=${ATMG08:-${COMIN_GES}/${GPREFIX}atmf008.nc}
+ATMG09=${ATMG09:-${COMIN_GES}/${GPREFIX}atmf009.nc}
 GBIAS=${GBIAS:-${COMIN_GES}/${GPREFIX}abias}
 GBIASPC=${GBIASPC:-${COMIN_GES}/${GPREFIX}abias_pc}
 GBIASAIR=${GBIASAIR:-${COMIN_GES}/${GPREFIX}abias_air}
@@ -178,10 +177,9 @@ GRADSTAT=${GRADSTAT:-${COMIN_GES}/${GPREFIX}radstat}
 
 # Analysis files
 export APREFIX=${APREFIX:-""}
-export ASUFFIX=${ASUFFIX:-".nc"}
-SFCANL=${SFCANL:-${COMOUT}/${APREFIX}sfcanl${ASUFFIX}}
+SFCANL=${SFCANL:-${COMOUT}/${APREFIX}sfcanl.nc}
 DTFANL=${DTFANL:-${COMOUT}/${APREFIX}dtfanl.nc}
-ATMANL=${ATMANL:-${COMOUT}/${APREFIX}atmanl${ASUFFIX}}
+ATMANL=${ATMANL:-${COMOUT}/${APREFIX}atmanl.nc}
 ABIAS=${ABIAS:-${COMOUT}/${APREFIX}abias}
 ABIASPC=${ABIASPC:-${COMOUT}/${APREFIX}abias_pc}
 ABIASAIR=${ABIASAIR:-${COMOUT}/${APREFIX}abias_air}
@@ -244,8 +242,8 @@ JCAP=${JCAP:--9999} # there is no jcap in these files
 
 # Get header information from Ensemble Guess files
 if [ ${DOHYBVAR} = "YES" ]; then
-   SFCGES_ENSMEAN=${SFCGES_ENSMEAN:-${COMIN_GES_ENS}/${GPREFIX}sfcf006.ensmean${GSUFFIX}}
-   export ATMGES_ENSMEAN=${ATMGES_ENSMEAN:-${COMIN_GES_ENS}/${GPREFIX}atmf006.ensmean${GSUFFIX}}
+   SFCGES_ENSMEAN=${SFCGES_ENSMEAN:-${COMIN_GES_ENS}/${GPREFIX}sfcf006.ensmean.nc}
+   export ATMGES_ENSMEAN=${ATMGES_ENSMEAN:-${COMIN_GES_ENS}/${GPREFIX}atmf006.ensmean.nc}
    LONB_ENKF=${LONB_ENKF:-$(${NCLEN} ${ATMGES_ENSMEAN} grid_xt)} # get LONB_ENKF
    LATB_ENKF=${LATB_ENKF:-$(${NCLEN} ${ATMGES_ENSMEAN} grid_yt)} # get LATB_ENFK
    LEVS_ENKF=${LEVS_ENKF:-$(${NCLEN} ${ATMGES_ENSMEAN} pfull)} # get LATB_ENFK
@@ -338,17 +336,17 @@ fi
 
 # Set 4D-EnVar specific variables
 if [ ${DOHYBVAR} = "YES" -a ${l4densvar} = ".true." -a ${lwrite4danl} = ".true." ]; then
-   ATMA03=${ATMA03:-${COMOUT}/${APREFIX}atma003${ASUFFIX}}
+   ATMA03=${ATMA03:-${COMOUT}/${APREFIX}atma003.nc}
    ATMI03=${ATMI03:-${COMOUT}/${APREFIX}atmi003.nc}
-   ATMA04=${ATMA04:-${COMOUT}/${APREFIX}atma004${ASUFFIX}}
+   ATMA04=${ATMA04:-${COMOUT}/${APREFIX}atma004.nc}
    ATMI04=${ATMI04:-${COMOUT}/${APREFIX}atmi004.nc}
-   ATMA05=${ATMA05:-${COMOUT}/${APREFIX}atma005${ASUFFIX}}
+   ATMA05=${ATMA05:-${COMOUT}/${APREFIX}atma005.nc}
    ATMI05=${ATMI05:-${COMOUT}/${APREFIX}atmi005.nc}
-   ATMA07=${ATMA07:-${COMOUT}/${APREFIX}atma007${ASUFFIX}}
+   ATMA07=${ATMA07:-${COMOUT}/${APREFIX}atma007.nc}
    ATMI07=${ATMI07:-${COMOUT}/${APREFIX}atmi007.nc}
-   ATMA08=${ATMA08:-${COMOUT}/${APREFIX}atma008${ASUFFIX}}
+   ATMA08=${ATMA08:-${COMOUT}/${APREFIX}atma008.nc}
    ATMI08=${ATMI08:-${COMOUT}/${APREFIX}atmi008.nc}
-   ATMA09=${ATMA09:-${COMOUT}/${APREFIX}atma009${ASUFFIX}}
+   ATMA09=${ATMA09:-${COMOUT}/${APREFIX}atma009.nc}
    ATMI09=${ATMI09:-${COMOUT}/${APREFIX}atmi009.nc}
 fi
 
@@ -536,9 +534,9 @@ if [ ${DOHYBVAR} = "YES" ]; then
    for imem in $(seq 1 ${NMEM_ENKF}); do
       memchar="mem"$(printf %03i ${imem})
       for fhr in ${fhrs}; do
-         ${NLN} ${COMIN_GES_ENS}/${memchar}/atmos/${GPREFIX}atmf0${fhr}${ENKF_SUFFIX}${GSUFFIX} ./ensemble_data/sigf${fhr}_ens_${memchar}
+         ${NLN} ${COMIN_GES_ENS}/${memchar}/atmos/${GPREFIX}atmf0${fhr}${ENKF_SUFFIX}.nc ./ensemble_data/sigf${fhr}_ens_${memchar}
          if [ ${cnvw_option} = ".true." ]; then
-            ${NLN} ${COMIN_GES_ENS}/${memchar}/atmos/${GPREFIX}sfcf0${fhr}${GSUFFIX} ./ensemble_data/sfcf${fhr}_ens_${memchar}
+            ${NLN} ${COMIN_GES_ENS}/${memchar}/atmos/${GPREFIX}sfcf0${fhr}.nc ./ensemble_data/sfcf${fhr}_ens_${memchar}
          fi
       done
    done

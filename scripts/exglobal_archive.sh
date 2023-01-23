@@ -15,7 +15,6 @@ fi
 
 # CURRENT CYCLE
 APREFIX="${CDUMP}.t${cyc}z."
-ASUFFIX=${ASUFFIX:-".nc"}
 
 # Realtime parallels run GFS MOS on 1 day delay
 # If realtime parallel, back up CDATE_MOS one day
@@ -94,8 +93,8 @@ if [ "${CDUMP}" = "gfs" ] && [ "${FITSARC}" = "YES" ]; then
     fhr=0
     while [[ ${fhr} -le ${fhmax} ]]; do
         fhr3=$(printf %03i "${fhr}")
-        sfcfile=${prefix}.sfcf${fhr3}${ASUFFIX}
-        sigfile=${prefix}.atmf${fhr3}${ASUFFIX}
+        sfcfile=${prefix}.sfcf${fhr3}.nc
+        sigfile=${prefix}.atmf${fhr3}.nc
         nb_copy "${sfcfile}" "${VFYARC}"/"${CDUMP}"."${PDY}"/"${cyc}"/
         nb_copy "${sigfile}" "${VFYARC}"/"${CDUMP}"."${PDY}"/"${cyc}"/
         (( fhr = 10#${fhr} + 6 ))

@@ -91,7 +91,7 @@
 #
 #     output data: $PGMOUT
 #                  $PGMERR
-#                  $COMOUT/${APREFIX}sfcanl${ASUFFIX}
+#                  $COMOUT/${APREFIX}sfcanl.nc
 #
 # Remarks:
 #
@@ -200,7 +200,7 @@ $NLN $FIXfv3/$CASE/${CASE}_oro_data.tile6.nc   ./orog.tile6.nc
 $NLN $SIGLEVEL                                 ./vcoord.txt
 
 # output gaussian global surface analysis files
-$NLN $COMOUT/${APREFIX}sfcanl${ASUFFIX} ./sfc.gaussian.analysis.file
+$NLN $COMOUT/${APREFIX}sfcanl.nc ./sfc.gaussian.analysis.file
 
 # Executable namelist
 cat <<EOF > fort.41

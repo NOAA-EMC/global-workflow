@@ -30,7 +30,6 @@ ANALYSISSH=${ANALYSISSH:-$HOMEgfs/scripts/exglobal_atmos_analysis.sh}
 
 # Prefix and Suffix Variables.
 export APREFIX=${APREFIX:-""}
-export ASUFFIX=${ASUFFIX:-".nc"}
 
 # Select obs
 export RUN_SELECT=${RUN_SELECT:-"YES"}
