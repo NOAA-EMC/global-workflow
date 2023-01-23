@@ -21,7 +21,7 @@ Where to do development?
 
  * In authoritative (main) repository:
 
-  - Work for the upcoming implementation (who: members of global-workflow-developers team)
+  - Work for upcoming implementation (who: members of global-workflow-developers team)
   - Major new features or port work (who: generally code managers and/or members of global-workflow-developers team)
 
  * In a fork:
@@ -38,7 +38,7 @@ Protected branches
 The following global-workflow branches are protected by the code management team:
 
 * develop (HEAD)
-* operations (kept aligned with current production)
+* dev/gfs.v16 (kept aligned with current production, as well as ingests bug fixes and updates between release branches)
 
 These protected branches require the following to accept changes:
 
@@ -58,8 +58,8 @@ The following steps should be followed in order to make changes to the develop b
  #. Issue - Open issue to document changes. Reference this issue in commits to your branches (e.g. ``git commit -m "Issue #23 - blah changes for what-not code"``) Click `here <https://github.com/NOAA-EMC/global-workflow/issues/new/choose>`__ to open a new global-workflow issue.
  #. GitFlow - Follow `GitFlow <https://nvie.com/posts/a-successful-git-branching-model/>`_ procedures for development (branch names, forking vs branching, etc.). Read more `here <https://docs.google.com/document/d/1H5McooP-ZmDIOhcy4zJwdFVk3DyjbJt_Nyqj4QGBRBU/edit?usp=sharing>`__ about GitFlow at EMC.
  #. To fork or not to fork? - If not working within authoritative repository create a fork of the authoritative repository. Read more `here <https://help.github.com/en/github/getting-started-with-github/fork-a-repo>`__ about forking in GitHub.
- #. Branch - Create branch in either authoritative repository or fork of authoritative repository. See the `Where to do development? <development_>`_ section for how to determine where. Follow Gitflow conventions when creating branch.
- #. Development - Perform and test changes in branch. Document work in issue and mention issue number in commit messages to link your work to the issue See `Commit Messages <commit-standards_>`_ section below. Depending on changes the code manager may request or perform additional pre-commit tests.
+ #. Branch - Create branch in either authoritative repository or fork of authoritative repository. See the `Where to do development? <development_>`_ section for how to determine where. Follow GitFlow conventions when creating branch.
+ #. Development - Perform and test changes in branch. Document work in issue and mention issue number in commit messages to link your work to the issue. See `Commit Messages <commit-standards_>`_ section below. Depending on changes the code manager may request or perform additional pre-commit tests.
  #. Pull request - When ready to merge changes back to develop branch, the lead developer should initiate a pull request (PR) of your branch (either fork or not) into the develop branch. Read `here <https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/about-pull-requests>`__ about pull requests in GitHub. Provide some information about the PR in the proper field, add at least one reviewer to the PR and assign the PR to a code manager.
  #. Complete - When review and testing is complete the code manager will complete the pull request and subsequent merge/commit.
  #. Cleanup - When complete the lead developer should delete the branch and close the issue. "Closing keywords" can be used in the PR to automatically close associated issues.
@@ -94,6 +94,8 @@ Commit message standards
  * The final line of the commit message should include tags to relevant issues (e.g. ``Refs: #217, #300``)
 
 Here is the example commit message from the article linked above; it includes descriptions of what would be in each part of the commit message for guidance:
+
+::
  
    Summarize changes in around 50 characters or less
 
@@ -118,12 +120,12 @@ Here is the example commit message from the article linked above; it includes de
       vary here
 
    If you use an issue tracker, put references to them at the bottom,
-   like this::
+   like this:
 
       Resolves: #123
       See also: #456, #789
 
-A detailed commit message is very useful for documenting changes
+A detailed commit message is very useful for documenting changes.
 
 .. _sync:
 
@@ -131,9 +133,9 @@ A detailed commit message is very useful for documenting changes
 How to sync fork with the authoritative repository
 ==================================================
 
-As development in the main authoritative repository moves forward you will need to sync your fork's branches to stay up-to-date. Below is an example of how to sync your fork's copy of a branch with the authoritative repository copy. The branch name for the example will be "feature/new_thing". Click `here <https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/about-pull-requests/syncing-a-fork>`__ for documentation on syncing forks.
+As development in the main authoritative repository moves forward you will need to sync your fork branches to stay up-to-date. Below is an example of how to sync your fork copy of a branch with the authoritative repository copy. The branch name for the example will be "feature/new_thing". Click `here <https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/about-pull-requests/syncing-a-fork>`__ for documentation on syncing forks.
 
-1. Clone your fork and checkout branch that needs syncing
+1. Clone your fork and checkout branch that needs syncing:
 
 ::
 
@@ -141,25 +143,25 @@ As development in the main authoritative repository moves forward you will need 
    cd fork
    git checkout feature/my_new_thing
 
-2. Add upstream info to your clone so it knows where to merge from. The term "upstream" refers to the authoritative repository from which the fork was create
+2. Add upstream info to your clone so it knows where to merge from. The term "upstream" refers to the authoritative repository from which the fork was created.
 
 ::
 
    git remote add upstream https://github.com/NOAA-EMC/global-workflow.git
 
-3. Fetch upstream information into clone
+3. Fetch upstream information into clone:
 
 ::
 
    git fetch upstream
 
-Later on you can update your fork's remote information by doing the following command
+Later on you can update your fork remote information by doing the following command:
 
 ::
 
    git remote update
 
-4. Merge upstream feature/other_new_thing into your branch
+4. Merge upstream ``feature/other_new_thing`` into your branch:
 
 ::
 
@@ -167,7 +169,7 @@ Later on you can update your fork's remote information by doing the following co
 
 5. Resolve any conflicts and perform any needed "add"s or "commit"s for conflict resolution. 
 
-6. Push the merged copy back up to your fork (origin)
+6. Push the merged copy back up to your fork (origin):
 
 ::
 
@@ -177,6 +179,8 @@ Later on you can update your fork's remote information by doing the following co
 
 Done!
 
-Moving forward you'll want to perform the "remote update" command regularly to update the metadata for the remote/upstream repository in your fork (e.g. pull in metadata for branches made in auth repo after you forked it)::
+Moving forward you'll want to perform the "remote update" command regularly to update the metadata for the remote/upstream repository in your fork (e.g. pull in metadata for branches made in auth repo after you forked it).
+
+::
 
    git remote update

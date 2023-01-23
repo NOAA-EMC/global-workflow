@@ -34,7 +34,7 @@ or
 
    crontab $PSLOT.crontab
 
-**WARNING: ``crontab $PSLOT.crontab`` command will overwrite existing crontab file on your login node. If running multiple crons recommend editing crontab file with ``crontab -e`` command.**
+** WARNING: ``crontab $PSLOT.crontab`` command will overwrite existing crontab file on your login node. If running multiple crons recommend editing crontab file with ``crontab -e`` command. **
 
 Check your crontab settings::
 

@@ -29,13 +29,13 @@ Automated Generation
 Cycled mode
 ***********
 
-Not yet supported. See Manual Generation section below for how to create your ICs yourself (outside of workflow).
+Not yet supported. See :ref:`Manual Generation<manual-generation>` section below for how to create your ICs yourself (outside of workflow).
 
 *****************************
-Free-forecast mode (atm-only)
+Forecast-only mode (atm-only)
 *****************************
 
-Free-forecast mode in global workflow includes ``getic`` and ``init`` jobs for the gfs suite. The ``getic`` job pulls inputs for ``chgres_cube`` (init job) or warm start ICs into your ``ROTDIR/COMROT``. The ``init`` job then ingests those files to produce initial conditions for your experiment. 
+Forecast-only mode in global workflow includes ``getic`` and ``init`` jobs for the gfs suite. The ``getic`` job pulls inputs for ``chgres_cube`` (init job) or warm start ICs into your ``ROTDIR/COMROT``. The ``init`` job then ingests those files to produce initial conditions for your experiment. 
 
 Users on machines without HPSS access (e.g. Orion) need to perform the ``getic`` step manually and stage inputs for the ``init`` job. The table below lists the needed files for ``init`` and where to place them in your ``ROTDIR``.
 
@@ -78,7 +78,7 @@ Operations/production output location on HPSS: /NCEPPROD/hpssprod/runhistory/rh 
 For HPSS path, see retrospective table in :ref:`pre-production parallel section <retrospective>`: below
 
 *********************
-Free-forecast coupled
+Forecast-only coupled
 *********************
 
 Coupled initial conditions are currently only generated offline and copied prior to the forecast run. Prototype initial conditions will automatically be used when setting up an experiment as an S2SW app, there is no need to do anything additional. Copies of initial conditions from the prototype runs are currently maintained on Hera, Orion, and WCOSS2. The locations used are determined by ``parm/config/config.coupled_ic``. If you need prototype ICs on another machine, please contact Walter (Walter.Kolczynski@noaa.gov).
@@ -95,20 +95,34 @@ Cold starts
 
 The following information is for users needing to generate initial conditions for a cycled experiment that will run at a different resolution or layer amount than the operational GFS (C768C384L127).
 
-The ``chgres_cube`` code is available from the `UFS_UTILS repository <https://github.com/ufs-community/UFS_UTILS>`_ on GitHub and can be used to convert GFS ICs to a different resolution or number of layers. Users may clone the develop/HEAD branch or the same version used by global-workflow develop (found in sorc/checkout.sh). The ``chgres_cube`` code/scripts currently support the following GFS inputs:
+The ``chgres_cube`` code is available from the `UFS_UTILS repository <https://github.com/ufs-community/UFS_UTILS>`_ on GitHub and can be used to convert GFS ICs to a different resolution or number of layers. Users may clone the develop/HEAD branch or the same version used by global-workflow develop (found in ``sorc/checkout.sh``). The ``chgres_cube`` code/scripts currently support the following GFS inputs:
 
 * pre-GFSv14 
 * GFSv14 
 * GFSv15 
 * GFSv16 
 
-Clone UFS_UTILS::
+Users can use the copy of UFS_UTILS that is already cloned and built within their global-workflow clone or clone/build it separately:
+
+Within a build/linked global-workflow clone:
+
+::
+
+   cd sorc/ufs_utils.fd/util/gdas_init
+
+Clone and build separately:
+
+Clone UFS_UTILS:
+
+::
 
    git clone --recursive https://github.com/NOAA-EMC/UFS_UTILS.git
 
 Then switch to a different tag or use the default branch (develop).
 
-Build UFS_UTILS::
+Build UFS_UTILS:
+
+::
 
    sh build_all.sh
    cd fix
@@ -116,29 +130,33 @@ Build UFS_UTILS::
 
 where ``$MACHINE`` is ``wcoss2``, ``hera``, ``jet``, or ``orion``. Note: UFS-UTILS builds on Orion but due to the lack of HPSS access on Orion the ``gdas_init`` utility is not supported there.
 
-Configure your conversion::
+Configure your conversion:
+
+::
 
    cd util/gdas_init
    vi config
 
 Read the doc block at the top of the config and adjust the variables to meet you needs (e.g. ``yy, mm, dd, hh`` for ``SDATE``).
 
-Submit conversion script::`
+Submit conversion script:
+
+::
 
    ./driver.$MACHINE.sh
 
 where ``$MACHINE`` is currently ``wcoss2``,  ``hera`` or ``jet``. Additional options will be available as support for other machines expands. Note: UFS-UTILS builds on Orion but due to lack of HPSS access there is no ``gdas_init`` driver for Orion nor support to pull initial conditions from HPSS for the ``gdas_init`` utility.
 
-3 small jobs will be submitted:
+Several small jobs will be submitted:
 
   - 1 jobs to pull inputs off HPSS
-  - 2 jobs to run ``chgres_cube`` (1 for deterministic/hires and 1 for each EnKF ensemble member)
+  - 1 or 2 jobs to run ``chgres_cube`` (1 for deterministic/hires and 1 for each EnKF ensemble member)
 
 The chgres jobs will have a dependency on the data-pull jobs and will wait to run until all data-pull jobs have completed.
 
 Check output:
 
-In the config you will have defined an output folder called ``$OUTDIR``. The converted output will be found there, including the needed abias and radstat initial condition files. The files will be in the needed directory structure for the global-workflow system, therefore a user can move the contents of their ``$OUTDIR`` directly into their ``$ROTDIR/$COMROT``.
+In the config you will have defined an output folder called ``$OUTDIR``. The converted output will be found there, including the needed abias and radstat initial condition files (if CDUMP=gdas). The files will be in the needed directory structure for the global-workflow system, therefore a user can move the contents of their ``$OUTDIR`` directly into their ``$ROTDIR/$COMROT``.
 
 Please report bugs to George Gayno (george.gayno@noaa.gov) and Kate Friedman (kate.friedman@noaa.gov).
 
@@ -231,9 +249,9 @@ And then on all platforms::
 What files should you pull for starting a new experiment with warm starts from production?
 ------------------------------------------------------------------------------------------
 
-That depends on what mode you want to run -- free-forecast or cycled. Whichever mode navigate to the top of your ``COMROT`` and pull the entirety of the tarball(s) listed below for your mode. The files within the tarball are already in the ``$CDUMP.$PDY/$CYC`` folder format expected by the system.
+That depends on what mode you want to run -- forecast-only or cycled. Whichever mode, navigate to the top of your ``COMROT`` and pull the entirety of the tarball(s) listed below for your mode. The files within the tarball are already in the ``$CDUMP.$PDY/$CYC`` folder format expected by the system.
 
-For free-forecast there are two tar balls to pull
+For forecast-only there are two tar balls to pull
 
    1. File #1 (for starting cycle SDATE)::
       /NCEPPROD/hpssprod/runhistory/rhYYYY/YYYYMM/YYYYMMDD/com_gfs_prod_gfs.YYYYMMDD_CC.gfs_restart.tar
@@ -270,7 +288,7 @@ Recent pre-implementation parallel series was for GFS v16 (implemented March 202
 * **Where are these tarballs?** See below for the location on HPSS for each v16 pre-implementation parallel.
 * **What tarballs do I need to grab for my experiment?** Tarballs from two cycles are required. The tarballs are listed below, where $CDATE is your starting cycle and $GDATE is one cycle prior.
 
-  - Free-forecast
+  - Forecast-only
     + ../$CDATE/gfs_restarta.tar
     + ../$GDATE/gdas_restartb.tar
   - Cycled w/EnKF
