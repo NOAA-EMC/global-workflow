@@ -2,14 +2,14 @@ help([[
 Load environment to run GFS on Jet
 ]])
 
-prepend_path("MODULEPATH", "/lfs4/HFIP/hfv3gfs/nwprod/hpc-stack/libs/modulefiles/stack")
+prepend_path("MODULEPATH", "/lfs4/HFIP/hfv3gfs/role.epic/hpc-stack/libs/intel-18.0.5.274/modulefiles/stack")
 
-load(pathJoin("hpc", "1.1.0"))
+load(pathJoin("hpc", "1.2.0"))
 load(pathJoin("hpc-intel", "18.0.5.274"))
 load(pathJoin("hpc-impi", "2018.4.274"))
 load(pathJoin("cmake", "3.20.1"))
 
-load(pathJoin("hpss", "hpss"))
+load(pathJoin("hpss"))
 load(pathJoin("nco", "4.9.1"))
 load(pathJoin("gempak", "7.4.2"))
 load(pathJoin("ncl", "6.6.2"))
@@ -22,7 +22,7 @@ setenv("CRTM_FIX","/lfs4/HFIP/hfv3gfs/nwprod/NCEPLIBS/fix/crtm_v2.3.0")
 
 load(pathJoin("jasper", "2.0.25"))
 load(pathJoin("zlib", "1.2.11"))
-load(pathJoin("png", "1.6.35"))
+load(pathJoin("libpng", "1.6.35"))
 
 load(pathJoin("hdf5", "1.10.6"))
 load(pathJoin("netcdf", "4.7.4"))
@@ -48,8 +48,10 @@ load(pathJoin("cdo", "1.9.5"))
 load(pathJoin("R", "4.0.2"))
 
 --TODO need to port/build prepobs
---prepend_path("MODULEPATH", pathJoin("/scratch1/NCEPDEV/global/glopara/git/prepobs/v1.0.1/modulefiles"))
---load(pathJoin("prepobs", "1.0.1"))
+prepend_path("MODULEPATH", pathJoin("/lfs1/NESDIS/nesdis-rdo2/David.Huber/prepobs/v1.0.1/modulefiles"))
+load(pathJoin("prepobs", "1.0.1"))
 
+prepend_path("MODULEPATH", "/contrib/anaconda/modulefiles")
+load(pathJoin("anaconda", "5.3.1"))
 
 whatis("Description: GFS run environment")
