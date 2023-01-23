@@ -351,7 +351,7 @@ elif [ ${step} = "analcalc" ]; then
 
 elif [ ${step} = "analdiag" ]; then
 
-    export wtime_analdiag="00:10:00"
+    export wtime_analdiag="00:15:00"
     export npe_analdiag=96             # Should be at least twice npe_ediag
     export nth_analdiag=1
     export npe_node_analdiag=$(echo "${npe_node_max} / ${nth_analdiag}" | bc)
@@ -681,7 +681,7 @@ elif [[ ${step} = "eobs" || ${step} = "eomg" ]]; then
 
 elif [ ${step} = "ediag" ]; then
 
-    export wtime_ediag="00:06:00"
+    export wtime_ediag="00:15:00"
     export npe_ediag=48
     export nth_ediag=1
     export npe_node_ediag=$(echo "${npe_node_max} / ${nth_ediag}" | bc)
@@ -771,10 +771,6 @@ elif [ ${step} = "postsnd" ]; then
     export npe_node_postsnd=10
     export npe_postsndcfp=9
     export npe_node_postsndcfp=1
-    if [ ${OUTPUT_FILE} == "nemsio" ]; then
-        export npe_postsnd=13
-        export npe_node_postsnd=4
-    fi
     if [[ "$(echo "${npe_node_postsnd} * ${nth_postsnd}" | bc)" -gt "${npe_node_max}" ]]; then
         export npe_node_postsnd=$(echo "${npe_node_max} / ${nth_postsnd}" | bc)
     fi

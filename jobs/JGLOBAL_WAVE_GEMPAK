@@ -1,35 +1,9 @@
 #! /usr/bin/env bash
 
 source "${HOMEgfs}/ush/preamble.sh"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "wavegempak" -c "base wavegempak"
 
-##############################################
-# make temp directory
-##############################################
-export DATA=${DATA:-${DATAROOT}/${jobid}}
-mkdir -p ${DATA}
-cd ${DATA}
-
-
-##############################################
-# Run setpdy and initialize PDY variables
-##############################################
-export cycle="t${cyc}z"
-setpdy.sh
-. ./PDY
-
-
-##############################################
-# Determine Job Output Name on System
-##############################################
-export pid=${pid:-$$}
-export pgmout="OUTPUT.${pid}"
-export pgmerr=errfile
-
-
-export NET=${NET:-gfs}
-export RUN=${RUN:-gfs}
 export COMPONENT="wave"
-export machine=${machine:-WCOSS2}
 
 # Add default errchk = err_chk
 export errchk=${errchk:-err_chk}
@@ -38,14 +12,11 @@ export errchk=${errchk:-err_chk}
 # Set COM Paths
 export COMIN=${COMIN:-$(compath.py ${envir}/${NET}/${gfs_ver})/${RUN}.${PDY}/${cyc}/${COMPONENT}}
 export COMOUT=${COMOUT:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/${COMPONENT}/gempak}
-#export pid=$$
-export pgmout="OUTPUT.$$"
 
 export DBN_ALERT_TYPE=GFS_WAVE_GEMPAK
 export SENDCOM=${SENDCOM:-YES}
 export SENDDBN=${SENDDBN:-YES}
 export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
-
 
 if [ ${SENDCOM} = YES ] ; then
   mkdir -m 775 -p ${COMOUT}
@@ -64,6 +35,5 @@ cd ${DATAROOT}
 if [ "${KEEPDATA}" != "YES" ]; then
   rm -rf ${DATA}
 fi
-
 
 exit 0

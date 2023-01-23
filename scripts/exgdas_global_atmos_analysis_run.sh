@@ -90,16 +90,16 @@ if [ $DOHYBVAR = "YES" ]; then
    if [ $l4densvar = ".true." ]; then
       fhrs="03 04 05 06 07 08 09"
    fi
-   
+
    for imem in $(seq 1 $NMEM_ENKF); do
       memchar="mem"$(printf %03i $imem)
       for fhr in $fhrs; do
-         $NLN ${COMIN_GES_ENS}/$memchar/RESTART $DATA/ens/$memchar
+         $NLN ${COMIN_GES_ENS}/$memchar/atmos/RESTART $DATA/ens/$memchar
       done
    done
 
 fi
-    
+
 ################################################################################
 # link fix files to $DATA
 # static B

@@ -49,15 +49,11 @@ export JO=${LATB:-721}
 # specify default model output format: 3 for sigio and 4
 # for nemsio
 export OUTTYP=${OUTTYP:-4}
-export OUTPUT_FILE=${OUTPUT_FILE:-"nemsio"}
+export OUTPUT_FILE=${OUTPUT_FILE:-"netcdf"}
 export TCYC=${TCYC:-".t${cyc}z."}
 export PREFIX=${PREFIX:-${RUN}${TCYC}}
 if (( OUTTYP == 4 )) ; then
-  if [[ "${OUTPUT_FILE}" = "netcdf" ]]; then
-    export SUFFIX=".nc"
-  else
-    export SUFFIX=".nemsio"
-  fi
+  export SUFFIX=".nc"
 else
   export SUFFIX=
 fi
@@ -202,7 +198,7 @@ else   ## not_anl if_stimes
       # period and error exit
       ###############################
       if (( ic == SLEEP_LOOP_MAX )); then
-        echo " *** FATAL ERROR: No model output in nemsio for f${fhr} "
+        echo " *** FATAL ERROR: No model output for f${fhr} "
         export err=9
         err_chk
       fi

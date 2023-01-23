@@ -1,49 +1,7 @@
 #! /usr/bin/env bash
 
 source "${HOMEgfs}/ush/preamble.sh"
-
-##############################################
-# make temp directory
-##############################################
-export DATA=${DATA:-${DATAROOT}/${jobid}}
-mkdir -p "${DATA}"
-cd "${DATA}" || exit 1
-
-
-##############################################
-# Run setpdy and initialize PDY variables
-##############################################
-export cycle="t${cyc}z"
-setpdy.sh
-. ./PDY
-
-
-##############################################
-# Determine Job Output Name on System
-##############################################
-export pid=${pid:-$$}
-export pgmout="OUTPUT.${pid}"
-export pgmerr=errfile
-
-
-#############################
-# Source relevant config files
-#############################
-export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
-configs="base post"
-for config in ${configs}; do
-    . ${EXPDIR}/config.${config}
-    status=$?
-    (( status != 0 )) && exit "${status}"
-done
-
-
-##########################################
-# Source machine runtime environment
-##########################################
-. "${HOMEgfs}/env/${machine}.env" post
-status=$?
-(( status != 0 )) && exit "${status}"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "post" -c "base post"
 
 
 ####################################
@@ -63,6 +21,17 @@ export COMPONENT="atmos"
 
 
 ##############################################
+# TODO: Remove this egregious HACK
+##############################################
+if [[ "${SDATE:-}" = "${CDATE}" ]]; then
+  if [[ ${post_times} = "anl" ]]; then
+    echo "No offline post-processing in the first half cycle for analysis"
+    exit 0
+  fi
+fi
+
+
+##############################################
 # Begin JOB SPECIFIC work
 ##############################################
 export APRUNP=${APRUN:-${APRUN_NP}}
@@ -72,8 +41,8 @@ export FIXCRTM=${CRTM_FIX:-${HOMECRTM}/fix}
 export PARMpost=${PARMpost:-${HOMEgfs}/parm/post}
 export INLINE_POST=${WRITE_DOPOST:-".false."}
 
-export COMIN=${COMIN:-${ROTDIR}/${RUN}.${PDY}/${cyc}/${COMPONENT}}
-export COMOUT=${COMOUT:-${ROTDIR}/${RUN}.${PDY}/${cyc}/${COMPONENT}}
+export COMIN=${COMIN:-${ROTDIR}/${RUN}.${PDY}/${cyc}/atmos}
+export COMOUT=${COMOUT:-${ROTDIR}/${RUN}.${PDY}/${cyc}/atmos}
 
 # shellcheck disable=SC2174
 [[ ! -d "${COMOUT}" ]] && mkdir -m 775 -p "${COMOUT}"

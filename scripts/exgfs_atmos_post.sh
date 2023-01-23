@@ -40,7 +40,6 @@ source "${HOMEgfs}/ush/preamble.sh"
 
 cd "${DATA}" || exit 1
 
-# specify model output format type: 4 for nemsio, 3 for sigio
 export POSTGPSH=${POSTGPSH:-${USHgfs}/gfs_post.sh}
 export GFSDOWNSH=${GFSDOWNSH:-${USHgfs}/fv3gfs_downstream_nems.sh}
 export GFSDOWNSHF=${GFSDOWNSHF:-${USHgfs}/inter_flux.sh}
@@ -66,14 +65,10 @@ export GOESF=${GOESF:-"YES"}
 export WAFSF=${WAFSF:-"NO"}
 export PGBF=${PGBF:-"YES"}
 export TCYC=${TCYC:-".t${cyc}z."}
-export OUTPUT_FILE=${OUTPUT_FILE:-"nemsio"}
+export OUTPUT_FILE=${OUTPUT_FILE:-"netcdf"}
 export PREFIX=${PREFIX:-${RUN}${TCYC}}
 if (( OUTTYP == 4 )); then
-  if [[ "${OUTPUT_FILE}" = "netcdf" ]]; then
-    export SUFFIX=".nc"
-  else
-    export SUFFIX=".nemsio"
-  fi
+  export SUFFIX=".nc"
 else
   export SUFFIX=
 fi
@@ -256,7 +251,7 @@ else   ## not_anl if_stime
       # period and error exit
       ###############################
       if (( ic == SLEEP_LOOP_MAX )); then
-        echo " *** FATAL ERROR: No model output in nemsio for f${fhr} "
+        echo " *** FATAL ERROR: No model output for f${fhr} "
         export err=9
         err_chk
       fi
