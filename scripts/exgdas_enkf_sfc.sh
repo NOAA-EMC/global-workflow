@@ -32,7 +32,6 @@ ntiles=${ntiles:-6}
 # Utilities
 NCP=${NCP:-"/bin/cp -p"}
 NLN=${NLN:-"/bin/ln -sf"}
-NEMSIOGET=${NEMSIOGET:-${NWPROD}/exec/nemsio_get}
 NCLEN=${NCLEN:-$HOMEgfs/ush/getncdimlen}
 
 # Scripts

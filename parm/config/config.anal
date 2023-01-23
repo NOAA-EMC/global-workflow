@@ -40,11 +40,6 @@ fi
 export lobsdiag_forenkf=".false."  # anal does not need to write out jacobians
 								   # set to .true. in config.eobs and config.eupd
 
-if [[ ${OUTPUT_FILE} = "nemsio" ]]; then
-	export DO_CALC_INCREMENT="YES"
-	export DO_CALC_ANALYSIS="NO"
-fi
-
 # Do not process the following datasets
 export GSNDBF=${GSNDBF:-/dev/null}
 export AMSREBF=${AMSREBF:-/dev/null}
