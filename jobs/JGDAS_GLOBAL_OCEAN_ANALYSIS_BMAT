@@ -17,7 +17,7 @@ export CDUMP=${CDUMP:-${RUN:-"gfs"}}
 # Begin JOB SPECIFIC work
 ##############################################
 
-export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENT}}
+export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/ocean}
 
 ###############################################################
 # Run relevant script
