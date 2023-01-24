@@ -33,6 +33,7 @@ If running with Rocoto make sure to have a Rocoto module loaded before running s
 .. list-table:: ROCOTO Module Load Commands
    :widths: 25 120
    :header-rows: 1
+
    * - **MACHINE**
      - **COMMAND(S)**
    * - Hera
