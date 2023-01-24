@@ -201,8 +201,7 @@ Example ``setup_expt.py`` on Orion:
 
 ::
 
-   Orion-login-3$ ./setup_expt.py cycled --pslot test --idate 2022010118 --edate 2022010200 --resdet 192 --resens 96 --nens 80
-   --comrot /work/noaa/stmp/jschmo/comrot --expdir /work/noaa/global/jschmo/expdir
+   Orion-login-3$ ./setup_expt.py cycled --pslot test --idate 2022010118 --edate 2022010200 --resdet 192 --resens 96 --nens 80 --comrot /work/noaa/stmp/jschmo/comrot --expdir /work/noaa/global/jschmo/expdir
    EDITED:  /work/noaa/global/jschmo/expdir/test/config.base as per user input.
    EDITED:  /work/noaa/global/jschmo/expdir/test/config.aeroanl as per user input.
    EDITED:  /work/noaa/global/jschmo/expdir/test/config.ocnanal as per user input.
@@ -213,8 +212,7 @@ What happens if I run ``setup_expt.py`` again for an experiment that already exi
 
 ::
 
-   Orion-login-3$ ./setup_expt.py cycled --pslot test --idate 2022010118 --edate 2022010200 --resdet 192 --resens 96 --nens 80
-   --comrot /work/noaa/stmp/jschmo/comrot --expdir /work/noaa/global/jschmo/expdir
+   Orion-login-3$ ./setup_expt.py cycled --pslot test --idate 2022010118 --edate 2022010200 --resdet 192 --resens 96 --nens 80 --comrot /work/noaa/stmp/jschmo/comrot --expdir /work/noaa/global/jschmo/expdir
 
    directory already exists in /work/noaa/stmp/jschmo/comrot/test
 
