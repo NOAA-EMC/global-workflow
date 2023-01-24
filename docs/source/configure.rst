@@ -38,8 +38,8 @@ The global-workflow configs contain switches that change how the system runs. Ma
 | DO_METP        | Run METplus jobs             | YES           | YES         | One cycle spinup                                  |
 +----------------+------------------------------+---------------+-------------+---------------------------------------------------+
 | EXP_WARM_START | Is experiment starting warm  | .false.       | NO          | Impacts IAU settings for initial cycle. Can also  |
-|                | (.true.) or cold (.false)?   |               |             | be set when running setup_expy[_fcstonly].py      |
-|                |                              |               |             | script with --start flag (e.g. --start warm)      |
+|                | (.true.) or cold (.false)?   |               |             | be set when running ``setup_expt.py`` script with |
+|                |                              |               |             | the ``--start`` flag (e.g. ``--start warm``)      |
 +----------------+------------------------------+---------------+-------------+---------------------------------------------------+
 | HPSSARCH       | Archive to HPPS              | NO            | Possibly    | Whether to save output to tarballs on HPPS        |
 +----------------+------------------------------+---------------+-------------+---------------------------------------------------+
