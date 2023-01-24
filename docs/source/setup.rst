@@ -19,22 +19,19 @@ Experiment Setup
 
 If running with Rocoto make sure to have a Rocoto module loaded before running setup scripts:
 
-.. list-table:: ROCOTO Module Load Commands
-   :widths: 25 150
-   :header-rows: 1
-
-   * - **MACHINE**
-     - **COMMAND(S)**
-   * - Hera
-     - ``module load rocoto/1.3.3``
-   * - Orion
-     - | ``module load contrib``
-       | ``module load rocoto/1.3.3``
-   * - WCOSS2
-     - ``module use /apps/ops/test/nco/modulefiles/``
-       ``module load core/rocoto/1.3.5``
-   * - S4
-     - ``module load rocoto/1.3.4``
++------------+----------------------------------------------------------+
+| MACHINE    | ROCOTO MODULE LOAD COMMAND(S)                            |
++============+==========================================================+
+| Hera       | ``module load rocoto/1.3.3``                             |
++------------+----------------------------------------------------------+
+| Orion      | ``module load contrib``                                  |
+|            | ``module load rocoto/1.3.3``                             |
++------------+----------------------------------------------------------+
+| WCOSS2     | ``module use /apps/ops/test/nco/modulefiles/``           |
+|            | ``module load core/rocoto/1.3.5``                        |
++------------+----------------------------------------------------------+
+| S4         | ``module load rocoto/1.3.4``                             |
++------------+----------------------------------------------------------+
 
 ^^^^^^^^^^^^^^^^^^^^^^^^
 Forecast-only experiment
