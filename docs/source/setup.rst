@@ -7,7 +7,7 @@ Experiment Setup
 +------------+----------------------------------------------------------+
 | MACHINE    | PYTHON MODULE LOAD COMMAND(S)                            |
 +============+==========================================================+
-| Hera       | | ``module use -a /contrib/anaconda/modulefiles``        |
+| Hera       | ``module use -a /contrib/anaconda/modulefiles``          |
 |            | ``module load anaconda/anaconda3-5.3.1``                 |
 +------------+----------------------------------------------------------+
 | Orion      | ``module load python/3.7.5``                             |
