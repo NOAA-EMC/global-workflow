@@ -11,6 +11,7 @@ if [ $# -ne 1 ]; then
     echo "getic init coupled_ic aerosol_init"
     echo "atmanalprep atmanalrun atmanalpost"
     echo "atmensanalprep atmensanalrun atmensanalpost"
+    echo "landanlinit landanlrun landanlfinal"
     echo "aeroanlinit aeroanlrun aeroanlfinal"
     echo "anal sfcanl analcalc analdiag gldas fcst post vrfy metp arch echgres"
     echo "eobs ediag eomg eupd ecen esfc efcs epos earc"
@@ -191,6 +192,58 @@ elif [[ "${step}" = "atmanalpost" ]]; then
     export npe_node_atmanalpost
     export is_exclusive=True
 
+elif [[ "${step}" = "landanlinit" ]]; then
+
+    export wtime_landanlinit="00:10:00"
+    export npe_landanlinit=1
+    export nth_landanlinit=1
+    npe_node_landanlinit=$(echo "${npe_node_max} / ${nth_landanlinit}" | bc)
+    export npe_node_landanlinit
+    export memory_landanlinit="3072M"
+
+elif [[ "${step}" = "landanlrun" ]]; then
+
+   case ${CASE} in
+     C768)
+        layout_x=6
+        layout_y=6
+        ;;
+      C384)
+        layout_x=5
+        layout_y=5
+        ;;
+     C192 | C96 | C48)
+        layout_x=8
+        layout_y=8
+        ;;
+      *)
+          echo "FATAL: Resolution not supported'"
+          exit 1
+    esac
+
+    export layout_x
+    export layout_y
+
+    export wtime_landanlrun="00:30:00"
+    npe_landanlrun=$(echo "${layout_x} * ${layout_y} * 6" | bc)
+    export npe_landanlrun
+    npe_landanlrun_gfs=$(echo "${layout_x} * ${layout_y} * 6" | bc)
+    export npe_landanlrun_gfs
+    export nth_landanlrun=1
+    export nth_landanlrun_gfs=1
+    npe_node_landanlrun=$(echo "${npe_node_max} / ${nth_landanlrun}" | bc)
+    export npe_node_landanlrun
+    export is_exclusive=True
+
+elif [[ "${step}" = "landanlfinal" ]]; then
+
+    export wtime_landanlfinal="00:10:00"
+    export npe_landanlfinal=1
+    export nth_landanlfinal=1
+    npe_node_landanlfinal=$(echo "${npe_node_max} / ${nth_landanlfinal}" | bc)
+    export npe_node_landanlfinal
+    export memory_landanlfinal="3072M"
+
 elif [[ "${step}" = "aeroanlinit" ]]; then
 
     export wtime_aeroanlinit="00:10:00"
@@ -212,13 +265,16 @@ elif [[ "${step}" = "aeroanlrun" ]]; then
         layout_y=5
         ;;
      C192 | C96 | C48)
-        layout_x=3
-        layout_y=3
+        layout_x=8
+        layout_y=8
         ;;
       *)
           echo "FATAL: Resolution not supported'"
           exit 1
     esac
+
+    export layout_x
+    export layout_y
 
     export wtime_aeroanlrun="00:30:00"
     npe_aeroanlrun=$(echo "${layout_x} * ${layout_y} * 6" | bc)
@@ -343,7 +399,7 @@ elif [ ${step} = "analcalc" ]; then
 
 elif [ ${step} = "analdiag" ]; then
 
-    export wtime_analdiag="00:15:00"
+    export wtime_analdiag="00:10:00"
     export npe_analdiag=96             # Should be at least twice npe_ediag
     export nth_analdiag=1
     export npe_node_analdiag=$(echo "${npe_node_max} / ${nth_analdiag}" | bc)
@@ -673,7 +729,7 @@ elif [[ ${step} = "eobs" || ${step} = "eomg" ]]; then
 
 elif [ ${step} = "ediag" ]; then
 
-    export wtime_ediag="00:15:00"
+    export wtime_ediag="00:06:00"
     export npe_ediag=48
     export nth_ediag=1
     export npe_node_ediag=$(echo "${npe_node_max} / ${nth_ediag}" | bc)
@@ -764,6 +820,10 @@ elif [ ${step} = "postsnd" ]; then
     export npe_node_postsnd=10
     export npe_postsndcfp=9
     export npe_node_postsndcfp=1
+    if [ ${OUTPUT_FILE} == "nemsio" ]; then
+        export npe_postsnd=13
+        export npe_node_postsnd=4
+    fi
     if [[ "$(echo "${npe_node_postsnd} * ${nth_postsnd}" | bc)" -gt "${npe_node_max}" ]]; then
         export npe_node_postsnd=$(echo "${npe_node_max} / ${nth_postsnd}" | bc)
     fi
