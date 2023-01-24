@@ -45,23 +45,22 @@ FV3_GFS_postdet(){
     if [ $RERUN = "NO" ]; then
       #.............................
 
-      # Link all (except sfc_data) restart files from $gmemdir
+      # Link all restart files from $gmemdir
       for file in $(ls $gmemdir/RESTART/${sPDY}.${scyc}0000.*.nc); do
         file2=$(echo $(basename $file))
         file2=$(echo $file2 | cut -d. -f3-) # remove the date from file
         fsuf=$(echo $file2 | cut -d. -f1)
-        if [ $fsuf != "sfc_data" ]; then
-          $NLN $file $DATA/INPUT/$file2
-        fi
+        $NLN $file $DATA/INPUT/$file2
       done
 
-      # Link sfcanl_data restart files from $memdir
-      for file in $(ls $memdir/RESTART/${sPDY}.${scyc}0000.*.nc); do
-        file2=$(echo $(basename $file))
-        file2=$(echo $file2 | cut -d. -f3-) # remove the date from file
-        fsufanl=$(echo $file2 | cut -d. -f1)
-        if [ $fsufanl = "sfcanl_data" ]; then
+      # Replace sfc_data with sfcanl_data restart files from $memdir (if found)
+      for file in $(ls $memdir/RESTART/${sPDY}.${scyc}0000.sfcanl_data.tile?.nc); do
+        if [[ -f $file ]]; then
+          file2=$(echo $(basename $file))
+          file2=$(echo $file2 | cut -d. -f3-) # remove the date from file
+          fsufanl=$(echo $file2 | cut -d. -f1)
           file2=$(echo $file2 | sed -e "s/sfcanl_data/sfc_data/g")
+          rm -f $DATA/INPUT/$file2
           $NLN $file $DATA/INPUT/$file2
         fi
       done
@@ -144,14 +143,10 @@ EOF
 
   fi
 
-  if [ $machine = 'sandbox' ]; then
-    echo SUB ${FUNCNAME[0]}: Checking initial condition, overriden in sandbox mode!
-  else
-    nfiles=$(ls -1 $DATA/INPUT/* | wc -l)
-    if [ $nfiles -le 0 ]; then
-      echo SUB ${FUNCNAME[0]}: Initial conditions must exist in $DATA/INPUT, ABORT!
-      exit 1
-    fi
+  nfiles=$(ls -1 $DATA/INPUT/* | wc -l)
+  if [ $nfiles -le 0 ]; then
+    echo SUB ${FUNCNAME[0]}: Initial conditions must exist in $DATA/INPUT, ABORT!
+    exit 1
   fi
 
   # If doing IAU, change forecast hours
@@ -546,10 +541,6 @@ EOF
 FV3_GFS_nml(){
   # namelist output for a certain component
   echo SUB ${FUNCNAME[0]}: Creating name lists and model configure file for FV3
-  if [ $machine = 'sandbox' ]; then
-    cd $SCRIPTDIR
-    echo "MAIN: !!!Sandbox mode, writing to current directory!!!"
-  fi
   # Call child scripts in current script directory
   source $SCRIPTDIR/parsing_namelists_FV3.sh
   FV3_namelists
@@ -869,7 +860,51 @@ MOM6_postdet() {
 
     last_fhr=$fhr
   done
-  $NLN ${COMOUTocean}/MOM_input $DATA/INPUT/MOM_input
+
+  # Link ocean restarts from DATA to COM
+  mkdir -p "${COMOUTocean}/RESTART"
+  # end point restart does not have a timestamp, calculate
+  local rdate=$($NDATE $FHMAX $CDATE)
+  # Greater than 1/2 degree have a single MOM restart
+  $NLN "${COMOUTocean}/RESTART/${rdate:0:8}.${rdate:8:2}0000.res.nc" "${DATA}/MOM6_RESTART/MOM.res.nc"
+  # 1/4 degree have 3 additional restarts
+  case ${OCNRES} in
+    "025")
+      $NLN "${COMOUTocean}/RESTART/${rdate:0:8}.${rdate:8:2}0000.MOM.res_1.nc" "${DATA}/MOM6_RESTART/MOM.res_1.nc"
+      $NLN "${COMOUTocean}/RESTART/${rdate:0:8}.${rdate:8:2}0000.MOM.res_2.nc" "${DATA}/MOM6_RESTART/MOM.res_2.nc"
+      $NLN "${COMOUTocean}/RESTART/${rdate:0:8}.${rdate:8:2}0000.MOM.res_3.nc" "${DATA}/MOM6_RESTART/MOM.res_3.nc"
+      ;;
+    *)
+    ;;
+  esac
+
+  # Loop over restart_interval frequency and link restarts from DATA to COM
+  local res_int=$(echo $restart_interval | cut -d' ' -f1)  # If this is a list, get the frequency.  # This is bound to break w/ IAU
+  local idate=$($NDATE $res_int $CDATE)
+  while [[ $idate -lt $rdate ]]; do
+    local idatestr=$(date +%Y-%m-%d-%H -d "${idate:0:8} ${idate:8:2}")
+    $NLN "${COMOUTocean}/RESTART/${idate:0:8}.${idate:8:2}0000.res.nc" "${DATA}/MOM6_RESTART/MOM.res.${idatestr}-00-00.nc"
+    case ${OCNRES} in
+      "025")
+        $NLN "${COMOUTocean}/RESTART/${idate:0:8}.${idate:8:2}0000.MOM.res_1.nc" "${DATA}/MOM6_RESTART/MOM.res_1.${idatestr}-00-00.nc"
+        $NLN "${COMOUTocean}/RESTART/${idate:0:8}.${idate:8:2}0000.MOM.res_2.nc" "${DATA}/MOM6_RESTART/MOM.res_2.${idatestr}-00-00.nc"
+        $NLN "${COMOUTocean}/RESTART/${idate:0:8}.${idate:8:2}0000.MOM.res_3.nc" "${DATA}/MOM6_RESTART/MOM.res_3.${idatestr}-00-00.nc"
+      ;;
+    esac
+    local idate=$($NDATE $res_int $idate)
+  done
+
+  # TODO: mediator should have its own CMEPS_postdet() function
+  # Link mediator restarts from DATA to COM
+  local COMOUTmed="${ROTDIR}/${CDUMP}.${PDY}/${cyc}/med"
+  mkdir -p "${COMOUTmed}/RESTART"
+  local idate=$($NDATE $res_int $CDATE)
+  while [[ $idate -le $rdate ]]; do
+    local seconds=$(to_seconds ${idate:8:2}0000)  # use function to_seconds from forecast_predet.sh to convert HHMMSS to seconds
+    local idatestr="${idate:0:4}-${idate:4:2}-${idate:6:2}-${seconds}"
+    $NLN "${COMOUTmed}/RESTART/${idate:0:8}.${idate:8:2}0000.ufs.cpld.cpl.r.nc" "${DATA}/RESTART/ufs.cpld.cpl.r.${idatestr}.nc"
+    local idate=$($NDATE $res_int $idate)
+  done
 
   echo "SUB ${FUNCNAME[0]}: MOM6 input data linked/copied"
 
@@ -884,50 +919,9 @@ MOM6_nml() {
 MOM6_out() {
   echo "SUB ${FUNCNAME[0]}: Copying output data for MOM6"
 
-  # Link ocean restarts from DATA to COM
-  local ocean_com_dir="${ROTDIR}/${CDUMP}.${PDY}/${cyc}/ocean"
-  mkdir -p "${ocean_com_dir}/RESTART"
-  # end point restart does not have a timestamp, calculate
-  local rdate=$($NDATE $FHMAX $CDATE)
-  $NLN "${DATA}/MOM6_RESTART/MOM.res.nc" "${ocean_com_dir}/RESTART/${rdate:0:8}.${rdate:8:2}0000.res.nc"
-  # Greater than 1/2 degree have a single MOM restart
-  # Less than 1/2 degree have 3 additional restarts
-  case ${OCNRES} in
-    "025")
-      $NLN "${DATA}/MOM6_RESTART/MOM.res_1.nc" "${ocean_com_dir}/RESTART/${rdate:0:8}.${rdate:8:2}0000.MOM.res_1.nc"
-      $NLN "${DATA}/MOM6_RESTART/MOM.res_2.nc" "${ocean_com_dir}/RESTART/${rdate:0:8}.${rdate:8:2}0000.MOM.res_2.nc"
-      $NLN "${DATA}/MOM6_RESTART/MOM.res_3.nc" "${ocean_com_dir}/RESTART/${rdate:0:8}.${rdate:8:2}0000.MOM.res_3.nc"
-      ;;
-    *)
-    ;;
-  esac
-  # Loop over restart_interval_nems and link restarts from DATA to COM
-  local idate=$($NDATE $restart_interval_nems $CDATE)
-  while [[ $idate -lt $rdate ]]; do
-    local idatestr=$(date +%Y-%m-%d-%H -d "${idate:0:8} ${idate:8:2}")
-    $NLN "${DATA}/MOM6_RESTART/MOM.res.${idatestr}-00-00.nc" "${ocean_com_dir}/RESTART/${idate:0:8}.${idate:8:2}0000.res.nc"
-    case ${OCNRES} in
-      "025")
-        $NLN "${DATA}/MOM6_RESTART/MOM.res_1.${idatestr}-00-00.nc" "${ocean_com_dir}/RESTART/${idate:0:8}.${idate:8:2}0000.MOM.res_1.nc"
-        $NLN "${DATA}/MOM6_RESTART/MOM.res_2.${idatestr}-00-00.nc" "${ocean_com_dir}/RESTART/${idate:0:8}.${idate:8:2}0000.MOM.res_2.nc"
-        $NLN "${DATA}/MOM6_RESTART/MOM.res_3.${idatestr}-00-00.nc" "${ocean_com_dir}/RESTART/${idate:0:8}.${idate:8:2}0000.MOM.res_3.nc"
-      ;;
-      *)
-      ;;
-    esac
-    local idate=$($NDATE $restart_interval_nems $idate)
-  done
+  # Copy MOM_input from DATA to COMOUToucean after the forecast is run (and successfull)
+  $NCP ${DATA}/INPUT/MOM_input ${COMOUTocean}/MOM_input
 
-  # TODO: mediator should have its own CMEPS_out() function
-  # Link mediator restarts from DATA to COM
-  local med_com_dir="${ROTDIR}/${CDUMP}.${PDY}/${cyc}/med"
-  mkdir -p "${med_com_dir}/RESTART"
-  local idate=$($NDATE $restart_interval_nems $CDATE)
-  while [[ $idate -le $rdate ]]; do
-    local seconds=$(to_seconds ${idatestr:8:2}0000)  # use function to_seconds from forecast_predet.sh to convert HHMMSS to seconds
-    local idatestr="${idate:0:4}-${idate:4:2}-${idate:6:2}-${seconds}"
-    $NLN "${DATA}/RESTART/ufs.cpld.cpl.r.${idatestr}" "${med_com_dir}/RESTART/${idate:0:8}.${idate:8:2}0000."ufs.cpld.cpl.r.nc
-  done
 }
 
 CICE_postdet() {
@@ -998,12 +992,10 @@ CICE_postdet() {
   $NLN -sf $FIXcice/$ICERES/${ice_kmt_file} $DATA/
   $NLN -sf $FIXcice/$ICERES/$MESH_OCN_ICE $DATA/
 
-  # TODO: shouldn't this be in CICE_out()?
-  # Link output files
+  # Link CICE output files
   export ENSMEM=${ENSMEM:-01}
   export IDATE=$CDATE
   [[ ! -d $COMOUTice ]] && mkdir -p $COMOUTice
-  $NLN $COMOUTice/ice_in $DATA/ice_in
   fhrlst=$OUTPUT_FH
 
   for fhr in $fhrlst; do
@@ -1025,6 +1017,19 @@ CICE_postdet() {
     fi
     last_fhr=$fhr
   done
+
+  # Link CICE restarts to COMOUTice/RESTART
+  # Loop over restart_interval and link restarts from DATA to COM
+  mkdir -p ${COMOUTice}/RESTART
+  local res_int=$(echo ${restart_interval} | cut -d' ' -f1)  # If this is a list, get the frequency.  # This is bound to break w/ IAU
+  local rdate=$(${NDATE} ${FHMAX}   ${CDATE})
+  local idate=$(${NDATE} ${res_int} ${CDATE})
+  while [[ $idate -le $rdate ]]; do
+    local seconds=$(to_seconds ${idate:8:2}0000)  # use function to_seconds from forecast_predet.sh to convert HHMMSS to seconds
+    local idatestr="${idate:0:4}-${idate:4:2}-${idate:6:2}-${seconds}"
+    $NLN "${COMOUTice}/RESTART/${idate:0:8}.${idate:8:2}0000.cice_model.res.nc" "${DATA}/RESTART/iced.${idatestr}.nc"
+    local idate=$(${NDATE} ${res_int} ${idate})
+  done
 }
 
 CICE_nml() {
@@ -1035,20 +1040,9 @@ CICE_nml() {
 
 CICE_out() {
   echo "SUB ${FUNCNAME[0]}: Copying output data for CICE"
-  # TODO: Why is this empty?  Is there no cice output being copied back to COM?  There is output linked to COMOUTice in CICE_postdet()
-  # And people as why this needs refactoring.
 
-  local ice_com_dir="${ROTDIR}/${CDUMP}.${PDY}/${cyc}/ice"
-  mkdir -p "${ice_com_dir}/RESTART"
-
-  # Link ice restarts to COMOUTice
-  # Loop over restart_interval_nems and link restarts from DATA to COM
-  local idate=$($NDATE $restart_interval_nems $CDATE)
-  while [[ $idate -le $rdate ]]; do
-    local seconds=$(to_seconds ${idatestr:8:2}0000)  # use function to_seconds from forecast_predet.sh to convert HHMMSS to seconds
-    local idatestr="${idate:0:4}-${idate:4:2}-${idate:6:2}-${seconds}"
-    $NLN "${DATA}/RESTART/iced.${idatestr}" "${ice_com_dir}/RESTART/${idate:0:8}.${idate:8:2}0000.cice_model.res.nc"
-  done
+  # Copy ice_in namelist from DATA to COMOUTice after the forecast is run (and successfull)
+  $NCP ${DATA}/ice_in $COMOUTice/ice_in
 }
 
 GOCART_rc() {

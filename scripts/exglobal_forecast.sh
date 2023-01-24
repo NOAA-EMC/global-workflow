@@ -123,8 +123,7 @@ common_predet
 echo $RUN
 case $RUN in
   'data') DATM_predet;;
-  'gfs') FV3_GFS_predet;;
-  'gdas') FV3_GFS_predet;;
+  'gfs' | 'gdas') FV3_GFS_predet;;
   'gefs') FV3_GEFS_predet;;
 esac
 [[ $cplflx = .true. ]] && MOM6_predet
@@ -132,8 +131,7 @@ esac
 [[ $cplice = .true. ]] && CICE_predet
 
 case $RUN in
-  'gfs') FV3_GFS_det;;
-  'gdas') FV3_GFS_det;;
+  'gfs' | 'gdas') FV3_GFS_det;;
   'gefs') FV3_GEFS_det;;
 esac				#no run type determination for data atmosphere
 [[ $cplflx = .true. ]] && MOM6_det
@@ -146,8 +144,7 @@ echo "MAIN: Post-determination set up of run type"
 echo $RUN
 case $RUN in
   'data') DATM_postdet;;
-  'gfs') FV3_GFS_postdet;;
-  'gdas') FV3_GFS_postdet;;
+  'gfs' | 'gdas') FV3_GFS_postdet;;
   'gefs') FV3_GEFS_postdet;;
 esac				#no post determination set up for data atmosphere
 [[ $cplflx = .true. ]] && MOM6_postdet
@@ -159,10 +156,9 @@ echo "MAIN: Post-determination set up of run type finished"
 echo "MAIN: Writing name lists and model configuration"
 case $RUN in
   'data') DATM_nml;;
-  'gfs') FV3_GFS_nml;;
-  'gdas') FV3_GFS_nml;;
+  'gfs' | 'gdas') FV3_GFS_nml;;
   'gefs') FV3_GEFS_nml;;
-esac				#no namelist for data atmosphere
+esac
 [[ $cplflx = .true. ]] && MOM6_nml
 [[ $cplwav = .true. ]] && WW3_nml
 [[ $cplice = .true. ]] && CICE_nml
@@ -188,31 +184,23 @@ if [ $esmf_profile ]; then
   export ESMF_RUNTIME_PROFILE_OUTPUT=SUMMARY
 fi
 
-if [ $machine != 'sandbox' ]; then
-  $NCP $FCSTEXECDIR/$FCSTEXEC $DATA/.
-  export OMP_NUM_THREADS=$NTHREADS_FV3
-  $APRUN_FV3 $DATA/$FCSTEXEC 1>&1 2>&2
-  export ERR=$?
-  export err=$ERR
-  $ERRSCRIPT || exit $err
-else
-  echo "MAIN: mpirun launch here"
-fi
+$NCP $FCSTEXECDIR/$FCSTEXEC $DATA/.
+export OMP_NUM_THREADS=$NTHREADS_FV3
+$APRUN_FV3 $DATA/$FCSTEXEC 1>&1 2>&2
+export ERR=$?
+export err=$ERR
+$ERRSCRIPT || exit $err
 
-if [ $machine != 'sandbox' ]; then
-  case $RUN in
-    'data') data_out_Data_ATM;;
-    'gfs') data_out_GFS;;
-    'gdas') data_out_GFS;;
-    'gefs') data_out_GEFS;;
-  esac
-  [[ $cplflx = .true. ]] && MOM6_out
-  [[ $cplwav = .true. ]] && WW3_out
-  [[ $cplice = .true. ]] && CICE_out
-  [[ $esmf_profile = .true. ]] && CPL_out
-else
-  echo "MAIN: Running on sandbox mode, no output linking"
-fi
+case $RUN in
+  'data') data_out_Data_ATM;;
+  'gfs') data_out_GFS;;
+  'gdas') data_out_GFS;;
+  'gefs') data_out_GEFS;;
+esac
+[[ $cplflx = .true. ]] && MOM6_out
+[[ $cplwav = .true. ]] && WW3_out
+[[ $cplice = .true. ]] && CICE_out
+[[ $esmf_profile = .true. ]] && CPL_out
 echo "MAIN: Output copied to COMROT"
 
 #------------------------------------------------------------------

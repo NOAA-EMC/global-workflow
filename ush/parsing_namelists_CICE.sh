@@ -10,6 +10,13 @@ else
   cmeps_run_type='initial'
 fi
 
+# C48, 5degree Ocean does not work with this formula
+# Supply from config.ice
+# TODO: figure out why
+local _block_size_x=$(( 2 * ( $NX_GLB / $ICEPETS ) ))
+local _block_size_y=$(( $NY_GLB / 2 ))
+block_size_x=${block_size_x:-_block_size_x}
+block_size_y=${block_size_y:-_block_size_y}
 
 cat > ice_in <<eof
 &setup_nml
@@ -176,8 +183,8 @@ cat > ice_in <<eof
    nprocs = $ICEPETS
    nx_global         = $NX_GLB
    ny_global         = $NY_GLB
-   block_size_x      = $(( 2 * ( $NX_GLB / $ICEPETS ) ))
-   block_size_y      = $(( $NY_GLB / 2 ))
+   block_size_x      = ${block_size_x}
+   block_size_y      = ${block_size_y}
    max_blocks        = -1
    processor_shape   = 'slenderX2'
    distribution_type = 'cartesian'
