@@ -596,7 +596,7 @@ data_out_GFS() {
         done
       fi
     elif [ $CDUMP = "gfs" ]; then
-      $NCP $DATA/input.nml ${ROTDIR}/${RUN}.${PDY}/$cyc/${mem:-""}/atmos/
+      $NCP $DATA/input.nml ${ROTDIR}/${RUN}.${PDY}/${cyc}/atmos/
     fi
   fi
 
