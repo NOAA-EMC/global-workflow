@@ -197,17 +197,15 @@ Example:
    cd workflow
    ./setup_expt.py cycled --pslot test --configdir /home/Joe.Schmo/git/global-workflow/parm/config --idate 2020010100 --edate 2020010118 --comrot /some_large_disk_area/Joe.Schmo/comrot --expdir /some_safe_disk_area/Joe.Schmo/expdir --resdet 384 --resens 192 --nens 80 --gfs_cyc 4
 
-Example ``setup_expt.py`` on WCOSS_C:
+Example ``setup_expt.py`` on Orion:
 
 ::
 
-   SURGE-slogin1 > ./setup_expt.py cycled --pslot fv3demo --idate 2017073118 --edate 2017080106 --comrot /gpfs/hps2/ptmp/Joe.Schmo --expdir /gpfs/hps3/emc/global/noscrub/Joe.Schmo/para_gfs
-   SDATE = 2017-07-31 18:00:00
-   EDATE = 2017-08-01 06:00:00
-   EDITED:  /gpfs/hps3/emc/global/noscrub/Joe.Schmo/para_gfs/fv3demo/config.base as per user input.
-   DEFAULT: /gpfs/hps3/emc/global/noscrub/Joe.Schmo/para_gfs/fv3demo/config.base.default is for reference only.
-   Please verify and delete the default file before proceeding.
-   SURGE-slogin1 >
+   Orion-login-3$ ./setup_expt.py cycled --pslot test --idate 2022010118 --edate 2022010200 --resdet 192 --resens 96 --nens 80
+   --comrot /work/noaa/stmp/jschmo/comrot --expdir /work/noaa/global/jschmo/expdir
+   EDITED:  /work/noaa/global/jschmo/expdir/test/config.base as per user input.
+   EDITED:  /work/noaa/global/jschmo/expdir/test/config.aeroanl as per user input.
+   EDITED:  /work/noaa/global/jschmo/expdir/test/config.ocnanal as per user input.
 
 The message about the config.base.default is telling you that you are free to delete it if you wish but it’s not necessary to remove. Your resulting config.base was generated from config.base.default and the default one is there for your information.
 
@@ -215,17 +213,19 @@ What happens if I run ``setup_expt.py`` again for an experiment that already exi
 
 ::
 
-   SURGE-slogin1 > ./setup_expt.py forecast-only --pslot fv3demo --idate 2017073118 
-   --edate 2017080106 --comrot /gpfs/hps2/ptmp/Joe.Schmo --expdir /gpfs/hps3/emc/global/noscrub/Joe.Schmo/para_gfs
-   COMROT already exists in /gpfs/hps2/ptmp/Joe.Schmo/fv3demo
-   Do you wish to over-write COMROT [y/N]: y
-   EXPDIR already exists in /gpfs/hps3/emc/global/noscrub/Joe.Schmo/para_gfs/fv3demo
-   Do you wish to over-write EXPDIR [y/N]: y
-   SDATE = 2017-07-31 18:00:00
-   EDATE = 2017-08-01 06:00:00
-   EDITED:  /gpfs/hps3/emc/global/noscrub/Joe.Schmo/para_gfs/fv3demo/config.base as per user input.
-   DEFAULT: /gpfs/hps3/emc/global/noscrub/Joe.Schmo/para_gfs/fv3demo/config.base.default is for reference only.
-   Please verify and delete the default file before proceeding.
+   Orion-login-3$ ./setup_expt.py cycled --pslot test --idate 2022010118 --edate 2022010200 --resdet 192 --resens 96 --nens 80
+   --comrot /work/noaa/stmp/jschmo/comrot --expdir /work/noaa/global/jschmo/expdir
+
+   directory already exists in /work/noaa/stmp/jschmo/comrot/test
+
+   Do you wish to over-write [y/N]: y
+
+   directory already exists in /work/noaa/global/jschmo/expdir/test
+
+   Do you wish to over-write [y/N]: y
+   EDITED:  /work/noaa/global/jschmo/expdir/test/config.base as per user input.
+   EDITED:  /work/noaa/global/jschmo/expdir/test/config.aeroanl as per user input.
+   EDITED:  /work/noaa/global/jschmo/expdir/test/config.ocnanal as per user input.
 
 Your ``COMROT`` and ``EXPDIR`` will be deleted and remade. Be careful with this!
 
