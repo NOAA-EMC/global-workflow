@@ -12,7 +12,6 @@ Experiment Setup
      - **COMMAND(S)**
    * - Hera
      - ::
-
            module use -a /contrib/anaconda/modulefiles
            module load anaconda/anaconda3-5.3.1
    * - Orion
