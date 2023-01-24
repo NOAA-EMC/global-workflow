@@ -497,14 +497,8 @@ EOF
   JCAP_STP=${JCAP_STP:-$JCAP_CASE}
   LONB_STP=${LONB_STP:-$LONB_CASE}
   LATB_STP=${LATB_STP:-$LATB_CASE}
-
   cd $DATA
-
   affix="nc"
-  if [ "$OUTPUT_FILE" = "nemsio" ]; then
-    affix="nemsio"
-  fi
-
   if [ $QUILTING = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]; then
     fhr=$FHMIN
     for fhr in $OUTPUT_FH; do

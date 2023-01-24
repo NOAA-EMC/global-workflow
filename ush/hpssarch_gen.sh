@@ -16,11 +16,7 @@ ARCH_GAUSSIAN=${ARCH_GAUSSIAN:-"YES"}
 ARCH_GAUSSIAN_FHMAX=${ARCH_GAUSSIAN_FHMAX:-36}
 ARCH_GAUSSIAN_FHINC=${ARCH_GAUSSIAN_FHINC:-6}
 SUFFIX=${SUFFIX:-".nc"}
-if [ $SUFFIX = ".nc" ]; then
-  format="netcdf"
-else
-  format="nemsio"
-fi
+format="netcdf"
 
 # Set whether to archive downstream products
 DO_DOWN=${DO_DOWN:-"NO"}
