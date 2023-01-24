@@ -67,13 +67,13 @@ The following steps should be followed in order to make changes to the develop b
 .. _development-tools:
 
 =================
-DEVELOPMENT TOOLS
+Development Tools
 =================
 
 See the `/test` folder in global-workflow for available development and testing tools.
 
 ----------------
-COMPARISON TOOLS
+Comparison Tools
 ----------------
 
 There are several scripts to compare output between two experiments (e.g. control and test). See scripts under `/test` folder and read `README` there for information on how to use them.
