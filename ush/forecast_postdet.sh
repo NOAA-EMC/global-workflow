@@ -129,7 +129,8 @@ EOF
     #.............................
 
   else ## cold start
-    for file in $(ls $memdir/INPUT/*.nc); do
+    ICSDIR=${ICSDIR:-${memdir}/INPUT}         # cold start initial conditions
+    for file in $(ls ${ICSDIR}/*.nc); do
       file2=$(echo $(basename $file))
       fsuf=$(echo $file2 | cut -c1-3)
       if [ $fsuf = "gfs" -o $fsuf = "sfc" ]; then
@@ -594,7 +595,7 @@ data_out_GFS() {
           $NCP $file $memdir/RESTART/$file
         done
       fi
-    elif [ $CDUMP = "gfs" ] || [ ${RUN} = "gefs" ]; then
+    elif [ $CDUMP = "gfs" ]; then
       $NCP $DATA/input.nml ${ROTDIR}/${RUN}.${PDY}/$cyc/${mem:-""}/atmos/
     fi
   fi
