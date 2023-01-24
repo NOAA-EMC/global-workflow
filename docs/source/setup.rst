@@ -34,8 +34,8 @@ If running with Rocoto make sure to have a Rocoto module loaded before running s
      - | ``module load contrib``
        | ``module load rocoto/1.3.3``
    * - WCOSS2
-     - | ``module use /apps/ops/test/nco/modulefiles/``
-       | ``module load core/rocoto/1.3.5``
+     - ``module use /apps/ops/test/nco/modulefiles/``
+       ``module load core/rocoto/1.3.5``
    * - S4
      - ``module load rocoto/1.3.4``
 
