@@ -12,7 +12,7 @@ Experiment Setup
      - **COMMAND(S)**
    * - Hera
      - | ``module use -a /contrib/anaconda/modulefiles``
-     - | ``module load anaconda/anaconda3-5.3.1``
+       | ``module load anaconda/anaconda3-5.3.1``
    * - Orion
      - ``module load python/3.7.5``
    * - WCOSS2
@@ -32,10 +32,10 @@ If running with Rocoto make sure to have a Rocoto module loaded before running s
      - ``module load rocoto/1.3.3``
    * - Orion
      - | ``module load contrib``
-     - | ``module load rocoto/1.3.3``
+       | ``module load rocoto/1.3.3``
    * - WCOSS2
      - | ``module use /apps/ops/test/nco/modulefiles/``
-     - | ``module load core/rocoto/1.3.5``
+       | ``module load core/rocoto/1.3.5``
    * - S4
      - ``module load rocoto/1.3.4``
 
