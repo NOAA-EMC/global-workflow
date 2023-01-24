@@ -4,21 +4,18 @@ Experiment Setup
 
  Global workflow uses a set of scripts to help configure and set up the drivers (also referred to as Workflow Manager) that run the end-to-end system. While currently we use a `ROCOTO <https://github.com/christopherwharrop/rocoto/wiki/documentation>`__ based system and that is documented here, an `ecFlow <https://www.ecmwf.int/en/learning/training/introduction-ecmwf-job-scheduler-ecflow>`__ based systm is also under development and will be introduced to the Global Workflow when it is mature. To run the setup scripts, you need to make sure to have a copy of ``python3`` with ``numpy`` available. The easiest way to guarantee this is to load python from the `official hpc-stack installation <https://github.com/NOAA-EMC/hpc-stack/wiki/Official-Installations>`_ for the machine you are on:
 
-.. list-table:: Python Module Load Commands
-   :widths: 25 150
-   :header-rows: 1
-
-   * - **MACHINE**
-     - **COMMAND(S)**
-   * - Hera
-     - | ``module use -a /contrib/anaconda/modulefiles``
-       | ``module load anaconda/anaconda3-5.3.1``
-   * - Orion
-     - ``module load python/3.7.5``
-   * - WCOSS2
-     - ``module load python/3.8.6``
-   * - S4
-     - ``module load miniconda/3.8-s4``
++------------+----------------------------------------------------------+
+| MACHINE    | PYTHON MODULE LOAD COMMAND(S)                            |
++------------+----------------------------------------------------------+
+| Hera       | | ``module use -a /contrib/anaconda/modulefiles``        |
+|            | | ``module load anaconda/anaconda3-5.3.1``               |
++------------+----------------------------------------------------------+
+| Orion      | ``module load python/3.7.5``                             |
++------------+----------------------------------------------------------+
+| WCOSS2     | ``module load python/3.8.6``                             |
++------------+----------------------------------------------------------+
+| S4         | ``module load miniconda/3.8-s4``                         |
++------------+----------------------------------------------------------+
 
 If running with Rocoto make sure to have a Rocoto module loaded before running setup scripts:
 
@@ -35,7 +32,7 @@ If running with Rocoto make sure to have a Rocoto module loaded before running s
        | ``module load rocoto/1.3.3``
    * - WCOSS2
      - ``module use /apps/ops/test/nco/modulefiles/``
-       | ``module load core/rocoto/1.3.5``
+       ``module load core/rocoto/1.3.5``
    * - S4
      - ``module load rocoto/1.3.4``
 
