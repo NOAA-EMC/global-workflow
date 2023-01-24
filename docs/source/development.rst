@@ -64,6 +64,20 @@ The following steps should be followed in order to make changes to the develop b
  #. Complete - When review and testing is complete the code manager will complete the pull request and subsequent merge/commit.
  #. Cleanup - When complete the lead developer should delete the branch and close the issue. "Closing keywords" can be used in the PR to automatically close associated issues.
 
+.. _development-tools:
+
+=================
+DEVELOPMENT TOOLS
+=================
+
+See the `/test` folder in global-workflow for available development and testing tools.
+
+----------------
+COMPARISON TOOLS
+----------------
+
+There are several scripts to compare output between two experiments (e.g. control and test). See scripts under `/test` folder and read `README` there for information on how to use them.
+
 .. _code-standards:
 
 ==============
