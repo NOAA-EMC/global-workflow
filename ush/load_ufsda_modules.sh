@@ -59,7 +59,8 @@ elif [[ -d /work ]] ; then
      pip list
   fi
   # set NETCDF variable based on ncdump location
-  NETCDF=$( which ncdump | cut -d " " -f 3 )
+  ncdump=$( which ncdump )
+  NETCDF=$( echo "$ncdump" | cut -d " " -f 3 )
   export NETCDF
   # prod_util stuff, find a better solution later...
   module use /apps/contrib/NCEP/hpc-stack/libs/hpc-stack/modulefiles/compiler/intel/2022.1.2/

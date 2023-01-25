@@ -60,7 +60,6 @@ class Task:
         self.PDY = self.config['PDY']
         self.cyc = self.config['cyc']
         self.current_cycle = dt.datetime.strptime(self.PDY + self.cyc, '%Y%m%d%H')
-        pass
 
     def execute(self):
         """
