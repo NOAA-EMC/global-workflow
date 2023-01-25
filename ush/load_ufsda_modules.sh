@@ -60,7 +60,7 @@ elif [[ -d /work ]] ; then
   fi
   # set NETCDF variable based on ncdump location
   ncdump=$( which ncdump )
-  NETCDF=$( echo "$ncdump" | cut -d " " -f 3 )
+  NETCDF=$( echo "${ncdump}" | cut -d " " -f 3 )
   export NETCDF
   # prod_util stuff, find a better solution later...
   module use /apps/contrib/NCEP/hpc-stack/libs/hpc-stack/modulefiles/compiler/intel/2022.1.2/
