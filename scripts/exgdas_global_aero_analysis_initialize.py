@@ -9,6 +9,6 @@ logging.basicConfig(format='%(asctime)s:%(levelname)s:%(message)s', level=loggin
 
 if __name__ == '__main__':
 
-    AeroAnl = pygfs.task.aero_analysis.AerosolAnalysis(os.environ)
+    AeroAnl = pygfs.task.aero_analysis.AerosolAnalysis(dict(os.environ))
     AeroAnl.configure()
     AeroAnl.initialize()

@@ -24,17 +24,27 @@ elif [[ -d /lfs3 ]] ; then
 elif [[ -d /scratch1 ]] ; then
   # We are on NOAA Hera
   module load GDAS/hera
-  if [[ "${DEBUG_WORKFLOW}" == "YES" ]] ; then
+  if [[ "${DEBUG_WORKFLOW:-NO}" == "YES" ]] ; then
      module list
      pip list
   fi
+  # set NETCDF variable based on ncdump location
+  export NETCDF=$( which ncdump )
+  # prod_util stuff, find a better solution later...
+  module use /scratch2/NCEPDEV/nwprod/hpc-stack/libs/hpc-stack/modulefiles/compiler/intel/2022.1.2/
+  module load prod_util
 elif [[ -d /work ]] ; then
   # We are on MSU Orion
   module load GDAS/orion
-  if [[ "${DEBUG_WORKFLOW}" == "YES" ]] ; then
+  if [[ "${DEBUG_WORKFLOW:-NO}" == "YES" ]] ; then
      module list
      pip list
   fi
+  # set NETCDF variable based on ncdump location
+  export NETCDF=$( which ncdump | cut -d " " -f 3 )
+  # prod_util stuff, find a better solution later...
+  module use /apps/contrib/NCEP/hpc-stack/libs/hpc-stack/modulefiles/compiler/intel/2022.1.2/
+  module load prod_util
 elif [[ -d /glade ]] ; then
   # We are on NCAR Yellowstone
   echo WARNING: UFSDA NOT SUPPORTED ON THIS PLATFORM
