@@ -10,24 +10,24 @@ else
   cmeps_run_type='initial'
 fi
 
-#Get correct MPI options for NPROC and grid
-cice_processor_shape=${cice_processor_shape:-'slenderX2'}
-shape=${cice_processor_shape#${cice_processor_shape%?}}
-NPX=$(( ICEPETS / shape )) #number of processors in x direction
-NPY=$(( ICEPETS / NPX ))   #number of processors in y direction
+# Get correct MPI options for NPROC and grid
+local cice_processor_shape=${cice_processor_shape:-'slenderX2'}
+local shape=${cice_processor_shape#${cice_processor_shape%?}}
+local NPX=$(( ICEPETS / shape )) #number of processors in x direction
+local NPY=$(( ICEPETS / NPX ))   #number of processors in y direction
 if (( $(( NX_GLB % NPX )) == 0 )); then
-    block_size_x=$(( NX_GLB / NPX ))
+  local block_size_x=$(( NX_GLB / NPX ))
 else
-    block_size_x=$(( (NX_GLB / NPX) + 1 ))
+  local block_size_x=$(( (NX_GLB / NPX) + 1 ))
 fi
 if (( $(( NY_GLB % NPY )) == 0 )); then
-    block_size_y=$(( NY_GLB / NPY ))
+  local block_size_y=$(( NY_GLB / NPY ))
 else
-    block_size_y=$(( (NY_GLB / NPY) + 1 ))
+  local block_size_y=$(( (NY_GLB / NPY) + 1 ))
 fi
-max_blocks=$(( (NX_GLB * NY_GLB) / (block_size_x * block_size_y * ICEPETS) ))
+local max_blocks=$(( (NX_GLB * NY_GLB) / (block_size_x * block_size_y * ICEPETS) ))
 if (( max_blocks == 0 )) || (( max_blocks % 2 != 0 )); then
-    max_blocks=-1
+  local max_blocks=-1
 fi
 
 cat > ice_in <<eof
@@ -43,7 +43,7 @@ cat > ice_in <<eof
    ndtd           = 1
    runtype        = '$cmeps_run_type'
    runid          = 'unknown'
-   ice_ic         = 'cice_model.res'
+   ice_ic         = 'cice_model.res.nc'
    restart        = .true.
    restart_ext    = .false.
    use_restart_time = $USE_RESTART_TIME
