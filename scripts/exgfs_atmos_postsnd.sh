@@ -36,38 +36,20 @@ export INCREMENT=12
 export MAKEBUFR=NO
 export F00FLAG=YES
 export fformat=${OUTPUT_FILE:-netcdf}
-if [ $fformat == "netcdf" ]
- then
 export atmfm="nc"
 export logfm="txt"
-else 
-export atmfm="nemsio"
-export logfm="nemsio"
-fi
-
-    export NINT1=${FHOUT_HF_GFS:-1}
-    export NEND1=${FHMAX_HF_GFS:-120}
-    export NINT3=${FHOUT_GFS:-3}
+export NINT1=${FHOUT_HF_GFS:-1}
+export NEND1=${FHMAX_HF_GFS:-120}
+export NINT3=${FHOUT_GFS:-3}
 
 rm -f -r ${COMOUT}/bufr.${cycle}
 mkdir -p ${COMOUT}/bufr.${cycle}
-
-    if [ -f $HOMEgfs/ush/getncdimlen ]
-	then
-	GETDIM=$HOMEgfs/ush/getncdimlen
-	else
-	GETDIM=$EXECbufrsnd/getncdimlen
-	fi
-if [ $fformat == "netcdf" ]
- then
-export LEVS=$($GETDIM $COMIN/${RUN}.${cycle}.atmf000.${atmfm} pfull)
+if [ -f $HOMEgfs/ush/getncdimlen ]; then
+  GETDIM=$HOMEgfs/ush/getncdimlen
 else
-# Extract number of vertical levels from $STARTHOUR atmospheric file
-export NEMSIOGET=${NEMSIOGET:-$EXECbufrsnd/nemsio_get}
-fhr3=$(printf %03i $STARTHOUR)
-ATMFCS=$COMIN/${RUN}.${cycle}.atmf${fhr3}.nemsio
-export LEVS=$($NEMSIOGET $ATMFCS dimz | awk '{print $2}')
+  GETDIM=$EXECbufrsnd/getncdimlen
 fi
+export LEVS=$($GETDIM $COMIN/${RUN}.${cycle}.atmf000.${atmfm} pfull)
 
 ### Loop for the hour and wait for the sigma and surface flux file:
 export FSTART=$STARTHOUR

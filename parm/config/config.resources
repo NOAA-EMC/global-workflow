@@ -770,10 +770,6 @@ elif [ ${step} = "postsnd" ]; then
     export npe_node_postsnd=10
     export npe_postsndcfp=9
     export npe_node_postsndcfp=1
-    if [ ${OUTPUT_FILE} == "nemsio" ]; then
-        export npe_postsnd=13
-        export npe_node_postsnd=4
-    fi
     if [[ "$(echo "${npe_node_postsnd} * ${nth_postsnd}" | bc)" -gt "${npe_node_max}" ]]; then
         export npe_node_postsnd=$(echo "${npe_node_max} / ${nth_postsnd}" | bc)
     fi
