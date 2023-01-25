@@ -10,13 +10,25 @@ else
   cmeps_run_type='initial'
 fi
 
-# C48, 5degree Ocean does not work with this formula
-# Supply from config.ice
-# TODO: figure out why
-local _block_size_x=$(( 2 * ( $NX_GLB / $ICEPETS ) ))
-local _block_size_y=$(( $NY_GLB / 2 ))
-block_size_x=${block_size_x:-_block_size_x}
-block_size_y=${block_size_y:-_block_size_y}
+#Get correct MPI options for NPROC and grid
+cice_processor_shape=${cice_processor_shape:-'slenderX2'}
+shape=${cice_processor_shape#${cice_processor_shape%?}}
+NPX=$(( ICEPETS / shape )) #number of processors in x direction
+NPY=$(( ICEPETS / NPX ))   #number of processors in y direction
+if (( $(( NX_GLB % NPX )) == 0 )); then
+    block_size_x=$(( NX_GLB / NPX ))
+else
+    block_size_x=$(( (NX_GLB / NPX) + 1 ))
+fi
+if (( $(( NY_GLB % NPY )) == 0 )); then
+    block_size_y=$(( NY_GLB / NPY ))
+else
+    block_size_y=$(( (NY_GLB / NPY) + 1 ))
+fi
+max_blocks=$(( (NX_GLB * NY_GLB) / (block_size_x * block_size_y * ICEPETS) ))
+if (( max_blocks == 0 )) || (( max_blocks % 2 != 0 )); then
+    max_blocks=-1
+fi
 
 cat > ice_in <<eof
 &setup_nml
@@ -31,7 +43,7 @@ cat > ice_in <<eof
    ndtd           = 1
    runtype        = '$cmeps_run_type'
    runid          = 'unknown'
-   ice_ic         = 'cice_model.res.nc'
+   ice_ic         = 'cice_model.res'
    restart        = .true.
    restart_ext    = .false.
    use_restart_time = $USE_RESTART_TIME
@@ -180,13 +192,13 @@ cat > ice_in <<eof
 /
 
 &domain_nml
-   nprocs = $ICEPETS
-   nx_global         = $NX_GLB
-   ny_global         = $NY_GLB
+   nprocs = ${ICEPETS}
+   nx_global         = ${NX_GLB}
+   ny_global         = ${NY_GLB}
    block_size_x      = ${block_size_x}
    block_size_y      = ${block_size_y}
-   max_blocks        = -1
-   processor_shape   = 'slenderX2'
+   max_blocks        = ${max_blocks}
+   processor_shape   = '${cice_processor_shape}'
    distribution_type = 'cartesian'
    distribution_wght = 'latitude'
    ew_boundary_type  = 'cyclic'

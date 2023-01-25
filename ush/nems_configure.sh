@@ -42,11 +42,11 @@ CHMPETS=${CHMPETS:-${ATMPETS}}
 USE_MOMMESH=${USE_MOMMESH:-"true"}
 MESH_OCN_ICE=${MESH_OCN_ICE:-"mesh.mx${ICERES}.nc"}
 
-if [[ $OCNRES = "100" ]];  then
-  EPS_IMESH='2.5e-1'
-else
-  EPS_IMESH='1.0e-1'
-fi
+case ${OCNRES} in
+    "100" ) EPS_IMESH="2.5e-1";;
+    "500" ) EPS_IMESH="4.0e-1";;
+    * ) EPS_IMESH="1.0e-1";;
+esac
 
 rm -f $DATA/nems.configure
 

@@ -768,12 +768,17 @@ MOM6_postdet() {
 
   # Copy MOM6 ICs
   if [[ "${MODE}" = 'cycled' ]]; then  # TODO: remove this block after ICSDIR is corrected for forecast-only
-    $NLN "${ROTDIR}/${CDUMP}.${gPDY}/${gcyc}/ocean/RESTART/${PDY}.${cyc}0000.MOM.res.nc" "${DATA}/INPUT/MOM.res.nc"
+    if [ ${warm_start} = '.true.' ]; then
+        res_dir=${ROTDIR}/${CDUMP}.${gPDY}/${gcyc}/ocean/RESTART
+    else
+        res_dir=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/ocean/RESTART
+    fi
+    $NLN "${res_dir}/${PDY}.${cyc}0000.MOM.res.nc" "${DATA}/INPUT/MOM.res.nc"
     case $OCNRES in
       "025")
-        $NLN "${ROTDIR}/${CDUMP}.${gPDY}/${gcyc}/ocean/RESTART/${PDY}.${cyc}0000.MOM.res_1.nc" "${DATA}/INPUT/MOM.res_1.nc"
-        $NLN "${ROTDIR}/${CDUMP}.${gPDY}/${gcyc}/ocean/RESTART/${PDY}.${cyc}0000.MOM.res_2.nc" "${DATA}/INPUT/MOM.res_2.nc"
-        $NLN "${ROTDIR}/${CDUMP}.${gPDY}/${gcyc}/ocean/RESTART/${PDY}.${cyc}0000.MOM.res_3.nc" "${DATA}/INPUT/MOM.res_3.nc"
+        $NLN "${res_dir}/${PDY}.${cyc}0000.MOM.res_1.nc" "${DATA}/INPUT/MOM.res_1.nc"
+        $NLN "${res_dir}/${PDY}.${cyc}0000.MOM.res_2.nc" "${DATA}/INPUT/MOM.res_2.nc"
+        $NLN "${res_dir}/${PDY}.${cyc}0000.MOM.res_3.nc" "${DATA}/INPUT/MOM.res_3.nc"
       ;;
       *)
       ;;
@@ -781,7 +786,7 @@ MOM6_postdet() {
   else
     $NCP -pf "${ICSDIR}/${CDATE}/ocn/MOM*nc" "${DATA}/INPUT/"  # TODO: Update files in ICSDIR to reflect COM structure naming convention
   fi
-
+  
   # Copy MOM6 fixed files
   $NCP -pf $FIXmom/$OCNRES/* $DATA/INPUT/
 
@@ -795,15 +800,17 @@ MOM6_postdet() {
   fi
 
   # Copy mediator restart file to RUNDIR  # TODO: mediator should have its own CMEPS_postdet() function
-  local mediator_file="${ROTDIR}/${CDUMP}.${gPDY}/${gcyc}/med/${PDY}.${cyc}0000.ufs.cpld.cpl.r.nc"
-  if [[ -f "${mediator_file}" ]]; then
-    $NLN "${mediator_file}" "${DATA}/ufs.cpld.cpl.r.nc"
-    rm -f "${DATA}/rpointer.cpl"
-    touch "${DATA}/rpointer.cpl"
-    echo "ufs.cpld.cpl.r.nc" >> "${DATA}/rpointer.cpl"
-  else
-    echo "FATAL ERROR: ${mediator_file} does not exist, ABORT!"
-    exit 4
+  if [ ${warm_start} = 'true' ]; then
+    local mediator_file="${ROTDIR}/${CDUMP}.${gPDY}/${gcyc}/med/${PDY}.${cyc}0000.ufs.cpld.cpl.r.nc"
+    if [[ -f "${mediator_file}" ]]; then
+       $NLN "${mediator_file}" "${DATA}/ufs.cpld.cpl.r.nc"
+        rm -f "${DATA}/rpointer.cpl"
+        touch "${DATA}/rpointer.cpl"
+        echo "ufs.cpld.cpl.r.nc" >> "${DATA}/rpointer.cpl"
+    else
+        echo "FATAL ERROR: ${mediator_file} does not exist, ABORT!"
+        exit 4
+    fi
   fi
 
   if [ $DO_OCN_SPPT = "YES" -o $DO_OCN_PERT_EPBL = "YES" ]; then
@@ -988,7 +995,12 @@ CICE_postdet() {
 
   # Copy/link CICE IC to DATA
   if [[ "${MODE}" = 'cycled' ]]; then  # TODO: remove this block after ICSDIR is corrected for forecast-only
-    $NLN "${ROTDIR}/${CDUMP}.${gPDY}/${gcyc}/ice/RESTART/${PDY}.${cyc}0000.cice_model.res.nc" "${DATA}/cice_model.res.nc"
+    if [ ${warm_start} = '.true.' ]; then
+        res_dir=${ROTDIR}/${CDUMP}.${gPDY}/${gcyc}/ice/RESTART
+    else
+        res_dir=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/ice/RESTART
+    fi
+    $NLN "${res_dir}/${PDY}.${cyc}0000.cice_model.res.nc" "${DATA}/cice_model.res.nc"
   else
     $NCP -p $ICSDIR/$CDATE/ice/cice_model_${ICERESdec}.res_$CDATE.nc $DATA/cice_model.res.nc
   fi

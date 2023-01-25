@@ -370,7 +370,11 @@ elif [ ${step} = "gldas" ]; then
 
 elif [ ${step} = "fcst" ]; then
 
-    export wtime_fcst="00:30:00"
+    if [ ${CASE} = "C48" ]; then
+        export wtime_fcst="00:30:00"
+    else
+        export wtime_fcst="00:40:00"
+    fi
     if [ ${CASE} = "C768" ]; then
       export wtime_fcst_gfs="06:00:00"
     elif [ ${CASE} = "C384" ]; then
