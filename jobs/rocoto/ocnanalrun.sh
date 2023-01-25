@@ -3,10 +3,10 @@
 source "${HOMEgfs}/ush/preamble.sh"
 
 ###############################################################
-# Source GDASApp modules
-module purge
-module use "${HOMEgfs}/sorc/gdas.cd/modulefiles"
-module load GDAS/"${machine,,}"
+# Source UFSDA workflow modules
+. "${HOMEgfs}/ush/load_ufsda_modules.sh"
+status=$?
+[[ ${status} -ne 0 ]] && exit "${status}"
 
 export job="ocnanalrun"
 export jobid="${job}.$$"
