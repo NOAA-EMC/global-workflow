@@ -11,11 +11,6 @@
 ## for execution.
 #####
 
-FV3_GEFS_postdet(){
-  echo SUB ${FUNCNAME[0]}: Linking input data for FV3 $RUN
-  # soft link commands insert here
-}
-
 DATM_postdet(){
   ######################################################################
   # Link DATM  inputs (ie forcing files)                           #
@@ -134,7 +129,7 @@ EOF
     #.............................
 
   else ## cold start
-    for file in $(ls $memdir/INPUT/*.nc); do
+    for file in $(ls ${memdir}/INPUT/*.nc); do
       file2=$(echo $(basename $file))
       fsuf=$(echo $file2 | cut -c1-3)
       if [ $fsuf = "gfs" -o $fsuf = "sfc" ]; then
@@ -307,9 +302,9 @@ EOF
   # inline post fix files
   if [ $WRITE_DOPOST = ".true." ]; then
     $NLN $PARM_POST/post_tag_gfs${LEVS}             $DATA/itag
-    $NLN $PARM_POST/postxconfig-NT-GFS-TWO.txt      $DATA/postxconfig-NT.txt
-    $NLN $PARM_POST/postxconfig-NT-GFS-F00-TWO.txt  $DATA/postxconfig-NT_FH00.txt
-    $NLN $PARM_POST/params_grib2_tbl_new            $DATA/params_grib2_tbl_new
+    $NLN ${FLTFILEGFS:-$PARM_POST/postxconfig-NT-GFS-TWO.txt}           $DATA/postxconfig-NT.txt
+    $NLN ${FLTFILEGFSF00:-$PARM_POST/postxconfig-NT-GFS-F00-TWO.txt}    $DATA/postxconfig-NT_FH00.txt
+    $NLN ${POSTGRB2TBL:-$PARM_POST/params_grib2_tbl_new}                $DATA/params_grib2_tbl_new
   fi
 
   #------------------------------------------------------------------
@@ -593,12 +588,13 @@ data_out_GFS() {
         done
       fi
     elif [ $CDUMP = "gfs" ]; then
-      $NCP $DATA/input.nml $ROTDIR/${CDUMP}.${PDY}/${cyc}/atmos/
+      $NCP $DATA/input.nml ${ROTDIR}/${RUN}.${PDY}/${cyc}/atmos/
     fi
   fi
 
   echo "SUB ${FUNCNAME[0]}: Output data for FV3 copied"
 }
+
 
 WW3_postdet() {
   echo "SUB ${FUNCNAME[0]}: Linking input data for WW3"
