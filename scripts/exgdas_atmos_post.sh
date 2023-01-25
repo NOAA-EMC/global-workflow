@@ -49,14 +49,8 @@ export JO=${LATB:-721}
 # specify default model output format: 3 for sigio and 4
 # for nemsio
 export OUTTYP=${OUTTYP:-4}
-export OUTPUT_FILE=${OUTPUT_FILE:-"netcdf"}
 export TCYC=${TCYC:-".t${cyc}z."}
 export PREFIX=${PREFIX:-${RUN}${TCYC}}
-if (( OUTTYP == 4 )) ; then
-  export SUFFIX=".nc"
-else
-  export SUFFIX=
-fi
 export machine=${machine:-WCOSS2}
 
 ###########################
@@ -75,11 +69,7 @@ export IDRT=${IDRT:-0} # IDRT=0 is setting for outputting grib files on lat/lon 
 # Chuang: modify to process analysis when post_times is 00
 stime="$(echo "${post_times}" | cut -c1-3)"
 export stime
-if (( OUTTYP == 4 )) ; then
-  export loganl="${COMIN}/${PREFIX}atmanl${SUFFIX}"
-else
-  export loganl="${COMIN}/${PREFIX}sanl"
-fi
+export loganl="${COMIN}/${PREFIX}atmanl.nc"
 
 if [[ "${stime}" = "anl" ]]; then
   if [[ -f "${loganl}" ]]; then
@@ -109,12 +99,11 @@ if [[ "${stime}" = "anl" ]]; then
     fi
 
     [[ -f flxfile ]] && rm flxfile ; [[ -f nemsfile ]] && rm nemsfile
-    if (( OUTTYP == 4 )) ; then
-      ln -fs "${COMIN}/${PREFIX}atmanl${SUFFIX}" nemsfile
-      export NEMSINP=nemsfile
-      ln -fs "${COMIN}/${PREFIX}sfcanl${SUFFIX}" flxfile
-      export FLXINP=flxfile
-    fi
+    
+    ln -fs "${COMIN}/${PREFIX}atmanl.nc" nemsfile
+    export NEMSINP=nemsfile
+    ln -fs "${COMIN}/${PREFIX}sfcanl.nc" flxfile
+    export FLXINP=flxfile
     export PGBOUT=pgbfile
     export PGIOUT=pgifile
     export PGBOUT2=pgbfile.grib2
@@ -155,8 +144,8 @@ if [[ "${stime}" = "anl" ]]; then
       if [[ "${SENDDBN}" = 'YES' ]]; then
         run="$(echo "${RUN}" | tr '[:lower:]' '[:upper:]')"
         if [[ "${GRIBVERSION}" = 'grib2' ]]; then
-          "${DBNROOT}/bin/dbn_alert" MODEL "${run}_MSC_sfcanl" "${job}" "${COMOUT}/${PREFIX}sfc${fhr3}${SUFFIX}"
-          "${DBNROOT}/bin/dbn_alert" MODEL "${run}_SA" "${job}" "${COMIN}/${PREFIX}atm${fhr3}${SUFFIX}"
+          "${DBNROOT}/bin/dbn_alert" MODEL "${run}_MSC_sfcanl" "${job}" "${COMOUT}/${PREFIX}sfc${fhr3}.nc"
+          "${DBNROOT}/bin/dbn_alert" MODEL "${run}_SA" "${job}" "${COMIN}/${PREFIX}atm${fhr3}.nc"
           "${DBNROOT}/bin/dbn_alert" MODEL "GDAS_PGA_GB2" "${job}" "${COMOUT}/${PREFIX}pgrb2.1p00.${fhr3}"
           "${DBNROOT}/bin/dbn_alert" MODEL "GDAS_PGA_GB2_WIDX" "${job}" "${COMOUT}/${PREFIX}pgrb2.1p00.${fhr3}.idx"
         fi
@@ -210,12 +199,10 @@ else   ## not_anl if_stimes
     ###############################
     [[ -f flxfile ]] && rm flxfile
     [[ -f nemsfile ]] && rm nemsfile
-    if (( OUTTYP == 4 )) ; then
-      ln -sf "${COMIN}/${PREFIX}atmf${fhr}${SUFFIX}" nemsfile
-      export NEMSINP=nemsfile
-      ln -sf "${COMIN}/${PREFIX}sfcf${fhr}${SUFFIX}" flxfile
-      export FLXINP=flxfile
-    fi
+    ln -sf "${COMIN}/${PREFIX}atmf${fhr}.nc" nemsfile
+    export NEMSINP=nemsfile
+    ln -sf "${COMIN}/${PREFIX}sfcf${fhr}.nc" flxfile
+    export FLXINP=flxfile
 
     if (( d_fhr > 0 )); then
       export IGEN=${IGEN_FCST}
@@ -313,8 +300,8 @@ else   ## not_anl if_stimes
       # use post to generate Grib2 flux files
 
       if (( OUTTYP == 4 )) ; then
-        export NEMSINP=${COMIN}/${PREFIX}atmf${fhr}${SUFFIX}
-        export FLXINP=${COMIN}/${PREFIX}sfcf${fhr}${SUFFIX}
+        export NEMSINP=${COMIN}/${PREFIX}atmf${fhr}.nc
+        export FLXINP=${COMIN}/${PREFIX}sfcf${fhr}.nc
         if (( d_fhr == 0 )); then
           export PostFlatFile=${PARMpost}/postxconfig-NT-GFS-FLUX-F00.txt
           export CTLFILE=${PARMpost}/postcntrl_gfs_flux_f00.xml
@@ -336,8 +323,8 @@ else   ## not_anl if_stimes
       fi
 
       if [[ "${SENDDBN}" = 'YES' ]] && [[ "${RUN}" = 'gdas' ]] && (( d_fhr % 3 == 0 )); then
-        "${DBNROOT}/bin/dbn_alert" MODEL "${run}_SF" "${job}" "${COMOUT}/${PREFIX}atmf${fhr}${SUFFIX}"
-        "${DBNROOT}/bin/dbn_alert" MODEL "${run}_BF" "${job}" "${COMOUT}/${PREFIX}sfcf${fhr}${SUFFIX}"
+        "${DBNROOT}/bin/dbn_alert" MODEL "${run}_SF" "${job}" "${COMOUT}/${PREFIX}atmf${fhr}.nc"
+        "${DBNROOT}/bin/dbn_alert" MODEL "${run}_BF" "${job}" "${COMOUT}/${PREFIX}sfcf${fhr}.nc"
         "${DBNROOT}/bin/dbn_alert" MODEL "${run}_SGB_GB2" "${job}" "${COMOUT}/${PREFIX}sfluxgrbf${fhr}.grib2"
         "${DBNROOT}/bin/dbn_alert" MODEL "${run}_SGB_GB2_WIDX ""${job}" "${COMOUT}/${PREFIX}sfluxgrbf${fhr}.grib2.idx"
       fi

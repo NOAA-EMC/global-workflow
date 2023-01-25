@@ -45,9 +45,7 @@ CDUMP=${CDUMP:-"gdas"}
 
 # Filenames.
 GPREFIX=${GPREFIX:-""}
-GSUFFIX=${GSUFFIX:-$SUFFIX}
 APREFIX=${APREFIX:-""}
-ASUFFIX=${ASUFFIX:-$SUFFIX}
 
 SMOOTH_ENKF=${SMOOTH_ENKF:-"YES"}
 
@@ -92,7 +90,7 @@ fi
 INCREMENTS_TO_ZERO=${INCREMENTS_TO_ZERO:-"'NONE'"}
 
 ################################################################################
-ATMGES_ENSMEAN=$COMIN_GES_ENS/${GPREFIX}atmf006.ensmean${GSUFFIX}
+ATMGES_ENSMEAN=$COMIN_GES_ENS/${GPREFIX}atmf006.ensmean.nc
 LONB_ENKF=${LONB_ENKF:-$($NCLEN $ATMGES_ENSMEAN grid_xt)} # get LONB_ENKF
 LATB_ENKF=${LATB_ENKF:-$($NCLEN $ATMGES_ENSMEAN grid_yt)} # get LATB_ENFK
 LEVS_ENKF=${LEVS_ENKF:-$($NCLEN $ATMGES_ENSMEAN pfull)} # get LEVS_ENFK
@@ -195,21 +193,21 @@ for imem in $(seq 1 $NMEM_ENKF); do
    fi
    mkdir -p $COMOUT_ANL_ENS/$memchar/atmos
    for FHR in $nfhrs; do
-      $NLN $COMIN_GES_ENS/$memchar/atmos/${GPREFIX}atmf00${FHR}${ENKF_SUFFIX}${GSUFFIX}  sfg_${CDATE}_fhr0${FHR}_${memchar}
+      $NLN $COMIN_GES_ENS/$memchar/atmos/${GPREFIX}atmf00${FHR}${ENKF_SUFFIX}.nc  sfg_${CDATE}_fhr0${FHR}_${memchar}
       if [ $cnvw_option = ".true." ]; then
-         $NLN $COMIN_GES_ENS/$memchar/atmos/${GPREFIX}sfcf00${FHR}${GSUFFIX} sfgsfc_${CDATE}_fhr0${FHR}_${memchar}
+         $NLN $COMIN_GES_ENS/$memchar/atmos/${GPREFIX}sfcf00${FHR}.nc sfgsfc_${CDATE}_fhr0${FHR}_${memchar}
       fi
       if [ $FHR -eq 6 ]; then
          if [ $DO_CALC_INCREMENT = "YES" ]; then
-            $NLN $COMOUT_ANL_ENS/$memchar/atmos/${APREFIX}atmanl${ASUFFIX}             sanl_${CDATE}_fhr0${FHR}_${memchar}
+            $NLN $COMOUT_ANL_ENS/$memchar/atmos/${APREFIX}atmanl.nc             sanl_${CDATE}_fhr0${FHR}_${memchar}
          else
-            $NLN $COMOUT_ANL_ENS/$memchar/atmos/${APREFIX}atminc${ASUFFIX}             incr_${CDATE}_fhr0${FHR}_${memchar}
+            $NLN $COMOUT_ANL_ENS/$memchar/atmos/${APREFIX}atminc.nc             incr_${CDATE}_fhr0${FHR}_${memchar}
          fi
       else
          if [ $DO_CALC_INCREMENT = "YES" ]; then
-            $NLN $COMOUT_ANL_ENS/$memchar/atmos/${APREFIX}atma00${FHR}${ASUFFIX}             sanl_${CDATE}_fhr0${FHR}_${memchar}
+            $NLN $COMOUT_ANL_ENS/$memchar/atmos/${APREFIX}atma00${FHR}.nc             sanl_${CDATE}_fhr0${FHR}_${memchar}
          else
-            $NLN $COMOUT_ANL_ENS/$memchar/atmos/${APREFIX}atmi00${FHR}${ASUFFIX}             incr_${CDATE}_fhr0${FHR}_${memchar}
+            $NLN $COMOUT_ANL_ENS/$memchar/atmos/${APREFIX}atmi00${FHR}.nc             incr_${CDATE}_fhr0${FHR}_${memchar}
          fi
       fi
    done
@@ -217,9 +215,9 @@ done
 
 # Ensemble mean guess
 for FHR in $nfhrs; do
-   $NLN $COMIN_GES_ENS/${GPREFIX}atmf00${FHR}.ensmean${GSUFFIX} sfg_${CDATE}_fhr0${FHR}_ensmean
+   $NLN $COMIN_GES_ENS/${GPREFIX}atmf00${FHR}.ensmean.nc sfg_${CDATE}_fhr0${FHR}_ensmean
    if [ $cnvw_option = ".true." ]; then
-      $NLN $COMIN_GES_ENS/${GPREFIX}sfcf00${FHR}.ensmean${GSUFFIX} sfgsfc_${CDATE}_fhr0${FHR}_ensmean
+      $NLN $COMIN_GES_ENS/${GPREFIX}sfcf00${FHR}.ensmean.nc sfgsfc_${CDATE}_fhr0${FHR}_ensmean
    fi
 done
 

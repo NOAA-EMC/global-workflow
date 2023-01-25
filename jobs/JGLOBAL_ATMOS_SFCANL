@@ -27,9 +27,6 @@ GDUMP=${GDUMP:-"gdas"}
 export OPREFIX="${CDUMP}.t${cyc}z."
 export GPREFIX="${GDUMP}.t${gcyc}z."
 export APREFIX="${CDUMP}.t${cyc}z."
-export GSUFFIX=${GSUFFIX:-${SUFFIX}}
-export ASUFFIX=${ASUFFIX:-${SUFFIX}}
-
 
 if [ ${RUN_ENVIR} = "nco" -o ${ROTDIR_DUMP:-NO} = "YES" ]; then
     export COMIN=${COMIN:-${ROTDIR}/${RUN}.${PDY}/${cyc}/atmos}
@@ -47,7 +44,7 @@ export COMIN_GES="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/atmos"
 export COMIN_GES_ENS="${ROTDIR}/enkfgdas.${gPDY}/${gcyc}"
 
 
-export ATMGES="${COMIN_GES}/${GPREFIX}atmf006${GSUFFIX}"
+export ATMGES="${COMIN_GES}/${GPREFIX}atmf006.nc"
 if [ ! -f ${ATMGES} ]; then
     echo "FATAL ERROR: FILE MISSING: ATMGES = ${ATMGES}"
     exit 1
