@@ -29,6 +29,7 @@ export CDUMP_OBS=${CDUMP_OBS:-${CDUMP}}
 export OPREFIX="${CDUMP_OBS}.t${cyc}z."
 export APREFIX="${CDUMP}.t${cyc}z."
 export GPREFIX="${GDUMP}.t${gcyc}z."
+export GSUFFIX=".ensmean.nc"
 
 if [ ${RUN_ENVIR} = "nco" -o ${ROTDIR_DUMP:-NO} = "YES" ]; then
     export COMIN_OBS=${COMIN_OBS:-$(compath.py ${envir}/obsproc/${obsproc_ver})/${RUN}.${PDY}/${cyc}/${COMPONENT}}
@@ -46,7 +47,7 @@ export COMIN_GES=${COMIN_GES_ENS}
 export COMOUT="${ROTDIR}/enkf${CDUMP}.${PDY}/${cyc}"
 
 
-export ATMGES_ENSMEAN="${COMIN_GES_ENS}/${GPREFIX}atmf006.ensmean.nc"
+export ATMGES_ENSMEAN="${COMIN_GES_ENS}/${GPREFIX}atmf006${GSUFFIX}"
 if [ ! -f ${ATMGES_ENSMEAN} ]; then
     echo "FATAL ERROR: FILE MISSING: ATMGES_ENSMEAN = ${ATMGES_ENSMEAN}"
     exit 1
