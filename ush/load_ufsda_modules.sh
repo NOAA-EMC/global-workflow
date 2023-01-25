@@ -29,7 +29,8 @@ elif [[ -d /scratch1 ]] ; then
      pip list
   fi
   # set NETCDF variable based on ncdump location
-  export NETCDF=$( which ncdump )
+  NETCDF=$( which ncdump )
+  export NETCDF
   # prod_util stuff, find a better solution later...
   module use /scratch2/NCEPDEV/nwprod/hpc-stack/libs/hpc-stack/modulefiles/compiler/intel/2022.1.2/
   module load prod_util
@@ -41,7 +42,8 @@ elif [[ -d /work ]] ; then
      pip list
   fi
   # set NETCDF variable based on ncdump location
-  export NETCDF=$( which ncdump | cut -d " " -f 3 )
+  NETCDF=$( which ncdump | cut -d " " -f 3 )
+  export NETCDF
   # prod_util stuff, find a better solution later...
   module use /apps/contrib/NCEP/hpc-stack/libs/hpc-stack/modulefiles/compiler/intel/2022.1.2/
   module load prod_util
