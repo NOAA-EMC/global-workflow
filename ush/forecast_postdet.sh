@@ -129,8 +129,7 @@ EOF
     #.............................
 
   else ## cold start
-    ICSDIR=${ICSDIR:-${memdir}/INPUT}         # cold start initial conditions
-    for file in $(ls ${ICSDIR}/*.nc); do
+    for file in $(ls ${memdir}/INPUT/*.nc); do
       file2=$(echo $(basename $file))
       fsuf=$(echo $file2 | cut -c1-3)
       if [ $fsuf = "gfs" -o $fsuf = "sfc" ]; then
