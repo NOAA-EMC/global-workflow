@@ -199,31 +199,32 @@ class AerosolAnalysis(Analysis):
         ntiles = 6  # global
         # aerosol static-B needs nicas, cor_rh, cor_rv and stddev files.
         b_dir = self.config['BERROR_DATA_DIR']
+        b_datestr = self.config['BERROR_DATE']
         berror_list = []
         berror_list.append([
-            os.path.join(b_dir, '20160630.000000.cor_rh.coupler.res'),
-            os.path.join(self.config['DATA'], 'berror', '20160630.000000.cor_rh.coupler.res')
+            os.path.join(b_dir, b_datestr + '.cor_rh.coupler.res'),
+            os.path.join(self.config['DATA'], 'berror', b_datestr + '.cor_rh.coupler.res')
         ])
         berror_list.append([
-            os.path.join(b_dir, '20160630.000000.cor_rv.coupler.res'),
-            os.path.join(self.config['DATA'], 'berror', '20160630.000000.cor_rv.coupler.res')
+            os.path.join(b_dir, b_datestr + '.cor_rv.coupler.res'),
+            os.path.join(self.config['DATA'], 'berror', b_datestr + '.cor_rv.coupler.res')
         ])
         berror_list.append([
-            os.path.join(b_dir, '20160630.000000.stddev.coupler.res'),
-            os.path.join(self.config['DATA'], 'berror', '20160630.000000.stddev.coupler.res')
+            os.path.join(b_dir, b_datestr + '.stddev.coupler.res'),
+            os.path.join(self.config['DATA'], 'berror', b_datestr + '.stddev.coupler.res')
         ])
         for t in range(1, ntiles + 1):
             berror_list.append([
-                os.path.join(b_dir, f'20160630.000000.cor_rh.fv_tracer.res.tile{t}.nc'),
-                os.path.join(self.config['DATA'], 'berror', f'20160630.000000.cor_rh.fv_tracer.res.tile{t}.nc')
+                os.path.join(b_dir, f'{b_datestr}.cor_rh.fv_tracer.res.tile{t}.nc'),
+                os.path.join(self.config['DATA'], 'berror', f'{b_datestr}.cor_rh.fv_tracer.res.tile{t}.nc')
             ])
             berror_list.append([
-                os.path.join(b_dir, f'20160630.000000.cor_rv.fv_tracer.res.tile{t}.nc'),
-                os.path.join(self.config['DATA'], 'berror', f'20160630.000000.cor_rv.fv_tracer.res.tile{t}.nc')
+                os.path.join(b_dir, f'{b_datestr}.cor_rv.fv_tracer.res.tile{t}.nc'),
+                os.path.join(self.config['DATA'], 'berror', f'{b_datestr}.cor_rv.fv_tracer.res.tile{t}.nc')
             ])
             berror_list.append([
-                os.path.join(b_dir, f'20160630.000000.stddev.fv_tracer.res.tile{t}.nc'),
-                os.path.join(self.config['DATA'], 'berror', f'20160630.000000.stddev.fv_tracer.res.tile{t}.nc')
+                os.path.join(b_dir, f'{b_datestr}.stddev.fv_tracer.res.tile{t}.nc'),
+                os.path.join(self.config['DATA'], 'berror', f'{b_datestr}.stddev.fv_tracer.res.tile{t}.nc')
             ])
         nproc = ntiles * int(self.config['layout_x']) * int(self.config['layout_y'])
         for t in range(1, nproc + 1):
