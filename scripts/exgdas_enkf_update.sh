@@ -41,6 +41,7 @@ ENKFEXEC=${ENKFEXEC:-$HOMEgfs/exec/enkf.x}
 
 # Cycling and forecast hour specific parameters
 CDATE=${CDATE:-"2001010100"}
+CDUMP=${CDUMP:-"gdas"}
 
 # Filenames.
 GPREFIX=${GPREFIX:-""}
@@ -83,7 +84,11 @@ cnvw_option=${cnvw_option:-".false."}
 netcdf_diag=${netcdf_diag:-".true."}
 modelspace_vloc=${modelspace_vloc:-".false."} # if true, 'vlocal_eig.dat' is needed
 IAUFHRS_ENKF=${IAUFHRS_ENKF:-6}
-DO_CALC_INCREMENT=${DO_CALC_INCREMENT:-"NO"}
+if [ $CDUMP = "gfs" ]; then
+   DO_CALC_INCREMENT=${DO_CALC_INCREMENT_ENKF_GFS:-"NO"}
+else
+   DO_CALC_INCREMENT=${DO_CALC_INCREMENT:-"NO"}
+fi
 INCREMENTS_TO_ZERO=${INCREMENTS_TO_ZERO:-"'NONE'"}
 
 ################################################################################
@@ -94,11 +99,11 @@ LEVS_ENKF=${LEVS_ENKF:-$($NCLEN $ATMGES_ENSMEAN pfull)} # get LEVS_ENFK
 use_gfs_ncio=".true."
 use_gfs_nemsio=".false."
 paranc=${paranc:-".true."}
+WRITE_INCR_ZERO="incvars_to_zero= $INCREMENTS_TO_ZERO,"
 if [ $DO_CALC_INCREMENT = "YES" ]; then
    write_fv3_incr=".false." 
 else
    write_fv3_incr=".true."
-   WRITE_INCR_ZERO="incvars_to_zero= $INCREMENTS_TO_ZERO,"
 fi
 LATA_ENKF=${LATA_ENKF:-$LATB_ENKF}
 LONA_ENKF=${LONA_ENKF:-$LONB_ENKF}
