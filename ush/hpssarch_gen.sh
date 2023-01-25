@@ -474,7 +474,7 @@ if [ $type = "enkfgdas" -o $type = "enkfgfs" ]; then
       echo  "${dirname}${head}atmf${fhr}.ensmean.nc       " >>enkf${CDUMP}.txt
       echo  "${dirname}${head}sfcf${fhr}.ensmean.nc       " >>enkf${CDUMP}.txt
       if [ -s $ROTDIR/${dirpath}${head}atmf${fhr}.ensspread.nc ]; then
-	echo  "${dirname}${head}atmf${fhr}.ensspread.nc     " >>enkf${CDUMP}.txt
+          echo  "${dirname}${head}atmf${fhr}.ensspread.nc     " >>enkf${CDUMP}.txt
       fi
       fh=$((fh+3))
   done
