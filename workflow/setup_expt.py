@@ -60,23 +60,41 @@ def fill_COMROT_cycled(host, inputs):
 
     if inputs.icsdir is not None:
         # Link ensemble member initial conditions
-        enkfdir = f'enkf{inputs.cdump}.{idatestr[:8]}/{idatestr[8:]}'
-        makedirs_if_missing(os.path.join(comrot, enkfdir))
-        for ii in range(1, inputs.nens + 1):
-            makedirs_if_missing(os.path.join(comrot, enkfdir, f'mem{ii:03d}'))
-            os.symlink(os.path.join(inputs.icsdir, idatestr, f'C{inputs.resens}', f'mem{ii:03d}', 'RESTART'),
-                       os.path.join(comrot, enkfdir, f'mem{ii:03d}', 'RESTART'))
+        if inputs.nens > 0:
+            enkfdir = f'enkf{inputs.cdump}.{idatestr[:8]}/{idatestr[8:]}'
+            makedirs_if_missing(os.path.join(comrot, enkfdir))
+
+            # Link atmospheric files (ocean, ice, coming TBD ...)
+            for ii in range(1, inputs.nens + 1):
+                memdir = f'mem{ii:03d}/atmos'
+                dst_dir = os.path.join(comrot, enkfdir, memdir, 'INPUT')
+                src_dir = os.path.join(inputs.icsdir, enkfdir, memdir, 'INPUT')
+                makedirs_if_missing(dst_dir)
+                files = os.listdir(src_dir)
+                for fname in files:
+                    os.symlink(os.path.join(src_dir, fname),
+                               os.path.join(dst_dir, fname))
 
         # Link deterministic initial conditions
         detdir = f'{inputs.cdump}.{idatestr[:8]}/{idatestr[8:]}'
         makedirs_if_missing(os.path.join(comrot, detdir))
-        os.symlink(os.path.join(inputs.icsdir, idatestr, f'C{inputs.resdet}', 'control', 'RESTART'),
-                   os.path.join(comrot, detdir, 'RESTART'))
+
+        # Link atmospheric files (ocean, ice, TBD ...)
+        dst_dir = os.path.join(comrot, detdir, 'atmos/INPUT')
+        src_dir = os.path.join(inputs.icsdir, detdir, 'atmos/INPUT')
+        makedirs_if_missing(dst_dir)
+        files = os.listdir(src_dir)
+        for fname in files:
+            os.symlink(os.path.join(src_dir, fname),
+                       os.path.join(dst_dir, fname))
 
         # Link bias correction and radiance diagnostics files
-        for fname in ['abias', 'abias_pc', 'abias_air', 'radstat']:
-            os.symlink(os.path.join(inputs.icsdir, idatestr, f'{inputs.cdump}.t{idatestr[8:]}z.{fname}'),
-                       os.path.join(comrot, detdir, f'{inputs.cdump}.t{idatestr[8:]}z.{fname}'))
+        src_dir = os.path.join(inputs.icsdir, detdir, 'atmos')
+        dst_dir = os.path.join(comrot, detdir, 'atmos')
+        for ftype in ['abias', 'abias_pc', 'abias_air', 'radstat']:
+            fname = f'{inputs.cdump}.t{idatestr[8:]}z.{ftype}'
+            os.symlink(os.path.join(src_dir, f'{fname}'),
+                       os.path.join(dst_dir, f'{fname}'))
 
     return
 
@@ -85,6 +103,7 @@ def fill_COMROT_forecasts(host, inputs):
     """
     Implementation of 'fill_COMROT' for forecast-only mode
     """
+    print('forecast-only mode treats ICs differently and cannot be staged here')
     return
 
 
