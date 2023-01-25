@@ -1,19 +1,10 @@
 #!/bin/bash
 ################################################################################
-####  UNIX Script Documentation Block
-#                      .                                             .
-# Script name:         exgdas_global_aero_analysis_run.sh
-# Script description:  Runs the global aerosol analysis with FV3-JEDI
+# exgdas_global_aero_analysis_run.sh
 #
-# Author: Cory Martin        Org: NCEP/EMC     Date: 2022-29-09
-#
-# Abstract: This script runs a global model aerosol analysis using FV3-JEDI
-#
-# $Id$
-#
-# Attributes:
-#   Language: POSIX shell
-#   Machine: Orion
+# This script runs a global aerosol variational analysis with FV3-JEDI.
+# It assumes the runtime directory has already been staged with the appropriate
+# input files and YAML configuration (by the initialize script) before execution.
 #
 ################################################################################
 # run executable

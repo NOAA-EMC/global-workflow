@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+# exgdas_global_aero_analysis_initialize.py
+# This script creates an AerosolAnalysis class
+# and runs the configure and initialize methods
+# which create and stage the runtime directory
+# and create the YAML configuration
+# for a global aerosol variational analysis
 import pygfs.task.aero_analysis
 import logging
 import os

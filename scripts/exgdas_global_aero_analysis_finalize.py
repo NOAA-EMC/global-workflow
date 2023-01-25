@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+# exgdas_global_aero_analysis_finalize.py
+# This script creates an AerosolAnalysis class
+# and runs the configure and finalize methods
+# which perform post-processing and clean up activities
+# for a global aerosol variational analysis
 import pygfs.task.aero_analysis
 import logging
 import os
