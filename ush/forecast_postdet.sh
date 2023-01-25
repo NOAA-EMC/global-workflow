@@ -865,9 +865,9 @@ MOM6_postdet() {
   mkdir -p "${COMOUTocean}/RESTART"
   # end point restart does not have a timestamp, calculate
   local rdate=$($NDATE $FHMAX $CDATE)
-  # Greater than 1/2 degree have a single MOM restart
-  $NLN "${COMOUTocean}/RESTART/${rdate:0:8}.${rdate:8:2}0000.res.nc" "${DATA}/MOM6_RESTART/MOM.res.nc"
-  # 1/4 degree have 3 additional restarts
+  # Coarser than 1/2 degree has a single MOM restart
+  $NLN "${COMOUTocean}/RESTART/${rdate:0:8}.${rdate:8:2}0000.MOM.res.nc" "${DATA}/MOM6_RESTART/MOM.res.nc"
+  # 1/4 degree resolution has 3 additional restarts
   case ${OCNRES} in
     "025")
       $NLN "${COMOUTocean}/RESTART/${rdate:0:8}.${rdate:8:2}0000.MOM.res_1.nc" "${DATA}/MOM6_RESTART/MOM.res_1.nc"
@@ -896,15 +896,18 @@ MOM6_postdet() {
 
   # TODO: mediator should have its own CMEPS_postdet() function
   # Link mediator restarts from DATA to COM
-  local COMOUTmed="${ROTDIR}/${CDUMP}.${PDY}/${cyc}/med"
-  mkdir -p "${COMOUTmed}/RESTART"
-  local idate=$($NDATE $res_int $CDATE)
-  while [[ $idate -le $rdate ]]; do
-    local seconds=$(to_seconds ${idate:8:2}0000)  # use function to_seconds from forecast_predet.sh to convert HHMMSS to seconds
-    local idatestr="${idate:0:4}-${idate:4:2}-${idate:6:2}-${seconds}"
-    $NLN "${COMOUTmed}/RESTART/${idate:0:8}.${idate:8:2}0000.ufs.cpld.cpl.r.nc" "${DATA}/RESTART/ufs.cpld.cpl.r.${idatestr}.nc"
-    local idate=$($NDATE $res_int $idate)
-  done
+  # DANGER DANGER DANGER - Linking mediator restarts to COM causes the model to fail with a message like this below:
+  # Abort with message NetCDF: File exists && NC_NOCLOBBER in file pio-2.5.7/src/clib/pioc_support.c at line 2173
+  # Instead of linking, copy the mediator files after the model finishes
+  #local COMOUTmed="${ROTDIR}/${CDUMP}.${PDY}/${cyc}/med"
+  #mkdir -p "${COMOUTmed}/RESTART"
+  #local idate=$($NDATE $res_int $CDATE)
+  #while [[ $idate -le $rdate ]]; do
+  #  local seconds=$(to_seconds ${idate:8:2}0000)  # use function to_seconds from forecast_predet.sh to convert HHMMSS to seconds
+  #  local idatestr="${idate:0:4}-${idate:4:2}-${idate:6:2}-${seconds}"
+  #  $NLN "${COMOUTmed}/RESTART/${idate:0:8}.${idate:8:2}0000.ufs.cpld.cpl.r.nc" "${DATA}/RESTART/ufs.cpld.cpl.r.${idatestr}.nc"
+  #  local idate=$($NDATE $res_int $idate)
+  #done
 
   echo "SUB ${FUNCNAME[0]}: MOM6 input data linked/copied"
 
@@ -922,6 +925,21 @@ MOM6_out() {
   # Copy MOM_input from DATA to COMOUToucean after the forecast is run (and successfull)
   $NCP ${DATA}/INPUT/MOM_input ${COMOUTocean}/MOM_input
 
+  # TODO: mediator should have its own CMEPS_out() function
+  # Copy mediator restarts from DATA to COM
+  # Linking mediator restarts to COM causes the model to fail with a message.
+  # See MOM6_postdet() function for error message
+  local COMOUTmed="${ROTDIR}/${CDUMP}.${PDY}/${cyc}/med"
+  mkdir -p "${COMOUTmed}/RESTART"
+  local rdate=$($NDATE $FHMAX $CDATE)
+  local res_int=$(echo $restart_interval | cut -d' ' -f1)  # If this is a list, get the frequency.  # This is bound to break w/ IAU
+  local idate=$($NDATE $res_int $CDATE)
+  while [[ $idate -le $rdate ]]; do
+    local seconds=$(to_seconds ${idate:8:2}0000)  # use function to_seconds from forecast_predet.sh to convert HHMMSS to seconds
+    local idatestr="${idate:0:4}-${idate:4:2}-${idate:6:2}-${seconds}"
+    $NCP "${DATA}/RESTART/ufs.cpld.cpl.r.${idatestr}.nc" "${COMOUTmed}/RESTART/${idate:0:8}.${idate:8:2}0000.ufs.cpld.cpl.r.nc"
+    local idate=$($NDATE $res_int $idate)
+  done
 }
 
 CICE_postdet() {
@@ -937,16 +955,8 @@ CICE_postdet() {
   npt=$((FHMAX*$stepsperhr))      # Need this in order for dump_last to work
 
   histfreq_n=${histfreq_n:-6}
-  if [[ "${MODE}" = "cycled" ]]; then  # TODO: this needs to be improved to include CDUMP = GDAS | GFS
-    if [[ "${CDUMP}" = "gdas" ]]; then  # TODO: improve and remove this default of dumping hourly restarts for cycled system
-      dumpfreq_n=1
-    elif [[ "${CDUMP}" = "gfs" ]]; then
-      dumpfreq_n=${dumpfreq_n:-24}
-    fi
-  else
-    dumpfreq_n=${dumpfreq_n:-840}  # default 35 days (840 hours) for forecast-only
-  fi
-  dumpfreq=${dumpfreq:-"h"} #  "h","d","m" or "y" for restarts at intervals of "hours", "days", "months" or "years"
+  dumpfreq_n=${dumpfreq_n:-1000}  # Set this to a really large value, as cice, mom6 and cmeps restart interval is controlled by nems.configure
+  dumpfreq=${dumpfreq:-"y"} #  "h","d","m" or "y" for restarts at intervals of "hours", "days", "months" or "years"
   cice_hist_avg=${cice_hist_avg:-".true."}
 
   FRAZIL_FWSALT=${FRAZIL_FWSALT:-".true."}

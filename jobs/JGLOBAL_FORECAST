@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 source "${HOMEgfs}/ush/preamble.sh"
-export DATA=${DATAROOT}/debug_fcst  # TODO: (RM) remove before PR
+#export DATA=${DATAROOT}/debug_fcst  # TODO: (RM) remove before PR
 source "${HOMEgfs}/ush/jjob_header.sh" -e "fcst" -c "base fcst"
 
 ##############################################
