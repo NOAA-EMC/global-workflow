@@ -125,3 +125,17 @@ def strptime(dtstr, fmt):
         return datetime.datetime.strptime(dtstr, fmt)
     except Exception as ee:
         raise Exception(f"Bad datetime string (format): '{dtstr} ({fmt})'")
+
+
+def to_isotime(dt):
+    """
+    Return a ISO formatted '%Y-%m-%dT%H:%M:%SZ' string from a datetime object.
+    """
+    return strftime(dt, '%Y-%m-%dT%H:%M:%SZ')
+
+
+def to_fv3time(dt):
+    """
+    Return a FV3 formatted '%Y%m%d.%H%M%S' string from a datetime object.
+    """
+    return strftime(dt, '%Y%m%d.%H%M%S')

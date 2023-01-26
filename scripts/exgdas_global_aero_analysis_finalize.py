@@ -4,15 +4,23 @@
 # and runs the configure and finalize methods
 # which perform post-processing and clean up activities
 # for a global aerosol variational analysis
-import pygfs.task.aero_analysis
-import logging
 import os
 
-# set up logger
-logging.basicConfig(format='%(asctime)s:%(levelname)s:%(message)s', level=logging.INFO, datefmt='%Y-%m-%d %H:%M:%S')
+from pygw.logger import Logger, logit
+from pygw.configuration import cast_strdict_as_dtypedict
+from pygfs.task.aero_analysis import AerosolAnalysis
+
+
+# Initialize root logger
+logger = Logger(level='DEBUG', colored_log=True)
+
 
 if __name__ == '__main__':
 
-    AeroAnl = pygfs.task.aero_analysis.AerosolAnalysis(dict(os.environ))
-    AeroAnl.configure()
-    AeroAnl.finalize()
+    # Take configuration from environment and cast it as python dictionary
+    config = cast_strdict_as_dtypedict(os.environ)
+
+    # Instantiate the aerosol analysis task
+    AeroAnl = AerosolAnalysis(config)
+    AeroAnl.configure()  # TODO: clarify, how do you configure before initializing?  These should be swapped.
+    AeroAnl.initialize()
