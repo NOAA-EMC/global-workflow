@@ -156,7 +156,7 @@ HDOB=${HDOB:-${COMIN_OBS}/${OPREFIX}hdob.tm00.bufr_d${OSUFFIX}}
 
 # Guess files
 GPREFIX=${GPREFIX:-""}
-GSUFFIX=${GSUFFIX:-${SUFFIX}}
+GSUFFIX=${GSUFFIX:-".nc"}
 SFCG03=${SFCG03:-${COMIN_GES}/${GPREFIX}sfcf003${GSUFFIX}}
 SFCG04=${SFCG04:-${COMIN_GES}/${GPREFIX}sfcf004${GSUFFIX}}
 SFCG05=${SFCG05:-${COMIN_GES}/${GPREFIX}sfcf005${GSUFFIX}}
@@ -178,10 +178,9 @@ GRADSTAT=${GRADSTAT:-${COMIN_GES}/${GPREFIX}radstat}
 
 # Analysis files
 export APREFIX=${APREFIX:-""}
-export ASUFFIX=${ASUFFIX:-${SUFFIX}}
-SFCANL=${SFCANL:-${COMOUT}/${APREFIX}sfcanl${ASUFFIX}}
+SFCANL=${SFCANL:-${COMOUT}/${APREFIX}sfcanl.nc}
 DTFANL=${DTFANL:-${COMOUT}/${APREFIX}dtfanl.nc}
-ATMANL=${ATMANL:-${COMOUT}/${APREFIX}atmanl${ASUFFIX}}
+ATMANL=${ATMANL:-${COMOUT}/${APREFIX}atmanl.nc}
 ABIAS=${ABIAS:-${COMOUT}/${APREFIX}abias}
 ABIASPC=${ABIASPC:-${COMOUT}/${APREFIX}abias_pc}
 ABIASAIR=${ABIASAIR:-${COMOUT}/${APREFIX}abias_air}
@@ -244,14 +243,12 @@ JCAP=${JCAP:--9999} # there is no jcap in these files
 
 # Get header information from Ensemble Guess files
 if [ ${DOHYBVAR} = "YES" ]; then
-   SFCGES_ENSMEAN=${SFCGES_ENSMEAN:-${COMIN_GES_ENS}/${GPREFIX}sfcf006.ensmean${GSUFFIX}}
-   export ATMGES_ENSMEAN=${ATMGES_ENSMEAN:-${COMIN_GES_ENS}/${GPREFIX}atmf006.ensmean${GSUFFIX}}
-   if [ ${SUFFIX} = ".nc" ]; then
-      LONB_ENKF=${LONB_ENKF:-$(${NCLEN} ${ATMGES_ENSMEAN} grid_xt)} # get LONB_ENKF
-      LATB_ENKF=${LATB_ENKF:-$(${NCLEN} ${ATMGES_ENSMEAN} grid_yt)} # get LATB_ENFK
-      LEVS_ENKF=${LEVS_ENKF:-$(${NCLEN} ${ATMGES_ENSMEAN} pfull)} # get LATB_ENFK
-      JCAP_ENKF=${JCAP_ENKF:--9999} # again, no jcap in the netcdf files
-   fi
+   SFCGES_ENSMEAN=${SFCGES_ENSMEAN:-${COMIN_GES_ENS}/${GPREFIX}sfcf006.ensmean.nc}
+   export ATMGES_ENSMEAN=${ATMGES_ENSMEAN:-${COMIN_GES_ENS}/${GPREFIX}atmf006.ensmean.nc}
+   LONB_ENKF=${LONB_ENKF:-$(${NCLEN} ${ATMGES_ENSMEAN} grid_xt)} # get LONB_ENKF
+   LATB_ENKF=${LATB_ENKF:-$(${NCLEN} ${ATMGES_ENSMEAN} grid_yt)} # get LATB_ENFK
+   LEVS_ENKF=${LEVS_ENKF:-$(${NCLEN} ${ATMGES_ENSMEAN} pfull)} # get LATB_ENFK
+   JCAP_ENKF=${JCAP_ENKF:--9999} # again, no jcap in the netcdf files
    NLON_ENKF=${NLON_ENKF:-${LONB_ENKF}}
    NLAT_ENKF=${NLAT_ENKF:-$((${LATB_ENKF}+2))}
    [ ${JCAP_ENKF} -eq -9999 -a ${LATB_ENKF} -ne -9999 ] && JCAP_ENKF=$((LATB_ENKF-2))
@@ -340,17 +337,17 @@ fi
 
 # Set 4D-EnVar specific variables
 if [ ${DOHYBVAR} = "YES" -a ${l4densvar} = ".true." -a ${lwrite4danl} = ".true." ]; then
-   ATMA03=${ATMA03:-${COMOUT}/${APREFIX}atma003${ASUFFIX}}
+   ATMA03=${ATMA03:-${COMOUT}/${APREFIX}atma003.nc}
    ATMI03=${ATMI03:-${COMOUT}/${APREFIX}atmi003.nc}
-   ATMA04=${ATMA04:-${COMOUT}/${APREFIX}atma004${ASUFFIX}}
+   ATMA04=${ATMA04:-${COMOUT}/${APREFIX}atma004.nc}
    ATMI04=${ATMI04:-${COMOUT}/${APREFIX}atmi004.nc}
-   ATMA05=${ATMA05:-${COMOUT}/${APREFIX}atma005${ASUFFIX}}
+   ATMA05=${ATMA05:-${COMOUT}/${APREFIX}atma005.nc}
    ATMI05=${ATMI05:-${COMOUT}/${APREFIX}atmi005.nc}
-   ATMA07=${ATMA07:-${COMOUT}/${APREFIX}atma007${ASUFFIX}}
+   ATMA07=${ATMA07:-${COMOUT}/${APREFIX}atma007.nc}
    ATMI07=${ATMI07:-${COMOUT}/${APREFIX}atmi007.nc}
-   ATMA08=${ATMA08:-${COMOUT}/${APREFIX}atma008${ASUFFIX}}
+   ATMA08=${ATMA08:-${COMOUT}/${APREFIX}atma008.nc}
    ATMI08=${ATMI08:-${COMOUT}/${APREFIX}atmi008.nc}
-   ATMA09=${ATMA09:-${COMOUT}/${APREFIX}atma009${ASUFFIX}}
+   ATMA09=${ATMA09:-${COMOUT}/${APREFIX}atma009.nc}
    ATMI09=${ATMI09:-${COMOUT}/${APREFIX}atmi009.nc}
 fi
 
@@ -538,9 +535,9 @@ if [ ${DOHYBVAR} = "YES" ]; then
    for imem in $(seq 1 ${NMEM_ENKF}); do
       memchar="mem"$(printf %03i ${imem})
       for fhr in ${fhrs}; do
-         ${NLN} ${COMIN_GES_ENS}/${memchar}/atmos/${GPREFIX}atmf0${fhr}${ENKF_SUFFIX}${GSUFFIX} ./ensemble_data/sigf${fhr}_ens_${memchar}
+         ${NLN} ${COMIN_GES_ENS}/${memchar}/atmos/${GPREFIX}atmf0${fhr}${ENKF_SUFFIX}.nc ./ensemble_data/sigf${fhr}_ens_${memchar}
          if [ ${cnvw_option} = ".true." ]; then
-            ${NLN} ${COMIN_GES_ENS}/${memchar}/atmos/${GPREFIX}sfcf0${fhr}${GSUFFIX} ./ensemble_data/sfcf${fhr}_ens_${memchar}
+            ${NLN} ${COMIN_GES_ENS}/${memchar}/atmos/${GPREFIX}sfcf0${fhr}.nc ./ensemble_data/sfcf${fhr}_ens_${memchar}
          fi
       done
    done

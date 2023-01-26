@@ -91,7 +91,7 @@
 #
 #     output data: $PGMOUT
 #                  $PGMERR
-#                  $COMOUT/${APREFIX}sfcanl${ASUFFIX}
+#                  $COMOUT/${APREFIX}sfcanl.nc
 #
 # Remarks:
 #
@@ -121,7 +121,6 @@ LATB_SFC=${LATB_SFC:-$LATB_CASE}
 DONST=${DONST:-"NO"}
 LEVS=${LEVS:-64}
 LEVSP1=$(($LEVS+1))
-OUTPUT_FILE=${OUTPUT_FILE:-"netcdf"}
 export NETCDF_OUT=".true."
 #  Directories.
 gfs_ver=${gfs_ver:-v16.3.0}
@@ -201,7 +200,7 @@ $NLN $FIXfv3/$CASE/${CASE}_oro_data.tile6.nc   ./orog.tile6.nc
 $NLN $SIGLEVEL                                 ./vcoord.txt
 
 # output gaussian global surface analysis files
-$NLN $COMOUT/${APREFIX}sfcanl${ASUFFIX} ./sfc.gaussian.analysis.file
+$NLN $COMOUT/${APREFIX}sfcanl.nc ./sfc.gaussian.analysis.file
 
 # Executable namelist
 cat <<EOF > fort.41
