@@ -16,6 +16,6 @@ export jobid="${job}.$$"
 export PYTHONPATH="$PYTHONPATH:${HOMEgfs}/ush/python:${HOMEgfs}/ush/python/pygw/src"
 ###############################################################
 # Execute the JJOB
-"${HOMEgfs}/jobs/JGDAS_GLOBAL_AERO_ANALYSIS_FINALIZE"
+"${HOMEgfs}/jobs/JGLOBAL_AERO_ANALYSIS_FINALIZE"
 status=$?
 exit "${status}"

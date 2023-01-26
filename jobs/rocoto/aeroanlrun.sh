@@ -13,6 +13,6 @@ export jobid="${job}.$$"
 
 ###############################################################
 # Execute the JJOB
-"${HOMEgfs}/jobs/JGDAS_GLOBAL_AERO_ANALYSIS_RUN"
+"${HOMEgfs}/jobs/JGLOBAL_AERO_ANALYSIS_RUN"
 status=$?
 exit "${status}"
