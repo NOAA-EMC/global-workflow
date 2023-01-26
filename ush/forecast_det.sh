@@ -39,9 +39,9 @@ FV3_GFS_det(){
 
   #-------------------------------------------------------
   # determine if restart IC exists to continue from a previous forecast
-  RERUN="NO"
+  RERUN=${RERUN:-"NO"}
   filecount=$(find "${RSTDIR_ATM:-/dev/null}" -type f | wc -l)
-  if [ ${CDUMP} = "gfs" -a ${rst_invt1} -gt 0 -a ${FHMAX} -gt ${rst_invt1} -a ${filecount} -gt 10 ]; then
+  if [[ ( ${CDUMP} = "gfs" || ( ${RUN} = "gefs" && ${CDATE_RST} = "" )) && ${rst_invt1} -gt 0 && ${FHMAX} -gt ${rst_invt1} && ${filecount} -gt 10 ]]; then
     reverse=$(echo "${restart_interval[@]} " | tac -s ' ')
     for xfh in ${reverse} ; do
       yfh=$((xfh-(IAU_OFFSET/2)))
@@ -72,10 +72,6 @@ FV3_GFS_det(){
     done
   fi
   #-------------------------------------------------------
-}
-
-FV3_GEFS_det(){
-  echo "SUB ${FUNCNAME[0]}: Defining variables for FV3GEFS"
 }
 
 WW3_det(){
