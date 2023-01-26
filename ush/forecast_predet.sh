@@ -12,12 +12,25 @@
 # Cycling and forecast hour specific parameters
 
 to_seconds() {
-# Function to convert HHMMSS to seconds since 00Z
-  local hhmmss=${1}
+  # Function to convert HHMMSS to seconds since 00Z
+  local hhmmss=${1:?}
   local hh=${hhmmss:0:2}
   local mm=${hhmmss:2:2}
   local ss=${hhmmss:4:2}
-  echo $(((hh*3600+mm*60+ss)))
+  local seconds=$(((hh*3600+mm*60+ss)))
+  local padded_seconds=$(printf "%05d" ${seconds})
+  echo ${padded_seconds}
+}
+
+middle_date(){
+  # Function to calculate mid-point date in YYYYMMDDHH between two dates also in YYYYMMDDHH
+  local date1=${1:?}
+  local date2=${2:?}
+  local date1s=$(date -d "${date1:0:8} ${date1:8:2}" +%s)
+  local date2s=$(date -d "${date2:0:8} ${date2:8:2}" +%s)
+  local dtsecsby2=$(( $((date2s - date1s)) / 2 ))
+  local mid_date=$(date -d "${date1:0:8} ${date1:8:2} + ${dtsecsby2} seconds" +%Y%m%d%H%M%S)
+  echo ${mid_date:0:10}
 }
 
 common_predet(){

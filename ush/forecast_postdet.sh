@@ -54,16 +54,18 @@ FV3_GFS_postdet(){
       done
 
       # Replace sfc_data with sfcanl_data restart files from $memdir (if found)
-      for file in $(ls $memdir/RESTART/${sPDY}.${scyc}0000.sfcanl_data.tile?.nc); do
-        if [[ -f $file ]]; then
-          file2=$(echo $(basename $file))
-          file2=$(echo $file2 | cut -d. -f3-) # remove the date from file
-          fsufanl=$(echo $file2 | cut -d. -f1)
-          file2=$(echo $file2 | sed -e "s/sfcanl_data/sfc_data/g")
-          rm -f $DATA/INPUT/$file2
-          $NLN $file $DATA/INPUT/$file2
-        fi
-      done
+      if [ "${MODE}" = "cycled" ] && [ "${APP}" = "ATM" ]; then  # TODO: remove if-block when global_cycle can handle NOAHMP
+        for file in $(ls $memdir/RESTART/${sPDY}.${scyc}0000.sfcanl_data.tile?.nc); do
+          if [[ -f $file ]]; then
+            file2=$(echo $(basename $file))
+            file2=$(echo $file2 | cut -d. -f3-) # remove the date from file
+            fsufanl=$(echo $file2 | cut -d. -f1)
+            file2=$(echo $file2 | sed -e "s/sfcanl_data/sfc_data/g")
+            rm -f $DATA/INPUT/$file2
+            $NLN $file $DATA/INPUT/$file2
+          fi
+        done
+      fi
 
       # Need a coupler.res when doing IAU
       if [ $DOIAU = "YES" ]; then
@@ -795,7 +797,7 @@ MOM6_postdet() {
 
   # Copy mediator restart file to RUNDIR  # TODO: mediator should have its own CMEPS_postdet() function
   if [[ "${warm_start}" = '.true.' ]]; then
-    local mediator_file="${ROTDIR}/${CDUMP}.${gPDY}/${gcyc}/med/${PDY}.${cyc}0000.ufs.cpld.cpl.r.nc"
+    local mediator_file="${ROTDIR}/${CDUMP}.${gPDY}/${gcyc}/med/RESTART/${PDY}.${cyc}0000.ufs.cpld.cpl.r.nc"
     if [[ -f "${mediator_file}" ]]; then
        $NLN "${mediator_file}" "${DATA}/ufs.cpld.cpl.r.nc"
         rm -f "${DATA}/rpointer.cpl"
@@ -807,6 +809,7 @@ MOM6_postdet() {
     fi
   fi
 
+  # TODO: some documentation would be nice to see here, e.g. whose phone number is in here?
   if [ $DO_OCN_SPPT = "YES" -o $DO_OCN_PERT_EPBL = "YES" ]; then
     if [ ${SET_STP_SEED:-"YES"} = "YES" ]; then
       ISEED_OCNSPPT=$(( (CDATE*1000 + MEMBER*10 + 6) % 2147483647 ))
@@ -816,51 +819,69 @@ MOM6_postdet() {
     fi
   fi
 
-  # Link output files
-
-  export ENSMEM=${ENSMEM:-01}
-  export IDATE=$CDATE
-
+  # Create COMOUTocean
   [[ ! -d $COMOUTocean ]] && mkdir -p $COMOUTocean
 
-  fhrlst=$OUTPUT_FH
+  # Link output files
+  if [[ "${CDUMP}" = "gfs" ]]; then
+    # Link output files for CDUMP = gfs
 
-  for fhr in $fhrlst; do
-    if [ $fhr = 'anl' ]; then
-      continue
-    fi
-    if [ -z ${last_fhr:-} ]; then
+    # TODO: get requirements on what files need to be written out and what these dates here are and what they mean
+    export ENSMEM=${ENSMEM:-01}
+    export IDATE=$CDATE
+
+    fhrlst=$OUTPUT_FH
+
+    for fhr in $fhrlst; do
+      if [ $fhr = 'anl' ]; then  # Looking at OUTPUT_FH, this is never true, TODO: remove this block
+        continue
+      fi
+      if [ -z ${last_fhr:-} ]; then
+        last_fhr=$fhr
+        continue
+      fi
+      (( interval = fhr - last_fhr ))
+      (( midpoint = last_fhr + interval/2 ))
+      VDATE=$($NDATE $fhr $IDATE)
+      YYYY=$(echo $VDATE | cut -c1-4)
+      MM=$(echo $VDATE | cut -c5-6)
+      DD=$(echo $VDATE | cut -c7-8)
+      HH=$(echo $VDATE | cut -c9-10)
+      SS=$((10#$HH*3600))
+
+      VDATE_MID=$($NDATE $midpoint $IDATE)
+      YYYY_MID=$(echo $VDATE_MID | cut -c1-4)
+      MM_MID=$(echo $VDATE_MID | cut -c5-6)
+      DD_MID=$(echo $VDATE_MID | cut -c7-8)
+      HH_MID=$(echo $VDATE_MID | cut -c9-10)
+      SS_MID=$((10#$HH_MID*3600))
+
+      source_file="ocn_${YYYY_MID}_${MM_MID}_${DD_MID}_${HH_MID}.nc"
+      dest_file="ocn${VDATE}.${ENSMEM}.${IDATE}.nc"
+      ${NLN} ${COMOUTocean}/${dest_file} ${DATA}/${source_file}
+
+      source_file="ocn_daily_${YYYY}_${MM}_${DD}.nc"
+      dest_file=${source_file}
+      if [ ! -a "${DATA}/${source_file}" ]; then
+        $NLN ${COMOUTocean}/${dest_file} ${DATA}/${source_file}
+      fi
+
       last_fhr=$fhr
-      continue
-    fi
-    (( interval = fhr - last_fhr ))
-    (( midpoint = last_fhr + interval/2 ))
-    VDATE=$($NDATE $fhr $IDATE)
-    YYYY=$(echo $VDATE | cut -c1-4)
-    MM=$(echo $VDATE | cut -c5-6)
-    DD=$(echo $VDATE | cut -c7-8)
-    HH=$(echo $VDATE | cut -c9-10)
-    SS=$((10#$HH*3600))
+    done
 
-    VDATE_MID=$($NDATE $midpoint $IDATE)
-    YYYY_MID=$(echo $VDATE_MID | cut -c1-4)
-    MM_MID=$(echo $VDATE_MID | cut -c5-6)
-    DD_MID=$(echo $VDATE_MID | cut -c7-8)
-    HH_MID=$(echo $VDATE_MID | cut -c9-10)
-    SS_MID=$((10#$HH_MID*3600))
+  elif [[ "${CDUMP}" = "gdas" ]]; then
+    # Link output files for CDUMP = gdas
 
-    source_file="ocn_${YYYY_MID}_${MM_MID}_${DD_MID}_${HH_MID}.nc"
-    dest_file="ocn${VDATE}.${ENSMEM}.${IDATE}.nc"
-    ${NLN} ${COMOUTocean}/${dest_file} ${DATA}/${source_file}
+    # MOM6 does not write out the first forecast hour, so start at FHOUT
+    local fhr="${FHOUT}"
+    while [[ "${fhr}" -le "${FHMAX}" ]]; do
+      local idatestr=$(date -d "${CDATE:0:8} ${CDATE:8:2} + ${fhr} hours" +%Y_%m_%d_%H)
+      local fhr3=$(printf %03i ${fhr})
+      $NLN "${COMOUTocean}/${CDUMP}.t${cyc}z.ocnf${fhr3}.nc" "${DATA}/ocn_da_${idatestr}.nc"
+      local fhr=$((fhr + FHOUT))
+    done
 
-    source_file="ocn_daily_${YYYY}_${MM}_${DD}.nc"
-    dest_file=${source_file}
-    if [ ! -a "${DATA}/${source_file}" ]; then
-      $NLN ${COMOUTocean}/${dest_file} ${DATA}/${source_file}
-    fi
-
-    last_fhr=$fhr
-  done
+  fi
 
   # Link ocean restarts from DATA to COM
   mkdir -p "${COMOUTocean}/RESTART"
@@ -884,13 +905,13 @@ MOM6_postdet() {
   local idate=$($NDATE $res_int $CDATE)
   while [[ $idate -lt $rdate ]]; do
     local idatestr=$(date +%Y-%m-%d-%H -d "${idate:0:8} ${idate:8:2}")
-    $NLN "${COMOUTocean}/RESTART/${idate:0:8}.${idate:8:2}0000.res.nc" "${DATA}/MOM6_RESTART/MOM.res.${idatestr}-00-00.nc"
+    $NLN "${COMOUTocean}/RESTART/${idate:0:8}.${idate:8:2}0000.MOM.res.nc" "${DATA}/MOM6_RESTART/MOM.res.${idatestr}-00-00.nc"
     case ${OCNRES} in
       "025")
         $NLN "${COMOUTocean}/RESTART/${idate:0:8}.${idate:8:2}0000.MOM.res_1.nc" "${DATA}/MOM6_RESTART/MOM.res_1.${idatestr}-00-00.nc"
         $NLN "${COMOUTocean}/RESTART/${idate:0:8}.${idate:8:2}0000.MOM.res_2.nc" "${DATA}/MOM6_RESTART/MOM.res_2.${idatestr}-00-00.nc"
         $NLN "${COMOUTocean}/RESTART/${idate:0:8}.${idate:8:2}0000.MOM.res_3.nc" "${DATA}/MOM6_RESTART/MOM.res_3.${idatestr}-00-00.nc"
-      ;;
+        ;;
     esac
     local idate=$($NDATE $res_int $idate)
   done
@@ -1009,30 +1030,43 @@ CICE_postdet() {
   $NLN -sf $FIXcice/$ICERES/$MESH_OCN_ICE $DATA/
 
   # Link CICE output files
-  export ENSMEM=${ENSMEM:-01}
-  export IDATE=$CDATE
   [[ ! -d $COMOUTice ]] && mkdir -p $COMOUTice
-  fhrlst=$OUTPUT_FH
 
-  for fhr in $fhrlst; do
-    if [ $fhr = 'anl' ]; then
-      continue
-    fi
-    VDATE=$($NDATE $fhr $IDATE)
-    YYYY=$(echo $VDATE | cut -c1-4)
-    MM=$(echo $VDATE | cut -c5-6)
-    DD=$(echo $VDATE | cut -c7-8)
-    HH=$(echo $VDATE | cut -c9-10)
-    SS=$((10#$HH*3600))
+  if [[ "${CDUMP}" = "gfs" ]]; then
+    # Link output files for CDUMP = gfs
 
-    if [[ 10#$fhr -eq 0 ]]; then
-      $NLN $COMOUTice/iceic$VDATE.$ENSMEM.$IDATE.nc $DATA/history/iceh_ic.${YYYY}-${MM}-${DD}-$(printf "%5.5d" ${SS}).nc
-    else
-      (( interval = fhr - last_fhr ))
-      $NLN $COMOUTice/ice$VDATE.$ENSMEM.$IDATE.nc $DATA/history/iceh_$(printf "%0.2d" $interval)h.${YYYY}-${MM}-${DD}-$(printf "%5.5d" ${SS}).nc
-    fi
-    last_fhr=$fhr
-  done
+    export ENSMEM=${ENSMEM:-01}
+    export IDATE=$CDATE
+
+    fhrlst=$OUTPUT_FH
+
+    # TODO: consult w/ NB on how to improve on this.  Gather requirements and more information on what these files are and how they are used to properly catalog them
+    for fhr in $fhrlst; do
+      if [ $fhr = 'anl' ]; then  # Looking at OUTPUT_FH, this is never true. TODO: remove this block
+        continue
+      fi
+      VDATE=$($NDATE $fhr $IDATE)
+      YYYY=$(echo $VDATE | cut -c1-4)
+      MM=$(echo $VDATE | cut -c5-6)
+      DD=$(echo $VDATE | cut -c7-8)
+      HH=$(echo $VDATE | cut -c9-10)
+      SS=$((10#$HH*3600))
+
+      if [[ 10#$fhr -eq 0 ]]; then
+        $NLN $COMOUTice/iceic$VDATE.$ENSMEM.$IDATE.nc $DATA/history/iceh_ic.${YYYY}-${MM}-${DD}-$(printf "%5.5d" ${SS}).nc
+      else
+        (( interval = fhr - last_fhr ))
+        $NLN $COMOUTice/ice$VDATE.$ENSMEM.$IDATE.nc $DATA/history/iceh_$(printf "%0.2d" $interval)h.${YYYY}-${MM}-${DD}-$(printf "%5.5d" ${SS}).nc
+      fi
+      last_fhr=$fhr
+    done
+
+  elif [[ "${CDUMP}" = "gdas" ]]; then
+    # Link output files for CDUMP = gdas
+
+    echo "Link CICE forecast output files for CDUMP = gdas"
+
+  fi
 
   # Link CICE restarts to COMOUTice/RESTART
   # Loop over restart_interval and link restarts from DATA to COM

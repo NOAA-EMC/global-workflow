@@ -67,8 +67,7 @@ def fill_COMROT_cycled(host, inputs):
 
     if inputs.start in ['warm']:  # This is warm start experiment
         idatestr = datetime_to_YMDH(inputs.idate - to_timedelta('T06H'))
-        atmos_dir = ocean_dir = ice_dir = 'RESTART'
-        med_dir = ''
+        atmos_dir = ocean_dir = ice_dir = med_dir = 'RESTART'
     elif inputs.start in ['cold']:  # This is a cold start experiment
         idatestr = datetime_to_YMDH(inputs.idate)
         atmos_dir = 'INPUT'
