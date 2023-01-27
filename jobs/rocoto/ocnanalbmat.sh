@@ -16,4 +16,4 @@ export jobid="${job}.$$"
 #"${HOMEgfs}"/jobs/JGDAS_GLOBAL_OCEAN_ANALYSIS_BMAT
 echo "BMAT gets run here"
 status=$?
-exit "${status}"
+exit ${status}
