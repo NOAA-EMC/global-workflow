@@ -60,7 +60,7 @@ Operations/production output location on HPSS: /NCEPPROD/hpssprod/runhistory/rh 
 |                |                                 |                                                                             |                                |
 |                |   gfs.t. ``hh`` z.sfcanl        |                                                                             |                                |
 +----------------+---------------------------------+-----------------------------------------------------------------------------+--------------------------------+
-| v14 ops        |   gfs.t. ``hh`` z.atmanl.nemsio | gpfs_hps_nco_ops_com_gfs_prod_gfs. ``yyyymmddhh`` .anl.tar                  | gfs. ``yyyymmdd` /`hh``        |
+| v14 ops        |   gfs.t. ``hh`` z.atmanl.nemsio | gpfs_hps_nco_ops_com_gfs_prod_gfs. ``yyyymmddhh`` .anl.tar                  | gfs. ``yyyymmdd`` /``hh``      |
 |                |                                 |                                                                             |                                |
 |                |   gfs.t. ``hh`` z.sfcanl.nemsio |                                                                             |                                |
 +----------------+---------------------------------+-----------------------------------------------------------------------------+--------------------------------+
@@ -252,7 +252,7 @@ For forecast-only there are two tarballs to pull
 
   /NCEPPROD/hpssprod/runhistory/rhYYYY/YYYYMM/YYYYMMDD/com_gfs_vGFSVER_gfs.YYYYMMDD_CC.gfs_restart.tar
 
-...where ``GFSVER`` is the version of the GFS (e.g. 16.3).
+...where ``GFSVER`` is the version of the GFS (e.g. "16.3").
 
 2. File #2 (for prior cycle GDATE=SDATE-06):
 
@@ -260,7 +260,7 @@ For forecast-only there are two tarballs to pull
 
   /NCEPPROD/hpssprod/runhistory/rhYYYY/YYYYMM/YYYYMMDD/com_gfs_vGFSVER_gdas.YYYYMMDD_CC.gdas_restart.tar
 
-...where ``GFSVER`` is the version of the GFS (e.g. 16.3).
+...where ``GFSVER`` is the version of the GFS (e.g. "16.3").
 
 For cycled mode there 18 tarballs to pull (9 for SDATE and 9 for GDATE (SDATE-06)):
 
@@ -309,7 +309,7 @@ Recent pre-implementation parallel series was for GFS v16 (implemented March 202
 
 * **Where do I put the warm-start initial conditions?** Extraction should occur right inside your COMROT. You may need to rename the enkf folder (enkf.gdas.$PDY -> enkfgdas.$PDY).
 
-Due to a recent change in the dycore, you may also need an additional offline step to fix the checksum of the NetCDF files for warm start. See the :ref:`Fix netcdf checksum section <gfsv17-checksum>`:  above
+Due to a recent change in the dycore, you may also need an additional offline step to fix the checksum of the NetCDF files for warm start. See the :ref:`Fix netcdf checksum section <gfsv17-checksum>`.
 
 .. _retrospective:
 
