@@ -4,7 +4,7 @@ source "${HOMEgfs}/ush/preamble.sh"
 
 ###############################################################
 # Source UFSDA workflow modules
-. ${HOMEgfs}/ush/load_ufsda_modules.sh
+. "${HOMEgfs}/ush/load_ufsda_modules.sh"
 status=$?
 [[ ${status} -ne 0 ]] && exit ${status}
 
