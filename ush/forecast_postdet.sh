@@ -759,19 +759,12 @@ MOM6_postdet() {
 
   # Copy MOM6 ICs
   if [[ "${MODE}" = 'cycled' ]]; then  # TODO: remove this block after ICSDIR is corrected for forecast-only
-    if [[ "${warm_start}" = '.true.' ]]; then
-      local res_dir=${ROTDIR}/${CDUMP}.${gPDY}/${gcyc}/ocean/RESTART
-    else
-      local res_dir=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/ocean/RESTART  # TODO: clarify what is the difference in the two cases here.  They are both valid at the same time as seen on the next line where the files are being linked.
-    fi
-    $NLN "${res_dir}/${PDY}.${cyc}0000.MOM.res.nc" "${DATA}/INPUT/MOM.res.nc"
+    $NLN "${ROTDIR}/${CDUMP}.${gPDY}/${gcyc}/ocean/RESTART/${PDY}.${cyc}0000.MOM.res.nc" "${DATA}/INPUT/MOM.res.nc"
     case $OCNRES in
       "025")
-        $NLN "${res_dir}/${PDY}.${cyc}0000.MOM.res_1.nc" "${DATA}/INPUT/MOM.res_1.nc"
-        $NLN "${res_dir}/${PDY}.${cyc}0000.MOM.res_2.nc" "${DATA}/INPUT/MOM.res_2.nc"
-        $NLN "${res_dir}/${PDY}.${cyc}0000.MOM.res_3.nc" "${DATA}/INPUT/MOM.res_3.nc"
-      ;;
-      *)
+        $NLN "${ROTDIR}/${CDUMP}.${gPDY}/${gcyc}/ocean/RESTART/${PDY}.${cyc}0000.MOM.res_1.nc" "${DATA}/INPUT/MOM.res_1.nc"
+        $NLN "${ROTDIR}/${CDUMP}.${gPDY}/${gcyc}/ocean/RESTART/${PDY}.${cyc}0000.MOM.res_2.nc" "${DATA}/INPUT/MOM.res_2.nc"
+        $NLN "${ROTDIR}/${CDUMP}.${gPDY}/${gcyc}/ocean/RESTART/${PDY}.${cyc}0000.MOM.res_3.nc" "${DATA}/INPUT/MOM.res_3.nc"
       ;;
     esac
   else
@@ -878,10 +871,12 @@ MOM6_postdet() {
 
   fi
 
-  # Link ocean restarts from DATA to COM
   mkdir -p "${COMOUTocean}/RESTART"
+
   # end point restart does not have a timestamp, calculate
-  local rdate=$($NDATE $FHMAX $CDATE)
+  local rdate=$(date -d "${CDATE:0:8} ${CDATE:8:2} + ${FHMAX} hours" +%Y%m%d%H)
+
+  # Link ocean restarts from DATA to COM
   # Coarser than 1/2 degree has a single MOM restart
   $NLN "${COMOUTocean}/RESTART/${rdate:0:8}.${rdate:8:2}0000.MOM.res.nc" "${DATA}/MOM6_RESTART/MOM.res.nc"
   # 1/4 degree resolution has 3 additional restarts
@@ -897,7 +892,7 @@ MOM6_postdet() {
 
   # Loop over restart_interval frequency and link restarts from DATA to COM
   local res_int=$(echo $restart_interval | cut -d' ' -f1)  # If this is a list, get the frequency.  # This is bound to break w/ IAU
-  local idate=$($NDATE $res_int $CDATE)
+  local idate=$(date -d "${CDATE:0:8} ${CDATE:8:2} + ${res_int} hours" +%Y%m%d%H)
   while [[ $idate -lt $rdate ]]; do
     local idatestr=$(date +%Y-%m-%d-%H -d "${idate:0:8} ${idate:8:2}")
     $NLN "${COMOUTocean}/RESTART/${idate:0:8}.${idate:8:2}0000.MOM.res.nc" "${DATA}/MOM6_RESTART/MOM.res.${idatestr}-00-00.nc"
@@ -908,7 +903,7 @@ MOM6_postdet() {
         $NLN "${COMOUTocean}/RESTART/${idate:0:8}.${idate:8:2}0000.MOM.res_3.nc" "${DATA}/MOM6_RESTART/MOM.res_3.${idatestr}-00-00.nc"
         ;;
     esac
-    local idate=$($NDATE $res_int $idate)
+    local idate=$(date -d "${idate:0:8} ${idate:8:2} + ${res_int} hours" +%Y%m%d%H)
   done
 
   # TODO: mediator should have its own CMEPS_postdet() function
@@ -918,12 +913,12 @@ MOM6_postdet() {
   # Instead of linking, copy the mediator files after the model finishes
   #local COMOUTmed="${ROTDIR}/${CDUMP}.${PDY}/${cyc}/med"
   #mkdir -p "${COMOUTmed}/RESTART"
-  #local idate=$($NDATE $res_int $CDATE)
+  #local idate=$(date -d "${CDATE:0:8} ${CDATE:8:2} + ${res_int} hours" +%Y%m%d%H)
   #while [[ $idate -le $rdate ]]; do
   #  local seconds=$(to_seconds ${idate:8:2}0000)  # use function to_seconds from forecast_predet.sh to convert HHMMSS to seconds
   #  local idatestr="${idate:0:4}-${idate:4:2}-${idate:6:2}-${seconds}"
   #  $NLN "${COMOUTmed}/RESTART/${idate:0:8}.${idate:8:2}0000.ufs.cpld.cpl.r.nc" "${DATA}/RESTART/ufs.cpld.cpl.r.${idatestr}.nc"
-  #  local idate=$($NDATE $res_int $idate)
+  #  local idate=$(date -d "${idate:0:8} ${idate:8:2} + ${res_int} hours" +%Y%m%d%H)
   #done
 
   echo "SUB ${FUNCNAME[0]}: MOM6 input data linked/copied"
@@ -948,14 +943,14 @@ MOM6_out() {
   # See MOM6_postdet() function for error message
   local COMOUTmed="${ROTDIR}/${CDUMP}.${PDY}/${cyc}/med"
   mkdir -p "${COMOUTmed}/RESTART"
-  local rdate=$($NDATE $FHMAX $CDATE)
   local res_int=$(echo $restart_interval | cut -d' ' -f1)  # If this is a list, get the frequency.  # This is bound to break w/ IAU
-  local idate=$($NDATE $res_int $CDATE)
+  local idate=$(date -d "${CDATE:0:8} ${CDATE:8:2} + ${res_int} hours" +%Y%m%d%H)
+  local rdate=$(date -d "${CDATE:0:8} ${CDATE:8:2} + ${FHMAX} hours" +%Y%m%d%H)
   while [[ $idate -le $rdate ]]; do
     local seconds=$(to_seconds ${idate:8:2}0000)  # use function to_seconds from forecast_predet.sh to convert HHMMSS to seconds
     local idatestr="${idate:0:4}-${idate:4:2}-${idate:6:2}-${seconds}"
     $NCP "${DATA}/RESTART/ufs.cpld.cpl.r.${idatestr}.nc" "${COMOUTmed}/RESTART/${idate:0:8}.${idate:8:2}0000.ufs.cpld.cpl.r.nc"
-    local idate=$($NDATE $res_int $idate)
+    local idate=$(date -d "${idate:0:8} ${idate:8:2} + ${res_int} hours" +%Y%m%d%H)
   done
 }
 
@@ -971,10 +966,16 @@ CICE_postdet() {
   steps=$((nhours*stepsperhr))
   npt=$((FHMAX*$stepsperhr))      # Need this in order for dump_last to work
 
+  # TODO:  These settings should be elevated to config.ice
   histfreq_n=${histfreq_n:-6}
   dumpfreq_n=${dumpfreq_n:-1000}  # Set this to a really large value, as cice, mom6 and cmeps restart interval is controlled by nems.configure
   dumpfreq=${dumpfreq:-"y"} #  "h","d","m" or "y" for restarts at intervals of "hours", "days", "months" or "years"
-  cice_hist_avg=${cice_hist_avg:-".true."}
+
+  if [[ "${CDUMP}" == "gdas" ]]; then
+    cice_hist_avg=".false."   # DA needs instantaneous
+  elif [[ "${CDUMP}" == "gfs" ]]; then
+    cice_hist_avg=".true."    # P8 wants averaged over histfreq_n
+  fi
 
   FRAZIL_FWSALT=${FRAZIL_FWSALT:-".true."}
   ktherm=${ktherm:-2}
@@ -1005,12 +1006,7 @@ CICE_postdet() {
 
   # Copy/link CICE IC to DATA
   if [[ "${MODE}" = 'cycled' ]]; then  # TODO: remove this block after ICSDIR is corrected for forecast-only
-    if [[ "${warm_start}" = '.true.' ]]; then
-      local res_dir=${ROTDIR}/${CDUMP}.${gPDY}/${gcyc}/ice/RESTART
-    else
-      local res_dir=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/ice/RESTART
-    fi
-    $NLN "${res_dir}/${PDY}.${cyc}0000.cice_model.res.nc" "${DATA}/cice_model.res.nc"
+    $NLN "${ROTDIR}/${CDUMP}.${gPDY}/${gcyc}/ice/RESTART/${PDY}.${cyc}0000.cice_model.res.nc" "${DATA}/cice_model.res.nc"
   else
     $NCP -p $ICSDIR/$CDATE/ice/cice_model_${ICERESdec}.res_$CDATE.nc $DATA/cice_model.res.nc
   fi
@@ -1026,6 +1022,7 @@ CICE_postdet() {
 
   # Link CICE output files
   [[ ! -d $COMOUTice ]] && mkdir -p $COMOUTice
+  mkdir -p ${COMOUTice}/RESTART
 
   if [[ "${CDUMP}" = "gfs" ]]; then
     # Link output files for CDUMP = gfs
@@ -1048,32 +1045,43 @@ CICE_postdet() {
       SS=$((10#$HH*3600))
 
       if [[ 10#$fhr -eq 0 ]]; then
-        $NLN $COMOUTice/iceic$VDATE.$ENSMEM.$IDATE.nc $DATA/history/iceh_ic.${YYYY}-${MM}-${DD}-$(printf "%5.5d" ${SS}).nc
+        $NLN $COMOUTice/iceic$VDATE.$ENSMEM.$IDATE.nc $DATA/CICE_OUTPUT/iceh_ic.${YYYY}-${MM}-${DD}-$(printf "%5.5d" ${SS}).nc
       else
-        (( interval = fhr - last_fhr ))
-        $NLN $COMOUTice/ice$VDATE.$ENSMEM.$IDATE.nc $DATA/history/iceh_$(printf "%0.2d" $interval)h.${YYYY}-${MM}-${DD}-$(printf "%5.5d" ${SS}).nc
+        (( interval = fhr - last_fhr ))  # Umm.. isn't this histfreq_n?
+        $NLN $COMOUTice/ice$VDATE.$ENSMEM.$IDATE.nc $DATA/CICE_OUTPUT/iceh_$(printf "%0.2d" $interval)h.${YYYY}-${MM}-${DD}-$(printf "%5.5d" ${SS}).nc
       fi
       last_fhr=$fhr
     done
 
   elif [[ "${CDUMP}" = "gdas" ]]; then
-    # Link output files for CDUMP = gdas
 
-    echo "Link CICE forecast output files for CDUMP = gdas"
+    # Link CICE generated initial condition file from DATA/CICE_OUTPUT to COMOUTice
+    # This can be thought of as the f000 output from the CICE model
+    local seconds=$(to_seconds ${CDATE:8:2}0000)  # convert HHMMSS to seconds
+    $NLN "${COMOUTice}/${CDUMP}.t${cyc}z.iceic.nc" "${DATA}/CICE_OUTPUT/iceh_ic.${CDATE:0:4}-${CDATE:4:2}-${CDATE:6:2}-${seconds}.nc"
+
+    # Link instantaneous CICE forecast output files from DATA/CICE_OUTPUT to COMOUTice
+    local fhr="${FHOUT}"
+    while [[ "${fhr}" -le "${FHMAX}" ]]; do
+      local idate=$(date -d "${CDATE:0:8} ${CDATE:8:2} + ${fhr} hours" +%Y%m%d%H)
+      local seconds=$(to_seconds ${idate:8:2}0000)  # convert HHMMSS to seconds
+      local fhr3=$(printf %03i ${fhr})
+      $NLN "${COMOUTice}/${CDUMP}.t${cyc}z.icef${fhr3}.nc" "${DATA}/CICE_OUTPUT/iceh_inst.${idate:0:4}-${idate:4:2}-${idate:6:2}-${seconds}.nc"
+      local fhr=$((fhr + FHOUT))
+    done
 
   fi
 
-  # Link CICE restarts to COMOUTice/RESTART
+  # Link CICE restarts from CICE_RESTART to COMOUTice/RESTART
   # Loop over restart_interval and link restarts from DATA to COM
-  mkdir -p ${COMOUTice}/RESTART
   local res_int=$(echo ${restart_interval} | cut -d' ' -f1)  # If this is a list, get the frequency.  # This is bound to break w/ IAU
-  local rdate=$(${NDATE} ${FHMAX}   ${CDATE})
-  local idate=$(${NDATE} ${res_int} ${CDATE})
-  while [[ $idate -le $rdate ]]; do
-    local seconds=$(to_seconds ${idate:8:2}0000)  # use function to_seconds from forecast_predet.sh to convert HHMMSS to seconds
+  local rdate=$(date -d "${CDATE:0:8} ${CDATE:8:2} + ${FHMAX} hours" +%Y%m%d%H)
+  local idate=$(date -d "${CDATE:0:8} ${CDATE:8:2} + ${res_int} hours" +%Y%m%d%H)
+  while [[ ${idate} -le ${rdate} ]]; do
+    local seconds=$(to_seconds ${idate:8:2}0000)  # convert HHMMSS to seconds
     local idatestr="${idate:0:4}-${idate:4:2}-${idate:6:2}-${seconds}"
-    $NLN "${COMOUTice}/RESTART/${idate:0:8}.${idate:8:2}0000.cice_model.res.nc" "${DATA}/RESTART/iced.${idatestr}.nc"
-    local idate=$(${NDATE} ${res_int} ${idate})
+    $NLN "${COMOUTice}/RESTART/${idate:0:8}.${idate:8:2}0000.cice_model.res.nc" "${DATA}/CICE_RESTART/cice_model.res.${idatestr}.nc"
+    local idate=$(date -d "${idate:0:8} ${idate:8:2} + ${res_int} hours" +%Y%m%d%H)
   done
 }
 

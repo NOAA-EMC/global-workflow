@@ -17,7 +17,7 @@ to_seconds() {
   local hh=${hhmmss:0:2}
   local mm=${hhmmss:2:2}
   local ss=${hhmmss:4:2}
-  local seconds=$(((hh*3600+mm*60+ss)))
+  local seconds=$((10#${hh}*3600+10#${mm}*60+10#${ss}))
   local padded_seconds=$(printf "%05d" ${seconds})
   echo ${padded_seconds}
 }
@@ -301,24 +301,12 @@ WW3_predet(){
 
 CICE_predet(){
   echo "SUB ${FUNCNAME[0]}: CICE before run type determination"
-  if [ ! -d $ROTDIR ]; then mkdir -p $ROTDIR; fi
-  if [ ! -d $DATA ]; then mkdir -p $DATA; fi
-  if [ ! -d $DATA/RESTART ]; then mkdir -p $DATA/RESTART; fi
-  if [ ! -d $DATA/INPUT ]; then mkdir -p $DATA/INPUT; fi
-  if [ ! -d $DATA/restart ]; then mkdir -p $DATA/restart; fi
-  if [ ! -d $DATA/history ]; then mkdir -p $DATA/history; fi
-  if [ ! -d $DATA/OUTPUT ]; then mkdir -p $DATA/OUTPUT; fi
+  if [ ! -d $DATA/CICE_OUTPUT ]; then  mkdir -p $DATA/CICE_OUTPUT; fi
+  if [ ! -d $DATA/CICE_RESTART ]; then mkdir -p $DATA/CICE_RESTART; fi
 }
 
 MOM6_predet(){
   echo "SUB ${FUNCNAME[0]}: MOM6 before run type determination"
-  if [ ! -d $ROTDIR ]; then mkdir -p $ROTDIR; fi
-  if [ ! -d $DATA ]; then mkdir -p $DATA; fi
-  if [ ! -d $DATA/RESTART ]; then mkdir -p $DATA/RESTART; fi
-  if [ ! -d $DATA/INPUT ]; then mkdir -p $DATA/INPUT; fi
-  if [ ! -d $DATA/restart ]; then mkdir -p $DATA/restart; fi
-  if [ ! -d $DATA/history ]; then mkdir -p $DATA/history; fi
-  if [ ! -d $DATA/OUTPUT ]; then mkdir -p $DATA/OUTPUT; fi
   if [ ! -d $DATA/MOM6_OUTPUT ]; then mkdir -p $DATA/MOM6_OUTPUT; fi
   if [ ! -d $DATA/MOM6_RESTART ]; then mkdir -p $DATA/MOM6_RESTART; fi
   cd "${DATA}" || exit 8

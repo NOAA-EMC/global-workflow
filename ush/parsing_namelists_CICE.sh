@@ -51,8 +51,8 @@ cat > ice_in <<eof
    lcdf64         = .false.
    numin          = 21
    numax          = 89
-   restart_dir    = './RESTART/'
-   restart_file   = 'iced'
+   restart_dir    = './CICE_RESTART/'
+   restart_file   = 'cice_model.res'
    pointer_file   = './ice.restart_file'
    dumpfreq       = '$dumpfreq'
    dumpfreq_n     =  $dumpfreq_n
@@ -68,12 +68,12 @@ cat > ice_in <<eof
    latpnt(2)      = -65.
    lonpnt(2)      = -45.
    histfreq       = 'm','d','h','x','x'
-   histfreq_n     =  0 , 0 , 6 , 1 , 1
+   histfreq_n     =  0 , 0 , ${FHOUT} , 1 , 1
    hist_avg       = $cice_hist_avg
-   history_dir    = './history/'
+   history_dir    = './CICE_OUTPUT/'
    history_file   = 'iceh'
    write_ic       = .true.
-   incond_dir     = './history/'
+   incond_dir     = './CICE_OUTPUT/'
    incond_file    = 'iceh_ic'
    version_name   = 'CICE_6.0.2'
 /
