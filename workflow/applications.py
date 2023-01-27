@@ -181,6 +181,10 @@ class AppConfig:
         else:
             configs += ['anal', 'analdiag']
 
+        if self.do_jediocnvar:
+            configs += ['ocnanalprep', 'ocnanalbmat', 'ocnanalrun', 'ocnanalpost']
+            configs += ['ocnpost']
+
         configs += ['sfcanl', 'analcalc', 'fcst', 'post', 'vrfy', 'arch']
 
         if self.do_gldas:
@@ -341,13 +345,20 @@ class AppConfig:
         """
 
         gdas_gfs_common_tasks_before_fcst = ['prep']
-        gdas_gfs_common_tasks_after_fcst = ['post', 'vrfy']
+        gdas_gfs_common_tasks_after_fcst = ['post']
+        if self.do_ocean:
+            gdas_gfs_common_tasks_after_fcst += ['ocnpost']
+        gdas_gfs_common_tasks_after_fcst += ['vrfy']
+
         gdas_gfs_common_cleanup_tasks = ['arch']
 
         if self.do_jedivar:
             gdas_gfs_common_tasks_before_fcst += ['atmanalprep', 'atmanalrun', 'atmanalpost']
         else:
             gdas_gfs_common_tasks_before_fcst += ['anal']
+
+        if self.do_jediocnvar:
+            gdas_gfs_common_tasks_before_fcst += ['ocnanalprep', 'ocnanalbmat', 'ocnanalrun', 'ocnanalpost']
 
         gdas_gfs_common_tasks_before_fcst += ['sfcanl', 'analcalc']
 

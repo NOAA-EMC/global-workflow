@@ -13,7 +13,7 @@ class Tasks:
     VALID_TASKS = ['aerosol_init', 'coupled_ic', 'getic', 'init',
                    'prep', 'anal', 'sfcanl', 'analcalc', 'analdiag', 'gldas', 'arch',
                    'atmanalprep', 'atmanalrun', 'atmanalpost',
-                   'ocnanalprep', 'ocnanalrun', 'ocnanalpost',
+                   'ocnanalprep', 'ocnanalbmat', 'ocnanalrun', 'ocnanalpost',
                    'earc', 'ecen', 'echgres', 'ediag', 'efcs',
                    'eobs', 'eomg', 'epos', 'esfc', 'eupd',
                    'atmensanalprep', 'atmensanalrun', 'atmensanalpost',
@@ -242,6 +242,7 @@ class Tasks:
 
     def prep(self):
 
+        suffix = self._base["SUFFIX"]
         dump_suffix = self._base["DUMP_SUFFIX"]
         gfs_cyc = self._base["gfs_cyc"]
         dmpdir = self._base["DMPDIR"]
@@ -250,7 +251,7 @@ class Tasks:
         deps = []
         dep_dict = {'type': 'metatask', 'name': f'{"gdas"}post', 'offset': '-06:00:00'}
         deps.append(rocoto.add_dependency(dep_dict))
-        data = f'&ROTDIR;/gdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmf009.nc'
+        data = f'&ROTDIR;/gdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmf009{suffix}'
         dep_dict = {'type': 'data', 'data': data, 'offset': '-06:00:00'}
         deps.append(rocoto.add_dependency(dep_dict))
         data = f'{dmpdir}/{self.cdump}{dump_suffix}.@Y@m@d/@H/atmos/{self.cdump}.t@Hz.updated.status.tm00.bufr_d'
@@ -398,6 +399,7 @@ class Tasks:
 
     def atmanalprep(self):
 
+        suffix = self._base["SUFFIX"]
         dump_suffix = self._base["DUMP_SUFFIX"]
         gfs_cyc = self._base["gfs_cyc"]
         dmpdir = self._base["DMPDIR"]
@@ -406,7 +408,7 @@ class Tasks:
         deps = []
         dep_dict = {'type': 'metatask', 'name': 'gdaspost', 'offset': '-06:00:00'}
         deps.append(rocoto.add_dependency(dep_dict))
-        data = f'&ROTDIR;/gdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmf009.nc'
+        data = f'&ROTDIR;/gdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmf009{suffix}'
         dep_dict = {'type': 'data', 'data': data, 'offset': '-06:00:00'}
         deps.append(rocoto.add_dependency(dep_dict))
         data = f'{dmpdir}/{self.cdump}{dump_suffix}.@Y@m@d/@H/atmos/{self.cdump}.t@Hz.updated.status.tm00.bufr_d'
@@ -454,13 +456,14 @@ class Tasks:
 
     def aeroanlinit(self):
 
+        suffix = self._base["SUFFIX"]
         dump_suffix = self._base["DUMP_SUFFIX"]
         dmpdir = self._base["DMPDIR"]
 
         deps = []
         dep_dict = {'type': 'metatask', 'name': 'gdaspost', 'offset': '-06:00:00'}
         deps.append(rocoto.add_dependency(dep_dict))
-        data = f'&ROTDIR;/gdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmf009.nc'
+        data = f'&ROTDIR;/gdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmf009{suffix}'
         dep_dict = {'type': 'data', 'data': data, 'offset': '-06:00:00'}
         deps.append(rocoto.add_dependency(dep_dict))
         data = f'{dmpdir}/{self.cdump}{dump_suffix}.@Y@m@d/@H/atmos/{self.cdump}.t@Hz.updated.status.tm00.bufr_d'
@@ -498,14 +501,17 @@ class Tasks:
 
     def ocnanalprep(self):
 
+        suffix = self._base["SUFFIX"]
         dump_suffix = self._base["DUMP_SUFFIX"]
         dmpdir = self._base["DMPDIR"]
 
         deps = []
-        data = f'&ROTDIR;/gdas.@Y@m@d/@H/ocean/gdas.t@Hz.ocnf009.nc'
+        #dep_dict = {'type': 'metatask', 'name': 'ocnanalpost', 'offset': '-06:00:00'}
+        #deps.append(rocoto.add_dependency(dep_dict))
+        data = f'&ROTDIR;/gdas.@Y@m@d/@H/ocean/gdas.t@Hz.ocnf009{suffix}'
         dep_dict = {'type': 'data', 'data': data, 'offset': '-06:00:00'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('ocnanalprep')
         task = create_wf_task('ocnanalprep',
@@ -516,10 +522,26 @@ class Tasks:
 
         return task
 
-    def ocnanalrun(self):
+    def ocnanalbmat(self):
 
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump}ocnanalprep'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('ocnanalbmat')
+        task = create_wf_task('ocnanalbmat',
+                              resources,
+                              cdump=self.cdump,
+                              envar=self.envars,
+                              dependency=dependencies)
+
+        return task
+
+    def ocnanalrun(self):
+
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}ocnanalbmat'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -1083,6 +1105,7 @@ class Tasks:
 
     def atmensanalprep(self):
 
+        suffix = self._base["SUFFIX"]
         dump_suffix = self._base["DUMP_SUFFIX"]
         gfs_cyc = self._base["gfs_cyc"]
         dmpdir = self._base["DMPDIR"]
@@ -1091,7 +1114,7 @@ class Tasks:
         deps = []
         dep_dict = {'type': 'metatask', 'name': 'gdaspost', 'offset': '-06:00:00'}
         deps.append(rocoto.add_dependency(dep_dict))
-        data = f'&ROTDIR;/gdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmf009.nc'
+        data = f'&ROTDIR;/gdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmf009{suffix}'
         dep_dict = {'type': 'data', 'data': data, 'offset': '-06:00:00'}
         deps.append(rocoto.add_dependency(dep_dict))
         data = f'{dmpdir}/{self.cdump}{dump_suffix}.@Y@m@d/@H/atmos/{self.cdump}.t@Hz.updated.status.tm00.bufr_d'
@@ -1254,10 +1277,9 @@ class Tasks:
         def _get_eposgroups(epos):
             fhmin = epos['FHMIN_ENKF']
             fhmax = epos['FHMAX_ENKF']
-            fhout = epos['FHOUT_ENKF']
             if self.cdump == "gfs":
                 fhmax = epos['FHMAX_ENKF_GFS']
-                fhout = epos['FHOUT_ENKF_GFS']
+            fhout = epos['FHOUT_ENKF']
             fhrs = range(fhmin, fhmax + fhout, fhout)
 
             neposgrp = epos['NEPOSGRP']
