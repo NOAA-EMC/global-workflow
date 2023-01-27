@@ -22,5 +22,4 @@ if __name__ == '__main__':
 
     # Instantiate the aerosol analysis task
     AeroAnl = AerosolAnalysis(config)
-    AeroAnl.configure()  # TODO: clarify, how do you configure before initializing?  These should be swapped.
     AeroAnl.initialize()
