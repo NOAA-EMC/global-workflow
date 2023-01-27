@@ -6,7 +6,7 @@ source "${HOMEgfs}/ush/preamble.sh"
 # Source UFSDA workflow modules
 . "${HOMEgfs}/ush/load_ufsda_modules.sh"
 status=$?
-[[ ${status} -ne 0 ]] && exit ${status}
+[[ "${status}" -ne 0 ]] && exit "${status}"
 
 export job="ocnanalbmat"
 export jobid="${job}.$$"
