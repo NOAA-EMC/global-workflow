@@ -21,15 +21,21 @@ Resolutions:
 
 Supported resolutions in global-workflow: C48, C96, C192, C384, C768
 
+.. _automated-generation:
+
 ^^^^^^^^^^^^^^^^^^^^
 Automated Generation
 ^^^^^^^^^^^^^^^^^^^^
+
+.. _cycled:
 
 ***********
 Cycled mode
 ***********
 
 Not yet supported. See :ref:`Manual Generation<manual-generation>` section below for how to create your ICs yourself (outside of workflow).
+
+.. _forecastonly-atmonly:
 
 *****************************
 Forecast-only mode (atm-only)
@@ -79,7 +85,9 @@ Operations/production output location on HPSS: /NCEPPROD/hpssprod/runhistory/rh 
 |                |   gfs.t. ``hh`` z.sfcanl.nc     |                                                                             |                                |
 +----------------+---------------------------------+-----------------------------------------------------------------------------+--------------------------------+
 
-For HPSS path, see retrospective table in :ref:`pre-production parallel section <retrospective>`: below
+For HPSS path, see retrospective table in :ref:`pre-production parallel section <retrospective>` below
+
+.. _forecastonly-coupled:
 
 *********************
 Forecast-only coupled
@@ -87,11 +95,15 @@ Forecast-only coupled
 
 Coupled initial conditions are currently only generated offline and copied prior to the forecast run. Prototype initial conditions will automatically be used when setting up an experiment as an S2SW app, there is no need to do anything additional. Copies of initial conditions from the prototype runs are currently maintained on Hera, Orion, and WCOSS2. The locations used are determined by ``parm/config/config.coupled_ic``. If you need prototype ICs on another machine, please contact Walter (Walter.Kolczynski@noaa.gov).
 
+.. _manual-generation:
+
 ^^^^^^^^^^^^^^^^^
 Manual Generation
 ^^^^^^^^^^^^^^^^^
 
 NOTE: Initial conditions cannot be generated on S4. These must be generated on another supported platform then pushed to S4. If you do not have access to a supported system or need assistance, please contact David Huber (david.huber@noaa.gov).
+
+.. _coldstarts:
 
 ***********
 Cold starts
@@ -108,7 +120,7 @@ The ``chgres_cube`` code is available from the `UFS_UTILS repository <https://gi
 
 Users can use the copy of UFS_UTILS that is already cloned and built within their global-workflow clone or clone/build it separately:
 
-Within a build/linked global-workflow clone:
+Within a built/linked global-workflow clone:
 
 ::
 
@@ -116,7 +128,7 @@ Within a build/linked global-workflow clone:
 
 Clone and build separately:
 
-Clone UFS_UTILS:
+1. Clone UFS_UTILS:
 
 ::
 
@@ -124,7 +136,7 @@ Clone UFS_UTILS:
 
 Then switch to a different tag or use the default branch (develop).
 
-Build UFS_UTILS:
+2. Build UFS_UTILS:
 
 ::
 
@@ -137,7 +149,7 @@ where ``$MACHINE`` is ``wcoss2``, ``hera``, or ``jet``.
 .. note::
    UFS-UTILS builds on Orion but due to the lack of HPSS access on Orion the ``gdas_init`` utility is not supported there.
 
-Configure your conversion:
+3. Configure your conversion:
 
 ::
 
@@ -152,7 +164,7 @@ Most users will want to adjust the following ``config`` settings for the current
 #. RUN_CHGRES=YES (to run chgres_cube on the original ICs pulled off HPSS)
 #. LEVS=128 (for the L127 GFS)
 
-Submit conversion script:
+4. Submit conversion script:
 
 ::
 
@@ -170,17 +182,19 @@ Several small jobs will be submitted:
 
 The chgres jobs will have a dependency on the data-pull jobs and will wait to run until all data-pull jobs have completed.
 
-Check output:
+5. Check output:
 
 In the config you will have defined an output folder called ``$OUTDIR``. The converted output will be found there, including the needed abias and radstat initial condition files (if CDUMP=gdas). The files will be in the needed directory structure for the global-workflow system, therefore a user can move the contents of their ``$OUTDIR`` directly into their ``$ROTDIR/$COMROT``.
 
 Please report bugs to George Gayno (george.gayno@noaa.gov) and Kate Friedman (kate.friedman@noaa.gov).
 
+.. _warmstarts-prod:
+
 *****************************
 Warm starts (from production)
 *****************************
 
-The GFSv15 was implemented into production on June 12th, 2019 at 12z. The GFS was spun up ahead of that cycle and thus production output for the system is available from the 00z cycle (2019061200) and later. Production output tarballs from the prior GFSv14 system are located in the same location on HPSS but have "hps" in the name to represent that it was run on the Cray, where as the GFS now runs in production on the Dell and has "dell1" in the tarball name.
+Output and warm start initial conditions from the operational GFS (FV3GFS) are saved on HPSS. Users can pull these warm start initial conditions from tape for their use in running operational resolution experiments.
 
 See production output in the following location on HPSS:
 
@@ -194,7 +208,8 @@ Example listing for January 2nd 2023 00z (2023010200) production tarballs:
 
 ::
 
-  -bash-4.2$ hpsstar dir /NCEPPROD/hpssprod/runhistory/rh2023/202301/20230102 | grep gfs | grep _00. | grep -v idx                                                           [connecting to hpsscore1.fairmont.rdhpcs.noaa.gov/1217]
+  -bash-4.2$ hpsstar dir /NCEPPROD/hpssprod/runhistory/rh2023/202301/20230102 | grep gfs | grep _00. | grep -v idx
+  [connecting to hpsscore1.fairmont.rdhpcs.noaa.gov/1217]
   -rw-r-----    1 nwprod    rstprod  34824086016 Jan  4 03:31 com_gfs_v16.3_enkfgdas.20230102_00.enkfgdas.tar
   -rw-r--r--    1 nwprod    prod     219779890688 Jan  4 04:04 com_gfs_v16.3_enkfgdas.20230102_00.enkfgdas_restart_grp1.tar
   -rw-r--r--    1 nwprod    prod     219779921408 Jan  4 04:13 com_gfs_v16.3_enkfgdas.20230102_00.enkfgdas_restart_grp2.tar
@@ -221,7 +236,7 @@ Example listing for January 2nd 2023 00z (2023010200) production tarballs:
   -rw-r--r--    1 nwprod    prod     32850422784 Jan  4 02:51 com_gfs_v16.3_gfs.20230102_00.gfswave_raw.tar
   -rw-r-----    1 nwprod    rstprod   7419548160 Jan  4 05:15 com_obsproc_v1.1_gfs.20230102_00.obsproc_gfs.tar
 
-The warm starts and other output from production are at C768 deterministic and C384 EnKF. The warm start files must be converted to your desired resolution(s) using ``chgres_cube`` if you wish to run a different resolution. If you are running a C768/C384 experiment you can use them as is.
+The warm starts and other output from production are at C768 deterministic and C384 EnKF. The warm start files must be converted to your desired resolution(s) using ``chgres_cube`` if you wish to run a different resolution. If you are running a C768C384L127 experiment you can use them as is.
 
 ------------------------------------------------------------------------------------------
 What files should you pull for starting a new experiment with warm starts from production?
@@ -237,7 +252,7 @@ For forecast-only there are two tarballs to pull
 
   /NCEPPROD/hpssprod/runhistory/rhYYYY/YYYYMM/YYYYMMDD/com_gfs_vGFSVER_gfs.YYYYMMDD_CC.gfs_restart.tar
 
-  ...where ``GFSVER`` is the version of the GFS (e.g. 16.3).
+...where ``GFSVER`` is the version of the GFS (e.g. 16.3).
 
 2. File #2 (for prior cycle GDATE=SDATE-06):
 
@@ -245,7 +260,7 @@ For forecast-only there are two tarballs to pull
 
   /NCEPPROD/hpssprod/runhistory/rhYYYY/YYYYMM/YYYYMMDD/com_gfs_vGFSVER_gdas.YYYYMMDD_CC.gdas_restart.tar
 
-  ...where ``GFSVER`` is the version of the GFS (e.g. 16.3).
+...where ``GFSVER`` is the version of the GFS (e.g. 16.3).
 
 For cycled mode there 18 tarballs to pull (9 for SDATE and 9 for GDATE (SDATE-06)):
 
@@ -268,6 +283,8 @@ Tarballs per cycle:
    com_gfs_vGFSVER_enkfgdas.YYYYMMDD_CC.enkfgdas_restart_grp8.tar
 
 Go to the top of your ``COMROT/ROTDIR`` and pull the contents of all tarballs there. The tarballs already contain the needed directory structure.
+
+.. _warmstarts-preprod-parallels:
 
 *******************************************
 Warm starts (from pre-production parallels)
@@ -342,19 +359,19 @@ GFSv15 (Q2FY19) Pre-Implementation Parallel HPSS Locations
 | 20150503 - 20151130 | fv3q2fy19retro6 | $PREFIX/emc.glopara/WCOSS_DELL_P3/Q2FY19/fv3q2fy19retro6  |
 +---------------------+-----------------+-----------------------------------------------------------+
 
-.. _gfsv17_warmstarts:
+.. _gfsv17-warmstarts:
 
----------------------------------------
+***************************************
 Using pre-GFSv17 warm starts for GFSv17
----------------------------------------
+***************************************
 
 If a user wishes to run a high-res (C768C384L127) GFSv17 experiment with warm starts from the operational GFSv16 (or older) warm starts, they must process the initial condition files before using. See details below in the :ref:`Fix netcdf checksum section <gfsv17-checksum>`.
 
 .. _gfsv17-checksum:
 
-^^^^^^^^^^^^^^^^^^^^^^^^^
+-------------------------
 Fix NetCDF checksum issue
-^^^^^^^^^^^^^^^^^^^^^^^^^
+-------------------------
 
 Due to a recent change in UFS, the setting to bypass the data verification no longer works, so you may also need an additional offline step to delete the checksum of the NetCDF files for warm start:
 
