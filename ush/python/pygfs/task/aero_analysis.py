@@ -24,102 +24,89 @@ class AerosolAnalysis(Analysis):
     """
     Class for global aerosol analysis tasks
     """
-    @logit(logger, name=AerosolAnalysis)
+    @logit(logger, name="AerosolAnalysis")
     def __init__(self, config):
         super().__init__(config)
 
         _res = int(self.config['CASE'][1:])
         _res_enkf = int(self.config['CASE_ENKF'][1:])
+        _window_begin = self.current_cycle - to_timedelta(f"{self.config['assim_freq']}H") / 2
 
-        # Add to global config for convenience
-        # Q. Where are these variables used?  I see use of ntiles, but not the rest.
-        # Remove them if not used.
-        # Similarly for runtime_config
-        # In terms of provenence, and to preserve the original config, I would not add to the config
-        # Instead, a local config should be created for this class and used. See below
-        tmp_dict = {
+        # Create a local dictionary that is repeatedly used across this class
+        local_dict = AttrDict(
+            {
             'npx_ges': _res + 1,
             'npy_ges': _res + 1,
-            'npz_ges': self.config['LEVS'] - 1,
-            'npz': self.config['LEVS'] - 1,
+            'npz_ges': self.config.LEVS - 1,
+            'npz': self.config.LEVS - 1,
             'npx_anl': _res_enkf + 1,
             'npy_anl': _res_enkf + 1,
-            'npz_anl': self.config['LEVS'] - 1,
-        }
-        self.config = AttrDict(self.config, **tmp_dict)
-
-        # Add to runtime_config
-        window_begin = self.current_cycle - to_timedelta(f"{self.config['assim_freq']}H") / 2
-
-        tmp_dict = {
-            'AERO_WINDOW_BEGIN': to_isotime(window_begin),
+            'npz_anl': self.config['LEVS'] - 1
+            'AERO_WINDOW_BEGIN': to_isotime(_window_begin),
             'AERO_WINDOW_LENGTH': f"PT{self.config['assim_freq']}H",
             'BKG_ISOTIME': to_isotime(self.current_cycle),
             'BKG_YYYYmmddHHMMSS': to_fv3time(self.current_cycle),
-        }
-        self.runtime_config = AttrDict(self.runtime_config, **tmp_dict)
+            'cdate_fv3': to_fv3time(self.current_cycle),
+            'comin_ges_atm': self.config.COMIN_GES.replace('chem', 'atmos'),  # 'chem' is COMPONENT, aerosol fields are in 'atmos' tracers
+            }
+        )
 
-        # Create a local config that is repeatedly used across this class
-        self.lconfig = AttrDict()
-        self.lconfig.cdate_fv3 = to_fv3time(self.current_cycle)
-        self.lconfig.comin_ges = self.config['COMIN_GES']
-        self.lconfig.comin_ges_atm = self.lconfig.comin_ges.replace('chem', 'atmos')  # 'chem' is COMPONENT, aerosol fields are in 'atmos' tracers
-
+        # task_config is everything that is this task should need
+        self.task_config = AttrDict(**self.config, **self.runtime_config, **local_dict)
 
     @logit(logger)
     def initialize(self: Analysis) -> None:
         super().initialize()
 
         # stage CRTM fix files
-        crtm_fix_list_path = os.path.join(self.config['HOMEgfs'], 'parm', 'parm_gdas', 'aero_crtm_coeff.yaml')
+        crtm_fix_list_path = os.path.join(self.task_config['HOMEgfs'], 'parm', 'parm_gdas', 'aero_crtm_coeff.yaml')
         crtm_fix_list = YAMLFile(path=crtm_fix_list_path)
-        crtm_fix_list = Template.substitute_structure(crtm_fix_list, TemplateConstants.DOLLAR_PARENTHESES, self.runtime_config.get)
+        crtm_fix_list = Template.substitute_structure(crtm_fix_list, TemplateConstants.DOLLAR_PARENTHESES, self.task_config.get)
         FileHandler(crtm_fix_list).sync()
 
         # stage fix files
-        jedi_fix_list_path = os.path.join(self.config['HOMEgfs'], 'parm', 'parm_gdas', 'aero_jedi_fix.yaml')
+        jedi_fix_list_path = os.path.join(self.task_config['HOMEgfs'], 'parm', 'parm_gdas', 'aero_jedi_fix.yaml')
         jedi_fix_list = YAMLFile(path=jedi_fix_list_path)
-        jedi_fix_list = Template.substitute_structure(jedi_fix_list, TemplateConstants.DOLLAR_PARENTHESES, self.runtime_config.get)
+        jedi_fix_list = Template.substitute_structure(jedi_fix_list, TemplateConstants.DOLLAR_PARENTHESES, self.task_config.get)
         FileHandler(jedi_fix_list).sync()
 
         # stage berror files
         # copy BUMP files, otherwise it will assume ID matrix
-        if self.config.get('STATICB_TYPE', 'bump_aero') in ['bump_aero']:
-            FileHandler(AerosolAnalysis.get_berror_dict(self.config)).sync()
+        if self.task_config.get('STATICB_TYPE', 'bump_aero') in ['bump_aero']:
+            FileHandler(AerosolAnalysis.get_berror_dict(self.task_config)).sync()
 
         # stage backgrounds
-        FileHandler(self._get_bkg_dict(AttrDict(self.config, **self.lconfig))).sync()
+        FileHandler(self._get_bkg_dict(AttrDict(self.task_config, **self.task_config))).sync()
 
         # generate variational YAML file
-        yaml_out = os.path.join(self.config['DATA'], f"{self.config['CDUMP']}.t{self.cyc}z.aerovar.yaml")
-        varda_yaml = YAMLFile(path=self.config['AEROVARYAML'])
-        varda_yaml = Template.substitute_structure(varda_yaml, TemplateConstants.DOUBLE_CURLY_BRACES, self.runtime_config.get)
-        varda_yaml = Template.substitute_structure(varda_yaml, TemplateConstants.DOLLAR_PARENTHESES, self.runtime_config.get)
+        yaml_out = os.path.join(self.task_config['DATA'], f"{self.task_config['CDUMP']}.t{self.cyc}z.aerovar.yaml")
+        varda_yaml = YAMLFile(path=self.task_config['AEROVARYAML'])
+        varda_yaml = Template.substitute_structure(varda_yaml, TemplateConstants.DOUBLE_CURLY_BRACES, self.task_config.get)
+        varda_yaml = Template.substitute_structure(varda_yaml, TemplateConstants.DOLLAR_PARENTHESES, self.task_config.get)
         varda_yaml.save(yaml_out)
 
         # link var executable
-        exe_src = self.config['JEDIVAREXE']
-        exe_dest = os.path.join(self.config['DATA'], os.path.basename(exe_src))
+        exe_src = self.task_config['JEDIVAREXE']
+        exe_dest = os.path.join(self.task_config['DATA'], os.path.basename(exe_src))
         if os.path.exists(exe_dest):
             rm_p(exe_dest)
         os.symlink(exe_src, exe_dest)
 
         # need output dir for diags and anl
         newdirs = [
-            os.path.join(self.config['DATA'], 'anl'),
-            os.path.join(self.config['DATA'], 'diags'),
+            os.path.join(self.task_config['DATA'], 'anl'),
+            os.path.join(self.task_config['DATA'], 'diags'),
         ]
         FileHandler({'mkdir': newdirs}).sync()
 
     @logit(logger)
     def finalize(self: Analysis) -> None:
-        super().finalize()
         # ---- tar up diags
         # path of output tar statfile
-        aerostat = os.path.join(self.config['COMOUTaero'], f"{self.config['APREFIX']}aerostat")
+        aerostat = os.path.join(self.task_config['COMOUTaero'], f"{self.task_config['APREFIX']}aerostat")
 
         # get list of diag files to put in tarball
-        diags = glob.glob(os.path.join(self.config['DATA'], 'diags', 'diag*nc4'))
+        diags = glob.glob(os.path.join(self.task_config['DATA'], 'diags', 'diag*nc4'))
 
         # gzip the files first
         for diagfile in diags:
@@ -132,21 +119,21 @@ class AerosolAnalysis(Analysis):
                 archive.add(f"{diagfile}.gz")
 
         # copy full YAML from executable to ROTDIR
-        src = os.path.join(self.config['DATA'], f"{self.config['CDUMP']}.t{self.cyc}z.aerovar.yaml")
-        dest = os.path.join(self.config['COMOUTaero'], f"{self.config['CDUMP']}.t{self.cyc}z.aerovar.yaml")
+        src = os.path.join(self.task_config['DATA'], f"{self.task_config['CDUMP']}.t{self.cyc}z.aerovar.yaml")
+        dest = os.path.join(self.task_config['COMOUTaero'], f"{self.task_config['CDUMP']}.t{self.cyc}z.aerovar.yaml")
         yaml_copy = {
-            'mkdir': self.config['COMOUTaero'],
+            'mkdir': self.task_config['COMOUTaero'],
             'copy': [src, dest]
         }  # yaml_copy is not used, remove???
 
         # ---- NOTE below is 'temporary', eventually we will not be using FMS RESTART formatted files
         # ---- all of the rest of this method will need to be changed but requires model and JEDI changes
         # ---- copy RESTART fv_tracer files for future reference
-        fms_bkg_file_template = os.path.join(self.lconfig.comin_ges_atm, 'RESTART', f'{self.lconfig.cdate_fv3}.fv_tracer.res.tile1.nc')
+        fms_bkg_file_template = os.path.join(self.task_config.comin_ges_atm, 'RESTART', f'{self.task_config.cdate_fv3}.fv_tracer.res.tile1.nc')
         bkglist = []
-        for itile in range(1, self.config.ntiles+1):
+        for itile in range(1, self.task_config.ntiles+1):
             bkg_path = fms_bkg_file_template.replace('tile1', f'tile{itile}')
-            dest = os.path.join(self.config['COMOUTaero'], f'aeroges.{os.path.basename(bkg_path)}')
+            dest = os.path.join(self.task_config['COMOUTaero'], f'aeroges.{os.path.basename(bkg_path)}')
             bkglist.append([bkg_path, dest])
         FileHandler({'copy': bkglist}).sync()
 
@@ -156,11 +143,11 @@ class AerosolAnalysis(Analysis):
 
         # ---- move increments to ROTDIR
         logger.info('Moving increments to ROTDIR')
-        fms_inc_file_template = os.path.join(self.config['DATA'], 'anl', f'aeroinc.{self.lconfig.cdate_fv3}.fv_tracer.res.tile1.nc')
+        fms_inc_file_template = os.path.join(self.task_config['DATA'], 'anl', f'aeroinc.{self.task_config.cdate_fv3}.fv_tracer.res.tile1.nc')
         inclist = []
-        for itile in range(1, self.config.ntiles+1):
+        for itile in range(1, self.task_config.ntiles+1):
             inc_path = fms_inc_file_template.replace('tile1', f'tile{itile}')
-            dest = os.path.join(self.config['COMOUTaero'], os.path.basename(inc_path))
+            dest = os.path.join(self.task_config['COMOUTaero'], os.path.basename(inc_path))
             inclist.append([inc_path, dest])
         FileHandler({'copy': inclist}).sync()
 
@@ -174,36 +161,36 @@ class AerosolAnalysis(Analysis):
         This method will be assumed to be deprecated before this is implemented operationally
         """
         # only need the fv_tracer files
-        fms_inc_file_template = os.path.join(self.config['DATA'], 'anl', f'aeroinc.{self.lconfig.cdate_fv3}.fv_tracer.res.tileX.nc')
-        fms_bkg_file_template = os.path.join(self.lconfig.comin_ges_atm, 'RESTART', f'{self.lconfig.cdate_fv3}.fv_tracer.res.tileX.nc')
+        fms_inc_file_template = os.path.join(self.task_config['DATA'], 'anl', f'aeroinc.{self.task_config.cdate_fv3}.fv_tracer.res.tileX.nc')
+        fms_bkg_file_template = os.path.join(self.task_config.comin_ges_atm, 'RESTART', f'{self.task_config.cdate_fv3}.fv_tracer.res.tileX.nc')
         # TODO: this list should be read from the yaml file
         incvars = ['dust1', 'dust2', 'dust3', 'dust4', 'dust5',
                    'seas1', 'seas2', 'seas3', 'seas4',
                    'so4', 'oc1', 'oc2', 'bc1', 'bc2']
-        super().add_fv3_increments(fms_inc_file_template, fms_bkg_file_template, incvars, self.config.ntiles)
+        super().add_fv3_increments(fms_inc_file_template, fms_bkg_file_template, incvars, self.task_config.ntiles)
 
 
 @logit(logger)
-def get_bkg_dict(config: Dict[str, Any]) -> Dict[str, List[str]]:
+def get_bkg_dict(task_config: Dict[str, Any]) -> Dict[str, List[str]]:
     """
-    Return FileHandler config for model backgrounds
+    Return FileHandler task_config for model backgrounds
     """
     # NOTE for now this is FV3 RESTART files and just assumed to be fh006
 
     # get FV3 RESTART files, this will be a lot simpler when using history files
-    rst_dir = os.path.join(config.comin_ges_atm, 'RESTART')  # for now, option later?
+    rst_dir = os.path.join(task_config.comin_ges_atm, 'RESTART')  # for now, option later?
 
     # aerosol DA only needs core/tracer
     bkglist = []
-    basename = f'{config.cdate_fv3}.coupler.res'
-    bkglist.append([os.path.join(rst_dir, basename), os.path.join(config['DATA'], 'bkg', basename)])
-    for tt in range(1, config.ntiles + 1):
-        basename = f'{config.cdate_fv3}.fv_core.res.tile{tt}.nc'
-        bkglist.append([os.path.join(rst_dir, basename), os.path.join(config['DATA'], 'bkg', basename)])
-        basename = f'{config.cdate_fv3}.fv_tracer.res.tile{tt}.nc'
-        bkglist.append([os.path.join(rst_dir, basename), os.path.join(config['DATA'], 'bkg', basename)])
+    basename = f'{task_config.cdate_fv3}.coupler.res'
+    bkglist.append([os.path.join(rst_dir, basename), os.path.join(task_config['DATA'], 'bkg', basename)])
+    for tt in range(1, task_config.ntiles + 1):
+        basename = f'{task_config.cdate_fv3}.fv_core.res.tile{tt}.nc'
+        bkglist.append([os.path.join(rst_dir, basename), os.path.join(task_config['DATA'], 'bkg', basename)])
+        basename = f'{task_config.cdate_fv3}.fv_tracer.res.tile{tt}.nc'
+        bkglist.append([os.path.join(rst_dir, basename), os.path.join(task_config['DATA'], 'bkg', basename)])
     bkg_dict = {
-        'mkdir': [os.path.join(config['DATA'], 'bkg')],
+        'mkdir': [os.path.join(task_config['DATA'], 'bkg')],
         'copy': bkglist,
     }
     return bkg_dict
