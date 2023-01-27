@@ -788,14 +788,21 @@ MOM6_postdet() {
   if [[ "${warm_start}" = '.true.' ]]; then
     local mediator_file="${ROTDIR}/${CDUMP}.${gPDY}/${gcyc}/med/RESTART/${PDY}.${cyc}0000.ufs.cpld.cpl.r.nc"
     if [[ -f "${mediator_file}" ]]; then
-       $NLN "${mediator_file}" "${DATA}/ufs.cpld.cpl.r.nc"
-        rm -f "${DATA}/rpointer.cpl"
-        touch "${DATA}/rpointer.cpl"
-        echo "ufs.cpld.cpl.r.nc" >> "${DATA}/rpointer.cpl"
+      $NLN "${mediator_file}" "${DATA}/ufs.cpld.cpl.r.nc"
+      rm -f "${DATA}/rpointer.cpl"
+      touch "${DATA}/rpointer.cpl"
+      echo "ufs.cpld.cpl.r.nc" >> "${DATA}/rpointer.cpl"
     else
-        echo "FATAL ERROR: ${mediator_file} must exist for warm_start = .true. and does not, ABORT!"
-        exit 4
+      # We have a choice to make here.
+      # Either we can FATAL ERROR out, or we can let the coupling fields initialize from zero
+      # cmeps_run_type is determined based on the availability of the mediator restart file
+      echo "WARNING: ${mediator_file} does not exist for warm_start = .true., initializing!"
+      #echo "FATAL ERROR: ${mediator_file} must exist for warm_start = .true. and does not, ABORT!"
+      #exit 4
     fi
+  else
+    # This is a cold start, so initialize the coupling fields from zero
+    export cmeps_run_type="startup"
   fi
 
   # TODO: some documentation would be nice to see here, e.g. whose phone number is in here?

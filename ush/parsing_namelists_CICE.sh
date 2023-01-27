@@ -4,11 +4,10 @@
 
 CICE_namelists(){
 
-if [ $warm_start = ".true." ]; then
-  cmeps_run_type='continue'
-else
-  cmeps_run_type='initial'
-fi
+# There is no chance that the workflow will try and spin-up CICE,
+# so, runtype should always be "continue" as the ICs
+# will be read from the initial condition file mentioned in "pointer_file"
+local runtype="continue"
 
 # Get correct MPI options for NPROC and grid
 local cice_processor_shape=${cice_processor_shape:-'slenderX2'}
@@ -41,7 +40,7 @@ cat > ice_in <<eof
    dt             = $ICETIM
    npt            = $npt
    ndtd           = 1
-   runtype        = '$cmeps_run_type'
+   runtype        = '${runtype}'
    runid          = 'unknown'
    ice_ic         = 'cice_model.res.nc'
    restart        = .true.
@@ -54,8 +53,8 @@ cat > ice_in <<eof
    restart_dir    = './CICE_RESTART/'
    restart_file   = 'cice_model.res'
    pointer_file   = './ice.restart_file'
-   dumpfreq       = '$dumpfreq'
-   dumpfreq_n     =  $dumpfreq_n
+   dumpfreq       = '${dumpfreq}'
+   dumpfreq_n     =  ${dumpfreq_n}
    dump_last      = .false.
    bfbflag        = 'off'
    diagfreq       = 6
@@ -69,7 +68,7 @@ cat > ice_in <<eof
    lonpnt(2)      = -45.
    histfreq       = 'm','d','h','x','x'
    histfreq_n     =  0 , 0 , ${FHOUT} , 1 , 1
-   hist_avg       = $cice_hist_avg
+   hist_avg       = ${cice_hist_avg}
    history_dir    = './CICE_OUTPUT/'
    history_file   = 'iceh'
    write_ic       = .true.

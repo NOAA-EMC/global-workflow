@@ -232,7 +232,7 @@ FV3_GFS_predet(){
     RSTDIR_ATM=${RSTDIR_ATM:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos/RERUN_RESTART}
     if [ ! -d $RSTDIR_ATM ]; then mkdir -p $RSTDIR_ATM ; fi
     $NLN $RSTDIR_ATM RESTART
-    if [[ $(( ${FHMAX_GFS} % ${restart_interval_gfs} )) == 0 ]]; then
+    #if [[ $(( ${FHMAX_GFS} % ${restart_interval_gfs} )) == 0 ]]; then  # TODO: Xianwu's hotfix will remove this if statement
       # The final restart written at the end doesn't include the valid date
       # Create links that keep the same name pattern for these files
       VDATE=$($NDATE +$FHMAX_GFS $CDATE)
@@ -247,7 +247,7 @@ FV3_GFS_predet(){
       for file in $files; do
         $NLN $RSTDIR_ATM/$file $RSTDIR_ATM/${vPDY}.${vcyc}0000.$file
       done
-    fi
+    #fi  # TODO: Xianwu's hotfix will remove this fi statement
   else
     mkdir -p $DATA/RESTART
   fi
