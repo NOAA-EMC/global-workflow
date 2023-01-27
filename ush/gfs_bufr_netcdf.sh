@@ -48,10 +48,8 @@ else
    bufrflag=".false."
 fi
 
-fformat="nc"
-
- SFCF="sfc"
- CLASS="class1fv3"
+SFCF="sfc"
+CLASS="class1fv3"
 cat << EOF > gfsparm
  &NAMMET
   levs=$LEVS,makebufr=$bufrflag,
@@ -82,7 +80,7 @@ do
    ic=0
    while [ $ic -lt 1000 ]
    do
-      if [ ! -f $COMIN/${RUN}.${cycle}.logf${hh2}.${fformat} ]
+      if [ ! -f $COMIN/${RUN}.${cycle}.logf${hh2}.txt ]
       then
           sleep 10
           ic=$(expr $ic + 1)
@@ -96,8 +94,8 @@ do
       fi
    done
 #------------------------------------------------------------------
-   ln -sf $COMIN/${RUN}.${cycle}.atmf${hh2}.${fformat} sigf${hh} 
-   ln -sf $COMIN/${RUN}.${cycle}.${SFCF}f${hh2}.${fformat} flxf${hh}
+   ln -sf $COMIN/${RUN}.${cycle}.atmf${hh2}.nc sigf${hh} 
+   ln -sf $COMIN/${RUN}.${cycle}.${SFCF}f${hh2}.nc flxf${hh}
 
    hh=$( expr $hh + $FINT )
    if test $hh -lt 10

@@ -222,7 +222,6 @@ export LOGSCRIPT=${LOGSCRIPT:-}
 export ENDSCRIPT=${ENDSCRIPT:-}
 export GFSOUT=${GFSOUT:-gfsout}
 export CTLFILE=${CTLFILE:-${NWPROD}/parm/gfs_cntrl.parm}
-export OUTPUT_FILE=${OUTPUT_FILE:-"netcdf"}
 export GRIBVERSION=${GRIBVERSION:-'grib1'}
 #  Other variables.
 export POSTGPVARS=${POSTGPVARS}
