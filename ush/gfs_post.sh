@@ -222,8 +222,6 @@ export LOGSCRIPT=${LOGSCRIPT:-}
 export ENDSCRIPT=${ENDSCRIPT:-}
 export GFSOUT=${GFSOUT:-gfsout}
 export CTLFILE=${CTLFILE:-${NWPROD}/parm/gfs_cntrl.parm}
-#export MODEL_OUT_FORM=${MODEL_OUT_FORM:-binarynemsiompiio}
-export OUTPUT_FILE=${OUTPUT_FILE:-"nemsio"}
 export GRIBVERSION=${GRIBVERSION:-'grib1'}
 #  Other variables.
 export POSTGPVARS=${POSTGPVARS}
@@ -260,16 +258,10 @@ fi
 export SIGHDR=${SIGHDR:-${NWPROD}/exec/global_sighdr} 
 export IDRT=${IDRT:-4}
 
-# run post to read nemsio file if OUTTYP=4
+# run post to read file if OUTTYP=4
 if (( OUTTYP == 4 )) ; then
-	if [ "${OUTPUT_FILE}" = "netcdf" ]; then
-		export MODEL_OUT_FORM=${MODEL_OUT_FORM:-netcdfpara}
-	elif [ "${OUTPUT_FILE}" = "nemsio" ]; then
-		export MODEL_OUT_FORM=${MODEL_OUT_FORM:-binarynemsiompiio}
-	else
-		export MODEL_OUT_FORM=${MODEL_OUT_FORM:-binarynemsiompiio}
-	fi
-	export GFSOUT=${NEMSINP}
+  export MODEL_OUT_FORM=${MODEL_OUT_FORM:-netcdfpara}
+  export GFSOUT=${NEMSINP}
 fi
 
 # allow threads to use threading in Jim's sp lib

@@ -164,24 +164,11 @@ export restart_interval_gfs=12
 
 # I/O QUILTING, true--use Write Component; false--use GFDL FMS
 # if quilting=true, choose OUTPUT_GRID as cubed_sphere_grid in netcdf or gaussian_grid
-# if gaussian_grid, set OUTPUT_FILE for nemsio or netcdf
 # WRITE_DOPOST=true, use inline POST
 export QUILTING=".true."
 export OUTPUT_GRID="gaussian_grid"
-export OUTPUT_FILE="netcdf"
-export WRITE_DOPOST=".true."
+export WRITE_DOPOST=".true." # WRITE_DOPOST=true, use inline POST
 export WRITE_NSFLIP=".true."
-
-# suffix options depending on file format
-if [ $OUTPUT_FILE = "netcdf" ]; then
-    export SUFFIX=".nc"
-    export NEMSIO_IN=".false."
-    export NETCDF_IN=".true."
-else
-    export SUFFIX=".nemsio"
-    export NEMSIO_IN=".true."
-    export NETCDF_IN=".false."
-fi
 
 # IAU related parameters
 export DOIAU="YES"        # Enable 4DIAU for control with 3 increments
@@ -242,11 +229,6 @@ export nst_anl=.true.
 
 # Analysis increments to zero in CALCINCEXEC
 export INCREMENTS_TO_ZERO="'liq_wat_inc','icmr_inc'"
-
-if [ $OUTPUT_FILE = "nemsio" ]; then
-    export DO_CALC_INCREMENT="YES"
-    export DO_CALC_ANALYSIS="NO"
-fi
 
 # Stratospheric increments to zero
 export INCVARS_ZERO_STRAT="'sphum_inc','liq_wat_inc','icmr_inc'"

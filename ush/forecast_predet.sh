@@ -133,11 +133,8 @@ FV3_GFS_predet(){
 
   QUILTING=${QUILTING:-".true."}
   OUTPUT_GRID=${OUTPUT_GRID:-"gaussian_grid"}
-  OUTPUT_FILE=${OUTPUT_FILE:-"nemsio"}
   WRITE_NEMSIOFLIP=${WRITE_NEMSIOFLIP:-".true."}
   WRITE_FSYNCFLAG=${WRITE_FSYNCFLAG:-".true."}
-  affix="nemsio"
-  [[ "$OUTPUT_FILE" = "netcdf" ]] && affix="nc"
 
   rCDUMP=${rCDUMP:-$CDUMP}
 
@@ -208,8 +205,8 @@ FV3_GFS_predet(){
   print_freq=${print_freq:-6}
 
   #-------------------------------------------------------
-  if [ $CDUMP = "gfs" ] && [ $rst_invt1 -gt 0 ] && [ $MEMBER -lt 0 ]; then
-    RSTDIR_ATM=${RSTDIR:-$ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos/RERUN_RESTART
+  if [[ ${CDUMP} = "gfs" || ${RUN} = "gefs" ]] && [ ${rst_invt1} -gt 0 ]; then
+    RSTDIR_ATM=${RSTDIR_ATM:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos/RERUN_RESTART}
     if [ ! -d $RSTDIR_ATM ]; then mkdir -p $RSTDIR_ATM ; fi
     $NLN $RSTDIR_ATM RESTART
     # The final restart written at the end doesn't include the valid date
@@ -232,7 +229,7 @@ FV3_GFS_predet(){
 
   #-------------------------------------------------------
   # member directory
-  if [ $MEMBER -lt 0 ]; then
+  if [[ ${MEMBER} -lt 0 || ${RUN} = "gefs" ]]; then
     prefix=$CDUMP
     rprefix=$rCDUMP
     memchar=""
@@ -241,13 +238,13 @@ FV3_GFS_predet(){
     rprefix=enkf$rCDUMP
     memchar=mem$(printf %03i $MEMBER)
   fi
-  memdir=$ROTDIR/${prefix}.$PDY/$cyc/atmos/$memchar
+  memdir=${memdir:-${ROTDIR}/${prefix}.${PDY}/${cyc}/${memchar}/atmos}
   if [ ! -d $memdir ]; then mkdir -p $memdir; fi
 
   GDATE=$($NDATE -$assim_freq $CDATE)
   gPDY=$(echo $GDATE | cut -c1-8)
   gcyc=$(echo $GDATE | cut -c9-10)
-  gmemdir=$ROTDIR/${rprefix}.$gPDY/$gcyc/atmos/$memchar
+  gmemdir=${gmemdir:-${ROTDIR}/${rprefix}.${gPDY}/${gcyc}/${memchar}/atmos}
 
   if [[ "$DOIAU" = "YES" ]]; then
     sCDATE=$($NDATE -3 $CDATE)

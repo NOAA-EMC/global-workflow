@@ -1,49 +1,7 @@
 #! /usr/bin/env bash
 
 source "${HOMEgfs}/ush/preamble.sh"
-
-##############################################
-# make temp directory
-##############################################
-export DATA=${DATA:-${DATAROOT}/${jobid}}
-mkdir -p ${DATA}
-cd ${DATA}
-
-
-##############################################
-# Run setpdy and initialize PDY variables
-##############################################
-export cycle="t${cyc}z"
-setpdy.sh
-. ./PDY
-
-
-##############################################
-# Determine Job Output Name on System
-##############################################
-export pid=${pid:-$$}
-export pgmout="OUTPUT.${pid}"
-export pgmerr=errfile
-
-
-#############################
-# Source relevant config files
-#############################
-export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
-configs="base anal eupd"
-for config in ${configs}; do
-    . ${EXPDIR}/config.${config}
-    status=$?
-    [[ ${status} -ne 0 ]] && exit ${status}
-done
-
-
-##########################################
-# Source machine runtime environment
-##########################################
-. ${HOMEgfs}/env/${machine}.env eupd
-status=$?
-[[ ${status} -ne 0 ]] && exit ${status}
+source "${HOMEgfs}/ush/jjob_header.sh" -e "eupd" -c "base anal eupd"
 
 
 ##############################################
@@ -64,13 +22,10 @@ gcyc=$(echo ${GDATE} | cut -c9-10)
 
 export APREFIX="${CDUMP}.t${cyc}z."
 export GPREFIX="gdas.t${gcyc}z."
-export ASUFFIX=${ASUFFIX:-${SUFFIX}}
-export GSUFFIX=${GSUFFIX:-${SUFFIX}}
-
 
 # COMIN_GES_ENS and COMOUT_ANL_ENS are used in script
-export COMIN_GES_ENS="${ROTDIR}/enkfgdas.${gPDY}/${gcyc}/${COMPONENT}"
-export COMOUT_ANL_ENS="${ROTDIR}/enkf${CDUMP}.${PDY}/${cyc}/${COMPONENT}"
+export COMIN_GES_ENS="${ROTDIR}/enkfgdas.${gPDY}/${gcyc}"
+export COMOUT_ANL_ENS="${ROTDIR}/enkf${CDUMP}.${PDY}/${cyc}"
 
 
 ###############################################################

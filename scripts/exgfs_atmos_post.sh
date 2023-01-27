@@ -40,7 +40,6 @@ source "${HOMEgfs}/ush/preamble.sh"
 
 cd "${DATA}" || exit 1
 
-# specify model output format type: 4 for nemsio, 3 for sigio
 export POSTGPSH=${POSTGPSH:-${USHgfs}/gfs_post.sh}
 export GFSDOWNSH=${GFSDOWNSH:-${USHgfs}/fv3gfs_downstream_nems.sh}
 export GFSDOWNSHF=${GFSDOWNSHF:-${USHgfs}/inter_flux.sh}
@@ -66,17 +65,7 @@ export GOESF=${GOESF:-"YES"}
 export WAFSF=${WAFSF:-"NO"}
 export PGBF=${PGBF:-"YES"}
 export TCYC=${TCYC:-".t${cyc}z."}
-export OUTPUT_FILE=${OUTPUT_FILE:-"nemsio"}
 export PREFIX=${PREFIX:-${RUN}${TCYC}}
-if (( OUTTYP == 4 )); then
-  if [[ "${OUTPUT_FILE}" = "netcdf" ]]; then
-    export SUFFIX=".nc"
-  else
-    export SUFFIX=".nemsio"
-  fi
-else
-  export SUFFIX=
-fi
 export machine=${machine:-WCOSS2}
 
 ###########################
@@ -95,11 +84,7 @@ export IDRT=${IDRT:-0} # IDRT=0 is setting for outputting grib files on lat/lon 
 # Process analysis when post_times is 00
 stime="$(echo "${post_times}" | cut -c1-3)"
 export stime
-if (( OUTTYP == 4 )); then
-  export loganl="${COMIN}/${PREFIX}atmanl${SUFFIX}"
-else
-  export loganl="${COMIN}/${PREFIX}sanl"
-fi
+export loganl="${COMIN}/${PREFIX}atmanl.nc"
 
 if [[ "${stime}" = "anl" ]]; then
   if [[ -f "${loganl}" ]]; then
@@ -121,12 +106,10 @@ if [[ "${stime}" = "anl" ]]; then
     fi
 
     [[ -f flxfile ]] && rm flxfile ; [[ -f nemsfile ]] && rm nemsfile
-    if (( OUTTYP == 4 )); then
-      ln -fs "${COMIN}/${PREFIX}atmanl${SUFFIX}" nemsfile
-      export NEMSINP=nemsfile
-      ln -fs "${COMIN}/${PREFIX}sfcanl${SUFFIX}" flxfile
-      export FLXINP=flxfile
-    fi
+    ln -fs "${COMIN}/${PREFIX}atmanl.nc" nemsfile
+    export NEMSINP=nemsfile
+    ln -fs "${COMIN}/${PREFIX}sfcanl.nc" flxfile
+    export FLXINP=flxfile
 
     export PGBOUT=pgbfile
     export PGIOUT=pgifile
@@ -160,8 +143,8 @@ if [[ "${stime}" = "anl" ]]; then
       fi
 
       if [[ "${SENDDBN}" = 'YES' ]]; then
-        "${DBNROOT}/bin/dbn_alert" MODEL GFS_MSC_sfcanl "${job}" "${COMOUT}/${PREFIX}sfcanl${SUFFIX}"
-        "${DBNROOT}/bin/dbn_alert" MODEL GFS_SA "${job}" "${COMOUT}/${PREFIX}atmanl${SUFFIX}"
+        "${DBNROOT}/bin/dbn_alert" MODEL GFS_MSC_sfcanl "${job}" "${COMOUT}/${PREFIX}sfcanl.nc"
+        "${DBNROOT}/bin/dbn_alert" MODEL GFS_SA "${job}" "${COMOUT}/${PREFIX}atmanl.nc"
         if [[ "${PGBF}" = 'YES' ]]; then
           "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2_0P25 "${job}" "${COMOUT}/${PREFIX}pgrb2.0p25.anl"
           "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2_0P25_WIDX "${job}" "${COMOUT}/${PREFIX}pgrb2.0p25.anl.idx"
@@ -256,7 +239,7 @@ else   ## not_anl if_stime
       # period and error exit
       ###############################
       if (( ic == SLEEP_LOOP_MAX )); then
-        echo " *** FATAL ERROR: No model output in nemsio for f${fhr} "
+        echo " *** FATAL ERROR: No model output for f${fhr} "
         export err=9
         err_chk
       fi
@@ -267,12 +250,10 @@ else   ## not_anl if_stime
     # for backup to start Model Fcst
     ###############################
     [[ -f flxfile ]] && rm flxfile ; [[ -f nemsfile ]] && rm nemsfile
-    if (( OUTTYP == 4 )); then
-      ln -fs "${COMIN}/${PREFIX}atmf${fhr}${SUFFIX}" nemsfile
-      export NEMSINP=nemsfile
-      ln -fs "${COMIN}/${PREFIX}sfcf${fhr}${SUFFIX}" flxfile
-      export FLXINP=flxfile
-    fi
+    ln -fs "${COMIN}/${PREFIX}atmf${fhr}.nc" nemsfile
+    export NEMSINP=nemsfile
+    ln -fs "${COMIN}/${PREFIX}sfcf${fhr}.nc" flxfile
+    export FLXINP=flxfile
 
     if (( fhr > 0 )); then
       export IGEN=${IGEN_FCST}

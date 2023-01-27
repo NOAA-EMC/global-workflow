@@ -8,16 +8,10 @@ echo "BEGIN: config.post"
 # Get task specific resources
 . $EXPDIR/config.resources post
 
-# Convert nemsio files to grib files using post job
-#-------------------------------------------
-
 # No. of concurrent post jobs [0 implies sequential]
 export NPOSTGRP=42
 export OUTTYP=4
-export MODEL_OUT_FORM=binarynemsiompiio
-if [ $OUTPUT_FILE = "netcdf" ]; then
-    export MODEL_OUT_FORM=netcdfpara
-fi
+export MODEL_OUT_FORM=netcdfpara
 
 # Post driver job that calls gfs_post.sh and downstream jobs
 export POSTJJOBSH="$HOMEpost/jobs/JGLOBAL_POST"

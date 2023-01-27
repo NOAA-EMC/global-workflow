@@ -224,8 +224,8 @@ if [[ ! -d "${top_dir}/exec" ]]; then mkdir "${top_dir}/exec" || exit 1 ; fi
 cd "${top_dir}/exec" || exit 1
 
 for utilexe in fbwndgfs.x gaussian_sfcanl.x gfs_bufr.x regrid_nemsio.x supvit.x syndat_getjtbul.x \
-  syndat_maksynrc.x syndat_qctropcy.x tocsbufr.x enkf_chgres_recenter.x \
-  enkf_chgres_recenter_nc.x fv3nc2nemsio.x tave.x vint.x reg2grb2.x ; do
+  syndat_maksynrc.x syndat_qctropcy.x tocsbufr.x enkf_chgres_recenter.x overgridid.x \
+  mkgfsawps.x enkf_chgres_recenter_nc.x fv3nc2nemsio.x tave.x vint.x reg2grb2.x ; do
     [[ -s "${utilexe}" ]] && rm -f "${utilexe}"
     ${LINK} "${script_dir}/gfs_utils.fd/install/bin/${utilexe}" .
 done

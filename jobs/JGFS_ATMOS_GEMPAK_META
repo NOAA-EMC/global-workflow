@@ -1,43 +1,26 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
+# TODO (#1222) This job is not part of the rocoto suite
 
 ############################################
 # GFS GEMPAK META PRODUCT GENERATION
 ############################################
+source "${HOMEgfs}/ush/preamble.sh"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "gempak_meta" -e "base"
 
-export LAUNCH_MODE=MPI
 
 ###############################################
 # Set MP variables
 ###############################################
+export LAUNCH_MODE=MPI
 export OMP_NUM_THREADS=1
 export MP_LABELIO=yes
 export MP_PULSE=0
 export MP_DEBUG_NOTIMEOUT=yes
 
-##########################################################
-# obtain unique process id (pid) and make temp directory
-##########################################################
-export DATA=${DATA:-${DATAROOT}/${jobid}}
-mkdir -p ${DATA}
-cd ${DATA}
-
-######################################
-# Set up the cycle variable
-######################################
-export cycle="t${cyc}z"
-
-###########################################
-# Run setpdy and initialize PDY variables
-###########################################
-setpdy.sh
-. ./PDY
-
 ################################
 # Set up the HOME directory
 ################################
-export HOMEgfs=${HOMEgfs:-${PACKAGEROOT}/gfs.${gfs_ver}}
 export EXECgfs=${EXECgfs:-${HOMEgfs}/exec}
 export PARMgfs=${PARMgfs:-${HOMEgfs}/parm}
 export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
@@ -57,8 +40,6 @@ export fhinc=12
 ###################################
 # Specify NET and RUN Name and model
 ####################################
-export NET=${NET:-gfs}
-export RUN=${RUN:-gfs}
 export model=${model:-gfs}
 export COMPONENT="atmos"
 
@@ -84,8 +65,6 @@ export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 if [ ${SENDCOM} = YES ] ; then
   mkdir -m 775 -p ${COMOUT}
 fi
-
-export pgmout=OUTPUT.$$
 
 
 ########################################################
