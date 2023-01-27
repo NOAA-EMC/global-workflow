@@ -765,6 +765,7 @@ MOM6_postdet() {
         $NLN "${ROTDIR}/${CDUMP}.${gPDY}/${gcyc}/ocean/RESTART/${PDY}.${cyc}0000.MOM.res_1.nc" "${DATA}/INPUT/MOM.res_1.nc"
         $NLN "${ROTDIR}/${CDUMP}.${gPDY}/${gcyc}/ocean/RESTART/${PDY}.${cyc}0000.MOM.res_2.nc" "${DATA}/INPUT/MOM.res_2.nc"
         $NLN "${ROTDIR}/${CDUMP}.${gPDY}/${gcyc}/ocean/RESTART/${PDY}.${cyc}0000.MOM.res_3.nc" "${DATA}/INPUT/MOM.res_3.nc"
+        $NLN "${ROTDIR}/${CDUMP}.${gPDY}/${gcyc}/ocean/RESTART/${PDY}.${cyc}0000.MOM.res_4.nc" "${DATA}/INPUT/MOM.res_4.nc"
       ;;
     esac
   else
@@ -879,12 +880,13 @@ MOM6_postdet() {
   # Link ocean restarts from DATA to COM
   # Coarser than 1/2 degree has a single MOM restart
   $NLN "${COMOUTocean}/RESTART/${rdate:0:8}.${rdate:8:2}0000.MOM.res.nc" "${DATA}/MOM6_RESTART/MOM.res.nc"
-  # 1/4 degree resolution has 3 additional restarts
+  # 1/4 degree resolution has 4 additional restarts
   case ${OCNRES} in
     "025")
       $NLN "${COMOUTocean}/RESTART/${rdate:0:8}.${rdate:8:2}0000.MOM.res_1.nc" "${DATA}/MOM6_RESTART/MOM.res_1.nc"
       $NLN "${COMOUTocean}/RESTART/${rdate:0:8}.${rdate:8:2}0000.MOM.res_2.nc" "${DATA}/MOM6_RESTART/MOM.res_2.nc"
       $NLN "${COMOUTocean}/RESTART/${rdate:0:8}.${rdate:8:2}0000.MOM.res_3.nc" "${DATA}/MOM6_RESTART/MOM.res_3.nc"
+      $NLN "${COMOUTocean}/RESTART/${rdate:0:8}.${rdate:8:2}0000.MOM.res_4.nc" "${DATA}/MOM6_RESTART/MOM.res_4.nc"
       ;;
     *)
     ;;
@@ -901,6 +903,7 @@ MOM6_postdet() {
         $NLN "${COMOUTocean}/RESTART/${idate:0:8}.${idate:8:2}0000.MOM.res_1.nc" "${DATA}/MOM6_RESTART/MOM.res_1.${idatestr}-00-00.nc"
         $NLN "${COMOUTocean}/RESTART/${idate:0:8}.${idate:8:2}0000.MOM.res_2.nc" "${DATA}/MOM6_RESTART/MOM.res_2.${idatestr}-00-00.nc"
         $NLN "${COMOUTocean}/RESTART/${idate:0:8}.${idate:8:2}0000.MOM.res_3.nc" "${DATA}/MOM6_RESTART/MOM.res_3.${idatestr}-00-00.nc"
+        $NLN "${COMOUTocean}/RESTART/${idate:0:8}.${idate:8:2}0000.MOM.res_4.nc" "${DATA}/MOM6_RESTART/MOM.res_4.${idatestr}-00-00.nc"
         ;;
     esac
     local idate=$(date -d "${idate:0:8} ${idate:8:2} + ${res_int} hours" +%Y%m%d%H)
