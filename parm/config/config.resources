@@ -391,7 +391,7 @@ elif [ ${step} = "gldas" ]; then
 
 elif [ ${step} = "fcst" ]; then
 
-    export wtime_fcst="00:30:00"
+    export wtime_fcst="00:40:00"
     if [ ${CASE} = "C768" ]; then
       export wtime_fcst_gfs="06:00:00"
     elif [ ${CASE} = "C384" ]; then
@@ -458,7 +458,6 @@ elif [ ${step} = "fcst" ]; then
         if [[ ${DO_OCN} == "YES" ]]; then
             case ${OCNRES} in
                 # Except for 025, these are guesses for now
-                500) export OCNPETS=8 ;;
                 100) export OCNPETS=20 ;;
                 050) export OCNPETS=60 ;;
                 025) export OCNPETS=220 ;;
@@ -473,7 +472,6 @@ elif [ ${step} = "fcst" ]; then
         if [[ ${DO_ICE} == "YES" ]]; then
             case ${ICERES} in
                 # Except for 025, these are guesses for now
-                500) export ICEPETS=4 ;;
                 100) export ICEPETS=10 ;;
                 050) export ICEPETS=30 ;;
                 025) export ICEPETS=120 ;;
@@ -760,7 +758,7 @@ elif [ ${step} = "esfc" ]; then
 elif [ ${step} = "efcs" ]; then
 
     if [ ${CASE} = "C768" ]; then
-      export wtime_efcs="01:20:00"
+      export wtime_efcs="06:00:00"
     else
       export wtime_efcs="00:40:00"
     fi
@@ -787,10 +785,6 @@ elif [ ${step} = "postsnd" ]; then
     export npe_node_postsnd=10
     export npe_postsndcfp=9
     export npe_node_postsndcfp=1
-    if [ ${OUTPUT_FILE} == "nemsio" ]; then
-        export npe_postsnd=13
-        export npe_node_postsnd=4
-    fi
     if [[ "$(echo "${npe_node_postsnd} * ${nth_postsnd}" | bc)" -gt "${npe_node_max}" ]]; then
         export npe_node_postsnd=$(echo "${npe_node_max} / ${nth_postsnd}" | bc)
     fi
