@@ -49,7 +49,7 @@ FV3_GFS_postdet(){
       done
 
       # Replace sfc_data with sfcanl_data restart files from $memdir (if found)
-      if [ "${MODE}" = "cycled" ] && [ "${APP}" = "ATM" ]; then  # TODO: remove if-block when global_cycle can handle NOAHMP
+      if [ "${MODE}" = "cycled" ] && [ "${CCPP_SUITE}" = "FV3_GFS_v16" ]; then  # TODO: remove if statement when global_cycle can handle NOAHMP
         for file in $(ls $memdir/RESTART/${sPDY}.${scyc}0000.sfcanl_data.tile?.nc); do
           if [[ -f $file ]]; then
             file2=$(echo $(basename $file))
@@ -770,7 +770,7 @@ MOM6_postdet() {
       ;;
     esac
   else
-    $NCP -pf "${ICSDIR}/${CDATE}/ocn/MOM*nc" "${DATA}/INPUT/"  # TODO: Update files in ICSDIR to reflect COM structure naming convention
+    $NCP -pf "${ICSDIR}/${CDATE}"/ocn/MOM*.nc "${DATA}/INPUT/"  # TODO: Update files in ICSDIR to reflect COM structure naming convention
   fi
 
   # Copy MOM6 fixed files
@@ -966,6 +966,9 @@ MOM6_out() {
 CICE_postdet() {
   echo "SUB ${FUNCNAME[0]}: CICE after run type determination"
 
+  # TODO: move configuration settings to config.ice
+
+  # TODO: These need to be calculated in the parsing_namelists_CICE.sh script CICE_namelists() function and set as local
   year=$(echo $CDATE|cut -c 1-4)
   month=$(echo $CDATE|cut -c 5-6)
   day=$(echo $CDATE|cut -c 7-8)
@@ -994,20 +997,9 @@ CICE_postdet() {
   # restart_pond_lvl (if tr_pond_lvl=true):
   #   -- if true, initialize the level ponds from restart (if runtype=continue)
   #   -- if false, re-initialize level ponds to zero (if runtype=initial or continue)
-
-  #TODO: Determine the proper way to determine if it's a 'hot start' or not
-  #note this is not mediator cold start or not
-  #if [ hotstart ]; then
-  #  #continuing run "hot start"
-  #  RUNTYPE='continue'
-  #  USE_RESTART_TIME='.true.'
-  #fi
-  RUNTYPE='initial'
-  USE_RESTART_TIME='.false.'
   restart_pond_lvl=${restart_pond_lvl:-".false."}
 
   ICERES=${ICERES:-"025"}  # TODO: similar to MOM_out, lift this higher
-  ICERESdec=echo "$ICERES" | awk '{printf "%0.2f", $1/100}'
 
   ice_grid_file=${ice_grid_file:-"grid_cice_NEMS_mx${ICERES}.nc"}
   ice_kmt_file=${ice_kmt_file:-"kmtu_cice_NEMS_mx${ICERES}.nc"}
@@ -1017,6 +1009,7 @@ CICE_postdet() {
   if [[ "${MODE}" = 'cycled' ]]; then  # TODO: remove this block after ICSDIR is corrected for forecast-only
     $NLN "${ROTDIR}/${CDUMP}.${gPDY}/${gcyc}/ice/RESTART/${PDY}.${cyc}0000.cice_model.res.nc" "${DATA}/cice_model.res.nc"
   else
+    ICERESdec=$(echo "${ICERES}" | awk '{printf "%0.2f", $1/100}')
     $NCP -p $ICSDIR/$CDATE/ice/cice_model_${ICERESdec}.res_$CDATE.nc $DATA/cice_model.res.nc
   fi
   # TODO: add a check for the restarts to exist, if not, exit eloquently
@@ -1035,6 +1028,9 @@ CICE_postdet() {
 
   if [[ "${CDUMP}" = "gfs" ]]; then
     # Link output files for CDUMP = gfs
+
+    # TODO: make these forecast output files consistent w/ GFS output
+    # TODO: Work w/ NB to determine appropriate naming convention for these files
 
     export ENSMEM=${ENSMEM:-01}
     export IDATE=$CDATE

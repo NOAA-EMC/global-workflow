@@ -4,10 +4,21 @@
 
 CICE_namelists(){
 
-# There is no chance that the workflow will try and spin-up CICE,
-# so, runtype should always be "continue" as the ICs
-# will be read from the initial condition file mentioned in "pointer_file"
-local runtype="continue"
+# "warm_start" here refers to whether CICE model is warm starting or not.
+# In the case of the Prototypes, the CICE ICs were obtained from Travis Sluka.
+# Travis's system was using SIS2, so the prototypes always set this to "initial"
+# in order for the CICE model to _initialize_ from the SIS2 ICs.
+# However, in the SOCA cycled system, if starting from a previously cycled SOCA run,
+# the CICE ICs are obtained from the previous cycle of the UFS S2S,
+# so the CICE namelist should be set to "continue"
+# TODO: confirm w/ NB and GV
+if [[ "${warm_start}" = ".true." ]]; then
+   local runtype="continue"
+   local use_restart_time=".true."
+else
+   local runtype="initial"
+   local use_restart_time=".false."
+fi
 
 # Get correct MPI options for NPROC and grid
 local cice_processor_shape=${cice_processor_shape:-'slenderX2'}
@@ -45,7 +56,7 @@ cat > ice_in <<eof
    ice_ic         = 'cice_model.res.nc'
    restart        = .true.
    restart_ext    = .false.
-   use_restart_time = $USE_RESTART_TIME
+   use_restart_time = ${use_restart_time}
    restart_format = 'nc'
    lcdf64         = .false.
    numin          = 21
