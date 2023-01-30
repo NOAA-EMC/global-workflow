@@ -4,7 +4,7 @@
 # Fanglin Yang, 20180318
 # --create bunches of files to be archived to HPSS
 ###################################################
-source "$HOMEgfs/ush/preamble.sh"
+source "${HOMEgfs}/ush/preamble.sh"
 
 type=${1:-gfs}                ##gfs, gdas, enkfgdas or enkfggfs
 
@@ -17,12 +17,12 @@ ARCH_GAUSSIAN_FHINC=${ARCH_GAUSSIAN_FHINC:-6}
 
 # Set whether to archive downstream products
 DO_DOWN=${DO_DOWN:-"NO"}
-if [ $DO_BUFRSND = "YES" -o $WAFSF = "YES" ]; then
+if [ ${DO_BUFRSND} = "YES" -o ${WAFSF} = "YES" ]; then
   export DO_DOWN="YES"
 fi
 
 #-----------------------------------------------------
-if [ $type = "gfs" ]; then
+if [[ ${type} = "gfs" ]]; then
 #-----------------------------------------------------
   FHMIN_GFS=${FHMIN_GFS:-0}
   FHMAX_GFS=${FHMAX_GFS:-384}
@@ -37,7 +37,7 @@ if [ $type = "gfs" ]; then
   touch gfsb.txt
   touch gfs_restarta.txt
 
-  if [ $ARCH_GAUSSIAN = "YES" ]; then
+  if [[ ${ARCH_GAUSSIAN} = "YES" ]]; then
     rm -f gfs_pgrb2b.txt
     rm -f gfs_netcdfb.txt
     rm -f gfs_flux.txt
@@ -51,17 +51,18 @@ if [ $type = "gfs" ]; then
     fi
   fi
 
-  if [ $DO_DOWN = "YES" ]; then
+  if [[ ${DO_DOWN} = "YES" ]]; then
     rm -f gfs_downstream.txt
     touch gfs_downstream.txt
   fi
 
   dirpath="gfs.${PDY}/${cyc}/atmos/"
   dirname="./${dirpath}"
+  obs_dirname="./gfs.${PDY}/${cyc}/obs/"
 
   head="gfs.t${cyc}z."
 
-  if [ $ARCH_GAUSSIAN = "YES" ]; then
+  if [[ ${ARCH_GAUSSIAN} = "YES" ]]; then
     echo  "${dirname}${head}pgrb2b.0p25.anl                  " >>gfs_pgrb2b.txt
     echo  "${dirname}${head}pgrb2b.0p25.anl.idx              " >>gfs_pgrb2b.txt
     echo  "${dirname}${head}pgrb2b.1p00.anl                  " >>gfs_pgrb2b.txt
@@ -89,11 +90,11 @@ if [ $type = "gfs" ]; then
   #  This uses the bash extended globbing option
   echo  "./logs/${CDATE}/gfs!(arch).log                    " >>gfsa.txt
   echo  "${dirname}input.nml                               " >>gfsa.txt
-  if [ $MODE = "cycled" ]; then
+  if [[ ${MODE} = "cycled" ]]; then
     echo  "${dirname}${head}gsistat                          " >>gfsa.txt
-    echo  "${dirname}${head}nsstbufr                         " >>gfsa.txt
-    echo  "${dirname}${head}prepbufr                         " >>gfsa.txt
-    echo  "${dirname}${head}prepbufr.acft_profiles           " >>gfsa.txt
+    echo  "${obs_dirname}${head}nsstbufr                         " >>gfsa.txt
+    echo  "${obs_dirname}${head}prepbufr                         " >>gfsa.txt
+    echo  "${obs_dirname}${head}prepbufr.acft_profiles           " >>gfsa.txt
   fi
   echo  "${dirname}${head}pgrb2.0p25.anl                   " >>gfsa.txt
   echo  "${dirname}${head}pgrb2.0p25.anl.idx               " >>gfsa.txt
@@ -106,18 +107,18 @@ if [ $type = "gfs" ]; then
                  storms.gfso.atcf_gen.altg.${PDY}${cyc})
 
   for file in ${cyclone_files[@]}; do
-    [[ -s $ROTDIR/${dirname}${file} ]] && echo "${dirname}${file}" >>gfsa.txt
+    [[ -s ${ROTDIR}/${dirname}${file} ]] && echo "${dirname}${file}" >>gfsa.txt
   done
 
-  if [ $DO_DOWN = "YES" ]; then
-   if [ $DO_BUFRSND = "YES" ]; then
+  if [[ ${DO_DOWN} = "YES" ]]; then
+   if [[ ${DO_BUFRSND} = "YES" ]]; then
     echo  "${dirname}gempak/gfs_${PDY}${cyc}.sfc              " >>gfs_downstream.txt
     echo  "${dirname}gempak/gfs_${PDY}${cyc}.snd              " >>gfs_downstream.txt
     echo  "${dirname}wmo/gfs_collective*.postsnd_${cyc}       " >>gfs_downstream.txt
     echo  "${dirname}bufr.t${cyc}z                            " >>gfs_downstream.txt
     echo  "${dirname}gfs.t${cyc}z.bufrsnd.tar.gz              " >>gfs_downstream.txt
    fi
-   if [ $WAFSF = "YES" ]; then
+   if [[ ${WAFSF} = "YES" ]]; then
     echo  "${dirname}wafsgfs*.t${cyc}z.gribf*.grib2           " >>gfs_downstream.txt
     echo  "${dirname}gfs.t${cyc}z.wafs_grb45f*.grib2          " >>gfs_downstream.txt
     echo  "${dirname}gfs.t${cyc}z.wafs_grb45f*.nouswafs.grib2 " >>gfs_downstream.txt
@@ -136,15 +137,15 @@ if [ $type = "gfs" ]; then
 
 
   fh=0
-  while [ $fh -le $FHMAX_GFS ]; do
-    fhr=$(printf %03i $fh)
-    if [ $ARCH_GAUSSIAN = "YES" ]; then
+  while [[ ${fh} -le ${FHMAX_GFS} ]]; do
+    fhr=$(printf %03i ${fh})
+    if [[ ${ARCH_GAUSSIAN} = "YES" ]]; then
       echo  "${dirname}${head}sfluxgrbf${fhr}.grib2           " >>gfs_flux.txt
       echo  "${dirname}${head}sfluxgrbf${fhr}.grib2.idx       " >>gfs_flux.txt
 
       echo  "${dirname}${head}pgrb2b.0p25.f${fhr}             " >>gfs_pgrb2b.txt
       echo  "${dirname}${head}pgrb2b.0p25.f${fhr}.idx         " >>gfs_pgrb2b.txt
-      if [ -s $ROTDIR/${dirpath}${head}pgrb2b.1p00.f${fhr} ]; then
+      if [[ -s ${ROTDIR}/${dirpath}${head}pgrb2b.1p00.f${fhr} ]]; then
          echo  "${dirname}${head}pgrb2b.1p00.f${fhr}         " >>gfs_pgrb2b.txt
          echo  "${dirname}${head}pgrb2b.1p00.f${fhr}.idx     " >>gfs_pgrb2b.txt
       fi
@@ -154,32 +155,32 @@ if [ $type = "gfs" ]; then
     echo  "${dirname}${head}pgrb2.0p25.f${fhr}.idx          " >>gfsa.txt
     echo  "${dirname}${head}logf${fhr}.txt                  " >>gfsa.txt
 
-    if [ -s $ROTDIR/${dirpath}${head}pgrb2.0p50.f${fhr} ]; then
+    if [[ -s ${ROTDIR}/${dirpath}${head}pgrb2.0p50.f${fhr} ]]; then
        echo  "${dirname}${head}pgrb2.0p50.f${fhr}          " >>gfsb.txt
        echo  "${dirname}${head}pgrb2.0p50.f${fhr}.idx      " >>gfsb.txt
     fi
-    if [ -s $ROTDIR/${dirpath}${head}pgrb2.1p00.f${fhr} ]; then
+    if [[ -s ${ROTDIR}/${dirpath}${head}pgrb2.1p00.f${fhr} ]]; then
        echo  "${dirname}${head}pgrb2.1p00.f${fhr}          " >>gfsb.txt
        echo  "${dirname}${head}pgrb2.1p00.f${fhr}.idx      " >>gfsb.txt
     fi
 
-    inc=$FHOUT_GFS
-    if [ $FHMAX_HF_GFS -gt 0 -a $FHOUT_HF_GFS -gt 0 -a $fh -lt $FHMAX_HF_GFS ]; then
-     inc=$FHOUT_HF_GFS
+    inc=${FHOUT_GFS}
+    if [ ${FHMAX_HF_GFS} -gt 0 -a ${FHOUT_HF_GFS} -gt 0 -a ${fh} -lt ${FHMAX_HF_GFS} ]; then
+     inc=${FHOUT_HF_GFS}
     fi
 
     fh=$((fh+inc))
   done
 
   #..................
-  if [ $MODE = "cycled" ]; then
+  if [[ ${MODE} = "cycled" ]]; then
     echo  "${dirname}RESTART/*0000.sfcanl_data.tile1.nc  " >>gfs_restarta.txt
     echo  "${dirname}RESTART/*0000.sfcanl_data.tile2.nc  " >>gfs_restarta.txt
     echo  "${dirname}RESTART/*0000.sfcanl_data.tile3.nc  " >>gfs_restarta.txt
     echo  "${dirname}RESTART/*0000.sfcanl_data.tile4.nc  " >>gfs_restarta.txt
     echo  "${dirname}RESTART/*0000.sfcanl_data.tile5.nc  " >>gfs_restarta.txt
     echo  "${dirname}RESTART/*0000.sfcanl_data.tile6.nc  " >>gfs_restarta.txt
-  elif [ $MODE = "forecast-only" ]; then
+  elif [[ ${MODE} = "forecast-only" ]]; then
     echo  "${dirname}INPUT/gfs_ctrl.nc        " >>gfs_restarta.txt
     echo  "${dirname}INPUT/gfs_data.tile1.nc  " >>gfs_restarta.txt
     echo  "${dirname}INPUT/gfs_data.tile2.nc  " >>gfs_restarta.txt
@@ -196,7 +197,7 @@ if [ $type = "gfs" ]; then
   fi
 
   #..................
-  if [ $DO_WAVE = "YES" ]; then
+  if [[ ${DO_WAVE} = "YES" ]]; then
 
     rm -rf gfswave.txt
     touch gfswave.txt
@@ -213,7 +214,7 @@ if [ $type = "gfs" ]; then
 
   fi
 
-  if [ $DO_OCN = "YES" ]; then
+  if [[ ${DO_OCN} = "YES" ]]; then
     dirpath="gfs.${PDY}/${cyc}/ocean/"
     dirname="./${dirpath}"
 
@@ -247,7 +248,7 @@ if [ $type = "gfs" ]; then
     echo  "${dirname}${head}flux.1p00.f???.idx  " >>gfs_flux_1p00.txt
   fi
 
-  if [ $DO_ICE = "YES" ]; then
+  if [[ ${DO_ICE} = "YES" ]]; then
     dirpath="gfs.${PDY}/${cyc}/ice/"
     dirname="./${dirpath}"
 
@@ -259,7 +260,7 @@ if [ $type = "gfs" ]; then
     echo  "${dirname}ice*nc                     " >>ice.txt
   fi
 
-  if [ $DO_AERO = "YES" ]; then
+  if [[ ${DO_AERO} = "YES" ]]; then
     dirpath="gfs.${PDY}/${cyc}/chem"
     dirname="./${dirpath}"
 
@@ -278,7 +279,7 @@ fi   ##end of gfs
 
 
 #-----------------------------------------------------
-if [ $type = "gdas" ]; then
+if [[ ${type} = "gdas" ]]; then
 #-----------------------------------------------------
 
   rm -f gdas.txt
@@ -290,6 +291,7 @@ if [ $type = "gdas" ]; then
 
   dirpath="gdas.${PDY}/${cyc}/atmos/"
   dirname="./${dirpath}"
+  obs_dirname="./gdas.${PDY}/${cyc}/obs/"
   head="gdas.t${cyc}z."
 
   #..................
@@ -309,25 +311,25 @@ if [ $type = "gdas" ]; then
   if [ -s $ROTDIR/${dirpath}${head}atma009.ensres.nc ]; then
      echo  "${dirname}${head}atma009.ensres.nc  " >>gdas.txt
   fi
-  if [ -s $ROTDIR/${dirpath}${head}cnvstat ]; then
+  if [[ -s ${ROTDIR}/${dirpath}${head}cnvstat ]]; then
      echo  "${dirname}${head}cnvstat                 " >>gdas.txt
   fi
-  if [ -s $ROTDIR/${dirpath}${head}oznstat ]; then
+  if [[ -s ${ROTDIR}/${dirpath}${head}oznstat ]]; then
      echo  "${dirname}${head}oznstat                 " >>gdas.txt
   fi
-  if [ -s $ROTDIR/${dirpath}${head}radstat ]; then
+  if [[ -s ${ROTDIR}/${dirpath}${head}radstat ]]; then
      echo  "${dirname}${head}radstat                 " >>gdas.txt
   fi
   for fstep in prep anal gldas fcst vrfy radmon minmon oznmon; do
-   if [ -s $ROTDIR/logs/${CDATE}/gdas${fstep}.log ]; then
+   if [[ -s ${ROTDIR}/logs/${CDATE}/gdas${fstep}.log ]]; then
      echo  "./logs/${CDATE}/gdas${fstep}.log         " >>gdas.txt
    fi
   done
   echo  "./logs/${CDATE}/gdaspost*.log               " >>gdas.txt
 
   fh=0
-  while [ $fh -le 9 ]; do
-    fhr=$(printf %03i $fh)
+  while [[ ${fh} -le 9 ]]; do
+    fhr=$(printf %03i ${fh})
     echo  "${dirname}${head}sfluxgrbf${fhr}.grib2      " >>gdas.txt
     echo  "${dirname}${head}sfluxgrbf${fhr}.grib2.idx  " >>gdas.txt
     echo  "${dirname}${head}pgrb2.0p25.f${fhr}         " >>gdas.txt
@@ -340,7 +342,7 @@ if [ $type = "gdas" ]; then
     fh=$((fh+3))
   done
   flist="001 002 004 005 007 008"
-  for fhr in $flist; do
+  for fhr in ${flist}; do
     echo  "${dirname}${head}sfluxgrbf${fhr}.grib2      " >>gdas.txt
     echo  "${dirname}${head}sfluxgrbf${fhr}.grib2.idx  " >>gdas.txt
   done
@@ -348,15 +350,15 @@ if [ $type = "gdas" ]; then
 
 
   #..................
-  if [ -s $ROTDIR/${dirpath}${head}cnvstat ]; then
+  if [[ -s ${ROTDIR}/${dirpath}${head}cnvstat ]]; then
      echo  "${dirname}${head}cnvstat               " >>gdas_restarta.txt
   fi
-  if [ -s $ROTDIR/${dirpath}${head}radstat ]; then
+  if [[ -s ${ROTDIR}/${dirpath}${head}radstat ]]; then
      echo  "${dirname}${head}radstat               " >>gdas_restarta.txt
   fi
-  echo  "${dirname}${head}nsstbufr                 " >>gdas_restarta.txt
-  echo  "${dirname}${head}prepbufr                 " >>gdas_restarta.txt
-  echo  "${dirname}${head}prepbufr.acft_profiles   " >>gdas_restarta.txt
+  echo  "${obs_dirname}${head}nsstbufr                 " >>gdas_restarta.txt
+  echo  "${obs_dirname}${head}prepbufr                 " >>gdas_restarta.txt
+  echo  "${obs_dirname}${head}prepbufr.acft_profiles   " >>gdas_restarta.txt
   echo  "${dirname}${head}abias                    " >>gdas_restarta.txt
   echo  "${dirname}${head}abias_air                " >>gdas_restarta.txt
   echo  "${dirname}${head}abias_int                " >>gdas_restarta.txt
@@ -377,7 +379,7 @@ if [ $type = "gdas" ]; then
   echo  "${dirname}RESTART " >>gdas_restartb.txt
 
   #..................
-  if [ $DO_WAVE = "YES" ]; then
+  if [[ ${DO_WAVE} = "YES" ]]; then
 
     rm -rf gdaswave.txt
     touch gdaswave.txt
@@ -404,19 +406,19 @@ fi   ##end of gdas
 
 
 #-----------------------------------------------------
-if [ $type = "enkfgdas" -o $type = "enkfgfs" ]; then
+if [ ${type} = "enkfgdas" -o ${type} = "enkfgfs" ]; then
 #-----------------------------------------------------
 
   IAUFHRS_ENKF=${IAUFHRS_ENKF:-6}
   lobsdiag_forenkf=${lobsdiag_forenkf:-".false."}
-  nfhrs=$(echo $IAUFHRS_ENKF | sed 's/,/ /g')
+  nfhrs=$(echo ${IAUFHRS_ENKF} | sed 's/,/ /g')
   NMEM_ENKF=${NMEM_ENKF:-80}
   NMEM_EARCGRP=${NMEM_EARCGRP:-10}               ##number of ens memebers included in each tarball
   NTARS=$((NMEM_ENKF/NMEM_EARCGRP))
-  [[ $NTARS -eq 0 ]] && NTARS=1
-  [[ $((NTARS*NMEM_EARCGRP)) -lt $NMEM_ENKF ]] && NTARS=$((NTARS+1))
+  [[ ${NTARS} -eq 0 ]] && NTARS=1
+  [[ $((NTARS*NMEM_EARCGRP)) -lt ${NMEM_ENKF} ]] && NTARS=$((NTARS+1))
 ##NTARS2=$((NTARS/2))  # number of earc groups to include analysis/increments
-  NTARS2=$NTARS
+  NTARS2=${NTARS}
 
   dirpath="enkf${CDUMP}.${PDY}/${cyc}/"
   dirname="./${dirpath}"
@@ -428,13 +430,13 @@ if [ $type = "enkfgdas" -o $type = "enkfgfs" ]; then
 
   echo  "${dirname}${head}enkfstat                   " >>enkf${CDUMP}.txt
   echo  "${dirname}${head}gsistat.ensmean            " >>enkf${CDUMP}.txt
-  if [ -s $ROTDIR/${dirpath}${head}cnvstat.ensmean ]; then
+  if [[ -s ${ROTDIR}/${dirpath}${head}cnvstat.ensmean ]]; then
        echo  "${dirname}${head}cnvstat.ensmean       " >>enkf${CDUMP}.txt
   fi
-  if [ -s $ROTDIR/${dirpath}${head}oznstat.ensmean ]; then
+  if [[ -s ${ROTDIR}/${dirpath}${head}oznstat.ensmean ]]; then
        echo  "${dirname}${head}oznstat.ensmean       " >>enkf${CDUMP}.txt
   fi
-  if [ -s $ROTDIR/${dirpath}${head}radstat.ensmean ]; then
+  if [[ -s ${ROTDIR}/${dirpath}${head}radstat.ensmean ]]; then
        echo  "${dirname}${head}radstat.ensmean       " >>enkf${CDUMP}.txt
   fi
   for FHR in $nfhrs; do  # loop over analysis times in window
@@ -459,8 +461,8 @@ if [ $type = "enkfgdas" -o $type = "enkfgfs" ]; then
   done
 
 # eomg* are optional jobs
-  for log in $ROTDIR/logs/${CDATE}/${CDUMP}eomg*.log; do
-     if [ -s "$log" ]; then
+  for log in ${ROTDIR}/logs/${CDATE}/${CDUMP}eomg*.log; do
+     if [[ -s "${log}" ]]; then
         echo  "logs/${CDATE}/${CDUMP}eomg*.log        " >>enkf${CDUMP}.txt
      fi
      break
@@ -481,7 +483,7 @@ if [ $type = "enkfgdas" -o $type = "enkfgfs" ]; then
 
   #...........................
   n=1
-  while [ $n -le $NTARS ]; do
+  while [[ ${n} -le ${NTARS} ]]; do
   #...........................
 
   rm -f enkf${CDUMP}_grp${n}.txt
@@ -492,7 +494,7 @@ if [ $type = "enkfgdas" -o $type = "enkfgfs" ]; then
   touch enkf${CDUMP}_restartb_grp${n}.txt
 
   m=1
-  while [ $m -le $NMEM_EARCGRP ]; do
+  while [[ ${m} -le ${NMEM_EARCGRP} ]]; do
     nm=$(((n-1)*NMEM_EARCGRP+m))
     mem=$(printf %03i $nm)
     dirpath="enkf${CDUMP}.${PDY}/${cyc}/mem${mem}/atmos/"
@@ -536,13 +538,13 @@ if [ $type = "enkfgdas" -o $type = "enkfgfs" ]; then
 
     if [[ lobsdiag_forenkf = ".false." ]] ; then
        echo "${dirname}${head}gsistat              " >>enkf${CDUMP}_grp${n}.txt
-       if [ -s $ROTDIR/${dirpath}${head}cnvstat ] ; then
+       if [[ -s ${ROTDIR}/${dirpath}${head}cnvstat ]] ; then
           echo "${dirname}${head}cnvstat           " >>enkf${CDUMP}_grp${n}.txt
        fi
-       if [ -s $ROTDIR/${dirpath}${head}radstat ]; then
+       if [[ -s ${ROTDIR}/${dirpath}${head}radstat ]]; then
           echo "${dirname}${head}radstat           " >>enkf${CDUMP}_restarta_grp${n}.txt
        fi
-       if [ -s $ROTDIR/${dirpath}${head}cnvstat ]; then
+       if [[ -s ${ROTDIR}/${dirpath}${head}cnvstat ]]; then
           echo "${dirname}${head}cnvstat           " >>enkf${CDUMP}_restarta_grp${n}.txt
        fi
        echo "${dirname}${head}abias                " >>enkf${CDUMP}_restarta_grp${n}.txt
