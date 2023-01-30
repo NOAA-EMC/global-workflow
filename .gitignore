@@ -7,7 +7,7 @@ __pycache__
 *.sw[a-p]
 ._*
 .DS_Store
-nohup.out
+#nohup.out - some users do not want this to be a part of .gitignore.  TODO: review against best practices
 .idea/
 .vscode/
 
