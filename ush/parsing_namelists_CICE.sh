@@ -5,13 +5,15 @@
 CICE_namelists(){
 
 # "warm_start" here refers to whether CICE model is warm starting or not.
-# In the case of the Prototypes, the CICE ICs were obtained from Travis Sluka.
-# Travis's system was using SIS2, so the prototypes always set this to "initial"
+# Per JM, in the case of the Prototypes, the sea-ice ICs were obtained from CPC.
+# CPC sea-ice initial conditions are created from SIS2 sea-ice model.
+# Hence, the prototypes always set this to "initial"
 # in order for the CICE model to _initialize_ from the SIS2 ICs.
 # However, in the SOCA cycled system, if starting from a previously cycled SOCA run,
 # the CICE ICs are obtained from the previous cycle of the UFS S2S,
 # so the CICE namelist should be set to "continue"
-# TODO: confirm w/ NB and GV
+# TODO: Is there a way to interrogate the restart file to know if this is a
+# SIS2 restart or a CICE restart, instead of relying on "${warm_start}"
 if [[ "${warm_start}" = ".true." ]]; then
    local runtype="continue"
    local use_restart_time=".true."
