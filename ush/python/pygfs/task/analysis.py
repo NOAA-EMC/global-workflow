@@ -56,7 +56,7 @@ class Analysis(Task):
             basename = os.path.basename(obfile)
             copylist.append([os.path.join(self.config['COMIN_OBS'], basename), obfile])
         obs_dict = {
-            'mkdir': [os.path.join(self.config['DATA'], 'obs')],
+            'mkdir': [os.path.join(self.runtime_config['DATA'], 'obs')],
             'copy': copylist
         }
         return obs_dict

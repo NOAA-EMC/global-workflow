@@ -45,11 +45,13 @@ class Task:
         for kk in runtime_keys:
             try:
                 self.runtime_config[kk] = config[kk]
+                del self.config[kk]
             except KeyError:
                 raise KeyError(f"Encountered an unreferenced runtime_key {kk} in 'config'")
 
         # Any other composite runtime variables that may be needed for the duration of the task
-        self.runtime_config['current_cycle'] = to_datetime(config['PDY'] + config['cyc'])
+        self.runtime_config['current_cycle'] = to_datetime(str(self.runtime_config['PDY'])) + \
+                                               dt.timedelta(hours=self.runtime_config['cyc'])
 
         pass
 
