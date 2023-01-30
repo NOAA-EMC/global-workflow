@@ -35,19 +35,19 @@ class AerosolAnalysis(Analysis):
         # Create a local dictionary that is repeatedly used across this class
         local_dict = AttrDict(
             {
-            'npx_ges': _res + 1,
-            'npy_ges': _res + 1,
-            'npz_ges': self.config.LEVS - 1,
-            'npz': self.config.LEVS - 1,
-            'npx_anl': _res_enkf + 1,
-            'npy_anl': _res_enkf + 1,
-            'npz_anl': self.config['LEVS'] - 1
-            'AERO_WINDOW_BEGIN': to_isotime(_window_begin),
-            'AERO_WINDOW_LENGTH': f"PT{self.config['assim_freq']}H",
-            'BKG_ISOTIME': to_isotime(self.current_cycle),
-            'BKG_YYYYmmddHHMMSS': to_fv3time(self.current_cycle),
-            'cdate_fv3': to_fv3time(self.current_cycle),
-            'comin_ges_atm': self.config.COMIN_GES.replace('chem', 'atmos'),  # 'chem' is COMPONENT, aerosol fields are in 'atmos' tracers
+                'npx_ges': _res + 1,
+                'npy_ges': _res + 1,
+                'npz_ges': self.config.LEVS - 1,
+                'npz': self.config.LEVS - 1,
+                'npx_anl': _res_enkf + 1,
+                'npy_anl': _res_enkf + 1,
+                'npz_anl': self.config['LEVS'] - 1
+                'AERO_WINDOW_BEGIN': to_isotime(_window_begin),
+                'AERO_WINDOW_LENGTH': f"PT{self.config['assim_freq']}H",
+                'BKG_ISOTIME': to_isotime(self.current_cycle),
+                'BKG_YYYYmmddHHMMSS': to_fv3time(self.current_cycle),
+                'cdate_fv3': to_fv3time(self.current_cycle),
+                'comin_ges_atm': self.config.COMIN_GES.replace('chem', 'atmos'),  # 'chem' is COMPONENT, aerosol fields are in 'atmos' tracers
             }
         )
 
@@ -131,7 +131,7 @@ class AerosolAnalysis(Analysis):
         # ---- copy RESTART fv_tracer files for future reference
         fms_bkg_file_template = os.path.join(self.task_config.comin_ges_atm, 'RESTART', f'{self.task_config.cdate_fv3}.fv_tracer.res.tile1.nc')
         bkglist = []
-        for itile in range(1, self.task_config.ntiles+1):
+        for itile in range(1, self.task_config.ntiles + 1):
             bkg_path = fms_bkg_file_template.replace('tile1', f'tile{itile}')
             dest = os.path.join(self.task_config['COMOUTaero'], f'aeroges.{os.path.basename(bkg_path)}')
             bkglist.append([bkg_path, dest])
@@ -145,7 +145,7 @@ class AerosolAnalysis(Analysis):
         logger.info('Moving increments to ROTDIR')
         fms_inc_file_template = os.path.join(self.task_config['DATA'], 'anl', f'aeroinc.{self.task_config.cdate_fv3}.fv_tracer.res.tile1.nc')
         inclist = []
-        for itile in range(1, self.task_config.ntiles+1):
+        for itile in range(1, self.task_config.ntiles + 1):
             inc_path = fms_inc_file_template.replace('tile1', f'tile{itile}')
             dest = os.path.join(self.task_config['COMOUTaero'], os.path.basename(inc_path))
             inclist.append([inc_path, dest])
