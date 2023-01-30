@@ -806,7 +806,8 @@ MOM6_postdet() {
     export cmeps_run_type="startup"
   fi
 
-  # TODO: some documentation would be nice to see here, e.g. whose phone number is in here?
+  # If using stochatic parameterizations, create a seed that does not exceed the
+  # largest signed integer
   if [ $DO_OCN_SPPT = "YES" -o $DO_OCN_PERT_EPBL = "YES" ]; then
     if [ ${SET_STP_SEED:-"YES"} = "YES" ]; then
       ISEED_OCNSPPT=$(( (CDATE*1000 + MEMBER*10 + 6) % 2147483647 ))
