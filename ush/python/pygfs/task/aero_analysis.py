@@ -30,7 +30,7 @@ class AerosolAnalysis(Analysis):
 
         _res = int(self.config['CASE'][1:])
         _res_enkf = int(self.config['CASE_ENKF'][1:])
-        _window_begin = self.current_cycle - to_timedelta(f"{self.config['assim_freq']}H") / 2
+        _window_begin = self.runtime_config.current_cycle - to_timedelta(f"{self.config['assim_freq']}H") / 2
 
         # Create a local dictionary that is repeatedly used across this class
         local_dict = AttrDict(
@@ -41,12 +41,12 @@ class AerosolAnalysis(Analysis):
             'npz': self.config.LEVS - 1,
             'npx_anl': _res_enkf + 1,
             'npy_anl': _res_enkf + 1,
-            'npz_anl': self.config['LEVS'] - 1
+            'npz_anl': self.config['LEVS'] - 1,
             'AERO_WINDOW_BEGIN': to_isotime(_window_begin),
             'AERO_WINDOW_LENGTH': f"PT{self.config['assim_freq']}H",
-            'BKG_ISOTIME': to_isotime(self.current_cycle),
-            'BKG_YYYYmmddHHMMSS': to_fv3time(self.current_cycle),
-            'cdate_fv3': to_fv3time(self.current_cycle),
+            'BKG_ISOTIME': to_isotime(self.runtime_config.current_cycle),
+            'BKG_YYYYmmddHHMMSS': to_fv3time(self.runtime_config.current_cycle),
+            'cdate_fv3': to_fv3time(self.runtime_config.current_cycle),
             'comin_ges_atm': self.config.COMIN_GES.replace('chem', 'atmos'),  # 'chem' is COMPONENT, aerosol fields are in 'atmos' tracers
             }
         )
