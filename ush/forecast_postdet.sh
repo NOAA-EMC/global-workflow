@@ -11,11 +11,6 @@
 ## for execution.
 #####
 
-FV3_GEFS_postdet(){
-  echo SUB ${FUNCNAME[0]}: Linking input data for FV3 $RUN
-  # soft link commands insert here
-}
-
 DATM_postdet(){
   ######################################################################
   # Link DATM  inputs (ie forcing files)                           #
@@ -134,7 +129,7 @@ EOF
     #.............................
 
   else ## cold start
-    for file in $(ls $memdir/INPUT/*.nc); do
+    for file in $(ls ${memdir}/INPUT/*.nc); do
       file2=$(echo $(basename $file))
       fsuf=$(echo $file2 | cut -c1-3)
       if [ $fsuf = "gfs" -o $fsuf = "sfc" ]; then
@@ -150,8 +145,6 @@ EOF
     nfiles=$(ls -1 $DATA/INPUT/* | wc -l)
     if [ $nfiles -le 0 ]; then
       echo SUB ${FUNCNAME[0]}: Initial conditions must exist in $DATA/INPUT, ABORT!
-      msg="SUB ${FUNCNAME[0]}: Initial conditions must exist in $DATA/INPUT, ABORT!"
-      postmsg "$jlogfile" "$msg"
       exit 1
     fi
   fi
@@ -179,7 +172,7 @@ EOF
 
   # Fractional grid related
   if [ $FRAC_GRID = ".true." ]; then
-    OROFIX=${OROFIX:-"${FIX_DIR}/fix_fv3_fracoro/${CASE}.mx${OCNRES}_frac"}
+    OROFIX=${OROFIX:-"${FIX_DIR}/orog/${CASE}.mx${OCNRES}_frac"}
     FIX_SFC=${FIX_SFC:-"${OROFIX}/fix_sfc"}
     for n in $(seq 1 $ntiles); do
       $NLN ${OROFIX}/oro_${CASE}.mx${OCNRES}.tile${n}.nc $DATA/INPUT/oro_data.tile${n}.nc
@@ -240,7 +233,7 @@ EOF
   fi
 
   # Files for GWD
-  OROFIX_ugwd=${OROFIX_ugwd:-"${FIX_DIR}/fix_ugwd"}
+  OROFIX_ugwd=${OROFIX_ugwd:-"${FIX_DIR}/ugwd"}
   $NLN ${OROFIX_ugwd}/ugwp_limb_tau.nc $DATA/ugwp_limb_tau.nc
   for n in $(seq 1 $ntiles); do
     $NLN ${OROFIX_ugwd}/$CASE/${CASE}_oro_data_ls.tile${n}.nc $DATA/INPUT/oro_data_ls.tile${n}.nc
@@ -278,12 +271,12 @@ EOF
 
   ## merra2 aerosol climo
   if [ $IAER -eq "1011" ]; then
-    FIX_AER="${FIX_DIR}/fix_aer"
+    FIX_AER="${FIX_DIR}/aer"
     for month in $(seq 1 12); do
       MM=$(printf %02d $month)
       $NLN "${FIX_AER}/merra2.aerclim.2003-2014.m${MM}.nc" "aeroclim.m${MM}.nc"
     done
-    FIX_LUT="${FIX_DIR}/fix_lut"
+    FIX_LUT="${FIX_DIR}/lut"
     $NLN $FIX_LUT/optics_BC.v1_3.dat $DATA/optics_BC.dat
     $NLN $FIX_LUT/optics_OC.v1_3.dat $DATA/optics_OC.dat
     $NLN $FIX_LUT/optics_DU.v15_3.dat $DATA/optics_DU.dat
@@ -309,9 +302,9 @@ EOF
   # inline post fix files
   if [ $WRITE_DOPOST = ".true." ]; then
     $NLN $PARM_POST/post_tag_gfs${LEVS}             $DATA/itag
-    $NLN $PARM_POST/postxconfig-NT-GFS-TWO.txt      $DATA/postxconfig-NT.txt
-    $NLN $PARM_POST/postxconfig-NT-GFS-F00-TWO.txt  $DATA/postxconfig-NT_FH00.txt
-    $NLN $PARM_POST/params_grib2_tbl_new            $DATA/params_grib2_tbl_new
+    $NLN ${FLTFILEGFS:-$PARM_POST/postxconfig-NT-GFS-TWO.txt}           $DATA/postxconfig-NT.txt
+    $NLN ${FLTFILEGFSF00:-$PARM_POST/postxconfig-NT-GFS-F00-TWO.txt}    $DATA/postxconfig-NT_FH00.txt
+    $NLN ${POSTGRB2TBL:-$PARM_POST/params_grib2_tbl_new}                $DATA/params_grib2_tbl_new
   fi
 
   #------------------------------------------------------------------
@@ -503,26 +496,19 @@ EOF
   JCAP_STP=${JCAP_STP:-$JCAP_CASE}
   LONB_STP=${LONB_STP:-$LONB_CASE}
   LATB_STP=${LATB_STP:-$LATB_CASE}
-
   cd $DATA
-
-  affix="nc"
-  if [ "$OUTPUT_FILE" = "nemsio" ]; then
-    affix="nemsio"
-  fi
-
   if [ $QUILTING = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]; then
     fhr=$FHMIN
     for fhr in $OUTPUT_FH; do
       FH3=$(printf %03i $fhr)
       FH2=$(printf %02i $fhr)
-      atmi=atmf${FH3}.$affix
-      sfci=sfcf${FH3}.$affix
+      atmi=atmf${FH3}.nc
+      sfci=sfcf${FH3}.nc
       logi=logf${FH3}
       pgbi=GFSPRS.GrbF${FH2}
       flxi=GFSFLX.GrbF${FH2}
-      atmo=$memdir/${CDUMP}.t${cyc}z.atmf${FH3}.$affix
-      sfco=$memdir/${CDUMP}.t${cyc}z.sfcf${FH3}.$affix
+      atmo=$memdir/${CDUMP}.t${cyc}z.atmf${FH3}.nc
+      sfco=$memdir/${CDUMP}.t${cyc}z.sfcf${FH3}.nc
       logo=$memdir/${CDUMP}.t${cyc}z.logf${FH3}.txt
       pgbo=$memdir/${CDUMP}.t${cyc}z.master.grb2f${FH3}
       flxo=$memdir/${CDUMP}.t${cyc}z.sfluxgrbf${FH3}.grib2
@@ -602,12 +588,13 @@ data_out_GFS() {
         done
       fi
     elif [ $CDUMP = "gfs" ]; then
-      $NCP $DATA/input.nml $ROTDIR/${CDUMP}.${PDY}/${cyc}/atmos/
+      $NCP $DATA/input.nml ${ROTDIR}/${RUN}.${PDY}/${cyc}/atmos/
     fi
   fi
 
   echo "SUB ${FUNCNAME[0]}: Output data for FV3 copied"
 }
+
 
 WW3_postdet() {
   echo "SUB ${FUNCNAME[0]}: Linking input data for WW3"
@@ -784,7 +771,7 @@ MOM6_postdet() {
   $NCP -pf $FIXmom/$OCNRES/* $DATA/INPUT/
 
   # Copy coupled grid_spec
-  spec_file="$FIX_DIR/fix_cpl/a${CASE}o${OCNRES}/grid_spec.nc"
+  spec_file="$FIX_DIR/cpl/a${CASE}o${OCNRES}/grid_spec.nc"
   if [ -s $spec_file ]; then
     $NCP -pf $spec_file $DATA/INPUT/
   else
@@ -842,10 +829,6 @@ MOM6_postdet() {
 
     source_file="ocn_${YYYY_MID}_${MM_MID}_${DD_MID}_${HH_MID}.nc"
     dest_file="ocn${VDATE}.${ENSMEM}.${IDATE}.nc"
-    ${NLN} ${COMOUTocean}/${dest_file} ${DATA}/${source_file}
-
-    source_file="wavocn_${YYYY_MID}_${MM_MID}_${DD_MID}_${HH_MID}.nc"
-    dest_file=${source_file}
     ${NLN} ${COMOUTocean}/${dest_file} ${DATA}/${source_file}
 
     source_file="ocn_daily_${YYYY}_${MM}_${DD}.nc"
@@ -1019,6 +1002,13 @@ GOCART_postdet() {
     DD=$(echo $VDATE | cut -c7-8)
     HH=$(echo $VDATE | cut -c9-10)
     SS=$((10#$HH*3600))
+
+    #
+    # Temporarily delete existing files due to noclobber in GOCART
+    #
+    if [[ -e "${COMOUTaero}/gocart.inst_aod.${YYYY}${MM}${DD}_${HH}00z.nc4" ]]; then
+      rm "${COMOUTaero}/gocart.inst_aod.${YYYY}${MM}${DD}_${HH}00z.nc4"
+    fi
 
     $NLN $COMOUTaero/gocart.inst_aod.${YYYY}${MM}${DD}_${HH}00z.nc4 $DATA/gocart.inst_aod.${YYYY}${MM}${DD}_${HH}00z.nc4
   done

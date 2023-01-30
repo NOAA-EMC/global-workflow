@@ -5,9 +5,14 @@ __pycache__
 *.[aox]
 *.mod
 *.sw[a-p]
+._*
 .DS_Store
 .idea/
+.vscode/
 
+# Ignore editor generated backup files
+#-------------------------------------
+*~
 # Ignore folders
 #-------------------
 exec/
@@ -17,8 +22,23 @@ install*/
 # Ignore fix directory symlinks
 #------------------------------
 fix/0readme
-fix/fix_*
-fix/gdas/
+fix/aer
+fix/am
+fix/chem
+fix/cice
+fix/cpl
+fix/datm
+fix/gdas
+fix/gldas
+fix/gsi
+fix/lut
+fix/mom6
+fix/orog
+fix/reg2grb2
+fix/sfc_climo
+fix/ugwd
+fix/verif
+fix/wave
 fix/wafs
 
 # Ignore parm file symlinks
@@ -75,71 +95,12 @@ parm/wafs
 #--------------------------------------------
 sorc/*log
 sorc/logs
-sorc/ufs_model.fd
-sorc/gfs_post.fd
-sorc/gfs_wafs.fd
-sorc/gldas.fd
-sorc/gsi_enkf.fd
-sorc/gsi.fd
-sorc/enkf.fd
-sorc/gdas.cd
-sorc/gsi_utils.fd
-sorc/gsi_monitor.fd
-sorc/ufs_utils.fd
-sorc/verif-global.fd
-
-# Ignore sorc symlinks
-#---------------------
-sorc/calc_analysis.fd
-sorc/calc_increment_ens.fd
-sorc/calc_increment_ens_ncio.fd
-sorc/emcsfc_ice_blend.fd
-sorc/emcsfc_snow2mdl.fd
-sorc/fregrid.fd
-sorc/gdas2gldas.fd
-sorc/getsfcensmeanp.fd
-sorc/getsigensmeanp_smooth.fd
-sorc/getsigensstatp.fd
-sorc/gfs_ncep_post.fd
-sorc/gldas2gdas.fd
-sorc/gldas_forcing.fd
-sorc/gldas_model.fd
-sorc/gldas_post.fd
-sorc/gldas_rst.fd
-sorc/global_chgres.fd
-sorc/global_cycle.fd
-sorc/global_enkf.fd
-sorc/global_gsi.fd
-sorc/interp_inc.fd
-sorc/make_hgrid.fd
-sorc/make_solo_mosaic.fd
-sorc/ncdiag_cat.fd
-sorc/nst_tf_chg.fd
-sorc/oznmon_horiz.fd
-sorc/oznmon_time.fd
-sorc/radmon_angle.fd
-sorc/radmon_bcoef.fd
-sorc/radmon_bcor.fd
-sorc/radmon_time.fd
-sorc/recentersigp.fd
-sorc/upp.fd
-sorc/wafs_awc_wafavn.fd
-sorc/wafs_blending.fd
-sorc/wafs_blending_0p25.fd
-sorc/wafs_cnvgrib2.fd
-sorc/wafs_gcip.fd
-sorc/wafs_grib2_0p25.fd
-sorc/wafs_makewafs.fd
-sorc/wafs_setmissing.fd
+sorc/*.cd
+sorc/*.fd
 
 # Ignore scripts from externals
 #------------------------------
 # jobs symlinks
-jobs/JGDAS_ATMOS_GLDAS
-jobs/JGDAS_ATMOS_VERFOZN
-jobs/JGDAS_ATMOS_VERFRAD
-jobs/JGDAS_ATMOS_VMINMON
-jobs/JGFS_ATMOS_VMINMON
 jobs/JGFS_ATMOS_WAFS
 jobs/JGFS_ATMOS_WAFS_BLENDING
 jobs/JGFS_ATMOS_WAFS_BLENDING_0P25
@@ -148,11 +109,6 @@ jobs/JGFS_ATMOS_WAFS_GRIB2
 jobs/JGFS_ATMOS_WAFS_GRIB2_0P25
 # scripts symlinks
 scripts/exemcsfc_global_sfc_prep.sh
-scripts/exgdas_atmos_gldas.sh
-scripts/exgdas_atmos_verfozn.sh
-scripts/exgdas_atmos_verfrad.sh
-scripts/exgdas_atmos_vminmon.sh
-scripts/exgfs_atmos_vminmon.sh
 scripts/exgfs_atmos_wafs_blending.sh
 scripts/exgfs_atmos_wafs_blending_0p25.sh
 scripts/exgfs_atmos_wafs_gcip.sh
@@ -168,29 +124,17 @@ ush/fv3gfs_driver_grid.sh
 ush/fv3gfs_filter_topo.sh
 ush/fv3gfs_make_grid.sh
 ush/fv3gfs_make_orog.sh
-ush/gldas_archive.sh
-ush/gldas_forcing.sh
-ush/gldas_get_data.sh
-ush/gldas_liscrd.sh
-ush/gldas_post.sh
-ush/gldas_process_data.sh
 ush/global_chgres.sh
 ush/global_chgres_driver.sh
 ush/global_cycle.sh
 ush/global_cycle_driver.sh
-ush/minmon_xtrct_costs.pl
-ush/minmon_xtrct_gnorms.pl
-ush/minmon_xtrct_reduct.pl
 ush/mkwfsgbl.sh
-ush/ozn_xtrct.sh
-ush/radmon_ck_stdout.sh
-ush/radmon_err_rpt.sh
-ush/radmon_verf_angle.sh
-ush/radmon_verf_bcoef.sh
-ush/radmon_verf_bcor.sh
-ush/radmon_verf_time.sh
 ush/ufsda
-ush/rstprod.sh
 ush/wafs_blending.sh
 ush/wafs_grib2.regrid.sh
 ush/wafs_intdsk.sh
+ush/finddate.sh
+ush/make_NTC_file.pl
+ush/make_ntc_bull.pl
+ush/make_tif.sh
+ush/month_name.sh

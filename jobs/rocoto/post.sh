@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${HOMEgfs}/ush/preamble.sh"
 
 ###############################################################
 ## NCEP post driver script
@@ -9,27 +9,30 @@ source "$HOMEgfs/ush/preamble.sh"
 ###############################################################
 
 # Source FV3GFS workflow modules
-. $HOMEgfs/ush/load_fv3gfs_modules.sh
+. ${HOMEgfs}/ush/load_fv3gfs_modules.sh
 status=$?
-[[ $status -ne 0 ]] && exit $status
+[[ ${status} -ne 0 ]] && exit ${status}
 
-export COMPONENT=${COMPONENT:-atmos}
+export job="post"
+export jobid="${job}.$$"
 
-if [ $FHRGRP = 'anl' ]; then
+export COMPONENT="atmos"
+
+if [ ${FHRGRP} = 'anl' ]; then
     fhrlst="anl"
-    restart_file=$ROTDIR/${CDUMP}.${PDY}/${cyc}/$COMPONENT/${CDUMP}.t${cyc}z.atm
+    restart_file=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENT}/${CDUMP}.t${cyc}z.atm
 else
-    fhrlst=$(echo $FHRLST | sed -e 's/_/ /g; s/f/ /g; s/,/ /g')
-    restart_file=$ROTDIR/${CDUMP}.${PDY}/${cyc}/$COMPONENT/${CDUMP}.t${cyc}z.logf
+    fhrlst=$(echo ${FHRLST} | sed -e 's/_/ /g; s/f/ /g; s/,/ /g')
+    restart_file=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENT}/${CDUMP}.t${cyc}z.logf
 fi
 
 
 #---------------------------------------------------------------
-for fhr in $fhrlst; do
-    export post_times=$fhr
-    $HOMEgfs/jobs/JGLOBAL_ATMOS_NCEPPOST
+for fhr in ${fhrlst}; do
+    export post_times=${fhr}
+    ${HOMEgfs}/jobs/JGLOBAL_ATMOS_POST
     status=$?
-    [[ $status -ne 0 ]] && exit $status
+    [[ ${status} -ne 0 ]] && exit ${status}
 done
 
 exit 0

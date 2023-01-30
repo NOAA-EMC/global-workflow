@@ -42,10 +42,13 @@ GETSFCENSMEANEXEC=${GETSFCENSMEANEXEC:-$HOMEgfs/exec/getsfcensmeanp.x}
 
 # Other variables.
 PREFIX=${PREFIX:-""}
-SUFFIX=${SUFFIX:-""}
 FHMIN=${FHMIN_EPOS:-3}
 FHMAX=${FHMAX_EPOS:-9}
 FHOUT=${FHOUT_EPOS:-3}
+
+if [[ $CDUMP == "gfs" ]]; then
+    NMEM_ENKF=${NMEM_EFCS:-${NMEM_ENKF:-30}}
+fi
 NMEM_ENKF=${NMEM_ENKF:-80}
 SMOOTH_ENKF=${SMOOTH_ENKF:-"NO"}
 ENKF_SPREAD=${ENKF_SPREAD:-"NO"}
@@ -75,23 +78,23 @@ for imem in $(seq 1 $NMEM_ENKF); do
    memchar="mem"$(printf %03i $imem)
    for fhr in $(seq $FHMIN $FHOUT $FHMAX); do
       fhrchar=$(printf %03i $fhr)
-      $NLN $COMIN/$memchar/${PREFIX}sfcf$fhrchar${SUFFIX} sfcf${fhrchar}_$memchar
-      $NLN $COMIN/$memchar/${PREFIX}atmf$fhrchar${SUFFIX} atmf${fhrchar}_$memchar
+      $NLN $COMIN/$memchar/atmos/${PREFIX}sfcf${fhrchar}.nc sfcf${fhrchar}_$memchar
+      $NLN $COMIN/$memchar/atmos/${PREFIX}atmf${fhrchar}.nc atmf${fhrchar}_$memchar
    done
 done
 
 # Forecast ensemble mean and smoothed files
 for fhr in $(seq $FHMIN $FHOUT $FHMAX); do
    fhrchar=$(printf %03i $fhr)
-   $NLN $COMOUT/${PREFIX}sfcf${fhrchar}.ensmean${SUFFIX} sfcf${fhrchar}.ensmean
-   $NLN $COMOUT/${PREFIX}atmf${fhrchar}.ensmean${SUFFIX} atmf${fhrchar}.ensmean
+   $NLN $COMOUT/${PREFIX}sfcf${fhrchar}.ensmean.nc sfcf${fhrchar}.ensmean
+   $NLN $COMOUT/${PREFIX}atmf${fhrchar}.ensmean.nc atmf${fhrchar}.ensmean
    if [ $SMOOTH_ENKF = "YES" ]; then
       for imem in $(seq 1 $NMEM_ENKF); do
          memchar="mem"$(printf %03i $imem)
-         $NLN $COMOUT/$memchar/${PREFIX}atmf${fhrchar}${ENKF_SUFFIX}${SUFFIX} atmf${fhrchar}${ENKF_SUFFIX}_$memchar
+         $NLN $COMOUT/$memchar/atmos/${PREFIX}atmf${fhrchar}${ENKF_SUFFIX}.nc atmf${fhrchar}${ENKF_SUFFIX}_$memchar
       done
    fi
-   [[ $ENKF_SPREAD = "YES" ]] && $NLN $COMOUT/${PREFIX}atmf${fhrchar}.ensspread${SUFFIX} atmf${fhrchar}.ensspread
+   [[ $ENKF_SPREAD = "YES" ]] && $NLN $COMOUT/${PREFIX}atmf${fhrchar}.ensspread.nc atmf${fhrchar}.ensspread
 done
 
 ################################################################################
@@ -146,7 +149,7 @@ if [ $SENDDBN = "YES" ]; then
       fhrchar=$(printf %03i $fhr)
       if [ $(expr $fhr % 3) -eq 0 ]; then
          if [ -s ./sfcf${fhrchar}.ensmean ]; then
-             $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job $COMOUT/${PREFIX}sfcf${fhrchar}.ensmean${SUFFIX}
+             $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job $COMOUT/${PREFIX}sfcf${fhrchar}.ensmean.nc
          fi
       fi
    done

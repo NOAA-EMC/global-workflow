@@ -2,7 +2,7 @@ help([[
 Load environment to run GFS on Orion
 ]])
 
-prepend_path("MODULEPATH", "/apps/contrib/NCEP/libs/hpc-stack/modulefiles/stack")
+prepend_path("MODULEPATH", "/apps/contrib/NCEP/hpc-stack/libs/hpc-stack/modulefiles/stack")
 
 load(pathJoin("hpc", os.getenv("hpc_ver")))
 load(pathJoin("hpc-intel", os.getenv("hpc_intel_ver")))
@@ -11,7 +11,8 @@ load(pathJoin("hpc-impi", os.getenv("hpc_impi_ver")))
 load(pathJoin("nco", os.getenv("nco_ver")))
 load(pathJoin("gempak", os.getenv("gempak_ver")))
 load(pathJoin("ncl", os.getenv("ncl_ver")))
-load(pathJoin("perl", os.getenv("perl_ver")))
+
+load(pathJoin("cmake", "cmake_ver"))
 
 load(pathJoin("prod_util", os.getenv("prod_util_ver")))
 load(pathJoin("grib_util", os.getenv("grib_util_ver")))
@@ -31,6 +32,9 @@ load(pathJoin("wgrib2", os.getenv("wgrib2_ver")))
 load(pathJoin("cdo", os.getenv("cdo_ver")))
 
 load(pathJoin("R", os.getenv("R_ver")))
+
+prepend_path("MODULEPATH", pathJoin("/work/noaa/global/glopara/git/prepobs/v1.0.1/modulefiles"))
+load(pathJoin("prepobs", "1.0.1"))
 
 -- Temporary until official hpc-stack is updated
 prepend_path("MODULEPATH", "/work2/noaa/global/wkolczyn/save/hpc-stack/modulefiles/stack")

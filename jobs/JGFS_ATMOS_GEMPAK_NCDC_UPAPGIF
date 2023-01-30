@@ -1,51 +1,35 @@
 #! /usr/bin/env bash
 
-source "$HOMEgfs/ush/preamble.sh"
+# TODO (#1222) This job is not part of the rocoto suite
 
 ############################################
 # GFS GEMPAK NCDC PRODUCT GENERATION
 ############################################
+source "${HOMEgfs}/ush/preamble.sh"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "gempak_gif" -c "base"
 
-##########################################################
-# obtain unique process id (pid) and make temp directory
-##########################################################
-export DATA=${DATA:-${DATAROOT}/${jobid:?}}
-mkdir -p $DATA
-cd $DATA
-
-######################################
-# Set up the cycle variable
-######################################
-export cycle=${cycle:-t${cyc}z}
-
-###########################################
-# Run setpdy and initialize PDY variables
-###########################################
-setpdy.sh
-. PDY
 
 ################################
 # Set up the HOME directory
 ################################
-export HOMEgfs=${HOMEgfs:-${NWROOT}/gfs.${gfs_ver}}
-export EXECgfs=${EXECgfs:-$HOMEgfs/exec}
-export PARMgfs=${PARMgfs:-$HOMEgfs/parm}
-export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
-export FIXgfs=${FIXgfs:-$HOMEgfs/gempak/fix}
-export USHgempak=${USHgempak:-$HOMEgfs/gempak/ush}
-export SRCgfs=${SRCgfs:-$HOMEgfs/scripts}
-export UTILgfs=${UTILgfs:-$HOMEgfs/util}
+export EXECgfs=${EXECgfs:-${HOMEgfs}/exec}
+export PARMgfs=${PARMgfs:-${HOMEgfs}/parm}
+export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
+export FIXgfs=${FIXgfs:-${HOMEgfs}/gempak/fix}
+export USHgempak=${USHgempak:-${HOMEgfs}/gempak/ush}
+export SRCgfs=${SRCgfs:-${HOMEgfs}/scripts}
+export UTILgfs=${UTILgfs:-${HOMEgfs}/util}
 
 ######################################
 # Set up the GEMPAK directory
 #######################################
-export HOMEgempak=${HOMEgempak:-$HOMEgfs/gempak}
-export FIXgempak=${FIXgempak:-$HOMEgempak/fix}
-export USHgempak=${USHgempak:-$HOMEgempak/ush}
+export HOMEgempak=${HOMEgempak:-${HOMEgfs}/gempak}
+export FIXgempak=${FIXgempak:-${HOMEgempak}/fix}
+export USHgempak=${USHgempak:-${HOMEgempak}/ush}
 
 export MP_PULSE=0
 export MP_TIMEOUT=2000
-export cycle=t${cyc}z
+
 
 #
 # Set up model and cycle specific variables
@@ -60,24 +44,23 @@ export fstart=00
 ###################################
 # Specify NET and RUN Name and model
 ####################################
-export NET=${NET:-gfs}
-export RUN=${RUN:-gfs}
 export model=${model:-gfs}
-export COMPONENT=${COMPONENT:-atmos}
+export COMPONENT="atmos"
 
 ##############################################
 # Define COM directories
 ##############################################
-export COMIN=${COMIN:-$(compath.py ${NET}/${envir}/${RUN}.${PDY})/${cyc}/$COMPONENT/gempak}
-export COMINgfs=${COMINgfs:-$(compath.py ${NET}/${envir}/${RUN}.${PDY})/${cyc}/$COMPONENT}
-export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/$COMPONENT}
+export COMIN=${COMIN:-$(compath.py ${envir}/${NET}/${gfs_ver})/${RUN}.${PDY}/${cyc}/${COMPONENT}/gempak}
+export COMINgfs=${COMINgfs:-$(compath.py ${envir}/${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/${COMPONENT}}
+export COMINobsproc=${COMINobsproc:-$(compath.py ${envir}/obsproc/${obsproc_ver})/${RUN}.${PDY}/${cyc}/${COMPONENT}}
+export COMOUT=${COMOUT:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/${COMPONENT}}
 export COMOUTwmo=${COMOUTwmo:-${COMOUT}/wmo}
 
 export SENDDBN=${SENDDBN:-NO}
 export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
-if [ $SENDCOM = YES ] ; then
-  mkdir -m 775 -p $COMOUT $COMOUTwmo
+if [ ${SENDCOM} = YES ] ; then
+  mkdir -m 775 -p ${COMOUT} ${COMOUTwmo}
 fi
 
 export pgmout=OUTPUT.$$
@@ -85,21 +68,21 @@ export pgmout=OUTPUT.$$
 
 ########################################################
 # Execute the script.
-$SRCgfs/exgfs_atmos_gempak_gif_ncdc_skew_t.sh
+${SRCgfs}/exgfs_atmos_gempak_gif_ncdc_skew_t.sh
 export err=$?; err_chk
 ########################################################
 
 ############################################
 # print exec I/O output
 ############################################
-if [ -e "$pgmout" ] ; then
-  cat $pgmout
+if [ -e "${pgmout}" ] ; then
+  cat ${pgmout}
 fi
 
 ###################################
 # Remove temp directories
 ###################################
-if [ "$KEEPDATA" != "YES" ] ; then
-  rm -rf $DATA
+if [ "${KEEPDATA}" != "YES" ] ; then
+  rm -rf ${DATA}
 fi
 

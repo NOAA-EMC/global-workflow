@@ -1,6 +1,6 @@
 #! /bin/env python3
 '''
-Compares two grib2 files and print any variables that have a 
+Compares two grib2 files and print any variables that have a
   non-identity correlation.
 
 Syntax
@@ -22,9 +22,10 @@ import subprocess
 
 # TODO - Update to also check the min just in case the grib files have a constant offset
 
+
 def count_nonid_corr(test_string: str, quiet=False):
     '''
-    Scan a wgrib2 print of the correlation between two values and count 
+    Scan a wgrib2 print of the correlation between two values and count
       how many variables have a non-identity correlation. Any such variables
       are printed.
 
@@ -63,6 +64,7 @@ def count_nonid_corr(test_string: str, quiet=False):
             print(f"{count} variables are different")
 
     return count
+
 
 if __name__ == '__main__':
     fileA = sys.argv[0]

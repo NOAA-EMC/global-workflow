@@ -2,20 +2,11 @@
 
 import os
 from pathlib import Path
-from yaml import load
-try:
-    from yaml import CLoader as Loader
-except ImportError:
-    from yaml import Loader
+
+from pygw.yaml_file import YAMLFile
 
 
 __all__ = ['Host']
-
-
-def load_yaml(_path: Path):
-    with open(_path, "r") as _file:
-        yaml_dict = load(_file, Loader=Loader)
-        return yaml_dict
 
 
 class Host:
@@ -24,7 +15,7 @@ class Host:
     """
 
     SUPPORTED_HOSTS = ['HERA', 'ORION', 'JET',
-                       'WCOSS2']
+                       'WCOSS2', 'S4', 'CONTAINER']
 
     def __init__(self, host=None):
 
@@ -35,12 +26,13 @@ class Host:
 
         self.machine = detected_host
         self.info = self._get_info
-        self.scheduler = self.info['scheduler']
+        self.scheduler = self.info['SCHEDULER']
 
     @classmethod
     def detect(cls):
 
         machine = 'NOTFOUND'
+        container = os.getenv('SINGULARITY_NAME', None)
 
         if os.path.exists('/scratch1/NCEPDEV'):
             machine = 'HERA'
@@ -50,6 +42,10 @@ class Host:
             machine = 'JET'
         elif os.path.exists('/lfs/f1'):
             machine = 'WCOSS2'
+        elif os.path.exists('/data/prod'):
+            machine = 'S4'
+        elif container is not None:
+            machine = 'CONTAINER'
 
         if machine not in Host.SUPPORTED_HOSTS:
             raise NotImplementedError(f'This machine is not a supported host.\n' +
@@ -63,7 +59,7 @@ class Host:
 
         hostfile = Path(os.path.join(os.path.dirname(__file__), f'hosts/{self.machine.lower()}.yaml'))
         try:
-            info = load_yaml(hostfile)
+            info = YAMLFile(path=hostfile)
         except FileNotFoundError:
             raise FileNotFoundError(f'{hostfile} does not exist!')
         except IOError:

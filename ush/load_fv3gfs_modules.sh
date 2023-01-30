@@ -18,7 +18,7 @@ source "$HOMEgfs/versions/run.ver"
 # Load our modules:
 module use "$HOMEgfs/modulefiles"
 
-if [[ -d /lfs/h2 ]]; then
+if [[ -d /lfs/f1 ]]; then
   # We are on WCOSS2 (Cactus or Dogwood)
   source "$HOMEgfs/versions/wcoss2.ver"
   module load module_base.wcoss2
@@ -39,6 +39,9 @@ elif [[ -d /glade ]] ; then
 elif [[ -d /lustre && -d /ncrc ]] ; then
   # We are on GAEA.
   module load module_base.gaea
+elif [[ -d /data/prod ]] ; then
+  # We are on SSEC S4
+  module load module_base.s4
 else
   echo WARNING: UNKNOWN PLATFORM
 fi
@@ -47,4 +50,4 @@ fi
 ulimit -S -s "$ulimit_s"
 unset ulimit_s
 
-${TRACE_ON:-set -x}
+set_trace

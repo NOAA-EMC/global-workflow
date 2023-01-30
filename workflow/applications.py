@@ -2,8 +2,8 @@
 
 from typing import Dict, Any
 from datetime import timedelta
-from configuration import Configuration
 from hosts import Host
+from pygw.configuration import Configuration
 
 __all__ = ['AppConfig']
 
@@ -78,11 +78,11 @@ class AppConfig:
 
     VALID_MODES = ['cycled', 'forecast-only']
 
-    def __init__(self, configuration: Configuration) -> None:
+    def __init__(self, conf: Configuration) -> None:
 
         self.scheduler = Host().scheduler
 
-        _base = configuration.parse_config('config.base')
+        _base = conf.parse_config('config.base')
 
         self.mode = _base['MODE']
 
@@ -103,11 +103,12 @@ class AppConfig:
         self.do_bufrsnd = _base.get('DO_BUFRSND', False)
         self.do_gempak = _base.get('DO_GEMPAK', False)
         self.do_awips = _base.get('DO_AWIPS', False)
-        self.do_wafs = _base.get('DO_WAFS', False)
+        self.do_wafs = _base.get('WAFSF', False)
         self.do_vrfy = _base.get('DO_VRFY', True)
         self.do_metp = _base.get('DO_METP', False)
         self.do_jedivar = _base.get('DO_JEDIVAR', False)
         self.do_jediens = _base.get('DO_JEDIENS', False)
+        self.do_jediocnvar = _base.get('DO_JEDIOCNVAR', False)
 
         self.do_hpssarch = _base.get('HPSSARCH', False)
 
@@ -133,7 +134,7 @@ class AppConfig:
         self.configs_names = self._get_app_configs()
 
         # Source the config_files for the jobs in the application
-        self.configs = self._source_configs(configuration)
+        self.configs = self._source_configs(conf)
 
         # Update the base config dictionary based on application
         upd_base_map = {'cycled': self._cycled_upd_base,
@@ -182,7 +183,6 @@ class AppConfig:
 
         configs += ['sfcanl', 'analcalc', 'fcst', 'post', 'vrfy', 'arch']
 
-
         if self.do_gldas:
             configs += ['gldas']
 
@@ -216,6 +216,9 @@ class AppConfig:
 
         if self.do_wafs:
             configs += ['wafs', 'wafsgrib2', 'wafsblending', 'wafsgcip', 'wafsgrib20p25', 'wafsblending0p25']
+
+        if self.do_aero:
+            configs += ['aeroanlinit', 'aeroanlrun', 'aeroanlfinal']
 
         return configs
 
@@ -282,7 +285,7 @@ class AppConfig:
 
         return base_out
 
-    def _source_configs(self, configuration: Configuration) -> Dict[str, Any]:
+    def _source_configs(self, conf: Configuration) -> Dict[str, Any]:
         """
         Given the configuration object and jobs,
         source the configurations for each config and return a dictionary
@@ -292,7 +295,7 @@ class AppConfig:
         configs = dict()
 
         # Return config.base as well
-        configs['base'] = configuration.parse_config('config.base')
+        configs['base'] = conf.parse_config('config.base')
 
         # Source the list of all config_files involved in the application
         for config in self.configs_names:
@@ -312,7 +315,7 @@ class AppConfig:
                 files += [f'config.{config}']
 
             print(f'sourcing config.{config}')
-            configs[config] = configuration.parse_config(files)
+            configs[config] = conf.parse_config(files)
 
         return configs
 
@@ -348,20 +351,23 @@ class AppConfig:
 
         gdas_gfs_common_tasks_before_fcst += ['sfcanl', 'analcalc']
 
+        if self.do_aero:
+            gdas_gfs_common_tasks_before_fcst += ['aeroanlinit', 'aeroanlrun', 'aeroanlfinal']
+
         gldas_tasks = ['gldas']
         wave_prep_tasks = ['waveinit', 'waveprep']
         wave_bndpnt_tasks = ['wavepostbndpnt', 'wavepostbndpntbll']
         wave_post_tasks = ['wavepostsbs', 'wavepostpnt']
 
-        hybrid_gdas_or_gfs_tasks = []
-        hybrid_gdas_tasks = []
+        hybrid_tasks = []
+        hybrid_after_eupd_tasks = []
         if self.do_hybvar:
             if self.do_jediens:
-                hybrid_gdas_or_gfs_tasks += ['atmensanalprep', 'atmensanalrun', 'atmensanalpost', 'echgres']
+                hybrid_tasks += ['atmensanalprep', 'atmensanalrun', 'atmensanalpost', 'echgres']
             else:
-                hybrid_gdas_or_gfs_tasks += ['eobs', 'eupd', 'echgres']
-                hybrid_gdas_or_gfs_tasks += ['ediag'] if self.lobsdiag_forenkf else ['eomg']
-            hybrid_gdas_tasks += ['ecen', 'esfc', 'efcs', 'epos', 'earc']
+                hybrid_tasks += ['eobs', 'eupd', 'echgres']
+                hybrid_tasks += ['ediag'] if self.lobsdiag_forenkf else ['eomg']
+            hybrid_after_eupd_tasks += ['ecen', 'esfc', 'efcs', 'epos', 'earc']
 
         # Collect all "gdas" cycle tasks
         gdas_tasks = gdas_gfs_common_tasks_before_fcst.copy()
@@ -380,8 +386,8 @@ class AppConfig:
 
         if self.do_hybvar:
             if 'gdas' in self.eupd_cdumps:
-                gdas_tasks += hybrid_gdas_or_gfs_tasks
-                gdas_tasks += hybrid_gdas_tasks
+                gdas_tasks += hybrid_tasks
+                gdas_tasks += hybrid_after_eupd_tasks
 
         if self.do_wave and 'gdas' in self.wave_cdumps:
             if self.do_wave_bnd:
@@ -402,9 +408,10 @@ class AppConfig:
 
         if self.do_metp:
             gfs_tasks += ['metp']
-
         if self.do_hybvar and 'gfs' in self.eupd_cdumps:
-            gfs_tasks += hybrid_gdas_or_gfs_tasks
+            gfs_tasks += hybrid_tasks
+            gfs_tasks += hybrid_after_eupd_tasks
+            gfs_tasks.remove("echgres")
 
         if self.do_wave and 'gfs' in self.wave_cdumps:
             if self.do_wave_bnd:

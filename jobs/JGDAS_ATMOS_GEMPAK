@@ -1,41 +1,20 @@
 #! /usr/bin/env bash
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${HOMEgfs}/ush/preamble.sh"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "gempak" -c "base gempak"
 
-############################################
-# GDAS GEMPAK PRODUCT GENERATION
-############################################
-
-##########################################################
-# obtain unique process id (pid) and make temp directory
-##########################################################
-export DATA=${DATA:-${DATAROOT}/${jobid:?}}
-mkdir -p $DATA
-cd $DATA
-
-######################################
-# Set up the cycle variable
-######################################
-export cycle=${cycle:-t${cyc}z}
-
-###########################################
-# Run setpdy and initialize PDY variables
-###########################################
-setpdy.sh
-. PDY
+# TODO (#1219) This j-job is not part of the rocoto suite
 
 ################################
 # Set up the HOME directory
-################################
-export HOMEgfs=${HOMEgfs:-${NWROOT}/gfs.${gfs_ver}}
-export EXECgfs=${EXECgfs:-$HOMEgfs/exec}
-export PARMgfs=${PARMgfs:-$HOMEgfs/parm}
-export PARMwmo=${PARMwmo:-$HOMEgfs/parm/wmo}
-export PARMproduct=${PARMproduct:-$HOMEgfs/parm/product}
-export FIXgempak=${FIXgempak:-$HOMEgfs/gempak/fix}
-export USHgempak=${USHgempak:-$HOMEgfs/gempak/ush}
-export SRCgfs=${SRCgfs:-$HOMEgfs/scripts}
-export UTILgfs=${UTILgfs:-$HOMEgfs/util}
+export EXECgfs=${EXECgfs:-${HOMEgfs}/exec}
+export PARMgfs=${PARMgfs:-${HOMEgfs}/parm}
+export PARMwmo=${PARMwmo:-${HOMEgfs}/parm/wmo}
+export PARMproduct=${PARMproduct:-${HOMEgfs}/parm/product}
+export FIXgempak=${FIXgempak:-${HOMEgfs}/gempak/fix}
+export USHgempak=${USHgempak:-${HOMEgfs}/gempak/ush}
+export SRCgfs=${SRCgfs:-${HOMEgfs}/scripts}
+export UTILgfs=${UTILgfs:-${HOMEgfs}/util}
 
 ############################################
 # Set up model and cycle specific variables
@@ -48,73 +27,71 @@ export GRIB=pgrb2f
 export EXT=""
 export DBN_ALERT_TYPE=GDAS_GEMPAK
 
+export SENDCOM=${SENDCOM:-NO}
 export SENDDBN=${SENDDBN:-NO}
 export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
 ###################################
 # Specify NET and RUN Name and model
 ####################################
-export NET=${NET:-gfs}
-export RUN=${RUN:-gdas}
 export model=${model:-gdas}
-export COMPONENT=${COMPONENT:-atmos}
+export COMPONENT="atmos"
 
 ##############################################
 # Define COM directories
 ##############################################
-export COMIN=${COMIN:-$(compath.py ${NET}/${envir}/${RUN}.${PDY})/${cyc}/$COMPONENT}
-export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/$COMPONENT/gempak}
+export COMIN=${COMIN:-$(compath.py ${envir}/${NET}/${gfs_ver})/${RUN}.${PDY}/${cyc}/${COMPONENT}}
+export COMOUT=${COMOUT:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/${COMPONENT}/gempak}
 
-if [ $SENDCOM = YES ] ; then
-  mkdir -m 775 -p $COMOUT
+if [ ${SENDCOM} = YES ] ; then
+  mkdir -m 775 -p ${COMOUT}
 fi
 
-export pgmout=OUTPUT.$$
 
-
-if [ -f $DATA/poescrip ]; then
-   rm $DATA/poescript
+# TODO: These actions belong in an ex-script not a j-job (#1219)
+if [ -f ${DATA}/poescript ]; then
+   rm ${DATA}/poescript
 fi
 
 ########################################################
 # Execute the script.
-echo "$SRCgfs/exgdas_atmos_nawips.sh gdas 009 GDAS_GEMPAK " >> poescript
+echo "${SRCgfs}/exgdas_atmos_nawips.sh gdas 009 GDAS_GEMPAK " >> poescript
 ########################################################
 
 ########################################################
 # Execute the script for quater-degree grib
-echo "$SRCgfs/exgdas_atmos_nawips.sh gdas_0p25 009 GDAS_GEMPAK " >>poescript
+echo "${SRCgfs}/exgdas_atmos_nawips.sh gdas_0p25 009 GDAS_GEMPAK " >>poescript
 ########################################################
 
 cat poescript
 
-chmod 775 $DATA/poescript
+chmod 775 ${DATA}/poescript
 export MP_PGMMODEL=mpmd
-export MP_CMDFILE=$DATA/poescript
+export MP_CMDFILE=${DATA}/poescript
 
-ntasks=${NTASKS_GEMPAK:-$(cat $DATA/poescript | wc -l)}
+ntasks=${NTASKS_GEMPAK:-$(cat ${DATA}/poescript | wc -l)}
 ptile=${PTILE_GEMPAK:-4}
 threads=${NTHREADS_GEMPAK:-1}
-export OMP_NUM_THREADS=$threads
-APRUN="mpirun -n $ntasks cfp "
+export OMP_NUM_THREADS=${threads}
+APRUN="mpiexec -l -np ${ntasks} --cpu-bind verbose,core cfp"
 
-APRUN_GEMPAKCFP=${APRUN_GEMPAKCFP:-$APRUN}
-APRUNCFP=$(eval echo $APRUN_GEMPAKCFP)
+APRUN_GEMPAKCFP=${APRUN_GEMPAKCFP:-${APRUN}}
+APRUNCFP=$(eval echo ${APRUN_GEMPAKCFP})
 
-$APRUNCFP $DATA/poescript
+${APRUNCFP} ${DATA}/poescript
 export err=$?; err_chk
 
 ############################################
 # print exec I/O output
 ############################################
-if [ -e "$pgmout" ] ; then
-  cat $pgmout
+if [ -e "${pgmout}" ] ; then
+  cat ${pgmout}
 fi
 
 ###################################
 # Remove temp directories
 ###################################
-if [ "$KEEPDATA" != "YES" ] ; then
-  rm -rf $DATA
+if [ "${KEEPDATA}" != "YES" ] ; then
+  rm -rf ${DATA}
 fi
 

@@ -32,7 +32,6 @@ ntiles=${ntiles:-6}
 # Utilities
 NCP=${NCP:-"/bin/cp -p"}
 NLN=${NLN:-"/bin/ln -sf"}
-NEMSIOGET=${NEMSIOGET:-${NWPROD}/exec/nemsio_get}
 NCLEN=${NCLEN:-$HOMEgfs/ush/getncdimlen}
 
 # Scripts
@@ -44,9 +43,7 @@ OPREFIX=${OPREFIX:-""}
 OSUFFIX=${OSUFFIX:-""}
 APREFIX=${APREFIX:-""}
 APREFIX_ENKF=${APREFIX_ENKF:-$APREFIX}
-ASUFFIX=${ASUFFIX:-$SUFFIX}
 GPREFIX=${GPREFIX:-""}
-GSUFFIX=${GSUFFIX:-$SUFFIX}
 
 # Variables
 NMEM_ENKF=${NMEM_ENKF:-80}
@@ -57,8 +54,8 @@ CYCLESH=${CYCLESH:-$HOMEgfs/ush/global_cycle.sh}
 export CYCLEXEC=${CYCLEXEC:-$HOMEgfs/exec/global_cycle}
 APRUN_CYCLE=${APRUN_CYCLE:-${APRUN:-""}}
 NTHREADS_CYCLE=${NTHREADS_CYCLE:-${NTHREADS:-1}}
-export FIXfv3=${FIXfv3:-$HOMEgfs/fix/fix_fv3_gmted2010}
-export FIXgsm=${FIXgsm:-$HOMEgfs/fix/fix_am}
+export FIXfv3=${FIXfv3:-$HOMEgfs/fix/orog}
+export FIXgsm=${FIXgsm:-$HOMEgfs/fix/am}
 export CYCLVARS=${CYCLVARS:-"FSNOL=-2.,FSNOS=99999.,"}
 export FHOUR=${FHOUR:-0}
 export DELTSFC=${DELTSFC:-6}
@@ -145,10 +142,10 @@ if [ $DOIAU = "YES" ]; then
             cmem=$(printf %03i $imem)
             memchar="mem$cmem"
 
-            [[ $TILE_NUM -eq 1 ]] && mkdir -p $COMOUT_ENS/$memchar/RESTART
+            [[ $TILE_NUM -eq 1 ]] && mkdir -p $COMOUT_ENS/$memchar/atmos/RESTART
 
-            $NLN $COMIN_GES_ENS/$memchar/RESTART/$bPDY.${bcyc}0000.sfc_data.tile${n}.nc $DATA/fnbgsi.$cmem
-            $NLN $COMOUT_ENS/$memchar/RESTART/$bPDY.${bcyc}0000.sfcanl_data.tile${n}.nc $DATA/fnbgso.$cmem
+            $NLN $COMIN_GES_ENS/$memchar/atmos/RESTART/$bPDY.${bcyc}0000.sfc_data.tile${n}.nc $DATA/fnbgsi.$cmem
+            $NLN $COMOUT_ENS/$memchar/atmos/RESTART/$bPDY.${bcyc}0000.sfcanl_data.tile${n}.nc $DATA/fnbgso.$cmem
             $NLN $FIXfv3/$CASE/${CASE}_grid.tile${n}.nc                                $DATA/fngrid.$cmem
             $NLN $FIXfv3/$CASE/${CASE}_oro_data.tile${n}.nc                            $DATA/fnorog.$cmem
 
@@ -171,10 +168,10 @@ if [ $DOSFCANL_ENKF = "YES" ]; then
         cmem=$(printf %03i $imem)
         memchar="mem$cmem"
 
-        [[ $TILE_NUM -eq 1 ]] && mkdir -p $COMOUT_ENS/$memchar/RESTART
+        [[ $TILE_NUM -eq 1 ]] && mkdir -p $COMOUT_ENS/$memchar/atmos/RESTART
 
-        $NLN $COMIN_GES_ENS/$memchar/RESTART/$PDY.${cyc}0000.sfc_data.tile${n}.nc $DATA/fnbgsi.$cmem
-        $NLN $COMOUT_ENS/$memchar/RESTART/$PDY.${cyc}0000.sfcanl_data.tile${n}.nc $DATA/fnbgso.$cmem
+        $NLN $COMIN_GES_ENS/$memchar/atmos/RESTART/$PDY.${cyc}0000.sfc_data.tile${n}.nc $DATA/fnbgsi.$cmem
+        $NLN $COMOUT_ENS/$memchar/atmos/RESTART/$PDY.${cyc}0000.sfcanl_data.tile${n}.nc $DATA/fnbgso.$cmem
         $NLN $FIXfv3/$CASE/${CASE}_grid.tile${n}.nc                               $DATA/fngrid.$cmem
         $NLN $FIXfv3/$CASE/${CASE}_oro_data.tile${n}.nc                           $DATA/fnorog.$cmem
 

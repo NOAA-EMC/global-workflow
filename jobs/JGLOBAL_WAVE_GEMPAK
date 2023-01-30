@@ -1,46 +1,25 @@
 #! /usr/bin/env bash
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${HOMEgfs}/ush/preamble.sh"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "wavegempak" -c "base wavegempak"
 
-# JY - 10/29, move the block in the front, otherwise PDY is not defined for COMIN
-export DATA=${DATA:-${DATAROOT}/${jobid:?}}
-mkdir -p $DATA
-cd $DATA
-
-
-######################################
-# Set up the cycle variable
-######################################
-export cycle=${cycle:-t${cyc}z}
-
-setpdy.sh
-. PDY
-
-#
-export NET=${NET:-gfs}
-export RUN=${RUN:-gfs}
-export COMPONENT=${COMPONENT:-wave}
-export machine=${machine:-WCOSS2}
-export HOMEgfs=${HOMEgfs:-$(dirname $(dirname $0))}
+export COMPONENT="wave"
 
 # Add default errchk = err_chk
 export errchk=${errchk:-err_chk}
 
 ###################################
 # Set COM Paths
-export COMIN=${COMIN:-$(compath.py ${NET}/${envir}/${RUN}.${PDY})/${cyc}/$COMPONENT}
-export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${RUN}.${PDY}/${cyc}/$COMPONENT/gempak}
-#export pid=$$
-export pgmout="OUTPUT.$$"
+export COMIN=${COMIN:-$(compath.py ${envir}/${NET}/${gfs_ver})/${RUN}.${PDY}/${cyc}/${COMPONENT}}
+export COMOUT=${COMOUT:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/${COMPONENT}/gempak}
 
 export DBN_ALERT_TYPE=GFS_WAVE_GEMPAK
 export SENDCOM=${SENDCOM:-YES}
 export SENDDBN=${SENDDBN:-YES}
 export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
-
-if [ $SENDCOM = YES ] ; then
-  mkdir -m 775 -p $COMOUT
+if [ ${SENDCOM} = YES ] ; then
+  mkdir -m 775 -p ${COMOUT}
 fi
 
 
@@ -48,13 +27,13 @@ fi
 # Execute the script.
 ${HOMEgfs}/scripts/exgfs_wave_nawips.sh
 status=$?
-[[ $status -ne 0 ]] && exit $status
+[[ ${status} -ne 0 ]] && exit ${status}
 ###################################
-# Remove temp directories
-if [ "$KEEPDATA" != "YES" ]; then
-  cd $DATAROOT
-  rm -rf $DATA
-fi
 
+# Remove temp directories
+cd ${DATAROOT}
+if [ "${KEEPDATA}" != "YES" ]; then
+  rm -rf ${DATA}
+fi
 
 exit 0

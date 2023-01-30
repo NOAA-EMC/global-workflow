@@ -1,39 +1,23 @@
 #! /usr/bin/env bash
 
-source "$HOMEgfs/ush/preamble.sh"
+# TODO (#1222) This job is not part of the rocoto suite
 
 ############################################
 # GFS_PGRB2_SPEC_GEMPAK PRODUCT GENERATION
 ############################################
+source "${HOMEgfs}/ush/preamble.sh"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "gempak_spec" -c "base"
 
-#########################################################
-# obtain unique process id (pid) and make temp directory
-#########################################################
-export DATA=${DATA:-${DATAROOT}/${jobid:?}}
-mkdir -p $DATA
-cd $DATA
-
-######################################
-# Set up the cycle variable
-######################################
-export cycle=${cycle:-t${cyc}z}
-
-###########################################
-# Run setpdy and initialize PDY variables
-###########################################
-setpdy.sh
-. PDY
 
 ################################
 # Set up the HOME directory
 ################################
-export HOMEgfs=${HOMEgfs:-${NWROOT}/gfs.${gfs_ver}}
-export EXECgfs=${EXECgfs:-$HOMEgfs/exec}
-export PARMgfs=${PARMgfs:-$HOMEgfs/parm}
-export EXPDIR=${EXPDIR:-$HOMEgfs/parm/config}
-export FIXgempak=${FIXgempak:-$HOMEgfs/gempak/fix}
-export USHgempak=${USHgempak:-$HOMEgfs/gempak/ush}
-export SRCgfs=${SRCgfs:-$HOMEgfs/scripts}
+export EXECgfs=${EXECgfs:-${HOMEgfs}/exec}
+export PARMgfs=${PARMgfs:-${HOMEgfs}/parm}
+export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
+export FIXgempak=${FIXgempak:-${HOMEgfs}/gempak/fix}
+export USHgempak=${USHgempak:-${HOMEgfs}/gempak/ush}
+export SRCgfs=${SRCgfs:-${HOMEgfs}/scripts}
 
 # For half-degree P Grib files
 #export DO_HD_PGRB=YES
@@ -41,9 +25,7 @@ export SRCgfs=${SRCgfs:-$HOMEgfs/scripts}
 ###################################
 # Specify NET and RUN Name and model
 ####################################
-export NET=gfs
-export RUN=gfs_goessim
-export COMPONENT=${COMPONENT:-atmos}
+export COMPONENT="atmos"
 export finc=3
 export model=gfs
 export EXT=""
@@ -51,27 +33,30 @@ export EXT=""
 ##############################################
 # Define COM directories
 ##############################################
-export COMIN=${COMIN:-$(compath.py ${NET}/${envir}/${NET}.${PDY})/${cyc}/$COMPONENT}
-export COMOUT=${COMOUT:-${COMROOT}/${NET}/${envir}/${NET}.${PDY}/${cyc}/$COMPONENT/gempak}
+export COMIN=${COMIN:-$(compath.py ${envir}/${NET}/${gfs_ver})/${RUN}.${PDY}/${cyc}/${COMPONENT}}
+export COMOUT=${COMOUT:-$(compath.py -o ${NET}/${gfs_ver}/${NET}.${PDY})/${cyc}/${COMPONENT}/gempak}
 
 export SENDDBN=${SENDDBN:-NO}
 export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 
-if [ $SENDCOM = YES ] ; then
-  mkdir -m 775 -p $COMOUT
+if [ ${SENDCOM} = YES ] ; then
+  mkdir -m 775 -p ${COMOUT}
 fi
 
 
-export DATA_HOLD=$DATA
+# TODO - Assess what is going on with overwriting $DATA here (#1224)
+
+export DATA_HOLD=${DATA}
 
 #################################################################
 # Execute the script for the regular grib
 #################################################################
-export DATA=$DATA_HOLD/SPECIAL
-mkdir -p $DATA
-cd $DATA
+export DATA=${DATA_HOLD}/SPECIAL
+mkdir -p ${DATA}
+cd ${DATA}
 
 export DBN_ALERT_TYPE=GFS_GOESSIM_GEMPAK
+export RUN2=gfs_goessim
 export GRIB=goessimpgrb2.0p25.f
 export EXT=" "
 export fend=180
@@ -82,17 +67,17 @@ echo "RUNS the Program"
 
 ########################################################
 # Execute the script.
-$SRCgfs/exgfs_atmos_goes_nawips.sh
+${SRCgfs}/exgfs_atmos_goes_nawips.sh
 
 #################################################################
 # Execute the script for the 221 grib
 
-export DATA=$DATA_HOLD/SPECIAL221
-mkdir -p $DATA
-cd $DATA
+export DATA=${DATA_HOLD}/SPECIAL221
+mkdir -p ${DATA}
+cd ${DATA}
 
 export DBN_ALERT_TYPE=GFS_GOESSIM221_GEMPAK
-export RUN=gfs_goessim221
+export RUN2=gfs_goessim221
 export GRIB=goessimpgrb2f
 export EXT=".grd221"
 export fend=180
@@ -103,12 +88,12 @@ echo "RUNS the Program"
 
 ########################################################
 # Execute the script.
-$SRCgfs/exgfs_atmos_goes_nawips.sh
+${SRCgfs}/exgfs_atmos_goes_nawips.sh
 export err=$?; err_chk
 ########################################################
 
 echo "end of program"
-cd $DATA_HOLD
+cd ${DATA_HOLD}
 echo "######################################"
 echo "  SPECIAL.OUT "
 echo "######################################"
@@ -116,14 +101,14 @@ echo "######################################"
 ############################################
 # print exec I/O output
 ############################################
-if [ -e "$pgmout" ] ; then
-  cat $pgmout
+if [ -e "${pgmout}" ] ; then
+  cat ${pgmout}
 fi
 
 ###################################
 # Remove temp directories
 ###################################
-if [ "$KEEPDATA" != "YES" ] ; then
-  rm -rf $DATA
+if [ "${KEEPDATA}" != "YES" ] ; then
+  rm -rf "${DATA}"
 fi
 

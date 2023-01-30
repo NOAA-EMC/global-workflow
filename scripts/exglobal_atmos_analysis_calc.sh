@@ -23,7 +23,7 @@ source "$HOMEgfs/ush/preamble.sh"
 
 #  Directories.
 pwd=$(pwd)
-export FIXgsm=${FIXgsm:-$HOMEgfs/fix/fix_am}
+export FIXgsm=${FIXgsm:-$HOMEgfs/fix/am}
 
 # Base variables
 CDATE=${CDATE:-"2001010100"}
@@ -43,7 +43,6 @@ export NCP=${NCP:-"/bin/cp"}
 export NMV=${NMV:-"/bin/mv"}
 export NLN=${NLN:-"/bin/ln -sf"}
 export CHGRP_CMD=${CHGRP_CMD:-"chgrp ${group_name:-rstprod}"}
-export NEMSIOGET=${NEMSIOGET:-${NWPROD}/exec/nemsio_get}
 export NCLEN=${NCLEN:-$HOMEgfs/ush/getncdimlen}
 COMPRESS=${COMPRESS:-gzip}
 UNCOMPRESS=${UNCOMPRESS:-gunzip}
@@ -72,7 +71,7 @@ CALCANLPY=${CALCANLPY:-$HOMEgfs/ush/calcanl_gfs.py}
 
 DOGAUSFCANL=${DOGAUSFCANL-"NO"}
 GAUSFCANLSH=${GAUSFCANLSH:-$HOMEgfs/ush/gaussian_sfcanl.sh}
-export GAUSFCANLEXE=${GAUSFCANLEXE:-$HOMEgfs/exec/gaussian_sfcanl.exe}
+export GAUSFCANLEXE=${GAUSFCANLEXE:-$HOMEgfs/exec/gaussian_sfcanl.x}
 NTHREADS_GAUSFCANL=${NTHREADS_GAUSFCANL:-1}
 APRUN_GAUSFCANL=${APRUN_GAUSFCANL:-${APRUN:-""}}
 
@@ -83,21 +82,19 @@ SENDDBN=${SENDDBN:-"NO"}
 
 # Guess files
 GPREFIX=${GPREFIX:-""}
-GSUFFIX=${GSUFFIX:-$SUFFIX}
-ATMG03=${ATMG03:-${COMIN_GES}/${GPREFIX}atmf003${GSUFFIX}}
-ATMG04=${ATMG04:-${COMIN_GES}/${GPREFIX}atmf004${GSUFFIX}}
-ATMG05=${ATMG05:-${COMIN_GES}/${GPREFIX}atmf005${GSUFFIX}}
-ATMGES=${ATMGES:-${COMIN_GES}/${GPREFIX}atmf006${GSUFFIX}}
-ATMG07=${ATMG07:-${COMIN_GES}/${GPREFIX}atmf007${GSUFFIX}}
-ATMG08=${ATMG08:-${COMIN_GES}/${GPREFIX}atmf008${GSUFFIX}}
-ATMG09=${ATMG09:-${COMIN_GES}/${GPREFIX}atmf009${GSUFFIX}}
+ATMG03=${ATMG03:-${COMIN_GES}/${GPREFIX}atmf003.nc}
+ATMG04=${ATMG04:-${COMIN_GES}/${GPREFIX}atmf004.nc}
+ATMG05=${ATMG05:-${COMIN_GES}/${GPREFIX}atmf005.nc}
+ATMGES=${ATMGES:-${COMIN_GES}/${GPREFIX}atmf006.nc}
+ATMG07=${ATMG07:-${COMIN_GES}/${GPREFIX}atmf007.nc}
+ATMG08=${ATMG08:-${COMIN_GES}/${GPREFIX}atmf008.nc}
+ATMG09=${ATMG09:-${COMIN_GES}/${GPREFIX}atmf009.nc}
 
 # Analysis files
 export APREFIX=${APREFIX:-""}
-export ASUFFIX=${ASUFFIX:-$SUFFIX}
-SFCANL=${SFCANL:-${COMOUT}/${APREFIX}sfcanl${ASUFFIX}}
+SFCANL=${SFCANL:-${COMOUT}/${APREFIX}sfcanl.nc}
 DTFANL=${DTFANL:-${COMOUT}/${APREFIX}dtfanl.nc}
-ATMANL=${ATMANL:-${COMOUT}/${APREFIX}atmanl${ASUFFIX}}
+ATMANL=${ATMANL:-${COMOUT}/${APREFIX}atmanl.nc}
 
 # Increment files
 ATMINC=${ATMINC:-${COMOUT}/${APREFIX}atminc.nc}
@@ -117,17 +114,17 @@ fi
 
 # Set 4D-EnVar specific variables
 if [ $DOHYBVAR = "YES" -a $l4densvar = ".true." -a $lwrite4danl = ".true." ]; then
-   ATMA03=${ATMA03:-${COMOUT}/${APREFIX}atma003${ASUFFIX}}
+   ATMA03=${ATMA03:-${COMOUT}/${APREFIX}atma003.nc}
    ATMI03=${ATMI03:-${COMOUT}/${APREFIX}atmi003.nc}
-   ATMA04=${ATMA04:-${COMOUT}/${APREFIX}atma004${ASUFFIX}}
+   ATMA04=${ATMA04:-${COMOUT}/${APREFIX}atma004.nc}
    ATMI04=${ATMI04:-${COMOUT}/${APREFIX}atmi004.nc}
-   ATMA05=${ATMA05:-${COMOUT}/${APREFIX}atma005${ASUFFIX}}
+   ATMA05=${ATMA05:-${COMOUT}/${APREFIX}atma005.nc}
    ATMI05=${ATMI05:-${COMOUT}/${APREFIX}atmi005.nc}
-   ATMA07=${ATMA07:-${COMOUT}/${APREFIX}atma007${ASUFFIX}}
+   ATMA07=${ATMA07:-${COMOUT}/${APREFIX}atma007.nc}
    ATMI07=${ATMI07:-${COMOUT}/${APREFIX}atmi007.nc}
-   ATMA08=${ATMA08:-${COMOUT}/${APREFIX}atma008${ASUFFIX}}
+   ATMA08=${ATMA08:-${COMOUT}/${APREFIX}atma008.nc}
    ATMI08=${ATMI08:-${COMOUT}/${APREFIX}atmi008.nc}
-   ATMA09=${ATMA09:-${COMOUT}/${APREFIX}atma009${ASUFFIX}}
+   ATMA09=${ATMA09:-${COMOUT}/${APREFIX}atma009.nc}
    ATMI09=${ATMI09:-${COMOUT}/${APREFIX}atmi009.nc}
 fi
 

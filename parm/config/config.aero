@@ -13,6 +13,12 @@ case $machine in
   "ORION")
     AERO_INPUTS_DIR="/work2/noaa/global/wkolczyn/noscrub/global-workflow/gocart_emissions"
     ;;
+  "S4")
+    AERO_INPUTS_DIR="/data/prod/glopara/gocart_emissions"
+    ;;
+  "WCOSS2")
+    AERO_INPUTS_DIR="/lfs/h2/emc/global/noscrub/emc.global/data/gocart_emissions"
+    ;;
   *)
     echo "FATAL ERROR: Machine $machine unsupported for aerosols"
     exit 2

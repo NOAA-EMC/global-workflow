@@ -63,8 +63,6 @@
 #   copy_back - switch to copy updated files back to archive directory and
 #                to tcvitals directory
 #                (Default: YES)
-#   jlogfile  - path to job log file (skipped over by this script if not
-#                 passed in)
 #   SENDCOM     switch  copy output files to $COMSP
 #                (Default: YES)
 #   files_override - switch to override default "files" setting for given run
@@ -78,7 +76,7 @@ HOMENHCp1=${HOMENHCp1:-/gpfs/?p1/nhc/save/guidance/storm-data/ncep}
 HOMENHC=${HOMENHC:-/gpfs/dell2/nhc/save/guidance/storm-data/ncep}
 TANK_TROPCY=${TANK_TROPCY:-${DCOMROOT}/us007003}
 
-FIXSYND=${FIXSYND:-$HOMEgfs/fix/fix_am}
+FIXSYND=${FIXSYND:-$HOMEgfs/fix/am}
 USHSYND=${USHSYND:-$HOMEgfs/ush}
 EXECSYND=${EXECSYND:-$HOMEgfs/exec}
 PARMSYND=${PARMSYND:-$HOMEgfs/parm/relo}
@@ -95,7 +93,7 @@ set +x
 echo
 echo $msg
 echo
-${TRACE_ON:-set -x}
+set_trace
 echo $msg >> $pgmout
 
 if [ "$#" -ne '1' ]; then
@@ -105,14 +103,14 @@ positional parameter 1"
    echo
    echo $msg
    echo
-   ${TRACE_ON:-set -x}
+   set_trace
    echo $msg >> $pgmout
    msg="**NO TROPICAL CYCLONE tcvitals processed --> non-fatal"
    set +x
    echo
    echo $msg
    echo
-   ${TRACE_ON:-set -x}
+   set_trace
    echo $msg >> $pgmout
 
 # Copy null files into "${COMSP}syndata.tcvitals.$tmmark" and
@@ -137,7 +135,7 @@ set +x
 echo
 echo "Run date is $CDATE10"
 echo
-${TRACE_ON:-set -x}
+set_trace
 
 year=$(echo $CDATE10 | cut -c1-4)
 
@@ -159,7 +157,7 @@ if [ $dateck_size -lt 10 ]; then
    echo 1900010100 > dateck
    set +x
    echo -e "\n${msg}\n"
-   ${TRACE_ON:-set -x}
+   set_trace
    echo $msg >> $pgmout
 fi
 
@@ -188,7 +186,7 @@ if [ -n "$files_override" ]; then  # for testing, typically want FILES=F
   fi 
   set +x
   echo -e "\n${msg}\n"
-  ${TRACE_ON:-set -x}
+  set_trace
   echo $msg >> $pgmout
 fi
 
@@ -250,7 +248,7 @@ cp $slmask slmask.126
  
 #  Execute program syndat_qctropcy
 
-pgm=$(basename $EXECSYND/syndat_qctropcy)
+pgm=$(basename $EXECSYND/syndat_qctropcy.x)
 export pgm
 if [ -s prep_step ]; then
    set +u
@@ -264,7 +262,7 @@ fi
 echo "$CDATE10"      > cdate10.dat
 export FORT11=slmask.126
 export FORT12=cdate10.dat
-$EXECSYND/syndat_qctropcy >> $pgmout 2> errfile
+${EXECSYND}/${pgm} >> $pgmout 2> errfile
 errqct=$?
 ###cat errfile
 cat errfile >> $pgmout
@@ -273,21 +271,21 @@ set +x
 echo
 echo "The foreground exit status for SYNDAT_QCTROPCY is " $errqct
 echo
-${TRACE_ON:-set -x}
+set_trace
 if [ "$errqct" -gt '0' ];then
    msg="**NON-FATAL ERROR PROGRAM  SYNDAT_QCTROPCY  RETURN CODE $errqct"
    set +x
    echo
    echo $msg
    echo
-   ${TRACE_ON:-set -x}
+   set_trace
    echo $msg >> $pgmout
    msg="**NO TROPICAL CYCLONE tcvitals processed --> non-fatal"
    set +x
    echo
    echo $msg
    echo
-   ${TRACE_ON:-set -x}
+   set_trace
    echo $msg >> $pgmout
 
 # In the event of a ERROR in PROGRAM SYNDAT_QCTROPCY, copy null files into
@@ -311,7 +309,7 @@ echo "----------------------------------------------------------"
 echo "**********  COMPLETED PROGRAM syndat_qctropcy   **********"
 echo "----------------------------------------------------------"
 echo
-${TRACE_ON:-set -x}
+set_trace
 
 if [ "$copy_back" = 'YES' ]; then
    cat lthistry>>$ARCHSYND/syndat_lthistry.$year
@@ -356,7 +354,7 @@ $HOMENHC/tcvitals successfully updated by syndat_qctropcy"
       echo
       echo $msg
       echo
-      ${TRACE_ON:-set -x}
+      set_trace
       echo $msg >> $pgmout
    fi
 
@@ -368,7 +366,7 @@ not changed by syndat_qctropcy"
    echo
    echo $msg
    echo
-   ${TRACE_ON:-set -x}
+   set_trace
    echo $msg >> $pgmout
 
 fi
@@ -386,6 +384,6 @@ then
 fi
     
 #  Write JTWC/FNOC Tcvitals to /com path since not saved anywhere else
-[ $SENDCOM = YES ]  &&  cp fnoc ${COMSP}jtwc-fnoc.tcvitals.$tmmark
+[ $SENDCOM = YES ]  &&  cp fnoc "${COMSP}jtwc-fnoc.tcvitals.${tmmark}"
 
 exit

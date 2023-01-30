@@ -13,6 +13,8 @@ load(pathJoin("nco", os.getenv("nco_ver")))
 load(pathJoin("gempak", os.getenv("gempak_ver")))
 load(pathJoin("ncl", os.getenv("ncl_ver")))
 
+load(pathJoin("cmake", "cmake_ver"))
+
 load(pathJoin("prod_util", os.getenv("prod_util_ver")))
 load(pathJoin("grib_util", os.getenv("grib_util_ver")))
 
@@ -31,6 +33,9 @@ load(pathJoin("wgrib2", os.getenv("wgrib2_ver")))
 load(pathJoin("cdo", os.getenv("cdo_ver")))
 
 load(pathJoin("R", os.getenv("R_ver")))
+
+prepend_path("MODULEPATH", pathJoin("/scratch1/NCEPDEV/global/glopara/git/prepobs/v1.0.1/modulefiles"))
+load(pathJoin("prepobs", "1.0.1"))
 
 -- Temporary until official hpc-stack is updated
 prepend_path("MODULEPATH", "/scratch2/NCEPDEV/ensemble/save/Walter.Kolczynski/hpc-stack/modulefiles/stack")

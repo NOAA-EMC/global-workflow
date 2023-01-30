@@ -42,7 +42,6 @@ export NCP=${NCP:-"/bin/cp"}
 export NMV=${NMV:-"/bin/mv"}
 export NLN=${NLN:-"/bin/ln -sf"}
 export CHGRP_CMD=${CHGRP_CMD:-"chgrp ${group_name:-rstprod}"}
-export NEMSIOGET=${NEMSIOGET:-${NWPROD}/exec/nemsio_get}
 export NCLEN=${NCLEN:-$HOMEgfs/ush/getncdimlen}
 export CATEXEC=${CATEXEC:-$ncdiag_ROOT/bin/ncdiag_cat_serial.x}
 COMPRESS=${COMPRESS:-gzip}
@@ -62,7 +61,6 @@ SENDDBN=${SENDDBN:-"NO"}
 
 # Analysis files
 export APREFIX=${APREFIX:-""}
-export ASUFFIX=${ASUFFIX:-$SUFFIX}
 RADSTAT=${RADSTAT:-${COMOUT}/${APREFIX}radstat}
 PCPSTAT=${PCPSTAT:-${COMOUT}/${APREFIX}pcpstat}
 CNVSTAT=${CNVSTAT:-${COMOUT}/${APREFIX}cnvstat}
