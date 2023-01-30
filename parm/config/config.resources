@@ -287,7 +287,7 @@ elif [[ "${step}" = "ocnanalrun" ]]; then
     export wtime_ocnanalrun="00:30:00"
     export npe_ocnanalrun=${npes}
     export nth_ocnanalrun=1
-    export native_ocnanalrun="--exclusive"
+    export is_exclusive=True
     npe_node_ocnanalrun=$(echo "${npe_node_max} / ${nth_ocnanalrun}" | bc)
     export npe_node_ocnanalrun
 
