@@ -266,7 +266,7 @@ elif [[ "${step}" = "ocnanalbmat" ]]; then
     export wtime_ocnanalbmat="00:30:00"
     export npe_ocnanalbmat=${npes}
     export nth_ocnanalbmat=1
-    export native_ocnanalbmat="--exclusive"
+    export is_exclusive=True
     npe_node_ocnanalbmat=$(echo "${npe_node_max} / ${nth_ocnanalbmat}" | bc)
     export npe_node_ocnanalbmat
 
