@@ -28,17 +28,15 @@ export OPREFIX="${CDUMP}.t${cyc}z."
 export GPREFIX="${GDUMP}.t${gcyc}z."
 export APREFIX="${CDUMP}.t${cyc}z."
 
-
-if [ ${RUN_ENVIR} = "nco" -o ${ROTDIR_DUMP:-NO} = "YES" ]; then
-    export COMIN=${COMIN:-${ROTDIR}/${RUN}.${PDY}/${cyc}/atmos}
-    export COMOUT=${COMOUT:-${ROTDIR}/${RUN}.${PDY}/${cyc}/atmos}
-    export COMIN_OBS=${COMIN_OBS:-$(compath.py ${envir}/obsproc/${obsproc_ver})/${RUN}.${PDY}/${cyc}/atmos}
-    export COMIN_GES_OBS=${COMIN_GES_OBS:-$(compath.py ${envir}/obsproc/${obsproc_ver})/${GDUMP}.${gPDY}/${gcyc}/atmos}
+export COMIN=${COMIN:-${ROTDIR}/${RUN}.${PDY}/${cyc}/atmos}
+export COMOUT=${COMOUT:-${ROTDIR}/${RUN}.${PDY}/${cyc}/atmos}
+export COMIN_OBS=${COMIN_OBS:-$(compath.py ${envir}/obsproc/${obsproc_ver})/${RUN}.${PDY}/${cyc}/atmos}
+if [ ${RUN_ENVIR} = "nco" ]; then
+  export COMIN_GES_OBS=${COMIN_GES_OBS:-$(compath.py ${envir}/obsproc/${obsproc_ver})/${GDUMP}.${gPDY}/${gcyc}/atmos}
 else
-    export COMOUT="${ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos"
-    export COMIN_OBS="${DMPDIR}/${CDUMP}.${PDY}/${cyc}/atmos"
-    export COMIN_GES_OBS="${DMPDIR}/${GDUMP}.${gPDY}/${gcyc}/atmos"
+  export COMIN_GES_OBS="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/obs"
 fi
+
 mkdir -m 775 -p ${COMOUT}
 # COMIN_GES and COMIN_GES_ENS are used in script
 export COMIN_GES="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/atmos"
@@ -69,26 +67,19 @@ fi
 
 # Link observational data
 export PREPQC="${COMIN_OBS}/${OPREFIX}prepbufr"
-if [ ! -f ${PREPQC} ]; then
+if [[ ! -f ${PREPQC} ]]; then
     echo "WARNING: Global PREPBUFR FILE ${PREPQC} MISSING"
 fi
 export TCVITL="${COMOUT}/${OPREFIX}syndata.tcvitals.tm00"
 if [[ ${DONST} = "YES" ]]; then
    if [[ ${MAKE_NSSTBUFR} == "YES" ]]; then
-      export NSSTBF="${COMOUT}/${OPREFIX}nsstbufr"
-   else
       export NSSTBF="${COMIN_OBS}/${OPREFIX}nsstbufr"
    fi
 fi
-
-if [[ ${MAKE_ACFTBUFR} == "YES" ]]; then
-   export PREPQCPF="${COMOUT}/${OPREFIX}prepbufr.acft_profiles"
-else
-   export PREPQCPF="${COMIN_OBS}/${OPREFIX}prepbufr.acft_profiles"
-fi
+export PREPQCPF="${COMIN_OBS}/${OPREFIX}prepbufr.acft_profiles"
 
 # Copy fix file for obsproc  # TODO: Why is this necessary?
-if [ ${RUN} = "gfs" ]; then
+if [[ ${RUN} = "gfs" ]]; then
     mkdir -p ${ROTDIR}/fix
     cp ${FIXgsi}/prepobs_errtable.global ${ROTDIR}/fix/
 fi
@@ -119,7 +110,7 @@ fi
 ##############################################
 # Final processing
 ##############################################
-if [ -e "${pgmout}" ] ; then
+if [[ -e "${pgmout}" ]] ; then
   cat ${pgmout}
 fi
 

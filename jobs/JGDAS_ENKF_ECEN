@@ -25,7 +25,7 @@ export CASE=${CASE_ENKF}
 
 
 EUPD_CYC=$(echo ${EUPD_CYC:-"gdas"} | tr a-z A-Z)
-if [ ${EUPD_CYC} = "GFS" ]; then
+if [[ ${EUPD_CYC} = "GFS" ]]; then
     CDUMP_ENKF="gfs"
 else
     CDUMP_ENKF=${CDUMP}
@@ -40,8 +40,8 @@ if [ ${RUN_ENVIR} = "nco" -o ${ROTDIR_DUMP:-NO} = "YES" ]; then
     export COMIN_OBS=${COMIN_OBS:-$(compath.py ${envir}/obsproc/${obsproc_ver})/${RUN}.${PDY}/${cyc}/atmos}
     export COMIN_GES_OBS=${COMIN_GES_OBS:-$(compath.py ${envir}/obsproc/${obsproc_ver})/${GDUMP}.${gPDY}/${gcyc}/atmos}
 else
-    export COMIN_OBS="${DMPDIR}/${CDUMP}.${PDY}/${cyc}/atmos"
-    export COMIN_GES_OBS="${DMPDIR}/${GDUMP}.${gPDY}/${gcyc}/atmos"
+    export COMIN_OBS="${COMIN_OBS:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/obs}"
+    export COMIN_GES_OBS="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/obs"
 fi
 
 # COMIN, COMIN_ENS and COMIN_GES_ENS are used in script
@@ -66,7 +66,7 @@ status=$?
 ##############################################
 # Final processing
 ##############################################
-if [ -e "${pgmout}" ] ; then
+if [[ -e "${pgmout}" ]] ; then
   cat ${pgmout}
 fi
 
