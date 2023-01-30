@@ -2,22 +2,15 @@
 export STRICT="NO"
 source "${HOMEgfs}/ush/preamble.sh"
 WIPE_DATA="NO"
-DATA="${DATAROOT}/${RUN}ocnanal_${cyc}"
+export DATA="${DATAROOT}/${RUN}ocnanal_${cyc}"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "ocnanalrun" -c "base ocnanal ocnanalrun"
 
-
-##############################################
-# Set variables used in the script
-##############################################
-
-export CDUMP=${CDUMP:-${RUN:-"gfs"}}
-export COMPONENT="ocean"
 
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
 
-export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENT}}
+export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/ocean}
 
 ###############################################################
 # Run relevant script

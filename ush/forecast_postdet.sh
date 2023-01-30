@@ -11,11 +11,6 @@
 ## for execution.
 #####
 
-FV3_GEFS_postdet(){
-  echo SUB ${FUNCNAME[0]}: Linking input data for FV3 $RUN
-  # soft link commands insert here
-}
-
 DATM_postdet(){
   ######################################################################
   # Link DATM  inputs (ie forcing files)                           #
@@ -134,7 +129,7 @@ EOF
     #.............................
 
   else ## cold start
-    for file in $(ls $memdir/INPUT/*.nc); do
+    for file in $(ls ${memdir}/INPUT/*.nc); do
       file2=$(echo $(basename $file))
       fsuf=$(echo $file2 | cut -c1-3)
       if [ $fsuf = "gfs" -o $fsuf = "sfc" ]; then
@@ -307,9 +302,9 @@ EOF
   # inline post fix files
   if [ $WRITE_DOPOST = ".true." ]; then
     $NLN $PARM_POST/post_tag_gfs${LEVS}             $DATA/itag
-    $NLN $PARM_POST/postxconfig-NT-GFS-TWO.txt      $DATA/postxconfig-NT.txt
-    $NLN $PARM_POST/postxconfig-NT-GFS-F00-TWO.txt  $DATA/postxconfig-NT_FH00.txt
-    $NLN $PARM_POST/params_grib2_tbl_new            $DATA/params_grib2_tbl_new
+    $NLN ${FLTFILEGFS:-$PARM_POST/postxconfig-NT-GFS-TWO.txt}           $DATA/postxconfig-NT.txt
+    $NLN ${FLTFILEGFSF00:-$PARM_POST/postxconfig-NT-GFS-F00-TWO.txt}    $DATA/postxconfig-NT_FH00.txt
+    $NLN ${POSTGRB2TBL:-$PARM_POST/params_grib2_tbl_new}                $DATA/params_grib2_tbl_new
   fi
 
   #------------------------------------------------------------------
@@ -502,19 +497,18 @@ EOF
   LONB_STP=${LONB_STP:-$LONB_CASE}
   LATB_STP=${LATB_STP:-$LATB_CASE}
   cd $DATA
-  affix="nc"
   if [ $QUILTING = ".true." -a $OUTPUT_GRID = "gaussian_grid" ]; then
     fhr=$FHMIN
     for fhr in $OUTPUT_FH; do
       FH3=$(printf %03i $fhr)
       FH2=$(printf %02i $fhr)
-      atmi=atmf${FH3}.$affix
-      sfci=sfcf${FH3}.$affix
+      atmi=atmf${FH3}.nc
+      sfci=sfcf${FH3}.nc
       logi=logf${FH3}
       pgbi=GFSPRS.GrbF${FH2}
       flxi=GFSFLX.GrbF${FH2}
-      atmo=$memdir/${CDUMP}.t${cyc}z.atmf${FH3}.$affix
-      sfco=$memdir/${CDUMP}.t${cyc}z.sfcf${FH3}.$affix
+      atmo=$memdir/${CDUMP}.t${cyc}z.atmf${FH3}.nc
+      sfco=$memdir/${CDUMP}.t${cyc}z.sfcf${FH3}.nc
       logo=$memdir/${CDUMP}.t${cyc}z.logf${FH3}.txt
       pgbo=$memdir/${CDUMP}.t${cyc}z.master.grb2f${FH3}
       flxo=$memdir/${CDUMP}.t${cyc}z.sfluxgrbf${FH3}.grib2
@@ -594,12 +588,13 @@ data_out_GFS() {
         done
       fi
     elif [ $CDUMP = "gfs" ]; then
-      $NCP $DATA/input.nml $ROTDIR/${CDUMP}.${PDY}/${cyc}/atmos/
+      $NCP $DATA/input.nml ${ROTDIR}/${RUN}.${PDY}/${cyc}/atmos/
     fi
   fi
 
   echo "SUB ${FUNCNAME[0]}: Output data for FV3 copied"
 }
+
 
 WW3_postdet() {
   echo "SUB ${FUNCNAME[0]}: Linking input data for WW3"

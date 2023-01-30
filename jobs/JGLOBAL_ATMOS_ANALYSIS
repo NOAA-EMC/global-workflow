@@ -27,8 +27,6 @@ GDUMP=${GDUMP:-"gdas"}
 export OPREFIX="${CDUMP}.t${cyc}z."
 export GPREFIX="${GDUMP}.t${gcyc}z."
 export APREFIX="${CDUMP}.t${cyc}z."
-export GSUFFIX=${GSUFFIX:-${SUFFIX}}
-export ASUFFIX=${ASUFFIX:-${SUFFIX}}
 
 export COMIN=${COMIN:-${ROTDIR}/${RUN}.${PDY}/${cyc}/atmos}
 export COMOUT=${COMOUT:-${ROTDIR}/${RUN}.${PDY}/${cyc}/atmos}
@@ -45,8 +43,8 @@ export COMIN_GES="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/atmos"
 export COMIN_GES_ENS="${ROTDIR}/enkfgdas.${gPDY}/${gcyc}"
 
 
-export ATMGES="${COMIN_GES}/${GPREFIX}atmf006${GSUFFIX}"
-if [[ ! -f ${ATMGES} ]]; then
+export ATMGES="${COMIN_GES}/${GPREFIX}atmf006.nc"
+if [ ! -f ${ATMGES} ]; then
     echo "FATAL ERROR: FILE MISSING: ATMGES = ${ATMGES}"
     exit 1
 fi
@@ -58,9 +56,9 @@ status=$?
 [[ ${status} -ne 0 ]] && exit ${status}
 
 
-if [[ ${DOHYBVAR} = "YES" ]]; then
-    export ATMGES_ENSMEAN="${COMIN_GES_ENS}/${GPREFIX}atmf006.ensmean${GSUFFIX}"
-    if [[ ! -f ${ATMGES_ENSMEAN} ]]; then
+if [ ${DOHYBVAR} = "YES" ]; then
+    export ATMGES_ENSMEAN="${COMIN_GES_ENS}/${GPREFIX}atmf006.ensmean.nc"
+    if [ ! -f ${ATMGES_ENSMEAN} ]; then
         echo "FATAL ERROR: FILE MISSING: ATMGES_ENSMEAN = ${ATMGES_ENSMEAN}"
         exit 2
     fi

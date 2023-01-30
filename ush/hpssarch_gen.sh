@@ -9,14 +9,11 @@ source "${HOMEgfs}/ush/preamble.sh"
 type=${1:-gfs}                ##gfs, gdas, enkfgdas or enkfggfs
 
 CDATE=${CDATE:-2018010100}
-PDY=$(echo ${CDATE} | cut -c 1-8)
-cyc=$(echo ${CDATE} | cut -c 9-10)
-OUTPUT_FILE=${OUTPUT_FILE:-"netcdf"}
+PDY=$(echo $CDATE | cut -c 1-8)
+cyc=$(echo $CDATE | cut -c 9-10)
 ARCH_GAUSSIAN=${ARCH_GAUSSIAN:-"YES"}
 ARCH_GAUSSIAN_FHMAX=${ARCH_GAUSSIAN_FHMAX:-36}
 ARCH_GAUSSIAN_FHINC=${ARCH_GAUSSIAN_FHINC:-6}
-SUFFIX=${SUFFIX:-".nc"}
-format="netcdf"
 
 # Set whether to archive downstream products
 DO_DOWN=${DO_DOWN:-"NO"}
@@ -42,15 +39,15 @@ if [[ ${type} = "gfs" ]]; then
 
   if [[ ${ARCH_GAUSSIAN} = "YES" ]]; then
     rm -f gfs_pgrb2b.txt
-    rm -f gfs_${format}b.txt
+    rm -f gfs_netcdfb.txt
     rm -f gfs_flux.txt
     touch gfs_pgrb2b.txt
-    touch gfs_${format}b.txt
+    touch gfs_netcdfb.txt
     touch gfs_flux.txt
 
-    if [[ ${MODE} = "cycled" ]]; then
-      rm -f gfs_${format}a.txt
-      touch gfs_${format}a.txt
+    if [ $MODE = "cycled" ]; then
+      rm -f gfs_netcdfa.txt
+      touch gfs_netcdfa.txt
     fi
   fi
 
@@ -71,19 +68,19 @@ if [[ ${type} = "gfs" ]]; then
     echo  "${dirname}${head}pgrb2b.1p00.anl                  " >>gfs_pgrb2b.txt
     echo  "${dirname}${head}pgrb2b.1p00.anl.idx              " >>gfs_pgrb2b.txt
 
-    if [[ ${MODE} = "cycled" ]]; then
-      echo  "${dirname}${head}atmanl${SUFFIX}            " >>gfs_${format}a.txt
-      echo  "${dirname}${head}sfcanl${SUFFIX}            " >>gfs_${format}a.txt
-      echo  "${dirname}${head}atmi*.nc                   " >>gfs_${format}a.txt
-      echo  "${dirname}${head}dtfanl.nc                  " >>gfs_${format}a.txt
-      echo  "${dirname}${head}loginc.txt                 " >>gfs_${format}a.txt
+    if [ $MODE = "cycled" ]; then
+      echo  "${dirname}${head}atmanl.nc            " >>gfs_netcdfa.txt
+      echo  "${dirname}${head}sfcanl.nc            " >>gfs_netcdfa.txt
+      echo  "${dirname}${head}atmi*.nc                   " >>gfs_netcdfa.txt
+      echo  "${dirname}${head}dtfanl.nc                  " >>gfs_netcdfa.txt
+      echo  "${dirname}${head}loginc.txt                 " >>gfs_netcdfa.txt
     fi
 
     fh=0
-    while [[ ${fh} -le ${ARCH_GAUSSIAN_FHMAX} ]]; do
-      fhr=$(printf %03i ${fh})
-      echo  "${dirname}${head}atmf${fhr}${SUFFIX}        " >>gfs_${format}b.txt
-      echo  "${dirname}${head}sfcf${fhr}${SUFFIX}        " >>gfs_${format}b.txt
+    while [ $fh -le $ARCH_GAUSSIAN_FHMAX ]; do
+      fhr=$(printf %03i $fh)
+      echo  "${dirname}${head}atmf${fhr}.nc        " >>gfs_netcdfb.txt
+      echo  "${dirname}${head}sfcf${fhr}.nc        " >>gfs_netcdfb.txt
       fh=$((fh+ARCH_GAUSSIAN_FHINC))
     done
   fi
@@ -303,16 +300,16 @@ if [[ ${type} = "gdas" ]]; then
   echo  "${dirname}${head}pgrb2.0p25.anl.idx         " >>gdas.txt
   echo  "${dirname}${head}pgrb2.1p00.anl             " >>gdas.txt
   echo  "${dirname}${head}pgrb2.1p00.anl.idx         " >>gdas.txt
-  echo  "${dirname}${head}atmanl${SUFFIX}            " >>gdas.txt
-  echo  "${dirname}${head}sfcanl${SUFFIX}            " >>gdas.txt
-  if [[ -s ${ROTDIR}/${dirpath}${head}atmanl.ensres${SUFFIX} ]]; then
-     echo  "${dirname}${head}atmanl.ensres${SUFFIX}  " >>gdas.txt
+  echo  "${dirname}${head}atmanl.nc            " >>gdas.txt
+  echo  "${dirname}${head}sfcanl.nc            " >>gdas.txt
+  if [ -s $ROTDIR/${dirpath}${head}atmanl.ensres.nc ]; then
+     echo  "${dirname}${head}atmanl.ensres.nc  " >>gdas.txt
   fi
-  if [[ -s ${ROTDIR}/${dirpath}${head}atma003.ensres${SUFFIX} ]]; then
-     echo  "${dirname}${head}atma003.ensres${SUFFIX}  " >>gdas.txt
+  if [ -s $ROTDIR/${dirpath}${head}atma003.ensres.nc ]; then
+     echo  "${dirname}${head}atma003.ensres.nc  " >>gdas.txt
   fi
-  if [[ -s ${ROTDIR}/${dirpath}${head}atma009.ensres${SUFFIX} ]]; then
-     echo  "${dirname}${head}atma009.ensres${SUFFIX}  " >>gdas.txt
+  if [ -s $ROTDIR/${dirpath}${head}atma009.ensres.nc ]; then
+     echo  "${dirname}${head}atma009.ensres.nc  " >>gdas.txt
   fi
   if [[ -s ${ROTDIR}/${dirpath}${head}cnvstat ]]; then
      echo  "${dirname}${head}cnvstat                 " >>gdas.txt
@@ -340,8 +337,8 @@ if [[ ${type} = "gdas" ]]; then
     echo  "${dirname}${head}pgrb2.1p00.f${fhr}         " >>gdas.txt
     echo  "${dirname}${head}pgrb2.1p00.f${fhr}.idx     " >>gdas.txt
     echo  "${dirname}${head}logf${fhr}.txt             " >>gdas.txt
-    echo  "${dirname}${head}atmf${fhr}${SUFFIX}        " >>gdas.txt
-    echo  "${dirname}${head}sfcf${fhr}${SUFFIX}        " >>gdas.txt
+    echo  "${dirname}${head}atmf${fhr}.nc              " >>gdas.txt
+    echo  "${dirname}${head}sfcf${fhr}.nc              " >>gdas.txt
     fh=$((fh+3))
   done
   flist="001 002 004 005 007 008"
@@ -442,20 +439,20 @@ if [ ${type} = "enkfgdas" -o ${type} = "enkfgfs" ]; then
   if [[ -s ${ROTDIR}/${dirpath}${head}radstat.ensmean ]]; then
        echo  "${dirname}${head}radstat.ensmean       " >>enkf${CDUMP}.txt
   fi
-  for FHR in ${nfhrs}; do  # loop over analysis times in window
-     if [[ ${FHR} -eq 6 ]]; then
-        if [[ -s ${ROTDIR}/${dirpath}${head}atmanl.ensmean${SUFFIX} ]]; then
-            echo  "${dirname}${head}atmanl.ensmean${SUFFIX}      " >>enkf${CDUMP}.txt
+  for FHR in $nfhrs; do  # loop over analysis times in window
+     if [ $FHR -eq 6 ]; then
+        if [ -s $ROTDIR/${dirpath}${head}atmanl.ensmean.nc ]; then
+            echo  "${dirname}${head}atmanl.ensmean.nc      " >>enkf${CDUMP}.txt
 	fi
-        if [[ -s ${ROTDIR}/${dirpath}${head}atminc.ensmean${SUFFIX} ]]; then
-            echo  "${dirname}${head}atminc.ensmean${SUFFIX}      " >>enkf${CDUMP}.txt
+        if [ -s $ROTDIR/${dirpath}${head}atminc.ensmean.nc ]; then
+            echo  "${dirname}${head}atminc.ensmean.nc      " >>enkf${CDUMP}.txt
         fi
      else
-        if [[ -s ${ROTDIR}/${dirpath}${head}atma00${FHR}.ensmean${SUFFIX} ]]; then
-	    echo  "${dirname}${head}atma00${FHR}.ensmean${SUFFIX}      " >>enkf${CDUMP}.txt
+        if [ -s $ROTDIR/${dirpath}${head}atma00${FHR}.ensmean.nc ]; then
+	    echo  "${dirname}${head}atma00${FHR}.ensmean.nc      " >>enkf${CDUMP}.txt
         fi
-        if [[ -s ${ROTDIR}/${dirpath}${head}atmi00${FHR}.ensmean${SUFFIX} ]]; then
-            echo  "${dirname}${head}atmi00${FHR}.ensmean${SUFFIX}      " >>enkf${CDUMP}.txt
+        if [ -s $ROTDIR/${dirpath}${head}atmi00${FHR}.ensmean.nc ]; then
+            echo  "${dirname}${head}atmi00${FHR}.ensmean.nc      " >>enkf${CDUMP}.txt
         fi
      fi 
   done # loop over FHR
@@ -474,14 +471,12 @@ if [ ${type} = "enkfgdas" -o ${type} = "enkfgfs" ]; then
 
 # Ensemble spread file only available with netcdf output
   fh=3
-  while [[ ${fh} -le 9 ]]; do
-      fhr=$(printf %03i ${fh})
-      echo  "${dirname}${head}atmf${fhr}.ensmean${SUFFIX}       " >>enkf${CDUMP}.txt
-      echo  "${dirname}${head}sfcf${fhr}.ensmean${SUFFIX}       " >>enkf${CDUMP}.txt
-      if [[ ${OUTPUT_FILE} = "netcdf" ]]; then
-          if [[ -s ${ROTDIR}/${dirpath}${head}atmf${fhr}.ensspread${SUFFIX} ]]; then
-	     echo  "${dirname}${head}atmf${fhr}.ensspread${SUFFIX}     " >>enkf${CDUMP}.txt
-          fi
+  while [ $fh -le 9 ]; do
+      fhr=$(printf %03i $fh)
+      echo  "${dirname}${head}atmf${fhr}.ensmean.nc       " >>enkf${CDUMP}.txt
+      echo  "${dirname}${head}sfcf${fhr}.ensmean.nc       " >>enkf${CDUMP}.txt
+      if [ -s $ROTDIR/${dirpath}${head}atmf${fhr}.ensspread.nc ]; then
+          echo  "${dirname}${head}atmf${fhr}.ensspread.nc     " >>enkf${CDUMP}.txt
       fi
       fh=$((fh+3))
   done
@@ -507,37 +502,37 @@ if [ ${type} = "enkfgdas" -o ${type} = "enkfgfs" ]; then
     head="${CDUMP}.t${cyc}z."
 
     #---
-    for FHR in ${nfhrs}; do  # loop over analysis times in window
-      if [[ ${FHR} -eq 6 ]]; then
-         if [[ ${n} -le ${NTARS2} ]]; then
-            if [[ -s ${ROTDIR}/${dirpath}${head}atmanl${SUFFIX} ]] ; then
-                echo "${dirname}${head}atmanl${SUFFIX}      " >>enkf${CDUMP}_grp${n}.txt
+    for FHR in $nfhrs; do  # loop over analysis times in window
+      if [ $FHR -eq 6 ]; then
+         if [ $n -le $NTARS2 ]; then
+            if [ -s $ROTDIR/${dirpath}${head}atmanl.nc ] ; then
+                echo "${dirname}${head}atmanl.nc      " >>enkf${CDUMP}_grp${n}.txt
             fi
-	    if [[ -s ${ROTDIR}/${dirpath}${head}ratminc${SUFFIX} ]] ; then
-		echo "${dirname}${head}ratminc${SUFFIX}      " >>enkf${CDUMP}_grp${n}.txt
+	    if [ -s $ROTDIR/${dirpath}${head}ratminc.nc ] ; then
+		echo "${dirname}${head}ratminc.nc      " >>enkf${CDUMP}_grp${n}.txt
 	    fi
          fi
-         if [[ -s ${ROTDIR}/${dirpath}${head}ratminc${SUFFIX} ]] ; then
-             echo "${dirname}${head}ratminc${SUFFIX}      " >>enkf${CDUMP}_restarta_grp${n}.txt
+         if [ -s $ROTDIR/${dirpath}${head}ratminc.nc ] ; then
+             echo "${dirname}${head}ratminc.nc      " >>enkf${CDUMP}_restarta_grp${n}.txt
          fi
 
       else
-         if [[ ${n} -le ${NTARS2} ]]; then
-             if [[ -s ${ROTDIR}/${dirpath}${head}atma00${FHR}${SUFFIX} ]] ; then
-                 echo "${dirname}${head}atma00${FHR}${SUFFIX}      " >>enkf${CDUMP}_grp${n}.txt
+         if [ $n -le $NTARS2 ]; then
+             if [ -s $ROTDIR/${dirpath}${head}atma00${FHR}.nc ] ; then
+                 echo "${dirname}${head}atma00${FHR}.nc      " >>enkf${CDUMP}_grp${n}.txt
              fi
-             if [[ -s ${ROTDIR}/${dirpath}${head}ratmi00${FHR}${SUFFIX} ]] ; then
-                 echo "${dirname}${head}ratmi00${FHR}${SUFFIX}      " >>enkf${CDUMP}_grp${n}.txt
+             if [ -s $ROTDIR/${dirpath}${head}ratmi00${FHR}.nc ] ; then
+                 echo "${dirname}${head}ratmi00${FHR}.nc      " >>enkf${CDUMP}_grp${n}.txt
              fi
          fi
-         if [[ -s ${ROTDIR}/${dirpath}${head}ratmi00${FHR}${SUFFIX} ]] ; then
-             echo "${dirname}${head}ratmi00${FHR}${SUFFIX}      " >>enkf${CDUMP}_restarta_grp${n}.txt
+         if [ -s $ROTDIR/${dirpath}${head}ratmi00${FHR}.nc ] ; then
+             echo "${dirname}${head}ratmi00${FHR}.nc      " >>enkf${CDUMP}_restarta_grp${n}.txt
          fi
 
       fi 
-      echo "${dirname}${head}atmf00${FHR}${SUFFIX}       " >>enkf${CDUMP}_grp${n}.txt
-      if [[ ${FHR} -eq 6 ]]; then
-	  echo "${dirname}${head}sfcf00${FHR}${SUFFIX}       " >>enkf${CDUMP}_grp${n}.txt
+      echo "${dirname}${head}atmf00${FHR}.nc       " >>enkf${CDUMP}_grp${n}.txt
+      if [ $FHR -eq 6 ]; then
+	  echo "${dirname}${head}sfcf00${FHR}.nc       " >>enkf${CDUMP}_grp${n}.txt
       fi
     done # loop over FHR
 
