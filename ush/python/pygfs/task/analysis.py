@@ -1,11 +1,16 @@
-from pygw.task import Task
-from pygw.attrdict import AttrDict
-from pygw.template import Template, TemplateConstants
+#!/usr/bin/env python3
+
+import os
+from logging import getLogger
+from netCDF4 import Dataset
+from typing import List, Dict, Any
+
 from pygw.yaml_file import YAMLFile
 from pygw.file_utils import FileHandler
-import datetime as dt
-import logging
-import os
+from pygw.logger import logit
+from pygw.task import Task
+
+logger = getLogger(__name__.split('.')[-1])
 
 
 class Analysis(Task):
@@ -16,39 +21,31 @@ class Analysis(Task):
     directly related to peforming an analysis
     """
 
-    def __init__(self, config):
+    def __init__(self, config: Dict[str, Any]) -> None:
         super().__init__(config)
+        self.config.ntiles = 6
 
-    def initialize(self):
+    def initialize(self) -> None:
         super().initialize()
         # all analyses need to stage observations
         obs_dict = self.get_obs_dict()
         FileHandler(obs_dict).sync()
 
-    def configure(self):
-        """Compute additional variables and add them to the root configuration"""
-        super().configure()
-
-    def execute(self):
-        """
-        Note this is generally unused and instead a shell script
-        """
-        super().execute()
-
-    def finalize(self):
-        super().finalize()
-
-    def clean(self):
-        super().clean()
-
-    def get_obs_dict(self):
+    @logit(logger)
+    def get_obs_dict(self: Task) -> Dict[str, Any]:
         """Compile a dictionary of observation files to copy
 
         This method uses the OBS_LIST configuration variable to generate a dictionary
         from a list of YAML files that specify what observation files are to be
         copied to the run directory from the observation input directory
 
-        returns `obs_dict` - a dictionary for FileHandler
+        Parameters
+        ----------
+
+        Returns
+        ----------
+        obs_dict: Dict
+            a dictionary containing the list of observation files to copy for FileHandler
         """
         obs_list_config = YAMLFile(path=self.config['OBS_LIST'])
         # get observers from master dictionary
@@ -63,3 +60,31 @@ class Analysis(Task):
             'copy': copylist
         }
         return obs_dict
+
+    @logit(logger)
+    def add_fv3_increments(self, inc_file_tmpl: str, bkg_file_tmpl: str, incvars: List) -> None:
+        """Add cubed-sphere increments to cubed-sphere backgrounds
+
+        Parameters
+        ----------
+        inc_file_tmpl : str
+           template of the FV3 increment file of the form: 'filetype.{tileX}.nc'
+        bkg_file_tmpl : str
+           template of the FV3 background file of the form: 'filetype.{tileX}.nc'
+        incvars : List
+           List of increment variables to add to the background
+        """
+
+        for tt in range(1, self.config.ntiles + 1):
+            inc_path = inc_file_tmpl.replace('tileX', f'tile{tt}')
+            bkg_path = bkg_file_tmpl.replace('tileX', f'tile{tt}')
+            with Dataset(inc_path, mode='r') as incfile, Dataset(bkg_path, mode='a') as rstfile:
+                for vname in incvars:
+                    increment = incfile.variables[vname][:]
+                    bkg = rstfile.variables[vname][:]
+                    anl = bkg + increment
+                    rstfile.variables[vname][:] = anl[:]
+                    try:
+                        rstfile.variables[vname].delncattr('checksum')  # remove the checksum so fv3 does not complain
+                    except AttributeError:
+                        pass  # checksum is missing, move on

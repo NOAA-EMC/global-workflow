@@ -5,16 +5,21 @@
 # which create and stage the runtime directory
 # and create the YAML configuration
 # for a global aerosol variational analysis
-import pygfs.task.aero_analysis
-import logging
 import os
 
-# set up logger
-logging.basicConfig(format='%(asctime)s:%(levelname)s:%(message)s', level=logging.INFO, datefmt='%Y-%m-%d %H:%M:%S')
+from pygw.logger import Logger
+from pygw.configuration import cast_strdict_as_dtypedict
+from pygfs.task.aero_analysis import AerosolAnalysis
+
+# Initialize root logger
+logger = Logger(level='DEBUG', colored_log=True)
 
 
 if __name__ == '__main__':
 
-    AeroAnl = pygfs.task.aero_analysis.AerosolAnalysis(dict(os.environ))
-    AeroAnl.configure()
+    # Take configuration from environment and cast it as python dictionary
+    config = cast_strdict_as_dtypedict(os.environ)
+
+    # Instantiate the aerosol analysis task
+    AeroAnl = AerosolAnalysis(config)
     AeroAnl.initialize()
