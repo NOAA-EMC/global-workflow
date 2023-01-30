@@ -346,9 +346,6 @@ class AppConfig:
 
         gdas_gfs_common_tasks_before_fcst = ['prep']
         gdas_gfs_common_tasks_after_fcst = ['post', 'vrfy']
-        if self.do_ocean:
-            gdas_gfs_common_tasks_after_fcst += ['ocnpost']
-        gdas_gfs_common_tasks_after_fcst += ['vrfy']
 
         gdas_gfs_common_cleanup_tasks = ['arch']
 
