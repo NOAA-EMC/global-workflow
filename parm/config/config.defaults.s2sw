@@ -16,17 +16,23 @@ min_seaice="1.0e-6"
 use_cice_alb=".true."
 
 # config.fv3
-DELTIM=300
-layout_x_gfs=8
-layout_y_gfs=8
-WRITE_GROUP_GFS=1
-WRTTASK_PER_GROUP_GFS=24
-#The settings below will result in S2SWA running 35 days under 8 hours wallclock on hera
-#layout_x_gfs=24
-#layout_y_gfs=16
-#WRTTASK_PER_GROUP_GFS=86
-WRTIOBUF="32M"
-MEDPETS=300
+case "${CASE}" in
+  "C384")
+    DELTIM=300
+    layout_x_gfs=8
+    layout_y_gfs=8
+    WRITE_GROUP_GFS=1
+    WRTTASK_PER_GROUP_GFS=24
+    #The settings below will result in S2SWA running 35 days under 8 hours wallclock on hera
+    #layout_x_gfs=24
+    #layout_y_gfs=61
+    #WRTTASK_PER_GROUP_GFS=86
+    MEDPETS=300  
+    ;;
+  "C768")
+    MEDPETS=300  
+    ;;
+esac
 
 # config.wave
 
