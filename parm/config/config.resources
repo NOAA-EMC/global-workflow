@@ -249,6 +249,27 @@ elif [[ "${step}" = "ocnanalprep" ]]; then
     export npe_node_ocnanalprep
     export memory_ocnanalprep="3072M"
 
+elif [[ "${step}" = "ocnanalbmat" ]]; then
+   npes=16
+   case ${CASE} in
+      C384)
+        npes=480
+        ;;
+      C48)
+        npes=16
+        ;;
+      *)
+          echo "FATAL: Resolution not supported'"
+          exit 1
+    esac
+
+    export wtime_ocnanalbmat="00:30:00"
+    export npe_ocnanalbmat=${npes}
+    export nth_ocnanalbmat=1
+    export is_exclusive=True
+    npe_node_ocnanalbmat=$(echo "${npe_node_max} / ${nth_ocnanalbmat}" | bc)
+    export npe_node_ocnanalbmat
+
 elif [[ "${step}" = "ocnanalrun" ]]; then
    npes=16
    case ${CASE} in
@@ -266,7 +287,7 @@ elif [[ "${step}" = "ocnanalrun" ]]; then
     export wtime_ocnanalrun="00:30:00"
     export npe_ocnanalrun=${npes}
     export nth_ocnanalrun=1
-    export native_ocnanalrun="--exclusive"
+    export is_exclusive=True
     npe_node_ocnanalrun=$(echo "${npe_node_max} / ${nth_ocnanalrun}" | bc)
     export npe_node_ocnanalrun
 
