@@ -165,6 +165,23 @@ export DOBNDPNT_WAVE="NO"
 export cplwav2atm=".false."
 export FRAC_GRID=".true."
 
+# Set operational resolution
+export OPS_RES="C768" # Do not change
+
+# Resolution specific parameters
+export LEVS=128
+export CASE="@CASECTL@"
+export CASE_ENKF="@CASEENS@"
+case "${CASE}" in
+    "C48") export OCNRES=500;;
+    "C96") export OCNRES=100;;
+    "C192") export OCNRES=050;;
+    "C384") export OCNRES=025;;
+    "C768") export OCNRES=025;;
+    *) export OCNRES=025;;
+esac
+export ICERES=${OCNRES}
+
 case "${APP}" in
   ATM)
     export confignamevarfornems="atm"
@@ -211,23 +228,6 @@ case "${APP}" in
     exit 1
     ;;
 esac
-
-# Set operational resolution
-export OPS_RES="C768" # Do not change
-
-# Resolution specific parameters
-export LEVS=128
-export CASE="@CASECTL@"
-export CASE_ENKF="@CASEENS@"
-case "${CASE}" in
-    "C48") export OCNRES=500;;
-    "C96") export OCNRES=100;;
-    "C192") export OCNRES=050;;
-    "C384") export OCNRES=025;;
-    "C768") export OCNRES=025;;
-    *) export OCNRES=025;;
-esac
-export ICERES=${OCNRES}
 
 # Surface cycle update frequency
 if [[ "${CDUMP}" == "gdas" ]] ; then
