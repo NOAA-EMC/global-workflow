@@ -33,7 +33,7 @@ NOTE: Only non-restricted data is available on S4.
 
 To request rstprod access, do either a and/or b below:
 
-a) If you need restricted data access on WCOSS, fill out form here:
+a) If you need restricted data access on WCOSS2, read details about restricted data and fill out form here:
 
 https://www.nco.ncep.noaa.gov/sib/restricted_data/restricted_data_sib/
 
@@ -67,7 +67,7 @@ For any merge with multiple commits, a short synopsis of the merge should appear
 Version
 ^^^^^^^
 
-It is advised to use Git v2+ when available. At the time of writing this documentation the swfault Git clients on the different machines were as noted in the table below. It is recommended that you check the default modules before loading recommneded ones:
+It is advised to use Git v2+ when available. At the time of writing this documentation the default Git clients on the different machines were as noted in the table below. It is recommended that you check the default modules before loading recommended ones:
 
 +---------+----------+---------------------------------------+
 | Machine | Default  | Recommended                           |
@@ -85,7 +85,9 @@ It is advised to use Git v2+ when available. At the time of writing this documen
 Output format
 ^^^^^^^^^^^^^
 
-For proper display of Git command output (e.g. git branch and git diff) type the following once on both machines::
+For proper display of Git command output (e.g. git branch and git diff) type the following once per machine:
+
+::
 
    git config --global core.pager 'less -FRX'
 
