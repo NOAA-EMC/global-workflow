@@ -55,13 +55,6 @@ ENKF_SPREAD=${ENKF_SPREAD:-"NO"}
 
 ################################################################################
 #  Preprocessing
-mkdata=NO
-if [ ! -d $DATA ]; then
-   mkdata=YES
-   mkdir -p $DATA
-fi
-cd $DATA || exit 99
-
 ENKF_SUFFIX="s"
 [[ $SMOOTH_ENKF = "NO" ]] && ENKF_SUFFIX=""
 
@@ -75,26 +68,32 @@ export OMP_NUM_THREADS=$NTHREADS_EPOS
 ################################################################################
 # Forecast ensemble member files
 for imem in $(seq 1 $NMEM_ENKF); do
-   memchar="mem"$(printf %03i $imem)
+   MEMDIR="mem"$(printf %03i "${imem}")
+   generate_com -x COM_ATMOS_HISTORY
    for fhr in $(seq $FHMIN $FHOUT $FHMAX); do
       fhrchar=$(printf %03i $fhr)
-      $NLN $COMIN/$memchar/atmos/${PREFIX}sfcf${fhrchar}.nc sfcf${fhrchar}_$memchar
-      $NLN $COMIN/$memchar/atmos/${PREFIX}atmf${fhrchar}.nc atmf${fhrchar}_$memchar
+      ${NLN} "${COM_ATMOS_HISTORY}/${PREFIX}sfcf${fhrchar}.nc" "sfcf${fhrchar}_${MEMDIR}"
+      ${NLN} "${COM_ATMOS_HISTORY}/${PREFIX}atmf${fhrchar}.nc" "atmf${fhrchar}_${MEMDIR}"
    done
 done
 
 # Forecast ensemble mean and smoothed files
+COM_ATMOS_HISTORY_STAT=$({
+   MEMDIR="ensstat"
+   echo "${COM_ATMOS_HISTORY_TMPL}" | envsubst
+})
 for fhr in $(seq $FHMIN $FHOUT $FHMAX); do
    fhrchar=$(printf %03i $fhr)
-   $NLN $COMOUT/${PREFIX}sfcf${fhrchar}.ensmean.nc sfcf${fhrchar}.ensmean
-   $NLN $COMOUT/${PREFIX}atmf${fhrchar}.ensmean.nc atmf${fhrchar}.ensmean
+   ${NLN} "${COM_ATMOS_HISTORY_STAT}/${PREFIX}sfcf${fhrchar}.ensmean.nc" "sfcf${fhrchar}.ensmean"
+   ${NLN} "${COM_ATMOS_HISTORY_STAT}/${PREFIX}atmf${fhrchar}.ensmean.nc" "atmf${fhrchar}.ensmean"
    if [ $SMOOTH_ENKF = "YES" ]; then
       for imem in $(seq 1 $NMEM_ENKF); do
-         memchar="mem"$(printf %03i $imem)
-         $NLN $COMOUT/$memchar/atmos/${PREFIX}atmf${fhrchar}${ENKF_SUFFIX}.nc atmf${fhrchar}${ENKF_SUFFIX}_$memchar
+         MEMDIR="mem"$(printf %03i "${imem}")
+         generate_com -x COM_ATMOS_HISTORY
+         ${NLN} "${COM_ATMOS_HISTORY}/${PREFIX}atmf${fhrchar}${ENKF_SUFFIX}.nc" "atmf${fhrchar}${ENKF_SUFFIX}_${MEMDIR}"
       done
    fi
-   [[ $ENKF_SPREAD = "YES" ]] && $NLN $COMOUT/${PREFIX}atmf${fhrchar}.ensspread.nc atmf${fhrchar}.ensspread
+   [[ $ENKF_SPREAD = "YES" ]] && ${NLN} "${COM_ATMOS_HISTORY_STAT}/${PREFIX}atmf${fhrchar}.ensspread.nc" "atmf${fhrchar}.ensspread"
 done
 
 ################################################################################
@@ -134,8 +133,8 @@ if [ $SMOOTH_ENKF = "YES" ]; then
       if [ ! -s atmf${fhrchar}${ENKF_SUFFIX}_mem001 ]; then
          echo WARNING! no smoothed ensemble member for fhour = $fhrchar >&2
          for imem in $(seq 1 $NMEM_ENKF); do
-            memchar="mem"$(printf %03i $imem)
-            $NCP atmf${fhrchar}_$memchar atmf${fhrchar}${ENKF_SUFFIX}_$memchar
+            MEMDIR="mem"$(printf %03i $imem)
+            ${NCP} "atmf${fhrchar}_${MEMDIR}" "atmf${fhrchar}${ENKF_SUFFIX}_${MEMDIR}"
          done
       fi
    done
@@ -149,7 +148,7 @@ if [ $SENDDBN = "YES" ]; then
       fhrchar=$(printf %03i $fhr)
       if [ $(expr $fhr % 3) -eq 0 ]; then
          if [ -s ./sfcf${fhrchar}.ensmean ]; then
-             $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job $COMOUT/${PREFIX}sfcf${fhrchar}.ensmean.nc
+             ${DBNROOT}/bin/dbn_alert "MODEL" "GFS_ENKF" "${job}" "${COM_ATMOS_HISTORY_STAT}/${PREFIX}sfcf${fhrchar}.ensmean.nc"
          fi
       fi
    done
@@ -159,7 +158,5 @@ fi
 ################################################################################
 #  Postprocessing
 cd $pwd
-[[ $mkdata = "YES" ]] && rm -rf $DATA
-
 
 exit $err

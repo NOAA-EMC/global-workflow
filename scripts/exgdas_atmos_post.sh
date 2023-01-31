@@ -49,8 +49,7 @@ export JO=${LATB:-721}
 # specify default model output format: 3 for sigio and 4
 # for nemsio
 export OUTTYP=${OUTTYP:-4}
-export TCYC=${TCYC:-".t${cyc}z."}
-export PREFIX=${PREFIX:-${RUN}${TCYC}}
+export PREFIX=${PREFIX:-${RUN}.t${cyc}z.}
 export machine=${machine:-WCOSS2}
 
 ###########################
@@ -69,7 +68,7 @@ export IDRT=${IDRT:-0} # IDRT=0 is setting for outputting grib files on lat/lon 
 # Chuang: modify to process analysis when post_times is 00
 stime="$(echo "${post_times}" | cut -c1-3)"
 export stime
-export loganl="${COMIN}/${PREFIX}atmanl.nc"
+export loganl="${COM_ATMOS_ANALYSIS}/${PREFIX}atmanl.nc"
 
 if [[ "${stime}" = "anl" ]]; then
   if [[ -f "${loganl}" ]]; then
@@ -100,9 +99,9 @@ if [[ "${stime}" = "anl" ]]; then
 
     [[ -f flxfile ]] && rm flxfile ; [[ -f nemsfile ]] && rm nemsfile
     
-    ln -fs "${COMIN}/${PREFIX}atmanl.nc" nemsfile
+    ln -fs "${COM_ATMOS_ANALYSIS}/${PREFIX}atmanl.nc" nemsfile
     export NEMSINP=nemsfile
-    ln -fs "${COMIN}/${PREFIX}sfcanl.nc" flxfile
+    ln -fs "${COM_ATMOS_ANALYSIS}/${PREFIX}sfcanl.nc" flxfile
     export FLXINP=flxfile
     export PGBOUT=pgbfile
     export PGIOUT=pgifile
@@ -117,7 +116,6 @@ if [[ "${stime}" = "anl" ]]; then
     ${POSTGPSH}
     export err=$?; err_chk
 
-
     if [[ "${GRIBVERSION}" = 'grib2' ]]; then
       mv "${PGBOUT}" "${PGBOUT2}"
 
@@ -126,28 +124,25 @@ if [[ "${stime}" = "anl" ]]; then
       export downset=${downset:-1}
       ${GFSDOWNSH}
       export err=$?; err_chk
-
-      export fhr3=anl
     fi
 
     if [[ "${SENDCOM}" = 'YES' ]]; then
-      export fhr3=anl
       if [[ "${GRIBVERSION}" = 'grib2' ]]; then
-        MASTERANL=${PREFIX}master.grb2${fhr3}
+        MASTERANL=${PREFIX}master.grb2anl
         ##########XXW Accord to Boi, fortran index should use *if${fhr}, wgrib index use .idx
         #MASTERANLIDX=${RUN}.${cycle}.master.grb2${fhr3}.idx
-        MASTERANLIDX=${PREFIX}master.grb2i${fhr3}
-        cp "${PGBOUT2}" "${COMOUT}/${MASTERANL}"
-        ${GRB2INDEX} "${PGBOUT2}" "${COMOUT}/${MASTERANLIDX}"
+        MASTERANLIDX=${PREFIX}master.grb2ianl
+        cp "${PGBOUT2}" "${COM_ATMOS_MASTER}/${MASTERANL}"
+        ${GRB2INDEX} "${PGBOUT2}" "${COM_ATMOS_MASTER}/${MASTERANLIDX}"
       fi
 
       if [[ "${SENDDBN}" = 'YES' ]]; then
         run="$(echo "${RUN}" | tr '[:lower:]' '[:upper:]')"
         if [[ "${GRIBVERSION}" = 'grib2' ]]; then
-          "${DBNROOT}/bin/dbn_alert" MODEL "${run}_MSC_sfcanl" "${job}" "${COMOUT}/${PREFIX}sfc${fhr3}.nc"
-          "${DBNROOT}/bin/dbn_alert" MODEL "${run}_SA" "${job}" "${COMIN}/${PREFIX}atm${fhr3}.nc"
-          "${DBNROOT}/bin/dbn_alert" MODEL "GDAS_PGA_GB2" "${job}" "${COMOUT}/${PREFIX}pgrb2.1p00.${fhr3}"
-          "${DBNROOT}/bin/dbn_alert" MODEL "GDAS_PGA_GB2_WIDX" "${job}" "${COMOUT}/${PREFIX}pgrb2.1p00.${fhr3}.idx"
+          "${DBNROOT}/bin/dbn_alert" MODEL "${run}_MSC_sfcanl" "${job}" "${COM_ATMOS_ANALYSIS}/${PREFIX}sfcanl.nc"
+          "${DBNROOT}/bin/dbn_alert" MODEL "${run}_SA" "${job}" "${COMIN}/${PREFIX}atmanl.nc"
+          "${DBNROOT}/bin/dbn_alert" MODEL "GDAS_PGA_GB2" "${job}" "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb2.1p00.anl"
+          "${DBNROOT}/bin/dbn_alert" MODEL "GDAS_PGA_GB2_WIDX" "${job}" "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb2.1p00.anl.idx"
         fi
       fi
     fi
@@ -199,9 +194,9 @@ else   ## not_anl if_stimes
     ###############################
     [[ -f flxfile ]] && rm flxfile
     [[ -f nemsfile ]] && rm nemsfile
-    ln -sf "${COMIN}/${PREFIX}atmf${fhr}.nc" nemsfile
+    ln -sf "${COM_ATMOS_HISTORY}/${PREFIX}atmf${fhr}.nc" nemsfile
     export NEMSINP=nemsfile
-    ln -sf "${COMIN}/${PREFIX}sfcf${fhr}.nc" flxfile
+    ln -sf "${COM_ATMOS_HISTORY}/${PREFIX}sfcf${fhr}.nc" flxfile
     export FLXINP=flxfile
 
     if (( d_fhr > 0 )); then
@@ -265,7 +260,7 @@ else   ## not_anl if_stimes
     if [[ "${INLINE_POST}" = ".false." ]]; then
       ${POSTGPSH}
     else
-      cp "${COMOUT}/${MASTERFHR}" "${PGBOUT}"
+      cp "${COM_ATMOS_MASTER}/${MASTERFHR}" "${PGBOUT}"
     fi
     export err=$?; err_chk
 
@@ -281,27 +276,27 @@ else   ## not_anl if_stimes
 
     if [[ "${SENDDBN}" = "YES" ]]; then
       run="$(echo "${RUN}" | tr '[:lower:]' '[:upper:]')"
-      "${DBNROOT}/bin/dbn_alert" MODEL "${run}_PGB2_0P25" "${job}" "${COMOUT}/${PREFIX}pgrb2.0p25.f${fhr}"
-      "${DBNROOT}/bin/dbn_alert" MODEL "${run}_PGB2_0P25_WIDX ""${job}" "${COMOUT}/${PREFIX}pgrb2.0p25.f${fhr}.idx"
-      "${DBNROOT}/bin/dbn_alert" MODEL "${run}_PGB_GB2" "${job}" "${COMOUT}/${PREFIX}pgrb2.1p00.f${fhr}"
-      "${DBNROOT}/bin/dbn_alert" MODEL "${run}_PGB_GB2_WIDX" "${job}" "${COMOUT}/${PREFIX}pgrb2.1p00.f${fhr}.idx"
+      "${DBNROOT}/bin/dbn_alert" MODEL "${run}_PGB2_0P25" "${job}" "${COM_ATMOS_GRIB_0p25}/${PREFIX}pgrb2.0p25.f${fhr}"
+      "${DBNROOT}/bin/dbn_alert" MODEL "${run}_PGB2_0P25_WIDX ""${job}" "${COM_ATMOS_GRIB_0p25}/${PREFIX}pgrb2.0p25.f${fhr}.idx"
+      "${DBNROOT}/bin/dbn_alert" MODEL "${run}_PGB_GB2" "${job}" "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb2.1p00.f${fhr}"
+      "${DBNROOT}/bin/dbn_alert" MODEL "${run}_PGB_GB2_WIDX" "${job}" "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb2.1p00.f${fhr}.idx"
     fi
 
 
     if [[ "${SENDCOM}" = 'YES' ]]; then
       if [[ "${GRIBVERSION}" = 'grib2' ]]; then
         if [[ "${INLINE_POST}" = ".false." ]]; then
-          cp "${PGBOUT2}" "${COMOUT}/${MASTERFHR}"
+          cp "${PGBOUT2}" "${COM_ATMOS_MASTER}/${MASTERFHR}"
         fi
-        ${GRB2INDEX} "${PGBOUT2}" "${COMOUT}/${MASTERFHRIDX}"
+        ${GRB2INDEX} "${PGBOUT2}" "${COM_ATMOS_MASTER}/${MASTERFHRIDX}"
       fi
 
       # Model generated flux files will be in nemsio after FY17 upgrade
       # use post to generate Grib2 flux files
 
       if (( OUTTYP == 4 )) ; then
-        export NEMSINP=${COMIN}/${PREFIX}atmf${fhr}.nc
-        export FLXINP=${COMIN}/${PREFIX}sfcf${fhr}.nc
+        export NEMSINP=${COM_ATMOS_HISTORY}/${PREFIX}atmf${fhr}.nc
+        export FLXINP=${COM_ATMOS_HISTORY}/${PREFIX}sfcf${fhr}.nc
         if (( d_fhr == 0 )); then
           export PostFlatFile=${PARMpost}/postxconfig-NT-GFS-FLUX-F00.txt
           export CTLFILE=${PARMpost}/postcntrl_gfs_flux_f00.xml
@@ -317,16 +312,16 @@ else   ## not_anl if_stimes
         if [[ "${INLINE_POST}" = ".false." ]]; then
           ${POSTGPSH}
           export err=$?; err_chk
-          mv fluxfile "${COMOUT}/${FLUXFL}"
+          mv fluxfile "${COM_ATMOS_MASTER}/${FLUXFL}"
         fi
-        ${WGRIB2} -s "${COMOUT}/${FLUXFL}" > "${COMOUT}/${FLUXFLIDX}"
+        ${WGRIB2} -s "${COM_ATMOS_MASTER}/${FLUXFL}" > "${COM_ATMOS_MASTER}/${FLUXFLIDX}"
       fi
 
       if [[ "${SENDDBN}" = 'YES' ]] && [[ "${RUN}" = 'gdas' ]] && (( d_fhr % 3 == 0 )); then
-        "${DBNROOT}/bin/dbn_alert" MODEL "${run}_SF" "${job}" "${COMOUT}/${PREFIX}atmf${fhr}.nc"
-        "${DBNROOT}/bin/dbn_alert" MODEL "${run}_BF" "${job}" "${COMOUT}/${PREFIX}sfcf${fhr}.nc"
-        "${DBNROOT}/bin/dbn_alert" MODEL "${run}_SGB_GB2" "${job}" "${COMOUT}/${PREFIX}sfluxgrbf${fhr}.grib2"
-        "${DBNROOT}/bin/dbn_alert" MODEL "${run}_SGB_GB2_WIDX ""${job}" "${COMOUT}/${PREFIX}sfluxgrbf${fhr}.grib2.idx"
+        "${DBNROOT}/bin/dbn_alert" MODEL "${run}_SF" "${job}" "${COM_ATMOS_HISTORY}/${PREFIX}atmf${fhr}.nc"
+        "${DBNROOT}/bin/dbn_alert" MODEL "${run}_BF" "${job}" "${COM_ATMOS_HISTORY}/${PREFIX}sfcf${fhr}.nc"
+        "${DBNROOT}/bin/dbn_alert" MODEL "${run}_SGB_GB2" "${job}" "${COM_ATMOS_MASTER}/${PREFIX}sfluxgrbf${fhr}.grib2"
+        "${DBNROOT}/bin/dbn_alert" MODEL "${run}_SGB_GB2_WIDX ""${job}" "${COM_ATMOS_MASTER}/${PREFIX}sfluxgrbf${fhr}.grib2.idx"
       fi
     fi
 

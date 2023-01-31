@@ -41,11 +41,14 @@ export FIXCRTM=${CRTM_FIX:-${HOMECRTM}/fix}
 export PARMpost=${PARMpost:-${HOMEgfs}/parm/post}
 export INLINE_POST=${WRITE_DOPOST:-".false."}
 
-export COMIN=${COMIN:-${ROTDIR}/${RUN}.${PDY}/${cyc}/atmos}
-export COMOUT=${COMOUT:-${ROTDIR}/${RUN}.${PDY}/${cyc}/atmos}
+# Construct COM variables from templates
+generate_com -rx COM_ATMOS_RESTART COM_ATMOS_ANALYSIS COM_ATMOS_HISTORY COM_ATMOS_MASTER
+generate_com -rx COM_ATMOS_GRIB_0p25 COM_ATMOS_GRIB_0p50 COM_ATMOS_GRIB_1p00
 
 # shellcheck disable=SC2174
-[[ ! -d "${COMOUT}" ]] && mkdir -m 775 -p "${COMOUT}"
+for prod_dir in ${COM_ATMOS_GRIB_0p25} ${COM_ATMOS_GRIB_0p50} ${COM_ATMOS_GRIB_1p00}; do
+  if [[ ! -d "${prod_dir}" ]]; then mkdir -m 775 -p "${prod_dir}"; fi
+done
 # shellcheck disable=
 
 if [ "${RUN}" = gfs ];then
@@ -68,7 +71,8 @@ fi
 #######################################
 # Specify Restart File Name to Key Off
 #######################################
-export restart_file=${COMIN}/${RUN}.t${cyc}z.logf
+# TODO Improve the name of this variable
+export restart_file=${COM_ATMOS_HISTORY}/${RUN}.t${cyc}z.logf
 
 ####################################
 # Specify Timeout Behavior of Post
@@ -85,7 +89,7 @@ export SLEEP_INT=5
 ###############################################################
 # Run relevant exglobal script
 
-"${SCRgfs}/ex${RUN}_atmos_post.sh"
+"${HOMEgfs}/scripts/ex${RUN}_atmos_post.sh"
 status=$?
 (( status != 0 )) && exit "${status}"
 

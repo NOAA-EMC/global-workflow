@@ -240,50 +240,50 @@ while [ $nset -le $totalset ]; do
 
   if [ $nset = 1 ]; then
     if [ $fhr3 = anl ]; then
-      cp pgb2file_${fhr3}_0p25  $COMOUT/${PREFIX}pgrb2.0p25.anl
-      $WGRIB2 -s pgb2file_${fhr3}_0p25 > $COMOUT/${PREFIX}pgrb2.0p25.anl.idx
+      cp "pgb2file_${fhr3}_0p25" "${COM_ATMOS_GRIB_0p25}/${PREFIX}pgrb2.0p25.anl"
+      ${WGRIB2} -s "pgb2file_${fhr3}_0p25 "> "${COM_ATMOS_GRIB_0p25}/${PREFIX}pgrb2.0p25.anl.idx"
       if [ "$PGBS" = "YES" ]; then
-        cp pgb2file_${fhr3}_0p5   $COMOUT/${PREFIX}pgrb2.0p50.anl
-        cp pgb2file_${fhr3}_1p0   $COMOUT/${PREFIX}pgrb2.1p00.anl
-        $WGRIB2 -s pgb2file_${fhr3}_0p5  > $COMOUT/${PREFIX}pgrb2.0p50.anl.idx
-        $WGRIB2 -s pgb2file_${fhr3}_1p0  > $COMOUT/${PREFIX}pgrb2.1p00.anl.idx
+        cp "pgb2file_${fhr3}_0p5" "${COM_ATMOS_GRIB_0p50}/${PREFIX}pgrb2.0p50.anl"
+        cp "pgb2file_${fhr3}_1p0" "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb2.1p00.anl"
+        ${WGRIB2} -s "pgb2file_${fhr3}_0p5" > "${COM_ATMOS_GRIB_0p50}/${PREFIX}pgrb2.0p50.anl.idx"
+        ${WGRIB2} -s "pgb2file_${fhr3}_1p0" > "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb2.1p00.anl.idx"
         if [ "$PGB1F" = 'YES' ]; then
-          cp pgbfile_${fhr3}_1p0    $COMOUT/${PREFIX}pgrb.1p00.anl
-          $GRBINDEX $COMOUT/${PREFIX}pgrb.1p00.anl $COMOUT/${PREFIX}pgrb.1p00.anl.idx
+          cp "pgbfile_${fhr3}_1p0" "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb.1p00.anl"
+          ${GRBINDEX} "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb.1p00.anl" "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb.1p00.anl.idx"
         fi
       fi
     else
-      cp pgb2file_${fhr3}_0p25  $COMOUT/${PREFIX}pgrb2.0p25.f${fhr3}
-      $WGRIB2 -s pgb2file_${fhr3}_0p25 > $COMOUT/${PREFIX}pgrb2.0p25.f${fhr3}.idx
+      cp "pgb2file_${fhr3}_0p25" "${COM_ATMOS_GRIB_0p25}/${PREFIX}pgrb2.0p25.f${fhr3}"
+      ${WGRIB2} -s "pgb2file_${fhr3}_0p25" > "${COM_ATMOS_GRIB_0p25}/${PREFIX}pgrb2.0p25.f${fhr3}.idx"
       if [ "$PGBS" = "YES" ]; then
-        cp pgb2file_${fhr3}_0p5   $COMOUT/${PREFIX}pgrb2.0p50.f${fhr3}
-        cp pgb2file_${fhr3}_1p0   $COMOUT/${PREFIX}pgrb2.1p00.f${fhr3}
-        $WGRIB2 -s pgb2file_${fhr3}_0p5  > $COMOUT/${PREFIX}pgrb2.0p50.f${fhr3}.idx
-        $WGRIB2 -s pgb2file_${fhr3}_1p0  > $COMOUT/${PREFIX}pgrb2.1p00.f${fhr3}.idx
+        cp "pgb2file_${fhr3}_0p5" "${COM_ATMOS_GRIB_0p50}/${PREFIX}pgrb2.0p50.f${fhr3}"
+        cp "pgb2file_${fhr3}_1p0" "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb2.1p00.f${fhr3}"
+        ${WGRIB2} -s "pgb2file_${fhr3}_0p5"  > "${COM_ATMOS_GRIB_0p50}/${PREFIX}pgrb2.0p50.f${fhr3}.idx"
+        ${WGRIB2} -s "pgb2file_${fhr3}_1p0"  > "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb2.1p00.f${fhr3}.idx"
         if [ "$PGB1F" = 'YES' ]; then
-          cp pgbfile_${fhr3}_1p0    $COMOUT/${PREFIX}pgrb.1p00.f${fhr3}
-          $GRBINDEX $COMOUT/${PREFIX}pgrb.1p00.f${fhr3} $COMOUT/${PREFIX}pgrb.1p00.f${fhr3}.idx
+          cp "pgbfile_${fhr3}_1p0" "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb.1p00.f${fhr3}"
+          ${GRBINDEX} "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb.1p00.f${fhr3}" "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb.1p00.f${fhr3}.idx"
         fi
       fi
     fi
   elif [ $nset = 2 ]; then
     if [ $fhr3 = anl ]; then
-      cp pgb2bfile_${fhr3}_0p25  $COMOUT/${PREFIX}pgrb2b.0p25.anl
-      $WGRIB2 -s pgb2bfile_${fhr3}_0p25 > $COMOUT/${PREFIX}pgrb2b.0p25.anl.idx
+      cp "pgb2bfile_${fhr3}_0p25" "${COM_ATMOS_GRIB_0p25}/${PREFIX}pgrb2b.0p25.anl"
+      ${WGRIB2} -s "pgb2bfile_${fhr3}_0p25" > "${COM_ATMOS_GRIB_0p25}/${PREFIX}pgrb2b.0p25.anl.idx"
       if [ "$PGBS" = "YES" ]; then
-        cp pgb2bfile_${fhr3}_0p5   $COMOUT/${PREFIX}pgrb2b.0p50.anl
-        cp pgb2bfile_${fhr3}_1p0   $COMOUT/${PREFIX}pgrb2b.1p00.anl
-        $WGRIB2 -s pgb2bfile_${fhr3}_0p5  > $COMOUT/${PREFIX}pgrb2b.0p50.anl.idx
-        $WGRIB2 -s pgb2bfile_${fhr3}_1p0  > $COMOUT/${PREFIX}pgrb2b.1p00.anl.idx
+        cp "pgb2bfile_${fhr3}_0p5" "${COM_ATMOS_GRIB_0p50}/${PREFIX}pgrb2b.0p50.anl"
+        cp "pgb2bfile_${fhr3}_1p0" "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb2b.1p00.anl"
+        ${WGRIB2} -s "pgb2bfile_${fhr3}_0p5" > "${COM_ATMOS_GRIB_0p50}/${PREFIX}pgrb2b.0p50.anl.idx"
+        ${WGRIB2} -s "pgb2bfile_${fhr3}_1p0" > "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb2b.1p00.anl.idx"
       fi
     else
-      cp pgb2bfile_${fhr3}_0p25  $COMOUT/${PREFIX}pgrb2b.0p25.f${fhr3}
-      $WGRIB2 -s pgb2bfile_${fhr3}_0p25 > $COMOUT/${PREFIX}pgrb2b.0p25.f${fhr3}.idx
+      cp "pgb2bfile_${fhr3}_0p25"  "${COM_ATMOS_GRIB_0p25}/${PREFIX}pgrb2b.0p25.f${fhr3}"
+      ${WGRIB2} -s "pgb2bfile_${fhr3}_0p25" > "${COM_ATMOS_GRIB_0p25}/${PREFIX}pgrb2b.0p25.f${fhr3}.idx"
       if [ "$PGBS" = "YES" ]; then
-        cp pgb2bfile_${fhr3}_0p5   $COMOUT/${PREFIX}pgrb2b.0p50.f${fhr3}
-        cp pgb2bfile_${fhr3}_1p0   $COMOUT/${PREFIX}pgrb2b.1p00.f${fhr3}
-        $WGRIB2 -s pgb2bfile_${fhr3}_0p5  > $COMOUT/${PREFIX}pgrb2b.0p50.f${fhr3}.idx
-        $WGRIB2 -s pgb2bfile_${fhr3}_1p0  > $COMOUT/${PREFIX}pgrb2b.1p00.f${fhr3}.idx
+        cp "pgb2bfile_${fhr3}_0p5" "${COM_ATMOS_GRIB_0p50}/${PREFIX}pgrb2b.0p50.f${fhr3}"
+        cp "pgb2bfile_${fhr3}_1p0" "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb2b.1p00.f${fhr3}"
+        ${WGRIB2} -s "pgb2bfile_${fhr3}_0p5" > "${COM_ATMOS_GRIB_0p50}/${PREFIX}pgrb2b.0p50.f${fhr3}.idx"
+        ${WGRIB2} -s "pgb2bfile_${fhr3}_1p0" > "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb2b.1p00.f${fhr3}.idx"
       fi
     fi
   fi
