@@ -75,6 +75,19 @@ Usage
 
    Note 2: The viewer requires the full path to the database and xml files if you are not in your EXPDIR when you invoke it.
 
+   Note 3: Only ``TERM=xterm`` is supported. You may wish to create a shell function to switch automatically if you are in a different terminal:
+
+   Bash example:
+
+   ::
+
+      function rv {
+        oldterm=${TERM};
+        export TERM='xterm';
+        ${PATH_TO_VIEWER}/rocoto_viewer.py $@;
+        export TERM=${oldterm};
+      }
+
 *********************
 What the viewer shows
 *********************
