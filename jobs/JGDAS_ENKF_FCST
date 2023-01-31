@@ -83,5 +83,4 @@ fi
 cd ${DATAROOT}
 [[ ${KEEPDATA} = "NO" ]] && rm -rf ${DATA}
 
-
 exit 0

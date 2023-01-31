@@ -6,13 +6,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "fcst" -c "base fcst"
 ##############################################
 # Set variables used in the script
 ##############################################
-# Set wave variables
-if [ ${DO_WAVE:-"NO"} = "YES" ]; then
-  # WAVE component directory
-  export CDUMPwave=${CDUMPwave:-${CDUMP}wave}
-  export COMINwave=${COMINwave:-$(compath.py ${envir}/${NET}/${gfs_ver})/${CDUMP}.${PDY}/${cyc}/wave}
-  export COMOUTwave=${COMOUTwave:-$(compath.py -o ${NET}/${gfs_ver})/${CDUMP}.${PDY}/${cyc}/wave}
-fi
 
 ##############################################
 # Begin JOB SPECIFIC work
@@ -33,6 +26,44 @@ else
     export FHOUT_HF=0
 fi
 
+export MEMDIR=${MEMDIR:-''}
+
+# Construct COM variables from templates (see config.com)
+generate_com -rx COM_ATMOS_RESTART COM_ATMOS_INPUT COM_ATMOS_ANALYSIS COM_ATMOS_HISTORY COM_ATMOS_MASTER
+generate_com -rx COM_WAVE_RESTART COM_WAVE_PREP COM_WAVE_HISTORY
+generate_com -rx COM_MED_RESTART COM_OCEAN_RESTART COM_OCEAN_INPUT COM_OCEAN_HISTORY
+generate_com -rx COM_ICE_HISTORY
+generate_com -rx COM_CHEM_HISTORY
+
+# Construct COM variables for previous cycle restarts
+DATE_PREV=$(${NDATE} -"${assim_freq}" "${PDY}${cyc}")
+PDY_PREV=$(echo "${DATE_PREV}" | cut -c1-8)
+declare -x PDY_PREV
+cyc_PREV=$(echo "${DATE_PREV}" | cut -c9-10)
+declare -x cyc_PREV
+
+# shellcheck disable=SC2030,SC2031
+COM_ATMOS_RESTART_PREV=$({
+  # Override env variables for this subshell to get correct template substitution
+  RUN=${rCDUMP}
+  PDY="${PDY_PREV}"
+  cyc="${cyc_PREV}"
+  echo "${COM_ATMOS_RESTART_TMPL}" | envsubst
+})
+declare -rx COM_ATMOS_RESTART_PREV
+
+COM_WAVE_RESTART_PREV=$( {
+  # Override env variables for this subshell to get correct template substitution
+  # If we drop a separate cycle frequency, this can be merged with above
+  DATE_PREV=$(${NDATE} -"${WAVHCYC:-${assim_freq}}" "${PDY}${cyc}")
+  PDY_PREV=$(echo "${DATE_PREV}" | cut -c1-8)
+  cyc_PREV=$(echo "${DATE_PREV}" | cut -c9-10)
+  PDY="${PDY_PREV}"
+  cyc="${cyc_PREV}"
+  echo "${COM_WAVE_RESTART_TMPL}" | envsubst
+})
+declare -rx COM_WAVE_RESTART_PREV
+# shellcheck disable=
 
 ###############################################################
 # Run relevant exglobal script

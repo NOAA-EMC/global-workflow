@@ -19,7 +19,7 @@ FV3_GFS_det(){
   res_latlon_dynamics="''"
 
   # Determine if this is a warm start or cold start
-  if [[ -f "${gmemdir}/RESTART/${sPDY}.${scyc}0000.coupler.res" ]]; then
+  if [[ -f "${COM_ATMOS_RESTART_PREV}/${sPDY}.${scyc}0000.coupler.res" ]]; then
     export warm_start=".true."
   fi
 
@@ -40,7 +40,7 @@ FV3_GFS_det(){
   #-------------------------------------------------------
   # determine if restart IC exists to continue from a previous forecast
   RERUN=${RERUN:-"NO"}
-  filecount=$(find "${RSTDIR_ATM:-/dev/null}" -type f | wc -l)
+  filecount=$(find "${COM_ATMOS_RESTART:-/dev/null}" -type f | wc -l)
   if [[ ( ${CDUMP} = "gfs" || ( ${RUN} = "gefs" && ${CDATE_RST} = "" )) && ${rst_invt1} -gt 0 && ${FHMAX} -gt ${rst_invt1} && ${filecount} -gt 10 ]]; then
     reverse=$(echo "${restart_interval[@]} " | tac -s ' ')
     for xfh in ${reverse} ; do
@@ -48,14 +48,14 @@ FV3_GFS_det(){
       SDATE=$(${NDATE} +${yfh} "${CDATE}")
       PDYS=$(echo "${SDATE}" | cut -c1-8)
       cycs=$(echo "${SDATE}" | cut -c9-10)
-      flag1=${RSTDIR_ATM}/${PDYS}.${cycs}0000.coupler.res
-      flag2=${RSTDIR_ATM}/coupler.res
+      flag1=${COM_ATMOS_RESTART}/${PDYS}.${cycs}0000.coupler.res
+      flag2=${COM_ATMOS_RESTART}/coupler.res
 
       #make sure that the wave restart files also exist if cplwav=true
       waverstok=".true."
       if [[ "${cplwav}" = ".true." ]]; then
         for wavGRD in ${waveGRD} ; do
-          if [[ ! -f "${RSTDIR_WAVE}/${PDYS}.${cycs}0000.restart.${wavGRD}" ]]; then
+          if [[ ! -f "${COM_WAVE_RESTART}/${PDYS}.${cycs}0000.restart.${wavGRD}" ]]; then
             waverstok=".false."
           fi
         done

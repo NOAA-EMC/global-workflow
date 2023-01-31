@@ -53,6 +53,7 @@ export COM_WAVE_GRID_TMPL='${ROTDIR}/${RUN}.${PDY}/${cyc}/${MEMDIR}/wave/product
 export COM_WAVE_STATION_TMPL='${ROTDIR}/${RUN}.${PDY}/${cyc}/${MEMDIR}/wave/products/station'
 
 export COM_OCEAN_HISTORY_TMPL='${ROTDIR}/${RUN}.${PDY}/${cyc}/${MEMDIR}/ocean/model_data/history'
+export COM_OCEAN_RESTART_TMPL='${ROTDIR}/${RUN}.${PDY}/${cyc}/${MEMDIR}/ocean/model_data/restart'
 export COM_OCEAN_INPUT_TMPL='${ROTDIR}/${RUN}.${PDY}/${cyc}/${MEMDIR}/ocean/model_data/input'
 export COM_OCEAN_ANALYSIS_TMPL='${ROTDIR}/${RUN}.${PDY}/${cyc}/${MEMDIR}/ocean/model_data/analysis'
 export COM_OCEAN_DAILY_TMPL='${ROTDIR}/${RUN}.${PDY}/${cyc}/${MEMDIR}/ocean/products/daily'
@@ -60,6 +61,7 @@ export COM_OCEAN_GRIB_0p50_TMPL='${ROTDIR}/${RUN}.${PDY}/${cyc}/${MEMDIR}/ocean/
 export COM_OCEAN_GRIB_0p25_TMPL='${ROTDIR}/${RUN}.${PDY}/${cyc}/${MEMDIR}/ocean/products/0p25'
 
 export COM_ICE_HISTORY_TMPL='${ROTDIR}/${RUN}.${PDY}/${cyc}/${MEMDIR}/ice/model_data/history'
+export COM_ICE_RESTART_TMPL='${ROTDIR}/${RUN}.${PDY}/${cyc}/${MEMDIR}/ice/model_data/restart'
 
 export COM_CHEM_HISTORY_TMPL='${ROTDIR}/${RUN}.${PDY}/${cyc}/${MEMDIR}/chem/model_data/history'
 

@@ -60,7 +60,6 @@ DATM_predet(){
 FV3_GFS_predet(){
   echo "SUB ${FUNCNAME[0]}: Defining variables for FV3GFS"
   CDUMP=${CDUMP:-gdas}
-  CDUMPwave="${CDUMP}wave"
   FHMIN=${FHMIN:-0}
   FHMAX=${FHMAX:-9}
   FHOUT=${FHOUT:-3}
@@ -214,10 +213,9 @@ FV3_GFS_predet(){
   print_freq=${print_freq:-6}
 
   #-------------------------------------------------------
-  if [[ ${CDUMP} =~ "gfs" || ${RUN} = "gefs" ]] && [ ${rst_invt1} -gt 0 ]; then
-    RSTDIR_ATM=${RSTDIR_ATM:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos/RERUN_RESTART}
-    if [ ! -d $RSTDIR_ATM ]; then mkdir -p $RSTDIR_ATM ; fi
-    $NLN $RSTDIR_ATM RESTART
+  if [[ ${RUN} =~ "gfs" || ${RUN} = "gefs" ]] && (( rst_invt1 > 0 )); then
+    if [[ ! -d ${COM_ATMOS_RESTART} ]]; then mkdir -p "${COM_ATMOS_RESTART}" ; fi
+    ${NLN} "${COM_ATMOS_RESTART}" RESTART
     # The final restart written at the end doesn't include the valid date
     # Create links that keep the same name pattern for these files
     VDATE=$($NDATE +$FHMAX_GFS $CDATE)
@@ -229,34 +227,19 @@ FV3_GFS_predet(){
         files="${files} ${base}.tile${tile}.nc"
       done
     done
-    for file in $files; do
-      $NLN $RSTDIR_ATM/$file $RSTDIR_ATM/${vPDY}.${vcyc}0000.$file
+    for file in ${files}; do
+      ${NLN} "${COM_ATMOS_RESTART}/${file}" "${COM_ATMOS_RESTART}/${vPDY}.${vcyc}0000.${file}"
     done
   else
     mkdir -p $DATA/RESTART
   fi
 
-  #-------------------------------------------------------
-  # member directory
-  if [[ ${MEMBER} -lt 0 || ${RUN} = "gefs" ]]; then
-    memchar=""
-  else
-    memchar=mem$(printf %03i $MEMBER)
-  fi
-  memdir=${memdir:-${ROTDIR}/${RUN}.${PDY}/${cyc}/${memchar}/atmos}
-  if [ ! -d $memdir ]; then mkdir -p $memdir; fi
-
-  GDATE=$($NDATE -$assim_freq $CDATE)
-  gPDY=$(echo $GDATE | cut -c1-8)
-  gcyc=$(echo $GDATE | cut -c9-10)
-  gmemdir=${gmemdir:-${ROTDIR}/${rCDUMP}.${gPDY}/${gcyc}/${memchar}/atmos}
-
   if [[ "$DOIAU" = "YES" ]]; then
     sCDATE=$($NDATE -3 $CDATE)
     sPDY=$(echo $sCDATE | cut -c1-8)
     scyc=$(echo $sCDATE | cut -c9-10)
-    tPDY=$gPDY
-    tcyc=$gcyc
+    tPDY=${PDY_PREV}
+    tcyc=${cyc_PREV}
   else
     sCDATE=$CDATE
     sPDY=$PDY
@@ -270,13 +253,13 @@ FV3_GFS_predet(){
 
 WW3_predet(){
   echo "SUB ${FUNCNAME[0]}: Defining variables for WW3"
-  if [[ $CDUMP =~ "gdas" ]]; then
-    export RSTDIR_WAVE=$ROTDIR/${CDUMP}.${PDY}/${cyc}/wave/restart
-  else
-    export RSTDIR_WAVE=${RSTDIR_WAVE:-$ROTDIR/${CDUMP}.${PDY}/${cyc}/wave/restart}
-  fi
-  if [ ! -d $RSTDIR_WAVE ]; then mkdir -p $RSTDIR_WAVE ; fi
-  $NLN $RSTDIR_WAVE restart_wave
+  # if [[ $CDUMP =~ "gdas" ]]; then
+  #   export RSTDIR_WAVE=$ROTDIR/${CDUMP}.${PDY}/${cyc}/wave/restart
+  # else
+  #   export RSTDIR_WAVE=${RSTDIR_WAVE:-$ROTDIR/${CDUMP}.${PDY}/${cyc}/wave/restart}
+  # fi
+  if [[ ! -d "${COM_WAVE_RESTART}" ]]; then mkdir -p "${COM_WAVE_RESTART}" ; fi
+  ${NLN} "${COM_WAVE_RESTART}" "restart_wave"
 }
 
 CICE_predet(){
@@ -289,5 +272,4 @@ MOM6_predet(){
   echo "SUB ${FUNCNAME[0]}: MOM6 before run type determination"
   if [ ! -d $DATA/MOM6_OUTPUT ]; then mkdir -p $DATA/MOM6_OUTPUT; fi
   if [ ! -d $DATA/MOM6_RESTART ]; then mkdir -p $DATA/MOM6_RESTART; fi
-  cd "${DATA}" || exit 8
 }

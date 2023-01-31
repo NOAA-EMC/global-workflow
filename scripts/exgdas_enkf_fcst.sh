@@ -63,11 +63,6 @@ SENDDBN=${SENDDBN:-"NO"}
 
 ################################################################################
 # Preprocessing
-mkdata=NO
-if [ ! -d $DATA ]; then
-   mkdata=YES
-   mkdir -p $DATA
-fi
 cd $DATA || exit 99
 DATATOP=$DATA
 
@@ -75,7 +70,7 @@ DATATOP=$DATA
 # Set output data
 cymd=$(echo $CDATE | cut -c1-8)
 chh=$(echo  $CDATE | cut -c9-10)
-EFCSGRP=$COMOUT/efcs.grp${ENSGRP}
+EFCSGRP="${ROTDIR}/enkf${CDUMP}.${PDY}/${cyc}/efcs.grp${ENSGRP}"
 if [ -f $EFCSGRP ]; then
    if [ $RERUN_EFCSGRP = "YES" ]; then
       rm -f $EFCSGRP
@@ -145,7 +140,7 @@ for imem in $(seq $ENSBEG $ENSEND); do
    cd $DATATOP
 
    cmem=$(printf %03i $imem)
-   memchar="mem$cmem"
+   MEMDIR="mem${cmem}"
 
    echo "Processing MEMBER: $cmem"
 
@@ -157,12 +152,50 @@ for imem in $(seq $ENSBEG $ENSEND); do
       [[ $memstat -eq 1 ]] && skip_mem="YES"
    fi
 
+   # Construct COM variables from templates (see config.com)
+   # Can't make these read-only because we are looping over members
+   generate_com -x COM_ATMOS_RESTART COM_ATMOS_INPUT COM_ATMOS_ANALYSIS COM_ATMOS_HISTORY COM_ATMOS_MASTER
+   generate_com -x COM_WAVE_RESTART COM_WAVE_PREP COM_WAVE_HISTORY
+   generate_com -x COM_MED_RESTART COM_OCEAN_INPUT COM_OCEAN_HISTORY
+   generate_com -x COM_ICE_HISTORY
+   generate_com -x COM_CHEM_HISTORY
+
+   # Construct COM variables for previous cycle restarts
+   DATE_PREV=$(${NDATE} -"${assim_freq}" "${PDY}${cyc}")
+   PDY_PREV=$(echo "${DATE_PREV}" | cut -c1-8)
+   declare -x PDY_PREV
+   cyc_PREV=$(echo "${DATE_PREV}" | cut -c9-10)
+   declare -x cyc_PREV
+
+   # shellcheck disable=SC2030,SC2031
+   COM_ATMOS_RESTART_PREV=$({
+     # Override env variables for this subshell to get correct template substitution
+     RUN=${rCDUMP}
+     PDY="${PDY_PREV}"
+     cyc="${cyc_PREV}"
+     echo "${COM_ATMOS_RESTART_TMPL}" | envsubst
+   })
+   declare -x COM_ATMOS_RESTART_PREV
+
+   COM_WAVE_RESTART_PREV=$( {
+     # Override env variables for this subshell to get correct template substitution
+     # If we drop a separate cycle frequency, this can be merged with above
+     DATE_PREV=$(${NDATE} -"${WAVHCYC:-${assim_freq}}" "${PDY}${cyc}")
+     PDY_PREV=$(echo "${DATE_PREV}" | cut -c1-8)
+     cyc_PREV=$(echo "${DATE_PREV}" | cut -c9-10)
+     PDY="${PDY_PREV}"
+     cyc="${cyc_PREV}"
+     echo "${COM_WAVE_RESTART_TMPL}" | envsubst
+   })
+   declare -x COM_WAVE_RESTART_PREV
+   # shellcheck disable=
+
    if [ $skip_mem = "NO" ]; then
 
       ra=0
 
       export MEMBER=$imem
-      export DATA=$DATATOP/$memchar
+      export DATA="${DATATOP}/${MEMDIR}"
       if [ -d $DATA ]; then rm -rf $DATA; fi
       mkdir -p $DATA
       $FORECASTSH
@@ -182,7 +215,7 @@ for imem in $(seq $ENSBEG $ENSEND); do
      while [ $fhr -le $FHMAX ]; do
        FH3=$(printf %03i $fhr)
        if [ $(expr $fhr % 3) -eq 0 ]; then
-         $DBNROOT/bin/dbn_alert MODEL GFS_ENKF $job $COMOUT/$memchar/atmos/${CDUMP}.t${cyc}z.sfcf${FH3}.nc
+         "${DBNROOT}/bin/dbn_alert" MODEL GFS_ENKF "${job}" "${COM_ATMOS_HISTORY}/${CDUMP}.t${cyc}z.sfcf${FH3}.nc"
        fi
        fhr=$((fhr+FHOUT))
      done
@@ -222,8 +255,5 @@ export err=$rc; err_chk
 
 ################################################################################
 #  Postprocessing
-cd $pwd
-[[ $mkdata = "YES" ]] && rm -rf $DATATOP
-
 
 exit $err
