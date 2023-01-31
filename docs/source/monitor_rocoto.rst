@@ -11,31 +11,48 @@ Using command line
 
 You can use Rocoto commands with arguments to check the status of your experiment. 
 
-Start or continue a run::
+Start or continue a run:
+
+::
 
    rocotorun -d /path/to/workflow/database/file -w /path/to/workflow/xml/file
 
-Check the status of the workflow::
+Check the status of the workflow:
+
+::
 
    rocotostat -d /path/to/workflow/database/file -w /path/to/workflow/xml/file [-c YYYYMMDDCCmm,[YYYYMMDDCCmm,...]] [-t taskname,[taskname,...]] [-s] [-T]
 
-Note: YYYYMMDDCCmm = YearMonthDayCycleMinute ...where mm/Minute is ’00’ for all cycles currently.
+.. note::
+   YYYYMMDDCCmm = YearMonthDayCycleMinute ...where mm/Minute is ’00’ for all cycles currently.
 
-Check the status of a job::
+Check the status of a job:
+
+::
 
    rocotocheck -d /path/to/workflow/database/file -w /path/to/workflow/xml/file -c YYYYMMDDCCmm -t taskname
 
-Force a task to run (ignores dependencies - USE CAREFULLY!)::
+Force a task to run (ignores dependencies - USE CAREFULLY!):
+
+::
 
    rocotoboot -d /path/to/workflow/database/file -w /path/to/workflow/xml/file -c YYYYMMDDCCmm -t taskname
 
-Rerun task(s)::
+Rerun task(s):
+
+::
 
    rocotorewind -d /path/to/workflow/database/file -w /path/to/workflow/xml/file -c YYYYMMDDCCmm -t taskname
 
-Set a task to complete (overwrites current state)::
+   (If job is currently queued or running rocoto will kill the job. Run rocotorun afterwards to fire off rewound task.)
+
+Set a task to complete (overwrites current state):
+
+::
 
    rocotocomplete -d /path/to/workflow/database/file -w /path/to/workflow/xml/file -c YYYYMMDDCCmm -t taskname
+
+(Will not kill queued or running job, only update status.)
 
 Several dates and task names may be specified in the same command by adding more -c and -t options. However, lists are not allowed.
 
@@ -43,7 +60,7 @@ Several dates and task names may be specified in the same command by adding more
 Use ROCOTO viewer
 ^^^^^^^^^^^^^^^^^
 
-An alternative approach is to use A GUI that was designed to assist with monitoring global workflow  experiments that use ROCOTO. It can be found under the ush/rocoto folder in global-workflow.
+An alternative approach is to use a GUI that was designed to assist with monitoring global workflow  experiments that use ROCOTO. It can be found under the ``workflow`` folder in global-workflow.
 
 *****
 Usage
@@ -53,9 +70,23 @@ Usage
 
    ./rocoto_viewer.py -d /path/to/workflow/database/file -w /path/to/workflow/xml/file
 
-Note 1: Terminal/window must be wide enough to display all experiment information columns, viewer will complain if not.
+.. note::
+   Note 1: Terminal/window must be wide enough to display all experiment information columns, viewer will complain if not.
 
-Note 2: The viewer requires the full path to the database and xml files if you are not in your EXPDIR when you invoke it.
+   Note 2: The viewer requires the full path to the database and xml files if you are not in your EXPDIR when you invoke it.
+
+   Note 3: Only ``TERM=xterm`` is supported. You may wish to create a shell function to switch automatically if you are in a different terminal:
+
+   Bash example:
+
+   ::
+
+      function rv {
+        oldterm=${TERM};
+        export TERM='xterm';
+        ${PATH_TO_VIEWER}/rocoto_viewer.py $@;
+        export TERM=${oldterm};
+      }
 
 *********************
 What the viewer shows
