@@ -37,12 +37,17 @@ export USHens_tracker=${USHens_tracker:-${HOMEens_tracker}/ush}
 ##############################################
 # Define COM and Data directories
 ##############################################
-export COMIN=${ROTDIR}/${RUN}.${PDY}/${cyc}/${COMPONENT}
-export COMINgfs=${COMIN}
-export gfsdir=${COMINgfs}
-export COMINgdas=${COMIN}
-export gdasdir=${COMINgdas}
-export COMOUT=${ROTDIR}/${RUN}.${PDY}/${cyc}/${COMPONENT}
+generate_com -rx COM_ATMOS_GRIB_0p25 COM_ATMOS_TRACK
+
+if [[ ! -d "${COM_ATMOS_TRACK}" ]]; then mkdir -p "${COM_ATMOS_TRACK}"; fi
+
+# The following variables are used by the tracker scripts which are outside
+#   of global-workflow and therefore can't be standardized at this time
+export COMINgfs=${COM_ATMOS_GRIB_0p25}
+export gfsdir=${COM_ATMOS_GRIB_0p25}
+export COMINgdas=${COM_ATMOS_GRIB_0p25}
+export gdasdir=${COM_ATMOS_GRIB_0p25}
+export COMOUT=${COM_ATMOS_TRACK}
 export COMINsyn=${COMINsyn:-$(compath.py ${envir}/com/gfs/${gfs_ver})/syndat}
 
 if [ ${RUN_ENVIR} = "nco" ]; then
