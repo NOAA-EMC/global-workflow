@@ -29,9 +29,6 @@ The global-workflow configs contain switches that change how the system runs. Ma
 | DO_GLDAS       | Run GLDAS to spin up land    | YES           | YES         | Spins up for 84hrs if sflux files not available   |
 |                | ICs                          |               |             |                                                   |
 +----------------+------------------------------+---------------+-------------+---------------------------------------------------+
-| DO_WAVE        | Runs wave jobs and produce   | YES           | YES         | One-way wave coupling, new for GFSv16             |
-|                | wave forecast output         |               |             |                                                   |
-+----------------+------------------------------+---------------+-------------+---------------------------------------------------+
 | DO_VRFY        | Run vrfy job                 | NO            | YES         | Whether to include vrfy job (GSI monitoring,      |
 |                |                              |               |             | tracker, VSDB, fit2obs)                           |
 +----------------+------------------------------+---------------+-------------+---------------------------------------------------+
