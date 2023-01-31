@@ -20,16 +20,13 @@ export DO_CALC_ANALYSIS=${DO_CALC_ANALYSIS:-"YES"}
 export APREFIX="${CDUMP/enkf}.t${cyc}z."
 export APREFIX_ENS="${CDUMP}.t${cyc}z."
 
-if [ ${RUN_ENVIR} = "nco" -o ${ROTDIR_DUMP:-NO} = "YES" ]; then
-    export COMOUT=${COMOUT:-${ROTDIR}/${RUN/enkf}.${PDY}/${cyc}/atmos}
-    export COMOUT_ENS=${COMOUT_ENS:-${ROTDIR}/${RUN}.${PDY}/${cyc}}
-else
-    export COMOUT="${ROTDIR}/${RUN/enkf}.${PDY}/${cyc}/atmos"
-    export COMOUT_ENS="${ROTDIR}/${RUN}.${PDY}/${cyc}"
-fi
-mkdir -m 775 -p ${COMOUT}
+generate_com -rx COM_ATMOS_HISTORY
 
-export ATMFCST_ENSRES="${COMOUT_ENS}/mem001/atmos/${APREFIX_ENS}atmf006.nc"
+COM_ATMOS_HISTORY_MEM=$({
+    MEMDIR="mem001"
+    echo "${COM_ATMOS_HISTORY_TMPL}" | envsubst
+})
+declare -rx COM_ATMOS_HISTORY_MEM
 
 ###############################################################
 # Run relevant script
