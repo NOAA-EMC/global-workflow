@@ -959,7 +959,12 @@ MOM6_out() {
   while [[ $idate -le $rdate ]]; do
     local seconds=$(to_seconds ${idate:8:2}0000)  # use function to_seconds from forecast_predet.sh to convert HHMMSS to seconds
     local idatestr="${idate:0:4}-${idate:4:2}-${idate:6:2}-${seconds}"
-    $NCP "${DATA}/RESTART/ufs.cpld.cpl.r.${idatestr}.nc" "${COMOUTmed}/RESTART/${idate:0:8}.${idate:8:2}0000.ufs.cpld.cpl.r.nc"
+    local mediator_file="${DATA}/RESTART/ufs.cpld.cpl.r.${idatestr}.nc"
+    if [[ -f ${mediator_file} ]]; then
+      $NCP "${DATA}/RESTART/ufs.cpld.cpl.r.${idatestr}.nc" "${COMOUTmed}/RESTART/${idate:0:8}.${idate:8:2}0000.ufs.cpld.cpl.r.nc"
+    else
+      echo "Mediator restart ${mediator_file} not found."
+    fi
     local idate=$(date -d "${idate:0:8} ${idate:8:2} + ${res_int} hours" +%Y%m%d%H)
   done
 }
