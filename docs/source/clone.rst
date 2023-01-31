@@ -39,11 +39,7 @@ Clone workflow and component repositories
 Workflow
 ********
 
-https method:
-
-::
-
-   git clone https://github.com/NOAA-EMC/global-workflow.git
+There are several ways to clone repositories from GitHub. Below we describe how to clone the global-workflow using either the ssh or https methods. **The ssh method is highly preferred and recommended.**
 
 ssh method (using a password protected SSH key):
 
@@ -53,6 +49,12 @@ ssh method (using a password protected SSH key):
 
 .. note::
    When using ssh methods you need to make sure that your GitHub account is configured for the computer from which you are accessing the repository (See `this link <https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account>`_)
+
+https method:
+
+::
+
+   git clone https://github.com/NOAA-EMC/global-workflow.git
 
 Check what you just cloned (by default you will have only the develop branch):
 
