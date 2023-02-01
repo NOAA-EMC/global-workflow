@@ -26,32 +26,49 @@ status=$?
 ###############################################################
 # Set script and dependency variables
 export OPREFIX="${CDUMP}.t${cyc}z."
-export COMOUT="${ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos"
+generate_com -rx COM_OBS COM_OBSDMP
+
+DATE_PREV=$(${NDATE} -${assim_freq} "${PDY}${cyc}")
+PDY_PREV=$(echo $DATE_PREV | cut -c1-8)
+cyc_PREV=$(echo $DATE_PREV | cut -c9-10)
+GDUMP="gdas"
+# shellcheck disable=SC2030
+COM_OBS_PREV=$({
+    PDY=${PDY_PREV}
+    cyc=${cyc_PREV}
+    CDUMP=${GDUMP}
+    echo "${COM_OBS_TMPL}" | envsubst
+})
+declare -rx COM_OBS_PREV
+
+COM_OBSDMP_PREV=$({
+    PDY=${PDY_PREV}
+    cyc=${cyc_PREV}
+    CDUMP=${GDUMP}
+    echo "${COM_OBSDMP_TMPL}" | envsubst
+})
+declare -rx COM_OBSDMP_PREV
+# shellcheck disable=
+
 export MAKE_PREPBUFR=${MAKE_PREPBUFR:-"YES"}
-[[ ! -d ${COMOUT} ]] && mkdir -p ${COMOUT}
-[[ ! -d ${COMIN_OBS} ]] && mkdir -p ${COMIN_OBS}
+if [[ ! -d "${COM_OBS}" ]]; then mkdir -p "${COM_OBS}"; fi
 
 ###############################################################
 # If ROTDIR_DUMP=YES, copy dump files to rotdir
-if [[ ${ROTDIR_DUMP} = "YES" ]]; then
-   ${HOMEgfs}/ush/getdump.sh "${CDATE}" "${CDUMP}" "${DMPDIR}/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}/atmos" "${COMIN_OBS}"
+if [ $ROTDIR_DUMP = "YES" ]; then
+   "${HOMEgfs}/ush/getdump.sh" "${PDY}${cyc}" "${CDUMP}" "${COM_OBSDMP}" "${COM_OBS}"
    status=$?
    [[ ${status} -ne 0 ]] && exit ${status}
 
-#  Ensure previous cycle gdas dumps are available (used by cycle & downstream)
-   GDATE=$(${NDATE} -${assim_freq} ${CDATE})
-   gPDY=$(echo ${GDATE} | cut -c1-8)
-   gcyc=$(echo ${GDATE} | cut -c9-10)
-   GDUMP=gdas
-   gCOMOBS="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/obs"
-   if [[ ! -s ${gCOMOBS}/${GDUMP}.t${gcyc}z.updated.status.tm00.bufr_d ]]; then
-     ${HOMEgfs}/ush/getdump.sh "${GDATE}" "${GDUMP}" "${DMPDIR}/${GDUMP}${DUMP_SUFFIX}.${gPDY}/${gcyc}/atmos" "${gCOMOBS}"
+   #  Ensure previous cycle gdas dumps are available (used by cycle & downstream)
+   if [[ ! -s "${COM_OBS_PREV}/${GDUMP}.t${cyc_PREV}z.updated.status.tm00.bufr_d" ]]; then
+     "${HOMEgfs}/ush/getdump.sh" "${DATE_PREV}" "${GDUMP}" "${COM_OBSDMP_PREV}" "${COM_OBS_PREV}"
      status=$?
      [[ ${status} -ne 0 ]] && exit ${status}
    fi
    # exception handling to ensure no dead link
-   [[ $(find ${COMIN_OBS} -xtype l | wc -l) -ge 1 ]] && exit 9
-   [[ $(find ${gCOMOBS} -xtype l | wc -l) -ge 1 ]] && exit 9
+   [[ $(find ${COM_OBS} -xtype l | wc -l) -ge 1 ]] && exit 9
+   [[ $(find ${COM_OBS_PREV} -xtype l | wc -l) -ge 1 ]] && exit 9
 fi
 
 
@@ -75,40 +92,38 @@ if [[ ${PROCESS_TROPCY} = "YES" ]]; then
         fi
     fi
 
-    [[ ${ROTDIR_DUMP} = "YES" ]] && rm ${COMOUT}${CDUMP}.t${cyc}z.syndata.tcvitals.tm00
+    if [[ ${ROTDIR_DUMP} = "YES" ]]; then rm "${COM_OBS}/${CDUMP}.t${cyc}z.syndata.tcvitals.tm00"; fi
 
     ${HOMEgfs}/jobs/JGLOBAL_ATMOS_TROPCY_QC_RELOC
     status=$?
     [[ ${status} -ne 0 ]] && exit ${status}
 
 else
-    [[ ${ROTDIR_DUMP} = "NO" ]] && cp ${DMPDIR}/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}/atmos/${CDUMP}.t${cyc}z.syndata.tcvitals.tm00 ${COMOUT}/
+    if [[ ${ROTDIR_DUMP} = "NO" ]]; then cp "${COM_OBSDMP}/${CDUMP}.t${cyc}z.syndata.tcvitals.tm00" "${COM_OBS}/"; fi
 fi
 
-# Will modify the new location later in the next PR to address issue 1198
-if [[ ${ROTDIR_DUMP} = "YES" ]]; then
-   mv ${COMIN_OBS}/*syndata.tcvitals.tm00 ${COMOUT}
-   mv ${COMIN_OBS}/*snogrb_t1534.3072.1536 ${COMOUT}
-   mv ${COMIN_OBS}/*seaice.5min.blend.grb ${COMOUT}
-fi
 
 ###############################################################
 # Generate prepbufr files from dumps or copy from OPS
-if [[ ${MAKE_PREPBUFR} = "YES" ]]; then
-    if [[ ${ROTDIR_DUMP} = "YES" ]]; then
-        rm -f ${COMIN_OBS}/${OPREFIX}prepbufr
-        rm -f ${COMIN_OBS}/${OPREFIX}prepbufr.acft_profiles
-        rm -f ${COMIN_OBS}/${OPREFIX}nsstbufr
+if [ $MAKE_PREPBUFR = "YES" ]; then
+    if [ $ROTDIR_DUMP = "YES" ]; then
+        rm -f "${COM_OBS}/${OPREFIX}prepbufr"
+        rm -f "${COM_OBS}/${OPREFIX}prepbufr.acft_profiles"
+        rm -f "${COM_OBS}/${OPREFIX}nsstbufr"
     fi
 
     export job="j${CDUMP}_prep_${cyc}"
     export DATAROOT="${RUNDIR}/${CDATE}/${CDUMP}/prepbufr"
-    export COMIN=${COMIN_OBS}
-    export COMINgdas=${COMINgdas:-${ROTDIR}/gdas.${PDY}/${cyc}/atmos}
-    export COMINgfs=${COMINgfs:-${ROTDIR}/gfs.${PDY}/${cyc}/atmos}
-    export COMOUT=${COMIN_OBS}
-    if [[ ${ROTDIR_DUMP} = "NO" ]]; then
-        COMIN_OBS=${COMIN_OBS:-${DMPDIR}/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}/atmos}
+    export COMIN=${COM_OBS}
+    export COMOUT=${COM_OBS}
+    COMINgdas=$(RUN="gdas"; echo "${COM_ATMOS_HISTORY_TMPL}" | envsubst)
+    declare -rx COMINgdas
+    COMINgfs=$(RUN="gfs"; echo "${COM_ATMOS_HISTORY_TMPL}" | envsubst)
+    declare -rx COMINgfs
+    if [ $ROTDIR_DUMP = "NO" ]; then
+        export COMSP=${COMSP:-"${COM_OBSDMP}/${CDUMP}.t${cyc}z."}
+    else
+        export COMSP=${COMSP:-"${COM_OBS}/${CDUMP}.t${cyc}z."}
     fi
     export COMSP=${COMSP:-${COMIN_OBS}/${CDUMP}.t${cyc}z.}
 
@@ -117,20 +132,29 @@ if [[ ${MAKE_PREPBUFR} = "YES" ]]; then
         export MAKE_NSSTBUFR="NO"
     fi
 
-    ${HOMEobsproc}/jobs/JOBSPROC_GLOBAL_PREP
+    export DEBUG_LEVEL="4"
+    export LOUD="YES"
+    export HOMEprepobs="${BASE_GIT}/prepobs/v1.0.1"
+    export EXECprepobs=${HOMEprepobs}/exec
+    export FIXprepobs=${HOMEprepobs}/fix
+    export SCRIPTprepobs=${HOMEprepobs}/script
+    export USHprepobs=${HOMEprepobs}/ush
+
+
+    $HOMEobsproc/jobs/JOBSPROC_GLOBAL_PREP
     status=$?
     [[ ${status} -ne 0 ]] && exit ${status}
 
     # If creating NSSTBUFR was disabled, copy from DMPDIR if appropriate.
     if [[ ${MAKE_NSSTBUFR:-"NO"} = "NO" ]]; then
-        [[ ${DONST} = "YES" ]] && ${NCP} ${DMPDIR}/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}/atmos/${OPREFIX}nsstbufr ${COMIN_OBS}/${OPREFIX}nsstbufr
+        if [[ $DONST = "YES" ]]; then ${NCP} "${COM_OBSDMP}/${OPREFIX}nsstbufr" "${COM_OBS}/${OPREFIX}nsstbufr"; fi
     fi
 
 else
-    if [[ ${ROTDIR_DUMP} = "NO" ]]; then
-        ${NCP} ${DMPDIR}/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}/atmos/${OPREFIX}prepbufr               ${COMIN_OBS}/${OPREFIX}prepbufr
-        ${NCP} ${DMPDIR}/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}/atmos/${OPREFIX}prepbufr.acft_profiles ${COMIN_OBS}/${OPREFIX}prepbufr.acft_profiles
-        [[ ${DONST} = "YES" ]] && ${NCP} ${DMPDIR}/${CDUMP}${DUMP_SUFFIX}.${PDY}/${cyc}/atmos/${OPREFIX}nsstbufr ${COMIN_OBS}/${OPREFIX}nsstbufr
+    if [ $ROTDIR_DUMP = "NO" ]; then
+        ${NCP} "${COM_OBSDMP}/${OPREFIX}prepbufr"               "${COM_OBS}/${OPREFIX}prepbufr"
+        ${NCP} "${COM_OBSDMP}/${OPREFIX}prepbufr.acft_profiles" "${COM_OBS}/${OPREFIX}prepbufr.acft_profiles"
+        if [[ $DONST = "YES" ]]; then ${NCP} "${COM_OBSDMP}/${OPREFIX}nsstbufr" "${COM_OBS}/${OPREFIX}nsstbufr"; fi
     fi
 fi
 

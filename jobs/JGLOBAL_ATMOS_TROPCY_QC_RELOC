@@ -12,7 +12,6 @@ export RUN_ENVIR=${RUN_ENVIR:-"nco"}
 ##############################################
 export CDATE=${CDATE:-${PDY}${cyc}}
 export CDUMP=${CDUMP:-${RUN:-"gfs"}}
-export COMPONENT="atmos"
 
 
 ##############################################
@@ -33,11 +32,8 @@ export TANK_TROPCY=${TANK_TROPCY:-${DCOMROOT}}   # path to tropical cyclone reco
 ##############################################
 # Define COM directories
 ##############################################
-export COMIN=${ROTDIR}/${RUN}.${PDY}/${cyc}/${COMPONENT}
-export COMOUT=${ROTDIR}/${RUN}.${PDY}/${cyc}/${COMPONENT}
-if [ ! -d ${COMOUT} ]; then mkdir -p ${COMOUT}; fi
-#export COMINgdas=${ROTDIR}/gdas.${PDY}/${cyc}
-#export COMINgfs=${ROTDIR}/gfs.${PDY}/${cyc}
+generate_com COM_OBS
+if [[ ! -d "${COM_OBS}" ]]; then mkdir -p "${COM_OBS}"; fi
 
 export CRES=$(echo ${CASE} | cut -c2-)
 export LATB=$((CRES*2))
