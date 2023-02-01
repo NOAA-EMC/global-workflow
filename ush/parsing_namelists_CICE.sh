@@ -4,12 +4,43 @@
 
 CICE_namelists(){
 
-if [ $warm_start = ".true." ]; then
-  cmeps_run_type='continue'
+# "warm_start" here refers to whether CICE model is warm starting or not.
+# Per JM, in the case of the Prototypes, the sea-ice ICs were obtained from CPC.
+# CPC sea-ice initial conditions are created from SIS2 sea-ice model.
+# Hence, the prototypes always set this to "initial"
+# in order for the CICE model to _initialize_ from the SIS2 ICs.
+# However, in the SOCA cycled system, if starting from a previously cycled SOCA run,
+# the CICE ICs are obtained from the previous cycle of the UFS S2S,
+# so the CICE namelist should be set to "continue"
+# TODO: Is there a way to interrogate the restart file to know if this is a
+# SIS2 restart or a CICE restart, instead of relying on "${warm_start}"
+if [[ "${warm_start}" = ".true." ]]; then
+   local runtype="continue"
+   local use_restart_time=".true."
 else
-  cmeps_run_type='initial'
+   local runtype="initial"
+   local use_restart_time=".false."
 fi
 
+# Get correct MPI options for NPROC and grid
+local cice_processor_shape=${cice_processor_shape:-'slenderX2'}
+local shape=${cice_processor_shape#${cice_processor_shape%?}}
+local NPX=$(( ICEPETS / shape )) #number of processors in x direction
+local NPY=$(( ICEPETS / NPX ))   #number of processors in y direction
+if (( $(( NX_GLB % NPX )) == 0 )); then
+  local block_size_x=$(( NX_GLB / NPX ))
+else
+  local block_size_x=$(( (NX_GLB / NPX) + 1 ))
+fi
+if (( $(( NY_GLB % NPY )) == 0 )); then
+  local block_size_y=$(( NY_GLB / NPY ))
+else
+  local block_size_y=$(( (NY_GLB / NPY) + 1 ))
+fi
+local max_blocks=$(( (NX_GLB * NY_GLB) / (block_size_x * block_size_y * ICEPETS) ))
+if (( max_blocks == 0 )) || (( max_blocks % 2 != 0 )); then
+  local max_blocks=-1
+fi
 
 cat > ice_in <<eof
 &setup_nml
@@ -22,21 +53,21 @@ cat > ice_in <<eof
    dt             = $ICETIM
    npt            = $npt
    ndtd           = 1
-   runtype        = '$cmeps_run_type'
+   runtype        = '${runtype}'
    runid          = 'unknown'
-   ice_ic         = '$iceic'
+   ice_ic         = 'cice_model.res.nc'
    restart        = .true.
    restart_ext    = .false.
-   use_restart_time = $USE_RESTART_TIME
+   use_restart_time = ${use_restart_time}
    restart_format = 'nc'
    lcdf64         = .false.
    numin          = 21
    numax          = 89
-   restart_dir    = './RESTART/'
-   restart_file   = 'iced'
+   restart_dir    = './CICE_RESTART/'
+   restart_file   = 'cice_model.res'
    pointer_file   = './ice.restart_file'
-   dumpfreq       = '$dumpfreq'
-   dumpfreq_n     =  $dumpfreq_n
+   dumpfreq       = '${dumpfreq}'
+   dumpfreq_n     =  ${dumpfreq_n}
    dump_last      = .false.
    bfbflag        = 'off'
    diagfreq       = 6
@@ -49,12 +80,12 @@ cat > ice_in <<eof
    latpnt(2)      = -65.
    lonpnt(2)      = -45.
    histfreq       = 'm','d','h','x','x'
-   histfreq_n     =  0 , 0 , 6 , 1 , 1
-   hist_avg       = $cice_hist_avg
-   history_dir    = './history/'
+   histfreq_n     =  0 , 0 , ${FHOUT} , 1 , 1
+   hist_avg       = ${cice_hist_avg}
+   history_dir    = './CICE_OUTPUT/'
    history_file   = 'iceh'
    write_ic       = .true.
-   incond_dir     = './history/'
+   incond_dir     = './CICE_OUTPUT/'
    incond_file    = 'iceh_ic'
    version_name   = 'CICE_6.0.2'
 /
@@ -173,13 +204,13 @@ cat > ice_in <<eof
 /
 
 &domain_nml
-   nprocs = $ICEPETS
-   nx_global         = $NX_GLB
-   ny_global         = $NY_GLB
-   block_size_x      = $(( 2 * ( $NX_GLB / $ICEPETS ) ))
-   block_size_y      = $(( $NY_GLB / 2 ))
-   max_blocks        = -1
-   processor_shape   = 'slenderX2'
+   nprocs = ${ICEPETS}
+   nx_global         = ${NX_GLB}
+   ny_global         = ${NY_GLB}
+   block_size_x      = ${block_size_x}
+   block_size_y      = ${block_size_y}
+   max_blocks        = ${max_blocks}
+   processor_shape   = '${cice_processor_shape}'
    distribution_type = 'cartesian'
    distribution_wght = 'latitude'
    ew_boundary_type  = 'cyclic'

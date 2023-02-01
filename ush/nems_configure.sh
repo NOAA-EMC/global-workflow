@@ -19,7 +19,11 @@ fi
 # Setup nems.configure
 DumpFields=${NEMSDumpFields:-false}
 cap_dbug_flag=${cap_dbug_flag:-0}
-if [ $warm_start = ".true." ]; then
+# Determine "cmeps_run_type" based on the availability of the mediator restart file
+# If it is a warm_start, we already copied the mediator restart to DATA, if it was present
+# If the mediator restart was not present, despite being a "warm_start", we put out a WARNING
+# in forecast_postdet.sh
+if [[ -f "${DATA}/ufs.cpld.cpl.r.nc" ]]; then
   cmeps_run_type='continue'
 else
   cmeps_run_type='startup'
@@ -42,11 +46,11 @@ CHMPETS=${CHMPETS:-${ATMPETS}}
 USE_MOMMESH=${USE_MOMMESH:-"true"}
 MESH_OCN_ICE=${MESH_OCN_ICE:-"mesh.mx${ICERES}.nc"}
 
-if [[ $OCNRES = "100" ]];  then
-  EPS_IMESH='2.5e-1'
-else
-  EPS_IMESH='1.0e-1'
-fi
+case "${OCNRES}" in
+  "500") EPS_IMESH="4.0e-1";;
+  "100") EPS_IMESH="2.5e-1";;
+  *) EPS_IMESH="1.0e-1";;
+esac
 
 rm -f $DATA/nems.configure
 

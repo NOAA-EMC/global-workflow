@@ -7,12 +7,12 @@ Entry point for setting up an experiment in the global-workflow
 import os
 import glob
 import shutil
-from datetime import datetime
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
 from hosts import Host
 
 from pygw.yaml_file import YAMLFile
+from pygw.timetools import to_datetime, to_timedelta, datetime_to_YMDH
 
 
 _here = os.path.dirname(__file__)
@@ -55,46 +55,97 @@ def fill_COMROT_cycled(host, inputs):
     Implementation of 'fill_COMROT' for cycled mode
     """
 
-    idatestr = inputs.idate.strftime('%Y%m%d%H')
     comrot = os.path.join(inputs.comrot, inputs.pslot)
 
-    if inputs.icsdir is not None:
-        # Link ensemble member initial conditions
-        if inputs.nens > 0:
-            enkfdir = f'enkf{inputs.cdump}.{idatestr[:8]}/{idatestr[8:]}'
-            makedirs_if_missing(os.path.join(comrot, enkfdir))
+    do_ocean = do_ice = do_med = False
+    if inputs.app in ['S2S', 'S2SW']:
+        do_ocean = do_ice = do_med = True
 
-            # Link atmospheric files (ocean, ice, coming TBD ...)
-            for ii in range(1, inputs.nens + 1):
-                memdir = f'mem{ii:03d}/atmos'
-                dst_dir = os.path.join(comrot, enkfdir, memdir, 'INPUT')
-                src_dir = os.path.join(inputs.icsdir, enkfdir, memdir, 'INPUT')
-                makedirs_if_missing(dst_dir)
-                files = os.listdir(src_dir)
-                for fname in files:
-                    os.symlink(os.path.join(src_dir, fname),
-                               os.path.join(dst_dir, fname))
+    if inputs.icsdir is None:
+        print("User did not provide path to stage initial conditions in COMROT")
+        return
 
-        # Link deterministic initial conditions
-        detdir = f'{inputs.cdump}.{idatestr[:8]}/{idatestr[8:]}'
-        makedirs_if_missing(os.path.join(comrot, detdir))
+    rdatestr = datetime_to_YMDH(inputs.idate - to_timedelta('T06H'))
+    idatestr = datetime_to_YMDH(inputs.idate)
 
-        # Link atmospheric files (ocean, ice, TBD ...)
-        dst_dir = os.path.join(comrot, detdir, 'atmos/INPUT')
-        src_dir = os.path.join(inputs.icsdir, detdir, 'atmos/INPUT')
-        makedirs_if_missing(dst_dir)
+    if inputs.start in ['warm']:  # This is warm start experiment (only meaningful for atmos)
+        atmos_dir = med_dir = 'RESTART'
+    elif inputs.start in ['cold']:  # This is a cold start experiment
+        atmos_dir = 'INPUT'
+        med_dir = ''  # no mediator files for a "cold start"
+        do_med = False
+    ocean_dir = ice_dir = 'RESTART'  # ocean and ice have the same filenames for warm and cold
+
+    def link_files_from_src_to_dst(src_dir, dst_dir):
         files = os.listdir(src_dir)
         for fname in files:
             os.symlink(os.path.join(src_dir, fname),
                        os.path.join(dst_dir, fname))
+        return
 
-        # Link bias correction and radiance diagnostics files
-        src_dir = os.path.join(inputs.icsdir, detdir, 'atmos')
-        dst_dir = os.path.join(comrot, detdir, 'atmos')
-        for ftype in ['abias', 'abias_pc', 'abias_air', 'radstat']:
-            fname = f'{inputs.cdump}.t{idatestr[8:]}z.{ftype}'
-            os.symlink(os.path.join(src_dir, f'{fname}'),
-                       os.path.join(dst_dir, f'{fname}'))
+    # Link ensemble member initial conditions
+    if inputs.nens > 0:
+        if inputs.start in ['warm']:
+            enkfdir = f'enkf{inputs.cdump}.{rdatestr[:8]}/{rdatestr[8:]}'
+        elif inputs.start in ['cold']:
+            enkfdir = f'enkf{inputs.cdump}.{idatestr[:8]}/{idatestr[8:]}'
+
+        for ii in range(1, inputs.nens + 1):
+            memdir = f'mem{ii:03d}'
+            # Link atmospheric files
+            dst_dir = os.path.join(comrot, enkfdir, memdir, 'atmos', atmos_dir)
+            src_dir = os.path.join(inputs.icsdir, enkfdir, memdir, 'atmos', atmos_dir)
+            makedirs_if_missing(dst_dir)
+            link_files_from_src_to_dst(src_dir, dst_dir)
+            # ocean, ice, etc. TBD ...
+
+    # Link deterministic initial conditions
+
+    # Link atmospheric files
+    if inputs.start in ['warm']:
+        detdir = f'{inputs.cdump}.{rdatestr[:8]}/{rdatestr[8:]}'
+    elif inputs.start in ['cold']:
+        detdir = f'{inputs.cdump}.{idatestr[:8]}/{idatestr[8:]}'
+
+    dst_dir = os.path.join(comrot, detdir, 'atmos', atmos_dir)
+    src_dir = os.path.join(inputs.icsdir, detdir, 'atmos', atmos_dir)
+    makedirs_if_missing(dst_dir)
+    link_files_from_src_to_dst(src_dir, dst_dir)
+
+    # Link ocean files
+    if do_ocean:
+        detdir = f'{inputs.cdump}.{rdatestr[:8]}/{rdatestr[8:]}'
+        dst_dir = os.path.join(comrot, detdir, 'ocean', ocean_dir)
+        src_dir = os.path.join(inputs.icsdir, detdir, 'ocean', ocean_dir)
+        makedirs_if_missing(dst_dir)
+        link_files_from_src_to_dst(src_dir, dst_dir)
+
+    # Link ice files
+    if do_ice:
+        detdir = f'{inputs.cdump}.{rdatestr[:8]}/{rdatestr[8:]}'
+        dst_dir = os.path.join(comrot, detdir, 'ice', ice_dir)
+        src_dir = os.path.join(inputs.icsdir, detdir, 'ice', ice_dir)
+        makedirs_if_missing(dst_dir)
+        link_files_from_src_to_dst(src_dir, dst_dir)
+
+    # Link mediator files
+    if do_med:
+        detdir = f'{inputs.cdump}.{rdatestr[:8]}/{rdatestr[8:]}'
+        dst_dir = os.path.join(comrot, detdir, 'med', med_dir)
+        src_dir = os.path.join(inputs.icsdir, detdir, 'med', med_dir)
+        makedirs_if_missing(dst_dir)
+        link_files_from_src_to_dst(src_dir, dst_dir)
+
+    # Link bias correction and radiance diagnostics files
+    detdir = f'{inputs.cdump}.{idatestr[:8]}/{idatestr[8:]}'
+    src_dir = os.path.join(inputs.icsdir, detdir, 'atmos')
+    dst_dir = os.path.join(comrot, detdir, 'atmos')
+    makedirs_if_missing(dst_dir)
+    for ftype in ['abias', 'abias_pc', 'abias_air', 'radstat']:
+        fname = f'{inputs.cdump}.t{idatestr[8:]}z.{ftype}'
+        src_file = os.path.join(src_dir, fname)
+        if os.path.exists(src_file):
+            os.symlink(src_file, os.path.join(dst_dir, fname))
 
     return
 
@@ -164,8 +215,8 @@ def edit_baseconfig(host, inputs):
     extend_dict = dict()
     extend_dict = {
         "@PSLOT@": inputs.pslot,
-        "@SDATE@": inputs.idate.strftime('%Y%m%d%H'),
-        "@EDATE@": inputs.edate.strftime('%Y%m%d%H'),
+        "@SDATE@": datetime_to_YMDH(inputs.idate),
+        "@EDATE@": datetime_to_YMDH(inputs.edate),
         "@CASECTL@": f'C{inputs.resdet}',
         "@EXPDIR@": inputs.expdir,
         "@ROTDIR@": inputs.comrot,
@@ -182,19 +233,20 @@ def edit_baseconfig(host, inputs):
         extend_dict = {
             "@CASEENS@": f'C{inputs.resens}',
             "@NMEM_ENKF@": inputs.nens,
+            "@DOHYBVAR@": "YES" if inputs.nens > 0 else "NO",
         }
         tmpl_dict = dict(tmpl_dict, **extend_dict)
 
+    # Determine CCPP suite and MP based on mode and app
+    gfsv16 = {"@CCPP_SUITE@": "FV3_GFS_v16", "@IMP_PHYSICS@": 11}
+    gfsv17 = {"@CCPP_SUITE@": "FV3_GFS_v17_p8", "@IMP_PHYSICS@": 8}
     if inputs.mode in ['cycled']:
-        extend_dict = {
-            "@CCPP_SUITE@": 'FV3_GFS_v16',
-            "@IMP_PHYSICS@": 11
-        }
+        if inputs.app in ['ATM']:
+            extend_dict = gfsv16
+        elif inputs.app in ['S2S', 'S2SW']:
+            extend_dict = gfsv17
     elif inputs.mode in ['forecast-only']:
-        extend_dict = {
-            "@CCPP_SUITE@": 'FV3_GFS_v17_p8',
-            "@IMP_PHYSICS@": 8
-        }
+        extend_dict = gfsv17
     tmpl_dict = dict(tmpl_dict, **extend_dict)
 
     base_input = f'{inputs.configdir}/config.base.emc.dyn'
@@ -268,8 +320,8 @@ def input_args():
         subp.add_argument('--expdir', help='full path to EXPDIR',
                           type=str, required=False, default=os.getenv('HOME'))
         subp.add_argument('--idate', help='starting date of experiment, initial conditions must exist!',
-                          required=True, type=lambda dd: datetime.strptime(dd, '%Y%m%d%H'))
-        subp.add_argument('--edate', help='end date experiment', required=True, type=lambda dd: datetime.strptime(dd, '%Y%m%d%H'))
+                          required=True, type=lambda dd: to_datetime(dd))
+        subp.add_argument('--edate', help='end date experiment', required=True, type=lambda dd: to_datetime(dd))
         subp.add_argument('--icsdir', help='full path to initial condition directory', type=str, required=False, default=None)
         subp.add_argument('--configdir', help='full path to directory containing the config files',
                           type=str, required=False, default=os.path.join(_top, 'parm/config'))
@@ -283,28 +335,32 @@ def input_args():
         subp.add_argument('--yaml', help='Defaults to substitute from', type=str,
                           required=False, default=os.path.join(_top, 'parm/config/yaml/defaults.yaml'))
 
+    ufs_apps = ['ATM', 'ATMA', 'ATMW', 'S2S', 'S2SW']
+
     # cycled mode additional arguments
     cycled.add_argument('--resens', help='resolution of the ensemble model forecast',
                         type=int, required=False, default=192)
     cycled.add_argument('--nens', help='number of ensemble members',
                         type=int, required=False, default=20)
     cycled.add_argument('--app', help='UFS application', type=str,
-                        choices=['ATM', 'ATMW', 'ATMA'], required=False, default='ATM')
+                        choices=ufs_apps, required=False, default='ATM')
 
     # forecast only mode additional arguments
-    forecasts.add_argument('--app', help='UFS application', type=str, choices=[
-        'ATM', 'ATMA', 'ATMW', 'S2S', 'S2SW', 'S2SWA', 'NG-GODAS'], required=False, default='ATM')
+    forecasts.add_argument('--app', help='UFS application', type=str,
+                           choices=ufs_apps + ['S2SWA'], required=False, default='ATM')
 
     args = parser.parse_args()
 
-    if args.app in ['S2S', 'S2SW'] and args.icsdir is None:
-        raise SyntaxError("An IC directory must be specified with --icsdir when running the S2S or S2SW app")
+    if args.mode in ['forecast-only'] and args.app in ['S2S', 'S2SW'] and args.icsdir is None:
+        raise SyntaxError("An IC directory must be specified with --icsdir when running the S2S or S2SW app in forecast-only mode")
 
     # Add an entry for warm_start = .true. or .false.
-    if args.start == "warm":
+    if args.start in ['warm']:
         args.warm_start = ".true."
-    else:
+    elif args.start in ['cold']:
         args.warm_start = ".false."
+    print(args.warm_start)
+
     return args
 
 
