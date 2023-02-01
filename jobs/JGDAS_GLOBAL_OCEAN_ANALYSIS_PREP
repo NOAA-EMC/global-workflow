@@ -24,8 +24,6 @@ export GDUMP=${GDUMP:-"gdas"}
 export OPREFIX="${CDUMP}.t${cyc}z."
 export GPREFIX="${GDUMP}.t${gcyc}z."
 export APREFIX="${CDUMP}.t${cyc}z."
-export GSUFFIX=${GSUFFIX:-${SUFFIX}}
-export ASUFFIX=${ASUFFIX:-${SUFFIX}}
 
 export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/ocean}
 
@@ -33,6 +31,11 @@ mkdir -p "${COMOUT}"
 
 # COMIN_GES and COMIN_GES_ENS are used in script
 export COMIN_GES="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/ocean"
+
+# Add UFSDA to PYTHONPATH
+ufsdaPATH="${HOMEgfs}/sorc/gdas.cd/ush/"
+PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${ufsdaPATH}"
+export PYTHONPATH
 
 ###############################################################
 # Run relevant script

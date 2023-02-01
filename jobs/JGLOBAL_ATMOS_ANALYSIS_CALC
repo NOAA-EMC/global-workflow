@@ -25,9 +25,6 @@ GDUMP=${GDUMP:-"gdas"}
 export OPREFIX="${CDUMP}.t${cyc}z."
 export GPREFIX="${GDUMP}.t${gcyc}z."
 export APREFIX="${CDUMP}.t${cyc}z."
-export GSUFFIX=${GSUFFIX:-${SUFFIX}}
-export ASUFFIX=${ASUFFIX:-${SUFFIX}}
-
 
 if [ ${RUN_ENVIR} = "nco" -o ${ROTDIR_DUMP:-NO} = "YES" ]; then
     export COMIN=${COMIN:-${ROTDIR}/${RUN}.${PDY}/${cyc}/atmos}
@@ -36,8 +33,8 @@ if [ ${RUN_ENVIR} = "nco" -o ${ROTDIR_DUMP:-NO} = "YES" ]; then
     export COMIN_GES_OBS=${COMIN_GES_OBS:-$(compath.py ${envir}/obsproc/${obsproc_ver})/${GDUMP}.${gPDY}/${gcyc}/atmos}
 else
     export COMOUT="${ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos"
-    export COMIN_OBS="${DMPDIR}/${CDUMP}.${PDY}/${cyc}/atmos"
-    export COMIN_GES_OBS="${DMPDIR}/${GDUMP}.${gPDY}/${gcyc}/atmos"
+    export COMIN_OBS="${COMIN_OBS:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/obs}"
+    export COMIN_GES_OBS="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/obs"
 fi
 mkdir -m 775 -p ${COMOUT}
 # COMIN_GES and COMIN_GES_ENS are used in script
@@ -45,7 +42,7 @@ export COMIN_GES="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/atmos"
 export COMIN_GES_ENS="${ROTDIR}/enkfgdas.${gPDY}/${gcyc}"
 
 
-export ATMGES="${COMIN_GES}/${GPREFIX}atmf006${GSUFFIX}"
+export ATMGES="${COMIN_GES}/${GPREFIX}atmf006.nc"
 if [ ! -f ${ATMGES} ]; then
     echo "FATAL ERROR: FILE MISSING: ATMGES = ${ATMGES}"
     exit 1
@@ -59,7 +56,7 @@ status=$?
 
 
 if [ ${DOHYBVAR} = "YES" ]; then
-    export ATMGES_ENSMEAN="${COMIN_GES_ENS}/${GPREFIX}atmf006.ensmean${GSUFFIX}"
+    export ATMGES_ENSMEAN="${COMIN_GES_ENS}/${GPREFIX}atmf006.ensmean.nc"
     if [ ! -f ${ATMGES_ENSMEAN} ]; then
         echo "FATAL ERROR: FILE MISSING: ATMGES_ENSMEAN = ${ATMGES_ENSMEAN}"
         exit 2
@@ -86,7 +83,7 @@ status=$?
 ##############################################
 # Final processing
 ##############################################
-if [ -e "${pgmout}" ] ; then
+if [[ -e "${pgmout}" ]] ; then
   cat ${pgmout}
 fi
 

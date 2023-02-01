@@ -69,7 +69,7 @@ if [ ${VRFYFITS} = "YES" -a ${CDUMP} = ${CDFNL} -a ${CDATE} != ${SDATE} ]; then
     xdate=$(${NDATE} -${VBACKUP_FITS} ${CDATE})
 
     export RUN_ENVIR_SAVE=${RUN_ENVIR}
-    export RUN_ENVIR=${OUTPUT_FILE}
+    export RUN_ENVIR="netcdf"
 
     ${PREPQFITSH} ${PSLOT} ${xdate} ${ROTDIR} ${ARCDIR} ${TMPDIR}
 

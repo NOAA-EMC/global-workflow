@@ -6,6 +6,23 @@ if [[ "${DEBUG_WORKFLOW:-NO}" == "NO" ]]; then
     set +x
 fi
 
+# Read optional module argument, default is to use GDAS
+MODS="GDAS"
+if [[ $# -gt 0 ]]; then
+  case "$1" in
+    --eva)
+      MODS="EVA"
+      ;;
+    --gdas)
+      MODS="GDAS"
+      ;;
+    *)
+      echo "Invalid option: $1" >&2
+      exit 1
+      ;;
+  esac
+fi
+
 # Setup runtime environment by loading modules
 ulimit_s=$( ulimit -S -s )
 
@@ -23,14 +40,14 @@ elif [[ -d /lfs3 ]] ; then
   echo WARNING: UFSDA NOT SUPPORTED ON THIS PLATFORM
 elif [[ -d /scratch1 ]] ; then
   # We are on NOAA Hera
-  module load GDAS/hera
+  module load "${MODS}/hera"
   if [[ "${DEBUG_WORKFLOW}" == "YES" ]] ; then
      module list
      pip list
   fi
 elif [[ -d /work ]] ; then
   # We are on MSU Orion
-  module load GDAS/orion
+  module load "${MODS}/orion"
   if [[ "${DEBUG_WORKFLOW}" == "YES" ]] ; then
      module list
      pip list

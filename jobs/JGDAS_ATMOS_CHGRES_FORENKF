@@ -25,9 +25,6 @@ GDUMP=${GDUMP:-"gdas"}
 export OPREFIX="${CDUMP}.t${cyc}z."
 export GPREFIX="${GDUMP}.t${gcyc}z."
 export APREFIX="${CDUMP}.t${cyc}z."
-export GSUFFIX=${GSUFFIX:-${SUFFIX}}
-export ASUFFIX=${ASUFFIX:-${SUFFIX}}
-
 
 if [ ${RUN_ENVIR} = "nco" -o ${ROTDIR_DUMP:-NO} = "YES" ]; then
     export COMIN=${COMIN:-${ROTDIR}/${RUN}.${PDY}/${cyc}/atmos}
@@ -38,8 +35,8 @@ if [ ${RUN_ENVIR} = "nco" -o ${ROTDIR_DUMP:-NO} = "YES" ]; then
 else
     export COMOUT="${ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos"
     export COMOUT_ENS="${ROTDIR}/enkfgdas.${PDY}/${cyc}"
-    export COMIN_OBS="${DMPDIR}/${CDUMP}.${PDY}/${cyc}/atmos"
-    export COMIN_GES_OBS="${DMPDIR}/${GDUMP}.${gPDY}/${gcyc}/atmos"
+    export COMIN_OBS="${COMIN_OBS:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/obs}"
+    export COMIN_GES_OBS="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/obs"
 fi
 mkdir -m 775 -p ${COMOUT}
 # COMIN_GES and COMIN_GES_ENS are used in script
@@ -60,7 +57,7 @@ status=$?
 ##############################################
 # Final processing
 ##############################################
-if [ -e "${pgmout}" ] ; then
+if [[ -e "${pgmout}" ]] ; then
   cat ${pgmout}
 fi
 
