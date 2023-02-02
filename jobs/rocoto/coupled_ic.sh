@@ -13,13 +13,6 @@ source "$HOMEgfs/ush/preamble.sh"
 ###############################################################
 
 ###############################################################
-# Source workflow modules
-. "${HOMEgfs}/ush/load_fv3gfs_modules.sh"  # TODO: Do we need any modules for this job??
-status=$?
-[[ $status -ne 0 ]] && exit $status
-err=0
-
-###############################################################
 # Source relevant configs
 configs="base coupled_ic wave"
 for config in ${configs}; do
@@ -67,7 +60,7 @@ for ftype in gfs_data sfc_data; do
   done
 done
 
-# Stage ocean initial conditions to ROTDIR (warm start), Not sure if there exists a "cold start" for ocean
+# Stage ocean initial conditions to ROTDIR (warm start)
 OCNdir="${ROTDIR}/${CDUMP}.${gPDY}/${gcyc}/ocean/RESTART"
 [[ ! -d "${OCNdir}" ]] && mkdir -p "${OCNdir}"
 source="${BASE_CPLIC}/${CPL_OCNIC}/${PDY}${cyc}/ocn/${OCNRES}/MOM.res.nc"
@@ -107,7 +100,7 @@ rc=$?
 [[ ${rc} -ne 0 ]] && error_message "${source}" "${target}" "${rc}"
 err=$((err + rc))
 
-# Stage the WW3 initial conditions to ROTDIR (unsure if these should be treated as warm start or cold start)
+# Stage the WW3 initial conditions to ROTDIR (warm start; TODO: these should be placed in $RUN.$gPDY/$gcyc)
 if [[ "${DO_WAVE}" = "YES" ]]; then
   WAVdir="${ROTDIR}/${CDUMP}.${PDY}/${cyc}/wave/restart"
   [[ ! -d "${WAVdir}" ]] && mkdir -p "${WAVdir}"
