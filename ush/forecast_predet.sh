@@ -42,7 +42,6 @@ common_predet(){
   CDATE=${CDATE:-2017032500}
   DATA=${DATA:-$pwd/fv3tmp$$}    # temporary running directory
   ROTDIR=${ROTDIR:-$pwd}         # rotating archive directory
-  ICSDIR=${ICSDIR:-$pwd}         # cold start initial conditions
 }
 
 DATM_predet(){
@@ -102,7 +101,6 @@ FV3_GFS_predet(){
   FIXfv3=${FIXfv3:-$FIX_DIR/orog}
   DATA=${DATA:-$pwd/fv3tmp$$}    # temporary running directory
   ROTDIR=${ROTDIR:-$pwd}         # rotating archive directory
-  ICSDIR=${ICSDIR:-$pwd}         # cold start initial conditions
   DMPDIR=${DMPDIR:-$pwd}         # global dumps for seaice, snow and sst analysis
 
   # Model resolution specific parameters

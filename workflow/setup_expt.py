@@ -220,7 +220,6 @@ def edit_baseconfig(host, inputs):
         "@CASECTL@": f'C{inputs.resdet}',
         "@EXPDIR@": inputs.expdir,
         "@ROTDIR@": inputs.comrot,
-        "@ICSDIR@": inputs.icsdir,
         "@EXP_WARM_START@": inputs.warm_start,
         "@MODE@": inputs.mode,
         "@gfs_cyc@": inputs.gfs_cyc,
@@ -296,7 +295,6 @@ def input_args():
         Setup files and directories to start a GFS parallel.\n
         Create EXPDIR, copy config files.\n
         Create COMROT experiment directory structure,
-        link initial condition files from $ICSDIR to $COMROT
         """
 
     parser = ArgumentParser(description=description,
@@ -322,7 +320,6 @@ def input_args():
         subp.add_argument('--idate', help='starting date of experiment, initial conditions must exist!',
                           required=True, type=lambda dd: to_datetime(dd))
         subp.add_argument('--edate', help='end date experiment', required=True, type=lambda dd: to_datetime(dd))
-        subp.add_argument('--icsdir', help='full path to initial condition directory', type=str, required=False, default=None)
         subp.add_argument('--configdir', help='full path to directory containing the config files',
                           type=str, required=False, default=os.path.join(_top, 'parm/config'))
         subp.add_argument('--cdump', help='CDUMP to start the experiment',
@@ -338,6 +335,7 @@ def input_args():
     ufs_apps = ['ATM', 'ATMA', 'ATMW', 'S2S', 'S2SW']
 
     # cycled mode additional arguments
+    cycled.add_argument('--icsdir', help='full path to initial condition directory', type=str, required=False, default=None)
     cycled.add_argument('--resens', help='resolution of the ensemble model forecast',
                         type=int, required=False, default=192)
     cycled.add_argument('--nens', help='number of ensemble members',
@@ -350,9 +348,6 @@ def input_args():
                            choices=ufs_apps + ['S2SWA'], required=False, default='ATM')
 
     args = parser.parse_args()
-
-    if args.mode in ['forecast-only'] and args.app in ['S2S', 'S2SW'] and args.icsdir is None:
-        raise SyntaxError("An IC directory must be specified with --icsdir when running the S2S or S2SW app in forecast-only mode")
 
     # Add an entry for warm_start = .true. or .false.
     if args.start in ['warm']:

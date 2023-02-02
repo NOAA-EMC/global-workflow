@@ -111,7 +111,6 @@ fi
 export DATAROOT="${STMP}/RUNDIRS/${PSLOT}"  # TODO: set via prod_envir in Ops
 export RUNDIR="${DATAROOT}"  # TODO: Should be removed; use DATAROOT instead
 export ARCDIR="${NOSCRUB}/archive/${PSLOT}"
-export ICSDIR="@ICSDIR@"
 export ATARDIR="@ATARDIR@"
 
 # Commonly defined parameters in JJOBS
