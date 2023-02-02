@@ -89,6 +89,11 @@ case $OCNRES in
       fi
     done
   ;;
+  *)
+    echo "FATAL ERROR: Unsupported ocean resolution ${OCNRES}"
+    rc=1
+    err=$((err + rc))
+  ;;
 esac
 
 # Stage ice initial conditions to ROTDIR (cold start as these are SIS2 generated)
@@ -106,7 +111,7 @@ err=$((err + rc))
 if [[ "${DO_WAVE}" = "YES" ]]; then
   WAVdir="${ROTDIR}/${CDUMP}.${PDY}/${cyc}/wave/restart"
   [[ ! -d "${WAVdir}" ]] && mkdir -p "${WAVdir}"
-  for grdID in "${waveGRD}"; do
+  for grdID in ${waveGRD}; do  # TODO: check if this is a bash array; if so adjust
     source="${BASE_CPLIC}/${CPL_WAVIC}/${PDY}${cyc}/wav/${grdID}/${PDY}.${cyc}0000.restart.${grdID}"
     target="${WAVdir}/${PDY}.${cyc}0000.restart.${grdID}"
     ${NCP} "${source}" "${target}"
