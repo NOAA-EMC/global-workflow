@@ -289,7 +289,11 @@ export IAU_DELTHRS_ENKF=6
 export lobsdiag_forenkf=".true."
 
 # run GLDAS to spin up land ICs
-export DO_GLDAS="YES"
+if [[ $machine == "JET" ]]; then
+   export DO_GLDAS="NO"
+else
+   export DO_GLDAS="YES"
+fi
 export gldas_cyc=00
 
 # Exception handling that when DO_GLDAS is set, the FHOUT must be 1

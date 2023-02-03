@@ -761,6 +761,10 @@ elif [ ${step} = "esfc" ]; then
     export nth_cycle=${nth_esfc}
     export npe_node_cycle=$(echo "${npe_node_max} / ${nth_cycle}" | bc)
     export memory_esfc="80GB"
+    #xjet only has 64GB of memory
+    if [[ ${PARTITION_BATCH} = "xjet" ]]; then
+       export memory_esfc="60GB"
+    fi
 
 elif [ ${step} = "efcs" ]; then
 
