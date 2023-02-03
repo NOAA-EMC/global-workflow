@@ -109,8 +109,12 @@ fi
 # Cyclone genesis and cyclone track verification
 #-------------------------------------------------
 
-export ens_tracker_ver=v1.1.15.4
-export HOMEens_tracker=/lfs1/NESDIS/nesdis-rdo2/David.Huber/TC_Tracker/TC_tracker.v1.1.15.4
+export ens_tracker_ver=v1.1.15.5
+export HOMEens_tracker=$BASE_GIT/TC_tracker/${ens_tracker_ver}
+if [[ ${machine} = "JET" ]]; then
+   export ens_tracker_ver=v1.1.15.4
+   export HOMEens_tracker=/lfs1/NESDIS/nesdis-rdo2/David.Huber/TC_Tracker/TC_tracker.v1.1.15.4
+fi
 
 if [ "$VRFYTRAK" = "YES" ]; then
 
