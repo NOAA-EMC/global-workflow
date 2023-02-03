@@ -9,7 +9,7 @@ load(pathJoin("hpc-intel", "18.0.5.274"))
 load(pathJoin("hpc-impi", "2018.4.274"))
 load(pathJoin("cmake", "3.20.1"))
 
-load(pathJoin("hpss"))
+load("hpss")
 load(pathJoin("nco", "4.9.1"))
 load(pathJoin("gempak", "7.4.2"))
 load(pathJoin("ncl", "6.6.2"))
