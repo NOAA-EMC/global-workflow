@@ -758,20 +758,16 @@ MOM6_postdet() {
   OCNRES=${OCNRES:-"025"}  # TODO: remove from here and lift higher
 
   # Copy MOM6 ICs
-  if [[ "${MODE}" = 'cycled' ]]; then  # TODO: remove this block after ICSDIR is corrected for forecast-only
-    $NLN "${ROTDIR}/${CDUMP}.${gPDY}/${gcyc}/ocean/RESTART/${PDY}.${cyc}0000.MOM.res.nc" "${DATA}/INPUT/MOM.res.nc"
-    case $OCNRES in
-      "025")
-        for nn in $(seq 1 4); do
-          if [[ -f "${ROTDIR}/${CDUMP}.${gPDY}/${gcyc}/ocean/RESTART/${PDY}.${cyc}0000.MOM.res_${nn}.nc" ]]; then
-            $NLN "${ROTDIR}/${CDUMP}.${gPDY}/${gcyc}/ocean/RESTART/${PDY}.${cyc}0000.MOM.res_${nn}.nc" "${DATA}/INPUT/MOM.res_${nn}.nc"
-          fi
-        done
-      ;;
-    esac
-  else
-    $NCP -pf "${ICSDIR}/${CDATE}"/ocn/MOM*.nc "${DATA}/INPUT/"  # TODO: Update files in ICSDIR to reflect COM structure naming convention
-  fi
+  $NLN "${ROTDIR}/${CDUMP}.${gPDY}/${gcyc}/ocean/RESTART/${PDY}.${cyc}0000.MOM.res.nc" "${DATA}/INPUT/MOM.res.nc"
+  case $OCNRES in
+    "025")
+      for nn in $(seq 1 4); do
+        if [[ -f "${ROTDIR}/${CDUMP}.${gPDY}/${gcyc}/ocean/RESTART/${PDY}.${cyc}0000.MOM.res_${nn}.nc" ]]; then
+          $NLN "${ROTDIR}/${CDUMP}.${gPDY}/${gcyc}/ocean/RESTART/${PDY}.${cyc}0000.MOM.res_${nn}.nc" "${DATA}/INPUT/MOM.res_${nn}.nc"
+        fi
+      done
+    ;;
+  esac
 
   # Copy MOM6 fixed files
   $NCP -pf $FIXmom/$OCNRES/* $DATA/INPUT/
@@ -1012,11 +1008,10 @@ CICE_postdet() {
   export MESH_OCN_ICE=${MESH_OCN_ICE:-"mesh.mx${ICERES}.nc"}
 
   # Copy/link CICE IC to DATA
-  if [[ "${MODE}" = 'cycled' ]]; then  # TODO: remove this block after ICSDIR is corrected for forecast-only
+  if [[ "${warm_start}" = ".true." ]]; then
     $NLN "${ROTDIR}/${CDUMP}.${gPDY}/${gcyc}/ice/RESTART/${PDY}.${cyc}0000.cice_model.res.nc" "${DATA}/cice_model.res.nc"
-  else
-    ICERESdec=$(echo "${ICERES}" | awk '{printf "%0.2f", $1/100}')
-    $NCP -p $ICSDIR/$CDATE/ice/cice_model_${ICERESdec}.res_$CDATE.nc $DATA/cice_model.res.nc
+  else # cold start are typically SIS2 restarts obtained from somewhere else e.g. CPC
+    $NLN "${ROTDIR}/${CDUMP}.${PDY}/${cyc}/ice/RESTART/${PDY}.${cyc}0000.cice_model.res.nc" "${DATA}/cice_model.res.nc"
   fi
   # TODO: add a check for the restarts to exist, if not, exit eloquently
   rm -f "${DATA}/ice.restart_file"
