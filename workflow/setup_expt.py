@@ -354,7 +354,6 @@ def input_args():
         args.warm_start = ".true."
     elif args.start in ['cold']:
         args.warm_start = ".false."
-    print(args.warm_start)
 
     return args
 
