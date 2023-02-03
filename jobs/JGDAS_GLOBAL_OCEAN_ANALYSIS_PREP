@@ -32,6 +32,11 @@ mkdir -p "${COMOUT}"
 # COMIN_GES and COMIN_GES_ENS are used in script
 export COMIN_GES="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/ocean"
 
+# Add UFSDA to PYTHONPATH
+ufsdaPATH="${HOMEgfs}/sorc/gdas.cd/ush/"
+PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${ufsdaPATH}"
+export PYTHONPATH
+
 ###############################################################
 # Run relevant script
 

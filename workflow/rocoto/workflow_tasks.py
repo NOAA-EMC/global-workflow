@@ -13,7 +13,7 @@ class Tasks:
     VALID_TASKS = ['aerosol_init', 'coupled_ic', 'getic', 'init',
                    'prep', 'anal', 'sfcanl', 'analcalc', 'analdiag', 'gldas', 'arch',
                    'atmanalprep', 'atmanalrun', 'atmanalpost',
-                   'ocnanalprep', 'ocnanalrun', 'ocnanalpost',
+                   'ocnanalprep', 'ocnanalbmat', 'ocnanalrun', 'ocnanalpost',
                    'earc', 'ecen', 'echgres', 'ediag', 'efcs',
                    'eobs', 'eomg', 'epos', 'esfc', 'eupd',
                    'atmensanalprep', 'atmensanalrun', 'atmensanalpost',
@@ -516,10 +516,26 @@ class Tasks:
 
         return task
 
-    def ocnanalrun(self):
+    def ocnanalbmat(self):
 
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump}ocnanalprep'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('ocnanalbmat')
+        task = create_wf_task('ocnanalbmat',
+                              resources,
+                              cdump=self.cdump,
+                              envar=self.envars,
+                              dependency=dependencies)
+
+        return task
+
+    def ocnanalrun(self):
+
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}ocnanalbmat'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -668,7 +684,8 @@ class Tasks:
         return self._post_task('post', add_anl_to_post=add_anl_to_post)
 
     def ocnpost(self):
-        return self._post_task('ocnpost', add_anl_to_post=False)
+        if self.app_config.mode in ['forecast-only']:  # TODO: fix ocnpost in cycled mode
+            return self._post_task('ocnpost', add_anl_to_post=False)
 
     def _post_task(self, task_name, add_anl_to_post=False):
         if task_name not in ['post', 'ocnpost']:
@@ -1013,8 +1030,9 @@ class Tasks:
                 dep_dict = {'type': 'task', 'name': f'{self.cdump}wavepostbndpnt'}
                 deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_ocean:
-            dep_dict = {'type': 'metatask', 'name': f'{self.cdump}ocnpost'}
-            deps.append(rocoto.add_dependency(dep_dict))
+            if self.app_config.mode in ['forecast-only']:  # TODO: fix ocnpost to run in cycled mode
+                dep_dict = {'type': 'metatask', 'name': f'{self.cdump}ocnpost'}
+                deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump

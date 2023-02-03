@@ -10,6 +10,29 @@
 
 # For all non-evironment variables
 # Cycling and forecast hour specific parameters
+
+to_seconds() {
+  # Function to convert HHMMSS to seconds since 00Z
+  local hhmmss=${1:?}
+  local hh=${hhmmss:0:2}
+  local mm=${hhmmss:2:2}
+  local ss=${hhmmss:4:2}
+  local seconds=$((10#${hh}*3600+10#${mm}*60+10#${ss}))
+  local padded_seconds=$(printf "%05d" ${seconds})
+  echo ${padded_seconds}
+}
+
+middle_date(){
+  # Function to calculate mid-point date in YYYYMMDDHH between two dates also in YYYYMMDDHH
+  local date1=${1:?}
+  local date2=${2:?}
+  local date1s=$(date -d "${date1:0:8} ${date1:8:2}" +%s)
+  local date2s=$(date -d "${date2:0:8} ${date2:8:2}" +%s)
+  local dtsecsby2=$(( $((date2s - date1s)) / 2 ))
+  local mid_date=$(date -d "${date1:0:8} ${date1:8:2} + ${dtsecsby2} seconds" +%Y%m%d%H%M%S)
+  echo ${mid_date:0:10}
+}
+
 common_predet(){
   echo "SUB ${FUNCNAME[0]}: Defining variables for shared through models"
   pwd=$(pwd)
@@ -276,24 +299,12 @@ WW3_predet(){
 
 CICE_predet(){
   echo "SUB ${FUNCNAME[0]}: CICE before run type determination"
-  if [ ! -d $ROTDIR ]; then mkdir -p $ROTDIR; fi
-  if [ ! -d $DATA ]; then mkdir -p $DATA; fi
-  if [ ! -d $DATA/RESTART ]; then mkdir -p $DATA/RESTART; fi
-  if [ ! -d $DATA/INPUT ]; then mkdir -p $DATA/INPUT; fi
-  if [ ! -d $DATA/restart ]; then mkdir -p $DATA/restart; fi
-  if [ ! -d $DATA/history ]; then mkdir -p $DATA/history; fi
-  if [ ! -d $DATA/OUTPUT ]; then mkdir -p $DATA/OUTPUT; fi
+  if [ ! -d $DATA/CICE_OUTPUT ]; then  mkdir -p $DATA/CICE_OUTPUT; fi
+  if [ ! -d $DATA/CICE_RESTART ]; then mkdir -p $DATA/CICE_RESTART; fi
 }
 
 MOM6_predet(){
   echo "SUB ${FUNCNAME[0]}: MOM6 before run type determination"
-  if [ ! -d $ROTDIR ]; then mkdir -p $ROTDIR; fi
-  if [ ! -d $DATA ]; then mkdir -p $DATA; fi
-  if [ ! -d $DATA/RESTART ]; then mkdir -p $DATA/RESTART; fi
-  if [ ! -d $DATA/INPUT ]; then mkdir -p $DATA/INPUT; fi
-  if [ ! -d $DATA/restart ]; then mkdir -p $DATA/restart; fi
-  if [ ! -d $DATA/history ]; then mkdir -p $DATA/history; fi
-  if [ ! -d $DATA/OUTPUT ]; then mkdir -p $DATA/OUTPUT; fi
   if [ ! -d $DATA/MOM6_OUTPUT ]; then mkdir -p $DATA/MOM6_OUTPUT; fi
   if [ ! -d $DATA/MOM6_RESTART ]; then mkdir -p $DATA/MOM6_RESTART; fi
   cd "${DATA}" || exit 8

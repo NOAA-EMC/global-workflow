@@ -6,13 +6,13 @@ GFS Configuration
  
    Schematic flow chart for GFS v16 in operations
 
-The sequence of jobs that are run for an end-to-end (DA+forecast+post processing+verification) GFS configuration using the Global Workflow is shown above. The system utilizes a collection of scripts that perform the tasks for each step.
+The sequence of jobs that are run for an end-to-end (analysis+forecast+post processing+verification) GFS configuration using the Global Workflow is shown above. The system utilizes a collection of scripts that perform the tasks for each step.
 
-For any cycle the system consists of two phases -- the gdas phase which provides the initial guess fields, and the gfs phase which creates the initial conditions and forecast of the system. As with the operational system, the gdas runs for each cycle (00, 06, 12, and 18 UTC), however, to save time and space in experiments, the gfs (right side of the diagram) is initially setup to run for only the 00 UTC cycle. (See the "run GFS this cycle?" portion of the diagram) The option to run the GFS for all four cycles is available (see gfs_cyc variable in configuration file).
+For any cycle the system consists of two suites -- the "gdas" suite which provides the initial guess fields, and the "gfs" suite which creates the initial conditions and forecast of the system. As with the operational system, the gdas runs for each cycle (00, 06, 12, and 18 UTC), however, to save time and space in experiments, the gfs (right side of the diagram) is initially setup to run for only the 00 UTC cycle (See the "run GFS this cycle?" portion of the diagram). The option to run the GFS for all four cycles is available (see the ``gfs_cyc`` variable in configuration file).
 
 An experimental run is different from operations in the following ways:
 
-* Workflow manager: operations utilizes `ecFlow <https://www.ecmwf.int/en/learning/training/introduction-ecmwf-job-scheduler-ecflow>`__, while development currently utilizes `ROCOTO <https://github.com/christopherwharrop/rocoto/wiki/documentation>`__. Note, experiments can also be run using ecFlow. 
+* Workflow manager: operations utilizes `ecFlow <https://www.ecmwf.int/en/learning/training/introduction-ecmwf-job-scheduler-ecflow>`__, while development currently utilizes `ROCOTO <https://github.com/christopherwharrop/rocoto/wiki/documentation>`__. Note, experiments can also be run using ecFlow on platforms with ecFlow servers established. 
 
 * Dump step is not run as it has already been completed during the real-time production runs and dump data is available in the global dump archive on supported machines.
 
@@ -28,8 +28,8 @@ Downstream jobs (e.g. awips, gempak, etc.) are not included in the diagram. Thos
 Jobs in the GFS Configuration 
 =============================
 +-------------------+-----------------------------------------------------------------------------------------------------------------------+
-| Job Name          | Purpose                                                                                                               |
-+-------------------+-----------------------------------------------------------------------------------------------------------------------+
+| JOB NAME          | PURPOSE                                                                                                               |
++===================+=======================================================================================================================+
 | anal              | Runs the analysis. 1) Runs the atmospheric analysis (global_gsi) to produce analysis increments; 2) Update surface    |
 |                   | guess file via global_cycle to create surface analysis on tiles.                                                      |
 +-------------------+-----------------------------------------------------------------------------------------------------------------------+
@@ -44,7 +44,7 @@ Jobs in the GFS Configuration
 | earcN/eamn        | Archival script for EnKF: 1) Write select EnKF output to HPSS; 2) Copy select files to online archive; 3) Clean up    |
 |                   | EnKF temporary run directories; 4) Remove "old" EnKF files from rotating directory.                                   |
 +-------------------+-----------------------------------------------------------------------------------------------------------------------+
-| ecenN/ecmn        | Recenter ensemble members around hi-res deterministic analysis.  Note - GFS v16 recenters ensemble member analysis    |
+| ecenN/ecmn        | Recenter ensemble members around hi-res deterministic analysis.  GFS v16 recenters ensemble member analysis.          |
 |                   | increments.                                                                                                           |
 +-------------------+-----------------------------------------------------------------------------------------------------------------------+
 | echgres           | Runs chgres on full-resolution forecast for EnKF recentering (ecen).                                                  |

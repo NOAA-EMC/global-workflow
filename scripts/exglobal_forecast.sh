@@ -154,7 +154,7 @@ echo "MAIN: Writing name lists and model configuration"
 case $RUN in
   'data') DATM_nml;;
   'gfs' | 'gdas' | 'gefs') FV3_GFS_nml;;
-esac				#no namelist for data atmosphere
+esac
 [[ $cplflx = .true. ]] && MOM6_nml
 [[ $cplwav = .true. ]] && WW3_nml
 [[ $cplice = .true. ]] && CICE_nml
@@ -178,29 +178,21 @@ if [ $esmf_profile ]; then
   export ESMF_RUNTIME_PROFILE_OUTPUT=SUMMARY
 fi
 
-if [ $machine != 'sandbox' ]; then
-  $NCP $FCSTEXECDIR/$FCSTEXEC $DATA/.
-  export OMP_NUM_THREADS=$NTHREADS_FV3
-  $APRUN_FV3 $DATA/$FCSTEXEC 1>&1 2>&2
-  export ERR=$?
-  export err=$ERR
-  $ERRSCRIPT || exit $err
-else
-  echo "MAIN: mpirun launch here"
-fi
+$NCP $FCSTEXECDIR/$FCSTEXEC $DATA/.
+export OMP_NUM_THREADS=$NTHREADS_FV3
+$APRUN_FV3 $DATA/$FCSTEXEC 1>&1 2>&2
+export ERR=$?
+export err=$ERR
+$ERRSCRIPT || exit $err
 
-if [ $machine != 'sandbox' ]; then
-  case $RUN in
-    'data') data_out_Data_ATM;;
-    'gfs' | 'gdas' | 'gefs') data_out_GFS;;
-  esac
-  [[ $cplflx = .true. ]] && MOM6_out
-  [[ $cplwav = .true. ]] && WW3_out
-  [[ $cplice = .true. ]] && CICE_out
-  [[ $esmf_profile = .true. ]] && CPL_out
-else
-  echo "MAIN: Running on sandbox mode, no output linking"
-fi
+case $RUN in
+  'data') data_out_Data_ATM;;
+  'gfs' | 'gdas' | 'gefs') data_out_GFS;;
+esac
+[[ $cplflx = .true. ]] && MOM6_out
+[[ $cplwav = .true. ]] && WW3_out
+[[ $cplice = .true. ]] && CICE_out
+[[ $esmf_profile = .true. ]] && CPL_out
 echo "MAIN: Output copied to COMROT"
 
 #------------------------------------------------------------------

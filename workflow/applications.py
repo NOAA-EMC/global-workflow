@@ -181,6 +181,11 @@ class AppConfig:
         else:
             configs += ['anal', 'analdiag']
 
+        if self.do_jediocnvar:
+            configs += ['ocnanalprep', 'ocnanalbmat', 'ocnanalrun', 'ocnanalpost']
+        if self.do_ocean:
+            configs += ['ocnpost']
+
         configs += ['sfcanl', 'analcalc', 'fcst', 'post', 'vrfy', 'arch']
 
         if self.do_gldas:
@@ -341,13 +346,20 @@ class AppConfig:
         """
 
         gdas_gfs_common_tasks_before_fcst = ['prep']
-        gdas_gfs_common_tasks_after_fcst = ['post', 'vrfy']
+        gdas_gfs_common_tasks_after_fcst = ['post']
+        # if self.do_ocean:  # TODO: uncomment when ocnpost is fixed in cycled mode
+        #    gdas_gfs_common_tasks_after_fcst += ['ocnpost']
+        gdas_gfs_common_tasks_after_fcst += ['vrfy']
+
         gdas_gfs_common_cleanup_tasks = ['arch']
 
         if self.do_jedivar:
             gdas_gfs_common_tasks_before_fcst += ['atmanalprep', 'atmanalrun', 'atmanalpost']
         else:
             gdas_gfs_common_tasks_before_fcst += ['anal']
+
+        if self.do_jediocnvar:
+            gdas_gfs_common_tasks_before_fcst += ['ocnanalprep', 'ocnanalbmat', 'ocnanalrun', 'ocnanalpost']
 
         gdas_gfs_common_tasks_before_fcst += ['sfcanl', 'analcalc']
 
@@ -436,7 +448,12 @@ class AppConfig:
 
         gfs_tasks += gdas_gfs_common_cleanup_tasks
 
-        tasks = {'gdas': gdas_tasks, 'gfs': gfs_tasks}
+        tasks = dict()
+        tasks['gdas'] = gdas_tasks
+
+        # Add CDUMP=gfs tasks if running early cycle
+        if self.gfs_cyc > 0:
+            tasks['gfs'] = gfs_tasks
 
         return tasks
 
