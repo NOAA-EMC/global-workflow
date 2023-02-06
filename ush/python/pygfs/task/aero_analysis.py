@@ -123,7 +123,7 @@ class AerosolAnalysis(Analysis):
         - copying the guess files to the ROTDIR
         - applying the increments to the original RESTART files
         - moving the increment files to the ROTDIR
-    
+
         Please note that some of these steps are temporary and will be modified
         once the model is able to read aerosol tracer increments.
         """
@@ -206,7 +206,7 @@ class AerosolAnalysis(Analysis):
         ----------
         task_config: Dict
             a dictionary containing all of the configuration needed for the task
-        
+
         Returns
         ----------
         bkg_dict: Dict
@@ -240,7 +240,7 @@ class AerosolAnalysis(Analysis):
         """Compile a dictionary of background error files to copy
 
         This method will construct a dictionary of BUMP background error files
-        for global aerosol DA and return said dictionary for use by the FileHandler class. 
+        for global aerosol DA and return said dictionary for use by the FileHandler class.
         This dictionary contains coupler and fv_tracer files
         for correlation and standard deviation as well as NICAS localization.
 
@@ -248,7 +248,7 @@ class AerosolAnalysis(Analysis):
         ----------
         config: Dict
             a dictionary containing all of the configuration needed
-        
+
         Returns
         ----------
         berror_dict: Dict

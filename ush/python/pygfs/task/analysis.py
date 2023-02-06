@@ -99,7 +99,7 @@ class Analysis(Task):
         ----------
         task_config: Dict
             a dictionary containing all of the configuration needed for the task
-        
+
         Returns
         ----------
         bkg_dict: Dict
@@ -116,9 +116,9 @@ class Analysis(Task):
 
         Parameters
         ----------
-        task_config: Dict
-            a dictionary containing all of the configuration needed for the task
-        
+        config: Dict
+            a dictionary containing all of the configuration needed
+
         Returns
         ----------
         berror_dict: Dict
@@ -126,3 +126,4 @@ class Analysis(Task):
         """
         berror_dict = {'foo': 'bar'}
         return berror_dict
+    
