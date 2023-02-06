@@ -91,8 +91,38 @@ class Analysis(Task):
 
     @logit(logger)
     def get_bkg_dict(self, task_config: Dict[str, Any]) -> Dict[str, List[str]]:
-        pass
+        """Compile a dictionary of model background files to copy
+
+        This method is a placeholder for now... will be possibly made generic at a later date
+
+        Parameters
+        ----------
+        task_config: Dict
+            a dictionary containing all of the configuration needed for the task
+        
+        Returns
+        ----------
+        bkg_dict: Dict
+            a dictionary containing the list of model background files to copy for FileHandler
+        """
+        bkg_dict = {'foo': 'bar'}
+        return bkg_dict
 
     @logit(logger)
     def get_berror_dict(self, config: Dict[str, Any]) -> Dict[str, List[str]]:
-        pass
+        """Compile a dictionary of background error files to copy
+
+        This method is a placeholder for now... will be possibly made generic at a later date
+
+        Parameters
+        ----------
+        task_config: Dict
+            a dictionary containing all of the configuration needed for the task
+        
+        Returns
+        ----------
+        berror_dict: Dict
+            a dictionary containing the list of background error files to copy for FileHandler
+        """
+        berror_dict = {'foo': 'bar'}
+        return berror_dict

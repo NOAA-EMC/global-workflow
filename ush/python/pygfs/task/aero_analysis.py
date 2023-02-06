@@ -56,6 +56,18 @@ class AerosolAnalysis(Analysis):
 
     @logit(logger)
     def initialize(self: Analysis) -> None:
+        """Initialize a global aerosol analysis
+
+        This method will initialize a global aerosol analysis using JEDI.
+        This includes:
+        - staging CRTM fix files
+        - staging FV3-JEDI fix files
+        - staging B error files
+        - staging model backgrounds
+        - generating a YAML file for the JEDI executable
+        - linking the JEDI executable (TODO make it copyable, requires JEDI fix)
+        - creating output directories
+        """
         super().initialize()
 
         # stage CRTM fix files
@@ -102,6 +114,19 @@ class AerosolAnalysis(Analysis):
 
     @logit(logger)
     def finalize(self: Analysis) -> None:
+        """Finalize a global aerosol analysis
+
+        This method will finalize a global aerosol analysis using JEDI.
+        This includes:
+        - tarring up output diag files and place in ROTDIR
+        - copying the generated YAML file from initialize to the ROTDIR
+        - copying the guess files to the ROTDIR
+        - applying the increments to the original RESTART files
+        - moving the increment files to the ROTDIR
+    
+        Please note that some of these steps are temporary and will be modified
+        once the model is able to read aerosol tracer increments.
+        """
         # ---- tar up diags
         # path of output tar statfile
         aerostat = os.path.join(self.task_config['COMOUTaero'], f"{self.task_config['APREFIX']}aerostat")
@@ -165,16 +190,27 @@ class AerosolAnalysis(Analysis):
         # only need the fv_tracer files
         fms_inc_file_template = os.path.join(self.task_config['DATA'], 'anl', f'aeroinc.{self.task_config.cdate_fv3}.fv_tracer.res.tileX.nc')
         fms_bkg_file_template = os.path.join(self.task_config.comin_ges_atm, 'RESTART', f'{self.task_config.cdate_fv3}.fv_tracer.res.tileX.nc')
-        # TODO: this list should be read from the yaml file
-        incvars = ['dust1', 'dust2', 'dust3', 'dust4', 'dust5',
-                   'seas1', 'seas2', 'seas3', 'seas4',
-                   'so4', 'oc1', 'oc2', 'bc1', 'bc2']
+        # get list of increment vars
+        incvars_list_path = os.path.join(self.task_config['HOMEgfs'], 'parm', 'parm_gdas', 'aeroanl_inc_vars.yaml')
+        incvars = YAMLFile(path=incvars_list_path)
         super().add_fv3_increments(fms_inc_file_template, fms_bkg_file_template, incvars)
 
     @logit(logger)
     def get_bkg_dict(self, task_config: Dict[str, Any]) -> Dict[str, List[str]]:
-        """
-        Return FileHandler task_config for model backgrounds
+        """Compile a dictionary of model background files to copy
+
+        This method constructs a dictionary of FV3 RESTART files (coupler, core, tracer)
+        that are needed for global aerosol DA and returns said dictionary for use by the FileHandler class.
+
+        Parameters
+        ----------
+        task_config: Dict
+            a dictionary containing all of the configuration needed for the task
+        
+        Returns
+        ----------
+        bkg_dict: Dict
+            a dictionary containing the list of model background files to copy for FileHandler
         """
         super().get_bkg_dict(task_config)
         # NOTE for now this is FV3 RESTART files and just assumed to be fh006
@@ -201,8 +237,22 @@ class AerosolAnalysis(Analysis):
 
     @logit(logger)
     def get_berror_dict(self, config: Dict[str, Any]) -> Dict[str, List[str]]:
-        """
-        Return FileHandler configuration for berror
+        """Compile a dictionary of background error files to copy
+
+        This method will construct a dictionary of BUMP background error files
+        for global aerosol DA and return said dictionary for use by the FileHandler class. 
+        This dictionary contains coupler and fv_tracer files
+        for correlation and standard deviation as well as NICAS localization.
+
+        Parameters
+        ----------
+        config: Dict
+            a dictionary containing all of the configuration needed
+        
+        Returns
+        ----------
+        berror_dict: Dict
+            a dictionary containing the list of background error files to copy for FileHandler
         """
         super.get_berror_dict(config)
         # aerosol static-B needs nicas, cor_rh, cor_rv and stddev files.
