@@ -126,4 +126,3 @@ class Analysis(Task):
         """
         berror_dict = {'foo': 'bar'}
         return berror_dict
-
