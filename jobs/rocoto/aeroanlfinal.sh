@@ -13,7 +13,7 @@ export jobid="${job}.$$"
 
 ###############################################################
 # setup python path for workflow utilities and tasks
-export PYTHONPATH="$PYTHONPATH:${HOMEgfs}/ush/python:${HOMEgfs}/ush/python/pygw/src"
+export PYTHONPATH="${PYTHONPATH}:${HOMEgfs}/ush/python:${HOMEgfs}/ush/python/pygw/src"
 ###############################################################
 # Execute the JJOB
 "${HOMEgfs}/jobs/JGLOBAL_AERO_ANALYSIS_FINALIZE"

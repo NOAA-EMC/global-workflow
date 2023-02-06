@@ -199,7 +199,6 @@ class AerosolAnalysis(Analysis):
         }
         return bkg_dict
 
-
     @logit(logger)
     def get_berror_dict(self, config: Dict[str, Any]) -> Dict[str, List[str]]:
         """
