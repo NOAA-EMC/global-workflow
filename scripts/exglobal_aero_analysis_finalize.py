@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # exgdas_global_aero_analysis_finalize.py
 # This script creates an AerosolAnalysis class
-# and runs the configure and finalize methods
+# and runs the finalize method
 # which perform post-processing and clean up activities
 # for a global aerosol variational analysis
 import os
@@ -22,4 +22,4 @@ if __name__ == '__main__':
 
     # Instantiate the aerosol analysis task
     AeroAnl = AerosolAnalysis(config)
-    AeroAnl.initialize()
+    AeroAnl.finalize()

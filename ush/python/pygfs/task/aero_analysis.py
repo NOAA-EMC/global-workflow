@@ -120,12 +120,13 @@ class AerosolAnalysis(Analysis):
                 archive.add(f"{diagfile}.gz")
 
         # copy full YAML from executable to ROTDIR
-        src = os.path.join(self.task_config['DATA'], f"{self.task_config['CDUMP']}.t{self.cyc}z.aerovar.yaml")
-        dest = os.path.join(self.task_config['COMOUTaero'], f"{self.task_config['CDUMP']}.t{self.cyc}z.aerovar.yaml")
+        src = os.path.join(self.task_config['DATA'], f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.aerovar.yaml")
+        dest = os.path.join(self.task_config['COMOUTaero'], f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.aerovar.yaml")
         yaml_copy = {
             'mkdir': self.task_config['COMOUTaero'],
             'copy': [src, dest]
-        }  # yaml_copy is not used, remove???
+        }
+        FileHandler(yaml_copy).sync()
 
         # ---- NOTE below is 'temporary', eventually we will not be using FMS RESTART formatted files
         # ---- all of the rest of this method will need to be changed but requires model and JEDI changes
@@ -168,7 +169,7 @@ class AerosolAnalysis(Analysis):
         incvars = ['dust1', 'dust2', 'dust3', 'dust4', 'dust5',
                    'seas1', 'seas2', 'seas3', 'seas4',
                    'so4', 'oc1', 'oc2', 'bc1', 'bc2']
-        super().add_fv3_increments(fms_inc_file_template, fms_bkg_file_template, incvars, self.task_config.ntiles)
+        super().add_fv3_increments(fms_inc_file_template, fms_bkg_file_template, incvars)
 
     @logit(logger)
     def get_bkg_dict(self, task_config: Dict[str, Any]) -> Dict[str, List[str]]:
