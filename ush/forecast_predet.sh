@@ -10,6 +10,29 @@
 
 # For all non-evironment variables
 # Cycling and forecast hour specific parameters
+
+to_seconds() {
+  # Function to convert HHMMSS to seconds since 00Z
+  local hhmmss=${1:?}
+  local hh=${hhmmss:0:2}
+  local mm=${hhmmss:2:2}
+  local ss=${hhmmss:4:2}
+  local seconds=$((10#${hh}*3600+10#${mm}*60+10#${ss}))
+  local padded_seconds=$(printf "%05d" ${seconds})
+  echo ${padded_seconds}
+}
+
+middle_date(){
+  # Function to calculate mid-point date in YYYYMMDDHH between two dates also in YYYYMMDDHH
+  local date1=${1:?}
+  local date2=${2:?}
+  local date1s=$(date -d "${date1:0:8} ${date1:8:2}" +%s)
+  local date2s=$(date -d "${date2:0:8} ${date2:8:2}" +%s)
+  local dtsecsby2=$(( $((date2s - date1s)) / 2 ))
+  local mid_date=$(date -d "${date1:0:8} ${date1:8:2} + ${dtsecsby2} seconds" +%Y%m%d%H%M%S)
+  echo ${mid_date:0:10}
+}
+
 common_predet(){
   echo "SUB ${FUNCNAME[0]}: Defining variables for shared through models"
   pwd=$(pwd)
@@ -19,7 +42,6 @@ common_predet(){
   CDATE=${CDATE:-2017032500}
   DATA=${DATA:-$pwd/fv3tmp$$}    # temporary running directory
   ROTDIR=${ROTDIR:-$pwd}         # rotating archive directory
-  ICSDIR=${ICSDIR:-$pwd}         # cold start initial conditions
 }
 
 DATM_predet(){
@@ -79,7 +101,6 @@ FV3_GFS_predet(){
   FIXfv3=${FIXfv3:-$FIX_DIR/orog}
   DATA=${DATA:-$pwd/fv3tmp$$}    # temporary running directory
   ROTDIR=${ROTDIR:-$pwd}         # rotating archive directory
-  ICSDIR=${ICSDIR:-$pwd}         # cold start initial conditions
   DMPDIR=${DMPDIR:-$pwd}         # global dumps for seaice, snow and sst analysis
 
   # Model resolution specific parameters
@@ -133,10 +154,8 @@ FV3_GFS_predet(){
 
   QUILTING=${QUILTING:-".true."}
   OUTPUT_GRID=${OUTPUT_GRID:-"gaussian_grid"}
-  OUTPUT_FILE=${OUTPUT_FILE:-"netcdf"}
   WRITE_NEMSIOFLIP=${WRITE_NEMSIOFLIP:-".true."}
   WRITE_FSYNCFLAG=${WRITE_FSYNCFLAG:-".true."}
-  affix="nc"
 
   rCDUMP=${rCDUMP:-$CDUMP}
 
@@ -207,8 +226,8 @@ FV3_GFS_predet(){
   print_freq=${print_freq:-6}
 
   #-------------------------------------------------------
-  if [ $CDUMP = "gfs" ] && [ $rst_invt1 -gt 0 ] && [ $MEMBER -lt 0 ]; then
-    RSTDIR_ATM=${RSTDIR:-$ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos/RERUN_RESTART
+  if [[ ${CDUMP} = "gfs" || ${RUN} = "gefs" ]] && [ ${rst_invt1} -gt 0 ]; then
+    RSTDIR_ATM=${RSTDIR_ATM:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos/RERUN_RESTART}
     if [ ! -d $RSTDIR_ATM ]; then mkdir -p $RSTDIR_ATM ; fi
     $NLN $RSTDIR_ATM RESTART
     # The final restart written at the end doesn't include the valid date
@@ -231,7 +250,7 @@ FV3_GFS_predet(){
 
   #-------------------------------------------------------
   # member directory
-  if [ $MEMBER -lt 0 ]; then
+  if [[ ${MEMBER} -lt 0 || ${RUN} = "gefs" ]]; then
     prefix=$CDUMP
     rprefix=$rCDUMP
     memchar=""
@@ -240,13 +259,13 @@ FV3_GFS_predet(){
     rprefix=enkf$rCDUMP
     memchar=mem$(printf %03i $MEMBER)
   fi
-  memdir=$ROTDIR/${prefix}.$PDY/$cyc/$memchar/atmos
+  memdir=${memdir:-${ROTDIR}/${prefix}.${PDY}/${cyc}/${memchar}/atmos}
   if [ ! -d $memdir ]; then mkdir -p $memdir; fi
 
   GDATE=$($NDATE -$assim_freq $CDATE)
   gPDY=$(echo $GDATE | cut -c1-8)
   gcyc=$(echo $GDATE | cut -c9-10)
-  gmemdir=$ROTDIR/${rprefix}.$gPDY/$gcyc/$memchar/atmos
+  gmemdir=${gmemdir:-${ROTDIR}/${rprefix}.${gPDY}/${gcyc}/${memchar}/atmos}
 
   if [[ "$DOIAU" = "YES" ]]; then
     sCDATE=$($NDATE -3 $CDATE)
@@ -278,24 +297,12 @@ WW3_predet(){
 
 CICE_predet(){
   echo "SUB ${FUNCNAME[0]}: CICE before run type determination"
-  if [ ! -d $ROTDIR ]; then mkdir -p $ROTDIR; fi
-  if [ ! -d $DATA ]; then mkdir -p $DATA; fi
-  if [ ! -d $DATA/RESTART ]; then mkdir -p $DATA/RESTART; fi
-  if [ ! -d $DATA/INPUT ]; then mkdir -p $DATA/INPUT; fi
-  if [ ! -d $DATA/restart ]; then mkdir -p $DATA/restart; fi
-  if [ ! -d $DATA/history ]; then mkdir -p $DATA/history; fi
-  if [ ! -d $DATA/OUTPUT ]; then mkdir -p $DATA/OUTPUT; fi
+  if [ ! -d $DATA/CICE_OUTPUT ]; then  mkdir -p $DATA/CICE_OUTPUT; fi
+  if [ ! -d $DATA/CICE_RESTART ]; then mkdir -p $DATA/CICE_RESTART; fi
 }
 
 MOM6_predet(){
   echo "SUB ${FUNCNAME[0]}: MOM6 before run type determination"
-  if [ ! -d $ROTDIR ]; then mkdir -p $ROTDIR; fi
-  if [ ! -d $DATA ]; then mkdir -p $DATA; fi
-  if [ ! -d $DATA/RESTART ]; then mkdir -p $DATA/RESTART; fi
-  if [ ! -d $DATA/INPUT ]; then mkdir -p $DATA/INPUT; fi
-  if [ ! -d $DATA/restart ]; then mkdir -p $DATA/restart; fi
-  if [ ! -d $DATA/history ]; then mkdir -p $DATA/history; fi
-  if [ ! -d $DATA/OUTPUT ]; then mkdir -p $DATA/OUTPUT; fi
   if [ ! -d $DATA/MOM6_OUTPUT ]; then mkdir -p $DATA/MOM6_OUTPUT; fi
   if [ ! -d $DATA/MOM6_RESTART ]; then mkdir -p $DATA/MOM6_RESTART; fi
   cd "${DATA}" || exit 8

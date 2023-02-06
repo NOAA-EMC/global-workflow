@@ -9,10 +9,7 @@ Error: "ImportError" message when running setup script
 Example::
 
    $ ./setup_xml.py /path/to/your/experiment/directory
-   Traceback (most recent call last):
-     File "./setup_workflow.py", line 32, in <module>
-      	from collections import OrderedDict
-   ImportError: cannot import name OrderedDict
+   /usr/bin/env: python3: No such file or directory
 
 **Cause:** Missing python module in your environment
 

@@ -5,7 +5,7 @@ View Experiment output
 The output from your run will be found in the ``COMROT/ROTDIR`` you established. This is also where you placed your initial conditions. Within your ``COMROT`` you will have the following directory structure (based on the type of experiment you run):
 
 ^^^^^^^^^^^^^
-Free Forecast
+Forecast-only
 ^^^^^^^^^^^^^
 
 ::
@@ -21,7 +21,7 @@ Cycled
 
 ::
 
-   enkfgdas.YYYYMMDD/CC/atmos/mem###/   <- contains EnKF inputs/outputs for each cycle and each member
+   enkfgdas.YYYYMMDD/CC/mem###/atmos    <- contains EnKF inputs/outputs for each cycle and each member
    gdas.YYYYMMDD/CC/atmos               <- contains deterministic gdas inputs/outputs (atmosphere)
    gdas.YYYYMMDD/CC/wave                <- contains deterministic gdas inputs/outputs (wave)
    gfs.YYYYMMDD/CC/atmos                <- contains deterministic long forecast gfs inputs/outputs (atmosphere)
@@ -29,7 +29,9 @@ Cycled
    logs/                                <- logs for each cycle in the run
    vrfyarch/                            <- contains files related to verification and archival
 
-Here is an example ``COMROT`` for a cycled run as it may look several cycles in (note the archival steps remove older cycle folders as the run progresses)::
+Here is an example ``COMROT`` for a cycled run as it may look several cycles in (note the archival steps remove older cycle folders as the run progresses):
+
+::
 
    -bash-4.2$ ll /scratch1/NCEPDEV/stmp4/Joe.Schmo/comrot/testcyc192
    total 88
