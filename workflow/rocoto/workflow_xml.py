@@ -57,9 +57,6 @@ class RocotoXML:
 
         entity['PSLOT'] = self._base['PSLOT']
 
-        if self._app_config.mode in ['forecast-only']:
-            entity['ICSDIR'] = self._base['ICSDIR']
-
         entity['ROTDIR'] = self._base['ROTDIR']
         entity['JOBS_DIR'] = self._base['BASE_JOB']
 

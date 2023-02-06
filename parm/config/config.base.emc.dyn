@@ -96,7 +96,6 @@ export BASE_JOB="${HOMEgfs}/jobs/rocoto"
 
 # EXPERIMENT specific environment parameters
 export SDATE=@SDATE@
-export FDATE=@FDATE@
 export EDATE=@EDATE@
 export EXP_WARM_START="@EXP_WARM_START@"
 export assim_freq=6
@@ -111,7 +110,6 @@ fi
 export DATAROOT="${STMP}/RUNDIRS/${PSLOT}"  # TODO: set via prod_envir in Ops
 export RUNDIR="${DATAROOT}"  # TODO: Should be removed; use DATAROOT instead
 export ARCDIR="${NOSCRUB}/archive/${PSLOT}"
-export ICSDIR="@ICSDIR@"
 export ATARDIR="@ATARDIR@"
 
 # Commonly defined parameters in JJOBS
@@ -165,6 +163,23 @@ export DOBNDPNT_WAVE="NO"
 export cplwav2atm=".false."
 export FRAC_GRID=".true."
 
+# Set operational resolution
+export OPS_RES="C768" # Do not change
+
+# Resolution specific parameters
+export LEVS=128
+export CASE="@CASECTL@"
+export CASE_ENKF="@CASEENS@"
+case "$CASE" in
+    "C48") export OCNRES=500;;
+    "C96") export OCNRES=100;;
+    "C192") export OCNRES=050;;
+    "C384") export OCNRES=025;;
+    "C768") export OCNRES=025;;
+    *) export OCNRES=025;;
+esac
+export ICERES=$OCNRES
+
 case "${APP}" in
   ATM)
     export confignamevarfornems="atm"
@@ -211,23 +226,6 @@ case "${APP}" in
     exit 1
     ;;
 esac
-
-# Set operational resolution
-export OPS_RES="C768" # Do not change
-
-# Resolution specific parameters
-export LEVS=128
-export CASE="@CASECTL@"
-export CASE_ENKF="@CASEENS@"
-case "${CASE}" in
-    "C48") export OCNRES=500;;
-    "C96") export OCNRES=100;;
-    "C192") export OCNRES=050;;
-    "C384") export OCNRES=025;;
-    "C768") export OCNRES=025;;
-    *) export OCNRES=025;;
-esac
-export ICERES=${OCNRES}
 
 # Surface cycle update frequency
 if [[ "${CDUMP}" == "gdas" ]] ; then
@@ -289,7 +287,7 @@ export IAU_DELTHRS_ENKF=6
 export lobsdiag_forenkf=".true."
 
 # run GLDAS to spin up land ICs
-export DO_GLDAS="YES"
+export DO_GLDAS="NO"
 export gldas_cyc=00
 
 # Exception handling that when DO_GLDAS is set, the FHOUT must be 1
@@ -312,7 +310,7 @@ export DO_JEDIENS="NO"
 export DO_JEDIOCNVAR="NO"
 
 # Hybrid related
-export DOHYBVAR="YES"
+export DOHYBVAR="@DOHYBVAR@"
 export NMEM_ENKF=@NMEM_ENKF@
 export NMEM_EFCS=30
 export SMOOTH_ENKF="NO"
@@ -363,7 +361,7 @@ export MAKE_ACFTBUFR="@MAKE_ACFTBUFR@"
 # Analysis increments to zero in CALCINCEXEC
 export INCREMENTS_TO_ZERO="'liq_wat_inc','icmr_inc'"
 
-# Write analysis files for early cycle EnKF 
+# Write analysis files for early cycle EnKF
 export DO_CALC_INCREMENT_ENKF_GFS="YES"
 
 # Stratospheric increments to zero

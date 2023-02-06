@@ -74,7 +74,7 @@ The following command examples include variables for reference but users should 
 
    cd workflow
    ./setup_expt.py forecast-only --idate $IDATE --edate $EDATE [--app $APP] [--start $START] [--gfs_cyc $GFS_CYC] [--resdet $RESDET]
-     [--pslot $PSLOT] [--configdir $CONFIGDIR] [--comrot $COMROT] [--expdir $EXPDIR] [--icsdir $ICSDIR]
+     [--pslot $PSLOT] [--configdir $CONFIGDIR] [--comrot $COMROT] [--expdir $EXPDIR]
 
 where:
 
@@ -97,10 +97,6 @@ where:
    * ``$GFS_CYC`` is the forecast frequency (0 = none, 1 = 00z only [default], 2 = 00z & 12z, 4 = all cycles)
    * ``$COMROT`` is the path to your experiment output directory. DO NOT include PSLOT folder at end of path, it’ll be built for you. [default: $HOME (but do not use default due to limited space in home directories normally, provide a path to a larger scratch space)]
    * ``$EXPDIR`` is the path to your experiment directory where your configs will be placed and where you will find your workflow monitoring files (i.e. rocoto database and xml file). DO NOT include PSLOT folder at end of path, it will be built for you. [default: $HOME]
-   * ``$ICSDIR`` is the path to the initial conditions. This is handled differently depending on whether ``$APP`` is S2S or not.
-
-      - If ``$APP`` is ATM or ATMW, this setting is currently ignored
-      - If ``$APP`` is S2S or S2SW, ICs are copied from the central location to this location and the argument is required
 
 Examples:
 
@@ -109,21 +105,21 @@ Atm-only:
 ::
 
    cd workflow
-   ./setup_expt.py forecast-only --pslot test --idate 2020010100 --edate 2020010118 --resdet 384 --gfs_cyc 4 --comrot /some_large_disk_area/Joe.Schmo/comrot --expdir /some_safe_disk_area/Joe.Schmo/expdir 
+   ./setup_expt.py forecast-only --pslot test --idate 2020010100 --edate 2020010118 --resdet 384 --gfs_cyc 4 --comrot /some_large_disk_area/Joe.Schmo/comrot --expdir /some_safe_disk_area/Joe.Schmo/expdir
 
 Coupled:
 
 ::
 
    cd workflow
-   ./setup_expt.py forecast-only --app S2SW --pslot coupled_test --idate 2013040100 --edate 2013040100 --resdet 384 --comrot /some_large_disk_area/Joe.Schmo/comrot --expdir /some_safe_disk_area/Joe.Schmo/expdir --icsdir /some_large_disk_area/Joe.Schmo/icsdir
+   ./setup_expt.py forecast-only --app S2SW --pslot coupled_test --idate 2013040100 --edate 2013040100 --resdet 384 --comrot /some_large_disk_area/Joe.Schmo/comrot --expdir /some_safe_disk_area/Joe.Schmo/expdir
 
 Coupled with aerosols:
 
 ::
 
    cd workflow
-   ./setup_expt.py forecast-only --app S2SWA --pslot coupled_test --idate 2013040100 --edate 2013040100 --resdet 384 --comrot /some_large_disk_area/Joe.Schmo/comrot --expdir /some_safe_disk_area/Joe.Schmo/expdir --icsdir /some_large_disk_area/Joe.Schmo/icsdir
+   ./setup_expt.py forecast-only --app S2SWA --pslot coupled_test --idate 2013040100 --edate 2013040100 --resdet 384 --comrot /some_large_disk_area/Joe.Schmo/comrot --expdir /some_safe_disk_area/Joe.Schmo/expdir
 
 ****************************************
 Step 2: Set user and experiment settings
@@ -164,13 +160,13 @@ Example:
 Step 4: Confirm files from setup scripts
 ****************************************
 
-You will now have a rocoto xml file in your EXPDIR ($PSLOT.xml) and a crontab file generated for your use. Rocoto uses CRON as the scheduler. If you do not have a crontab file you may not have had the rocoto module loaded. To fix this load a rocoto module and then rerun setup_xml.py script again. Follow directions for setting up the rocoto cron on the platform the experiment is going to run on.  
+You will now have a rocoto xml file in your EXPDIR ($PSLOT.xml) and a crontab file generated for your use. Rocoto uses CRON as the scheduler. If you do not have a crontab file you may not have had the rocoto module loaded. To fix this load a rocoto module and then rerun setup_xml.py script again. Follow directions for setting up the rocoto cron on the platform the experiment is going to run on.
 
 ^^^^^^^^^^^^^^^^^
 Cycled experiment
 ^^^^^^^^^^^^^^^^^
 
-Scripts that will be used: 
+Scripts that will be used:
 
    * ``workflow/setup_expt.py``
    * ``workflow/setup_xml.py``
@@ -289,5 +285,4 @@ Example:
 Step 4: Confirm files from setup scripts
 ****************************************
 
-You will now have a rocoto xml file in your EXPDIR ($PSLOT.xml) and a crontab file generated for your use. Rocoto uses CRON as the scheduler. If you do not have a crontab file you may not have had the rocoto module loaded. To fix this load a rocoto module and then rerun ``setup_xml.py`` script again. Follow directions for setting up the rocoto cron on the platform the experiment is going to run on.  
-
+You will now have a rocoto xml file in your EXPDIR ($PSLOT.xml) and a crontab file generated for your use. Rocoto uses CRON as the scheduler. If you do not have a crontab file you may not have had the rocoto module loaded. To fix this load a rocoto module and then rerun ``setup_xml.py`` script again. Follow directions for setting up the rocoto cron on the platform the experiment is going to run on.
