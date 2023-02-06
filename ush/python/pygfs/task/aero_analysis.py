@@ -131,10 +131,10 @@ class AerosolAnalysis(Analysis):
         # ---- NOTE below is 'temporary', eventually we will not be using FMS RESTART formatted files
         # ---- all of the rest of this method will need to be changed but requires model and JEDI changes
         # ---- copy RESTART fv_tracer files for future reference
-        fms_bkg_file_template = os.path.join(self.task_config.comin_ges_atm, 'RESTART', f'{self.task_config.cdate_fv3}.fv_tracer.res.tile1.nc')
+        fms_bkg_file_template = os.path.join(self.task_config.comin_ges_atm, 'RESTART', f'{self.task_config.cdate_fv3}.fv_tracer.res.tileX.nc')
         bkglist = []
         for itile in range(1, self.task_config.ntiles + 1):
-            bkg_path = fms_bkg_file_template.replace('tile1', f'tile{itile}')
+            bkg_path = fms_bkg_file_template.replace('tileX', f'tile{itile}')
             dest = os.path.join(self.task_config['COMOUTaero'], f'aeroges.{os.path.basename(bkg_path)}')
             bkglist.append([bkg_path, dest])
         FileHandler({'copy': bkglist}).sync()
@@ -145,10 +145,10 @@ class AerosolAnalysis(Analysis):
 
         # ---- move increments to ROTDIR
         logger.info('Moving increments to ROTDIR')
-        fms_inc_file_template = os.path.join(self.task_config['DATA'], 'anl', f'aeroinc.{self.task_config.cdate_fv3}.fv_tracer.res.tile1.nc')
+        fms_inc_file_template = os.path.join(self.task_config['DATA'], 'anl', f'aeroinc.{self.task_config.cdate_fv3}.fv_tracer.res.tileX.nc')
         inclist = []
         for itile in range(1, self.task_config.ntiles + 1):
-            inc_path = fms_inc_file_template.replace('tile1', f'tile{itile}')
+            inc_path = fms_inc_file_template.replace('tileX', f'tile{itile}')
             dest = os.path.join(self.task_config['COMOUTaero'], os.path.basename(inc_path))
             inclist.append([inc_path, dest])
         FileHandler({'copy': inclist}).sync()
@@ -186,10 +186,12 @@ class AerosolAnalysis(Analysis):
         bkglist = []
         basename = f'{task_config.cdate_fv3}.coupler.res'
         bkglist.append([os.path.join(rst_dir, basename), os.path.join(task_config['DATA'], 'bkg', basename)])
-        for tt in range(1, task_config.ntiles + 1):
-            basename = f'{task_config.cdate_fv3}.fv_core.res.tile{tt}.nc'
+        basename_core = f'{task_config.cdate_fv3}.fv_core.res.tileX.nc'
+        basename_tracer = f'{task_config.cdate_fv3}.fv_tracer.res.tileX.nc'
+        for itile in range(1, task_config.ntiles + 1):
+            basename = basename_core.replace('tileX', f'tile{itile}')
             bkglist.append([os.path.join(rst_dir, basename), os.path.join(task_config['DATA'], 'bkg', basename)])
-            basename = f'{task_config.cdate_fv3}.fv_tracer.res.tile{tt}.nc'
+            basename = basename_tracer.replace('tileX', f'tile{itile}')
             bkglist.append([os.path.join(rst_dir, basename), os.path.join(task_config['DATA'], 'bkg', basename)])
         bkg_dict = {
             'mkdir': [os.path.join(task_config['DATA'], 'bkg')],
@@ -208,31 +210,20 @@ class AerosolAnalysis(Analysis):
         b_dir = config['BERROR_DATA_DIR']
         b_datestr = config['BERROR_DATE']
         berror_list = []
-        berror_list.append([
-            os.path.join(b_dir, b_datestr + '.cor_rh.coupler.res'),
-            os.path.join(config['DATA'], 'berror', b_datestr + '.cor_rh.coupler.res')
-        ])
-        berror_list.append([
-            os.path.join(b_dir, b_datestr + '.cor_rv.coupler.res'),
-            os.path.join(config['DATA'], 'berror', b_datestr + '.cor_rv.coupler.res')
-        ])
-        berror_list.append([
-            os.path.join(b_dir, b_datestr + '.stddev.coupler.res'),
-            os.path.join(config['DATA'], 'berror', b_datestr + '.stddev.coupler.res')
-        ])
-        for tt in range(1, config.ntiles + 1):
+
+        for ftype in ['cor_rh', 'cor_rv', 'stddev']:
+            template_bump_coupler = f'{b_datestr}.{ftype}.coupler.res'
+            template_bump_tracer = f'{b_datestr}.{ftype}.fv_tracer.res.tileX.nc'
             berror_list.append([
-                os.path.join(b_dir, f'{b_datestr}.cor_rh.fv_tracer.res.tile{tt}.nc'),
-                os.path.join(config['DATA'], 'berror', f'{b_datestr}.cor_rh.fv_tracer.res.tile{tt}.nc')
+                os.path.join(b_dir, template_bump_coupler),
+                os.path.join(config['DATA'], 'berror', template_bump_coupler)
             ])
-            berror_list.append([
-                os.path.join(b_dir, f'{b_datestr}.cor_rv.fv_tracer.res.tile{tt}.nc'),
-                os.path.join(config['DATA'], 'berror', f'{b_datestr}.cor_rv.fv_tracer.res.tile{tt}.nc')
-            ])
-            berror_list.append([
-                os.path.join(b_dir, f'{b_datestr}.stddev.fv_tracer.res.tile{tt}.nc'),
-                os.path.join(config['DATA'], 'berror', f'{b_datestr}.stddev.fv_tracer.res.tile{tt}.nc')
-            ])
+            for itile in range(1, config.ntiles + 1):
+                bump_tracer = template_bump_tracer.replace('tileX', f'tile{itile}')
+                berror_list.append([
+                    os.path.join(b_dir, bump_tracer),
+                    os.path.join(config['DATA'], 'berror', bump_tracer)
+                ])
 
         nproc = config.ntiles * config['layout_x'] * config['layout_y']
         for nn in range(1, nproc + 1):
