@@ -51,11 +51,7 @@ class AerosolAnalysis(Analysis):
             }
         )
 
-        # task_config is everything that is this task should need
-        print('config pdy')
-        print(self.config['PDY'])
-        print('runtime config pdy')
-        print(self.runtime_config['PDY'])
+        # task_config is everything that this task should need
         self.task_config = AttrDict(**self.config, **self.runtime_config, **local_dict)
 
     @logit(logger)
@@ -83,11 +79,12 @@ class AerosolAnalysis(Analysis):
         FileHandler(self.get_bkg_dict(AttrDict(self.task_config, **self.task_config))).sync()
 
         # generate variational YAML file
-        yaml_out = os.path.join(self.task_config['DATA'], f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']}z.aerovar.yaml")
+        yaml_out = os.path.join(self.task_config['DATA'], f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.aerovar.yaml")
         varda_yaml = YAMLFile(path=self.task_config['AEROVARYAML'])
         varda_yaml = Template.substitute_structure(varda_yaml, TemplateConstants.DOUBLE_CURLY_BRACES, self.task_config.get)
         varda_yaml = Template.substitute_structure(varda_yaml, TemplateConstants.DOLLAR_PARENTHESES, self.task_config.get)
         varda_yaml.save(yaml_out)
+        logger.info(f"Wrote YAML to {yaml_out}")
 
         # link var executable
         exe_src = self.task_config['JEDIVAREXE']
