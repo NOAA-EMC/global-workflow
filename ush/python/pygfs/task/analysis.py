@@ -88,3 +88,11 @@ class Analysis(Task):
                         rstfile.variables[vname].delncattr('checksum')  # remove the checksum so fv3 does not complain
                     except AttributeError:
                         pass  # checksum is missing, move on
+
+    @logit(logger)
+    def get_bkg_dict(task_config: Dict[str, Any]) -> Dict[str, List[str]]:
+        pass
+
+    @logit(logger)
+    def get_berror_dict(config: Dict[str, Any]) -> Dict[str, List[str]]:
+        pass
