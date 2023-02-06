@@ -12,18 +12,17 @@ load(pathJoin("cfp", "2.0.4"))
 setenv("USE_CFP","YES")
 
 load(pathJoin("python", "3.8.6"))
+load(pathJoin("nco", "4.7.9"))
 load(pathJoin("gempak", "7.14.1"))
 load(pathJoin("perl", "5.32.0"))
 load(pathJoin("libjpeg", "9c"))
-
+load(pathJoin("udunits", "2.2.28"))
+load(pathJoin("gsl", "2.7"))
 load(pathJoin("cdo", "1.9.8"))
 
 load(pathJoin("hdf5", "1.10.6"))
 load(pathJoin("netcdf", "4.7.4"))
 
-load(pathJoin("udunits", "2.2.28"))
-load(pathJoin("gsl", "2.7"))
-load(pathJoin("nco", "4.7.9"))
 load(pathJoin("prod_util", "2.0.9"))
 load(pathJoin("grib_util", "1.2.3"))
 load(pathJoin("bufr_dump", "1.0.0"))
