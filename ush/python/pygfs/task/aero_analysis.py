@@ -174,7 +174,7 @@ class AerosolAnalysis(Analysis):
         super().add_fv3_increments(fms_inc_file_template, fms_bkg_file_template, incvars, self.task_config.ntiles)
 
     @logit(logger)
-    def get_bkg_dict(task_config: Dict[str, Any]) -> Dict[str, List[str]]:
+    def get_bkg_dict(self, task_config: Dict[str, Any]) -> Dict[str, List[str]]:
         """
         Return FileHandler task_config for model backgrounds
         """
@@ -201,7 +201,7 @@ class AerosolAnalysis(Analysis):
 
 
     @logit(logger)
-    def get_berror_dict(config: Dict[str, Any]) -> Dict[str, List[str]]:
+    def get_berror_dict(self, config: Dict[str, Any]) -> Dict[str, List[str]]:
         """
         Return FileHandler configuration for berror
         """
