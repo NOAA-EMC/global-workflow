@@ -175,7 +175,7 @@ class AerosolAnalysis(Analysis):
 
 
 @logit(logger)
-def get_bkg_dict(task_config: Dict[str, Any]) -> Dict[str, List[str]]:
+def _get_bkg_dict(task_config: Dict[str, Any]) -> Dict[str, List[str]]:
     """
     Return FileHandler task_config for model backgrounds
     """

@@ -51,7 +51,7 @@ class Task:
 
         # Any other composite runtime variables that may be needed for the duration of the task
         self.runtime_config['current_cycle'] = to_datetime(str(self.runtime_config['PDY'])) + \
-                                               dt.timedelta(hours=self.runtime_config['cyc'])
+            dt.timedelta(hours=self.runtime_config['cyc'])
 
         pass
 
