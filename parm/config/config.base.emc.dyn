@@ -96,7 +96,6 @@ export BASE_JOB="${HOMEgfs}/jobs/rocoto"
 
 # EXPERIMENT specific environment parameters
 export SDATE=@SDATE@
-export FDATE=@FDATE@
 export EDATE=@EDATE@
 export EXP_WARM_START="@EXP_WARM_START@"
 export assim_freq=6
@@ -111,7 +110,6 @@ fi
 export DATAROOT="${STMP}/RUNDIRS/${PSLOT}"  # TODO: set via prod_envir in Ops
 export RUNDIR="${DATAROOT}"  # TODO: Should be removed; use DATAROOT instead
 export ARCDIR="${NOSCRUB}/archive/${PSLOT}"
-export ICSDIR="@ICSDIR@"
 export ATARDIR="@ATARDIR@"
 
 # Commonly defined parameters in JJOBS
