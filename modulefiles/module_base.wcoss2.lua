@@ -3,11 +3,11 @@ Load environment to run GFS on WCOSS2
 ]])
 
 load(pathJoin("PrgEnv-intel", "8.1.0"))
-load(pathJoin("craype", "2.7.10"))
+load(pathJoin("craype", "2.7.13"))
 load(pathJoin("intel", "19.1.3.304"))
-load(pathJoin("cray-mpich", "8.1.9"))
+load(pathJoin("cray-mpich", "8.1.7"))
 load(pathJoin("cray-pals", "1.0.17"))
-load(pathJoin("esmf", "8.0.1"))
+load(pathJoin("esmf", "8.3.0bs09"))
 load(pathJoin("cfp", "2.0.4"))
 setenv("USE_CFP","YES")
 
@@ -29,7 +29,7 @@ load(pathJoin("grib_util", "1.2.3"))
 load(pathJoin("bufr_dump", "1.0.0"))
 load(pathJoin("util_shared", "1.4.0"))
 load(pathJoin("crtm", "2.3.0"))
-load(pathJoin("g2tmpl", "1.9.1"))
+load(pathJoin("g2tmpl", "1.10.2"))
 load(pathJoin("wgrib2", "2.0.7"))
 
 pushenv("HPC_OPT", "/apps/ops/para/libs")
