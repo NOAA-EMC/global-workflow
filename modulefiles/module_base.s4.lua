@@ -24,8 +24,8 @@ load(pathJoin("png", "1.6.35"))
 
 load(pathJoin("hdf5", "1.10.6"))
 load(pathJoin("netcdf", "4.7.4"))
-load(pathJoin("pio", "2.5.2"))
-load(pathJoin("esmf", "8.2.1b04"))
+load(pathJoin("pio", "2.5.7"))
+load(pathJoin("esmf", "8.3.0b09"))
 load(pathJoin("fms", "2021.03"))
 
 load(pathJoin("bacio", "2.4.1"))
