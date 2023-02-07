@@ -208,7 +208,7 @@ elif [[ "${step}" = "aeroanlinit" ]]; then
         layout_y=8
         ;;
       *)
-          echo "FATAL: Resolution not supported'"
+          echo "FATAL ERROR: Resolution not supported for aerosol analysis'"
           exit 1
     esac
 

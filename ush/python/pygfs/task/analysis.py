@@ -22,8 +22,7 @@ class Analysis(Task):
     """
 
     def __init__(self, config: Dict[str, Any]) -> None:
-        super().__init__(config)
-        self.config.ntiles = 6
+        super().__init__(config, ntiles=6)
 
     def initialize(self) -> None:
         super().initialize()
