@@ -13,6 +13,13 @@ source "$HOMEgfs/ush/preamble.sh"
 ###############################################################
 
 ###############################################################
+# Source FV3GFS workflow modules
+. ${HOMEgfs}/ush/load_fv3gfs_modules.sh
+status=$?
+[[ ${status} -ne 0 ]] && exit ${status}
+err=0
+
+###############################################################
 # Source relevant configs
 configs="base coupled_ic wave"
 for config in ${configs}; do
