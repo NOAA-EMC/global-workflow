@@ -156,8 +156,11 @@ case ${case_in} in
         ;;
 esac
 
-if [[ "${WRTTASK_PER_GROUP}" -gt "${npe_node_max}" ]]; then export WRTTASK_PER_GROUP=${npe_node_max} ; fi
-if [[ "${WRTTASK_PER_GROUP_GFS}" -gt "${npe_node_max}" ]]; then export WRTTASK_PER_GROUP_GFS=${npe_node_max} ; fi
+#While in theory this is likely the best way to go, in practice partiularly for C768 runs will fail
+#when using npe_node_max.  Additional write groups also did not get around errors. Should likely 
+#be revisted at another time.
+#if [[ "${WRTTASK_PER_GROUP}" -gt "${npe_node_max}" ]]; then export WRTTASK_PER_GROUP=${npe_node_max} ; fi
+#if [[ "${WRTTASK_PER_GROUP_GFS}" -gt "${npe_node_max}" ]]; then export WRTTASK_PER_GROUP_GFS=${npe_node_max} ; fi
 
 # Calculate chunksize based on resolution
 export RESTILE=$(echo ${case_in} |cut -c2-)
