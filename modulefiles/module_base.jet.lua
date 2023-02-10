@@ -10,7 +10,7 @@ load(pathJoin("hpc-impi", "2018.4.274"))
 
 load(pathJoin("esmf", "8_2_0_beta_snapshot_14"))
 
-load(hpss)
+load("hpss")
 load(pathJoin("gempak", "7.4.2"))
 load(pathJoin("cdo", "1.9.5"))
 
