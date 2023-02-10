@@ -10,7 +10,6 @@ load(pathJoin("hpc-impi", "2018.4"))
 
 load(pathJoin("esmf", "8.3.0b09"))
 
-load(pathJoin("nco", "4.8.1"))
 load(pathJoin("gempak", "7.5.1"))
 load(pathJoin("ncl", "6.6.2"))
 load(pathJoin("jasper", "2.0.25"))
@@ -21,6 +20,7 @@ load(pathJoin("cdo", "1.9.5"))
 load(pathJoin("hdf5", "1.10.6"))
 load(pathJoin("netcdf", "4.7.4"))
 
+load(pathJoin("nco", "4.8.1"))
 load(pathJoin("prod_util", "1.2.2"))
 load(pathJoin("grib_util", "1.2.2"))
 load(pathJoin("g2tmpl", "1.10.0"))

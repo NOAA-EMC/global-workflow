@@ -11,13 +11,13 @@ load(pathJoin("hpc-impi", "2018.4.274"))
 load(pathJoin("esmf", "8_2_0_beta_snapshot_14"))
 
 load(hpss)
-load(pathJoin("nco", "4.9.1"))
 load(pathJoin("gempak", "7.4.2"))
 load(pathJoin("cdo", "1.9.5"))
 
 load(pathJoin("hdf5", "1.10.6"))
 load(pathJoin("netcdf", "4.7.4"))
 
+load(pathJoin("nco", "4.9.1"))
 load(pathJoin("prod_util", "1.2.2"))
 load(pathJoin("grib_util", "1.2.2"))
 load(pathJoin("g2tmpl", "1.10.0"))
