@@ -1,7 +1,9 @@
+import datetime as dt
 import logging
 from typing import Dict
 
 from pygw.attrdict import AttrDict
+from pygw.timetools import to_datetime
 
 logger = logging.getLogger(__name__.split('.')[-1])
 
@@ -43,8 +45,15 @@ class Task:
         for kk in runtime_keys:
             try:
                 self.runtime_config[kk] = config[kk]
+                del self.config[kk]
             except KeyError:
                 raise KeyError(f"Encountered an unreferenced runtime_key {kk} in 'config'")
+
+        # Any other composite runtime variables that may be needed for the duration of the task
+        self.runtime_config['current_cycle'] = to_datetime(str(self.runtime_config['PDY'])) + \
+            dt.timedelta(hours=self.runtime_config['cyc'])
+
+        pass
 
     def initialize(self):
         """
