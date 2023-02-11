@@ -769,6 +769,11 @@ MOM6_postdet() {
     ;;
   esac
 
+  # Link increment
+  if [[ "${MOM_IAU}" = "true" ]]; then
+      $NLN "${ROTDIR}/${CDUMP}.${PDY}/${cyc}/ocean/${CDUMP}.t${cyc}z.ocninc.nc" "${DATA}/INPUT/inc.nc"
+  fi
+
   # Copy MOM6 fixed files
   $NCP -pf $FIXmom/$OCNRES/* $DATA/INPUT/
 
