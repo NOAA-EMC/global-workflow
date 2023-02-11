@@ -48,17 +48,15 @@ obs_list_yaml=$PWD/obs_list.yaml
 rm -f ${obs_list_yaml}
 touch obs_list.yaml
 echo "observers:" >> obs_list.yaml
-echo "- !INC \${OBS_YAML_DIR}/salt_profile_fnmoc.yaml" >> obs_list.yaml
+echo "- !INC ${OBS_YAML_DIR}/adt_j3_egm2008.yaml" >> obs_list.yaml
 
 # Configure the marine DA
-#marineda_yaml=$PWD/marineda.yaml
-#touch marineda.yaml
 echo "ocnanal:" > ocnanal.yaml
 echo "  SOCA_INPUT_FIX_DIR: /scratch2/NCEPDEV/ocean/Guillaume.Vernieres/data/static/72x35x25/soca" >> ocnanal.yaml
 echo "  CASE_ANL: 'C24'" >> ocnanal.yaml
-echo "  COMIN_OBS: '/scratch2/NCEPDEV/marineda/r2d2'" >> ocnanal.yaml
+echo "  COMIN_OBS: '/scratch2/NCEPDEV/ocean/Guillaume.Vernieres/runs/r2d2-v2-v3'" >> ocnanal.yaml
 echo "  SOCA_OBS_LIST: ${obs_list_yaml}" >> ocnanal.yaml
-echo "  SOCA_NINNER: 1" >> ocnanal.yaml
+echo "  SOCA_NINNER: 100" >> ocnanal.yaml
 echo "  R2D2_OBS_SRC: 'gdas_marine'" >> ocnanal.yaml
 echo "  R2D2_OBS_DUMP: 's2s_v1'" >> ocnanal.yaml
 echo "  SABER_BLOCKS_YAML: ''" >> ocnanal.yaml
@@ -89,4 +87,5 @@ cd ${BASEDIR}/${PSLOT}/EXPDIR/${PSLOT}
 rocotorun -d $PSLOT.db -w $PSLOT.xml
 #rocotostat -d $PSLOT.db -w $PSLOT.xml
 
-echo "./rocoto_viewer.py  -d $EXPDIR/$PSLOT/$PSLOT.db -w $EXPDIR/$PSLOT/$PSLOT.xml"
+echo "./rocoto_viewer.py  -d ./${PSLOT}/EXPDIR/$PSLOT/$PSLOT.db -w ${PSLOT}/EXPDIR/$PSLOT/$PSLOT.xml"
+

@@ -282,6 +282,7 @@ export IAU_OFFSET=6
 export DOIAU_ENKF=${DOIAU:-"YES"}   # Enable 4DIAU for EnKF ensemble
 export IAUFHRS_ENKF="3,6,9"
 export IAU_DELTHRS_ENKF=6
+export MOM_IAU=true
 
 # Use Jacobians in eupd and thereby remove need to run eomg
 export lobsdiag_forenkf=".true."
