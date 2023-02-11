@@ -48,7 +48,7 @@ obs_list_yaml=$PWD/obs_list.yaml
 rm -f ${obs_list_yaml}
 touch obs_list.yaml
 echo "observers:" >> obs_list.yaml
-echo "- !INC ${OBS_YAML_DIR}/adt_j3_egm2008.yaml" >> obs_list.yaml
+echo "- !INC \${OBS_YAML_DIR}/adt_j3_egm2008.yaml" >> obs_list.yaml
 
 # Configure the marine DA
 echo "ocnanal:" > ocnanal.yaml
