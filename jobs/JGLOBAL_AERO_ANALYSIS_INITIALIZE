@@ -1,0 +1,55 @@
+#! /usr/bin/env bash
+
+source "${HOMEgfs}/ush/preamble.sh"
+export DATA=${DATA:-${DATAROOT}/${RUN}aeroanl_${cyc}}
+source "${HOMEgfs}/ush/jjob_header.sh" -e "aeroanlinit" -c "base aeroanl aeroanlinit"
+
+##############################################
+# Set variables used in the script
+##############################################
+export CDATE=${CDATE:-${PDY}${cyc}}
+export CDUMP=${CDUMP:-${RUN:-"gfs"}}
+
+
+##############################################
+# Begin JOB SPECIFIC work
+##############################################
+
+GDATE=$(date +%Y%m%d%H -d "${CDATE:0:8} ${CDATE:8:2} - ${assim_freq} hours")
+export GDATE
+gPDY=${GDATE:0:8}
+export gcyc=${GDATE:8:2}
+export GDUMP=${GDUMP:-"gdas"}
+
+export OPREFIX="${CDUMP}.t${cyc}z."
+export GPREFIX="${GDUMP}.t${gcyc}z."
+export APREFIX="${CDUMP}.t${cyc}z."
+
+export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/chem}
+
+mkdir -p "${COMOUT}"
+
+# COMIN_GES and COMIN_GES_ENS are used in script
+export COMIN_GES="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/chem"
+export COMIN_GES_ENS="${ROTDIR}/enkf${GDUMP}.${gPDY}/${gcyc}/chem"
+
+###############################################################
+# Run relevant script
+
+EXSCRIPT=${GDASAEROINITPY:-${HOMEgfs}/scripts/exglobal_aero_analysis_initialize.py}
+${EXSCRIPT}
+status=$?
+[[ ${status} -ne 0 ]] && exit "${status}"
+
+##############################################
+# End JOB SPECIFIC work
+##############################################
+
+##############################################
+# Final processing
+##############################################
+if [[ -e "${pgmout}" ]] ; then
+  cat "${pgmout}"
+fi
+
+exit 0

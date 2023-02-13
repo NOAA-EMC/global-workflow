@@ -905,7 +905,7 @@ MOM6_postdet() {
     case ${OCNRES} in
       "025")
         for nn in $(seq 1 4); do
-          $NLN "${COMOUTocean}/RESTART/${idate:0:8}.${idate:8:2}0000.MOM.res_${nn}.nc" "${DATA}/MOM6_RESTART/MOM.res_${nn}.${idatestr}-00-00.nc"
+          $NLN "${COMOUTocean}/RESTART/${idate:0:8}.${idate:8:2}0000.MOM.res_${nn}.nc" "${DATA}/MOM6_RESTART/MOM.res.${idatestr}-00-00_${nn}.nc"
         done
         ;;
     esac
