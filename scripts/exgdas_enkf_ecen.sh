@@ -351,4 +351,4 @@ cd $pwd
 [[ $mkdata = "YES" ]] && rm -rf $DATA
 
 
-exit $err
+exit ${err}
