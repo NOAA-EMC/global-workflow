@@ -770,8 +770,13 @@ MOM6_postdet() {
   esac
 
   # Link increment
-  if [[ "${MOM_IAU}" = "true" ]]; then
+  if [[ "${DO_JEDIOCNVAR:-NO}" = "YES" ]]; then
+      if [[ ! -f "${ROTDIR}/${CDUMP}.${PDY}/${cyc}/ocean/${CDUMP}.t${cyc}z.ocninc.nc" ]]; then
+          echo "FATAL ERROR: Ocean increment not found, ABORT!"
+          exit 111
+      fi
       $NLN "${ROTDIR}/${CDUMP}.${PDY}/${cyc}/ocean/${CDUMP}.t${cyc}z.ocninc.nc" "${DATA}/INPUT/inc.nc"
+      export MOM_IAU="true"
   fi
 
   # Copy MOM6 fixed files
