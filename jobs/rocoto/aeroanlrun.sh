@@ -1,15 +1,18 @@
 #! /usr/bin/env bash
 
-source "$HOMEgfs/ush/preamble.sh"
+source "${HOMEgfs}/ush/preamble.sh"
 
 ###############################################################
-# Source FV3GFS workflow modules
-. $HOMEgfs/ush/load_fv3gfs_modules.sh
+# Source UFSDA workflow modules
+. "${HOMEgfs}/ush/load_ufsda_modules.sh"
 status=$?
-[[ $status -ne 0 ]] && exit $status
+[[ ${status} -ne 0 ]] && exit "${status}"
 
 export job="aeroanlrun"
 export jobid="${job}.$$"
 
 ###############################################################
-echo "Do nothing for now"
+# Execute the JJOB
+"${HOMEgfs}/jobs/JGLOBAL_AERO_ANALYSIS_RUN"
+status=$?
+exit "${status}"
