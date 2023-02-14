@@ -367,7 +367,7 @@ elif [ ${step} = "analcalc" ]; then
 
     export wtime_analcalc="00:10:00"
     export npe_analcalc=127
-    export ntasks=${npe_analcalc}
+    export ntasks="${npe_analcalc}"
     export nth_analcalc=1
     export nth_echgres=4
     export nth_echgres_gfs=12

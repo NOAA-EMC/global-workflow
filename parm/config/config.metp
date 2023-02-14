@@ -93,7 +93,7 @@ export precip1_type_list="ccpa_accum24hr"
 export precip1_ccpa_accum24hr_model_bucket="06"
 export precip1_ccpa_accum24hr_model_var="APCP"
 export precip1_ccpa_accum24hr_model_file_format="pgbf{lead?fmt=%2H}.${CDUMP}.{init?fmt=%Y%m%d%H}.grib2"
-export precip1_ccpa_accum24hr_fhr_min=$FHMIN_GFS
+export precip1_ccpa_accum24hr_fhr_min="$FHMIN_GFS"
 export precip1_ccpa_accum24hr_fhr_max="180"
 export precip1_ccpa_accum24hr_grid="G211"
 export precip1_ccpa_accum24hr_gather_by="VSDB"

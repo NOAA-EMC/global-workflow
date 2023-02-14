@@ -114,7 +114,7 @@ export HOMEens_tracker=$BASE_GIT/TC_tracker/${ens_tracker_ver}
 if [ "$VRFYTRAK" = "YES" ]; then
 
     export TRACKERSH="$HOMEgfs/jobs/JGFS_ATMOS_CYCLONE_TRACKER"
-    export COMINsyn=${COMINsyn:-$(compath.py ${envir}/com/gfs/${gfs_ver})/syndat}
+    export COMINsyn=${COMINsyn:-$(compath.py "${envir}"/com/gfs/"${gfs_ver}")/syndat}
     if [ "$CDUMP" = "gdas" ]; then
         export FHOUT_CYCLONE=3
         export FHMAX_CYCLONE=$FHMAX
@@ -130,14 +130,14 @@ if [[ "$VRFYGENESIS" == "YES" && "$CDUMP" == "gfs" ]]; then
     export GENESISSH="$HOMEgfs/jobs/JGFS_ATMOS_CYCLONE_GENESIS"
 fi
 
-if [[ "$VRFYFSU" == "YES" && "$CDUMP" == "gfs" ]]; then
+if [[ "${VRFYFSU}" == "YES" && "${CDUMP}" == "gfs" ]]; then
 
-    export GENESISFSU="$HOMEgfs/jobs/JGFS_ATMOS_FSU_GENESIS"
+    export GENESISFSU="${HOMEgfs}/jobs/JGFS_ATMOS_FSU_GENESIS"
 fi
 
-if [[ "$RUNMOS" == "YES" && "$CDUMP" == "gfs" ]]; then
+if [[ "${RUNMOS}" == "YES" && "${CDUMP}" == "gfs" ]]; then
 
-    if [ "$machine" = "HERA" ] ; then
+    if [[ "${machine}" = "HERA" ]] ; then
         export RUNGFSMOSSH="${HOMEgfs}/scripts/run_gfsmos_master.sh.hera"
     else
         echo "WARNING: MOS package is not enabled on ${machine}!"
