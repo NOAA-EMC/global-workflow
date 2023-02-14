@@ -8,8 +8,6 @@ load(pathJoin("hpc", "1.1.0"))
 load(pathJoin("hpc-intel", "18.0.5.274"))
 load(pathJoin("hpc-impi", "2018.4.274"))
 
-load(pathJoin("esmf", "8_2_0_beta_snapshot_14"))
-
 load("hpss")
 load(pathJoin("gempak", "7.4.2"))
 load(pathJoin("cdo", "1.9.5"))

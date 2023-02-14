@@ -9,8 +9,6 @@ load(pathJoin("hpc", "1.1.0"))
 load(pathJoin("hpc-intel", "18.0.4"))
 load(pathJoin("hpc-impi", "18.0.4"))
 
-load(pathJoin("esmf", "8.2.1b04"))
-
 load(pathJoin("miniconda", "3.8-s4"))
 load(pathJoin("ncl", "6.4.0-precompiled"))
 load(pathJoin("cdo", "1.9.8"))

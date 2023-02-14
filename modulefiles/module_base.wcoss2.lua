@@ -7,7 +7,6 @@ load(pathJoin("craype", "2.7.10"))
 load(pathJoin("intel", "19.1.3.304"))
 load(pathJoin("cray-mpich", "8.1.9"))
 load(pathJoin("cray-pals", "1.0.17"))
-load(pathJoin("esmf", "8.0.1"))
 load(pathJoin("cfp", "2.0.4"))
 setenv("USE_CFP","YES")
 
