@@ -48,7 +48,7 @@ if (( 10#${ENSGRP} > 0 )) && [[ ${HPSSARCH} = "YES" || ${LOCALARCH} = "YES" ]]; 
    SAVEWARMICB="NO"
    mm=$(echo "${CDATE}"|cut -c 5-6)
    dd=$(echo "${CDATE}"|cut -c 7-8)
-   nday=$(( (mm-1)*30+dd ))
+   nday=$(( (10#${mm}-1)*30+10#${dd} ))
    mod=$((nday % ARCH_WARMICFREQ))
    if [ "${CDATE}" -eq "${firstday}" ] && [ "${cyc}" -eq "${EARCINC_CYC}" ]; then SAVEWARMICA="YES" ; fi
    if [ "${CDATE}" -eq "${firstday}" ] && [ "${cyc}" -eq "${EARCICS_CYC}" ]; then SAVEWARMICB="YES" ; fi
