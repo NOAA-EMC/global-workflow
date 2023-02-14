@@ -832,7 +832,7 @@ ENERGYSAVEDAYS = 0.25           !   [days] default = 1.0
 ODA_INCUPD = @[ODA_INCUPD]   ! [Boolean] default = False
                              ! If true, oda incremental updates will be applied
                              ! everywhere in the domain.
-ODA_INCUPD_FILE = "inc.nc"   ! The name of the file with the T,S,h increments.
+ODA_INCUPD_FILE = "mom6_increment.nc"   ! The name of the file with the T,S,h increments.
 
 ODA_TEMPINC_VAR = "Temp"        ! default = "ptemp_inc"
                                 ! The name of the potential temperature inc. variable in
