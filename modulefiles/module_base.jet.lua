@@ -47,8 +47,7 @@ load(pathJoin("cdo", "1.9.5"))
 
 load(pathJoin("R", "4.0.2"))
 
---TODO need to port/build prepobs
-prepend_path("MODULEPATH", pathJoin("/lfs1/NESDIS/nesdis-rdo2/David.Huber/prepobs/v1.0.1/modulefiles"))
+prepend_path("MODULEPATH", pathJoin("/lfs4/HFIP/hfv3gfs/glopara/git/prepobs/v1.0.1/modulefiles"))
 load(pathJoin("prepobs", "1.0.1"))
 
 prepend_path("MODULEPATH", "/contrib/anaconda/modulefiles")

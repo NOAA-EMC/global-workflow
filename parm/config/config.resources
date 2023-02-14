@@ -310,6 +310,10 @@ elif [ ${step} = "anal" ]; then
     if [[ "${machine}" = "WCOSS2" ]]; then
       export nth_anal=8
       export nth_anal_gfs=8
+    elif [[ "${PARTITION_BATCH}" = "xjet" ]]; then
+      export wtime_anal="01:10:00"
+      export npe_anal=792
+      export npe_anal_gfs=816
     fi
     if [ ${CASE} = "C384" ]; then
       export npe_anal=160

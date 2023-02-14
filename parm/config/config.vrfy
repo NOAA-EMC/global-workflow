@@ -53,7 +53,6 @@ if [ $VRFYFITS = "YES" ]; then
         export PREPQFITSH="$fitdir/subfits_orion_netcdf"
     elif [ $machine = "JET" ]; then
         export PREPQFITSH="$fitdir/subfits_jet_netcdf"
-        export COMINsyn="/lfs4/HFIP/hwrf-data/hwrf-input/SYNDAT-PLUS"
     else
         echo "Fit2Obs NOT supported on this machine"
     fi
@@ -111,10 +110,6 @@ fi
 
 export ens_tracker_ver=v1.1.15.5
 export HOMEens_tracker=$BASE_GIT/TC_tracker/${ens_tracker_ver}
-if [[ ${machine} = "JET" ]]; then
-   export ens_tracker_ver=v1.1.15.4
-   export HOMEens_tracker=/lfs1/NESDIS/nesdis-rdo2/David.Huber/TC_Tracker/TC_tracker.v1.1.15.4
-fi
 
 if [ "$VRFYTRAK" = "YES" ]; then
 
