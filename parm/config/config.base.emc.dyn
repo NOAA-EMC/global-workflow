@@ -308,9 +308,6 @@ export imp_physics=@IMP_PHYSICS@
 export DO_JEDIVAR="NO"
 export DO_JEDIENS="NO"
 export DO_JEDIOCNVAR="YES"
-if [[ ${DO_JEDIOCNVAR} = "YES" ]]; then
-    export MOM_IAU=true
-fi
 
 # Hybrid related
 export DOHYBVAR="@DOHYBVAR@"
