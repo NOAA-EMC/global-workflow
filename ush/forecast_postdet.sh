@@ -776,7 +776,7 @@ MOM6_postdet() {
           exit 111
       fi
       $NLN "${ROTDIR}/${CDUMP}.${PDY}/${cyc}/ocean/${CDUMP}.t${cyc}z.ocninc.nc" "${DATA}/INPUT/inc.nc"
-      export MOM_IAU="true"
+      export ODA_INCUPD="true"
   fi
 
   # Copy MOM6 fixed files
