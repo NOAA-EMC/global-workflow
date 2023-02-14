@@ -775,7 +775,7 @@ MOM6_postdet() {
           echo "FATAL ERROR: Ocean increment not found, ABORT!"
           exit 111
       fi
-      $NLN "${ROTDIR}/${CDUMP}.${PDY}/${cyc}/ocean/${CDUMP}.t${cyc}z.ocninc.nc" "${DATA}/INPUT/inc.nc"
+      $NLN "${ROTDIR}/${CDUMP}.${PDY}/${cyc}/ocean/${CDUMP}.t${cyc}z.ocninc.nc" "${DATA}/INPUT/mom6_increment.nc"
       export ODA_INCUPD="true"
   fi
 
