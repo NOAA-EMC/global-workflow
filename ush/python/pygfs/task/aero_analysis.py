@@ -85,7 +85,7 @@ class AerosolAnalysis(Analysis):
         # stage berror files
         # copy BUMP files, otherwise it will assume ID matrix
         if self.task_config.get('STATICB_TYPE', 'bump_aero') in ['bump_aero']:
-            FileHandler(AerosolAnalysis.get_berror_dict(self.task_config)).sync()
+            FileHandler(self.get_berror_dict(self.task_config)).sync()
 
         # stage backgrounds
         FileHandler(self.get_bkg_dict(AttrDict(self.task_config, **self.task_config))).sync()
@@ -254,7 +254,7 @@ class AerosolAnalysis(Analysis):
         berror_dict: Dict
             a dictionary containing the list of background error files to copy for FileHandler
         """
-        super.get_berror_dict(config)
+        super().get_berror_dict(config)
         # aerosol static-B needs nicas, cor_rh, cor_rv and stddev files.
         b_dir = config['BERROR_DATA_DIR']
         b_datestr = config['BERROR_DATE']
