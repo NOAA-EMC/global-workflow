@@ -120,6 +120,14 @@ def fill_COMROT_cycled(host, inputs):
         makedirs_if_missing(dst_dir)
         link_files_from_src_to_dst(src_dir, dst_dir)
 
+        # First 1/2 cycle needs a MOM6 increment
+        incdir = f'{inputs.cdump}.{idatestr[:8]}/{idatestr[8:]}'
+        incfile = f'{inputs.cdump}.t{idatestr[8:]}z.ocninc.nc'
+        src_file = os.path.join(inputs.icsdir, incdir, 'ocean', incfile)
+        dst_file = os.path.join(comrot, incdir, 'ocean', incfile)
+        makedirs_if_missing(os.path.join(comrot, incdir, 'ocean'))
+        os.symlink(src_file, dst_file)
+
     # Link ice files
     if do_ice:
         detdir = f'{inputs.cdump}.{rdatestr[:8]}/{rdatestr[8:]}'
