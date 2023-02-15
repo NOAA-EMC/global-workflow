@@ -1,0 +1,51 @@
+name: Build and Deploy Documentation
+on:
+  push:
+    branches:
+      - develop
+      - feature/*
+      - main/*
+      - bugfix/*
+      - release/*
+    paths:
+      - docs/**
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+jobs:
+  documentation:
+    runs-on: ubuntu-latest
+    name: Build and deploy documentation
+
+    steps:
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.9"
+
+    - name: Install (upgrade) python dependencies
+      run: |
+        pip install --upgrade pip sphinx sphinx-gallery sphinx_rtd_theme sphinxcontrib-bibtex
+
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Build documentation
+      run: |
+        ./.github/scripts/build_docs.sh
+
+    - name: Upload documentation (on success)
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: documentation
+        path: artifact/documentation
+
+    - name: Upload warnings (on failure)
+      uses: actions/upload-artifact@v3
+      if: failure()
+      with:
+        name: documentation_warnings.log
+        path: artifact/doc_warnings.log
+        if-no-files-found: ignore
+

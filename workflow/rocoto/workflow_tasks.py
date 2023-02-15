@@ -13,7 +13,7 @@ class Tasks:
     VALID_TASKS = ['aerosol_init', 'coupled_ic', 'getic', 'init',
                    'prep', 'anal', 'sfcanl', 'analcalc', 'analdiag', 'gldas', 'arch',
                    'atmanalprep', 'atmanalrun', 'atmanalpost',
-                   'ocnanalprep', 'ocnanalrun', 'ocnanalpost',
+                   'ocnanalprep', 'ocnanalbmat', 'ocnanalrun', 'ocnanalpost',
                    'earc', 'ecen', 'echgres', 'ediag', 'efcs',
                    'eobs', 'eomg', 'epos', 'esfc', 'eupd',
                    'atmensanalprep', 'atmensanalrun', 'atmensanalpost',
@@ -39,7 +39,9 @@ class Tasks:
         envar_dict = {'RUN_ENVIR': self._base.get('RUN_ENVIR', 'emc'),
                       'HOMEgfs': self._base.get('HOMEgfs'),
                       'EXPDIR': self._base.get('EXPDIR'),
+                      'NET': 'gfs',
                       'CDUMP': self.cdump,
+                      'RUN': self.cdump,
                       'CDATE': '<cyclestr>@Y@m@d@H</cyclestr>',
                       'PDY': '<cyclestr>@Y@m@d</cyclestr>',
                       'cyc': '<cyclestr>@H</cyclestr>',
@@ -240,7 +242,6 @@ class Tasks:
 
     def prep(self):
 
-        suffix = self._base["SUFFIX"]
         dump_suffix = self._base["DUMP_SUFFIX"]
         gfs_cyc = self._base["gfs_cyc"]
         dmpdir = self._base["DMPDIR"]
@@ -249,7 +250,7 @@ class Tasks:
         deps = []
         dep_dict = {'type': 'metatask', 'name': f'{"gdas"}post', 'offset': '-06:00:00'}
         deps.append(rocoto.add_dependency(dep_dict))
-        data = f'&ROTDIR;/gdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmf009{suffix}'
+        data = f'&ROTDIR;/gdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmf009.nc'
         dep_dict = {'type': 'data', 'data': data, 'offset': '-06:00:00'}
         deps.append(rocoto.add_dependency(dep_dict))
         data = f'{dmpdir}/{self.cdump}{dump_suffix}.@Y@m@d/@H/atmos/{self.cdump}.t@Hz.updated.status.tm00.bufr_d'
@@ -397,7 +398,6 @@ class Tasks:
 
     def atmanalprep(self):
 
-        suffix = self._base["SUFFIX"]
         dump_suffix = self._base["DUMP_SUFFIX"]
         gfs_cyc = self._base["gfs_cyc"]
         dmpdir = self._base["DMPDIR"]
@@ -406,7 +406,7 @@ class Tasks:
         deps = []
         dep_dict = {'type': 'metatask', 'name': 'gdaspost', 'offset': '-06:00:00'}
         deps.append(rocoto.add_dependency(dep_dict))
-        data = f'&ROTDIR;/gdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmf009{suffix}'
+        data = f'&ROTDIR;/gdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmf009.nc'
         dep_dict = {'type': 'data', 'data': data, 'offset': '-06:00:00'}
         deps.append(rocoto.add_dependency(dep_dict))
         data = f'{dmpdir}/{self.cdump}{dump_suffix}.@Y@m@d/@H/atmos/{self.cdump}.t@Hz.updated.status.tm00.bufr_d'
@@ -454,14 +454,13 @@ class Tasks:
 
     def aeroanlinit(self):
 
-        suffix = self._base["SUFFIX"]
         dump_suffix = self._base["DUMP_SUFFIX"]
         dmpdir = self._base["DMPDIR"]
 
         deps = []
         dep_dict = {'type': 'metatask', 'name': 'gdaspost', 'offset': '-06:00:00'}
         deps.append(rocoto.add_dependency(dep_dict))
-        data = f'&ROTDIR;/gdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmf009{suffix}'
+        data = f'&ROTDIR;/gdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmf009.nc'
         dep_dict = {'type': 'data', 'data': data, 'offset': '-06:00:00'}
         deps.append(rocoto.add_dependency(dep_dict))
         data = f'{dmpdir}/{self.cdump}{dump_suffix}.@Y@m@d/@H/atmos/{self.cdump}.t@Hz.updated.status.tm00.bufr_d'
@@ -499,12 +498,11 @@ class Tasks:
 
     def ocnanalprep(self):
 
-        suffix = self._base["SUFFIX"]
         dump_suffix = self._base["DUMP_SUFFIX"]
         dmpdir = self._base["DMPDIR"]
 
         deps = []
-        data = f'&ROTDIR;/gdas.@Y@m@d/@H/ocean/gdas.t@Hz.ocnf009{suffix}'
+        data = f'&ROTDIR;/gdas.@Y@m@d/@H/ocean/gdas.t@Hz.ocnf009.nc'
         dep_dict = {'type': 'data', 'data': data, 'offset': '-06:00:00'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
@@ -518,10 +516,26 @@ class Tasks:
 
         return task
 
-    def ocnanalrun(self):
+    def ocnanalbmat(self):
 
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump}ocnanalprep'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('ocnanalbmat')
+        task = create_wf_task('ocnanalbmat',
+                              resources,
+                              cdump=self.cdump,
+                              envar=self.envars,
+                              dependency=dependencies)
+
+        return task
+
+    def ocnanalrun(self):
+
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}ocnanalbmat'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
@@ -635,9 +649,8 @@ class Tasks:
         dependencies = rocoto.create_dependency(dep=dep)
 
         if self.app_config.do_jediocnvar:
-            dep_dict = {'type': 'task', 'name': f'{self.cdump}ocnanalrun'}
-            dep = rocoto.add_dependency(dep_dict)
-            dependencies = rocoto.create_dependency(dep=dep)
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}ocnanalpost'}
+            dependencies.append(rocoto.add_dependency(dep_dict))
 
         if self.app_config.do_gldas and self.cdump in ['gdas']:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}gldas'}
@@ -645,6 +658,10 @@ class Tasks:
 
         if self.app_config.do_wave and self.cdump in self.app_config.wave_cdumps:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}waveprep'}
+            dependencies.append(rocoto.add_dependency(dep_dict))
+
+        if self.app_config.do_aero:
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}aeroanlfinal'}
             dependencies.append(rocoto.add_dependency(dep_dict))
 
         dependencies = rocoto.create_dependency(dep_condition='and', dep=dependencies)
@@ -670,7 +687,8 @@ class Tasks:
         return self._post_task('post', add_anl_to_post=add_anl_to_post)
 
     def ocnpost(self):
-        return self._post_task('ocnpost', add_anl_to_post=False)
+        if self.app_config.mode in ['forecast-only']:  # TODO: fix ocnpost in cycled mode
+            return self._post_task('ocnpost', add_anl_to_post=False)
 
     def _post_task(self, task_name, add_anl_to_post=False):
         if task_name not in ['post', 'ocnpost']:
@@ -1015,8 +1033,9 @@ class Tasks:
                 dep_dict = {'type': 'task', 'name': f'{self.cdump}wavepostbndpnt'}
                 deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_ocean:
-            dep_dict = {'type': 'metatask', 'name': f'{self.cdump}ocnpost'}
-            deps.append(rocoto.add_dependency(dep_dict))
+            if self.app_config.mode in ['forecast-only']:  # TODO: fix ocnpost to run in cycled mode
+                dep_dict = {'type': 'metatask', 'name': f'{self.cdump}ocnpost'}
+                deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
@@ -1085,7 +1104,6 @@ class Tasks:
 
     def atmensanalprep(self):
 
-        suffix = self._base["SUFFIX"]
         dump_suffix = self._base["DUMP_SUFFIX"]
         gfs_cyc = self._base["gfs_cyc"]
         dmpdir = self._base["DMPDIR"]
@@ -1094,7 +1112,7 @@ class Tasks:
         deps = []
         dep_dict = {'type': 'metatask', 'name': 'gdaspost', 'offset': '-06:00:00'}
         deps.append(rocoto.add_dependency(dep_dict))
-        data = f'&ROTDIR;/gdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmf009{suffix}'
+        data = f'&ROTDIR;/gdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmf009.nc'
         dep_dict = {'type': 'data', 'data': data, 'offset': '-06:00:00'}
         deps.append(rocoto.add_dependency(dep_dict))
         data = f'{dmpdir}/{self.cdump}{dump_suffix}.@Y@m@d/@H/atmos/{self.cdump}.t@Hz.updated.status.tm00.bufr_d'
@@ -1257,9 +1275,10 @@ class Tasks:
         def _get_eposgroups(epos):
             fhmin = epos['FHMIN_ENKF']
             fhmax = epos['FHMAX_ENKF']
+            fhout = epos['FHOUT_ENKF']
             if self.cdump == "gfs":
                 fhmax = epos['FHMAX_ENKF_GFS']
-            fhout = epos['FHOUT_ENKF']
+                fhout = epos['FHOUT_ENKF_GFS']
             fhrs = range(fhmin, fhmax + fhout, fhout)
 
             neposgrp = epos['NEPOSGRP']

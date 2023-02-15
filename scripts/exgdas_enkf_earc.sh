@@ -7,7 +7,7 @@ source "${HOMEgfs}/ush/preamble.sh"
 ##############################################
 export n=$((10#${ENSGRP}))
 export CDUMP_ENKF=$(echo "${EUPD_CYC:-"gdas"}" | tr a-z A-Z)
-export ARCH_LIST="${ROTDIR}/enkf${CDUMP}.${PDY}/${cyc}/${COMPONENT}/earc${ENSGRP}"
+export ARCH_LIST="${ROTDIR}/enkf${CDUMP}.${PDY}/${cyc}/earc${ENSGRP}"
 
 # ICS are restarts and always lag INC by $assim_freq hours.
 EARCINC_CYC=${ARCH_CYC}
@@ -48,7 +48,7 @@ if (( 10#${ENSGRP} > 0 )) && [[ ${HPSSARCH} = "YES" || ${LOCALARCH} = "YES" ]]; 
    SAVEWARMICB="NO"
    mm=$(echo "${CDATE}"|cut -c 5-6)
    dd=$(echo "${CDATE}"|cut -c 7-8)
-   nday=$(( (mm-1)*30+dd ))
+   nday=$(( (10#${mm}-1)*30+10#${dd} ))
    mod=$((nday % ARCH_WARMICFREQ))
    if [ "${CDATE}" -eq "${firstday}" ] && [ "${cyc}" -eq "${EARCINC_CYC}" ]; then SAVEWARMICA="YES" ; fi
    if [ "${CDATE}" -eq "${firstday}" ] && [ "${cyc}" -eq "${EARCICS_CYC}" ]; then SAVEWARMICB="YES" ; fi
@@ -122,13 +122,13 @@ if [ "${ENSGRP}" -eq 0 ]; then
     [[ ! -d ${ARCDIR} ]] && mkdir -p "${ARCDIR}"
     cd "${ARCDIR}"
 
-    nb_copy "${ROTDIR}"/enkf"${CDUMP}"."${PDY}"/"${cyc}"/"${COMPONENT}"/"${CDUMP}".t"${cyc}"z.enkfstat         enkfstat."${CDUMP}"."${CDATE}"
-    nb_copy "${ROTDIR}"/enkf"${CDUMP}"."${PDY}"/"${cyc}"/"${COMPONENT}"/"${CDUMP}".t"${cyc}"z.gsistat.ensmean  gsistat."${CDUMP}"."${CDATE}".ensmean
+    nb_copy "${ROTDIR}/enkf${CDUMP}.${PDY}/${cyc}/${CDUMP}.t${cyc}z.enkfstat"        "enkfstat.${CDUMP}.${CDATE}"
+    nb_copy "${ROTDIR}/enkf${CDUMP}.${PDY}/${cyc}/${CDUMP}.t${cyc}z.gsistat.ensmean" "gsistat.${CDUMP}.${CDATE}.ensmean"
 
     if [ "${CDUMP_ENKF}" != "GDAS" ]; then
-      nb_copy "${ROTDIR}"/enkfgfs."${PDY}"/"${cyc}"/"${COMPONENT}"/"${CDUMP}".t"${cyc}"z.enkfstat enkfstat.gfs."${CDATE}"
-      nb_copy "${ROTDIR}"/enkfgfs."${PDY}"/"${cyc}"/"${COMPONENT}"/"${CDUMP}".t"${cyc}"z.gsistat.ensmean gsistat.gfs."${CDATE}".ensmean
-        fi
+      nb_copy "${ROTDIR}/enkfgfs.${PDY}/${cyc}/${CDUMP}.t${cyc}z.enkfstat"        "enkfstat.gfs.${CDATE}"
+      nb_copy "${ROTDIR}/enkfgfs.${PDY}/${cyc}/${CDUMP}.t${cyc}z.gsistat.ensmean" "gsistat.gfs.${CDATE}.ensmean"
+    fi
 
 fi
 
@@ -152,7 +152,7 @@ if [ "${ENSGRP}" -eq 0 ]; then
         # Loop over GDAS and GFS EnKF directories separately.
         clist="gdas gfs"
         for ctype in ${clist}; do
-            COMIN_ENS="${ROTDIR}/enkf${ctype}.${gPDY}/${gcyc}/${COMPONENT}"
+            COMIN_ENS="${ROTDIR}/enkf${ctype}.${gPDY}/${gcyc}"
             if [ -d "${COMIN_ENS}" ]; then
                 rocotolog="${EXPDIR}/logs/${GDATE}.log"
                 if [ -f "${rocotolog}" ]; then

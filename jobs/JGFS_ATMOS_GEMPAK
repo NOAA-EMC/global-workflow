@@ -1,45 +1,12 @@
 #! /usr/bin/env bash
 
 source "${HOMEgfs}/ush/preamble.sh"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "gempak" -c "base gempak"
 
-##########################################################
-# make temp directory
-##########################################################
-export DATA=${DATA:-${DATAROOT}/${jobid}}
-mkdir -p ${DATA}
-cd ${DATA}
-
-###########################################
-# Run setpdy and initialize PDY variables
-###########################################
-export cycle="t${cyc}z"
-setpdy.sh
-. ./PDY
-
-export pgmout=OUTPUT.$$
-
-#############################
-# Source relevant config files
-#############################
-export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
-configs="base gempak"
-for config in ${configs}; do
-    . ${EXPDIR}/config.${config}
-    status=$?
-    [[ ${status} -ne 0 ]] && exit ${status}
-done
-
-##########################################
-# Source machine runtime environment
-##########################################
-. ${HOMEgfs}/env/${machine}.env gempak
-status=$?
-[[ ${status} -ne 0 ]] && exit ${status}
 
 ################################
 # Set up the HOME directory
 ################################
-export HOMEgfs=${HOMEgfs:-${PACKAGEROOT}/gfs.${gfs_ver}}  # TODO: These should be removed as they are defined in config.base
 export EXECgfs=${EXECgfs:-${HOMEgfs}/exec}
 export PARMgfs=${PARMgfs:-${HOMEgfs}/parm}
 export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
@@ -63,8 +30,6 @@ export DBN_ALERT_TYPE=${DBN_ALERT_TYPE:-GFS_GEMPAK}
 ###################################
 # Specify NET and RUN Name and model
 ####################################
-export NET=${NET:-gfs}
-export RUN=${RUN:-gfs}
 export model=${model:-gfs}
 export COMPONENT="atmos"
 
@@ -139,9 +104,11 @@ echo "time ${SRCgfs}/exgfs_atmos_nawips.sh gfs35_atl 180 GFS_GEMPAK_WWB &> ${DAT
 echo "time ${SRCgfs}/exgfs_atmos_nawips.sh gfs40 180 GFS_GEMPAK_WWB &> ${DATA}/gfs40.$$.1 " >>poescript
 echo "time ${SRCgfs}/exgfs_atmos_nawips.sh gfs40 180 GFS_GEMPAK_WWB &> ${DATA}/gfs40.$$.2 " >>poescript
 
-# Add task number to the MPMD script
-nl -n ln -v 0 poescript > poescript.new
-mv poescript.new poescript
+if [[ ${CFP_MP:-"NO"} == "YES" ]]; then
+  # Add task number to the MPMD script
+  nl -n ln -v 0 poescript > poescript.new
+  mv poescript.new poescript
+fi
 
 cat poescript
 
@@ -149,7 +116,7 @@ chmod 775 ${DATA}/poescript
 export MP_PGMMODEL=mpmd
 export MP_CMDFILE=${DATA}/poescript
 
-ntasks=${NTASKS_GEMPAK:-$(cat ${DATA}/poescript | wc -l)}
+ntasks=$(cat ${DATA}/poescript | wc -l)
 ptile=${PTILE_GEMPAK:-4}
 threads=${NTHREADS_GEMPAK:-1}
 export OMP_NUM_THREADS=${threads}

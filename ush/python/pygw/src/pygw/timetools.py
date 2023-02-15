@@ -9,12 +9,15 @@ __all__ = ["to_datetime", "to_timedelta",
 
 
 _DATETIME_RE = re.compile(
-    r"(?P<year>\d{4})(-)?(?P<month>\d{2})(-)?(?P<day>\d{2})(T)?(?P<hour>\d{2})?(:)?(?P<minute>\d{2})?(:)?(?P<second>\d{2})?(Z)?")
+    r"(?P<year>\d{4})(-)?(?P<month>\d{2})(-)?(?P<day>\d{2})"
+    r"(T)?(?P<hour>\d{2})?(:)?(?P<minute>\d{2})?(:)?(?P<second>\d{2})?(Z)?")
 
 _TIMEDELTA_HOURS_RE = re.compile(
-    r"(?P<sign>[+-])?((?P<days>\d+)[d])?(T)?((?P<hours>\d+)[H])?((?P<minutes>\d+)[M])?((?P<seconds>\d+)[S])?(Z)?")
+    r"(?P<sign>[+-])?"
+    r"((?P<days>\d+)[d])?(T)?((?P<hours>\d+)[H])?((?P<minutes>\d+)[M])?((?P<seconds>\d+)[S])?(Z)?")
 _TIMEDELTA_TIME_RE = re.compile(
-    r"(?P<sign>[+-])?((?P<days>\d+)\s+day(s)?,\s)?(T)?(?P<hours>\d{1,2})?(:(?P<minutes>\d{1,2}))?(:(?P<seconds>\d{1,2}))?")
+    r"(?P<sign>[+-])?"
+    r"((?P<days>\d+)\s+day(s)?,\s)?(T)?(?P<hours>\d{1,2})?(:(?P<minutes>\d{1,2}))?(:(?P<seconds>\d{1,2}))?")
 
 
 def to_datetime(dtstr):
@@ -122,3 +125,17 @@ def strptime(dtstr, fmt):
         return datetime.datetime.strptime(dtstr, fmt)
     except Exception as ee:
         raise Exception(f"Bad datetime string (format): '{dtstr} ({fmt})'")
+
+
+def to_isotime(dt):
+    """
+    Return a ISO formatted '%Y-%m-%dT%H:%M:%SZ' string from a datetime object.
+    """
+    return strftime(dt, '%Y-%m-%dT%H:%M:%SZ')
+
+
+def to_fv3time(dt):
+    """
+    Return a FV3 formatted '%Y%m%d.%H%M%S' string from a datetime object.
+    """
+    return strftime(dt, '%Y%m%d.%H%M%S')

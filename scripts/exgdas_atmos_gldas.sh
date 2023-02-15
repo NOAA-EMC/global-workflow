@@ -4,7 +4,7 @@
 ####  UNIX Script Documentation Block
 #                      .                                             .
 # Script name:         exgdas_atmos_gldas.sh
-# Script description:  Runs the global land analysis                    
+# Script description:  Runs the global land analysis
 #
 ################################################################################
 
@@ -31,7 +31,6 @@ export ERRSCRIPT=${ERRSCRIPT:-"eval [[ ${err} = 0 ]]"}
 # Set up the running environment
 #################################
 export USE_CFP=${USE_CFP:-"NO"}
-export COMPONENT=${COMPONENT:-atmos}
 export assim_freq=${assim_freq:-6}
 export gldas_spinup_hours=${gldas_spinup_hours:-72}
 
@@ -77,8 +76,8 @@ export RUNDIR=${DATA}
 GDAS=${RUNDIR}/force
 mkdir -p "${GDAS}"
 
-input1=${COMINgdas}/gdas.${gldas_symd}/${gldas_scyc}/${COMPONENT}/RESTART
-input2=${COMINgdas}/gdas.${gldas_eymd}/${gldas_ecyc}/${COMPONENT}/RESTART
+input1=${COMINgdas}/gdas.${gldas_symd}/${gldas_scyc}/atmos/RESTART
+input2=${COMINgdas}/gdas.${gldas_eymd}/${gldas_ecyc}/atmos/RESTART
 [[ -d ${RUNDIR} ]]       && rm -fr "${RUNDIR}/FIX"
 [[ -f ${RUNDIR}/LIS ]]   && rm -fr "${RUNDIR}/LIS"
 [[ -d ${RUNDIR}/input ]] && rm -fr "${RUNDIR}/input"
@@ -165,11 +164,11 @@ ${ERRSCRIPT} || exit 4
 
 
 #---------------------------------------------------------------
-### 3) Produce initials noah.rst from 6-tile gdas restart files 
+### 3) Produce initials noah.rst from 6-tile gdas restart files
 #---------------------------------------------------------------
 rm -f fort.41 fort.141 fort.11 fort.12
 
-# 3a) create gdas2gldas input file 
+# 3a) create gdas2gldas input file
 
 cat >> fort.141 << EOF
  &config
@@ -186,7 +185,7 @@ EOF
 cp fort.141 fort.41
 
 
-# 3b) Use gdas2gldas to generate nemsio file 
+# 3b) Use gdas2gldas to generate nemsio file
 
 export OMP_NUM_THREADS=1
 export pgm=gdas2gldas

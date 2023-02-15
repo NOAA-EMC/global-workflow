@@ -40,7 +40,6 @@ source "${HOMEgfs}/ush/preamble.sh"
 
 cd "${DATA}" || exit 1
 
-# specify model output format type: 4 for nemsio, 3 for sigio
 export POSTGPSH=${POSTGPSH:-${USHgfs}/gfs_post.sh}
 export GFSDOWNSH=${GFSDOWNSH:-${USHgfs}/fv3gfs_downstream_nems.sh}
 export GFSDOWNSHF=${GFSDOWNSHF:-${USHgfs}/inter_flux.sh}
@@ -66,17 +65,7 @@ export GOESF=${GOESF:-"YES"}
 export WAFSF=${WAFSF:-"NO"}
 export PGBF=${PGBF:-"YES"}
 export TCYC=${TCYC:-".t${cyc}z."}
-export OUTPUT_FILE=${OUTPUT_FILE:-"nemsio"}
 export PREFIX=${PREFIX:-${RUN}${TCYC}}
-if (( OUTTYP == 4 )); then
-  if [ "${OUTPUT_FILE}" = "netcdf" ]; then
-    export SUFFIX=".nc"
-  else
-    export SUFFIX=".nemsio"
-  fi
-else
-  export SUFFIX=
-fi
 export machine=${machine:-WCOSS2}
 
 ###########################
@@ -95,14 +84,10 @@ export IDRT=${IDRT:-0} # IDRT=0 is setting for outputting grib files on lat/lon 
 # Process analysis when post_times is 00
 stime="$(echo "${post_times}" | cut -c1-3)"
 export stime
-if (( OUTTYP == 4 )); then
-  export loganl="${COMIN}/${PREFIX}atmanl${SUFFIX}"
-else
-  export loganl="${COMIN}/${PREFIX}sanl"
-fi
+export loganl="${COMIN}/${PREFIX}atmanl.nc"
 
-if [ "${stime}" = "anl" ]; then
-  if [ -f "${loganl}" ]; then
+if [[ "${stime}" = "anl" ]]; then
+  if [[ -f "${loganl}" ]]; then
     # add new environmental variables for running new ncep post
     # Validation date
     export VDATE=${PDY}${cyc}
@@ -113,7 +98,7 @@ if [ "${stime}" = "anl" ]; then
 
     # specify smaller control file for GDAS because GDAS does not
     # produce flux file, the default will be /nwprod/parm/gfs_cntrl.parm
-    if [ "${GRIBVERSION}" = 'grib2' ]; then
+    if [[ "${GRIBVERSION}" = 'grib2' ]]; then
       # use grib2 nomonic table in product g2tmpl directory as default 
       export POSTGRB2TBL=${POSTGRB2TBL:-${g2tmpl_ROOT}/share/params_grib2_tbl_new}
       export PostFlatFile=${PostFlatFile:-${PARMpost}/postxconfig-NT-GFS-ANL.txt}
@@ -121,12 +106,10 @@ if [ "${stime}" = "anl" ]; then
     fi
 
     [[ -f flxfile ]] && rm flxfile ; [[ -f nemsfile ]] && rm nemsfile
-    if (( OUTTYP == 4 )); then
-      ln -fs "${COMIN}/${PREFIX}atmanl${SUFFIX}" nemsfile
-      export NEMSINP=nemsfile
-      ln -fs "${COMIN}/${PREFIX}sfcanl${SUFFIX}" flxfile
-      export FLXINP=flxfile
-    fi
+    ln -fs "${COMIN}/${PREFIX}atmanl.nc" nemsfile
+    export NEMSINP=nemsfile
+    ln -fs "${COMIN}/${PREFIX}sfcanl.nc" flxfile
+    export FLXINP=flxfile
 
     export PGBOUT=pgbfile
     export PGIOUT=pgifile
@@ -138,31 +121,31 @@ if [ "${stime}" = "anl" ]; then
     ${POSTGPSH}
     export err=$?; err_chk
 
-    if [ "${GRIBVERSION}" = 'grib2' ]; then
+    if [[ "${GRIBVERSION}" = 'grib2' ]]; then
       mv "${PGBOUT}" "${PGBOUT2}"
     fi
 
     #  Process pgb files
-    if [ "${PGBF}" = 'YES' ]; then
+    if [[ "${PGBF}" = 'YES' ]]; then
       export FH=-1
       export downset=${downset:-2}
       ${GFSDOWNSH}
       export err=$?; err_chk
     fi
 
-    if [ "${SENDCOM}" = 'YES' ]; then
+    if [[ "${SENDCOM}" = 'YES' ]]; then
       export fhr3=anl
-      if [ "${GRIBVERSION}" = 'grib2' ]; then
+      if [[ "${GRIBVERSION}" = 'grib2' ]]; then
         MASTERANL=${PREFIX}master.grb2${fhr3}
         MASTERANLIDX=${PREFIX}master.grb2i${fhr3}
         cp "${PGBOUT2}" "${COMOUT}/${MASTERANL}"
         ${GRB2INDEX} "${PGBOUT2}" "${COMOUT}/${MASTERANLIDX}"
       fi
 
-      if [ "${SENDDBN}" = 'YES' ]; then
-        "${DBNROOT}/bin/dbn_alert" MODEL GFS_MSC_sfcanl "${job}" "${COMOUT}/${PREFIX}sfcanl${SUFFIX}"
-        "${DBNROOT}/bin/dbn_alert" MODEL GFS_SA "${job}" "${COMOUT}/${PREFIX}atmanl${SUFFIX}"
-        if [ "${PGBF}" = 'YES' ]; then
+      if [[ "${SENDDBN}" = 'YES' ]]; then
+        "${DBNROOT}/bin/dbn_alert" MODEL GFS_MSC_sfcanl "${job}" "${COMOUT}/${PREFIX}sfcanl.nc"
+        "${DBNROOT}/bin/dbn_alert" MODEL GFS_SA "${job}" "${COMOUT}/${PREFIX}atmanl.nc"
+        if [[ "${PGBF}" = 'YES' ]]; then
           "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2_0P25 "${job}" "${COMOUT}/${PREFIX}pgrb2.0p25.anl"
           "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2_0P25_WIDX "${job}" "${COMOUT}/${PREFIX}pgrb2.0p25.anl.idx"
           "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2B_0P25 "${job}" "${COMOUT}/${PREFIX}pgrb2b.0p25.anl"
@@ -185,7 +168,7 @@ if [ "${stime}" = "anl" ]; then
 
     ##########################  WAFS U/V/T analysis start ##########################
     # U/V/T on ICAO standard atmospheric pressure levels for WAFS verification
-    if [ "${WAFSF}" = "YES" ]; then
+    if [[ "${WAFSF}" = "YES" ]]; then
       if [[ "${RUN}" = "gfs" && "${GRIBVERSION}" = 'grib2' ]]; then
         export OUTTYP=${OUTTYP:-4}
 
@@ -208,7 +191,7 @@ if [ "${stime}" = "anl" ]; then
           -new_grid_interpolation bilinear -set_bitmap 1 \
           -new_grid ${wafsgrid} "${PGBOUT}.tmp"
 
-          if [ "${SENDCOM}" = "YES" ]; then
+          if [[ "${SENDCOM}" = "YES" ]]; then
             cp "${PGBOUT}.tmp" "${COMOUT}/${PREFIX}wafs.0p25.anl"
             ${WGRIB2} -s "${PGBOUT}.tmp" > "${COMOUT}/${PREFIX}wafs.0p25.anl.idx"
 
@@ -244,7 +227,7 @@ else   ## not_anl if_stime
     export pgm="postcheck"
     ic=1
     while (( ic <= SLEEP_LOOP_MAX )); do
-      if [ -f "${restart_file}${fhr}.txt" ]; then
+      if [[ -f "${restart_file}${fhr}.txt" ]]; then
         break
       else
         ic=$(( ic + 1 ))
@@ -256,7 +239,7 @@ else   ## not_anl if_stime
       # period and error exit
       ###############################
       if (( ic == SLEEP_LOOP_MAX )); then
-        echo " *** FATAL ERROR: No model output in nemsio for f${fhr} "
+        echo " *** FATAL ERROR: No model output for f${fhr} "
         export err=9
         err_chk
       fi
@@ -267,12 +250,10 @@ else   ## not_anl if_stime
     # for backup to start Model Fcst
     ###############################
     [[ -f flxfile ]] && rm flxfile ; [[ -f nemsfile ]] && rm nemsfile
-    if (( OUTTYP == 4 )); then
-      ln -fs "${COMIN}/${PREFIX}atmf${fhr}${SUFFIX}" nemsfile
-      export NEMSINP=nemsfile
-      ln -fs "${COMIN}/${PREFIX}sfcf${fhr}${SUFFIX}" flxfile
-      export FLXINP=flxfile
-    fi
+    ln -fs "${COMIN}/${PREFIX}atmf${fhr}.nc" nemsfile
+    export NEMSINP=nemsfile
+    ln -fs "${COMIN}/${PREFIX}sfcf${fhr}.nc" flxfile
+    export FLXINP=flxfile
 
     if (( fhr > 0 )); then
       export IGEN=${IGEN_FCST}
@@ -288,11 +269,11 @@ else   ## not_anl if_stime
     export OUTTYP=${OUTTYP:-4}
     export GFSOUT="${PREFIX}gfsio${fhr}"
 
-    if [ "${GRIBVERSION}" = 'grib2' ]; then
+    if [[ "${GRIBVERSION}" = 'grib2' ]]; then
       export POSTGRB2TBL="${POSTGRB2TBL:-${g2tmpl_ROOT}/share/params_grib2_tbl_new}"
       export PostFlatFile="${PostFlatFile:-${PARMpost}/postxconfig-NT-GFS.txt}"
 
-      if [ "${RUN}" = "gfs" ]; then
+      if [[ "${RUN}" = "gfs" ]]; then
         export IGEN=${IGEN_GFS}
         if (( fhr > 0 )); then export IGEN=${IGEN_FCST} ; fi
       else
@@ -322,54 +303,54 @@ else   ## not_anl if_stime
     export PGBOUT2=pgbfile.grib2
     export PGIOUT2=pgifile.grib2.idx
     export FILTER=0 
-    if [ "${GRIBVERSION}" = 'grib2' ]; then
+    if [[ "${GRIBVERSION}" = 'grib2' ]]; then
       MASTERFL=${PREFIX}master.grb2f${fhr}
       MASTERFLIDX=${PREFIX}master.grb2if${fhr}
     fi
 
-    if [ "${INLINE_POST}" = ".false." ]; then
+    if [[ "${INLINE_POST}" = ".false." ]]; then
       ${POSTGPSH}
     else
       cp -p "${COMOUT}/${MASTERFL}" "${PGBOUT}" 
     fi
     export err=$?; err_chk
 
-    if [ "${GRIBVERSION}" = 'grib2' ]; then
+    if [[ "${GRIBVERSION}" = 'grib2' ]]; then
       mv "${PGBOUT}" "${PGBOUT2}"
     fi
 
     #  Process pgb files
-    if [ "${PGBF}" = 'YES' ]; then
+    if [[ "${PGBF}" = 'YES' ]]; then
       export FH=$(( 10#${fhr} + 0 ))
       export downset=${downset:-2}
       ${GFSDOWNSH}
       export err=$?; err_chk
     fi
 
-    if [ "${SENDCOM}" = "YES" ]; then
-      if [ "${GRIBVERSION}" = 'grib2' ]; then
-        if [ "${INLINE_POST}" = ".false." ]; then 
+    if [[ "${SENDCOM}" = "YES" ]]; then
+      if [[ "${GRIBVERSION}" = 'grib2' ]]; then
+        if [[ "${INLINE_POST}" = ".false." ]]; then 
           cp "${PGBOUT2}" "${COMOUT}/${MASTERFL}"
         fi
         ${GRB2INDEX} "${PGBOUT2}" "${COMOUT}/${MASTERFLIDX}"
       fi
 
-      if [ "${SENDDBN}" = 'YES' ]; then
-        if [ "${GRIBVERSION}" = 'grib2' ]; then
-          if [ "${PGBF}" = 'YES' ]; then
+      if [[ "${SENDDBN}" = 'YES' ]]; then
+        if [[ "${GRIBVERSION}" = 'grib2' ]]; then
+          if [[ "${PGBF}" = 'YES' ]]; then
             "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2_0P25 "${job}" "${COMOUT}/${PREFIX}pgrb2.0p25.f${fhr}"
             "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2_0P25_WIDX "${job}" "${COMOUT}/${PREFIX}pgrb2.0p25.f${fhr}.idx"
             "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2B_0P25 "${job}" "${COMOUT}/${PREFIX}pgrb2b.0p25.f${fhr}"
             "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2B_0P25_WIDX "${job}" "${COMOUT}/${PREFIX}pgrb2b.0p25.f${fhr}.idx"
 
-            if [ -s "${COMOUT}/${PREFIX}pgrb2.0p50.f${fhr}" ]; then
+            if [[ -s "${COMOUT}/${PREFIX}pgrb2.0p50.f${fhr}" ]]; then
               "${DBNROOT}/bin/dbn_alert"  MODEL GFS_PGB2_0P5 "${job}" "${COMOUT}/${PREFIX}pgrb2.0p50.f${fhr}"
               "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2_0P5_WIDX "${job}" "${COMOUT}/${PREFIX}pgrb2.0p50.f${fhr}.idx"
               "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2B_0P5 "${job}" "${COMOUT}/${PREFIX}pgrb2b.0p50.f${fhr}"
               "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2B_0P5_WIDX "${job}" "${COMOUT}/${PREFIX}pgrb2b.0p50.f${fhr}.idx"
             fi
 
-            if [ -s "${COMOUT}/${PREFIX}pgrb2.1p00.f${fhr}" ]; then
+            if [[ -s "${COMOUT}/${PREFIX}pgrb2.1p00.f${fhr}" ]]; then
               "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2_1P0 "${job}" "${COMOUT}/${PREFIX}pgrb2.1p00.f${fhr}"
               "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2_1P0_WIDX "${job}" "${COMOUT}/${PREFIX}pgrb2.1p00.f${fhr}.idx"
               "${DBNROOT}/bin/dbn_alert" MODEL GFS_PGB2B_1P0 "${job}" "${COMOUT}/${PREFIX}pgrb2b.1p00.f${fhr}"
@@ -400,21 +381,21 @@ else   ## not_anl if_stime
       export FLUXFL=${PREFIX}sfluxgrbf${fhr}.grib2
       FLUXFLIDX=${PREFIX}sfluxgrbf${fhr}.grib2.idx
 
-      #Add extra flux.1p00 file for coupled
-      if [ "${FLXGF}" = 'YES' ]; then                    
-        export FH=$(( 10#${fhr} + 0 ))
-        ${GFSDOWNSHF}
-        export err=$?; err_chk
-      fi   
-
-      if [ "${INLINE_POST}" = ".false." ]; then
+      if [[ "${INLINE_POST}" = ".false." ]]; then
         ${POSTGPSH}
         export err=$?; err_chk
         mv fluxfile "${COMOUT}/${FLUXFL}"
       fi
       ${WGRIB2} -s "${COMOUT}/${FLUXFL}" > "${COMOUT}/${FLUXFLIDX}"
 
-      if [ "${SENDDBN}" = 'YES' ]; then
+      #Add extra flux.1p00 file for coupled
+      if [[ "${FLXGF}" = 'YES' ]]; then
+        export FH=$(( 10#${fhr} + 0 ))
+        ${GFSDOWNSHF}
+        export err=$?; err_chk
+      fi
+
+      if [[ "${SENDDBN}" = 'YES' ]]; then
         "${DBNROOT}/bin/dbn_alert" MODEL GFS_SGB_GB2 "${job}" "${COMOUT}/${FLUXFL}"
         "${DBNROOT}/bin/dbn_alert" MODEL GFS_SGB_GB2_WIDX "${job}" "${COMOUT}/${FLUXFLIDX}"
       fi
@@ -422,7 +403,7 @@ else   ## not_anl if_stime
 
     # process satellite look alike separately so that master pgb gets out in time    
     # set outtyp to 2 because master post already generates gfs io files
-    if [ "${GOESF}" = "YES" ]; then
+    if [[ "${GOESF}" = "YES" ]]; then
       export OUTTYP=${OUTTYP:-4}
 
       # specify output file name from chgres which is input file name to nceppost 
@@ -436,7 +417,7 @@ else   ## not_anl if_stime
       export FIXCRTM="${FIXCRTM:-${CRTM_FIX}}"
       "${USHgfs}/link_crtm_fix.sh" "${FIXCRTM}"
 
-      if [ "${GRIBVERSION}" = 'grib2' ]; then 
+      if [[ "${GRIBVERSION}" = 'grib2' ]]; then 
         export PostFlatFile="${PARMpost}/postxconfig-NT-GFS-GOES.txt"
         export CTLFILE="${PARMpost}/postcntrl_gfs_goes.xml"
       fi
@@ -449,24 +430,24 @@ else   ## not_anl if_stime
       export JO=0
       export IGEN=0
 
-      if [ "${NET}" = "gfs" ]; then
+      if [[ "${NET}" = "gfs" ]]; then
         ${POSTGPSH}
         export err=$?; err_chk
       fi
 
-      if [ "${GRIBVERSION}" = 'grib2' ]; then
+      if [[ "${GRIBVERSION}" = 'grib2' ]]; then
         SPECIALFL="${PREFIX}special.grb2"
         SPECIALFLIDX="${PREFIX}special.grb2i"
       fi
       fhr3=${fhr}
 
-      if [ "${SENDCOM}" = "YES" ]; then
+      if [[ "${SENDCOM}" = "YES" ]]; then
         #       echo "$PDY$cyc$pad$fhr" > $COMOUT/${RUN}.t${cyc}z.master.control
 
         mv goesfile "${COMOUT}/${SPECIALFL}f${fhr}"
         mv goesifile "${COMOUT}/${SPECIALFLIDX}f${fhr}"
 
-        if [ "${SENDDBN}" = "YES" ]; then
+        if [[ "${SENDDBN}" = "YES" ]]; then
           "${DBNROOT}/bin/dbn_alert" MODEL GFS_SPECIAL_GB2 "${job}" "${COMOUT}/${SPECIALFL}f${fhr}"
         fi
       fi
@@ -509,8 +490,8 @@ else   ## not_anl if_stime
         if (( err != 0 )); then
           echo " *** GFS POST WARNING: WAFS output failed for f${fhr}, err=${err}"
         else
-          if [ -e "${PGBOUT}" ]; then
-            if [ "${SENDCOM}" = "YES" ]; then
+          if [[ -e "${PGBOUT}" ]]; then
+            if [[ "${SENDCOM}" = "YES" ]]; then
               cp "${PGBOUT}" "${COMOUT}/${PREFIX}wafs.grb2f${fhr}"
               cp "${PGIOUT}" "${COMOUT}/${PREFIX}wafs.grb2if${fhr}"
             fi

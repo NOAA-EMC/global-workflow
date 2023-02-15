@@ -2,56 +2,18 @@
 
 source "${HOMEgfs}/ush/preamble.sh"
 
-echo
-echo "=============== START TO SOURCE FV3GFS WORKFLOW MODULES ==============="
-. ${HOMEgfs}/ush/load_fv3gfs_modules.sh
+###############################################################
+# Source FV3GFS workflow modules
+source "${HOMEgfs}/ush/load_fv3gfs_modules.sh"
 status=$?
-[[ ${status} -ne 0 ]] && exit ${status}
+(( status != 0 )) && exit "${status}"
 
 export job="vrfy"
 export jobid="${job}.$$"
 
-
-##############################################
-# make temp directory
-##############################################
-export DATA="${DATA:-${DATAROOT}/${jobid}}"
-mkdir -p ${DATA}
-cd ${DATA}
-
-
-##############################################
-# Run setpdy and initialize PDY variables
-##############################################
-export cycle="t${cyc}z"
-setpdy.sh
-. ./PDY
-
-##############################################
-# Determine Job Output Name on System
-##############################################
-export pid=${pid:-$$}
-export pgmout="OUTPUT.${pid}"
-export pgmerr=errfile
-
-
-###############################################################
-echo
-echo "=============== START TO SOURCE RELEVANT CONFIGS ==============="
-configs="base vrfy"
-for config in ${configs}; do
-    . ${EXPDIR}/config.${config}
-    status=$?
-    [[ ${status} -ne 0 ]] && exit ${status}
-done
-
-
-###############################################################
-echo
-echo "=============== START TO SOURCE MACHINE RUNTIME ENVIRONMENT ==============="
-. ${BASE_ENV}/${machine}.env vrfy
-status=$?
-[[ ${status} -ne 0 ]] && exit ${status}
+# TODO (#235) - This job is calling multiple j-jobs and doing too much in general
+#   Also, this forces us to call the config files here instead of the j-job
+source "${HOMEgfs}/ush/jjob_header.sh" -e "vrfy" -c "base vrfy"
 
 ###############################################################
 export COMPONENT="atmos"
@@ -107,7 +69,7 @@ if [ ${VRFYFITS} = "YES" -a ${CDUMP} = ${CDFNL} -a ${CDATE} != ${SDATE} ]; then
     xdate=$(${NDATE} -${VBACKUP_FITS} ${CDATE})
 
     export RUN_ENVIR_SAVE=${RUN_ENVIR}
-    export RUN_ENVIR=${OUTPUT_FILE}
+    export RUN_ENVIR="netcdf"
 
     ${PREPQFITSH} ${PSLOT} ${xdate} ${ROTDIR} ${ARCDIR} ${TMPDIR}
 

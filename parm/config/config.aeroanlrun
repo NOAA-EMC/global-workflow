@@ -8,7 +8,4 @@ echo "BEGIN: config.aeroanlrun"
 # Get task specific resources
 . $EXPDIR/config.resources aeroanlrun
 
-# Task specific variables
-export JEDIVAREXE=$HOMEgfs/exec/fv3jedi_var.x
-
 echo "END: config.aeroanlrun"

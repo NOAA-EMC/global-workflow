@@ -1,4 +1,5 @@
 from pygw.logger import Logger
+from pygw.logger import logit
 
 level = 'debug'
 number_of_log_msgs = 5
@@ -40,3 +41,27 @@ def test_logger(tmp_path):
         lev = line.split('-')[3].strip().lower()
         message = line.split(':')[-1].strip()
         assert reference[lev] == message
+
+
+def test_logit(tmp_path):
+
+    logger = Logger('test_logit', level=level, colored_log=True)
+
+    @logit(logger)
+    def add(x, y):
+        return x + y
+
+    @logit(logger)
+    def usedict(n, j=0, k=1):
+        return n + j + k
+
+    @logit(logger, 'example')
+    def spam():
+        print('Spam!')
+
+    add(2, 3)
+    usedict(2, 3)
+    usedict(2, k=3)
+    spam()
+
+    assert True

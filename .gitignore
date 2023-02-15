@@ -5,8 +5,11 @@ __pycache__
 *.[aox]
 *.mod
 *.sw[a-p]
+._*
 .DS_Store
+#nohup.out - some users do not want this to be a part of .gitignore.  TODO: review against best practices
 .idea/
+.vscode/
 
 # Ignore editor generated backup files
 #-------------------------------------

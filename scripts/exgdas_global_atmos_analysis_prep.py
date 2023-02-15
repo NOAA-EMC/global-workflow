@@ -35,6 +35,7 @@ logging.info(f"sys.path={sys.path}")
 
 # import UFSDA utilities
 import ufsda
+from ufsda.stage import atm_obs, bias_obs
 
 # get configuration based on environment variables
 config = ufsda.misc_utils.get_env_config(component='atm')

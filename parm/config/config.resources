@@ -193,6 +193,28 @@ elif [[ "${step}" = "atmanalpost" ]]; then
 
 elif [[ "${step}" = "aeroanlinit" ]]; then
 
+   # below lines are for creating JEDI YAML
+   case ${CASE} in
+     C768)
+        layout_x=6
+        layout_y=6
+        ;;
+      C384)
+        layout_x=5
+        layout_y=5
+        ;;
+     C192 | C96 | C48)
+        layout_x=8
+        layout_y=8
+        ;;
+      *)
+          echo "FATAL ERROR: Resolution not supported for aerosol analysis'"
+          exit 1
+    esac
+
+    export layout_x
+    export layout_y
+
     export wtime_aeroanlinit="00:10:00"
     export npe_aeroanlinit=1
     export nth_aeroanlinit=1
@@ -212,13 +234,16 @@ elif [[ "${step}" = "aeroanlrun" ]]; then
         layout_y=5
         ;;
      C192 | C96 | C48)
-        layout_x=3
-        layout_y=3
+        layout_x=8
+        layout_y=8
         ;;
       *)
           echo "FATAL: Resolution not supported'"
           exit 1
     esac
+
+    export layout_x
+    export layout_y
 
     export wtime_aeroanlrun="00:30:00"
     npe_aeroanlrun=$(echo "${layout_x} * ${layout_y} * 6" | bc)
@@ -249,6 +274,27 @@ elif [[ "${step}" = "ocnanalprep" ]]; then
     export npe_node_ocnanalprep
     export memory_ocnanalprep="3072M"
 
+elif [[ "${step}" = "ocnanalbmat" ]]; then
+   npes=16
+   case ${CASE} in
+      C384)
+        npes=480
+        ;;
+      C48)
+        npes=16
+        ;;
+      *)
+          echo "FATAL: Resolution not supported'"
+          exit 1
+    esac
+
+    export wtime_ocnanalbmat="00:30:00"
+    export npe_ocnanalbmat=${npes}
+    export nth_ocnanalbmat=1
+    export is_exclusive=True
+    npe_node_ocnanalbmat=$(echo "${npe_node_max} / ${nth_ocnanalbmat}" | bc)
+    export npe_node_ocnanalbmat
+
 elif [[ "${step}" = "ocnanalrun" ]]; then
    npes=16
    case ${CASE} in
@@ -266,7 +312,7 @@ elif [[ "${step}" = "ocnanalrun" ]]; then
     export wtime_ocnanalrun="00:30:00"
     export npe_ocnanalrun=${npes}
     export nth_ocnanalrun=1
-    export native_ocnanalrun="--exclusive"
+    export is_exclusive=True
     npe_node_ocnanalrun=$(echo "${npe_node_max} / ${nth_ocnanalrun}" | bc)
     export npe_node_ocnanalrun
 
@@ -343,7 +389,7 @@ elif [ ${step} = "analcalc" ]; then
 
 elif [ ${step} = "analdiag" ]; then
 
-    export wtime_analdiag="00:10:00"
+    export wtime_analdiag="00:15:00"
     export npe_analdiag=96             # Should be at least twice npe_ediag
     export nth_analdiag=1
     export npe_node_analdiag=$(echo "${npe_node_max} / ${nth_analdiag}" | bc)
@@ -370,7 +416,11 @@ elif [ ${step} = "gldas" ]; then
 
 elif [ ${step} = "fcst" ]; then
 
-    export wtime_fcst="00:40:00"
+    if [ ${CASE} = "C48" ]; then
+        export wtime_fcst="00:30:00"
+    else
+        export wtime_fcst="00:40:00"
+    fi
     if [ ${CASE} = "C768" ]; then
       export wtime_fcst_gfs="06:00:00"
     elif [ ${CASE} = "C384" ]; then
@@ -437,6 +487,7 @@ elif [ ${step} = "fcst" ]; then
         if [[ ${DO_OCN} == "YES" ]]; then
             case ${OCNRES} in
                 # Except for 025, these are guesses for now
+                500) export OCNPETS=8 ;;
                 100) export OCNPETS=20 ;;
                 050) export OCNPETS=60 ;;
                 025) export OCNPETS=220 ;;
@@ -451,6 +502,7 @@ elif [ ${step} = "fcst" ]; then
         if [[ ${DO_ICE} == "YES" ]]; then
             case ${ICERES} in
                 # Except for 025, these are guesses for now
+                500) export ICEPETS=4 ;;
                 100) export ICEPETS=10 ;;
                 050) export ICEPETS=30 ;;
                 025) export ICEPETS=120 ;;
@@ -605,7 +657,10 @@ elif [[ ${step} = "arch" || ${step} = "earc" || ${step} = "getic" ]]; then
     eval "export npe_${step}=1"
     eval "export npe_node_${step}=1"
     eval "export nth_${step}=1"
-    eval "export memory_${step}=50GB"
+    eval "export memory_${step}=2048M"
+    if [[ "${machine}" = "WCOSS2" ]]; then
+      eval "export memory_${step}=50GB"
+    fi
 
 elif [ ${step} = "coupled_ic" ]; then
 
@@ -670,11 +725,11 @@ elif [[ ${step} = "eobs" || ${step} = "eomg" ]]; then
 
 elif [ ${step} = "ediag" ]; then
 
-    export wtime_ediag="00:06:00"
+    export wtime_ediag="00:15:00"
     export npe_ediag=48
     export nth_ediag=1
     export npe_node_ediag=$(echo "${npe_node_max} / ${nth_ediag}" | bc)
-    export memory_ediag="24GB"
+    export memory_ediag="30GB"
 
 elif [ ${step} = "eupd" ]; then
 
@@ -734,7 +789,7 @@ elif [ ${step} = "esfc" ]; then
 elif [ ${step} = "efcs" ]; then
 
     if [ ${CASE} = "C768" ]; then
-      export wtime_efcs="01:20:00"
+      export wtime_efcs="06:00:00"
     else
       export wtime_efcs="00:40:00"
     fi
@@ -761,10 +816,6 @@ elif [ ${step} = "postsnd" ]; then
     export npe_node_postsnd=10
     export npe_postsndcfp=9
     export npe_node_postsndcfp=1
-    if [ ${OUTPUT_FILE} == "nemsio" ]; then
-        export npe_postsnd=13
-        export npe_node_postsnd=4
-    fi
     if [[ "$(echo "${npe_node_postsnd} * ${nth_postsnd}" | bc)" -gt "${npe_node_max}" ]]; then
         export npe_node_postsnd=$(echo "${npe_node_max} / ${nth_postsnd}" | bc)
     fi

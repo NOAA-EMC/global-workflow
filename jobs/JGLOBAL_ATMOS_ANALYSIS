@@ -1,49 +1,7 @@
 #! /usr/bin/env bash
 
 source "${HOMEgfs}/ush/preamble.sh"
-
-##############################################
-# Obtain unique process id (pid) and make temp directory
-##############################################
-export DATA=${DATA:-${DATAROOT}/${jobid}}
-mkdir -p ${DATA}
-cd ${DATA}
-
-
-##############################################
-# Run setpdy and initialize PDY variables
-##############################################
-export cycle="t${cyc}z"
-setpdy.sh
-. ./PDY
-
-
-##############################################
-# Determine Job Output Name on System
-##############################################
-export pid=${pid:-$$}
-export pgmout="OUTPUT.${pid}"
-export pgmerr=errfile
-
-
-#############################
-# Source relevant config files
-#############################
-export EXPDIR=${EXPDIR:-${HOMEgfs}/parm/config}
-configs="base anal"
-for config in ${configs}; do
-    . ${EXPDIR}/config.${config}
-    status=$?
-    [[ ${status} -ne 0 ]] && exit ${status}
-done
-
-
-##########################################
-# Source machine runtime environment
-##########################################
-. ${HOMEgfs}/env/${machine}.env anal
-status=$?
-[[ ${status} -ne 0 ]] && exit ${status}
+source "${HOMEgfs}/ush/jjob_header.sh" -e "anal" -c "base anal"
 
 
 ##############################################
@@ -69,27 +27,23 @@ GDUMP=${GDUMP:-"gdas"}
 export OPREFIX="${CDUMP}.t${cyc}z."
 export GPREFIX="${GDUMP}.t${gcyc}z."
 export APREFIX="${CDUMP}.t${cyc}z."
-export GSUFFIX=${GSUFFIX:-${SUFFIX}}
-export ASUFFIX=${ASUFFIX:-${SUFFIX}}
 
-
-if [ ${RUN_ENVIR} = "nco" -o ${ROTDIR_DUMP:-NO} = "YES" ]; then
-    export COMIN=${COMIN:-${ROTDIR}/${RUN}.${PDY}/${cyc}/${COMPONENT}}
-    export COMOUT=${COMOUT:-${ROTDIR}/${RUN}.${PDY}/${cyc}/${COMPONENT}}
-    export COMIN_OBS=${COMIN_OBS:-$(compath.py ${envir}/obsproc/${obsproc_ver})/${RUN}.${PDY}/${cyc}/${COMPONENT}}
-    export COMIN_GES_OBS=${COMIN_GES_OBS:-$(compath.py ${envir}/obsproc/${obsproc_ver})/${GDUMP}.${gPDY}/${gcyc}/${COMPONENT}}
+export COMIN=${COMIN:-${ROTDIR}/${RUN}.${PDY}/${cyc}/atmos}
+export COMOUT=${COMOUT:-${ROTDIR}/${RUN}.${PDY}/${cyc}/atmos}
+export COMIN_OBS=${COMIN_OBS:-$(compath.py ${envir}/obsproc/${obsproc_ver})/${RUN}.${PDY}/${cyc}/atmos}
+if [ ${RUN_ENVIR} = "nco" ]; then
+  export COMIN_GES_OBS=${COMIN_GES_OBS:-$(compath.py ${envir}/obsproc/${obsproc_ver})/${GDUMP}.${gPDY}/${gcyc}/atmos}
 else
-    export COMOUT="${ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENT}"
-    export COMIN_OBS="${DMPDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENT}"
-    export COMIN_GES_OBS="${DMPDIR}/${GDUMP}.${gPDY}/${gcyc}/${COMPONENT}"
+  export COMIN_GES_OBS="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/obs"
 fi
+
 mkdir -m 775 -p ${COMOUT}
 # COMIN_GES and COMIN_GES_ENS are used in script
-export COMIN_GES="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/${COMPONENT}"
-export COMIN_GES_ENS="${ROTDIR}/enkfgdas.${gPDY}/${gcyc}/${COMPONENT}"
+export COMIN_GES="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/atmos"
+export COMIN_GES_ENS="${ROTDIR}/enkfgdas.${gPDY}/${gcyc}"
 
 
-export ATMGES="${COMIN_GES}/${GPREFIX}atmf006${GSUFFIX}"
+export ATMGES="${COMIN_GES}/${GPREFIX}atmf006.nc"
 if [ ! -f ${ATMGES} ]; then
     echo "FATAL ERROR: FILE MISSING: ATMGES = ${ATMGES}"
     exit 1
@@ -97,18 +51,13 @@ fi
 
 
 # Get LEVS
-if [ ${GSUFFIX} = ".nc" ]; then
-    export LEVS=$(${NCLEN} ${ATMGES} pfull)
-    status=$?
-else
-    export LEVS=$(${NEMSIOGET} ${ATMGES} dimz | awk '{print $2}')
-    status=$?
-fi
+export LEVS=$(${NCLEN} ${ATMGES} pfull)
+status=$?
 [[ ${status} -ne 0 ]] && exit ${status}
 
 
 if [ ${DOHYBVAR} = "YES" ]; then
-    export ATMGES_ENSMEAN="${COMIN_GES_ENS}/${GPREFIX}atmf006.ensmean${GSUFFIX}"
+    export ATMGES_ENSMEAN="${COMIN_GES_ENS}/${GPREFIX}atmf006.ensmean.nc"
     if [ ! -f ${ATMGES_ENSMEAN} ]; then
         echo "FATAL ERROR: FILE MISSING: ATMGES_ENSMEAN = ${ATMGES_ENSMEAN}"
         exit 2
@@ -118,26 +67,19 @@ fi
 
 # Link observational data
 export PREPQC="${COMIN_OBS}/${OPREFIX}prepbufr"
-if [ ! -f ${PREPQC} ]; then
+if [[ ! -f ${PREPQC} ]]; then
     echo "WARNING: Global PREPBUFR FILE ${PREPQC} MISSING"
 fi
 export TCVITL="${COMOUT}/${OPREFIX}syndata.tcvitals.tm00"
 if [[ ${DONST} = "YES" ]]; then
    if [[ ${MAKE_NSSTBUFR} == "YES" ]]; then
-      export NSSTBF="${COMOUT}/${OPREFIX}nsstbufr"
-   else
       export NSSTBF="${COMIN_OBS}/${OPREFIX}nsstbufr"
    fi
 fi
-
-if [[ ${MAKE_ACFTBUFR} == "YES" ]]; then
-   export PREPQCPF="${COMOUT}/${OPREFIX}prepbufr.acft_profiles"
-else
-   export PREPQCPF="${COMIN_OBS}/${OPREFIX}prepbufr.acft_profiles"
-fi
+export PREPQCPF="${COMIN_OBS}/${OPREFIX}prepbufr.acft_profiles"
 
 # Copy fix file for obsproc  # TODO: Why is this necessary?
-if [ ${RUN} = "gfs" ]; then
+if [[ ${RUN} = "gfs" ]]; then
     mkdir -p ${ROTDIR}/fix
     cp ${FIXgsi}/prepobs_errtable.global ${ROTDIR}/fix/
 fi
@@ -168,7 +110,7 @@ fi
 ##############################################
 # Final processing
 ##############################################
-if [ -e "${pgmout}" ] ; then
+if [[ -e "${pgmout}" ]] ; then
   cat ${pgmout}
 fi
 

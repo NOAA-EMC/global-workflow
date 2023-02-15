@@ -35,39 +35,21 @@ export ENDHOUR=${ENDHOUR:-180}
 export INCREMENT=12
 export MAKEBUFR=NO
 export F00FLAG=YES
-export fformat=${OUTPUT_FILE:-netcdf}
-if [ $fformat == "netcdf" ]
- then
+export fformat=netcdf
 export atmfm="nc"
 export logfm="txt"
-else 
-export atmfm="nemsio"
-export logfm="nemsio"
-fi
-
-    export NINT1=${FHOUT_HF_GFS:-1}
-    export NEND1=${FHMAX_HF_GFS:-120}
-    export NINT3=${FHOUT_GFS:-3}
+export NINT1=${FHOUT_HF_GFS:-1}
+export NEND1=${FHMAX_HF_GFS:-120}
+export NINT3=${FHOUT_GFS:-3}
 
 rm -f -r ${COMOUT}/bufr.${cycle}
 mkdir -p ${COMOUT}/bufr.${cycle}
-
-    if [ -f $HOMEgfs/ush/getncdimlen ]
-	then
-	GETDIM=$HOMEgfs/ush/getncdimlen
-	else
-	GETDIM=$EXECbufrsnd/getncdimlen
-	fi
-if [ $fformat == "netcdf" ]
- then
-export LEVS=$($GETDIM $COMIN/${RUN}.${cycle}.atmf000.${atmfm} pfull)
+if [ -f $HOMEgfs/ush/getncdimlen ]; then
+  GETDIM=$HOMEgfs/ush/getncdimlen
 else
-# Extract number of vertical levels from $STARTHOUR atmospheric file
-export NEMSIOGET=${NEMSIOGET:-$EXECbufrsnd/nemsio_get}
-fhr3=$(printf %03i $STARTHOUR)
-ATMFCS=$COMIN/${RUN}.${cycle}.atmf${fhr3}.nemsio
-export LEVS=$($NEMSIOGET $ATMFCS dimz | awk '{print $2}')
+  GETDIM=$EXECbufrsnd/getncdimlen
 fi
+export LEVS=$($GETDIM $COMIN/${RUN}.${cycle}.atmf000.${atmfm} pfull)
 
 ### Loop for the hour and wait for the sigma and surface flux file:
 export FSTART=$STARTHOUR
@@ -137,34 +119,23 @@ fi
 # Create Regional Collectives of BUFR data and 
 # add appropriate WMO Headers.
 ########################################
-collect=' 1 2 3 4 5 6 7 8 9'
-if [ $machine == "HERA" -o  $machine == "JET" ]; then
-for m in ${collect}
-do
-sh $USHbufrsnd/gfs_sndp.sh $m
-done
-
-################################################
-# Convert the bufr soundings into GEMPAK files
-################################################
-sh $USHbufrsnd/gfs_bfr2gpk.sh
-
-else
 rm -rf poe_col
-for m in ${collect}
-do
-echo "sh $USHbufrsnd/gfs_sndp.sh $m " >> poe_col
+for (( m = 1; m <10 ; m++ )); do
+    echo "sh ${USHbufrsnd}/gfs_sndp.sh ${m} " >> poe_col
 done
 
-mv poe_col cmdfile
+if [[ ${CFP_MP:-"NO"} == "YES" ]]; then
+    nl -n ln -v 0 poe_col > cmdfile
+else
+    mv poe_col cmdfile
+fi
 
 cat cmdfile
 chmod +x cmdfile
 
 ${APRUN_POSTSNDCFP} cmdfile
 
-sh $USHbufrsnd/gfs_bfr2gpk.sh
-fi
+sh "${USHbufrsnd}/gfs_bfr2gpk.sh"
 
 
 ############## END OF SCRIPT #######################

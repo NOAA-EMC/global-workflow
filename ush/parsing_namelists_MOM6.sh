@@ -15,7 +15,8 @@ MOM6_ALLOW_LANDMASK_CHANGES=${MOM6_ALLOW_LANDMASK_CHANGES:-'False'}
 DO_OCN_SPPT=${DO_OCN_SPPT:-'False'}
 PERT_EPBL=${PERT_EPBL:-'False'}
 
-MOM_IAU_HRS=${MOM_IAU_HRS:-'3.0'}
+ODA_INCUPD=${ODA_INCUPD:-"false"}
+ODA_INCUPD_NHOURS=${ODA_INCUPD_NHOURS:-'3.0'}
 
 if [ $cplwav = ".true." ] ; then
   MOM6_USE_WAVES='True'
@@ -23,46 +24,52 @@ else
   MOM6_USE_WAVES='False'
 fi
 
-if [ $OCNRES = '025' ]; then
-  NX_GLB=1440
-  NY_GLB=1080
-  DT_DYNAM_MOM6='900'
-  DT_THERM_MOM6='1800'
-  CHLCLIM="seawifs-clim-1997-2010.${NX_GLB}x${NY_GLB}.v20180328.nc"
-  FRUNOFF="runoff.daitren.clim.${NX_GLB}x${NY_GLB}.v20180328.nc"
-  MOM6_RIVER_RUNOFF='True'
-  MOM6_RESTART_SETTING="r"
-elif [ $OCNRES = '050' ]; then
-  NX_GLB=720
-  NY_GLB=576
-  DT_DYNAM_MOM6='1800'
-  DT_THERM_MOM6='3600'
-  CHLCLIM="seawifs-clim-1997-2010.${NX_GLB}x${NY_GLB}.v20180328.nc"
-  FRUNOFF="runoff.daitren.clim.${NX_GLB}x${NY_GLB}.v20180328.nc"
-  MOM6_RESTART_SETTING='n'
-  MOM6_RIVER_RUNOFF='True'
-elif [ $OCNRES = '100' ]; then
-  NX_GLB=360
-  NY_GLB=320
-  DT_DYNAM_MOM6='1800'
-  DT_THERM_MOM6='3600'
-  FRUNOFF=""
-  CHLCLIM="seawifs_1998-2006_smoothed_2X.nc"
-  MOM6_RESTART_SETTING='n'
-  MOM6_RIVER_RUNOFF='False'
-elif [ $OCNRES = '400' ]; then
-  NX_GLB=90
-  NY_GLB=80
-  DT_DYNAM_MOM6='1800'
-  DT_THERM_MOM6='3600'
-  FRUNOFF=""
-  CHLCLIM="seawifs_1998-2006_smoothed_2X.nc"
-  MOM6_RESTART_SETTING='n'
-  MOM6_RIVER_RUNOFF='False'
-else
-  echo "FATAL ERROR: do not have MOM6 settings defined for desired OCNRES=$OCNRES"
-  exit 1
-fi
+case "${OCNRES}" in
+  "025")
+    NX_GLB=1440
+    NY_GLB=1080
+    DT_DYNAM_MOM6='900'
+    DT_THERM_MOM6='1800'
+    CHLCLIM="seawifs-clim-1997-2010.${NX_GLB}x${NY_GLB}.v20180328.nc"
+    FRUNOFF="runoff.daitren.clim.${NX_GLB}x${NY_GLB}.v20180328.nc"
+    MOM6_RIVER_RUNOFF='True'
+    MOM6_RESTART_SETTING="r"
+    ;;
+  "050")
+    NX_GLB=720
+    NY_GLB=576
+    DT_DYNAM_MOM6='1800'
+    DT_THERM_MOM6='3600'
+    CHLCLIM="seawifs-clim-1997-2010.${NX_GLB}x${NY_GLB}.v20180328.nc"
+    FRUNOFF="runoff.daitren.clim.${NX_GLB}x${NY_GLB}.v20180328.nc"
+    MOM6_RESTART_SETTING='n'
+    MOM6_RIVER_RUNOFF='True'
+    ;;
+  "100")
+    NX_GLB=360
+    NY_GLB=320
+    DT_DYNAM_MOM6='1800'
+    DT_THERM_MOM6='3600'
+    FRUNOFF=""
+    CHLCLIM="seawifs_1998-2006_smoothed_2X.nc"
+    MOM6_RESTART_SETTING='n'
+    MOM6_RIVER_RUNOFF='False'
+    ;;
+  "500")
+    NX_GLB=72
+    NY_GLB=35
+    DT_DYNAM_MOM6='3600'
+    DT_THERM_MOM6='3600'
+    FRUNOFF=""
+    CHLCLIM="seawifs_1998-2006_smoothed_2X.nc"
+    MOM6_RESTART_SETTING='r'
+    MOM6_RIVER_RUNOFF='False'
+    ;;
+  *)
+    echo "FATAL ERROR: do not have MOM6 settings defined for desired OCNRES=$OCNRES"
+    exit 1
+    ;;
+esac
 
 cat >> input.nml <<EOF
 
@@ -127,7 +134,8 @@ sed -e "s/@\[DT_THERM_MOM6\]/$DT_THERM_MOM6/g" \
     -e "s/@\[CHLCLIM\]/$CHLCLIM/g" \
     -e "s/@\[DO_OCN_SPPT\]/$OCN_SPPT/g" \
     -e "s/@\[PERT_EPBL\]/$PERT_EPBL/g" \
-    -e "s/@\[MOM_IAU_HRS\]/$MOM_IAU_HRS/g" $DATA/INPUT/MOM_input_template_$OCNRES > $DATA/INPUT/MOM_input
+    -e "s/@\[ODA_INCUPD_NHOURS\]/$ODA_INCUPD_NHOURS/g" \
+    -e "s/@\[ODA_INCUPD\]/$ODA_INCUPD/g" $DATA/INPUT/MOM_input_template_$OCNRES > $DATA/INPUT/MOM_input
 rm $DATA/INPUT/MOM_input_template_$OCNRES
 
 #data table for runoff:
