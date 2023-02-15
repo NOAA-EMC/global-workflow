@@ -769,6 +769,16 @@ MOM6_postdet() {
     ;;
   esac
 
+  # Link increment
+  if [[ "${DO_JEDIOCNVAR:-NO}" = "YES" ]]; then
+      if [[ ! -f "${ROTDIR}/${CDUMP}.${PDY}/${cyc}/ocean/${CDUMP}.t${cyc}z.ocninc.nc" ]]; then
+          echo "FATAL ERROR: Ocean increment not found, ABORT!"
+          exit 111
+      fi
+      $NLN "${ROTDIR}/${CDUMP}.${PDY}/${cyc}/ocean/${CDUMP}.t${cyc}z.ocninc.nc" "${DATA}/INPUT/mom6_increment.nc"
+      export ODA_INCUPD="true"
+  fi
+
   # Copy MOM6 fixed files
   $NCP -pf $FIXmom/$OCNRES/* $DATA/INPUT/
 
