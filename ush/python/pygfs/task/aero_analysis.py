@@ -13,6 +13,7 @@ from pygw.file_utils import FileHandler
 from pygw.timetools import to_isotime, to_fv3time, to_timedelta
 from pygw.fsutils import rm_p
 from pygw.template import Template, TemplateConstants
+from pygw.timetools import to_fv3time
 from pygw.yaml_file import YAMLFile
 from pygw.logger import logit
 from pygfs.task.analysis import Analysis
@@ -84,7 +85,7 @@ class AerosolAnalysis(Analysis):
 
         # stage berror files
         # copy BUMP files, otherwise it will assume ID matrix
-        if self.task_config.get('STATICB_TYPE', 'identity') in ['bump_aero']:
+        if self.task_config.get('STATICB_TYPE', 'identity') in ['bump']:
             FileHandler(self.get_berror_dict(self.task_config)).sync()
 
         # stage backgrounds
@@ -257,9 +258,7 @@ class AerosolAnalysis(Analysis):
         super().get_berror_dict(config)
         # aerosol static-B needs nicas, cor_rh, cor_rv and stddev files.
         b_dir = config['BERROR_DATA_DIR']
-        b_datestr = config['BERROR_DATE']
-        print(b_datestr)
-        print(type(b_datestr))
+        b_datestr = to_fv3time(config['BERROR_DATE'])
         berror_list = []
 
         for ftype in ['cor_rh', 'cor_rv', 'stddev']:
