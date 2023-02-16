@@ -190,7 +190,7 @@ if [ "${GDATE}" -lt "${RDATE}" ]; then
     RDATE=${GDATE}
 fi
 rPDY=$(echo "${RDATE}" | cut -c1-8)
-clist="gdas gfs enkfgdas enkfgfs"
+clist="enkfgdas enkfgfs"
 for ctype in ${clist}; do
     COMIN="${ROTDIR}/${ctype}.${rPDY}"
     [[ -d ${COMIN} ]] && rm -rf "${COMIN}"
