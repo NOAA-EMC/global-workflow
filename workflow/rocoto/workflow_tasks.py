@@ -649,9 +649,8 @@ class Tasks:
         dependencies = rocoto.create_dependency(dep=dep)
 
         if self.app_config.do_jediocnvar:
-            dep_dict = {'type': 'task', 'name': f'{self.cdump}ocnanalrun'}
-            dep = rocoto.add_dependency(dep_dict)
-            dependencies = rocoto.create_dependency(dep=dep)
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}ocnanalpost'}
+            dependencies.append(rocoto.add_dependency(dep_dict))
 
         if self.app_config.do_gldas and self.cdump in ['gdas']:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}gldas'}
