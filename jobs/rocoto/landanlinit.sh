@@ -1,5 +1,5 @@
 #! /usr/bin/env bash
-export STRICT="NO"
+
 source "${HOMEgfs}/ush/preamble.sh"
 
 ###############################################################
@@ -8,15 +8,17 @@ source "${HOMEgfs}/ush/preamble.sh"
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
 
-export STRICT="YES"
 export job="landanlinit"
 export jobid="${job}.$$"
 
 ###############################################################
 # setup python path for workflow utilities and tasks
-export PYTHONPATH="$PYTHONPATH:${HOMEgfs}/ush/python:${HOMEgfs}/ush/python/pygw/src"
+pygwPATH="${HOMEgfs}/ush/python:${HOMEgfs}/ush/python/pygw/src"
+PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${pygwPATH}"
+export PYTHONPATH
+
 ###############################################################
 # Execute the JJOB
-"${HOMEgfs}/jobs/JGDAS_GLOBAL_LAND_ANALYSIS_INITIALIZE"
+"${HOMEgfs}/jobs/JGLOBAL_LAND_ANALYSIS_INITIALIZE"
 status=$?
 exit "${status}"

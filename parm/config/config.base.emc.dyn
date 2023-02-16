@@ -273,14 +273,8 @@ export restart_interval_gfs=0
 
 export QUILTING=".true."
 export OUTPUT_GRID="gaussian_grid"
-export OUTPUT_FILE="netcdf"
-export WRITE_DOPOST=".true."  # WRITE_DOPOST=true, use inline POST
+export WRITE_DOPOST=".true." # WRITE_DOPOST=true, use inline POST
 export WRITE_NSFLIP=".true."
-
-# suffix options depending on file format
-export SUFFIX=".nc"
-export NEMSIO_IN=".false."
-export NETCDF_IN=".true."
 
 # IAU related parameters
 export DOIAU="YES"        # Enable 4DIAU for control with 3 increments
@@ -331,6 +325,7 @@ if [[ ${DOHYBVAR} = "YES" ]]; then
     export FHMIN_ENKF=3
     export FHMAX_ENKF=9
     export FHMAX_ENKF_GFS=120
+    export FHOUT_ENKF_GFS=3
     if [ $l4densvar = ".true." ]; then
         export FHOUT=1
         export FHOUT_ENKF=1

@@ -1,5 +1,5 @@
 #! /usr/bin/env bash
-export STRICT="NO"
+
 source "${HOMEgfs}/ush/preamble.sh"
 
 ###############################################################
@@ -8,12 +8,11 @@ source "${HOMEgfs}/ush/preamble.sh"
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
 
-export STRICT="YES"
 export job="landanlrun"
 export jobid="${job}.$$"
 
 ###############################################################
 # Execute the JJOB
-"${HOMEgfs}/jobs/JGDAS_GLOBAL_LAND_ANALYSIS_RUN"
+"${HOMEgfs}/jobs/JGLOBAL_LAND_ANALYSIS_RUN"
 status=$?
 exit "${status}"
