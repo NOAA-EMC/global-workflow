@@ -152,7 +152,6 @@ class AerosolAnalysis(Analysis):
             'mkdir': [self.task_config['COMOUTaero']],
             'copy': [[src, dest]]
         }
-        print(yaml_copy)
         FileHandler(yaml_copy).sync()
 
         # ---- NOTE below is 'temporary', eventually we will not be using FMS RESTART formatted files
@@ -194,7 +193,7 @@ class AerosolAnalysis(Analysis):
         fms_bkg_file_template = os.path.join(self.task_config.comin_ges_atm, 'RESTART', f'{self.task_config.cdate_fv3}.fv_tracer.res.tileX.nc')
         # get list of increment vars
         incvars_list_path = os.path.join(self.task_config['HOMEgfs'], 'parm', 'parm_gdas', 'aeroanl_inc_vars.yaml')
-        incvars = YAMLFile(path=incvars_list_path)
+        incvars = YAMLFile(path=incvars_list_path)['incvars']
         super().add_fv3_increments(fms_inc_file_template, fms_bkg_file_template, incvars)
 
     @logit(logger)
