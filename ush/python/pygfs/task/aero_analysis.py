@@ -149,9 +149,10 @@ class AerosolAnalysis(Analysis):
         src = os.path.join(self.task_config['DATA'], f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.aerovar.yaml")
         dest = os.path.join(self.task_config['COMOUTaero'], f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.aerovar.yaml")
         yaml_copy = {
-            'mkdir': self.task_config['COMOUTaero'],
-            'copy': [src, dest]
+            'mkdir': [self.task_config['COMOUTaero']],
+            'copy': [[src, dest]]
         }
+        print(yaml_copy)
         FileHandler(yaml_copy).sync()
 
         # ---- NOTE below is 'temporary', eventually we will not be using FMS RESTART formatted files
