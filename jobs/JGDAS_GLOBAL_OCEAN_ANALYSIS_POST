@@ -50,6 +50,9 @@ cp "${DATA}/soca_gridspec.nc" "${COMOUT}/${CDUMP}.t${bcyc}z.ocngrid.nc"
 mkdir -p "${COMOUT}/logs"
 cp "${DATA}/*.out" "${COMOUT}/logs"
 
+# Copy var.yaml
+cp "${DATA}/var.yaml" "${COMOUT}"
+
 ##########################################
 # Remove the Temporary working directory
 ##########################################
