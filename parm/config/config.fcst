@@ -12,7 +12,7 @@ echo "BEGIN: config.fcst"
 
 # Turn off waves if not used for this CDUMP
 case $WAVE_CDUMP in
-  both | $CDUMP ) ;; # Don't change
+  both | ${CDUMP/enkf} ) ;; # Don't change
   *) DO_WAVE="NO" ;; # Turn waves off
 esac
 
@@ -147,7 +147,7 @@ export d2_bg_k1=0.20
 export d2_bg_k2=0.04
 export dz_min=6
 export n_sponge=42
-if [[ "$LEVS" = "128" && "$CDUMP" = "gdas" ]]; then
+if [[ "${LEVS}" = "128" && "${CDUMP}" =~ "gdas" ]]; then
    export tau=5.0
    export rf_cutoff=1.0e3
    export d2_bg_k1=0.20
@@ -280,7 +280,7 @@ export deflate_level=1
 # Disable the use of coupler.res; get model start time from model_configure
 export USE_COUPLER_RES="NO"
 
-if [[ "$CDUMP" == "gdas" ]] ; then # GDAS cycle specific parameters
+if [[ "$CDUMP" =~ "gdas" ]] ; then # GDAS cycle specific parameters
 
     # Variables used in DA cycling
     export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table_da"
@@ -306,7 +306,7 @@ if [[ "$CDUMP" == "gdas" ]] ; then # GDAS cycle specific parameters
     # Turn on dry mass adjustment in GDAS
     export adjust_dry_mass=".true."
 
-elif [[ "$CDUMP" == "gfs" ]] ; then # GFS cycle specific parameters
+elif [[ "$CDUMP" =~ "gfs" ]] ; then # GFS cycle specific parameters
 
     # Write more variables to output
     export DIAG_TABLE="$HOMEgfs/parm/parm_fv3diag/diag_table"

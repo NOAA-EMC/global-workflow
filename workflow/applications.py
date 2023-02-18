@@ -403,10 +403,7 @@ class AppConfig:
 
         gdas_tasks += gdas_gfs_common_tasks_after_fcst
 
-        if self.do_hybvar:
-            if 'gdas' in self.eupd_cdumps:
-                gdas_tasks += hybrid_tasks
-                gdas_tasks += hybrid_after_eupd_tasks
+
 
         if self.do_wave and 'gdas' in self.wave_cdumps:
             if self.do_wave_bnd:
@@ -427,10 +424,6 @@ class AppConfig:
 
         if self.do_metp:
             gfs_tasks += ['metp']
-        if self.do_hybvar and 'gfs' in self.eupd_cdumps:
-            gfs_tasks += hybrid_tasks
-            gfs_tasks += hybrid_after_eupd_tasks
-            gfs_tasks.remove("echgres")
 
         if self.do_wave and 'gfs' in self.wave_cdumps:
             if self.do_wave_bnd:
@@ -458,9 +451,18 @@ class AppConfig:
         tasks = dict()
         tasks['gdas'] = gdas_tasks
 
+        if self.do_hybvar and 'gdas' in self.eupd_cdumps:
+            enkfgdas_tasks = hybrid_tasks + hybrid_after_eupd_tasks
+            tasks['enkfgdas'] = enkfgdas_tasks
+
         # Add CDUMP=gfs tasks if running early cycle
         if self.gfs_cyc > 0:
             tasks['gfs'] = gfs_tasks
+
+            if self.do_hybvar and 'gfs' in self.eupd_cdumps:
+                enkfgfs_tasks = hybrid_tasks + hybrid_after_eupd_tasks
+                enkfgfs_tasks.remove("echgres")
+                tasks['enkfgfs'] = enkfgfs_tasks
 
         return tasks
 

@@ -25,6 +25,7 @@ GDUMP=${GDUMP:-"gdas"}
 export OPREFIX="${CDUMP}.t${cyc}z."
 export GPREFIX="${GDUMP}.t${gcyc}z."
 export APREFIX="${CDUMP}.t${cyc}z."
+export GPREFIX_ENS="enkf${GDUMP}.t${gcyc}z."
 
 if [ ${RUN_ENVIR} = "nco" -o ${ROTDIR_DUMP:-NO} = "YES" ]; then
     export COMIN=${COMIN:-${ROTDIR}/${RUN}.${PDY}/${cyc}/atmos}
@@ -56,7 +57,7 @@ status=$?
 
 
 if [ ${DOHYBVAR} = "YES" ]; then
-    export ATMGES_ENSMEAN="${COMIN_GES_ENS}/${GPREFIX}atmf006.ensmean.nc"
+    export ATMGES_ENSMEAN="${COMIN_GES_ENS}/${GPREFIX_ENS}atmf006.ensmean.nc"
     if [ ! -f ${ATMGES_ENSMEAN} ]; then
         echo "FATAL ERROR: FILE MISSING: ATMGES_ENSMEAN = ${ATMGES_ENSMEAN}"
         exit 2
