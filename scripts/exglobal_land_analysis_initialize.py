@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# exgdas_global_land_analysis_initialize.py
+# exglobal_land_analysis_initialize.py
 # This script creates an LandAnalysis class
 # and runs the initialize method
 # which create and stage the runtime directory

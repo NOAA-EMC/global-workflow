@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# exgdas_global_land_analysis_finalize.py
+# exglobal_land_analysis_finalize.py
 # This script creates an LandAnalysis class
 # and runs the finalize method
 # which perform post-processing and clean up activities

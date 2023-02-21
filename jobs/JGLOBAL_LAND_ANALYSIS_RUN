@@ -38,7 +38,7 @@ export COMIN_GES_ENS="${ROTDIR}/enkf${GDUMP}.${gPDY}/${gcyc}/${COMPONENT}"
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASLANDRUNSH:-${HOMEgfs}/scripts/exgdas_global_land_analysis_run.sh}
+EXSCRIPT=${GDASLANDRUNSH:-${HOMEgfs}/scripts/exglobal_land_analysis_run.sh}
 ${EXSCRIPT}
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"

@@ -38,7 +38,7 @@ export COMIN_GES_ENS="${ROTDIR}/enkf${GDUMP}.${gPDY}/${gcyc}/${COMPONENT}"
 ###############################################################
 # Run relevant script
 
-EXSCRIPT=${GDASLANDFINALPY:-${HOMEgfs}/scripts/exgdas_global_land_analysis_finalize.py}
+EXSCRIPT=${GDASLANDFINALPY:-${HOMEgfs}/scripts/exglobal_land_analysis_finalize.py}
 ${EXSCRIPT}
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"

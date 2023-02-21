@@ -38,7 +38,7 @@ export PYTHONPATH=${HOMEgfs}/sorc/gdas.cd/ush/:${PYTHONPATH}
 
 ###############################################################
 # Run relevant script
-EXSCRIPT=${GDASLANDINITPY:-${HOMEgfs}/scripts/exgdas_global_land_analysis_initialize.py}
+EXSCRIPT=${GDASLANDINITPY:-${HOMEgfs}/scripts/exglobal_land_analysis_initialize.py}
 ${EXSCRIPT}
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
