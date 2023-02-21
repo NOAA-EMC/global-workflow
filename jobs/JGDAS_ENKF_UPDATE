@@ -8,7 +8,7 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "eupd" -c "base anal eupd"
 # Set variables used in the script
 ##############################################
 export CDATE=${CDATE:-${PDY}${cyc}}
-export CDUMP=${CDUMP:-${RUN:-"gdas"}}
+export CDUMP=${CDUMP:-${RUN:-"enkfgdas"}}
 export COMPONENT="atmos"
 
 
@@ -21,11 +21,11 @@ gPDY=$(echo ${GDATE} | cut -c1-8)
 gcyc=$(echo ${GDATE} | cut -c9-10)
 
 export APREFIX="${CDUMP}.t${cyc}z."
-export GPREFIX="gdas.t${gcyc}z."
+export GPREFIX="enkfgdas.t${gcyc}z."
 
 # COMIN_GES_ENS and COMOUT_ANL_ENS are used in script
 export COMIN_GES_ENS="${ROTDIR}/enkfgdas.${gPDY}/${gcyc}"
-export COMOUT_ANL_ENS="${ROTDIR}/enkf${CDUMP}.${PDY}/${cyc}"
+export COMOUT_ANL_ENS="${ROTDIR}/${CDUMP}.${PDY}/${cyc}"
 
 
 ###############################################################

@@ -243,8 +243,8 @@ JCAP=${JCAP:--9999} # there is no jcap in these files
 
 # Get header information from Ensemble Guess files
 if [ ${DOHYBVAR} = "YES" ]; then
-   SFCGES_ENSMEAN=${SFCGES_ENSMEAN:-${COMIN_GES_ENS}/${GPREFIX}sfcf006.ensmean.nc}
-   export ATMGES_ENSMEAN=${ATMGES_ENSMEAN:-${COMIN_GES_ENS}/${GPREFIX}atmf006.ensmean.nc}
+   SFCGES_ENSMEAN=${SFCGES_ENSMEAN:-${COMIN_GES_ENS}/${GPREFIX_ENS}sfcf006.ensmean.nc}
+   export ATMGES_ENSMEAN=${ATMGES_ENSMEAN:-${COMIN_GES_ENS}/${GPREFIX_ENS}atmf006.ensmean.nc}
    LONB_ENKF=${LONB_ENKF:-$(${NCLEN} ${ATMGES_ENSMEAN} grid_xt)} # get LONB_ENKF
    LATB_ENKF=${LATB_ENKF:-$(${NCLEN} ${ATMGES_ENSMEAN} grid_yt)} # get LATB_ENFK
    LEVS_ENKF=${LEVS_ENKF:-$(${NCLEN} ${ATMGES_ENSMEAN} pfull)} # get LATB_ENFK
@@ -535,9 +535,9 @@ if [ ${DOHYBVAR} = "YES" ]; then
    for imem in $(seq 1 ${NMEM_ENKF}); do
       memchar="mem"$(printf %03i ${imem})
       for fhr in ${fhrs}; do
-         ${NLN} ${COMIN_GES_ENS}/${memchar}/atmos/${GPREFIX}atmf0${fhr}${ENKF_SUFFIX}.nc ./ensemble_data/sigf${fhr}_ens_${memchar}
+         ${NLN} ${COMIN_GES_ENS}/${memchar}/atmos/${GPREFIX_ENS}atmf0${fhr}${ENKF_SUFFIX}.nc ./ensemble_data/sigf${fhr}_ens_${memchar}
          if [ ${cnvw_option} = ".true." ]; then
-            ${NLN} ${COMIN_GES_ENS}/${memchar}/atmos/${GPREFIX}sfcf0${fhr}.nc ./ensemble_data/sfcf${fhr}_ens_${memchar}
+            ${NLN} ${COMIN_GES_ENS}/${memchar}/atmos/${GPREFIX_ENS}sfcf0${fhr}.nc ./ensemble_data/sfcf${fhr}_ens_${memchar}
          fi
       done
    done
