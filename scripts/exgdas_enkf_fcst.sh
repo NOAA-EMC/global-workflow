@@ -48,7 +48,7 @@ export DIAG_TABLE=${DIAG_TABLE_ENKF:-${DIAG_TABLE:-$PARM_FV3DIAG/diag_table_da}}
 
 # Cycling and forecast hour specific parameters
 export CDATE=${CDATE:-"2001010100"}
-export CDUMP=${CDUMP:-"gdas"}
+export CDUMP=${CDUMP:-"enkfgdas"}
 
 # Re-run failed members, or entire group
 RERUN_EFCSGRP=${RERUN_EFCSGRP:-"YES"}
@@ -107,13 +107,13 @@ export LEVS=${LEVS_ENKF:-${LEVS:-64}}
 
 # nggps_diag_nml
 export FHOUT=${FHOUT_ENKF:-3}
-if [[ ${CDUMP} == "gfs" ]]; then
+if [[ ${CDUMP} == "enkfgfs" ]]; then
     export FHOUT=${FHOUT_ENKF_GFS:-${FHOUT_ENKF:${FHOUT:-3}}}
 fi
 # model_configure
 export DELTIM=${DELTIM_ENKF:-${DELTIM:-225}}
 export FHMAX=${FHMAX_ENKF:-9}
-if [[ $CDUMP == "gfs" ]]; then
+if [[ $CDUMP == "enkfgfs" ]]; then
    export FHMAX=${FHMAX_ENKF_GFS:-${FHMAX_ENKF:-${FHMAX}}}
 fi
 
