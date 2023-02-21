@@ -6,5 +6,5 @@
 echo "BEGIN: config.landanlinit"
 
 # Get task specific resources
-. $EXPDIR/config.resources landanlinit
+. ${EXPDIR}/config.resources landanlinit
 echo "END: config.landanlinit"
