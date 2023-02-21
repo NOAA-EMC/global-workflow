@@ -31,7 +31,7 @@ export COMIN="${ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENT}"
 echo
 echo "=============== START TO GENERATE QUARTER DEGREE GRIB1 FILES ==============="
 if [ ${MKPGB4PRCP} = "YES" -a ${CDUMP} = "gfs" ]; then
-    if [ ! -d ${ARCDIR} ]; then mkdir ${ARCDIR} ; fi
+    if [ ! -d ${ARCDIR} ]; then mkdir -p ${ARCDIR} ; fi
     nthreads_env=${OMP_NUM_THREADS:-1} # get threads set in env
     export OMP_NUM_THREADS=1
     cd ${COMIN}
