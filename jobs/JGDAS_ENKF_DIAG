@@ -22,31 +22,33 @@ GDATE=$(${NDATE} -${assim_freq} ${CDATE})
 gPDY=$(echo ${GDATE} | cut -c1-8)
 gcyc=$(echo ${GDATE} | cut -c9-10)
 GDUMP=${GDUMP:-"gdas"}
+GDUMP_ENS=${GDUMP_ENS:-"enkf${GDUMP}"}
 
 export CASE=${CASE_ENKF}
-export CDUMP_OBS=${CDUMP_OBS:-${CDUMP}}
+export CDUMP_OBS=${CDUMP_OBS:-${CDUMP/enkf}}
+export CDUMP_CTL=${CDUMP_CTL:-${CDUMP/enkf}}
+
 
 export OPREFIX="${CDUMP_OBS}.t${cyc}z."
-export APREFIX="${CDUMP}.t${cyc}z."
+export APREFIX="${CDUMP_CTL}.t${cyc}z."
+export APREFIX_ENS="${CDUMP}.t${cyc}z."
 export GPREFIX="${GDUMP}.t${gcyc}z."
+export GPREFIX_ENS="${GDUMP_ENS}.t${gcyc}z."
 
 if [ ${RUN_ENVIR} = "nco" -o ${ROTDIR_DUMP:-NO} = "YES" ]; then
-    export COMIN_OBS=${COMIN_OBS:-$(compath.py ${envir}/obsproc/${obsproc_ver})/${RUN}.${PDY}/${cyc}/${COMPONENT}}
-    export COMIN_GES_OBS=${COMIN_GES_OBS:-$(compath.py ${envir}/obsproc/${obsproc_ver})/${GDUMP}.${gPDY}/${gcyc}/${COMPONENT}}
+    export COMIN_OBS=${COMIN_OBS:-$(compath.py ${envir}/obsproc/${obsproc_ver})/${CDUMP_OBS}.${PDY}/${cyc}/${COMPONENT}}
 else
-    export COMIN_OBS="${COMIN_OBS:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/obs}"
-    export COMIN_GES_OBS="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/obs"
+    export COMIN_OBS="${COMIN_OBS:-${ROTDIR}/${CDUMP_OBS}.${PDY}/${cyc}/obs}"
 fi
 
 # COMIN_GES, COMIN_ANL COMIN_GES_ENS, and COMOUT  are used in script
 COMIN_GES_CTL="${ROTDIR}/gdas.${gPDY}/${gcyc}/${COMPONENT}"
-export COMIN_ANL="${ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENT}"
+export COMIN_ANL="${ROTDIR}/${CDUMP/enkf}.${PDY}/${cyc}/${COMPONENT}"
 export COMIN_GES_ENS="${ROTDIR}/enkfgdas.${gPDY}/${gcyc}"
-export COMIN_GES=${COMIN_GES_ENS}
-export COMOUT="${ROTDIR}/enkf${CDUMP}.${PDY}/${cyc}"
+export COMOUT="${ROTDIR}/${CDUMP}.${PDY}/${cyc}"
 
 
-export ATMGES_ENSMEAN="${COMIN_GES_ENS}/${GPREFIX}atmf006.ensmean.nc"
+export ATMGES_ENSMEAN="${COMIN_GES_ENS}/${GPREFIX_ENS}atmf006.ensmean.nc"
 if [ ! -f ${ATMGES_ENSMEAN} ]; then
     echo "FATAL ERROR: FILE MISSING: ATMGES_ENSMEAN = ${ATMGES_ENSMEAN}"
     exit 1
@@ -71,21 +73,21 @@ export GBIASAIR=${COMIN_GES_CTL}/${GPREFIX}abias_air
 export GRADSTAT=${COMIN_GES_CTL}/${GPREFIX}radstat
 
 # Bias correction coefficients related to ensemble mean
-export ABIAS="${COMOUT}/${APREFIX}abias.ensmean"
-export ABIASPC="${COMOUT}/${APREFIX}abias_pc.ensmean"
-export ABIASAIR="${COMOUT}/${APREFIX}abias_air.ensmean"
-export ABIASe="${COMOUT}/${APREFIX}abias_int.ensmean"
+export ABIAS="${COMOUT}/${APREFIX_ENS}abias.ensmean"
+export ABIASPC="${COMOUT}/${APREFIX_ENS}abias_pc.ensmean"
+export ABIASAIR="${COMOUT}/${APREFIX_ENS}abias_air.ensmean"
+export ABIASe="${COMOUT}/${APREFIX_ENS}abias_int.ensmean"
 
 # Diagnostics related to ensemble mean
-export GSISTAT="${COMOUT}/${APREFIX}gsistat.ensmean"
-export CNVSTAT="${COMOUT}/${APREFIX}cnvstat.ensmean"
-export OZNSTAT="${COMOUT}/${APREFIX}oznstat.ensmean"
-export RADSTAT="${COMOUT}/${APREFIX}radstat.ensmean"
+export GSISTAT="${COMOUT}/${APREFIX_ENS}gsistat.ensmean"
+export CNVSTAT="${COMOUT}/${APREFIX_ENS}cnvstat.ensmean"
+export OZNSTAT="${COMOUT}/${APREFIX_ENS}oznstat.ensmean"
+export RADSTAT="${COMOUT}/${APREFIX_ENS}radstat.ensmean"
 
 # Select observations based on ensemble mean
 export RUN_SELECT="YES"
 export USE_SELECT="NO"
-export SELECT_OBS="${COMOUT}/${APREFIX}obsinput.ensmean"
+export SELECT_OBS="${COMOUT}/${APREFIX_ENS}obsinput.ensmean"
 
 export DIAG_SUFFIX="_ensmean"
 export DIAG_COMPRESS="NO"
