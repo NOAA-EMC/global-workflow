@@ -35,7 +35,7 @@ _calling_script=$(basename "${BASH_SOURCE[1]}")
 start_time_human=$(date -d"@${start_time}" -u)
 echo "Begin ${_calling_script} at ${start_time_human}"
 
-export PS4='+ $(basename ${BASH_SOURCE})[${LINENO}]'"${id}: "
+declare -rx PS4='+ $(basename ${BASH_SOURCE[0]:-"Unknown"})[${LINENO}]'"${id}: "
 
 set_strict() {
     if [[ ${STRICT:-"YES"} == "YES" ]]; then
