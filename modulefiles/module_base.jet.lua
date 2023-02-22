@@ -19,7 +19,7 @@ load(pathJoin("nco", "4.9.1"))
 load(pathJoin("prod_util", "1.2.2"))
 load(pathJoin("grib_util", "1.2.2"))
 load(pathJoin("g2tmpl", "1.10.0"))
-load(pathJoin("crtm", "2.3.0"))
+load(pathJoin("crtm", "2.4.0"))
 load(pathJoin("wgrib2", "2.0.8"))
 
 whatis("Description: GFS run environment")
