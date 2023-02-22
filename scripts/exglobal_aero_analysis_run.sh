@@ -1,6 +1,6 @@
 #!/bin/bash
 ################################################################################
-# exgdas_global_aero_analysis_run.sh
+# exglobal_aero_analysis_run.sh
 #
 # This script runs a global aerosol variational analysis with FV3-JEDI.
 # It assumes the runtime directory has already been staged with the appropriate
