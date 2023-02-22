@@ -16,7 +16,7 @@ export g2tmpl_ver=${g2tmpl_ver:-v1.5.0}
 # Set variables used in the exglobal script
 ##############################################
 export CDATE=${CDATE:-${PDY}${cyc}}
-export CDUMP=${CDUMP:-${RUN:-"gfs"}}
+export CDUMP=${RUN/enkf}
 export COMPONENT="atmos"
 
 
@@ -42,14 +42,15 @@ export PARMpost=${PARMpost:-${HOMEgfs}/parm/post}
 export INLINE_POST=${WRITE_DOPOST:-".false."}
 
 # Construct COM variables from templates
+export YMD=${PDY}
+export HH=${cyc}
 generate_com -rx COM_ATMOS_RESTART COM_ATMOS_ANALYSIS COM_ATMOS_HISTORY COM_ATMOS_MASTER
-generate_com -rx COM_ATMOS_GRIB_0p25 COM_ATMOS_GRIB_0p50 COM_ATMOS_GRIB_1p00
-
-# shellcheck disable=SC2174
-for prod_dir in ${COM_ATMOS_GRIB_0p25} ${COM_ATMOS_GRIB_0p50} ${COM_ATMOS_GRIB_1p00}; do
-  if [[ ! -d "${prod_dir}" ]]; then mkdir -m 775 -p "${prod_dir}"; fi
+for RES in '0p25' '0p50' '1p00'; do
+  # After the post refactor, we likely won't need these separate envvars
+  prod_dir="COM_ATMOS_GRIB_${RES}"      
+  declare -x "${prod_dir}"="$(echo "${COM_ATMOS_GRIB_TMPL}" | envsubst)"
+  if [[ ! -d "${prod_dir}" ]]; then mkdir -m 775 -p "${!prod_dir}"; fi
 done
-# shellcheck disable=
 
 if [ "${RUN}" = gfs ];then
   export FHOUT_PGB=${FHOUT_GFS:-3} #Output frequency of gfs pgb file at 1.0 and 0.5 deg.

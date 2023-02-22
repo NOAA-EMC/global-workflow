@@ -19,9 +19,9 @@ export MAKE_ACFTBUFR=${MAKE_ACFTBUFR:-"NO"}
 # Begin JOB SPECIFIC work
 ##############################################
 
-GDATE=$(${NDATE} -${assim_freq} ${CDATE})
-gPDY=$(echo ${GDATE} | cut -c1-8)
-gcyc=$(echo ${GDATE} | cut -c9-10)
+DATE_PREV=$(${NDATE} -${assim_freq} ${CDATE})
+PDY_PREV=$(echo ${DATE_PREV} | cut -c1-8)
+cyc_PREV=$(echo ${DATE_PREV} | cut -c9-10)
 GDUMP=${GDUMP:-"gdas"}
 
 export OPREFIX="${CDUMP}.t${cyc}z."
@@ -38,7 +38,17 @@ else
   export COMIN_GES_OBS="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/obs"
 fi
 
-mkdir -m 775 -p ${COMOUT}
+generate_com -rx COM_OBS COM_ATMOS_ANALYSIS
+
+COM_ATMOS_ANALYSIS_PREV=$({
+    CDUMP=${GDUMP}
+    PDY=${PDY_PREV}
+    cyc=${cyc_PREV}
+    echo ${COM_ATMOS_ANALYSIS_TMPL} | envsubst
+})
+declare -rx COM_ATMOS_ANALYSIS_PREV
+
+mkdir -m 775 -p ${COM_ATMOS_ANALYSIS}
 # COMIN_GES and COMIN_GES_ENS are used in script
 export COMIN_GES="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/atmos"
 export COMIN_GES_ENS="${ROTDIR}/enkfgdas.${gPDY}/${gcyc}"

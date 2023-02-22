@@ -140,7 +140,7 @@ if [[ "${stime}" = "anl" ]]; then
         run="$(echo "${RUN}" | tr '[:lower:]' '[:upper:]')"
         if [[ "${GRIBVERSION}" = 'grib2' ]]; then
           "${DBNROOT}/bin/dbn_alert" MODEL "${run}_MSC_sfcanl" "${job}" "${COM_ATMOS_ANALYSIS}/${PREFIX}sfcanl.nc"
-          "${DBNROOT}/bin/dbn_alert" MODEL "${run}_SA" "${job}" "${COMIN}/${PREFIX}atmanl.nc"
+          "${DBNROOT}/bin/dbn_alert" MODEL "${run}_SA" "${job}" "${COM_ATMOS_ANALYSIS}/${PREFIX}atmanl.nc"
           "${DBNROOT}/bin/dbn_alert" MODEL "GDAS_PGA_GB2" "${job}" "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb2.1p00.anl"
           "${DBNROOT}/bin/dbn_alert" MODEL "GDAS_PGA_GB2_WIDX" "${job}" "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb2.1p00.anl.idx"
         fi

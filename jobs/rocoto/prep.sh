@@ -26,25 +26,25 @@ status=$?
 ###############################################################
 # Set script and dependency variables
 export OPREFIX="${CDUMP}.t${cyc}z."
-generate_com -rx COM_OBS COM_OBSDMP
+YMD=${PDY} HH=${cyc} generate_com -rx COM_OBS COM_OBSDMP
 
 DATE_PREV=$(${NDATE} -${assim_freq} "${PDY}${cyc}")
-PDY_PREV=$(echo $DATE_PREV | cut -c1-8)
-cyc_PREV=$(echo $DATE_PREV | cut -c9-10)
+PDY_PREV=${DATE_PREV:0:8}
+cyc_PREV=${DATE_PREV:8:2}
 GDUMP="gdas"
 # shellcheck disable=SC2030
 COM_OBS_PREV=$({
-    PDY=${PDY_PREV}
-    cyc=${cyc_PREV}
-    CDUMP=${GDUMP}
+    export YMD=${PDY_PREV}
+    export HH=${cyc_PREV}
+    export RUN=${GDUMP}
     echo "${COM_OBS_TMPL}" | envsubst
 })
 declare -rx COM_OBS_PREV
 
 COM_OBSDMP_PREV=$({
-    PDY=${PDY_PREV}
-    cyc=${cyc_PREV}
-    CDUMP=${GDUMP}
+    export YMD=${PDY_PREV}
+    export HH=${cyc_PREV}
+    export CDUMP=${GDUMP}
     echo "${COM_OBSDMP_TMPL}" | envsubst
 })
 declare -rx COM_OBSDMP_PREV

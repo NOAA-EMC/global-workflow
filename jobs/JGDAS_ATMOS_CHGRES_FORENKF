@@ -7,9 +7,7 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "anal" -c "base anal echgres"
 ##############################################
 # Set variables used in the script
 ##############################################
-export CDATE=${CDATE:-${PDY}${cyc}}
-export CDUMP=${CDUMP:-${RUN:-"gfs"}}
-export COMPONENT="atmos"
+export CDUMP=${RUN/enkf}
 export DO_CALC_ANALYSIS=${DO_CALC_ANALYSIS:-"YES"}
 
 
@@ -17,13 +15,15 @@ export DO_CALC_ANALYSIS=${DO_CALC_ANALYSIS:-"YES"}
 # Begin JOB SPECIFIC work
 ##############################################
 
-export APREFIX="${CDUMP/enkf}.t${cyc}z."
-export APREFIX_ENS="${CDUMP}.t${cyc}z."
+export APREFIX="${CDUMP}.t${cyc}z."
+export APREFIX_ENS="${RUN}.t${cyc}z."
 
-generate_com -rx COM_ATMOS_HISTORY
+export YMD=${PDY}
+export HH=${cyc}
+RUN=${CDUMP} generate_com -rx COM_ATMOS_HISTORY
 
 COM_ATMOS_HISTORY_MEM=$({
-    MEMDIR="mem001"
+    export MEMDIR="mem001"
     echo "${COM_ATMOS_HISTORY_TMPL}" | envsubst
 })
 declare -rx COM_ATMOS_HISTORY_MEM

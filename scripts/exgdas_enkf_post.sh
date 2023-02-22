@@ -65,11 +65,18 @@ $NCP $GETATMENSMEANEXEC $DATA
 
 export OMP_NUM_THREADS=$NTHREADS_EPOS
 
+export YMD=${PDY}
+export HH=${cyc}
+
 ################################################################################
 # Forecast ensemble member files
 for imem in $(seq 1 $NMEM_ENKF); do
-   MEMDIR="mem"$(printf %03i "${imem}")
-   generate_com -x COM_ATMOS_HISTORY
+   export MEMDIR="mem"$(printf %03i "${imem}")
+   COM_ATMOS_HISTORY=$({
+      export RUN
+      echo "${COM_ATMOS_HISTORY_TMPL}" | envsubst   
+   })
+
    for fhr in $(seq $FHMIN $FHOUT $FHMAX); do
       fhrchar=$(printf %03i $fhr)
       ${NLN} "${COM_ATMOS_HISTORY}/${PREFIX}sfcf${fhrchar}.nc" "sfcf${fhrchar}_${MEMDIR}"
@@ -80,8 +87,11 @@ done
 # Forecast ensemble mean and smoothed files
 COM_ATMOS_HISTORY_STAT=$({
    MEMDIR="ensstat"
+   export MEMDIR
    echo "${COM_ATMOS_HISTORY_TMPL}" | envsubst
 })
+if [[ ! -d "${COM_ATMOS_HISTORY_STAT}" ]]; then mkdir -p "${COM_ATMOS_HISTORY_STAT}"; fi
+
 for fhr in $(seq $FHMIN $FHOUT $FHMAX); do
    fhrchar=$(printf %03i $fhr)
    ${NLN} "${COM_ATMOS_HISTORY_STAT}/${PREFIX}sfcf${fhrchar}.ensmean.nc" "sfcf${fhrchar}.ensmean"

@@ -70,7 +70,11 @@ DATATOP=$DATA
 # Set output data
 cymd=$(echo $CDATE | cut -c1-8)
 chh=$(echo  $CDATE | cut -c9-10)
-EFCSGRP="${ROTDIR}/enkf${CDUMP}.${PDY}/${cyc}/efcs.grp${ENSGRP}"
+
+export YMD=${PDY}
+export HH=${cyc}
+generate_com COM_ENKF_GROUP
+EFCSGRP="${COM_ENKF_GROUP}/efcs.grp${ENSGRP}"
 if [ -f $EFCSGRP ]; then
    if [ $RERUN_EFCSGRP = "YES" ]; then
       rm -f $EFCSGRP
@@ -102,13 +106,13 @@ export LEVS=${LEVS_ENKF:-${LEVS:-64}}
 
 # nggps_diag_nml
 export FHOUT=${FHOUT_ENKF:-3}
-if [[ ${CDUMP} == "enkfgfs" ]]; then
+if [[ ${RUN} == "enkfgfs" ]]; then
     export FHOUT=${FHOUT_ENKF_GFS:-${FHOUT_ENKF:${FHOUT:-3}}}
 fi
 # model_configure
 export DELTIM=${DELTIM_ENKF:-${DELTIM:-225}}
 export FHMAX=${FHMAX_ENKF:-9}
-if [[ $CDUMP == "enkfgfs" ]]; then
+if [[ ${RUN} == "enkfgfs" ]]; then
    export FHMAX=${FHMAX_ENKF_GFS:-${FHMAX_ENKF:-${FHMAX}}}
 fi
 
@@ -140,7 +144,7 @@ for imem in $(seq $ENSBEG $ENSEND); do
    cd $DATATOP
 
    cmem=$(printf %03i $imem)
-   MEMDIR="mem${cmem}"
+   export MEMDIR="mem${cmem}"
 
    echo "Processing MEMBER: $cmem"
 
@@ -162,17 +166,17 @@ for imem in $(seq $ENSBEG $ENSEND); do
 
    # Construct COM variables for previous cycle restarts
    DATE_PREV=$(${NDATE} -"${assim_freq}" "${PDY}${cyc}")
-   PDY_PREV=$(echo "${DATE_PREV}" | cut -c1-8)
+   PDY_PREV="${DATE_PREV:0:8}"
    declare -x PDY_PREV
-   cyc_PREV=$(echo "${DATE_PREV}" | cut -c9-10)
+   cyc_PREV="${DATE_PREV:8:2}"
    declare -x cyc_PREV
 
    # shellcheck disable=SC2030,SC2031
    COM_ATMOS_RESTART_PREV=$({
      # Override env variables for this subshell to get correct template substitution
      RUN=${rCDUMP}
-     PDY="${PDY_PREV}"
-     cyc="${cyc_PREV}"
+     YMD="${PDY_PREV}"
+     HH="${cyc_PREV}"
      echo "${COM_ATMOS_RESTART_TMPL}" | envsubst
    })
    declare -x COM_ATMOS_RESTART_PREV
@@ -180,11 +184,8 @@ for imem in $(seq $ENSBEG $ENSEND); do
    COM_WAVE_RESTART_PREV=$( {
      # Override env variables for this subshell to get correct template substitution
      # If we drop a separate cycle frequency, this can be merged with above
-     DATE_PREV=$(${NDATE} -"${WAVHCYC:-${assim_freq}}" "${PDY}${cyc}")
-     PDY_PREV=$(echo "${DATE_PREV}" | cut -c1-8)
-     cyc_PREV=$(echo "${DATE_PREV}" | cut -c9-10)
-     PDY="${PDY_PREV}"
-     cyc="${cyc_PREV}"
+     YMD="${PDY_PREV}"
+     HH="${cyc_PREV}"
      echo "${COM_WAVE_RESTART_TMPL}" | envsubst
    })
    declare -x COM_WAVE_RESTART_PREV

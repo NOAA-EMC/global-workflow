@@ -24,48 +24,49 @@ echo "BEGIN: config.com"
 #    })
 #
 
+# Ignore shellcheck warnings about variables not being expanded; this is what we want
 # shellcheck disable=SC2016
-export COM_OBS_TMPL='${ROTDIR}/${RUN}.${PDY}/${cyc}/obs'
-export COM_OBSDMP_TMPL='${DMPDIR}/${RUN}.${PDY}/${cyc}/atmos'
+export COM_OBS_TMPL='${ROTDIR}/${RUN}.${YMD}/${HH}/obs'
+export COM_OBSDMP_TMPL='${DMPDIR}/${CDUMP}${DUMP_SUFFIX}.${YMD}/${HH}/atmos'
 
-export COM_ATMOS_INPUT_TMPL='${ROTDIR}/${RUN}.${PDY}/${cyc}/${MEMDIR}/atmos/model_data/input'
-export COM_ATMOS_RESTART_TMPL='${ROTDIR}/${RUN}.${PDY}/${cyc}/${MEMDIR}/atmos/model_data/restart'
-export COM_ATMOS_ANALYSIS_TMPL='${ROTDIR}/${RUN}.${PDY}/${cyc}/${MEMDIR}/atmos/model_data/analysis'
-export COM_ATMOS_HISTORY_TMPL='${ROTDIR}/${RUN}.${PDY}/${cyc}/${MEMDIR}/atmos/model_data/history'
-export COM_ATMOS_MASTER_TMPL='${ROTDIR}/${RUN}.${PDY}/${cyc}/${MEMDIR}/atmos/model_data/master'
-export COM_ATMOS_GRIB_0p25_TMPL='${ROTDIR}/${RUN}.${PDY}/${cyc}/${MEMDIR}/atmos/products/0p25'
-export COM_ATMOS_GRIB_0p50_TMPL='${ROTDIR}/${RUN}.${PDY}/${cyc}/${MEMDIR}/atmos/products/0p50'
-export COM_ATMOS_GRIB_1p00_TMPL='${ROTDIR}/${RUN}.${PDY}/${cyc}/${MEMDIR}/atmos/products/1p00'
-export COM_ATMOS_BUFR_TMPL='${ROTDIR}/${RUN}.${PDY}/${cyc}/${MEMDIR}/atmos/products/bufr'
-export COM_ATMOS_GEMPAK_TMPL='${ROTDIR}/${RUN}.${PDY}/${cyc}/${MEMDIR}/atmos/products/gempak'
-export COM_ATMOS_GENESIS_TMPL='${ROTDIR}/${RUN}.${PDY}/${cyc}/${MEMDIR}/atmos/products/cyclone/genesis_vital'
-export COM_ATMOS_TRACK_TMPL='${ROTDIR}/${RUN}.${PDY}/${cyc}/${MEMDIR}/atmos/products/cyclone/tracks'
-export COM_ATMOS_GOES_TMPL='${ROTDIR}/${RUN}.${PDY}/${cyc}/${MEMDIR}/atmos/products/goes_sim'
-export COM_ATMOS_IMAGERY_TMPL='${ROTDIR}/${RUN}.${PDY}/${cyc}/${MEMDIR}/atmos/products/imagery'
-export COM_ATMOS_MINMON_TMPL='${ROTDIR}/${RUN}.${PDY}/${cyc}/${MEMDIR}/atmos/products/minmon'
-export COM_ATMOS_WAFS_TMPL='${ROTDIR}/${RUN}.${PDY}/${cyc}/${MEMDIR}/atmos/products/wafs'
-export COM_ATMOS_WMO_TMPL='${ROTDIR}/${RUN}.${PDY}/${cyc}/${MEMDIR}/atmos/products/wmo'
+COM_BASE='${ROTDIR}/${RUN}.${YMD}/${HH}/${MEMDIR}'
+export COM_ENKF_GROUP_TMPL=${COM_BASE}
 
-export COM_WAVE_RESTART_TMPL='${ROTDIR}/${RUN}.${PDY}/${cyc}/${MEMDIR}/wave/model_data/restart'
-export COM_WAVE_PREP_TMPL='${ROTDIR}/${RUN}.${PDY}/${cyc}/${MEMDIR}/wave/model_data/prep'
-export COM_WAVE_HISTORY_TMPL='${ROTDIR}/${RUN}.${PDY}/${cyc}/${MEMDIR}/wave/model_data/history'
-export COM_WAVE_GRID_TMPL='${ROTDIR}/${RUN}.${PDY}/${cyc}/${MEMDIR}/wave/products/gridded'
-export COM_WAVE_STATION_TMPL='${ROTDIR}/${RUN}.${PDY}/${cyc}/${MEMDIR}/wave/products/station'
+export COM_ATMOS_INPUT_TMPL=${COM_BASE}'/atmos/model_data/input'
+export COM_ATMOS_RESTART_TMPL=${COM_BASE}'/atmos/model_data/restart'
+export COM_ATMOS_ANALYSIS_TMPL=${COM_BASE}'/atmos/model_data/analysis'
+export COM_ATMOS_HISTORY_TMPL=${COM_BASE}'/atmos/model_data/history'
+export COM_ATMOS_MASTER_TMPL=${COM_BASE}'/atmos/model_data/master'
+export COM_ATMOS_GRIB_TMPL=${COM_BASE}'/atmos/products/${RES}'
+export COM_ATMOS_BUFR_TMPL=${COM_BASE}'/atmos/products/bufr'
+export COM_ATMOS_GEMPAK_TMPL=${COM_BASE}'/atmos/products/gempak'
+export COM_ATMOS_GENESIS_TMPL=${COM_BASE}'/atmos/products/cyclone/genesis_vital'
+export COM_ATMOS_TRACK_TMPL=${COM_BASE}'/atmos/products/cyclone/tracks'
+export COM_ATMOS_GOES_TMPL=${COM_BASE}'/atmos/products/goes_sim'
+export COM_ATMOS_IMAGERY_TMPL=${COM_BASE}'/atmos/products/imagery'
+export COM_ATMOS_MINMON_TMPL=${COM_BASE}'/atmos/products/minmon'
+export COM_ATMOS_WAFS_TMPL=${COM_BASE}'/atmos/products/wafs'
+export COM_ATMOS_WMO_TMPL=${COM_BASE}'/atmos/products/wmo'
 
-export COM_OCEAN_HISTORY_TMPL='${ROTDIR}/${RUN}.${PDY}/${cyc}/${MEMDIR}/ocean/model_data/history'
-export COM_OCEAN_RESTART_TMPL='${ROTDIR}/${RUN}.${PDY}/${cyc}/${MEMDIR}/ocean/model_data/restart'
-export COM_OCEAN_INPUT_TMPL='${ROTDIR}/${RUN}.${PDY}/${cyc}/${MEMDIR}/ocean/model_data/input'
-export COM_OCEAN_ANALYSIS_TMPL='${ROTDIR}/${RUN}.${PDY}/${cyc}/${MEMDIR}/ocean/model_data/analysis'
-export COM_OCEAN_DAILY_TMPL='${ROTDIR}/${RUN}.${PDY}/${cyc}/${MEMDIR}/ocean/products/daily'
-export COM_OCEAN_GRIB_0p50_TMPL='${ROTDIR}/${RUN}.${PDY}/${cyc}/${MEMDIR}/ocean/products/0p50'
-export COM_OCEAN_GRIB_0p25_TMPL='${ROTDIR}/${RUN}.${PDY}/${cyc}/${MEMDIR}/ocean/products/0p25'
+export COM_WAVE_RESTART_TMPL=${COM_BASE}'/wave/model_data/restart'
+export COM_WAVE_PREP_TMPL=${COM_BASE}'/wave/model_data/prep'
+export COM_WAVE_HISTORY_TMPL=${COM_BASE}'/wave/model_data/history'
+export COM_WAVE_GRID_TMPL=${COM_BASE}'/wave/products/gridded'
+export COM_WAVE_STATION_TMPL=${COM_BASE}'/wave/products/station'
 
-export COM_ICE_HISTORY_TMPL='${ROTDIR}/${RUN}.${PDY}/${cyc}/${MEMDIR}/ice/model_data/history'
-export COM_ICE_RESTART_TMPL='${ROTDIR}/${RUN}.${PDY}/${cyc}/${MEMDIR}/ice/model_data/restart'
+export COM_OCEAN_HISTORY_TMPL=${COM_BASE}'/ocean/model_data/history'
+export COM_OCEAN_RESTART_TMPL=${COM_BASE}'/ocean/model_data/restart'
+export COM_OCEAN_INPUT_TMPL=${COM_BASE}'/ocean/model_data/input'
+export COM_OCEAN_ANALYSIS_TMPL=${COM_BASE}'/ocean/model_data/analysis'
+export COM_OCEAN_DAILY_TMPL=${COM_BASE}'/ocean/products/daily'
+export COM_OCEAN_GRIB_TMPL=${COM_BASE}'/ocean/products/${RES}'
 
-export COM_CHEM_HISTORY_TMPL='${ROTDIR}/${RUN}.${PDY}/${cyc}/${MEMDIR}/chem/model_data/history'
+export COM_ICE_HISTORY_TMPL=${COM_BASE}'/ice/model_data/history'
+export COM_ICE_RESTART_TMPL=${COM_BASE}'/ice/model_data/restart'
 
-export COM_MED_RESTART_TMPL='${ROTDIR}/${RUN}.${PDY}/${cyc}/${MEMDIR}/med/model_data/restart'
+export COM_CHEM_HISTORY_TMPL=${COM_BASE}'/chem/model_data/history'
+
+export COM_MED_RESTART_TMPL=${COM_BASE}'/med/model_data/restart'
 
 # shellcheck disable=
 
@@ -90,7 +91,7 @@ function generate_com() {
     while getopts "aAfFilrtux" option; do
         opts="${opts}${option}"
     done
-    shift
+    shift $((OPTIND-1))
 
     for com_var in "$@"; do
         local template="${com_var}_TMPL"

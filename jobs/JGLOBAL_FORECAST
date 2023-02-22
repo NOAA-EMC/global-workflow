@@ -29,6 +29,8 @@ fi
 export MEMDIR=${MEMDIR:-''}
 
 # Construct COM variables from templates (see config.com)
+export YMD=${PDY}
+export HH=${cyc}
 generate_com -rx COM_ATMOS_RESTART COM_ATMOS_INPUT COM_ATMOS_ANALYSIS COM_ATMOS_HISTORY COM_ATMOS_MASTER
 generate_com -rx COM_WAVE_RESTART COM_WAVE_PREP COM_WAVE_HISTORY
 generate_com -rx COM_MED_RESTART COM_OCEAN_RESTART COM_OCEAN_INPUT COM_OCEAN_HISTORY
@@ -37,17 +39,15 @@ generate_com -rx COM_CHEM_HISTORY
 
 # Construct COM variables for previous cycle restarts
 DATE_PREV=$(${NDATE} -"${assim_freq}" "${PDY}${cyc}")
-PDY_PREV=$(echo "${DATE_PREV}" | cut -c1-8)
-declare -x PDY_PREV
-cyc_PREV=$(echo "${DATE_PREV}" | cut -c9-10)
-declare -x cyc_PREV
+declare -x PDY_PREV="${DATE_PREV:0:8}"
+declare -x cyc_PREV="${DATE_PREV:8:2}"
 
 # shellcheck disable=SC2030,SC2031
 COM_ATMOS_RESTART_PREV=$({
   # Override env variables for this subshell to get correct template substitution
   RUN=${rCDUMP}
-  PDY="${PDY_PREV}"
-  cyc="${cyc_PREV}"
+  YMD="${PDY_PREV}"
+  HH="${cyc_PREV}"
   echo "${COM_ATMOS_RESTART_TMPL}" | envsubst
 })
 declare -rx COM_ATMOS_RESTART_PREV
@@ -55,11 +55,8 @@ declare -rx COM_ATMOS_RESTART_PREV
 COM_WAVE_RESTART_PREV=$( {
   # Override env variables for this subshell to get correct template substitution
   # If we drop a separate cycle frequency, this can be merged with above
-  DATE_PREV=$(${NDATE} -"${WAVHCYC:-${assim_freq}}" "${PDY}${cyc}")
-  PDY_PREV=$(echo "${DATE_PREV}" | cut -c1-8)
-  cyc_PREV=$(echo "${DATE_PREV}" | cut -c9-10)
-  PDY="${PDY_PREV}"
-  cyc="${cyc_PREV}"
+  YMD="${PDY_PREV}"
+  HH="${cyc_PREV}"
   echo "${COM_WAVE_RESTART_TMPL}" | envsubst
 })
 declare -rx COM_WAVE_RESTART_PREV
