@@ -1351,7 +1351,7 @@ def create_wf_task(task_name, resources,
                          'varval': f'{varval}',
                          'vardict': vardict}
 
-    cycledefstr = cdump.replace('enkf','') if cycledef is None else cycledef
+    cycledefstr = cdump.replace('enkf', '') if cycledef is None else cycledef
 
     task_dict = {'taskname': f'{tasknamestr}',
                  'cycledef': f'{cycledefstr}',
