@@ -396,7 +396,6 @@ class AppConfig:
 
         gdas_tasks += gdas_gfs_common_tasks_after_fcst
 
-
         if self.do_wave and 'gdas' in self.wave_cdumps:
             if self.do_wave_bnd:
                 gdas_tasks += wave_bndpnt_tasks
