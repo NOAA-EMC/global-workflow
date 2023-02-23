@@ -86,7 +86,7 @@ class Analysis(Task):
                     rstfile.variables[vname][:] = anl[:]
                     try:
                         rstfile.variables[vname].delncattr('checksum')  # remove the checksum so fv3 does not complain
-                    except AttributeError:
+                    except (AttributeError, RuntimeError):
                         pass  # checksum is missing, move on
 
     @logit(logger)
