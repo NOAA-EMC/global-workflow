@@ -244,16 +244,8 @@ def edit_baseconfig(host, inputs):
         }
         tmpl_dict = dict(tmpl_dict, **extend_dict)
 
-    # Determine CCPP suite and MP based on mode and app
-    gfsv16 = {"@CCPP_SUITE@": "FV3_GFS_v16", "@IMP_PHYSICS@": 11}
-    gfsv17 = {"@CCPP_SUITE@": "FV3_GFS_v17_p8", "@IMP_PHYSICS@": 8}
-    if inputs.mode in ['cycled']:
-        if inputs.app in ['ATM']:
-            extend_dict = gfsv16
-        elif inputs.app in ['S2S', 'S2SW']:
-            extend_dict = gfsv17
-    elif inputs.mode in ['forecast-only']:
-        extend_dict = gfsv17
+    # All apps and modes now use the same physics and CCPP suite by default
+    extend_dict = {"@CCPP_SUITE@": "FV3_GFS_v17_p8", "@IMP_PHYSICS@": 8}
     tmpl_dict = dict(tmpl_dict, **extend_dict)
 
     base_input = f'{inputs.configdir}/config.base.emc.dyn'

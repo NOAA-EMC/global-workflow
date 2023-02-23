@@ -15,7 +15,6 @@ fileB: string
     Path to the second grib2 file
 
 '''
-
 import re
 import sys
 import subprocess

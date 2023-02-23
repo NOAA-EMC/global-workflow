@@ -1325,7 +1325,7 @@ class Tasks:
             fhmin = epos['FHMIN_ENKF']
             fhmax = epos['FHMAX_ENKF']
             fhout = epos['FHOUT_ENKF']
-            if self.cdump == "gfs":
+            if self.cdump == "enkfgfs":
                 fhmax = epos['FHMAX_ENKF_GFS']
                 fhout = epos['FHOUT_ENKF_GFS']
             fhrs = range(fhmin, fhmax + fhout, fhout)
@@ -1400,7 +1400,7 @@ def create_wf_task(task_name, resources,
                          'varval': f'{varval}',
                          'vardict': vardict}
 
-    cycledefstr = cdump.replace('enkf','') if cycledef is None else cycledef
+    cycledefstr = cdump.replace('enkf', '') if cycledef is None else cycledef
 
     task_dict = {'taskname': f'{tasknamestr}',
                  'cycledef': f'{cycledefstr}',

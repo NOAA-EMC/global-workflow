@@ -23,10 +23,7 @@ load(pathJoin("prod_util", "1.2.2"))
 load(pathJoin("grib_util", "1.2.2"))
 load(pathJoin("g2tmpl", "1.10.0"))
 load(pathJoin("ncdiag", "1.0.0"))
-
-load(pathJoin("crtm", "2.3.0"))
-setenv("CRTM_FIX","/apps/contrib/NCEPLIBS/orion/fix/crtm_v2.3.0")
-
+load(pathJoin("crtm", "2.4.0"))
 load(pathJoin("wgrib2", "2.0.8"))
 setenv("WGRIB2","wgrib2")
 
