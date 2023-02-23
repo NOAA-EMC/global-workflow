@@ -5,7 +5,7 @@ Load environment to run GFS on WCOSS2
 load(pathJoin("PrgEnv-intel", "8.1.0"))
 load(pathJoin("craype", "2.7.13"))
 load(pathJoin("intel", "19.1.3.304"))
-load(pathJoin("cray-mpich", "8.1.7"))
+load(pathJoin("cray-mpich", "8.1.9"))
 load(pathJoin("cray-pals", "1.0.17"))
 load(pathJoin("cfp", "2.0.4"))
 setenv("USE_CFP","YES")
