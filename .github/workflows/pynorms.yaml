@@ -1,4 +1,4 @@
-name: Check Norms
+name: pynorms
 on: [push, pull_request]
 
 jobs:

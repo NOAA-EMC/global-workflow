@@ -145,6 +145,7 @@ if [ $DOIAU = "YES" ]; then
 
             [[ $TILE_NUM -eq 1 ]] && mkdir -p $COMOUT_ENS/$memchar/atmos/RESTART
 
+            $NCP $COMIN_GES_ENS/$memchar/atmos/RESTART/$bPDY.${bcyc}0000.sfc_data.tile${n}.nc $COMOUT_ENS/$memchar/atmos/RESTART/$bPDY.${bcyc}0000.sfcanl_data.tile${n}.nc
             $NLN $COMIN_GES_ENS/$memchar/atmos/RESTART/$bPDY.${bcyc}0000.sfc_data.tile${n}.nc $DATA/fnbgsi.$cmem
             $NLN $COMOUT_ENS/$memchar/atmos/RESTART/$bPDY.${bcyc}0000.sfcanl_data.tile${n}.nc $DATA/fnbgso.$cmem
             $NLN $FIXfv3/$CASE/${CASE}_grid.tile${n}.nc                                $DATA/fngrid.$cmem
@@ -171,6 +172,7 @@ if [ $DOSFCANL_ENKF = "YES" ]; then
 
         [[ $TILE_NUM -eq 1 ]] && mkdir -p $COMOUT_ENS/$memchar/atmos/RESTART
 
+        $NCP $COMIN_GES_ENS/$memchar/atmos/RESTART/$PDY.${cyc}0000.sfc_data.tile${n}.nc $COMOUT_ENS/$memchar/atmos/RESTART/$PDY.${cyc}0000.sfcanl_data.tile${n}.nc
         $NLN $COMIN_GES_ENS/$memchar/atmos/RESTART/$PDY.${cyc}0000.sfc_data.tile${n}.nc $DATA/fnbgsi.$cmem
         $NLN $COMOUT_ENS/$memchar/atmos/RESTART/$PDY.${cyc}0000.sfcanl_data.tile${n}.nc $DATA/fnbgso.$cmem
         $NLN $FIXfv3/$CASE/${CASE}_grid.tile${n}.nc                               $DATA/fngrid.$cmem
