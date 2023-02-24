@@ -17,7 +17,7 @@ fi
 
 case_in=$1
 
-echo "BEGIN: config.fv3"
+echo "BEGIN: config.ufs"
 
 
 if [[ "${machine}" = "WCOSS2" ]]; then
@@ -179,4 +179,4 @@ case ${case_in} in
     ;;
 esac
 
-echo "END: config.fv3"
+echo "END: config.ufs"

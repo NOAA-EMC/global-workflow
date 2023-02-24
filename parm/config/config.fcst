@@ -8,7 +8,7 @@ echo "BEGIN: config.fcst"
 # set -eu
 
 # Source model specific information that is resolution dependent
-. $EXPDIR/config.fv3 $CASE
+. $EXPDIR/config.ufs $CASE
 
 # Turn off waves if not used for this CDUMP
 case $WAVE_CDUMP in
