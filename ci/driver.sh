@@ -36,8 +36,8 @@ case ${TARGET} in
     source $MODULESHOME/init/sh
     source $my_dir/${TARGET}.sh
     module purge
-    module use $GDAS_MODULE_USE
-    module load GDAS/$TARGET
+    module use $GFS_MODULE_USE
+    module load GFS/$TARGET
     module list
     ;;
   *)
@@ -48,24 +48,24 @@ esac
 
 # ==============================================================================
 # pull on the repo and get list of open PRs
-cd $GDAS_CI_ROOT/repo
-CI_LABEL="${GDAS_CI_HOST}-RT"
-gh pr list --label "$CI_LABEL" --state "open" | awk '{print $1;}' > $GDAS_CI_ROOT/open_pr_list
-open_pr_list=$(cat $GDAS_CI_ROOT/open_pr_list)
+cd $GFS_CI_ROOT/repo
+CI_LABEL="${GFS_CI_HOST}-RT"
+gh pr list --label "$CI_LABEL" --state "open" | awk '{print $1;}' > $GFS_CI_ROOT/open_pr_list
+open_pr_list=$(cat $GFS_CI_ROOT/open_pr_list)
 
 # ==============================================================================
 # clone, checkout, build, test, etc.
-repo_url="https://github.com/NOAA-EMC/GDASApp.git"
+repo_url="https://github.com/NOAA-EMC/global-workflow.git"
 # loop through all open PRs
 for pr in $open_pr_list; do
   gh pr edit $pr --remove-label $CI_LABEL --add-label ${CI_LABEL}-Running
   echo "Processing Pull Request #${pr}"
   mkdir -p $GDAS_CI_ROOT/PR/$pr
-  cd $GDAS_CI_ROOT/PR/$pr
+  cd $GFS_CI_ROOT/PR/$pr
 
   # clone copy of repo
   git clone $repo_url
-  cd GDASApp
+  cd global-workflow
 
   # checkout pull request
   git pull
@@ -80,7 +80,7 @@ for pr in $open_pr_list; do
     hera | orion)
       echo "Loading modules on $TARGET"
       module purge
-      module use $GDAS_CI_ROOT/PR/$pr/GDASApp/modulefiles
+      module use $GFS_CI_ROOT/PR/$pr/global-workflow/modulefiles
       module load GDAS/$TARGET
       module list
       ;;
@@ -91,7 +91,7 @@ for pr in $open_pr_list; do
   esac
 
   # run build and testing command
-  $my_dir/run_ci.sh -d $GDAS_CI_ROOT/PR/$pr/GDASApp -o $GDAS_CI_ROOT/PR/$pr/output_${commit}
+  $my_dir/run_ci.sh -d $GFS_CI_ROOT/PR/$pr/global-workflow -o $GFS_CI_ROOT/PR/$pr/output_${commit}
   ci_status=$?
   gh pr comment $pr --body-file $GDAS_CI_ROOT/PR/$pr/output_${commit}
   if [ $ci_status -eq 0 ]; then

@@ -1,6 +1,8 @@
 #!/bin/bash
 #set -eu
 
+TARGET='hera'
+
 # ==============================================================================
 usage() {
   set +x
@@ -31,7 +33,7 @@ done
 
 # ==============================================================================
 # start output file
-echo "Automated GDASApp Testing Results:" > $outfile
+echo "Automated global-workflow Testing Results:" > $outfile
 echo "Machine: ${TARGET}" >> $outfile
 echo '```' >> $outfile
 echo "Start: $(date) on $(hostname)" >> $outfile
@@ -42,7 +44,9 @@ cd $repodir
 module purge
 export BUILD_JOBS=8
 rm -rf log.build
-./build.sh -t $TARGET &>> log.build
+./checkout.sh
+# build full cycle
+./build_all.sh -g &>> log.build
 build_status=$?
 if [ $build_status -eq 0 ]; then
   echo "Build:                                 *SUCCESS*" >> $outfile
@@ -54,26 +58,7 @@ else
   echo '```' >> $outfile
   exit $build_status
 fi
+./link_workflow.sh
 # ==============================================================================
-# run ctests
-cd $repodir/build
-module use $GDAS_MODULE_USE
-module load GDAS/$TARGET
-echo "---------------------------------------------------" >> $outfile
-rm -rf log.ctest
-ctest -R gdasapp --output-on-failure &>> log.ctest
-ctest_status=$?
-npassed=$(cat log.ctest | grep "tests passed")
-if [ $ctest_status -eq 0 ]; then
-  echo "Tests:                                 *SUCCESS*" >> $outfile
-  echo "Tests: Completed at $(date)" >> $outfile
-  echo "Tests: $npassed" >> $outfile
-else
-  echo "Tests:                                  *Failed*" >> $outfile
-  echo "Tests: Failed at $(date)" >> $outfile
-  echo "Tests: $npassed" >> $outfile
-  cat log.ctest | grep "(Failed)" >> $outfile
-  echo "Tests: see output at $repodir/build/log.ctest" >> $outfile
-fi
-echo '```' >> $outfile
-exit $ctest_status
+# run pytests
+# TODO add pytest framework
