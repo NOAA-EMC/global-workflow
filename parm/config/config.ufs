@@ -265,17 +265,25 @@ if [[ "${skip_cice6}" == "false" ]]; then
   case "${cice6_res}" in
     "500")
       export ntasks_cice6=4
+      export NX_GLB="72"
+      export NY_GLB="35"
+      export cice_processor_shape="slenderX1"
       ;;
     "100")
       export ntasks_cice6=10
       echo "FATAL ERROR: Unsupported CICE6 resolution = ${cice6_res}, ABORT!"
+      exit 1
       ;;
     "050")
       export ntasks_cice6=30
       echo "FATAL ERROR: Unsupported CICE6 resolution = ${cice6_res}, ABORT!"
+      exit 1
       ;;
     "025")
       export ntasks_cice6=120
+      export NX_GLB="1440"
+      export NY_GLB="1080"
+      export cice_processor_shape="slenderX2"
       ;;
     *)
       echo "FATAL ERROR: Unsupported CICE6 resolution = ${cice6_res}, ABORT!"
