@@ -12,6 +12,13 @@
 
 FV3_model_configure(){
 
+local restile=$(echo ${CASE} |cut -c2-)
+local ichunk2d=$((4*restile))
+local jchunk2d=$((2*restile))
+local ichunk3d=$((4*restile))
+local jchunk3d=$((2*restile))
+local kchunk3d=1
+
 rm -f model_configure
 cat >> model_configure <<EOF
 start_year:              ${tPDY:0:4}

@@ -1,5 +1,7 @@
 #! /usr/bin/env bash
 
+echo "BEGIN: config.ice"
+
 case "${ICERES}" in
   "025")
     export NX_GLB="1440"
@@ -15,3 +17,5 @@ case "${ICERES}" in
     exit 1
     ;;
 esac
+
+echo "END: config.ice"

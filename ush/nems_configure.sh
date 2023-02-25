@@ -7,7 +7,7 @@
 ## $cpl** switches.
 ##
 ## This is a child script of modular
-## forecast script. This script is definition only
+## forecast script. This script is definition only (Is it? There is nothing defined here being used outside this script.)
 #####
 writing_nems_configure()
 {
@@ -17,51 +17,22 @@ if [ -e $SCRIPTDIR/nems.configure ]; then
 fi
 
 # Setup nems.configure
-DumpFields=${NEMSDumpFields:-false}
-cap_dbug_flag=${cap_dbug_flag:-0}
+local DumpFields=${NEMSDumpFields:-false}
+local cap_dbug_flag=${cap_dbug_flag:-0}
 # Determine "cmeps_run_type" based on the availability of the mediator restart file
 # If it is a warm_start, we already copied the mediator restart to DATA, if it was present
 # If the mediator restart was not present, despite being a "warm_start", we put out a WARNING
 # in forecast_postdet.sh
 if [[ -f "${DATA}/ufs.cpld.cpl.r.nc" ]]; then
-  cmeps_run_type='continue'
+  local cmeps_run_type='continue'
 else
-  cmeps_run_type='startup'
+  local cmeps_run_type='startup'
 fi
-restart_interval=${restart_interval:-3024000}    # Interval in seconds to write restarts
-
-ATM_model=${ATM_model:-'fv3'}
-OCN_model=${OCN_model:-'mom6'}
-ICE_model=${ICE_model:-'cice'}
-WAV_model=${WAV_model:-'ww3'}
-CHM_model=${CHM_model:-'gocart'}
-
-ATMPETS=${ATMPETS:-8}
-MEDPETS=${MEDPETS:-8}
-OCNPETS=${OCNPETS:-0}
-ICEPETS=${ICEPETS:-0}
-WAVPETS=${WAVPETS:-0}
-CHMPETS=${CHMPETS:-${ATMPETS}}
-
-USE_MOMMESH=${USE_MOMMESH:-"true"}
-MESH_OCN_ICE=${MESH_OCN_ICE:-"mesh.mx${ICERES}.nc"}
-
-case "${OCNRES}" in
-  "500") EPS_IMESH="4.0e-1";;
-  "100") EPS_IMESH="2.5e-1";;
-  *) EPS_IMESH="1.0e-1";;
-esac
+local res_int=${restart_interval:-3024000}    # Interval in seconds to write restarts
 
 rm -f $DATA/nems.configure
 
-med_petlist_bounds=${med_petlist_bounds:-"0 $(( $MEDPETS-1 ))"}
-atm_petlist_bounds=${atm_petlist_bounds:-"0 $(( $ATMPETS-1 ))"}
-ocn_petlist_bounds=${ocn_petlist_bounds:-"$ATMPETS $(( $ATMPETS+$OCNPETS-1 ))"}
-ice_petlist_bounds=${ice_petlist_bounds:-"$(( $ATMPETS+$OCNPETS )) $(( $ATMPETS+$OCNPETS+$ICEPETS-1 ))"}
-wav_petlist_bounds=${wav_petlist_bounds:-"$(( $ATMPETS+$OCNPETS+$ICEPETS )) $(( $ATMPETS+$OCNPETS+$ICEPETS+$WAVPETS-1 ))"}
-chm_petlist_bounds=${chm_petlist_bounds:-"0 $(( $CHMPETS-1 ))"}
-
-esmf_logkind=${esmf_logkind:-"ESMF_LOGKIND_MULTI"} #options: ESMF_LOGKIND_MULTI_ON_ERROR, ESMF_LOGKIND_MULTI, ESMF_LOGKIND_NONE
+local esmf_logkind=${esmf_logkind:-"ESMF_LOGKIND_MULTI"} #options: ESMF_LOGKIND_MULTI_ON_ERROR, ESMF_LOGKIND_MULTI, ESMF_LOGKIND_NONE
 
 # Copy the selected template into run directory
 infile="$SCRIPTDIR/nems.configure.$confignamevarfornems.IN"
@@ -71,8 +42,12 @@ else
   echo "FATAL ERROR: nem.configure template '$infile' does not exist!"
   exit 1
 fi
+
+local atm_petlist_bounds="0 $(( $ATMPETS-1 ))"
+local med_petlist_bounds="0 $(( $MEDPETS-1 ))"
+
 sed -i -e "s;@\[med_model\];cmeps;g" tmp1
-sed -i -e "s;@\[atm_model\];$ATM_model;g" tmp1
+sed -i -e "s;@\[atm_model\];fv3;g" tmp1
 sed -i -e "s;@\[med_petlist_bounds\];$med_petlist_bounds;g" tmp1
 sed -i -e "s;@\[atm_petlist_bounds\];$atm_petlist_bounds;g" tmp1
 sed -i -e "s;@\[esmf_logkind\];$esmf_logkind;g" tmp1
@@ -82,39 +57,64 @@ if [ $cpl = ".true." ]; then
 fi
 
 if [ $cplflx = .true. ]; then
-  if [ $restart_interval  -gt 0 ]; then
-    restart_interval_nems=$restart_interval
+  if [ $res_int  -gt 0 ]; then
+    local restart_interval_nems=$res_int
   else
-    restart_interval_nems=$FHMAX
+    local restart_interval_nems=$FHMAX
   fi
-  sed -i -e "s;@\[ocn_model\];$OCN_model;g" tmp1
+
+  case "${OCNRES}" in
+    "500") local eps_imesh="4.0e-1";;
+    "100") local eps_imesh="2.5e-1";;
+    *) local eps_imesh="1.0e-1";;
+  esac
+
+  local use_coldstart=${use_coldstart:-".false."}
+  local use_mommesh=${USE_MOMMESH:-"true"}
+  local restile=$(echo ${CASE} |cut -c2-)
+  local ocn_petlist_bounds="$ATMPETS $(( $ATMPETS+$OCNPETS-1 ))"
+
+  sed -i -e "s;@\[ocn_model\];mom6;g" tmp1
   sed -i -e "s;@\[ocn_petlist_bounds\];$ocn_petlist_bounds;g" tmp1
   sed -i -e "s;@\[DumpFields\];$DumpFields;g" tmp1
   sed -i -e "s;@\[cap_dbug_flag\];$cap_dbug_flag;g" tmp1
   sed -i -e "s;@\[use_coldstart\];$use_coldstart;g" tmp1
   sed -i -e "s;@\[RUNTYPE\];$cmeps_run_type;g" tmp1
   sed -i -e "s;@\[CPLMODE\];$cplmode;g" tmp1
-  sed -i -e "s;@\[restart_interval\];$restart_interval;g" tmp1
+  sed -i -e "s;@\[restart_interval\];$res_int;g" tmp1
   sed -i -e "s;@\[coupling_interval_fast_sec\];$CPL_FAST;g" tmp1
   sed -i -e "s;@\[RESTART_N\];$restart_interval_nems;g" tmp1
-  sed -i -e "s;@\[use_mommesh\];$USE_MOMMESH;g" tmp1
-  sed -i -e "s;@\[eps_imesh\];$EPS_IMESH;g" tmp1
-  sed -i -e "s;@\[ATMTILESIZE\];$RESTILE;g" tmp1
+  sed -i -e "s;@\[use_mommesh\];$use_mommesh;g" tmp1
+  sed -i -e "s;@\[eps_imesh\];$eps_imesh;g" tmp1
+  sed -i -e "s;@\[ATMTILESIZE\];$restile;g" tmp1
 fi
+
 if [ $cplwav = .true. ]; then
+
+  local wav_petlist_bounds="$(( $ATMPETS+$OCNPETS+$ICEPETS )) $(( $ATMPETS+$OCNPETS+$ICEPETS+$WAVPETS-1 ))"
+
   sed -i -e "s;@\[wav_model\];ww3;g" tmp1
   sed -i -e "s;@\[wav_petlist_bounds\];$wav_petlist_bounds;g" tmp1
   sed -i -e "s;@\[MESH_WAV\];$MESH_WAV;g" tmp1
   sed -i -e "s;@\[MULTIGRID\];$waveMULTIGRID;g" tmp1
 fi
+
 if [ $cplice = .true. ]; then
-  sed -i -e "s;@\[ice_model\];$ICE_model;g" tmp1
+
+  local mesh_ocn_ice=${MESH_OCN_ICE:-"mesh.mx${ICERES}.nc"}
+  local ice_petlist_bounds="$(( $ATMPETS+$OCNPETS )) $(( $ATMPETS+$OCNPETS+$ICEPETS-1 ))"
+
+  sed -i -e "s;@\[ice_model\];cice6;g" tmp1
   sed -i -e "s;@\[ice_petlist_bounds\];$ice_petlist_bounds;g" tmp1
-  sed -i -e "s;@\[MESH_OCN_ICE\];$MESH_OCN_ICE;g" tmp1
+  sed -i -e "s;@\[MESH_OCN_ICE\];$mesh_ocn_ice;g" tmp1
   sed -i -e "s;@\[FHMAX\];$FHMAX_GFS;g" tmp1
 fi
+
 if [ $cplchm = .true. ]; then
-  sed -i -e "s;@\[chm_model\];$CHM_model;g" tmp1
+
+  local chm_petlist_bounds="0 $(( $CHMPETS-1 ))"
+
+  sed -i -e "s;@\[chm_model\];gocart;g" tmp1
   sed -i -e "s;@\[chm_petlist_bounds\];$chm_petlist_bounds;g" tmp1
   sed -i -e "s;@\[coupling_interval_fast_sec\];$CPL_FAST;g" tmp1
 fi

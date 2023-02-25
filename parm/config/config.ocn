@@ -1,7 +1,6 @@
 #! /usr/bin/env bash
 
-# OCNRES is currently being set in config.base
- case "$CASE" in
-     "C48") export OCNTIM=3600;;
-     *) export OCNTIM=1800;;
- esac
+echo "BEGIN: config.ocn"
+
+echo "END: config.ocn"
+
