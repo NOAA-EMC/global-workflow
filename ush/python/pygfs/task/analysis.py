@@ -22,13 +22,20 @@ class Analysis(Task):
     """
 
     def __init__(self, config: Dict[str, Any]) -> None:
-        super().__init__(config, ntiles=6)
+        super().__init__(config)
+        self.config.ntiles = 6
 
     def initialize(self) -> None:
         super().initialize()
         # all analyses need to stage observations
         obs_dict = self.get_obs_dict()
         FileHandler(obs_dict).sync()
+
+    def initialize_bias(self) -> None:
+        super().initialize()
+        # all analyses need to stage observations
+        bias_dict = self.get_bias_dict()
+        FileHandler(bias_dict).sync()
 
     @logit(logger)
     def get_obs_dict(self: Task) -> Dict[str, Any]:
@@ -47,6 +54,7 @@ class Analysis(Task):
             a dictionary containing the list of observation files to copy for FileHandler
         """
         obs_list_config = YAMLFile(path=self.config['OBS_LIST'])
+
         # get observers from master dictionary
         observers = obs_list_config['observers']
         copylist = []
@@ -59,6 +67,48 @@ class Analysis(Task):
             'copy': copylist
         }
         return obs_dict
+
+    @logit(logger)
+    def get_bias_dict(self: Task) -> Dict[str, Any]:
+        """Compile a dictionary of observation files to copy
+
+        This method uses the OBS_LIST configuration variable to generate a dictionary
+        from a list of YAML files that specify what observation bias correction files
+        are to be copied to the run directory from the observation input directory
+
+        Parameters
+        ----------
+
+        Returns
+        ----------
+        obs_dict: Dict
+            a dictionary containing the list of observation files to copy for FileHandler
+        """
+        obs_list_config = YAMLFile(path=self.config['OBS_LIST'])
+        # get observers from master dictionary
+        observers = obs_list_config['observers']
+        copylist = []
+        for ob in observers:
+            if 'obs bias' in ob.keys():
+                obfile = ob['obs bias']['input file']
+                basename = os.path.basename(obfile)
+                copylist.append([os.path.join(self.task_config.comin_ges_atm, basename), obfile])
+
+                obfile2 = obfile.replace('satbias', 'satbias_cov')
+                basename = os.path.basename(obfile2)
+                copylist.append([os.path.join(self.task_config.comin_ges_atm, basename), obfile2])
+
+                obfile2 = obfile.replace('satbias', 'tlapse')
+                obfile2 = obfile2.replace('nc4', 'txt')
+                basename = os.path.basename(obfile2)
+                copylist.append([os.path.join(self.task_config.comin_ges_atm, basename), obfile2])
+
+                obs_dict = {
+                    'mkdir': [os.path.join(self.runtime_config['DATA'], 'bc')],
+                    'copy': copylist
+        }
+        return obs_dict
+
 
     @logit(logger)
     def add_fv3_increments(self, inc_file_tmpl: str, bkg_file_tmpl: str, incvars: List) -> None:

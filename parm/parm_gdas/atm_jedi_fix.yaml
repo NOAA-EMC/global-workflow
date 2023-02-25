@@ -1,0 +1,11 @@
+mkdir:
+- !ENV ${DATA}/fv3jedi
+copy:
+- - !ENV ${FV3JEDI_FIX}/fv3jedi/fv3files/akbk$(npz).nc4
+  - !ENV ${DATA}/fv3jedi/akbk.nc4
+- - !ENV ${FV3JEDI_FIX}/fv3jedi/fv3files/fmsmpp.nml
+  - !ENV ${DATA}/fv3jedi/fmsmpp.nml
+- - !ENV ${FV3JEDI_FIX}/fv3jedi/fv3files/field_table_gfdl
+  - !ENV ${DATA}/fv3jedi/field_table
+- - !ENV ${FV3JEDI_FIX}/fv3jedi/fieldmetadata/gfs-restart.yaml
+  - !ENV ${DATA}/fv3jedi/gfs-restart.yaml

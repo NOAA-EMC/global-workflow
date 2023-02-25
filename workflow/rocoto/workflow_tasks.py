@@ -17,6 +17,7 @@ class Tasks:
                    'earc', 'ecen', 'echgres', 'ediag', 'efcs',
                    'eobs', 'eomg', 'epos', 'esfc', 'eupd',
                    'atmensanalprep', 'atmensanalrun', 'atmensanalpost',
+                   'atmanlinit', 'atmanlrun', 'atmanlfinal',
                    'aeroanlinit', 'aeroanlrun', 'aeroanlfinal',
                    'fcst', 'post', 'ocnpost', 'vrfy', 'metp',
                    'postsnd', 'awips', 'gempak',
@@ -449,6 +450,50 @@ class Tasks:
 
         resources = self.get_resource('atmanalpost')
         task = create_wf_task('atmanalpost', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
+    def atmanlinit(self):
+
+        dump_suffix = self._base["DUMP_SUFFIX"]
+        dmpdir = self._base["DMPDIR"]
+
+        deps = []
+        dep_dict = {'type': 'metatask', 'name': 'gdaspost', 'offset': '-06:00:00'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        data = f'&ROTDIR;/gdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmf009.nc'
+        dep_dict = {'type': 'data', 'data': data, 'offset': '-06:00:00'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        data = f'{dmpdir}/{self.cdump}{dump_suffix}.@Y@m@d/@H/atmos/{self.cdump}.t@Hz.updated.status.tm00.bufr_d'
+        dep_dict = {'type': 'data', 'data': data}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+        resources = self.get_resource('atmanlinit')
+        task = create_wf_task('atmanlinit', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+        return task
+
+    def atmanlrun(self):
+
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}atmanlinit'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        resources = self.get_resource('atmanlrun')
+        task = create_wf_task('atmanlrun', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+
+        return task
+
+    def atmanlfinal(self):
+
+        deps = []
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}atmanlrun'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
+
+        resources = self.get_resource('atmanlfinal')
+        task = create_wf_task('atmanlfinal', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
 
         return task
 
