@@ -74,7 +74,7 @@ class AtmAnalysis(Analysis):
 
         # stage bias correction files
         super().initialize_bias()
-        
+
         # stage CRTM fix files
         crtm_fix_list_path = os.path.join(self.task_config['HOMEgfs'], 'parm', 'parm_gdas', 'atm_crtm_coeff.yaml')
         crtm_fix_list = YAMLFile(path=crtm_fix_list_path)
@@ -161,27 +161,27 @@ class AtmAnalysis(Analysis):
         # ---- NOTE below is 'temporary', eventually we will not be using FMS RESTART formatted files
         # ---- all of the rest of this method will need to be changed but requires model and JEDI changes
         # ---- copy RESTART fv_tracer files for future reference
-##        fms_bkg_file_template = os.path.join(self.task_config.comin_ges_atm, 'RESTART', f'{self.task_config.cdate_fv3}.fv_tracer.res.tileX.nc')
-##        bkglist = []
-##        for itile in range(1, self.task_config.ntiles + 1):
-##            bkg_path = fms_bkg_file_template.replace('tileX', f'tile{itile}')
-##            dest = os.path.join(self.task_config['COMOUTatmos'], f'atmges.{os.path.basename(bkg_path)}')
-##            bkglist.append([bkg_path, dest])
-##        FileHandler({'copy': bkglist}).sync()
+        # fms_bkg_file_template = os.path.join(self.task_config.comin_ges_atm, 'RESTART', f'{self.task_config.cdate_fv3}.fv_tracer.res.tileX.nc')
+        # bkglist = []
+        # for itile in range(1, self.task_config.ntiles + 1):
+        # bkg_path = fms_bkg_file_template.replace('tileX', f'tile{itile}')
+        # dest = os.path.join(self.task_config['COMOUTatmos'], f'atmges.{os.path.basename(bkg_path)}')
+        # bkglist.append([bkg_path, dest])
+        # FileHandler({'copy': bkglist}).sync()
 
         # ---- add increments to RESTART files
-##        logger.info('Adding increments to RESTART files')
-##        self._add_fms_cube_sphere_increments()
+        # logger.info('Adding increments to RESTART files')
+        # self._add_fms_cube_sphere_increments()
 
         # ---- move increments to ROTDIR
-##        logger.info('Moving increments to ROTDIR')
-##        fms_inc_file_template = os.path.join(self.task_config['DATA'], 'anl', f'atminc.{self.task_config.cdate_fv3}.fv_tracer.res.tileX.nc')
-##        inclist = []
-##        for itile in range(1, self.task_config.ntiles + 1):
-##            inc_path = fms_inc_file_template.replace('tileX', f'tile{itile}')
-##            dest = os.path.join(self.task_config['COMOUTatmos'], os.path.basename(inc_path))
-##            inclist.append([inc_path, dest])
-##        FileHandler({'copy': inclist}).sync()
+        # logger.info('Moving increments to ROTDIR')
+        # fms_inc_file_template = os.path.join(self.task_config['DATA'], 'anl', f'atminc.{self.task_config.cdate_fv3}.fv_tracer.res.tileX.nc')
+        # inclist = []
+        # for itile in range(1, self.task_config.ntiles + 1):
+        #     inc_path = fms_inc_file_template.replace('tileX', f'tile{itile}')
+        #     dest = os.path.join(self.task_config['COMOUTatmos'], os.path.basename(inc_path))
+        #     inclist.append([inc_path, dest])
+        # FileHandler({'copy': inclist}).sync()
 
         # ---- copy increments to ROTDIR
         cdate_inc = self.task_config.cdate_fv3.replace('.', '_')
@@ -248,8 +248,8 @@ class AtmAnalysis(Analysis):
         bkglist.append([os.path.join(rst_dir, basename), os.path.join(task_config['DATA'], 'bkg', basename)])
         basename = f'{task_config.cdate_fv3}.fv_core.res.nc'
         bkglist.append([os.path.join(rst_dir, basename), os.path.join(task_config['DATA'], 'bkg', basename)])
-        basename_cadat  = f'{task_config.cdate_fv3}.ca_data.tileX.nc'
-        basename_core   = f'{task_config.cdate_fv3}.fv_core.res.tileX.nc'
+        basename_cadat = f'{task_config.cdate_fv3}.ca_data.tileX.nc'
+        basename_core = f'{task_config.cdate_fv3}.fv_core.res.tileX.nc'
         basename_srfwnd = f'{task_config.cdate_fv3}.fv_srf_wnd.res.tileX.nc'
         basename_tracer = f'{task_config.cdate_fv3}.fv_tracer.res.tileX.nc'
         basename_phydat = f'{task_config.cdate_fv3}.phy_data.tileX.nc'

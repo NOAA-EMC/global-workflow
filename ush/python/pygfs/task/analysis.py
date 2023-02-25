@@ -106,9 +106,8 @@ class Analysis(Task):
                 obs_dict = {
                     'mkdir': [os.path.join(self.runtime_config['DATA'], 'bc')],
                     'copy': copylist
-        }
+                }
         return obs_dict
-
 
     @logit(logger)
     def add_fv3_increments(self, inc_file_tmpl: str, bkg_file_tmpl: str, incvars: List) -> None:
