@@ -23,8 +23,8 @@ else
 fi
 
 # Get correct MPI options for NPROC and grid
-local cice_processor_shape=${cice_processor_shape:-'slenderX2'}
-local shape=${cice_processor_shape#${cice_processor_shape%?}}
+local processor_shape=${cice6_processor_shape:-'slenderX2'}
+local shape=${processor_shape#${processor_shape%?}}
 local NPX=$(( ICEPETS / shape )) #number of processors in x direction
 local NPY=$(( ICEPETS / NPX ))   #number of processors in y direction
 if (( $(( NX_GLB % NPX )) == 0 )); then
@@ -37,10 +37,7 @@ if (( $(( NY_GLB % NPY )) == 0 )); then
 else
   local block_size_y=$(( (NY_GLB / NPY) + 1 ))
 fi
-local max_blocks=$(( (NX_GLB * NY_GLB) / (block_size_x * block_size_y * ICEPETS) ))
-if (( max_blocks == 0 )) || (( max_blocks % 2 != 0 )); then
-  local max_blocks=-1
-fi
+local max_blocks=-1
 
 cat > ice_in <<eof
 &setup_nml
@@ -210,7 +207,7 @@ cat > ice_in <<eof
    block_size_x      = ${block_size_x}
    block_size_y      = ${block_size_y}
    max_blocks        = ${max_blocks}
-   processor_shape   = '${cice_processor_shape}'
+   processor_shape   = '${processor_shape}'
    distribution_type = 'cartesian'
    distribution_wght = 'latitude'
    ew_boundary_type  = 'cyclic'
