@@ -10,7 +10,10 @@ apply_shellcheck() {
   set +e
   shellcheck -i "${code}" "${filename}" -f diff > "${patch}"
   set -e
-  patch_size=$(wc -l ${patch} | awk '{print $1}')
+  # shellcheck disable=SC2312
+  # Ignore the error that masks the return value
+  patch_size=$(wc -l "${patch}" | awk '{print $1}')
+  # shellcheck disable=
   if [[ "${patch_size}" -gt 0 ]]; then
     echo "Apply patch for ${code} on ${filename}"
     git apply "${patch}"
