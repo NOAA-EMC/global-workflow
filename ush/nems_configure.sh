@@ -12,8 +12,8 @@
 writing_nems_configure()
 {
 echo "SUB ${FUNCNAME[0]}: parsing_nems_configure begins"
-if [ -e $SCRIPTDIR/nems.configure ]; then
-  rm -f $SCRIPTDIR/nems.configure
+if [[ -e ${SCRIPTDIR}/nems.configure ]]; then
+  rm -f "${SCRIPTDIR}"/nems.configure
 fi
 
 # Setup nems.configure
@@ -30,37 +30,37 @@ else
 fi
 local res_int=${restart_interval:-3024000}    # Interval in seconds to write restarts
 
-rm -f $DATA/nems.configure
+rm -f "${DATA}"/nems.configure
 
 local esmf_logkind=${esmf_logkind:-"ESMF_LOGKIND_MULTI"} #options: ESMF_LOGKIND_MULTI_ON_ERROR, ESMF_LOGKIND_MULTI, ESMF_LOGKIND_NONE
 
 # Copy the selected template into run directory
-infile="$SCRIPTDIR/nems.configure.$confignamevarfornems.IN"
-if [ -s $infile ]; then
-  cp $infile tmp1
+infile="${SCRIPTDIR}/nems.configure.${confignamevarfornems}.IN"
+if [[ -s ${infile} ]]; then
+  cp "${infile}" tmp1
 else
-  echo "FATAL ERROR: nem.configure template '$infile' does not exist!"
+  echo "FATAL ERROR: nem.configure template '${infile}' does not exist!"
   exit 1
 fi
 
-local atm_petlist_bounds="0 $(( $ATMPETS-1 ))"
-local med_petlist_bounds="0 $(( $MEDPETS-1 ))"
+local atm_petlist_bounds="0 $(( ${ATMPETS}-1 ))"
+local med_petlist_bounds="0 $(( ${MEDPETS}-1 ))"
 
 sed -i -e "s;@\[med_model\];cmeps;g" tmp1
 sed -i -e "s;@\[atm_model\];fv3;g" tmp1
-sed -i -e "s;@\[med_petlist_bounds\];$med_petlist_bounds;g" tmp1
-sed -i -e "s;@\[atm_petlist_bounds\];$atm_petlist_bounds;g" tmp1
-sed -i -e "s;@\[esmf_logkind\];$esmf_logkind;g" tmp1
+sed -i -e "s;@\[med_petlist_bounds\];${med_petlist_bounds};g" tmp1
+sed -i -e "s;@\[atm_petlist_bounds\];${atm_petlist_bounds};g" tmp1
+sed -i -e "s;@\[esmf_logkind\];${esmf_logkind};g" tmp1
 
-if [ $cpl = ".true." ]; then
-  sed -i -e "s;@\[coupling_interval_slow_sec\];$CPL_SLOW;g" tmp1
+if [[ ${cpl} = ".true." ]]; then
+  sed -i -e "s;@\[coupling_interval_slow_sec\];${CPL_SLOW};g" tmp1
 fi
 
-if [ $cplflx = .true. ]; then
-  if [ $res_int  -gt 0 ]; then
-    local restart_interval_nems=$res_int
+if [[ ${cplflx} = .true. ]]; then
+  if [[ ${res_int}  -gt 0 ]]; then
+    local restart_interval_nems=${res_int}
   else
-    local restart_interval_nems=$FHMAX
+    local restart_interval_nems=${FHMAX}
   fi
 
   case "${OCNRES}" in
@@ -71,59 +71,59 @@ if [ $cplflx = .true. ]; then
 
   local use_coldstart=${use_coldstart:-".false."}
   local use_mommesh=${USE_MOMMESH:-"true"}
-  local restile=$(echo ${CASE} |cut -c2-)
-  local ocn_petlist_bounds="$ATMPETS $(( $ATMPETS+$OCNPETS-1 ))"
+  local restile=$(echo "${CASE}" |cut -c2-)
+  local ocn_petlist_bounds="${ATMPETS} $(( ${ATMPETS}+${OCNPETS}-1 ))"
 
   sed -i -e "s;@\[ocn_model\];mom6;g" tmp1
-  sed -i -e "s;@\[ocn_petlist_bounds\];$ocn_petlist_bounds;g" tmp1
-  sed -i -e "s;@\[DumpFields\];$DumpFields;g" tmp1
-  sed -i -e "s;@\[cap_dbug_flag\];$cap_dbug_flag;g" tmp1
-  sed -i -e "s;@\[use_coldstart\];$use_coldstart;g" tmp1
-  sed -i -e "s;@\[RUNTYPE\];$cmeps_run_type;g" tmp1
-  sed -i -e "s;@\[CPLMODE\];$cplmode;g" tmp1
-  sed -i -e "s;@\[restart_interval\];$res_int;g" tmp1
-  sed -i -e "s;@\[coupling_interval_fast_sec\];$CPL_FAST;g" tmp1
-  sed -i -e "s;@\[RESTART_N\];$restart_interval_nems;g" tmp1
-  sed -i -e "s;@\[use_mommesh\];$use_mommesh;g" tmp1
-  sed -i -e "s;@\[eps_imesh\];$eps_imesh;g" tmp1
-  sed -i -e "s;@\[ATMTILESIZE\];$restile;g" tmp1
+  sed -i -e "s;@\[ocn_petlist_bounds\];${ocn_petlist_bounds};g" tmp1
+  sed -i -e "s;@\[DumpFields\];${DumpFields};g" tmp1
+  sed -i -e "s;@\[cap_dbug_flag\];${cap_dbug_flag};g" tmp1
+  sed -i -e "s;@\[use_coldstart\];${use_coldstart};g" tmp1
+  sed -i -e "s;@\[RUNTYPE\];${cmeps_run_type};g" tmp1
+  sed -i -e "s;@\[CPLMODE\];${cplmode};g" tmp1
+  sed -i -e "s;@\[restart_interval\];${res_int};g" tmp1
+  sed -i -e "s;@\[coupling_interval_fast_sec\];${CPL_FAST};g" tmp1
+  sed -i -e "s;@\[RESTART_N\];${restart_interval_nems};g" tmp1
+  sed -i -e "s;@\[use_mommesh\];${use_mommesh};g" tmp1
+  sed -i -e "s;@\[eps_imesh\];${eps_imesh};g" tmp1
+  sed -i -e "s;@\[ATMTILESIZE\];${restile};g" tmp1
 fi
 
-if [ $cplwav = .true. ]; then
+if [[ ${cplwav} = .true. ]]; then
 
-  local wav_petlist_bounds="$(( $ATMPETS+$OCNPETS+$ICEPETS )) $(( $ATMPETS+$OCNPETS+$ICEPETS+$WAVPETS-1 ))"
+  local wav_petlist_bounds="$(( ${ATMPETS}+${OCNPETS}+${ICEPETS} )) $(( ${ATMPETS}+${OCNPETS}+${ICEPETS}+${WAVPETS}-1 ))"
 
   sed -i -e "s;@\[wav_model\];ww3;g" tmp1
-  sed -i -e "s;@\[wav_petlist_bounds\];$wav_petlist_bounds;g" tmp1
-  sed -i -e "s;@\[MESH_WAV\];$MESH_WAV;g" tmp1
-  sed -i -e "s;@\[MULTIGRID\];$waveMULTIGRID;g" tmp1
+  sed -i -e "s;@\[wav_petlist_bounds\];${wav_petlist_bounds};g" tmp1
+  sed -i -e "s;@\[MESH_WAV\];${MESH_WAV};g" tmp1
+  sed -i -e "s;@\[MULTIGRID\];${waveMULTIGRID};g" tmp1
 fi
 
-if [ $cplice = .true. ]; then
+if [[ ${cplice} = .true. ]]; then
 
   local mesh_ocn_ice=${MESH_OCN_ICE:-"mesh.mx${ICERES}.nc"}
-  local ice_petlist_bounds="$(( $ATMPETS+$OCNPETS )) $(( $ATMPETS+$OCNPETS+$ICEPETS-1 ))"
+  local ice_petlist_bounds="$(( ${ATMPETS}+${OCNPETS} )) $(( ${ATMPETS}+${OCNPETS}+${ICEPETS}-1 ))"
 
   sed -i -e "s;@\[ice_model\];cice6;g" tmp1
-  sed -i -e "s;@\[ice_petlist_bounds\];$ice_petlist_bounds;g" tmp1
-  sed -i -e "s;@\[MESH_OCN_ICE\];$mesh_ocn_ice;g" tmp1
-  sed -i -e "s;@\[FHMAX\];$FHMAX_GFS;g" tmp1
+  sed -i -e "s;@\[ice_petlist_bounds\];${ice_petlist_bounds};g" tmp1
+  sed -i -e "s;@\[MESH_OCN_ICE\];${mesh_ocn_ice};g" tmp1
+  sed -i -e "s;@\[FHMAX\];${FHMAX_GFS};g" tmp1
 fi
 
-if [ $cplchm = .true. ]; then
+if [[ ${cplchm} = .true. ]]; then
 
-  local chm_petlist_bounds="0 $(( $CHMPETS-1 ))"
+  local chm_petlist_bounds="0 $(( ${CHMPETS}-1 ))"
 
   sed -i -e "s;@\[chm_model\];gocart;g" tmp1
-  sed -i -e "s;@\[chm_petlist_bounds\];$chm_petlist_bounds;g" tmp1
-  sed -i -e "s;@\[coupling_interval_fast_sec\];$CPL_FAST;g" tmp1
+  sed -i -e "s;@\[chm_petlist_bounds\];${chm_petlist_bounds};g" tmp1
+  sed -i -e "s;@\[coupling_interval_fast_sec\];${CPL_FAST};g" tmp1
 fi
 
 mv tmp1 nems.configure
 
 echo "$(cat nems.configure)"
 
-if [ $cplflx = .true. ]; then
+if [[ ${cplflx} = .true. ]]; then
 
 #Create other CMEPS mediator related files
 cat > pio_in << EOF
@@ -180,8 +180,8 @@ echo "$(cat med_modelio.nml)"
 
 fi
 
-cp $HOMEgfs/sorc/ufs_model.fd/tests/parm/fd_nems.yaml fd_nems.yaml
+cp "${HOMEgfs}"/sorc/ufs_model.fd/tests/parm/fd_nems.yaml fd_nems.yaml
 
-echo "SUB ${FUNCNAME[0]}: Nems configured for $confignamevarfornems"
+echo "SUB ${FUNCNAME[0]}: Nems configured for ${confignamevarfornems}"
 
 }
