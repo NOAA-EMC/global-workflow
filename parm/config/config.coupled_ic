@@ -32,6 +32,10 @@ case "${CASE}" in
     export CPL_OCNIC=HR1
     export CPL_WAVIC=HR1
     ;;
+  *)
+    echo "Unrecognized case: ${1}"
+    exit 1
+    ;;
 esac
 
 echo "END: config.coupled_ic"
