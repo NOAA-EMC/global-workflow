@@ -16,7 +16,7 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "ocnanalprep" -c "base ocnanal ocnanal
 export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/ocean}
 
 # Add UFSDA to PYTHONPATH
-export PYTHONPATH=${HOMEgfs}/sorc/gdas.cd/ush/:${PYTHONPATH}
+export PYTHONPATH=${HOMEgfs}/sorc/gdas.cd/ush/:${HOMEgfs}/sorc/gdas.cd/ush/eva:${PYTHONPATH}
 
 ###############################################################
 # Run relevant script
