@@ -2,6 +2,8 @@
 
 set -ex
 
+GH_EXEC=/home/Terry.McGuinness/bin/gh
+
 my_dir="$( cd "$( dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd )"
 
 # ==============================================================================
@@ -47,26 +49,29 @@ case ${TARGET} in
     ;;
 esac
 
+#repo_url="https://github.com/NOAA-EMC/global-workflow.git"
+# using Terrence.McGuinness-NOAA for development with GitHub interations
+repo_url="https://github.com/TerrenceMcGuinness-NOAA/global-workflow.git"
+
 # ==============================================================================
 # pull on the repo and get list of open PRs
 cd $GFS_CI_ROOT/repo
-CI_LABEL="${GFS_CI_HOST}-RT"
+git clone $repo_url
+cd $GFS_CI_ROOT/repo/global-workflow
+CI_LABEL="${GFS_CI_HOST}-GW-RT"
 echo "Open PRs:"
-gh pr list --label "$CI_LABEL" --state "open"
-gh pr list --label "$CI_LABEL" --state "open" | awk '{print $1;}' > $GFS_CI_ROOT/open_pr_list
+$GH_EXEC pr list --repo $repo_url --label "$CI_LABEL" --state "open"
+$GH_EXEC pr list --label "$CI_LABEL" --state "open" | awk '{print $1;}' > $GFS_CI_ROOT/open_pr_list
 open_pr_list=$(cat $GFS_CI_ROOT/open_pr_list)
 echo "open_pr_list: $open_pr_list"
 
 # ==============================================================================
 # clone, checkout, build, test, etc.
-#repo_url="https://github.com/NOAA-EMC/global-workflow.git"
-# using Terrence.McGuinness-NOAA for development with GitHub interations
-repo_url="https://github.com/Terrence.McGuinness/global-workflow.git"
-# loop through all open PRs
+# loop throu all open PRs
 for pr in $open_pr_list; do
-  gh pr edit $pr --remove-label $CI_LABEL --add-label ${CI_LABEL}-Running
+  $GH_EXEC pr edit --repo $repo_url $pr --remove-label $CI_LABEL --add-label ${CI_LABEL}-Running
   echo "Processing Pull Request #${pr}"
-  mkdir -p $GDAS_CI_ROOT/PR/$pr
+  mkdir -p $GFS_CI_ROOT/PR/$pr
   cd $GFS_CI_ROOT/PR/$pr
 
   # clone copy of repo
@@ -74,12 +79,11 @@ for pr in $open_pr_list; do
   cd global-workflow
 
   # checkout pull request
-  git pull
-  gh pr checkout $pr
+  $GH_EXEC pr checkout $pr --repo $repo_url
 
   # get commit hash
   commit=$(git log --pretty=format:'%h' -n 1)
-  echo "$commit" > $GDAS_CI_ROOT/PR/$pr/commit
+  echo "$commit" > $GFS_CI_ROOT/PR/$pr/commit
 
   # load modules
   case ${TARGET} in
@@ -96,21 +100,22 @@ for pr in $open_pr_list; do
       ;;
   esac
 
+  $GH_EXEC pr edit --repo $repo_url $pr --remove-label ${CI_LABEL}-Running --add-label ${CI_LABEL}
   echo "pull open PR update lable and clone build test completed"
   exit
 
   # run build and testing command
   $my_dir/run_ci.sh -d $GFS_CI_ROOT/PR/$pr/global-workflow -o $GFS_CI_ROOT/PR/$pr/output_${commit}
   ci_status=$?
-  gh pr comment $pr --body-file $GDAS_CI_ROOT/PR/$pr/output_${commit}
+  $GH_EXEC pr comment $pr --body-file $GFS_CI_ROOT/PR/$pr/output_${commit}
   if [ $ci_status -eq 0 ]; then
-    gh pr edit $pr --remove-label ${CI_LABEL}-Running --add-label ${CI_LABEL}-Passed
+    $GH_EXEC pr edit $pr --remove-label ${CI_LABEL}-Running --add-label ${CI_LABEL}-Passed
   else
-    gh pr edit $pr --remove-label ${CI_LABEL}-Running --add-label ${CI_LABEL}-Failed
+    $GH_EXEC pr edit $pr --remove-label ${CI_LABEL}-Running --add-label ${CI_LABEL}-Failed
   fi
 done
 
 # ==============================================================================
 # scrub working directory for older files
-find $GDAS_CI_ROOT/PR/* -maxdepth 1 -mtime +3 -exec rm -rf {} \;
+find $GFS_CI_ROOT/PR/* -maxdepth 1 -mtime +3 -exec rm -rf {} \;
 
