@@ -52,18 +52,34 @@ export OBERROR=${FIXgsi}/prepobs_errtable.global
 
 
 # Use experimental dumps in EMC GFS v16 parallels
-if [[ ${RUN_ENVIR} == "emc" ]]; then
-  export ABIBF="/dev/null"
+if [[ $RUN_ENVIR == "emc" ]]; then
+  ABIBF="/dev/null"
   if [[ "${CDATE}" -ge "2019022800" ]] ; then
-    export ABIBF="${COMIN_OBS}/${CDUMP}.t${cyc}z.gsrcsr.tm00.bufr_d"
+    para="x"
+    if [[ "${CDATE}" -ge "2019111000" && "${CDATE}" -le "2020052612" ]]; then
+      para="y"
+    fi
+    ABIBF=$({
+      RUN="${CDUMP}${para}"
+      echo "${COM_OBSDMP_TMPL}/${CDUMP}.t${cyc}z.gsrcsr.tm00.bufr_d" | envsubst
+    })
   fi
+  declare -x ABIBF
 
-  export AHIBF="/dev/null"
+  AHIBF="/dev/null"
   if [[ "${CDATE}" -ge "2019042300" ]]; then
-    export AHIBF="${COMIN_OBS}/${CDUMP}.t${cyc}z.ahicsr.tm00.bufr_d"
+    ABIBF=$({
+      RUN="${CDUMP}x"
+      echo "${COM_OBSDMP_TMPL}/${CDUMP}.t${cyc}z.ahicsr.tm00.bufr_d" | envsubst
+    })
   fi
+  declare -x AHIBF
 
-  export HDOB="${COMIN_OBS}/${CDUMP}.t${cyc}z.hdob.tm00.bufr_d"
+  HDOB=$({
+    RUN="${CDUMP}x"
+    echo "${COM_OBSDMP_TMPL}/${CDUMP}.t${cyc}z.hdob.tm00.bufr_d" | envsubst
+  })
+  declare -x HDOB
 
   #   Use dumps from NCO GFS v16 parallel
   if [[ "${CDATE}" -ge "2020103012" ]]; then

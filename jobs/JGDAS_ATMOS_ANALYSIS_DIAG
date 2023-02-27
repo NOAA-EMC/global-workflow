@@ -29,15 +29,15 @@ export GPREFIX_ENS="enkf${GDUMP}.t${gcyc}z."
 declare -rx COMIN=${COM_ATMOS_ANALYSIS}
 declare -rx COMOUT=${COM_ATMOS_ANALYSIS}
 export DMPDIR=${DMPDIR:-$(compath.py "${envir}/obsproc/${obsproc_ver}")}
-COMIN_OBS=$(echo "${COMIN_OBS_TMPL}" | envsubst)
+COM_OBS=$(echo "${COM_OBS_TMPL}" | envsubst)
 COMIN_GES_OBS=$( {
     RUN=${GDUMP}
     PDY=${gPDY}
     cyc=${gcyc}
-    echo "${COMIN_OBS_TMPL}" | envsubst
+    echo "${COM_OBS_TMPL}" | envsubst
 })
 
-declare -rx COMIN_OBS
+declare -rx COM_OBS
 declare -rx COMIN_GES_OBS
 
 mkdir -m 775 -p ${COMOUT}
