@@ -48,9 +48,9 @@ esac
 
 # ==============================================================================
 # pull on the repo and get list of open PRs
-cd $GDAS_CI_ROOT/repo
-CI_LABEL="${GDAS_CI_HOST}-GW-RT"
-gh pr list --label "$CI_LABEL" --state "open" | awk '{print $1;}' > $GDAS_CI_ROOT/open_pr_list_gw
+cd $GFS_CI_ROOT/repo
+CI_LABEL="${GFS_CI_HOST}-GW-RT"
+gh pr list --label "$CI_LABEL" --state "open" | awk '{print $1;}' > $GFS_CI_ROOT/open_pr_list_gw
 open_pr_list=$(cat $GDAS_CI_ROOT/open_pr_list_gw)
 
 # ==============================================================================

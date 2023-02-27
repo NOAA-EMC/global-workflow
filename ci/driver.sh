@@ -1,5 +1,7 @@
 #!/bin/bash --login
 
+set -ex
+
 my_dir="$( cd "$( dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd )"
 
 # ==============================================================================
@@ -36,8 +38,7 @@ case ${TARGET} in
     source $MODULESHOME/init/sh
     source $my_dir/${TARGET}.sh
     module purge
-    module use $GFS_MODULE_USE
-    module load GFS/$TARGET
+    module use $GFS_MODULE_USE/module_base.${TARGET}.lua
     module list
     ;;
   *)
@@ -50,12 +51,17 @@ esac
 # pull on the repo and get list of open PRs
 cd $GFS_CI_ROOT/repo
 CI_LABEL="${GFS_CI_HOST}-RT"
+echo "Open PRs:"
+gh pr list --label "$CI_LABEL" --state "open"
 gh pr list --label "$CI_LABEL" --state "open" | awk '{print $1;}' > $GFS_CI_ROOT/open_pr_list
 open_pr_list=$(cat $GFS_CI_ROOT/open_pr_list)
+echo "open_pr_list: $open_pr_list"
 
 # ==============================================================================
 # clone, checkout, build, test, etc.
-repo_url="https://github.com/NOAA-EMC/global-workflow.git"
+#repo_url="https://github.com/NOAA-EMC/global-workflow.git"
+# using Terrence.McGuinness-NOAA for development with GitHub interations
+repo_url="https://github.com/Terrence.McGuinness/global-workflow.git"
 # loop through all open PRs
 for pr in $open_pr_list; do
   gh pr edit $pr --remove-label $CI_LABEL --add-label ${CI_LABEL}-Running
@@ -81,7 +87,7 @@ for pr in $open_pr_list; do
       echo "Loading modules on $TARGET"
       module purge
       module use $GFS_CI_ROOT/PR/$pr/global-workflow/modulefiles
-      module load GDAS/$TARGET
+      module load module_base.${TARGET}.lua
       module list
       ;;
     *)
@@ -89,6 +95,9 @@ for pr in $open_pr_list; do
       exit 1
       ;;
   esac
+
+  echo "pull open PR update lable and clone build test completed"
+  exit
 
   # run build and testing command
   $my_dir/run_ci.sh -d $GFS_CI_ROOT/PR/$pr/global-workflow -o $GFS_CI_ROOT/PR/$pr/output_${commit}
