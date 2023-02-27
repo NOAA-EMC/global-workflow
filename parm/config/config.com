@@ -27,7 +27,7 @@ echo "BEGIN: config.com"
 # Ignore shellcheck warnings about variables not being expanded; this is what we want
 # shellcheck disable=SC2016
 export COM_OBS_TMPL='${ROTDIR}/${RUN}.${YMD}/${HH}/obs'
-export COM_OBSDMP_TMPL='${DMPDIR}/${CDUMP}${DUMP_SUFFIX}.${YMD}/${HH}/atmos'
+export COM_OBSDMP_TMPL='${DMPDIR}/${DUMP}${DUMP_SUFFIX}.${YMD}/${HH}/atmos'
 
 COM_BASE='${ROTDIR}/${RUN}.${YMD}/${HH}/${MEMDIR}'
 export COM_ENKF_GROUP_TMPL=${COM_BASE}
@@ -67,41 +67,3 @@ export COM_ICE_RESTART_TMPL=${COM_BASE}'/ice/model_data/restart'
 export COM_CHEM_HISTORY_TMPL=${COM_BASE}'/chem/model_data/history'
 
 export COM_MED_RESTART_TMPL=${COM_BASE}'/med/model_data/restart'
-
-# shellcheck disable=
-
-function generate_com() {
-    #
-    # Generate a list COM variables from a template by substituting in env variables.
-    #
-    # Each argument must have a corresponding template with the name ${ARG}_TMPL.
-    #
-    # Accepts as options all the same options the bash built-in `declare` allows except
-    #  -g, which is assumed, and -p. These options are passed to `declare`.
-    #
-    # Syntax:
-    #   generate_com [-aAfFilrtux] $var1 [$var2 [$var3 ...]]
-    #
-    #   var1, var2, etc: Variable names whose values will be generated from a template
-    #                    and declared
-    #   options: Same function as the bash `declare` built-in
-    #
-    local opts="-g"
-    local OPTIND=1
-    while getopts "aAfFilrtux" option; do
-        opts="${opts}${option}"
-    done
-    shift $((OPTIND-1))
-
-    for com_var in "$@"; do
-        local template="${com_var}_TMPL"
-        local value
-        value=$(echo "${!template}" | envsubst)
-        # shellcheck disable=SC2086
-        declare ${opts} "${com_var}"="${value}"
-    done
-}
-# shellcheck disable=
-export -f generate_com
-
-echo "END: config.com"

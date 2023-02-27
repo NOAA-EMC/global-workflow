@@ -35,7 +35,7 @@ _calling_script=$(basename "${BASH_SOURCE[1]}")
 start_time_human=$(date -d"@${start_time}" -u)
 echo "Begin ${_calling_script} at ${start_time_human}"
 
-declare -rx PS4='+ $(basename ${BASH_SOURCE[0]:-"Unknown"})[${LINENO}]'"${id}: "
+declare -rx PS4='+ $(basename ${BASH_SOURCE[0]:-${FUNCNAME[0]:-"Unknown"}})[${LINENO}]'"${id}: "
 
 set_strict() {
     if [[ ${STRICT:-"YES"} == "YES" ]]; then
@@ -86,6 +86,48 @@ postamble() {
 # shellcheck disable=SC2064
 trap "postamble ${_calling_script} ${start_time} \$?" EXIT
 # shellcheck disable=
+
+function generate_com() {
+    #
+    # Generate a list COM variables from a template by substituting in env variables.
+    #
+    # Each argument must have a corresponding template with the name ${ARG}_TMPL.
+    #
+    # Accepts as options all the same options the bash built-in `declare` allows except
+    #  -g, which is assumed, and -p. These options are passed to `declare`.
+    #
+    # Syntax:
+    #   generate_com [-aAfFilrtux] $var1[:$tmpl1] [$var2[:$tmpl2]] [...]]
+    #
+    #   options: Same function as the bash `declare` built-in
+    #   var1, var2, etc: Variable names whose values will be generated from a template
+    #                    and declared
+    #   tmpl1, tmpl2, etc: Specify the template to use (default is "${var}_TMPL")
+    #
+    local opts="-g"
+    local OPTIND=1
+    while getopts "aAfFilrtux" option; do
+        opts="${opts}${option}"
+    done
+    shift $((OPTIND-1))
+
+    for input in "$@"; do
+        IFS=':' read -ra args <<< "${input}"
+        local com_var="${args[0]}"
+        local template
+        local value
+        if (( ${#args[@]} > 1 )); then
+            template="${args[1]}"
+        else
+            template="${com_var}_TMPL"
+        fi
+        value=$(echo "${!template}" | envsubst)
+        # shellcheck disable=SC2086
+        declare ${opts} "${com_var}"="${value}"
+    done
+}
+# shellcheck disable=
+declare -xf generate_com
 
 # Turn on our settings
 set_strict
