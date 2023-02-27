@@ -30,7 +30,7 @@ else
 fi
 local res_int=${restart_interval:-3024000}    # Interval in seconds to write restarts
 
-rm -f "${DATA}"/nems.configure
+rm -f "${DATA}/nems.configure"
 
 local esmf_logkind=${esmf_logkind:-"ESMF_LOGKIND_MULTI"} #options: ESMF_LOGKIND_MULTI_ON_ERROR, ESMF_LOGKIND_MULTI, ESMF_LOGKIND_NONE
 
@@ -56,13 +56,14 @@ if [[ ${cpl} = ".true." ]]; then
   sed -i -e "s;@\[coupling_interval_slow_sec\];${CPL_SLOW};g" tmp1
 fi
 
-if [[ ${cplflx} = .true. ]]; then
-  if [[ ${res_int}  -gt 0 ]]; then
+if [[ "${cplflx}" = ".true." ]]; then
+  if [[ ${res_int} -gt 0 ]]; then
     local restart_interval_nems=${res_int}
   else
     local restart_interval_nems=${FHMAX}
   fi
 
+  # TODO: Should this be raised up to config.ufs?
   case "${OCNRES}" in
     "500") local eps_imesh="4.0e-1";;
     "100") local eps_imesh="2.5e-1";;
@@ -72,7 +73,10 @@ if [[ ${cplflx} = .true. ]]; then
   local use_coldstart=${use_coldstart:-".false."}
   local use_mommesh=${USE_MOMMESH:-"true"}
   local restile=$(echo "${CASE}" |cut -c2-)
-  local ocn_petlist_bounds="${ATMPETS} $(( ${ATMPETS}+${OCNPETS}-1 ))"
+
+  local start="${ATMPETS}"
+  local end="$(( ${start}+${OCNPETS}-1 ))"
+  local ocn_petlist_bounds="${start} ${end}"
 
   sed -i -e "s;@\[ocn_model\];mom6;g" tmp1
   sed -i -e "s;@\[ocn_petlist_bounds\];${ocn_petlist_bounds};g" tmp1
@@ -89,20 +93,13 @@ if [[ ${cplflx} = .true. ]]; then
   sed -i -e "s;@\[ATMTILESIZE\];${restile};g" tmp1
 fi
 
-if [[ ${cplwav} = .true. ]]; then
-
-  local wav_petlist_bounds="$(( ${ATMPETS}+${OCNPETS}+${ICEPETS} )) $(( ${ATMPETS}+${OCNPETS}+${ICEPETS}+${WAVPETS}-1 ))"
-
-  sed -i -e "s;@\[wav_model\];ww3;g" tmp1
-  sed -i -e "s;@\[wav_petlist_bounds\];${wav_petlist_bounds};g" tmp1
-  sed -i -e "s;@\[MESH_WAV\];${MESH_WAV};g" tmp1
-  sed -i -e "s;@\[MULTIGRID\];${waveMULTIGRID};g" tmp1
-fi
-
-if [[ ${cplice} = .true. ]]; then
+if [[ "${cplice}" = ".true." ]]; then
 
   local mesh_ocn_ice=${MESH_OCN_ICE:-"mesh.mx${ICERES}.nc"}
-  local ice_petlist_bounds="$(( ${ATMPETS}+${OCNPETS} )) $(( ${ATMPETS}+${OCNPETS}+${ICEPETS}-1 ))"
+
+  local start="$(( ${ATMPETS}+${OCNPETS} ))"
+  local end="$(( ${start}+${ICEPETS}-1 ))"
+  local ice_petlist_bounds="${start} ${end}"
 
   sed -i -e "s;@\[ice_model\];cice6;g" tmp1
   sed -i -e "s;@\[ice_petlist_bounds\];${ice_petlist_bounds};g" tmp1
@@ -110,7 +107,19 @@ if [[ ${cplice} = .true. ]]; then
   sed -i -e "s;@\[FHMAX\];${FHMAX_GFS};g" tmp1
 fi
 
-if [[ ${cplchm} = .true. ]]; then
+if [[ "${cplwav}" = ".true." ]]; then
+
+  local start="$(( ${ATMPETS}+${OCNPETS:-0}+${ICEPETS:-0} ))"
+  local end="$(( ${start}+${WAVPETS}-1 ))"
+  local wav_petlist_bounds="${start} ${end}"
+
+  sed -i -e "s;@\[wav_model\];ww3;g" tmp1
+  sed -i -e "s;@\[wav_petlist_bounds\];${wav_petlist_bounds};g" tmp1
+  sed -i -e "s;@\[MESH_WAV\];${MESH_WAV};g" tmp1
+  sed -i -e "s;@\[MULTIGRID\];${waveMULTIGRID};g" tmp1
+fi
+
+if [[ "${cplchm}" = ".true." ]]; then
 
   local chm_petlist_bounds="0 $(( ${CHMPETS}-1 ))"
 
@@ -123,7 +132,7 @@ mv tmp1 nems.configure
 
 echo "$(cat nems.configure)"
 
-if [[ ${cplflx} = .true. ]]; then
+if [[ "${cplflx}" = ".true." ]]; then
 
 #Create other CMEPS mediator related files
 cat > pio_in << EOF
@@ -180,7 +189,7 @@ echo "$(cat med_modelio.nml)"
 
 fi
 
-cp "${HOMEgfs}"/sorc/ufs_model.fd/tests/parm/fd_nems.yaml fd_nems.yaml
+${NCP} "${HOMEgfs}/sorc/ufs_model.fd/tests/parm/fd_nems.yaml" fd_nems.yaml
 
 echo "SUB ${FUNCNAME[0]}: Nems configured for ${confignamevarfornems}"
 

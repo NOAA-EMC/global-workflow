@@ -62,7 +62,7 @@ echo "$(cat input.nml)"
 
 
 #Copy MOM_input and edit:
-${NCP} -pf "${HOMEgfs}"/parm/mom6/MOM_input_template_"${OCNRES}" "${DATA}"/INPUT/
+${NCP} -pf "${HOMEgfs}/parm/mom6/MOM_input_template_${OCNRES}" "${DATA}/INPUT/"
 sed -e "s/@\[DT_THERM_MOM6\]/${DT_THERM_MOM6}/g" \
     -e "s/@\[DT_DYNAM_MOM6\]/${DT_DYNAM_MOM6}/g" \
     -e "s/@\[MOM6_RIVER_RUNOFF\]/${MOM6_RIVER_RUNOFF}/g" \
@@ -76,13 +76,13 @@ sed -e "s/@\[DT_THERM_MOM6\]/${DT_THERM_MOM6}/g" \
     -e "s/@\[DO_OCN_SPPT\]/${OCN_SPPT}/g" \
     -e "s/@\[PERT_EPBL\]/${PERT_EPBL}/g" \
     -e "s/@\[ODA_INCUPD_NHOURS\]/${ODA_INCUPD_NHOURS}/g" \
-    -e "s/@\[ODA_INCUPD\]/${ODA_INCUPD}/g" "${DATA}"/INPUT/MOM_input_template_"${OCNRES}" > "${DATA}"/INPUT/MOM_input
-rm "${DATA}"/INPUT/MOM_input_template_"${OCNRES}"
+    -e "s/@\[ODA_INCUPD\]/${ODA_INCUPD}/g" "${DATA}/INPUT/MOM_input_template_${OCNRES}" > "${DATA}/INPUT/MOM_input"
+rm "${DATA}/INPUT/MOM_input_template_${OCNRES}"
 
 #data table for runoff:
 DATA_TABLE=${DATA_TABLE:-${PARM_FV3DIAG}/data_table}
-${NCP} "${DATA_TABLE}" "${DATA}"/data_table_template
-sed -e "s/@\[FRUNOFF\]/${FRUNOFF}/g" "${DATA}"/data_table_template > "${DATA}"/data_table
-rm "${DATA}"/data_table_template
+${NCP} "${DATA_TABLE}" "${DATA}/data_table_template"
+sed -e "s/@\[FRUNOFF\]/${FRUNOFF}/g" "${DATA}/data_table_template" > "${DATA}/data_table"
+rm "${DATA}/data_table_template"
 
 }

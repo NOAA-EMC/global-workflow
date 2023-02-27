@@ -437,7 +437,7 @@ elif [[ ${step} = "fcst" || ${step} = "efcs" ]]; then
         fi
 
         # PETS for the atmosphere dycore
-        (( FV3PETS = layout_x * layout_y * 6 ))
+        (( FV3PETS = ntasks_fv3 ))
 
         # PETS for quilting
         if [[ ${QUILTING:-} == ".true." ]]; then
