@@ -1,183 +1,97 @@
 #!/bin/bash
 ################################################################################
-####  UNIX Script Documentation Block
-#                      .                                             .
-# Script name:         exglobal_land_analysis_run.sh
-# Script description:  Runs the global land analysis with FV3-JEDI
+# exglobal_land_analysis_run.sh
 #
-# Author: Jiarui Dong        Org: NCEP/EMC     Date: 2023-02-15
-#
-# Abstract: This script runs a global model land analysis using FV3-JEDI
-#           and also (for now) updates increment files using a python ush utility
-#
-# $Id$
-#
-# Attributes:
-#   Language: POSIX shell
-#   Machine: Orion
+# This script runs a global land letkfoi analysis with FV3-JEDI.
+# It assumes the runtime directory has already been staged with the appropriate
+# input files and YAML configuration (by the initialize script) before execution.
 #
 ################################################################################
-
-#  Set environment.
-source "${HOMEgfs}/ush/preamble.sh"
-
-#  Directories
-pwd=$(pwd)
-
 #  Utilities
-export NLN=${NLN:-"/bin/ln -sf"}
-export INCPY=${INCPY:-"${HOMEgfs}/sorc/gdas.cd/ush/jediinc2fv3.py"}
-export GENYAML=${GENYAML:-"${HOMEgfs}/sorc/gdas.cd/ush/genYAML"}
-export GETOBSYAML=${GETOBSYAML:-"${HOMEgfs}/sorc/gdas.cd/ush/get_obs_list.py"}
+CASE=${CASE:-C96}
+RES=$(echo $CASE | cut -c 2-)
+export CREATEENS=${CREATEENS:-"${HOMEgfs}/sorc/gdas.cd/ush/land/letkf_create_ens.py"}
+export IMS_IODA=${IMS_IODA:-"${HOMEgfs}/sorc/gdas.cd/build/bin/imsfv3_scf2ioda.py"}
+export CALCFIMS=${CALCFIMS:-"${HOMEgfs}/sorc/gdas.cd/build/bin/calcfIMS.exe"}
+#export TPATH="/scratch2/NCEPDEV/land/data/fix/C${RES}/"
+export TPATH=${FIXgfs:-"${HOMEgfs}/fix/orog/C${RES}"}
+export TSTUB="C${RES}_oro_data"
+export GFSv17=${GFSv17:-"NO"}
+BKGDIR=${DATA}/bkg
+FILEDATE=${PDY}.${cyc}0000
+DOY=$(date +%j -d "${PDY} + 1 day")
+YYYY=`echo ${PDY} | cut -c1-4`
+################################################################################
+# Create ensemble member
+WORKDIR=${BKGDIR}
+B=30  # background error std for LETKFOI
+
+if [ $GFSv17 == "YES" ]; then
+    SNOWDEPTHVAR="snodl"
+else
+    SNOWDEPTHVAR="snwdph"
+fi
+
+# FOR LETKFOI, CREATE THE PSEUDO-ENSEMBLE
+cd $WORKDIR
+for ens in 001 002
+do
+    if [ -e $WORKDIR/mem${ens} ]; then
+            rm -rf $WORKDIR/mem${ens}
+    fi
+    mkdir -p $WORKDIR/mem${ens}
+    for tile in 1 2 3 4 5 6
+    do
+        cp ${WORKDIR}/${FILEDATE}.sfc_data.tile${tile}.nc  ${WORKDIR}/mem${ens}/${FILEDATE}.sfc_data.tile${tile}.nc
+    done
+    cp ${WORKDIR}/${FILEDATE}.coupler.res ${WORKDIR}/mem${ens}/${FILEDATE}.coupler.res
+done
+
+echo 'do_landDA: calling create ensemble'
+
+python ${CREATEENS} $FILEDATE $SNOWDEPTHVAR $B $WORKDIR
 
 ################################################################################
-# make subdirectories
-mkdir -p ${DATA}/fv3jedi
-mkdir -p ${DATA}/obs
-mkdir -p ${DATA}/diags
-mkdir -p ${DATA}/bc
-mkdir -p ${DATA}/anl
+# IMS proc
+WORKDIR=${DATA}/obs
+cd $WORKDIR
+if [[ -e fims.nml ]]; then
+  rm fims.nml
+fi
 
-################################################################################
-# generate YAML file
-cat > ${DATA}/temp.yaml << EOF
-template: ${LANDVARYAML}
-output: ${DATA}/fv3jedi_var.yaml
-config:
-#  atm: true
-  land: true
-  BERROR_YAML: ${BERROR_YAML}
-  OBS_DIR: obs
-  DIAG_DIR: diags
-  CRTM_COEFF_DIR: crtm
-  BIAS_IN_DIR: obs
-  BIAS_OUT_DIR: bc
-  OBS_PREFIX: ${OPREFIX}
-  BIAS_PREFIX: ${GPREFIX}
-  OBS_LIST: ${OBS_LIST}
-  OBS_YAML_DIR: ${OBS_YAML_DIR}
-  BKG_DIR: bkg
-  fv3jedi_staticb_dir: berror
-  fv3jedi_fix_dir: fv3jedi
-  fv3jedi_fieldset_dir: fv3jedi
-  fv3jedi_fieldmetadata_dir: fv3jedi
-  OBS_DATE: '${CDATE}'
-  BIAS_DATE: '${GDATE}'
-  ANL_DIR: anl/
-  NMEM_ENKF: '$NMEM_ENKF'
-  INTERP_METHOD: '${INTERP_METHOD}'
+cat >> fims.nml << EOF
+ &fIMS_nml
+  idim=$RES, jdim=$RES,
+  otype=${TSTUB},
+  jdate=$YYYY${DOY},
+  yyyymmddhh=${PDY}.18,
+  imsformat=2,
+  imsversion=1.3,
+  IMS_OBS_PATH="${OBSDIR}/snow_ice_cover/IMS/$YYYY/",
+  IMS_IND_PATH="${OBSDIR}/snow_ice_cover/IMS/index_files/"
+  /
 EOF
-${GENYAML} --config ${DATA}/temp.yaml
 
-################################################################################
-# link observations to $DATA
-${GETOBSYAML} --config ${DATA}/fv3jedi_var.yaml --output ${DATA}/${OPREFIX}obsspace_list
-files=$(cat ${DATA}/${OPREFIX}obsspace_list)
-for file in $files; do
-  basefile=$(basename ${file})
-  ${NLN} ${COMOUT}/${basefile} ${DATA}/obs/${basefile}
+# stage restarts
+for tile in 1 2 3 4 5 6
+do
+  if [[ ! -e ${FILEDATE}.sfc_data.tile${tile}.nc ]]; then
+    cp ${BKGDIR}/${FILEDATE}.sfc_data.tile${tile}.nc .
+  fi
 done
 
-# link backgrounds to $DATA
-# linking FMS RESTART files for now
-# change to (or make optional) for cube sphere history later
-$NLN ${COMIN_GES}/RESTART $DATA/bkg
+ulimit -Ss unlimited
+${CALCFIMS}
 
+export PYTHONPATH=$PYTHONPATH:${project_source_dir}/build/lib/python${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR}/pyioda/
 
-# optionally link ensemble backgrounds to $DATA
-if [ ${DOHYBVAR} = "YES" ]; then
-   mkdir -p ${DATA}/ens
-   fhrs="06"
-   if [ $l4densvar = ".true." ]; then
-      fhrs="03 04 05 06 07 08 09"
-   fi
-
-   for imem in $(seq 1 ${NMEM_ENKF}); do
-      memchar="mem"$(printf %03i $imem)
-      for fhr in $fhrs; do
-         ${NLN} ${COMIN_GES_ENS}/${memchar}/atmos/RESTART ${DATA}/ens/$memchar
-      done
-   done
-
-fi
-
-################################################################################
-# link fix files to $DATA
-# static B
-CASE_BERROR=${CASE_BERROR:-${CASE_ANL:-${CASE}}}
-if [[ (${STATICB_TYPE} = "bump") || (${STATICB_TYPE} = "gsibec") ]] ; then
-    ${NLN} "${FV3JEDI_FIX}/${STATICB_TYPE}/${CASE_BERROR}/" "${DATA}/berror"
-fi
-
-# vertical coordinate
-LAYERS=$(expr $LEVS - 1)
-${NLN} ${FV3JEDI_FIX}/fv3jedi/fv3files/akbk${LAYERS}.nc4 ${DATA}/fv3jedi/akbk.nc4
-
-# other FV3-JEDI fix files
-${NLN} ${FV3JEDI_FIX}/fv3jedi/fv3files/fmsmpp.nml ${DATA}/fv3jedi/fmsmpp.nml
-${NLN} ${FV3JEDI_FIX}/fv3jedi/fv3files/field_table_gfdl ${DATA}/fv3jedi/field_table
-
-# fieldmetadata
-${NLN} ${FV3JEDI_FIX}/fv3jedi/fieldmetadata/gfs-land.yaml ${DATA}/fv3jedi/gfs-land.yaml
-
-# fieldsets
-fieldsets="dynamics.yaml ufo.yaml"
-for fieldset in ${fieldsets}; do
-  ${NLN} ${FV3JEDI_FIX}/fv3jedi/fieldsets/${fieldset} ${DATA}/fv3jedi/${fieldset}
-done
-
-# CRTM coeffs
-#${NLN} "${FV3JEDI_FIX}/crtm/2.3.0" "${DATA}/crtm"
-
-#  Link executable to $DATA
-${NLN} ${JEDIVAREXE} ${DATA}/fv3jedi_var.x
+echo 'do_landDA: calling ioda converter'
+python ${IMS_IODA} -i IMSscf.${PDY}.${TSTUB}.nc -o ioda.IMSscf.${PDY}.${TSTUB}.nc
 
 ################################################################################
 # run executable
-export OMP_NUM_THREADS=$NTHREADS_LANDANL
 export pgm=${JEDIVAREXE}
 . prep_step
-${APRUN_LANDANL} ${DATA}/fv3jedi_var.x ${DATA}/fv3jedi_var.yaml 1>&1 2>&2
+${APRUN_LANDANL} "${DATA}/fv3jedi_var.x" "${DATA}/${CDUMP}.t${cyc}z.landvar.yaml" 1>&1 2>&2
 export err=$?; err_chk
-
-################################################################################
-# translate FV3-JEDI increment to FV3 readable format
-if [[ "${CASE_BERROR}" = "${CASE}" ]]; then
-    landges_fv3=${COMIN_GES}/${GPREFIX}landf006.nc
-else
-    landges_fv3=${COMIN_GES}/${GPREFIX}landf006.ensres.nc
-fi
-landinc_jedi=${DATA}/anl/landinc.${PDY}_${cyc}0000z.nc4
-landinc_fv3=${COMOUT}/${CDUMP}.${cycle}.landinc.nc
-if [ -s ${landinc_jedi} ]; then
-    ${INCPY} ${landges_fv3} ${landinc_jedi} ${landinc_fv3}
-    export err=$?
-else
-    echo "***WARNING*** missing $landinc_jedi   ABORT"
-    export err=99
-fi
-err_chk
-
-################################################################################
-# Create log file noting creating of analysis increment file
-echo "$CDUMP $CDATE landinc and tiled sfcanl done at $(date)" > $COMOUT/${CDUMP}.${cycle}.loginc.txt
-
-################################################################################
-# Copy diags and YAML to $COMOUT
-cp -r ${DATA}/fv3jedi_var.yaml ${COMOUT}/${CDUMP}.${cycle}.fv3jedi_var.yaml
-cp -rf ${DATA}/diags ${COMOUT}/
-cp -rf ${DATA}/bc ${COMOUT}/
-
-# ***WARNING*** PATCH
-# Copy abias, abias_pc, and abias_air from previous cycle to current cycle
-# Deterministic abias used in enkf cycle
-alist="abias abias_air abias_int abias_pc"
-for abias in ${alist}; do
-    cp "${COMIN_GES}/${GPREFIX}${abias}" "${COMOUT}/${APREFIX}${abias}"
-done
-
-################################################################################
-
-exit ${err}
-
-################################################################################
+exit "${err}"
