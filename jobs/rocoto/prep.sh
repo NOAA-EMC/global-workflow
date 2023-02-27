@@ -26,7 +26,7 @@ status=$?
 ###############################################################
 # Set script and dependency variables
 export OPREFIX="${CDUMP}.t${cyc}z."
-YMD=${PDY} HH=${cyc} generate_com -rx COM_OBS COM_OBSDMP
+YMD=${PDY} HH=${cyc} DUMP=${CDUMP} generate_com -rx COM_OBS COM_OBSDMP
 
 DATE_PREV=$(${NDATE} -${assim_freq} "${PDY}${cyc}")
 PDY_PREV=${DATE_PREV:0:8}
@@ -116,9 +116,11 @@ if [ $MAKE_PREPBUFR = "YES" ]; then
     export DATAROOT="${RUNDIR}/${CDATE}/${CDUMP}/prepbufr"
     export COMIN=${COM_OBS}
     export COMOUT=${COM_OBS}
-    COMINgdas=$(RUN="gdas"; echo "${COM_ATMOS_HISTORY_TMPL}" | envsubst)
+    export YMD=${PDY}
+    export HH=${cyc}
+    COMINgdas=$(export RUN="gdas"; echo "${COM_ATMOS_HISTORY_TMPL}" | envsubst)
     declare -rx COMINgdas
-    COMINgfs=$(RUN="gfs"; echo "${COM_ATMOS_HISTORY_TMPL}" | envsubst)
+    COMINgfs=$(export RUN="gfs"; echo "${COM_ATMOS_HISTORY_TMPL}" | envsubst)
     declare -rx COMINgfs
     if [ $ROTDIR_DUMP = "NO" ]; then
         export COMSP=${COMSP:-"${COM_OBSDMP}/${CDUMP}.t${cyc}z."}
