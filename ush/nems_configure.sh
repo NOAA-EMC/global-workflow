@@ -12,8 +12,8 @@
 writing_nems_configure()
 {
 echo "SUB ${FUNCNAME[0]}: parsing_nems_configure begins"
-if [[ -e ${SCRIPTDIR}/nems.configure ]]; then
-  rm -f "${SCRIPTDIR}"/nems.configure
+if [[ -e "${SCRIPTDIR}/nems.configure" ]]; then
+  rm -f "${SCRIPTDIR}/nems.configure"
 fi
 
 # Setup nems.configure
