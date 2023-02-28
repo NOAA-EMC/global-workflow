@@ -5,11 +5,32 @@ import subprocess
 import sys
 from typing import Any, Optional
 
-__all__ = ["Executable", "which", "ProcessError", "CommandNotFoundError"]
+__all__ = ["Executable", "which", "CommandNotFoundError"]
 
 
 class Executable:
-    """Class representing a program that can be run on the command line."""
+    """
+    Class representing a program that can be run on the command line.
+
+    Example:
+    --------
+
+    >>> from pygw.executable import Executable
+    >>> cmd = Executable('srun')  # Lets say we need to run command e.g. "srun"
+    >>> cmd.add_default_arg('my_exec.x')  # Lets say we need to run the executable "my_exec.x"
+    >>> cmd.add_default_arg('my_arg.yaml')  # Lets say we need to pass an argument to this executable e.g. "my_arg.yaml"
+    >>> cmd.add_default_env('OMP_NUM_THREADS', 4)  # Lets say we want to run w/ 4 threads in the environment
+    >>> cmd(output='stdout', error='stderr')  # Run the command and capture the stdout and stderr in files named similarly.
+
+    `cmd` line above will translate to:
+
+    $ export OMP_NUM_THREADS=4
+    $ srun my_exec.x my_arg.yaml 1>&stdout 2>&stderr
+
+    References
+    ----------
+    .. [1] "spack.util.executable.py", https://github.com/spack/spack/blob/develop/lib/spack/spack/util/executable.py
+    """
 
     def __init__(self, name: str):
         """
@@ -19,9 +40,6 @@ class Executable:
         ----------
         name : str
             name of the executable to run
-
-        Adopted from:
-        https://github.com/spack/spack/blob/develop/lib/spack/spack/util/executable.py
         """
         self.exe = shlex.split(str(name))
         self.default_env = {}
@@ -41,42 +59,51 @@ class Executable:
             key: The environment variable to set
             value: The value to set it to
         """
-        self.default_env[key] = value
+        self.default_env[key] = str(value)
 
     @property
     def command(self) -> str:
-        """The command-line string.
+        """
+        The command-line string.
 
         Returns:
+        --------
             str: The executable and default arguments
         """
         return " ".join(self.exe)
 
     @property
     def name(self) -> str:
-        """The executable name.
+        """
+        The executable name.
 
         Returns:
+        --------
             str: The basename of the executable
         """
         return os.path.basename(self.path)
 
     @property
     def path(self) -> str:
-        """The path to the executable.
+        """
+        The path to the executable.
 
         Returns:
+        --------
             str: The path to the executable
         """
         return self.exe[0]
 
     def __call__(self, *args, **kwargs):
-        """Run this executable in a subprocess.
+        """
+        Run this executable in a subprocess.
 
         Parameters:
+        -----------
             *args (str): Command-line arguments to the executable to run
 
         Keyword Arguments:
+        ------------------
             _dump_env (dict): Dict to be set to the environment actually
                 used (envisaged for testing purposes only)
             env (dict): The environment with which to run the executable
@@ -220,7 +247,9 @@ class Executable:
 
 
 def which_string(*args, **kwargs):
-    """Like ``which()``, but return a string instead of an ``Executable``."""
+    """
+    Like ``which()``, but return a string instead of an ``Executable``.
+    """
     path = kwargs.get("path", os.environ.get("PATH", ""))
     required = kwargs.get("required", False)
 
@@ -246,19 +275,23 @@ def which_string(*args, **kwargs):
 
 
 def which(*args, **kwargs) -> Optional[Executable]:
-    """Finds an executable in the path like command-line which.
+    """
+    Finds an executable in the PATH like command-line which.
 
     If given multiple executables, returns the first one that is found.
     If no executables are found, returns None.
 
     Parameters:
+    -----------
         *args (str): One or more executables to search for
 
     Keyword Arguments:
+    ------------------
         path (list or str): The path to search. Defaults to ``PATH``
         required (bool): If set to True, raise an error if executable not found
 
     Returns:
+    --------
         Executable: The first executable that is found in the path
     """
     exe = which_string(*args, **kwargs)
@@ -266,7 +299,9 @@ def which(*args, **kwargs) -> Optional[Executable]:
 
 
 class ProcessError(Exception):
-    """ExecErrors are raised when Executables exit with an error code."""
+    """
+    ProcessErrors are raised when Executables exit with an error code.
+    """
     def __init__(self, short_msg, long_msg=None):
         self.short_msg = short_msg
         self.long_msg = long_msg
@@ -275,4 +310,6 @@ class ProcessError(Exception):
 
 
 class CommandNotFoundError(OSError):
-    """Raised when ``which()`` cannot find a required executable."""
+    """
+    Raised when ``which()`` cannot find a required executable.
+    """
