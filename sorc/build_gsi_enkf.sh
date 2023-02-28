@@ -19,6 +19,9 @@ while getopts ":dov" option; do
 done
 shift $((OPTIND-1))
 
+# Temporary crtm version setting
+export crtm_ver="2.4.0"
+
 BUILD_TYPE=${BUILD_TYPE:-"Release"} \
 BUILD_VERBOSE=${BUILD_VERBOSE:-"NO"} \
 GSI_MODE=GFS \

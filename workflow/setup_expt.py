@@ -120,6 +120,14 @@ def fill_COMROT_cycled(host, inputs):
         makedirs_if_missing(dst_dir)
         link_files_from_src_to_dst(src_dir, dst_dir)
 
+        # First 1/2 cycle needs a MOM6 increment
+        incdir = f'{inputs.cdump}.{idatestr[:8]}/{idatestr[8:]}'
+        incfile = f'{inputs.cdump}.t{idatestr[8:]}z.ocninc.nc'
+        src_file = os.path.join(inputs.icsdir, incdir, 'ocean', incfile)
+        dst_file = os.path.join(comrot, incdir, 'ocean', incfile)
+        makedirs_if_missing(os.path.join(comrot, incdir, 'ocean'))
+        os.symlink(src_file, dst_file)
+
     # Link ice files
     if do_ice:
         detdir = f'{inputs.cdump}.{rdatestr[:8]}/{rdatestr[8:]}'
@@ -236,16 +244,8 @@ def edit_baseconfig(host, inputs):
         }
         tmpl_dict = dict(tmpl_dict, **extend_dict)
 
-    # Determine CCPP suite and MP based on mode and app
-    gfsv16 = {"@CCPP_SUITE@": "FV3_GFS_v16", "@IMP_PHYSICS@": 11}
-    gfsv17 = {"@CCPP_SUITE@": "FV3_GFS_v17_p8", "@IMP_PHYSICS@": 8}
-    if inputs.mode in ['cycled']:
-        if inputs.app in ['ATM']:
-            extend_dict = gfsv16
-        elif inputs.app in ['S2S', 'S2SW']:
-            extend_dict = gfsv17
-    elif inputs.mode in ['forecast-only']:
-        extend_dict = gfsv17
+    # All apps and modes now use the same physics and CCPP suite by default
+    extend_dict = {"@CCPP_SUITE@": "FV3_GFS_v17_p8", "@IMP_PHYSICS@": 8}
     tmpl_dict = dict(tmpl_dict, **extend_dict)
 
     base_input = f'{inputs.configdir}/config.base.emc.dyn'

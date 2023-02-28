@@ -15,8 +15,8 @@ MOM6_ALLOW_LANDMASK_CHANGES=${MOM6_ALLOW_LANDMASK_CHANGES:-'False'}
 DO_OCN_SPPT=${DO_OCN_SPPT:-'False'}
 PERT_EPBL=${PERT_EPBL:-'False'}
 
-MOM_IAU=${MOM_IAU:-"false"}
-MOM_IAU_HRS=${MOM_IAU_HRS:-'3.0'}
+ODA_INCUPD=${ODA_INCUPD:-"false"}
+ODA_INCUPD_NHOURS=${ODA_INCUPD_NHOURS:-'3.0'}
 
 if [ $cplwav = ".true." ] ; then
   MOM6_USE_WAVES='True'
@@ -134,8 +134,8 @@ sed -e "s/@\[DT_THERM_MOM6\]/$DT_THERM_MOM6/g" \
     -e "s/@\[CHLCLIM\]/$CHLCLIM/g" \
     -e "s/@\[DO_OCN_SPPT\]/$OCN_SPPT/g" \
     -e "s/@\[PERT_EPBL\]/$PERT_EPBL/g" \
-    -e "s/@\[MOM_IAU_HRS\]/$MOM_IAU_HRS/g" \
-    -e "s/@\[MOM_IAU\]/$MOM_IAU/g" $DATA/INPUT/MOM_input_template_$OCNRES > $DATA/INPUT/MOM_input
+    -e "s/@\[ODA_INCUPD_NHOURS\]/$ODA_INCUPD_NHOURS/g" \
+    -e "s/@\[ODA_INCUPD\]/$ODA_INCUPD/g" $DATA/INPUT/MOM_input_template_$OCNRES > $DATA/INPUT/MOM_input
 rm $DATA/INPUT/MOM_input_template_$OCNRES
 
 #data table for runoff:
