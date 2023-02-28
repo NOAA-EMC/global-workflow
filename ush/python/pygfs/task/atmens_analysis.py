@@ -20,15 +20,15 @@ from pygfs.task.analysis import Analysis
 logger = getLogger(__name__.split('.')[-1])
 
 
-class AtmAnalysis(Analysis):
+class AtmEnsAnalysis(Analysis):
     """
-    Class for global atm analysis tasks
+    Class for global atmens analysis tasks
     """
-    @logit(logger, name="AtmAnalysis")
+    @logit(logger, name="AtmEnsAnalysis")
     def __init__(self, config):
         super().__init__(config)
 
-        _res = int(self.config['CASE'][1:])
+        _res = int(self.config['CASE_ANL'][1:])
         _res_enkf = int(self.config['CASE_ENKF'][1:])
         _window_begin = self.runtime_config.current_cycle - to_timedelta(f"{self.config['assim_freq']}H") / 2
 
@@ -47,7 +47,8 @@ class AtmAnalysis(Analysis):
                 'BKG_ISOTIME': to_isotime(self.runtime_config.current_cycle),
                 'BKG_YYYYmmddHHMMSS': to_fv3time(self.runtime_config.current_cycle),
                 'cdate_fv3': to_fv3time(self.runtime_config.current_cycle),
-                'comin_ges_atm': self.config.COMIN_GES.replace('chem', 'atmos'),  # 'chem' is COMPONENT, atm fields are in 'atmos' tracers
+                'comin_ges_atm': self.config.COMIN_GES.replace('chem', 'atmos'),
+                'comin_ges_atmens': self.config.COMIN_GES_ENS.replace('chem', 'atmos'),  # 'chem' is COMPONENT, atmens fields are in 'atmos'
             }
         )
 
@@ -56,9 +57,9 @@ class AtmAnalysis(Analysis):
 
     @logit(logger)
     def initialize(self: Analysis) -> None:
-        """Initialize a global atm analysis
+        """Initialize a global atmens analysis
 
-        This method will initialize a global atm analysis using JEDI.
+        This method will initialize a global atmens analysis using JEDI.
         This includes:
         - staging CRTM fix files
         - staging FV3-JEDI fix files
@@ -87,24 +88,19 @@ class AtmAnalysis(Analysis):
         jedi_fix_list = Template.substitute_structure(jedi_fix_list, TemplateConstants.DOLLAR_PARENTHESES, self.task_config.get)
         FileHandler(jedi_fix_list).sync()
 
-        # stage berror files
-        # copy BUMP files, otherwise it will assume ID matrix
-        if self.task_config.get('STATICB_TYPE', 'bump_atm') in ['bump_atm']:
-            FileHandler(AtmAnalysis.get_berror_dict(self.task_config)).sync()
-
         # stage backgrounds
         FileHandler(self.get_bkg_dict(AttrDict(self.task_config, **self.task_config))).sync()
 
         # generate variational YAML file
-        yaml_out = os.path.join(self.task_config['DATA'], f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.atmvar.yaml")
-        varda_yaml = YAMLFile(path=self.task_config['ATMVARYAML'])
+        yaml_out = os.path.join(self.task_config['DATA'], f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.atmens.yaml")
+        varda_yaml = YAMLFile(path=self.task_config['ATMENSYAML'])
         varda_yaml = Template.substitute_structure(varda_yaml, TemplateConstants.DOUBLE_CURLY_BRACES, self.task_config.get)
         varda_yaml = Template.substitute_structure(varda_yaml, TemplateConstants.DOLLAR_PARENTHESES, self.task_config.get)
         varda_yaml.save(yaml_out)
         logger.info(f"Wrote YAML to {yaml_out}")
 
         # link var executable
-        exe_src = self.task_config['JEDIVAREXE']
+        exe_src = self.task_config['JEDIENSEXE']
         exe_dest = os.path.join(self.task_config['DATA'], os.path.basename(exe_src))
         if os.path.exists(exe_dest):
             rm_p(exe_dest)
@@ -117,11 +113,19 @@ class AtmAnalysis(Analysis):
         ]
         FileHandler({'mkdir': newdirs}).sync()
 
+        # Make directories for member analsis files
+        for imem in range(1, self.task_config['NMEM_ENKF'] + 1):
+            memchar = f"mem{imem:03d}"
+            anldir = [
+                os.path.join(self.task_config['DATA'], 'anl', memchar)
+            ]
+            FileHandler({'mkdir': anldir}).sync()
+
     @logit(logger)
     def finalize(self: Analysis) -> None:
-        """Finalize a global atm analysis
+        """Finalize a global atmens analysis
 
-        This method will finalize a global atm analysis using JEDI.
+        This method will finalize a global atmens analysis using JEDI.
         This includes:
         - tarring up output diag files and place in ROTDIR
         - copying the generated YAML file from initialize to the ROTDIR
@@ -130,11 +134,11 @@ class AtmAnalysis(Analysis):
         - moving the increment files to the ROTDIR
 
         Please note that some of these steps are temporary and will be modified
-        once the model is able to read atm tracer increments.
+        once the model is able to read atmens tracer increments.
         """
         # ---- tar up diags
         # path of output tar statfile
-        atmstat = os.path.join(self.task_config['COMOUTatmos'], f"{self.task_config['APREFIX']}atmstat")
+        atmensstat = os.path.join(self.task_config['COMOUT'], f"{self.task_config['APREFIX']}atmensstat")
 
         # get list of diag files to put in tarball
         diags = glob.glob(os.path.join(self.task_config['DATA'], 'diags', 'diag*nc4'))
@@ -145,15 +149,15 @@ class AtmAnalysis(Analysis):
                 f_out.writelines(f_in)
 
         # open tar file for writing
-        with tarfile.open(atmstat, "w") as archive:
+        with tarfile.open(atmensstat, "w") as archive:
             for diagfile in diags:
                 archive.add(f"{diagfile}.gz")
 
         # copy full YAML from executable to ROTDIR
-        src = os.path.join(self.task_config['DATA'], f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.atmvar.yaml")
-        dest = os.path.join(self.task_config['COMOUTatmos'], f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.atmvar.yaml")
+        src = os.path.join(self.task_config['DATA'], f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.atmens.yaml")
+        dest = os.path.join(self.task_config['COMOUT'], f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.atmens.yaml")
         yaml_copy = {
-            'mkdir': [self.task_config['COMOUTatmos']],
+            'mkdir': [self.task_config['COMOUT']],
             'copy': [[src, dest]]
         }
         FileHandler(yaml_copy).sync()
@@ -161,11 +165,11 @@ class AtmAnalysis(Analysis):
         # ---- NOTE below is 'temporary', eventually we will not be using FMS RESTART formatted files
         # ---- all of the rest of this method will need to be changed but requires model and JEDI changes
         # ---- copy RESTART fv_tracer files for future reference
-        # fms_bkg_file_template = os.path.join(self.task_config.comin_ges_atm, 'RESTART', f'{self.task_config.cdate_fv3}.fv_tracer.res.tileX.nc')
+        # fms_bkg_file_template = os.path.join(self.task_config.comin_ges_atmens, 'RESTART', f'{self.task_config.cdate_fv3}.fv_tracer.res.tileX.nc')
         # bkglist = []
         # for itile in range(1, self.task_config.ntiles + 1):
         # bkg_path = fms_bkg_file_template.replace('tileX', f'tile{itile}')
-        # dest = os.path.join(self.task_config['COMOUTatmos'], f'atmges.{os.path.basename(bkg_path)}')
+        # dest = os.path.join(self.task_config['COMOUT'], f'atmges.{os.path.basename(bkg_path)}')
         # bkglist.append([bkg_path, dest])
         # FileHandler({'copy': bkglist}).sync()
 
@@ -179,20 +183,31 @@ class AtmAnalysis(Analysis):
         # inclist = []
         # for itile in range(1, self.task_config.ntiles + 1):
         #     inc_path = fms_inc_file_template.replace('tileX', f'tile{itile}')
-        #     dest = os.path.join(self.task_config['COMOUTatmos'], os.path.basename(inc_path))
+        #     dest = os.path.join(self.task_config['COMOUT'], os.path.basename(inc_path))
         #     inclist.append([inc_path, dest])
         # FileHandler({'copy': inclist}).sync()
 
-        # ---- copy increments to ROTDIR
+        # ---- copy member increments to ROTDIR
         cdate_inc = self.task_config.cdate_fv3.replace('.', '_')
-        src = os.path.join(self.task_config['DATA'], 'anl', f'atminc.{cdate_inc}z.nc4')
-        dest = os.path.join(self.task_config['COMOUTatmos'], f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.atminc.nc")
         inclist = []
-        inclist = {
-            'mkdir': [self.task_config['COMOUTatmos']],
-            'copy': [[src, dest]]
+        for imem in range(1, self.task_config['NMEM_ENKF'] + 1):
+            memchar = f"mem{imem:03d}"
+
+            # make directory for member incrfement
+            incdir = [
+                os.path.join(self.task_config['COMOUT'], memchar, 'atmos')
+            ]
+            FileHandler({'mkdir': incdir}).sync()
+
+            src = os.path.join(self.task_config['DATA'], 'anl', memchar, f'atminc.{cdate_inc}z.nc4')
+            dest = os.path.join(self.task_config['COMOUT'], memchar, 'atmos', f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.atminc.nc")
+            cdate_inc = self.task_config.cdate_fv3.replace('.', '_')
+            inclist.append([src, dest])
+
+        inc_dict = {
+            'copy': inclist,
         }
-        FileHandler(inclist).sync()
+        FileHandler(inc_dict).sync()
 
     def clean(self):
         super().clean()
@@ -200,14 +215,14 @@ class AtmAnalysis(Analysis):
     @logit(logger)
     def _add_fms_cube_sphere_increments(self: Analysis) -> None:
         """This method adds increments to RESTART files to get an analysis
-        NOTE this is only needed for now because the model cannot read atm increments.
+        NOTE this is only needed for now because the model cannot read atmens increments.
         This method will be assumed to be deprecated before this is implemented operationally
         """
         # only need the fv_tracer files
         fms_inc_file_template = os.path.join(self.task_config['DATA'], 'anl', f'atminc.{self.task_config.cdate_fv3}.fv_tracer.res.tileX.nc')
         fms_bkg_file_template = os.path.join(self.task_config.comin_ges_atm, 'RESTART', f'{self.task_config.cdate_fv3}.fv_tracer.res.tileX.nc')
         # get list of increment vars
-        incvars_list_path = os.path.join(self.task_config['HOMEgfs'], 'parm', 'parm_gdas', 'atmanl_inc_vars.yaml')
+        incvars_list_path = os.path.join(self.task_config['HOMEgfs'], 'parm', 'parm_gdas', 'atmensanl_inc_vars.yaml')
         incvars = YAMLFile(path=incvars_list_path)
         super().add_fv3_increments(fms_inc_file_template, fms_bkg_file_template, incvars)
 
@@ -216,7 +231,7 @@ class AtmAnalysis(Analysis):
         """Compile a dictionary of model background files to copy
 
         This method constructs a dictionary of FV3 RESTART files (coupler, core, tracer)
-        that are needed for global atm DA and returns said dictionary for use by the FileHandler class.
+        that are needed for global atmens DA and returns said dictionary for use by the FileHandler class.
 
         Parameters
         ----------
@@ -231,87 +246,50 @@ class AtmAnalysis(Analysis):
         super().get_bkg_dict(task_config)
         # NOTE for now this is FV3 RESTART files and just assumed to be fh006
 
-        # get FV3 RESTART files, this will be a lot simpler when using history files
-        rst_dir = os.path.join(task_config.comin_ges_atm, 'RESTART')  # for now, option later?
+        bkgdir = [
+            os.path.join(task_config['DATA'], 'bkg'),
+        ]
+        FileHandler({'mkdir': bkgdir}).sync()
 
-        # atm DA only needs core/tracer
+        # loop over ensemble members
         bkglist = []
-        basename = f'{task_config.cdate_fv3}.coupler.res'
-        bkglist.append([os.path.join(rst_dir, basename), os.path.join(task_config['DATA'], 'bkg', basename)])
-        basename = f'{task_config.cdate_fv3}.fv_core.res.nc'
-        bkglist.append([os.path.join(rst_dir, basename), os.path.join(task_config['DATA'], 'bkg', basename)])
-        basename_cadat = f'{task_config.cdate_fv3}.ca_data.tileX.nc'
-        basename_core = f'{task_config.cdate_fv3}.fv_core.res.tileX.nc'
-        basename_srfwnd = f'{task_config.cdate_fv3}.fv_srf_wnd.res.tileX.nc'
-        basename_tracer = f'{task_config.cdate_fv3}.fv_tracer.res.tileX.nc'
-        basename_phydat = f'{task_config.cdate_fv3}.phy_data.tileX.nc'
-        basename_sfcdat = f'{task_config.cdate_fv3}.sfc_data.tileX.nc'
-        for itile in range(1, task_config.ntiles + 1):
-            basename = basename_cadat.replace('tileX', f'tile{itile}')
-            bkglist.append([os.path.join(rst_dir, basename), os.path.join(task_config['DATA'], 'bkg', basename)])
-            basename = basename_core.replace('tileX', f'tile{itile}')
-            bkglist.append([os.path.join(rst_dir, basename), os.path.join(task_config['DATA'], 'bkg', basename)])
-            basename = basename_srfwnd.replace('tileX', f'tile{itile}')
-            bkglist.append([os.path.join(rst_dir, basename), os.path.join(task_config['DATA'], 'bkg', basename)])
-            basename = basename_tracer.replace('tileX', f'tile{itile}')
-            bkglist.append([os.path.join(rst_dir, basename), os.path.join(task_config['DATA'], 'bkg', basename)])
-            basename = basename_phydat.replace('tileX', f'tile{itile}')
-            bkglist.append([os.path.join(rst_dir, basename), os.path.join(task_config['DATA'], 'bkg', basename)])
-            basename = basename_sfcdat.replace('tileX', f'tile{itile}')
-            bkglist.append([os.path.join(rst_dir, basename), os.path.join(task_config['DATA'], 'bkg', basename)])
+        for imem in range(1, task_config['NMEM_ENKF'] + 1):
+            memchar = f"mem{imem:03d}"
+
+            # make run directory for member restart files
+            bkgdir = [
+                os.path.join(task_config['DATA'], 'bkg', memchar, 'RESTART')
+            ]
+            FileHandler({'mkdir': bkgdir}).sync()
+
+            # get FV3 RESTART files, this will be a lot simpler when using history files
+            rst_dir = os.path.join(task_config.comin_ges_atmens, memchar, 'atmos/RESTART')
+
+            basename = f'{task_config.cdate_fv3}.coupler.res'
+            bkglist.append([os.path.join(rst_dir, basename), os.path.join(task_config['DATA'], 'bkg', memchar, 'RESTART', basename)])
+            basename = f'{task_config.cdate_fv3}.fv_core.res.nc'
+            bkglist.append([os.path.join(rst_dir, basename), os.path.join(task_config['DATA'], 'bkg', memchar, 'RESTART', basename)])
+            basename_cadat = f'{task_config.cdate_fv3}.ca_data.tileX.nc'
+            basename_core = f'{task_config.cdate_fv3}.fv_core.res.tileX.nc'
+            basename_srfwnd = f'{task_config.cdate_fv3}.fv_srf_wnd.res.tileX.nc'
+            basename_tracer = f'{task_config.cdate_fv3}.fv_tracer.res.tileX.nc'
+            basename_phydat = f'{task_config.cdate_fv3}.phy_data.tileX.nc'
+            basename_sfcdat = f'{task_config.cdate_fv3}.sfc_data.tileX.nc'
+            for itile in range(1, task_config.ntiles + 1):
+                basename = basename_cadat.replace('tileX', f'tile{itile}')
+                bkglist.append([os.path.join(rst_dir, basename), os.path.join(task_config['DATA'], 'bkg', memchar, 'RESTART', basename)])
+                basename = basename_core.replace('tileX', f'tile{itile}')
+                bkglist.append([os.path.join(rst_dir, basename), os.path.join(task_config['DATA'], 'bkg', memchar, 'RESTART', basename)])
+                basename = basename_srfwnd.replace('tileX', f'tile{itile}')
+                bkglist.append([os.path.join(rst_dir, basename), os.path.join(task_config['DATA'], 'bkg', memchar, 'RESTART', basename)])
+                basename = basename_tracer.replace('tileX', f'tile{itile}')
+                bkglist.append([os.path.join(rst_dir, basename), os.path.join(task_config['DATA'], 'bkg', memchar, 'RESTART', basename)])
+                basename = basename_phydat.replace('tileX', f'tile{itile}')
+                bkglist.append([os.path.join(rst_dir, basename), os.path.join(task_config['DATA'], 'bkg', memchar, 'RESTART', basename)])
+                basename = basename_sfcdat.replace('tileX', f'tile{itile}')
+                bkglist.append([os.path.join(rst_dir, basename), os.path.join(task_config['DATA'], 'bkg', memchar, 'RESTART', basename)])
+
         bkg_dict = {
-            'mkdir': [os.path.join(task_config['DATA'], 'bkg')],
             'copy': bkglist,
         }
         return bkg_dict
-
-    @logit(logger)
-    def get_berror_dict(self, config: Dict[str, Any]) -> Dict[str, List[str]]:
-        """Compile a dictionary of background error files to copy
-
-        This method will construct a dictionary of BUMP background error files
-        for global atm DA and return said dictionary for use by the FileHandler class.
-        This dictionary contains coupler and fv_tracer files
-        for correlation and standard deviation as well as NICAS localization.
-
-        Parameters
-        ----------
-        config: Dict
-            a dictionary containing all of the configuration needed
-
-        Returns
-        ----------
-        berror_dict: Dict
-            a dictionary containing the list of background error files to copy for FileHandler
-        """
-        super.get_berror_dict(config)
-        # atm static-B needs nicas, cor_rh, cor_rv and stddev files.
-        b_dir = config['BERROR_DATA_DIR']
-        b_datestr = config['BERROR_DATE']
-        berror_list = []
-
-        for ftype in ['cor_rh', 'cor_rv', 'stddev']:
-            template_bump_coupler = f'{b_datestr}.{ftype}.coupler.res'
-            template_bump_tracer = f'{b_datestr}.{ftype}.fv_tracer.res.tileX.nc'
-            berror_list.append([
-                os.path.join(b_dir, template_bump_coupler),
-                os.path.join(config['DATA'], 'berror', template_bump_coupler)
-            ])
-            for itile in range(1, config.ntiles + 1):
-                bump_tracer = template_bump_tracer.replace('tileX', f'tile{itile}')
-                berror_list.append([
-                    os.path.join(b_dir, bump_tracer),
-                    os.path.join(config['DATA'], 'berror', bump_tracer)
-                ])
-
-        nproc = config.ntiles * config['layout_x'] * config['layout_y']
-        for nn in range(1, nproc + 1):
-            berror_list.append([
-                os.path.join(b_dir, f'nicas_atm_nicas_local_{nproc:06}-{nn:06}.nc'),
-                os.path.join(config['DATA'], 'berror', f'nicas_atm_nicas_local_{nproc:06}-{nn:06}.nc')
-            ])
-        berror_dict = {
-            'mkdir': [os.path.join(config['DATA'], 'berror')],
-            'copy': berror_list,
-        }
-        return berror_dict

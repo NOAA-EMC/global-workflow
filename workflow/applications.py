@@ -109,6 +109,7 @@ class AppConfig:
         self.do_jedivar = _base.get('DO_JEDIVAR', False)
         self.do_jediens = _base.get('DO_JEDIENS', False)
         self.do_jediatmvar = _base.get('DO_JEDIVAR', False)
+        self.do_jediatmens = _base.get('DO_JEDIENS', False)
         self.do_jediocnvar = _base.get('DO_JEDIOCNVAR', False)
 
         self.do_hpssarch = _base.get('HPSSARCH', False)
@@ -193,6 +194,8 @@ class AppConfig:
             configs += ['gldas']
 
         if self.do_hybvar:
+            if self.do_jediatmens:
+                configs += ['atmensanlinit', 'atmensanlrun', 'atmensanlfinal']
             if self.do_jediens:
                 configs += ['atmensanalprep', 'atmensanalrun', 'atmensanalpost']
             else:
@@ -381,6 +384,8 @@ class AppConfig:
         hybrid_tasks = []
         hybrid_after_eupd_tasks = []
         if self.do_hybvar:
+            if self.do_jediatmens:
+                hybrid_tasks += ['atmensanlinit', 'atmensanlrun', 'atmensanlfinal']
             if self.do_jediens:
                 hybrid_tasks += ['atmensanalprep', 'atmensanalrun', 'atmensanalpost', 'echgres']
             else:
