@@ -1,5 +1,5 @@
 #!/bin/bash
-set -ex
+#set -ex
 
 # ==============================================================================
 usage() {
@@ -38,8 +38,7 @@ echo "Start: $(date) on $(hostname)" >> $outfile
 echo "---------------------------------------------------" >> $outfile
 # ==============================================================================
 # run build script
-cd $repodir
-module purge
+cd $repodir/sorc
 export BUILD_JOBS=8
 rm -rf log.build
 ./checkout.sh -g -c

@@ -36,11 +36,7 @@ done
 case ${TARGET} in
   hera | orion)
     echo "Running Automated Testing on $TARGET"
-    source $MODULESHOME/init/sh
     source $my_dir/${TARGET}.sh
-    module purge
-    module use $GFS_MODULE_USE/module_base.${TARGET}.lua
-    module list
     ;;
   *)
     echo "Unsupported platform. Exiting with error."
@@ -90,29 +86,14 @@ for pr in $open_pr_list; do
   commit=$(git log --pretty=format:'%h' -n 1)
   echo "$commit" > $GFS_CI_ROOT/PR/$pr/commit
 
-  # load modules
-  case ${TARGET} in
-    hera | orion)
-      echo "Loading modules on $TARGET"
-      module purge
-      module use $GFS_CI_ROOT/PR/$pr/global-workflow/modulefiles
-      module load module_base.${TARGET}.lua
-      module list
-      ;;
-    *)
-      echo "Unsupported platform. Exiting with error."
-      exit 1
-      ;;
-  esac
-
   # run build and testing command
   $my_dir/run_ci.sh -d $GFS_CI_ROOT/PR/$pr/global-workflow -o $GFS_CI_ROOT/PR/$pr/output_${commit}
   ci_status=$?
   $GH_EXEC pr comment $pr --body-file $GFS_CI_ROOT/PR/$pr/output_${commit}
   if [ $ci_status -eq 0 ]; then
-    $GH_EXEC pr edit $pr --remove-label ${CI_LABEL}-Running --add-label ${CI_LABEL}-Passed
+    $GH_EXEC pr edit --repo $repo_url $pr --remove-label ${CI_LABEL}-Running --add-label ${CI_LABEL}-Passed
   else
-    $GH_EXEC pr edit $pr --remove-label ${CI_LABEL}-Running --add-label ${CI_LABEL}-Failed
+    $GH_EXEC pr edit $pr --repo $repo --remove-label ${CI_LABEL}-Running --add-label ${CI_LABEL}-Failed
   fi
 done
 
