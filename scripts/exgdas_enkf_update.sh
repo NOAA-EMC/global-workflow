@@ -82,7 +82,7 @@ cnvw_option=${cnvw_option:-".false."}
 netcdf_diag=${netcdf_diag:-".true."}
 modelspace_vloc=${modelspace_vloc:-".false."} # if true, 'vlocal_eig.dat' is needed
 IAUFHRS_ENKF=${IAUFHRS_ENKF:-6}
-if [ $CDUMP = "gfs" ]; then
+if [ $CDUMP = "enkfgfs" ]; then
    DO_CALC_INCREMENT=${DO_CALC_INCREMENT_ENKF_GFS:-"NO"}
 else
    DO_CALC_INCREMENT=${DO_CALC_INCREMENT:-"NO"}
