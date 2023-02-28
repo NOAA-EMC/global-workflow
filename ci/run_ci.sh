@@ -68,3 +68,5 @@ echo "check/build/link completed"
 ####################################################################
 # run pytests
 # TODO add pytest framework
+exit 0
+
