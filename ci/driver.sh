@@ -1,9 +1,33 @@
 #!/bin/bash --login
 
-set -ex
+################################################################################
+####  UNIX Script Documentation Block
+#                      .                                             .
+# Script name:         ci_driver.sh
+# Script description:  driver script for checking PR ready for CI regresssion testing
+#
+# Author:   Cory Martin / Terry McGuinness         Date: 2023-02-27
+#
+# Abstract: This script uses GitHub CL to check for Pull Requests with {machine}-GW-RT tags
+#           on the development branch on the global-workflow repo and stages the tests
+#           buy cloning the PRs and then calls run_ci.sh to building from $(HOMEgfs)/sorc
+#           and then run a suite of regression tests with various configurations.
+#
+# Script history log:
+# 2022        Cory Martin        Initial Script
+# 2023-02-25  Terry McGuinness   Refactored for global-workflow
 
+#################################################################
+# TODO using static build for GitHub CLI until fixed in HPC-Stack
+#################################################################
 GH_EXEC=/home/Terry.McGuinness/bin/gh
-my_dir="$( cd "$( dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd )"
+
+#####################################################################
+# Setup the reletive paths to scripts and source preamble for logging 
+#####################################################################
+pwd="$( cd "$( dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd )"
+HOMEgfs=$(realpath "${pwd}/..")
+source "${HOMEgfs}/ush/preamble.sh"
 
 # ==============================================================================
 usage() {
@@ -17,11 +41,10 @@ usage() {
   exit 1
 }
 
-# ==============================================================================
-# First, set up runtime environment
-
+#########################################################################
+#  Set up runtime environment varibles for accounts on supproted machines
+#########################################################################
 export TARGET="$(hostname)"
-
 while getopts "t:h" opt; do
   case $opt in
     t)
@@ -48,8 +71,9 @@ esac
 # using Terrence.McGuinness-NOAA for development with GitHub interations
 repo_url="https://github.com/TerrenceMcGuinness-NOAA/global-workflow.git"
 
-# ==============================================================================
-# pull on the repo and get list of open PRs
+#########################################################################
+# pull on the repo and get list of open PRs with tags {machine}-GW-RT
+#########################################################################
 mkdir -p $GFS_CI_ROOT/repo
 cd $GFS_CI_ROOT/repo
 if [ ! -d $GFS_CI_ROOT/repo/global-workflow ]; then
@@ -66,9 +90,10 @@ else
  exit
 fi 
 
-# ==============================================================================
-# clone, checkout, build, test, etc.
+#######################################
+# clone, checkout, build, test, each PR
 # loop throu all open PRs
+#######################################
 for pr in $open_pr_list; do
   $GH_EXEC pr edit --repo $repo_url $pr --remove-label $CI_LABEL --add-label ${CI_LABEL}-Running
   echo "Processing Pull Request #${pr}"
@@ -97,6 +122,9 @@ for pr in $open_pr_list; do
   fi
 done
 
-# ==============================================================================
+##########################################
 # scrub working directory for older files
+##########################################
 find $GFS_CI_ROOT/PR/* -maxdepth 1 -mtime +3 -exec rm -rf {} \;
+
+exit 0
