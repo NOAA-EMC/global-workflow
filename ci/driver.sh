@@ -105,10 +105,6 @@ for pr in $open_pr_list; do
       ;;
   esac
 
-  $GH_EXEC pr edit --repo $repo_url $pr --remove-label ${CI_LABEL}-Running --add-label ${CI_LABEL}
-  echo "pull open PR update lable and clone build test completed"
-  exit
-
   # run build and testing command
   $my_dir/run_ci.sh -d $GFS_CI_ROOT/PR/$pr/global-workflow -o $GFS_CI_ROOT/PR/$pr/output_${commit}
   ci_status=$?
@@ -123,4 +119,3 @@ done
 # ==============================================================================
 # scrub working directory for older files
 find $GFS_CI_ROOT/PR/* -maxdepth 1 -mtime +3 -exec rm -rf {} \;
-
