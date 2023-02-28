@@ -51,13 +51,20 @@ echo 'do_landDA: calling create ensemble'
 
 python ${CREATEENS} $FILEDATE $SNOWDEPTHVAR $B $WORKDIR
 
+for ens in 001 002
+do
+    mkdir -p $WORKDIR/mem${ens}/RESTART
+    mv $WORKDIR/mem${ens}/${FILEDATE}.* $WORKDIR/mem${ens}/RESTART/
+    cp ${WORKDIR}/${FILEDATE}.coupler.res $WORKDIR/mem${ens}/RESTART/
+done
 ################################################################################
 # IMS proc
-WORKDIR=${DATA}/obs
-cd $WORKDIR
-if [[ -e fims.nml ]]; then
-  rm fims.nml
-fi
+if [[ ${cyc} == "18" ]]; then
+  WORKDIR=${DATA}/obs
+  cd $WORKDIR
+  if [[ -e fims.nml ]]; then
+    rm fims.nml
+  fi
 
 cat >> fims.nml << EOF
  &fIMS_nml
@@ -72,26 +79,26 @@ cat >> fims.nml << EOF
   /
 EOF
 
-# stage restarts
-for tile in 1 2 3 4 5 6
-do
-  if [[ ! -e ${FILEDATE}.sfc_data.tile${tile}.nc ]]; then
-    cp ${BKGDIR}/${FILEDATE}.sfc_data.tile${tile}.nc .
-  fi
-done
+  # stage restarts
+  for tile in 1 2 3 4 5 6
+  do
+    if [[ ! -e ${FILEDATE}.sfc_data.tile${tile}.nc ]]; then
+      cp ${BKGDIR}/${FILEDATE}.sfc_data.tile${tile}.nc .
+    fi
+  done
 
-ulimit -Ss unlimited
-${CALCFIMS}
+  ulimit -Ss unlimited
+  ${CALCFIMS}
 
-export PYTHONPATH=$PYTHONPATH:${project_source_dir}/build/lib/python${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR}/pyioda/
+  export PYTHONPATH=$PYTHONPATH:${project_source_dir}/build/lib/python${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR}/pyioda/
 
-echo 'do_landDA: calling ioda converter'
-python ${IMS_IODA} -i IMSscf.${PDY}.${TSTUB}.nc -o ioda.IMSscf.${PDY}.${TSTUB}.nc
-
+  echo 'do_landDA: calling ioda converter'
+  python ${IMS_IODA} -i IMSscf.${PDY}.${TSTUB}.nc -o ioda.IMSscf.${PDY}.${TSTUB}.nc
+fi
 ################################################################################
 # run executable
 export pgm=${JEDIVAREXE}
 . prep_step
-${APRUN_LANDANL} "${DATA}/fv3jedi_var.x" "${DATA}/${CDUMP}.t${cyc}z.landvar.yaml" 1>&1 2>&2
+${APRUN_LANDANL} "${DATA}/fv3jedi_letkf.x" "${DATA}/${CDUMP}.t${cyc}z.landoi.yaml" 1>&1 2>&2
 export err=$?; err_chk
 exit "${err}"

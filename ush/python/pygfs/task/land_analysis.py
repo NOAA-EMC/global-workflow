@@ -80,7 +80,7 @@ class LandAnalysis(Analysis):
         FileHandler(self.get_bkg_dict(AttrDict(self.task_config, **self.task_config))).sync()
 
         # generate letkfoi YAML file
-        yaml_out = os.path.join(self.task_config['DATA'], f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.landvar.yaml")
+        yaml_out = os.path.join(self.task_config['DATA'], f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.landoi.yaml")
         letkfoi_yaml = YAMLFile(path=self.task_config['LANDVARYAML'])
         letkfoi_yaml = Template.substitute_structure(letkfoi_yaml, TemplateConstants.DOUBLE_CURLY_BRACES, self.task_config.get)
         letkfoi_yaml = Template.substitute_structure(letkfoi_yaml, TemplateConstants.DOLLAR_PARENTHESES, self.task_config.get)
@@ -134,8 +134,8 @@ class LandAnalysis(Analysis):
                 archive.add(f"{diagfile}.gz")
 
         # copy full YAML from executable to ROTDIR
-        src = os.path.join(self.task_config['DATA'], f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.landvar.yaml")
-        dest = os.path.join(self.task_config['COMOUTland'], f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.landvar.yaml")
+        src = os.path.join(self.task_config['DATA'], f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.landoi.yaml")
+        dest = os.path.join(self.task_config['COMOUTland'], f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.landoi.yaml")
         yaml_copy = {
             'mkdir': self.task_config['COMOUTland'],
             'copy': [src, dest]

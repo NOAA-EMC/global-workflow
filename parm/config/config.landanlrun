@@ -8,7 +8,4 @@ echo "BEGIN: config.landanlrun"
 # Get task specific resources
 . ${EXPDIR}/config.resources landanlrun
 
-# Task specific variables
-export JEDIVAREXE=${HOMEgfs}/exec/fv3jedi_var.x
-
 echo "END: config.landanlrun"
