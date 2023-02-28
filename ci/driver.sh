@@ -54,8 +54,11 @@ repo_url="https://github.com/TerrenceMcGuinness-NOAA/global-workflow.git"
 
 # ==============================================================================
 # pull on the repo and get list of open PRs
+mkdir -p $GFS_CI_ROOT/repo
 cd $GFS_CI_ROOT/repo
-#git clone $repo_url
+if [ ! -d $GFS_CI_ROOT/repo/global-workflow ]; then
+ git clone $repo_url
+fi
 cd $GFS_CI_ROOT/repo/global-workflow
 git pull
 CI_LABEL="${GFS_CI_HOST}-GW-RT"
