@@ -9,8 +9,8 @@
 # Author:   Cory Martin / Terry McGuinness         Date: 2023-02-27
 #
 # Abstract: This script uses GitHub CL to check for Pull Requests with {machine}-GW-RT tags
-#           on the development branch on the global-workflow repo and stages the tests
-#           buy cloning the PRs and then calls run_ci.sh to building from $(HOMEgfs)/sorc
+#           on the development branch for the global-workflow repo and stages tests
+#           by cloning the PRs and then calling run_ci.sh to building from $(HOMEgfs)/sorc
 #           and then run a suite of regression tests with various configurations.
 #
 # Script history log:
@@ -59,7 +59,7 @@ done
 case ${TARGET} in
   hera | orion)
     echo "Running Automated Testing on $TARGET"
-    source $my_dir/${TARGET}.sh
+    source ${HOMEgfs}/ci/${TARGET}.sh
     ;;
   *)
     echo "Unsupported platform. Exiting with error."
@@ -112,7 +112,7 @@ for pr in $open_pr_list; do
   echo "$commit" > $GFS_CI_ROOT/PR/$pr/commit
 
   # run build and testing command
-  $my_dir/run_ci.sh -d $GFS_CI_ROOT/PR/$pr/global-workflow -o $GFS_CI_ROOT/PR/$pr/output_${commit}
+  ${HOMEgfs}/ci/run_ci.sh -d $GFS_CI_ROOT/PR/$pr/global-workflow -o $GFS_CI_ROOT/PR/$pr/output_${commit}
   ci_status=$?
   $GH_EXEC pr comment $pr --repo $repo_url --body-file $GFS_CI_ROOT/PR/$pr/output_${commit}
   if [ $ci_status -eq 0 ]; then
