@@ -1,7 +1,15 @@
 #!/bin/bash
-#set -ex
 
-# ==============================================================================
+#####################################################################
+# Setup the reletive paths to scripts and source preamble for logging 
+#####################################################################
+pwd="$( cd "$( dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd )"
+HOMEgfs=$(realpath "${pwd}/..")
+source "${HOMEgfs}/ush/preamble.sh"
+
+#####################################################################
+#  Usage and arguments for specfifying cloned directgory
+#####################################################################
 usage() {
   set +x
   echo
@@ -14,7 +22,6 @@ usage() {
   exit 1
 }
 
-# ==============================================================================
 while getopts "d:o:h" opt; do
   case $opt in
     d)
@@ -29,14 +36,14 @@ while getopts "d:o:h" opt; do
   esac
 done
 
-# ==============================================================================
+####################################################################
 # start output file
 echo "Automated global-workflow Testing Results:" > $outfile
 echo "Machine: ${TARGET}" >> $outfile
 echo '```' >> $outfile
 echo "Start: $(date) on $(hostname)" >> $outfile
 echo "---------------------------------------------------" >> $outfile
-# ==============================================================================
+####################################################################
 # run build script
 cd $repodir/sorc
 export BUILD_JOBS=8
@@ -58,6 +65,6 @@ fi
 ./link_workflow.sh
 
 echo "check/build/link completed"
-# ==============================================================================
+####################################################################
 # run pytests
 # TODO add pytest framework
