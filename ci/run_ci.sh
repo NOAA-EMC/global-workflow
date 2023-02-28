@@ -1,7 +1,5 @@
 #!/bin/bash
-#set -eu
-
-TARGET='hera'
+set -ex
 
 # ==============================================================================
 usage() {
@@ -44,7 +42,7 @@ cd $repodir
 module purge
 export BUILD_JOBS=8
 rm -rf log.build
-./checkout.sh
+./checkout.sh -g -c
 # build full cycle
 ./build_all.sh -g &>> log.build
 build_status=$?
@@ -59,6 +57,8 @@ else
   exit $build_status
 fi
 ./link_workflow.sh
+
+echo "check/build/link completed"
 # ==============================================================================
 # run pytests
 # TODO add pytest framework
