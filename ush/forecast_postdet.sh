@@ -878,9 +878,9 @@ MOM6_postdet() {
 
     # Save MOM6 backgrounds
     local fhr="${FHMIN}"
-    for fhr in $OUTPUT_FH; do
+    for fhr in ${OUTPUT_FH}; do
       local idatestr=$(date -d "${CDATE:0:8} ${CDATE:8:2} + ${fhr} hours" +%Y_%m_%d_%H)
-      local fhr3=$(printf %03i ${fhr})
+      local fhr3=$(printf %03i "${fhr}")
       $NLN "${COMOUTocean}/${CDUMP}.t${cyc}z.ocnf${fhr3}.nc" "${DATA}/ocn_da_${idatestr}.nc"
     done
   fi
