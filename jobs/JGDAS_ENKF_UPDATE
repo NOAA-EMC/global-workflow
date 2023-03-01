@@ -7,25 +7,27 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "eupd" -c "base anal eupd"
 ##############################################
 # Set variables used in the script
 ##############################################
-export CDATE=${CDATE:-${PDY}${cyc}}
-export CDUMP=${CDUMP:-${RUN:-"enkfgdas"}}
-export COMPONENT="atmos"
+export CDUMP=${RUN/"enkf"}
 
 
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
 
-GDATE=$(${NDATE} -${assim_freq} ${CDATE})
-gPDY=$(echo ${GDATE} | cut -c1-8)
-gcyc=$(echo ${GDATE} | cut -c9-10)
+DATE_PREV=$(${NDATE} -${assim_freq} ${CDATE})
+export PDY_PREV=${DATE_PREV:0:8}
+export cyc_PREV=${DATE_PREV:8:2}
+GDUMP="gdas"
+GDUMP_ENS="enkf${GDUMP}"
 
-export APREFIX="${CDUMP}.t${cyc}z."
-export GPREFIX="enkfgdas.t${gcyc}z."
+export APREFIX="${RUN}.t${cyc}z."
+export GPREFIX="${GDUMP_ENS}.t${cyc_PREV}z."
 
-# COMIN_GES_ENS and COMOUT_ANL_ENS are used in script
-export COMIN_GES_ENS="${ROTDIR}/enkfgdas.${gPDY}/${gcyc}"
-export COMOUT_ANL_ENS="${ROTDIR}/${CDUMP}.${PDY}/${cyc}"
+MEMDIR="ensstat" YMD=${PDY} HH=${cyc} generate_com -rx \
+  COM_ATMOS_ANALYSIS_STAT:COM_ATMOS_ANALYSIS_TMPL
+
+MEMDIR="ensstat" YMD=${PDY_PREV} HH=${cyc_PREV} generate_com -rx \
+  COM_ATMOS_HISTORY_STAT_PREV:COM_ATMOS_HISTORY_TMPL
 
 
 ###############################################################
@@ -40,7 +42,7 @@ status=$?
 # Send Alerts
 ##############################################
 if [ ${SENDDBN} = YES  ] ; then
-   ${DBNROOT}/bin/dbn_alert MODEL ENKF1_MSC_enkfstat ${job} ${COMOUT_ANL_ENS}/${APREFIX}enkfstat
+   "${DBNROOT}/bin/dbn_alert" "MODEL" "ENKF1_MSC_enkfstat" "${job}" "${COM_ATMOS_ANALYSIS_STAT}/${APREFIX}enkfstat"
 fi
 
 
