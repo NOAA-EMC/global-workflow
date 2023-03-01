@@ -80,6 +80,7 @@ class Tasks:
           Variables substitued by default:
             ${ROTDIR} -> '&ROTDIR;'
             ${RUN}    -> self.cdump
+            ${DUMP}   -> self.cdump
             ${MEMDIR} -> ''
             ${YMD}    -> '@Y@m@d'
             ${HH}     -> '@H'
@@ -102,7 +103,7 @@ class Tasks:
         rocoto_conversion_dict = {
             'ROTDIR': '&ROTDIR;',
             'RUN': self.cdump,
-            'CDUMP': self.cdump,
+            'DUMP': self.cdump,
             'MEMDIR': '',
             'YMD': '@Y@m@d',
             'HH': '@H'
