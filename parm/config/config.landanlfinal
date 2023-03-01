@@ -6,5 +6,5 @@
 echo "BEGIN: config.landanlfinal"
 
 # Get task specific resources
-. ${EXPDIR}/config.resources landanlfinal
+. "${EXPDIR}/config.resources" landanlfinal
 echo "END: config.landanlfinal"
