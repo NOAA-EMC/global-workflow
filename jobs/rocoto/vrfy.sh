@@ -68,12 +68,18 @@ if [ ${VRFYFITS} = "YES" -a ${CDUMP} = ${CDFNL} -a ${CDATE} != ${SDATE} ]; then
 
     xdate=$(${NDATE} -${VBACKUP_FITS} ${CDATE})
 
-    export RUN_ENVIR_SAVE=${RUN_ENVIR}
-    export RUN_ENVIR="netcdf"
+    export vday=$(echo ${xdate} | cut -c1-8)
+    export vcyc=$(echo ${xdate} | cut -c9-10)
+    export COMDAY=${ROTDIR}/logs/${xdate}
+    export COM_INA=${ROTDIR}/gdas.${vday}/${vcyc}/atmos
+    export COM_INF='$ROTDIR/vrfyarch/gfs.$fdy/$fzz'
+    export COM_PRP='$ROTDIR/gdas.$pdy/$cyc/obs'
+
+    export OUTPUT_FILETYPE_SAVE=${OUTPUT_FILETYPE}
 
     ${PREPQFITSH} ${PSLOT} ${xdate} ${ROTDIR} ${ARCDIR} ${TMPDIR}
 
-    export RUN_ENVIR=${RUN_ENVIR_SAVE}
+    export OUTPUT_FILETYPE=${OUTPUT_FILETYPE_SAVE}
 
 fi
 

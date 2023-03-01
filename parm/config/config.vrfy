@@ -32,33 +32,36 @@ export RUNMOS="NO"                # whether to run entire MOS package
 
 if [ $VRFYFITS = "YES" ]; then
 
-    export fit_ver="newm.1.3"
-    export fitdir="$BASE_GIT/verif/global/Fit2Obs/${fit_ver}/batrun"
-    export PRVT=$HOMEgfs/fix/gsi/prepobs_errtable.global
-    export HYBLEVS=$HOMEgfs/fix/am/global_hyblev.l${LEVS}.txt
-    export CUE2RUN=$QUEUE
+    export fit_ver="newm.1.7"
+    export fitdir="${BASE_GIT}/verif/global/Fit2Obs/${fit_ver}/batrun"
+    export PRVT=${HOMEgfs}/fix/gsi/prepobs_errtable.global
+    export HYBLEVS=${HOMEgfs}/fix/am/global_hyblev.l${LEVS}.txt
+    export CUE2RUN=${QUEUE}
 
     export VBACKUP_FITS=24
+    export OUTPUT_FILETYPE="netcdf"
+    export CONVNETC="YES"
+    export ACPROFit="YES"
 
-    export CONVNETC="NO"
     if [ ${netcdf_diag:-".false."} = ".true." ]; then
         export CONVNETC="YES"
     fi
 
-    if [ $machine = "HERA" ]; then
-        export PREPQFITSH="$fitdir/subfits_hera_slurm"
+    if [ $machine = "WCOSS2" ]; then
+        export PREPQFITSH="$fitdir/subfits_wcoss2"
+    elif [ $machine = "HERA" ]; then
+        export PREPQFITSH="$fitdir/subfits_hera"
+    elif [ $machine = "ORION" ]; then
+        export PREPQFITSH="$fitdir/subfits_orion"
     elif [ $machine = "S4" ]; then
         export PREPQFITSH="$fitdir/subfits_s4_slurm"
-    elif [ $machine = "ORION" ]; then
-        export PREPQFITSH="$fitdir/subfits_orion_netcdf"
     elif [ $machine = "JET" ]; then
-        export PREPQFITSH="$fitdir/subfits_jet_netcdf"
+        export PREPQFITSH="$fitdir/subfits_jet"
     else
         echo "Fit2Obs NOT supported on this machine"
     fi
 
 fi
-
 
 #----------------------------------------------------------
 # Minimization, Radiance and Ozone Monitoring
