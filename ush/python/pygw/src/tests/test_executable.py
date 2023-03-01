@@ -10,6 +10,9 @@ echo ${USER}
 
 
 def test_executable(tmp_path):
+    """
+    Tests the class `Executable`
+    """
     whoami = os.environ['USER']
 
     test_file = tmp_path / 'whoami.x'
@@ -28,7 +31,10 @@ def test_executable(tmp_path):
 
 
 def test_which(tmpdir):
-    # `which` should return None if the executable is not found
+    """
+    Tests the `which()` function.
+    `which` should return `None` if the executable is not found
+    """
     os.environ["PATH"] = str(tmpdir)
     assert which('test.x') is None
 

@@ -38,7 +38,7 @@ class Executable:
         Parameters
         ----------
         name : str
-            name of the executable to run
+               name of the executable to run
         """
         self.exe = shlex.split(str(name))
         self.default_env = {}
@@ -47,16 +47,26 @@ class Executable:
         if not self.exe:
             raise ProcessError(f"Cannot construct executable for '{name}'")
 
-    def add_default_arg(self, arg: Any) -> None:
-        """Add a default argument to the command."""
+    def add_default_arg(self, arg: str) -> None:
+        """
+        Add a default argument to the command.
+        Parameters
+        ----------
+        arg : str
+              argument to the executable
+        """
         self.exe.append(arg)
 
     def add_default_env(self, key: str, value: Any) -> None:
-        """Set an environment variable when the command is run.
+        """
+        Set an environment variable when the command is run.
 
         Parameters:
-            key: The environment variable to set
-            value: The value to set it to
+        ----------
+        key : str
+              The environment variable to set
+        value : Any
+                The value to set it to
         """
         self.default_env[key] = str(value)
 
@@ -67,7 +77,7 @@ class Executable:
 
         Returns:
         --------
-            str: The executable and default arguments
+        str : The executable and default arguments
         """
         return " ".join(self.exe)
 
@@ -78,7 +88,7 @@ class Executable:
 
         Returns:
         --------
-            str: The basename of the executable
+        str : The basename of the executable
         """
         return os.path.basename(self.path)
 
@@ -89,7 +99,7 @@ class Executable:
 
         Returns:
         --------
-            str: The path to the executable
+        str : The path to the executable
         """
         return self.exe[0]
 
@@ -99,22 +109,29 @@ class Executable:
 
         Parameters:
         -----------
-            *args (str): Command-line arguments to the executable to run
+        *args (str): Command-line arguments to the executable to run
 
         Keyword Arguments:
         ------------------
-            _dump_env (dict): Dict to be set to the environment actually
-                used (envisaged for testing purposes only)
-            env (dict): The environment with which to run the executable
-            fail_on_error (bool): Raise an exception if the subprocess returns
-                an error. Default is True. The return code is available as
-                ``exe.returncode``
-            ignore_errors (int or list): A list of error codes to ignore.
-                If these codes are returned, this process will not raise
-                an exception even if ``fail_on_error`` is set to ``True``
-            input: Where to read stdin from
-            output: Where to send stdout
-            error: Where to send stderr
+        _dump_env : Dict
+            Dict to be set to the environment actually
+            used (envisaged for testing purposes only)
+        env : Dict
+            The environment with which to run the executable
+        fail_on_error : bool
+            Raise an exception if the subprocess returns
+            an error. Default is True. The return code is available as
+            ``exe.returncode``
+        ignore_errors : int or List
+            A list of error codes to ignore.
+            If these codes are returned, this process will not raise
+            an exception even if ``fail_on_error`` is set to ``True``
+        input :
+            Where to read stdin from
+        output :
+            Where to send stdout
+        error :
+            Where to send stderr
 
         Accepted values for input, output, and error:
 
@@ -245,9 +262,29 @@ class Executable:
         return " ".join(self.exe)
 
 
-def which_string(*args, **kwargs):
+def which_string(*args, **kwargs) -> str:
     """
     Like ``which()``, but return a string instead of an ``Executable``.
+
+    If given multiple executables, returns the string of the first one that is found.
+    If no executables are found, returns None.
+
+    Parameters:
+    -----------
+    *args : str
+        One or more executables to search for
+
+    Keyword Arguments:
+    ------------------
+    path : str or List
+        The path to search. Defaults to ``PATH``
+    required : bool
+        If set to True, raise an error if executable not found
+
+    Returns:
+    --------
+    str :
+        The first executable that is found in the path
     """
     path = kwargs.get("path", os.environ.get("PATH", ""))
     required = kwargs.get("required", False)
@@ -282,16 +319,19 @@ def which(*args, **kwargs) -> Optional[Executable]:
 
     Parameters:
     -----------
-        *args (str): One or more executables to search for
+    *args : str
+        One or more executables to search for
 
     Keyword Arguments:
     ------------------
-        path (list or str): The path to search. Defaults to ``PATH``
-        required (bool): If set to True, raise an error if executable not found
+    path : str or List
+        The path to search. Defaults to ``PATH``
+    required : bool
+        If set to True, raise an error if executable not found
 
     Returns:
     --------
-        Executable: The first executable that is found in the path
+    Executable: The first executable that is found in the path
     """
     exe = which_string(*args, **kwargs)
     return Executable(shlex.quote(exe)) if exe else None
