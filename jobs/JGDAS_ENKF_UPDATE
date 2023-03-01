@@ -17,8 +17,8 @@ export CDUMP=${RUN/"enkf"}
 DATE_PREV=$(${NDATE} -${assim_freq} ${CDATE})
 export PDY_PREV=${DATE_PREV:0:8}
 export cyc_PREV=${DATE_PREV:8:2}
-GDUMP="gdas"
-GDUMP_ENS="enkf${GDUMP}"
+export GDUMP="gdas"
+export GDUMP_ENS="enkf${GDUMP}"
 
 export APREFIX="${RUN}.t${cyc}z."
 export GPREFIX="${GDUMP_ENS}.t${cyc_PREV}z."

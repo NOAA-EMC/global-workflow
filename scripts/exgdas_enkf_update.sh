@@ -181,7 +181,7 @@ nfhrs=$(echo $IAUFHRS_ENKF | sed 's/,/ /g')
 for imem in $(seq 1 $NMEM_ENKF); do
    memchar="mem"$(printf %03i $imem)
 
-   MEMDIR=${memchar} YMD=${PDY_PREV} HH=${cyc_PREV} generate_com -x \
+   MEMDIR=${memchar} RUN=${GDUMP_ENS} YMD=${PDY_PREV} HH=${cyc_PREV} generate_com -x \
       COM_ATMOS_HISTORY_MEM_PREV:COM_ATMOS_HISTORY_TMPL
 
    MEMDIR=${memchar} YMD=${PDY} HH=${cyc} generate_com -x \
