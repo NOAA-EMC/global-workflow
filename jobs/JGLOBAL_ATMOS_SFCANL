@@ -7,9 +7,8 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "sfcanl" -c "base sfcanl"
 ##############################################
 # Set variables used in the script
 ##############################################
-export CDATE=${CDATE:-${PDY}${cyc}}
-export CDUMP=${CDUMP:-${RUN:-"gfs"}}
-export COMPONENT="atmos"
+export CDUMP="${RUN/enkf}"
+export CDATE="${PDY}${cyc}"
 if [[ ${RUN_ENVIR} = "nco" ]]; then
     export ROTDIR=${COMROOT:?}/${NET}/${envir}
 fi
@@ -19,37 +18,23 @@ fi
 # Begin JOB SPECIFIC work
 ##############################################
 
-GDATE=$(${NDATE} -${assim_freq} ${CDATE})
-gPDY=$(echo ${GDATE} | cut -c1-8)
-gcyc=$(echo ${GDATE} | cut -c9-10)
-GDUMP=${GDUMP:-"gdas"}
+DATE_PREV=$(${NDATE} -${assim_freq} ${CDATE})
+PDY_PREV=${DATE_PREV:0:8}
+cyc_PREV=${DATE_PREV:8:2}
+export GDUMP="gdas"
 
 export OPREFIX="${CDUMP}.t${cyc}z."
-export GPREFIX="${GDUMP}.t${gcyc}z."
+export GPREFIX="${GDUMP}.t${cyc_PREV}z."
 export APREFIX="${CDUMP}.t${cyc}z."
 
-if [ ${RUN_ENVIR} = "nco" -o ${ROTDIR_DUMP:-NO} = "YES" ]; then
-    export COMIN=${COMIN:-${ROTDIR}/${RUN}.${PDY}/${cyc}/atmos}
-    export COMOUT=${COMOUT:-${ROTDIR}/${RUN}.${PDY}/${cyc}/atmos}
-    export COMIN_OBS=${COMIN_OBS:-${ROTDIR}/${RUN}.${PDY}/${cyc}/atmos}
-    export COMIN_GES_OBS=${COMIN_GES_OBS:-${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/atmos}
-else
-    export COMOUT="${ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos"
-    export COMIN_OBS="${COMIN_OBS:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/obs}"
-    export COMIN_GES_OBS="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/obs"
-fi
-mkdir -m 775 -p ${COMOUT}
-# COMIN_GES and COMIN_GES_ENS are used in script
-export COMIN_GES="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/atmos"
-export COMIN_GES_ENS="${ROTDIR}/enkfgdas.${gPDY}/${gcyc}"
+YMD=${PDY} HH=${cyc} generate_com -rx COM_OBS COM_ATMOS_ANALYSIS COM_ATMOS_RESTART
 
+RUN=${GDUMP} YMD=${PDY_PREV} HH=${cyc_PREV} generate_com -rx \
+    COM_OBS_PREV:COM_OBS_TMPL \
+    COM_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL
 
-export ATMGES="${COMIN_GES}/${GPREFIX}atmf006.nc"
-if [ ! -f ${ATMGES} ]; then
-    echo "FATAL ERROR: FILE MISSING: ATMGES = ${ATMGES}"
-    exit 1
-fi
-
+declare -rx COMIN="${COM_ATMOS_ANALYSIS}"
+declare -rx COMOUT="${COM_ATMOS_ANALYSIS}"
 
 ###############################################################
 # Run relevant script
