@@ -1175,7 +1175,7 @@ class Tasks:
         do_gfs_enkf = True if self.app_config.do_hybvar and 'gfs' in self.app_config.eupd_cdumps else False
         atm_hist_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_HISTORY_TMPL"], {'RUN': 'gdas'})
         dump_path = self._template_to_rocoto_cycstring(self._base["COM_OBSDMP_TMPL"],
-                                                  {'DMPDIR': dmpdir, 'DUMP_SUFFIX': dump_suffix})
+                                                       {'DMPDIR': dmpdir, 'DUMP_SUFFIX': dump_suffix})
 
         deps = []
         dep_dict = {'type': 'metatask', 'name': 'gdaspost', 'offset': '-06:00:00'}
