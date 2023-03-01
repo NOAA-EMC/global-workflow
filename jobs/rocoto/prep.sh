@@ -25,30 +25,19 @@ status=$?
 
 ###############################################################
 # Set script and dependency variables
-export OPREFIX="${CDUMP}.t${cyc}z."
-YMD=${PDY} HH=${cyc} DUMP=${CDUMP} generate_com -rx COM_OBS COM_OBSDMP
 
 DATE_PREV=$(${NDATE} -${assim_freq} "${PDY}${cyc}")
 PDY_PREV=${DATE_PREV:0:8}
 cyc_PREV=${DATE_PREV:8:2}
 GDUMP="gdas"
-# shellcheck disable=SC2030
-COM_OBS_PREV=$({
-    export YMD=${PDY_PREV}
-    export HH=${cyc_PREV}
-    export RUN=${GDUMP}
-    echo "${COM_OBS_TMPL}" | envsubst
-})
-declare -rx COM_OBS_PREV
 
-COM_OBSDMP_PREV=$({
-    export YMD=${PDY_PREV}
-    export HH=${cyc_PREV}
-    export CDUMP=${GDUMP}
-    echo "${COM_OBSDMP_TMPL}" | envsubst
-})
-declare -rx COM_OBSDMP_PREV
-# shellcheck disable=
+export OPREFIX="${CDUMP}.t${cyc}z."
+
+YMD=${PDY} HH=${cyc} DUMP=${CDUMP} generate_com -rx COM_OBS COM_OBSDMP
+
+RUN=${GDUMP} DUMP=${GDUMP} YMD=${PDY_PREV} HH=${cyc_PREV} generate_com -rx \
+    COM_OBS_PREV:COM_OBS_TMPL \
+    COM_OBSDMP_PREV:COM_OBSDMP_TMPL
 
 export MAKE_PREPBUFR=${MAKE_PREPBUFR:-"YES"}
 if [[ ! -d "${COM_OBS}" ]]; then mkdir -p "${COM_OBS}"; fi
@@ -116,12 +105,8 @@ if [ $MAKE_PREPBUFR = "YES" ]; then
     export DATAROOT="${RUNDIR}/${CDATE}/${CDUMP}/prepbufr"
     export COMIN=${COM_OBS}
     export COMOUT=${COM_OBS}
-    export YMD=${PDY}
-    export HH=${cyc}
-    COMINgdas=$(export RUN="gdas"; echo "${COM_ATMOS_HISTORY_TMPL}" | envsubst)
-    declare -rx COMINgdas
-    COMINgfs=$(export RUN="gfs"; echo "${COM_ATMOS_HISTORY_TMPL}" | envsubst)
-    declare -rx COMINgfs
+    RUN="gdas" YMD=${PDY} HH=${cyc} generate_com -rx COMINgdas:COM_ATMOS_HISTORY_TMPL
+    RUN="gfs" YMD=${PDY} HH=${cyc} generate_com -rx COMINgfs:COM_ATMOS_HISTORY_TMPL
     if [ $ROTDIR_DUMP = "NO" ]; then
         export COMSP=${COMSP:-"${COM_OBSDMP}/${CDUMP}.t${cyc}z."}
     else
