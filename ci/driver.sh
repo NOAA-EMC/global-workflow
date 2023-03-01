@@ -1,12 +1,11 @@
 #!/bin/bash --login
 
 ################################################################################
-####  UNIX Script Documentation Block
 #                      .                                             .
 # Script name:         ci_driver.sh
 # Script description:  driver script for checking PR ready for CI regresssion testing
 #
-# Author:   Cory Martin / Terry McGuinness         Date: 2023-02-27
+# Author:   Cory Martin / Terry McGuinness   Org: NCEP/EMC     Date: 2023-02-27
 #
 # Abstract: This script uses GitHub CL to check for Pull Requests with {machine}-GW-RT tags
 #           on the development branch for the global-workflow repo and stages tests
@@ -22,12 +21,18 @@
 #################################################################
 GH_EXEC=/home/Terry.McGuinness/bin/gh
 
-#####################################################################
-# Setup the reletive paths to scripts and source preamble for logging 
-#####################################################################
+################################################################
+# Setup the reletive paths to scripts and PS4 for better logging 
+################################################################
+set -ex
 pwd="$( cd "$( dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd )"
-HOMEgfs=$(realpath "${pwd}/..")
-source "${HOMEgfs}/ush/preamble.sh"
+scriptname=$(basename "${BASH_SOURCE[1]}")
+start_time=$(date +%s)
+start_time_human=$(date -d"@${start_time}" -u)
+echo "Begin ${scriptname} at ${start_time_human}"
+export PS4='+ $(basename ${BASH_SOURCE})[${LINENO}]'
+
+export HOMEgfs=$(realpath "${pwd}/..")
 
 # ==============================================================================
 usage() {
@@ -121,6 +126,8 @@ for pr in $open_pr_list; do
     $GH_EXEC pr edit $pr --repo $repo_url --remove-label ${CI_LABEL}-Running --add-label ${CI_LABEL}-Failed
   fi
 done
+
+
 
 ##########################################
 # scrub working directory for older files
