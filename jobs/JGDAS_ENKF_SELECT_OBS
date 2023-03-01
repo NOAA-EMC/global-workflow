@@ -7,7 +7,7 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "eobs" -c "base anal eobs"
 ##############################################
 # Set variables used in the script
 ##############################################
-export CDUMP=${RUN/gdas}
+export CDUMP=${RUN/enkf}
 export MAKE_NSSTBUFR=${MAKE_NSSTBUFR:-"NO"}
 export MAKE_ACFTBUFR=${MAKE_ACFTBUFR:-"NO"}
 
@@ -36,7 +36,7 @@ RUN=${CDUMP} generate_com -rx COM_OBS
 MEMDIR='ensstat' generate_com -rx COM_ATMOS_ANALYSIS
 declare -rx COM_ATMOS_ANALYSIS_ENS="${COM_ATMOS_ANALYSIS}"
 
-RUN=${GDUMP} generate_com -r COM_ATMOS_ANALYSIS_DET
+RUN=${GDUMP} generate_com -r COM_ATMOS_ANALYSIS_DET:COM_ATMOS_ANALYSIS_TMPL
 
 MEMDIR='ensstat' RUN=${GDUMP_ENS} YMD=${PDY_PREV} HH=${cyc_PREV} generate_com -rx \
     COM_ATMOS_ANALYSIS_PREV:COM_ATMOS_ANALYSIS_TMPL \
