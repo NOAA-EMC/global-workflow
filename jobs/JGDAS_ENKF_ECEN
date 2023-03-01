@@ -7,36 +7,33 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "ecen" -c "base ecen"
 ##############################################
 # Set variables used in the script
 ##############################################
-export CDATE=${CDATE:-${PDY}${cyc}}
-export CDUMP=${CDUMP:-${RUN:-"enkfgdas"}}
-export COMPONENT="atmos"
-
+export CDUMP="${RUN/enkf}"
 
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
-
-GDATE=$(${NDATE} -${assim_freq} ${CDATE})
-gPDY=$(echo ${GDATE} | cut -c1-8)
-gcyc=$(echo ${GDATE} | cut -c9-10)
-GDUMP=${GDUMP:-"gdas"}
-GDUMP_ENS=${GDUMP_ENS:-"enkf${GDUMP}"}
+DATE_PREV=$(${NDATE} -"${assim_freq}" "${PDY}${cyc}")
+export PDY_PREV=${DATE_PREV:0:8}
+export cyc_PREV=${DATE_PREV:8:2}
+export GDUMP="gdas"
+export GDUMP_ENS="enkf${GDUMP}"
 
 export CASE=${CASE_ENKF}
 
-export CDUMP_OBS=${CDUMP_OBS:-${CDUMP/enkf}}
+export OPREFIX="${CDUMP}.t${cyc}z."
+export APREFIX="${CDUMP}.t${cyc}z."
+export APREFIX_ENS="${RUN}.t${cyc}z."
+export GPREFIX="${GDUMP}.t${cyc_PREV}z."
+export GPREFIX_ENS="${GDUMP_ENS}.t${cyc_PREV}z."
 
-export OPREFIX="${CDUMP_OBS}.t${cyc}z."
-export APREFIX="${CDUMP/enkf}.t${cyc}z."
-export APREFIX_ENS="${CDUMP}.t${cyc}z."
-export GPREFIX="${GDUMP}.t${gcyc}z."
-export GPREFIX_ENS="${GDUMP_ENS}.t${gcyc}z."
+RUN=${CDUMP} YMD=${PDY} HH=${cyc} generate_com -rx \
+  COM_ATMOS_ANALYSIS_DET:COM_ATMOS_ANALYSIS_TMPL
 
-# COMIN, COMIN_ENS and COMIN_GES_ENS are used in script
-export COMIN="${ROTDIR}/${CDUMP/enkf}.${PDY}/${cyc}/atmos"
-export COMIN_ENS="${ROTDIR}/${CDUMP}.${PDY}/${cyc}"
-export COMOUT_ENS="${ROTDIR}/${CDUMP}.${PDY}/${cyc}"
-export COMIN_GES_ENS="${ROTDIR}/${GDUMP_ENS}.${gPDY}/${gcyc}"
+MEMDIR="ensstat" YMD=${PDY} HH=${cyc} generate_com -rx \
+  COM_ATMOS_ANALYSIS_STAT:COM_ATMOS_ANALYSIS_TMPL
+
+MEMDIR="ensstat" RUN=${GDUMP} YMD=${PDY_PREV} HH=${cyc_PREV} generate_com -rx \
+  COM_ATMOS_HISTORY_STAT_PREV:COM_ATMOS_HISTORY_TMPL
 
 
 ###############################################################
