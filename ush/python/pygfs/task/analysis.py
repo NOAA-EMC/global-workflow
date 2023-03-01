@@ -22,7 +22,8 @@ class Analysis(Task):
     """
 
     def __init__(self, config: Dict[str, Any]) -> None:
-        super().__init__(config, ntiles=6)
+        super().__init__(config)
+        self.config.ntiles = 6
 
     def initialize(self) -> None:
         super().initialize()
@@ -85,7 +86,7 @@ class Analysis(Task):
                     rstfile.variables[vname][:] = anl[:]
                     try:
                         rstfile.variables[vname].delncattr('checksum')  # remove the checksum so fv3 does not complain
-                    except AttributeError:
+                    except (AttributeError, RuntimeError):
                         pass  # checksum is missing, move on
 
     @logit(logger)
