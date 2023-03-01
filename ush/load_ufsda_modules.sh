@@ -1,8 +1,7 @@
 #! /usr/bin/env bash
 
 ###############################################################
-export DEBUG_WORKFLOW="${DEBUG_WORKFLOW:-NO}"
-if [[ "${DEBUG_WORKFLOW}" == "NO" ]]; then
+if [[ "${DEBUG_WORKFLOW:-NO}" == "NO" ]]; then
     echo "Loading modules quietly..."
     set +x
 fi
