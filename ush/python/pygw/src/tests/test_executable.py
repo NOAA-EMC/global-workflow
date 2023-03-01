@@ -12,6 +12,10 @@ echo ${USER}
 def test_executable(tmp_path):
     """
     Tests the class `Executable`
+    Parameters:
+    -----------
+    tmp_path : Path
+        temporary path created by pytest
     """
     whoami = os.environ['USER']
 
@@ -34,6 +38,10 @@ def test_which(tmpdir):
     """
     Tests the `which()` function.
     `which` should return `None` if the executable is not found
+    Parameters
+    ----------
+    tmpdir : Path
+        path to a temporary directory created by pytest
     """
     os.environ["PATH"] = str(tmpdir)
     assert which('test.x') is None
