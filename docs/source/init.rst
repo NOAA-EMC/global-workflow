@@ -1,6 +1,61 @@
-==========================
+==================
+Initial Conditions
+==================
+
+^^^^^^^^^^^^^^^^^^^^^^^^^
+Staged Initial Conditions
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Select staged initial conditions are made available to users on supported platforms in the following locations:
+
+::
+
+   Hera: /scratch1/NCEPDEV/global/glopara/data/ICSDIR
+   Orion: /work/noaa/global/glopara/data/ICSDIR
+   WCOSS2: /lfs/h2/emc/global/noscrub/emc.global/data/ICSDIR
+
+***************
+Cycled ATM-only
+***************
+
+Cold-start C96C48L127 ICs are available in ``C96C48`` subfolders:
+
+::
+
+   -bash-4.2$ ll /scratch1/NCEPDEV/global/glopara/data/ICSDIR/C96C48/
+   total 8
+   drwxr-sr-x 3 glopara stmp 4096 Jan 20 16:37 enkfgdas.20211220
+   drwxr-sr-x 3 glopara stmp 4096 Jan 20 16:37 gdas.20211220
+
+******************
+Cycled Coupled ATM
+******************
+
+::
+
+   -bash-4.2$ ll /scratch1/NCEPDEV/global/glopara/data/ICSDIR/C48mx500/
+   total 8
+   drwxr-sr-x 3 glopara stmp 4096 Feb  3 15:43 enkfgdas.20210323
+   drwxr-sr-x 4 glopara stmp 4096 Jan 20 18:33 gdas.20210323
+   -bash-4.2$ ll /scratch1/NCEPDEV/global/glopara/data/ICSDIR/C48mx500/enkfgdas.20210323/06/mem001[->080]/
+   atmos/ ice/ ocean/
+   -bash-4.2$ ll /scratch1/NCEPDEV/global/glopara/data/ICSDIR/C48mx500/gdas.20210323/06/
+   atmos/ ice/ med/ ocean/
+
+*********
+Prototype
+*********
+
+::
+
+    WCOSS2: /lfs/h2/emc/global/noscrub/emc.global/IC/COUPLED
+    HERA: /scratch1/NCEPDEV/climate/role.ufscpara/IC
+    ORION: /work/noaa/global/glopara/data/ICSDIR/prototype_ICs
+    S4: /data/prod/glopara/coupled_ICs
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 Prepare Initial Conditions
-==========================
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 There are two types of initial conditions for the global-workflow:
 
