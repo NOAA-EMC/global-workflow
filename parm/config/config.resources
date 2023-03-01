@@ -9,8 +9,6 @@ if [ $# -ne 1 ]; then
     echo "Must specify an input task argument to set resource variables!"
     echo "argument can be any one of the following:"
     echo "getic init coupled_ic aerosol_init"
-    echo "atmanalprep atmanalrun atmanalpost"
-    echo "atmensanalprep atmensanalrun atmensanalpost"
     echo "atmanlinit atmanlrun atmanlfinal"
     echo "atmensanlinit atmensanlrun atmensanlfinal"
     echo "aeroanlinit aeroanlrun aeroanlfinal"
@@ -157,41 +155,6 @@ elif [ ${step} = "waveawipsgridded" ]; then
     export npe_node_waveawipsgridded=$(echo "${npe_node_max} / ${nth_waveawipsgridded}" | bc)
     export NTASKS=${npe_waveawipsgridded}
     export memory_waveawipsgridded_gfs="1GB"
-
-elif [[ "${step}" = "atmanalprep" ]]; then
-
-    export wtime_atmanalprep="00:10:00"
-    export npe_atmanalprep=1
-    export nth_atmanalprep=1
-    npe_node_atmanalprep=$(echo "${npe_node_max} / ${nth_atmanalprep}" | bc)
-    export npe_node_atmanalprep
-    export memory_atmanalprep="3072M"
-
-elif [[ "${step}" = "atmanalrun" ]]; then
-
-    # make below case dependent later
-    export layout_x=1
-    export layout_y=1
-
-    export wtime_atmanalrun="00:30:00"
-    npe_atmanalrun=$(echo "${layout_x} * ${layout_y} * 6" | bc)
-    export npe_atmanalrun
-    npe_atmanalrun_gfs=$(echo "${layout_x} * ${layout_y} * 6" | bc)
-    export npe_atmanalrun_gfs
-    export nth_atmanalrun=1
-    export nth_atmanalrun_gfs=${nth_atmanalrun}
-    npe_node_atmanalrun=$(echo "${npe_node_max} / ${nth_atmanalrun}" | bc)
-    export npe_node_atmanalrun
-    export is_exclusive=True
-
-elif [[ "${step}" = "atmanalpost" ]]; then
-
-    export wtime_atmanalpost="00:30:00"
-    export npe_atmanalpost=${npe_node_max}
-    export nth_atmanalpost=1
-    npe_node_atmanalpost=$(echo "${npe_node_max} / ${nth_atmanalpost}" | bc)
-    export npe_node_atmanalpost
-    export is_exclusive=True
 
 elif [[ "${step}" = "atmanlinit" ]]; then
 
@@ -740,36 +703,6 @@ elif [ ${step} = "coupled_ic" ]; then
     export npe_coupled_ic=1
     export npe_node_coupled_ic=1
     export nth_coupled_ic=1
-    export is_exclusive=True
-
-elif [ ${step} = "atmensanalprep" ]; then
-
-    export wtime_atmensanalprep="00:10:00"
-    export npe_atmensanalprep=1
-    export nth_atmensanalprep=1
-    export npe_node_atmensanalprep=$(echo "${npe_node_max} / ${nth_atmensanalprep}" | bc)
-    export is_exclusive=True
-
-elif [ ${step} = "atmensanalrun" ]; then
-
-    # make below case dependent later
-    export layout_x=2
-    export layout_y=3
-
-    export wtime_atmensanalrun="00:30:00"
-    export npe_atmensanalrun=$(echo "${layout_x} * ${layout_y} * 6" | bc)
-    export npe_atmensanalrun_gfs=$(echo "${layout_x} * ${layout_y} * 6" | bc)
-    export nth_atmensanalrun=1
-    export nth_atmensanalrun_gfs=${nth_atmensanalrun}
-    export is_exclusive=True
-    export npe_node_atmensanalrun=$(echo "${npe_node_max} / ${nth_atmensanalrun}" | bc)
-
-elif [ ${step} = "atmensanalpost" ]; then
-
-    export wtime_atmensanalpost="00:30:00"
-    export npe_atmensanalpost=${npe_node_max}
-    export nth_atmensanalpost=1
-    export npe_node_atmensanalpost=$(echo "${npe_node_max} / ${nth_atmensanalpost}" | bc)
     export is_exclusive=True
 
 elif [[ ${step} = "eobs" || ${step} = "eomg" ]]; then

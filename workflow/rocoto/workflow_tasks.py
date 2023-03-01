@@ -12,11 +12,9 @@ class Tasks:
     SERVICE_TASKS = ['arch', 'earc', 'getic']
     VALID_TASKS = ['aerosol_init', 'coupled_ic', 'getic', 'init',
                    'prep', 'anal', 'sfcanl', 'analcalc', 'analdiag', 'gldas', 'arch',
-                   'atmanalprep', 'atmanalrun', 'atmanalpost',
                    'ocnanalprep', 'ocnanalbmat', 'ocnanalrun', 'ocnanalpost',
                    'earc', 'ecen', 'echgres', 'ediag', 'efcs',
                    'eobs', 'eomg', 'epos', 'esfc', 'eupd',
-                   'atmensanalprep', 'atmensanalrun', 'atmensanalpost',
                    'atmanlinit', 'atmanlrun', 'atmanlfinal',
                    'atmensanlinit', 'atmensanlrun', 'atmensanlfinal',
                    'aeroanlinit', 'aeroanlrun', 'aeroanlfinal',
@@ -354,8 +352,8 @@ class Tasks:
     def sfcanl(self):
 
         deps = []
-        if self.app_config.do_jedivar:
-            dep_dict = {'type': 'task', 'name': f'{self.cdump}atmanalrun'}
+        if self.app_config.do_jediatmvar:
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}atmanlrun'}
         else:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}anal'}
         deps.append(rocoto.add_dependency(dep_dict))
@@ -369,8 +367,8 @@ class Tasks:
     def analcalc(self):
 
         deps = []
-        if self.app_config.do_jedivar:
-            dep_dict = {'type': 'task', 'name': f'{self.cdump}atmanalrun'}
+        if self.app_config.do_jediatmvar:
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}atmanlrun'}
         else:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}anal'}
         deps.append(rocoto.add_dependency(dep_dict))
@@ -395,62 +393,6 @@ class Tasks:
 
         resources = self.get_resource('analdiag')
         task = create_wf_task('analdiag', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
-
-        return task
-
-    def atmanalprep(self):
-
-        dump_suffix = self._base["DUMP_SUFFIX"]
-        gfs_cyc = self._base["gfs_cyc"]
-        dmpdir = self._base["DMPDIR"]
-        do_gfs_enkf = True if self.app_config.do_hybvar and 'gfs' in self.app_config.eupd_cdumps else False
-
-        deps = []
-        dep_dict = {'type': 'metatask', 'name': 'gdaspost', 'offset': '-06:00:00'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        data = f'&ROTDIR;/gdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmf009.nc'
-        dep_dict = {'type': 'data', 'data': data, 'offset': '-06:00:00'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        data = f'{dmpdir}/{self.cdump}{dump_suffix}.@Y@m@d/@H/atmos/{self.cdump}.t@Hz.updated.status.tm00.bufr_d'
-        dep_dict = {'type': 'data', 'data': data}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
-
-        cycledef = self.cdump
-        if self.cdump in ['gfs'] and do_gfs_enkf and gfs_cyc != 4:
-            cycledef = 'gdas'
-
-        resources = self.get_resource('atmanalprep')
-        task = create_wf_task('atmanalprep', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies,
-                              cycledef=cycledef)
-        return task
-
-    def atmanalrun(self):
-
-        deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.cdump}atmanalprep'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        if self.app_config.do_hybvar:
-            dep_dict = {'type': 'metatask', 'name': 'enkfgdasepmn', 'offset': '-06:00:00'}
-            deps.append(rocoto.add_dependency(dep_dict))
-            dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
-        else:
-            dependencies = rocoto.create_dependency(dep=deps)
-
-        resources = self.get_resource('atmanalrun')
-        task = create_wf_task('atmanalrun', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
-
-        return task
-
-    def atmanalpost(self):
-
-        deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.cdump}atmanalrun'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
-
-        resources = self.get_resource('atmanalpost')
-        task = create_wf_task('atmanalpost', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
 
         return task
 
@@ -1144,55 +1086,6 @@ class Tasks:
 
         return task
 
-    def atmensanalprep(self):
-        gfs_cyc = self._base["gfs_cyc"]
-        do_gfs_enkf = True if self.app_config.do_hybvar and 'gfs' in self.app_config.eupd_cdumps else False
-        cycledef = 'gdas'
-        if self.cdump in ['gfs'] and do_gfs_enkf:
-            cycledef = 'gfs'
-            if gfs_cyc != 4:
-                cycledef = 'gdas'
-        task_cdump = cycledef
-
-        deps = []
-        dep_dict = {'type': 'task', 'name': f'{task_cdump}prep'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'metatask', 'name': 'enkfgdasepmn', 'offset': '-06:00:00'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
-
-        resources = self.get_resource('atmensanalprep')
-        task = create_wf_task('atmensanalprep', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies,
-                              cycledef=cycledef)
-
-        return task
-
-    def atmensanalrun(self):
-
-        deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.cdump}atmensanalprep'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'metatask', 'name': 'enkfgdasepmn', 'offset': '-06:00:00'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
-
-        resources = self.get_resource('atmensanalrun')
-        task = create_wf_task('atmensanalrun', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
-
-        return task
-
-    def atmensanalpost(self):
-
-        deps = []
-        dep_dict = {'type': 'task', 'name': f'{self.cdump}atmensanalrun'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dependencies = rocoto.create_dependency(dep=deps)
-
-        resources = self.get_resource('atmensanalpost')
-        task = create_wf_task('atmensanalpost', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
-
-        return task
-
     def atmensanlinit(self):
         gfs_cyc = self._base["gfs_cyc"]
         do_gfs_enkf = True if self.app_config.do_hybvar and 'gfs' in self.app_config.eupd_cdumps else False
@@ -1270,8 +1163,8 @@ class Tasks:
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump.replace("enkf","")}analcalc'}
         deps.append(rocoto.add_dependency(dep_dict))
-        if self.app_config.do_jediens:
-            dep_dict = {'type': 'task', 'name': f'{self.cdump}atmensanalrun'}
+        if self.app_config.do_jediatmens:
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}atmensanlrun'}
         else:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}eupd'}
         deps.append(rocoto.add_dependency(dep_dict))
@@ -1299,8 +1192,8 @@ class Tasks:
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump.replace("enkf","")}analcalc'}
         deps.append(rocoto.add_dependency(dep_dict))
-        if self.app_config.do_jediens:
-            dep_dict = {'type': 'task', 'name': f'{self.cdump}atmensanalrun'}
+        if self.app_config.do_jediatmens:
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}atmensanlrun'}
         else:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}eupd'}
         deps.append(rocoto.add_dependency(dep_dict))

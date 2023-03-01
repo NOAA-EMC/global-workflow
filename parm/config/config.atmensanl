@@ -1,9 +1,9 @@
 #!/bin/bash -x
 
-########## config.atmanal ##########
+########## config.atmensanl ##########
 # configuration common to all atm analysis tasks
 
-echo "BEGIN: config.atmanal"
+echo "BEGIN: config.atmensanl"
 
 export OBS_YAML_DIR=${HOMEgfs}/sorc/gdas.cd/parm/atm/obs/config/
 export OBS_LIST=${HOMEgfs}/sorc/gdas.cd/parm/atm/obs/lists/gdas_prototype.yaml
@@ -28,4 +28,4 @@ export io_layout_y=1
 export JEDIVAREXE=${HOMEgfs}/exec/fv3jedi_var.x
 export CRTM_VER="2.3.0"
 
-echo "END: config.atmanal"
+echo "END: config.atmensanl"
