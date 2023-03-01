@@ -12,8 +12,8 @@ module load anaconda/anaconda3-5.3.1
 module load rocoto/1.3.3
 
 # Don't do this if you have other things running!
-pkill -u Guillaume.Vernieres rocoto
-scancel -u Guillaume.Vernieres
+pkill -u ${USER} rocoto
+scancel -u ${USER}
 
 GWDIR=$PWD/global-workflow
 CONFIGDIR=$GWDIR/parm/config
@@ -24,17 +24,14 @@ ln -sf $GWDIR/workflow/rocoto_viewer.py .
 
 # Experiment setup. 
 APP=S2S
-IDATE=2021032312
-EDATE=2021032412
-PSLOT=s2s
-RES=48
+IDATE=2019063000 #2021032312 #2019063000
+EDATE=2019070100 #2021032318 #2019070100
+PSLOT=wcda #lores #wcda
+RES=384 #48 #384
+ORES=025 #500 #025
 GFS_CYC=0
 COMROT=$BASEDIR/$PSLOT/COMROT
 EXPDIR=$BASEDIR/$PSLOT/EXPDIR
-
-cyc=12
-gcyc=06
-cyc_ss=$((cyc*3600))
 
 # Link to the garbage collection (STMP) ... Not sure this will work for everybody
 ln -sf /scratch1/NCEPDEV/stmp2/${USER}/RUNDIRS .
@@ -63,6 +60,9 @@ echo "  SABER_BLOCKS_YAML: ''" >> ocnanal.yaml
 echo "  NICAS_RESOL: 1" >> ocnanal.yaml
 echo "  NICAS_GRID_SIZE: 15000" >> ocnanal.yaml
 
+# Warm starts
+ICSDIR=/scratch2/NCEPDEV/ocean/Guillaume.Vernieres/data/ICSDIR/C${RES}O${ORES}
+
 # Create configs and comrot
 echo "setup experiment:"
 $GWDIR/workflow/setup_expt.py cycled --app $APP \
@@ -76,7 +76,7 @@ $GWDIR/workflow/setup_expt.py cycled --app $APP \
                                      --expdir $EXPDIR \
                                      --nens 0 \
                                      --start 'warm' \
-                                     --icsdir $PWD/ICSDIR/C48O500 \
+                                     --icsdir $ICSDIR \
                                      --yaml ocnanal.yaml
 
 echo "generate xml stuff"
