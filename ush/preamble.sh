@@ -121,6 +121,10 @@ function generate_com() {
         else
             template="${com_var}_TMPL"
         fi
+        if [[ ! -v "${template}" ]]; then
+            echo "FATAL ERROR in generate_com: Requested template ${template} not defined!"
+            exit 2
+        fi
         value=$(echo "${!template}" | envsubst)
         # shellcheck disable=SC2086
         declare ${opts} "${com_var}"="${value}"
