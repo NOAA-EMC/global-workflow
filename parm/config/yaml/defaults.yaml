@@ -2,6 +2,10 @@ aeroanl:
   IO_LAYOUT_X: 1
   IO_LAYOUT_Y: 1
 
+landanl:
+  IO_LAYOUT_X: 1
+  IO_LAYOUT_Y: 1
+
 ocnanal:
   SOCA_INPUT_FIX_DIR: '/scratch2/NCEPDEV/ocean/Guillaume.Vernieres/data/static/72x35x25'
   CASE_ANL: 'C48'

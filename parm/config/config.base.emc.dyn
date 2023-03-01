@@ -157,6 +157,7 @@ export DO_WAVE="NO"
 export DO_OCN="NO"
 export DO_ICE="NO"
 export DO_AERO="NO"
+export DO_LAND="NO"
 export CCPP_SUITE="@CCPP_SUITE@"
 export WAVE_CDUMP="" # When to include wave suite: gdas, gfs, or both
 export DOBNDPNT_WAVE="NO"
@@ -183,6 +184,10 @@ export ICERES=$OCNRES
 case "${APP}" in
   ATM)
     export confignamevarfornems="atm"
+    ;;
+  ATML)
+    export DO_LAND="YES"
+    export confignamevarfornems="atm_land"
     ;;
   ATMA)
     export DO_AERO="YES"
