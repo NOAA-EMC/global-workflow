@@ -121,10 +121,10 @@ for pr in ${open_pr_list}; do
 
   # get commit hash
   commit=$(git log --pretty=format:'%h' -n 1)
-  echo "$commit" > "${GFS_CI_ROOT}/PR/${pr}/commit"
+  echo "${commit}" > "${GFS_CI_ROOT}/PR/${pr}/commit"
 
   # run build and testing command
-  "${HOMEgfs}/ci/run_ci.sh" -d "$GFS_CI_ROOT/PR/$pr/global-workflow" -o "${GFS_CI_ROOT}/PR/${pr}/output_${commit}"
+  "${HOMEgfs}/ci/run_ci.sh" -d "${GFS_CI_ROOT}/PR/$pr/global-workflow" -o "${GFS_CI_ROOT}/PR/${pr}/output_${commit}"
   ci_status=$?
   "${GH_EXEC}" pr comment "${pr}" --repo "${repo_url}" --body-file "${GFS_CI_ROOT}/PR/${pr}/output_${commit}"
   if [[ ${ci_status} -eq 0 ]]; then

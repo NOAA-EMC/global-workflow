@@ -81,11 +81,11 @@ function setup_cold_96_00z {
 	expdir="${SAVE}/global-workflow/RUNTEST/expdir/${pslot}"
     workflowdir="${SAVE}/global-workflow/workflow"
 
-	${workflowdir}/setup_expt.py cycled --app ATM --resdet 96 --resens 48 \
+	"${workflowdir}/setup_expt.py" cycled --app ATM --resdet 96 --resens 48 \
 		--comrot "${NOSCRUB}/global-workflow/RUNTEST" \
 		--expdir "${SAVE}/global-workflow/RUNTEST/expdir" \
 		--idate 2021122018 \
-		--edate 2021122200 \
+		--edate 2021122024 \
 		--nens 2 \
 		--gfs_cyc 1 \
 		--start cold \

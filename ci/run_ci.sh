@@ -45,7 +45,7 @@ current_date=$(date)
 the_hostname=$(hostname)
 echo "Automated global-workflow Testing Results:" > "${outfile}"
 echo "Machine: ${TARGET}" >> "${outfile}"
-echo '```' >> ${outfile}
+echo '```' >> "${outfile}"
 echo "Start: ${current_date} on ${the_hostname}" >> "${outfile}"
 echo "---------------------------------------------------" >> ${outfile}
 ######################################################################
@@ -69,9 +69,9 @@ if [[ ${build_status} -eq 0 ]]; then
   echo "Build: Completed at ${the_date}" >> "${outfile}"
 else
   echo "Build:                                  *FAILED*" >> "${outfile}"
-  echo "Build: Failed at ${the_date}" >> ${outfile}
+  echo "Build: Failed at ${the_date}" >> "${outfile}"
   echo "Build: see output at $repodir/log.build" >> "${outfile}"
-  echo '```' >> $outfile
+  echo '```' >> "$outfile"
   check_status=false
 fi
 
@@ -91,20 +91,22 @@ source "${repodir}/ci/expt_functions.sh"
 setup_cold_96_00z "{pslot}"
 
 xmlfile="${repodir}/RUNTEST/expdir/${pslot}/${pslot}.xml"
-if [ -f ${xmlfile} ]; then
+if [[ -f ${xmlfile} ]]; then
   echo "CREATE EXP:  created Rocoto XML file in experment directory *SUCCESS*" >> "${outfile}"
 else
   echo "CREATE EXP:  created Rocoto XML file in experment directory *FAILED*" >> "${outfile}"
   check_status=false
 fi
 
-if [[ $(check_xml_ROTDIR ${xmlfile}) ]]; then
+check_ROTIR=$(check_xml_ROTDIR ${xmlfile})
+if [[ "${check_ROTDIR}" ]]; then
  echo "ROTDIR path in XML is valid *SUCCESS*" >> "${outfile}"
 else
  echo "ROTDIR path in XML is valid *FAILED*" >> "${outfile}"
  check_status=false
 fi
 
+cd ${pwd}
 echo "check/build/link and create a single test completed"
 exit "${check_status}"
 
