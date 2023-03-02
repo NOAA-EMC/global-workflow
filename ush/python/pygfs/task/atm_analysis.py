@@ -47,7 +47,7 @@ class AtmAnalysis(Analysis):
                 'BKG_ISOTIME': to_isotime(self.runtime_config.current_cycle),
                 'BKG_YYYYmmddHHMMSS': to_fv3time(self.runtime_config.current_cycle),
                 'cdate_fv3': to_fv3time(self.runtime_config.current_cycle),
-                'comin_ges_atm': self.config.COMIN_GES.replace('chem', 'atmos'),  # 'chem' is COMPONENT, atm fields are in 'atmos' tracers
+                'comin_ges_atm': self.config.COMIN_GES,
             }
         )
 

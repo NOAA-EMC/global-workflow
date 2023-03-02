@@ -26,6 +26,5 @@ export io_layout_x=1
 export io_layout_y=1
 
 export JEDIVAREXE=${HOMEgfs}/exec/fv3jedi_var.x
-export CRTM_VER="2.3.0"
 
 echo "END: config.atmensanl"
