@@ -13,6 +13,7 @@ from pygw.file_utils import FileHandler
 from pygw.timetools import to_isotime, to_fv3time, to_timedelta
 from pygw.fsutils import rm_p
 from pygw.template import Template, TemplateConstants
+from pygw.timetools import to_fv3time
 from pygw.yaml_file import YAMLFile
 from pygw.logger import logit
 from pygfs.task.analysis import Analysis
@@ -84,8 +85,8 @@ class AerosolAnalysis(Analysis):
 
         # stage berror files
         # copy BUMP files, otherwise it will assume ID matrix
-        if self.task_config.get('STATICB_TYPE', 'bump_aero') in ['bump_aero']:
-            FileHandler(AerosolAnalysis.get_berror_dict(self.task_config)).sync()
+        if self.task_config.get('STATICB_TYPE', 'identity') in ['bump']:
+            FileHandler(self.get_berror_dict(self.task_config)).sync()
 
         # stage backgrounds
         FileHandler(self.get_bkg_dict(AttrDict(self.task_config, **self.task_config))).sync()
@@ -148,8 +149,8 @@ class AerosolAnalysis(Analysis):
         src = os.path.join(self.task_config['DATA'], f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.aerovar.yaml")
         dest = os.path.join(self.task_config['COMOUTaero'], f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.aerovar.yaml")
         yaml_copy = {
-            'mkdir': self.task_config['COMOUTaero'],
-            'copy': [src, dest]
+            'mkdir': [self.task_config['COMOUTaero']],
+            'copy': [[src, dest]]
         }
         FileHandler(yaml_copy).sync()
 
@@ -192,7 +193,7 @@ class AerosolAnalysis(Analysis):
         fms_bkg_file_template = os.path.join(self.task_config.comin_ges_atm, 'RESTART', f'{self.task_config.cdate_fv3}.fv_tracer.res.tileX.nc')
         # get list of increment vars
         incvars_list_path = os.path.join(self.task_config['HOMEgfs'], 'parm', 'parm_gdas', 'aeroanl_inc_vars.yaml')
-        incvars = YAMLFile(path=incvars_list_path)
+        incvars = YAMLFile(path=incvars_list_path)['incvars']
         super().add_fv3_increments(fms_inc_file_template, fms_bkg_file_template, incvars)
 
     @logit(logger)
@@ -254,10 +255,10 @@ class AerosolAnalysis(Analysis):
         berror_dict: Dict
             a dictionary containing the list of background error files to copy for FileHandler
         """
-        super.get_berror_dict(config)
+        super().get_berror_dict(config)
         # aerosol static-B needs nicas, cor_rh, cor_rv and stddev files.
         b_dir = config['BERROR_DATA_DIR']
-        b_datestr = config['BERROR_DATE']
+        b_datestr = to_fv3time(config['BERROR_DATE'])
         berror_list = []
 
         for ftype in ['cor_rh', 'cor_rv', 'stddev']:
