@@ -6,6 +6,6 @@
 echo "BEGIN: config.atmanlrun"
 
 # Get task specific resources
-. "${EXPDIR}/config.resources atmanlrun"
+. "${EXPDIR}"/config.resources atmanlrun
 
 echo "END: config.atmanlrun"
