@@ -83,13 +83,13 @@ repo_url="https://github.com/TerrenceMcGuinness-NOAA/global-workflow.git"
 #########################################################################
 mkdir -p ${GFS_CI_ROOT}/repo
 cd "${GFS_CI_ROOT}/repo"
-if [ ! -d "${GFS_CI_ROOT}/repo/global-workflow" ]; then
+if [[ ! -d "${GFS_CI_ROOT}/repo/global-workflow" ][; then
  git clone $repo_url
 fi
 cd "${GFS_CI_ROOT}/repo/global-workflow"
 git pull
 CI_LABEL="${GFS_CI_HOST}-RT"
-${GH_EXEC} pr list --label "${CI_LABEL}" --state "open" | awk '{print $1;}' > ${GFS_CI_ROOT}/open_pr_list
+${GH_EXEC} pr list --label "${CI_LABEL}" --state "open" | awk '{print $1;}' > "${GFS_CI_ROOT}/open_pr_list"
 if [ -s ${GFS_CI_ROOT}/open_pr_list ]; then
  open_pr_list=$(cat ${GFS_CI_ROOT}/open_pr_list)
 else
