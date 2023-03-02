@@ -1086,25 +1086,15 @@ class Tasks:
         return task
 
     def atmensanlinit(self):
-        gfs_cyc = self._base["gfs_cyc"]
-        do_gfs_enkf = True if self.app_config.do_hybvar and 'gfs' in self.app_config.eupd_cdumps else False
-        cycledef = 'gdas'
-        if self.cdump in ['gfs'] and do_gfs_enkf:
-            cycledef = 'gfs'
-            if gfs_cyc != 4:
-                cycledef = 'gdas'
-        task_cdump = cycledef
-
         deps = []
-        dep_dict = {'type': 'task', 'name': f'{task_cdump}prep'}
+        dep_dict = {'type': 'task', 'name': f'{self.cdump.replace("enkf","")}prep'}
         deps.append(rocoto.add_dependency(dep_dict))
         dep_dict = {'type': 'metatask', 'name': 'enkfgdasepmn', 'offset': '-06:00:00'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
         resources = self.get_resource('atmensanlinit')
-        task = create_wf_task('atmensanlinit', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies,
-                              cycledef=cycledef)
+        task = create_wf_task('atmensanlinit', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
 
         return task
 
