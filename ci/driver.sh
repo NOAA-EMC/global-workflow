@@ -63,8 +63,8 @@ done
 
 case ${TARGET} in
   hera | orion)
-    echo "Running Automated Testing on $TARGET"
-    source ${HOMEgfs}/ci/${TARGET}.sh
+    echo "Running Automated Testing on ${TARGET}"
+    source "${HOMEgfs}/ci/${TARGET}.sh"
     ;;
   *)
     echo "Unsupported platform. Exiting with error."
