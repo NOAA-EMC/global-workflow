@@ -72,16 +72,10 @@ class AerosolAnalysis(Analysis):
         super().initialize()
 
         # stage CRTM fix files
-        crtm_fix_list_path = os.path.join(self.task_config['HOMEgfs'], 'parm', 'parm_gdas', 'aero_crtm_coeff.yaml')
-        crtm_fix_list = YAMLFile(path=crtm_fix_list_path)
-        crtm_fix_list = Template.substitute_structure(crtm_fix_list, TemplateConstants.DOLLAR_PARENTHESES, self.task_config.get)
-        FileHandler(crtm_fix_list).sync()
+        super().stage_fix('aero_crtm_coeff.yaml')
 
         # stage fix files
-        jedi_fix_list_path = os.path.join(self.task_config['HOMEgfs'], 'parm', 'parm_gdas', 'aero_jedi_fix.yaml')
-        jedi_fix_list = YAMLFile(path=jedi_fix_list_path)
-        jedi_fix_list = Template.substitute_structure(jedi_fix_list, TemplateConstants.DOLLAR_PARENTHESES, self.task_config.get)
-        FileHandler(jedi_fix_list).sync()
+        super().stage_fix('aero_jedi_fix.yaml')
 
         # stage berror files
         # copy BUMP files, otherwise it will assume ID matrix

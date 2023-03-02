@@ -6,7 +6,7 @@
 echo "BEGIN: config.atmanl"
 
 export OBS_YAML_DIR=${HOMEgfs}/sorc/gdas.cd/parm/atm/obs/config/
-export OBS_LIST=${HOMEgfs}/sorc/gdas.cd/parm/atm/obs/lists/gdas_prototype.yaml
+export OBS_LIST=${HOMEgfs}/sorc/gdas.cd/parm/atm/obs/lists/gdas_prototype_3d.yaml
 export ATMVARYAML=${HOMEgfs}/sorc/gdas.cd/parm/atm/variational/3dvar_dripcg.yaml
 export STATICB_TYPE="identity"
 export BERROR_YAML=${HOMEgfs}/sorc/gdas.cd/parm/atm/berror/staticb_${STATICB_TYPE}.yaml
@@ -26,5 +26,6 @@ export io_layout_x=1
 export io_layout_y=1
 
 export JEDIVAREXE=${HOMEgfs}/exec/fv3jedi_var.x
+export crtm_VERSION="2.3.0"
 
 echo "END: config.atmanl"

@@ -69,27 +69,18 @@ class AtmAnalysis(Analysis):
         - creating output directories
         """
 
-        # stage observations
+        # stage observations and bias corrections
         super().initialize()
 
-        # stage bias correction files
-        super().initialize_bias()
-
         # stage CRTM fix files
-        crtm_fix_list_path = os.path.join(self.task_config['HOMEgfs'], 'parm', 'parm_gdas', 'atm_crtm_coeff.yaml')
-        crtm_fix_list = YAMLFile(path=crtm_fix_list_path)
-        crtm_fix_list = Template.substitute_structure(crtm_fix_list, TemplateConstants.DOLLAR_PARENTHESES, self.task_config.get)
-        FileHandler(crtm_fix_list).sync()
+        super().stage_fix('atm_crtm_coeff.yaml')
 
         # stage fix files
-        jedi_fix_list_path = os.path.join(self.task_config['HOMEgfs'], 'parm', 'parm_gdas', 'atm_jedi_fix.yaml')
-        jedi_fix_list = YAMLFile(path=jedi_fix_list_path)
-        jedi_fix_list = Template.substitute_structure(jedi_fix_list, TemplateConstants.DOLLAR_PARENTHESES, self.task_config.get)
-        FileHandler(jedi_fix_list).sync()
+        super().stage_fix('atm_jedi_fix.yaml')
 
         # stage berror files
         # copy BUMP files, otherwise it will assume ID matrix
-        if self.task_config.get('STATICB_TYPE', 'bump_atm') in ['bump_atm']:
+        if self.task_config.get('STATICB_TYPE', 'identity') in ['bump']:
             FileHandler(AtmAnalysis.get_berror_dict(self.task_config)).sync()
 
         # stage backgrounds

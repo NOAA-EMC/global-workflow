@@ -9,6 +9,7 @@ from pygw.yaml_file import YAMLFile
 from pygw.file_utils import FileHandler
 from pygw.logger import logit
 from pygw.task import Task
+from pygw.template import Template, TemplateConstants
 
 logger = getLogger(__name__.split('.')[-1])
 
@@ -31,9 +32,7 @@ class Analysis(Task):
         obs_dict = self.get_obs_dict()
         FileHandler(obs_dict).sync()
 
-    def initialize_bias(self) -> None:
-        super().initialize()
-        # all analyses need to stage observations
+        # some analyses need to stage bias corrections
         bias_dict = self.get_bias_dict()
         FileHandler(bias_dict).sync()
 
@@ -175,3 +174,19 @@ class Analysis(Task):
         """
         berror_dict = {'foo': 'bar'}
         return berror_dict
+
+    @logit(logger)
+    def stage_fix(self, fix_yaml: str) -> None:
+        """Stage fix files
+
+        This method is a placeholder for now... will be possibly made generic at a later date
+
+        Parameters
+        ----------
+        fix_yaml : str
+            tamplate of fix files to copy
+        """
+        fix_list_path = os.path.join(self.config['HOMEgfs'], 'parm', 'parm_gdas', fix_yaml)
+        fix_list = YAMLFile(path=fix_list_path)
+        fix_list = Template.substitute_structure(fix_list, TemplateConstants.DOLLAR_PARENTHESES, self.task_config.get)
+        FileHandler(fix_list).sync()
