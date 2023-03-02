@@ -1,3 +1,5 @@
+#!/usr/bin/bash
+
 export GFS_CI_ROOT="TDB" #TODO
 export GFS_CI_HOST='orion'
 export GFS_MODULE_USE="${GFS_CI_ROOT}/repo/modulefiles"

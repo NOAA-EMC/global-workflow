@@ -326,6 +326,6 @@ function del_exp {
 
 function check_xml_ROTDIR {
    xmlfile=${1:?}
-   rotdir=$(grep ROTDIR ${xmlfile} | head -1 | sed 's/">//' | sed 's/\"//' | cut -d" " -f3)
+   rotdir=$(grep ROTDIR "${xmlfile}" | head -1 | sed 's/">//' | sed 's/\"//' | cut -d" " -f3)
    [[ -d ${rotdir} ]] && return 0 || return 1
 }

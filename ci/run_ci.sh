@@ -47,7 +47,7 @@ echo "Automated global-workflow Testing Results:" > "${outfile}"
 echo "Machine: ${TARGET}" >> "${outfile}"
 echo '```' >> "${outfile}"
 echo "Start: ${current_date} on ${the_hostname}" >> "${outfile}"
-echo "---------------------------------------------------" >> ${outfile}
+echo "---------------------------------------------------" >> "${outfile}"
 ######################################################################
 # run build script
 
@@ -70,8 +70,8 @@ if [[ ${build_status} -eq 0 ]]; then
 else
   echo "Build:                                  *FAILED*" >> "${outfile}"
   echo "Build: Failed at ${the_date}" >> "${outfile}"
-  echo "Build: see output at $repodir/log.build" >> "${outfile}"
-  echo '```' >> "$outfile"
+  echo "Build: see output at ${repodir}/log.build" >> "${outfile}"
+  echo '```' >> "${outfile}"
   check_status=false
 fi
 
@@ -98,7 +98,7 @@ else
   check_status=false
 fi
 
-check_ROTIR=$(check_xml_ROTDIR ${xmlfile})
+check_ROTDIR=$(check_xml_ROTDIR "${xmlfile}")
 if [[ "${check_ROTDIR}" ]]; then
  echo "ROTDIR path in XML is valid *SUCCESS*" >> "${outfile}"
 else
