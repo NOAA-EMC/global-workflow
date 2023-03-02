@@ -876,15 +876,12 @@ MOM6_postdet() {
   elif [[ "${CDUMP}" =~ "gdas" ]]; then
     # Link output files for CDUMP = gdas
 
-    # MOM6 does not write out the first forecast hour, so start at FHOUT
-    local fhr="${FHOUT}"
-    while [[ "${fhr}" -le "${FHMAX}" ]]; do
+    # Save MOM6 backgrounds
+    for fhr in ${OUTPUT_FH}; do
       local idatestr=$(date -d "${CDATE:0:8} ${CDATE:8:2} + ${fhr} hours" +%Y_%m_%d_%H)
-      local fhr3=$(printf %03i ${fhr})
+      local fhr3=$(printf %03i "${fhr}")
       $NLN "${COMOUTocean}/${CDUMP}.t${cyc}z.ocnf${fhr3}.nc" "${DATA}/ocn_da_${idatestr}.nc"
-      local fhr=$((fhr + FHOUT))
     done
-
   fi
 
   mkdir -p "${COMOUTocean}/RESTART"
