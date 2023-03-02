@@ -7,7 +7,7 @@
 #
 # Author:   Cory Martin / Terry McGuinness   Org: NCEP/EMC     Date: 2023-02-27
 #
-# Abstract: This script uses GitHub CL to check for Pull Requests with {machine}-GW-RT tags
+# Abstract: This script uses GitHub CL to check for Pull Requests with {machine}-CI tags
 #           on the development branch for the global-workflow repo and stages tests
 #           by cloning the PRs and then calling run_ci.sh to building from $(HOMEgfs)/sorc
 #           and then run a suite of regression tests with various configurations.
@@ -79,17 +79,17 @@ esac
 repo_url="https://github.com/TerrenceMcGuinness-NOAA/global-workflow.git"
 
 #########################################################################
-# pull on the repo and get list of open PRs with tags {machine}-RT
+# pull on the repo and get list of open PRs with tags {machine}-CI
 #########################################################################
 mkdir -p "${GFS_CI_ROOT}/repo"
 cd "${GFS_CI_ROOT}/repo"
-if [[ ! -d "${GFS_CI_ROOT}/repo/global-workflow" ][; then
+if [[ ! -d "${GFS_CI_ROOT}/repo/global-workflow" ]]; then
  git clone $repo_url
 fi
 cd "${GFS_CI_ROOT}/repo/global-workflow"
 git pull
-CI_LABEL="${GFS_CI_HOST}-RT"
-${GH_EXEC} pr list --label "${CI_LABEL}" --state "open" | awk '{print $1;}' > "${GFS_CI_ROOT}/open_pr_list"
+CI_LABEL="${GFS_CI_HOST}"
+${GH_EXEC} pr list --label "${CI_LABEL}-CI" --state "open" | awk '{print $1;}' > "${GFS_CI_ROOT}/open_pr_list"
 if [ -s ${GFS_CI_ROOT}/open_pr_list ]; then
  open_pr_list=$(cat ${GFS_CI_ROOT}/open_pr_list)
 else
@@ -97,17 +97,20 @@ else
  exit
 fi 
 
-#######################################
+
 # clone, checkout, build, test, each PR
 # loop throu all open PRs
 #######################################
 for pr in $open_pr_list; do
-  ${GH_EXEC} pr edit --repo ${repo_url} $pr --remove-label ${CI_LABEL} --add-label ${CI_LABEL}-Running
+  ${GH_EXEC} pr edit --repo ${repo_url} $pr --remove-label "${CI_LABEL}-CI" --add-label "${CI_LABEL}-Running"
   echo "Processing Pull Request #${pr}"
   mkdir -p "${GFS_CI_ROOT}/PR/${pr}"
   cd "${GFS_CI_ROOT}/PR/${pr}"
 
   # clone copy of repo
+  if [[ -d global-workflow ]]; then
+    rm -Rf global-workflow
+  fi
   git clone ${repo_url}
   cd global-workflow
 

@@ -46,7 +46,9 @@ echo "Start: $(date) on $(hostname)" >> $outfile
 echo "---------------------------------------------------" >> $outfile
 ######################################################################
 # run build script
-pwd=$PWD
+
+# run build script
+cd $repodir/sorc
 export BUILD_JOBS=8
 rm -rf log.build
 ./checkout.sh -g -c
