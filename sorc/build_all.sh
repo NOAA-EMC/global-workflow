@@ -82,6 +82,12 @@ if [[ -z "${MACHINE_ID}" ]]; then
 fi
 
 #------------------------------------
+# SOURCE BUILD VERSION FILES
+#------------------------------------
+source ../versions/build.ver
+source ../versions/${MACHINE_ID}.ver
+
+#------------------------------------
 # INCLUDE PARTIAL BUILD
 #------------------------------------
 # Turn off some shellcheck warnings because we want to have
