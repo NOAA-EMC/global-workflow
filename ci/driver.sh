@@ -123,7 +123,7 @@ for pr in $open_pr_list; do
   if [ $ci_status -eq 0 ]; then
     ${GH_EXEC} pr edit --repo ${repo_url} ${pr} --remove-label "${CI_LABEL}-Running" --add-label "${CI_LABEL}-Passed"
   else
-    ${GH_EXEC} pr edit ${pr} --repo ${repo_url} --remove-label ${CI_LABEL}-Running --add-label ${CI_LABEL}-Failed"
+    ${GH_EXEC} pr edit ${pr} --repo ${repo_url} --remove-label "${CI_LABEL}-Running" --add-label "${CI_LABEL}-Failed"
   fi
 done
 
