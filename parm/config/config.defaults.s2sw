@@ -27,21 +27,22 @@ case "${CASE}" in
     #layout_y_gfs=16
     #WRTTASK_PER_GROUP_GFS=86
     WRTIOBUF="32M"  # TODO: This value is for P8 w/ C384.  Why not update/set this as default in config.fv3 C384?
-    MEDPETS=300  # TODO: P8 wants to use 300 instead of ATMPETS = layout_x * layout_y * 6
+    MEDPETS=300  # TODO: Use 300 instead of ATMPETS = layout_x * layout_y * 6
+    ;;
+  "C768")
+    MEDPETS=300  
     ;;
 esac
 
-# config.ice
-
-# TODO: These also are likely P8 hard-wired configurations.  Perhaps this file should be config.P8.defaults
 # config.wave
-waveGRD='gwes_30m'
-waveinterpGRD=' '
-waveuoutpGRD='gwes_30m'
-MESH_WAV='mesh.gwes_30m.nc'
+
+waveGRD='mx025'
+waveinterpGRD='reg025'
+waveuoutpGRD='mx025'
+MESH_WAV='mesh.mx025.nc'
 
 waveesmfGRD=' '
-wavepostGRD='gwes_30m'
+wavepostGRD=' '
 waveGRDN="1"
 waveGRDG="10"
 USE_WAV_RMP="NO"

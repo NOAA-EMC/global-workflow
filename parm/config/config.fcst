@@ -153,6 +153,11 @@ export isatmedmf=1
 tbf=""
 if [[ "$satmedmf" = ".true." ]]; then tbf="_satmedmf" ; fi
 
+#Convection schemes
+export progsigma=".true."
+tbp=""
+if [ "$progsigma" = ".true." ]; then tbp="_progsigma" ; fi
+
 # Radiation options
 export IAER=1011    ; #spectral band mapping method for aerosol optical properties
 export iovr_lw=3    ; #de-correlation length cloud overlap method (Barker, 2008)
@@ -180,17 +185,17 @@ export random_clds=".true."
 
 if [[ "$imp_physics" -eq 99 ]]; then # ZhaoCarr
     export ncld=1
-    export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_zhaocarr${tbf}"
+    export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_zhaocarr${tbf}${tbp}"
     export nwat=2
 
 elif [[ "$imp_physics" -eq 6 ]]; then # WSM6
     export ncld=2
-    export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_wsm6${tbf}"
+    export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_wsm6${tbf}${tbp}"
     export nwat=6
 
 elif [[ "$imp_physics" -eq 8 ]]; then # Thompson
     export ncld=2
-    export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_thompson_noaero_tke"
+    export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_thompson_noaero_tke${tbp}"
     export nwat=6
 
     export cal_pre=".false."
@@ -212,7 +217,7 @@ elif [[ "$imp_physics" -eq 8 ]]; then # Thompson
     export d4_bg=0.12
 elif [[ "$imp_physics" -eq 11 ]]; then # GFDL
     export ncld=5
-    export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_gfdl${tbf}"
+    export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_gfdl${tbf}${tbp}"
     export nwat=6
     export dnats=1
     export cal_pre=".false."
