@@ -50,7 +50,8 @@ usage() {
 #########################################################################
 #  Set up runtime environment varibles for accounts on supproted machines
 #########################################################################
-export TARGET="$(hostname)"
+TARGET=$(hostname) || true
+export TARGET
 while getopts "t:h" opt; do
   case ${opt} in
     t)
