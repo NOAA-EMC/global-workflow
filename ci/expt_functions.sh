@@ -1,3 +1,5 @@
+#!/bin/bash
+
 function modify_base {
 	expdir="${1:?}"
 	NOSCRUB=${NOSCRUB:?}
@@ -76,8 +78,8 @@ function setup_cold_96_00z {
 	NOSCRUB=${NOSCRUB:?}
 	SAVE=${SAVE:?}
 	module load intelpython 2> /dev/null
-	expdir=${SAVE}/global-workflow/RUNTEST/expdir/${pslot}
-    workflowdir=${SAVE}/global-workflow/workflow
+	expdir="${SAVE}/global-workflow/RUNTEST/expdir/${pslot}"
+    workflowdir="${SAVE}/global-workflow/workflow"
 
 	${workflowdir}/setup_expt.py cycled --app ATM --resdet 96 --resens 48 \
 		--comrot "${NOSCRUB}/global-workflow/RUNTEST" \
@@ -89,12 +91,12 @@ function setup_cold_96_00z {
 		--start cold \
 		--pslot "${pslot}"
 	
-	link_IC "${NOSCRUB}/global-workflow/RUNTEST/${pslot}" $icdir
+	link_IC "${NOSCRUB}/global-workflow/RUNTEST/${pslot}" "${icdir}"
 
 	modify_base "${expdir}"
 
 	echo "Finishing experiment setup"
-	${workflowdir}/setup_xml.py "${expdir}"
+	"${workflowdir}/setup_xml.py" "${expdir}"
 	modify_xml "${expdir}/${pslot}.xml"
 }
 
@@ -319,11 +321,11 @@ function del_exp {
 	PTMP=${PTMP:?}
 	expdir="${SAVE}/global-workflow/expdir/${pslot}"
 
-	rm -Rf ${expdir} "${NOSCRUB}/global-workflow/${pslot}" "${PTMP}/RUNDIRS/${pslot}"
+	rm -Rf "${expdir}" "${NOSCRUB}/global-workflow/${pslot}" "${PTMP}/RUNDIRS/${pslot}"
 }
 
 function check_xml_ROTDIR {
    xmlfile=${1:?}
    rotdir=$(grep ROTDIR ${xmlfile} | head -1 | sed 's/">//' | sed 's/\"//' | cut -d" " -f3)
-   [ -d ${rotdir} ] && return 0 || return 1
+   [[ -d ${rotdir} ]] && return 0 || return 1
 }

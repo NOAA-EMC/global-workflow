@@ -86,7 +86,7 @@ repo_url="https://github.com/TerrenceMcGuinness-NOAA/global-workflow.git"
 mkdir -p "${GFS_CI_ROOT}/repo"
 cd "${GFS_CI_ROOT}/repo"
 if [[ ! -d "${GFS_CI_ROOT}/repo/global-workflow" ]]; then
- git clone ${repo_url}
+ git clone "${repo_url}"
 fi
 cd "${GFS_CI_ROOT}/repo/global-workflow"
 git pull
@@ -104,7 +104,7 @@ fi
 # loop throu all open PRs
 #######################################
 for pr in ${open_pr_list}; do
-  ${GH_EXEC} pr edit --repo ${repo_url} ${pr} --remove-label "${CI_LABEL}-CI" --add-label "${CI_LABEL}-Running"
+  "${GH_EXEC}" pr edit --repo "${repo_url}" "${pr}" --remove-label "${CI_LABEL}-CI" --add-label "${CI_LABEL}-Running"
   echo "Processing Pull Request #${pr}"
   mkdir -p "${GFS_CI_ROOT}/PR/${pr}"
   cd "${GFS_CI_ROOT}/PR/${pr}"
@@ -113,30 +113,30 @@ for pr in ${open_pr_list}; do
   if [[ -d global-workflow ]]; then
     rm -Rf global-workflow
   fi
-  git clone ${repo_url}
+  git clone "${repo_url}"
   cd global-workflow
 
   # checkout pull request
-  $GH_EXEC pr checkout ${pr} --repo ${repo_url}
+  "${GH_EXEC}" pr checkout "${pr}" --repo "${repo_url}"
 
   # get commit hash
   commit=$(git log --pretty=format:'%h' -n 1)
   echo "$commit" > "${GFS_CI_ROOT}/PR/${pr}/commit"
 
   # run build and testing command
-  ${HOMEgfs}/ci/run_ci.sh -d "$GFS_CI_ROOT/PR/$pr/global-workflow" -o "${GFS_CI_ROOT}/PR/${pr}/output_${commit}"
+  "${HOMEgfs}/ci/run_ci.sh" -d "$GFS_CI_ROOT/PR/$pr/global-workflow" -o "${GFS_CI_ROOT}/PR/${pr}/output_${commit}"
   ci_status=$?
-  ${GH_EXEC} pr comment ${pr} --repo "${repo_url}" --body-file "${GFS_CI_ROOT}/PR/${pr}/output_${commit}"
-  if [ $ci_status -eq 0 ]; then
-    ${GH_EXEC} pr edit --repo "${repo_url}" "${pr}" --remove-label "${CI_LABEL}-Running" --add-label "${CI_LABEL}-Passed"
+  "${GH_EXEC}" pr comment "${pr}" --repo "${repo_url}" --body-file "${GFS_CI_ROOT}/PR/${pr}/output_${commit}"
+  if [[ ${ci_status} -eq 0 ]]; then
+    "${GH_EXEC}" pr edit --repo "${repo_url}" "${pr}" --remove-label "${CI_LABEL}-Running" --add-label "${CI_LABEL}-Passed"
   else
-    ${GH_EXEC} pr edit "${pr}" --repo "${repo_url}" --remove-label "${CI_LABEL}-Running" --add-label "${CI_LABEL}-Failed"
+    "${GH_EXEC}" pr edit "${pr}" --repo "${repo_url}" --remove-label "${CI_LABEL}-Running" --add-label "${CI_LABEL}-Failed"
   fi
 done
 
 ##########################################
 # scrub working directory for older files
 ##########################################
-find ${GFS_CI_ROOT}/PR/* -maxdepth 1 -mtime +3 -exec rm -rf {} \;
+find "${GFS_CI_ROOT}/PR/*" -maxdepth 1 -mtime +3 -exec rm -rf {} \;
 
 exit 0
