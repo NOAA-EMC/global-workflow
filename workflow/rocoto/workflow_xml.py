@@ -5,6 +5,7 @@ from distutils.spawn import find_executable
 from datetime import datetime
 from pygw.timetools import to_timedelta
 from collections import OrderedDict
+from typing import Dict
 from applications import AppConfig
 from rocoto.workflow_tasks import get_wf_tasks
 import rocoto.rocoto as rocoto
@@ -12,9 +13,10 @@ import rocoto.rocoto as rocoto
 
 class RocotoXML:
 
-    def __init__(self, app_config: AppConfig) -> None:
+    def __init__(self, app_config: AppConfig, rocoto_config: Dict) -> None:
 
         self._app_config = app_config
+        self.rocoto_config = rocoto_config
 
         self._base = self._app_config.configs['base']
 
@@ -60,7 +62,7 @@ class RocotoXML:
         entity['ROTDIR'] = self._base['ROTDIR']
         entity['JOBS_DIR'] = self._base['BASE_JOB']
 
-        entity['MAXTRIES'] = self._base.get('ROCOTO_MAXTRIES', 2)
+        entity['MAXTRIES'] = self.rocoto_config['maxtries']
 
         # Put them all in an XML key-value syntax
         strings = []
@@ -75,9 +77,9 @@ class RocotoXML:
         """
 
         scheduler = self._app_config.scheduler
-        cyclethrottle = self._base.get('ROCOTO_CYCLETHROTTLE', 3)
-        taskthrottle = self._base.get('ROCOTO_TASKTHROTTLE', 25)
-        verbosity = self._base.get('ROCOTO_VERBOSITY', 10)
+        cyclethrottle = self.rocoto_config['cyclethrottle']
+        taskthrottle = self.rocoto_config['taskthrottle']
+        verbosity = self.rocoto_config['verbosity']
 
         expdir = self._base['EXPDIR']
 
