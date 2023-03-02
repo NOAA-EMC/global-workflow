@@ -28,6 +28,15 @@ def input_args():
     parser.add_argument('expdir', help='full path to experiment directory containing config files',
                         type=str, default=os.environ['PWD'])
 
+    parser.add_argument('--maxtries', help='maximum number of retries', type=int,
+                        default=2, required=False)
+    parser.add_argument('--cyclethrottle', help='maximum number of concurrent cycles', type=int,
+                        default=3, required=False)
+    parser.add_argument('--taskthrottle', help='maximum number of concurrent tasks', type=int,
+                        default=25, required=False)
+    parser.add_argument('--verbosity', help='verbosity level of Rocoto', type=int,
+                        default=10, required=False)
+
     args = parser.parse_args()
 
     return args
@@ -45,6 +54,10 @@ def check_expdir(cmd_expdir, cfg_expdir):
 if __name__ == '__main__':
 
     user_inputs = input_args()
+    rocoto_param_dict = {'maxtries': user_inputs.maxtries,
+                         'cyclethrottle': user_inputs.cyclethrottle,
+                         'taskthrottle': user_inputs.taskthrottle,
+                         'verbosity': user_inputs.verbosity}
 
     cfg = Configuration(user_inputs.expdir)
 
@@ -54,5 +67,5 @@ if __name__ == '__main__':
     app_config = AppConfig(cfg)
 
     # Create Rocoto Tasks and Assemble them into an XML
-    xml = RocotoXML(app_config)
+    xml = RocotoXML(app_config, rocoto_param_dict)
     xml.write()

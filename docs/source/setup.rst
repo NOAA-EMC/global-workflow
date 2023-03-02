@@ -156,6 +156,8 @@ Example:
 
    ./setup_xml.py /some_safe_disk_area/Joe.Schmo/expdir/test
 
+Additional options for setting up Rocoto are available with `setup_xml.py -h` that allow users to change the number of failed tries, number of concurrent cycles and tasks as well as Rocoto's verbosity levels.
+
 ****************************************
 Step 4: Confirm files from setup scripts
 ****************************************
