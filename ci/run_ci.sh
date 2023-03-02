@@ -34,6 +34,9 @@ while getopts "d:o:h" opt; do
     h|\?|:)
       usage
       ;;
+    *)
+      exit
+     ;; 
   esac
 done
 
@@ -48,7 +51,7 @@ echo "---------------------------------------------------" >> $outfile
 # run build script
 
 # run build script
-cd $repodir/sorc
+cd "${repodir}/sorc"
 export BUILD_JOBS=8
 rm -rf log.build
 ./checkout.sh -g -c
@@ -60,13 +63,13 @@ rm -rf log.build
 check_status=true
 
 build_status=$?
-if [ $build_status -eq 0 ]; then
-  echo "Build:                                 *SUCCESS*" >> $outfile
-  echo "Build: Completed at $(date)" >> $outfile
+if [ ${build_status} -eq 0 ]; then
+  echo "Build:                                 *SUCCESS*" >> ${outfile}
+  echo "Build: Completed at $(date)" >> ${outfile}
 else
-  echo "Build:                                  *FAILED*" >> $outfile
-  echo "Build: Failed at $(date)" >> $outfile
-  echo "Build: see output at $repodir/log.build" >> $outfile
+  echo "Build:                                  *FAILED*" >> ${outfile}
+  echo "Build: Failed at $(date)" >> ${outfile}
+  echo "Build: see output at $repodir/log.build" >> ${outfile}
   echo '```' >> $outfile
   check_status=false
 fi
@@ -80,11 +83,11 @@ export NOSCRUB=${repodir}
 export PTMP=${repodir}
 export SAVE=${NOSCRUB}
 
-mkdir -p ${repodir}/RUNTEST/expdir
-mkdir -p ${repodir}/RUNTEST/DATAROOT
+mkdir -p "${repodir}/RUNTEST/expdir"
+mkdir -p "${repodir}/RUNTEST/DATAROOT"
 
-source ${repodir}/ci/expt_functions.sh
-setup_cold_96_00z $pslot
+source "${repodir}/ci/expt_functions.sh"
+setup_cold_96_00z ${pslot}
 
 xmlfile="${repodir}/RUNTEST/expdir/${pslot}/${pslot}.xml"
 if [ -f ${xmlfile} ]; then

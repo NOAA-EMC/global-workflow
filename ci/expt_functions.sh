@@ -317,7 +317,7 @@ function del_exp {
 	NOSCRUB=${NOSCRUB:?}
 	SAVE=${SAVE:?}
 	PTMP=${PTMP:?}
-	expdir=${SAVE}/global-workflow/expdir/${pslot}
+	expdir="${SAVE}/global-workflow/expdir/${pslot}"
 
 	rm -Rf ${expdir} "${NOSCRUB}/global-workflow/${pslot}" "${PTMP}/RUNDIRS/${pslot}"
 }

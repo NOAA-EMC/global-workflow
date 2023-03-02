@@ -60,6 +60,8 @@ while getopts "t:h" opt; do
     h|\?|:)
       usage
       ;;
+    *)
+      exit
   esac
 done
 
@@ -84,14 +86,14 @@ repo_url="https://github.com/TerrenceMcGuinness-NOAA/global-workflow.git"
 mkdir -p "${GFS_CI_ROOT}/repo"
 cd "${GFS_CI_ROOT}/repo"
 if [[ ! -d "${GFS_CI_ROOT}/repo/global-workflow" ]]; then
- git clone $repo_url
+ git clone ${repo_url}
 fi
 cd "${GFS_CI_ROOT}/repo/global-workflow"
 git pull
 CI_LABEL="${GFS_CI_HOST}"
 ${GH_EXEC} pr list --label "${CI_LABEL}-CI" --state "open" | awk '{print $1;}' > "${GFS_CI_ROOT}/open_pr_list"
-if [ -s ${GFS_CI_ROOT}/open_pr_list ]; then
- open_pr_list=$(cat ${GFS_CI_ROOT}/open_pr_list)
+if [[ -s "${GFS_CI_ROOT}/open_pr_list" ]]; then
+ open_pr_list=$(cat "${GFS_CI_ROOT}/open_pr_list")
 else
  echo "no PRs to process .. exit"
  exit
@@ -101,8 +103,8 @@ fi
 # clone, checkout, build, test, each PR
 # loop throu all open PRs
 #######################################
-for pr in $open_pr_list; do
-  ${GH_EXEC} pr edit --repo ${repo_url} $pr --remove-label "${CI_LABEL}-CI" --add-label "${CI_LABEL}-Running"
+for pr in ${open_pr_list}; do
+  ${GH_EXEC} pr edit --repo ${repo_url} ${pr} --remove-label "${CI_LABEL}-CI" --add-label "${CI_LABEL}-Running"
   echo "Processing Pull Request #${pr}"
   mkdir -p "${GFS_CI_ROOT}/PR/${pr}"
   cd "${GFS_CI_ROOT}/PR/${pr}"
