@@ -234,7 +234,7 @@ esac
 
 # MOM6 specific settings
 if [[ "${skip_mom6}" == "false" ]]; then
-  export nth_mom6=1  # MOM6 is not thread-safe (allegedly)
+  export nth_mom6=1
   case "${mom6_res}" in
     "500")
       ntasks_mom6=8
@@ -301,7 +301,12 @@ fi
 
 # CICE6 specific settings
 if [[ "${skip_cice6}" == "false" ]]; then
-  export nth_cice6=${mom6_res}  # CICE6 needs to run on same threads as MOM6 (allegedly)
+  # Ensure we sourced the MOM6 section
+  if [[ "${skip_mom6}" == "true" ]]; then
+    echo "FATAL ERROR: CICE6 cannot be configured without MOM6, ABORT!"
+    exit 1
+  fi
+  export nth_cice6=${mom6_res}  # CICE6 needs to run on same threads as MOM6
   case "${cice6_res}" in
     "500")
       ntasks_cice6=4
@@ -309,7 +314,7 @@ if [[ "${skip_cice6}" == "false" ]]; then
       ;;
     "100")
       ntasks_cice6=10
-      cice6_processor_shape="slenderX1"
+      cice6_processor_shape="slenderX2"
       ;;
     "050")
       ntasks_cice6=30
