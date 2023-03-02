@@ -54,10 +54,10 @@ def check_expdir(cmd_expdir, cfg_expdir):
 if __name__ == '__main__':
 
     user_inputs = input_args()
-    rocoto_param_dict = {'maxtries': user_inputs['maxtries'],
-                         'cyclethrottle': user_inputs['cyclethrottle'],
-                         'taskthrottle': user_inputs['taskthrottle'],
-                         'verbosity': user_inputs['verbosity']}
+    rocoto_param_dict = {'maxtries': user_inputs.maxtries,
+                         'cyclethrottle': user_inputs.cyclethrottle,
+                         'taskthrottle': user_inputs.taskthrottle,
+                         'verbosity': user_inputs.verbosity}
 
     cfg = Configuration(user_inputs.expdir)
 
