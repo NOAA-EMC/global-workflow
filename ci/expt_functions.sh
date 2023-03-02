@@ -321,3 +321,9 @@ function del_exp {
 
 	rm -Rf ${expdir} "${NOSCRUB}/global-workflow/${pslot}" "${PTMP}/RUNDIRS/${pslot}"
 }
+
+function check_xml_ROTDIR {
+   xmlfile=${1:?}
+   rotdir=$(grep ROTDIR ${xmlfile} | head -1 | sed 's/">//' | sed 's/\"//' | cut -d" " -f3)
+   [ -d ${rotdir} ] && return 0 || return 1
+}

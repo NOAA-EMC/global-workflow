@@ -52,6 +52,11 @@ rm -rf log.build
 ./checkout.sh -g -c
 # build full cycle
 ./build_all.sh -g &>> log.build
+
+# Validations
+
+check_status=true
+
 build_status=$?
 if [ $build_status -eq 0 ]; then
   echo "Build:                                 *SUCCESS*" >> $outfile
@@ -61,7 +66,7 @@ else
   echo "Build: Failed at $(date)" >> $outfile
   echo "Build: see output at $repodir/log.build" >> $outfile
   echo '```' >> $outfile
-  exit $build_status
+  check_status=false
 fi
 
 ./link_workflow.sh
@@ -79,6 +84,21 @@ mkdir -p ${repodir}/RUNTEST/DATAROOT
 source ${repodir}/ci/expt_functions.sh
 setup_cold_96_00z $pslot
 
+xmlfile="${repodir}/RUNTEST/expdir/${pslot}/${pslot}.xml"
+if [ -f ${xmlfile} ]; then
+  echo "CREATE EXP:  created Rocoto XML file in experment directory *SUCCESS*" >> ${outfile}
+else
+  echo "CREATE EXP:  created Rocoto XML file in experment directory *FAILED*" >> ${outfile}
+  check_status=false
+fi
+
+if [ $(check_xml_ROTDIR ${xmlfile}) ]; then
+ echo "ROTDIR path in XML is valid *SUCCESS* >> ${outfile}
+else
+ echo "ROTDIR path in XML is valid *FAILED* >> ${outfile}
+ check_status=false
+fi
+
 echo "check/build/link and create a single test completed"
-exit 0
+exit check_status 
 
