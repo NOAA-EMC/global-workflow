@@ -34,8 +34,7 @@ export PS4='+ $(basename ${BASH_SOURCE})[${LINENO}]'
 
 HOMEgfs=$(realpath "${pwd}/..")
 export HOMEgfs
-local host
-host=$(hostname)
+host=$(hostname) || true
 
 usage() {
   set +x
@@ -82,7 +81,7 @@ repo_url="https://github.com/TerrenceMcGuinness-NOAA/global-workflow.git"
 # pull on the repo and get list of open PRs with tags {machine}-RT
 #########################################################################
 mkdir -p ${GFS_CI_ROOT}/repo
-cd ${GFS_CI_ROOT}/repo
+cd "${GFS_CI_ROOT}/repo"
 if [ ! -d "${GFS_CI_ROOT}/repo/global-workflow" ]; then
  git clone $repo_url
 fi
