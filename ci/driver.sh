@@ -34,7 +34,6 @@ export PS4='+ $(basename ${BASH_SOURCE})[${LINENO}]'
 
 export HOMEgfs=$(realpath "${pwd}/..")
 
-# ==============================================================================
 usage() {
   set +x
   echo
@@ -126,7 +125,6 @@ for pr in $open_pr_list; do
     $GH_EXEC pr edit $pr --repo $repo_url --remove-label ${CI_LABEL}-Running --add-label ${CI_LABEL}-Failed
   fi
 done
-
 
 
 ##########################################
