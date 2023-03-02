@@ -79,7 +79,7 @@ class RocotoXML:
 
         scheduler = self._app_config.scheduler
         cyclethrottle = self.rocoto['cyclethrottle']
-        taskthrottle =  self.rocoto['taskthrottle']
+        taskthrottle = self.rocoto['taskthrottle']
         verbosity = self.rocoto['verbosity']
 
         expdir = self._base['EXPDIR']
