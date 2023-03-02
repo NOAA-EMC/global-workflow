@@ -5,13 +5,14 @@ export hpc_impi_ver=2022.1.2
 export obsproc_run_ver=1.1.2
 export prepobs_run_ver=1.0.1
 
-export prod_util_ver=1.2.2
 export cmake_ver=3.22.1
-export gempak_ver=7.5.1
-export wrf_io_ver=1.2.0
-export esmf_ver=8.2.1b04
-export nco_ver=4.8.1
+
 export cdo_ver=1.9.5
 
+export nco_ver=4.8.1
+export prod_util_ver=1.2.2
+export gempak_ver=7.5.1
+export wrf_io_ver=1.2.0
+
 export tracker_ver=v1.1.15.5
-export fit_ver="newm.1.5"
+export fit_ver="newm.1.7"
