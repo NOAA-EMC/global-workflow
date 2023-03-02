@@ -8,7 +8,7 @@ load(pathJoin("hpc", os.getenv("hpc_ver")))
 load(pathJoin("hpc-intel", os.getenv("hpc_intel_ver")))
 load(pathJoin("hpc-impi", os.getenv("hpc_impi_ver")))
 
-load(hpss)
+load("hpss")
 load(pathJoin("gempak", os.getenv("gempak_ver")))
 load(pathJoin("cdo", os.getenv("cdo_ver")))
 
