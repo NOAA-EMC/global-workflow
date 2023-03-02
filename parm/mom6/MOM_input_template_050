@@ -419,7 +419,7 @@ GILL_EQUATORIAL_LD = True       !   [Boolean] default = False
                                 ! radius, otherwise, if false, use Pedlosky's definition. These definitions
                                 ! differ by a factor of 2 in front of the beta term in the denominator. Gill's
                                 ! is the more appropriate definition.
-INTERNAL_WAVE_SPEED_BETTER_EST = False !   [Boolean] default = True 
+INTERNAL_WAVE_SPEED_BETTER_EST = False !   [Boolean] default = True
                                 ! If true, use a more robust estimate of the first mode wave speed as the
                                 ! starting point for iterations.
 
@@ -757,7 +757,7 @@ MSTAR2_COEF1 = 0.29             !   [nondim] default = 0.3
 MSTAR2_COEF2 = 0.152            !   [nondim] default = 0.085
                                 ! Coefficient in computing mstar when only rotation limits the total mixing
                                 ! (used if EPBL_MSTAR_SCHEME = OM4)
-EPBL_MLD_BISECTION = True       !   [Boolean] default = False 
+EPBL_MLD_BISECTION = True       !   [Boolean] default = False
                                 ! If true, use bisection with the iterative determination of the self-consistent
                                 ! mixed layer depth.  Otherwise use the false position after a maximum and
                                 ! minimum bound have been evaluated and the returned value or bisection before
@@ -858,8 +858,32 @@ USE_NEUTRAL_DIFFUSION = True    !   [Boolean] default = False
                                 ! If true, enables the neutral diffusion module.
 
 ! === module ocean_model_init ===
-
 RESTART_CHECKSUMS_REQUIRED = False
+
+! === module MOM_oda_incupd ===
+ODA_INCUPD = @[ODA_INCUPD]   ! [Boolean] default = False
+                             ! If true, oda incremental updates will be applied
+                             ! everywhere in the domain.
+ODA_INCUPD_FILE = "mom6_increment.nc"   ! The name of the file with the T,S,h increments.
+
+ODA_TEMPINC_VAR = "Temp"        ! default = "ptemp_inc"
+                                ! The name of the potential temperature inc. variable in
+				      	   ! ODA_INCUPD_FILE.
+ODA_SALTINC_VAR = "Salt"        ! default = "sal_inc"
+                                ! The name of the salinity inc. variable in
+                                ! ODA_INCUPD_FILE.
+ODA_THK_VAR = "h"               ! default = "h"
+                                ! The name of the int. depth inc. variable in
+                                ! ODA_INCUPD_FILE.
+ODA_INCUPD_UV = false           !
+!ODA_UINC_VAR = "u"             ! default = "u_inc"
+                                ! The name of the zonal vel. inc. variable in
+                                ! ODA_INCUPD_UV_FILE.
+!ODA_VINC_VAR = "v"             ! default = "v_inc"
+                                ! The name of the meridional vel. inc. variable in
+                                ! ODA_INCUPD_UV_FILE.
+ODA_INCUPD_NHOURS = @[ODA_INCUPD_NHOURS]            ! default=3.0
+
 ! === module MOM_lateral_boundary_diffusion ===
 ! This module implements lateral diffusion of tracers near boundaries
 
@@ -913,8 +937,8 @@ LIQUID_RUNOFF_FROM_DATA = @[MOM6_RIVER_RUNOFF]  !   [Boolean] default = False
                                 ! the data_table using the component name 'OCN'.
 ! === module ocean_stochastics ===
 DO_SPPT   = @[DO_OCN_SPPT]      ! [Boolean] default = False
-                                ! If true perturb the diabatic tendencies in MOM_diabadic_driver 
-PERT_EPBL = @[PERT_EPBL]        ! [Boolean] default = False 
+                                ! If true perturb the diabatic tendencies in MOM_diabatic_driver
+PERT_EPBL = @[PERT_EPBL]        ! [Boolean] default = False
                                 ! If true perturb the KE dissipation and destruction in MOM_energetic_PBL
 ! === module MOM_restart ===
 

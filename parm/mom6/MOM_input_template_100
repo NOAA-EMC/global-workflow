@@ -76,7 +76,7 @@ SAVE_INITIAL_CONDS = False      !   [Boolean] default = False
                                 ! If true, write the initial conditions to a file given by IC_OUTPUT_FILE.
 
 ! === module MOM_oda_incupd ===
-ODA_INCUPD = @[MOM_IAU]         ! [Boolean] default = False
+ODA_INCUPD = @[ODA_INCUPD]         ! [Boolean] default = False
                                 ! If true, oda incremental updates will be applied
                                 ! everywhere in the domain.
 ODA_INCUPD_FILE = "mom6_increment.nc" ! The name of the file with the T,S,h increments.
@@ -97,7 +97,7 @@ ODA_UINC_VAR = "u_inc"          ! default = "u_inc"
 ODA_VINC_VAR = "v_inc"          ! default = "v_inc"
                                 ! The name of the meridional vel. inc. variable in
                                 ! ODA_INCUPD_UV_FILE.
-ODA_INCUPD_NHOURS = @[MOM_IAU_HRS] ! default=3.0
+ODA_INCUPD_NHOURS = @[ODA_INCUPD_NHOURS] ! default=3.0
                                 ! Number of hours for full update (0=direct insertion).
 
 ! === module MOM_domains ===
@@ -430,7 +430,7 @@ VISC_RES_FN_POWER = 2           !   [nondim] default = 100
                                 ! used, although even integers are more efficient to calculate.  Setting this
                                 ! greater than 100 results in a step-function being used. This function affects
                                 ! lateral viscosity, Kh, and not KhTh.
-INTERNAL_WAVE_SPEED_BETTER_EST = False !   [Boolean] default = True 
+INTERNAL_WAVE_SPEED_BETTER_EST = False !   [Boolean] default = True
                                 ! If true, use a more robust estimate of the first mode wave speed as the
                                 ! starting point for iterations.
 
@@ -829,6 +829,28 @@ ENERGYSAVEDAYS = 0.25           !   [days] default = 1.0
                                 ! other globally summed diagnostics.
 
 ! === module ocean_model_init ===
+ODA_INCUPD = @[ODA_INCUPD]   ! [Boolean] default = False
+                             ! If true, oda incremental updates will be applied
+                             ! everywhere in the domain.
+ODA_INCUPD_FILE = "mom6_increment.nc"   ! The name of the file with the T,S,h increments.
+
+ODA_TEMPINC_VAR = "Temp"        ! default = "ptemp_inc"
+                                ! The name of the potential temperature inc. variable in
+				      	   ! ODA_INCUPD_FILE.
+ODA_SALTINC_VAR = "Salt"        ! default = "sal_inc"
+                                ! The name of the salinity inc. variable in
+                                ! ODA_INCUPD_FILE.
+ODA_THK_VAR = "h"               ! default = "h"
+                                ! The name of the int. depth inc. variable in
+                                ! ODA_INCUPD_FILE.
+ODA_INCUPD_UV = false           !
+!ODA_UINC_VAR = "u"             ! default = "u_inc"
+                                ! The name of the zonal vel. inc. variable in
+                                ! ODA_INCUPD_UV_FILE.
+!ODA_VINC_VAR = "v"             ! default = "v_inc"
+                                ! The name of the meridional vel. inc. variable in
+                                ! ODA_INCUPD_UV_FILE.
+ODA_INCUPD_NHOURS = @[ODA_INCUPD_NHOURS]            ! default=3.0
 
 ! === module MOM_surface_forcing ===
 OCEAN_SURFACE_STAGGER = "A"     ! default = "C"
@@ -856,7 +878,7 @@ FIX_USTAR_GUSTLESS_BUG = False  !   [Boolean] default = True
                                 ! velocity
 ! === module ocean_stochastics ===
 DO_SPPT   = @[DO_OCN_SPPT]      ! [Boolean] default = False
-                                ! If true perturb the diabatic tendencies in MOM_diabadic_driver
+                                ! If true perturb the diabatic tendencies in MOM_diabatic_driver
 PERT_EPBL = @[PERT_EPBL]        ! [Boolean] default = False
                                 ! If true perturb the KE dissipation and destruction in MOM_energetic_PBL
 

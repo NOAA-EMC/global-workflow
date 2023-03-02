@@ -91,8 +91,8 @@ function checkout() {
     return "${status}"
   fi
   if [[ "${recursive}" == "YES" ]]; then
-    git submodule update --init --recursive >> "${logfile}" 2>&1
     echo "|-- Updating submodules (if any)"
+    git submodule update --init --recursive >> "${logfile}" 2>&1
     status=$?
     if ((status > 0)); then
       echo "    WARNING: Error while updating submodules of ${name}"
@@ -156,8 +156,8 @@ mkdir -p "${logdir}"
 # The checkout version should always be a speciifc commit (hash or tag), not a branch
 errs=0
 checkout "gfs_utils.fd"    "https://github.com/NOAA-EMC/gfs-utils"              "0b8ff56"                    ; errs=$((errs + $?))
-checkout "ufs_model.fd"    "https://github.com/ufs-community/ufs-weather-model" "${ufs_model_hash:-7a1ce44}" ; errs=$((errs + $?))
-checkout "ufs_utils.fd"    "https://github.com/ufs-community/UFS_UTILS.git"     "8b990c0"                    ; errs=$((errs + $?))
+checkout "ufs_utils.fd"    "https://github.com/ufs-community/UFS_UTILS.git"     "5b67e4d"                    ; errs=$((errs + $?))
+checkout "ufs_model.fd"    "https://github.com/ufs-community/ufs-weather-model" "${ufs_model_hash:-c22aaad}" ; errs=$((errs + $?))
 checkout "verif-global.fd" "https://github.com/NOAA-EMC/EMC_verif-global.git"   "c267780"                    ; errs=$((errs + $?))
 
 if [[ ${checkout_gsi} == "YES" ]]; then
@@ -165,7 +165,7 @@ if [[ ${checkout_gsi} == "YES" ]]; then
 fi
 
 if [[ ${checkout_gdas} == "YES" ]]; then
-  checkout "gdas.cd" "https://github.com/NOAA-EMC/GDASApp.git" "f7c23af"; errs=$((errs + $?))
+  checkout "gdas.cd" "https://github.com/NOAA-EMC/GDASApp.git" "a00b5da"; errs=$((errs + $?))
 fi
 
 if [[ ${checkout_gsi} == "YES" || ${checkout_gdas} == "YES" ]]; then

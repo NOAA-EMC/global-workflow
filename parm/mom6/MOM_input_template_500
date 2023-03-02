@@ -492,10 +492,12 @@ MAXTRUNC = 1000                 !   [truncations save_interval-1] default = 0
                                 ! to stop if there is any truncation of velocities.
 
 ! === module ocean_model_init ===
-ODA_INCUPD = @[MOM_IAU]            ! [Boolean] default = False
+
+! === module MOM_oda_incupd ===
+ODA_INCUPD = @[ODA_INCUPD]   ! [Boolean] default = False
                              ! If true, oda incremental updates will be applied
                              ! everywhere in the domain.
-ODA_INCUPD_FILE = "inc.nc"   ! The name of the file with the T,S,h increments.
+ODA_INCUPD_FILE = "mom6_increment.nc"   ! The name of the file with the T,S,h increments.
 
 ODA_TEMPINC_VAR = "Temp"        ! default = "ptemp_inc"
                                 ! The name of the potential temperature inc. variable in
@@ -513,7 +515,7 @@ ODA_INCUPD_UV = false           !
 !ODA_VINC_VAR = "v"             ! default = "v_inc"
                                 ! The name of the meridional vel. inc. variable in
                                 ! ODA_INCUPD_UV_FILE.
-ODA_INCUPD_NHOURS = @[MOM_IAU_HRS]            ! default=3.0
+ODA_INCUPD_NHOURS = @[ODA_INCUPD_NHOURS]            ! default=3.0
 
 ! === module MOM_surface_forcing ===
 OCEAN_SURFACE_STAGGER = "A"     ! default = "C"

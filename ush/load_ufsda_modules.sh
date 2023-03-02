@@ -41,17 +41,35 @@ elif [[ -d /lfs3 ]] ; then
 elif [[ -d /scratch1 ]] ; then
   # We are on NOAA Hera
   module load "${MODS}/hera"
-  if [[ "${DEBUG_WORKFLOW}" == "YES" ]] ; then
+  if [[ "${DEBUG_WORKFLOW:-NO}" == "YES" ]] ; then
      module list
      pip list
   fi
+  # set NETCDF variable based on ncdump location
+  NETCDF=$( which ncdump )
+  export NETCDF
+  # prod_util stuff, find a better solution later...
+  module use /scratch2/NCEPDEV/nwprod/hpc-stack/libs/hpc-stack/modulefiles/compiler/intel/2022.1.2/
+  module load prod_util
 elif [[ -d /work ]] ; then
   # We are on MSU Orion
+  # prod_util stuff, find a better solution later...
+  #module use /apps/contrib/NCEP/hpc-stack/libs/hpc-stack/modulefiles/compiler/intel/2022.1.2/
+  #module load prod_util
+  export UTILROOT=/work2/noaa/da/python/opt/intel-2022.1.2/prod_util/1.2.2
+  export MDATE=/work2/noaa/da/python/opt/intel-2022.1.2/prod_util/1.2.2/bin/mdate
+  export NDATE=/work2/noaa/da/python/opt/intel-2022.1.2/prod_util/1.2.2/bin/ndate
+  export NHOUR=/work2/noaa/da/python/opt/intel-2022.1.2/prod_util/1.2.2/bin/nhour
+  export FSYNC=/work2/noaa/da/python/opt/intel-2022.1.2/prod_util/1.2.2/bin/fsync_file
   module load "${MODS}/orion"
-  if [[ "${DEBUG_WORKFLOW}" == "YES" ]] ; then
+  if [[ "${DEBUG_WORKFLOW:-NO}" == "YES" ]] ; then
      module list
      pip list
   fi
+  # set NETCDF variable based on ncdump location
+  ncdump=$( which ncdump )
+  NETCDF=$( echo "${ncdump}" | cut -d " " -f 3 )
+  export NETCDF
 elif [[ -d /glade ]] ; then
   # We are on NCAR Yellowstone
   echo WARNING: UFSDA NOT SUPPORTED ON THIS PLATFORM

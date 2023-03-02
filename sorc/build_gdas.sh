@@ -23,7 +23,7 @@ fi
 
 cd gdas.cd
 
-BUILD_JOBS="${build_jobs}" ./build.sh -t "${MACHINE_ID}"
+WORKFLOW_BUILD="ON" BUILD_JOBS="${build_jobs}" ./build.sh -t "${MACHINE_ID}"
 
 exit $?
 

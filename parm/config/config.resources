@@ -193,6 +193,28 @@ elif [[ "${step}" = "atmanalpost" ]]; then
 
 elif [[ "${step}" = "aeroanlinit" ]]; then
 
+   # below lines are for creating JEDI YAML
+   case ${CASE} in
+     C768)
+        layout_x=6
+        layout_y=6
+        ;;
+      C384)
+        layout_x=5
+        layout_y=5
+        ;;
+     C192 | C96 | C48)
+        layout_x=8
+        layout_y=8
+        ;;
+      *)
+          echo "FATAL ERROR: Resolution not supported for aerosol analysis'"
+          exit 1
+    esac
+
+    export layout_x
+    export layout_y
+
     export wtime_aeroanlinit="00:10:00"
     export npe_aeroanlinit=1
     export nth_aeroanlinit=1
@@ -212,13 +234,16 @@ elif [[ "${step}" = "aeroanlrun" ]]; then
         layout_y=5
         ;;
      C192 | C96 | C48)
-        layout_x=3
-        layout_y=3
+        layout_x=8
+        layout_y=8
         ;;
       *)
           echo "FATAL: Resolution not supported'"
           exit 1
     esac
+
+    export layout_x
+    export layout_y
 
     export wtime_aeroanlrun="00:30:00"
     npe_aeroanlrun=$(echo "${layout_x} * ${layout_y} * 6" | bc)
@@ -407,9 +432,9 @@ elif [ ${step} = "fcst" ]; then
     export is_exclusive=True
 
     # During workflow creation, we need resources for all CDUMPs and CDUMP is undefined
-    CDUMP_LIST=${CDUMP:-"gdas gfs"}
+    CDUMP_LIST=${CDUMP:-"gdas gfs enkfgdas enkfgfs"}
     for CDUMP in ${CDUMP_LIST}; do
-        if [[ ${CDUMP} == "gfs" ]]; then
+        if [[ ${CDUMP} =~ "gfs" ]]; then
             export layout_x=${layout_x_gfs}
             export layout_y=${layout_y_gfs}
             export WRITE_GROUP=${WRITE_GROUP_GFS}
@@ -489,7 +514,7 @@ elif [ ${step} = "fcst" ]; then
             (( NTASKS_TOT = NTASKS_TOT + ICEPETS ))
         fi
 
-        if [[ ${CDUMP} == "gfs" ]]; then
+        if [[ ${CDUMP} =~ "gfs" ]]; then
             export npe_fcst_gfs=${NTASKS_TOT}
         else
             export npe_fcst=${NTASKS_TOT}
@@ -704,7 +729,7 @@ elif [ ${step} = "ediag" ]; then
     export npe_ediag=48
     export nth_ediag=1
     export npe_node_ediag=$(echo "${npe_node_max} / ${nth_ediag}" | bc)
-    export memory_ediag="24GB"
+    export memory_ediag="30GB"
 
 elif [ ${step} = "eupd" ]; then
 

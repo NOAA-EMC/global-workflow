@@ -47,8 +47,9 @@ CALCINCNCEXEC=${CALCINCEXEC:-$HOMEgfs/exec/calc_increment_ens_ncio.x}
 OPREFIX=${OPREFIX:-""}
 OSUFFIX=${OSUFFIX:-""}
 APREFIX=${APREFIX:-""}
-APREFIX_ENKF=${APREFIX_ENKF:-$APREFIX}
+APREFIX_ENS=${APREFIX_ENS:-$APREFIX}
 GPREFIX=${GPREFIX:-""}
+GPREFIX_ENS=${GPREFIX_ENS:-$GPREFIX}
 
 # Variables
 NMEM_ENKF=${NMEM_ENKF:-80}
@@ -59,7 +60,7 @@ FHMIN=${FHMIN_ECEN:-3}
 FHMAX=${FHMAX_ECEN:-9}
 FHOUT=${FHOUT_ECEN:-3}
 FHSFC=${FHSFC_ECEN:-$FHMIN}
-if [ $CDUMP = "gfs" ]; then
+if [ $CDUMP = "enkfgfs" ]; then
    DO_CALC_INCREMENT=${DO_CALC_INCREMENT_ENKF_GFS:-"NO"}
 else
    DO_CALC_INCREMENT=${DO_CALC_INCREMENT:-"NO"}
@@ -109,32 +110,32 @@ for FHR in $(seq $FHMIN $FHOUT $FHMAX); do
 
 for imem in $(seq 1 $NMEM_ENKF); do
    memchar="mem"$(printf %03i $imem)
-   $NLN $COMIN_GES_ENS/$memchar/atmos/${GPREFIX}atmf00${FHR}${ENKF_SUFFIX}.nc ./atmges_$memchar
+   $NLN $COMIN_GES_ENS/$memchar/atmos/${GPREFIX_ENS}atmf00${FHR}${ENKF_SUFFIX}.nc ./atmges_$memchar
    if [ $DO_CALC_INCREMENT = "YES" ]; then
       if [ $FHR -eq 6 ]; then
-         $NLN $COMIN_ENS/$memchar/atmos/${APREFIX_ENKF}atmanl.nc ./atmanl_$memchar
+         $NLN $COMIN_ENS/$memchar/atmos/${APREFIX_ENS}atmanl.nc ./atmanl_$memchar
       else
-         $NLN $COMIN_ENS/$memchar/atmos/${APREFIX_ENKF}atma00${FHR}.nc ./atmanl_$memchar
+         $NLN $COMIN_ENS/$memchar/atmos/${APREFIX_ENS}atma00${FHR}.nc ./atmanl_$memchar
       fi
    fi
    mkdir -p $COMOUT_ENS/$memchar
    if [ $FHR -eq 6 ]; then
-      $NLN $COMOUT_ENS/$memchar/atmos/${APREFIX}atminc.nc ./atminc_$memchar
+      $NLN $COMOUT_ENS/$memchar/atmos/${APREFIX_ENS}atminc.nc ./atminc_$memchar
    else
-      $NLN $COMOUT_ENS/$memchar/atmos/${APREFIX}atmi00${FHR}.nc ./atminc_$memchar
+      $NLN $COMOUT_ENS/$memchar/atmos/${APREFIX_ENS}atmi00${FHR}.nc ./atminc_$memchar
    fi
    if [[ $RECENTER_ENKF = "YES" ]]; then
       if [ $DO_CALC_INCREMENT = "YES" ]; then
          if [ $FHR -eq 6 ]; then
-            $NLN $COMOUT_ENS/$memchar/atmos/${APREFIX}ratmanl.nc ./ratmanl_$memchar
+            $NLN $COMOUT_ENS/$memchar/atmos/${APREFIX_ENS}ratmanl.nc ./ratmanl_$memchar
          else
-            $NLN $COMOUT_ENS/$memchar/atmos/${APREFIX}ratma00${FHR}.nc ./ratmanl_$memchar
+            $NLN $COMOUT_ENS/$memchar/atmos/${APREFIX_ENS}ratma00${FHR}.nc ./ratmanl_$memchar
          fi
      else
          if [ $FHR -eq 6 ]; then
-            $NLN $COMOUT_ENS/$memchar/atmos/${APREFIX}ratminc.nc ./ratminc_$memchar
+            $NLN $COMOUT_ENS/$memchar/atmos/${APREFIX_ENS}ratminc.nc ./ratminc_$memchar
          else
-            $NLN $COMOUT_ENS/$memchar/atmos/${APREFIX}ratmi00${FHR}.nc ./ratminc_$memchar
+            $NLN $COMOUT_ENS/$memchar/atmos/${APREFIX_ENS}ratmi00${FHR}.nc ./ratminc_$memchar
          fi
      fi
    fi
@@ -143,9 +144,9 @@ done
 if [ $DO_CALC_INCREMENT = "YES" ]; then
    # Link ensemble mean analysis
    if [ $FHR -eq 6 ]; then
-      $NLN $COMIN_ENS/${APREFIX_ENKF}atmanl.ensmean.nc ./atmanl_ensmean
+      $NLN $COMIN_ENS/${APREFIX_ENS}atmanl.ensmean.nc ./atmanl_ensmean
    else
-      $NLN $COMIN_ENS/${APREFIX_ENKF}atma00${FHR}.ensmean.nc ./atmanl_ensmean
+      $NLN $COMIN_ENS/${APREFIX_ENS}atma00${FHR}.ensmean.nc ./atmanl_ensmean
    fi
 
    # Compute ensemble mean analysis
@@ -163,9 +164,9 @@ if [ $DO_CALC_INCREMENT = "YES" ]; then
 else
    # Link ensemble mean increment
    if [ $FHR -eq 6 ]; then
-      $NLN $COMIN_ENS/${APREFIX_ENKF}atminc.ensmean.nc ./atminc_ensmean
+      $NLN $COMIN_ENS/${APREFIX_ENS}atminc.ensmean.nc ./atminc_ensmean
    else
-      $NLN $COMIN_ENS/${APREFIX_ENKF}atmi00${FHR}.ensmean.nc ./atminc_ensmean
+      $NLN $COMIN_ENS/${APREFIX_ENS}atmi00${FHR}.ensmean.nc ./atminc_ensmean
    fi
 
    # Compute ensemble mean increment
@@ -182,8 +183,8 @@ else
    export err=$?; err_chk
 
    # If available, link to ensemble mean guess.  Otherwise, compute ensemble mean guess
-   if [ -s $COMIN_GES_ENS/${GPREFIX}atmf00${FHR}.ensmean.nc ]; then
-       $NLN $COMIN_GES_ENS/${GPREFIX}atmf00${FHR}.ensmean.nc ./atmges_ensmean
+   if [ -s $COMIN_GES_ENS/${GPREFIX_ENS}atmf00${FHR}.ensmean.nc ]; then
+       $NLN $COMIN_GES_ENS/${GPREFIX_ENS}atmf00${FHR}.ensmean.nc ./atmges_ensmean
    else
        DATAPATH="./"
        ATMGESNAME="atmges"
@@ -350,4 +351,4 @@ cd $pwd
 [[ $mkdata = "YES" ]] && rm -rf $DATA
 
 
-exit $err
+exit ${err}

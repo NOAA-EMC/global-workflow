@@ -1,0 +1,23 @@
+mkdir:
+- !ENV ${DATA}/crtm/
+copy:
+- - !ENV ${FV3JEDI_FIX}/crtm/${CRTM_VER}/AerosolCoeff.bin
+  - !ENV ${DATA}/crtm/AerosolCoeff.bin
+- - !ENV ${FV3JEDI_FIX}/crtm/${CRTM_VER}/CloudCoeff.bin
+  - !ENV ${DATA}/crtm/CloudCoeff.bin
+- - !ENV ${FV3JEDI_FIX}/crtm/${CRTM_VER}/v.viirs-m_npp.SpcCoeff.bin
+  - !ENV ${DATA}/crtm/v.viirs-m_npp.SpcCoeff.bin
+- - !ENV ${FV3JEDI_FIX}/crtm/${CRTM_VER}/v.viirs-m_npp.TauCoeff.bin
+  - !ENV ${DATA}/crtm/v.viirs-m_npp.TauCoeff.bin
+- - !ENV ${FV3JEDI_FIX}/crtm/${CRTM_VER}/v.viirs-m_j1.SpcCoeff.bin
+  - !ENV ${DATA}/crtm/v.viirs-m_j1.SpcCoeff.bin
+- - !ENV ${FV3JEDI_FIX}/crtm/${CRTM_VER}/v.viirs-m_j1.TauCoeff.bin
+  - !ENV ${DATA}/crtm/v.viirs-m_j1.TauCoeff.bin
+- - !ENV ${FV3JEDI_FIX}/crtm/${CRTM_VER}/NPOESS.VISice.EmisCoeff.bin
+  - !ENV ${DATA}/crtm/NPOESS.VISice.EmisCoeff.bin
+- - !ENV ${FV3JEDI_FIX}/crtm/${CRTM_VER}/NPOESS.VISland.EmisCoeff.bin
+  - !ENV ${DATA}/crtm/NPOESS.VISland.EmisCoeff.bin
+- - !ENV ${FV3JEDI_FIX}/crtm/${CRTM_VER}/NPOESS.VISsnow.EmisCoeff.bin
+  - !ENV ${DATA}/crtm/NPOESS.VISsnow.EmisCoeff.bin
+- - !ENV ${FV3JEDI_FIX}/crtm/${CRTM_VER}/NPOESS.VISwater.EmisCoeff.bin
+  - !ENV ${DATA}/crtm/NPOESS.VISwater.EmisCoeff.bin

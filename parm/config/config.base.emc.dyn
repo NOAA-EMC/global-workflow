@@ -119,8 +119,8 @@ export RUN=${RUN:-${CDUMP:-"gfs"}}  # RUN is defined in the job-card (ecf); CDUM
 # TODO: determine where is RUN actually used in the workflow other than here
 # TODO: is it possible to replace all instances of ${CDUMP} to ${RUN} to be
 #       consistent w/ EE2?
-export COMIN_OBS=${COMIN_OBS:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/obs}
-export COMIN_GES_OBS=${COMIN_GES_OBS:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/obs}
+export COMIN_OBS=${COMIN_OBS:-${ROTDIR}/${CDUMP/enkf}.${PDY}/${cyc}/obs}
+export COMIN_GES_OBS=${COMIN_GES_OBS:-${ROTDIR}/${CDUMP/enkf}.${PDY}/${cyc}/obs}
 
 export COMINatmos=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos
 export COMOUTatmos=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos
@@ -228,10 +228,10 @@ case "${APP}" in
 esac
 
 # Surface cycle update frequency
-if [[ "${CDUMP}" == "gdas" ]] ; then
+if [[ "${CDUMP}" =~ "gdas" ]] ; then
    export FHCYC=1
    export FTSFS=10
-elif [[ "${CDUMP}" == "gfs" ]] ; then
+elif [[ "${CDUMP}" =~ "gfs" ]] ; then
    export FHCYC=24
 fi
 

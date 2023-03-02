@@ -7,7 +7,7 @@ source "${HOMEgfs}/ush/preamble.sh"
 ##############################################
 export n=$((10#${ENSGRP}))
 export CDUMP_ENKF=$(echo "${EUPD_CYC:-"gdas"}" | tr a-z A-Z)
-export ARCH_LIST="${ROTDIR}/enkf${CDUMP}.${PDY}/${cyc}/earc${ENSGRP}"
+export ARCH_LIST="${ROTDIR}/${RUN}.${PDY}/${cyc}/earc${ENSGRP}"
 
 # ICS are restarts and always lag INC by $assim_freq hours.
 EARCINC_CYC=${ARCH_CYC}
@@ -20,10 +20,10 @@ fi
 mkdir -p "${ARCH_LIST}"
 cd "${ARCH_LIST}"
 
-"${HOMEgfs}"/ush/hpssarch_gen.sh enkf"${CDUMP}"
+"${HOMEgfs}"/ush/hpssarch_gen.sh "${RUN}"
 status=$?
 if [ "${status}" -ne 0 ]; then
-   echo "${HOMEgfs}/ush/hpssarch_gen.sh enkf${CDUMP} failed, ABORT!"
+   echo "${HOMEgfs}/ush/hpssarch_gen.sh ${RUN} failed, ABORT!"
    exit "${status}"
 fi
 
@@ -48,7 +48,7 @@ if (( 10#${ENSGRP} > 0 )) && [[ ${HPSSARCH} = "YES" || ${LOCALARCH} = "YES" ]]; 
    SAVEWARMICB="NO"
    mm=$(echo "${CDATE}"|cut -c 5-6)
    dd=$(echo "${CDATE}"|cut -c 7-8)
-   nday=$(( (mm-1)*30+dd ))
+   nday=$(( (10#${mm}-1)*30+10#${dd} ))
    mod=$((nday % ARCH_WARMICFREQ))
    if [ "${CDATE}" -eq "${firstday}" ] && [ "${cyc}" -eq "${EARCINC_CYC}" ]; then SAVEWARMICA="YES" ; fi
    if [ "${CDATE}" -eq "${firstday}" ] && [ "${cyc}" -eq "${EARCICS_CYC}" ]; then SAVEWARMICB="YES" ; fi
@@ -65,27 +65,27 @@ if (( 10#${ENSGRP} > 0 )) && [[ ${HPSSARCH} = "YES" || ${LOCALARCH} = "YES" ]]; 
 
    if [ "${CDATE}" -gt "${SDATE}" ]; then # Don't run for first half cycle
 
-     ${TARCMD} -P -cvf "${ATARDIR}"/"${CDATE}"/enkf"${CDUMP}"_grp"${ENSGRP}".tar $(cat "${ARCH_LIST}"/enkf"${CDUMP}"_grp"${n}".txt)
+     ${TARCMD} -P -cvf "${ATARDIR}/${CDATE}/${RUN}_grp${ENSGRP}.tar" $(cat "${ARCH_LIST}/${RUN}_grp${n}.txt")
      status=$?
      if [ "${status}" -ne 0 ] && [ "${CDATE}" -ge "${firstday}" ]; then
-         echo "$(echo "${TARCMD}" | tr 'a-z' 'A-Z') ${CDATE} enkf${CDUMP}_grp${ENSGRP}.tar failed"
+         echo "$(echo "${TARCMD}" | tr 'a-z' 'A-Z') ${CDATE} ${RUN}_grp${ENSGRP}.tar failed"
          exit "${status}"
      fi
 
      if [ "${SAVEWARMICA}" = "YES" ] && [ "${cyc}" -eq "${EARCINC_CYC}" ]; then
-       ${TARCMD} -P -cvf "${ATARDIR}"/"${CDATE}"/enkf"${CDUMP}"_restarta_grp"${ENSGRP}".tar $(cat "${ARCH_LIST}"/enkf"${CDUMP}"_restarta_grp"${n}".txt)
+       ${TARCMD} -P -cvf "${ATARDIR}/${CDATE}/${RUN}_restarta_grp${ENSGRP}.tar" $(cat "${ARCH_LIST}/${RUN}_restarta_grp${n}.txt")
        status=$?
        if [ "${status}" -ne 0 ]; then
-           echo "$(echo "${TARCMD}" | tr 'a-z' 'A-Z') ${CDATE} enkf${CDUMP}_restarta_grp${ENSGRP}.tar failed"
+           echo "$(echo "${TARCMD}" | tr 'a-z' 'A-Z') ${CDATE} ${RUN}_restarta_grp${ENSGRP}.tar failed"
            exit "${status}"
        fi
      fi
 
      if [ "${SAVEWARMICB}" = "YES" ] && [ "${cyc}" -eq "${EARCICS_CYC}" ]; then
-       ${TARCMD} -P -cvf "${ATARDIR}"/"${CDATE}"/enkf"${CDUMP}"_restartb_grp"${ENSGRP}".tar $(cat "${ARCH_LIST}"/enkf"${CDUMP}"_restartb_grp"${n}".txt)
+       ${TARCMD} -P -cvf "${ATARDIR}/${CDATE}/${RUN}_restartb_grp${ENSGRP}.tar" $(cat "${ARCH_LIST}/${RUN}_restartb_grp{n}.txt")
        status=$?
        if [ "${status}" -ne 0 ]; then
-           echo "$(echo "${TARCMD}" | tr 'a-z' 'A-Z') ${CDATE} enkf${CDUMP}_restartb_grp${ENSGRP}.tar failed"
+           echo "$(echo "${TARCMD}" | tr 'a-z' 'A-Z') ${CDATE} ${RUN}_restartb_grp${ENSGRP}.tar failed"
            exit "${status}"
        fi
      fi
@@ -109,10 +109,10 @@ if [ "${ENSGRP}" -eq 0 ]; then
         fi
 
         set +e
-        ${TARCMD} -P -cvf "${ATARDIR}"/"${CDATE}"/enkf"${CDUMP}".tar $(cat "${ARCH_LIST}"/enkf"${CDUMP}".txt)
+        ${TARCMD} -P -cvf "${ATARDIR}/${CDATE}/${RUN}.tar" $(cat "${ARCH_LIST}/${RUN}.txt")
         status=$?
         if [ "${status}" -ne 0 ] && [ "${CDATE}" -ge "${firstday}" ]; then
-            echo "$(echo "${TARCMD}" | tr 'a-z' 'A-Z') ${CDATE} enkf${CDUMP}.tar failed"
+            echo "$(echo "${TARCMD}" | tr 'a-z' 'A-Z') ${CDATE} ${RUN}.tar failed"
             exit "${status}"
         fi
         set_strict
@@ -122,12 +122,12 @@ if [ "${ENSGRP}" -eq 0 ]; then
     [[ ! -d ${ARCDIR} ]] && mkdir -p "${ARCDIR}"
     cd "${ARCDIR}"
 
-    nb_copy "${ROTDIR}/enkf${CDUMP}.${PDY}/${cyc}/${CDUMP}.t${cyc}z.enkfstat"        "enkfstat.${CDUMP}.${CDATE}"
-    nb_copy "${ROTDIR}/enkf${CDUMP}.${PDY}/${cyc}/${CDUMP}.t${cyc}z.gsistat.ensmean" "gsistat.${CDUMP}.${CDATE}.ensmean"
+    nb_copy "${ROTDIR}/${RUN}.${PDY}/${cyc}/${RUN}.t${cyc}z.enkfstat"        "enkfstat.${RUN}.${CDATE}"
+    nb_copy "${ROTDIR}/${RUN}.${PDY}/${cyc}/${RUN}.t${cyc}z.gsistat.ensmean" "gsistat.${RUN}.${CDATE}.ensmean"
 
     if [ "${CDUMP_ENKF}" != "GDAS" ]; then
-      nb_copy "${ROTDIR}/enkfgfs.${PDY}/${cyc}/${CDUMP}.t${cyc}z.enkfstat"        "enkfstat.gfs.${CDATE}"
-      nb_copy "${ROTDIR}/enkfgfs.${PDY}/${cyc}/${CDUMP}.t${cyc}z.gsistat.ensmean" "gsistat.gfs.${CDATE}.ensmean"
+      nb_copy "${ROTDIR}/enkfgfs.${PDY}/${cyc}/${RUN}.t${cyc}z.enkfstat"        "enkfstat.gfs.${CDATE}"
+      nb_copy "${ROTDIR}/enkfgfs.${PDY}/${cyc}/${RUN}.t${cyc}z.gsistat.ensmean" "gsistat.gfs.${CDATE}.ensmean"
     fi
 
 fi
@@ -190,9 +190,9 @@ if [ "${GDATE}" -lt "${RDATE}" ]; then
     RDATE=${GDATE}
 fi
 rPDY=$(echo "${RDATE}" | cut -c1-8)
-clist="gdas gfs"
+clist="enkfgdas enkfgfs"
 for ctype in ${clist}; do
-    COMIN="${ROTDIR}/enkf${ctype}.${rPDY}"
+    COMIN="${ROTDIR}/${ctype}.${rPDY}"
     [[ -d ${COMIN} ]] && rm -rf "${COMIN}"
 done
 
