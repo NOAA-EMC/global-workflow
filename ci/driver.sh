@@ -34,13 +34,15 @@ export PS4='+ $(basename ${BASH_SOURCE})[${LINENO}]'
 
 HOMEgfs=$(realpath "${pwd}/..")
 export HOMEgfs
+local host
+host=$(hostname)
 
 usage() {
   set +x
   echo
   echo "Usage: $0 -t <target> -h"
   echo
-  echo "  -t  target/machine script is running on    DEFAULT: $(hostname)"
+  echo "  -t  target/machine script is running on    DEFAULT: ${host}"
   echo "  -h  display this message and quit"
   echo
   exit 1
