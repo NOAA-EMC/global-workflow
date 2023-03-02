@@ -24,6 +24,7 @@ if [[ -d /lfs/f1 ]]; then
   module load module_base.wcoss2
 elif [[ -d /lfs3 ]] ; then
   # We are on NOAA Jet
+  source "$HOMEgfs/versions/jet.ver"
   module load module_base.jet
 elif [[ -d /scratch1 ]] ; then
   # We are on NOAA Hera
@@ -41,6 +42,7 @@ elif [[ -d /lustre && -d /ncrc ]] ; then
   module load module_base.gaea
 elif [[ -d /data/prod ]] ; then
   # We are on SSEC S4
+  source "$HOMEgfs/versions/s4.ver"
   module load module_base.s4
 else
   echo WARNING: UNKNOWN PLATFORM
