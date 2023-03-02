@@ -32,7 +32,8 @@ start_time_human=$(date -d"@${start_time}" -u)
 echo "Begin ${scriptname} at ${start_time_human}"
 export PS4='+ $(basename ${BASH_SOURCE})[${LINENO}]'
 
-export HOMEgfs=$(realpath "${pwd}/..")
+HOMEgfs=$(realpath "${pwd}/..")
+export HOMEgfs
 
 # ==============================================================================
 usage() {
