@@ -16,6 +16,7 @@ from pygw.template import Template, TemplateConstants
 from pygw.yaml_file import YAMLFile
 from pygw.logger import logit
 from pygfs.task.analysis import Analysis
+from datetime import date
 
 logger = getLogger(__name__.split('.')[-1])
 

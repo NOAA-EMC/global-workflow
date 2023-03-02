@@ -74,8 +74,8 @@ cat >> fims.nml << EOF
   yyyymmddhh=${PDY}.18,
   imsformat=2,
   imsversion=1.3,
-  IMS_OBS_PATH="${OBSDIR}/snow_ice_cover/IMS/$YYYY/",
-  IMS_IND_PATH="${OBSDIR}/snow_ice_cover/IMS/index_files/"
+  IMS_OBS_PATH="${WORKDIR}/",
+  IMS_IND_PATH="${WORKDIR}/"
   /
 EOF
 
