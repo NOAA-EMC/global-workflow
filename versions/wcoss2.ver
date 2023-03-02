@@ -2,8 +2,8 @@ export envvar_ver=1.0
 export prod_envir_ver=${prod_envir_ver:-2.0.4} # Allow override from ops ecflow
 export prod_util_ver=${prod_util_ver:-2.0.9}   # Allow override from ops ecflow
 
-export obsproc_run_ver=1.0.2
+export obsproc_run_ver=1.1.2
 export prepobs_run_ver=1.0.1
 
 export tracker_ver=v1.1.15.5
-export fit_ver="newm.1.5"
+export fit_ver="newm.1.7"
