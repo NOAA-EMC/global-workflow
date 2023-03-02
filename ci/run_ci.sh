@@ -1,19 +1,15 @@
 #!/bin/bash
+set -ex
 
-<<<<<<< HEAD
-################################################################
-=======
 #####################################################################
 # Setup the reletive paths to scripts and source preamble for logging 
 #####################################################################
 pwd="$( cd "$( dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd )"
 HOMEgfs=$(realpath "${pwd}/..")
-source "${HOMEgfs}/ush/preamble.sh"
 
 #####################################################################
 #  Usage and arguments for specfifying cloned directgory
 #####################################################################
->>>>>>> 894ae78a73c82572fbf08da575e6296ca99e5d98
 usage() {
   set +x
   echo
@@ -26,10 +22,7 @@ usage() {
   exit 1
 }
 
-<<<<<<< HEAD
 ################################################################
-=======
->>>>>>> 894ae78a73c82572fbf08da575e6296ca99e5d98
 while getopts "d:o:h" opt; do
   case $opt in
     d)
@@ -44,23 +37,14 @@ while getopts "d:o:h" opt; do
   esac
 done
 
-<<<<<<< HEAD
-
-######################################################################
-=======
 ####################################################################
->>>>>>> 894ae78a73c82572fbf08da575e6296ca99e5d98
 # start output file
 echo "Automated global-workflow Testing Results:" > $outfile
 echo "Machine: ${TARGET}" >> $outfile
 echo '```' >> $outfile
 echo "Start: $(date) on $(hostname)" >> $outfile
 echo "---------------------------------------------------" >> $outfile
-<<<<<<< HEAD
 ######################################################################
-=======
-####################################################################
->>>>>>> 894ae78a73c82572fbf08da575e6296ca99e5d98
 # run build script
 pwd=$PWD
 export BUILD_JOBS=8
