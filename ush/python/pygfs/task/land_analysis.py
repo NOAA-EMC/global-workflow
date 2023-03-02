@@ -138,8 +138,8 @@ class LandAnalysis(Analysis):
         src = os.path.join(self.task_config['DATA'], f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.landoi.yaml")
         dest = os.path.join(self.task_config['COMOUTland'], f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.landoi.yaml")
         yaml_copy = {
-            'mkdir': self.task_config['COMOUTland'],
-            'copy': [src, dest]
+            'mkdir': [self.task_config['COMOUTland']],
+            'copy': [[src, dest]]
         }
         FileHandler(yaml_copy).sync()
 
@@ -182,7 +182,7 @@ class LandAnalysis(Analysis):
         fms_bkg_file_template = os.path.join(self.task_config.comin_ges_atm, 'RESTART', f'{self.task_config.cdate_fv3}.sfc_data.tileX.nc')
         # get list of increment vars
         incvars_list_path = os.path.join(self.task_config['HOMEgfs'], 'parm', 'parm_gdas', 'landanl_inc_vars.yaml')
-        incvars = YAMLFile(path=incvars_list_path)
+        incvars = YAMLFile(path=incvars_list_path)['incvars']
         super().add_fv3_increments(fms_inc_file_template, fms_bkg_file_template, incvars)
 
     @logit(logger)
