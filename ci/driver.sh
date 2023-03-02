@@ -79,17 +79,17 @@ repo_url="https://github.com/TerrenceMcGuinness-NOAA/global-workflow.git"
 #########################################################################
 # pull on the repo and get list of open PRs with tags {machine}-GW-RT
 #########################################################################
-mkdir -p $GFS_CI_ROOT/repo
-cd $GFS_CI_ROOT/repo
-if [ ! -d $GFS_CI_ROOT/repo/global-workflow ]; then
+mkdir -p ${GFS_CI_ROOT}/repo
+cd ${GFS_CI_ROOT}/repo
+if [ ! -d ${GFS_CI_ROOT}/repo/global-workflow ]; then
  git clone $repo_url
 fi
-cd $GFS_CI_ROOT/repo/global-workflow
+cd ${GFS_CI_ROOT}/repo/global-workflow
 git pull
 CI_LABEL="${GFS_CI_HOST}-GW-RT"
-$GH_EXEC pr list --label "$CI_LABEL" --state "open" | awk '{print $1;}' > $GFS_CI_ROOT/open_pr_list
-if [ -s $GFS_CI_ROOT/open_pr_list ]; then
- open_pr_list=$(cat $GFS_CI_ROOT/open_pr_list)
+${GH_EXEC} pr list --label "${CI_LABEL}" --state "open" | awk '{print $1;}' > ${GFS_CI_ROOT}/open_pr_list
+if [ -s ${GFS_CI_ROOT}/open_pr_list ]; then
+ open_pr_list=$(cat ${GFS_CI_ROOT}/open_pr_list)
 else
  echo "no PRs to process .. exit"
  exit
@@ -100,37 +100,36 @@ fi
 # loop throu all open PRs
 #######################################
 for pr in $open_pr_list; do
-  $GH_EXEC pr edit --repo $repo_url $pr --remove-label $CI_LABEL --add-label ${CI_LABEL}-Running
+  ${GH_EXEC} pr edit --repo ${repo_url} $pr --remove-label ${CI_LABEL} --add-label ${CI_LABEL}-Running
   echo "Processing Pull Request #${pr}"
-  mkdir -p $GFS_CI_ROOT/PR/$pr
-  cd $GFS_CI_ROOT/PR/$pr
+  mkdir -p ${GFS_CI_ROOT}/PR/$pr
+  cd ${GFS_CI_ROOT}/PR/${pr}
 
   # clone copy of repo
-  git clone $repo_url
+  git clone ${repo_url}
   cd global-workflow
 
   # checkout pull request
-  $GH_EXEC pr checkout $pr --repo $repo_url
+  $GH_EXEC pr checkout ${pr} --repo ${repo_url}
 
   # get commit hash
   commit=$(git log --pretty=format:'%h' -n 1)
-  echo "$commit" > $GFS_CI_ROOT/PR/$pr/commit
+  echo "$commit" > ${GFS_CI_ROOT}/PR/${pr}/commit
 
   # run build and testing command
-  ${HOMEgfs}/ci/run_ci.sh -d $GFS_CI_ROOT/PR/$pr/global-workflow -o $GFS_CI_ROOT/PR/$pr/output_${commit}
+  ${HOMEgfs}/ci/run_ci.sh -d $GFS_CI_ROOT/PR/$pr/global-workflow -o ${GFS_CI_ROOT}/PR/${pr}/output_${commit}
   ci_status=$?
-  $GH_EXEC pr comment $pr --repo $repo_url --body-file $GFS_CI_ROOT/PR/$pr/output_${commit}
+  ${GH_EXEC} pr comment ${pr} --repo ${repo_url} --body-file ${GFS_CI_ROOT}/PR/${pr}/output_${commit}
   if [ $ci_status -eq 0 ]; then
-    $GH_EXEC pr edit --repo $repo_url $pr --remove-label ${CI_LABEL}-Running --add-label ${CI_LABEL}-Passed
+    ${GH_EXEC} pr edit --repo ${repo_url} ${pr} --remove-label ${CI_LABEL}-Running --add-label ${CI_LABEL}-Passed
   else
-    $GH_EXEC pr edit $pr --repo $repo_url --remove-label ${CI_LABEL}-Running --add-label ${CI_LABEL}-Failed
+    ${GH_EXEC} pr edit ${pr} --repo ${repo_url} --remove-label ${CI_LABEL}-Running --add-label ${CI_LABEL}-Failed
   fi
 done
-
 
 ##########################################
 # scrub working directory for older files
 ##########################################
-find $GFS_CI_ROOT/PR/* -maxdepth 1 -mtime +3 -exec rm -rf {} \;
+find ${GFS_CI_ROOT}/PR/* -maxdepth 1 -mtime +3 -exec rm -rf {} \;
 
 exit 0
