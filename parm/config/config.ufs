@@ -128,10 +128,10 @@ case "${fv3_res}" in
         ;;
     "C192")
         export DELTIM=450
-        export layout_x=4
-        export layout_y=6
-        export layout_x_gfs=4
-        export layout_y_gfs=6
+        export layout_x=6
+        export layout_y=4
+        export layout_x_gfs=6
+        export layout_y_gfs=4
         export nth_fv3=1
         export nth_fv3_gfs=2
         export cdmbgwd="0.23,1.5,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
@@ -143,8 +143,8 @@ case "${fv3_res}" in
         ;;
     "C384")
         export DELTIM=${DELTIM:-200}
-        export layout_x=6
-        export layout_y=8
+        export layout_x=8
+        export layout_y=6
         export layout_x_gfs=${layout_x_gfs:-8}
         export layout_y_gfs=${layout_y_gfs:-12}
         export nth_fv3=1
