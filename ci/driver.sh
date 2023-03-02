@@ -51,9 +51,9 @@ usage() {
 #########################################################################
 export TARGET="$(hostname)"
 while getopts "t:h" opt; do
-  case $opt in
+  case ${opt} in
     t)
-      TARGET=$OPTARG
+      TARGET=${OPTARG}
       ;;
     h|\?|:)
       usage
@@ -77,16 +77,16 @@ esac
 repo_url="https://github.com/TerrenceMcGuinness-NOAA/global-workflow.git"
 
 #########################################################################
-# pull on the repo and get list of open PRs with tags {machine}-GW-RT
+# pull on the repo and get list of open PRs with tags {machine}-RT
 #########################################################################
 mkdir -p ${GFS_CI_ROOT}/repo
 cd ${GFS_CI_ROOT}/repo
-if [ ! -d ${GFS_CI_ROOT}/repo/global-workflow ]; then
+if [ ! -d "${GFS_CI_ROOT}/repo/global-workflow" ]; then
  git clone $repo_url
 fi
-cd ${GFS_CI_ROOT}/repo/global-workflow
+cd "${GFS_CI_ROOT}/repo/global-workflow"
 git pull
-CI_LABEL="${GFS_CI_HOST}-GW-RT"
+CI_LABEL="${GFS_CI_HOST}-RT"
 ${GH_EXEC} pr list --label "${CI_LABEL}" --state "open" | awk '{print $1;}' > ${GFS_CI_ROOT}/open_pr_list
 if [ -s ${GFS_CI_ROOT}/open_pr_list ]; then
  open_pr_list=$(cat ${GFS_CI_ROOT}/open_pr_list)
@@ -102,8 +102,8 @@ fi
 for pr in $open_pr_list; do
   ${GH_EXEC} pr edit --repo ${repo_url} $pr --remove-label ${CI_LABEL} --add-label ${CI_LABEL}-Running
   echo "Processing Pull Request #${pr}"
-  mkdir -p ${GFS_CI_ROOT}/PR/$pr
-  cd ${GFS_CI_ROOT}/PR/${pr}
+  mkdir -p "${GFS_CI_ROOT}/PR/${pr}"
+  cd "${GFS_CI_ROOT}/PR/${pr}"
 
   # clone copy of repo
   git clone ${repo_url}
@@ -117,13 +117,13 @@ for pr in $open_pr_list; do
   echo "$commit" > ${GFS_CI_ROOT}/PR/${pr}/commit
 
   # run build and testing command
-  ${HOMEgfs}/ci/run_ci.sh -d $GFS_CI_ROOT/PR/$pr/global-workflow -o ${GFS_CI_ROOT}/PR/${pr}/output_${commit}
+  ${HOMEgfs}/ci/run_ci.sh -d "$GFS_CI_ROOT/PR/$pr/global-workflow" -o "${GFS_CI_ROOT}/PR/${pr}/output_${commit}"
   ci_status=$?
-  ${GH_EXEC} pr comment ${pr} --repo ${repo_url} --body-file ${GFS_CI_ROOT}/PR/${pr}/output_${commit}
+  ${GH_EXEC} pr comment ${pr} --repo ${repo_url} --body-file "${GFS_CI_ROOT}/PR/${pr}/output_${commit}"
   if [ $ci_status -eq 0 ]; then
-    ${GH_EXEC} pr edit --repo ${repo_url} ${pr} --remove-label ${CI_LABEL}-Running --add-label ${CI_LABEL}-Passed
+    ${GH_EXEC} pr edit --repo ${repo_url} ${pr} --remove-label "${CI_LABEL}-Running" --add-label "${CI_LABEL}-Passed"
   else
-    ${GH_EXEC} pr edit ${pr} --repo ${repo_url} --remove-label ${CI_LABEL}-Running --add-label ${CI_LABEL}-Failed
+    ${GH_EXEC} pr edit ${pr} --repo ${repo_url} --remove-label ${CI_LABEL}-Running --add-label ${CI_LABEL}-Failed"
   fi
 done
 
