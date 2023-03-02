@@ -11,13 +11,12 @@ from rocoto.workflow_tasks import get_wf_tasks
 import rocoto.rocoto as rocoto
 
 
-
 class RocotoXML:
 
-    def __init__(self, app_config: AppConfig, rocoto: Dict) -> None:
+    def __init__(self, app_config: AppConfig, rocoto_config: Dict) -> None:
 
         self._app_config = app_config
-        self.rocoto = rocoto
+        self.rocoto_config = rocoto_config
 
         self._base = self._app_config.configs['base']
 
@@ -63,7 +62,7 @@ class RocotoXML:
         entity['ROTDIR'] = self._base['ROTDIR']
         entity['JOBS_DIR'] = self._base['BASE_JOB']
 
-        entity['MAXTRIES'] = self.rocoto['maxtries']
+        entity['MAXTRIES'] = self.rocoto_config['maxtries']
 
         # Put them all in an XML key-value syntax
         strings = []
@@ -78,9 +77,9 @@ class RocotoXML:
         """
 
         scheduler = self._app_config.scheduler
-        cyclethrottle = self.rocoto['cyclethrottle']
-        taskthrottle = self.rocoto['taskthrottle']
-        verbosity = self.rocoto['verbosity']
+        cyclethrottle = self.rocoto_config['cyclethrottle']
+        taskthrottle = self.rocoto_config['taskthrottle']
+        verbosity = self.rocoto_config['verbosity']
 
         expdir = self._base['EXPDIR']
 
