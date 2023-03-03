@@ -9,6 +9,7 @@ from pygw.yaml_file import YAMLFile
 from pygw.file_utils import FileHandler
 from pygw.logger import logit
 from pygw.task import Task
+from pygw.template import Template, TemplateConstants
 
 logger = getLogger(__name__.split('.')[-1])
 
@@ -31,6 +32,10 @@ class Analysis(Task):
         obs_dict = self.get_obs_dict()
         FileHandler(obs_dict).sync()
 
+        # some analyses need to stage bias corrections
+        bias_dict = self.get_bias_dict()
+        FileHandler(bias_dict).sync()
+
     @logit(logger)
     def get_obs_dict(self: Task) -> Dict[str, Any]:
         """Compile a dictionary of observation files to copy
@@ -48,6 +53,7 @@ class Analysis(Task):
             a dictionary containing the list of observation files to copy for FileHandler
         """
         obs_list_config = YAMLFile(path=self.config['OBS_LIST'])
+
         # get observers from master dictionary
         observers = obs_list_config['observers']
         copylist = []
@@ -59,6 +65,47 @@ class Analysis(Task):
             'mkdir': [os.path.join(self.runtime_config['DATA'], 'obs')],
             'copy': copylist
         }
+        return obs_dict
+
+    @logit(logger)
+    def get_bias_dict(self: Task) -> Dict[str, Any]:
+        """Compile a dictionary of observation files to copy
+
+        This method uses the OBS_LIST configuration variable to generate a dictionary
+        from a list of YAML files that specify what observation bias correction files
+        are to be copied to the run directory from the observation input directory
+
+        Parameters
+        ----------
+
+        Returns
+        ----------
+        obs_dict: Dict
+            a dictionary containing the list of observation files to copy for FileHandler
+        """
+        obs_list_config = YAMLFile(path=self.config['OBS_LIST'])
+        # get observers from master dictionary
+        observers = obs_list_config['observers']
+        copylist = []
+        for ob in observers:
+            if 'obs bias' in ob.keys():
+                obfile = ob['obs bias']['input file']
+                basename = os.path.basename(obfile)
+                copylist.append([os.path.join(self.task_config.comin_ges_atm, basename), obfile])
+
+                obfile2 = obfile.replace('satbias', 'satbias_cov')
+                basename = os.path.basename(obfile2)
+                copylist.append([os.path.join(self.task_config.comin_ges_atm, basename), obfile2])
+
+                obfile2 = obfile.replace('satbias', 'tlapse')
+                obfile2 = obfile2.replace('nc4', 'txt')
+                basename = os.path.basename(obfile2)
+                copylist.append([os.path.join(self.task_config.comin_ges_atm, basename), obfile2])
+
+                obs_dict = {
+                    'mkdir': [os.path.join(self.runtime_config['DATA'], 'bc')],
+                    'copy': copylist
+                }
         return obs_dict
 
     @logit(logger)
@@ -126,3 +173,19 @@ class Analysis(Task):
         """
         berror_dict = {'foo': 'bar'}
         return berror_dict
+
+    @logit(logger)
+    def stage_fix(self, fix_yaml: str) -> None:
+        """Stage fix files
+
+        This method is a placeholder for now... will be possibly made generic at a later date
+
+        Parameters
+        ----------
+        fix_yaml : str
+            tamplate of fix files to copy
+        """
+        fix_list_path = os.path.join(self.config['HOMEgfs'], 'parm', 'parm_gdas', fix_yaml)
+        fix_list = YAMLFile(path=fix_list_path)
+        fix_list = Template.substitute_structure(fix_list, TemplateConstants.DOLLAR_PARENTHESES, self.task_config.get)
+        FileHandler(fix_list).sync()
