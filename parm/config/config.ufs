@@ -142,26 +142,26 @@ case "${fv3_res}" in
         export WRTIOBUF="8M"
         ;;
     "C384")
-        export DELTIM=${DELTIM:-200}
+        export DELTIM=200
         export layout_x=6
         export layout_y=8
-        export layout_x_gfs=${layout_x_gfs:-8}
-        export layout_y_gfs=${layout_y_gfs:-12}
+        export layout_x_gfs=8
+        export layout_y_gfs=12
         export nth_fv3=1
-        export nth_fv3_gfs=${nth_fv3_gfs:-2}
+        export nth_fv3_gfs=2
         export cdmbgwd="1.1,0.72,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
-        export WRITE_GROUP=2
-        export WRTTASK_PER_GROUP=64
-        export WRITE_GROUP_GFS=${WRITE_GROUP_GFS:-2}
-        export WRTTASK_PER_GROUP_GFS=${WRTTASK_PER_GROUP_GFS:-64}
-        export WRTIOBUF=${WRTIOBUF:-"16M"}
+        export WRITE_GROUP=1
+        export WRTTASK_PER_GROUP=48
+        export WRITE_GROUP_GFS=2
+        export WRTTASK_PER_GROUP_GFS=64
+        export WRTIOBUF="16M"
         ;;
     "C768")
         export DELTIM=150
         export layout_x=8
         export layout_y=12
-        export layout_x_gfs=16
-        export layout_y_gfs=12
+        export layout_x_gfs=12
+        export layout_y_gfs=16
         export nth_fv3=4
         export nth_fv3_gfs=4
         export cdmbgwd="4.0,0.15,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
@@ -181,9 +181,9 @@ case "${fv3_res}" in
         export nth_fv3_gfs=4
         export cdmbgwd="4.0,0.10,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=4
-        export WRTTASK_PER_GROUP=$(echo "2*${npe_node_max}" |bc)  # TODO: this is pointless because below this is getting reset
+        export WRTTASK_PER_GROUP=64  # TODO: refine these numbers when a case is available
         export WRITE_GROUP_GFS=4
-        export WRTTASK_PER_GROUP_GFS=$(echo "2*${npe_node_max}" |bc)  # TODO: this is pointless because below this is getting reset
+        export WRTTASK_PER_GROUP_GFS=64  # TODO: refine these numbers when a case is available
         export WRTIOBUF="48M"
         ;;
     "C3072")
@@ -196,9 +196,9 @@ case "${fv3_res}" in
         export nth_fv3_gfs=4
         export cdmbgwd="4.0,0.05,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=4
-        export WRTTASK_PER_GROUP=$(echo "3*${npe_node_max}" |bc)  # TODO: this is pointless because below this is getting reset
+        export WRTTASK_PER_GROUP=64  # TODO: refine these numbers when a case is available
         export WRITE_GROUP_GFS=4
-        export WRTTASK_PER_GROUP_GFS=$(echo "3*${npe_node_max}" |bc)  # TODO: this is pointless because below this is getting reset
+        export WRTTASK_PER_GROUP_GFS=64  # TODO: refine these numbers when a case is available
         export WRTIOBUF="64M"
         ;;
     *)
@@ -206,9 +206,6 @@ case "${fv3_res}" in
         exit 1
         ;;
 esac
-
-if [[ "${WRTTASK_PER_GROUP}" -gt "${npe_node_max}" ]]; then export WRTTASK_PER_GROUP=${npe_node_max} ; fi
-if [[ "${WRTTASK_PER_GROUP_GFS}" -gt "${npe_node_max}" ]]; then export WRTTASK_PER_GROUP_GFS=${npe_node_max} ; fi
 
 (( ntasks_fv3 = layout_x * layout_y * 6 ))
 (( ntasks_fv3_gfs = layout_x_gfs * layout_y_gfs * 6 ))
