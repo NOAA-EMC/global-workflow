@@ -94,13 +94,13 @@ build_status=$?
 if [[ ${build_status} -eq 0 ]]; then
 {
   echo "Build:                                 *SUCCESS*"
-  echo "Build: Completed at ${the_date}"
+  echo "Build: Completed at ${current_date}"
 }  >> "${outfile}"
 else
 {
   echo "Build:                                  *FAILED*"
-  echo "Build: Failed at ${the_date}"
-  echo "Build: see output at ${repodir}/log.build"
+  echo "Build: Failed at ${current_date}"
+  echo "Build: see output at ${PWD}/log.build"
 }
   echo '```' >> "${outfile}"
 fi
