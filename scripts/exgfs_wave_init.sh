@@ -96,16 +96,16 @@ source "$HOMEgfs/ush/preamble.sh"
       echo " Mod def file for $grdID not found in ${COMIN}/rundata. Setting up to generate ..."
       echo ' '
       set_trace
-      if [ -f $PARMwave/ww3_grid.inp.$grdID ]
+      if [ -f $FIXwave/ww3_grid.inp.$grdID ]
       then
-        cp $PARMwave/ww3_grid.inp.$grdID ww3_grid.inp.$grdID
+        cp $FIXwave/ww3_grid.inp.$grdID ww3_grid.inp.$grdID
       fi
 
       if [ -f ww3_grid.inp.$grdID ]
       then
         set +x
         echo ' '
-        echo "   ww3_grid.inp.$grdID copied ($PARMwave/ww3_grid.inp.$grdID)."
+        echo "   ww3_grid.inp.$grdID copied ($FIXwave/ww3_grid.inp.$grdID)."
         echo ' '
         set_trace
       else
