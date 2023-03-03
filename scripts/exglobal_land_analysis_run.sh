@@ -37,7 +37,7 @@ cd "${WORKDIR}" || exit
 for ens in 001 002
 do
     if [[ -e "${WORKDIR}/mem${ens}" ]]; then
-            rm -rf "{$WORKDIR}/mem${ens}"
+            rm -rf "${WORKDIR}/mem${ens}"
     fi
     mkdir -p "${WORKDIR}/mem${ens}"
     for tile in 1 2 3 4 5 6

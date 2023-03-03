@@ -560,7 +560,7 @@ elif [ ${step} = "fcst" ]; then
         fi
 
         if [[ ${DO_OCN} == "YES" ]]; then
-            case ${OCNRES} in
+            case "${OCNRES}" in
                 # Except for 025, these are guesses for now
                 500) export OCNPETS=8 ;;
                 100) export OCNPETS=20 ;;
