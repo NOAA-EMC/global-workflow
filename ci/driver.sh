@@ -7,11 +7,11 @@
 #
 # Abstract:
 #
-#  This script uses GitHub CL to check for Pull Requests with {machine}-CI tags
-#  on the development branch for the global-workflow repo and stages tests directors
-#  per PR number and then calling run_ci.sh to clone and  building from
-#  $(HOMEgfs)/sorc and then run a suite of regression tests with various configurations.
-#
+# This script uses GitHub CL to check for Pull Requests with {machine}-CI tags on the
+# development branch for the global-workflow repo.  It then stages tests directors per
+# PR number and calls run_ci.sh to perform a clone and full build from $(HOMEgfs)/sorc
+# of the PR. It then is ready to run a suite of regression tests with various
+# configurations with run_tests.py.
 #######################################################################################
 
 #################################################################
