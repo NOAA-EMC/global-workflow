@@ -152,7 +152,7 @@ EOF
          chgrp rstprod $GEMGRD
          chmod 750 $GEMGRD
        fi
-       mv $GEMGRD $COMOUT/gempak/$GEMGRD
+       cpfs $GEMGRD $COMOUT/gempak/$GEMGRD
        if [ $SENDDBN = "YES" ] ; then
            $DBNROOT/bin/dbn_alert MODEL ${DBN_ALERT_TYPE} $job \
              $COMOUT/gempak/$GEMGRD
