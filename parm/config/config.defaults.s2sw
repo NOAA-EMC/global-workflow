@@ -14,7 +14,7 @@ FHOUT_HF_GFS=-1
 min_seaice="1.0e-6"
 use_cice_alb=".true."
 
-# config.fv3  # TODO: This is hard-wired for P8 and needs to be refactored.  For now, use case C384
+# config.ufs  # TODO: This is hard-wired for P8 and needs to be refactored.  For now, use case C384
 case "${CASE}" in
   "C384")
     DELTIM=300

@@ -170,6 +170,8 @@ export OPS_RES="C768" # Do not change
 export LEVS=128
 export CASE="@CASECTL@"
 export CASE_ENKF="@CASEENS@"
+# TODO: This should not depend on $CASE or $CASE_ENKF
+# These are the currently available grid-combinations
 case "${CASE}" in
     "C48") export OCNRES=500;;
     "C96") export OCNRES=100;;
@@ -179,6 +181,7 @@ case "${CASE}" in
     *) export OCNRES=025;;
 esac
 export ICERES=${OCNRES}
+export waveGRD='gnh_10m aoc_9km gsh_15m'
 
 case "${APP}" in
   ATM)
