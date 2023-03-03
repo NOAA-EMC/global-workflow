@@ -50,7 +50,7 @@ elif [[ ${machine} = "ORION" ]]; then
 fi
 
 if [[ "${step}" = "prep" ]]; then
-    export wtime_prep='00:45:00'
+    export wtime_prep='00:30:00'
     export npe_prep=4
     export npe_node_prep=2
     export nth_prep=1
@@ -284,7 +284,7 @@ elif [[ "${step}" = "aeroanlrun" ]]; then
         layout_y=8
         ;;
       *)
-          echo "FATAL: Resolution not supported'"
+          echo "FATAL ERROR: Resolution ${CASE} is not supported, ABORT!"
           exit 1
     esac
 
@@ -467,116 +467,106 @@ elif [[ "${step}" = "gldas" ]]; then
     export npe_node_gaussian
     export is_exclusive=True
 
-elif [[ "${step}" = "fcst" ]]; then
-
-    if [[ "${CASE}" = "C48" ]]; then
-        export wtime_fcst="00:30:00"
-    else
-        export wtime_fcst="00:40:00"
-    fi
-    if [[ "${CASE}" = "C768" ]]; then
-      export wtime_fcst_gfs="06:00:00"
-    elif [[ "${CASE}" = "C384" ]]; then
-      export wtime_fcst_gfs="06:00:00"
-    else
-      export wtime_fcst_gfs="03:00:00"
-    fi
+elif [[ ${step} = "fcst" || ${step} = "efcs" ]]; then
 
     export is_exclusive=True
 
+    if [[ ${step} == "fcst" ]]; then
+        _CDUMP_LIST=${CDUMP:-"gdas gfs"}
+    elif [[ ${step} == "efcs" ]]; then
+        _CDUMP_LIST=${CDUMP:-"enkfgdas enkfgfs"}
+    fi
+
     # During workflow creation, we need resources for all CDUMPs and CDUMP is undefined
-    CDUMP_LIST=${CDUMP:-"gdas gfs enkfgdas enkfgfs"}
-    for CDUMP in ${CDUMP_LIST}; do
-        if [[ ${CDUMP} =~ "gfs" ]]; then
-            export layout_x=${layout_x_gfs}
-            export layout_y=${layout_y_gfs}
-            export WRITE_GROUP=${WRITE_GROUP_GFS}
-            export WRTTASK_PER_GROUP=${WRTTASK_PER_GROUP_GFS}
+    for _CDUMP in ${_CDUMP_LIST}; do
+        if [[ ${_CDUMP} =~ "gfs" ]]; then
+          export layout_x=${layout_x_gfs}
+          export layout_y=${layout_y_gfs}
+          export WRITE_GROUP=${WRITE_GROUP_GFS}
+          export WRTTASK_PER_GROUP=${WRTTASK_PER_GROUP_GFS}
+          ntasks_fv3=${ntasks_fv3_gfs}
+          ntasks_quilt=${ntasks_quilt_gfs}
+          nth_fv3=${nth_fv3_gfs}
         fi
 
-        (( ATMPETS = layout_x * layout_y * 6 ))
+        # PETS for the atmosphere dycore
+        (( FV3PETS = ntasks_fv3 ))
 
-        # Mediator only uses the atm model PETS or less
-        export MEDPETS=${MEDPETS:-ATMPETS}
-
-        if [[ ${DO_AERO} == "YES" ]]; then
-            # Aerosol model only uses the atm model PETS
-            export CHMPETS=${ATMPETS}
-            # Aerosol model runs on same PETs as ATM, so don't add to $NTASKS_TOT
-
-            if [[ ${machine} == "HERA" ]]; then
-                # Need more memory on Hera for aerosols, so increase threads to spread it out
-                nth_fv3_gfs=${nth_fv3_gfs:-4}
-            fi
+        # PETS for quilting
+        if [[ ${QUILTING:-} == ".true." ]]; then
+          (( QUILTPETS = ntasks_quilt ))
+        else
+          QUILTPETS=0
         fi
 
-        # If using in-line post, add the write tasks to the ATMPETS
-        if [[ ${QUILTING} == ".true." ]]; then
-            (( ATMPETS = ATMPETS + WRITE_GROUP * WRTTASK_PER_GROUP ))
-        fi
+        # Total PETS for the atmosphere component
+        (( ATMPETS = FV3PETS + QUILTPETS))
         export ATMPETS
+
+        # Total PETS for the coupled model (starting w/ the atmosphere)
         NTASKS_TOT=${ATMPETS}
 
-        export nth_fcst=${nth_fv3:-2}
-        export nth_fcst_gfs=${nth_fv3_gfs:-2}
+        # The mediator PETS can overlap with other components, usually it lands on the atmosphere tasks.
+        # However, it is suggested limiting mediator PETS to 300, as it may cause the slow performance.
+        # See https://docs.google.com/document/d/1bKpi-52t5jIfv2tuNHmQkYUe3hkKsiG_DG_s6Mnukog/edit
+        # TODO: Update reference with moved to RTD
+        MEDPETS=${MEDPETS:-ATMPETS}
+        [[ "${MEDPETS}" -gt 300 ]] && MEDPETS=300
+        export MEDPETS
 
-        npe_node_fcst=$(echo "${npe_node_max} / ${nth_fcst}" | bc)
-        export npe_node_fcst
-        npe_node_fcst_gfs=$(echo "${npe_node_max} / ${nth_fcst_gfs}" | bc)
-        export npe_node_fcst_gfs
+        if [[ ${DO_AERO} == "YES" ]]; then
+          (( CHMPETS = ntasks_fv3 ))
+          # GOCART shares the same grid and forecast tasks as FV3, do not add to NTASKS_TOT
+          export CHMPETS
+        fi
 
         if [[ ${DO_WAVE} == "YES" ]]; then
-            case ${waveGRD} in
-                'gnh_10m aoc_9km gsh_15m') export WAVPETS=140 ;;
-                'gwes_30m') export WAVPETS=100 ;;
-                'mx050') export WAVPETS=240 ;;
-                'mx025') export WAVPETS=80 ;;
-                *)
-                    echo "FATAL: Number of PEs not defined for wave grid '${waveGRD}'"
-                    echo "  Please add an entry to config.resources within fcst for this grid"
-                    exit 3
-            esac
-            (( NTASKS_TOT = NTASKS_TOT + WAVPETS ))
+          (( WAVPETS = ntasks_ww3 ))
+          (( NTASKS_TOT = NTASKS_TOT + WAVPETS ))
+          export WAVPETS
         fi
 
         if [[ ${DO_OCN} == "YES" ]]; then
-            case ${OCNRES} in
-                # Except for 025, these are guesses for now
-                500) export OCNPETS=8 ;;
-                100) export OCNPETS=20 ;;
-                050) export OCNPETS=60 ;;
-                025) export OCNPETS=220 ;;
-                *)
-                    echo "FATAL: Number of PEs not defined for ocean resolution ${OCNRES}"
-                    echo "  Please add an entry to config.resources within fcst for this resolution"
-                    exit 3
-            esac
-            (( NTASKS_TOT = NTASKS_TOT + OCNPETS ))
+          (( OCNPETS = ntasks_mom6 ))
+          (( NTASKS_TOT = NTASKS_TOT + OCNPETS ))
+          export OCNPETS
         fi
 
         if [[ ${DO_ICE} == "YES" ]]; then
-            case ${ICERES} in
-                # Except for 025, these are guesses for now
-                500) export ICEPETS=4 ;;
-                100) export ICEPETS=10 ;;
-                050) export ICEPETS=30 ;;
-                025) export ICEPETS=120 ;;
-                *)
-                    echo "FATAL: Number of PEs not defined for ice resolution ${ICERES}"
-                    echo "  Please add an entry to config.resources within fcst for this resolution"
-                    exit 3
-            esac
-            (( NTASKS_TOT = NTASKS_TOT + ICEPETS ))
+          (( ICEPETS = ntasks_cice6 ))
+          (( NTASKS_TOT = NTASKS_TOT + ICEPETS ))
+          export ICEPETS
         fi
 
-        if [[ ${CDUMP} =~ "gfs" ]]; then
-            export npe_fcst_gfs=${NTASKS_TOT}
+        if [[ ${_CDUMP} =~ "gfs" ]]; then
+          declare -x npe_${step}_gfs=${NTASKS_TOT}
+          threads=${nth_fv3_gfs:-2}
+          declare -x nth_${step}_gfs=${threads}
+          declare -x npe_node_${step}_gfs=$(echo "${npe_node_max} / ${threads}" | bc)
         else
-            export npe_fcst=${NTASKS_TOT}
+          declare -x npe_${step}=${NTASKS_TOT}
+          threads=${nth_fv3:-2}
+          declare -x nth_${step}=${threads}
+          declare -x npe_node_${step}=$(echo "${npe_node_max} / ${threads}" | bc)
         fi
     done
 
-elif [[ "${step}" = "ocnpost" ]]; then
+    case "${CASE}" in
+      "C48" | "C96" | "C192")
+        declare -x wtime_${step}="00:30:00"
+        declare -x wtime_${step}_gfs="03:00:00"
+        ;;
+      "C384" | "C768" | "C1152")
+        declare -x wtime_${step}="01:00:00"
+        declare -x wtime_${step}_gfs="06:00:00"
+        ;;
+      *)
+        echo "FATAL ERROR: Resolution ${CASE} not supported in ${step}"
+        exit 1
+        ;;
+    esac
+
+elif [ ${step} = "ocnpost" ]; then
 
     export wtime_ocnpost="00:30:00"
     export npe_ocnpost=1
@@ -821,19 +811,6 @@ elif [[ "${step}" = "esfc" ]]; then
     npe_node_cycle=$(echo "${npe_node_max} / ${nth_cycle}" | bc)
     export npe_node_cycle
     export memory_esfc="80GB"
-
-elif [[ "${step}" = "efcs" ]]; then
-
-    if [[ "${CASE}" = "C768" ]]; then
-      export wtime_efcs="06:00:00"
-    else
-      export wtime_efcs="00:40:00"
-    fi
-    npe_efcs=$(echo "${layout_x} * ${layout_y} * 6" | bc)
-    export npe_efcs
-    export nth_efcs=${nth_fv3:-2}
-    npe_node_efcs=$(echo "${npe_node_max} / ${nth_efcs}" | bc)
-    export npe_node_efcs
 
 elif [[ "${step}" = "epos" ]]; then
 

@@ -5,16 +5,18 @@
 
 echo "BEGIN: config.fcst"
 
-# set -eu
-
-# Source model specific information that is resolution dependent
-. $EXPDIR/config.fv3 $CASE
-
 # Turn off waves if not used for this CDUMP
 case $WAVE_CDUMP in
   both | ${CDUMP/enkf} ) ;; # Don't change
   *) DO_WAVE="NO" ;; # Turn waves off
 esac
+
+# Source model specific information that is resolution dependent
+string="--fv3 $CASE"
+[[ ${DO_OCN} == "YES" ]] && string="$string --mom6 $OCNRES"
+[[ ${DO_ICE} == "YES" ]] && string="$string --cice6 $ICERES"
+[[ ${DO_WAVE} == "YES" ]] && string="$string --ww3 ${waveGRD// /;}"
+source $EXPDIR/config.ufs ${string}
 
 # Source component configs if necessary
 for component in WAVE OCN ICE AERO; do
@@ -39,13 +41,8 @@ export esmf_logkind="ESMF_LOGKIND_MULTI_ON_ERROR" #Options: ESMF_LOGKIND_MULTI_O
 
 #######################################################################
 # COUPLING COMPONENTS
-export OCN_model="mom6"
-export ICE_model="cice6"
-export WAV_model="ww3"
-export CHM_model="gocart"
 
 # cpl defaults
-
 export cpl=".false."
 export cplflx=".false."
 export cplice=".false."
@@ -70,11 +67,6 @@ fi
 if [[ "$DO_WAVE" = "YES" ]]; then
   export cplwav=".true."
 fi
-
-#######################################################################
-# COUPLING COMPONENTS
-export use_coldstart=".false."
-
 
 #######################################################################
 
@@ -161,6 +153,11 @@ export isatmedmf=1
 tbf=""
 if [[ "$satmedmf" = ".true." ]]; then tbf="_satmedmf" ; fi
 
+#Convection schemes
+export progsigma=".true."
+tbp=""
+if [ "$progsigma" = ".true." ]; then tbp="_progsigma" ; fi
+
 # Radiation options
 export IAER=1011    ; #spectral band mapping method for aerosol optical properties
 export iovr_lw=3    ; #de-correlation length cloud overlap method (Barker, 2008)
@@ -188,17 +185,17 @@ export random_clds=".true."
 
 if [[ "$imp_physics" -eq 99 ]]; then # ZhaoCarr
     export ncld=1
-    export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_zhaocarr${tbf}"
+    export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_zhaocarr${tbf}${tbp}"
     export nwat=2
 
 elif [[ "$imp_physics" -eq 6 ]]; then # WSM6
     export ncld=2
-    export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_wsm6${tbf}"
+    export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_wsm6${tbf}${tbp}"
     export nwat=6
 
 elif [[ "$imp_physics" -eq 8 ]]; then # Thompson
     export ncld=2
-    export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_thompson_noaero_tke"
+    export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_thompson_noaero_tke${tbp}"
     export nwat=6
 
     export cal_pre=".false."
@@ -220,7 +217,7 @@ elif [[ "$imp_physics" -eq 8 ]]; then # Thompson
     export d4_bg=0.12
 elif [[ "$imp_physics" -eq 11 ]]; then # GFDL
     export ncld=5
-    export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_gfdl${tbf}"
+    export FIELD_TABLE="$HOMEgfs/parm/parm_fv3diag/field_table_gfdl${tbf}${tbp}"
     export nwat=6
     export dnats=1
     export cal_pre=".false."
@@ -248,8 +245,6 @@ export DO_SKEB=${DO_SKEB:-"NO"}
 export DO_SHUM=${DO_SHUM:-"NO"}
 export DO_LAND_PERT=${DO_LAND_PERT:-"NO"}
 export DO_CA=${DO_CA:-"YES"}
-export DO_OCN_SPPT=${DO_OCN_SPPT:-"NO"}
-export DO_OCN_PERT_EPBL=${DO_OCN_PERT_EPBL:-"NO"}
 
 #coupling settings
 export cplmode="nems_frac"
