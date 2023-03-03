@@ -59,7 +59,6 @@ class Analysis(Task):
         copylist = []
         for ob in observers:
             obfile = ob['obs space']['obsdatain']['engine']['obsfile']
-            obfile = obfile.replace('enkf', '')
             basename = os.path.basename(obfile)
             copylist.append([os.path.join(self.config['COMIN_OBS'], basename), obfile])
         obs_dict = {

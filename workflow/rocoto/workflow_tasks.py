@@ -407,8 +407,10 @@ class Tasks:
         else:
             dependencies = rocoto.create_dependency(dep=deps)
 
+        cycledef = "gdas"
         resources = self.get_resource('atmanlinit')
-        task = create_wf_task('atmanlinit', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+        task = create_wf_task('atmanlinit', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies,
+                              cycledef=cycledef)
 
         return task
 
@@ -1093,8 +1095,10 @@ class Tasks:
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
+        cycledef = "gdas"
         resources = self.get_resource('atmensanlinit')
-        task = create_wf_task('atmensanlinit', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies)
+        task = create_wf_task('atmensanlinit', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies,
+                              cycledef=cycledef)
 
         return task
 

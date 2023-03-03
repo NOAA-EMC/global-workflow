@@ -1,22 +1,14 @@
 #!/bin/bash -x
 
 ########## config.atmensanl ##########
-# configuration common to all atm analysis tasks
+# configuration common to all atm ens analysis tasks
 
 echo "BEGIN: config.atmensanl"
 
 export OBS_YAML_DIR=${HOMEgfs}/sorc/gdas.cd/parm/atm/obs/config/
-export OBS_LIST=${HOMEgfs}/sorc/gdas.cd/parm/atm/obs/lists/gdas_prototype.yaml
-export ATMVARYAML=${HOMEgfs}/sorc/gdas.cd/parm/atm/variational/3dvar_dripcg.yaml
-export STATICB_TYPE="identity"
-export BERROR_YAML=${HOMEgfs}/sorc/gdas.cd/parm/atm/berror/staticb_${STATICB_TYPE}.yaml
+export OBS_LIST=${HOMEgfs}/sorc/gdas.cd/parm/atm/obs/lists/lgetkf_prototype.yaml
+export ATMENSYAML=${HOMEgfs}/sorc/gdas.cd/parm/atm/lgetkf/lgetkf.yaml
 export FV3JEDI_FIX=${HOMEgfs}/fix/gdas
-export R2D2_OBS_DB='ufsda_test'
-export R2D2_OBS_DUMP='oper_gdas'
-export R2D2_OBS_SRC='ncdiag'
-export R2D2_BC_SRC='gsi'
-export R2D2_BC_DUMP='oper_gdas'
-export R2D2_ARCH_DB='local'
 export INTERP_METHOD='barycentric'
 
 export layout_x=1
@@ -25,7 +17,7 @@ export layout_y=1
 export io_layout_x=1
 export io_layout_y=1
 
-export JEDIVAREXE=${HOMEgfs}/exec/fv3jedi_var.x
+export JEDIENSEXE=${HOMEgfs}/exec/fv3jedi_letkf.x
 export crtm_VERSION="2.3.0"
 
 echo "END: config.atmensanl"

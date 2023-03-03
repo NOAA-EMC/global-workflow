@@ -1,10 +1,10 @@
 #!/bin/bash -x
 
-########## config.atmanlinit ##########
-# Pre Atm Analysis specific
+########## config.atmensanlinit ##########
+# Pre Atm Ens Analysis specific
 
-echo "BEGIN: config.atmanlinit"
+echo "BEGIN: config.atmensanlinit"
 
 # Get task specific resources
-. "${EXPDIR}"/config.resources atmanlinit
-echo "END: config.atmanlinit"
+. "${EXPDIR}/config.resources" atmensanlinit
+echo "END: config.atmensanlinit"

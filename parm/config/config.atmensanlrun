@@ -1,11 +1,11 @@
 #!/bin/bash -x
 
-########## config.atmanlrun ##########
-# Atmsol Analysis specific
+########## config.atmensanlrun ##########
+# Atm Ens Analysis specific
 
-echo "BEGIN: config.atmanlrun"
+echo "BEGIN: config.atmensanlrun"
 
 # Get task specific resources
-. "${EXPDIR}"/config.resources atmanlrun
+. "${EXPDIR}/config.resources" atmensanlrun
 
-echo "END: config.atmanlrun"
+echo "END: config.atmensanlrun"

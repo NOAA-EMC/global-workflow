@@ -1,7 +1,7 @@
 #!/bin/bash -x
 
 ########## config.atmanl ##########
-# configuration common to all atm analysis tasks
+# configuration common to all atm var analysis tasks
 
 echo "BEGIN: config.atmanl"
 
@@ -11,12 +11,6 @@ export ATMVARYAML=${HOMEgfs}/sorc/gdas.cd/parm/atm/variational/3dvar_dripcg.yaml
 export STATICB_TYPE="identity"
 export BERROR_YAML=${HOMEgfs}/sorc/gdas.cd/parm/atm/berror/staticb_${STATICB_TYPE}.yaml
 export FV3JEDI_FIX=${HOMEgfs}/fix/gdas
-export R2D2_OBS_DB='ufsda_test'
-export R2D2_OBS_DUMP='oper_gdas'
-export R2D2_OBS_SRC='ncdiag'
-export R2D2_BC_SRC='gsi'
-export R2D2_BC_DUMP='oper_gdas'
-export R2D2_ARCH_DB='local'
 export INTERP_METHOD='barycentric'
 
 export layout_x=1
