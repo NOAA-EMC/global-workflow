@@ -18,6 +18,7 @@
 # TODO using static build for GitHub CLI until fixed in HPC-Stack
 #################################################################
 GH=/home/Terry.McGuinness/bin/gh
+repo_url=${repo_url:-"https://github.com/global-workflow.git"}
 
 ################################################################
 # Setup the reletive paths to scripts and PS4 for better logging 
@@ -30,8 +31,6 @@ start_time_human=$(date -d"@${start_time}" -u)
 echo "Begin ${scriptname} at ${start_time_human}"
 export PS4='+ $(basename ${BASH_SOURCE})[${LINENO}]'
 
-HOMEgfs=$(realpath "${pwd}/..")
-export HOMEgfs
 host=$(hostname) || true
 
 usage() {
@@ -59,6 +58,8 @@ while getopts "t:h" opt; do
       usage
       ;;
     *)
+      echo "Unrecognized option" 
+      usage
       exit
   esac
 done
@@ -66,18 +67,13 @@ done
 case ${TARGET} in
   hera | orion)
     echo "Running Automated Testing on ${TARGET}"
-    source "${HOMEgfs}/ci/${TARGET}.sh"
+    source "${pwd}/${TARGET}.sh"
     ;;
   *)
     echo "Unsupported platform. Exiting with error."
     exit 1
     ;;
 esac
-
-#repo_url="https://github.com/NOAA-EMC/global-workflow.git"
-# using Terrence.McGuinness-NOAA fork for development with GitHub interations
-repo_url="https://github.com/TerrenceMcGuinness-NOAA/global-workflow.git"
-export repo_url
 
 #########################################################################
 # pull on the repo and get list of open PRs with tags {machine}-CI
@@ -112,7 +108,7 @@ for pr in ${open_pr_list}; do
   mkdir -p "${pr_dir}"
   # call run_ci to clone and build PR
   id=$(gh pr view "${pr}" --json id --jq '.id')
-  "${HOMEgfs}/ci/run_ci.sh" -p "${pr}" -d "${pr_dir}" -o "${pr_dir}/output_${id}"
+  "${pwd}/run_ci.sh" -p "${pr}" -d "${pr_dir}" -o "${pr_dir}/output_${id}"
   ci_status=$?
   "${GH}" pr comment "${pr}" --repo "${repo_url}" --body-file "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
   if [[ ${ci_status} -eq 0 ]]; then
