@@ -73,3 +73,4 @@ if __name__ == '__main__':
 
     string = subprocess.run(wgrib2_cmd, shell=True, stdout=subprocess.PIPE).stdout.decode("utf-8")
     count_nonid_corr(string)
+
