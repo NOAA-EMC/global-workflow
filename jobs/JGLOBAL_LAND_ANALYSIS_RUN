@@ -10,8 +10,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "landanlrun" -c "base landanl landanlr
 ##############################################
 export CDATE=${CDATE:-${PDY}${cyc}}
 export CDUMP=${CDUMP:-${RUN:-"gfs"}}
-export COMPONENT="atmos"
-
 
 ##############################################
 # Begin JOB SPECIFIC work
@@ -27,13 +25,13 @@ export OPREFIX="${CDUMP}.t${cyc}z."
 export GPREFIX="${GDUMP}.t${gcyc}z."
 export APREFIX="${CDUMP}.t${cyc}z."
 
-export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENT}}
+export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/land}
 
 mkdir -p "${COMOUT}"
 
 # COMIN_GES and COMIN_GES_ENS are used in script
-export COMIN_GES="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/${COMPONENT}"
-export COMIN_GES_ENS="${ROTDIR}/enkf${GDUMP}.${gPDY}/${gcyc}/${COMPONENT}"
+export COMIN_GES="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/land"
+export COMIN_GES_ENS="${ROTDIR}/enkf${GDUMP}.${gPDY}/${gcyc}/land"
 
 ###############################################################
 # Run relevant script
