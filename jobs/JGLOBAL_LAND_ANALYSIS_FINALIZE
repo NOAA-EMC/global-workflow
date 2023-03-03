@@ -25,13 +25,13 @@ export OPREFIX="${CDUMP}.t${cyc}z."
 export GPREFIX="${GDUMP}.t${gcyc}z."
 export APREFIX="${CDUMP}.t${cyc}z."
 
-export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos}
+export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/land}
 
 mkdir -p "${COMOUT}"
 
 # COMIN_GES and COMIN_GES_ENS are used in script
-export COMIN_GES="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/atmos"
-export COMIN_GES_ENS="${ROTDIR}/enkf${GDUMP}.${gPDY}/${gcyc}/atmos"
+export COMIN_GES="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/land"
+export COMIN_GES_ENS="${ROTDIR}/enkf${GDUMP}.${gPDY}/${gcyc}/land"
 
 ###############################################################
 # Run relevant script
