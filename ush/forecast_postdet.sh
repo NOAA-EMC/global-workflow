@@ -755,8 +755,6 @@ CPL_out() {
 MOM6_postdet() {
   echo "SUB ${FUNCNAME[0]}: MOM6 after run type determination"
 
-  OCNRES=${OCNRES:-"025"}  # TODO: remove from here and lift higher
-
   # Copy MOM6 ICs
   $NLN "${ROTDIR}/${CDUMP}.${gPDY}/${gcyc}/ocean/RESTART/${PDY}.${cyc}0000.MOM.res.nc" "${DATA}/INPUT/MOM.res.nc"
   case $OCNRES in
@@ -776,7 +774,6 @@ MOM6_postdet() {
           exit 111
       fi
       $NLN "${ROTDIR}/${CDUMP}.${PDY}/${cyc}/ocean/${CDUMP}.t${cyc}z.ocninc.nc" "${DATA}/INPUT/mom6_increment.nc"
-      export ODA_INCUPD="true"
   fi
 
   # Copy MOM6 fixed files
@@ -877,7 +874,6 @@ MOM6_postdet() {
     # Link output files for CDUMP = gdas
 
     # Save MOM6 backgrounds
-    local fhr="${FHMIN}"
     for fhr in ${OUTPUT_FH}; do
       local idatestr=$(date -d "${CDATE:0:8} ${CDATE:8:2} + ${fhr} hours" +%Y_%m_%d_%H)
       local fhr3=$(printf %03i "${fhr}")
