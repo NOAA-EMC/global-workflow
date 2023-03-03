@@ -64,16 +64,16 @@ if [[ -d global-workflow ]]; then
   rm -Rf global-workflow
 fi
 
-pr_state=$(gh pr view "${PR}" --json state --jq '.state')
-if [[ "${pr_state}" != "OPEN" ]]; then
-  titile=$(gh pr view "${PR}" --json title --jq '.title')
-  echo ("PR ${title} is no longer open, qutting")
-  exit 1
-fi  
- 
 git clone "${repo_url}"
 cd global-workflow
 
+pr_state=$(gh pr view "${PR}" --json state --jq '.state')
+if [[ "${pr_state}" != "OPEN" ]]; then
+  titile=$(gh pr view "${PR}" --json title --jq '.title')
+  echo "PR ${title} is no longer open, state is ${pr_state} ... qutting"
+  exit 1
+fi  
+ 
 # checkout pull request
 "${GH}" pr checkout "${PR}" --repo "${repo_url}"
 
