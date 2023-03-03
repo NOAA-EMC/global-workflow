@@ -24,7 +24,7 @@ GH=/home/Terry.McGuinness/bin/gh
 ################################################################
 set -eux
 pwd="$(cd "$(dirname  "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd )"
-scriptname=$(basename "${BASH_SOURCE[1]}")
+scriptname=$(basename "${BASH_SOURCE[0]}")
 start_time=$(date +%s)
 start_time_human=$(date -d"@${start_time}" -u)
 echo "Begin ${scriptname} at ${start_time_human}"
@@ -92,7 +92,7 @@ git pull
 
 CI_LABEL="${GFS_CI_HOST}"
 list=$(${GH} pr list --label "${CI_LABEL}-CI" --state "open")
-list=echo "${list}" | awk '{print $1;}' > "${GFS_CI_ROOT}/open_pr_list"
+list=$(echo "${list}" | awk '{print $1;}' > "${GFS_CI_ROOT}/open_pr_list")
 
 if [[ -s "${GFS_CI_ROOT}/open_pr_list" ]]; then
  open_pr_list=$(cat "${GFS_CI_ROOT}/open_pr_list")
@@ -100,7 +100,6 @@ else
  echo "no PRs to process .. exit"
  exit
 fi 
-
 
 #######################################
 # clone, checkout, build, test, each PR
@@ -112,9 +111,10 @@ for pr in ${open_pr_list}; do
   pr_dir="${GFS_CI_ROOT}/PR/${pr}"
   mkdir -p "${pr_dir}"
   # call run_ci to clone and build PR
-  "${HOMEgfs}/ci/run_ci.sh" -p "${pr}" -d "${pr_dir}" -o "${pr_dir}/output_${commit}"
+  id=$(gh pr view "${pr}" --json id --jq '.id')
+  "${HOMEgfs}/ci/run_ci.sh" -p "${pr}" -d "${pr_dir}" -o "${pr_dir}/output_${id}"
   ci_status=$?
-  "${GH}" pr comment "${pr}" --repo "${repo_url}" --body-file "${GFS_CI_ROOT}/PR/${pr}/output_${commit}"
+  "${GH}" pr comment "${pr}" --repo "${repo_url}" --body-file "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
   if [[ ${ci_status} -eq 0 ]]; then
     "${GH}" pr edit --repo "${repo_url}" "${pr}" --remove-label "${CI_LABEL}-Running" --add-label "${CI_LABEL}-Passed"
   else
@@ -129,6 +129,6 @@ done
 ##########################################
 # scrub working directory for older files
 ##########################################
-find "${GFS_CI_ROOT}/PR/*" -maxdepth 1 -mtime +3 -exec rm -rf {} \;
+#find "${GFS_CI_ROOT}/PR/*" -maxdepth 1 -mtime +3 -exec rm -rf {} \;
 
 exit 0

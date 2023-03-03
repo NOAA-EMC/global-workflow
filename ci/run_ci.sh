@@ -6,6 +6,10 @@ set -eux
 #####################################################################
 pwd="$( cd "$( dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd )"
 repo_url=${repo_url:-"https://github.com/global-workflow.git"}
+#################################################################
+# TODO using static build for GitHub CLI until fixed in HPC-Stack
+#################################################################
+GH=/home/Terry.McGuinness/bin/gh
 
 #####################################################################
 #  Usage and arguments for specfifying cloned directgory
@@ -73,7 +77,7 @@ commit=$(git log --pretty=format:'%h' -n 1)
 echo "${commit}" > "../commit"
 
 # run build script
-cd "${repodir}/sorc"
+cd sorc
 export BUILD_JOBS=8
 rm -rf log.build
 ./checkout.sh -g -c
