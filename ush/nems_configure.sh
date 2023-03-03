@@ -46,13 +46,15 @@ fi
 local atm_petlist_bounds="0 $(( ${ATMPETS}-1 ))"
 local med_petlist_bounds="0 $(( ${MEDPETS}-1 ))"
 
-sed -i -e "s;@\[med_model\];cmeps;g" tmp1
 sed -i -e "s;@\[atm_model\];fv3;g" tmp1
-sed -i -e "s;@\[med_petlist_bounds\];${med_petlist_bounds};g" tmp1
 sed -i -e "s;@\[atm_petlist_bounds\];${atm_petlist_bounds};g" tmp1
+sed -i -e "s;@\[atm_omp_num_threads\];${ATMTHREADS};g" tmp1
+sed -i -e "s;@\[med_model\];cmeps;g" tmp1
+sed -i -e "s;@\[med_petlist_bounds\];${med_petlist_bounds};g" tmp1
+sed -i -e "s;@\[med_omp_num_threads\];${MEDTHREADS};g" tmp1
 sed -i -e "s;@\[esmf_logkind\];${esmf_logkind};g" tmp1
 
-if [[ ${cpl} = ".true." ]]; then
+if [[ "${cpl}" = ".true." ]]; then
   sed -i -e "s;@\[coupling_interval_slow_sec\];${CPL_SLOW};g" tmp1
 fi
 
@@ -63,7 +65,7 @@ if [[ "${cplflx}" = ".true." ]]; then
     local restart_interval_nems=${FHMAX}
   fi
 
-  # TODO: Should this be raised up to config.ufs?
+  # TODO: Should this be raised up to config.ufs or config.ocn?
   case "${OCNRES}" in
     "500") local eps_imesh="4.0e-1";;
     "100") local eps_imesh="2.5e-1";;
@@ -80,6 +82,7 @@ if [[ "${cplflx}" = ".true." ]]; then
 
   sed -i -e "s;@\[ocn_model\];mom6;g" tmp1
   sed -i -e "s;@\[ocn_petlist_bounds\];${ocn_petlist_bounds};g" tmp1
+  sed -i -e "s;@\[ocn_omp_num_threads\];${OCNTHREADS};g" tmp1
   sed -i -e "s;@\[DumpFields\];${DumpFields};g" tmp1
   sed -i -e "s;@\[cap_dbug_flag\];${cap_dbug_flag};g" tmp1
   sed -i -e "s;@\[use_coldstart\];${use_coldstart};g" tmp1
@@ -103,6 +106,7 @@ if [[ "${cplice}" = ".true." ]]; then
 
   sed -i -e "s;@\[ice_model\];cice6;g" tmp1
   sed -i -e "s;@\[ice_petlist_bounds\];${ice_petlist_bounds};g" tmp1
+  sed -i -e "s;@\[ice_omp_num_threads\];${ICETHREADS};g" tmp1
   sed -i -e "s;@\[MESH_OCN_ICE\];${mesh_ocn_ice};g" tmp1
   sed -i -e "s;@\[FHMAX\];${FHMAX_GFS};g" tmp1
 fi
@@ -115,6 +119,7 @@ if [[ "${cplwav}" = ".true." ]]; then
 
   sed -i -e "s;@\[wav_model\];ww3;g" tmp1
   sed -i -e "s;@\[wav_petlist_bounds\];${wav_petlist_bounds};g" tmp1
+  sed -i -e "s;@\[wav_omp_num_threads\];${WAVTHREADS};g" tmp1
   sed -i -e "s;@\[MESH_WAV\];${MESH_WAV};g" tmp1
   sed -i -e "s;@\[MULTIGRID\];${waveMULTIGRID};g" tmp1
 fi
@@ -125,6 +130,7 @@ if [[ "${cplchm}" = ".true." ]]; then
 
   sed -i -e "s;@\[chm_model\];gocart;g" tmp1
   sed -i -e "s;@\[chm_petlist_bounds\];${chm_petlist_bounds};g" tmp1
+  sed -i -e "s;@\[chm_omp_num_threads\];${CHMTHREADS};g" tmp1
   sed -i -e "s;@\[coupling_interval_fast_sec\];${CPL_FAST};g" tmp1
 fi
 

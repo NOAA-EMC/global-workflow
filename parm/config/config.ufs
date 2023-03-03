@@ -25,6 +25,7 @@ fi
 skip_mom6=true
 skip_cice6=true
 skip_ww3=true
+skip_mediator=true
 
 # Loop through named arguments
 while [[ $# -gt 0 ]]; do
@@ -54,26 +55,31 @@ while [[ $# -gt 0 ]]; do
   shift
 done
 
+# Mediator is required if any of the components are not skipped
+if [[ "${skip_mom6}" == "false" ] || [ "${skip_cice6}" == "false" ] || [ "${skip_ww3}" == "false" ]]; then
+  skip_mediator=false
+fi
+
 case "${machine}" in
   "WCOSS2")
-    export npe_node_max=128
+    npe_node_max=128
     ;;
   "HERA" | "ORION")
-    export npe_node_max=40
+    npe_node_max=40
     ;;
   "JET")
     case "${PARTITION_BATCH}" in
       "xjet")
-        export npe_node_max=24
+        npe_node_max=24
         ;;
       "vjet" | "sjet")
-        export npe_node_max=16
+        npe_node_max=16
         ;;
       "kjet")
-        export npe_node_max=40
+        npe_node_max=40
         ;;
       *)
-        echo "FATAL ERROR: Unsupported PARTITION_BATCH = ${PARTITION_BATCH}, ABORT!"
+        echo "FATAL ERROR: Unsupported ${machine} PARTITION_BATCH = ${PARTITION_BATCH}, ABORT!"
         exit 1
         ;;
     esac
@@ -81,18 +87,19 @@ case "${machine}" in
   "S4")
     case "${PARTITION_BATCH}" in
       "s4")
-        export npe_node_max=32
+        npe_node_max=32
         ;;
       "ivy")
-        export npe_node_max=20
+        npe_node_max=20
         ;;
       *)
-        echo "FATAL ERROR: Unsupported PARTITION_BATCH = ${PARTITION_BATCH}, ABORT!"
+        echo "FATAL ERROR: Unsupported ${machine} PARTITION_BATCH = ${PARTITION_BATCH}, ABORT!"
         exit 1
         ;;
     esac
     ;;
 esac
+export npe_node_max
 
 # (Standard) Model resolution dependent variables
 case "${fv3_res}" in
@@ -102,8 +109,8 @@ case "${fv3_res}" in
         export layout_y=1
         export layout_x_gfs=1
         export layout_y_gfs=1
-        export nth_fv3=1
-        export nth_fv3_gfs=1
+        export nthreads_fv3=1
+        export nthreads_fv3_gfs=1
         export cdmbgwd="0.071,2.1,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=1
         export WRTTASK_PER_GROUP=2
@@ -117,8 +124,8 @@ case "${fv3_res}" in
         export layout_y=2
         export layout_x_gfs=2
         export layout_y_gfs=2
-        export nth_fv3=1
-        export nth_fv3_gfs=1
+        export nthreads_fv3=1
+        export nthreads_fv3_gfs=1
         export cdmbgwd="0.14,1.8,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=1
         export WRTTASK_PER_GROUP=4
@@ -132,8 +139,8 @@ case "${fv3_res}" in
         export layout_y=6
         export layout_x_gfs=4
         export layout_y_gfs=6
-        export nth_fv3=1
-        export nth_fv3_gfs=2
+        export nthreads_fv3=1
+        export nthreads_fv3_gfs=2
         export cdmbgwd="0.23,1.5,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=1
         export WRTTASK_PER_GROUP=64
@@ -147,8 +154,8 @@ case "${fv3_res}" in
         export layout_y=8
         export layout_x_gfs=8
         export layout_y_gfs=12
-        export nth_fv3=1
-        export nth_fv3_gfs=2
+        export nthreads_fv3=1
+        export nthreads_fv3_gfs=2
         export cdmbgwd="1.1,0.72,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=1
         export WRTTASK_PER_GROUP=48
@@ -162,8 +169,8 @@ case "${fv3_res}" in
         export layout_y=12
         export layout_x_gfs=12
         export layout_y_gfs=16
-        export nth_fv3=4
-        export nth_fv3_gfs=4
+        export nthreads_fv3=4
+        export nthreads_fv3_gfs=4
         export cdmbgwd="4.0,0.15,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=2
         export WRTTASK_PER_GROUP=64
@@ -177,8 +184,8 @@ case "${fv3_res}" in
         export layout_y=16
         export layout_x_gfs=8
         export layout_y_gfs=16
-        export nth_fv3=4
-        export nth_fv3_gfs=4
+        export nthreads_fv3=4
+        export nthreads_fv3_gfs=4
         export cdmbgwd="4.0,0.10,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=4
         export WRTTASK_PER_GROUP=64  # TODO: refine these numbers when a case is available
@@ -192,8 +199,8 @@ case "${fv3_res}" in
         export layout_y=32
         export layout_x_gfs=16
         export layout_y_gfs=32
-        export nth_fv3=4
-        export nth_fv3_gfs=4
+        export nthreads_fv3=4
+        export nthreads_fv3_gfs=4
         export cdmbgwd="4.0,0.05,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
         export WRITE_GROUP=4
         export WRTTASK_PER_GROUP=64  # TODO: refine these numbers when a case is available
@@ -220,18 +227,24 @@ export ntasks_quilt_gfs
 # Determine whether to use parallel NetCDF based on resolution
 case ${fv3_res} in
   "C48" | "C96" | "C192" | "C384")
-    export OUTPUT_FILETYPE_ATM="netcdf"
-    export OUTPUT_FILETYPE_SFC="netcdf"
+    OUTPUT_FILETYPE_ATM="netcdf"
+    OUTPUT_FILETYPE_SFC="netcdf"
     ;;
   "C768" | "C1152" | "C3072")
-    export OUTPUT_FILETYPE_ATM="netcdf_parallel"
-    export OUTPUT_FILETYPE_SFC="netcdf_parallel"
+    OUTPUT_FILETYPE_ATM="netcdf_parallel"
+    OUTPUT_FILETYPE_SFC="netcdf_parallel"
     ;;
 esac
+export OUTPUT_FILETYPE_ATM OUTPUT_FILETYPE_SFC
+
+# Mediator specific settings
+if [[ "${skip_mediator}" == "false" ]]; then
+  export nthreads_mediator=${nthreads_fv3}  # TODO: consult w/ @junwang-noaa how to optimize this in the context of nthreads_fv3 or should it be its own number?
+fi
 
 # MOM6 specific settings
 if [[ "${skip_mom6}" == "false" ]]; then
-  export nth_mom6=1
+  nthreads_mom6=1
   case "${mom6_res}" in
     "500")
       ntasks_mom6=8
@@ -286,7 +299,7 @@ if [[ "${skip_mom6}" == "false" ]]; then
       exit 1
       ;;
   esac
-  export ntasks_mom6
+  export nthreads_mom6 ntasks_mom6
   export OCNTIM
   export NX_GLB NY_GLB
   export DT_DYNAM_MOM6 DT_THERM_MOM6
@@ -303,7 +316,7 @@ if [[ "${skip_cice6}" == "false" ]]; then
     echo "FATAL ERROR: CICE6 cannot be configured without MOM6, ABORT!"
     exit 1
   fi
-  export nth_cice6=${mom6_res}  # CICE6 needs to run on same threads as MOM6
+  nthreads_cice6=${nthreads_mom6}  # CICE6 needs to run on same threads as MOM6
   case "${cice6_res}" in
     "500")
       ntasks_cice6=4
@@ -328,31 +341,32 @@ if [[ "${skip_cice6}" == "false" ]]; then
   esac
   # NX_GLB and NY_GLB are set in the MOM6 section above
   # CICE6 runs on the same domain decomposition as MOM6
-  export ntasks_cice6
+  export nthreads_cice6 ntasks_cice6
   export cice6_processor_shape
 fi
 
 # WW3 specific settings
 if [[ "${skip_ww3}" == "false" ]]; then
-  export nth_ww3=2
+  nthreads_ww3=2
   case "${ww3_res}" in
     "gnh_10m;aoc_9km;gsh_15m")
-      export ntasks_ww3=140
+      ntasks_ww3=140
       ;;
     "gwes_30m")
-      export ntasks_ww3=100
+      ntasks_ww3=100
       ;;
     "mx050")
-      export ntasks_ww3=240
+      ntasks_ww3=240
       ;;
     "mx025")
-      export ntasks_ww3=80
+      ntasks_ww3=80
       ;;
     *)
       echo "FATAL ERROR: Unsupported WW3 resolution = ${ww3_res}, ABORT!"
       exit 1
       ;;
   esac
+  export nthreads_ww3 nthreads_ww3
 fi
 
 echo "END: config.ufs"

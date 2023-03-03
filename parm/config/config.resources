@@ -414,41 +414,42 @@ elif [ ${step} = "gldas" ]; then
     export npe_node_gaussian=$(echo "${npe_node_max} / ${nth_gaussian}" | bc)
     export is_exclusive=True
 
-elif [[ ${step} = "fcst" || ${step} = "efcs" ]]; then
+elif [[ "${step}" = "fcst" || "${step}" = "efcs" ]]; then
 
     export is_exclusive=True
 
-    if [[ ${step} == "fcst" ]]; then
+    if [[ "${step}" = "fcst" ]]; then
         _CDUMP_LIST=${CDUMP:-"gdas gfs"}
-    elif [[ ${step} == "efcs" ]]; then
+    elif [[ "${step}" = "efcs" ]]; then
         _CDUMP_LIST=${CDUMP:-"enkfgdas enkfgfs"}
     fi
 
     # During workflow creation, we need resources for all CDUMPs and CDUMP is undefined
     for _CDUMP in ${_CDUMP_LIST}; do
-        if [[ ${_CDUMP} =~ "gfs" ]]; then
+        if [[ "${_CDUMP}" =~ "gfs" ]]; then
           export layout_x=${layout_x_gfs}
           export layout_y=${layout_y_gfs}
           export WRITE_GROUP=${WRITE_GROUP_GFS}
           export WRTTASK_PER_GROUP=${WRTTASK_PER_GROUP_GFS}
           ntasks_fv3=${ntasks_fv3_gfs}
           ntasks_quilt=${ntasks_quilt_gfs}
-          nth_fv3=${nth_fv3_gfs}
+          nthreads_fv3=${nthreads_fv3_gfs}
         fi
 
         # PETS for the atmosphere dycore
-        (( FV3PETS = ntasks_fv3 ))
+        (( FV3PETS = ntasks_fv3 * nthreads_fv3 ))
 
         # PETS for quilting
-        if [[ ${QUILTING:-} == ".true." ]]; then
-          (( QUILTPETS = ntasks_quilt ))
+        if [[ "${QUILTING:-}" = ".true." ]]; then
+          (( QUILTPETS = ntasks_quilt * nthreads_fv3 ))
         else
           QUILTPETS=0
         fi
 
         # Total PETS for the atmosphere component
-        (( ATMPETS = FV3PETS + QUILTPETS))
-        export ATMPETS
+        ATMTHREADS=${nthreads_fv3}
+        (( ATMPETS = FV3PETS + QUILTPETS ))
+        export ATMPETS ATMTHREADS
 
         # Total PETS for the coupled model (starting w/ the atmosphere)
         NTASKS_TOT=${ATMPETS}
@@ -456,45 +457,49 @@ elif [[ ${step} = "fcst" || ${step} = "efcs" ]]; then
         # The mediator PETS can overlap with other components, usually it lands on the atmosphere tasks.
         # However, it is suggested limiting mediator PETS to 300, as it may cause the slow performance.
         # See https://docs.google.com/document/d/1bKpi-52t5jIfv2tuNHmQkYUe3hkKsiG_DG_s6Mnukog/edit
-        # TODO: Update reference with moved to RTD
+        # TODO: Update reference when moved to ufs-weather-model RTD
+        MEDTHREADS=${nthreads_mediator:-1}
         MEDPETS=${MEDPETS:-ATMPETS}
         [[ "${MEDPETS}" -gt 300 ]] && MEDPETS=300
-        export MEDPETS
+        export MEDPETS MEDTHREADS
 
-        if [[ ${DO_AERO} == "YES" ]]; then
-          (( CHMPETS = ntasks_fv3 ))
-          # GOCART shares the same grid and forecast tasks as FV3, do not add to NTASKS_TOT
-          export CHMPETS
+        if [[ "${DO_AERO}" = "YES" ]]; then
+          # GOCART shares the same grid and forecast tasks as FV3 (do not add write grid component tasks).
+          (( CHMTHREADS = ATMTHREADS ))
+          (( CHMPETS = FV3PETS ))
+          # Do not add to NTASKS_TOT
+          export CHMPETS CHMTHREADS
         fi
 
-        if [[ ${DO_WAVE} == "YES" ]]; then
-          (( WAVPETS = ntasks_ww3 ))
+        if [[ "${DO_WAVE}" = "YES" ]]; then
+          (( WAVPETS = ntasks_ww3 * nthreads_ww3 ))
+          (( WAVTHREADS = nthreads_ww3 ))
+          export WAVPETS WAVTHREADS
           (( NTASKS_TOT = NTASKS_TOT + WAVPETS ))
-          export WAVPETS
         fi
 
-        if [[ ${DO_OCN} == "YES" ]]; then
-          (( OCNPETS = ntasks_mom6 ))
+        if [[ "${DO_OCN}" = "YES" ]]; then
+          (( OCNPETS = ntasks_mom6 * nthreads_mom6 ))
+          (( OCNTHREADS = nthreads_mom6 ))
+          export OCNPETS OCNTHREADS
           (( NTASKS_TOT = NTASKS_TOT + OCNPETS ))
-          export OCNPETS
         fi
 
-        if [[ ${DO_ICE} == "YES" ]]; then
-          (( ICEPETS = ntasks_cice6 ))
+        if [[ "${DO_ICE}" = "YES" ]]; then
+          (( ICEPETS = ntasks_cice6 * nthreads_cice6 ))
+          (( ICETHREADS = nthreads_cice6 ))
+          export ICEPETS ICETHREADS
           (( NTASKS_TOT = NTASKS_TOT + ICEPETS ))
-          export ICEPETS
         fi
 
-        if [[ ${_CDUMP} =~ "gfs" ]]; then
+        if [[ "${_CDUMP}" =~ "gfs" ]]; then
           declare -x npe_${step}_gfs=${NTASKS_TOT}
-          threads=${nth_fv3_gfs:-2}
-          declare -x nth_${step}_gfs=${threads}
-          declare -x npe_node_${step}_gfs=$(echo "${npe_node_max} / ${threads}" | bc)
+          declare -x nth_${step}_gfs=1  # ESMF handles threading for the UFS-weather-model
+          declare -x npe_node_${step}_gfs=${npe_node_max}
         else
           declare -x npe_${step}=${NTASKS_TOT}
-          threads=${nth_fv3:-2}
-          declare -x nth_${step}=${threads}
-          declare -x npe_node_${step}=$(echo "${npe_node_max} / ${threads}" | bc)
+          declare -x nth_${step}=1  # ESMF handles threading for the UFS-weather-model
+          declare -x npe_node_${step}=${npe_node_max}
         fi
     done
 

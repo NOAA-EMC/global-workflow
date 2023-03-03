@@ -136,11 +136,6 @@ FV3_GFS_predet(){
 
   # Model config options
   APRUN_FV3=${APRUN_FV3:-${APRUN_FCST:-${APRUN:-""}}}
-  #the following NTHREAD_FV3 line is commented out because NTHREAD_FCST is not defined
-  #and because NTHREADS_FV3 gets overwritten by what is in the env/${macine}.env
-  #file and the value of npe_node_fcst is not correctly defined when using more than
-  #one thread and sets NTHREADS_FV3=1 even when the number of threads is appropraitely >1
-  #NTHREADS_FV3=${NTHREADS_FV3:-${NTHREADS_FCST:-${nth_fv3:-1}}}
   cores_per_node=${cores_per_node:-${npe_node_fcst:-24}}
   ntiles=${ntiles:-6}
   if [ $MEMBER -lt 0 ]; then
