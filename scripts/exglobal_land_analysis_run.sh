@@ -9,7 +9,7 @@
 ################################################################################
 #  Utilities
 CASE=${CASE:-C96}
-RES=$(echo $CASE | cut -c 2-)
+RES=$(echo "${CASE}" | cut -c 2-)
 export CREATEENS=${CREATEENS:-"${HOMEgfs}/sorc/gdas.cd/ush/land/letkf_create_ens.py"}
 export IMS_IODA=${IMS_IODA:-"${HOMEgfs}/sorc/gdas.cd/build/bin/imsfv3_scf2ioda.py"}
 export CALCFIMS=${CALCFIMS:-"${HOMEgfs}/sorc/gdas.cd/build/bin/calcfIMS.exe"}
@@ -20,57 +20,57 @@ export GFSv17=${GFSv17:-"NO"}
 BKGDIR=${DATA}/bkg
 FILEDATE=${PDY}.${cyc}0000
 DOY=$(date +%j -d "${PDY} + 1 day")
-YYYY=`echo ${PDY} | cut -c1-4`
+YYYY=$(echo "${PDY}" | cut -c1-4)
 ################################################################################
 # Create ensemble member
 WORKDIR=${BKGDIR}
 B=30  # background error std for LETKFOI
 
-if [ $GFSv17 == "YES" ]; then
+if [[ ${GFSv17} == "YES" ]]; then
     SNOWDEPTHVAR="snodl"
 else
     SNOWDEPTHVAR="snwdph"
 fi
 
 # FOR LETKFOI, CREATE THE PSEUDO-ENSEMBLE
-cd $WORKDIR
+cd "${WORKDIR}" || exit
 for ens in 001 002
 do
-    if [ -e $WORKDIR/mem${ens} ]; then
-            rm -rf $WORKDIR/mem${ens}
+    if [[ -e "${WORKDIR}/mem${ens}" ]]; then
+            rm -rf "{$WORKDIR}/mem${ens}"
     fi
-    mkdir -p $WORKDIR/mem${ens}
+    mkdir -p "${WORKDIR}/mem${ens}"
     for tile in 1 2 3 4 5 6
     do
-        cp ${WORKDIR}/${FILEDATE}.sfc_data.tile${tile}.nc  ${WORKDIR}/mem${ens}/${FILEDATE}.sfc_data.tile${tile}.nc
+        cp "${WORKDIR}/${FILEDATE}.sfc_data.tile${tile}.nc"  "${WORKDIR}/mem${ens}/${FILEDATE}.sfc_data.tile${tile}.nc"
     done
-    cp ${WORKDIR}/${FILEDATE}.coupler.res ${WORKDIR}/mem${ens}/${FILEDATE}.coupler.res
+    cp "${WORKDIR}/${FILEDATE}.coupler.res" "${WORKDIR}/mem${ens}/${FILEDATE}.coupler.res"
 done
 
 echo 'do_landDA: calling create ensemble'
 
-python ${CREATEENS} $FILEDATE $SNOWDEPTHVAR $B $WORKDIR
+python "${CREATEENS}" "${FILEDATE}" "${SNOWDEPTHVAR}" "${B}" "${WORKDIR}"
 
 for ens in 001 002
 do
-    mkdir -p $WORKDIR/mem${ens}/RESTART
-    mv $WORKDIR/mem${ens}/${FILEDATE}.* $WORKDIR/mem${ens}/RESTART/
-    cp ${WORKDIR}/${FILEDATE}.coupler.res $WORKDIR/mem${ens}/RESTART/
+    mkdir -p "${WORKDIR}/mem${ens}/RESTART"
+    mv "${WORKDIR}/mem${ens}/${FILEDATE}.*" "${WORKDIR}/mem${ens}/RESTART/"
+    cp "${WORKDIR}/${FILEDATE}.coupler.res" "${WORKDIR}/mem${ens}/RESTART/"
 done
 ################################################################################
 # IMS proc
 if [[ ${cyc} == "18" ]]; then
   WORKDIR=${DATA}/obs
-  cd $WORKDIR
+  cd "${WORKDIR}" || exit
   if [[ -e fims.nml ]]; then
     rm fims.nml
   fi
 
 cat >> fims.nml << EOF
  &fIMS_nml
-  idim=$RES, jdim=$RES,
+  idim=${RES}, jdim=${RES},
   otype=${TSTUB},
-  jdate=$YYYY${DOY},
+  jdate=${YYYY}${DOY},
   yyyymmddhh=${PDY}.18,
   imsformat=2,
   imsversion=1.3,
@@ -83,17 +83,17 @@ EOF
   for tile in 1 2 3 4 5 6
   do
     if [[ ! -e ${FILEDATE}.sfc_data.tile${tile}.nc ]]; then
-      cp ${BKGDIR}/${FILEDATE}.sfc_data.tile${tile}.nc .
+      cp "${BKGDIR}/${FILEDATE}.sfc_data.tile${tile}.nc" "${WORKDIR}"
     fi
   done
 
   ulimit -Ss unlimited
   ${CALCFIMS}
 
-  export PYTHONPATH=$PYTHONPATH:${project_source_dir}/build/lib/python${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR}/pyioda/
+  export PYTHONPATH=${PYTHONPATH}:${project_source_dir}/build/lib/python${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR}/pyioda/
 
   echo 'do_landDA: calling ioda converter'
-  python ${IMS_IODA} -i IMSscf.${PDY}.${TSTUB}.nc -o ioda.IMSscf.${PDY}.${TSTUB}.nc
+  python "${IMS_IODA}" -i "IMSscf.${PDY}.${TSTUB}.nc" -o "ioda.IMSscf.${PDY}.${TSTUB}.nc"
 fi
 ################################################################################
 # run executable
