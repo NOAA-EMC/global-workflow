@@ -17,22 +17,15 @@ export CDUMP=${CDUMP:-${RUN:-"gfs"}}
 ##############################################
 
 GDATE=$(date +%Y%m%d%H -d "${CDATE:0:8} ${CDATE:8:2} - ${assim_freq} hours")
-export GDATE
-gPDY=${GDATE:0:8}
-export gcyc=${GDATE:8:2}
-export GDUMP=${GDUMP:-"gdas"}
-
-export OPREFIX="${CDUMP}.t${cyc}z."
-export GPREFIX="${GDUMP}.t${gcyc}z."
-export APREFIX="${CDUMP}.t${cyc}z."
+export GDUMP="gdas"
 
 export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/chem}
 
 mkdir -p "${COMOUT}"
 
 # COMIN_GES and COMIN_GES_ENS are used in script
-export COMIN_GES="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/chem"
-export COMIN_GES_ENS="${ROTDIR}/enkf${GDUMP}.${gPDY}/${gcyc}/chem"
+export COMIN_GES="${ROTDIR}/${GDUMP}.${GDATE:0:8}/${GDATE:8:2}/chem"
+export COMIN_GES_ENS="${ROTDIR}/enkf${GDUMP}.${GDATE:0:8}/${GDATE:8:2}/chem"
 
 ###############################################################
 # Run relevant script

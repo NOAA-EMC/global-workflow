@@ -7,6 +7,12 @@
 # input files and YAML configuration (by the initialize script) before execution.
 #
 ################################################################################
+
+set -eux
+
+# cd into the DATA directory
+cd "${DATA}" || (echo "FATAL ERROR: Unable to cd into ${DATA}; ABORT!"; exit 9)
+
 # run executable
 export pgm=${JEDIVAREXE}
 . prep_step
