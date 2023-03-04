@@ -179,8 +179,7 @@ if [ $esmf_profile ]; then
 fi
 
 $NCP $FCSTEXECDIR/$FCSTEXEC $DATA/.
-export OMP_NUM_THREADS=$NTHREADS_FV3
-$APRUN_FV3 $DATA/$FCSTEXEC 1>&1 2>&2
+$APRUN_UFS $DATA/$FCSTEXEC 1>&1 2>&2
 export ERR=$?
 export err=$ERR
 $ERRSCRIPT || exit $err

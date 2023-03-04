@@ -135,14 +135,7 @@ FV3_GFS_predet(){
   PARM_POST=${PARM_POST:-$HOMEgfs/parm/post}
 
   # Model config options
-  APRUN_FV3=${APRUN_FV3:-${APRUN_FCST:-${APRUN:-""}}}
-  cores_per_node=${cores_per_node:-${npe_node_fcst:-24}}
   ntiles=${ntiles:-6}
-  if [ $MEMBER -lt 0 ]; then
-    NTASKS_TOT=${NTASKS_TOT:-${npe_fcst_gfs:-0}}
-  else
-    NTASKS_TOT=${NTASKS_TOT:-${npe_efcs:-0}}
-  fi
 
   TYPE=${TYPE:-"nh"}                  # choices:  nh, hydro
   MONO=${MONO:-"non-mono"}            # choices:  mono, non-mono

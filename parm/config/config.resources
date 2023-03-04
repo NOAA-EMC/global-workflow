@@ -442,6 +442,9 @@ elif [[ "${step}" = "fcst" || "${step}" = "efcs" ]]; then
         # PETS for quilting
         if [[ "${QUILTING:-}" = ".true." ]]; then
           (( QUILTPETS = ntasks_quilt * nthreads_fv3 ))
+          (( WRTTASK_PER_GROUP = WRTTASK_PER_GROUP * nthreads_fv3 ))  # when threads are used, WRTTASKS_PER_GROUP = INCOMING_WRTTASKS_PER_GROUP * threads
+          # model_configure should be updated to reflect the number of threads used by calling this variable write_pets_per_group
+          export WRTTASK_PER_GROUP
         else
           QUILTPETS=0
         fi
@@ -517,6 +520,9 @@ elif [[ "${step}" = "fcst" || "${step}" = "efcs" ]]; then
         exit 1
         ;;
     esac
+
+    unset _CDUMP _CDUMP_LIST
+    unset NTASKS_TOT
 
 elif [ ${step} = "ocnpost" ]; then
 
