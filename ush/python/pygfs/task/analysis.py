@@ -81,7 +81,7 @@ class Analysis(Task):
         Returns
         ----------
         obs_dict: Dict
-            a dictionary containing the list of observation files to copy for FileHandler
+            a dictionary containing the list of observation bias files to copy for FileHandler
         """
         obs_list_config = YAMLFile(path=self.config['OBS_LIST'])
         # get observers from master dictionary
@@ -90,22 +90,14 @@ class Analysis(Task):
         for ob in observers:
             if 'obs bias' in ob.keys():
                 obfile = ob['obs bias']['input file']
-                basename = os.path.basename(obfile)
-                copylist.append([os.path.join(self.task_config.comin_ges_atm, basename), obfile])
+                for obfile in ['satbias.nc4', 'satbias_cov.nc4', 'tlapse.txt']:
+                    basename = os.path.basename(obfile)
+                    copylist.append([os.path.join(self.task_config.comin_ges_atm, basename), obfile])
 
-                obfile2 = obfile.replace('satbias', 'satbias_cov')
-                basename = os.path.basename(obfile2)
-                copylist.append([os.path.join(self.task_config.comin_ges_atm, basename), obfile2])
-
-                obfile2 = obfile.replace('satbias', 'tlapse')
-                obfile2 = obfile2.replace('nc4', 'txt')
-                basename = os.path.basename(obfile2)
-                copylist.append([os.path.join(self.task_config.comin_ges_atm, basename), obfile2])
-
-                obs_dict = {
-                    'mkdir': [os.path.join(self.runtime_config['DATA'], 'bc')],
-                    'copy': copylist
-                }
+        obs_dict = {
+            'mkdir': [os.path.join(self.runtime_config['DATA'], 'bc')],
+            'copy': copylist
+        }
         return obs_dict
 
     @logit(logger)
