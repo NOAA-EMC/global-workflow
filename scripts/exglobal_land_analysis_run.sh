@@ -54,8 +54,11 @@ python "${CREATEENS}" "${FILEDATE}" "${SNOWDEPTHVAR}" "${B}" "${WORKDIR}"
 for ens in 001 002
 do
     mkdir -p "${WORKDIR}/mem${ens}/RESTART"
-    mv "${WORKDIR}/mem${ens}/${FILEDATE}.*" "${WORKDIR}/mem${ens}/RESTART/"
-    cp "${WORKDIR}/${FILEDATE}.coupler.res" "${WORKDIR}/mem${ens}/RESTART/"
+    for tile in 1 2 3 4 5 6
+    do
+      mv "${WORKDIR}/mem${ens}/${FILEDATE}.sfc_data.tile${tile}.nc" "${WORKDIR}/mem${ens}/RESTART/"
+    done
+    mv "${WORKDIR}/mem${ens}/${FILEDATE}.coupler.res" "${WORKDIR}/mem${ens}/RESTART/"
 done
 ################################################################################
 # IMS proc
