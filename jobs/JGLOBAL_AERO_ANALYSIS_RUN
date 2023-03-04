@@ -8,19 +8,14 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "aeroanlrun" -c "base aeroanl aeroanlr
 ##############################################
 # Set variables used in the script
 ##############################################
-export CDATE=${CDATE:-${PDY}${cyc}}
-export CDUMP=${CDUMP:-${RUN:-"gfs"}}
-
+GDATE=$(date +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
+GDUMP="gdas"
 
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
 
-GDATE=$(date +%Y%m%d%H -d "${CDATE:0:8} ${CDATE:8:2} - ${assim_freq} hours")
-export GDUMP="gdas"
-
-export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/chem}
-
+export COMOUT=${COMOUT:-${ROTDIR}/${RUN}.${PDY}/${cyc}/chem}
 mkdir -p "${COMOUT}"
 
 # COMIN_GES and COMIN_GES_ENS are used in script
