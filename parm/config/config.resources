@@ -496,13 +496,13 @@ elif [[ "${step}" = "fcst" || "${step}" = "efcs" ]]; then
         fi
 
         if [[ "${_CDUMP}" =~ "gfs" ]]; then
-          declare -x npe_${step}_gfs=${NTASKS_TOT}
+          declare -x npe_${step}_gfs="${NTASKS_TOT}"
           declare -x nth_${step}_gfs=1  # ESMF handles threading for the UFS-weather-model
-          declare -x npe_node_${step}_gfs=${npe_node_max}
+          declare -x npe_node_${step}_gfs="${npe_node_max}"
         else
-          declare -x npe_${step}=${NTASKS_TOT}
+          declare -x npe_${step}="${NTASKS_TOT}"
           declare -x nth_${step}=1  # ESMF handles threading for the UFS-weather-model
-          declare -x npe_node_${step}=${npe_node_max}
+          declare -x npe_node_${step}="${npe_node_max}"
         fi
     done
 
