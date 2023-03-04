@@ -1,0 +1,10 @@
+#!/bin/bash -x
+
+########## config.atmensanlfinal ##########
+# Post Atm Ens Analysis specific
+
+echo "BEGIN: config.atmensanlfinal"
+
+# Get task specific resources
+. "${EXPDIR}/config.resources" atmensanlfinal
+echo "END: config.atmensanlfinal"

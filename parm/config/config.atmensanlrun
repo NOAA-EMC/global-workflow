@@ -1,0 +1,11 @@
+#!/bin/bash -x
+
+########## config.atmensanlrun ##########
+# Atm Ens Analysis specific
+
+echo "BEGIN: config.atmensanlrun"
+
+# Get task specific resources
+. "${EXPDIR}/config.resources" atmensanlrun
+
+echo "END: config.atmensanlrun"

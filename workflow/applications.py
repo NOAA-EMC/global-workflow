@@ -107,7 +107,7 @@ class AppConfig:
         self.do_vrfy = _base.get('DO_VRFY', True)
         self.do_metp = _base.get('DO_METP', False)
         self.do_jedivar = _base.get('DO_JEDIVAR', False)
-        self.do_jediens = _base.get('DO_JEDIENS', False)
+        self.do_jediatmens = _base.get('DO_JEDIENS', False)
         self.do_jediocnvar = _base.get('DO_JEDIOCNVAR', False)
 
         self.do_hpssarch = _base.get('HPSSARCH', False)
@@ -192,8 +192,8 @@ class AppConfig:
             configs += ['gldas']
 
         if self.do_hybvar:
-            if self.do_jediens:
-                configs += ['atmensanalprep', 'atmensanalrun', 'atmensanalpost']
+            if self.do_jediatmens:
+                configs += ['atmensanlinit', 'atmensanlrun', 'atmensanlfinal']
             else:
                 configs += ['eobs', 'eomg', 'ediag', 'eupd']
             configs += ['ecen', 'esfc', 'efcs', 'echgres', 'epos', 'earc']
@@ -374,8 +374,8 @@ class AppConfig:
         hybrid_tasks = []
         hybrid_after_eupd_tasks = []
         if self.do_hybvar:
-            if self.do_jediens:
-                hybrid_tasks += ['atmensanalprep', 'atmensanalrun', 'atmensanalpost', 'echgres']
+            if self.do_jediatmens:
+                hybrid_tasks += ['atmensanlinit', 'atmensanlrun', 'atmensanlfinal', 'echgres']
             else:
                 hybrid_tasks += ['eobs', 'eupd', 'echgres']
                 hybrid_tasks += ['ediag'] if self.lobsdiag_forenkf else ['eomg']
