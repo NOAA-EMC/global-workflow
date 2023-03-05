@@ -78,7 +78,7 @@ def fill_COMROT_cycled(host, inputs):
     elif inputs.start in ['cold']:  # This is a cold start experiment
         atmos_dir = 'INPUT'
         med_dir = ''  # no mediator files for a "cold start"
-        chem_dir = '' # aerosols do not have a 'directory'
+        chem_dir = ''  # aerosols do not have a 'directory'
         do_med = False
     ocean_dir = ice_dir = 'RESTART'  # ocean and ice have the same filenames for warm and cold
 
