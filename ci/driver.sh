@@ -80,12 +80,12 @@ esac
 ############################################################
 CI_LABEL="${GFS_CI_HOST}"
 pr_list_file="open_pr_list"
-rm -f "${list_file}
-list=$(${GH} pr list --repo "${repo_url} --label "${CI_LABEL}-CI" --state "open")
+rm -f "${pr_list_file}"
+list=$(${GH} pr list --repo "${repo_url}" --label "${CI_LABEL}-CI" --state "open")
 list=$(echo "${list}" | awk '{print $1;}' > "${GFS_CI_ROOT}/${pr_list_file}")
 
 if [[ -s "${GFS_CI_ROOT}/${pr_list_file}" ]]; then
- "${pr_list_file}"=$(cat "${GFS_CI_ROOT}/${pr_list_file}")
+ pr_list=$(cat "${GFS_CI_ROOT}/${pr_list_file}")
 else
  echo "no PRs to process .. exit"
  exit
@@ -96,14 +96,14 @@ fi
 # loop throu all open PRs
 #######################################
 
-cd ${GFS_CI_ROOT}
-for pr in ${pr_list_file}; do
+cd "${GFS_CI_ROOT}"
+for pr in "${pr_list}"; do
   "${GH}" pr edit --repo "${repo_url}" "${pr}" --remove-label "${CI_LABEL}-CI" --add-label "${CI_LABEL}-Running"
   echo "Processing Pull Request #${pr}"
   pr_dir="${GFS_CI_ROOT}/PR/${pr}"
   mkdir -p "${pr_dir}"
   # call run_ci to clone and build PR
-  id=$(gh pr view "${pr}" --json id --jq '.id')
+  id=$(gh pr view "${pr}" --repo "${repo_url}" --json id --jq '.id')
   "${pwd}/run_ci.sh" -p "${pr}" -d "${pr_dir}" -o "${pr_dir}/output_${id}"
   ci_status=$?
   "${GH}" pr comment "${pr}" --repo "${repo_url}" --body-file "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
