@@ -75,23 +75,17 @@ case ${TARGET} in
     ;;
 esac
 
-#########################################################################
-# pull on the repo and get list of open PRs with tags {machine}-CI
-#########################################################################
-mkdir -p "${GFS_CI_ROOT}/repo"
-cd "${GFS_CI_ROOT}/repo"
-if [[ ! -d "${GFS_CI_ROOT}/repo/global-workflow" ]]; then
- git clone "${repo_url}"
-fi
-cd "${GFS_CI_ROOT}/repo/global-workflow"
-git pull
-
+############################################################
+# query repo and get list of open PRs with tags {machine}-CI
+############################################################
 CI_LABEL="${GFS_CI_HOST}"
-list=$(${GH} pr list --label "${CI_LABEL}-CI" --state "open")
-list=$(echo "${list}" | awk '{print $1;}' > "${GFS_CI_ROOT}/open_pr_list")
+pr_list_file="open_pr_list"
+rm -f "${list_file}
+list=$(${GH} pr list --repo "${repo_url} --label "${CI_LABEL}-CI" --state "open")
+list=$(echo "${list}" | awk '{print $1;}' > "${GFS_CI_ROOT}/${pr_list_file}")
 
-if [[ -s "${GFS_CI_ROOT}/open_pr_list" ]]; then
- open_pr_list=$(cat "${GFS_CI_ROOT}/open_pr_list")
+if [[ -s "${GFS_CI_ROOT}/${pr_list_file}" ]]; then
+ "${pr_list_file}"=$(cat "${GFS_CI_ROOT}/${pr_list_file}")
 else
  echo "no PRs to process .. exit"
  exit
@@ -101,7 +95,9 @@ fi
 # clone, checkout, build, test, each PR
 # loop throu all open PRs
 #######################################
-for pr in ${open_pr_list}; do
+
+cd ${GFS_CI_ROOT}
+for pr in ${pr_list_file}; do
   "${GH}" pr edit --repo "${repo_url}" "${pr}" --remove-label "${CI_LABEL}-CI" --add-label "${CI_LABEL}-Running"
   echo "Processing Pull Request #${pr}"
   pr_dir="${GFS_CI_ROOT}/PR/${pr}"
