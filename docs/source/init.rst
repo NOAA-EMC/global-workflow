@@ -273,15 +273,12 @@ For HPSS path, see retrospective table in :ref:`pre-production parallel section 
 Manual Generation
 *****************
 
-NOTE: Initial conditions cannot be generated on S4. These must be generated on another supported platform then pushed to S4. If you do not have access to a supported system or need assistance, please contact David Huber (david.huber@noaa.gov).
+.. note::
+   Initial conditions cannot be generated on S4. These must be generated on another supported platform then pushed to S4. If you do not have access to a supported system or need assistance, please contact David Huber (david.huber@noaa.gov).
 
 .. _coldstarts:
 
------------
-Cold starts
------------
-
-The following information is for users needing to generate initial conditions for a cycled experiment that will run at a different resolution or layer amount than the operational GFS (C768C384L127).
+The following information is for users needing to generate cold-start initial conditions for a cycled experiment that will run at a different resolution or layer amount than the operational GFS (C768C384L127).
 
 The ``chgres_cube`` code is available from the `UFS_UTILS repository <https://github.com/ufs-community/UFS_UTILS>`_ on GitHub and can be used to convert GFS ICs to a different resolution or number of layers. Users may clone the develop/HEAD branch or the same version used by global-workflow develop (found in ``sorc/checkout.sh``). The ``chgres_cube`` code/scripts currently support the following GFS inputs:
 
