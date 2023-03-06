@@ -26,9 +26,7 @@ repo_url=${repo_url:-"https://github.com/NOAA-EMC/global-workflow.git"}
 set -eux
 pwd="$(cd "$(dirname  "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd )"
 scriptname=$(basename "${BASH_SOURCE[0]}")
-start_time=$(date +%s)
-start_time_human=$(date -d"@${start_time}" -u)
-echo "Begin ${scriptname} at ${start_time_human}"
+echo "Begin ${scriptname} at $(date -u)"
 export PS4='+ $(basename ${BASH_SOURCE})[${LINENO}]'
 
 host=$(hostname) || true
