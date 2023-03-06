@@ -58,7 +58,6 @@ while getopts "t:h" opt; do
     *)
       echo "Unrecognized option" 
       usage
-      exit
   esac
 done
 
