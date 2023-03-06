@@ -188,7 +188,7 @@ Forecast-only P8 prototype initial conditions are made available to users on sup
     ORION: /work/noaa/global/glopara/data/ICSDIR/prototype_ICs
     S4: /data/prod/glopara/coupled_ICs
 
-These locations are known within the workflow via paths set in ``config.coupled_ic``.
+These locations are known within the workflow via paths set in ``parm/config/config.coupled_ic``.
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 Prepare Initial Conditions
@@ -196,23 +196,30 @@ Prepare Initial Conditions
 
 .. _automated-generation:
 
-^^^^^^^^^^^^^^^^^^^^
+********************
 Automated Generation
-^^^^^^^^^^^^^^^^^^^^
+********************
 
 .. _cycled:
 
-***********
+-----------
 Cycled mode
-***********
+-----------
 
 Not yet supported. See :ref:`Manual Generation<manual-generation>` section below for how to create your ICs yourself (outside of workflow).
 
+.. _forecastonly-coupled:
+
+---------------------
+Forecast-only coupled
+---------------------
+Coupled initial conditions are currently only generated offline and copied prior to the forecast run. Prototype initial conditions will automatically be used when setting up an experiment as an S2SW app, there is no need to do anything additional. Copies of initial conditions from the prototype runs are currently maintained on Hera, Orion, and WCOSS2. The locations used are determined by ``parm/config/config.coupled_ic``. If you need prototype ICs on another machine, please contact Walter (Walter.Kolczynski@noaa.gov).
+
 .. _forecastonly-atmonly:
 
-*****************************
+-----------------------------
 Forecast-only mode (atm-only)
-*****************************
+-----------------------------
 
 Forecast-only mode in global workflow includes ``getic`` and ``init`` jobs for the gfs suite. The ``getic`` job pulls inputs for ``chgres_cube`` (init job) or warm start ICs into your ``ROTDIR/COMROT``. The ``init`` job then ingests those files to produce initial conditions for your experiment. 
 
@@ -260,27 +267,19 @@ Operations/production output location on HPSS: /NCEPPROD/hpssprod/runhistory/rh 
 
 For HPSS path, see retrospective table in :ref:`pre-production parallel section <retrospective>` below
 
-.. _forecastonly-coupled:
-
-*********************
-Forecast-only coupled
-*********************
-
-Coupled initial conditions are currently only generated offline and copied prior to the forecast run. Prototype initial conditions will automatically be used when setting up an experiment as an S2SW app, there is no need to do anything additional. Copies of initial conditions from the prototype runs are currently maintained on Hera, Orion, and WCOSS2. The locations used are determined by ``parm/config/config.coupled_ic``. If you need prototype ICs on another machine, please contact Walter (Walter.Kolczynski@noaa.gov).
-
 .. _manual-generation:
 
-^^^^^^^^^^^^^^^^^
+*****************
 Manual Generation
-^^^^^^^^^^^^^^^^^
+*****************
 
 NOTE: Initial conditions cannot be generated on S4. These must be generated on another supported platform then pushed to S4. If you do not have access to a supported system or need assistance, please contact David Huber (david.huber@noaa.gov).
 
 .. _coldstarts:
 
-***********
+-----------
 Cold starts
-***********
+-----------
 
 The following information is for users needing to generate initial conditions for a cycled experiment that will run at a different resolution or layer amount than the operational GFS (C768C384L127).
 
