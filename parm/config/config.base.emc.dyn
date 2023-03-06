@@ -132,8 +132,6 @@ export COMINice=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/ice
 export COMOUTice=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/ice
 export COMINaero=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/chem
 export COMOUTaero=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/chem
-export COMINland=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos
-export COMOUTland=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos
 
 export ERRSCRIPT=${ERRSCRIPT:-'eval [[ $err = 0 ]]'}
 export LOGSCRIPT=${LOGSCRIPT:-""}
