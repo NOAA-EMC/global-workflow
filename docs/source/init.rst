@@ -9,17 +9,26 @@ There are two types of initial conditions for the global-workflow:
 
 Most users will initiate their experiments with cold start ICs unless running high resolution (C768 deterministic with C384 EnKF) for a date with warm starts available. It is `not recommended` to run high resolution unless required or as part of final testing.
 
-Resolutions:
+Atmosphere Resolutions:
 
-* C48 = 2­ degree ≈ 200km
-* C96 = 1­ degree ≈ 100km
-* C192 = 1/2­ degree ≈ 50km
+* C48 = 2 degree ≈ 200km
+* C96 = 1 degree ≈ 100km
+* C192 = 1/2 degree ≈ 50km
 * C384 = 1/4 degree ≈ 25km
-* C768 = 1/8th degree ≈ 13km
+* C768 = 1/8 degree ≈ 13km
 * C1152 ≈ 9km
 * C3072 ≈ 3km
 
-Supported resolutions in global-workflow: C48, C96, C192, C384, C768
+Supported atmosphere resolutions in global-workflow: C48, C96, C192, C384, C768
+
+Ocean Resolutions:
+
+* mx500 = 5 degree
+* mx100 = 1 degree
+* mx050 = 1/2 degree
+* mx025 = 1/4 degree
+
+Supported ocean resolutions in global-workflow: mx500, mx100
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 Staged Initial Conditions
@@ -37,29 +46,125 @@ Select staged initial conditions are made available to users on supported platfo
 Cycled ATM-only
 ***************
 
-Cold-start C96C48L127 ICs are available in ``C96C48`` subfolders. Example on Hera:
+Cold-start atmosphere-only cycled C96 deterministic C48 enkf (80 members) ICs are available in ``C96C48`` subfolders.
+
+Start date = 2021122018
 
 ::
 
-   -bash-4.2$ ll /scratch1/NCEPDEV/global/glopara/data/ICSDIR/C96C48/
-   total 8
-   drwxr-sr-x 3 glopara stmp 4096 Jan 20 16:37 enkfgdas.20211220
-   drwxr-sr-x 3 glopara stmp 4096 Jan 20 16:37 gdas.20211220
+   -bash-4.2$ tree /scratch1/NCEPDEV/global/glopara/data/ICSDIR/C96C48/
+   |-- enkfgdas.20211220
+   |   `-- 18
+   |       |-- mem### (where ### = 001 -> 080)
+   |       |   `-- atmos
+   |       |       `-- INPUT
+   |       |           |-- gfs_ctrl.nc
+   |       |           |-- gfs_data.tile1.nc
+   |       |           |-- gfs_data.tile2.nc
+   |       |           |-- gfs_data.tile3.nc
+   |       |           |-- gfs_data.tile4.nc
+   |       |           |-- gfs_data.tile5.nc
+   |       |           |-- gfs_data.tile6.nc
+   |       |           |-- sfc_data.tile1.nc
+   |       |           |-- sfc_data.tile2.nc
+   |       |           |-- sfc_data.tile3.nc
+   |       |           |-- sfc_data.tile4.nc
+   |       |           |-- sfc_data.tile5.nc
+   |       |           `-- sfc_data.tile6.nc
+   `-- gdas.20211220
+       `-- 18
+           `-- atmos
+               |-- INPUT
+               |   |-- gfs_ctrl.nc
+               |   |-- gfs_data.tile1.nc
+               |   |-- gfs_data.tile2.nc
+               |   |-- gfs_data.tile3.nc
+               |   |-- gfs_data.tile4.nc
+               |   |-- gfs_data.tile5.nc
+               |   |-- gfs_data.tile6.nc
+               |   |-- sfc_data.tile1.nc
+               |   |-- sfc_data.tile2.nc
+               |   |-- sfc_data.tile3.nc
+               |   |-- sfc_data.tile4.nc
+               |   |-- sfc_data.tile5.nc
+               |   `-- sfc_data.tile6.nc
+               |-- gdas.t18z.abias
+               |-- gdas.t18z.abias_air
+               |-- gdas.t18z.abias_pc
+               `-- gdas.t18z.radstat
 
-******************
-Cycled Coupled ATM
-******************
+
+*********************************
+Cycled ATM w/ Coupled (S2S) model
+*********************************
+
+Warm-start cycled w/ coupled (S2S) model C48 atmosphere 5 degree ocean/ice ICs are available in ``C48mx500`` subfolders.
+
+Start date = 2021032312
 
 ::
 
-   -bash-4.2$ ll /scratch1/NCEPDEV/global/glopara/data/ICSDIR/C48mx500/
-   total 8
-   drwxr-sr-x 3 glopara stmp 4096 Feb  3 15:43 enkfgdas.20210323
-   drwxr-sr-x 4 glopara stmp 4096 Jan 20 18:33 gdas.20210323
-   -bash-4.2$ ll /scratch1/NCEPDEV/global/glopara/data/ICSDIR/C48mx500/enkfgdas.20210323/06/mem001[->080]/
-   atmos/ ice/ ocean/
-   -bash-4.2$ ll /scratch1/NCEPDEV/global/glopara/data/ICSDIR/C48mx500/gdas.20210323/06/
-   atmos/ ice/ med/ ocean/
+   -bash-4.2$  tree /scratch1/NCEPDEV/global/glopara/data/ICSDIR/C48mx500
+   `-- gdas.20210323
+       |-- 06
+       |   |-- atmos
+       |   |   `-- RESTART
+       |   |       |-- 20210323.120000.ca_data.tile1.nc
+       |   |       |-- 20210323.120000.ca_data.tile2.nc
+       |   |       |-- 20210323.120000.ca_data.tile3.nc
+       |   |       |-- 20210323.120000.ca_data.tile4.nc
+       |   |       |-- 20210323.120000.ca_data.tile5.nc
+       |   |       |-- 20210323.120000.ca_data.tile6.nc
+       |   |       |-- 20210323.120000.coupler.res
+       |   |       |-- 20210323.120000.fv_core.res.nc
+       |   |       |-- 20210323.120000.fv_core.res.tile1.nc
+       |   |       |-- 20210323.120000.fv_core.res.tile2.nc
+       |   |       |-- 20210323.120000.fv_core.res.tile3.nc
+       |   |       |-- 20210323.120000.fv_core.res.tile4.nc
+       |   |       |-- 20210323.120000.fv_core.res.tile5.nc
+       |   |       |-- 20210323.120000.fv_core.res.tile6.nc
+       |   |       |-- 20210323.120000.fv_srf_wnd.res.tile1.nc
+       |   |       |-- 20210323.120000.fv_srf_wnd.res.tile2.nc
+       |   |       |-- 20210323.120000.fv_srf_wnd.res.tile3.nc
+       |   |       |-- 20210323.120000.fv_srf_wnd.res.tile4.nc
+       |   |       |-- 20210323.120000.fv_srf_wnd.res.tile5.nc
+       |   |       |-- 20210323.120000.fv_srf_wnd.res.tile6.nc
+       |   |       |-- 20210323.120000.fv_tracer.res.tile1.nc
+       |   |       |-- 20210323.120000.fv_tracer.res.tile2.nc
+       |   |       |-- 20210323.120000.fv_tracer.res.tile3.nc
+       |   |       |-- 20210323.120000.fv_tracer.res.tile4.nc
+       |   |       |-- 20210323.120000.fv_tracer.res.tile5.nc
+       |   |       |-- 20210323.120000.fv_tracer.res.tile6.nc
+       |   |       |-- 20210323.120000.phy_data.tile1.nc
+       |   |       |-- 20210323.120000.phy_data.tile2.nc
+       |   |       |-- 20210323.120000.phy_data.tile3.nc
+       |   |       |-- 20210323.120000.phy_data.tile4.nc
+       |   |       |-- 20210323.120000.phy_data.tile5.nc
+       |   |       |-- 20210323.120000.phy_data.tile6.nc
+       |   |       |-- 20210323.120000.sfc_data.tile1.nc
+       |   |       |-- 20210323.120000.sfc_data.tile2.nc
+       |   |       |-- 20210323.120000.sfc_data.tile3.nc
+       |   |       |-- 20210323.120000.sfc_data.tile4.nc
+       |   |       |-- 20210323.120000.sfc_data.tile5.nc
+       |   |       `-- 20210323.120000.sfc_data.tile6.nc
+       |   |-- ice
+       |   |   `-- RESTART
+       |   |       `-- 20210323.120000.cice_model.res.nc
+       |   |-- med
+       |   |   `-- RESTART
+       |   |       `-- 20210323.120000.ufs.cpld.cpl.r.nc
+       |   `-- ocean
+       |       `-- RESTART
+       |           `-- 20210323.120000.MOM.res.nc
+       `-- 12
+           |-- atmos
+           |   |-- gdas.t12z.abias
+           |   |-- gdas.t12z.abias_air
+           |   |-- gdas.t12z.abias_int
+           |   |-- gdas.t12z.abias_pc
+           |   `-- gdas.t12z.radstat
+           `-- ocean
+               `-- gdas.t12z.ocninc.nc
 
 *********
 Prototype
