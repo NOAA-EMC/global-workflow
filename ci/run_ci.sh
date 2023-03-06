@@ -12,7 +12,7 @@ repo_url=${repo_url:-"https://github.com/global-workflow.git"}
 usage() {
   set +x
   echo
-  echo "Usage: $0 -d <directory> -o <output> -h"
+  echo "Usage: $0 -p <PR#> -d <directory> -o <output> -h"
   echo
   echo "  -p  PR nunber to clone and build"
   echo "  -d  Full path of <directory> of were to clone and build PR" 
