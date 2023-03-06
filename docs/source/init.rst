@@ -2,6 +2,25 @@
 Initial Conditions
 ==================
 
+There are two types of initial conditions for the global-workflow:
+
+#. Warm start: these ICs are taken directly from either the GFS in production or an experiment "warmed" up (at least one cycle in).
+#. Cold start: any ICs converted to a new resolution or grid (e.g. C768 -> C384). These ICs are often prepared by chgres_cube (change resolution utility).
+
+Most users will initiate their experiments with cold start ICs unless running high resolution (C768 deterministic with C384 EnKF) for a date with warm starts available. It is `not recommended` to run high resolution unless required or as part of final testing.
+
+Resolutions:
+
+* C48 = 2­ degree ≈ 200km
+* C96 = 1­ degree ≈ 100km
+* C192 = 1/2­ degree ≈ 50km
+* C384 = 1/4 degree ≈ 25km
+* C768 = 1/8th degree ≈ 13km
+* C1152 ≈ 9km
+* C3072 ≈ 3km
+
+Supported resolutions in global-workflow: C48, C96, C192, C384, C768
+
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 Staged Initial Conditions
 ^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -18,7 +37,7 @@ Select staged initial conditions are made available to users on supported platfo
 Cycled ATM-only
 ***************
 
-Cold-start C96C48L127 ICs are available in ``C96C48`` subfolders:
+Cold-start C96C48L127 ICs are available in ``C96C48`` subfolders. Example on Hera:
 
 ::
 
@@ -56,25 +75,6 @@ Prototype
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 Prepare Initial Conditions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-There are two types of initial conditions for the global-workflow:
-
-#. Warm start: these ICs are taken directly from either the GFS in production or an experiment "warmed" up (at least one cycle in).
-#. Cold start: any ICs converted to a new resolution or grid (e.g. GSM-GFS -> FV3GFS). These ICs are often prepared by chgres_cube (change resolution utility).
-
-Most users will initiate their experiments with cold start ICs unless running high resolution (C768 deterministic with C384 EnKF) for a date with warm starts available. It is `not recommended` to run high resolution unless required or as part of final testing.
-
-Resolutions:
-
-* C48 = 2­ degree ≈ 200km
-* C96 = 1­ degree ≈ 100km
-* C192 = 1/2­ degree ≈ 50km
-* C384 = 1/4 degree ≈ 25km
-* C768 = 1/8th degree ≈ 13km
-* C1152 ≈ 9km
-* C3072 ≈ 3km
-
-Supported resolutions in global-workflow: C48, C96, C192, C384, C768
 
 .. _automated-generation:
 
