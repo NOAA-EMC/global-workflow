@@ -69,8 +69,8 @@ cd global-workflow
 
 pr_state=$(gh pr view "${PR}" --json state --jq '.state')
 if [[ "${pr_state}" != "OPEN" ]]; then
-  titile=$(gh pr view "${PR}" --json title --jq '.title')
-  echo "PR ${title} is no longer open, state is ${pr_state} ... qutting"
+  title=$(gh pr view "${PR}" --json title --jq '.title')
+  echo "PR ${title} is no longer open, state is ${pr_state} ... quitting"
   exit 1
 fi  
  
