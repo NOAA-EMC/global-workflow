@@ -23,8 +23,8 @@ else
 fi
 
 # Get correct MPI options for NPROC and grid
-local cice_processor_shape=${cice_processor_shape:-'slenderX2'}
-local shape=${cice_processor_shape#${cice_processor_shape%?}}
+local processor_shape=${cice6_processor_shape:-'slenderX2'}
+local shape=${processor_shape#${processor_shape%?}}
 local NPX=$(( ICEPETS / shape )) #number of processors in x direction
 local NPY=$(( ICEPETS / NPX ))   #number of processors in y direction
 if (( $(( NX_GLB % NPX )) == 0 )); then
@@ -37,21 +37,18 @@ if (( $(( NY_GLB % NPY )) == 0 )); then
 else
   local block_size_y=$(( (NY_GLB / NPY) + 1 ))
 fi
-local max_blocks=$(( (NX_GLB * NY_GLB) / (block_size_x * block_size_y * ICEPETS) ))
-if (( max_blocks == 0 )) || (( max_blocks % 2 != 0 )); then
-  local max_blocks=-1
-fi
+local max_blocks=-1
 
 cat > ice_in <<eof
 &setup_nml
    days_per_year  = 365
    use_leap_years = .true.
-   year_init      = $year
-   month_init     = $month
-   day_init       = $day
-   sec_init       = $sec
-   dt             = $ICETIM
-   npt            = $npt
+   year_init      = ${year}
+   month_init     = ${month}
+   day_init       = ${day}
+   sec_init       = ${sec}
+   dt             = ${ICETIM}
+   npt            = ${npt}
    ndtd           = 1
    runtype        = '${runtype}'
    runid          = 'unknown'
@@ -93,8 +90,8 @@ cat > ice_in <<eof
 &grid_nml
    grid_format  = 'nc'
    grid_type    = 'tripole'
-   grid_file    = '$ice_grid_file'
-   kmt_file     = '$ice_kmt_file'
+   grid_file    = '${ice_grid_file}'
+   kmt_file     = '${ice_kmt_file}'
    kcatbound    = 0
    ncat         = 5
    nfsd         = 1
@@ -113,8 +110,8 @@ cat > ice_in <<eof
    restart_lvl  = .false.
    tr_pond_topo = .false.
    restart_pond_topo = .false.
-   tr_pond_lvl  = $tr_pond_lvl
-   restart_pond_lvl  = $restart_pond_lvl
+   tr_pond_lvl  = ${tr_pond_lvl}
+   restart_pond_lvl  = ${restart_pond_lvl}
    tr_aero      = .false.
    restart_aero = .false.
    tr_fsd       = .false.
@@ -123,7 +120,7 @@ cat > ice_in <<eof
 
 &thermo_nml
    kitd              = 1
-   ktherm            = $ktherm
+   ktherm            = ${ktherm}
    conduct           = 'MU71'
    a_rapid_mode      =  0.5e-3
    Rac_rapid_mode    =    10.0
@@ -197,9 +194,9 @@ cat > ice_in <<eof
    ustar_min       = 0.0005
    emissivity      = 0.95
    fbot_xfer_type  = 'constant'
-   update_ocn_f    = $FRAZIL_FWSALT
+   update_ocn_f    = ${FRAZIL_FWSALT}
    l_mpond_fresh   = .false.
-   tfrz_option     = $tfrz_option
+   tfrz_option     = ${tfrz_option}
    restart_coszen  = .true.
 /
 
@@ -210,7 +207,7 @@ cat > ice_in <<eof
    block_size_x      = ${block_size_x}
    block_size_y      = ${block_size_y}
    max_blocks        = ${max_blocks}
-   processor_shape   = '${cice_processor_shape}'
+   processor_shape   = '${processor_shape}'
    distribution_type = 'cartesian'
    distribution_wght = 'latitude'
    ew_boundary_type  = 'cyclic'
