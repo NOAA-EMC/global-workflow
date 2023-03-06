@@ -38,21 +38,19 @@ Staged Initial Conditions
 * :ref:`Cycled ATM w/ Coupled (S2S) model<staged_ics_cycled_coupled>`
 * :ref:`Prototype<staged_ics_prototype>`
 
-Select staged initial conditions are made available to users on supported platforms in the following locations:
-
-::
-
-   Hera: /scratch1/NCEPDEV/global/glopara/data/ICSDIR
-   Orion: /work/noaa/global/glopara/data/ICSDIR
-   WCOSS2: /lfs/h2/emc/global/noscrub/emc.global/data/ICSDIR
-
 .. _staged_ics_cycled_atmonly:
 
 ***************
 Cycled ATM-only
 ***************
 
-Cold-start atmosphere-only cycled C96 deterministic C48 enkf (80 members) ICs are available in ``C96C48`` subfolders.
+Cold-start atmosphere-only cycled C96 deterministic C48 enkf (80 members) ICs are available in the following locations on supported platforms:
+
+::
+
+   Hera: /scratch1/NCEPDEV/global/glopara/data/ICSDIR/C96C48
+   Orion: /work/noaa/global/glopara/data/ICSDIR/C96C48
+   WCOSS2: /lfs/h2/emc/global/noscrub/emc.global/data/ICSDIR/C96C48
 
 Start date = 2021122018
 
@@ -105,7 +103,13 @@ Start date = 2021122018
 Cycled ATM w/ Coupled (S2S) model
 *********************************
 
-Warm-start cycled w/ coupled (S2S) model C48 atmosphere 5 degree ocean/ice ICs are available in ``C48mx500`` subfolders.
+Warm-start cycled w/ coupled (S2S) model C48 atmosphere 5 degree ocean/ice ICs are available in the following locations on supported platforms:
+
+::
+
+   Hera: /scratch1/NCEPDEV/global/glopara/data/ICSDIR/C48mx500
+   Orion: /work/noaa/global/glopara/data/ICSDIR/C48mx500
+   WCOSS2: /lfs/h2/emc/global/noscrub/emc.global/data/ICSDIR/C48mx500
 
 Start date = 2021032312
 
