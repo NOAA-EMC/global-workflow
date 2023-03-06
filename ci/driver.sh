@@ -18,7 +18,7 @@
 # TODO using static build for GitHub CLI until fixed in HPC-Stack
 #################################################################
 GH=/home/Terry.McGuinness/bin/gh
-repo_url=${repo_url:-"https://github.com/global-workflow.git"}
+repo_url=${repo_url:-"https://github.com/NOAA-EMC/global-workflow.git"}
 
 ################################################################
 # Setup the reletive paths to scripts and PS4 for better logging 
