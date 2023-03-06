@@ -55,7 +55,7 @@ while [[ $# -gt 0 ]]; do
   shift
 done
 
-# Mediator is required if any of the components are not skipped
+# Mediator is required if any of the non-ATM components are used
 if [[ "${skip_mom6}" == "false" ]] || [[ "${skip_cice6}" == "false" ]] || [[ "${skip_ww3}" == "false" ]]; then
   skip_mediator=false
 fi
