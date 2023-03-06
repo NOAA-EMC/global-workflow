@@ -32,11 +32,9 @@ mkdir -p "${COMOUT}"
 export COMIN_GES="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/atmos"
 export COMIN_GES_ENS="${ROTDIR}/enkf${GDUMP}.${gPDY}/${gcyc}/atmos"
 
-# Add UFSDA to PYTHONPATH
-export PYTHONPATH=${HOMEgfs}/sorc/gdas.cd/ush/:${PYTHONPATH}
-
 ###############################################################
 # Run relevant script
+
 EXSCRIPT=${GDASLANDINITPY:-${HOMEgfs}/scripts/exglobal_land_analysis_initialize.py}
 ${EXSCRIPT}
 status=$?

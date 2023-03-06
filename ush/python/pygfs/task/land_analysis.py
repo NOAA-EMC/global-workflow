@@ -119,7 +119,7 @@ class LandAnalysis(Analysis):
         """
         # ---- tar up diags
         # path of output tar statfile
-        landstat = os.path.join(self.task_config['COMOUTland'], f"{self.task_config['APREFIX']}landstat")
+        landstat = os.path.join(self.task_config['COMOUTatmos'], f"{self.task_config['APREFIX']}landstat")
 
         # get list of diag files to put in tarball
         diags = glob.glob(os.path.join(self.task_config['DATA'], 'diags', 'diag*nc4'))
@@ -136,9 +136,9 @@ class LandAnalysis(Analysis):
 
         # copy full YAML from executable to ROTDIR
         src = os.path.join(self.task_config['DATA'], f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.landoi.yaml")
-        dest = os.path.join(self.task_config['COMOUTland'], f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.landoi.yaml")
+        dest = os.path.join(self.task_config['COMOUTatmos'], f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.landoi.yaml")
         yaml_copy = {
-            'mkdir': [self.task_config['COMOUTland']],
+            'mkdir': [self.task_config['COMOUTatmos']],
             'copy': [[src, dest]]
         }
         FileHandler(yaml_copy).sync()
@@ -150,7 +150,7 @@ class LandAnalysis(Analysis):
         bkglist = []
         for itile in range(1, self.task_config.ntiles + 1):
             bkg_path = fms_bkg_file_template.replace('tileX', f'tile{itile}')
-            dest = os.path.join(self.task_config['COMOUTland'], f'landges.{os.path.basename(bkg_path)}')
+            dest = os.path.join(self.task_config['COMOUTatmos'], f'landges.{os.path.basename(bkg_path)}')
             bkglist.append([bkg_path, dest])
         FileHandler({'copy': bkglist}).sync()
 
@@ -164,7 +164,7 @@ class LandAnalysis(Analysis):
         inclist = []
         for itile in range(1, self.task_config.ntiles + 1):
             inc_path = fms_inc_file_template.replace('tileX', f'tile{itile}')
-            dest = os.path.join(self.task_config['COMOUTland'], os.path.basename(inc_path))
+            dest = os.path.join(self.task_config['COMOUTatmos'], os.path.basename(inc_path))
             inclist.append([inc_path, dest])
         FileHandler({'copy': inclist}).sync()
 
