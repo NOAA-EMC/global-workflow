@@ -165,9 +165,11 @@ class AtmEnsAnalysis(Analysis):
             FileHandler({'mkdir': incdir}).sync()
 
             # rewrite UFS-DA atmens increments
-            atmges_fv3 = os.path.join(self.task_config['COMIN_GES_ENS'], memchar, 'atmos', f"{self.task_config['CDUMP']}.t{self.task_config['gcyc']:02d}z.atmf006.nc")
+            atmges_fv3 = os.path.join(self.task_config['COMIN_GES_ENS'], memchar, 'atmos',
+                                      f"{self.task_config['CDUMP']}.t{self.task_config['gcyc']:02d}z.atmf006.nc")
             atminc_jedi = os.path.join(self.task_config['DATA'], 'anl', memchar, f'atminc.{cdate_inc}z.nc4')
-            atminc_fv3 = os.path.join(self.task_config['COMOUT'], memchar, 'atmos', f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.atminc.nc")
+            atminc_fv3 = os.path.join(self.task_config['COMOUT'], memchar, 'atmos',
+                                      f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.atminc.nc")
 
             cmd = Executable(incpy)
             cmd.add_default_arg(atmges_fv3)
