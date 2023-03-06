@@ -75,10 +75,10 @@ esac
 ############################################################
 # query repo and get list of open PRs with tags {machine}-CI
 ############################################################
-CI_LABEL="${GFS_CI_HOST}"
+CI_HOST="${GFS_CI_HOST}"
 pr_list_file="open_pr_list"
 rm -f "${pr_list_file}"
-list=$(${GH} pr list --repo "${repo_url}" --label "${CI_LABEL}-CI" --state "open")
+list=$(${GH} pr list --repo "${repo_url}" --label "${CI_HOST}-CI" --state "open")
 list=$(echo "${list}" | awk '{print $1;}' > "${GFS_CI_ROOT}/${pr_list_file}")
 
 if [[ -s "${GFS_CI_ROOT}/${pr_list_file}" ]]; then
@@ -95,7 +95,7 @@ fi
 
 cd "${GFS_CI_ROOT}"
 for pr in ${pr_list}; do
-  "${GH}" pr edit --repo "${repo_url}" "${pr}" --remove-label "${CI_LABEL}-CI" --add-label "${CI_LABEL}-Running"
+  "${GH}" pr edit --repo "${repo_url}" "${pr}" --remove-label "${CI_HOST}-CI" --add-label "${CI_HOST}-Running"
   echo "Processing Pull Request #${pr}"
   pr_dir="${GFS_CI_ROOT}/PR/${pr}"
   mkdir -p "${pr_dir}"
@@ -105,9 +105,9 @@ for pr in ${pr_list}; do
   ci_status=$?
   "${GH}" pr comment "${pr}" --repo "${repo_url}" --body-file "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
   if [[ ${ci_status} -eq 0 ]]; then
-    "${GH}" pr edit --repo "${repo_url}" "${pr}" --remove-label "${CI_LABEL}-Running" --add-label "${CI_LABEL}-Passed"
+    "${GH}" pr edit --repo "${repo_url}" "${pr}" --remove-label "${CI_HOST}-Running" --add-label "${CI_HOST}-Passed"
   else
-    "${GH}" pr edit "${pr}" --repo "${repo_url}" --remove-label "${CI_LABEL}-Running" --add-label "${CI_LABEL}-Failed"
+    "${GH}" pr edit "${pr}" --repo "${repo_url}" --remove-label "${CI_HOST}-Running" --add-label "${CI_HOST}-Failed"
   fi
 
   ####################################
