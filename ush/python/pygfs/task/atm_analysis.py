@@ -80,9 +80,9 @@ class AtmAnalysis(Analysis):
         super().stage_fix('atm_jedi_fix.yaml')
 
         # stage berror files
-        # copy BUMP files, otherwise it will assume ID matrix
-        if self.task_config.get('STATICB_TYPE', 'identity') in ['bump']:
-            FileHandler(AtmAnalysis.get_berror_dict(self.task_config)).sync()
+        # copy static background error files, otherwise it will assume ID matrix
+        if self.task_config.get('STATICB_TYPE', 'identity') in ['gsibec']:
+            FileHandler(self.get_berror_dict(AttrDict(self.task_config, **self.task_config))).sync()
 
         # stage backgrounds
         FileHandler(self.get_bkg_dict(AttrDict(self.task_config, **self.task_config))).sync()
@@ -225,7 +225,7 @@ class AtmAnalysis(Analysis):
         return bkg_dict
 
     @logit(logger)
-    def get_berror_dict(self, config: Dict[str, Any]) -> Dict[str, List[str]]:
+    def get_berror_dict(self, task_config: Dict[str, Any]) -> Dict[str, List[str]]:
         """Compile a dictionary of background error files to copy
 
         This method will construct a dictionary of background error files
@@ -241,34 +241,16 @@ class AtmAnalysis(Analysis):
         berror_dict: Dict
             a dictionary containing the list of atm background error files to copy for FileHandler
         """
-        super.get_berror_dict(config)
-        # atm static-B needs nicas, cor_rh, cor_rv and stddev files.
-        b_dir = config['BERROR_DATA_DIR']
-        b_datestr = config['BERROR_DATE']
+        super().get_berror_dict(task_config)
+
         berror_list = []
-
-        for ftype in ['cor_rh', 'cor_rv', 'stddev']:
-            template_bump_coupler = f'{b_datestr}.{ftype}.coupler.res'
-            template_bump_tracer = f'{b_datestr}.{ftype}.fv_tracer.res.tileX.nc'
+        for ftype in ['gfs_gsi_global.nml', 'gsi-coeffs-gfs-global.nc4']:
             berror_list.append([
-                os.path.join(b_dir, template_bump_coupler),
-                os.path.join(config['DATA'], 'berror', template_bump_coupler)
-            ])
-            for itile in range(1, config.ntiles + 1):
-                bump_tracer = template_bump_tracer.replace('tileX', f'tile{itile}')
-                berror_list.append([
-                    os.path.join(b_dir, bump_tracer),
-                    os.path.join(config['DATA'], 'berror', bump_tracer)
-                ])
-
-        nproc = config.ntiles * config['layout_x'] * config['layout_y']
-        for nn in range(1, nproc + 1):
-            berror_list.append([
-                os.path.join(b_dir, f'nicas_atm_nicas_local_{nproc:06}-{nn:06}.nc'),
-                os.path.join(config['DATA'], 'berror', f'nicas_atm_nicas_local_{nproc:06}-{nn:06}.nc')
+                os.path.join(task_config['FV3JEDI_FIX'], 'gsibec', task_config['CASE_ANL'], ftype),
+                os.path.join(task_config['DATA'], 'berror', ftype)
             ])
         berror_dict = {
-            'mkdir': [os.path.join(config['DATA'], 'berror')],
+            'mkdir': [os.path.join(task_config['DATA'], 'berror')],
             'copy': berror_list,
         }
         return berror_dict
