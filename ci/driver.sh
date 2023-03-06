@@ -94,7 +94,7 @@ fi
 #######################################
 
 cd "${GFS_CI_ROOT}"
-for pr in "${pr_list}"; do
+for pr in ${pr_list}; do
   "${GH}" pr edit --repo "${repo_url}" "${pr}" --remove-label "${CI_LABEL}-CI" --add-label "${CI_LABEL}-Running"
   echo "Processing Pull Request #${pr}"
   pr_dir="${GFS_CI_ROOT}/PR/${pr}"
