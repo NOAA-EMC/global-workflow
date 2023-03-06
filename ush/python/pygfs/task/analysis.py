@@ -87,12 +87,21 @@ class Analysis(Task):
         # get observers from master dictionary
         observers = obs_list_config['observers']
         copylist = []
+
         for ob in observers:
             if 'obs bias' in ob.keys():
                 obfile = ob['obs bias']['input file']
-                for obfile in ['satbias.nc4', 'satbias_cov.nc4', 'tlapse.txt']:
-                    basename = os.path.basename(obfile)
-                    copylist.append([os.path.join(self.task_config.comin_ges_atm, basename), obfile])
+                basename = os.path.basename(obfile)
+                copylist.append([os.path.join(self.task_config.comin_ges_atm, basename), obfile])
+
+                obfile = obfile.replace('satbias', 'satbias_cov')
+                basename = os.path.basename(obfile)
+                copylist.append([os.path.join(self.task_config.comin_ges_atm, basename), obfile])
+
+                obfile = obfile.replace('satbias_cov', 'tlapse')
+                obfile = obfile.replace('nc4', 'txt')
+                basename = os.path.basename(obfile)
+                copylist.append([os.path.join(self.task_config.comin_ges_atm, basename), obfile])
 
         obs_dict = {
             'mkdir': [os.path.join(self.runtime_config['DATA'], 'bc')],
