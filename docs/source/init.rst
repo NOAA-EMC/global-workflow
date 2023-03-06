@@ -34,6 +34,10 @@ Supported ocean resolutions in global-workflow: mx500, mx100
 Staged Initial Conditions
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+* :ref:`Cycled ATM-only<staged_ics_cycled_atmonly>`
+* :ref:`Cycled ATM w/ Coupled (S2S) model<staged_ics_cycled_coupled>`
+* :ref:`Prototype<staged_ics_prototype>`
+
 Select staged initial conditions are made available to users on supported platforms in the following locations:
 
 ::
@@ -41,6 +45,8 @@ Select staged initial conditions are made available to users on supported platfo
    Hera: /scratch1/NCEPDEV/global/glopara/data/ICSDIR
    Orion: /work/noaa/global/glopara/data/ICSDIR
    WCOSS2: /lfs/h2/emc/global/noscrub/emc.global/data/ICSDIR
+
+.. _staged_ics_cycled_atmonly:
 
 ***************
 Cycled ATM-only
@@ -93,6 +99,7 @@ Start date = 2021122018
                |-- gdas.t18z.abias_pc
                `-- gdas.t18z.radstat
 
+.. _staged_ics_cycled_coupled:
 
 *********************************
 Cycled ATM w/ Coupled (S2S) model
@@ -166,9 +173,13 @@ Start date = 2021032312
            `-- ocean
                `-- gdas.t12z.ocninc.nc
 
+.. _staged_ics_prototype:
+
 *********
 Prototype
 *********
+
+Forecast-only P8 prototype initial conditions are made available to users on supported platforms in the following locations:
 
 ::
 
@@ -176,6 +187,8 @@ Prototype
     HERA: /scratch1/NCEPDEV/climate/role.ufscpara/IC
     ORION: /work/noaa/global/glopara/data/ICSDIR/prototype_ICs
     S4: /data/prod/glopara/coupled_ICs
+
+These locations are known within the workflow via paths set in ``config.coupled_ic``.
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 Prepare Initial Conditions
