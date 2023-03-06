@@ -3,7 +3,7 @@
 #####################################################################################
 #
 # Script description: Top level driver script for checking PR
-#                     ready for CI regresssion testing
+#                     ready for CI regression testing
 #
 # Abstract:
 #
