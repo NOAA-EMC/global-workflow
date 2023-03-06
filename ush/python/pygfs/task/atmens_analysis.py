@@ -15,6 +15,7 @@ from pygw.fsutils import rm_p
 from pygw.template import Template, TemplateConstants
 from pygw.yaml_file import YAMLFile
 from pygw.logger import logit
+from pygw.executable import Executable
 from pygfs.task.analysis import Analysis
 
 logger = getLogger(__name__.split('.')[-1])
@@ -120,12 +121,8 @@ class AtmEnsAnalysis(Analysis):
         This includes:
         - tarring up output diag files and place in ROTDIR
         - copying the generated YAML file from initialize to the ROTDIR
-        - copying the guess files to the ROTDIR
-        - applying the increments to the original RESTART files
-        - moving the increment files to the ROTDIR
+        - rewriting UFS-DA increments to UFS model readable format with delp and hydrostatic delz calculation
 
-        Please note that some of these steps are temporary and will be modified
-        once the model is able to read atmens tracer increments.
         """
         # ---- tar up diags
         # path of output tar statfile
@@ -153,69 +150,33 @@ class AtmEnsAnalysis(Analysis):
         }
         FileHandler(yaml_copy).sync()
 
-        # ---- NOTE below is 'temporary', eventually we will not be using FMS RESTART formatted files
-        # ---- all of the rest of this method will need to be changed but requires model and JEDI changes
-        # ---- copy RESTART fv_tracer files for future reference
-        # fms_bkg_file_template = os.path.join(self.task_config.comin_ges_atmens, 'RESTART', f'{self.task_config.cdate_fv3}.fv_tracer.res.tileX.nc')
-        # bkglist = []
-        # for itile in range(1, self.task_config.ntiles + 1):
-        # bkg_path = fms_bkg_file_template.replace('tileX', f'tile{itile}')
-        # dest = os.path.join(self.task_config['COMOUT'], f'atmges.{os.path.basename(bkg_path)}')
-        # bkglist.append([bkg_path, dest])
-        # FileHandler({'copy': bkglist}).sync()
-
-        # ---- add increments to RESTART files
-        # logger.info('Adding increments to RESTART files')
-        # self._add_fms_cube_sphere_increments()
-
-        # ---- move increments to ROTDIR
-        # logger.info('Moving increments to ROTDIR')
-        # fms_inc_file_template = os.path.join(self.task_config['DATA'], 'anl', f'atminc.{self.task_config.cdate_fv3}.fv_tracer.res.tileX.nc')
-        # inclist = []
-        # for itile in range(1, self.task_config.ntiles + 1):
-        #     inc_path = fms_inc_file_template.replace('tileX', f'tile{itile}')
-        #     dest = os.path.join(self.task_config['COMOUT'], os.path.basename(inc_path))
-        #     inclist.append([inc_path, dest])
-        # FileHandler({'copy': inclist}).sync()
-
-        # ---- copy member increments to ROTDIR
+        # rewrite UFS-DA atmens increments to UFS model readable format with delp and hydrostatic delz calculation
+        gprefix = self.task_config['GPREFIX']
         cdate_inc = self.task_config.cdate_fv3.replace('.', '_')
-        inclist = []
+        incpy = os.path.join(self.task_config['HOMEgfs'], 'sorc/gdas.cd/ush/jediinc2fv3.py')
+
         for imem in range(1, self.task_config['NMEM_ENKF'] + 1):
             memchar = f"mem{imem:03d}"
 
-            # make directory for member incrfement
+            # make output directory for member increment
             incdir = [
                 os.path.join(self.task_config['COMOUT'], memchar, 'atmos')
             ]
             FileHandler({'mkdir': incdir}).sync()
 
-            src = os.path.join(self.task_config['DATA'], 'anl', memchar, f'atminc.{cdate_inc}z.nc4')
-            dest = os.path.join(self.task_config['COMOUT'], memchar, 'atmos', f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.atminc.nc")
-            cdate_inc = self.task_config.cdate_fv3.replace('.', '_')
-            inclist.append([src, dest])
+            # rewrite UFS-DA atmens increments
+            atmges_fv3 = os.path.join(self.task_config['COMIN_GES_ENS'], memchar, 'atmos', f"{self.task_config['CDUMP']}.t{self.task_config['gcyc']:02d}z.atmf006.nc")
+            atminc_jedi = os.path.join(self.task_config['DATA'], 'anl', memchar, f'atminc.{cdate_inc}z.nc4')
+            atminc_fv3 = os.path.join(self.task_config['COMOUT'], memchar, 'atmos', f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.atminc.nc")
 
-        inc_dict = {
-            'copy': inclist,
-        }
-        FileHandler(inc_dict).sync()
+            cmd = Executable(incpy)
+            cmd.add_default_arg(atmges_fv3)
+            cmd.add_default_arg(atminc_jedi)
+            cmd.add_default_arg(atminc_fv3)
+            cmd(output='stdout', error='stderr')
 
     def clean(self):
         super().clean()
-
-    @logit(logger)
-    def _add_fms_cube_sphere_increments(self: Analysis) -> None:
-        """This method adds increments to RESTART files to get an analysis
-        NOTE this is only needed for now because the model cannot read atmens increments.
-        This method will be assumed to be deprecated before this is implemented operationally
-        """
-        # only need the fv_tracer files
-        fms_inc_file_template = os.path.join(self.task_config['DATA'], 'anl', f'atminc.{self.task_config.cdate_fv3}.fv_tracer.res.tileX.nc')
-        fms_bkg_file_template = os.path.join(self.task_config.comin_ges_atm, 'RESTART', f'{self.task_config.cdate_fv3}.fv_tracer.res.tileX.nc')
-        # get list of increment vars
-        incvars_list_path = os.path.join(self.task_config['HOMEgfs'], 'parm', 'parm_gdas', 'atmensanl_inc_vars.yaml')
-        incvars = YAMLFile(path=incvars_list_path)
-        super().add_fv3_increments(fms_inc_file_template, fms_bkg_file_template, incvars)
 
     @logit(logger)
     def get_bkg_dict(self, task_config: Dict[str, Any]) -> Dict[str, List[str]]:
