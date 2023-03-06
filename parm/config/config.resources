@@ -438,6 +438,7 @@ elif [[ "${step}" = "fcst" || "${step}" = "efcs" ]]; then
 
         # PETS for the atmosphere dycore
         (( FV3PETS = ntasks_fv3 * nthreads_fv3 ))
+        echo "FV3 using (nthreads, PETS) = (${nthreads_fv3}, ${FV3PETS})"
 
         # PETS for quilting
         if [[ "${QUILTING:-}" = ".true." ]]; then
@@ -448,11 +449,13 @@ elif [[ "${step}" = "fcst" || "${step}" = "efcs" ]]; then
         else
           QUILTPETS=0
         fi
+        echo "QUILT using (nthreads, PETS) = (${nthreads_fv3}, ${QUILTPETS})"
 
         # Total PETS for the atmosphere component
         ATMTHREADS=${nthreads_fv3}
         (( ATMPETS = FV3PETS + QUILTPETS ))
         export ATMPETS ATMTHREADS
+        echo "FV3ATM using (nthreads, PETS) = (${ATMTHREADS}, ${ATMPETS})"
 
         # Total PETS for the coupled model (starting w/ the atmosphere)
         NTASKS_TOT=${ATMPETS}
@@ -465,6 +468,7 @@ elif [[ "${step}" = "fcst" || "${step}" = "efcs" ]]; then
         MEDPETS=${MEDPETS:-ATMPETS}
         [[ "${MEDPETS}" -gt 300 ]] && MEDPETS=300
         export MEDPETS MEDTHREADS
+        echo "MEDIATOR using (threads, PETS) = (${MEDTHREADS}, ${MEDPETS})"
 
         if [[ "${DO_AERO}" = "YES" ]]; then
           # GOCART shares the same grid and forecast tasks as FV3 (do not add write grid component tasks).
@@ -472,12 +476,14 @@ elif [[ "${step}" = "fcst" || "${step}" = "efcs" ]]; then
           (( CHMPETS = FV3PETS ))
           # Do not add to NTASKS_TOT
           export CHMPETS CHMTHREADS
+          echo "GOCART using (threads, PETS) = (${CHMTHREADS}, ${CHMPETS})"
         fi
 
         if [[ "${DO_WAVE}" = "YES" ]]; then
           (( WAVPETS = ntasks_ww3 * nthreads_ww3 ))
           (( WAVTHREADS = nthreads_ww3 ))
           export WAVPETS WAVTHREADS
+          echo "WW3 using (threads, PETS) = (${WAVTHREADS}, ${WAVPETS})"
           (( NTASKS_TOT = NTASKS_TOT + WAVPETS ))
         fi
 
@@ -485,6 +491,7 @@ elif [[ "${step}" = "fcst" || "${step}" = "efcs" ]]; then
           (( OCNPETS = ntasks_mom6 * nthreads_mom6 ))
           (( OCNTHREADS = nthreads_mom6 ))
           export OCNPETS OCNTHREADS
+          echo "MOM6 using (threads, PETS) = (${OCNTHREADS}, ${OCNPETS})"
           (( NTASKS_TOT = NTASKS_TOT + OCNPETS ))
         fi
 
@@ -492,8 +499,11 @@ elif [[ "${step}" = "fcst" || "${step}" = "efcs" ]]; then
           (( ICEPETS = ntasks_cice6 * nthreads_cice6 ))
           (( ICETHREADS = nthreads_cice6 ))
           export ICEPETS ICETHREADS
+          echo "CICE6 using (threads, PETS) = (${ICETHREADS}, ${ICEPETS})"
           (( NTASKS_TOT = NTASKS_TOT + ICEPETS ))
         fi
+
+        echo "Total PETS for ${_CDUMP} = ${NTASKS_TOT}"
 
         if [[ "${_CDUMP}" =~ "gfs" ]]; then
           declare -x npe_${step}_gfs="${NTASKS_TOT}"
@@ -504,6 +514,7 @@ elif [[ "${step}" = "fcst" || "${step}" = "efcs" ]]; then
           declare -x nth_${step}=1  # ESMF handles threading for the UFS-weather-model
           declare -x npe_node_${step}="${npe_node_max}"
         fi
+
     done
 
     case "${CASE}" in
