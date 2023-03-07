@@ -1,7 +1,5 @@
 #!/bin/bash
 
-MACHINE_ID="UNKNOWN"  # Initialize
-
 # First detect w/ hostname
 case $(hostname -f) in
 
@@ -37,6 +35,7 @@ case $(hostname -f) in
   login0[1-2].expanse.sdsc.edu) MACHINE_ID=expanse ;; ### expanse1-2
 
   discover3[1-5].prv.cube) MACHINE_ID=discover ;; ### discover31-35
+  *) MACHINE_ID=UNKNOWN ;;  # Unknown platform
 esac
 
 # Overwrite auto-detect with MACHINE if set
