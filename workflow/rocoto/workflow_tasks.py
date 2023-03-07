@@ -353,7 +353,7 @@ class Tasks:
 
         deps = []
         if self.app_config.do_jediatmvar:
-            dep_dict = {'type': 'task', 'name': f'{self.cdump}atmanlrun'}
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}atmanlfinal'}
         else:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}anal'}
         deps.append(rocoto.add_dependency(dep_dict))
@@ -368,7 +368,7 @@ class Tasks:
 
         deps = []
         if self.app_config.do_jediatmvar:
-            dep_dict = {'type': 'task', 'name': f'{self.cdump}atmanlrun'}
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}atmanlfinal'}
         else:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}anal'}
         deps.append(rocoto.add_dependency(dep_dict))
