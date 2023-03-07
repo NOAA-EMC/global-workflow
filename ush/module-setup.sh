@@ -1,7 +1,7 @@
 #!/bin/bash
 set -u
 
-if [[ $MACHINE_ID = jet* ]] ; then
+if [[ ${MACHINE_ID} = jet* ]] ; then
     # We are on NOAA Jet
     if ( ! eval module help > /dev/null 2>&1 ) ; then
         source /apps/lmod/lmod/init/bash
@@ -9,7 +9,7 @@ if [[ $MACHINE_ID = jet* ]] ; then
     export LMOD_SYSTEM_DEFAULT_MODULES=contrib
     module reset
 
-elif [[ $MACHINE_ID = hera* ]] ; then
+elif [[ ${MACHINE_ID} = hera* ]] ; then
     # We are on NOAA Hera
     if ( ! eval module help > /dev/null 2>&1 ) ; then
         source /apps/lmod/lmod/init/bash
@@ -17,7 +17,7 @@ elif [[ $MACHINE_ID = hera* ]] ; then
     export LMOD_SYSTEM_DEFAULT_MODULES=contrib
     module reset
 
-elif [[ $MACHINE_ID = orion* ]] ; then
+elif [[ ${MACHINE_ID} = orion* ]] ; then
     # We are on Orion
     if ( ! eval module help > /dev/null 2>&1 ) ; then
         source /apps/lmod/init/bash
@@ -25,7 +25,7 @@ elif [[ $MACHINE_ID = orion* ]] ; then
     export LMOD_SYSTEM_DEFAULT_MODULES=contrib
     module reset
 
-elif [[ $MACHINE_ID = s4* ]] ; then
+elif [[ ${MACHINE_ID} = s4* ]] ; then
     # We are on SSEC Wisconsin S4
     if ( ! eval module help > /dev/null 2>&1 ) ; then
         source /usr/share/lmod/lmod/init/bash
@@ -33,25 +33,25 @@ elif [[ $MACHINE_ID = s4* ]] ; then
     export LMOD_SYSTEM_DEFAULT_MODULES=license_intel
     module reset
 
-elif [[ $MACHINE_ID = wcoss2 ]]; then
+elif [[ ${MACHINE_ID} = wcoss2 ]]; then
     # We are on WCOSS2
     module reset
 
-elif [[ $MACHINE_ID = cheyenne* ]] ; then
+elif [[ ${MACHINE_ID} = cheyenne* ]] ; then
     # We are on NCAR Cheyenne
     if ( ! eval module help > /dev/null 2>&1 ) ; then
         source /glade/u/apps/ch/modulefiles/default/localinit/localinit.sh
     fi
     module purge
 
-elif [[ $MACHINE_ID = stampede* ]] ; then
+elif [[ ${MACHINE_ID} = stampede* ]] ; then
     # We are on TACC Stampede
     if ( ! eval module help > /dev/null 2>&1 ) ; then
         source /opt/apps/lmod/lmod/init/bash
     fi
     module purge
 
-elif [[ $MACHINE_ID = gaea* ]] ; then
+elif [[ ${MACHINE_ID} = gaea* ]] ; then
     # We are on GAEA.
     if ( ! eval module help > /dev/null 2>&1 ) ; then
         # We cannot simply load the module command.  The GAEA
@@ -83,12 +83,12 @@ elif [[ $MACHINE_ID = gaea* ]] ; then
     if [[ -s /etc/opt/cray/pe/admin-pe/site-config ]] ; then
         source /etc/opt/cray/pe/admin-pe/site-config
     fi
-    if [[ "$__ms_source_etc_profile" == yes ]] ; then
+    if [[ "${__ms_source_etc_profile}" == yes ]] ; then
         source /etc/profile
         unset __ms_source_etc_profile
     fi
 
-elif [[ $MACHINE_ID = expanse* ]]; then
+elif [[ ${MACHINE_ID} = expanse* ]]; then
     # We are on SDSC Expanse
     if ( ! eval module help > /dev/null 2>&1 ) ; then
         source /etc/profile.d/modules.sh
@@ -96,11 +96,11 @@ elif [[ $MACHINE_ID = expanse* ]]; then
     module purge
     module load slurm/expanse/20.02.3
 
-elif [[ $MACHINE_ID = discover* ]]; then
+elif [[ ${MACHINE_ID} = discover* ]]; then
     # We are on NCCS discover
     export SPACK_ROOT=/discover/nobackup/mapotts1/spack
-    export PATH=$PATH:$SPACK_ROOT/bin
-    . $SPACK_ROOT/share/spack/setup-env.sh
+    export PATH=${PATH}:${SPACK_ROOT}/bin
+    . "${SPACK_ROOT}"/share/spack/setup-env.sh
 
 else
     echo WARNING: UNKNOWN PLATFORM 1>&2
