@@ -1171,7 +1171,7 @@ class Tasks:
         dep_dict = {'type': 'task', 'name': f'{self.cdump.replace("enkf","")}analcalc'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_jediens:
-            dep_dict = {'type': 'task', 'name': f'{self.cdump}atmensanlrun'}
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}atmensanlfinal'}
         else:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}eupd'}
         deps.append(rocoto.add_dependency(dep_dict))
@@ -1200,7 +1200,7 @@ class Tasks:
         dep_dict = {'type': 'task', 'name': f'{self.cdump.replace("enkf","")}analcalc'}
         deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_jediens:
-            dep_dict = {'type': 'task', 'name': f'{self.cdump}atmensanlrun'}
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}atmensanlfinal'}
         else:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}eupd'}
         deps.append(rocoto.add_dependency(dep_dict))
