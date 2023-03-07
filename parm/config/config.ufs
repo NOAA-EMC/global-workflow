@@ -116,7 +116,6 @@ case "${fv3_res}" in
         export WRTTASK_PER_GROUP=2
         export WRITE_GROUP_GFS=1
         export WRTTASK_PER_GROUP_GFS=2
-        export WRTIOBUF="1M"
         ;;
     "C96")
         export DELTIM=600
@@ -131,7 +130,6 @@ case "${fv3_res}" in
         export WRTTASK_PER_GROUP=4
         export WRITE_GROUP_GFS=1
         export WRTTASK_PER_GROUP_GFS=4
-        export WRTIOBUF="4M"
         ;;
     "C192")
         export DELTIM=450
@@ -146,7 +144,6 @@ case "${fv3_res}" in
         export WRTTASK_PER_GROUP=64
         export WRITE_GROUP_GFS=2
         export WRTTASK_PER_GROUP_GFS=64
-        export WRTIOBUF="8M"
         ;;
     "C384")
         export DELTIM=200
@@ -157,11 +154,10 @@ case "${fv3_res}" in
         export nthreads_fv3=1
         export nthreads_fv3_gfs=2
         export cdmbgwd="1.1,0.72,1.0,1.0"  # mountain blocking, ogwd, cgwd, cgwd src scaling
-        export WRITE_GROUP=1
+        export WRITE_GROUP=2
         export WRTTASK_PER_GROUP=48
         export WRITE_GROUP_GFS=2
         export WRTTASK_PER_GROUP_GFS=64
-        export WRTIOBUF="16M"
         ;;
     "C768")
         export DELTIM=150
@@ -176,7 +172,6 @@ case "${fv3_res}" in
         export WRTTASK_PER_GROUP=64
         export WRITE_GROUP_GFS=4
         export WRTTASK_PER_GROUP_GFS=64
-        export WRTIOBUF="32M"
         ;;
     "C1152")
         export DELTIM=120
@@ -191,7 +186,6 @@ case "${fv3_res}" in
         export WRTTASK_PER_GROUP=64  # TODO: refine these numbers when a case is available
         export WRITE_GROUP_GFS=4
         export WRTTASK_PER_GROUP_GFS=64  # TODO: refine these numbers when a case is available
-        export WRTIOBUF="48M"
         ;;
     "C3072")
         export DELTIM=90
@@ -206,7 +200,6 @@ case "${fv3_res}" in
         export WRTTASK_PER_GROUP=64  # TODO: refine these numbers when a case is available
         export WRITE_GROUP_GFS=4
         export WRTTASK_PER_GROUP_GFS=64  # TODO: refine these numbers when a case is available
-        export WRTIOBUF="64M"
         ;;
     *)
         echo "FATAL ERROR: Unsupported FV3 resolution = ${fv3_res}, ABORT!"

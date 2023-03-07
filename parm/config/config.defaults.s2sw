@@ -27,7 +27,6 @@ case "${CASE}" in
     #layout_x_gfs=24
     #layout_y_gfs=16
     #WRTTASK_PER_GROUP_GFS=86
-    WRTIOBUF="32M"  # TODO: This value is for P8 w/ C384.  Why not update/set this as default in config.fv3 C384?
     ;;
   *)  # All other ${CASE}
     echo "config.defaults.s2sw: Using default settings for CASE=${CASE}"
