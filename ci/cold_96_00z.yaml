@@ -1,0 +1,8 @@
+comrot: ${NOSCRUB}/global-workflow
+expdir: ${SAVE}/global-workflow/expdir
+idate: 2021122018
+edate: 2021122200
+nens: 2
+gfs_cyc: 1
+start: cold
+pslot: cold_96_00z

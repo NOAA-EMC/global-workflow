@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 
 import os
+import socket
 
 from pygw.yaml_file import YAMLFile
 from pygw.logger import logit
 
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
-#from hosts import Host
+from hosts import Host
 
 # @logit(logger)
 
@@ -33,8 +34,14 @@ def input_args():
 if __name__ == '__main__':
 
     user_inputs = input_args()
-#    host = Host()
-#    print( "HOST:", host.machine )
+
+    try:
+       host = Host()
+       print( "HOST:", host.machine )
+    except:
+        print(socket.gethostname(),"is not specificly supported")
 
     yaml_dict = YAMLFile(path=user_inputs.yaml)
-    print(yaml_dict.CDATE)
+
+    for conf,value in yaml_dict.items():
+        print(conf,value)
