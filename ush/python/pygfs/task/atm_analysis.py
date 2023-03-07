@@ -10,7 +10,7 @@ from typing import Dict, List, Any
 
 from pygw.attrdict import AttrDict
 from pygw.file_utils import FileHandler
-from pygw.timetools import to_isotime, to_fv3time, to_timedelta
+from pygw.timetools import to_isotime, to_fv3time, to_timedelta, datetime_to_YMDH
 from pygw.fsutils import rm_p
 from pygw.template import Template, TemplateConstants
 from pygw.yaml_file import YAMLFile
@@ -117,6 +117,7 @@ class AtmAnalysis(Analysis):
         This includes:
         - tarring up output diag files and place in ROTDIR
         - copying the generated YAML file from initialize to the ROTDIR
+        - copying the update bias correction files to ROTDIR
         - rewrite UFS-DA atm increment to UFS model readable format with delp and hydrostatic delz calculation
 
         Please note that some of these steps are temporary and will be modified
@@ -147,6 +148,38 @@ class AtmAnalysis(Analysis):
             'copy': [[src, dest]]
         }
         FileHandler(yaml_copy).sync()
+
+        # copy bias correction files to ROTDIR
+        biasdir = os.path.join(self.task_config['DATA'], 'bc')
+        biasls = os.listdir(biasdir)
+        biaslist = []
+        for bfile in biasls:
+            src = os.path.join(biasdir, bfile)
+            dest = os.path.join(self.task_config['COMOUTatmos'], bfile)
+            biaslist.append([src, dest])
+
+        gprefix = f"{self.task_config['GPREFIX']}"
+        gdate = datetime_to_YMDH(self.task_config['GDATE'])
+        gsuffix = f"{gdate}" + ".txt"
+        aprefix = f"{self.task_config['APREFIX']}"
+        adate = datetime_to_YMDH(self.task_config['CDATE'])
+        asuffix = f"{adate}" + ".txt"
+
+        obsdir = os.path.join(self.task_config['DATA'], 'obs')
+        obsls = os.listdir(obsdir)
+        for ofile in obsls:
+            if ofile.endswith(".txt"):
+                src = os.path.join(obsdir, ofile)
+                tfile = ofile.replace(gprefix, aprefix)
+                tfile = tfile.replace(gsuffix, asuffix)
+                dest = os.path.join(self.task_config['COMOUTatmos'], tfile)
+                biaslist.append([src, dest])
+
+        bias_copy = {
+            'mkdir': [self.task_config['COMOUTatmos']],
+            'copy': biaslist,
+        }
+        FileHandler(bias_copy).sync()
 
         # rewrite UFS-DA atm increment to UFS model readable format with delp and hydrostatic delz calculation
         case_berror = int(self.config['CASE_ANL'][1:])
