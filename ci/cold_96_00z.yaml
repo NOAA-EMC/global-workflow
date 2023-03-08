@@ -1,3 +1,7 @@
+mode: cycled
+app: ATM
+resdet: 96
+resens: 48
 comrot: ${NOSCRUB}/global-workflow
 expdir: ${SAVE}/global-workflow/expdir
 idate: 2021122018

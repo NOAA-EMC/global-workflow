@@ -5,10 +5,12 @@ import socket
 
 from pygw.yaml_file import YAMLFile
 from pygw.logger import logit
+from pygw.executable import Executable
 
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
 from hosts import Host
+
 
 # @logit(logger)
 
@@ -41,7 +43,17 @@ if __name__ == '__main__':
     except:
         print(socket.gethostname(),"is not specificly supported")
 
-    yaml_dict = YAMLFile(path=user_inputs.yaml)
 
-    for conf,value in yaml_dict.items():
-        print(conf,value)
+    setup_expt_cmd = Executable(os.path.abspath(os.path.join(_top,'workflow/setup_expt.py')))
+
+    setup_expt_args = YAMLFile(path=user_inputs.yaml)
+    mode = setup_expt_args.mode
+    setup_expt_cmd.add_default_arg(mode)
+    del setup_expt_args['mode']
+
+    for conf,value in setup_expt_args.items():
+         setup_expt_cmd.add_default_arg(f'--{conf}')
+         setup_expt_cmd.add_default_arg(str(value))
+
+    print( setup_expt_cmd.command )
+    setup_expt_cmd(output='stdout', error='stderr') 
