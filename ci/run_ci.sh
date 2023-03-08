@@ -87,7 +87,7 @@ export BUILD_JOBS=8
 rm -rf log.build
 ./checkout.sh -g -c
 # build full cycle
-#./build_all.sh -g &>> log.build
+./build_all.sh -g &>> log.build
 
 # Validations
 build_status=$?
@@ -105,7 +105,7 @@ else
   echo '```' >> "${outfile}"
 fi
 
-#./link_workflow.sh
+./link_workflow.sh
 
 cd ../ush/python/pygw
 pip3 install .
