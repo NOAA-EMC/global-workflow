@@ -43,17 +43,33 @@ if __name__ == '__main__':
     except:
         print(socket.gethostname(),"is not specificly supported")
 
+    #link_IC
+    #rotdir="${NOSCRUB}/global-workflow/RUNTEST/${pslot}"
+    #rm -Rf "${rotdir}"
+    #cp -as "${icdir}/" "${rotdir}"
 
-    setup_expt_cmd = Executable(os.path.abspath(os.path.join(_top,'workflow/setup_expt.py')))
 
     setup_expt_args = YAMLFile(path=user_inputs.yaml)
-    mode = setup_expt_args.mode
-    setup_expt_cmd.add_default_arg(mode)
-    del setup_expt_args['mode']
 
+    mode = setup_expt_args.mode
+    icdir = setup_expt_args.icdir
+    rotdir = setup_expt_args.rotdir
+    del setup_expt_args['mode']
+    del setup_expt_args['icdir']
+    del setup_expt_args['rotdir']
+
+    setup_expt_cmd = Executable(os.path.abspath(os.path.join(_top,'workflow/setup_expt.py')))
+    setup_expt_cmd.add_default_arg(mode)
     for conf,value in setup_expt_args.items():
          setup_expt_cmd.add_default_arg(f'--{conf}')
          setup_expt_cmd.add_default_arg(str(value))
 
     print( setup_expt_cmd.command )
-    setup_expt_cmd(output='stdout', error='stderr') 
+    #setup_expt_cmd(output='stdout', error='stderr') 
+
+    link_ic_cmd = Executable('cp')
+    link_ic_cmd.add_defaut_arg('-as')
+    link_ic_cmd.add_defaut_arg(os.path.abspath(icdir+'/'))
+    link_ic_cmd.add_defaut_arg(os.path.abspath(rotdir))
+    print( link_ic_cmd.command )
+

@@ -100,20 +100,28 @@ for pr in ${pr_list}; do
   pr_dir="${GFS_CI_ROOT}/PR/${pr}"
   mkdir -p "${pr_dir}"
   # call run_ci to clone and build PR
-  id=$(gh pr view "${pr}" --repo "${repo_url}" --json id --jq '.id')
+  id=$("${GH}" pr view "${pr}" --repo "${repo_url}" --json id --jq '.id')
   "${pwd}/run_ci.sh" -p "${pr}" -d "${pr_dir}" -o "${pr_dir}/output_${id}"
   ci_status=$?
+  if [[ ${ci_status} -eq 0 ]]; then
   "${GH}" pr comment "${pr}" --repo "${repo_url}" --body-file "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
   if [[ ${ci_status} -eq 0 ]]; then
-    "${GH}" pr edit --repo "${repo_url}" "${pr}" --remove-label "${CI_HOST}-Running" --add-label "${CI_HOST}-Passed"
+    mkdir -p "${pr_dir}/RUNTEST"
+    cd "${pr_dir}/RUNTEST"
+    export RUNTEST="${pr_dir}/RUNTEST"
+    "${pwd}/create_experment.py" --yaml "${pwd}/clold_96_00z.yaml"
+    ci_status=$?
+    if [[ ${ci_status} -eq 0 ]]; then
+      "${GH}" pr edit --repo "${repo_url}" "${pr}" --remove-label "${CI_HOST}-Running" --add-label "${CI_HOST}-Passed"
+    fi
   else
     "${GH}" pr edit "${pr}" --repo "${repo_url}" --remove-label "${CI_HOST}-Running" --add-label "${CI_HOST}-Failed"
   fi
+done
 
   ####################################
   # TODO setup_test.py -t testname.py
   ####################################
-done
 
 ##########################################
 # scrub working directory for older files
