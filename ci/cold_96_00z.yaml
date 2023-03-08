@@ -1,7 +1,7 @@
 mode: cycled
 icdir: /scratch1/NCEPDEV/global/glopara/data/ICSDIR/C96C48
 pslot: cold_96_00z
-rotdir: ${RUNTEST}/{pslot}
+rotdir: ${RUNTEST}/cold_96_00z
 app: ATM
 resdet: 96
 resens: 48

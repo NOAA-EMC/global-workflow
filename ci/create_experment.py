@@ -43,11 +43,6 @@ if __name__ == '__main__':
     except:
         print(socket.gethostname(),"is not specificly supported")
 
-    #link_IC
-    #rotdir="${NOSCRUB}/global-workflow/RUNTEST/${pslot}"
-    #rm -Rf "${rotdir}"
-    #cp -as "${icdir}/" "${rotdir}"
-
 
     setup_expt_args = YAMLFile(path=user_inputs.yaml)
 
@@ -65,11 +60,18 @@ if __name__ == '__main__':
          setup_expt_cmd.add_default_arg(str(value))
 
     print( setup_expt_cmd.command )
-    #setup_expt_cmd(output='stdout', error='stderr') 
+    setup_expt_cmd(output='stdout_expt', error='stderr_expt') 
 
     link_ic_cmd = Executable('cp')
-    link_ic_cmd.add_defaut_arg('-as')
-    link_ic_cmd.add_defaut_arg(os.path.abspath(icdir+'/'))
-    link_ic_cmd.add_defaut_arg(os.path.abspath(rotdir))
+    link_ic_cmd.add_default_arg('-as')
+    link_ic_cmd.add_default_arg(os.path.abspath(icdir+'/'))
+    link_ic_cmd.add_default_arg(os.path.abspath(rotdir))
     print( link_ic_cmd.command )
+    link_ic_cmd(output='stdout_linkic', error='stderr_linkic')
+
+    setup_xml_cmd = Executable(os.path.abspath(os.path.join(_top,'workflow/setup_xml.py')))
+    setup_xml_cmd.add_default_arg(os.path.abspath(os.path.join(setup_expt_args.expdir,setup_expt_args.pslot)))
+    print( setup_xml_cmd.command )
+    setup_xml_cmd(output='stdout_setupxml', error='stderr_setupxml')
+    
 
