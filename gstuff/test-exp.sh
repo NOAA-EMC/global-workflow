@@ -23,12 +23,15 @@ BASEDIR=$PWD # were we run/dump stuff
 ln -sf $GWDIR/workflow/rocoto_viewer.py .
 
 # Experiment setup. 
+# possible start dates: 2021032312 2019063000 2021063006 2021070106
+cyc=12
+cdate=20210323
 APP=S2S
-IDATE=2019063000 #2021032312 #2019063000
-EDATE=2019070100 #2021032318 #2019070100
-PSLOT=wcda
-RES=384
-ORES=025
+IDATE=${cdate}${cyc}
+EDATE=2021032400
+PSLOT=lores
+RES=48
+ORES=500
 GFS_CYC=0
 COMROT=$BASEDIR/$PSLOT/COMROT
 EXPDIR=$BASEDIR/$PSLOT/EXPDIR
@@ -47,9 +50,15 @@ touch obs_list.yaml
 echo "observers:" >> obs_list.yaml
 echo "- !INC \${OBS_YAML_DIR}/adt_j3_egm2008.yaml" >> obs_list.yaml
 
+if [[ ${ORES} == '025' ]]; then
+    SOCA_INPUT_FIX_DIR=/scratch2/NCEPDEV/ocean/Guillaume.Vernieres/data/static/1440x1080x75/soca
+else
+    SOCA_INPUT_FIX_DIR=/scratch2/NCEPDEV/ocean/Guillaume.Vernieres/data/static/72x35x25/soca
+fi
+    
 # Configure the marine DA
 echo "ocnanal:" > ocnanal.yaml
-echo "  SOCA_INPUT_FIX_DIR: /scratch2/NCEPDEV/ocean/Guillaume.Vernieres/data/static/72x35x25/soca" >> ocnanal.yaml
+echo "  SOCA_INPUT_FIX_DIR: ${SOCA_INPUT_FIX_DIR}" >> ocnanal.yaml
 echo "  CASE_ANL: 'C24'" >> ocnanal.yaml
 echo "  COMIN_OBS: '/scratch2/NCEPDEV/ocean/Guillaume.Vernieres/runs/r2d2-v2-v3'" >> ocnanal.yaml
 echo "  SOCA_OBS_LIST: ${obs_list_yaml}" >> ocnanal.yaml
@@ -78,6 +87,11 @@ $GWDIR/workflow/setup_expt.py cycled --app $APP \
                                      --start 'warm' \
                                      --icsdir $ICSDIR \
                                      --yaml ocnanal.yaml
+
+# Copy GSI bias and radsat to COMROT
+#mkdir -p  ${COMROT}/${PSLOT}/gdas.${cdate}/${cyc}/atmos
+#cp ${ICSDIR}/gdas.${cdate}/${cyc}/atmos/gdas.${cyc}.{abias,abias_air,abias_int,abias_pc,radstat} \
+#   ${COMROT}/${PSLOT}/gdas.${cdate}/${cyc}/atmos
 
 echo "generate xml stuff"
 $GWDIR/workflow/setup_xml.py $EXPDIR/$PSLOT
