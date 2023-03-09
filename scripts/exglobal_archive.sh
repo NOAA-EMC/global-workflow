@@ -220,11 +220,27 @@ elif [ "${CDUMP}" = "gdas" ]; then
         targrp_list="${targrp_list} gdaswave"
     fi
 
+    #gdasocean
+    if [ "${DO_OCN}" = "YES" ]; then
+        targrp_list="${targrp_list} gdasocean"
+    fi
+
+    #gdasice
+    if [ "${DO_ICE}" = "YES" ]; then
+        targrp_list="${targrp_list} gdasice"
+    fi
+
     if [ "${SAVEWARMICA}" = "YES" ] || [ "${SAVEFCSTIC}" = "YES" ]; then
         targrp_list="${targrp_list} gdas_restarta"
 
         if [ "${DO_WAVE}" = "YES" ]; then
             targrp_list="${targrp_list} gdaswave_restart"
+        fi
+        if [ "${DO_OCN}" = "YES" ]; then
+            targrp_list="${targrp_list} gdasocean_restart"
+        fi
+        if [ "${DO_ICE}" = "YES" ]; then
+            targrp_list="${targrp_list} gdasice_restart"
         fi
     fi
 
