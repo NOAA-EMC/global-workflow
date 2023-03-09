@@ -1,0 +1,16 @@
+forecast:
+
+     # Currently, and using the pygw tools, all YAML-key and value
+     # pairs can be deduced from the run-time environment. However, as
+     # development and refactor continue/progress, environment
+     # variables can be replaced as necessary.
+     
+     # This defines the path to the forecast model executable; the
+     # intention of this is to allow a user/developer to point to a
+     # different executable path if necessary.
+     exec: !ENV ${HOMEgfs}/exec/ufs_model.x
+
+     # This is the path, for example, of the fixed-files required for
+     # the respective application type; an example can be found in
+     # `parm/config/yaml/forecast/fixed.atm.yaml`.
+     fix_yaml_file: !ENV ${HOMEgfs}/parm/ufs/fix/forecast/forecast.atm.yaml
