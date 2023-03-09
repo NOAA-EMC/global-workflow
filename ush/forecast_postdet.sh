@@ -49,22 +49,23 @@ FV3_GFS_postdet(){
       done
 
       # Link sfcanl_data restart files from current cycle
-      for file in "${COM_ATMOS_RESTART}/${sPDY}.${scyc}0000."*.nc; do
-        file2=$(echo $(basename $file))
-        file2=$(echo $file2 | cut -d. -f3-) # remove the date from file
-        fsufanl=$(echo $file2 | cut -d. -f1)
-        if [ $fsufanl = "sfcanl_data" ]; then
+      if [ "${MODE}" = "cycled" ] && [ "${CCPP_SUITE}" = "FV3_GFS_v16" ]; then  # TODO: remove if statement when global_cycle can handle NOAHMP
+        for file in "${COM_ATMOS_RESTART}/${sPDY}.${scyc}0000."*.nc; do
+          file2=$(echo $(basename $file))
+          file2=$(echo $file2 | cut -d. -f3-) # remove the date from file
+          fsufanl=$(echo $file2 | cut -d. -f1)
           file2=$(echo $file2 | sed -e "s/sfcanl_data/sfc_data/g")
+          rm -f $DATA/INPUT/$file2
           $NLN $file $DATA/INPUT/$file2
-        fi
-      done
+        done
+      fi
 
       # Need a coupler.res when doing IAU
       if [ $DOIAU = "YES" ]; then
         rm -f $DATA/INPUT/coupler.res
         cat >> $DATA/INPUT/coupler.res << EOF
         2        (Calendar: no_calendar=0, thirty_day_months=1, julian=2, gregorian=3, noleap=4)
-        ${gPDY:0:4}  ${gPDY:4:2}  ${gPDY:6:2}  ${gcyc}     0     0        Model start time:   year, month, day, hour, minute, second
+        ${PDY_PREV:0:4}  ${PDY_PREV:4:2}  ${PDY_PREV:6:2}  ${cyc_PREV}     0     0        Model start time:   year, month, day, hour, minute, second
         ${sPDY:0:4}  ${sPDY:4:2}  ${sPDY:6:2}  ${scyc}     0     0        Current model time: year, month, day, hour, minute, second
 EOF
       fi
@@ -749,12 +750,12 @@ MOM6_postdet() {
   echo "SUB ${FUNCNAME[0]}: MOM6 after run type determination"
 
   # Copy MOM6 ICs
-  $NLN "${ROTDIR}/${CDUMP}.${gPDY}/${gcyc}/ocean/RESTART/${PDY}.${cyc}0000.MOM.res.nc" "${DATA}/INPUT/MOM.res.nc"
+  $NLN "${ROTDIR}/${CDUMP}.${PDY_PREV}/${cyc_PREV}/ocean/RESTART/${PDY}.${cyc}0000.MOM.res.nc" "${DATA}/INPUT/MOM.res.nc"
   case $OCNRES in
     "025")
       for nn in $(seq 1 4); do
-        if [[ -f "${ROTDIR}/${CDUMP}.${gPDY}/${gcyc}/ocean/RESTART/${PDY}.${cyc}0000.MOM.res_${nn}.nc" ]]; then
-          $NLN "${ROTDIR}/${CDUMP}.${gPDY}/${gcyc}/ocean/RESTART/${PDY}.${cyc}0000.MOM.res_${nn}.nc" "${DATA}/INPUT/MOM.res_${nn}.nc"
+        if [[ -f "${ROTDIR}/${CDUMP}.${PDY_PREV}/${cyc_PREV}/ocean/RESTART/${PDY}.${cyc}0000.MOM.res_${nn}.nc" ]]; then
+          $NLN "${ROTDIR}/${CDUMP}.${PDY_PREV}/${cyc_PREV}/ocean/RESTART/${PDY}.${cyc}0000.MOM.res_${nn}.nc" "${DATA}/INPUT/MOM.res_${nn}.nc"
         fi
       done
     ;;
@@ -1007,7 +1008,7 @@ CICE_postdet() {
 
   # Copy/link CICE IC to DATA
   if [[ "${warm_start}" = ".true." ]]; then
-    $NLN "${ROTDIR}/${CDUMP}.${gPDY}/${gcyc}/ice/RESTART/${PDY}.${cyc}0000.cice_model.res.nc" "${DATA}/cice_model.res.nc"
+    $NLN "${ROTDIR}/${CDUMP}.${PDY_PREV}/${cyc_PREV}/ice/RESTART/${PDY}.${cyc}0000.cice_model.res.nc" "${DATA}/cice_model.res.nc"
   else # cold start are typically SIS2 restarts obtained from somewhere else e.g. CPC
     $NLN "${ROTDIR}/${CDUMP}.${PDY}/${cyc}/ice/RESTART/${PDY}.${cyc}0000.cice_model.res.nc" "${DATA}/cice_model.res.nc"
   fi
