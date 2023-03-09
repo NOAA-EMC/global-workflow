@@ -1,14 +1,19 @@
-mode: cycled
-icdir: /scratch1/NCEPDEV/global/glopara/data/ICSDIR/C96C48
-pslot: cold_96_00z
-rotdir: ${RUNTEST}/cold_96_00z
-app: ATM
-resdet: 96
-resens: 48
-comrot: ${RUNTEST}/COMROT
-expdir: ${RUNTEST}/expdir
-idate: 2021122018
-edate: 2021122200
-nens: 2
-gfs_cyc: 1
-start: cold
+environment:
+  icdir: /scratch1/NCEPDEV/global/glopara/data/ICSDIR/C96C48
+  rotdir: ${RUNTEST}/cold_96_00z
+
+experment:
+  mode: cycled
+
+arguments:  
+   pslot: cold_96_00z
+   app: ATM
+   resdet: 96
+   resens: 48
+   comrot: ${RUNTEST}/COMROT
+   expdir: ${RUNTEST}/expdir
+   idate: 2021122018
+   edate: 2021122200
+   nens: 2
+   gfs_cyc: 1
+   start: cold
