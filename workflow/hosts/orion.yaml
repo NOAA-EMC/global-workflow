@@ -1,4 +1,5 @@
-BASE_GIT: '/work/noaa/global/glopara/git'
+# BASE_GIT: '/work/noaa/global/glopara/git'
+BASE_GIT: '/work2/noaa/global/wkolczyn/save/gw_external_git'
 DMPDIR: '/work/noaa/rstprod/dump'
 PACKAGEROOT: '/work/noaa/global/glopara/nwpara'
 COMROOT: '/work/noaa/global/glopara/com'
