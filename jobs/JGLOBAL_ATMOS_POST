@@ -42,13 +42,11 @@ export PARMpost=${PARMpost:-${HOMEgfs}/parm/post}
 export INLINE_POST=${WRITE_DOPOST:-".false."}
 
 # Construct COM variables from templates
-export YMD=${PDY}
-export HH=${cyc}
-generate_com -rx COM_ATMOS_RESTART COM_ATMOS_ANALYSIS COM_ATMOS_HISTORY COM_ATMOS_MASTER
+YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_RESTART COM_ATMOS_ANALYSIS COM_ATMOS_HISTORY COM_ATMOS_MASTER
 for RES in '0p25' '0p50' '1p00'; do
   # After the post refactor, we likely won't need these separate envvars
-  prod_dir="COM_ATMOS_GRIB_${RES}"      
-  declare -x "${prod_dir}"="$(echo "${COM_ATMOS_GRIB_TMPL}" | envsubst)"
+  prod_dir="COM_ATMOS_GRIB_${RES}"
+  RES=${RES} YMD=${PDY} HH=${cyc} generate_com -rx "${prod_dir}:COM_ATMOS_GRIB_TMPL"
   if [[ ! -d "${prod_dir}" ]]; then mkdir -m 775 -p "${!prod_dir}"; fi
 done
 
