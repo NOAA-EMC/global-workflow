@@ -232,7 +232,7 @@ export OUTPUT_FILETYPE_ATM OUTPUT_FILETYPE_SFC
 
 # Mediator specific settings
 if [[ "${skip_mediator}" == "false" ]]; then
-  export nthreads_mediator=${nthreads_fv3}  # TODO: consult w/ @junwang-noaa how to optimize this in the context of nthreads_fv3 or should it be its own number?
+  export nthreads_mediator=${nthreads_fv3}  # Use same threads as FV3
 fi
 
 # MOM6 specific settings
