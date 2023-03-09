@@ -1,0 +1,13 @@
+# This YAML-formatted file should contain experiment configuration
+# attributes. When possible, the YAML-loader applications to handle
+# `!ENV` and `!INC` should be used.
+ufs:
+
+     # This YAML-formatted file should contain only forecast model
+     # attributes; see `parm/config/yaml/forecast.yaml
+     forecast: !INC /path/to/forecast.yaml  
+
+     # This is currently intended as an example, but similar to the
+     # `forecast` key, this file should contain only attributes
+     # specific to GDAS.
+     gdas: !INC /path/to/gdas.yaml
