@@ -23,7 +23,6 @@ repo_url=${repo_url:-"https://github.com/NOAA-EMC/global-workflow.git"}
 ################################################################
 # Setup the reletive paths to scripts and PS4 for better logging 
 ################################################################
-set -eux
 pwd="$(cd "$(dirname  "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd )"
 scriptname=$(basename "${BASH_SOURCE[0]}")
 echo "Begin ${scriptname} at $(date -u)" || true
@@ -52,8 +51,9 @@ usage() {
 source ${pwd}/../ush/detect_machine.sh
 if [[ $MACHINE_ID != "UNKNOWN" ]]; then
    TARGET="${MACHINE_ID}"
-else 
+fi   
 
+if [[ -z ${TARGET+x} || $1 == "-h" ]]; then
   export TARGET
   while getopts "t:h" opt; do
     case ${opt} in
@@ -89,10 +89,8 @@ fi
 ############################################################
 # query repo and get list of open PRs with tags {machine}-CI
 ############################################################
+set -eux
 CI_HOST="${TARGET^}"
-
-exit
-
 pr_list_file="open_pr_list"
 rm -f "${pr_list_file}"
 list=$(${GH} pr list --repo "${repo_url}" --label "${CI_HOST}-CI" --state "open")
