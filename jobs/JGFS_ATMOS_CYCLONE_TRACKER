@@ -37,7 +37,8 @@ export USHens_tracker=${USHens_tracker:-${HOMEens_tracker}/ush}
 ##############################################
 # Define COM and Data directories
 ##############################################
-generate_com -rx COM_ATMOS_GRIB_0p25 COM_ATMOS_TRACK
+YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_TRACK
+YMD=${PDY} HH=${cyc} RES="0p25" generate_com -rx COM_ATMOS_GRIB_0p25:COM_ATMOS_GRIB_TMPL
 
 if [[ ! -d "${COM_ATMOS_TRACK}" ]]; then mkdir -p "${COM_ATMOS_TRACK}"; fi
 
