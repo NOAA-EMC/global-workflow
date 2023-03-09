@@ -93,7 +93,7 @@ EOF
 
   # stage observations
   cp "${COMIN_OBS}/gdas.t${cyc}z.ims${YYYY}${DOY}_4km_v1.3.nc" "${WORKDIR}/ims${YYYY}${DOY}_4km_v1.3.nc"
-  cp "${COMIN_OBS}/gdas.t${cyc}z.IMS4km_to_FV3_mapping.oro_C${RES}.mx100.nc" "${WORKDIR}/IMS4km_to_FV3_mapping.C${RES}_oro_data.nc"
+  cp "${COMIN_OBS}/gdas.t${cyc}z.IMS4km_to_FV3_mapping.C${RES}_oro_data.nc" "${WORKDIR}/IMS4km_to_FV3_mapping.C${RES}_oro_data.nc"
 
   ulimit -Ss unlimited
   ${CALCFIMS}
