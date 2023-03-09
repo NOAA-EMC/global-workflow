@@ -241,7 +241,7 @@ while [ $nset -le $totalset ]; do
   if [ $nset = 1 ]; then
     if [ $fhr3 = anl ]; then
       cp "pgb2file_${fhr3}_0p25" "${COM_ATMOS_GRIB_0p25}/${PREFIX}pgrb2.0p25.anl"
-      ${WGRIB2} -s "pgb2file_${fhr3}_0p25 "> "${COM_ATMOS_GRIB_0p25}/${PREFIX}pgrb2.0p25.anl.idx"
+      ${WGRIB2} -s "pgb2file_${fhr3}_0p25" > "${COM_ATMOS_GRIB_0p25}/${PREFIX}pgrb2.0p25.anl.idx"
       if [ "$PGBS" = "YES" ]; then
         cp "pgb2file_${fhr3}_0p5" "${COM_ATMOS_GRIB_0p50}/${PREFIX}pgrb2.0p50.anl"
         cp "pgb2file_${fhr3}_1p0" "${COM_ATMOS_GRIB_1p00}/${PREFIX}pgrb2.1p00.anl"
