@@ -29,53 +29,70 @@ scriptname=$(basename "${BASH_SOURCE[0]}")
 echo "Begin ${scriptname} at $(date -u)" || true
 export PS4='+ $(basename ${BASH_SOURCE})[${LINENO}]'
 
-host=$(hostname) || true
-
 usage() {
   set +x
   echo
   echo "Usage: $0 -t <target> -h"
   echo
-  echo "  -t  target/machine script is running on    DEFAULT: ${host}"
-  echo "  -h  display this message and quit"
+  echo    "  -h  display this message and quit"
+  echo -n "  -t  target/machine script is running"
+  if [[ "${TARGET+x}" ]]; then
+    echo "on DEFAULT: ${TARGET}"
+  fi  
   echo
   exit 1
 }
 
+
+
 #########################################################################
 #  Set up runtime environment varibles for accounts on supproted machines
 #########################################################################
-TARGET=$(hostname) || true
-export TARGET
-while getopts "t:h" opt; do
-  case ${opt} in
-    t)
-      TARGET=${OPTARG}
-      ;;
-    h|\?|:)
-      usage
+
+source ${pwd}/../ush/detect_machine.sh
+if [[ $MACHINE_ID != "UNKNOWN" ]]; then
+   TARGET="${MACHINE_ID}"
+else 
+
+  export TARGET
+  while getopts "t:h" opt; do
+    case ${opt} in
+      t)
+        TARGET=${OPTARG}
+        ;;
+      h|\?|:)
+        usage
+        ;;
+      *)
+        echo "Unrecognized option" 
+        usage
+    esac
+  done
+
+  if [[ -z "${TARGET+x}" ]]; then
+    usage
+  fi  
+
+  case ${TARGET} in
+    hera | orion)
+      echo "Running Automated Testing on ${TARGET}"
+      source "${pwd}/${TARGET}.sh"
       ;;
     *)
-      echo "Unrecognized option" 
-      usage
+      echo "Unsupported platform. Exiting with error."
+      exit 1
+      ;;
   esac
-done
 
-case ${TARGET} in
-  hera | orion)
-    echo "Running Automated Testing on ${TARGET}"
-    source "${pwd}/${TARGET}.sh"
-    ;;
-  *)
-    echo "Unsupported platform. Exiting with error."
-    exit 1
-    ;;
-esac
+fi  
 
 ############################################################
 # query repo and get list of open PRs with tags {machine}-CI
 ############################################################
 CI_HOST="${TARGET^}"
+
+exit
+
 pr_list_file="open_pr_list"
 rm -f "${pr_list_file}"
 list=$(${GH} pr list --repo "${repo_url}" --label "${CI_HOST}-CI" --state "open")
