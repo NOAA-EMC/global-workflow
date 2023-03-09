@@ -8,7 +8,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "sfcanl" -c "base sfcanl"
 # Set variables used in the script
 ##############################################
 export CDUMP="${RUN/enkf}"
-export CDATE="${PDY}${cyc}"
 if [[ ${RUN_ENVIR} = "nco" ]]; then
     export ROTDIR=${COMROOT:?}/${NET}/${envir}
 fi
@@ -17,7 +16,6 @@ fi
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
-
 DATE_PREV=$(${NDATE} -${assim_freq} ${CDATE})
 PDY_PREV=${DATE_PREV:0:8}
 cyc_PREV=${DATE_PREV:8:2}
@@ -33,8 +31,8 @@ RUN=${GDUMP} YMD=${PDY_PREV} HH=${cyc_PREV} generate_com -rx \
     COM_OBS_PREV:COM_OBS_TMPL \
     COM_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL
 
-declare -rx COMIN="${COM_ATMOS_ANALYSIS}"
-declare -rx COMOUT="${COM_ATMOS_ANALYSIS}"
+# Used by global_cycle.sh
+declare -rx CDATE="${PDY}${cyc}"
 
 ###############################################################
 # Run relevant script
