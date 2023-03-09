@@ -302,6 +302,9 @@ while [ "${GDATE}" -le "${GDATEEND}" ]; do
     gcyc=$(echo "${GDATE}" | cut -c9-10)
     COMIN="${ROTDIR}/${CDUMP}.${gPDY}/${gcyc}/atmos"
     COMINwave="${ROTDIR}/${CDUMP}.${gPDY}/${gcyc}/wave"
+    COMINocean="${ROTDIR}/${CDUMP}.${gPDY}/${gcyc}/ocean"
+    COMINice="${ROTDIR}/${CDUMP}.${gPDY}/${gcyc}/ice"
+    COMINmed="${ROTDIR}/${CDUMP}.${gPDY}/${gcyc}/med"
     COMINrtofs="${ROTDIR}/rtofs.${gPDY}"
     if [ -d "${COMIN}" ]; then
         rocotolog="${EXPDIR}/logs/${GDATE}.log"
@@ -312,6 +315,9 @@ while [ "${GDATE}" -le "${GDATEEND}" ]; do
             set_strict
             if [ "${rc}" -eq 0 ]; then
                 if [ -d "${COMINwave}" ]; then rm -rf "${COMINwave}" ; fi
+                if [ -d "${COMINocean}" ]; then rm -rf "${COMINocean}" ; fi
+                if [ -d "${COMINice}" ]; then rm -rf "${COMINice}" ; fi
+                if [ -d "${COMINmed}" ]; then rm -rf "${COMINmed}" ; fi
                 if [ -d "${COMINrtofs}" ] && [ "${GDATE}" -lt "${RTOFS_DATE}" ]; then rm -rf "${COMINrtofs}" ; fi
                 if [ "${CDUMP}" != "gdas" ] || [ "${DO_GLDAS}" = "NO" ] || [ "${GDATE}" -lt "${GLDAS_DATE}" ]; then
                     if [ "${CDUMP}" = "gdas" ]; then
@@ -346,6 +352,18 @@ while [ "${GDATE}" -le "${GDATEEND}" ]; do
 
     if [ -d "${COMINwave}" ]; then
         [[ ! "$(ls -A "${COMINwave}")" ]] && rm -rf "${COMINwave}"
+    fi
+
+    if [ -d "${COMINocean}" ]; then
+        [[ ! "$(ls -A "${COMINocean}")" ]] && rm -rf "${COMINocean}"
+    fi
+
+    if [ -d "${COMINice}" ]; then
+        [[ ! "$(ls -A "${COMINice}")" ]] && rm -rf "${COMINice}"
+    fi
+
+    if [ -d "${COMINmed}" ]; then
+        [[ ! "$(ls -A "${COMINmed}")" ]] && rm -rf "${COMINmed}"
     fi
 
     # Remove mdl gfsmos directory
