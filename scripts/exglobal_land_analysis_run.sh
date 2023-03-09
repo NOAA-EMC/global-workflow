@@ -10,6 +10,7 @@
 #  Utilities
 CASE=${CASE:-C96}
 RES=$(echo "${CASE}" | cut -c 2-)
+export gdasapp_dir=${gdasapp_dir:-"${HOMEgfs}/sorc/gdas.cd/"}
 export CREATEENS=${CREATEENS:-"${HOMEgfs}/sorc/gdas.cd/ush/land/letkf_create_ens.py"}
 export IMS_IODA=${IMS_IODA:-"${HOMEgfs}/sorc/gdas.cd/build/bin/imsfv3_scf2ioda.py"}
 export CALCFIMS=${CALCFIMS:-"${HOMEgfs}/sorc/gdas.cd/build/bin/calcfIMS.exe"}
@@ -74,7 +75,7 @@ cat >> fims.nml << EOF
   idim=${RES}, jdim=${RES},
   otype=${TSTUB},
   jdate=${YYYY}${DOY},
-  yyyymmddhh=${PDY}.18,
+  yyyymmddhh=${PDY}.${cyc},
   imsformat=2,
   imsversion=1.3,
   IMS_OBS_PATH="${WORKDIR}/",
@@ -90,13 +91,27 @@ EOF
     fi
   done
 
+  # stage observations
+  cp "${COMIN_OBS}/gdas.t${cyc}z.ims${YYYY}${DOY}_4km_v1.3.nc" "${WORKDIR}/ims${YYYY}${DOY}_4km_v1.3.nc"
+  cp "${COMIN_OBS}/gdas.t${cyc}z.IMS4km_to_FV3_mapping.oro_C${RES}.mx100.nc" "${WORKDIR}/IMS4km_to_FV3_mapping.C${RES}_oro_data.nc"
+
   ulimit -Ss unlimited
   ${CALCFIMS}
 
-  export PYTHONPATH=${PYTHONPATH}:${project_source_dir}/build/lib/python${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR}/pyioda/
+##  export PYTHONPATH=${PYTHONPATH}:${gdasapp_dir}/build/lib/python${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR}/pyioda/
+  export PYTHONPATH=${PYTHONPATH}:${gdasapp_dir}/iodaconv/src/:${gdasapp_dir}/build/lib/python3.7/pyioda/
 
+  echo "PYTHONPATH: ${PYTHONPATH}"
   echo 'do_landDA: calling ioda converter'
   python "${IMS_IODA}" -i "IMSscf.${PDY}.${TSTUB}.nc" -o "ioda.IMSscf.${PDY}.${TSTUB}.nc"
+
+  rc=$?
+  exit $rc
+
+  if [[ -e "ioda.IMSscf.${PDY}.C${RES}_oro_data.nc"  ]]; then
+    cp "ioda.IMSscf.${PDY}.C${RES}_oro_data.nc" "gdas.t${cyc}z.ims_snow_${PDY}${cyc}.nc4"
+  fi
+
 fi
 ################################################################################
 # run executable
