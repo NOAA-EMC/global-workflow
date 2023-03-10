@@ -90,7 +90,7 @@ esac
 # query repo and get list of open PRs with tags {machine}-CI
 ############################################################
 set -eux
-CI_HOST="${TARGET^}"
+export CI_HOST="${TARGET^}"
 pr_list_file="open_pr_list"
 rm -f "${pr_list_file}"
 list=$(${GH} pr list --repo "${repo_url}" --label "${CI_HOST}-CI" --state "open")

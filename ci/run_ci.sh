@@ -47,13 +47,11 @@ done
 
 ####################################################################
 # start output file
-current_date=$(date)
-the_hostname=$(hostname)
 {
  echo "Automated global-workflow Testing Results:"
- echo "Machine: ${TARGET}"
+ echo "Machine: ${CI_HOST}"
  echo '```'
- echo "Start: ${current_date} on ${the_hostname}"
+ echo "Start: $(date) on $(hostname)" || true
  echo "---------------------------------------------------"
 }  >> "${outfile}"
 ######################################################################
@@ -94,12 +92,12 @@ build_status=$?
 if [[ ${build_status} -eq 0 ]]; then
 {
   echo "Build:                                 *SUCCESS*"
-  echo "Build: Completed at ${current_date}"
+  echo "Build: Completed at $(date)" || true
 }  >> "${outfile}"
 else
 {
   echo "Build:                                  *FAILED*"
-  echo "Build: Failed at ${current_date}"
+  echo "Build: Failed at $(date)" || true
   echo "Build: see output at ${PWD}/log.build"
 }
   echo '```' >> "${outfile}"
