@@ -8,10 +8,10 @@ from pygw.logger import Logger, logit
 
 logger = Logger(level="error", colored_log=True)
 
-__all__ = ["Error", "msg_except_handle"]
+__all__ = ["WorkflowException", "msg_except_handle"]
 
 
-class Error(Exception):
+class WorkflowException(Exception):
     """
     Description
     -----------
@@ -35,7 +35,7 @@ class Error(Exception):
         Description
         -----------
 
-        Creates a new Error object.
+        Creates a new WorkflowException object.
 
         """
 
@@ -60,8 +60,8 @@ def msg_except_handle(err_cls: object) -> Callable:
 
     err_cls: object
 
-        A Python object containing the Error subclass to be used for
-        exception raises.
+        A Python object containing the WorkflowException subclass to
+        be used for exception raises.
 
     Parameters
     ----------
