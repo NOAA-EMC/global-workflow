@@ -177,6 +177,7 @@ if [[ ${DOIAU} = "YES" ]]; then
     # update surface restarts at the beginning of the window, if IAU
     # For now assume/hold dtfanl.nc valid at beginning of window
     for n in $(seq 1 ${ntiles}); do
+        ${NCP} ${COMIN_GES}/RESTART/${bPDY}.${bcyc}0000.sfc_data.tile${n}.nc ${COMOUT}/RESTART/${bPDY}.${bcyc}0000.sfcanl_data.tile${n}.nc
         ${NLN} ${COMIN_GES}/RESTART/${bPDY}.${bcyc}0000.sfc_data.tile${n}.nc ${DATA}/fnbgsi.00${n}
         ${NLN} ${COMOUT}/RESTART/${bPDY}.${bcyc}0000.sfcanl_data.tile${n}.nc ${DATA}/fnbgso.00${n}
         ${NLN} ${FIXfv3}/${CASE}/${CASE}_grid.tile${n}.nc                    ${DATA}/fngrid.00${n}
@@ -193,6 +194,7 @@ fi
 
 # Update surface restarts at middle of window
 for n in $(seq 1 ${ntiles}); do
+    ${NCP} ${COMIN_GES}/RESTART/${PDY}.${cyc}0000.sfc_data.tile${n}.nc ${COMOUT}/RESTART/${PDY}.${cyc}0000.sfcanl_data.tile${n}.nc
     ${NLN} ${COMIN_GES}/RESTART/${PDY}.${cyc}0000.sfc_data.tile${n}.nc ${DATA}/fnbgsi.00${n}
     ${NLN} ${COMOUT}/RESTART/${PDY}.${cyc}0000.sfcanl_data.tile${n}.nc ${DATA}/fnbgso.00${n}
     ${NLN} ${FIXfv3}/${CASE}/${CASE}_grid.tile${n}.nc                  ${DATA}/fngrid.00${n}

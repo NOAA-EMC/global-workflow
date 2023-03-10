@@ -8,7 +8,7 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "epos" -c "base epos"
 # Set variables used in the script
 ##############################################
 export CDATE=${CDATE:-${PDY}${cyc}}
-export CDUMP=${CDUMP:-${RUN:-"gdas"}}
+export CDUMP=${CDUMP:-${RUN:-"enkfgdas"}}
 export COMPONENT="atmos"
 
 
@@ -20,8 +20,8 @@ export GFS_NCIO=${GFS_NCIO:-"YES"}
 export PREFIX="${CDUMP}.t${cyc}z."
 
 # COMIN, COMOUT are used in script
-export COMIN="${ROTDIR}/enkf${CDUMP}.${PDY}/${cyc}"
-export COMOUT="${ROTDIR}/enkf${CDUMP}.${PDY}/${cyc}"
+export COMIN="${ROTDIR}/${CDUMP}.${PDY}/${cyc}"
+export COMOUT="${ROTDIR}/${CDUMP}.${PDY}/${cyc}"
 
 
 export LEVS=$((LEVS-1))

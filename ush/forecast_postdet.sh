@@ -542,7 +542,7 @@ data_out_GFS() {
 
   if [ $SEND = "YES" ]; then
     # Copy model restart files
-    if [ $CDUMP = "gdas" -a $rst_invt1 -gt 0 ]; then
+    if [[ ${CDUMP} =~ "gdas" ]] && (( rst_invt1 > 0 )); then
       cd $DATA/RESTART
       mkdir -p $memdir/RESTART
       for rst_int in $restart_interval ; do
@@ -568,7 +568,7 @@ data_out_GFS() {
           $NCP $file $memdir/RESTART/$file
         done
       fi
-    elif [ $CDUMP = "gfs" ]; then
+    elif [[ ${CDUMP} =~ "gfs" ]]; then
       $NCP $DATA/input.nml ${ROTDIR}/${RUN}.${PDY}/${cyc}/atmos/
     fi
   fi
@@ -743,8 +743,6 @@ CPL_out() {
 MOM6_postdet() {
   echo "SUB ${FUNCNAME[0]}: MOM6 after run type determination"
 
-  OCNRES=${OCNRES:-"025"}  # TODO: remove from here and lift higher
-
   # Copy MOM6 ICs
   $NLN "${ROTDIR}/${CDUMP}.${gPDY}/${gcyc}/ocean/RESTART/${PDY}.${cyc}0000.MOM.res.nc" "${DATA}/INPUT/MOM.res.nc"
   case $OCNRES in
@@ -764,7 +762,6 @@ MOM6_postdet() {
           exit 111
       fi
       $NLN "${ROTDIR}/${CDUMP}.${PDY}/${cyc}/ocean/${CDUMP}.t${cyc}z.ocninc.nc" "${DATA}/INPUT/mom6_increment.nc"
-      export ODA_INCUPD="true"
   fi
 
   # Copy MOM6 fixed files
@@ -815,7 +812,7 @@ MOM6_postdet() {
   [[ ! -d $COMOUTocean ]] && mkdir -p $COMOUTocean
 
   # Link output files
-  if [[ "${CDUMP}" = "gfs" ]]; then
+  if [[ "${CDUMP}" =~ "gfs" ]]; then
     # Link output files for CDUMP = gfs
 
     # TODO: get requirements on what files need to be written out and what these dates here are and what they mean
@@ -861,18 +858,15 @@ MOM6_postdet() {
       last_fhr=$fhr
     done
 
-  elif [[ "${CDUMP}" = "gdas" ]]; then
+  elif [[ "${CDUMP}" =~ "gdas" ]]; then
     # Link output files for CDUMP = gdas
 
-    # MOM6 does not write out the first forecast hour, so start at FHOUT
-    local fhr="${FHOUT}"
-    while [[ "${fhr}" -le "${FHMAX}" ]]; do
+    # Save MOM6 backgrounds
+    for fhr in ${OUTPUT_FH}; do
       local idatestr=$(date -d "${CDATE:0:8} ${CDATE:8:2} + ${fhr} hours" +%Y_%m_%d_%H)
-      local fhr3=$(printf %03i ${fhr})
+      local fhr3=$(printf %03i "${fhr}")
       $NLN "${COMOUTocean}/${CDUMP}.t${cyc}z.ocnf${fhr3}.nc" "${DATA}/ocn_da_${idatestr}.nc"
-      local fhr=$((fhr + FHOUT))
     done
-
   fi
 
   mkdir -p "${COMOUTocean}/RESTART"
@@ -983,9 +977,9 @@ CICE_postdet() {
   dumpfreq_n=${dumpfreq_n:-1000}  # Set this to a really large value, as cice, mom6 and cmeps restart interval is controlled by nems.configure
   dumpfreq=${dumpfreq:-"y"} #  "h","d","m" or "y" for restarts at intervals of "hours", "days", "months" or "years"
 
-  if [[ "${CDUMP}" == "gdas" ]]; then
+  if [[ "${CDUMP}" =~ "gdas" ]]; then
     cice_hist_avg=".false."   # DA needs instantaneous
-  elif [[ "${CDUMP}" == "gfs" ]]; then
+  elif [[ "${CDUMP}" =~ "gfs" ]]; then
     cice_hist_avg=".true."    # P8 wants averaged over histfreq_n
   fi
 
@@ -1025,7 +1019,7 @@ CICE_postdet() {
   [[ ! -d $COMOUTice ]] && mkdir -p $COMOUTice
   mkdir -p ${COMOUTice}/RESTART
 
-  if [[ "${CDUMP}" = "gfs" ]]; then
+  if [[ "${CDUMP}" =~ "gfs" ]]; then
     # Link output files for CDUMP = gfs
 
     # TODO: make these forecast output files consistent w/ GFS output
@@ -1057,7 +1051,7 @@ CICE_postdet() {
       last_fhr=$fhr
     done
 
-  elif [[ "${CDUMP}" = "gdas" ]]; then
+  elif [[ "${CDUMP}" =~ "gdas" ]]; then
 
     # Link CICE generated initial condition file from DATA/CICE_OUTPUT to COMOUTice
     # This can be thought of as the f000 output from the CICE model

@@ -1,5 +1,5 @@
 #
-name: linters
+name: shellnorms
 on:
   pull_request:
 

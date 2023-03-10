@@ -328,6 +328,7 @@ cat >> input.nml <<EOF
   cnvcld       = ${cnvcld:-".true."}
   imfshalcnv   = ${imfshalcnv:-"2"}
   imfdeepcnv   = ${imfdeepcnv:-"2"}
+  progsigma    = ${progsigma:-".true."} 
   ras          = ${ras:-".false."}
   cdmbgwd      = ${cdmbgwd:-"3.5,0.25"}
   prslrd0      = ${prslrd0:-"0."}
@@ -384,9 +385,9 @@ cat >> input.nml <<EOF
   frac_grid    = ${FRAC_GRID:-".true."}
   cplchm       = ${cplchm:-".false."}
   cplflx       = ${cplflx:-".false."}
-  cplice       = ${cplice-".false."} 
+  cplice       = ${cplice:-".false."} 
   cplwav       = ${cplwav:-".false."}
-  cplwav2atm   = ${cplwav2atm-".false."}
+  cplwav2atm   = ${cplwav2atm:-".false."}
 EOF
 
 # Add namelist for IAU

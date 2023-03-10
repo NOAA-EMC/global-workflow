@@ -1,4 +1,4 @@
-name: Run pytests
+name: pytests
 on: [push, pull_request]
 
 jobs:

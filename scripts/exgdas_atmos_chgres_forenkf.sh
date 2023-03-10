@@ -25,7 +25,7 @@ export FIXgsm=${FIXgsm:-$HOMEgfs/fix/am}
 
 # Base variables
 CDATE=${CDATE:-"2001010100"}
-CDUMP=${CDUMP:-"gdas"}
+CDUMP=${CDUMP:-"enkfgdas"}
 GDUMP=${GDUMP:-"gdas"}
 
 # Derived base variables
@@ -63,6 +63,7 @@ SIGLEVEL=${SIGLEVEL:-${FIXgsm}/global_hyblev.l${LEVS}.txt}
 
 # forecast files
 APREFIX=${APREFIX:-""}
+APREFIX_ENS=${APREFIX_ENS:-""}
 # at full resolution
 ATMF03=${ATMF03:-${COMOUT}/${APREFIX}atmf003.nc}
 ATMF04=${ATMF04:-${COMOUT}/${APREFIX}atmf004.nc}
@@ -79,7 +80,7 @@ ATMF06ENS=${ATMF06ENS:-${COMOUT}/${APREFIX}atmf006.ensres.nc}
 ATMF07ENS=${ATMF07ENS:-${COMOUT}/${APREFIX}atmf007.ensres.nc}
 ATMF08ENS=${ATMF08ENS:-${COMOUT}/${APREFIX}atmf008.ensres.nc}
 ATMF09ENS=${ATMF09ENS:-${COMOUT}/${APREFIX}atmf009.ensres.nc}
-ATMFCST_ENSRES=${ATMFCST_ENSRES:-${COMOUT_ENS}/mem001/atmos/${APREFIX}atmf006.nc}
+ATMFCST_ENSRES=${ATMFCST_ENSRES:-${COMOUT_ENS}/mem001/atmos/${APREFIX_ENS}atmf006.nc}
 
 # Set script / GSI control parameters
 DOHYBVAR=${DOHYBVAR:-"NO"}

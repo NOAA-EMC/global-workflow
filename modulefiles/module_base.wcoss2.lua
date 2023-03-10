@@ -3,7 +3,7 @@ Load environment to run GFS on WCOSS2
 ]])
 
 load(pathJoin("PrgEnv-intel", "8.1.0"))
-load(pathJoin("craype", "2.7.10"))
+load(pathJoin("craype", "2.7.13"))
 load(pathJoin("intel", "19.1.3.304"))
 load(pathJoin("cray-mpich", "8.1.9"))
 load(pathJoin("cray-pals", "1.0.17"))
@@ -26,7 +26,7 @@ load(pathJoin("prod_util", "2.0.9"))
 load(pathJoin("grib_util", "1.2.3"))
 load(pathJoin("bufr_dump", "1.0.0"))
 load(pathJoin("util_shared", "1.4.0"))
-load(pathJoin("crtm", "2.3.0"))
+load(pathJoin("crtm", "2.4.0"))
 load(pathJoin("g2tmpl", "1.9.1"))
 load(pathJoin("wgrib2", "2.0.7"))
 

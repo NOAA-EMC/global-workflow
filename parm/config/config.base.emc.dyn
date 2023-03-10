@@ -119,8 +119,8 @@ export RUN=${RUN:-${CDUMP:-"gfs"}}  # RUN is defined in the job-card (ecf); CDUM
 # TODO: determine where is RUN actually used in the workflow other than here
 # TODO: is it possible to replace all instances of ${CDUMP} to ${RUN} to be
 #       consistent w/ EE2?
-export COMIN_OBS=${COMIN_OBS:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/obs}
-export COMIN_GES_OBS=${COMIN_GES_OBS:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/obs}
+export COMIN_OBS=${COMIN_OBS:-${ROTDIR}/${CDUMP/enkf}.${PDY}/${cyc}/obs}
+export COMIN_GES_OBS=${COMIN_GES_OBS:-${ROTDIR}/${CDUMP/enkf}.${PDY}/${cyc}/obs}
 
 export COMINatmos=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos
 export COMOUTatmos=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos
@@ -170,7 +170,9 @@ export OPS_RES="C768" # Do not change
 export LEVS=128
 export CASE="@CASECTL@"
 export CASE_ENKF="@CASEENS@"
-case "$CASE" in
+# TODO: This should not depend on $CASE or $CASE_ENKF
+# These are the currently available grid-combinations
+case "${CASE}" in
     "C48") export OCNRES=500;;
     "C96") export OCNRES=100;;
     "C192") export OCNRES=050;;
@@ -178,7 +180,8 @@ case "$CASE" in
     "C768") export OCNRES=025;;
     *) export OCNRES=025;;
 esac
-export ICERES=$OCNRES
+export ICERES=${OCNRES}
+export waveGRD='gnh_10m aoc_9km gsh_15m'
 
 case "${APP}" in
   ATM)
@@ -215,7 +218,7 @@ case "${APP}" in
         export DO_WAVE="YES"
         export WAVE_CDUMP="both"
         export cplwav2atm=".true."
-        export confignamevarfornems="${confignamevarfornems}_wave"
+        export confignamevarfornems="${confignamevarfornems}_outerwave"
     fi
 
     source ${EXPDIR}/config.defaults.s2sw
@@ -228,10 +231,10 @@ case "${APP}" in
 esac
 
 # Surface cycle update frequency
-if [[ "${CDUMP}" == "gdas" ]] ; then
+if [[ "${CDUMP}" =~ "gdas" ]] ; then
    export FHCYC=1
    export FTSFS=10
-elif [[ "${CDUMP}" == "gfs" ]] ; then
+elif [[ "${CDUMP}" =~ "gfs" ]] ; then
    export FHCYC=24
 fi
 
