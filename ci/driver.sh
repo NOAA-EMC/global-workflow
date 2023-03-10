@@ -73,18 +73,18 @@ if [[ -z ${TARGET+x} || $1 == "-h" ]]; then
     usage
   fi  
 
-  case ${TARGET} in
-    hera | orion)
-      echo "Running Automated Testing on ${TARGET}"
-      source "${pwd}/${TARGET}.sh"
-      ;;
-    *)
-      echo "Unsupported platform. Exiting with error."
-      exit 1
-      ;;
-  esac
+fi
 
-fi  
+case ${TARGET} in
+  hera | orion)
+    echo "Running Automated Testing on ${TARGET}"
+    source "${pwd}/${TARGET}.sh"
+    ;;
+  *)
+    echo "Unsupported platform. Exiting with error."
+    exit 1
+    ;;
+esac
 
 ############################################################
 # query repo and get list of open PRs with tags {machine}-CI
@@ -119,10 +119,12 @@ for pr in ${pr_list}; do
   "${pwd}/run_ci.sh" -p "${pr}" -d "${pr_dir}" -o "${pr_dir}/output_${id}"
   ci_status=$?
   if [[ ${ci_status} -eq 0 ]]; then
-    mkdir -p "${pr_dir}/RUNTEST"
-    cd "${pr_dir}/RUNTEST"
     export RUNTEST="${pr_dir}/RUNTEST"
-    "${pr_dir}/global-workflow/ci/create_experment.py" --yaml "${pwd}/cold_96_00z.yaml"
+    mkdir -p "${RUNTEST}"
+    cd "${RUNTEST}"
+    rm -Rf *
+    export HOMEgfs="${pr_dir}/global-workflow"
+    "${pwd}/create_experment.py" --yaml "${pwd}/cold_96_00z.yaml"
     ci_status=$?
     if [[ ${ci_status} -eq 0 ]]; then
       {

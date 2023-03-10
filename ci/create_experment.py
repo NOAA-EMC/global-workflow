@@ -46,9 +46,11 @@ if __name__ == '__main__':
     mode = setup_expt_args.experment.mode
     icdir = setup_expt_args.environment.icdir
     rotdir = setup_expt_args.environment.rotdir
+    HOMEgfs = setup_expt_args.environment.HOMEgfs
 
-    setup_expt_cmd = Executable(Path.absolute(Path.joinpath(_top,'workflow','setup_expt.py')))
+    setup_expt_cmd = Executable(Path.absolute(Path.joinpath(Path(HOMEgfs),'workflow','setup_expt.py')))
     setup_expt_cmd.add_default_arg(mode)
+
     for conf,value in setup_expt_args.arguments.items():
          setup_expt_cmd.add_default_arg(f'--{conf}')
          setup_expt_cmd.add_default_arg(str(value))
@@ -65,7 +67,7 @@ if __name__ == '__main__':
     logger.info(f'run command: {link_ic_cmd.command}')
     link_ic_cmd(output='stdout_linkic', error='stderr_linkic')
 
-    setup_xml_cmd = Executable(Path.absolute(Path.joinpath(_top,'workflow','setup_xml.py')))
+    setup_xml_cmd = Executable(Path.absolute(Path.joinpath(Path(HOMEgfs),'workflow','setup_xml.py')))
     expdir = Path.absolute(Path.joinpath(Path(setup_expt_args.arguments.expdir),Path(setup_expt_args.arguments.pslot)))
     setup_xml_cmd.add_default_arg(str(expdir))
 
