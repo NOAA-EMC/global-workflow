@@ -71,3 +71,4 @@ if __name__ == '__main__':
 
     logger.info(f'run command: {setup_xml_cmd.command}')
     setup_xml_cmd(output='stdout_setupxml', error='stderr_setupxml')
+    
