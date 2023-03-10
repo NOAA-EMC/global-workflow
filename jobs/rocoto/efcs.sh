@@ -8,12 +8,18 @@ source "${HOMEgfs}/ush/preamble.sh"
 #status=$?
 #[[ ${status} -ne 0 ]] && exit ${status}
 
+# TODO: clean this up
+source "${HOMEgfs}/ush/detect_machine.sh"
 set +x
 module use "${HOMEgfs}/sorc/ufs_model.fd/tests"
 module load modules.ufs_model.lua
 # Workflow needs utilities from prod_util (setPDY.sh, ndate, etc.)
 module load prod_util
+if [[ "${MACHINE_ID}" = "wcoss2" ]]; then
+  module load cray-pals
+fi
 module list
+unset MACHINE_ID
 set_trace
 
 export job="efcs"
