@@ -49,6 +49,7 @@ if __name__ == '__main__':
     HOMEgfs = setup_expt_args.environment.HOMEgfs
 
     setup_expt_cmd = Executable(Path.absolute(Path.joinpath(Path(HOMEgfs),'workflow','setup_expt.py')))
+    setup_expt_cmd.add_default_env('HOMEgfs', HOMEgfs)
     setup_expt_cmd.add_default_arg(mode)
 
     for conf,value in setup_expt_args.arguments.items():
@@ -68,6 +69,7 @@ if __name__ == '__main__':
     link_ic_cmd(output='stdout_linkic', error='stderr_linkic')
 
     setup_xml_cmd = Executable(Path.absolute(Path.joinpath(Path(HOMEgfs),'workflow','setup_xml.py')))
+    setup_xml_cmd.add_default_env('HOMEgfs', HOMEgfs)
     expdir = Path.absolute(Path.joinpath(Path(setup_expt_args.arguments.expdir),Path(setup_expt_args.arguments.pslot)))
     setup_xml_cmd.add_default_arg(str(expdir))
 
