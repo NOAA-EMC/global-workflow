@@ -1,11 +1,11 @@
 import pytest
 
-from pygw.exceptions import Error
+from pygw.exceptions import WorkflowException
 
 # ----
 
 
-class TestErrors(Error):
+class TestError(WorkflowException):
     """
     Description
     -----------
@@ -30,6 +30,6 @@ def test_errors() -> None:
     # Raise the base-class exception.
     with pytest.raises(Exception):
         msg = "Testing exception raise."
-        raise TestErrors(msg=msg)
+        raise TestError(msg=msg)
 
     assert True
