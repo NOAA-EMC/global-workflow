@@ -13,41 +13,12 @@ echo "BEGIN: config.init"
 
 export UFS_DIR=${HOMEgfs}/sorc/ufs_utils.fd
 export GDASINIT_DIR=${UFS_DIR}/util/gdas_init
+export GDAS_INIT_DIR=${UFS_DIR}/util/gdas_init
 
 export CRES_HIRES=$CASE
 export CRES_ENKF=$CASE_ENKF
-export FRAC_ORO="YES"
+export FRAC_ORO="yes"
 
-if [[ ${CDUMP} == 'gdas'  ||  ${CDUMP} == 'gfs'  ||  ${CDUMP} == 'hires' ]] ; then
-  CTAR=${CRES_HIRES}
-else
-  CTAR=${CRES_ENKF}
-fi
-
-if [ "${FRAC_ORO:-"NO"}" = "YES" ]; then
-  if  [ "${CTAR}" = "C48" ]; then
-    OCNRES='400'
-  elif [ "${CTAR}" = "C96" ]; then
-    OCNRES='100'
-  elif [ "${CTAR}" = "C192" ]; then
-    OCNRES='050'
-  elif [ "${CTAR}" = "C384" ]; then
-    OCNRES='025'
-  elif [ "${CTAR}" = "C768" ]; then
-    OCNRES='025'
-  elif [ "${CTAR}" = "C1152" ]; then
-    OCNRES='025'
-  fi
-  OROD="${CTAR}.mx${OCNRES}_frac"
-  ORON="oro_${CTAR}.mx${OCNRES}"
-else
-  OROD="${CTAR}"
-  ORON="${CTAR}_oro_data"
-fi
-
-export ORO_DIR=${OROD}
-export ORO_NAME=${ORON}
-export CTAR=${CTAR}
 export RUNICSH=${GDASINIT_DIR}/run_v16.chgres.sh
 if [ "${RETRO:-"NO"}" = "YES" ] || [ "$CDUMP" = "gdas" ]; then
   export RUNICSH=${GDASINIT_DIR}/run_v16retro.chgres.sh
