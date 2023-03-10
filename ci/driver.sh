@@ -127,7 +127,7 @@ for pr in ${pr_list}; do
     if [[ ${ci_status} -eq 0 ]]; then
       {
         echo "Created experment"
-        echo "Experment setup: Completed at $(date)"
+        echo "Experment setup: Completed at $(date)" || true
       } >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
       "${GH}" pr comment "${pr}" --repo "${repo_url}" --body-file "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
       "${GH}" pr edit --repo "${repo_url}" "${pr}" --remove-label "${CI_HOST}-Running" --add-label "${CI_HOST}-Passed"
