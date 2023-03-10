@@ -11,4 +11,3 @@ export repo_url="https://github.com/TerrenceMcGuinness-NOAA/global-workflow.git"
 export NOSCRUB=/scratch1/NCEPDEV/global/Terry.McGuinness/GFS_CI_ROOT/PR/1
 export PTMP=${NOSCRUB}/global-workflow
 export SAVE=${NOSCRUB}
-
