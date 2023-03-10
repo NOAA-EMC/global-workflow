@@ -5,11 +5,14 @@
 
 echo "BEGIN: config.landanl"
 
+obs_list_name=gdas_land_adpsfc_only.yaml
+if [[ "${cyc}" == "18" ]]; then
+    obs_list_name=gdas_land_prototype.yaml
+fi
+
 export OBS_YAML_DIR=${HOMEgfs}/sorc/gdas.cd/parm/land/obs/config/
-export OBS_LIST=${HOMEgfs}/sorc/gdas.cd/parm/land/obs/lists/gdas_land_prototype.yaml
+export OBS_LIST=${HOMEgfs}/sorc/gdas.cd/parm/land/obs/lists/${obs_list_name}
 export LANDVARYAML=${HOMEgfs}/sorc/gdas.cd/parm/land/letkfoi/letkfoi.yaml
-##export STATICB_TYPE="identity"
-##export BERROR_YAML=${HOMEgfs}/sorc/gdas.cd/parm/atm/berror/staticb_${STATICB_TYPE}.yaml
 export FV3JEDI_FIX=${HOMEgfs}/fix/gdas
 
 export io_layout_x=@IO_LAYOUT_X@
