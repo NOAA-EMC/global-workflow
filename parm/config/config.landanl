@@ -6,7 +6,7 @@
 echo "BEGIN: config.landanl"
 
 export OBS_YAML_DIR=${HOMEgfs}/sorc/gdas.cd/parm/land/obs/config/
-export OBS_LIST=${HOMEgfs}/sorc/gdas.cd/parm/land/obs/lists/gdas_land_prototype.yaml
+export OBS_LIST=${HOMEgfs}/sorc/gdas.cd/parm/land/obs/lists/gdas_t${cyc}z_land_prototype.yaml
 export LANDVARYAML=${HOMEgfs}/sorc/gdas.cd/parm/land/letkfoi/letkfoi.yaml
 ##export STATICB_TYPE="identity"
 ##export BERROR_YAML=${HOMEgfs}/sorc/gdas.cd/parm/atm/berror/staticb_${STATICB_TYPE}.yaml

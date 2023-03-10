@@ -105,9 +105,6 @@ EOF
   echo 'do_landDA: calling ioda converter'
   python "${IMS_IODA}" -i "IMSscf.${PDY}.${TSTUB}.nc" -o "ioda.IMSscf.${PDY}.${TSTUB}.nc"
 
-  rc=$?
-  exit $rc
-
   if [[ -e "ioda.IMSscf.${PDY}.C${RES}_oro_data.nc"  ]]; then
     cp "ioda.IMSscf.${PDY}.C${RES}_oro_data.nc" "gdas.t${cyc}z.ims_snow_${PDY}${cyc}.nc4"
   fi
