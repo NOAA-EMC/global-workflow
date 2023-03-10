@@ -43,6 +43,7 @@ export INLINE_POST=${WRITE_DOPOST:-".false."}
 
 # Construct COM variables from templates
 YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_RESTART COM_ATMOS_ANALYSIS COM_ATMOS_HISTORY COM_ATMOS_MASTER
+YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_GOES COM_ATMOS_WAFS
 for RES in '0p25' '0p50' '1p00'; do
   # After the post refactor, we likely won't need these separate envvars
   prod_dir="COM_ATMOS_GRIB_${RES}"
