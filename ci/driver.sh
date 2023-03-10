@@ -35,7 +35,7 @@ usage() {
   echo
   echo    "  -h  display this message and quit"
   echo -n "  -t  target/machine script is running"
-  if [[ "${TARGET+x}" ]]; then
+  if [[ -n "${TARGET+x}" ]]; then
     echo "on DEFAULT: ${TARGET}"
   fi  
   echo
@@ -48,8 +48,8 @@ usage() {
 #  Set up runtime environment varibles for accounts on supproted machines
 #########################################################################
 
-source ${pwd}/../ush/detect_machine.sh
-if [[ $MACHINE_ID != "UNKNOWN" ]]; then
+source "${pwd}/../ush/detect_machine.sh"
+if [[ "${MACHINE_ID}" != "UNKNOWN" ]]; then
    TARGET="${MACHINE_ID}"
 fi   
 
