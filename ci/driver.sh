@@ -125,8 +125,10 @@ for pr in ${pr_list}; do
     "${pr_dir}/global-workflow/ci/create_experment.py" --yaml "${pwd}/cold_96_00z.yaml"
     ci_status=$?
     if [[ ${ci_status} -eq 0 ]]; then
-      echo "Created experment                         *SUCCESS*" >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
-      echo "Experment setup: Completed at $(date)" >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
+      {
+        echo "Created experment"
+        echo "Experment setup: Completed at $(date)"
+      } >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
       "${GH}" pr comment "${pr}" --repo "${repo_url}" --body-file "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
       "${GH}" pr edit --repo "${repo_url}" "${pr}" --remove-label "${CI_HOST}-Running" --add-label "${CI_HOST}-Passed"
     else
