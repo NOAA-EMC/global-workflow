@@ -122,7 +122,7 @@ for pr in ${pr_list}; do
     export RUNTEST="${pr_dir}/RUNTEST"
     mkdir -p "${RUNTEST}"
     cd "${RUNTEST}"
-    rm -Rf *
+    rm -Rf ./*
     export HOMEgfs="${pr_dir}/global-workflow"
     "${pwd}/create_experment.py" --yaml "${pwd}/cold_96_00z.yaml"
     ci_status=$?
