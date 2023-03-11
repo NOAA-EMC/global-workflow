@@ -220,7 +220,7 @@ elif [[ "${step}" = "landanlinit" ]]; then
    declare -x npe_${step}=1
    declare -x ${step}=1
    npe_node_landanlinit=$(echo "${npe_node_max} / ${nth_landanlinit}" | bc)
-   declare -x npe_node_${step}
+   export npe_node_landanlinit
    declare -x memory_${step}="3072M"
 
 elif [[ "${step}" = "landanlrun" ]]; then
@@ -248,13 +248,13 @@ elif [[ "${step}" = "landanlrun" ]]; then
 
    declare -x wtime_${step}="00:30:00"
    npe_landanlrun=$(echo "${layout_x} * ${layout_y} * 6" | bc)
-   declare -x npe_${step}
+   export npe_landanlrun
    npe_landanlrun_gfs=$(echo "${layout_x} * ${layout_y} * 6" | bc)
-   declare -x npe_${step}_gfs
+   export npe_landanlrun_gfs
    declare -x nth_${step}=1
    declare -x nth_${step}_gfs=1
    npe_node_landanlrun=$(echo "${npe_node_max} / ${nth_landanlrun}" | bc)
-   declare -x npe_node_${step}
+   export npe_node_landanlrun
    export is_exclusive=True
 
 elif [[ "${step}" = "landanlfinal" ]]; then
@@ -263,7 +263,7 @@ elif [[ "${step}" = "landanlfinal" ]]; then
    declare -x npe_${step}=1
    declare -x nth_${step}=1
    npe_node_landanlfinal=$(echo "${npe_node_max} / ${nth_landanlfinal}" | bc)
-   declare -x npe_node_${step}
+   export npe_node_landanlfinal
    declare -x memory_${step}="3072M"
 
 elif [[ "${step}" = "aeroanlinit" ]]; then
