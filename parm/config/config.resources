@@ -216,12 +216,12 @@ elif [[ "${step}" = "landanlinit" ]]; then
    export layout_x
    export layout_y
 
-   export wtime_landanlinit="00:10:00"
-   export npe_landanlinit=1
-   export nth_landanlinit=1
-   npe_node_landanlinit=$(echo "${npe_node_max} / ${nth_landanlinit}" | bc)
-   export npe_node_landanlinit
-   export memory_landanlinit="3072M"
+   declare -x wtime_${step}="00:10:00"
+   declare -x npe_${step}=1
+   declare -x ${step}=1
+   npe_node_${step}=$(echo "${npe_node_max} / ${nth_${step}}" | bc)
+   declare -x npe_node_${step}
+   declare -x memory_${step}="3072M"
 
 elif [[ "${step}" = "landanlrun" ]]; then
 
@@ -246,25 +246,25 @@ elif [[ "${step}" = "landanlrun" ]]; then
    export layout_x
    export layout_y
 
-   export wtime_landanlrun="00:30:00"
-   npe_landanlrun=$(echo "${layout_x} * ${layout_y} * 6" | bc)
-   export npe_landanlrun
-   npe_landanlrun_gfs=$(echo "${layout_x} * ${layout_y} * 6" | bc)
-   export npe_landanlrun_gfs
-   export nth_landanlrun=1
-   export nth_landanlrun_gfs=1
-   npe_node_landanlrun=$(echo "${npe_node_max} / ${nth_landanlrun}" | bc)
-   export npe_node_landanlrun
+   declare -x wtime_${step}="00:30:00"
+   npe_${step}=$(echo "${layout_x} * ${layout_y} * 6" | bc)
+   declare -x npe_${step}
+   npe_${step}_gfs=$(echo "${layout_x} * ${layout_y} * 6" | bc)
+   declare -x npe_${step}_gfs
+   declare -x nth_${step}=1
+   declare -x nth_${step}_gfs=1
+   npe_node_${step}=$(echo "${npe_node_max} / ${nth_${step}}" | bc)
+   declare -x npe_node_${step}
    export is_exclusive=True
 
 elif [[ "${step}" = "landanlfinal" ]]; then
 
-   export wtime_landanlfinal="00:10:00"
-   export npe_landanlfinal=1
-   export nth_landanlfinal=1
-   npe_node_landanlfinal=$(echo "${npe_node_max} / ${nth_landanlfinal}" | bc)
-   export npe_node_landanlfinal
-   export memory_landanlfinal="3072M"
+   declare -x wtime_${step}="00:10:00"
+   declare -x npe_${step}=1
+   declare -x nth_${step}=1
+   npe_node_${step}=$(echo "${npe_node_max} / ${nth_${step}}" | bc)
+   declare -x npe_node_${step}
+   declare -x memory_${step}="3072M"
 
 elif [[ "${step}" = "aeroanlinit" ]]; then
 
