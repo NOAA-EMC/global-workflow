@@ -257,10 +257,10 @@ export gfs_cyc=@gfs_cyc@ # 0: no GFS cycle, 1: 00Z only, 2: 00Z and 12Z only, 4:
 # GFS output and frequency
 export FHMIN_GFS=0
 
-export FHMAX_GFS_00=${FHMAX_GFS_00:-384}
-export FHMAX_GFS_06=${FHMAX_GFS_06:-384}
-export FHMAX_GFS_12=${FHMAX_GFS_12:-384}
-export FHMAX_GFS_18=${FHMAX_GFS_18:-384}
+export FHMAX_GFS_00=${FHMAX_GFS_00:-120}
+export FHMAX_GFS_06=${FHMAX_GFS_06:-120}
+export FHMAX_GFS_12=${FHMAX_GFS_12:-120}
+export FHMAX_GFS_18=${FHMAX_GFS_18:-120}
 export FHMAX_GFS=$(eval echo \${FHMAX_GFS_${cyc}})
 
 export FHOUT_GFS=${FHOUT_GFS:-3}
