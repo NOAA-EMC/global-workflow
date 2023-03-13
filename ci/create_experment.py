@@ -10,6 +10,7 @@ ${HOMEgfs}/workflow/setup_xml.py
 '''
 
 import os, sys, socket
+import glob
 from pathlib import Path
 
 from pygw.yaml_file import YAMLFile
@@ -52,8 +53,8 @@ if __name__ == '__main__':
 
     setup_expt_args = YAMLFile(path=user_inputs.yaml)
 
-    icdir = setup_expt_args.environment.icdir
-    rotdir = setup_expt_args.environment.rotdir
+    icdir = glob.glob(str(Path.absolute(Path(setup_expt_args.environment.icdir)))+"/*")
+    rotdir = str(Path.absolute(Path(setup_expt_args.environment.rotdir)))
     HOMEgfs = setup_expt_args.environment.HOMEgfs
 
     mode = setup_expt_args.experment.mode
@@ -65,20 +66,22 @@ if __name__ == '__main__':
          setup_expt_cmd.add_default_arg(f'--{conf}')
          setup_expt_cmd.add_default_arg(str(value))
 
-    logger.info(f'run command: {setup_expt_cmd.command}')
+    logger.info(f'Run command: {setup_expt_cmd.command}')
     setup_expt_cmd(output='stdout_expt', error='stderr_expt') 
 
     # Make symlinks of initial conitions into ROTDIR
-    link_ic_cmd = Executable('cp')
-    for cmds in f'-as {os.path.abspath(os.path.join(icdir,'/'))}* {os.path.abspath(rotdir)}'.split():
-        link_ic_cmd.add_default_arg(cmds)
-    logger.info(f'run command: {link_ic_cmd.command}')
-    link_ic_cmd(output='stdout_linkic', error='stderr_linkic')
+    for folder in icdir:
+        link_ic_cmd = Executable('cp')
+        link_ic_cmd.add_default_arg('-as')
+        link_ic_cmd.add_default_arg(folder)
+        link_ic_cmd.add_default_arg(rotdir)
+        logger.info(f'Run command: {link_ic_cmd.command}')
+        link_ic_cmd()
 
     setup_xml_cmd = Executable(Path.absolute(Path.joinpath(Path(HOMEgfs),'workflow','setup_xml.py')))
     expdir = Path.absolute(Path.joinpath(Path(setup_expt_args.arguments.expdir),Path(setup_expt_args.arguments.pslot)))
     setup_xml_cmd.add_default_arg(str(expdir))
 
-    logger.info(f'run command: {setup_xml_cmd.command}')
+    logger.info(f'Run command: {setup_xml_cmd.command}')
     setup_xml_cmd(output='stdout_setupxml', error='stderr_setupxml')
 

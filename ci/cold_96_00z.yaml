@@ -1,5 +1,5 @@
 environment:
-  icdir: /scratch1/NCEPDEV/global/glopara/data/ICSDIR/C96C48/
+  icdir: /scratch1/NCEPDEV/global/glopara/data/ICSDIR/C96C48
   rotdir: ${RUNTEST}/cold_96_00z
   HOMEgfs: ${HOMEGFS}   #TODO - currenlty using the env var ${HOMEgfs}
                         #cause XML file to have HOMEgfs set to None 
