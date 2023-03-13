@@ -399,6 +399,52 @@ if [[ ${type} = "gdas" ]]; then
 
   fi
 
+  #..................
+  if [[ ${DO_OCN} = "YES" ]]; then
+
+    rm -rf gdasocean.txt
+    touch gdasocean.txt
+    rm -rf gdasocean_restart.txt
+    touch gdasocean_restart.txt
+
+    dirpath="gdas.${PDY}/${cyc}/ocean/"
+    dirname="./${dirpath}"
+
+    head="gdas.t${cyc}z."
+
+    #...........................
+    echo "${dirname}/${head}*             " >>gdasocean.txt
+    echo "${dirname}/MOM_input            " >>gdasocean.txt
+
+    echo "${dirname}/RESTART/*            " >>gdasocean_restart.txt
+
+    dirpath="gdas.${PDY}/${cyc}/med/"
+    dirname="./${dirpath}"
+
+    echo "${dirname}/RESTART/*            " >>gdasocean_restart.txt
+
+  fi
+
+  if [[ ${DO_ICE} = "YES" ]]; then
+
+    rm -rf gdasice.txt
+    touch gdasice.txt
+    rm -rf gdasice_restart.txt
+    touch gdasice_restart.txt
+
+    dirpath="gdas.${PDY}/${cyc}/ice/"
+    dirname="./${dirpath}"
+
+    head="gdas.t${cyc}z."
+
+    #...........................
+    echo "${dirname}/${head}*             " >>gdasice.txt
+    echo "${dirname}/ice_in               " >>gdasice.txt
+
+    echo "${dirname}/RESTART/*            " >>gdasice_restart.txt
+
+ fi
+
 
 #-----------------------------------------------------
 fi   ##end of gdas

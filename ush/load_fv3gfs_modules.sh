@@ -40,6 +40,8 @@ else
   echo WARNING: UNKNOWN PLATFORM
 fi
 
+module list
+
 # Restore stack soft limit:
 ulimit -S -s "$ulimit_s"
 unset ulimit_s
