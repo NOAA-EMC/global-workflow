@@ -238,8 +238,8 @@ FV3_GFS_predet(){
     sCDATE=$($NDATE -3 $CDATE)
     sPDY=$(echo $sCDATE | cut -c1-8)
     scyc=$(echo $sCDATE | cut -c9-10)
-    tPDY=${PDY_PREV}
-    tcyc=${cyc_PREV}
+    tPDY=${gPDY}
+    tcyc=${gcyc}
   else
     sCDATE=$CDATE
     sPDY=$PDY

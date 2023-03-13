@@ -14,19 +14,19 @@ export CDUMP=${RUN/"enkf"}
 # Begin JOB SPECIFIC work
 ##############################################
 
-DATE_PREV=$(${NDATE} -${assim_freq} ${CDATE})
-export PDY_PREV=${DATE_PREV:0:8}
-export cyc_PREV=${DATE_PREV:8:2}
+GDATE=$(${NDATE} -${assim_freq} ${CDATE})
+export gPDY=${GDATE:0:8}
+export gcyc=${GDATE:8:2}
 export GDUMP="gdas"
 export GDUMP_ENS="enkf${GDUMP}"
 
 export APREFIX="${RUN}.t${cyc}z."
-export GPREFIX="${GDUMP_ENS}.t${cyc_PREV}z."
+export GPREFIX="${GDUMP_ENS}.t${gcyc}z."
 
 MEMDIR="ensstat" YMD=${PDY} HH=${cyc} generate_com -rx \
   COM_ATMOS_ANALYSIS_STAT:COM_ATMOS_ANALYSIS_TMPL
 
-MEMDIR="ensstat" YMD=${PDY_PREV} HH=${cyc_PREV} generate_com -rx \
+MEMDIR="ensstat" YMD=${gPDY} HH=${gcyc} generate_com -rx \
   COM_ATMOS_HISTORY_STAT_PREV:COM_ATMOS_HISTORY_TMPL
 
 

@@ -19,25 +19,25 @@ export MAKE_ACFTBUFR=${MAKE_ACFTBUFR:-"NO"}
 # Begin JOB SPECIFIC work
 ##############################################
 
-DATE_PREV=$(${NDATE} -${assim_freq} ${CDATE})
-export PDY_PREV=${DATE_PREV:0:8}
-export cyc_PREV=${DATE_PREV:8:2}
+GDATE=$(${NDATE} -${assim_freq} ${CDATE})
+export gPDY=${GDATE:0:8}
+export gcyc=${GDATE:8:2}
 export GDUMP="gdas"
 export GDUMP_ENS="enkf${GDUMP}"
 
 export OPREFIX="${CDUMP}.t${cyc}z."
-export GPREFIX="${GDUMP}.t${cyc_PREV}z."
+export GPREFIX="${GDUMP}.t${gcyc}z."
 export APREFIX="${CDUMP}.t${cyc}z."
-export GPREFIX_ENS="${GDUMP_ENS}.t${cyc_PREV}z."
+export GPREFIX_ENS="${GDUMP_ENS}.t${gcyc}z."
 
 # Generate COM variables from templates
 YMD=${PDY} HH=${cyc} generate_com -rx COM_OBS COM_ATMOS_ANALYSIS
 
-RUN=${GDUMP} YMD=${PDY_PREV} HH=${cyc_PREV} generate_com -rx \
+RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} generate_com -rx \
     COM_ATMOS_ANALYSIS_PREV:COM_ATMOS_ANALYSIS_TMPL \
     COM_ATMOS_HISTORY_PREV:COM_ATMOS_HISTORY_TMPL
 
-MEMDIR='ensstat' RUN=${GDUMP_ENS} YMD=${PDY_PREV} HH=${cyc_PREV} generate_com -rx \
+MEMDIR='ensstat' RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} generate_com -rx \
     COM_ATMOS_HISTORY_ENS_PREV:COM_ATMOS_HISTORY_TMPL
 
 mkdir -m 775 -p "${COM_ATMOS_ANALYSIS}"

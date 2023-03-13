@@ -26,16 +26,16 @@ status=$?
 ###############################################################
 # Set script and dependency variables
 
-DATE_PREV=$(${NDATE} -${assim_freq} "${PDY}${cyc}")
-PDY_PREV=${DATE_PREV:0:8}
-cyc_PREV=${DATE_PREV:8:2}
+GDATE=$(${NDATE} -${assim_freq} "${PDY}${cyc}")
+gPDY=${GDATE:0:8}
+gcyc=${GDATE:8:2}
 GDUMP="gdas"
 
 export OPREFIX="${CDUMP}.t${cyc}z."
 
 YMD=${PDY} HH=${cyc} DUMP=${CDUMP} generate_com -rx COM_OBS COM_OBSDMP
 
-RUN=${GDUMP} DUMP=${GDUMP} YMD=${PDY_PREV} HH=${cyc_PREV} generate_com -rx \
+RUN=${GDUMP} DUMP=${GDUMP} YMD=${gPDY} HH=${gcyc} generate_com -rx \
     COM_OBS_PREV:COM_OBS_TMPL \
     COM_OBSDMP_PREV:COM_OBSDMP_TMPL
 
@@ -50,8 +50,8 @@ if [ $ROTDIR_DUMP = "YES" ]; then
    [[ ${status} -ne 0 ]] && exit ${status}
 
    #  Ensure previous cycle gdas dumps are available (used by cycle & downstream)
-   if [[ ! -s "${COM_OBS_PREV}/${GDUMP}.t${cyc_PREV}z.updated.status.tm00.bufr_d" ]]; then
-     "${HOMEgfs}/ush/getdump.sh" "${DATE_PREV}" "${GDUMP}" "${COM_OBSDMP_PREV}" "${COM_OBS_PREV}"
+   if [[ ! -s "${COM_OBS_PREV}/${GDUMP}.t${gcyc}z.updated.status.tm00.bufr_d" ]]; then
+     "${HOMEgfs}/ush/getdump.sh" "${GDATE}" "${GDUMP}" "${COM_OBSDMP_PREV}" "${COM_OBS_PREV}"
      status=$?
      [[ ${status} -ne 0 ]] && exit ${status}
    fi

@@ -24,7 +24,7 @@ dnats=${dnats:-0}
 if [ $DOIAU = "YES" ]; then
 cat > diag_table << EOF
 FV3 Forecast
-${PDY_PREV:0:4} ${PDY_PREV:4:2} ${PDY_PREV:6:2} ${cyc_PREV} 0 0
+${gPDY:0:4} ${gPDY:4:2} ${gPDY:6:2} ${gcyc} 0 0
 EOF
 cat $DIAG_TABLE >> diag_table
 else

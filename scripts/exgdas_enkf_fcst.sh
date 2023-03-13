@@ -165,18 +165,18 @@ for imem in $(seq $ENSBEG $ENSEND); do
    generate_com -x COM_CHEM_HISTORY
 
    # Construct COM variables for previous cycle restarts
-   DATE_PREV=$(${NDATE} -"${assim_freq}" "${PDY}${cyc}")
-   PDY_PREV="${DATE_PREV:0:8}"
-   declare -x PDY_PREV
-   cyc_PREV="${DATE_PREV:8:2}"
-   declare -x cyc_PREV
+   GDATE=$(${NDATE} -"${assim_freq}" "${PDY}${cyc}")
+   gPDY="${GDATE:0:8}"
+   declare -x gPDY
+   gcyc="${GDATE:8:2}"
+   declare -x gcyc
 
    # shellcheck disable=SC2030,SC2031
    COM_ATMOS_RESTART_PREV=$({
      # Override env variables for this subshell to get correct template substitution
      RUN=${rCDUMP}
-     YMD="${PDY_PREV}"
-     HH="${cyc_PREV}"
+     YMD="${gPDY}"
+     HH="${gcyc}"
      echo "${COM_ATMOS_RESTART_TMPL}" | envsubst
    })
    declare -x COM_ATMOS_RESTART_PREV
@@ -184,8 +184,8 @@ for imem in $(seq $ENSBEG $ENSEND); do
    COM_WAVE_RESTART_PREV=$( {
      # Override env variables for this subshell to get correct template substitution
      # If we drop a separate cycle frequency, this can be merged with above
-     YMD="${PDY_PREV}"
-     HH="${cyc_PREV}"
+     YMD="${gPDY}"
+     HH="${gcyc}"
      echo "${COM_WAVE_RESTART_TMPL}" | envsubst
    })
    declare -x COM_WAVE_RESTART_PREV
