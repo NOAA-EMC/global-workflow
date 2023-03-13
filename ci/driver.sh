@@ -9,7 +9,7 @@
 #
 # This script uses GitHub CLI to check for Pull Requests with {machine}-CI tags on the
 # development branch for the global-workflow repo.  It then stages tests directories per
-# PR number and calls run_ci.sh to perform a clone and full build from $(HOMEgfs)/sorc
+# PR number and calls clone-build_ci.sh to perform a clone and full build from $(HOMEgfs)/sorc
 # of the PR. It then is ready to run a suite of regression tests with various
 # configurations with run_tests.py.
 #######################################################################################
@@ -114,9 +114,9 @@ for pr in ${pr_list}; do
   echo "Processing Pull Request #${pr}"
   pr_dir="${GFS_CI_ROOT}/PR/${pr}"
   mkdir -p "${pr_dir}"
-  # call run_ci to clone and build PR
+  # call clone-build_ci to clone and build PR
   id=$("${GH}" pr view "${pr}" --repo "${repo_url}" --json id --jq '.id')
-  "${pwd}/run_ci.sh" -p "${pr}" -d "${pr_dir}" -o "${pr_dir}/output_${id}"
+  "${pwd}/clone-build_ci.sh" -p "${pr}" -d "${pr_dir}" -o "${pr_dir}/output_${id}"
   ci_status=$?
   if [[ ${ci_status} -eq 0 ]]; then
     export RUNTEST="${pr_dir}/RUNTEST"
