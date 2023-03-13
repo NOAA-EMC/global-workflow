@@ -1,7 +1,15 @@
 #!/usr/bin/env python3
 
-import os, sys
-import socket
+'''
+Basic python script to create an experment directory on the fly from a given
+yaml file for the arguments to the two scripts below in ${HOMEgfs}/workflow
+where ${HOMEgfs} is specified within the input yaml file.
+
+${HOMEgfs}/workflow/setup_expt.py
+${HOMEgfs}/workflow/setup_xml.py
+'''
+
+import os, sys, socket
 from pathlib import Path
 
 from pygw.yaml_file import YAMLFile
@@ -37,16 +45,18 @@ if __name__ == '__main__':
 
     try:
        host = Host()
-       print( "HOST:", host.machine )
+       logger.info( f'Running on HOST:{host.machine}')
     except:
-        print(socket.gethostname(),"is not specificly supported")
+        logger.error(f'HOST:{socket.gethostname()} is not currently supported')
+        sys.exit(1)
 
     setup_expt_args = YAMLFile(path=user_inputs.yaml)
 
-    mode = setup_expt_args.experment.mode
     icdir = setup_expt_args.environment.icdir
     rotdir = setup_expt_args.environment.rotdir
     HOMEgfs = setup_expt_args.environment.HOMEgfs
+
+    mode = setup_expt_args.experment.mode
 
     setup_expt_cmd = Executable(Path.absolute(Path.joinpath(Path(HOMEgfs),'workflow','setup_expt.py')))
     setup_expt_cmd.add_default_arg(mode)
@@ -60,10 +70,8 @@ if __name__ == '__main__':
 
     # Make symlinks of initial conitions into ROTDIR
     link_ic_cmd = Executable('cp')
-    link_ic_cmd.add_default_arg('-as')
-    link_ic_cmd.add_default_arg(os.path.abspath(icdir))
-    link_ic_cmd.add_default_arg(os.path.abspath(rotdir))
-
+    for cmds in f'-as {os.path.abspath(icdir)} {os.path.abspath(rotdir)}'.split():
+        link_ic_cmd.add_default_arg(cmds)
     logger.info(f'run command: {link_ic_cmd.command}')
     link_ic_cmd(output='stdout_linkic', error='stderr_linkic')
 

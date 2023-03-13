@@ -1,15 +1,15 @@
 environment:
   icdir: /scratch1/NCEPDEV/global/glopara/data/ICSDIR/C96C48/
   rotdir: ${RUNTEST}/cold_96_00z
-  HOMEgfs: ${HOMEGFS}
-
+  HOMEgfs: ${HOMEGFS}   #TODO - currenlty using the env var ${HOMEgfs}
+                        #cause XML file to have HOMEgfs set to None 
 experment:
   mode: cycled
 
 arguments:  
-   pslot: cold_96_00z
-   app: ATM
-   resdet: 96
+   pslot: cold_96_00z  #TODO pslot must be the same as above in rotdir 
+   app: ATM            #this sould be updated when forward stringfication
+   resdet: 96          #is supported in the YAMLFile class
    resens: 48
    comrot: ${RUNTEST}
    expdir: ${RUNTEST}/expdir
