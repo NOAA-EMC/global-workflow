@@ -59,8 +59,10 @@ export COM_OCEAN_RESTART_TMPL=${COM_BASE}'/ocean/model_data/restart'
 export COM_OCEAN_INPUT_TMPL=${COM_BASE}'/ocean/model_data/input'
 export COM_OCEAN_ANALYSIS_TMPL=${COM_BASE}'/ocean/model_data/analysis'
 export COM_OCEAN_DAILY_TMPL=${COM_BASE}'/ocean/products/daily'
+export COM_OCEAN_XSECT_TMPL=${COM_BASE}'/ocean/products/xsect'
 export COM_OCEAN_GRIB_TMPL=${COM_BASE}'/ocean/products/${RES}'
 
+export COM_ICE_INPUT_TMPL=${COM_BASE}'/ice/model_data/input'
 export COM_ICE_HISTORY_TMPL=${COM_BASE}'/ice/model_data/history'
 export COM_ICE_RESTART_TMPL=${COM_BASE}'/ice/model_data/restart'
 

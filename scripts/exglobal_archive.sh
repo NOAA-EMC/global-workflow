@@ -420,7 +420,10 @@ while [ "${GDATE}" -le "${GDATEEND}" ]; do
     fi
 
     # Remove any empty directories
-    find "${ROTDIR:?}/${RUN}.${gPDY}/${gcyc}/" -empty -type d -delete
+    target_dir="${ROTDIR:?}/${RUN}.${gPDY}/${gcyc}/"
+    if [[ -d ${target_dir} ]]; then
+        find "${target_dir}" -empty -type d -delete
+    fi
 
     GDATE=$(${NDATE} +"${assim_freq}" "${GDATE}")
 done

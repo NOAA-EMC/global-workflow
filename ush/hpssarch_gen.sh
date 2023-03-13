@@ -8,9 +8,6 @@ source "${HOMEgfs}/ush/preamble.sh"
 
 type=${1:-gfs}                ##gfs, gdas, enkfgdas or enkfggfs
 
-CDATE=${CDATE:-2018010100}
-PDY=$(echo $CDATE | cut -c 1-8)
-cyc=$(echo $CDATE | cut -c 9-10)
 ARCH_GAUSSIAN=${ARCH_GAUSSIAN:-"YES"}
 ARCH_GAUSSIAN_FHMAX=${ARCH_GAUSSIAN_FHMAX:-36}
 ARCH_GAUSSIAN_FHINC=${ARCH_GAUSSIAN_FHINC:-6}
@@ -45,7 +42,7 @@ if [[ ${type} = "gfs" ]]; then
     touch gfs_netcdfb.txt
     touch gfs_flux.txt
 
-    if [ $MODE = "cycled" ]; then
+    if [[ ${MODE} = "cycled" ]]; then
       rm -f gfs_netcdfa.txt
       touch gfs_netcdfa.txt
     fi
@@ -56,31 +53,33 @@ if [[ ${type} = "gfs" ]]; then
     touch gfs_downstream.txt
   fi
 
-  dirpath="gfs.${PDY}/${cyc}/atmos/"
-  dirname="./${dirpath}"
-  obs_dirname="./gfs.${PDY}/${cyc}/obs/"
-
   head="gfs.t${cyc}z."
 
   if [[ ${ARCH_GAUSSIAN} = "YES" ]]; then
-    echo  "${dirname}${head}pgrb2b.0p25.anl                  " >>gfs_pgrb2b.txt
-    echo  "${dirname}${head}pgrb2b.0p25.anl.idx              " >>gfs_pgrb2b.txt
-    echo  "${dirname}${head}pgrb2b.1p00.anl                  " >>gfs_pgrb2b.txt
-    echo  "${dirname}${head}pgrb2b.1p00.anl.idx              " >>gfs_pgrb2b.txt
+    {
+      echo "${COM_ATMOS_GRIB_0p25}/${head}pgrb2b.0p25.anl"
+      echo "${COM_ATMOS_GRIB_0p25}/${head}pgrb2b.0p25.anl.idx"
+      echo "${COM_ATMOS_GRIB_1p00}/${head}pgrb2b.1p00.anl"
+      echo "${COM_ATMOS_GRIB_1p00}/${head}pgrb2b.1p00.anl.idx"
+    } >> gfs_pgrb2b.txt
 
-    if [ $MODE = "cycled" ]; then
-      echo  "${dirname}${head}atmanl.nc            " >>gfs_netcdfa.txt
-      echo  "${dirname}${head}sfcanl.nc            " >>gfs_netcdfa.txt
-      echo  "${dirname}${head}atmi*.nc                   " >>gfs_netcdfa.txt
-      echo  "${dirname}${head}dtfanl.nc                  " >>gfs_netcdfa.txt
-      echo  "${dirname}${head}loginc.txt                 " >>gfs_netcdfa.txt
+    if [[ ${MODE} = "cycled" ]]; then
+      {
+        echo "${COM_ATMOS_ANALYSIS}/${head}atmanl.nc"
+        echo "${COM_ATMOS_ANALYSIS}/${head}sfcanl.nc"
+        echo "${COM_ATMOS_ANALYSIS}/${head}atmi*.nc"
+        echo "${COM_ATMOS_ANALYSIS}/${head}dtfanl.nc"
+        echo "${COM_ATMOS_ANALYSIS}/${head}loginc.txt"
+      } >> gfs_netcdfa.txt
     fi
 
     fh=0
     while [ $fh -le $ARCH_GAUSSIAN_FHMAX ]; do
       fhr=$(printf %03i $fh)
-      echo  "${dirname}${head}atmf${fhr}.nc        " >>gfs_netcdfb.txt
-      echo  "${dirname}${head}sfcf${fhr}.nc        " >>gfs_netcdfb.txt
+      {
+        echo "${COM_ATMOS_HISTORY}/${head}atmf${fhr}.nc"
+        echo "${COM_ATMOS_HISTORY}/${head}sfcf${fhr}.nc"
+      } >> gfs_netcdfb.txt
       fh=$((fh+ARCH_GAUSSIAN_FHINC))
     done
   fi
@@ -88,81 +87,103 @@ if [[ ${type} = "gfs" ]]; then
   #..................
   # Exclude the gfsarch.log file, which will change during the tar operation
   #  This uses the bash extended globbing option
-  echo  "./logs/${CDATE}/gfs!(arch).log                    " >>gfsa.txt
-  echo  "${dirname}input.nml                               " >>gfsa.txt
-  if [[ ${MODE} = "cycled" ]]; then
-    echo  "${dirname}${head}gsistat                          " >>gfsa.txt
-    echo  "${obs_dirname}${head}nsstbufr                         " >>gfsa.txt
-    echo  "${obs_dirname}${head}prepbufr                         " >>gfsa.txt
-    echo  "${obs_dirname}${head}prepbufr.acft_profiles           " >>gfsa.txt
-  fi
-  echo  "${dirname}${head}pgrb2.0p25.anl                   " >>gfsa.txt
-  echo  "${dirname}${head}pgrb2.0p25.anl.idx               " >>gfsa.txt
-  #Only generated if there are cyclones to track
-  cyclone_files=(avno.t${cyc}z.cyclone.trackatcfunix
-                 avnop.t${cyc}z.cyclone.trackatcfunix
-                 trak.gfso.atcfunix.${PDY}${cyc}
-                 trak.gfso.atcfunix.altg.${PDY}${cyc}
-                 storms.gfso.atcf_gen.${PDY}${cyc}
-                 storms.gfso.atcf_gen.altg.${PDY}${cyc})
+  {
+    echo "./logs/${PDY}${cyc}/gfs!(arch).log"
+    echo "${COM_ATMOS_INPUT}/input.nml"
 
-  for file in ${cyclone_files[@]}; do
-    [[ -s ${ROTDIR}/${dirname}${file} ]] && echo "${dirname}${file}" >>gfsa.txt
-  done
+    if [[ ${MODE} = "cycled" ]]; then
+      echo "${COM_ATMOS_ANALYSIS}/${head}gsistat"
+      echo "${COM_OBS}/${head}nsstbufr"
+      echo "${COM_OBS}/${head}prepbufr"
+      echo "${COM_OBS}/${head}prepbufr.acft_profiles"
+    fi
 
-  if [[ ${DO_DOWN} = "YES" ]]; then
-   if [[ ${DO_BUFRSND} = "YES" ]]; then
-    echo  "${dirname}gempak/gfs_${PDY}${cyc}.sfc              " >>gfs_downstream.txt
-    echo  "${dirname}gempak/gfs_${PDY}${cyc}.snd              " >>gfs_downstream.txt
-    echo  "${dirname}wmo/gfs_collective*.postsnd_${cyc}       " >>gfs_downstream.txt
-    echo  "${dirname}bufr.t${cyc}z                            " >>gfs_downstream.txt
-    echo  "${dirname}gfs.t${cyc}z.bufrsnd.tar.gz              " >>gfs_downstream.txt
-   fi
-   if [[ ${WAFSF} = "YES" ]]; then
-    echo  "${dirname}wafsgfs*.t${cyc}z.gribf*.grib2           " >>gfs_downstream.txt
-    echo  "${dirname}gfs.t${cyc}z.wafs_grb45f*.grib2          " >>gfs_downstream.txt
-    echo  "${dirname}gfs.t${cyc}z.wafs_grb45f*.nouswafs.grib2 " >>gfs_downstream.txt
-    echo  "${dirname}WAFS_blended_${PDY}${cyc}f*.grib2        " >>gfs_downstream.txt
-    echo  "${dirname}gfs.t*z.gcip.f*.grib2                    " >>gfs_downstream.txt
-    echo  "${dirname}gfs.t${cyc}z.wafs_0p25.f*.grib2          " >>gfs_downstream.txt
-    echo  "${dirname}gfs.t${cyc}z.wafs_0p25_unblended.f*.grib2" >>gfs_downstream.txt
-    echo  "${dirname}WAFS_0p25_blended_${PDY}${cyc}f*.grib2   " >>gfs_downstream.txt
-   fi
-  fi
+    echo "${COM_ATMOS_GRIB_0p25}/${head}pgrb2.0p25.anl"
+    echo "${COM_ATMOS_GRIB_0p25}/${head}pgrb2.0p25.anl.idx"
 
-  echo  "${dirname}${head}pgrb2.0p50.anl                   " >>gfsb.txt
-  echo  "${dirname}${head}pgrb2.0p50.anl.idx               " >>gfsb.txt
-  echo  "${dirname}${head}pgrb2.1p00.anl                   " >>gfsb.txt
-  echo  "${dirname}${head}pgrb2.1p00.anl.idx               " >>gfsb.txt
+    #Only generated if there are cyclones to track
+    cyclone_files=("avno.t${cyc}z.cyclone.trackatcfunix"
+                   "avnop.t${cyc}z.cyclone.trackatcfunix"
+                   "trak.gfso.atcfunix.${PDY}${cyc}"
+                   "trak.gfso.atcfunix.altg.${PDY}${cyc}")
+
+    for file in "${cyclone_files[@]}"; do
+      [[ -s ${COM_ATMOS_TRACK}/${file} ]] && echo "${COM_ATMOS_TRACK}/${file}"
+    done
+
+    genesis_files=("storms.gfso.atcf_gen.${PDY}${cyc}"
+                   "storms.gfso.atcf_gen.altg.${PDY}${cyc}")
+    for file in "${genesis_files[@]}"; do
+      [[ -s ${COM_ATMOS_GENESIS}/${file} ]] && echo "${COM_ATMOS_GENESIS}/${file}"
+    done
+  } >> gfsa.txt
+
+  {
+    if [[ ${DO_DOWN} = "YES" ]]; then
+      if [[ ${DO_BUFRSND} = "YES" ]]; then
+          echo "${COM_ATMOS_GEMPAK}/gfs_${PDY}${cyc}.sfc"
+          echo "${COM_ATMOS_GEMPAK}/gfs_${PDY}${cyc}.snd"
+          echo "${COM_ATMOS_WMO}/gfs_collective*.postsnd_${cyc}"
+          echo "${COM_ATMOS_BUFR}/bufr.t${cyc}z"
+          echo "${COM_ATMOS_BUFR}/gfs.t${cyc}z.bufrsnd.tar.gz"
+      fi
+      if [[ ${WAFSF} = "YES" ]]; then
+          echo "${COM_ATMOS_WAFS}/wafsgfs*.t${cyc}z.gribf*.grib2"
+          echo "${COM_ATMOS_WAFS}/gfs.t${cyc}z.wafs_grb45f*.grib2"
+          echo "${COM_ATMOS_WAFS}/gfs.t${cyc}z.wafs_grb45f*.nouswafs.grib2"
+          echo "${COM_ATMOS_WAFS}/WAFS_blended_${PDY}${cyc}f*.grib2"
+          echo "${COM_ATMOS_WAFS}/gfs.t*z.gcip.f*.grib2"
+          echo "${COM_ATMOS_WAFS}/gfs.t${cyc}z.wafs_0p25.f*.grib2"
+          echo "${COM_ATMOS_WAFS}/gfs.t${cyc}z.wafs_0p25_unblended.f*.grib2"
+          echo "${COM_ATMOS_WAFS}/WAFS_0p25_blended_${PDY}${cyc}f*.grib2"
+      fi
+    fi
+  } >> gfs_downstream.txt
+
+  {
+    echo "${COM_ATMOS_GRIB_0p50}/${head}pgrb2.0p50.anl"
+    echo "${COM_ATMOS_GRIB_0p50}/${head}pgrb2.0p50.anl.idx"
+    echo "${COM_ATMOS_GRIB_1p00}/${head}pgrb2.1p00.anl"
+    echo "${COM_ATMOS_GRIB_1p00}/${head}pgrb2.1p00.anl.idx"
+  } >> gfsb.txt
 
 
   fh=0
   while [[ ${fh} -le ${FHMAX_GFS} ]]; do
     fhr=$(printf %03i ${fh})
     if [[ ${ARCH_GAUSSIAN} = "YES" ]]; then
-      echo  "${dirname}${head}sfluxgrbf${fhr}.grib2           " >>gfs_flux.txt
-      echo  "${dirname}${head}sfluxgrbf${fhr}.grib2.idx       " >>gfs_flux.txt
+      {
+        echo "${COM_ATMOS_MASTER}/${head}sfluxgrbf${fhr}.grib2"
+        echo "${COM_ATMOS_MASTER}/${head}sfluxgrbf${fhr}.grib2.idx"
+      } >> gfs_flux.txt
 
-      echo  "${dirname}${head}pgrb2b.0p25.f${fhr}             " >>gfs_pgrb2b.txt
-      echo  "${dirname}${head}pgrb2b.0p25.f${fhr}.idx         " >>gfs_pgrb2b.txt
-      if [[ -s ${ROTDIR}/${dirpath}${head}pgrb2b.1p00.f${fhr} ]]; then
-         echo  "${dirname}${head}pgrb2b.1p00.f${fhr}         " >>gfs_pgrb2b.txt
-         echo  "${dirname}${head}pgrb2b.1p00.f${fhr}.idx     " >>gfs_pgrb2b.txt
+      {
+        echo "${COM_ATMOS_GRIB_0p25}/${head}pgrb2b.0p25.f${fhr}"
+        echo "${COM_ATMOS_GRIB_0p25}/${head}pgrb2b.0p25.f${fhr}.idx"
+        if [[ -s "${COM_ATMOS_GRIB_1p00}/${head}pgrb2b.1p00.f${fhr}" ]]; then
+           echo "${COM_ATMOS_GRIB_1p00}/{head}pgrb2b.1p00.f${fhr}"
+           echo "${COM_ATMOS_GRIB_1p00}/{head}pgrb2b.1p00.f${fhr}.idx"
+        fi
+      } >> gfs_pgrb2b.txt
+    fi
+
+    {
+      echo "${COM_ATMOS_GRIB_0p25}/${head}pgrb2.0p25.f${fhr}"
+      echo "${COM_ATMOS_GRIB_0p25}/${head}pgrb2.0p25.f${fhr}.idx"
+      echo "${COM_ATMOS_HISTORY}/${head}logf${fhr}.txt"
+    } >> gfsa.txt
+
+
+    {
+      if [[ -s "${COM_ATMOS_GRIB_0p50}/${head}pgrb2.0p50.f${fhr}" ]]; then
+         echo "${COM_ATMOS_GRIB_0p50}/${head}pgrb2.0p50.f${fhr}"
+         echo "${COM_ATMOS_GRIB_0p50}/${head}pgrb2.0p50.f${fhr}.idx"
       fi
-    fi
-
-    echo  "${dirname}${head}pgrb2.0p25.f${fhr}              " >>gfsa.txt
-    echo  "${dirname}${head}pgrb2.0p25.f${fhr}.idx          " >>gfsa.txt
-    echo  "${dirname}${head}logf${fhr}.txt                  " >>gfsa.txt
-
-    if [[ -s ${ROTDIR}/${dirpath}${head}pgrb2.0p50.f${fhr} ]]; then
-       echo  "${dirname}${head}pgrb2.0p50.f${fhr}          " >>gfsb.txt
-       echo  "${dirname}${head}pgrb2.0p50.f${fhr}.idx      " >>gfsb.txt
-    fi
-    if [[ -s ${ROTDIR}/${dirpath}${head}pgrb2.1p00.f${fhr} ]]; then
-       echo  "${dirname}${head}pgrb2.1p00.f${fhr}          " >>gfsb.txt
-       echo  "${dirname}${head}pgrb2.1p00.f${fhr}.idx      " >>gfsb.txt
-    fi
+      if [[ -s "${COM_ATMOS_GRIB_1p00}/${head}pgrb2.1p00.f${fhr}" ]]; then
+         echo "${COM_ATMOS_GRIB_1p00}/${head}pgrb2.1p00.f${fhr}"
+         echo "${COM_ATMOS_GRIB_1p00}/${head}pgrb2.1p00.f${fhr}.idx"
+      fi
+    } >> gfsb.txt
 
     inc=${FHOUT_GFS}
     if [ ${FHMAX_HF_GFS} -gt 0 -a ${FHOUT_HF_GFS} -gt 0 -a ${fh} -lt ${FHMAX_HF_GFS} ]; then
@@ -173,28 +194,31 @@ if [[ ${type} = "gfs" ]]; then
   done
 
   #..................
-  if [[ ${MODE} = "cycled" ]]; then
-    echo  "${dirname}RESTART/*0000.sfcanl_data.tile1.nc  " >>gfs_restarta.txt
-    echo  "${dirname}RESTART/*0000.sfcanl_data.tile2.nc  " >>gfs_restarta.txt
-    echo  "${dirname}RESTART/*0000.sfcanl_data.tile3.nc  " >>gfs_restarta.txt
-    echo  "${dirname}RESTART/*0000.sfcanl_data.tile4.nc  " >>gfs_restarta.txt
-    echo  "${dirname}RESTART/*0000.sfcanl_data.tile5.nc  " >>gfs_restarta.txt
-    echo  "${dirname}RESTART/*0000.sfcanl_data.tile6.nc  " >>gfs_restarta.txt
-  elif [[ ${MODE} = "forecast-only" ]]; then
-    echo  "${dirname}INPUT/gfs_ctrl.nc        " >>gfs_restarta.txt
-    echo  "${dirname}INPUT/gfs_data.tile1.nc  " >>gfs_restarta.txt
-    echo  "${dirname}INPUT/gfs_data.tile2.nc  " >>gfs_restarta.txt
-    echo  "${dirname}INPUT/gfs_data.tile3.nc  " >>gfs_restarta.txt
-    echo  "${dirname}INPUT/gfs_data.tile4.nc  " >>gfs_restarta.txt
-    echo  "${dirname}INPUT/gfs_data.tile5.nc  " >>gfs_restarta.txt
-    echo  "${dirname}INPUT/gfs_data.tile6.nc  " >>gfs_restarta.txt
-    echo  "${dirname}INPUT/sfc_data.tile1.nc  " >>gfs_restarta.txt
-    echo  "${dirname}INPUT/sfc_data.tile2.nc  " >>gfs_restarta.txt
-    echo  "${dirname}INPUT/sfc_data.tile3.nc  " >>gfs_restarta.txt
-    echo  "${dirname}INPUT/sfc_data.tile4.nc  " >>gfs_restarta.txt
-    echo  "${dirname}INPUT/sfc_data.tile5.nc  " >>gfs_restarta.txt
-    echo  "${dirname}INPUT/sfc_data.tile6.nc  " >>gfs_restarta.txt
-  fi
+  {
+    if [[ ${MODE} = "cycled" ]]; then
+      echo "${COM_ATMOS_RESTART}/*0000.sfcanl_data.tile1.nc"
+      echo "${COM_ATMOS_RESTART}/*0000.sfcanl_data.tile2.nc"
+      echo "${COM_ATMOS_RESTART}/*0000.sfcanl_data.tile3.nc"
+      echo "${COM_ATMOS_RESTART}/*0000.sfcanl_data.tile4.nc"
+      echo "${COM_ATMOS_RESTART}/*0000.sfcanl_data.tile5.nc"
+      echo "${COM_ATMOS_RESTART}/*0000.sfcanl_data.tile6.nc"
+    elif [[ ${MODE} = "forecast-only" ]]; then
+      echo "${COM_ATMOS_INPUT}/gfs_ctrl.nc"
+      echo "${COM_ATMOS_INPUT}/gfs_data.tile1.nc"
+      echo "${COM_ATMOS_INPUT}/gfs_data.tile2.nc"
+      echo "${COM_ATMOS_INPUT}/gfs_data.tile3.nc"
+      echo "${COM_ATMOS_INPUT}/gfs_data.tile4.nc"
+      echo "${COM_ATMOS_INPUT}/gfs_data.tile5.nc"
+      echo "${COM_ATMOS_INPUT}/gfs_data.tile6.nc"
+      echo "${COM_ATMOS_INPUT}/sfc_data.tile1.nc"
+      echo "${COM_ATMOS_INPUT}/sfc_data.tile2.nc"
+      echo "${COM_ATMOS_INPUT}/sfc_data.tile3.nc"
+      echo "${COM_ATMOS_INPUT}/sfc_data.tile4.nc"
+      echo "${COM_ATMOS_INPUT}/sfc_data.tile5.nc"
+      echo "${COM_ATMOS_INPUT}/sfc_data.tile6.nc"
+    fi
+  } >> gfs_restarta.txt
+
 
   #..................
   if [[ ${DO_WAVE} = "YES" ]]; then
@@ -202,21 +226,17 @@ if [[ ${type} = "gfs" ]]; then
     rm -rf gfswave.txt
     touch gfswave.txt
 
-    dirpath="gfs.${PDY}/${cyc}/wave/"
-    dirname="./${dirpath}"
-
     head="gfswave.t${cyc}z."
 
     #...........................
-    echo  "${dirname}rundata/ww3_multi*   " >>gfswave.txt
-    echo "${dirname}gridded/${head}*      " >>gfswave.txt
-    echo "${dirname}station/${head}*      " >>gfswave.txt
-
+    {
+      echo "${COM_WAVE_HISTORY}/ww3_multi*"
+      echo "${COM_WAVE_GRID}/${head}*"
+      echo "${COM_WAVE_STATION}/${head}*"
+    } >> gfswave.txt
   fi
 
   if [[ ${DO_OCN} = "YES" ]]; then
-    dirpath="gfs.${PDY}/${cyc}/ocean/"
-    dirname="./${dirpath}"
 
     head="gfs.t${cyc}z."
 
@@ -234,42 +254,39 @@ if [[ ${type} = "gfs" ]]; then
     touch ocn_3D.txt
     touch ocn_xsect.txt
     touch ocn_daily.txt
-    echo  "${dirname}MOM_input                  " >>ocn_2D.txt
-    echo  "${dirname}ocn_2D*                    " >>ocn_2D.txt
-    echo  "${dirname}ocn_3D*                    " >>ocn_3D.txt
-    echo  "${dirname}ocn*EQ*                    " >>ocn_xsect.txt
-    echo  "${dirname}ocn_daily*                 " >>ocn_daily.txt
-    echo  "${dirname}ocn_ice*0p5x0p5.grb2       " >>ocn_ice_grib2_0p5.txt
-    echo  "${dirname}ocn_ice*0p25x0p25.grb2     " >>ocn_ice_grib2_0p25.txt
+    echo "${COM_OCEAN_INPUT}/MOM_input" >> ocn_2D.txt
+    echo "${COM_OCEAN_HISTORY}/ocn_2D*" >> ocn_2D.txt
+    echo "${COM_OCEAN_HISTORY}/ocn_3D*" >> ocn_3D.txt
+    echo "${COM_OCEAN_XSECT}/ocn*EQ*" >> ocn_xsect.txt
+    echo "${COM_OCEAN_DAILY}/ocn_daily*" >> ocn_daily.txt
+    echo "${COM_OCEAN_GRIB_0p50}/ocn_ice*0p5x0p5.grb2" >> ocn_ice_grib2_0p5.txt
+    echo "${COM_OCEAN_GRIB_0p25}/ocn_ice*0p25x0p25.grb2" >> ocn_ice_grib2_0p25.txt
 
-    dirpath="gfs.${PDY}/${cyc}/atmos/"
-    dirname="./${dirpath}"
-    echo  "${dirname}${head}flux.1p00.f???      " >>gfs_flux_1p00.txt
-    echo  "${dirname}${head}flux.1p00.f???.idx  " >>gfs_flux_1p00.txt
+    # Also save fluxes from atmosphere
+    {
+      echo "${COM_ATMOS_GRIB_1p00}/${head}flux.1p00.f???"
+      echo "${COM_ATMOS_GRIB_1p00}/${head}flux.1p00.f???.idx"
+    } >> gfs_flux_1p00.txt
   fi
 
   if [[ ${DO_ICE} = "YES" ]]; then
-    dirpath="gfs.${PDY}/${cyc}/ice/"
-    dirname="./${dirpath}"
-
     head="gfs.t${cyc}z."
 
     rm -f ice.txt
     touch ice.txt
-    echo  "${dirname}ice_in                     " >>ice.txt
-    echo  "${dirname}ice*nc                     " >>ice.txt
+    {
+      echo "${COM_ICE_INPUT}/ice_in"
+      echo "${COM_ICE_HISTORY}/ice*nc"
+    } >> ice.txt
   fi
 
   if [[ ${DO_AERO} = "YES" ]]; then
-    dirpath="gfs.${PDY}/${cyc}/chem"
-    dirname="./${dirpath}"
-
     head="gocart"
 
     rm -f chem.txt
     touch chem.txt
 
-    echo "${dirname}/${head}*" >> chem.txt
+    echo "${COM_CHEM_HISTORY}/${head}*" >> chem.txt
   fi
 
 #-----------------------------------------------------
@@ -295,88 +312,89 @@ if [[ ${type} = "gdas" ]]; then
   head="gdas.t${cyc}z."
 
   #..................
-  echo  "${dirname}${head}gsistat                    " >>gdas.txt
-  echo  "${dirname}${head}pgrb2.0p25.anl             " >>gdas.txt
-  echo  "${dirname}${head}pgrb2.0p25.anl.idx         " >>gdas.txt
-  echo  "${dirname}${head}pgrb2.1p00.anl             " >>gdas.txt
-  echo  "${dirname}${head}pgrb2.1p00.anl.idx         " >>gdas.txt
-  echo  "${dirname}${head}atmanl.nc            " >>gdas.txt
-  echo  "${dirname}${head}sfcanl.nc            " >>gdas.txt
-  if [ -s $ROTDIR/${dirpath}${head}atmanl.ensres.nc ]; then
-     echo  "${dirname}${head}atmanl.ensres.nc  " >>gdas.txt
-  fi
-  if [ -s $ROTDIR/${dirpath}${head}atma003.ensres.nc ]; then
-     echo  "${dirname}${head}atma003.ensres.nc  " >>gdas.txt
-  fi
-  if [ -s $ROTDIR/${dirpath}${head}atma009.ensres.nc ]; then
-     echo  "${dirname}${head}atma009.ensres.nc  " >>gdas.txt
-  fi
-  if [[ -s ${ROTDIR}/${dirpath}${head}cnvstat ]]; then
-     echo  "${dirname}${head}cnvstat                 " >>gdas.txt
-  fi
-  if [[ -s ${ROTDIR}/${dirpath}${head}oznstat ]]; then
-     echo  "${dirname}${head}oznstat                 " >>gdas.txt
-  fi
-  if [[ -s ${ROTDIR}/${dirpath}${head}radstat ]]; then
-     echo  "${dirname}${head}radstat                 " >>gdas.txt
-  fi
-  for fstep in prep anal gldas fcst vrfy radmon minmon oznmon; do
-   if [[ -s ${ROTDIR}/logs/${CDATE}/gdas${fstep}.log ]]; then
-     echo  "./logs/${CDATE}/gdas${fstep}.log         " >>gdas.txt
-   fi
-  done
-  echo  "./logs/${CDATE}/gdaspost*.log               " >>gdas.txt
+  {
+    echo "${COM_ATMOS_ANALYSIS}/${head}gsistat"
+    echo "${COM_ATMOS_GRIB_0p25}/${head}pgrb2.0p25.anl"
+    echo "${COM_ATMOS_GRIB_0p25}/${head}pgrb2.0p25.anl.idx"
+    echo "${COM_ATMOS_GRIB_1p00}/${head}pgrb2.1p00.anl"
+    echo "${COM_ATMOS_GRIB_1p00}/${head}pgrb2.1p00.anl.idx"
+    echo "${COM_ATMOS_ANALYSIS}/${head}atmanl.nc"
+    echo "${COM_ATMOS_ANALYSIS}/${head}sfcanl.nc"
+    if [[ -s "${COM_ATMOS_ANALYSIS}/${head}atmanl.ensres.nc" ]]; then
+       echo "${COM_ATMOS_ANALYSIS}/${head}atmanl.ensres.nc"
+    fi
+    if [[ -s "${COM_ATMOS_ANALYSIS}/${head}atma003.ensres.nc" ]]; then
+       echo "${COM_ATMOS_ANALYSIS}/${head}atma003.ensres.nc"
+    fi
+    if [[ -s "${COM_ATMOS_ANALYSIS}/${head}atma009.ensres.nc" ]]; then
+       echo "${COM_ATMOS_ANALYSIS}/${head}atma009.ensres.nc"
+    fi
+    if [[ -s "${COM_ATMOS_ANALYSIS}/${head}cnvstat" ]]; then
+       echo "${COM_ATMOS_ANALYSIS}/${head}cnvstat"
+    fi
+    if [[ -s "${COM_ATMOS_ANALYSIS}/${head}oznstat" ]]; then
+       echo "${COM_ATMOS_ANALYSIS}/${head}oznstat"
+    fi
+    if [[ -s "${COM_ATMOS_ANALYSIS}/${head}radstat" ]]; then
+       echo "${COM_ATMOS_ANALYSIS}/${head}radstat"
+    fi
+    for fstep in prep anal gldas fcst vrfy radmon minmon oznmon; do
+      if [[ -s "${ROTDIR}/logs/${PDY}${cyc}/gdas${fstep}.log" ]]; then
+        echo "./logs/${PDY}${cyc}/gdas${fstep}.log"
+      fi
+    done
+    echo "./logs/${PDY}${cyc}/gdaspost*.log"
 
-  fh=0
-  while [[ ${fh} -le 9 ]]; do
-    fhr=$(printf %03i ${fh})
-    echo  "${dirname}${head}sfluxgrbf${fhr}.grib2      " >>gdas.txt
-    echo  "${dirname}${head}sfluxgrbf${fhr}.grib2.idx  " >>gdas.txt
-    echo  "${dirname}${head}pgrb2.0p25.f${fhr}         " >>gdas.txt
-    echo  "${dirname}${head}pgrb2.0p25.f${fhr}.idx     " >>gdas.txt
-    echo  "${dirname}${head}pgrb2.1p00.f${fhr}         " >>gdas.txt
-    echo  "${dirname}${head}pgrb2.1p00.f${fhr}.idx     " >>gdas.txt
-    echo  "${dirname}${head}logf${fhr}.txt             " >>gdas.txt
-    echo  "${dirname}${head}atmf${fhr}.nc              " >>gdas.txt
-    echo  "${dirname}${head}sfcf${fhr}.nc              " >>gdas.txt
-    fh=$((fh+3))
-  done
-  flist="001 002 004 005 007 008"
-  for fhr in ${flist}; do
-    echo  "${dirname}${head}sfluxgrbf${fhr}.grib2      " >>gdas.txt
-    echo  "${dirname}${head}sfluxgrbf${fhr}.grib2.idx  " >>gdas.txt
-  done
-  
-
-
-  #..................
-  if [[ -s ${ROTDIR}/${dirpath}${head}cnvstat ]]; then
-     echo  "${dirname}${head}cnvstat               " >>gdas_restarta.txt
-  fi
-  if [[ -s ${ROTDIR}/${dirpath}${head}radstat ]]; then
-     echo  "${dirname}${head}radstat               " >>gdas_restarta.txt
-  fi
-  echo  "${obs_dirname}${head}nsstbufr                 " >>gdas_restarta.txt
-  echo  "${obs_dirname}${head}prepbufr                 " >>gdas_restarta.txt
-  echo  "${obs_dirname}${head}prepbufr.acft_profiles   " >>gdas_restarta.txt
-  echo  "${dirname}${head}abias                    " >>gdas_restarta.txt
-  echo  "${dirname}${head}abias_air                " >>gdas_restarta.txt
-  echo  "${dirname}${head}abias_int                " >>gdas_restarta.txt
-  echo  "${dirname}${head}abias_pc                 " >>gdas_restarta.txt
-  echo  "${dirname}${head}atmi*nc                  " >>gdas_restarta.txt
-  echo  "${dirname}${head}dtfanl.nc                " >>gdas_restarta.txt
-  echo  "${dirname}${head}loginc.txt               " >>gdas_restarta.txt
-
-  echo  "${dirname}RESTART/*0000.sfcanl_data.tile1.nc  " >>gdas_restarta.txt
-  echo  "${dirname}RESTART/*0000.sfcanl_data.tile2.nc  " >>gdas_restarta.txt
-  echo  "${dirname}RESTART/*0000.sfcanl_data.tile3.nc  " >>gdas_restarta.txt
-  echo  "${dirname}RESTART/*0000.sfcanl_data.tile4.nc  " >>gdas_restarta.txt
-  echo  "${dirname}RESTART/*0000.sfcanl_data.tile5.nc  " >>gdas_restarta.txt
-  echo  "${dirname}RESTART/*0000.sfcanl_data.tile6.nc  " >>gdas_restarta.txt
+    fh=0
+    while [[ ${fh} -le 9 ]]; do
+      fhr=$(printf %03i ${fh})
+      echo "${dirname}${head}sfluxgrbf${fhr}.grib2"
+      echo "${dirname}${head}sfluxgrbf${fhr}.grib2.idx"
+      echo "${dirname}${head}pgrb2.0p25.f${fhr}"
+      echo "${dirname}${head}pgrb2.0p25.f${fhr}.idx"
+      echo "${dirname}${head}pgrb2.1p00.f${fhr}"
+      echo "${dirname}${head}pgrb2.1p00.f${fhr}.idx"
+      echo "${dirname}${head}logf${fhr}.txt"
+      echo "${dirname}${head}atmf${fhr}.nc"
+      echo "${dirname}${head}sfcf${fhr}.nc"
+      fh=$((fh+3))
+    done
+    flist="001 002 004 005 007 008"
+    for fhr in ${flist}; do
+      echo "${dirname}${head}sfluxgrbf${fhr}.grib2"
+      echo "${dirname}${head}sfluxgrbf${fhr}.grib2.idx"
+    done
+  } >> gdas.txt
 
 
   #..................
-  echo  "${dirname}RESTART " >>gdas_restartb.txt
+  if [[ -s ${ROTDIR}/${dirpath}${head}cnvstat ]]; then
+     echo "${dirname}${head}cnvstat               " >>gdas_restarta.txt
+  fi
+  if [[ -s ${ROTDIR}/${dirpath}${head}radstat ]]; then
+     echo "${dirname}${head}radstat               " >>gdas_restarta.txt
+  fi
+  echo "${obs_dirname}${head}nsstbufr                 " >>gdas_restarta.txt
+  echo "${obs_dirname}${head}prepbufr                 " >>gdas_restarta.txt
+  echo "${obs_dirname}${head}prepbufr.acft_profiles   " >>gdas_restarta.txt
+  echo "${dirname}${head}abias                    " >>gdas_restarta.txt
+  echo "${dirname}${head}abias_air                " >>gdas_restarta.txt
+  echo "${dirname}${head}abias_int                " >>gdas_restarta.txt
+  echo "${dirname}${head}abias_pc                 " >>gdas_restarta.txt
+  echo "${dirname}${head}atmi*nc                  " >>gdas_restarta.txt
+  echo "${dirname}${head}dtfanl.nc                " >>gdas_restarta.txt
+  echo "${dirname}${head}loginc.txt               " >>gdas_restarta.txt
+
+  echo "${dirname}RESTART/*0000.sfcanl_data.tile1.nc  " >>gdas_restarta.txt
+  echo "${dirname}RESTART/*0000.sfcanl_data.tile2.nc  " >>gdas_restarta.txt
+  echo "${dirname}RESTART/*0000.sfcanl_data.tile3.nc  " >>gdas_restarta.txt
+  echo "${dirname}RESTART/*0000.sfcanl_data.tile4.nc  " >>gdas_restarta.txt
+  echo "${dirname}RESTART/*0000.sfcanl_data.tile5.nc  " >>gdas_restarta.txt
+  echo "${dirname}RESTART/*0000.sfcanl_data.tile6.nc  " >>gdas_restarta.txt
+
+
+  #..................
+  echo "${dirname}RESTART " >>gdas_restartb.txt
 
   #..................
   if [[ ${DO_WAVE} = "YES" ]]; then
@@ -474,42 +492,42 @@ if [ ${type} = "enkfgdas" -o ${type} = "enkfgfs" ]; then
   rm -f ${RUN}.txt
   touch ${RUN}.txt
 
-  echo  "${dirname}${head}enkfstat                   " >>${RUN}.txt
-  echo  "${dirname}${head}gsistat.ensmean            " >>${RUN}.txt
+  echo "${dirname}${head}enkfstat                   " >>${RUN}.txt
+  echo "${dirname}${head}gsistat.ensmean            " >>${RUN}.txt
   if [[ -s ${ROTDIR}/${dirpath}${head}cnvstat.ensmean ]]; then
-       echo  "${dirname}${head}cnvstat.ensmean       " >>${RUN}.txt
+       echo "${dirname}${head}cnvstat.ensmean       " >>${RUN}.txt
   fi
   if [[ -s ${ROTDIR}/${dirpath}${head}oznstat.ensmean ]]; then
-       echo  "${dirname}${head}oznstat.ensmean       " >>${RUN}.txt
+       echo "${dirname}${head}oznstat.ensmean       " >>${RUN}.txt
   fi
   if [[ -s ${ROTDIR}/${dirpath}${head}radstat.ensmean ]]; then
-       echo  "${dirname}${head}radstat.ensmean       " >>${RUN}.txt
+       echo "${dirname}${head}radstat.ensmean       " >>${RUN}.txt
   fi
   for FHR in $nfhrs; do  # loop over analysis times in window
      if [ $FHR -eq 6 ]; then
         if [ -s $ROTDIR/${dirpath}${head}atmanl.ensmean.nc ]; then
-            echo  "${dirname}${head}atmanl.ensmean.nc      " >>${RUN}.txt
+            echo "${dirname}${head}atmanl.ensmean.nc      " >>${RUN}.txt
 	fi
         if [ -s $ROTDIR/${dirpath}${head}atminc.ensmean.nc ]; then
-            echo  "${dirname}${head}atminc.ensmean.nc      " >>${RUN}.txt
+            echo "${dirname}${head}atminc.ensmean.nc      " >>${RUN}.txt
         fi
      else
         if [ -s $ROTDIR/${dirpath}${head}atma00${FHR}.ensmean.nc ]; then
-	    echo  "${dirname}${head}atma00${FHR}.ensmean.nc      " >>${RUN}.txt
+	    echo "${dirname}${head}atma00${FHR}.ensmean.nc      " >>${RUN}.txt
         fi
         if [ -s $ROTDIR/${dirpath}${head}atmi00${FHR}.ensmean.nc ]; then
-            echo  "${dirname}${head}atmi00${FHR}.ensmean.nc      " >>${RUN}.txt
+            echo "${dirname}${head}atmi00${FHR}.ensmean.nc      " >>${RUN}.txt
         fi
      fi 
   done # loop over FHR
   for fstep in eobs ecen esfc eupd efcs epos ; do
-   echo  "logs/${CDATE}/${RUN}${fstep}*.log        " >>${RUN}.txt
+   echo "logs/${CDATE}/${RUN}${fstep}*.log        " >>${RUN}.txt
   done
 
 # eomg* are optional jobs
   for log in ${ROTDIR}/logs/${CDATE}/${RUN}eomg*.log; do
      if [[ -s "${log}" ]]; then
-        echo  "logs/${CDATE}/${RUN}eomg*.log        " >>${RUN}.txt
+        echo "logs/${CDATE}/${RUN}eomg*.log        " >>${RUN}.txt
      fi
      break
   done
@@ -519,10 +537,10 @@ if [ ${type} = "enkfgdas" -o ${type} = "enkfgfs" ]; then
   fh=3
   while [ $fh -le 9 ]; do
       fhr=$(printf %03i $fh)
-      echo  "${dirname}${head}atmf${fhr}.ensmean.nc       " >>${RUN}.txt
-      echo  "${dirname}${head}sfcf${fhr}.ensmean.nc       " >>${RUN}.txt
+      echo "${dirname}${head}atmf${fhr}.ensmean.nc       " >>${RUN}.txt
+      echo "${dirname}${head}sfcf${fhr}.ensmean.nc       " >>${RUN}.txt
       if [ -s $ROTDIR/${dirpath}${head}atmf${fhr}.ensspread.nc ]; then
-          echo  "${dirname}${head}atmf${fhr}.ensspread.nc     " >>${RUN}.txt
+          echo "${dirname}${head}atmf${fhr}.ensspread.nc     " >>${RUN}.txt
       fi
       fh=$((fh+3))
   done
