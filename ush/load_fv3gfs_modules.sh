@@ -18,7 +18,7 @@ module use "$HOMEgfs/modulefiles"
 if [[ -d /lfs/f1 ]]; then
   # We are on WCOSS2 (Cactus or Dogwood)
   module load module_base.wcoss2
-elif [[ -d /lfs3 ]] ; then
+elif [[ -d /mnt/lfs1 ]] ; then
   # We are on NOAA Jet
   module load module_base.jet
 elif [[ -d /scratch1 ]] ; then
