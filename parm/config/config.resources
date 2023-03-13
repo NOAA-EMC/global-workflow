@@ -661,7 +661,7 @@ elif [[ ${step} = "arch" || ${step} = "earc" || ${step} = "getic" ]]; then
     eval "export npe_${step}=1"
     eval "export npe_node_${step}=1"
     eval "export nth_${step}=1"
-    eval "export memory_${step}=2048M"
+    eval "export memory_${step}=4096M"
     if [[ "${machine}" = "WCOSS2" ]]; then
       eval "export memory_${step}=50GB"
     fi
