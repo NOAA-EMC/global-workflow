@@ -70,7 +70,7 @@ if __name__ == '__main__':
 
     # Make symlinks of initial conitions into ROTDIR
     link_ic_cmd = Executable('cp')
-    for cmds in f'-as {os.path.abspath(icdir)} {os.path.abspath(rotdir)}'.split():
+    for cmds in f'-as {os.path.abspath(os.path.join(icdir,'/'))}* {os.path.abspath(rotdir)}'.split():
         link_ic_cmd.add_default_arg(cmds)
     logger.info(f'run command: {link_ic_cmd.command}')
     link_ic_cmd(output='stdout_linkic', error='stderr_linkic')
@@ -81,4 +81,4 @@ if __name__ == '__main__':
 
     logger.info(f'run command: {setup_xml_cmd.command}')
     setup_xml_cmd(output='stdout_setupxml', error='stderr_setupxml')
-    
+
