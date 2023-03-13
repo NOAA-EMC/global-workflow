@@ -13,7 +13,7 @@ export CDUMPFCST="gdas"           # Fit-to-obs with GDAS/GFS prepbufr
 export CDFNL="gdas"               # Scores verification against GDAS/GFS analysis
 
 export MKPGB4PRCP="YES"           # Make 0.25-deg pgb files in ARCDIR for precip verification
-export VRFYFITS="YES"             # Fit to observations
+export VRFYFITS="NO"             # Fit to observations
 export VRFYRAD="YES"              # Radiance data assimilation monitoring
 export VRFYOZN="YES"              # Ozone data assimilation monitoring
 export VRFYMINMON="YES"           # GSI minimization monitoring
