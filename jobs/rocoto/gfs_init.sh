@@ -1,5 +1,6 @@
 #! /usr/bin/env bash
 
+. /apps/lmod/lmod/init/sh
 source "${HOMEgfs}/ush/preamble.sh"
 
 ###############################################################
