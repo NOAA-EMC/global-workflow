@@ -2,7 +2,7 @@
 
 source "${HOMEgfs}/ush/preamble.sh"
 export DATA=${DATA:-${DATAROOT}/${RUN}aeroanl_${cyc}}
-source "${HOMEgfs}/ush/jjob_header.sh" -e "aeroanlinit" -c "base aeroanl aeroanlinit"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "gfsinit" -c "base gfs gfsinnit"
 
 ##############################################
 # Set variables used in the script
@@ -25,18 +25,18 @@ export OPREFIX="${CDUMP}.t${cyc}z."
 export GPREFIX="${GDUMP}.t${gcyc}z."
 export APREFIX="${CDUMP}.t${cyc}z."
 
-export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/chem}
+export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/gfs}
 
 mkdir -p "${COMOUT}"
 
 # COMIN_GES and COMIN_GES_ENS are used in script
-export COMIN_GES="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/chem"
-export COMIN_GES_ENS="${ROTDIR}/enkf${GDUMP}.${gPDY}/${gcyc}/chem"
+export COMIN_GES="${ROTDIR}/${GDUMP}.${gPDY}/${gcyc}/gfs"
 
 ###############################################################
 # Run relevant script
+###############################################################
 
-EXSCRIPT=${GDASAEROINITPY:-${HOMEgfs}/scripts/exglobal_aero_analysis_initialize.py}
+EXSCRIPT=${GDASFCSTINITPY:-${HOMEgfs}/scripts/exglobal_gfs_initialize.py}
 ${EXSCRIPT}
 status=$?
 [[ ${status} -ne 0 ]] && exit "${status}"
