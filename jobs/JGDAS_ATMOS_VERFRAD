@@ -42,31 +42,21 @@ parm_file=${parm_file:-${PARMmon}/da_mon.parm}
 #  determine PDY and cyc for previous cycle
 #############################################
 
-cdate=$(${NDATE} -6 ${PDY}${cyc})
-echo 'pdate = ${pdate}'
+pdate=$(${NDATE} -6 ${PDY}${cyc})
+echo "pdate = ${pdate}"
 
-export P_PDY=$(echo ${cdate} | cut -c1-8)
-export p_cyc=$(echo ${cdate} | cut -c9-10)
+export P_PDY=${pdate:0:8}
+export p_cyc=${pdate:8:2}
 
 #############################################
 # COMOUT - WHERE GSI OUTPUT RESIDES
 # TANKverf - WHERE OUTPUT DATA WILL RESIDE
 #############################################
 export TANKverf=${TANKverf:-$(compath.py ${envir}/${NET}/${gfs_ver})}
-export TANKverf_rad=${TANKverf_rad:-${TANKverf}/${RUN}.${PDY}/${cyc}/${COMPONENT}/radmon}
-export TANKverf_radM1=${TANKverf_radM1:-${TANKverf}/${RUN}.${P_PDY}/${p_cyc}/${COMPONENT}/radmon}
-export COM_IN=${COM_IN:-$(compath.py ${envir}/${NET}/${gfs_ver})}
-export COMIN=${COMIN:-${COM_IN}/${RUN}.${PDY}/${cyc}/${COMPONENT}}
+export TANKverf_rad=${TANKverf_rad:-${TANKverf}/${RUN}.${PDY}/${cyc}/atmos/radmon}
+export TANKverf_radM1=${TANKverf_radM1:-${TANKverf}/${RUN}.${P_PDY}/${p_cyc}/atmos/radmon}
 
-################################
-#  backwards compatibility for
-#  gfs v15 which doesn't have
-#  a $COMPONENT in output path
-################################
-if [[ ! -d ${COMIN} ]]; then
-   export COMIN=${COM_IN}/${RUN}.${PDY}/${cyc}
-fi
-
+YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_ANALYSIS
 
 mkdir -p -m 775 ${TANKverf_rad}
 
@@ -75,8 +65,8 @@ mkdir -p -m 775 ${TANKverf_rad}
 ########################################
 export RAD_AREA=${RAD_AREA:-glb}
 
-export biascr=${biascr:-${COMIN}/gdas.t${cyc}z.abias}
-export radstat=${radstat:-${COMIN}/gdas.t${cyc}z.radstat}
+export biascr=${biascr:-${COM_ATMOS_ANALYSIS}/gdas.t${cyc}z.abias}
+export radstat=${radstat:-${COM_ATMOS_ANALYSIS}/gdas.t${cyc}z.radstat}
 
 echo " "
 echo "JOB HAS STARTED"
