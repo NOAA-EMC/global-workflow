@@ -1,6 +1,13 @@
 
+# ----
+
 from pygfs.forecast import Forecast
 from pygfs.exceptions import GFSError
+
+from pygw.configuration import cast_strdict_as_dtypedict
+from pygw.logger import Logger
+
+# ----
 
 
 class GFS(Forecast):
@@ -8,14 +15,14 @@ class GFS(Forecast):
 
     """
 
-    def __init__(self: Forecast, config_obj: object):
+    def __init__(self: Forecast, config: object):
         """
         Creates a new GFS object.
 
         """
 
         # Define the base-class attributes.
-        super().__init__(config_obj=config_obj)
+        super().__init__(config=config)
 
     def initialize(self: Forecast):
         """ """
