@@ -65,31 +65,21 @@ $NCP $GETATMENSMEANEXEC $DATA
 
 export OMP_NUM_THREADS=$NTHREADS_EPOS
 
-export YMD=${PDY}
-export HH=${cyc}
-
 ################################################################################
 # Forecast ensemble member files
 for imem in $(seq 1 $NMEM_ENKF); do
-   export MEMDIR="mem"$(printf %03i "${imem}")
-   COM_ATMOS_HISTORY=$({
-      export RUN
-      echo "${COM_ATMOS_HISTORY_TMPL}" | envsubst   
-   })
+   memchar="mem"$(printf %03i "${imem}")
+   MEMDIR=${memchar} YMD=${PDY} HH=${cyc} generate_com -x COM_ATMOS_HISTORY:COM_ATMOS_HISTORY_TMPL
 
    for fhr in $(seq $FHMIN $FHOUT $FHMAX); do
       fhrchar=$(printf %03i $fhr)
-      ${NLN} "${COM_ATMOS_HISTORY}/${PREFIX}sfcf${fhrchar}.nc" "sfcf${fhrchar}_${MEMDIR}"
-      ${NLN} "${COM_ATMOS_HISTORY}/${PREFIX}atmf${fhrchar}.nc" "atmf${fhrchar}_${MEMDIR}"
+      ${NLN} "${COM_ATMOS_HISTORY}/${PREFIX}sfcf${fhrchar}.nc" "sfcf${fhrchar}_${memchar}"
+      ${NLN} "${COM_ATMOS_HISTORY}/${PREFIX}atmf${fhrchar}.nc" "atmf${fhrchar}_${memchar}"
    done
 done
 
 # Forecast ensemble mean and smoothed files
-COM_ATMOS_HISTORY_STAT=$({
-   MEMDIR="ensstat"
-   export MEMDIR
-   echo "${COM_ATMOS_HISTORY_TMPL}" | envsubst
-})
+MEMDIR="ensstat" YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_HISTORY_STAT:COM_ATMOS_HISTORY_TMPL
 if [[ ! -d "${COM_ATMOS_HISTORY_STAT}" ]]; then mkdir -p "${COM_ATMOS_HISTORY_STAT}"; fi
 
 for fhr in $(seq $FHMIN $FHOUT $FHMAX); do

@@ -71,9 +71,7 @@ DATATOP=$DATA
 cymd=$(echo $CDATE | cut -c1-8)
 chh=$(echo  $CDATE | cut -c9-10)
 
-export YMD=${PDY}
-export HH=${cyc}
-generate_com COM_ENKF_GROUP
+YMD=${PDY} HH=${cyc} generate_com COM_ENKF_GROUP
 EFCSGRP="${COM_ENKF_GROUP}/efcs.grp${ENSGRP}"
 if [ -f $EFCSGRP ]; then
    if [ $RERUN_EFCSGRP = "YES" ]; then

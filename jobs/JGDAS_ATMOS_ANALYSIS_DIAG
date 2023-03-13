@@ -15,7 +15,7 @@ export DO_CALC_ANALYSIS=${DO_CALC_ANALYSIS:-"YES"}
 # Begin JOB SPECIFIC work
 ##############################################
 
-GDATE=$(${NDATE} -${assim_freq} ${CDATE})
+GDATE=$(${NDATE} -${assim_freq} ${PDY}${cyc})
 export gPDY=${GDATE:0:8}
 export gcyc=${GDATE:8:2}
 export GDUMP="gdas"
@@ -24,36 +24,9 @@ export GDUMP_ENS="enkf${GDUMP}"
 export OPREFIX="${CDUMP}.t${cyc}z."
 export GPREFIX="${GDUMP}.t${gcyc}z."
 export APREFIX="${RUN}.t${cyc}z."
-# export GPREFIX_ENS="${GDUMP_ENS}.t${gcyc}z."
 
 YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_ANALYSIS
-
-# RUN=${GDUMP} YMD=${PDY} HH=${cyc} generate -rx \
-#     COM_OBS_PREV:COM_OBS_TMPL \
-#     COM_ATMOS_ANALYSIS_PREV:COM_ATMOS_ANALYSIS_TMPL
-
-# MEMDIR='ensstat' RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} generate_com -rx \
-#     COM_ATMOS_HISTORY_ENS_PREV:COM_ATMOS_HISTORY_TMPL
-
-
-mkdir -m 775 -p ${COM_ATMOS_ANALYSIS}
-
-
-# export ATMGES="${COMIN_GES}/${GPREFIX}atmf006.nc"
-# if [ ! -f ${ATMGES} ]; then
-#     echo "FATAL ERROR: FILE MISSING: ATMGES = ${ATMGES}"
-#     exit 1
-# fi
-
-
-# if [ ${DOHYBVAR} = "YES" ]; then
-#     export ATMGES_ENSMEAN="${COM_ATMOS_HISTORY_ENS_PREV}/${GPREFIX_ENS}atmf006.ensmean.nc"
-#     if [ ! -f ${ATMGES_ENSMEAN} ]; then
-#         echo "FATAL ERROR: FILE MISSING: ATMGES_ENSMEAN = ${ATMGES_ENSMEAN}"
-#         exit 2
-#     fi
-# fi
-
+mkdir -m 775 -p "${COM_ATMOS_ANALYSIS}"
 
 ###############################################################
 # Run relevant script

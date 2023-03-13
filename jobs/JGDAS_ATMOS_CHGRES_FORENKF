@@ -18,15 +18,8 @@ export DO_CALC_ANALYSIS=${DO_CALC_ANALYSIS:-"YES"}
 export APREFIX="${CDUMP}.t${cyc}z."
 export APREFIX_ENS="${RUN}.t${cyc}z."
 
-export YMD=${PDY}
-export HH=${cyc}
-RUN=${CDUMP} generate_com -rx COM_ATMOS_HISTORY
-
-COM_ATMOS_HISTORY_MEM=$({
-    export MEMDIR="mem001"
-    echo "${COM_ATMOS_HISTORY_TMPL}" | envsubst
-})
-declare -rx COM_ATMOS_HISTORY_MEM
+RUN=${CDUMP} YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_HISTORY
+MEMDIR="mem001" YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_HISTORY_MEM:COM_ATMOS_HISTORY_TMPL
 
 ###############################################################
 # Run relevant script

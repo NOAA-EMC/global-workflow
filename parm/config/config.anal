@@ -59,34 +59,27 @@ if [[ $RUN_ENVIR == "emc" ]]; then
     if [[ "${CDATE}" -ge "2019111000" && "${CDATE}" -le "2020052612" ]]; then
       para="y"
     fi
-    ABIBF=$({
-      RUN="${CDUMP}${para}"
-      echo "${COM_OBSDMP_TMPL}/${CDUMP}.t${cyc}z.gsrcsr.tm00.bufr_d" | envsubst
-    })
+    RUN="${CDUMP}${para}" YMD=${PDY} HH=${cyc} generate_com COM_OBSDMP:COM_OBSDMP_TMPL
+    ABIBF="${COM_OBSDMP}/${CDUMP}.t${cyc}z.gsrcsr.tm00.bufr_d"
   fi
-  declare -x ABIBF
 
   AHIBF="/dev/null"
   if [[ "${CDATE}" -ge "2019042300" ]]; then
-    ABIBF=$({
-      RUN="${CDUMP}x"
-      echo "${COM_OBSDMP_TMPL}/${CDUMP}.t${cyc}z.ahicsr.tm00.bufr_d" | envsubst
-    })
+    RUN="${CDUMP}x" YMD=${PDY} HH=${cyc} generate_com COM_OBSDMP:COM_OBSDMP_TMPL
+    AHIBF="${COM_OBSDMP}/${CDUMP}.t${cyc}z.gsrcsr.tm00.bufr_d"
   fi
-  declare -x AHIBF
 
-  HDOB=$({
-    RUN="${CDUMP}x"
-    echo "${COM_OBSDMP_TMPL}/${CDUMP}.t${cyc}z.hdob.tm00.bufr_d" | envsubst
-  })
-  declare -x HDOB
+  RUN="${CDUMP}x" YMD=${PDY} HH=${cyc} generate_com COM_OBSDMP:COM_OBSDMP_TMPL
+  HDOB="${COM_OBSDMP}/${CDUMP}.t${cyc}z.hdob.tm00.bufr_d"
 
   #   Use dumps from NCO GFS v16 parallel
   if [[ "${CDATE}" -ge "2020103012" ]]; then
-    export ABIBF=""
-    export AHIBF=""
-    export HDOB=""
+    ABIBF=""
+    AHIBF=""
+    HDOB=""
   fi
+
+  declare -rx ABIBF AHIBF HDOB
 
   #   Set info files and prepobs.errtable.global for GFS v16 retrospective parallels
   if [[ "${CDATE}" -ge "2019021900" && "${CDATE}" -lt "2019110706" ]]; then
