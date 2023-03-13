@@ -105,8 +105,5 @@ fi
 
 ./link_workflow.sh
 
-cd ../ush/python/pygw
-pip3 install .
-
 echo "check/build/link test completed"
 exit "${build_status}"

@@ -23,7 +23,7 @@ repo_url=${repo_url:-"https://github.com/NOAA-EMC/global-workflow.git"}
 ################################################################
 # Setup the reletive paths to scripts and PS4 for better logging 
 ################################################################
-pwd="$(cd "$(dirname  "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd )"
+script_pwd="$(cd "$(dirname  "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd )"
 scriptname=$(basename "${BASH_SOURCE[0]}")
 echo "Begin ${scriptname} at $(date -u)" || true
 export PS4='+ $(basename ${BASH_SOURCE})[${LINENO}]'
@@ -48,7 +48,7 @@ usage() {
 #  Set up runtime environment varibles for accounts on supproted machines
 #########################################################################
 
-source "${pwd}/../ush/detect_machine.sh"
+source "${script_pwd}/../ush/detect_machine.sh"
 if [[ "${MACHINE_ID}" != "UNKNOWN" ]]; then
    TARGET="${MACHINE_ID}"
 fi   
@@ -78,7 +78,7 @@ fi
 case ${TARGET} in
   hera | orion)
     echo "Running Automated Testing on ${TARGET}"
-    source "${pwd}/${TARGET}.sh"
+    source "${script_pwd}/${TARGET}.sh"
     ;;
   *)
     echo "Unsupported platform. Exiting with error."
@@ -116,15 +116,22 @@ for pr in ${pr_list}; do
   mkdir -p "${pr_dir}"
   # call clone-build_ci to clone and build PR
   id=$("${GH}" pr view "${pr}" --repo "${repo_url}" --json id --jq '.id')
-  "${pwd}/clone-build_ci.sh" -p "${pr}" -d "${pr_dir}" -o "${pr_dir}/output_${id}"
+  "${script_pwd}/clone-build_ci.sh" -p "${pr}" -d "${pr_dir}" -o "${pr_dir}/output_${id}"
   ci_status=$?
   if [[ ${ci_status} -eq 0 ]]; then
+    #setup runtime env for correct python install
+    module use "${pr_dir}"/global-workflow/modulefiles
+    module load "module_base.${TARGET}"
+    cd "${pr_dir}/global-workflow/ush/python/pygw"
+    python3 -m pip install .
+    export PYTHONPATH="${pr_dir}/global-workflow/workflow" # Needed becuase Host class is in workflow 
+    module load rocoto
     export RUNTEST="${pr_dir}/RUNTEST"
     mkdir -p "${RUNTEST}"
     cd "${RUNTEST}"
     rm -Rf ./*
-    export HOMEgfs="${pr_dir}/global-workflow"
-    "${pwd}/create_experment.py" --yaml "${pwd}/cold_96_00z.yaml"
+    export HOMEGFS="${pr_dir}/global-workflow"
+    "${script_pwd}/create_experment.py" --yaml "${script_pwd}/cold_96_00z.yaml"
     ci_status=$?
     if [[ ${ci_status} -eq 0 ]]; then
       {
