@@ -16,7 +16,7 @@ fi
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
-GDATE=$(${NDATE} -${assim_freq} ${CDATE})
+GDATE=$(${NDATE} -"${assim_freq}" "${PDY}${cyc}")
 gPDY=${GDATE:0:8}
 gcyc=${GDATE:8:2}
 export GDUMP="gdas"
@@ -30,9 +30,6 @@ YMD=${PDY} HH=${cyc} generate_com -rx COM_OBS COM_ATMOS_ANALYSIS COM_ATMOS_RESTA
 RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} generate_com -rx \
     COM_OBS_PREV:COM_OBS_TMPL \
     COM_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL
-
-# Used by global_cycle.sh
-declare -rx CDATE="${PDY}${cyc}"
 
 ###############################################################
 # Run relevant script

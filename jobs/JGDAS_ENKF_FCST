@@ -7,9 +7,7 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "efcs" -c "base fcst efcs"
 ##############################################
 # Set variables used in the script
 ##############################################
-export CDATE=${CDATE:-${PDY}${cyc}}
-export CDUMP=${CDUMP:-${RUN:-"enkfgdas"}}
-export COMPONENT="atmos"
+export CDUMP=${RUN/enkf}
 export rCDUMP="enkfgdas"
 
 ##############################################
@@ -17,10 +15,6 @@ export rCDUMP="enkfgdas"
 ##############################################
 
 export CASE=${CASE_ENKF}
-
-# COMOUT is used in script
-export COMOUT="${ROTDIR}/${CDUMP}.${PDY}/${cyc}"
-
 
 # Forecast length for EnKF forecast
 export FHMIN=${FHMIN_ENKF}

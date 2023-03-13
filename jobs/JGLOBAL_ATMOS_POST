@@ -15,15 +15,13 @@ export g2tmpl_ver=${g2tmpl_ver:-v1.5.0}
 ##############################################
 # Set variables used in the exglobal script
 ##############################################
-export CDATE=${CDATE:-${PDY}${cyc}}
 export CDUMP=${RUN/enkf}
-export COMPONENT="atmos"
 
 
 ##############################################
 # TODO: Remove this egregious HACK
 ##############################################
-if [[ "${SDATE:-}" = "${CDATE}" ]]; then
+if [[ "${SDATE:-}" = "${PDY}${cyc}" ]]; then
   if [[ ${post_times} = "anl" ]]; then
     echo "No offline post-processing in the first half cycle for analysis"
     exit 0
@@ -45,7 +43,7 @@ export INLINE_POST=${WRITE_DOPOST:-".false."}
 YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_RESTART COM_ATMOS_ANALYSIS COM_ATMOS_HISTORY COM_ATMOS_MASTER
 YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_GOES COM_ATMOS_WAFS
 for RES in '0p25' '0p50' '1p00'; do
-  # After the post refactor, we likely won't need these separate envvars
+  # After the post refactor, we likely won't need these separate envvars here
   prod_dir="COM_ATMOS_GRIB_${RES}"
   RES=${RES} YMD=${PDY} HH=${cyc} generate_com -rx "${prod_dir}:COM_ATMOS_GRIB_TMPL"
   if [[ ! -d "${prod_dir}" ]]; then mkdir -m 775 -p "${!prod_dir}"; fi

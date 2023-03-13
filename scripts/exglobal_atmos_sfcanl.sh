@@ -182,7 +182,7 @@ if [[ ${DOIAU} = "YES" ]]; then
     export OMP_NUM_THREADS_CY=${NTHREADS_CYCLE}
     export MAX_TASKS_CY=${ntiles}
 
-    ${CYCLESH}
+    CDATE="${PDY}${cyc}" ${CYCLESH}
     export err=$?; err_chk
 fi
 
@@ -200,7 +200,7 @@ export APRUNCY=${APRUN_CYCLE}
 export OMP_NUM_THREADS_CY=${NTHREADS_CYCLE}
 export MAX_TASKS_CY=${ntiles}
 
-${CYCLESH}
+CDATE="${PDY}${cyc}" ${CYCLESH}
 export err=$?; err_chk
 
 

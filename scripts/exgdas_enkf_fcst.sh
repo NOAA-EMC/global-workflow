@@ -46,10 +46,6 @@ export FCSTEXEC=${FCSTEXEC:-fv3gfs.x}
 export PARM_FV3DIAG=${PARM_FV3DIAG:-$HOMEgfs/parm/parm_fv3diag}
 export DIAG_TABLE=${DIAG_TABLE_ENKF:-${DIAG_TABLE:-$PARM_FV3DIAG/diag_table_da}}
 
-# Cycling and forecast hour specific parameters
-export CDATE=${CDATE:-"2001010100"}
-export CDUMP=${CDUMP:-"enkfgdas"}
-
 # Re-run failed members, or entire group
 RERUN_EFCSGRP=${RERUN_EFCSGRP:-"YES"}
 
@@ -68,9 +64,6 @@ DATATOP=$DATA
 
 ################################################################################
 # Set output data
-cymd=$(echo $CDATE | cut -c1-8)
-chh=$(echo  $CDATE | cut -c9-10)
-
 YMD=${PDY} HH=${cyc} generate_com COM_ENKF_GROUP
 EFCSGRP="${COM_ENKF_GROUP}/efcs.grp${ENSGRP}"
 if [ -f $EFCSGRP ]; then
@@ -134,6 +127,14 @@ if [ $RECENTER_ENKF = "YES" ]; then
    export PREFIX_ATMINC="r"
 fi
 
+# APRUN for different executables
+export APRUN_FV3=${APRUN_FV3:-${APRUN:-""}}
+export NTHREADS_FV3=${NTHREADS_FV3:-${NTHREADS:-1}}
+
+GDATE=$(${NDATE} -"${assim_freq}" "${PDY}${cyc}")
+declare -x gPDY="${GDATE:0:8}"
+declare -x gcyc="${GDATE:8:2}"
+
 ################################################################################
 # Run forecast for ensemble member
 rc=0
@@ -156,39 +157,31 @@ for imem in $(seq $ENSBEG $ENSEND); do
 
    # Construct COM variables from templates (see config.com)
    # Can't make these read-only because we are looping over members
-   generate_com -x COM_ATMOS_RESTART COM_ATMOS_INPUT COM_ATMOS_ANALYSIS COM_ATMOS_HISTORY COM_ATMOS_MASTER
-   generate_com -x COM_WAVE_RESTART COM_WAVE_PREP COM_WAVE_HISTORY
-   generate_com -x COM_MED_RESTART COM_OCEAN_INPUT COM_OCEAN_HISTORY
-   generate_com -x COM_ICE_HISTORY
-   generate_com -x COM_CHEM_HISTORY
+   YMD=${PDY} HH=${cyc} generate_com -x COM_ATMOS_RESTART COM_ATMOS_INPUT COM_ATMOS_ANALYSIS \
+     COM_ATMOS_HISTORY COM_ATMOS_MASTER
+     
+   RUN=${rCDUMP} YMD="${gPDY}" HH="${gcyc}" generate_com -x COM_ATMOS_RESTART_PREV:COM_ATMOS_RESTART_TMPL
 
-   # Construct COM variables for previous cycle restarts
-   GDATE=$(${NDATE} -"${assim_freq}" "${PDY}${cyc}")
-   gPDY="${GDATE:0:8}"
-   declare -x gPDY
-   gcyc="${GDATE:8:2}"
-   declare -x gcyc
+   if [[ ${DO_WAVE} == "YES" ]]; then
+     YMD=${PDY} HH=${cyc} generate_com -x COM_WAVE_RESTART COM_WAVE_PREP COM_WAVE_HISTORY
+     RUN=${rCDUMP} YMD="${gPDY}" HH="${gcyc}" generate_com -x COM_WAVE_RESTART_PREV:COM_WAVE_RESTART_TMPL
+   fi
 
-   # shellcheck disable=SC2030,SC2031
-   COM_ATMOS_RESTART_PREV=$({
-     # Override env variables for this subshell to get correct template substitution
-     RUN=${rCDUMP}
-     YMD="${gPDY}"
-     HH="${gcyc}"
-     echo "${COM_ATMOS_RESTART_TMPL}" | envsubst
-   })
-   declare -x COM_ATMOS_RESTART_PREV
+   if [[ ${DO_OCEAN} == "YES" ]]; then
+     YMD=${PDY} HH=${cyc} generate_com -x COM_MED_RESTART COM_OCEAN_RESTART COM_OCEAN_INPUT COM_OCEAN_HISTORY
+     RUN=${rCDUMP} YMD="${gPDY}" HH="${gcyc}" generate_com -x COM_OCEAN_RESTART_PREV:COM_OCEAN_RESTART_TMPL
+   fi
 
-   COM_WAVE_RESTART_PREV=$( {
-     # Override env variables for this subshell to get correct template substitution
-     # If we drop a separate cycle frequency, this can be merged with above
-     YMD="${gPDY}"
-     HH="${gcyc}"
-     echo "${COM_WAVE_RESTART_TMPL}" | envsubst
-   })
-   declare -x COM_WAVE_RESTART_PREV
-   # shellcheck disable=
+   if [[ ${DO_ICE} == "YES" ]]; then
+     YMD=${PDY} HH=${cyc} generate_com -x COM_ICE_HISTORY
+     RUN=${rCDUMP} YMD="${gPDY}" HH="${gcyc}" generate_com -x COM_ICE_RESTART_PREV:COM_ICE_RESTART_TMPL
+   fi
 
+   if [[ ${DO_AERO} == "YES" ]]; then
+     YMD=${PDY} HH=${cyc} generate_com -x COM_CHEM_HISTORY
+   fi
+
+   
    if [ $skip_mem = "NO" ]; then
 
       ra=0

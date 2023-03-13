@@ -59,18 +59,18 @@ if [[ $RUN_ENVIR == "emc" ]]; then
     if [[ "${CDATE}" -ge "2019111000" && "${CDATE}" -le "2020052612" ]]; then
       para="y"
     fi
-    RUN="${CDUMP}${para}" YMD=${PDY} HH=${cyc} generate_com COM_OBSDMP:COM_OBSDMP_TMPL
-    ABIBF="${COM_OBSDMP}/${CDUMP}.t${cyc}z.gsrcsr.tm00.bufr_d"
+    RUN="${CDUMP}${para}" YMD=${PDY} HH=${cyc} generate_com COM_OBS_TEMP:COM_OBS_TMPL
+    ABIBF="${COM_OBS_TEMP}/${CDUMP}.t${cyc}z.gsrcsr.tm00.bufr_d"
   fi
 
   AHIBF="/dev/null"
   if [[ "${CDATE}" -ge "2019042300" ]]; then
-    RUN="${CDUMP}x" YMD=${PDY} HH=${cyc} generate_com COM_OBSDMP:COM_OBSDMP_TMPL
-    AHIBF="${COM_OBSDMP}/${CDUMP}.t${cyc}z.gsrcsr.tm00.bufr_d"
+    RUN="${CDUMP}x" YMD=${PDY} HH=${cyc} generate_com COM_OBS_TEMP:COM_OBS_TMPL
+    AHIBF="${COM_OBS_TEMP}/${CDUMP}.t${cyc}z.gsrcsr.tm00.bufr_d"
   fi
 
-  RUN="${CDUMP}x" YMD=${PDY} HH=${cyc} generate_com COM_OBSDMP:COM_OBSDMP_TMPL
-  HDOB="${COM_OBSDMP}/${CDUMP}.t${cyc}z.hdob.tm00.bufr_d"
+  RUN="${CDUMP}x" YMD=${PDY} HH=${cyc} generate_com COM_OBS_TEMP:COM_OBS_TMPL
+  HDOB="${COM_OBS_TEMP}/${CDUMP}.t${cyc}z.hdob.tm00.bufr_d"
 
   #   Use dumps from NCO GFS v16 parallel
   if [[ "${CDATE}" -ge "2020103012" ]]; then

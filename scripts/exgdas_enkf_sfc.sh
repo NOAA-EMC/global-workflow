@@ -153,7 +153,7 @@ if [ $DOIAU = "YES" ]; then
 
         done
 
-        $CYCLESH
+        CDATE="${PDY}${cyc}" ${CYCLESH}
         export err=$?; err_chk
 
     done
@@ -189,7 +189,7 @@ if [ $DOSFCANL_ENKF = "YES" ]; then
 
         done
 
-        $CYCLESH
+        CDATE="${PDY}${cyc}" ${CYCLESH}
         export err=$?; err_chk
 
     done
