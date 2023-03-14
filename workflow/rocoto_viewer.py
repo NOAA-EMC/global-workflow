@@ -947,13 +947,13 @@ def get_tasklist(workflow_file):
                 task_cycledefs = cycle_noname
             if list_tasks:
                 print(f"{task_name}, {task_cycledefs}")
-                # dependancies = child.iter('dependency')
+                # dependancies = child.getiterator('dependency')
                 # for dependency in dependancies:
                 #    for them in dependency.getchildren():
                 #        print(them.attrib)
             tasks_ordered.append((task_name, task_cycledefs, log_file))
         elif child.tag == 'metatask':
-            all_metatasks_iterator = child.iter('metatask')
+            all_metatasks_iterator = child.getiterator('metatask')
             all_vars = dict()
             all_tasks = []
             for i, metatasks in enumerate(all_metatasks_iterator):
