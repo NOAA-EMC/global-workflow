@@ -1,24 +1,20 @@
 from datetime import datetime, timedelta
 from pygw.timetools import *
+import pytest
 
 current_date = datetime.now()
 
 
 def test_to_datetime():
-    datetime_pairs = [
-        ('20221215', datetime(2022, 12, 15, 0, 0, 0)),
-        ('2022121518', datetime(2022, 12, 15, 18, 0, 0)),
-        ('202212151830', datetime(2022, 12, 15, 18, 30, 0)),
-        ('2022121518Z', datetime(2022, 12, 15, 18, 0, 0)),
-        ('20221215T1830', datetime(2022, 12, 15, 18, 30, 0)),
-        ('20221215T1830Z', datetime(2022, 12, 15, 18, 30, 0)),
-        ('2022-12-15T18:30', datetime(2022, 12, 15, 18, 30, 0)),
-        ('2022-12-1518:30', datetime(2022, 12, 15, 18, 30, 0)),
-        ('2022-12-15T18:30Z', datetime(2022, 12, 15, 18, 30, 0)),
-        ('2022-12-15T18:30:45Z', datetime(2022, 12, 15, 18, 30, 45)),
-    ]
-    for pair in datetime_pairs:
-        assert to_datetime(pair[0]) == pair[1]
+
+    assert to_datetime('20220314') == datetime(2022, 3, 14)
+    assert to_datetime('2022031412') == datetime(2022, 3, 14, 12)
+    assert to_datetime('202203141230') == datetime(2022, 3, 14, 12, 30)
+    assert to_datetime('2022-03-14') == datetime(2022, 3, 14)
+    assert to_datetime('2022-03-14T12Z') == datetime(2022, 3, 14, 12)
+    assert to_datetime('2022-03-14T12:30Z') == datetime(2022, 3, 14, 12, 30)
+    assert to_datetime('2022-03-14T12:30:45') == datetime(2022, 3, 14, 12, 30, 45)
+    assert to_datetime('2022-03-14T12:30:45Z') == datetime(2022, 3, 14, 12, 30, 45)
 
 
 def test_to_timedelta():
