@@ -75,9 +75,9 @@ EOF
         for i in $(echo $IAUFHRS | sed "s/,/ /g" | rev); do
           incfhr=$(printf %03i $i)
           if [ $incfhr = "006" ]; then
-            increment_file="${COM_ATMOS_ANALYSIS}/${CDUMP}.t${cyc}z.${PREFIX_ATMINC}atminc.nc"
+            increment_file="${COM_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.${PREFIX_ATMINC}atminc.nc"
           else
-            increment_file="${COM_ATMOS_ANALYSIS}/${CDUMP}.t${cyc}z.${PREFIX_ATMINC}atmi${incfhr}.nc"
+            increment_file="${COM_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.${PREFIX_ATMINC}atmi${incfhr}.nc"
           fi
           if [ ! -f $increment_file ]; then
             echo "ERROR: DOIAU = $DOIAU, but missing increment file for fhr $incfhr at $increment_file"
@@ -90,7 +90,7 @@ EOF
         read_increment=".false."
         res_latlon_dynamics=""
       else
-        increment_file="${COM_ATMOS_ANALYSIS}/${CDUMP}.t${cyc}z.${PREFIX_ATMINC}atminc.nc"
+        increment_file="${COM_ATMOS_ANALYSIS}/${RUN}.t${cyc}z.${PREFIX_ATMINC}atminc.nc"
         if [ -f $increment_file ]; then
           $NLN $increment_file $DATA/INPUT/fv3_increment.nc
           read_increment=".true."
@@ -504,11 +504,11 @@ EOF
       logi=logf${FH3}
       pgbi=GFSPRS.GrbF${FH2}
       flxi=GFSFLX.GrbF${FH2}
-      atmo=${COM_ATMOS_HISTORY}/${CDUMP}.t${cyc}z.atmf${FH3}.nc
-      sfco=${COM_ATMOS_HISTORY}/${CDUMP}.t${cyc}z.sfcf${FH3}.nc
-      logo=${COM_ATMOS_HISTORY}/${CDUMP}.t${cyc}z.logf${FH3}.txt
-      pgbo=${COM_ATMOS_MASTER}/${CDUMP}.t${cyc}z.master.grb2f${FH3}
-      flxo=${COM_ATMOS_MASTER}/${CDUMP}.t${cyc}z.sfluxgrbf${FH3}.grib2
+      atmo=${COM_ATMOS_HISTORY}/${RUN}.t${cyc}z.atmf${FH3}.nc
+      sfco=${COM_ATMOS_HISTORY}/${RUN}.t${cyc}z.sfcf${FH3}.nc
+      logo=${COM_ATMOS_HISTORY}/${RUN}.t${cyc}z.logf${FH3}.txt
+      pgbo=${COM_ATMOS_MASTER}/${RUN}.t${cyc}z.master.grb2f${FH3}
+      flxo=${COM_ATMOS_MASTER}/${RUN}.t${cyc}z.sfluxgrbf${FH3}.grib2
       eval $NLN $atmo $atmi
       eval $NLN $sfco $sfci
       eval $NLN $logo $logi
@@ -554,7 +554,7 @@ data_out_GFS() {
 
   if [ $SEND = "YES" ]; then
     # Copy model restart files
-    if [[ ${CDUMP} =~ "gdas" ]] && (( rst_invt1 > 0 )); then
+    if [[ ${RUN} =~ "gdas" ]] && (( rst_invt1 > 0 )); then
       cd $DATA/RESTART
       mkdir -p "${COM_ATMOS_RESTART}"
       for rst_int in $restart_interval ; do
@@ -580,7 +580,7 @@ data_out_GFS() {
           ${NCP} "${file}" "${COM_ATMOS_RESTART}/${file}"
         done
       fi
-    elif [[ ${CDUMP} =~ "gfs" ]]; then
+    elif [[ ${RUN} =~ "gfs" ]]; then
       ${NCP} ${DATA}/input.nml ${COM_ATMOS_INPUT}
     fi
   fi
@@ -616,7 +616,7 @@ WW3_postdet() {
     $NLN -sf $FIXwave/$MESH_WAV $DATA/
   fi
 
-  export wavprfx=${CDUMP}${WAV_MEMBER:-}
+  export wavprfx=${RUN}${WAV_MEMBER:-}
 
   #Copy initial condition files:
   for wavGRD in $waveGRD ; do
@@ -654,7 +654,7 @@ WW3_postdet() {
   fi
 
   if [ "$WW3ICEINP" = "YES" ]; then
-    wavicefile="${COM_WAVE_PREP}/${CDUMP}.${WAVEICE_FID}.${cycle}.ice"
+    wavicefile="${COM_WAVE_PREP}/${RUN}.${WAVEICE_FID}.${cycle}.ice"
     if [ ! -f $wavicefile ]; then
       echo "ERROR: WW3ICEINP = ${WW3ICEINP}, but missing ice file"
       echo "Abort!"
@@ -664,7 +664,7 @@ WW3_postdet() {
   fi
 
   if [ "$WW3CURINP" = "YES" ]; then
-    wavcurfile="${COM_WAVE_PREP}/${CDUMP}.${WAVECUR_FID}.${cycle}.cur"
+    wavcurfile="${COM_WAVE_PREP}/${RUN}.${WAVECUR_FID}.${cycle}.cur"
     if [ ! -f $wavcurfile ]; then
       echo "ERROR: WW3CURINP = ${WW3CURINP}, but missing current file"
       echo "Abort!"
@@ -719,7 +719,7 @@ WW3_postdet() {
 
 WW3_nml() {
   echo "SUB ${FUNCNAME[0]}: Copying input files for WW3"
-  WAV_MOD_TAG=${CDUMP}wave${waveMEMB}
+  WAV_MOD_TAG=${RUN}wave${waveMEMB}
   if [ "${USE_WAV_RMP:-YES}" = "YES" ]; then
     if (( $( ls -1 $FIXwave/rmp_src_to_dst_conserv_* > /dev/null | wc -l) > 0 )); then
       for file in $(ls $FIXwave/rmp_src_to_dst_conserv_*) ; do
@@ -742,7 +742,7 @@ WW3_out() {
 CPL_out() {
   echo "SUB ${FUNCNAME[0]}: Copying output data for general cpl fields"
   if [ $esmf_profile = ".true." ]; then
-    $NCP $DATA/ESMF_Profile.summary $ROTDIR/$CDUMP.$PDY/$cyc/
+    ${NCP} "${DATA}/ESMF_Profile.summary" "${COM_TOP}"
   fi
 }
 
@@ -750,12 +750,12 @@ MOM6_postdet() {
   echo "SUB ${FUNCNAME[0]}: MOM6 after run type determination"
 
   # Copy MOM6 ICs
-  $NLN "${ROTDIR}/${CDUMP}.${gPDY}/${gcyc}/ocean/RESTART/${PDY}.${cyc}0000.MOM.res.nc" "${DATA}/INPUT/MOM.res.nc"
+  ${NLN} "${COM_OCEAN_RESTART_PREV}/${PDY}.${cyc}0000.MOM.res.nc" "${DATA}/INPUT/MOM.res.nc"
   case $OCNRES in
     "025")
       for nn in $(seq 1 4); do
-        if [[ -f "${ROTDIR}/${CDUMP}.${gPDY}/${gcyc}/ocean/RESTART/${PDY}.${cyc}0000.MOM.res_${nn}.nc" ]]; then
-          $NLN "${ROTDIR}/${CDUMP}.${gPDY}/${gcyc}/ocean/RESTART/${PDY}.${cyc}0000.MOM.res_${nn}.nc" "${DATA}/INPUT/MOM.res_${nn}.nc"
+        if [[ -f "${COM_OCEAN_RESTART_PREV}/${PDY}.${cyc}0000.MOM.res_${nn}.nc" ]]; then
+          ${NLN} "${COM_OCEAN_RESTART_PREV}/${PDY}.${cyc}0000.MOM.res_${nn}.nc" "${DATA}/INPUT/MOM.res_${nn}.nc"
         fi
       done
     ;;
@@ -763,11 +763,11 @@ MOM6_postdet() {
 
   # Link increment
   if [[ "${DO_JEDIOCNVAR:-NO}" = "YES" ]]; then
-      if [[ ! -f "${ROTDIR}/${CDUMP}.${PDY}/${cyc}/ocean/${CDUMP}.t${cyc}z.ocninc.nc" ]]; then
+      if [[ ! -f "${COM_OCEAN_ANALYSIS}/${RUN}.t${cyc}z.ocninc.nc" ]]; then
           echo "FATAL ERROR: Ocean increment not found, ABORT!"
           exit 111
       fi
-      $NLN "${ROTDIR}/${CDUMP}.${PDY}/${cyc}/ocean/${CDUMP}.t${cyc}z.ocninc.nc" "${DATA}/INPUT/mom6_increment.nc"
+      ${NLN} "${COM_OCEAN_ANALYSIS}/${RUN}.t${cyc}z.ocninc.nc" "${DATA}/INPUT/mom6_increment.nc"
   fi
 
   # Copy MOM6 fixed files
@@ -818,8 +818,8 @@ MOM6_postdet() {
   [[ ! -d $COMOUTocean ]] && mkdir -p $COMOUTocean
 
   # Link output files
-  if [[ "${CDUMP}" =~ "gfs" ]]; then
-    # Link output files for CDUMP = gfs
+  if [[ "${RUN}" =~ "gfs" ]]; then
+    # Link output files for RUN = gfs
 
     # TODO: get requirements on what files need to be written out and what these dates here are and what they mean
     export ENSMEM=${ENSMEM:-01}
@@ -865,14 +865,14 @@ MOM6_postdet() {
       last_fhr=$fhr
     done
 
-  elif [[ "${CDUMP}" =~ "gdas" ]]; then
-    # Link output files for CDUMP = gdas
+  elif [[ "${RUN}" =~ "gdas" ]]; then
+    # Link output files for RUN = gdas
 
     # Save MOM6 backgrounds
     for fhr in ${OUTPUT_FH}; do
       local idatestr=$(date -d "${CDATE:0:8} ${CDATE:8:2} + ${fhr} hours" +%Y_%m_%d_%H)
       local fhr3=$(printf %03i "${fhr}")
-      $NLN "${COM_OCEAN_HISTORY}/${CDUMP}.t${cyc}z.ocnf${fhr3}.nc" "${DATA}/ocn_da_${idatestr}.nc"
+      $NLN "${COM_OCEAN_HISTORY}/${RUN}.t${cyc}z.ocnf${fhr3}.nc" "${DATA}/ocn_da_${idatestr}.nc"
     done
   fi
 
@@ -916,7 +916,7 @@ MOM6_postdet() {
   # DANGER DANGER DANGER - Linking mediator restarts to COM causes the model to fail with a message like this below:
   # Abort with message NetCDF: File exists && NC_NOCLOBBER in file pio-2.5.7/src/clib/pioc_support.c at line 2173
   # Instead of linking, copy the mediator files after the model finishes
-  #local COMOUTmed="${ROTDIR}/${CDUMP}.${PDY}/${cyc}/med"
+  #local COMOUTmed="${ROTDIR}/${RUN}.${PDY}/${cyc}/med"
   #mkdir -p "${COMOUTmed}/RESTART"
   #local idate=$(date -d "${CDATE:0:8} ${CDATE:8:2} + ${res_int} hours" +%Y%m%d%H)
   #while [[ $idate -le $rdate ]]; do
@@ -946,8 +946,7 @@ MOM6_out() {
   # Copy mediator restarts from DATA to COM
   # Linking mediator restarts to COM causes the model to fail with a message.
   # See MOM6_postdet() function for error message
-  local COMOUTmed="${ROTDIR}/${CDUMP}.${PDY}/${cyc}/med"
-  mkdir -p "${COMOUTmed}/RESTART"
+  mkdir -p "${COM_MED_RESTART}"
   local res_int=$(echo $restart_interval | cut -d' ' -f1)  # If this is a list, get the frequency.  # This is bound to break w/ IAU
   local idate=$(date -d "${CDATE:0:8} ${CDATE:8:2} + ${res_int} hours" +%Y%m%d%H)
   local rdate=$(date -d "${CDATE:0:8} ${CDATE:8:2} + ${FHMAX} hours" +%Y%m%d%H)
@@ -956,7 +955,7 @@ MOM6_out() {
     local idatestr="${idate:0:4}-${idate:4:2}-${idate:6:2}-${seconds}"
     local mediator_file="${DATA}/RESTART/ufs.cpld.cpl.r.${idatestr}.nc"
     if [[ -f ${mediator_file} ]]; then
-      $NCP "${DATA}/RESTART/ufs.cpld.cpl.r.${idatestr}.nc" "${COMOUTmed}/RESTART/${idate:0:8}.${idate:8:2}0000.ufs.cpld.cpl.r.nc"
+      $NCP "${DATA}/RESTART/ufs.cpld.cpl.r.${idatestr}.nc" "${COM_MED_RESTART}/${idate:0:8}.${idate:8:2}0000.ufs.cpld.cpl.r.nc"
     else
       echo "Mediator restart ${mediator_file} not found."
     fi
@@ -984,9 +983,9 @@ CICE_postdet() {
   dumpfreq_n=${dumpfreq_n:-1000}  # Set this to a really large value, as cice, mom6 and cmeps restart interval is controlled by nems.configure
   dumpfreq=${dumpfreq:-"y"} #  "h","d","m" or "y" for restarts at intervals of "hours", "days", "months" or "years"
 
-  if [[ "${CDUMP}" =~ "gdas" ]]; then
+  if [[ "${RUN}" =~ "gdas" ]]; then
     cice_hist_avg=".false."   # DA needs instantaneous
-  elif [[ "${CDUMP}" =~ "gfs" ]]; then
+  elif [[ "${RUN}" =~ "gfs" ]]; then
     cice_hist_avg=".true."    # P8 wants averaged over histfreq_n
   fi
 
@@ -1008,9 +1007,9 @@ CICE_postdet() {
 
   # Copy/link CICE IC to DATA
   if [[ "${warm_start}" = ".true." ]]; then
-    $NLN "${ROTDIR}/${CDUMP}.${gPDY}/${gcyc}/ice/RESTART/${PDY}.${cyc}0000.cice_model.res.nc" "${DATA}/cice_model.res.nc"
+    $NLN "${COM_ICE_RESTART_PREV}/${PDY}.${cyc}0000.cice_model.res.nc" "${DATA}/cice_model.res.nc"
   else # cold start are typically SIS2 restarts obtained from somewhere else e.g. CPC
-    $NLN "${ROTDIR}/${CDUMP}.${PDY}/${cyc}/ice/RESTART/${PDY}.${cyc}0000.cice_model.res.nc" "${DATA}/cice_model.res.nc"
+    $NLN "${COM_ICE_RESTART}/${RUN}.${PDY}/${cyc}/ice/RESTART/${PDY}.${cyc}0000.cice_model.res.nc" "${DATA}/cice_model.res.nc"
   fi
   # TODO: add a check for the restarts to exist, if not, exit eloquently
   rm -f "${DATA}/ice.restart_file"
@@ -1026,8 +1025,8 @@ CICE_postdet() {
   if [[ ! -d "${COM_ICE_HISTORY}" ]]; then mkdir -p "${COM_ICE_HISTORY}"; fi  
   mkdir -p ${COM_ICE_RESTART}
 
-  if [[ "${CDUMP}" =~ "gfs" ]]; then
-    # Link output files for CDUMP = gfs
+  if [[ "${RUN}" =~ "gfs" ]]; then
+    # Link output files for RUN = gfs
 
     # TODO: make these forecast output files consistent w/ GFS output
     # TODO: Work w/ NB to determine appropriate naming convention for these files
@@ -1058,7 +1057,7 @@ CICE_postdet() {
       last_fhr=$fhr
     done
 
-  elif [[ "${CDUMP}" =~ "gdas" ]]; then
+  elif [[ "${RUN}" =~ "gdas" ]]; then
 
     # Link CICE generated initial condition file from DATA/CICE_OUTPUT to COMOUTice
     # This can be thought of as the f000 output from the CICE model

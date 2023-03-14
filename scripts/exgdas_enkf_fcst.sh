@@ -64,8 +64,7 @@ DATATOP=$DATA
 
 ################################################################################
 # Set output data
-YMD=${PDY} HH=${cyc} generate_com COM_ENKF_GROUP
-EFCSGRP="${COM_ENKF_GROUP}/efcs.grp${ENSGRP}"
+EFCSGRP="${COM_TOP}/efcs.grp${ENSGRP}"
 if [ -f $EFCSGRP ]; then
    if [ $RERUN_EFCSGRP = "YES" ]; then
       rm -f $EFCSGRP
@@ -167,8 +166,9 @@ for imem in $(seq $ENSBEG $ENSEND); do
      RUN=${rCDUMP} YMD="${gPDY}" HH="${gcyc}" generate_com -x COM_WAVE_RESTART_PREV:COM_WAVE_RESTART_TMPL
    fi
 
-   if [[ ${DO_OCEAN} == "YES" ]]; then
-     YMD=${PDY} HH=${cyc} generate_com -x COM_MED_RESTART COM_OCEAN_RESTART COM_OCEAN_INPUT COM_OCEAN_HISTORY
+   if [[ ${DO_OCN} == "YES" ]]; then
+     YMD=${PDY} HH=${cyc} generate_com -x COM_MED_RESTART COM_OCEAN_RESTART \
+       COM_OCEAN_INPUT COM_OCEAN_HISTORY COM_OCEAN_ANALYSIS
      RUN=${rCDUMP} YMD="${gPDY}" HH="${gcyc}" generate_com -x COM_OCEAN_RESTART_PREV:COM_OCEAN_RESTART_TMPL
    fi
 

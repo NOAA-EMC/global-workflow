@@ -7,8 +7,7 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "earc" -c "base earc"
 ##############################################
 # Set variables used in the script
 ##############################################
-export CDATE=${CDATE:-${PDY}${cyc}}
-export CDUMP=${CDUMP:-${RUN:-"gdas"}}
+export CDUMP=${RUN/enkf}
 
 ###############################################################
 # Run archive script

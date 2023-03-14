@@ -15,7 +15,7 @@ export CDUMP=${RUN/enkf}
 ##############################################
 export GFS_NCIO=${GFS_NCIO:-"YES"}
 
-export PREFIX="${CDUMP}.t${cyc}z."
+export PREFIX="${RUN}.t${cyc}z."
 
 export LEVS=$((LEVS-1))
 

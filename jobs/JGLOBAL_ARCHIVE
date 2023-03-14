@@ -7,8 +7,7 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "arch" -c "base arch"
 ##############################################
 # Set variables used in the script
 ##############################################
-export CDATE=${CDATE:-${PDY}${cyc}}
-export CDUMP=${CDUMP:-${RUN:-"gfs"}}
+export CDUMP=${RUN/enkf}
 
 YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_ANALYSIS COM_ATMOS_BUFR COM_ATMOS_GEMPAK \
   COM_ATMOS_GENESIS COM_ATMOS_HISTORY COM_ATMOS_INPUT COM_ATMOS_MASTER COM_ATMOS_RESTART \
