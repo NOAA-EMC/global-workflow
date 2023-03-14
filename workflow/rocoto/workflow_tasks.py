@@ -653,9 +653,9 @@ class Tasks:
 
         deps = []
         if self.app_config.do_atm:
-            atm_hist_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_HISTORY_TMPL"])
+            atm_input_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_INPUT_TMPL"])
             atm_restart_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_RESTART_TMPL"])
-            data = f'{atm_hist_path}/INPUT/sfc_data.tile6.nc'
+            data = f'{atm_input_path}/sfc_data.tile6.nc'
             dep_dict = {'type': 'data', 'data': data}
             deps.append(rocoto.add_dependency(dep_dict))
             data = f'{atm_restart_path}/@Y@m@d.@H0000.sfcanl_data.tile6.nc'
