@@ -23,7 +23,7 @@ repo_url=${repo_url:-"https://github.com/NOAA-EMC/global-workflow.git"}
 ################################################################
 # Setup the reletive paths to scripts and PS4 for better logging 
 ################################################################
-script_pwd="$(cd "$(dirname  "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd )"
+ROOT_DIR="$(cd "$(dirname  "${BASH_SOURCE[0]}")/.." >/dev/null 2>&1 && pwd )"
 scriptname=$(basename "${BASH_SOURCE[0]}")
 echo "Begin ${scriptname} at $(date -u)" || true
 export PS4='+ $(basename ${BASH_SOURCE})[${LINENO}]'
@@ -48,37 +48,18 @@ usage() {
 #  Set up runtime environment varibles for accounts on supproted machines
 #########################################################################
 
-source "${script_pwd}/../ush/detect_machine.sh"
+source "${ROOT_DIR}/ush/detect_machine.sh"
 if [[ "${MACHINE_ID}" != "UNKNOWN" ]]; then
-   TARGET="${MACHINE_ID}"
-fi   
-
-if [[ -z ${TARGET+x} || $1 == "-h" ]]; then
-  export TARGET
-  while getopts "t:h" opt; do
-    case ${opt} in
-      t)
-        TARGET=${OPTARG}
-        ;;
-      h|\?|:)
-        usage
-        ;;
-      *)
-        echo "Unrecognized option" 
-        usage
-    esac
-  done
-
-  if [[ -z "${TARGET+x}" ]]; then
-    usage
-  fi  
-
+  TARGET="${MACHINE_ID}"
+else
+  echo "Unsupported platform. Exiting with error."
+  exit 1
 fi
 
 case ${TARGET} in
   hera | orion)
     echo "Running Automated Testing on ${TARGET}"
-    source "${script_pwd}/${TARGET}.sh"
+    source "${ROOT_DIR}/ci/${TARGET}.sh"
     ;;
   *)
     echo "Unsupported platform. Exiting with error."
@@ -100,7 +81,7 @@ if [[ -s "${GFS_CI_ROOT}/${pr_list_file}" ]]; then
  pr_list=$(cat "${GFS_CI_ROOT}/${pr_list_file}")
 else
  echo "no PRs to process .. exit"
- exit
+ exit 1
 fi 
 
 #######################################
@@ -116,7 +97,7 @@ for pr in ${pr_list}; do
   mkdir -p "${pr_dir}"
   # call clone-build_ci to clone and build PR
   id=$("${GH}" pr view "${pr}" --repo "${repo_url}" --json id --jq '.id')
-  "${script_pwd}/clone-build_ci.sh" -p "${pr}" -d "${pr_dir}" -o "${pr_dir}/output_${id}"
+  "${ROOT_DIR}/ci/clone-build_ci.sh" -p "${pr}" -d "${pr_dir}" -o "${pr_dir}/output_${id}"
   ci_status=$?
   if [[ ${ci_status} -eq 0 ]]; then
     #setup runtime env for correct python install
@@ -130,12 +111,12 @@ for pr in ${pr_list}; do
     cd "${RUNTEST}"
     rm -Rf ./*
     export HOMEGFS="${pr_dir}/global-workflow"
-    "${script_pwd}/create_experment.py" --yaml "${script_pwd}/cold_96_00z.yaml"
+    "${ROOT_DIR}/ci/create_experiment.py" --yaml "${ROOT_DIR}/ci/cold_96_00z.yaml"
     ci_status=$?
     if [[ ${ci_status} -eq 0 ]]; then
       {
-        echo "Created experment"
-        echo "Experment setup: Completed at $(date)" || true
+        echo "Created experiment"
+        echo "Experiment setup: Completed at $(date)" || true
       } >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
       "${GH}" pr comment "${pr}" --repo "${repo_url}" --body-file "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
       "${GH}" pr edit --repo "${repo_url}" "${pr}" --remove-label "${CI_HOST}-Running" --add-label "${CI_HOST}-Passed"
@@ -146,10 +127,6 @@ for pr in ${pr_list}; do
     "${GH}" pr edit "${pr}" --repo "${repo_url}" --remove-label "${CI_HOST}-Running" --add-label "${CI_HOST}-Failed"
   fi
 done
-
-  ####################################
-  # TODO setup_test.py -t testname.py
-  ####################################
 
 ##########################################
 # scrub working directory for older files

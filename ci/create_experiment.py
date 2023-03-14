@@ -1,13 +1,16 @@
 #!/usr/bin/env python3
 
-'''Basic python script to create an experment directory on the fly from a given
+'''Basic python script to create an experiment directory on the fly from a given
 
 yaml file for the arguments to the two scripts below in ${HOMEgfs}/workflow
 
 where ${HOMEgfs} is specified within the input yaml file.
 
-${HOMEgfs}/workflow/setup_expt.py
-${HOMEgfs}/workflow/setup_xml.py
+ ${HOMEgfs}/workflow/setup_expt.py
+ ${HOMEgfs}/workflow/setup_xml.py
+
+The yaml file are simply the argments for these two scripts.
+After this scripts runs these two the use will have an experment ready for launching
 '''
 
 import os, sys, socket
@@ -28,19 +31,17 @@ _top  = Path.absolute(Path(__file__)).parents[1]
 
 def input_args():
     """
-    input_args()
-    
-    Method to collect user arguments for `create_experment.py`
+    Method to collect user arguments for `create_expirment.py`
     """
     
     description = """
-      Single agument as a yaml file
+      Single agument as a yaml file which simply contains the key value pairs as arguments to setup_expt.py
     """
 
     parser = ArgumentParser(description=description,
                             formatter_class=ArgumentDefaultsHelpFormatter)
 
-    parser.add_argument('--yaml', help='yaml configuration file per experment', type=str, required=True )
+    parser.add_argument('--yaml', help='yaml configuration file per expirment', type=str, required=True )
 
     args = parser.parse_args()
     return args
@@ -61,7 +62,7 @@ if __name__ == '__main__':
     rotdir = str(Path.absolute(Path(setup_expt_args.environment.rotdir)))
     HOMEgfs = setup_expt_args.environment.HOMEgfs
 
-    mode = setup_expt_args.experment.mode
+    mode = setup_expt_args.expirment.mode
 
     setup_expt_cmd = Executable(Path.absolute(Path.joinpath(Path(HOMEgfs),'workflow','setup_expt.py')))
     setup_expt_cmd.add_default_arg(mode)
@@ -79,4 +80,3 @@ if __name__ == '__main__':
 
     logger.info(f'Run command: {setup_xml_cmd.command}')
     setup_xml_cmd(output='stdout_setupxml', error='stderr_setupxml')
-

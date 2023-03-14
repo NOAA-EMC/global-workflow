@@ -2,7 +2,7 @@ environment:
   rotdir: ${RUNTEST}/cold_96_00z
   HOMEgfs: ${HOMEGFS}   #TODO - currenlty using the env var ${HOMEgfs}
                         #cause XML file to have HOMEgfs set to None 
-experment:
+experiment:
   mode: cycled
 
 arguments:  
@@ -12,7 +12,7 @@ arguments:
    resens: 48
    comrot: ${RUNTEST}
    expdir: ${RUNTEST}/expdir
-   icsdir: /scratch1/NCEPDEV/global/glopara/data/ICSDIR/C96C48
+   icsdir: ${ICSDIR_ROOT}/C96C48
    idate: 2021122018
    edate: 2021122200
    nens: 2
