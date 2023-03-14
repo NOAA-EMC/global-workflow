@@ -219,9 +219,9 @@ elif [[ "${step}" = "landanlinit" || "${step}" = "landanlfinal" ]]; then
    declare -x wtime_${step}="00:10:00"
    declare -x npe_${step}=1
    declare -x nth_${step}=1
-   temp_landname="${npe_node_max} / ${nth_${step}}"
-##   npe_node_step=$(echo "${!temp_landname}" | bc)
-   declare -x npe_node_${step}=$(echo "${!temp_landname}" | bc)
+   temp_landname1="nth_${step}"
+   temp_landname2="${npe_node_max} / ${!temp_landname1}"
+   declare -x npe_node_${step}=$(echo "${!temp_landname2}" | bc)
    declare -x memory_${step}="3072M"
 
 elif [[ "${step}" = "landanlrun" ]]; then
