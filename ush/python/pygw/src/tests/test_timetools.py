@@ -22,20 +22,10 @@ def test_to_datetime():
 
 
 def test_to_timedelta():
-    timedelta_pairs = [
-        ('4dT05H39M56S', timedelta(days=4, hours=5, minutes=39, seconds=56)),
-        ('1 day, 05:39:56', timedelta(days=1, hours=5, minutes=39, seconds=56)),
-        ('4 days, 05:39:56', timedelta(days=4, hours=5, minutes=39, seconds=56)),
-        ('3 days,', timedelta(days=3, hours=0, minutes=0, seconds=0)),
-        ('05:39:56', timedelta(hours=5, minutes=39, seconds=56)),
-        ('-05:39:56', timedelta(hours=5, minutes=39, seconds=56)),
-    ]
-    for pair in timedelta_pairs:
-        print(to_timedelta(pair[0]))
-        # datetime.timedelta is eccentric.  If you manually check the result, they are correct.
-        # So we just print the result to make sure the method works, instead of asserting it.
-        # assert to_timedelta(pair[0]) == pair[1]
-        assert True
+    assert to_timedelta('2d3H4M5S') == timedelta(days=2, hours=3, minutes=4, seconds=5)
+    assert to_timedelta('-3H15M') == timedelta(hours=-3, minutes=-15)
+    assert to_timedelta('1:30:45') == timedelta(hours=1, minutes=30, seconds=45)
+    assert to_timedelta('5 days, 12:30:15') == timedelta(days=5, hours=12, minutes=30, seconds=15)
 
 
 def test_datetime_to_ymdh():
