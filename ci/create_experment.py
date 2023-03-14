@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
-'''
-Basic python script to create an experment directory on the fly from a given
+'''Basic python script to create an experment directory on the fly from a given
+
 yaml file for the arguments to the two scripts below in ${HOMEgfs}/workflow
+
 where ${HOMEgfs} is specified within the input yaml file.
 
 ${HOMEgfs}/workflow/setup_expt.py
@@ -27,11 +28,15 @@ _top  = Path.absolute(Path(__file__)).parents[1]
 
 def input_args():
     """
+    input_args()
+    
     Method to collect user arguments for `create_experment.py`
+    
     """
-    description = """
-        Single agument as a yaml file
-        """
+    description =
+    """Single agument as a yaml file
+    
+    """
     parser = ArgumentParser(description=description,
                             formatter_class=ArgumentDefaultsHelpFormatter)
 
