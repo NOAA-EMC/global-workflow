@@ -256,8 +256,6 @@ if [[ ${HPSSARCH} = "YES" || ${LOCALARCH} = "YES" ]]; then
         if [ "${DO_ICE}" = "YES" ]; then
             targrp_list="${targrp_list} gdasice_restart"
         fi
-    fi
-
         if [ "${SAVEWARMICB}" = "YES" ] || [ "${SAVEFCSTIC}" = "YES" ]; then
             targrp_list="${targrp_list} gdas_restartb"
         fi
