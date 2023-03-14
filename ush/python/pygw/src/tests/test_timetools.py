@@ -61,13 +61,21 @@ def test_to_fv3time():
     assert to_fv3time(current_date) == current_date.strftime('%Y%m%d.%H%M%S')
 
 
-def test_add_to_datetime():
-    td = timedelta(hours=5, minutes=39, seconds=56)
-    dt = datetime(2022, 12, 15, 18, 30, 0)
-    assert add_to_datetime(dt, td) == datetime(2022, 12, 16, 0, 9, 56)
-
-
 def test_add_to_timedelta():
-    td1 = timedelta(hours=5, minutes=39, seconds=56)
-    td2 = timedelta(hours=0, minutes=20, seconds=4)
-    assert add_to_timedelta(td1, td2) == timedelta(hours=6, minutes=0, seconds=0)
+    assert add_to_timedelta(timedelta(days=1), timedelta(hours=3)) == \
+           timedelta(days=1, hours=3)
+    assert add_to_timedelta(timedelta(hours=5, minutes=30), timedelta(minutes=15)) == \
+           timedelta(hours=5, minutes=45)
+    assert add_to_timedelta(timedelta(seconds=45), timedelta(milliseconds=500)) == \
+           timedelta(seconds=45, milliseconds=500)
+
+
+def test_add_to_datetime():
+    dt = datetime(2023, 3, 14, 12, 0, 0)
+    td = timedelta(days=1, hours=6)
+    negative_td = timedelta(days=-1, hours=-6)
+    zero_td = timedelta()
+
+    assert add_to_datetime(dt, td) == datetime(2023, 3, 15, 18, 0, 0)
+    assert add_to_datetime(dt, negative_td) == datetime(2023, 3, 13, 6, 0, 0)
+    assert add_to_datetime(dt, zero_td) == datetime(2023, 3, 14, 12, 0, 0)
