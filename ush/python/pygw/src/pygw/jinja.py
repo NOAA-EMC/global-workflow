@@ -1,44 +1,191 @@
 import io
-import os
 import sys
 import jinja2
+from markupsafe import Markup
 from pathlib import Path
+
+from .timetools import strftime, to_YMDH, to_YMD, to_fv3time, to_isotime
+
+
+@jinja2.pass_eval_context
+class SilentUndefined(jinja2.Undefined):
+    """
+    Description
+    -----------
+    A Jinja2 undefined that does not raise an error when it is used in a
+    template. Instead, it returns the template back when the variable is not found
+    This class is not to be used outside of this file
+    Its purpose is to return the template instead of an empty string
+    Presently, it also does not return the filter applied to the variable.
+    This will be added later when a use case for it presents itself.
+    """
+    def __str__(self):
+        return "{{ " + self._undefined_name + " }}"
+
+    def __add__(self, other):
+        return str(self) + other
+
+    def __radd__(self, other):
+        return other + str(self)
+
+    def __mod__(self, other):
+        return str(self) % other
+
+    def __call__(self, *args, **kwargs):
+        return Markup("{{ " + self._undefined_name + " }}")
 
 
 class Jinja:
+    """
+    Description
+    -----------
+    A wrapper around jinja2 to render templates
+    """
 
-    def __init__(self, template_path, data, allow_missing=True):
+    def __init__(self, template_path_or_string: str, data: dict, allow_missing: bool = True):
         """
+        Description
+        -----------
         Given a path to a (jinja2) template and a data object, substitute the
         template file with data.
         Allow for retaining missing or undefined variables.
+        Parameters
+        ----------
+        template_path_or_string : str
+            Path to the template file or a templated string
+        data : dict
+            Data to be substituted into the template
+        allow_missing : bool
+            If True, allow for missing or undefined variables
         """
 
         self.data = data
-        self.undefined = jinja2.Undefined if allow_missing else jinja2.StrictUndefined
+        self.undefined = SilentUndefined if allow_missing else jinja2.StrictUndefined
 
-        if Path(template_path).is_file():
-            self.template_path = Path(template_path)
-            self.output = self._render_file()
+        if Path(template_path_or_string).is_file():
+            self.template_type = 'file'
+            self.template_path = Path(template_path_or_string)
         else:
-            self.output = self._render_stream()
+            self.template_type = 'stream'
+            self.template_stream = template_path_or_string
+
+    @property
+    def render(self, data: dict = None) -> str:
+        """
+        Description
+        -----------
+        Render the Jinja2 template with the data
+        Parameters
+        ----------
+        data: dict (optional)
+        Additional data to be used in the template
+        Not implemented yet.  Placed here for future use
+        Returns
+        -------
+        rendered: str
+        Rendered template into text
+        """
+
+        render_map = {'stream': self._render_stream,
+                      'file': self._render_file}
+        return render_map[self.template_type]()
+
+    def get_set_env(self, loader: jinja2.BaseLoader) -> jinja2.Environment:
+        """
+        Description
+        -----------
+        Define the environment for the jinja2 template
+        Any number of filters can be added here
+
+        Parameters
+        ----------
+        loader: of class jinja2.BaseLoader
+        Returns
+        -------
+        env: jinja2.Environment
+        """
+        env = jinja2.Environment(loader=loader, undefined=self.undefined)
+        env.filters["strftime"] = lambda dt, fmt: strftime(dt, fmt)
+        env.filters["to_isotime"] = lambda dt: to_isotime(dt) if not isinstance(dt, SilentUndefined) else dt
+        env.filters["to_fv3time"] = lambda dt: to_fv3time(dt) if not isinstance(dt, SilentUndefined) else dt
+        env.filters["to_YMDH"] = lambda dt: to_YMDH(dt) if not isinstance(dt, SilentUndefined) else dt
+        env.filters["to_YMD"] = lambda dt: to_YMD(dt) if not isinstance(dt, SilentUndefined) else dt
+        return env
+
+    @staticmethod
+    def add_filter_env(env: jinja2.Environment, filter_name: str, filter_func: callable):
+        """
+        Description
+        -----------
+        Add a custom filter to the jinja2 environment
+        Not implemented yet.  Placed here for future use
+        Parameters
+        ----------
+        env: jinja2.Environment
+            Active jinja2 environment
+        filter_name: str
+            name of the filter
+        filter_func: callable
+            function that will be called
+        Returns
+        -------
+        env: jinja2.Environment
+            Active jinja2 environment with the new filter added
+        """
+        raise NotImplementedError("Not implemented yet.  Placed here for future use")
+        # Implementation would look something like the following
+        # env.filters[filter_name] = filter_func
+        # return env
 
     def _render_stream(self):
-        raise NotImplementedError("Unable to handle templates other than files")
+        loader = jinja2.BaseLoader()
+        env = self.get_set_env(loader)
+        template = env.from_string(self.template_stream)
+        return self._render_template(template)
 
-    def _render_file(self):
+    def _render_file(self, data: dict = None):
         template_dir = self.template_path.parent
         template_file = self.template_path.relative_to(template_dir)
 
-        dirname = os.path.dirname(str(self.template_path))
-        relpath = os.path.relpath(str(self.template_path), dirname)
-
         loader = jinja2.FileSystemLoader(template_dir)
-        output = self._render(str(template_file), loader)
+        env = self.get_set_env(loader)
+        template = env.get_template(str(template_file))
+        return self._render_template(template)
 
-        return output
+    def _render_template(self, template):
+        """
+        Description
+        -----------
+        Render a jinja2 template object
+        Parameters
+        ----------
+        template: jinja2.Template
+
+        Returns
+        -------
+        rendered: str
+        """
+        try:
+            rendered = template.render(**self.data)
+        except jinja2.UndefinedError as ee:
+            raise Exception(f"Undefined variable in Jinja2 template\n{ee}")
+
+        return rendered
 
     def _render(self, template_name, loader):
+        """
+        Description
+        -----------
+        Internal method to render a jinja2 template
+        Parameters
+        ----------
+        template_name: str
+        loader: jinja2.BaseLoader
+        Returns
+        -------
+        rendered: str
+        rendered template
+        """
         env = jinja2.Environment(loader=loader, undefined=self.undefined)
         template = env.get_template(template_name)
         try:
@@ -48,10 +195,30 @@ class Jinja:
 
         return rendered
 
-    def save(self, output_file):
+    def save(self, output_file: str) -> None:
+        """
+        Description
+        -----------
+        Render and save the output to a file
+        Parameters
+        ----------
+        output_file: str
+        Path to the output file
+        Returns
+        -------
+        None
+        """
         with open(output_file, 'wb') as fh:
-            fh.write(self.output.encode("utf-8"))
+            fh.write(self.render.encode("utf-8"))
 
-    def dump(self):
+    def dump(self) -> None:
+        """
+        Description
+        -----------
+        Render and dump the output to stdout
+        Returns
+        -------
+        None
+        """
         io.TextIOWrapper(sys.stdout.buffer,
-                         encoding="utf-8").write(self.output)
+                         encoding="utf-8").write(self.render)
