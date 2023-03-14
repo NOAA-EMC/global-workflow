@@ -8,19 +8,34 @@ echo "BEGIN: config.coupled_ic"
 source ${EXPDIR}/config.resources coupled_ic
 
 if [[ "${machine}" == "WCOSS2" ]]; then
-  export BASE_CPLIC="/lfs/h2/emc/global/noscrub/emc.global/IC/COUPLED"
+  export BASE_CPLIC="/lfs/h2/emc/couple/noscrub/Jiande.Wang/IC"
 elif [[ "${machine}" == "HERA" ]]; then
   export BASE_CPLIC="/scratch1/NCEPDEV/climate/role.ufscpara/IC"
 elif [[ "${machine}" == "ORION" ]]; then
-  export BASE_CPLIC="/work/noaa/global/wkolczyn/noscrub/global-workflow/IC"
+  export BASE_CPLIC="/work/noaa/global/glopara/data/ICSDIR/prototype_ICs"
 elif [[ "${machine}" == "S4" ]]; then
   export BASE_CPLIC="/data/prod/glopara/coupled_ICs"
 fi
 
-export CPL_ATMIC=GEFS-NoahMP-aerosols-p8c
-export CPL_ICEIC=CPC
-export CPL_OCNIC=CPC3Dvar
-export CPL_WAVIC=GEFSwave20210528v2
-export CPL_DATM=CDEPS_DATM
+
+case "${CASE}" in
+  "C384")
+    #C384 and P8 ICs
+    export CPL_ATMIC=GEFS-NoahMP-aerosols-p8c
+    export CPL_ICEIC=CPC
+    export CPL_OCNIC=CPC3Dvar
+    export CPL_WAVIC=GEFSwave20210528v2
+    ;;
+  "C768")
+    export CPL_ATMIC=HR1
+    export CPL_ICEIC=HR1
+    export CPL_OCNIC=HR1
+    export CPL_WAVIC=HR1
+    ;;
+  *)
+    echo "Unrecognized case: ${1}"
+    exit 1
+    ;;
+esac
 
 echo "END: config.coupled_ic"

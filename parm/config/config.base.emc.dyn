@@ -170,7 +170,9 @@ export OPS_RES="C768" # Do not change
 export LEVS=128
 export CASE="@CASECTL@"
 export CASE_ENKF="@CASEENS@"
-case "$CASE" in
+# TODO: This should not depend on $CASE or $CASE_ENKF
+# These are the currently available grid-combinations
+case "${CASE}" in
     "C48") export OCNRES=500;;
     "C96") export OCNRES=100;;
     "C192") export OCNRES=050;;
@@ -178,7 +180,8 @@ case "$CASE" in
     "C768") export OCNRES=025;;
     *) export OCNRES=025;;
 esac
-export ICERES=$OCNRES
+export ICERES=${OCNRES}
+export waveGRD='gnh_10m aoc_9km gsh_15m'
 
 case "${APP}" in
   ATM)
@@ -215,7 +218,7 @@ case "${APP}" in
         export DO_WAVE="YES"
         export WAVE_CDUMP="both"
         export cplwav2atm=".true."
-        export confignamevarfornems="${confignamevarfornems}_wave"
+        export confignamevarfornems="${confignamevarfornems}_outerwave"
     fi
 
     source ${EXPDIR}/config.defaults.s2sw
@@ -249,10 +252,10 @@ export gfs_cyc=@gfs_cyc@ # 0: no GFS cycle, 1: 00Z only, 2: 00Z and 12Z only, 4:
 # GFS output and frequency
 export FHMIN_GFS=0
 
-export FHMAX_GFS_00=${FHMAX_GFS_00:-384}
-export FHMAX_GFS_06=${FHMAX_GFS_06:-384}
-export FHMAX_GFS_12=${FHMAX_GFS_12:-384}
-export FHMAX_GFS_18=${FHMAX_GFS_18:-384}
+export FHMAX_GFS_00=${FHMAX_GFS_00:-120}
+export FHMAX_GFS_06=${FHMAX_GFS_06:-120}
+export FHMAX_GFS_12=${FHMAX_GFS_12:-120}
+export FHMAX_GFS_18=${FHMAX_GFS_18:-120}
 export FHMAX_GFS=$(eval echo \${FHMAX_GFS_${cyc}})
 
 export FHOUT_GFS=${FHOUT_GFS:-3}

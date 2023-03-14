@@ -82,7 +82,7 @@ if (( 10#${ENSGRP} > 0 )) && [[ ${HPSSARCH} = "YES" || ${LOCALARCH} = "YES" ]]; 
      fi
 
      if [ "${SAVEWARMICB}" = "YES" ] && [ "${cyc}" -eq "${EARCICS_CYC}" ]; then
-       ${TARCMD} -P -cvf "${ATARDIR}/${CDATE}/${RUN}_restartb_grp${ENSGRP}.tar" $(cat "${ARCH_LIST}/${RUN}_restartb_grp{n}.txt")
+       ${TARCMD} -P -cvf "${ATARDIR}/${CDATE}/${RUN}_restartb_grp${ENSGRP}.tar" $(cat "${ARCH_LIST}/${RUN}_restartb_grp${n}.txt")
        status=$?
        if [ "${status}" -ne 0 ]; then
            echo "$(echo "${TARCMD}" | tr 'a-z' 'A-Z') ${CDATE} ${RUN}_restartb_grp${ENSGRP}.tar failed"

@@ -27,7 +27,7 @@ done
 
 cd "${cwd}/ufs_model.fd"
 
-MAKE_OPT="-DAPP=${APP} -DCCPP_SUITES=${CCPP_SUITES}"
+MAKE_OPT="-DAPP=${APP} -D32BIT=ON -DCCPP_SUITES=${CCPP_SUITES}"
 [[ ${BUILD_TYPE:-"Release"} = "DEBUG" ]] && MAKE_OPT+=" -DDEBUG=ON"
 COMPILE_NR=0
 CLEAN_BEFORE=YES
@@ -36,5 +36,6 @@ CLEAN_AFTER=NO
 ./tests/compile.sh "${MACHINE_ID}" "${MAKE_OPT}" "${COMPILE_NR}" "${CLEAN_BEFORE}" "${CLEAN_AFTER}"
 mv "./tests/fv3_${COMPILE_NR}.exe" ./tests/ufs_model.x
 mv "./tests/modules.fv3_${COMPILE_NR}.lua" ./tests/modules.ufs_model.lua
+cp "./modulefiles/ufs_common.lua" ./tests/ufs_common.lua
 
 exit 0
