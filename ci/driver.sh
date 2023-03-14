@@ -123,7 +123,6 @@ for pr in ${pr_list}; do
     module use "${pr_dir}"/global-workflow/modulefiles
     module load "module_base.${TARGET}"
     cd "${pr_dir}/global-workflow/ush/python/pygw"
-    python3 -m pip install .
     export PYTHONPATH="${pr_dir}/global-workflow/workflow" # Needed becuase Host class is in workflow 
     module load rocoto
     export RUNTEST="${pr_dir}/RUNTEST"
