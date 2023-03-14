@@ -10,7 +10,7 @@ where ${HOMEgfs} is specified within the input yaml file.
  ${HOMEgfs}/workflow/setup_xml.py
 
 The yaml file are simply the argments for these two scripts.
-After this scripts runs these two the use will have an experment ready for launching
+After this scripts runs these two the use will have an experiment ready for launching
 '''
 
 import os, sys, socket
@@ -31,7 +31,7 @@ _top  = Path.absolute(Path(__file__)).parents[1]
 
 def input_args():
     """
-    Method to collect user arguments for `create_expirment.py`
+    Method to collect user arguments for `create_experiment.py`
     """
     
     description = """
@@ -41,7 +41,7 @@ def input_args():
     parser = ArgumentParser(description=description,
                             formatter_class=ArgumentDefaultsHelpFormatter)
 
-    parser.add_argument('--yaml', help='yaml configuration file per expirment', type=str, required=True )
+    parser.add_argument('--yaml', help='yaml configuration file per experiment', type=str, required=True )
 
     args = parser.parse_args()
     return args
@@ -62,7 +62,7 @@ if __name__ == '__main__':
     rotdir = str(Path.absolute(Path(setup_expt_args.environment.rotdir)))
     HOMEgfs = setup_expt_args.environment.HOMEgfs
 
-    mode = setup_expt_args.expirment.mode
+    mode = setup_expt_args.experiment.mode
 
     setup_expt_cmd = Executable(Path.absolute(Path.joinpath(Path(HOMEgfs),'workflow','setup_expt.py')))
     setup_expt_cmd.add_default_arg(mode)
