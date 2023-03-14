@@ -31,12 +31,12 @@ def input_args():
     input_args()
     
     Method to collect user arguments for `create_experment.py`
-    
     """
-    description =
-    """Single agument as a yaml file
     
+    description = """
+      Single agument as a yaml file
     """
+
     parser = ArgumentParser(description=description,
                             formatter_class=ArgumentDefaultsHelpFormatter)
 
@@ -58,7 +58,6 @@ if __name__ == '__main__':
 
     setup_expt_args = YAMLFile(path=user_inputs.yaml)
 
-    icdir = glob.glob(str(Path.absolute(Path(setup_expt_args.environment.icdir)))+"/*")
     rotdir = str(Path.absolute(Path(setup_expt_args.environment.rotdir)))
     HOMEgfs = setup_expt_args.environment.HOMEgfs
 
@@ -73,15 +72,6 @@ if __name__ == '__main__':
 
     logger.info(f'Run command: {setup_expt_cmd.command}')
     setup_expt_cmd(output='stdout_expt', error='stderr_expt') 
-
-    # Make symlinks of initial conitions into ROTDIR
-    for folder in icdir:
-        link_ic_cmd = Executable('cp')
-        link_ic_cmd.add_default_arg('-as')
-        link_ic_cmd.add_default_arg(folder)
-        link_ic_cmd.add_default_arg(rotdir)
-        logger.info(f'Run command: {link_ic_cmd.command}')
-        link_ic_cmd()
 
     setup_xml_cmd = Executable(Path.absolute(Path.joinpath(Path(HOMEgfs),'workflow','setup_xml.py')))
     expdir = Path.absolute(Path.joinpath(Path(setup_expt_args.arguments.expdir),Path(setup_expt_args.arguments.pslot)))
