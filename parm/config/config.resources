@@ -220,8 +220,6 @@ elif [[ "${step}" = "landanlinit" || "${step}" = "landanlfinal" ]]; then
    declare -x npe_${step}=1
    declare -x nth_${step}=1
    temp_stepname="nth_${step}"
-##   temp_landname2="${npe_node_max} / ${!temp_landname1}"
-##   declare -x npe_node_${step}=$(echo "${!temp_landname2}" | bc)
    declare -x npe_node_${step}=$(echo "${npe_node_max} / ${!temp_stepname}" | bc)
    declare -x memory_${step}="3072M"
 
