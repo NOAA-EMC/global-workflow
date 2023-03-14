@@ -47,15 +47,15 @@ if [ $VRFYFITS = "YES" ]; then
         export CONVNETC="YES"
     fi
 
-    if [ $machine = "WCOSS2" ]; then
+    if [[ $machine == "WCOSS2" ]]; then
         export PREPQFITSH="$fitdir/subfits_wcoss2"
-    elif [ $machine = "HERA" ]; then
+    elif [[ $machine == "HERA" ]]; then
         export PREPQFITSH="$fitdir/subfits_hera"
-    elif [ $machine = "ORION" ]; then
+    elif [[ $machine == "ORION" ]]; then
         export PREPQFITSH="$fitdir/subfits_orion"
-    elif [ $machine = "S4" ]; then
+    elif [[ $machine == "S4" ]]; then
         export PREPQFITSH="$fitdir/subfits_s4_slurm"
-    elif [ $machine = "JET" ]; then
+    elif [[ $machine == "JET" ]]; then
         export PREPQFITSH="$fitdir/subfits_jet"
     else
         echo "Fit2Obs NOT supported on this machine"
@@ -67,7 +67,7 @@ fi
 # Minimization, Radiance and Ozone Monitoring
 #----------------------------------------------------------
 
-if [ $VRFYRAD = "YES" -o $VRFYMINMON = "YES" -o $VRFYOZN = "YES" ]; then
+if [[ $VRFYRAD == "YES" || $VRFYMINMON == "YES" || $VRFYOZN == "YES" ]]; then
 
     export envir="para"
     export COM_IN=$ROTDIR
