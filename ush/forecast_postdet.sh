@@ -616,7 +616,7 @@ WW3_postdet() {
     $NLN -sf $FIXwave/$MESH_WAV $DATA/
   fi
 
-  export wavprfx=${RUN}${WAV_MEMBER:-}
+  export wavprfx=${RUNwave}${WAV_MEMBER:-}
 
   #Copy initial condition files:
   for wavGRD in $waveGRD ; do
@@ -654,7 +654,7 @@ WW3_postdet() {
   fi
 
   if [ "$WW3ICEINP" = "YES" ]; then
-    wavicefile="${COM_WAVE_PREP}/${RUN}.${WAVEICE_FID}.${cycle}.ice"
+    wavicefile="${COM_WAVE_PREP}/${RUNwave}.${WAVEICE_FID}.${cycle}.ice"
     if [ ! -f $wavicefile ]; then
       echo "ERROR: WW3ICEINP = ${WW3ICEINP}, but missing ice file"
       echo "Abort!"
@@ -664,7 +664,7 @@ WW3_postdet() {
   fi
 
   if [ "$WW3CURINP" = "YES" ]; then
-    wavcurfile="${COM_WAVE_PREP}/${RUN}.${WAVECUR_FID}.${cycle}.cur"
+    wavcurfile="${COM_WAVE_PREP}/${RUNwave}.${WAVECUR_FID}.${cycle}.cur"
     if [ ! -f $wavcurfile ]; then
       echo "ERROR: WW3CURINP = ${WW3CURINP}, but missing current file"
       echo "Abort!"
@@ -673,6 +673,7 @@ WW3_postdet() {
     $NLN $wavcurfile $DATA/current.${WAVECUR_FID}
   fi
 
+  if [[ ! -d ${COM_WAVE_HISTORY} ]]; then mkdir -p "${COM_WAVE_HISTORY}"; fi
 
   # Link output files
   cd $DATA
@@ -815,7 +816,7 @@ MOM6_postdet() {
   fi
 
   # Create COMOUTocean
-  [[ ! -d $COMOUTocean ]] && mkdir -p $COMOUTocean
+  [[ ! -d ${COM_OCEAN_HISTORY} ]] && mkdir -p "${COM_OCEAN_HISTORY}"
 
   # Link output files
   if [[ "${RUN}" =~ "gfs" ]]; then
@@ -939,8 +940,9 @@ MOM6_nml() {
 MOM6_out() {
   echo "SUB ${FUNCNAME[0]}: Copying output data for MOM6"
 
-  # Copy MOM_input from DATA to COMOUToucean after the forecast is run (and successfull)
-  $NCP ${DATA}/INPUT/MOM_input ${COMOUTocean}/MOM_input
+  # Copy MOM_input from DATA to COMOUTocean after the forecast is run (and successfull)
+  if [[ ! -d ${COM_OCEAN_INPUT} ]]; then mkdir -p "${COM_OCEAN_INPUT}"; fi
+  ${NCP} "${DATA}/INPUT/MOM_input" "${COM_OCEAN_INPUT}/"
 
   # TODO: mediator should have its own CMEPS_out() function
   # Copy mediator restarts from DATA to COM
@@ -1009,7 +1011,7 @@ CICE_postdet() {
   if [[ "${warm_start}" = ".true." ]]; then
     $NLN "${COM_ICE_RESTART_PREV}/${PDY}.${cyc}0000.cice_model.res.nc" "${DATA}/cice_model.res.nc"
   else # cold start are typically SIS2 restarts obtained from somewhere else e.g. CPC
-    $NLN "${COM_ICE_RESTART}/${RUN}.${PDY}/${cyc}/ice/RESTART/${PDY}.${cyc}0000.cice_model.res.nc" "${DATA}/cice_model.res.nc"
+    $NLN "${COM_ICE_RESTART}/${PDY}.${cyc}0000.cice_model.res.nc" "${DATA}/cice_model.res.nc"
   fi
   # TODO: add a check for the restarts to exist, if not, exit eloquently
   rm -f "${DATA}/ice.restart_file"
@@ -1099,7 +1101,8 @@ CICE_out() {
   echo "SUB ${FUNCNAME[0]}: Copying output data for CICE"
 
   # Copy ice_in namelist from DATA to COMOUTice after the forecast is run (and successfull)
-  $NCP ${DATA}/ice_in $COMOUTice/ice_in
+  if [[ ! -d "${COM_ICE_INPUT}" ]]; then mkdir -p "${COM_ICE_INPUT}"; fi
+  ${NCP} "${DATA}/ice_in" "${COM_ICE_INPUT}/ice_in"
 }
 
 GOCART_rc() {
