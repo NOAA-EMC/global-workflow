@@ -36,7 +36,7 @@ export COMIN_GES_ENS="${ROTDIR}/enkf${GDUMP}.${gPDY}/${gcyc}/chem"
 ###############################################################
 # Run relevant script
 
-echo $PYTHONPATH
+export PYTHONPATH="${HOMEgfs}/ush/python/pygw/src:${HOMEgfs}/ush/python"
 ${PYTHON} ${HOMEgfs}/scripts/exglobal_gfs_initialize.py # TEST
 
 exit 9999 # TEST
