@@ -2,7 +2,7 @@
 # ----
 
 import pygfs.forecast as forecast
-import pygfs.exceptions.GFSError as GFSError
+from pygfs.exceptions import GFSForecastError
 
 from pygw.configuration import cast_strdict_as_dtypedict
 from pygw.logger import Logger
