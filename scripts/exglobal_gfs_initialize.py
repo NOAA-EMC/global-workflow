@@ -19,9 +19,6 @@ if __name__ == '__main__':
     start_time = time.time()
     config = cast_strdict_as_dtypedict(os.environ)
 
-    print(config)
-    quit()
-
     # Launch the task.
     task = GFS(config=config)
     task.initialize()
