@@ -29,7 +29,7 @@ export jobid=
 
 ###############################################################
 # Execute the JJOB
-${HOMEgfs}/jobs/JGLOBAL_GFS_INITIALIZE
+$(which sh) ${HOMEgfs}/jobs/JGLOBAL_GFS_INITIALIZE
 status=$?
 
 
