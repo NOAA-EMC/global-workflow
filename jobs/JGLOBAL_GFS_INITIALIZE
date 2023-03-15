@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
 
 source "${HOMEgfs}/ush/preamble.sh"
-export DATA=${DATA:-${DATAROOT}/${RUN}aeroanl_${cyc}}
+export DATA=${DATA:-${DATAROOT}/${RUN}gfsfcst_${cyc}}
 source "${HOMEgfs}/ush/jjob_header.sh" -e "gfsinit" -c "base fcst"
 
 ##############################################
@@ -36,6 +36,7 @@ export COMIN_GES_ENS="${ROTDIR}/enkf${GDUMP}.${gPDY}/${gcyc}/chem"
 ###############################################################
 # Run relevant script
 
+echo $HOMEgfs
 ${PYTHON} ${HOMEgfs}/scripts/exglobal_gfs_initialize.py # TEST
 
 exit 9999 # TEST
