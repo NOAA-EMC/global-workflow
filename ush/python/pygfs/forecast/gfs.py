@@ -24,7 +24,7 @@ class GFS(Forecast):
         # Define the base-class attributes.
         super().__init__(config=config)
 
-    def initialize(self: Forecast):
+    def initialize(self: Forecast) -> None:
         """ """
 
         super().initialize()
