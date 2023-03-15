@@ -1,7 +1,7 @@
 
 # ----
 
-from forecast import Forecast
+from pygfs.forecast import Forecast
 from pygfs.exceptions import GFSError
 
 from pygw.configuration import cast_strdict_as_dtypedict
