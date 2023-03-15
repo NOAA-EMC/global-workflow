@@ -1,7 +1,7 @@
 
 # ----
 
-import pygfs.forecast.Forecast as Forecast
+import pygfs.forecast as forecast
 from pygfs.exceptions import GFSError
 
 from pygw.configuration import cast_strdict_as_dtypedict
@@ -10,7 +10,7 @@ from pygw.logger import Logger
 # ----
 
 
-class GFS(Forecast):
+class GFS(forecast.Forecast):
     """
 
     """
