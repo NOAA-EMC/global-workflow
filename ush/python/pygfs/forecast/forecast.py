@@ -19,3 +19,14 @@ class Forecast(Task):
 
         # Define the base-class attributes.
         super().__init__(config=config)
+
+    def model_configure(self: Task) -> None:
+        """Builds the model_configure file appropriate for the forecast
+        application.
+
+        """
+
+    def nems_configure(self: Task) -> None:
+        """ """
+
+        nems_configure = self.config.get('')

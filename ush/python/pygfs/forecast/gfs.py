@@ -28,3 +28,5 @@ class GFS(Forecast):
         """ """
 
         super().initialize()
+
+        self.nems_configure()
