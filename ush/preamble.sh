@@ -18,7 +18,7 @@
 #     (set -eu) [default: "YES"]
 #
 #######
-set +x
+#set +x TEST
 if (( $# > 0 )); then
     id="(${1})"
 else
