@@ -36,7 +36,4 @@ class GFS(Forecast):
 
         super().initialize()
 
-        for (item, value) in self.config.items():
-            print(item, value)
-
         self.nems_configure()
