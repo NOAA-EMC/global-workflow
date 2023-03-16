@@ -137,7 +137,7 @@ if [ $DOIAU = "YES" ]; then
             MEMDIR=${memchar} YMD=${PDY} HH=${cyc} generate_com \
                 COM_ATMOS_RESTART_MEM:COM_ATMOS_RESTART_TMPL
 
-            MEMDIR=${memchar} YMD=${gPDY} HH=${gcyc} generate_com \
+            MEMDIR=${memchar} RUN="enkfgdas" YMD=${gPDY} HH=${gcyc} generate_com \
                 COM_ATMOS_RESTART_MEM_PREV:COM_ATMOS_RESTART_TMPL
 
             [[ ${TILE_NUM} -eq 1 ]] && mkdir -p "${COM_ATMOS_RESTART_MEM}"

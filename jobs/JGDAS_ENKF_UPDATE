@@ -26,7 +26,7 @@ export GPREFIX="${GDUMP_ENS}.t${gcyc}z."
 MEMDIR="ensstat" YMD=${PDY} HH=${cyc} generate_com -rx \
   COM_ATMOS_ANALYSIS_STAT:COM_ATMOS_ANALYSIS_TMPL
 
-MEMDIR="ensstat" YMD=${gPDY} HH=${gcyc} generate_com -rx \
+MEMDIR="ensstat" RUN="enkfgdas" YMD=${gPDY} HH=${gcyc} generate_com -rx \
   COM_ATMOS_HISTORY_STAT_PREV:COM_ATMOS_HISTORY_TMPL
 
 
