@@ -17,7 +17,7 @@ base_logger = Logger(level="error", colored_log=True)
 class Forecast(Task):
     """ """
 
-    # @logit(base_logger)
+    @logit(base_logger, level="INFO")
     def __init__(self: Task, config: object, model: str):
         """
         Description
