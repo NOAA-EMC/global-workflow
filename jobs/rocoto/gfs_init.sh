@@ -11,7 +11,7 @@ source "${HOMEgfs}/ush/preamble.sh"
 
 # TODO: clean this up
 source "${HOMEgfs}/ush/detect_machine.sh"
-set +x
+#set +x # TEST --
 source "${HOMEgfs}/ush/module-setup.sh"
 module use "${HOMEgfs}/sorc/ufs_model.fd/tests"
 module load modules.ufs_model.lua
