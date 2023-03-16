@@ -40,17 +40,18 @@ class Grids:
         self.grid_res_dicts = {"c48": self.c48
                                }
 
-        self.grid_config["input.nml"] = self.grid_res_dicts[self.case.lower()]
+        (self.grid_config["input.nml"],
+         self.grid_config["model_configure"]) = \
+            self.grid_res_dicts[self.case.lower()]
 
-        # Define the grid dimensions accordingly.
-        self.grid_config["dimensions"] = AttrDict()
-        (self.grid_config["dimensions"]["npx"],
-         self.grid_config["dimensions"]["npy"]) = \
+        # Define the atmosphere model (FV3) grid dimensions
+        # accordingly.
+        self.grid_config["atmos_dims"] = AttrDict()
+        (self.grid_config["atmos_dims"]["npx"],
+         self.grid_config["atmos_dims"]["npy"]) = \
             [(int(self.case[1::]) + 1) for idx in range(2)]
 
-        print(self.grid_config["dimensions"])
-
-    @ logit(base_logger)
+    @logit(base_logger)
     def c48(self) -> Tuple[Dict]:
         """
 
