@@ -6,53 +6,54 @@ from dataclasses import dataclass
 
 from typing import Dict, Tuple
 
+
+from pygfs.config.config import Config, base_logger
 from pygw.attrdict import AttrDict
 from pygw.logger import Logger, logit
 
 # ----
 
-base_logger = Logger(level="error", colored_log=True)
+# base_logger = Logger(level="info", colored_log=True)
 
 # ----
 
 
-class Grids:
+class GFS(Config):
     """
 
     """
 
     @logit(base_logger)
-    def __init__(self, case):
+    def __init__(self: Config, case: str):
         """
         Description
         -----------
 
-        Creates a new Grids object.
+        Creates a new GFS object.
 
         """
 
         # Define the base-class attributes.
-        self.case = case
-        self.grid_config = AttrDict()
+        super().__init__(self)
 
         # Define the allowable grid methods and collect the respective
         # resolution grid attributes accordingly.
-        self.grid_res_dicts = {"c48": self.c48
-                               }
+        grid_res_dict = {"c48": self.c48,
+                         }
 
         (self.grid_config["input.nml"],
          self.grid_config["model_configure"]) = \
-            self.grid_res_dicts[self.case.lower()]
+            grid_res_dicts[case.lower()]
 
         # Define the atmosphere model (FV3) grid dimensions
         # accordingly.
         self.grid_config["atmos_dims"] = AttrDict()
         (self.grid_config["atmos_dims"]["npx"],
          self.grid_config["atmos_dims"]["npy"]) = \
-            [(int(self.case[1::]) + 1) for idx in range(2)]
+            [(int(case[1::]) + 1) for idx in range(2)]
 
     @logit(base_logger)
-    def c48(self) -> Tuple[Dict]:
+    def c48(self: Config) -> Tuple[Dict]:
         """
 
         """
