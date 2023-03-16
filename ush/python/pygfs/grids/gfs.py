@@ -21,6 +21,7 @@ class Grids:
 
     """
 
+    @logit(base_logger)
     def __init__(self, case):
         """
         Description
@@ -41,6 +42,15 @@ class Grids:
 
         self.grid_config["input.nml"] = self.grid_res_dicts[self.case.lower()]
 
+        # Define the grid dimensions accordingly.
+        self.grid_config["dimensions"] = AttrDict()
+        (self.grid_config["dimensions"]["npx"],
+         self.grid_config["dimensions"]["npy"]) = \
+            [(int(self.case[::1]) + 1) for idx in range(2)]
+
+        print(self.grid_config["dimensions"])
+
+    @logit(base_logger)
     def c48(self) -> Tuple[Dict]:
         """
 
@@ -49,11 +59,16 @@ class Grids:
         # Define the default namelist (i.e., input.nml) attributes for
         # the respective grid resolution; these may be overridden by
         # the experiment configuration attributes.
-        input_nml = {"deltim": 1200.0,
+        input_nml = {"cdmbgwd": "0.071,2.1,1.0,1.0",
                      "layout_x": 1,
                      "layout_y": 1,
-                     "layout_x_gfs": 1,
-                     "layout_y_gfs": 1,
-                     "cdmbgwd": "0.071,2.1,1.0,1.0"}
+                     }
 
-        return (input_nml)
+        # Define the model configuration (i.e., model_configure)
+        # attributes for the respective grid resolution; these may be
+        # overridden by the experiment configuration attributes.
+        model_configure = {"deltim": 1200.0,
+                           "WRITE_GROUP": 1,
+                           }
+
+        return (input_nml, model_configure)

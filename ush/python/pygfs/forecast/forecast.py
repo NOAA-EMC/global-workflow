@@ -2,7 +2,7 @@
 
 # ----
 
-from typing import Dict
+from typing import Dict, Tuple
 
 from pygfs.exceptions import ForecastError
 from pygfs.grids.gfs import Grids
@@ -70,7 +70,7 @@ class Forecast(Task):
         return fcst_model_config
 
     @logit(base_logger)
-    def build_grid_attrs(self: Task) -> None:
+    def build_grid_attrs(self: Task) -> Tuple[Dict]:
         """ """
 
         if self.config.CASE not in self.fcst_model_config["res"]:
@@ -79,7 +79,7 @@ class Forecast(Task):
 
         input_nml = Grids(case=self.config.CASE).grid_config
 
-        print(input_nml)
+        return (input_nml)
 
     @logit(base_logger)
     def model_configure(self: Task) -> None:
