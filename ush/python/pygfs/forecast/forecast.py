@@ -30,16 +30,22 @@ class Forecast(Task):
         super().__init__(config=config)
 
         # Define the supported forecast models and the respective
-        # attributes; build the base-class dictionary.
-        self.fcst_model_dict = {'GFS': {"ntiles": 6,
+        # attributes; build the base-class dictionary; model keys
+        # (e.g., gfs) should be lowercase for generalization purposes.
+        self.fcst_model_dict = {'gfs': {"ntiles": 6,
                                         "configs": ["ATM"]
                                         }
                                 }
 
+        if model.lower() not in self.fcst_model_dict:
+            msg = f"Forecast model {model} is not supported. Aborting!!!"
+            raise ForecastError(msg=msg)
+
         self.fcst_model_config = AttrDict()
 
-        print("HERE")
-        print(self.fcst_model_config)
+    @logit(base_logger)
+    def build_fcst_model_config(self: Task) -> None:
+        """ """
 
     @logit(base_logger)
     def model_configure(self: Task) -> None:
