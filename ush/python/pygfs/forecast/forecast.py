@@ -9,7 +9,7 @@ from pygw.task import Task
 
 # ----
 
-logger = Logger(level="error", colored_log=True)
+base_logger = Logger(level="error", colored_log=True)
 
 # ----
 
@@ -17,7 +17,7 @@ logger = Logger(level="error", colored_log=True)
 class Forecast(Task):
     """ """
 
-    @logit(logger)
+    @logit(base_logger)
     def __init__(self: Task, config: object, model: str):
         """
         Description
@@ -29,7 +29,6 @@ class Forecast(Task):
 
         # Define the base-class attributes.
         super().__init__(config=config)
-        self.logger = logger
 
         # Define the supported forecast models and the respective
         # attributes; build the base-class dictionary.
@@ -40,7 +39,7 @@ class Forecast(Task):
 
         self.fcst_model_config = AttrDict()
 
-    @logit(logger)
+    @logit(base_logger)
     def model_configure(self: Task) -> None:
         """
         Description
