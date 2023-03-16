@@ -72,7 +72,7 @@ class Forecast(Task):
     def check_resolution(self: Task) -> None:
         """ """
 
-        if self.config.CASE not in self.fcst_model_config.res:
+        if self.config.CASE not in self.fcst_model_config["res"]:
             msg = f"The forecast model resolution {self.config.CASE} is not supported. Aborting!!!"
             raise ForecastError(msg=msg)
 
