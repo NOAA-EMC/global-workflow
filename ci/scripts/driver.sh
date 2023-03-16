@@ -109,17 +109,21 @@ for pr in ${pr_list}; do
     module list
     #setup space to put an experiment
     export RUNTEST="${pr_dir}/RUNTEST"
+    rm -Rf "${RUNTEST}"
     mkdir -p "${RUNTEST}"
-    rm -Rf "${RUNTEST}/*"
+    # TODO adding pip install for YAML until is in HPC minicanda3
+    cd "${HOMEGFS}/ush/python/pygw"
+    python3 -m pip install .
     #make links to the python packages used in the PR'ed repo
     cd "${WF_ROOT_DIR}/ci/scripts"
-    if [[ ! -h "{WF_ROOT_DIR}/ci/scripts/workflow" ]]; then
+    if [[ ! -L workflow ]]; then
       ln -s "${HOMEGFS}/workflow" workflow
     fi
-    if [[ ! -h "${WF_ROOT_DIR}/ci/scripts/pygw" ]]; then
+    if [[ ! -L pygw ]]; then
       ln -s "${HOMEGFS}/ush/python/pygw/src/pygw" pygw
-    fi  
-    "${WF_ROOT_DIR}/ci/scripts/create_experiment.py" --yaml "${WF_ROOT_DIR}/ci/experiments/96C48_hybatmDA.yaml"
+    fi
+    PSLOT=C96C48_hybatmDA # TODO loop over experments for each yaml file in the experiments dir
+    "${WF_ROOT_DIR}/ci/scripts/create_experiment.py" --yaml "${WF_ROOT_DIR}/ci/experiments/${PSLOT}.yaml"
     ci_status=$?
     if [[ ${ci_status} -eq 0 ]]; then
       {

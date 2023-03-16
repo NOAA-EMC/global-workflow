@@ -17,9 +17,7 @@ import os, sys, socket
 import glob
 from pathlib import Path
 
-import pygw
-
-#from pygw.yaml_file import YAMLFile
+from pygw.yaml_file import YAMLFile
 from pygw.logger import Logger
 from pygw.executable import Executable
 
