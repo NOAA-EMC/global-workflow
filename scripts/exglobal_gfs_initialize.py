@@ -4,7 +4,7 @@ import time
 from pygw.logger import Logger
 from pygw.configuration import cast_strdict_as_dtypedict
 
-from pygfs.forecast.gfs import GFS
+from pygfs.ufswm.gfs import GFS
 
 # Initialize root logger.
 logger = Logger(level='DEBUG', colored_log=True)
