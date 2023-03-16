@@ -5,6 +5,7 @@
 from typing import Dict
 
 from pygfs.exceptions import ForecastError
+from pygfs.grids import gfs
 from pygw.attrdict import AttrDict
 from pygw.logger import Logger, logit
 from pygw.task import Task
@@ -69,7 +70,7 @@ class Forecast(Task):
         return fcst_model_config
 
     @logit(base_logger)
-    def check_resolution(self: Task) -> None:
+    def build_grid_attrs(self: Task) -> None:
         """ """
 
         if self.config.CASE not in self.fcst_model_config["res"]:
