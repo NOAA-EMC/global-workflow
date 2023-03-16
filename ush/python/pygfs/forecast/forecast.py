@@ -57,6 +57,7 @@ class Forecast(Task):
             msg = f"Forecast model {self.model} application {self.app} is not supported. Aborting!!!"
             raise ForecastError(msg=msg)
 
+        print(self.config.APP)
         for key in self.config.keys():
             print(key)
 
