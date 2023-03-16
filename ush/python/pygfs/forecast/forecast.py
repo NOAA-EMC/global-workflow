@@ -39,7 +39,7 @@ class Forecast(Task):
 
         self.fcst_model_config = AttrDict()
 
-        print(self.fcst_model_config)
+        # print(self.fcst_model_config)
 
     @logit(base_logger)
     def model_configure(self: Task) -> None:
