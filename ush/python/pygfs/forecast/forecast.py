@@ -63,18 +63,15 @@ class Forecast(Task):
 
         fcst_model_config = self.fcst_model_dict[self.model]
 
-        with open("/scratch1/NCEPDEV/da/Henry.Winterbottom/config.keys", "w") as f:
-            for key in self.config.keys():
-                f.write(f"{key}\n")
-
         return fcst_model_config
 
     @logit(base_logger)
     def check_resolution(self: Task) -> None:
         """ """
 
-        if self.fcst_model_config["res"]:
-            pass  # for now
+        print(self.config.CASE)
+
+        # if self.fcst_model_config["res"]:
 
     @logit(base_logger)
     def model_configure(self: Task) -> None:
