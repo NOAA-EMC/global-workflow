@@ -53,7 +53,7 @@ class Forecast(Task):
 
         fcst_model_dict = self.fcst_model_dict[self.model]
 
-        if self.app not None and self.app not in fcst_model_dict["configs"]:
+        if (self.app is not None) and (self.app not in fcst_model_dict["configs"]):
             msg = f"Forecast model {self.model} application {self.app} is not supported. Aborting!!!"
             raise ForecastError(msg=msg)
 
