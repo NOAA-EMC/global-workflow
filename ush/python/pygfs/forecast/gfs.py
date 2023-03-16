@@ -17,12 +17,15 @@ class GFS(Forecast):
 
     def __init__(self: Forecast, config: object):
         """
+        Description
+        -----------
+
         Creates a new GFS object.
 
         """
 
         # Define the base-class attributes.
-        super().__init__(config=config)
+        super().__init__(config=config, model="GFS")
 
     def initialize(self: Forecast) -> None:
         """ """
