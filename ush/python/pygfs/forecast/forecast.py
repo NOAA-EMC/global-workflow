@@ -3,6 +3,7 @@
 # ----
 
 from pygfs.exceptions import ForecastError
+from pygw.attrdict import AttrDict
 from pygw.task import Task
 
 # ----
@@ -11,8 +12,11 @@ from pygw.task import Task
 class Forecast(Task):
     """ """
 
-    def __init__(self: Task, config: object):
+    def __init__(self: Task, config: object, model: str):
         """
+        Description
+        -----------
+
         Creates a new Forecast object.
 
         """
@@ -20,8 +24,23 @@ class Forecast(Task):
         # Define the base-class attributes.
         super().__init__(config=config)
 
+        # Define the supported forecast models and the respective
+        # attributes; build the base-class dictionary.
+        self.fcst_model_dict = {'GFS': {"ntiles": 6,
+                                        "configs": ["ATM"]
+                                        }
+                                }
+
+        self.fcst_model_config = AttrDict()
+
+        print(self.fcst_model_config)
+
     def model_configure(self: Task) -> None:
-        """Builds the model_configure file appropriate for the forecast
+        """
+        Description
+        -----------
+
+        Builds the model_configure file appropriate for the forecast
         application.
 
         """
