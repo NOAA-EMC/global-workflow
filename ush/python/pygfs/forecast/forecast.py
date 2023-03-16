@@ -48,12 +48,13 @@ class Forecast(Task):
             raise ForecastError(msg=msg)
 
         self.fcst_model_config = self.build_fcst_model_config()
-        print(self.fcst_model_config)
 
     @logit(base_logger)
     def build_fcst_model_config(self: Task) -> Dict:
         """ """
 
+        # Define the configuration attributes for the respective
+        # (supported) forecast model; proceed accordingly.
         fcst_model_dict = self.fcst_model_dict[self.model]
 
         if (self.app is not None) and (self.app not in fcst_model_dict["configs"]):
@@ -62,7 +63,17 @@ class Forecast(Task):
 
         fcst_model_config = self.fcst_model_dict[self.model]
 
+        with open("config.keys", "w") as f:
+            for key in config.keys():
+                f.write(f"{key}\n")
+
         return fcst_model_config
+
+    @logit(base_logger)
+    def check_resolution(self: Task) -> None:
+        """ """
+
+        if self.fcst_model_config["res"]:
 
     @logit(base_logger)
     def model_configure(self: Task) -> None:
