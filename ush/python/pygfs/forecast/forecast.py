@@ -53,12 +53,11 @@ class Forecast(Task):
 
         fcst_model_dict = self.fcst_model_dict[self.model]
 
-        if self.app not None:
-            if self.app not in fcst_model_dict["configs"]:
-                msg = (f"Forecast model {self.model} application {self.app} is "
-                       "not supported. Aborting!!!"
-                       )
-                raise ForecastError(msg=msg)
+        if self.app not None and self.app not in fcst_model_dict["configs"]:
+            msg = f"Forecast model {self.model} application {self.app} is not supported. Aborting!!!"
+            raise ForecastError(msg=msg)
+
+        print(self.config.keys())
 
     @logit(base_logger)
     def model_configure(self: Task) -> None:
