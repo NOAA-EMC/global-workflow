@@ -31,7 +31,7 @@ class Forecast(Task):
         # Define the base-class attributes.
         super().__init__(config=config)
         self.app = app
-        self.model = model
+        self.model = model.lower()
 
         # Define the supported forecast models and the respective
         # attributes; build the base-class dictionary; model keys
@@ -41,8 +41,8 @@ class Forecast(Task):
                                         }
                                 }
 
-        if model.lower() not in self.fcst_model_dict:
-            msg = f"Forecast model {model} is not supported. Aborting!!!"
+        if self.model not in self.fcst_model_dict:
+            msg = f"Forecast model {self.model} is not supported. Aborting!!!"
             raise ForecastError(msg=msg)
 
         self.fcst_model_config = self.build_fcst_model_config()
