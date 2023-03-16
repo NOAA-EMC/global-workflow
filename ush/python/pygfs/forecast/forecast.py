@@ -5,7 +5,7 @@
 from typing import Dict
 
 from pygfs.exceptions import ForecastError
-from pygfs.grids import gfs
+from pygfs.grids.gfs import Grids
 from pygw.attrdict import AttrDict
 from pygw.logger import Logger, logit
 from pygw.task import Task
@@ -76,6 +76,10 @@ class Forecast(Task):
         if self.config.CASE not in self.fcst_model_config["res"]:
             msg = f"The forecast model resolution {self.config.CASE} is not supported. Aborting!!!"
             raise ForecastError(msg=msg)
+
+        input_nml = Grids(cast=self.config.CASE)
+
+        print(input_nml)
 
     @logit(base_logger)
     def model_configure(self: Task) -> None:
