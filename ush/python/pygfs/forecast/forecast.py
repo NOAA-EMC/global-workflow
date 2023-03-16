@@ -37,7 +37,9 @@ class Forecast(Task):
         # attributes; build the base-class dictionary; model keys
         # (e.g., gfs) should be lowercase for generalization purposes.
         self.fcst_model_dict = {'gfs': {"ntiles": 6,
-                                        "configs": ["ATM"]
+                                        "configs": ["ATM"],
+                                        # THIS CAN BE EXPANDED LATER
+                                        "res": ["C48", "C96"],
                                         }
                                 }
 
@@ -46,6 +48,7 @@ class Forecast(Task):
             raise ForecastError(msg=msg)
 
         self.fcst_model_config = self.build_fcst_model_config()
+        print(self.fcst_model_config)
 
     @logit(base_logger)
     def build_fcst_model_config(self: Task) -> Dict:
@@ -57,9 +60,9 @@ class Forecast(Task):
             msg = f"Forecast model {self.model} application {self.app} is not supported. Aborting!!!"
             raise ForecastError(msg=msg)
 
-        print(self.config.APP)
-        for key in self.config.keys():
-            print(key)
+        fcst_model_config = self.fcst_model_dict[self.model]
+
+        return fcst_model_config
 
     @logit(base_logger)
     def model_configure(self: Task) -> None:
