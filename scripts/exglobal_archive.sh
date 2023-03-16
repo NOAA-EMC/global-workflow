@@ -314,6 +314,7 @@ GDATE=$(${NDATE} -"${RMOLDSTD:-120}" "${PDY}${cyc}")
 GLDAS_DATE=$(${NDATE} -96 "${PDY}${cyc}")
 RTOFS_DATE=$(${NDATE} -48 "${PDY}${cyc}")
 function remove_files() {
+    # TODO: move this to a new location
     local directory=$1
     shift
     local exclude_list=""
@@ -339,7 +340,7 @@ while [ "${GDATE}" -le "${GDATEEND}" ]; do
     gPDY="${GDATE:0:8}"
     gcyc="${GDATE:8:2}"
     COMINrtofs="${ROTDIR}/rtofs.${gPDY}"
-    if [ -d "${COMIN}" ]; then
+    if [ -d "${COM_TOP}" ]; then
         rocotolog="${EXPDIR}/logs/${GDATE}.log"
         if [ -f "${rocotolog}" ]; then
             set +e
