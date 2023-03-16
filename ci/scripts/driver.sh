@@ -98,8 +98,7 @@ for pr in ${pr_list}; do
   mkdir -p "${pr_dir}"
   # call clone-build_ci to clone and build PR
   id=$("${GH}" pr view "${pr}" --repo "${repo_url}" --json id --jq '.id')
-  #"${WF_ROOT_DIR}/ci/scripts/clone-build_ci.sh" -p "${pr}" -d "${pr_dir}" -o "${pr_dir}/output_${id}"
-  echo "SKIPPING CONE-BUILD"
+  "${WF_ROOT_DIR}/ci/scripts/clone-build_ci.sh" -p "${pr}" -d "${pr_dir}" -o "${pr_dir}/output_${id}"
   ci_status=$?
   if [[ ${ci_status} -eq 0 ]]; then
     #setup runtime env for correct python install
