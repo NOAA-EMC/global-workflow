@@ -19,6 +19,7 @@ base_logger = Logger(level="info", colored_log=True)
 class UFSWM:
     """ """
 
+    @logit(base_logger, name="UFSWM")
     def __init__(self, config: object, model: str, app: str = None):
         """
         Description
@@ -107,7 +108,7 @@ class UFSWM:
 
         # print(self.grid_config)
 
-        return (input_nml)
+        # return (input_nml)
 
     @logit(base_logger)
     def configure_inputs(self, template_path: str, output_path: str, value_dict: Dict,

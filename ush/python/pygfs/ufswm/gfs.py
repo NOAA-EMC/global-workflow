@@ -17,6 +17,7 @@ class GFS(UFSWM):
 
     """
 
+    @logit(base_logger, name="GFS")
     def __init__(self: UFSWM, config: object):
         """
         Description
