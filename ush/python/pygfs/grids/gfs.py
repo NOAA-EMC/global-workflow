@@ -46,11 +46,11 @@ class Grids:
         self.grid_config["dimensions"] = AttrDict()
         (self.grid_config["dimensions"]["npx"],
          self.grid_config["dimensions"]["npy"]) = \
-            [(int(self.case[::1]) + 1) for idx in range(2)]
+            [(int(self.case[1::]) + 1) for idx in range(2)]
 
         print(self.grid_config["dimensions"])
 
-    @logit(base_logger)
+    @ logit(base_logger)
     def c48(self) -> Tuple[Dict]:
         """
 
