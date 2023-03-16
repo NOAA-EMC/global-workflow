@@ -64,7 +64,7 @@ class Forecast(Task):
         fcst_model_config = self.fcst_model_dict[self.model]
 
         with open("~/config.keys", "w") as f:
-            for key in config.keys():
+            for key in self.config.keys():
                 f.write(f"{key}\n")
 
         return fcst_model_config
