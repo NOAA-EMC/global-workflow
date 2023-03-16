@@ -39,7 +39,7 @@ class Forecast(Task):
         self.fcst_model_dict = {'gfs': {"ntiles": 6,
                                         "configs": ["ATM"],
                                         # THIS CAN BE EXPANDED LATER
-                                        "res": ["C48", "C96"],
+                                        "res": ["C488", "C96"],
                                         }
                                 }
 
@@ -72,9 +72,9 @@ class Forecast(Task):
     def check_resolution(self: Task) -> None:
         """ """
 
-        print(self.config.CASE)
-
-        # if self.fcst_model_config["res"]:
+        if self.config.CASE not in self.fcst_model.config.res:
+            msg = f"The forecast model resolution {self.config.CASE} is not supported. Aborting!!!"
+            raise ForecastError(msg=msg)
 
     @logit(base_logger)
     def model_configure(self: Task) -> None:
