@@ -57,7 +57,8 @@ class Forecast(Task):
             msg = f"Forecast model {self.model} application {self.app} is not supported. Aborting!!!"
             raise ForecastError(msg=msg)
 
-        print(self.config.keys())
+        for key in self.config.keys():
+            print(key)
 
     @logit(base_logger)
     def model_configure(self: Task) -> None:
