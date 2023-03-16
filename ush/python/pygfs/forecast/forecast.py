@@ -4,7 +4,12 @@
 
 from pygfs.exceptions import ForecastError
 from pygw.attrdict import AttrDict
+from pygw.logger import Logger, logit
 from pygw.task import Task
+
+# ----
+
+logger = Logger(level="error", colored_log=True)
 
 # ----
 
@@ -12,6 +17,7 @@ from pygw.task import Task
 class Forecast(Task):
     """ """
 
+    @logit(logger)
     def __init__(self: Task, config: object, model: str):
         """
         Description
@@ -23,6 +29,7 @@ class Forecast(Task):
 
         # Define the base-class attributes.
         super().__init__(config=config)
+        self.logger = logger
 
         # Define the supported forecast models and the respective
         # attributes; build the base-class dictionary.
@@ -33,8 +40,7 @@ class Forecast(Task):
 
         self.fcst_model_config = AttrDict()
 
-        print(self.fcst_model_config)
-
+    @logit(logger)
     def model_configure(self: Task) -> None:
         """
         Description
