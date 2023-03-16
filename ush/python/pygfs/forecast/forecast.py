@@ -77,7 +77,7 @@ class Forecast(Task):
             msg = f"The forecast model resolution {self.config.CASE} is not supported. Aborting!!!"
             raise ForecastError(msg=msg)
 
-        input_nml = Grids(cast=self.config.CASE)
+        input_nml = Grids(case=self.config.CASE)
 
         print(input_nml)
 
