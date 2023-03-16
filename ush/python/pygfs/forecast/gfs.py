@@ -28,7 +28,7 @@ class GFS(Forecast):
         """
 
         # Define the base-class attributes.
-        super().__init__(config=config, model="GFSS")
+        super().__init__(config=config, model="GFS")
 
     @logit(base_logger)
     def initialize(self: Forecast) -> None:
