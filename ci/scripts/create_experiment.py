@@ -17,17 +17,19 @@ import os, sys, socket
 import glob
 from pathlib import Path
 
-from pygw.yaml_file import YAMLFile
+import pygw
+
+#from pygw.yaml_file import YAMLFile
 from pygw.logger import Logger
 from pygw.executable import Executable
 
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
-from hosts import Host
+from workflow.hosts import Host
 
 logger = Logger(level='DEBUG', colored_log=True)
-_here = Path.absolute(Path(__file__)).parents[0]
-_top  = Path.absolute(Path(__file__)).parents[1]
+_here = Path.absolute(Path(__file__)).parents[1]
+_top  = Path.absolute(Path(__file__)).parents[2]
 
 def input_args():
     """

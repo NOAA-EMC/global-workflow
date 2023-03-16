@@ -23,32 +23,33 @@ repo_url=${repo_url:-"https://github.com/NOAA-EMC/global-workflow.git"}
 ################################################################
 # Setup the reletive paths to scripts and PS4 for better logging 
 ################################################################
-ROOT_DIR="$(cd "$(dirname  "${BASH_SOURCE[0]}")/.." >/dev/null 2>&1 && pwd )"
+WF_ROOT_DIR="$(cd "$(dirname  "${BASH_SOURCE[0]}")/../.." >/dev/null 2>&1 && pwd )"
 scriptname=$(basename "${BASH_SOURCE[0]}")
 echo "Begin ${scriptname} at $(date -u)" || true
 export PS4='+ $(basename ${BASH_SOURCE})[${LINENO}]'
 
+
 usage() {
   set +x
   echo
-  echo "Usage: $0 -t <target> -h"
+  echo "Usage: $0 -h"
   echo
   echo    "  -h  display this message and quit"
-  echo -n "  -t  target/machine script is running"
+  echo
+  echo "This is top level script to run CI tests on the global-workflow repo"
   if [[ -n "${TARGET+x}" ]]; then
-    echo "on DEFAULT: ${TARGET}"
+     echo "on the DEFAULTED: ${TARGET} machine"
   fi  
   echo
   exit 1
 }
 
 
-
 #########################################################################
 #  Set up runtime environment varibles for accounts on supproted machines
 #########################################################################
 
-source "${ROOT_DIR}/ush/detect_machine.sh"
+source "${WF_ROOT_DIR}/ush/detect_machine.sh"
 if [[ "${MACHINE_ID}" != "UNKNOWN" ]]; then
   TARGET="${MACHINE_ID}"
 else
@@ -59,7 +60,7 @@ fi
 case ${TARGET} in
   hera | orion)
     echo "Running Automated Testing on ${TARGET}"
-    source "${ROOT_DIR}/ci/${TARGET}.sh"
+    source "${WF_ROOT_DIR}/ci/environments/${TARGET}.sh"
     ;;
   *)
     echo "Unsupported platform. Exiting with error."
@@ -97,21 +98,28 @@ for pr in ${pr_list}; do
   mkdir -p "${pr_dir}"
   # call clone-build_ci to clone and build PR
   id=$("${GH}" pr view "${pr}" --repo "${repo_url}" --json id --jq '.id')
-  "${ROOT_DIR}/ci/clone-build_ci.sh" -p "${pr}" -d "${pr_dir}" -o "${pr_dir}/output_${id}"
+  #"${WF_ROOT_DIR}/ci/scripts/clone-build_ci.sh" -p "${pr}" -d "${pr_dir}" -o "${pr_dir}/output_${id}"
+  echo "SKIPPING CONE-BUILD"
   ci_status=$?
   if [[ ${ci_status} -eq 0 ]]; then
     #setup runtime env for correct python install
-    module use "${pr_dir}"/global-workflow/modulefiles
-    module load "module_base.${TARGET}"
-    cd "${pr_dir}/global-workflow/ush/python/pygw"
-    export PYTHONPATH="${pr_dir}/global-workflow/workflow" # Needed becuase Host class is in workflow 
-    module load rocoto
+    export HOMEGFS="${pr_dir}/global-workflow"
+    module use "${HOMEGFS}/modulefiles"
+    module load "module_setup.${TARGET}"
+    module list
+    #setup space to put an experiment
     export RUNTEST="${pr_dir}/RUNTEST"
     mkdir -p "${RUNTEST}"
-    cd "${RUNTEST}"
-    rm -Rf ./*
-    export HOMEGFS="${pr_dir}/global-workflow"
-    "${ROOT_DIR}/ci/create_experiment.py" --yaml "${ROOT_DIR}/ci/cold_96_00z.yaml"
+    rm -Rf "${RUNTEST}/*"
+    #make links to the python packages used in the PR'ed repo
+    cd "${WF_ROOT_DIR}/ci/scripts"
+    if [[ ! -h "{WF_ROOT_DIR}/ci/scripts/workflow" ]]; then
+      ln -s "${HOMEGFS}/workflow" workflow
+    fi
+    if [[ ! -h "${WF_ROOT_DIR}/ci/scripts/pygw" ]]; then
+      ln -s "${HOMEGFS}/ush/python/pygw/src/pygw" pygw
+    fi  
+    "${WF_ROOT_DIR}/ci/scripts/create_experiment.py" --yaml "${WF_ROOT_DIR}/ci/experiments/96C48_hybatmDA.yaml"
     ci_status=$?
     if [[ ${ci_status} -eq 0 ]]; then
       {

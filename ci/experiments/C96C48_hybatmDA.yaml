@@ -1,0 +1,20 @@
+environment:
+  rotdir: ${RUNTEST}/C96C48_hybatmDA
+  HOMEgfs: ${HOMEGFS}   # TODO - using the env var ${HOMEgfs} will cause
+                        # the rocoto XML file to have HOMEgfs set to None 
+experiment:
+  mode: cycled
+
+arguments:
+  pslot: C96C48_hybatmDA
+  app: ATM
+  resdet: 96
+  resens: 48
+  comrot: ${RUNTEST}
+  expdir: ${RUNTEST}/expdir
+  icsdir: ${ICSDIR_ROOT}/C96C48
+  idate: 2021122018
+  edate: 2021122200
+  nens: 2
+  gfs_cyc: 1
+  start: cold
