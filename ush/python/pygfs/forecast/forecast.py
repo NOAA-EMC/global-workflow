@@ -51,7 +51,7 @@ class Forecast(Task):
         self.fcst_model_config = self.build_fcst_model_config()
 
         # Check that the forecast model resolution is supported.
-        self.check_resolution()
+        self.build_grid_attrs()
 
     @logit(base_logger)
     def build_fcst_model_config(self: Task) -> Dict:
