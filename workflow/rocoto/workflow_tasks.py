@@ -924,12 +924,12 @@ class Tasks:
         if task_name not in ['wafs', 'wafsgcip', 'wafsgrib2', 'wafsgrib20p25']:
             raise KeyError(f'Invalid WAFS task: {task_name}')
 
-        atm_hist_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_HISTORY_TMPL"])
+        wafs_path = self._template_to_rocoto_cycstring(self._base["COM_ATMOS_WAFS_TMPL"])
 
         deps = []
         fhrlst = [6] + [*range(12, 36 + 3, 3)]
         for fhr in fhrlst:
-            data = f'{atm_hist_path}/{self.cdump}.t@Hz.wafs.grb2if{fhr:03d}'
+            data = f'{wafs_path}/{self.cdump}.t@Hz.wafs.grb2if{fhr:03d}'
             dep_dict = {'type': 'data', 'data': data}
             deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
