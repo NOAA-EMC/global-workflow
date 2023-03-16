@@ -11,7 +11,7 @@ from pygw.logger import Logger, logit
 
 # ----
 
-base_logger = Logger(level="error", colored_log=True)
+base_logger = Logger(level="info", colored_log=True)
 
 # ----
 

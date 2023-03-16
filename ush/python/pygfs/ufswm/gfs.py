@@ -1,8 +1,7 @@
 
 # ----
 
-from pygfs.forecast.forecast import Forecast
-from pygfs.forecast.forecast import base_logger
+from pygfs.ufswm.ufswm import UFSWM, base_logger
 from pygfs.exceptions import GFSForecastError
 
 from pygw.configuration import cast_strdict_as_dtypedict
@@ -13,12 +12,12 @@ from pygw.logger import logit
 
 # ----
 
-class GFS(Forecast):
+class GFS(UFSWM):
     """
 
     """
 
-    def __init__(self: Forecast, config: object):
+    def __init__(self: UFSWM, config: object):
         """
         Description
         -----------
