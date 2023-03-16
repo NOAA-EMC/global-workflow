@@ -30,7 +30,7 @@ class GFS(UFSWM):
         super().__init__(config=config, model="GFS")
 
     @logit(base_logger)
-    def initialize(self: Forecast) -> None:
+    def initialize(self: UFSWM) -> None:
         """ """
 
         super().initialize()
