@@ -39,7 +39,7 @@ class Forecast(Task):
         self.fcst_model_dict = {'gfs': {"ntiles": 6,
                                         "configs": ["ATM"],
                                         # THIS CAN BE EXPANDED LATER
-                                        "res": ["C488", "C96"],
+                                        "res": ["C48", "C96"],
                                         }
                                 }
 
