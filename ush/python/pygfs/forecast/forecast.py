@@ -74,6 +74,7 @@ class Forecast(Task):
         """ """
 
         if self.fcst_model_config["res"]:
+            pass  # for now
 
     @logit(base_logger)
     def model_configure(self: Task) -> None:
