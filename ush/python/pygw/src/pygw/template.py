@@ -6,7 +6,7 @@ from collections.abc import Sequence
 
 # Template imported with permission from jcsda/solo
 
-__all__ = ['Template', 'TemplateConstants', 'Jinja']
+__all__ = ['Template', 'TemplateConstants']
 
 
 class TemplateConstants:
@@ -24,7 +24,7 @@ class Template:
     """
         Utility for substituting variables in a template. The template can be the contents of a whole file
         as a string (substitute_string) or in a complex dictionary (substitute_structure).
-        substitutions defines different type of variables with a regex and a slice:
+        substitutions define different type of variables with a regex and a slice:
         - the regex is supposed to find the whole variable, e.g, $(variable)
         - the slice indicate how to slice the value returned by the regex to have the variable name, in the
           case of $(variable), the slice is 2, -1 to remove $( and ).
@@ -144,7 +144,7 @@ class Template:
             if a flat structure (dictionary).
             If the same key name is present more than once in the structure, we want to
             either prioritise the values that are near the root of the tree (shallow_precedence=True)
-            or values that are near the leaves (shallow_precedence=False). We don't anticipated use
+            or values that are near the leaves (shallow_precedence=False). We don't anticipate use
             cases where the "nearest variable" should be used, but this could constitute a future
             improvement.
         """
