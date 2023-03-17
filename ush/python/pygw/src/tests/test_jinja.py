@@ -35,12 +35,3 @@ def test_render_file(tmp_path, create_template):
     data = {"name": "Jane", "greeting": "How are you?", "current_date": current_date}
     j = Jinja(str(file_path), data, allow_missing=False)
     assert j.render == f"Hello Jane! How are you? It is: {to_isotime(current_date)}"
-
-
-# def test_save():
-#    assert False
-#
-#
-# def test_dump():
-#    assert False
-#
