@@ -27,8 +27,8 @@ from workflow.hosts import Host
 
 logger = Logger(level='DEBUG', colored_log=True)
 
-def input_args():
 
+def input_args():
 
     """Method to collect user arguments for `create_experiment.py`
     """
@@ -46,6 +46,7 @@ def input_args():
     return args
 
 if __name__ == '__main__':
+
 
     user_inputs = input_args()
 
