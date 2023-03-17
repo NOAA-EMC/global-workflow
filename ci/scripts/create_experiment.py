@@ -33,7 +33,7 @@ def input_args():
     """Method to collect user arguments for `create_experiment.py`
     """
 
-    description ="""Single agument as a yaml file containing the
+    description = """Single agument as a yaml file containing the
     key value pairs as arguments to setup_expt.py
     """
 
@@ -46,7 +46,6 @@ def input_args():
     return args
 
 if __name__ == '__main__':
-
 
     user_inputs = input_args()
 
