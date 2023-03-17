@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta
 from pygw.timetools import *
-import pytest
 
 current_date = datetime.now()
 
