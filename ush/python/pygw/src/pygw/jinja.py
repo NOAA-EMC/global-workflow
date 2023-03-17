@@ -3,8 +3,11 @@ import sys
 import jinja2
 from markupsafe import Markup
 from pathlib import Path
+from typing import Dict
 
 from .timetools import strftime, to_YMDH, to_YMD, to_fv3time, to_isotime
+
+__all__ = ['Jinja']
 
 
 @jinja2.pass_eval_context
@@ -42,7 +45,7 @@ class Jinja:
     A wrapper around jinja2 to render templates
     """
 
-    def __init__(self, template_path_or_string: str, data: dict, allow_missing: bool = True):
+    def __init__(self, template_path_or_string: str, data: Dict, allow_missing: bool = True):
         """
         Description
         -----------
@@ -70,7 +73,7 @@ class Jinja:
             self.template_stream = template_path_or_string
 
     @property
-    def render(self, data: dict = None) -> str:
+    def render(self, data: Dict = None) -> str:
         """
         Description
         -----------
@@ -143,7 +146,7 @@ class Jinja:
         template = env.from_string(self.template_stream)
         return self._render_template(template)
 
-    def _render_file(self, data: dict = None):
+    def _render_file(self, data: Dict = None):
         template_dir = self.template_path.parent
         template_file = self.template_path.relative_to(template_dir)
 
@@ -152,7 +155,7 @@ class Jinja:
         template = env.get_template(str(template_file))
         return self._render_template(template)
 
-    def _render_template(self, template):
+    def _render_template(self, template: jinja2.Template):
         """
         Description
         -----------
@@ -172,7 +175,7 @@ class Jinja:
 
         return rendered
 
-    def _render(self, template_name, loader):
+    def _render(self, template_name: str, loader: jinja2.BaseLoader) -> str:
         """
         Description
         -----------
