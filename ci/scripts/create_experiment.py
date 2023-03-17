@@ -13,7 +13,8 @@ The yaml file are simply the argments for these two scripts.
 After this scripts runs these two the use will have an experiment ready for launching
 '''
 
-import os, sys, socket
+import sys
+import socket
 from pathlib import Path
 
 from pygw.yaml_file import YAMLFile
@@ -27,12 +28,14 @@ from workflow.hosts import Host
 logger = Logger(level='DEBUG', colored_log=True)
 
 def input_args():
-        """Method to collect user arguments for `create_experiment.py`
-        """
+    """Method to collect user arguments for `create_experiment.py`
+    """
+
     description =
-        """Single agument as a yaml file containing the
-        key value pairs as arguments to setup_expt.py
-        """
+    """Single agument as a yaml file containing the
+    key value pairs as arguments to setup_expt.py
+    """
+
     parser = ArgumentParser(description=description,
                             formatter_class=ArgumentDefaultsHelpFormatter)
 
