@@ -14,7 +14,6 @@ After this scripts runs these two the use will have an experiment ready for laun
 '''
 
 import os, sys, socket
-import glob
 from pathlib import Path
 
 from pygw.yaml_file import YAMLFile
@@ -26,18 +25,14 @@ from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from workflow.hosts import Host
 
 logger = Logger(level='DEBUG', colored_log=True)
-_here = Path.absolute(Path(__file__)).parents[1]
-_top  = Path.absolute(Path(__file__)).parents[2]
 
 def input_args():
-    """
-    Method to collect user arguments for `create_experiment.py`
-    """
-    
-    description = """
-      Single agument as a yaml file which simply contains the key value pairs as arguments to setup_expt.py
-    """
-
+        """Method to collect user arguments for `create_experiment.py`
+        """
+    description =
+        """Single agument as a yaml file containing the
+        key value pairs as arguments to setup_expt.py
+        """
     parser = ArgumentParser(description=description,
                             formatter_class=ArgumentDefaultsHelpFormatter)
 
