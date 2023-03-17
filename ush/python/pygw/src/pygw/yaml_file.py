@@ -2,7 +2,10 @@ import os
 import re
 import yaml
 import datetime
+from typing import Any, Dict
 from .attrdict import AttrDict
+from .template import TemplateConstants, Template
+from .jinja import Jinja
 
 __all__ = ['YAMLFile', 'parse_yaml',
            'save_as_yaml', 'dump_as_yaml', 'vanilla_yaml']
@@ -146,3 +149,53 @@ def vanilla_yaml(ctx):
         return ctx.strftime("%Y-%m-%dT%H:%M:%SZ")
     else:
         return ctx
+
+
+def parse_j2yaml(path: str, data: Dict = None) -> Dict[str, Any]:
+    """
+    Description
+    -----------
+    Load a compound jinja2-templated yaml file and resolve any templated variables.
+    The jinja2 templates are first resolved and then the rendered template is parsed as a yaml.
+    Finally, any remaining $( ... ) templates are resolved
+
+    Parameters
+    ----------
+    path : str
+        the path to the yaml file
+    data : Dict[str, Any], optional
+        the context for jinja2 templating
+    Returns
+    -------
+    Dict[str, Any]
+        the dict configuration
+    """
+    jenv = Jinja(path, data)
+    yaml_file = jenv.render
+    yaml_dict = YAMLFile(data=yaml_file)
+    yaml_dict = Template.substitute_structure(yaml_dict, TemplateConstants.DOLLAR_PARENTHESES, data.get)
+
+    return yaml_dict
+
+
+def parse_yamltmpl(path: str, data: Dict = None) -> Dict[str, Any]:
+    """
+    Description
+    -----------
+    Load a simple templated yaml file and then resolve any templated variables defined as $( ... )
+    Parameters
+    ----------
+    path : str
+        the path to the yaml file
+    data : Dict[str, Any], optional
+        the context for pygw.Template templating
+    Returns
+    -------
+    Dict[str, Any]
+        the dict configuration
+    """
+    yaml_dict = YAMLFile(path=path)
+    if data is not None:
+        yaml_dict = Template.substitute_structure(yaml_dict, TemplateConstants.DOLLAR_PARENTHESES, data.get)
+
+    return yaml_dict
