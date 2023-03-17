@@ -32,9 +32,7 @@ def input_args():
     """Method to collect user arguments for `create_experiment.py`
     """
 
-    description =
-
-    """Single agument as a yaml file containing the
+    description ="""Single agument as a yaml file containing the
     key value pairs as arguments to setup_expt.py
     """
 
@@ -64,19 +62,19 @@ if __name__ == '__main__':
 
     mode = setup_expt_args.experiment.mode
 
-    setup_expt_cmd = Executable(Path.absolute(Path.joinpath(Path(HOMEgfs),'workflow','setup_expt.py')))
+    setup_expt_cmd = Executable(Path.absolute(Path.joinpath(Path(HOMEgfs),'workflow', 'setup_expt.py')))
     setup_expt_cmd.add_default_arg(mode)
 
     for conf,value in setup_expt_args.arguments.items():
-         setup_expt_cmd.add_default_arg(f'--{conf}')
-         setup_expt_cmd.add_default_arg(str(value))
+        setup_expt_cmd.add_default_arg(f'--{conf}')
+        setup_expt_cmd.add_default_arg(str(value))
 
     logger.info(f'Run command: {setup_expt_cmd.command}')
-    setup_expt_cmd(output='stdout_expt',error='stderr_expt')
+    setup_expt_cmd(output='stdout_expt', error='stderr_expt')
 
-    setup_xml_cmd = Executable(Path.absolute(Path.joinpath(Path(HOMEgfs),'workflow','setup_xml.py')))
-    expdir = Path.absolute(Path.joinpath(Path(setup_expt_args.arguments.expdir),Path(setup_expt_args.arguments.pslot)))
+    setup_xml_cmd = Executable(Path.absolute(Path.joinpath(Path(HOMEgfs),'workflow', 'setup_xml.py')))
+    expdir = Path.absolute(Path.joinpath(Path(setup_expt_args.arguments.expdir), Path(setup_expt_args.arguments.pslot)))
     setup_xml_cmd.add_default_arg(str(expdir))
 
     logger.info(f'Run command: {setup_xml_cmd.command}')
-    setup_xml_cmd(output='stdout_setupxml',error='stderr_setupxml')
+    setup_xml_cmd(output='stdout_setupxml', error='stderr_setupxml')
