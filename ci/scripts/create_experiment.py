@@ -45,8 +45,8 @@ def input_args():
     args = parser.parse_args()
     return args
 
-if __name__ == '__main__':
 
+if __name__ == '__main__':
 
     user_inputs = input_args()
 
