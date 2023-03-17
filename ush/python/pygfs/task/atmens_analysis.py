@@ -129,7 +129,7 @@ class AtmEnsAnalysis(Analysis):
         atmensstat = os.path.join(self.task_config['COMOUT'], f"{self.task_config['APREFIX']}atmensstat")
 
         # get list of diag files to put in tarball
-        diags = glob.glob(os.path.join(self.task_config['DATA'], 'diags', 'diag*nc4'))
+        diags = glob.glob('diags/diag*nc4')
 
         # gzip the files first
         for diagfile in diags:
