@@ -1,45 +1,229 @@
-==========================
-Prepare Initial Conditions
-==========================
+==================
+Initial Conditions
+==================
 
 There are two types of initial conditions for the global-workflow:
 
 #. Warm start: these ICs are taken directly from either the GFS in production or an experiment "warmed" up (at least one cycle in).
-#. Cold start: any ICs converted to a new resolution or grid (e.g. GSM-GFS -> FV3GFS). These ICs are often prepared by chgres_cube (change resolution utility).
+#. Cold start: any ICs converted to a new resolution or grid (e.g. C768 -> C384). These ICs are often prepared by chgres_cube (change resolution utility).
 
 Most users will initiate their experiments with cold start ICs unless running high resolution (C768 deterministic with C384 EnKF) for a date with warm starts available. It is `not recommended` to run high resolution unless required or as part of final testing.
 
-Resolutions:
+Atmosphere Resolutions:
 
-* C48 = 2­ degree ≈ 200km
-* C96 = 1­ degree ≈ 100km
-* C192 = 1/2­ degree ≈ 50km
+* C48 = 2 degree ≈ 200km
+* C96 = 1 degree ≈ 100km
+* C192 = 1/2 degree ≈ 50km
 * C384 = 1/4 degree ≈ 25km
-* C768 = 1/8th degree ≈ 13km
+* C768 = 1/8 degree ≈ 13km
 * C1152 ≈ 9km
 * C3072 ≈ 3km
 
-Supported resolutions in global-workflow: C48, C96, C192, C384, C768
+Supported atmosphere resolutions in global-workflow: C48, C96, C192, C384, C768
+
+Ocean Resolutions:
+
+* mx500 = 5 degree
+* mx100 = 1 degree
+* mx050 = 1/2 degree
+* mx025 = 1/4 degree
+
+Supported ocean resolutions in global-workflow: mx500, mx100
+
+^^^^^^^^^^^^^^^^^^^^^^^^^
+Staged Initial Conditions
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* :ref:`Cycled ATM-only<staged_ics_cycled_atmonly>`
+* :ref:`Cycled ATM w/ Coupled (S2S) model<staged_ics_cycled_coupled>`
+* :ref:`Prototype<staged_ics_prototype>`
+
+.. _staged_ics_cycled_atmonly:
+
+***************
+Cycled ATM-only
+***************
+
+Cold-start atmosphere-only cycled C96 deterministic C48 enkf (80 members) ICs are available in the following locations on supported platforms:
+
+::
+
+   Hera: /scratch1/NCEPDEV/global/glopara/data/ICSDIR/C96C48
+   Orion: /work/noaa/global/glopara/data/ICSDIR/C96C48
+   WCOSS2: /lfs/h2/emc/global/noscrub/emc.global/data/ICSDIR/C96C48
+
+Start date = 2021122018
+
+::
+
+   -bash-4.2$ tree /scratch1/NCEPDEV/global/glopara/data/ICSDIR/C96C48/
+   |-- enkfgdas.20211220
+   |   `-- 18
+   |       |-- mem### (where ### = 001 -> 080)
+   |       |   `-- atmos
+   |       |       `-- INPUT
+   |       |           |-- gfs_ctrl.nc
+   |       |           |-- gfs_data.tile1.nc
+   |       |           |-- gfs_data.tile2.nc
+   |       |           |-- gfs_data.tile3.nc
+   |       |           |-- gfs_data.tile4.nc
+   |       |           |-- gfs_data.tile5.nc
+   |       |           |-- gfs_data.tile6.nc
+   |       |           |-- sfc_data.tile1.nc
+   |       |           |-- sfc_data.tile2.nc
+   |       |           |-- sfc_data.tile3.nc
+   |       |           |-- sfc_data.tile4.nc
+   |       |           |-- sfc_data.tile5.nc
+   |       |           `-- sfc_data.tile6.nc
+   `-- gdas.20211220
+       `-- 18
+           `-- atmos
+               |-- INPUT
+               |   |-- gfs_ctrl.nc
+               |   |-- gfs_data.tile1.nc
+               |   |-- gfs_data.tile2.nc
+               |   |-- gfs_data.tile3.nc
+               |   |-- gfs_data.tile4.nc
+               |   |-- gfs_data.tile5.nc
+               |   |-- gfs_data.tile6.nc
+               |   |-- sfc_data.tile1.nc
+               |   |-- sfc_data.tile2.nc
+               |   |-- sfc_data.tile3.nc
+               |   |-- sfc_data.tile4.nc
+               |   |-- sfc_data.tile5.nc
+               |   `-- sfc_data.tile6.nc
+               |-- gdas.t18z.abias
+               |-- gdas.t18z.abias_air
+               |-- gdas.t18z.abias_pc
+               `-- gdas.t18z.radstat
+
+.. _staged_ics_cycled_coupled:
+
+*********************************
+Cycled ATM w/ Coupled (S2S) model
+*********************************
+
+Warm-start cycled w/ coupled (S2S) model C48 atmosphere 5 degree ocean/ice ICs are available in the following locations on supported platforms:
+
+::
+
+   Hera: /scratch1/NCEPDEV/global/glopara/data/ICSDIR/C48mx500
+   Orion: /work/noaa/global/glopara/data/ICSDIR/C48mx500
+   WCOSS2: /lfs/h2/emc/global/noscrub/emc.global/data/ICSDIR/C48mx500
+
+Start date = 2021032312
+
+::
+
+   -bash-4.2$  tree /scratch1/NCEPDEV/global/glopara/data/ICSDIR/C48mx500
+   `-- gdas.20210323
+       |-- 06
+       |   |-- atmos
+       |   |   `-- RESTART
+       |   |       |-- 20210323.120000.ca_data.tile1.nc
+       |   |       |-- 20210323.120000.ca_data.tile2.nc
+       |   |       |-- 20210323.120000.ca_data.tile3.nc
+       |   |       |-- 20210323.120000.ca_data.tile4.nc
+       |   |       |-- 20210323.120000.ca_data.tile5.nc
+       |   |       |-- 20210323.120000.ca_data.tile6.nc
+       |   |       |-- 20210323.120000.coupler.res
+       |   |       |-- 20210323.120000.fv_core.res.nc
+       |   |       |-- 20210323.120000.fv_core.res.tile1.nc
+       |   |       |-- 20210323.120000.fv_core.res.tile2.nc
+       |   |       |-- 20210323.120000.fv_core.res.tile3.nc
+       |   |       |-- 20210323.120000.fv_core.res.tile4.nc
+       |   |       |-- 20210323.120000.fv_core.res.tile5.nc
+       |   |       |-- 20210323.120000.fv_core.res.tile6.nc
+       |   |       |-- 20210323.120000.fv_srf_wnd.res.tile1.nc
+       |   |       |-- 20210323.120000.fv_srf_wnd.res.tile2.nc
+       |   |       |-- 20210323.120000.fv_srf_wnd.res.tile3.nc
+       |   |       |-- 20210323.120000.fv_srf_wnd.res.tile4.nc
+       |   |       |-- 20210323.120000.fv_srf_wnd.res.tile5.nc
+       |   |       |-- 20210323.120000.fv_srf_wnd.res.tile6.nc
+       |   |       |-- 20210323.120000.fv_tracer.res.tile1.nc
+       |   |       |-- 20210323.120000.fv_tracer.res.tile2.nc
+       |   |       |-- 20210323.120000.fv_tracer.res.tile3.nc
+       |   |       |-- 20210323.120000.fv_tracer.res.tile4.nc
+       |   |       |-- 20210323.120000.fv_tracer.res.tile5.nc
+       |   |       |-- 20210323.120000.fv_tracer.res.tile6.nc
+       |   |       |-- 20210323.120000.phy_data.tile1.nc
+       |   |       |-- 20210323.120000.phy_data.tile2.nc
+       |   |       |-- 20210323.120000.phy_data.tile3.nc
+       |   |       |-- 20210323.120000.phy_data.tile4.nc
+       |   |       |-- 20210323.120000.phy_data.tile5.nc
+       |   |       |-- 20210323.120000.phy_data.tile6.nc
+       |   |       |-- 20210323.120000.sfc_data.tile1.nc
+       |   |       |-- 20210323.120000.sfc_data.tile2.nc
+       |   |       |-- 20210323.120000.sfc_data.tile3.nc
+       |   |       |-- 20210323.120000.sfc_data.tile4.nc
+       |   |       |-- 20210323.120000.sfc_data.tile5.nc
+       |   |       `-- 20210323.120000.sfc_data.tile6.nc
+       |   |-- ice
+       |   |   `-- RESTART
+       |   |       `-- 20210323.120000.cice_model.res.nc
+       |   |-- med
+       |   |   `-- RESTART
+       |   |       `-- 20210323.120000.ufs.cpld.cpl.r.nc
+       |   `-- ocean
+       |       `-- RESTART
+       |           `-- 20210323.120000.MOM.res.nc
+       `-- 12
+           |-- atmos
+           |   |-- gdas.t12z.abias
+           |   |-- gdas.t12z.abias_air
+           |   |-- gdas.t12z.abias_int
+           |   |-- gdas.t12z.abias_pc
+           |   `-- gdas.t12z.radstat
+           `-- ocean
+               `-- gdas.t12z.ocninc.nc
+
+.. _staged_ics_prototype:
+
+*********
+Prototype
+*********
+
+Forecast-only P8 prototype initial conditions are made available to users on supported platforms in the following locations:
+
+::
+
+    WCOSS2: /lfs/h2/emc/global/noscrub/emc.global/IC/COUPLED
+    HERA: /scratch1/NCEPDEV/climate/role.ufscpara/IC
+    ORION: /work/noaa/global/glopara/data/ICSDIR/prototype_ICs
+    S4: /data/prod/glopara/coupled_ICs
+
+These locations are known within the workflow via paths set in ``parm/config/config.coupled_ic``.
+
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+Prepare Initial Conditions
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. _automated-generation:
 
-^^^^^^^^^^^^^^^^^^^^
+********************
 Automated Generation
-^^^^^^^^^^^^^^^^^^^^
+********************
 
 .. _cycled:
 
-***********
+-----------
 Cycled mode
-***********
+-----------
 
 Not yet supported. See :ref:`Manual Generation<manual-generation>` section below for how to create your ICs yourself (outside of workflow).
 
+.. _forecastonly-coupled:
+
+---------------------
+Forecast-only coupled
+---------------------
+Coupled initial conditions are currently only generated offline and copied prior to the forecast run. Prototype initial conditions will automatically be used when setting up an experiment as an S2SW app, there is no need to do anything additional. Copies of initial conditions from the prototype runs are currently maintained on Hera, Orion, and WCOSS2. The locations used are determined by ``parm/config/config.coupled_ic``. If you need prototype ICs on another machine, please contact Walter (Walter.Kolczynski@noaa.gov).
+
 .. _forecastonly-atmonly:
 
-*****************************
+-----------------------------
 Forecast-only mode (atm-only)
-*****************************
+-----------------------------
 
 Forecast-only mode in global workflow includes ``getic`` and ``init`` jobs for the gfs suite. The ``getic`` job pulls inputs for ``chgres_cube`` (init job) or warm start ICs into your ``ROTDIR/COMROT``. The ``init`` job then ingests those files to produce initial conditions for your experiment. 
 
@@ -87,29 +271,18 @@ Operations/production output location on HPSS: /NCEPPROD/hpssprod/runhistory/rh 
 
 For HPSS path, see retrospective table in :ref:`pre-production parallel section <retrospective>` below
 
-.. _forecastonly-coupled:
-
-*********************
-Forecast-only coupled
-*********************
-
-Coupled initial conditions are currently only generated offline and copied prior to the forecast run. Prototype initial conditions will automatically be used when setting up an experiment as an S2SW app, there is no need to do anything additional. Copies of initial conditions from the prototype runs are currently maintained on Hera, Orion, and WCOSS2. The locations used are determined by ``parm/config/config.coupled_ic``. If you need prototype ICs on another machine, please contact Walter (Walter.Kolczynski@noaa.gov).
-
 .. _manual-generation:
 
-^^^^^^^^^^^^^^^^^
+*****************
 Manual Generation
-^^^^^^^^^^^^^^^^^
+*****************
 
-NOTE: Initial conditions cannot be generated on S4. These must be generated on another supported platform then pushed to S4. If you do not have access to a supported system or need assistance, please contact David Huber (david.huber@noaa.gov).
+.. note::
+   Initial conditions cannot be generated on S4. These must be generated on another supported platform then pushed to S4. If you do not have access to a supported system or need assistance, please contact David Huber (david.huber@noaa.gov).
 
 .. _coldstarts:
 
-***********
-Cold starts
-***********
-
-The following information is for users needing to generate initial conditions for a cycled experiment that will run at a different resolution or layer amount than the operational GFS (C768C384L127).
+The following information is for users needing to generate cold-start initial conditions for a cycled experiment that will run at a different resolution or layer amount than the operational GFS (C768C384L127).
 
 The ``chgres_cube`` code is available from the `UFS_UTILS repository <https://github.com/ufs-community/UFS_UTILS>`_ on GitHub and can be used to convert GFS ICs to a different resolution or number of layers. Users may clone the develop/HEAD branch or the same version used by global-workflow develop (found in ``sorc/checkout.sh``). The ``chgres_cube`` code/scripts currently support the following GFS inputs:
 
