@@ -6,9 +6,14 @@ from collections.abc import Callable
 
 from pygw.logger import Logger, logit
 
+# ----
+
 logger = Logger(level="error", colored_log=True)
 
-__all__ = ["WorkflowException", "msg_except_handle"]
+__all__ = ["InputArgsException", "SchemaExcception",
+           "WorkflowException", "msg_except_handle"]
+
+# ----
 
 
 class WorkflowException(Exception):
@@ -43,6 +48,31 @@ class WorkflowException(Exception):
         logger.error(msg=msg)
         super().__init__()
 
+# ----
+
+
+class InputArgsException(WorkflowException):
+    """
+    Description
+    -----------
+
+    This is the base-class for exceptions encountered within
+    pygw/inputargs.py; it is a sub-class of WorkflowException.
+
+    """
+
+
+# ----
+
+class SchemaException(WorkflowException):
+    """
+    Description
+    -----------
+
+    This is the base-class for exceptions encountered within
+    pygw/schema.py; it is a sub-class of WorkflowException.
+
+    """
 
 # ----
 
