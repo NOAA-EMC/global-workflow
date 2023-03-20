@@ -108,7 +108,7 @@ for pr in ${pr_list}; do
     module list
     #setup space to put an experiment
     export RUNTEST="${pr_dir}/RUNTEST"
-    rm -Rf ${RUNTEST}/*
+    rm -Rf "${RUNTEST}"/*
     mkdir -p "${RUNTEST}"
     #make links to the python packages used in the PR'ed repo
     cd "${WF_ROOT_DIR}/ci/scripts"
