@@ -38,10 +38,10 @@ usage() {
   echo
   echo "This is top level script to run CI tests on the global-workflow repo"
   if [[ -n "${TARGET+x}" ]]; then
-     echo "on the DEFAULTED: ${TARGET} machine"
+     echo "on the DEFAULT: ${TARGET} machine"
   fi  
   echo
-  exit 1
+  exit 0
 }
 
 
@@ -82,7 +82,7 @@ if [[ -s "${GFS_CI_ROOT}/${pr_list_file}" ]]; then
  pr_list=$(cat "${GFS_CI_ROOT}/${pr_list_file}")
 else
  echo "no PRs to process .. exit"
- exit 1
+ exit 0
 fi 
 
 #############################################################
