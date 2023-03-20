@@ -85,10 +85,10 @@ else
  exit 1
 fi 
 
-#######################################
-# clone, checkout, build, test, each PR
-# loop throu all open PRs
-#######################################
+#############################################################
+# Loop throu all open PRs
+# Clone, checkout, build, creat set of experments, for each
+#############################################################
 
 cd "${GFS_CI_ROOT}"
 for pr in ${pr_list}; do
@@ -122,22 +122,31 @@ for pr in ${pr_list}; do
       ln -s "${HOMEGFS}/ush/python/pygw/src/pygw" pygw
     fi
     PSLOT=C96C48_hybatmDA # TODO loop over experments for each yaml file in the experiments dir
-    "${WF_ROOT_DIR}/ci/scripts/create_experiment.py" --yaml "${WF_ROOT_DIR}/ci/experiments/${PSLOT}.yaml"
-    ci_status=$?
-    if [[ ${ci_status} -eq 0 ]]; then
-      {
-        echo "Created experiment"
-        echo "Experiment setup: Completed at $(date) for expirment ${PSLOT}" || true
-      } >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
-      "${GH}" pr comment "${pr}" --repo "${repo_url}" --body-file "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
-      "${GH}" pr edit --repo "${repo_url}" "${pr}" --remove-label "${CI_HOST}-Running" --add-label "${CI_HOST}-Passed"
-    else
-      "${GH}" pr edit "${pr}" --repo "${repo_url}" --remove-label "${CI_HOST}-Running" --add-label "${CI_HOST}-Failed"
-    fi
-  else
-    "${GH}" pr edit "${pr}" --repo "${repo_url}" --remove-label "${CI_HOST}-Running" --add-label "${CI_HOST}-Failed"
-  fi
-done
+    #############################################################
+    # loop over every yaml file in ${WF_ROOT_DIR}/ci/experiments
+    # and create an run directory for each one for this PR loop
+    #############################################################
+    for yaml_config in "${WF_ROOT_DIR}ci/experiments/*.yaml" do
+      PSLOT=$(basename "${yaml_config}")
+      "${WF_ROOT_DIR}/ci/scripts/create_experiment.py" --yaml "${WF_ROOT_DIR}/ci/experiments/${PSLOT}.yaml"
+      ci_status=$?
+      if [[ ${ci_status} -eq 0 ]]; then
+        {
+          echo "Created experiment"
+          echo "Experiment setup: Completed at $(date) for expirment ${PSLOT}" || true
+        } >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
+      else 
+        {
+          echo "Failed on createing experiment ${PSLOT}"
+          echo "Experiment setup: failed at $(date) for expirment ${PSLOT}" || true
+        } >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
+        "${GH}" pr edit "${pr}" --repo "${repo_url}" --remove-label "${CI_HOST}-Running" --add-label "${CI_HOST}-Failed"
+        exit 1
+      fi
+    done
+    "${GH}" pr comment "${pr}" --repo "${repo_url}" --body-file "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
+    "${GH}" pr edit --repo "${repo_url}" "${pr}" --remove-label "${CI_HOST}-Running" --add-label "${CI_HOST}-Passed"
+  done
 
 ##########################################
 # scrub working directory for older files

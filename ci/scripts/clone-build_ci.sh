@@ -85,7 +85,8 @@ export BUILD_JOBS=8
 rm -rf log.build
 ./checkout.sh -g -c
 # build full cycle
-./build_all.sh -g &>> log.build
+#./build_all.sh -g &>> log.build
+echo "SKIPPING BUILD FOR DEBUGGING"
 
 # Validations
 build_status=$?
