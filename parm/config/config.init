@@ -13,7 +13,6 @@ echo "BEGIN: config.init"
 
 export UFS_DIR=${HOMEgfs}/sorc/ufs_utils.fd
 export GDASINIT_DIR=${UFS_DIR}/util/gdas_init
-export GDAS_INIT_DIR=${UFS_DIR}/util/gdas_init
 
 export CRES_HIRES=$CASE
 export CRES_ENKF=$CASE_ENKF
