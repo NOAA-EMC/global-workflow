@@ -93,7 +93,7 @@ def test_schema_float() -> None:
     This function provides a unit test for the schema module; a
     float-value will be passed to the schema validator that accepts
     only string or integer instances; in order to pass, this unit test
-    must raise a a SchemaException.
+    must raise a SchemaException.
 
     """
 
@@ -106,7 +106,9 @@ def test_schema_float() -> None:
         validate_opts(cls_schema=CLS_SCHEMA, cls_opts=cls_opts)
 
     except SchemaException:
-        pass
+        return
+
+    assert False
 
 
 # ----
