@@ -123,7 +123,8 @@ for pr in ${pr_list}; do
     # and create an run directory for each one for this PR loop
     #############################################################
     for yaml_config in "${WF_ROOT_DIR}/ci/experiments/"*.yaml; do
-      export pslot=$(basename "${yaml_config}" .yaml || true) || true
+      pslot=$(basename "${yaml_config}" .yaml) || true
+      export pslot
       "${WF_ROOT_DIR}/ci/scripts/create_experiment.py" --yaml "${WF_ROOT_DIR}/ci/experiments/${pslot}.yaml"
       ci_status=$?
       if [[ ${ci_status} -eq 0 ]]; then
