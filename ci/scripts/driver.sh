@@ -87,7 +87,7 @@ fi
 
 #############################################################
 # Loop throu all open PRs
-# Clone, checkout, build, creat set of experments, for each
+# Clone, checkout, build, creat set of experiments, for each
 #############################################################
 
 cd "${GFS_CI_ROOT}"
