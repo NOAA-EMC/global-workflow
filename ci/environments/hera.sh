@@ -8,3 +8,4 @@ export SLURM_QOS=debug
 export repo_url="https://github.com/NOAA-EMC/global-workflow.git"
 #export repo_url="https://github.com/TerrenceMcGuinness-NOAA/global-workflow.git"
 export ICSDIR_ROOT="/scratch1/NCEPDEV/global/glopara/data/ICSDIR"
+
