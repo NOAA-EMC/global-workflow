@@ -2,6 +2,8 @@
 
 # ----
 
+import os
+
 from typing import Dict, Tuple
 
 from pygw.task import Task
