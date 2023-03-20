@@ -4,6 +4,8 @@
 
 from typing import Dict, Tuple
 
+from pygw.task import Task
+
 from pygfs.exceptions import ForecastError
 from pygfs.config.gfs import GFS
 from pygw.attrdict import AttrDict
@@ -16,20 +18,22 @@ base_logger = Logger(level="info", colored_log=True)
 # ----
 
 
-class UFSWM:
+class UFSWM(Task):
     """ """
 
     @logit(base_logger, name="UFSWM")
-    def __init__(self, config: object, model: str, app: str = None):
+    def __init__(self, config: object, model: str, app: str = None,
+                 *args, **kwargs):
         """
         Description
         -----------
 
-        Creates a new Forecast object.
+        Creates a new UFSWM object.
 
         """
 
         # Define the base-class attributes.
+        super().__init__(config, *args, **kwargs)
         self.app = app
         self.config = config
         self.model = model.lower()
