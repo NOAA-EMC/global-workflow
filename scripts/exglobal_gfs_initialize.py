@@ -1,17 +1,27 @@
 import os
 import time
 
-from pygw.logger import Logger
+from schema import validate
+from pygw.logger import Logger, logit
 from pygw.configuration import cast_strdict_as_dtypedict
 
 from pygfs.ufswm.gfs import GFS
 
+# ----
+
 # Initialize root logger.
-logger = Logger(level='DEBUG', colored_log=True)
+base_logger = Logger(level='DEBUG', colored_log=True)
 
 # ----
 
+
+@logit(base_logger)
 if __name__ == '__main__':
+
+    # Define the schema attributes; proceed accordingly.
+    cls_schema = {
+        "yaml_file": str
+    }
 
     # Take configuration from environment and cast it as Python
     # dictionary.

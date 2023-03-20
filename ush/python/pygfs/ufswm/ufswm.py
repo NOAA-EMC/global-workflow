@@ -129,7 +129,7 @@ class UFSWM(Task):
         """
 
     @logit(base_logger)
-    def get_fixed_files(self: Task):
+    def get_fv3_fixed_files(self: Task):
         """
         Description
         -----------
@@ -148,7 +148,5 @@ class UFSWM(Task):
         ufswm_config.FIX_orog = os.path.join(FIX_dir, 'orog')
         ufswm_config.FIX_ugwd = os.path.join(FIX_dir, 'ugwd')
         ufswm_config.FIX_lut = os.path.join(FIX_dir, 'lut')
-
-        print(ufswm_config)
 
         return ufswm_config
