@@ -14,6 +14,11 @@ from pygw.logger import logit
 
 class GFS(UFSWM):
     """
+    Description
+    -----------
+
+    Parameters
+    ----------
 
     """
 
@@ -32,8 +37,18 @@ class GFS(UFSWM):
 
     @logit(base_logger)
     def initialize(self: UFSWM) -> None:
-        """ """
+        """ 
+        Description
+        -----------
+
+        Parameters
+        ----------
+
+
+
+        """
 
         super().initialize()
 
-        self.nems_configure()
+        # Link the fixed files to the application directory.
+        self.get_fixed_files()

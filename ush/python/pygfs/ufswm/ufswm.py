@@ -22,7 +22,7 @@ class UFSWM(Task):
     """ """
 
     @logit(base_logger, name="UFSWM")
-    def __init__(self, config: object, model: str, app: str = None,
+    def __init__(self: Task, config: object, model: str, app: str = None,
                  *args, **kwargs):
         """
         Description
@@ -61,8 +61,8 @@ class UFSWM(Task):
         self.build_grid_attrs()
 
     @logit(base_logger)
-    def build_fcst_model_config(self) -> Dict:
-        """ 
+    def build_fcst_model_config(self: Task) -> Dict:
+        """
         Description
         -----------
 
@@ -90,9 +90,9 @@ class UFSWM(Task):
         return fcst_model_config
 
     @logit(base_logger)
-    def build_grid_attrs(self) -> Tuple[Dict]:
-        """ 
-        Description 
+    def build_grid_attrs(self: Task) -> Tuple[Dict]:
+        """
+        Description
         -----------
 
         Returns
@@ -115,7 +115,7 @@ class UFSWM(Task):
         # return (input_nml)
 
     @logit(base_logger)
-    def configure_inputs(self, template_path: str, output_path: str, value_dict: Dict,
+    def configure_inputs(self: Task, template_path: str, output_path: str, value_dict: Dict,
                          default_value_dict: Dict = None) -> None:
         """
         Description
@@ -126,8 +126,27 @@ class UFSWM(Task):
 
         """
 
-#    @logit(base_logger)
-#    def nems_configure(self) -> None:
-#        """ """
+    @logit(base_logger)
+    def get_fixed_files(self: Task):
+        """
+        Description
+        -----------
 
-#        nems_configure = self.config.get('')
+        Parameters
+        ----------
+
+        """
+
+        # Define the fixed-file attributes.
+        ufswm_config = AttrDict()
+
+        FIX_dir = os.path.join(self.config.HOMEgfs, "fix")
+        ufswm_config.FIX_am = os.path.join(FIX_dir, 'am')
+        ufswm_config.FIX_aer = os.path.join(FIX_dir, 'aer')
+        ufswm_config.FIX_orog = os.path.join(FIX_dir, 'orog')
+        ufswm_config.FIX_ugwd = os.path.join(FIX_dir, 'ugwd')
+        ufswm_config.FIX_lut = os.path.join(FIX_dir, 'lut')
+
+        print(ufswm_config)
+
+        return ufswm_config
