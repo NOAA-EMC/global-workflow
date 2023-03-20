@@ -174,8 +174,8 @@ class LandAnalysis(Analysis):
         inclist = []
         for itile in range(1, self.task_config.ntiles + 1):
             inc_path = fms_anl_file_template.replace('tileX', f'tile{itile}')
-#DONG            dest = os.path.join(self.task_config['COMOUTatmos'], 'RESTART', f'{os.path.basename(inc_path)}')
-            dest = os.path.join(self.task_config['COMOUTatmos'], f'{os.path.basename(inc_path)}')
+            dest = os.path.join(self.task_config['COMOUTatmos'], 'RESTART', f'{os.path.basename(inc_path)}')
+#DONG            dest = os.path.join(self.task_config['COMOUTatmos'], f'{os.path.basename(inc_path)}')
             inclist.append([inc_path, dest])
         FileHandler({'copy': inclist}).sync()
 
