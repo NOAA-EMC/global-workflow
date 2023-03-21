@@ -12,7 +12,7 @@ from pygfs.exceptions import ForecastError
 # from pygfs.config.gfs import GFS
 from pygw.attrdict import AttrDict
 from pygw.logger import Logger, logit
-from pygw.template import Template
+from pygw.template import Template, TemplateConstants
 
 # ----
 
