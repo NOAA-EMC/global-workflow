@@ -22,12 +22,6 @@ def main() -> None:
     start_time = time.time()
     config = cast_strdict_as_dtypedict(os.environ)
 
-    for item in config:
-        print(item)
-
-    quit()
-    
-
     # Launch the task.
     task = GFS(config=config)
     task.initialize()
