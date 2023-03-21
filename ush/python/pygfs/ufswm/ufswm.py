@@ -150,7 +150,7 @@ class UFSWM(Task):
         ufswm_config.FIX_lut = os.path.join(FIX_dir, 'lut')
 
         for item in self.config:
-            print(item, self.config[item])
+            print(item)
 
         print("I AM HERE ", self.config.FCST_fixed_yaml)
 
