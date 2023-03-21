@@ -54,13 +54,13 @@ class UFSWM(Task):
             msg = f"Forecast model {self.model} is not supported. Aborting!!!"
             raise ForecastError(msg=msg)
 
-        if self.model.lower() == "gfs":
-            self.grid_config = GFS(case=self.config.CASE)
+#        if self.model.lower() == "gfs":
+#            self.grid_config = GFS(case=self.config.CASE)
 
-        self.fcst_model_config = self.build_fcst_model_config()
+#        self.fcst_model_config = self.build_fcst_model_config()
 
         # Check that the forecast model resolution is supported.
-        self.build_grid_attrs()
+#        self.build_grid_attrs()
 
     @logit(base_logger)
     def build_fcst_model_config(self: Task) -> Dict:
