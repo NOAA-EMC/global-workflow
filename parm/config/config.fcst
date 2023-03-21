@@ -38,7 +38,6 @@ fi
 export esmf_profile=".false."
 export esmf_logkind="ESMF_LOGKIND_MULTI_ON_ERROR" #Options: ESMF_LOGKIND_MULTI_ON_ERROR, ESMF_LOGKIND_MULTI, ESMF_LOGKIND_NONE
 
-
 #######################################################################
 # COUPLING COMPONENTS
 
@@ -355,6 +354,15 @@ if [[ "$DO_AERO" = "YES" ]]; then # temporary settings for aerosol coupling
     export fscav_aero="${aero_conv_scav_factors:-${fscav_aero}}"
     export dnats_aero="${aero_diag_tracers:-0}"
 fi
+
+#---------------------------------------------------------------------
+
+# The following variables are required of the Python refactoring of
+# the forecast tasks; at some point in the future these should be
+# defined within a YAML-formatted configuration file specific to the
+# respective forecast application.
+export FCST_fixed_yaml=${PARMgfs}/ufs/forecast/ufs.atm.fixed_files.yaml
+
 
 # Remember config.efcs will over-ride these values for ensemble forecasts
 # if these variables are re-defined there.
