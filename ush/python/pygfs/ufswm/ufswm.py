@@ -144,6 +144,11 @@ class UFSWM(Task):
         # Define the fixed-file attributes.
         ufswm_config = AttrDict()
 
+        ufswm_config.HOMEgfs = self.config.HOMEgfs
+        ufswm_config.DATA = self.config.DATA
+        ufswm_config.atm_res = self.config.atm_res
+        ufswm_config.ocn_res = self.config.ocn_res
+
         FIX_dir = os.path.join(self.config.HOMEgfs, "fix")
         ufswm_config.FIX_am = os.path.join(FIX_dir, 'am')
         ufswm_config.FIX_aer = os.path.join(FIX_dir, 'aer')
