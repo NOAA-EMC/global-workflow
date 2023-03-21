@@ -30,7 +30,8 @@ export COM_OBS_TMPL='${ROTDIR}/${RUN}.${YMD}/${HH}/obs'
 export COM_OBSDMP_TMPL='${DMPDIR}/${DUMP}${DUMP_SUFFIX}.${YMD}/${HH}/atmos'
 
 COM_BASE='${ROTDIR}/${RUN}.${YMD}/${HH}/${MEMDIR}'
-export COM_TOP_TMPL=${COM_BASE}
+
+export COM_TOP_TMPL='${ROTDIR}/${RUN}.${YMD}/${HH}'
 
 export COM_ATMOS_INPUT_TMPL=${COM_BASE}'/atmos/model_data/input'
 export COM_ATMOS_RESTART_TMPL=${COM_BASE}'/atmos/model_data/restart'
