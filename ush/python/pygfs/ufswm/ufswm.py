@@ -12,8 +12,7 @@ from pygfs.exceptions import ForecastError
 # from pygfs.config.gfs import GFS
 from pygw.attrdict import AttrDict
 from pygw.logger import Logger, logit
-
-from pygw.yaml_file import YAMLFile
+from pygw.template import Template
 
 # ----
 
@@ -151,8 +150,9 @@ class UFSWM(Task):
         ufswm_config.FIX_ugwd = os.path.join(FIX_dir, 'ugwd')
         ufswm_config.FIX_lut = os.path.join(FIX_dir, 'lut')
 
-        ufswm_config_dict = YAMLFile(path=self.config.FCST_FIXED_YAML)
-
-        print(ufswm_config_dict)
+        # Link the fixed-files accordingly.
+        fixed_yaml = self.config.FCST_FIXED_YAML
+        fixed_data = Template.substitute_structure(
+            fix_yaml, TemplateConstants.DOLLAR_PARENTHESES, ufswm_config.get)
 
         return ufswm_config
