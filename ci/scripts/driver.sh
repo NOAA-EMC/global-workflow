@@ -135,10 +135,9 @@ for pr in ${pr_list}; do
       else 
         {
           echo "Failed on createing experiment ${pslot}"
-          echo "Experiment setup: failed at $(date) for expirment ${pslot}" || true
+          echo "Experiment setup: failed at $(date) for experiment ${pslot}" || true
         } >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
         "${GH}" pr edit "${pr}" --repo "${repo_url}" --remove-label "${CI_HOST}-Running" --add-label "${CI_HOST}-Failed"
-        exit 1
       fi
     done
     "${GH}" pr comment "${pr}" --repo "${repo_url}" --body-file "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
@@ -148,6 +147,7 @@ for pr in ${pr_list}; do
       echo "Failed on cloning and building global-workflowi PR: ${pr}"
       echo "CI on ${CI_HOST} failed to build on $(date) for repo ${repo_url}}" || true
     } >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
+    "${GH}" pr edit "${pr}" --repo "${repo_url}" --remove-label "${CI_HOST}-Running" --add-label "${CI_HOST}-Failed"
   fi
 
 done # looping over each open and labeled PR
