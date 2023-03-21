@@ -39,8 +39,6 @@ export COMIN_GES_ENS="${ROTDIR}/enkf${GDUMP}.${gPDY}/${gcyc}/chem"
 export PYTHONPATH="${HOMEgfs}/ush/python/pygw/src:${HOMEgfs}/ush/python" # THIS CANNOT LIVE HERE FOREVER.
 ${PYTHON} ${HOMEgfs}/scripts/exglobal_gfs_initialize.py # TEST
 
-printenv
-
 exit 9999 # TEST
 
 EXSCRIPT=${GDASAEROINITPY:-${HOMEgfs}/scripts/exglobal_aero_analysis_initialize.py}
