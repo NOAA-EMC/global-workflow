@@ -372,5 +372,4 @@ fi
 # if these variables are re-defined there.
 # Otherwise, the ensemble forecast will inherit from config.fcst
 
-exit 999999
 echo "END: config.fcst"
