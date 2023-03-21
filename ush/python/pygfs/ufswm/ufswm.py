@@ -13,6 +13,8 @@ from pygfs.exceptions import ForecastError
 from pygw.attrdict import AttrDict
 from pygw.logger import Logger, logit
 
+from pygw.yaml_file import YAMLFile
+
 # ----
 
 base_logger = Logger(level="info", colored_log=True)
@@ -149,6 +151,6 @@ class UFSWM(Task):
         ufswm_config.FIX_ugwd = os.path.join(FIX_dir, 'ugwd')
         ufswm_config.FIX_lut = os.path.join(FIX_dir, 'lut')
 
-        print("I AM HERE ", self.config.FCST_FIXED_YAML)
+        ufswm_config_dict = YAMLFile(path=self.config.FCST_FIXED_YAML)
 
         return ufswm_config
