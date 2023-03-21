@@ -16,7 +16,7 @@ base_logger = Logger(level='DEBUG', colored_log=True)
 
 
 @logit(base_logger)
-if __name__ == '__main__':
+def main() -> None:
 
     # Take configuration from environment and cast it as Python
     # dictionary.
@@ -33,3 +33,9 @@ if __name__ == '__main__':
     Logger().info(msg=msg)
     total_time = stop_time - start_time
     msg = f"Total Elapsed Time: {total_time} seconds."
+
+
+# ----
+
+if __name__ == '__main__':
+    main()
