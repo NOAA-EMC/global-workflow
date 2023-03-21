@@ -160,7 +160,7 @@ class UFSWM(Task):
         # Link the fixed-files accordingly.
         fixed_yaml = self.config.FCST_FIXED_YAML
 
-        fixed_data = parse_yaml(path=fixed_yaml)
+        fixed_data = parse_yaml(path=fixed_yaml, self.config)
         FileHandler(fixed_data).sync()
 
         return ufswm_config
