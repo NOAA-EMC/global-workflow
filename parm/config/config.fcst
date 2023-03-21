@@ -361,7 +361,7 @@ fi
 # the forecast tasks; at some point in the future these should be
 # defined within a YAML-formatted configuration file specific to the
 # respective forecast application.
-export FCST_fixed_yaml=${PARMgfs}/ufs/forecast/ufs.atm.fixed_files.yaml
+export FCST_fixed_yaml=${HOMEgfs}/parm/ufs/forecast/ufs.atm.fixed_files.yaml
 
 
 # Remember config.efcs will over-ride these values for ensemble forecasts
