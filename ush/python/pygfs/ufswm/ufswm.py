@@ -152,6 +152,6 @@ class UFSWM(Task):
         for item in self.config:
             print(item)
 
-        print("I AM HERE ", self.config.FCST_fixed_yaml)
+        print("I AM HERE ", self.config.FCST_FIXED_YAML)
 
         return ufswm_config
