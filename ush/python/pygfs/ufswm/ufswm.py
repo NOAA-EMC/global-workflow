@@ -9,7 +9,7 @@ from typing import Dict, Tuple
 from pygw.task import Task
 
 from pygfs.exceptions import ForecastError
-from pygfs.config.gfs import GFS
+# from pygfs.config.gfs import GFS
 from pygw.attrdict import AttrDict
 from pygw.logger import Logger, logit
 
