@@ -149,4 +149,6 @@ class UFSWM(Task):
         ufswm_config.FIX_ugwd = os.path.join(FIX_dir, 'ugwd')
         ufswm_config.FIX_lut = os.path.join(FIX_dir, 'lut')
 
+        print(self.config.FCST_fixed_yaml)
+
         return ufswm_config
