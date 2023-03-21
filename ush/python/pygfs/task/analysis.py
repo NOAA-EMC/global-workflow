@@ -5,8 +5,9 @@ from logging import getLogger
 from netCDF4 import Dataset
 from typing import List, Dict, Any
 
-from pygw.yaml_file import YAMLFile
+from pygw.yaml_file import YAMLFile, parse_j2yaml
 from pygw.file_utils import FileHandler
+from pygw.template import Template, TemplateConstants
 from pygw.logger import logit
 from pygw.task import Task
 
@@ -47,14 +48,16 @@ class Analysis(Task):
         obs_dict: Dict
             a dictionary containing the list of observation files to copy for FileHandler
         """
-        obs_list_config = YAMLFile(path=self.config['OBS_LIST'])
+        logger.debug(f"OBS_LIST: {self.task_config['OBS_LIST']}")
+        obs_list_config = parse_j2yaml(self.task_config["OBS_LIST"], self.task_config)
+        logger.debug(f"obs_list_config: {obs_list_config}")
         # get observers from master dictionary
         observers = obs_list_config['observers']
         copylist = []
         for ob in observers:
             obfile = ob['obs space']['obsdatain']['engine']['obsfile']
             basename = os.path.basename(obfile)
-            copylist.append([os.path.join(self.config['COMIN_OBS'], basename), obfile])
+            copylist.append([os.path.join(self.task_config['COMIN_OBS'], basename), obfile])
         obs_dict = {
             'mkdir': [os.path.join(self.runtime_config['DATA'], 'obs')],
             'copy': copylist
