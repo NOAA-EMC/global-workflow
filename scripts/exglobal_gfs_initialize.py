@@ -1,7 +1,6 @@
 import os
 import time
 
-from schema import validate
 from pygw.logger import Logger, logit
 from pygw.configuration import cast_strdict_as_dtypedict
 
