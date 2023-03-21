@@ -14,7 +14,6 @@ base_logger = Logger(level='DEBUG', colored_log=True)
 # ----
 
 
-@logit(base_logger)
 def main() -> None:
 
     # Take configuration from environment and cast it as Python
