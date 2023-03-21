@@ -153,6 +153,6 @@ class UFSWM(Task):
         # Link the fixed-files accordingly.
         fixed_yaml = self.config.FCST_FIXED_YAML
         fixed_data = Template.substitute_structure(
-            fix_yaml, TemplateConstants.DOLLAR_PARENTHESES, ufswm_config.get)
+            fixed_yaml, TemplateConstants.DOLLAR_PARENTHESES, ufswm_config.get)
 
         return ufswm_config
