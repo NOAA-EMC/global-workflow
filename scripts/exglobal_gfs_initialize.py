@@ -18,11 +18,6 @@ base_logger = Logger(level='DEBUG', colored_log=True)
 @logit(base_logger)
 if __name__ == '__main__':
 
-    # Define the schema attributes; proceed accordingly.
-    cls_schema = {
-        "yaml_file": str
-    }
-
     # Take configuration from environment and cast it as Python
     # dictionary.
     script_name = os.path.basename(__file__)
