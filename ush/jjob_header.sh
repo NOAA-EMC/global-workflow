@@ -113,5 +113,3 @@ if (( status != 0 )); then
     echo "FATAL [${BASH_SOURCE[0]}]: Error while sourcing machine environment ${machine}.env for job ${env_job}"
 	exit "${status}"
 fi
-
-exit 9999
