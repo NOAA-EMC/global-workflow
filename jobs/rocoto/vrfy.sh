@@ -72,7 +72,6 @@ if [[ ${VRFYFITS} = "YES" && ${CDUMP} = "${CDFNL}" && ${CDATE} != "${SDATE}" ]];
     xdate=$(${NDATE} -"${VBACKUP_FITS} ${CDATE}")
 
     vday=$(echo "${xdate}" | cut -c1-8)
-    export vday
     vcyc=$(echo "${xdate}" | cut -c9-10)
     export vcyc
     export COMDAY=${ROTDIR}/logs/${xdate}
