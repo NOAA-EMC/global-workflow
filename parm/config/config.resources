@@ -4,7 +4,7 @@
 # Set resource information for job tasks
 # e.g. walltime, node, cores per node, memory etc.
 
-if [ $# -ne 1 ]; then
+if [[ $# -ne 1 ]]; then
 
     echo "Must specify an input task argument to set resource variables!"
     echo "argument can be any one of the following:"
@@ -49,7 +49,7 @@ elif [[ ${machine} = "ORION" ]]; then
    export npe_node_max=40
 fi
 
-if [ ${step} = "prep" ]; then
+if [[ ${step} = "prep" ]]; then
     export wtime_prep='00:30:00'
     export npe_prep=4
     export npe_node_prep=2
@@ -60,99 +60,110 @@ if [ ${step} = "prep" ]; then
       export memory_prep="40G"
     fi
 
-elif [ ${step} = "aerosol_init" ]; then
+elif [[ ${step} = "aerosol_init" ]]; then
     export wtime_aerosol_init="00:05:00"
     export npe_aerosol_init=1
     export nth_aerosol_init=1
-    export npe_node_aerosol_init=$(echo "${npe_node_max} / ${nth_aerosol_init}" | bc)
+    npe_node_aerosol_init=$(echo "${npe_node_max} / ${nth_aerosol_init}" | bc)
+    export npe_node_aerosol_init
     export NTASKS=${npe_aerosol_init}
     export memory_aerosol_init="6G"
 
-elif [ ${step} = "waveinit" ]; then
+elif [[ ${step} = "waveinit" ]]; then
 
     export wtime_waveinit="00:10:00"
     export npe_waveinit=12
     export nth_waveinit=1
-    export npe_node_waveinit=$(echo "${npe_node_max} / ${nth_waveinit}" | bc)
+    npe_node_waveinit=$(echo "${npe_node_max} / ${nth_waveinit}" | bc)
+    export npe_node_waveinit
     export NTASKS=${npe_waveinit}
     export memory_waveinit="2GB"
 
-elif [ ${step} = "waveprep" ]; then
+elif [[ ${step} = "waveprep" ]]; then
 
     export wtime_waveprep="00:10:00"
     export npe_waveprep=5
     export npe_waveprep_gfs=65
     export nth_waveprep=1
     export nth_waveprep_gfs=1
-    export npe_node_waveprep=$(echo "${npe_node_max} / ${nth_waveprep}" | bc)
-    export npe_node_waveprep_gfs=$(echo "${npe_node_max} / ${nth_waveprep_gfs}" | bc)
+    npe_node_waveprep=$(echo "${npe_node_max} / ${nth_waveprep}" | bc)
+    export npe_node_waveprep
+    npe_node_waveprep_gfs=$(echo "${npe_node_max} / ${nth_waveprep_gfs}" | bc)
+    export npe_node_waveprep_gfs
     export NTASKS=${npe_waveprep}
     export NTASKS_gfs=${npe_waveprep_gfs}
     export memory_waveprep="100GB"
     export memory_waveprep_gfs="150GB"
 
-elif [ ${step} = "wavepostsbs" ]; then
+elif [[ ${step} = "wavepostsbs" ]]; then
 
     export wtime_wavepostsbs="00:20:00"
     export wtime_wavepostsbs_gfs="03:00:00"
     export npe_wavepostsbs=8
     export nth_wavepostsbs=1
-    export npe_node_wavepostsbs=$(echo "${npe_node_max} / ${nth_wavepostsbs}" | bc)
+    npe_node_wavepostsbs=$(echo "${npe_node_max} / ${nth_wavepostsbs}" | bc)
+    export npe_node_wavepostsbs
     export NTASKS=${npe_wavepostsbs}
     export memory_wavepostsbs="10GB"
     export memory_wavepostsbs_gfs="10GB"
 
-elif [ ${step} = "wavepostbndpnt" ]; then
+elif [[ ${step} = "wavepostbndpnt" ]]; then
 
     export wtime_wavepostbndpnt="01:00:00"
     export npe_wavepostbndpnt=240
     export nth_wavepostbndpnt=1
-    export npe_node_wavepostbndpnt=$(echo "${npe_node_max} / ${nth_wavepostbndpnt}" | bc)
+    npe_node_wavepostbndpnt=$(echo "${npe_node_max} / ${nth_wavepostbndpnt}" | bc)
+    export npe_node_wavepostbndpnt
     export NTASKS=${npe_wavepostbndpnt}
     export is_exclusive=True
 
-elif [ ${step} = "wavepostbndpntbll" ]; then
+elif [[ ${step} = "wavepostbndpntbll" ]]; then
 
     export wtime_wavepostbndpntbll="01:00:00"
     export npe_wavepostbndpntbll=448
     export nth_wavepostbndpntbll=1
-    export npe_node_wavepostbndpntbll=$(echo "${npe_node_max} / ${nth_wavepostbndpntbll}" | bc)
+    npe_node_wavepostbndpntbll=$(echo "${npe_node_max} / ${nth_wavepostbndpntbll}" | bc)
+    export npe_node_wavepostbndpntbll
     export NTASKS=${npe_wavepostbndpntbll}
     export is_exclusive=True
 
-elif [ ${step} = "wavepostpnt" ]; then
+elif [[ ${step} = "wavepostpnt" ]]; then
 
     export wtime_wavepostpnt="01:30:00"
     export npe_wavepostpnt=200
     export nth_wavepostpnt=1
-    export npe_node_wavepostpnt=$(echo "${npe_node_max} / ${nth_wavepostpnt}" | bc)
+    npe_node_wavepostpnt=$(echo "${npe_node_max} / ${nth_wavepostpnt}" | bc)
+    export npe_node_wavepostpnt
     export NTASKS=${npe_wavepostpnt}
     export is_exclusive=True
 
-elif [ ${step} = "wavegempak" ]; then
+elif [[ ${step} = "wavegempak" ]]; then
 
     export wtime_wavegempak="02:00:00"
     export npe_wavegempak=1
     export nth_wavegempak=1
-    export npe_node_wavegempak=$(echo "${npe_node_max} / ${nth_wavegempak}" | bc)
+    npe_node_wavegempak=$(echo "${npe_node_max} / ${nth_wavegempak}" | bc)
+    export npe_node_wavegempak
     export NTASKS=${npe_wavegempak}
     export memory_wavegempak="1GB"
 
-elif [ ${step} = "waveawipsbulls" ]; then
+elif [[ ${step} = "waveawipsbulls" ]]; then
 
     export wtime_waveawipsbulls="00:20:00"
     export npe_waveawipsbulls=1
     export nth_waveawipsbulls=1
-    export npe_node_waveawipsbulls=$(echo "${npe_node_max} / ${nth_waveawipsbulls}" | bc)
+    npe_node_waveawipsbulls=$(echo "${npe_node_max} / ${nth_waveawipsbulls}" | bc)
+    export npe_node_waveawipsbulls
     export NTASKS=${npe_waveawipsbulls}
     export is_exclusive=True
 
-elif [ ${step} = "waveawipsgridded" ]; then
+elif [[ ${step} = "waveawipsgridded" ]]; then
 
     export wtime_waveawipsgridded="02:00:00"
     export npe_waveawipsgridded=1
     export nth_waveawipsgridded=1
-    export npe_node_waveawipsgridded=$(echo "${npe_node_max} / ${nth_waveawipsgridded}" | bc)
+    npe_node_waveawipsgridded=$(echo "${npe_node_max} / ${nth_waveawipsgridded}" | bc)
+    export npe_node_waveawipsgridded
     export NTASKS=${npe_waveawipsgridded}
     export memory_waveawipsgridded_gfs="1GB"
 
@@ -324,7 +335,7 @@ elif [[ "${step}" = "ocnanalpost" ]]; then
     npe_node_ocnanalpost=$(echo "${npe_node_max} / ${nth_ocnanalpost}" | bc)
     export npe_node_ocnanalpost
 
-elif [ ${step} = "anal" ]; then
+elif [[ ${step} = "anal" ]]; then
 
     export wtime_anal="00:50:00"
     export wtime_anal_gfs="00:40:00"
@@ -335,23 +346,13 @@ elif [ ${step} = "anal" ]; then
     if [[ "${machine}" = "WCOSS2" ]]; then
       export nth_anal=8
       export nth_anal_gfs=8
-    elif [[ "${PARTITION_BATCH}" = "xjet" ]]; then
-      export wtime_anal="01:10:00"
-      export npe_anal=792
-      export npe_anal_gfs=816
     fi
-    if [ ${CASE} = "C384" ]; then
+    if [[ ${CASE} = "C384" ]]; then
       export npe_anal=160
       export npe_anal_gfs=160
       export nth_anal=10
       export nth_anal_gfs=10
-      if [[ ${PARTITION_BATCH} = "xjet" ]]; then
-         #For the analysis jobs, the number of tasks and cores used must be equal
-         #On the xjet partition, this is accomplished by increasing the task
-         #count to a multiple of 24
-         export npe_anal=168
-         export npe_anal_gfs=168
-      elif [[ ${machine} = "S4" ]]; then
+      if [[ ${machine} = "S4" ]]; then
          #On the S4-s4 partition, this is accomplished by increasing the task
          #count to a multiple of 32
          if [[ ${PARTITION_BATCH} = "s4" ]]; then
@@ -367,10 +368,7 @@ elif [ ${step} = "anal" ]; then
     if [[ ${CASE} = "C192" || ${CASE} = "C96" || ${CASE} = "C48" ]]; then
       export npe_anal=84
       export npe_anal_gfs=84
-      if [[ $PARTITION_BATCH = "xjet" ]]; then
-         export nth_anal=4
-         export nth_anal_gfs=4
-      elif [[ ${machine} = "S4" ]]; then
+      if [[ ${machine} = "S4" ]]; then
          export nth_anal=4
          export nth_anal_gfs=4
          #Adjust job count for S4
@@ -383,12 +381,14 @@ elif [ ${step} = "anal" ]; then
          fi
       fi
     fi
-    export npe_node_anal=$(echo "${npe_node_max} / ${nth_anal}" | bc)
+    npe_node_anal=$(echo "${npe_node_max} / ${nth_anal}" | bc)
+    export npe_node_anal
     export nth_cycle=${nth_anal}
-    export npe_node_cycle=$(echo "${npe_node_max} / ${nth_cycle}" | bc)
+    npe_node_cycle=$(echo "${npe_node_max} / ${nth_cycle}" | bc)
+    export npe_node_cycle
     export is_exclusive=True
 
-elif [ ${step} = "analcalc" ]; then
+elif [[ ${step} = "analcalc" ]]; then
 
     export wtime_analcalc="00:10:00"
     export npe_analcalc=127
@@ -396,34 +396,39 @@ elif [ ${step} = "analcalc" ]; then
     export nth_analcalc=1
     export nth_echgres=4
     export nth_echgres_gfs=12
-    export npe_node_analcalc=$(echo "${npe_node_max} / ${nth_analcalc}" | bc)
+    npe_node_analcalc=$(echo "${npe_node_max} / ${nth_analcalc}" | bc)
+    export npe_node_analcalc
     export is_exclusive=True
 
-elif [ ${step} = "analdiag" ]; then
+elif [[ ${step} = "analdiag" ]]; then
 
     export wtime_analdiag="00:15:00"
     export npe_analdiag=96             # Should be at least twice npe_ediag
     export nth_analdiag=1
-    export npe_node_analdiag=$(echo "${npe_node_max} / ${nth_analdiag}" | bc)
+    npe_node_analdiag=$(echo "${npe_node_max} / ${nth_analdiag}" | bc)
+    export npe_node_analdiag
     export memory_analdiag="48GB"
 
-elif [ ${step} = "sfcanl" ]; then
+elif [[ ${step} = "sfcanl" ]]; then
 
     export wtime_sfcanl="00:10:00"
     export npe_sfcanl=6
     export nth_sfcanl=1
-    export npe_node_sfcanl=$(echo "${npe_node_max} / ${nth_sfcanl}" | bc)
+    npe_node_sfcanl=$(echo "${npe_node_max} / ${nth_sfcanl}" | bc)
+    export npe_node_sfcanl
     export is_exclusive=True
 
-elif [ ${step} = "gldas" ]; then
+elif [[ ${step} = "gldas" ]]; then
 
     export wtime_gldas="00:10:00"
     export npe_gldas=112
     export nth_gldas=1
-    export npe_node_gldas=$(echo "${npe_node_max} / ${nth_gldas}" | bc)
+    npe_node_gldas=$(echo "${npe_node_max} / ${nth_gldas}" | bc)
+    export npe_node_gldas
     export npe_gaussian=96
     export nth_gaussian=1
-    export npe_node_gaussian=$(echo "${npe_node_max} / ${nth_gaussian}" | bc)
+    npe_node_gaussian=$(echo "${npe_node_max} / ${nth_gaussian}" | bc)
+    export npe_node_gaussian
     export is_exclusive=True
 
 elif [[ "${step}" = "fcst" || "${step}" = "efcs" ]]; then
@@ -518,25 +523,25 @@ elif [[ "${step}" = "fcst" || "${step}" = "efcs" ]]; then
         echo "Total PETS for ${_CDUMP} = ${NTASKS_TOT}"
 
         if [[ "${_CDUMP}" =~ "gfs" ]]; then
-          declare -x npe_${step}_gfs="${NTASKS_TOT}"
-          declare -x nth_${step}_gfs=1  # ESMF handles threading for the UFS-weather-model
-          declare -x npe_node_${step}_gfs="${npe_node_max}"
+          declare -x "npe_${step}_gfs"="${NTASKS_TOT}"
+          declare -x "nth_${step}_gfs"=1  # ESMF handles threading for the UFS-weather-model
+          declare -x "npe_node_${step}_gfs"="${npe_node_max}"
         else
-          declare -x npe_${step}="${NTASKS_TOT}"
-          declare -x nth_${step}=1  # ESMF handles threading for the UFS-weather-model
-          declare -x npe_node_${step}="${npe_node_max}"
+          declare -x "npe_${step}"="${NTASKS_TOT}"
+          declare -x "nth_${step}"=1  # ESMF handles threading for the UFS-weather-model
+          declare -x "npe_node_${step}"="${npe_node_max}"
         fi
 
     done
 
     case "${CASE}" in
       "C48" | "C96" | "C192")
-        declare -x wtime_${step}="00:30:00"
-        declare -x wtime_${step}_gfs="03:00:00"
+        declare -x wtime_"${step}"="00:30:00"
+        declare -x wtime_"${step}_gfs"="03:00:00"
         ;;
       "C384" | "C768" | "C1152")
-        declare -x wtime_${step}="01:00:00"
-        declare -x wtime_${step}_gfs="06:00:00"
+        declare -x wtime_"${step}"="01:00:00"
+        declare -x wtime_"${step}_gfs"="06:00:00"
         ;;
       *)
         echo "FATAL ERROR: Resolution ${CASE} not supported in ${step}"
@@ -547,7 +552,7 @@ elif [[ "${step}" = "fcst" || "${step}" = "efcs" ]]; then
     unset _CDUMP _CDUMP_LIST
     unset NTASKS_TOT
 
-elif [ ${step} = "ocnpost" ]; then
+elif [[ ${step} = "ocnpost" ]]; then
 
     export wtime_ocnpost="00:30:00"
     export npe_ocnpost=1
@@ -555,12 +560,12 @@ elif [ ${step} = "ocnpost" ]; then
     export nth_ocnpost=1
     export memory_ocnpost="96G"
 
-elif [ ${step} = "post" ]; then
+elif [[ ${step} = "post" ]]; then
 
     export wtime_post="00:12:00"
     export wtime_post_gfs="01:00:00"
     export npe_post=126
-    res=$(echo ${CASE} | cut -c2-)
+    res=$(echo "${CASE}" | cut -c2-)
     if (( npe_post > res )); then
       export npe_post=${res}
     fi
@@ -572,7 +577,7 @@ elif [ ${step} = "post" ]; then
     if [[ "${npe_node_post_gfs}" -gt "${npe_node_max}" ]]; then export npe_node_post_gfs=${npe_node_max} ; fi
     export is_exclusive=True
 
-elif [ ${step} = "wafs" ]; then
+elif [[ ${step} = "wafs" ]]; then
 
     export wtime_wafs="00:30:00"
     export npe_wafs=1
@@ -580,7 +585,7 @@ elif [ ${step} = "wafs" ]; then
     export nth_wafs=1
     export memory_wafs="1GB"
 
-elif [ ${step} = "wafsgcip" ]; then
+elif [[ ${step} = "wafsgcip" ]]; then
 
     export wtime_wafsgcip="00:30:00"
     export npe_wafsgcip=2
@@ -588,39 +593,43 @@ elif [ ${step} = "wafsgcip" ]; then
     export npe_node_wafsgcip=1
     export memory_wafsgcip="50GB"
 
-elif [ ${step} = "wafsgrib2" ]; then
+elif [[ ${step} = "wafsgrib2" ]]; then
 
     export wtime_wafsgrib2="00:30:00"
     export npe_wafsgrib2=18
     export nth_wafsgrib2=1
-    export npe_node_wafsgrib2=$(echo "${npe_node_max} / ${nth_wafsgrib2}" | bc)
+    npe_node_wafsgrib2=$(echo "${npe_node_max} / ${nth_wafsgrib2}" | bc)
+    export npe_node_wafsgrib2
     export memory_wafsgrib2="80GB"
 
-elif [ ${step} = "wafsblending" ]; then
+elif [[ ${step} = "wafsblending" ]]; then
 
     export wtime_wafsblending="00:30:00"
     export npe_wafsblending=1
     export nth_wafsblending=1
-    export npe_node_wafsblending=$(echo "${npe_node_max} / ${nth_wafsblending}" | bc)
+    npe_node_wafsblending=$(echo "${npe_node_max} / ${nth_wafsblending}" | bc)
+    export npe_node_wafsblending
     export memory_wafsblending="15GB"
 
-elif [ ${step} = "wafsgrib20p25" ]; then
+elif [[ ${step} = "wafsgrib20p25" ]]; then
 
     export wtime_wafsgrib20p25="00:30:00"
     export npe_wafsgrib20p25=11
     export nth_wafsgrib20p25=1
-    export npe_node_wafsgrib20p25=$(echo "${npe_node_max} / ${nth_wafsgrib20p25}" | bc)
+    npe_node_wafsgrib20p25=$(echo "${npe_node_max} / ${nth_wafsgrib20p25}" | bc)
+    export npe_node_wafsgrib20p25
     export memory_wafsgrib20p25="80GB"
 
-elif [ ${step} = "wafsblending0p25" ]; then
+elif [[ ${step} = "wafsblending0p25" ]]; then
 
     export wtime_wafsblending0p25="00:30:00"
     export npe_wafsblending0p25=1
     export nth_wafsblending0p25=1
-    export npe_node_wafsblending0p25=$(echo "${npe_node_max} / ${nth_wafsblending0p25}" | bc)
+    npe_node_wafsblending0p25=$(echo "${npe_node_max} / ${nth_wafsblending0p25}" | bc)
+    export npe_node_wafsblending0p25
     export memory_wafsblending0p25="15GB"
 
-elif [ ${step} = "vrfy" ]; then
+elif [[ ${step} = "vrfy" ]]; then
 
     export wtime_vrfy="03:00:00"
     export wtime_vrfy_gfs="06:00:00"
@@ -634,7 +643,7 @@ elif [ ${step} = "vrfy" ]; then
     fi
     export is_exclusive=True
 
-elif [ ${step} = "metp" ]; then
+elif [[ ${step} = "metp" ]]; then
 
     export nth_metp=1
     export wtime_metp="03:00:00"
@@ -645,7 +654,7 @@ elif [ ${step} = "metp" ]; then
     export npe_node_metp_gfs=4
     export is_exclusive=True
 
-elif [ ${step} = "echgres" ]; then
+elif [[ ${step} = "echgres" ]]; then
 
     export wtime_echgres="00:10:00"
     export npe_echgres=3
@@ -655,7 +664,7 @@ elif [ ${step} = "echgres" ]; then
       export memory_echgres="200GB"
     fi
 
-elif [ ${step} = "init" ]; then
+elif [[ ${step} = "init" ]]; then
 
     export wtime_init="00:30:00"
     export npe_init=24
@@ -663,14 +672,14 @@ elif [ ${step} = "init" ]; then
     export npe_node_init=6
     export memory_init="70G"
 
-elif [ ${step} = "init_chem" ]; then
+elif [[ ${step} = "init_chem" ]]; then
 
     export wtime_init_chem="00:30:00"
     export npe_init_chem=1
     export npe_node_init_chem=1
     export is_exclusive=True
 
-elif [ ${step} = "mom6ic" ]; then
+elif [[ ${step} = "mom6ic" ]]; then
 
     export wtime_mom6ic="00:30:00"
     export npe_mom6ic=24
@@ -688,7 +697,7 @@ elif [[ ${step} = "arch" || ${step} = "earc" || ${step} = "getic" ]]; then
       eval "export memory_${step}=50GB"
     fi
 
-elif [ ${step} = "coupled_ic" ]; then
+elif [[ ${step} = "coupled_ic" ]]; then
 
     export wtime_coupled_ic="00:15:00"
     export npe_coupled_ic=1
@@ -696,34 +705,39 @@ elif [ ${step} = "coupled_ic" ]; then
     export nth_coupled_ic=1
     export is_exclusive=True
 
-elif [ ${step} = "atmensanalprep" ]; then
+elif [[ ${step} = "atmensanalprep" ]]; then
 
     export wtime_atmensanalprep="00:10:00"
     export npe_atmensanalprep=1
     export nth_atmensanalprep=1
-    export npe_node_atmensanalprep=$(echo "${npe_node_max} / ${nth_atmensanalprep}" | bc)
+    npe_node_atmensanalprep=$(echo "${npe_node_max} / ${nth_atmensanalprep}" | bc)
+    export npe_node_atmensanalprep
     export is_exclusive=True
 
-elif [ ${step} = "atmensanalrun" ]; then
+elif [[ ${step} = "atmensanalrun" ]]; then
 
     # make below case dependent later
     export layout_x=2
     export layout_y=3
 
     export wtime_atmensanalrun="00:30:00"
-    export npe_atmensanalrun=$(echo "${layout_x} * ${layout_y} * 6" | bc)
-    export npe_atmensanalrun_gfs=$(echo "${layout_x} * ${layout_y} * 6" | bc)
+    npe_atmensanalrun=$(echo "${layout_x} * ${layout_y} * 6" | bc)
+    export npe_atmensanalrun
+    npe_atmensanalrun_gfs=$(echo "${layout_x} * ${layout_y} * 6" | bc)
+    export npe_atmensanalrun_gfs
     export nth_atmensanalrun=1
     export nth_atmensanalrun_gfs=${nth_atmensanalrun}
     export is_exclusive=True
-    export npe_node_atmensanalrun=$(echo "${npe_node_max} / ${nth_atmensanalrun}" | bc)
+    npe_node_atmensanalrun=$(echo "${npe_node_max} / ${nth_atmensanalrun}" | bc)
+    export npe_node_atmensanalrun
 
-elif [ ${step} = "atmensanalpost" ]; then
+elif [[ ${step} = "atmensanalpost" ]]; then
 
     export wtime_atmensanalpost="00:30:00"
     export npe_atmensanalpost=${npe_node_max}
     export nth_atmensanalpost=1
-    export npe_node_atmensanalpost=$(echo "${npe_node_max} / ${nth_atmensanalpost}" | bc)
+    npe_node_atmensanalpost=$(echo "${npe_node_max} / ${nth_atmensanalpost}" | bc)
+    export npe_node_atmensanalpost
     export is_exclusive=True
 
 elif [[ ${step} = "eobs" || ${step} = "eomg" ]]; then
@@ -740,34 +754,36 @@ elif [[ ${step} = "eobs" || ${step} = "eomg" ]]; then
     export npe_eomg=${npe_eobs}
     export nth_eobs=2
     export nth_eomg=${nth_eobs}
-    export npe_node_eobs=$(echo "${npe_node_max} / ${nth_eobs}" | bc)
+    npe_node_eobs=$(echo "${npe_node_max} / ${nth_eobs}" | bc)
+    export npe_node_eobs
     export npe_node_eomg=${npe_node_eobs}
     export is_exclusive=True
     #The number of tasks and cores used must be the same for eobs
-    #For S4 and Jet/xjet, this is accomplished by running 10 tasks/node
-    if [[ ${machine} = "S4" || ${PARTITION_BATCH} = "xjet" ]]; then
+    #For S4, this is accomplished by running 10 tasks/node
+    if [[ ${machine} = "S4" ]]; then
        export npe_node_eobs=10
     fi
 
-elif [ ${step} = "ediag" ]; then
+elif [[ ${step} = "ediag" ]]; then
 
     export wtime_ediag="00:15:00"
     export npe_ediag=48
     export nth_ediag=1
-    export npe_node_ediag=$(echo "${npe_node_max} / ${nth_ediag}" | bc)
+    npe_node_ediag=$(echo "${npe_node_max} / ${nth_ediag}" | bc)
+    export npe_node_ediag
     export memory_ediag="30GB"
 
-elif [ ${step} = "eupd" ]; then
+elif [[ ${step} = "eupd" ]]; then
 
     export wtime_eupd="00:30:00"
-    if [ ${CASE} = "C768" ]; then
+    if [[ ${CASE} = "C768" ]]; then
       export npe_eupd=480
       export nth_eupd=6
       if [[ "${machine}" = "WCOSS2" ]]; then
         export npe_eupd=315
         export nth_eupd=14
       fi
-    elif [ ${CASE} = "C384" ]; then
+    elif [[ ${CASE} = "C384" ]]; then
       export npe_eupd=270
       export nth_eupd=2
       if [[ "${machine}" = "WCOSS2" ]]; then
@@ -786,36 +802,37 @@ elif [ ${step} = "eupd" ]; then
         export nth_eupd=4
       fi
     fi
-    export npe_node_eupd=$(echo "${npe_node_max} / ${nth_eupd}" | bc)
+    npe_node_eupd=$(echo "${npe_node_max} / ${nth_eupd}" | bc)
+    export npe_node_eupd
     export is_exclusive=True
 
-elif [ ${step} = "ecen" ]; then
+elif [[ ${step} = "ecen" ]]; then
 
     export wtime_ecen="00:10:00"
     export npe_ecen=80
     export nth_ecen=4
     if [[ "${machine}" = "HERA" ]]; then export nth_ecen=6; fi
     if [[ ${CASE} = "C384" || ${CASE} = "C192" || ${CASE} = "C96" || ${CASE} = "C48" ]]; then export nth_ecen=2; fi
-    export npe_node_ecen=$(echo "${npe_node_max} / ${nth_ecen}" | bc)
+    npe_node_ecen=$(echo "${npe_node_max} / ${nth_ecen}" | bc)
+    export npe_node_ecen
     export nth_cycle=${nth_ecen}
-    export npe_node_cycle=$(echo "${npe_node_max} / ${nth_cycle}" | bc)
+    npe_node_cycle=$(echo "${npe_node_max} / ${nth_cycle}" | bc)
+    export npe_node_cycle
     export is_exclusive=True
 
-elif [ ${step} = "esfc" ]; then
+elif [[ ${step} = "esfc" ]]; then
 
     export wtime_esfc="00:06:00"
     export npe_esfc=80
     export nth_esfc=1
-    export npe_node_esfc=$(echo "${npe_node_max} / ${nth_esfc}" | bc)
+    npe_node_esfc=$(echo "${npe_node_max} / ${nth_esfc}" | bc)
+    export npe_node_esfc
     export nth_cycle=${nth_esfc}
-    export npe_node_cycle=$(echo "${npe_node_max} / ${nth_cycle}" | bc)
+    npe_node_cycle=$(echo "${npe_node_max} / ${nth_cycle}" | bc)
+    export npe_node_cycle
     export memory_esfc="80GB"
-    #xjet only has 64GB of memory
-    if [[ ${PARTITION_BATCH} = "xjet" ]]; then
-       export memory_esfc="60GB"
-    fi
 
-elif [ ${step} = "epos" ]; then
+elif [[ ${step} = "epos" ]]; then
 
     export wtime_epos="00:15:00"
     export npe_epos=80
@@ -823,10 +840,11 @@ elif [ ${step} = "epos" ]; then
     if [[ "${machine}" == "HERA" ]]; then
       export nth_epos=6
     fi
-    export npe_node_epos=$(echo "${npe_node_max} / ${nth_epos}" | bc)
+    npe_node_epos=$(echo "${npe_node_max} / ${nth_epos}" | bc)
+    export npe_node_epos
     export is_exclusive=True
 
-elif [ ${step} = "postsnd" ]; then
+elif [[ ${step} = "postsnd" ]]; then
 
     export wtime_postsnd="02:00:00"
     export npe_postsnd=40
@@ -834,12 +852,14 @@ elif [ ${step} = "postsnd" ]; then
     export npe_node_postsnd=10
     export npe_postsndcfp=9
     export npe_node_postsndcfp=1
-    if [[ "$(echo "${npe_node_postsnd} * ${nth_postsnd}" | bc)" -gt "${npe_node_max}" ]]; then
-        export npe_node_postsnd=$(echo "${npe_node_max} / ${nth_postsnd}" | bc)
+    postsnd_req_cores=$(echo "${npe_node_postsnd} * ${nth_postsnd}" | bc)
+    if [[ ${postsnd_req_cores} -gt "${npe_node_max}" ]]; then
+        npe_node_postsnd=$(echo "${npe_node_max} / ${nth_postsnd}" | bc)
+        export npe_node_postsnd
     fi
     export is_exclusive=True
 
-elif [ ${step} = "awips" ]; then
+elif [[ ${step} = "awips" ]]; then
 
     export wtime_awips="03:30:00"
     export npe_awips=1
@@ -847,7 +867,7 @@ elif [ ${step} = "awips" ]; then
     export nth_awips=1
     export memory_awips="3GB"
 
-elif [ ${step} = "gempak" ]; then
+elif [[ ${step} = "gempak" ]]; then
 
     export wtime_gempak="03:00:00"
     export npe_gempak=2
