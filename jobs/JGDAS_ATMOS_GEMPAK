@@ -35,22 +35,24 @@ export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 # Specify NET and RUN Name and model
 ####################################
 export model=${model:-gdas}
-export COMPONENT="atmos"
 
 ##############################################
 # Define COM directories
 ##############################################
-export COMIN=${COMIN:-$(compath.py ${envir}/${NET}/${gfs_ver})/${RUN}.${PDY}/${cyc}/${COMPONENT}}
-export COMOUT=${COMOUT:-$(compath.py -o ${NET}/${gfs_ver}/${RUN}.${PDY})/${cyc}/${COMPONENT}/gempak}
+for res in 0p25 0p50 1p00; do
+  RES=${res} YMD=${PDY} HH=${cyc} generate_com -rx "COM_ATMOS_GRIB_${res}:COM_ATMOS_GRIB_TMPL"
+done
 
-if [ ${SENDCOM} = YES ] ; then
-  mkdir -m 775 -p ${COMOUT}
+YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_GEMPAK
+
+if [[ ${SENDCOM} = YES && ! -d "${COM_ATMOS_GEMPAK}" ]] ; then
+  mkdir -m 775 -p "${COM_ATMOS_GEMPAK}"
 fi
 
 
-# TODO: These actions belong in an ex-script not a j-job (#1219)
-if [ -f ${DATA}/poescript ]; then
-   rm ${DATA}/poescript
+# TODO: These actions belong in an ex-script not a j-job
+if [[ -f poescript ]]; then
+   rm -f poescript
 fi
 
 ########################################################
@@ -60,7 +62,7 @@ echo "${SRCgfs}/exgdas_atmos_nawips.sh gdas 009 GDAS_GEMPAK " >> poescript
 
 ########################################################
 # Execute the script for quater-degree grib
-echo "${SRCgfs}/exgdas_atmos_nawips.sh gdas_0p25 009 GDAS_GEMPAK " >>poescript
+echo "${SRCgfs}/exgdas_atmos_nawips.sh gdas_0p25 009 GDAS_GEMPAK " >> poescript
 ########################################################
 
 cat poescript
@@ -76,9 +78,8 @@ export OMP_NUM_THREADS=${threads}
 APRUN="mpiexec -l -np ${ntasks} --cpu-bind verbose,core cfp"
 
 APRUN_GEMPAKCFP=${APRUN_GEMPAKCFP:-${APRUN}}
-APRUNCFP=$(eval echo ${APRUN_GEMPAKCFP})
 
-${APRUNCFP} ${DATA}/poescript
+${APRUN_GEMPAKCFP} ${DATA}/poescript
 export err=$?; err_chk
 
 ############################################
