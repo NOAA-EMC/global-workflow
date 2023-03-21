@@ -5,6 +5,18 @@
 
 echo "BEGIN: config.fcst"
 
+#---------------------------------------------------------------------
+
+# The following variables are required of the Python refactoring of
+# the forecast tasks; at some point in the future these should be
+# defined within a YAML-formatted configuration file specific to the
+# respective forecast application.
+export FCST_FIXED_YAML="${HOMEgfs}/parm/ufs/forecast/ufs.atm.fixed_files.yaml"
+
+
+
+#---------------------------------------------------------------------
+
 # Turn off waves if not used for this CDUMP
 case $WAVE_CDUMP in
   both | ${CDUMP/enkf} ) ;; # Don't change
@@ -354,14 +366,6 @@ if [[ "$DO_AERO" = "YES" ]]; then # temporary settings for aerosol coupling
     export fscav_aero="${aero_conv_scav_factors:-${fscav_aero}}"
     export dnats_aero="${aero_diag_tracers:-0}"
 fi
-
-#---------------------------------------------------------------------
-
-# The following variables are required of the Python refactoring of
-# the forecast tasks; at some point in the future these should be
-# defined within a YAML-formatted configuration file specific to the
-# respective forecast application.
-export FCST_FIXED_YAML="${HOMEgfs}/parm/ufs/forecast/ufs.atm.fixed_files.yaml"
 
 
 # Remember config.efcs will over-ride these values for ensemble forecasts
