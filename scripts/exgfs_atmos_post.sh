@@ -410,7 +410,7 @@ else   ## not_anl if_stime
       # if model already runs gfs io, make sure GFSOUT is linked to the gfsio file
       # new imported variable for global_post.sh
 
-      export GFSOUT=${PREFIX}gfsio${fhr}     
+      export GFSOUT=${PREFIX}gfsio${fhr}
 
       # link satellite coefficients files, use hwrf version as ops crtm 2.0.5
       # does not new coefficient files used by post
