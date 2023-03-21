@@ -129,7 +129,7 @@ class UFSWM(Task):
         """
 
     @logit(base_logger)
-    def get_fv3_fixed_files(self: Task):
+    def get_fixed_files(self: Task):
         """
         Description
         -----------
