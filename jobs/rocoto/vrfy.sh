@@ -17,12 +17,14 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "vrfy" -c "base vrfy"
 
 ###############################################################
 export COMPONENT="atmos"
-export CDATEm1=$(${NDATE} -24 ${CDATE})
-export PDYm1=$(echo ${CDATEm1} | cut -c1-8)
+CDATEm1=$(${NDATE} -24 "${CDATE}")
+export CDATEm1
+PDYm1=$(echo "${CDATEm1}" | cut -c1-8)
+export PDYm1
 
-CDATEm1c=$(${NDATE} -06 ${CDATE})
-PDYm1c=$(echo ${CDATEm1c} | cut -c1-8)
-pcyc=$(echo ${CDATEm1c} | cut -c9-10)
+CDATEm1c=$(${NDATE} -06 "${CDATE}")
+PDYm1c=$(echo "${CDATEm1c}" | cut -c1-8)
+pcyc=$(echo "${CDATEm1c}" | cut -c9-10)
 
 export COMIN="${ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENT}"
 
@@ -30,20 +32,21 @@ export COMIN="${ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENT}"
 ###############################################################
 echo
 echo "=============== START TO GENERATE QUARTER DEGREE GRIB1 FILES ==============="
-if [ ${MKPGB4PRCP} = "YES" -a ${CDUMP} = "gfs" ]; then
-    if [ ! -d ${ARCDIR} ]; then mkdir -p ${ARCDIR} ; fi
+if [[ ${MKPGB4PRCP} = "YES" && ${CDUMP} = "gfs" ]]; then
+    if [[ ! -d "${ARCDIR}" ]]; then mkdir -p "${ARCDIR}" ; fi
     nthreads_env=${OMP_NUM_THREADS:-1} # get threads set in env
     export OMP_NUM_THREADS=1
-    cd ${COMIN}
+    set -e
+    cd "${COMIN}"
     fhmax=${vhr_rain:-${FHMAX_GFS}}
     fhr=0
-    while [ ${fhr} -le ${fhmax} ]; do
-       fhr2=$(printf %02i ${fhr})
-       fhr3=$(printf %03i ${fhr})
+    while [[ ${fhr} -le ${fhmax} ]]; do
+       fhr2=$(printf %02i "${fhr}")
+       fhr3=$(printf %03i "${fhr}")
        fname=${CDUMP}.t${cyc}z.sfluxgrbf${fhr3}.grib2
        fileout=${ARCDIR}/pgbq${fhr2}.${CDUMP}.${CDATE}.grib2
-       ${WGRIB2} ${fname} -match "(:PRATE:surface:)|(:TMP:2 m above ground:)" -grib ${fileout}
-       (( fhr = ${fhr} + 6 ))
+       ${WGRIB2} "${fname}" -match "(:PRATE:surface:)|(:TMP:2 m above ground:)" -grib "${fileout}"
+       (( fhr = fhr + 6 ))
     done
     export OMP_NUM_THREADS=${nthreads_env} # revert to threads set in env
 fi
@@ -52,32 +55,34 @@ fi
 ###############################################################
 echo
 echo "=============== START TO RUN MOS ==============="
-if [ ${RUNMOS} = "YES" -a ${CDUMP} = "gfs" ]; then
-    ${RUNGFSMOSSH} ${PDY}${cyc}
+if [[ ${RUNMOS} = "YES" && ${CDUMP} = "gfs" ]]; then
+    ${RUNGFSMOSSH} "${PDY}${cyc}"
 fi
 
 
 ###############################################################
 echo
 echo "=============== START TO RUN FIT2OBS VERIFICATION ==============="
-if [ ${VRFYFITS} = "YES" -a ${CDUMP} = ${CDFNL} -a ${CDATE} != ${SDATE} ]; then
+if [[ ${VRFYFITS} = "YES" && ${CDUMP} = "${CDFNL}" && ${CDATE} != "${SDATE}" ]]; then
 
     export CDUMPFCST=${VDUMP}
     export TMPDIR="${RUNDIR}/${CDATE}/${CDUMP}"
-    [[ ! -d ${TMPDIR} ]] && mkdir -p ${TMPDIR}
+    [[ ! -d ${TMPDIR} ]] && mkdir -p "${TMPDIR}"
 
-    xdate=$(${NDATE} -${VBACKUP_FITS} ${CDATE})
+    xdate=$(${NDATE} -"${VBACKUP_FITS} ${CDATE}")
 
-    export vday=$(echo ${xdate} | cut -c1-8)
-    export vcyc=$(echo ${xdate} | cut -c9-10)
+    vday=$(echo "${xdate}" | cut -c1-8)
+    export vday
+    vcyc=$(echo "${xdate}" | cut -c9-10)
+    export vcyc
     export COMDAY=${ROTDIR}/logs/${xdate}
     export COM_INA=${ROTDIR}/gdas.${vday}/${vcyc}/atmos
-    export COM_INF='$ROTDIR/vrfyarch/gfs.$fdy/$fzz'
-    export COM_PRP='$ROTDIR/gdas.$pdy/$cyc/obs'
+    export COM_INF="${ROTDIR}/vrfyarch/gfs.${fdy}/${fzz}"
+    export COM_PRP="${ROTDIR}/gdas.${pdy}/${cyc}/obs"
 
     export OUTPUT_FILETYPE_SAVE=${OUTPUT_FILETYPE}
 
-    ${PREPQFITSH} ${PSLOT} ${xdate} ${ROTDIR} ${ARCDIR} ${TMPDIR}
+    ${PREPQFITSH} "${PSLOT} ${xdate} ${ROTDIR} ${ARCDIR} ${TMPDIR}"
 
     export OUTPUT_FILETYPE=${OUTPUT_FILETYPE_SAVE}
 
@@ -87,7 +92,7 @@ fi
 ###############################################################
 echo
 echo "=============== START TO RUN RADMON DATA EXTRACTION ==============="
-if [ ${VRFYRAD} = "YES" -a "${CDUMP}" = "${CDFNL}" -a "${CDATE}" != "${SDATE}" ]; then
+if [[ ${VRFYRAD} = "YES" && ${CDUMP} = "${CDFNL}" && ${CDATE} != "${SDATE}" ]]; then
 
     export EXP=${PSLOT}
     export COMOUT="${ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENT}"
@@ -103,7 +108,7 @@ fi
 ###############################################################
 echo
 echo "=============== START TO RUN OZMON DATA EXTRACTION ==============="
-if [ "${VRFYOZN}" = "YES" -a "${CDUMP}" = "${CDFNL}" -a "${CDATE}" != "${SDATE}" ]; then
+if [[ ${VRFYOZN} = "YES" && ${CDUMP} = "${CDFNL}" && ${CDATE} != "${SDATE}" ]]; then
 
     export EXP=${PSLOT}
     export COMOUT="${ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENT}"
@@ -119,7 +124,7 @@ fi
 ###############################################################
 echo
 echo "=============== START TO RUN MINMON ==============="
-if [ "${VRFYMINMON}" = "YES" -a "${CDATE}" != "${SDATE}" ]; then
+if [[ ${VRFYMINMON} = "YES" && ${CDATE} != "${SDATE}" ]]; then
 
     export COMOUT="${ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENT}"
     export M_TANKverfM0="${M_TANKverf}/stats/${PSLOT}/${CDUMP}.${PDY}/${cyc}"
@@ -134,9 +139,10 @@ fi
 ################################################################################
 echo
 echo "=============== START TO RUN CYCLONE TRACK VERIFICATION ==============="
-if [ ${VRFYTRAK} = "YES" ]; then
+if [[ ${VRFYTRAK} = "YES" ]]; then
 
-    export COMINsyn=${COMINsyn:-$(compath.py ${envir}/com/gfs/${gfs_ver})/syndat}
+    COMINsyn=${COMINsyn:-$(compath.py "${envir}/com/gfs/${gfs_ver}")/syndat}
+    export COMINsyn
 
     ${TRACKERSH}
 fi
@@ -145,7 +151,7 @@ fi
 ################################################################################
 echo
 echo "=============== START TO RUN CYCLONE GENESIS VERIFICATION ==============="
-if [ ${VRFYGENESIS} = "YES" -a "${CDUMP}" = "gfs" ]; then
+if [[ ${VRFYGENESIS} = "YES" && "${CDUMP}" = "gfs" ]]; then
     ${GENESISSH}
 fi
 
@@ -153,15 +159,15 @@ fi
 ################################################################################
 echo
 echo "=============== START TO RUN CYCLONE GENESIS VERIFICATION (FSU) ==============="
-if [ ${VRFYFSU} = "YES" -a "${CDUMP}" = "gfs" ]; then
+if [[ ${VRFYFSU} = "YES" && "${CDUMP}" = "gfs" ]]; then
     ${GENESISFSU}
 fi
 
 
 ###############################################################
 # Force Exit out cleanly
-cd ${DATAROOT}
-if [ ${KEEPDATA:-"NO"} = "NO" ] ; then rm -rf ${DATA} ; fi
+cd "${DATAROOT}"
+if [[ ${KEEPDATA:-"NO"} = "NO" ]] ; then rm -rf "${DATA}" ; fi
 
 
 exit 0

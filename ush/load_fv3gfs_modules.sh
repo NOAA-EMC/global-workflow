@@ -10,10 +10,10 @@ fi
 ulimit_s=$( ulimit -S -s )
 
 # Find module command and purge:
-source "$HOMEgfs/modulefiles/module-setup.sh.inc"
+source "${HOMEgfs}/modulefiles/module-setup.sh.inc"
 
 # Load our modules:
-module use "$HOMEgfs/modulefiles"
+module use "${HOMEgfs}/modulefiles"
 
 if [[ -d /lfs/f1 ]]; then
   # We are on WCOSS2 (Cactus or Dogwood)
@@ -43,7 +43,7 @@ fi
 module list
 
 # Restore stack soft limit:
-ulimit -S -s "$ulimit_s"
+ulimit -S -s "${ulimit_s}"
 unset ulimit_s
 
 set_trace
