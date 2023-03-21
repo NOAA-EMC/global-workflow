@@ -25,6 +25,8 @@ ANLDIR=${DATA}/anl
 FILEDATE=${PDY}.${cyc}0000
 DOY=$(date +%j -d "${PDY} + 1 day")
 YYYY=$(echo "${PDY}" | cut -c1-4)
+
+SFCANLDIR=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos/RESTART/
 ################################################################################
 # Create ensemble member
 WORKDIR=${BKGDIR}
@@ -48,7 +50,7 @@ do
     mkdir -p "${WORKDIR}/mem${ens}"
     for tile in 1 2 3 4 5 6
     do
-        cp "${WORKDIR}/${FILEDATE}.sfc_data.tile${tile}.nc"  "${WORKDIR}/mem${ens}/${FILEDATE}.sfc_data.tile${tile}.nc"
+        cp "${SFCANLDIR}/${FILEDATE}.sfcanl_data.tile${tile}.nc"  "${WORKDIR}/mem${ens}/${FILEDATE}.sfc_data.tile${tile}.nc"
     done
     cp "${WORKDIR}/${FILEDATE}.coupler.res" "${WORKDIR}/mem${ens}/${FILEDATE}.coupler.res"
 done
@@ -144,7 +146,7 @@ EOF
 for tile in 1 2 3 4 5 6
 do
   if [[ ! -e ${FILEDATE}.sfc_data.tile${tile}.nc ]]; then
-    cp "${BKGDIR}/${FILEDATE}.sfc_data.tile${tile}.nc" "${WORKDIR}"
+    cp "${SFCANLDIR}/${FILEDATE}.sfcanl_data.tile${tile}.nc"  "${WORKDIR}/${FILEDATE}.sfc_data.tile${tile}.nc"
   fi
 done
 

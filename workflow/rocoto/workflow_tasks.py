@@ -507,7 +507,7 @@ class Tasks:
         data = f'&ROTDIR;/gdas.@Y@m@d/@H/atmos/gdas.t@Hz.atmf009.nc'
         dep_dict = {'type': 'data', 'data': data, 'offset': '-06:00:00'}
         deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'task', 'name': f'{self.cdump}prep'}
+        dep_dict = {'type': 'task', 'name': f'{self.cdump}sfcanl'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
@@ -531,8 +531,6 @@ class Tasks:
 
         deps = []
         dep_dict = {'type': 'task', 'name': f'{self.cdump}landanlrun'}
-        deps.append(rocoto.add_dependency(dep_dict))
-        dep_dict = {'type': 'task', 'name': f'{self.cdump}sfcanl'}
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep_condition='and', dep=deps)
 
