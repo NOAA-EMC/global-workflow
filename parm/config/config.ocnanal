@@ -15,7 +15,7 @@ export SOCA_VARS=tocn,socn,ssh
 export SABER_BLOCKS_YAML=@SABER_BLOCKS_YAML@
 export SOCA_NINNER=@SOCA_NINNER@
 export CASE_ANL=@CASE_ANL@
-export DOMAIN_STACK_SIZE=2000000
+export DOMAIN_STACK_SIZE=3000000
 export JEDI_BIN=${HOMEgfs}/sorc/gdas.cd/build/bin
 
 # R2D2

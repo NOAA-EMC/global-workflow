@@ -19,19 +19,16 @@ GWDIR=$PWD/global-workflow
 CONFIGDIR=$GWDIR/parm/config
 BASEDIR=$PWD # were we run/dump stuff
 
-# Link of convenience to the rocoto viewer
-ln -sf $GWDIR/workflow/rocoto_viewer.py .
-
 # Experiment setup. 
 # possible start dates: 2021032312 2019063000 2021063006 2021070106
 cyc=12
-cdate=20210323
+cdate=20210701
 APP=S2S
 IDATE=${cdate}${cyc}
-EDATE=2021032400
-PSLOT=lores
-RES=48
-ORES=500
+EDATE=2021071500
+PSLOT=golden
+RES=384
+ORES=025
 GFS_CYC=0
 COMROT=$BASEDIR/$PSLOT/COMROT
 EXPDIR=$BASEDIR/$PSLOT/EXPDIR
@@ -46,9 +43,17 @@ rm -rf ./RUNDIRS/$PSLOT
 # Configure the marine obs to be assimilated
 obs_list_yaml=$PWD/obs_list.yaml
 rm -f ${obs_list_yaml}
+
+obs_list=(adt_j3_egm2008 adt_3a_egm2008 adt_3b_egm2008 adt_c2_egm2008 adt_sa_egm2008 \
+          sst_viirs_npp_l3u_so025 sst_viirs_npp_l3u_so025 sst_metopa_l3u_so025 sst_metopb_l3u_so025 sst_metopc_l3u_so025 \
+          icec_ssmis_f17_north icec_ssmis_f17_south icec_ssmis_f18_north icec_ssmis_f18_south)
+
 touch obs_list.yaml
 echo "observers:" >> obs_list.yaml
-echo "- !INC \${OBS_YAML_DIR}/adt_j3_egm2008.yaml" >> obs_list.yaml
+for obs in "${obs_list[@]}"
+do
+    echo "- !INC \${OBS_YAML_DIR}/${obs}.yaml" >> obs_list.yaml
+done
 
 if [[ ${ORES} == '025' ]]; then
     SOCA_INPUT_FIX_DIR=/scratch2/NCEPDEV/ocean/Guillaume.Vernieres/data/static/1440x1080x75/soca
@@ -102,4 +107,7 @@ rocotorun -d $PSLOT.db -w $PSLOT.xml
 #rocotostat -d $PSLOT.db -w $PSLOT.xml
 
 echo "./rocoto_viewer.py  -d ./${PSLOT}/EXPDIR/$PSLOT/$PSLOT.db -w ${PSLOT}/EXPDIR/$PSLOT/$PSLOT.xml"
+
+# Link of convenience to the rocoto viewer
+ln -sf $GWDIR/workflow/rocoto_viewer.py .
 
