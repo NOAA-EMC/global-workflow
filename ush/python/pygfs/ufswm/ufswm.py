@@ -106,9 +106,9 @@ class UFSWM(Task):
 
         """
 
-        if self.config.CASE not in self.fcst_model_config["res"]:
-            msg = f"The forecast model resolution {self.config.CASE} is not supported. Aborting!!!"
-            raise ForecastError(msg=msg)
+        # if self.config.CASE not in self.fcst_model_config["res"]:
+        #    msg = f"The forecast model resolution {self.config.CASE} is not supported. Aborting!!!"
+        #    raise ForecastError(msg=msg)
 
         # self.grid_config = self.grid_config
 
