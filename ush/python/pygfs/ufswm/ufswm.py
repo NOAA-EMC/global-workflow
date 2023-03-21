@@ -153,4 +153,6 @@ class UFSWM(Task):
 
         ufswm_config_dict = YAMLFile(path=self.config.FCST_FIXED_YAML)
 
+        print(ufswm_config_dict)
+
         return ufswm_config
