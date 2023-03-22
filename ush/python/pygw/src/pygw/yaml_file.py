@@ -7,8 +7,15 @@ from .attrdict import AttrDict
 from .template import TemplateConstants, Template
 from .jinja import Jinja
 
-__all__ = ['YAMLFile', 'parse_yaml', 'parse_j2yaml', 'parse_yamltmpl',
-           'save_as_yaml', 'dump_as_yaml', 'vanilla_yaml']
+__all__ = [
+    "YAMLFile",
+    "parse_yaml",
+    "parse_j2yaml",
+    "parse_yamltmpl",
+    "save_as_yaml",
+    "dump_as_yaml",
+    "vanilla_yaml",
+]
 
 
 class YAMLFile(AttrDict):
@@ -45,18 +52,15 @@ class YAMLFile(AttrDict):
 
 def save_as_yaml(data, target):
     # specifies a wide file so that long strings are on one line.
-    with open(target, 'w') as fh:
-        yaml.safe_dump(vanilla_yaml(data), fh,
-                       width=100000, sort_keys=False)
+    with open(target, "w") as fh:
+        yaml.safe_dump(vanilla_yaml(data), fh, width=100000, sort_keys=False)
 
 
 def dump_as_yaml(data):
-    return yaml.dump(vanilla_yaml(data),
-                     width=100000, sort_keys=False)
+    return yaml.dump(vanilla_yaml(data), width=100000, sort_keys=False)
 
 
-def parse_yaml(path=None, data=None,
-               encoding='utf-8', loader=yaml.SafeLoader):
+def parse_yaml(path=None, data=None, encoding="utf-8", loader=yaml.SafeLoader):
     """
     Load a yaml configuration file and resolve any environment variables
     The environment variables must have !ENV before them and be in this format
@@ -79,10 +83,10 @@ def parse_yaml(path=None, data=None,
     https://dev.to/mkaranasou/python-yaml-configuration-with-environment-variables-parsing-2ha6
     """
     # define tags
-    envtag = '!ENV'
-    inctag = '!INC'
+    envtag = "!ENV"
+    inctag = "!INC"
     # pattern for global vars: look for ${word}
-    pattern = re.compile(r'.*?\${(\w+)}.*?')
+    pattern = re.compile(r".*?\${(\w+)}.*?")
     loader = loader or yaml.SafeLoader
 
     # the envtag will be used to mark where to start searching for the pattern
@@ -96,7 +100,7 @@ def parse_yaml(path=None, data=None,
             full_value = line
             for g in match:
                 full_value = full_value.replace(
-                    f'${{{g}}}', os.environ.get(g, f'${{{g}}}')
+                    f"${{{g}}}", os.environ.get(g, f"${{{g}}}")
                 )
             return full_value
         return line
@@ -128,13 +132,12 @@ def parse_yaml(path=None, data=None,
     loader.add_constructor(inctag, constructor_include_variables)
 
     if path:
-        with open(path, 'r', encoding=encoding) as conf_data:
+        with open(path, "r", encoding=encoding) as conf_data:
             return yaml.load(conf_data, Loader=loader)
     elif data:
         return yaml.load(data, Loader=loader)
     else:
-        raise ValueError(
-            "Either a path or data should be defined as input")
+        raise ValueError("Either a path or data should be defined as input")
 
 
 def vanilla_yaml(ctx):
@@ -174,7 +177,8 @@ def parse_j2yaml(path: str, data: Dict = None) -> Dict[str, Any]:
     yaml_file = jenv.render
     yaml_dict = YAMLFile(data=yaml_file)
     yaml_dict = Template.substitute_structure(
-        yaml_dict, TemplateConstants.DOLLAR_PARENTHESES, data.get)
+        yaml_dict, TemplateConstants.DOLLAR_PARENTHESES, data.get
+    )
 
     return yaml_dict
 
@@ -197,6 +201,8 @@ def parse_yamltmpl(path: str, data: Dict = None) -> Dict[str, Any]:
     """
     yaml_dict = YAMLFile(path=path)
     if data is not None:
-        yaml_dict = Template.substitute_structure(yaml_dict, TemplateConstants.DOLLAR_PARENTHESES, data.get)
+        yaml_dict = Template.substitute_structure(
+            yaml_dict, TemplateConstants.DOLLAR_PARENTHESES, data.get
+        )
 
     return yaml_dict
