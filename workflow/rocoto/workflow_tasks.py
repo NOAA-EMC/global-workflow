@@ -838,7 +838,7 @@ class Tasks:
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
-        resources = self.get_resource('waeawipsgridded')
+        resources = self.get_resource('waveawipsgridded')
         task = create_wf_task('waveawipsgridded', resources, cdump=self.cdump, envar=self.envars,
                               dependency=dependencies)
 
