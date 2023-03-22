@@ -13,8 +13,8 @@ where ${HOMEgfs} is specified within the input yaml file.
 The yaml file are simply the argments for these two scripts.
 After this scripts runs these two the use will have an experiment ready for launching
 
-Returns
--------
+Output
+------
 
 Functionally an experement is setup as a result running the two scripts discribed above
 with an error code of 0 apon success.
@@ -45,7 +45,6 @@ def input_args():
 
     A single key valued argument: --yaml <full path to YAML file>
 
-
     Description
     -----------
 
@@ -57,11 +56,18 @@ def input_args():
             of the path to the global-workflow repo being tested
 
     experiment:
-         mode: <cycled> <forecast-only>
+        mode: <cycled> <forecast-only>
             used to hold the only required positional argument to setup_expt.py
 
     arguments:
-         holds all the remaining key values pairs for all requisite arguments documented for setup_expt.py
+        holds all the remaining key values pairs for all requisite arguments documented for setup_expt.py
+
+
+    Returns
+    -------
+
+    agrs
+
     """
 
     description = """Single agument as a yaml file containing the
