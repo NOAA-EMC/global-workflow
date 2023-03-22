@@ -1,5 +1,4 @@
 environment:
-  rotdir: ${RUNTEST}/C96C48_hybatmDA
   HOMEgfs: ${HOMEGFS}   # TODO - using the env var ${HOMEgfs} will cause
                         # the rocoto XML file to have HOMEgfs set to None 
 experiment:

@@ -37,7 +37,31 @@ logger = Logger(level='DEBUG', colored_log=True)
 
 def input_args():
 
-    """Method to collect user arguments for `create_experiment.py`
+    """
+    Method to collect user arguments for `create_experiment.py`
+
+    Input
+    -----
+
+    A single key valued argument: --yaml <full path to YAML file>
+
+
+    Description
+    -----------
+
+    A full path to a YAML file with the following format with required sections: environment, experiment, arguments
+
+    environment:
+        HOMEgfs: ${HOMEGFS}
+            used to pass the environment variable $HOMEGFS
+            of the path to the global-workflow repo being tested
+
+    experiment:
+         mode: <cycled> <forecast-only>
+            used to hold the only required positional argument to setup_expt.py
+
+    arguments:
+         holds all the remaining key values pairs for all requisite arguments documented for setup_expt.py
     """
 
     description = """Single agument as a yaml file containing the
@@ -66,9 +90,7 @@ if __name__ == '__main__':
 
     setup_expt_args = YAMLFile(path=user_inputs.yaml)
 
-    rotdir = str(Path.absolute(Path(setup_expt_args.environment.rotdir)))
     HOMEgfs = setup_expt_args.environment.HOMEgfs
-
     mode = setup_expt_args.experiment.mode
 
     setup_expt_cmd = Executable(Path.absolute(Path.joinpath(Path(HOMEgfs), 'workflow', 'setup_expt.py')))
