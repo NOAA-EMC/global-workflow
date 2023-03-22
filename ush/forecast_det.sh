@@ -45,7 +45,7 @@ FV3_GFS_det(){
     reverse=$(echo "${restart_interval[@]} " | tac -s ' ')
     for xfh in ${reverse} ; do
       yfh=$((xfh-(IAU_OFFSET/2)))
-      SDATE=$(${NDATE} +${yfh} "${CDATE}")
+      SDATE=$(${NDATE} ${yfh} "${CDATE}")
       PDYS=$(echo "${SDATE}" | cut -c1-8)
       cycs=$(echo "${SDATE}" | cut -c9-10)
       flag1=${COM_ATMOS_RESTART}/${PDYS}.${cycs}0000.coupler.res
