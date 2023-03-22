@@ -7,7 +7,7 @@ from .attrdict import AttrDict
 from .template import TemplateConstants, Template
 from .jinja import Jinja
 
-__all__ = ['YAMLFile', 'parse_yaml',
+__all__ = ['YAMLFile', 'parse_yaml', 'parse_j2yaml', 'parse_yamltmpl',
            'save_as_yaml', 'dump_as_yaml', 'vanilla_yaml']
 
 
@@ -173,7 +173,8 @@ def parse_j2yaml(path: str, data: Dict = None) -> Dict[str, Any]:
     jenv = Jinja(path, data)
     yaml_file = jenv.render
     yaml_dict = YAMLFile(data=yaml_file)
-    yaml_dict = Template.substitute_structure(yaml_dict, TemplateConstants.DOLLAR_PARENTHESES, data.get)
+    yaml_dict = Template.substitute_structure(
+        yaml_dict, TemplateConstants.DOLLAR_PARENTHESES, data.get)
 
     return yaml_dict
 
