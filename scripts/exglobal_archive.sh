@@ -317,20 +317,30 @@ function remove_files() {
     # TODO: move this to a new location
     local directory=$1
     shift
+    if [[ ! -d ${directory} ]]; then
+        echo "No directory ${directory} to remove files from, skiping"
+        return
+    fi
     local exclude_list=""
-    if (($# > 0 )); then
+    if (($# > 0)); then
         exclude_list=$*
     fi
     local file_list
-    file_list=$(ls -R "${directory}")
-    # echo "${file_list[@]}"
+    declare -a file_list
+    readarray -t file_list < <(find -L "${directory}" -type f)
+    if (( ${#file_list[@]} == 0 )); then return; fi
+    # echo "Number of files to remove before exclusions: ${#file_list[@]}"
     for exclude in ${exclude_list}; do
-        # echo "Excluding ${exclude}"
-        file_list=$(echo "${file_list[@]}" | grep -v "${exclude}")
-        # echo "${file_list[@]}"
+        echo "Excluding ${exclude}"
+        declare -a file_list_old=("${file_list[@]}")
+        readarray file_list < <(printf -- '%s\n' "${file_list_old[@]}" | grep -v "${exclude}")
+        # echo "Number of files to remove after exclusion: ${#file_list[@]}"
+        if (( ${#file_list[@]} == 0 )); then return; fi
     done
+    # echo "Number of files to remove after exclusions: ${#file_list[@]}"
+
     for file in "${file_list[@]}"; do
-        rm -f "${directory}/${file}"
+        rm -f "${file}"
     done
     # Remove directory if empty
     rmdir "${directory}" || true
@@ -347,6 +357,7 @@ while [ "${GDATE}" -le "${GDATEEND}" ]; do
             testend=$(tail -n 1 "${rocotolog}" | grep "This cycle is complete: Success")
             rc=$?
             set_strict
+
             if [ "${rc}" -eq 0 ]; then
                 # Obs
                 exclude_list="prepbufr"
@@ -361,7 +372,7 @@ while [ "${GDATE}" -le "${GDATEEND}" ]; do
                 if [[ ${DO_GLDAS} == "YES" ]] && [[ ${RUN} =~ "gdas" ]] && [[ "${GDATE}" -ge "${GLDAS_DATE}" ]]; then
                     exclude_list="${exclude_list} sflux sfcanl"
                 fi
-                templates=$(env || echo '' | grep -Eo 'COM_ATMOS_.*_TMPL')
+                templates=$(compgen -A variable | grep 'COM_ATMOS_.*_TMPL')
                 for template in ${templates}; do
                     YMD="${gPDY}" HH="${gcyc}" generate_com "directory:${template}"
                     remove_files "${directory}" "${exclude_list[@]}"
@@ -369,7 +380,7 @@ while [ "${GDATE}" -le "${GDATEEND}" ]; do
 
                 # Wave
                 exclude_list=""
-                templates=$(env || echo '' | grep -Eo 'COM_WAVE_.*_TMPL')
+                templates=$(compgen -A variable | grep 'COM_WAVE_.*_TMPL')
                 for template in ${templates}; do
                     YMD="${gPDY}" HH="${gcyc}" generate_com "directory:${template}"
                     remove_files "${directory}" "${exclude_list[@]}"
@@ -377,7 +388,7 @@ while [ "${GDATE}" -le "${GDATEEND}" ]; do
 
                 # Ocean
                 exclude_list=""
-                templates=$(env || echo '' | grep -Eo 'COM_OCEAN_.*_TMPL')
+                templates=$(compgen -A variable | grep 'COM_OCEAN_.*_TMPL')
                 for template in ${templates}; do
                     YMD="${gPDY}" HH="${gcyc}" generate_com "directory:${template}"
                     remove_files "${directory}" "${exclude_list[@]}"
@@ -385,7 +396,7 @@ while [ "${GDATE}" -le "${GDATEEND}" ]; do
 
                 # Ice
                 exclude_list=""
-                templates=$(env || echo '' | grep -Eo 'COM_ICE_.*_TMPL')
+                templates=$(compgen -A variable | grep 'COM_ICE_.*_TMPL')
                 for template in ${templates}; do
                     YMD="${gPDY}" HH="${gcyc}" generate_com "directory:${template}"
                     remove_files "${directory}" "${exclude_list[@]}"
@@ -393,7 +404,7 @@ while [ "${GDATE}" -le "${GDATEEND}" ]; do
 
                 # Aerosols (GOCART)
                 exclude_list=""
-                templates=$(env || echo '' | grep -Eo 'COM_CHEM_.*_TMPL')
+                templates=$(compgen -A variable | grep 'COM_CHEM_.*_TMPL')
                 for template in ${templates}; do
                     YMD="${gPDY}" HH="${gcyc}" generate_com "directory:${template}"
                     remove_files "${directory}" "${exclude_list[@]}"
@@ -401,7 +412,7 @@ while [ "${GDATE}" -le "${GDATEEND}" ]; do
 
                 # Mediator
                 exclude_list=""
-                templates=$(env || echo '' | grep -Eo 'COM_MED_.*_TMPL')
+                templates=$(compgen -A variable | grep 'COM_MED_.*_TMPL')
                 for template in ${templates}; do
                     YMD="${gPDY}" HH="${gcyc}" generate_com "directory:${template}"
                     remove_files "${directory}" "${exclude_list[@]}"

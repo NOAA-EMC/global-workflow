@@ -136,25 +136,36 @@ fi
 
 ###############################################################
 # ENSGRP 0 also does clean-up
-if [ "${ENSGRP}" -eq 0 ]; then
+###############################################################
+if [[ "${ENSGRP}" -eq 0 ]]; then
     function remove_files() {
         # TODO: move this to a new location
         local directory=$1
         shift
+        if [[ ! -d ${directory} ]]; then
+            echo "No directory ${directory} to remove files from, skiping"
+            return
+        fi
         local exclude_list=""
-        if (($# > 0 )); then
+        if (($# > 0)); then
             exclude_list=$*
         fi
         local file_list
-        file_list=$(ls -R "${directory}")
-        # echo "${file_list[@]}"
+        declare -a file_list
+        readarray -t file_list < <(find -L "${directory}" -type f)
+        # echo "Number of files to remove before exclusions: ${#file_list[@]}"
+        if (( ${#file_list[@]} == 0 )); then return; fi
         for exclude in ${exclude_list}; do
-            # echo "Excluding ${exclude}"
-            file_list=$(echo "${file_list[@]}" | grep -v "${exclude}")
-            # echo "${file_list[@]}"
+            echo "Excluding ${exclude}"
+            declare -a file_list_old=("${file_list[@]}")
+            readarray file_list < <(printf -- '%s\n' "${file_list_old[@]}" | grep -v "${exclude}")
+            # echo "Number of files to remove after exclusion: ${#file_list[@]}"
+            if (( ${#file_list[@]} == 0 )); then return; fi
         done
+        # echo "Number of files to remove after exclusions: ${#file_list[@]}"
+
         for file in "${file_list[@]}"; do
-            rm -f "${directory}/${file}"
+            rm -f "${file}"
         done
         # Remove directory if empty
         rmdir "${directory}" || true
@@ -163,6 +174,7 @@ if [ "${ENSGRP}" -eq 0 ]; then
     # Start start and end dates to remove
     GDATEEND=$(${NDATE} -"${RMOLDEND_ENKF:-24}"  "${PDY}${cyc}")
     GDATE=$(${NDATE} -"${RMOLDSTD_ENKF:-120}" "${PDY}${cyc}")
+
     while [ "${GDATE}" -le "${GDATEEND}" ]; do
 
         gPDY="${GDATE:0:8}"
@@ -185,13 +197,13 @@ if [ "${ENSGRP}" -eq 0 ]; then
                             ;;
                     esac
 
-                    memlist=$(seq --format="mem%03g" 1 ${nmem})
-                    memlist=$(${memlist[@]} "ensstat")
+                    readarray memlist< <(seq --format="mem%03g" 1 "${nmem}")
+                    memlist+=("ensstat")
 
                     for mem in ${memlist}; do
                         # Atmos
                         exclude_list="f006.ens"
-                        templates=$(env || echo '' | grep -Eo 'COM_ATMOS_.*_TMPL')
+                        templates=$(compgen -A variable | grep 'COM_ATMOS_.*_TMPL')
                         for template in ${templates}; do
                             MEMDIR="${mem}" YMD="${gPDY}" HH="${gcyc}" generate_com "directory:${template}"
                             remove_files "${directory}" "${exclude_list[@]}"
@@ -199,7 +211,7 @@ if [ "${ENSGRP}" -eq 0 ]; then
 
                         # Wave
                         exclude_list=""
-                        templates=$(env || echo '' | grep -Eo 'COM_WAVE_.*_TMPL')
+                        templates=$(compgen -A variable | grep 'COM_WAVE_.*_TMPL')
                         for template in ${templates}; do
                             MEMDIR="${mem}" YMD="${gPDY}" HH="${gcyc}" generate_com "directory:${template}"
                             remove_files "${directory}" "${exclude_list[@]}"
@@ -207,7 +219,7 @@ if [ "${ENSGRP}" -eq 0 ]; then
 
                         # Ocean
                         exclude_list=""
-                        templates=$(env || echo '' | grep -Eo 'COM_OCEAN_.*_TMPL')
+                        templates=$(compgen -A variable | grep 'COM_OCEAN_.*_TMPL')
                         for template in ${templates}; do
                             YMEMDIR="${mem}" MD="${gPDY}" HH="${gcyc}" generate_com "directory:${template}"
                             remove_files "${directory}" "${exclude_list[@]}"
@@ -215,7 +227,7 @@ if [ "${ENSGRP}" -eq 0 ]; then
 
                         # Ice
                         exclude_list=""
-                        templates=$(env || echo '' | grep -Eo 'COM_ICE_.*_TMPL')
+                        templates=$(compgen -A variable | grep 'COM_ICE_.*_TMPL')
                         for template in ${templates}; do
                             MEMDIR="${mem}" YMD="${gPDY}" HH="${gcyc}" generate_com "directory:${template}"
                             remove_files "${directory}" "${exclude_list[@]}"
@@ -223,7 +235,7 @@ if [ "${ENSGRP}" -eq 0 ]; then
 
                         # Aerosols (GOCART)
                         exclude_list=""
-                        templates=$(env || echo '' | grep -Eo 'COM_CHEM_.*_TMPL')
+                        templates=$(compgen -A variable | grep 'COM_CHEM_.*_TMPL')
                         for template in ${templates}; do
                             MEMDIR="${mem}" YMD="${gPDY}" HH="${gcyc}" generate_com "directory:${template}"
                             remove_files "${directory}" "${exclude_list[@]}"
@@ -231,7 +243,7 @@ if [ "${ENSGRP}" -eq 0 ]; then
 
                         # Mediator
                         exclude_list=""
-                        templates=$(env || echo '' | grep -Eo 'COM_MED_.*_TMPL')
+                        templates=$(compgen -A variable | grep 'COM_MED_.*_TMPL')
                         for template in ${templates}; do
                             MEMDIR="${mem}" YMD="${gPDY}" HH="${gcyc}" generate_com "directory:${template}"
                             remove_files "${directory}" "${exclude_list[@]}"
