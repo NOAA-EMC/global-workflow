@@ -60,7 +60,7 @@ export PREPQC="${COM_OBS}/${OPREFIX}prepbufr"
 if [[ ! -f ${PREPQC} ]]; then
     echo "WARNING: Global PREPBUFR FILE ${PREPQC} MISSING"
 fi
-export TCVITL="${COM_ATMOS_ANALYSIS_DET}/${APREFIX_DET}syndata.tcvitals.tm00"
+export TCVITL="${COM_OBS}/${APREFIX_DET}syndata.tcvitals.tm00"
 if [[ ${DONST} = "YES" ]]; then
    export NSSTBF="${COM_OBS}/${OPREFIX}nsstbufr"
 fi
