@@ -16,6 +16,7 @@ export GDASINIT_DIR=${UFS_DIR}/util/gdas_init
 
 export CRES_HIRES=$CASE
 export CRES_ENKF=$CASE_ENKF
+export FRAC_ORO="yes"
 
 export RUNICSH=${GDASINIT_DIR}/run_v16.chgres.sh
 if [ "${RETRO:-"NO"}" = "YES" ] || [ "$CDUMP" = "gdas" ]; then
