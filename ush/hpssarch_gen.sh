@@ -341,11 +341,11 @@ if [[ ${type} = "gdas" ]]; then
     echo  "${dirname}${head}sfcf${fhr}.nc              " >>gdas.txt
     fh=$((fh+3))
   done
-  flist="001 002 004 005 007 008"
-  for fhr in ${flist}; do
-    echo  "${dirname}${head}sfluxgrbf${fhr}.grib2      " >>gdas.txt
-    echo  "${dirname}${head}sfluxgrbf${fhr}.grib2.idx  " >>gdas.txt
-  done
+#  flist="001 002 004 005 007 008"
+#  for fhr in ${flist}; do
+#    echo  "${dirname}${head}sfluxgrbf${fhr}.grib2      " >>gdas.txt
+#    echo  "${dirname}${head}sfluxgrbf${fhr}.grib2.idx  " >>gdas.txt
+#  done
   
 
 
