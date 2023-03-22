@@ -66,7 +66,9 @@ def input_args():
     Returns
     -------
 
-    agrs
+    args: dict
+
+        dictionary with the value of the file path to a yaml file from the key yaml
 
     """
 
