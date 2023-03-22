@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
-'''Basic python script to create an experiment directory on the fly from a given
+"""
+Basic python script to create an experiment directory on the fly from a given
 
 yaml file for the arguments to the two scripts below in ${HOMEgfs}/workflow
 
@@ -11,7 +12,13 @@ where ${HOMEgfs} is specified within the input yaml file.
 
 The yaml file are simply the argments for these two scripts.
 After this scripts runs these two the use will have an experiment ready for launching
-'''
+
+Returns
+-------
+
+Functionally an experement is setup as a result running the two scripts discribed above
+with an error code of 0 apon success.
+"""
 
 import sys
 import socket
