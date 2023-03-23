@@ -93,20 +93,23 @@ function generate_com() {
     #
     # Each argument must have a corresponding template with the name ${ARG}_TMPL.
     #
-    # Accepts as options all the same options the bash built-in `declare` allows except
-    #  -g, which is assumed, and -p. These options are passed to `declare`.
+    # Accepts as options `-r` and `-x`, which do the same thing as the same options in
+    #   `declare`. Variables are automatically marked as `-g` so the variable is visible
+    #   in the calling script.
     #
     # Syntax:
-    #   generate_com [-aAfFilrtux] $var1[:$tmpl1] [$var2[:$tmpl2]] [...]]
+    #   generate_com [-rx] $var1[:$tmpl1] [$var2[:$tmpl2]] [...]]
     #
-    #   options: Same function as the bash `declare` built-in
+    #   options:
+    #       -r: Make variable read-only (same as `decalre -r`)
+    #       -x: Mark variable for export (same as `declare -x`)
     #   var1, var2, etc: Variable names whose values will be generated from a template
     #                    and declared
     #   tmpl1, tmpl2, etc: Specify the template to use (default is "${var}_TMPL")
     #
     local opts="-g"
     local OPTIND=1
-    while getopts "aAfFilrtux" option; do
+    while getopts "rx" option; do
         opts="${opts}${option}"
     done
     shift $((OPTIND-1))
