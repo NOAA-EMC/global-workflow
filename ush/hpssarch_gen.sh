@@ -415,6 +415,11 @@ if [[ ${type} = "gdas" ]]; then
     #...........................
     echo "${dirname}/${head}*             " >>gdasocean.txt
     echo "${dirname}/MOM_input            " >>gdasocean.txt
+    echo "${dirname}/gdas.t??z.ocngrid.nc " >>gdasocean.txt
+    echo "${dirname}/bump/*               " >>gdasocean.txt
+    echo "${dirname}/diags/*              " >>gdasocean.txt
+    echo "${dirname}/logs/*               " >>gdasocean.txt
+    echo "${dirname}/yaml/*               " >>gdasocean.txt
 
     echo "${dirname}/RESTART/*            " >>gdasocean_restart.txt
 
