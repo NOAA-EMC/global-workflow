@@ -53,34 +53,6 @@ export OBERROR=${FIXgsi}/prepobs_errtable.global
 
 # Use experimental dumps in EMC GFS v16 parallels
 if [[ $RUN_ENVIR == "emc" ]]; then
-  ABIBF="/dev/null"
-  if [[ "${CDATE}" -ge "2019022800" ]] ; then
-    para="x"
-    if [[ "${CDATE}" -ge "2019111000" && "${CDATE}" -le "2020052612" ]]; then
-      para="y"
-    fi
-    RUN="${CDUMP}${para}" YMD=${PDY} HH=${cyc} generate_com COM_OBS_TEMP:COM_OBS_TMPL
-    ABIBF="${COM_OBS_TEMP}/${CDUMP}.t${cyc}z.gsrcsr.tm00.bufr_d"
-  fi
-
-  AHIBF="/dev/null"
-  if [[ "${CDATE}" -ge "2019042300" ]]; then
-    RUN="${CDUMP}x" YMD=${PDY} HH=${cyc} generate_com COM_OBS_TEMP:COM_OBS_TMPL
-    AHIBF="${COM_OBS_TEMP}/${CDUMP}.t${cyc}z.gsrcsr.tm00.bufr_d"
-  fi
-
-  RUN="${CDUMP}x" YMD=${PDY} HH=${cyc} generate_com COM_OBS_TEMP:COM_OBS_TMPL
-  HDOB="${COM_OBS_TEMP}/${CDUMP}.t${cyc}z.hdob.tm00.bufr_d"
-
-  #   Use dumps from NCO GFS v16 parallel
-  if [[ "${CDATE}" -ge "2020103012" ]]; then
-    ABIBF=""
-    AHIBF=""
-    HDOB=""
-  fi
-
-  declare -rx ABIBF AHIBF HDOB
-
   #   Set info files and prepobs.errtable.global for GFS v16 retrospective parallels
   if [[ "${CDATE}" -ge "2019021900" && "${CDATE}" -lt "2019110706" ]]; then
     export CONVINFO=${FIXgsi}/gfsv16_historical/global_convinfo.txt.2019021900
