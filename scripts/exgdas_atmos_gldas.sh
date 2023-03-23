@@ -85,12 +85,8 @@ mkdir -p "${RUNDIR}/input"
 ln -fs "${GDAS}" "${RUNDIR}/input/GDAS"
 ln -fs "${EXECgldas:?}/gldas_model" "${RUNDIR}/LIS"
 
-# Set FIXgldas subfolder based on FRAC_GRID value
-if [[ "${FRAC_GRID:-".true."}" = ".true." ]] ; then
-  ln -fs "${FIXgldas}/frac_grid/FIX_T${JCAP}" "${RUNDIR}/FIX"
-else
-  ln -fs "${FIXgldas}/nonfrac_grid/FIX_T${JCAP}" "${RUNDIR}/FIX"
-fi
+# Set FIXgldas subfolder
+ln -fs "${FIXgldas}/frac_grid/FIX_T${JCAP}" "${RUNDIR}/FIX"
 
 #---------------------------------------------------------------
 ### 1) Get gdas 6-tile netcdf restart file and gdas forcing data

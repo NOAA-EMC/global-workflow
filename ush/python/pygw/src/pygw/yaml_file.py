@@ -174,7 +174,8 @@ def parse_j2yaml(path: str, data: Dict) -> Dict[str, Any]:
     jenv = Jinja(path, data)
     yaml_file = jenv.render
     yaml_dict = YAMLFile(data=yaml_file)
-    yaml_dict = Template.substitute_structure(yaml_dict, TemplateConstants.DOLLAR_PARENTHESES, data.get)
+    yaml_dict = Template.substitute_structure(
+        yaml_dict, TemplateConstants.DOLLAR_PARENTHESES, data.get)
 
     # If the input yaml file included other yamls with jinja2 templates, then we need to re-parse the jinja2 templates in them
     jenv2 = Jinja(json.dumps(yaml_dict, indent=4), data)
