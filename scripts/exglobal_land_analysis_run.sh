@@ -8,25 +8,33 @@
 #
 ################################################################################
 #  Utilities
+export NCP=${NCP:-"/bin/cp"}
+export NMV=${NMV:-"/bin/mv"}
+export NLN=${NLN:-"/bin/ln -sf"}
 CASE=${CASE:-C96}
 RES=$(echo "${CASE}" | cut -c 2-)
+
+#  Directories.
+export COMINgdas=${COMINgdas:-${ROTDIR}}
+SFCANLDIR=${COMINgdas}/${CDUMP}.${PDY}/${cyc}/atmos/RESTART/
 export gdasapp_dir=${gdasapp_dir:-"${HOMEgfs}/sorc/gdas.cd/"}
+BKGDIR=${DATA}/bkg
+ANLDIR=${DATA}/anl
+
+#  Filenames
 export CREATEENS=${CREATEENS:-"${HOMEgfs}/sorc/gdas.cd/ush/land/letkf_create_ens.py"}
 export IMS_IODA=${IMS_IODA:-"${HOMEgfs}/sorc/gdas.cd/build/bin/imsfv3_scf2ioda.py"}
 export CALCFIMS=${CALCFIMS:-"${HOMEgfs}/sorc/gdas.cd/build/bin/calcfIMS.exe"}
 export ADDJEDIINC=${ADDJEDIINC:-"${HOMEgfs}/sorc/gdas.cd/build/bin/apply_incr.exe"}
+
 #export TPATH="/scratch2/NCEPDEV/land/data/fix/C${RES}/"
 #export TPATH=${FIXgfs:-"${HOMEgfs}/fix/orog/C${RES}"}
 export TPATH="${HOMEgfs}/fix/orog/C${RES}"
 export TSTUB="C${RES}_oro_data"
 export GFSv17=${GFSv17:-"NO"}
-BKGDIR=${DATA}/bkg
-ANLDIR=${DATA}/anl
 FILEDATE=${PDY}.${cyc}0000
 DOY=$(date +%j -d "${PDY} + 1 day")
 YYYY=$(echo "${PDY}" | cut -c1-4)
-
-SFCANLDIR=${ROTDIR}/${CDUMP}.${PDY}/${cyc}/atmos/RESTART/
 ################################################################################
 # Create ensemble member
 WORKDIR=${BKGDIR}
@@ -50,9 +58,9 @@ do
     mkdir -p "${WORKDIR}/mem${ens}"
     for tile in 1 2 3 4 5 6
     do
-        cp "${SFCANLDIR}/${FILEDATE}.sfcanl_data.tile${tile}.nc"  "${WORKDIR}/mem${ens}/${FILEDATE}.sfc_data.tile${tile}.nc"
+        ${NCP} "${SFCANLDIR}/${FILEDATE}.sfcanl_data.tile${tile}.nc"  "${WORKDIR}/mem${ens}/${FILEDATE}.sfc_data.tile${tile}.nc"
     done
-    cp "${WORKDIR}/${FILEDATE}.coupler.res" "${WORKDIR}/mem${ens}/${FILEDATE}.coupler.res"
+    ${NCP} "${WORKDIR}/${FILEDATE}.coupler.res" "${WORKDIR}/mem${ens}/${FILEDATE}.coupler.res"
 done
 
 echo 'do_landDA: calling create ensemble'
@@ -64,9 +72,9 @@ do
     mkdir -p "${WORKDIR}/mem${ens}/RESTART"
     for tile in 1 2 3 4 5 6
     do
-      mv "${WORKDIR}/mem${ens}/${FILEDATE}.sfc_data.tile${tile}.nc" "${WORKDIR}/mem${ens}/RESTART/"
+      ${NMV} "${WORKDIR}/mem${ens}/${FILEDATE}.sfc_data.tile${tile}.nc" "${WORKDIR}/mem${ens}/RESTART/"
     done
-    mv "${WORKDIR}/mem${ens}/${FILEDATE}.coupler.res" "${WORKDIR}/mem${ens}/RESTART/"
+    ${NMV} "${WORKDIR}/mem${ens}/${FILEDATE}.coupler.res" "${WORKDIR}/mem${ens}/RESTART/"
 done
 ################################################################################
 # IMS proc
@@ -94,13 +102,13 @@ EOF
   for tile in 1 2 3 4 5 6
   do
     if [[ ! -e ${FILEDATE}.sfc_data.tile${tile}.nc ]]; then
-      cp "${BKGDIR}/${FILEDATE}.sfc_data.tile${tile}.nc" "${WORKDIR}"
+      ${NCP} "${BKGDIR}/${FILEDATE}.sfc_data.tile${tile}.nc" "${WORKDIR}"
     fi
   done
 
   # stage observations
-  cp "${COMIN_OBS}/gdas.t${cyc}z.ims${YYYY}${DOY}_4km_v1.3.nc" "${WORKDIR}/ims${YYYY}${DOY}_4km_v1.3.nc"
-  cp "${COMIN_OBS}/gdas.t${cyc}z.IMS4km_to_FV3_mapping.C${RES}_oro_data.nc" "${WORKDIR}/IMS4km_to_FV3_mapping.C${RES}_oro_data.nc"
+  ${NCP} "${COMIN_OBS}/gdas.t${cyc}z.ims${YYYY}${DOY}_4km_v1.3.nc" "${WORKDIR}/ims${YYYY}${DOY}_4km_v1.3.nc"
+  ${NCP} "${COMIN_OBS}/gdas.t${cyc}z.IMS4km_to_FV3_mapping.C${RES}_oro_data.nc" "${WORKDIR}/IMS4km_to_FV3_mapping.C${RES}_oro_data.nc"
 
   ulimit -Ss unlimited
   ${CALCFIMS}
@@ -113,7 +121,7 @@ EOF
   python "${IMS_IODA}" -i "IMSscf.${PDY}.${TSTUB}.nc" -o "ioda.IMSscf.${PDY}.${TSTUB}.nc"
 
   if [[ -e "ioda.IMSscf.${PDY}.C${RES}_oro_data.nc"  ]]; then
-    cp "ioda.IMSscf.${PDY}.C${RES}_oro_data.nc" "gdas.t${cyc}z.ims_snow_${PDY}${cyc}.nc4"
+    ${NCP} "ioda.IMSscf.${PDY}.C${RES}_oro_data.nc" "gdas.t${cyc}z.ims_snow_${PDY}${cyc}.nc4"
   fi
 
 fi
@@ -146,7 +154,7 @@ EOF
 for tile in 1 2 3 4 5 6
 do
   if [[ ! -e ${FILEDATE}.sfc_data.tile${tile}.nc ]]; then
-    cp "${SFCANLDIR}/${FILEDATE}.sfcanl_data.tile${tile}.nc"  "${WORKDIR}/${FILEDATE}.sfc_data.tile${tile}.nc"
+    ${NCP} "${SFCANLDIR}/${FILEDATE}.sfcanl_data.tile${tile}.nc"  "${WORKDIR}/${FILEDATE}.sfc_data.tile${tile}.nc"
   fi
 done
 
@@ -154,7 +162,7 @@ done
 for tile in 1 2 3 4 5 6
 do
   if [[ ! -e ${FILEDATE}.xainc.sfc_data.tile${tile}.nc ]]; then
-    cp landinc.${FILEDATE}.sfc_data.tile${tile}.nc ${FILEDATE}.xainc.sfc_data.tile${tile}.nc
+    ${NCP} landinc.${FILEDATE}.sfc_data.tile${tile}.nc ${FILEDATE}.xainc.sfc_data.tile${tile}.nc
   fi
 done
 
@@ -167,7 +175,7 @@ ${APRUN_LANDANL} "${ADDJEDIINC}" "${WORKDIR}/apply_incr.log" 1>&1 2>&2
 for tile in 1 2 3 4 5 6
 do
   if [[ -e ${FILEDATE}.sfc_data.tile${tile}.nc ]]; then
-    mv ${FILEDATE}.sfc_data.tile${tile}.nc ${FILEDATE}.sfcanl_data.tile${tile}.nc
+    ${NMV} ${FILEDATE}.sfc_data.tile${tile}.nc ${FILEDATE}.sfcanl_data.tile${tile}.nc
   fi
 done
 
