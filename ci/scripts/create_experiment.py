@@ -36,7 +36,6 @@ logger = Logger(level='DEBUG', colored_log=True)
 
 
 def input_args():
-
     """
     Method to collect user arguments for `create_experiment.py`
 
@@ -66,9 +65,9 @@ def input_args():
     Returns
     -------
 
-    args: dict
+    args: Namespace
 
-        dictionary with the value of the file path to a yaml file from the key yaml
+        Namespace with the value of the file path to a yaml file from the key yaml
 
     """
 
