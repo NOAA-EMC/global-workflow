@@ -71,16 +71,16 @@ class Analysis(Task):
         Parameters
         ----------
         inc_file_tmpl : str
-           template of the FV3 increment file of the form: 'filetype.{tileX}.nc'
+           template of the FV3 increment file of the form: 'filetype.tile{tilenum}.nc'
         bkg_file_tmpl : str
-           template of the FV3 background file of the form: 'filetype.{tileX}.nc'
+           template of the FV3 background file of the form: 'filetype.tile{tilenum}.nc'
         incvars : List
            List of increment variables to add to the background
         """
 
-        for tt in range(1, self.config.ntiles + 1):
-            inc_path = inc_file_tmpl.replace('tileX', f'tile{tt}')
-            bkg_path = bkg_file_tmpl.replace('tileX', f'tile{tt}')
+        for itile in range(1, self.config.ntiles + 1):
+            inc_path = inc_file_tmpl.format(tilenum=itile)
+            bkg_path = bkg_file_tmpl.format(tilenum=itile)
             with Dataset(inc_path, mode='r') as incfile, Dataset(bkg_path, mode='a') as rstfile:
                 for vname in incvars:
                     increment = incfile.variables[vname][:]
