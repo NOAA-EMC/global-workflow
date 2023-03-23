@@ -8,10 +8,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "esfc" -c "base esfc"
 # Set variables used in the script
 ##############################################
 export CDUMP="${RUN/enkf}"
-if [[ ${RUN_ENVIR} = "nco" ]]; then
-    export ROTDIR=${COMROOT:?}/${NET}/${envir}
-fi
-
 
 ##############################################
 # Begin JOB SPECIFIC work
