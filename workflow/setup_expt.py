@@ -68,13 +68,46 @@ def fill_COMROT_cycled(host, inputs):
     rdatestr = datetime_to_YMDH(inputs.idate - to_timedelta('T06H'))
     idatestr = datetime_to_YMDH(inputs.idate)
 
-    if inputs.start in ['warm']:  # This is warm start experiment (only meaningful for atmos)
-        atmos_dir = med_dir = 'RESTART'
-    elif inputs.start in ['cold']:  # This is a cold start experiment
-        atmos_dir = 'INPUT'
-        med_dir = ''  # no mediator files for a "cold start"
+    if os.path.isdir(os.path.join(inputs.icsdir, 'atmos', 'model_data')):
+        flat_structure = False
+    else:
+        flat_structure = True
+
+    # Destination always uses the new COM structure
+    # These should match the templates defined in config.com
+    if inputs.start in ['warm']:
+        dst_atm_dir = os.path.join('atmos', 'model_data', 'restart')
+        dst_med_dir = os.path.join('med', 'model_data', 'restart')
+    else:
+        dst_atm_dir = os.path.join('atmos', 'model_data', 'input')
+        dst_med_dir = ''  # no mediator files for a "cold start"
         do_med = False
-    ocean_dir = ice_dir = 'RESTART'  # ocean and ice have the same filenames for warm and cold
+    dst_ocn_rst_dir = os.path.join('ocean', 'model_data', 'restart')
+    dst_ocn_anl_dir = os.path.join('ocean', 'model_data', 'analysis')
+    dst_ice_dir = os.path.join('ice', 'model_data', 'restart')
+    dst_atm_anl_dir = os.path.join('atmos', 'model_data', 'analysis')
+
+    if flat_structure:
+        # ICs are in the old flat COM structure
+        if inputs.start in ['warm']:  # This is warm start experiment (only meaningful for atmos)
+            src_atm_dir = os.path.join('atmos', 'RESTART')
+            src_med_dir = os.path.join('med', 'RESTART')
+        elif inputs.start in ['cold']:  # This is a cold start experiment
+            src_atm_dir = os.path.join('atmos', 'INPUT')
+            src_med_dir = ''  # no mediator files for a "cold start"
+            do_med = False
+        # ocean and ice have the same filenames for warm and cold
+        src_ocn_rst_dir = os.path.join('ocean', 'RESTART')
+        src_ocn_rst_dir = 'ocean'
+        src_ice_dir = os.path.join('ice', 'RESTART')
+        src_atm_anl_dir = 'atmos'
+    else:
+        src_atm_dir = dst_atm_dir
+        src_med_dir = dst_med_dir
+        src_ocn_rst_dir = dst_ocn_rst_dir
+        src_ocn_anl_dir = dst_ocn_anl_dir
+        src_ice_dir = dst_ice_dir
+        src_atm_anl_dir = dst_atm_anl_dir
 
     def link_files_from_src_to_dst(src_dir, dst_dir):
         files = os.listdir(src_dir)
@@ -93,8 +126,8 @@ def fill_COMROT_cycled(host, inputs):
         for ii in range(1, inputs.nens + 1):
             memdir = f'mem{ii:03d}'
             # Link atmospheric files
-            dst_dir = os.path.join(comrot, enkfdir, memdir, 'atmos', atmos_dir)
-            src_dir = os.path.join(inputs.icsdir, enkfdir, memdir, 'atmos', atmos_dir)
+            dst_dir = os.path.join(comrot, enkfdir, memdir, dst_atm_dir)
+            src_dir = os.path.join(inputs.icsdir, enkfdir, memdir, src_atm_dir)
             makedirs_if_missing(dst_dir)
             link_files_from_src_to_dst(src_dir, dst_dir)
             # ocean, ice, etc. TBD ...
@@ -107,47 +140,47 @@ def fill_COMROT_cycled(host, inputs):
     elif inputs.start in ['cold']:
         detdir = f'{inputs.cdump}.{idatestr[:8]}/{idatestr[8:]}'
 
-    dst_dir = os.path.join(comrot, detdir, 'atmos', atmos_dir)
-    src_dir = os.path.join(inputs.icsdir, detdir, 'atmos', atmos_dir)
+    dst_dir = os.path.join(comrot, detdir, dst_atm_dir)
+    src_dir = os.path.join(inputs.icsdir, detdir, src_atm_dir)
     makedirs_if_missing(dst_dir)
     link_files_from_src_to_dst(src_dir, dst_dir)
 
     # Link ocean files
     if do_ocean:
         detdir = f'{inputs.cdump}.{rdatestr[:8]}/{rdatestr[8:]}'
-        dst_dir = os.path.join(comrot, detdir, 'ocean', ocean_dir)
-        src_dir = os.path.join(inputs.icsdir, detdir, 'ocean', ocean_dir)
+        dst_dir = os.path.join(comrot, detdir, dst_ocn_rst_dir)
+        src_dir = os.path.join(inputs.icsdir, detdir, 'ocean', src_ocn_rst_dir)
         makedirs_if_missing(dst_dir)
         link_files_from_src_to_dst(src_dir, dst_dir)
 
         # First 1/2 cycle needs a MOM6 increment
         incdir = f'{inputs.cdump}.{idatestr[:8]}/{idatestr[8:]}'
         incfile = f'{inputs.cdump}.t{idatestr[8:]}z.ocninc.nc'
-        src_file = os.path.join(inputs.icsdir, incdir, 'ocean', incfile)
-        dst_file = os.path.join(comrot, incdir, 'ocean', incfile)
-        makedirs_if_missing(os.path.join(comrot, incdir, 'ocean'))
+        src_file = os.path.join(inputs.icsdir, incdir, src_ocn_anl_dir, incfile)
+        dst_file = os.path.join(comrot, incdir, dst_ocn_anl_dir, incfile)
+        makedirs_if_missing(os.path.join(comrot, incdir, dst_ocn_anl_dir))
         os.symlink(src_file, dst_file)
 
     # Link ice files
     if do_ice:
         detdir = f'{inputs.cdump}.{rdatestr[:8]}/{rdatestr[8:]}'
-        dst_dir = os.path.join(comrot, detdir, 'ice', ice_dir)
-        src_dir = os.path.join(inputs.icsdir, detdir, 'ice', ice_dir)
+        dst_dir = os.path.join(comrot, detdir, 'ice', dst_ice_dir)
+        src_dir = os.path.join(inputs.icsdir, detdir, 'ice', src_ice_dir)
         makedirs_if_missing(dst_dir)
         link_files_from_src_to_dst(src_dir, dst_dir)
 
     # Link mediator files
     if do_med:
         detdir = f'{inputs.cdump}.{rdatestr[:8]}/{rdatestr[8:]}'
-        dst_dir = os.path.join(comrot, detdir, 'med', med_dir)
-        src_dir = os.path.join(inputs.icsdir, detdir, 'med', med_dir)
+        dst_dir = os.path.join(comrot, detdir, 'med', dst_med_dir)
+        src_dir = os.path.join(inputs.icsdir, detdir, 'med', src_med_dir)
         makedirs_if_missing(dst_dir)
         link_files_from_src_to_dst(src_dir, dst_dir)
 
     # Link bias correction and radiance diagnostics files
     detdir = f'{inputs.cdump}.{idatestr[:8]}/{idatestr[8:]}'
-    src_dir = os.path.join(inputs.icsdir, detdir, 'atmos')
-    dst_dir = os.path.join(comrot, detdir, 'atmos')
+    src_dir = os.path.join(inputs.icsdir, detdir, src_atm_anl_dir)
+    dst_dir = os.path.join(comrot, detdir, dst_atm_anl_dir)
     makedirs_if_missing(dst_dir)
     for ftype in ['abias', 'abias_pc', 'abias_air', 'radstat']:
         fname = f'{inputs.cdump}.t{idatestr[8:]}z.{ftype}'
