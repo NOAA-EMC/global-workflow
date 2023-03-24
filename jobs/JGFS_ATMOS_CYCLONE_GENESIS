@@ -44,9 +44,11 @@ export COMINgfs=${COM_ATMOS_GRIB_0p25}
 export COMINgenvit=${COM_ATMOS_GENESIS}
 export COMOUTgenvit=${COM_ATMOS_GENESIS}
 
-export COMINsyn=${COMINsyn:-$(compath.py ${envir}/com/gfs/${gfs_ver})/syndat}
+export COMINsyn=${COMINsyn:-$(compath.py "${envir}/com/gfs/${gfs_ver}")/syndat}
 
-mkdir -m 775 -p ${COMOUTgenvit}
+mkdir -m 775 -p "${COMOUTgenvit}"
+
+export JYYYY=${PDY:0:4}
 
 ##############################################
 # Run relevant script
