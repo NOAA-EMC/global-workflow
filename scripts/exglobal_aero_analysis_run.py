@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # exgdas_global_aero_analysis_run.py
-# This script creates an AerosolAnalysis class
+# This script creates an AerosolAnalysis object
 # and runs the execute method
 # which executes the global aerosol variational analysis
 import os
