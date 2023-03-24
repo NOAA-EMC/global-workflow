@@ -533,13 +533,13 @@ if [ ${DOHYBVAR} = "YES" ]; then
    fi
 
    for imem in $(seq 1 ${NMEM_ENKF}); do
-      MEMDIR="mem$(printf %03i "${imem}")"
-      MEMDIR=${MEMDIR} RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} generate_com COM_ATMOS_HISTORY
+      memchar="mem$(printf %03i "${imem}")"
+      MEMDIR=${memchar} RUN=${GDUMP_ENS} YMD=${gPDY} HH=${gcyc} generate_com COM_ATMOS_HISTORY
 
       for fhr in ${fhrs}; do
-         ${NLN} ${COM_ATMOS_HISTORY}/${GPREFIX_ENS}atmf0${fhr}${ENKF_SUFFIX}.nc ./ensemble_data/sigf${fhr}_ens_${MEMDIR}
+         ${NLN} ${COM_ATMOS_HISTORY}/${GPREFIX_ENS}atmf0${fhr}${ENKF_SUFFIX}.nc ./ensemble_data/sigf${fhr}_ens_${memchar}
          if [ ${cnvw_option} = ".true." ]; then
-            ${NLN} ${COM_ATMOS_HISTORY}/${GPREFIX_ENS}sfcf0${fhr}.nc ./ensemble_data/sfcf${fhr}_ens_${MEMDIR}
+            ${NLN} ${COM_ATMOS_HISTORY}/${GPREFIX_ENS}sfcf0${fhr}.nc ./ensemble_data/sfcf${fhr}_ens_${memchar}
          fi
       done
    done
