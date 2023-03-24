@@ -246,16 +246,11 @@ if [[ ${HPSSARCH} = "YES" || ${LOCALARCH} = "YES" ]]; then
 
         if [ "${SAVEWARMICA}" = "YES" ] || [ "${SAVEFCSTIC}" = "YES" ]; then
             targrp_list="${targrp_list} gdas_restarta"
-            if [ "${DO_WAVE}" = "YES" ]; then
-                targrp_list="${targrp_list} gdaswave_restart"
-            fi
+            if [ "${DO_WAVE}" = "YES" ]; then targrp_list="${targrp_list} gdaswave_restart"; fi
+            if [ "${DO_OCN}" = "YES" ]; then targrp_list="${targrp_list} gdasocean_restart"; fi
+            if [ "${DO_ICE}" = "YES" ]; then targrp_list="${targrp_list} gdasice_restart"; fi
         fi
-        if [ "${DO_OCN}" = "YES" ]; then
-            targrp_list="${targrp_list} gdasocean_restart"
-        fi
-        if [ "${DO_ICE}" = "YES" ]; then
-            targrp_list="${targrp_list} gdasice_restart"
-        fi
+
         if [ "${SAVEWARMICB}" = "YES" ] || [ "${SAVEFCSTIC}" = "YES" ]; then
             targrp_list="${targrp_list} gdas_restartb"
         fi
