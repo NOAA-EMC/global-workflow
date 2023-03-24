@@ -40,7 +40,7 @@ FV3_GFS_postdet(){
     if [ $RERUN = "NO" ]; then
       #.............................
 
-      # Link all (except sfc_data) restart files from previous cycle
+      # Link all restart files from previous cycle
       for file in "${COM_ATMOS_RESTART_PREV}/${sPDY}.${scyc}0000."*.nc; do
         file2=$(echo $(basename $file))
         file2=$(echo $file2 | cut -d. -f3-) # remove the date from file
@@ -48,7 +48,7 @@ FV3_GFS_postdet(){
         $NLN $file $DATA/INPUT/$file2
       done
 
-      # Link sfcanl_data restart files from current cycle
+      # Replace sfc_data with sfcanl_data restart files from current cycle (if found)
       if [ "${MODE}" = "cycled" ] && [ "${CCPP_SUITE}" = "FV3_GFS_v16" ]; then  # TODO: remove if statement when global_cycle can handle NOAHMP
         for file in "${COM_ATMOS_RESTART}/${sPDY}.${scyc}0000."*.nc; do
           file2=$(echo $(basename $file))
@@ -771,7 +771,7 @@ MOM6_postdet() {
     exit 3
   fi
 
-  # Copy mediator restart files to RUNDIR
+  # Copy mediator restart files to RUNDIR  # TODO: mediator should have its own CMEPS_postdet() function
   if [[ $warm_start = ".true." ]]; then
     local mediator_file="${COM_MED_RESTART}/${PDY}.${cyc}0000.ufs.cpld.cpl.r.nc"
     if [[ -f "${mediator_file}" ]]; then
