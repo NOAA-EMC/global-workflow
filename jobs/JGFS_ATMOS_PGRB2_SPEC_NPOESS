@@ -36,6 +36,10 @@ export DBNROOT=${DBNROOT:-${UTILROOT}/fakedbn}
 YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_GOES
 RES="0p50" YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_GRIB_0p50:COM_ATMOS_GRIB_TMPL
 
+if [[ ${SENDCOM} == "YES" ]]; then
+   mkdir -m 775 -p "${COM_ATMOS_GOES}"
+fi
+
 # TODO - This should be in the ex-script (#1226)
 
 ####################################
