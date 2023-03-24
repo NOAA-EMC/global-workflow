@@ -213,7 +213,7 @@ class AerosolAnalysis(Analysis):
         This method will be assumed to be deprecated before this is implemented operationally
         """
         # only need the fv_tracer files
-        template = '{}.fv_tracer.res.tile{}.nc'.format(to_fv3time(self.task_config.current_cycle), '{tilenum}')
+        template = f'{to_fv3time(self.task_config.current_cycle)}.fv_tracer.res.tile{{tilenum}}.nc'
         inc_template = os.path.join(self.task_config.DATA, 'anl', 'aeroinc.' + template)
         bkg_template = os.path.join(self.task_config.comin_ges_atm, 'RESTART', template)
         # get list of increment vars
