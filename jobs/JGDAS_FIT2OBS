@@ -1,0 +1,57 @@
+#! /usr/bin/env bash
+
+source "${HOMEgfs}/ush/preamble.sh"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "fit2obs" -c "base fit2obs"
+
+
+##############################################
+# Set variables used in the script
+##############################################
+
+export CDATE=${CDATE:-${PDY}${cyc}}
+export CDUMP=${CDUMP:-${RUN:-"gdas"}}
+
+export xdate=$(${NDATE} -${VBACKUP_FITS} ${CDATE})
+export vday=$(echo ${xdate} | cut -c1-8)
+export vcyc=$(echo ${xdate} | cut -c9-10)
+
+export COM_INA=${ROTDIR}/gdas.${vday}/${vcyc}/atmos
+export COM_INF='$ROTDIR/vrfyarch/gfs.$fdy/$fzz'
+export COM_PRP='$ROTDIR/gdas.$pdy/$cyc/obs'
+
+export OUTPUT_FILETYPE=${OUTPUT_FILETYPE:-netcdf}
+
+export FIT_DIR=${ARCDIR}/fits
+[[ ! -d "${FIT_DIR}" ]] && mkdir -p "${FIT_DIR}"
+export HORZ_DIR=${ARCDIR}/horiz
+[[ ! -d "${HORZ_DIR}" ]] && mkdir -p "${HORZ_DIR}"
+export COMLOX=${DATA}/fitx
+[[ ! -d "${COMLOX}" ]] && mkdir -p "${COMLOX}"
+
+###############################################################
+# RUN FIT2OBS VERIFICATION
+###############################################################
+
+"${fitdir}/batrun/excfs_gdas_vrfyfits.sh.ecf"
+status=$?
+[[ ${status} -ne 0 ]] && exit "${status}"
+
+##############################################
+# End JOB SPECIFIC work
+##############################################
+
+##############################################
+# Final processing
+##############################################
+if [[ -e "${pgmout}" ]] ; then
+  cat "${pgmout}"
+fi
+
+
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd "${DATAROOT}" || (echo "${DATAROOT} does not exist. ABORT!"; exit 1)
+[[ ${KEEPDATA} = "NO" ]] && rm -rf "${DATA}"
+
+exit 0
