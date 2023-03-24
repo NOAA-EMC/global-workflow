@@ -358,9 +358,6 @@ class Tasks:
         else:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}anal'}
         deps.append(rocoto.add_dependency(dep_dict))
-        if self.app_config.do_land:
-            dep_dict = {'type': 'task', 'name': f'{self.cdump}landanlfinal'}
-            deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
         resources = self.get_resource('sfcanl')
