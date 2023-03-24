@@ -194,7 +194,8 @@ fi
 
 # Update surface restarts at middle of window
 for n in $(seq 1 ${ntiles}); do
-    ${NCP} ${COMIN_GES}/RESTART/${PDY}.${cyc}0000.sfc_data.tile${n}.nc ${COMOUT}/RESTART/${PDY}.${cyc}0000.sfcanl_data.tile${n}.nc
+#DONG    ${NCP} ${COMIN_GES}/RESTART/${PDY}.${cyc}0000.sfc_data.tile${n}.nc ${COMOUT}/RESTART/${PDY}.${cyc}0000.sfcanl_data.tile${n}.nc
+    ${NCP} ${COMOUT}/${PDY}.${cyc}0000.sfc_data.tile${n}.nc ${COMOUT}/RESTART/${PDY}.${cyc}0000.sfcanl_data.tile${n}.nc
     ${NLN} ${COMIN_GES}/RESTART/${PDY}.${cyc}0000.sfc_data.tile${n}.nc ${DATA}/fnbgsi.00${n}
     ${NLN} ${COMOUT}/RESTART/${PDY}.${cyc}0000.sfcanl_data.tile${n}.nc ${DATA}/fnbgso.00${n}
     ${NLN} ${FIXfv3}/${CASE}/${CASE}_grid.tile${n}.nc                  ${DATA}/fngrid.00${n}

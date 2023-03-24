@@ -15,8 +15,6 @@ CASE=${CASE:-C96}
 RES=$(echo "${CASE}" | cut -c 2-)
 
 #  Directories.
-export COMINgdas=${COMINgdas:-${ROTDIR}}
-SFCANLDIR=${COMINgdas}/${CDUMP}.${PDY}/${cyc}/atmos/RESTART/
 export gdasapp_dir=${gdasapp_dir:-"${HOMEgfs}/sorc/gdas.cd/"}
 BKGDIR=${DATA}/bkg
 ANLDIR=${DATA}/anl
@@ -58,7 +56,7 @@ do
     mkdir -p "${WORKDIR}/mem${ens}"
     for tile in 1 2 3 4 5 6
     do
-        ${NCP} "${SFCANLDIR}/${FILEDATE}.sfcanl_data.tile${tile}.nc"  "${WORKDIR}/mem${ens}/${FILEDATE}.sfc_data.tile${tile}.nc"
+        ${NCP} "${WORKDIR}/${FILEDATE}.sfc_data.tile${tile}.nc"  "${WORKDIR}/mem${ens}/${FILEDATE}.sfc_data.tile${tile}.nc"
     done
     ${NCP} "${WORKDIR}/${FILEDATE}.coupler.res" "${WORKDIR}/mem${ens}/${FILEDATE}.coupler.res"
 done
@@ -154,7 +152,7 @@ EOF
 for tile in 1 2 3 4 5 6
 do
   if [[ ! -e ${FILEDATE}.sfc_data.tile${tile}.nc ]]; then
-    ${NCP} "${SFCANLDIR}/${FILEDATE}.sfcanl_data.tile${tile}.nc"  "${WORKDIR}/${FILEDATE}.sfc_data.tile${tile}.nc"
+    ${NCP} "${BKGDIR}/${FILEDATE}.sfc_data.tile${tile}.nc"  "${WORKDIR}/${FILEDATE}.sfc_data.tile${tile}.nc"
   fi
 done
 
@@ -170,14 +168,6 @@ echo 'do_landDA: calling apply snow increment'
 
 # (n=6) -> this is fixed, at one task per tile (with minor code change, could run on a single proc).
 ${APRUN_LANDANL} "${ADDJEDIINC}" "${WORKDIR}/apply_incr.log" 1>&1 2>&2
-
-# change names of the analysis
-for tile in 1 2 3 4 5 6
-do
-  if [[ -e ${FILEDATE}.sfc_data.tile${tile}.nc ]]; then
-    ${NMV} ${FILEDATE}.sfc_data.tile${tile}.nc ${FILEDATE}.sfcanl_data.tile${tile}.nc
-  fi
-done
 
 export err=$?; err_chk
 exit "${err}"
