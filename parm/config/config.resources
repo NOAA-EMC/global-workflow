@@ -12,7 +12,7 @@ if [ $# -ne 1 ]; then
     echo "atmanalprep atmanalrun atmanalpost"
     echo "atmensanalprep atmensanalrun atmensanalpost"
     echo "aeroanlinit aeroanlrun aeroanlfinal"
-    echo "anal sfcanl analcalc analdiag gldas fcst post vrfy metp arch echgres"
+    echo "anal sfcanl analcalc analdiag gldas fcst post vrfy fit2obs metp arch echgres"
     echo "eobs ediag eomg eupd ecen esfc efcs epos earc"
     echo "init_chem mom6ic ocnpost"
     echo "waveinit waveprep wavepostsbs wavepostbndpnt wavepostbndpntbll wavepostpnt"
@@ -621,6 +621,14 @@ elif [ ${step} = "vrfy" ]; then
       export memory_vrfy="16384M"
     fi
     export is_exclusive=True
+
+elif [ ${step} = "fit2obs" ]; then
+
+    export wtime_fit2obs="00:20:00"
+    export npe_fit2obs=3
+    export nth_fit2obs=1
+    export npe_node_fit2obs=1
+    if [[ ${machine} == "WCOSS2" ]]; then export npe_node_fit2obs=3 ; fi
 
 elif [ ${step} = "metp" ]; then
 
