@@ -91,7 +91,9 @@ function generate_com() {
     #
     # Generate a list COM variables from a template by substituting in env variables.
     #
-    # Each argument must have a corresponding template with the name ${ARG}_TMPL.
+    # Each argument must have a corresponding template with the name ${ARG}_TMPL. Any 
+    #   variables in the template are replaced with their values. Undefined variables
+    #   are just removed without raising an error.
     #
     # Accepts as options `-r` and `-x`, which do the same thing as the same options in
     #   `declare`. Variables are automatically marked as `-g` so the variable is visible
@@ -106,6 +108,17 @@ function generate_com() {
     #   var1, var2, etc: Variable names whose values will be generated from a template
     #                    and declared
     #   tmpl1, tmpl2, etc: Specify the template to use (default is "${var}_TMPL")
+    #
+    #   Examples:
+    #       # Current cycle and RUN, implicitly using template COM_ATMOS_ANALYSIS_TMPL
+    #       YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_ANALYSIS
+    #
+    #       # Previous cycle and gdas using an explicit template
+    #       RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} generate_com -rx \
+    #           COM_ATMOS_HISTORY_PREV:COM_ATMOS_HISTORY_TMPL
+    #
+    #       # Current cycle and COM for first member
+    #       MEMDIR='mem001' YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_HISTORY
     #
     local opts="-g"
     local OPTIND=1

@@ -1,27 +1,31 @@
 # shellcheck shell=bash
 echo "BEGIN: config.com"
 
-# These are just templates. Substitute variables in at runtime like this:
-#   ```
-#   COM_OBS=$(echo "${COM_OBS_TMPL}" | envsubst)
-#   ```
+# These are just templates. All templates must use single quotations so variable
+#   expansion does not occur when this file is sourced. Substitution happens later
+#   during runtime. It is recommended to use the helper function `generate_com()`,
+#   to do this substitution, which is defined in `ush/preamble.sh`.
+#   
+#   Syntax for generate_com():
+#       generate_com [-rx] $var1[:$tmpl1] [$var2[:$tmpl2]] [...]]
 #
-# Or use the `generate_com` function included below, which uses the same
-#   options as `declare`/`typeset`
+#       options:
+#           -r: Make variable read-only (same as `decalre -r`)
+#           -x: Mark variable for export (same as `declare -x`)
+#       var1, var2, etc: Variable names whose values will be generated from a template
+#                   and declared
+#       tmpl1, tmpl2, etc: Specify the template to use (default is "${var}_TMPL")
 #
-#   # Assign COM_OBS from COM_OBS_TMPL template and mark it for export and read-only
-#   generate_com -rx COM_OBS
+#   Examples:
+#       # Current cycle and RUN
+#       YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_ANALYSIS
 #
-# If you need to override variables in the template without changing the
-#   actual variable in your program, you can make assignments in the subshell:
+#       # Previous cycle and gdas
+#       RUN=${GDUMP} YMD=${gPDY} HH=${gcyc} generate_com -rx \
+#           COM_ATMOS_HISTORY_PREV:COM_ATMOS_HISTORY_TMPL
 #
-#   COM_ATMOS_RESTART_PREV=$({
-#       # Override env variables for this subshell to get correct template substitution
-#      RUN=${rCDUMP}
-#      PDY="${PDY_PREV}"
-#      cyc="${cyc_PREV}"
-#      echo "${COM_ATMOS_RESTART_TMPL}" | envsubst
-#    })
+#       # Current cycle and COM for first member
+#       MEMDIR='mem001' YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_HISTORY
 #
 
 # Ignore shellcheck warnings about variables not being expanded; this is what we want
