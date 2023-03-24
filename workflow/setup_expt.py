@@ -151,8 +151,6 @@ def fill_COMROT_cycled(host, inputs):
 
     # Link aerosol files
     if do_aerosols:
-        # TODO: do not know what warm start ICs for aerosols will look like
-        #       so leave room for it
         if inputs.start in ['warm']:
             detdir = f'{inputs.cdump}.{rdatestr[:8]}/{rdatestr[8:]}'
         elif inputs.start in ['cold']:

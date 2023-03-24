@@ -253,7 +253,7 @@ class AerosolAnalysis(Analysis):
 
         # aerosol DA only needs core/tracer
         for ftype in ['core', 'tracer']:
-        template = f'{to_fv3time(self.task_config.current_cycle)}.fv_{ftype}.res.tile{{tilenum}}.nc'
+            template = f'{to_fv3time(self.task_config.current_cycle)}.fv_{ftype}.res.tile{{tilenum}}.nc'
             for itile in range(1, task_config.ntiles + 1):
                 basename = template.format(tilenum=itile)
                 bkglist.append([os.path.join(rst_dir, basename), os.path.join(run_dir, basename)])
