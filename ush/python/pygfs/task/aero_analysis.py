@@ -293,7 +293,7 @@ class AerosolAnalysis(Analysis):
             berror_list.append([
                 os.path.join(b_dir, coupler), os.path.join(config.DATA, 'berror', coupler)
             ])
-            template = '{}.{}.fv_tracer.res.tile{}.nc'.format(b_datestr, ftype, '{tilenum}')
+            template = '{b_datestr}.{ftype}.fv_tracer.res.tile{{tilenum}}.nc'
             for itile in range(1, config.ntiles + 1):
                 tracer = template.format(tilenum=itile)
                 berror_list.append([
