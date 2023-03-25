@@ -888,7 +888,7 @@ class Tasks:
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
-        resources = self.get_resource('waeawipsgridded')
+        resources = self.get_resource('waveawipsgridded')
         task = create_wf_task('waveawipsgridded', resources, cdump=self.cdump, envar=self.envars,
                               dependency=dependencies)
 
@@ -1291,7 +1291,7 @@ class Tasks:
 
         groups = self._get_hybgroups(self._base['NMEM_ENKF'], self._configs['efcs']['NMEM_EFCSGRP'])
 
-        if self.cdump == "gfs":
+        if self.cdump == "enkfgfs":
             groups = self._get_hybgroups(self._base['NMEM_EFCS'], self._configs['efcs']['NMEM_EFCSGRP_GFS'])
         cycledef = 'gdas_half,gdas' if self.cdump in ['enkfgdas'] else self.cdump.replace('enkf', '')
         resources = self.get_resource('efcs')
