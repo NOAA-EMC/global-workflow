@@ -285,7 +285,6 @@ class AtmAnalysis(Analysis):
             b_dir = config.BERROR_DATA_DIR
             b_datestr = config.BERROR_DATE
             berror_list = []
-
             for ftype in ['cor_rh', 'cor_rv', 'stddev']:
                 template_bump_coupler = f'{b_datestr}.{ftype}.coupler.res'
                 template_bump_tracer = f'{b_datestr}.{ftype}.fv_tracer.res.tileX.nc'
@@ -299,7 +298,6 @@ class AtmAnalysis(Analysis):
                         os.path.join(b_dir, bump_tracer),
                         os.path.join(config.DATA, 'berror', bump_tracer)
                     ])
-                    
             nproc = config.ntiles * config.layout_x * config.layout_y
             for nn in range(1, nproc + 1):
                 berror_list.append([
