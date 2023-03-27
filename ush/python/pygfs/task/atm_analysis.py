@@ -13,7 +13,7 @@ from pygw.file_utils import FileHandler
 from pygw.timetools import to_isotime, to_fv3time, to_timedelta, datetime_to_YMDH
 from pygw.fsutils import rm_p
 from pygw.template import Template, TemplateConstants
-from pygw.yaml_file import YAMLFile
+from pygw.yaml_file import YAMLFile, parse_yamltmpl, parse_j2yaml, save_as_yaml
 from pygw.logger import logit
 from pygw.executable import Executable
 from pygfs.task.analysis import Analysis
@@ -87,8 +87,8 @@ class AtmAnalysis(Analysis):
 
         # stage berror files
         # copy static background error files, otherwise it will assume ID matrix
-        if self.task_config.get('STATICB_TYPE', 'identity') in ['gsibec']:
-            FileHandler(self.get_berror_dict(AttrDict(self.task_config, **self.task_config))).sync()
+        if self.task_config.get('STATICB_TYPE', 'identity') in ['bump', 'gsibec']:
+            FileHandler(self.get_berror_dict(self.task_config)).sync()
 
         # stage backgrounds
         FileHandler(self.get_bkg_dict(AttrDict(self.task_config, **self.task_config))).sync()
@@ -123,7 +123,7 @@ class AtmAnalysis(Analysis):
         This includes:
         - tarring up output diag files and place in ROTDIR
         - copying the generated YAML file from initialize to the ROTDIR
-        - copying the update bias correction files to ROTDIR
+        - copying the updated bias correction files to ROTDIR
         - rewrite UFS-DA atm increment to UFS model readable format with delp and hydrostatic delz calculation
 
         Please note that some of these steps are temporary and will be modified
@@ -264,7 +264,7 @@ class AtmAnalysis(Analysis):
         return bkg_dict
 
     @logit(logger)
-    def get_berror_dict(self, task_config: Dict[str, Any]) -> Dict[str, List[str]]:
+    def get_berror_dict(self, config: Dict[str, Any]) -> Dict[str, List[str]]:
         """Compile a dictionary of background error files to copy
 
         This method will construct a dictionary of background error files
@@ -280,16 +280,46 @@ class AtmAnalysis(Analysis):
         berror_dict: Dict
             a dictionary containing the list of atm background error files to copy for FileHandler
         """
-        super().get_berror_dict(task_config)
+        if config.STATICB_TYPE in ['bump']:
+            # BUMP atm static-B needs nicas, cor_rh, cor_rv and stddev files.
+            b_dir = config.BERROR_DATA_DIR
+            b_datestr = config.BERROR_DATE
+            berror_list = []
 
-        berror_list = []
-        for ftype in ['gfs_gsi_global.nml', 'gsi-coeffs-gfs-global.nc4']:
-            berror_list.append([
-                os.path.join(task_config['FV3JEDI_FIX'], 'gsibec', task_config['CASE_ANL'], ftype),
-                os.path.join(task_config['DATA'], 'berror', ftype)
-            ])
-        berror_dict = {
-            'mkdir': [os.path.join(task_config['DATA'], 'berror')],
-            'copy': berror_list,
-        }
+            for ftype in ['cor_rh', 'cor_rv', 'stddev']:
+                template_bump_coupler = f'{b_datestr}.{ftype}.coupler.res'
+                template_bump_tracer = f'{b_datestr}.{ftype}.fv_tracer.res.tileX.nc'
+                berror_list.append([
+                    os.path.join(b_dir, template_bump_coupler),
+                    os.path.join(config.DATA, 'berror', template_bump_coupler)
+                ])
+                for itile in range(1, config.ntiles + 1):
+                    bump_tracer = template_bump_tracer.replace('tileX', f'tile{itile}')
+                    berror_list.append([
+                        os.path.join(b_dir, bump_tracer),
+                        os.path.join(config.DATA, 'berror', bump_tracer)
+                    ])
+                    
+            nproc = config.ntiles * config.layout_x * config.layout_y
+            for nn in range(1, nproc + 1):
+                berror_list.append([
+                    os.path.join(b_dir, f'nicas_atm_nicas_local_{nproc:06}-{nn:06}.nc'),
+                    os.path.join(config.DATA, 'berror', f'nicas_atm_nicas_local_{nproc:06}-{nn:06}.nc')
+                ])
+            berror_dict = {
+                'mkdir': [os.path.join(config.DATA, 'berror')],
+                'copy': berror_list,
+            }
+        else:
+            # gsi atm static-B needs namelist and coefficient files.
+            berror_list = []
+            for ftype in ['gfs_gsi_global.nml', 'gsi-coeffs-gfs-global.nc4']:
+                berror_list.append([
+                    os.path.join(config.FV3JEDI_FIX, 'gsibec', config.CASE_ANL, ftype),
+                    os.path.join(config.DATA, 'berror', ftype)
+                ])
+            berror_dict = {
+                'mkdir': [os.path.join(config.DATA, 'berror')],
+                'copy': berror_list,
+            }
         return berror_dict
