@@ -81,7 +81,7 @@ class Analysis(Task):
 
         Returns
         ----------
-        obs_dict: Dict
+        bias_dict: Dict
             a dictionary containing the list of observation bias files to copy for FileHandler
         """
         obs_list_config = YAMLFile(path=self.config['OBS_LIST'])
@@ -104,11 +104,11 @@ class Analysis(Task):
                 basename = os.path.basename(obfile)
                 copylist.append([os.path.join(self.task_config.comin_ges_atm, basename), obfile])
 
-        obs_dict = {
+        bias_dict = {
             'mkdir': [os.path.join(self.runtime_config['DATA'], 'bc')],
             'copy': copylist
         }
-        return obs_dict
+        return bias_dict
 
     @logit(logger)
     def add_fv3_increments(self, inc_file_tmpl: str, bkg_file_tmpl: str, incvars: List) -> None:
