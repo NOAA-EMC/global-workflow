@@ -87,12 +87,14 @@ def test_argsparse_args() -> None:
         assert isinstance(args_obj.filepath, str)
         assert not isinstance(args_obj.filepath, int)
 
-    # Test the argument parser with multiple arguments.
+    # Test the argument parser with multiple arguments; note that the
+    # Python interpretor assumes that all attributes collected via
+    # the sys instance are formatted as strings.
     with patch("sys.argv", ["main", "--filepath", "/path/to/file", "--intarg", "2"]):
         args_obj = main()
 
         assert args_obj.filepath == "/path/to/file"
-        assert args_obj.intarg == "2"
+        assert args_obj.intarg == 2
 
     # Test the argument parser with no arguments.
     with patch("sys.argv", ["main"]):
