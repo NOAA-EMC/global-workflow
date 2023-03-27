@@ -1,9 +1,8 @@
-import datetime as dt
 import logging
 from typing import Dict
 
 from pygw.attrdict import AttrDict
-from pygw.timetools import to_datetime
+from pygw.timetools import add_to_datetime, to_timedelta
 
 logger = logging.getLogger(__name__.split('.')[-1])
 
@@ -45,13 +44,21 @@ class Task:
         for kk in runtime_keys:
             try:
                 self.runtime_config[kk] = config[kk]
+                logger.debug(f'Deleting runtime_key {kk} from config')
                 del self.config[kk]
             except KeyError:
                 raise KeyError(f"Encountered an unreferenced runtime_key {kk} in 'config'")
 
         # Any other composite runtime variables that may be needed for the duration of the task
-        self.runtime_config['current_cycle'] = to_datetime(str(self.runtime_config['PDY'])) + \
-            dt.timedelta(hours=self.runtime_config['cyc'])
+        # can be constructed here
+
+        # Construct the current cycle datetime object
+        self.runtime_config['current_cycle'] = add_to_datetime(self.runtime_config['PDY'], to_timedelta(f"{self.runtime_config.cyc}H"))
+        logger.debug(f"current cycle: {self.runtime_config['current_cycle']}")
+
+        # Construct the previous cycle datetime object
+        self.runtime_config['previous_cycle'] = add_to_datetime(self.runtime_config.current_cycle, -to_timedelta(f"{self.config['assim_freq']}H"))
+        logger.debug(f"previous cycle: {self.runtime_config['previous_cycle']}")
 
         pass
 
