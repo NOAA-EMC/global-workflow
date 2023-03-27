@@ -1,4 +1,5 @@
 import io
+import os
 import sys
 import jinja2
 from markupsafe import Markup
@@ -65,7 +66,7 @@ class Jinja:
         self.data = data
         self.undefined = SilentUndefined if allow_missing else jinja2.StrictUndefined
 
-        if Path(template_path_or_string).is_file():
+        if os.path.isfile(template_path_or_string):
             self.template_type = 'file'
             self.template_path = Path(template_path_or_string)
         else:
