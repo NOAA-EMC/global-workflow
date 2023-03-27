@@ -88,7 +88,6 @@ class Analysis(Task):
         # get observers from master dictionary
         observers = obs_list_config['observers']
         copylist = []
-
         for ob in observers:
             if 'obs bias' in ob.keys():
                 obfile = ob['obs bias']['input file']
