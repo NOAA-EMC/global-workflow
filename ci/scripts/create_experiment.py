@@ -101,7 +101,7 @@ if __name__ == '__main__':
     setup_expt_cmd(output='stdout_expt', error='stderr_expt')
 
     setup_xml_cmd = Executable(Path.absolute(Path.joinpath(Path(HOMEgfs), 'workflow', 'setup_xml.py')))
-    expdir = Path.absolute(Path.joinpath(Path(setup_expt_args.arguments.expdir), Path(pslot))
+    expdir = Path.absolute(Path.joinpath(Path(setup_expt_args.arguments.expdir), Path(pslot)))
     setup_xml_cmd.add_default_arg(str(expdir))
 
     logger.info(f'Run command: {setup_xml_cmd.command}')

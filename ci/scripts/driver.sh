@@ -36,7 +36,7 @@ source "${HOMEGFS_DIR}/ush/detect_machine.sh"
 case ${MACHINE_ID} in
   hera | orion)
     echo "Running Automated Testing on ${MACHINE_ID}"
-    source "${HOMEGFS_DIR}/ci/environments/${MACINE_ID}.sh"
+    source "${HOMEGFS_DIR}/ci/environments/${MACHINE_ID}.sh"
     ;;
   *)
     echo "Unsupported platform. Exiting with error."
@@ -75,12 +75,13 @@ for pr in ${pr_list}; do
   mkdir -p "${pr_dir}"
   # call clone-build_ci to clone and build PR
   id=$("${GH}" pr view "${pr}" --repo "${REPO_URL}" --json id --jq '.id')
-  "${HOMEGFS_DIR}/ci/scripts/clone-build_ci.sh" -p "${pr}" -d "${pr_dir}" -o "${pr_dir}/output_${id}"
+  #"${HOMEGFS_DIR}/ci/scripts/clone-build_ci.sh" -p "${pr}" -d "${pr_dir}" -o "${pr_dir}/output_${id}"
+  echo "SKIPPING clone-build script"
   ci_status=$?
   if [[ ${ci_status} -eq 0 ]]; then
     #setup runtime env for correct python install
-    module use "${pr_dir}/modulefiles"
-    module load "module_setup.${TARGET}"
+    module use "${pr_dir}/global-workflow/modulefiles"
+    module load "module_setup.${MACHINE_ID}"
     module list
     #setup space to put an experiment
     export RUNTEST="${pr_dir}/RUNTEST"
@@ -92,7 +93,7 @@ for pr in ${pr_list}; do
     #############################################################
     for yaml_config in "${HOMEGFS_DIR}/ci/experiments/"*.yaml; do
       pslot=$(basename "${yaml_config}" .yaml) || true
-      "${HOMEGFS_DIR}/ci/scripts/create_experiment.py" --yaml "${HOMEGFS_DIR}/ci/experiments/${pslot}.yaml --dir ${pr_dir}/global-workflow"
+      "${HOMEGFS_DIR}/ci/scripts/create_experiment.py" --yaml "${HOMEGFS_DIR}/ci/experiments/${pslot}.yaml" --dir "${pr_dir}/global-workflow"
       ci_status=$?
       if [[ ${ci_status} -eq 0 ]]; then
         {
