@@ -999,7 +999,7 @@ class Tasks:
         deps.append(rocoto.add_dependency(dep_dict))
         dependencies = rocoto.create_dependency(dep=deps)
 
-        cycledef = 'gdas' if self.cdump in ['gdas'] else self.cdump
+        cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
 
         resources = self.get_resource('fit2obs')
         task = create_wf_task('fit2obs', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies,
