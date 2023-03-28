@@ -1,11 +1,6 @@
 #!/bin/bash
 set -eux
 
-#################################################################
-# TODO using static build for GitHub CLI until fixed in HPC-Stack
-#################################################################
-GH=/home/Terry.McGuinness/bin/gh
-repo_url=${repo_url:-"https://github.com/global-workflow.git"}
 #####################################################################
 #  Usage and arguments for specfifying cloned directgory
 #####################################################################
@@ -49,7 +44,7 @@ done
 # start output file
 {
  echo "Automated global-workflow Testing Results:"
- echo "Machine: ${CI_HOST}"
+ echo "Machine: ${MACHINE_ID^}"
  echo '```'
  echo "Start: $(date) on $(hostname)" || true
  echo "---------------------------------------------------"
@@ -62,7 +57,7 @@ if [[ -d global-workflow ]]; then
   rm -Rf global-workflow
 fi
 
-git clone "${repo_url}"
+git clone "${REPO_URL}"
 cd global-workflow
 
 pr_state=$(gh pr view "${PR}" --json state --jq '.state')
@@ -73,7 +68,7 @@ if [[ "${pr_state}" != "OPEN" ]]; then
 fi  
  
 # checkout pull request
-"${GH}" pr checkout "${PR}" --repo "${repo_url}"
+"${GH}" pr checkout "${PR}" --repo "${REPO_URL}"
 
 # get commit hash
 commit=$(git log --pretty=format:'%h' -n 1)

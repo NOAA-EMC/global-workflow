@@ -20,7 +20,7 @@ Functionally an experement is setup as a result running the two scripts discribe
 with an error code of 0 apon success.
 """
 
-import sys
+import sys, os
 import socket
 from pathlib import Path
 
@@ -29,8 +29,6 @@ from pygw.logger import Logger
 from pygw.executable import Executable
 
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
-
-from workflow.hosts import Host
 
 logger = Logger(level='DEBUG', colored_log=True)
 
@@ -47,12 +45,7 @@ def input_args():
     Description
     -----------
 
-    A full path to a YAML file with the following format with required sections: environment, experiment, arguments
-
-    environment:
-        HOMEgfs: ${HOMEGFS}
-            used to pass the environment variable $HOMEGFS
-            of the path to the global-workflow repo being tested
+    A full path to a YAML file with the following format with required sections: experiment, arguments
 
     experiment:
         mode: <cycled> <forecast-only>
@@ -60,7 +53,7 @@ def input_args():
 
     arguments:
         holds all the remaining key values pairs for all requisite arguments documented for setup_expt.py
-
+        Note: the argument pslot is derived from the basename of the yamlfile itself
 
     Returns
     -------
@@ -79,6 +72,7 @@ def input_args():
                             formatter_class=ArgumentDefaultsHelpFormatter)
 
     parser.add_argument('--yaml', help='yaml configuration file per experiment', type=str, required=True)
+    parser.add_argument('--dir', help='full path to top level of repo of global-workflow', type=str, required=True)
 
     args = parser.parse_args()
     return args
@@ -87,17 +81,10 @@ def input_args():
 if __name__ == '__main__':
 
     user_inputs = input_args()
-
-    try:
-        host = Host()
-        logger.info(f'Running on HOST:{host.machine}')
-    except NotImplementedError:
-        logger.error(f'HOST:{socket.gethostname()} is not currently supported')
-        sys.exit(1)
-
     setup_expt_args = YAMLFile(path=user_inputs.yaml)
 
-    HOMEgfs = setup_expt_args.environment.HOMEgfs
+    HOMEgfs = user_inputs.dir
+    pslot = Path(user_inputs.yaml).stem
     mode = setup_expt_args.experiment.mode
 
     setup_expt_cmd = Executable(Path.absolute(Path.joinpath(Path(HOMEgfs), 'workflow', 'setup_expt.py')))
@@ -107,11 +94,14 @@ if __name__ == '__main__':
         setup_expt_cmd.add_default_arg(f'--{conf}')
         setup_expt_cmd.add_default_arg(str(value))
 
+    setup_expt_cmd.add_default_arg('--pslot')
+    setup_expt_cmd.add_default_arg(pslot)
+
     logger.info(f'Run command: {setup_expt_cmd.command}')
     setup_expt_cmd(output='stdout_expt', error='stderr_expt')
 
     setup_xml_cmd = Executable(Path.absolute(Path.joinpath(Path(HOMEgfs), 'workflow', 'setup_xml.py')))
-    expdir = Path.absolute(Path.joinpath(Path(setup_expt_args.arguments.expdir), Path(setup_expt_args.arguments.pslot)))
+    expdir = Path.absolute(Path.joinpath(Path(setup_expt_args.arguments.expdir), Path(pslot))
     setup_xml_cmd.add_default_arg(str(expdir))
 
     logger.info(f'Run command: {setup_xml_cmd.command}')
