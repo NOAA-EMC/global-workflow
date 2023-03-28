@@ -122,7 +122,7 @@ ESIASI=${ESIASI:-${COMIN_OBS}/${OPREFIX}esiasi.tm00.bufr_d${OSUFFIX}}
 IASIDB=${IASIDB:-${COMIN_OBS}/${OPREFIX}iasidb.tm00.bufr_d${OSUFFIX}}
 AMSREBF=${AMSREBF:-${COMIN_OBS}/${OPREFIX}amsre.tm00.bufr_d${OSUFFIX}}
 AMSR2BF=${AMSR2BF:-${COMIN_OBS}/${OPREFIX}amsr2.tm00.bufr_d${OSUFFIX}}
-GMI1CRBF=${GMI1CRBF:-${COMIN_OBS}/${OPREFIX}gmi1cr.tm00.bufr_d${OSUFFIX}}
+GMI1CRBF=${GMI1CRBF:-${COMIN_OBS}/${OPREFIX}gmi1cr.tm00.bufr_d${OSUFFIX}} # GMI temporarily disabled due to array overflow.
 SAPHIRBF=${SAPHIRBF:-${COMIN_OBS}/${OPREFIX}saphir.tm00.bufr_d${OSUFFIX}}
 SEVIRIBF=${SEVIRIBF:-${COMIN_OBS}/${OPREFIX}sevcsr.tm00.bufr_d${OSUFFIX}}
 AHIBF=${AHIBF:-${COMIN_OBS}/${OPREFIX}ahicsr.tm00.bufr_d${OSUFFIX}}
@@ -466,7 +466,7 @@ ${NLN} ${ESIASI}           iasibufrears
 ${NLN} ${IASIDB}           iasibufr_db
 ${NLN} ${AMSREBF}          amsrebufr
 ${NLN} ${AMSR2BF}          amsr2bufr
-${NLN} ${GMI1CRBF}         gmibufr
+#${NLN} ${GMI1CRBF}         gmibufr # GMI temporarily disabled due to array overflow.
 ${NLN} ${SAPHIRBF}         saphirbufr
 ${NLN} ${SEVIRIBF}         seviribufr
 ${NLN} ${CRISBF}           crisbufr
@@ -866,7 +866,6 @@ OBS_INPUT::
    iasibufr       iasi        metop-c     iasi_metop-c        0.0     1     1
    sstviirs       viirs-m     npp         viirs-m_npp         0.0     4     0
    sstviirs       viirs-m     j1          viirs-m_j1          0.0     4     0
-   abibufr        abi         g18         abi_g18             0.0     1     0
    ahibufr        ahi         himawari9   ahi_himawari9       0.0     1     0
    atmsbufr       atms        n21         atms_n21            0.0     1     1
    crisfsbufr     cris-fsr    n21         cris-fsr_n21        0.0     1     0
