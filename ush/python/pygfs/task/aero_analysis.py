@@ -165,7 +165,8 @@ class AerosolAnalysis(Analysis):
         # open tar file for writing
         with tarfile.open(aerostat, "w") as archive:
             for diagfile in diags:
-                archive.add(f"{diagfile}.gz")
+                diaggzip = f"{diagfile}.gz"
+                archive.add(diaggzip, arcname=os.path.basename(diaggzip))
 
         # copy full YAML from executable to ROTDIR
         src = os.path.join(self.task_config['DATA'], f"{self.task_config['CDUMP']}.t{self.runtime_config['cyc']:02d}z.aerovar.yaml")
