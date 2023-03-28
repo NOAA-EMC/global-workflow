@@ -86,7 +86,7 @@ def main() -> None:
     # dictionary.
     script_name = os.path.basename(__file__)
     msg = f"Completed application {script_name}."
-    logger.info(message=msg)
+    logger.info(msg=msg)
     start_time = time.time()
     config = cast_strdict_as_dtypedict(os.environ)
 
@@ -96,7 +96,7 @@ def main() -> None:
 
     stop_time = time.time()
     msg = f"Completed application {script_name}."
-    logger.info(message=msg)
+    logger.info(msg=msg)
     total_time = stop_time - start_time
     msg = f"Total Elapsed Time: {total_time} seconds."
     logger.info(msg=msg)
