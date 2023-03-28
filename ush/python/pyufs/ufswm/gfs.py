@@ -67,4 +67,4 @@ class GFS(UFSWM):
 
         # Define the base-class attributes.
         model = "GFS"
-        super().__init__(config=config, model=model, app=self.config.APP)
+        super().__init__(config=config, model=model, app=config.APP)
