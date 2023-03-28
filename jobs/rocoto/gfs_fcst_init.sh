@@ -29,7 +29,7 @@ export jobid="${job}.$$"
 
 ###############################################################
 # Execute the JJOB
-${HOMEgfs}/jobs/JGLOBAL_UFS_FORECAST_INIT
+$(which sh) ${HOMEgfs}/jobs/JGLOBAL_UFS_FORECAST_INIT
 status=$?
 
 
