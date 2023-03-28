@@ -17,13 +17,47 @@
 #
 # -----------------------------------------------------------------------------
 
+"""
+Script
+------
+
+    exglobal_ufs_forecast_init.py
+
+Description
+-----------
+
+    This script contains a task level interface for the global UFS
+    forecast initialization application.
+
+Functions
+---------
+
+    main()
+
+        This is the driver-level function to invoke the tasks within
+        this script.
+
+Author(s)
+---------
+
+
+    Henry R. Winterbottom; 28 March 2023
+
+History
+-------
+
+    2023-03-28: Henry Winterbottom -- Initial implementation.
+
+"""
+
+# ----
+
 import os
 import time
 
-from pygw.logger import Logger
 from pygw.configuration import cast_strdict_as_dtypedict
-
-from pygfs.ufswm.gfs import GFS
+from pygw.logger import Logger
+from pyufs.ufswm.gfs import GFS
 
 # ----
 
@@ -51,6 +85,8 @@ def main() -> None:
     # Take configuration from environment and cast it as Python
     # dictionary.
     script_name = os.path.basename(__file__)
+    msg = f"Completed application {script_name}."
+    logger.info(message=msg)
     start_time = time.time()
     config = cast_strdict_as_dtypedict(os.environ)
 
@@ -60,12 +96,13 @@ def main() -> None:
 
     stop_time = time.time()
     msg = f"Completed application {script_name}."
-    Logger().info(msg=msg)
+    logger.info(message=msg)
     total_time = stop_time - start_time
     msg = f"Total Elapsed Time: {total_time} seconds."
+    logger.info(msg=msg)
 
 # ----
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
