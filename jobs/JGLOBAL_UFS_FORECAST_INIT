@@ -1,6 +1,6 @@
 #! /usr/bin/env bash --posix
 
-###############################################################################
+# -----------------------------------------------------------------------------
 # 
 # Program Name:          JGLOBAL_UFS_FORECAST_INIT
 #
@@ -15,11 +15,11 @@
 #
 # Usage: user@host:$ sh JGLOBAL_UFS_FORECAST_INIT
 #
-#   Parameters:
+#   Parameters: (None)
 #
-#   Input Files:
+#   Input Files: (None)
 #
-#   Output Files:
+#   Output Files: (None)
 #
 # Conditions Codes:
 #
@@ -52,7 +52,7 @@
 #   PYTHONPATH:         Python library path for the respective
 #                       global-workflow application(s).
 #
-###############################################################################
+# -----------------------------------------------------------------------------
 
 # Establish the run-time environment.
 source "${HOMEgfs}/ush/preamble.sh"
