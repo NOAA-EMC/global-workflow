@@ -75,8 +75,7 @@ for pr in ${pr_list}; do
   mkdir -p "${pr_dir}"
   # call clone-build_ci to clone and build PR
   id=$("${GH}" pr view "${pr}" --repo "${REPO_URL}" --json id --jq '.id')
-  #"${HOMEGFS_DIR}/ci/scripts/clone-build_ci.sh" -p "${pr}" -d "${pr_dir}" -o "${pr_dir}/output_${id}"
-  echo "SKIPPING clone-build script"
+  "${HOMEGFS_DIR}/ci/scripts/clone-build_ci.sh" -p "${pr}" -d "${pr_dir}" -o "${pr_dir}/output_${id}"
   ci_status=$?
   if [[ ${ci_status} -eq 0 ]]; then
     #setup runtime env for correct python install
