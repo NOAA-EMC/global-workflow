@@ -33,8 +33,7 @@ History
 
 # ----
 
-from pyufs.ufswm.ufswm import UFSWM, base_logger
-from pyufs.exceptions import GFSError
+from pyufs.ufswm.ufswm import UFSWM
 
 # ----
 
