@@ -156,10 +156,6 @@ EOF
 
   #--------------------------------------------------------------------------
   # Grid and orography data
-  for n in $(seq 1 $ntiles); do
-    $NLN $FIXfv3/$CASE/${CASE}_grid.tile${n}.nc     $DATA/INPUT/${CASE}_grid.tile${n}.nc
-    $NLN $FIXfv3/$CASE/${CASE}_oro_data.tile${n}.nc $DATA/INPUT/oro_data.tile${n}.nc
-  done
 
   if [ $cplflx = ".false." ] ; then
     $NLN $FIXfv3/$CASE/${CASE}_mosaic.nc $DATA/INPUT/grid_spec.nc
@@ -167,20 +163,12 @@ EOF
     $NLN $FIXfv3/$CASE/${CASE}_mosaic.nc $DATA/INPUT/${CASE}_mosaic.nc
   fi
 
-  # Fractional grid related
-  if [ $FRAC_GRID = ".true." ]; then
-    OROFIX=${OROFIX:-"${FIX_DIR}/orog/${CASE}.mx${OCNRES}_frac"}
-    FIX_SFC=${FIX_SFC:-"${OROFIX}/fix_sfc"}
-    for n in $(seq 1 $ntiles); do
-      $NLN ${OROFIX}/oro_${CASE}.mx${OCNRES}.tile${n}.nc $DATA/INPUT/oro_data.tile${n}.nc
-    done
-  else
-    OROFIX=${OROFIX:-"${FIXfv3}/${CASE}"}
-    FIX_SFC=${FIX_SFC:-"${OROFIX}/fix_sfc"}
-    for n in $(seq 1 $ntiles); do
-      $NLN ${OROFIX}/${CASE}_oro_data.tile${n}.nc $DATA/INPUT/oro_data.tile${n}.nc
-    done
-  fi
+  OROFIX=${OROFIX:-"${FIX_DIR}/orog/${CASE}.mx${OCNRES}_frac"}
+  FIX_SFC=${FIX_SFC:-"${OROFIX}/fix_sfc"}
+  for n in $(seq 1 $ntiles); do
+    $NLN ${OROFIX}/oro_${CASE}.mx${OCNRES}.tile${n}.nc $DATA/INPUT/oro_data.tile${n}.nc
+    $NLN ${OROFIX}/${CASE}_grid.tile${n}.nc     $DATA/INPUT/${CASE}_grid.tile${n}.nc
+  done
 
   export CCPP_SUITE=${CCPP_SUITE:-"FV3_GFS_v16"}
   _suite_file=$HOMEgfs/sorc/ufs_model.fd/FV3/ccpp/suites/suite_${CCPP_SUITE}.xml
@@ -257,8 +245,8 @@ EOF
   if [ $imp_physics -eq 8 ]; then
     $NLN $FIX_AM/CCN_ACTIVATE.BIN  $DATA/CCN_ACTIVATE.BIN
     $NLN $FIX_AM/freezeH2O.dat     $DATA/freezeH2O.dat
-    $NLN $FIX_AM/qr_acr_qg.dat     $DATA/qr_acr_qg.dat
-    $NLN $FIX_AM/qr_acr_qs.dat     $DATA/qr_acr_qs.dat
+    $NLN $FIX_AM/qr_acr_qgV2.dat   $DATA/qr_acr_qgV2.dat
+    $NLN $FIX_AM/qr_acr_qsV2.dat   $DATA/qr_acr_qsV2.dat
   fi
 
   $NLN $FIX_AM/${O3FORC}                         $DATA/global_o3prdlos.f77
