@@ -20,7 +20,7 @@ Functionally an experement is setup as a result running the two scripts discribe
 with an error code of 0 apon success.
 """
 
-import sys, os
+import sys
 import socket
 from pathlib import Path
 
