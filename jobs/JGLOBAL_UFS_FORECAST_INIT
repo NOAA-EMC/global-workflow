@@ -1,0 +1,113 @@
+#! /usr/bin/env bash --posix
+
+###############################################################################
+# 
+# Program Name:          JGLOBAL_UFS_FORECAST_INIT
+#
+# Author(s)/Contacts(s): Henry R. Winterbottom (henry.winterbottom@noaa.gov)
+#
+# Abstract:              A Linux POSIX shell script to initialize a global UFS
+#                        forecast application.
+#
+# History Log:  
+#
+#   - 2023-03-28: Henry R. Winterbottom -- Original version.
+#
+# Usage: user@host:$ sh JGLOBAL_UFS_FORECAST_INIT
+#
+#   Parameters:
+#
+#   Input Files:
+#
+#   Output Files:
+#
+# Conditions Codes:
+#
+#   - 0; no problem encountered during application executation.
+#
+#   - >0; a problem was encountered while executing application.
+#
+# Imported Controllable Options:
+#
+#   CDUMP:     The task starting phase; may be either `gdas` or `gfs`.
+#
+#   DATAROOT:  The directory tree to the respective application is to
+#              be executed.
+#
+#   HOMEgfs:   The top-level directory tree for the global-workflow
+#              system.
+#
+#   PDY:       The production day; formatted as %Y%m%d assuming the POSIX
+#              format.
+#
+# Additional/Optional Controllable Attributes.
+#
+#   DO_WAVE:   Run the wave-model as part of the global UFS forecast.
+#
+#   GFSINITPY: The `/scripts` path application launched by this
+#              script.
+#
+# Exported Shell Variables:
+#
+#   PYTHONPATH:         Python library path for the respective
+#                       global-workflow application(s).
+#
+###############################################################################
+
+# Establish the run-time environment.
+source "${HOMEgfs}/ush/preamble.sh"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "fcst" -c "base fcst"
+
+# ----
+
+# Define all variables used in the script.
+if [ ${DO_WAVE:-"NO"} = "YES" ]; then
+
+    # WAVE component directory
+    export CDUMPwave=${CDUMPwave:-${CDUMP}wave}
+    export COMINwave=${COMINwave:-$(compath.py ${envir}/${NET}/${gfs_ver})/${CDUMP}.${PDY}/${cyc}/wave}
+    export COMOUTwave=${COMOUTwave:-$(compath.py -o ${NET}/${gfs_ver})/${CDUMP}.${PDY}/${cyc}/wave}
+
+fi # if [ ${DO_WAVE:-"NO"} = "YES" ]
+
+# ----
+
+# Define all job-specific work; restart conditions for GFS cycle come
+# from GDAS.
+rCDUMP=${CDUMP}
+[[ ${CDUMP} = "gfs" ]] && export rCDUMP="gdas"
+
+# Forecast length for GFS forecast
+if [ ${CDUMP} = "gfs" ]; then
+    
+    export FHMAX=${FHMAX_GFS}
+    export FHOUT=${FHOUT_GFS}
+    export FHMAX_HF=${FHMAX_HF_GFS}
+    export FHOUT_HF=${FHOUT_HF_GFS}
+
+else # if [ ${CDUMP} = "gfs" ]
+
+    export FHMAX_HF=0
+    export FHOUT_HF=0
+
+fi # if [ ${CDUMP} = "gfs" ]
+
+# ----
+
+# Launch the relevant task script.
+export PYTHONPATH=${HOMEgfs}/ush/python/pygw/src:${HOMEgfs}/ush/python/pyufs:${PYTHONPATH}
+$(which python) ${FSINITSH:-${HOMEgfs}/scripts/exglobal_ufs_forecast_init.py}
+
+# Collect the output (if any) from the executable.
+if [ -e "${pgmout}" ]; then
+
+    $(which cat) ${pgmout}
+
+fi # if [ -e "${pgmout}" ]
+
+# Clean up the task accordingly.
+
+cd ${DATAROOT}
+[[ ${KEEPDATA} = "NO" ]] && $(which rm) -rf ${DATA}
+
+exit 0
