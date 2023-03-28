@@ -58,6 +58,8 @@ export COM_WAVE_PREP_TMPL=${COM_BASE}'/wave/model_data/prep'
 export COM_WAVE_HISTORY_TMPL=${COM_BASE}'/wave/model_data/history'
 export COM_WAVE_GRID_TMPL=${COM_BASE}'/wave/products/gridded'
 export COM_WAVE_STATION_TMPL=${COM_BASE}'/wave/products/station'
+export COM_WAVE_GEMPAK_TMPL=${COM_BASE}'/wave/products/gempak'
+export COM_WAVE_WMO_TMPL=${COM_BASE}'/wave/products/wmo'
 
 export COM_OCEAN_HISTORY_TMPL=${COM_BASE}'/ocean/model_data/history'
 export COM_OCEAN_RESTART_TMPL=${COM_BASE}'/ocean/model_data/restart'
