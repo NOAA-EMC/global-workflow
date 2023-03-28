@@ -11,7 +11,7 @@ echo "BEGIN: config.com"
 #
 #       options:
 #           -r: Make variable read-only (same as `decalre -r`)
-#           -x: Mark variable for export (same as `declare -x`)
+#           -x: Mark variable for declare -rx (same as `declare -x`)
 #       var1, var2, etc: Variable names whose values will be generated from a template
 #                   and declared
 #       tmpl1, tmpl2, etc: Specify the template to use (default is "${var}_TMPL")
@@ -35,51 +35,51 @@ if [[ "${RUN_ENVIR:-emc}" == "nco" ]]; then
 else
     COM_OBS_TMPL='${ROTDIR}/${RUN}.${YMD}/${HH}/obs'
 fi
-export COM_OBS_TMPL
-export COM_OBSDMP_TMPL='${DMPDIR}/${DUMP}${DUMP_SUFFIX}.${YMD}/${HH}/atmos'
+declare -rx COM_OBS_TMPL
+declare -rx COM_OBSDMP_TMPL='${DMPDIR}/${DUMP}${DUMP_SUFFIX}.${YMD}/${HH}/atmos'
 
 COM_BASE='${ROTDIR}/${RUN}.${YMD}/${HH}/${MEMDIR}'
 
-export COM_TOP_TMPL='${ROTDIR}/${RUN}.${YMD}/${HH}'
+declare -rx COM_TOP_TMPL='${ROTDIR}/${RUN}.${YMD}/${HH}'
 
-export COM_ATMOS_INPUT_TMPL=${COM_BASE}'/atmos/model_data/input'
-export COM_ATMOS_RESTART_TMPL=${COM_BASE}'/atmos/model_data/restart'
-export COM_ATMOS_ANALYSIS_TMPL=${COM_BASE}'/atmos/model_data/analysis'
-export COM_ATMOS_HISTORY_TMPL=${COM_BASE}'/atmos/model_data/history'
-export COM_ATMOS_MASTER_TMPL=${COM_BASE}'/atmos/model_data/master'
-export COM_ATMOS_GRIB_TMPL=${COM_BASE}'/atmos/products/${RES}'
-export COM_ATMOS_BUFR_TMPL=${COM_BASE}'/atmos/products/bufr'
-export COM_ATMOS_GEMPAK_TMPL=${COM_BASE}'/atmos/products/gempak'
-export COM_ATMOS_GENESIS_TMPL=${COM_BASE}'/atmos/products/cyclone/genesis_vital'
-export COM_ATMOS_TRACK_TMPL=${COM_BASE}'/atmos/products/cyclone/tracks'
-export COM_ATMOS_GOES_TMPL=${COM_BASE}'/atmos/products/goes_sim'
-export COM_ATMOS_IMAGERY_TMPL=${COM_BASE}'/atmos/products/imagery'
-export COM_ATMOS_MINMON_TMPL=${COM_BASE}'/atmos/products/minmon'
-export COM_ATMOS_WAFS_TMPL=${COM_BASE}'/atmos/products/wafs'
-export COM_ATMOS_WMO_TMPL=${COM_BASE}'/atmos/products/wmo'
+declare -rx COM_ATMOS_INPUT_TMPL=${COM_BASE}'/atmos/model_data/input'
+declare -rx COM_ATMOS_RESTART_TMPL=${COM_BASE}'/atmos/model_data/restart'
+declare -rx COM_ATMOS_ANALYSIS_TMPL=${COM_BASE}'/atmos/model_data/analysis'
+declare -rx COM_ATMOS_HISTORY_TMPL=${COM_BASE}'/atmos/model_data/history'
+declare -rx COM_ATMOS_MASTER_TMPL=${COM_BASE}'/atmos/model_data/master'
+declare -rx COM_ATMOS_GRIB_TMPL=${COM_BASE}'/atmos/products/${RES}'
+declare -rx COM_ATMOS_BUFR_TMPL=${COM_BASE}'/atmos/products/bufr'
+declare -rx COM_ATMOS_GEMPAK_TMPL=${COM_BASE}'/atmos/products/gempak'
+declare -rx COM_ATMOS_GENESIS_TMPL=${COM_BASE}'/atmos/products/cyclone/genesis_vital'
+declare -rx COM_ATMOS_TRACK_TMPL=${COM_BASE}'/atmos/products/cyclone/tracks'
+declare -rx COM_ATMOS_GOES_TMPL=${COM_BASE}'/atmos/products/goes_sim'
+declare -rx COM_ATMOS_IMAGERY_TMPL=${COM_BASE}'/atmos/products/imagery'
+declare -rx COM_ATMOS_MINMON_TMPL=${COM_BASE}'/atmos/products/minmon'
+declare -rx COM_ATMOS_WAFS_TMPL=${COM_BASE}'/atmos/products/wafs'
+declare -rx COM_ATMOS_WMO_TMPL=${COM_BASE}'/atmos/products/wmo'
 
-export COM_WAVE_RESTART_TMPL=${COM_BASE}'/wave/model_data/restart'
-export COM_WAVE_PREP_TMPL=${COM_BASE}'/wave/model_data/prep'
-export COM_WAVE_HISTORY_TMPL=${COM_BASE}'/wave/model_data/history'
-export COM_WAVE_GRID_TMPL=${COM_BASE}'/wave/products/gridded'
-export COM_WAVE_STATION_TMPL=${COM_BASE}'/wave/products/station'
-export COM_WAVE_GEMPAK_TMPL=${COM_BASE}'/wave/products/gempak'
-export COM_WAVE_WMO_TMPL=${COM_BASE}'/wave/products/wmo'
+declare -rx COM_WAVE_RESTART_TMPL=${COM_BASE}'/wave/model_data/restart'
+declare -rx COM_WAVE_PREP_TMPL=${COM_BASE}'/wave/model_data/prep'
+declare -rx COM_WAVE_HISTORY_TMPL=${COM_BASE}'/wave/model_data/history'
+declare -rx COM_WAVE_GRID_TMPL=${COM_BASE}'/wave/products/gridded'
+declare -rx COM_WAVE_STATION_TMPL=${COM_BASE}'/wave/products/station'
+declare -rx COM_WAVE_GEMPAK_TMPL=${COM_BASE}'/wave/products/gempak'
+declare -rx COM_WAVE_WMO_TMPL=${COM_BASE}'/wave/products/wmo'
 
-export COM_OCEAN_HISTORY_TMPL=${COM_BASE}'/ocean/model_data/history'
-export COM_OCEAN_RESTART_TMPL=${COM_BASE}'/ocean/model_data/restart'
-export COM_OCEAN_INPUT_TMPL=${COM_BASE}'/ocean/model_data/input'
-export COM_OCEAN_ANALYSIS_TMPL=${COM_BASE}'/ocean/model_data/analysis'
-export COM_OCEAN_2D_TMPL=${COM_BASE}'/ocean/products/2D'
-export COM_OCEAN_3D_TMPL=${COM_BASE}'/ocean/products/3D'
-export COM_OCEAN_DAILY_TMPL=${COM_BASE}'/ocean/products/daily'
-export COM_OCEAN_XSECT_TMPL=${COM_BASE}'/ocean/products/xsect'
-export COM_OCEAN_GRIB_TMPL=${COM_BASE}'/ocean/products/${RES}'
+declare -rx COM_OCEAN_HISTORY_TMPL=${COM_BASE}'/ocean/model_data/history'
+declare -rx COM_OCEAN_RESTART_TMPL=${COM_BASE}'/ocean/model_data/restart'
+declare -rx COM_OCEAN_INPUT_TMPL=${COM_BASE}'/ocean/model_data/input'
+declare -rx COM_OCEAN_ANALYSIS_TMPL=${COM_BASE}'/ocean/model_data/analysis'
+declare -rx COM_OCEAN_2D_TMPL=${COM_BASE}'/ocean/products/2D'
+declare -rx COM_OCEAN_3D_TMPL=${COM_BASE}'/ocean/products/3D'
+declare -rx COM_OCEAN_DAILY_TMPL=${COM_BASE}'/ocean/products/daily'
+declare -rx COM_OCEAN_XSECT_TMPL=${COM_BASE}'/ocean/products/xsect'
+declare -rx COM_OCEAN_GRIB_TMPL=${COM_BASE}'/ocean/products/${RES}'
 
-export COM_ICE_INPUT_TMPL=${COM_BASE}'/ice/model_data/input'
-export COM_ICE_HISTORY_TMPL=${COM_BASE}'/ice/model_data/history'
-export COM_ICE_RESTART_TMPL=${COM_BASE}'/ice/model_data/restart'
+declare -rx COM_ICE_INPUT_TMPL=${COM_BASE}'/ice/model_data/input'
+declare -rx COM_ICE_HISTORY_TMPL=${COM_BASE}'/ice/model_data/history'
+declare -rx COM_ICE_RESTART_TMPL=${COM_BASE}'/ice/model_data/restart'
 
-export COM_CHEM_HISTORY_TMPL=${COM_BASE}'/chem/model_data/history'
+declare -rx COM_CHEM_HISTORY_TMPL=${COM_BASE}'/chem/model_data/history'
 
-export COM_MED_RESTART_TMPL=${COM_BASE}'/med/model_data/restart'
+declare -rx COM_MED_RESTART_TMPL=${COM_BASE}'/med/model_data/restart'
