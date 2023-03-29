@@ -127,7 +127,7 @@ fi
 # run executable
 export pgm=${JEDIVAREXE}
 . prep_step
-${APRUN_LANDANL} "${DATA}/fv3jedi_letkf.x" "${DATA}/${CDUMP}.t${cyc}z.landoi.yaml" 1>&1 2>&2
+${APRUN_LANDANL} "${DATA}/fv3jedi_letkf.x" "${DATA}/${CDUMP}.t${cyc}z.letkfoi.yaml" 1>&1 2>&2
 ################################################################################
 # add jedi increment
 WORKDIR=${ANLDIR}
