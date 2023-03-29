@@ -111,7 +111,7 @@ if [ "${ENSGRP}" -eq 0 ]; then
         fi
 
         set +e
-        ${TARCMD} -P -cvf "${ATARDIR}/${CDATE}/${RUN}.tar" $(cat "${ARCH_LIST}/${RUN}.txt")        
+        ${TARCMD} -P -cvf "${ATARDIR}/${CDATE}/${RUN}.tar" $(cat "${ARCH_LIST}/${RUN}.txt")
         status=$?
         ${HSICMD} chgrp rstprod "${ATARDIR}/${CDATE}/${RUN}.tar"
         ${HSICMD} chmod 640 "${ATARDIR}/${CDATE}/${RUN}.tar"
