@@ -103,14 +103,18 @@ if [ "${ENSGRP}" -eq 0 ]; then
 
 #--set the archiving command and create local directories, if necessary
         TARCMD="htar"
+        HSICMD="hsi"
         if [[ ${LOCALARCH} = "YES" ]]; then
             TARCMD="tar"
+            HSICMD=""
             [ ! -d "${ATARDIR}"/"${CDATE}" ] && mkdir -p "${ATARDIR}"/"${CDATE}"
         fi
 
         set +e
         ${TARCMD} -P -cvf "${ATARDIR}/${CDATE}/${RUN}.tar" $(cat "${ARCH_LIST}/${RUN}.txt")
         status=$?
+        ${HSICMD} chgrp rstprod "${ATARDIR}/${CDATE}/${RUN}.tar"
+        ${HSICMD} chmod 640 "${ATARDIR}/${CDATE}/${RUN}.tar"
         if [ "${status}" -ne 0 ] && [ "${CDATE}" -ge "${firstday}" ]; then
             echo "$(echo "${TARCMD}" | tr 'a-z' 'A-Z') ${CDATE} ${RUN}.tar failed"
             exit "${status}"
