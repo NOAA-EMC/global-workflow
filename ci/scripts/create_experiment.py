@@ -10,14 +10,14 @@ where ${HOMEgfs} is specified within the input yaml file.
  ${HOMEgfs}/workflow/setup_expt.py
  ${HOMEgfs}/workflow/setup_xml.py
 
-The yaml file are simply the argments for these two scripts.
+The yaml file are simply the arguments for these two scripts.
 After this scripts runs these two the use will have an experiment ready for launching
 
 Output
 ------
 
-Functionally an experement is setup as a result running the two scripts discribed above
-with an error code of 0 apon success.
+Functionally an experiment is setup as a result running the two scripts described above
+with an error code of 0 upon success.
 """
 
 import sys
@@ -61,10 +61,10 @@ def input_args():
     args: Namespace
 
         Namespace with the value of the file path to a yaml file from the key yaml
-
+:w
     """
 
-    description = """Single agument as a yaml file containing the
+    description = """Single argument as a yaml file containing the
     key value pairs as arguments to setup_expt.py
     """
 
