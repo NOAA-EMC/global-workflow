@@ -74,7 +74,8 @@ for pr in ${pr_list}; do
   mkdir -p "${pr_dir}"
   # call clone-build_ci to clone and build PR
   id=$("${GH}" pr view "${pr}" --repo "${REPO_URL}" --json id --jq '.id')
-  "${HOMEGFS_DIR}/ci/scripts/clone-build_ci.sh" -p "${pr}" -d "${pr_dir}" -o "${pr_dir}/output_${id}"
+  #"${HOMEGFS_DIR}/ci/scripts/clone-build_ci.sh" -p "${pr}" -d "${pr_dir}" -o "${pr_dir}/output_${id}"
+  echo "SKIPPING clone-build script"
   ci_status=$?
   if [[ ${ci_status} -eq 0 ]]; then
     #setup runtime env for correct python install
@@ -82,8 +83,8 @@ for pr in ${pr_list}; do
     module load "module_setup.${MACHINE_ID}"
     module list
     #setup space to put an experiment
-    export RUNTEST="${pr_dir}/RUNTEST"
-    rm -Rf "${RUNTEST:?}"/*
+    export RUNTESTS="${pr_dir}/RUNTESTS"
+    rm -Rf "${RUNTESTS:?}"/*
     #############################################################
     # loop over every yaml file in ${HOMEGFS_DIR}/ci/experiments
     # and create an run directory for each one for this PR loop
@@ -91,8 +92,6 @@ for pr in ${pr_list}; do
     for yaml_config in "${HOMEGFS_DIR}/ci/experiments/"*.yaml; do
       pslot=$(basename "${yaml_config}" .yaml) || true
       export pslot
-      mkdir -p "${RUNTEST}/${pslot}/COMROT"
-      mkdir -p "${RUNTEST}/${pslot}/EXPDIR"
       "${HOMEGFS_DIR}/ci/scripts/create_experiment.py" --yaml "${HOMEGFS_DIR}/ci/experiments/${pslot}.yaml" --dir "${pr_dir}/global-workflow"
       ci_status=$?
       if [[ ${ci_status} -eq 0 ]]; then

@@ -4,8 +4,8 @@ experiment:
 arguments:
   app: ATM
   resdet: 96
-  comrot: ${RUNTEST}/EXPDIRS/${pslot}/COMROT
-  expdir: ${RUNTEST}/EXPDIRS/${pslot}/EXPERMENT
+  comrot: ${RUNTESTS}/${pslot}/COMROT
+  expdir: ${RUNTESTS}/${pslot}/EXPERMENT
   icsdir: ${ICSDIR_ROOT}/C96C48
   idate: 2021122018
   edate: 2021122100
