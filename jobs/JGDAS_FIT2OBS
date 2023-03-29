@@ -12,12 +12,18 @@ export CDATE=${CDATE:-${PDY}${cyc}}
 export CDUMP=${CDUMP:-${RUN:-"gdas"}}
 
 export xdate=$(${NDATE} -${VBACKUP_FITS} ${CDATE})
+export CDATE=${xdate} # Reset CDATE to xdate for lookback
 export vday=$(echo ${xdate} | cut -c1-8)
 export vcyc=$(echo ${xdate} | cut -c9-10)
 
 export COM_INA=${ROTDIR}/gdas.${vday}/${vcyc}/atmos
 export COM_INF='$ROTDIR/vrfyarch/gfs.$fdy/$fzz'
-export COM_PRP='$ROTDIR/gdas.$pdy/$cyc/obs'
+export COM_PRP=${ROTDIR}/gdas.${vday}/${vcyc}/obs
+
+export PRPI=${COM_PRP}/${CDUMP}.t${vcyc}z.prepbufr
+export sig1=${COM_INA}/${CDUMP}.t${vcyc}z.atmanl.nc
+export sfc1=${COM_INA}/${CDUMP}.t${vcyc}z.atmanl.nc
+export CNVS=${COM_INA}/${CDUMP}.t${vcyc}z.cnvstat
 
 export OUTPUT_FILETYPE=${OUTPUT_FILETYPE:-netcdf}
 
@@ -28,28 +34,44 @@ export HORZ_DIR=${ARCDIR}/horiz
 export COMLOX=${DATA}/fitx
 [[ ! -d "${COMLOX}" ]] && mkdir -p "${COMLOX}"
 
-###############################################################
-# RUN FIT2OBS VERIFICATION
-###############################################################
+echo "echo err_chk">${DATA}/err_chk; chmod 755 ${DATA}/err_chk
+echo "echo postmsg">${DATA}/postmsg; chmod 755 ${DATA}/postmsg
 
-if [[ ${xdate} -ge ${SDATE} ]]; then # Run FIT2OBS
+##############################################
+# Check spinup and available inputs
+##############################################
 
-  module load netcdf/4.7.0
+if [[ ${xdate} -gt ${SDATE} ]]; then
+  for file in ${PRPI} ${sig1} ${sfc1} ${CNVS}; do
+    if [ ! -f ${file} ]; then
+      echo "FATAL ERROR: FILE MISSING: ${file}"
+      exit 1
+    fi
+  done
+
+  ##############################################
+  # RUN FIT2OBS VERIFICATION
+  ##############################################
+
   "${fitdir}/batrun/excfs_gdas_vrfyfits.sh.ecf"
   status=$?
   [[ ${status} -ne 0 ]] && exit "${status}"
 
-fi
+  ##############################################
+  # End JOB SPECIFIC work
+  ##############################################
 
-##############################################
-# End JOB SPECIFIC work
-##############################################
+  ##############################################
+  # Final processing
+  ##############################################
+  if [[ -e "${pgmout}" ]] ; then
+    cat "${pgmout}"
+  fi
 
-##############################################
-# Final processing
-##############################################
-if [[ -e "${pgmout}" ]] ; then
-  cat "${pgmout}"
+else
+
+  echo "Too early for FIT2OBS to run. Exiting."
+
 fi
 
 ##########################################
