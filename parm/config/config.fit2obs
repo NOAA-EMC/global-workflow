@@ -12,13 +12,12 @@ export fit_ver="newm.1.7"
 export fitdir="${BASE_GIT}/verif/global/Fit2Obs/${fit_ver}"
 
 export HOMEcfs=${fitdir}
-export EXECcfs=${HOMEcfs}/exec
-export USHcfs=${HOMEcfs}/ush
+export EXECcfs=${HOMEcfs}/install/exec
+export USHcfs=${HOMEcfs}/install/ush
 
 export PRVT=${HOMEgfs}/fix/gsi/prepobs_errtable.global
 export HYBLEVS=${HOMEgfs}/fix/am/global_hyblev.l${LEVS}.txt
 
-export CDUMPFCST="gfs"            # Fit-to-obs verifying dump
 export VBACKUP_FITS=24
 export OUTPUT_FILETYPE="netcdf"
 export CONVNETC="YES"
