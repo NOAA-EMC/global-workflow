@@ -84,7 +84,9 @@ class Analysis(Task):
         bias_dict: Dict
             a dictionary containing the list of observation bias files to copy for FileHandler
         """
-        obs_list_config = YAMLFile(path=self.config['OBS_LIST'])
+        logger.debug(f"OBS_LIST: {self.task_config['OBS_LIST']}")
+        obs_list_config = parse_j2yaml(self.task_config["OBS_LIST"], self.task_config)
+        logger.debug(f"obs_list_config: {obs_list_config}")
         # get observers from master dictionary
         observers = obs_list_config['observers']
         copylist = []
