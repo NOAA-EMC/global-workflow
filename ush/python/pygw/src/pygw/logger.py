@@ -215,7 +215,7 @@ class Logger:
 
         # Define the base-class attributes.
         self.name = name
-        self.level = level
+        self.level = level.upper()
         self.format = _format
         self.colored_log = colored_log
 
@@ -223,8 +223,8 @@ class Logger:
         if level is None:
             level = os.environ.get("LOGGING_LEVEL")
 
-            if level is None:
-                level = Logger.DEFAULT_LEVEL
+        if level is None:
+            level = Logger.DEFAULT_LEVEL
 
         self.level = level.upper()
 
