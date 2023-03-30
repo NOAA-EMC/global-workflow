@@ -8,8 +8,6 @@ source "${HOMEgfs}/ush/jjob_header.sh" -e "atmensanlrun" -c "base atmensanl atme
 ##############################################
 # Set variables used in the script
 ##############################################
-GDATE=$(date +%Y%m%d%H -d "${PDY} ${cyc} - ${assim_freq} hours")
-GDUMP="gdas"
 
 ##############################################
 # Begin JOB SPECIFIC work
