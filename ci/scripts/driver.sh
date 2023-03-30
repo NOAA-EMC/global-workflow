@@ -18,7 +18,7 @@ set -eux
 #################################################################
 # TODO using static build for GitHub CLI until fixed in HPC-Stack
 #################################################################
-export GH=/home/Terry.McGuinness/bin/gh
+export GH=${HOME}/bin/gh
 
 ################################################################
 # Setup the reletive paths to scripts and PS4 for better logging 
@@ -61,11 +61,16 @@ else
  echo "no PRs to process .. exit"
  exit 0
 fi 
-
+ 
 #############################################################
 # Loop throu all open PRs
 # Clone, checkout, build, creat set of experiments, for each
 #############################################################
+
+#first setup runtime env for correct python install and git
+module use "${HOMEGFS_DIR}/modulefiles"
+module load "module_ci.${MACHINE_ID}"
+module list
 
 for pr in ${pr_list}; do
   "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "${MACHINE_ID^}-CI" --add-label "${MACHINE_ID^}-Running"
@@ -74,14 +79,9 @@ for pr in ${pr_list}; do
   mkdir -p "${pr_dir}"
   # call clone-build_ci to clone and build PR
   id=$("${GH}" pr view "${pr}" --repo "${REPO_URL}" --json id --jq '.id')
-  #"${HOMEGFS_DIR}/ci/scripts/clone-build_ci.sh" -p "${pr}" -d "${pr_dir}" -o "${pr_dir}/output_${id}"
-  echo "SKIPPING clone-build script"
+  "${HOMEGFS_DIR}/ci/scripts/clone-build_ci.sh" -p "${pr}" -d "${pr_dir}" -o "${pr_dir}/output_${id}"
   ci_status=$?
   if [[ ${ci_status} -eq 0 ]]; then
-    #setup runtime env for correct python install
-    module use "${pr_dir}/global-workflow/modulefiles"
-    module load "module_setup.${MACHINE_ID}"
-    module list
     #setup space to put an experiment
     export RUNTESTS="${pr_dir}/RUNTESTS"
     rm -Rf "${RUNTESTS:?}"/*
