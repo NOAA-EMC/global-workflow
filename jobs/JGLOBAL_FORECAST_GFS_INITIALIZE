@@ -1,0 +1,62 @@
+#! /usr/bin/env bash
+
+source "${HOMEgfs}/ush/preamble.sh"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "fcst" -c "base fcst"
+
+##############################################
+# Set variables used in the script
+##############################################
+# Set wave variables
+if [ ${DO_WAVE:-"NO"} = "YES" ]; then
+  # WAVE component directory
+  export CDUMPwave=${CDUMPwave:-${CDUMP}wave}
+  export COMINwave=${COMINwave:-$(compath.py ${envir}/${NET}/${gfs_ver})/${CDUMP}.${PDY}/${cyc}/wave}
+  export COMOUTwave=${COMOUTwave:-$(compath.py -o ${NET}/${gfs_ver})/${CDUMP}.${PDY}/${cyc}/wave}
+fi
+
+##############################################
+# Begin JOB SPECIFIC work
+##############################################
+
+# Restart conditions for GFS cycle come from GDAS
+rCDUMP=${CDUMP}
+[[ ${CDUMP} = "gfs" ]] && export rCDUMP="gdas"
+
+# Forecast length for GFS forecast
+if [ ${CDUMP} = "gfs" ]; then
+    export FHMAX=${FHMAX_GFS}
+    export FHOUT=${FHOUT_GFS}
+    export FHMAX_HF=${FHMAX_HF_GFS}
+    export FHOUT_HF=${FHOUT_HF_GFS}
+else
+    export FHMAX_HF=0
+    export FHOUT_HF=0
+fi
+
+
+###############################################################
+# Run relevant exglobal script
+$(which python) ${HOMEgfs}/scripts/exglobal_gfs_forecast_initialize.py
+
+exit 9999
+
+
+##############################################
+# End JOB SPECIFIC work
+##############################################
+
+##############################################
+# Final processing
+##############################################
+if [ -e "${pgmout}" ] ; then
+  cat ${pgmout}
+fi
+
+##########################################
+# Remove the Temporary working directory
+##########################################
+cd ${DATAROOT}
+[[ ${KEEPDATA} = "NO" ]] && rm -rf ${DATA}
+
+
+exit 0

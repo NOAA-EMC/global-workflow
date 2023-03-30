@@ -4,14 +4,18 @@ import os
 from pygfs.task.forecast import Forecast
 from pygfs.exceptions import GFSError
 from typing import Dict, List
-from pygw.logger import logit
+from pygw.logger import Logger, logit
 
 from pygw.attrdict import AttrDict
 
 # ----
 
-# The following attributes are mandatory for fixed-file syncing; this
-# should not be changed unless absolutely necessary.
+logger = Logger(name="GFS", colored_log=True)
+
+# ----
+
+# The following attributes are mandatory for fixed-file syncing;
+# this should not be changed unless absolutely necessary.
 FIXED_MAND_ATTR_DICT = {"DATA": "DATA",
                         "FIXgfs": "FIXgfs",
                         "HOMEgfs": "HOMEgfs",
@@ -21,16 +25,14 @@ FIXED_MAND_ATTR_DICT = {"DATA": "DATA",
 
 # ----
 
-logger = Logger().build_logger()
 
-# ----
-
-
+@logit(logger)
 class GFS(Forecast):
     """
 
     """
 
+    @logit(logger)
     def __init__(self: Forecast, config: Dict):
         """
         Description
@@ -47,7 +49,7 @@ class GFS(Forecast):
 
     @staticmethod
     @logit(logger)
-    def __fixedfiles(config: Dict, logger: object,
+    def __fixedfiles(config: Dict, logger: object, fixed_path: str,
                      fixed_list: List = None) -> Dict:
         """
         Description
@@ -170,6 +172,7 @@ class GFS(Forecast):
 
         return fixedfiles_dict
 
+    @logit(logger)
     def initialize(self: Forecast):
         """
 
