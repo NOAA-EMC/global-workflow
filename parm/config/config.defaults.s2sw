@@ -14,25 +14,6 @@ FHOUT_HF_GFS=-1
 min_seaice="1.0e-6"
 use_cice_alb=".true."
 
-# config.ufs  # TODO: This is hard-wired for P8 and needs to be refactored.  For now, use case C384
-# TODO: Q. for @jessicameixner-noaa: can we make these defaults in config.ufs for C384?
-case "${CASE}" in
-  "C384")
-    DELTIM=300
-    layout_x_gfs=8
-    layout_y_gfs=8
-    WRITE_GROUP_GFS=1
-    WRTTASK_PER_GROUP_GFS=24
-    #The settings below will result in S2SWA running 35 days under 8 hours wallclock on hera
-    #layout_x_gfs=24
-    #layout_y_gfs=16
-    #WRTTASK_PER_GROUP_GFS=86
-    ;;
-  *)  # All other ${CASE}
-    echo "config.defaults.s2sw: Using default settings for CASE=${CASE}"
-    ;;
-esac
-
 # config.wave
 
 waveGRD='mx025'
