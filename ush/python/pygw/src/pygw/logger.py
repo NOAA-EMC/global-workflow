@@ -75,10 +75,7 @@ class Logger:
         """
 
         if level is None:
-            level = os.environ.get("LOGGING_LEVEL")
-
-        if level is None:
-            level = Logger.DEFAULT_LEVEL
+            level = os.environ.get("LOGGING_LEVEL", Logger.DEFAULT_LEVEL)
 
         self.name = name
         self.level = level.upper()
