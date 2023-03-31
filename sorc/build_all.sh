@@ -90,6 +90,11 @@ fi
 source ./partial_build.sh ${_verbose_opt} ${_partial_opt}
 # shellcheck disable=
 
+# Disable gldas on Jet
+if [[ ${MACHINE_ID} =~ jet.* ]]; then
+   Build_gldas="false"
+fi
+
 #------------------------------------
 # Exception Handling Init
 #------------------------------------
