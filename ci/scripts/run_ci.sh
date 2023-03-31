@@ -30,7 +30,10 @@ case ${MACHINE_ID} in
    ;;
 esac
 
-module load rocoto
+module use "${HOMEGFS_DIR}/modulefiles"
+module load "module_ci.${MACHINE_ID}"
+module list
+
 rocotorun=$(which rocotorun)
 if [[ -z ${var+x} ]]; then
   echo "rocotorun being used from ${rocotorun}"
