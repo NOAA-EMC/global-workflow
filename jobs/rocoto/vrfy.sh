@@ -69,19 +69,20 @@ if [[ ${VRFYFITS} = "YES" && ${CDUMP} = "${CDFNL}" && ${CDATE} != "${SDATE}" ]];
     export TMPDIR="${RUNDIR}/${CDATE}/${CDUMP}"
     [[ ! -d ${TMPDIR} ]] && mkdir -p "${TMPDIR}"
 
-    xdate=$(${NDATE} -"${VBACKUP_FITS} ${CDATE}")
+    xdate=$(${NDATE} -"${VBACKUP_FITS}" "${CDATE}")
 
     vday=$(echo "${xdate}" | cut -c1-8)
     vcyc=$(echo "${xdate}" | cut -c9-10)
     export vcyc
+
     export COMDAY=${ROTDIR}/logs/${xdate}
     export COM_INA=${ROTDIR}/gdas.${vday}/${vcyc}/atmos
-    export COM_INF="${ROTDIR}/vrfyarch/gfs.${fdy}/${fzz}"
-    export COM_PRP="${ROTDIR}/gdas.${pdy}/${cyc}/obs"
+    export COM_INF='${ROTDIR}/vrfyarch/gfs.${fdy}/${fzz}'
+    export COM_PRP='${ROTDIR}/gdas.${pdy}/${cyc}/obs'
 
     export OUTPUT_FILETYPE_SAVE=${OUTPUT_FILETYPE}
 
-    ${PREPQFITSH} "${PSLOT} ${xdate} ${ROTDIR} ${ARCDIR} ${TMPDIR}"
+    ${PREPQFITSH} "${PSLOT}" "${xdate}" "${ROTDIR}" "${ARCDIR}" "${TMPDIR}"
 
     export OUTPUT_FILETYPE=${OUTPUT_FILETYPE_SAVE}
 
