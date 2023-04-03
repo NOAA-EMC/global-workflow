@@ -993,6 +993,20 @@ class Tasks:
 
         return task
 
+    def fit2obs(self):
+        deps = []
+        dep_dict = {'type': 'metatask', 'name': f'{self.cdump}post'}
+        deps.append(rocoto.add_dependency(dep_dict))
+        dependencies = rocoto.create_dependency(dep=deps)
+
+        cycledef = 'gdas_half,gdas' if self.cdump in ['gdas'] else self.cdump
+
+        resources = self.get_resource('fit2obs')
+        task = create_wf_task('fit2obs', resources, cdump=self.cdump, envar=self.envars, dependency=dependencies,
+                              cycledef=cycledef)
+
+        return task
+
     def metp(self):
         deps = []
         dep_dict = {'type': 'metatask', 'name': f'{self.cdump}post'}
@@ -1019,6 +1033,9 @@ class Tasks:
         deps = []
         if self.app_config.do_vrfy:
             dep_dict = {'type': 'task', 'name': f'{self.cdump}vrfy'}
+            deps.append(rocoto.add_dependency(dep_dict))
+        if self.app_config.do_fit2obs and self.cdump in ['gdas']:
+            dep_dict = {'type': 'task', 'name': f'{self.cdump}fit2obs'}
             deps.append(rocoto.add_dependency(dep_dict))
         if self.app_config.do_metp and self.cdump in ['gfs']:
             dep_dict = {'type': 'metatask', 'name': f'{self.cdump}metp'}
