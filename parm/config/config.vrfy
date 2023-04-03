@@ -6,7 +6,7 @@
 echo "BEGIN: config.vrfy"
 
 # Get task specific resources
-. "${EXPDIR}/config.resources vrfy"
+. ${EXPDIR}/config.resources vrfy
 
 export VDUMP="gfs"                # Verifying dump
 export CDUMPFCST="gdas"           # Fit-to-obs with GDAS/GFS prepbufr
