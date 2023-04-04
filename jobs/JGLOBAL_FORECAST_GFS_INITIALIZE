@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 
-source "${HOMEgfs}/ush/preamble.sh"
+source "${HOMEgfs}/ush/preamble.testing.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "fcst" -c "base fcst"
 
 ##############################################
