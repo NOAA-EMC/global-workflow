@@ -69,7 +69,7 @@ class UFSWM:
 
     """
 
-    def __init__(self, config: Dict):
+    def __init__(self, config: Dict, forecast_config: Dict):
         """
         Description
         -----------
@@ -80,13 +80,14 @@ class UFSWM:
 
         # Define the base-class attributes.
         self.config = config
+        self.forecast_config = forecast_config
         self.logger = Logger(level=self.config.loglev, colored_log=True)
 
         # Configure the respective forecast models.
         self.atmos_grid = self.__atmos_grid_setup(
             atm_res=self.config.CASE,
             atm_levs=self.config.LEVS,
-            atm_ntiles=self.config.ntiles,
+            atm_ntiles=self.forecast_config.ntiles,
             logger=self.logger,
         )
 
@@ -127,7 +128,7 @@ class UFSWM:
         Returns
         -------
 
-        atm_config: Dict
+        atm_config: Dict[str, Any]
 
             A Python dictionary containing the atmosphere model
             configuration established via the parameter attributes.

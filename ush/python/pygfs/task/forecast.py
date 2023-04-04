@@ -1,10 +1,23 @@
+
+import os
 from typing import Dict, List
 
 from pygw.task import Task
 from pygw.logger import Logger
 
+from pygw.attrdict import AttrDict
+
 from pygfs.ufswm import UFSWM
 from pygfs.exceptions import ForecastError
+
+from pygw.yaml_file import YAMLFile, parse_yamltmpl
+
+from pygw.file_utils import FileHandler
+
+# ----
+
+# Define the valid forecast model list.
+VALID_MODEL_LIST = ["gfs"]
 
 # ----
 
@@ -29,36 +42,48 @@ class Forecast(Task):
         """
 
         # Define the base-class attributes.
-        super().__init__(config, *args, *kwargs)
-        self.config.model = model
+        super().__init__(config=config, *args, *kwargs)
+        self.model = model
+        self.fcst_config = AttrDict()
 
         # Define the appplication logger object.
         if getattr(self.config, "loglev") is None:
             self.config.loglev = "info"
-        self.logger = Logger(level=self.config.loglev, colored_log=True)
 
-        # Update the configuration accordingly.
-        if self.config.model.lower() == "gfs":
-            self.config.ntiles = 6
+        self.logger = Logger(
+            level=self.config.loglev, colored_log=True)
 
-        if self.config.model.lower() != "gfs":
+        # Check that the specified forecast model is supported;
+        # proceed accordingly.
+        if model.lower() not in VALID_MODEL_LIST:
+            msg = f"Forecast model {model} is not (yet) supported. Aborting!!!"
             raise ForecastError(msg=msg)
 
-        self.ufswm = UFSWM(config=self.config)
+        try:
+            self.fcst_config.config = YAMLFile(
+                path=self.config.FCSTYAML).as_dict()["forecast"]
+        except KeyError:
+            msg = ("The attribute (e.g., YAML-key) `forecast` could not be determined "
+                   f"from YAML-formatted file {self.config.FCSTYAML}. Aborting!!!"
+                   )
+            raise ForecastError(msg=msg)
 
-    def get_fixedfiles_info(self: Task, app: str) -> List:
-        """ """
-
-        fixed_files_list = [
-            item for item in self.config.keys() if f"FIX{app}" in item]
-
-        if len(fixed_files_list) == 0:
-            fixed_files_info = None
-
-        return fixed_files_list
-
-    def sync_fixedfiles(self: Task, fixedfiles_dict: Dict) -> None:
-        """ 
+    def build_dirtree(self: Task) -> None:
+        """
 
 
         """
+
+        fixed_yaml = self.fcst_config.config.fixed_file_yaml
+        fixed_data = parse_yamltmpl(
+            path=fixed_yaml, data=self.fcst_config)
+
+        # Build the directory tree and link the fixed files to the
+        # working directory.
+        FileHandler(fixed_data.dirtree_atmos).sync()
+        FileHandler(fixed_data.fix_atmos).sync()
+        FileHandler(fixed_data.fix_land).sync()
+
+        if self.fcst_config.coupled:
+            FileHandler(fixed_data.dirtree_ocean).sync()
+            FileHandler(fixed_data.fix_ocean).sync()
