@@ -635,10 +635,10 @@ WW3_postdet() {
 
   if [ $waveMULTIGRID = ".true." ]; then
     for wavGRD in $waveGRD ; do
-      ${NLN} "${COM_WAVE_PREP}/${wavprfx}.log.${wavGRD}.${PDY}${cyc}" "log.${wavGRD}"
+      ${NLN} "${COM_WAVE_HISTORY}/${wavprfx}.log.${wavGRD}.${PDY}${cyc}" "log.${wavGRD}"
     done
   else 
-    ${NLN} "${COM_WAVE_PREP}/${wavprfx}.log.${waveGRD}.${PDY}${cyc}" "log.ww3"
+    ${NLN} "${COM_WAVE_HISTORY}/${wavprfx}.log.${waveGRD}.${PDY}${cyc}" "log.ww3"
   fi
 
   if [ "$WW3ICEINP" = "YES" ]; then
