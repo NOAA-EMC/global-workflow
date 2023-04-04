@@ -3,12 +3,8 @@
 source "${HOMEgfs}/ush/preamble.sh"
 source "${HOMEgfs}/ush/jjob_header.sh" -e "wavepostbndpnt" -c "base wave wavepostsbs wavepostbndpnt"
 
-export COMPONENT="wave"
-
 # Add default errchk = err_chk
 export errchk=${errchk:-err_chk}
-
-export CDATE=${PDY}${cyc}
 
 export MP_PULSE=0
 
@@ -19,26 +15,24 @@ export USHwave=${USHwave:-${HOMEgfs}/ush}
 export EXECwave=${EXECwave:-${HOMEgfs}/exec}
 
 # Set COM Paths and GETGES environment
-export COMIN=${COMIN:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENT}}
-export COMOUT=${COMOUT:-${ROTDIR}/${CDUMP}.${PDY}/${cyc}/${COMPONENT}}
+YMD=${PDY} HH=${cyc} generate_com -rx COM_WAVE_PREP COM_WAVE_HISTORY COM_WAVE_STATION
 
-mkdir -p ${COMOUT}/station
-
+if [[ ! -d ${COM_WAVE_STATION} ]]; then mkdir -p "${COM_WAVE_STATION}"; fi
 
 # Set wave model ID tag to include member number
 # if ensemble; waveMEMB var empty in deterministic
 membTAG='p'
 if [ "${waveMEMB}" == "00" ]; then membTAG='c'; fi
 export membTAG
-export WAV_MOD_TAG=${CDUMP}wave${waveMEMB}
+export WAV_MOD_TAG=${RUN}wave${waveMEMB}
 
 export CFP_VERBOSE=1
 
 export FHMAX_WAV_PNT=180
-if [ ${FHMAX_WAV} -lt ${FHMAX_WAV_PNT} ] ; then export FHMAX_WAV_IBP=${FHMAX_WAV} ; fi
+if [ ${FHMAX_WAV} -lt ${FHMAX_WAV_PNT} ] ; then export FHMAX_WAV_PNT=${FHMAX_WAV} ; fi
 export DOSPC_WAV='YES' # Spectral post
 export DOBLL_WAV='NO' # Bulletin post
-export DOBNDPNT_WAV='YES'  #not boundary points
+export DOBNDPNT_WAV='YES'  # Do boundary points
 
 # Execute the Script
 ${HOMEgfs}/scripts/exgfs_wave_post_pnt.sh

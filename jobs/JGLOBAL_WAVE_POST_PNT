@@ -21,8 +21,6 @@ if [[ ! -d ${COM_WAVE_STATION} ]]; then mkdir -p "${COM_WAVE_STATION}"; fi
 
 # Set wave model ID tag to include member number
 # if ensemble; waveMEMB var empty in deterministic
-# Set wave model ID tag to include member number
-# if ensemble; waveMEMB var empty in deterministic
 membTAG='p'
 if [ "${waveMEMB}" == "00" ]; then membTAG='c'; fi
 export membTAG
