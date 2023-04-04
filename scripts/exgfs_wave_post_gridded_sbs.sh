@@ -157,7 +157,7 @@ source "$HOMEgfs/ush/preamble.sh"
         echo '*********************************************** '
         echo ' '
         set_trace
-        echo "$WAV_MOD_TAG post $date $cycle : GRINT template file missing."
+        echo "${WAV_MOD_TAG} post ${PDY} ${cycle} : GRINT template file missing."
         exit_code=1
         DOGRI_WAV='NO'
       fi
@@ -266,7 +266,7 @@ source "$HOMEgfs/ush/preamble.sh"
           echo '*************************************************** '
           echo ' '
           set_trace
-          echo "$WAV_MOD_TAG post $grdID $date $cycle : field output missing."
+          echo "${WAV_MOD_TAG} post ${grdID} ${PDY} ${cycle} : field output missing."
           err=3; export err;${errchk}
           exit $err
         fi

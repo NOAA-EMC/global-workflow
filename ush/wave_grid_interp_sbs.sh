@@ -175,9 +175,9 @@ source "$HOMEgfs/ush/preamble.sh"
   if [ "$SENDCOM" = 'YES' ]
   then
     set +x
-    echo "   Saving GRID file as ${COM_WAVE_PREP}/$WAV_MOD_TAG.out_grd.$grdID.${PDY}${cyc}"
+    echo "   Saving GRID file as ${COM_WAVE_PREP}/${WAV_MOD_TAG}.out_grd.${grdID}.${PDY}${cyc}"
     set_trace
-    cp ${DATA}/output_${ymdh}0000/out_grd.$grdID ${COM_WAVE_PREP}/$WAV_MOD_TAG.out_grd.$grdID.${PDY}${cyc}
+    cp "${DATA}/output_${ymdh}0000/out_grd.${grdID}" "${COM_WAVE_PREP}/${WAV_MOD_TAG}.out_grd.${grdID}.${PDY}${cyc}"
 
 #    if [ "$SENDDBN" = 'YES' ]
 #    then
