@@ -710,7 +710,7 @@ WW3_nml() {
   echo "SUB ${FUNCNAME[0]}: Copying input files for WW3"
   WAV_MOD_TAG=${RUN}wave${waveMEMB}
   if [ "${USE_WAV_RMP:-YES}" = "YES" ]; then
-    if (( $( ls -1 $FIXwave/rmp_src_to_dst_conserv_* > /dev/null | wc -l) > 0 )); then
+    if (( $( ls -1 $FIXwave/rmp_src_to_dst_conserv_* 2> /dev/null | wc -l) > 0 )); then
       for file in $(ls $FIXwave/rmp_src_to_dst_conserv_*) ; do
         $NLN $file $DATA/
       done
