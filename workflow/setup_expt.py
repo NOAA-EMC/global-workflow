@@ -7,6 +7,7 @@ Entry point for setting up an experiment in the global-workflow
 import os
 import glob
 import shutil
+import warnings
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
 from hosts import Host
@@ -57,12 +58,16 @@ def fill_COMROT_cycled(host, inputs):
 
     comrot = os.path.join(inputs.comrot, inputs.pslot)
 
-    do_ocean = do_ice = do_med = False
+    do_ocean = do_ice = do_med = do_aerosols = False
+
     if inputs.app in ['S2S', 'S2SW']:
         do_ocean = do_ice = do_med = True
 
+    if inputs.app in ['ATMA']:
+        do_aerosols = True
+
     if inputs.icsdir is None:
-        print("User did not provide path to stage initial conditions in COMROT")
+        warnings.warn("User did not provide '--icsdir' to stage initial conditions")
         return
 
     rdatestr = datetime_to_YMDH(inputs.idate - to_timedelta('T06H'))
@@ -174,6 +179,17 @@ def fill_COMROT_cycled(host, inputs):
         detdir = f'{inputs.cdump}.{rdatestr[:8]}/{rdatestr[8:]}'
         dst_dir = os.path.join(comrot, detdir, 'med', dst_med_dir)
         src_dir = os.path.join(inputs.icsdir, detdir, 'med', src_med_dir)
+        makedirs_if_missing(dst_dir)
+        link_files_from_src_to_dst(src_dir, dst_dir)
+
+    # Link aerosol files
+    if do_aerosols:
+        if inputs.start in ['warm']:
+            detdir = f'{inputs.cdump}.{rdatestr[:8]}/{rdatestr[8:]}'
+        elif inputs.start in ['cold']:
+            detdir = f'{inputs.cdump}.{idatestr[:8]}/{idatestr[8:]}'
+        dst_dir = os.path.join(comrot, detdir, 'chem', chem_dir)
+        src_dir = os.path.join(inputs.icsdir, detdir, 'chem', chem_dir)
         makedirs_if_missing(dst_dir)
         link_files_from_src_to_dst(src_dir, dst_dir)
 

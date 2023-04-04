@@ -243,8 +243,8 @@ EOF
   if [ $imp_physics -eq 8 ]; then
     $NLN $FIX_AM/CCN_ACTIVATE.BIN  $DATA/CCN_ACTIVATE.BIN
     $NLN $FIX_AM/freezeH2O.dat     $DATA/freezeH2O.dat
-    $NLN $FIX_AM/qr_acr_qg.dat     $DATA/qr_acr_qg.dat
-    $NLN $FIX_AM/qr_acr_qs.dat     $DATA/qr_acr_qs.dat
+    $NLN $FIX_AM/qr_acr_qgV2.dat   $DATA/qr_acr_qgV2.dat
+    $NLN $FIX_AM/qr_acr_qsV2.dat   $DATA/qr_acr_qsV2.dat
   fi
 
   $NLN $FIX_AM/${O3FORC}                         $DATA/global_o3prdlos.f77

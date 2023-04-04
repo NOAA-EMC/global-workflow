@@ -104,15 +104,19 @@ if [ "${ENSGRP}" -eq 0 ]; then
 
         #--set the archiving command and create local directories, if necessary
         TARCMD="htar"
+        HSICMD="hsi"
         if [[ ${LOCALARCH} = "YES" ]]; then
             TARCMD="tar"
+            HSICMD=""
             if [[ ! -d "${ATARDIR}/${PDY}${cyc}" ]]; then mkdir -p "${ATARDIR}/${PDY}${cyc}"; fi
         fi
 
         set +e
         ${TARCMD} -P -cvf "${ATARDIR}/${PDY}${cyc}/${RUN}.tar" $(cat "${ARCH_LIST}/${RUN}.txt")
         status=$?
-        if [[ "${status}" -ne 0 ]] && [[ "${PDY}${cyc}" -ge "${firstday}" ]]; then
+        ${HSICMD} chgrp rstprod "${ATARDIR}/${PDY}${cyc}/${RUN}.tar"
+        ${HSICMD} chmod 640 "${ATARDIR}/${PDY}${cyc}/${RUN}.tar"
+        if (( status != 0 && ${PDY}${cyc} >= firstday )); then
             echo "FATAL ERROR: ${TARCMD} ${PDY}${cyc} ${RUN}.tar failed"
             exit "${status}"
         fi

@@ -120,8 +120,10 @@ if [[ ${HPSSARCH} = "YES" || ${LOCALARCH} = "YES" ]]; then
 
     # --set the archiving command and create local directories, if necessary
     TARCMD="htar"
+    HSICMD="hsi"
     if [[ ${LOCALARCH} = "YES" ]]; then
        TARCMD="tar"
+       HSICMD=''
        [[ ! -d "${ATARDIR}/${PDY}${cyc}" ]] && mkdir -p "${ATARDIR}/${PDY}${cyc}"
        [[ ! -d "${ATARDIR}/${CDATE_MOS}" ]] && [[ -d "${ROTDIR}/gfsmos.${PDY_MOS}" ]] && [[ "${cyc}" -eq 18 ]] && mkdir -p "${ATARDIR}/${CDATE_MOS}"
     fi
@@ -262,8 +264,15 @@ if [[ ${HPSSARCH} = "YES" || ${LOCALARCH} = "YES" ]]; then
         set +e
         ${TARCMD} -P -cvf "${ATARDIR}/${PDY}${cyc}/${targrp}.tar" $(cat "${ARCH_LIST}/${targrp}.txt")
         status=$?
+        case ${targrp} in
+            'gdas'|'gdas_restarta')
+                ${HSICMD} chgrp rstprod "${ATARDIR}/${CDATE}/${targrp}.tar"
+                ${HSICMD} chmod 640 "${ATARDIR}/${CDATE}/${targrp}.tar"
+                ;;
+            *) ;;
+        esac
         if [ "${status}" -ne 0 ] && [ "${PDY}${cyc}" -ge "${firstday}" ]; then
-            echo "${TARCMD^^} ${PDY}${cyc} ${targrp}.tar failed"
+            echo "FATAL ERROR: ${TARCMD} ${PDY}${cyc} ${targrp}.tar failed"
             exit "${status}"
         fi
         set_strict

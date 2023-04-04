@@ -1,5 +1,6 @@
 import os
 import re
+import json
 import yaml
 import datetime
 from typing import Any, Dict
@@ -7,7 +8,7 @@ from .attrdict import AttrDict
 from .template import TemplateConstants, Template
 from .jinja import Jinja
 
-__all__ = ['YAMLFile', 'parse_yaml', "parse_j2yaml", "parse_yamltmpl",
+__all__ = ['YAMLFile', 'parse_yaml', 'parse_yamltmpl', 'parse_j2yaml',
            'save_as_yaml', 'dump_as_yaml', 'vanilla_yaml']
 
 
@@ -151,7 +152,7 @@ def vanilla_yaml(ctx):
         return ctx
 
 
-def parse_j2yaml(path: str, data: Dict = None) -> Dict[str, Any]:
+def parse_j2yaml(path: str, data: Dict) -> Dict[str, Any]:
     """
     Description
     -----------
@@ -175,6 +176,11 @@ def parse_j2yaml(path: str, data: Dict = None) -> Dict[str, Any]:
     yaml_dict = YAMLFile(data=yaml_file)
     yaml_dict = Template.substitute_structure(
         yaml_dict, TemplateConstants.DOLLAR_PARENTHESES, data.get)
+
+    # If the input yaml file included other yamls with jinja2 templates, then we need to re-parse the jinja2 templates in them
+    jenv2 = Jinja(json.dumps(yaml_dict, indent=4), data)
+    yaml_file2 = jenv2.render
+    yaml_dict = YAMLFile(data=yaml_file2)
 
     return yaml_dict
 
