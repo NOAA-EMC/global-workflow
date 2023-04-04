@@ -81,16 +81,16 @@ def fill_COMROT_cycled(host, inputs):
     # Destination always uses the new COM structure
     # These should match the templates defined in config.com
     if inputs.start in ['warm']:
-        dst_atm_dir = os.path.join('atmos', 'model_data', 'restart')
-        dst_med_dir = os.path.join('med', 'model_data', 'restart')
+        dst_atm_dir = os.path.join('model_data', 'atmos', 'restart')
+        dst_med_dir = os.path.join('model_data', 'med', 'restart')
     else:
-        dst_atm_dir = os.path.join('atmos', 'model_data', 'input')
+        dst_atm_dir = os.path.join('model_data', 'atmos', 'input')
         dst_med_dir = ''  # no mediator files for a "cold start"
         do_med = False
-    dst_ocn_rst_dir = os.path.join('ocean', 'model_data', 'restart')
-    dst_ocn_anl_dir = os.path.join('ocean', 'model_data', 'analysis')
-    dst_ice_dir = os.path.join('ice', 'model_data', 'restart')
-    dst_atm_anl_dir = os.path.join('atmos', 'model_data', 'analysis')
+    dst_ocn_rst_dir = os.path.join('model_data', 'ocean', 'restart')
+    dst_ocn_anl_dir = os.path.join('model_data', 'ocean', 'analysis')
+    dst_ice_dir = os.path.join('model_data', 'ice', 'restart')
+    dst_atm_anl_dir = os.path.join('analysis', 'atmos')
 
     if flat_structure:
         # ICs are in the old flat COM structure
