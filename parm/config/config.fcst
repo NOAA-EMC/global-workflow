@@ -73,6 +73,7 @@ fi
 export FORECASTSH="$HOMEgfs/scripts/exglobal_forecast.sh"
 export FCSTEXECDIR="$HOMEgfs/exec"
 export FCSTEXEC="ufs_model.x"
+export FCSTYAML="$HOMEgfs/parm/ufs/forecast/gfs.yaml"
 
 #######################################################################
 # Model configuration
