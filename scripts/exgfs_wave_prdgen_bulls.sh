@@ -23,7 +23,7 @@ source "$HOMEgfs/ush/preamble.sh"
 # 0.a Basic modes of operation
 
 # PATH for working and home directories
- export RUNwave=${RUNwave:-${RUN}${COMPONENT}}
+ export RUNwave=${RUNwave:-${RUN}wave}
  export envir=${envir:-ops}
  export cyc=${cyc:-00}
  export cycle=${cycle:-t${cyc}z}
@@ -58,11 +58,11 @@ source "$HOMEgfs/ush/preamble.sh"
 
 # 1.  Get necessary files
  set +x
- echo "   Copying bulletins from $COMIN"
+ echo "   Copying bulletins from ${COM_WAVE_STATION}"
  set_trace
 
 # 1.a Link the input file and untar it
- BullIn=$COMIN/station/${RUNwave}.$cycle.cbull_tar
+ BullIn="${COM_WAVE_STATION}/${RUNwave}.${cycle}.cbull_tar"
  if [ -f $BullIn ]; then
    cp $BullIn cbull.tar
  else
@@ -120,7 +120,7 @@ source "$HOMEgfs/ush/preamble.sh"
  if [ -f $PARMwave/bull_awips_gfswave ]; then
    cp $PARMwave/bull_awips_gfswave awipsbull.data
  else
-   echo "ABNORMAL EXIT: NO AWIPS BULLETIN HEADER DATA FILE"
+   msg="ABNORMAL EXIT: NO AWIPS BULLETIN HEADER DATA FILE"
    set +x
    echo ' '
    echo '******************************************* '
@@ -146,8 +146,8 @@ source "$HOMEgfs/ush/preamble.sh"
 
 # 2.c Generate list of bulletins to process
  echo '   Generating buoy list ...'
- echo 'bulls=$(sed -e 's/export b//g' -e 's/=/ /' awipsbull.data | grep -v "#" |awk '{ print $1}')'
- bulls=$(sed -e 's/export b//g' -e 's/=/ /' awipsbull.data | grep -v "#" |awk '{ print $1}')
+ # echo 'bulls=$(sed -e 's/export b//g' -e 's/=/ /' awipsbull.data | grep -v "#" |awk '{ print $1}')'
+ bulls=$(sed -e 's/export b//g' -e 's/=/ /' awipsbull.data | grep -v "#" |awk '{print $1}')
   
 # 2.d Looping over buoys running formbul
  echo '   Looping over buoys ... \n'
@@ -176,14 +176,14 @@ source "$HOMEgfs/ush/preamble.sh"
   
    set_trace
    
-   formbul.pl -d $headr -f $fname -j $job -m ${RUNwave} \
-              -p $PCOM -s NO -o $oname > formbul.out 2>&1
+   formbul.pl -d "${headr}" -f "${fname}" -j "${job}" -m "${RUNwave}" \
+              -p "${COM_WAVE_WMO}" -s "NO" -o "${oname}" > formbul.out 2>&1
    OK=$?
 
    if [ "$OK" != '0' ] || [ ! -f $oname ]; then
      set_trace
      cat formbul.out
-     echo "ABNORMAL EXIT: ERROR IN formbul"
+     msg="ABNORMAL EXIT: ERROR IN formbul"
      set +x
      echo ' '
      echo '************************************** '
@@ -202,20 +202,20 @@ source "$HOMEgfs/ush/preamble.sh"
  done
 
 # 3. Send output files to the proper destination
- set_trace
- if [ "$SENDCOM" = YES ]; then
-   cp  awipsbull.$cycle.${RUNwave} $PCOM/awipsbull.$cycle.${RUNwave}
-   if [ "$SENDDBN_NTC" = YES ]; then
-     make_ntc_bull.pl  WMOBH NONE KWBC NONE $DATA/awipsbull.$cycle.${RUNwave} $PCOM/awipsbull.$cycle.${RUNwave}
-   else
-     if [ "${envir}" = "para" ] || [ "${envir}" = "test" ] || [ "${envir}" = "dev" ]; then
-       echo "Making NTC bulletin for parallel environment, but do not alert."
-       set_trace
-       (export SENDDBN=NO; make_ntc_bull.pl  WMOBH NONE KWBC NONE \
-               $DATA/awipsbull.$cycle.${RUNwave} $PCOM/awipsbull.$cycle.${RUNwave})
-     fi
-   fi
- fi
+set_trace
+if [ "$SENDCOM" = YES ]; then
+  cp "awipsbull.${cycle}.${RUNwave}" "${COM_WAVE_WMO}/awipsbull.${cycle}.${RUNwave}"
+  if [ "$SENDDBN_NTC" = YES ]; then
+    make_ntc_bull.pl "WMOBH" "NONE" "KWBC" "NONE" "${DATA}/awipsbull.${cycle}.${RUNwave}" \
+      "${COM_WAVE_WMO}/awipsbull.${cycle}.${RUNwave}"
+  else
+    if [ "${envir}" = "para" ] || [ "${envir}" = "test" ] || [ "${envir}" = "dev" ]; then
+      echo "Making NTC bulletin for parallel environment, but do not alert."
+      (export SENDDBN=NO; make_ntc_bull.pl "WMOBH" "NONE" "KWBC" "NONE" \
+          "${DATA}/awipsbull.${cycle}.${RUNwave}" "${COM_WAVE_WMO}/awipsbull.${cycle}.${RUNwave}")
+    fi
+  fi
+fi
 
 # --------------------------------------------------------------------------- #
 # 4.  Clean up
