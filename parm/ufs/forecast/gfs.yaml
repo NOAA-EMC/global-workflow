@@ -1,0 +1,21 @@
+forecast:
+
+     dirtree_atmos:
+          mkdir:
+               - $(DATA)/INPUT
+               - $(DATA)/RESTART
+
+     dirtree_ocean:
+          mkdir:
+               - $(DATA)/MOM6_OUTPUT
+               - $(DATA)/history
+               - $(DATA)/INPUT
+               - $(DATA)/RESTART      
+
+     fixed_files:
+          atmos: ${PARMgfs}/ufs/forecast/gfs/fix/atmos.fixed_files.yaml
+          land: ${PARMgfs}/ufs/forecast/gfs/fix/land.fixed_files.yaml
+          ocean: ${PARMgfs}/ufs/forecast/gfs/fix/ocean.fixed_files.yaml
+
+     model_configure: ${PARMufs}/ufs/forecast/gfs/model_configure.IN
+     nems_configure: ${PARMufs}/ufs/forecast/gfs/nems/nems.configure.atm.IN

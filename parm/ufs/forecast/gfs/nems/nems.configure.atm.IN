@@ -1,0 +1,8 @@
+# ESMF #
+logKindFlag:            {{ esmf_logkind or "ESMF_LOGKIND_NONE"}} 
+
+EARTH_component_list: ATM
+ATM_model:            fv3
+runSeq::
+  ATM
+::

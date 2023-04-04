@@ -1,0 +1,34 @@
+# The following inputs need to be resolved:
+# HOMEgfs  - path to HOMEgfs directory
+# DATA     - path to DATA directory where files will be staged and run (DATA must exist)
+# atm_res  - resolution of the atmospheric cubed-sphere grid e.g C48
+# ocn_res  - resolution of the ocean tripolar grid e.g. 100
+# FIX_orog - path to orography fix files
+# FIX_ugwd - path to xyz fix files
+# FIX_am   - path to am fix files
+# FIX_aer  - path to aer fix files
+# FIX_lut  - path to lut fix files
+
+#dirtree_atmos:
+#  mkdir:
+#    - $(DATA)/INPUT
+#    - $(DATA)/RESTART
+
+#dirtree_ocean:
+#  mkdir:
+#    - $(DATA)/MOM6_OUTPUT
+#    - $(DATA)/history
+#    - $(DATA)/INPUT
+#    - $(DATA)/RESTART
+
+# Define the path to the respective YAML-formatted files containing
+# the fixed-files for the respective UFS component models.
+#fix_atmos: !INC ${HOMEgfs}/parm/ufs/forecast/atmos.fixed_files.yaml
+#fix_land: !INC ${HOMEgfs}/parm/ufs/forecast/land.fixed_files.yaml
+#fix_ocean: !INC ${HOMEgfs}/parm/ufs/forecast/ocean.fixed_files.yaml
+
+
+       
+
+
+

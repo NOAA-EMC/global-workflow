@@ -1,7 +1,7 @@
 
 import os
 
-from pygfs.task.forecast import Forecast
+from pygfs.task.forecast import Forecast, GFS_APP_LIST
 from pygfs.exceptions import GFSError
 from typing import Dict, List
 from pygw.logger import Logger, logit
@@ -21,7 +21,6 @@ FIXED_MAND_ATTR_DICT = {"DATA": "DATA",
                         "FIXgfs": "FIXgfs",
                         "HOMEgfs": "HOMEgfs",
                         "atm_res": "CASE",
-                        "coupled": "cpl",
                         "ocn_res": "OCNRES"
                         }
 
@@ -45,9 +44,22 @@ class GFS(Forecast):
         # Define the base-class attributes.
         super().__init__(config=config, model="GFS")
 
+        if self.fcst_config.APP.lower() not in GFS_APP_LIST:
+            msg = (f"The GFS forecast application {self.config.APP} is not "
+                   "supported. Aborting!!!"
+                   )
+            raise GFSError(msg=msg)
+
         self.fcst_config.model = "gfs"
         self.fcst_config.ntiles = 6
         self.fcst_config.fix_path = self.config.FIXgfs
+
+        # HRW: THIS IS ALREADY DEFINED IN THE RUN-TIME ENVIRONMENT; DO
+        # WE WANT TO KEEP IT HERE AS IT CURRENTLY HAS NOT BEARING BUT
+        # COULD BE AN ATTRIBUTE COLLECTED FROM A YAML-FORMATTED
+        # CONFIGURATION FILE IN THE FUTURE?
+        self.fcst_config.coupled = (self.fcst_config.app in [
+                                    "s2s", "s2sw", "s2swa"])
 
     def __fixedfiles(self: Forecast) -> Dict:
         """
@@ -151,6 +163,8 @@ class GFS(Forecast):
         # Build the directory tree and copy the required fixed files
         # accordingly.
         self.__fixedfiles()
-        self.build_dirtree()
+        self.config_dirtree()
 
         # Build the respective UFS configuration files.
+        self.build_model_configure()
+        self.build_nems_configure()

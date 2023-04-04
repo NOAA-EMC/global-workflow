@@ -1,0 +1,98 @@
+C48:
+         DELTIM: 1200
+         layout_x: 1
+         layout_y: 1
+         layout_x_gfs: 1
+         layout_y_gfs: 1
+         nthreads_fv3: 1
+         nthreads_fv3_gfs: 1
+         cdmbgwd: 0.071,2.1,1.0,1.0  # mountain blocking, ogwd, cgwd, cgwd src scaling
+         WRITE_GROUP: 1
+         WRTTASK_PER_GROUP: 2
+         WRITE_GROUP_GFS: 1
+         WRTTASK_PER_GROUP_GFS: 2
+
+C96:
+         DELTIM: 600
+         layout_x: 2
+         layout_y: 2
+         layout_x_gfs: 2
+         layout_y_gfs: 2
+         nthreads_fv3: 1
+         nthreads_fv3_gfs: 1
+         cdmbgwd: 0.14,1.8,1.0,1.0  # mountain blocking, ogwd, cgwd, cgwd src scaling
+         WRITE_GROUP: 1
+         WRTTASK_PER_GROUP: 4
+         WRITE_GROUP_GFS: 1
+         WRTTASK_PER_GROUP_GFS: 4
+        
+C192:
+         DELTIM: 450
+         layout_x: 4
+         layout_y: 6
+         layout_x_gfs: 4
+         layout_y_gfs: 6
+         nthreads_fv3: 1
+         nthreads_fv3_gfs: 2
+         cdmbgwd: 0.23,1.5,1.0,1.0  # mountain blocking, ogwd, cgwd, cgwd src scaling
+         WRITE_GROUP: 1
+         WRTTASK_PER_GROUP: 64
+         WRITE_GROUP_GFS: 2
+         WRTTASK_PER_GROUP_GFS: 64
+         
+C384:
+         DELTIM: 200
+         layout_x: 6
+         layout_y: 8
+         layout_x_gfs: 8
+         layout_y_gfs: 12
+         nthreads_fv3: 1
+         nthreads_fv3_gfs: 2
+         cdmbgwd: 1.1,0.72,1.0,1.0  # mountain blocking, ogwd, cgwd, cgwd src scaling
+         WRITE_GROUP: 2
+         WRTTASK_PER_GROUP: 48
+         WRITE_GROUP_GFS: 2
+         WRTTASK_PER_GROUP_GFS: 64
+
+C768:
+         DELTIM: 150
+         layout_x: 8
+         layout_y: 12
+         layout_x_gfs: 12
+         layout_y_gfs: 16
+         nthreads_fv3: 4
+         nthreads_fv3_gfs: 4
+         cdmbgwd: 4.0,0.15,1.0,1.0  # mountain blocking, ogwd, cgwd, cgwd src scaling
+         WRITE_GROUP: 2
+         WRTTASK_PER_GROUP: 64
+         WRITE_GROUP_GFS: 4
+         WRTTASK_PER_GROUP_GFS: 64
+        
+C1152:
+         DELTIM: 120
+         layout_x: 8
+         layout_y: 16
+         layout_x_gfs: 8
+         layout_y_gfs: 16
+         nthreads_fv3: 4
+         nthreads_fv3_gfs: 4
+         cdmbgwd: 4.0,0.10,1.0,1.0  # mountain blocking, ogwd, cgwd, cgwd src scaling
+         WRITE_GROUP: 4
+         WRTTASK_PER_GROUP: 64  # TODO: refine these numbers when a case is available
+         WRITE_GROUP_GFS: 4
+         WRTTASK_PER_GROUP_GFS: 64  # TODO: refine these numbers when a case is available
+        
+C3072:
+         DELTIM: 90
+         layout_x: 16
+         layout_y: 32
+         layout_x_gfs: 16
+         layout_y_gfs: 32
+         nthreads_fv3: 4
+         nthreads_fv3_gfs: 4
+         cdmbgwd: 4.0,0.05,1.0,1.0 # mountain blocking, ogwd, cgwd, cgwd src scaling
+         WRITE_GROUP: 4
+         WRTTASK_PER_GROUP: 64  # TODO: refine these numbers when a case is available
+         WRITE_GROUP_GFS: 4
+         WRTTASK_PER_GROUP_GFS: 64  # TODO: refine these numbers when a case is available
+

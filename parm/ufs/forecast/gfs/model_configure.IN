@@ -1,0 +1,36 @@
+start_year:              {{ start_year }}
+start_month:             {{ start_month }}
+start_day:               {{ start_day }}
+start_hour:              {{ start_hour }}
+start_minute:            {{ start_minute|0 }}
+start_second:            {{ start_second|0 }}
+nhours_fcst:             {{ FHMAX }}
+fhrot:                   {{ IAU_FHROT|0 }}
+
+dt_atmos:                {{ DELTIM }}
+calendar:                {{ calendar|"julian" }}
+restart_interval:        {{ restart_interval }}
+output_1st_tstep_rst:    .false.
+
+quilting:                {{ QUILTING }}
+write_groups:            {{ WRITE_GROUP|1 }}
+write_tasks_per_group:   {{ WRTTASK_PER_GROUP|24 }}
+itasks:                  1
+output_history:          {{ OUTPUT_HISTORY|.true. }}
+write_dopost:            {{ WRITE_DOPOST|.false. }}
+write_nsflip:            {{ WRITE_NSFLIP|.false. }}
+num_files:               {{ NUM_FILES|2 }}
+filename_base:           "atm" "sfc"
+output_grid:             {{ OUTPUT_GRID }}
+output_file:             "{{ OUTPUT_FILETYPE_ATM }}" "{{ OUTPUT_FILETYPE_SFC }}"
+ichunk2d:                {{ ichunk2d|0 }}
+jchunk2d:                {{ jchunk2d|0 }}
+ichunk3d:                {{ ichunk3d|0 }}
+jchunk3d:                {{ jchunk3d|0 }}
+kchunk3d:                {{ kchunk3d|0 }}
+ideflate:                {{ ideflate|1 }}
+nbits:                   {{ nbits|14 }}
+imo:                     {{ LONB_IMO }}
+jmo:                     {{ LATB_JMO }}
+output_fh:               {{ OUTPUT_FH }}
+iau_offset:              {{ IAU_OFFSET|0 }}
