@@ -36,7 +36,7 @@ fi
 
 ###############################################################
 # Run relevant exglobal script
-$(which python) ${HOMEgfs}/scripts/exglobal_gfs_forecast_initialize.py
+$(which python) ${HOMEgfs}/scripts/exglobal_fv3gfs_forecast_initialize.py
 
 exit 9999
 
