@@ -6,7 +6,7 @@ import os,sys
 from pathlib import Path
 
 from pygw.logger import Logger
-logger = Logger(level='DEBUG', colored_log=True)
+logger = Logger(colored_log=True)
 
 from pygw.executable import Executable
 
@@ -19,7 +19,7 @@ def get_args():
     parser.add_argument('--cmp_dirs_joblevel', nargs=1, metavar=('file_list.yml'), help='use stored job level file list when comparing ROTDIRs')
     parser.add_argument('--cmp_jobs',nargs=3,metavar=('job_name','ROTDIR','file_list.yml'),help='compare files at the job level (uses file_list.yml to track)')
     parser.add_argument('-n','--nameID',dest="nameID",help='tag name for compare (used in output filename)')
-    parser.add_argument('-vt','--verbose_tar', help='include names of differing files witin tar files', action='store_true',default=False)
+    parser.add_argument('-vt','--verbose_tar', help='include names of differing files within tar files', action='store_true',default=False)
     args = parser.parse_args()
     if args.cmp_dirs is not None:
         for dirs in args.cmp_dirs:
@@ -157,12 +157,12 @@ def print_diff_files(dcmp):
     from subprocess import run
 
     global diff_file; global cwd; global verbose
-    global fixed_dir_experment_name
+    global fixed_dir_experiment_name
     if len(dcmp.common_dirs) != 0:
         logger.info('checking directories: %s'%' '.join(dcmp.common_dirs))
     if len( dcmp.diff_files ) == 0 and len(dcmp.common_files) != 0:
         logger.info('out of %d common files no differences found'%len(dcmp.common_files))
-    file1_shortpath = '/'+dcmp.left.replace(cwd,'').replace(fixed_dir_experment_name,'').lstrip('/')
+    file1_shortpath = '/'+dcmp.left.replace(cwd,'').replace(fixed_dir_experiment_name,'').lstrip('/')
     if verbose:
         logger.info('checked in directory %s'%(file1_shortpath))
     if len( dcmp.diff_files) != 0 and verbose:
@@ -175,8 +175,8 @@ def print_diff_files(dcmp):
     num_differing_files = 0
     for name in dcmp.diff_files:
         file1 = os.path.join(dcmp.left,name); file2 = os.path.join(dcmp.right,name)
-        file1_shortpath = '/'+dcmp.left.replace(cwd,'').replace(fixed_dir_experment_name,'').lstrip('/')
-        file2_shortpath = '/'+dcmp.right.replace(cwd,'').replace(fixed_dir_experment_name,'').lstrip('/')
+        file1_shortpath = '/'+dcmp.left.replace(cwd,'').replace(fixed_dir_experiment_name,'').lstrip('/')
+        file2_shortpath = '/'+dcmp.right.replace(cwd,'').replace(fixed_dir_experiment_name,'').lstrip('/')
         if '.nc' in name:
             net_cdf_type = netcdfver(file1)
             if net_cdf_type is not None:
@@ -213,11 +213,11 @@ def print_diff_files(dcmp):
     if verbose:
         if num_netcdf_differing_files == 0 and num_tar_differing_files == 0 and num_differing_files == 0 and len(dcmp.diff_files) != 0:
             if num_identified_tar_files == len(dcmp.diff_files):
-                logger.info('all of the %d potentially differeing files where acctually non-differing tar files'%len(dcmp.diff_files))
+                logger.info('all of the %d potentially differed files where actually non-differing tar files'%len(dcmp.diff_files))
             elif len(dcmp.diff_files) == num_netcdf_differing_files_onlyheader:
-                logger.info('all of the %d potentially differeing files where acctually non-differing NetCDF files (only headers differed)'%len(dcmp.diff_files))
+                logger.info('all of the %d potentially differed files where actually non-differing NetCDF files (only headers differed)'%len(dcmp.diff_files))
             else:
-                logger.info('of the %d potentially differeing %d NetCDF differed %d tar files differedl, and %d differed that where not NetCDF or tar'%(len(dcmp.diff_files),num_netcdf_differing_files,num_tar_differing_files,num_differing_files))
+                logger.info('of the %d potentially differed %d NetCDF differed %d tar files differed, and %d differed that where not NetCDF or tar'%(len(dcmp.diff_files),num_netcdf_differing_files,num_tar_differing_files,num_differing_files))
 
     for sub_dcmp in dcmp.subdirs.values():
         print_diff_files(sub_dcmp)
@@ -237,7 +237,7 @@ if __name__ == '__main__':
     import time
     import yaml
 
-    fixed_dir_experment_name = 'fv3gfs_regression_experments'
+    fixed_dir_experiment_name = 'fv3gfs_regression_experiments'
 
     NCCMP = Executable("nccmp")
 
@@ -300,7 +300,7 @@ if __name__ == '__main__':
 
     for folder in (folder1,folder2):
         if not os.path.isdir(folder):
-            logger.critical('directory %s does not exsist'%folder)
+            logger.critical('directory %s does not exist'%folder)
             sys.exit(-1)
 
     cwd = os.getcwd()
