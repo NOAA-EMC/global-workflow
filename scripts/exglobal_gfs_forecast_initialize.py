@@ -2,7 +2,7 @@
 
 # -----------------------------------------------------------------------------
 #
-# Program Name:          exglobal_ufs_forecast_init.py
+# Program Name:          exglobal_gfs_forecast_init.py
 #
 # Author(s)/Contacts(s): Henry R. Winterbottom (henry.winterbottom@noaa.gov)
 #
@@ -52,22 +52,22 @@ History
 
 # ----
 
+__author__ = "Henry R. Winterbottom"
+__maintainer__ = "Henry R. Winterbottom"
+__email__ = "henry.winterbottom@noaa.gov"
+
+# ----
+
 import os
 import time
 
 from pygw.configuration import cast_strdict_as_dtypedict
 from pygw.logger import Logger
-from pygfs.task.gfs import GFS
+from pygfs.task.fv3gfs import FV3GFS
 
 # ----
 
 logger = Logger()
-
-# ----
-
-__author__ = "Henry R. Winterbottom"
-__maintainer__ = "Henry R. Winterbottom"
-__email__ = "henry.winterbottom@noaa.gov"
 
 # ----
 
@@ -85,13 +85,11 @@ def main() -> None:
     # Take configuration from environment and cast it as Python
     # dictionary.
     script_name = os.path.basename(__file__)
-    msg = f"Completed application {script_name}."
-    logger.info(msg=msg)
     start_time = time.time()
     config = cast_strdict_as_dtypedict(os.environ)
 
     # Launch the task.
-    task = GFS(config=config)
+    task = FV3GFS(config=config)
     task.initialize()
 
     stop_time = time.time()

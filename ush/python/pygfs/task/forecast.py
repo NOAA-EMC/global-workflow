@@ -3,12 +3,13 @@ import os
 from typing import Dict, List
 
 from pygw.task import Task
-from pygw.logger import Logger, logit
+# from pygw.logger import Logger, logit
 
 from pygw.attrdict import AttrDict
 
 from pygfs.ufswm import UFSWM
 from pygfs.exceptions import ForecastError
+from pygfs.utils.logger import Logger
 
 from pygw.jinja import Jinja
 from pygw.yaml_file import YAMLFile, parse_yamltmpl
@@ -18,7 +19,7 @@ from pygw.file_utils import FileHandler
 # ----
 
 # Define the valid forecast model list.
-VALID_MODEL_LIST = ["gfs"]
+VALID_MODEL_LIST = ["fv3gfs"]
 
 # The following are the supported GFS applications.
 GFS_APP_LIST = ["atm", "atmw", "atma", "s2s", "s2sw", "s2swa"]
@@ -53,36 +54,49 @@ class Forecast(Task):
 
         # Define the base-class attributes.
         super().__init__(config=config, *args, *kwargs)
-        self.config.model = model
+        self.config = config
+        self.model = model.lower()
+        self.logger = Logger(config=self.config).logger
 
-        # HRW: THIS ALLOWS ME TO BUILD ON THE DICTIONARY FOR THE
-        # RESPECTIVE APPLICATION (i.e., FORECAST).
-        self.fcst_config = AttrDict(self.config).deepcopy()
+        UFSWM(config=self.config, model=self.model)
 
         try:
-            self.fcst_config.config = YAMLFile(
-                path=self.fcst_config.FCSTYAML).as_dict()["forecast"]
+            self.config.forecast = YAMLFile(
+                path=self.config.FCSTYAML).as_dict()["forecast"]
+
         except KeyError:
             msg = ("The attribute (e.g., YAML-key) `forecast` could not be determined "
                    f"from YAML-formatted file {self.fcst_config.FCSTYAML}. Aborting!!!"
                    )
             raise ForecastError(msg=msg)
 
-        if self.fcst_config.model.lower() not in VALID_MODEL_LIST:
-            msg = f"Forecast model {self.fcst_config.model} is not (yet) supported. Aborting!!!"
-            raise ForecastError(msg=msg)
+        # try:
+        #    self.config.yaml_config = YAMLFile(
+        #        path=self.config.FCSTYAML).as_dict()["forecast"]
+        # except KeyError:
+        #    msg = ("The attribute (e.g., YAML-key) `forecast` could not be determined "
+        #           f"from YAML-formatted file {self.fcst_config.FCSTYAML}. Aborting!!!"
+        #           )
+        #    raise ForecastError(msg=msg)
 
-        if getattr(self.fcst_config, "loglev") is None:
-            self.fcst_config.loglev = "info"
-        self.logger = Logger(
-            level=self.config.loglev, colored_log=True)
+        # if self.model not in VALID_MODEL_LIST:
+        #    msg = f"Forecast model {self.model} is not (yet) supported. Aborting!!!"
+        #    raise ForecastError(msg=msg)
+
+        # if getattr(self.config, "loglev") is None:
+        #    self.config.loglev = "info"
+        # self.logger = Logger(
+        #    level=self.config.loglev, colored_log=True)
 
     def build_model_configure(self: Task) -> None:
         """ """
 
-        model_configure_tmpl = self.fcst_config.config.model_configure
+        model_configure_tmpl = self.config.forecast.model_configure
         model_configure_path = os.path.join(
             self.runtime_config.DATA, "model_configure")
+
+        Jinja(model_configure_tmpl, data=self.config,
+              allow_missing=True).save(model_configure_path)
 
     def build_nems_configure(self: Task) -> None:
         """
@@ -97,7 +111,7 @@ class Forecast(Task):
 
         # Define then NEMS configuration template and write the file
         # accordingly.
-        nems_configure_tmpl = self.fcst_config.config.nems_configure
+        nems_configure_tmpl = self.config.forecast.nems_configure
         nems_configure_path = os.path.join(
             self.runtime_config.DATA, "nems.configure")
 
@@ -106,7 +120,7 @@ class Forecast(Task):
         # IF A VARIABLE IS NOT RENDERED CORRECTLY THE FORECAST
         # MODEL WILL FAIL; THIS IS ALSO USEFUL IN THE CASES WHEN A
         # USER HAS DEFINE THE INCORRECT nems.configure TEMPLATE.
-        Jinja(nems_configure_tmpl, data=self.fcst_config,
+        Jinja(nems_configure_tmpl, data=self.config,
               allow_missing=False).save(nems_configure_path)
 
         with open(nems_configure_path, "a", encoding="utf-8") as fout:
@@ -125,18 +139,18 @@ class Forecast(Task):
         # Build the directory tree and link the fixed files to the
         # working directory; proceed accordingly.
         dirtree_config = parse_yamltmpl(
-            path=self.fcst_config.FCSTYAML, data=self.runtime_config)["forecast"]
-
+            path=self.config.FCSTYAML, data=self.runtime_config)["forecast"]
         FileHandler(dirtree_config.dirtree_atmos).sync()
+
         atmos_fcst_config = parse_yamltmpl(
-            path=dirtree_config.fixed_files.atmos, data=self.fcst_config)
+            path=dirtree_config.fixed_files.atmos, data=self.config)
         FileHandler(atmos_fcst_config).sync()
         land_fcst_config = parse_yamltmpl(
-            path=dirtree_config.fixed_files.land, data=self.fcst_config)
+            path=dirtree_config.fixed_files.land, data=self.config)
         FileHandler(land_fcst_config).sync()
 
-        if self.fcst_config.coupled:
+        if self.config.coupled: # HRW: THIS NEEDS TO BE UPDATED.
             FileHandler(dirtree_config.dirtree_ocean).sync()
             ocean_fcst_config = parse_yamltmpl(
-                path=dirtree_config.fixed_files.ocean, data=self.fcst_config)
+                path=dirtree_config.fixed_files.ocean, data=self.config)
             FileHandler(ocean_fcst_config).sync()

@@ -2,7 +2,7 @@
 Module
 ------
 
-    pygfs.tools.timeinfo (pygfs/tools/timeinfo.py)
+    pygfs.utils.datetime (pygfs/utils/datetime.py)
 
 Description
 -----------
@@ -14,7 +14,7 @@ Description
 Classes
 -------
 
-    TimeInfo(datestr, fmt="%Y-%m-%d %H:%M:%S")
+    DateTime(datestr, fmt="%Y-%m-%d %H:%M:%S")
 
         This is the base-class object for all time-stamp attribute
         definitions.
@@ -34,7 +34,7 @@ import datetime
 import sqlite3
 from dataclasses import dataclass
 
-from pygfs.exceptions import TimeInfoError
+from pygfs.exceptions import DateTimeError
 from pygw.attrdict import AttrDict
 from pygw.timetools import strftime, strptime
 
@@ -42,7 +42,7 @@ from pygw.timetools import strftime, strptime
 
 
 @dataclass
-class TimeInfo:
+class DateTime:
     """
     Description
     -----------
@@ -71,7 +71,7 @@ class TimeInfo:
     Raises
     ------
 
-    TimeInfoError:
+    DateTimeError:
 
         - raised if an exception is encountered while discerning the
           format of the attribute `datestr` upon entry.
@@ -81,17 +81,17 @@ class TimeInfo:
 
     """
 
-    def __init__(self: object, datestr: str, fmt: str = "%Y-%m-%d %H:%M:%S"):
+    def __init__(self: dataclass, datestr: str, fmt: str = "%Y-%m-%d %H:%M:%S"):
         """
         Description
         -----------
 
-        Creates a new TimeInfo object.
+        Creates a new DateTime object.
 
         """
 
         # Define the base-class attributes.
-        self.timeinfo = AttrDict()
+        self.datetime = AttrDict()
 
         # Define the time-stamp attributes relative to the application
         # initialization time; enforce input attribute `datestr` to be
@@ -104,7 +104,7 @@ class TimeInfo:
                 f"Initializing the attributes for input timestamp {datestr} "
                 f"failed with error {errmsg}. Aborting!!!"
             )
-            raise TimeInfoError(msg=msg) from errmsg
+            raise DateTimeError(msg=msg) from errmsg
 
         time_attr_dict = {
             "year": "%Y",
@@ -128,9 +128,9 @@ class TimeInfo:
         for (time_attr, time_attr_value) in time_attr_dict.items():
             value = strftime(dt=time_str, fmt=time_attr_value)
             try:
-                setattr(self.timeinfo, time_attr, int(value))
+                setattr(self.datetime, time_attr, int(value))
             except ValueError:
-                setattr(self.timeinfo, time_attr, value)
+                setattr(self.datetime, time_attr, value)
 
         # Define the derived time-stamp attributes; proceed
         # accordingly.
@@ -143,9 +143,9 @@ class TimeInfo:
                 "Defining timestamp attributes failed with error "
                 f"{errmsg}. Aborting!!!"
             )
-            raise TimeInfoError(msg=msg) from errmsg
+            raise DateTimeError(msg=msg) from errmsg
 
-    def __epoch(self: object):
+    def __epoch(self: dataclass):
         """
         Description
         -----------
@@ -157,16 +157,16 @@ class TimeInfo:
 
         # Define the epoch time (i.e., number of seconds since 0000
         # UTC 01 January 1970).
-        self.timeinfo.epoch = datetime.datetime(
-            int(self.timeinfo.year),
-            int(self.timeinfo.month),
-            int(self.timeinfo.day),
-            int(self.timeinfo.hour),
-            int(self.timeinfo.minute),
-            int(self.timeinfo.second),
+        self.datetime.epoch = datetime.datetime(
+            int(self.datetime.year),
+            int(self.datetime.month),
+            int(self.datetime.day),
+            int(self.datetime.hour),
+            int(self.datetime.minute),
+            int(self.datetime.second),
         ).timestamp()
 
-    def __julianday(self: object):
+    def __julianday(self: dataclass):
         """
         Description
         -----------
@@ -179,14 +179,14 @@ class TimeInfo:
         # Define the Julian day.
         connect = sqlite3.connect(":memory:")
         datestr = (
-            f"{self.timeinfo.year}-"
-            f"{self.timeinfo.month}-"
-            f"{self.timeinfo.day} "
-            f"{self.timeinfo.hour}:"
-            f"{self.timeinfo.minute}:"
-            f"{self.timeinfo.second}"
+            f"{self.datetime.year}-"
+            f"{self.datetime.month}-"
+            f"{self.datetime.day} "
+            f"{self.datetime.hour}:"
+            f"{self.datetime.minute}:"
+            f"{self.datetime.second}"
         )
 
-        self.timeinfo.julian_day = list(
+        self.datetime.julian_day = list(
             connect.execute(f"select julianday('{datestr}')")
         )[0][0]

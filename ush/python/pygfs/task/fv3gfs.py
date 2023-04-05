@@ -27,7 +27,7 @@ FIXED_MAND_ATTR_DICT = {"DATA": "DATA",
 # ----
 
 
-class GFS(Forecast):
+class FV3GFS(Forecast):
     """
 
     """
@@ -42,24 +42,26 @@ class GFS(Forecast):
         """
 
         # Define the base-class attributes.
-        super().__init__(config=config, model="GFS")
+        super().__init__(config=config, model="FV3GFS")
 
-        if self.fcst_config.APP.lower() not in GFS_APP_LIST:
-            msg = (f"The GFS forecast application {self.config.APP} is not "
-                   "supported. Aborting!!!"
-                   )
-            raise GFSError(msg=msg)
+        print(self.config.ufswm.atmos.grids)
 
-        self.fcst_config.model = "gfs"
-        self.fcst_config.ntiles = 6
-        self.fcst_config.fix_path = self.config.FIXgfs
+#        if self.fcst_config.APP.lower() not in GFS_APP_LIST:
+#            msg = (f"The GFS forecast application {self.config.APP} is not "
+#                   "supported. Aborting!!!"
+#                   )
+#            raise GFSError(msg=msg)
+
+        # self.fcst_config.model = "gfs"
+        # self.fcst_config.ntiles = 6
+        # self.fcst_config.fix_path = self.config.FIXgfs
 
         # HRW: THIS IS ALREADY DEFINED IN THE RUN-TIME ENVIRONMENT; DO
         # WE WANT TO KEEP IT HERE AS IT CURRENTLY HAS NOT BEARING BUT
         # COULD BE AN ATTRIBUTE COLLECTED FROM A YAML-FORMATTED
         # CONFIGURATION FILE IN THE FUTURE?
-        self.fcst_config.coupled = (self.fcst_config.app in [
-                                    "s2s", "s2sw", "s2swa"])
+        # self.fcst_config.coupled = (self.fcst_config.app in [
+        #                            "s2s", "s2sw", "s2swa"])
 
     def __fixedfiles(self: Forecast) -> Dict:
         """
@@ -117,12 +119,12 @@ class GFS(Forecast):
                        )
                 raise GFSError(msg=msg)
 
-            setattr(self.fcst_config, fixed_attr_key, value)
+            setattr(self.config, fixed_attr_key, value)
 
         # Define the top-level directory-tree path containing the
         # respective fixed-files and build the Python dictionary
         # required to link the application-specific fixed files.
-        fix_dirpath = self.fcst_config.FIXgfs
+        fix_dirpath = self.config.FIXgfs
 
         if (not os.path.isdir(fix_dirpath)) or (not os.path.exists(fix_dirpath)):
             msg = (f"The directory tree {fix_dirpath} is either not a directory "
@@ -149,7 +151,7 @@ class GFS(Forecast):
                        )
                 self.logger.warning(msg=msg)
 
-            setattr(self.fcst_config, fixed_attr_key, os.path.join(
+            setattr(self.config, fixed_attr_key, os.path.join(
                 self.config.FIXgfs, fixed_attr_value))
 
     def initialize(self: Forecast):
