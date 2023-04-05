@@ -30,15 +30,11 @@ __version__ = 0.0
 # ----
 
 from dataclasses import dataclass
-from typing import Any, Dict
+from typing import Dict
 
-from pygw.attrdict import AttrDict
-from pygw.timetools import strftime, strptime
-
-from pygfs.exceptions import UFSWMError
+from pygfs.utils.datetime import DateTime
 from pygfs.utils.grids import FV3GFS
 from pygfs.utils.logger import Logger
-from pygfs.utils.datetime import DateTime
 
 # ----
 
@@ -92,16 +88,19 @@ class UFSWM:
 
         # Define the configuration attributes for the FV3 GFS forecast
         # model.
-        self.config.ufswm.atmos.grids = FV3GFS(config=self.config,
-                                               model="FV3GFS",
-                                               res=self.config.CASE,
-                                               nlevs=self.config.LEVS).grids
+        self.config.ufswm.atmos.grids = FV3GFS(
+            config=self.config,
+            model="FV3GFS",
+            res=self.config.CASE,
+            nlevs=self.config.LEVS,
+        ).grids
 
         # HRW: The following may eventually be moved out of this
         # method into `configure`; this is dependent on the additional
         # UFS component model needs; TBD.
-        self.config.ufswm.atmos.datetime = DateTime(datestr=self.config.CDATE,
-                                                    fmt="%Y-%m-%d %H:%M:%S").datetime
+        self.config.ufswm.atmos.datetime = DateTime(
+            datestr=self.config.CDATE, fmt="%Y-%m-%d %H:%M:%S"
+        ).datetime
 
         msg = (
             "\nThe atmosphere model configuration is as follows:\n\n"
