@@ -184,7 +184,7 @@ def print_diff_files(dcmp):
                     netcdf_diff_output = NCCMP("--threads=4", "--data", file1, file2)
                 else:
                     netcdf_diff_output = NCCMP("--diff-count=3", "--threads=4", "--data", file1, file2)
-                if len(netcdf_diff_output) == 0:
+                if netcdf_diff_output is None:
                     diff_file.write('NetCDF file %s of type: %s differs only in the header in directories %s and %s\n'%(name,net_cdf_type,file1_shortpath,file2_shortpath))
                     num_netcdf_differing_files_onlyheader += 1
                 else: 
