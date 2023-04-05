@@ -6,9 +6,10 @@ import os,sys
 from pathlib import Path
 
 from pygw.logger import Logger
-logger = Logger(colored_log=True)
+logger = Logger(level="INFO",_format='%(levelname)-5s %(message)s',colored_log=False)
 
 from pygw.executable import Executable
+from pygw.executable import which
 
 def get_args():
     import argparse
@@ -157,14 +158,16 @@ def print_diff_files(dcmp):
     from subprocess import run
 
     global diff_file; global cwd; global verbose
+    global files_compared    
+    global total_num_diff_files
     global fixed_dir_experiment_name
     if len(dcmp.common_dirs) != 0:
         logger.info('checking directories: %s'%' '.join(dcmp.common_dirs))
-    if len( dcmp.diff_files ) == 0 and len(dcmp.common_files) != 0:
-        logger.info('out of %d common files no differences found'%len(dcmp.common_files))
+    #if len( dcmp.diff_files ) == 0 and len(dcmp.common_files) != 0:
+    #    logger.info('out of %d common files no differences found'%len(dcmp.common_files))
     file1_shortpath = '/'+dcmp.left.replace(cwd,'').replace(fixed_dir_experiment_name,'').lstrip('/')
     if verbose:
-        logger.info('checked in directory %s'%(file1_shortpath))
+        print('checked in directory %s'%(file1_shortpath),end="\r")
     if len( dcmp.diff_files) != 0 and verbose:
         number_netcdf_files = len([s for s in dcmp.diff_files if '.nc' in s])
         logger.info('checking %d differing files of which %d are NetCDF and some may be tar files'%(len(dcmp.diff_files),number_netcdf_files))
@@ -210,6 +213,8 @@ def print_diff_files(dcmp):
         logger.info('%d tar files differed'%num_tar_differing_files)
     if num_differing_files != 0:
         logger.info('%d files differed that was not NetCDF nor tar files'%num_differing_files)
+    files_compared += len(dcmp.common_files)
+    total_num_diff_files += num_differing_files + num_tar_differing_files + num_netcdf_differing_files
     if verbose:
         if num_netcdf_differing_files == 0 and num_tar_differing_files == 0 and num_differing_files == 0 and len(dcmp.diff_files) != 0:
             if num_identified_tar_files == len(dcmp.diff_files):
@@ -237,7 +242,17 @@ if __name__ == '__main__':
     import time
     import yaml
 
+    global files_compared
+    files_compared = 0
+    global total_num_diff_files
+    total_num_diff_files = 0
+
     fixed_dir_experiment_name = 'fv3gfs_regression_experiments'
+
+    test = which("nccmp")
+    if test is None:
+        logger.critical('The NCO nccmp utility was not found')
+        sys.exit(-1)
 
     NCCMP = Executable("nccmp")
 
@@ -245,6 +260,7 @@ if __name__ == '__main__':
 
     process_time = time.process_time()
 
+    global verbose
     verbose = args.verbose_tar
     file_dic_list = collections.defaultdict(list)
 
@@ -306,8 +322,9 @@ if __name__ == '__main__':
     cwd = os.getcwd()
 
     logger.info('comparing folders:\n   %s\n   %s'%(folder1,folder2))
-    logger.info('checking for matching file counts in directories')
 
+    logger.info('checking for matching file counts in directories')
+    match_pass=True
     results = compare(folder1, folder2)
     left_right = ('left','right')
     for each_side in left_right:
@@ -324,11 +341,16 @@ if __name__ == '__main__':
                 for file in results[each_side]:
                     diff_file.write('   %s'%file)
             logger.info('%d files found in %s that are not in %s:'%(num_missmatched_files,os.path.basename(foldera),os.path.basename(folderb)))
+            match_pass=False
+    if match_pass:
+        logger.info(f"Both directorires: {os.path.basename(foldera)} and {os.path.basename(folderb)} match with {len(results['both'])} distinct files and directories")
     logger.info('checking for file differences...')
     egnore_file_list = ['*.log','INPUT','RESTART','logs']
     compare_files = filecmp.dircmp(folder1, folder2, egnore_file_list)
     diff_file = open( diff_file_name, 'w')
     print_diff_files( compare_files )
+    logger.info(f'Total number of files common to both experiments: {files_compared} of which {total_num_diff_files} differed')
     elapsed_time = time.process_time() - process_time 
+    logger.info('Results written to file: {diff_file_name}')
     logger.info('comparing fv3gfs output directories completed. Time to process(%.4f seconds)'%elapsed_time)
     diff_file.close()
