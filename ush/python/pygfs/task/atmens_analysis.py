@@ -240,17 +240,17 @@ class AtmEnsAnalysis(Analysis):
 
             # make run directory for member restart files
             bkgdir = [
-                os.path.join(task_config['DATA'], 'bkg', memchar, 'RESTART')
+                os.path.join(task_config['DATA'], 'bkg', memchar)
             ]
             FileHandler({'mkdir': bkgdir}).sync()
 
             # get FV3 RESTART files, this will be a lot simpler when using history files
             rst_dir = os.path.join(task_config.comin_ges_atmens, memchar, 'atmos/RESTART')
-            run_dir = os.path.join(task_config['DATA'], 'bkg', memchar, 'RESTART')
+            run_dir = os.path.join(task_config['DATA'], 'bkg', memchar)
 
             # atmens DA needs coupler
             basename = f'{to_fv3time(task_config.current_cycle)}.coupler.res'
-            bkglist.append([os.path.join(rst_dir, basename), os.path.join(task_config['DATA'], 'bkg', memchar, 'RESTART', basename)])
+            bkglist.append([os.path.join(rst_dir, basename), os.path.join(task_config['DATA'], 'bkg', memchar, basename)])
             # atmens DA needs core, srf_wnd, tracer, phy_data, sfc_data
             for ftype in ['core', 'srf_wnd', 'tracer']:
                 template = f'{to_fv3time(self.task_config.current_cycle)}.fv_{ftype}.res.tile{{tilenum}}.nc'
