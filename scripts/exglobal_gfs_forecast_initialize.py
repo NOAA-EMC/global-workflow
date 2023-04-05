@@ -2,7 +2,7 @@
 
 # -----------------------------------------------------------------------------
 #
-# Program Name:          exglobal_gfs_forecast_init.py
+# Program Name:          exglobal_fv3gfs_forecast_init.py
 #
 # Author(s)/Contacts(s): Henry R. Winterbottom (henry.winterbottom@noaa.gov)
 #
@@ -21,7 +21,7 @@
 Script
 ------
 
-    exglobal_ufs_forecast_init.py
+    exglobal_fv3gfs_forecast_init.py
 
 Description
 -----------
@@ -63,7 +63,7 @@ import time
 
 from pygw.configuration import cast_strdict_as_dtypedict
 from pygw.logger import Logger
-from pygfs.task.fv3gfs import FV3GFS
+from pygfs.task.fv3gfs_forecast import FV3GFS
 
 # ----
 
