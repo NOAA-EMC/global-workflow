@@ -33,19 +33,12 @@ from dataclasses import dataclass
 from typing import Any, Dict
 
 from pygw.attrdict import AttrDict
-from pygw.logger import Logger
+from pygw.timetools import strftime, strptime
 
 from pygfs.exceptions import UFSWMError
-
-# ----
-
-# Define the supported options for the respective forecast model
-# attributes; only GFS configurations are currently supported.
-ATM_RES_LIST = ["c48", "c96", "c192", "c384"]
-
-ATM_LEVS_LIST = [64, 128]
-
-ATM_NTILES_LIST = [6]
+from pygfs.utils.grids import FV3GFS
+from pygfs.utils.logger import Logger
+from pygfs.utils.datetime import DateTime
 
 # ----
 
@@ -69,7 +62,7 @@ class UFSWM:
 
     """
 
-    def __init__(self, config: Dict, forecast_config: Dict):
+    def __init__(self: dataclass, config: Dict, model: str):
         """
         Description
         -----------
@@ -80,109 +73,54 @@ class UFSWM:
 
         # Define the base-class attributes.
         self.config = config
-        self.forecast_config = forecast_config
-        self.logger = Logger(level=self.config.loglev, colored_log=True)
+        self.model = model.lower()
+        self.logger = Logger(config=self.config).logger
 
-        # Configure the respective forecast models.
-        self.atmos_grid = self.__atmos_grid_setup(
-            atm_res=self.config.CASE,
-            atm_levs=self.config.LEVS,
-            atm_ntiles=self.forecast_config.ntiles,
-            logger=self.logger,
-        )
+        # Define the respective forecast model configuration
+        # attributes.
+        self.configure()
 
-    @staticmethod
-    def __atmos_grid_setup(
-        atm_res: str, atm_levs: int, atm_ntiles: int, logger: object
-    ) -> Dict[str, Any]:
+    def __fv3gfs(self: dataclass) -> None:
         """
         Description
         -----------
 
-        This method defines the atmosphere model (e.g., FV3) grid
-        configuration attributes.
-
-        Parameters
-        ----------
-
-        atm_res: str
-
-            A Python string define the atmosphere model resolution;
-            this should be of the form `C##` where `##` is the
-            cubed-sphere resolution (e.g., 48, 96, 192, etc.,).
-
-        atm_levs: int
-
-            A Python integer defining the total number of levels for
-            the atmosphere model configuration.
-
-        atm_ntiles: int
-
-            A Python integer defining the total number of tiles for
-            the cubed-sphere (i.e., FV3 forecast model) application.
-
-        logger: object
-
-            A Python object containing the defined logger object.
-
-        Returns
-        -------
-
-        atm_config: Dict[str, Any]
-
-            A Python dictionary containing the atmosphere model
-            configuration established via the parameter attributes.
+        This method defines the configuration attributes for the UFS
+        FV3 GFS forecast component model.
 
         """
 
-        # Check that the parameter attribute values are valid; proceed
-        # accordingly.
-        atm_config = AttrDict()
-        if atm_res.lower() not in ATM_RES_LIST:
-            msg = (
-                f"The cubed sphere resolution {atm_res.upper()} is not "
-                "supported; valid values are: "
-                f"{', '.join([res.upper() for res in ATM_RES_LIST])}. "
-                "Aborting!!!"
-            )
-            raise UFSWMError(msg=msg)
+        # Define the configuration attributes for the FV3 GFS forecast
+        # model.
+        self.config.ufswm.atmos.grids = FV3GFS(config=self.config,
+                                               model="FV3GFS",
+                                               res=self.config.CASE,
+                                               nlevs=self.config.LEVS).grids
 
-        if atm_levs not in ATM_LEVS_LIST:
-            msg = (
-                f"The number of vertical levels {atm_levs} is not supported; "
-                f"valid values are {','.join(ATM_LEVS_LIST)}. "
-                "Aborting!!!"
-            )
-            raise UFSWMError(msg=msg)
-
-        if atm_ntiles not in ATM_NTILES_LIST:
-            msg = (
-                f"The specified number of cubed-sphere tiles {atm_ntiles} is not "
-                f"supported; value values are {','.join(ATM_NTILES_LIST)}. "
-                "Aborting!!!"
-            )
-            raise UFSWMError(msg=msg)
+        # HRW: The following may eventually be moved out of this
+        # method into `configure`; this is dependent on the additional
+        # UFS component model needs; TBD.
+        self.config.ufswm.atmos.datetime = DateTime(datestr=self.config.CDATE,
+                                                    fmt="%Y-%m-%d %H:%M:%S").datetime
 
         msg = (
             "\nThe atmosphere model configuration is as follows:\n\n"
-            f"Cubed sphere resolution: {atm_res.upper()}\n"
-            f"Vertical levels: {atm_levs}\n"
-            f"Number of cubed sphere tiles: {atm_ntiles}.\n"
+            f"Cubed sphere resolution: {self.config.ufswm.atmos.grids.csres.upper()}\n"
+            f"Vertical levels: {self.config.ufswm.atmos.grids.nlevs}\n"
+            f"Number of cubed sphere tiles: {self.config.ufswm.atmos.grids.ntiles}.\n"
         )
-        logger.warn(msg=msg)
+        self.logger.warn(msg=msg)
 
-        # Define all atmosphere model configuration attributes with
-        # respect to the parameter attributes.
-        atm_config = AttrDict()
+    def configure(self: dataclass) -> None:
+        """
+        Description
+        -----------
 
-        atm_config.case_res = atm_res
-        atm_config.csg_res = int(atm_config.case_res[1:])
+        This method collects and defines the configuration attributes
+        for the respective UFS forecast component model.
 
-        atm_config.jcap = int((atm_config.csg_res * 2) - 2)
-        atm_config.lonb = int(4 * atm_config.csg_res)
-        atm_config.lonb = int(2 * atm_config.csg_res)
-        atm_config.npx = int(atm_config.csg_res + 1)
-        atm_config.npy = int(atm_config.csg_res + 1)
-        atm_config.npz = int(atm_levs - 1)
+        """
 
-        return atm_config
+        # UFS WM atmosphere FV3 GFS forecast model.
+        if self.model == "fv3gfs":
+            self.__fv3gfs()
