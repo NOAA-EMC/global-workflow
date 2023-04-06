@@ -18,10 +18,10 @@ Classes
         ush/python/pygfs/task/forecast module; it is a sub-class of
         WorkflowException.
 
-    GFSError(msg)
+    FV3GFSError(msg)
 
         This is the base-class for exceptions encountered within the
-        ush/python/pygfs/task/gfs module; it is a sub-class of
+        ush/python/pygfs/task/fv3gfs module; it is a sub-class of
         WorkflowException.
 
     GridsError(msg)
@@ -58,8 +58,8 @@ from pygw.exceptions import WorkflowException
 # ----
 
 # Define all available classes.
-__all__ = ["ForecastError", "GFSError", "GridsInfoError", "TimestampsError",
-           "UFSWMError"]
+__all__ = ["ForecastError", "FV3GFSError", "GridsInfoError",
+           "TimestampsError", "UFSWMError"]
 
 # ----
 
@@ -78,13 +78,13 @@ class ForecastError(WorkflowException):
 # ----
 
 
-class GFSError(WorkflowException):
+class FV3GFSError(WorkflowException):
     """
     Description
     -----------
 
     This is the base-class for exceptions encountered within the
-    ush/python/pygfs/task/gfs module; it is a sub-class of
+    ush/python/pygfs/task/fv3gfs module; it is a sub-class of
     WorkflowException.
 
     """
