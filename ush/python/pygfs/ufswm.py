@@ -32,8 +32,11 @@ __version__ = 0.0
 from dataclasses import dataclass
 from typing import Dict
 
+from pygw.decorators import private
+
 from pygfs.utils.datetime import DateTime
-from pygfs.utils.grids import FV3GFS
+from pygfs.utils.grids import FV3GFS as FV3GFS_grids
+from pygfs.utils.layout import FV3GFS as FV3GFS_layout
 from pygfs.utils.logger import Logger
 
 # ----
@@ -76,7 +79,8 @@ class UFSWM:
         # attributes.
         self.configure()
 
-    def __fv3gfs(self: dataclass) -> None:
+    @private
+    def fv3gfs(self: dataclass) -> None:
         """
         Description
         -----------
@@ -88,7 +92,7 @@ class UFSWM:
 
         # Define the configuration attributes for the FV3 GFS forecast
         # model.
-        self.config.ufswm.atmos.grids = FV3GFS(
+        self.config.ufswm.atmos.grids = FV3GFS_grids(
             config=self.config,
             model="FV3GFS",
             res=self.config.CASE,
@@ -110,6 +114,11 @@ class UFSWM:
         )
         self.logger.warn(msg=msg)
 
+        # Define the layout attribuites for the FV3 GFS forecast
+        # model.
+        self.config.ufswm.atmos.layout = FV3GFS_layout(
+            config=self.config, res=self.config.CASE).setup()
+
     def configure(self: dataclass) -> None:
         """
         Description
@@ -122,4 +131,4 @@ class UFSWM:
 
         # UFS WM atmosphere FV3 GFS forecast model.
         if self.model == "fv3gfs":
-            self.__fv3gfs()
+            self.fv3gfs()
