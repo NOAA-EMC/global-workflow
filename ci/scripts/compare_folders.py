@@ -351,6 +351,6 @@ if __name__ == '__main__':
     print_diff_files( compare_files )
     logger.info(f'Total number of files common to both experiments: {files_compared} of which {total_num_diff_files} differed')
     elapsed_time = time.process_time() - process_time 
-    logger.info('Results written to file: {diff_file_name}')
+    logger.info(f'Results written to file: {diff_file_name}')
     logger.info('comparing fv3gfs output directories completed. Time to process(%.4f seconds)'%elapsed_time)
     diff_file.close()
