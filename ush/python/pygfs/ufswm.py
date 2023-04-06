@@ -94,7 +94,6 @@ class UFSWM:
         # model.
         self.config.ufswm.atmos.grids = FV3GFS_grids(
             config=self.config,
-            model="FV3GFS",
             res=self.config.CASE,
             nlevs=self.config.LEVS,
         ).grids
