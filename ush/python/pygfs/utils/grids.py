@@ -7,12 +7,24 @@ Module
 Description
 -----------
 
-
+    This module contains the base-class object for all grid definition
+    applications; the module also contains sub-classes for the
+    respective, and supported, Unified Forecast System (UFS) Weather
+    Model (WM) component models.
 
 Classes
 -------
 
+    FV3GFS(config, res, nlevs)
 
+        This is the base-class object for all FV3 GFS grid attribute
+        defintions as a function grid-spacing resolution; it is a
+        sub-class of Grids.
+
+    Grids()
+
+        This is the base-class object for all forecast model grid
+        attribute computations and definitions.
 
 """
 
@@ -31,13 +43,7 @@ from dataclasses import dataclass
 
 from pygfs.exceptions import GridsError
 from pygw.attrdict import AttrDict
-
-# ----
-
-# Define the supported options for the respective forecast model
-# attributes; only GFS configurations are currently supported.
-FV3GFS_RES_LIST = ["c48", "c96", "c192", "c384"]
-FV3GFS_LEVS_LIST = [64, 128]
+from pygw.decorators import private
 
 # ----
 
@@ -48,9 +54,12 @@ class Grids:
     Description
     -----------
 
+    This is the base-class object for all forecast model grid
+    attribute computations and definitions.
+
     """
 
-    def __init__(self: dataclass, model: str, res: Union[str, int]):
+    def __init__(self: dataclass):
         """
         Description
         -----------
@@ -61,17 +70,45 @@ class Grids:
 
         # Define the base-class attributes.
         self.grids = AttrDict()
-        self.model = model.lower()
-        self.res = str(res)
 
 # ----
 
 
 class FV3GFS(Grids):
-    """ """
+    """
+    Description
+    -----------
 
-    def __init__(self: Grids, config: Dict, model: str, res: str,
-                 nlevs: int):
+    This is the base-class object for all FV3 GFS grid attribute
+    defintions as a function grid-spacing resolution; it is a
+    sub-class of Grids.
+
+    Parameters
+    ----------
+
+    config: Dict
+
+        A Python dictionary containing the run-time environment
+        configuration.
+
+    res: str
+
+        A Python string specifying a valid cubed-sphere resolution
+        (e.g., C48, C96, etc.,)
+
+    nlevs: int
+
+        A Python integer specifying a valid number of staggered
+        vertical levels.
+
+    """
+
+    # Define the supported options for the respective forecast model
+    # attributes; only GFS configurations are currently supported.
+    FV3GFS_RES_LIST = ["c48", "c96", "c192", "c384"]
+    FV3GFS_LEVS_LIST = [64, 128]
+
+    def __init__(self: Grids, config: Dict, res: str, nlevs: int):
         """
         Description
         -----------
@@ -81,38 +118,56 @@ class FV3GFS(Grids):
         """
 
         # Define the base-class attributes.
-        super().__init__(model=model, res=res)
+        super().__init__()
         self.grids.ntiles = 6
         self.grids.nlevs = nlevs
-        self.grids.csres = self.res
-        self.grids.res = int(self.res[1:])
+        self.grids.csres = res
+        self.grids.res = int(self.grids.csres[1:])
 
         # Validate and build the grids information attributes.
-        self.__check()
-        self.__config()
+        self.check()
+        self.config()
 
-    def __check(self: Grids):
+    @private
+    def check(self: Grids):
         """
+        Description
+        -----------
+
+        This method checks the validity of both the cubed-sphere
+        resolution and total number of staggered vertical levels.
+
+        Raises
+        ------
+
+        GridsError:
+
+            - raised if the specified cubed-sphere resolution is not a
+              valid cubed-sphere resolution.
+
+            - raised if the number of staggered vertical levels is not
+              supported.
 
         """
         # Check that the base-class object containing the FV3 GFS
         # forecast model attributes is valid; proceed accordingly.
-        if self.grids.csres.lower() not in FV3GFS_RES_LIST:
+        if self.grids.csres.lower() not in self.FV3GFS_RES_LIST:
             msg = (
-                f"The cubed sphere resolution {self.grids.csres.upper()} is not "
+                f"The cubed-sphere resolution {self.grids.csres.upper()} is not "
                 "supported; valid values are: "
                 f"{', '.join([res.upper() for res in FV3GFS_RES_LIST])}. Aborting!!!"
             )
             raise GridsError(msg=msg)
 
-        if self.grids.nlevs not in FV3GFS_LEVS_LIST:
+        if self.grids.nlevs not in self.FV3GFS_LEVS_LIST:
             msg = (f"The specified number of vertical levels {self.grids.levs}"
                    f"is not supported; valid values are {','.join(FV3GFS_LEVS_LIST)}. "
                    "Aborting!!!"
                    )
             raise GridsError(msg=msg)
 
-    def __config(self: Grids):
+    @private
+    def config(self: Grids):
         """
         Description
         -----------
@@ -122,6 +177,8 @@ class FV3GFS(Grids):
 
         """
 
+        # Compute and define the grid attributes using the resolution
+        # of the cubed-sphere.
         grids_dict = {
             "jcap": int(self.grids.res * 2) - 2,
             "lonb": int(4*self.grids.res),
