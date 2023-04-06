@@ -12,12 +12,6 @@ Description
 Classes
 -------
 
-    DateTimeError(msg)
-
-        This is the base-class for exceptions encountered within the
-        ush/python/pygfs/utils/datetime module; it is a sub-class of
-        WorkflowException.
-
     ForecastError(msg)
 
         This is the base-class for exceptions encountered within the
@@ -34,6 +28,12 @@ Classes
 
         This is the base-class for exceptions encountered within the
         ush/python/pygfs/utils/grids module; it is a sub-class of
+        WorkflowException.
+
+    TimestampsError(msg)
+
+        This is the base-class for exceptions encountered within the
+        ush/python/pygfs/utils/timestamps module; it is a sub-class of
         WorkflowException.
 
     UFSWMError(msg)
@@ -58,22 +58,8 @@ from pygw.exceptions import WorkflowException
 # ----
 
 # Define all available classes.
-__all__ = ["DateTimeError", "ForecastError", "GFSError", "GridsInfoError",
+__all__ = ["ForecastError", "GFSError", "GridsInfoError", "TimestampsError",
            "UFSWMError"]
-
-# ----
-
-
-class DateTimeError(WorkflowException):
-    """
-    Description
-    -----------
-
-    This is the base-class for exceptions encountered within the
-    ush/python/pygfs/utils/datetime module; it is a sub-class of
-    WorkflowException.
-
-    """
 
 # ----
 
@@ -117,6 +103,19 @@ class GridsError(WorkflowException):
 
     """
 
+# ----
+
+
+class TimestampsError(WorkflowException):
+    """
+    Description
+    -----------
+
+    This is the base-class for exceptions encountered within the
+    ush/python/pygfs/utils/timestamps module; it is a sub-class of
+    WorkflowException.
+
+    """
 
 # ----
 
