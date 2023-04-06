@@ -149,7 +149,7 @@ class Forecast(Task):
             path=dirtree_config.fixed_files.land, data=self.config)
         FileHandler(land_fcst_config).sync()
 
-        if self.config.coupled: # HRW: THIS NEEDS TO BE UPDATED.
+        if self.config.coupled:  # HRW: THIS NEEDS TO BE UPDATED.
             FileHandler(dirtree_config.dirtree_ocean).sync()
             ocean_fcst_config = parse_yamltmpl(
                 path=dirtree_config.fixed_files.ocean, data=self.config)
