@@ -2,13 +2,13 @@
 Module
 ------
 
-    pygfs.ufswm (pygfs/ufswm.py)
+    pygfs.task.forecast (pygfs/task/forecast.py)
 
 Description
 -----------
 
-    This module contains the base-class module for all Unified
-    Forecast System (UFS) Weather Model (WM) applications.
+    This module contains the base-class module for forecast model
+    applications.
 
 Classes
 -------
@@ -117,8 +117,7 @@ class Forecast(Task):
         """
 
         model_configure_tmpl = self.config.forecast.model_configure
-        model_configure_path = os.path.join(
-            self.runtime_config.DATA, "model_configure")
+        model_configure_path = os.path.join(self.runtime_config.DATA, "model_configure")
 
         Jinja(model_configure_tmpl, data=self.config, allow_missing=True).save(
             model_configure_path
@@ -138,8 +137,7 @@ class Forecast(Task):
         # Define then NEMS configuration template and write the file
         # accordingly.
         nems_configure_tmpl = self.config.forecast.nems_configure
-        nems_configure_path = os.path.join(
-            self.runtime_config.DATA, "nems.configure")
+        nems_configure_path = os.path.join(self.runtime_config.DATA, "nems.configure")
 
         # HRW: FORCING ALL TEMPLATE VARIABLES TO BE RENDERED IF
         # THEY ARE WITHOUT DEFAULT VALUES (IN THE JINJA TEMPLATE);
