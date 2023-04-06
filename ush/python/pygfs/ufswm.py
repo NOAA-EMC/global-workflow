@@ -34,10 +34,10 @@ from typing import Dict
 
 from pygw.decorators import private
 
-from pygfs.utils.datetime import DateTime
 from pygfs.utils.grids import FV3GFS as FV3GFS_grids
 from pygfs.utils.layout import FV3GFS as FV3GFS_layout
 from pygfs.utils.logger import Logger
+from pygfs.utils.timestamps import Timestamps
 
 # ----
 
@@ -102,9 +102,9 @@ class UFSWM:
         # HRW: The following may eventually be moved out of this
         # method into `configure`; this is dependent on the additional
         # UFS component model needs; TBD.
-        self.config.ufswm.atmos.datetime = DateTime(
+        self.config.ufswm.atmos.timestamps = Timestamps(
             datestr=self.config.CDATE, fmt="%Y-%m-%d %H:%M:%S"
-        ).datetime
+        ).timestamps
 
         msg = (
             "\nThe atmosphere model configuration is as follows:\n\n"
@@ -117,7 +117,8 @@ class UFSWM:
         # Define the layout attribuites for the FV3 GFS forecast
         # model.
         self.config.ufswm.atmos.layout = FV3GFS_layout(
-            config=self.config, res=self.config.CASE).setup()
+            config=self.config, res=self.config.CASE
+        ).setup()
 
     def configure(self: dataclass) -> None:
         """
