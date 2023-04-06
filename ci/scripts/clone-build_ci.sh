@@ -78,9 +78,9 @@ echo "${commit}" > "../commit"
 cd sorc
 export BUILD_JOBS=8
 rm -rf log.build
-./checkout.sh -g -c
+./checkout.sh -c -g -u
 # build full cycle
-./build_all.sh -g &>> log.build
+./build_all.sh  &>> log.build
 
 # Validations
 build_status=$?

@@ -8,7 +8,7 @@ set -eux
 #
 # Abstract:
 #
-# This script uses GitHub CLI to check for Pull Requests with {machine}-CI tags on the
+# This script uses GitHub CLI to check for Pull Requests with CI-Ready-${machine} tags on the
 # development branch for the global-workflow repo.  It then stages tests directories per
 # PR number and calls clone-build_ci.sh to perform a clone and full build from $(HOMEgfs)/sorc
 # of the PR. It then is ready to run a suite of regression tests with various
@@ -52,7 +52,7 @@ export REPO_URL=${REPO_URL:-"https://github.com/NOAA-EMC/global-workflow.git"}
 set -eux
 pr_list_file="open_pr_list"
 rm -f "${pr_list_file}"
-list=$(${GH} pr list --repo "${REPO_URL}" --label "${MACHINE_ID^}-CI" --state "open")
+list=$(${GH} pr list --repo "${REPO_URL}" --label "CI-${MACHINE_ID^}-Ready" --state "open")
 list=$(echo "${list}" | awk '{print $1;}' > "${GFS_CI_ROOT}/${pr_list_file}")
 
 if [[ -s "${GFS_CI_ROOT}/${pr_list_file}" ]]; then
@@ -73,7 +73,7 @@ module load "module_ci.${MACHINE_ID}"
 module list
 
 for pr in ${pr_list}; do
-  "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "${MACHINE_ID^}-CI" --add-label "${MACHINE_ID^}-Running"
+  "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Ready" --add-label "CI-${MACHINE_ID^}-Running"
   echo "Processing Pull Request #${pr}"
   pr_dir="${GFS_CI_ROOT}/PR/${pr}"
   mkdir -p "${pr_dir}"
@@ -104,17 +104,17 @@ for pr in ${pr_list}; do
           echo "Failed on createing experiment ${pslot}"
           echo "Experiment setup: failed at $(date) for experiment ${pslot}" || true
         } >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
-        "${GH}" pr edit "${pr}" --repo "${REPO_URL}" --remove-label "${MACHINE_ID^}-Running" --add-label "${MACHINE_ID^}-Failed"
+        "${GH}" pr edit "${pr}" --repo "${REPO_URL}" --remove-label "CI-${MACHINE_ID^}-Running" --add-label "CI-${MACHINE_ID^}-Failed"
       fi
     done
     "${GH}" pr comment "${pr}" --repo "${REPO_URL}" --body-file "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
-    "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "${MACHINE_ID^}-Running" --add-label "${MACHINE_ID^}-Passed"
+    "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Running" --add-label "CI-${MACHINE_ID^}-Passed"
   else 
     {
       echo "Failed on cloning and building global-workflowi PR: ${pr}"
       echo "CI on ${MACHINE_ID^} failed to build on $(date) for repo ${REPO_URL}}" || true
     } >> "${GFS_CI_ROOT}/PR/${pr}/output_${id}"
-    "${GH}" pr edit "${pr}" --repo "${REPO_URL}" --remove-label "${MACHINE_ID^}-Running" --add-label "${MACHINE_ID^}-Failed"
+    "${GH}" pr edit "${pr}" --repo "${REPO_URL}" --remove-label "CI-${MACHINE_ID^}-Running" --add-label "CI-${MACHINE_ID^}-Failed"
   fi
 
 done # looping over each open and labeled PR
