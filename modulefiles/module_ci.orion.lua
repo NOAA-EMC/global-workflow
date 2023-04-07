@@ -9,6 +9,7 @@ load(pathJoin("contrib","0.1"))
 load(pathJoin("rocoto","1.3.3"))
 load(pathJoin("git","2.28.0"))
 load(pathJoin("nccmp","1.8.7"))
+load(pathJoin("wgrib2","3.0.2"))
 
 prepend_path("MODULEPATH", "/work2/noaa/global/wkolczyn/save/hpc-stack/modulefiles/stack")
 load(pathJoin("hpc", "1.2.0"))

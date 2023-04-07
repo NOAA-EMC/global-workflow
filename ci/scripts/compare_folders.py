@@ -33,6 +33,25 @@ def get_args():
 def compare(folder1, folder2 ):
     return _recursive_dircmp(folder1, folder2)
 
+def count_nonid_corr(test_string: str, quiet=False):
+    pattern = re.compile(r"(\d+:\d+:)(?P<var>.*):rpn_corr=(?P<corr>.*)")
+    matches = [m.groupdict() for m in pattern.finditer(test_string)]
+
+    count = 0
+    for match in matches:
+        if float(match['corr']) != 1.0:
+            count = count + 1
+            if not quiet:
+                print(f"{match['var']}: corr={match['corr']}")
+
+    if not quiet:
+        if count == 0:
+            print("All fields are identical!")
+        else:
+            print(f"{count} variables are different")
+
+    return count
+
 def _recursive_dircmp(folder1, folder2 ):
 
     comparison = filecmp.dircmp(folder1, folder2)
@@ -175,6 +194,8 @@ def print_diff_files(dcmp):
     num_netcdf_differing_files_onlyheader = 0
     num_tar_differing_files = 0
     num_identified_tar_files = 0
+    num_grib_differing_files = 0
+    num_identified_grib_files = 0
     num_differing_files = 0
     for name in dcmp.diff_files:
         file1 = os.path.join(dcmp.left,name); file2 = os.path.join(dcmp.right,name)
@@ -203,6 +224,13 @@ def print_diff_files(dcmp):
             if not tarcmp( file1, file2 ):
                 diff_file.write('tar file %s differs in directories %s and %s\n' % (name, file1_shortpath, file2_shortpath))
                 num_tar_differing_files += 1
+        elif any([x in name for x in ["grib2","grb2","flux"]]):
+            num_identified_grib_files += 1
+            grib2_diff_outout=WGRIB2(file1,"-var", "-rpn","sto_1" ,"-import_grib", file2,"-rpn", "rcl_1:print_corr")
+            count=count_nonid_corr(grib2_diff_output,quiet=True)
+            if count != 0:
+               diff_file.write('grib file %s differs in directories %s and %s\n' % (name, file1_shortpath, file2_shortpath))
+               num_grib_differing_files += 1
         else:
             diff_file.write('file %s differs in directories %s and %s\n'% (name, file1_shortpath, file2_shortpath))
             num_differing_files += 1
@@ -249,12 +277,15 @@ if __name__ == '__main__':
 
     fixed_dir_experiment_name = 'fv3gfs_regression_experiments'
 
-    test = which("nccmp")
-    if test is None:
+    if which("nccmp") is None:
         logger.critical('The NCO nccmp utility was not found')
+        sys.exit(-1)
+    if which("wgrib2") is None:
+        logger.critical('The wgrib2 utility was not found')
         sys.exit(-1)
 
     NCCMP = Executable("nccmp")
+    WGRIB2 = Executable("wgrib2")
 
     args = get_args()
 
@@ -344,6 +375,9 @@ if __name__ == '__main__':
             match_pass=False
     if match_pass:
         logger.info(f"Both directorires: {os.path.basename(foldera)} and {os.path.basename(folderb)} match with {len(results['both'])} distinct files and directories")
+    else:
+        logger.info(f"Total number of distinct files and directories found in both: {len(results['both'])}")
+
     logger.info('checking for file differences...')
     egnore_file_list = ['*.log','INPUT','RESTART','logs']
     compare_files = filecmp.dircmp(folder1, folder2, egnore_file_list)
