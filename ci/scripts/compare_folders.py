@@ -10,6 +10,7 @@ logger = Logger(level="INFO",_format='%(levelname)-5s %(message)s',colored_log=F
 
 from pygw.executable import Executable
 from pygw.executable import which
+import re
 
 def get_args():
     import argparse
@@ -185,8 +186,7 @@ def print_diff_files(dcmp):
     #if len( dcmp.diff_files ) == 0 and len(dcmp.common_files) != 0:
     #    logger.info('out of %d common files no differences found'%len(dcmp.common_files))
     file1_shortpath = '/'+dcmp.left.replace(cwd,'').replace(fixed_dir_experiment_name,'').lstrip('/')
-    if verbose:
-        print('checked in directory %s'%(file1_shortpath),end="\r")
+    print('checked in directory %s'%(file1_shortpath),end="\r")
     if len( dcmp.diff_files) != 0 and verbose:
         number_netcdf_files = len([s for s in dcmp.diff_files if '.nc' in s])
         logger.info('checking %d differing files of which %d are NetCDF and some may be tar files'%(len(dcmp.diff_files),number_netcdf_files))
@@ -197,6 +197,8 @@ def print_diff_files(dcmp):
     num_grib_differing_files = 0
     num_identified_grib_files = 0
     num_differing_files = 0
+    import io
+    wgrib2_output = io.StringIO()
     for name in dcmp.diff_files:
         file1 = os.path.join(dcmp.left,name); file2 = os.path.join(dcmp.right,name)
         file1_shortpath = '/'+dcmp.left.replace(cwd,'').replace(fixed_dir_experiment_name,'').lstrip('/')
@@ -226,7 +228,7 @@ def print_diff_files(dcmp):
                 num_tar_differing_files += 1
         elif any([x in name for x in ["grib2","grb2","flux"]]):
             num_identified_grib_files += 1
-            grib2_diff_outout=WGRIB2(file1,"-var", "-rpn","sto_1" ,"-import_grib", file2,"-rpn", "rcl_1:print_corr")
+            grib2_diff_output=WGRIB2(file1,"-var", "-rpn","sto_1" ,"-import_grib", file2,"-rpn", "rcl_1:print_corr",output=str)
             count=count_nonid_corr(grib2_diff_output,quiet=True)
             if count != 0:
                diff_file.write('grib file %s differs in directories %s and %s\n' % (name, file1_shortpath, file2_shortpath))
