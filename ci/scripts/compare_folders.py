@@ -193,7 +193,8 @@ def print_diff_files(dcmp):
     num_identified_grib_files = 0
     num_differing_files = 0
     for name in dcmp.diff_files:
-        file1 = os.path.join(dcmp.left, name); file2 = os.path.join(dcmp.right, name)
+        file1 = os.path.join(dcmp.left, name)
+        file2 = os.path.join(dcmp.right, name)
         file1_shortpath = '/' + dcmp.left.replace(cwd, '').replace(fixed_dir_experiment_name, '').lstrip('/')
         file2_shortpath = '/' + dcmp.right.replace(cwd, '').replace(fixed_dir_experiment_name, '').lstrip('/')
         if '.nc' in name:
@@ -204,9 +205,10 @@ def print_diff_files(dcmp):
                 else:
                     netcdf_diff_output = NCCMP("--diff-count=3", "--threads=4", "--data", file1, file2)
                 if netcdf_diff_output is None:
-                    diff_file.write(f'NetCDF file {name} of type: {net_cdf_type} differs only in the header in directories {file1_shortpath} and {file2_shortpath}\n')
+                    diff_file.write(f'NetCDF file {name} of type: {net_cdf_type} differs only in the header\\
+                    in directories {file1_shortpath} and {file2_shortpath}\n')
                     num_netcdf_differing_files_onlyheader += 1
-                else: 
+                else:
                     diff_file.write(f'NetCDF file {name} of type: {net_cdf_type} differs {file1_shortpath} in directories {file2_shortpath} and %s\n')
                     num_netcdf_differing_files += 1
         elif tarfile.is_tarfile(file1):
@@ -220,10 +222,10 @@ def print_diff_files(dcmp):
             if not tarcmp( file1, file2 ):
                 diff_file.write(f'tar file {name} differs in directories {file1_shortpath} and {file2_shortpath}\n')
                 num_tar_differing_files += 1
-        elif any([x in name for x in ["grib2","grb2","flux"]]):
+        elif any([x in name for x in ["grib2", "grb2", "flux"]]):
             num_identified_grib_files += 1
-            grib2_diff_output=WGRIB2(file1, "-var", "-rpn","sto_1", "-import_grib", file2, "-rpn", "rcl_1:print_corr", output=str)
-            count=count_nonid_corr(grib2_diff_output, quiet=True)
+            grib2_diff_output = WGRIB2(file1, "-var", "-rpn","sto_1", "-import_grib", file2, "-rpn", "rcl_1:print_corr", output=str)
+            count = count_nonid_corr(grib2_diff_output, quiet=True)
             if count != 0:
                diff_file.write(f'grib file {name} differs in directories {file1_shortpath} and {fil2_shortpath}\n')
                num_grib_differing_files += 1
@@ -331,7 +333,7 @@ if __name__ == '__main__':
         logger.info(f"Total number of distinct files and directories found in both: {len(results['both'])}")
 
     logger.info('checking for file differences...')
-    ignore_file_list = ['*.log','INPUT','RESTART','logs']
+    ignore_file_list = ['*.log', 'INPUT', 'RESTART', 'logs']
     compare_files = filecmp.dircmp(folder1, folder2, ignore_file_list)
     diff_file = open(diff_file_name, 'w')
     print_diff_files(compare_files)
