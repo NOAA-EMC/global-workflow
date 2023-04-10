@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
 import filecmp
-import os,sys
+import os
+import sys
 from pathlib import Path
 
 from pygw.logger import Logger
@@ -16,9 +17,9 @@ def get_args():
     import json
     parser = argparse.ArgumentParser()
     #group  = parser.add_mutually_exclusive_group(required=True)
-    parser.add_argument('--cmp_dirs',nargs=2,metavar=('ROTDIR_baseline','ROTDIR_testrun'),help='compare COMROT foloders')
-    parser.add_argument('-n','--nameID',dest="nameID",help='tag name for compare (used in output filename)')
-    parser.add_argument('-vt','--verbose_tar', help='include names of differing files within tar files', action='store_true',default=False)
+    parser.add_argument('--cmp_dirs', nargs=2,metavar=('ROTDIR_baseline','ROTDIR_testrun'),help='compare COMROT foloders')
+    parser.add_argument('-n','--nameID', dest="nameID",help='tag name for compare (used in output filename)')
+    parser.add_argument('-vt','--verbose_tar', help='include names of differing files within tar files', action='store_true', default=False)
     args = parser.parse_args()
     if args.cmp_dirs is not None:
         for dirs in args.cmp_dirs:
@@ -49,6 +50,7 @@ def count_nonid_corr(test_string: str, quiet=False):
             print(f"{count} variables are different")
 
     return count
+
 
 def _recursive_dircmp(folder1, folder2 ):
 
