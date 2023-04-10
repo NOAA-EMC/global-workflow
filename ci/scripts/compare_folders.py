@@ -18,8 +18,6 @@ def get_args():
     parser = argparse.ArgumentParser()
     #group  = parser.add_mutually_exclusive_group(required=True)
     parser.add_argument('--cmp_dirs',nargs=2,metavar=('ROTDIR_baseline','ROTDIR_testrun'),help='compare COMROT foloders')
-    parser.add_argument('--cmp_dirs_joblevel', nargs=1, metavar=('file_list.yml'), help='use stored job level file list when comparing ROTDIRs')
-    parser.add_argument('--cmp_jobs',nargs=3,metavar=('job_name','ROTDIR','file_list.yml'),help='compare files at the job level (uses file_list.yml to track)')
     parser.add_argument('-n','--nameID',dest="nameID",help='tag name for compare (used in output filename)')
     parser.add_argument('-vt','--verbose_tar', help='include names of differing files within tar files', action='store_true',default=False)
     args = parser.parse_args()
@@ -174,17 +172,14 @@ def netcdfver(filename):
 def print_diff_files(dcmp):
 
     import tarfile
-    import subprocess
-    from subprocess import run
 
     global diff_file; global cwd; global verbose
     global files_compared    
     global total_num_diff_files
     global fixed_dir_experiment_name
+
     if len(dcmp.common_dirs) != 0:
         logger.info('checking directories: %s'%' '.join(dcmp.common_dirs))
-    #if len( dcmp.diff_files ) == 0 and len(dcmp.common_files) != 0:
-    #    logger.info('out of %d common files no differences found'%len(dcmp.common_files))
     file1_shortpath = '/'+dcmp.left.replace(cwd,'').replace(fixed_dir_experiment_name,'').lstrip('/')
     print('checked in directory %s'%(file1_shortpath),end="\r")
     if len( dcmp.diff_files) != 0 and verbose:
@@ -197,8 +192,6 @@ def print_diff_files(dcmp):
     num_grib_differing_files = 0
     num_identified_grib_files = 0
     num_differing_files = 0
-    import io
-    wgrib2_output = io.StringIO()
     for name in dcmp.diff_files:
         file1 = os.path.join(dcmp.left,name); file2 = os.path.join(dcmp.right,name)
         file1_shortpath = '/'+dcmp.left.replace(cwd,'').replace(fixed_dir_experiment_name,'').lstrip('/')
@@ -257,15 +250,6 @@ def print_diff_files(dcmp):
     for sub_dcmp in dcmp.subdirs.values():
         print_diff_files(sub_dcmp)
 
-def capture_files_dir( input_dir ):
-
-    #current_file_list = collections.defaultdict(list)
-    current_file_list = []
-    for path, subdirs, files in os.walk(input_dir):
-        for name in files:
-            current_file_list.append( os.path.join(path, name) )
-    return current_file_list
-
 if __name__ == '__main__':
 
     import datetime
@@ -295,42 +279,6 @@ if __name__ == '__main__':
 
     global verbose
     verbose = args.verbose_tar
-    file_dic_list = collections.defaultdict(list)
-
-    if args.cmp_jobs is not None:
-
-        job_name = args.cmp_jobs[0]
-        ROTDIR =  args.cmp_jobs[1]
-        ROTDIR_Path = Path( args.cmp_jobs[1] )
-        if not ROTDIR_Path.is_dir():
-            logger.critical('ROTDIR %s is not a direcy')
-            sys.exit(-1)
-        yaml_files_filename =  os.path.realpath( args.cmp_jobs[2] )
-        logger.info('determining job level files for job %s in file %s'%(job_name, os.path.basename(yaml_files_filename)))
-        file_list_current = capture_files_dir( ROTDIR )
-        yaml_files_filename_Path = Path(yaml_files_filename)
-        if yaml_files_filename_Path.is_file():
-            yaml_files_fptr = open(  yaml_files_filename )
-            file_dic_list = yaml.load( yaml_files_fptr  )
-            yaml_files_fptr.close()
-
-        if 'prior_ROTDIR' in file_dic_list:
-            result = []
-            for file in file_list_current:
-                if file not in file_dic_list['prior_ROTDIR']:
-                    result.append(file)
-            file_dic_list[job_name] = result
-        else:
-            file_dic_list[job_name] = file_list_current
-            
-        file_dic_list['prior_ROTDIR'] = file_list_current
-        logger.info('write out file %s'%yaml_files_filename )
-        with open(yaml_files_filename, 'w') as outfile:
-            yaml.dump(file_dic_list, outfile, default_flow_style=False)
-
-    if  args.cmp_dirs is None:
-        logger.info( 'compare_folders script is being used to capture job level files only and is quitting')
-        sys.exit(0)
 
     folder1 = os.path.realpath( args.cmp_dirs[0] )
     folder2 = os.path.realpath( args.cmp_dirs[1] )
@@ -381,8 +329,8 @@ if __name__ == '__main__':
         logger.info(f"Total number of distinct files and directories found in both: {len(results['both'])}")
 
     logger.info('checking for file differences...')
-    egnore_file_list = ['*.log','INPUT','RESTART','logs']
-    compare_files = filecmp.dircmp(folder1, folder2, egnore_file_list)
+    ignore_file_list = ['*.log','INPUT','RESTART','logs']
+    compare_files = filecmp.dircmp(folder1, folder2, ignore_file_list)
     diff_file = open( diff_file_name, 'w')
     print_diff_files( compare_files )
     logger.info(f'Total number of files common to both experiments: {files_compared} of which {total_num_diff_files} differed')
