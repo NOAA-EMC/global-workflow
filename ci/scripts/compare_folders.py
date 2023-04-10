@@ -17,20 +17,21 @@ def get_args():
     import argparse
     import json
     parser = argparse.ArgumentParser()
-    parser.add_argument('--cmp_dirs', nargs=2,metavar=('ROTDIR_baseline','ROTDIR_testrun'), help='compare COMROT foloders')
+    parser.add_argument('--cmp_dirs', nargs=2, metavar=('ROTDIR_baseline', 'ROTDIR_testrun'), help='compare COMROT foloders')
     parser.add_argument('-n', '--nameID', dest="nameID", help='tag name for compare (used in output filename)')
     parser.add_argument('-vt', '--verbose_tar', help='include names of differing files within tar files', action='store_true', default=False)
     args = parser.parse_args()
     if args.cmp_dirs is not None:
         for dirs in args.cmp_dirs:
-            if not Path(dirs).is_dir( ):
-                logger.critical('directory %s does not exsist'%dirs)
+            if not Path(dirs).is_dir():
+                logger.critical(f'directory {dirs} does not exsist')
                 sys.exit(-1)
     return args
 
 
 def compare(folder1, folder2):
     return _recursive_dircmp(folder1, folder2)
+
 
 def count_nonid_corr(test_string: str, quiet=False):
     pattern = re.compile(r"(\d+:\d+:)(?P<var>.*):rpn_corr=(?P<corr>.*)")
@@ -75,6 +76,7 @@ def _recursive_dircmp(folder1, folder2):
 
     return data
 
+
 def tarcmp(tar_file_one, tar_file_two):
 
     import hashlib
@@ -82,9 +84,9 @@ def tarcmp(tar_file_one, tar_file_two):
 
     tar1 = tarfile.open(tar_file_one, mode="r")
     tar2 = tarfile.open(tar_file_two, mode="r")
-    chunk_size = 100*1024
+    chunk_size = 100 * 1024
 
-    for member1,member2 in list(zip(tar1, tar2)):
+    for member1, member2 in list(zip(tar1, tar2)):
         if not member1.isfile():
             continue
 
@@ -109,6 +111,7 @@ def tarcmp(tar_file_one, tar_file_two):
 
     return True
 
+
 def tarcmp_verbose(tar_file_one, tar_file_two):
 
     import hashlib
@@ -124,7 +127,7 @@ def tarcmp_verbose(tar_file_one, tar_file_two):
 
         tar = tarfile.open(tar_file, mode="r")
 
-        chunk_size = 100*1024
+        chunk_size = 100 * 1024
         store_digests = {}
         files_md5[tar_file] = {}
 
@@ -149,12 +152,6 @@ def tarcmp_verbose(tar_file_one, tar_file_two):
 
 
 def netcdfver(filename):
-#    Returns one of three strings based on the NetCDF version of the
-#    given file, or returns None if the file is not NetCDF:
-#     *  "CDF1" = NetCDF classic format
-#     *  "CDF2" = NetCDF 64-bit offset format
-#     *  "HDF5" = HDF5 file, and hence possibly a NetCDF4 file.
-#     *  None   = Not NetCDF and not HDF5
     import codecs
     with open(filename, 'rb') as f:
         eight=f.read(8)
