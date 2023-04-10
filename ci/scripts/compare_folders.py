@@ -41,15 +41,11 @@ def count_nonid_corr(test_string: str, quiet=False):
     for match in matches:
         if float(match['corr']) != 1.0:
             count = count + 1
-            if not quiet:
-                print(f"{match['var']}: corr={match['corr']}")
-
     if not quiet:
         if count == 0:
             print("All fields are identical!")
         else:
             print(f"{count} variables are different")
-
     return count
 
 
@@ -172,16 +168,17 @@ def print_diff_files(dcmp):
     import tarfile
 
     global diff_file
-    global glcwd
     global verbose
     global files_compared
     global total_num_diff_files
     global fixed_dir_experiment_name
 
+    cwd = os.getcwd()
+
     if len(dcmp.common_dirs) != 0:
         logger.info(f'checking directories: {" ".join(dcmp.common_dirs)}')
-    file1_shortpath = '/' + dcmp.left.replace(cwd, '').replace(fixed_dir_experiment_name, '').lstrip('/')
-    print(f'checked in directory {file1_shortpath}', end="\r")
+    file1_path = '/' + dcmp.left.replace(cwd, '').replace(fixed_dir_experiment_name, '').lstrip('/')
+    print(f'checked in directory {file1_path}', end="\r")
     if len(dcmp.diff_files) != 0 and verbose:
         number_netcdf_files = len([s for s in dcmp.diff_files if '.nc' in s])
         logger.info(f'checking {len(dcmp.diff_files)} differing files of which {number_netcdf_files} are NetCDF and some may be tar files')
@@ -195,8 +192,8 @@ def print_diff_files(dcmp):
     for name in dcmp.diff_files:
         file1 = os.path.join(dcmp.left, name)
         file2 = os.path.join(dcmp.right, name)
-        file1_shortpath = '/' + dcmp.left.replace(cwd, '').replace(fixed_dir_experiment_name, '').lstrip('/')
-        file2_shortpath = '/' + dcmp.right.replace(cwd, '').replace(fixed_dir_experiment_name, '').lstrip('/')
+        file1_path = '/' + dcmp.left.replace(cwd, '').replace(fixed_dir_experiment_name, '').lstrip('/')
+        file2_path = '/' + dcmp.right.replace(cwd, '').replace(fixed_dir_experiment_name, '').lstrip('/')
         if '.nc' in name:
             net_cdf_type = netcdfver(file1)
             if net_cdf_type is not None:
@@ -206,10 +203,10 @@ def print_diff_files(dcmp):
                     netcdf_diff_output = NCCMP("--diff-count=3", "--threads=4", "--data", file1, file2)
                 if netcdf_diff_output is None:
                     diff_file.write(f'NetCDF file {name} of type: {net_cdf_type} differs only in the header ' 
-                                    f'in directories {file1_shortpath} and {file2_shortpath}\n')
+                                    f'in directories {file1_path} and {file2_path}\n')
                     num_netcdf_differing_files_onlyheader += 1
                 else:
-                    diff_file.write(f'NetCDF file {name} of type: {net_cdf_type} differs {file1_shortpath} in directories {file2_shortpath} and %s\n')
+                    diff_file.write(f'NetCDF file {name} of type: {net_cdf_type} differs {file1_path} in directories {file2_path} and %s\n')
                     num_netcdf_differing_files += 1
         elif tarfile.is_tarfile(file1):
             num_identified_tar_files += 1
@@ -218,19 +215,19 @@ def print_diff_files(dcmp):
                 if len(diff_tar_members) != 0:
                     for tar_file in diff_tar_members:
                         diff_file.write(f'tar member file {tar_file} differs in tar file {name} '
-                                        f'from directories {file1_shortpath} and {file2_shortpath}\n')
+                                        f'from directories {file1_path} and {file2_path}\n')
             if not tarcmp(file1, file2):
-                diff_file.write(f'tar file {name} differs in directories {file1_shortpath} and {file2_shortpath}\n')
+                diff_file.write(f'tar file {name} differs in directories {file1_path} and {file2_path}\n')
                 num_tar_differing_files += 1
         elif any([x in name for x in ["grib2", "grb2", "flux"]]):
             num_identified_grib_files += 1
             grib2_diff_output = WGRIB2(file1, "-var", "-rpn", "sto_1", "-import_grib", file2, "-rpn", "rcl_1:print_corr", output=str)
             count = count_nonid_corr(grib2_diff_output, quiet=True)
             if count != 0:
-                diff_file.write(f'grib file {name} differs in directories {file1_shortpath} and {file2_shortpath}\n')
+                diff_file.write(f'grib file {name} differs in directories {file1_path} and {file2_path}\n')
                 num_grib_differing_files += 1
         else:
-            diff_file.write(f'file {name} differs in directories {file1_shortpath} and {file2_shortpath}\n')
+            diff_file.write(f'file {name} differs in directories {file1_path} and {file2_path}\n')
             num_differing_files += 1
         diff_file.flush()
     if num_netcdf_differing_files != 0:
@@ -306,9 +303,8 @@ if __name__ == '__main__':
             logger.critical(f'directory {folder} does not exist')
             sys.exit(-1)
 
-    cwd = os.getcwd()
     CR = '\n'
-    logger.info(f'{RC}comparing folders:{CR}   {folder1}{CR}   {folder2}{CR}')
+    logger.info(f'{CR}comparing folders:{CR}   {folder1}{CR}   {folder2}{CR}')
 
     logger.info('checking for matching file counts in directories')
     match_pass = True
@@ -336,12 +332,13 @@ if __name__ == '__main__':
         logger.info(f"Total number of distinct files and directories found in both: {len(results['both'])}")
 
     logger.info('checking for file differences...')
-    ignore_file_list = ['*.log', 'INPUT', 'RESTART', 'logs']
+    #TODO ignore does not use wild cards
+    ignore_file_list = ['*pathname*', '*.loginc.txt', '*.loganl.txt', '*.log', 'INPUT', 'RESTART', 'logs']
     compare_files = filecmp.dircmp(folder1, folder2, ignore_file_list)
     diff_file = open(diff_file_name, 'w')
     print_diff_files(compare_files)
     logger.info(f'Total number of files common to both experiments: {files_compared} of which {total_num_diff_files} differed')
     elapsed_time = time.process_time() - process_time
     logger.info(f'Results written to file: {diff_file_name}')
-    logger.info('comparing fv3gfs output directories completed. Time to process({elapse_time} seconds)')
+    logger.info(f'comparing fv3gfs output directories completed. Time to process({elapsed_time:4.4f} seconds)')
     diff_file.close()
