@@ -155,14 +155,14 @@ def netcdfver(filename):
     import codecs
     with open(filename, 'rb') as f:
         eight=f.read(8)
-        if len(eight)<4:
+        if len(eight) < 4:
             return None
         four=eight[0:4]
-        if four==b'CDF\x01':
+        if four == b'CDF\x01':
             return "CDF1"
-        elif four==b'CDF\x02':
+        elif four == b'CDF\x02':
             return "CDF2"
-        elif eight==b'\x89\x48\x44\x46\x0d\x0a\x1a\x0a':
+        elif eight == b'\x89\x48\x44\x46\x0d\x0a\x1a\x0a':
             return "HDF5"
     return None
 
@@ -171,18 +171,20 @@ def print_diff_files(dcmp):
 
     import tarfile
 
-    global diff_file; global cwd; global verbose
+    global diff_file
+    global glcwd
+    global verbose
     global files_compared    
     global total_num_diff_files
     global fixed_dir_experiment_name
 
     if len(dcmp.common_dirs) != 0:
         logger.info('checking directories: %s'%' '.join(dcmp.common_dirs))
-    file1_shortpath = '/'+dcmp.left.replace(cwd,'').replace(fixed_dir_experiment_name,'').lstrip('/')
-    print('checked in directory %s'%(file1_shortpath),end="\r")
-    if len( dcmp.diff_files) != 0 and verbose:
+    file1_shortpath = '/'+dcmp.left.replace(cwd, '').replace(fixed_dir_experiment_name, '').lstrip('/')
+    print('checked in directory %s'%(file1_shortpath), end="\r")
+    if len(dcmp.diff_files) != 0 and verbose:
         number_netcdf_files = len([s for s in dcmp.diff_files if '.nc' in s])
-        logger.info('checking %d differing files of which %d are NetCDF and some may be tar files'%(len(dcmp.diff_files),number_netcdf_files))
+        logger.info('checking %d differing files of which %d are NetCDF and some may be tar files'%(len(dcmp.diff_files), number_netcdf_files))
     num_netcdf_differing_files = 0
     num_netcdf_differing_files_onlyheader = 0
     num_tar_differing_files = 0
@@ -191,9 +193,9 @@ def print_diff_files(dcmp):
     num_identified_grib_files = 0
     num_differing_files = 0
     for name in dcmp.diff_files:
-        file1 = os.path.join(dcmp.left,name); file2 = os.path.join(dcmp.right,name)
-        file1_shortpath = '/'+dcmp.left.replace(cwd,'').replace(fixed_dir_experiment_name,'').lstrip('/')
-        file2_shortpath = '/'+dcmp.right.replace(cwd,'').replace(fixed_dir_experiment_name,'').lstrip('/')
+        file1 = os.path.join(dcmp.left, name); file2 = os.path.join(dcmp.right, name)
+        file1_shortpath = '/'+dcmp.left.replace(cwd, '').replace(fixed_dir_experiment_name, '').lstrip('/')
+        file2_shortpath = '/'+dcmp.right.replace(cwd, '').replace(fixed_dir_experiment_name, '').lstrip('/')
         if '.nc' in name:
             net_cdf_type = netcdfver(file1)
             if net_cdf_type is not None:
