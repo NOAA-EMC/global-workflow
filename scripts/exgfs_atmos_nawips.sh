@@ -166,7 +166,7 @@ EOF
       ####    let fhcnt=fhcnt+1
     	let fhcnt=fhcnt+$ILPOST
     else
-      let fhcnt=fhcnt+finc
+      fhcnt=$((ILPOST > finc ? fhcnt+ILPOST : fhcnt+finc ))
     fi
   fi
 done
