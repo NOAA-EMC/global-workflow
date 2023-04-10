@@ -12,24 +12,25 @@ from pygw.executable import Executable
 from pygw.executable import which
 import re
 
+
 def get_args():
     import argparse
     import json
     parser = argparse.ArgumentParser()
-    parser.add_argument('--cmp_dirs', nargs=2,metavar=('ROTDIR_baseline','ROTDIR_testrun'),help='compare COMROT foloders')
-    parser.add_argument('-n', '--nameID', dest="nameID",help='tag name for compare (used in output filename)')
+    parser.add_argument('--cmp_dirs', nargs=2,metavar=('ROTDIR_baseline','ROTDIR_testrun'), help='compare COMROT foloders')
+    parser.add_argument('-n', '--nameID', dest="nameID", help='tag name for compare (used in output filename)')
     parser.add_argument('-vt', '--verbose_tar', help='include names of differing files within tar files', action='store_true', default=False)
     args = parser.parse_args()
     if args.cmp_dirs is not None:
         for dirs in args.cmp_dirs:
-            if not Path(dirs).is_dir():
+            if not Path(dirs).is_dir( ):
                 logger.critical('directory %s does not exsist'%dirs)
                 sys.exit(-1)
     return args
 
 
-def compare(folder1, folder2 ):
-    return _recursive_dircmp( folder1, folder2 )
+def compare(folder1, folder2):
+    return _recursive_dircmp(folder1, folder2)
 
 def count_nonid_corr(test_string: str, quiet=False):
     pattern = re.compile(r"(\d+:\d+:)(?P<var>.*):rpn_corr=(?P<corr>.*)")
