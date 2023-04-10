@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import filecmp
-import collections
 import os,sys
 from pathlib import Path
 
