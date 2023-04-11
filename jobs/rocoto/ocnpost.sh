@@ -50,7 +50,7 @@ export IDATE=${PDY}${cyc}
 
 for fhr in ${fhrlst}; do
   export fhr=${fhr}  
-  # Ignore possible misspelling error (nothing is misspelled)
+  # Ignore possible spelling error (nothing is misspelled)
   # shellcheck disable=SC2153
   VDATE=$(${NDATE} "${fhr}" "${IDATE}")
   # shellcheck disable=

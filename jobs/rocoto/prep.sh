@@ -25,7 +25,7 @@ status=$?
 
 ###############################################################
 # Set script and dependency variables
-# Ignore possible misspelling error (nothing is misspelled)
+# Ignore possible spelling error (nothing is misspelled)
 # shellcheck disable=SC2153
 GDATE=$(${NDATE} -${assim_freq} "${PDY}${cyc}")
 # shellcheck disable=

@@ -14,7 +14,7 @@ export DO_CALC_ANALYSIS=${DO_CALC_ANALYSIS:-"YES"}
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
-# Ignore possible misspelling error (nothing is misspelled)
+# Ignore possible spelling error (nothing is misspelled)
 # shellcheck disable=SC2153
 GDATE=$(${NDATE} -"${assim_freq}" "${PDY}${cyc}")
 # shellcheck disable=

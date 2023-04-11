@@ -129,7 +129,7 @@ fi
 export APRUN_FV3=${APRUN_FV3:-${APRUN:-""}}
 export NTHREADS_FV3=${NTHREADS_FV3:-${NTHREADS:-1}}
 
-# Ignore possible misspelling error (nothing is misspelled)
+# Ignore possible spelling error (nothing is misspelled)
 # shellcheck disable=SC2153
 GDATE=$(${NDATE} -"${assim_freq}" "${PDY}${cyc}")
 declare -x gPDY="${GDATE:0:8}"

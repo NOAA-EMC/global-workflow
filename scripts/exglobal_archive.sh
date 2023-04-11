@@ -18,7 +18,7 @@ APREFIX="${RUN}.t${cyc}z."
 
 # Realtime parallels run GFS MOS on 1 day delay
 # If realtime parallel, back up CDATE_MOS one day
-# Ignore possible misspelling error (nothing is misspelled)
+# Ignore possible spelling error (nothing is misspelled)
 # shellcheck disable=SC2153
 CDATE_MOS=${PDY}${cyc}
 if [ "${REALTIME}" = "YES" ]; then

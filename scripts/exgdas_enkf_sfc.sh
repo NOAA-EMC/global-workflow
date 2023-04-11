@@ -77,7 +77,7 @@ cd $DATA || exit 99
 ################################################################################
 # Update surface fields in the FV3 restart's using global_cycle.
 
-# Ignore possible misspelling error (nothing is misspelled)
+# Ignore possible spelling error (nothing is misspelled)
 # shellcheck disable=SC2153
 BDATE=$(${NDATE} -3 "${PDY}${cyc}")
 bPDY=${BDATE:0:8}
@@ -99,7 +99,7 @@ FNSNOG=${FNSNOG:-${COM_OBS_PREV}/${GPREFIX}snogrb_t${JCAP_CASE}.${LONB_CASE}.${L
 
 # Set CYCLVARS by checking grib date of current snogrb vs that of prev cycle
 if [ ${RUN_GETGES:-"NO"} = "YES" ]; then
-    # Ignore possible misspelling error (nothing is misspelled)
+    # Ignore possible spelling error (nothing is misspelled)
     # shellcheck disable=SC2153
     snoprv=$($GETGESSH -q -t snogrb_$JCAP_CASE -e $gesenvir -n $GDUMP -v $GDATE)
 else

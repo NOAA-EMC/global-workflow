@@ -65,7 +65,7 @@ echo "=============== START TO RUN FIT2OBS VERIFICATION ==============="
 if [[ ${VRFYFITS} == "YES" && "${CDUMP}" == "${CDFNL}" && "${PDY}${cyc}" != "${SDATE}" ]]; then
 
     
-    # Ignore possible misspelling error (nothing is misspelled)
+    # Ignore possible spelling error (nothing is misspelled)
     # shellcheck disable=SC2153
     export CDUMPFCST=${VDUMP}
     # shellcheck disable=
