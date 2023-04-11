@@ -46,10 +46,15 @@ esac
 export MACHINE_ID
 export REPO_URL=${REPO_URL:-"https://github.com/NOAA-EMC/global-workflow.git"}
 
+######################################################
+# setup runtime env for correct python install and git
+######################################################
+module use "${HOMEGFS_DIR}/modulefiles"
+module load "module_ci.${MACHINE_ID}"
+
 ############################################################
 # query repo and get list of open PRs with tags {machine}-CI
 ############################################################
-set -eux
 pr_list_file="open_pr_list"
 rm -f "${pr_list_file}"
 list=$(${GH} pr list --repo "${REPO_URL}" --label "CI-${MACHINE_ID^}-Ready" --state "open")
@@ -66,11 +71,6 @@ fi
 # Loop throu all open PRs
 # Clone, checkout, build, creat set of experiments, for each
 #############################################################
-
-#first setup runtime env for correct python install and git
-module use "${HOMEGFS_DIR}/modulefiles"
-module load "module_ci.${MACHINE_ID}"
-module list
 
 for pr in ${pr_list}; do
   "${GH}" pr edit --repo "${REPO_URL}" "${pr}" --remove-label "CI-${MACHINE_ID^}-Ready" --add-label "CI-${MACHINE_ID^}-Running"
