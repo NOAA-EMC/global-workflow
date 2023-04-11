@@ -16,8 +16,10 @@ fi
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
+# Ignore possible misspelling error (nothing is misspelled)
+# shellcheck disable=SC2153
 GDATE=$(${NDATE} -"${assim_freq}" "${PDY}${cyc}")
-gPDY=${GDATE:0:8}
+# shellcheck disable=
 gcyc=${GDATE:8:2}
 export GDUMP="gdas"
 

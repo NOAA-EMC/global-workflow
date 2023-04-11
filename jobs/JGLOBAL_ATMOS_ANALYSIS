@@ -19,7 +19,7 @@ export MAKE_ACFTBUFR=${MAKE_ACFTBUFR:-"NO"}
 # Begin JOB SPECIFIC work
 ##############################################
 
-GDATE=$(${NDATE} -${assim_freq} ${CDATE})
+GDATE=$(${NDATE} -${assim_freq} ${PDY}${cyc})
 export gPDY=${GDATE:0:8}
 export gcyc=${GDATE:8:2}
 export GDUMP="gdas"

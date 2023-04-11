@@ -25,8 +25,10 @@ status=$?
 
 ###############################################################
 # Set script and dependency variables
-
+# Ignore possible misspelling error (nothing is misspelled)
+# shellcheck disable=SC2153
 GDATE=$(${NDATE} -${assim_freq} "${PDY}${cyc}")
+# shellcheck disable=
 gPDY=${GDATE:0:8}
 gcyc=${GDATE:8:2}
 GDUMP="gdas"
@@ -83,7 +85,7 @@ if [[ ${PROCESS_TROPCY} = "YES" ]]; then
 
     if [[ ${ROTDIR_DUMP} = "YES" ]]; then rm "${COM_OBS}/${CDUMP}.t${cyc}z.syndata.tcvitals.tm00"; fi
 
-    ${HOMEgfs}/jobs/JGLOBAL_ATMOS_TROPCY_QC_RELOC
+    "${HOMEgfs}/jobs/JGLOBAL_ATMOS_TROPCY_QC_RELOC"
     status=$?
     [[ ${status} -ne 0 ]] && exit ${status}
 
@@ -94,8 +96,8 @@ fi
 
 ###############################################################
 # Generate prepbufr files from dumps or copy from OPS
-if [ $MAKE_PREPBUFR = "YES" ]; then
-    if [ $ROTDIR_DUMP = "YES" ]; then
+if [[ ${MAKE_PREPBUFR} = "YES" ]]; then
+    if [[ ${ROTDIR_DUMP} = "YES" ]]; then
         rm -f "${COM_OBS}/${OPREFIX}prepbufr"
         rm -f "${COM_OBS}/${OPREFIX}prepbufr.acft_profiles"
         rm -f "${COM_OBS}/${OPREFIX}nsstbufr"
@@ -107,7 +109,7 @@ if [ $MAKE_PREPBUFR = "YES" ]; then
     export COMOUT=${COM_OBS}
     RUN="gdas" YMD=${PDY} HH=${cyc} generate_com -rx COMINgdas:COM_ATMOS_HISTORY_TMPL
     RUN="gfs" YMD=${PDY} HH=${cyc} generate_com -rx COMINgfs:COM_ATMOS_HISTORY_TMPL
-    if [ $ROTDIR_DUMP = "NO" ]; then
+    if [[ ${ROTDIR_DUMP} = "NO" ]]; then
         export COMSP=${COMSP:-"${COM_OBSDMP}/${CDUMP}.t${cyc}z."}
     else
         export COMSP=${COMSP:-"${COM_OBS}/${CDUMP}.t${cyc}z."}
@@ -128,20 +130,20 @@ if [ $MAKE_PREPBUFR = "YES" ]; then
     export USHprepobs=${HOMEprepobs}/ush
 
 
-    $HOMEobsproc/jobs/JOBSPROC_GLOBAL_PREP
+    "${HOMEobsproc}/jobs/JOBSPROC_GLOBAL_PREP"
     status=$?
     [[ ${status} -ne 0 ]] && exit ${status}
 
     # If creating NSSTBUFR was disabled, copy from DMPDIR if appropriate.
     if [[ ${MAKE_NSSTBUFR:-"NO"} = "NO" ]]; then
-        if [[ $DONST = "YES" ]]; then ${NCP} "${COM_OBSDMP}/${OPREFIX}nsstbufr" "${COM_OBS}/${OPREFIX}nsstbufr"; fi
+        if [[ ${DONST} = "YES" ]]; then ${NCP} "${COM_OBSDMP}/${OPREFIX}nsstbufr" "${COM_OBS}/${OPREFIX}nsstbufr"; fi
     fi
 
 else
     if [ $ROTDIR_DUMP = "NO" ]; then
         ${NCP} "${COM_OBSDMP}/${OPREFIX}prepbufr"               "${COM_OBS}/${OPREFIX}prepbufr"
         ${NCP} "${COM_OBSDMP}/${OPREFIX}prepbufr.acft_profiles" "${COM_OBS}/${OPREFIX}prepbufr.acft_profiles"
-        if [[ $DONST = "YES" ]]; then ${NCP} "${COM_OBSDMP}/${OPREFIX}nsstbufr" "${COM_OBS}/${OPREFIX}nsstbufr"; fi
+        if [[ ${DONST} = "YES" ]]; then ${NCP} "${COM_OBSDMP}/${OPREFIX}nsstbufr" "${COM_OBS}/${OPREFIX}nsstbufr"; fi
     fi
 fi
 

@@ -15,7 +15,10 @@ export MAKE_ACFTBUFR=${MAKE_ACFTBUFR:-"NO"}
 ##############################################
 # Begin JOB SPECIFIC work
 ##############################################
+# Ignore possible misspelling error (nothing is misspelled)
+# shellcheck disable=SC2153
 GDATE=$(${NDATE} -${assim_freq} ${PDY}${cyc})
+# shellcheck disable=
 export gPDY=${GDATE:0:8}
 export gcyc=${GDATE:8:2}
 export GDUMP="gdas"
@@ -50,10 +53,13 @@ if [[ ! -f ${ATMGES_ENSMEAN} ]]; then
     exit 1
 fi
 
-LEVS=$(${NCDUMP} -h ${ATMGES_ENSMEAN} | grep -i "pfull" | head -1 | awk -F" = " '{print $2}' | awk -F" " '{print $1}') # get LEVS
-export LEVS
+# Ignore masking of chained commands and possible misspelling warning
+# shellcheck disable=SC2153,SC2312
+LEVS=$(${NCDUMP} -h "${ATMGES_ENSMEAN}" | grep -i "pfull" | head -1 | awk -F" = " '{print $2}' | awk -F" " '{print $1}') # get LEVS
+# shellcheck disable=
 status=$?
-[[ ${status} -ne 0 ]] && exit ${status}
+[[ ${status} -ne 0 ]] && exit "${status}"
+export LEVS
 
 # Link observational data
 export PREPQC="${COM_OBS}/${OPREFIX}prepbufr"

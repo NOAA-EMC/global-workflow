@@ -11,3 +11,6 @@ disable=SC1090
 
 # Disable non-existent binary
 disable=SC1091
+
+# Disable -p -m only applies to deepest directory
+disable=SC2174

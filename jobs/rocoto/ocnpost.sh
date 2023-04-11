@@ -49,8 +49,11 @@ export ENSMEM=${ENSMEM:-01}
 export IDATE=${PDY}${cyc}
 
 for fhr in ${fhrlst}; do
-  export fhr=${fhr}
+  export fhr=${fhr}  
+  # Ignore possible misspelling error (nothing is misspelled)
+  # shellcheck disable=SC2153
   VDATE=$(${NDATE} "${fhr}" "${IDATE}")
+  # shellcheck disable=
   declare -x VDATE
   cd "${DATA}" || exit 2
   if (( fhr > 0 )); then

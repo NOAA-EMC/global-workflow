@@ -41,16 +41,16 @@ export INLINE_POST=${WRITE_DOPOST:-".false."}
 
 # Construct COM variables from templates
 YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_RESTART COM_ATMOS_ANALYSIS COM_ATMOS_HISTORY COM_ATMOS_MASTER
-if [[ ! -d ${COM_ATMOS_MASTER} ]]; then mkdir -m 775 -p ${COM_ATMOS_MASTER}; fi
+if [[ ! -d ${COM_ATMOS_MASTER} ]]; then mkdir -m 775 -p "${COM_ATMOS_MASTER}"; fi
 
 if [[ ${GOESF} == "YES" ]]; then
   YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_GOES
-  if [[ ! -d ${COM_ATMOS_GOES} ]]; then mkdir -m 775 -p ${COM_ATMOS_GOES}; fi
+  if [[ ! -d ${COM_ATMOS_GOES} ]]; then mkdir -m 775 -p "${COM_ATMOS_GOES}"; fi
 fi
 
 if [[ ${WAFSF} == "YES" ]]; then
   YMD=${PDY} HH=${cyc} generate_com -rx COM_ATMOS_WAFS
-  if [[ ! -d ${COM_ATMOS_WAFS} ]]; then mkdir -m 775 -p ${COM_ATMOS_WAFS}; fi
+  if [[ ! -d ${COM_ATMOS_WAFS} ]]; then mkdir -m 775 -p "${COM_ATMOS_WAFS}"; fi
 fi
 
 for RES in '0p25' '0p50' '1p00'; do
