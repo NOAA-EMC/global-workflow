@@ -49,8 +49,8 @@ export REPO_URL=${REPO_URL:-"https://github.com/NOAA-EMC/global-workflow.git"}
 ######################################################
 # setup runtime env for correct python install and git
 ######################################################
-module use "${HOMEGFS_DIR}/modulefiles"
-module load "module_ci.${MACHINE_ID}"
+#module use "${HOMEGFS_DIR}/modulefiles"
+#module load "module_ci.${MACHINE_ID}"
 
 ############################################################
 # query repo and get list of open PRs with tags {machine}-CI
@@ -118,6 +118,8 @@ for pr in ${pr_list}; do
   fi
 
 done # looping over each open and labeled PR
+
+rm "${GFS_CI_ROOT}/${pr_list_file}"
 
 ##########################################
 # scrub working directory for older files

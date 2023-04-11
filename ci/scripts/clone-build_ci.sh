@@ -84,21 +84,22 @@ rm -rf log.build
 
 # Validations
 build_status=$?
-if [[ ${build_status} -eq 0 ]]; then
-{
-  echo "Build:                                 *SUCCESS*"
-  echo "Build: Completed at $(date)" || true
-}  >> "${outfile}"
+if [[ ${build_status} != 0 ]]; then
+  {
+    echo "Build:                                  *FAILED*"
+    echo "Build: Failed at $(date)" || true
+    echo "Build: see output at ${PWD}/log.build"
+  } echo '```' >> "${outfile}"
+  exit "${build_status}"
 else
-{
-  echo "Build:                                  *FAILED*"
-  echo "Build: Failed at $(date)" || true
-  echo "Build: see output at ${PWD}/log.build"
-}
-  echo '```' >> "${outfile}"
+  {
+    echo "Build:                                 *SUCCESS*"
+    echo "Build: Completed at $(date)" || true
+  }  >> "${outfile}"
 fi
 
 ./link_workflow.sh
+build_status=$?
 
 echo "check/build/link test completed"
 exit "${build_status}"
