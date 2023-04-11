@@ -52,7 +52,7 @@ export OBERROR=${FIXgsi}/prepobs_errtable.global
 
 
 # Use experimental dumps in EMC GFS v16 parallels
-if [[ $RUN_ENVIR == "emc" ]]; then
+if [[ ${RUN_ENVIR} == "emc" ]]; then
   #   Set info files and prepobs.errtable.global for GFS v16 retrospective parallels
   if [[ "${CDATE}" -ge "2019021900" && "${CDATE}" -lt "2019110706" ]]; then
     export CONVINFO=${FIXgsi}/gfsv16_historical/global_convinfo.txt.2019021900

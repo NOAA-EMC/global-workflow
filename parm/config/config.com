@@ -1,4 +1,6 @@
 # shellcheck shell=bash
+# Ignore shellcheck warnings about variables not being expanded; this is what we want
+# shellcheck disable=SC2016
 echo "BEGIN: config.com"
 
 # These are just templates. All templates must use single quotations so variable
@@ -32,9 +34,6 @@ echo "BEGIN: config.com"
 # If any restart, input, or analysis template is updated, `setup_expt.py.fill_COMROT_cycled()`
 #   must correspondingly be updated to match.
 # 
-
-# Ignore shellcheck warnings about variables not being expanded; this is what we want
-# shellcheck disable=SC2016
 if [[ "${RUN_ENVIR:-emc}" == "nco" ]]; then
     COM_OBS_TMPL=$(compath.py "${envir}/obsproc/${obsproc_ver}")'/${RUN}.${YMD}/${HH}/atmos'
     COM_RTOFS_TMPL=$(compath.py "${envir}/${WAVECUR_DID}/${rtofs_ver}")
