@@ -204,7 +204,7 @@ if [[ "${ENSGRP}" -eq 0 ]]; then
                     readarray memlist< <(seq --format="mem%03g" 1 "${nmem}")
                     memlist+=("ensstat")
 
-                    for mem in ${memlist}; do
+                    for mem in "${memlist[@]}"; do
                         # Atmos
                         exclude_list="f006.ens"
                         templates=$(compgen -A variable | grep 'COM_ATMOS_.*_TMPL')
