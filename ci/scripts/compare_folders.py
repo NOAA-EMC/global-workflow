@@ -163,7 +163,7 @@ def netcdfver(filename):
     return None
 
 
-def print_diff_files(dcmp):
+def check_diff_files(dcmp, ignore_list):
 
     import tarfile
 
@@ -179,9 +179,11 @@ def print_diff_files(dcmp):
         logger.info(f'checking directories: {" ".join(dcmp.common_dirs)}')
     file1_path = '/' + dcmp.left.replace(cwd, '').replace(fixed_dir_experiment_name, '').lstrip('/')
     print(f'checked in directory {file1_path}', end="\r")
+
     if len(dcmp.diff_files) != 0 and verbose:
         number_netcdf_files = len([s for s in dcmp.diff_files if '.nc' in s])
         logger.info(f'checking {len(dcmp.diff_files)} differing files of which {number_netcdf_files} are NetCDF and some may be tar files')
+
     num_netcdf_differing_files = 0
     num_netcdf_differing_files_onlyheader = 0
     num_tar_differing_files = 0
@@ -189,7 +191,11 @@ def print_diff_files(dcmp):
     num_grib_differing_files = 0
     num_identified_grib_files = 0
     num_differing_files = 0
+
     for name in dcmp.diff_files:
+       
+        if any(item in name for item in ignore_list):
+            continue
         file1 = os.path.join(dcmp.left, name)
         file2 = os.path.join(dcmp.right, name)
         file1_path = '/' + dcmp.left.replace(cwd, '').replace(fixed_dir_experiment_name, '').lstrip('/')
@@ -198,9 +204,11 @@ def print_diff_files(dcmp):
             net_cdf_type = netcdfver(file1)
             if net_cdf_type is not None:
                 if verbose:
-                    netcdf_diff_output = NCCMP("--threads=4", "--data", file1, file2)
+                    #netcdf_diff_output = NCCMP("--threads=4", "--data", file1, file2)
+                    netcdf_diff_output = NCCMP("--data", file1, file2)
                 else:
-                    netcdf_diff_output = NCCMP("--diff-count=3", "--threads=4", "--data", file1, file2)
+                    #netcdf_diff_output = NCCMP("--diff-count=3", "--threads=4", "--data", file1, file2)
+                    netcdf_diff_output = NCCMP("--diff-count=3", "--data", file1, file2)
                 if netcdf_diff_output is None:
                     diff_file.write(f'NetCDF file {name} of type: {net_cdf_type} differs only in the header ' 
                                     f'in directories {file1_path} and {file2_path}\n')
@@ -249,7 +257,7 @@ def print_diff_files(dcmp):
                             f'tar files differed, and {num_differing_files} differed that where not NetCDF or tar')
 
     for sub_dcmp in dcmp.subdirs.values():
-        print_diff_files(sub_dcmp)
+        check_diff_files(sub_dcmp, ignore_list)
 
 
 if __name__ == '__main__':
@@ -332,11 +340,11 @@ if __name__ == '__main__':
         logger.info(f"Total number of distinct files and directories found in both: {len(results['both'])}")
 
     logger.info('checking for file differences...')
-    #TODO ignore does not use wild cards
-    ignore_file_list = ['*pathname*', '*.loginc.txt', '*.loganl.txt', '*.log', 'INPUT', 'RESTART', 'logs']
+    ignore_file_list = ['INPUT', 'RESTART', 'logs']
     compare_files = filecmp.dircmp(folder1, folder2, ignore_file_list)
     diff_file = open(diff_file_name, 'w')
-    print_diff_files(compare_files)
+    ignore_list=["log","pathname"]
+    check_diff_files(compare_files,ignore_list)
     logger.info(f'Total number of files common to both experiments: {files_compared} of which {total_num_diff_files} differed')
     elapsed_time = time.process_time() - process_time
     logger.info(f'Results written to file: {diff_file_name}')
