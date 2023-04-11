@@ -46,7 +46,7 @@ if [[ ! -d "${COM_OBS}" ]]; then mkdir -p "${COM_OBS}"; fi
 
 ###############################################################
 # If ROTDIR_DUMP=YES, copy dump files to rotdir
-if [ $ROTDIR_DUMP = "YES" ]; then
+if [[ ${ROTDIR_DUMP} = "YES" ]]; then
    "${HOMEgfs}/ush/getdump.sh" "${PDY}${cyc}" "${CDUMP}" "${COM_OBSDMP}" "${COM_OBS}"
    status=$?
    [[ ${status} -ne 0 ]] && exit ${status}
@@ -140,7 +140,7 @@ if [[ ${MAKE_PREPBUFR} = "YES" ]]; then
     fi
 
 else
-    if [ $ROTDIR_DUMP = "NO" ]; then
+    if [[ ${ROTDIR_DUMP} = "NO" ]]; then
         ${NCP} "${COM_OBSDMP}/${OPREFIX}prepbufr"               "${COM_OBS}/${OPREFIX}prepbufr"
         ${NCP} "${COM_OBSDMP}/${OPREFIX}prepbufr.acft_profiles" "${COM_OBS}/${OPREFIX}prepbufr.acft_profiles"
         if [[ ${DONST} = "YES" ]]; then ${NCP} "${COM_OBSDMP}/${OPREFIX}nsstbufr" "${COM_OBS}/${OPREFIX}nsstbufr"; fi
