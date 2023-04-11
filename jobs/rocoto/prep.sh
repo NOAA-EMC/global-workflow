@@ -9,25 +9,17 @@ status=$?
 [[ ${status} -ne 0 ]] && exit ${status}
 
 ###############################################################
-# Source relevant configs
-configs="base prep"
-for config in ${configs}; do
-    . ${EXPDIR}/config.${config}
-    status=$?
-    [[ ${status} -ne 0 ]] && exit ${status}
-done
+export job="prep"
+export jobid="${job}.$$"
+source "${HOMEgfs}/ush/jjob_header.sh" -e "prep" -c "base prep"
 
-###############################################################
-# Source machine runtime environment
-. ${BASE_ENV}/${machine}.env prep
-status=$?
-[[ ${status} -ne 0 ]] && exit ${status}
+export CDUMP="${RUN/enkf}"
 
 ###############################################################
 # Set script and dependency variables
 # Ignore possible spelling error (nothing is misspelled)
 # shellcheck disable=SC2153
-GDATE=$(${NDATE} -${assim_freq} "${PDY}${cyc}")
+GDATE=$(${NDATE} -"${assim_freq}" "${PDY}${cyc}")
 # shellcheck disable=
 gPDY=${GDATE:0:8}
 gcyc=${GDATE:8:2}
