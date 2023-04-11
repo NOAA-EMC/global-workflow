@@ -88,9 +88,9 @@ for fhr in $(seq $FHMIN $FHOUT $FHMAX); do
    ${NLN} "${COM_ATMOS_HISTORY_STAT}/${PREFIX}atmf${fhrchar}.ensmean.nc" "atmf${fhrchar}.ensmean"
    if [ $SMOOTH_ENKF = "YES" ]; then
       for imem in $(seq 1 $NMEM_ENKF); do
-         MEMDIR="mem"$(printf %03i "${imem}")
-         generate_com -x COM_ATMOS_HISTORY
-         ${NLN} "${COM_ATMOS_HISTORY}/${PREFIX}atmf${fhrchar}${ENKF_SUFFIX}.nc" "atmf${fhrchar}${ENKF_SUFFIX}_${MEMDIR}"
+         memchar="mem"$(printf %03i "${imem}")
+         MEMDIR="${memchar}" YMD=${PDY} HH=${cyc} generate_com -x COM_ATMOS_HISTORY
+         ${NLN} "${COM_ATMOS_HISTORY}/${PREFIX}atmf${fhrchar}${ENKF_SUFFIX}.nc" "atmf${fhrchar}${ENKF_SUFFIX}_${memchar}"
       done
    fi
    [[ $ENKF_SPREAD = "YES" ]] && ${NLN} "${COM_ATMOS_HISTORY_STAT}/${PREFIX}atmf${fhrchar}.ensspread.nc" "atmf${fhrchar}.ensspread"
@@ -133,8 +133,8 @@ if [ $SMOOTH_ENKF = "YES" ]; then
       if [ ! -s atmf${fhrchar}${ENKF_SUFFIX}_mem001 ]; then
          echo WARNING! no smoothed ensemble member for fhour = $fhrchar >&2
          for imem in $(seq 1 $NMEM_ENKF); do
-            MEMDIR="mem"$(printf %03i $imem)
-            ${NCP} "atmf${fhrchar}_${MEMDIR}" "atmf${fhrchar}${ENKF_SUFFIX}_${MEMDIR}"
+            memchar="mem"$(printf %03i $imem)
+            ${NCP} "atmf${fhrchar}_${memchar}" "atmf${fhrchar}${ENKF_SUFFIX}_${memchar}"
          done
       fi
    done
