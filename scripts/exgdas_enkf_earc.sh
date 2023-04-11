@@ -156,17 +156,18 @@ if [[ "${ENSGRP}" -eq 0 ]]; then
         fi
         local file_list
         declare -a file_list
+        # Suppress warnings about chained commands suppressing exit codes
+        # shellcheck disable=2312
         readarray -t file_list < <(find -L "${directory}" -type f)
-        # echo "Number of files to remove before exclusions: ${#file_list[@]}"
         if (( ${#file_list[@]} == 0 )); then return; fi
         for exclude in ${exclude_list}; do
             echo "Excluding ${exclude}"
             declare -a file_list_old=("${file_list[@]}")
+            # Suppress warnings about chained commands suppressing exit codes
+            # shellcheck disable=2312
             readarray file_list < <(printf -- '%s\n' "${file_list_old[@]}" | grep -v "${exclude}")
-            # echo "Number of files to remove after exclusion: ${#file_list[@]}"
             if (( ${#file_list[@]} == 0 )); then return; fi
         done
-        # echo "Number of files to remove after exclusions: ${#file_list[@]}"
 
         for file in "${file_list[@]}"; do
             rm -f "${file}"
@@ -188,6 +189,8 @@ if [[ "${ENSGRP}" -eq 0 ]]; then
             rocotolog="${EXPDIR}/logs/${GDATE}.log"
             if [[ -f "${rocotolog}" ]]; then
                 set +e
+                 # Suppress warnings about chained commands suppressing exit codes
+                # shellcheck disable=2312
                 testend=$(tail -n 1 "${rocotolog}" | grep "This cycle is complete: Success")
                 rc=$?
                 set_strict
@@ -207,6 +210,8 @@ if [[ "${ENSGRP}" -eq 0 ]]; then
                     for mem in "${memlist[@]}"; do
                         # Atmos
                         exclude_list="f006.ens"
+                        # Suppress warnings about chained commands suppressing exit codes
+                        # shellcheck disable=2312
                         templates=$(compgen -A variable | grep 'COM_ATMOS_.*_TMPL')
                         for template in ${templates}; do
                             MEMDIR="${mem}" YMD="${gPDY}" HH="${gcyc}" generate_com "directory:${template}"
@@ -215,6 +220,8 @@ if [[ "${ENSGRP}" -eq 0 ]]; then
 
                         # Wave
                         exclude_list=""
+                        # Suppress warnings about chained commands suppressing exit codes
+                        # shellcheck disable=2312
                         templates=$(compgen -A variable | grep 'COM_WAVE_.*_TMPL')
                         for template in ${templates}; do
                             MEMDIR="${mem}" YMD="${gPDY}" HH="${gcyc}" generate_com "directory:${template}"
@@ -223,6 +230,8 @@ if [[ "${ENSGRP}" -eq 0 ]]; then
 
                         # Ocean
                         exclude_list=""
+                        # Suppress warnings about chained commands suppressing exit codes
+                        # shellcheck disable=2312
                         templates=$(compgen -A variable | grep 'COM_OCEAN_.*_TMPL')
                         for template in ${templates}; do
                             YMEMDIR="${mem}" MD="${gPDY}" HH="${gcyc}" generate_com "directory:${template}"
@@ -231,6 +240,8 @@ if [[ "${ENSGRP}" -eq 0 ]]; then
 
                         # Ice
                         exclude_list=""
+                        # Suppress warnings about chained commands suppressing exit codes
+                        # shellcheck disable=2312
                         templates=$(compgen -A variable | grep 'COM_ICE_.*_TMPL')
                         for template in ${templates}; do
                             MEMDIR="${mem}" YMD="${gPDY}" HH="${gcyc}" generate_com "directory:${template}"
@@ -239,6 +250,8 @@ if [[ "${ENSGRP}" -eq 0 ]]; then
 
                         # Aerosols (GOCART)
                         exclude_list=""
+                        # Suppress warnings about chained commands suppressing exit codes
+                        # shellcheck disable=2312
                         templates=$(compgen -A variable | grep 'COM_CHEM_.*_TMPL')
                         for template in ${templates}; do
                             MEMDIR="${mem}" YMD="${gPDY}" HH="${gcyc}" generate_com "directory:${template}"
@@ -247,6 +260,8 @@ if [[ "${ENSGRP}" -eq 0 ]]; then
 
                         # Mediator
                         exclude_list=""
+                        # Suppress warnings about chained commands suppressing exit codes
+                        # shellcheck disable=2312
                         templates=$(compgen -A variable | grep 'COM_MED_.*_TMPL')
                         for template in ${templates}; do
                             MEMDIR="${mem}" YMD="${gPDY}" HH="${gcyc}" generate_com "directory:${template}"

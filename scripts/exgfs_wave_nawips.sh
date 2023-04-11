@@ -14,7 +14,7 @@
 source "$HOMEgfs/ush/preamble.sh"
 
 #export grids=${grids:-'glo_30m at_10m ep_10m wc_10m ao_9km'} #Interpolated grids
-export grids=${grids:-'glo_10m gso_15m ao_9km'}  #Native grids
+export grids=${grids:-'glo_30m'}  #Native grids
 export RUNwave=${RUNwave:-${RUN}wave}
 export fstart=${fstart:-0}
 export FHMAX_WAV=${FHMAX_WAV:-180}  #180 Total of hours to process
@@ -83,7 +83,7 @@ while [ $fhcnt -le $FHMAX_WAV ]; do
         sleep 20
       fi
       if [ $icnt -ge $maxtries ]; then
-        echo "ABORTING after 5 minutes of waiting for $GRIBIN."
+        msg="ABORTING after 5 minutes of waiting for $GRIBIN."
         echo ' '
         echo '**************************** '
         echo '*** ERROR : NO GRIB FILE *** '
@@ -102,7 +102,7 @@ while [ $fhcnt -le $FHMAX_WAV ]; do
                                           $GRIBIN 1> out 2>&1
       OK=$?
       if [ "$OK" != '0' ]; then 
-        echo "ABNORMAL EXIT: ERROR IN interpolation the global grid"
+        msg="ABNORMAL EXIT: ERROR IN interpolation the global grid"
         #set +x
         echo ' '
         echo '************************************************************* '

@@ -25,6 +25,8 @@ source "${HOMEgfs}/ush/preamble.sh"
 pwd=$(pwd)
 
 # Derived base variables
+# Ignore possible misspelling error (nothing is misspelled)
+# shellcheck disable=SC2153
 GDATE=$(${NDATE} -"${assim_freq}" "${PDY}${cyc}")
 BDATE=$(${NDATE} -3 "${PDY}${cyc}")
 bPDY=${BDATE:0:8}

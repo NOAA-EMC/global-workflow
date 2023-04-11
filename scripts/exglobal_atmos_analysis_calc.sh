@@ -29,11 +29,6 @@ export FIXgsm=${FIXgsm:-$HOMEgfs/fix/am}
 CDUMP=${CDUMP:-"gdas"}
 GDUMP=${GDUMP:-"gdas"}
 
-# Derived base variables
-BDATE=$($NDATE -3 $CDATE)
-bPDY=$(echo $BDATE | cut -c1-8)
-bcyc=$(echo $BDATE | cut -c9-10)
-
 # Utilities
 export NCP=${NCP:-"/bin/cp"}
 export NMV=${NMV:-"/bin/mv"}

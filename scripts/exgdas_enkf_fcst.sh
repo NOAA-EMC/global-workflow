@@ -21,7 +21,6 @@
 source "$HOMEgfs/ush/preamble.sh"
 
 # Directories.
-pwd=$(pwd)
 export FIX_DIR=${FIX_DIR:-$HOMEgfs/fix}
 export FIX_AM=${FIX_AM:-$FIX_DIR/am}
 
@@ -130,6 +129,8 @@ fi
 export APRUN_FV3=${APRUN_FV3:-${APRUN:-""}}
 export NTHREADS_FV3=${NTHREADS_FV3:-${NTHREADS:-1}}
 
+# Ignore possible misspelling error (nothing is misspelled)
+# shellcheck disable=SC2153
 GDATE=$(${NDATE} -"${assim_freq}" "${PDY}${cyc}")
 declare -x gPDY="${GDATE:0:8}"
 declare -x gcyc="${GDATE:8:2}"

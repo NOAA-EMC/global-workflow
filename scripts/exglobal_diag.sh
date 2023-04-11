@@ -29,12 +29,6 @@ CDATE="${PDY}${cyc}"
 CDUMP=${CDUMP:-"gdas"}
 GDUMP=${GDUMP:-"gdas"}
 
-# Derived base variables
-GDATE=$(${NDATE} -"${assim_freq}" "${PDY}${cyc}")
-BDATE=$(${NDATE} -3 "${PDY}${cyc}")
-bPDY=${BDATE:0:8}
-bcyc=${BDATE:8:2}
-
 # Utilities
 export NCP=${NCP:-"/bin/cp"}
 export NMV=${NMV:-"/bin/mv"}
