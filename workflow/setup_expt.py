@@ -73,7 +73,7 @@ def fill_COMROT_cycled(host, inputs):
     rdatestr = datetime_to_YMDH(inputs.idate - to_timedelta('T06H'))
     idatestr = datetime_to_YMDH(inputs.idate)
 
-    if os.path.isdir(os.path.join(inputs.icsdir, 'atmos', 'model_data')):
+    if os.path.isdir(os.path.join(inputs.icsdir, 'model_data', 'atmos')):
         flat_structure = False
     else:
         flat_structure = True
