@@ -27,7 +27,7 @@ job_name=${job/[jpt]gfs/gfs}
 
 if (( num != 1 )); then
    echo ""
-   echo " FATAL ERROR: Incorrect number of argumentS "
+   echo " FATAL ERROR: Incorrect number of arguments "
    echo ""
    echo ""
    echo "Usage: $0  \${fcsthrs} (3 digits) "

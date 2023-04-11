@@ -29,9 +29,6 @@ PDY_MOS="${CDATE_MOS:0:8}"
 ###############################################################
 # Archive online for verification and diagnostics
 ###############################################################
-# COMIN=${COMINatmos:-"${ROTDIR}/${RUN}.${PDY}/${cyc}/atmos"}
-# cd "${COMIN}"
-
 source "${HOMEgfs}/ush/file_utils.sh"
 
 [[ ! -d ${ARCDIR} ]] && mkdir -p "${ARCDIR}"

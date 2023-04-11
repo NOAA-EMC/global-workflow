@@ -146,7 +146,6 @@ source "$HOMEgfs/ush/preamble.sh"
 
 # 2.c Generate list of bulletins to process
  echo '   Generating buoy list ...'
- # echo 'bulls=$(sed -e 's/export b//g' -e 's/=/ /' awipsbull.data | grep -v "#" |awk '{ print $1}')'
  bulls=$(sed -e 's/export b//g' -e 's/=/ /' awipsbull.data | grep -v "#" |awk '{print $1}')
   
 # 2.d Looping over buoys running formbul

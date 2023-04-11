@@ -928,7 +928,7 @@ MOM6_nml() {
 MOM6_out() {
   echo "SUB ${FUNCNAME[0]}: Copying output data for MOM6"
 
-  # Copy MOM_input from DATA to COMOUTocean after the forecast is run (and successfull)
+  # Copy MOM_input from DATA to COM_OCEAN_INPUT after the forecast is run (and successfull)
   if [[ ! -d ${COM_OCEAN_INPUT} ]]; then mkdir -p "${COM_OCEAN_INPUT}"; fi
   ${NCP} "${DATA}/INPUT/MOM_input" "${COM_OCEAN_INPUT}/"
 
