@@ -1,7 +1,7 @@
 mkdir:
 - $(DATA)/fv3jedi
 copy:
-- [$(FV3JEDI_FIX)/fv3jedi/fv3files/akbk$(npz).nc4, $(DATA)/fv3jedi/akbk.nc4]
-- [$(FV3JEDI_FIX)/fv3jedi/fv3files/fmsmpp.nml, $(DATA)/fv3jedi/fmsmpp.nml]
-- [$(FV3JEDI_FIX)/fv3jedi/fv3files/field_table_gfdl, $(DATA)/fv3jedi/field_table]
-- [$(FV3JEDI_FIX)/fv3jedi/fieldmetadata/gfs-restart.yaml, $(DATA)/fv3jedi/gfs-restart.yaml]
+- [$(HOMEgfs)/fix/gdas/fv3jedi/fv3files/akbk$(npz).nc4, $(DATA)/fv3jedi/akbk.nc4]
+- [$(HOMEgfs)/fix/gdas/fv3jedi/fv3files/fmsmpp.nml, $(DATA)/fv3jedi/fmsmpp.nml]
+- [$(HOMEgfs)/fix/gdas/fv3jedi/fv3files/field_table_gfdl, $(DATA)/fv3jedi/field_table]
+- [$(HOMEgfs)/fix/gdas/fv3jedi/fieldmetadata/gfs-restart.yaml, $(DATA)/fv3jedi/gfs-restart.yaml]

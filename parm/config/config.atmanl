@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#! /usr/bin/env bash
 
 ########## config.atmanl ##########
 # configuration common to all atm var analysis tasks

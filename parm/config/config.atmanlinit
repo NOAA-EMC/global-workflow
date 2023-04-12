@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#! /usr/bin/env bash
 
 ########## config.atmanlinit ##########
 # Pre Atm Var Analysis specific

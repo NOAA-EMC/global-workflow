@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#! /usr/bin/env bash
 
 ########## config.atmanlrun ##########
 # Atm Var Analysis specific

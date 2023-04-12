@@ -11,7 +11,7 @@ from pygw.attrdict import AttrDict
 from pygw.file_utils import FileHandler
 from pygw.timetools import add_to_datetime, to_fv3time, to_timedelta, to_YMDH
 from pygw.fsutils import rm_p, chdir
-from pygw.yaml_file import YAMLFile, parse_yamltmpl, parse_j2yaml, save_as_yaml
+from pygw.yaml_file import parse_yamltmpl, parse_j2yaml, save_as_yaml
 from pygw.logger import logit
 from pygw.executable import Executable
 from pygw.exceptions import WorkflowException
